@@ -93,6 +93,45 @@ static void BoardDiag_cpswTxIsrFxn(void *appData)
     txSem = true;
 }
 
+static void BoardDiag_cpswTimerISR(uintptr_t arg)
+{
+    Cpsw_periodicTick(gCpswLpbkObj.hCpsw);
+}
+
+static TimerP_Handle BoardDiag_cpswCreateClock(void)
+{
+    TimerP_Handle timerHandle;
+    TimerP_Params timerParams;
+    uint32_t period = 1000 * 100; /* usecs */
+
+    TimerP_Params_init(&timerParams);
+
+    timerParams.startMode  = TimerP_StartMode_USER;
+    timerParams.periodType = TimerP_PeriodType_MICROSECS;
+    timerParams.period     = period;
+
+    timerHandle = TimerP_create(TimerP_ANY,
+                                (TimerP_Fxn) & BoardDiag_cpswTimerISR,
+                                &timerParams);
+
+    return timerHandle;
+}
+
+void BoardDiag_cpswStartClock(CpswApp_ClkHandle handle)
+{
+    TimerP_Handle timerHandle = (TimerP_Handle)handle;
+
+    /* start the timer */
+    TimerP_start(timerHandle);
+}
+
+void BoardDiag_cpswStopClock(TimerP_Handle handle)
+{
+    TimerP_Handle timerHandle = (TimerP_Handle)handle;
+
+    TimerP_stop(timerHandle);
+}
+
 /**
  * \brief   This function is used to queue the received packets to rx ready queue
  *
@@ -190,7 +229,7 @@ static void BoardDiag_cpswWait(uint32_t waitTime)
 
     /* we multiply waitTime by 10000 as 400MHz R5 takes 2.5ns for single cycle
      * and we assume for loop takes 4 cycles */
-    for (index = 0; index < (waitTime*10000); index++);
+    for (index = 0; index < (waitTime*1000); index++);
 }
 
 /**
@@ -219,8 +258,10 @@ static int8_t boarDiag_cpswInitRxReadyPktQ(void)
                                                   UDMA_CACHELINE_ALIGNMENT);
         if(pPktInfo == NULL)
         {
-           UART_printf("\n");
+           UART_printf("CpswAppMemUtils_allocEthPktFxn Failed\n");
+           return -1;
         }
+
         CPSW_UTILS_SET_PKT_APP_STATE(&pPktInfo->pktState,
                                      CPSW_PKTSTATE_APP_WITH_FREEQ);
         CpswUtils_enQ(&gCpswLpbkObj.rxFreeQ,
@@ -281,25 +322,20 @@ static int8_t BoardDiag_cpswInitTxFreePktQ(void)
     /* Initialize TX EthPkts and queue them to txFreePktInfoQ */
     for(index = 0U; index < CPSWAPPUTILS_ARRAY_SIZE(gCpswLpbkObj.txFreePktInfo); index++)
     {
-        pktInfo = &gCpswLpbkObj.txFreePktInfo[index];
+        pktInfo = CpswAppMemUtils_allocEthPktFxn(&gCpswLpbkObj,
+                                                  CPSW_APPMEMUTILS_LARGE_POOL_PKT_SIZE,
+                                                  UDMA_CACHELINE_ALIGNMENT);
+
         if(pktInfo == NULL)
         {
-            return -1;
+            UART_printf("\n"); 
         }
-
-        CpswDma_pktInfoInit(pktInfo);
-
-        memset (&pktInfo->node, 0U, sizeof(pktInfo->node));
-        pktInfo->bufPtr     = (uint8_t *)&gCpswLpbkObj.txBufMem[index][0U];
-        pktInfo->orgBufLen  = ETH_MAX_FRAME_LEN;
-        pktInfo->userBufLen = ETH_MAX_FRAME_LEN;
-        pktInfo->appPriv    = NULL;
-
         CPSW_UTILS_SET_PKT_APP_STATE(&pktInfo->pktState,
                                      CPSW_PKTSTATE_APP_WITH_FREEQ);
 
         CpswUtils_enQ(&gCpswLpbkObj.txFreePktInfoQ,
                       &pktInfo->node);
+
     }
 
     UART_printf("initQs() txFreePktInfoQ initialized with %d pkts\n",
@@ -488,7 +524,7 @@ void BoardDiag_cpswCloseDma(void)
                              &cqPktInfoQ,
                              gCpswLpbkObj.rxStartFlowIdx,
                              gCpswLpbkObj.rxFlowIdx,
-                             gCpswLpbkObj.hostMacAddr,
+                             gCpswLpbkObj.hostMacAddr0,
                              gCpswLpbkObj.hRxFlow);
 
     CpswAppUtils_freePktInfoQ(&fqPktInfoQ);
@@ -540,7 +576,7 @@ static void BoardDiag_cpswShowStats(void)
 
     if (status == CPSW_SOK)
     {
-        inArgs.portNum = CPSW_MAC_PORT_0;
+        inArgs.portNum = gCpswLpbkObj.portNum0;
         CPSW_IOCTL_SET_INOUT_ARGS(&prms,
                                   &inArgs,
                                   &portStats);
@@ -604,7 +640,7 @@ int32_t BoardDiag_cpswPktRxTx(void)
                        CPSW_MAC_ADDR_LEN);
 
                 memcpy(frame->hdr.srcMac,
-                       &gCpswLpbkObj.hostMacAddr[0U],
+                       &gCpswLpbkObj.hostMacAddr0[0U],
                        CPSW_MAC_ADDR_LEN);
 
                 frame->hdr.etherType = htons(ETHERTYPE_EXPERIMENTAL1);
@@ -731,6 +767,8 @@ int32_t BoardDiag_cpswPktRxTx(void)
 int32_t BoardDiag_cpswOpenDma(void)
 {
     int32_t status = CPSW_SOK;
+    uint8_t macAddrBuf[CPSW_GESI_ETH_PORT_MAX][BOARD_MAC_ADDR_BYTES];
+    uint32_t macEntries;
 
     /* Open the CPSW TX channel  */
     CpswDma_initTxChParams(&cpswTxChCfg);
@@ -792,9 +830,15 @@ int32_t BoardDiag_cpswOpenDma(void)
                                 true,
                                 &gCpswLpbkObj.rxStartFlowIdx,
                                 &gCpswLpbkObj.rxFlowIdx,
-                                &gCpswLpbkObj.hostMacAddr[0U],
+                                &gCpswLpbkObj.hostMacAddr0[0U],
                                 &gCpswLpbkObj.hRxFlow,
                                 &cpswRxFlowCfg);
+
+    /* For 1st Port */
+    Board_readMacAddr(0, &macAddrBuf[0][0], sizeof(macAddrBuf), &macEntries);
+    memcpy(&gCpswLpbkObj.hostMacAddr0[0U], &macAddrBuf[0][0], CPSW_MAC_ADDR_LEN);
+    /* For 2nd Port */
+    memcpy(&gCpswLpbkObj.hostMacAddr1[0U], &macAddrBuf[1][0], CPSW_MAC_ADDR_LEN);
 
         if (NULL == gCpswLpbkObj.hRxFlow)
         {
@@ -811,10 +855,16 @@ int32_t BoardDiag_cpswOpenDma(void)
         }
         else
         {
-            CpswAppUtils_print("Host MAC address: ");
-            CpswAppUtils_printMacAddr(gCpswLpbkObj.hostMacAddr);
+            CpswAppUtils_print("Host MAC0 address: ");
+            CpswAppUtils_printMacAddr(gCpswLpbkObj.hostMacAddr0);
             /* For MAC loopback disable secure flag for the host port entry */
-            BoardDiag_cpswChangeHostAleEntry(&gCpswLpbkObj.hostMacAddr[0U]);
+            BoardDiag_cpswChangeHostAleEntry(&gCpswLpbkObj.hostMacAddr0[0U]);
+            
+            //CpswAppUtils_print("Host MAC1 address: ");
+            //CpswAppUtils_printMacAddr(gCpswLpbkObj.hostMacAddr1);
+            /* For MAC loopback disable secure flag for the host port entry */
+            //BoardDiag_cpswChangeHostAleEntry(&gCpswLpbkObj.hostMacAddr1[0U]);
+            
 
             /* Submit all ready RX buffers to DMA.*/
             boarDiag_cpswInitRxReadyPktQ();
@@ -880,9 +930,7 @@ static int32_t BoardDiag_cpswOpen(void)
 
     Cpsw_initOsalPrms(&osalPrms);
 
-    Cpsw_init(gCpswLpbkObj.cpswType,
-              &osalPrms,
-              &utilsPrms);
+    Cpsw_init(gCpswLpbkObj.cpswType, &osalPrms, &utilsPrms);
 
     /* Open the CPSW driver */
     gCpswLpbkObj.hCpsw = Cpsw_open(gCpswLpbkObj.cpswType,
@@ -915,25 +963,6 @@ static int32_t BoardDiag_cpswOpen(void)
         }
     }
 
-    if (status == CPSW_SOK)
-    {
-        status = CpswAppUtils_allocMac(gCpswLpbkObj.hCpsw,
-                                       gCpswLpbkObj.coreKey,
-                                       gCpswLpbkObj.coreId,
-                                       gCpswLpbkObj.hostMacAddr);
-        if(status != CPSW_SOK)
-        {
-            UART_printf("CpswApp_loopbackTest failed CpswAppUtils_allocMac: %d\n",
-                         status);
-        }
-        else
-        {
-            CpswAppUtils_addHostPortEntry(gCpswLpbkObj.hCpsw,
-                                          gCpswLpbkObj.coreId,
-                                          gCpswLpbkObj.hostMacAddr);
-        }
-    }
-
     if(status == CPSW_SOK)
     {
         /* memutils open should happen after Cpsw is opened as it uses CpswUtils_Q
@@ -957,7 +986,7 @@ static int32_t BoardDiag_cpswOpen(void)
 
         Cpsw_initMacPortParams(macConfig);
 
-        BoardDiag_cpswChangeHostAleEntry(&gCpswLpbkObj.hostMacAddr[0U]);
+        BoardDiag_cpswChangeHostAleEntry(&gCpswLpbkObj.hostMacAddr0[0U]);
 
         CpswAppBoardUtils_setPhyConfig(gCpswLpbkObj.cpswType,
                                        linkArgs0.portNum,
@@ -980,7 +1009,7 @@ static int32_t BoardDiag_cpswOpen(void)
 
         Cpsw_initMacPortParams(macConfig);
 
-        BoardDiag_cpswChangeHostAleEntry(&gCpswLpbkObj.hostMacAddr[0U]);
+        BoardDiag_cpswChangeHostAleEntry(&gCpswLpbkObj.hostMacAddr1[0U]);
 
         CpswAppBoardUtils_setPhyConfig(gCpswLpbkObj.cpswType,
                                        linkArgs1.portNum,
@@ -1039,6 +1068,7 @@ int32_t BoardDiag_cpswLoopbackTest(void)
     int32_t       status;
     bool          alive;
     uint8_t       index;
+    TimerP_Handle clkhandle = BoardDiag_cpswCreateClock();
 
     Cpsw_IoctlPrms prms;
     CpswAle_SetPortStateInArgs setPortStateInArgs;
@@ -1071,8 +1101,7 @@ int32_t BoardDiag_cpswLoopbackTest(void)
         setPortStateInArgs.portNum   = CPSW_ALE_HOST_PORT_NUM;
         setPortStateInArgs.portState = CPSW_ALE_PORTSTATE_FORWARD;
 
-        CPSW_IOCTL_SET_IN_ARGS(&prms,
-                               &setPortStateInArgs);
+        CPSW_IOCTL_SET_IN_ARGS(&prms, &setPortStateInArgs);
         prms.outArgs = NULL;
 
         status = Cpsw_ioctl(gCpswLpbkObj.hCpsw,
@@ -1123,6 +1152,8 @@ int32_t BoardDiag_cpswLoopbackTest(void)
         }
     }
 
+    BoardDiag_cpswStartClock(clkhandle);
+
     UART_printf("Waiting for link to up for portNum-%d and portNum-%d...\n\r",
                  gCpswLpbkObj.portNum0,
                  gCpswLpbkObj.portNum1);
@@ -1134,7 +1165,6 @@ int32_t BoardDiag_cpswLoopbackTest(void)
                                           gCpswLpbkObj.coreId,
                                           gCpswLpbkObj.portNum0))
         {
-            Cpsw_periodicTick(gCpswLpbkObj.hCpsw);
             BoardDiag_cpswWait(1000);
         }
 
@@ -1142,7 +1172,6 @@ int32_t BoardDiag_cpswLoopbackTest(void)
                                           gCpswLpbkObj.coreId,
                                           gCpswLpbkObj.portNum1))
         {
-            Cpsw_periodicTick(gCpswLpbkObj.hCpsw);
             BoardDiag_cpswWait(1000);
         }
 
@@ -1183,6 +1212,8 @@ int32_t BoardDiag_cpswLoopbackTest(void)
 
     CpswAppUtils_disableClocks(gCpswLpbkObj.cpswType);
     CpswAppBoardUtils_deInit();
+
+    BoardDiag_cpswStopClock(clkhandle);
 
     return 0;
 }
@@ -1235,7 +1266,7 @@ int8_t BoardDiag_CpswEthRunTest(void)
     else
     {
         gCpswLpbkObj.portNum0 = CPSW_MAC_PORT_0;
-        gCpswLpbkObj.portNum1 = CPSW_MAC_PORT_1;
+        gCpswLpbkObj.portNum1 = CPSW_MAC_PORT_7;
     }
 
     /* Run the loopback test */
@@ -1276,9 +1307,12 @@ int main(void)
     boardCfg = BOARD_INIT_MODULE_CLOCK |
                BOARD_INIT_PINMUX_CONFIG |
                BOARD_INIT_UART_STDIO |
-               BOARD_INIT_ETH_PHY;
+               BOARD_INIT_ENETCTRL_CPSW9G;
 #else
-    boardCfg = BOARD_INIT_UART_STDIO;
+    boardCfg = BOARD_INIT_PINMUX_CONFIG |
+               BOARD_INIT_UART_STDIO |
+               BOARD_INIT_ENETCTRL_CPSW9G |
+               BOARD_INIT_CPSW9G_ETH_PHY;
 #endif
 
     status = Board_init(boardCfg);
@@ -1294,14 +1328,6 @@ int main(void)
     {
         return -1;
     }
-
-    boardCfg = BOARD_INIT_CPSW9G_ETH_PHY;
-    status = Board_init(boardCfg);
-    if(status != BOARD_SOK)
-    {
-        return -1;
-    }
-
 
     ret = BoardDiag_CpswEthRunTest();
     if(ret == 0)

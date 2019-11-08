@@ -105,6 +105,8 @@ extern "C" {
 #define CPSW_PHY_START_ADDRESS      (0U)
 #define CPSW_PHY_END_ADDRESS        (31U)
 
+#define CPSW_GESI_ETH_PORT_MAX      (5U)
+
 typedef void *CpswApp_ClkHandle;
 
 /**
@@ -143,7 +145,7 @@ typedef struct
     /* TX DMA packet info memory */
     CpswDma_PktInfo      txFreePktInfo[CPSW_APPMEMUTILS_NUM_TX_PKTS];
 
-    uint8_t              hostMacAddr[CPSW_MAC_ADDR_LEN];
+    uint8_t              hostMacAddr0[ETH_MAC_ADDR_LEN];
 
     uint8_t              hostMacAddr1[CPSW_MAC_ADDR_LEN];
 
