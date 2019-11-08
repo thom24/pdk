@@ -138,7 +138,6 @@ CHECK_UDP_PTP:
     QBNE    GPTP_CHECK_EXIT, R3.w0, RCV_TEMP_REG_2.w0
     SET     R22, R22, RX_IS_UDP_PTP_BIT
     SET     MII_RCV.rx_flags, MII_RCV.rx_flags, host_rcv_flag_shift
-
    
 CHECK_IF_FROM_MASTER:
     ;check if frame is from master and set flag
@@ -148,6 +147,15 @@ CHECK_IF_FROM_MASTER:
     QBNE    GPTP_CHECK_EXIT, RCV_TEMP_REG_1.w2, R3.w2    
     QBNE    GPTP_CHECK_EXIT, RCV_TEMP_REG_2, R4    
     SET     R22, R22, PTP_PKT_FROM_MASTER_RX
+
+    ; skip any filtering + cut-through
+    .if $defined(ICSS_DUAL_EMAC_BUILD)
+        QBA     FB_LT_VT_2
+    .endif
+    ; skip filting but not cut-through
+    .if $defined(ICSS_SWITCH_BUILD)
+        QBA     FB_LT_VT
+    .endif
 
 GPTP_CHECK_EXIT:
     .endm     

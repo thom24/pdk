@@ -103,7 +103,9 @@ typedef struct {
     volatile uint32_t excessColl;               /**Number of excess collisions(Half Duplex)*//**Number of excess collisions(Half Duplex)*/
 
     volatile uint32_t rxMisAlignmentFrames;     /**Number of non multiple of 8 byte frames rcvd*/
-    volatile uint32_t stormPrevCounter;         /**Number of packets dropped because of Storm Prevention*/
+    volatile uint32_t stormPrevCounter;         /**Number of packets dropped because of Storm Prevention (broadcast)*/
+    volatile uint32_t stormPrevCounterMC;         /**Number of packets dropped because of Storm Prevention (multicast)*/
+    volatile uint32_t stormPrevCounterUC;         /**Number of packets dropped because of Storm Prevention (unicast)*/
     volatile uint32_t macRxError;               /**Number of MAC receive errors*/
 
     volatile uint32_t SFDError;                  /**Number of invalid SFD*/

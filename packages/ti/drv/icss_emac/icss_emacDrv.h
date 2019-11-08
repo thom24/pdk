@@ -355,6 +355,8 @@ typedef struct ICSS_EmacFwStaticMmap_s {
     uint32_t portControlAddr;               /* Port Control Addr offset */
     uint32_t portMacAddr;                   /* Port Mac Addr offset*/
     uint32_t rxInterruptStatusOffset;       /* RX Interrupt Status Offset */
+    uint32_t stormPreventionOffsetMC;         /* Storm prevention offset (multicast)*/
+    uint32_t stormPreventionOffsetUC;         /* Storm prevention offset (unicast)*/
     uint32_t p0QueueDescOffset;             /* Port 0 QueueDescOffset */
     uint32_t p0ColQueueDescOffset;          /* Port 0 Collision QueueDescOffset */
     uint32_t emacTtsConfigBaseOffset;       /* TTS Config Base Offset */

@@ -417,25 +417,27 @@ EXCESS_COLLISION_OFFSET    .set         STATISTICS_OFFSET + 0x5c      ;more than
 
 ;********************Error packets****************
 ;Packed dropped on account of storm prevention
-RX_MISALIGNMENT_COUNT_OFFSET    .set  STATISTICS_OFFSET + 0x60 ;frame size in bits is not a multiple of 8
-STORM_PREVENTION_COUNTER    .set      STATISTICS_OFFSET + 0x64
-RX_ERROR_OFFSET    .set               STATISTICS_OFFSET + 0x68
-SFD_ERROR_OFFSET    .set              STATISTICS_OFFSET + 0x6c
-TX_DEFERRED_OFFSET    .set            STATISTICS_OFFSET + 0x70
-TX_ERROR_OFFSET    .set               STATISTICS_OFFSET + 0x74
-RX_OVERSIZED_FRAME_OFFSET    .set     STATISTICS_OFFSET + 0x78  ;count of frames with size greater than 1518 bytes
-RX_UNDERSIZED_FRAME_OFFSET    .set    STATISTICS_OFFSET + 0x7c  ;count of frames shorter than 64 bytes (including CRC)
-RX_CRC_COUNT_OFFSET    .set           STATISTICS_OFFSET + 0x80  ;number of frames with CRC error
-RX_DROPPED_FRAMES_OFFSET    .set      STATISTICS_OFFSET + 0x84
+RX_MISALIGNMENT_COUNT_OFFSET	.set	  	EXCESS_COLLISION_OFFSET + 0x4  ;frame size in bits is not a multiple of 8
+STORM_PREVENTION_COUNTER_BC	.set	      	RX_MISALIGNMENT_COUNT_OFFSET + 0x4
+STORM_PREVENTION_COUNTER_MC	.set	      	STORM_PREVENTION_COUNTER_BC + 0x4
+STORM_PREVENTION_COUNTER_UC	.set	      	STORM_PREVENTION_COUNTER_MC + 0x4
+RX_ERROR_OFFSET	.set	               	STORM_PREVENTION_COUNTER_UC + 0x4 
+SFD_ERROR_OFFSET	.set	              	RX_ERROR_OFFSET + 0x4 
+TX_DEFERRED_OFFSET	.set	            	SFD_ERROR_OFFSET + 0x4 
+TX_ERROR_OFFSET	.set	               	TX_DEFERRED_OFFSET + 0x4 
+RX_OVERSIZED_FRAME_OFFSET	.set	     	TX_ERROR_OFFSET + 0x4   ;count of frames with size greater than 1518 bytes
+RX_UNDERSIZED_FRAME_OFFSET	.set	    	RX_OVERSIZED_FRAME_OFFSET + 0x4   ;count of frames shorter than 64 bytes (including CRC)
+RX_CRC_COUNT_OFFSET	.set	           	RX_UNDERSIZED_FRAME_OFFSET + 0x4   ;number of frames with CRC error
+RX_DROPPED_FRAMES_OFFSET	.set	      	RX_CRC_COUNT_OFFSET + 0x4 
 
 ;****************Debug Statistics***************************************************/
-TX_OVERFLOW_OFFSET    .set              STATISTICS_OFFSET + 0x88
-TX_UNDERFLOW_OFFSET    .set              STATISTICS_OFFSET + 0x8c
+TX_OVERFLOW_COUNTER	.set					RX_DROPPED_FRAMES_OFFSET + 0x4 
+TX_UNDERFLOW_COUNTER	.set				TX_OVERFLOW_COUNTER + 0x4 
 
 ;**********************************************************************************/
 
 
-STAT_SIZE    .set  0x90    ;always keep it's value same as the last stat offset
+STAT_SIZE    .set  0x98    ;always keep it's value same as the last stat offset
 
 ;****************************************************************************
 ;                          End of Statistics                                *
@@ -450,7 +452,7 @@ STAT_SIZE    .set  0x90    ;always keep it's value same as the last stat offset
 ;*              These are present on both PRU0 and PRU1                     *
 ;****************************************************************************
 ;STATISTICS_OFFSET    .set             0x1f00
-STORM_PREVENTION_OFFSET    .set       STATISTICS_OFFSET + STAT_SIZE             ;4 bytes
+STORM_PREVENTION_OFFSET_BC .set       STATISTICS_OFFSET + STAT_SIZE             ;4 bytes
 PHY_SPEED_OFFSET    .set              STATISTICS_OFFSET + STAT_SIZE + 4     ;4 bytes
 PORT_STATUS_OFFSET    .set            STATISTICS_OFFSET + STAT_SIZE + 8     ;1 byte
 COLLISION_COUNTER    .set             STATISTICS_OFFSET + STAT_SIZE + 9     ;1 byte
@@ -458,13 +460,15 @@ RX_PKT_SIZE_OFFSET    .set            STATISTICS_OFFSET + STAT_SIZE + 10        
 PORT_CONTROL_ADDR    .set             STATISTICS_OFFSET + STAT_SIZE + 14        ;4 bytes
 PORT_MAC_ADDR    .set                 STATISTICS_OFFSET + STAT_SIZE + 18        ;6 bytes 
 RX_INT_STATUS_OFFSET    .set          STATISTICS_OFFSET + STAT_SIZE + 24        ;1 byte
+STORM_PREVENTION_OFFSET_MC	.set  	  STATISTICS_OFFSET + STAT_SIZE + 25			 ;4 bytes
+STORM_PREVENTION_OFFSET_UC	.set   	  STATISTICS_OFFSET + STAT_SIZE	+ 29			 ;4 bytes
 
     
 ;****************************************************************************
 ;                          Protocol-specific Stats                          *
 ;****************************************************************************
 ; Placing these AFTER cfg offsets so as to not interfere with icss_emac
-STP_INVALID_STATE_OFFSET    .set              RX_INT_STATUS_OFFSET + 4 ; number of invalid STP state errors
+STP_INVALID_STATE_OFFSET    .set              STORM_PREVENTION_OFFSET_UC + 4 ; number of invalid STP state errors
 
 ;***********************************************************************************************************
 ;                                                                                                          *

@@ -163,7 +163,7 @@ Bit 19: 1: PROMISCUOUS MODE ENABLE
 /* Base statistics offset  */
 #define ICSS_EMAC_FW_STATISTICS_OFFSET           (0x1F00U)
 /*  Needs to be updated anytime a new statistic is added or existing statistics is no longer supported (removed).*/
-#define ICSS_EMAC_FW_STAT_SIZE               (0x90U)
+#define ICSS_EMAC_FW_STAT_SIZE               (0x98U)
 
 /* Offsets from ICSS_EMAC_FW_STATISTICS_OFFSET */
 #define ICSS_EMAC_FW_STORM_PREVENTION_OFFSET         (ICSS_EMAC_FW_STATISTICS_OFFSET + ICSS_EMAC_FW_STAT_SIZE)         /*4 bytes */
@@ -174,6 +174,8 @@ Bit 19: 1: PROMISCUOUS MODE ENABLE
 #define ICSS_EMAC_FW_PORT_CONTROL_ADDR               (ICSS_EMAC_FW_STATISTICS_OFFSET + ICSS_EMAC_FW_STAT_SIZE + 14U)   /*4 bytes   */
 #define ICSS_EMAC_FW_PORT_MAC_ADDR                   (ICSS_EMAC_FW_STATISTICS_OFFSET + ICSS_EMAC_FW_STAT_SIZE + 18U)   /*6 bytes   */
 #define ICSS_EMAC_FW_RX_INT_STATUS_OFFSET            (ICSS_EMAC_FW_STATISTICS_OFFSET + ICSS_EMAC_FW_STAT_SIZE + 24U)   /*1 byte */
+#define ICSS_EMAC_FW_STORM_PREVENTION_OFFSET_MC      (ICSS_EMAC_FW_STATISTICS_OFFSET + ICSS_EMAC_FW_STAT_SIZE + 25U)   /*4 bytes */
+#define ICSS_EMAC_FW_STORM_PREVENTION_OFFSET_UC      (ICSS_EMAC_FW_STATISTICS_OFFSET + ICSS_EMAC_FW_STAT_SIZE + 29U)   /*4 bytes */
 
 
 /* DRAM1 Offsets for Switch*/

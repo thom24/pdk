@@ -331,7 +331,7 @@ FB_PROMISCUOUS_MODE_ENABLE:
     QBA		FB_LT_VT
     .endif
     .else
-    QBA		FB_LT_VT_2
+    QBA		FB_UNICAST_CHECK_CT
     .endif
     
 FB_UNICAST_DA_NO_MATCH:
@@ -466,32 +466,7 @@ FDB_UNLOCK:
 ;*********************************
 ; multicast/broadcast handling
 ;*********************************
-FB_MULTI_OR_BROADCAST:		; detected a multi-cast or broadcast frame
-    ; since the RCV_TEMP_REG_2 has the feature bit information set
-    ; for checking the promiscuous mode bit is enabled or not
-    ; skip the storm prevention for Multicast and Broadcast packets
-    ; here similar to unicast packets when promiscuous mode is enabled
-    .if $defined("ICSS_DUAL_EMAC_BUILD")
-        QBBS	FB_CONTINUE, RCV_TEMP_REG_2, ICSS_EMAC_PROMISCOUS_BIT
-    .endif
-;Do storm prevention here
-    LDI	RCV_TEMP_REG_3 , STORM_PREVENTION_OFFSET
-    LBCO	&RCV_TEMP_REG_2, PRU_DMEM_ADDR, RCV_TEMP_REG_3, 4	; load the current storm prevent count 
-    QBBC	FB_CONTINUE, RCV_TEMP_REG_2, 0
-    LSR	RCV_TEMP_REG_2, RCV_TEMP_REG_2, 8	
-    QBGT	FB_DISCARD, RCV_TEMP_REG_2.w0, 1	; check if the counter is less than zero and discard packet
-    SUB	RCV_TEMP_REG_2, RCV_TEMP_REG_2, 1	
-    LSL	RCV_TEMP_REG_2, RCV_TEMP_REG_2, 8	
-    SET	RCV_TEMP_REG_2 , RCV_TEMP_REG_2 , 0 
-    SBCO	&RCV_TEMP_REG_2, PRU_DMEM_ADDR, RCV_TEMP_REG_3, 4	
-    JMP     FB_CONTINUE
-    
-FB_DISCARD:
-;discard packet transmission if the credits for broadcast expire and update the statistic for the same
-    
-    LDI	RCV_TEMP_REG_3 , STORM_PREVENTION_COUNTER
-    QBA	COUNT_RX_STATS
-    
+FB_MULTI_OR_BROADCAST:
 FB_CONTINUE:
     ; Check if destination is broadcast
     FILL	&RCV_TEMP_REG_1, 4   ; Fill with 0xffffffff
@@ -535,7 +510,60 @@ FB_BROADCAST_CHECK_CT:
 
 FB_SKIP_VLAN_FLTR:
     .endif
+    
+    ; Storm Prevention
+    QBBC    FB_STORM_NOT_MC, R22, RX_MC_FRAME
+    LDI     RCV_TEMP_REG_3 , STORM_PREVENTION_OFFSET_MC
+    ;Do storm prevention here
+    LBCO  &RCV_TEMP_REG_2, PRU_DMEM_ADDR, RCV_TEMP_REG_3, 4   ; load the current storm prevent count 
+    QBBC  FB_CONT_CT_CHECK, RCV_TEMP_REG_2, 0
+    LSR   RCV_TEMP_REG_2, RCV_TEMP_REG_2, 8   
+    QBGT  FB_DISCARD_MC, RCV_TEMP_REG_2.w0, 1    ; check if the counter is less than zero and discard packet
+    SUB   RCV_TEMP_REG_2, RCV_TEMP_REG_2, 1   
+    LSL   RCV_TEMP_REG_2, RCV_TEMP_REG_2, 8   
+    SET   RCV_TEMP_REG_2 , RCV_TEMP_REG_2 , 0 
+    SBCO  &RCV_TEMP_REG_2, PRU_DMEM_ADDR, RCV_TEMP_REG_3, 4 
 
+    QBA     FB_CONT_CT_CHECK
+FB_STORM_NOT_MC:
+    QBBC    FB_STORM_NOT_BC, R22, RX_BC_FRAME
+    LDI     RCV_TEMP_REG_3 , STORM_PREVENTION_OFFSET_BC
+    ;Do storm prevention here
+    LBCO  &RCV_TEMP_REG_2, PRU_DMEM_ADDR, RCV_TEMP_REG_3, 4   ; load the current storm prevent count 
+    QBBC  FB_CONT_CT_CHECK, RCV_TEMP_REG_2, 0
+    LSR   RCV_TEMP_REG_2, RCV_TEMP_REG_2, 8   
+    QBGT  FB_DISCARD_BC, RCV_TEMP_REG_2.w0, 1    ; check if the counter is less than zero and discard packet
+    SUB   RCV_TEMP_REG_2, RCV_TEMP_REG_2, 1   
+    LSL   RCV_TEMP_REG_2, RCV_TEMP_REG_2, 8   
+    SET   RCV_TEMP_REG_2 , RCV_TEMP_REG_2 , 0 
+    SBCO  &RCV_TEMP_REG_2, PRU_DMEM_ADDR, RCV_TEMP_REG_3, 4 
+
+    QBA     FB_CONT_CT_CHECK
+FB_STORM_NOT_BC:
+    LDI     RCV_TEMP_REG_3 , STORM_PREVENTION_OFFSET_UC
+    ;Do storm prevention here
+    LBCO  &RCV_TEMP_REG_2, PRU_DMEM_ADDR, RCV_TEMP_REG_3, 4   ; load the current storm prevent count 
+    QBBC  FB_CONT_CT_CHECK, RCV_TEMP_REG_2, 0
+    LSR   RCV_TEMP_REG_2, RCV_TEMP_REG_2, 8   
+    QBGT  FB_DISCARD_UC, RCV_TEMP_REG_2.w0, 1    ; check if the counter is less than zero and discard packet
+    SUB   RCV_TEMP_REG_2, RCV_TEMP_REG_2, 1   
+    LSL   RCV_TEMP_REG_2, RCV_TEMP_REG_2, 8   
+    SET   RCV_TEMP_REG_2 , RCV_TEMP_REG_2 , 0 
+    SBCO  &RCV_TEMP_REG_2, PRU_DMEM_ADDR, RCV_TEMP_REG_3, 4 
+
+    QBA     FB_CONT_CT_CHECK 
+
+FB_DISCARD_MC:
+    LDI RCV_TEMP_REG_3 , STORM_PREVENTION_COUNTER_MC
+    QBA COUNT_RX_STATS
+FB_DISCARD_BC:
+    LDI RCV_TEMP_REG_3 , STORM_PREVENTION_COUNTER_BC
+    QBA COUNT_RX_STATS 
+FB_DISCARD_UC:
+    LDI RCV_TEMP_REG_3 , STORM_PREVENTION_COUNTER_UC
+    QBA COUNT_RX_STATS 
+
+FB_CONT_CT_CHECK:
     .if    $defined("TWO_PORT_CFG")
 
     .if $defined("ICSS_STP_SWITCH")
