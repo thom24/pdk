@@ -289,6 +289,7 @@ EmacSendPkt
     pkt_desc.PktLength   = PBM_getValidLen(hPkt);
     pkt_desc.PktFrags    = 1;
 
+    CacheP_wbInv((void *)&pkt_desc, sizeof(EMAC_PKT_DESC_T));
     emac_send_status = emac_send(NIMU_PORT_NUM_USED, &pkt_desc);
     return emac_send_status;
 }
