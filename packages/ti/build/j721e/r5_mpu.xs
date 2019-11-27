@@ -53,7 +53,10 @@
  * | 6  | 0x80000000   | 2GB  | T  | DDR - Strongly Ordered, Shareable         | F  | RW at PL 1 & PL 3   | 0x0  |
  *  -------------------------------------------------------------------------------------------------------------
  * | 7  | 0xAA000000   | 32MB | T  | DDR (VRing Buffer) - Uncacheble           | F  | RW at PL 1 & PL 3   | 0x0  |
+ *  -------------------------------------------------------------------------------------------------------------
+ * | 8  | 0x50000000   | 64MB | T  | OSPI flash memory - Cachable              | F  | RW at PL 1          | 0x0  |
  * |-------------------------------------------------------------------------------------------------------------|
+
  */
 
 /*
@@ -140,7 +143,7 @@ MPU.setRegionMeta(5, 0x70000000, MPU.RegionSize_8M, attrs);
 attrs.enable = true;
 attrs.bufferable = true;
 attrs.cacheable = true;
-attrs.shareable = false;
+attrs.shareable = true;
 attrs.noExecute = false;
 attrs.accPerm = 0x3;          /* RW at PL1 & PL2 */
 attrs.tex = 1;
@@ -157,3 +160,13 @@ attrs.accPerm = 3;          /* RW at PL1 */
 attrs.tex = 0;
 attrs.subregionDisableMask = 0;
 MPU.setRegionMeta(7, 0xAA000000, MPU.RegionSize_32M, attrs);
+
+attrs.enable = true;
+attrs.bufferable = true;
+attrs.cacheable = true;
+attrs.shareable = false;
+attrs.noExecute = false;
+attrs.accPerm = 1;          /* RW at PL1 */
+attrs.tex = 1;
+attrs.subregionDisableMask = 0;
+MPU.setRegionMeta(8, 0x50000000, MPU.RegionSize_64M, attrs);

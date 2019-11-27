@@ -207,7 +207,7 @@ SBL_MCU3_CPU1_BTCM_BASE_ADDR_SOC
 /*                           Internal Functions                               */
 /* ========================================================================== */
 
-static void SBL_RequestAllCores(void)
+void SBL_RequestAllCores(void)
 {
 #if !defined(SBL_SKIP_BRD_CFG_BOARD) && !defined(SBL_SKIP_SYSFW_INIT)
     uint32_t i;
@@ -236,7 +236,7 @@ static void SBL_RequestAllCores(void)
     return;
 }
 
-static void SBL_ReleaseAllCores(void)
+void SBL_ReleaseAllCores(void)
 {
 #if !defined(SBL_SKIP_BRD_CFG_BOARD) && !defined(SBL_SKIP_SYSFW_INIT)
     uint32_t i;
