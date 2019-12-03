@@ -123,32 +123,32 @@ const uint32_t lowPriAddr[3] = {0x80000000, 0x81000000, 0x82000000};
 
 /* PCIE RC IATU table */ 
 const uint32_t obRCcfg[] = {
-	PCIE_WINDOW_MEM_BASE_VC0, PCIE_WINDOW_MEM_MASK_VC0, PCIE_OB_LO_ADDR_RC_VC0, PCIE_OB_HI_ADDR_RC_VC0,
-	PCIE_WINDOW_MEM_BASE_VC1, PCIE_WINDOW_MEM_MASK_VC1, PCIE_OB_LO_ADDR_RC_VC1, PCIE_OB_HI_ADDR_RC_VC1,
-	PCIE_WINDOW_MEM_BASE_VC2, PCIE_WINDOW_MEM_MASK_VC2, PCIE_OB_LO_ADDR_RC_VC2, PCIE_OB_HI_ADDR_RC_VC2, 
-	PCIE_WINDOW_MEM_BASE_VC3, PCIE_WINDOW_MEM_MASK_VC3, PCIE_OB_LO_ADDR_RC_VC3, PCIE_OB_HI_ADDR_RC_VC3
+    PCIE_WINDOW_MEM_BASE_VC0, PCIE_WINDOW_MEM_MASK_VC0, PCIE_OB_LO_ADDR_RC_VC0, PCIE_OB_HI_ADDR_RC_VC0,
+    PCIE_WINDOW_MEM_BASE_VC1, PCIE_WINDOW_MEM_MASK_VC1, PCIE_OB_LO_ADDR_RC_VC1, PCIE_OB_HI_ADDR_RC_VC1,
+    PCIE_WINDOW_MEM_BASE_VC2, PCIE_WINDOW_MEM_MASK_VC2, PCIE_OB_LO_ADDR_RC_VC2, PCIE_OB_HI_ADDR_RC_VC2, 
+    PCIE_WINDOW_MEM_BASE_VC3, PCIE_WINDOW_MEM_MASK_VC3, PCIE_OB_LO_ADDR_RC_VC3, PCIE_OB_HI_ADDR_RC_VC3
 };
 
 const uint32_t ibRCcfg[] = {
-	PCIE_IB_LO_ADDR_RC_VC0, PCIE_IB_HI_ADDR_RC_VC0, PCIE_WINDOW_MEM_MASK_VC0,
-	PCIE_IB_LO_ADDR_RC_VC1, PCIE_IB_HI_ADDR_RC_VC1, PCIE_WINDOW_MEM_MASK_VC1, 
-	PCIE_IB_LO_ADDR_RC_VC2, PCIE_IB_HI_ADDR_RC_VC2, PCIE_WINDOW_MEM_MASK_VC2, 
-	PCIE_IB_LO_ADDR_RC_VC3, PCIE_IB_HI_ADDR_RC_VC3, PCIE_WINDOW_MEM_MASK_VC3
+    PCIE_IB_LO_ADDR_RC_VC0, PCIE_IB_HI_ADDR_RC_VC0, PCIE_WINDOW_MEM_MASK_VC0,
+    PCIE_IB_LO_ADDR_RC_VC1, PCIE_IB_HI_ADDR_RC_VC1, PCIE_WINDOW_MEM_MASK_VC1, 
+    PCIE_IB_LO_ADDR_RC_VC2, PCIE_IB_HI_ADDR_RC_VC2, PCIE_WINDOW_MEM_MASK_VC2, 
+    PCIE_IB_LO_ADDR_RC_VC3, PCIE_IB_HI_ADDR_RC_VC3, PCIE_WINDOW_MEM_MASK_VC3
 };
 
 /* PCIE EP IATU table */ 
 const uint32_t obEPcfg[] = {
-	PCIE_WINDOW_MEM_BASE_VC0, PCIE_WINDOW_MEM_MASK_VC0, PCIE_OB_LO_ADDR_EP_VC0, PCIE_OB_HI_ADDR_EP_VC0,
-	PCIE_WINDOW_MEM_BASE_VC1, PCIE_WINDOW_MEM_MASK_VC1, PCIE_OB_LO_ADDR_EP_VC1, PCIE_OB_HI_ADDR_EP_VC1,
-	PCIE_WINDOW_MEM_BASE_VC2, PCIE_WINDOW_MEM_MASK_VC2, PCIE_OB_LO_ADDR_EP_VC2, PCIE_OB_HI_ADDR_EP_VC2, 
-	PCIE_WINDOW_MEM_BASE_VC3, PCIE_WINDOW_MEM_MASK_VC3, PCIE_OB_LO_ADDR_EP_VC3, PCIE_OB_HI_ADDR_EP_VC3
+    PCIE_WINDOW_MEM_BASE_VC0, PCIE_WINDOW_MEM_MASK_VC0, PCIE_OB_LO_ADDR_EP_VC0, PCIE_OB_HI_ADDR_EP_VC0,
+    PCIE_WINDOW_MEM_BASE_VC1, PCIE_WINDOW_MEM_MASK_VC1, PCIE_OB_LO_ADDR_EP_VC1, PCIE_OB_HI_ADDR_EP_VC1,
+    PCIE_WINDOW_MEM_BASE_VC2, PCIE_WINDOW_MEM_MASK_VC2, PCIE_OB_LO_ADDR_EP_VC2, PCIE_OB_HI_ADDR_EP_VC2, 
+    PCIE_WINDOW_MEM_BASE_VC3, PCIE_WINDOW_MEM_MASK_VC3, PCIE_OB_LO_ADDR_EP_VC3, PCIE_OB_HI_ADDR_EP_VC3
 };
 
 const uint32_t ibEPcfg[] = {
-	PCIE_IB_LO_ADDR_EP_VC0, PCIE_IB_HI_ADDR_EP_VC0, PCIE_WINDOW_MEM_MASK_VC0, 
-	PCIE_IB_LO_ADDR_EP_VC1, PCIE_IB_HI_ADDR_EP_VC1, PCIE_WINDOW_MEM_MASK_VC1,
-	PCIE_IB_LO_ADDR_EP_VC2, PCIE_IB_HI_ADDR_EP_VC2, PCIE_WINDOW_MEM_MASK_VC2,
-	PCIE_IB_LO_ADDR_EP_VC3, PCIE_IB_HI_ADDR_EP_VC3, PCIE_WINDOW_MEM_MASK_VC3
+    PCIE_IB_LO_ADDR_EP_VC0, PCIE_IB_HI_ADDR_EP_VC0, PCIE_WINDOW_MEM_MASK_VC0, 
+    PCIE_IB_LO_ADDR_EP_VC1, PCIE_IB_HI_ADDR_EP_VC1, PCIE_WINDOW_MEM_MASK_VC1,
+    PCIE_IB_LO_ADDR_EP_VC2, PCIE_IB_HI_ADDR_EP_VC2, PCIE_WINDOW_MEM_MASK_VC2,
+    PCIE_IB_LO_ADDR_EP_VC3, PCIE_IB_HI_ADDR_EP_VC3, PCIE_WINDOW_MEM_MASK_VC3
 };
 
 /* Global config variable that controls
@@ -594,7 +594,7 @@ pcieRet_e pcieObTransCfg(Pcie_Handle handle)
   if(PcieModeGbl == pcie_RC_MODE)
   {
     
-	/*Configure OB region for remote configuration access space*/
+    /*Configure OB region for remote configuration access space*/
     regionParams.regionDir    = PCIE_ATU_REGION_DIR_OUTBOUND;
     regionParams.tlpType      = PCIE_TLP_TYPE_CFG;
     regionParams.enableRegion = 1;
@@ -616,9 +616,9 @@ pcieRet_e pcieObTransCfg(Pcie_Handle handle)
     }
   
     for (i=0; i<4; i++) {
-	   memset (&regionParams, 0, sizeof(regionParams));
+       memset (&regionParams, 0, sizeof(regionParams));
     
-	   /*Configure OB region for memory transfer*/
+       /*Configure OB region for memory transfer*/
        regionParams.regionDir    = PCIE_ATU_REGION_DIR_OUTBOUND;
        regionParams.tlpType      = PCIE_TLP_TYPE_MEM;
        regionParams.enableRegion = 1;
@@ -642,10 +642,10 @@ pcieRet_e pcieObTransCfg(Pcie_Handle handle)
   } 
   else 
   {
-	for (i=0; i<4; i++) {
-	   memset (&regionParams, 0, sizeof(regionParams));
+    for (i=0; i<4; i++) {
+       memset (&regionParams, 0, sizeof(regionParams));
     
-	   /*Configure OB region for memory transfer*/
+       /*Configure OB region for memory transfer*/
        regionParams.regionDir    = PCIE_ATU_REGION_DIR_OUTBOUND;
        regionParams.tlpType      = PCIE_TLP_TYPE_MEM;
        regionParams.enableRegion = 1;
@@ -665,8 +665,8 @@ pcieRet_e pcieObTransCfg(Pcie_Handle handle)
        {
             return retVal;
        } 
-    }	   
-  }	  
+    }       
+  }      
   return retVal;
 }
 
@@ -700,9 +700,9 @@ pcieRet_e pcieIbTransCfg(Pcie_Handle handle)
 
          /* This aligns the buffer to 4K, which needs to be compensated by the application */
          regionParams.lowerTargetAddr = ((uint32_t)lowPriAddr[i] & ~0xfffU) ;
-		 if (i == 3) {
-			regionParams.lowerTargetAddr = ((uint32_t)dstBuf.buf & ~0xfffU) ; 
-		 } 	 
+         if (i == 3) {
+            regionParams.lowerTargetAddr = ((uint32_t)dstBuf.buf & ~0xfffU) ; 
+         }      
          regionParams.upperTargetAddr = 0;
 
          if ( (retVal = Pcie_atuRegionConfig(
@@ -714,16 +714,16 @@ pcieRet_e pcieIbTransCfg(Pcie_Handle handle)
             return retVal;
          }
       }
-	  else {
-	     regionParams.lowerBaseAddr    = ibEPcfg[0+i*3];
+      else {
+         regionParams.lowerBaseAddr    = ibEPcfg[0+i*3];
          regionParams.upperBaseAddr    = ibEPcfg[1+i*3];
          regionParams.regionWindowSize = ibEPcfg[2+i*3];
 
          /* This aligns the buffer to 4K, which needs to be compensated by the application */
          regionParams.lowerTargetAddr = ((uint32_t)lowPriAddr[i] & ~0xfffU) ;
-		 if (i == 3) {
-			regionParams.lowerTargetAddr = ((uint32_t)dstBuf.buf & ~0xfffU) ; 
-		 } 	 
+         if (i == 3) {
+            regionParams.lowerTargetAddr = ((uint32_t)dstBuf.buf & ~0xfffU) ; 
+         }      
          regionParams.upperTargetAddr = 0;
 
          if ( (retVal = Pcie_atuRegionConfig(
@@ -734,7 +734,7 @@ pcieRet_e pcieIbTransCfg(Pcie_Handle handle)
          {
             return retVal;
          }
-	  }
+      }
   }
   return retVal;
 }
@@ -753,9 +753,9 @@ void pcieInitAppBuf(void)
   {
     dstBuf.buf[i] = 0;
     srcBuf[i] = i;
-	*(unsigned int*)(uintptr_t)(lowPriAddr[0] + 4*i) = 0;
-  	*(unsigned int*)(uintptr_t)(lowPriAddr[1] + 4*i) = 0;
- 	*(unsigned int*)(uintptr_t)(lowPriAddr[2] + 4*i) = 0;
+    *(unsigned int*)(uintptr_t)(lowPriAddr[0] + 4*i) = 0;
+      *(unsigned int*)(uintptr_t)(lowPriAddr[1] + 4*i) = 0;
+     *(unsigned int*)(uintptr_t)(lowPriAddr[2] + 4*i) = 0;
   }
   
   dstBuf.buf[PCIE_BUFSIZE_APP] = PCIE_EXAMPLE_BUF_EMPTY;
@@ -856,9 +856,9 @@ void pcieSetupVC(uint32_t csl_pcie_dat_base) {
      * TC/VC mapping must be identical for ports on both sides of a link.
      * For simplicity, a 1:1 TC to VC mapping is used here
      */
-	 
-	PCIE_logPrintf("PCIE VC setup ....\n");
-		
+     
+    PCIE_logPrintf("PCIE VC setup ....\n");
+        
     /* VC_TC_MAP_VC0_BIT1: Bit locations within this field correspond to TC values */
     *((uint32_t *)(uintptr_t) (csl_pcie_dat_base + 0x115c)) = 0x00000001 ; //TC0 ----> VC0
     *((uint32_t *)(uintptr_t) (csl_pcie_dat_base + 0x115c)) = 0x80000001 ;
@@ -898,8 +898,8 @@ void pcieSetupVC(uint32_t csl_pcie_dat_base) {
     while ((*((uint32_t volatile *)(uintptr_t) (csl_pcie_dat_base + 0x116C)) >> 17) & 0x1);
     while ((*((uint32_t volatile *)(uintptr_t) (csl_pcie_dat_base + 0x1178)) >> 17) & 0x1);
     while ((*((uint32_t volatile *)(uintptr_t) (csl_pcie_dat_base + 0x1184)) >> 17) & 0x1);
-	
-	PCIE_logPrintf("PCIE VC setup passed\n");
+    
+    PCIE_logPrintf("PCIE VC setup passed\n");
 }
 
 void pcieConfigMasterPortOrderId(void){
@@ -911,7 +911,7 @@ void pcieConfigMasterPortOrderId(void){
     // configure hp master writes on pcie0 to use orderid 8 for TC3
     *((uint32_t *)(uintptr_t) (cba_qos_base + 0x18400 + 0x00) )   = 0x00007000; 
     *((uint32_t *)(uintptr_t) (cba_qos_base + 0x18400 + 0x0c) )   = 0x00007080;
-	
+    
     // configure hp master reads on pcie1 to use orderid 8
     *((uint32_t *)(uintptr_t) (cba_qos_base + 0x19000 + 0x0C) )   = 0x00007080;
     *((uint32_t *)(uintptr_t) (cba_qos_base + 0x19000 + 0x14) )   = 0x00000008;
@@ -921,10 +921,10 @@ void pcieConfigMasterPortOrderId(void){
 }
 
 void configureNBThreadmap(void) {
-	
-	/* Maxwell has 2 ports into the NB that are based on orderIDs (0-7 and 8-15), so in effect the bits are for specific orderIDs. NAVSS_THREADMAP register has 2 MMR bits, where bit 0 is for orderIDs 0-7, and bit 1 is for orderIDs 8-15. And the value of each bit determines which thread in MSMC to map, 0 = thread 0 (NRT), 1 = thread 2 (RT).*/
-	/* NB0 for MSMC, NB1 for DDR */
-	*((uint32_t *)(uintptr_t) (0x03802010)) = 0x00000003;
+    
+    /* Maxwell has 2 ports into the NB that are based on orderIDs (0-7 and 8-15), so in effect the bits are for specific orderIDs. NAVSS_THREADMAP register has 2 MMR bits, where bit 0 is for orderIDs 0-7, and bit 1 is for orderIDs 8-15. And the value of each bit determines which thread in MSMC to map, 0 = thread 0 (NRT), 1 = thread 2 (RT).*/
+    /* NB0 for MSMC, NB1 for DDR */
+    *((uint32_t *)(uintptr_t) (0x03802010)) = 0x00000003;
     *((uint32_t *)(uintptr_t) (0x03803010)) = 0x00000000;
 }
 
@@ -1113,7 +1113,7 @@ void pcie (void)
     {
       PCIE_logPrintf ("Successfully configured Inbound Translation!\n");
     }
-	
+    
     if ((retVal = pcieObTransCfg (handle)) != pcie_RET_OK) 
     {
       PCIE_logPrintf ("Failed to configure Outbound Address Translation(%d)!\n", (int)retVal);
@@ -1177,16 +1177,16 @@ void pcie (void)
     for (i=0; i<PCIE_BUFSIZE_APP; i++)
     {
       pciedstBufBase->buf[i] = srcBuf[i] << 3;
-	  *(unsigned int*)(uintptr_t)(PCIE_WINDOW_MEM_BASE_VC0 + 4*i) = srcBuf[i] << 0;
-  	  *(unsigned int*)(uintptr_t)(PCIE_WINDOW_MEM_BASE_VC1 + 4*i) = srcBuf[i] << 1;
- 	  *(unsigned int*)(uintptr_t)(PCIE_WINDOW_MEM_BASE_VC2 + 4*i) = srcBuf[i] << 2;
+      *(unsigned int*)(uintptr_t)(PCIE_WINDOW_MEM_BASE_VC0 + 4*i) = srcBuf[i] << 0;
+        *(unsigned int*)(uintptr_t)(PCIE_WINDOW_MEM_BASE_VC1 + 4*i) = srcBuf[i] << 1;
+       *(unsigned int*)(uintptr_t)(PCIE_WINDOW_MEM_BASE_VC2 + 4*i) = srcBuf[i] << 2;
     }
     
     /* Mark that the buffer is full, so EP can process it */
     pciedstBufBase->buf[PCIE_BUFSIZE_APP] = PCIE_EXAMPLE_BUF_FULL;
     *(unsigned int*)(uintptr_t)(PCIE_WINDOW_MEM_BASE_VC0 + 4*PCIE_BUFSIZE_APP) = PCIE_EXAMPLE_BUF_FULL;
-  	*(unsigned int*)(uintptr_t)(PCIE_WINDOW_MEM_BASE_VC1 + 4*PCIE_BUFSIZE_APP) = PCIE_EXAMPLE_BUF_FULL;
- 	*(unsigned int*)(uintptr_t)(PCIE_WINDOW_MEM_BASE_VC2 + 4*PCIE_BUFSIZE_APP) = PCIE_EXAMPLE_BUF_FULL;
+      *(unsigned int*)(uintptr_t)(PCIE_WINDOW_MEM_BASE_VC1 + 4*PCIE_BUFSIZE_APP) = PCIE_EXAMPLE_BUF_FULL;
+     *(unsigned int*)(uintptr_t)(PCIE_WINDOW_MEM_BASE_VC2 + 4*PCIE_BUFSIZE_APP) = PCIE_EXAMPLE_BUF_FULL;
 
     /* Note on cache coherence: Write back is not necessary because pcieBase is in
        peripheral address space instead of physical memory*/
@@ -1195,22 +1195,22 @@ void pcie (void)
        RC waits for the loopback to be completed and
        receive data back from EP */
 
-	do {
+    do {
       cache_invalidate ((void *)lowPriAddr[0], PCIE_EXAMPLE_DSTBUF_BYTES);
     } while(*(uint32_t volatile *)(uintptr_t)(lowPriAddr[0] + PCIE_BUFSIZE_APP * 4) != PCIE_EXAMPLE_BUF_FULL);
-	PCIE_logPrintf ("Root Complex received VC0 data.\n");
+    PCIE_logPrintf ("Root Complex received VC0 data.\n");
 
-	do {
+    do {
       cache_invalidate ((void *)lowPriAddr[1], PCIE_EXAMPLE_DSTBUF_BYTES);
     } while(*(uint32_t volatile *)(uintptr_t)(lowPriAddr[1] + PCIE_BUFSIZE_APP * 4) != PCIE_EXAMPLE_BUF_FULL);
-	PCIE_logPrintf ("Root Complex received VC1 data.\n");
+    PCIE_logPrintf ("Root Complex received VC1 data.\n");
 
-	do {
+    do {
       cache_invalidate ((void *)lowPriAddr[2], PCIE_EXAMPLE_DSTBUF_BYTES);
     } while(*(uint32_t volatile *)(uintptr_t)(lowPriAddr[2] + PCIE_BUFSIZE_APP * 4) != PCIE_EXAMPLE_BUF_FULL);
-	PCIE_logPrintf ("Root Complex received VC2 data.\n");
-	
-	do {
+    PCIE_logPrintf ("Root Complex received VC2 data.\n");
+    
+    do {
       cache_invalidate ((void *)dstBuf.buf, PCIE_EXAMPLE_DSTBUF_BYTES);
     } while(dstBuf.buf[PCIE_BUFSIZE_APP] != PCIE_EXAMPLE_BUF_FULL);
     PCIE_logPrintf ("Root Complex received VC3 data.\n");
@@ -1224,24 +1224,24 @@ void pcie (void)
                         (unsigned)dstBuf.buf[i], (unsigned)srcBuf[i], (unsigned)i);
         exit(1);
       }
-	  if(*(uint32_t volatile *)(uintptr_t)(lowPriAddr[0] + i*4) != (srcBuf[i] << 0))
+      if(*(uint32_t volatile *)(uintptr_t)(lowPriAddr[0] + i*4) != (srcBuf[i] << 0))
       {
         PCIE_logPrintf ("Received data = %u\nTransmited data = %u\nIndex = %u.\n\nTest failed.\n",
                         *(uint32_t volatile *)(lowPriAddr[0] + i*4), (unsigned)srcBuf[i]<<0, (unsigned)i);
         exit(1);
       }
-	  if(*(uint32_t volatile *)(uintptr_t)(lowPriAddr[1] + i*4) != (srcBuf[i] << 1))
+      if(*(uint32_t volatile *)(uintptr_t)(lowPriAddr[1] + i*4) != (srcBuf[i] << 1))
       {
         PCIE_logPrintf ("Received data = %u\nTransmited data = %u\nIndex = %u.\n\nTest failed.\n",
                         *(uint32_t volatile *)(lowPriAddr[1] + i*4), (unsigned)srcBuf[i]<<1, (unsigned)i);
         exit(1);
-      }	 
-	  if(*(uint32_t volatile *)(uintptr_t)(lowPriAddr[2] + i*4) != (srcBuf[i] << 2))
+      }     
+      if(*(uint32_t volatile *)(uintptr_t)(lowPriAddr[2] + i*4) != (srcBuf[i] << 2))
       {
         PCIE_logPrintf ("Received data = %u\nTransmited data = %u\nIndex = %u.\n\nTest failed.\n",
                         *(uint32_t volatile *)(lowPriAddr[2] + i*4), (unsigned)srcBuf[i]<<2, (unsigned)i);
         exit(1);
-      }	  
+      }      
     }
     
     PCIE_logPrintf ("Root Complex received all correct data.\n");
@@ -1257,29 +1257,29 @@ void pcie (void)
     do {
       cache_invalidate ((void *)lowPriAddr[0], PCIE_EXAMPLE_DSTBUF_BYTES);
     } while(*(uint32_t volatile *)(uintptr_t)(lowPriAddr[0] + PCIE_BUFSIZE_APP * 4) != PCIE_EXAMPLE_BUF_FULL);
-	PCIE_logPrintf ("End Point received VC0 data.\n");     
-	
-	do {
+    PCIE_logPrintf ("End Point received VC0 data.\n");     
+    
+    do {
       cache_invalidate ((void *)lowPriAddr[1], PCIE_EXAMPLE_DSTBUF_BYTES);
     } while(*(uint32_t volatile *)(uintptr_t)(lowPriAddr[1] + PCIE_BUFSIZE_APP * 4) != PCIE_EXAMPLE_BUF_FULL);
-	PCIE_logPrintf ("End Point received VC1 data.\n");     
-	
-	do {
+    PCIE_logPrintf ("End Point received VC1 data.\n");     
+    
+    do {
       cache_invalidate ((void *)lowPriAddr[2], PCIE_EXAMPLE_DSTBUF_BYTES);
     } while(*(uint32_t volatile *)(uintptr_t)(lowPriAddr[2] + PCIE_BUFSIZE_APP * 4) != PCIE_EXAMPLE_BUF_FULL);
-	PCIE_logPrintf ("End Point received VC2 data.\n");     
-	
-	do {
+    PCIE_logPrintf ("End Point received VC2 data.\n");     
+    
+    do {
       cache_invalidate ((void *)dstBuf.buf, PCIE_EXAMPLE_DSTBUF_BYTES);
     } while(dstBuf.buf[PCIE_BUFSIZE_APP] != PCIE_EXAMPLE_BUF_FULL);
-	PCIE_logPrintf ("End Point received VC3 data.\n");
+    PCIE_logPrintf ("End Point received VC3 data.\n");
 
     /* Loopback to RC what was written in the DST buffer.
        Write from EP to RC */
     for (i=0; i<PCIE_BUFSIZE_APP; i++)
     {
       pciedstBufBase->buf[i] = dstBuf.buf[i];
-	  *(uint32_t*)(uintptr_t)(PCIE_WINDOW_MEM_BASE_VC0 + 4*i) = *(uint32_t*)(uintptr_t)(lowPriAddr[0] + i*4);
+      *(uint32_t*)(uintptr_t)(PCIE_WINDOW_MEM_BASE_VC0 + 4*i) = *(uint32_t*)(uintptr_t)(lowPriAddr[0] + i*4);
       *(uint32_t*)(uintptr_t)(PCIE_WINDOW_MEM_BASE_VC1 + 4*i) = *(uint32_t*)(uintptr_t)(lowPriAddr[1] + i*4);
       *(uint32_t*)(uintptr_t)(PCIE_WINDOW_MEM_BASE_VC2 + 4*i) = *(uint32_t*)(uintptr_t)(lowPriAddr[2] + i*4);
     }
@@ -1287,8 +1287,8 @@ void pcie (void)
     /* Mark that the buffer is full, so RC can process it */
     pciedstBufBase->buf[PCIE_BUFSIZE_APP] = PCIE_EXAMPLE_BUF_FULL;
     *(unsigned int*)(uintptr_t)(PCIE_WINDOW_MEM_BASE_VC0 + 4*PCIE_BUFSIZE_APP) = PCIE_EXAMPLE_BUF_FULL;
-  	*(unsigned int*)(uintptr_t)(PCIE_WINDOW_MEM_BASE_VC1 + 4*PCIE_BUFSIZE_APP) = PCIE_EXAMPLE_BUF_FULL;
- 	*(unsigned int*)(uintptr_t)(PCIE_WINDOW_MEM_BASE_VC2 + 4*PCIE_BUFSIZE_APP) = PCIE_EXAMPLE_BUF_FULL;
+      *(unsigned int*)(uintptr_t)(PCIE_WINDOW_MEM_BASE_VC1 + 4*PCIE_BUFSIZE_APP) = PCIE_EXAMPLE_BUF_FULL;
+     *(unsigned int*)(uintptr_t)(PCIE_WINDOW_MEM_BASE_VC2 + 4*PCIE_BUFSIZE_APP) = PCIE_EXAMPLE_BUF_FULL;
 
     /* Note on cache coherence: Write back is not necessary because pcieBase is in
        peripheral address space instead of physical memory*/
@@ -1298,19 +1298,19 @@ void pcie (void)
  
   /* PCIE QOS test only runs from RC side
      RC reads from EP's DDR into its own DDR through VC0, as the background traffic.
-	 Meanwhile, RC reads from EP's MSMC through VC3, the read latency is recorded.
+     Meanwhile, RC reads from EP's MSMC through VC3, the read latency is recorded.
      The record buffer is placed in OCMC to avoid interference with code running in MSMC
   */ 
   if(PcieModeGbl == pcie_RC_MODE) {
 #ifdef UDMA
       PCIE_logPrintf("PCIE QOS test started ....\n");
-	  
+      
       ddrRefreshCtrlCheck();
-	  
-	  configureNB1DdrAttr();
+      
+      configureNB1DdrAttr();
 
       if (pcieUdmaTest((void *)PCIE_WINDOW_MEM_BASE_VC0, PCIE_EXAMPLE_LINE_SIZE))
-	  {
+      {
          PCIE_logPrintf("UDMA test failed\n");
          exit(1);
       }

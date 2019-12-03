@@ -81,8 +81,8 @@ GPIO_CallbackFxn gpioCallbackFunctions[] = {
 
 /* GPIO Driver board specific pin configuration structure */
 GPIO_PinConfig gpioPinConfigs[] = {
-	GPIO_PCIE_RSTDRVn | GPIO_CFG_OUTPUT,
-	GPIO_PCIE_SWRSTn | GPIO_CFG_OUTPUT,
+    GPIO_PCIE_RSTDRVn | GPIO_CFG_OUTPUT,
+    GPIO_PCIE_SWRSTn | GPIO_CFG_OUTPUT,
 };
 
 /* GPIO Driver configuration structure */
@@ -352,7 +352,7 @@ void PlatformPCIESS1PhyConfig(void)
 
     /*Program for Analog circuits in the IP.*/
     /* Set bit 31:27 to 0b00001 */
-	regVal  = HW_RD_REG32(SOC_OCP2SCP3_USB3RX_PHY_PCIE1_BASE + 0x0CU);
+    regVal  = HW_RD_REG32(SOC_OCP2SCP3_USB3RX_PHY_PCIE1_BASE + 0x0CU);
     regVal &= 0x07FFFFFFU;
     regVal |= ((uint32_t) 0x01U << 27U);
     HW_WR_REG32(SOC_OCP2SCP3_USB3RX_PHY_PCIE1_BASE + 0x0CU, regVal);
@@ -362,15 +362,15 @@ void PlatformPCIESS1PhyConfig(void)
     regVal &= 0xFFFC3FFFU;
     regVal |= ((uint32_t) 0xAU << 14U);
     HW_WR_REG32(SOC_OCP2SCP3_USB3RX_PHY_PCIE1_BASE + 0x0CU, regVal);
-	
+    
     /*Program for digital section of the IP.*/
     regVal  = HW_RD_REG32(SOC_OCP2SCP3_USB3RX_PHY_PCIE1_BASE + 0x28U);
     regVal &= 0xFB0007FFU;
     regVal |= 0x00E33000U;
     HW_WR_REG32(SOC_OCP2SCP3_USB3RX_PHY_PCIE1_BASE + 0x28U, regVal);
-	
-	/* Clear bit 6:5 */
-	regVal  = HW_RD_REG32(SOC_OCP2SCP3_USB3RX_PHY_PCIE1_BASE + 0x0CU);
+    
+    /* Clear bit 6:5 */
+    regVal  = HW_RD_REG32(SOC_OCP2SCP3_USB3RX_PHY_PCIE1_BASE + 0x0CU);
     regVal &= 0xFFFFFF9FU;
     HW_WR_REG32(SOC_OCP2SCP3_USB3RX_PHY_PCIE1_BASE + 0x0CU, regVal);
 
@@ -634,7 +634,7 @@ void PlatformGetInts (uint32_t *msis, uint32_t *intx, uint32_t *unknowns)
 void PlatformPCIE_GPIO_Init(void)
 {
 #if defined(SOC_AM572x) || defined(SOC_AM574x)
-	GPIO_init();
+    GPIO_init();
 #endif
 }
 
@@ -648,16 +648,16 @@ void PlatformPCIE_GPIO_Init(void)
 void PlatformPCIE_PERSTn_Reset(uint32_t resetOnOffF)
 {
 #if defined(SOC_AM572x) || defined(SOC_AM574x)
-	GPIO_write(0, GPIO_PIN_VAL_HIGH); //Select Reset Driver
+    GPIO_write(0, GPIO_PIN_VAL_HIGH); //Select Reset Driver
 
-	if(resetOnOffF)	
-	{
-		GPIO_write(1, GPIO_PIN_VAL_LOW);
-	}
-	else
-	{
-		GPIO_write(1, GPIO_PIN_VAL_HIGH);
-	}
+    if(resetOnOffF)    
+    {
+        GPIO_write(1, GPIO_PIN_VAL_LOW);
+    }
+    else
+    {
+        GPIO_write(1, GPIO_PIN_VAL_HIGH);
+    }
 
 #endif
 }
@@ -766,7 +766,7 @@ void PlatformPCIESS2CtrlConfig(void)
 #ifdef SOC_AM571x
     /*CONTROL MODULE PWR CTL REG status of CTRL_CORE_PHY_POWER_USB: 0x4A002370 */
     regVal = HW_RD_REG32(
-    		SOC_CTRL_MODULE_CORE_CORE_REGISTERS_BASE + CTRL_CORE_PHY_POWER_USB);
+            SOC_CTRL_MODULE_CORE_CORE_REGISTERS_BASE + CTRL_CORE_PHY_POWER_USB);
 
     HW_SET_FIELD(regVal, CTRL_CORE_PHY_POWER_USB_USB_PWRCTL_CLK_CMD,
                  0x13U);
@@ -791,7 +791,7 @@ void PlatformPCIESS2PhyConfig(void)
 
 #if defined(SOC_AM572x) || defined(SOC_AM574x)
     /*Program for Analog circuits in the IP.*/
-	/* Set bit 31:27 to 0b00001 */
+    /* Set bit 31:27 to 0b00001 */
     regVal  = HW_RD_REG32(SOC_OCP2SCP3_USB3RX_PHY_PCIE2_BASE + 0x0CU);
     regVal &= 0x07FFFFFFU;
     regVal |= ((uint32_t) 0x01U << 27U);
@@ -838,7 +838,7 @@ void PlatformPCIESS2PhyConfig(void)
 
 #ifdef SOC_AM571x
     /*Program for Analog circuits in the IP.*/
-	/* Set bit 31:27 to 0b00001 */
+    /* Set bit 31:27 to 0b00001 */
     regVal  = HW_RD_REG32(SOC_OCP2SCP1_USB3RX_PHY_USB_BASE + 0x0CU);
     regVal &= 0x07FFFFFFU;
     regVal |= ((uint32_t) 0x01U << 27U);
@@ -856,7 +856,7 @@ void PlatformPCIESS2PhyConfig(void)
     regVal |= 0x00E33000U;
     HW_WR_REG32(SOC_OCP2SCP1_USB3RX_PHY_USB_BASE + 0x28U, regVal);
 
-	/* Clear bit 6:5 */
+    /* Clear bit 6:5 */
     regVal  = HW_RD_REG32(SOC_OCP2SCP1_USB3RX_PHY_USB_BASE + 0x0CU);
     regVal &= 0xFFFFFF9FU;
     HW_WR_REG32(SOC_OCP2SCP1_USB3RX_PHY_USB_BASE + 0x0CU, regVal);

@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2010-2018 Texas Instruments Incorporated - http://www.ti.com/ 
+ * Copyright (C) 2010-2019 Texas Instruments Incorporated - http://www.ti.com/ 
  * 
  * 
  *  Redistribution and use in source and binary forms, with or without 
@@ -107,8 +107,14 @@ pcieRet_e Pcie_open
     }else if (pHandle == 0) {
       retVal = pcie_RET_INV_HANDLE;
     }else {
-      if ((pcieLObj.insts[deviceNum].bases.cfgBase != 0) && 
-          (pcieLObj.insts[deviceNum].bases.dataBase != 0)) {
+      if ((pcieLObj.insts[deviceNum].bases.cfgBase != 0) 
+          && (pcieLObj.insts[deviceNum].bases.dataBase != 0)
+#if defined(SOC_J721E)
+          && (pcieLObj.insts[deviceNum].bases.devParams != 0))
+#else
+      )
+#endif 
+      {
         *pHandle = &pcieLObj.insts[deviceNum];
       }else {
         retVal = pcie_RET_INV_DEVICENUM;

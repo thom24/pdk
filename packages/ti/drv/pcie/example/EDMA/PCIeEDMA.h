@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2016 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2013-2019 Texas Instruments Incorporated - http://www.ti.com/
  *
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -79,14 +79,14 @@ extern volatile short irqRaised1;
  */
 typedef enum {
 
-	EDMA3            = 0,
-	QDMA             = 1,
-	EDMA3_WITH_LINK  = 2,
-	QDMA_WITH_LINK   = 3,
-	EDMA3_WITH_CHAIN = 4,
-	EDMA3_POLL_MODE  = 5,
-	EDMA3_PING_PONG  = 6,
-	EDMA3_MISC       = 7
+    EDMA3            = 0,
+    QDMA             = 1,
+    EDMA3_WITH_LINK  = 2,
+    QDMA_WITH_LINK   = 3,
+    EDMA3_WITH_CHAIN = 4,
+    EDMA3_POLL_MODE  = 5,
+    EDMA3_PING_PONG  = 6,
+    EDMA3_MISC       = 7
 
 } EDMA3_Type;
 
@@ -116,7 +116,7 @@ static inline uint64_t EdmaReadTime(void)
 
 #if defined (_TMS320C6X)
     uint32_t high = 0;
-	low = TSCL;
+    low = TSCL;
     high = TSCH;
     timeVal = _itoll(high,low);
 #elif __ARM_ARCH_7A__
@@ -153,10 +153,10 @@ static inline uint64_t EdmaReadTime(void)
  *  \return  EDMA3_DRV_SOK or EDMA3_DRV Error Code
  */
 void edmaTransfer(EDMA3_DRV_Handle hEdma,
-		          EDMA3_Type EdmaType,
-		          unsigned int* src,
-		          unsigned int* dst,
-		          unsigned int acnt,
+                  EDMA3_Type EdmaType,
+                  unsigned int* src,
+                  unsigned int* dst,
+                  unsigned int acnt,
                   unsigned int bcnt,
                   unsigned int ccnt,
                   EDMA3_DRV_SyncType syncType,
@@ -179,14 +179,14 @@ void edmaDeinit(EDMA3_DRV_Handle hEdma);
  *  \return  EDMA3_DRV_SOK or EDMA3_DRV Error Code
  */
 EDMA3_DRV_Result edma3_test(
-		            EDMA3_DRV_Handle hEdma,
-		            unsigned int* srcBuff,
-		            unsigned int* dstBuff,
-		            unsigned int acnt,
-		            unsigned int bcnt,
-		            unsigned int ccnt,
-		            EDMA3_DRV_SyncType syncType,
-		            unsigned long* totalTime);
+                    EDMA3_DRV_Handle hEdma,
+                    unsigned int* srcBuff,
+                    unsigned int* dstBuff,
+                    unsigned int acnt,
+                    unsigned int bcnt,
+                    unsigned int ccnt,
+                    EDMA3_DRV_SyncType syncType,
+                    unsigned long* totalTime);
 
 
 #endif /* PCIEEDMA_H_ */

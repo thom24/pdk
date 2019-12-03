@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2016-2018, Texas Instruments Incorporated
+# Copyright (c) 2016-2019, Texas Instruments Incorporated
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -35,7 +35,7 @@ include $(PDK_PCIE_COMP_PATH)/src/src_files_common.mk
 
 MODULE_NAME = pcie
 
-ifeq ($(SOC),$(filter $(SOC), am571x am572x am574x k2h k2k k2l k2e k2g c6678 c6657 am65xx))
+ifeq ($(SOC),$(filter $(SOC), am571x am572x am574x k2h k2k k2l k2e k2g c6678 c6657 am65xx j721e))
 SRCDIR += soc/$(SOC)/src
 INCDIR += soc
 # Common source files across all platforms and cores

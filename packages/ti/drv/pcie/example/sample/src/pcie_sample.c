@@ -80,15 +80,15 @@
 #define COHERENT  /* Cache ops unnecessary */
 #endif
 #endif
-#ifdef __aarch64__
+#if defined(SOC_AM65XX) && defined(BUILD_MPU)
 #define COHERENT  /* Cache ops unnecessary */
 #endif
 #if defined(SOC_AM574x) || defined(SOC_AM572x) || defined(SOC_AM571x) || \
-    defined(SOC_K2G) || defined(SOC_AM65XX) || defined(__ARM_ARCH_7A__)
+    defined(SOC_K2G) || defined(SOC_AM65XX) || defined(SOC_J721E) || defined(__ARM_ARCH_7A__)
 #include "ti/board/board.h"
 #endif
 
-#if !defined(SOC_AM572x) && !defined(SOC_AM571x) && !defined(SOC_AM574x) && !defined(SOC_AM65XX)
+#if !defined(SOC_AM572x) && !defined(SOC_AM571x) && !defined(SOC_AM574x) && !defined(SOC_AM65XX) && !defined(SOC_J721E)
 #include <ti/csl/csl_bootcfgAux.h>
 #include <ti/csl/csl_xmcAux.h>
 #include <ti/csl/csl_serdes_pcie.h>
@@ -100,14 +100,19 @@
 #include <ti/csl/cslr_gic500.h>
 #define PCIE_REV2_HW
 #else
+#ifdef SOC_J721E
+#include <ti/csl/cslr_gic500.h>
+#define PCIE_REV3_HW
+#else
 #define PCIE_REV1_HW
+#endif
 #endif
 #endif
 #ifdef _TMS320C6X 
 #include <ti/csl/csl_cacheAux.h>
 #endif
 #include <ti/csl/csl_chip.h>
-#ifdef SOC_AM65XX
+#if defined(SOC_AM65XX) || defined(SOC_J721E)
 #include <ti/csl/arch/csl_arch.h>
 #endif
 #ifdef UDMA
@@ -115,14 +120,23 @@
 #endif
 
 #if (defined(_TMS320C6X) || defined (__TI_ARM_V7M4__)) || defined (__TI_ARM_V7R4__)
-#pragma DATA_SECTION(dstBuf, ".dstBufSec")
 /* Cache coherence: Align must be a multiple of cache line size (L2=128 bytes, L1=64 bytes) to operate with cache enabled. */
 /* Aligning to 256 bytes because the PCIe inbound offset register masks the last 8bits of the buffer address  */
-#pragma DATA_ALIGN(dstBuf, 256) // TI way of aligning
+#ifdef SOC_J721E
+#pragma DATA_SECTION(dstBuf, ".far:dstBufSec")
+#pragma DATA_ALIGN(dstBuf, 0x1000) /* TI way of aligning */
+#else
+#pragma DATA_SECTION(dstBuf, ".dstBufSec")
+#pragma DATA_ALIGN(dstBuf, 256) /* TI way of aligning */
+#endif
 #endif
 
 /* last element in the buffer is a marker that indicates the buffer status: full/empty */
+#ifdef SOC_J721E
+#define PCIE_EXAMPLE_MAX_CACHE_LINE_SIZE 0x1000
+#else
 #define PCIE_EXAMPLE_MAX_CACHE_LINE_SIZE 128
+#endif
 #define PCIE_EXAMPLE_UINT32_SIZE           4 /* preprocessor #if requires a real constant, not a sizeof() */
 
 #define PCIE_EXAMPLE_DSTBUF_BYTES ((PCIE_BUFSIZE_APP + 1) * PCIE_EXAMPLE_UINT32_SIZE)
@@ -144,9 +158,16 @@ typedef struct dstBuf_s {
 } dstBuf_t;
 dstBuf_t dstBuf
 #ifdef __ARM_ARCH_7A__
-__attribute__((aligned(256), section(".bss:dstBufSec"))) // GCC way of aligning
+#ifdef SOC_J721E
+__attribute__((aligned(0x1000), section(".bss:dstBufSec"))) /* GCC way of aligning */
+#else
+__attribute__((aligned(256), section(".bss:dstBufSec"))) /* GCC way of aligning */
 #endif
-; // for dstBuf
+#endif
+#if defined(SOC_J721E) && defined(BUILD_MPU)
+__attribute__((aligned(0x01000))) /* GCC way of aligning */
+#endif
+; /* for dstBuf */
 
 #define PCIE_EXAMPLE_BUF_EMPTY 0
 #define PCIE_EXAMPLE_BUF_FULL  1
@@ -170,9 +191,13 @@ uint64_t totalDMATime = 0;
 #endif
 UInt32 dataContainer[PCIE_EXAMPLE_LINE_SIZE]
 #ifdef __ARM_ARCH_7A__
-__attribute__((aligned(256))) // GCC way of aligning
+#ifdef SOC_J721E
+__attribute__((aligned(0x1000))) /* GCC way of aligning */
+#else
+__attribute__((aligned(256))) /* GCC way of aligning */
 #endif
-; // for dstBuf
+#endif
+; /* for dstBuf */
 #endif
 
 #ifdef _TMS320C6X 
@@ -261,7 +286,7 @@ void cache_writeback (void *ptr, int size)
  *   Input addr:  L2 address to be converted to global.
  *   return:  uint32_t   Global L2 address
  *****************************************************************************/
-uint32_t pcieConvert_CoreLocal2GlobalAddr (uint32_t  addr)
+uint32_t pcieConvert_CoreLocal2GlobalAddr (uintptr_t  addr)
 {
 #ifdef _TMS320C6X
 
@@ -326,7 +351,7 @@ int PcieExampleEdmaRC(dstBuf_t *remote_address,
   CCount = 1;
   
   remoteBuf = (remote_address->edma_buf);
-  source = (uint32_t *)pcieConvert_CoreLocal2GlobalAddr((uint32_t)dataContainer);
+  source = (uint32_t *)pcieConvert_CoreLocal2GlobalAddr((uintptr_t)dataContainer);
   totalTimePointer=&totalTime;
   *totalTimePointer=0;
 
@@ -334,7 +359,7 @@ int PcieExampleEdmaRC(dstBuf_t *remote_address,
                ACount, BCount, CCount, EDMA3_DRV_SYNC_A,totalTimePointer);
 
     totalDMATime += *totalTimePointer;
-	PCIE_logPrintf("EDMA write %d bytes with %d cycles\n", (PCIE_EXAMPLE_LINE_SIZE*PCIE_EXAMPLE_UINT32_SIZE), (unsigned int)totalDMATime);
+    PCIE_logPrintf("EDMA write %d bytes with %d cycles\n", (PCIE_EXAMPLE_LINE_SIZE*PCIE_EXAMPLE_UINT32_SIZE), (unsigned int)totalDMATime);
   do {
       cache_invalidate ((void *)dstBuf.edma_buf, PCIE_EDMA_EXAMPLE_DSTBUF_BYTES);
   } while(dstBuf.edma_buf[PCIE_EXAMPLE_LINE_SIZE-1U] != PCIE_EXAMPLE_BUF_FULL);    
@@ -400,7 +425,7 @@ int PcieExampleEdmaEP(dstBuf_t *remote_address,
   CCount = 1;
   
   remoteBuf = remote_address->edma_buf;
-  source = (volatile uint32_t *)pcieConvert_CoreLocal2GlobalAddr((uint32_t)dstBuf.edma_buf);
+  source = (volatile uint32_t *)pcieConvert_CoreLocal2GlobalAddr((uintptr_t)dstBuf.edma_buf);
   totalTimePointer=&totalTime;
   *totalTimePointer=0;
 
@@ -438,6 +463,10 @@ pcieRet_e pcieCfgDbi(Pcie_Handle handle, uint8_t enable)
     PCIE_logPrintf ("SET CMD STATUS register failed!\n");
     return retVal;
   }
+#elif defined(PCIE_REV3_HW)
+/* No dbiRo setting needed for J7ES */
+    memset (&regs, 0, sizeof(regs));
+    retVal = pcie_RET_OK;
 #else
   pciePlconfDbiRoWrEnReg_t dbiRo;
 
@@ -452,7 +481,7 @@ pcieRet_e pcieCfgDbi(Pcie_Handle handle, uint8_t enable)
     return retVal;
   }
 #endif
-  return pcie_RET_OK;
+  return retVal;
 } /* pcieCfgDbi */
 
 /*****************************************************************************
@@ -460,7 +489,7 @@ pcieRet_e pcieCfgDbi(Pcie_Handle handle, uint8_t enable)
  ****************************************************************************/
 pcieRet_e pciePowerCfg(void)
 {
-#if !defined(SOC_AM572x) && !defined(SOC_AM571x) && !defined(SOC_AM574x) && !defined(SOC_AM65XX)
+#if !defined(SOC_AM572x) && !defined(SOC_AM571x) && !defined(SOC_AM574x) && !defined(SOC_AM65XX) && !defined(SOC_J721E)
   /* Turn on the PCIe power domain */
   if (CSL_PSC_getPowerDomainState (CSL_PSC_PD_PCIE) != PSC_PDSTATE_ON) {
     /* Enable the domain */
@@ -517,7 +546,7 @@ pcieRet_e pcieSerdesCfg(void)
 #if !defined(DEVICE_K2K) && !defined(DEVICE_K2H) && !defined(DEVICE_K2E) && !defined(DEVICE_K2L) && \
     !defined(SOC_K2K) && !defined(SOC_K2H) && !defined(SOC_K2L) && !defined(SOC_K2E) && !defined(SOC_K2G) && \
     !defined(SOC_AM572x) && !defined(SOC_AM571x) && !defined(SOC_AM574x) && \
-    !defined(SOC_AM65XX)
+    !defined(SOC_AM65XX) && !defined(SOC_J721E)
   uint16_t cfg;
 
   /* Provide PLL reference clock to SERDES inside PCIESS
@@ -553,6 +582,8 @@ pcieRet_e pcieSerdesCfg(void)
 #else
   PlatformPCIESSSerdesConfig(1, 1);
 #endif
+#elif defined(SOC_J721E)
+  PlatformPCIESSSerdesConfig(1, 1);
 #else
 #ifndef  SIMULATOR_SUPPORT
 
@@ -597,7 +628,7 @@ pcieRet_e pcieSerdesCfg(void)
       serdes_lane_enable_params2.lane_ctrl_rate[i] = CSL_SERDES_LANE_FULL_RATE; /* GEN2 */
   }
 
-  //SB CMU and COMLANE Setup
+  /* SB CMU and COMLANE Setup */
   status1 = CSL_PCIeSerdesInit(serdes_lane_enable_params1.base_addr, serdes_lane_enable_params1.ref_clock, serdes_lane_enable_params1.linkrate);
 
   if (status1 != 0)
@@ -900,14 +931,16 @@ pcieRet_e pcieCfgRC(Pcie_Handle handle)
   }
 #endif
 
+#if !defined(SOC_J721E) /* for J721E move to Pciev3_setInterfaceMode */
   /* Set gen2/link cap */
   if ((retVal = pcieSetGen2(handle)) != pcie_RET_OK)
   {
     PCIE_logPrintf ("pcieSetGen2 failed!\n");
     return retVal;
   }
+#endif
   
-#if !defined(PCIE_REV2_HW) /* RC does not support BAR */
+#if (!defined(PCIE_REV2_HW)) && (!defined(PCIE_REV3_HW)) /* RC does not support BAR */
   /* Configure BAR Masks */   
   /* First need to enable writing on BAR mask registers */
   if ((retVal = pcieCfgDbi (handle, 1)) != pcie_RET_OK)
@@ -990,7 +1023,7 @@ pcieRet_e pcieCfgRC(Pcie_Handle handle)
     return retVal;
   }
 
-#if defined(PCIE_REV0_HW) || defined(PCIE_REV2_HW)
+#if defined(PCIE_REV0_HW) || defined(PCIE_REV2_HW) || defined(PCIE_REV3_HW)
   /* Enable ECRC */
   memset (&setRegs, 0, sizeof(setRegs));
   
@@ -1057,12 +1090,14 @@ pcieRet_e pcieCfgEP(Pcie_Handle handle)
   }
 #endif
 
+#if !defined(SOC_J721E)  /* for J721E move to Pciev3_setInterfaceMode */
   /* Set gen2/link cap */
   if ((retVal = pcieSetGen2(handle)) != pcie_RET_OK)
   {
     PCIE_logPrintf ("pcieSetGen2 failed!\n");
     return retVal;
   }
+#endif
   
   /* Configure BAR Masks */   
   /* First need to enable writing on BAR mask registers */
@@ -1144,7 +1179,7 @@ pcieRet_e pcieCfgEP(Pcie_Handle handle)
     return retVal;
   }
  
-#if defined(PCIE_REV0_HW) || defined(PCIE_REV2_HW)
+#if defined(PCIE_REV0_HW) || defined(PCIE_REV2_HW) || defined(PCIE_REV3_HW)
   /* Enable ECRC */
   memset (&setRegs, 0, sizeof(setRegs));
   
@@ -1282,6 +1317,7 @@ pcieRet_e pcieObTransCfg(Pcie_Handle handle, uint32_t obAddrLo, uint32_t obAddrH
     regionParams.enableRegion = 1;
 
     regionParams.lowerBaseAddr    = PCIE_WINDOW_CFG_BASE + resSize;
+
     regionParams.upperBaseAddr    = 0; /* only 32 bits needed given data area size */
     regionParams.regionWindowSize = PCIE_WINDOW_CFG_MASK;
 
@@ -1298,6 +1334,33 @@ pcieRet_e pcieObTransCfg(Pcie_Handle handle, uint32_t obAddrLo, uint32_t obAddrH
     }
   }
 #ifdef PCIE_REV2_HW
+  else
+  {
+    /* Set up OB region for MSI generation on EP */
+    /* Configure OB region for MSI generation access space */
+    regionParams.regionDir    = PCIE_ATU_REGION_DIR_OUTBOUND;
+    regionParams.tlpType      = PCIE_TLP_TYPE_MEM;
+    regionParams.enableRegion = 1;
+
+    regionParams.lowerBaseAddr    = PCIE_WINDOW_MSI_ADDR + resSize;
+    regionParams.upperBaseAddr    = 0; /* only 32 bits needed given data area size */
+    regionParams.regionWindowSize = PCIE_WINDOW_MSI_MASK;
+
+    regionParams.lowerTargetAddr = PCIE_PCIE_MSI_BASE;
+    regionParams.upperTargetAddr = 0U;
+
+    if ( (retVal = Pcie_atuRegionConfig(
+                     handle,
+                     pcie_LOCATION_LOCAL,
+                     (uint32_t) 0U,
+                     &regionParams)) != pcie_RET_OK) 
+    {
+      return retVal;
+    }
+  }
+#endif
+
+#ifdef PCIE_REV3_HW
   else
   {
     /* Set up OB region for MSI generation on EP */
@@ -1401,6 +1464,31 @@ pcieRet_e pcieIbTransCfg(Pcie_Handle handle, pcieIbTransCfg_t *ibCfg)
   }
 #endif
 
+#ifdef PCIE_REV3_HW
+  if (PcieModeGbl == pcie_RC_MODE)
+  {
+    /*Configure IB region for MSI receive */
+    regionParams.regionDir    = PCIE_ATU_REGION_DIR_INBOUND;
+    regionParams.tlpType      = PCIE_TLP_TYPE_MEM;
+    regionParams.enableRegion = 1;
+    regionParams.matchMode    = PCIE_ATU_REGION_MATCH_MODE_ADDR;
+
+    regionParams.lowerBaseAddr    = PCIE_PCIE_MSI_BASE;
+    regionParams.upperBaseAddr    = 0U;
+    regionParams.regionWindowSize = PCIE_WINDOW_MSI_MASK;
+
+    /* Point at GICD_SETSPI_NSR in ARM GIC to directly trigger a SPI */
+    regionParams.lowerTargetAddr = (CSL_COMPUTE_CLUSTER0_GIC_DISTRIBUTOR_BASE + CSL_GIC500_MSG_SETSPI_NSR) - PCIE_PCIE_MSI_OFF;
+    regionParams.upperTargetAddr = 0;
+
+    retVal = Pcie_atuRegionConfig(
+               handle,
+               pcie_LOCATION_LOCAL,
+               (uint32_t) 1U,
+               &regionParams);
+  }
+#endif
+
   return retVal;
 }
 #endif
@@ -1422,7 +1510,7 @@ void pcieInitAppBuf(void)
   dstBuf.buf[PCIE_BUFSIZE_APP] = PCIE_EXAMPLE_BUF_EMPTY;
   cache_writeback ((void *)dstBuf.buf, PCIE_EXAMPLE_DSTBUF_BYTES);
   
-#ifdef EDMA
+#if defined(EDMA)||defined(UDMA)
   for (i = 0; i < PCIE_EXAMPLE_LINE_SIZE - 1U; i++) 
   {
     dstBuf.edma_buf[i] = 0;
@@ -1453,7 +1541,11 @@ void pcieWaitLinkUp(Pcie_Handle handle)
   
   uint8_t ltssmState = 0;
  
+#if defined(SOC_J721E)
+  while(ltssmState != (pcie_LTSSM_L0-1)) /* For J721E 0x10 is L0 state */
+#else
   while(ltssmState != pcie_LTSSM_L0)
+#endif
   {
     cycleDelay(100);
     if (Pcie_readRegs (handle, pcie_LOCATION_LOCAL, &getRegs) != pcie_RET_OK) 
@@ -1524,6 +1616,32 @@ pcieRet_e pcieCheckLinkParams(Pcie_Handle handle)
 
   return retVal;
 #else
+#if defined(SOC_J721E)
+  pcieRet_e retVal = pcie_RET_OK;
+  pcieRegisters_t regs;
+  pcieLinkStatCtrlReg_t linkStatCtrl;
+  int32_t expLanes = 1, expSpeed = 1;
+  
+  expSpeed = 3; /* expected GEN3 */
+  expLanes = 2;  /* expected 2 lanes */
+      
+  /* Get link status */
+  memset (&regs, 0, sizeof(regs));
+  regs.linkStatCtrl = &linkStatCtrl;
+  
+  PCIE_logPrintf ("Checking link speed and # of lanes\n");
+  do 
+  {
+     retVal = Pcie_readRegs (handle, pcie_LOCATION_LOCAL, &regs);
+     if (retVal != pcie_RET_OK) {
+        PCIE_logPrintf ("Failed to read linkStatCtrl: %d\n", retVal);
+     }
+  }while ((expLanes != linkStatCtrl.negotiatedLinkWd)||(expSpeed != linkStatCtrl.linkSpeed));
+  PCIE_logPrintf ("Expect %d lanes, found %d lanes Pass\n",
+             (int)expLanes, (int)linkStatCtrl.negotiatedLinkWd);
+  PCIE_logPrintf ("Expect gen %d speed, found gen %d speed Pass\n",
+           (int)expSpeed, (int)linkStatCtrl.linkSpeed);
+#endif /* defined(SOC_J721E) */
   return pcie_RET_OK;
 #endif
 }
@@ -1740,9 +1858,99 @@ void pcieEpSendInts (Pcie_Handle handle)
     intNum++;
   }
 }
+#elif defined(PCIE_REV3_HW) && defined(BUILD_MPU)
+void pcieEpSendInts (Pcie_Handle handle)
+{
+  pcieRegisters_t             regs;
+  pcieEpIrqSetReg_t           intxAssert;
+  pcieEpIrqClrReg_t           intxDeassert;
+  pcieRet_e                   retVal;
+  int32_t                     i, intNum = 0;
+
+  PCIE_logPrintf ("EP sending interrupts to RC\n");
+
+  /* Mark that RC received no ISRs */
+  dstBuf.buf[PCIE_BUFSIZE_APP] = 0;
+  cache_writeback ((void *)dstBuf.buf, PCIE_EXAMPLE_DSTBUF_BYTES);
+
+  for (i = 0; i < PCIE_NUM_INTS; i++)
+  {
+    /* Send it - MSI is just a mem write */
+    *(volatile uint32_t *)(PCIE_WINDOW_MSI_ADDR + PCIE_PCIE_MSI_OFF) = PCIE_WINDOW_MSI_DATA;
+    /* Wait for RC to process it */
+    do {
+      cache_invalidate ((void *)dstBuf.buf, PCIE_EXAMPLE_DSTBUF_BYTES);
+    } while(dstBuf.buf[PCIE_BUFSIZE_APP] == intNum);
+    /* Count it */
+    intNum++;
+  }
+  PCIE_logPrintf("%d MSI interrupt sent/received!!!\n", intNum);
+  
+  /* Now send legacy interrupts */
+  memset (&regs, 0, sizeof(regs));
+  memset (&intxAssert, 0, sizeof(intxAssert));
+  memset (&intxDeassert, 0, sizeof(intxDeassert));
+  regs.legacyIrqEnableSet[0] = NULL;
+
+  for (i = 0; i < PCIE_NUM_INTS; i++)
+  {
+    /* Read the current value */
+    regs.epIrqClr = NULL;
+    regs.epIrqSet = &intxAssert;
+    retVal = Pcie_readRegs (handle, pcie_LOCATION_LOCAL, &regs);
+    if (retVal != pcie_RET_OK)
+    {
+      PCIE_logPrintf("Can't read legacy assert regs\n");
+      exit(1);
+    }
+    if (intxAssert.epIrqSet)
+    {
+      PCIE_logPrintf("Legacy interrupt already asserted\n");
+      exit(1);
+    }
+    /* Send it */
+    intxAssert.epIrqSet = 1U;
+    retVal = Pcie_writeRegs (handle, pcie_LOCATION_LOCAL, &regs);
+    if (retVal != pcie_RET_OK)
+    {
+      PCIE_logPrintf("Can't write legacy assert regs\n");
+      exit(1);
+    }
+    /* read it back */
+    retVal = Pcie_readRegs (handle, pcie_LOCATION_LOCAL, &regs);
+    if (retVal != pcie_RET_OK)
+    {
+      PCIE_logPrintf("Can't read legacy assert regs\n");
+      exit(1);
+    }
+    if (! intxAssert.epIrqSet) {
+      PCIE_logPrintf("Legacy interrupt failed to assert\n");
+      exit(1);
+    }
+    /* Deassert it */
+    regs.epIrqClr = NULL;
+    regs.epIrqSet = &intxAssert;
+    intxAssert.epIrqSet = 0U;
+    /* Remove it */
+    retVal = Pcie_writeRegs (handle, pcie_LOCATION_LOCAL, &regs);
+    if (retVal != pcie_RET_OK)
+    {
+      PCIE_logPrintf("Can't write legacy assert regs in ticonf\n");
+      exit(1);
+    }
+    /* Next iteration will verify it deasserted */
+    /* Wait for RC to process it */
+    do {
+      cache_invalidate ((void *)dstBuf.buf, PCIE_EXAMPLE_DSTBUF_BYTES);
+    } while(dstBuf.buf[PCIE_BUFSIZE_APP] == intNum);
+    /* Count it */
+    intNum++;
+  }
+  PCIE_logPrintf("%d Legacy interrupt sent/received!!!\n", intNum-PCIE_NUM_INTS);
+}
 #endif
 
-#if defined(PCIE_REV1_HW) || (defined(PCIE_REV2_HW) && defined(BUILD_MPU))
+#if defined(PCIE_REV1_HW) || (defined(PCIE_REV2_HW) && defined(BUILD_MPU)) || (defined(PCIE_REV3_HW) && defined(BUILD_MPU))
 void pcieRcWaitInts (Pcie_Handle handle, SemaphoreP_Handle sem, void *pcieBase)
 {
   int32_t numInts = 0;
@@ -1764,6 +1972,7 @@ void pcieRcWaitInts (Pcie_Handle handle, SemaphoreP_Handle sem, void *pcieBase)
 void pcieSetLanes (Pcie_Handle handle)
 {
 #ifdef PCIE_REV2_HW
+  /* Request just 1 lane -- this would work on all HW */
   pcieLnkCtrlReg_t lnkCtrlReg;
   pcieRegisters_t  regs;
   uint8_t          origLanes;
@@ -1788,6 +1997,32 @@ void pcieSetLanes (Pcie_Handle handle)
   }
   PCIE_logPrintf ("Set lanes from %d to %d\n", (int)origLanes, (int)lnkCtrlReg.lnkMode);
 #endif
+
+#ifdef PCIE_REV3_HW
+  /* Request just 1 lane -- this would work on all HW */
+  pcieLnkCtrlReg_t lnkCtrlReg;
+  pcieRegisters_t  regs;
+  uint8_t          origLanes;
+
+  memset (&regs, 0, sizeof(regs));
+  regs.lnkCtrl = &lnkCtrlReg;
+  if (Pcie_readRegs (handle, pcie_LOCATION_LOCAL, &regs) != pcie_RET_OK)
+  {
+    PCIE_logPrintf ("Read pcieCtrlAddr register failed!\n");
+    exit(1);
+  }
+  origLanes = lnkCtrlReg.lnkMode;
+  lnkCtrlReg.lnkMode = 2-1; /* number of lanes-1, 2 lane */
+  if (origLanes!=lnkCtrlReg.lnkMode)
+  {
+    if (Pcie_writeRegs (handle, pcie_LOCATION_LOCAL, &regs) != pcie_RET_OK)
+    {
+      PCIE_logPrintf ("Write pcieCtrlAddr register failed!\n");
+      exit(1);
+    }
+    PCIE_logPrintf ("Set lanes from %d to %d\n", (int)origLanes+1, (int)lnkCtrlReg.lnkMode+1);
+  }
+#endif
 }
 
 /*****************************************************************************
@@ -1804,7 +2039,7 @@ void pcie (void)
 #if !defined(DEVICE_K2K) && !defined(DEVICE_K2H) && !defined(DEVICE_K2E) && !defined(DEVICE_K2L) && \
     !defined(SOC_K2K) && !defined(SOC_K2H) && !defined(SOC_K2L) && !defined(SOC_K2E) && !defined(SOC_K2G) && \
     !defined(SOC_AM572x) && !defined(SOC_AM571x) && !defined(SOC_AM574x) && \
-    !defined(SOC_AM65XX)
+    !defined(SOC_AM65XX) && !defined(SOC_J721E)
   uint16_t lock=0;
 #endif
   int32_t          deviceNum = 0;
@@ -1816,7 +2051,7 @@ void pcie (void)
   dstBuf_t        *pciedstBufBase;
   uint32_t    i;
   char             pcieModeResponse;
-#if defined(PCIE_REV1_HW) || (defined(PCIE_REV2_HW) && defined(BUILD_MPU))
+#if defined(PCIE_REV1_HW) || (defined(PCIE_REV2_HW) && defined(BUILD_MPU)) || (defined(PCIE_REV3_HW) && defined(BUILD_MPU))
   SemaphoreP_Handle sem = NULL;
 #endif
 
@@ -1824,10 +2059,14 @@ void pcie (void)
   deviceNum = 1; /* The second interface is hooked up on GP EVM */
 #endif
 
+#ifdef j721e_evm
+  deviceNum = 1; /* The second interface is hooked up on GP EVM */
+#endif
+
   /* Get remote buffer out of cache */
   cache_writeback ((void *)&dstBuf, sizeof(dstBuf));
   /* Unlock kicker once, and don't relock, because its not multicore safe */
-#if !defined(SOC_AM572x) && !defined(SOC_AM571x) && !defined(SOC_AM574x) && !defined(SOC_AM65XX)
+#if !defined(SOC_AM572x) && !defined(SOC_AM571x) && !defined(SOC_AM574x) && !defined(SOC_AM65XX) && !defined(SOC_J721E)
   CSL_BootCfgUnlockKicker();
 #endif
 
@@ -1844,7 +2083,7 @@ void pcie (void)
   PCIE_logPrintf ("**********************************************\n");
   PCIE_logPrintf ("*             PCIe Test Start                *\n");
 
-#if defined(SOC_K2G) || defined(SOC_AM572x) || defined(SOC_AM571x) || defined(SOC_AM574x) || defined(SOC_AM65XX)
+#if defined(SOC_K2G) || defined(SOC_AM572x) || defined(SOC_AM571x) || defined(SOC_AM574x) || defined(SOC_AM65XX) || defined(SOC_J721E)
   PCIE_logPrintf ("Enter: E for Endpoint or R for Root Complex   \n");
   PCIE_logScanf  ("%c", &pcieModeResponse);
   if ((pcieModeResponse == 'E') || (pcieModeResponse == 'e'))
@@ -1903,6 +2142,13 @@ void pcie (void)
     exit(1);
   }
 
+#if defined(SOC_J721E)
+  pcie_refclk_to_io(deviceNum, deviceNum);
+  
+  /* SRIS disable */
+  sris_control(handle, 0);
+#endif
+  
   /* Set the PCIe mode*/
   if ((retVal = Pcie_setInterfaceMode(handle, PcieModeGbl)) != pcie_RET_OK) {
     PCIE_logPrintf ("Set PCIe Mode failed (%d)\n", (int)retVal);
@@ -1913,7 +2159,7 @@ void pcie (void)
 #if !defined(DEVICE_K2K) && !defined(DEVICE_K2H) && !defined(DEVICE_K2E) && !defined(DEVICE_K2L) && \
     !defined(SOC_K2K) && !defined(SOC_K2H) && !defined(SOC_K2L) && !defined(SOC_K2E) && !defined(SOC_K2G) && \
     !defined(SOC_AM572x) && !defined(SOC_AM571x) && !defined(SOC_AM574x) && \
-    !defined(SOC_AM65XX)
+    !defined(SOC_AM65XX) && !defined(SOC_J721E)
   while (!lock)
   {
     CSL_BootCfgGetPCIEPLLLock(&lock);
@@ -1953,7 +2199,7 @@ void pcie (void)
     ibCfg.ibBar         = PCIE_BAR_IDX_RC; /* Match BAR that was configured above*/
     ibCfg.ibStartAddrLo = PCIE_IB_LO_ADDR_RC;
     ibCfg.ibStartAddrHi = PCIE_IB_HI_ADDR_RC;
-    ibCfg.ibOffsetAddr  = (uint32_t)pcieConvert_CoreLocal2GlobalAddr ((uint32_t)dstBuf.buf);
+    ibCfg.ibOffsetAddr  = (uint32_t)pcieConvert_CoreLocal2GlobalAddr ((uintptr_t)dstBuf.buf);
     ibCfg.region        = PCIE_IB_REGION_RC;       
 
     if ((retVal = pcieIbTransCfg(handle, &ibCfg)) != pcie_RET_OK) 
@@ -1978,6 +2224,7 @@ void pcie (void)
   }
   else
   {
+
     /* Configure application registers for End Point*/
     if ((retVal = pcieCfgEP(handle)) != pcie_RET_OK) 
     {
@@ -1987,6 +2234,14 @@ void pcie (void)
 
     /* Configure Address Translation */
     
+#if defined(SOC_J721E)
+    barCfg.location = pcie_LOCATION_LOCAL;
+    barCfg.mode     = pcie_EP_MODE;
+    barCfg.base     = PCIE_IB_LO_ADDR_EP;
+    barCfg.barxc = (uint8_t)0x4; /* BARxC set to 32bit memory BAR, non prefetchable */
+    barCfg.barxa     = (uint8_t)0x0F; /* BARxA set to 4 MB */ 
+    barCfg.idx        = PCIE_BAR_IDX_EP;
+#else
     barCfg.location = pcie_LOCATION_LOCAL;
     barCfg.mode     = pcie_EP_MODE;
     barCfg.base     = PCIE_IB_LO_ADDR_EP;
@@ -1994,7 +2249,7 @@ void pcie (void)
     barCfg.type     = pcie_BAR_TYPE32;
     barCfg.memSpace = pcie_BAR_MEM_MEM;
     barCfg.idx      = PCIE_BAR_IDX_EP;
-    
+#endif    
     if ((retVal = Pcie_cfgBar(handle, &barCfg)) != pcie_RET_OK) 
     {
       PCIE_logPrintf ("Failed to configure BAR!\n");
@@ -2004,7 +2259,7 @@ void pcie (void)
     ibCfg.ibBar         = PCIE_BAR_IDX_EP; /* Match BAR that was configured above*/
     ibCfg.ibStartAddrLo = PCIE_IB_LO_ADDR_EP;
     ibCfg.ibStartAddrHi = PCIE_IB_HI_ADDR_EP;
-    ibCfg.ibOffsetAddr  = (uint32_t)pcieConvert_CoreLocal2GlobalAddr ((uint32_t)dstBuf.buf);
+    ibCfg.ibOffsetAddr  = (uint32_t)pcieConvert_CoreLocal2GlobalAddr ((uintptr_t)dstBuf.buf);
     ibCfg.region        = PCIE_IB_REGION_EP;       
 
     if ((retVal = pcieIbTransCfg(handle, &ibCfg)) != pcie_RET_OK) 
@@ -2067,6 +2322,10 @@ void pcie (void)
   /* Adjust PCIE base to point at remote target buffer */
   pcieBase = (char *) PCIE_WINDOW_MEM_BASE +  /* data area doesn't start at low address */
                      (((uint32_t)&dstBuf) & 0xffff); /* dstBuf needs to be 64K aligned in addr tran */
+#elif defined(PCIE_REV3_HW)
+  /* Adjust PCIE base to point at remote target buffer */
+  pcieBase = (char *) PCIE_WINDOW_MEM_BASE +  /* data area doesn't start at low address */
+                     (((uintptr_t)&dstBuf) & 0x0fff); /* dstBuf needs to be 64K aligned in addr tran */
 #else
   /* No adjustment needed */
 #endif
@@ -2074,7 +2333,7 @@ void pcie (void)
 
   if(PcieModeGbl == pcie_RC_MODE)
   {
-#if defined(PCIE_REV1_HW) || (defined(PCIE_REV2_HW) && defined(BUILD_MPU))
+    #if defined(PCIE_REV1_HW) || (defined(PCIE_REV2_HW) && defined(BUILD_MPU)) || (defined(PCIE_REV3_HW) && defined(BUILD_MPU))
     sem = PlatformSetupMSIAndINTX (handle);
 #endif
     /**********************************************************************/
@@ -2114,7 +2373,7 @@ void pcie (void)
     }
     
     PCIE_logPrintf ("Root Complex received data.\n");
-#if defined(PCIE_REV1_HW) || (defined(PCIE_REV2_HW) && defined(BUILD_MPU))
+#if defined(PCIE_REV1_HW) || (defined(PCIE_REV2_HW) && defined(BUILD_MPU)) || (defined(PCIE_REV3_HW) && defined(BUILD_MPU))
     pcieRcWaitInts (handle, sem, pcieBase);
 #endif
 
@@ -2160,11 +2419,11 @@ PCIE_logPrintf ("Failed to pass token \n");
        peripheral address space instead of physical memory*/
 
     PCIE_logPrintf ("End Point sent data to Root Complex, completing the loopback.\n");
-#if defined(PCIE_REV1_HW) || (defined(PCIE_REV2_HW) && defined(BUILD_MPU))
+#if defined(PCIE_REV1_HW) || (defined(PCIE_REV2_HW) && defined(BUILD_MPU)) || (defined(PCIE_REV3_HW) && defined(BUILD_MPU))
     /* Send msi to EP */
     pcieEpSendInts (handle);
 #endif
-    PCIE_logPrintf ("End of Test.\n");
+    PCIE_logPrintf ("End of Interrupt Test.\n");
 
 #ifdef PCIE_EXAMPLE_DMA_EP
     if (PcieExampleEdmaEP(pciedstBufBase, 0xbabeface, 100000,
@@ -2211,7 +2470,7 @@ PCIE_logPrintf ("Failed to pass token \n");
 int main() {
   Task_Params params;
   Task_Params_init (&params);
-  params.stackSize = 36864; //32768;
+  params.stackSize = 36864; /* 32768; */
   Task_create((Task_FuncPtr) pcie, &params, NULL);
 
 #ifdef __ARM_ARCH_7A__
@@ -2226,25 +2485,25 @@ int main() {
     Mmu_initDescAttrs(&attrs);
 
     attrs.type = Mmu_DescriptorType_TABLE;
-    attrs.shareable = 0;            // non-shareable
-    attrs.accPerm = 1;              // read/write at any privelege level
-    attrs.attrIndx = 0;             // Use MAIR0 Register Byte 3 for
-                                    // determining the memory attributes
-                                    // for each MMU entry
+    attrs.shareable = 0;            /* non-shareable */
+    attrs.accPerm = 1;              /* read/write at any privelege level */
+    attrs.attrIndx = 0;             /* Use MAIR0 Register Byte 3 for */
+                                    /* determining the memory attributes */
+                                    /* for each MMU entry */
 
 
-    // Update the first level table's MMU entry for 0x00000000 with the
-    // new attributes.
+    /* Update the first level table's MMU entry for 0x00000000 with the */
+    /* new attributes. */
     Mmu_setFirstLevelDesc((Ptr)0x00000000, (UInt64)addr0, &attrs);
-    // Update the first level table's MMU entry for 0x40000000 with the
-    // new attributes.
+    /* Update the first level table's MMU entry for 0x40000000 with the */
+    /* new attributes. */
     Mmu_setFirstLevelDesc((Ptr)0x40000000, (UInt64)addr1, &attrs);
 
 #if defined(SOC_K2G)
     {
       CSL_MsmcRegs *msmc = (CSL_MsmcRegs *)CSL_MSMC_CFG_REGS;
       int32_t index, privid;
-      // Set up SES & SMS to make all masters coherent
+      /* Set up SES & SMS to make all masters coherent */
       for (privid = 0; privid < 16; privid++)
       {
         for (index = 0; index < 8; index++)
@@ -2253,13 +2512,13 @@ int main() {
           uint32_t sms_mpaxh = msmc->SMS_MPAX_PER_PRIVID[privid].SMS[index].MPAXH;
           if (CSL_FEXT (ses_mpaxh, MSMC_SES_MPAXH_0_SEGSZ) != 0)
           {
-            // Clear the "US" bit to make coherent.  This is at 0x80.
+            /* Clear the "US" bit to make coherent.  This is at 0x80. */
             ses_mpaxh &= ~0x80;
             msmc->SES_MPAX_PER_PRIVID[privid].SES[index].MPAXH = ses_mpaxh;
           }
           if (CSL_FEXT (sms_mpaxh, MSMC_SMS_MPAXH_0_SEGSZ) != 0)
           {
-            // Clear the "US" bit to make coherent.  This is at 0x80.
+            /* Clear the "US" bit to make coherent.  This is at 0x80. */
             sms_mpaxh &= ~0x80;
             msmc->SMS_MPAX_PER_PRIVID[privid].SMS[index].MPAXH = sms_mpaxh;
           }
@@ -2271,7 +2530,7 @@ int main() {
 #endif
 
 #if defined(SOC_AM574x) || defined(SOC_AM572x) || defined(SOC_AM571x) || \
-    defined(SOC_K2G) || defined(SOC_AM65XX) || defined(__ARM_ARCH_7A__)
+    defined(SOC_K2G) || defined(SOC_AM65XX) || defined(SOC_J721E) || defined(__ARM_ARCH_7A__)
   Board_initCfg boardCfg;
   boardCfg = BOARD_INIT_UNLOCK_MMR 
 #ifndef IO_CONSOLE

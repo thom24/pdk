@@ -67,8 +67,8 @@
 ifeq ($(pcie_component_make_include), )
 
 # under other list
-drvpcie_BOARDLIST       = am65xx_evm am65xx_idk
-drvpcie_SOCLIST         = am574x am572x am571x k2h k2k k2l k2e k2g c6678 c6657 am65xx
+drvpcie_BOARDLIST       = am65xx_evm am65xx_idk j721e_evm
+drvpcie_SOCLIST         = am574x am572x am571x k2h k2k k2l k2e k2g c6678 c6657 am65xx j721e
 drvpcie_am574x_CORELIST = c66x a15_0 ipu1_0
 drvpcie_am572x_CORELIST = c66x a15_0 ipu1_0
 drvpcie_am571x_CORELIST = c66x a15_0 ipu1_0
@@ -81,6 +81,7 @@ drvpcie_c6678_CORELIST  = c66x
 drvpcie_c6657_CORELIST  = c66x
 
 drvpcie_am65xx_CORELIST = mpu1_0 mcu1_0
+drvpcie_j721e_CORELIST = mpu1_0 mcu1_0
 
 ############################
 # pcie package
@@ -96,7 +97,11 @@ drvpcie_LIB_LIST = $(pcie_LIB_LIST)
 # All the tests mentioned in list are built when test target is called
 # List below all examples for allowed values
 ############################
+ifeq ($(SOC), j721e)
+pcie_EXAMPLE_LIST = PCIE_sample_ExampleProject
+else
 pcie_EXAMPLE_LIST = PCIE_sample_ExampleProject PCIE_Qos_ExampleProject PCIE_sample_SMP_ExampleProject
+endif
 drvpcie_EXAMPLE_LIST = $(pcie_EXAMPLE_LIST)
 
 #

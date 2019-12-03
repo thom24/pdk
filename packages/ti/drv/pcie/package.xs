@@ -52,6 +52,7 @@ function getLibs(prog)
     /* Device types supported */
     var socTypes = [
                        'am65xx',
+                       'j721e',
                        'k2k',
                        'k2h',
                        'k2l',

@@ -87,7 +87,7 @@
 #define PCIE_TEST_APP_TRPD_SIZE         ((sizeof(CSL_UdmapTR15) * 2U) + 4U)
 
 #if defined (__aarch64__)
-// Timestamp for A53 core
+/* Timestamp for A53 core */
 #if defined (PCIE_SMP_ENABLE)
 #include <ti/sysbios/timers/dmtimer/TimestampProvider.h>
 #else
@@ -96,7 +96,7 @@
 #define TIMESTAMP_GETFREQ(x)    TimestampProvider_getFreq(x)
 #define TIMESTAMP_GET32()       TimestampProvider_get32()
 #else
-// Timestamp for R5F core
+/* Timestamp for R5F core */
 #include <xdc/runtime/Timestamp.h>
 #define TIMESTAMP_GETFREQ(x)    Timestamp_getFreq(x)
 #define TIMESTAMP_GET32()       Timestamp_get32()
@@ -242,10 +242,10 @@ int32_t pcieUdmaTest (void *pcieWindow, uint32_t windowSize)
     if(UDMA_SOK == retVal)
     {
 #ifndef QOS 
-		retVal = pcieUdmaLoop(chHandle, gSrcBuf, pcieWindow, windowSize);
+        retVal = pcieUdmaLoop(chHandle, gSrcBuf, pcieWindow, windowSize);
 #else
-	    /* PCIE VC0 read */  
-		retVal = pcieUdmaLoop(chHandle, pcieWindow, (void *)lowPriAddr[0], windowSize);
+        /* PCIE VC0 read */  
+        retVal = pcieUdmaLoop(chHandle, pcieWindow, (void *)lowPriAddr[0], windowSize);
 #endif
         if(UDMA_SOK != retVal)
         {
@@ -293,10 +293,10 @@ static int32_t pcieUdmaLoop (Udma_ChHandle chHandle, void *src, void *dst, uint3
         destBuf[i] = 0U;
     }
     /* Writeback source and destination buffer if not PCIE data space */
-    if ((uint32_t)src >= 0x20000000)  {
+    if ((uintptr_t)src >= 0x20000000)  {
         CacheP_wb((void *)src, size);
     }
-    if ((uint32_t)dst >= 0x20000000)  {
+    if ((uintptr_t)dst >= 0x20000000)  {
         CacheP_wb((void *)dst, size);
     }
 
@@ -336,7 +336,7 @@ static int32_t pcieUdmaOneCopy (Udma_ChHandle chHandle,
     float       speed;
 #else
     uint32_t    loop = 0;
-#endif	
+#endif    
     /* Update TR packet descriptor */
     pcieUdmaTrpdInit(chHandle, tprdMem, destBuf, srcBuf, length);
 
@@ -370,27 +370,27 @@ static int32_t pcieUdmaOneCopy (Udma_ChHandle chHandle,
         }
     }
 #else
-	if(UDMA_SOK == retVal)
+    if(UDMA_SOK == retVal)
     {
 #if defined (__TI_ARM_V7R4__)
         asm (" cpsid if ");
 #endif
-		/* The PCIE VC3 read with CPU is performed in the gap of UDMA transfer
+        /* The PCIE VC3 read with CPU is performed in the gap of UDMA transfer
            The total read duration needs to be shorter than the gap */ 
-		while(loop < LOGSIZE) {
-			t_read = TIMESTAMP_GET32();
-			BARRIER
-			(void)*(unsigned volatile int*)(uintptr_t)(PCIE_WINDOW_MEM_BASE_VC3);
-			BARRIER
-			t_read = TIMESTAMP_GET32() - t_read - t_overhead;
-			readLatency[loop++] = t_read;
-	    }
-#if defined (__TI_ARM_V7R4__)		
-		asm (" cpsie if ");
-#endif		
-		/* Wait for return descriptor in completion ring - this marks the
+        while(loop < LOGSIZE) {
+            t_read = TIMESTAMP_GET32();
+            BARRIER
+            (void)*(unsigned volatile int*)(uintptr_t)(PCIE_WINDOW_MEM_BASE_VC3);
+            BARRIER
+            t_read = TIMESTAMP_GET32() - t_read - t_overhead;
+            readLatency[loop++] = t_read;
+        }
+#if defined (__TI_ARM_V7R4__)        
+        asm (" cpsie if ");
+#endif        
+        /* Wait for return descriptor in completion ring - this marks the
          * transfer completion */
-		 
+         
         SemaphoreP_pend(gUdmaAppDoneSem, SemaphoreP_WAIT_FOREVER);
 
         /* Response received in completion queue */
@@ -486,7 +486,7 @@ static int32_t pcieUdmaInit(Udma_DrvHandle drvHandle)
     instId = UDMA_INST_ID_MAIN_0;
 #else
 #ifdef QOS
-	instId = UDMA_INST_ID_MAIN_0;
+    instId = UDMA_INST_ID_MAIN_0;
 #else
     instId = UDMA_INST_ID_MCU_0;
 #endif
@@ -725,12 +725,12 @@ static void pcieUdmaTrpdInit(Udma_ChHandle chHandle,
 
     /* Assume length is multiple of 32KB*/
     if (length <= 32768) {
-		pTr->icnt0    = length;
-		pTr->icnt1    = 1U;
-	} else {
-		pTr->icnt0    = 32768;
-		pTr->icnt1    = length/32768U;
-	}
+        pTr->icnt0    = length;
+        pTr->icnt1    = 1U;
+    } else {
+        pTr->icnt0    = 32768;
+        pTr->icnt1    = length/32768U;
+    }
     pTr->icnt2    = 1U;
     pTr->icnt3    = 1U;
     pTr->dim1     = pTr->icnt0;
@@ -741,12 +741,12 @@ static void pcieUdmaTrpdInit(Udma_ChHandle chHandle,
                                            Replace with CSL-FL API */
     /* Assume length is multiple of 32KB*/
     if (length <= 32768) {
-		pTr->dicnt0    = length;
-		pTr->dicnt1    = 1U;
-	} else {
-		pTr->dicnt0    = 32768;
-		pTr->dicnt1    = length/32768U;
-	}
+        pTr->dicnt0    = length;
+        pTr->dicnt1    = 1U;
+    } else {
+        pTr->dicnt0    = 32768;
+        pTr->dicnt1    = length/32768U;
+    }
     pTr->dicnt2   = 1U;
     pTr->dicnt3   = 1U;
     pTr->ddim1    = pTr->dicnt0;

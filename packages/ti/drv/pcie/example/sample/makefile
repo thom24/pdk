@@ -23,13 +23,21 @@ INCDIR = . src am65xx/src udma
 SRCS_COMMON += pcie_sample.c pcie_sample_board.c pcie_udma.c
 endif
 
+ifeq ($(SOC),$(filter $(SOC), j721e))
+SRCDIR = . src j721e/src udma
+INCDIR = . src j721e/src udma
+# Common source files across all platforms and cores
+SRCS_COMMON += pcie_sample.c pcie_sample_board.c pcie_udma.c
+endif
+
 # List all the external components/interfaces, whose interface header files
 #  need to be included for this component
 INCLUDE_EXTERNAL_INTERFACES = bios xdc pdk
 
 # List all the components required by the application
-COMP_LIST_COMMON = pcie uart osal_tirtos csl board udma sciclient
+COMP_LIST_COMMON = pcie uart osal_tirtos csl board udma sciclient i2c 
 
+ifeq ($(SOC),$(filter $(SOC), am65xx))
 ifeq ($(CORE),$(filter $(CORE), mpu1_0))
 # Enable XDC build for application by providing XDC CFG File per core
 XDC_CFG_FILE_$(CORE) = ./am65xx/pciesample_a53.cfg
@@ -41,6 +49,13 @@ XDC_CFG_FILE_$(CORE) = ./am65xx/pciesample_r5.cfg
 endif
 PACKAGE_SRCS_COMMON = .
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_PCIE_SMP)
+endif
+ifeq ($(SOC),$(filter $(SOC), j721e))
+XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
+
+PACKAGE_SRCS_COMMON = .
+CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS)
+endif
 
 # Include common make files
 ifeq ($(MAKERULEDIR), )

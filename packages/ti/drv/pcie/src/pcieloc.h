@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2015-2016 Texas Instruments Incorporated - http://www.ti.com/ 
+ * Copyright (C) 2015-2019 Texas Instruments Incorporated - http://www.ti.com/ 
  * 
  * 
  *  Redistribution and use in source and binary forms, with or without 
@@ -59,7 +59,7 @@ Pcie_DeviceCfgBaseAddr *pcie_handle_to_cfg (Pcie_Handle handle);
 #define pcie_check_handle(x) {\
     if (pcie_check_handle_fcn(x) == 0) {  \
       return pcie_RET_INV_HANDLE;         \
-    }										\
+    }                                        \
   }
 
 /* Save last warning if debug is enabled */
@@ -106,7 +106,7 @@ Pcie_DeviceCfgBaseAddr *pcie_handle_to_cfg (Pcie_Handle handle);
 #define pcie_setbits(newval,field,val)                        \
   {                                                           \
     /* Eval "val" only once */                                \
-    uint32_t working_val = (val);                               \
+    uint32_t working_val = (uint32_t)(val);                               \
     uint32_t working_mask = (field##_MASK >> field##_SHIFT);  \
     /* warning if the value is outside the range */           \
     /* This generates runtime overhead if pcie_DEBUG set */   \

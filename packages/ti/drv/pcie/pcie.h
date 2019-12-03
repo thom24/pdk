@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2010-2018 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2010-2019 Texas Instruments Incorporated - http://www.ti.com/
  *
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -3093,6 +3093,89 @@ typedef struct pcieStatusCmdReg_s {
 } pcieStatusCmdReg_t;
 /* @} */
 
+/**
+ * @ingroup pcielld_reg_cfg_baseaddr_structures
+ * @brief Specification of the Base Address Register
+ *
+ * On rev 3 hw, this corresponds to I_BAR_0_REG
+ *
+ * @{
+ */
+typedef struct pcieBaseAddrReg_s {
+  uint32_t raw; /**< @brief [ro] Raw image of register on read; actual value on write */
+  /**
+   * @brief [rw] msio
+   *
+   * Set if it is a IO base address
+   *
+   * On rev 3 hw, this corresponds to MSI0
+   *
+   * Field size: 1 bit
+   */
+  uint8_t msio;
+  /**
+   * @brief [rw] r7
+   *
+   * Set if R7 needs to set
+   *
+   * On rev 3 hw, this corresponds to R7
+   *
+   * Field size: 1 bit
+   */
+  uint8_t r7;
+  /**
+   * @brief [rw] so
+   *
+   * Set if SO needs to set
+   *
+   * On rev 3 hw, this corresponds to SO
+   *
+   * Field size: 1 bit
+   */
+  uint8_t s0;
+  /**
+   * @brief [rw] po
+   *
+   * Set if PO needs to set
+   *
+   * On rev 3 hw, this corresponds to PO
+   *
+   * Field size: 1 bit
+   */
+  uint8_t p0;
+  /**
+   * @brief [rw] r8
+   *
+   * Set if R8 needs to set
+   *
+   * On rev 3 hw, this corresponds to R8
+   *
+   * Field size: 1 bit
+   */
+  uint8_t r8;
+  /**
+   * @brief [rw] bamr0
+   *
+   * Set if BAMR0 needs to set
+   *
+   * On rev 3 hw, this corresponds to BAMR0
+   *
+   * Field size: 4 bit
+   */
+  uint8_t bamr0;
+  /**
+   * @brief [rw] bamrw
+   *
+   * Set if BAMRW needs to set
+   *
+   * On rev 3 hw, this corresponds to BAMRW
+   *
+   * Field size: 20 bit
+   */
+  uint32_t bamrw;
+} pcieBaseAddrReg_t;
+/* @} */
+
 
 /**
  * @ingroup pcielld_reg_cfg_com_structures
@@ -3201,6 +3284,14 @@ typedef struct pcieBarReg_s {
    * Field size: 1 bit
    */
   uint8_t memSpace;
+  /**
+   * @brief BARxC
+   */
+  uint8_t barxc;
+  /**
+   * @brief BARxA
+   */
+  uint8_t barxa;
 } pcieBarReg_t;
 /* @} */
 
@@ -12046,6 +12137,7 @@ typedef struct pcieRegisters_s {
   pcieVndDevIdReg_t                 *vndDevId;                /**< @brief Vendor and device ID*/
   pcieStatusCmdReg_t                *statusCmd;               /**< @brief Status Command*/
   pcieRevIdReg_t                    *revId;                   /**< @brief Class code and Revision ID*/
+  pcieBaseAddrReg_t                 *baseAddr;                /**< @brief Base Address*/
 
   /*Type 0 Registers*/
   pcieBistReg_t                     *bist;                    /**< @brief Bist Header*/
@@ -12264,6 +12356,14 @@ typedef struct pcieBarCfg_s {
    * @brief BAR index
    */
   uint8_t idx;
+  /**
+   * @brief BARxC
+   */
+  uint8_t barxc;
+  /**
+   * @brief BARxA
+   */
+  uint8_t barxa;
 } pcieBarCfg_t;
 
 /**

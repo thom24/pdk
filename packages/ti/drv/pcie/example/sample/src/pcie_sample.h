@@ -63,12 +63,12 @@
 /* PCIE LLD include */
 #include <ti/drv/pcie/pcie.h>
 
-#if !defined(__TI_ARM_V7M4__) && !defined(EDMAPKTBENCH) && !defined(SOC_AM65XX)
+#if !defined(__TI_ARM_V7M4__) && !defined(EDMAPKTBENCH) && !defined(SOC_AM65XX) && !defined(SOC_J721E)
 /* Only do EDMA on C6X and A15 */
 #define EDMA
 #endif
 
-#if defined(SOC_AM65XX)
+#if defined(SOC_AM65XX)||defined(SOC_J721E)
 #define UDMA
 #endif
 
@@ -79,12 +79,12 @@
 #include "../../edmaPktBench/edmaPktBench.h"
 #endif
 
-#if !defined(SOC_AM65XX)
+#if defined(SOC_AM65XX)||defined(SOC_J721E)
 /* Do gen2 on all other devices -- remove or -U for GEN1 */
-#define GEN2
+#define GEN3
 #else
 /* AM6 is GEN3 */
-#define GEN3
+#define GEN2
 #endif
 
 /* Set up printf */
@@ -95,6 +95,7 @@
 #if !defined(SOC_AM574x) && !defined(SOC_AM572x) && !defined(SOC_AM571x) && \
     !defined(SOC_K2G) && \
     !defined(SOC_AM65XX) && \
+    !defined(SOC_J721E) && \
     !defined(__ARM_ARCH_7A__)
 /* AM57x, AM65x and K2G always use UART for all cores.  Also all ARM use UART */
 #define IO_CONSOLE
@@ -127,10 +128,6 @@
 #define PCIE_IB_LO_ADDR_RC   0x90000000
 #define PCIE_IB_HI_ADDR_RC   0
 
-/* PCIE address space for MSI */
-#define PCIE_PCIE_MSI_BASE   (0x00010000U)
-#define PCIE_PCIE_MSI_OFF    (0x00000040U)
-
 /* Outbound Base Address for PCIe EP */
 #define PCIE_OB_LO_ADDR_EP   PCIE_IB_LO_ADDR_RC
 #define PCIE_OB_HI_ADDR_EP   0
@@ -140,11 +137,17 @@
 #define PCIE_IB_HI_ADDR_EP   0
 
 #if defined(SOC_AM65XX)
+
 #ifdef am65xx_idk
 #define PCIE_WINDOW_START    0x10000000U
 #else
 #define PCIE_WINDOW_START    0x18000000U
 #endif
+
+/* PCIE address space for MSI */
+#define PCIE_PCIE_MSI_BASE   (0x00010000U)
+#define PCIE_PCIE_MSI_OFF    (0x00000040U)
+
 /* Data area offset absolute including PCIe base (only used rev 2) */
 #define PCIE_WINDOW_MEM_BASE (PCIE_WINDOW_START + 0x01000000U)
 #define PCIE_WINDOW_MEM_MASK 0x00FFFFFFU
@@ -159,10 +162,48 @@
 #define PCIE_WINDOW_MSI_MASK 0x0000FFFFU
 
 /* SPI number (a block of reserved ARM GIC SPIs) to use for MSI) */
-#define PCIE_SPI_BASE        (0x00000300U)
+/* For AM65xx, use the reserved SPI 268 - 279 */
+#define PCIE_SPI_BASE        (300) /* 268+32 = 300 */
 #define PCIE_WINDOW_MSI_DATA (PCIE_SPI_BASE)
 
-#else
+/* Inbound limit */
+#define PCIE_INBOUND_MASK    0x0FFFFFFFU
+
+#elif defined(SOC_J721E)
+
+#define PCIE_WINDOW_START    0x18000000U
+
+/* PCIE address space for MSI */
+#define PCIE_PCIE_MSI_BASE   (0x02000000U)
+#define PCIE_PCIE_MSI_OFF    (0x00000040U)
+
+/* Data area offset absolute including PCIe base (only used rev 3) */
+#define PCIE_WINDOW_MEM_BASE (PCIE_WINDOW_START + 0x01000000U)
+#define PCIE_WINDOW_MEM_MASK 0x0000FFFFU
+
+/* Cfg area offset absolute including PCIe base (only used rev 3) */
+/* This MUST agree Pciev1_DeviceCfgBaseAddrs.bases! */
+#define PCIE_WINDOW_CFG_BASE (PCIE_WINDOW_START + 0x00010000U)
+#define PCIE_WINDOW_CFG_MASK 0x0000FFFFU
+
+/* MSI address in PCIE data window */
+#define PCIE_WINDOW_MSI_ADDR (PCIE_WINDOW_START + 0x02000000U)
+#define PCIE_WINDOW_MSI_MASK 0x0000FFFFU
+
+/* SPI number (a block of reserved ARM GIC SPIs) to use for MSI) */
+/* For J721E, use reserved SPI 794 - 847 */
+#define PCIE_SPI_BASE        (826) /* 794+32 = 826 */
+#define PCIE_WINDOW_MSI_DATA (PCIE_SPI_BASE)
+
+/* Inbound limit */
+#define PCIE_INBOUND_MASK    0x00000FFFU
+
+#else /* other devies */
+
+/* PCIE address space for MSI */
+#define PCIE_PCIE_MSI_BASE   (0x00010000U)
+#define PCIE_PCIE_MSI_OFF    (0x00000040U)
+
 /* Data area offset relative to PCIe base (only used rev 1) */
 #define PCIE_WINDOW_MEM_BASE 0x01000000U
 #define PCIE_WINDOW_MEM_MASK 0x00FFFFFFU
@@ -176,10 +217,10 @@
 #define PCIE_WINDOW_MSI_ADDR 0x02000000U
 #define PCIE_WINDOW_MSI_MASK 0x00FFFFFFU
 #define PCIE_WINDOW_MSI_DATA 0x00000000U
-#endif
 
 /* Inbound limit (only used rev 1) */
 #define PCIE_INBOUND_MASK    0x0FFFFFFFU
+#endif
 
 /* BAR mask */
 #define PCIE_BAR_MASK         0x0FFFFFFF
@@ -217,8 +258,8 @@
 /*****************************************************************************
  * Choose the type of EDMA transfer (Current options are "DMA" and "QDMA")
  *****************************************************************************/
-#define EDMA_TYPE 0 //DMA
-//#define EDMA_TYPE 1 //QDMA
+#define EDMA_TYPE 0 /* DMA */
+/* #define EDMA_TYPE 1 //QDMA */
 
 #endif
 
