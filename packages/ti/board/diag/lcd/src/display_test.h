@@ -81,6 +81,31 @@ extern "C" {
 /**************************************************************************
  **                       Macro Definitions
  **************************************************************************/
+/* Number of Pipes should be 1 when loading buffers at run time.
+ * Test Pipe Id should be VID1 when number of pipes is 2.
+ */
+#define BUFFERS_RUNTIME                (0U)
+#define TEST_VID_PIPE                  (CSL_DSS_VID_PIPE_ID_VID1)
+#define NUM_VID_PIPES                  (2U)
+#define UPSCALING_ENABLE               (0U)
+#define DOWNSCALING_ENABLE             (1U)
+
+/* OLDI can be tested using VP1 */
+#define TEST_VP_INSTANCE               (CSL_DSS_VP_ID_1)
+#define DSS_RUN_COUNT                  (30000U)
+#define PWM_GPIO_PIN                   (86U)
+
+#define NUM_BYTES_PER_PIXEL            (4U)
+
+#define NUM_BUFFERS                    (1U)
+#define BUFF_WIDTH_1080P               (1920U)
+#define BUFF_HEIGHT_1080P              (1080U)
+#define BUFF_WIDTH_480P                (720U)
+#define BUFF_HEIGHT_480P               (480U)
+
+#define MAX_BUFFER_SIZE                (NUM_BUFFERS * NUM_BYTES_PER_PIXEL * \
+                                        BUFF_HEIGHT_480P * \
+                                        BUFF_WIDTH_480P)
 
 /*ECAP register offsets*/
 #define ECAP_TSCTR         (0x00U)
@@ -121,14 +146,12 @@ extern "C" {
    On EVM one can test DPI only using VP2 */
 #define TEST_VP_INSTANCE               (CSL_DSS_VP_ID_1)
 
-#define NUM_BYTES_PER_PIXEL            (3U)
-#define NUM_BUFFERS                    (4U)
 #define BUFF_WIDTH_1080P               (1920U)
 #define BUFF_HEIGHT_1080P              (1080U)
 #define BUFF_WIDTH_480P                (720U)
 #define BUFF_HEIGHT_480P               (480U)
 
-#define MAX_BUFFER_SIZE                (NUM_BUFFERS * NUM_BUFFERS * BUFF_HEIGHT_1080P * BUFF_WIDTH_1080P)
+//#define MAX_BUFFER_SIZE                (NUM_BUFFERS * NUM_BUFFERS * BUFF_HEIGHT_1080P * BUFF_WIDTH_1080P)
 
 #define LCD_WIDTH                      (1920U)
 #define LCD_HEIGHT                     (1080U)

@@ -35,6 +35,7 @@ DIAGOBJDIR ?= $(PDK_DIAG_DIR)/obj/$(BOARD)/$(TARGET)/compliance
 else
 DIAGOBJDIR ?= $(PDK_DIAG_DIR)/obj/$(BOARD)/$(TARGET)/functional
 endif
+
 DIAGBINDIR ?= $(PDK_DIAG_DIR)/bin/$(BOARD)/$(TARGET)
 
 # ARMV7 link directory that contain built peripheral libraries
@@ -57,6 +58,7 @@ INCDIR := $(CSL_DIR);$(PDK_INSTALL_PATH);$(PDK_DIAG_DIR);$(PDK_DIAG_DIR)/src/$(B
 BOARD_LIB = "$(PDK_DIAG_DIR)/lib/$(BOARD)/r5f/release/ti.board.aer5f"
 UART_LIB = "$(PDK_INSTALL_PATH)/ti/drv/uart/lib/am65xx/r5f/release/ti.drv.uart.aer5f"
 I2C_LIB = "$(PDK_INSTALL_PATH)/ti/drv/i2c/lib/am65xx/r5f/release/ti.drv.i2c.aer5f"
+
 CSL_LIB = "$(PDK_INSTALL_PATH)/ti/csl/lib/am65xx/r5f/release/ti.csl.aer5f"
 CSL_INIT_LIB = "$(PDK_INSTALL_PATH)/ti/csl/lib/am65xx/r5f/release/ti.csl.init.aer5f"
 OSAL_LIB = "$(PDK_INSTALL_PATH)/ti/osal/lib/nonos/am65xx/r5f/release/ti.osal.aer5f"
@@ -64,6 +66,7 @@ SCICLIENT_LIB = "$(PDK_INSTALL_PATH)/ti/drv/sciclient/lib/am65xx/mcu1_0/release/
 PERIPHERAL_LIB = $(UART_LIB) $(I2C_LIB) $(CSL_LIB) $(CSL_INIT_LIB) $(SCICLIENT_LIB)
 RTSLIB_PATH = "$(TOOLCHAIN_PATH_R5)/lib/libc.a"
 LNK_LIBS = -l$(PERIPHERAL_LIB) -l$(BOARD_LIB) -l$(OSAL_LIB) $(RTSLIB_PATH)
+
 
 # Compiler options
 INTERNALDEFS = -g -ms -DMAKEFILE_BUILD -c -qq -pdsw225  $(DEBUG_FLAG) -D$(BOARD) -DSOC_$(DEVICE) --endian=little -mv7R5 --abi=eabi -eo.oer5f -ea.ser5f --symdebug:dwarf --embed_inline_assembly --float_support=vfpv3d16 -ms -oe -op0 -os --optimize_with_debug --inline_recursion_limit=20  -DBUILD_MCU1_0 -DBUILD_MCU -DBARE_METAL
@@ -82,6 +85,7 @@ OBJEXT = oer5f
 ASMOBJEXT = oer5f
 SRCDIR = $(PDK_DIAG_DIR)/diag/lcd/src
 
+
 INCS = -I. -I$(strip $(subst ;, -I,$(INCDIR)))
 
 VPATH=$(SRCDIR):$(PDK_DIAG_DIR)/diag/common/$(DEVICE):$(PDK_INSTALL_PATH)/ti/drv/uart/soc/am65xx:$(PDK_INSTALL_PATH)/ti/drv/i2c/soc/am65xx
@@ -90,6 +94,7 @@ VPATH=$(SRCDIR):$(PDK_DIAG_DIR)/diag/common/$(DEVICE):$(PDK_INSTALL_PATH)/ti/drv
 TEST_SRC = \
 	display_test.c \
     lcd_touch_test.c
+
 
 TEST_SRC_DEV = 
 
@@ -100,7 +105,7 @@ ENTRY_SRC = diag_entry_r5.asm
 DIAG_SRC = diag_common_cfg.c
 
 # FLAGS for the SourceFiles
-CFLAGS += -O2 -DDIAG_$(TESTMODE)
+CFLAGS += -DDIAG_$(TESTMODE) -O2
 SRC_CFLAGS = -I. $(CFLAGS) -g -eo.$(OBJEXT) -ea.$(ASMOBJEXT)
 
 # Make Rule for the SRC Files

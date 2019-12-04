@@ -524,4 +524,3 @@ int main(void)
 }
 
 /* Nothing past this point */
-

@@ -85,4 +85,3 @@ TEST_STATUS lcdTest(void *testArgs);
 #endif // _LCD_TEST_H_
 
 /* Nothing past this point */
-

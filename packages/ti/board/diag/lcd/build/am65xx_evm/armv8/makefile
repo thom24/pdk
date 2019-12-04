@@ -30,10 +30,14 @@
 #  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 # Output directories
+ifeq ($(TESTMODE),STRESS_TEST)
+DIAGOBJDIR ?= $(PDK_DIAG_DIR)/obj/$(BOARD)/$(TARGET)/stress
+else
 ifeq ($(TESTMODE),COMPLIANCE_TEST)
 DIAGOBJDIR ?= $(PDK_DIAG_DIR)/obj/$(BOARD)/$(TARGET)/compliance
 else
 DIAGOBJDIR ?= $(PDK_DIAG_DIR)/obj/$(BOARD)/$(TARGET)/functional
+endif
 endif
 DIAGBINDIR ?= $(PDK_DIAG_DIR)/bin/$(BOARD)/$(TARGET)
 
@@ -68,10 +72,14 @@ INTERNALDEFS = -Wimplicit -Wall $(DEBUG_FLAG) -D__ARMv8 -D$(BOARD) -DSOC_$(DEVIC
 INTERNALLINKDEFS = -Werror -Wl,-static -Wl,--gc-sections -nostartfiles -Wl,-T $(PDK_DIAG_DIR)/diag/common/$(DEVICE)/linker_a53.lds -Wl,--build-id=none --entry Entry -Wl,--start-group -l"c" -lrdimon -l"m" -l"gcc" -l"stdc++" $(BOARD_LIB) $(PERIPHERAL_LIB) $(OSAL_LIB) -Wl,--end-group $(LDFLAGS)
 
 # Executable using device independent library and device object file
+ifeq ($(TESTMODE),STRESS_TEST)
+EXE=lcdStress_diagExample_$(BOARD)_$(TARGET).out
+else
 ifeq ($(TESTMODE),COMPLIANCE_TEST)
 EXE=lcdCompliance_diagExample_$(BOARD)_$(TARGET).out
 else
 EXE=lcd_diagExample_$(BOARD)_$(TARGET).out
+endif
 endif
 
 OBJEXT = o
@@ -96,7 +104,7 @@ ENTRY_SRC = diag_entry.S
 DIAG_SRC = diag_common_cfg.c \
 
 # FLAGS for the SourceFiles
-CFLAGS += -Wall -O2 -DDIAG_$(TESTMODE)
+CFLAGS += -DDIAG_$(TESTMODE) -Wall -O2
 SRC_CFLAGS = -I. $(CFLAGS) -g -gdwarf-3 -gstrict-dwarf -Wall 
 
 # Make Rule for the SRC Files
