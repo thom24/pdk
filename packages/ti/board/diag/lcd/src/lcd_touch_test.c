@@ -69,7 +69,7 @@ touch_init_t touch_init[NUM_OF_CONFIGS] = {
     {SCREEN_TOUCH_LEVEL_REG_ADDR, 0x64},
     {SCREEN_LEAVE_LEVEL_REG_ADDR, 0x3c},
     {LOW_POWER_CONTROL_REG_ADDR, 0x03},
-    {REFRESH_RATE_REG_ADDR, 0x05},
+    {REFRESH_RATE_REG_ADDR, 0x00},
 
     {BOARDER_SPACING1_REG_ADDR, 0x00},
     {BOARDER_SPACING2_REG_ADDR, 0x00},
@@ -530,6 +530,24 @@ static int8_t BoardDiag_read_device_deatils(I2C_Handle handle)
 }
 
 /**
+ *  \brief    The function clear the buffer status register.
+ */
+void bufferclear(I2C_Handle handle)
+{
+    uint16_t index;
+
+    BOARD_delay(100000);
+
+    for(index = 0; index < 50; index++)
+    {
+        BoardDiag_write_register(  handle,
+								   BOARD_I2C_TOUCH_SLAVE_ADDR,
+								   BUFFER_STATUS_REG_ADDR,
+								   0U);
+    }
+}
+
+/**
  *  \brief    The function performs the LCD touch test by reading
  *            the touch taps and displaying the position of touch
  *              co-ordinates on to the serial console.
@@ -543,7 +561,6 @@ int8_t BoardDiag_lcd_touch_detect_test(void)
 {
     int8_t ret = 0;
     uint16_t index;
-#if !defined(DIAG_COMPLIANCE_TEST)
     uint8_t rdRegData;
     uint8_t touchCount = 0;
     uint16_t xCoordinateData;
@@ -553,7 +570,6 @@ int8_t BoardDiag_lcd_touch_detect_test(void)
     bool touchExitStatusFlag = false;
     uint8_t cfgRegCount = 0;
     uint8_t pointData[4] = {'\0'};
-#endif
 
     I2C_Params i2cParams;
     I2C_HwAttrs i2cConfig;
@@ -605,20 +621,8 @@ int8_t BoardDiag_lcd_touch_detect_test(void)
         UART_printf("Touch initialization failed\n\r");
         return ret;
     }
-
-    /* One milli sec delay */
-    BOARD_delay(1000);
-    UART_printf("Clearing the buffer status register...\n\r");
-    for(index = 0; index < 50; index++)
-    {
-        ret = BoardDiag_write_register(handle,
-                                       BOARD_I2C_TOUCH_SLAVE_ADDR,
-                                       BUFFER_STATUS_REG_ADDR,
-                                       0U);
-        /* '50' milli sec delay */
-        BOARD_delay(50000);
-    }
-#if !defined(DIAG_COMPLIANCE_TEST)
+	UART_printf("Clearing the buffer status register...\n\r");
+	bufferclear(handle);
     /* Continuously wait for a touch to be detected or test to be timed-out */
     //while((!touchExitStatusFlag) && (delayCycleCount != DELAY_CYCLES))
     UART_printf("\n\n\rWaiting for user to provide 20 single point touches...\n\r");
@@ -671,16 +675,11 @@ int8_t BoardDiag_lcd_touch_detect_test(void)
                 touchExitStatusFlag = true;
             }
 
-            ret = BoardDiag_write_register(handle,
-                                           BOARD_I2C_TOUCH_SLAVE_ADDR,
-                                           BUFFER_STATUS_REG_ADDR,
-                                           0U);
+             bufferclear(handle);
         }
 
         //delayCycleCount++;
     }
-#endif
-
     /* Closing the Board presence detect i2c instance */
     I2C_close(handle);
 
