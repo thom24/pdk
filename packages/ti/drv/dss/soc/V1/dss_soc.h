@@ -157,7 +157,7 @@ typedef void (*Dss_DctrlDpHpdCbFxn)(uint32_t hpdState, void *appData);
 #define DSS_DCTRL_NODE_EDP_DPI1               (0x10U)
 #define DSS_DCTRL_NODE_EDP_DPI2               (0x11U)
 #define DSS_DCTRL_NODE_EDP_DPI3               (0x12U)
-#define DSS_DCTRL_NODE_DSI                    (0x13U)
+#define DSS_DCTRL_NODE_DSI_DPI2               (0x13U)
 #define DSS_DCTRL_NODE_DISCSYNC0              (0x14U)
 #define DSS_DCTRL_NODE_DISCSYNC1              (0x15U)
 /* @} */
@@ -300,6 +300,15 @@ typedef struct
 } Dss_DpInitParams;
 
 /**
+ * \brief Structure containing DSI init parameters
+ */
+typedef struct
+{
+    uint32_t isAvailable;
+    /**< Flag to indicate whether eDP module is available */
+} Dss_DsiInitParams;
+
+/**
  *  \brief DSS SOC parameters.
  */
 typedef struct
@@ -310,6 +319,8 @@ typedef struct
     /**< DSS resource information */
     Dss_DpInitParams dpInitParams;
     /**< DSS DP init information */
+    Dss_DsiInitParams dsiInitParams;
+    /**< DSS DSI init information */
 } Dss_SocParams;
 
 /**
@@ -473,6 +484,14 @@ static inline void Dss_dpInitParamsInit(Dss_DpInitParams *dpInitParams)
     }
 }
 
+static inline void Dss_dsiInitParamsInit(Dss_DsiInitParams *dsiInitParams)
+{
+    if(NULL != dsiInitParams)
+    {
+        dsiInitParams->isAvailable = TRUE;
+    }
+}
+
 static inline void Dss_socParamsInit(Dss_SocParams *socParams)
 {
     if(NULL != socParams)
@@ -480,6 +499,7 @@ static inline void Dss_socParamsInit(Dss_SocParams *socParams)
         Dss_irqParamsInit(&(socParams->irqParams));
         Dss_rmInfoInit(&(socParams->rmInfo));
         Dss_dpInitParamsInit(&(socParams->dpInitParams));
+        Dss_dsiInitParamsInit(&(socParams->dsiInitParams));
     }
 }
 

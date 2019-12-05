@@ -59,6 +59,7 @@ extern "C" {
 #else
 #define APP_OUTPUT_HDMI          (0)
 #define APP_OUTPUT_EDP           (1)
+#define APP_OUTPUT_DSI           (2)
 #endif
 
 /* ========================================================================== */

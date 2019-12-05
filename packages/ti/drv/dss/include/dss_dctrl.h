@@ -336,6 +336,18 @@ typedef void (*Dss_DctrlLineNumCbFxn)(uint32_t vpId, void *appData);
  */
 #define IOCTL_DSS_DCTRL_REGISTER_LINENUM_CB  (DSS_DCTRL_IOCTL_BASE + 0x0EU)
 
+/**
+ * \brief Command to set the DSI specific parameters
+ *
+ *  Currently used to set number of output lanes.
+ *
+ * \param cmdArgs       [IN]  Pointer of type #Dss_DctrlDsiParams
+ * \param cmdArgsStatus [OUT] NULL
+ *
+ * \return  FVID2_SOK if successful, else suitable error code
+ */
+#define IOCTL_DSS_DCTRL_SET_DSI_PARAMS       (DSS_DCTRL_IOCTL_BASE + 0x0FU)
+
 /* @} */
 
 /* ========================================================================== */
@@ -580,6 +592,19 @@ typedef struct
     void *appData;
     /**< Private data of application */
 } Dss_DctrlLineNumCbParams;
+
+/**
+ * \brief Structure containing DSI Output parameters.
+ *  This structure is used as an argument to
+ *  IOCTL_DSS_DCTRL_SET_DSI_PARAMS.
+ */
+typedef struct
+{
+    uint32_t instId;
+    /**< DSI Instance ID, currently note used */
+    uint32_t numOfLanes;
+    /**< Number of outputs lanes for DSI output, max 4 */
+} Dss_DctrlDsiParams;
 
 /* ========================================================================== */
 /*                  Internal/Private Function Declarations                    */

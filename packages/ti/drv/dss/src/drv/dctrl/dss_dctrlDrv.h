@@ -60,6 +60,12 @@ extern "C" {
 /*                         Structure Declarations                             */
 /* ========================================================================== */
 
+typedef struct
+{
+    uint32_t isAvailable;
+    /**< Flag to indicate whether DSI module is available */
+} Dss_DctrlDrvDsiInitParams;
+
 /**
  *  \brief DSS Controller Driver initialization parameters.
  */
@@ -75,6 +81,9 @@ typedef struct
     Dss_DpInitParams dpInitParams;
     /**< DP init parameters */
 #endif
+
+    Dss_DctrlDrvDsiInitParams dsiInitParams;
+    /**< DSI Init Parameters */
 } Dss_DctrlDrvInitParams;
 
 /* ========================================================================== */

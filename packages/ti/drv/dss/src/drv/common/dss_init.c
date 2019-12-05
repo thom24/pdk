@@ -138,6 +138,13 @@ int32_t Dss_init(const Dss_InitParams *initParams)
         dctrlInitParams.dpInitParams.isAvailable = initParams->socParams.dpInitParams.isAvailable;
         dctrlInitParams.dpInitParams.isHpdSupported = initParams->socParams.dpInitParams.isHpdSupported;
 #endif
+
+        dctrlInitParams.dsiInitParams.isAvailable = FALSE;
+#if defined(SOC_J721E)
+        dctrlInitParams.dsiInitParams.isAvailable =
+            initParams->socParams.dsiInitParams.isAvailable;
+#endif
+
         retVal = Dss_dctrlDrvInit(&dctrlInitParams);
     }
 

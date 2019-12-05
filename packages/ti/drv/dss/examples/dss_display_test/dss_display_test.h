@@ -59,13 +59,6 @@ extern "C" {
 #define DISP_APP_RUN_COUNT              (0x1000U)
 #endif
 
-#if defined (SOC_AM65XX)
-#define DISP_APP_LCD_WIDTH              (1280U)
-#define DISP_APP_LCD_HEIGHT             (800U)
-#else
-#define DISP_APP_LCD_WIDTH              (1920U)
-#define DISP_APP_LCD_HEIGHT             (1080U)
-#endif
 /* Worst case frames per handle */
 #define DISP_APP_MAX_FRAMES_PER_HANDLE    (2U)
 
@@ -75,13 +68,14 @@ extern "C" {
 #define DISP_APP_ARGB32                   (3U)
 #define DISP_APP_RGB24                    (4U)
 #define DISP_APP_BGR24                    (5U)
-#define DISP_APP_YUV2                     (6U)
+#define DISP_APP_YUV2_1                   (6U)
 #define DISP_APP_UVVY                     (7U)
 #define DISP_APP_YUV420                   (8U)
 #define DISP_APP_YUV420_12                (9U)
 #define DISP_APP_RGB565                   (10U)
 #define DISP_APP_BGR565                   (11U)
 #define DISP_APP_BGRA32                   (12U)
+#define DISP_APP_YUV2_2                   (13U)
 
 /* Test Params to be used. Possible values:
  * 1U: Test VID1 and VIDL1
@@ -96,6 +90,10 @@ extern "C" {
  * 10U: Test VID1 RGB565 (Only for J7)
  * 11U: Test VID1 BGR565 (Only for J7)
  * 12U: Test VID1 BGRA32 (Only for J7, eDP)
+ * 13U: Test VID1 YUV422 on DSI (Only for J7)
+ *      This test case outputs on AUO LCD, which supports 1280x800
+ *      resolution. So with this test, enable macro
+ *      DISP_APP_LOAD_BUFFERS_RUNTIME to load YUV422 buffer.
  */
 #define DISP_APP_USE_TEST_PARAMS          (DISP_APP_BGRA32_1)
 
@@ -117,6 +115,22 @@ extern "C" {
 #define DISP_APP_TEST_EDP                 (0U)
 
 #define DISP_APP_TEST_MULTISYNC           (0U)
+
+/**< Enable DSI output, configures DSI for 1280x800 resolution and
+ *   uses LCD AUO display for displaying YUV422 image */
+#define DISP_APP_TEST_DSI                 (0U)
+
+
+#if defined (SOC_AM65XX)
+#define DISP_APP_LCD_WIDTH              (1280U)
+#define DISP_APP_LCD_HEIGHT             (800U)
+#elif (1u == DISP_APP_TEST_DSI)
+#define DISP_APP_LCD_WIDTH              (1280U)
+#define DISP_APP_LCD_HEIGHT             (800U)
+#else
+#define DISP_APP_LCD_WIDTH              (1920U)
+#define DISP_APP_LCD_HEIGHT             (1080U)
+#endif
 
 /* Enable the below macro to have prints on the IO Console */
 #undef CIO_CONSOLE
@@ -241,7 +255,8 @@ typedef struct
 /*                  Internal/Private Function Declarations                   */
 /* ========================================================================== */
 
-/* None */
+int32_t DispApp_SetDsiSerdesCfg(DispApp_Obj *appObj);
+
 
 /* ========================================================================== */
 /*                          Function Declarations                             */
@@ -745,7 +760,7 @@ static const DispApp_TestParams gDispAppTestParams=
 #endif
     }
 };
-#elif (DISP_APP_YUV2 == DISP_APP_USE_TEST_PARAMS)
+#elif (DISP_APP_YUV2_1 == DISP_APP_USE_TEST_PARAMS)
 static const DispApp_TestParams gDispAppTestParams=
 {
     /* Number of Pipes */
@@ -801,6 +816,88 @@ static const DispApp_TestParams gDispAppTestParams=
     /* Scaler enable */
     {
         TRUE
+    },
+    /* Global Alpha */
+    {
+        0xFFU
+    },
+    /* Pre-multiply alpha */
+    {
+        FALSE
+    },
+    /* X Position */
+    {
+        0U
+    },
+    /* Y position */
+    {
+        0U
+    },
+    /* Invalid Pipe Id */
+    {
+        CSL_DSS_VID_PIPE_ID_VIDL1,
+#if defined (SOC_J721E)
+        CSL_DSS_VID_PIPE_ID_VID2,
+        CSL_DSS_VID_PIPE_ID_VIDL2
+#endif
+    }
+};
+#elif (DISP_APP_YUV2_2 == DISP_APP_USE_TEST_PARAMS)
+static const DispApp_TestParams gDispAppTestParams=
+{
+    /* Number of Pipes */
+    1U,
+    /* bpp */
+    2U,
+    /* Instance Id */
+    {
+        DSS_DISP_INST_VID1
+    },
+    /* Pipe Id */
+    {
+        CSL_DSS_VID_PIPE_ID_VID1
+    },
+    /* Pipe Node Id */
+    {
+        DSS_DCTRL_NODE_VID1
+    },
+    /* Pipe Type */
+    {
+        CSL_DSS_VID_PIPE_TYPE_VID
+    },
+    /* Data format */
+    {
+        FVID2_DF_YUV422I_YUYV
+    },
+    /* Input buffer width */
+    {
+        1280U
+    },
+    /* Input buffer height */
+    {
+        800U
+    },
+    /* Pitch */
+    {
+        {
+            1280U*2U, 0U, 0U, 0U, 0U, 0U
+        }
+    },
+    /* Scan format */
+    {
+        FVID2_SF_PROGRESSIVE
+    },
+    /* Output buffer width */
+    {
+        DISP_APP_LCD_WIDTH
+    },
+    /* Output buffer height */
+    {
+        DISP_APP_LCD_HEIGHT
+    },
+    /* Scaler enable */
+    {
+        FALSE
     },
     /* Global Alpha */
     {

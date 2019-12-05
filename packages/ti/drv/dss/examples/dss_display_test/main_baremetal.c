@@ -100,3 +100,8 @@ int main(void)
 
     return(0);
 }
+
+void App_wait(uint32_t wait_in_ms)
+{
+    Board_delay(wait_in_ms);
+}

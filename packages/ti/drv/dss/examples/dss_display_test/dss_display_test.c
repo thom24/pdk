@@ -59,36 +59,42 @@
 /* ========================================================================== */
 
 #if defined (SOC_AM65XX)
-#define TEST_VP_ID                      (CSL_DSS_VP_ID_1)
-#define TEST_OVERLAY_ID                 (CSL_DSS_OVERLAY_ID_1)
-#define TEST_DCTRL_OVERLAY_NODE_ID      (DSS_DCTRL_NODE_OVERLAY1)
-#define TEST_DCTRL_VP_NODE_ID           (DSS_DCTRL_NODE_VP1)
-#define TEST_DCTRL_OUT_NODE_ID          (DSS_DCTRL_NODE_OLDI)
+    #define TEST_VP_ID                      (CSL_DSS_VP_ID_1)
+    #define TEST_OVERLAY_ID                 (CSL_DSS_OVERLAY_ID_1)
+    #define TEST_DCTRL_OVERLAY_NODE_ID      (DSS_DCTRL_NODE_OVERLAY1)
+    #define TEST_DCTRL_VP_NODE_ID           (DSS_DCTRL_NODE_VP1)
+    #define TEST_DCTRL_OUT_NODE_ID          (DSS_DCTRL_NODE_OLDI)
 #else
-#if(1U == DISP_APP_TEST_EDP)
-#define TEST_VP_ID                      (CSL_DSS_VP_ID_1)
-#define TEST_OVERLAY_ID                 (CSL_DSS_OVERLAY_ID_1)
-#define TEST_DCTRL_OVERLAY_NODE_ID      (DSS_DCTRL_NODE_OVERLAY1)
-#define TEST_DCTRL_VP_NODE_ID           (DSS_DCTRL_NODE_VP1)
-#define TEST_DCTRL_OUT_NODE_ID          (DSS_DCTRL_NODE_EDP_DPI0)
-#elif(1U == DISP_APP_TEST_OVERLAY_VP_4)
-#define TEST_VP_ID                      (CSL_DSS_VP_ID_4)
-#define TEST_OVERLAY_ID                 (CSL_DSS_OVERLAY_ID_4)
-#define TEST_DCTRL_OVERLAY_NODE_ID      (DSS_DCTRL_NODE_OVERLAY4)
-#define TEST_DCTRL_VP_NODE_ID           (DSS_DCTRL_NODE_VP4)
-#define TEST_DCTRL_OUT_NODE_ID          (DSS_DCTRL_NODE_DPI_DPI0)
-#else
-#define TEST_VP_ID                      (CSL_DSS_VP_ID_2)
-#define TEST_OVERLAY_ID                 (CSL_DSS_OVERLAY_ID_2)
-#define TEST_DCTRL_OVERLAY_NODE_ID      (DSS_DCTRL_NODE_OVERLAY2)
-#define TEST_DCTRL_VP_NODE_ID           (DSS_DCTRL_NODE_VP2)
-#define TEST_DCTRL_OUT_NODE_ID          (DSS_DCTRL_NODE_DPI_DPI0)
-#if(1U == DISP_APP_TEST_MULTISYNC)
-#define TEST_SYNC_VP_ID                 (CSL_DSS_VP_ID_1)
-#define TEST_DCTRL_SYNC_VP_NODE_ID      (DSS_DCTRL_NODE_VP1)
-#define TEST_DCTRL_SYNC_OUT_NODE_ID     (DSS_DCTRL_NODE_DISCSYNC0)
-#endif
-#endif
+    #if(1U == DISP_APP_TEST_DSI)
+        #define TEST_VP_ID                      (CSL_DSS_VP_ID_3)
+        #define TEST_OVERLAY_ID                 (CSL_DSS_OVERLAY_ID_3)
+        #define TEST_DCTRL_OVERLAY_NODE_ID      (DSS_DCTRL_NODE_OVERLAY3)
+        #define TEST_DCTRL_VP_NODE_ID           (DSS_DCTRL_NODE_VP3)
+        #define TEST_DCTRL_OUT_NODE_ID          (DSS_DCTRL_NODE_DSI_DPI2)
+    #elif(1U == DISP_APP_TEST_EDP)
+        #define TEST_VP_ID                      (CSL_DSS_VP_ID_1)
+        #define TEST_OVERLAY_ID                 (CSL_DSS_OVERLAY_ID_1)
+        #define TEST_DCTRL_OVERLAY_NODE_ID      (DSS_DCTRL_NODE_OVERLAY1)
+        #define TEST_DCTRL_VP_NODE_ID           (DSS_DCTRL_NODE_VP1)
+        #define TEST_DCTRL_OUT_NODE_ID          (DSS_DCTRL_NODE_EDP_DPI0)
+    #elif(1U == DISP_APP_TEST_OVERLAY_VP_4)
+        #define TEST_VP_ID                      (CSL_DSS_VP_ID_4)
+        #define TEST_OVERLAY_ID                 (CSL_DSS_OVERLAY_ID_4)
+        #define TEST_DCTRL_OVERLAY_NODE_ID      (DSS_DCTRL_NODE_OVERLAY4)
+        #define TEST_DCTRL_VP_NODE_ID           (DSS_DCTRL_NODE_VP4)
+        #define TEST_DCTRL_OUT_NODE_ID          (DSS_DCTRL_NODE_DPI_DPI0)
+    #else
+        #define TEST_VP_ID                      (CSL_DSS_VP_ID_2)
+        #define TEST_OVERLAY_ID                 (CSL_DSS_OVERLAY_ID_2)
+        #define TEST_DCTRL_OVERLAY_NODE_ID      (DSS_DCTRL_NODE_OVERLAY2)
+        #define TEST_DCTRL_VP_NODE_ID           (DSS_DCTRL_NODE_VP2)
+        #define TEST_DCTRL_OUT_NODE_ID          (DSS_DCTRL_NODE_DPI_DPI0)
+        #if(1U == DISP_APP_TEST_MULTISYNC)
+            #define TEST_SYNC_VP_ID                 (CSL_DSS_VP_ID_1)
+            #define TEST_DCTRL_SYNC_VP_NODE_ID      (DSS_DCTRL_NODE_VP1)
+            #define TEST_DCTRL_SYNC_OUT_NODE_ID     (DSS_DCTRL_NODE_DISCSYNC0)
+        #endif
+    #endif
 #endif
 
 /* ========================================================================== */
@@ -140,7 +146,16 @@ int32_t Dss_displayTest(void)
     Utils_prfLoadRegister(TaskP_self(), "Display_testapp");
 #endif
 
+#if (1U == DISP_APP_TEST_DSI)
+    retVal = DispApp_SetDsiSerdesCfg(&gDispApp_Obj);
+
+    if (FVID2_SOK == retVal)
+    {
+        retVal = DispApp_runTest(&gDispApp_Obj);
+    }
+#else
     retVal = DispApp_runTest(&gDispApp_Obj);
+#endif
 
 #if !defined(DSS_TESTAPP_BAREMETAL)
     Utils_prfLoadCalcStop();
@@ -148,9 +163,9 @@ int32_t Dss_displayTest(void)
     Utils_prfLoadCalcReset();
     Utils_prfLoadUnRegister(TaskP_self());
     App_print("Number of frames = %d, elapsed msec = %d, fps = %d\n",
-		    DISP_APP_RUN_COUNT,
-		    gTestStopTime - gTestStartTime,
-		    (uint32_t)((float)DISP_APP_RUN_COUNT / ((gTestStopTime - gTestStartTime)/1000.0)));
+            DISP_APP_RUN_COUNT,
+            gTestStopTime - gTestStartTime,
+            (uint32_t)((float)DISP_APP_RUN_COUNT / ((gTestStopTime - gTestStartTime)/1000.0)));
 
 #endif
 
@@ -354,54 +369,57 @@ static void DispApp_create(DispApp_Obj *appObj)
     vpParams->lcdOpTimingCfg.mInfo.vBackPorch = 14U;
     vpParams->lcdOpTimingCfg.mInfo.vSyncLen = 6U;
 #else
-#if(1U == DISP_APP_TEST_MULTISYNC)
-    vpParams->syncOpCfg.enabled = TRUE;
-    vpParams->syncOpCfg.isPrimary = TRUE;
-    vpParams->syncOpCfg.numSyncVpIds = 1U;
-    vpParams->syncOpCfg.syncVpIds[0] = TEST_SYNC_VP_ID;
-#endif
-#if(DISP_APP_BGR24 == DISP_APP_USE_TEST_PARAMS)
-#if(1U == DISP_APP_TEST_EDP)
-    vpParams->lcdOpTimingCfg.mInfo.standard = FVID2_STD_CUSTOM;
-    vpParams->lcdOpTimingCfg.mInfo.width = 1280U;
-    vpParams->lcdOpTimingCfg.mInfo.height = 720U;
-    vpParams->lcdOpTimingCfg.mInfo.pixelClock = 74250U;
-    vpParams->lcdOpTimingCfg.mInfo.hFrontPorch = 110U;
-    vpParams->lcdOpTimingCfg.mInfo.hBackPorch = 220U;
-    vpParams->lcdOpTimingCfg.mInfo.hSyncLen = 40U;
-    vpParams->lcdOpTimingCfg.mInfo.vFrontPorch = 5U;
-    vpParams->lcdOpTimingCfg.mInfo.vBackPorch = 20U;
-    vpParams->lcdOpTimingCfg.mInfo.vSyncLen = 5U;
-#else
-    vpParams->lcdOpTimingCfg.mInfo.standard = FVID2_STD_720P_60;
-#endif
-#else
-#if(1U == DISP_APP_TEST_EDP)
-    vpParams->lcdOpTimingCfg.mInfo.standard = FVID2_STD_CUSTOM;
-    vpParams->lcdOpTimingCfg.mInfo.width = 1920U;
-    vpParams->lcdOpTimingCfg.mInfo.height = 1080U;
-    vpParams->lcdOpTimingCfg.mInfo.pixelClock = 148500U;
-    vpParams->lcdOpTimingCfg.mInfo.hFrontPorch = 88U;
-    vpParams->lcdOpTimingCfg.mInfo.hBackPorch = 148U;
-    vpParams->lcdOpTimingCfg.mInfo.hSyncLen = 44U;
-    vpParams->lcdOpTimingCfg.mInfo.vFrontPorch = 4U;
-    vpParams->lcdOpTimingCfg.mInfo.vBackPorch = 36U;
-    vpParams->lcdOpTimingCfg.mInfo.vSyncLen = 5U;
-#else
-    vpParams->lcdOpTimingCfg.mInfo.standard = FVID2_STD_1080P_60;
-#endif
-#endif
+    #if(1U == DISP_APP_TEST_MULTISYNC)
+        vpParams->syncOpCfg.enabled = TRUE;
+        vpParams->syncOpCfg.isPrimary = TRUE;
+        vpParams->syncOpCfg.numSyncVpIds = 1U;
+        vpParams->syncOpCfg.syncVpIds[0] = TEST_SYNC_VP_ID;
+    #endif
+    #if(DISP_APP_BGR24 == DISP_APP_USE_TEST_PARAMS)
+        #if(1U == DISP_APP_TEST_EDP)
+            vpParams->lcdOpTimingCfg.mInfo.standard = FVID2_STD_CUSTOM;
+            vpParams->lcdOpTimingCfg.mInfo.width = 1280U;
+            vpParams->lcdOpTimingCfg.mInfo.height = 720U;
+            vpParams->lcdOpTimingCfg.mInfo.pixelClock = 74250U;
+            vpParams->lcdOpTimingCfg.mInfo.hFrontPorch = 110U;
+            vpParams->lcdOpTimingCfg.mInfo.hBackPorch = 220U;
+            vpParams->lcdOpTimingCfg.mInfo.hSyncLen = 40U;
+            vpParams->lcdOpTimingCfg.mInfo.vFrontPorch = 5U;
+            vpParams->lcdOpTimingCfg.mInfo.vBackPorch = 20U;
+            vpParams->lcdOpTimingCfg.mInfo.vSyncLen = 5U;
+        #else
+            vpParams->lcdOpTimingCfg.mInfo.standard = FVID2_STD_720P_60;
+        #endif
+    #else
+        #if(1U == DISP_APP_TEST_EDP)
+            vpParams->lcdOpTimingCfg.mInfo.standard = FVID2_STD_CUSTOM;
+            vpParams->lcdOpTimingCfg.mInfo.width = 1920U;
+            vpParams->lcdOpTimingCfg.mInfo.height = 1080U;
+            vpParams->lcdOpTimingCfg.mInfo.pixelClock = 148500U;
+            vpParams->lcdOpTimingCfg.mInfo.hFrontPorch = 88U;
+            vpParams->lcdOpTimingCfg.mInfo.hBackPorch = 148U;
+            vpParams->lcdOpTimingCfg.mInfo.hSyncLen = 44U;
+            vpParams->lcdOpTimingCfg.mInfo.vFrontPorch = 4U;
+            vpParams->lcdOpTimingCfg.mInfo.vBackPorch = 36U;
+            vpParams->lcdOpTimingCfg.mInfo.vSyncLen = 5U;
+        #else
+            vpParams->lcdOpTimingCfg.mInfo.standard = FVID2_STD_1080P_60;
+        #endif
+    #endif
+
 #endif
 
     vpParams->lcdOpTimingCfg.dvoFormat = FVID2_DV_GENERIC_DISCSYNC;
 #if(1U == DISP_APP_TEST_EDP)
-    vpParams->lcdOpTimingCfg.videoIfWidth = FVID2_VIFW_36BIT;    
+    vpParams->lcdOpTimingCfg.videoIfWidth = FVID2_VIFW_36BIT;
 #else
     vpParams->lcdOpTimingCfg.videoIfWidth = FVID2_VIFW_24BIT;
 #endif
+
     vpParams->lcdPolarityCfg.actVidPolarity = FVID2_POL_HIGH;
     vpParams->lcdPolarityCfg.hsPolarity = FVID2_POL_HIGH;
     vpParams->lcdPolarityCfg.vsPolarity = FVID2_POL_HIGH;
+
 #if(1U == DISP_APP_TEST_EDP)
     vpParams->lcdPolarityCfg.pixelClkPolarity = FVID2_EDGE_POL_RISING;
 
@@ -437,6 +455,28 @@ static void DispApp_create(DispApp_Obj *appObj)
     vpParams->lcdPolarityCfg.hsPolarity = FVID2_POL_HIGH;
     vpParams->lcdPolarityCfg.vsPolarity = FVID2_POL_HIGH;
     vpParams->lcdPolarityCfg.pixelClkPolarity = FVID2_EDGE_POL_FALLING;
+#endif
+
+#if (1U == DISP_APP_TEST_DSI)
+    vpParams->lcdOpTimingCfg.dvoFormat = FVID2_DV_GENERIC_DISCSYNC;
+    vpParams->lcdOpTimingCfg.videoIfWidth = FVID2_VIFW_24BIT;
+    vpParams->lcdPolarityCfg.actVidPolarity = FVID2_POL_HIGH;
+    vpParams->lcdPolarityCfg.hsPolarity = FVID2_POL_LOW;
+    vpParams->lcdPolarityCfg.vsPolarity = FVID2_POL_LOW;
+    advVpParams->lcdAdvSignalCfg.hVAlign = CSL_DSS_VP_HVSYNC_ALIGNED;
+
+    vpParams->lcdOpTimingCfg.mInfo.standard = FVID2_STD_CUSTOM;
+    vpParams->lcdOpTimingCfg.mInfo.width = DISP_APP_LCD_WIDTH;
+    vpParams->lcdOpTimingCfg.mInfo.height = DISP_APP_LCD_HEIGHT;
+    vpParams->lcdOpTimingCfg.mInfo.pixelClock = 74250000U;
+    vpParams->lcdOpTimingCfg.mInfo.hFrontPorch =110U;
+    vpParams->lcdOpTimingCfg.mInfo.hBackPorch = 220U;
+    vpParams->lcdOpTimingCfg.mInfo.hSyncLen = 40U;
+    vpParams->lcdOpTimingCfg.mInfo.vFrontPorch = 5U;
+    vpParams->lcdOpTimingCfg.mInfo.vBackPorch = 20U;
+    vpParams->lcdOpTimingCfg.mInfo.vSyncLen = 5U;
+
+    vpParams->lcdPolarityCfg.pixelClkPolarity = FVID2_EDGE_POL_RISING;
 #endif
 
     DispApp_configDctrl(appObj);
@@ -484,6 +524,7 @@ static void DispApp_create(DispApp_Obj *appObj)
                 App_print("DSS Set Mflag Params IOCTL Failed!!!\r\n");
             }
         }
+
         if(FVID2_SOK == retVal)
         {
             retVal = DispApp_allocAndQueueFrames(appObj, instObj);
@@ -645,6 +686,18 @@ static int32_t DispApp_allocAndQueueFrames(const DispApp_Obj *appObj,
     Fvid2_FrameList frmList;
 
 #if(1U == DISP_APP_LOAD_BUFFERS_RUNTIME)
+
+#if (1U == DISP_APP_TEST_DSI)
+    uint32_t height=800U, width=1280U;
+    char uartInput = '0';
+    App_print("Load Image using loadRaw command and then press '1'\n");
+    App_print("Command is:\n");
+    App_print("loadRaw(0x82000000, 0, \"C:\\\\PSP4_yuyv422_prog_packed_1280_800.yuv\", 32, false);\n");
+    do
+    {
+        scanf("%c", &uartInput);
+    } while ('1' != uartInput);
+#else
     uint32_t height=1080U, width=1920U;
     char uartInput = '0';
     App_print("Load Image using loadRaw command and then press '1'\n");
@@ -654,6 +707,8 @@ static int32_t DispApp_allocAndQueueFrames(const DispApp_Obj *appObj,
     {
         scanf("%c", &uartInput);
     } while ('1' != uartInput);
+#endif
+
 #endif
 
     Fvid2FrameList_init(&frmList);
@@ -899,6 +954,25 @@ static int32_t DispApp_configDctrl(DispApp_Obj *appObj)
     }
 #endif
 
+#if (1U == DISP_APP_TEST_DSI)
+    if(FVID2_SOK == retVal)
+    {
+        Dss_DctrlDsiParams dsiPrms;
+
+        dsiPrms.numOfLanes = 2u;
+
+        retVal = Fvid2_control(
+            appObj->dctrlHandle,
+            IOCTL_DSS_DCTRL_SET_DSI_PARAMS,
+            &dsiPrms,
+            NULL);
+        if(retVal != FVID2_SOK)
+        {
+            App_print("DSS Set DSI Params IOCTL Failed!!!\r\n");
+        }
+    }
+#endif
+
     retVal = Fvid2_control(
         appObj->dctrlHandle,
         IOCTL_DSS_DCTRL_SET_VP_PARAMS,
@@ -1013,3 +1087,4 @@ void App_print(const char *format, ...)
 
     return;
 }
+

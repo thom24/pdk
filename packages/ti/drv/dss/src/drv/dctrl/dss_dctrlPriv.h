@@ -102,6 +102,7 @@ typedef struct
     /**< FVID2 registration complete flag */
     Dss_DctrlDrvInstObj *instObj;
     /**< Display instance objects pointer */
+    Dss_DctrlDrvInitParams drvInitParams;
 } Dss_DctrlDrvCommonObj;
 
 /**
@@ -187,6 +188,7 @@ typedef struct
     /**< Video port safety error callback parameters */
     Dss_DctrlDrvErrorCount  errorCnt;
     /**< Display controller driver error count */
+    Dss_DctrlDsiParams dsiParams;
 } Dss_DctrlDrvInfo;
 
 /* ========================================================================== */
@@ -218,6 +220,14 @@ int32_t Dss_dctrlDrvInitDp(uint32_t isHpdSupported);
 int32_t Dss_dctrlDrvProcessHpdDp(uint32_t hpdState);
 int32_t Dss_dctrlDrvRegisterHpdCb(const Dss_DctrlDpHpdCbParams *cbParams);
 #endif
+
+void Dss_dctrlDrvInitDSI();
+int32_t Dss_dctrlDrvSetDSIParams(Dss_DctrlDrvInfo *drvInfo,
+    const Dss_DctrlDsiParams *dsPrms);
+int32_t Dss_dctrlDrvEnableVideoDSI(Dss_DctrlDrvInfo *drvInfo,
+    const Fvid2_ModeInfo *mInfo, uint32_t hsyncPolarity,
+    uint32_t vsyncPolarity);
+
 
 /* ========================================================================== */
 /*                       Static Function Definitions                          */

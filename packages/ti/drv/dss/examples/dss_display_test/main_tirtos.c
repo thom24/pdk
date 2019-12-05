@@ -124,48 +124,50 @@ static Void taskFxn(UArg a0, UArg a1)
 #if defined (SOC_AM65XX)
     App_configureLCD(APP_OUTPUT_OLDI);
 #else
-#if (1U == DISP_APP_TEST_EDP)
-    App_configureLCD(APP_OUTPUT_EDP);
-#else
-    App_configureLCD(APP_OUTPUT_HDMI);
-#if (1U == DISP_APP_TEST_MULTISYNC)
-    /* HSYNC mode 14 <- VP0 HSYNC */
-    regVal = CSL_REG32_RD(CSL_CTRL_MMR0_CFG0_BASE +
-            CSL_MAIN_CTRL_MMR_CFG0_PADCONFIG38);
-    CSL_FINS(regVal,
-            MAIN_CTRL_MMR_CFG0_PADCONFIG38_MUXMODE,
-            0xEU);
-    CSL_REG32_WR(CSL_CTRL_MMR0_CFG0_BASE +
-            CSL_MAIN_CTRL_MMR_CFG0_PADCONFIG38, regVal);
+    #if (1U == DISP_APP_TEST_DSI)
+        App_configureLCD(APP_OUTPUT_DSI);
+    #elif (1U == DISP_APP_TEST_EDP)
+        App_configureLCD(APP_OUTPUT_EDP);
+    #else
+        App_configureLCD(APP_OUTPUT_HDMI);
+        #if (1U == DISP_APP_TEST_MULTISYNC)
+            /* HSYNC mode 14 <- VP0 HSYNC */
+            regVal = CSL_REG32_RD(CSL_CTRL_MMR0_CFG0_BASE +
+                    CSL_MAIN_CTRL_MMR_CFG0_PADCONFIG38);
+            CSL_FINS(regVal,
+                    MAIN_CTRL_MMR_CFG0_PADCONFIG38_MUXMODE,
+                    0xEU);
+            CSL_REG32_WR(CSL_CTRL_MMR0_CFG0_BASE +
+                    CSL_MAIN_CTRL_MMR_CFG0_PADCONFIG38, regVal);
 
-    /* DE MODE 14 <- VP0 DE */
-    regVal = CSL_REG32_RD(CSL_CTRL_MMR0_CFG0_BASE +
-            CSL_MAIN_CTRL_MMR_CFG0_PADCONFIG39);
-    CSL_FINS(regVal,
-            MAIN_CTRL_MMR_CFG0_PADCONFIG39_MUXMODE,
-            0xEU);
-    CSL_REG32_WR(CSL_CTRL_MMR0_CFG0_BASE +
-            CSL_MAIN_CTRL_MMR_CFG0_PADCONFIG39, regVal);
+            /* DE MODE 14 <- VP0 DE */
+            regVal = CSL_REG32_RD(CSL_CTRL_MMR0_CFG0_BASE +
+                    CSL_MAIN_CTRL_MMR_CFG0_PADCONFIG39);
+            CSL_FINS(regVal,
+                    MAIN_CTRL_MMR_CFG0_PADCONFIG39_MUXMODE,
+                    0xEU);
+            CSL_REG32_WR(CSL_CTRL_MMR0_CFG0_BASE +
+                    CSL_MAIN_CTRL_MMR_CFG0_PADCONFIG39, regVal);
 
-    /* VSYNC MODE 14 <- VP0 VSYNC */
-    regVal = CSL_REG32_RD(CSL_CTRL_MMR0_CFG0_BASE +
-            CSL_MAIN_CTRL_MMR_CFG0_PADCONFIG40);
-    CSL_FINS(regVal,
-            MAIN_CTRL_MMR_CFG0_PADCONFIG40_MUXMODE,
-            0xEU);
-    CSL_REG32_WR(CSL_CTRL_MMR0_CFG0_BASE +
-            CSL_MAIN_CTRL_MMR_CFG0_PADCONFIG40, regVal);
+            /* VSYNC MODE 14 <- VP0 VSYNC */
+            regVal = CSL_REG32_RD(CSL_CTRL_MMR0_CFG0_BASE +
+                    CSL_MAIN_CTRL_MMR_CFG0_PADCONFIG40);
+            CSL_FINS(regVal,
+                    MAIN_CTRL_MMR_CFG0_PADCONFIG40_MUXMODE,
+                    0xEU);
+            CSL_REG32_WR(CSL_CTRL_MMR0_CFG0_BASE +
+                    CSL_MAIN_CTRL_MMR_CFG0_PADCONFIG40, regVal);
 
-    /* DPI_0_PCLK <- DPI_1_PCLK */
-    regVal = CSL_REG32_RD(CSL_CTRL_MMR0_CFG0_BASE +
-            CSL_MAIN_CTRL_MMR_CFG0_DSS_DISPC0_CLKSEL3);
-    CSL_FINS(regVal,
-            MAIN_CTRL_MMR_CFG0_DSS_DISPC0_CLKSEL3_DPI3_PCLK,
-            0x5U);
-    CSL_REG32_WR(CSL_CTRL_MMR0_CFG0_BASE +
-            CSL_MAIN_CTRL_MMR_CFG0_DSS_DISPC0_CLKSEL3, regVal);
-#endif
-#endif
+            /* DPI_0_PCLK <- DPI_1_PCLK */
+            regVal = CSL_REG32_RD(CSL_CTRL_MMR0_CFG0_BASE +
+                    CSL_MAIN_CTRL_MMR_CFG0_DSS_DISPC0_CLKSEL3);
+            CSL_FINS(regVal,
+                    MAIN_CTRL_MMR_CFG0_DSS_DISPC0_CLKSEL3_DPI3_PCLK,
+                    0x5U);
+            CSL_REG32_WR(CSL_CTRL_MMR0_CFG0_BASE +
+                    CSL_MAIN_CTRL_MMR_CFG0_DSS_DISPC0_CLKSEL3, regVal);
+        #endif
+    #endif
 #endif
     App_configureSoC();
 
@@ -181,3 +183,9 @@ void InitMmu(void)
     Osal_initMmuDefault();
 }
 #endif
+
+
+void App_wait(uint32_t wait_in_ms)
+{
+    Task_sleep(wait_in_ms);
+}

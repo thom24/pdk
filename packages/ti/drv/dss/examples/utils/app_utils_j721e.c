@@ -139,6 +139,39 @@ void App_configureLCD(uint32_t app_output)
             Board_control(BOARD_CTRL_CMD_SET_HDMI_PD_HIGH, (void*) 0U);
         }
     }
+    else if (APP_OUTPUT_DSI == app_output)
+    {
+        if(PM_SUCCESS == status)
+        {
+            status = Sciclient_pmSetModuleState(TISCI_DEV_DSS0,
+                    TISCI_MSG_VALUE_DEVICE_SW_STATE_ON,
+                    TISCI_MSG_FLAG_AOP,
+                    SCICLIENT_SERVICE_WAIT_FOREVER);
+        }
+        if(PM_SUCCESS == status)
+        {
+            status = Sciclient_pmModuleClkRequest(TISCI_DEV_DSS0,
+                    TISCI_DEV_DSS0_DSS_FUNC_CLK,
+                    TISCI_MSG_VALUE_CLOCK_SW_STATE_REQ,
+                    0,
+                    SCICLIENT_SERVICE_WAIT_FOREVER);
+        }
+        if (PM_SUCCESS == status)
+        {
+            status = Sciclient_pmSetModuleClkParent(TISCI_DEV_DSS0,
+                TISCI_DEV_DSS0_DSS_INST0_DPI_2_IN_2X_CLK,
+                TISCI_DEV_DSS0_DSS_INST0_DPI_2_IN_2X_CLK_PARENT_HSDIV1_16FFT_MAIN_18_HSDIVOUT0_CLK,
+                SCICLIENT_SERVICE_WAIT_FOREVER);
+        }
+        if (PM_SUCCESS == status)
+        {
+            /* Set the clock at the desirable frequency*/
+            status = Sciclient_pmSetModuleClkFreq(TISCI_DEV_DSS0,
+                TISCI_DEV_DSS0_DSS_INST0_DPI_2_IN_2X_CLK, 74250000u,
+                TISCI_MSG_FLAG_CLOCK_ALLOW_FREQ_CHANGE,
+                SCICLIENT_SERVICE_WAIT_FOREVER);
+        }
+    }
     else
     {
         if(PM_SUCCESS == status)

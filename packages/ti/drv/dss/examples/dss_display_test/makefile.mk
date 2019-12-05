@@ -33,6 +33,9 @@ endif
 # Common source files and CFLAGS across all platforms and cores
 PACKAGE_SRCS_COMMON = .
 SRCS_COMMON += dss_display_test.c
+ifeq ($(BOARD),j721e_evm)
+SRCS_COMMON += dss_display_dsi_cfg.c
+endif
 CFLAGS_LOCAL_COMMON += $(PDK_CFLAGS) $(DSS_CFLAGS)
 
 # Core/SoC/platform specific source files and CFLAGS

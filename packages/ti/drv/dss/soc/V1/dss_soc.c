@@ -90,7 +90,7 @@ static const Dss_DctrlNodeIdInfo gDss_DctrlNodeIdInfo[] = {
     {DSS_DCTRL_NODE_EDP_DPI1, CSL_DSS_DPI_ID_EDP_1,      DSS_DCTRL_NODE_TYPE_OUTPUT},  /* Virtual Node */
     {DSS_DCTRL_NODE_EDP_DPI2, CSL_DSS_DPI_ID_EDP_2,      DSS_DCTRL_NODE_TYPE_OUTPUT},  /* Virtual Node */
     {DSS_DCTRL_NODE_EDP_DPI3, CSL_DSS_DPI_ID_EDP_3,      DSS_DCTRL_NODE_TYPE_OUTPUT},  /* Virtual Node */
-    {DSS_DCTRL_NODE_DSI,      CSL_DSS_DPI_ID_DSI,        DSS_DCTRL_NODE_TYPE_OUTPUT}   /* Virtual Node */
+    {DSS_DCTRL_NODE_DSI_DPI2, CSL_DSS_DPI_ID_DSI,        DSS_DCTRL_NODE_TYPE_OUTPUT}   /* Virtual Node */
 };
 
 static const Dss_CommRegInfo gDss_commRegInfo[] = {
