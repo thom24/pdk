@@ -27,10 +27,10 @@ MEMORY
 SECTIONS
 {
     .text:Start	   >  0x00
-    .text          >  PRUIMEM, PAGE 0
-    .bss           >  PRUDMEM, PAGE 1
-    .data          >  PRUDMEM, PAGE 1
-    .rodata        >  PRUDMEM, PAGE 1
+    .text          >  PRUIMEM, PAGE 0 palign = 16
+    .bss           >  PRUDMEM, PAGE 1 palign = 16
+    .data          >  PRUDMEM, PAGE 1 palign = 16
+    .rodata        >  PRUDMEM, PAGE 1 palign = 16
     .farbss        >  SHAREDMEM, PAGE 2
     .fardata       >  SHAREDMEM, PAGE 2
     .rofardata     >  SHAREDMEM, PAGE 2
@@ -39,8 +39,8 @@ SECTIONS
     .init_array    >  PRUDMEM, PAGE 1
     .cinit         >  PRUDMEM, PAGE 1
     .args          >  PRUDMEM, PAGE 1
-    .resource_table >  PRUDMEM, PAGE 1
-    .version_string >  PRUDMEM, PAGE 1 palign=8
+    .resource_table >  PRUDMEM, PAGE 1 palign = 16
+    .version_string >  PRUDMEM, PAGE 1 palign = 16
 }
 
 
