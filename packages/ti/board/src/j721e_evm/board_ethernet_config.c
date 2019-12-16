@@ -228,45 +228,90 @@ static void Board_disableIcssEmacDelay(void)
 }
 
 /**
- * \brief  Power down the ENET PHYs
+ * \brief  Enable/Disable PHY reset for ENET EXP boards PHY
  *
  * \return  BOARD_SOK in case of success or appropriate error code
  */
-static Board_STATUS Board_enetPhyPwrDwn(void)
+Board_STATUS Board_cpsw9gEnetExpPhyReset(bool enableFlag)
 {
     Board_IoExpCfg_t ioExpCfg;
     Board_STATUS status = BOARD_SOK;
-    bool isAlpha = 0;
 
-    /*
-     * MDIO stability issue due to ENET card is resolved in Beta HW revision.
-     * Disabling ENET card is needed only for Alpha CP boards.
-     */
-    isAlpha = Board_isAlpha(BOARD_ID_CP);
-
-    if((isAlpha == TRUE) && (Board_detectBoard(BOARD_ID_ENET) == TRUE))
+    if (Board_detectBoard(BOARD_ID_ENET) == TRUE)
     {
-        ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_DEVICE2_INSTANCE;
-        ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
-        ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_DEVICE2_ADDR;
-        ioExpCfg.enableIntr  = false;
-        ioExpCfg.ioExpType   = THREE_PORT_IOEXP;
-        ioExpCfg.portNum     = PORTNUM_2;
-        ioExpCfg.pinNum      = PIN_NUM_0;
-        ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_HIGH;
+        if (1U == enableFlag)
+        {
+            /* EXP_ENET_RSTz - set to 0 for PHY reset */
+            ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_DEVICE2_INSTANCE;
+            ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
+            ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_DEVICE2_ADDR;
+            ioExpCfg.enableIntr  = false;
+            ioExpCfg.ioExpType   = THREE_PORT_IOEXP;
+            ioExpCfg.portNum     = PORTNUM_2;
+            ioExpCfg.pinNum      = PIN_NUM_1;
+            ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_LOW;
 
-        status = Board_control(BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT, &ioExpCfg);
+            status = Board_control(BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT, &ioExpCfg);
+        }
+        else
+        {
+            /* EXP_ENET_RSTz - set to 1 to take PHY out of reset (normal operation)*/
+            ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_DEVICE2_INSTANCE;
+            ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
+            ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_DEVICE2_ADDR;
+            ioExpCfg.enableIntr  = false;
+            ioExpCfg.ioExpType   = THREE_PORT_IOEXP;
+            ioExpCfg.portNum     = PORTNUM_2;
+            ioExpCfg.pinNum      = PIN_NUM_1;
+            ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_HIGH;
 
-        ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_DEVICE2_INSTANCE;
-        ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
-        ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_DEVICE2_ADDR;
-        ioExpCfg.enableIntr  = false;
-        ioExpCfg.ioExpType   = THREE_PORT_IOEXP;
-        ioExpCfg.portNum     = PORTNUM_2;
-        ioExpCfg.pinNum      = PIN_NUM_1;
-        ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_LOW;
+            status = Board_control(BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT, &ioExpCfg);
+        }
+    }
 
-        status = Board_control(BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT, &ioExpCfg);
+    return status;
+}
+
+/**
+ * \brief  Enable/Disable COMA_MODE for ENET EXP boards PHY
+ *
+ * \return  BOARD_SOK in case of success or appropriate error code
+ */
+Board_STATUS Board_cpsw9gEnetExpComaModeCfg(bool enableFlag)
+{
+    Board_IoExpCfg_t ioExpCfg;
+    Board_STATUS status = BOARD_SOK;
+
+    if (Board_detectBoard(BOARD_ID_ENET) == TRUE)
+    {
+        if (1U == enableFlag)
+        {
+            /* ENET_EXP_PWRDN - set to 1 for device power down */
+            ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_DEVICE2_INSTANCE;
+            ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
+            ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_DEVICE2_ADDR;
+            ioExpCfg.enableIntr  = false;
+            ioExpCfg.ioExpType   = THREE_PORT_IOEXP;
+            ioExpCfg.portNum     = PORTNUM_2;
+            ioExpCfg.pinNum      = PIN_NUM_0;
+            ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_HIGH;
+
+            status = Board_control(BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT, &ioExpCfg);
+        }
+        else
+        {
+            /* ENET_EXP_PWRDN - set to 0 for normal operation */
+            ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_DEVICE2_INSTANCE;
+            ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
+            ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_DEVICE2_ADDR;
+            ioExpCfg.enableIntr  = false;
+            ioExpCfg.ioExpType   = THREE_PORT_IOEXP;
+            ioExpCfg.portNum     = PORTNUM_2;
+            ioExpCfg.pinNum      = PIN_NUM_0;
+            ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_LOW;
+
+            status = Board_control(BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT, &ioExpCfg);
+        }
     }
 
     return status;
@@ -300,13 +345,24 @@ Board_STATUS Board_cpsw9gEthPhyConfig(void)
     uint8_t  phyAddr;
     uint32_t index;
     uint16_t regData = 0;
+    bool isAlpha = 0;
 
-    /* CPSW9G MDIO access is unstable when ENET card is connected.
-       Keeping the ENET PHY in reset as a temporary workaround */
-    status = Board_enetPhyPwrDwn();
-    if (status != BOARD_SOK)
+    /*
+     * MDIO stability issue due to ENET card is resolved in Beta HW revision.
+     * Disabling ENET card is needed only for Alpha CP boards.
+     */
+    isAlpha = Board_isAlpha(BOARD_ID_CP);
+
+    if(isAlpha == TRUE)
     {
-        return status;
+        /* CPSW9G MDIO access is unstable when ENET card is connected.
+           Keeping the ENET PHY in reset as a temporary workaround */
+        status = Board_cpsw9gEnetExpComaModeCfg(1U);
+        status = Board_cpsw9gEnetExpPhyReset(1U);
+        if (status != BOARD_SOK)
+        {
+            return status;
+        }
     }
 
     for(index = 0; index < BOARD_CPSW9G_EMAC_PORT_MAX; index++)
