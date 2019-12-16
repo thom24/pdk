@@ -737,27 +737,31 @@ Board_STATUS Board_ethConfigCpsw9g(void)
 
     Board_unlockMMR();
 
+    /* On J721E EVM to use all 8 ports simultaneously, we use below configuration
+       RGMII Ports - 1,3,4,8. QSGMII ports - 2 (main),5,6,7 (sub)*/
+
     /* Configures the CPSW9G RGMII ports */
-    for(portNum=0; portNum < BOARD_CPSW9G_EMAC_PORT_MAX; portNum++)
+    for(portNum=0; portNum < BOARD_CPSW9G_PORT_MAX; portNum++)
     {
-        status = Board_cpsw9gEthConfig(portNum, RGMII);
-        if(status != BOARD_SOK)
+        if ( 0U == portNum ||
+             2U == portNum ||
+             3U == portNum ||
+             7U == portNum )
         {
-            return BOARD_FAIL;
+            status = Board_cpsw9gEthConfig(portNum, RGMII);
         }
-    }
+        else
+        {
+            if (1U == portNum)
+            {
+                status = Board_cpsw9gEthConfig(portNum, QSGMII);
+            }
+            else
+            {
+                status = Board_cpsw9gEthConfig(portNum, QSGMII_SUB);
+            }
+        }
 
-    /* Configures CPSW9G RMII port */
-    status = Board_cpsw9gEthConfig(CPSW9G_RMII_PORTNUM, RMII);
-    if(status != BOARD_SOK)
-    {
-        return BOARD_FAIL;
-    }
-
-    /* Configures SGMII Ethernet */
-    for(portNum=0; portNum<BOARD_SGMII_PORT_MAX; portNum++)
-    {
-        status = Board_sgmiiEthConfig(portNum, QSGMII);
         if(status != BOARD_SOK)
         {
             return BOARD_FAIL;

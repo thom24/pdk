@@ -154,8 +154,9 @@ extern "C" {
 #define BOARD_USER_LED2                                 (7U)
 #define BOARD_USER_LED_IOEXP_PORT                       (2U)
 
-#define BOARD_ICSS_EMAC_PORT_MAX                        (4) 
-#define BOARD_CPSW9G_EMAC_PORT_MAX                      (4) 
+#define BOARD_ICSS_EMAC_PORT_MAX                        (4)
+#define BOARD_CPSW9G_EMAC_PORT_MAX                      (4)
+#define BOARD_CPSW9G_PORT_MAX                           (8)
 
 
 /* ICSS0 EMAC PHY register address */
@@ -201,7 +202,7 @@ extern "C" {
 #define BOARD_ICSS_EMAC_STRAP_STS1_ADDR                (0x6EU)
 #define BOARD_ICSS_EMAC_STRAP_STS2_ADDR                (0x6FU)
 
-#define BOARD_SGMII_PORT_MAX							(4U)
+#define BOARD_SGMII_PORT_MAX                            (4U)
 
 /* MCU_ETH1_RESETn */
 #define BOARD_GPIO_IOEXP_MCU_EMAC_RST_PORT_NUM          (0U) /* WKUP_GPIO0_3 */

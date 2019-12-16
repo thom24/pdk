@@ -41,19 +41,20 @@
 #ifndef _BOARD_ETHERNET_CONFIG_H_
 #define _BOARD_ETHERNET_CONFIG_H_
 
-#include "board.h"
-#include "board_i2c_io_exp.h"
-#include "board_control.h"
+#include <ti/board/board.h>
+#include <ti/board/src/j721e_evm/include/board_i2c_io_exp.h>
+#include <ti/board/src/j721e_evm/include/board_control.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#define CPSW2G_PORTNUM  (5U)
+#define CPSW2G_PORTNUM                  (5U)
 
-#define CPSW9G_RMII_PORTNUM (7U)
+#define CPSW9G_RMII_PORTNUM             (7U)
+#define CPSW9G_SGMII_PORTNUM            (1U)
 
-#define RGMII_ID_DISABLE_MASK (0x10)
+#define RGMII_ID_DISABLE_MASK           (0x10)
 
 typedef struct Board_pruicssMdioInfo
 {
@@ -72,7 +73,9 @@ typedef enum
     RMII,
     RGMII,
     SGMII,
-    QSGMII
+    QSGMII,
+    XFI,
+    QSGMII_SUB
 }emac_mode;
 
 /**
