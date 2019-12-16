@@ -48,23 +48,49 @@
 #include <ti/csl/soc.h>
 #include <ti/csl/hw_types.h>
 #include <ti/csl/cslr.h>
+#include <ti/csl/csl_serdes.h>
+#include <ti/csl/cslr_device.h>
+#include <ti/csl/csl_serdes_pcie.h>
+#include <ti/csl/cslr_pcie.h>
+#include <ti/csl/csl_serdes_ethernet.h>
 
-#include "board.h"
-#include "board_internal.h"
+#include <ti/board/board.h>
+#include <ti/board/src/j721e_evm/include/board_internal.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+
+#define PCIE1X_SERDES_INSTANCE      (0U)
+#define SGMII_SERDES_INSTANCE       (CSL_SIERRA_SERDES0)
+#define PCIE2X_SERDES_INSTANCE      (1U)
+#define PCIEM2_SERDES_INSTANCE      (2U)
+#define USB_SERDES_INSTANCE         (3U)
+#define EDP_SERDES_INSTANCE         (4U)
+
+#define PCIE0_LANE_NUM              (0U)
+#define SGMII_LANE_NUM              (1U)
+
 /**
- *  \brief serdes configurations
+ *  \brief serdes configurations for Sierra 1 in SGMII mode
  *
- *  The function configures the serdes1 module for one lane pcie interface
+ *  The function configures the serdes module for SGMII instance
  *
  * \return   BOARD_SOK in case of success or appropriate error code
  *
  */
-Board_STATUS Board_serdesCfg(void);
+Board_STATUS Board_serdesCfgSgmii(void);
+
+/**
+ *  \brief serdes configurations for Sierra 1 in QSGMII mode
+ *
+ *  The function configures the serdes module for QSGMII instances
+ *
+ * \return   BOARD_SOK in case of success or appropriate error code
+ *
+ */
+Board_STATUS Board_serdesCfgQsgmii(void);
 
 
 #ifdef __cplusplus

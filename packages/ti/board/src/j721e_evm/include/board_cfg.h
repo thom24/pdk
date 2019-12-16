@@ -74,7 +74,7 @@ extern "C" {
 #define BOARD_ICSSG_UART_INSTANCE                       (4U)
 
 /* INFO and GESI board ID EEPROM address */
-#define BOARD_EXP_CON_BOARDID_EEPROM_ADDRS				(0x52U)
+#define BOARD_EXP_CON_BOARDID_EEPROM_ADDRS              (0x52U)
 
 /* I2C instance connected to EEPROM - WKUP I2C0 */
 #define BOARD_I2C_EEPROM_INSTANCE                       (0U)

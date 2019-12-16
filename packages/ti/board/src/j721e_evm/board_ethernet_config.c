@@ -650,20 +650,6 @@ static Board_STATUS Board_icssEthConfig(uint32_t portNum, uint8_t mode)
     return BOARD_SOK;
 }
 
-
-/**
- * \brief  Board specific configurations for SGMII Ethernet
- *
- * This function takes care of configuring the internal delays for
- * SGMII Ethernet PHY
- *
- * \return  BOARD_SOK in case of success or appropriate error code
- */
-static Board_STATUS Board_sgmiiEthConfig(uint32_t portNum, uint8_t mode)
-{
-    return BOARD_SOK;
-}
-
 /**
  * \brief  Configures the CPSW2G Subsytem for RGMII mode
  *

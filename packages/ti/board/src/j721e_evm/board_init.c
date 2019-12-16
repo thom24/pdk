@@ -56,6 +56,7 @@
 #include "board_internal.h"
 #include "board_ethernet_config.h"
 #include "board_utils.h"
+#include "board_serdes_cfg.h"
 #include <ti/drv/sciclient/sciclient.h>
 
 Board_gblObj Board_obj[BOARD_I2C_PORT_CNT] = {
@@ -308,11 +309,6 @@ Board_STATUS Board_init(Board_initCfg cfg)
 
     if (cfg & BOARD_INIT_UART_STDIO)
         ret = Board_uartStdioInit();
-    if (ret != BOARD_SOK)
-        return ret;
-
-    if (cfg & BOARD_INIT_SERDES_PHY)
-        ret = Board_serdesCfg();
     if (ret != BOARD_SOK)
         return ret;
 
