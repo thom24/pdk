@@ -336,6 +336,8 @@ extern pinmuxBoardCfg_t gAM7xMainPinmuxDataInfo[];
 extern pinmuxBoardCfg_t gAM7xWkupPinmuxDataInfo[];
 extern pinmuxBoardCfg_t gAM7xMainPinmuxDataGesiCpsw9g[];
 extern pinmuxBoardCfg_t gAM7xWkupPinmuxDataGesiCpsw9g[];
+extern pinmuxBoardCfg_t gAM7xMainPinmuxDataGesiCpsw9gSgmii[];
+extern pinmuxBoardCfg_t gAM7xMainPinmuxDataGesiCpsw9gQsgmii[];
 extern pinmuxBoardCfg_t gAM7xWkupPinmuxDataHpb[];
 
 #ifdef __cplusplus

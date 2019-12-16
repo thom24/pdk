@@ -341,12 +341,160 @@ static pinmuxPerCfg_t gRgmii2PinCfg[] =
     {PINMUX_END}
 };
 
+static pinmuxPerCfg_t gRgmii7PinCfg[] =
+{
+    /* MyRGMII7 -> RGMII7_RD0 -> AC23 */
+    {
+        PIN_PRG1_PRU0_GPO0, PIN_MODE(9) | \
+        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+    },
+    /* MyRGMII7 -> RGMII7_RD1 -> AG22 */
+    {
+        PIN_PRG1_PRU0_GPO1, PIN_MODE(9) | \
+        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+    },
+    /* MyRGMII7 -> RGMII7_RD2 -> AF22 */
+    {
+        PIN_PRG1_PRU0_GPO2, PIN_MODE(9) | \
+        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+    },
+    /* MyRGMII7 -> RGMII7_RD3 -> AJ23 */
+    {
+        PIN_PRG1_PRU0_GPO3, PIN_MODE(9) | \
+        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+    },
+    /* MyRGMII7 -> RGMII7_RXC -> AD22 */
+    {
+        PIN_PRG1_PRU0_GPO6, PIN_MODE(9) | \
+        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+    },
+    /* MyRGMII7 -> RGMII7_RX_CTL -> AH23 */
+    {
+        PIN_PRG1_PRU0_GPO4, PIN_MODE(9) | \
+        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+    },
+    /* MyRGMII7 -> RGMII7_TD0 -> AF24 */
+    {
+        PIN_PRG1_PRU0_GPO11, PIN_MODE(9) | \
+        ((PIN_PULL_DISABLE) & (~PIN_PULL_DIRECTION & ~PIN_INPUT_ENABLE))
+    },
+    /* MyRGMII7 -> RGMII7_TD1 -> AJ24 */
+    {
+        PIN_PRG1_PRU0_GPO12, PIN_MODE(9) | \
+        ((PIN_PULL_DISABLE) & (~PIN_PULL_DIRECTION & ~PIN_INPUT_ENABLE))
+    },
+    /* MyRGMII7 -> RGMII7_TD2 -> AG24 */
+    {
+        PIN_PRG1_PRU0_GPO13, PIN_MODE(9) | \
+        ((PIN_PULL_DISABLE) & (~PIN_PULL_DIRECTION & ~PIN_INPUT_ENABLE))
+    },
+    /* MyRGMII7 -> RGMII7_TD3 -> AD24 */
+    {
+        PIN_PRG1_PRU0_GPO14, PIN_MODE(9) | \
+        ((PIN_PULL_DISABLE) & (~PIN_PULL_DIRECTION & ~PIN_INPUT_ENABLE))
+    },
+    /* MyRGMII7 -> RGMII7_TXC -> AE24 */
+    {
+        PIN_PRG1_PRU0_GPO16, PIN_MODE(9) | \
+        ((PIN_PULL_DISABLE) & (~PIN_PULL_DIRECTION & ~PIN_INPUT_ENABLE))
+    },
+    /* MyRGMII7 -> RGMII7_TX_CTL -> AC24 */
+    {
+        PIN_PRG1_PRU0_GPO15, PIN_MODE(9) | \
+        ((PIN_PULL_DISABLE) & (~PIN_PULL_DIRECTION & ~PIN_INPUT_ENABLE))
+    },
+    {PINMUX_END}
+};
+
+static pinmuxPerCfg_t gRgmii8PinCfg[] =
+{
+    /* MyRGMII8 -> RGMII8_RD0 -> AE22 */
+    {
+        PIN_PRG1_PRU1_GPO0, PIN_MODE(8) | \
+        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+    },
+    /* MyRGMII8 -> RGMII8_RD1 -> AG23 */
+    {
+        PIN_PRG1_PRU1_GPO1, PIN_MODE(8) | \
+        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+    },
+    /* MyRGMII8 -> RGMII8_RD2 -> AF23 */
+    {
+        PIN_PRG1_PRU1_GPO2, PIN_MODE(8) | \
+        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+    },
+    /* MyRGMII8 -> RGMII8_RD3 -> AD23 */
+    {
+        PIN_PRG1_PRU1_GPO3, PIN_MODE(8) | \
+        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+    },
+    /* MyRGMII8 -> RGMII8_RXC -> AE23 */
+    {
+        PIN_PRG1_PRU1_GPO6, PIN_MODE(8) | \
+        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+    },
+    /* MyRGMII8 -> RGMII8_RX_CTL -> AH24 */
+    {
+        PIN_PRG1_PRU1_GPO4, PIN_MODE(8) | \
+        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+    },
+    /* MyRGMII8 -> RGMII8_TD0 -> AJ25 */
+    {
+        PIN_PRG1_PRU1_GPO11, PIN_MODE(8) | \
+        ((PIN_PULL_DISABLE) & (~PIN_PULL_DIRECTION & ~PIN_INPUT_ENABLE))
+    },
+    /* MyRGMII8 -> RGMII8_TD1 -> AH25 */
+    {
+        PIN_PRG1_PRU1_GPO12, PIN_MODE(8) | \
+        ((PIN_PULL_DISABLE) & (~PIN_PULL_DIRECTION & ~PIN_INPUT_ENABLE))
+    },
+    /* MyRGMII8 -> RGMII8_TD2 -> AG25 */
+    {
+        PIN_PRG1_PRU1_GPO13, PIN_MODE(8) | \
+        ((PIN_PULL_DISABLE) & (~PIN_PULL_DIRECTION & ~PIN_INPUT_ENABLE))
+    },
+    /* MyRGMII8 -> RGMII8_TD3 -> AH26 */
+    {
+        PIN_PRG1_PRU1_GPO14, PIN_MODE(8) | \
+        ((PIN_PULL_DISABLE) & (~PIN_PULL_DIRECTION & ~PIN_INPUT_ENABLE))
+    },
+    /* MyRGMII8 -> RGMII8_TXC -> AJ26 */
+    {
+        PIN_PRG1_PRU1_GPO16, PIN_MODE(8) | \
+        ((PIN_PULL_DISABLE) & (~PIN_PULL_DIRECTION & ~PIN_INPUT_ENABLE))
+    },
+    /* MyRGMII8 -> RGMII8_TX_CTL -> AJ27 */
+    {
+        PIN_PRG1_PRU1_GPO15, PIN_MODE(8) | \
+        ((PIN_PULL_DISABLE) & (~PIN_PULL_DIRECTION & ~PIN_INPUT_ENABLE))
+    },
+    {PINMUX_END}
+};
+
 static pinmuxModuleCfg_t gRgmiiPinCfg[] =
 {
     {3, TRUE, gRgmii3PinCfg},
     {4, TRUE, gRgmii4PinCfg},
     {1, TRUE, gRgmii1PinCfg},
     {2, TRUE, gRgmii2PinCfg},
+    {PINMUX_END}
+};
+
+static pinmuxModuleCfg_t gSgmiiPinCfg[] =
+{
+    {3, TRUE, gRgmii3PinCfg},
+    {4, TRUE, gRgmii4PinCfg},
+    {7, TRUE, gRgmii7PinCfg},
+    {8, TRUE, gRgmii8PinCfg},
+    {PINMUX_END}
+};
+
+static pinmuxModuleCfg_t gQsgmiiPinCfg[] =
+{
+    {1, TRUE, gRgmii1PinCfg},
+    {3, TRUE, gRgmii3PinCfg},
+    {4, TRUE, gRgmii4PinCfg},
+    {8, TRUE, gRgmii8PinCfg},
     {PINMUX_END}
 };
 
@@ -415,6 +563,26 @@ pinmuxBoardCfg_t gAM7xMainPinmuxDataGesiCpsw9g[] =
     {1, gGpioPinCfg},
     {2, gMdioPinCfg},
     {3, gRgmiiPinCfg},
+    {4, gRmiiPinCfg},
+    {PINMUX_END}
+};
+
+pinmuxBoardCfg_t gAM7xMainPinmuxDataGesiCpsw9gSgmii[] =
+{
+    {0, gCpsw9gPinCfg},
+    {1, gGpioPinCfg},
+    {2, gMdioPinCfg},
+    {3, gSgmiiPinCfg},
+    {4, gRmiiPinCfg},
+    {PINMUX_END}
+};
+
+pinmuxBoardCfg_t gAM7xMainPinmuxDataGesiCpsw9gQsgmii[] =
+{
+    {0, gCpsw9gPinCfg},
+    {1, gGpioPinCfg},
+    {2, gMdioPinCfg},
+    {3, gQsgmiiPinCfg},
     {4, gRmiiPinCfg},
     {PINMUX_END}
 };

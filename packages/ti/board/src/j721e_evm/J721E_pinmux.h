@@ -3,16 +3,16 @@
  *
  * \file   J721E_pinmux.h
  *
- * \brief  This file contains pad configure register offsets and bit-field 
+ * \brief  This file contains pad configure register offsets and bit-field
  *         value macros for different configurations,
  *
- *           BIT[21]		TXDISABLE		disable the pin's output driver
- *           BIT[18]		RXACTIVE		enable the pin's input buffer (typically kept enabled)
- *           BIT[17]		PULLTYPESEL		set the iternal resistor pull direction high or low (if enabled)
- *           BIT[16]		PULLUDEN		internal resistor disable (0 = enabled / 1 = disabled)
- *           BIT[3:0]		MUXMODE			select the desired function on the given pin
+ *           BIT[21]        TXDISABLE       disable the pin's output driver
+ *           BIT[18]        RXACTIVE        enable the pin's input buffer (typically kept enabled)
+ *           BIT[17]        PULLTYPESEL     set the iternal resistor pull direction high or low (if enabled)
+ *           BIT[16]        PULLUDEN        internal resistor disable (0 = enabled / 1 = disabled)
+ *           BIT[3:0]       MUXMODE         select the desired function on the given pin
  *
- *  \copyright Copyright (CU) 2019 Texas Instruments Incorporated - 
+ *  \copyright Copyright (CU) 2019 Texas Instruments Incorporated -
  *             http://www.ti.com/
  */
 
@@ -33,20 +33,20 @@ extern "C" {
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
-#define PIN_MODE(mode)	                (mode)
+#define PIN_MODE(mode)                  (mode)
 #define PINMUX_END                      (-1)
 
 /** \brief Active mode configurations */
 /** \brief Resistor enable */
 #define PIN_PULL_DISABLE                (0x1U << 16U)
 /** \brief Pull direction */
-#define	PIN_PULL_DIRECTION              (0x1U << 17U)
+#define PIN_PULL_DIRECTION              (0x1U << 17U)
 /** \brief Receiver enable */
-#define	PIN_INPUT_ENABLE                (0x1U << 18U)
+#define PIN_INPUT_ENABLE                (0x1U << 18U)
 /** \brief Driver disable */
-#define	PIN_OUTPUT_DISABLE              (0x1U << 21U)
+#define PIN_OUTPUT_DISABLE              (0x1U << 21U)
 /** \brief Wakeup enable */
-#define	PIN_WAKEUP_ENABLE               (0x1U << 29U)
+#define PIN_WAKEUP_ENABLE               (0x1U << 29U)
 
 /** \brief Pad config register offset in control module */
 enum pinMainOffsets
@@ -326,7 +326,7 @@ enum pinWkupOffsets
 /*                            Global Variables                                */
 /* ========================================================================== */
 
-/** \brief Pinmux configuration data for the board. Auto-generated from 
+/** \brief Pinmux configuration data for the board. Auto-generated from
            Pinmux tool. */
 extern pinmuxBoardCfg_t gJ721E_MainPinmuxData[];
 extern pinmuxBoardCfg_t gJ721E_WkupPinmuxData[];
@@ -336,6 +336,8 @@ extern pinmuxBoardCfg_t gJ721E_MainPinmuxDataInfo[];
 extern pinmuxBoardCfg_t gJ721E_WkupPinmuxDataInfo[];
 extern pinmuxBoardCfg_t gJ721E_MainPinmuxDataGesiCpsw9g[];
 extern pinmuxBoardCfg_t gJ721E_WkupPinmuxDataGesiCpsw9g[];
+extern pinmuxBoardCfg_t gJ721E_MainPinmuxDataGesiCpsw9gSgmii[];
+extern pinmuxBoardCfg_t gJ721E_MainPinmuxDataGesiCpsw9gQsgmii[];
 extern pinmuxBoardCfg_t gJ721E_WkupPinmuxDataHpb[];
 
 
