@@ -200,6 +200,26 @@ ex02_bios_multicore_echo_test_$(SOC)_CORELIST = $(drvipc_$(SOC)_CORELIST)
 export ex02_bios_multicore_echo_test_$(SOC)_CORELIST
 ipc_EXAMPLE_LIST += ex02_bios_multicore_echo_test
 
+# IPC ex02_bios_multicore_echo_testb - use R5F BTCM
+ex02_bios_multicore_echo_testb_COMP_LIST = ex02_bios_multicore_echo_testb
+ex02_bios_multicore_echo_testb_RELPATH = ti/drv/ipc/examples/ex02_bios_multicore_echo_test/ex02_bios_multicore_echo_testb
+ex02_bios_multicore_echo_testb_PATH = $(PDK_IPC_COMP_PATH)/examples/ex02_bios_multicore_echo_test/ex02_bios_multicore_echo_testb
+ex02_bios_multicore_echo_testb_MAKEFILE = -fmakefile.btcm
+ex02_bios_multicore_echo_testb_BOARD_DEPENDENCY = yes
+ex02_bios_multicore_echo_testb_CORE_DEPENDENCY = yes
+ex02_bios_multicore_echo_testb_XDC_CONFIGURO = yes
+export ex02_bios_multicore_echo_testb_COMP_LIST
+export ex02_bios_multicore_echo_testb_BOARD_DEPENDENCY
+export ex02_bios_multicore_echo_testb_CORE_DEPENDENCY
+export ex02_bios_multicore_echo_testb_XDC_CONFIGURO
+ex02_bios_multicore_echo_testb_PKG_LIST = ex02_bios_multicore_echo_testb
+ex02_bios_multicore_echo_testb_INCLUDE = $(ex02_bios_multicore_echo_testb_PATH)
+ex02_bios_multicore_echo_testb_BOARDLIST = $(drvipc_BOARDLIST)
+export ex02_bios_multicore_echo_testb_BOARDLIST
+ex02_bios_multicore_echo_testb_$(SOC)_CORELIST = $(drvipc_$(SOC)_CORELIST)
+export ex02_bios_multicore_echo_testb_$(SOC)_CORELIST
+ipc_EXAMPLE_LIST += ex02_bios_multicore_echo_testb
+
 # IPC ex03_linux_bios_2core_echo_test
 ex03_linux_bios_2core_echo_test_COMP_LIST = ex03_linux_bios_2core_echo_test
 ex03_linux_bios_2core_echo_test_RELPATH = ti/drv/ipc/examples/ex03_linux_bios_2core_echo_test
