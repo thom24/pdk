@@ -51,30 +51,6 @@ extern "C" {
 #include "ipc_trace.h"
 #endif
 
-#define IPC_VRING_BASEADDR             0xA0000000
-#define SZ_1M                          0x00100000
-
-#define R5F_MEM_RPMSG_VRING0           (IPC_VRING_BASEADDR)
-#define R5F_MEM_RPMSG_VRING1           (R5F_MEM_RPMSG_VRING0+0x10000)
-
-#define MCU1_0_R5F_MEM_RPMSG_VRING0    (IPC_VRING_BASEADDR)
-#define MCU1_0_R5F_MEM_RPMSG_VRING1    (MCU1_0_R5F_MEM_RPMSG_VRING0+0x10000)
-
-#define MCU1_1_R5F_MEM_RPMSG_VRING0    (IPC_VRING_BASEADDR+0x01000000)
-#define MCU1_1_R5F_MEM_RPMSG_VRING1    (MCU1_1_R5F_MEM_RPMSG_VRING0+0x10000)
-
-#define R5F_MEM_IPC_VRING_SIZE         SZ_1M
-#define R5F_NUM_ENTRIES                2
-
-/*
- * Assign fixed RAM addresses to facilitate a fixed MMU table.
- * PHYS_MEM_IPC_VRING & PHYS_MEM_IPC_DATA MUST be together.
- */
-/* See CMA BASE addresses in Linux side: arch/arm/mach-omap2/remoteproc.c */
-#define PHYS_MEM_IPC_VRING             (IPC_VRING_BASEADDR)
-#define MCU1_0_PHYS_MEM_IPC_VRING      (IPC_VRING_BASEADDR)
-#define MCU1_1_PHYS_MEM_IPC_VRING      (MCU1_0_PHYS_MEM_IPC_VRING+0x01000000)
-
 /*
  * Sizes of the virtqueues (expressed in number of buffers supported,
  * and must be power of 2)
@@ -92,6 +68,9 @@ extern "C" {
 extern char xdc_runtime_SysMin_Module_State_0_outbuf__A;
 #define TRACEBUFADDR ((uintptr_t)&xdc_runtime_SysMin_Module_State_0_outbuf__A)
 #endif
+
+#define RPMSG_VRING_ADDR_ANY FW_RSC_ADDR_ANY
+
 const Ipc_ResourceTable ti_ipc_remoteproc_ResourceTable __attribute__ ((section (".resource_table"), aligned (4096))) = 
 {
     1,                   /* we're the first version that implements this */
@@ -112,14 +91,14 @@ const Ipc_ResourceTable ti_ipc_remoteproc_ResourceTable __attribute__ ((section 
     },
     /* the two vrings */
 #if defined (BUILD_MCU1_0)
-    { MCU1_0_R5F_MEM_RPMSG_VRING0, 4096, R5F_RPMSG_VQ0_SIZE, 1, 0 },
-    { MCU1_0_R5F_MEM_RPMSG_VRING1, 4096, R5F_RPMSG_VQ1_SIZE, 2, 0 },
+    { RPMSG_VRING_ADDR_ANY, 4096, R5F_RPMSG_VQ0_SIZE, 1, 0 },
+    { RPMSG_VRING_ADDR_ANY, 4096, R5F_RPMSG_VQ1_SIZE, 2, 0 },
 #elif defined (BUILD_MCU1_1)
-    { MCU1_1_R5F_MEM_RPMSG_VRING0, 4096, R5F_RPMSG_VQ0_SIZE, 1, 0 },
-    { MCU1_1_R5F_MEM_RPMSG_VRING1, 4096, R5F_RPMSG_VQ1_SIZE, 2, 0 },
+    { RPMSG_VRING_ADDR_ANY, 4096, R5F_RPMSG_VQ0_SIZE, 1, 0 },
+    { RPMSG_VRING_ADDR_ANY, 4096, R5F_RPMSG_VQ1_SIZE, 2, 0 },
 #else
-    { R5F_MEM_RPMSG_VRING0, 4096, R5F_RPMSG_VQ0_SIZE, 1, 0 },
-    { R5F_MEM_RPMSG_VRING1, 4096, R5F_RPMSG_VQ1_SIZE, 2, 0 },
+    { RPMSG_VRING_ADDR_ANY, 4096, R5F_RPMSG_VQ0_SIZE, 1, 0 },
+    { RPMSG_VRING_ADDR_ANY, 4096, R5F_RPMSG_VQ1_SIZE, 2, 0 },
 #endif
 
     {

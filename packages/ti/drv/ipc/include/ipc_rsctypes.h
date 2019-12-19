@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011-2016, Texas Instruments Incorporated
+ * Copyright (c) 2011-2020, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -79,6 +79,10 @@ extern "C" {
 #define TYPE_TRACE       2
 /** \brief VDEV type */
 #define TYPE_VDEV        3
+
+/* Linux kernel defines this as (-1), below define avoids compile warnings */
+/** \brief Macro to specify memory needs to be dynamically allocated */
+#define FW_RSC_ADDR_ANY (~0)
 
 /** \brief Number of e ntries */
 #define NUM_ENTRIES      2
