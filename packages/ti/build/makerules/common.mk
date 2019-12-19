@@ -493,7 +493,11 @@ ifeq ($(OS),Windows_NT)
 else
   SBL_CERT_GEN=$(PDK_INSTALL_PATH)/ti/build/makerules/x509CertificateGen.sh
 endif
+ifeq ($(BUILD_HS),yes)
 SBL_CERT_KEY=$(ROOTDIR)/ti/build/makerules/k3_dev_mpk.pem
+else
+SBL_CERT_KEY=$(ROOTDIR)/ti/build/makerules/rom_degenerateKey.pem
+endif
 ifeq ($(BUILD_PROFILE_$(CORE)),release)
   SBL_MLO_PATH=$(BINDIR)/MLO$(HS_SUFFIX)
   SBL_MLO_PATH_SIGNED=$(BINDIR)/MLO
@@ -602,7 +606,10 @@ endif
 
 ifeq ($(BUILD_HS),yes)
 $(SBL_IMAGE_PATH_SIGNED): $(SBL_IMAGE_PATH)
+  # K3 build does not support the "secure_sign_sbl" target
+  ifneq ($(SOC), $(filter $(SOC), am65xx am64x j721e j7200))
 	$(MAKE) secure_sign_sbl
+  endif
 endif
 
 secure_sign_sbl:

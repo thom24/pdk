@@ -76,6 +76,10 @@ LIMIT_SOCS_j7        = j721e j7200
 
 export LIMIT_SOCS ?= $(LIMIT_SOCS_$(PDK_SOC))
 
+ifeq ($(findstring hs,$(PDK_SOC)),hs)
+export BUILD_HS ?= yes
+endif
+
 LIMIT_BOARDS_j7        = $(BOARD_LIST_j721e) $(BOARD_LIST_j7200)
 LIMIT_BOARDS_am335x    = $(BOARD_LIST_am335x)
 LIMIT_BOARDS_omapl137  = $(BOARD_LIST_omapl137)
