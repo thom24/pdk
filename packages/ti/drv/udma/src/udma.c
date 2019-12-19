@@ -73,7 +73,8 @@
 
 int32_t Udma_init(Udma_DrvHandle drvHandle, const Udma_InitPrms *initPrms)
 {
-    int32_t             retVal = UDMA_SOK;
+    int32_t                             retVal = UDMA_SOK;
+    struct tisci_msg_rm_proxy_cfg_req   req;
 
     if((drvHandle == NULL_PTR) || (initPrms == NULL_PTR))
     {
@@ -112,6 +113,19 @@ int32_t Udma_init(Udma_DrvHandle drvHandle, const Udma_InitPrms *initPrms)
             if(UDMA_SOK != retVal)
             {
                 Udma_printf(drvHandle, "[Error] RM init failed!!!\n");
+            }
+        }
+
+        if(UDMA_SOK == retVal)
+        {
+            /* Setup channelized firewall for default core proxy */
+            req.valid_params = 0U;
+            req.nav_id       = drvHandle->devIdProxy;
+            req.index        = drvHandle->initPrms.rmInitPrms.proxyThreadNum;
+            retVal = Sciclient_rmSetProxyCfg(&req, UDMA_SCICLIENT_TIMEOUT);
+            if(UDMA_SOK != retVal)
+            {
+                Udma_printf(drvHandle, "[Error] SciClient Set proxy config failed!!!\n");
             }
         }
 

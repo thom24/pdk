@@ -207,6 +207,12 @@ typedef struct
      *   Also this should be set a unique number across core and NAVSS
      *   instance. Care should be taken not to use the same proxy across
      *   the system.
+     *
+     *   Warning: When using multiple UDMA handle for the same NAVSS instance
+     *   within a core, care should taken to provide a unique proxy number
+     *   per handle. Otherwise the the driver handle will use the same
+     *   proxy for ring operation and will result in unintended behaviour and
+     *   corruption of ring memory/operation.
      */
     uint32_t                startC7xCoreIntr;
     /**< Start C7x core interrupt from which this UDMA driver instance manages.
