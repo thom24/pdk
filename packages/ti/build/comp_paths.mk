@@ -97,6 +97,8 @@ PDK_IPC_ROOT_PATH ?= $(pdk_PATH)
 export PDK_IPC_COMP_PATH = $(pdk_PATH)/ti/drv/ipc
 PDK_CPSW_ROOT_PATH ?= $(pdk_PATH)
 export PDK_CPSW_COMP_PATH = $(PDK_CPSW_ROOT_PATH)/ti/drv/cpsw
+PDK_CSITX_ROOT_PATH ?= $(pdk_PATH)
+export PDK_CSITX_COMP_PATH = $(PDK_CSITX_ROOT_PATH)/ti/drv/csitx
 
 #Below applicable only for K3 DMSC; not applicable for PRSDK
 DMSC_ROOT_PATH ?= $(pdk_PATH)
