@@ -105,41 +105,34 @@ extern "C" {
 /* Virtual Address used for C66x to access j7_c66_interrupt_router */
 #define IPC_C66X_INTR_VA_BASE    (0x18000000U)
 
-/* C66x_1/2 intr_router phy address */
-#define IPC_C66X_1_INTR_PA_BASE    (CSL_C66SS0_INTROUTER0_INTR_ROUTER_CFG_BASE)
-#define IPC_C66X_2_INTR_PA_BASE    (CSL_C66SS1_INTROUTER0_INTR_ROUTER_CFG_BASE)
+/* Sclient does not configure RAT, so it must
+ * be done C66x core
+ * RAT configuration for C66x_1 and C66x_2 */
+#define   IPC_C66X_1_INTR_PA_BASE     (CSL_C66SS0_INTROUTER0_INTR_ROUTER_CFG_BASE)
+#define   IPC_C66X_2_INTR_PA_BASE     (CSL_C66SS1_INTROUTER0_INTR_ROUTER_CFG_BASE)
+#define   C66X1_MBINTR_INPUT_BASE     (74U)
+#define   C66X1_MBINTR_OFFSET         (84U)
+#define   C66X1_MBINTR_OUTPUT_BASE    (96U)
+#define   C66X2_MBINTR_INPUT_BASE     (74U)
+#define   C66X2_MBINTR_OUTPUT_BASE    (96U)
+#define   C66X2_MBINTR_OFFSET         (84U)
 
-/* CPU local interrupt Number */
-#define    MPU1_0_MBINTR_OFFSET             (726U)
-#define    MCU1R5F0_MBINTR_OFFSET           (376U)
-#define    MCU1R5F1_MBINTR_OFFSET           (380U)
-#define    MCU2R5F0_MBINTR_OFFSET           (248U)
-#define    MCU2R5F1_MBINTR_OFFSET           (248U)
-#define    MCU3R5F0_MBINTR_OFFSET           (248U)
-#define    MCU3R5F1_MBINTR_OFFSET           (248U)
+/* Request Sciclient for available resource in group2 NavSS
+ * For C7x, DMSC does not configure or map CLEC router
+ * it must be done by C7x software.
+ * StartEvent = 672 (CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_ROUTER_0_OUTL_INTR_128)
+ * ClecEvent  = 1664 corresponds to 672
+ */
+#define   C7X_CLEC_BASE_ADDR              (CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE)
 
-/* C66x Corepack Event */
-#define    C66X1_MBINTR_OFFSET               (84U)
-#define    C66X2_MBINTR_OFFSET               (84U)
+/* Base NAVSS event from group 2 */
+#define   IPC_C7X_COMPUTE_CLUSTER_OFFSET  (CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_ROUTER_0_OUTL_INTR_128)
 
-#define    C7X1_MBINTR_OFFSET                (51U)
-#define    IPC_C7X_COMPUTE_CLUSTER_OFFSET    (CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_ROUTER_0_OUTL_INTR_128)
+/* CLEC event corresponding to Base NAVSS event */
+#define   C7X1_CLEC_BASE_GR2_NAVSS        (1664U)
 
-#define    C66X1_MBINTR_INPUT_BASE           (74U)
-#define    C66X2_MBINTR_INPUT_BASE           (74U)
-
-/* Input to C66x Interrupt Router */
-#define    C66X1_MBINTR_OUTPUT_BASE          (96U)
-#define    C66X2_MBINTR_OUTPUT_BASE          (96U)
-
-#ifdef IPC_SUPPORT_SCICLIENT
-#define    C7X1_MBINTR_OUTPUT_BASE         (1715U)
-#else
-#define    C7X1_MBINTR_OUTPUT_BASE         (1724U)
-#endif
-
-#define    C7X_CLEC_BASE_ADDR              (CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE)
-
+/* User selected IRQ number */
+#define   C7X1_MBINTR_OFFSET              (51U)
 
 /* ========================================================================== */
 /*                             Include Files                                  */
@@ -178,6 +171,8 @@ int32_t Ipc_sciclientIrqRelease(uint16_t remoteId, uint32_t clusterId,
         uint32_t userId, uint32_t intNumber);
 int32_t Ipc_sciclientIrqSet(uint16_t remoteId, uint32_t clusterId,
         uint32_t userId, uint32_t intNumber);
+int32_t Ipc_getIntNumRange(uint32_t coreIndex, uint16_t *rangeStartP,
+        uint16_t *rangeNumP);
 #endif
  
 /* ========================================================================== */

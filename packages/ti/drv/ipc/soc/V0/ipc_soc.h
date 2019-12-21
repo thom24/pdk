@@ -63,30 +63,23 @@ extern "C" {
 #define    IPC_MCU1_1           (2)    /**< ARM MCU  R5F - core1 */
 #define    IPC_MAX_PROCS        (3)    /**< Maximum Processors */
 
-#define    IPC_MAILBOX_CLUSTER_CNT              (12)
-#define    IPC_MAILBOX_USER_CNT                  (4)
-#define    MAIN_NAVSS_MAILBOX_INPUTINTR_MAX    (440)
-#define    MAIN_NAVSS_MAILBOX_OUTPUTINTR_MAX   (512)
+#define    IPC_MAILBOX_CLUSTER_CNT              (12U)
+#define    IPC_MAILBOX_USER_CNT                  (4U)
+#define    MAIN_NAVSS_MAILBOX_INPUTINTR_MAX    (440U)
+#define    MAIN_NAVSS_MAILBOX_OUTPUTINTR_MAX   (512U)
 
 #define IPC_MCU_NAVSS0_INTR0_CFG_BASE    (CSL_NAVSS0_INTR0_INTR_ROUTER_CFG_BASE)
 
 /* Refer to Maxwell TRM (section 10.1.1.3) - NAVSS Integration */
 #define    NAVSS512_MPU1_0_OUTPUT_OFFSET                   (112)
+#define    NAVSS512_MCU1R5F0_OUTPUT_OFFSET                 (120)
+#define    NAVSS512_MCU1R5F1_OUTPUT_OFFSET                 (121)
 
-#define    NAVSS512_MCU1R5F0_OUTPUT_OFFSET                  (120)
-#define    NAVSS512_MCU1R5F1_OUTPUT_OFFSET                  (121)
+#define    MAIN2MCU0_INTR_ROUTER_INPUT_BASE                (184)
+#define    MAIN2MCU1_INTR_ROUTER_INPUT_BASE                (186)
 
-#define    MAIN2MCU0_INTR_ROUTER_INPUT_BASE                 (184)
-#define    MAIN2MCU1_INTR_ROUTER_INPUT_BASE                 (186)
-
-#define    MAIN2MCU0_INTR_ROUTER_OUTPUT_BASE                 (0)
-#define    MAIN2MCU1_INTR_ROUTER_OUTPUT_BASE                 (1)
-
-/* CPU local interrupt Number */
-#define    MPU1_0_MBINTR_OFFSET             (496)
-
-#define    MCU1R5F0_MBINTR_OFFSET           (160)
-#define    MCU1R5F1_MBINTR_OFFSET           (162)
+#define    MAIN2MCU0_INTR_ROUTER_OUTPUT_BASE               (0)
+#define    MAIN2MCU1_INTR_ROUTER_OUTPUT_BASE               (1)
 
 /* ========================================================================== */
 /*                             Include Files                                  */
@@ -113,10 +106,12 @@ extern "C" {
 /* ========================================================================== */
 
 #ifdef IPC_SUPPORT_SCICLIENT
-int32_t Ipc_sciclientIrqRelease(uint16_t remoteId, int32_t clusterId,
-        int32_t userId, uint32_t intNumber);
-int32_t Ipc_sciclientIrqSet(uint16_t remoteId, int32_t clusterId, int32_t userId,
-            uint32_t intNumber);
+int32_t Ipc_sciclientIrqRelease(uint16_t remoteId, uint32_t clusterId,
+        uint32_t userId, uint32_t intNumber);
+int32_t Ipc_sciclientIrqSet(uint16_t remoteId, uint32_t clusterId,
+        uint32_t userId, uint32_t intNumber);
+int32_t Ipc_getIntNumRange(uint32_t coreIndex, uint16_t *rangeStartP,
+        uint16_t *rangeNumP);
 #endif
  
 int32_t Ipc_main2mcu_intRouter(Ipc_MbConfig *cfg);

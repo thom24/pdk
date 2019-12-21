@@ -57,10 +57,7 @@
 #include <ti/sysbios/family/c7x/Mmu.h>
 #endif
 
-#ifdef IPC_SUPPORT_SCICLIENT
 #include <ti/drv/sciclient/sciclient.h>
-#endif
-
 #include <ti/board/board.h>
 
 /* ========================================================================== */
@@ -93,7 +90,6 @@ extern int32_t Ipc_echo_test(void);
 /* ========================================================================== */
 
 
-#ifdef IPC_SUPPORT_SCICLIENT
 void ipc_initSciclient()
 {
     Sciclient_ConfigPrms_t        config;
@@ -118,7 +114,6 @@ void ipc_boardInit()
     Board_init(boardCfg);
 
 }
-#endif
 
 int main(void)
 {
@@ -126,14 +121,10 @@ int main(void)
     Error_Block eb;
     Task_Params taskParams;
 
-#ifdef IPC_SUPPORT_SCICLIENT
-
     /* It must be called before board init */
     ipc_initSciclient();
 
     ipc_boardInit();
-
-#endif
 
     Error_init(&eb);
 

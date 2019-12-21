@@ -171,6 +171,9 @@ void *Mailbox_plugInterrupt(Ipc_MbConfig *cfg, Ipc_OsalIsrFxn func, uintptr_t ar
      **/
 #if defined(BUILD_C7X_1)
     Ipc_configClecRouter(cfg->eventId );
+
+    cfg->eventId = (cfg->eventId - IPC_C7X_COMPUTE_CLUSTER_OFFSET) + C7X1_MBINTR_OFFSET;
+
 #endif
 
     /* Register interrupts */

@@ -42,7 +42,7 @@ ifeq ($(SOC),$(filter $(SOC), j721e))
 endif
 
 ifeq ($(SOC),$(filter $(SOC), am65xx))
-  CFLAGS_LOCAL_COMMON += -DIPC_EXCLUDE_POLLED_RX -DMAILBOX_INTERRUPT_MODE
+  CFLAGS_LOCAL_COMMON += -DIPC_SUPPORT_SCICLIENT -DIPC_EXCLUDE_POLLED_RX -DMAILBOX_INTERRUPT_MODE
 endif
  
 #Temporarily adding it until we have official support of C7x in Bios
