@@ -163,7 +163,7 @@ filename, ((csize + 3U)/4U) * 4U, arrName);
     }
     printf("\\\n} /* %d bytes */", csize );
     printf("\n");
-    fprintf(stderr, " Done. (%d bytes)", size);
+    fprintf(stderr, " Done. (%d bytes)\r\n", size);
 
     if(csize!=size)
     {
