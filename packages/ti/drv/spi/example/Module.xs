@@ -59,4 +59,10 @@ function modBuild()
     var mkFiles = libUtility.listAllFiles (".xs", "example", true);
     for (var k = 0 ; k < mkFiles.length; k++)
         Pkg.otherFiles[Pkg.otherFiles.length++] = mkFiles[k];
+
+    /* Add all the .lds files to the release package. */
+    var mkFiles = libUtility.listAllFiles (".lds", "example", true);
+    for (var k = 0 ; k < mkFiles.length; k++)
+        Pkg.otherFiles[Pkg.otherFiles.length++] = mkFiles[k];
+
 }
