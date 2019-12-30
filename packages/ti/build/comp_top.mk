@@ -53,12 +53,33 @@ TARGETS_SOC_BOARD_INDP      = tar help doxygen xdc_meta
 
 .PHONY : $(TARGETS_FOR_MULT_SOC_BOARDS) $(TARGETS_SOC_BOARD_INDP) release package
 
+# If LIMIT_SOCS is undefined, use the default component's SOC LIST defined in <comp>_component.mk
+ifdef LIMIT_SOCS
+  SOC_LIST_ALL = $(LIMIT_SOCS)
+else
+  SOC_LIST_ALL = $($(COMP)_SOCLIST)
+endif
+
+# If LIMIT_CORES is undefined, use the default component's _CORELIST defined in <comp>_component.mk
+ifdef LIMIT_CORES
+  CORE_LIST_ALL = $(LIMIT_CORES)
+else
+  CORE_LIST_ALL = $(foreach SOC,$(SOC_LIST_ALL),$($(COMP)_$(SOC)_CORELIST))
+endif
+
+# If LIMIT_BOARDS is undefined, use the default BOARDLIST defined in platform.mk
+ifdef LIMIT_BOARDS
+  BOARD_LIST_ALL = $(LIMIT_BOARDS)
+else
+  BOARD_LIST_ALL = $(foreach SOC,$(SOC_LIST_ALL),$(BOARD_LIST_$(SOC)))
+endif
+
 # Invoke the ti/build/makefile with {BOARD,CORE,SOC} and COMP name
 # For each SOC, build the BOARD,CORE combination for each relevant BOARD,SOC for that SOC
 $(TARGETS_FOR_MULT_SOC_BOARDS):
-	$(foreach current_soc, $(LIMIT_SOCS),\
-	$(foreach current_board, $(filter $(LIMIT_BOARDS),$(BOARD_LIST_$(current_soc))), \
-	$(foreach current_core, $(filter $(LIMIT_CORES), $(filter-out $(PRUCORE_LIST),$(CORE_LIST_$(current_soc)))),\
+	$(foreach current_soc, $(SOC_LIST_ALL),\
+	$(foreach current_board, $(filter $(BOARD_LIST_ALL),$(BOARD_LIST_$(current_soc))), \
+	$(foreach current_core, $(filter $(CORE_LIST_ALL), $(filter-out $(PRUCORE_LIST),$(CORE_LIST_$(current_soc)))),\
 	$(MAKE) -f $(PDK_INSTALL_PATH)/ti/build/makefile $@ COMP=$(COMP) CORE=$(current_core) BOARD=$(current_board) SOC=$(current_soc);\
 	)))
 
