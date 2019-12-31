@@ -1474,13 +1474,15 @@ Device: :ref:`J721E_DEV_C66SS0_CORE0 <soc_doc_j721e_public_devices_desc_device_l
 
 Following is a mapping of Clocks IDs to function:
 
-+------------+-----------------------------------+--------------+
-|   Clock ID | Name                              | Function     |
-+============+===================================+==============+
-|          0 | DEV_C66SS0_CORE0_GEM_TRC_CLK      | Input clock  |
-+------------+-----------------------------------+--------------+
-|          1 | DEV_C66SS0_CORE0_GEM_CLK2_OUT_CLK | Output clock |
-+------------+-----------------------------------+--------------+
++------------+------------------------------------+--------------+
+|   Clock ID | Name                               | Function     |
++============+====================================+==============+
+|          0 | DEV_C66SS0_CORE0_GEM_TRC_CLK       | Input clock  |
++------------+------------------------------------+--------------+
+|          1 | DEV_C66SS0_CORE0_GEM_CLK2_OUT_CLK  | Output clock |
++------------+------------------------------------+--------------+
+|          4 | DEV_C66SS0_CORE0_GEM_PBIST_ROM_CLK | Output clock |
++------------+------------------------------------+--------------+
 
 .. _soc_doc_j721e_public_clks_c66ss0_introuter0:
 
@@ -1498,6 +1500,14 @@ Following is a mapping of Clocks IDs to function:
 |          0 | DEV_C66SS0_INTROUTER0_INTR_CLK | Input clock |
 +------------+--------------------------------+-------------+
 
+.. _soc_doc_j721e_public_clks_c66ss0_pbist0:
+
+
+Clocks for C66SS0_PBIST0 Device
+-------------------------------
+
+**This device has no defined clocks.**
+
 .. _soc_doc_j721e_public_clks_c66ss1_core0:
 
 
@@ -1508,13 +1518,15 @@ Device: :ref:`J721E_DEV_C66SS1_CORE0 <soc_doc_j721e_public_devices_desc_device_l
 
 Following is a mapping of Clocks IDs to function:
 
-+------------+-----------------------------------+--------------+
-|   Clock ID | Name                              | Function     |
-+============+===================================+==============+
-|          0 | DEV_C66SS1_CORE0_GEM_TRC_CLK      | Input clock  |
-+------------+-----------------------------------+--------------+
-|          1 | DEV_C66SS1_CORE0_GEM_CLK2_OUT_CLK | Output clock |
-+------------+-----------------------------------+--------------+
++------------+------------------------------------+--------------+
+|   Clock ID | Name                               | Function     |
++============+====================================+==============+
+|          0 | DEV_C66SS1_CORE0_GEM_TRC_CLK       | Input clock  |
++------------+------------------------------------+--------------+
+|          1 | DEV_C66SS1_CORE0_GEM_CLK2_OUT_CLK  | Output clock |
++------------+------------------------------------+--------------+
+|          4 | DEV_C66SS1_CORE0_GEM_PBIST_ROM_CLK | Output clock |
++------------+------------------------------------+--------------+
 
 .. _soc_doc_j721e_public_clks_c66ss1_introuter0:
 
@@ -1531,6 +1543,14 @@ Following is a mapping of Clocks IDs to function:
 +============+================================+=============+
 |          0 | DEV_C66SS1_INTROUTER0_INTR_CLK | Input clock |
 +------------+--------------------------------+-------------+
+
+.. _soc_doc_j721e_public_clks_c66ss1_pbist0:
+
+
+Clocks for C66SS1_PBIST0 Device
+-------------------------------
+
+**This device has no defined clocks.**
 
 .. _soc_doc_j721e_public_clks_c71ss0:
 
@@ -1567,6 +1587,14 @@ Following is a mapping of Clocks IDs to function:
 +------------+-----------------------------+-------------+
 |          1 | DEV_C71SS0_MMA_MMA_CLK      | Input clock |
 +------------+-----------------------------+-------------+
+
+.. _soc_doc_j721e_public_clks_c71x_0_pbist_vd:
+
+
+Clocks for C71X_0_PBIST_VD Device
+---------------------------------
+
+**This device has no defined clocks.**
 
 .. _soc_doc_j721e_public_clks_cmpevent_intrtr0:
 
@@ -3371,6 +3399,14 @@ Following is a mapping of Clocks IDs to function:
 +------------+----------------------------------------------------------------------+-------------------------------------------------+
 |          7 | DEV_GPMC0_PO_GPMC_DEV_CLK                                            | Output clock                                    |
 +------------+----------------------------------------------------------------------+-------------------------------------------------+
+
+.. _soc_doc_j721e_public_clks_gpu0_dft_pbist_0:
+
+
+Clocks for GPU0_DFT_PBIST_0 Device
+----------------------------------
+
+**This device has no defined clocks.**
 
 .. _soc_doc_j721e_public_clks_gpu0_gpucore_0:
 
@@ -6094,6 +6130,22 @@ Following is a mapping of Clocks IDs to function:
 |          0 | DEV_MCU_NAVSS0_UDMASS_VD2CLK | Input clock |
 +------------+------------------------------+-------------+
 
+.. _soc_doc_j721e_public_clks_mcu_pbist0:
+
+
+Clocks for MCU_PBIST0 Device
+----------------------------
+
+**This device has no defined clocks.**
+
+.. _soc_doc_j721e_public_clks_mcu_pbist1:
+
+
+Clocks for MCU_PBIST1 Device
+----------------------------
+
+**This device has no defined clocks.**
+
 .. _soc_doc_j721e_public_clks_mcu_r5fss0_core0:
 
 
@@ -7187,6 +7239,86 @@ Following is a mapping of Clocks IDs to function:
 
 Clocks for NAVSS_MCU_J7_MCU_0 Device
 ------------------------------------
+
+**This device has no defined clocks.**
+
+.. _soc_doc_j721e_public_clks_pbist0:
+
+
+Clocks for PBIST0 Device
+------------------------
+
+**This device has no defined clocks.**
+
+.. _soc_doc_j721e_public_clks_pbist1:
+
+
+Clocks for PBIST1 Device
+------------------------
+
+**This device has no defined clocks.**
+
+.. _soc_doc_j721e_public_clks_pbist10:
+
+
+Clocks for PBIST10 Device
+-------------------------
+
+**This device has no defined clocks.**
+
+.. _soc_doc_j721e_public_clks_pbist2:
+
+
+Clocks for PBIST2 Device
+------------------------
+
+**This device has no defined clocks.**
+
+.. _soc_doc_j721e_public_clks_pbist3:
+
+
+Clocks for PBIST3 Device
+------------------------
+
+**This device has no defined clocks.**
+
+.. _soc_doc_j721e_public_clks_pbist4:
+
+
+Clocks for PBIST4 Device
+------------------------
+
+**This device has no defined clocks.**
+
+.. _soc_doc_j721e_public_clks_pbist5:
+
+
+Clocks for PBIST5 Device
+------------------------
+
+**This device has no defined clocks.**
+
+.. _soc_doc_j721e_public_clks_pbist6:
+
+
+Clocks for PBIST6 Device
+------------------------
+
+**This device has no defined clocks.**
+
+.. _soc_doc_j721e_public_clks_pbist7:
+
+
+Clocks for PBIST7 Device
+------------------------
+
+**This device has no defined clocks.**
+
+.. _soc_doc_j721e_public_clks_pbist9:
+
+
+Clocks for PBIST9 Device
+------------------------
 
 **This device has no defined clocks.**
 

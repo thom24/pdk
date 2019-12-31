@@ -192,11 +192,12 @@ static int32_t setPLLClk(uint32_t modId, uint32_t clkId, uint64_t clkRate);
 int32_t main(void)
 {
     Board_initCfg           boardCfg;
-
+    
     boardCfg = BOARD_INIT_PINMUX_CONFIG |
                BOARD_INIT_UART_STDIO;
     Board_init(boardCfg);
     App_getRevisionTest();
+
     return 0;
 }
 
@@ -214,12 +215,13 @@ static int32_t App_getRevisionTest(void)
     };
 
     #if defined (BUILD_MCU1_0 )
+    struct tisci_msg_version_req req = {0};
     const Sciclient_ReqPrm_t      reqPrm =
     {
         TISCI_MSG_VERSION,
         TISCI_MSG_FLAG_AOP,
-        NULL,
-        0,
+        (const uint8_t *)&req,
+        sizeof(req),
         SCICLIENT_SERVICE_WAIT_FOREVER
     };
     #endif

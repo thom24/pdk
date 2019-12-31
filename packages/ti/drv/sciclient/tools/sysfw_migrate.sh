@@ -83,6 +83,7 @@ $RM .gitignore
 $RM .gitmodules
 $RM Makefile
 $RM README.md
+$RM binaries/SYSFW_Software_FMEA_Form.xls
 cd $SCRIPT_DIR
 git add $SCI_CLIENT_DIR/soc/sysfw
 git commit -m "Migratiing to SYSFW version $RELEASE_TAG"
