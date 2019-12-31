@@ -93,16 +93,14 @@ function connectTargets()
     sysResetVar=dsDMSC_0.target.getResetType(1);
     sysResetVar.issueReset();
     print("Connecting to DMSC_Cortex_M3_0!");
-
-    /*The CCXML file automatically loads the GEL for now*/
-
-    // if (disableGelLoad == 0)
-    // {
-    //     // Load the GEL. This can be removed if the GEL is already linked with the target ccxml
-    //     dsDMSC_0.expression.evaluate('GEL_LoadGel("'+gelFilePath+'/J7_SVB.gel")');
-    // }
     // Connect targets
     dsDMSC_0.target.connect();
+    print("Fill R5F ATCM memory...");
+    dsDMSC_0.memory.fill(0x61000000, 0, 0x2000, 0);
+    print("Writing While(1) for R5F")
+    dsDMSC_0.memory.writeWord(0, 0x61000000, 0xE59FF004); /* ldr        pc, [pc, #4] */
+    dsDMSC_0.memory.writeWord(0, 0x61000004, 0x38);       /* Address 0x38 */
+    dsDMSC_0.memory.writeWord(0, 0x61000038, 0xEAFFFFFE) /* b          #0x38 */
     print("Loading DMSC Firmware ... " + sysfw_bin);
     // Load the DMSC firmware
     dsDMSC_0.memory.loadRaw(0, 0x40000, sysfw_bin, 32, false);
@@ -138,10 +136,10 @@ function connectTargets()
 function disconnectTargets()
 {
     updateScriptVars();
-    // Disconnect targets
-    //dsDMSC_0.target.disconnect();
     // Reset the R5F to be in clean state.
-    //dsMCU1_0.target.reset();
+    dsMCU1_0.target.reset();
+    // Disconnect targets
+    dsDMSC_0.target.disconnect();
 }
 
 function doEverything()
