@@ -794,12 +794,12 @@ static pinmuxPerCfg_t gUart8PinCfg[] =
 {
     /* MyUART1 -> UART8_RXD -> Y24 */
     {
-        PIN_PRG0_PRU1_GPO9, PIN_MODE(1) | \
+        PIN_PRG0_PRU1_GPO9, PIN_MODE(14) | \
         ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
     },
     /* MyUART1 -> UART8_TXD -> AA25 */
     {
-        PIN_PRG0_PRU1_GPO10, PIN_MODE(1) | \
+        PIN_PRG0_PRU1_GPO10, PIN_MODE(14) | \
         ((PIN_PULL_DISABLE) & (~PIN_PULL_DIRECTION & ~PIN_INPUT_ENABLE))
     },
     {PINMUX_END}

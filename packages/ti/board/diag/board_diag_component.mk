@@ -506,6 +506,26 @@ export led_board_diag_$(SOC)_CORELIST
 export led_board_diag_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
 board_diag_EXAMPLE_LIST += led_board_diag
 
+# LIN
+lin_board_diag_COMP_LIST = lin_board_diag
+lin_board_diag_RELPATH = ti/board/diag/lin/build
+lin_board_diag_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/lin/build
+lin_board_diag_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
+lin_board_diag_MAKEFILE = -f makefile
+lin_board_diag_BOARD_DEPENDENCY = yes
+lin_board_diag_CORE_DEPENDENCY = yes
+export lin_board_diag_COMP_LIST
+export lin_board_diag_BOARD_DEPENDENCY
+export lin_board_diag_CORE_DEPENDENCY
+export lin_board_diag_MAKEFILE
+lin_board_diag_PKG_LIST = lin_board_diag
+lin_board_diag_INCLUDE = $(lin_board_diag_PATH)
+lin_board_diag_BOARDLIST = $(board_diag_$(SOC)_BOARDLIST)
+lin_board_diag_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
+export lin_board_diag_$(SOC)_CORELIST
+export lin_board_diag_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
+board_diag_EXAMPLE_LIST += lin_board_diag
+
 # MCAN
 mcan_board_diag_COMP_LIST = mcan_board_diag
 mcan_board_diag_RELPATH = ti/board/diag/mcan/build
