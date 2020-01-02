@@ -195,6 +195,9 @@ endif
 ifneq ($(PDK_CSIRX_ROOT_PATH), $(pdk_PATH))
   pdk_INCLUDE += $(PDK_CSIRX_ROOT_PATH)
 endif
+ifneq ($(PDK_CSITX_ROOT_PATH), $(pdk_PATH))
+  pdk_INCLUDE += $(PDK_CSITX_ROOT_PATH)
+endif
 ifneq ($(PDK_DSS_ROOT_PATH), $(pdk_PATH))
   pdk_INCLUDE += $(PDK_DSS_ROOT_PATH)
 endif
@@ -261,7 +264,7 @@ ifeq ($(OS),Windows_NT)
     MAKE = $(xdc_PATH)/gmake
   else
     MAKE = gmake
-  endif  
+  endif
 else
   MAKE = make
 endif
