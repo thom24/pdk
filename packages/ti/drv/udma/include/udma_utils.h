@@ -95,7 +95,7 @@ extern "C" {
 /**
  *  \brief UDMA get ring size utility API.
  *
- *  \param mode         [IN] Ring mode. Refer \ref tisci_msg_value_rm_ring_mode
+ *  \param mode         [IN] Ring mode. Refer \ref tisci_msg_rm_ring_cfg_req::mode
  *  \param elemCnt      [IN] Ring element count.
  *  \param elemSize     [IN] Ring element size. Refer \ref Udma_RingElemSize
  *

@@ -142,7 +142,7 @@ typedef struct
      *   #UDMA_RING_SIZE_CHECK_SKIP by #UdmaRingPrms_init API to enable
      *   backward combatibility when this is not set rightly by the caller */
     uint8_t                 mode;
-    /**< Ring mode. Refer \ref tisci_msg_value_rm_ring_mode */
+    /**< Ring mode. Refer \ref tisci_msg_rm_ring_cfg_req::mode */
     uint32_t                elemCnt;
     /**< Ring element count.
      *      Set to queue depth of the ring.
