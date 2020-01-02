@@ -225,6 +225,26 @@ ifneq ($(wildcard $(PDK_CPSW_COMP_PATH)),)
 board_diag_EXAMPLE_LIST += cpsw_board_diag
 endif
 
+# csirx
+csirx_board_diag_COMP_LIST = csirx_board_diag
+csirx_board_diag_RELPATH = ti/board/diag/csirx/build
+csirx_board_diag_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/csirx/build
+csirx_board_diag_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
+csirx_board_diag_MAKEFILE = -f makefile
+csirx_board_diag_BOARD_DEPENDENCY = yes
+csirx_board_diag_CORE_DEPENDENCY = yes
+export csirx_board_diag_COMP_LIST
+export csirx_board_diag_BOARD_DEPENDENCY
+export csirx_board_diag_CORE_DEPENDENCY
+export csirx_board_diag_MAKEFILE
+csirx_board_diag_PKG_LIST = csirx_board_diag
+csirx_board_diag_INCLUDE = $(csirx_board_diag_PATH)
+csirx_board_diag_BOARDLIST = $(board_diag_$(SOC)_BOARDLIST)
+csirx_board_diag_$(SOC)_CORELIST = mcu2_1
+export csirx_board_diag_$(SOC)_CORELIST
+export csirx_board_diag_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
+board_diag_EXAMPLE_LIST += csirx_board_diag
+
 
 # CURRENT MONITOR
 currentMonitor_board_diag_COMP_LIST = currentMonitor_board_diag
