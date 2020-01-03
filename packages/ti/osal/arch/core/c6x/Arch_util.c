@@ -101,6 +101,19 @@ void OsalArch_globalRestoreInterrupt (uintptr_t restoreValue)
     (void)_restore_interrupts(restoreValue);
 }
 
+/* Below function initializes the intc module,
+   this is needed only once per start */
+void OsalArch_oneTimeInit(void)
+{
+     if (gFirstTime == (bool)false) {
+         /* record the index in the handle */
+         gContext.numEvtEntries      = (Uint16)OSAL_NONOS_CONFIGNUM_HWI;
+         gContext.eventhandlerRecord = gEventRecord;
+         (void)CSL_intcInit(&gContext);
+         gFirstTime = (bool)true;
+     }
+}
+
 /* Below function registers the interrupt for a given ISR */
 HwiP_Handle OsalArch_HwiPCreate(int32_t interruptNum, HwiP_Fxn hwiFxn,
                           const HwiP_Params *params)
@@ -169,14 +182,7 @@ HwiP_Handle OsalArch_HwiPCreate(int32_t interruptNum, HwiP_Fxn hwiFxn,
    }
     if (hwi_handle != NULL_PTR)
     {
-         if (gFirstTime == (bool)false) {
-           /* record the index in the handle */
-           gContext.numEvtEntries      = (Uint16)OSAL_NONOS_CONFIGNUM_HWI;
-           gContext.eventhandlerRecord = gEventRecord;
-           (void)CSL_intcInit(&gContext);
-           gFirstTime = (bool)true;
-         }
-     
+         OsalArch_oneTimeInit();
          (void)CSL_intcGlobalNmiEnable();
          (void)CSL_intcGlobalEnable((CSL_IntcGlobalEnableState *)NULL_PTR);
      

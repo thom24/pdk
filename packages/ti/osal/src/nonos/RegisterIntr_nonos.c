@@ -115,6 +115,7 @@ OsalInterruptRetCode_e Osal_RegisterInterrupt(OsalRegisterIntrParams_t *interrup
             HwiP_Create(Event_combiner_event,core_intVecNum,Event_dispatcher_plug);
 */
    if(interruptRegParams->corepacConfig.intVecNum == OSAL_REGINT_INTVEC_EVENT_COMBINER) {
+      OsalArch_oneTimeInit();
       (void)EventCombinerP_dispatchPlug((uint32_t)interruptRegParams->corepacConfig.corepacEventNum,
                                   interruptRegParams->corepacConfig.isrRoutine,
                                   interruptRegParams->corepacConfig.arg,(bool)true);

@@ -217,6 +217,10 @@ int32_t OsalArch_postInterrupt(uint32_t intNum);
 /* Below function globally restore interrupt in the chip level */
 void OsalArch_globalRestoreInterrupt (uintptr_t restoreValue);
 
+/* Below function initializes the intc module,
+   this is needed only once per start */
+void OsalArch_oneTimeInit(void);
+
 /* Below function registers the interrupt for a given ISR */
 HwiP_Handle OsalArch_HwiPCreate(int32_t interruptNum, HwiP_Fxn hwiFxn,
                           const HwiP_Params *params);
