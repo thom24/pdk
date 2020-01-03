@@ -73,7 +73,7 @@ udma_user_input_unit_testapp_PKG_LIST = udma_user_input_unit_testapp
 udma_user_input_unit_testapp_INCLUDE = $(udma_user_input_unit_testapp_PATH)
 export udma_user_input_unit_testapp_BOARDLIST = $(drvudma_BOARDLIST)
 ifeq ($(SOC),$(filter $(SOC), j721e))
-export udma_user_input_unit_testapp_$(SOC)_CORELIST = mpu1_0 mcu1_0 mcu2_0 mcu2_1 mcu3_0 mcu3_1 c66xdsp_1 c66xdsp_2 c7x
+export udma_user_input_unit_testapp_$(SOC)_CORELIST = mpu1_0 mcu1_0 mcu2_0 mcu2_1 mcu3_0 mcu3_1 c66xdsp_1 c66xdsp_2 c7x_1
 else
 export udma_user_input_unit_testapp_$(SOC)_CORELIST = mpu1_0 mcu1_0
 endif

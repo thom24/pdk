@@ -2865,6 +2865,48 @@ static UdmaTestParams gUdmaTestCases[] =
         .runFlag    = (UDMA_TEST_RF_SOC_ALL | UDMA_TEST_RF_CORE_ALL | UDMA_TEST_RF_CFG_DEF | UDMA_TEST_RF_CFG_DYN),
         .ringPrmId  = UDMA_TEST_RING_PRMID_INVALID,
     },
+    {
+        .enableTest = TEST_ENABLE,
+        .tcId       = 4841U,
+        .tcName     = "Main NAVSS Blockcpy DDR to DDR in interrupt mode chaining test",
+        .disableInfo= NULL,
+        .printEnable= PRINT_ENABLE,
+        .prfEnable  = PRF_DISABLE,
+        .tcType     = (UDMA_TCT_SANITY | UDMA_TCT_FUNCTIONAL),
+        .dcEnable   = DATA_CHECK_ENABLE,
+        .loopCnt    = USE_DEF_LP_CNT,
+        .numTasks   = 1U,
+        .testType   = {UDMA_TT_BLK_CPY},
+        .testFxnPtr = {&udmaTestBlkcpyChainingTc},
+        .pacingTime = {PACING_NONE},
+        .numCh      = {2U},
+        .instId     = {UDMA_INST_ID_MAIN_0, UDMA_INST_ID_MAIN_0},
+        .chPrmId    = {UDMA_TEST_CH_PRMID_INTR_DEF, UDMA_TEST_CH_PRMID_INTR_DEF},
+        .qdepth     = {USE_DEF_QDEPTH, USE_DEF_QDEPTH},
+        .icnt       = {
+                        {UDMA_TEST_DEF_ICNT0, 1U, 1U, 1U},
+                        {UDMA_TEST_DEF_ICNT0, 1U, 1U, 1U}
+                      },
+        .dicnt      = {
+                        {UDMA_TEST_DEF_DICNT0, 1U, 1U, 1U},
+                        {UDMA_TEST_DEF_DICNT0, 1U, 1U, 1U}
+                      },
+        .dim        = {
+                        {0U, 0U, 0U},
+                        {0U, 0U, 0U}
+                      },
+        .ddim       = {
+                        {0U, 0U, 0U},
+                        {0U, 0U, 0U}
+                      },
+        .heapIdSrc  = {DEF_HEAP_ID, DEF_HEAP_ID},
+        .heapIdDest = {DEF_HEAP_ID, DEF_HEAP_ID},
+        .srcBufSize = {UDMA_TEST_DEF_ICNT0, UDMA_TEST_DEF_ICNT0},
+        .destBufSize= {UDMA_TEST_DEF_DICNT0, UDMA_TEST_DEF_DICNT0},
+        .runFlag    = (UDMA_TEST_RF_MAIN_BC | UDMA_TEST_RF_CFG_DYN),
+        .ringPrmId  = UDMA_TEST_RING_PRMID_INVALID,
+    },
+
 };
 
 #ifdef __cplusplus

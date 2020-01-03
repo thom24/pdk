@@ -59,11 +59,11 @@
 /*                          Function Declarations                             */
 /* ========================================================================== */
 
-static int32_t udmaTestBlkcpyTestLoop(UdmaTestTaskObj *taskObj, uint32_t pauseTest);
-static int32_t udmaTestBlkcpyTest(UdmaTestTaskObj *taskObj, uint32_t pauseTest);
+static int32_t udmaTestBlkcpyTestLoop(UdmaTestTaskObj *taskObj, uint32_t pauseTest, uint32_t chainTest);
+static int32_t udmaTestBlkcpyTest(UdmaTestTaskObj *taskObj, uint32_t pauseTest, uint32_t chainTest);
 
-static int32_t udmaTestBlkcpyCreate(UdmaTestTaskObj *taskObj);
-static int32_t udmaTestBlkcpyDelete(UdmaTestTaskObj *taskObj);
+static int32_t udmaTestBlkcpyCreate(UdmaTestTaskObj *taskObj, uint32_t chainTest);
+static int32_t udmaTestBlkcpyDelete(UdmaTestTaskObj *taskObj, uint32_t chainTest);
 static int32_t udmaTestBlkcpyAlloc(UdmaTestTaskObj *taskObj);
 static int32_t udmaTestBlkcpyFree(UdmaTestTaskObj *taskObj);
 static int32_t udmaTestBlkcpyCompareData(UdmaTestTaskObj *taskObj,
@@ -103,13 +103,13 @@ int32_t udmaTestBlkcpyTc(UdmaTestTaskObj *taskObj)
               " |TEST INFO|:: Task:%d: Pacing time          : %d ms ::\r\n", taskObj->taskId, taskObj->pacingTime);
 
     retVal = udmaTestBlkcpyAlloc(taskObj);
-    retVal += udmaTestBlkcpyCreate(taskObj);
+    retVal += udmaTestBlkcpyCreate(taskObj, FALSE);
 
     Utils_prfTsBegin(taskObj->prfTsHandle);
-    retVal += udmaTestBlkcpyTestLoop(taskObj, FALSE);
+    retVal += udmaTestBlkcpyTestLoop(taskObj, FALSE, FALSE);
     Utils_prfTsEnd(taskObj->prfTsHandle, (taskObj->loopCnt * taskObj->numCh));
 
-    retVal += udmaTestBlkcpyDelete(taskObj);
+    retVal += udmaTestBlkcpyDelete(taskObj, FALSE);
     retVal += udmaTestBlkcpyFree(taskObj);
 
     retVal += gUdmaTestBlkcpyResult;
@@ -131,13 +131,13 @@ int32_t udmaTestBlkcpyPauseResumeTc(UdmaTestTaskObj *taskObj)
               " |TEST INFO|:: Task:%d: Pacing time          : %d ms ::\r\n", taskObj->taskId, taskObj->pacingTime);
 
     retVal = udmaTestBlkcpyAlloc(taskObj);
-    retVal += udmaTestBlkcpyCreate(taskObj);
+    retVal += udmaTestBlkcpyCreate(taskObj, FALSE);
 
     Utils_prfTsBegin(taskObj->prfTsHandle);
-    retVal += udmaTestBlkcpyTestLoop(taskObj, TRUE);
+    retVal += udmaTestBlkcpyTestLoop(taskObj, TRUE, FALSE);
     Utils_prfTsEnd(taskObj->prfTsHandle, (taskObj->loopCnt * taskObj->numCh));
 
-    retVal += udmaTestBlkcpyDelete(taskObj);
+    retVal += udmaTestBlkcpyDelete(taskObj, FALSE);
     retVal += udmaTestBlkcpyFree(taskObj);
 
     retVal += gUdmaTestBlkcpyResult;
@@ -145,7 +145,35 @@ int32_t udmaTestBlkcpyPauseResumeTc(UdmaTestTaskObj *taskObj)
     return (retVal);
 }
 
-static int32_t udmaTestBlkcpyTestLoop(UdmaTestTaskObj *taskObj, uint32_t pauseTest)
+int32_t udmaTestBlkcpyChainingTc(UdmaTestTaskObj *taskObj)
+{
+    int32_t         retVal = UDMA_SOK;
+
+    GT_1trace(taskObj->traceMask, GT_INFO1,
+              " |TEST INFO|:: Task:%d: Block Copy Testcase ::\r\n", taskObj->taskId);
+    GT_2trace(taskObj->traceMask, GT_INFO1,
+              " |TEST INFO|:: Task:%d: Num channels         : %d ::\r\n", taskObj->taskId, taskObj->numCh);
+    GT_2trace(taskObj->traceMask, GT_INFO1,
+              " |TEST INFO|:: Task:%d: Loop count           : %d ::\r\n", taskObj->taskId, taskObj->loopCnt);
+    GT_2trace(taskObj->traceMask, GT_INFO1,
+              " |TEST INFO|:: Task:%d: Pacing time          : %d ms ::\r\n", taskObj->taskId, taskObj->pacingTime);
+
+    retVal = udmaTestBlkcpyAlloc(taskObj);
+    retVal += udmaTestBlkcpyCreate(taskObj, TRUE);
+
+    Utils_prfTsBegin(taskObj->prfTsHandle);
+    retVal += udmaTestBlkcpyTestLoop(taskObj, FALSE, TRUE);
+    Utils_prfTsEnd(taskObj->prfTsHandle, (taskObj->loopCnt * taskObj->numCh));
+
+    retVal += udmaTestBlkcpyDelete(taskObj, TRUE);
+    retVal += udmaTestBlkcpyFree(taskObj);
+
+    retVal += gUdmaTestBlkcpyResult;
+
+    return (retVal);
+}
+
+static int32_t udmaTestBlkcpyTestLoop(UdmaTestTaskObj *taskObj, uint32_t pauseTest, uint32_t chainTest)
 {
     int32_t         retVal = UDMA_SOK;
     uint32_t        loopCnt = 0U;
@@ -175,7 +203,7 @@ static int32_t udmaTestBlkcpyTestLoop(UdmaTestTaskObj *taskObj, uint32_t pauseTe
         }
 
         /* Perform UDMA memcpy */
-        retVal = udmaTestBlkcpyTest(taskObj, pauseTest);
+        retVal = udmaTestBlkcpyTest(taskObj, pauseTest, chainTest);
         if(UDMA_SOK != retVal)
         {
             break;
@@ -219,7 +247,7 @@ static int32_t udmaTestBlkcpyTestLoop(UdmaTestTaskObj *taskObj, uint32_t pauseTe
     return (retVal);
 }
 
-static int32_t udmaTestBlkcpyTest(UdmaTestTaskObj *taskObj, uint32_t pauseTest)
+static int32_t udmaTestBlkcpyTest(UdmaTestTaskObj *taskObj, uint32_t pauseTest, uint32_t chainTest)
 {
     int32_t         retVal = UDMA_SOK;
     uint32_t       *pTrResp, trRespStatus;
@@ -382,10 +410,14 @@ static int32_t udmaTestBlkcpyTest(UdmaTestTaskObj *taskObj, uint32_t pauseTest)
 
             if(UDMA_TEST_EVENT_INTR == chObj->chPrms->eventMode)
             {
-                for(qCnt = 0U; qCnt < chObj->qdepth; qCnt++)
+                if ((chainTest == FALSE) ||
+                    ((chainTest == TRUE) && (chCnt == (taskObj->numCh - 1))))
                 {
-                    /* Wait for return descriptor in completion ring */
-                    SemaphoreP_pend(chObj->transferDoneSem, SemaphoreP_WAIT_FOREVER);
+                    for(qCnt = 0U; qCnt < chObj->qdepth; qCnt++)
+                    {
+                        /* Wait for return descriptor in completion ring */
+                        SemaphoreP_pend(chObj->transferDoneSem, SemaphoreP_WAIT_FOREVER);
+                    }
                 }
             }
         }
@@ -485,7 +517,7 @@ static int32_t udmaTestBlkcpyTest(UdmaTestTaskObj *taskObj, uint32_t pauseTest)
     return (retVal);
 }
 
-static int32_t udmaTestBlkcpyCreate(UdmaTestTaskObj *taskObj)
+static int32_t udmaTestBlkcpyCreate(UdmaTestTaskObj *taskObj, uint32_t chainTest)
 {
     int32_t             retVal = UDMA_SOK;
     uint32_t            chCnt, qCnt;
@@ -620,33 +652,38 @@ static int32_t udmaTestBlkcpyCreate(UdmaTestTaskObj *taskObj)
 
         if((UDMA_SOK == retVal) && (UDMA_TEST_EVENT_NONE != chObj->chPrms->eventMode))
         {
-            /* Register ring completion callback */
-            eventHandle = &chObj->cqEventObj;
-            UdmaEventPrms_init(&eventPrms);
-            eventPrms.eventType         = UDMA_EVENT_TYPE_DMA_COMPLETION;
-            eventPrms.eventMode         = UDMA_EVENT_MODE_SHARED;
-            eventPrms.chHandle          = chObj->chHandle;
-            eventPrms.masterEventHandle = masterEventHandle;
-            if(UDMA_TEST_EVENT_INTR == chObj->chPrms->eventMode)
+            if((chainTest == FALSE) ||
+               ((chainTest == TRUE) && (chCnt == taskObj->numCh - 1)))
             {
-                eventPrms.masterEventHandle = Udma_eventGetGlobalHandle(chObj->drvHandle);
-                eventPrms.eventCb           = &udmaTestBlkcpyEventDmaCb;
-                eventPrms.appData           = chObj;
-            }
-            retVal = Udma_eventRegister(chObj->drvHandle, eventHandle, &eventPrms);
-            if(UDMA_SOK != retVal)
-            {
-                GT_0trace(taskObj->traceMask, GT_ERR,
-                    " UDMA CQ event register failed!!\n");
-            }
-            else
-            {
-                chObj->cqEventHandle = eventHandle;
-            }
-            if(NULL == masterEventHandle)
-            {
-                /* Which ever event gets registered first is the master event */
-                masterEventHandle = eventHandle;
+                /* Register ring completion callback */
+                /* In case of chaining test, register ring completion only for last channel. */
+                eventHandle = &chObj->cqEventObj;
+                UdmaEventPrms_init(&eventPrms);
+                eventPrms.eventType         = UDMA_EVENT_TYPE_DMA_COMPLETION;
+                eventPrms.eventMode         = UDMA_EVENT_MODE_SHARED;
+                eventPrms.chHandle          = chObj->chHandle;
+                eventPrms.masterEventHandle = masterEventHandle;
+                if(UDMA_TEST_EVENT_INTR == chObj->chPrms->eventMode)
+                {
+                    eventPrms.masterEventHandle = Udma_eventGetGlobalHandle(chObj->drvHandle);
+                    eventPrms.eventCb           = &udmaTestBlkcpyEventDmaCb;
+                    eventPrms.appData           = chObj;
+                }
+                retVal = Udma_eventRegister(chObj->drvHandle, eventHandle, &eventPrms);
+                if(UDMA_SOK != retVal)
+                {
+                    GT_0trace(taskObj->traceMask, GT_ERR,
+                        " UDMA CQ event register failed!!\n");
+                }
+                else
+                {
+                    chObj->cqEventHandle = eventHandle;
+                }
+                if(NULL == masterEventHandle)
+                {
+                    /* Which ever event gets registered first is the master event */
+                    masterEventHandle = eventHandle;
+                }
             }
 
             if(UDMA_SOK == retVal)
@@ -717,10 +754,37 @@ static int32_t udmaTestBlkcpyCreate(UdmaTestTaskObj *taskObj)
         }
     }
 
+    if((UDMA_SOK == retVal) && (chainTest == TRUE))
+    {
+        for(chCnt = 0U ; chCnt < taskObj->numCh; chCnt++)
+        {
+            chObj = taskObj->chObj[chCnt];
+            if(chCnt < (taskObj->numCh - 1))
+            {
+                Udma_ChHandle chainedChHandle;
+
+                chainedChHandle = taskObj->chObj[chCnt + 1]->chHandle;
+                retVal = Udma_chSetChaining(
+                             chObj->chHandle,
+                             chainedChHandle,
+                             CSL_UDMAP_TR_FLAGS_TRIGGER_GLOBAL0);
+                if(UDMA_SOK != retVal)
+                {
+                    GT_0trace(taskObj->traceMask, GT_ERR,
+                        "[Error] UDMA channel chaining failed!!\n");
+                }
+            }
+            if(UDMA_SOK != retVal)
+            {
+                break;
+            }
+        }
+    }
+
     return (retVal);
 }
 
-static int32_t udmaTestBlkcpyDelete(UdmaTestTaskObj *taskObj)
+static int32_t udmaTestBlkcpyDelete(UdmaTestTaskObj *taskObj, uint32_t chainTest)
 {
     int32_t         retVal = UDMA_SOK, tempRetVal;
     uint64_t        pDesc;
@@ -754,6 +818,28 @@ static int32_t udmaTestBlkcpyDelete(UdmaTestTaskObj *taskObj)
         #endif
         }
 
+        if(chainTest == TRUE)
+        {
+            if(chCnt < (taskObj->numCh - 1))
+            {
+                Udma_ChHandle chainedChHandle;
+
+                chainedChHandle = taskObj->chObj[chCnt + 1]->chHandle;
+                retVal = Udma_chBreakChaining(
+                             chObj->chHandle,
+                             chainedChHandle);
+                if(UDMA_SOK != retVal)
+                {
+                    GT_0trace(taskObj->traceMask, GT_ERR,
+                        "[Error] UDMA channel break chaining failed!!\n");
+                }
+            }
+        }
+    }
+
+    for(chCnt = 0U ; chCnt < taskObj->numCh; chCnt++)
+    {
+        chObj = taskObj->chObj[chCnt];
         /* Unregister master event at the end - CQ is the master event */
         if(NULL != chObj->trEventHandle)
         {

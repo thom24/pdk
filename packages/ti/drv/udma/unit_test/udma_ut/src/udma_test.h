@@ -579,6 +579,7 @@ void udmaDrvPrint(const char *str);
  */
 int32_t udmaTestBlkcpyTc(UdmaTestTaskObj *taskObj);
 int32_t udmaTestBlkcpyPauseResumeTc(UdmaTestTaskObj *taskObj);
+int32_t udmaTestBlkcpyChainingTc(UdmaTestTaskObj *taskObj);
 /*
  * UDMA ring test functions
  */
