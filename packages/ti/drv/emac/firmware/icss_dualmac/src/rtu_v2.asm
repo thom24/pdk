@@ -471,10 +471,14 @@ weop:
 	WAIT_EOP
 	jmp	psi_idle2
 
+err_exit00:
+	qbbs	err_exit, r1, 1	; don't do anything if eop already set
+
+	;ERROR: Drop pkt. Note: won't service PSI unti we eop on this thread
 err_exit01:	;some kind of error..  for now just toss until EOP
-err_exit00:	;ERROR: Drop pkt. Note: won't service PSI unti we eop on this thread
 	WAIT_EOP
 	add	r30.b2, r30.b2, 1
+err_exit:
 	jmp	psi_idle
 ;end of psi host egress
 
