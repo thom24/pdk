@@ -116,7 +116,7 @@ static Board_STATUS Board_CfgQsgmii(void)
 
     memset(&serdesLane0EnableParams, 0, sizeof(serdesLane0EnableParams));
 
-    /* SGMII Config */
+    /* QSGMII Config */
     serdesLane0EnableParams.serdesInstance    = (CSL_SerdesInstance)SGMII_SERDES_INSTANCE;
     serdesLane0EnableParams.baseAddr          = CSL_SERDES_16G0_BASE;
     serdesLane0EnableParams.refClock          = CSL_SERDES_REF_CLOCK_100M;
