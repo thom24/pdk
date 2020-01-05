@@ -90,6 +90,15 @@ void GetRevisionTest2(UArg arg0, UArg arg1);
 
 void appReset(void);
 
+/**
+ * \brief   Set the interrupt config for C66x Timer interrupts.
+ *
+ * \param   None.
+ *
+ * \return  None
+ */
+void App_sciclientC66xIntrConfig(void);
+
 /* ========================================================================== */
 /*                            Global Variables                                */
 /* ========================================================================== */
@@ -121,6 +130,7 @@ int main(void)
 
     Error_init(&eb);
     App_sciclientConsoleInit();
+    App_sciclientC66xIntrConfig();
 
     task1 = Task_create(GetRevisionTest1, &taskParams1, &eb);
     if (task1 == NULL)
@@ -151,13 +161,13 @@ void GetRevisionTest1(UArg arg0, UArg arg1)
         SCICLIENT_SERVICE_OPERATION_MODE_POLLED,
         NULL
     };
-
+    struct tisci_msg_version_req request;
     const Sciclient_ReqPrm_t      reqPrm =
     {
         TISCI_MSG_VERSION,
         TISCI_MSG_FLAG_AOP,
-        NULL,
-        0,
+        (uint8_t *) &request,
+        sizeof(request),
         SCICLIENT_SERVICE_WAIT_FOREVER
     };
 
@@ -216,13 +226,13 @@ void GetRevisionTest2(UArg arg0, UArg arg1)
         SCICLIENT_SERVICE_OPERATION_MODE_POLLED,
         NULL
     };
-
+    struct tisci_msg_version_req request;
     const Sciclient_ReqPrm_t      reqPrm =
     {
         TISCI_MSG_VERSION,
         TISCI_MSG_FLAG_AOP,
-        NULL,
-        0,
+        (uint8_t *) &request,
+        sizeof(request),
         SCICLIENT_SERVICE_WAIT_FOREVER
     };
 
@@ -252,7 +262,7 @@ void GetRevisionTest2(UArg arg0, UArg arg1)
                 App_sciclientPrintf(
                                   " ABI revision %d.%d\n", response.abi_major,
                                   response.abi_minor);
-				Task_sleep(100);
+                Task_sleep(100);
             }
             else
             {
@@ -280,3 +290,4 @@ void InitMmu(void)
     Osal_initMmuDefault();
 }
 #endif
+
