@@ -673,7 +673,6 @@ int32_t Ipc_getIntNumRange(uint32_t coreIndex,
         *rangeStartP = res.range_start;
         *rangeNumP = res.range_num;
     }
-
     return retVal;
 }
 

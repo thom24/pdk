@@ -371,10 +371,10 @@ int32_t Ipc_mailboxRegister(uint16_t selfId, uint16_t remoteProcId,
 
                 MailboxClrNewMsgStatus(baseAddr, userId, queueId);
 
+#ifdef IPC_SUPPORT_SCICLIENT
                 /* Get the Interrupt Configuration */
                 Ipc_getMailboxIntrRouterCfg(selfId, clusterId, userId, &cfg, g_ipc_mBoxCnt);
 
-#ifdef IPC_SUPPORT_SCICLIENT
                 {
                     /* Release the resource first */
                     retVal = Ipc_sciclientIrqRelease(selfId, clusterId, userId, cfg.eventId);
