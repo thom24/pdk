@@ -1048,7 +1048,6 @@ uint32_t serdes_init(uint8_t serdesInstance, CSL_SerdesSSCMode SSC_Mode){
     serdesLaneEnableParams.linkRate         = SERDES_DIAG_TEST_LINK_RATE;
     serdesLaneEnableParams.numLanes         = SERDES_DIAG_TEST_NUM_LANES;
     serdesLaneEnableParams.laneMask         = SERDES_DIAG_TEST_LANE_MASK;
-    serdesLaneEnableParams.pllMask          = 0x1; /* Using 1 PLL for both lanes */
     serdesLaneEnableParams.SSC_mode         = SSC_Mode;
     serdesLaneEnableParams.phyType          = SERDES_DIAG_TEST_PHY_TYPE;
     serdesLaneEnableParams.pcieGenType      = SERDES_DIAG_TEST_PCIE_GEN_TYPE;
@@ -1064,11 +1063,16 @@ uint32_t serdes_init(uint8_t serdesInstance, CSL_SerdesSSCMode SSC_Mode){
 
     /* Select the IP type, IP instance num, Serdes Lane Number */
     for (laneNum=0; laneNum < serdesLaneEnableParams.numLanes; laneNum++){
-        CSL_serdesIPSelect(serdesLaneEnableParams.phyType, serdesLaneEnableParams.phyInstanceNum, serdesLaneEnableParams.serdesInstance, laneNum);
+        CSL_serdesIPSelect(CSL_CTRL_MMR0_CFG0_BASE,
+                           serdesLaneEnableParams.phyType, 
+                           serdesLaneEnableParams.phyInstanceNum, 
+                           serdesLaneEnableParams.serdesInstance, 
+                           laneNum);
     }
 
     /* selects the appropriate clocks for all serdes based on the protocol chosen */
-     status = CSL_serdesRefclkSel(serdesLaneEnableParams.baseAddr,
+     status = CSL_serdesRefclkSel(CSL_CTRL_MMR0_CFG0_BASE,
+                                  serdesLaneEnableParams.baseAddr,
                                   serdesLaneEnableParams.refClock,
                                   serdesLaneEnableParams.refClkSrc,
                                   serdesLaneEnableParams.serdesInstance,
