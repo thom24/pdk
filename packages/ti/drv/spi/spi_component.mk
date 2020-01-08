@@ -487,7 +487,11 @@ OSPI_Flash_TestApp_PKG_LIST = OSPI_Flash_TestApp
 OSPI_Flash_TestApp_INCLUDE = $(OSPI_Flash_TestApp_PATH)
 OSPI_Flash_TestApp_BOARDLIST = $(drvspi_BOARDLIST)
 export OSPI_Flash_TestApp_BOARDLIST
+ifeq ($(SOC),$(filter $(SOC), j721e))
+OSPI_Flash_TestApp_$(SOC)_CORELIST = $(drvspi_j721e_CORELISTARM)
+else
 OSPI_Flash_TestApp_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELIST)
+endif
 export OSPI_Flash_TestApp_$(SOC)_CORELIST
 
 # OSPI rtos Flash Test app with SMP enabled
@@ -527,7 +531,11 @@ OSPI_Flash_Dma_TestApp_PKG_LIST = OSPI_Flash_Dma_TestApp
 OSPI_Flash_Dma_TestApp_INCLUDE = $(OSPI_Flash_Dma_TestApp_PATH)
 OSPI_Flash_Dma_TestApp_BOARDLIST = $(drvspi_BOARDLIST)
 export OSPI_Flash_Dma_TestApp_BOARDLIST
+ifeq ($(SOC),$(filter $(SOC), j721e))
+OSPI_Flash_Dma_TestApp_$(SOC)_CORELIST = $(drvspi_j721e_CORELISTARM)
+else
 OSPI_Flash_Dma_TestApp_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELIST)
+endif
 export OSPI_Flash_Dma_TestApp_$(SOC)_CORELIST
 
 # OSPI rtos DMA Flash Test app with SMP enabled
