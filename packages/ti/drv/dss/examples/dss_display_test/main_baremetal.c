@@ -44,6 +44,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <ti/board/board.h>
+#include <ti/osal/osal.h>
 #include <ti/drv/dss/examples/utils/app_utils.h>
 #include "dss_display_test.h"
 
@@ -103,5 +104,5 @@ int main(void)
 
 void App_wait(uint32_t wait_in_ms)
 {
-    Board_delay(wait_in_ms);
+    Osal_delay(wait_in_ms);
 }
