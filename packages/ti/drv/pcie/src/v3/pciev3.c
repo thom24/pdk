@@ -276,10 +276,10 @@ pcieRet_e Pciev3_readRegs
   *Application Registers
   *****************************************************************************************/
   if ((retVal == pcie_RET_OK) && (readRegs->pid != NULL)) {
-    retVal = pciev3_read_pid_reg (params->userCfgBase, readRegs->pid);
+    retVal = pciev3_read_pid_reg ((CSL_pcie_ep_coreRegs *)params->userCfgBase, readRegs->pid);
   }
   if ((retVal == pcie_RET_OK) && (readRegs->cmdStatus != NULL)) {
-    retVal = pciev3_read_cmdStatus_reg (params->userCfgBase, readRegs->cmdStatus);
+    retVal = pciev3_read_cmdStatus_reg ((CSL_pcie_ep_coreRegs *)params->userCfgBase, readRegs->cmdStatus);
   }
   if ((retVal == pcie_RET_OK) && (readRegs->cfgTrans != NULL)) {
     /* Not supported on rev 3 */
@@ -338,10 +338,10 @@ pcieRet_e Pciev3_readRegs
     retVal = pcie_RET_INV_REG;
   }
   if ((retVal == pcie_RET_OK) && (readRegs->epIrqSet != NULL)) {
-    retVal = pciev3_read_epIrqSet_reg (params->userCfgBase, readRegs->epIrqSet, 0);
+    retVal = pciev3_read_epIrqSet_reg ((CSL_user_cfgRegs *)params->userCfgBase, readRegs->epIrqSet, 0);
   }
   if ((retVal == pcie_RET_OK) && (readRegs->epIrqClr != NULL)) {
-    retVal = pciev3_read_epIrqClr_reg (params->userCfgBase, readRegs->epIrqClr, 0);
+    retVal = pciev3_read_epIrqClr_reg ((CSL_user_cfgRegs *)params->userCfgBase, readRegs->epIrqClr, 0);
   }
   if ((retVal == pcie_RET_OK) && (readRegs->epIrqStatus != NULL)) {
     /* Not supported on rev 3 */
@@ -377,13 +377,13 @@ pcieRet_e Pciev3_readRegs
         retVal = pcie_RET_INV_REG;
     }
     if ((retVal == pcie_RET_OK) && (readRegs->legacyIrqStatus[i] != NULL)) {
-      retVal = pciev3_read_legacyIrqStatus_reg (params->intCfgBase, readRegs->legacyIrqStatus[i], i);
+      retVal = pciev3_read_legacyIrqStatus_reg ((CSL_intd_cfgRegs *)params->intCfgBase, readRegs->legacyIrqStatus[i], i);
     }
     if ((retVal == pcie_RET_OK) && (readRegs->legacyIrqEnableSet[i] != NULL)) {
-      retVal = pciev3_read_legacyIrqEnableSet_reg (params->intCfgBase, readRegs->legacyIrqEnableSet[i], i);
+      retVal = pciev3_read_legacyIrqEnableSet_reg ((CSL_intd_cfgRegs *)params->intCfgBase, readRegs->legacyIrqEnableSet[i], i);
     }
     if ((retVal == pcie_RET_OK) && (readRegs->legacyIrqEnableClr[i] != NULL)) {
-      retVal = pciev3_read_legacyIrqEnableClr_reg (params->intCfgBase, readRegs->legacyIrqEnableClr[i], i);
+      retVal = pciev3_read_legacyIrqEnableClr_reg ((CSL_intd_cfgRegs *)params->intCfgBase, readRegs->legacyIrqEnableClr[i], i);
     }
   }
   if ((retVal == pcie_RET_OK) && (readRegs->errIrqStatusRaw != NULL)) {
@@ -620,7 +620,7 @@ pcieRet_e Pciev3_readRegs
 
   /*MSI Registers*/
   if ((retVal == pcie_RET_OK) && (readRegs->msiCap != NULL)) {
-    retVal = pciev3_read_msiCap_reg ((void *)&(baseCfgEp->EP_PF_I_PCIE[params->pfNum].EP_PF_I_MSI_CAP_STRUCT.I_MSI_CTRL_REG), readRegs->msiCap);
+    retVal = pciev3_read_msiCap_reg ((CSL_pcie_ep_coreRegs *)&(baseCfgEp->EP_PF_I_PCIE[params->pfNum].EP_PF_I_MSI_CAP_STRUCT.I_MSI_CTRL_REG), readRegs->msiCap);
   }
   if ((retVal == pcie_RET_OK) && (readRegs->msiLo32 != NULL)) {
     retVal = pciev3_read_msiLo32_reg (baseCfgEp, readRegs->msiLo32);
@@ -973,7 +973,7 @@ pcieRet_e Pciev3_readRegs
     retVal = pcie_RET_INV_REG;
   }
   if ((retVal == pcie_RET_OK) && (readRegs->tiConfDeviceCmd != NULL)) {
-    retVal = pciev3_read_linkStatus_reg (params->userCfgBase, readRegs->tiConfDeviceCmd);
+    retVal = pciev3_read_linkStatus_reg ((CSL_pcie_ep_coreRegs *)params->userCfgBase, readRegs->tiConfDeviceCmd);
   }
   if ((retVal == pcie_RET_OK) && (readRegs->tiConfPmCtrl != NULL)) {
     /* Not supported on rev 3 */
@@ -1057,7 +1057,7 @@ pcieRet_e Pciev3_writeRegs
   * Reject hw rev 0 app registers (these are similar but not identical to TI CONF on rev 3)
   *****************************************************************************************/
   if ((retVal == pcie_RET_OK) && (writeRegs->cmdStatus != NULL)) {
-    retVal = pciev3_write_cmdStatus_reg (params->userCfgBase, writeRegs->cmdStatus);
+    retVal = pciev3_write_cmdStatus_reg ((CSL_pcie_ep_coreRegs *)params->userCfgBase, writeRegs->cmdStatus);
   }
   if ((retVal == pcie_RET_OK) && (writeRegs->cfgTrans != NULL)) {
     /* Not supported on rev 3 */
@@ -1112,10 +1112,10 @@ pcieRet_e Pciev3_writeRegs
     retVal = pcie_RET_INV_REG;
   }
   if ((retVal == pcie_RET_OK) && (writeRegs->epIrqSet != NULL)) {
-    retVal = pciev3_write_epIrqSet_reg (params->userCfgBase, writeRegs->epIrqSet, 0);
+    retVal = pciev3_write_epIrqSet_reg ((CSL_user_cfgRegs *)params->userCfgBase, writeRegs->epIrqSet, 0);
   }
   if ((retVal == pcie_RET_OK) && (writeRegs->epIrqClr != NULL)) {
-    retVal = pciev3_write_epIrqClr_reg (params->userCfgBase, writeRegs->epIrqClr, 0);
+    retVal = pciev3_write_epIrqClr_reg ((CSL_user_cfgRegs *)params->userCfgBase, writeRegs->epIrqClr, 0);
   }
   if ((retVal == pcie_RET_OK) && (writeRegs->epIrqStatus != NULL)) {
     /* Not supported on rev 3 */
@@ -1151,13 +1151,13 @@ pcieRet_e Pciev3_writeRegs
         retVal = pcie_RET_INV_REG;
     }
     if ((retVal == pcie_RET_OK) && (writeRegs->legacyIrqStatus[i] != NULL)) {
-      retVal = pciev3_write_legacyIrqStatus_reg (params->intCfgBase, writeRegs->legacyIrqStatus[i], i);
+      retVal = pciev3_write_legacyIrqStatus_reg ((CSL_intd_cfgRegs *)params->intCfgBase, writeRegs->legacyIrqStatus[i], i);
     }
     if ((retVal == pcie_RET_OK) && (writeRegs->legacyIrqEnableSet[i] != NULL)) {
-      retVal = pciev3_write_legacyIrqEnableSet_reg (params->intCfgBase, writeRegs->legacyIrqEnableSet[i], i);
+      retVal = pciev3_write_legacyIrqEnableSet_reg ((CSL_intd_cfgRegs *)params->intCfgBase, writeRegs->legacyIrqEnableSet[i], i);
     }
     if ((retVal == pcie_RET_OK) && (writeRegs->legacyIrqEnableClr[i] != NULL)) {
-      retVal = pciev3_write_legacyIrqEnableClr_reg (params->intCfgBase, writeRegs->legacyIrqEnableClr[i], i);
+      retVal = pciev3_write_legacyIrqEnableClr_reg ((CSL_intd_cfgRegs *)params->intCfgBase, writeRegs->legacyIrqEnableClr[i], i);
     }
   }
   if ((retVal == pcie_RET_OK) && (writeRegs->errIrqStatusRaw != NULL)) {
@@ -1390,7 +1390,7 @@ pcieRet_e Pciev3_writeRegs
 
   /*MSI Registers*/
   if ((retVal == pcie_RET_OK) && (writeRegs->msiCap != NULL)) {
-    retVal = pciev3_write_msiCap_reg ((void *)&(baseCfgEp->EP_PF_I_PCIE[params->pfNum].EP_PF_I_MSI_CAP_STRUCT.I_MSI_CTRL_REG), writeRegs->msiCap);
+    retVal = pciev3_write_msiCap_reg ((CSL_pcie_ep_coreRegs *)&(baseCfgEp->EP_PF_I_PCIE[params->pfNum].EP_PF_I_MSI_CAP_STRUCT.I_MSI_CTRL_REG), writeRegs->msiCap);
   }
   if ((retVal == pcie_RET_OK) && (writeRegs->msiLo32 != NULL)) {
     retVal = pciev3_write_msiLo32_reg (baseCfgEp, writeRegs->msiLo32);
@@ -1742,7 +1742,7 @@ pcieRet_e Pciev3_writeRegs
     retVal = pcie_RET_INV_REG;
   }
   if ((retVal == pcie_RET_OK) && (writeRegs->tiConfDeviceCmd != NULL)) {
-    retVal = pciev3_write_linkStatus_reg (params->userCfgBase, writeRegs->tiConfDeviceCmd);
+    retVal = pciev3_write_linkStatus_reg ((CSL_pcie_ep_coreRegs *)params->userCfgBase, writeRegs->tiConfDeviceCmd);
   }
   if ((retVal == pcie_RET_OK) && (writeRegs->tiConfPmCtrl != NULL)) {
     /* Not supported on rev 3 */
