@@ -18,7 +18,7 @@ ifeq ($(SOC),$(filter $(SOC), am65xx))
 XDC_CFG_FILE_mpu1_0 = ./am65xx/gpioLedBlinkTest_a53.cfg
 XDC_CFG_FILE_mcu1_0 = ./am65xx/gpioLedBlinkTest_r5.cfg
 endif
-ifeq ($(SOC),$(filter $(SOC), j721e))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200))
 XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
 endif
 endif
@@ -48,6 +48,9 @@ ifeq ($(SOC),$(filter $(SOC), j721e))
 SRCDIR += j721e
 endif
 
+ifeq ($(SOC),$(filter $(SOC), j7200))
+SRCDIR += j7200
+endif
 # List all the external components/interfaces, whose interface header files
 # need to be included for this component
 INCLUDE_EXTERNAL_INTERFACES = pdk $(EXTERNAL_INTERFACES)
@@ -56,7 +59,7 @@ INCLUDE_EXTERNAL_INTERFACES = pdk $(EXTERNAL_INTERFACES)
 #COMP_LIST_COMMON  += gpio_profile uart board csl profiling
 COMP_LIST_COMMON  += gpio uart board csl
 
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e))
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
 COMP_LIST_COMMON += sciclient i2c
 endif
 

@@ -66,14 +66,14 @@
 
 #include <ti/board/board.h>
 
-#if defined(SOC_J721E)
+#if defined(SOC_J721E) || defined(SOC_J7200)
 #include <ti/csl/soc.h>
 #if defined (BUILD_DSP_1) || defined (BUILD_DSP_2)
 #include  "ti/csl/csl_chipAux.h"
 #endif
 #endif
 
-#if defined(SOC_AM65XX) || defined(SOC_J721E)
+#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)
 #include <ti/drv/sciclient/sciclient.h>
 #endif
 
@@ -110,7 +110,7 @@ extern void GPIOApp_UpdateBoardInfo(void);
 extern void GPIOAppUpdateConfig(uint32_t *gpioBaseAddr, uint32_t *gpioPin);
 #endif
 
-#if defined(SOC_AM65XX) || defined(SOC_J721E)
+#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)
 /* Main domain GPIO interrupt events */
 #define MAIN_GPIO_INTRTR_GPIO0_BANK0_INT (0x000000C0) /* GPIO port 0 bank 0 interrupt event #, input to MAIN_GPIO_INTRTR */
 #define MAIN_GPIO_INTRTR_GPIO1_BANK0_INT (0x000000C8) /* GPIO port 1 bank 0 interrupt event #, input to MAIN_GPIO_INTRTR */
@@ -190,7 +190,7 @@ void GPIO_configIntRouter(uint32_t portNum, uint32_t pinNum, uint32_t gpioIntRtr
 
 #endif
 
-#if defined(j721e_sim) || defined (j721e_evm)
+#if defined(j721e_sim) || defined (j721e_evm) || defined (j7200_evm)
 
     /* no main domain GPIO pins directly connected to LEDs on GP EVM,
        use WKUP domain GPIO pins which connected to LEDs on base board */
@@ -223,7 +223,7 @@ static void Board_initGPIO(void)
 {
     Board_initCfg boardCfg;
 
-#if defined(SOC_K2H) || defined(SOC_K2K) || defined(SOC_K2E) || defined(SOC_K2L) || defined(SOC_K2G) || defined(SOC_C6678) || defined(SOC_C6657) || defined(SOC_OMAPL137) || defined(SOC_OMAPL138) || defined(SOC_AM65XX) || defined(SOC_J721E)
+#if defined(SOC_K2H) || defined(SOC_K2K) || defined(SOC_K2E) || defined(SOC_K2L) || defined(SOC_K2G) || defined(SOC_C6678) || defined(SOC_C6657) || defined(SOC_OMAPL137) || defined(SOC_OMAPL138) || defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)
     GPIO_v0_HwAttrs gpio_cfg;
 
     /* Get the default SPI init configurations */
@@ -264,7 +264,7 @@ static void Board_initGPIO(void)
 #endif
 
     /* Modify the default GPIO configurations if necessary */
-#if defined (j721e_evm)  || defined (j721e_sim)
+#if defined (j721e_evm)  || defined (j721e_sim) || defined (j7200_evm)
 
 	/* change default GPIO port from MAIN GPIO0 to WAKEUP GPIO0 to access TP45 */
     gpio_cfg.baseAddr = CSL_WKUP_GPIO0_BASE;
@@ -375,7 +375,7 @@ int main()
     Board_initGPIO();
 #endif
 #if defined(SOC_AM574x) || defined(SOC_AM572x) || defined(SOC_AM571x)|| defined(SOC_AM335x) || defined(SOC_AM437x) || \
-    defined(SOC_K2H) || defined(SOC_K2K) || defined(SOC_K2E) || defined(SOC_K2G) || defined(SOC_OMAPL137) || defined(SOC_OMAPL138) || defined(SOC_AM65XX) || defined(SOC_J721E)
+    defined(SOC_K2H) || defined(SOC_K2K) || defined(SOC_K2E) || defined(SOC_K2G) || defined(SOC_OMAPL137) || defined(SOC_OMAPL138) || defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)
     uint32_t testOutput = 1;
 #endif
 
@@ -420,7 +420,7 @@ int main()
         /* Trigger interrupt */
         GPIOTriggerPinInt(gpioBaseAddr, 0, gpioPin);
 #endif
-#if defined(SOC_K2H) || defined(SOC_K2K) || defined(SOC_K2E) || defined(SOC_K2G) || defined(SOC_OMAPL137) || defined(SOC_OMAPL138) || defined(SOC_AM65XX) || defined(SOC_J721E)
+#if defined(SOC_K2H) || defined(SOC_K2K) || defined(SOC_K2E) || defined(SOC_K2G) || defined(SOC_OMAPL137) || defined(SOC_OMAPL138) || defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)
         GPIO_toggle(USER_LED0);
 #endif
         AppDelay(DELAY_VALUE);
@@ -439,11 +439,8 @@ int main()
  */
 int main(void)
 {
- #if defined(SOC_AM65XX) || defined(SOC_J721E)
+ #if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)
     Sciclient_ConfigPrms_t  sciClientCfg;
-#endif
-
-#if defined(SOC_AM65XX) || defined(SOC_J721E)
     Sciclient_configPrmsInit(&sciClientCfg);
     Sciclient_init(&sciClientCfg);
 #endif
@@ -455,7 +452,7 @@ int main(void)
     AppGPIOInit();
 #endif
 
-#if defined (SOC_J721E)
+#if defined (SOC_J721E) || defined(SOC_J7200)
     Task_Handle task;
     Error_Block eb;
     Task_Params taskParams;
@@ -506,7 +503,7 @@ void AppLoopDelay(uint32_t delayVal)
  */
 void AppGpioCallbackFxn(void)
 {
-#if !defined(SOC_J721E)
+#if !defined(SOC_J721E) || defined(SOC_J7200)
     /* Toggle LED1 */
     GPIO_toggle(USER_LED1);
     AppLoopDelay(DELAY_VALUE);
