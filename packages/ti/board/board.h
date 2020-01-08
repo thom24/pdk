@@ -286,6 +286,32 @@ typedef struct {
 
 } Board_SoCInfo;
 
+/** ---------------------------------------------------------------------------
+ * \brief Enumeration of reported temperature event types
+ *
+ * ----------------------------------------------------------------------------
+ */
+typedef enum {
+    /** Temperature alert event occurred */
+    BOARD_DDR_TEMP_EVENT_TEMP_ALERT = 1,
+    /** Low temperature alarm event occurred */
+    BOARD_DDR_TEMP_EVENT_LOW_TEMP_ALARM = 2,
+    /** Temperature change event occurred: Needs 4 x refresh */
+    BOARD_DDR_TEMP_EVENT_TEMP_CHANGE_4X_REFRESH = 3,
+    /** Temperature change event occurred: Needs 2 x refresh */
+    BOARD_DDR_TEMP_EVENT_TEMP_CHANGE_2X_REFRESH = 4,
+    /** Temperature change event occurred: Needs 1 x refresh */
+    BOARD_DDR_TEMP_EVENT_TEMP_CHANGE_1X_REFRESH = 5,
+    /** Temperature change event occurred: Needs 0.5 x refresh */
+    BOARD_DDR_TEMP_EVENT_TEMP_CHANGE_1_BY_2_REFRESH = 6,
+    /** Temperature change event occurred: Needs 0.25 x refresh */
+    BOARD_DDR_TEMP_EVENT_TEMP_CHANGE_1_BY_4_REFRESH = 7,
+    /** Temperature change event occurred: Needs 0.25 x refresh and derating */
+    BOARD_DDR_TEMP_EVENT_TEMP_CHANGE_1_BY_4_REFRESH_WITH_DERATING = 8,
+    /** High temperature alarm event occurred */
+    BOARD_DDR_TEMP_EVENT_HIGH_TEMP_ALARM = 9,
+} Board_DDRTempEventType;
+
 typedef uint32_t Board_initCfg;
 #define BOARD_INIT_ALL                  (0xFFFFFFFFU)
 #define BOARD_INIT_UNLOCK_MMR           (1 << 1U)
@@ -331,9 +357,9 @@ typedef uint32_t Board_initCfg;
 #define BOARD_INIT_CPSW9G_ETH_PHY       (1 << 24U)
 
 /* Configures ENET Control(mac mode, delay settings) for CPSW/ICCS ports */
-#define BOARD_INIT_ENETCTRL_CPSW2G       (1 << 25U)
-#define BOARD_INIT_ENETCTRL_CPSW9G       (1 << 26U)
-#define BOARD_INIT_ENETCTRL_ICSS         (1 << 27U)
+#define BOARD_INIT_ENETCTRL_CPSW2G      (1 << 25U)
+#define BOARD_INIT_ENETCTRL_CPSW9G      (1 << 26U)
+#define BOARD_INIT_ENETCTRL_ICSS        (1 << 27U)
 #define BOARD_INIT_DEFAULT              BOARD_INIT_ALL
 
 #define BOARD_DEINIT_ALL                (0xFFFFFFFFU)
@@ -341,6 +367,8 @@ typedef uint32_t Board_initCfg;
 #define BOARD_DEINIT_MODULE_CLOCK       (1 << 2U)
 #define BOARD_DEINIT_UART_STDIO         (1 << 3U)
 #define BOARD_DEINIT_DEFAULT            BOARD_DEINIT_ALL
+
+typedef void (*Board_thermalMgmtCallbackFunction_t)(Board_DDRTempEventType DDRTempEventType);
 
 /* @} */
 
@@ -425,6 +453,17 @@ Board_STATUS Board_init(Board_initCfg cfg);
  * @return  BOARD_SOK in case of success or appropriate error code
  */
 Board_STATUS Board_deinit(Board_initCfg cfg);
+
+/**
+ *  @brief      Initialize Board DDR Temperature monitoring.
+ *
+ *  @param[in] callbackFunction
+ *    Callback function to be called with thermal events
+ *
+ *  @return Board_STATUS Returns status on API call
+ *
+ */
+Board_STATUS Board_DDRTempMonitoringInit(Board_thermalMgmtCallbackFunction_t callbackFunction);
 
 #ifdef __cplusplus
 }

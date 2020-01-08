@@ -32,6 +32,7 @@
  *****************************************************************************/
 #include <string.h>
 #include "board_ddr.h"
+#include "board_ddrRegInit.h"
 
 /* Global variables */
 static LPDDR4_Config gBoardDdrCfg;

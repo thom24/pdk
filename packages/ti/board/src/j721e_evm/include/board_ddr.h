@@ -45,7 +45,6 @@
 #include <ti/csl/csl_emif.h>
 #include <ti/drv/sciclient/sciclient.h>
 
-#include "board_ddrRegInit.h"
 #include "board.h"
 #include "board_pll.h"
 #include "board_utils.h"
@@ -55,7 +54,7 @@
 extern "C" {
 #endif
 
-#define BOARD_DDR_SS_BASE      (0x02990000U)
+#define BOARD_DDR_SS_BASE                (0x02990000U)
 
 #define BOARD_DDR_FSP_CLKCHNG_REQ_ADDR   (0x00114080U)
 #define BOARD_DDR_FSP_CLKCHNG_ACK_ADDR   (0x001140C0U)
@@ -63,9 +62,17 @@ extern "C" {
 #define BOARD_CTRL_MMR_PART5_LOCK0       (0x115008U)
 #define BOARD_CTRL_MMR_PART5_LOCK1       (0x11500CU)
 
-#define BOARD_DDR_SRAM_MAX     (512U)
+#define BOARD_DDR_SRAM_MAX               (512U)
 
-#define  BOARD_DDR_CTL_REG_OFFSET    (0)
+#define BOARD_DDR_CTL_REG_OFFSET         (0)
+
+#define LPDDR4__AUTO_TEMPCHK_VAL_0__REG_OFFSET  (162U)
+#define LPDDR4__AUTO_TEMPCHK_VAL_0_MASK         (0x00FFFF00U)
+#define LPDDR4__AUTO_TEMPCHK_VAL_0_SHIFT        (8U)
+#define LPDDR4__AUTO_TEMPCHK_OP0_MASK           (7U)
+
+#define BOARD_MAX_TEMP_CHECK_REFRESH_RATE_VALUE           (7U)
+#define BOARD_TEMP_CHECK_REFRESH_RATE_VALUE_0_25_DERATING (6U)
 
 #ifdef __cplusplus
 }
