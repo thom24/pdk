@@ -37,6 +37,13 @@
 
 #include "sbl_boot_perf_benchmark.h"
 
+/**
+ * MCU DEVGRP is not currently properly supported for AM65xx
+ */
+#if defined(SOC_AM65XX)
+#undef SBL_ENABLE_DEV_GRP_MCU
+#endif
+
 /**********************************************************************
  ************************** Global Variables **************************
  **********************************************************************/
@@ -162,17 +169,40 @@ static int32_t BOOT_PERF_TEST_sysfwInit(void)
     };
 #endif
 
-#if defined(SBL_SKIP_SYSFW_INIT) || defined(SBL_SKIP_BRD_CFG_BOARD)
-    Sciclient_BoardCfgPrms_t sblPerfTestBoardCfgPrms={(uint32_t)&sblPerfTestBoardCfg,0, sizeof(sblPerfTestBoardCfg), DEVGRP_ALL};
+#if defined(SBL_SKIP_SYSFW_INIT) || defined(SBL_SKIP_BRD_CFG_BOARD) || defined(SBL_ENABLE_DEV_GRP_MCU)
+    Sciclient_BoardCfgPrms_t sblPerfTestBoardCfgPrms =
+    {
+        .boardConfigLow = (uint32_t)&sblPerfTestBoardCfg,
+	.boardConfigHigh = 0,
+	.boardConfigSize = sizeof(sblPerfTestBoardCfg),
+	.devGrp = SBL_PERF_TEST_DEVGRP
+    };
+
+    Sciclient_BoardCfgPrms_t sblPerfTestBoardCfgPmPrms =
+    {
+        .boardConfigLow = (uint32_t)NULL,
+	.boardConfigHigh = 0,
+	.boardConfigSize = 0,
+	.devGrp = SBL_PERF_TEST_DEVGRP
+    };
+
+    Sciclient_BoardCfgPrms_t sblPerfTestBoardCfgRmPrms =
+    {
+        .boardConfigLow = (uint32_t)&sblPerfTestBoardCfg_rm,
+	.boardConfigHigh = 0,
+	.boardConfigSize = sizeof(sblPerfTestBoardCfg_rm),
+	.devGrp = SBL_PERF_TEST_DEVGRP
+    };
+
+    Sciclient_BoardCfgPrms_t sblPerfTestBoardCfgSecPrms =
+    {
+        .boardConfigLow = (uint32_t)&sblPerfTestBoardCfg_sec,
+	.boardConfigHigh = 0,
+	.boardConfigSize = sizeof(sblPerfTestBoardCfg_sec),
+	.devGrp = SBL_PERF_TEST_DEVGRP
+    };
 #endif
 
-#if defined(SBL_SKIP_SYSFW_INIT) || defined(SBL_SKIP_BRD_CFG_RM)
-    Sciclient_BoardCfgPrms_t sblPerfTestBoardCfgRmPrms={(uint32_t)&sblPerfTestBoardCfg_rm,0, sizeof(sblPerfTestBoardCfg_rm), DEVGRP_ALL};
-#endif
-
-#if defined(SBL_SKIP_SYSFW_INIT) || defined(SBL_SKIP_BRD_CFG_SEC)
-    Sciclient_BoardCfgPrms_t sblPerfTestBoardCfgSecPrms={(uint32_t)&sblPerfTestBoardCfg_sec,0, sizeof(sblPerfTestBoardCfg_sec), DEVGRP_ALL};
-#endif
     BOOT_PERF_TEST_CacheCleanInvalidateDcacheSetWay();
 
     BOOT_PERF_TEST_SYSFW_UartLogEnable();
@@ -193,7 +223,7 @@ static int32_t BOOT_PERF_TEST_sysfwInit(void)
     }
 #endif
 
-#if defined(SBL_SKIP_SYSFW_INIT) || defined(SBL_SKIP_BRD_CFG_BOARD)
+#if defined(SBL_SKIP_SYSFW_INIT) || defined(SBL_SKIP_BRD_CFG_BOARD) || defined(SBL_ENABLE_DEV_GRP_MCU)
 
     memcpy((void *)&sblPerfTestBoardCfg, (void *)&gBoardConfigLow, sizeof(sblPerfTestBoardCfg));
     /* Redirect DMSC logs to UART 0 */
@@ -216,15 +246,21 @@ static int32_t BOOT_PERF_TEST_sysfwInit(void)
 
 #if defined(SBL_SKIP_SYSFW_INIT) || defined(SBL_SKIP_BRD_CFG_PM)
     BOOT_PERF_TEST_UartLogDisable();
-    status = Sciclient_boardCfgPm((Sciclient_BoardCfgPrms_t *)NULL);
+    status = Sciclient_boardCfgPm(&sblPerfTestBoardCfgPmPrms);
     BOOT_PERF_TEST_UartLogEnable();
+    if (status != CSL_PASS)
+    {
+        return CSL_EFAIL;
+    }
+#elif defined(SBL_ENABLE_DEV_GRP_MCU)
+    status = Sciclient_boardCfgPm(&sblPerfTestBoardCfgPmPrms);
     if (status != CSL_PASS)
     {
         return CSL_EFAIL;
     }
 #endif
 
-#if defined(SBL_SKIP_SYSFW_INIT) || defined(SBL_SKIP_BRD_CFG_RM)
+#if defined(SBL_SKIP_SYSFW_INIT) || defined(SBL_SKIP_BRD_CFG_RM) || defined(SBL_ENABLE_DEV_GRP_MCU)
     memcpy((void *)&sblPerfTestBoardCfg_rm, (void *)&gBoardConfigLow_rm, sizeof(sblPerfTestBoardCfg_rm));
     BOOT_PERF_TEST_CacheCleanInvalidateDcacheSetWay();
     status = Sciclient_boardCfgRm(&sblPerfTestBoardCfgRmPrms);
@@ -239,7 +275,7 @@ static int32_t BOOT_PERF_TEST_sysfwInit(void)
         Board_init(BOARD_INIT_UART_STDIO);
     }
 
-#if defined(SBL_SKIP_SYSFW_INIT) || defined(SBL_SKIP_BRD_CFG_SEC)
+#if defined(SBL_SKIP_SYSFW_INIT) || defined(SBL_SKIP_BRD_CFG_SEC) || defined(SBL_ENABLE_DEV_GRP_MCU)
     memcpy((void *)&sblPerfTestBoardCfg_sec, (void *)&gBoardConfigLow_security, sizeof(sblPerfTestBoardCfg_sec));
     BOOT_PERF_TEST_CacheCleanInvalidateDcacheSetWay();
     status = Sciclient_boardCfgSec(&sblPerfTestBoardCfgSecPrms);
@@ -275,19 +311,29 @@ int32_t main()
 
     sbl_puts("Attempting board config ...");
 
-#if !defined(SBL_ENABLE_PLL) || defined(SBL_ENABLE_CUST_PLLS) || defined(SBL_SKIP_SYSFW_INIT)
+#if !defined(SBL_ENABLE_PLL) || defined(SBL_SKIP_SYSFW_INIT)
     sbl_puts("BOARD_INIT_PLL ...");
     Board_init(BOARD_INIT_PLL);
     sbl_puts("passed\r\n");
-#endif
-
-#if !defined(SBL_ENABLE_CLOCKS) || defined(SBL_ENABLE_CUST_CLOCKS) || defined(SBL_SKIP_SYSFW_INIT)
-    sbl_puts("BOARD_INIT_MODULE_CLOCK...");
-    Board_init(BOARD_INIT_MODULE_CLOCK);
+#elif defined(SBL_ENABLE_DEV_GRP_MCU)
+    /* Only MCU PLLs were enabled in SBL, enable Main Domain */
+    sbl_puts("BOARD_INIT_PLL_MAIN ...");
+    Board_init(BOARD_INIT_PLL_MAIN);
     sbl_puts("passed\r\n");
 #endif
 
-#if !defined(SBL_ENABLE_DDR) || defined(SBL_SKIP_SYSFW_INIT)
+#if !defined(SBL_ENABLE_CLOCKS) || defined(SBL_SKIP_SYSFW_INIT)
+    sbl_puts("BOARD_INIT_MODULE_CLOCK...");
+    Board_init(BOARD_INIT_MODULE_CLOCK);
+    sbl_puts("passed\r\n");
+#elif defined(SBL_ENABLE_DEV_GRP_MCU)
+    /* Only MCU PLLs were enabled in SBL, enable Main Domain */
+    sbl_puts("BOARD_INIT_MODULE_CLOCK_MAIN...");
+    Board_init(BOARD_INIT_MODULE_CLOCK_MAIN);
+    sbl_puts("passed\r\n");
+#endif
+
+#if !defined(SBL_ENABLE_DDR) || defined(SBL_SKIP_SYSFW_INIT) || defined(SBL_ENABLE_DEV_GRP_MCU)
     sbl_puts("BOARD_INIT_DDR...");
     Board_init(BOARD_INIT_DDR);
     sbl_puts("passed\r\n");

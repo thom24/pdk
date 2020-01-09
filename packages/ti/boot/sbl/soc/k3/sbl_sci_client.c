@@ -109,6 +109,42 @@ void SBL_SciClientInit(void)
     void *sysfw_ptr = gSciclient_firmware;
 
 #ifndef SBL_SKIP_SYSFW_INIT
+    /* Point to the constant global structure because we need to modify it */
+    struct tisci_boardcfg *pBoardConfigLow = (struct tisci_boardcfg *)&gBoardConfigLow;
+
+    /* SYSFW board configurations */
+    Sciclient_BoardCfgPrms_t sblBoardCfgPrms =
+    {
+        .boardConfigLow = (uint32_t)&gBoardConfigLow,
+	.boardConfigHigh = 0,
+	.boardConfigSize = sizeof(gBoardConfigLow),
+	.devGrp = SBL_DEVGRP
+    };
+
+    Sciclient_BoardCfgPrms_t sblBoardCfgPmPrms =
+    {
+        .boardConfigLow = (uint32_t)NULL,
+	.boardConfigHigh = 0,
+	.boardConfigSize = 0,
+	.devGrp = SBL_DEVGRP
+    };
+    
+    Sciclient_BoardCfgPrms_t sblBoardCfgRmPrms =
+    {
+        .boardConfigLow = (uint32_t)&gBoardConfigLow_rm,
+	.boardConfigHigh = 0,
+	.boardConfigSize = sizeof(gBoardConfigLow_rm),
+	.devGrp = SBL_DEVGRP
+    };
+
+    Sciclient_BoardCfgPrms_t sblBoardCfgSecPrms =
+    {
+        .boardConfigLow = (uint32_t)&gBoardConfigLow_security,
+	.boardConfigHigh = 0,
+	.boardConfigSize = sizeof(gBoardConfigLow_security),
+	.devGrp = SBL_DEVGRP
+    };
+
     Sciclient_ConfigPrms_t        config =
     {
         SCICLIENT_SERVICE_OPERATION_MODE_POLLED,
@@ -151,18 +187,18 @@ void SBL_SciClientInit(void)
     if (SBL_LOG_LEVEL < SBL_LOG_MIN)
     {
         /* Redirect DMSC logs to memory */
-        gBoardConfigLow.debug_cfg.trace_dst_enables = TISCI_BOARDCFG_TRACE_DST_MEM;
+        pBoardConfigLow->debug_cfg.trace_dst_enables = TISCI_BOARDCFG_TRACE_DST_MEM;
 
         /* Enable no logs */
-        gBoardConfigLow.debug_cfg.trace_src_enables = 0;
+        pBoardConfigLow->debug_cfg.trace_src_enables = 0;
     }
     else if (SBL_LOG_LEVEL > SBL_LOG_MIN)
     {
         /* Redirect DMSC logs to WKUP UART */
-        gBoardConfigLow.debug_cfg.trace_dst_enables = TISCI_BOARDCFG_TRACE_DST_UART0;
+        pBoardConfigLow->debug_cfg.trace_dst_enables = TISCI_BOARDCFG_TRACE_DST_UART0;
 
         /* Enable full logs */
-        gBoardConfigLow.debug_cfg.trace_src_enables = TISCI_BOARDCFG_TRACE_SRC_PM   |
+        pBoardConfigLow->debug_cfg.trace_src_enables = TISCI_BOARDCFG_TRACE_SRC_PM   |
                                                       TISCI_BOARDCFG_TRACE_SRC_RM   |
                                                       TISCI_BOARDCFG_TRACE_SRC_SEC  |
                                                       TISCI_BOARDCFG_TRACE_SRC_BASE |
@@ -171,7 +207,7 @@ void SBL_SciClientInit(void)
     }
 
     SBL_ADD_PROFILE_POINT;
-    status = Sciclient_boardCfg((Sciclient_BoardCfgPrms_t *)NULL);
+    status = Sciclient_boardCfg(&sblBoardCfgPrms);
     if (status != CSL_PASS)
     {
         SBL_log(SBL_LOG_ERR,"SYSFW board config ...FAILED \n");
@@ -186,12 +222,13 @@ void SBL_SciClientInit(void)
         UART_stdioDeInit();
     }
     SBL_ADD_PROFILE_POINT;
-    status = Sciclient_boardCfgPm((Sciclient_BoardCfgPrms_t *)NULL);
+    status = Sciclient_boardCfgPm(&sblBoardCfgPmPrms);
     if (status != CSL_PASS)
     {
         SBL_log(SBL_LOG_ERR,"SYSFW board config pm...FAILED \n")
         SblErrLoop(__FILE__, __LINE__);
     }
+    
     if (SBL_LOG_LEVEL > SBL_LOG_NONE)
     {
         /* Re-init UART for logging */
@@ -207,7 +244,7 @@ void SBL_SciClientInit(void)
 
 #ifndef SBL_SKIP_BRD_CFG_RM
     SBL_ADD_PROFILE_POINT;
-    status = Sciclient_boardCfgRm((Sciclient_BoardCfgPrms_t *)NULL);
+    status = Sciclient_boardCfgRm(&sblBoardCfgRmPrms);
     if (status != CSL_PASS)
     {
         SBL_log(SBL_LOG_ERR,"SYSFW board config rm...FAILED \n");
@@ -217,7 +254,7 @@ void SBL_SciClientInit(void)
 
 #ifndef SBL_SKIP_BRD_CFG_SEC
     SBL_ADD_PROFILE_POINT;
-    status = Sciclient_boardCfgSec((Sciclient_BoardCfgPrms_t *)NULL);
+    status = Sciclient_boardCfgSec(&sblBoardCfgSecPrms);
     if (status != CSL_PASS)
     {
         SBL_log(SBL_LOG_ERR,"SYSFW board config sec...FAILED \n");
