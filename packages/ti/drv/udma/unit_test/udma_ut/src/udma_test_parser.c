@@ -1415,10 +1415,7 @@ void udmaTestPrint(const char *str, ...)
         SemaphoreP_pend(gUdmaTestUtObj.lockSem, SemaphoreP_WAIT_FOREVER);
     }
 
-    /* UART not yet supported on C7x */
-#if !(defined (__C7100__))
     UART_printf("%s", str);
-#endif
 
     if(TRUE == Udma_appIsPrintSupported())
     {
