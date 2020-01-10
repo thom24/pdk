@@ -142,11 +142,11 @@ const Udma_RmInitPrms gUdmaRmDefCfg_MainNavss[UDMA_NUM_CORE] =
         84U,                                        /* startIrIntr */
         20U,                                        /* numIrIntr */
 
-        UDMA_DEFAULT_RM_PROXY_THREAD_START,         /* proxyThreadNum */
+        0U,                                         /* proxyThreadNum */
         0U,                                         /* startC7xCoreIntr */
 
-        32U,                                        /* startProxy */
-        2U,                                         /* numProxy */
+        1U,                                         /* startProxy */
+        3U,                                         /* numProxy */
 
         0U,                                         /* startRingMon */
         3U,                                         /* numRingMon */
@@ -189,14 +189,14 @@ const Udma_RmInitPrms gUdmaRmDefCfg_MainNavss[UDMA_NUM_CORE] =
         228U,                                       /* startIrIntr */
         20U,                                        /* numIrIntr */
 
-        UDMA_DEFAULT_RM_PROXY_THREAD_START + 1U,    /* proxyThreadNum */
+        36U,                                        /* proxyThreadNum */
         0U,                                         /* startC7xCoreIntr */
 
-        34U,                                        /* startProxy */
-        14U,                                        /* numProxy */
+        37U,                                        /* startProxy */
+        7U,                                         /* numProxy */
 
-        3U,                                         /* startRingMon */
-        3U,                                         /* numRingMon */
+        22U,                                        /* startRingMon */
+        6U,                                         /* numRingMon */
     },
     /* MCU2_1 */
     {
@@ -236,13 +236,13 @@ const Udma_RmInitPrms gUdmaRmDefCfg_MainNavss[UDMA_NUM_CORE] =
         228U,                                       /* startIrIntr */
         20U,                                        /* numIrIntr */
 
-        UDMA_DEFAULT_RM_PROXY_THREAD_START + 2U,    /* proxyThreadNum */
+        44U,                                        /* proxyThreadNum */
         0U,                                         /* startC7xCoreIntr */
 
-        48U,                                        /* startProxy */
-        2U,                                         /* numProxy */
+        45U,                                        /* startProxy */
+        7U,                                         /* numProxy */
 
-        6U,                                         /* startRingMon */
+        28U,                                        /* startRingMon */
         3U,                                         /* numRingMon */
     },
     /* MCU3_0 */
@@ -283,13 +283,13 @@ const Udma_RmInitPrms gUdmaRmDefCfg_MainNavss[UDMA_NUM_CORE] =
         228U,                                       /* startIrIntr */
         16U,                                        /* numIrIntr */
 
-        UDMA_DEFAULT_RM_PROXY_THREAD_START + 3U,    /* proxyThreadNum */
+        16U,                                        /* proxyThreadNum */
         0U,                                         /* startC7xCoreIntr */
 
-        50U,                                        /* startProxy */
-        2U,                                         /* numProxy */
+        17U,                                        /* startProxy */
+        3U,                                         /* numProxy */
 
-        9U,                                         /* startRingMon */
+        7U,                                         /* startRingMon */
         3U,                                         /* numRingMon */
     },
     /* MCU3_1 */
@@ -330,13 +330,13 @@ const Udma_RmInitPrms gUdmaRmDefCfg_MainNavss[UDMA_NUM_CORE] =
         228U,                                       /* startIrIntr */
         8U,                                         /* numIrIntr */
 
-        UDMA_DEFAULT_RM_PROXY_THREAD_START + 4U,    /* proxyThreadNum */
+        20U,                                        /* proxyThreadNum */
         0U,                                         /* startC7xCoreIntr */
 
-        52U,                                        /* startProxy */
-        2U,                                         /* numProxy */
+        21U,                                        /* startProxy */
+        3U,                                         /* numProxy */
 
-        12U,                                        /* startRingMon */
+        10U,                                        /* startRingMon */
         3U,                                         /* numRingMon */
     },
     /* C7X_1 */
@@ -377,13 +377,13 @@ const Udma_RmInitPrms gUdmaRmDefCfg_MainNavss[UDMA_NUM_CORE] =
         700U,                                       /* startIrIntr */
         8U,                                         /* numIrIntr */
 
-        UDMA_DEFAULT_RM_PROXY_THREAD_START + 5U,    /* proxyThreadNum */
+        24U,                                        /* proxyThreadNum */
         32U,                                        /* startC7xCoreIntr */
 
-        54U,                                        /* startProxy */
-        2U,                                         /* numProxy */
+        25U,                                        /* startProxy */
+        3U,                                         /* numProxy */
 
-        15U,                                        /* startRingMon */
+        13U,                                        /* startRingMon */
         3U,                                         /* numRingMon */
     },
     /* C66X_1 */
@@ -424,13 +424,13 @@ const Udma_RmInitPrms gUdmaRmDefCfg_MainNavss[UDMA_NUM_CORE] =
         32U,                                        /* startIrIntr */
         8U,                                         /* numIrIntr */
 
-        UDMA_DEFAULT_RM_PROXY_THREAD_START + 6U,    /* proxyThreadNum */
+        28U,                                        /* proxyThreadNum */
         0U,                                         /* startC7xCoreIntr */
 
-        56U,                                        /* startProxy */
-        2U,                                         /* numProxy */
+        29U,                                        /* startProxy */
+        3U,                                         /* numProxy */
 
-        18U,                                        /* startRingMon */
+        16U,                                        /* startRingMon */
         3U,                                         /* numRingMon */
     },
     /* C66X_2 */
@@ -471,13 +471,13 @@ const Udma_RmInitPrms gUdmaRmDefCfg_MainNavss[UDMA_NUM_CORE] =
         32U,                                        /* startIrIntr */
         8U,                                         /* numIrIntr */
 
-        UDMA_DEFAULT_RM_PROXY_THREAD_START + 7U,    /* proxyThreadNum */
+        32U,                                        /* proxyThreadNum */
         0U,                                         /* startC7xCoreIntr */
 
-        58U,                                        /* startProxy */
-        2U,                                         /* numProxy */
+        33U,                                        /* startProxy */
+        3U,                                         /* numProxy */
 
-        21U,                                        /* startRingMon */
+        19U,                                        /* startRingMon */
         3U,                                         /* numRingMon */
     },
     /* MCU1_0 */
@@ -518,14 +518,14 @@ const Udma_RmInitPrms gUdmaRmDefCfg_MainNavss[UDMA_NUM_CORE] =
         78U,                                        /* startIrIntr */
         4U,                                         /* numIrIntr */
 
-        UDMA_DEFAULT_RM_PROXY_THREAD_START + 8U,    /* proxyThreadNum */
+        8U,                                         /* proxyThreadNum */
         0U,                                         /* startC7xCoreIntr */
 
-        60U,                                        /* startProxy */
-        2U,                                         /* numProxy */
+        9U,                                         /* startProxy */
+        3U,                                         /* numProxy */
 
-        24U,                                        /* startRingMon */
-        3U,                                         /* numRingMon */
+        5U,                                         /* startRingMon */
+        1U,                                         /* numRingMon */
     },
     /* MCU1_1 */
     {
@@ -565,14 +565,14 @@ const Udma_RmInitPrms gUdmaRmDefCfg_MainNavss[UDMA_NUM_CORE] =
         78U,                                        /* startIrIntr */
         4U,                                         /* numIrIntr */
 
-        UDMA_DEFAULT_RM_PROXY_THREAD_START + 9U,    /* proxyThreadNum */
+        12U,                                        /* proxyThreadNum */
         0U,                                         /* startC7xCoreIntr */
 
-        62U,                                        /* startProxy */
-        2U,                                         /* numProxy */
+        13U,                                        /* startProxy */
+        3U,                                         /* numProxy */
 
-        27U,                                        /* startRingMon */
-        3U,                                         /* numRingMon */
+        6U,                                         /* startRingMon */
+        1U,                                         /* numRingMon */
     }
 };
 
@@ -617,14 +617,14 @@ const Udma_RmInitPrms gUdmaRmDefCfg_McuNavss[UDMA_NUM_CORE] =
         448U,       /* startIrIntr */
         4U,         /* numIrIntr */
 
-        UDMA_DEFAULT_RM_PROXY_THREAD_START,         /* proxyThreadNum */
-        0U,                                         /* startC7xCoreIntr */
+        1U,         /* proxyThreadNum */
+        0U,         /* startC7xCoreIntr */
 
-        32U,                                        /* startProxy */
-        2U,                                         /* numProxy */
+        2U,         /* startProxy */
+        3U,         /* numProxy */
 
-        0U,                                         /* startRingMon */
-        3U,                                         /* numRingMon */
+        0U,         /* startRingMon */
+        3U,         /* numRingMon */
     },
     /* MCU2_0 */
     {
@@ -664,14 +664,14 @@ const Udma_RmInitPrms gUdmaRmDefCfg_McuNavss[UDMA_NUM_CORE] =
         248U,       /* startIrIntr */
         8U,         /* numIrIntr */
 
-        UDMA_DEFAULT_RM_PROXY_THREAD_START + 1U,    /* proxyThreadNum */
-        0U,                                         /* startC7xCoreIntr */
+        37U,        /* proxyThreadNum */
+        0U,         /* startC7xCoreIntr */
 
-        34U,                                        /* startProxy */
-        2U,                                         /* numProxy */
+        38U,        /* startProxy */
+        3U,         /* numProxy */
 
-        3U,                                         /* startRingMon */
-        3U,                                         /* numRingMon */
+        26U,        /* startRingMon */
+        3U,         /* numRingMon */
     },
     /* MCU2_1 */
     {
@@ -711,14 +711,14 @@ const Udma_RmInitPrms gUdmaRmDefCfg_McuNavss[UDMA_NUM_CORE] =
         248U,       /* startIrIntr */
         8U,         /* numIrIntr */
 
-        UDMA_DEFAULT_RM_PROXY_THREAD_START + 2U,    /* proxyThreadNum */
-        0U,                                         /* startC7xCoreIntr */
+        41U,        /* proxyThreadNum */
+        0U,         /* startC7xCoreIntr */
 
-        36U,                                        /* startProxy */
-        2U,                                         /* numProxy */
+        42U,        /* startProxy */
+        15U,        /* numProxy */
 
-        6U,                                         /* startRingMon */
-        3U,                                         /* numRingMon */
+        29U,        /* startRingMon */
+        3U,         /* numRingMon */
     },
     /* MCU3_0 */
     {
@@ -758,14 +758,14 @@ const Udma_RmInitPrms gUdmaRmDefCfg_McuNavss[UDMA_NUM_CORE] =
         248U,       /* startIrIntr */
         8U,         /* numIrIntr */
 
-        UDMA_DEFAULT_RM_PROXY_THREAD_START + 3U,    /* proxyThreadNum */
-        0U,                                         /* startC7xCoreIntr */
+        17U,        /* proxyThreadNum */
+        0U,         /* startC7xCoreIntr */
 
-        38U,                                        /* startProxy */
-        2U,                                         /* numProxy */
+        18U,        /* startProxy */
+        3U,         /* numProxy */
 
-        9U,                                         /* startRingMon */
-        3U,                                         /* numRingMon */
+        11U,        /* startRingMon */
+        3U,         /* numRingMon */
     },
     /* MCU3_1 */
     {
@@ -805,14 +805,14 @@ const Udma_RmInitPrms gUdmaRmDefCfg_McuNavss[UDMA_NUM_CORE] =
         248U,       /* startIrIntr */
         8U,         /* numIrIntr */
 
-        UDMA_DEFAULT_RM_PROXY_THREAD_START + 4U,    /* proxyThreadNum */
-        0U,                                         /* startC7xCoreIntr */
+        21U,        /* proxyThreadNum */
+        0U,         /* startC7xCoreIntr */
 
-        40U,                                        /* startProxy */
-        2U,                                         /* numProxy */
+        22U,        /* startProxy */
+        3U,         /* numProxy */
 
-        12U,                                        /* startRingMon */
-        3U,                                         /* numRingMon */
+        14U,        /* startRingMon */
+        3U,         /* numRingMon */
     },
     /* C7X_1 */
     {
@@ -852,14 +852,14 @@ const Udma_RmInitPrms gUdmaRmDefCfg_McuNavss[UDMA_NUM_CORE] =
         710U,       /* startIrIntr */
         4U,         /* numIrIntr */
 
-        UDMA_DEFAULT_RM_PROXY_THREAD_START + 5U,    /* proxyThreadNum */
-        40U,                                        /* startC7xCoreIntr */
+        25U,        /* proxyThreadNum */
+        40U,        /* startC7xCoreIntr */
 
-        42U,                                        /* startProxy */
-        2U,                                         /* numProxy */
+        26U,        /* startProxy */
+        3U,         /* numProxy */
 
-        15U,                                        /* startRingMon */
-        3U,                                         /* numRingMon */
+        17U,        /* startRingMon */
+        3U,         /* numRingMon */
     },
     /* C66X_1 */
     {
@@ -899,14 +899,14 @@ const Udma_RmInitPrms gUdmaRmDefCfg_McuNavss[UDMA_NUM_CORE] =
         40U,        /* startIrIntr */
         4U,         /* numIrIntr */
 
-        UDMA_DEFAULT_RM_PROXY_THREAD_START + 6U,    /* proxyThreadNum */
-        0U,                                         /* startC7xCoreIntr */
+        29U,        /* proxyThreadNum */
+        0U,         /* startC7xCoreIntr */
 
-        44U,                                        /* startProxy */
-        2U,                                         /* numProxy */
+        30U,        /* startProxy */
+        3U,         /* numProxy */
 
-        18U,                                        /* startRingMon */
-        3U,                                         /* numRingMon */
+        20U,        /* startRingMon */
+        3U,         /* numRingMon */
     },
     /* C66X_2 */
     {
@@ -946,14 +946,14 @@ const Udma_RmInitPrms gUdmaRmDefCfg_McuNavss[UDMA_NUM_CORE] =
         40U,        /* startIrIntr */
         4U,         /* numIrIntr */
 
-        UDMA_DEFAULT_RM_PROXY_THREAD_START + 7U,    /* proxyThreadNum */
-        0U,                                         /* startC7xCoreIntr */
+        33U,        /* proxyThreadNum */
+        0U,         /* startC7xCoreIntr */
 
-        46U,                                        /* startProxy */
-        2U,                                         /* numProxy */
+        34U,        /* startProxy */
+        3U,         /* numProxy */
 
-        21U,                                        /* startRingMon */
-        3U,                                         /* numRingMon */
+        23U,        /* startRingMon */
+        3U,         /* numRingMon */
     },
     /* MCU1_0 */
     {
@@ -993,14 +993,14 @@ const Udma_RmInitPrms gUdmaRmDefCfg_McuNavss[UDMA_NUM_CORE] =
         72U,        /* startIrIntr */
         6U,         /* numIrIntr */
 
-        UDMA_DEFAULT_RM_PROXY_THREAD_START + 8U,    /* proxyThreadNum */
-        0U,                                         /* startC7xCoreIntr */
+        9U,         /* proxyThreadNum */
+        0U,         /* startC7xCoreIntr */
 
-        48U,                                        /* startProxy */
-        2U,                                         /* numProxy */
+        10U,        /* startProxy */
+        3U,         /* numProxy */
 
-        24U,                                        /* startRingMon */
-        3U,                                         /* numRingMon */
+        5U,         /* startRingMon */
+        3U,         /* numRingMon */
     },
     /* MCU1_1 */
     {
@@ -1040,14 +1040,14 @@ const Udma_RmInitPrms gUdmaRmDefCfg_McuNavss[UDMA_NUM_CORE] =
         72U,        /* startIrIntr */
         6U,         /* numIrIntr */
 
-        UDMA_DEFAULT_RM_PROXY_THREAD_START + 9U,    /* proxyThreadNum */
-        0U,                                         /* startC7xCoreIntr */
+        13U,        /* proxyThreadNum */
+        0U,         /* startC7xCoreIntr */
 
-        50U,                                        /* startProxy */
-        2U,                                         /* numProxy */
+        14U,        /* startProxy */
+        3U,         /* numProxy */
 
-        27U,                                        /* startRingMon */
-        3U,                                         /* numRingMon */
+        8U,         /* startRingMon */
+        3U,         /* numRingMon */
     }
 };
 
