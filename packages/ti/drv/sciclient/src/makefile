@@ -15,15 +15,15 @@ PACKAGE_SRCS_COMMON =
 
 # SoC Specific source files
 ifeq ($(SOC),$(filter $(SOC), am65xx))
-  SRCDIR += soc/V0
-  INCDIR += soc/V0
-  GEN_FILE = soc/V0/sciclient_firmware_V0.h
+  SCICLIENT_SOCVER = V0
 endif
 ifeq ($(SOC),$(filter $(SOC), j721e j7200))
-  SRCDIR += soc/V1
-  INCDIR += soc/V1
-  GEN_FILE = soc/V1/sciclient_firmware_V1.h
+  SCICLIENT_SOCVER = V1
 endif
+
+SRCDIR += soc/$(SCICLIENT_SOCVER)
+INCDIR += soc/$(SCICLIENT_SOCVER)
+GEN_FILE = soc/$(SCICLIENT_SOCVER)/sciclient_firmware_$(SCICLIENT_SOCVER).h
 
 # List all the external components/interfaces, whose interface header files
 # need to be included for this component
@@ -89,9 +89,10 @@ ifeq ($(MAKERULEDIR), )
 endif
 include $(MAKERULEDIR)/common.mk
 
-$(SRCS): $(GEN_FILE)
+src/sciclient.c src/sciclient_boardcfg.c src/sciclient_dummy.c src/sciclient_priv.h soc/$(SCICLIENT_SOCVER)/sciclient_fmwSecureProxyMap.c : $(GEN_FILE)
 
 $(GEN_FILE):
+	echo $(SRCS_COMMON)
 ifneq ($(OS),Windows_NT)
 	$(CHMOD) a+x $(FIRMWARE_HEADER_GEN)
 endif
