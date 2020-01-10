@@ -102,6 +102,11 @@ SECTIONS
     /* USB ram disk dev-msc example */
     .bss:extMemCache:ramdisk : {} align (32)     > DDR0
 
+    /* SA sections */
+    .scBufs     	: {} align(4)  		> MSMC3
+    .saSrcBuffers     	: {} align(4)  		> MSMC3
+    .saDstBuffers     	: {} align(4)  		> MSMC3
+
     /* USB or any other LLD buffer for benchmarking */
     .benchmark_buffer (NOLOAD) {} ALIGN (8) > DDR0
 

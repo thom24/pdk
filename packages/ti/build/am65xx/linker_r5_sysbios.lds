@@ -84,6 +84,11 @@ SECTIONS
 	.sysmem  	: {} 				> MSMC3
 	.stack  	: {} align(4)		> MSMC3  (HIGH)
 
+    /* SA sections */
+    .scBufs     	: {} align(4)  		> DDR0
+    .saSrcBuffers     	: {} align(4)  		> DDR0
+    .saDstBuffers     	: {} align(4)  		> DDR0
+
     /* USB or any other LLD buffer for benchmarking */
     .benchmark_buffer (NOLOAD) {} ALIGN (8) > DDR0
 
