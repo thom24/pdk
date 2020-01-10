@@ -170,11 +170,10 @@ static int32_t Dss_dctrlDrvSetDpHpdCbParamsIoctl(
 static int32_t Dss_dctrlDrvProcessDpHpdIoctl(
                             Dss_DctrlDrvInstObj *instObj,
                             const uint32_t *dpProcessHpdParams);
-#endif
-
 static int32_t Dss_dctrlSetDsiParamsIoctl(Dss_DctrlDrvInstObj *instObj,
                                           const Dss_DctrlDsiParams *dsiPrms);
 static uint32_t Dss_dctrlDrvIsOutputDSI(uint32_t vpId);
+#endif
 
 
 static void Dss_dctrlVpSetGoBit(uint32_t vpId);
@@ -302,12 +301,12 @@ int32_t Dss_dctrlDrvInit(const Dss_DctrlDrvInitParams *drvInitParams)
     {
         retVal = Dss_dctrlDrvInitDp(drvInitParams->dpInitParams.isHpdSupported);
     }
-#endif
 
     if (TRUE == drvInitParams->dsiInitParams.isAvailable)
     {
         Dss_dctrlDrvInitDSI();
     }
+#endif
 
     if(FVID2_SOK == retVal)
     {
@@ -844,11 +843,11 @@ static int32_t Dss_dctrlDrvControl(Fdrv_Handle handle,
                     instObj,
                     (const Dss_DctrlDpHpdCbParams*) cmdArgs);
                 break;
-#endif
             case IOCTL_DSS_DCTRL_SET_DSI_PARAMS:
                 retVal = Dss_dctrlSetDsiParamsIoctl(
                     instObj, (const Dss_DctrlDsiParams*) cmdArgs);
                 break;
+#endif
             default:
                 GT_0trace(DssTrace,
                           GT_ERR,
@@ -1004,10 +1003,8 @@ static int32_t Dss_dctrlDrvSetVpParamsIoctl(
     const Dss_DctrlSyncOpCfg *syncOpCfg;
     Dss_DctrlVpParams *pVpParams;
     Dss_DctrlDrvInfo *pDrvInfo;
-    Dss_DctrlDrvCommonObj *pObj;
 
     pDrvInfo = &gDss_DctrlDrvInfo;
-    pObj = &gDss_DctrlDrvCommonObj;
 
     /* Check for NULL pointers */
     GT_assert(DssTrace, (NULL != instObj));
@@ -1039,12 +1036,19 @@ static int32_t Dss_dctrlDrvSetVpParamsIoctl(
         }
     }
 
-    if ((TRUE == Dss_dctrlDrvIsOutputDSI(vpId)) &&
-        (FALSE == pObj->drvInitParams.dsiInitParams.isAvailable))
+#if defined (SOC_J721E)
     {
-        retVal = FVID2_EINVALID_PARAMS;
-        GT_0trace(DssTrace, GT_ERR, "DSI is not supported!!\r\n");
+        Dss_DctrlDrvCommonObj *pObj;
+
+        pObj = &gDss_DctrlDrvCommonObj;
+        if ((TRUE == Dss_dctrlDrvIsOutputDSI(vpId)) &&
+            (FALSE == pObj->drvInitParams.dsiInitParams.isAvailable))
+        {
+            retVal = FVID2_EINVALID_PARAMS;
+            GT_0trace(DssTrace, GT_ERR, "DSI is not supported!!\r\n");
+        }
     }
+#endif
 
     if(FVID2_SOK == retVal)
     {
@@ -1122,12 +1126,14 @@ static int32_t Dss_dctrlDrvSetVpParamsIoctl(
             CSL_dssVpSetLcdLineNum(vpRegs, lcdOpTimingCfg->mInfo.height - 5U);
         }
 
+#if defined (SOC_J721E)
         if ((FVID2_SOK == retVal) &&
             (TRUE == Dss_dctrlDrvIsOutputDSI(vpId)))
         {
             retVal = Dss_dctrlDrvEnableVideoDSI(pDrvInfo, &lcdOpTimingCfg->mInfo,
                 lcdPolarityCfg->hsPolarity, lcdPolarityCfg->vsPolarity);
         }
+#endif
 
         Dss_dctrlVpEnable(vpId, TRUE);
     }
@@ -1225,7 +1231,6 @@ static uint32_t Dss_dctrlDrvIsOutputDP(uint32_t vpId)
 
     return vpFound;
 }
-#endif
 
 static uint32_t Dss_dctrlDrvIsOutputDSI(uint32_t vpId)
 {
@@ -1252,6 +1257,7 @@ static uint32_t Dss_dctrlDrvIsOutputDSI(uint32_t vpId)
 
     return vpFound;
 }
+#endif
 
 static int32_t Dss_dctrlDrvSetOverlayParamsIoctl(
                             Dss_DctrlDrvInstObj *instObj,
@@ -2323,6 +2329,7 @@ static void Dss_dctrlVpEnable(uint32_t vpId, uint32_t enable)
     }
 }
 
+#if defined (SOC_J721E)
 static int32_t Dss_dctrlSetDsiParamsIoctl(Dss_DctrlDrvInstObj *instObj,
                                           const Dss_DctrlDsiParams *dsiPrms)
 {
@@ -2366,4 +2373,4 @@ static int32_t Dss_dctrlSetDsiParamsIoctl(Dss_DctrlDrvInstObj *instObj,
 
     return retVal;
 }
-
+#endif
