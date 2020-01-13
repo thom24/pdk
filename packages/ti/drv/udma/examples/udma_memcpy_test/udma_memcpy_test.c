@@ -125,6 +125,7 @@ static void App_udmaTrpdInit(Udma_ChHandle chHandle,
                              uint32_t length);
 
 static void App_print(const char *str);
+static void App_printNum(const char *str, uint32_t num);
 
 /* ========================================================================== */
 /*                            Global Variables                                */
@@ -203,14 +204,14 @@ int32_t Udma_memcpyTest(void)
         {
             if (Udma_appIsUdmapStatsSupported() == TRUE)
             {
-                Udma_ChStats chStats;
+                Udma_ChStats    chStats;
                 retVal = Udma_chGetStats(chHandle, &chStats);
                 if(UDMA_SOK == retVal)
                 {
                     App_print("UDMA App memcpy test statistics:\n");
-                    UART_printf("Completed packet count       : %d\n", chStats.packetCnt);
-                    UART_printf("Completed payload byte count : %d\n", chStats.completedByteCnt);
-                    UART_printf("Started byte count           : %d\n", chStats.startedByteCnt);
+                    App_printNum("Completed packet count       : %d\n", chStats.packetCnt);
+                    App_printNum("Completed payload byte count : %d\n", chStats.completedByteCnt);
+                    App_printNum("Started byte count           : %d\n", chStats.startedByteCnt);
                 }
             }
         }
@@ -692,6 +693,20 @@ static void App_print(const char *str)
     if(TRUE == Udma_appIsPrintSupported())
     {
         printf("%s", str);
+    }
+
+    return;
+}
+static void App_printNum(const char *str, uint32_t num)
+{
+    static char printBuf[200U];
+
+    snprintf(printBuf, 200U, str, num);
+    UART_printf("%s", printBuf);
+
+    if(TRUE == Udma_appIsPrintSupported())
+    {
+        printf("%s", printBuf);
     }
 
     return;
