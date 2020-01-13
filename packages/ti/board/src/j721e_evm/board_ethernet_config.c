@@ -613,7 +613,7 @@ Board_STATUS Board_icssEthPhyConfig(void)
  *
  * \return  BOARD_SOK in case of success or appropriate error code
  */
-static Board_STATUS Board_cpsw9gEthConfig(uint32_t portNum, uint8_t mode)
+Board_STATUS Board_cpsw9gEthConfig(uint32_t portNum, uint8_t mode)
 {
     uint32_t status;
     uintptr_t modeSel;

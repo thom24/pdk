@@ -226,6 +226,21 @@ Board_STATUS Board_cpsw9gEnetExpComaModeCfg(bool enable);
  */
 Board_STATUS Board_cpsw9gEnetExpPhyReset(bool enableFlag);
 
+/**
+ * \brief  Configures the CPSW9G Subsytem for RGMII and RMII mode
+ *
+ * \param  portNum [IN]    EMAC port number
+ * \param  mode    [IN]    Mode selection for the specified port number
+ *                         000 - GMII
+ *                         001 - RMII
+ *                         010 - RGMII
+ *                         011 - SGMII
+ *                         100 - QSGMII
+ *
+ * \return  BOARD_SOK in case of success or appropriate error code
+ */
+Board_STATUS Board_cpsw9gEthConfig(uint32_t portNum, uint8_t mode);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
