@@ -703,7 +703,7 @@ static int32_t udmaTestDeinit(UdmaTestObj *testObj)
 static void udmaTestInitTestObj(UdmaTestObj *testObj, UdmaTestParams *testPrms)
 {
     uint32_t                taskCnt, chCnt, qCnt, chIdx, totalCh = 0U, cnt, dim;
-    UdmaTestTaskObj        *taskObj;
+    volatile UdmaTestTaskObj    *taskObj;
     const UdmaTestChPrm    *chPrms;
     const Udma_ChTxPrms    *txPrms = NULL;
     const Udma_ChRxPrms    *rxPrms = NULL;
