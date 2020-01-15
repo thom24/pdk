@@ -1251,6 +1251,17 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
         },
         .host_hierarchy_entries = {0},
     },
+    /* OTP access configuration */
+    .otp_config = {
+		.subhdr = {
+			.magic = TISCI_BOARDCFG_OTP_CFG_MAGIC_NUM,
+			.size = sizeof(struct tisci_boardcfg_extended_otp),
+		},
+                /* Host ID 0 is DMSC. This means no host has write acces to OTP array */
+		.write_host_id = 0,
+		/* This is an array with 32 entries */
+		.otp_entry = {0},
+	},
 };
 #endif
 
