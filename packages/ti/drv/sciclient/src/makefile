@@ -23,7 +23,6 @@ endif
 
 SRCDIR += soc/$(SCICLIENT_SOCVER)
 INCDIR += soc/$(SCICLIENT_SOCVER)
-GEN_FILE = soc/$(SCICLIENT_SOCVER)/sciclient_firmware_$(SCICLIENT_SOCVER).h
 
 # List all the external components/interfaces, whose interface header files
 # need to be included for this component
@@ -88,15 +87,6 @@ ifeq ($(MAKERULEDIR), )
   export MAKERULEDIR
 endif
 include $(MAKERULEDIR)/common.mk
-
-src/sciclient.c src/sciclient_boardcfg.c src/sciclient_dummy.c src/sciclient_priv.h soc/$(SCICLIENT_SOCVER)/sciclient_fmwSecureProxyMap.c : $(GEN_FILE)
-
-$(GEN_FILE):
-	echo $(SRCS_COMMON)
-ifneq ($(OS),Windows_NT)
-	$(CHMOD) a+x $(FIRMWARE_HEADER_GEN)
-endif
-	$(FIRMWARE_HEADER_GEN) $(SOC)$(FIRMWARE_HEADER_GEN_SUFFIX)
 
 # OBJs and libraries are built by using rule defined in rules_<target>.mk
 #     and need not be explicitly specified here
