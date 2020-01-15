@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2017-2019 Texas Instruments Incorporated
+ *  Copyright (C) 2017-2020 Texas Instruments Incorporated
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -53,7 +53,15 @@
 #ifndef TISCI_SEC_MACROS_H_
 #define TISCI_SEC_MACROS_H_
 
+/**
+ * \brief Maximum number of priv id slots supported by the hardware
+ */
 #define FWL_MAX_PRIVID_SLOTS (3U)
+
+/**
+ * \brief Length of UID
+ */
+#define UID_LEN_WORDS (8U)
 
 #endif
 

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2017-2019 Texas Instruments Incorporated
+ *  Copyright (C) 2017-2020 Texas Instruments Incorporated
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -63,31 +63,40 @@
 #include <am65x/tisci_sec_proxy.h>
 #include <am65x/tisci_boardcfg_constraints.h>
 #endif
+#if defined (SOC_AM6XX)
+#include <am65x_pg2/tisci_resasg_types.h>
+#include <am65x_pg2/tisci_hosts.h>
+#include <am65x_pg2/tisci_sec_proxy.h>
+#include <am65x_pg2/tisci_boardcfg_constraints.h>
+#endif
 #if defined (SOC_J721E)
 #include <j721e/tisci_resasg_types.h>
 #include <j721e/tisci_hosts.h>
 #include <j721e/tisci_sec_proxy.h>
 #include <j721e/tisci_boardcfg_constraints.h>
 #endif
-#include <tisci/security/tisci_firewall.h>
-#include <tisci/security/tisci_procboot.h>
-#include <tisci/security/tisci_sec_macros.h>
-#include <tisci/security/tisci_keystore.h>
-#include <tisci/security/tisci_rng.h>
-#include <tisci/security/tisci_sa2ul_pka.h>
-#include <tisci/tisci_boardcfg.h>
-#include <tisci/pm/tisci_pm_clock.h>
-#include <tisci/pm/tisci_pm_device.h>
-#include <tisci/pm/tisci_pm_core.h>
 #include <tisci/tisci_protocol.h>
+#include <tisci/security/tisci_sa2ul_pka.h>
+#include <tisci/security/tisci_ext_otp.h>
+#include <tisci/security/tisci_keystore.h>
+#include <tisci/security/tisci_sec_macros.h>
+#include <tisci/security/tisci_firewall.h>
+#include <tisci/security/tisci_rng.h>
+#include <tisci/security/tisci_procboot.h>
+#include <tisci/security/tisci_soc_uid.h>
+#include <tisci/security/tisci_secure_jtag.h>
 #include <tisci/tisci_core.h>
+#include <tisci/pm/tisci_pm_device.h>
+#include <tisci/pm/tisci_pm_clock.h>
+#include <tisci/pm/tisci_pm_core.h>
+#include <tisci/tisci_boardcfg.h>
 #include <tisci/rm/tisci_rm_ra.h>
+#include <tisci/rm/tisci_rm_proxy.h>
 #include <tisci/rm/tisci_rm_irq.h>
+#include <tisci/rm/tisci_rm_core.h>
+#include <tisci/rm/tisci_rm_shared.h>
 #include <tisci/rm/tisci_rm_udmap.h>
 #include <tisci/rm/tisci_rm_psil.h>
-#include <tisci/rm/tisci_rm_shared.h>
-#include <tisci/rm/tisci_rm_proxy.h>
-#include <tisci/rm/tisci_rm_core.h>
 #include <tisci/tisci_boardcfg_macros.h>
 
 #endif /* TISCI_INCLUDES_H */

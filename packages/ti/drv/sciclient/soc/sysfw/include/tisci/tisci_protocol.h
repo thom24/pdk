@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2017-2019 Texas Instruments Incorporated
+ *  Copyright (C) 2017-2020 Texas Instruments Incorporated
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -205,9 +205,34 @@ struct tisci_sec_header {
 /** Message to generate a symmetric key via RNG and save it in the runtime keystore */
 #define TISCI_MSG_KEYSTORE_GEN_SKEY_FROM_RNG    (0x9016U)
 
-
 /** Message to get random numbers */
 #define TISCI_MSG_GET_RANDOM                    (0x9020U)
+
+/** Message to get SOC UID */
+#define TISCI_MSG_GET_SOC_UID                   (0x9021U)
+
+/*********************************************************/
+/* Messages for handling extended OTP area */
+
+/** Message to read 32 bit OTP MMR by register number */
+#define TISCI_MSG_READ_OTP_MMR                  (0x9022U)
+
+/** Message to write to non-secure OTP Row */
+#define TISCI_MSG_WRITE_OTP_ROW                 (0x9023U)
+
+/** Message to lock OTP Row */
+#define TISCI_MSG_LOCK_OTP_ROW                  (0x9024U)
+
+/** Message to perform a global lock on OTP writes */
+#define TISCI_MSG_SOFT_LOCK_OTP_WRITE_GLOBAL    (0x9025U)
+
+/** Message ID reserved for row level lock on OTP writes */
+#define TISCI_MSG_RSVD_OTP_1                    (0x9026U)
+
+/** Message ID reserved for write to secure OTP row */
+#define TISCI_MSG_RSVD_OTP_2                    (0x9027U)
+
+/******************************************************/
 
 /* Processor Control APIs */
 

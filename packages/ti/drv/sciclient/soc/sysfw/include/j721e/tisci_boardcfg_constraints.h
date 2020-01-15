@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2017-2019 Texas Instruments Incorporated
+ *  Copyright (C) 2017-2020 Texas Instruments Incorporated
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -64,24 +64,6 @@
 #define TISCI_BOARDCFG_MAX_MCU_HOST_COUNT                             (4U)
 
 #define TISCI_BOARDCFG_RM_RESASG_ENTRIES_MAX                          (TISCI_RESASG_UTYPE_CNT * 2U)
-
-#define TISCI_BOARDCFG_SECPROXY_SCALING_FACTOR_MASK                   (0x01U)
-#define TISCI_BOARDCFG_SECPROXY_SCALING_PROFILE_MASK                  (0x01U)
-#define TISCI_BOARDCFG_SECPROXY_DISABLE_MAIN_NAV_SECURE_PROXY_MASK    (0x01U)
-
-#define TISCI_BOARDCFG_DEBUG_TRACE_DST_ENABLES_MASK                   (0x0FU)
-#define TISCI_BOARDCFG_DEBUG_TRACE_SRC_ENABLES_MASK                   (0x3FU)
-
-#define TISCI_BOARDCFG_RM_HOST_CFG_MAGIC_NUM                          (0x4C41U)
-#define TISCI_BOARDCFG_RM_RESASG_MAGIC_NUM                            (0x7B25U)
-
-#define TISCI_BOARDCFG_CONTROL_MAGIC_NUM                              (0xC1D3U)
-#define TISCI_BOARDCFG_SECPROXY_MAGIC_NUM                             (0x1207U)
-#define TISCI_BOARDCFG_MSMC_MAGIC_NUM                                 (0xA5C3U)
-#define TISCI_BOARDCFG_PROC_ACL_MAGIC_NUM                             (0xF1EAU)
-#define TISCI_BOARDCFG_HOST_HIERARCHY_MAGIC_NUM                       (0x8D27U)
-#define TISCI_BOARDCFG_DBG_CFG_MAGIC_NUM                              (0x020CU)
-#define TISCI_BOARDCFG_PMIC_CFG_MAGIC_NUM                             (0x3172U)
 
 #endif /* TISCI_BOARDCFG_CONSTRAINTS_H */
 

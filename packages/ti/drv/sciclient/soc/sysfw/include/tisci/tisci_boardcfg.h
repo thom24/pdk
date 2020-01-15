@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2017-2019 Texas Instruments Incorporated
+ *  Copyright (C) 2017-2020 Texas Instruments Incorporated
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -350,16 +350,48 @@ struct tisci_boardcfg_host_hierarchy {
 } __attribute__((__packed__));
 
 /**
+ * \brief access configuration for one OTP MMR. Each MMR is 32 bit wide.
+ *
+ * \param host_id Id of the host owning the MMR
+ *
+ * \param host_perms 2 bit wide fields specifying permissions
+ *                   bit 1:0 - 10b - non-secure, any other value secure
+ *                   bit 7:2 - Reserved for future use
+ */
+struct tisci_boardcfg_extended_otp_entry {
+    uint8_t    host_id;
+    uint8_t    host_perms;
+} __attribute__((__packed__));
+
+/**
+ * \brief Maximum number of OTP rows allowed by design
+ */
+#define MAX_NUM_EXT_OTP_MMRS (32U)
+
+/**
+ * \brief Access configuration for each OTP row
+ * \param subhdr Magic and size for integrity check
+ * \param otp_entry access configurations for each OTP MMR
+ * \param write_host_id ID of the host allowed to perform OTP write/lock operations.
+ */
+struct tisci_boardcfg_extended_otp {
+    struct tisci_boardcfg_substructure_header    subhdr;
+    struct tisci_boardcfg_extended_otp_entry    otp_entry[MAX_NUM_EXT_OTP_MMRS];
+    uint8_t                    write_host_id;
+} __attribute__((__packed__));
+/**
  * \brief Format of the complete board configuration.
  *
  * \param tisci_boardcfg_abi_rev Secure Board Config ABI version (separate from DMSC ABI version)
  * \param tisci_boardcfg_proc_acl Processor Access control list
  * \param tisci_boardcfg_host_hierarchy Host hierarchy list
+ * \param otp_config  OTP Configuration
  */
 struct tisci_boardcfg_sec {
     struct tisci_boardcfg_abi_rev        rev;
     struct tisci_boardcfg_proc_acl    processor_acl_list;
     struct tisci_boardcfg_host_hierarchy    host_hierarchy;
+    struct tisci_boardcfg_extended_otp    otp_config;
 } __attribute__((__packed__));
 
 /**
@@ -456,7 +488,7 @@ struct tisci_boardcfg_hashes_data {
     uint8_t    sec_bcfg_iv[TISCI_BOARDCFG_SEC_IV_LEN];
     uint8_t    sec_bcfg_rs[TISCI_BOARDCFG_SEC_RS_LEN];
     uint8_t    sec_bcfg_ver;
-    uint8_t      sec_bcfg_num_iter;
+    uint8_t    sec_bcfg_num_iter;
     uint8_t    hashes_received;
 };
 #endif          /* TISCI_BOARD_CFG_H */

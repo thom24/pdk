@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2017-2019 Texas Instruments Incorporated
+ *  Copyright (C) 2017-2020 Texas Instruments Incorporated
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -209,7 +209,6 @@
 #define TISCI_DEV_BOARD0 157
 #define TISCI_DEV_MCU_ARMSS0_CPU0 159
 #define TISCI_DEV_WKUP_DMSC0_CORTEX_M3_0 161
-#define TISCI_DEV_WKUP_DMSC0_INTR_AGGR_0 162
 #define TISCI_DEV_NAVSS0_CPTS0 163
 #define TISCI_DEV_NAVSS0_MAILBOX0_CLUSTER0 164
 #define TISCI_DEV_NAVSS0_MAILBOX0_CLUSTER1 165
@@ -233,13 +232,11 @@
 #define TISCI_DEV_NAVSS0_TIMER_MGR0 183
 #define TISCI_DEV_NAVSS0_TIMER_MGR1 184
 #define TISCI_DEV_NAVSS0_PROXY0 185
-#define TISCI_DEV_NAVSS0_SEC_PROXY0 186
 #define TISCI_DEV_NAVSS0_RINGACC0 187
 #define TISCI_DEV_NAVSS0_UDMAP0 188
 #define TISCI_DEV_MCU_NAVSS0_INTR_AGGR_0 189
 #define TISCI_DEV_MCU_NAVSS0_INTR_ROUTER_0 190
 #define TISCI_DEV_MCU_NAVSS0_PROXY0 191
-#define TISCI_DEV_MCU_NAVSS0_SEC_PROXY0 192
 #define TISCI_DEV_MCU_NAVSS0_MCRC0 193
 #define TISCI_DEV_MCU_NAVSS0_UDMAP0 194
 #define TISCI_DEV_MCU_NAVSS0_RINGACC0 195
