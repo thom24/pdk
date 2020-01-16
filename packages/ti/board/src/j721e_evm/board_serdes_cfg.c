@@ -57,8 +57,6 @@ static Board_STATUS Board_CfgSgmii(void)
     serdesLane0EnableParams.linkRate          = CSL_SERDES_LINK_RATE_1p25G;
     serdesLane0EnableParams.numLanes          = 0x2;
     serdesLane0EnableParams.laneMask          = 0x3;
-    serdesLane0EnableParams.numPLLs           = 0x1;
-    serdesLane0EnableParams.pllMask           = 0x1;
     serdesLane0EnableParams.SSC_mode          = CSL_SERDES_NO_SSC;
     serdesLane0EnableParams.phyType           = CSL_SERDES_PHY_TYPE_SGMII;
     serdesLane0EnableParams.operatingMode     = CSL_SERDES_FUNCTIONAL_MODE;
@@ -74,10 +72,15 @@ static Board_STATUS Board_CfgSgmii(void)
     CSL_serdesPorReset(serdesLane0EnableParams.baseAddr);
 
     /* Select the IP type, IP instance num, Serdes Lane Number */
-    CSL_serdesIPSelect(serdesLane0EnableParams.phyType, serdesLane0EnableParams.phyInstanceNum, serdesLane0EnableParams.serdesInstance, SGMII_LANE_NUM);
+    CSL_serdesIPSelect(CSL_CTRL_MMR0_CFG0_BASE,
+                       serdesLane0EnableParams.phyType,
+                       serdesLane0EnableParams.phyInstanceNum,
+                       serdesLane0EnableParams.serdesInstance,
+                       SGMII_LANE_NUM);
 
 
-    result = CSL_serdesRefclkSel(serdesLane0EnableParams.baseAddr,
+    result = CSL_serdesRefclkSel(CSL_CTRL_MMR0_CFG0_BASE,
+                                 serdesLane0EnableParams.baseAddr,
                                  serdesLane0EnableParams.refClock,
                                  serdesLane0EnableParams.refClkSrc,
                                  serdesLane0EnableParams.serdesInstance,
@@ -124,8 +127,6 @@ static Board_STATUS Board_CfgQsgmii(void)
     serdesLane0EnableParams.linkRate          = CSL_SERDES_LINK_RATE_5G;
     serdesLane0EnableParams.numLanes          = 0x2;
     serdesLane0EnableParams.laneMask          = 0x3;
-    serdesLane0EnableParams.numPLLs           = 0x1;
-    serdesLane0EnableParams.pllMask           = 0x1;
     serdesLane0EnableParams.SSC_mode          = CSL_SERDES_NO_SSC;
     serdesLane0EnableParams.phyType           = CSL_SERDES_PHY_TYPE_QSGMII;
     serdesLane0EnableParams.operatingMode     = CSL_SERDES_FUNCTIONAL_MODE;
@@ -141,10 +142,15 @@ static Board_STATUS Board_CfgQsgmii(void)
     CSL_serdesPorReset(serdesLane0EnableParams.baseAddr);
 
     /* Select the IP type, IP instance num, Serdes Lane Number */
-    CSL_serdesIPSelect(serdesLane0EnableParams.phyType, serdesLane0EnableParams.phyInstanceNum, serdesLane0EnableParams.serdesInstance, SGMII_LANE_NUM);
+    CSL_serdesIPSelect(CSL_CTRL_MMR0_CFG0_BASE,
+                       serdesLane0EnableParams.phyType,
+                       serdesLane0EnableParams.phyInstanceNum,
+                       serdesLane0EnableParams.serdesInstance,
+                       SGMII_LANE_NUM);
 
 
-    result = CSL_serdesRefclkSel(serdesLane0EnableParams.baseAddr,
+    result = CSL_serdesRefclkSel(CSL_CTRL_MMR0_CFG0_BASE,
+                                 serdesLane0EnableParams.baseAddr,
                                  serdesLane0EnableParams.refClock,
                                  serdesLane0EnableParams.refClkSrc,
                                  serdesLane0EnableParams.serdesInstance,

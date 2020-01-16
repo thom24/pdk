@@ -1,7 +1,7 @@
 /**
  *  \file     j721e/usb_wrapper.c
  *
- *  \brief    This file contains APIs for manipulating the SOC specific wrapper. 
+ *  \brief    This file contains APIs for manipulating the SOC specific wrapper.
  *            As the name suggests this file implements the USB wrapper as
  *            impemented by J7.
  *
@@ -60,7 +60,7 @@
 
 
 /* USB uses Sierra SERDES */
-#include <ti/csl/src/ip/serdes_cd/V0/cslr_wiz16b4m4cs.h>    
+#include <ti/csl/src/ip/serdes_cd/V0/cslr_wiz16b4m4cs.h>
 
 /* ========================================================================== */
 /*                 extern Function Prototypes                                 */
@@ -101,7 +101,7 @@ void usbHostIntrHandler(void* drvData)
 }
 #endif
 
-/* turn on the USB2 PHY clock and do its settings 
+/* turn on the USB2 PHY clock and do its settings
    the clock freq needs to be updated while the USBSS is in reset */
 void usbPhyOn(uint32_t portNumber, uint32_t invertPolarity)
 {
@@ -119,16 +119,16 @@ void usbPhyOn(uint32_t portNumber, uint32_t invertPolarity)
         usbCmnRegs = CSL_USB1_MMR_MMRVBP_USBSS_CMN_BASE;
     }
 
-    /* 
+    /*
      * assert reset to the USB controller to program the necessary bits
      * 0 to reset. 1 to release reset.
      */
     HW_WR_FIELD32(usbCmnRegs + CSL_USB3P0SS_CMN_USB3P0SS_W1,
                   CSL_USB3P0SS_CMN_USB3P0SS_W1_PWRUP_RST_N, 0);
 
-    
-    /* setting VBUS_SEL for external divider - J7 EVM has a voltage divider 
-     * for VBUS. Assuming everyone uses EVM has reference design. 
+
+    /* setting VBUS_SEL for external divider - J7 EVM has a voltage divider
+     * for VBUS. Assuming everyone uses EVM has reference design.
      * If not, we can disable this setting by setting the USB config */
     if (usbConfig->vbusDivider == 1)
     {
@@ -174,7 +174,7 @@ void usbPhyOn(uint32_t portNumber, uint32_t invertPolarity)
                CSL_USB3P0SS_CMN_STATIC_CONFIG_LANE_REVERSE, invertPolarity);
     }
 
-    /* release reset */ 
+    /* release reset */
     HW_WR_FIELD32(usbCmnRegs + CSL_USB3P0SS_CMN_USB3P0SS_W1,
                   CSL_USB3P0SS_CMN_USB3P0SS_W1_PWRUP_RST_N, 1);
 
@@ -182,11 +182,11 @@ void usbPhyOn(uint32_t portNumber, uint32_t invertPolarity)
 
 
 
-/* 
- * Setting up the USB wrapper for USB mode  (host or device mode) 
+/*
+ * Setting up the USB wrapper for USB mode  (host or device mode)
  * on a controller(portNumber)
  * Also need to set the USB2.0 or USB3.0 mode depending on config
- * 
+ *
  */
 #define MODESTRAP_SEL_HOST_MODE     (1)
 #define MODESTRAP_SEL_DEVICE_MODE   (2)
@@ -207,11 +207,11 @@ static int32_t usb3_wrapper_config(uint32_t portNumber, uint32_t isHostMode)
         usbCmnRegs = CSL_USB1_MMR_MMRVBP_USBSS_CMN_BASE;
     }
 
-    /* 
+    /*
      * assert reset to the USB controller to program the necessary bits
      * 0 to reset. 1 to release reset.
      */
-    HW_WR_FIELD32(usbCmnRegs + CSL_USB3P0SS_CMN_USB3P0SS_W1, 
+    HW_WR_FIELD32(usbCmnRegs + CSL_USB3P0SS_CMN_USB3P0SS_W1,
                   CSL_USB3P0SS_CMN_USB3P0SS_W1_PWRUP_RST_N, 0);
 
     /* set the USB controller to host or device mode */
@@ -223,22 +223,22 @@ static int32_t usb3_wrapper_config(uint32_t portNumber, uint32_t isHostMode)
     {
        modeStrap =  MODESTRAP_SEL_DEVICE_MODE;
     }
-    
-    HW_WR_FIELD32(usbCmnRegs + CSL_USB3P0SS_CMN_USB3P0SS_W1, 
+
+    HW_WR_FIELD32(usbCmnRegs + CSL_USB3P0SS_CMN_USB3P0SS_W1,
                   CSL_USB3P0SS_CMN_USB3P0SS_W1_MODESTRAP, modeStrap);
 
-    HW_WR_FIELD32(usbCmnRegs + CSL_USB3P0SS_CMN_USB3P0SS_W1, 
+    HW_WR_FIELD32(usbCmnRegs + CSL_USB3P0SS_CMN_USB3P0SS_W1,
                   CSL_USB3P0SS_CMN_USB3P0SS_W1_MODESTRAP_SEL,
                   MODESTRAP_USES_MODE_S_SEL);
 
     /* set to USB2.0 only if USB3.0 is not enabled. i.e SERDES is not used */
     if (usbConfig->usb30Enabled == FALSE) /* user asks for USB2.0 only */
     {
-        HW_WR_FIELD32(usbCmnRegs + CSL_USB3P0SS_CMN_USB3P0SS_W1, 
+        HW_WR_FIELD32(usbCmnRegs + CSL_USB3P0SS_CMN_USB3P0SS_W1,
                   CSL_USB3P0SS_CMN_USB3P0SS_W1_USB2_ONLY_MODE, 0x1);
     }
 
-    /* release reset */ 
+    /* release reset */
     HW_WR_FIELD32(usbCmnRegs + CSL_USB3P0SS_CMN_USB3P0SS_W1,
                   CSL_USB3P0SS_CMN_USB3P0SS_W1_PWRUP_RST_N, 1);
 
@@ -246,9 +246,9 @@ static int32_t usb3_wrapper_config(uint32_t portNumber, uint32_t isHostMode)
 }
 
 
-/* setting up USB clocks for USB instance #portNumber 
- * which is either 0 or 1 
- * 
+/* setting up USB clocks for USB instance #portNumber
+ * which is either 0 or 1
+ *
  * EVM has HFOSC0 connected to 19.2MHz crystal on EVM
  * and this matches with the allowed frequency USB PHY clock. So we will set the
  * USB PHY to use this HFOSC0
@@ -272,7 +272,7 @@ void usbClockCfg(uint32_t portNumber)
     {
         mmrUsbClkSel  = CSL_MAIN_CTRL_MMR_CFG0_USB1_CLKSEL;
     }
-    
+
     /* mux for usb2 ref clock */
     /* #define CSL_FINS(reg, PER_REG_FIELD, val) */
     CSL_FINS(*(uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE + mmrUsbClkSel),
@@ -291,8 +291,8 @@ void usbClockCfg(uint32_t portNumber)
 
 
 #define SERDES_NUMS   4
-/* 
- * Mapping the SERDES ID that can be used with the USB 
+/*
+ * Mapping the SERDES ID that can be used with the USB
  * USB uses SIERRA SERDES
  */
 static CSL_SerdesInstance usbIdSerdesIdMap[SERDES_NUMS] = {CSL_SIERRA_SERDES0,
@@ -307,7 +307,7 @@ static uint32_t usbSerdesBaseMap[SERDES_NUMS] = {CSL_SERDES_16G0_BASE,
                                                  CSL_SERDES_16G3_BASE};
 
 
-/* setting up clock for USB3.0 Super speed 
+/* setting up clock for USB3.0 Super speed
  * return 0 if success.
  */
 int32_t usbClockSSCfg(uint32_t portNumber)
@@ -317,8 +317,8 @@ int32_t usbClockSSCfg(uint32_t portNumber)
 
     const USB_Config*   usbConfig = &USB_config[portNumber];
 
-	CSL_SerdesLaneEnableParams serdesLaneEnableParams;
-	CSL_SerdesLaneEnableStatus laneRetVal = CSL_SERDES_LANE_ENABLE_NO_ERR;
+    CSL_SerdesLaneEnableParams serdesLaneEnableParams;
+    CSL_SerdesLaneEnableStatus laneRetVal = CSL_SERDES_LANE_ENABLE_NO_ERR;
 
     /* Unlock Lock1 Kick Registers - IP control / status regs */
     *(uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK1_KICK0) = KICK0;
@@ -341,7 +341,7 @@ int32_t usbClockSSCfg(uint32_t portNumber)
         rc = E_FAIL;
     }
 
-    if (portNumber == 0) 
+    if (portNumber == 0)
     {
         if (usbConfig->serdesId == 3)
         {
@@ -363,7 +363,7 @@ int32_t usbClockSSCfg(uint32_t portNumber)
             CSL_FINSR(*(volatile uint32_t *)(uintptr_t)
                       (CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_SERDES3_LN1_CTRL),1,0,0x2);
         }
-        else 
+        else
         {
             /* serdesId == 0 */
             CSL_FINS(*(uint32_t *)(uintptr_t)
@@ -393,8 +393,6 @@ int32_t usbClockSSCfg(uint32_t portNumber)
         serdesLaneEnableParams.linkRate       = CSL_SERDES_LINK_RATE_5G;
         serdesLaneEnableParams.numLanes       = 2; /* 2 lanes for USB-C laneswapping */
         serdesLaneEnableParams.laneMask       = 3; /* 2 lanes */
-        serdesLaneEnableParams.numPLLs        = 1;
-        serdesLaneEnableParams.pllMask        = 0x1;
         serdesLaneEnableParams.phyType        = CSL_SERDES_PHY_TYPE_USB;
         /*serdesLaneEnableParams.pcieGenType    = CSL_SERDES_PCIE_GEN3; */
         serdesLaneEnableParams.operatingMode  = CSL_SERDES_FUNCTIONAL_MODE;
@@ -411,7 +409,8 @@ int32_t usbClockSSCfg(uint32_t portNumber)
 
 
         /* selects the appropriate clocks for all serdes based on the protocol chosen */
-        rc = CSL_serdesRefclkSel(serdesLaneEnableParams.baseAddr,
+        rc = CSL_serdesRefclkSel(CSL_CTRL_MMR0_CFG0_BASE,
+                                 serdesLaneEnableParams.baseAddr,
                                  serdesLaneEnableParams.refClock,
                                  serdesLaneEnableParams.refClkSrc,
                                  serdesLaneEnableParams.serdesInstance,
@@ -446,7 +445,7 @@ int32_t usbClockSSCfg(uint32_t portNumber)
         }
     }
 
-    return rc; 
+    return rc;
 }
 
 /* Do USB-C lane swap when the USB-C cable is flipped */
@@ -461,12 +460,12 @@ int32_t usbcLaneSwap(uint32_t portNumber)
      * USBSS#0 can use SERDES#0 or SERDES#3
      * USBSS#1 can use SERDES#1 or SERDES#2
      */
-    if ((portNumber == 0) && 
+    if ((portNumber == 0) &&
         (!((usbConfig->serdesId == 0) || (usbConfig->serdesId == 3))))
     {
         rc = E_FAIL;
     }
-    if ((portNumber == 1) && 
+    if ((portNumber == 1) &&
         (!((usbConfig->serdesId == 1) || (usbConfig->serdesId == 2))))
     {
         rc = E_FAIL;
@@ -475,7 +474,7 @@ int32_t usbcLaneSwap(uint32_t portNumber)
     if (rc != E_FAIL)
     {
         /* now that we have validated to find the proper SERDES instance we need
-         * to work on, we perform the laneswap procedure by reset the PHY then 
+         * to work on, we perform the laneswap procedure by reset the PHY then
          * program the swap bit */
 
         /* find the SERDES base */
@@ -483,15 +482,15 @@ int32_t usbcLaneSwap(uint32_t portNumber)
 
         /* assert SERDES PHY reset - write 0 to reset */
         /* all SERDES registers are SIERRA SERDES (CS) */
-        HW_WR_FIELD32(serdesBase + CSL_WIZ16B4M4CS_WIZ_CONFIG_SERDES_RST, 
+        HW_WR_FIELD32(serdesBase + CSL_WIZ16B4M4CS_WIZ_CONFIG_SERDES_RST,
                 CSL_WIZ16B4M4CS_WIZ_CONFIG_SERDES_RST_PHY_RESET_N, 0);
 
         /* write the swap bit */
-        HW_WR_FIELD32(serdesBase + CSL_WIZ16B4M4CS_WIZ_CONFIG_SERDES_TYPEC, 
+        HW_WR_FIELD32(serdesBase + CSL_WIZ16B4M4CS_WIZ_CONFIG_SERDES_TYPEC,
                       CSL_WIZ16B4M4CS_WIZ_CONFIG_SERDES_TYPEC_LN10_SWAP, 0x1);
 
         /* clear the PHY reset condition */
-        HW_WR_FIELD32(serdesBase + CSL_WIZ16B4M4CS_WIZ_CONFIG_SERDES_RST, 
+        HW_WR_FIELD32(serdesBase + CSL_WIZ16B4M4CS_WIZ_CONFIG_SERDES_RST,
                 CSL_WIZ16B4M4CS_WIZ_CONFIG_SERDES_RST_PHY_RESET_N, 1);
     }
 
@@ -501,8 +500,8 @@ int32_t usbcLaneSwap(uint32_t portNumber)
 /* Enable all the interrupts for wrapper */
 void usbCdncdEnableWrapperIntr(uint32_t baseAddr)
 {
-    /* No need to set anything on the wrapper to 
-     * Enable USB main interrupts on J7 
+    /* No need to set anything on the wrapper to
+     * Enable USB main interrupts on J7
      *
      * CDN core interrupts are wired directly to GIC or Int Router
      */
@@ -550,8 +549,8 @@ void usb_controller_setup_host_mode(uint32_t portNum)
 /* Enable all the interrupts for wrapper */
 void usbDwcDcdEnableWrapperIntr(uint32_t baseAddr)
 {
-    /* No need to set anything on the wrapper to 
-     * Enable USB main interrupts on AM65xx. 
+    /* No need to set anything on the wrapper to
+     * Enable USB main interrupts on AM65xx.
      *
      * WR1 IRQ_STATUS_RAW_MAIN will trigger USB main interrupt
      * WR1 to IRQ_STATUS_MAIN to clear set interrupt.
@@ -559,8 +558,8 @@ void usbDwcDcdEnableWrapperIntr(uint32_t baseAddr)
      * DWC core interrupt will still trigger interrupt no matter what.
      */
 
-    /* USB misc interrupts enabling is still done through 
-       IRQ_ENABLE_SET_MISC, but since we are not handling MISC interrupts 
+    /* USB misc interrupts enabling is still done through
+       IRQ_ENABLE_SET_MISC, but since we are not handling MISC interrupts
        now so not enabling them */
 }
 
