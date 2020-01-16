@@ -22,7 +22,7 @@ endif
   CG_XML_VERSION=2.61.00
 
   #Component versions for non-TDA builds
-  BIOS_VERSION=6_76_03_01
+  BIOS_VERSION=6_76_04_02
   XDC_VERSION=3_55_02_22_core
 
   EDMA_VERSION=2_12_05_30E
