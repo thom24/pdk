@@ -47,7 +47,7 @@
  *  Supported Platforms:j721e_evm.
  *
  */
- 
+
 /* Test application local header file */
 #include "cpsw_eth_test.h"
 
@@ -219,7 +219,7 @@ static int8_t boarDiag_cpswInitRxReadyPktQ(void)
                                                   UDMA_CACHELINE_ALIGNMENT);
         if(pPktInfo == NULL)
         {
-           UART_printf("\n"); 
+           UART_printf("\n");
         }
         CPSW_UTILS_SET_PKT_APP_STATE(&pPktInfo->pktState,
                                      CPSW_PKTSTATE_APP_WITH_FREEQ);
@@ -240,7 +240,7 @@ static int8_t boarDiag_cpswInitRxReadyPktQ(void)
     if(CpswUtils_getQCount(&rxReadyQ) != 0U )
     {
         UART_printf("rxReadyQ is not zero,...Exiting\n");
-        return -1;        
+        return -1;
     }
 
     CpswAppUtils_validatePacketState(&gCpswLpbkObj.rxFreeQ,
@@ -349,7 +349,7 @@ static int32_t BoardDiag_cpswChangeHostAleEntry(uint8_t macAddr[])
         UART_printf("Setting the ALE port state to forward failed with error status - %d\n\r", status);
         return status;
     }
-    
+
     return status;
 }
 
@@ -531,7 +531,7 @@ static void BoardDiag_cpswShowStats(void)
     status = Cpsw_ioctl(gCpswLpbkObj.hCpsw,
                         gCpswLpbkObj.coreId,
                         CPSW_STATS_IOCTL_GET_HOSTPORT_STATS,
-                        &prms);                        
+                        &prms);
     if (status != CPSW_SOK)
     {
         UART_printf("CpswApp_showStats() failed to get host stats: %d\n",
@@ -961,6 +961,7 @@ static int32_t BoardDiag_cpswOpen(void)
 
         CpswAppBoardUtils_setPhyConfig(gCpswLpbkObj.cpswType,
                                        linkArgs0.portNum,
+                                       macConfig,
                                        interface,
                                        phyConfig);
 
@@ -983,6 +984,7 @@ static int32_t BoardDiag_cpswOpen(void)
 
         CpswAppBoardUtils_setPhyConfig(gCpswLpbkObj.cpswType,
                                        linkArgs1.portNum,
+                                       macConfig,
                                        interface,
                                        phyConfig);
         if(status == CPSW_PHY_INVALID_PHYADDR)
@@ -1025,7 +1027,7 @@ static int32_t BoardDiag_cpswOpen(void)
 
 /**
  * \brief   This function is used to perform the CPSW9G
- *          Ethernet port to port external loopback test 
+ *          Ethernet port to port external loopback test
  *
  * \return  int32_t
  *               0 - in case of success
@@ -1042,8 +1044,7 @@ int32_t BoardDiag_cpswLoopbackTest(void)
     CpswAle_SetPortStateInArgs setPortStateInArgs;
 
     CpswAppBoardUtils_init();
-    CpswAppUtils_enableClocks(gCpswLpbkObj.cpswType,
-                              MAC_CONN_TYPE_RGMII_FORCE_1000_FULL);
+    CpswAppUtils_enableClocks(gCpswLpbkObj.cpswType);
 
     gCpswLpbkObj.coreId = CpswAppSoc_getCoreId();
 
@@ -1234,7 +1235,7 @@ int8_t BoardDiag_CpswEthRunTest(void)
     else
     {
         gCpswLpbkObj.portNum0 = CPSW_MAC_PORT_0;
-        gCpswLpbkObj.portNum1 = CPSW_MAC_PORT_1;        
+        gCpswLpbkObj.portNum1 = CPSW_MAC_PORT_1;
     }
 
     /* Run the loopback test */
