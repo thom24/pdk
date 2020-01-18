@@ -55,12 +55,10 @@
 #include <ti/drv/sciclient/soc/sciclient_soc_priv.h>
 
 #if defined (SOC_AM65XX)
-#include <ti/drv/sciclient/soc/V0/sciclient_firmware_V0.h>
 #include <ti/drv/sciclient/soc/V0/sciclient_defaultBoardcfg.h>
 #endif
 
 #if defined (SOC_J721E) || defined (SOC_J7200)
-#include <ti/drv/sciclient/soc/V1/sciclient_firmware_V1.h>
 #include <ti/drv/sciclient/soc/V1/sciclient_defaultBoardcfg.h>
 #endif
 
