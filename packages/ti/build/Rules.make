@@ -171,14 +171,15 @@ export bios_PATH := $(BIOS_INSTALL_PATH)
 export xdc_PATH := $(XDC_INSTALL_PATH)
 export edma3_lld_PATH := $(EDMA3LLD_BIOS6_INSTALLDIR)
 export ndk_PATH := $(NDK_INSTALL_PATH)
+export ns_PATH := $(NS_INSTALL_PATH)
 export radarLink_PATH := $(RADARLINK_INSTALL_PATH)
 export ipc_PATH := $(IPC_INSTALL_PATH)
 export uia_PATH := $(UIA_INSTALL_PATH)
 
 export ROOTDIR := $(pdk_PATH)
-XDCPATH = 
+XDCPATH =
 ifeq ($(BUILD_OS_TYPE),tirtos)
-  XDCPATH = $(bios_PATH)/packages;$(xdc_PATH)/packages;$(edma3_lld_PATH)/packages;$(ndk_PATH)/packages;$(pdk_PATH);$(ipc_PATH)/packages;$(uia_PATH)/packages;
+  XDCPATH = $(bios_PATH)/packages;$(xdc_PATH)/packages;$(edma3_lld_PATH)/packages;$(ndk_PATH)/packages;$(ns_PATH)/;$(pdk_PATH);$(ipc_PATH)/packages;$(uia_PATH)/packages;
 endif
 export XDCPATH
 

@@ -76,6 +76,11 @@ ifeq ($(BUILD_OS_TYPE),tirtos)
   # NDK
   ndk_INCLUDE = $(ndk_PATH)/packages
   export ndk_INCLUDE
+
+  # NS
+  ns_INCLUDE = $(ns_PATH)/source/
+  export ns_INCLUDE
+
 endif
 
 #Below applicable only for TDA devices
