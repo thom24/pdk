@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -107,19 +107,25 @@
 /* @} */
 
 #if defined(j721e_evm)
+#include <ti/board/src/devices/common/common.h>
+
 #include <ti/board/src/devices/fpd/ds90ub924.h>
 #include <ti/board/src/devices/fpd/ds90ub953.h>
 #include <ti/board/src/devices/fpd/ds90ub960.h>
 #include <ti/board/src/devices/fpd/ds90ub941.h>
-#include <ti/board/src/devices/sensors/imx390.h>
-#include <ti/board/src/devices/common/common.h>
-#include <ti/board/src/devices/combos/ds90ub9xx_tlc59108.h>
-#include <ti/board/src/devices/sensors/tlc59108.h>
-#include <ti/board/src/devices/audio/pcm3168A.h>
 #include <ti/board/src/devices/fpd/ds90ub925.h>
 #include <ti/board/src/devices/fpd/ds90ub926.h>
-#include <ti/board/src/devices/audio/afe8310.h>
+#include <ti/board/src/devices/fpd/ds90ub9702.h>
+
+#include <ti/board/src/devices/sensors/imx390.h>
+#include <ti/board/src/devices/sensors/tlc59108.h>
+
+#include <ti/board/src/devices/combos/ds90ub9xx_tlc59108.h>
 #include <ti/board/src/devices/combos/ds90ub92x_afe8310.h>
+
+#include <ti/board/src/devices/audio/pcm3168A.h>
+#include <ti/board/src/devices/audio/afe8310.h>
+
 #include <ti/board/src/devices/pmic/tps65941.h>
 #endif
 
