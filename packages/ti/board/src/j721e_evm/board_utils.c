@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -175,6 +175,49 @@ bool Board_isAlpha(uint32_t boardID)
     }
 
     return alphaBoard;
+}
+
+/**
+ *  \brief    Function to detect ENET expansion application card type
+ *
+ *  ENET expansion connector supports QSGMII and SGMII application cards.
+ *  This function detects type of the application card connected on
+ *  ENET expansion connector.
+ *
+ *  \return
+ *            0 (BOARD_ENET_NONE)   - No board connected or invalid board ID data
+ *            1 (BOARD_ENET_QSGMII) - QSGMII board connected
+ *            2 (BOARD_ENET_SGMII)  - SGMII board connected
+ *           -1 (BOARD_ENET_UNKOWN) - Unknown board
+*/
+int32_t Board_detectEnetCard(void)
+{
+    Board_IDInfo_v2 info;
+    Board_STATUS status;
+    int8_t ret = 0;
+
+    status = Board_getBoardData(&info, BOARD_ID_ENET);
+    if(status == 0)
+    {
+        if((strcmp(info.boardInfo.boardName, "J7X-VSC8514-ETH")) == 0)
+        {
+            ret = BOARD_ENET_QSGMII;
+        }
+        else if((strcmp(info.boardInfo.boardName, "J7X-DP83869-ETH")) == 0)
+        {
+            ret = BOARD_ENET_SGMII;
+        }
+        else
+        {
+            ret = BOARD_ENET_UNKOWN;
+        }
+    }
+    else
+    {
+        ret = BOARD_ENET_NONE;
+    }
+
+    return ret;
 }
 
 /**

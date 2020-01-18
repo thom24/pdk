@@ -237,36 +237,33 @@ Board_STATUS Board_cpsw9gEnetExpPhyReset(bool enableFlag)
     Board_IoExpCfg_t ioExpCfg;
     Board_STATUS status = BOARD_SOK;
 
-    if (Board_detectBoard(BOARD_ID_ENET) == TRUE)
+    if (1U == enableFlag)
     {
-        if (1U == enableFlag)
-        {
-            /* EXP_ENET_RSTz - set to 0 for PHY reset */
-            ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_DEVICE2_INSTANCE;
-            ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
-            ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_DEVICE2_ADDR;
-            ioExpCfg.enableIntr  = false;
-            ioExpCfg.ioExpType   = THREE_PORT_IOEXP;
-            ioExpCfg.portNum     = PORTNUM_2;
-            ioExpCfg.pinNum      = PIN_NUM_1;
-            ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_LOW;
+        /* EXP_ENET_RSTz - set to 0 for PHY reset */
+        ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_DEVICE2_INSTANCE;
+        ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
+        ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_DEVICE2_ADDR;
+        ioExpCfg.enableIntr  = false;
+        ioExpCfg.ioExpType   = THREE_PORT_IOEXP;
+        ioExpCfg.portNum     = PORTNUM_2;
+        ioExpCfg.pinNum      = PIN_NUM_1;
+        ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_LOW;
 
-            status = Board_control(BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT, &ioExpCfg);
-        }
-        else
-        {
-            /* EXP_ENET_RSTz - set to 1 to take PHY out of reset (normal operation)*/
-            ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_DEVICE2_INSTANCE;
-            ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
-            ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_DEVICE2_ADDR;
-            ioExpCfg.enableIntr  = false;
-            ioExpCfg.ioExpType   = THREE_PORT_IOEXP;
-            ioExpCfg.portNum     = PORTNUM_2;
-            ioExpCfg.pinNum      = PIN_NUM_1;
-            ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_HIGH;
+        status = Board_control(BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT, &ioExpCfg);
+    }
+    else
+    {
+        /* EXP_ENET_RSTz - set to 1 to take PHY out of reset (normal operation)*/
+        ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_DEVICE2_INSTANCE;
+        ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
+        ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_DEVICE2_ADDR;
+        ioExpCfg.enableIntr  = false;
+        ioExpCfg.ioExpType   = THREE_PORT_IOEXP;
+        ioExpCfg.portNum     = PORTNUM_2;
+        ioExpCfg.pinNum      = PIN_NUM_1;
+        ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_HIGH;
 
-            status = Board_control(BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT, &ioExpCfg);
-        }
+        status = Board_control(BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT, &ioExpCfg);
     }
 
     return status;
@@ -619,6 +616,8 @@ Board_STATUS Board_cpsw9gEthConfig(uint32_t portNum, uint8_t mode)
     uintptr_t modeSel;
     uint32_t regData;
 
+    Board_unlockMMR();
+
     modeSel = CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_ENET1_CTRL + (portNum * 0x04);
     regData = CSL_REG32_RD(modeSel);
     regData = mode;
@@ -720,8 +719,6 @@ Board_STATUS Board_ethConfigCpsw9g(void)
 {
     Board_STATUS status = BOARD_SOK;
     uint8_t portNum;
-
-    Board_unlockMMR();
 
     /* On J721E EVM to use all 8 ports simultaneously, we use below configuration
        RGMII Ports - 1,3,4,8. QSGMII ports - 2 (main),5,6,7 (sub)*/
