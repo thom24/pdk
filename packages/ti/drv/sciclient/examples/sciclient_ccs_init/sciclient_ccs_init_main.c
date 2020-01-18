@@ -191,11 +191,6 @@ static int32_t setPLLClk(uint32_t modId, uint32_t clkId, uint64_t clkRate);
 
 int32_t main(void)
 {
-    Board_initCfg           boardCfg;
-    
-    boardCfg = BOARD_INIT_PINMUX_CONFIG |
-               BOARD_INIT_UART_STDIO;
-    Board_init(boardCfg);
     App_getRevisionTest();
 
     return 0;

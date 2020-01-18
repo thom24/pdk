@@ -14,7 +14,7 @@ INCDIR = .
 
 # List all the external components/interfaces, whose interface header files
 # need to be included for this component
-INCLUDE_EXTERNAL_INTERFACES = pdk sciclient osal_nonos board uart
+INCLUDE_EXTERNAL_INTERFACES = pdk sciclient osal_nonos 
 
 # List all the components required by the application
 COMP_LIST_COMMON  = sciclient csl osal_nonos csl_init board uart i2c
