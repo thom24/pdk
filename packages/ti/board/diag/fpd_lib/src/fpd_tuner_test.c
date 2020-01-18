@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -57,10 +57,50 @@ Board_FpdRmtDevObj fpdTunerRmtParams[8] =
     {0x00, 0x00}
 };
 
+Board_FpdRmtDevObj testSetfpdTunerRmtParams[8] =
+{
+    {0xff, 0xff},
+    {0xff, 0xff},
+    {0xff, 0xff},
+    {0xff, 0xff},
+    {0xff, 0xff},
+    {0xff, 0xff},
+    {0xff, 0xff},
+    {0xff, 0xff}
+};
+
+Board_FpdRmtDevObj testClrfpdTunerRmtParams[8] =
+{
+    {0x01, 0x01},
+    {0x01, 0x01},
+    {0x01, 0x01},
+    {0x01, 0x01},
+    {0x01, 0x01},
+    {0x01, 0x01},
+    {0x01, 0x01},
+    {0x01, 0x01}
+};
+
 uint8_t ub926DefReg[] = {
     0x04,
     0xf0,
     0x1e,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
     0x00
 };
 
@@ -100,6 +140,150 @@ fpdRegCfgObj_t ub926RegDetails[] =
         0U,
         0U,
         0x80U
+    },
+
+    {
+        BOARD_FPD_UB926_SLAVE_ID0_REG_ADDR,
+        0U,
+        0U,
+        0U,
+        0xfeU,
+        0x02U
+    },
+
+    {
+        BOARD_FPD_UB926_SLAVE_ID1_REG_ADDR,
+        0U,
+        0U,
+        0U,
+        0xfeU,
+        0x02U
+    },
+
+    {
+        BOARD_FPD_UB926_SLAVE_ID2_REG_ADDR,
+        0U,
+        0U,
+        0U,
+        0xfeU,
+        0x02U
+    },
+
+    {
+        BOARD_FPD_UB926_SLAVE_ID3_REG_ADDR,
+        0U,
+        0U,
+        0U,
+        0xfeU,
+        0x02U
+    },
+
+    {
+        BOARD_FPD_UB926_SLAVE_ID4_REG_ADDR,
+        0U,
+        0U,
+        0U,
+        0xfeU,
+        0x02U
+    },
+
+    {
+        BOARD_FPD_UB926_SLAVE_ID5_REG_ADDR,
+        0U,
+        0U,
+        0U,
+        0xfeU,
+        0x02U
+    },
+
+    {
+        BOARD_FPD_UB926_SLAVE_ID6_REG_ADDR,
+        0U,
+        0U,
+        0U,
+        0xfeU,
+        0x02U
+    },
+
+    {
+        BOARD_FPD_UB926_SLAVE_ID7_REG_ADDR,
+        0U,
+        0U,
+        0U,
+        0xfeU,
+        0x02U
+    },
+
+    {
+        BOARD_FPD_UB926_SLAVE_ALIAS0_REG_ADDR,
+        0U,
+        0U,
+        0U,
+        0xfeU,
+        0x02U
+    },
+
+    {
+        BOARD_FPD_UB926_SLAVE_ALIAS1_REG_ADDR,
+        0U,
+        0U,
+        0U,
+        0xfeU,
+        0x02U
+    },
+
+    {
+        BOARD_FPD_UB926_SLAVE_ALIAS2_REG_ADDR,
+        0U,
+        0U,
+        0U,
+        0xfeU,
+        0x02U
+    },
+
+    {
+        BOARD_FPD_UB926_SLAVE_ALIAS3_REG_ADDR,
+        0U,
+        0U,
+        0U,
+        0xfeU,
+        0x02U
+    },
+
+    {
+        BOARD_FPD_UB926_SLAVE_ALIAS4_REG_ADDR,
+        0U,
+        0U,
+        0U,
+        0xfeU,
+        0x02U
+    },
+
+    {
+        BOARD_FPD_UB926_SLAVE_ALIAS5_REG_ADDR,
+        0U,
+        0U,
+        0U,
+        0xfeU,
+        0x02U
+    },
+
+    {
+        BOARD_FPD_UB926_SLAVE_ALIAS6_REG_ADDR,
+        0U,
+        0U,
+        0U,
+        0xfeU,
+        0x02U
+    },
+
+    {
+        BOARD_FPD_UB926_SLAVE_ALIAS7_REG_ADDR,
+        0U,
+        0U,
+        0U,
+        0xfeU,
+        0x02U
     },
 
     {
@@ -329,6 +513,15 @@ static int8_t Board_fpdUB926SetCfg(void *handle)
         UART_printf("'Board_fpdUb926SetBackChModeCtrl' cfg failed\n\r");
     }
 
+    ret = Board_fpdUb926RmtSerSlvDevAliasIdCfg((void *)handle,
+                                               &fpdTunerModParams,
+                                               testSetfpdTunerRmtParams);
+    if(ret != 0)
+    {
+        UART_printf("'Board_fpdUb926RmtSerSlvDevAliasIdCfg' cfg failed\n\r");
+        return -1;
+    }
+
     return ret;
 }
 
@@ -336,7 +529,16 @@ static int8_t Board_fpdUB926ClrCfg(void *handle)
 {
     int8_t ret = 0;
     
-        ret = Board_fpdUb926SetOverrideFCConfigModeCtrl((void *)handle,
+    ret = Board_fpdUb926RmtSerSlvDevAliasIdCfg((void *)handle,
+                                               &fpdTunerModParams,
+                                               testClrfpdTunerRmtParams);
+    if(ret != 0)
+    {
+        UART_printf("'Board_fpdUb926RmtSerSlvDevAliasIdCfg' cfg failed\n\r");
+        return -1;
+    }
+
+    ret = Board_fpdUb926SetOverrideFCConfigModeCtrl((void *)handle,
                                                         &fpdTunerModParams,
                                                         BOARD_FPD_MODE_ENABLE);
     if(ret != 0)

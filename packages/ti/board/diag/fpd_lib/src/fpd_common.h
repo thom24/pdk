@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -40,7 +40,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
- 
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -77,6 +77,8 @@ typedef enum cfgVerifyFlag
 
 int32_t BoardDiag_fpdTuner_run_test();
 int8_t BoardDiag_fpd_dsi_test(void);
+int32_t BoardDiag_fpdCsi_run_test();
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

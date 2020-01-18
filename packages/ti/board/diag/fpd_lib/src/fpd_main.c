@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -87,6 +87,7 @@ int main(void)
     {
         UART_printf("\n1.FPD DSI (ds90ub941 & ds90ub924)\n");
         UART_printf  ("2.FPD TUNER (ds90ub926 & ds90ub925)\n");
+        UART_printf  ("3.FPD CSI (ds90ub9702)\n");
         UART_printf  ("Select Option: ");
         UART_scanFmt("%d", &userInput);
         
@@ -113,6 +114,18 @@ int main(void)
             else
             {
                 UART_printf("\nFPD LIB test Failed\n");                     
+            }
+        }
+        if (userInput == 3)
+        {
+            ret = BoardDiag_fpdCsi_run_test();
+            if(ret == 0)
+            {
+                UART_printf("\nFPD LIB test Passed\n");
+            }
+            else
+            {
+                UART_printf("\nFPD LIB test Failed\n");
             }
         }
     }

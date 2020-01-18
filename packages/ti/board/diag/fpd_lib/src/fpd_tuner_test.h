@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -45,6 +45,22 @@ extern "C" {
 #endif
 
 #include "fpd_common.h"
+
+#define BOARD_FPD_UB926_SLAVE_ID1_REG_ADDR              (0x09U)
+#define BOARD_FPD_UB926_SLAVE_ID2_REG_ADDR              (0x0AU)
+#define BOARD_FPD_UB926_SLAVE_ID3_REG_ADDR              (0x0BU)
+#define BOARD_FPD_UB926_SLAVE_ID4_REG_ADDR              (0x0CU)
+#define BOARD_FPD_UB926_SLAVE_ID5_REG_ADDR              (0x0DU)
+#define BOARD_FPD_UB926_SLAVE_ID6_REG_ADDR              (0x0EU)
+#define BOARD_FPD_UB926_SLAVE_ID7_REG_ADDR              (0x0FU)
+
+#define BOARD_FPD_UB926_SLAVE_ALIAS1_REG_ADDR           (0x11U)
+#define BOARD_FPD_UB926_SLAVE_ALIAS2_REG_ADDR           (0x12U)
+#define BOARD_FPD_UB926_SLAVE_ALIAS3_REG_ADDR           (0x13U)
+#define BOARD_FPD_UB926_SLAVE_ALIAS4_REG_ADDR           (0x14U)
+#define BOARD_FPD_UB926_SLAVE_ALIAS5_REG_ADDR           (0x15U)
+#define BOARD_FPD_UB926_SLAVE_ALIAS6_REG_ADDR           (0x16U)
+#define BOARD_FPD_UB926_SLAVE_ALIAS7_REG_ADDR           (0x17U)
 
 #define RESET_REG_MASK                  (uint8_t)(BOARD_FPD_UB926_BC_ENABLE_BIT_MASK | BOARD_FPD_UB926_REMOTE_AUTO_PWR_DWN_BIT_MASK)
 #define CONFIGURATION1_REG_MASK         (uint8_t)BOARD_FPD_UB926_I2C_PASS_THROUGH_BIT_MASK

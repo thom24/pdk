@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -118,7 +118,8 @@ uint8_t ub941DefReg[] = {
     0x00,
     0x00,
     0x00,
-    0x00
+    0x00,
+    0x1E
 };
 
 fpdRegCfgObj_t ub941RegDetails[] = 
@@ -364,6 +365,15 @@ fpdRegCfgObj_t ub941RegDetails[] =
         0U,
         0xfeU,
         0x02U
+    },
+
+    {
+        BOARD_FPD_UB941_I2C_CONTROL_REG_ADDR,
+        0U,
+        (uint8_t)I2C_CONTROL_REG_CMP_MASK,
+        (uint8_t)~(I2C_CONTROL_REG_CMP_MASK),
+        0U,
+        0U
     },
 
     {
@@ -819,6 +829,24 @@ static int8_t Board_fpdUB941SetCfg(void *handle)
         return -1;
     }
 
+    ret = Board_fpdUb941SetI2CPassAllModeCtrl((void *)handle,
+                                              &fpdDsiModParams,
+                                              BOARD_FPD_MODE_ENABLE);
+    if(ret != 0)
+    {
+        UART_printf("'Board_fpdUb941SetI2CPassAllModeCtrl' cfg failed\n\r");
+        return -1;
+    }
+
+    ret = Board_fpdUb941SetI2CPassThrModeCfg((void *)handle,
+                                             &fpdDsiModParams,
+                                             BOARD_FPD_MODE_ENABLE);
+    if(ret != 0)
+    {
+        UART_printf("'Board_fpdUb941SetI2CPassThrModeCfg' cfg failed\n\r");
+        return -1;
+    }
+
     return ret;
 }
 
@@ -832,6 +860,24 @@ static int8_t Board_fpdUB941ClrCfg(void *handle)
     if(ret != 0)
     {
         UART_printf("'Board_fpdUb941RmtDesAliasCfg' cfg failed\n\r");
+        return -1;
+    }
+
+    ret = Board_fpdUb941SetI2CPassAllModeCtrl((void *)handle,
+                                              &fpdDsiModParams,
+                                              BOARD_FPD_MODE_DISABLE);
+    if(ret != 0)
+    {
+        UART_printf("'Board_fpdUb941SetI2CPassAllModeCtrl' cfg failed\n\r");
+        return -1;
+    }
+
+    ret = Board_fpdUb941SetI2CPassThrModeCfg((void *)handle,
+                                             &fpdDsiModParams,
+                                             BOARD_FPD_MODE_DISABLE);
+    if(ret != 0)
+    {
+        UART_printf("'Board_fpdUb941SetI2CPassThrModeCfg' cfg failed\n\r");
         return -1;
     }
 
