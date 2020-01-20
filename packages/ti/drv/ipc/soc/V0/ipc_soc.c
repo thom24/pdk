@@ -441,13 +441,24 @@ int32_t Ipc_getIntNumRange(uint32_t coreIndex,
 
     req.type           = req_type[coreIndex];
     req.subtype        = req_subtype[coreIndex];
-    req.secondary_host = TISCI_HOST_ID_ALL;
+    req.secondary_host = map_host_id[coreIndex];
 
     /* Get interrupt number range */
     retVal =  Sciclient_rmGetResourceRange(
                 &req,
                 &res,
                 IPC_SCICLIENT_TIMEOUT);
+    if (CSL_PASS != retVal || res.range_num == 0) {
+        /* Try with HOST_ID_ALL */
+        req.type           = req_type[coreIndex];
+        req.subtype        = req_subtype[coreIndex];
+        req.secondary_host = TISCI_HOST_ID_ALL;
+
+        retVal = Sciclient_rmGetResourceRange(
+                &req,
+                &res,
+                IPC_SCICLIENT_TIMEOUT);
+    }
     if (CSL_PASS == retVal)
     {
         *rangeStartP = res.range_start;

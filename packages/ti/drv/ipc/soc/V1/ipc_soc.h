@@ -132,7 +132,7 @@ extern "C" {
 #define   C7X1_CLEC_BASE_GR2_NAVSS        (1664U)
 
 /* User selected IRQ number */
-#define   C7X1_MBINTR_OFFSET              (51U)
+#define   C7X1_MBINTR_OFFSET              (2U)
 
 /* ========================================================================== */
 /*                             Include Files                                  */
