@@ -663,10 +663,16 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
             .host_id = TISCI_HOST_ID_ALL,
         },
         {
-            .num_resource = 56U,
+            .num_resource = 32U,
             .type = TISCI_RESASG_UTYPE(TISCI_DEV_COMPUTE_CLUSTER0_GIC500SS, TISCI_RESASG_SUBTYPE_COMPUTE_CLUSTER0_GIC500SS_SPI_IRQ_GROUP0_FROM_GPIOMUX_INTRTR0),
             .start_resource = 392U,
-            .host_id = TISCI_HOST_ID_ALL,
+            .host_id = TISCI_HOST_ID_A72_2,
+        },
+        {
+            .num_resource = 24U,
+            .type = TISCI_RESASG_UTYPE(TISCI_DEV_COMPUTE_CLUSTER0_GIC500SS, TISCI_RESASG_SUBTYPE_COMPUTE_CLUSTER0_GIC500SS_SPI_IRQ_GROUP0_FROM_GPIOMUX_INTRTR0),
+            .start_resource = 424U,
+            .host_id = TISCI_HOST_ID_A72_3,
         },
         {
             .num_resource = 64U,
@@ -681,9 +687,9 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
             .host_id = TISCI_HOST_ID_ALL,
         },
         {
-            .num_resource = 60U,
+            .num_resource = 16U,
             .type = TISCI_RESASG_UTYPE(TISCI_DEV_COMPUTE_CLUSTER0_GIC500SS, TISCI_RESASG_SUBTYPE_COMPUTE_CLUSTER0_GIC500SS_SPI_IRQ_GROUP2_FROM_NAVSS0_INTR_ROUTER_0),
-            .start_resource = 672U,
+            .start_resource = 716U,
             .host_id = TISCI_HOST_ID_ALL,
         },
         {
