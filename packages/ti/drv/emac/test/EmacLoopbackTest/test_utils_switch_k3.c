@@ -304,6 +304,7 @@ int32_t app_test_task_init_pruicss(uint32_t portNum);
 int32_t app_test_task_disable_pruicss(uint32_t portNum);
 int32_t app_test_setup_default_settings();
 int32_t app_test_send_receive(uint32_t startP, uint32_t endP, uint32_t displayResult);
+EMAC_DRV_ERR_E app_test_flood_ctrl(void);
 
 
 
@@ -890,7 +891,13 @@ void app_test_task_poll_ctrl (UArg arg0, UArg arg1)
     while(1)
     {
         if (gPollModeEnabled == 1)
+        {
             emac_poll_ctrl(port, pktRings,mgmtRings,txRings);
+        }
+        else if (gPollModeEnabled == 2)
+        {
+            emac_poll_ctrl(port, pktRings,mgmtRings,0);
+        }
         else
             emac_poll_ctrl(port, 0,0,txRings);
         Task_sleep(2);
@@ -943,6 +950,11 @@ int32_t app_test_send(uint32_t port_num, uint8_t* pPkt, uint32_t pktChannel, uin
             p_pkt_desc->pPrev = NULL;
             p_pkt_desc->PktLength      = pktSize;
             gPktReceived = 0;
+            /* intermix sending mgmt packets with actual packets for every 5th packet */
+            if ((i % 5) == 0)
+            {
+                app_test_flood_ctrl();
+            }
             sentRetVal = emac_send(port_num, p_pkt_desc);
             if(sentRetVal != EMAC_DRV_RESULT_OK)
             {
@@ -1833,7 +1845,6 @@ void test_EMAC_verify_icssg_switch(void)
     gPrussHandle[1] =  PRUICSS_create((PRUICSS_Config*)prussCfg,PRUICCSS_INSTANCE_TWO);
 
     app_test_udma_init();
-    gPollModeEnabled =1;
 
     if (app_test_emac_open_switch(EMAC_MODE_POLL) != 0)
     {
@@ -1856,15 +1867,19 @@ void test_EMAC_verify_icssg_switch(void)
 #else
     app_test_check_port_link_switch(EMAC_SWITCH_PORT2);
     /*Set up default setting for test app */
+
+    gPollModeEnabled =1;
     app_test_setup_default_settings();
 
     /*Set port state to Forward*/
     app_test_port_set_state(EMAC_SWITCH_PORT1,EMAC_IOCTL_PORT_STATE_FORWARD);
     app_test_port_set_state(EMAC_SWITCH_PORT2,EMAC_IOCTL_PORT_STATE_FORWARD);
 
+
+    gPollModeEnabled =2;
     /* Verify local injection using loopback connection between SW1 and SW2 */
     app_test_local_injection();
-
+    gPollModeEnabled =1;
     /* Verify Port Priority by sending packets with different PCP to ensure recieved on correct flow/ring pair*/
     app_test_port_priority();
 
