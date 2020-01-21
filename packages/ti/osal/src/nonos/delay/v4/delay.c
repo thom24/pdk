@@ -99,4 +99,22 @@ int32_t Osal_delay(uint32_t nTicks)
    osal_core_delay(nTicks);
    return (osal_OK);
 }
+
+#ifdef _MSC_VER
+/* Below functions are not defined for windows host emulation build so define dummy functions for build to work */
+void osalArch_TimestampGet64(TimeStamp_Struct *tStamp)
+{
+}
+
+void    osalArch_TimestampInit(void)
+{
+}
+
+int32_t  osalArch_TimeStampGetFreqKHz(void)
+{
+    /* R5F time Stamp is via PMU, which runs at CPU speed */
+    return (0);
+}
+#endif
+
 /* nothing past this point */
