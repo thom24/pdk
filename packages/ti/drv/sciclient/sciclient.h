@@ -218,6 +218,13 @@
 #include <stdint.h>
 #include <stddef.h>
 
+/* Windows Visual Studio build doesn't  __attribute__ indentifier, so forcing it be to dummy for getting build working */
+#ifdef _MSC_VER
+  #ifndef __attribute__
+    #define __attribute__()
+  #endif
+#endif
+
 /* TISCI Include */
 #define TISCI_BIT(n)  (1UL << (n))
 
@@ -295,7 +302,6 @@ typedef uint8_t devgrp_t;
 #include <ti/drv/sciclient/soc/sysfw/include/tisci/rm/tisci_rm_shared.h>
 #include <ti/drv/sciclient/soc/sysfw/include/tisci/rm/tisci_rm_core.h>
 #include <ti/drv/sciclient/soc/sysfw/include/tisci/rm/tisci_rm_proxy.h>
-
 #include <ti/drv/sciclient/include/sciclient_soc.h>
 #include <ti/drv/sciclient/include/sciclient_pm.h>
 #include <ti/drv/sciclient/include/sciclient_rm.h>

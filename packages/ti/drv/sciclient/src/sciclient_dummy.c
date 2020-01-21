@@ -211,6 +211,15 @@ int32_t Sciclient_procBootAuthAndStart(
     return retVal;
 }
 
+/* Below function was not available in host emulation build, hence adding an empty function */
+#if defined (HOST_EMULATION)
+int32_t Sciclient_rmSetProxyCfg(const struct tisci_msg_rm_proxy_cfg_req *req, uint32_t timeout)
+{
+    int32_t r = CSL_PASS;
+    return r;
+}
+#endif
+
 #if defined (BUILD_MCU1_0)
 int32_t Sciclient_boardCfg(Sciclient_BoardCfgPrms_t * pInPrms)
 {

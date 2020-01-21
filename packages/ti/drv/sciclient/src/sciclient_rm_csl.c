@@ -146,102 +146,98 @@ typedef struct
 will not be used for target*/
 static SciUdmaRmObj gSciUdmaRmObjMain =
 {
-    .udmapRegs =
     {
-        .pGenCfgRegs     = &gHost_udmap_gcfgRegs,
-        .pRxFlowCfgRegs  = &gHost_udmap_rxfcfgRegs,
-        .pTxChanCfgRegs  = &gHost_udmap_txccfgRegs,
-        .pRxChanCfgRegs  = &gHost_udmap_rxccfgRegs,
-        .pTxChanRtRegs   = &gHost_udmap_txcrtRegs,
-        .pRxChanRtRegs   = &gHost_udmap_rxcrtRegs
+        &gHost_udmap_gcfgRegs,
+        &gHost_udmap_rxfcfgRegs,
+        &gHost_udmap_txccfgRegs,
+        &gHost_udmap_rxccfgRegs,
+        &gHost_udmap_txcrtRegs,
+        &gHost_udmap_rxcrtRegs
     },
-    .raRegs =
     {
-        .pGlbRegs   = &gHost_ringacc_gcfgRegs,
-        .pCfgRegs   = &gHost_ringacc_cfgRegs,
-        .pRtRegs    = &gHost_ringacc_rtRegs,
-        .pMonRegs   = &gHost_ringacc_monitorRegs,
-        .pFifoRegs  = &gHost_ringacc_fifosRegs,
-        .pIscRegs   = &gHost_ringacc_iscRegs,
-        .maxRings   = CSL_NAVSS_MAIN_RINGACC_RING_CNT
+        &gHost_ringacc_gcfgRegs,
+        &gHost_ringacc_cfgRegs,
+        &gHost_ringacc_rtRegs,
+        &gHost_ringacc_monitorRegs,
+        &gHost_ringacc_fifosRegs,
+        &gHost_ringacc_iscRegs,
+        CSL_NAVSS_MAIN_RINGACC_RING_CNT
     },
-    .psilCfgRegs         = &gHost_psilcfgRegs,
-    .iaRegs =
+    &gHost_psilcfgRegs,
     {
-        .pCfgRegs       = &gHost_intaggr_cfgRegs,
-        .pImapRegs      = &gHost_intaggr_imapRegs,
-        .pIntrRegs      = &gHost_intaggr_intrRegs,
-        .pL2gRegs       = &gHost_intaggr_l2gRegs,
-        .pMcastRegs     = &gHost_intaggr_mcastRegs,
-        .pGcntCfgRegs   = &gHost_intaggr_gcntcfgRegs,
-        .pGcntRtiRegs   = &gHost_intaggr_gcntrtiRegs,
-        .srcEventCnt    = 4608U,
-        .virtIntrCnt    = 256U,
-        .localEventCnt  = 4U,
-        .globalEventCnt = 512U,
-        .mcastEventCnt  = 512U
+        &gHost_intaggr_cfgRegs,
+        &gHost_intaggr_imapRegs,
+        &gHost_intaggr_intrRegs,
+        &gHost_intaggr_l2gRegs,
+        &gHost_intaggr_mcastRegs,
+        &gHost_intaggr_gcntcfgRegs,
+        &gHost_intaggr_gcntrtiRegs,
+        4608U,
+        256U,
+        4U,
+        512U,
+        512U
     },
-    .irRegs =
+
     {
-        .pIntrRouterRegs = &gHost_intr_router_cfgRegs,
-        .pIntdRegs       = NULL,
-        .numInputIntrs   = UDMA_NAVSS0_IR_NUM_IN_INTR,
-        .numOutputIntrs  = UDMA_NAVSS0_IR_NUM_OUT_INTR
+        &gHost_intr_router_cfgRegs,
+        NULL,
+        UDMA_NAVSS0_IR_NUM_IN_INTR,
+        UDMA_NAVSS0_IR_NUM_OUT_INTR
     },
-    .txUdmaThreadIdStart = CSL_PSILCFG_NAVSS_MAIN_UDMAP0_TSTRM_THREAD_OFFSET,
-    .txUdmaThreadIdEnd = CSL_PSILCFG_NAVSS_MAIN_UDMAP0_TSTRM_THREAD_OFFSET + CSL_PSILCFG_NAVSS_MAIN_UDMAP0_TSTRM_THREAD_CNT - 1,
-    .rxUdmaThreadIdStart = CSL_PSILCFG_NAVSS_MAIN_UDMAP0_RSTRM_THREAD_OFFSET,
-    .rxUdmaThreadIdEnd = CSL_PSILCFG_NAVSS_MAIN_UDMAP0_RSTRM_THREAD_OFFSET + CSL_PSILCFG_NAVSS_MAIN_UDMAP0_RSTRM_THREAD_CNT - 1,
+    CSL_PSILCFG_NAVSS_MAIN_UDMAP0_TSTRM_THREAD_OFFSET,
+    CSL_PSILCFG_NAVSS_MAIN_UDMAP0_TSTRM_THREAD_OFFSET + CSL_PSILCFG_NAVSS_MAIN_UDMAP0_TSTRM_THREAD_CNT - 1,
+    CSL_PSILCFG_NAVSS_MAIN_UDMAP0_RSTRM_THREAD_OFFSET,
+    CSL_PSILCFG_NAVSS_MAIN_UDMAP0_RSTRM_THREAD_OFFSET + CSL_PSILCFG_NAVSS_MAIN_UDMAP0_RSTRM_THREAD_CNT - 1,
 };
 
 static SciUdmaRmObj gSciUdmaRmObjMcu =
 {
-    .udmapRegs =
     {
-        .pGenCfgRegs     = &gHost_udmap_gcfgRegs,
-        .pRxFlowCfgRegs  = &gHost_udmap_rxfcfgRegs,
-        .pTxChanCfgRegs  = &gHost_udmap_txccfgRegs,
-        .pRxChanCfgRegs  = &gHost_udmap_rxccfgRegs,
-        .pTxChanRtRegs   = &gHost_udmap_txcrtRegs,
-        .pRxChanRtRegs   = &gHost_udmap_rxcrtRegs
+        &gHost_udmap_gcfgRegs,
+        &gHost_udmap_rxfcfgRegs,
+        &gHost_udmap_txccfgRegs,
+        &gHost_udmap_rxccfgRegs,
+        &gHost_udmap_txcrtRegs,
+        &gHost_udmap_rxcrtRegs
     },
-    .raRegs =
+
     {
-        .pGlbRegs   = &gHost_ringacc_gcfgRegs,
-        .pCfgRegs   = &gHost_ringacc_cfgRegs,
-        .pRtRegs    = &gHost_ringacc_rtRegs,
-        .pMonRegs   = &gHost_ringacc_monitorRegs,
-        .pFifoRegs  = &gHost_ringacc_fifosRegs,
-        .pIscRegs   = &gHost_ringacc_iscRegs,
-        .maxRings   = CSL_NAVSS_MCU_RINGACC_RING_CNT
+        &gHost_ringacc_gcfgRegs,
+        &gHost_ringacc_cfgRegs,
+        &gHost_ringacc_rtRegs,
+        &gHost_ringacc_monitorRegs,
+        &gHost_ringacc_fifosRegs,
+        &gHost_ringacc_iscRegs,
+        CSL_NAVSS_MCU_RINGACC_RING_CNT
     },
-    .psilCfgRegs         = &gHost_psilcfgRegs,
-    .iaRegs =
+    &gHost_psilcfgRegs,
+
     {
-        .pCfgRegs       = &gHost_intaggr_cfgRegs,
-        .pImapRegs      = &gHost_intaggr_imapRegs,
-        .pIntrRegs      = &gHost_intaggr_intrRegs,
-        .pL2gRegs       = &gHost_intaggr_l2gRegs,
-        .pMcastRegs     = &gHost_intaggr_mcastRegs,
-        .pGcntCfgRegs   = &gHost_intaggr_gcntcfgRegs,
-        .pGcntRtiRegs   = &gHost_intaggr_gcntrtiRegs,
-        .srcEventCnt    = 1536,
-        .virtIntrCnt    = 256U,
-        .localEventCnt  = 4U,
-        .globalEventCnt = 256U,
-        .mcastEventCnt  = 128U
+        &gHost_intaggr_cfgRegs,
+        &gHost_intaggr_imapRegs,
+        &gHost_intaggr_intrRegs,
+        &gHost_intaggr_l2gRegs,
+        &gHost_intaggr_mcastRegs,
+        &gHost_intaggr_gcntcfgRegs,
+        &gHost_intaggr_gcntrtiRegs,
+        1536,
+        256U,
+        4U,
+        256U,
+        128U
     },
-    .irRegs =
+
     {
-        .pIntrRouterRegs = &gHost_intr_router_cfgRegs,
-        .pIntdRegs       = NULL,
-        .numInputIntrs   = UDMA_MCU_NAVSS0_IR_NUM_IN_INTR,
-        .numOutputIntrs  = UDMA_MCU_NAVSS0_IR_NUM_OUT_INTR
+        &gHost_intr_router_cfgRegs,
+        NULL,
+        UDMA_MCU_NAVSS0_IR_NUM_IN_INTR,
+        UDMA_MCU_NAVSS0_IR_NUM_OUT_INTR
     },
-    .txUdmaThreadIdStart = CSL_PSILCFG_NAVSS_MCU_UDMAP0_TSTRM_THREAD_OFFSET,
-    .txUdmaThreadIdEnd = CSL_PSILCFG_NAVSS_MCU_UDMAP0_TSTRM_THREAD_OFFSET + CSL_PSILCFG_NAVSS_MCU_UDMAP0_TSTRM_THREAD_CNT - 1,
-    .rxUdmaThreadIdStart = CSL_PSILCFG_NAVSS_MCU_UDMAP0_RSTRM_THREAD_OFFSET,
-    .rxUdmaThreadIdEnd = CSL_PSILCFG_NAVSS_MCU_UDMAP0_RSTRM_THREAD_OFFSET + CSL_PSILCFG_NAVSS_MCU_UDMAP0_RSTRM_THREAD_CNT - 1,
+    CSL_PSILCFG_NAVSS_MCU_UDMAP0_TSTRM_THREAD_OFFSET,
+    CSL_PSILCFG_NAVSS_MCU_UDMAP0_TSTRM_THREAD_OFFSET + CSL_PSILCFG_NAVSS_MCU_UDMAP0_TSTRM_THREAD_CNT - 1,
+    CSL_PSILCFG_NAVSS_MCU_UDMAP0_RSTRM_THREAD_OFFSET,
+    CSL_PSILCFG_NAVSS_MCU_UDMAP0_RSTRM_THREAD_OFFSET + CSL_PSILCFG_NAVSS_MCU_UDMAP0_RSTRM_THREAD_CNT - 1,
 };
 #else
 static SciUdmaRmObj gSciUdmaRmObjMain =
