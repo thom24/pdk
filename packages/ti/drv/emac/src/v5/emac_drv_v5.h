@@ -470,8 +470,9 @@ typedef struct EMAC_MCB_V5_S {
     UTIL_TRACE_CB_T* drv_trace_cb;
 } EMAC_MCB_V5_T;
 
-
-bool emac_check_hw_desc_resources(uint32_t p1, uint32_t ch1, uint32_t p2, uint32_t ch2);
+void emac_free_hw_cppi_tx_desc(uint32_t p1, uint32_t ch1, EMAC_CPPI_DESC_T* pCppiDesc);
+bool emac_get_hw_cppi_tx_descs(uint32_t p1, uint32_t ch1, uint32_t p2, uint32_t ch2, EMAC_CPPI_DESC_T** pCppiDesc1, EMAC_CPPI_DESC_T** pCppiDesc2);
+bool emac_get_hw_cppi_tx_desc(uint32_t p1, uint32_t ch1, EMAC_CPPI_DESC_T** pCppiDesc);
 
 /**
  *  @b Description

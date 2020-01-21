@@ -1941,160 +1941,207 @@ static EMAC_DRV_ERR_E EMAC_get_stats_icssg_v5(uint32_t port_num, EMAC_STATISTICS
 }
 
 /*
- *  ======== emac_check_hw_desc_resources ========
+ *  ======== emac_get_hw_cppi_tx_desc ========
  */
-bool emac_check_hw_desc_resources(uint32_t p1, uint32_t ch1, uint32_t p2, uint32_t ch2)
+void emac_free_hw_cppi_tx_desc(uint32_t p1, uint32_t ch1, EMAC_CPPI_DESC_T* pCppiDesc)
 {
-    EMAC_CPPI_DESC_T *pCppiDesc1 = emac_mcb.port_cb[p1].txReadyDescs[ch1];
-    EMAC_CPPI_DESC_T *pCppiDesc2 = emac_mcb.port_cb[p2].txReadyDescs[ch2];
-    if(pCppiDesc1 && pCppiDesc2)
+    uintptr_t key;
+    key = EMAC_osalHardwareIntDisable();
+    pCppiDesc->nextPtr = emac_mcb.port_cb[p1].txReadyDescs[ch1];
+    emac_mcb.port_cb[p1].txReadyDescs[ch1] = pCppiDesc;
+    EMAC_osalHardwareIntRestore(key);
+}
+
+/*
+ *  ======== emac_get_hw_cppi_tx_desc ========
+ */
+bool emac_get_hw_cppi_tx_desc(uint32_t p1, uint32_t ch1, EMAC_CPPI_DESC_T** pCppiDesc)
+{
+    bool retVal = FALSE;
+    EMAC_CPPI_DESC_T *temp1;
+    uintptr_t key;
+    key = EMAC_osalHardwareIntDisable();
+    *pCppiDesc = emac_mcb.port_cb[p1].txReadyDescs[ch1];
+    if(*pCppiDesc)
     {
-        return TRUE;
+        temp1 = *pCppiDesc;
+        emac_mcb.port_cb[p1].txReadyDescs[ch1] = temp1->nextPtr;
+        retVal = TRUE;
     }
-    else
+    EMAC_osalHardwareIntRestore(key);
+    return retVal;
+}
+
+/*
+ *  ======== emac_get_hw_cppi_tx_descs ========
+ */
+
+bool emac_get_hw_cppi_tx_descs(uint32_t p1, uint32_t ch1, uint32_t p2, uint32_t ch2, EMAC_CPPI_DESC_T** pCppiDesc1, EMAC_CPPI_DESC_T** pCppiDesc2)
+{
+    bool retVal = FALSE;
+    uintptr_t key;
+    EMAC_CPPI_DESC_T *temp1, *temp2;
+
+    key = EMAC_osalHardwareIntDisable();
+    *pCppiDesc1 = emac_mcb.port_cb[p1].txReadyDescs[ch1];
+    *pCppiDesc2 = emac_mcb.port_cb[p2].txReadyDescs[ch2];
+    if(*pCppiDesc1 && *pCppiDesc2)
     {
-        return FALSE;
+        temp1 = *pCppiDesc1;
+        temp2 = *pCppiDesc2;
+        emac_mcb.port_cb[p1].txReadyDescs[ch1] = temp1->nextPtr;
+        emac_mcb.port_cb[p2].txReadyDescs[ch2] = temp2->nextPtr;
+        retVal = TRUE;
     }
+    EMAC_osalHardwareIntRestore(key);
+
+    return retVal;
+}
+
+
+
+
+/*
+ *  ======== emac_poll_tx_ring ========
+ */
+static EMAC_DRV_ERR_E emac_poll_tx_ring(uint32_t port_num, Udma_RingHandle compRingHandle, uint32_t ringNum)
+{
+    EMAC_DRV_ERR_E retVal = EMAC_DRV_RESULT_SEND_ERR;
+    EMAC_CPPI_DESC_T *pCppiDesc = NULL;
+    EMAC_PKT_DESC_T  *pPktDesc;
+    int32_t refCount;
+    uintptr_t key;
+
+    do
+    {
+        if ((emac_udma_ring_dequeue(compRingHandle, &pCppiDesc)) ==0)
+        {
+            retVal = EMAC_DRV_RESULT_OK;
+            if (pCppiDesc != NULL)
+            {
+                pPktDesc = pCppiDesc->appPtr;
+                if ((pPktDesc) && (!(pCppiDesc->hostDesc.pktInfo2 & EMAC_FW_MGMT_PKT)))
+                {
+                    if (pPktDesc->RefCount)
+                    {
+                        refCount = emac_mAtomic32Sub(&(pPktDesc->RefCount), 1);
+                        if(refCount == 1)
+                        {
+                            EMAC_FREE_PKT(port_num, pCppiDesc->appPtr);
+                        }
+                    }
+                    else
+                    {
+                        EMAC_FREE_PKT(port_num, pCppiDesc->appPtr);
+                    }
+                }
+                key = EMAC_osalHardwareIntDisable();
+                pCppiDesc->nextPtr = emac_mcb.port_cb[port_num].txReadyDescs[ringNum];
+                emac_mcb.port_cb[port_num].txReadyDescs[ringNum] = pCppiDesc;
+                EMAC_osalHardwareIntRestore(key);
+            }
+        }
+    } while (pCppiDesc != NULL);
+    return retVal;
 }
 
 /*
  *  ======== EMAC_send_v5_local ========
  */
-static EMAC_DRV_ERR_E EMAC_send_v5_local(uint32_t port_num, uint32_t virt_port_num, EMAC_PKT_DESC_T* p_desc)
+static EMAC_DRV_ERR_E EMAC_send_v5_local(uint32_t port_num, uint32_t virt_port_num, EMAC_PKT_DESC_T* p_desc, EMAC_CPPI_DESC_T* p_tx_cppi_desc)
 {
     EMAC_DRV_ERR_E retVal = EMAC_DRV_RESULT_OK;
-    EMAC_CPPI_DESC_T *pCppiDesc;
+    EMAC_CPPI_DESC_T *pCppiDesc = NULL;
     Udma_ChHandle txChHandle;
     uint32_t chNum =p_desc->PktChannel;
+    uintptr_t key;
 
-    if (chNum > (EMAC_TX_MAX_CHANNELS_PER_PORT -1))
+    txChHandle = emac_mcb.port_cb[port_num].txChHandle[chNum];
+    retVal = emac_poll_tx_ring(port_num,Udma_chGetCqRingHandle(txChHandle), chNum);
+    if (retVal == EMAC_DRV_RESULT_OK)
     {
-        UTILS_trace(UTIL_TRACE_LEVEL_ERR,emac_mcb.drv_trace_cb,"port: %d: TX channel number invalid during emac_send: %d",port_num);
-        retVal = EMAC_DRV_RESULT_ERR_INVALID_CHANNEL;
-    }
-    else
-    {
-        txChHandle = emac_mcb.port_cb[port_num].txChHandle[chNum];
-    
-        EMAC_PKT_DESC_T *pDescLocal;
-        int32_t refCount;
-    
-        do
+        if (p_desc->PktLength < EMAC_MIN_PKT_SIZE)
         {
-            /* Need to free up the EMAC_PKT_DESC_T back to the application */
-            /* Go through the TX Return queue which is where the descriptor is re- cycled after it is transmitted on the wire
-                get the buffer which is this case is a EMAC_PKT_DESC_T and return    it to the application/stack */
-            pCppiDesc = NULL;
-            if ((emac_udma_ring_dequeue(Udma_chGetCqRingHandle(txChHandle), &pCppiDesc)) != 0)
-            {
-                UTILS_trace(UTIL_TRACE_LEVEL_ERR,emac_mcb.drv_trace_cb,"port: %d: TX ring dequeue error during emac_send: %d",
-                port_num);
-                gTxDropCounter++;
-                retVal = EMAC_DRV_RESULT_SEND_ERR;
-            }
-            else
-                {
-                    if (pCppiDesc)
-                    {
-                        pDescLocal = pCppiDesc->appPtr;
-                        if (pDescLocal->RefCount)
-                        {
-                            refCount = emac_mAtomic32Sub(&(pDescLocal->RefCount), 1);
-                            if(refCount ==1)
-                            {
-                                EMAC_FREE_PKT(port_num, pCppiDesc->appPtr);
-                            }
-                        }
-                        else
-                        {
-                            EMAC_FREE_PKT(port_num, pCppiDesc->appPtr);
-                        }
-                        pCppiDesc->nextPtr = emac_mcb.port_cb[port_num].txReadyDescs[chNum];
-                        emac_mcb.port_cb[port_num].txReadyDescs[chNum] = pCppiDesc;
-                    }
-                }
-            } while (pCppiDesc != NULL);
-        /* return queue processing end */
-
-        if (retVal == EMAC_DRV_RESULT_OK)
+            p_desc->PktLength = EMAC_MIN_PKT_SIZE;
+        }
+        if (p_tx_cppi_desc != NULL)
         {
-            if (p_desc->PktLength < EMAC_MIN_PKT_SIZE)
-            {
-                p_desc->PktLength = EMAC_MIN_PKT_SIZE;
-            }
+            pCppiDesc = p_tx_cppi_desc;
+        }
+        else
+        {
+            emac_get_hw_cppi_tx_desc(port_num, chNum, &pCppiDesc);
+        }
+        if (pCppiDesc != NULL)
+        {
+            uint64_t bufPtr = (uint64_t)p_desc->pDataBuffer + p_desc->DataOffset;
+            pCppiDesc->hostDesc.bufPtr    = bufPtr;
+            pCppiDesc->hostDesc.orgBufPtr = bufPtr;
+            pCppiDesc->hostDesc.orgBufLen = p_desc->BufferLen;
+            pCppiDesc->hostDesc.bufInfo1  = p_desc->PktLength;
+            /* Clear packet type flag bits in case its set, default of 0 indicates TX packet type*/
+            pCppiDesc->hostDesc.pktInfo2 &= 0x07FFFFFF;
 
-            /* Get a free descriptor from the port free tx queue we setup during initialization. */
-            pCppiDesc = emac_mcb.port_cb[port_num].txReadyDescs[chNum];
-            if (pCppiDesc != NULL)
+            /* bits 0-7: specify the port number to direct the packet out */
+            /* bits 8-15: specify the tx port queue to use */
+            pCppiDesc->hostDesc.srcDstTag = 0;
+            pCppiDesc->hostDesc.srcDstTag = p_desc->TxPktTc <<8;
+            if (virt_port_num == EMAC_SWITCH_PORT1)
             {
-                uint64_t bufPtr = (uint64_t)p_desc->pDataBuffer + p_desc->DataOffset;
-                emac_mcb.port_cb[port_num].txReadyDescs[chNum] = pCppiDesc->nextPtr;
-    
-                pCppiDesc->hostDesc.bufPtr    = bufPtr;
-                pCppiDesc->hostDesc.orgBufPtr = bufPtr;
-                pCppiDesc->hostDesc.orgBufLen = p_desc->BufferLen;
-                pCppiDesc->hostDesc.bufInfo1  = p_desc->PktLength;
-    
-                /* Clear packet type flag bits in case its set, default of 0 indicates TX packet type*/
-                pCppiDesc->hostDesc.pktInfo2 &= 0x07FFFFFF;
-    
-                /* bits 0-7: specify the port number to direct the packet out */
-                /* bits 8-15: specify the tx port queue to use */
-                pCppiDesc->hostDesc.srcDstTag = 0;
-                pCppiDesc->hostDesc.srcDstTag = p_desc->TxPktTc <<8;
-    
-                if (virt_port_num == EMAC_SWITCH_PORT1)
-                {
-                    pCppiDesc->hostDesc.srcDstTag |= 1;
-                }
-                else if(virt_port_num == EMAC_SWITCH_PORT2)
-                {
-                    pCppiDesc->hostDesc.srcDstTag |= 2;
-                }
-                /* For CPSW port, always direct packet out of MAC port 1 */
-                if (port_num ==EMAC_CPSW_PORT_NUM)
-                {
-                    pCppiDesc->hostDesc.srcDstTag =1U;
-                }
-                CSL_FINS (pCppiDesc->hostDesc.descInfo, UDMAP_CPPI5_PD_DESCINFO_PKTLEN, p_desc->PktLength);
-                if ((port_num != EMAC_CPSW_PORT_NUM) && (p_desc->Flags & EMAC_PKT_FLAG_TX_TS_REQ))
-                {
-                    pCppiDesc->hostDesc.descInfo |= 0x20000000;
-                    pCppiDesc->psinfo[0] = p_desc->TxtimestampId;
-                    pCppiDesc->psinfo[1] = 0x80000000; /*tx_ts_request */
-                }
-                else
-                {
-                    /* clear flag for TX timestamp */
-                    pCppiDesc->hostDesc.descInfo &= 0xDFFFFFFF;
-                }
-                pCppiDesc->appPtr = p_desc;
-    
-                /*enqueue packet for transmission */
-                if ((retVal = emac_udma_ring_enqueue (Udma_chGetFqRingHandle(txChHandle),pCppiDesc, p_desc->PktLength)) != EMAC_DRV_RESULT_OK)
-                {
-                    gTxDropCounter++;
-                    pCppiDesc->nextPtr = emac_mcb.port_cb[port_num].txReadyDescs[chNum];
-                    emac_mcb.port_cb[port_num].txReadyDescs[chNum] = pCppiDesc;
-                    UTILS_trace(UTIL_TRACE_LEVEL_ERR, emac_mcb.drv_trace_cb, "port: %d, Udma ring enqueue error emac_send",port_num);
-                }
+                pCppiDesc->hostDesc.srcDstTag |= 1;
+            }
+            else if(virt_port_num == EMAC_SWITCH_PORT2)
+            {
+                pCppiDesc->hostDesc.srcDstTag |= 2;
+            }
+            /* For CPSW port, always direct packet out of MAC port 1 */
+            if (port_num ==EMAC_CPSW_PORT_NUM)
+            {
+                pCppiDesc->hostDesc.srcDstTag =1U;
+            }
+            CSL_FINS (pCppiDesc->hostDesc.descInfo, UDMAP_CPPI5_PD_DESCINFO_PKTLEN, p_desc->PktLength);
+            if ((port_num != EMAC_CPSW_PORT_NUM) && (p_desc->Flags & EMAC_PKT_FLAG_TX_TS_REQ))
+            {
+                pCppiDesc->hostDesc.descInfo |= 0x20000000;
+                pCppiDesc->psinfo[0] = p_desc->TxtimestampId;
+                pCppiDesc->psinfo[1] = 0x80000000; /*tx_ts_request */
             }
             else
             {
-                gTxDropCounter++;
-                UTILS_trace(UTIL_TRACE_LEVEL_ERR, emac_mcb.drv_trace_cb, "port: %d, No TX free descriptor availalble during emac_send",port_num);
-                retVal = EMAC_DRV_RESULT_ERR_NO_FREE_DESC;
+                /* clear flag for TX timestamp */
+                pCppiDesc->hostDesc.descInfo &= 0xDFFFFFFF;
             }
+            pCppiDesc->appPtr = p_desc;
+
+            /*enqueue packet for transmission */
+            if ((retVal = emac_udma_ring_enqueue (Udma_chGetFqRingHandle(txChHandle),pCppiDesc, p_desc->PktLength)) != EMAC_DRV_RESULT_OK)
+            {
+                gTxDropCounter++;
+                key = EMAC_osalHardwareIntDisable();
+                pCppiDesc->nextPtr = emac_mcb.port_cb[port_num].txReadyDescs[chNum];
+                emac_mcb.port_cb[port_num].txReadyDescs[chNum] = pCppiDesc;
+                    EMAC_osalHardwareIntRestore(key);
+                UTILS_trace(UTIL_TRACE_LEVEL_ERR, emac_mcb.drv_trace_cb, "port: %d, Udma ring enqueue error emac_send",port_num);
+            }
+        }
+        else
+        {
+            retVal = EMAC_DRV_RESULT_IOCTL_ERR_NO_FREE_DESC;
+            UTILS_trace(UTIL_TRACE_LEVEL_ERR, emac_mcb.drv_trace_cb, "port: %d, NO TX free descriptor available at emac_send",port_num)
         }
     }
     return retVal;
 }
+
 /*
  *  ======== EMAC_send_v5 ========
  */
 static EMAC_DRV_ERR_E EMAC_send_v5(uint32_t port_num, EMAC_PKT_DESC_T* p_desc)
 {
     EMAC_DRV_ERR_E retVal = EMAC_DRV_RESULT_OK;
+    EMAC_CPPI_DESC_T *pCppiDescTx1 = NULL;
+    EMAC_CPPI_DESC_T *pCppiDescTx2 = NULL;
+    
     uint32_t virt_port_num =0;
     switch (port_num)
     {
@@ -2115,23 +2162,44 @@ static EMAC_DRV_ERR_E EMAC_send_v5(uint32_t port_num, EMAC_PKT_DESC_T* p_desc)
         default:
             break;
     }
-    if (port_num == EMAC_SWITCH_PORT)
+    if (p_desc->PktChannel > (EMAC_TX_MAX_CHANNELS_PER_PORT -1))
     {
-        /* make sure there is hw descriptor for boths switch ports prior to actually sending */
-        if (emac_check_hw_desc_resources(0, p_desc->PktChannel,2U, p_desc->PktChannel))
-        {
-            p_desc->RefCount = 2U;
-            retVal = EMAC_send_v5_local(0, port_num, p_desc);
-            if (retVal == EMAC_DRV_RESULT_OK)
-            {
-                retVal = EMAC_send_v5_local(2U, port_num, p_desc);
-            }
-        }
+        UTILS_trace(UTIL_TRACE_LEVEL_ERR,emac_mcb.drv_trace_cb,"port: %d: TX channel number invalid during emac_send: %d",port_num);
+        retVal = EMAC_DRV_RESULT_ERR_INVALID_CHANNEL;
     }
     else
     {
-        p_desc->RefCount = 0;
-        retVal = EMAC_send_v5_local(port_num, virt_port_num, p_desc);
+        if (port_num == EMAC_SWITCH_PORT)
+        {
+            /* make sure there is hw descriptor for boths switch ports prior to actually sending */
+            if (emac_get_hw_cppi_tx_descs(0, p_desc->PktChannel,2U, p_desc->PktChannel, &pCppiDescTx1, &pCppiDescTx2))
+            {
+                p_desc->RefCount = 2U;
+                retVal = EMAC_send_v5_local(0, port_num, p_desc, pCppiDescTx1);
+                if (retVal == EMAC_DRV_RESULT_OK)
+                {
+                    retVal = EMAC_send_v5_local(2U, port_num, p_desc, pCppiDescTx2);
+                    if (retVal != EMAC_DRV_RESULT_OK)
+                    {
+                         UTILS_trace(UTIL_TRACE_LEVEL_UNEXPECTED,emac_mcb.drv_trace_cb,"port: %d: Send failure for 1st switch port, unexpected: %d",port_num);
+                    }
+                }
+                else
+                {
+                    /* need to free 2nd desciptor since 1st send failed,
+                     * dont need to free 1st desciptor because emac_send frees on failure
+                     */
+                    UTILS_trace(UTIL_TRACE_LEVEL_UNEXPECTED,emac_mcb.drv_trace_cb,"port: %d: Send failure for 2nd switch port, unexpected: %d",port_num);
+                    emac_free_hw_cppi_tx_desc(2, p_desc->PktChannel, pCppiDescTx2);
+                    p_desc->RefCount = 0;
+                }
+            }
+        }
+        else
+        {
+            p_desc->RefCount = 0;
+            retVal = EMAC_send_v5_local(port_num, virt_port_num, p_desc, NULL);
+        }
     }
     return retVal;
 } /* EMAC_send_v5 */
@@ -2283,37 +2351,7 @@ static void emac_poll_rx_pkts(uint32_t port_num, Udma_RingHandle compRingHandle,
  */
 static void emac_poll_tx_complete(uint32_t port_num, Udma_RingHandle compRingHandle, Udma_RingHandle freeRingHandle, uint32_t ringNum)
 {
-    EMAC_CPPI_DESC_T *pCppiDesc = NULL;
-    EMAC_PKT_DESC_T  *pPktDesc;
-    int32_t refCount;
-
-    do
-    {
-        if ((emac_udma_ring_dequeue(compRingHandle, &pCppiDesc)) ==0)
-        {
-            if (pCppiDesc)
-            {
-                pPktDesc = pCppiDesc->appPtr;
-                if ((pPktDesc) && (!(pCppiDesc->hostDesc.pktInfo2 & EMAC_FW_MGMT_PKT)))
-                {
-                    if (pPktDesc->RefCount)
-                    {
-                        refCount = emac_mAtomic32Sub(&(pPktDesc->RefCount), 1);
-                        if(refCount == 1)
-                        {
-                            EMAC_FREE_PKT(port_num, pCppiDesc->appPtr);
-                        }
-                    }
-                    else
-                    {
-                        EMAC_FREE_PKT(port_num, pCppiDesc->appPtr);
-                    }
-                }
-                pCppiDesc->nextPtr = emac_mcb.port_cb[port_num].txReadyDescs[ringNum];
-                emac_mcb.port_cb[port_num].txReadyDescs[ringNum] = pCppiDesc;
-            }
-        }
-    } while (pCppiDesc != NULL);
+    emac_poll_tx_ring(port_num,compRingHandle, ringNum);
 }
 
 /*
