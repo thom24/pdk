@@ -8,9 +8,10 @@ Security Configuration in System Firmware
 =========================================
 
 The security portion of system firmware has options that can be configured
-independently of the main Board Configuration. In addition, initialization of
-the secure portion of the system firmware can be deferred until this secure
-board configuration is sent to allow tuning of the system boot time.
+independently of the main Board Configuration. These options are controlled
+through the security board configuration. In addition, initialization of the
+secure portion of the system firmware is deferred until the secure board
+configuration is sent to allow tuning of the system boot time.
 
 .. warning::
 
@@ -101,12 +102,14 @@ boardcfg structure does..
 +--------------------+------------------------------------+-----------------------------------------------------------+
 | host_hierarchy     | :ref:`pub_boardcfg_host_hierarchy` | Host hierarchy configuration                              |
 +--------------------+------------------------------------+-----------------------------------------------------------+
+| otp_config         | :ref:`pub_boardcfg_ext_otp_config` | Extended OTP access configuration                         |
++--------------------+------------------------------------+-----------------------------------------------------------+
 
 
 .. _pub_boardcfg_proc_acl:
 
-Design for Processor Access List
---------------------------------
+Processor Access List
+---------------------
 
 Access Control List for various Processors in the SoC.
 
@@ -122,6 +125,8 @@ boardcfg_proc
 +------------------+---------------------------------------------------------------+------------------------------------+
 | proc_access_list | :ref:`processor_access_list <pub_processor_access_list>` [32] | Processor access description       |
 +------------------+---------------------------------------------------------------+------------------------------------+
+
+The magic number to be populated in the ``subhdr`` is ``0xF1EA``.
 
 .. _pub_processor_access_list:
 
@@ -140,8 +145,8 @@ Processor access list entry
 
 .. _pub_boardcfg_host_hierarchy:
 
-Design for Host Hierarchy
--------------------------
+Host Hierarchy
+--------------
 
 Host Hierarchy for various processing entities in the SoC.  Host hierarchy
 defines the supervisory tree for all processing entities in the SoC.
@@ -157,6 +162,8 @@ boardcfg_host_hierarchy
 | host_hierarchy_entries | :ref:`host_hierarchy_entries <pub_host_hierarchy>` [32]  | Host hierarchy description         |
 +------------------------+----------------------------------------------------------+------------------------------------+
 
+The magic number to be populated in the ``subhdr`` is ``0x8D27``.
+
 .. _pub_host_hierarchy:
 
 Host hierarchy entry
@@ -169,3 +176,47 @@ Host hierarchy entry
 +--------------------+------+--------------------------------------------------------------+
 | supervisor_host_id | u8   | Supervisor Host ID                                           |
 +--------------------+------+--------------------------------------------------------------+
+
+.. _pub_boardcfg_ext_otp_config:
+
+Extended OTP array configuration
+--------------------------------
+
+The below structure defines which hosts read the OTP area and which host has
+permissions to write to the OTP area. Please also refer to the below documents
+to understand the usage of the board configuration structure.
+
+1. :doc:`../6_topic_user_guides/extended_otp` and
+2. :doc:`../2_tisci_msgs/security/extended_otp` and
+
++------------------------+----------------------------------------------------------+------------------------------------+
+|     Element            |                              Type                        |            Description             |
++========================+==========================================================+====================================+
+| subhdr                 | :ref:`pub_boardcfg_subhdr`                               | Magic and size for integrity check |
++------------------------+----------------------------------------------------------+------------------------------------+
+| otp_entry              | :ref:`otp_entry <pub_boardcfg_otp_entry>` [32]           | OTP MMR access control per row     |
++------------------------+----------------------------------------------------------+------------------------------------+
+| write_host             | u8                                                       | ID of the host who can perform     |
+|                        |                                                          | writes to OTP rows                 |
++------------------------+----------------------------------------------------------+------------------------------------+
+
+The magic number to be populated in the ``subhdr`` is ``0x4081``.
+
+.. _pub_boardcfg_otp_entry:
+
+Extended OTP Row Entry
+^^^^^^^^^^^^^^^^^^^^^^
+
++--------------------+-----------+------------------------------------------------------------------------------------+
+| Element            | Type      | Description                                                                        |
++====================+===========+====================================================================================+
+| host_id            | u8        | Host ID                                                                            |
+|                    |           |                                                                                    |
+|                    |           | -  Set to 128 if the MMR must be accesible to all hosts                            |
+|                    |           | -  Set to 0 if the MMR must not be accesible to any host                           |
++--------------------+-----------+------------------------------------------------------------------------------------+
+| host_perms         | u8        | 2 bit wide fields specifying permissions                                           |
+|                    |           |                                                                                    |
+|                    |           | -  bit 1:0 - 10b - non-secure, any other value secure                              |
+|                    |           | -  bit 7:2 - Reserved for future use.                                              |
++--------------------+-----------+------------------------------------------------------------------------------------+

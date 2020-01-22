@@ -73,6 +73,7 @@ $RM binaries/*.png
 $RM binaries/*.svg
 $RM binaries/*.cmm
 $RM binaries/t32-qt-lsf
+$RM binaries/*hs.bin
 $RM -fr binaries/am6
 $RM -fr binaries/j721e
 $RM -fr binaries/memory

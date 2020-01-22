@@ -23,6 +23,26 @@ AM6 SoC Family
    am6x/runtime_keystore
    am6x/firewalls
    am6x/soc_devgrps
+   am6x/extended_otp
+
+AM65x PG2
+=========
+
+.. toctree::
+   :maxdepth: 1
+
+   am65x_pg2/hosts
+   am65x_pg2/devices
+   am65x_pg2/clocks
+   am65x_pg2/resasg_types
+   am65x_pg2/irq_sources
+   am65x_pg2/irq_dsts
+   am65x_pg2/navss
+   am65x_pg2/sec_proxy
+   am65x_pg2/processors
+   am65x_pg2/runtime_keystore
+   am65x_pg2/firewalls
+   am65x_pg2/soc_devgrps
 
 ================
 J721E SoC Family

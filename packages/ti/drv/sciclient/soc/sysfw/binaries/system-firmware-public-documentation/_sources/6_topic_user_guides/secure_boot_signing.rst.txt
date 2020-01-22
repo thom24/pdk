@@ -1,6 +1,6 @@
-==================================
- Signing binaries for Secure Boot
-==================================
+================================================
+ Signing binaries for Secure Boot on HS Devices
+================================================
 
 This document describes the various steps in signing binaries for secure boot.
 Usecases are listed in order of increasing complexity.

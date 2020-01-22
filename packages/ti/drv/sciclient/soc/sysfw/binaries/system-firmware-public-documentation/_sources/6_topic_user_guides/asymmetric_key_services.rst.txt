@@ -1,6 +1,6 @@
-========================
- Asymmetric Key Services
-========================
+=======================================
+ Asymmetric Key Services on HS Devices
+=======================================
 
 This document describes the asymmetric key services available in |sysfw|.
 

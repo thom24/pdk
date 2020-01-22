@@ -39,7 +39,7 @@
         <link rel="search" title="Search" href="../../search.html"/>
     <link rel="top" title="TISCI User Guide" href="../../index.html"/>
         <link rel="up" title="Chapter 5: SoC Family Specific Documentation" href="../index.html"/>
-        <link rel="next" title="J721E Host Descriptions" href="../j721e/hosts.html"/>
+        <link rel="next" title="AM65x Extended OTP Information" href="extended_otp.html"/>
         <link rel="prev" title="AM6 Firewall Descriptions" href="firewalls.html"/> 
 
   
@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                19.10.01
+                19.12.00
               </div>
             
           
@@ -125,6 +125,8 @@
 <li class="toctree-l4"><a class="reference internal" href="#enumeration-devices-accessible-in-devgrp-main">Enumeration Devices accessible in devgrp “MAIN”</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="extended_otp.html">AM65x Extended OTP Information</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../index.html#am65x-pg2">AM65x PG2</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#j721e-soc-family">J721E SoC Family</a></li>
@@ -392,58 +394,55 @@ sequence control of the SoC.</p>
 <tr class="row-even"><td>191</td>
 <td>AM6_DEV_MCU_NAVSS0_PROXY0</td>
 </tr>
-<tr class="row-odd"><td>192</td>
-<td>AM6_DEV_MCU_NAVSS0_SEC_PROXY0</td>
-</tr>
-<tr class="row-even"><td>194</td>
+<tr class="row-odd"><td>194</td>
 <td>AM6_DEV_MCU_NAVSS0_UDMAP0</td>
 </tr>
-<tr class="row-odd"><td>195</td>
+<tr class="row-even"><td>195</td>
 <td>AM6_DEV_MCU_NAVSS0_RINGACC0</td>
 </tr>
-<tr class="row-even"><td>207</td>
+<tr class="row-odd"><td>207</td>
 <td>AM6_DEV_CPT2_PROBE_VBUSM_MCU_FSS_S1_3</td>
 </tr>
-<tr class="row-odd"><td>208</td>
+<tr class="row-even"><td>208</td>
 <td>AM6_DEV_CPT2_PROBE_VBUSM_MCU_EXPORT_SLV_0</td>
 </tr>
-<tr class="row-even"><td>210</td>
+<tr class="row-odd"><td>210</td>
 <td>AM6_DEV_CPT2_PROBE_VBUSM_MCU_SRAM_SLV_1</td>
 </tr>
-<tr class="row-odd"><td>215</td>
+<tr class="row-even"><td>215</td>
 <td>AM6_DEV_CPT2_PROBE_VBUSM_MCU_FSS_S0_2</td>
 </tr>
-<tr class="row-even"><td>217</td>
+<tr class="row-odd"><td>217</td>
 <td>AM6_DEV_K3_ARM_ATB_FUNNEL_3_32_MCU_0</td>
 </tr>
-<tr class="row-odd"><td>218</td>
+<tr class="row-even"><td>218</td>
 <td>AM6_DEV_ICEMELTER_WKUP_0</td>
 </tr>
-<tr class="row-even"><td>220</td>
+<tr class="row-odd"><td>220</td>
 <td>AM6_DEV_VDC_DATA_VBUSM_32B_REF_WKUP2MCU</td>
 </tr>
-<tr class="row-odd"><td>221</td>
+<tr class="row-even"><td>221</td>
 <td>AM6_DEV_VDC_DATA_VBUSM_32B_REF_MCU2WKUP</td>
 </tr>
-<tr class="row-even"><td>224</td>
+<tr class="row-odd"><td>224</td>
 <td>AM6_DEV_VDC_DMSC_DBG_VBUSP_32B_REF_DBG2DMSC</td>
 </tr>
-<tr class="row-odd"><td>227</td>
+<tr class="row-even"><td>227</td>
 <td>AM6_DEV_VDC_SOC_FW_VBUSP_32B_REF_FWWKUP2MCU</td>
 </tr>
-<tr class="row-even"><td>231</td>
+<tr class="row-odd"><td>231</td>
 <td>AM6_DEV_GS80PRG_SOC_WRAP_WKUP_0</td>
 </tr>
-<tr class="row-odd"><td>232</td>
+<tr class="row-even"><td>232</td>
 <td>AM6_DEV_GS80PRG_MCU_WRAP_WKUP_0</td>
 </tr>
-<tr class="row-even"><td>233</td>
+<tr class="row-odd"><td>233</td>
 <td>AM6_DEV_MX_WAKEUP_RESET_SYNC_WKUP_0</td>
 </tr>
-<tr class="row-odd"><td>235</td>
+<tr class="row-even"><td>235</td>
 <td>AM6_DEV_MX_EFUSE_MCU_CHAIN_MCU_0</td>
 </tr>
-<tr class="row-even"><td>245</td>
+<tr class="row-odd"><td>245</td>
 <td>AM6_DEV_MCU_ARMSS0_CPU1</td>
 </tr>
 </tbody>
@@ -780,80 +779,74 @@ sequence control of the SoC.</p>
 <tr class="row-odd"><td>161</td>
 <td>AM6_DEV_WKUP_DMSC0_CORTEX_M3_0</td>
 </tr>
-<tr class="row-even"><td>162</td>
-<td>AM6_DEV_WKUP_DMSC0_INTR_AGGR_0</td>
-</tr>
-<tr class="row-odd"><td>163</td>
+<tr class="row-even"><td>163</td>
 <td>AM6_DEV_NAVSS0_CPTS0</td>
 </tr>
-<tr class="row-even"><td>164</td>
+<tr class="row-odd"><td>164</td>
 <td>AM6_DEV_NAVSS0_MAILBOX0_CLUSTER0</td>
 </tr>
-<tr class="row-odd"><td>165</td>
+<tr class="row-even"><td>165</td>
 <td>AM6_DEV_NAVSS0_MAILBOX0_CLUSTER1</td>
 </tr>
-<tr class="row-even"><td>166</td>
+<tr class="row-odd"><td>166</td>
 <td>AM6_DEV_NAVSS0_MAILBOX0_CLUSTER2</td>
 </tr>
-<tr class="row-odd"><td>167</td>
+<tr class="row-even"><td>167</td>
 <td>AM6_DEV_NAVSS0_MAILBOX0_CLUSTER3</td>
 </tr>
-<tr class="row-even"><td>168</td>
+<tr class="row-odd"><td>168</td>
 <td>AM6_DEV_NAVSS0_MAILBOX0_CLUSTER4</td>
 </tr>
-<tr class="row-odd"><td>169</td>
+<tr class="row-even"><td>169</td>
 <td>AM6_DEV_NAVSS0_MAILBOX0_CLUSTER5</td>
 </tr>
-<tr class="row-even"><td>170</td>
+<tr class="row-odd"><td>170</td>
 <td>AM6_DEV_NAVSS0_MAILBOX0_CLUSTER6</td>
 </tr>
-<tr class="row-odd"><td>171</td>
+<tr class="row-even"><td>171</td>
 <td>AM6_DEV_NAVSS0_MAILBOX0_CLUSTER7</td>
 </tr>
-<tr class="row-even"><td>172</td>
+<tr class="row-odd"><td>172</td>
 <td>AM6_DEV_NAVSS0_MAILBOX0_CLUSTER8</td>
 </tr>
-<tr class="row-odd"><td>173</td>
+<tr class="row-even"><td>173</td>
 <td>AM6_DEV_NAVSS0_MAILBOX0_CLUSTER9</td>
 </tr>
-<tr class="row-even"><td>174</td>
+<tr class="row-odd"><td>174</td>
 <td>AM6_DEV_NAVSS0_MAILBOX0_CLUSTER10</td>
 </tr>
-<tr class="row-odd"><td>175</td>
+<tr class="row-even"><td>175</td>
 <td>AM6_DEV_NAVSS0_MAILBOX0_CLUSTER11</td>
 </tr>
-<tr class="row-even"><td>176</td>
+<tr class="row-odd"><td>176</td>
 <td>AM6_DEV_NAVSS0_MCRC0</td>
 </tr>
-<tr class="row-odd"><td>177</td>
+<tr class="row-even"><td>177</td>
 <td>AM6_DEV_NAVSS0_PVU0</td>
 </tr>
-<tr class="row-even"><td>178</td>
+<tr class="row-odd"><td>178</td>
 <td>AM6_DEV_NAVSS0_PVU1</td>
 </tr>
-<tr class="row-odd"><td>179</td>
+<tr class="row-even"><td>179</td>
 <td>AM6_DEV_NAVSS0_UDMASS_INTA0</td>
 </tr>
-<tr class="row-even"><td>180</td>
+<tr class="row-odd"><td>180</td>
 <td>AM6_DEV_NAVSS0_MODSS_INTA0</td>
 </tr>
-<tr class="row-odd"><td>181</td>
+<tr class="row-even"><td>181</td>
 <td>AM6_DEV_NAVSS0_MODSS_INTA1</td>
 </tr>
-<tr class="row-even"><td>182</td>
+<tr class="row-odd"><td>182</td>
 <td>AM6_DEV_NAVSS0_INTR_ROUTER_0</td>
 </tr>
-<tr class="row-odd"><td>183</td>
+<tr class="row-even"><td>183</td>
 <td>AM6_DEV_NAVSS0_TIMER_MGR0</td>
 </tr>
-<tr class="row-even"><td>184</td>
+<tr class="row-odd"><td>184</td>
 <td>AM6_DEV_NAVSS0_TIMER_MGR1</td>
 </tr>
-<tr class="row-odd"><td>185</td>
+<tr class="row-even"><td>185</td>
 <td>AM6_DEV_NAVSS0_PROXY0</td>
-</tr>
-<tr class="row-even"><td>186</td>
-<td>AM6_DEV_NAVSS0_SEC_PROXY0</td>
 </tr>
 <tr class="row-odd"><td>187</td>
 <td>AM6_DEV_NAVSS0_RINGACC0</td>
@@ -993,7 +986,7 @@ sequence control of the SoC.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../j721e/hosts.html" class="btn btn-neutral float-right" title="J721E Host Descriptions" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="extended_otp.html" class="btn btn-neutral float-right" title="AM65x Extended OTP Information" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="firewalls.html" class="btn btn-neutral" title="AM6 Firewall Descriptions" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
@@ -1005,7 +998,7 @@ sequence control of the SoC.</p>
 
   <div role="contentinfo">
     <p>
-      <a href="http://www.ti.com/corp/docs/legal/copyright.shtml">&copy; Copyright 2016-2019</a>, Texas Instruments Incorporated. All rights reserved. <br>
+      <a href="http://www.ti.com/corp/docs/legal/copyright.shtml">&copy; Copyright 2016-2020</a>, Texas Instruments Incorporated. All rights reserved. <br>
       <a href="http://www.ti.com/corp/docs/legal/trademark/trademrk.htm">Trademarks</a> | <a href="http://www.ti.com/corp/docs/legal/privacy.shtml">Privacy policy</a> | <a href="http://www.ti.com/corp/docs/legal/termsofuse.shtml">Terms of use</a> | <a href="http://www.ti.com/lsds/ti/legal/termsofsale.page">Terms of sale</a>
 
     </p>
@@ -1027,7 +1020,7 @@ sequence control of the SoC.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'19.10.01',
+            VERSION:'19.12.00',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

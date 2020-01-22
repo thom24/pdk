@@ -46,5 +46,7 @@ Secure Management
    security/rng_api
    security/keystore
    security/asymmetric_key_services
+   security/runtime_debug
+   security/extended_otp
 
 

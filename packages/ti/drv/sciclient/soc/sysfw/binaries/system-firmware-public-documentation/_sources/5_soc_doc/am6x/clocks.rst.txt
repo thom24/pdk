@@ -2956,14 +2956,6 @@ Clocks for MCU_NAVSS0_RINGACC0 Device
 
 **This device has no defined clocks.**
 
-.. _soc_doc_am6_public_clks_mcu_navss0_sec_proxy0:
-
-
-Clocks for MCU_NAVSS0_SEC_PROXY0 Device
----------------------------------------
-
-**This device has no defined clocks.**
-
 .. _soc_doc_am6_public_clks_mcu_navss0_udmap0:
 
 
@@ -3597,14 +3589,6 @@ Clocks for NAVSS0_PVU1 Device
 
 Clocks for NAVSS0_RINGACC0 Device
 ---------------------------------
-
-**This device has no defined clocks.**
-
-.. _soc_doc_am6_public_clks_navss0_sec_proxy0:
-
-
-Clocks for NAVSS0_SEC_PROXY0 Device
------------------------------------
 
 **This device has no defined clocks.**
 
@@ -5246,14 +5230,6 @@ Following is a mapping of Clocks IDs to function:
 
 
 Clocks for WKUP_DMSC0_CORTEX_M3_0 Device
-----------------------------------------
-
-**This device has no defined clocks.**
-
-.. _soc_doc_am6_public_clks_wkup_dmsc0_intr_aggr_0:
-
-
-Clocks for WKUP_DMSC0_INTR_AGGR_0 Device
 ----------------------------------------
 
 **This device has no defined clocks.**

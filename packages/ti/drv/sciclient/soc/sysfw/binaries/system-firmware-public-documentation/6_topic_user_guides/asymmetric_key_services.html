@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Asymmetric Key Services &mdash; TISCI User Guide</title>
+  <title>Asymmetric Key Services on HS Devices &mdash; TISCI User Guide</title>
   
 
   
@@ -39,7 +39,7 @@
         <link rel="search" title="Search" href="../search.html"/>
     <link rel="top" title="TISCI User Guide" href="../index.html"/>
         <link rel="up" title="Chapter 6: Topic User Guides" href="index.html"/>
-        <link rel="next" title="Device Group Primer" href="devgrp_usage.html"/>
+        <link rel="next" title="Using Extended OTP on HS devices" href="extended_otp.html"/>
         <link rel="prev" title="Signing Board Configuration on HS devices" href="hs_boardcfg_signing.html"/> 
 
   
@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                19.10.01
+                19.12.00
               </div>
             
           
@@ -107,9 +107,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../4_trace/index.html">Chapter 4: Interpreting Trace Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../5_soc_doc/index.html">Chapter 5: SoC Family Specific Documentation</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Chapter 6: Topic User Guides</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="secure_boot_signing.html">Signing binaries for Secure Boot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="devgrp_usage.html">Device Group Primer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="secure_boot_signing.html">Signing binaries for Secure Boot on HS Devices</a></li>
 <li class="toctree-l2"><a class="reference internal" href="hs_boardcfg_signing.html">Signing Board Configuration on HS devices</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Asymmetric Key Services</a><ul>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Asymmetric Key Services on HS Devices</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#introduction">Introduction</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#data-format">Data Format</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#bigint-data-format">BIGINT data format</a></li>
@@ -131,7 +132,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#references">References</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="devgrp_usage.html">Device Group Primer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extended_otp.html">Using Extended OTP on HS devices</a></li>
 </ul>
 </li>
 </ul>
@@ -166,7 +167,7 @@
       
           <li><a href="index.html">Chapter 6: Topic User Guides</a> &raquo;</li>
       
-    <li>Asymmetric Key Services</li>
+    <li>Asymmetric Key Services on HS Devices</li>
       <li class="wy-breadcrumbs-aside">
         
           
@@ -178,8 +179,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="asymmetric-key-services">
-<h1>Asymmetric Key Services<a class="headerlink" href="#asymmetric-key-services" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="asymmetric-key-services-on-hs-devices">
+<h1>Asymmetric Key Services on HS Devices<a class="headerlink" href="#asymmetric-key-services-on-hs-devices" title="Permalink to this headline">¶</a></h1>
 <p>This document describes the asymmetric key services available in System Firmware.</p>
 <div class="section" id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
@@ -414,7 +415,7 @@ SEC 1, Version 2.0, May 2009 <a class="reference external" href="http://www.secg
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="devgrp_usage.html" class="btn btn-neutral float-right" title="Device Group Primer" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="extended_otp.html" class="btn btn-neutral float-right" title="Using Extended OTP on HS devices" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="hs_boardcfg_signing.html" class="btn btn-neutral" title="Signing Board Configuration on HS devices" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
@@ -426,7 +427,7 @@ SEC 1, Version 2.0, May 2009 <a class="reference external" href="http://www.secg
 
   <div role="contentinfo">
     <p>
-      <a href="http://www.ti.com/corp/docs/legal/copyright.shtml">&copy; Copyright 2016-2019</a>, Texas Instruments Incorporated. All rights reserved. <br>
+      <a href="http://www.ti.com/corp/docs/legal/copyright.shtml">&copy; Copyright 2016-2020</a>, Texas Instruments Incorporated. All rights reserved. <br>
       <a href="http://www.ti.com/corp/docs/legal/trademark/trademrk.htm">Trademarks</a> | <a href="http://www.ti.com/corp/docs/legal/privacy.shtml">Privacy policy</a> | <a href="http://www.ti.com/corp/docs/legal/termsofuse.shtml">Terms of use</a> | <a href="http://www.ti.com/lsds/ti/legal/termsofsale.page">Terms of sale</a>
 
     </p>
@@ -448,7 +449,7 @@ SEC 1, Version 2.0, May 2009 <a class="reference external" href="http://www.secg
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'19.10.01',
+            VERSION:'19.12.00',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

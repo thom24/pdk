@@ -16,7 +16,7 @@ Currently only one RNG API is supported.
 Introduction
 ============
 
-Keystone 3 device Random Number Generator(RNG) module includes a
+K3 device Random Number Generator(RNG) module includes a
 Non-Deterministic Random Bit Generator (NRBG) coupled to a Deterministic Random
 bit Generator (DRBG). The RNG is SP 800-90A and FIPS 140-2 compliant.
 
@@ -33,7 +33,7 @@ TISCI_MSG_GET_RANDOM - Get Random Number
 ----------------------------------------
 
 TISCI Message ID
-----------------
+^^^^^^^^^^^^^^^^
 
 .. sysfwapimacro:: TISCI_MSG_GET_RANDOM
 

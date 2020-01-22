@@ -1,0 +1,941 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>am6 Board Configuration Resource Assignment Type Descriptions &mdash; TISCI User Guide</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="../../_static/theme_overrides.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="TISCI User Guide" href="../../index.html"/>
+        <link rel="up" title="Chapter 5: SoC Family Specific Documentation" href="../index.html"/>
+        <link rel="next" title="am6 Peripheral Interrupt Source Descriptions" href="irq_sources.html"/>
+        <link rel="prev" title="AM6 Clock Identifiers" href="clocks.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+  <header id="tiHeader">
+    <div class="top">
+      <ul>
+        <li id="top_logo">
+          <a href="http://www.ti.com">
+            <img src="../../_static/img/ti_logo.png"/>
+          </a>
+        </li>
+      </ul>
+    </div>
+    <div class="nav"></div>
+  </header>
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> TISCI
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                19.12.00
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../1_intro/index.html">Chapter 1: Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../2_tisci_msgs/index.html">Chapter 2: TISCI Message Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../3_boardcfg/index.html">Chapter 3: Board Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../4_trace/index.html">Chapter 4: Interpreting Trace Data</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Chapter 5: SoC Family Specific Documentation</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#am6-soc-family">AM6 SoC Family</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../am6x/hosts.html">AM6 Host Descriptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../am6x/devices.html">AM6 Devices Descriptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../am6x/clocks.html">AM6 Clock Identifiers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../am6x/resasg_types.html">AM6 Board Configuration Resource Assignment Type Descriptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../am6x/irq_sources.html">AM6 Peripheral IRQ Source Descriptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../am6x/irq_dsts.html">AM6 Peripheral IRQ Destination Descriptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../am6x/navss.html">AM6 Navigator Subsystem Descriptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../am6x/sec_proxy.html">AM6 Secure Proxy Descriptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../am6x/processors.html">AM6 Processor Descriptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../am6x/runtime_keystore.html">AM6 Runtime Keystore</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../am6x/firewalls.html">AM6 Firewall Descriptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../am6x/soc_devgrps.html">AM6 Device Group descriptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../am6x/extended_otp.html">AM65x Extended OTP Information</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html#am65x-pg2">AM65x PG2</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="hosts.html">AM6 Host Descriptions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="devices.html">AM6 Devices Descriptions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="clocks.html">AM6 Clock Identifiers</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">am6 Board Configuration Resource Assignment Type Descriptions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="irq_sources.html">am6 Peripheral Interrupt Source Descriptions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="irq_dsts.html">am6 Peripheral Interrupt Destination Descriptions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="navss.html">am6 Navigator Subsystem Descriptions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sec_proxy.html">AM6 Secure Proxy Descriptions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="processors.html">AM6 Processor Descriptions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="runtime_keystore.html">AM6 Runtime Keystore</a></li>
+<li class="toctree-l4"><a class="reference internal" href="firewalls.html">AM6 Firewall Descriptions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="soc_devgrps.html">AM6 Device Group descriptions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#j721e-soc-family">J721E SoC Family</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../6_topic_user_guides/index.html">Chapter 6: Topic User Guides</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">TISCI</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../index.html">Chapter 5: SoC Family Specific Documentation</a> &raquo;</li>
+      
+    <li>am6 Board Configuration Resource Assignment Type Descriptions</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="am6-board-configuration-resource-assignment-type-descriptions">
+<h1>am6 Board Configuration Resource Assignment Type Descriptions<a class="headerlink" href="#am6-board-configuration-resource-assignment-type-descriptions" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>This chapter provides information of Board Configuration resource assignment
+type IDs that are permitted in the am6 SoC.  The resource type IDs represent am6
+resources ranges assignable to SoC processing entities (or PEs).</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="20%" />
+<col width="8%" />
+<col width="51%" />
+<col width="9%" />
+<col width="11%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Device Name</th>
+<th class="head">Device ID
+(10-bits)</th>
+<th class="head">Subtype Name</th>
+<th class="head">Subtype ID
+(6-bits)</th>
+<th class="head">Unique Type ID
+(16-bits)</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>AM6_DEV_MCU_CPSW0</td>
+<td>0x005</td>
+<td>RESASG_SUBTYPE_MCU_CPSW0_CPTS_HW3_PUSH_IRQ_GROUP0_FROM_TIMESYNC_INTRTR0</td>
+<td>0x00</td>
+<td>0x0140</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_MCU_CPSW0_CPTS_HW4_PUSH_IRQ_GROUP0_FROM_TIMESYNC_INTRTR0</td>
+<td>0x01</td>
+<td>0x0141</td>
+</tr>
+<tr class="row-even"><td>AM6_DEV_WKUP_DMSC0_CORTEX_M3_0</td>
+<td>0x0A1</td>
+<td>RESASG_SUBTYPE_WKUP_DMSC0_CORTEX_M3_0_NVIC_IRQ_GROUP0_FROM_WKUP_GPIOMUX_INTRTR0</td>
+<td>0x00</td>
+<td>0x2840</td>
+</tr>
+<tr class="row-odd"><td>AM6_DEV_ESM0</td>
+<td>0x034</td>
+<td>RESASG_SUBTYPE_ESM0_ESM_PLS_EVENT0_IRQ_GROUP0_FROM_GPIOMUX_INTRTR0</td>
+<td>0x00</td>
+<td>0x0D00</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_ESM0_ESM_PLS_EVENT1_IRQ_GROUP0_FROM_GPIOMUX_INTRTR0</td>
+<td>0x01</td>
+<td>0x0D01</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_ESM0_ESM_PLS_EVENT2_IRQ_GROUP0_FROM_GPIOMUX_INTRTR0</td>
+<td>0x02</td>
+<td>0x0D02</td>
+</tr>
+<tr class="row-even"><td>AM6_DEV_WKUP_ESM0</td>
+<td>0x036</td>
+<td>RESASG_SUBTYPE_WKUP_ESM0_ESM_PLS_EVENT0_IRQ_GROUP0_FROM_WKUP_GPIOMUX_INTRTR0</td>
+<td>0x00</td>
+<td>0x0D80</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_WKUP_ESM0_ESM_PLS_EVENT1_IRQ_GROUP0_FROM_WKUP_GPIOMUX_INTRTR0</td>
+<td>0x01</td>
+<td>0x0D81</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_WKUP_ESM0_ESM_PLS_EVENT2_IRQ_GROUP0_FROM_WKUP_GPIOMUX_INTRTR0</td>
+<td>0x02</td>
+<td>0x0D82</td>
+</tr>
+<tr class="row-odd"><td>AM6_DEV_GIC0</td>
+<td>0x038</td>
+<td>RESASG_SUBTYPE_GIC0_SPI_IRQ_GROUP0_FROM_NAVSS0_INTR_ROUTER_0</td>
+<td>0x00</td>
+<td>0x0E00</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_GIC0_SPI_IRQ_GROUP0_FROM_GPIOMUX_INTRTR0</td>
+<td>0x01</td>
+<td>0x0E01</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_GIC0_SPI_IRQ_GROUP1_FROM_NAVSS0_INTR_ROUTER_0</td>
+<td>0x02</td>
+<td>0x0E02</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_GIC0_SPI_IRQ_GROUP0_FROM_CMPEVENT_INTRTR0</td>
+<td>0x03</td>
+<td>0x0E03</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_GIC0_SPI_IRQ_GROUP0_FROM_WKUP_GPIOMUX_INTRTR0</td>
+<td>0x04</td>
+<td>0x0E04</td>
+</tr>
+<tr class="row-even"><td>AM6_DEV_PRU_ICSSG0</td>
+<td>0x03E</td>
+<td>RESASG_SUBTYPE_PRU_ICSSG0_PR1_EDC0_LATCH0_IN_IRQ_GROUP0_FROM_TIMESYNC_INTRTR0</td>
+<td>0x00</td>
+<td>0x0F80</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_PRU_ICSSG0_PR1_EDC0_LATCH1_IN_IRQ_GROUP0_FROM_TIMESYNC_INTRTR0</td>
+<td>0x01</td>
+<td>0x0F81</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_PRU_ICSSG0_PR1_EDC1_LATCH0_IN_IRQ_GROUP0_FROM_TIMESYNC_INTRTR0</td>
+<td>0x02</td>
+<td>0x0F82</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_PRU_ICSSG0_PR1_EDC1_LATCH1_IN_IRQ_GROUP0_FROM_TIMESYNC_INTRTR0</td>
+<td>0x03</td>
+<td>0x0F83</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_PRU_ICSSG0_PR1_IEP0_CAP_INTR_REQ_IRQ_GROUP0_FROM_GPIOMUX_INTRTR0</td>
+<td>0x04</td>
+<td>0x0F84</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_PRU_ICSSG0_PR1_IEP1_CAP_INTR_REQ_IRQ_GROUP0_FROM_GPIOMUX_INTRTR0</td>
+<td>0x05</td>
+<td>0x0F85</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_PRU_ICSSG0_PR1_SLV_INTR_IRQ_GROUP0_FROM_NAVSS0_INTR_ROUTER_0</td>
+<td>0x06</td>
+<td>0x0F86</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_PRU_ICSSG0_PR1_SLV_INTR_IRQ_GROUP0_FROM_GPIOMUX_INTRTR0</td>
+<td>0x07</td>
+<td>0x0F87</td>
+</tr>
+<tr class="row-even"><td>AM6_DEV_PRU_ICSSG1</td>
+<td>0x03F</td>
+<td>RESASG_SUBTYPE_PRU_ICSSG1_PR1_EDC0_LATCH0_IN_IRQ_GROUP0_FROM_TIMESYNC_INTRTR0</td>
+<td>0x00</td>
+<td>0x0FC0</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_PRU_ICSSG1_PR1_EDC0_LATCH1_IN_IRQ_GROUP0_FROM_TIMESYNC_INTRTR0</td>
+<td>0x01</td>
+<td>0x0FC1</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_PRU_ICSSG1_PR1_EDC1_LATCH0_IN_IRQ_GROUP0_FROM_TIMESYNC_INTRTR0</td>
+<td>0x02</td>
+<td>0x0FC2</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_PRU_ICSSG1_PR1_EDC1_LATCH1_IN_IRQ_GROUP0_FROM_TIMESYNC_INTRTR0</td>
+<td>0x03</td>
+<td>0x0FC3</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_PRU_ICSSG1_PR1_IEP0_CAP_INTR_REQ_IRQ_GROUP0_FROM_GPIOMUX_INTRTR0</td>
+<td>0x04</td>
+<td>0x0FC4</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_PRU_ICSSG1_PR1_IEP1_CAP_INTR_REQ_IRQ_GROUP0_FROM_GPIOMUX_INTRTR0</td>
+<td>0x05</td>
+<td>0x0FC5</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_PRU_ICSSG1_PR1_SLV_INTR_IRQ_GROUP0_FROM_NAVSS0_INTR_ROUTER_0</td>
+<td>0x06</td>
+<td>0x0FC6</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_PRU_ICSSG1_PR1_SLV_INTR_IRQ_GROUP0_FROM_GPIOMUX_INTRTR0</td>
+<td>0x07</td>
+<td>0x0FC7</td>
+</tr>
+<tr class="row-even"><td>AM6_DEV_PRU_ICSSG2</td>
+<td>0x040</td>
+<td>RESASG_SUBTYPE_PRU_ICSSG2_PR1_EDC0_LATCH0_IN_IRQ_GROUP0_FROM_TIMESYNC_INTRTR0</td>
+<td>0x00</td>
+<td>0x1000</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_PRU_ICSSG2_PR1_EDC0_LATCH1_IN_IRQ_GROUP0_FROM_TIMESYNC_INTRTR0</td>
+<td>0x01</td>
+<td>0x1001</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_PRU_ICSSG2_PR1_EDC1_LATCH0_IN_IRQ_GROUP0_FROM_TIMESYNC_INTRTR0</td>
+<td>0x02</td>
+<td>0x1002</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_PRU_ICSSG2_PR1_EDC1_LATCH1_IN_IRQ_GROUP0_FROM_TIMESYNC_INTRTR0</td>
+<td>0x03</td>
+<td>0x1003</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_PRU_ICSSG2_PR1_IEP0_CAP_INTR_REQ_IRQ_GROUP0_FROM_GPIOMUX_INTRTR0</td>
+<td>0x04</td>
+<td>0x1004</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_PRU_ICSSG2_PR1_IEP1_CAP_INTR_REQ_IRQ_GROUP0_FROM_GPIOMUX_INTRTR0</td>
+<td>0x05</td>
+<td>0x1005</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_PRU_ICSSG2_PR1_SLV_INTR_IRQ_GROUP0_FROM_NAVSS0_INTR_ROUTER_0</td>
+<td>0x06</td>
+<td>0x1006</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_PRU_ICSSG2_PR1_SLV_INTR_IRQ_GROUP0_FROM_GPIOMUX_INTRTR0</td>
+<td>0x07</td>
+<td>0x1007</td>
+</tr>
+<tr class="row-even"><td>AM6_DEV_NAVSS0</td>
+<td>0x076</td>
+<td>RESASG_SUBTYPE_NAVSS0_CPTS0_HW1_PUSH_IRQ_GROUP0_FROM_TIMESYNC_INTRTR0</td>
+<td>0x00</td>
+<td>0x1D80</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_NAVSS0_CPTS0_HW2_PUSH_IRQ_GROUP0_FROM_TIMESYNC_INTRTR0</td>
+<td>0x01</td>
+<td>0x1D81</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_NAVSS0_CPTS0_HW3_PUSH_IRQ_GROUP0_FROM_TIMESYNC_INTRTR0</td>
+<td>0x02</td>
+<td>0x1D82</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_NAVSS0_CPTS0_HW4_PUSH_IRQ_GROUP0_FROM_TIMESYNC_INTRTR0</td>
+<td>0x03</td>
+<td>0x1D83</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_NAVSS0_CPTS0_HW5_PUSH_IRQ_GROUP0_FROM_TIMESYNC_INTRTR0</td>
+<td>0x04</td>
+<td>0x1D84</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_NAVSS0_CPTS0_HW6_PUSH_IRQ_GROUP0_FROM_TIMESYNC_INTRTR0</td>
+<td>0x05</td>
+<td>0x1D85</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_NAVSS0_CPTS0_HW7_PUSH_IRQ_GROUP0_FROM_TIMESYNC_INTRTR0</td>
+<td>0x06</td>
+<td>0x1D86</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_NAVSS0_CPTS0_HW8_PUSH_IRQ_GROUP0_FROM_TIMESYNC_INTRTR0</td>
+<td>0x07</td>
+<td>0x1D87</td>
+</tr>
+<tr class="row-even"><td>AM6_DEV_NAVSS0_MODSS_INTA0</td>
+<td>0x0B4</td>
+<td>RESASG_SUBTYPE_IA_VINT</td>
+<td>0x0A</td>
+<td>0x2D0A</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_GLOBAL_EVENT_SEVT</td>
+<td>0x0D</td>
+<td>0x2D0D</td>
+</tr>
+<tr class="row-even"><td>AM6_DEV_NAVSS0_MODSS_INTA1</td>
+<td>0x0B5</td>
+<td>RESASG_SUBTYPE_IA_VINT</td>
+<td>0x0A</td>
+<td>0x2D4A</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_GLOBAL_EVENT_SEVT</td>
+<td>0x0D</td>
+<td>0x2D4D</td>
+</tr>
+<tr class="row-even"><td>AM6_DEV_NAVSS0_RINGACC0</td>
+<td>0x0BB</td>
+<td>RESASG_SUBTYPE_RA_ERROR_OES</td>
+<td>0x00</td>
+<td>0x2EC0</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_RA_GP</td>
+<td>0x01</td>
+<td>0x2EC1</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_RA_UDMAP_RX</td>
+<td>0x02</td>
+<td>0x2EC2</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_RA_UDMAP_TX</td>
+<td>0x03</td>
+<td>0x2EC3</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_RA_UDMAP_TX_EXT</td>
+<td>0x04</td>
+<td>0x2EC4</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_RA_UDMAP_RX_H</td>
+<td>0x05</td>
+<td>0x2EC5</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_RA_UDMAP_TX_H</td>
+<td>0x07</td>
+<td>0x2EC7</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_RA_VIRTID</td>
+<td>0x0A</td>
+<td>0x2ECA</td>
+</tr>
+<tr class="row-even"><td>AM6_DEV_NAVSS0_UDMAP0</td>
+<td>0x0BC</td>
+<td>RESASG_SUBTYPE_UDMAP_RX_FLOW_COMMON</td>
+<td>0x00</td>
+<td>0x2F00</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_UDMAP_INVALID_FLOW_OES</td>
+<td>0x01</td>
+<td>0x2F01</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_GLOBAL_EVENT_TRIGGER</td>
+<td>0x02</td>
+<td>0x2F02</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_UDMAP_GLOBAL_CONFIG</td>
+<td>0x03</td>
+<td>0x2F03</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_UDMAP_RX_CHAN</td>
+<td>0x0A</td>
+<td>0x2F0A</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_UDMAP_RX_HCHAN</td>
+<td>0x0B</td>
+<td>0x2F0B</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_UDMAP_TX_CHAN</td>
+<td>0x0D</td>
+<td>0x2F0D</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_UDMAP_TX_ECHAN</td>
+<td>0x0E</td>
+<td>0x2F0E</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_UDMAP_TX_HCHAN</td>
+<td>0x0F</td>
+<td>0x2F0F</td>
+</tr>
+<tr class="row-odd"><td>AM6_DEV_NAVSS0_UDMASS_INTA0</td>
+<td>0x0B3</td>
+<td>RESASG_SUBTYPE_IA_VINT</td>
+<td>0x0A</td>
+<td>0x2CCA</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_GLOBAL_EVENT_GEVT</td>
+<td>0x0B</td>
+<td>0x2CCB</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_GLOBAL_EVENT_MEVT</td>
+<td>0x0C</td>
+<td>0x2CCC</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_GLOBAL_EVENT_SEVT</td>
+<td>0x0D</td>
+<td>0x2CCD</td>
+</tr>
+<tr class="row-odd"><td>AM6_DEV_MCU_NAVSS0_RINGACC0</td>
+<td>0x0C3</td>
+<td>RESASG_SUBTYPE_RA_ERROR_OES</td>
+<td>0x00</td>
+<td>0x30C0</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_RA_GP</td>
+<td>0x01</td>
+<td>0x30C1</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_RA_UDMAP_RX</td>
+<td>0x02</td>
+<td>0x30C2</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_RA_UDMAP_TX</td>
+<td>0x03</td>
+<td>0x30C3</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_RA_UDMAP_RX_H</td>
+<td>0x05</td>
+<td>0x30C5</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_RA_UDMAP_TX_H</td>
+<td>0x07</td>
+<td>0x30C7</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_RA_VIRTID</td>
+<td>0x0A</td>
+<td>0x30CA</td>
+</tr>
+<tr class="row-even"><td>AM6_DEV_MCU_NAVSS0_UDMAP0</td>
+<td>0x0C2</td>
+<td>RESASG_SUBTYPE_UDMAP_RX_FLOW_COMMON</td>
+<td>0x00</td>
+<td>0x3080</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_UDMAP_INVALID_FLOW_OES</td>
+<td>0x01</td>
+<td>0x3081</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_GLOBAL_EVENT_TRIGGER</td>
+<td>0x02</td>
+<td>0x3082</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_UDMAP_GLOBAL_CONFIG</td>
+<td>0x03</td>
+<td>0x3083</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_UDMAP_RX_CHAN</td>
+<td>0x0A</td>
+<td>0x308A</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_UDMAP_RX_HCHAN</td>
+<td>0x0B</td>
+<td>0x308B</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_UDMAP_TX_CHAN</td>
+<td>0x0D</td>
+<td>0x308D</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_UDMAP_TX_HCHAN</td>
+<td>0x0F</td>
+<td>0x308F</td>
+</tr>
+<tr class="row-even"><td>AM6_DEV_MCU_NAVSS0_INTR_AGGR_0</td>
+<td>0x0BD</td>
+<td>RESASG_SUBTYPE_IA_VINT</td>
+<td>0x0A</td>
+<td>0x2F4A</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_GLOBAL_EVENT_GEVT</td>
+<td>0x0B</td>
+<td>0x2F4B</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_GLOBAL_EVENT_MEVT</td>
+<td>0x0C</td>
+<td>0x2F4C</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_GLOBAL_EVENT_SEVT</td>
+<td>0x0D</td>
+<td>0x2F4D</td>
+</tr>
+<tr class="row-even"><td>AM6_DEV_PCIE0</td>
+<td>0x078</td>
+<td>RESASG_SUBTYPE_PCIE0_PCIE_CPTS_HW2_PUSH_IRQ_GROUP0_FROM_TIMESYNC_INTRTR0</td>
+<td>0x00</td>
+<td>0x1E00</td>
+</tr>
+<tr class="row-odd"><td>AM6_DEV_PCIE1</td>
+<td>0x079</td>
+<td>RESASG_SUBTYPE_PCIE1_PCIE_CPTS_HW2_PUSH_IRQ_GROUP0_FROM_TIMESYNC_INTRTR0</td>
+<td>0x00</td>
+<td>0x1E40</td>
+</tr>
+<tr class="row-even"><td>AM6_DEV_PDMA1</td>
+<td>0x07C</td>
+<td>RESASG_SUBTYPE_PDMA1_LEVENT_IN_IRQ_GROUP0_FROM_TIMESYNC_INTRTR0</td>
+<td>0x00</td>
+<td>0x1F00</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_PDMA1_LEVENT_IN_IRQ_GROUP0_FROM_CMPEVENT_INTRTR0</td>
+<td>0x01</td>
+<td>0x1F01</td>
+</tr>
+<tr class="row-even"><td>AM6_DEV_MCU_ARMSS0_CPU0</td>
+<td>0x09F</td>
+<td>RESASG_SUBTYPE_MCU_ARMSS0_CPU0_INTR_IRQ_GROUP0_FROM_MCU_NAVSS0_INTR_ROUTER_0</td>
+<td>0x00</td>
+<td>0x27C0</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_MCU_ARMSS0_CPU0_INTR_IRQ_GROUP0_FROM_WKUP_GPIOMUX_INTRTR0</td>
+<td>0x01</td>
+<td>0x27C1</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_MCU_ARMSS0_CPU0_INTR_IRQ_GROUP0_FROM_MAIN2MCU_LVL_INTRTR0</td>
+<td>0x02</td>
+<td>0x27C2</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_MCU_ARMSS0_CPU0_INTR_IRQ_GROUP0_FROM_MAIN2MCU_PLS_INTRTR0</td>
+<td>0x03</td>
+<td>0x27C3</td>
+</tr>
+<tr class="row-even"><td>AM6_DEV_MCU_ARMSS0_CPU1</td>
+<td>0x0F5</td>
+<td>RESASG_SUBTYPE_MCU_ARMSS0_CPU1_INTR_IRQ_GROUP0_FROM_MCU_NAVSS0_INTR_ROUTER_0</td>
+<td>0x00</td>
+<td>0x3D40</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_MCU_ARMSS0_CPU1_INTR_IRQ_GROUP0_FROM_WKUP_GPIOMUX_INTRTR0</td>
+<td>0x01</td>
+<td>0x3D41</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_MCU_ARMSS0_CPU1_INTR_IRQ_GROUP0_FROM_MAIN2MCU_LVL_INTRTR0</td>
+<td>0x02</td>
+<td>0x3D42</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_MCU_ARMSS0_CPU1_INTR_IRQ_GROUP0_FROM_MAIN2MCU_PLS_INTRTR0</td>
+<td>0x03</td>
+<td>0x3D43</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="irq_sources.html" class="btn btn-neutral float-right" title="am6 Peripheral Interrupt Source Descriptions" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="clocks.html" class="btn btn-neutral" title="AM6 Clock Identifiers" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+      <a href="http://www.ti.com/corp/docs/legal/copyright.shtml">&copy; Copyright 2016-2020</a>, Texas Instruments Incorporated. All rights reserved. <br>
+      <a href="http://www.ti.com/corp/docs/legal/trademark/trademrk.htm">Trademarks</a> | <a href="http://www.ti.com/corp/docs/legal/privacy.shtml">Privacy policy</a> | <a href="http://www.ti.com/corp/docs/legal/termsofuse.shtml">Terms of use</a> | <a href="http://www.ti.com/lsds/ti/legal/termsofsale.page">Terms of sale</a>
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'19.12.00',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+    <script src="http://www.ti.com/assets/js/headerfooter/analytics.js" type="text/javascript" charset="utf-8"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+        });
+
+      var menuHeight = window.innerHeight;
+
+      var contentOffset = $(".wy-nav-content-wrap").offset();
+      var contentHeight = $(".wy-nav-content-wrap").height();
+      var contentBottom = contentOffset.top + contentHeight;
+
+      function setNavbarTop() {
+          var scrollTop = $(window).scrollTop();
+          var maxTop = scrollTop + menuHeight;
+
+          // If past the header
+          if (scrollTop > contentOffset.top && maxTop < contentBottom) {
+            stickyTop = scrollTop - contentOffset.top;
+          } else if (maxTop > contentBottom) {
+            stickyTop = scrollTop - contentOffset.top - (maxTop - contentBottom);
+          } else {
+            stickyTop = 0;
+          }
+
+          $(".wy-nav-side").css("top", stickyTop);
+      }
+
+      $(document).ready(function() {
+        setNavbarTop();
+        $(window).scroll(function () {
+          setNavbarTop();
+        });
+
+        $('body').on("mousewheel", function () {
+            // Remove default behavior
+            event.preventDefault();
+            // Scroll without smoothing
+            var wheelDelta = event.wheelDelta;
+            var currentScrollPosition = window.pageYOffset;
+            window.scrollTo(0, currentScrollPosition - wheelDelta);
+        });
+      });
+  </script>
+   
+
+</body>
+</html>
