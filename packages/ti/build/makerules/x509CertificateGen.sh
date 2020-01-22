@@ -47,6 +47,7 @@ X509_DEFAULT=x509-base.cfg
 
 LOADADDR=0
 SWRV=0
+BOARD_CONFIG=0
 ENC_IV_VAL=0000
 ENC_RS_VAL=0000
 ENC_KD_INDEX_VAL=0
@@ -189,6 +190,7 @@ options_help[o]="output_file:Name of the final output file. default x509-firmwar
 options_help[c]="cert_type:Target core on which the image would be running. Default is R5. Valid option are $VALID_CERT"
 options_help[l]="loadaddr:Target load address of the binary in hex. Default R5:0x41C00000 DMSC:0x00040000"
 options_help[s]="SWRV:SWRV value to be included in Certificate supported values (0-47). Default value $SWRV"
+options_help[f]="BOARD_CONFIG:Option to indicate this is a board configuration value. Supported values (0-1). Default value $BOARD_CONFIG"
 options_help[y]="image_encryption:Default is disabled. Valid options are $VALID_ENC"
 options_help[e]="enc_key_file:txt file with key inside it. If not provided script generates a random key."
 options_help[i]="enc_iv_file:txt file with Encryption Initial Vector(16 bytes) inside it. If not provided script generates a random IV."
@@ -199,7 +201,7 @@ options_help[j]="debug_type:Debug type to be included in Debug Extn. Valid optio
 options_help[m]="mode:Start R5 in lockstep or split mode. Valid options are $VALID_R5_BOOTCORE_OPTS"
 
 
-while getopts "b:k:o:c:l:s:e:i:r:y:d:u:j:m:h" opt
+while getopts "b:k:o:c:l:s:e:i:r:y:d:u:j:m:h:f" opt
 do
 	case $opt in
 	b)
@@ -225,6 +227,9 @@ do
 	;;
 	s)
 		SWRV=$OPTARG
+	;;
+	f)
+		BOARD_CONFIG=$OPTARG
 	;;
 	d)
 		IMG_DBG=$OPTARG
@@ -380,6 +385,7 @@ BIN_SIZE=`cat $BIN | wc -c | tr -d ' '`
 ADDR=`printf "%08x" $LOADADDR`
 
 gen_cert() {
+if [[ $BOARD_CONFIG == 0 ]]; then
 	echo "$CERT_SIGN Certificate being generated :"
 	echo "	X509_CFG = $TEMP_X509"
 	echo "	KEY = $SIGN_KEY"
@@ -389,6 +395,7 @@ gen_cert() {
 	echo "	LOADADDR = 0x$ADDR"
 	echo "	IMAGE_SIZE = $BIN_SIZE"
 	echo "	BOOT_OPTIONS = $BOOTCORE_OPTS"
+fi
 	sed -e "s/TEST_IMAGE_LENGTH/$BIN_SIZE/"	\
 		-e "s/TEST_IMAGE_SHA512/$SHA_VAL/" \
 		-e "s/TEST_SWRV/$SWRV/" \
@@ -425,8 +432,6 @@ cat << __HEADER_EOF > $X509_DEFAULT
 
  [ v3_ca ]
   basicConstraints = CA:true
-  1.3.6.1.4.1.294.1.1=ASN1:SEQUENCE:boot_seq
-  1.3.6.1.4.1.294.1.2=ASN1:SEQUENCE:image_integrity
   1.3.6.1.4.1.294.1.3=ASN1:SEQUENCE:swrv
   1.3.6.1.4.1.294.1.34=ASN1:SEQUENCE:sysfw_image_integrity
   1.3.6.1.4.1.294.1.35=ASN1:SEQUENCE:sysfw_image_load
@@ -435,6 +440,13 @@ __HEADER_EOF
 if [ ! -z $IMG_ENC ]; then
 	cat << __HEADER_ENC_EOF >> $X509_DEFAULT
   1.3.6.1.4.1.294.1.4=ASN1:SEQUENCE:encryption
+__HEADER_ENC_EOF
+fi
+
+if [[ $BOARD_CONFIG == 0 ]]; then
+	cat << __HEADER_ENC_EOF >> $X509_DEFAULT
+  1.3.6.1.4.1.294.1.1=ASN1:SEQUENCE:boot_seq
+  1.3.6.1.4.1.294.1.2=ASN1:SEQUENCE:image_integrity
 __HEADER_ENC_EOF
 fi
 
@@ -447,6 +459,18 @@ fi
 
 cat << __IMAGE_DEFAULT_EOF >> $X509_DEFAULT
 
+ [ swrv ]
+  swrv         =  INTEGER:TEST_SWRV
+
+ [ sysfw_image_integrity ]
+  shaType = OID:2.16.840.1.101.3.4.2.3
+  shaValue = FORMAT:HEX,OCT:TEST_IMAGE_SHA512
+  imageSize = INTEGER:TEST_IMAGE_LENGTH
+
+__IMAGE_DEFAULT_EOF
+
+if [[ $BOARD_CONFIG == 0 ]]; then
+	cat << __IMAGE_ENC_EOF >> $X509_DEFAULT
  [ boot_seq ]
   certType     =  INTEGER:TEST_CERT_TYPE
   bootCore     =  INTEGER:TEST_BOOT_CORE_ID
@@ -458,18 +482,17 @@ cat << __IMAGE_DEFAULT_EOF >> $X509_DEFAULT
   shaType      =  OID:2.16.840.1.101.3.4.2.3
   shaValue     =  FORMAT:HEX,OCT:TEST_IMAGE_SHA512
 
- [ swrv ]
-  swrv         =  INTEGER:TEST_SWRV
-
- [ sysfw_image_integrity ]
-  shaType = OID:2.16.840.1.101.3.4.2.3
-  shaValue = FORMAT:HEX,OCT:TEST_IMAGE_SHA512
-  imageSize = INTEGER:TEST_IMAGE_LENGTH
-
  [ sysfw_image_load ]
   destAddr = FORMAT:HEX,OCT:TEST_BOOT_ADDR
   authInPlace = INTEGER:1
-__IMAGE_DEFAULT_EOF
+__IMAGE_ENC_EOF
+else
+	cat << __IMAGE_ENC_EOF >> $X509_DEFAULT
+ [ sysfw_image_load ]
+  destAddr = FORMAT:HEX,OCT:00000000
+  authInPlace = INTEGER:2
+__IMAGE_ENC_EOF
+fi
 
 if [ ! -z $IMG_ENC ]; then
 	cat << __IMAGE_ENC_EOF >> $X509_DEFAULT
@@ -501,7 +524,12 @@ gen_cert
 
 cat $CERT $BIN > $OUTPUT
 
+if [[ $BOARD_CONFIG == 0 ]]; then
 echo "SUCCESS: Image $OUTPUT generated. Good to boot"
+else
+echo "SUCCESS: Image $OUTPUT generated."
+fi
+
 
 #Remove all intermediate files
 rm -f $X509_DEFAULT

@@ -50,7 +50,7 @@
 #endif
 uint32_t gSciclient_firmware[1];
 
-#if BINARY_FILE_SIZE_IN_BYTES > SBL_SYSFW_MAX_SIZE
+#if SCICLIENT_FIRMWARE_SIZE_IN_BYTES > SBL_SYSFW_MAX_SIZE
 #error "SYSFW too large...update SBL_SYSFW_MAX_SIZE"
 #endif
 
@@ -110,38 +110,38 @@ void SBL_SciClientInit(void)
 
 #ifndef SBL_SKIP_SYSFW_INIT
     /* Point to the constant global structure because we need to modify it */
-    struct tisci_boardcfg *pBoardConfigLow = (struct tisci_boardcfg *)&gBoardConfigLow;
+    struct tisci_boardcfg *pBoardConfigLow = (struct tisci_boardcfg *)gSciclient_boardCfgLow;
 
     /* SYSFW board configurations */
     Sciclient_BoardCfgPrms_t sblBoardCfgPrms =
     {
-        .boardConfigLow = (uint32_t)&gBoardConfigLow,
+        .boardConfigLow = (uint32_t)gSciclient_boardCfgLow,
 	.boardConfigHigh = 0,
-	.boardConfigSize = sizeof(gBoardConfigLow),
+	.boardConfigSize = SCICLIENT_BOARDCFG_SIZE_IN_BYTES,
 	.devGrp = SBL_DEVGRP
     };
 
     Sciclient_BoardCfgPrms_t sblBoardCfgPmPrms =
     {
-        .boardConfigLow = (uint32_t)NULL,
+        .boardConfigLow = (uint32_t)gSciclient_boardCfgLow_pm,
 	.boardConfigHigh = 0,
-	.boardConfigSize = 0,
+	.boardConfigSize = SCICLIENT_PM_BOARDCFG_SIZE_IN_BYTES,
 	.devGrp = SBL_DEVGRP
     };
     
     Sciclient_BoardCfgPrms_t sblBoardCfgRmPrms =
     {
-        .boardConfigLow = (uint32_t)&gBoardConfigLow_rm,
+        .boardConfigLow = (uint32_t)gSciclient_boardCfgLow_rm,
 	.boardConfigHigh = 0,
-	.boardConfigSize = sizeof(gBoardConfigLow_rm),
+	.boardConfigSize = SCICLIENT_RM_BOARDCFG_SIZE_IN_BYTES,
 	.devGrp = SBL_DEVGRP
     };
 
     Sciclient_BoardCfgPrms_t sblBoardCfgSecPrms =
     {
-        .boardConfigLow = (uint32_t)&gBoardConfigLow_security,
+        .boardConfigLow = (uint32_t)gSciclient_boardCfgLow_sec,
 	.boardConfigHigh = 0,
-	.boardConfigSize = sizeof(gBoardConfigLow_security),
+	.boardConfigSize = SCICLIENT_SECURITY_BOARDCFG_SIZE_IN_BYTES,
 	.devGrp = SBL_DEVGRP
     };
 
@@ -267,12 +267,13 @@ void SBL_SciClientInit(void)
 
     if (SBL_LOG_LEVEL > SBL_LOG_ERR)
     {
+        struct tisci_msg_version_req req = {0};
         const Sciclient_ReqPrm_t      reqPrm =
         {
             TISCI_MSG_VERSION,
             TISCI_MSG_FLAG_AOP,
-            (uint8_t *)NULL,
-            0,
+            (const uint8_t *)&req,
+            sizeof(req),
             SCICLIENT_SERVICE_WAIT_FOREVER
         };
 

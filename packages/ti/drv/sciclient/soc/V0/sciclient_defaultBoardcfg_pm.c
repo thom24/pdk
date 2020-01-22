@@ -30,49 +30,21 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- *  \file V1/sciclient_defaultBoardcfg.h
+ *  \file V0/sciclient_defaultBoardcfg.c
  *
- *  \brief File defining tisci_local_rm_boardcfg for boardCfg RM .
+ *  \brief File containing the boardcfg default data structure to
+ *      send TISCI_MSG_BOARD_CONFIG message.
  *
  */
-
-#ifndef SCICLIENT_DEFAULTBOARDCFG_
-#define SCICLIENT_DEFAULTBOARDCFG_
-
 /* ========================================================================== */
 /*                             Include Files                                  */
 /* ========================================================================== */
-#include <ti/csl/csl_types.h>
-#include <ti/drv/sciclient/sciclient.h>
-#include <ti/drv/sciclient/soc/sysfw/include/tisci/tisci_boardcfg.h>
-#include <ti/drv/sciclient/soc/sysfw/include/j721e/tisci_resasg_types.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <ti/drv/sciclient/soc/sysfw/include/am65x/tisci_hosts.h>
+#include <ti/drv/sciclient/soc/sysfw/include/am65x/tisci_boardcfg_constraints.h>
+#include <ti/drv/sciclient/soc/V0/sciclient_defaultBoardcfg.h>
 
 /* ========================================================================== */
 /*                            Global Variables                                */
 /* ========================================================================== */
-
-/* None */
-
-/* ========================================================================== */
-/*                           Macros & Typedefs                                */
-/* ========================================================================== */
-
-#if defined (BUILD_MCU1_0)
-struct tisci_local_rm_boardcfg {
-    struct tisci_boardcfg_rm      rm_boardcfg;
-    /**< RM board configuration */
-    struct tisci_boardcfg_rm_resasg_entry resasg_entries[TISCI_BOARDCFG_RM_RESASG_ENTRIES_MAX];
-    /**< Resource Assignment Entries */
-};
-#endif
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif /* #ifndef SCICLIENT_DEFAULTBOARDCFG_ */
 

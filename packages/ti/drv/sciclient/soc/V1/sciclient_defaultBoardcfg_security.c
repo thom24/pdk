@@ -30,49 +30,63 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- *  \file V1/sciclient_defaultBoardcfg.h
+ *  \file V1/sciclient_defaultBoardcfg.c
  *
- *  \brief File defining tisci_local_rm_boardcfg for boardCfg RM .
+ *  \brief File containing the boardcfg default data structure to
+ *      send TISCI_MSG_BOARD_CONFIG message.
  *
  */
-
-#ifndef SCICLIENT_DEFAULTBOARDCFG_
-#define SCICLIENT_DEFAULTBOARDCFG_
-
 /* ========================================================================== */
 /*                             Include Files                                  */
 /* ========================================================================== */
-#include <ti/csl/csl_types.h>
-#include <ti/drv/sciclient/sciclient.h>
-#include <ti/drv/sciclient/soc/sysfw/include/tisci/tisci_boardcfg.h>
-#include <ti/drv/sciclient/soc/sysfw/include/j721e/tisci_resasg_types.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <ti/drv/sciclient/soc/sysfw/include/j721e/tisci_hosts.h>
+#include <ti/drv/sciclient/soc/sysfw/include/j721e/tisci_boardcfg_constraints.h>
+#include <ti/drv/sciclient/soc/V1/sciclient_defaultBoardcfg.h>
 
 /* ========================================================================== */
 /*                            Global Variables                                */
 /* ========================================================================== */
 
-/* None */
-
-/* ========================================================================== */
-/*                           Macros & Typedefs                                */
-/* ========================================================================== */
-
 #if defined (BUILD_MCU1_0)
-struct tisci_local_rm_boardcfg {
-    struct tisci_boardcfg_rm      rm_boardcfg;
-    /**< RM board configuration */
-    struct tisci_boardcfg_rm_resasg_entry resasg_entries[TISCI_BOARDCFG_RM_RESASG_ENTRIES_MAX];
-    /**< Resource Assignment Entries */
+const struct tisci_boardcfg_sec gBoardConfigLow_security
+__attribute__(( aligned(128), section(".boardcfg_data") )) =
+{
+    /* boardcfg_abi_rev */
+    .rev = {
+        .tisci_boardcfg_abi_maj = TISCI_BOARDCFG_SEC_ABI_MAJ_VALUE,
+        .tisci_boardcfg_abi_min = TISCI_BOARDCFG_SEC_ABI_MIN_VALUE,
+    },
+
+    /* boardcfg_proc_acl */
+    .processor_acl_list = {
+        .subhdr = {
+            .magic = TISCI_BOARDCFG_PROC_ACL_MAGIC_NUM,
+            .size = (uint16_t) sizeof(struct tisci_boardcfg_proc_acl),
+        },
+        .proc_acl_entries = {0},
+    },
+
+    /* boardcfg_host_hierarchy */
+    .host_hierarchy = {
+        .subhdr = {
+            .magic = TISCI_BOARDCFG_HOST_HIERARCHY_MAGIC_NUM,
+            .size = (uint16_t) sizeof(struct tisci_boardcfg_host_hierarchy),
+        },
+        .host_hierarchy_entries = {0},
+    },
+
+    /* OTP access configuration */
+    .otp_config = {
+        .subhdr = {
+            .magic = TISCI_BOARDCFG_OTP_CFG_MAGIC_NUM,
+            .size = sizeof(struct tisci_boardcfg_extended_otp),
+        },
+        /* Host ID 0 is DMSC. This means no host has write acces to OTP array */
+        .write_host_id = 0,
+        /* This is an array with 32 entries */
+        .otp_entry = {0},
+    }, 
 };
 #endif
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif /* #ifndef SCICLIENT_DEFAULTBOARDCFG_ */
 

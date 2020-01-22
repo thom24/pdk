@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Texas Instruments Incorporated
+ * Copyright (c) 2018-2020, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -54,21 +54,14 @@ extern "C" {
 /* ========================================================================== */
 /*                            Global Variables                                */
 /* ========================================================================== */
-#if defined (BUILD_MCU1_0)
 
-/* Default board config structure */
-extern const struct tisci_boardcfg gBoardConfigLow;
-
-/* Default board config structure for RM*/
-extern const struct tisci_local_rm_boardcfg gBoardConfigLow_rm;
-
-/* Default board config structure for SECURITY */
-extern const struct tisci_boardcfg_sec gBoardConfigLow_security;
+/* NONE */
 
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
 
+#if defined (BUILD_MCU1_0)
 /* \brief Structure to hold the RM board configuration */
 struct tisci_local_rm_boardcfg {
     struct tisci_boardcfg_rm      rm_boardcfg;

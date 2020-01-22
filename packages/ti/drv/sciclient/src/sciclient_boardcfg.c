@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Texas Instruments Incorporated
+ * Copyright (c) 2018-2020, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,19 +42,33 @@
 /* ========================================================================== */
 
 #include <ti/drv/sciclient/src/sciclient_priv.h>
+#include <ti/csl/arch/csl_arch.h>
 
 /* ========================================================================== */
 /*                          Function Definitions                              */
 /* ========================================================================== */
 
 #if defined (BUILD_MCU1_0)
+const uint32_t gSciclient_boardCfgLow[(SCICLIENT_BOARDCFG_SIZE_IN_BYTES+3U)/4U]
+    __attribute__(( aligned(128), section(".boardcfg_data") ))
+    = SCICLIENT_BOARDCFG;
+const uint32_t gSciclient_boardCfgLow_rm[(SCICLIENT_RM_BOARDCFG_SIZE_IN_BYTES+3U)/4U]
+    __attribute__(( aligned(128), section(".boardcfg_data") ))
+    = SCICLIENT_RM_BOARDCFG;
+const uint32_t gSciclient_boardCfgLow_sec[(SCICLIENT_SECURITY_BOARDCFG_SIZE_IN_BYTES+3U)/4U]
+    __attribute__(( aligned(128), section(".boardcfg_data") ))
+    = SCICLIENT_SECURITY_BOARDCFG;
+const uint32_t gSciclient_boardCfgLow_pm[(SCICLIENT_PM_BOARDCFG_SIZE_IN_BYTES+3U)/4U]
+    __attribute__(( aligned(128), section(".boardcfg_data") ))
+    = SCICLIENT_PM_BOARDCFG;
+
 int32_t Sciclient_boardCfg(const Sciclient_BoardCfgPrms_t * pInPrms)
 {
     int32_t retVal = CSL_PASS;
     struct tisci_msg_board_config_req request = {
-        .tisci_boardcfgp_low  = (uint32_t) &gBoardConfigLow,
+        .tisci_boardcfgp_low  = (uint32_t) gSciclient_boardCfgLow,
         .tisci_boardcfgp_high = (uint32_t) 0x0U,
-        .tisci_boardcfg_size  = (uint16_t) sizeof(struct tisci_boardcfg),
+        .tisci_boardcfg_size  = (uint16_t) SCICLIENT_BOARDCFG_SIZE_IN_BYTES,
         .tisci_boardcfg_devgrp = (uint8_t) DEVGRP_ALL
     };
 
@@ -63,6 +77,7 @@ int32_t Sciclient_boardCfg(const Sciclient_BoardCfgPrms_t * pInPrms)
     {
         request.tisci_boardcfgp_low = pInPrms->boardConfigLow;
         request.tisci_boardcfgp_high = pInPrms->boardConfigHigh;
+        request.tisci_boardcfg_size = pInPrms->boardConfigSize;
         request.tisci_boardcfg_devgrp = pInPrms->devGrp;
     }
 
@@ -78,7 +93,8 @@ int32_t Sciclient_boardCfg(const Sciclient_BoardCfgPrms_t * pInPrms)
         .pRespPayload    = (uint8_t *) 0,
         .respPayloadSize = (uint32_t) 0
     };
-
+    CSL_armR5CacheWbInv((const void*) request.tisci_boardcfgp_low,
+                        request.tisci_boardcfg_size);
     if((CSL_PASS != Sciclient_service(&reqParam, &respParam))
         || ((respParam.flags & TISCI_MSG_FLAG_ACK) != TISCI_MSG_FLAG_ACK))
     {
@@ -92,10 +108,10 @@ int32_t Sciclient_boardCfgPm(const Sciclient_BoardCfgPrms_t * pInPrms)
 {
     int32_t retVal = CSL_PASS;
     struct tisci_msg_board_config_pm_req request = {
-        .tisci_boardcfg_pmp_low  = (uint32_t) NULL, /* PM Board Config structure
+        .tisci_boardcfg_pmp_low  = (uint32_t) gSciclient_boardCfgLow_pm, /* PM Board Config structure
                                                  definition removed from TISCI */
         .tisci_boardcfg_pmp_high = (uint32_t) 0x0U,
-        .tisci_boardcfg_pm_size  = (uint16_t) 0x0,
+        .tisci_boardcfg_pm_size  = (uint16_t) SCICLIENT_PM_BOARDCFG_SIZE_IN_BYTES,
         .tisci_boardcfg_pm_devgrp = (uint8_t) DEVGRP_ALL
 
     };
@@ -121,7 +137,8 @@ int32_t Sciclient_boardCfgPm(const Sciclient_BoardCfgPrms_t * pInPrms)
         .pRespPayload    = (uint8_t *) 0,
         .respPayloadSize = (uint32_t) 0
     };
-
+    CSL_armR5CacheWbInv((const void*) request.tisci_boardcfg_pmp_low,
+                            request.tisci_boardcfg_pm_size);
     if((CSL_PASS != Sciclient_service(&reqParam, &respParam))
         || ((respParam.flags & TISCI_MSG_FLAG_ACK) != TISCI_MSG_FLAG_ACK))
     {
@@ -133,9 +150,8 @@ int32_t Sciclient_boardCfgPm(const Sciclient_BoardCfgPrms_t * pInPrms)
 int32_t Sciclient_boardCfgRm(const Sciclient_BoardCfgPrms_t * pInPrms)
 {
     int32_t retVal = CSL_PASS;
-
     struct tisci_msg_board_config_rm_req request = {
-        .tisci_boardcfg_rmp_low  = (uint32_t) &gBoardConfigLow_rm,
+        .tisci_boardcfg_rmp_low  = (uint32_t) gSciclient_boardCfgLow_rm,
         .tisci_boardcfg_rmp_high = (uint32_t) 0x0U,
         .tisci_boardcfg_rm_size  = (uint16_t) sizeof(struct tisci_local_rm_boardcfg),
         .tisci_boardcfg_rm_devgrp = (uint8_t) DEVGRP_ALL
@@ -162,7 +178,8 @@ int32_t Sciclient_boardCfgRm(const Sciclient_BoardCfgPrms_t * pInPrms)
         .pRespPayload    = (uint8_t *) 0,
         .respPayloadSize = (uint32_t) 0
     };
-
+    CSL_armR5CacheWbInv((const void*) request.tisci_boardcfg_rmp_low,
+                            request.tisci_boardcfg_rm_size);
     if((CSL_PASS != Sciclient_service(&reqParam, &respParam))
         || ((respParam.flags & TISCI_MSG_FLAG_ACK) != TISCI_MSG_FLAG_ACK))
     {
@@ -174,11 +191,10 @@ int32_t Sciclient_boardCfgRm(const Sciclient_BoardCfgPrms_t * pInPrms)
 int32_t Sciclient_boardCfgSec(const Sciclient_BoardCfgPrms_t * pInPrms)
 {
     int32_t retVal = CSL_PASS;
-
     struct tisci_msg_board_config_security_req request = {
-        .tisci_boardcfg_securityp_low  = (uint32_t) &gBoardConfigLow_security,
+        .tisci_boardcfg_securityp_low  = (uint32_t) gSciclient_boardCfgLow_sec,
         .tisci_boardcfg_securityp_high = (uint32_t) 0x0U,
-        .tisci_boardcfg_security_size  = (uint16_t) sizeof(struct tisci_boardcfg_sec),
+        .tisci_boardcfg_security_size  = (uint16_t) SCICLIENT_SECURITY_BOARDCFG_SIZE_IN_BYTES,
         .tisci_boardcfg_security_devgrp = (uint8_t) DEVGRP_ALL
     };
 
@@ -203,7 +219,8 @@ int32_t Sciclient_boardCfgSec(const Sciclient_BoardCfgPrms_t * pInPrms)
         .pRespPayload    = (uint8_t *) 0,
         .respPayloadSize = (uint32_t) 0
     };
-
+    CSL_armR5CacheWbInv((const void*) request.tisci_boardcfg_securityp_low,
+                            request.tisci_boardcfg_security_size);
     if((CSL_PASS != Sciclient_service(&reqParam, &respParam))
         || ((respParam.flags & TISCI_MSG_FLAG_ACK) != TISCI_MSG_FLAG_ACK))
     {

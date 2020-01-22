@@ -154,19 +154,19 @@ uint32_t sciclientInitTimeCount = 0;
 
 void dmtimer0_read()
 {
-	sciclientInitTimeStamp[sciclientInitTimeCount] =  *(volatile uint32_t*)0x4413303C;
-	sciclientInitTimeCount = (sciclientInitTimeCount + 1)%30;
+        sciclientInitTimeStamp[sciclientInitTimeCount] =  *(volatile uint32_t*)0x4413303C;
+        sciclientInitTimeCount = (sciclientInitTimeCount + 1)%30;
 }
 void dmtimer0_enable()
 {
-	/* Unlock the the PM Ctrl registers */
-	*(volatile uint32_t *)0x44130020 = 0x8a6b7cda;
-	*(volatile uint32_t *)0x44130024 = 0x823caef9;
-	/* Set the DMTimer Source to be MOSC Clock - 25 MHz for AM65x */
-	*(volatile uint32_t *)0x44130200 = 0x2;
-	/* Start the timer */
-	*(volatile uint32_t *)0x44133038 = 0x3;
-	sciclientInitTimeCount = 0;
+        /* Unlock the the PM Ctrl registers */
+        *(volatile uint32_t *)0x44130020 = 0x8a6b7cda;
+        *(volatile uint32_t *)0x44130024 = 0x823caef9;
+        /* Set the DMTimer Source to be MOSC Clock - 25 MHz for AM65x */
+        *(volatile uint32_t *)0x44130200 = 0x2;
+        /* Start the timer */
+        *(volatile uint32_t *)0x44133038 = 0x3;
+        sciclientInitTimeCount = 0;
         dmtimer0_read();
 }
 
@@ -250,9 +250,10 @@ static int32_t App_getRevisionTest(void)
     }
     if (CSL_PASS == status)
     {
+        uint32_t boardCfgLow[] = SCICLIENT_PM_BOARDCFG;
         Sciclient_BoardCfgPrms_t boardCfgPrms_pm =
         {
-            .boardConfigLow = 0,
+            .boardConfigLow = (uint32_t)boardCfgLow,
             .boardConfigHigh = 0,
             .boardConfigSize = 0,
             .devGrp = DEVGRP_00
@@ -263,11 +264,12 @@ static int32_t App_getRevisionTest(void)
         dmtimer0_read();
         if (status == CSL_PASS)
         {
+            uint32_t boardCfgLow[] = SCICLIENT_RM_BOARDCFG;
             Sciclient_BoardCfgPrms_t boardCfgPrms_rm =
             {
-                .boardConfigLow = (uint32_t) &gBoardConfigLow_rm,
+                .boardConfigLow = (uint32_t) boardCfgLow,
                 .boardConfigHigh = 0,
-                .boardConfigSize = sizeof(gBoardConfigLow_rm),
+                .boardConfigSize = SCICLIENT_RM_BOARDCFG_SIZE_IN_BYTES,
                 .devGrp = DEVGRP_00
             };
             dmtimer0_read();
@@ -280,11 +282,12 @@ static int32_t App_getRevisionTest(void)
         }
         if (status == CSL_PASS)
         {
+            uint32_t boardCfgLow[] = SCICLIENT_SECURITY_BOARDCFG;
             Sciclient_BoardCfgPrms_t boardCfgPrms_security =
             {
-                .boardConfigLow = (uint32_t) &gBoardConfigLow_security,
+                .boardConfigLow = (uint32_t) boardCfgLow,
                 .boardConfigHigh = 0,
-                .boardConfigSize = sizeof(gBoardConfigLow_security),
+                .boardConfigSize = SCICLIENT_SECURITY_BOARDCFG_SIZE_IN_BYTES,
                 .devGrp = DEVGRP_00
             };
             printf("\nSciclient PM Board Configuration has Passed \n");
@@ -317,9 +320,10 @@ static int32_t App_getRevisionTest(void)
     }
     if (CSL_PASS == status)
     {
+        uint32_t boardCfgLow[] = SCICLIENT_PM_BOARDCFG;
         Sciclient_BoardCfgPrms_t boardCfgPrms_pm =
         {
-            .boardConfigLow = 0,
+            .boardConfigLow = (uint32_t)boardCfgLow,
             .boardConfigHigh = 0,
             .boardConfigSize = 0,
             .devGrp = DEVGRP_01
@@ -327,11 +331,12 @@ static int32_t App_getRevisionTest(void)
         status = Sciclient_boardCfgPm(&boardCfgPrms_pm);
         if (status == CSL_PASS)
         {
+            uint32_t boardCfgLow[] = SCICLIENT_RM_BOARDCFG;
             Sciclient_BoardCfgPrms_t boardCfgPrms_rm =
             {
-                .boardConfigLow = (uint32_t) &gBoardConfigLow_rm,
+                .boardConfigLow = (uint32_t) boardCfgLow,
                 .boardConfigHigh = 0,
-                .boardConfigSize = sizeof(gBoardConfigLow_rm),
+                .boardConfigSize = SCICLIENT_RM_BOARDCFG_SIZE_IN_BYTES,
                 .devGrp = DEVGRP_01
             };
             status = Sciclient_boardCfgRm(&boardCfgPrms_rm);
@@ -342,11 +347,12 @@ static int32_t App_getRevisionTest(void)
         }
         if (status == CSL_PASS)
         {
+            uint32_t boardCfgLow[] = SCICLIENT_SECURITY_BOARDCFG;
             Sciclient_BoardCfgPrms_t boardCfgPrms_security =
             {
-                .boardConfigLow = (uint32_t) &gBoardConfigLow_security,
+                .boardConfigLow = (uint32_t) boardCfgLow,
                 .boardConfigHigh = 0,
-                .boardConfigSize = sizeof(gBoardConfigLow_security),
+                .boardConfigSize = SCICLIENT_SECURITY_BOARDCFG_SIZE_IN_BYTES,
                 .devGrp = DEVGRP_01
             };
             status = Sciclient_boardCfgSec(&boardCfgPrms_security) ;

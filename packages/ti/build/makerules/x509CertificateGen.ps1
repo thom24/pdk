@@ -8,16 +8,17 @@ param
 	[string]$OUTPUT = $null,
 	[string]$LOADADDR = '0x00040000',
 	[ValidateSet('R5','DMSC_I', 'DMSC_O')][string]$CERT_SIGN = 'DMSC_I',
-	[ValidateSet('EFUSE_DEFAULT','SPLIT_MODE')][string]$MODE_R5 = 'EFUSE_DEFAULT'
+	[ValidateSet('EFUSE_DEFAULT','SPLIT_MODE')][string]$MODE_R5 = 'EFUSE_DEFAULT',
+	[int]$FIRMWARE_BOARD_CONFIG=0
 )
 
 #paths
 $SCRIPT_DIR = split-path -parent $MyInvocation.MyCommand.Definition
 
 if ( $BIN.length -eq  0 ) {
-        $WORK_DIR = [io.path]::GetFileNameWithoutExtension($ELF)
+		$WORK_DIR = [io.path]::GetFileNameWithoutExtension($ELF)
 } else {
-        $WORK_DIR = [io.path]::GetFileNameWithoutExtension($BIN)
+		$WORK_DIR = [io.path]::GetFileNameWithoutExtension($BIN)
 }
 
 #create working dir from input file
@@ -42,11 +43,10 @@ if ( $OUTPUT.length -eq  0 ) {
 
 #check if openssl is present
 Write-Host "Checking for OpenSSL..."
-trap {
-	Write-Host "Not found! Please install OpenSSL"
-	exit 1
+try { Invoke-Expression "openssl version" }
+catch { Write-Host "Not found! Please install OpenSSL" 
+    exit 1
 }
-Invoke-Expression "openssl version"
 
 $sha_oids = @{}
 $sha_oids.sha256='2.16.840.1.101.3.4.2.1'
@@ -79,9 +79,9 @@ function usage() {
 	}
 	Write-Host 'Examples of usage:-'
 	Write-Host '# Generate x509 certificate with random key from elf'
-	Write-Host "     $(split-path $MyInvocation.PSCommandPath -Leaf) -e ti-sci-firmware-am65xx.elf -o dmsc.bin -l 0x40000"
+	Write-Host "	 $(split-path $MyInvocation.PSCommandPath -Leaf) -e ti-sci-firmware-am65xx.elf -o dmsc.bin -l 0x40000"
 	Write-Host '# Generate x509 certificate with random key from bin'
-	Write-Host "    $(split-path $MyInvocation.PSCommandPath -Leaf) -b ti-sci-firmware-am65xx.bin -o dmsc.bin -l 0x40000"
+	Write-Host "	$(split-path $MyInvocation.PSCommandPath -Leaf) -b ti-sci-firmware-am65xx.bin -o dmsc.bin -l 0x40000"
 }
 
 $options_help.e="elf_file:`t`tELF file that needs to be signed"
@@ -89,6 +89,7 @@ $options_help.b="bin_file:`t`ttBin file that needs to be signed"
 $options_help.k="key_file:`t`tFile with key inside it. If not provided script generates a random key."
 $options_help.o="output_file:`tName of the final output file. The default is x509-firmware.bin"
 $options_help.l="loadaddr:`t`tTarget load address of the binary in hex. Default to $LOADADDR"
+$options_help.f="FIRMWARE_BOARD_CONFIG:Option to indicate this is a board configuration value. Supported values (0-1). Default value $FIRMWARE_BOARD_CONFIG"
 
 if ( ( $BIN.length -eq  0 ) -and ( $ELF.length -eq  0 ) ) {
 	usage "Either Input bin file or ELF file to sign"
@@ -135,17 +136,23 @@ $BIN_SIZE=(Get-Item $BIN).length
 $ADDR = ([Int32]::Parse($LOADADDR.split('x')[1], 'HexNumber')).ToString('X8')
 
 function gen_cert() {
-	Write-Host "$CERT_SIGN Certificate being generated :"
-	Write-Host "`tX509_CFG = $TEMP_X509"
-	Write-Host "`tKEY = $KEY"
-	Write-Host "`tBIN = $BIN"
-	Write-Host "`tCERT TYPE = $CERT_SIGN, $CERT_TYPE"
-	Write-Host "`tCORE ID = $BOOTCORE_ID"
-	Write-Host "`tLOADADDR = 0x$ADDR"
-	Write-Host "`tIMAGE_SIZE = $BIN_SIZE"
-	Write-Host "`tBOOT_OPTIONS = $BOOTCORE_OPTS"
-	Write-Host "`tSHA OID  is $SHA_OID"
-	Write-Host "`tSHA  is $SHA_VAL"
+	if ( $FIRMWARE_BOARD_CONFIG -eq 0 ) {
+		Write-Host "$CERT_SIGN Certificate being generated :"
+		Write-Host "`tX509_CFG = $TEMP_X509"
+		Write-Host "`tKEY = $KEY"
+		Write-Host "`tBIN = $BIN"
+		Write-Host "`tCERT TYPE = $CERT_SIGN, $CERT_TYPE"
+		Write-Host "`tCORE ID = $BOOTCORE_ID"
+		Write-Host "`tLOADADDR = 0x$ADDR"
+		Write-Host "`tIMAGE_SIZE = $BIN_SIZE"
+		Write-Host "`tBOOT_OPTIONS = $BOOTCORE_OPTS"
+		Write-Host "`tSHA OID  is $SHA_OID"
+		Write-Host "`tSHA  is $SHA_VAL"
+	}
+	else
+	{
+		$X509_TEMPPLATE="$SCRIPT_DIR\x509template_boardcfg.txt"
+	}
 	$SSL_CONF_FILE = (Get-Content -Raw $X509_TEMPPLATE) | ForEach-Object {
 				$_.replace("TEST_IMAGE_LENGTH", "$BIN_SIZE").
 				replace("TEST_IMAGE_SHA_OID", "$SHA_OID").
@@ -162,7 +169,13 @@ function gen_cert() {
 gen_cert
 Get-Content $CERT, $BIN -Enc Byte -Read 512 | Set-Content $OUTPUT  -Enc Byte
 
-Write-Host "SUCCESS: Image $OUTPUT generated. Good to boot"
+if ( $FIRMWARE_BOARD_CONFIG -eq 0 ) {
+	Write-Host "SUCCESS: Image $OUTPUT generated. Good to boot"
+}
+else
+{
+	Write-Host "SUCCESS: Image $OUTPUT generated."
+}
 
 #Remove all intermediate files
 Remove-Item $TEMP_X509

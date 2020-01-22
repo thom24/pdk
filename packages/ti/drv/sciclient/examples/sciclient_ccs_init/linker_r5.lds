@@ -72,15 +72,15 @@ SECTIONS
 /* 'intvecs' and 'intc_text' sections shall be placed within                  */
 /* a range of +\- 16 MB                                                       */
     .rstvectors           : {} palign(8)                            > RESET_VECTORS
-    .bootCode    	: {} palign(8) 		> OCMRAM_sciclientTest
-    .startupCode 	: {} palign(8) 		> OCMRAM_sciclientTest
-    .startupData 	: {} palign(8) 		> OCMRAM_sciclientTest, type = NOINIT
+    .boardcfg_data        : {} palign(8)                            > OCMRAM_sciclientTest
+    .bootCode             : {} palign(8)                            > OCMRAM_sciclientTest
+    .startupCode          : {} palign(8)                            > OCMRAM_sciclientTest
+    .startupData          : {} palign(8)                            > OCMRAM_sciclientTest, type = NOINIT
     .text                 : {} palign(8)                            > OCMRAM_sciclientTest
     .const                : {} palign(8)                            > OCMRAM_sciclientTest
     .cinit                : {} palign(8)                            > OCMRAM_sciclientTest
     .pinit                : {} palign(8)                            > OCMRAM_sciclientTest
     .data                 : {} palign(128)                          > OCMRAM_sciclientTest
-    .boardcfg_data        : {} palign(128)                          > OCMRAM_sciclientTest
     .bss                  : {} align(4)                             > OCMRAM_sciclientTest
     .sysmem               : {}                                      > OCMRAM_sciclientTest
     .stack                : {} align(4)                             > OCMRAM_sciclientTest  (HIGH)

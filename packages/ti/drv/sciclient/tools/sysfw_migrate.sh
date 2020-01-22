@@ -77,8 +77,6 @@ $RM binaries/*hs.bin
 $RM -fr binaries/am6
 $RM -fr binaries/j721e
 $RM -fr binaries/memory
-# TODO: Support for HS binaries would be part of a separate package
-$RM binaries/*hs*
 $RM -fr scripts
 $RM .gitignore
 $RM .gitmodules

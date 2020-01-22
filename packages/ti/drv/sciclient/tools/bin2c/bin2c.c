@@ -110,7 +110,7 @@ STATUS bin2c( uint8_t *inName, uint8_t * filename, uint8_t * arrName) {
 \n/*                           Macros & Typedefs                                */\
 \n/* ========================================================================== */\
 \n\
-\n#define BINARY_FILE_SIZE_IN_BYTES (%dU)\
+\n#define %s_SIZE_IN_BYTES (%dU)\
 \n\
 \n/* ========================================================================== */\
 \n/*                         Structure Declarations                             */\
@@ -129,7 +129,7 @@ STATUS bin2c( uint8_t *inName, uint8_t * filename, uint8_t * arrName) {
 \n/* ========================================================================== */\
 \n\
 \n#define %s {",
-filename, ((csize + 3U)/4U) * 4U, arrName);
+filename, arrName, csize, arrName);
 
     size=0;
     csize=0;

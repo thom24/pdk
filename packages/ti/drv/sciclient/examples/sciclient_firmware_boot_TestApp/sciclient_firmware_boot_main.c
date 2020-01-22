@@ -78,7 +78,7 @@ static uint64_t time_usecs[5] = { 0 };
 #pragma DATA_SECTION(gSciclient_firmware, ".firmware")
 
 #if defined (BUILD_MCU1_0) && defined(SOC_AM65XX)
-uint32_t gSciclient_firmware[BINARY_FILE_SIZE_IN_BYTES/4];
+uint32_t gSciclient_firmware[SCICLIENT_FIRMWARE_SIZE_IN_BYTES/4];
 
 /* MMCSD function table for MMCSD implementation */
 FATFS_DrvFxnTable FATFS_drvFxnTable = {
@@ -130,7 +130,7 @@ const FATFS_Config FATFS_config[_VOLUMES + 1] = {
     {NULL, NULL, NULL}
 };
 #else
-uint32_t gSciclient_firmware[BINARY_FILE_SIZE_IN_BYTES/4] = SCICLIENT_FIRMWARE;
+uint32_t gSciclient_firmware[SCICLIENT_FIRMWARE_SIZE_IN_BYTES/4] = SCICLIENT_FIRMWARE;
 #endif
 /* ========================================================================== */
 /*                         Structure Declarations                             */
@@ -193,9 +193,9 @@ int32_t App_loadFirmwareTest(void)
     App_sciclientPrintf(
                       " Reading from SD Card... \n");
 
-    status = sciclientTest_ReadSysfwImage(sysfw_ptr, BINARY_FILE_SIZE_IN_BYTES);
+    status = sciclientTest_ReadSysfwImage(sysfw_ptr, SCICLIENT_FIRMWARE_SIZE_IN_BYTES);
     /*Do a cache writeback*/
-    CacheP_wbInv(sysfw_ptr, BINARY_FILE_SIZE_IN_BYTES);
+    CacheP_wbInv(sysfw_ptr, SCICLIENT_FIRMWARE_SIZE_IN_BYTES);
 
     if (status != CSL_PASS)
     {
@@ -211,7 +211,7 @@ int32_t App_loadFirmwareTest(void)
     sysfw_ptr = (void *)&gSciclient_firmware;
 
     /*Do a cache writeback*/
-    CacheP_wbInv(sysfw_ptr, BINARY_FILE_SIZE_IN_BYTES);
+    CacheP_wbInv(sysfw_ptr, SCICLIENT_FIRMWARE_SIZE_IN_BYTES);
     #endif
 
     start_ticks = TimerP_getTimeInUsecs();
