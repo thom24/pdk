@@ -56,7 +56,7 @@ ifeq ($(CORE),mpu1_0)
     CPUID=0
 else
     ifeq ($(CORE),mcu1_0)
-    CPUID=7
+    CPUID=4
     endif
 endif
 
