@@ -233,7 +233,12 @@ int32_t Ipc_setCoreEventId(uint32_t selfId, Ipc_MbConfig* cfg, uint32_t intrCnt)
 
     if((start > 0U) && (range >= 1U))
     {
-        vimEventBaseNum = start;
+        /* Allocate the last 2 interrupts for IPC. Note that the IR allocation is
+         * static so this needs to be carefully set. Currently first interrupt is
+         * used by UDMA and middle one's are used by other modules like CPSW9G so
+         * we are using last 2 as a safe option.
+         */
+        vimEventBaseNum = (start + range) - 2U;
     }
 
     switch(selfId)
