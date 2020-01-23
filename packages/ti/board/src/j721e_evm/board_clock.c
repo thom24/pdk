@@ -61,8 +61,8 @@ uint32_t gBoardClkModuleMcuID[] = {
     TISCI_DEV_MCU_I2C0,
     TISCI_DEV_MCU_I2C1,
     TISCI_DEV_WKUP_I2C0,
-    TISCI_DEV_WKUP_UART0,
     TISCI_DEV_MCU_SA2_UL0,
+    TISCI_DEV_WKUP_UART0,  //Note: Keep the wakeup UART at end to skip it during clock deinit
 };
 
 uint32_t gBoardClkModuleMainID[] = {
@@ -372,7 +372,8 @@ Board_STATUS Board_moduleClockDeinitMcu(void)
 
     loopCount = sizeof(gBoardClkModuleMcuID) / sizeof(uint32_t);
 
-    for(index = 0; index < loopCount; index++)
+    /* (loopCount - 1) to avoid wakeup UART disable which is used by DMSC */
+    for(index = 0; index < (loopCount - 1); index++)
     {
         status = Board_moduleClockDisable(gBoardClkModuleMcuID[index]);
         if(status != BOARD_SOK)

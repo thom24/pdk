@@ -349,14 +349,12 @@ Board_STATUS Board_deinit(Board_initCfg cfg)
 
     if (cfg & BOARD_DEINIT_MODULE_CLOCK)
     {
-     //Disabling the module clock is crashing the system. Need to debug
-     //ret = Board_moduleClockDeinitMcu();
+     ret = Board_moduleClockDeinitMcu();
         if (ret != BOARD_SOK)
             return ret;
-     //Disabling the module clock is crashing the system. Need to debug
-     //ret = Board_moduleClockDeinitMain();
-        //if (ret != BOARD_SOK)
-            //return ret;
+     ret = Board_moduleClockDeinitMain();
+        if (ret != BOARD_SOK)
+            return ret;
     }
 
     if (cfg & BOARD_DEINIT_LOCK_MMR)
