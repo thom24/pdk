@@ -34,6 +34,7 @@
 #include <ti/csl/csl_lpddr.h>
 #include "board_ddr.h"
 
+#ifdef BUILD_MCU1_0
 typedef struct Board_DDRThermalMgmtInstance_s
 {
     LPDDR4_Config      boardDDRCfg;
@@ -49,8 +50,6 @@ static Board_DDRThermalMgmtInstance_t gBoard_DDRThermalMgmtInstance;
 /* Local defines */
 #define BOARD_SCICLIENT_RESP_TIMEOUT 1000000
 
-#ifdef BUILD_MCU1_0
-
 /* Multiplication factors assumes scaling by 8 */
 static const uint32_t gRefreshRateMultFactor[BOARD_MAX_TEMP_CHECK_REFRESH_RATE_VALUE+1] =
 {
@@ -63,10 +62,6 @@ static const uint32_t gRefreshRateMultFactor[BOARD_MAX_TEMP_CHECK_REFRESH_RATE_V
     2U,   /* 0.25 x with derating */
     2U,   /* 0.25 x with derating */
 };
-
-#endif
-
-#ifdef BUILD_MCU1_0
 
 #pragma CODE_SECTION(Board_updateRefreshRate, ".text:BOARD_DDR_thermalManagement");
 
