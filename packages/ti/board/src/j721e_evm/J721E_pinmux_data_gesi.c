@@ -548,13 +548,13 @@ static pinmuxPerCfg_t gPru_icssg1_pru1PinCfg[] =
 {
     /* MyPRU_ICSSG1_PRU1 -> PRG1_PRU1_GPO10 -> AB23 */
     {
-        PIN_PRG1_PRU1_GPO10, PIN_MODE(0) | \
+        PIN_PRG1_PRU1_GPO10, PIN_MODE(2) | \
         ((PIN_PULL_DISABLE) & (~PIN_PULL_DIRECTION & ~PIN_INPUT_ENABLE))
     },
     /* MyPRU_ICSSG1_PRU1 -> PRG1_PRU1_GPO9 -> AF21 */
     {
-        PIN_PRG1_PRU1_GPO9, PIN_MODE(0) | \
-        ((PIN_PULL_DISABLE) & (~PIN_PULL_DIRECTION & ~PIN_INPUT_ENABLE))
+        PIN_PRG1_PRU1_GPO9, PIN_MODE(2) | \
+        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
     },
     {PINMUX_END}
 };
@@ -742,12 +742,12 @@ static pinmuxPerCfg_t gSpi3PinCfg[] =
     /* MySPI3 -> SPI3_CS1 -> AB26 */
     {
         PIN_PRG0_PRU0_GPO9, PIN_MODE(4) | \
-        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+        ((PIN_PULL_DIRECTION | PIN_INPUT_ENABLE) & (~PIN_PULL_DISABLE))
     },
     /* MySPI3 -> SPI3_CS2 -> AB25 */
     {
         PIN_PRG0_PRU0_GPO10, PIN_MODE(4) | \
-        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+        ((PIN_PULL_DIRECTION | PIN_INPUT_ENABLE) & (~PIN_PULL_DISABLE))
     },
     /* MySPI3 -> SPI3_D0 -> AA26 */
     {
@@ -767,6 +767,11 @@ static pinmuxPerCfg_t gSpi6PinCfg[] =
     /* MySPI6 -> SPI6_CLK -> AC22 */
     {
         PIN_PRG1_PRU1_GPO17, PIN_MODE(4) | \
+        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+    },
+    /* MySPI6 -> SPI6_CS1 -> AG20 */
+    {
+        PIN_PRG1_PRU0_GPO9, PIN_MODE(4) | \
         ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
     },
     /* MySPI6 -> SPI6_D0 -> AJ22 */

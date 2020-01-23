@@ -222,6 +222,7 @@ enum pinMainOffsets
     PIN_MLB0_MLBCP             = 0x2A4U,
     PIN_MLB0_MLBCN             = 0x2A8U,
     PIN_MMC1_CLKLB             = 0x2ACU,
+    PIN_MMC2_CLKLB             = 0x2B0U,
 };
 
 enum pinWkupOffsets
