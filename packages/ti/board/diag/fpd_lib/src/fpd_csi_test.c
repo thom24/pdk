@@ -626,33 +626,6 @@ static int8_t Board_fpdUB9702SetCfg(void *csiHandle)
         return -1;
     }
 
-    ret = Board_fpdUb9702SetIOPinSupply((void *)csiHandle,
-                                        &fpdUb9702ModParams,
-                                        BOARD_FPD_UB9702_IO_PIN_SUPPLY_3V3);
-    if(ret != 0)
-    {
-        UART_printf("'Board_fpdUb9702SetIOPinSupply' cfg failed\n\r");
-        return -1;
-    }
-
-    ret = Board_fpdUb9702SetIOSupplyOverrideModeCtrl((void *)csiHandle,
-                                                     &fpdUb9702ModParams,
-                                                     BOARD_FPD_MODE_ENABLE);
-    if(ret != 0)
-    {
-        UART_printf("'Board_fpdUb9702SetIOSupplyOverrideModeCtrl' cfg failed\n\r");
-        return -1;
-    }
-
-    ret = Board_fpdUb9702SetIOSupplyMode((void *)csiHandle,
-                                         &fpdUb9702ModParams,
-                                         BOARD_FPD_UB9702_IO_SUPPLY_MODE_3V3);
-    if(ret != 0)
-    {
-        UART_printf("'Board_fpdUb9702SetIOSupplyMode' cfg failed\n\r");
-        return -1;
-    }
-
     ret = Board_fpdUb9702SetFSModeCtrl((void *)csiHandle,
                                        &fpdUb9702ModParams,
                                        BOARD_FPD_9702_EXT_GEN_BC_FS_GPIO7);
