@@ -59,6 +59,7 @@ function getLibs(prog)
                      'omapl138',
                      'am65xx',
                      'j721e',
+                     'j7200',
                    ];
 
     /* Get the SOC */

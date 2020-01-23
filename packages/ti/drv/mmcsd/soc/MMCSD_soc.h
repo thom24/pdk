@@ -81,8 +81,10 @@ extern "C" {
 	#define MMCSD_CNT CSL_MMCSD_CNT
 #elif defined(SOC_AM65XX)
 	#define MMCSD_CNT 2
-#elif defined(SOC_J721E) || defined(SOC_J7200)
+#elif defined(SOC_J721E)
 	#define MMCSD_CNT 3
+#elif defined(SOC_J7200)
+	#define MMCSD_CNT 2
 #endif
 #ifdef __cplusplus
 }

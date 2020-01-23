@@ -17,7 +17,7 @@ INCDIR = . src src/v0
 SRCS_COMMON += MMCSD_v0.c
 PACKAGE_SRCS_COMMON += src/v0 soc/MMCSD_v0.h
 else
-ifeq ($(SOC), $(filter $(SOC), am65xx j721e))
+ifeq ($(SOC), $(filter $(SOC), am65xx j721e j7200))
 SRCDIR = . src src/v2
 INCDIR = . src src/v2
 SRCS_COMMON += MMCSD_v2.c

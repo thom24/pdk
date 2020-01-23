@@ -14,7 +14,7 @@ LOCAL_APP_NAME = MMCSD_Baremetal_EMMC_$(BOARD)_$(CORE)TestApp
 
 BUILD_OS_TYPE = baremetal
 
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e))
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
 SRCDIR = ../src ../../
 INCDIR = ../src ../include ../../
 # Common source files across all platforms and cores
@@ -37,15 +37,16 @@ COMP_LIST_mpu1_1  = csl_init
 COMP_LIST_mcu1_0  = csl_init
 COMP_LIST_mcu1_1  = csl_init
 
-ifeq ($(SOC),$(filter $(SOC), j721e))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200))
 COMP_LIST_mcu2_0  = csl_init
 COMP_LIST_mcu2_1  = csl_init
+ifeq ($(SOC),$(filter $(SOC), j721e))
 COMP_LIST_mcu3_0  = csl_init
 COMP_LIST_mcu3_1  = csl_init
 endif
+endif
 
-
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e))
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
 COMP_LIST_COMMON += sciclient
 endif
 
