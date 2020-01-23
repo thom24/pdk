@@ -418,45 +418,6 @@ MMCSD_Error Board_mmc_voltageSwitchFxn(uint32_t instance,
 }
 
 /**
- * \brief Configures drive strength for LVCMOS IOs
- *
- * This is temporary function added as workaround for
- * eFuse drive strength configuration issue. Need to be
- * removed after this issue is fixed in the silicon.
- *
- */
-void Board_lvcmosDrvStrengthCfg(void)
-{
-    /* Unlock MMR */
-    Board_unlockMMR();
-
-    /* Configure Horizontal_Drive_Strength 3 to 0 */
-    /* Configure only if the IO strength is not as expected */
-    if((HW_RD_REG32(CSL_WKUP_CTRL_MMR0_CFG0_BASE + 0x40C0)) < 0xD)
-    {
-        HW_WR_REG32((CSL_WKUP_CTRL_MMR0_CFG0_BASE + 0x40C0), 0xD);
-        /* Configure Horizontal_Drive_Strength 7 to 4 */
-        HW_WR_REG32((CSL_WKUP_CTRL_MMR0_CFG0_BASE + 0x40C4), 0xD);
-        /* Configure Horizontal_Drive_Strength 11 to 8 */
-        HW_WR_REG32((CSL_WKUP_CTRL_MMR0_CFG0_BASE + 0x40C8), 0xD);
-        /* Configure Horizontal_Drive_Strength 15 to 12 */
-        HW_WR_REG32((CSL_WKUP_CTRL_MMR0_CFG0_BASE + 0x40CC), 0xD);
-    }
-
-    if((HW_RD_REG32(CSL_WKUP_CTRL_MMR0_CFG0_BASE + 0x40D0)) < 0xD)
-    {
-        /* Configure Vertical_Drive_Strength 3 to 0 */
-        HW_WR_REG32((CSL_WKUP_CTRL_MMR0_CFG0_BASE + 0x40D0), 0xD);
-        /* Configure Vertical_Drive_Strength 7 to 4 */
-        HW_WR_REG32((CSL_WKUP_CTRL_MMR0_CFG0_BASE + 0x40D4), 0xD);
-        /* Configure Vertical_Drive_Strength 11 to 8 */
-        HW_WR_REG32((CSL_WKUP_CTRL_MMR0_CFG0_BASE + 0x40D8), 0xD);
-        /* Configure Vertical_Drive_Strength 15 to 12 */
-        HW_WR_REG32((CSL_WKUP_CTRL_MMR0_CFG0_BASE + 0x40DC), 0xD);
-    }
-}
-
-/**
  * \brief Function to get board init params
  *
  *  This function shall be used to know the current board init

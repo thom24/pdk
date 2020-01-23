@@ -191,16 +191,16 @@ static Board_STATUS Board_CfgQsgmii(void)
  */
 Board_STATUS Board_serdesCfgSgmii(void)
 {
-    Board_STATUS ret;
+    Board_STATUS ret = BOARD_SOK;
+
+    Board_unlockMMR();
 
     /* SERDES0 Initializations */
     ret = Board_CfgSgmii();
-    if(ret != BOARD_SOK)
-    {
-        return ret;
-    }
 
-    return BOARD_SOK;
+    Board_lockMMR();
+
+    return ret;
 }
 
 /**
@@ -213,14 +213,14 @@ Board_STATUS Board_serdesCfgSgmii(void)
  */
 Board_STATUS Board_serdesCfgQsgmii(void)
 {
-    Board_STATUS ret;
+    Board_STATUS ret = BOARD_SOK;
+
+    Board_unlockMMR();
 
     /* SERDES0 Initializations */
     ret = Board_CfgQsgmii();
-    if(ret != BOARD_SOK)
-    {
-        return ret;
-    }
 
-    return BOARD_SOK;
+    Board_lockMMR();
+
+    return ret;
 }
