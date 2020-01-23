@@ -70,7 +70,7 @@
  * SDCD. Hence this feature , i.e using GPIO to check the SD card insert
  * is disabled. Same is the case with J7 and Simulator (J7). Here the demo
  * assumes that the SD card is inserted */
-#if !(defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SIMULATOR))
+#if !(defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SIMULATOR) || defined(SOC_J7200))
 #define FATFS_GPIO_ENABLED 1
 #endif
 
@@ -135,7 +135,7 @@ GPIO_CallbackFxn gpioCallbackFunctions[] = {
     NULL,
 };
 
-#if (defined(SOC_AM65XX)||defined(SOC_J721E))
+#if (defined(SOC_AM65XX)||defined(SOC_J721E)||defined (SOC_J7200))
 GPIO_v0_Config GPIO_v0_config = {
     gpioPinConfigs,
     gpioCallbackFunctions,
@@ -168,7 +168,7 @@ FATFS_DrvFxnTable FATFS_drvFxnTable = {
 /* FATFS configuration structure */
 FATFS_HwAttrs FATFS_initCfg[_VOLUMES] =
 {
-#if defined (SOC_AM65XX) || defined (SOC_J721E)
+#if defined (SOC_AM65XX) || defined (SOC_J721E) || defined (SOC_J7200)
     {  /* MMC1 is SD card  for AM65xx GP EVM */
         1U
     },
@@ -347,7 +347,7 @@ void fatfs_console(UArg arg0, UArg arg1)
 
 
 #ifndef BARE_METAL
-#if (defined(SOC_AM65XX) || defined(SOC_J721E)) && (defined(BUILD_MPU) || defined (__C7100__))
+#if (defined(SOC_AM65XX) || defined(SOC_J721E) || defined (SOC_J7200)) && (defined(BUILD_MPU) || defined (__C7100__))
 extern void Osal_initMmuDefault(void);
 void InitMmu(void)
 {
@@ -368,7 +368,7 @@ int main(void)
     Board_initCfg boardCfg;
     boardCfg = BOARD_INIT_PINMUX_CONFIG | BOARD_INIT_UART_STDIO | BOARD_INIT_MODULE_CLOCK;
 
-#if (defined(SOC_AM65XX)||defined(SOC_J721E)) &&  defined(__TI_ARM_V7R4__)
+#if (defined(SOC_AM65XX)||defined(SOC_J721E)||defined (SOC_J7200)) &&  defined(__TI_ARM_V7R4__)
     /* Clear it until the issue is resolved */
     boardCfg &= ~(BOARD_INIT_MODULE_CLOCK);
 #endif

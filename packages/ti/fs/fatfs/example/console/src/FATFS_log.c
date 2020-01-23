@@ -52,7 +52,7 @@
 /* TI-RTOS Header files */
 #include <ti/drv/uart/UART.h>
 #include <ti/drv/uart/UART_stdio.h>
-#if !defined(SOC_AM65XX) && !defined(SOC_J721E)
+#if !defined(SOC_AM65XX) && !defined(SOC_J721E) && !defined(SOC_J7200)
 #include <ti/csl/soc/am572x/src/cslr_control_core_pad_io.h>
 #endif
 
@@ -88,7 +88,7 @@ void ConsoleUtilsInit(void)
  *  ======== Board_initUART ========
  */
 void Board_initUART(void) {
-#if !defined(SOC_AM65XX) && !defined(SOC_J721E)
+#if !defined(SOC_AM65XX) && !defined(SOC_J721E) && !defined(SOC_J7200)
           HW_WR_REG32((SOC_CORE_PAD_IO_REGISTERS_BASE + CSL_CONTROL_CORE_PAD_IO_PAD_UART1_RXD),
             (CSL_CONTROL_CORE_PAD_IO_PAD_UART1_RXD_UART1_RXD_INPUTENABLE_MASK |
                     CSL_CONTROL_CORE_PAD_IO_PAD_UART1_RXD_UART1_RXD_SLEWCONTROL_MASK |

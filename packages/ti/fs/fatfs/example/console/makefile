@@ -32,7 +32,7 @@ endif
 
 endif
 
-ifeq ($(SOC),$(filter $(SOC), j721e))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200))
 SRCDIR = ./src ../
 INCDIR = ./src
 # Common source files across all platforms and cores
@@ -48,7 +48,7 @@ INCLUDE_EXTERNAL_INTERFACES = bios xdc pdk
 # List all the components required by the application
 COMP_LIST_COMMON = csl osal_tirtos mmcsd gpio uart board fatfs_indp
 
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e))
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
 COMP_LIST_COMMON += sciclient i2c
 endif
 
