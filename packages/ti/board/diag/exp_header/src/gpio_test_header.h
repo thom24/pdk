@@ -81,7 +81,7 @@ extern "C" {
 #define MAX_HEADER_LENGTH           (50U)
 #define I2C_IO_STS_SUCCESS          (0U)
 
-#if ((defined(am65xx_evm)) || (defined(am65xx_idk)))
+#if defined(SOC_AM65XX)
 /* Maximum number of pad config registers supported */
 #define PADCONFIG_MAX_COUNT         (5U)
 #define MAIN_PADCONFIG_MAX_COUNT    (5U)
@@ -89,9 +89,13 @@ extern "C" {
 #define NUM_PIN_SETS                (2U)
 #else /* defined SOC_J721E */
 /* Maximum number of pad config registers supported for J7 evm */
-#define PADCONFIG_MAX_COUNT         (30U)
-#define MAIN_PADCONFIG_MAX_COUNT    (28U)
-#define MLB_HEADER_PADCONFIG_INDEX  (31U)
+#define PADCONFIG_MAX_COUNT_ALPHA         (30U)
+#define MAIN_PADCONFIG_MAX_COUNT_ALPHA    (28U)
+#define MLB_HEADER_PADCONFIG_INDEX        (31U)
+
+#define PADCONFIG_MAX_COUNT_BETA         (16U)
+#define MAIN_PADCONFIG_MAX_COUNT_BETA    (14U)
+
 #define NUM_OF_MLB_HEADER_PINS      (3U)
 /* number of gpio pin sets for loopback test*/
 #define NUM_PIN_SETS                (3U)

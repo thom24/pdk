@@ -50,7 +50,7 @@
 
 #include "gpio_test_header.h"
 
-#if ((defined(am65xx_evm)) || (defined(am6xx_idk)))
+#if defined(SOC_AM65XX)
 testHeaderPinDetails_t testHeaderPin[NUM_PIN_SETS] = {
     {"SPI PINS\0",      0U,     3U,     CSL_GPIO0_BASE},
     {"TIMER PINS\0",    3U,     2U,     CSL_GPIO0_BASE}
@@ -66,15 +66,21 @@ static uint32_t pinMuxgpio[PADCONFIG_MAX_COUNT] =
     PIN_TIMER_IO0,
     PIN_TIMER_IO1
 };
-#else
-testHeaderPinDetails_t testHeaderPin[NUM_PIN_SETS] = {
+#elif defined(SOC_J721E)
+uint8_t gPadConfigMaxCount;
+uint8_t gMainPadConfigMaxCount;
+testHeaderPinDetails_t *testHeaderPin;
+static uint32_t *pinMuxgpio;
+
+/* Alpha GESI Board */
+testHeaderPinDetails_t testHeaderPinAlpha[NUM_PIN_SETS] = {
     {"USS/IMU SENSOR HEADER PINS\0",        1U,     6U,     CSL_GPIO0_BASE},
     {"MOTOR CONTROL HEADER MAIN PINS\0",    7U,     20U,    CSL_GPIO0_BASE},
     {"I3C PINS\0",                          29U,    2U,     CSL_WKUP_GPIO0_BASE},
 };
 
 /* Pad Config register offset address details */
-static uint32_t pinMuxgpio[PADCONFIG_MAX_COUNT] =
+static uint32_t pinMuxgpioAlpha[PADCONFIG_MAX_COUNT_ALPHA] =
 {
     /* USS/IMU SENSOR HEADER */
     PIN_PRG0_MDIO0_MDIO,
@@ -102,6 +108,37 @@ static uint32_t pinMuxgpio[PADCONFIG_MAX_COUNT] =
     PIN_PRG1_PRU1_GPO17,
     PIN_PRG1_PRU0_GPO4,
     PIN_PRG1_PRU0_GPO3,
+    PIN_PRG1_PRU0_GPO9,
+    PIN_PRG1_PRU0_GPO10,
+    PIN_PRG1_PRU1_GPO19,
+    PIN_PRG1_PRU0_GPO5,
+    /* I3C HEADER PINS  */
+    PIN_MCU_I3C0_SCL,
+    PIN_MCU_I3C0_SDA
+};
+
+/* Beta GESI Board */
+testHeaderPinDetails_t testHeaderPinBeta[NUM_PIN_SETS] = {
+    {"USS/IMU SENSOR HEADER PINS\0",        1U,     4U,     CSL_GPIO0_BASE},
+    {"MOTOR CONTROL HEADER MAIN PINS\0",    5U,     8U,    CSL_GPIO0_BASE},
+    {"I3C PINS\0",                          15U,    2U,     CSL_WKUP_GPIO0_BASE},
+};
+
+/* Pad Config register offset address details */
+static uint32_t pinMuxgpioBeta[PADCONFIG_MAX_COUNT_BETA] =
+{
+    /* USS/IMU SENSOR HEADER */
+    PIN_PRG0_MDIO0_MDIO,
+    PIN_PRG0_MDIO0_MDC,
+    PIN_PRG1_PRU1_GPO7,
+    PIN_PRG1_PRU1_GPO8,
+    /* MOTOR CONTROL HEADER */
+    PIN_PRG1_PRU1_GPO5,
+    PIN_PRG1_PRU0_GPO19,
+    PIN_PRG1_PRU0_GPO18,
+    PIN_PRG1_PRU0_GPO17,
+    PIN_PRG1_PRU1_GPO18,
+    PIN_PRG1_PRU0_GPO8,
     PIN_PRG1_PRU0_GPO9,
     PIN_PRG1_PRU0_GPO10,
     PIN_PRG1_PRU1_GPO19,
@@ -164,8 +201,6 @@ static int8_t BoardDiag_runGpioTestHeaderVerification(uint8_t index,
             {
                 UART_printf("Looping back the signal low failed for pin %d\n\r", pinIndex);
             }
-            UART_printf("Exiting...\n");
-            return -1;
         }
         else
         {
@@ -193,8 +228,6 @@ static int8_t BoardDiag_runGpioTestHeaderVerification(uint8_t index,
             {
                 UART_printf("Looping back the signal low failed for pin %d\n\r", pinIndex);
             }
-            UART_printf("Exiting...\n");
-            return -1;
         }
     }
 
@@ -214,17 +247,22 @@ int8_t BoardDiag_runExpHeaderTest(void)
     int8_t ret = 0;
     uint8_t index;
 #if defined(SOC_J721E)
+#ifndef DIAG_STRESS_TEST
     uint8_t userInput;
+#endif
     Board_STATUS status = BOARD_SOK;
 #endif
 
     /* set board pin mux mode to MAIN domain */
+#if defined(SOC_AM65XX)
     for(index = 0; index < MAIN_PADCONFIG_MAX_COUNT; index++)
     {
-#if (defined(am65xx_evm) || defined(am65xx_idk))
         Board_pinMuxSetMode(pinMuxgpio[index],
                             (GPIO_PADCONFIG_MUX_MODE | PIN_INPUT_ENABLE));
+    }
 #else
+    for(index = 0; index < gMainPadConfigMaxCount; index++)
+    {
         status = Board_pinmuxSetReg(BOARD_SOC_DOMAIN_MAIN,
                                     pinMuxgpio[index],
                                     BOARD_GPIO_PIN_MUX_CFG);
@@ -232,12 +270,10 @@ int8_t BoardDiag_runExpHeaderTest(void)
         {
             return status;
         }
-#endif
     }
 
-#if defined(SOC_J721E)
     /* set board pin mux mode to WAKEUP domain */
-    for(index = MAIN_PADCONFIG_MAX_COUNT; index < PADCONFIG_MAX_COUNT; index++)
+    for(index = gMainPadConfigMaxCount; index < gPadConfigMaxCount; index++)
     {
         status = Board_pinmuxSetReg(BOARD_SOC_DOMAIN_WKUP,
                                     pinMuxgpio[index],
@@ -248,11 +284,12 @@ int8_t BoardDiag_runExpHeaderTest(void)
         }
     }
 #endif
+
     UART_printf("\nRunning Test Header GPIO loopback test...\n");
 
     for(index = 0; index < NUM_PIN_SETS; index++)
     {
-#if defined(SOC_J721E)
+#if (defined(SOC_J721E) && (!defined(DIAG_STRESS_TEST)))
         if(index == 1)
         {
             UART_printf("\nSet SW3.8 to OFF for testing Motor control header \n\r");
@@ -282,7 +319,31 @@ int8_t BoardDiag_runExpHeaderTest(void)
 int8_t BoardDiag_expHeaderFuctionalTest(void)
 {
     int8_t ret = 0;
-
+#if defined(SOC_J721E)
+    bool isAlpha = 0;
+    /*
+     * There is a Update in PRG1 MUX-01, PRG1_PWM pins are DNI in
+     * GESI Beta HW revision.
+     * PRG1_PWM pins are enabled only for Alpha GESI boards.
+     */
+    isAlpha = Board_isAlpha(BOARD_ID_GESI);
+    if(isAlpha == TRUE)
+    {
+        UART_printf("ALPHA GESI Board\n");
+        gMainPadConfigMaxCount = MAIN_PADCONFIG_MAX_COUNT_ALPHA;
+        testHeaderPin= testHeaderPinAlpha;
+        gPadConfigMaxCount = PADCONFIG_MAX_COUNT_ALPHA;
+        pinMuxgpio = pinMuxgpioAlpha;
+    }
+    else
+    {
+        UART_printf("BETA GESI Board\n");
+        gMainPadConfigMaxCount = MAIN_PADCONFIG_MAX_COUNT_BETA;
+        testHeaderPin= testHeaderPinBeta;
+        gPadConfigMaxCount = PADCONFIG_MAX_COUNT_BETA;
+        pinMuxgpio = pinMuxgpioBeta;
+    }
+#endif
     ret = BoardDiag_runExpHeaderTest();
 
     return ret;
@@ -290,7 +351,7 @@ int8_t BoardDiag_expHeaderFuctionalTest(void)
 
 #ifdef DIAG_STRESS_TEST
 /**
- *  \brief    The function performs the expansion header Diagnostic 
+ *  \brief    The function performs the expansion header Diagnostic
  *            stress test.
  *
  *  \return   int8_t
@@ -501,6 +562,7 @@ int main(void)
         UART_printf("\nMLB Header Pin Toggle test failed\n");
         return ret;
     }
+
     UART_printf("\nI2C IO-Expander Mux Configuration... \n\r");
 
     BoardDiag_ioExpMuxSel(BOARD_I2C_IOEXP_DEVICE1_ADDR,
