@@ -669,12 +669,6 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
             .host_id = TISCI_HOST_ID_A72_2,
         },
         {
-            .num_resource = 24U,
-            .type = TISCI_RESASG_UTYPE(TISCI_DEV_COMPUTE_CLUSTER0_GIC500SS, TISCI_RESASG_SUBTYPE_COMPUTE_CLUSTER0_GIC500SS_SPI_IRQ_GROUP0_FROM_GPIOMUX_INTRTR0),
-            .start_resource = 424U,
-            .host_id = TISCI_HOST_ID_A72_3,
-        },
-        {
             .num_resource = 64U,
             .type = TISCI_RESASG_UTYPE(TISCI_DEV_COMPUTE_CLUSTER0_GIC500SS, TISCI_RESASG_SUBTYPE_COMPUTE_CLUSTER0_GIC500SS_SPI_IRQ_GROUP1_FROM_NAVSS0_INTR_ROUTER_0),
             .start_resource = 448U,
