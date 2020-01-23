@@ -1179,6 +1179,11 @@ int32_t Sciclient_rmPsilWrite(const struct tisci_msg_rm_psil_write_req *req,
     return (retVal);
 }
 
+int32_t Sciclient_rmSetProxyCfg(const struct tisci_msg_rm_proxy_cfg_req *req, uint32_t timeout)
+{
+    return CSL_PASS;
+}
+
 /* -------------------------------------------------------------------------- */
 /*                 Internal Function Definitions                              */
 /* -------------------------------------------------------------------------- */
