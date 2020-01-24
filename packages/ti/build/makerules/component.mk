@@ -71,8 +71,20 @@
 #
 ifeq ($(pdk_component_make_include), )
 
-# Filter out PRU cores for building components
-DEFAULT_$(SOC)_CORELIST = $(filter-out $(CORE_LIST_PRU),$(CORE_LIST_$(SOC)))
+# The below defines the DEFAULT_$(SOC)_CORELIST which are used by various components for an SOC
+# This is derived from the CORELIST_$(SOC) defined in platform.mk which encompasses all the available cores for a SOC.
+# The DEFAULT_$(SOC)_CORELIST is a subset of all the cores and is used for building components.
+
+# Filter out PRU cores from default cores list for building components
+DEFAULT_CORELIST_EXCLUDE_CORES = $(CORE_LIST_PRU)
+
+# For J7 cores, mpu1_1 is not a part of default core list 
+ifeq ($(SOC),$(filter $(SOC), j721e j7200))
+DEFAULT_CORELIST_EXCLUDE_CORES += mpu1_1
+endif
+
+DEFAULT_$(SOC)_CORELIST = $(filter-out $(DEFAULT_CORELIST_EXCLUDE_CORES), $(CORE_LIST_$(SOC)))
+
 
 # Core types (without the core IDs). This will be used to parse and order the establish the order of cores
 # in the case of building libraries for multiple cores
