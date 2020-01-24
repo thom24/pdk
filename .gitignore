@@ -4,6 +4,7 @@ packages/ti/binary/
 packages/ti/csl/
 packages/ti/drv/cpsw/
 packages/ti/drv/csirx/
+packages/ti/drv/csitx/
 packages/ti/drv/emac/firmware/icss_dualmac/src/version_file.h
 packages/ti/drv/pm/
 packages/ti/drv/vhwa/
