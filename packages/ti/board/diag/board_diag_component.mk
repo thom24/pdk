@@ -243,7 +243,11 @@ csirx_board_diag_BOARDLIST = $(board_diag_$(SOC)_BOARDLIST)
 csirx_board_diag_$(SOC)_CORELIST = mcu2_1
 export csirx_board_diag_$(SOC)_CORELIST
 export csirx_board_diag_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
+
+# Add CSIRX diagnostic test only if the CSIRX component path exists
+ifneq ($(wildcard $(PDK_CSIRX_COMP_PATH)),)
 board_diag_EXAMPLE_LIST += csirx_board_diag
+endif
 
 
 # CURRENT MONITOR
