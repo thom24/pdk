@@ -239,16 +239,15 @@ int32_t Ipc_setCoreEventId(uint32_t selfId, Ipc_MbConfig* cfg, uint32_t intrCnt)
          * used by UDMA and middle one's are used by other modules like CPSW9G so
          * we are using last 5 as a safe option.
          */
-         */
         if(range >= 5)
         {
             offset = 5;
         }
         else
         {
-	        offset = range;
+            offset = range;
         }
-	    vimEventBaseNum = (start + range) - offset;
+        vimEventBaseNum = (start + range) - offset;
     }
 
     switch(selfId)
