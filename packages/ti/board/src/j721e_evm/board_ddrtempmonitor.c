@@ -44,12 +44,21 @@ typedef struct Board_DDRThermalMgmtInstance_s
     Board_thermalMgmtCallbackFunction_t appCallBackFunction;
 } Board_DDRThermalMgmtInstance_t;
 
+#ifdef __cplusplus
+#pragma DATA_SECTION(".data:BOARD_DDR_thermalManagement");
+#else
 #pragma DATA_SECTION(gBoard_DDRThermalMgmtInstance, ".data:BOARD_DDR_thermalManagement");
+#endif
 static Board_DDRThermalMgmtInstance_t gBoard_DDRThermalMgmtInstance;
 
 /* Local defines */
 #define BOARD_SCICLIENT_RESP_TIMEOUT 1000000
 
+#ifdef __cplusplus
+#pragma DATA_SECTION(".const:BOARD_DDR_thermalManagement");
+#else
+#pragma DATA_SECTION(gRefreshRateMultFactor, ".const:BOARD_DDR_thermalManagement");
+#endif
 /* Multiplication factors assumes scaling by 8 */
 static const uint32_t gRefreshRateMultFactor[BOARD_MAX_TEMP_CHECK_REFRESH_RATE_VALUE+1] =
 {
@@ -62,8 +71,24 @@ static const uint32_t gRefreshRateMultFactor[BOARD_MAX_TEMP_CHECK_REFRESH_RATE_V
     2U,   /* 0.25 x with derating */
     2U,   /* 0.25 x with derating */
 };
+#ifdef __cplusplus
+#pragma DATA_SECTION(".const:BOARD_DDR_thermalManagement");
+#else
+#pragma DATA_SECTION(gBoardDDRFSPNum, ".const:BOARD_DDR_thermalManagement");
+#endif
 
+static const LPDDR4_CtlFspNum gBoardDDRFSPNum[LPDDR4_FSP_2+1] =
+{
+    LPDDR4_FSP_0,
+    LPDDR4_FSP_1,
+    LPDDR4_FSP_2,
+};
+
+#ifdef __cplusplus
+#pragma CODE_SECTION(".text:BOARD_DDR_thermalManagement");
+#else
 #pragma CODE_SECTION(Board_updateRefreshRate, ".text:BOARD_DDR_thermalManagement");
+#endif
 
 void Board_updateRefreshRate(const LPDDR4_CtlFspNum fsNum, uint32_t refreshMultFactor)
 {
@@ -83,7 +108,11 @@ void Board_updateRefreshRate(const LPDDR4_CtlFspNum fsNum, uint32_t refreshMultF
     }
 }
 
+#ifdef __cplusplus
+#pragma CODE_SECTION(".text:BOARD_DDR_thermalManagement");
+#else
 #pragma CODE_SECTION(Board_updateAllRefreshRate, ".text:BOARD_DDR_thermalManagement");
+#endif
 
 void Board_updateAllRefreshRate(uint32_t refreshMultFactor)
 {
@@ -93,7 +122,11 @@ void Board_updateAllRefreshRate(uint32_t refreshMultFactor)
     Board_updateRefreshRate(LPDDR4_FSP_2, refreshMultFactor);
 }
 
+#ifdef __cplusplus
+#pragma CODE_SECTION(".text:BOARD_DDR_thermalManagement");
+#else
 #pragma CODE_SECTION(Board_DDRInterruptHandler, ".text:BOARD_DDR_thermalManagement");
+#endif
 /**
  * \brief Interrupt handler for DDR events
  *
@@ -177,7 +210,7 @@ Board_STATUS Board_DDRTempMonitoringInit(Board_thermalMgmtCallbackFunction_t cal
     OsalInterruptRetCode_e      osalRet;
     uint64_t                    interruptMask;
     uint32_t                    lpddrStatus;
-    LPDDR4_CtlFspNum            fspNum;
+    uint32_t                    fspIndex;
     
     struct tisci_msg_rm_irq_release_req irq_release_req =
     {
@@ -210,10 +243,10 @@ Board_STATUS Board_DDRTempMonitoringInit(Board_thermalMgmtCallbackFunction_t cal
     if (status == BOARD_SOK)
     {
         /* Read and preserve the initial Refresh Rates as baseline */
-        for (fspNum = LPDDR4_FSP_0; fspNum <= LPDDR4_FSP_2; fspNum++)
+        for (fspIndex = 0; fspIndex <= LPDDR4_FSP_2; fspIndex++)
         {
-            lpddrStatus = LPDDR4_GetRefreshRate(&(gBoard_DDRThermalMgmtInstance.boardRuntimeDDRPd), &fspNum,
-                                                &(gBoard_DDRThermalMgmtInstance.boardDDRInitRefreshRate[fspNum]));
+            lpddrStatus = LPDDR4_GetRefreshRate(&(gBoard_DDRThermalMgmtInstance.boardRuntimeDDRPd), &gBoardDDRFSPNum[fspIndex],
+                                                &(gBoard_DDRThermalMgmtInstance.boardDDRInitRefreshRate[gBoardDDRFSPNum[fspIndex]]));
             if (lpddrStatus > 0U)
             {
                 BOARD_DEBUG_LOG("LPDDR4_GetRefreshRate: FAIL\n");
