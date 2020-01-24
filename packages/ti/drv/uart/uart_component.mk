@@ -288,14 +288,14 @@ uart_dma_profile_$(SOC)_CORELIST = $(drvuart_$(SOC)_CORELIST)
 export uart_dma_profile_$(SOC)_CORELIST
 
 # UART console LIB
-uart_console_COMP_LIST = uart_console_
+uart_console_COMP_LIST = uart_console
 uart_console_RELPATH = ti/drv/uart
 uart_console_PATH = $(PDK_UART_COMP_PATH)
 uart_console_LIBNAME = ti.drv.uart_console
 export uart_console_LIBNAME
 uart_console_LIBPATH = $(uart_console_PATH)/lib
 export uart_console_LIBPATH
-uart_console_OBJPATH = $(uart_console_RELPATH)/uart
+uart_console_OBJPATH = $(uart_console_RELPATH)/uart_console
 export uart_console_OBJPATH
 uart_console_MAKEFILE = -f build/makefile_console.mk
 export uart_console_MAKEFILE
@@ -308,7 +308,7 @@ export uart_console_CORE_DEPENDENCY
 export uart_console_SOC_DEPENDENCY
 uart_console_PKG_LIST = uart_console
 uart_console_INCLUDE = $(uart_console_PATH)
-uart_console_SOCLIST = tda2xx tda2px tda2ex tda3xx
+uart_console_SOCLIST = tda2xx tda2px tda2ex tda3xx am65xx j721e j7200
 export uart_console_SOCLIST
 uart_console_$(SOC)_CORELIST = $(drvuart_$(SOC)_CORELIST)
 export uart_console_$(SOC)_CORELIST
