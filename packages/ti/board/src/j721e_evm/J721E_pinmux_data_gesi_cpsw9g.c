@@ -584,7 +584,6 @@ pinmuxBoardCfg_t gJ721E_MainPinmuxDataGesiCpsw9gQsgmii[] =
     {1, gGpioPinCfg},
     {2, gMdioPinCfg},
     {3, gQsgmiiPinCfg},
-    {4, gRmiiPinCfg},
     {PINMUX_END}
 };
 pinmuxBoardCfg_t gJ721E_WkupPinmuxDataGesiCpsw9g[] =

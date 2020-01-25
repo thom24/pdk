@@ -237,34 +237,26 @@ Board_STATUS Board_cpsw9gEnetExpPhyReset(bool enableFlag)
     Board_IoExpCfg_t ioExpCfg;
     Board_STATUS status = BOARD_SOK;
 
+    ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_DEVICE2_INSTANCE;
+    ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
+    ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_DEVICE2_ADDR;
+    ioExpCfg.enableIntr  = false;
+    ioExpCfg.ioExpType   = THREE_PORT_IOEXP;
+    ioExpCfg.portNum     = PORTNUM_2;
+    ioExpCfg.pinNum      = PIN_NUM_1;
+
     if (1U == enableFlag)
     {
         /* EXP_ENET_RSTz - set to 0 for PHY reset */
-        ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_DEVICE2_INSTANCE;
-        ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
-        ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_DEVICE2_ADDR;
-        ioExpCfg.enableIntr  = false;
-        ioExpCfg.ioExpType   = THREE_PORT_IOEXP;
-        ioExpCfg.portNum     = PORTNUM_2;
-        ioExpCfg.pinNum      = PIN_NUM_1;
         ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_LOW;
-
-        status = Board_control(BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT, &ioExpCfg);
     }
     else
     {
         /* EXP_ENET_RSTz - set to 1 to take PHY out of reset (normal operation)*/
-        ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_DEVICE2_INSTANCE;
-        ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
-        ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_DEVICE2_ADDR;
-        ioExpCfg.enableIntr  = false;
-        ioExpCfg.ioExpType   = THREE_PORT_IOEXP;
-        ioExpCfg.portNum     = PORTNUM_2;
-        ioExpCfg.pinNum      = PIN_NUM_1;
         ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_HIGH;
-
-        status = Board_control(BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT, &ioExpCfg);
     }
+
+    status = Board_control(BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT, &ioExpCfg);
 
     return status;
 }
@@ -281,34 +273,26 @@ Board_STATUS Board_cpsw9gEnetExpComaModeCfg(bool enableFlag)
 
     if (Board_detectBoard(BOARD_ID_ENET) == TRUE)
     {
+        ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_DEVICE2_INSTANCE;
+        ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
+        ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_DEVICE2_ADDR;
+        ioExpCfg.enableIntr  = false;
+        ioExpCfg.ioExpType   = THREE_PORT_IOEXP;
+        ioExpCfg.portNum     = PORTNUM_2;
+        ioExpCfg.pinNum      = PIN_NUM_0;
+
         if (1U == enableFlag)
         {
             /* ENET_EXP_PWRDN - set to 1 for device power down */
-            ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_DEVICE2_INSTANCE;
-            ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
-            ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_DEVICE2_ADDR;
-            ioExpCfg.enableIntr  = false;
-            ioExpCfg.ioExpType   = THREE_PORT_IOEXP;
-            ioExpCfg.portNum     = PORTNUM_2;
-            ioExpCfg.pinNum      = PIN_NUM_0;
             ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_HIGH;
-
-            status = Board_control(BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT, &ioExpCfg);
         }
         else
         {
             /* ENET_EXP_PWRDN - set to 0 for normal operation */
-            ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_DEVICE2_INSTANCE;
-            ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
-            ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_DEVICE2_ADDR;
-            ioExpCfg.enableIntr  = false;
-            ioExpCfg.ioExpType   = THREE_PORT_IOEXP;
-            ioExpCfg.portNum     = PORTNUM_2;
-            ioExpCfg.pinNum      = PIN_NUM_0;
             ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_LOW;
-
-            status = Board_control(BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT, &ioExpCfg);
         }
+
+        status = Board_control(BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT, &ioExpCfg);
     }
 
     return status;
