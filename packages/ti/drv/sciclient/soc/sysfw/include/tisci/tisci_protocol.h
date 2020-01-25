@@ -231,11 +231,14 @@ struct tisci_sec_header {
 /** Message to perform a global lock on OTP writes */
 #define TISCI_MSG_SOFT_LOCK_OTP_WRITE_GLOBAL    (0x9025U)
 
-/** Message ID reserved for row level lock on OTP writes */
-#define TISCI_MSG_RSVD_OTP_1                    (0x9026U)
+/** Message to get the lock status of a row */
+#define TISCI_MSG_GET_OTP_ROW_LOCK_STATUS       (0x9026U)
+
+/** Message ID reserved for row level soft lock on OTP writes */
+#define TISCI_MSG_RSVD_OTP_1                    (0x9027U)
 
 /** Message ID reserved for write to secure OTP row */
-#define TISCI_MSG_RSVD_OTP_2                    (0x9027U)
+#define TISCI_MSG_RSVD_OTP_2                    (0x9028U)
 
 /******************************************************/
 
