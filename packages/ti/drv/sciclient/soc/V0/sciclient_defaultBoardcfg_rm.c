@@ -755,7 +755,7 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
         },
         {
             .start_resource = 160,
-            .num_resource = 64,
+            .num_resource = 32,
             .type = TISCI_RESASG_UTYPE(TISCI_RESASG_TYPE_PULSAR_C0_IRQ,
                          TISCI_RESASG_SUBTYPE_PULSAR_C0_IRQ_MAIN2MCU_LVL),
             .host_id = TISCI_HOST_ID_ALL,
@@ -783,8 +783,8 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
             .host_id = TISCI_HOST_ID_ALL,
         },
         {
-            .start_resource = 160,
-            .num_resource = 64,
+            .start_resource = 192,
+            .num_resource = 32,
             .type = TISCI_RESASG_UTYPE(TISCI_RESASG_TYPE_PULSAR_C1_IRQ,
                          TISCI_RESASG_SUBTYPE_PULSAR_C1_IRQ_MAIN2MCU_LVL),
             .host_id = TISCI_HOST_ID_ALL,

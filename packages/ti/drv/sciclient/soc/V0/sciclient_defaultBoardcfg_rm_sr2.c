@@ -416,9 +416,9 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
             .host_id = TISCI_HOST_ID_ALL,
         },
         {
-            .num_resource = 64U,
+            .num_resource = 32U,
             .type = TISCI_RESASG_UTYPE(TISCI_DEV_MCU_ARMSS0_CPU1, TISCI_RESASG_SUBTYPE_MCU_ARMSS0_CPU1_INTR_IRQ_GROUP0_FROM_MAIN2MCU_LVL_INTRTR0),
-            .start_resource = 160U,
+            .start_resource = 192U,
             .host_id = TISCI_HOST_ID_ALL,
         },
         {
@@ -470,7 +470,7 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
             .host_id = TISCI_HOST_ID_ALL,
         },
         {
-            .num_resource = 64U,
+            .num_resource = 32U,
             .type = TISCI_RESASG_UTYPE(TISCI_DEV_MCU_ARMSS0_CPU0, TISCI_RESASG_SUBTYPE_MCU_ARMSS0_CPU0_INTR_IRQ_GROUP0_FROM_MAIN2MCU_LVL_INTRTR0),
             .start_resource = 160U,
             .host_id = TISCI_HOST_ID_ALL,
