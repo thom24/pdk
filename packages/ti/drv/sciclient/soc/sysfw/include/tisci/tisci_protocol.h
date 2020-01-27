@@ -95,7 +95,7 @@ struct tisci_header {
 #ifdef _MSC_VER	
     uint8_t    *payload;
 #else
-	uint8_t    payload[];
+	uint8_t    payload[0];
 #endif	
 };
 
