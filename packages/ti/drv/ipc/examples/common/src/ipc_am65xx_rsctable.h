@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2018, Texas Instruments Incorporated
+ * Copyright (c) 2017-2020, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,6 +47,9 @@ extern "C" {
 #endif
 
 #include <ti/drv/ipc/include/ipc_rsctypes.h>
+#ifdef BAREMETAL
+#include "ipc_trace.h"
+#endif
 
 #define IPC_VRING_BASEADDR             0xA0000000
 #define SZ_1M                          0x00100000
@@ -82,9 +85,13 @@ extern "C" {
 /* flip up bits whose indices represent features we support */
 #define RPMSG_R5F_C0_FEATURES          1
 
+#ifdef BAREMETAL
+#define TRACEBUFADDR ((uintptr_t)&Ipc_traceBuffer)
+#else
+#define IPC_TRACE_BUFFER_MAX_SIZE     (0x80000)
 extern char xdc_runtime_SysMin_Module_State_0_outbuf__A;
 #define TRACEBUFADDR ((uintptr_t)&xdc_runtime_SysMin_Module_State_0_outbuf__A)
-
+#endif
 const Ipc_ResourceTable ti_ipc_remoteproc_ResourceTable __attribute__ ((section (".resource_table"), aligned (4096))) = 
 {
     1,                   /* we're the first version that implements this */
@@ -116,7 +123,7 @@ const Ipc_ResourceTable ti_ipc_remoteproc_ResourceTable __attribute__ ((section 
 #endif
 
     {
-        (TRACE_INTS_VER0 | TYPE_TRACE), TRACEBUFADDR, 0x80000, 0, "trace:r5f0",
+        (TRACE_INTS_VER0 | TYPE_TRACE), TRACEBUFADDR, IPC_TRACE_BUFFER_MAX_SIZE, 0, "trace:r5f0",
     },
 };
 

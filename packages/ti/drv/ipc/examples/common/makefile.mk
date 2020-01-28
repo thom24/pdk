@@ -9,17 +9,21 @@ INCDIR =
 INCLUDE_EXTERNAL_INTERFACES = pdk
 
 # List all the components required by the application
-COMP_LIST_COMMON = csl ipc sciclient
+COMP_LIST_COMMON = csl sciclient
 COMP_LIST_COMMON += board i2c uart
 ifeq ($(BUILD_OS_TYPE), baremetal)
   COMP_LIST_COMMON += csl_init osal_nonos
-  SRCS_COMMON = main_baremetal.c
+  COMP_LIST_COMMON += ipc_baremetal
+  SRCS_COMMON += main_baremetal.c
   ifeq ($(ISA),$(filter $(ISA), a53, a72))
     LNKFLAGS_LOCAL_$(CORE) += --entry Entry
   endif
+  ifeq ($(SOC),$(filter $(SOC), j721e am65xx))
+	  EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/$(SOC)/linker_$(ISA)_$(CORE).lds
+  endif
 else
   INCLUDE_EXTERNAL_INTERFACES += xdc bios
-  COMP_LIST_COMMON += osal_tirtos
+  COMP_LIST_COMMON += ipc osal_tirtos
   SRCS_COMMON += main_tirtos.c
   # Enable XDC build for application by providing XDC CFG File per core
   XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
@@ -50,7 +54,11 @@ endif
 
 # Common source files and CFLAGS across all platforms and cores
 PACKAGE_SRCS_COMMON = . ../common ../../common
+ifneq ($(BUILD_OS_TYPE), baremetal)
 SRCS_COMMON += ipc_utils.c ipc_testsetup.c
+else
+SRCS_COMMON += ipc_trace.c ipctest_baremetal.c
+endif
 
 CFLAGS_LOCAL_COMMON += $(PDK_CFLAGS)
 
