@@ -144,8 +144,39 @@ export board_$(SOC)_CORELIST
 # BOARD Examples
 #
 
+# Board DDR thermal monitor test app
+board_ddr_thermal_test_app_COMP_LIST = board_ddr_thermal_test_app
+board_ddr_thermal_test_app_RELPATH = ti/board/examples/ddr_thermal_test_app
+board_ddr_thermal_test_app_PATH = $(PDK_BOARD_COMP_PATH)/examples/ddr_thermal_test_app
+board_ddr_thermal_test_app_BOARD_DEPENDENCY = yes
+board_ddr_thermal_test_app_CORE_DEPENDENCY = yes
+board_ddr_thermal_test_app_MAKEFILE = -f makefile
+board_ddr_thermal_test_app_XDC_CONFIGURO = yes
+export board_ddr_thermal_test_app_COMP_LIST
+export board_ddr_thermal_test_app_BOARD_DEPENDENCY
+export board_ddr_thermal_test_app_CORE_DEPENDENCY
+export board_ddr_thermal_test_app_MAKEFILE
+export board_ddr_thermal_test_app_XDC_CONFIGURO
+board_ddr_thermal_test_app_PKG_LIST = board_ddr_thermal_test_app
+board_ddr_thermal_test_app_INCLUDE = $(board_ddr_thermal_test_app_PATH)
+board_ddr_thermal_test_app_BOARDLIST = j721e_evm
+export board_ddr_thermal_test_app_BOARDLIST
+board_ddr_thermal_test_app_$(SOC)_CORELIST = mcu1_0
+export board_ddr_thermal_test_app_$(SOC)_CORELIST
+ifeq ($(SOC),$(filter $(SOC), j721e))
+board_ddr_thermal_test_app_SBL_APPIMAGEGEN = yes
+export board_ddr_thermal_test_app_SBL_APPIMAGEGEN
+
+# Packaged for below board_EXAMPLE
+board_EXAMPLE_LIST += board_ddr_thermal_test_app
+
+endif
+
 export board_LIB_LIST
 export board_EXAMPLE_LIST
 
 board_component_make_include := 1
 endif
+
+
+
