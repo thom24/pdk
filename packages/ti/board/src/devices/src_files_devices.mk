@@ -1,4 +1,4 @@
-ifeq ($(BOARD),$(filter $(BOARD), j721e_evm))
+ifeq ($(BOARD),$(filter $(BOARD), j721e_evm j7200_evm))
 SRCDIR += src/devices/audio src/devices/combos src/devices/common src/devices/fpd src/devices/sensors src/devices/pmic
 INCDIR += src/devices/audio src/devices/combos src/devices/common src/devices/fpd src/devices/sensors src/devices/pmic
 
