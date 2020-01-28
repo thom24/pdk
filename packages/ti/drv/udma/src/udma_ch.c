@@ -1031,6 +1031,34 @@ Udma_RingHandle Udma_chGetCqRingHandle(Udma_ChHandle chHandle)
     return (cqRing);
 }
 
+Udma_RingHandle Udma_chGetTdCqRingHandle(Udma_ChHandle chHandle)
+{
+    int32_t         retVal = UDMA_SOK;
+    Udma_RingHandle tdCqRing = (Udma_RingHandle) NULL_PTR;
+    Udma_DrvHandle  drvHandle;
+
+    /* Error check */
+    if((NULL_PTR == chHandle) || (chHandle->chInitDone != UDMA_INIT_DONE))
+    {
+        retVal = UDMA_EBADARGS;
+    }
+    if(UDMA_SOK == retVal)
+    {
+        drvHandle = chHandle->drvHandle;
+        if((NULL_PTR == drvHandle) || (drvHandle->drvInitDone != UDMA_INIT_DONE))
+        {
+            retVal = UDMA_EFAIL;
+        }
+    }
+
+    if(UDMA_SOK == retVal)
+    {
+        tdCqRing = chHandle->tdCqRing;
+    }
+
+    return (tdCqRing);
+}
+
 uint16_t Udma_chGetFqRingNum(Udma_ChHandle chHandle)
 {
     uint16_t        ringNum = UDMA_RING_INVALID;

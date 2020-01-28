@@ -740,6 +740,18 @@ Udma_RingHandle Udma_chGetFqRingHandle(Udma_ChHandle chHandle);
 Udma_RingHandle Udma_chGetCqRingHandle(Udma_ChHandle chHandle);
 
 /**
+ *  \brief Returns the teardown completion ring handle of the channel.
+ *
+ *  Requirement: TODO
+ *
+ *  \param chHandle     [IN] UDMA channel handle.
+ *                           This parameter can't be NULL.
+ *
+ *  \return Teardown completion ring handle. Returns NULL for error.
+ */
+Udma_RingHandle Udma_chGetTdCqRingHandle(Udma_ChHandle chHandle);
+
+/**
  *  \brief Returns the default free ring number to be programmed
  *  in descriptor.
  *
