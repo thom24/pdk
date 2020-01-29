@@ -276,6 +276,36 @@ int32_t Ipc_loadResourceTable(void *rsctbl)
     return IPC_SOK;
 }
 
+/*
+ *  \brief Gets the trace buffer pointer from
+ *  the resource table
+ */
+void * Ipc_getResourceTraceBufPtr()
+{
+    Ipc_ResourceTable *rsc = NULL;
+    uint32_t i;
+    uintptr_t offset;
+    uint32_t type;
+    Ipc_Trace *entry = NULL;
+    void *tracePtr = NULL;
+
+    if (rscTable != NULL) {
+        rsc = (Ipc_ResourceTable*)rscTable;
+
+        for (i = 0; i < rsc->base.num; i++) {
+            offset = (uintptr_t)((uint8_t *)rsc + rsc->offset[i]);
+            type = *(uint32_t *)offset;
+            if (type == TYPE_TRACE) {
+                entry = (Ipc_Trace *)offset;
+                tracePtr = (void *)((uintptr_t)entry->da);
+                break;
+            }
+        }
+    }
+
+    return tracePtr;
+}
+
 /**
  *  \brief Placeholder for MMU Address translation
  */

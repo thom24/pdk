@@ -49,6 +49,8 @@
 #include <xdc/std.h>
 #include <xdc/runtime/Error.h>
 #include <xdc/runtime/System.h>
+#include <xdc/runtime/Timestamp.h>
+#include <xdc/runtime/Types.h>
 #include <xdc/runtime/Memory.h>
 
 /* BIOS Header files */
@@ -56,6 +58,10 @@
 #include <ti/sysbios/knl/Task.h>
 
 #include <ti/drv/ipc/ipc.h>
+#include <ti/osal/osal.h>
+
+#define CACHE_WB_TICK_PERIOD    5
+
 
 void SetManualBreak()
 {
@@ -77,4 +83,34 @@ void sysIdleLoop(void)
       defined(BUILD_MCU3_0) || defined(BUILD_MCU3_1)
    asm(" wfi");
 #endif
+}
+
+/*
+ * ======== traceBuf_cacheWb ========
+ *
+ * Used for flushing SysMin trace buffer.
+ */
+
+static uint8_t *traceBufAddr = 0U;
+
+Void traceBuf_cacheWb()
+{
+    static uint64_t oldticks;
+    uint64_t newticks;
+    Types_Timestamp64 bios_timestamp64;
+
+    Timestamp_get64(&bios_timestamp64);
+    newticks = ((uint64_t) bios_timestamp64.hi << 32) | bios_timestamp64.lo;
+    /* Don't keep flusing cache */
+    if ((newticks - oldticks) >= (uint64_t)CACHE_WB_TICK_PERIOD) {
+        oldticks = newticks;
+
+        /* Flush the cache of the SysMin buffer only: */
+        if (traceBufAddr == NULL) {
+            traceBufAddr = Ipc_getResourceTraceBufPtr();
+        }
+        if (traceBufAddr != NULL) {
+            CacheP_wb((const void *)traceBufAddr, 0x80000);
+        }
+    }
 }

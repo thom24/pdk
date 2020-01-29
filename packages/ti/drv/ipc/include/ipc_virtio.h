@@ -108,6 +108,13 @@ int32_t Ipc_initVirtIO(Ipc_VirtIoParams *vqParam);
 int32_t Ipc_loadResourceTable(void *rsctable);
 
 /**
+ *  \brief     Gets the address of the trace buffer.
+ *
+ *  \return    Address of the trace buffer.
+ */
+void * Ipc_getResourceTraceBufPtr(void);
+
+/**
  * \brief  Checks if remote is ready
  *
  * \param procId [IN] Id of remote core
