@@ -72,7 +72,7 @@ PERIPHERAL_LIB = $(UART_LIB) $(I2C_LIB) $(CSL_LIB) $(CSL_INIT_LIB) $(EMAC_LIB) $
 INTERNALDEFS = -Wimplicit -Wall $(DEBUG_FLAG) -D__ARMv8 -D$(BOARD) -DSOC_$(DEVICE) -Wunused -Wunknown-pragmas -ffunction-sections -fdata-sections -c -mcpu=cortex-a53+fp+simd -g -mabi=lp64 -mcmodel=large -mstrict-align -mfix-cortex-a53-835769 -mfix-cortex-a53-843419 -Wno-int-to-pointer-cast -Wno-pointer-to-int-cast -Werror
 
 # Linker options
-INTERNALLINKDEFS = -Werror -Wl,-static -Wl,--gc-sections -nostartfiles -Wl,-T $(PDK_DIAG_DIR)/diag/common/$(DEVICE)/linker_a53.lds -Wl,--build-id=none --entry Entry -Wl,--start-group -l"c" -lrdimon -l"m" -l"gcc" -l"stdc++" $(BOARD_LIB) $(PERIPHERAL_LIB) $(OSAL_LIB) -Wl,--end-group $(LDFLAGS)
+INTERNALLINKDEFS = -Werror -Wl,-static -Wl,--gc-sections -nostartfiles -Wl,-T $(PDK_DIAG_DIR)/diag/icssg_emac/build/am65xx_idk/armv8/linker_a53.lds -Wl,--build-id=none --entry Entry -Wl,--start-group -l"c" -lrdimon -l"m" -l"gcc" -l"stdc++" $(BOARD_LIB) $(PERIPHERAL_LIB) $(OSAL_LIB) -Wl,--end-group $(LDFLAGS)
 
 # Executable using device independent library and device object file
 ifeq ($(TESTMODE),STRESS_TEST)

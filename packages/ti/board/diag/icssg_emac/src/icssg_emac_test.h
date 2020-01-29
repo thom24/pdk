@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2018-2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -34,7 +34,7 @@
 /**
  *  \file   icssg_emac_test.h
  *
- *  \brief  This file contains all Local definitions for ICSSG EMAC test
+ *  \brief  This file contains all Local definitions for ICSSG EMAC diag
  *  application.
  *
  */
@@ -61,11 +61,19 @@
 #include <ti/drv/pruss/pruicss.h>
 #include <ti/drv/pruss/soc/pruicss_v1.h>
 
-/* EMAC firmware header files */
+/* ICSSG EMAC firmware header files PG1.0 */
 #include <ti/drv/emac/firmware/icss_dualmac/bin/rxl2_txl2_rgmii0_bin.h>      /* PDSPcode */
 #include <ti/drv/emac/firmware/icss_dualmac/bin/rtu_test0_bin.h>             /* PDSP2code */
 #include <ti/drv/emac/firmware/icss_dualmac/bin/rxl2_txl2_rgmii1_bin.h>      /*PDSP3code */
 #include <ti/drv/emac/firmware/icss_dualmac/bin/rtu_test1_bin.h>             /* PDSP4code */
+
+/* ICSSG EMAC firmware header files PG2.0 */
+#include <ti/drv/emac/firmware/icss_dualmac/bin_pg2/rxl2_rgmii0_bin.h>      /* PDSPcode */
+#include <ti/drv/emac/firmware/icss_dualmac/bin_pg2/rtu_test0_bin.h>        /* PDSP2code */
+#include <ti/drv/emac/firmware/icss_dualmac/bin_pg2/rxl2_rgmii1_bin.h>      /* PDSP3code */
+#include <ti/drv/emac/firmware/icss_dualmac/bin_pg2/rtu_test1_bin.h>        /* PDSP4code */
+#include <ti/drv/emac/firmware/icss_dualmac/bin_pg2/txl2_rgmii0_bin.h>      /* PDSP5code */
+#include <ti/drv/emac/firmware/icss_dualmac/bin_pg2/txl2_rgmii1_bin.h>      /* PDSP6code */
 
 /* EMAC firmware config header files */
 #include <ti/drv/emac/firmware/icss_dualmac/config/emac_fw_config_dual_mac.h>
@@ -74,125 +82,87 @@
 extern "C" {
 #endif
 
-#define ICSSG_PORT2PORT_TEST  (TRUE)
+extern void BOARD_delay(uint32_t usecs);
 
 /**********************************************************************
  ************************** LOCAL Definitions *************************
  **********************************************************************/
-#define PRU0_FIRMWARE_NAME      PDSPcode_0
-#define RTU0_FIRMWARE_NAME      PDSP2code_0
-#define PRU1_FIRMWARE_NAME      PDSP3code_0
-#define RTU1_FIRMWARE_NAME      PDSP4code_0
- 
-#define IDK_BOARD_DET_PIN           (0U)
-#define EMAC_MAC_PORTS_PER_ICSS     ((uint32_t)2U)
-#define EMAC_MAX_ICSS               ((uint32_t)3U)
-#define EMAC_MAX_CPSW               ((uint32_t)1U)
-#define EMAC_MAX_PORTS              ((EMAC_MAX_ICSS)*(EMAC_MAC_PORTS_PER_ICSS) \
-                                     + (EMAC_MAX_CPSW))
-#define EMAC_MAX_PORTS_ICSS         ((EMAC_MAX_ICSS)*(EMAC_MAC_PORTS_PER_ICSS))                                    
+#define BOARD_DIAG_ICSS_EMAC_MAX_PORTS_PER_INSTANCE     ((uint32_t)2U)
+#define BOARD_DIAG_ICSS_EMAC_MAX_INTANCES               ((uint32_t)3U)
+#define BOARD_DIAG_ICSS_EMAC_MAX_PORTS                  ((BOARD_DIAG_ICSS_EMAC_MAX_INTANCES)*(BOARD_DIAG_ICSS_EMAC_MAX_PORTS_PER_INSTANCE))
 
-#define PRUICSS_SLICE1_OFFSET           (0x8000)
+#define BOARD_DIAG_ICSS_EMAC_LINK_TIMEOUT_COUNT               (100U)
 
-#define DELAY                           (1000U)
-#define LINK_DELAY                      (100U)
-#define LINK_TIMOUT_COUNT               (100U)
- 
-#define RXTX                            (0x10U)
-#define ADD_FDB                         (0x1U)
-#define SET_RUN                         (0x4U)
-#define ENABLE_VLAN                     (0x5U)
-#define DISABLE_VLAN                    (0x6U)
-#define ADD_FILTER                      (0x7U)
-#define ADD_MAC                         (0x8U)
 /* Ring definitions */
-#define RING_TRCNT                      (128U)   /* Number of ring entries */
+#define BOARD_DIAG_ICSS_EMAC_RING_TRCNT                      (128U)   /* Number of ring entries */
 /* Size (in bytes) of each ring entry (for 48-bit packet descriptor ptr) */
-#define RING_TRSIZE                     (8U)
-#define UDMAP_DESC_SIZE                 (128U)
-#define CACHE_LINESZ                    (128U)
+#define BOARD_DIAG_ICSS_EMAC_RING_TRSIZE                     (8U)
+#define BOARD_DIAG_ICSS_EMAC_UDMAP_DESC_SIZE                 (128U)
+#define BOARD_DIAG_ICSS_EMAC_CACHE_LINESZ                    (128U)
 
 #ifdef DIAG_STRESS_TEST
-#define PKT_SEND_COUNT                  (10240U)
+#define BOARD_DIAG_ICSS_EMAC_PKT_SEND_COUNT         (10240U)
 #else
-#define PKT_SEND_COUNT                  (5U)
+#define BOARD_DIAG_ICSS_EMAC_PKT_SEND_COUNT         (5U)
 #endif
 
-/* Strap configuration Status register values */
-#define EMAC_STRAP_STS1_VAL             (0x0U)
-#define EMAC_STRAP_STS2_VAL             (0x0U)
+/* DO NOT CHANGE test_pkt UNLESS BOARD_DIAG_ICSS_EMAC_TEST_PKT_SIZE IS UPDATED */
+#define BOARD_DIAG_ICSS_EMAC_TEST_PKT_SIZE          (64U)
 
-/* DO NOT CHANGE test_pkt UNLESS TEST_PKT_SIZE IS UPDATED */
-#define TEST_PKT_SIZE                   (64U)
-
-#define APP_NUM_HOST_DESC               (128U)
+#define BOARD_DIAG_ICSS_EMAC_NUM_HOST_DESC          (128U)
 
 /**
  * @brief  Number of channels configured by a core on one port
  */
-#define APP_EMAC_NUM_CHANS_PER_CORE     (1U)
+#define BOARD_DIAG_ICSS_EMAC_NUM_CHANS_PER_CORE     (1U)
 
 /**
  * @brief  Number of EMAC MAC addresses configured per channel
  */
-#define APP_EMAC_NUM_MACADDRS_PER_CHAN  (1U)
+#define BOARD_DIAG_ICSS_EMAC_NUM_MACADDRS_PER_CHAN  (1U)
 /**
  * @brief  Max EMAC packet size in bytes initialized for the driver
  */
-#define APP_EMAC_INIT_PKT_SIZE           (128U)
+#define BOARD_DIAG_ICSS_EMAC_INIT_PKT_SIZE          (128U)
 
 /**
  * @brief  Max packet size in bytes used in the application,
  *         align to 128 byte cache line size
  */
-#define APP_EMAC_MAX_PKT_SIZE            (128U)
+#define BOARD_DIAG_ICSS_EMAC_MAX_PKT_SIZE           (128U)
 
 /**
  * @brief  Total packet buffer size in bytes per core
  *
  */
-#define APP_TOTAL_PKTBUF_SIZE           (EMAC_MAX_NUM_EMAC_PORTS*APP_MAX_PKTS* \
-                                         APP_EMAC_MAX_PKT_SIZE)
-
-/**
- * @brief  EMAC port 0 phy address
- */
-#define APP_PORT0_PHY_ADDR              (0U)
-
-/**
- * @brief  EMAC port 0 phy address
- */
-#define APP_PORT1_PHY_ADDR              (3U)
-
+#define BOARD_DIAG_ICSS_EMAC_TOTAL_PKTBUF_SIZE      (BOARD_DIAG_ICSS_EMAC_MAX_PORTS*BOARD_DIAG_ICSSG_EMAC_MAX_PKTS* \
+                                                    BOARD_DIAG_ICSS_EMAC_MAX_PKT_SIZE)
 
 /**
  * @brief  Max number of packets in the application free packet queue
  *
  */
-#define APP_MAX_PKTS                    (64U)
-
+#define BOARD_DIAG_ICSSG_EMAC_MAX_PKTS              (64U)
 
 /**
  * @brief  Max number of packet descriptors per port initialized
  *         for driver managed RX queue
  */
-#define APP_EMAC_INIT_RX_PKTS           (8*APP_EMAC_NUM_CHANS_PER_CORE)
+#define BOARD_DIAG_ICSS_EMAC_INIT_RX_PKTS           (8*BOARD_DIAG_ICSS_EMAC_NUM_CHANS_PER_CORE)
 
 /**
  * @brief  Max number of packet descriptors per port initialized
  *         for driver managed TX queue
  */
-#define APP_EMAC_INIT_TX_PKTS           (APP_MAX_PKTS-APP_EMAC_INIT_RX_PKTS)
+#define BOARD_DIAG_ICSS_EMAC_INIT_TX_PKTS           (BOARD_DIAG_ICSSG_EMAC_MAX_PKTS-BOARD_DIAG_ICSS_EMAC_INIT_RX_PKTS)
 
 /* Number of TX packet descriptor */
-#define EMAC_TX_PKT_DESC_COUNT          (64U)
+#define BOARD_DIAG_ICSS_EMAC_TX_PKT_DESC_COUNT          (16U)
 
 /* Number of RX packet descriptor */
-#define EMAC_RX_PKT_DESC_COUNT          (16U)
+#define BOARD_DIAG_ICSS_EMAC_RX_PKT_DESC_COUNT          (16U)
 
-#define BOARD_ICSS_EMAC_REG_DUMP_MAX    (16U)
-
-#define IDK_BOARD "AM65XIDK"
+#define BOARD_DIAG_ICSS_EMAC_REG_DUMP_MAX    (16U)
 
 #define BOARD_DIAG_ICSSEMAC_TEST_TIMEOUT   (100U)
 #define TX_BUFF_POOL_SIZE (0X1800U)
@@ -202,19 +172,19 @@ extern "C" {
 #define BOARD_ICSS_EMAC_APP_BOARDID_ADDR   (0x52U)
 #define BOARD_ICSS_MAX_PORTS_IDK           (4U)
 
-typedef struct pruicssMdioInfo
+typedef struct BOARD_DIAG_MDIO_INFO_tag
 {
     uint32_t mdioBaseAddrs;
     uint8_t  phyAddrs;
     uint16_t strapst1;
     uint16_t strapst2;
-} pruicssgDiagMdioInfo;
+} BOARD_DIAG_MDIO_INFO_T;
 
 /**
  * @brief
  *  Application Queue Data Structure
  */
-typedef struct APP_PKT_QUEUE_tag
+typedef struct BOARD_DIAG_ICSSG_EMAC_PKT_QUEUE_tag
 {
     uint32_t            Count;
     /**< Number of packets in queue */
@@ -222,7 +192,7 @@ typedef struct APP_PKT_QUEUE_tag
     /**< Pointer to the first packet */
     EMAC_PKT_DESC_T*  pTail;
     /**< Pointer to the last packet */
-} APP_PKT_QUEUE_T;
+} BOARD_DIAG_ICSSG_EMAC_PKT_QUEUE_T;
 
 /**
  * @brief
@@ -231,27 +201,23 @@ typedef struct APP_PKT_QUEUE_tag
  * @details
  *  Maintains the EMAC port control information of a core
  */
-typedef struct APP_EMAC_PCB_tag
+typedef struct BOARD_DIAG_ICSSG_EMAC_EMAC_PCB_tag
 {
     Uint32                          emac_state;
     /**< EMAC Port state */
     Uint32                          phy_addr;
     /**< Physical layer transceiver address mapped to the EMAC port */
-    EMAC_PKT_DESC_T                 pkt_desc[APP_MAX_PKTS];
+    EMAC_PKT_DESC_T                 pkt_desc[BOARD_DIAG_ICSSG_EMAC_MAX_PKTS];
     /**< Pre-allocated/initialized packet descriptiors for both free queue and RX queues */
-    APP_PKT_QUEUE_T                 freeQueue;
+    BOARD_DIAG_ICSSG_EMAC_PKT_QUEUE_T                 freeQueue;
     /**< Free packet descriptor queue, one queue per channel */
-    APP_PKT_QUEUE_T                 rxQueue[APP_EMAC_NUM_CHANS_PER_CORE];
+    BOARD_DIAG_ICSSG_EMAC_PKT_QUEUE_T                 rxQueue[BOARD_DIAG_ICSS_EMAC_NUM_CHANS_PER_CORE];
     /**< Received packet descriptor queue, one queue per channel */
-    EMAC_MAC_ADDR_T                 mac_addr[APP_EMAC_NUM_CHANS_PER_CORE][APP_EMAC_NUM_MACADDRS_PER_CHAN];
+    EMAC_MAC_ADDR_T                 mac_addr[BOARD_DIAG_ICSS_EMAC_NUM_CHANS_PER_CORE][BOARD_DIAG_ICSS_EMAC_NUM_MACADDRS_PER_CHAN];
     /**< MAC address for all the channels */
 
-} APP_EMAC_PCB_T;
+} BOARD_DIAG_ICSSG_EMAC_EMAC_PCB_T;
 
-
-extern void BOARD_delay(uint32_t usecs);
-void Mdio_PhyExtendedRegRead(uint32_t baseAddr, uint32_t phyAddr,
-                             uint32_t regNum, uint16_t *pData);
 /**
  * @brief
  *  EMAC Master Control Block
@@ -259,23 +225,24 @@ void Mdio_PhyExtendedRegRead(uint32_t baseAddr, uint32_t phyAddr,
  * @details
  *  Maintains the EMAC control information and error statistics.
  */
-typedef struct APP_EMAC_MCB_tag
+typedef struct BOARD_DIAG_ICSSG_EMAC_MCB_tag
 {
     Uint32              core_num;
     /**< DSP core number */
     Uint32              timer_count;
     /**< 100 msec timer count */
-    APP_EMAC_PCB_T      emac_pcb[EMAC_MAX_NUM_EMAC_PORTS];
+    BOARD_DIAG_ICSSG_EMAC_EMAC_PCB_T      emac_pcb[EMAC_MAX_NUM_EMAC_PORTS];
     /**< EMAC port control block */
-} APP_EMAC_MCB_T;
+} BOARD_DIAG_ICSSG_EMAC_MCB_T;
 
-/* EMAC firmware header files */
-typedef struct {
+typedef struct BOARD_DIAG_ICSSG_EMAC_PRUICSS_FW_tag {
     const uint32_t *pru;
     uint32_t pru_size;
     const uint32_t *rtu;
     uint32_t rtu_size;
-} pru_rtu_fw_t;
+    const uint32_t *txpru;
+    uint32_t txpru_size;
+} BOARD_DIAG_ICSSG_EMAC_PRUICSS_FW_T;
 
 /**
  * \brief  ICSSG emac test function
@@ -297,7 +264,6 @@ int8_t BoardDiag_IcssgEmacTest(void);
 *              0  - in case of success
 *              1  - in case of failure
 */
-
 int8_t BoardDiag_IcssgEmacTestInterposer(void);
 
 #ifdef __cplusplus
