@@ -379,7 +379,7 @@ ifdef MODULE_NAME
     else
       # Clean Object and Library (archive) directories
       clean :
-	$(RM) -rf $(OBJDIR)/* $(DEPDIR)/* $(LIBDIR)/$(LIBNAME).$(LIBEXT) $(LIBDIR)/$(LIBNAME).$(LIBEXT)_size.txt $(GEN_FILE)
+	$(RM) -rf $(OBJDIR)/* $(DEPDIR)/* $(LIBDIR)/$(LIBNAME).$(LIBEXT) $(LIBDIR)/$(LIBNAME).$(LIBEXT)_size.txt
 
       # Create dependencies list to ultimately create module archive library file
       ifeq ($(SECTTI_SIZE_INFO),yes)
