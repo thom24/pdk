@@ -143,9 +143,9 @@ typedef struct
     /* TX DMA packet info memory */
     CpswDma_PktInfo      txFreePktInfo[CPSW_APPMEMUTILS_NUM_TX_PKTS];
 
-    uint8_t              hostMacAddr[ETH_MAC_ADDR_LEN];
+    uint8_t              hostMacAddr[CPSW_MAC_ADDR_LEN];
 
-    uint8_t              hostMacAddr1[ETH_MAC_ADDR_LEN];
+    uint8_t              hostMacAddr1[CPSW_MAC_ADDR_LEN];
 
     /* Whether to print received Ethernet frames */
     bool printFrame;

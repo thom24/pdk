@@ -55,7 +55,7 @@ static volatile bool txSem = false;
 static volatile bool rxSem = false;
 
 /* Broadcast address */
-static uint8_t bcastAddr[ETH_MAC_ADDR_LEN] =
+static uint8_t bcastAddr[CPSW_MAC_ADDR_LEN] =
         { 0xffU, 0xffU, 0xffU, 0xffU, 0xffU, 0xffU };
 
 /* CPSW configuration */
@@ -601,11 +601,11 @@ int32_t BoardDiag_cpswPktRxTx(void)
 
                 memcpy(frame->hdr.dstMac,
                        bcastAddr,
-                       ETH_MAC_ADDR_LEN);
+                       CPSW_MAC_ADDR_LEN);
 
                 memcpy(frame->hdr.srcMac,
                        &gCpswLpbkObj.hostMacAddr[0U],
-                       ETH_MAC_ADDR_LEN);
+                       CPSW_MAC_ADDR_LEN);
 
                 frame->hdr.etherType = htons(ETHERTYPE_EXPERIMENTAL1);
                 memset(&frame->payload[0U],
