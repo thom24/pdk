@@ -48,3 +48,18 @@
 /*                            Global Variables                                */
 /* ========================================================================== */
 
+#if defined (BUILD_MCU1_0)
+struct tisci_boardcfg_pm {
+    struct tisci_boardcfg_abi_rev    rev;
+} __attribute__((__packed__));
+
+const struct tisci_boardcfg_pm gBoardConfigLow_pm = {
+    /* boardcfg_abi_rev */
+    .rev = 
+    {
+        .tisci_boardcfg_abi_maj          = TISCI_BOARDCFG_RM_ABI_MAJ_VALUE,
+        .tisci_boardcfg_abi_min          = TISCI_BOARDCFG_RM_ABI_MIN_VALUE
+    }
+};
+#endif
+
