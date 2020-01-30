@@ -255,7 +255,7 @@ ex04_linux_baremetal_2core_echo_test_BOARDLIST = am65xx_evm
 export ex04_linux_baremetal_2core_echo_test_BOARDLIST
 ex04_linux_baremetal_2core_echo_test_$(SOC)_CORELIST = mcu1_0
 export ex04_linux_baremetal_2core_echo_test_$(SOC)_CORELIST
-ipc_EXAMPLE_LIST += ex04_linux_baremetal_2core_echo_test
+# ipc_EXAMPLE_LIST += ex04_linux_baremetal_2core_echo_test
 
 export ipc_LIB_LIST
 export ipc_EXAMPLE_LIST
