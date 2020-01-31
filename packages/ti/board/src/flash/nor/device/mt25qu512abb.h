@@ -68,7 +68,7 @@
 #define NOR_CMD_RDSR                 (0x05U)
 #define NOR_CMD_RDCR_VOL             (0x85U)
 #define NOR_CMD_RDCR_NVOL            (0xB5U)
-#define NOR_CMD_RDID                 (0x9FU)
+#define NOR_CMD_RDID                 (0xAFU)
 
 /** Different commands for 4 byte addressing and 3 byte addressing */
 #ifdef EXT_ADDRESS_ENABLE
@@ -88,22 +88,20 @@
 #define NOR_CMD_SECTOR_ERASE         (0x20U)
 #define NOR_CMD_READ                 (0x03U)
 #define NOR_CMD_FAST_READ            (0x0BU)
-#define NOR_CMD_OCTAL_O_FAST_RD      (0x8BU)
-#define NOR_CMD_OCTAL_IO_FAST_RD     (0xCBU)
-#define NOR_CMD_OCTAL_DDR_O_FAST_RD  (0x9DU)
-#define NOR_CMD_OCTAL_DDR_IO_FAST_RD (0xFDU)
 #define NOR_CMD_QUAD_O_FAST_RD       (0x6BU)
 #define NOR_CMD_QUAD_IO_FAST_RD      (0xEBU)
 #define NOR_CMD_QUAD_DDR_O_FAST_RD   (0x6DU)
 #define NOR_CMD_OCTAL_READ           (NOR_CMD_OCTAL_O_FAST_RD)
 #define NOR_CMD_PAGE_PROG            (0x02U)
-#define NOR_CMD_OCTAL_FAST_PROG      (0x82U)
 #define NOR_CMD_EXT_OCTAL_FAST_PROG  (0xC2U)
-#define NOR_CMD_OCTAL_PROG           (NOR_CMD_OCTAL_FAST_PROG)
-#define NOR_CMD_QUAD_FAST_PROG      (0x32U)
-#define NOR_CMD_EXT_QUAD_FAST_PROG  (0x38U)
-#define NOR_CMD_WRITE_NVCR           (0x81U)
-#define NOR_CMD_READ_NVCR            (0x85U)
+#define NOR_CMD_QUAD_FAST_PROG       (0x32U)
+#define NOR_CMD_EXT_QUAD_FAST_PROG   (0x38U)
+#define NOR_CMD_WRITE_VCR            (0x81U)
+#define NOR_CMD_WRITE_ENVCR          (0x61U)
+#define NOR_CMD_READ_VCR             (0x85U)
+#define NOR_CMD_READ_ENVCR           (0x65U)
+#define NOR_CMD_WRITE_NVCR           (0xB1U)
+#define NOR_CMD_READ_NVCR            (0xB5U)
 #endif
 
 /* \brief Read ID command definitions */

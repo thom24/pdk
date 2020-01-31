@@ -48,6 +48,7 @@ static NOR_STATUS Nor_qspiErase(NOR_HANDLE handle, int32_t eraseCnt, bool blkEra
 
 static NOR_STATUS Nor_qspiCmdWrite(SPI_Handle handle, uint8_t *cmdBuf,
                                    uint32_t cmdLen, uint32_t dataLen);
+static NOR_STATUS Nor_qspiWaitReady(SPI_Handle handle, uint32_t timeOut);
 
 /* NOR function table for NOR OSPI interface implementation */
 const NOR_FxnTable Nor_qspiFxnTable =
@@ -126,105 +127,110 @@ static NOR_STATUS Nor_qspiReadId(SPI_Handle handle)
 
 static NOR_STATUS Nor_qspiEnableDDR(SPI_Handle handle)
 {
+    OSPI_v0_HwAttrs const *hwAttrs;
     NOR_STATUS       retVal;
     uint8_t          cmdWren = NOR_CMD_WREN;
-    uint32_t         data[3];
+    uint32_t         opCode[3];
     uint32_t         dummyCycles;
     uint32_t         rx_lines;
+    uint8_t          data[3];
+
+    hwAttrs = (OSPI_v0_HwAttrs const *)handle->hwAttrs;
 
     /* Send Write Enable command */
-    retVal = Nor_qspiCmdWrite(handle, &cmdWren, 1, 0);
+    if (Nor_qspiCmdWrite(handle, &cmdWren, 1, 0))
+    {
+    	return NOR_FAIL;
+    }
 
-    /* Enable double transfer rate mode */
+    if (Nor_qspiWaitReady(handle, NOR_WRR_WRITE_TIMEOUT))
+    {
+    	return NOR_FAIL;
+    }
+
+    /* Write Enhanced VCR register to enable DDR mode */
+    data[0] = NOR_CMD_WRITE_ENVCR;
+    data[1] = 0x5F;  /* Enable quad mode and DTR mode */
+    retVal = Nor_qspiCmdWrite(handle, data, 1, 1);
     if (retVal == NOR_PASS)
     {
-        /* send write VCR command to reg addr 0x0 to set to DDR mode */
-        data[0] = (NOR_CMD_WRITE_NVCR << 24)        | /* write non-volatile config reg cmd */
-                  (0 << 23)                         | /* read data disable */
-                  (7 << 20)                         | /* read 8 data bytes */
-                  (1 << 19)                         | /* enable cmd adddr */
-                  (2 << 16)                         | /* 3 address bytes */
-                  (1 << 15);                          /* write data enable */
-        data[1] = 0;     /* Non-volatile config register address */
-        data[2] = 0xE7U; /* set to Octal DDR in Nonvolatile Config Reg 0x0 */
-        SPI_control(handle, SPI_V0_CMD_ENABLE_DDR, (void *)data);
+        if (Nor_qspiWaitReady(handle, NOR_WRR_WRITE_TIMEOUT))
+        {
+            return NOR_FAIL;
+        }
 
         /* Set opcodes */
         dummyCycles = NOR_QUAD_READ_DUMMY_CYCLE - 2;
         rx_lines    = OSPI_XFER_LINES_QUAD;
-        data[0]     = NOR_CMD_QUAD_DDR_O_FAST_RD;
-        data[1]     = NOR_CMD_QUAD_FAST_PROG;
-        data[2]     = NOR_CMD_RDSR;
+        opCode[0]   = NOR_CMD_QUAD_DDR_O_FAST_RD;
+        opCode[1]   = NOR_CMD_QUAD_FAST_PROG;
+        opCode[2]   = NOR_CMD_RDSR;
 
         /* Update the read opCode, rx lines and read dummy cycles */
         SPI_control(handle, SPI_V0_CMD_RD_DUMMY_CLKS, (void *)&dummyCycles);
         SPI_control(handle, SPI_V0_CMD_SET_XFER_LINES, (void *)&rx_lines);
-        SPI_control(handle, SPI_V0_CMD_XFER_OPCODE, (void *)data);
+        SPI_control(handle, SPI_V0_CMD_XFER_OPCODE, (void *)opCode);
     }
+
+    CSL_ospiDtrEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), TRUE);
 
     return retVal;
 }
 
 static NOR_STATUS Nor_qspiEnableSDR(SPI_Handle handle)
 {
+    OSPI_v0_HwAttrs const *hwAttrs;
+    CSL_ospi_flash_cfgRegs *regAddr;
+    NOR_STATUS       retVal;
+    uint8_t          cmdWren = NOR_CMD_WREN;
     uint32_t         opCode[3];
     uint32_t         dummyCycles;
+    uint32_t         rx_lines;
+    uint8_t          data[3];
+    uint32_t         regVal;
 
-    dummyCycles = NOR_QUAD_READ_DUMMY_CYCLE;
-    opCode[0]   = NOR_CMD_QUAD_IO_FAST_RD;
-    opCode[1]   = NOR_CMD_EXT_QUAD_FAST_PROG;
-    opCode[2]   = NOR_CMD_RDSR;
+    hwAttrs = (OSPI_v0_HwAttrs const *)handle->hwAttrs;
 
-    /* Update the read opCode, rx lines and read dummy cycles */
-    SPI_control(handle, SPI_V0_CMD_RD_DUMMY_CLKS, (void *)&dummyCycles);
-    SPI_control(handle, SPI_V0_CMD_XFER_OPCODE, (void *)opCode);
+    /* Send Write Enable command */
+    if (Nor_qspiCmdWrite(handle, &cmdWren, 1, 0))
+    {
+    	return NOR_FAIL;
+    }
+
+    if (Nor_qspiWaitReady(handle, NOR_WRR_WRITE_TIMEOUT))
+    {
+    	return NOR_FAIL;
+    }
+
+    /* Write Enhanced VCR register to enable quad mode */
+    data[0] = NOR_CMD_WRITE_ENVCR;
+    data[1] = 0x7F;  /* Enable quad mode */
+    retVal = Nor_qspiCmdWrite(handle, data, 1, 1);
+    if (retVal == NOR_PASS)
+    {
+        dummyCycles = NOR_QUAD_READ_DUMMY_CYCLE;
+        rx_lines    = OSPI_XFER_LINES_QUAD;
+        opCode[0]     = NOR_CMD_QUAD_IO_FAST_RD;
+        opCode[1]     = NOR_CMD_QUAD_FAST_PROG;
+        opCode[2]     = NOR_CMD_RDSR;
+
+        SPI_control(handle, SPI_V0_CMD_RD_DUMMY_CLKS, (void *)&dummyCycles);
+        SPI_control(handle, SPI_V0_CMD_SET_XFER_LINES, (void *)&rx_lines);
+        SPI_control(handle, SPI_V0_CMD_XFER_OPCODE, (void *)opCode);
+    }
+
+    /* Flash device requires 4-bit access for command as well in quad mode */
+    regAddr = (CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr);
+    regVal = CSL_REG32_RD(&regAddr->DEV_INSTR_RD_CONFIG_REG);
+    regVal |= 0x200;
+    CSL_REG32_WR(&regAddr->DEV_INSTR_RD_CONFIG_REG, regVal);
 
     return NOR_PASS;
 }
 
 static NOR_STATUS Nor_qspiXipEnable(SPI_Handle handle)
 {
-    NOR_STATUS             retVal;
-    uint8_t  cmdWren = NOR_CMD_WREN;
-    uint32_t value = 0x0;
-    uint8_t  stigCmd[10];
-    uint32_t data[3];
-
-    /* Send Write Enable command */
-    retVal = Nor_qspiCmdWrite(handle, &cmdWren, 1, 0);
-
-    if (retVal == NOR_PASS)
-    {
-        stigCmd[0] = NOR_CMD_WRITE_NVCR; /* opcode */
-        stigCmd[1] = 0x0; /* disable read operation */
-        stigCmd[2] = 0x7; /* read 0x7=8 data bytes (ignored) */
-        stigCmd[3] = 0x1; /* enable cmd address */
-        stigCmd[4] = 0x0; /* disable mode bits */
-        stigCmd[5] = 0x3; /* use 0x3=4 address bytes */
-        stigCmd[6] = 0x1; /* enable write operation */
-        stigCmd[7] = 0x0; /* write 0x0=1 data byte */
-        stigCmd[8] = 0x0; /* 0x7=8 dummy cycles */
-        stigCmd[9] = 0x0; /* disable memory bank */
-
-        value |= (stigCmd[0] << 24);
-        value |= (stigCmd[1] << 23);
-        value |= (stigCmd[2] << 20);
-        value |= (stigCmd[3] << 19);
-        value |= (stigCmd[4] << 18);
-        value |= (stigCmd[5] << 16);
-        value |= (stigCmd[6] << 15);
-        value |= (stigCmd[7] << 12);
-        value |= (stigCmd[8] << 7);
-        value |= (stigCmd[9] << 2);
-
-        data[0] = value; /* NVCR cmd */
-        data[1] = 0x06;  /* addr */
-        data[2] = 0xFE;  /* data */
-
-        SPI_control(handle, SPI_V0_CMD_CFG_XIP, (void*)data);
-    }
-
-    return retVal;
+    return NOR_PASS;
 }
 
 
@@ -555,6 +561,7 @@ NOR_STATUS Nor_qspiErase(NOR_HANDLE handle, int32_t erLoc, bool blkErase)
     uint8_t         cmdWren  = NOR_CMD_WREN;
     NOR_Info       *norOspiInfo;
     SPI_Handle      spiHandle;
+    OSPI_v0_HwAttrs const *hwAttrs;
 
     if (!handle)
     {
@@ -567,6 +574,7 @@ NOR_STATUS Nor_qspiErase(NOR_HANDLE handle, int32_t erLoc, bool blkErase)
         return NOR_FAIL;
     }
     spiHandle = (SPI_Handle)norOspiInfo->hwHandle;
+    hwAttrs = (OSPI_v0_HwAttrs const *)spiHandle->hwAttrs;
 
     if (erLoc == NOR_BE_SECTOR_NUM)
     {
@@ -593,12 +601,22 @@ NOR_STATUS Nor_qspiErase(NOR_HANDLE handle, int32_t erLoc, bool blkErase)
             address   = erLoc * NOR_SECTOR_SIZE;
             cmd[0] = NOR_CMD_SECTOR_ERASE;
         }
-        cmd[1] = (address >> 24) & 0xff; /* 64MB flash device */
-        cmd[2] = (address >> 16) & 0xff;
-        cmd[3] = (address >>  8) & 0xff;
-        cmd[4] = (address >>  0) & 0xff;
 
-        cmdLen = 5;
+        if (hwAttrs->dtrEnable == (bool)true)
+        {
+            cmd[1] = (address >> 24) & 0xff; /* 4 address bytes */
+            cmd[2] = (address >> 16) & 0xff;
+            cmd[3] = (address >>  8) & 0xff;
+            cmd[4] = (address >>  0) & 0xff;
+            cmdLen = 5;
+        }
+        else
+        {
+            cmd[1] = (address >> 16) & 0xff;
+            cmd[2] = (address >>  8) & 0xff;
+            cmd[3] = (address >>  0) & 0xff;
+            cmdLen = 4;
+        }
     }
 
     if (Nor_qspiCmdWrite(spiHandle, &cmdWren, 1, 0))
