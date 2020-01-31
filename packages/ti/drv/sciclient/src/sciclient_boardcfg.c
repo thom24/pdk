@@ -52,15 +52,15 @@
 const uint32_t gSciclient_boardCfgLow[(SCICLIENT_BOARDCFG_SIZE_IN_BYTES+3U)/4U]
     __attribute__(( aligned(128), section(".boardcfg_data") ))
     = SCICLIENT_BOARDCFG;
-const uint32_t gSciclient_boardCfgLow_rm[(SCICLIENT_RM_BOARDCFG_SIZE_IN_BYTES+3U)/4U]
+const uint32_t gSciclient_boardCfgLow_rm[(SCICLIENT_BOARDCFG_RM_SIZE_IN_BYTES+3U)/4U]
     __attribute__(( aligned(128), section(".boardcfg_data") ))
-    = SCICLIENT_RM_BOARDCFG;
-const uint32_t gSciclient_boardCfgLow_sec[(SCICLIENT_SECURITY_BOARDCFG_SIZE_IN_BYTES+3U)/4U]
+    = SCICLIENT_BOARDCFG_RM;
+const uint32_t gSciclient_boardCfgLow_sec[(SCICLIENT_BOARDCFG_SECURITY_SIZE_IN_BYTES+3U)/4U]
     __attribute__(( aligned(128), section(".boardcfg_data") ))
-    = SCICLIENT_SECURITY_BOARDCFG;
-const uint32_t gSciclient_boardCfgLow_pm[(SCICLIENT_PM_BOARDCFG_SIZE_IN_BYTES+3U)/4U]
+    = SCICLIENT_BOARDCFG_SECURITY;
+const uint32_t gSciclient_boardCfgLow_pm[(SCICLIENT_BOARDCFG_PM_SIZE_IN_BYTES+3U)/4U]
     __attribute__(( aligned(128), section(".boardcfg_data") ))
-    = SCICLIENT_PM_BOARDCFG;
+    = SCICLIENT_BOARDCFG_PM;
 
 int32_t Sciclient_boardCfg(const Sciclient_BoardCfgPrms_t * pInPrms)
 {
@@ -111,7 +111,7 @@ int32_t Sciclient_boardCfgPm(const Sciclient_BoardCfgPrms_t * pInPrms)
         .tisci_boardcfg_pmp_low  = (uint32_t) gSciclient_boardCfgLow_pm, /* PM Board Config structure
                                                  definition removed from TISCI */
         .tisci_boardcfg_pmp_high = (uint32_t) 0x0U,
-        .tisci_boardcfg_pm_size  = (uint16_t) SCICLIENT_PM_BOARDCFG_SIZE_IN_BYTES,
+        .tisci_boardcfg_pm_size  = (uint16_t) SCICLIENT_BOARDCFG_PM_SIZE_IN_BYTES,
         .tisci_boardcfg_pm_devgrp = (uint8_t) DEVGRP_ALL
 
     };
@@ -194,7 +194,7 @@ int32_t Sciclient_boardCfgSec(const Sciclient_BoardCfgPrms_t * pInPrms)
     struct tisci_msg_board_config_security_req request = {
         .tisci_boardcfg_securityp_low  = (uint32_t) gSciclient_boardCfgLow_sec,
         .tisci_boardcfg_securityp_high = (uint32_t) 0x0U,
-        .tisci_boardcfg_security_size  = (uint16_t) SCICLIENT_SECURITY_BOARDCFG_SIZE_IN_BYTES,
+        .tisci_boardcfg_security_size  = (uint16_t) SCICLIENT_BOARDCFG_SECURITY_SIZE_IN_BYTES,
         .tisci_boardcfg_security_devgrp = (uint8_t) DEVGRP_ALL
     };
 

@@ -23,11 +23,6 @@ endif
 
 SRCDIR += soc/$(SCICLIENT_SOCVER)
 INCDIR += soc/$(SCICLIENT_SOCVER)
-ifeq ($(BUILD_HS),yes)
-GEN_FILE = soc/$(SCICLIENT_SOCVER)/sciclient_defaultBoardcfg_hexhs.h
-else
-GEN_FILE = soc/$(SCICLIENT_SOCVER)/sciclient_defaultBoardcfg_hex.h
-endif
 
 # List all the external components/interfaces, whose interface header files
 # need to be included for this component
@@ -113,47 +108,69 @@ SCICLIENT_CERT_KEY=$(ROOTDIR)/ti/build/makerules/k3_dev_mpk.pem
 else
 SCICLIENT_CERT_KEY=$(ROOTDIR)/ti/build/makerules/rom_degenerateKey.pem
 endif
-MAKE=gcc
 
-src/sciclient_boardcfg.c : $(GEN_FILE)
+BRD_CFG := sciclient_defaultBoardcfg
+CFG_DIR := $(ROOTDIR)/ti/drv/sciclient/soc/$(SCICLIENT_SOCVER)
 
-$(GEN_FILE): soc/$(SCICLIENT_SOCVER)/sciclient_defaultBoardcfg.c soc/$(SCICLIENT_SOCVER)/sciclient_defaultBoardcfg_pm.c soc/$(SCICLIENT_SOCVER)/sciclient_defaultBoardcfg_rm.c soc/$(SCICLIENT_SOCVER)/sciclient_defaultBoardcfg_security.c
-	echo "Build Board Configuration Obj Files"
-	$(MKDIR) -p $(OBJDIR)
-	$(CC) $(_CFLAGS) $(INCLUDES) $(CFLAGS_DIROPTS) $(COMPILEMODE) soc/$(SCICLIENT_SOCVER)/sciclient_defaultBoardcfg.c
-	$(CC) $(_CFLAGS) $(INCLUDES) $(CFLAGS_DIROPTS) $(COMPILEMODE) soc/$(SCICLIENT_SOCVER)/sciclient_defaultBoardcfg_pm.c
-	$(CC) $(_CFLAGS) $(INCLUDES) $(CFLAGS_DIROPTS) $(COMPILEMODE) soc/$(SCICLIENT_SOCVER)/sciclient_defaultBoardcfg_rm.c
-	$(CC) $(_CFLAGS) $(INCLUDES) $(CFLAGS_DIROPTS) $(COMPILEMODE) soc/$(SCICLIENT_SOCVER)/sciclient_defaultBoardcfg_security.c
-	echo "Create Binary" 
-	$(SCICLIENT_OBJCOPY) -S -O binary $(OBJDIR)/sciclient_defaultBoardcfg.$(OBJEXT) $(OBJDIR)/sciclient_defaultBoardcfg.bin.unsigned
-	$(SCICLIENT_OBJCOPY) -S -O binary $(OBJDIR)/sciclient_defaultBoardcfg_pm.$(OBJEXT) $(OBJDIR)/sciclient_defaultBoardcfg_pm.bin.unsigned
-	$(SCICLIENT_OBJCOPY) -S -O binary $(OBJDIR)/sciclient_defaultBoardcfg_rm.$(OBJEXT) $(OBJDIR)/sciclient_defaultBoardcfg_rm.bin.unsigned
-	$(SCICLIENT_OBJCOPY) -S -O binary $(OBJDIR)/sciclient_defaultBoardcfg_security.$(OBJEXT) $(OBJDIR)/sciclient_defaultBoardcfg_security.bin.unsigned
-ifeq ($(OS),Windows_NT)
-	$(CHMOD) a+x $(BIN2C_GEN)
-endif
+# These will be used to distinguish between an HS configuration and
+# .. a GP configuration in the rules below.
 ifeq ($(BUILD_HS),yes)
+SGN_EXT := .hs.signed
+HEX_EXT := _hexhs.h
+else
+SGN_EXT := .signed
+HEX_EXT := _hex.h
+endif
+
+# We want to create an include-able header file with a hex representation of
+# .. each board configuration (signed according to SoC). Because each Board
+# .. Configuration will require one of these header files, we can simply parse
+# .. through the appropriate SOC directory and generate one of these hex header
+# .. files for each Board Configuration file.
+HEXFILES := $(foreach file, \
+		$(wildcard $(CFG_DIR)/$(BRD_CFG)*.c), \
+		$(subst .c,$(HEX_EXT),$(file)))
+
+# Append the proper hex-file targets to "all" to guarantee they are
+# .. generated if missing/a board configuration file has been changed
+all: $(HEXFILES)
+
+# Build the Board Configuration object files. A modified Configuration file
+# .. will trigger this chain for that particular configuration
+$(OBJDIR)/$(BRD_CFG)%.$(OBJEXT) : soc/$(SCICLIENT_SOCVER)/$(BRD_CFG)%.c
+	@echo "Build Board Configuration Obj Files"
+	$(MKDIR) -p $(OBJDIR)
+	$(CC) $(_CFLAGS) $(INCLUDES) $(CFLAGS_DIROPTS) $(COMPILEMODE) $<
+
+# Copy the raw binary into an intermediate file (will get deleted by make)
+$(OBJDIR)/$(BRD_CFG)%.bin.unsigned : $(OBJDIR)/$(BRD_CFG)%.$(OBJEXT)
+	@echo "Create unsigned Board Configuration binary"
+	$(SCICLIENT_OBJCOPY) -S -O binary $< $@
+
+# If an HS signature is required, sign it with the HS key (will get deleted by make)
+$(OBJDIR)/$(BRD_CFG)%.bin.hs.signed : $(OBJDIR)/$(BRD_CFG)%.bin.unsigned
+	@echo "Sign Board Configuration with HS key"
 ifneq ($(OS),Windows_NT)
 	$(CHMOD) a+x $(SCICLIENT_CERT_GEN)
 endif
-	$(SCICLIENT_CERT_GEN) -b $(OBJDIR)/sciclient_defaultBoardcfg.bin.unsigned -o $(OBJDIR)/sciclient_defaultBoardcfg.bin.signed -k $(SCICLIENT_CERT_KEY) -f 1
-	$(SCICLIENT_CERT_GEN) -b $(OBJDIR)/sciclient_defaultBoardcfg_pm.bin.unsigned -o $(OBJDIR)/sciclient_defaultBoardcfg_pm.bin.signed -k $(SCICLIENT_CERT_KEY) -f 1
-	$(SCICLIENT_CERT_GEN) -b $(OBJDIR)/sciclient_defaultBoardcfg_rm.bin.unsigned -o $(OBJDIR)/sciclient_defaultBoardcfg_rm.bin.signed -k $(SCICLIENT_CERT_KEY) -f 1
-	$(SCICLIENT_CERT_GEN) -b $(OBJDIR)/sciclient_defaultBoardcfg_security.bin.unsigned -o $(OBJDIR)/sciclient_defaultBoardcfg_security.bin.signed -k $(SCICLIENT_CERT_KEY) -f 1
-	$(BIN2C_GEN) $(OBJDIR)/sciclient_defaultBoardcfg.bin.signed sciclient_defaultBoardcfg_hexhs.h SCICLIENT_BOARDCFG > $(ROOTDIR)/ti/drv/sciclient/soc/$(SCICLIENT_SOCVER)/sciclient_defaultBoardcfg_hexhs.h
-	$(BIN2C_GEN) $(OBJDIR)/sciclient_defaultBoardcfg_pm.bin.signed sciclient_defaultBoardcfg_pm_hexhs.h SCICLIENT_PM_BOARDCFG > $(ROOTDIR)/ti/drv/sciclient/soc/$(SCICLIENT_SOCVER)/sciclient_defaultBoardcfg_pm_hexhs.h
-	$(BIN2C_GEN) $(OBJDIR)/sciclient_defaultBoardcfg_rm.bin.signed sciclient_defaultBoardcfg_rm_hexhs.h SCICLIENT_RM_BOARDCFG > $(ROOTDIR)/ti/drv/sciclient/soc/$(SCICLIENT_SOCVER)/sciclient_defaultBoardcfg_rm_hexhs.h
-	$(BIN2C_GEN) $(OBJDIR)/sciclient_defaultBoardcfg_security.bin.signed sciclient_defaultBoardcfg_security_hexhs.h SCICLIENT_SECURITY_BOARDCFG > $(ROOTDIR)/ti/drv/sciclient/soc/$(SCICLIENT_SOCVER)/sciclient_defaultBoardcfg_security_hexhs.h
-else
-	$(CP) $(OBJDIR)/sciclient_defaultBoardcfg.bin.unsigned $(OBJDIR)/sciclient_defaultBoardcfg.bin.signed
-	$(CP) $(OBJDIR)/sciclient_defaultBoardcfg_pm.bin.unsigned $(OBJDIR)/sciclient_defaultBoardcfg_pm.bin.signed
-	$(CP) $(OBJDIR)/sciclient_defaultBoardcfg_rm.bin.unsigned $(OBJDIR)/sciclient_defaultBoardcfg_rm.bin.signed
-	$(CP) $(OBJDIR)/sciclient_defaultBoardcfg_security.bin.unsigned $(OBJDIR)/sciclient_defaultBoardcfg_security.bin.signed
-	$(BIN2C_GEN) $(OBJDIR)/sciclient_defaultBoardcfg.bin.signed sciclient_defaultBoardcfg_hex.h SCICLIENT_BOARDCFG > $(ROOTDIR)/ti/drv/sciclient/soc/$(SCICLIENT_SOCVER)/sciclient_defaultBoardcfg_hex.h
-	$(BIN2C_GEN) $(OBJDIR)/sciclient_defaultBoardcfg_pm.bin.signed sciclient_defaultBoardcfg_pm_hex.h SCICLIENT_PM_BOARDCFG > $(ROOTDIR)/ti/drv/sciclient/soc/$(SCICLIENT_SOCVER)/sciclient_defaultBoardcfg_pm_hex.h
-	$(BIN2C_GEN) $(OBJDIR)/sciclient_defaultBoardcfg_rm.bin.signed sciclient_defaultBoardcfg_rm_hex.h SCICLIENT_RM_BOARDCFG > $(ROOTDIR)/ti/drv/sciclient/soc/$(SCICLIENT_SOCVER)/sciclient_defaultBoardcfg_rm_hex.h
-	$(BIN2C_GEN) $(OBJDIR)/sciclient_defaultBoardcfg_security.bin.signed sciclient_defaultBoardcfg_security_hex.h SCICLIENT_SECURITY_BOARDCFG > $(ROOTDIR)/ti/drv/sciclient/soc/$(SCICLIENT_SOCVER)/sciclient_defaultBoardcfg_security_hex.h
+	$(SCICLIENT_CERT_GEN) -b $< -o $@ -k $(SCICLIENT_CERT_KEY) -f 1
+
+# If a GP signature is required, sign it with the GP key (will get deleted by make)
+$(OBJDIR)/$(BRD_CFG)%.bin.signed : $(OBJDIR)/$(BRD_CFG)%.bin.unsigned
+	@echo "Sign Board Configuration with GP key"
+	@echo "  (note: GP board configuration not ACTUALLY signed with anything)"
+	$(CP) $< $@
+
+# Generate the actual header file from the signed Board Configuration binary.
+# This rule determines the type of signature required in the previous rules.
+$(CFG_DIR)/%$(HEX_EXT) : $(OBJDIR)/%.bin$(SGN_EXT)
+	@echo "Generate include-able header file from signed Board Configuration"
+ifneq ($(OS),Windows_NT)
+	$(CHMOD) a+x $(BIN2C_GEN)
 endif
+	$(BIN2C_GEN) $< $*$(HEX_EXT) $(subst default,,$*) > $@
+
+
 
 # OBJs and libraries are built by using rule defined in rules_<target>.mk
 #     and need not be explicitly specified here

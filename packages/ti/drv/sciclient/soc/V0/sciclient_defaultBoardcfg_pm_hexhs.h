@@ -48,7 +48,7 @@
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
 
-#define SCICLIENT_PM_BOARDCFG_SIZE_IN_BYTES (1600U)
+#define SCICLIENT_BOARDCFG_PM_SIZE_IN_BYTES (1600U)
 
 /* ========================================================================== */
 /*                         Structure Declarations                             */
@@ -66,7 +66,7 @@
 /*                            Global Variables                                */
 /* ========================================================================== */
 
-#define SCICLIENT_PM_BOARDCFG { \
+#define SCICLIENT_BOARDCFG_PM { \
     0x3c068230U,     0x24048230U,     0x010203a0U,     0x00090202U, \
     0x97e4c5b0U,     0x02b51a79U,     0x09060d30U,     0x8648862aU, \
     0x01010df7U,     0x3000050dU,     0x0b318b81U,     0x03060930U, \

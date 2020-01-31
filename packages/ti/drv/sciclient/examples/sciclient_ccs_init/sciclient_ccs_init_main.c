@@ -250,7 +250,7 @@ static int32_t App_getRevisionTest(void)
     }
     if (CSL_PASS == status)
     {
-        uint32_t boardCfgLow[] = SCICLIENT_PM_BOARDCFG;
+        uint32_t boardCfgLow[] = SCICLIENT_BOARDCFG_PM;
         Sciclient_BoardCfgPrms_t boardCfgPrms_pm =
         {
             .boardConfigLow = (uint32_t)boardCfgLow,
@@ -264,12 +264,12 @@ static int32_t App_getRevisionTest(void)
         dmtimer0_read();
         if (status == CSL_PASS)
         {
-            uint32_t boardCfgLow[] = SCICLIENT_RM_BOARDCFG;
+            uint32_t boardCfgLow[] = SCICLIENT_BOARDCFG_RM;
             Sciclient_BoardCfgPrms_t boardCfgPrms_rm =
             {
                 .boardConfigLow = (uint32_t) boardCfgLow,
                 .boardConfigHigh = 0,
-                .boardConfigSize = SCICLIENT_RM_BOARDCFG_SIZE_IN_BYTES,
+                .boardConfigSize = SCICLIENT_BOARDCFG_RM_SIZE_IN_BYTES,
                 .devGrp = DEVGRP_00
             };
             dmtimer0_read();
@@ -282,12 +282,12 @@ static int32_t App_getRevisionTest(void)
         }
         if (status == CSL_PASS)
         {
-            uint32_t boardCfgLow[] = SCICLIENT_SECURITY_BOARDCFG;
+            uint32_t boardCfgLow[] = SCICLIENT_BOARDCFG_SECURITY;
             Sciclient_BoardCfgPrms_t boardCfgPrms_security =
             {
                 .boardConfigLow = (uint32_t) boardCfgLow,
                 .boardConfigHigh = 0,
-                .boardConfigSize = SCICLIENT_SECURITY_BOARDCFG_SIZE_IN_BYTES,
+                .boardConfigSize = SCICLIENT_BOARDCFG_SECURITY_SIZE_IN_BYTES,
                 .devGrp = DEVGRP_00
             };
             printf("\nSciclient PM Board Configuration has Passed \n");
@@ -320,7 +320,7 @@ static int32_t App_getRevisionTest(void)
     }
     if (CSL_PASS == status)
     {
-        uint32_t boardCfgLow[] = SCICLIENT_PM_BOARDCFG;
+        uint32_t boardCfgLow[] = SCICLIENT_BOARDCFG_PM;
         Sciclient_BoardCfgPrms_t boardCfgPrms_pm =
         {
             .boardConfigLow = (uint32_t)boardCfgLow,
@@ -331,12 +331,12 @@ static int32_t App_getRevisionTest(void)
         status = Sciclient_boardCfgPm(&boardCfgPrms_pm);
         if (status == CSL_PASS)
         {
-            uint32_t boardCfgLow[] = SCICLIENT_RM_BOARDCFG;
+            uint32_t boardCfgLow[] = SCICLIENT_BOARDCFG_RM;
             Sciclient_BoardCfgPrms_t boardCfgPrms_rm =
             {
                 .boardConfigLow = (uint32_t) boardCfgLow,
                 .boardConfigHigh = 0,
-                .boardConfigSize = SCICLIENT_RM_BOARDCFG_SIZE_IN_BYTES,
+                .boardConfigSize = SCICLIENT_BOARDCFG_RM_SIZE_IN_BYTES,
                 .devGrp = DEVGRP_01
             };
             status = Sciclient_boardCfgRm(&boardCfgPrms_rm);
@@ -347,12 +347,12 @@ static int32_t App_getRevisionTest(void)
         }
         if (status == CSL_PASS)
         {
-            uint32_t boardCfgLow[] = SCICLIENT_SECURITY_BOARDCFG;
+            uint32_t boardCfgLow[] = SCICLIENT_BOARDCFG_SECURITY;
             Sciclient_BoardCfgPrms_t boardCfgPrms_security =
             {
                 .boardConfigLow = (uint32_t) boardCfgLow,
                 .boardConfigHigh = 0,
-                .boardConfigSize = SCICLIENT_SECURITY_BOARDCFG_SIZE_IN_BYTES,
+                .boardConfigSize = SCICLIENT_BOARDCFG_SECURITY_SIZE_IN_BYTES,
                 .devGrp = DEVGRP_01
             };
             status = Sciclient_boardCfgSec(&boardCfgPrms_security) ;

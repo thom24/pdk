@@ -125,7 +125,7 @@ void SBL_SciClientInit(void)
     {
         .boardConfigLow = (uint32_t)gSciclient_boardCfgLow_pm,
 	.boardConfigHigh = 0,
-	.boardConfigSize = SCICLIENT_PM_BOARDCFG_SIZE_IN_BYTES,
+	.boardConfigSize = SCICLIENT_BOARDCFG_PM_SIZE_IN_BYTES,
 	.devGrp = SBL_DEVGRP
     };
     
@@ -133,7 +133,7 @@ void SBL_SciClientInit(void)
     {
         .boardConfigLow = (uint32_t)gSciclient_boardCfgLow_rm,
 	.boardConfigHigh = 0,
-	.boardConfigSize = SCICLIENT_RM_BOARDCFG_SIZE_IN_BYTES,
+	.boardConfigSize = SCICLIENT_BOARDCFG_RM_SIZE_IN_BYTES,
 	.devGrp = SBL_DEVGRP
     };
 
@@ -141,7 +141,7 @@ void SBL_SciClientInit(void)
     {
         .boardConfigLow = (uint32_t)gSciclient_boardCfgLow_sec,
 	.boardConfigHigh = 0,
-	.boardConfigSize = SCICLIENT_SECURITY_BOARDCFG_SIZE_IN_BYTES,
+	.boardConfigSize = SCICLIENT_BOARDCFG_SECURITY_SIZE_IN_BYTES,
 	.devGrp = SBL_DEVGRP
     };
 
