@@ -30,49 +30,50 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- *  \file V0/sciclient_defaultBoardcfg.h
+ *  \file V0/sciclient_defaultBoardcfg_pg2.c
  *
- *  \brief File defining tisci_local_rm_boardcfg for boardCfg RM .
+ *  \brief File containing the boardcfg default data structure to
+ *      send TISCI_MSG_BOARD_CONFIG message.
  *
  */
-
-#ifndef SCICLIENT_DEFAULTBOARDCFG_
-#define SCICLIENT_DEFAULTBOARDCFG_
-
 /* ========================================================================== */
 /*                             Include Files                                  */
 /* ========================================================================== */
-#include <ti/csl/csl_types.h>
-#include <ti/drv/sciclient/sciclient.h>
-#include <ti/drv/sciclient/soc/sysfw/include/tisci/tisci_boardcfg.h>
-#include <ti/drv/sciclient/soc/sysfw/include/am65x_pg2/tisci_resasg_types.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <ti/drv/sciclient/soc/sysfw/include/am65x/tisci_hosts.h>
+#include <ti/drv/sciclient/soc/sysfw/include/am65x/tisci_boardcfg_constraints.h>
+#include <ti/drv/sciclient/soc/V0/sciclient_defaultBoardcfg.h>
 
 /* ========================================================================== */
 /*                            Global Variables                                */
 /* ========================================================================== */
 
-/* NONE */
-
-/* ========================================================================== */
-/*                           Macros & Typedefs                                */
-/* ========================================================================== */
-
 #if defined (BUILD_MCU1_0)
-/* \brief Structure to hold the RM board configuration */
-struct tisci_local_rm_boardcfg {
-    struct tisci_boardcfg_rm      rm_boardcfg;
-    /**< Board configuration parameter */
-    struct tisci_boardcfg_rm_resasg_entry resasg_entries[TISCI_BOARDCFG_RM_RESASG_ENTRIES_MAX];
-    /**< Resource assignment entries */
+const struct tisci_boardcfg_sec_pg2 gSciclient_boardCfgLow_sec_pg2
+__attribute__(( aligned(128), section(".boardcfg_data") )) =
+{
+    /* boardcfg_abi_rev */
+    .rev = {
+        .tisci_boardcfg_abi_maj = TISCI_BOARDCFG_SEC_ABI_MAJ_VALUE,
+        .tisci_boardcfg_abi_min = TISCI_BOARDCFG_SEC_ABI_MIN_VALUE,
+    },
+
+    /* boardcfg_proc_acl */
+    .processor_acl_list = {
+        .subhdr = {
+            .magic = TISCI_BOARDCFG_PROC_ACL_MAGIC_NUM,
+            .size = sizeof(struct tisci_boardcfg_proc_acl),
+        },
+        .proc_acl_entries = {0},
+    },
+
+    /* boardcfg_host_hierarchy */
+    .host_hierarchy = {
+        .subhdr = {
+            .magic = TISCI_BOARDCFG_HOST_HIERARCHY_MAGIC_NUM,
+            .size = sizeof(struct tisci_boardcfg_host_hierarchy),
+        },
+        .host_hierarchy_entries = {0},
+    },
 };
 #endif
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif /* #ifndef SCICLIENT_DEFAULTBOARDCFG_ */

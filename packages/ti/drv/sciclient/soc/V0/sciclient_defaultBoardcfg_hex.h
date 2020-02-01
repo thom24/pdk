@@ -68,5 +68,5 @@
 
 #define SCICLIENT_BOARDCFG { \
     0xc1d30100U,     0x045a0007U,     0x07120700U,     0x00010100U, \
-    0x0005a5c3U,     0x08020c00U,     0x3f000d00U,     0x00000000U\
+    0x0005a5c3U,     0x08020c00U,     0x00000000U,     0x00000000U\
 } /* 29 bytes */

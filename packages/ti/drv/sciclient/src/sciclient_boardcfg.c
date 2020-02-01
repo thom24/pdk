@@ -62,6 +62,15 @@ const uint32_t gSciclient_boardCfgLow_pm[(SCICLIENT_BOARDCFG_PM_SIZE_IN_BYTES+3U
     __attribute__(( aligned(128), section(".boardcfg_data") ))
     = SCICLIENT_BOARDCFG_PM;
 
+#if defined (SOC_AM65XX)
+const uint32_t gSciclient_boardCfgLow_rm_pg2[(SCICLIENT_BOARDCFG_RM_PG2_SIZE_IN_BYTES+3U)/4U]
+    __attribute__(( aligned(128), section(".boardcfg_data") ))
+    = SCICLIENT_BOARDCFG_RM_PG2;
+const uint32_t gSciclient_boardCfgLow_sec_pg2[(SCICLIENT_BOARDCFG_SECURITY_PG2_SIZE_IN_BYTES+3U)/4U]
+    __attribute__(( aligned(128), section(".boardcfg_data") ))
+    = SCICLIENT_BOARDCFG_SECURITY_PG2;
+#endif
+
 int32_t Sciclient_boardCfg(const Sciclient_BoardCfgPrms_t * pInPrms)
 {
     int32_t retVal = CSL_PASS;

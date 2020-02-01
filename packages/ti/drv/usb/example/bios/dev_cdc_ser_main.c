@@ -5,7 +5,7 @@
  *****************************************************************************/
 
 /*
-* Copyright (C) 2019 Texas Instruments Incorporated - http://www.ti.com/
+* Copyright (C) 2019-2020 Texas Instruments Incorporated - http://www.ti.com/
 */
 /*
 *  Redistribution and use in source and binary forms, with or without
@@ -571,15 +571,11 @@ int main(void)
 #endif
 
     Board_initCfg boardCfg;
-#if defined (SOC_AM65XX)
-    boardCfg = BOARD_INIT_PINMUX_CONFIG |
-        BOARD_INIT_UART_STDIO;
-#else 
     boardCfg = BOARD_INIT_MODULE_CLOCK |
         BOARD_INIT_PINMUX_CONFIG |
         BOARD_INIT_UART_STDIO;
-#endif
-    Board_init(boardCfg);
+
+   Board_init(boardCfg);
 
     Error_init(&eb);
 

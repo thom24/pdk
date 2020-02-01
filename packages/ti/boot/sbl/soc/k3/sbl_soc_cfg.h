@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2018-2020 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -157,10 +157,10 @@ extern uint16_t sblMapOtpVidToMilliVolts[256];
 #define SBL_VTM_CFG_BASE             (CSL_WKUP_VTM0_CFG0_BASE)
 
 #define SBL_DEV_ID_OSPI0            (TISCI_DEV_MCU_FSS0_OSPI_0)
-#define SBL_CLK_ID_OSPI0            (TISCI_DEV_MCU_FSS0_OSPI_0_BUS_OSPI0_RCLK_CLK)
+#define SBL_CLK_ID_OSPI0            (TISCI_DEV_MCU_FSS0_OSPI_0_BUS_OSPI_RCLK_CLK)
 
 #define SBL_DEV_ID_OSPI1            (TISCI_DEV_MCU_FSS0_OSPI_1)
-#define SBL_CLK_ID_OSPI1            (TISCI_DEV_MCU_FSS0_OSPI_1_BUS_OSPI1_PCLK_CLK)
+#define SBL_CLK_ID_OSPI1            (TISCI_DEV_MCU_FSS0_OSPI_1_BUS_OSPI_PCLK_CLK)
 
 #define SBL_DEV_ID_RTI0             (TISCI_DEV_MCU_RTI0)
 #define SBL_DEV_ID_RTI1             (TISCI_DEV_MCU_RTI1)

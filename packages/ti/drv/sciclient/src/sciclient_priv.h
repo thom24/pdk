@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2018 Texas Instruments Incorporated
+ *  Copyright (C) 2018-2020 Texas Instruments Incorporated
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -172,6 +172,11 @@ extern const uint32_t gSciclient_boardCfgLow_rm[(SCICLIENT_BOARDCFG_RM_SIZE_IN_B
 extern const uint32_t gSciclient_boardCfgLow_sec[(SCICLIENT_BOARDCFG_SECURITY_SIZE_IN_BYTES+3U)/4U];
 /** Board Configuration - PM array */
 extern const uint32_t gSciclient_boardCfgLow_pm[(SCICLIENT_BOARDCFG_PM_SIZE_IN_BYTES+3U)/4U];
+
+#if defined (SOC_AM65XX)
+extern const uint32_t gSciclient_boardCfgLow_rm_pg2[(SCICLIENT_BOARDCFG_RM_PG2_SIZE_IN_BYTES+3U)/4U];
+extern const uint32_t gSciclient_boardCfgLow_sec_pg2[(SCICLIENT_BOARDCFG_SECURITY_PG2_SIZE_IN_BYTES+3U)/4U];
+#endif
 
 /* ========================================================================== */
 /*                          Function Declarations                             */

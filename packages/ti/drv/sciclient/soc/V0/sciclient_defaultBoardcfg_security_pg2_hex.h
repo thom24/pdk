@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2018 Texas Instruments Incorporated
+ *  Copyright (C) 2018-2020 Texas Instruments Incorporated
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -32,7 +32,7 @@
 */
 
 /**
-*  \file sciclient_defaultBoardcfg_hex.h
+*  \file sciclient_defaultBoardcfg_security_pg2_hex.h
 *
 *  \brief File containing the Binary in a C array.
 *
@@ -48,7 +48,7 @@
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
 
-#define SCICLIENT_BOARDCFG_SIZE_IN_BYTES (29U)
+#define SCICLIENT_BOARDCFG_SECURITY_PG2_SIZE_IN_BYTES (234U)
 
 /* ========================================================================== */
 /*                         Structure Declarations                             */
@@ -66,7 +66,20 @@
 /*                            Global Variables                                */
 /* ========================================================================== */
 
-#define SCICLIENT_BOARDCFG { \
-    0xc1d30100U,     0x045a0007U,     0x07120700U,     0x00010100U, \
-    0x0005a5c3U,     0x08020c00U,     0x00000800U,     0x00000000U\
-} /* 29 bytes */
+#define SCICLIENT_BOARDCFG_SECURITY_PG2 { \
+    0xf1ea0100U,     0x000000a4U,     0x00000000U,     0x00000000U, \
+    0x00000000U,     0x00000000U,     0x00000000U,     0x00000000U, \
+    0x00000000U,     0x00000000U,     0x00000000U,     0x00000000U, \
+    0x00000000U,     0x00000000U,     0x00000000U,     0x00000000U, \
+    0x00000000U,     0x00000000U,     0x00000000U,     0x00000000U, \
+    0x00000000U,     0x00000000U,     0x00000000U,     0x00000000U, \
+    0x00000000U,     0x00000000U,     0x00000000U,     0x00000000U, \
+    0x00000000U,     0x00000000U,     0x00000000U,     0x00000000U, \
+    0x00000000U,     0x00000000U,     0x00000000U,     0x00000000U, \
+    0x00000000U,     0x00000000U,     0x00000000U,     0x00000000U, \
+    0x00000000U,     0x8d270000U,     0x00000044U,     0x00000000U, \
+    0x00000000U,     0x00000000U,     0x00000000U,     0x00000000U, \
+    0x00000000U,     0x00000000U,     0x00000000U,     0x00000000U, \
+    0x00000000U,     0x00000000U,     0x00000000U,     0x00000000U, \
+    0x00000000U,     0x00000000U,     0x00000000U\
+} /* 234 bytes */

@@ -1,5 +1,5 @@
 /* =============================================================================
- *   Copyright (c) Texas Instruments Incorporated 2018-2019
+ *   Copyright (c) Texas Instruments Incorporated 2018-2020
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -121,6 +121,12 @@ int hs_index[EMAC_MAX_ICSS * EMAC_MAC_PORTS_PER_ICSS];    //one per icss slice
 #endif
 
 
+#define APP_TEST_AM65XX_PG1_0_VERSION (0x0BB5A02FU)
+
+/* Maxwell PG version */
+uint32_t gPgVersion;
+
+
 /* Test will use network firmware to verify packet transmission
   * and reception between 2 physical ICSSG ports, each ICSSG port needs to be connected
   * to another ICSSG port via ethernet cable.
@@ -131,23 +137,70 @@ int hs_index[EMAC_MAX_ICSS * EMAC_MAC_PORTS_PER_ICSS];    //one per icss slice
 
 #ifdef EMAC_TEST_APP_ICSSG
 /* EMAC firmware header files */
+
+
+
+/* PG 1.0 Firmware */
+#include <ti/drv/emac/firmware/icss_dualmac/bin/rxl2_txl2_rgmii0_bin.h>      /* PDSPcode */
+#include <ti/drv/emac/firmware/icss_dualmac/bin/rtu_test0_bin.h>             /* PDSP2code */
+#include <ti/drv/emac/firmware/icss_dualmac/bin/rxl2_txl2_rgmii1_bin.h>      /* PDSP3code */
+#include <ti/drv/emac/firmware/icss_dualmac/bin/rtu_test1_bin.h>             /* PDSP4code */
+
+
+/* PG2.0 firmware */
+#include <ti/drv/emac/firmware/icss_dualmac/bin_pg2/rxl2_rgmii0_bin.h>      /* PDSPcode */
+#include <ti/drv/emac/firmware/icss_dualmac/bin_pg2/rtu_test0_bin.h>        /* PDSP2code */
+#include <ti/drv/emac/firmware/icss_dualmac/bin_pg2/rxl2_rgmii1_bin.h>      /* PDSP3code */
+#include <ti/drv/emac/firmware/icss_dualmac/bin_pg2/rtu_test1_bin.h>        /* PDSP4code */
+#include <ti/drv/emac/firmware/icss_dualmac/bin_pg2/txl2_rgmii0_bin.h>      /* PDSP5code */
+#include <ti/drv/emac/firmware/icss_dualmac/bin_pg2/txl2_rgmii1_bin.h>      /* PDSP6code */
+
+#if 0
+typedef struct {
+    const uint32_t *pru;
+    uint32_t pru_size;
+} app_test_pru_rtu_fw2_t;
+
+static app_test_pru_rtu_fw2_t firmware_pg1[6] = 
+{
+     { PDSPcode_0,  sizeof(PDSPcode_0) },
+     { PDSP2code_0, sizeof(PDSP2code_0) },
+     { PDSP3code_0,  sizeof(PDSP3code_0) },
+     { PDSP4code_0, sizeof(PDSP4code_0) },
+     { NULL,        0},
+     { NULL,        0},
+};
+
+static app_test_pru_rtu_fw2_t firmware_pg2[6] =
+{
+     { PDSPcode_0,  sizeof(PDSPcode_0) },
+     { PDSP2code_0, sizeof(PDSP2code_0) },
+     { PDSP3code_0,  sizeof(PDSP3code_0) },
+     { PDSP4code_0, sizeof(PDSP4code_0) },
+     { NULL,        0},
+     { NULL,        0},
+};
+#else
 typedef struct {
     const uint32_t *pru;
     uint32_t pru_size;
     const uint32_t *rtu;
     uint32_t rtu_size;
+    const uint32_t *txpru;
+    uint32_t txpru_size;
 } app_test_pru_rtu_fw_t;
 
-
-#include <ti/drv/emac/firmware/icss_dualmac/bin/rxl2_txl2_rgmii0_bin.h>      /* PDSPcode */
-#include <ti/drv/emac/firmware/icss_dualmac/bin/rtu_test0_bin.h>             /* PDSP2code */
-#include <ti/drv/emac/firmware/icss_dualmac/bin/rxl2_txl2_rgmii1_bin.h>      /*PDSP3code */
-#include <ti/drv/emac/firmware/icss_dualmac/bin/rtu_test1_bin.h>             /* PDSP4code */
-
-static app_test_pru_rtu_fw_t firmware[2] = {
-    { PDSPcode_0, sizeof(PDSPcode_0), PDSP2code_0, sizeof(PDSP2code_0) },
-    { PDSP3code_0, sizeof(PDSP3code_0), PDSP4code_0, sizeof(PDSP4code_0) },
+app_test_pru_rtu_fw_t firmware_pg1[2] = {
+    { PDSPcode_0, sizeof(PDSPcode_0), PDSP2code_0, sizeof(PDSP2code_0), NULL, 0},
+    { PDSP3code_0, sizeof(PDSP3code_0), PDSP4code_0, sizeof(PDSP4code_0), NULL, 0}
 };
+
+app_test_pru_rtu_fw_t firmware_pg2[2] = {
+    { PDSPcode_0_PG2, sizeof(PDSPcode_0_PG2), PDSP2code_0_PG2, sizeof(PDSP2code_0_PG2), PDSP5code_0_PG2, sizeof(PDSP5code_0_PG2)},
+    { PDSP3code_0_PG2, sizeof(PDSP3code_0_PG2), PDSP4code_0_PG2, sizeof(PDSP4code_0_PG2),  PDSP6code_0_PG2, sizeof(PDSP6code_0_PG2)}
+};
+#endif
+
 #endif
 
 int32_t app_test_task_init_pruicss(uint32_t portNum);
@@ -500,25 +553,6 @@ uint8_t app_test_128_pkt[128] = {
         0xfe,0xfe, 0x00, 0x00
 };
 
-static uint8_t app_test_vlan_pkt[APP_TEST_PKT_SIZE+4] = {
-    0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-    0x48, 0x93, 0xfe, 0xfa, 0x18, 0x4a,
-    0x81, 0x00, 0x00,0x02,                      /* 00 is priority 0, 02 is vlanId */
-    0x08, 0x06, 0x00, 0x01,
-    0x08, 0x00, 0x06, 0x04,
-    0x00,0x01,0x01, 0xbb,
-    0xcc, 0xdd, 0xee, 0xff,
-    0xc0, 0xa8, 0x01, 0x16,
-    0x00, 0x00, 0x00, 0x00,
-    0xc0, 0xa8,0x01, 0x02,
-    0x01,0x02,0x03,0x04,
-    0x01,0x02,0x03,0x04,
-    0x01,0x02,0x03,0x04,
-    0x01,0x02,0x03,0x04,
-    0x01,0x02,0x03,0x04,
-    0xfe,0xfe, 0x00, 0x00
-};
-
 static uint8_t *pTestPkt = (uint8_t*)(&app_test_uc_pkt[0]);
 
 /**********************************************************************
@@ -530,6 +564,7 @@ static uint8_t *pTestPkt = (uint8_t*)(&app_test_uc_pkt[0]);
  */
 bool app_detect_interposer_card(void)
 {
+#ifdef am65xx_idk
     EMAC_socGetInitCfg(0, &emac_cfg);
     CSL_MdioRegs *pBaseAddr = (CSL_MdioRegs*) (uintptr_t)(emac_cfg.portCfg[2].mdioRegsBaseAddr);
 #ifdef EMAC_TEST_APP_WITHOUT_DDR
@@ -545,6 +580,9 @@ bool app_detect_interposer_card(void)
         UART_printf("PHYs for ICSSG1 are not ALIVE, interposer card is present\n");
         return TRUE;
     }
+#else
+    return FALSE;
+#endif
 }
 
 /**
@@ -752,48 +790,6 @@ app_init(void)
     }
 }
 
-/******************************************************************************
- * Function: Test EMAC_IOCTL_VLAN_CTRL command
- ******************************************************************************/
-/**
- *  @brief  send IOCTL command to create default table
- */
-void app_test_vlan_ctrl_set_default_tbl(void)
-{
-    EMAC_IOCTL_PARAMS params;
-    /* send packet only to the host */
-    EMAC_IOCTL_VLAN_FID_PARAMS vlanParams = {/*.fid = */0, /*.host_member =*/ 1, /*.p1_member =*/ 1,  /*.p2_member =*/ 0, \
-                          /*.host_tagged = */0, /*.p1_tagged = */0, /*.p2_tagged = */0, /*.stream_vid =*/ 0, /*.flood_to_host = */0};
-    params.subCommand = EMAC_IOCTL_VLAN_SET_DEFAULT_TBL;
-    params.ioctlVal = (void*)&vlanParams;
-
-    app_test_id++;
-    emac_ioctl(EMAC_SWITCH_PORT,EMAC_IOCTL_VLAN_CTRL,(void*)(&params));
-}
-
-/******************************************************************************
- * Function: Test EMAC_IOCTL_VLAN_CTRL command
- ******************************************************************************/
-/**
- *  @brief  send IOCTL command set tble entry
- */
-int32_t app_test_vlan_ctrl_set_tbl_entry(uint32_t portNum, uint8_t fid, uint16_t tblIndex, EMAC_IOCTL_VLAN_FID_PARAMS *pVlanParams)
-{
-    int32_t retVal;
-    EMAC_IOCTL_PARAMS params;
-    EMAC_IOCTL_VLAN_FID_ENTRY vlanEntry = {0};
-    /* send packet only to the host */
-
-    params.subCommand = EMAC_IOCTL_VLAN_SET_ENTRY;
-    params.ioctlVal = (void*)&vlanEntry;
-    memcpy(&vlanEntry.vlanFidPrams, pVlanParams, sizeof(EMAC_IOCTL_VLAN_FID_PARAMS));
-
-    vlanEntry.vlanFidPrams.fid = fid;
-    vlanEntry.vlanId = tblIndex;
-    retVal = emac_ioctl(portNum,EMAC_IOCTL_VLAN_CTRL,(void*)(&params));
-    return retVal;
-}
-
 #if defined (EMAC_BENCHMARK)
 uint32_t app_test_send_fail = 0;
 uint32_t app_test_alloc_fail = 0;
@@ -851,56 +847,42 @@ void app_test_loopback_pkt(uint32_t portNum, EMAC_PKT_DESC_T* pDesc)
 void app_test_rx_pkt_cb(uint32_t port_num, EMAC_PKT_DESC_T* p_desc)
 {
 #if !defined (EMAC_BENCHMARK)
-    uint32_t i;uint32_t *pCfgPkt;
-        if(p_desc->BufferLen == 16)
+    if (memcmp(p_desc->pDataBuffer, pTestPkt, APP_TEST_PKT_SIZE) == 0)
+    {
+        pkt_rcv_count++;
+        if (port_num != EMAC_PORT_CPSW)
         {
-            UART_printf("app_test_rx_pkt_cb:port: %d: received the following response begin\n", port_num);
-            pCfgPkt = (uint32_t*)&p_desc->pDataBuffer[0];
-            for (i = 0; i < 4; i++)
-                UART_printf("0x%08x ", pCfgPkt[i]);
-
-            UART_printf("\napp_test_rx_pkt_cb:port: %d: received the following response end\n", port_num);
-
-            if (p_desc->AppPrivate != 0U)
-            {
-                app_free_pkt(port_num,  (EMAC_PKT_DESC_T*) p_desc->AppPrivate);
-            }
-        }
-        else
-        {
-            if (memcmp(p_desc->pDataBuffer, pTestPkt, APP_TEST_PKT_SIZE) == 0)
-            {
-                pkt_rcv_count++;
-                if (port_num != 6)
-                    UART_printf("app_test_rx_pkt_cb: port %d: received packet %d, rx timestamp:  0x%x%08x\n",
+            UART_printf("app_test_rx_pkt_cb: port %d: ring num: %d, received packet %d, rx timestamp:  0x%x%08x\n",
                                             port_num,
+                                            p_desc->PktChannel,
                                             pkt_rcv_count,
                                             (unsigned int)(p_desc->RxTimeStamp >> 32),
                                             (unsigned int)(p_desc->RxTimeStamp & 0xFFFFFFFF));
-                else
-                    UART_printf("app_test_rx_pkt_cb: port %d: received packet %d\n",port_num, pkt_rcv_count);
-            }
-            else
-            {
-                UART_printf("app_test_rx_pkt_cb: port %u: packet match failed\n", port_num);
-                while(1);
-            }
-            if (p_desc->AppPrivate != 0U)
-            {
-                app_free_pkt(port_num,  (EMAC_PKT_DESC_T*) p_desc->AppPrivate);
-            }
-            pkt_received = 1;
         }
-#else
-        if (p_desc->AppPrivate != 0U)
+        else
         {
-            if (port_num != 6)
-            
-            app_test_loopback_pkt(app_test_send_port,p_desc);
-            app_free_pkt(port_num,  (EMAC_PKT_DESC_T*) p_desc->AppPrivate);
-            pkt_received = 1;
+                    UART_printf("app_test_rx_pkt_cb: port %d: ring num: %d, received packet %d\n",port_num, p_desc->PktChannel, pkt_rcv_count);
         }
-        pkt_rcv_count++;
+    }
+    else
+    {
+        UART_printf("app_test_rx_pkt_cb: port %u: ring num %d: packet match failed\n", port_num, p_desc->PktChannel);
+        while(1);
+    }
+    if (p_desc->AppPrivate != 0U)
+    {
+        app_free_pkt(port_num,  (EMAC_PKT_DESC_T*) p_desc->AppPrivate);
+    }
+    pkt_received = 1;
+#else
+    if (p_desc->AppPrivate != 0U)
+    {
+        if (port_num != EMAC_PORT_CPSW)
+        app_test_loopback_pkt(app_test_send_port,p_desc);
+        app_free_pkt(port_num,  (EMAC_PKT_DESC_T*) p_desc->AppPrivate);
+        pkt_received = 1;
+    }
+    pkt_rcv_count++;
 #endif
 }
 
@@ -1004,7 +986,8 @@ int32_t app_test_send(uint32_t pNum, uint8_t* pPkt, uint32_t pktChannel, uint32_
         /* only enable TX timestamp when in poll mode of operation, currently not support for SWITCH use case */
         if (pollModeEnabled)
         {
-            if (pNum != EMAC_CPSW_PORT_NUM)
+            /* PG2.0 test firmware does not currently support TX TS */
+            if ((pNum != EMAC_CPSW_PORT_NUM) && (gPgVersion == APP_TEST_AM65XX_PG1_0_VERSION))
             {
                 p_pkt_desc->Flags = EMAC_PKT_FLAG_TX_TS_REQ;
                 p_pkt_desc->TxtimestampId = pNum + i;
@@ -1059,6 +1042,7 @@ void app_test_pkt_clone(void)
 void app_test_port_mac(void)
 {
     int32_t status;
+    Task_sleep(500);
     app_test_id++;
     pTestPkt = (uint8_t*)(&app_test_uc_pkt[0]);
     UART_printf("EMAC_UT_%d begin: sending UC packet with PORT_MAC\n", app_test_id);
@@ -1161,28 +1145,6 @@ void app_test_multi_flows(void)
 
 }
 
-void app_test_multiple_rx_flows(void)
-{
-    uint32_t pktSize;
-    uint8_t pcp;
-    EMAC_IOCTL_VLAN_FID_PARAMS vlanParams = {/*.fid = */0, /*.host_member =*/ 1, /*.p1_member =*/ 1,  /*.p2_member =*/ 0, \
-                              /*.host_tagged = */0, /*.p1_tagged = */0, /*.p2_tagged = */0, /*.stream_vid =*/ 0, /*.flood_to_host = */0};
-
-    app_test_vlan_ctrl_set_tbl_entry(0, 0, 2, &vlanParams);
-    app_test_vlan_ctrl_set_tbl_entry(2, 0, 2, &vlanParams);
-    /* Start sending packet to verify local injection and host egress */
-    //pTestPkt = (uint8_t*)(&app_test_vlan_pkt[0]);
-    pktSize = APP_TEST_PKT_SIZE+4;
-    for (pcp = 0;pcp < 8; pcp++)
-    {
-        app_test_vlan_pkt[14] = pcp << 5;
-        pTestPkt = (uint8_t*)(&app_test_vlan_pkt[0]);
-        /* want to go out on ICSSG0 port 1, need to use emac port  0*/
-        app_test_send(0, pTestPkt, 0, pktSize);
-    }
-
-}
-
 int32_t app_test_send_receive(uint32_t startP, uint32_t endP, uint32_t displayResult)
 {
     uint32_t pNum;
@@ -1233,6 +1195,22 @@ void app_test_setup_fw_dualmac(uint32_t port_num, EMAC_HwAttrs_V5 *pEmacCfg)
 
 }
 #endif
+
+void app_test_trace_cb(uint8_t traceLevel, const char* traceString, ...)
+{
+    if (traceLevel <= UTIL_TRACE_LEVEL_ERR)
+    {
+        System_flush();
+        VaList arg_ptr;
+        /* print the format string */
+        va_start(arg_ptr, traceString);
+        System_vprintf(traceString, arg_ptr);
+        va_end(arg_ptr);
+        /* append newline */
+        System_printf("\n");
+        System_flush();
+    }
+}
 
 int32_t app_test_emac_open(uint32_t mode)
 {
@@ -1476,7 +1454,6 @@ void emac_test_get_cpsw_stats(void)
     UART_printf("EMAC_UT_%d  collecting cpsw stats passed\n", app_test_id);
 }
 
-#define APP_TEST_AM65XX_PG1_0_VERSION (0x0BB5A02FU)
 
 void app_test_udma_init(void)
 {
@@ -1487,9 +1464,8 @@ void app_test_udma_init(void)
 #if defined (SOC_AM65XX)
 #if defined (EMAC_TEST_APP_CPSW)
     /* if A53 and pg 1.0 use mcu navss due to hw errata*/
-    uint32_t pgVersion = CSL_REG32_RD(CSL_WKUP_CTRL_MMR0_CFG0_BASE + CSL_WKUP_CTRL_MMR_CFG0_JTAGID);
 #if defined (BUILD_MPU1_0)
-    if (pgVersion == APP_TEST_AM65XX_PG1_0_VERSION)
+    if (gPgVersion == APP_TEST_AM65XX_PG1_0_VERSION)
     {
         instId = UDMA_INST_ID_MCU_0;
     }
@@ -1666,6 +1642,8 @@ void test_EMAC_verify_ut_dual_mac_icssg(void)
         }
         UART_printf("Board_init success for UT\n");
 
+    gPgVersion = CSL_REG32_RD(CSL_WKUP_CTRL_MMR0_CFG0_BASE + CSL_WKUP_CTRL_MMR_CFG0_JTAGID);
+
 #if defined(SOC_J721E)
 #else
         if (app_detect_interposer_card() == TRUE)
@@ -1696,6 +1674,7 @@ void test_EMAC_verify_ut_dual_mac_icssg(void)
         while(1);
     }
     initComplete = 1;
+   
     /* Need to poll for link for ICSSG ports as they are port 2 port tests */
     /* For standalone CPSW test, we use internal loopback at CPSW-SS */
     app_test_check_port_link(portNum, endPort);
@@ -1866,7 +1845,7 @@ void app_test_task_verify_ut_dual_mac_cpsw(UArg arg0, UArg arg1)
 int32_t  app_test_task_disable_pruicss(uint32_t portNum)
 {
     PRUICSS_Handle prussDrvHandle;
-    uint8_t pru_n, rtu_n, slice_n ;
+    uint8_t pru_n, rtu_n, txpru_n, slice_n;
 
     if (portNum > 5)
         return -1;
@@ -1878,12 +1857,20 @@ int32_t  app_test_task_disable_pruicss(uint32_t portNum)
     slice_n = (portNum & 1);
     pru_n = (slice_n) ? PRUICCSS_PRU1 : PRUICCSS_PRU0;
     rtu_n = (slice_n) ? PRUICCSS_RTU1 : PRUICCSS_RTU0;
+    txpru_n = (slice_n) ? PRUICCSS_TPRU1 : PRUICCSS_TPRU0;
 
     if (PRUICSS_pruDisable(prussDrvHandle, pru_n) != 0)
         UART_printf("PRUICSS_pruDisable for PRUICCSS_PRU%d failed\n", slice_n);
 
     if (PRUICSS_pruDisable(prussDrvHandle, rtu_n) != 0)
         UART_printf("PRUICSS_pruDisable for PRUICCSS_RTU%d failed\n", slice_n);
+
+    /* pg version check: only disable txpru if NOT version PG1.0 */
+    if (gPgVersion != APP_TEST_AM65XX_PG1_0_VERSION)
+    {
+        if (PRUICSS_pruDisable(prussDrvHandle, txpru_n) != 0)
+            UART_printf("PRUICSS_pruDisable for PRUICCSS_RTU%d failed\n", slice_n);
+    }
 
     /* CLEAR SHARED MEM which is used for host/firmware handshake */
     PRUICSS_pruInitMemory(prussDrvHandle, PRU_ICSS_SHARED_RAM);
@@ -1898,8 +1885,8 @@ int32_t  app_test_task_disable_pruicss(uint32_t portNum)
 int32_t  app_test_task_init_pruicss(uint32_t portNum)
 {
     PRUICSS_Handle prussDrvHandle;
-    uint8_t firmwareLoad_done = FALSE;
-    uint8_t pru_n, rtu_n, slice_n ;
+    uint8_t pru_n, rtu_n, txpru_n, slice_n;
+    app_test_pru_rtu_fw_t *firmware;
 
     if (portNum > 5)
         return -1;
@@ -1910,24 +1897,48 @@ int32_t  app_test_task_init_pruicss(uint32_t portNum)
     slice_n = (portNum & 1);
     pru_n = (slice_n) ? PRUICCSS_PRU1 : PRUICCSS_PRU0;
     rtu_n = (slice_n) ? PRUICCSS_RTU1 : PRUICCSS_RTU0;
+    txpru_n = (slice_n) ? PRUICCSS_TPRU1 : PRUICCSS_TPRU0;
 
+    firmware = (gPgVersion == APP_TEST_AM65XX_PG1_0_VERSION)?firmware_pg1:firmware_pg2;
 
-    if (PRUICSS_pruWriteMemory(prussDrvHandle,PRU_ICSS_IRAM(slice_n), 0,
-                               firmware[slice_n].pru, firmware[slice_n].pru_size)) {
-        if (PRUICSS_pruWriteMemory(prussDrvHandle,PRU_ICSS_IRAM(slice_n + 2), 0,
-                                   firmware[slice_n].rtu, firmware[slice_n].rtu_size))
-            firmwareLoad_done = TRUE;
-        else
-            UART_printf("PRUICSS_pruWriteMemory for PRUICCSS_PRU%d failed\n", slice_n);
-    }
-    else
-        UART_printf("PRUICSS_pruWriteMemory for PRUICCSS_RTU%d failed\n", slice_n);
-    if( firmwareLoad_done)
+    if (PRUICSS_pruWriteMemory(prussDrvHandle,PRU_ICSS_IRAM_PRU(slice_n), 0,
+                               firmware[slice_n].pru, firmware[slice_n].pru_size) == 0)
     {
-        if (PRUICSS_pruEnable(prussDrvHandle, pru_n) != 0)
-            UART_printf("PRUICSS_pruEnable for PRUICCSS_PRU%d failed\n", slice_n);
-        if (PRUICSS_pruEnable(prussDrvHandle, rtu_n) != 0)
-            UART_printf("PRUICSS_pruEnable for PRUICCSS_RTU%d failed\n", slice_n);
+         UART_printf("PRUICSS_pruWriteMemory for PRUICCSS_PRU%d failed\n", slice_n);
+         return -1;
+    }
+    if (PRUICSS_pruWriteMemory(prussDrvHandle,PRU_ICSS_IRAM_RTU(slice_n), 0,
+                                   firmware[slice_n].rtu, firmware[slice_n].rtu_size) == 0)
+    {
+        UART_printf("PRUICSS_pruWriteMemory for PRUICCSS_RTU%d failed\n", slice_n);
+        return -1;
+    }
+    if (gPgVersion != APP_TEST_AM65XX_PG1_0_VERSION)
+    {
+        if (PRUICSS_pruWriteMemory(prussDrvHandle,PRU_ICSS_IRAM_TXPRU(slice_n), 0,
+                               firmware[slice_n].txpru, firmware[slice_n].txpru_size) == 0)
+        {
+            UART_printf("PRUICSS_pruWriteMemory for PRUICCSS_TXPRU%d failed\n", slice_n);
+            return -1;
+        }
+    }
+    if (PRUICSS_pruEnable(prussDrvHandle, pru_n) != 0)
+    {
+        UART_printf("PRUICSS_pruEnable for PRUICCSS_PRU%d failed\n", slice_n);
+        return -1;
+    }
+    if (PRUICSS_pruEnable(prussDrvHandle, rtu_n) != 0)
+    {
+        UART_printf("PRUICSS_pruEnable for PRUICCSS_RTU%d failed\n", slice_n);
+        return -1;
+    }
+    if (gPgVersion != APP_TEST_AM65XX_PG1_0_VERSION)
+    {
+        if (PRUICSS_pruEnable(prussDrvHandle, txpru_n) != 0)
+        {
+            UART_printf("PRUICSS_pruEnable for PRUICCSS_TXPRU%d failed\n", slice_n);
+            return -1;
+        }
     }
 
     return 0;

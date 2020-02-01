@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2019 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2016-2020 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -303,18 +303,19 @@ int main(void)
     Task_Handle task;
     Task_Params params;
     Error_Block eb;
-
+    volatile uint32_t emuwait_board=1;
+    
     Board_initCfg boardCfg;
-#if defined (SOC_AM65XX)
-    boardCfg = BOARD_INIT_PINMUX_CONFIG |
-        BOARD_INIT_UART_STDIO;
-#else 
+    Board_STATUS board_status;
+    
     boardCfg = BOARD_INIT_MODULE_CLOCK |
         BOARD_INIT_PINMUX_CONFIG |
         BOARD_INIT_UART_STDIO;
-#endif
-    Board_init(boardCfg);
 
+    board_status=Board_init(boardCfg);
+    if(board_status!=BOARD_SOK) {
+		while(emuwait_board);
+	}
     Error_init(&eb);
     Task_Params_init(&params);
     params.stackSize = 0x2000;

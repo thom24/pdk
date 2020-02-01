@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2018 Texas Instruments Incorporated
+ *  Copyright (C) 2018-2020 Texas Instruments Incorporated
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -161,7 +161,7 @@ extern "C" {
  *  @{
  *  Power Management Module Device IDs
  */
-#include <ti/drv/sciclient/soc/sysfw/include/am65x/tisci_devices.h>
+#include <ti/drv/sciclient/soc/sysfw/include/am65x_pg2/tisci_devices.h>
 /* @} */
 
 /**
@@ -170,7 +170,7 @@ extern "C" {
  *  @{
  *  Power Management Module Clock IDs for individual modules.
  */
-#include <ti/drv/sciclient/soc/sysfw/include/am65x/tisci_clocks.h>
+#include <ti/drv/sciclient/soc/sysfw/include/am65x_pg2/tisci_clocks.h>
 /* @} */
 
 /**

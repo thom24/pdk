@@ -12,7 +12,7 @@
  */
 
 /**
- * \copyright  Copyright (C) 2015-2019 Texas Instruments Incorporated -
+ * \copyright  Copyright (C) 2015-2020 Texas Instruments Incorporated -
  *             http://www.ti.com/
  */
 
@@ -196,7 +196,7 @@ void formatRamDisk(void)
     /* update the size of the file content */
     wp[FF_ENTRY_FS] = sizeof(img_fc)-1;
 }
-
+volatile uint32_t emuwait_board=1;
 int main()
 {
 #if !(defined(BUILD_ARM) && (defined(SOC_OMAPL137) || defined(SOC_OMAPL138)))
@@ -205,11 +205,15 @@ int main()
     USB_Handle  usb_handle;
 
     Board_initCfg boardCfg;
+    Board_STATUS board_status;
+    
     boardCfg = BOARD_INIT_MODULE_CLOCK |
         BOARD_INIT_PINMUX_CONFIG |
         BOARD_INIT_UART_STDIO;
-    Board_init(boardCfg);
-
+    board_status = Board_init(boardCfg);
+    if(board_status!=BOARD_SOK) {
+		while(emuwait_board);
+	}
 #if (defined(evmAM335x) || defined (evmAM437x))
     MMUConfigAndEnable();
 #endif
