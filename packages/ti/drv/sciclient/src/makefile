@@ -109,7 +109,8 @@ else
 SCICLIENT_CERT_KEY=$(ROOTDIR)/ti/build/makerules/rom_degenerateKey.pem
 endif
 
-BRD_CFG := sciclient_defaultBoard # purposely truncated to match main cfg file
+# For matching cfg files (purposely truncated to match main cfg file)
+BRD_CFG := sciclient_defaultBoard
 CFG_DIR := $(ROOTDIR)/ti/drv/sciclient/soc/$(SCICLIENT_SOCVER)
 
 # These will be used to distinguish between an HS configuration and
