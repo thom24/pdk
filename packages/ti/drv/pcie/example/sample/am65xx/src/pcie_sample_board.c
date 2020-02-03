@@ -115,7 +115,7 @@ void InitMmu(void)
   }
 
   if(retVal == FALSE) {
-    UART_printf("Mmu_map idx %d returned error %d", j, retVal);
+    PCIE_logPrintf("Mmu_map idx %d returned error %d", j, retVal);
     while(1);
   }
 }
@@ -181,7 +181,7 @@ void PlatformPCIESSSerdesConfig(int32_t serdes, int32_t iface)
     sciStatus = Sciclient_init(&sciConfig);
     if (sciStatus != CSL_PASS)
     {
-      UART_printf("SYSFW init ...FAILED\n");
+      PCIE_logPrintf("SYSFW init ...FAILED\n");
       exit(1);
     }
     /* Check that sciclient is working (tap the mic) */
@@ -190,11 +190,11 @@ void PlatformPCIESSSerdesConfig(int32_t serdes, int32_t iface)
     {
       if (sciRespPrm.flags == (uint32_t)TISCI_MSG_FLAG_ACK)
       {
-        UART_printf("SYSFW  ver %s running\n", (char *) sciResponse.str);
+        PCIE_logPrintf("SYSFW  ver %s running\n", (char *) sciResponse.str);
       }
       else
       {
-        UART_printf("SYSFW Get Version failed \n");
+        PCIE_logPrintf("SYSFW Get Version failed \n");
         exit(1);
       }
     }
@@ -241,7 +241,7 @@ void PlatformPCIESSSerdesConfig(int32_t serdes, int32_t iface)
   if (serdes == 0)
   {
     CSL_FINSR(*(volatile uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_SERDES0_CTRL), 1, 0, 0x1);
-    CSL_FINSR(*(volatile uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_SERDES0_CTRL), 7, 4, 0x4); //Left CML
+    CSL_FINSR(*(volatile uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_SERDES0_CTRL), 7, 4, 0x6); //Left CML, pass to right CML, two lane case
     sciStatus = Sciclient_pmSetModuleClkParent (
                   TISCI_DEV_SERDES0,
                   TISCI_DEV_SERDES0_BUS_LI_REFCLK,
@@ -258,7 +258,13 @@ void PlatformPCIESSSerdesConfig(int32_t serdes, int32_t iface)
     {
       CSL_FINSR(*(volatile uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_SERDES1_CTRL), 1, 0, 0x0);
     }
-    CSL_FINSR(*(volatile uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_SERDES1_CTRL), 7, 4, 0x1); //Right CML
+#if defined(am65xx_evm)
+    CSL_FINSR(*(volatile uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_SERDES1_CTRL), 7, 4, 0x1); //Right CML, one lane case
+#else 
+#if defined(am65xx_idk)    
+    CSL_FINSR(*(volatile uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_SERDES1_CTRL), 7, 4, 0x4); //Left CML, two lane case
+#endif    
+#endif    
 
     sciStatus = Sciclient_pmSetModuleClkParent (
                   TISCI_DEV_SERDES1,
@@ -269,7 +275,7 @@ void PlatformPCIESSSerdesConfig(int32_t serdes, int32_t iface)
 
   if (CSL_PASS != sciStatus)
   {
-    UART_printf("SYSFW setModuleClkParent failed\n");
+    PCIE_logPrintf("SYSFW setModuleClkParent failed\n");
     exit(1);
   }
 
@@ -284,6 +290,7 @@ void PlatformPCIESSSerdesConfig(int32_t serdes, int32_t iface)
   serdesLaneEnableParams.laneMask = PCIE_LANE_MASK;
   serdesLaneEnableParams.phyType = PCIE_PHY_TYPE;
   serdesLaneEnableParams.operatingMode = PCIE_OPERATING_MODE;
+  serdesLaneEnableParams.forceAttBoost = CSL_SERDES_FORCE_ATT_BOOST_DISABLED;
 
   for (i = 0; i < serdesLaneEnableParams.numLanes; i++)
   {

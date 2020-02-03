@@ -157,7 +157,7 @@ typedef struct dstBuf_s {
 #endif
 } dstBuf_t;
 dstBuf_t dstBuf
-#ifdef __ARM_ARCH_7A__
+#if defined(BUILD_MPU) || defined(__ARM_ARCH_7A__)
 #ifdef SOC_J721E
 __attribute__((aligned(0x1000), section(".bss:dstBufSec"))) /* GCC way of aligning */
 #else
@@ -871,7 +871,11 @@ pcieRet_e pcieSetGen2(Pcie_Handle handle)
   /* Setting PL_GEN2 */
   gen2.numFts = 0xF;
   gen2.dirSpd = dirSpd;
+#ifdef am65xx_idk
+  gen2.lnEn   = 2;
+#else
   gen2.lnEn   = 1;
+#endif
 #ifdef PCIESS1_X2
   gen2.lnEn = 2;
 #endif
@@ -932,10 +936,18 @@ pcieRet_e pcieCfgRC(Pcie_Handle handle)
 #endif
 
 #if !defined(SOC_J721E) /* for J721E move to Pciev3_setInterfaceMode */
+  if ((retVal = pcieCfgDbi (handle, 1)) != pcie_RET_OK)
+  {
+    return retVal;
+  }
   /* Set gen2/link cap */
   if ((retVal = pcieSetGen2(handle)) != pcie_RET_OK)
   {
     PCIE_logPrintf ("pcieSetGen2 failed!\n");
+    return retVal;
+  }
+  if ((retVal = pcieCfgDbi (handle, 0)) != pcie_RET_OK)
+  {
     return retVal;
   }
 #endif
@@ -1090,11 +1102,19 @@ pcieRet_e pcieCfgEP(Pcie_Handle handle)
   }
 #endif
 
-#if !defined(SOC_J721E)  /* for J721E move to Pciev3_setInterfaceMode */
+  #if !defined(SOC_J721E)  /* for J721E move to Pciev3_setInterfaceMode */
+  if ((retVal = pcieCfgDbi (handle, 1)) != pcie_RET_OK)
+  {
+    return retVal;
+  }
   /* Set gen2/link cap */
   if ((retVal = pcieSetGen2(handle)) != pcie_RET_OK)
   {
     PCIE_logPrintf ("pcieSetGen2 failed!\n");
+    return retVal;
+  }
+  if ((retVal = pcieCfgDbi (handle, 0)) != pcie_RET_OK)
+  {
     return retVal;
   }
 #endif
@@ -1642,6 +1662,42 @@ pcieRet_e pcieCheckLinkParams(Pcie_Handle handle)
   PCIE_logPrintf ("Expect gen %d speed, found gen %d speed Pass\n",
            (int)expSpeed, (int)linkStatCtrl.linkSpeed);
 #endif /* defined(SOC_J721E) */
+#if defined(SOC_AM65XX)
+  pcieRet_e retVal = pcie_RET_OK;
+  pcieRegisters_t regs;
+  pcieLinkStatCtrlReg_t linkStatCtrl;
+  int32_t expLanes = 1, expSpeed = 1;
+
+#ifdef GEN2
+  expSpeed = 2; /* expected GEN2 */
+#endif  
+#ifdef GEN3
+  expSpeed = 3; /* expected GEN3 */
+#endif
+
+#ifdef am65xx_evm
+  expLanes = 1;  /* expected 1 lane case */
+#else
+  expLanes = 2;  /* expected 2 lane case */
+#endif	
+  /* Get link status */
+  memset (&regs, 0, sizeof(regs));
+  regs.linkStatCtrl = &linkStatCtrl;
+
+  
+  PCIE_logPrintf ("Checking link speed and # of lanes\n");
+  do 
+  {
+     retVal = Pcie_readRegs (handle, pcie_LOCATION_LOCAL, &regs);
+     if (retVal != pcie_RET_OK) {
+        PCIE_logPrintf ("Failed to read linkStatCtrl: %d\n", retVal);
+     }
+  }while ((expLanes != linkStatCtrl.negotiatedLinkWd)||(expSpeed != linkStatCtrl.linkSpeed));
+  PCIE_logPrintf ("Expect %d lanes, found %d lanes Pass\n",
+             (int)expLanes, (int)linkStatCtrl.negotiatedLinkWd);
+  PCIE_logPrintf ("Expect gen %d speed, found gen %d speed Pass\n",
+           (int)expSpeed, (int)linkStatCtrl.linkSpeed);
+#endif /* defined(SOC_AM65XX) */
   return pcie_RET_OK;
 #endif
 }
@@ -2029,7 +2085,13 @@ void pcieSetLanes (Pcie_Handle handle)
  * Function: pcie main task 
  ****************************************************************************/
 uint32_t OFFSET = 0;
+#if defined (SOC_AM65XX)
+#ifdef am65xx_evm
+uint32_t base_address = 0x5600000;
+#else
 uint32_t base_address = 0x5500000;
+#endif
+#endif
 int i;
 void pcie (void)
 {
@@ -2285,6 +2347,27 @@ void pcie (void)
 
   /* Configure/limit number of lanes */
   pcieSetLanes (handle);
+#if defined(SOC_AM65XX) 
+  PCIE_logPrintf ("LINK_CAPABILITIES_REG before = 0x%x\n", *((volatile uint32_t *)(base_address+0x107C)));
+  /* Enable DBI */
+  *((volatile uint32_t *)(base_address+0x18BC)) |= 0x00000001;
+  /* Set Maximum Speed */
+#ifdef GEN3
+  *((volatile uint32_t *)(base_address+0x107C)) &= (~0x0000000F);
+  *((volatile uint32_t *)(base_address+0x107C)) |= 0x00000003;
+  *((volatile uint32_t *)(base_address+0x10A0)) &= (~0x0000000F);
+  *((volatile uint32_t *)(base_address+0x10A0)) |= 0x00000003;
+#endif  
+#ifdef GEN2
+  *((volatile uint32_t *)(base_address+0x107C)) &= (~0x0000000F);
+  *((volatile uint32_t *)(base_address+0x107C)) |= 0x00000002;
+  *((volatile uint32_t *)(base_address+0x10A0)) &= (~0x0000000F);
+  *((volatile uint32_t *)(base_address+0x10A0)) |= 0x00000002;
+#endif  
+  /* Disable DBI */
+  *((volatile uint32_t *)(base_address+0x18BC)) &= (~0x00000001); 
+  PCIE_logPrintf ("LINK_CAPABILITIES_REG after = 0x%x\n", *((volatile uint32_t *)(base_address+0x107C)));  
+#endif
 
   PCIE_logPrintf ("Starting link training...\n");
 

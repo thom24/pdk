@@ -79,11 +79,10 @@
 #include "../../edmaPktBench/edmaPktBench.h"
 #endif
 
-#if defined(SOC_AM65XX)||defined(SOC_J721E)
+#if defined(SOC_J721E)
 /* Do gen2 on all other devices -- remove or -U for GEN1 */
 #define GEN3
 #else
-/* AM6 is GEN3 */
 #define GEN2
 #endif
 
