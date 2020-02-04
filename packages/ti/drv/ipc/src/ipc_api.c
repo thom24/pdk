@@ -196,7 +196,7 @@ typedef struct RPMessage_Module_s
     /* NameEntry count */
     uint16_t  nameEntryCnt;
 
-    RPMessage_NameEntry  nameEntry[IPC_MAX_PROCS];
+    RPMessage_NameEntry  nameEntry[IPC_MAX_NAME_ENTRY];
 
 } RPMessage_Module;
 
@@ -516,7 +516,7 @@ int32_t RPMessage_announce(uint32_t remoteProcId, uint32_t endPt, const char* na
  *  \brief RPMessage_processAnnounceMsg : Handle an endpoint annoucement
  *         message from another processor
  */
-static void RPMessage_processAnnounceMsg(RPMessage_Announcement *amsg, uint32_t procId)
+static int32_t RPMessage_processAnnounceMsg(RPMessage_Announcement *amsg, uint32_t procId)
 {
     int32_t key;
     RPMessage_NameEntry *p;
@@ -546,7 +546,7 @@ static void RPMessage_processAnnounceMsg(RPMessage_Announcement *amsg, uint32_t 
 
         /* Save the annoucement for future calls to */
         /* RPMessage_peerIsReady().                 */
-        if(module.nameEntryCnt == IPC_MAX_PROCS-1)
+        if(module.nameEntryCnt == (IPC_MAX_NAME_ENTRY-1u))
         {
             pOsalPrms->unLockHIsrGate(module.gateSwi, key);
             SystemP_printf("RPMessage_processAnnounceMsg : all remote core done\n");
@@ -576,7 +576,7 @@ static void RPMessage_processAnnounceMsg(RPMessage_Announcement *amsg, uint32_t 
                 do
                 {
                     w = (RPMessage_Waiter*)elem;
-                    if( (NULL != w) && 
+                    if( (NULL != w) &&
                             (strncmp(w->name, amsg->name, SERVICENAMELEN-1) == 0) &&
                             (w->procId == procId || w->procId == RPMESSAGE_ANY))
                     {
@@ -597,6 +597,8 @@ static void RPMessage_processAnnounceMsg(RPMessage_Announcement *amsg, uint32_t 
             pOsalPrms->unLockHIsrGate(module.gateSwi, key);
         }
     }
+
+    return (rtnVal);
 }
 
 #endif /* IPC_EXCLUDE_CTRL_TASKS */
@@ -786,8 +788,13 @@ static void RPMessage_ctrlMsgTask(uint32_t* arg0, uint32_t* arg1)
 #if DEBUG_PRINT
             SystemP_printf("RPMessage_ctrlMsgTask ...CNTRLMSG_ANNOUNCE\n");
 #endif
-            RPMessage_processAnnounceMsg((RPMessage_Announcement*)amsg,
-                                         remoteProcId);
+            status = RPMessage_processAnnounceMsg(
+                (RPMessage_Announcement*)amsg, remoteProcId);
+            if(status != IPC_SOK)
+            {
+                SystemP_printf("RPMessage_processAnnounceMsg: Failed");
+                break;
+            }
         }
         else
         {
@@ -893,7 +900,7 @@ static RPMessage_Object* RPMessage_rawCreate(
         }
     }
 
-    if ((FALSE == found) || 
+    if ((FALSE == found) ||
         (params->numBufs < 1) ||
         (params->bufSize < ((params->numBufs * MSGBUFFERSIZE) + objSize)))
     {

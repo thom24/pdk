@@ -68,10 +68,15 @@ extern "C" {
 #define IPC_CTRL_ENDPOINT_ID            (53U)
 
 /**
- * \brief Size of VRing. There are 256 buffer of 512 bytes 
+ * \brief Size of VRing. There are 256 buffer of 512 bytes
  * Allocate same amount for book keeping.
  */
 #define  IPC_VRING_SIZE                 (0x20000U)
+
+/**
+ * \brief Max size of Name Entry
+ */
+#define  IPC_MAX_NAME_ENTRY             (100u)
 
 #ifdef BUILD_C7X_1
 #define  IPC_TASK_STACKSIZE  0x4000U
