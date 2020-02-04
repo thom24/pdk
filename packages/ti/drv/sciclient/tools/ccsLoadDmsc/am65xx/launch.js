@@ -96,9 +96,22 @@ function connectTargets()
     }
     // Connect targets
     dsDMSC_0.target.connect();
+    dsMCU1_0.target.connect();
+
+    // Read the Device ID to load the correct SYSFW
+    dev_id = dsMCU1_0.memory.readWord(0, 0x43000014); // CSL_WKUP_CTRL_MMR0_CFG0_BASE + CSL_WKUP_CTRL_MMR_CFG0_JTAGID
+
     print("Loading DMSC Firmware...");
     // Load the DMSC firmware
-    dsDMSC_0.memory.loadRaw(0, 0x40000, thisJsFileDirectory +"/../../../soc/sysfw/binaries/ti-sci-firmware-am65x-gp.bin", 32, false);
+    if (dev_id == 0x0BB5A02F) {
+        dsDMSC_0.memory.loadRaw(0, 0x40000, thisJsFileDirectory +"/../../../soc/sysfw/binaries/ti-sci-firmware-am65x-gp.bin", 32, false);
+    } else if (dev_id == 0x1BB5A02F) {
+        dsDMSC_0.memory.loadRaw(0, 0x40000, thisJsFileDirectory +"/../../../soc/sysfw/binaries/ti-sci-firmware-am65x_pg2-gp.bin", 32, false);
+    } else {
+        print("Invalid Device ID!");
+        return;
+    }
+
     print("DMSC Firmware Load Done...");
     // Set Stack pointer and Program Counter
     stackPointer = dsDMSC_0.memory.readWord(0, 0x40000);
