@@ -1289,15 +1289,10 @@ int main(void)
 {
     Board_initCfg boardCfg;
 
-#ifdef PDK_RAW_BOOT
     boardCfg = BOARD_INIT_MODULE_CLOCK |
                BOARD_INIT_PINMUX_CONFIG |
                BOARD_INIT_UART_STDIO |
                BOARD_INIT_ICSS_ETH_PHY;
-#else
-    boardCfg = BOARD_INIT_UART_STDIO |
-               BOARD_INIT_ICSS_ETH_PHY | BOARD_INIT_PINMUX_CONFIG;
-#endif
 
     Board_init(boardCfg);
     gPgVersion = CSL_REG32_RD(CSL_WKUP_CTRL_MMR0_CFG0_BASE + CSL_WKUP_CTRL_MMR_CFG0_JTAGID);
