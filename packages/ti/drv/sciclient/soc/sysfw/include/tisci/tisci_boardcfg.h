@@ -394,12 +394,6 @@ struct tisci_boardcfg_sec {
     struct tisci_boardcfg_extended_otp    otp_config;
 } __attribute__((__packed__));
 
-struct tisci_boardcfg_sec_pg2 {
-    struct tisci_boardcfg_abi_rev        rev;
-    struct tisci_boardcfg_proc_acl    processor_acl_list;
-    struct tisci_boardcfg_host_hierarchy    host_hierarchy;
-} __attribute__((__packed__));
-
 /**
  * \def TISCI_BOARDCFG_TRACE_DST_UART0
  * Traces to UART0 in wakeupss enabled.

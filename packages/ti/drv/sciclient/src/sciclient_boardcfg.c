@@ -66,9 +66,6 @@ const uint32_t gSciclient_boardCfgLow_pm[(SCICLIENT_BOARDCFG_PM_SIZE_IN_BYTES+3U
 const uint32_t gSciclient_boardCfgLow_rm_pg2[(SCICLIENT_BOARDCFG_RM_PG2_SIZE_IN_BYTES+3U)/4U]
     __attribute__(( aligned(128), section(".boardcfg_data") ))
     = SCICLIENT_BOARDCFG_RM_PG2;
-const uint32_t gSciclient_boardCfgLow_sec_pg2[(SCICLIENT_BOARDCFG_SECURITY_PG2_SIZE_IN_BYTES+3U)/4U]
-    __attribute__(( aligned(128), section(".boardcfg_data") ))
-    = SCICLIENT_BOARDCFG_SECURITY_PG2;
 #endif
 
 int32_t Sciclient_boardCfg(const Sciclient_BoardCfgPrms_t * pInPrms)
@@ -159,12 +156,50 @@ int32_t Sciclient_boardCfgPm(const Sciclient_BoardCfgPrms_t * pInPrms)
 int32_t Sciclient_boardCfgRm(const Sciclient_BoardCfgPrms_t * pInPrms)
 {
     int32_t retVal = CSL_PASS;
+
+#if defined(SOC_AM65XX)
+    /* Configure RM based on Device ID */
+    /* Maxwell PG1 and PG2 must be configured differently */
+    uint32_t pBoardConfigLow_rm;
+    uint16_t boardConfigSize_rm;
+
+    /* Read Device ID (which is different for each PG verison) */
+    uint32_t dev_id = HW_RD_REG32((CSL_WKUP_CTRL_MMR0_CFG0_BASE
+				   + CSL_WKUP_CTRL_MMR_CFG0_JTAGID));
+
+    if (dev_id == 0x0BB5A02F) /* PG1 */
+    {
+      pBoardConfigLow_rm = (uint32_t)gSciclient_boardCfgLow_rm;
+      boardConfigSize_rm = SCICLIENT_BOARDCFG_RM_SIZE_IN_BYTES;
+    }
+    else if (dev_id == 0x1BB5A02F) /* PG2 */
+    {
+      pBoardConfigLow_rm = (uint32_t)gSciclient_boardCfgLow_rm_pg2;
+      boardConfigSize_rm = SCICLIENT_BOARDCFG_RM_PG2_SIZE_IN_BYTES;
+    }
+    else
+    {
+      /* Should not be possible to get here. However, it would not be wise 
+       * .. to return CSL_EFAIL if we do just in case pInPrms is not NULL.
+       * .. Configure for PG1, CSL should catch the issue below. */
+      pBoardConfigLow_rm = (uint32_t)gSciclient_boardCfgLow_rm;
+      boardConfigSize_rm = SCICLIENT_BOARDCFG_RM_SIZE_IN_BYTES;
+    }
+
+    struct tisci_msg_board_config_rm_req request = {
+        .tisci_boardcfg_rmp_low  = pBoardConfigLow_rm,
+        .tisci_boardcfg_rmp_high = (uint32_t) 0x0U,
+        .tisci_boardcfg_rm_size  = (uint16_t) boardConfigSize_rm,
+        .tisci_boardcfg_rm_devgrp = (uint8_t) DEVGRP_ALL
+    };
+#else
     struct tisci_msg_board_config_rm_req request = {
         .tisci_boardcfg_rmp_low  = (uint32_t) gSciclient_boardCfgLow_rm,
         .tisci_boardcfg_rmp_high = (uint32_t) 0x0U,
-        .tisci_boardcfg_rm_size  = (uint16_t) sizeof(struct tisci_local_rm_boardcfg),
+        .tisci_boardcfg_rm_size  = (uint16_t) SCICLIENT_BOARDCFG_RM_SIZE_IN_BYTES,
         .tisci_boardcfg_rm_devgrp = (uint8_t) DEVGRP_ALL
     };
+#endif
 
     /* NULL pInPrms will retain default values */
     if (pInPrms != NULL)

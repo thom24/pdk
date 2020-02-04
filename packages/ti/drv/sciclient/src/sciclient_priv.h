@@ -175,7 +175,6 @@ extern const uint32_t gSciclient_boardCfgLow_pm[(SCICLIENT_BOARDCFG_PM_SIZE_IN_B
 
 #if defined (SOC_AM65XX)
 extern const uint32_t gSciclient_boardCfgLow_rm_pg2[(SCICLIENT_BOARDCFG_RM_PG2_SIZE_IN_BYTES+3U)/4U];
-extern const uint32_t gSciclient_boardCfgLow_sec_pg2[(SCICLIENT_BOARDCFG_SECURITY_PG2_SIZE_IN_BYTES+3U)/4U];
 #endif
 
 /* ========================================================================== */
