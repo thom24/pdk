@@ -26,41 +26,47 @@
 @REM if so we use that else we default to the working directory where the batch 
 @REM file was invoked from
 
+@REM PDK_INSTALL_PATH if it is passed as an argument.
+set pdk_path=%1
 
-@REM Find the PDK SOC and Version from the directory name
-cd ..\
-set s=%CD:\= %
-for %%a  in (%s%) do (
- set pdkdir=%%a
+set PDK_INSTALL_PATH=%CD%
+
+if defined pdk_path (
+@REM Use the PDK install path if passed as an argument
+set PDK_INSTALL_PATH=%pdk_path%
 )
 
-for /f "tokens=1,2,3,4,5 delims=/_" %%a in ("%pdkdir%") do set pdk_soc=%%b&set v1=%%c&set v2=%%d&set v3=%%e
+@REM Find the PDK_SOC/PDK_VER by going to the procsdk\pdk directory.
+cd %PDK_INSTALL_PATH%\..
+
+set s=%CD:\= %
+for %%a  in (%s%) do (
+  set pdkdir=%%a
+)
+for /f "tokens=1,2,3,4,5 delims=/_" %%a in ("%pdkdir%") do set pdksoc=%%b&set v1=%%c&set v2=%%d&set v3=%%e
 set pdkdir_ver=%v1%_%v2%_%v3%
 
+@REM Go to the SDK install directory
+cd %PDK_INSTALL_PATH%\..\..
+
 @REM Find the SDK directory to set SDK_INSTALL_PATH if it is not already set
-cd ..
-set sdkdir=%CD%
-
-@REM return to the original directory (pdk_*/packages)
-cd %pdkdir%
-cd packages
-
+set sdkdir=%CD:\=/%
 
 if not defined SDK_INSTALL_PATH (
    set SDK_INSTALL_PATH=%sdkdir%
 )
 
-if not defined PDK_INSTALL_PATH (
-   set PDK_INSTALL_PATH=%SDK_INSTALL_PATH%/%pdkdir%/packages
-)
 @REM PDK SoC and version
 if not defined PDK_SOC (
-   set PDK_SOC=%pdk_soc%
+   set PDK_SOC=%pdksoc%
 )
 
 if not defined PDK_VERSION (
     set PDK_VERSION=%pdkdir_ver%
 )
+
+@REM return to the original directory (pdk_*/packages)
+cd %PDK_INSTALL_PATH%
 
 @REM Find the XDC version from pdk/packages/ti/build/pdk_tools_path.mk
 for /f %%i IN ('findstr "XDC_VERSION=" %PDK_INSTALL_PATH%\ti\build\pdk_tools_path.mk') do set xdcver=%%i
@@ -74,6 +80,7 @@ set GMAKE_INSTALL_PATH=%GMAKE_INSTALL_PATH:\=/%
 @REM gmake install path into env PATH variable.
 set PATH=%GMAKE_INSTALL_PATH:/=\%;%PATH%
 
+set PDK_INSTALL_PATH=%PDK_INSTALL_PATH:\=/%
 @REM Define Rules.make
 set RULES_MAKE=%PDK_INSTALL_PATH%/ti/build/Rules.make
 
