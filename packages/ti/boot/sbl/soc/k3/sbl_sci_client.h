@@ -47,7 +47,11 @@ extern "C" {
 #define SBL_SYSFW_NOT_PROCESSED    (0x0U)
 #define SBL_SYSFW_CLEAR_TEXT       (0x55555555u)
 #define SBL_SYSFW_ENCRYPTED        (0xAAAAAAAAu)
+#if defined (BUILD_HS)
+#define SBL_SYSFW_MAX_SIZE         (0x82000U)
+#else
 #define SBL_SYSFW_MAX_SIZE         (0x41000U)
+#endif
 
 /**
  * @brief - SBL_SciClientInit() - function to do load DMSC firmware.

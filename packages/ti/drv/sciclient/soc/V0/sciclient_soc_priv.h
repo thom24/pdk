@@ -42,6 +42,7 @@
 #if defined (BUILD_HS)
 #include <ti/drv/sciclient/soc/V0/sciclient_defaultBoardcfg_hexhs.h>
 #include <ti/drv/sciclient/soc/V0/sciclient_defaultBoardcfg_rm_hexhs.h>
+#include <ti/drv/sciclient/soc/V0/sciclient_defaultBoardcfg_rm_pg2_hexhs.h>
 #include <ti/drv/sciclient/soc/V0/sciclient_defaultBoardcfg_pm_hexhs.h>
 #include <ti/drv/sciclient/soc/V0/sciclient_defaultBoardcfg_security_hexhs.h>
 #else

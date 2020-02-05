@@ -65,6 +65,7 @@ PACKAGE_SRCS_COMMON += soc/sysfw/binaries/ti-sci-firmware-j721e-gp.bin
 ifeq ($(BUILD_HS),yes)
 PACKAGE_SRCS_COMMON += soc/sysfw/binaries/ti-sci-firmware-am65x-hs-cert.bin
 PACKAGE_SRCS_COMMON += soc/sysfw/binaries/ti-sci-firmware-am65x-hs-enc.bin
+CFLAGS_LOCAL_COMMON += -DBUILD_HS
 endif
 
 # Core/SoC/platform specific source files and CFLAGS
