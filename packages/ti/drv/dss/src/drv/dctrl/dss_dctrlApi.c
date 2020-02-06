@@ -1037,6 +1037,7 @@ static int32_t Dss_dctrlDrvSetVpParamsIoctl(
     }
 
 #if defined (SOC_J721E)
+    if(FVID2_SOK == retVal)
     {
         Dss_DctrlDrvCommonObj *pObj;
 
@@ -2348,24 +2349,27 @@ static int32_t Dss_dctrlSetDsiParamsIoctl(Dss_DctrlDrvInstObj *instObj,
     /* Take the instance semaphore */
     (void) SemaphoreP_pend(instObj->lockSem, SemaphoreP_WAIT_FOREVER);
 
-    if (FALSE ==
-            gDss_DctrlDrvCommonObj.drvInitParams.dsiInitParams.isAvailable)
+    if(FVID2_SOK == retVal)
     {
-        GT_0trace(DssTrace,
-                  GT_ERR,
-                  "DSI Output is not supported \r\n");
-        retVal = FVID2_EBADARGS;
-    }
-    else
-    {
-        retVal = Dss_dctrlDrvSetDSIParams(&gDss_DctrlDrvInfo, dsiPrms);
+        if (FALSE ==
+                gDss_DctrlDrvCommonObj.drvInitParams.dsiInitParams.isAvailable)
+        {
+            GT_0trace(DssTrace,
+                      GT_ERR,
+                      "DSI Output is not supported \r\n");
+            retVal = FVID2_EBADARGS;
+        }
+        else
+        {
+            retVal = Dss_dctrlDrvSetDSIParams(&gDss_DctrlDrvInfo, dsiPrms);
+        }
     }
 
     if(FVID2_SOK != retVal)
     {
         GT_0trace(DssTrace,
                   GT_ERR,
-                  "Register Line Num Cb Params IOCTL failed\r\n");
+                  "Set DSI Params IOCTL failed\r\n");
     }
 
     /* Post the instance semaphore */
