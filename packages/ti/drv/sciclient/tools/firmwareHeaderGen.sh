@@ -30,8 +30,8 @@
 # OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 # EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-# Usage : For AM65XX    : ./firmwareHeaderGen.sh am65xx
-#         For AM65XX-HS : ./firmwareHeaderGen.sh am65xx-hs
+# Usage : For AM65XX    : ./firmwareHeaderGen.sh am65x
+#         For AM65XX-HS : ./firmwareHeaderGen.sh am65x-hs
 #         For J721E     : ./firmwareHeaderGen.sh j721e
 #         For J721E-HS  : ./firmwareHeaderGen.sh j721e-hs
 export RM=rm
@@ -41,10 +41,10 @@ export ECHO=echo
 export CHMOD=chmod
 export COPY=cp
 export CAT=cat
-#Default SOC is am65xx .This can be changed by using first parameter
+#Default SOC is am65x .This can be changed by using first parameter
 # as ,for example, "j721e". Assumes device type is GP by default.
-export SOC=am65xx
-export SOC_TYPE=gp
+export FW_SOC=am65x
+export FW_SOC_TYPE=gp
 
 if [[ $OS == 'Windows_NT' ]]; then
 export BIN2C_EXE=bin2c.exe
@@ -67,38 +67,43 @@ export BIN2C_GEN=$SCI_CLIENT_DIR/tools/bin2c/$BIN2C_EXE
 # PRSDK.
 if [ "$#" -gt 1 ]; then
 export ROOTDIR=$2
-export SOC=$1
+export FW_SOC=$1
 elif [ "$#" -gt 0 ]; then
 export ROOTDIR=$(cd "$SCI_CLIENT_DIR/../../.." && pwd )
-export SOC=$1
+export FW_SOC=$1
 else
 export ROOTDIR=$(cd "$SCI_CLIENT_DIR/../../.." && pwd )
 fi
 
 # Pickup correct sysfw binary
-if [[ $SOC == *"hs"* ]]; then
-  SOC_TYPE=hs-enc
-  SOC=${SOC%-hs}
+if [[ $FW_SOC == *"hs"* ]]; then
+  FW_SOC_TYPE=hs-enc
+  FW_SOC=${FW_SOC%-hs}
 fi
 
 export SCI_CLIENT_IN_SOC_DIR=$SCI_CLIENT_DIR/soc/sysfw/binaries
 
-if [ "$SOC" = "am65xx" ]; then
+if [ "$FW_SOC" = "am65x" ]; then
 export SCI_CLIENT_OUT_SOC_DIR=$SCI_CLIENT_DIR/soc/V0
-export FIRMWARE_SILICON=$SCI_CLIENT_IN_SOC_DIR/ti-sci-firmware-am65x-$SOC_TYPE.bin
-export SYSFW_SE_INNER_CERT=$SCI_CLIENT_IN_SOC_DIR/ti-sci-firmware-am65x-hs-cert.bin
 export SCICLIENT_FIRMWARE_HEADER=sciclient_firmware_V0.h
-fi
-
-if [ "$SOC" = "j721e" ]; then
-export SCI_CLIENT_OUT_SOC_DIR=$SCI_CLIENT_DIR/soc/V1
-export FIRMWARE_SILICON=$SCI_CLIENT_IN_SOC_DIR/ti-sci-firmware-j721e-$SOC_TYPE.bin
-export SYSFW_SE_INNER_CERT=$SCI_CLIENT_OUT_SOC_DIR/ti-sci-cert-j721e-$SOC_TYPE.bin
-export SCICLIENT_FIRMWARE_HEADER=sciclient_firmware_V1.h
-fi
-
-export SYSFW_SE_CUST_CERT=$SCI_CLIENT_OUT_SOC_DIR/sysfw_cert.bin
 export SYSFW_SE_SIGNED=$SCI_CLIENT_OUT_SOC_DIR/sysfw.bin
+fi
+
+if [ "$FW_SOC" = "am65x_pg2" ]; then
+export SCI_CLIENT_OUT_SOC_DIR=$SCI_CLIENT_DIR/soc/V0
+export SCICLIENT_FIRMWARE_HEADER=sciclient_firmware_V0_pg2.h
+SYSFW_SE_SIGNED=$SCI_CLIENT_OUT_SOC_DIR/sysfw_pg2.bin
+fi
+
+if [ "$FW_SOC" = "j721e" ]; then
+export SCI_CLIENT_OUT_SOC_DIR=$SCI_CLIENT_DIR/soc/V1
+export SCICLIENT_FIRMWARE_HEADER=sciclient_firmware_V1.h
+SYSFW_SE_SIGNED=$SCI_CLIENT_OUT_SOC_DIR/sysfw.bin
+fi
+
+export FIRMWARE_SILICON=$SCI_CLIENT_IN_SOC_DIR/ti-sci-firmware-$FW_SOC-$FW_SOC_TYPE.bin
+export SYSFW_SE_INNER_CERT=$SCI_CLIENT_IN_SOC_DIR/ti-sci-firmware-$FW_SOC-hs-cert.bin
+export SYSFW_SE_CUST_CERT=$SCI_CLIENT_OUT_SOC_DIR/sysfw_cert.bin
 
 # SBL_CERT_GEN may already be depending on how this is called
 export SBL_CERT_GEN="${SBL_CERT_GEN:-$ROOTDIR/ti/build/makerules/x509CertificateGen.sh}"
@@ -119,7 +124,7 @@ cd -
 $CHMOD a+x $SBL_CERT_GEN
 $CHMOD a+x $BIN2C_GEN
 
-if [ "$SOC_TYPE" == "gp" ]; then
+if [ "$FW_SOC_TYPE" == "gp" ]; then
 $ECHO "Generating the Header file for " $FIRMWARE_SILICON
 export SBL_CERT_KEY=$ROOTDIR/ti/build/makerules/rom_degenerateKey.pem
 $SBL_CERT_GEN -b $FIRMWARE_SILICON -o $SYSFW_SE_SIGNED -c DMSC_I -l 0x40000 -k $SBL_CERT_KEY
