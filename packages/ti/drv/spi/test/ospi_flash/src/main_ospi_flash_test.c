@@ -7,7 +7,7 @@
  */
 
 /*
- * Copyright (C) 2017 - 2018 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2017 - 2020 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -50,7 +50,7 @@
 #include <ti/sysbios/knl/Task.h>
 #include <ti/sysbios/BIOS.h>
 #include <ti/sysbios/utils/Load.h>
-#if defined(SOC_AM65XX) || defined(SOC_J721E)
+#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)
 #if defined (__aarch64__)
 #include <ti/sysbios/family/arm/v8a/Mmu.h>
 #endif
@@ -71,7 +71,7 @@
 #include <ti/osal/CacheP.h>
 #endif
 
-#if defined(SOC_AM65XX) || defined(SOC_J721E)
+#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)
 #include <ti/csl/src/ip/fss/V0/V0_1/cslr_fss.h>
 #include <ti/csl/src/ip/rat/V0/csl_rat.h>
 #include <ti/csl/arch/csl_arch.h>
@@ -91,6 +91,13 @@
 #include <ti/csl/soc/j721e/src/cslr_mcu_ctrl_mmr.h>
 #include <ti/csl/soc/j721e/src/cslr_mcu_pll_mmr.h>
 #include <ti/csl/soc/j721e/src/cslr_wkup_ctrl_mmr.h>
+#endif
+
+#if defined(SOC_J7200)
+#include <ti/csl/soc/j7200/src/cslr_soc_baseaddress.h>
+#include <ti/csl/soc/j7200/src/cslr_mcu_ctrl_mmr.h>
+#include <ti/csl/soc/j7200/src/cslr_mcu_pll_mmr.h>
+#include <ti/csl/soc/j7200/src/cslr_wkup_ctrl_mmr.h>
 #endif
 
 #endif
@@ -151,19 +158,17 @@ bool VerifyData(uint8_t *expData,
 #if defined(SOC_AM65XX)
 uint8_t txBuf[TEST_BUF_LEN]  __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT))) __attribute__((section(".benchmark_buffer")));
 #endif
-#if defined(SOC_J721E)
+#if defined(SOC_J721E) || defined(SOC_J7200)
 uint8_t txBuf[TEST_BUF_LEN]  __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
+uint8_t rxBuf[TEST_BUF_LEN]  __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
 #endif
 
 /* Buffer containing the received data */
 #if defined(SOC_AM65XX)
 uint8_t rxBuf[TEST_BUF_LEN]  __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT))) __attribute__((section(".benchmark_buffer")));
 #endif
-#if defined(SOC_J721E)
-uint8_t rxBuf[TEST_BUF_LEN]  __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
-#endif
 
-#if defined(SOC_AM65XX) || defined(SOC_J721E)
+#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)
 
 #ifdef SPI_DMA_ENABLE
 /*
@@ -464,7 +469,7 @@ void OSPI_configClk(uint32_t freq, bool usePHY)
 }
 #endif
 
-#if defined(SOC_J721E)
+#if defined(SOC_J721E) || defined(SOC_J7200)
 void OSPI_configClk(uint32_t freq, bool usePHY)
 {
     OSPI_v0_HwAttrs ospi_cfg;

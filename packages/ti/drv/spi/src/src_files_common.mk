@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2016 - 2018, Texas Instruments Incorporated
+# Copyright (c) 2016 - 2020, Texas Instruments Incorporated
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -30,7 +30,7 @@
 # EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 SOC_INDP_LIB_SOCS=k2h k2k k2l k2e k2g c6657 c6678 omapl137 omapl138 am571x am572x am574x  am335x am437x am65xx 
-SOC_DEP_LIB_SOCS=tda2xx tda3xx tda2px dra75x tda2ex dra72x dra78x j721e am77x
+SOC_DEP_LIB_SOCS=tda2xx tda3xx tda2px dra75x tda2ex dra72x dra78x j721e am77x j7200
 
 PACKAGE_SRCS_COMMON = makefile SPI.h MCSPI.h spi_component.mk .gitignore \
                       docs/ReleaseNotes_SPI_LLD.pdf \
@@ -76,7 +76,7 @@ ifeq ($(SOC),$(filter $(SOC),$(SOC_DEP_LIB_SOCS) ))
      PACKAGE_SRCS_COMMON += src/v1/QSPI_v1.c soc/QSPI_v1.h 
   endif
 
-  ifeq ($(SOC),$(filter $(SOC), j721e am77x))
+  ifeq ($(SOC),$(filter $(SOC), j721e am77x j7200))
     SRCDIR += src/v0
     INCDIR += src/v0
     SRCS_COMMON += OSPI_v0.c

@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2016 - 2019, Texas Instruments Incorporated
+# Copyright (c) 2016 - 2020, Texas Instruments Incorporated
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -66,10 +66,10 @@
 #
 ifeq ($(spi_component_make_include), )
 
-drvspi_BOARDLIST       = am65xx_evm am65xx_idk j721e_sim j721e_evm
-drvspi_SOCLIST         = tda2xx tda2px tda2ex tda3xx dra72x dra75x dra78x am574x am572x am571x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e
+drvspi_BOARDLIST       = am65xx_evm am65xx_idk j721e_sim j721e_evm j7200_evm
+drvspi_SOCLIST         = tda2xx tda2px tda2ex tda3xx dra72x dra75x dra78x am574x am572x am571x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j7200
 drvspi_SOCLISTLIM      = tda2xx tda2px tda2ex tda3xx dra72x dra75x dra78x am574x am572x am571x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx
-drvspi_dma_SOCLIST     = tda2xx tda2px tda2ex tda3xx dra72x dra75x dra78x am574x am572x am571x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e
+drvspi_dma_SOCLIST     = tda2xx tda2px tda2ex tda3xx dra72x dra75x dra78x am574x am572x am571x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j7200
 drvspi_am574x_CORELIST = c66x a15_0 ipu1_0
 drvspi_am572x_CORELIST = c66x a15_0 ipu1_0
 drvspi_am571x_CORELIST = c66x a15_0 ipu1_0
@@ -94,6 +94,7 @@ drvspi_dra78x_CORELIST = c66x ipu1_0
 drvspi_am65xx_CORELIST   = mpu1_0 mcu1_0
 drvspi_j721e_CORELIST     = $(DEFAULT_j721e_CORELIST)
 drvspi_j721e_CORELISTARM  = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1
+drvspi_j7200_CORELIST     = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
 ############################
 # spi package
 # List of components included under spi lib
