@@ -178,7 +178,7 @@ void Ipc_getCoreIdForTestcase(uint32_t testId, uint32_t *hostCore, uint32_t *rem
 {
     uint32_t  i;
 
-    for( i = 0; i < MAX_TEST_RESULT_CNT; i++)
+    for( i = 0; i < gTestCnt; i++)
     {
         if(gTestCases[i].testId == testId)
         {

@@ -493,7 +493,13 @@ void Virtio_isr(uint32_t* msg, uint32_t priv)
     VIRTIO_DIR direction, uint8_t status, uint32_t timeoutCnt)
 {
     int32_t retVal;
-    Virtio_Object *vq = (Virtio_Object *)Ipc_allocVirtio();
+    Virtio_Object *vq = NULL;
+
+    if (procId < IPC_MAX_PROCS)
+    {
+        vq = (Virtio_Object *)Ipc_allocVirtio();
+    }
+
     if (NULL != vq)
     {
         vq->callback       = callback;

@@ -457,6 +457,9 @@ int32_t Ipc_getIntNumRange(uint32_t coreIndex,
     req.subtype        = req_subtype[coreIndex];
     req.secondary_host = map_host_id[coreIndex];
 
+    res.range_num = 0;
+    res.range_start = 0;
+
     /* Get interrupt number range */
     retVal =  Sciclient_rmGetResourceRange(
                 &req,
