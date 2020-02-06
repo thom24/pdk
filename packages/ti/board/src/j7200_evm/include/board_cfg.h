@@ -45,14 +45,20 @@
 extern "C" {
 #endif
 
+#include <ti/board/board.h>
+#include <ti/board/src/j7200_evm/include/board_pinmux.h>
+#include <ti/csl/soc/j7200/src/cslr_wkup_ctrl_mmr.h>
+
 /* Board ID information */
-#define BOARD_INFO_CPU_NAME     "j721e"
-#define BOARD_INFO_BOARD_NAME   "j721e_evm"
+#define BOARD_INFO_CPU_NAME     "j7200"
+#define BOARD_INFO_BOARD_NAME   "j7200_evm"
 
 /* Memory sections */
 #define BOARD_DDR_START_ADDR                            (0x80000000U)
 #define BOARD_DDR_SIZE                                  (2048 * 1024 * 1024UL)
 #define BOARD_DDR_END_ADDR                              (0xFFFFFFFFU)
+/* Note with ECC enabled, all memory is not usable: 1/8 memory used for inline ECC */
+#define BOARD_DDR_ECC_END_ADDR                          (0xF1FFFFFFU)
 
 /* UART LLD instance number for primary UART port */
 #define BOARD_UART_INSTANCE                             (0U)
@@ -68,7 +74,7 @@ extern "C" {
 #define BOARD_ICSSG_UART_INSTANCE                       (4U)
 
 /* INFO and GESI board ID EEPROM address */
-#define BOARD_EXP_CON_BOARDID_EEPROM_ADDRS				(0x52U)
+#define BOARD_EXP_CON_BOARDID_EEPROM_ADDRS              (0x52U)
 
 /* I2C instance connected to EEPROM - WKUP I2C0 */
 #define BOARD_I2C_EEPROM_INSTANCE                       (0U)
@@ -148,8 +154,9 @@ extern "C" {
 #define BOARD_USER_LED2                                 (7U)
 #define BOARD_USER_LED_IOEXP_PORT                       (2U)
 
-#define BOARD_ICSS_EMAC_PORT_MAX                        (4) 
-#define BOARD_CPSW9G_EMAC_PORT_MAX                      (4) 
+#define BOARD_ICSS_EMAC_PORT_MAX                        (4)
+#define BOARD_CPSW9G_EMAC_PORT_MAX                      (4)
+#define BOARD_CPSW9G_PORT_MAX                           (8)
 
 
 /* ICSS0 EMAC PHY register address */
@@ -195,7 +202,7 @@ extern "C" {
 #define BOARD_ICSS_EMAC_STRAP_STS1_ADDR                (0x6EU)
 #define BOARD_ICSS_EMAC_STRAP_STS2_ADDR                (0x6FU)
 
-#define BOARD_SGMII_PORT_MAX							(4U)
+#define BOARD_SGMII_PORT_MAX                            (4U)
 
 /* MCU_ETH1_RESETn */
 #define BOARD_GPIO_IOEXP_MCU_EMAC_RST_PORT_NUM          (0U) /* WKUP_GPIO0_3 */
@@ -390,6 +397,16 @@ extern "C" {
 #define BOARD_MCSPI_MASTER_INSTANCE                     (1)
 #define BOARD_MCSPI_SLAVE_INSTANCE                      (1)
 
+/* LIN uart instance */
+#define BOARD_LIN_UART_INSTANCE                         (8U)
+#define BOARD_LIN_UART_BASE                             (CSL_UART8_BASE)
+
+/* Default pinmux configuration of UART Tx pin used by ROM/SBL */
+#define BOARD_MCU_UART_TX_PINMUX_VAL                    (PIN_MODE(0U) | ((PIN_PULL_DISABLE) & \
+                                                         (~PIN_PULL_DIRECTION & ~PIN_INPUT_ENABLE)))
+#define BOARD_MCU_UART_TX_PINMUX_ADDR                   (BOARD_WKUP_PMUX_CTRL_ADDR + PIN_WKUP_GPIO0_12)
+#define BOARD_MCU_UART_TX_LOCK_KICK_ADDR                (CSL_WKUP_CTRL_MMR0_CFG0_BASE + \
+                                                         CSL_WKUP_CTRL_MMR_CFG0_LOCK7_KICK0)
 
 #ifdef __cplusplus
 }

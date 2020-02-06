@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2016 - 2018, Texas Instruments Incorporated
+# Copyright (c) 2016 - 2020, Texas Instruments Incorporated
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -75,7 +75,7 @@ endif
 endif
 
 
-ifeq ($(BOARD),$(filter $(BOARD), am65xx_idk am65xx_evm j721e_sim j721e_evm))
+ifeq ($(BOARD),$(filter $(BOARD), am65xx_idk am65xx_evm j721e_sim j721e_evm j7200_evm))
 SRCDIR += src/flash/nor src/flash/nor/device src/flash/nor/ospi
 INCDIR += src/flash/nor src/flash/nor/device src/flash/nor/ospi
 SRCS_COMMON += nor_ospi.c nor.c
@@ -84,7 +84,7 @@ PACKAGE_SRCS_COMMON += src/flash/nor/ospi/nor_ospi.c src/flash/nor/ospi/nor_ospi
 PACKAGE_SRCS_COMMON += src/flash/nor/device/m35xu512.h
 endif
 
-ifeq ($(BOARD),$(filter $(BOARD), j721e_sim j721e_evm))
+ifeq ($(BOARD),$(filter $(BOARD), j721e_sim j721e_evm j7200_evm))
 SRCDIR += src/flash/nor/hyperflash
 INCDIR += src/flash/nor/hyperflash
 SRCS_COMMON += nor_hyperflash.c nor_qspi.c

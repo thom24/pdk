@@ -421,9 +421,9 @@ Board_STATUS Board_pinmuxConfig (void)
     Board_STATUS status = BOARD_SOK;
     uint32_t i2cPinmux;
 
-    Board_pinmuxUpdate(gAM7xMainPinmuxData,
+    Board_pinmuxUpdate(gJ7200_MainPinmuxData,
                        BOARD_SOC_DOMAIN_MAIN);
-    Board_pinmuxUpdate(gAM7xWkupPinmuxData,
+    Board_pinmuxUpdate(gJ7200_WkupPinmuxData,
                        BOARD_SOC_DOMAIN_WKUP);
 
     if(gBoardPinmuxCfg.autoCfg)
@@ -453,25 +453,25 @@ Board_STATUS Board_pinmuxConfig (void)
        (gBoardPinmuxCfg.gesiExp == BOARD_PINMUX_GESI_CPSW9G))
     {
         /* By default ICSSG RGMII is enabled */
-        Board_pinmuxUpdate(gAM7xMainPinmuxDataGesiIcssg,
+        Board_pinmuxUpdate(gJ7200_MainPinmuxDataGesiIcssg,
                            BOARD_SOC_DOMAIN_MAIN);
-        Board_pinmuxUpdate(gAM7xWkupPinmuxDataGesiIcssg,
+        Board_pinmuxUpdate(gJ7200_WkupPinmuxDataGesiIcssg,
                            BOARD_SOC_DOMAIN_WKUP);
 
         if(gBoardPinmuxCfg.gesiExp == BOARD_PINMUX_GESI_CPSW9G)
         {
             /* Overwrite the ICSSG RGMII muc configurations with CPSW9G RGMII */
-            Board_pinmuxUpdate(gAM7xMainPinmuxDataGesiCpsw9g,
+            Board_pinmuxUpdate(gJ7200_MainPinmuxDataGesiCpsw9g,
                                BOARD_SOC_DOMAIN_MAIN);
-            Board_pinmuxUpdate(gAM7xWkupPinmuxDataGesiCpsw9g,
+            Board_pinmuxUpdate(gJ7200_WkupPinmuxDataGesiCpsw9g,
                                BOARD_SOC_DOMAIN_WKUP);
         }
     }
     else if(gBoardPinmuxCfg.gesiExp == BOARD_PINMUX_INFO_VOUT)
     {
-        Board_pinmuxUpdate(gAM7xMainPinmuxDataInfo,
+        Board_pinmuxUpdate(gJ7200_MainPinmuxDataInfo,
                            BOARD_SOC_DOMAIN_MAIN);
-        Board_pinmuxUpdate(gAM7xWkupPinmuxDataInfo,
+        Board_pinmuxUpdate(gJ7200_WkupPinmuxDataInfo,
                            BOARD_SOC_DOMAIN_WKUP);
     }
     else
@@ -481,9 +481,18 @@ Board_STATUS Board_pinmuxConfig (void)
 
     if(gBoardPinmuxCfg.fssCfg == BOARD_PINMUX_FSS_HPB)
     {
-        Board_pinmuxUpdate(gAM7xWkupPinmuxDataHpb,
+        Board_pinmuxUpdate(gJ7200_WkupPinmuxDataHpb,
                            BOARD_SOC_DOMAIN_WKUP);
     }
 
     return status;
+}
+void Board_uartTxPinmuxConfig(void)
+{
+    /* Unlock partition lock kick */
+    HW_WR_REG32(BOARD_MCU_UART_TX_LOCK_KICK_ADDR, BOARD_KICK0_UNLOCK_VAL);
+    HW_WR_REG32(BOARD_MCU_UART_TX_LOCK_KICK_ADDR + 4U, BOARD_KICK1_UNLOCK_VAL);
+
+    /* Configure pinmux for UART Tx pin */
+    HW_WR_REG32(BOARD_MCU_UART_TX_PINMUX_ADDR, BOARD_MCU_UART_TX_PINMUX_VAL);
 }

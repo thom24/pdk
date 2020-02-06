@@ -210,22 +210,50 @@ static void Board_ethPhyExtendedRegWrite(uint32_t baseAddr,
 
 /**
  * \brief  Power down the ENET PHYs
+ * \brief  Enable/Disable PHY reset for ENET EXP boards PHY
  *
  * \return  BOARD_SOK in case of success or appropriate error code
  */
-static Board_STATUS Board_enetPhyPwrDwn(void)
+Board_STATUS Board_cpsw9gEnetExpPhyReset(bool enableFlag)
 {
     Board_IoExpCfg_t ioExpCfg;
     Board_STATUS status = BOARD_SOK;
-    bool isAlpha = 0;
 
-    /*
-     * MDIO stability issue due to ENET card is resolved in Beta HW revision.
-     * Disabling ENET card is needed only for Alpha CP boards.
-     */
-    isAlpha = Board_isAlpha(BOARD_ID_CP);
+    ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_DEVICE2_INSTANCE;
+    ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
+    ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_DEVICE2_ADDR;
+    ioExpCfg.enableIntr  = false;
+    ioExpCfg.ioExpType   = THREE_PORT_IOEXP;
+    ioExpCfg.portNum     = PORTNUM_2;
+    ioExpCfg.pinNum      = PIN_NUM_1;
 
-    if((isAlpha == TRUE) && (Board_detectBoard(BOARD_ID_ENET) == TRUE))
+    if (1U == enableFlag)
+    {
+        /* EXP_ENET_RSTz - set to 0 for PHY reset */
+        ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_LOW;
+    }
+    else
+    {
+        /* EXP_ENET_RSTz - set to 1 to take PHY out of reset (normal operation)*/
+        ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_HIGH;
+    }
+
+    status = Board_control(BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT, &ioExpCfg);
+
+    return status;
+}
+
+/**
+ * \brief  Enable/Disable COMA_MODE for ENET EXP boards PHY
+ *
+ * \return  BOARD_SOK in case of success or appropriate error code
+ */
+Board_STATUS Board_cpsw9gEnetExpComaModeCfg(bool enableFlag)
+{
+    Board_IoExpCfg_t ioExpCfg;
+    Board_STATUS status = BOARD_SOK;
+
+    if (Board_detectBoard(BOARD_ID_ENET) == TRUE)
     {
         ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_DEVICE2_INSTANCE;
         ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
@@ -234,18 +262,17 @@ static Board_STATUS Board_enetPhyPwrDwn(void)
         ioExpCfg.ioExpType   = THREE_PORT_IOEXP;
         ioExpCfg.portNum     = PORTNUM_2;
         ioExpCfg.pinNum      = PIN_NUM_0;
-        ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_HIGH;
 
-        status = Board_control(BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT, &ioExpCfg);
-
-        ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_DEVICE2_INSTANCE;
-        ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
-        ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_DEVICE2_ADDR;
-        ioExpCfg.enableIntr  = false;
-        ioExpCfg.ioExpType   = THREE_PORT_IOEXP;
-        ioExpCfg.portNum     = PORTNUM_2;
-        ioExpCfg.pinNum      = PIN_NUM_1;
-        ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_LOW;
+        if (1U == enableFlag)
+        {
+            /* ENET_EXP_PWRDN - set to 1 for device power down */
+            ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_HIGH;
+        }
+        else
+        {
+            /* ENET_EXP_PWRDN - set to 0 for normal operation */
+            ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_LOW;
+        }
 
         status = Board_control(BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT, &ioExpCfg);
     }
@@ -281,13 +308,24 @@ Board_STATUS Board_cpsw9gEthPhyConfig(void)
     uint8_t  phyAddr;
     uint32_t index;
     uint16_t regData = 0;
+    bool isAlpha = 0;
 
-    /* CPSW9G MDIO access is unstable when ENET card is connected.
-       Keeping the ENET PHY in reset as a temporary workaround */
-    status = Board_enetPhyPwrDwn();
-    if (status != BOARD_SOK)
+    /*
+     * MDIO stability issue due to ENET card is resolved in Beta HW revision.
+     * Disabling ENET card is needed only for Alpha CP boards.
+     */
+    isAlpha = Board_isAlpha(BOARD_ID_CP);
+
+    if(isAlpha == TRUE)
     {
-        return status;
+        /* CPSW9G MDIO access is unstable when ENET card is connected.
+           Keeping the ENET PHY in reset as a temporary workaround */
+        status = Board_cpsw9gEnetExpComaModeCfg(1U);
+        status = Board_cpsw9gEnetExpPhyReset(1U);
+        if (status != BOARD_SOK)
+        {
+            return status;
+        }
     }
 
     for(index = 0; index < BOARD_CPSW9G_EMAC_PORT_MAX; index++)
@@ -449,11 +487,13 @@ Board_STATUS Board_cpsw2gEthPhyConfig(void)
  *
  * \return  BOARD_SOK in case of success or appropriate error code
  */
-static Board_STATUS Board_cpsw9gEthConfig(uint32_t portNum, uint8_t mode)
+Board_STATUS Board_cpsw9gEthConfig(uint32_t portNum, uint8_t mode)
 {
     uint32_t status;
     uintptr_t modeSel;
     uint32_t regData;
+
+    Board_unlockMMR();
 
     modeSel = CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_ENET1_CTRL + (portNum * 0x04);
     regData = CSL_REG32_RD(modeSel);
@@ -469,19 +509,6 @@ static Board_STATUS Board_cpsw9gEthConfig(uint32_t portNum, uint8_t mode)
         return BOARD_FAIL;
     }
 
-    return BOARD_SOK;
-}
-
-/**
- * \brief  Board specific configurations for SGMII Ethernet
- *
- * This function takes care of configuring the internal delays for
- * SGMII Ethernet PHY
- *
- * \return  BOARD_SOK in case of success or appropriate error code
- */
-static Board_STATUS Board_sgmiiEthConfig(uint32_t portNum, uint8_t mode)
-{
     return BOARD_SOK;
 }
 
@@ -556,29 +583,31 @@ Board_STATUS Board_ethConfigCpsw9g(void)
     Board_STATUS status = BOARD_SOK;
     uint8_t portNum;
 
-    Board_unlockMMR();
+    /* On J721E EVM to use all 8 ports simultaneously, we use below configuration
+       RGMII Ports - 1,3,4,8. QSGMII ports - 2 (main),5,6,7 (sub)*/
 
     /* Configures the CPSW9G RGMII ports */
-    for(portNum=0; portNum < BOARD_CPSW9G_EMAC_PORT_MAX; portNum++)
+    for(portNum=0; portNum < BOARD_CPSW9G_PORT_MAX; portNum++)
     {
-        status = Board_cpsw9gEthConfig(portNum, RGMII);
-        if(status != BOARD_SOK)
+        if ( 0U == portNum ||
+             2U == portNum ||
+             3U == portNum ||
+             7U == portNum )
         {
-            return BOARD_FAIL;
+            status = Board_cpsw9gEthConfig(portNum, RGMII);
         }
-    }
+        else
+        {
+            if (1U == portNum)
+            {
+                status = Board_cpsw9gEthConfig(portNum, QSGMII);
+            }
+            else
+            {
+                status = Board_cpsw9gEthConfig(portNum, QSGMII_SUB);
+            }
+        }
 
-    /* Configures CPSW9G RMII port */
-    status = Board_cpsw9gEthConfig(CPSW9G_RMII_PORTNUM, RMII);
-    if(status != BOARD_SOK)
-    {
-        return BOARD_FAIL;
-    }
-
-    /* Configures SGMII Ethernet */
-    for(portNum=0; portNum<BOARD_SGMII_PORT_MAX; portNum++)
-    {
-        status = Board_sgmiiEthConfig(portNum, QSGMII);
         if(status != BOARD_SOK)
         {
             return BOARD_FAIL;

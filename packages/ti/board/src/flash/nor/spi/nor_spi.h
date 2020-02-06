@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2017, Texas Instruments Incorporated
+ * Copyright (c) 2016-2020, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -52,8 +52,8 @@ extern "C" {
 #include <ti/drv/spi/SPI.h>
 #include <ti/drv/spi/soc/SPI_soc.h>
 
-#if defined (evmK2H) || defined (evmK2K) || defined (evmK2L) || defined (evmK2E) || defined (evmK2G) || defined (iceK2G) || defined (evmC6657) || defined (evmC6678) || defined (evmOMAPL137) || defined (am65xx_evm) || defined (am65xx_idk)  || defined(j721e_sim) || defined(j721e_evm)
-#if defined (evmK2G) || defined (iceK2G) || defined (am65xx_evm) || defined (am65xx_idk)  || defined(j721e_sim) || defined(j721e_evm)
+#if defined (evmK2H) || defined (evmK2K) || defined (evmK2L) || defined (evmK2E) || defined (evmK2G) || defined (iceK2G) || defined (evmC6657) || defined (evmC6678) || defined (evmOMAPL137) || defined (am65xx_evm) || defined (am65xx_idk)  || defined(j721e_sim) || defined(j721e_evm) || defined(j7200_evm)
+#if defined (evmK2G) || defined (iceK2G) || defined (am65xx_evm) || defined (am65xx_idk)  || defined(j721e_sim) || defined(j721e_evm) || defined(j7200_evm)
 #include <ti/board/src/flash/nor/device/n25q128a13esf40f.h>
 #elif defined (evmOMAPL137)
 #include <ti/board/src/flash/nor/device/w25x32vsfig.h>

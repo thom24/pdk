@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2019, Texas Instruments Incorporated
+ * Copyright (c) 2016-2020, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -93,7 +93,7 @@ NOR_Config Nor_config[BOARD_FLASH_NOR_INTF_MAX] =
         NULL
     }
 };
-#elif defined (j721e_sim) || defined (j721e_evm)
+#elif defined (j721e_sim) || defined (j721e_evm) || defined(j7200_evm)
 NOR_Config Nor_config[BOARD_FLASH_NOR_INTF_MAX] =
 {
     {

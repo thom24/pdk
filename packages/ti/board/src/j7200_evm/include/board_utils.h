@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -60,6 +60,11 @@ extern "C" {
 #define BOARD_PSC_DEVICE_MODE_NONEXCLUSIVE    (1U)
 
 #define BOARD_MAC_ADDR_BYTES                  (6U)
+
+#define BOARD_ENET_NONE                       (0)
+#define BOARD_ENET_QSGMII                     (1U)
+#define BOARD_ENET_SGMII                      (2U)
+#define BOARD_ENET_UNKOWN                     (-1)
 
 /**
  * \brief Structure to configure the board I2C parameters
@@ -148,6 +153,21 @@ bool Board_detectBoard(uint32_t boardID);
  * \return TRUE if board revision is E2, FALSE for all other cases
  */
 bool Board_isAlpha(uint32_t boardID);
+
+/**
+ *  \brief    Function to detect ENET expansion application card type
+ *
+ *  ENET expansion connector supports QSGMII and SGMII application cards.
+ *  This function detects type of the application card connected on
+ *  ENET expansion connector.
+ *
+ *  \return
+ *            0 (BOARD_ENET_NONE)   - No board connected or invalid board ID EEPROM
+ *            1 (BOARD_ENET_QSGMII) - QSGMII board connected
+ *            2 (BOARD_ENET_SGMII)  - SGMII board connected
+ *           -1 (BOARD_ENET_UNKOWN) - Unknown board
+*/
+int32_t Board_detectEnetCard(void);
 
 /**
  * \brief Read MAC ID function

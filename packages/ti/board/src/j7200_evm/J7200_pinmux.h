@@ -16,8 +16,8 @@
  *             http://www.ti.com/
  */
 
-#ifndef _AM7XXX_PIN_MUX_H_
-#define _AM7XXX_PIN_MUX_H_
+#ifndef _J7200_PIN_MUX_H_
+#define _J7200_PIN_MUX_H_
 
 /* ========================================================================== */
 /*                             Include Files                                  */
@@ -328,19 +328,19 @@ enum pinWkupOffsets
 
 /** \brief Pinmux configuration data for the board. Auto-generated from 
            Pinmux tool. */
-extern pinmuxBoardCfg_t gAM7xMainPinmuxData[];
-extern pinmuxBoardCfg_t gAM7xWkupPinmuxData[];
-extern pinmuxBoardCfg_t gAM7xMainPinmuxDataGesiIcssg[];
-extern pinmuxBoardCfg_t gAM7xWkupPinmuxDataGesiIcssg[];
-extern pinmuxBoardCfg_t gAM7xMainPinmuxDataInfo[];
-extern pinmuxBoardCfg_t gAM7xWkupPinmuxDataInfo[];
-extern pinmuxBoardCfg_t gAM7xMainPinmuxDataGesiCpsw9g[];
-extern pinmuxBoardCfg_t gAM7xWkupPinmuxDataGesiCpsw9g[];
-extern pinmuxBoardCfg_t gAM7xMainPinmuxDataGesiCpsw9gSgmii[];
-extern pinmuxBoardCfg_t gAM7xMainPinmuxDataGesiCpsw9gQsgmii[];
-extern pinmuxBoardCfg_t gAM7xWkupPinmuxDataHpb[];
+extern pinmuxBoardCfg_t gJ7200_MainPinmuxData[];
+extern pinmuxBoardCfg_t gJ7200_WkupPinmuxData[];
+extern pinmuxBoardCfg_t gJ7200_MainPinmuxDataGesiIcssg[];
+extern pinmuxBoardCfg_t gJ7200_WkupPinmuxDataGesiIcssg[];
+extern pinmuxBoardCfg_t gJ7200_MainPinmuxDataInfo[];
+extern pinmuxBoardCfg_t gJ7200_WkupPinmuxDataInfo[];
+extern pinmuxBoardCfg_t gJ7200_MainPinmuxDataGesiCpsw9g[];
+extern pinmuxBoardCfg_t gJ7200_WkupPinmuxDataGesiCpsw9g[];
+extern pinmuxBoardCfg_t gJ7200_MainPinmuxDataGesiCpsw9gSgmii[];
+extern pinmuxBoardCfg_t gJ7200_MainPinmuxDataGesiCpsw9gQsgmii[];
+extern pinmuxBoardCfg_t gJ7200_WkupPinmuxDataHpb[];
 
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
-#endif /* _AM7XXX_PIN_MUX_H_ */
+#endif /* _J7200_PIN_MUX_H_ */

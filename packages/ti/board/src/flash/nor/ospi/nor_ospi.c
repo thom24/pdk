@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 - 2019, Texas Instruments Incorporated
+ * Copyright (c) 2018 - 2020, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,7 +36,12 @@
 #include <ti/drv/spi/soc/SPI_soc.h>
 #include <ti/csl/soc.h>
 
+#if defined (j7200_evm)
+/* SPI entry offset is at index 5 of SPI config array */
+#define SPI_CONFIG_OFFSET     (5U)
+#else
 #define SPI_CONFIG_OFFSET     CSL_MCSPI_PER_CNT
+#endif
 
 static NOR_HANDLE Nor_ospiOpen(uint32_t norIntf, uint32_t portNum, void *params);
 static void Nor_ospiClose(NOR_HANDLE handle);

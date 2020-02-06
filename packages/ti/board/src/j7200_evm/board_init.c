@@ -56,6 +56,7 @@
 #include "board_internal.h"
 #include "board_ethernet_config.h"
 #include "board_utils.h"
+#include "board_serdes_cfg.h"
 #include <ti/drv/sciclient/sciclient.h>
 
 Board_gblObj Board_obj[BOARD_I2C_PORT_CNT] = {
@@ -269,7 +270,17 @@ Board_STATUS Board_init(Board_initCfg cfg)
         return ret;
 
     if (cfg & BOARD_INIT_DDR)
-        ret = Board_DDRInit();
+    {
+        if (cfg & BOARD_INIT_DDR_ECC)
+        {
+            ret = Board_DDRInit(true);
+        }
+        else
+        {
+            ret = Board_DDRInit(false);
+        }
+    }
+
     if (ret != BOARD_SOK)
         return ret;
 
@@ -285,11 +296,6 @@ Board_STATUS Board_init(Board_initCfg cfg)
 
     if (cfg & BOARD_INIT_UART_STDIO)
         ret = Board_uartStdioInit();
-    if (ret != BOARD_SOK)
-        return ret;
-
-    if (cfg & BOARD_INIT_SERDES_PHY)
-        ret = Board_serdesCfg();
     if (ret != BOARD_SOK)
         return ret;
 
@@ -330,14 +336,12 @@ Board_STATUS Board_deinit(Board_initCfg cfg)
 
     if (cfg & BOARD_DEINIT_MODULE_CLOCK)
     {
-     //Disabling the module clock is crashing the system. Need to debug
-     //ret = Board_moduleClockDeinitMcu();
+     ret = Board_moduleClockDeinitMcu();
         if (ret != BOARD_SOK)
             return ret;
-     //Disabling the module clock is crashing the system. Need to debug
-     //ret = Board_moduleClockDeinitMain();
-        //if (ret != BOARD_SOK)
-            //return ret;
+     ret = Board_moduleClockDeinitMain();
+        if (ret != BOARD_SOK)
+            return ret;
     }
 
     if (cfg & BOARD_DEINIT_LOCK_MMR)

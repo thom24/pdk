@@ -46,7 +46,7 @@
 /* ========================================================================== */
 
 #include <ti/board/src/j7200_evm/include/pinmux.h>
-#include <ti/board/src/j7200_evm/AM7xxx_pinmux.h>
+#include <ti/board/src/j7200_evm/J7200_pinmux.h>
 #include <ti/csl/csl_types.h>
 
 #ifdef __cplusplus
@@ -89,7 +89,6 @@ extern "C" {
 #define BOARD_PINMUX_ENET_QSGMII        (0)  // Default
 #define BOARD_PINMUX_FSS_OSPI           (0)  // Default
 #define BOARD_PINMUX_FSS_HPB            (1)
-
 
 /* Structure to set the board pinmux configuration */
 typedef struct Board_PinmuxConfig_s
@@ -266,6 +265,18 @@ Board_STATUS Board_pinmuxUpdate (pinmuxBoardCfg_t *pinmuxData,
  */
 Board_STATUS Board_pinmuxConfig (void);
 
+/**
+ * \brief  Board UART Tx pinmuxing enable function
+ *
+ * Enables pinmux for the UART Tx pin of the default UART instance used
+ * by ROM/SBL.
+ *
+ * \param   void
+ *
+ * \return  void
+ *
+ */
+void Board_uartTxPinmuxConfig(void);
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

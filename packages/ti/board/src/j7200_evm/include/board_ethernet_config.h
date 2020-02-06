@@ -41,19 +41,20 @@
 #ifndef _BOARD_ETHERNET_CONFIG_H_
 #define _BOARD_ETHERNET_CONFIG_H_
 
-#include "board.h"
-#include "board_i2c_io_exp.h"
-#include "board_control.h"
+#include <ti/board/board.h>
+#include <ti/board/src/j7200_evm/include/board_i2c_io_exp.h>
+#include <ti/board/src/j7200_evm/include/board_control.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#define CPSW2G_PORTNUM  (5U)
+#define CPSW2G_PORTNUM                  (5U)
 
-#define CPSW9G_RMII_PORTNUM (7U)
+#define CPSW9G_RMII_PORTNUM             (7U)
+#define CPSW9G_SGMII_PORTNUM            (1U)
 
-#define RGMII_ID_DISABLE_MASK (0x10)
+#define RGMII_ID_DISABLE_MASK           (0x10)
 
 typedef struct Board_pruicssMdioInfo
 {
@@ -72,7 +73,9 @@ typedef enum
     RMII,
     RGMII,
     SGMII,
-    QSGMII
+    QSGMII,
+    XFI,
+    QSGMII_SUB
 }emac_mode;
 
 /**
@@ -208,6 +211,35 @@ Board_STATUS Board_ethConfigIcss(void);
  * \return  BOARD_SOK in case of success or appropriate error code
  */
 Board_STATUS Board_cpsw2gMacModeConfig(uint32_t portNum, uint8_t mode);
+
+/**
+ * \brief  Enable/Disable COMA_MODE for ENET EXP boards PHY
+ *
+ * \return  BOARD_SOK in case of success or appropriate error code
+ */
+Board_STATUS Board_cpsw9gEnetExpComaModeCfg(bool enable);
+
+/**
+ * \brief  Enable/Disable PHY reset for ENET EXP boards PHY
+ *
+ * \return  BOARD_SOK in case of success or appropriate error code
+ */
+Board_STATUS Board_cpsw9gEnetExpPhyReset(bool enableFlag);
+
+/**
+ * \brief  Configures the CPSW9G Subsytem for RGMII and RMII mode
+ *
+ * \param  portNum [IN]    EMAC port number
+ * \param  mode    [IN]    Mode selection for the specified port number
+ *                         000 - GMII
+ *                         001 - RMII
+ *                         010 - RGMII
+ *                         011 - SGMII
+ *                         100 - QSGMII
+ *
+ * \return  BOARD_SOK in case of success or appropriate error code
+ */
+Board_STATUS Board_cpsw9gEthConfig(uint32_t portNum, uint8_t mode);
 
 #ifdef __cplusplus
 }

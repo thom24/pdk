@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Texas Instruments Incorporated
+ * Copyright (c) 2019 - 2020, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -56,7 +56,7 @@ extern "C" {
 
 #include <ti/csl/csl_hyperbus.h>
 
-#if defined(j721e_evm)
+#if defined(j721e_evm) || defined(j7200_evm)
 #include <ti/board/src/flash/nor/device/s71ks512s.h>
 #endif
 
