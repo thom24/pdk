@@ -143,6 +143,18 @@ void App_configureLCD(uint32_t app_output)
     {
         if(PM_SUCCESS == status)
         {
+            status = Sciclient_pmSetModuleState(
+                TISCI_DEV_DSS_DSI0, TISCI_MSG_VALUE_DEVICE_SW_STATE_ON,
+                TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
+        }
+        if(PM_SUCCESS == status)
+        {
+            status = Sciclient_pmSetModuleState(
+                TISCI_DEV_DPHY_TX0, TISCI_MSG_VALUE_DEVICE_SW_STATE_ON,
+                TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
+        }
+        if(PM_SUCCESS == status)
+        {
             status = Sciclient_pmSetModuleState(TISCI_DEV_DSS0,
                     TISCI_MSG_VALUE_DEVICE_SW_STATE_ON,
                     TISCI_MSG_FLAG_AOP,

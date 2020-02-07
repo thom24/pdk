@@ -472,7 +472,7 @@ static int32_t dssDctrlSetDphyPowerAndReset(Dss_DctrlDSIDrvObj *dsiObj)
 
     for (cnt = 0u; cnt < dsiObj->cfgDsiTx.numOfLanes; cnt ++)
     {
-        dsiObj->cfgDsiTx.numOfLanes |= (1 << cnt);
+        dsiObj->dphyRstCfg.dphyDRstb |= (1 << cnt);
     }
 
     status = DSITX_SetDphyPwrAndRstCtrl(

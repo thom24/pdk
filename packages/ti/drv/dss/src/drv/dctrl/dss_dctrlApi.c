@@ -2334,7 +2334,7 @@ static void Dss_dctrlVpEnable(uint32_t vpId, uint32_t enable)
 static int32_t Dss_dctrlSetDsiParamsIoctl(Dss_DctrlDrvInstObj *instObj,
                                           const Dss_DctrlDsiParams *dsiPrms)
 {
-    int32_t retVal;
+    int32_t retVal = FVID2_SOK;
 
     /* Check for NULL pointers */
     GT_assert(DssTrace, (NULL != instObj));
