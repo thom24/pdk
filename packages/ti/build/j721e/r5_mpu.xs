@@ -143,7 +143,7 @@ MPU.setRegionMeta(5, 0x70000000, MPU.RegionSize_8M, attrs);
 attrs.enable = true;
 attrs.bufferable = true;
 attrs.cacheable = true;
-attrs.shareable = true;
+attrs.shareable = false;
 attrs.noExecute = false;
 attrs.accPerm = 0x3;          /* RW at PL1 & PL2 */
 attrs.tex = 1;
