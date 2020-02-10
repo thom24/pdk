@@ -66,6 +66,7 @@
 #include <ti/csl/soc.h>
 #include <ti/board/board.h>
 #include <ti/board/src/j721e_evm/include/board_control.h>
+#include <ti/board/src/j721e_evm/include/board_utils.h>
 
 /* I2C Driver Header Files */
 #include <ti/drv/i2c/I2C.h>
@@ -85,6 +86,22 @@
 /* ========================================================================== */
 
 uint32_t vaOffset = 0;
+
+#if defined(AUDIO_DC_ANALOG_TEST)
+uint32_t gAudioDCAnlogRxSerIndx[RX_NUM_SERIALIZER] = {Mcasp_SerializerNum_4,
+                                                      Mcasp_SerializerNum_5,
+                                                      Mcasp_SerializerNum_6,
+                                                      Mcasp_SerializerNum_11,
+                                                      Mcasp_SerializerNum_12,
+                                                      Mcasp_SerializerNum_13};
+uint32_t gAudioDCAnlogTxSerIndx[TX_NUM_SERIALIZER] = {Mcasp_SerializerNum_0,
+                                                      Mcasp_SerializerNum_1,
+                                                      Mcasp_SerializerNum_2,
+                                                      Mcasp_SerializerNum_7,
+                                                      Mcasp_SerializerNum_8,
+                                                      Mcasp_SerializerNum_9};
+extern Mcasp_ChanParams mcasp_chanparam[2];
+#endif /* #if defined(AUDIO_DC_ANALOG_TEST) */
 
 #if defined (SOC_J721E)
 #if defined (_TMS320C6X)
@@ -177,6 +194,33 @@ void configureAudio(void)
 	MCASP_log("\n Pinmux Config complete");
 }
 
+#if defined(AUDIO_DC_ANALOG_TEST)
+/* Configures the serializers for McASP audio daughter card Beta and above */
+void configureAudioDCSer(void)
+{
+    uint32_t index;
+
+    /* Configure the Rx serializers */
+    for (index = 0; index < RX_NUM_SERIALIZER; index++)
+    {
+        mcasp_chanparam[0].indexOfSersRequested[index] = gAudioDCAnlogRxSerIndx[index];
+    }
+
+    /* Configure the Tx serializers */
+    for (index = 0; index < TX_NUM_SERIALIZER; index++)
+    {
+        mcasp_chanparam[1].indexOfSersRequested[index] = gAudioDCAnlogTxSerIndx[index];
+    }
+
+    /* Select AUDIO_EXT_REFCLK0 input to use McASP0_AHCLKX signal, and set
+     * AUDIO_EXT_REFCLK0 as output */
+    Sciclient_pmSetModuleClkParent(TISCI_DEV_BOARD0,
+                                   TISCI_DEV_BOARD0_AUDIO_EXT_REFCLK0_IN,
+                                   TISCI_DEV_BOARD0_AUDIO_EXT_REFCLK0_IN_PARENT_MCASP_MAIN_0_MCASP_AHCLKX_POUT_0,
+                                   SCICLIENT_SERVICE_WAIT_FOREVER);
+}
+#endif /* #if defined(AUDIO_DC_ANALOG_TEST) */
+
 void McASP_Enable(void)
 {
 #if defined(AUDIO_DC_ANALOG_TEST)
@@ -186,12 +230,20 @@ void McASP_Enable(void)
                                    TISCI_DEV_MCASP0_AUX_CLK_PARENT_HSDIV3_16FFT_MAIN_4_HSDIVOUT0_CLK,
                                    SCICLIENT_SERVICE_WAIT_FOREVER);
 
-    /* Select AUDIO_EXT_REFCLK2 input to use McASP0_AHCLKX signal, and set
-     * AUDIO_EXT_REFCLK2 as output */
-    Sciclient_pmSetModuleClkParent(TISCI_DEV_BOARD0,
-                                   TISCI_DEV_BOARD0_AUDIO_EXT_REFCLK2_IN,
-                                   TISCI_DEV_BOARD0_AUDIO_EXT_REFCLK2_IN_PARENT_MCASP_MAIN_0_MCASP_AHCLKX_POUT_0,
-                                   SCICLIENT_SERVICE_WAIT_FOREVER);
+    if(Board_isAlpha(BOARD_ID_INFOTAINMENT))
+    {
+        /* Select AUDIO_EXT_REFCLK2 input to use McASP0_AHCLKX signal, and set
+         * AUDIO_EXT_REFCLK2 as output */
+        Sciclient_pmSetModuleClkParent(TISCI_DEV_BOARD0,
+                                       TISCI_DEV_BOARD0_AUDIO_EXT_REFCLK2_IN,
+                                       TISCI_DEV_BOARD0_AUDIO_EXT_REFCLK2_IN_PARENT_MCASP_MAIN_0_MCASP_AHCLKX_POUT_0,
+                                       SCICLIENT_SERVICE_WAIT_FOREVER);
+    }
+    else
+    {
+        /* Do the additional configurations for Beta board */
+        configureAudioDCSer();
+    }
 
     /* Send AUDIO_REFCLK2 OBSCLK0 for debug purposes */
     Sciclient_pmSetModuleClkParent(TISCI_DEV_BOARD0,
@@ -221,6 +273,9 @@ void McASP_Enable(void)
                                    TISCI_DEV_MCASP6_MCASP_AHCLKR_PIN_0,
                                    TISCI_DEV_MCASP6_MCASP_AHCLKR_PIN_0_PARENT_MCASP_AHCLKO_MUX_OUT1,
                                    SCICLIENT_SERVICE_WAIT_FOREVER);
+
+    /* Enable Frame sync for McASP6 which is used as REFCLK for McASP0 by default */
+    Board_pinmuxSetReg(BOARD_SOC_DOMAIN_MAIN, PIN_PRG1_PRU0_GPO6, 0x5000D);
 #else
     /* McASP10 AUXCLK selects MAIN_PLL4_HSDIV0_CLKOUT */
     Sciclient_pmSetModuleClkParent(TISCI_DEV_MCASP10,

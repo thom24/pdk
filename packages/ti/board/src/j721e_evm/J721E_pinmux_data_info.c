@@ -225,6 +225,11 @@ static pinmuxPerCfg_t gMcasp0PinCfg[] =
         PIN_PRG0_PRU0_GPO13, PIN_MODE(12) | \
         ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
     },
+    /* MyMCASP0 -> AUDIO_EXT_REFCLK0 -> AD22 */
+    {
+        PIN_PRG1_PRU0_GPO6, PIN_MODE(6) | \
+        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+    },
     {PINMUX_END}
 };
 
@@ -248,11 +253,6 @@ static pinmuxPerCfg_t gMcasp6PinCfg[] =
     /* MyMCASP6 -> MCASP6_ACLKX -> AC23 */
     {
         PIN_PRG1_PRU0_GPO0, PIN_MODE(12) | \
-        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
-    },
-    /* MyMCASP6 -> MCASP6_AFSR -> AD22 */
-    {
-        PIN_PRG1_PRU0_GPO6, PIN_MODE(13) | \
         ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
     },
     /* MyMCASP6 -> MCASP6_AFSX -> AG22 */
