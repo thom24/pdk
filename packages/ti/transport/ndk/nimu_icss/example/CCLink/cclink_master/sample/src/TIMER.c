@@ -66,6 +66,12 @@ typedef struct
 } TIMER;
 
 #ifdef __TIRTOS__
+#if !defined (__ARM_ARCH_7A__)
+struct timezone {
+    int     tz_minuteswest;
+    int     tz_dsttime;
+};
+#endif
 #elif _WIN32
 struct timezone {
     int     tz_minuteswest;
