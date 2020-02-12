@@ -44,7 +44,8 @@
 /* ========================================================================== */
 
 #if defined (SOC_AM65XX)
-#include <ti/drv/sciclient/soc/sysfw/include/am65x_pg2/tisci_resasg_types.h>
+#include <ti/drv/sciclient/soc/sysfw/include/am65x/tisci_resasg_types.h>
+#include <ti/drv/sciclient/soc/sysfw/include/am65x_sr2/tisci_resasg_types.h>
 #include <ti/drv/sciclient/soc/V0/sciclient_fmwMsgParams.h>
 #include <ti/drv/sciclient/soc/V0/sciclient_firmware_V0.h>
 #endif

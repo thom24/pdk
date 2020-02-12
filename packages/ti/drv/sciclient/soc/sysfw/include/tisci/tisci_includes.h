@@ -64,10 +64,10 @@
 #include <am65x/tisci_boardcfg_constraints.h>
 #endif
 #if defined (SOC_AM6XX)
-#include <am65x_pg2/tisci_resasg_types.h>
-#include <am65x_pg2/tisci_hosts.h>
-#include <am65x_pg2/tisci_sec_proxy.h>
-#include <am65x_pg2/tisci_boardcfg_constraints.h>
+#include <am65x_sr2/tisci_resasg_types.h>
+#include <am65x_sr2/tisci_hosts.h>
+#include <am65x_sr2/tisci_sec_proxy.h>
+#include <am65x_sr2/tisci_boardcfg_constraints.h>
 #endif
 #if defined (SOC_J721E)
 #include <j721e/tisci_resasg_types.h>

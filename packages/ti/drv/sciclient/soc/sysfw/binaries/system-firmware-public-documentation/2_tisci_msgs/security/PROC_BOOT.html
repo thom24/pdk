@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                19.12.00
+                19.12.02
               </div>
             
           
@@ -1212,8 +1212,8 @@ in the tisci_msg_proc_set_config_req structure.</td>
 <h3>Processor Specific Flags<a class="headerlink" href="#processor-specific-flags" title="Permalink to this headline">¶</a></h3>
 <p>This section lists the flags that are specific to each processor types. These
 flags apply to the <a class="reference internal" href="#proc-boot-processor-control-apis"><span class="std std-ref">processor control APIs</span></a>.</p>
-<div class="section" id="armv8-a53">
-<h4>ARMV8 A53<a class="headerlink" href="#armv8-a53" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="armv8">
+<h4>ARMV8<a class="headerlink" href="#armv8" title="Permalink to this headline">¶</a></h4>
 <ul class="simple">
 <li>config_flags_1 Fields</li>
 </ul>
@@ -1280,12 +1280,12 @@ flags apply to the <a class="reference internal" href="#proc-boot-processor-cont
 <tr class="row-even"><td>ACINACTM</td>
 <td>0</td>
 <td>N/A</td>
-<td>ACINACTM</td>
+<td>Snoop coherency interface state</td>
 </tr>
 <tr class="row-odd"><td>AINACTS</td>
 <td>1</td>
 <td>N/A</td>
-<td>ACINACTM</td>
+<td>ACP interface state</td>
 </tr>
 <tr class="row-even"><td>L2FLUSHREQ</td>
 <td>8</td>
@@ -1603,7 +1603,7 @@ we are not attempting to set</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'19.12.00',
+            VERSION:'19.12.02',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

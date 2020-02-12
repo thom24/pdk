@@ -469,8 +469,8 @@ Processor Specific Flags
 This section lists the flags that are specific to each processor types. These
 flags apply to the :ref:`processor control APIs <proc-boot-processor-control-apis>`.
 
-ARMV8 A53
-^^^^^^^^^
+ARMV8
+^^^^^
 
 -  config_flags_1 Fields
 
@@ -493,9 +493,9 @@ ARMV8 A53
 +------------+------------+---------+---------------------------------------------------------------------+
 | Flag Name  | Bit Offset | Default |                             Description                             |
 +============+============+=========+=====================================================================+
-| ACINACTM   | 0          | N/A     | ACINACTM                                                            |
+| ACINACTM   | 0          | N/A     | Snoop coherency interface state                                     |
 +------------+------------+---------+---------------------------------------------------------------------+
-| AINACTS    | 1          | N/A     | ACINACTM                                                            |
+| AINACTS    | 1          | N/A     | ACP interface state                                                 |
 +------------+------------+---------+---------------------------------------------------------------------+
 | L2FLUSHREQ | 8          | N/A     | SoC level L2 Flush Request - See L2FLUSH_DONE status for completion |
 +------------+------------+---------+---------------------------------------------------------------------+

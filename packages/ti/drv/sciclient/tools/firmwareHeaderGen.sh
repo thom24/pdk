@@ -89,10 +89,10 @@ export SCICLIENT_FIRMWARE_HEADER=sciclient_firmware_V0.h
 export SYSFW_SE_SIGNED=$SCI_CLIENT_OUT_SOC_DIR/sysfw.bin
 fi
 
-if [ "$FW_SOC" = "am65x_pg2" ]; then
+if [ "$FW_SOC" = "am65x_sr2" ]; then
 export SCI_CLIENT_OUT_SOC_DIR=$SCI_CLIENT_DIR/soc/V0
-export SCICLIENT_FIRMWARE_HEADER=sciclient_firmware_V0_pg2.h
-SYSFW_SE_SIGNED=$SCI_CLIENT_OUT_SOC_DIR/sysfw_pg2.bin
+export SCICLIENT_FIRMWARE_HEADER=sciclient_firmware_V0_sr2.h
+SYSFW_SE_SIGNED=$SCI_CLIENT_OUT_SOC_DIR/sysfw_sr2.bin
 fi
 
 if [ "$FW_SOC" = "j721e" ]; then

@@ -279,25 +279,25 @@ static int32_t App_getRevisionTest(void)
             };
 
 #if defined(SOC_AM65XX)
-            uint32_t boardCfgLow_pg2[] = SCICLIENT_BOARDCFG_RM_PG2;
-            Sciclient_BoardCfgPrms_t boardCfgPrms_rm_pg2 =
+            uint32_t boardCfgLow_sr2[] = SCICLIENT_BOARDCFG_RM_SR2;
+            Sciclient_BoardCfgPrms_t boardCfgPrms_rm_sr2 =
             {
-                .boardConfigLow = (uint32_t) boardCfgLow_pg2,
+                .boardConfigLow = (uint32_t) boardCfgLow_sr2,
                 .boardConfigHigh = 0,
-                .boardConfigSize = SCICLIENT_BOARDCFG_RM_PG2_SIZE_IN_BYTES,
+                .boardConfigSize = SCICLIENT_BOARDCFG_RM_SR2_SIZE_IN_BYTES,
                 .devGrp = DEVGRP_00
             };
 #endif
             dmtimer0_read();
 
 #if defined(SOC_AM65XX)
-            if (dev_id == 0x0BB5A02F) /* PG1 */
+            if (dev_id == 0x0BB5A02F) /* SR1 */
             {
                 status = Sciclient_boardCfgRm(&boardCfgPrms_rm);
             }
-            else if (dev_id == 0x1BB5A02F) /* PG2 */
+            else if (dev_id == 0x1BB5A02F) /* SR2 */
             {
-                status = Sciclient_boardCfgRm(&boardCfgPrms_rm_pg2);
+                status = Sciclient_boardCfgRm(&boardCfgPrms_rm_sr2);
             }
             else
             {
@@ -374,22 +374,22 @@ static int32_t App_getRevisionTest(void)
             };
 
 #if defined(SOC_AM65XX)
-            uint32_t boardCfgLow_pg2[] = SCICLIENT_BOARDCFG_RM_PG2;
-            Sciclient_BoardCfgPrms_t boardCfgPrms_rm_pg2 =
+            uint32_t boardCfgLow_sr2[] = SCICLIENT_BOARDCFG_RM_SR2;
+            Sciclient_BoardCfgPrms_t boardCfgPrms_rm_sr2 =
             {
-                .boardConfigLow = (uint32_t) boardCfgLow_pg2,
+                .boardConfigLow = (uint32_t) boardCfgLow_sr2,
                 .boardConfigHigh = 0,
-                .boardConfigSize = SCICLIENT_BOARDCFG_RM_PG2_SIZE_IN_BYTES,
+                .boardConfigSize = SCICLIENT_BOARDCFG_RM_SR2_SIZE_IN_BYTES,
                 .devGrp = DEVGRP_01
             };
 
-            if (dev_id == 0x0BB5A02F) /* PG1 */
+            if (dev_id == 0x0BB5A02F) /* SR1 */
             {
                 status = Sciclient_boardCfgRm(&boardCfgPrms_rm);
             }
-            else if (dev_id == 0x1BB5A02F) /* PG2 */
+            else if (dev_id == 0x1BB5A02F) /* SR2 */
             {
-                status = Sciclient_boardCfgRm(&boardCfgPrms_rm_pg2);
+                status = Sciclient_boardCfgRm(&boardCfgPrms_rm_sr2);
             }
             else
             {

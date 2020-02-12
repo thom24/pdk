@@ -63,9 +63,9 @@ const uint32_t gSciclient_boardCfgLow_pm[(SCICLIENT_BOARDCFG_PM_SIZE_IN_BYTES+3U
     = SCICLIENT_BOARDCFG_PM;
 
 #if defined (SOC_AM65XX)
-const uint32_t gSciclient_boardCfgLow_rm_pg2[(SCICLIENT_BOARDCFG_RM_PG2_SIZE_IN_BYTES+3U)/4U]
+const uint32_t gSciclient_boardCfgLow_rm_sr2[(SCICLIENT_BOARDCFG_RM_SR2_SIZE_IN_BYTES+3U)/4U]
     __attribute__(( aligned(128), section(".boardcfg_data") ))
-    = SCICLIENT_BOARDCFG_RM_PG2;
+    = SCICLIENT_BOARDCFG_RM_SR2;
 #endif
 
 int32_t Sciclient_boardCfg(const Sciclient_BoardCfgPrms_t * pInPrms)
@@ -159,7 +159,7 @@ int32_t Sciclient_boardCfgRm(const Sciclient_BoardCfgPrms_t * pInPrms)
 
 #if defined(SOC_AM65XX)
     /* Configure RM based on Device ID */
-    /* Maxwell PG1 and PG2 must be configured differently */
+    /* Maxwell SR1 and SR2 must be configured differently */
     uint32_t pBoardConfigLow_rm;
     uint16_t boardConfigSize_rm;
 
@@ -167,21 +167,21 @@ int32_t Sciclient_boardCfgRm(const Sciclient_BoardCfgPrms_t * pInPrms)
     uint32_t dev_id = HW_RD_REG32((CSL_WKUP_CTRL_MMR0_CFG0_BASE
 				   + CSL_WKUP_CTRL_MMR_CFG0_JTAGID));
 
-    if (dev_id == 0x0BB5A02F) /* PG1 */
+    if (dev_id == 0x0BB5A02F) /* SR1 */
     {
       pBoardConfigLow_rm = (uint32_t)gSciclient_boardCfgLow_rm;
       boardConfigSize_rm = SCICLIENT_BOARDCFG_RM_SIZE_IN_BYTES;
     }
-    else if (dev_id == 0x1BB5A02F) /* PG2 */
+    else if (dev_id == 0x1BB5A02F) /* SR2 */
     {
-      pBoardConfigLow_rm = (uint32_t)gSciclient_boardCfgLow_rm_pg2;
-      boardConfigSize_rm = SCICLIENT_BOARDCFG_RM_PG2_SIZE_IN_BYTES;
+      pBoardConfigLow_rm = (uint32_t)gSciclient_boardCfgLow_rm_sr2;
+      boardConfigSize_rm = SCICLIENT_BOARDCFG_RM_SR2_SIZE_IN_BYTES;
     }
     else
     {
       /* Should not be possible to get here. However, it would not be wise 
        * .. to return CSL_EFAIL if we do just in case pInPrms is not NULL.
-       * .. Configure for PG1, CSL should catch the issue below. */
+       * .. Configure for SR1, CSL should catch the issue below. */
       pBoardConfigLow_rm = (uint32_t)gSciclient_boardCfgLow_rm;
       boardConfigSize_rm = SCICLIENT_BOARDCFG_RM_SIZE_IN_BYTES;
     }
