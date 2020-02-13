@@ -1658,13 +1658,16 @@ static void uart_console_putc(uint8_t data)
 {
     Osal_ThreadType threadType = UART_osalGetThreadType();
 
-    if (threadType == Osal_ThreadType_Main)
+    if (uart_stdio.uart_handle != NULL)
     {
-        (void)UART_writePolling(uart_stdio.uart_handle, &data, 1u);
-    }
-    else
-    {
-        (void)UART_write(uart_stdio.uart_handle, &data, 1u);
+        if (threadType == Osal_ThreadType_Main)
+        {
+            (void)UART_writePolling(uart_stdio.uart_handle, &data, 1u);
+        }
+        else
+        {
+            (void)UART_write(uart_stdio.uart_handle, &data, 1u);
+        }
     }
 }
 
@@ -1674,7 +1677,10 @@ static void uart_console_putc(uint8_t data)
 static uint8_t uart_console_getc(void)
 {
     uint8_t temp = 0;
-    (void)UART_readPolling(uart_stdio.uart_handle, &temp, 1u);
+    if (uart_stdio.uart_handle != NULL)
+    {
+        (void)UART_readPolling(uart_stdio.uart_handle, &temp, 1u);
+    }
     return(temp);
 }
 
@@ -1689,13 +1695,17 @@ static uint8_t uart_console_getc(void)
  */
 void UART_stdioDeInit(void)
 {
-    UART_close(uart_stdio.uart_handle);
-    (void)UART_osalDeleteBlockingLock(uart_stdio.sem);
+    if (uart_stdio.uart_handle != NULL)
+    {
+        UART_close(uart_stdio.uart_handle);
+        (void)UART_osalDeleteBlockingLock(uart_stdio.sem);
 
-    /* Reset the STDIO handle to NULL so that subsequent stdioInit calls
-     * re-open the handle and re-register the interrupt.
-     */
-    uart_stdio.uart_handle = NULL;
+        /* 
+         * Reset the STDIO handle to NULL so that subsequent stdioInit calls
+         * re-open the handle and re-register the interrupt.
+         */
+        uart_stdio.uart_handle = NULL;
+    }
 }
 
 
