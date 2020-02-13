@@ -12,8 +12,8 @@ include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 
 # The below is a list of drivers which are not supported by build infrastructure (ti/build/makefile)
 NON_BUILDINFRA_RTSC_DRIVERS_LIST_DRV =  aif2 bcp cppi dfe fftc hyplnk iqn2 nwal pa qmss rm sa srio tcp3d tsip
-NON_BUILDINFRA_RTSC_DRIVERS_LIST_INSTR =  traceframework pktlib wdtimer fault_mgmt
-NON_BUILDINFRA_RTSC_DRIVERS_LIST_RUNTIME =  mmap
+NON_BUILDINFRA_RTSC_DRIVERS_LIST_INSTR =  traceframework wdtimer fault_mgmt
+NON_BUILDINFRA_RTSC_DRIVERS_LIST_RUNTIME =  mmap pktlib
 NON_BUILDINFRA_RTSC_DRIVERS_LIST_DIAG =  
 NON_BUILDINFRA_CUSTOM_DRIVERS_LIST =   starterware transportqmss transportsrio
 
