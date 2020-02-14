@@ -99,8 +99,9 @@ non-buildinfra_all non-buildinfra_pdk_libs non-buildinfra_pdk_examples:
 ### Non library/example targets
 
 env_check:
-ifeq ($(PDK_SOC),)
-	$(ECHO) "Warning !! PDK_SOC is not set!!! Please run 'help' and refer to 'Optional Arguments' in the help section"
+ifneq ($(PDK_SOC),$(filter $(PDK_SOC), $(PROCSDK_SUPPORTED_PDK_SOCS)))
+	$(ECHO) "Warning !! PDK_SOC is not set properly!!!"
+	$(ECHO) "PDK_SOC should be set to any of the values: $(PROCSDK_SUPPORTED_PDK_SOCS)" 
 endif
 
 help: env_check
@@ -142,6 +143,7 @@ help: env_check
 	$(ECHO) "PDK_SOC=<soc>  This will specify the SOC version if the pdk directory does not specify it (if git clone pdk.git is used)"
 	$(ECHO) "If pdk is git cloned, PDK_SOC should be set to the <soc> where the original PDK directory from the installer was pdk_<soc>_<version>)"
 	$(ECHO) "For example if the original PDK installed directory (which got replaced by pdk.git) was <procsdk_install_dir>/pdk_am65xx_1_0_5, PDK_SOC=am65xx"
+	$(ECHO) " PDK_SOC should be set to any of the values: $(PROCSDK_SUPPORTED_PDK_SOCS)" 
 	$(ECHO) ""
 	$(ECHO) "BUILD_PROFILE=<release/debug>  This will determine the type of libraries/examples generated (release/debug friendly). Default is 'release "
 	$(ECHO) "Valid values of LIMIT_CORES are $(LIMIT_CORES)"

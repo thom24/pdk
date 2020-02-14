@@ -16,7 +16,7 @@ MKDIR = $(UTILSPATH)mkdir
 ECHO = @$(UTILSPATH)echo
 MAKE = make
 
-include soc_lists.mk
+include soc_info.mk
 
 SOC_LIST_ALL  = $(SOC_LIST_CATALOG)
 SOC_LIST_ALL += $(SOC_LIST_INFOTAINMENT)
@@ -73,6 +73,8 @@ loc-install-pdk-build-common:
 	install -m 0755 comp_top.mk $(PDK_INSTALL_DIR)/packages/ti/build
 	install -m 0755 comp_paths.mk $(PDK_INSTALL_DIR)/packages/ti/build
 	install -m 0755 pdk_tools_path.mk $(PDK_INSTALL_DIR)/packages/ti/build
+	install -m 0644 procsdk_defs.mk $(PDK_INSTALL_DIR)/packages/ti/build
+	install -m 0755 soc_info.mk $(PDK_INSTALL_DIR)/packages/ti/build
 	install -m 0644 pdk_build_ver.h $(PDK_INSTALL_DIR)/packages/ti/build
 	install -m 0755 makerules/build_config.mk $(PDK_INSTALL_DIR)/packages/ti/build/makerules
 	install -m 0755 makerules/common.mk $(PDK_INSTALL_DIR)/packages/ti/build/makerules
