@@ -439,11 +439,6 @@ int main()
  */
 int main(void)
 {
- #if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)
-    Sciclient_ConfigPrms_t  sciClientCfg;
-    Sciclient_configPrmsInit(&sciClientCfg);
-    Sciclient_init(&sciClientCfg);
-#endif
     /* Call board init functions */
     Gpio_appC7xPreInit();
     Board_initGPIO();
