@@ -71,8 +71,10 @@
 #
 ifeq ($(pdk_component_make_include), )
 
+include $(PDK_INSTALL_PATH)/ti/build/soc_info.mk
+
 # The below defines the DEFAULT_$(SOC)_CORELIST which are used by various components for an SOC
-# This is derived from the CORELIST_$(SOC) defined in platform.mk which encompasses all the available cores for a SOC.
+# This is derived from the CORELIST_$(SOC) defined in soc_info.mk which encompasses all the available cores for a SOC.
 # The DEFAULT_$(SOC)_CORELIST is a subset of all the cores and is used for building components.
 
 # Filter out PRU cores from default cores list for building components

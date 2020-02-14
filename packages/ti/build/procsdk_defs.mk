@@ -10,7 +10,9 @@ include $(PDK_INSTALL_PATH)/ti/build/soc_info.mk
 # Below are the supported PDK_SOCs in Processor SDK
 export PROCSDK_SUPPORTED_PDK_SOCS = am335x am437x am437x-hs am57xx omapl137 omapl138 k2hk k2e k2l k2g k2g-hs c665x c667x am65xx am65xx-hs j7
 
-#if PDK_SOC is specified , derive LIMIT_SOCS from there (if LIMIT_SOCS not defined)
+#if PDK_SOC is specified , derive LIMIT_SOCS/LIMIT_BOARDS/LIMIT_CORES from it (if not specified explicitly)
+ifneq ($(PDK_SOC),)
+#Check if PDK_SOC exists within the supported SOCs 
 ifeq ($(PDK_SOC),$(filter $(PDK_SOC), $(PROCSDK_SUPPORTED_PDK_SOCS)))
 
 LIMIT_CORES_am335x    = $(CORE_LIST_am335x)
@@ -71,4 +73,5 @@ LIMIT_BOARDS_am57xx    = $(BOARD_LIST_am571x) $(BOARD_LIST_am572x) $(BOARD_LIST_
 
 export LIMIT_BOARDS ?= $(LIMIT_BOARDS_$(PDK_SOC))
 
+endif
 endif

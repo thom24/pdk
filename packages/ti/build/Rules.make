@@ -58,6 +58,8 @@ include $(PDK_INSTALL_PATH)/ti/build/procsdk_defs.mk
 #if LIMIT_BOARDS is defined, BOARD from the LIMIT_BOARDS
 ifneq ($(LIMIT_BOARDS),)
 BOARD ?= $(firstword $(LIMIT_BOARDS))
+SOC ?= $(firstword $(LIMIT_SOCS))
+CORE ?= $(firstword $(LIMIT_CORES))
 else	
 #if LIMIT_BOARDS is not defined, default BOARD and SOC to the below
 export BOARD ?= j721e_evm

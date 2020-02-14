@@ -176,6 +176,7 @@ board-diag_clean:
 # Building starterware 
 STARTERWARE_PLATFORM_am335x = "am335x-evm"
 STARTERWARE_PLATFORM_am437x = "am43xx-evm"
+STARTERWARE_PLATFORM_am437x-hs = "am43xx-evm"
 
 starterware:
 	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/starterware all_profiles -j1 PLATFORM=$(STARTERWARE_PLATFORM_$(PDK_SOC))
