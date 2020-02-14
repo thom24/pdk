@@ -1,5 +1,5 @@
 /*
- *   Copyright (c) Texas Instruments Incorporated 2019
+ *   Copyright (c) Texas Instruments Incorporated 2019 - 2020
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -67,7 +67,7 @@
 /**< Number of I2C channels */
 #define APP_I2C_INST_MAX                                    ((uint32_t)4U)
 #endif
-#if defined (SOC_J721E) || defined (SOC_AM77X)
+#if defined (SOC_J721E) || defined (SOC_AM77X) || defined (SOC_J7200)
 /**< Number of I2C channels */
 #define APP_I2C_INST_MAX                                    ((uint32_t)9U)
 #endif
@@ -143,7 +143,7 @@ static const char gAppI2cInstNames[APP_I2C_INST_MAX][50U] =
     {" \r\n 2: MCU Domain Inst0"},
     {" \r\n 3: MCU Domain Inst1"},
 #endif
-#if defined (SOC_J721E) || defined (SOC_AM77X)
+#if defined (SOC_J721E) || defined (SOC_AM77X) || defined (SOC_J7200)
     {" \r\n 0: Main Domain Inst0"},
     {" \r\n 1: Main Domain Inst1"},
     {" \r\n 2: Main Domain Inst2"},
@@ -164,7 +164,7 @@ static const uint32_t gAppI2cInstIds[APP_I2C_INST_MAX] =
     0U,
     1U,
 #endif
-#if defined (SOC_J721E) || defined (SOC_AM77X)
+#if defined (SOC_J721E) || defined (SOC_AM77X) || (SOC_J7200)
     0U,
     1U,
     2U,
@@ -202,7 +202,7 @@ uint32_t gAddrDataMode = 0U;
 #if defined (SOC_AM65XX)
 uint32_t gCurrInst = 1U;
 #endif
-#if defined (SOC_J721E)
+#if defined (SOC_J721E) || defined (SOC_J7200)
 uint32_t gCurrInst = 6U;
 #endif
 char gInputStr[APP_I2C_MAX_IN_STRING];

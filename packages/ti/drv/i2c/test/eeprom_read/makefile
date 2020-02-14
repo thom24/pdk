@@ -18,7 +18,7 @@ ifeq ($(SOC),$(filter $(SOC), am65xx))
 XDC_CFG_FILE_mpu1_0 = ./$(SOC)/i2cEepromTest_$(ISA).cfg
 XDC_CFG_FILE_mcu1_0 = ./$(SOC)/i2cEepromTest_r5.cfg
 endif
-ifeq ($(SOC),$(filter $(SOC), j721e))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200))
 XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
 endif
 endif
@@ -46,6 +46,12 @@ INCDIR = . src
 # Common source files across all platforms and cores
 SRCS_COMMON += main_test.c
 
+ifeq ($(SOC),$(filter $(SOC),j721e j7200))
+SRCDIR += $(PDK_INSTALL_PATH)/ti/build/unit-test/Unity/src $(PDK_INSTALL_PATH)/ti/build/unit-test/config
+INCDIR += $(PDK_INSTALL_PATH)/ti/build/unit-test/Unity/src $(PDK_INSTALL_PATH)/ti/build/unit-test/config
+SRCS_COMMON += unity_config.c unity.c
+endif
+
 # List all the external components/interfaces, whose interface header files
 # need to be included for this component
 INCLUDE_EXTERNAL_INTERFACES = pdk $(EXTERNAL_INTERFACES)
@@ -54,7 +60,7 @@ INCLUDE_EXTERNAL_INTERFACES = pdk $(EXTERNAL_INTERFACES)
 #COMP_LIST_COMMON  = i2c_profile uart board csl profiling
 COMP_LIST_COMMON  += i2c uart board csl
 
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e))
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
 COMP_LIST_COMMON += sciclient
 endif
 
@@ -63,6 +69,9 @@ CFLAGS_I2C_UT =
 PACKAGE_SRCS_COMMON = src makefile $(SOC)
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_I2C_UT) $(CFLAGS_OS_DEFINES)
 
+ifeq ($(SOC),$(filter $(SOC), j721e j7200))
+CFLAGS_LOCAL_COMMON += -DUNITY_INCLUDE_CONFIG_H 
+endif
 # Core/SoC/platform specific source files and CFLAGS
 # Example:
 #   SRCS_<core/SoC/platform-name> =
