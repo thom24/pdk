@@ -412,7 +412,7 @@ void SBL_SetupCoreMem(uint32_t core_id)
         case MCU1_CPU1_ID:
         case MCU2_CPU1_ID:
         case MCU3_CPU1_ID:
-            SBL_log(SBL_LOG_MAX, "Switching core id %d, proc_id 0x%x to split mode %d... \n", core_id-1, sbl_slave_core_info[core_id-1].tisci_proc_id);
+            SBL_log(SBL_LOG_MAX, "Switching core id %d, proc_id 0x%x to split mode... \n", core_id-1, sbl_slave_core_info[core_id-1].tisci_proc_id);
             /* Image for second MCU core present, disable lock step for the cluster */
             SBL_ConfigMcuLockStep(SBL_DISABLE_MCU_LOCKSTEP, &(sbl_slave_core_info[core_id-1]));
             /* DOnt break, fall through for enabling TCMs */
