@@ -34,12 +34,25 @@
 #include <ti/csl/csl_lpddr.h>
 #include "board_ddr.h"
 
+#define xstr(s) #s
+
+#define  CTL_SHIFT 11
+#define  PHY_SHIFT 11
+#define  PI_SHIFT 10
+
+#define TH_OFFSET_FROM_REG(REG, SHIFT, offset) do {\
+    volatile char *i, *pStr= xstr(REG); offset = 0;\
+    for (i = &pStr[SHIFT]; *i != '\0'; ++i) {\
+        offset = offset * 10 + (*i - '0'); }\
+    } while (0)
+
 #ifdef BUILD_MCU1_0
 typedef struct Board_DDRThermalMgmtInstance_s
 {
     LPDDR4_Config      boardDDRCfg;
     LPDDR4_PrivateData boardRuntimeDDRPd;
     uint32_t           boardDDRInitRefreshRate[LPDDR4_FSP_2+1];
+    uint32_t           boardDDRTrasMax[LPDDR4_FSP_2+1];
     HwiP_Handle        boardTempInterruptHandle;
     Board_thermalMgmtCallbackFunction_t appCallBackFunction;
 } Board_DDRThermalMgmtInstance_t;
@@ -93,13 +106,15 @@ static const LPDDR4_CtlFspNum gBoardDDRFSPNum[LPDDR4_FSP_2+1] =
 void Board_updateRefreshRate(const LPDDR4_CtlFspNum fsNum, uint32_t refreshMultFactor)
 {
     uint32_t refreshRate;
+    uint32_t trasMax;
     uint32_t status;
 
     /* Calculate refresh rate */
     refreshRate = (gBoard_DDRThermalMgmtInstance.boardDDRInitRefreshRate[fsNum] * refreshMultFactor) >> 3U;
+    trasMax = (gBoard_DDRThermalMgmtInstance.boardDDRTrasMax[fsNum] * refreshMultFactor) >> 3U;
 
     /* Take action to update Refresh rate */
-    status = LPDDR4_SetRefreshRate(&(gBoard_DDRThermalMgmtInstance.boardRuntimeDDRPd), &fsNum, &refreshRate);
+    status = LPDDR4_SetRefreshRate(&(gBoard_DDRThermalMgmtInstance.boardRuntimeDDRPd), &fsNum, &refreshRate, &trasMax);
 
     if (status > 0U)
     {
@@ -141,6 +156,7 @@ void Board_DDRInterruptHandler(uintptr_t arg)
     uint32_t regValue;
     uint32_t status;
     uint32_t tempCheckRefreshRateIndex;
+    uint32_t offset = 0U;
     
     /* Get DDR interrupt status to check on thermal events */
     LPDDR4_CheckCtlInterrupt (&(gBoard_DDRThermalMgmtInstance.boardRuntimeDDRPd), LPDDR4_TEMP_CHANGE, &irqStatus);
@@ -150,8 +166,9 @@ void Board_DDRInterruptHandler(uintptr_t arg)
          * Decide on refresh rate
          */
         /* Read Temp check register */
+        TH_OFFSET_FROM_REG(LPDDR4__AUTO_TEMPCHK_VAL_0__REG, CTL_SHIFT, offset);
         status = LPDDR4_ReadReg(&(gBoard_DDRThermalMgmtInstance.boardRuntimeDDRPd), LPDDR4_CTL_REGS,
-                                LPDDR4__AUTO_TEMPCHK_VAL_0__REG_OFFSET,
+                                offset,
                                 &regValue);
         if (status == 0U)
         {
@@ -246,7 +263,8 @@ Board_STATUS Board_DDRTempMonitoringInit(Board_thermalMgmtCallbackFunction_t cal
         for (fspIndex = 0; fspIndex <= LPDDR4_FSP_2; fspIndex++)
         {
             lpddrStatus = LPDDR4_GetRefreshRate(&(gBoard_DDRThermalMgmtInstance.boardRuntimeDDRPd), &gBoardDDRFSPNum[fspIndex],
-                                                &(gBoard_DDRThermalMgmtInstance.boardDDRInitRefreshRate[gBoardDDRFSPNum[fspIndex]]));
+                                                &(gBoard_DDRThermalMgmtInstance.boardDDRInitRefreshRate[gBoardDDRFSPNum[fspIndex]]),
+                                                &(gBoard_DDRThermalMgmtInstance.boardDDRTrasMax[gBoardDDRFSPNum[fspIndex]]));
             if (lpddrStatus > 0U)
             {
                 BOARD_DEBUG_LOG("LPDDR4_GetRefreshRate: FAIL\n");

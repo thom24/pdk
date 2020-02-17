@@ -40,6 +40,7 @@ typedef struct Board_DDRThermalMgmtInstance_s
     LPDDR4_Config      boardDDRCfg;
     LPDDR4_PrivateData boardRuntimeDDRPd;
     uint32_t           boardDDRInitRefreshRate[LPDDR4_FSP_2+1];
+    uint32_t           boardDDRTrasMax[LPDDR4_FSP_2+1];
     HwiP_Handle        boardTempInterruptHandle;
     Board_thermalMgmtCallbackFunction_t appCallBackFunction;
 } Board_DDRThermalMgmtInstance_t;
@@ -93,13 +94,15 @@ static const LPDDR4_CtlFspNum gBoardDDRFSPNum[LPDDR4_FSP_2+1] =
 void Board_updateRefreshRate(const LPDDR4_CtlFspNum fsNum, uint32_t refreshMultFactor)
 {
     uint32_t refreshRate;
+    uint32_t trasMax;
     uint32_t status;
 
     /* Calculate refresh rate */
     refreshRate = (gBoard_DDRThermalMgmtInstance.boardDDRInitRefreshRate[fsNum] * refreshMultFactor) >> 3U;
+    trasMax = (gBoard_DDRThermalMgmtInstance.boardDDRTrasMax[fsNum] * refreshMultFactor) >> 3U;
 
     /* Take action to update Refresh rate */
-    status = LPDDR4_SetRefreshRate(&(gBoard_DDRThermalMgmtInstance.boardRuntimeDDRPd), &fsNum, &refreshRate);
+    status = LPDDR4_SetRefreshRate(&(gBoard_DDRThermalMgmtInstance.boardRuntimeDDRPd), &fsNum, &refreshRate, &trasMax);
 
     if (status > 0U)
     {
@@ -246,7 +249,8 @@ Board_STATUS Board_DDRTempMonitoringInit(Board_thermalMgmtCallbackFunction_t cal
         for (fspIndex = 0; fspIndex <= LPDDR4_FSP_2; fspIndex++)
         {
             lpddrStatus = LPDDR4_GetRefreshRate(&(gBoard_DDRThermalMgmtInstance.boardRuntimeDDRPd), &gBoardDDRFSPNum[fspIndex],
-                                                &(gBoard_DDRThermalMgmtInstance.boardDDRInitRefreshRate[gBoardDDRFSPNum[fspIndex]]));
+                                                &(gBoard_DDRThermalMgmtInstance.boardDDRInitRefreshRate[gBoardDDRFSPNum[fspIndex]]),
+                                                &(gBoard_DDRThermalMgmtInstance.boardDDRTrasMax[gBoardDDRFSPNum[fspIndex]]));
             if (lpddrStatus > 0U)
             {
                 BOARD_DEBUG_LOG("LPDDR4_GetRefreshRate: FAIL\n");
