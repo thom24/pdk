@@ -182,34 +182,6 @@ int32_t Sciclient_rmRingCfg(const struct tisci_msg_rm_ring_cfg_req *req,
                             uint32_t timeout);
 
 /**
- *  \brief Get Navigator Subsystem ring's non-real-time register configuration
- *
- *  Gets the configuration of the non-real-time register fields of a ring.  The
- *  host, or a supervisor of the host, who owns the ring must be the requesting
- *  host.  The values of the non-real-time registers are returned in
- *  #tisci_msg_rm_ring_get_cfg_resp.  The reset_cfg parameter is used to
- *  request either the existing non-real-time register values or the hardware
- *  reset values for the ring's register fields.
- *
- *  \n<b>Message</b>:    #TISCI_MSG_RM_RING_GET_CFG
- *  \n<b>Request</b>:    #tisci_msg_rm_ring_get_cfg_req
- *  \n<b>Response</b>:   #tisci_msg_rm_ring_get_cfg_resp
- *
- *  \param  req             Pointer to Ring Accelerator get config payload
- *
- *  \param  resp            Pointer to Ring Accelerator get config response
- *                          payload
- *
- *  \param  timeout         Gives a sense of how long to wait for the operation.
- *                          Refer \ref Sciclient_ServiceOperationTimeout.
- *
- *  \return CSL_PASS on success, else failure
- */
-int32_t Sciclient_rmRingGetCfg(const struct tisci_msg_rm_ring_get_cfg_req *req,
-                               struct tisci_msg_rm_ring_get_cfg_resp *resp,
-                               uint32_t timeout);
-
-/**
  *  \brief Configures a Navigator Subsystem ring monitor
  *
  *  Configures the non-real-time registers of a Navigator Subsystem ring
@@ -266,38 +238,6 @@ int32_t Sciclient_rmUdmapGcfgCfg(
             uint32_t timeout);
 
 /**
- *  \brief Get Navigator Subsystem UDMAP GCFG non-real-time
- *  register configuration
- *
- *  Get Navigator Subsystem UDMAP global configuration's non-real-time
- *  register configuration. Gets the configuration of the non-real-time register
- *  fields of a UDMAP's global configuration.  The host, or a supervisor of the
- *  host, who owns the gcfg region  must be the requesting host.  The values of
- *  the non-real-time registers are returned in
- *  \ref tisci_msg_rm_udmap_gcfg_get_cfg_resp.  The reset_cfg parameter is used
- *  to request either the existing non-real-time register values or the hardware
- *  reset values for the UDMAP's global configuration register fields.
- *
- *  \n<b>Message</b>:    #TISCI_MSG_RM_UDMAP_GCFG_GET_CFG
- *  \n<b>Request</b>:    #tisci_msg_rm_udmap_gcfg_get_cfg_req
- *  \n<b>Response</b>:   #tisci_msg_rm_udmap_gcfg_get_cfg_resp
- *
- *  \param  req             Pointer to UDMAP GCFG get config payload
- *
- *  \param  resp            Pointer to UDMAP GCFG get config response
- *                          payload
- *
- *  \param  timeout         Gives a sense of how long to wait for the operation.
- *                          Refer \ref Sciclient_ServiceOperationTimeout.
- *
- *  \return CSL_PASS on success, else failure
- */
-int32_t Sciclient_rmUdmapGcfgGetCfg(
-            const struct tisci_msg_rm_udmap_gcfg_get_cfg_req *req,
-            struct tisci_msg_rm_udmap_gcfg_get_cfg_resp *resp,
-            uint32_t timeout);
-
-/**
  *  \brief Configures a Navigator Subsystem UDMAP transmit channel
  *
  *  Configures the non-real-time registers of a Navigator Subsystem UDMAP
@@ -325,37 +265,6 @@ int32_t Sciclient_rmUdmapTxChCfg(
             uint32_t timeout);
 
 /**
- *  \brief Get Navigator Subsystem UDMAP transmit channel's non-real-time
- *  register configuration
- *
- *  Gets the configuration of the non-real-time register fields of a UDMAP
- *  transmit channel.  The host, or a supervisor of the host, who owns the
- *  channel must be the requesting host.  The values of the non-real-time
- *  registers are returned in #tisci_msg_rm_udmap_tx_ch_get_cfg_resp.
- *  The reset_cfg parameter is used to request either the existing
- *  non-real-time register values or the hardware reset values for the UDMAP
- *  transmit channel's register fields.
- *
- *  \n<b>Message</b>:    #TISCI_MSG_RM_UDMAP_TX_CH_GET_CFG
- *  \n<b>Request</b>:    #tisci_msg_rm_udmap_tx_ch_get_cfg_req
- *  \n<b>Response</b>:   #tisci_msg_rm_udmap_tx_ch_get_cfg_resp
- *
- *  \param  req             Pointer to UDMAP Tx channel get config payload
- *
- *  \param  resp            Pointer to UDMAP Tx channel get config response
- *                          payload
- *
- *  \param  timeout         Gives a sense of how long to wait for the operation.
- *                          Refer \ref Sciclient_ServiceOperationTimeout.
- *
- *  \return CSL_PASS on success, else failure
- */
-int32_t Sciclient_rmUdmapTxChGetCfg(
-            const struct tisci_msg_rm_udmap_tx_ch_get_cfg_req *req,
-            struct tisci_msg_rm_udmap_tx_ch_get_cfg_resp *resp,
-            uint32_t timeout);
-
-/**
  *  \brief Configures a Navigator Subsystem UDMAP receive channel
  *
  *  Configures the non-real-time registers of a Navigator Subsystem UDMAP
@@ -380,37 +289,6 @@ int32_t Sciclient_rmUdmapTxChGetCfg(
 int32_t Sciclient_rmUdmapRxChCfg(
             const struct tisci_msg_rm_udmap_rx_ch_cfg_req *req,
             const struct tisci_msg_rm_udmap_rx_ch_cfg_resp *resp,
-            uint32_t timeout);
-
-/**
- *  \brief Get Navigator Subsystem UDMAP receive channel's non-real-time
- *  register configuration
- *
- *  Gets the configuration of the non-real-time register fields of a UDMAP
- *  receive channel.  The host, or a supervisor of the host, who owns the
- *  channel must be the requesting host.  The values of the non-real-time
- *  registers are returned in #tisci_msg_rm_udmap_rx_ch_get_cfg_resp.
- *  The reset_cfg parameter is used to request either the existing
- *  non-real-time register values or the hardware reset values for the UDMAP
- *  receive channel's register fields.
- *
- *  \n<b>Message</b>:    #TISCI_MSG_RM_UDMAP_RX_CH_GET_CFG
- *  \n<b>Request</b>:    #tisci_msg_rm_udmap_rx_ch_get_cfg_req
- *  \n<b>Response</b>:   #tisci_msg_rm_udmap_rx_ch_get_cfg_resp
- *
- *  \param  req             Pointer to UDMAP Rx channel get config payload
- *
- *  \param  resp            Pointer to UDMAP Rx channel get config response
- *                          payload
- *
- *  \param  timeout         Gives a sense of how long to wait for the operation.
- *                          Refer \ref Sciclient_ServiceOperationTimeout.
- *
- *  \return CSL_PASS on success, else failure
- */
-int32_t Sciclient_rmUdmapRxChGetCfg(
-            const struct tisci_msg_rm_udmap_rx_ch_get_cfg_req *req,
-            struct tisci_msg_rm_udmap_rx_ch_get_cfg_resp *resp,
             uint32_t timeout);
 
 /**
@@ -449,32 +327,6 @@ int32_t Sciclient_rmUdmapFlowCfg(
             uint32_t timeout);
 
 /**
- *  \brief UDMAP receive flow get configuration response message
- *
- *  Response received by host processor after RM has handled
- *  #tisci_msg_rm_udmap_flow_get_cfg_req.  The response contains
- *  the receive flow's register values.
- *
- *  \n<b>Message</b>:    #TISCI_MSG_RM_UDMAP_FLOW_GET_CFG
- *  \n<b>Request</b>:    #tisci_msg_rm_udmap_flow_get_cfg_req
- *  \n<b>Response</b>:   #tisci_msg_rm_udmap_flow_get_cfg_resp
- *
- *  \param  req             Pointer to UDMAP Rx flow get config payload
- *
- *  \param  resp            Pointer to UDMAP Rx flow get config response
- *                          payload
- *
- *  \param  timeout         Gives a sense of how long to wait for the operation.
- *                          Refer \ref Sciclient_ServiceOperationTimeout.
- *
- *  \return CSL_PASS on success, else failure
- */
-int32_t Sciclient_rmUdmapFlowGetCfg(
-            const struct tisci_msg_rm_udmap_flow_get_cfg_req *req,
-            struct tisci_msg_rm_udmap_flow_get_cfg_resp *resp,
-            uint32_t timeout);
-
-/**
  *  \brief Configures a Navigator Subsystem UDMAP receive flow's size threshold
  *         fields.
  *
@@ -505,39 +357,6 @@ int32_t Sciclient_rmUdmapFlowGetCfg(
 int32_t Sciclient_rmUdmapFlowSizeThreshCfg(
             const struct tisci_msg_rm_udmap_flow_size_thresh_cfg_req *req,
             const struct tisci_msg_rm_udmap_flow_size_thresh_cfg_resp *resp,
-            uint32_t timeout);
-
-/**
- *  \brief Get Navigator Subsystem UDMAP receive flow's non-real-time
- *  size threshold based queue routing register configuration
- *
- *  Gets the configuration of the non-real-time register fields of a UDMAP
- *  receive flow's size threshold routing registers.  The host, or a supervisor
- *  of the host, who owns the flow must be the requesting host.  The values of
- *  the non-real-time registers are returned in
- *  #tisci_msg_rm_udmap_flow_size_thresh_get_cfg_resp.
- *  The reset_cfg parameter is used to request either the existing
- *  non-real-time register values or the hardware reset values for the UDMAP
- *  flow's register fields.
- *
- *  \n<b>Message</b>:    #TISCI_MSG_RM_UDMAP_FLOW_SIZE_THRESH_GET_CFG
- *  \n<b>Request</b>:    #tisci_msg_rm_udmap_flow_size_thresh_get_cfg_req
- *  \n<b>Response</b>:   #tisci_msg_rm_udmap_flow_size_thresh_get_cfg_resp
- *
- *  \param  req             Pointer to UDMAP Rx flow size threshold based free
- *                          queue routing get config payload
- *
- *  \param  resp            Pointer to UDMAP Rx flow size threshold based free
- *                          queue routing get config response payload
- *
- *  \param  timeout         Gives a sense of how long to wait for the operation.
- *                          Refer \ref Sciclient_ServiceOperationTimeout.
- *
- *  \return CSL_PASS on success, else failure
- */
-int32_t Sciclient_rmUdmapFlowSizeThreshGetCfg(
-            const struct tisci_msg_rm_udmap_flow_size_thresh_get_cfg_req *req,
-            struct tisci_msg_rm_udmap_flow_size_thresh_get_cfg_resp *resp,
             uint32_t timeout);
 
 /**
