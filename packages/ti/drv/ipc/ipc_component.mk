@@ -44,7 +44,9 @@ ipc_LIB_LIST = ipc
 drvipc_SOCLIST         = am65xx j721e
 drvipc_BOARDLIST       = am65xx_evm am65xx_idk j721e_sim j721e_qt j721e_evm
 drvipc_am65xx_CORELIST = mpu1_0 mcu1_0 mcu1_1
+drvipc_am65xx_LASTCORE := $(word $(words $(drvipc_am65xx_CORELIST)), $(drvipc_am65xx_CORELIST))
 drvipc_j721e_CORELIST  = mpu1_0 mcu1_0 mcu2_0 mcu3_0 mcu1_1 mcu2_1 mcu3_1 c66xdsp_1 c66xdsp_2 c7x_1
+drvipc_j721e_LASTCORE := $(word $(words $(drvipc_j721e_CORELIST)), $(drvipc_j721e_CORELIST))
 drvipc_DISABLE_PARALLEL_MAKE = yes
 
 ############################
@@ -257,6 +259,35 @@ export ipc_perf_test_BOARDLIST
 ipc_perf_test_$(SOC)_CORELIST = $(drvipc_$(SOC)_CORELIST)
 export ipc_perf_test_$(SOC)_CORELIST
 ipc_EXAMPLE_LIST += ipc_perf_test
+ipc_perf_test_SBL_APPIMAGEGEN = yes
+export ipc_per_test_SBL_APPIMAGEGEN
+
+# Multicore IPC performance test
+ipc_multicore_perf_test_COMP_LIST = ipc_multicore_perf_test
+ipc_multicore_perf_test_RELPATH = ti/drv/ipc/examples/ipc_perf_test
+ipc_multicore_perf_test_BINPATH = $(PDK_INSTALL_PATH)/ti/binary/ipc_perf_test/bin
+ipc_multicore_perf_test_PATH = $(PDK_IPC_COMP_PATH)/examples/ipc_perf_test
+ipc_multicore_perf_test_MAKEFILE = -f$(PDK_IPC_COMP_PATH)/examples/ipc_multicore_perf_test.mk
+export ipc_multicore_perf_test_MAKEFILE
+# IPC multicore perf test depends on ipc_perf_test for all the cores
+ipc_multicore_perf_test_DEPENDS_ON=ipc_perf_test
+export ipc_multicore_perf_test_DEPENDS_ON
+ipc_multicore_perf_test_BOARD_DEPENDENCY = yes
+ipc_multicore_perf_test_CORE_DEPENDENCY = yes
+ipc_multicore_perf_test_XDC_CONFIGURO = yes
+export ipc_multicore_perf_test_COMP_LIST
+export ipc_multicore_perf_test_BOARD_DEPENDENCY
+export ipc_multicore_perf_test_CORE_DEPENDENCY
+export ipc_multicore_perf_test_XDC_CONFIGURO
+ipc_multicore_perf_test_PKG_LIST = ipc_multicore_perf_test
+ipc_multicore_perf_test_INCLUDE = $(ipc_multicore_perf_test_PATH)
+ipc_multicore_perf_test_BOARDLIST = $(drvipc_BOARDLIST)
+export ipc_multicore_perf_test_BOARDLIST
+ipc_multicore_perf_test_$(SOC)_CORELIST := $(drvipc_$(SOC)_LASTCORE)
+export ipc_multicore_perf_test_$(SOC)_CORELIST
+ipc_EXAMPLE_LIST += ipc_multicore_perf_test
+ipc_multicore_perf_test_SBL_APPIMAGEGEN = no
+export ipc_multicore_perf_test_SBL_APPIMAGEGEN
 
 # IPC ex04_linux_baremetal_2core_echo_test
 ex04_linux_baremetal_2core_echo_test_COMP_LIST = ex04_linux_baremetal_2core_echo_test
