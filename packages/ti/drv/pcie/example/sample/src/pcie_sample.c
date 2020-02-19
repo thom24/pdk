@@ -485,6 +485,31 @@ pcieRet_e pcieCfgDbi(Pcie_Handle handle, uint8_t enable)
 } /* pcieCfgDbi */
 
 /*****************************************************************************
+ * Function: Enable/Disable DBI_RO_WR_EN writes
+ ****************************************************************************/
+pcieRet_e pcieCfgDbiRWE(Pcie_Handle handle, uint8_t enable)
+{
+  pcieRegisters_t        regs;
+  pcieRet_e              retVal;
+#if defined(PCIE_REV2_HW)
+  pciePlconfDbiRoWrEnReg_t dbiRo;
+
+  memset (&dbiRo, 0, sizeof(dbiRo));
+  memset (&regs, 0, sizeof(regs));
+
+  dbiRo.cxDbiRoWrEn = enable;
+  regs.plconfDbiRoWrEn = &dbiRo;
+
+  if ((retVal = Pcie_writeRegs (handle, pcie_LOCATION_LOCAL, &regs)) != pcie_RET_OK) 
+  {
+    PCIE_logPrintf ("SET MISC_CONTROL register failed!\n");
+    return retVal;
+  }
+#endif
+  return retVal;
+} /* pcieCfgDbiRWE */
+
+/*****************************************************************************
  * Function: Power domain configuration
  ****************************************************************************/
 pcieRet_e pciePowerCfg(void)
@@ -578,7 +603,9 @@ pcieRet_e pcieSerdesCfg(void)
 #elif defined(SOC_AM65XX)
 #ifdef am65xx_idk
   PlatformPCIESSSerdesConfig(0, 0);
+#ifndef PCIE0_SERDES0
   PlatformPCIESSSerdesConfig(1, 0);
+#endif
 #else
   PlatformPCIESSSerdesConfig(1, 1);
 #endif
@@ -831,6 +858,7 @@ pcieRet_e pcieSetGen2(Pcie_Handle handle)
 
   pcieRegisters_t        regs;
   pcieLinkCapReg_t       linkCap;
+  pcieLinkCtrl2Reg_t	 linkCtrl2;
   pcieGen2Reg_t          gen2;
 
   uint8_t                targetGen, dirSpd;
@@ -848,6 +876,7 @@ pcieRet_e pcieSetGen2(Pcie_Handle handle)
 
   memset (&gen2,             0, sizeof(gen2));
   memset (&linkCap,          0, sizeof(linkCap));
+  memset (&linkCtrl2,        0, sizeof(linkCtrl2));
   memset (&regs,             0, sizeof(regs));
 
   /* Set gen1/gen2 in link cap */
@@ -867,6 +896,25 @@ pcieRet_e pcieSetGen2(Pcie_Handle handle)
   {
     regs.linkCap = NULL; /* Nothing to write back */
   }
+#if defined(SOC_AM65XX)  
+  /* Set gen2/gen3 in link ctrl2 */
+  regs.linkCtrl2 = &linkCtrl2;
+  if ((retVal = Pcie_readRegs (handle, pcie_LOCATION_LOCAL, &regs)) != pcie_RET_OK)
+  {
+    PCIE_logPrintf ("GET linkCtrl2 register failed!\n");
+    return retVal;
+  }
+
+  if (linkCtrl2.tgtSpeed != targetGen)
+  {
+    PCIE_logPrintf ("PowerUP linkCtrl2 gen=%d change to %d\n", linkCtrl2.tgtSpeed, targetGen);
+    linkCtrl2.tgtSpeed = targetGen;
+  }
+  else
+  {
+    regs.linkCtrl2 = NULL; /* Nothing to write back */
+  }
+#endif
 
   /* Setting PL_GEN2 */
   gen2.numFts = 0xF;
@@ -936,7 +984,7 @@ pcieRet_e pcieCfgRC(Pcie_Handle handle)
 #endif
 
 #if !defined(SOC_J721E) /* for J721E move to Pciev3_setInterfaceMode */
-  if ((retVal = pcieCfgDbi (handle, 1)) != pcie_RET_OK)
+  if ((retVal = pcieCfgDbiRWE (handle, 1)) != pcie_RET_OK)
   {
     return retVal;
   }
@@ -946,7 +994,7 @@ pcieRet_e pcieCfgRC(Pcie_Handle handle)
     PCIE_logPrintf ("pcieSetGen2 failed!\n");
     return retVal;
   }
-  if ((retVal = pcieCfgDbi (handle, 0)) != pcie_RET_OK)
+  if ((retVal = pcieCfgDbiRWE (handle, 0)) != pcie_RET_OK)
   {
     return retVal;
   }
@@ -1103,7 +1151,7 @@ pcieRet_e pcieCfgEP(Pcie_Handle handle)
 #endif
 
   #if !defined(SOC_J721E)  /* for J721E move to Pciev3_setInterfaceMode */
-  if ((retVal = pcieCfgDbi (handle, 1)) != pcie_RET_OK)
+  if ((retVal = pcieCfgDbiRWE (handle, 1)) != pcie_RET_OK)
   {
     return retVal;
   }
@@ -1113,7 +1161,7 @@ pcieRet_e pcieCfgEP(Pcie_Handle handle)
     PCIE_logPrintf ("pcieSetGen2 failed!\n");
     return retVal;
   }
-  if ((retVal = pcieCfgDbi (handle, 0)) != pcie_RET_OK)
+  if ((retVal = pcieCfgDbiRWE (handle, 0)) != pcie_RET_OK)
   {
     return retVal;
   }
@@ -1678,7 +1726,11 @@ pcieRet_e pcieCheckLinkParams(Pcie_Handle handle)
 #ifdef am65xx_evm
   expLanes = 1;  /* expected 1 lane case */
 #else
+#ifdef PCIE0_SERDES0
+  expLanes = 1;  /* expected 1 lane case */
+#else
   expLanes = 2;  /* expected 2 lane case */
+#endif
 #endif	
   /* Get link status */
   memset (&regs, 0, sizeof(regs));
@@ -2042,7 +2094,11 @@ void pcieSetLanes (Pcie_Handle handle)
   }
   origLanes = lnkCtrlReg.lnkMode;
 #ifdef am65xx_idk
+#ifdef PCIE0_SERDES0
+  lnkCtrlReg.lnkMode = 1; /* bitfield enabling one lane case */
+#else
   lnkCtrlReg.lnkMode = 3; /* bitfield enabling both lanes */
+#endif
 #else
   lnkCtrlReg.lnkMode = 1;
 #endif
@@ -2347,27 +2403,6 @@ void pcie (void)
 
   /* Configure/limit number of lanes */
   pcieSetLanes (handle);
-#if defined(SOC_AM65XX) 
-  PCIE_logPrintf ("LINK_CAPABILITIES_REG before = 0x%x\n", *((volatile uint32_t *)(base_address+0x107C)));
-  /* Enable DBI */
-  *((volatile uint32_t *)(base_address+0x18BC)) |= 0x00000001;
-  /* Set Maximum Speed */
-#ifdef GEN3
-  *((volatile uint32_t *)(base_address+0x107C)) &= (~0x0000000F);
-  *((volatile uint32_t *)(base_address+0x107C)) |= 0x00000003;
-  *((volatile uint32_t *)(base_address+0x10A0)) &= (~0x0000000F);
-  *((volatile uint32_t *)(base_address+0x10A0)) |= 0x00000003;
-#endif  
-#ifdef GEN2
-  *((volatile uint32_t *)(base_address+0x107C)) &= (~0x0000000F);
-  *((volatile uint32_t *)(base_address+0x107C)) |= 0x00000002;
-  *((volatile uint32_t *)(base_address+0x10A0)) &= (~0x0000000F);
-  *((volatile uint32_t *)(base_address+0x10A0)) |= 0x00000002;
-#endif  
-  /* Disable DBI */
-  *((volatile uint32_t *)(base_address+0x18BC)) &= (~0x00000001); 
-  PCIE_logPrintf ("LINK_CAPABILITIES_REG after = 0x%x\n", *((volatile uint32_t *)(base_address+0x107C)));  
-#endif
 
   PCIE_logPrintf ("Starting link training...\n");
 
