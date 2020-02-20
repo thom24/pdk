@@ -163,8 +163,10 @@ typedef struct EMAC_PRU_CFG_S {
     /**< Debug, RTU status*/
     uint32_t rtu_status;
     /**< Rerserved */
-    uint32_t cfg_out;
-    uint32_t info[4];
+    uint32_t info;
+    uint32_t res;
+    /**< Seed for random generator, used by FW to calculate backoff retransmission time for half duplex mode */
+    uint32_t seed;
 } EMAC_PRU_CFG_T;
 
 
@@ -452,13 +454,15 @@ typedef struct EMAC_PORT_CB_V5_S
     CSL_AleRegs *hCpswAleRegs;
 } EMAC_PORT_CB_V5_T;
 
-/* Port specficic control block for switch*/
-typedef struct EMAC_SWITCH_PORT_CB_V5_S
+/* Port specficic control block for IOCTL interface*/
+typedef struct EMAC_IOCTL_CB_V5_S
 {
     volatile int32_t ioctlCount;
     EMAC_IOCTL_CMD_T *pCmd1Icssg;
     EMAC_IOCTL_CMD_T *pCmd2Icssg;
-} EMAC_SWITCH_PORT_CB_V5_T;
+    uint8_t sequenceNumber;
+    bool             internalIoctl;
+} EMAC_IOCTL_CB_V5_T;
 
 
 
@@ -466,7 +470,7 @@ typedef struct EMAC_MCB_V5_S {
     /* Port specific control block */
     EMAC_PORT_CB_V5_T          port_cb[EMAC_MAX_NUM_EMAC_PORTS];
     /* Switch specific control block */
-    EMAC_SWITCH_PORT_CB_V5_T   switch_cb;
+    EMAC_IOCTL_CB_V5_T   ioctl_cb;
     UTIL_TRACE_CB_T* drv_trace_cb;
 } EMAC_MCB_V5_T;
 

@@ -232,7 +232,7 @@ typedef enum EMAC_POLL_RX_PKT_RINGS_e{
  */
 typedef enum EMAC_POLL_RX_MGMT_RINGS_e{
     EMAC_POLL_RX_MGMT_RING1      = 0x1,                             /**< Poll rx mgmt ring 1, associated with default flow*/
-    EMAC_POLL_RX_MGMT_RING2      = (EMAC_POLL_RX_MGMT_RING1) << 1,  /**< Poll rx mgmt ring 2, used for get rx mmgmt response from FW */
+    EMAC_POLL_RX_MGMT_RING2      = (EMAC_POLL_RX_MGMT_RING1) << 1,  /**< Poll rx mgmt ring 2, used for get rx mgmt response from FW */
     EMAC_POLL_RX_MGMT_RING3      = (EMAC_POLL_RX_MGMT_RING2) << 1,  /**< Poll rx mgmt ring 3, used for get tx timestamp response from FW */
     EMAC_POLL_RX_MGMT_RING_ALL   =  0x7                             /**< Poll all of the rx mgmt rings */
 } EMAC_POLL_RX_MGMT_RINGS;
@@ -890,20 +890,21 @@ typedef EMAC_LinkInfo EMAC_LINK_INFO_T;
  * @brief EMAC IOCTL commands to be sued when calling calling @ref emac_ioctl API.
   */
 typedef enum EMAC_IOCTL_CMD_E{
-    EMAC_IOCTL_PROMISCOUS_MODE_CTRL,        /**< Promiscous mode enable/disable control IOCTL*/
-    EMAC_IOCTL_VLAN_CTRL,                   /**< VLAN control IOCTL */
-    EMAC_IOCTL_PORT_STATE_CTRL,             /**< PORT State control IOCTL */
-    EMAC_IOCTL_FDB_ENTRY_CTRL,              /**< FDB Entry IOCTL */
-    EMAC_IOCTL_PORT_PRIO_MAPPING_CTRL,      /**< Configure traffic class mapping to port queue IOCTL */
-    EMAC_IOCTL_ACCEPTABLE_FRAME_CHECK_CTRL, /**< Configure Acceptable frame check control IOCTL */
-    EMAC_IOCTL_PRIO_REGEN_CTRL,             /**< Configure priority regen table */
-    EMAC_IOCTL_TEST_MULTI_FLOW,             /**< Test multi-flow support IOCTL */
+    EMAC_IOCTL_PROMISCOUS_MODE_CTRL,        /**< Promiscous mode enable/disable control ioctl*/
+    EMAC_IOCTL_VLAN_CTRL,                   /**< VLAN control ioctl */
+    EMAC_IOCTL_PORT_STATE_CTRL,             /**< PORT State control ioctl */
+    EMAC_IOCTL_FDB_ENTRY_CTRL,              /**< FDB Entry ioctl */
+    EMAC_IOCTL_PORT_PRIO_MAPPING_CTRL,      /**< Configure traffic class mapping to port queue ioctl */
+    EMAC_IOCTL_ACCEPTABLE_FRAME_CHECK_CTRL, /**< Configure Acceptable frame check control ioctl */
+    EMAC_IOCTL_PRIO_REGEN_CTRL,             /**< Configure priority regen table ioctl*/
+    EMAC_IOCTL_TEST_MULTI_FLOW,             /**< Test multi-flow support ioctl */
     EMAC_IOCTL_UC_FLOODING_CTRL,            /**< UC flooding control ioctl */
     EMAC_IOCTL_INTERFACE_MAC_CONFIG,        /**< interface mac config ioctl */
     EMAC_IOCTL_CUT_THROUGH_PREEMPT_SELECT,  /**< cut through or prempt select config ioctl */
     EMAC_IOCTL_SPECIAL_FRAME_PRIO_CONFIG,   /**< special packets default prio config ioctl */
     EMAC_IOCTL_FRAME_PREEMPTION_CTRL,       /**< premption control config ioctl */
-    EMAC_IOCTL_FDB_AGEING_TIMEOUT_CTRL       /**< configure FDB ageing timeout */
+    EMAC_IOCTL_FDB_AGEING_TIMEOUT_CTRL,     /**< configure FDB ageing timeout ioctl*/
+    EMAC_IOCTL_SPEED_DUPLEXITY_CTRL        /**< configure link speed and duplexity ioctl */
 
 } EMAC_IOCTL_CMD;
 

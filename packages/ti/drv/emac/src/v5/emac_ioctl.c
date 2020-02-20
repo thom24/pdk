@@ -923,8 +923,8 @@ EMAC_DRV_ERR_E emac_ioctl_port_state_ctrl(uint32_t port_num, void* p_params)
     EMAC_CPPI_DESC_T *pCppiDescTx1, *pCppiDescTx2;
 
     UTILS_trace(UTIL_TRACE_LEVEL_INFO, emac_mcb.drv_trace_cb, "port: %d: ENTER",port_num);
-    emac_update_cmd(0, EMAC_IOCTL_PORT_STATE_CTRL, emac_mcb.switch_cb.pCmd1Icssg, pParams, NULL, EMAC_FW_MGMT_CMD_TYPE, 0, 0);
-    emac_update_cmd(2, EMAC_IOCTL_PORT_STATE_CTRL, emac_mcb.switch_cb.pCmd2Icssg, pParams, NULL, EMAC_FW_MGMT_CMD_TYPE, 0, 0);
+    emac_update_cmd(0, EMAC_IOCTL_PORT_STATE_CTRL, emac_mcb.ioctl_cb.pCmd1Icssg, pParams, NULL, EMAC_FW_MGMT_CMD_TYPE, 0, 0);
+    emac_update_cmd(2, EMAC_IOCTL_PORT_STATE_CTRL, emac_mcb.ioctl_cb.pCmd2Icssg, pParams, NULL, EMAC_FW_MGMT_CMD_TYPE, 0, 0);
 
     currentState = emac_mcb.port_cb[port_num].emacState;
 
@@ -947,37 +947,37 @@ EMAC_DRV_ERR_E emac_ioctl_port_state_ctrl(uint32_t port_num, void* p_params)
         switch (pParams->subCommand)
         {
             case EMAC_IOCTL_PORT_STATE_DISABLE:
-                memcpy((void*)(emac_mcb.switch_cb.pCmd1Icssg->spare),(void*)(emac_util_get_R30_info(EMAC_PORT_DISABLE, portLoc, EMAC_ICSSG_0)), sizeof(emac_mcb.switch_cb.pCmd1Icssg->spare));
-                memcpy((void*)(emac_mcb.switch_cb.pCmd2Icssg->spare),(void*)(emac_util_get_R30_info(EMAC_PORT_DISABLE, portLoc, EMAC_ICSSG_1)), sizeof(emac_mcb.switch_cb.pCmd1Icssg->spare));
+                memcpy((void*)(emac_mcb.ioctl_cb.pCmd1Icssg->spare),(void*)(emac_util_get_R30_info(EMAC_PORT_DISABLE, portLoc, EMAC_ICSSG_0)), sizeof(emac_mcb.ioctl_cb.pCmd1Icssg->spare));
+                memcpy((void*)(emac_mcb.ioctl_cb.pCmd2Icssg->spare),(void*)(emac_util_get_R30_info(EMAC_PORT_DISABLE, portLoc, EMAC_ICSSG_1)), sizeof(emac_mcb.ioctl_cb.pCmd1Icssg->spare));
                 break;
             case EMAC_IOCTL_PORT_STATE_BLOCKING:
-                memcpy((void*)(emac_mcb.switch_cb.pCmd1Icssg->spare),(void*)(emac_util_get_R30_info(EMAC_PORT_BLOCK, portLoc, EMAC_ICSSG_0)), sizeof(emac_mcb.switch_cb.pCmd1Icssg->spare));
-                memcpy((void*)(emac_mcb.switch_cb.pCmd2Icssg->spare),(void*)(emac_util_get_R30_info(EMAC_PORT_BLOCK, portLoc,EMAC_ICSSG_1)), sizeof(emac_mcb.switch_cb.pCmd1Icssg->spare));
+                memcpy((void*)(emac_mcb.ioctl_cb.pCmd1Icssg->spare),(void*)(emac_util_get_R30_info(EMAC_PORT_BLOCK, portLoc, EMAC_ICSSG_0)), sizeof(emac_mcb.ioctl_cb.pCmd1Icssg->spare));
+                memcpy((void*)(emac_mcb.ioctl_cb.pCmd2Icssg->spare),(void*)(emac_util_get_R30_info(EMAC_PORT_BLOCK, portLoc,EMAC_ICSSG_1)), sizeof(emac_mcb.ioctl_cb.pCmd1Icssg->spare));
     
                 break;
             case EMAC_IOCTL_PORT_STATE_FORWARD:
-                memcpy((void*)(emac_mcb.switch_cb.pCmd1Icssg->spare),(void*)(emac_util_get_R30_info(EMAC_PORT_FORWARD, portLoc, EMAC_ICSSG_0)), sizeof(emac_mcb.switch_cb.pCmd1Icssg->spare));
-                memcpy((void*)(emac_mcb.switch_cb.pCmd2Icssg->spare),(void*)(emac_util_get_R30_info(EMAC_PORT_FORWARD, portLoc, EMAC_ICSSG_1)), sizeof(emac_mcb.switch_cb.pCmd1Icssg->spare));
+                memcpy((void*)(emac_mcb.ioctl_cb.pCmd1Icssg->spare),(void*)(emac_util_get_R30_info(EMAC_PORT_FORWARD, portLoc, EMAC_ICSSG_0)), sizeof(emac_mcb.ioctl_cb.pCmd1Icssg->spare));
+                memcpy((void*)(emac_mcb.ioctl_cb.pCmd2Icssg->spare),(void*)(emac_util_get_R30_info(EMAC_PORT_FORWARD, portLoc, EMAC_ICSSG_1)), sizeof(emac_mcb.ioctl_cb.pCmd1Icssg->spare));
                 break;
             case EMAC_IOCTL_PORT_STATE_FORWARD_WO_LEARNING:
-                memcpy((void*)(emac_mcb.switch_cb.pCmd1Icssg->spare),(void*)(emac_util_get_R30_info(EMAC_PORT_FORWARD_WO_LEARNING, portLoc, EMAC_ICSSG_0)), sizeof(emac_mcb.switch_cb.pCmd1Icssg->spare));
-                memcpy((void*)(emac_mcb.switch_cb.pCmd2Icssg->spare),(void*)(emac_util_get_R30_info(EMAC_PORT_FORWARD_WO_LEARNING, portLoc, EMAC_ICSSG_1)), sizeof(emac_mcb.switch_cb.pCmd1Icssg->spare));
+                memcpy((void*)(emac_mcb.ioctl_cb.pCmd1Icssg->spare),(void*)(emac_util_get_R30_info(EMAC_PORT_FORWARD_WO_LEARNING, portLoc, EMAC_ICSSG_0)), sizeof(emac_mcb.ioctl_cb.pCmd1Icssg->spare));
+                memcpy((void*)(emac_mcb.ioctl_cb.pCmd2Icssg->spare),(void*)(emac_util_get_R30_info(EMAC_PORT_FORWARD_WO_LEARNING, portLoc, EMAC_ICSSG_1)), sizeof(emac_mcb.ioctl_cb.pCmd1Icssg->spare));
                 break;
             case EMAC_IOCTL_PORT_STATE_TAS_TRIGGER:
-                memcpy((void*)(emac_mcb.switch_cb.pCmd1Icssg->spare),(void*)(emac_util_get_R30_info(EMAC_PORT_TAS_TRIGGER, portLoc, EMAC_ICSSG_0)), sizeof(emac_mcb.switch_cb.pCmd1Icssg->spare));
-                memcpy((void*)(emac_mcb.switch_cb.pCmd2Icssg->spare),(void*)(emac_util_get_R30_info(EMAC_PORT_TAS_TRIGGER, portLoc, EMAC_ICSSG_1)), sizeof(emac_mcb.switch_cb.pCmd1Icssg->spare));
+                memcpy((void*)(emac_mcb.ioctl_cb.pCmd1Icssg->spare),(void*)(emac_util_get_R30_info(EMAC_PORT_TAS_TRIGGER, portLoc, EMAC_ICSSG_0)), sizeof(emac_mcb.ioctl_cb.pCmd1Icssg->spare));
+                memcpy((void*)(emac_mcb.ioctl_cb.pCmd2Icssg->spare),(void*)(emac_util_get_R30_info(EMAC_PORT_TAS_TRIGGER, portLoc, EMAC_ICSSG_1)), sizeof(emac_mcb.ioctl_cb.pCmd1Icssg->spare));
                 break;
             case EMAC_IOCTL_PORT_STATE_TAS_ENABLE:
-                memcpy((void*)(emac_mcb.switch_cb.pCmd1Icssg->spare),(void*)(emac_util_get_R30_info(EMAC_PORT_TAS_ENABLE, portLoc, EMAC_ICSSG_0)), sizeof(emac_mcb.switch_cb.pCmd1Icssg->spare));
-                memcpy((void*)(emac_mcb.switch_cb.pCmd2Icssg->spare),(void*)(emac_util_get_R30_info(EMAC_PORT_TAS_ENABLE, portLoc, EMAC_ICSSG_1)), sizeof(emac_mcb.switch_cb.pCmd1Icssg->spare));
+                memcpy((void*)(emac_mcb.ioctl_cb.pCmd1Icssg->spare),(void*)(emac_util_get_R30_info(EMAC_PORT_TAS_ENABLE, portLoc, EMAC_ICSSG_0)), sizeof(emac_mcb.ioctl_cb.pCmd1Icssg->spare));
+                memcpy((void*)(emac_mcb.ioctl_cb.pCmd2Icssg->spare),(void*)(emac_util_get_R30_info(EMAC_PORT_TAS_ENABLE, portLoc, EMAC_ICSSG_1)), sizeof(emac_mcb.ioctl_cb.pCmd1Icssg->spare));
                 break;
             case EMAC_IOCTL_PORT_STATE_TAS_RESET:
-                memcpy((void*)(emac_mcb.switch_cb.pCmd1Icssg->spare),(void*)(emac_util_get_R30_info(EMAC_PORT_TAS_RESET, portLoc, EMAC_ICSSG_0)), sizeof(emac_mcb.switch_cb.pCmd1Icssg->spare));
-                memcpy((void*)(emac_mcb.switch_cb.pCmd2Icssg->spare),(void*)(emac_util_get_R30_info(EMAC_PORT_TAS_RESET, portLoc, EMAC_ICSSG_1)), sizeof(emac_mcb.switch_cb.pCmd1Icssg->spare));
+                memcpy((void*)(emac_mcb.ioctl_cb.pCmd1Icssg->spare),(void*)(emac_util_get_R30_info(EMAC_PORT_TAS_RESET, portLoc, EMAC_ICSSG_0)), sizeof(emac_mcb.ioctl_cb.pCmd1Icssg->spare));
+                memcpy((void*)(emac_mcb.ioctl_cb.pCmd2Icssg->spare),(void*)(emac_util_get_R30_info(EMAC_PORT_TAS_RESET, portLoc, EMAC_ICSSG_1)), sizeof(emac_mcb.ioctl_cb.pCmd1Icssg->spare));
                 break;
             case EMAC_IOCTL_PORT_STATE_TAS_DISABLE:
-                memcpy((void*)(emac_mcb.switch_cb.pCmd1Icssg->spare),(void*)(emac_util_get_R30_info(EMAC_PORT_TAS_DISABLE, portLoc, EMAC_ICSSG_0)), sizeof(emac_mcb.switch_cb.pCmd1Icssg->spare));
-                memcpy((void*)(emac_mcb.switch_cb.pCmd2Icssg->spare),(void*)(emac_util_get_R30_info(EMAC_PORT_TAS_DISABLE, portLoc, EMAC_ICSSG_1)), sizeof(emac_mcb.switch_cb.pCmd1Icssg->spare));
+                memcpy((void*)(emac_mcb.ioctl_cb.pCmd1Icssg->spare),(void*)(emac_util_get_R30_info(EMAC_PORT_TAS_DISABLE, portLoc, EMAC_ICSSG_0)), sizeof(emac_mcb.ioctl_cb.pCmd1Icssg->spare));
+                memcpy((void*)(emac_mcb.ioctl_cb.pCmd2Icssg->spare),(void*)(emac_util_get_R30_info(EMAC_PORT_TAS_DISABLE, portLoc, EMAC_ICSSG_1)), sizeof(emac_mcb.ioctl_cb.pCmd1Icssg->spare));
                 break;
              default:
                 break;
@@ -986,24 +986,24 @@ EMAC_DRV_ERR_E emac_ioctl_port_state_ctrl(uint32_t port_num, void* p_params)
         /* make sure there is hw descriptor for boths ICSSG instances */
         if (emac_get_hw_cppi_tx_descs(0, 0,2U, 0, &pCppiDescTx1, &pCppiDescTx2))
         {
-            emac_mcb.switch_cb.ioctlCount = 2;
-            retVal = emac_ioctl_send_mgmt_msg(0, emac_mcb.switch_cb.pCmd1Icssg, pCppiDescTx1);
+            emac_mcb.ioctl_cb.ioctlCount = 2;
+            retVal = emac_ioctl_send_mgmt_msg(0, emac_mcb.ioctl_cb.pCmd1Icssg, pCppiDescTx1);
             if (retVal != EMAC_DRV_RESULT_IOCTL_IN_PROGRESS)
             {
                 emac_free_hw_cppi_tx_desc(2U, 0, pCppiDescTx2);
                 /* restore current state for the port */
                 emac_mcb.port_cb[port_num].emacState = currentState;
-                emac_mcb.switch_cb.ioctlCount = 0;
+                emac_mcb.ioctl_cb.ioctlCount = 0;
             }
             else
             {
-                retVal = emac_ioctl_send_mgmt_msg(2, emac_mcb.switch_cb.pCmd2Icssg, pCppiDescTx2);
+                retVal = emac_ioctl_send_mgmt_msg(2, emac_mcb.ioctl_cb.pCmd2Icssg, pCppiDescTx2);
                 if (retVal != EMAC_DRV_RESULT_IOCTL_IN_PROGRESS)
                 {
                     UTILS_trace(UTIL_TRACE_LEVEL_UNEXPECTED, emac_mcb.drv_trace_cb, "port: %d, un-expected error, unable to sending MGMT message",port_num);
                     /* restore current state for the port */
                     emac_mcb.port_cb[port_num].emacState = currentState;
-                    emac_mcb.switch_cb.ioctlCount = 0;
+                    emac_mcb.ioctl_cb.ioctlCount = 0;
                 }
             }
         }
@@ -1030,23 +1030,23 @@ EMAC_DRV_ERR_E emac_ioctl_fdb_del_all(uint32_t port_num, void* p_params)
     /* make sure there is hw descriptor for boths ICSSG instances */
     if (emac_get_hw_cppi_tx_descs(0, 0,2U, 0,  &pCppiDescTx1, &pCppiDescTx2))
     {
-        emac_mcb.switch_cb.ioctlCount = 2;
-        emac_update_cmd(0, EMAC_IOCTL_FDB_ENTRY_CTRL, emac_mcb.switch_cb.pCmd1Icssg, pParams, NULL, EMAC_FW_MGMT_FDB_CMD_TYPE, 0, 0);
-        retVal = emac_ioctl_send_mgmt_msg(0, emac_mcb.switch_cb.pCmd1Icssg, pCppiDescTx1);
+        emac_mcb.ioctl_cb.ioctlCount = 2;
+        emac_update_cmd(0, EMAC_IOCTL_FDB_ENTRY_CTRL, emac_mcb.ioctl_cb.pCmd1Icssg, pParams, NULL, EMAC_FW_MGMT_FDB_CMD_TYPE, 0, 0);
+        retVal = emac_ioctl_send_mgmt_msg(0, emac_mcb.ioctl_cb.pCmd1Icssg, pCppiDescTx1);
         if (retVal != EMAC_DRV_RESULT_IOCTL_IN_PROGRESS)
         {
             emac_free_hw_cppi_tx_desc(2U, 0, pCppiDescTx2);
             /* restore current state for the port */
-            emac_mcb.switch_cb.ioctlCount = 0;
+            emac_mcb.ioctl_cb.ioctlCount = 0;
         }
         else
         {
-            emac_update_cmd(2, EMAC_IOCTL_FDB_ENTRY_CTRL,  emac_mcb.switch_cb.pCmd2Icssg, pParams, NULL, EMAC_FW_MGMT_FDB_CMD_TYPE, 0, 0);
-            retVal = emac_ioctl_send_mgmt_msg(2, emac_mcb.switch_cb.pCmd2Icssg, pCppiDescTx2);
+            emac_update_cmd(2, EMAC_IOCTL_FDB_ENTRY_CTRL,  emac_mcb.ioctl_cb.pCmd2Icssg, pParams, NULL, EMAC_FW_MGMT_FDB_CMD_TYPE, 0, 0);
+            retVal = emac_ioctl_send_mgmt_msg(2, emac_mcb.ioctl_cb.pCmd2Icssg, pCppiDescTx2);
             if (retVal != EMAC_DRV_RESULT_IOCTL_IN_PROGRESS)
             {
                 UTILS_trace(UTIL_TRACE_LEVEL_UNEXPECTED, emac_mcb.drv_trace_cb, "port: %d, un-expected error when sending MGMT message",port_num);
-                emac_mcb.switch_cb.ioctlCount = 0;
+                emac_mcb.ioctl_cb.ioctlCount = 0;
             }
         }
     }
@@ -1080,31 +1080,31 @@ EMAC_DRV_ERR_E emac_ioctl_fdb_entry_ctrl(uint32_t port_num, void* p_params)
         vlanDefaultTblAddr = emac_get_vlan_tbl_addr(port_num);
         emac_get_vlan_id(port_num, entry);
         broadSideSlot = emac_util_fdb_helper( vlanDefaultTblAddr, entry->vlanId, entry->mac, &fid);
-        emac_update_cmd(0, EMAC_IOCTL_FDB_ENTRY_CTRL, emac_mcb.switch_cb.pCmd1Icssg, pParams, entry, EMAC_FW_MGMT_FDB_CMD_TYPE, broadSideSlot, fid);
+        emac_update_cmd(0, EMAC_IOCTL_FDB_ENTRY_CTRL, emac_mcb.ioctl_cb.pCmd1Icssg, pParams, entry, EMAC_FW_MGMT_FDB_CMD_TYPE, broadSideSlot, fid);
 
         /* make sure there is hw descriptor for boths ICSSG instances */
         if (emac_get_hw_cppi_tx_descs(0, 0,2U, 0, &pCppiDescTx1, &pCppiDescTx2))
         {
-            emac_mcb.switch_cb.ioctlCount = 2;
-            retVal = emac_ioctl_send_mgmt_msg(0, emac_mcb.switch_cb.pCmd1Icssg, pCppiDescTx1);
+            emac_mcb.ioctl_cb.ioctlCount = 2;
+            retVal = emac_ioctl_send_mgmt_msg(0, emac_mcb.ioctl_cb.pCmd1Icssg, pCppiDescTx1);
             if (retVal != EMAC_DRV_RESULT_IOCTL_IN_PROGRESS)
             {
                 emac_free_hw_cppi_tx_desc(2U, 0, pCppiDescTx2);
                 /* restore current state for the port */
-                emac_mcb.switch_cb.ioctlCount = 0;
+                emac_mcb.ioctl_cb.ioctlCount = 0;
             }
             else
             {
                 vlanDefaultTblAddr = emac_get_vlan_tbl_addr(port_num);
                 emac_get_vlan_id(port_num, entry);
                 broadSideSlot = emac_util_fdb_helper( vlanDefaultTblAddr, entry->vlanId, entry->mac, &fid);
-                emac_update_cmd(2, EMAC_IOCTL_FDB_ENTRY_CTRL, emac_mcb.switch_cb.pCmd2Icssg, pParams, entry, EMAC_FW_MGMT_FDB_CMD_TYPE, broadSideSlot, fid);
+                emac_update_cmd(2, EMAC_IOCTL_FDB_ENTRY_CTRL, emac_mcb.ioctl_cb.pCmd2Icssg, pParams, entry, EMAC_FW_MGMT_FDB_CMD_TYPE, broadSideSlot, fid);
 
-                retVal = emac_ioctl_send_mgmt_msg(2, emac_mcb.switch_cb.pCmd2Icssg, pCppiDescTx2);
+                retVal = emac_ioctl_send_mgmt_msg(2, emac_mcb.ioctl_cb.pCmd2Icssg, pCppiDescTx2);
                 if (retVal != EMAC_DRV_RESULT_IOCTL_IN_PROGRESS)
                 {
                     /* restore current state for the port */
-                    emac_mcb.switch_cb.ioctlCount = 0;
+                    emac_mcb.ioctl_cb.ioctlCount = 0;
                 }
             }
         }
@@ -1133,7 +1133,7 @@ EMAC_DRV_ERR_E emac_ioctl_accept_frame_check_ctrl(uint32_t port_num, void* p_par
     uint32_t icssgInstance = 0;
 
     UTILS_trace(UTIL_TRACE_LEVEL_INFO, emac_mcb.drv_trace_cb, "port: %d: ENTER",port_num);
-    emac_update_cmd(port_num, EMAC_IOCTL_ACCEPTABLE_FRAME_CHECK_CTRL, emac_mcb.switch_cb.pCmd1Icssg, pParams, NULL, EMAC_FW_MGMT_CMD_TYPE, 0, 0);
+    emac_update_cmd(port_num, EMAC_IOCTL_ACCEPTABLE_FRAME_CHECK_CTRL, emac_mcb.ioctl_cb.pCmd1Icssg, pParams, NULL, EMAC_FW_MGMT_CMD_TYPE, 0, 0);
 
     if (port_num == 0)
     {
@@ -1156,24 +1156,24 @@ EMAC_DRV_ERR_E emac_ioctl_accept_frame_check_ctrl(uint32_t port_num, void* p_par
         switch (pParams->subCommand)
         {
             case EMAC_IOCTL_ACCEPTABLE_FRAME_CHECK_ONLY_VLAN_TAGGED:
-                memcpy((void*)(emac_mcb.switch_cb.pCmd1Icssg->spare),(void*)(emac_util_get_R30_info(EMAC_PORT_ACCEPT_TAGGED, portLoc, (EMAC_IcssgInstance)icssgInstance)), sizeof(emac_mcb.switch_cb.pCmd1Icssg->spare));
+                memcpy((void*)(emac_mcb.ioctl_cb.pCmd1Icssg->spare),(void*)(emac_util_get_R30_info(EMAC_PORT_ACCEPT_TAGGED, portLoc, (EMAC_IcssgInstance)icssgInstance)), sizeof(emac_mcb.ioctl_cb.pCmd1Icssg->spare));
                 break;
             case EMAC_IOCTL_ACCEPTABLE_FRAME_CHECK_ONLY_UN_TAGGED_PRIO_TAGGED:
-                memcpy((void*)(emac_mcb.switch_cb.pCmd1Icssg->spare),(void*)(emac_util_get_R30_info(EMAC_PORT_ACCEPT_UNTAGGED_N_PRIO, portLoc, (EMAC_IcssgInstance)icssgInstance)), sizeof(emac_mcb.switch_cb.pCmd1Icssg->spare));
+                memcpy((void*)(emac_mcb.ioctl_cb.pCmd1Icssg->spare),(void*)(emac_util_get_R30_info(EMAC_PORT_ACCEPT_UNTAGGED_N_PRIO, portLoc, (EMAC_IcssgInstance)icssgInstance)), sizeof(emac_mcb.ioctl_cb.pCmd1Icssg->spare));
     
                 break;
             case EMAC_IOCTL_ACCEPTABLE_FRAME_CHECK_ALL_FRAMES:
-                memcpy((void*)(emac_mcb.switch_cb.pCmd1Icssg->spare),(void*)(emac_util_get_R30_info(EMAC_PORT_ACCEPT_ALL, portLoc, (EMAC_IcssgInstance)icssgInstance)), sizeof(emac_mcb.switch_cb.pCmd1Icssg->spare));
+                memcpy((void*)(emac_mcb.ioctl_cb.pCmd1Icssg->spare),(void*)(emac_util_get_R30_info(EMAC_PORT_ACCEPT_ALL, portLoc, (EMAC_IcssgInstance)icssgInstance)), sizeof(emac_mcb.ioctl_cb.pCmd1Icssg->spare));
                 break;
              default:
                 break;
         }
-        emac_mcb.switch_cb.ioctlCount = 1;
-        retVal = emac_ioctl_send_mgmt_msg(port_num, emac_mcb.switch_cb.pCmd1Icssg, NULL);
+        emac_mcb.ioctl_cb.ioctlCount = 1;
+        retVal = emac_ioctl_send_mgmt_msg(port_num, emac_mcb.ioctl_cb.pCmd1Icssg, NULL);
 
         if (retVal != EMAC_DRV_RESULT_IOCTL_IN_PROGRESS)
         {
-            emac_mcb.switch_cb.ioctlCount = 0;
+            emac_mcb.ioctl_cb.ioctlCount = 0;
         }
     }
     UTILS_trace(UTIL_TRACE_LEVEL_INFO, emac_mcb.drv_trace_cb, "port: %d: EXIT with status: %d",port_num, retVal);
@@ -1305,7 +1305,7 @@ EMAC_DRV_ERR_E emac_ioctl_uc_flooding_ctrl(uint32_t port_num, uint32_t switch_po
     uint32_t icssgInstance = 0;
     
     UTILS_trace(UTIL_TRACE_LEVEL_INFO, emac_mcb.drv_trace_cb, "port: %d: ENTER",port_num);
-    emac_update_cmd(port_num, EMAC_IOCTL_UC_FLOODING_CTRL, emac_mcb.switch_cb.pCmd1Icssg, pParams, NULL, EMAC_FW_MGMT_CMD_TYPE, 0, 0);
+    emac_update_cmd(port_num, EMAC_IOCTL_UC_FLOODING_CTRL, emac_mcb.ioctl_cb.pCmd1Icssg, pParams, NULL, EMAC_FW_MGMT_CMD_TYPE, 0, 0);
 
     if (switch_port == EMAC_SWITCH_PORT1)
     {
@@ -1328,25 +1328,25 @@ EMAC_DRV_ERR_E emac_ioctl_uc_flooding_ctrl(uint32_t port_num, uint32_t switch_po
         switch (pParams->subCommand)
         {
             case EMAC_IOCTL_PORT_UC_FLOODING_ENABLE:
-                memcpy((void*)(emac_mcb.switch_cb.pCmd1Icssg->spare),(void*)(emac_util_get_R30_info(EMAC_PORT_UC_FLOODING_ENABLE, portLoc, (EMAC_IcssgInstance)icssgInstance)), sizeof(emac_mcb.switch_cb.pCmd1Icssg->spare));
+                memcpy((void*)(emac_mcb.ioctl_cb.pCmd1Icssg->spare),(void*)(emac_util_get_R30_info(EMAC_PORT_UC_FLOODING_ENABLE, portLoc, (EMAC_IcssgInstance)icssgInstance)), sizeof(emac_mcb.ioctl_cb.pCmd1Icssg->spare));
                 break;
             case EMAC_IOCTL_PORT_UC_FLOODING_DISABLE:
-                memcpy((void*)(emac_mcb.switch_cb.pCmd1Icssg->spare),(void*)(emac_util_get_R30_info(EMAC_PORT_UC_FLOODING_DISABLE, portLoc, (EMAC_IcssgInstance)icssgInstance)), sizeof(emac_mcb.switch_cb.pCmd1Icssg->spare));
+                memcpy((void*)(emac_mcb.ioctl_cb.pCmd1Icssg->spare),(void*)(emac_util_get_R30_info(EMAC_PORT_UC_FLOODING_DISABLE, portLoc, (EMAC_IcssgInstance)icssgInstance)), sizeof(emac_mcb.ioctl_cb.pCmd1Icssg->spare));
                 break;
              default:
                 break;
         }
         if(portLoc == 0)
         {
-            retVal = emac_ioctl_send_mgmt_msg(0, emac_mcb.switch_cb.pCmd1Icssg, NULL);
+            retVal = emac_ioctl_send_mgmt_msg(0, emac_mcb.ioctl_cb.pCmd1Icssg, NULL);
         }else
         {
-            retVal = emac_ioctl_send_mgmt_msg(2, emac_mcb.switch_cb.pCmd1Icssg, NULL);
+            retVal = emac_ioctl_send_mgmt_msg(2, emac_mcb.ioctl_cb.pCmd1Icssg, NULL);
         }
         
         if (retVal == EMAC_DRV_RESULT_IOCTL_IN_PROGRESS)
         {
-            emac_mcb.switch_cb.ioctlCount = 1;
+            emac_mcb.ioctl_cb.ioctlCount = 1;
         }
     }
 
@@ -1480,7 +1480,7 @@ EMAC_DRV_ERR_E emac_ioctl_frame_premption_ctrl(uint32_t port_num, uint32_t switc
     uintptr_t premptionTxEnabledStatusAddr, premptionTxActiveStatusAddr, premptionVerifyStateStatusAddr, premptionVerifyStateValueAddr, premptionMinFragSizeAddr, premptionMinFragAddAddr;
     UTILS_trace(UTIL_TRACE_LEVEL_INFO, emac_mcb.drv_trace_cb, "port: %d: ENTER",port_num);
 
-    emac_update_cmd(port_num, EMAC_IOCTL_FRAME_PREEMPTION_CTRL, emac_mcb.switch_cb.pCmd1Icssg, pParams, NULL, EMAC_FW_MGMT_CMD_TYPE, 0, 0);
+    emac_update_cmd(port_num, EMAC_IOCTL_FRAME_PREEMPTION_CTRL, emac_mcb.ioctl_cb.pCmd1Icssg, pParams, NULL, EMAC_FW_MGMT_CMD_TYPE, 0, 0);
     if (switch_port == EMAC_SWITCH_PORT1)
     {
         portLoc = 0;
@@ -1502,20 +1502,20 @@ EMAC_DRV_ERR_E emac_ioctl_frame_premption_ctrl(uint32_t port_num, uint32_t switc
         switch (pParams->subCommand)
         {
             case EMAC_IOCTL_PREEMPT_TX_ENABLE:
-                emac_mcb.switch_cb.ioctlCount = 1;
+                emac_mcb.ioctl_cb.ioctlCount = 1;
                 if(portLoc == 1)
                 {
-                    memcpy((void*)(emac_mcb.switch_cb.pCmd1Icssg->spare),(void*)(emac_util_get_R30_info(EMAC_PORT_PREMPT_TX_ENABLE, portLoc, EMAC_ICSSG_0)), sizeof(emac_mcb.switch_cb.pCmd1Icssg->spare));
-                    retVal = emac_ioctl_send_mgmt_msg(0, emac_mcb.switch_cb.pCmd1Icssg, NULL);
+                    memcpy((void*)(emac_mcb.ioctl_cb.pCmd1Icssg->spare),(void*)(emac_util_get_R30_info(EMAC_PORT_PREMPT_TX_ENABLE, portLoc, EMAC_ICSSG_0)), sizeof(emac_mcb.ioctl_cb.pCmd1Icssg->spare));
+                    retVal = emac_ioctl_send_mgmt_msg(0, emac_mcb.ioctl_cb.pCmd1Icssg, NULL);
                 }
                 else
                 {
-                    memcpy((void*)(emac_mcb.switch_cb.pCmd1Icssg->spare),(void*)(emac_util_get_R30_info(EMAC_PORT_PREMPT_TX_ENABLE, portLoc, EMAC_ICSSG_1)), sizeof(emac_mcb.switch_cb.pCmd1Icssg->spare));
-                    retVal = emac_ioctl_send_mgmt_msg(2, emac_mcb.switch_cb.pCmd1Icssg, NULL);
+                    memcpy((void*)(emac_mcb.ioctl_cb.pCmd1Icssg->spare),(void*)(emac_util_get_R30_info(EMAC_PORT_PREMPT_TX_ENABLE, portLoc, EMAC_ICSSG_1)), sizeof(emac_mcb.ioctl_cb.pCmd1Icssg->spare));
+                    retVal = emac_ioctl_send_mgmt_msg(2, emac_mcb.ioctl_cb.pCmd1Icssg, NULL);
                 }
                 if (retVal != EMAC_DRV_RESULT_IOCTL_IN_PROGRESS)
                 {
-                    emac_mcb.switch_cb.ioctlCount = 0;
+                    emac_mcb.ioctl_cb.ioctlCount = 0;
                 }
                 else
                 {
@@ -1524,20 +1524,20 @@ EMAC_DRV_ERR_E emac_ioctl_frame_premption_ctrl(uint32_t port_num, uint32_t switc
                 }
                 break;
             case EMAC_IOCTL_PREEMPT_TX_DISABLE:
-                emac_mcb.switch_cb.ioctlCount = 1;
+                emac_mcb.ioctl_cb.ioctlCount = 1;
                 if(portLoc == 1)
                 {
-                    memcpy((void*)(emac_mcb.switch_cb.pCmd1Icssg->spare),(void*)(emac_util_get_R30_info(EMAC_PORT_PREMPT_TX_DISABLE, portLoc, EMAC_ICSSG_0)), sizeof(emac_mcb.switch_cb.pCmd1Icssg->spare));
-                    retVal = emac_ioctl_send_mgmt_msg(0, emac_mcb.switch_cb.pCmd1Icssg, NULL);
+                    memcpy((void*)(emac_mcb.ioctl_cb.pCmd1Icssg->spare),(void*)(emac_util_get_R30_info(EMAC_PORT_PREMPT_TX_DISABLE, portLoc, EMAC_ICSSG_0)), sizeof(emac_mcb.ioctl_cb.pCmd1Icssg->spare));
+                    retVal = emac_ioctl_send_mgmt_msg(0, emac_mcb.ioctl_cb.pCmd1Icssg, NULL);
                 }
                 else
                 {
-                    memcpy((void*)(emac_mcb.switch_cb.pCmd1Icssg->spare),(void*)(emac_util_get_R30_info(EMAC_PORT_PREMPT_TX_DISABLE, portLoc, EMAC_ICSSG_1)), sizeof(emac_mcb.switch_cb.pCmd1Icssg->spare));
-                    retVal = emac_ioctl_send_mgmt_msg(2, emac_mcb.switch_cb.pCmd1Icssg, NULL);
+                    memcpy((void*)(emac_mcb.ioctl_cb.pCmd1Icssg->spare),(void*)(emac_util_get_R30_info(EMAC_PORT_PREMPT_TX_DISABLE, portLoc, EMAC_ICSSG_1)), sizeof(emac_mcb.ioctl_cb.pCmd1Icssg->spare));
+                    retVal = emac_ioctl_send_mgmt_msg(2, emac_mcb.ioctl_cb.pCmd1Icssg, NULL);
                 }
                 if (retVal != EMAC_DRV_RESULT_IOCTL_IN_PROGRESS)
                 {
-                    emac_mcb.switch_cb.ioctlCount = 0;
+                    emac_mcb.ioctl_cb.ioctlCount = 0;
                 }
                 else
                 {
@@ -1616,6 +1616,31 @@ EMAC_DRV_ERR_E emac_ioctl_configure_special_frame_prio_ctrl(uint32_t port_num, u
         }
     }
     UTILS_trace(UTIL_TRACE_LEVEL_INFO, emac_mcb.drv_trace_cb, "port: %d: EXIT with status: %d",port_num, retVal);
+    return retVal;
+}
+
+/*
+ *  ======== emac_ioctl_speed_duplexity_cfg ========
+ */
+EMAC_DRV_ERR_E emac_ioctl_speed_duplexity_cfg(uint32_t port_num, void* p_params)
+{
+    EMAC_IOCTL_PARAMS *pParams = (EMAC_IOCTL_PARAMS*) p_params;
+    EMAC_DRV_ERR_E retVal;
+    EMAC_IOCTL_CMD_T *pCmd = emac_mcb.ioctl_cb.pCmd1Icssg;
+
+    memset(pCmd, 0, sizeof(EMAC_IOCTL_CMD_T));
+    pCmd->commandHeader = EMAC_FW_MGMT_CMD_HEADER;
+    pCmd->commandType = EMAC_FW_MGMT_SPEED_DUPLEXITY_CMD_TYPE;
+    pCmd->seqNumber = pParams->seqNumber;
+    pCmd->commandParam = (uint8_t)pParams->subCommand;
+
+    emac_mcb.ioctl_cb.ioctlCount = 1;
+    retVal = emac_ioctl_send_mgmt_msg(port_num, pCmd, NULL);
+    if (retVal != EMAC_DRV_RESULT_IOCTL_IN_PROGRESS)
+    {
+        emac_mcb.ioctl_cb.ioctlCount = 0;
+    }
+
     return retVal;
 }
 

@@ -1,5 +1,5 @@
 /********************************************************************
- * Copyright (C) 2018-2019 Texas Instruments Incorporated.
+ * Copyright (C) 2018-2020 Texas Instruments Incorporated.
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -47,7 +47,7 @@
 #ifndef EMAC_IOCTL_H
 #define EMAC_IOCTL_H
 
-#include "emac_drv.h"
+#include <ti/drv/emac/emac_drv.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -62,11 +62,13 @@ extern "C" {
 #define EMAC_CLASS_CFG2_OFF     ((uint32_t)4U) /* from EMAC_CLASS_CFG1_OFF */
 #define EMAC_CLASS_GATE_OFF     ((uint32_t)8U) /* from EMAC_CLASS_CFG1_OFF */
 
-#define EMAC_CLASS_AND_EN_OFF   ((uint32_t)0U)
-#define EMAC_CLASS_OR_EN_OFF    ((uint32_t)4U)
-#define EMAC_IOCTL_PRIO_MAX      ((uint32_t)8U)
-#define EMAC_FW_MGMT_CMD_HEADER         ((uint32_t)0x81U)
-#define EMAC_FW_MGMT_FDB_CMD_TYPE     ((uint32_t)0x03U)
+#define EMAC_CLASS_AND_EN_OFF                     ((uint32_t)0U)
+#define EMAC_CLASS_OR_EN_OFF                      ((uint32_t)4U)
+#define EMAC_IOCTL_PRIO_MAX                       ((uint32_t)8U)
+#define EMAC_FW_MGMT_CMD_HEADER                   ((uint32_t)0x81U)
+#define EMAC_FW_MGMT_FDB_CMD_TYPE                 ((uint32_t)0x03U)
+#define EMAC_FW_MGMT_SPEED_DUPLEXITY_CMD_TYPE     ((uint32_t)0x02U)
+
 #define EMAC_FW_MGMT_CMD_TYPE           ((uint32_t)0x04U)
 #define EMAC_FW_MGMT_PKT                ((uint32_t)0x80000000u)
 /*! @endcond */
@@ -547,6 +549,59 @@ typedef struct EMAC_IOCTL_FDB_ENTRY_S {
 
 /*@}*/
 /** @} */
+
+/*@}*/
+/** @} */
+/**
+ *  @defgroup  EMAC_IOCTL_SPEED_DUPLEXITY_CTRL Control sub-commands
+ *  @ingroup emaclld_api_ioctl_macros
+ *  @{
+ *
+ *  @name EMAC_IOCTL_SPEED_DUPLEXITY_CTRL sub-commands
+ *  @details The following macros are sub-commands that to be used when issueing
+ *  emac_ioctl with EMAC_IOCTL_CMD set to EMAC_IOCTL_SPEED_DUPLEXITY_CTRL
+ *
+ */
+/*@{*/
+/**
+ *  @def  EMAC_IOCTL_PREEMPT_TX_ENABLE
+ *        Enable premeption on TX
+ */
+#define EMAC_IOCTL_SPEED_DUPLEXITY_10HD             ((uint32_t)0x0)
+
+/**
+ *  @def  EMAC_IOCTL_PREEMPT_TX_DISABLE
+ *        Disable  premeption on TX
+ */
+#define EMAC_IOCTL_SPEED_DUPLEXITY_10FD             ((uint32_t)0x8)
+
+/**
+ *  @def  EMAC_IOCTL_PREEMPT_GET_TX_ENABLE_STATUS
+ *        Get status of premeption on TX
+ */
+#define EMAC_IOCTL_SPEED_DUPLEXITY_100HD            ((uint32_t)0x2)
+
+/**
+ *  @def  EMAC_IOCTL_PREEMPT_GET_TX_ACTIVE_STATUS
+ *       Get status of weather premeption is active
+ */
+#define EMAC_IOCTL_SPEED_DUPLEXITY_100FD             ((uint32_t)0xA)
+
+/**
+ *  @def  EMAC_IOCTL_PREEMPT_VERIFY_ENABLE
+ *        Enable verify state machine
+ */
+#define EMAC_IOCTL_SPEED_DUPLEXITY_GIGABIT          ((uint32_t)0xC)
+
+/**
+ *  @def  EMAC_IOCTL_PREEMPT_VERIFY_DISABLE
+ *        Disable verify state machine
+ */
+#define EMAC_IOCTL_SPEED_DUPLEXITY_DISABLE          ((uint32_t)0xF)
+
+/*@}*/
+/** @} */
+
 /*!
  *  @cond NODOC
  *  Internally used by the driver, IOCTL helper functions
@@ -575,6 +630,7 @@ extern EMAC_DRV_ERR_E emac_ioctl_configure_cut_through_or_prempt_select_ctrl(uin
 extern EMAC_DRV_ERR_E emac_ioctl_configure_special_frame_prio_ctrl(uint32_t port_num, uint32_t switch_port, void* p_params);
 extern EMAC_DRV_ERR_E emac_ioctl_frame_premption_ctrl(uint32_t port_num, uint32_t switch_port, void* p_params);
 extern EMAC_DRV_ERR_E emac_ioctl_configure_fdb_ageing_interval(uint32_t port_num, uint32_t switch_port, void* p_params);
+extern EMAC_DRV_ERR_E emac_ioctl_speed_duplexity_cfg(uint32_t port_num, void* p_params);
 
 /*! @endcond */
 
