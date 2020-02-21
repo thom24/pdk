@@ -111,8 +111,6 @@ uint8_t icss_tx_port_queue[3][100352] __attribute__ ((aligned (UDMA_CACHELINE_AL
 #endif
 #endif
 
-uint8_t sequenceNumber = 0;
-
 uint32_t interposerCardPresent = 0;
 
 #ifdef EMAC_TEST_APP_ICSSG
@@ -155,32 +153,6 @@ uint32_t gPgVersion;
 #include <ti/drv/emac/firmware/icss_dualmac/bin_pg2/txl2_rgmii0_bin.h>      /* PDSP5code */
 #include <ti/drv/emac/firmware/icss_dualmac/bin_pg2/txl2_rgmii1_bin.h>      /* PDSP6code */
 
-#if 0
-typedef struct {
-    const uint32_t *pru;
-    uint32_t pru_size;
-} app_test_pru_rtu_fw2_t;
-
-static app_test_pru_rtu_fw2_t firmware_pg1[6] = 
-{
-     { PDSPcode_0,  sizeof(PDSPcode_0) },
-     { PDSP2code_0, sizeof(PDSP2code_0) },
-     { PDSP3code_0,  sizeof(PDSP3code_0) },
-     { PDSP4code_0, sizeof(PDSP4code_0) },
-     { NULL,        0},
-     { NULL,        0},
-};
-
-static app_test_pru_rtu_fw2_t firmware_pg2[6] =
-{
-     { PDSPcode_0,  sizeof(PDSPcode_0) },
-     { PDSP2code_0, sizeof(PDSP2code_0) },
-     { PDSP3code_0,  sizeof(PDSP3code_0) },
-     { PDSP4code_0, sizeof(PDSP4code_0) },
-     { NULL,        0},
-     { NULL,        0},
-};
-#else
 typedef struct {
     const uint32_t *pru;
     uint32_t pru_size;
@@ -199,7 +171,6 @@ app_test_pru_rtu_fw_t firmware_pg2[2] = {
     { PDSPcode_0_PG2, sizeof(PDSPcode_0_PG2), PDSP2code_0_PG2, sizeof(PDSP2code_0_PG2), PDSP5code_0_PG2, sizeof(PDSP5code_0_PG2)},
     { PDSP3code_0_PG2, sizeof(PDSP3code_0_PG2), PDSP4code_0_PG2, sizeof(PDSP4code_0_PG2),  PDSP6code_0_PG2, sizeof(PDSP6code_0_PG2)}
 };
-#endif
 
 #endif
 
@@ -957,7 +928,7 @@ void app_test_task_poll_ctrl (UArg arg0, UArg arg1)
         if (pollModeEnabled == 1)
             emac_poll_ctrl(port, pktRings,mgmtRings,txRings);
         else
-            emac_poll_ctrl(port, 0,0,txRings);
+            emac_poll_ctrl(port, 0,EMAC_POLL_RX_MGMT_RING2,txRings);
         Task_sleep(2);
     }
 }
