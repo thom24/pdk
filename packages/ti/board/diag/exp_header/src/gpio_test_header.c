@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2018-2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -184,6 +184,7 @@ static int8_t BoardDiag_runGpioTestHeaderVerification(uint8_t index,
     int8_t rdSignalLevel;
     uint8_t loopcnt;
     uint8_t pinIndex;
+    int8_t  retVal = 0;
     pinIndex = testHeaderPin[index].offsetIndex;
 
     for (loopcnt = 0; loopcnt < ((testHeaderPin[index].numOfPins)/2); loopcnt++)
@@ -196,10 +197,12 @@ static int8_t BoardDiag_runGpioTestHeaderVerification(uint8_t index,
             if(gpioSignalLevel == GPIO_PIN_VAL_HIGH)
             {
                 UART_printf("Looping back the signal high failed for pin %d\n\r", pinIndex);
+                retVal = -1;
             }
             else
             {
                 UART_printf("Looping back the signal low failed for pin %d\n\r", pinIndex);
+                retVal = -1;
             }
         }
         else
@@ -223,15 +226,17 @@ static int8_t BoardDiag_runGpioTestHeaderVerification(uint8_t index,
             if(gpioSignalLevel == GPIO_PIN_VAL_HIGH)
             {
                 UART_printf("Looping back the signal high failed for pin %d\n\r", pinIndex);
+                retVal = -1;
             }
             else
             {
                 UART_printf("Looping back the signal low failed for pin %d\n\r", pinIndex);
+                retVal = -1;
             }
         }
     }
 
-    return 0;
+    return retVal;
 }
 
 /**

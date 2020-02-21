@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -52,40 +52,40 @@
 #define PIN3       (0x0054)
 #define PIN4       (0x001C)
 #define PIN5       (0x001D)
-#define PIN6       (0x0029)
-#define PIN7       (0x002A)
 /* MOTOR CONTROL header pins */
-#define PIN8       (0x0034)
-#define PIN9       (0x000D)
-#define PIN10      (0x000F)
-#define PIN11      (0x000E)
-#define PIN12      (0x0010)
-#define PIN13      (0x0011)
-#define PIN14      (0x001A)
-#define PIN15      (0x0014)
-#define PIN16      (0x0013)
-#define PIN17      (0x0012)
-#define PIN18      (0x0027)
-#define PIN19      (0x0009)
-#define PIN20      (0x000C)
-#define PIN21      (0x0008)
-#define PIN22      (0x0007)
-#define PIN23      (0x0026)
-#define PIN24      (0x0005)
-#define PIN25      (0x0004)
-#define PIN26      (0x000A)
-#define PIN27      (0x000B)
-#define PIN28      (0x0028)
-#define PIN29      (0x0006)
+#define PIN6       (0x001A)
+#define PIN7       (0x0014)
+#define PIN8       (0x0013)
+#define PIN9       (0x0012)
+#define PIN10      (0x0027)
+#define PIN11      (0x0009)
+#define PIN12      (0x000A)
+#define PIN13      (0x000B)
+#define PIN14      (0x0028)
+#define PIN15      (0x0006)
 /* I3C test header pin - 2 and 3 */
-#define PIN30      (0x003C)
-#define PIN31      (0x003D)
-
+#define PIN16      (0x003C)
+#define PIN17      (0x003D)
+/* PRG1_PWM pins for Alpha */
+#define PIN18      (0x0029)
+#define PIN19      (0x002A)
+/* MOTOR CONTROL header pins */
+#define PIN20      (0x0034)
+#define PIN21      (0x000D)
+#define PIN22      (0x000F)
+#define PIN23      (0x000E)
+#define PIN24      (0x0010)
+#define PIN25      (0x0011)
+#define PIN26      (0x000C)
+#define PIN27      (0x0008)
+#define PIN28      (0x0007)
+#define PIN29      (0x0026)
+#define PIN30      (0x0005)
+#define PIN31      (0x0004)
 /* MLB header pins CLOCK, SIGNAL and DATA */
 #define PIN32      (0x007F)  /* GPIO0_127 */
 #define PIN33      (0x007B)  /* GPIO0_123 */
 #define PIN34      (0x0100)  /* GPIO1_0   */
-
 
 /* GPIO Driver board specific pin configuration structure */
 GPIO_PinConfig gpioPinConfigs[] = {
@@ -109,6 +109,7 @@ GPIO_PinConfig gpioPinConfigs[] = {
     PIN15 | GPIO_CFG_INPUT,
     PIN16 | GPIO_CFG_OUTPUT,
     PIN17 | GPIO_CFG_INPUT,
+	/* PRG1_PWM pins for Alpha */
     PIN18 | GPIO_CFG_OUTPUT,
     PIN19 | GPIO_CFG_INPUT,
     PIN20 | GPIO_CFG_OUTPUT,
@@ -123,7 +124,7 @@ GPIO_PinConfig gpioPinConfigs[] = {
     PIN29 | GPIO_CFG_INPUT,
     PIN30 | GPIO_CFG_OUTPUT,
     PIN31 | GPIO_CFG_INPUT,
-/* MLB header pins CLOCK, SIGNAL and DATA */
+	/* MLB header pins CLOCK, SIGNAL and DATA */
     PIN32 | GPIO_CFG_OUTPUT,
     PIN33 | GPIO_CFG_OUTPUT,
     PIN34 | GPIO_CFG_OUTPUT,
