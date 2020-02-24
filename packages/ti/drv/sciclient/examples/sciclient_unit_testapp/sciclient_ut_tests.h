@@ -238,7 +238,43 @@ App_sciclientTestParams_t gSciclientTestcaseParams[] =
 
         /** testType **/
         (APP_SCICLIENT_TEST_TYPE_SANITY)
+    },
+#if defined(SOC_AM65XX)
+    {
+        /** enableTest **/
+        TEST_ENABLE,
+
+        /** testCaseId **/
+        6U,
+
+        /** *reqId **/
+        "PDK:2145",
+
+        /** *testCaseName **/
+        "SCICLIENT RM Get Configuruation Test",
+
+        /** *userInfo **/
+        "None",
+
+        /** *disableReason **/
+        "None",
+
+        /** *passFailCriteria **/
+        "Sciclient_Get coniguration should return correctly for PG1.0 and PG2.0 ",
+
+        /** cpuID **/
+        APP_SCICLIENT_R5F,
+
+        /** sciclientConfigParams **/
+        {},
+
+        /** printEnable **/
+        PRINT_ENABLE,
+
+        /** testType **/
+        (APP_SCICLIENT_TEST_TYPE_SANITY)
     }
+#endif
 };
 
 #endif /* #ifndef SCICLIENT_TEST_CASES_H_ */

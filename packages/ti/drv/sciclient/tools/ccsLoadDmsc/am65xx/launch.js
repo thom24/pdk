@@ -51,7 +51,7 @@
 
 //<!!!!!! EDIT THIS !!!!!>
 // Set this to 1 to allow loading the GEL files directly from the ccxml file.
-disableGelLoad = 0;
+disableGelLoad = 1;
 if (disableGelLoad == 0)
 {
     //Path to GEL files
@@ -59,7 +59,7 @@ if (disableGelLoad == 0)
 }
 // Path to the directory in which this file would be residing. CCS expects
 // absolute paths to load the binaries.
-thisJsFileDirectory = "/pdk/packages/ti/drv/sciclient/tools/ccsLoadDmsc/am65xx/";
+thisJsFileDirectory = "/ti/j7presi/workarea/pdk/packages/ti/drv/sciclient/tools/ccsLoadDmsc/am65xx/";
 //<!!!!!! EDIT THIS !!!!!>
 
 // Import the DSS packages into our namespace to save on typing

@@ -44,6 +44,12 @@
 #include <stdint.h>
 #include <ti/csl/csl_types.h>
 #include <ti/drv/sciclient/sciclient.h>
+#include <string.h>
+
+#include <ti/csl/tistdtypes.h>
+#include <ti/csl/soc.h>
+#include <ti/csl/arch/csl_arch.h>
+#include <ti/csl/hw_types.h>
 
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
@@ -60,8 +66,23 @@
 /* ========================================================================== */
 /*                          Function Declarations                             */
 /* ========================================================================== */
-
-/* None */
+#if defined(SOC_AM65XX)
+/**
+ *  \brief Mapping resources from AM65xx PG2.0 to AM65xx PG1.0.
+ *         NOTE: Not all the PG2.0 resources are mapped to PG1.0. Due to this
+ *               the API is programmed to return failure if a match is not
+ *               found.
+ *
+ *  \param type     The input type from PG2.0. The same is modified to PG1.0
+ *                  in place.
+ *  \param subtype  The input subtype from PG2.0. The same is modified to PG1.0
+ *                  in place.
+ *  \return r       CSL_EFAIL: If the type/subtype is not found.
+ *                  CSL_PASS:  If the type/subtype is found.
+ */
+static int32_t Sciclient_rmGetResourceRange_mapResources (uint16_t *type,
+                                                          uint8_t *subtype);
+#endif
 
 /* ========================================================================== */
 /*                            Global Variables                                */
@@ -78,22 +99,43 @@ int32_t Sciclient_rmGetResourceRange(
                 struct tisci_msg_rm_get_resource_range_resp *resp,
                 uint32_t timeout)
 {
-    int32_t r;
+    int32_t r = CSL_PASS;
     Sciclient_ReqPrm_t sciReq ;
+    struct tisci_msg_rm_get_resource_range_req req_copy;
     sciReq.messageType    = TISCI_MSG_RM_GET_RESOURCE_RANGE;
     sciReq.flags          = TISCI_MSG_FLAG_AOP;
-    sciReq.pReqPayload    = (const uint8_t *) req;
+    sciReq.pReqPayload    = (const uint8_t *) &req_copy;
     sciReq.reqPayloadSize = (uint32_t) sizeof(*req);
     sciReq.timeout        = timeout;
+#if defined(SOC_AM65XX)
+    uint32_t dev_id = HW_RD_REG32((CSL_WKUP_CTRL_MMR0_CFG0_BASE
+                   + CSL_WKUP_CTRL_MMR_CFG0_JTAGID));
+#endif
 
     Sciclient_RespPrm_t sciResp ;
     sciResp.flags           = 0;
     sciResp.pRespPayload    = (uint8_t *) resp;
     sciResp.respPayloadSize = (uint32_t) sizeof(*resp);
+    memcpy(&req_copy, req, sizeof(struct tisci_msg_rm_get_resource_range_req));
 
-
-
-    r = Sciclient_service(&sciReq, &sciResp);
+#if defined(SOC_AM65XX)
+            if (dev_id == 0x0BB5A02F) /* SR1 */
+            {
+                r = Sciclient_rmGetResourceRange_mapResources(&req_copy.type, &req_copy.subtype);
+            }
+            else if (dev_id == 0x1BB5A02F) /* SR2 */
+            {
+                /* Do not do anything */
+            }
+            else
+            {
+                r = CSL_EFAIL;
+            }
+#endif
+    if (CSL_PASS == r)
+    {
+        r = Sciclient_service(&sciReq, &sciResp);
+    }
     if ((r != CSL_PASS) ||
         ((sciResp.flags & TISCI_MSG_FLAG_ACK) != TISCI_MSG_FLAG_ACK)) {
         r = CSL_EFAIL;
@@ -101,6 +143,179 @@ int32_t Sciclient_rmGetResourceRange(
 
     return r;
 }
+#if defined(SOC_AM65XX)
+static int32_t Sciclient_rmGetResourceRange_mapResources (uint16_t *type,
+                                                          uint8_t *subtype)
+{
+    int32_t r = CSL_PASS;
+    switch(*type)
+    {
+        case TISCI_DEV_GIC0:
+            *type = TISCI_RESASG_TYPE_GIC_IRQ;
+            switch (*subtype)
+            {
+                case TISCI_RESASG_SUBTYPE_GIC0_SPI_IRQ_GROUP0_FROM_NAVSS0_INTR_ROUTER_0:    *subtype = TISCI_RESASG_SUBTYPE_GIC_IRQ_MAIN_NAV_SET0; break;
+                case TISCI_RESASG_SUBTYPE_GIC0_SPI_IRQ_GROUP0_FROM_GPIOMUX_INTRTR0:         *subtype = TISCI_RESASG_SUBTYPE_GIC_IRQ_WKUP_GPIO; break;
+                case TISCI_RESASG_SUBTYPE_GIC0_SPI_IRQ_GROUP1_FROM_NAVSS0_INTR_ROUTER_0:    *subtype = TISCI_RESASG_SUBTYPE_GIC_IRQ_MAIN_NAV_SET1; break;
+                case TISCI_RESASG_SUBTYPE_GIC0_SPI_IRQ_GROUP0_FROM_CMPEVENT_INTRTR0:        *subtype = TISCI_RESASG_SUBTYPE_GIC_IRQ_COMP_EVT; break;
+                case TISCI_RESASG_SUBTYPE_GIC0_SPI_IRQ_GROUP0_FROM_WKUP_GPIOMUX_INTRTR0:    *subtype = TISCI_RESASG_SUBTYPE_GIC_IRQ_WKUP_GPIO; break;
+                default: r = CSL_EFAIL;
+            }
+            break;
+        case TISCI_DEV_PRU_ICSSG0: 
+            *type = TISCI_RESASG_TYPE_ICSSG0_IRQ;
+            switch (*subtype)
+            {
+                case TISCI_RESASG_SUBTYPE_PRU_ICSSG0_PR1_SLV_INTR_IRQ_GROUP0_FROM_NAVSS0_INTR_ROUTER_0: *subtype = TISCI_RESASG_SUBTYPE_ICSSG0_IRQ_MAIN_NAV; break;
+                case TISCI_RESASG_SUBTYPE_PRU_ICSSG0_PR1_SLV_INTR_IRQ_GROUP0_FROM_GPIOMUX_INTRTR0:      *subtype = TISCI_RESASG_SUBTYPE_ICSSG0_IRQ_MAIN_GPIO; break;
+                default: r = CSL_EFAIL;
+            }
+            break;
+        case TISCI_DEV_PRU_ICSSG1: 
+            *type = TISCI_RESASG_TYPE_ICSSG1_IRQ;
+            switch (*subtype)
+            {
+                case TISCI_RESASG_SUBTYPE_PRU_ICSSG1_PR1_SLV_INTR_IRQ_GROUP0_FROM_NAVSS0_INTR_ROUTER_0: *subtype = TISCI_RESASG_SUBTYPE_ICSSG1_IRQ_MAIN_NAV; break;
+                case TISCI_RESASG_SUBTYPE_PRU_ICSSG1_PR1_SLV_INTR_IRQ_GROUP0_FROM_GPIOMUX_INTRTR0:      *subtype = TISCI_RESASG_SUBTYPE_ICSSG1_IRQ_MAIN_GPIO; break;
+                default: r = CSL_EFAIL;
+            }
+            break;
+        case TISCI_DEV_PRU_ICSSG2:
+            *type = TISCI_RESASG_TYPE_ICSSG2_IRQ;
+            switch (*subtype)
+            {
+                case TISCI_RESASG_SUBTYPE_PRU_ICSSG2_PR1_SLV_INTR_IRQ_GROUP0_FROM_NAVSS0_INTR_ROUTER_0: *subtype = TISCI_RESASG_SUBTYPE_ICSSG2_IRQ_MAIN_NAV; break;
+                case TISCI_RESASG_SUBTYPE_PRU_ICSSG2_PR1_SLV_INTR_IRQ_GROUP0_FROM_GPIOMUX_INTRTR0:      *subtype = TISCI_RESASG_SUBTYPE_ICSSG2_IRQ_MAIN_GPIO; break;
+                default: r = CSL_EFAIL;
+            }
+            break;
+        case TISCI_DEV_NAVSS0_MODSS_INTA0: 
+            *type = TISCI_RESASG_TYPE_MAIN_NAV_MODSS_IA0;
+            switch (*subtype)
+            {
+                case TISCI_RESASG_SUBTYPE_IA_VINT:             *subtype = TISCI_RESASG_SUBTYPE_MAIN_NAV_MODSS_IA0_VINT; break;
+                case TISCI_RESASG_SUBTYPE_GLOBAL_EVENT_SEVT:   *subtype = TISCI_RESASG_SUBTYPE_MAIN_NAV_MODSS_IA0_SEVI; break;
+                default: r = CSL_EFAIL;
+            }
+            break;
+        case TISCI_DEV_NAVSS0_MODSS_INTA1: 
+            *type = TISCI_RESASG_TYPE_MAIN_NAV_MODSS_IA1;
+            switch (*subtype)
+            {
+                case TISCI_RESASG_SUBTYPE_IA_VINT:             *subtype = TISCI_RESASG_SUBTYPE_MAIN_NAV_MODSS_IA1_VINT; break;
+                case TISCI_RESASG_SUBTYPE_GLOBAL_EVENT_SEVT:   *subtype = TISCI_RESASG_SUBTYPE_MAIN_NAV_MODSS_IA1_SEVI; break;
+                default: r = CSL_EFAIL;
+            }
+            break;
+        case TISCI_DEV_NAVSS0_RINGACC0: 
+            *type = TISCI_RESASG_TYPE_MAIN_NAV_RA;
+            switch (*subtype)
+            {
+                case TISCI_RESASG_SUBTYPE_RA_ERROR_OES:   *subtype = TISCI_RESASG_SUBTYPE_MAIN_NAV_RA_ERROR_OES; break;
+                case TISCI_RESASG_SUBTYPE_RA_GP:          *subtype = TISCI_RESASG_SUBTYPE_MAIN_NAV_RA_RING_GP; break;
+                case TISCI_RESASG_SUBTYPE_RA_UDMAP_RX:    *subtype = TISCI_RESASG_SUBTYPE_MAIN_NAV_RA_RING_UDMAP_RX; break;
+                case TISCI_RESASG_SUBTYPE_RA_UDMAP_TX:    *subtype = TISCI_RESASG_SUBTYPE_MAIN_NAV_RA_RING_UDMAP_TX; break;
+                case TISCI_RESASG_SUBTYPE_RA_UDMAP_TX_EXT:*subtype = TISCI_RESASG_SUBTYPE_MAIN_NAV_RA_RING_UDMAP_TX; break;
+                case TISCI_RESASG_SUBTYPE_RA_UDMAP_RX_H:  *subtype = TISCI_RESASG_SUBTYPE_MAIN_NAV_RA_RING_UDMAP_RX; break;
+                case TISCI_RESASG_SUBTYPE_RA_UDMAP_TX_H:  *subtype = TISCI_RESASG_SUBTYPE_MAIN_NAV_RA_RING_UDMAP_TX; break;
+                case TISCI_RESASG_SUBTYPE_RA_VIRTID:      *subtype = TISCI_RESASG_SUBTYPE_MAIN_NAV_RA_VIRTID; break;
+                default: r = CSL_EFAIL;
+            }
+            break;
+        case TISCI_DEV_NAVSS0_UDMAP0:
+            *type = TISCI_RESASG_TYPE_MAIN_NAV_UDMAP;
+            switch (*subtype)
+            {
+                case TISCI_RESASG_SUBTYPE_UDMAP_RX_FLOW_COMMON:  *subtype = TISCI_RESASG_SUBTYPE_MAIN_NAV_UDMAP_RX_FLOW_COMMON; break;
+                case TISCI_RESASG_SUBTYPE_UDMAP_INVALID_FLOW_OES:*subtype = TISCI_RESASG_SUBTYPE_MAIN_NAV_UDMAP_INVALID_FLOW_OES; break;
+                case TISCI_RESASG_SUBTYPE_GLOBAL_EVENT_TRIGGER:  *subtype = TISCI_RESASG_SUBTYPE_MAIN_NAV_UDMAP_TRIGGER; break;
+                case TISCI_RESASG_SUBTYPE_UDMAP_GLOBAL_CONFIG:   *subtype = TISCI_RESASG_SUBTYPE_MAIN_NAV_UDMAP_GCFG; break;
+                case TISCI_RESASG_SUBTYPE_UDMAP_RX_CHAN:         *subtype = TISCI_RESASG_SUBTYPE_MAIN_NAV_UDMAP_RX_CHAN; break;
+                case TISCI_RESASG_SUBTYPE_UDMAP_RX_HCHAN:        *subtype = TISCI_RESASG_SUBTYPE_MAIN_NAV_UDMAP_RX_HCHAN; break;
+                case TISCI_RESASG_SUBTYPE_UDMAP_TX_CHAN:         *subtype = TISCI_RESASG_SUBTYPE_MAIN_NAV_UDMAP_TX_CHAN; break;
+                case TISCI_RESASG_SUBTYPE_UDMAP_TX_ECHAN:        *subtype = TISCI_RESASG_SUBTYPE_MAIN_NAV_UDMAP_TX_ECHAN; break;
+                case TISCI_RESASG_SUBTYPE_UDMAP_TX_HCHAN:        *subtype = TISCI_RESASG_SUBTYPE_MAIN_NAV_UDMAP_TX_HCHAN; break;
+                default: r = CSL_EFAIL;
+            }
+            break;
+        case TISCI_DEV_NAVSS0_UDMASS_INTA0:
+            *type = TISCI_RESASG_TYPE_MAIN_NAV_UDMASS_IA0;
+            switch (*subtype)
+            {
+                case TISCI_RESASG_SUBTYPE_IA_VINT          : *subtype = TISCI_RESASG_SUBTYPE_MAIN_NAV_UDMASS_IA0_VINT; break;
+                case TISCI_RESASG_SUBTYPE_GLOBAL_EVENT_GEVT: *subtype = TISCI_RESASG_SUBTYPE_MAIN_NAV_UDMASS_IA0_GEVI; break;
+                case TISCI_RESASG_SUBTYPE_GLOBAL_EVENT_MEVT: *subtype = TISCI_RESASG_SUBTYPE_MAIN_NAV_UDMASS_IA0_MEVI; break;
+                case TISCI_RESASG_SUBTYPE_GLOBAL_EVENT_SEVT: *subtype = TISCI_RESASG_SUBTYPE_MAIN_NAV_UDMASS_IA0_SEVI; break;
+                default: r = CSL_EFAIL;
+            }
+            break;
+        case TISCI_DEV_MCU_NAVSS0_RINGACC0: 
+            *type = TISCI_RESASG_TYPE_MCU_NAV_RA;
+            switch (*subtype)
+            {
+                case TISCI_RESASG_SUBTYPE_RA_ERROR_OES : *subtype = TISCI_RESASG_SUBTYPE_MCU_NAV_RA_ERROR_OES; break;
+                case TISCI_RESASG_SUBTYPE_RA_GP        : *subtype = TISCI_RESASG_SUBTYPE_MCU_NAV_RA_RING_GP; break;
+                case TISCI_RESASG_SUBTYPE_RA_UDMAP_RX  : *subtype = TISCI_RESASG_SUBTYPE_MCU_NAV_RA_RING_UDMAP_RX; break;
+                case TISCI_RESASG_SUBTYPE_RA_UDMAP_TX  : *subtype = TISCI_RESASG_SUBTYPE_MCU_NAV_RA_RING_UDMAP_TX; break;
+                case TISCI_RESASG_SUBTYPE_RA_UDMAP_RX_H: *subtype = TISCI_RESASG_SUBTYPE_MCU_NAV_RA_RING_UDMAP_RX; break;
+                case TISCI_RESASG_SUBTYPE_RA_UDMAP_TX_H: *subtype = TISCI_RESASG_SUBTYPE_MCU_NAV_RA_RING_UDMAP_TX; break;
+                case TISCI_RESASG_SUBTYPE_RA_VIRTID    : *subtype = TISCI_RESASG_SUBTYPE_MCU_NAV_RA_VIRTID; break;
+                default: r = CSL_EFAIL;
+            }
+            break;
+        case TISCI_DEV_MCU_NAVSS0_UDMAP0:
+            *type = TISCI_RESASG_TYPE_MCU_NAV_UDMAP;
+            switch (*subtype)
+            {
+                case TISCI_RESASG_SUBTYPE_UDMAP_RX_FLOW_COMMON  : *subtype = TISCI_RESASG_SUBTYPE_MCU_NAV_UDMAP_RX_FLOW_COMMON; break;
+                case TISCI_RESASG_SUBTYPE_UDMAP_INVALID_FLOW_OES: *subtype = TISCI_RESASG_SUBTYPE_MCU_NAV_UDMAP_INVALID_FLOW_OES; break;
+                case TISCI_RESASG_SUBTYPE_GLOBAL_EVENT_TRIGGER  : *subtype = TISCI_RESASG_SUBTYPE_MCU_NAV_UDMAP_TRIGGER; break;
+                case TISCI_RESASG_SUBTYPE_UDMAP_GLOBAL_CONFIG   : *subtype = TISCI_RESASG_SUBTYPE_MCU_NAV_UDMAP_GCFG; break;
+                case TISCI_RESASG_SUBTYPE_UDMAP_RX_CHAN         : *subtype = TISCI_RESASG_SUBTYPE_MCU_NAV_UDMAP_RX_CHAN; break;
+                case TISCI_RESASG_SUBTYPE_UDMAP_RX_HCHAN        : *subtype = TISCI_RESASG_SUBTYPE_MCU_NAV_UDMAP_RX_HCHAN; break;
+                case TISCI_RESASG_SUBTYPE_UDMAP_TX_CHAN         : *subtype = TISCI_RESASG_SUBTYPE_MCU_NAV_UDMAP_TX_CHAN; break;
+                case TISCI_RESASG_SUBTYPE_UDMAP_TX_HCHAN        : *subtype = TISCI_RESASG_SUBTYPE_MCU_NAV_UDMAP_TX_HCHAN; break;
+                default: r = CSL_EFAIL;
+            }
+            break;
+        case TISCI_DEV_MCU_NAVSS0_INTR_AGGR_0: 
+            *type = TISCI_RESASG_TYPE_MCU_NAV_UDMASS_IA0;
+            switch (*subtype)
+            {
+                case TISCI_RESASG_SUBTYPE_IA_VINT          : *subtype = TISCI_RESASG_SUBTYPE_MCU_NAV_UDMASS_IA0_VINT; break;
+                case TISCI_RESASG_SUBTYPE_GLOBAL_EVENT_GEVT: *subtype = TISCI_RESASG_SUBTYPE_MCU_NAV_UDMASS_IA0_GEVI; break;
+                case TISCI_RESASG_SUBTYPE_GLOBAL_EVENT_MEVT: *subtype = TISCI_RESASG_SUBTYPE_MCU_NAV_UDMASS_IA0_MEVI; break;
+                case TISCI_RESASG_SUBTYPE_GLOBAL_EVENT_SEVT: *subtype = TISCI_RESASG_SUBTYPE_MCU_NAV_UDMASS_IA0_SEVI; break;
+                default: r = CSL_EFAIL;
+            }
+            break;
+        case TISCI_DEV_MCU_ARMSS0_CPU0:
+            *type = TISCI_RESASG_TYPE_PULSAR_C0_IRQ;
+            switch (*subtype)
+            {
+                case TISCI_RESASG_SUBTYPE_MCU_ARMSS0_CPU0_INTR_IRQ_GROUP0_FROM_MCU_NAVSS0_INTR_ROUTER_0: *subtype = TISCI_RESASG_SUBTYPE_PULSAR_C0_IRQ_MCU_NAV ; break;
+                case TISCI_RESASG_SUBTYPE_MCU_ARMSS0_CPU0_INTR_IRQ_GROUP0_FROM_WKUP_GPIOMUX_INTRTR0    : *subtype = TISCI_RESASG_SUBTYPE_PULSAR_C0_IRQ_WKUP_GPIO; break;
+                case TISCI_RESASG_SUBTYPE_MCU_ARMSS0_CPU0_INTR_IRQ_GROUP0_FROM_MAIN2MCU_LVL_INTRTR0    : *subtype = TISCI_RESASG_SUBTYPE_PULSAR_C0_IRQ_MAIN2MCU_LVL; break;
+                case TISCI_RESASG_SUBTYPE_MCU_ARMSS0_CPU0_INTR_IRQ_GROUP0_FROM_MAIN2MCU_PLS_INTRTR0    : *subtype = TISCI_RESASG_SUBTYPE_PULSAR_C0_IRQ_MAIN2MCU_PLS; break;
+                default: r = CSL_EFAIL;
+            }
+            break;
+        case TISCI_DEV_MCU_ARMSS0_CPU1:
+            *type = TISCI_RESASG_TYPE_PULSAR_C1_IRQ;
+            switch (*subtype)
+            {
+                case TISCI_RESASG_SUBTYPE_MCU_ARMSS0_CPU1_INTR_IRQ_GROUP0_FROM_MCU_NAVSS0_INTR_ROUTER_0: *subtype = TISCI_RESASG_SUBTYPE_PULSAR_C1_IRQ_MCU_NAV ; break;
+                case TISCI_RESASG_SUBTYPE_MCU_ARMSS0_CPU1_INTR_IRQ_GROUP0_FROM_WKUP_GPIOMUX_INTRTR0    : *subtype = TISCI_RESASG_SUBTYPE_PULSAR_C1_IRQ_WKUP_GPIO; break;
+                case TISCI_RESASG_SUBTYPE_MCU_ARMSS0_CPU1_INTR_IRQ_GROUP0_FROM_MAIN2MCU_LVL_INTRTR0    : *subtype = TISCI_RESASG_SUBTYPE_PULSAR_C1_IRQ_MAIN2MCU_LVL; break;
+                case TISCI_RESASG_SUBTYPE_MCU_ARMSS0_CPU1_INTR_IRQ_GROUP0_FROM_MAIN2MCU_PLS_INTRTR0    : *subtype = TISCI_RESASG_SUBTYPE_PULSAR_C1_IRQ_MAIN2MCU_PLS; break;
+                default: r = CSL_EFAIL;
+            }
+            break;
+        default: r = CSL_EFAIL; break;
+    }
+    return r;
+}
+#endif
 
 int32_t Sciclient_rmIrqSet(const struct tisci_msg_rm_irq_set_req *req,
                            const struct tisci_msg_rm_irq_set_resp *resp,
