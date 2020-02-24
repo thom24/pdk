@@ -162,6 +162,20 @@ static void nimu_task_poll_pkt (uint32_t arg0, uint32_t arg1)
     }
 }
 
+#ifdef NIMU_ICSSG
+static void nimu_task_poll_ctrl (uint32_t arg0, uint32_t arg1)
+{
+    uint32_t portNum = (uint32_t) arg0;
+    (void)arg1;
+    while (nimuPollLoop == 1U)
+    {
+        /* Poll for EMAC_POLL_RX_MGMT_RING2 for mgmt responses from FW */
+        emac_poll_ctrl(portNum, 0, EMAC_POLL_RX_MGMT_RING2, EMAC_POLL_TX_COMPLETION_RING1);
+        Osal_TaskSleep(100);
+    }
+}
+#endif
+
 /**
  *  @b NIMU_start
  *  @n
@@ -270,6 +284,9 @@ static int_fast32_t NIMU_start (NETIF_DEVICE* ptr_net_device)
         nimu_init_pruicss(port_num);
 #endif
         Osal_TaskCreate_v2((void*)nimu_task_poll_pkt, port_num);
+#ifdef NIMU_ICSSG
+        Osal_TaskCreate_v2((void*)nimu_task_poll_ctrl, port_num);
+#endif
 
         NIMU_drv_log ("EMAC has been started successfully\n");
     }
