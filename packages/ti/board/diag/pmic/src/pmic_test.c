@@ -85,7 +85,7 @@ int32_t numPmic = 0;
 
 pmic_data_t* Get_PmicData(char *pBoardName);
  
-extern const I2C_Config I2C_config[];
+extern I2C_config_list I2C_config;
 
 /* Board specific definitions */
 #define I2C_INSTANCE                       (0U)

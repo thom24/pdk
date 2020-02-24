@@ -187,7 +187,7 @@ UART_HwAttrs uartInitCfg[CSL_UART_PER_CNT_AM437X] =
 UART_V1_Object UartObjects[CSL_UART_PER_CNT_AM437X];
 
 /* UART configuration structure */
-CSL_PUBLIC_CONST UART_config_list UART_config = {
+UART_config_list UART_config = {
     {
         &UART_FxnTable_v1,
         &UartObjects[0],

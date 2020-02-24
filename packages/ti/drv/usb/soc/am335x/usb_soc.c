@@ -61,7 +61,7 @@ const USB_FxnTable USB_FxnTable_musb = {
 
 /* USB configuration structure - for each of 
  * the USB instances + the null terminate entry */
-const USB_Config USB_config[3] = {
+USB_Config USB_config[3] = {
     {
         &USB_FxnTable_musb,
         0

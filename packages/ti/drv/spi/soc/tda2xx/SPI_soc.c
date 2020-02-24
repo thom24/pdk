@@ -278,7 +278,7 @@ const SPI_config_list SPI_config = {
 };
 
 /* MCSPI configuration structure */
-const MCSPI_config_list MCSPI_config = {
+MCSPI_config_list MCSPI_config = {
     {
         {
             &MCSPI_FxnTable_v1,

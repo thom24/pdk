@@ -99,7 +99,7 @@ void printTestCase(uint32_t testId, uint32_t i2cInst, I2C_BitRate dataRate)
     }
 }
 
-extern const I2C_config_list I2C_config;
+extern I2C_config_list I2C_config;
 
 /*
  *  ======== test function ========

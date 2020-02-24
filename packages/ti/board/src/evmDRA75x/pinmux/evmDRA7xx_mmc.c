@@ -94,7 +94,7 @@
 #include <ti/drv/pm/include/prcm/pmhal_pmic.h>
 #include <ti/drv/pm/include/pmic/pmhal_tps659039.h>
 #include <ti/drv/pm/include/prcm/pmhal_i2cComm.h>
-extern const I2C_Config I2C_config[];
+extern I2C_config_list I2C_config;
 static I2C_Handle pmic_i2c_handle = NULL;
 
 /* #define CTRL_CORE_CONTROL_PBIAS                         CSL_CONTROL_CORE_PAD_CONTROL_PBIAS */

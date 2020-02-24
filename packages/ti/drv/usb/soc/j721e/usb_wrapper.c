@@ -67,7 +67,7 @@
 /* ========================================================================== */
 extern void USBHCDTerm(uint32_t ulIndex);
 
-extern const USB_Config USB_config[3];
+extern USB_Config USB_config[3];
 
 /* ========================================================================== */
 /*                 Prototypes                                                 */
@@ -106,7 +106,7 @@ void usbHostIntrHandler(void* drvData)
 void usbPhyOn(uint32_t portNumber, uint32_t invertPolarity)
 {
     uint32_t usbCmnRegs = 0;
-    const USB_Config* usbConfig = &USB_config[portNumber];
+    USB_Config* usbConfig = &USB_config[portNumber];
     uint32_t pllRefSel = 0;
     uint32_t validPll = 1;
 
@@ -196,7 +196,7 @@ static int32_t usb3_wrapper_config(uint32_t portNumber, uint32_t isHostMode)
 {
     uint32_t usbCmnRegs = 0;
     uint32_t modeStrap = 0;
-    const USB_Config* usbConfig = &USB_config[portNumber];
+    USB_Config* usbConfig = &USB_config[portNumber];
 
     if (portNumber == 0)
     {
@@ -262,7 +262,7 @@ static int32_t usb3_wrapper_config(uint32_t portNumber, uint32_t isHostMode)
 void usbClockCfg(uint32_t portNumber)
 {
     uint32_t mmrUsbClkSel;
-    const USB_Config* usbConfig = &USB_config[portNumber];
+    USB_Config* usbConfig = &USB_config[portNumber];
 
     if (portNumber == 0)
     {
@@ -315,7 +315,7 @@ int32_t usbClockSSCfg(uint32_t portNumber)
     int32_t             rc = 0;
     int32_t             i;
 
-    const USB_Config*   usbConfig = &USB_config[portNumber];
+    USB_Config*   usbConfig = &USB_config[portNumber];
 
     CSL_SerdesLaneEnableParams serdesLaneEnableParams;
     CSL_SerdesLaneEnableStatus laneRetVal = CSL_SERDES_LANE_ENABLE_NO_ERR;
@@ -454,7 +454,7 @@ int32_t usbcLaneSwap(uint32_t portNumber)
     int32_t             rc = 0;
     uint32_t            serdesBase;
 
-    const USB_Config*   usbConfig = &USB_config[portNumber];
+    USB_Config*   usbConfig = &USB_config[portNumber];
 
     /* find which SERDES instance we need to use and validate it
      * USBSS#0 can use SERDES#0 or SERDES#3

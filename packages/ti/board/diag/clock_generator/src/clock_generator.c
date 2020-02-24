@@ -132,7 +132,7 @@ clockGenCfg_t clockConfig[NUM_CLOCK_GEN] =
 };
 #endif
 
-extern const I2C_Config I2C_config[];
+extern I2C_config_list I2C_config;
 extern void BOARD_delay(uint32_t usecs);
 
 /**

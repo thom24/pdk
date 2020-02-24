@@ -58,7 +58,7 @@ uint8_t rolling1;
 const uint8_t * FontBitmap;
 const FONT_CHAR_INFO * FontDescriptors;
 const FONT_INFO * FontInfo;
-extern const I2C_Config I2C_config[];
+extern I2C_config_list I2C_config;
 extern void BOARD_delay(uint32_t usecs);
 
 I2C_Params i2cParams;

@@ -87,8 +87,6 @@ bool Board_initUART(void)
     UART_socInitFwCfg();
     
     boardCfg = BOARD_INIT_PLL | BOARD_INIT_MODULE_CLOCK | BOARD_INIT_DDR | BOARD_INIT_ICSS_PINMUX;
-    //boardCfg |= BOARD_INIT_UART_STDIO;
-    //boardCfg |= BOARD_INIT_PINMUX_CONFIG;
     boardStatus = Board_init(boardCfg);
     if (boardStatus != BOARD_SOK)
     {

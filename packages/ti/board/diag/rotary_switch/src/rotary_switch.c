@@ -62,7 +62,7 @@ typedef	int16_t TEST_STATUS;
 #define TEST_FAIL     (-1)
 #endif
 
-extern const I2C_Config I2C_config[];
+extern I2C_config_list I2C_config;
 extern void BOARD_delay(uint32_t usecs);
 
 

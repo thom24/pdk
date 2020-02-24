@@ -47,7 +47,7 @@
 
 /* Externs */
 extern const SPI_config_list SPI_config;
-extern const MCSPI_config_list MCSPI_config;
+extern MCSPI_config_list MCSPI_config;
 
 /* Used to check status and initialization */
 static int32_t SPI_count = (-((int32_t)1));

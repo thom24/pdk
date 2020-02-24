@@ -137,7 +137,7 @@ I2C_v1_Object I2cObjects[I2C_HWIP_MAX_CNT];
 
 
 /* I2C configuration structure */
-const I2C_Config I2C_config[I2C_HWIP_MAX_CNT + 1] = {
+I2C_config_list I2C_config  = {
     {
         &I2C_v1_FxnTable,
         &I2cObjects[0],

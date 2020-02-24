@@ -337,7 +337,7 @@ extern USB_Config USB_config[3];
 void enableComplianceMode(uint32_t instanceNumber)
 {
     uint32_t regVal = 0;
-    const USB_Config* usbConfig = &USB_config[instanceNumber];
+    USB_Config* usbConfig = &USB_config[instanceNumber];
     uint32_t baseAddr = 0;
     uint32_t PP = 0, CCS=0, PED=0, PR=0;
 #ifdef _DEBUG_
@@ -447,7 +447,7 @@ void USB_Host_Init(uint32_t instanceNumber)
     XHCI_DATA_S* xhciData = 0;
 
 #if DOING_SERDES_AFTER_CORE_INIT
-    const USB_Config* usbConfig = &USB_config[instanceNumber];
+    USB_Config* usbConfig = &USB_config[instanceNumber];
 #endif
 
     xhciData = &g_usb_global.drv_instances[instanceNumber].xhciData;

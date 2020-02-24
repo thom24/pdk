@@ -49,7 +49,7 @@
 #include "board.h"
 #include "board_cfg.h"
 
-extern const I2C_Config I2C_config[];
+extern I2C_config_list I2C_config;
 
 /* Delay function */
 void AppDelay(uint32_t delayVal);

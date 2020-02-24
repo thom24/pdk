@@ -49,7 +49,7 @@
 #include "board.h"
 #include "board_cfg.h"
 
-extern const I2C_Config I2C_config[];
+extern I2C_config_list I2C_config;
 
 #if defined(skAM335x)
 #define I2C_ACCEL_INSTANCE                        (0U)

@@ -50,7 +50,7 @@
 
 #include "lcd_touch_test.h"
 
-extern const I2C_Config I2C_config[];
+extern I2C_config_list I2C_config;
 
 touch_init_t touch_init[NUM_OF_CONFIGS] = {
     {CMD_REG_ADDR, 0x0A},

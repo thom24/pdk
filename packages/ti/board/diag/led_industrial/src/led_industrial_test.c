@@ -49,7 +49,7 @@
 
 #include "led_industrial_test.h"
 
-extern const I2C_Config I2C_config[];
+extern I2C_config_list I2C_config;
 
 /**
  *  \brief    This function is used to set the output level of the LEDs

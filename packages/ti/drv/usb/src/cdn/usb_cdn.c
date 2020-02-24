@@ -405,12 +405,12 @@ extern void USBHCDDisconnect(uint32_t ulIndex);
 
 #define PRINT_COMPLIANCE_STATUS (1)
 
-extern const USB_Config USB_config[3];
+extern USB_Config USB_config[3];
 
 void enableComplianceMode(uint32_t instanceNumber)
 {
     uint32_t regVal = 0;
-    const USB_Config* usbConfig = &USB_config[instanceNumber];
+    USB_Config* usbConfig = &USB_config[instanceNumber];
     uint32_t baseAddr = 0;
     uint32_t PP = 0, CCS=0, PED=0, PR=0, PLS=0;
 

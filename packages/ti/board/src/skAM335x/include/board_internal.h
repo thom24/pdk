@@ -62,7 +62,7 @@ extern "C"
 /*****************************************************************************
  * Internal Objects                                                          *
  *****************************************************************************/
-extern const I2C_Config I2C_config[];
+extern I2C_config_list I2C_config;
 
 typedef struct
 {

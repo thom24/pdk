@@ -165,7 +165,7 @@ void usbClockCfg(uint32_t portNumber)
     uint32_t phyBase = 0;
 
 #ifndef DOING_SERDES_AFTER_CORE_INIT
-    const USB_Config* usbConfig = &USB_config[portNumber];
+    USB_Config* usbConfig = &USB_config[portNumber];
 
     /* enable USB2.0 clocks */
     /* nothing need to be done for USB2.0 clocks */

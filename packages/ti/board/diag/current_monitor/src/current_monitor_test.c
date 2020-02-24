@@ -52,7 +52,7 @@
 
 #include "current_monitor_test.h"
 
-extern const I2C_Config I2C_config[];
+extern I2C_config_list I2C_config;
 
 #if defined(am65xx_evm) || defined(am65xx_idk) //J7ES_TBD: Need to change back 'defined(am65xx_evm) || defined(am65xx_idk)' to 'defined(SOC_AM65XX)'
 inaCfgObj_t inaDevice[NUM_OF_INA_DEVICES] = {

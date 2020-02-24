@@ -108,7 +108,7 @@
 /*                          IMPORTED VARIABLES                                */
 /* ========================================================================== */
 
-extern HeapMem_Handle myHeap;
+extern const ti_sysbios_heaps_HeapMem_Handle myHeap;
 #define max(x,y) ( ((x) > (y))?(x):(y) )
 /* ========================================================================== */
 /*                          MACRO DEFINITIONS                                 */

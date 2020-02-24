@@ -51,7 +51,7 @@
  
 #include "fpd_dsi_test.h"
 
-extern const I2C_Config I2C_config[];
+extern I2C_config_list I2C_config;
 
 Board_FpdModuleObj fpdModParams = {0x2C, 0x16, 0x11};
 

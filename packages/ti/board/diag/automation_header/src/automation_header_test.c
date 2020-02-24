@@ -50,7 +50,7 @@
 
 #include "automation_header_test.h"
 
-extern const I2C_Config I2C_config[];
+extern I2C_config_list I2C_config;
 
 /**
  *  \brief    Used to read the input port registers of Boot mode

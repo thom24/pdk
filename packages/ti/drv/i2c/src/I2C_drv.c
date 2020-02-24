@@ -47,7 +47,7 @@
 #include <stdlib.h>
 
 /* Externs */
-extern const I2C_config_list I2C_config;
+extern I2C_config_list I2C_config;
 
 #if defined (BUILD_MCU)
 extern void I2C_socInit(void);

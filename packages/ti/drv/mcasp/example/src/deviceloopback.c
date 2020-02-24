@@ -60,7 +60,7 @@
 
 #include "deviceloopback.h"
 
-extern HeapMem_Handle myHeap;
+extern const ti_sysbios_heaps_HeapMem_Handle myHeap;
 
 /* The Serializer/timeslot information, one for each direction TX/RX */
 dlbTestInfo_t dlbTestInfo[2];

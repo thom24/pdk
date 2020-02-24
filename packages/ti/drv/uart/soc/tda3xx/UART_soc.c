@@ -116,7 +116,7 @@ UART_HwAttrs uartInitCfg[CSL_UART_PER_CNT] =
 UART_V1_Object UartObjects[CSL_UART_PER_CNT];
 
 /* UART configuration structure */
-CSL_PUBLIC_CONST UART_Config UART_config[CSL_UART_PER_CNT + 1U] = {
+UART_Config UART_config[CSL_UART_PER_CNT + 1U] = {
     {
         &UART_FxnTable_v1,
         &UartObjects[0],

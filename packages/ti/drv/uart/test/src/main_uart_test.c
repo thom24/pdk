@@ -167,11 +167,6 @@ UART_PAR uartParity = UART_PAR_NONE;
  */
 #define UDMA_TEST_APP_DESC_SIZE         (sizeof(CSL_UdmapCppi5HMPD) + (UART_TEST_CACHE_LINE_SIZE - sizeof(CSL_UdmapCppi5HMPD)))
 
-#if defined(SOC_J721E) || defined(SOC_J7200)
-extern Udma_RmInitPrms gUdmaRmDefCfg_MainNavss[];
-extern Udma_RmInitPrms gUdmaRmDefCfg_McuNavss[];
-#endif
-
 /*
  * UDMA driver objects
  */
@@ -209,6 +204,8 @@ Udma_DrvHandle UartApp_udmaInit(UART_HwAttrs *cfg)
 #else
         instId = UDMA_INST_ID_MAIN_0;
 #endif
+
+        UdmaInitPrms_init(instId, &initPrms);
 #if defined(SOC_J721E) || defined(SOC_J7200)
         /*
          * Modify the default virtual interrupt configuration
@@ -216,15 +213,16 @@ Udma_DrvHandle UartApp_udmaInit(UART_HwAttrs *cfg)
          * DMA example uses more than two DMA events which
          * requires numVintr > 2
          */
-        gUdmaRmDefCfg_MainNavss[2].startVintr = 226U;
-        gUdmaRmDefCfg_MainNavss[2].numVintr   = 18U;
-        gUdmaRmDefCfg_MainNavss[9].startVintr = 124U;
-        gUdmaRmDefCfg_MainNavss[9].numVintr   = 4U;
-
-        gUdmaRmDefCfg_McuNavss[1].numVintr    = 4U;
-        gUdmaRmDefCfg_McuNavss[9].numVintr    = 4U;
+#if defined (BUILD_MCU2_1)
+    initPrms.rmInitPrms.startVintr = 226U;
+    initPrms.rmInitPrms.numVintr = 18U;
 #endif
-        UdmaInitPrms_init(instId, &initPrms);
+#if (defined (BUILD_MCU1_1) || defined(BUILD_MCU1_0))
+    initPrms.rmInitPrms.startVintr = 124U;
+    initPrms.rmInitPrms.numVintr = 4U;
+#endif
+  
+#endif
         retVal = Udma_init(&gUdmaDrvObj, &initPrms);
         if(UDMA_SOK == retVal)
         {

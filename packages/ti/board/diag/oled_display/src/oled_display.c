@@ -70,7 +70,7 @@
 #define LCD_BST_CONV_CTL_GPIO    0x002D
 #define LCD_RESET                0x0134
 
-extern const I2C_Config I2C_config[];
+extern I2C_config_list I2C_config;
 extern void BOARD_delay(uint32_t usecs);
 
 /* GPIO Driver board specific pin configuration structure */

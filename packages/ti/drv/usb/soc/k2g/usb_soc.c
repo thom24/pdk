@@ -59,7 +59,7 @@ const USB_FxnTable USB_FxnTable_dwc = {
 
 /* USB configuration structure - for each of 
  * the USB instances + the null terminate entry */
-const USB_Config USB_config[3] = {
+USB_Config USB_config[3] = {
     {
         &USB_FxnTable_dwc,
         0

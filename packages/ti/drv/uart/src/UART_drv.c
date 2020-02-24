@@ -46,7 +46,7 @@
 #include <ti/drv/uart/src/UART_osal.h>
 
 /* Externs */
-extern const UART_config_list UART_config;
+extern UART_Config UART_config[];
 #if defined (BUILD_MCU)
 extern void UART_socInit(void);
 #endif

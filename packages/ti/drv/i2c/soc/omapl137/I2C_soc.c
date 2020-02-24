@@ -95,7 +95,7 @@ I2C_v0_Object I2cObjects[CSL_I2C_CNT];
 
 
 /* I2C configuration structure */
-CSL_PUBLIC_CONST I2C_config_list I2C_config = {
+I2C_config_list I2C_config = {
     {
         &I2C_v0_FxnTable,
         &I2cObjects[0],

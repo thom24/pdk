@@ -59,7 +59,7 @@ void UART_putHexNum(uint32_t hexValue);
 uint32_t UART_getNum(void);
 uint32_t UART_getHexNum(void);
 
-extern const UART_config_list UART_config;
+extern UART_Config UART_config[];
 /*!
  *  @brief      UART_Stdio_Object
  *

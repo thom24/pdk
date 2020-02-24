@@ -74,7 +74,7 @@ GPIO_v0_Config GPIO_v0_config = {
 static I2C_Params touchI2cParams;
 static I2C_Handle touchI2cHandle = NULL;
 
-extern const I2C_config_list I2C_config;
+extern I2C_config_list I2C_config;
 
 /******************************************************************************
  **                      INTERNAL FUNCTION DEFINITIONS

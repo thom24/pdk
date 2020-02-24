@@ -59,7 +59,7 @@
 /*                           Global Variables                                 */
 /* ========================================================================== */
 
-extern const I2C_Config I2C_config[];
+extern I2C_config_list I2C_config;
 
 I2C_Handle handle = NULL;
 

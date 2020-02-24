@@ -52,7 +52,7 @@
 
 #include "boot_eeprom_test.h"
 
-extern const I2C_Config I2C_config[];
+extern I2C_config_list I2C_config;
 
 uint8_t pageRdBuff[BOOT_EEPROM_PAGE_SIZE];
 uint8_t pageWrBuff[BOOT_EEPROM_PAGE_SIZE + 2];

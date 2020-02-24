@@ -118,7 +118,7 @@ I2C_v1_Object I2cObjects[I2C_HWIP_MAX_CNT];
 
 
 /* I2C configuration structure */
-CSL_PUBLIC_CONST I2C_config_list I2C_config = {
+I2C_config_list I2C_config = {
     {
         &I2C_v1_FxnTable,
         &I2cObjects[0],

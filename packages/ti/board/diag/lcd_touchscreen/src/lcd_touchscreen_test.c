@@ -64,7 +64,7 @@
  ************************** Internal functions ************************
  **********************************************************************/
 void AppDelay(uint32_t delayVal);
-extern const I2C_Config I2C_config[];
+extern I2C_config_list I2C_config;
 
 /* Board specific definitions */
 #define SOC_CORE_PAD_IO_REGISTERS_BASE              (0x4a003400U)
