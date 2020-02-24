@@ -28,10 +28,14 @@ INCLUDE_EXTERNAL_INTERFACES = pdk
 # Common source files and CFLAGS across all platforms and cores
 SRCS_COMMON += udma.c
 SRCS_COMMON += udma_rm.c udma_rmcfg.c
-SRCS_COMMON += udma_ch.c udma_dru.c
+SRCS_COMMON += udma_ch.c
 SRCS_COMMON += udma_ring.c udma_proxy.c udma_flow.c udma_event.c
 SRCS_COMMON += udma_osal.c udma_utils.c
 SRCS_COMMON += udma_soc.c
+#DRU is not present in all SOC
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e))
+SRCS_COMMON += udma_dru.c
+endif
 
 PACKAGE_SRCS_COMMON = udma.h udma_component.mk makefile .gitignore include docs $(SRCDIR)
 PACKAGE_SRCS_COMMON += soc/udma_soc.h
