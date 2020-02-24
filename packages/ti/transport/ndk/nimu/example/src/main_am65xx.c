@@ -103,7 +103,7 @@ uint8_t icss_tx_port_queue[1][100352] __attribute__ ((aligned (UDMA_CACHELINE_AL
 
 #define NIMU_MAX_TABLE_ENTRIES   9U
 #define NIMU_NUM_PORTS 1U
-#define NIMU_TEST_MAX_SUB_RX_CHANS_PER_PORT 1U
+#define NIMU_TEST_MAX_SUB_RX_CHANS_PER_PORT 2U
 #define NIMU_TEST_MAX_CHANS_PER_PORT 1U
 
 /* brief Number of ring entries - we can prime this much memcpy operations */
@@ -123,7 +123,7 @@ uint8_t icss_tx_port_queue[1][100352] __attribute__ ((aligned (UDMA_CACHELINE_AL
 struct Udma_ChObj       gUdmaTxChObj[NIMU_NUM_PORTS][NIMU_TEST_MAX_CHANS_PER_PORT];
 struct Udma_ChObj       gUdmaRxChObj[NIMU_NUM_PORTS];
 struct Udma_EventObj    gUdmaRxCqEventObj[NIMU_NUM_PORTS][NIMU_TEST_MAX_SUB_RX_CHANS_PER_PORT];
-struct Udma_ChObj       gUdmaRxCfgPsiChObj[NIMU_NUM_PORTS];
+struct Udma_ChObj       gUdmaRxCfgPsiChObj[NIMU_TEST_MAX_SUB_RX_CHANS_PER_PORT];
 struct Udma_EventObj    gUdmaRxCfgPsiCqEventObj[NIMU_NUM_PORTS][NIMU_TEST_MAX_SUB_RX_CHANS_PER_PORT];
 
 struct Udma_FlowObj gUdmaFlowHnd[NIMU_NUM_PORTS] __attribute__ ((aligned(UDMA_CACHELINE_ALIGNMENT)));
@@ -131,7 +131,7 @@ struct Udma_RingObj gUdmaRxRingHnd[NIMU_NUM_PORTS][NIMU_TEST_MAX_SUB_RX_CHANS_PE
 struct Udma_RingObj gUdmaRxCompRingHnd[NIMU_NUM_PORTS][NIMU_TEST_MAX_SUB_RX_CHANS_PER_PORT] __attribute__ ((aligned(UDMA_CACHELINE_ALIGNMENT)));
 struct Udma_RingObj gUdmaRxRingHndCfgPsi[NIMU_NUM_PORTS][NIMU_TEST_MAX_SUB_RX_CHANS_PER_PORT] __attribute__ ((aligned(UDMA_CACHELINE_ALIGNMENT)));
 struct Udma_RingObj gUdmaRxCompRingHndCfgPsi[NIMU_NUM_PORTS][NIMU_TEST_MAX_SUB_RX_CHANS_PER_PORT] __attribute__ ((aligned(UDMA_CACHELINE_ALIGNMENT)));
-struct Udma_FlowObj gUdmaFlowHndCfgPsi[NIMU_NUM_PORTS] __attribute__ ((aligned(UDMA_CACHELINE_ALIGNMENT)));
+struct Udma_FlowObj gUdmaFlowHndCfgPsi[NIMU_TEST_MAX_SUB_RX_CHANS_PER_PORT] __attribute__ ((aligned(UDMA_CACHELINE_ALIGNMENT)));
 static uint8_t gUdmapDescRamTx[NIMU_NUM_PORTS][NIMU_TEST_MAX_CHANS_PER_PORT][NIMU_TEST_APP_RING_ENTRIES * NIMU_TEST_APP_DESC_SIZE] __attribute__ ((aligned(UDMA_CACHELINE_ALIGNMENT)))
     __attribute__ ((section (".bss:nimu_ddr_mem")));
 static uint8_t gUdmapDescRamRx[NIMU_NUM_PORTS][NIMU_TEST_MAX_SUB_RX_CHANS_PER_PORT][NIMU_TEST_APP_RING_ENTRIES * NIMU_TEST_APP_DESC_SIZE] __attribute__ ((aligned(UDMA_CACHELINE_ALIGNMENT)))
@@ -176,7 +176,6 @@ extern int32_t (*NimuEmacInitFxn[NIMU_NUM_EMAC_PORTS])(STKEVENT_Handle hEvent);
 extern char *LocalIPAddr;
 
 void TaskFxn(UArg a0, UArg a1);
-bool app_detect_interposer_card(void);
 
 /* get handle to UDMA driver */
 Udma_DrvHandle nimu_app_get_udma_handle(void)
@@ -185,7 +184,7 @@ Udma_DrvHandle nimu_app_get_udma_handle(void)
 }
 
 #ifdef NIMU_APP_ICSSG
-void app_test_setup_fw_dualmac(uint32_t port_num, EMAC_HwAttrs_V5 *pEmacCfg)
+void nimu_app_setup_fw_dualmac(uint32_t port_num, EMAC_HwAttrs_V5 *pEmacCfg)
 {
     EMAC_FW_APP_CONFIG *pFwAppCfg;
     emacGetDualMacFwAppInitCfg(port_num, &pFwAppCfg);
@@ -210,9 +209,9 @@ void app_test_setup_fw_dualmac(uint32_t port_num, EMAC_HwAttrs_V5 *pEmacCfg)
 
 
 /*
- *  ======== app_test_init_emac_k3========
+ *  ======== nimu_app_init_emac_k3========
  */
-void app_test_init_emac_k3(uint32_t portNum, uint32_t index)
+void nimu_app_init_emac_k3(uint32_t portNum, uint32_t index)
 {
     EMAC_socGetInitCfg(0, &emac_cfg);
     int32_t chanNum = 0;
@@ -225,7 +224,7 @@ void app_test_init_emac_k3(uint32_t portNum, uint32_t index)
     if (portNum != NIMU_EMAC_PORT_CPSW)
     {
         
-        emac_cfg.portCfg[portNum].rxChannelCfgOverPSI.nsubChan = 1;
+        emac_cfg.portCfg[portNum].rxChannelCfgOverPSI.nsubChan = 2;
     }
     /* rxChannel2CfgOverPSI currently not used for dual mac and cpsw use case */
     emac_cfg.portCfg[portNum].rxChannel2CfgOverPSI.nsubChan = 0;
@@ -263,7 +262,7 @@ void app_test_init_emac_k3(uint32_t portNum, uint32_t index)
     }
 
 #ifdef NIMU_APP_ICSSG
-    app_test_setup_fw_dualmac(portNum, &emac_cfg);
+    nimu_app_setup_fw_dualmac(portNum, &emac_cfg);
 #endif
 
     EMAC_socSetInitCfg(0, &emac_cfg);
@@ -282,7 +281,6 @@ void NIMUStartUpTask(UArg a0, UArg a1)
     int32_t retVal;
     uint32_t nimu_device_index = 0U;
     Udma_InitPrms initPrms;
-    int32_t interposerCardPresent = 0;
 #if defined (__aarch64__)
     UdmaInitPrms_init(UDMA_INST_ID_MAIN_0, &initPrms);
 #else
@@ -301,31 +299,9 @@ void NIMUStartUpTask(UArg a0, UArg a1)
         while(1);
     }
 
-    if (portNum != NIMU_EMAC_PORT_CPSW)
-    {
-       /* Need to query MDIO block to see if interposer card is present. If present 
-        ICSSG1 PHY's will not be alive, those PHYs scorrelate to port 2 and port 3, lets check for port 2 and 3 */
-        if (app_detect_interposer_card())
-        {
-            interposerCardPresent = 1;
-        }
-    }
+    nimu_app_init_emac_k3(portNum, nimu_device_index);
 
-    app_test_init_emac_k3(portNum, nimu_device_index);
-
-    /* Port 7 is "virtual port" configuration will will map to use Port 3 as tx and Port 0 as Rx */
-    /* Port 8 is "virtual port" configuration will will map to use Port 1 as tx and Port 2 as Rx */
-    /* with presence of interposer Card, we will use virtual port 7 in this example */
-    if (interposerCardPresent ==1)
-    {
-        /* lets update the port number to EMAC_INTERPOSER_PORT0 */
-        portNum = EMAC_INTERPOSER_PORT0;
-        NIMUDeviceTable[nimu_device_index++].init = NimuEmacInitFxn[EMAC_INTERPOSER_PORT0];
-    }
-    else
-    {
-        NIMUDeviceTable[nimu_device_index++].init =  NimuEmacInitFxn[portNum];
-    }
+    NIMUDeviceTable[nimu_device_index++].init =  NimuEmacInitFxn[portNum];
 
     NIMUDeviceTable[nimu_device_index].init =  NULL;
     /* NIMUStartUpTask complete can post the semaphore now */
@@ -350,14 +326,14 @@ void TaskFxn(UArg a0, UArg a1)
 }
 
 /**
- *  \name app_test_task_get_stats
+ *  \name nimu_app_task_get_stats
  *  \brief get statistics
  *  \param a0
  *  \param a1
  *  \return none
  *
  */
-void app_test_task_get_stats(UArg a0, UArg a1)
+void nimu_app_task_get_stats(UArg a0, UArg a1)
 {
 
 #ifdef NIMU_APP_ICSSG
@@ -444,27 +420,6 @@ void app_test_task_get_stats(UArg a0, UArg a1)
     }
 }
 
-
-bool app_detect_interposer_card(void)
-{
-#ifdef am65xx_idk
-    EMAC_socGetInitCfg(0, &emac_cfg);
-   CSL_MdioRegs *pBaseAddr = (CSL_MdioRegs*) emac_cfg.portCfg[2].mdioRegsBaseAddr;
-    if ((CSL_MDIO_isPhyAlive(pBaseAddr,emac_cfg.portCfg[2].phyAddr)) ||(CSL_MDIO_isPhyAlive(pBaseAddr,emac_cfg.portCfg[3].phyAddr)))
-    {
-        UART_printf("PHYs for ICSSG1 are ALIVE, interposer card is NOT presen\n");
-        return FALSE;
-    }
-    else
-    {
-        UART_printf("PHYs for ICSSG1 are NOT ALIVE, interposer card is present\n");
-        return TRUE;
-    }
-#else
-    return FALSE;
-#endif
-}
-
 /*
  *  ======== main ========
  */
@@ -503,15 +458,14 @@ int main(void)
     taskParams.arg0 = (UArg)portNum;
     main_task = Task_create (NIMUStartUpTask, &taskParams, NULL);
 
-
     Task_Params_init(&taskParams);
     taskParams.priority = 1;
     taskParams.stackSize = 0x4000;
     taskParams.arg0 = (UArg)portNum;
-    Task_create (app_test_task_get_stats, &taskParams, NULL);
+    Task_create (nimu_app_task_get_stats, &taskParams, NULL);
 
     BIOS_start ();
-   return 0;
+    return 0;
 }
 
 #if defined (__aarch64__)
