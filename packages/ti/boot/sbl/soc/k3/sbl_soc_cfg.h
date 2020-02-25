@@ -80,12 +80,13 @@ typedef struct
 extern uint16_t sblMapOtpVidToMilliVolts[256];
 
 #define SBL_MAX_VTM_VDS        (8U)
+
+#if defined (SOC_AM65XX)
+
 #define SBL_OPP_LOW            (CSL_VTM_CFG1_OPPVID_OPP_LOW_DFLT_SHIFT)
 #define SBL_OPP_NOM            (CSL_VTM_CFG1_OPPVID_OPP_NOM_DFLT_SHIFT)
 #define SBL_OPP_ODR            (CSL_VTM_CFG1_OPPVID_OPP_ODR_DFLT_SHIFT)
 #define SBL_OPP_TRB            (CSL_VTM_CFG1_OPPVID_OPP_TRB_DFLT_SHIFT)
-
-#if defined (SOC_AM65XX)
 
 #define SBL_MCU_ATCM_BASE      (CSL_MCU_ATCM_BASE)
 #define SBL_MCU_ATCM_SIZE      (CSL_MCU_ATCM_SIZE)
@@ -251,6 +252,11 @@ extern uint16_t sblMapOtpVidToMilliVolts[256];
 #endif
 
 #if defined (SOC_J721E)
+
+#define SBL_OPP_LOW            (CSL_VTM_CFG1_VD_OPPVID_OPP_0_SHIFT)
+#define SBL_OPP_NOM            (CSL_VTM_CFG1_VD_OPPVID_OPP_1_SHIFT)
+#define SBL_OPP_ODR            (CSL_VTM_CFG1_VD_OPPVID_OPP_2_SHIFT)
+#define SBL_OPP_TRB            (CSL_VTM_CFG1_VD_OPPVID_OPP_3_SHIFT)
 
 #define SBL_MCU_ATCM_BASE      (CSL_MCU_ARMSS_ATCM_BASE)
 #define SBL_MCU_ATCM_SIZE      (CSL_MCU_ARMSS_ATCM_SIZE)
