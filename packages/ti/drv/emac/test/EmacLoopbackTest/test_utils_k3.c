@@ -1457,10 +1457,8 @@ void app_test_udma_init(void)
 #if defined (EMAC_TEST_APP_CPSW)
 #if defined (BUILD_MPU1_0)
     instId = UDMA_INST_ID_MAIN_0;
-#elif defined (BUILD_MCU1_0)
-    instId = UDMA_INST_ID_MCU_0;
 #else
-    instId = UDMA_INST_ID_MAIN_0;
+    instId = UDMA_INST_ID_MCU_0;
 #endif
 #else
     /* icssg use case */
