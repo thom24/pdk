@@ -45,7 +45,7 @@
 CODEGEN_INCLUDE = $(TOOLCHAIN_PATH_$(CGT_ISA))/include
 CC = $(TOOLCHAIN_PATH_$(CGT_ISA))/bin/armcl
 AR = $(TOOLCHAIN_PATH_$(CGT_ISA))/bin/armar
-LNK = $(TOOLCHAIN_PATH_$(CGT_ISA))/bin/armlnk
+LNK = $(TOOLCHAIN_PATH_$(CGT_ISA))/bin/armcl
 STRP = $(TOOLCHAIN_PATH_$(CGT_ISA))/bin/armstrip
 SIZE = $(TOOLCHAIN_PATH_$(CGT_ISA))/bin/armofd
 
@@ -65,6 +65,10 @@ ifeq ($(FORMAT),ELF)
   CSWITCH_FORMAT = eabi
   RTSLIB_FORMAT = eabi
 endif
+
+LNKFLAGS_INTERNAL_COMMON += -O4
+LNKFLAGS_INTERNAL_COMMON += --run_linker
+
 
 # Internal CFLAGS - normally doesn't change
 ifeq ($(CGT_ISA),$(filter $(CGT_ISA), M4 R5 M3))
@@ -110,15 +114,11 @@ ifeq ($(BUILD_PROFILE_$(CORE)), debug)
 endif
 ifeq ($(BUILD_PROFILE_$(CORE)), release)
  ifeq ($(CGT_ISA),$(filter $(CGT_ISA), M4 R5 M3))
-   ifeq ($(CGT_ISA),$(filter $(CGT_ISA), R5))
-     LNKFLAGS_INTERNAL_BUILD_PROFILE = --opt='--float_support=vfpv3d16 --endian=$(ENDIAN) -mv7$(CGT_ISA) --abi=$(CSWITCH_FORMAT) -qq -pdsw225 $(CFLAGS_GLOBAL_$(CORE)) -ms -op2 -O4 -s --diag_suppress=23000' --strict_compatibility=on
-   else
-     LNKFLAGS_INTERNAL_BUILD_PROFILE = --opt='--float_support=vfplib   --endian=$(ENDIAN) -mv7$(CGT_ISA) --abi=$(CSWITCH_FORMAT) -qq -pdsw225 $(CFLAGS_GLOBAL_$(CORE)) -oe --symdebug:dwarf -ms -op2 -O3 -os --optimize_with_debug --inline_recursion_limit=20 --diag_suppress=23000' --strict_compatibility=on
-   endif
+   LNKFLAGS_INTERNAL_BUILD_PROFILE = -qq --diag_warning=225 --diag_suppress=23000 $(LNKFLAGS_GLOBAL_$(CORE))
    ifeq ($(CGT_ISA),$(filter $(CGT_ISA), R5))
      CFLAGS_INTERNAL += -ms -O4 -s
    else
-     CFLAGS_INTERNAL += -ms -oe -O3 -op0 -os --optimize_with_debug --inline_recursion_limit=20
+     CFLAGS_INTERNAL += -ms -O4 -op0 -os --optimize_with_debug --inline_recursion_limit=20
    endif
    CFLAGS_XDCINTERNAL = -Dxdc_target_name__=$(XDC_TARGET_NAME) -Dxdc_target_types__=ti/targets/arm/elf/std.h -Dxdc_bld__profile_release
    ifndef MODULE_NAME
@@ -126,12 +126,11 @@ ifeq ($(BUILD_PROFILE_$(CORE)), release)
    endif
  endif
  ifeq ($(CGT_ISA), Arm9)
-	 LNKFLAGS_INTERNAL_BUILD_PROFILE = --opt='--endian=$(ENDIAN) -mv5e --float_support=vfplib --abi=$(CSWITCH_FORMAT) -qq -pdsw225 $(CFLAGS_GLOBAL_$(CORE)) -oe --symdebug:dwarf -ms -op2 -O3 -os --optimize_with_debug --inline_recursion_limit=20 --diag_suppress=23000' --strict_compatibility=on
-	 CFLAGS_INTERNAL += -ms -oe -O3 -op0 -os --optimize_with_debug --inline_recursion_limit=20
-	 CFLAGS_XDCINTERNAL = -Dxdc_target_name__=$(XDC_TARGET_NAME) -Dxdc_target_types__=ti/targets/arm/elf/std.h -Dxdc_bld__profile_release
-	 ifndef MODULE_NAME
+        LNKFLAGS_INTERNAL_BUILD_PROFILE = -qq --diag_warning=225 --diag_suppress=23000 $(LNKFLAGS_GLOBAL_$(CORE))
+	CFLAGS_XDCINTERNAL = -Dxdc_target_name__=$(XDC_TARGET_NAME) -Dxdc_target_types__=ti/targets/arm/elf/std.h -Dxdc_bld__profile_release
+	ifndef MODULE_NAME
 	  CFLAGS_XDCINTERNAL += -Dxdc_cfg__header__='$(CONFIGURO_DIR)/package/cfg/$(XDC_HFILE_NAME)_pe$(CGT_EXT).h'
-	 endif
+	endif
  endif
 endif
 
@@ -213,12 +212,6 @@ ifeq ($(CGT_ISA), R5)
   LNKFLAGS_INTERNAL_COMMON += -mv7R5
   #--diag_suppress=10063 supresses 'warning: entry point other than _c_int00 specified'
   LNKFLAGS_INTERNAL_COMMON += --diag_suppress=10063
-else
-ifeq ($(CGT_ISA), Arm9)
-  LNKFLAGS_INTERNAL_COMMON +=
-else
-  LNKFLAGS_INTERNAL_COMMON += --silicon_version=7$(CGT_ISA)
-endif
 endif
 
 # Assemble Linker flags from all other LNKFLAGS definitions
