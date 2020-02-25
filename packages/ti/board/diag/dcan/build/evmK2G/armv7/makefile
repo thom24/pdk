@@ -29,6 +29,7 @@
 #  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 #  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+.PHONY: build_exe
 # Output directories
 DIAGOBJDIR = $(PDK_DIAG_DIR)/obj/$(BOARD)/$(TARGET)
 DIAGBINDIR = $(PDK_DIAG_DIR)/bin/$(BOARD)/$(TARGET)
@@ -100,7 +101,10 @@ ENTRY_OBJ = $(patsubst %.S, $(DIAGOBJDIR)/%.$(ASMOBJEXT), $(ENTRY_SRC))
 TEST_SRC_DEV_OBJS = $(patsubst %.c, $(DIAGOBJDIR)/%.$(OBJEXT), $(TEST_SRC_DEV))
 DIAG_SRC_OBJS = $(patsubst %.c, $(DIAGOBJDIR)/%.$(OBJEXT), $(DIAG_SRC))
 
-all: clean_paltform $(DIAGBINDIR)/$(EXE)
+all: clean_paltform
+	$(MAKE) -f ./build/evmK2G/armv7/makefile build_exe
+
+build_exe: $(DIAGBINDIR)/$(EXE)
 
 $(DIAGBINDIR)/$(EXE): $(TEST_SRC_OBJS) $(TEST_SRC_DEV_OBJS) $(ENTRY_OBJ) $(DIAG_SRC_OBJS) $(DIAGBINDIR)/.created $(DIAGOBJDIR)/.created
 	@echo linking $(TEST_SRC_OBJS) $(TEST_SRC_DEV_OBJS) $(ENTRY_OBJ) $(DIAG_SRC_OBJS) into $@ ...
@@ -125,6 +129,6 @@ $(DIAGBINDIR)/.created:
 clean_paltform:
 	@rm -f $(DIAGOBJDIR)/platform.o 	
 
-clean:
+clean: clean_paltform
 	@rm -f $(DIAGBINDIR)/$(EXE)
 	@rm -f $(TEST_SRC_OBJS) $(TEST_SRC_DEV_OBJS) $(ENTRY_OBJ) $(DIAGBINDIR)/.created $(DIAGOBJDIR)/.created
