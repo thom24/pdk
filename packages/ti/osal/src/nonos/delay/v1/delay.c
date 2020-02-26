@@ -53,9 +53,10 @@ int32_t Delay_32kFClk(uintptr_t addr, uint32_t initCount, uint32_t rldCount, uin
   int32_t  baseTime, sampTime;
   uint32_t endTick = nTicks << 5;
   uint32_t tclrCfg = TIMER_TCLR_AR_MASK | TIMER_TCLR_ST_MASK;
+  uint32_t intFlags= (TIMER_INT_TCAR_EN_FLAG | TIMER_INT_OVF_EN_FLAG | TIMER_INT_MAT_EN_FLAG);
 
   if (gTimerFirstTime == 0) {
-    /* Enable the timer */
+    /* Disable the timer */
     TIMERDisable(timerBase);
     TIMERModeConfigure(timerBase, tclrCfg);
 
@@ -65,8 +66,14 @@ int32_t Delay_32kFClk(uintptr_t addr, uint32_t initCount, uint32_t rldCount, uin
     /* Load the load register with the reload count value */
     TIMERReloadSet(timerBase, rldCount);
 
+    /* Disable all the Timer interrupts as there is no ISR registered */
+    TIMERIntDisable(timerBase, intFlags);
+
     /* Enable the timer */
     TIMEREnable(timerBase);
+
+    /* Indicate the first setup is done */
+    gTimerFirstTime = 1;
   }
 
   /* Read the timer value */
