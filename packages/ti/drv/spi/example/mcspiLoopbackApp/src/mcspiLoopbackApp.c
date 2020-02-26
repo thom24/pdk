@@ -256,6 +256,9 @@ int main(void)
         BIOS_exit(0);
     }
 
+    /* Do the necessary set up configurations for McSPI.*/
+    SPI_init();
+
     /* Start BIOS */
     BIOS_start();
     return (0);
@@ -300,9 +303,6 @@ void spi_test(UArg arg0, UArg arg1)
 
     /* Modify the default SPI configurations if necessary */
     spi_initConfig();
-
-    /* Do the necessary set up configurations for McSPI.*/
-    SPI_init();
 
     /* Open MCSPI instance 1 driver */
     gSpiHandle = SPI_open(MCSPI_INSTANCE, &gSpiParams);
