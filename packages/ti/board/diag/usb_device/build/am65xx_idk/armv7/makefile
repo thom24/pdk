@@ -43,7 +43,7 @@ CC = $(TOOLCHAIN_PATH_R5)/bin/armcl
 AR = $(TOOLCHAIN_PATH_R5)/bin/armar
 LNK = $(TOOLCHAIN_PATH_R5)/bin/armlnk
 SIZE = $(TOOLCHAIN_PATH_R5)/bin/armofd
-RTSLIB_NAME = rtsv7R4_A_le_v3D16_eabi.lib
+RTSLIB_NAME = rtsv7R4_T_le_v3D16_eabi.lib
 
 # INCLUDE Directories
 CSL_DIR = $(PDK_INSTALL_PATH)/ti/csl/
@@ -63,7 +63,7 @@ RTSLIB_PATH = "$(TOOLCHAIN_PATH_R5)/lib/libc.a"
 LNK_LIBS = -l$(PERIPHERAL_LIB) -l$(BOARD_LIB) -l$(OSAL_LIB) $(RTSLIB_PATH)
 
 # Compiler options
-INTERNALDEFS = -g -ms -DMAKEFILE_BUILD -c -qq -pdsw225  $(DEBUG_FLAG) -D$(BOARD) -DSOC_$(DEVICE) --endian=little -mv7R5 --abi=eabi -eo.oer5f -ea.ser5f --symdebug:dwarf --embed_inline_assembly --float_support=vfpv3d16 -ms -oe -op0 -os --optimize_with_debug --inline_recursion_limit=20  -DBUILD_MCU1_0 -DBUILD_MCU -DBARE_METAL
+INTERNALDEFS = -g -ms -DMAKEFILE_BUILD -c -qq -pdsw225  $(DEBUG_FLAG) -D$(BOARD) -DSOC_$(DEVICE) --endian=little -mv7R5 --abi=eabi -eo.oer5f --code_state=16 -ea.ser5f --symdebug:dwarf --embed_inline_assembly --float_support=vfpv3d16 -ms -oe -op0 -os --optimize_with_debug --inline_recursion_limit=20  -DBUILD_MCU1_0 -DBUILD_MCU -DBARE_METAL
 
 # Linker options
 INTERNALLINKDEFS = --emit_warnings_as_errors -w -q -u _c_int00 $(PDK_DIAG_DIR)/diag/common/$(DEVICE)/linker_r5.lds -c -mv7R5 --diag_suppress=10063 --opt='--float_support=vfpv3d16 --endian=little -mv7R5 --abi=eabi -qq -pdsw225 -g -ms -DMAKEFILE_BUILD -oe --symdebug:dwarf -ms -op2 -os --optimize_with_debug --inline_recursion_limit=20 --diag_suppress=23000' --strict_compatibility=on -x --zero_init=on $(LNK_LIBS)
