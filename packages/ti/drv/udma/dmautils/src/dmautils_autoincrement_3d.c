@@ -1078,9 +1078,7 @@ int32_t DmaUtilsAutoInc3d_deconfigure(void * autoIncrementContext, int32_t chann
     DmaUtilsAutoInc3d_ChannelContext * channelContext;
     uint32_t isRingBasedFlowReq =0;
     Udma_ChHandle channelHandle;
-#ifdef HOST_EMULATION
-    uint32_t druChannelNum;
-#endif
+
     if ( autoIncrementContext == NULL)
     {
       retVal = UDMA_EBADARGS;
