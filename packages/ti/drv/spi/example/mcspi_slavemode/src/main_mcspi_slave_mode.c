@@ -1681,12 +1681,16 @@ int main(void)
     boardCfg = BOARD_INIT_MODULE_CLOCK |
                BOARD_INIT_UART_STDIO;
 #endif
+#else
+    boardCfg = BOARD_INIT_PINMUX_CONFIG |
+               BOARD_INIT_MODULE_CLOCK  |
+               BOARD_INIT_UART_STDIO;
+#endif
     boardStatus = Board_init(boardCfg);
     if (boardStatus != BOARD_SOK)
     {
         return (0);
     }
-#endif
 
 #if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)
 #if defined (__TI_ARM_V7R4__)
