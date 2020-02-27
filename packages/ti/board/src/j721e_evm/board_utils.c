@@ -60,6 +60,13 @@ Board_DetectCfg_t  gBoardDetCfg[BOARD_ID_MAX_BOARDS] =
 Board_I2cInitCfg_t gBoardI2cInitCfg = {0, BOARD_SOC_DOMAIN_MAIN, 0};
 Board_initParams_t gBoardInitParams = {BOARD_UART_INSTANCE, BOARD_UART_SOC_DOMAIN, BOARD_PSC_DEVICE_MODE_NONEXCLUSIVE};
 
+/* Variables to store and restore the RAT configurations on DSP core */
+#if defined (_TMS320C6X)
+static uint32_t gRatOffsetHi;
+static uint32_t gRatOffsetLo;
+static uint32_t gRatCfg;
+#endif
+
 /**
  * \brief Board ID read function
  *
@@ -532,6 +539,42 @@ uint32_t Board_getSocDomain(void)
 #endif
 
   return socDomain;
+}
+
+/**
+ *  \brief  Sets RAT configuration
+ *
+ *  MAIN padconfig registers are not directly accessible for C66x core
+ *  which requires RAT configuration for the access.
+ *
+ *  \return   None
+ */
+void Board_setRATCfg(void)
+{
+#if defined (_TMS320C6X)
+    gRatOffsetLo = HW_RD_REG32(CSL_C66_COREPAC_C66_RATCFG_BASE + 0x24);
+    gRatOffsetHi = HW_RD_REG32(CSL_C66_COREPAC_C66_RATCFG_BASE + 0x28);
+    gRatCfg      = HW_RD_REG32(CSL_C66_COREPAC_C66_RATCFG_BASE + 0x20);
+    HW_WR_REG32((CSL_C66_COREPAC_C66_RATCFG_BASE + 0x24),
+                BOARD_C66X_RAT_OFFSET);
+    HW_WR_REG32((CSL_C66_COREPAC_C66_RATCFG_BASE + 0x28), 0);
+    HW_WR_REG32((CSL_C66_COREPAC_C66_RATCFG_BASE + 0x20),
+                BOARD_C66X_RAT_CONFIG);
+#endif
+}
+
+/**
+ *  \brief  Restores RAT configuration
+ *
+ *  \return   None
+ */
+void Board_restoreRATCfg(void)
+{
+#if defined (_TMS320C6X)
+    HW_WR_REG32((CSL_C66_COREPAC_C66_RATCFG_BASE + 0x20), gRatCfg);
+    HW_WR_REG32((CSL_C66_COREPAC_C66_RATCFG_BASE + 0x24), gRatOffsetLo);
+    HW_WR_REG32((CSL_C66_COREPAC_C66_RATCFG_BASE + 0x28), gRatOffsetHi);
+#endif
 }
 
 /**

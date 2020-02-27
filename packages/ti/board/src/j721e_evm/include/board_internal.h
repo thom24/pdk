@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -374,6 +374,29 @@ extern Board_gblObj Board_obj[BOARD_I2C_PORT_CNT];
 #define BOARD_ETHPHY_STRAP_FLD_MASK             (0x0400U)
 #define BOARD_ETHPHY_STRAP_FLD_THS_CHECK_FLAG   (0x222U)
 
+#define BOARD_C66X_RAT_OFFSET                   (0x20000000U)
+#define BOARD_C66X_RAT_CONFIG                   (0x8000001DU)
+
+#if defined (_TMS320C6X)
+#define BOARD_CTRL_MMR0_CFG0_BASE   (CSL_CTRL_MMR0_CFG0_BASE + BOARD_C66X_RAT_OFFSET)
+#else
+#define BOARD_CTRL_MMR0_CFG0_BASE   (CSL_CTRL_MMR0_CFG0_BASE)
+#endif
+
+/* MAIN CTRL base address + offset to beginning of PAD CONFIG  section */
+#define BOARD_MAIN_PMUX_CTRL_ADDR	(BOARD_CTRL_MMR0_CFG0_BASE + 0x1C000)
+
+/* WKUP CTRL base address + offset to beginning of PAD CONFIG section proxy address */
+#define BOARD_WKUP_PMUX_CTRL_ADDR	(CSL_WKUP_CTRL_MMR0_CFG0_BASE + 0x1C000)
+
+/* WKUP CTRL base address + offset to beginning of PAD CONFIG section */
+#define BOARD_MMR_PROXY1_OFFSET	   (0x2000U)
+
+#define BOARD_MAIN_MMR_P7_CLAIM_ADDR    (0x11D100U)
+#define BOARD_WKUP_MMR_P7_CLAIM_ADDR    (0x4301D100U)
+#define BOARD_WKUP_MMR_P7_CLAIM_OFFSET  (0x1C000U)
+#define BOARD_MMR_CLAIM_ADDR_PER_REG    (128U)
+
 /*********************XXXXXXXXXXXXXXXXXXXXX**********************/
 
 /*****************************************************************************
@@ -639,6 +662,23 @@ Board_STATUS Board_pmSdVoltageCtrl(uint8_t vsel);
  *  \brief   This function is used to de-initialize board UART handles.
  */
 Board_STATUS Board_uartDeInit(void);
+
+/**
+ *  \brief  Sets RAT configuration
+ *
+ *  MAIN padconfig registers are not directly accessible for C66x core
+ *  which requires RAT configuration for the access.
+ *
+ *  \return   None
+ */
+void Board_setRATCfg(void);
+
+/**
+ *  \brief  Restores RAT configuration
+ *
+ *  \return   None
+ */
+void Board_restoreRATCfg(void);
 
 #ifdef __cplusplus
 }

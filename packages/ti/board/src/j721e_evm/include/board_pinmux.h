@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -56,28 +56,6 @@ extern "C" {
 #define BOARD_MODE_PIN_MASK            (0xFU)
 #define BOARD_PINMUX_BIT_MASK          (0xFFF8FFF0U)
 #define BOARD_GPIO_PIN_MUX_CFG         (0x50007U)
-
-#define BOARD_PINMUX_C66X_RAT_OFFSET    (0x20000000)
-#define BOARD_PINMUX_C66X_RAT_CONFIG    (0x8000001D)
-
-#if defined (_TMS320C6X)
-/* MAIN CTRL base address + offset to beginning of PAD CONFIG  section */
-#define BOARD_MAIN_PMUX_CTRL_ADDR	(CSL_CTRL_MMR0_CFG0_BASE + BOARD_PINMUX_C66X_RAT_OFFSET + 0x1C000)
-#else
-/* MAIN CTRL base address + offset to beginning of PAD CONFIG section proxy address */
-#define BOARD_MAIN_PMUX_CTRL_ADDR	(CSL_CTRL_MMR0_CFG0_BASE + 0x1C000)
-#endif
-
-/* WKUP CTRL base address + offset to beginning of PAD CONFIG section proxy address */
-#define BOARD_WKUP_PMUX_CTRL_ADDR	(CSL_WKUP_CTRL_MMR0_CFG0_BASE + 0x1C000)
-
-/* WKUP CTRL base address + offset to beginning of PAD CONFIG section */
-#define BOARD_MMR_PROXY1_OFFSET	   (0x2000U)
-
-#define BOARD_MAIN_MMR_P7_CLAIM_ADDR    (0x11D100U)
-#define BOARD_WKUP_MMR_P7_CLAIM_ADDR    (0x4301D100U)
-#define BOARD_WKUP_MMR_P7_CLAIM_OFFSET  (0x1C000U)
-#define BOARD_MMR_CLAIM_ADDR_PER_REG    (128U)
 
 #define BOARD_PINMUX_CUSTOM             (0)  // Default
 #define BOARD_PINMUX_AUTO               (1U)
