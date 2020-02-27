@@ -78,7 +78,7 @@ extern "C" {
  * #define GPMCXYZ_STATUS_ERROR2    GPMC_STATUS_RESERVED - 2
  * @endcode
  */
-#define GPMC_STATUS_RESERVED        (-(32U))
+#define GPMC_STATUS_RESERVED         (-((int32_t)32))
 
 /*!
  * \brief   Successful status code returned by GPMC_control().
@@ -86,7 +86,7 @@ extern "C" {
  * GPMC_control() returns GPMC_STATUS_SUCCESS if the control code was executed
  * successfully.
  */
-#define GPMC_STATUS_SUCCESS         (0U)
+#define GPMC_STATUS_SUCCESS          ((int32_t)(0))
 
 /*!
  * \brief   Generic error status code returned by GPMC_control().
@@ -94,7 +94,7 @@ extern "C" {
  * GPMC_control() returns GPMC_STATUS_ERROR if the control code was not executed
  * successfully.
  */
-#define GPMC_STATUS_ERROR          (-(1U))
+#define GPMC_STATUS_ERROR            (-((int32_t)1))
 
 /*!
  * \brief   An error status code returned by GPMC_control() for undefined
@@ -103,7 +103,7 @@ extern "C" {
  * GPMC_control() returns GPMC_STATUS_UNDEFINEDCMD if the control code is not
  * recognized by the driver implementation.
  */
-#define GPMC_STATUS_UNDEFINEDCMD   (-(2U))
+#define GPMC_STATUS_UNDEFINEDCMD     (-((int32_t)2))
 
 /*!
  *  @brief    Wait forever define

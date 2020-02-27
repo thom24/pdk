@@ -69,10 +69,11 @@ const GPMC_FxnTable GPMC_FxnTable_v1 = {
 static void GPMC_init_v1(GPMC_Handle handle)
 {
     /* Input parameter validation */
-    OSAL_Assert(handle == NULL);
-
-    /* Mark the object as available */
-    ((GPMC_v1_Object *)(handle->object))->isOpen = (bool)false;
+    if (handle != NULL)
+    {
+        /* Mark the object as available */
+        ((GPMC_v1_Object *)(handle->object))->isOpen = (bool)false;
+    }
     return;
 }
 
@@ -84,13 +85,14 @@ static void GPMC_transferCallback_v1(GPMC_Handle handle, GPMC_Transaction *msg)
     GPMC_v1_Object   *object; /* GPMC object */
 
     /* Input parameter validation */
-    OSAL_Assert(handle == NULL);
+    if (handle != NULL)
+    {
+        /* Get the pointer to the object */
+        object = handle->object;
 
-    /* Get the pointer to the object */
-    object = handle->object;
-
-    /* Indicate transfer complete */
-    GPMC_osalPostLock(object->transferComplete);
+        /* Indicate transfer complete */
+        GPMC_osalPostLock(object->transferComplete);
+    }
 }
 
 /*
@@ -101,29 +103,26 @@ static void GPMC_transferCallback_v1(GPMC_Handle handle, GPMC_Transaction *msg)
  */
 static void GPMC_hwiFxn_v1(uintptr_t arg)
 {
-    //GPMC_v1_Object        *object = NULL;
     GPMC_v1_HwAttrs const *hwAttrs = NULL;
 
     /* Input parameter validation */
-    OSAL_Assert(NULL == (void *)arg);
-
-    /* Get the pointer to the object and hwAttrs */
-    //object = ((GPMC_Handle)arg)->object;
-    hwAttrs = ((GPMC_Handle)arg)->hwAttrs;
-
-    if (hwAttrs->intcMuxNum != INVALID_INTC_MUX_NUM)
+    if (NULL != (void *)arg)
     {
-        GPMC_osalMuxIntcDisableHostInt(hwAttrs->intcMuxNum, hwAttrs->intcMuxOutEvent);
-        GPMC_osalMuxIntcClearSysInt(hwAttrs->intcMuxNum, hwAttrs->intcMuxInEvent);
-    }
+        /* Get the pointer to the object and hwAttrs */
+        hwAttrs = ((GPMC_Handle)arg)->hwAttrs;
 
-    /* TBD */
+        if (hwAttrs->intcMuxNum != INVALID_INTC_MUX_NUM)
+        {
+            GPMC_osalMuxIntcDisableHostInt(hwAttrs->intcMuxNum, hwAttrs->intcMuxOutEvent);
+            GPMC_osalMuxIntcClearSysInt(hwAttrs->intcMuxNum, hwAttrs->intcMuxInEvent);
+        }
 
-    if (hwAttrs->intcMuxNum != INVALID_INTC_MUX_NUM)
-    {
-        GPMC_osalMuxIntcClearSysInt(hwAttrs->intcMuxNum, hwAttrs->intcMuxInEvent);
-        GPMC_osalHardwareIntrClear(hwAttrs->intrNum);
-        GPMC_osalMuxIntcEnableHostInt(hwAttrs->intcMuxNum, hwAttrs->intcMuxOutEvent);
+        if (hwAttrs->intcMuxNum != INVALID_INTC_MUX_NUM)
+        {
+            GPMC_osalMuxIntcClearSysInt(hwAttrs->intcMuxNum, hwAttrs->intcMuxInEvent);
+            GPMC_osalHardwareIntrClear(hwAttrs->intrNum);
+            GPMC_osalMuxIntcEnableHostInt(hwAttrs->intcMuxNum, hwAttrs->intcMuxOutEvent);
+        }
     }
 }
 
@@ -168,250 +167,251 @@ static GPMC_Handle GPMC_open_v1(GPMC_Handle handle, const GPMC_Params *params)
     uint32_t               timeConfig;
 
     /* Input parameter validation */
-    OSAL_Assert(handle == NULL);
-
-    /* Get the pointer to the object and hwAttrs */
-    object = handle->object;
-    hwAttrs = handle->hwAttrs;
-
-    GPMC_osalHwiParamsInit(&hwiInputParams);
-
-    /* Determine if the device index was already opened */
-    key = GPMC_osalHardwareIntDisable();
-    if(object->isOpen == (bool)true)
+    if (handle != NULL)
     {
-        GPMC_osalHardwareIntRestore(key);
-        handle = NULL;
-    }
-    else
-    {
-        /* Mark the handle as being used */
-        object->isOpen = (bool)true;
-        GPMC_osalHardwareIntRestore(key);
+        /* Get the pointer to the object and hwAttrs */
+        object = handle->object;
+        hwAttrs = handle->hwAttrs;
 
-        /* Store the GPMC parameters */
-        if (params == NULL)
+        GPMC_osalHwiParamsInit(&hwiInputParams);
+
+        /* Determine if the device index was already opened */
+        key = GPMC_osalHardwareIntDisable();
+        if(object->isOpen == (bool)true)
         {
-            /* No params passed in, so use the defaults */
-            GPMC_Params_init(&(object->gpmcParams));
+            GPMC_osalHardwareIntRestore(key);
+            handle = NULL;
         }
         else
         {
-            /* Copy the params contents */
-            object->gpmcParams = *params;
-        }
+            /* Mark the handle as being used */
+            object->isOpen = (bool)true;
+            GPMC_osalHardwareIntRestore(key);
 
-        /* Extract GPMC operating mode based on hwAttrs and input parameters */
-        if(GPMC_MODE_BLOCKING == object->gpmcParams.transferMode)
-        {
-            if(true == hwAttrs->intrEnable)
+            /* Store the GPMC parameters */
+            if (params == NULL)
             {
-                object->intrPollMode = GPMC_OPER_MODE_BLOCKING;
+                /* No params passed in, so use the defaults */
+                GPMC_Params_init(&(object->gpmcParams));
             }
             else
             {
-                object->intrPollMode = GPMC_OPER_MODE_POLLING;
+                /* Copy the params contents */
+                object->gpmcParams = *params;
             }
-        }
-        else
-        {
-            object->intrPollMode = GPMC_OPER_MODE_CALLBACK;
-        }
 
-        /* Extract the polling mode from hardware attributes. */
-        if(GPMC_OPER_MODE_POLLING != object->intrPollMode)
-        {
-            if (hwAttrs->intcMuxNum != INVALID_INTC_MUX_NUM)
+            /* Extract GPMC operating mode based on hwAttrs and input parameters */
+            if(GPMC_MODE_BLOCKING == object->gpmcParams.transferMode)
             {
-                /* Setup intc mux */
-                muxInParams.arg         = (uintptr_t)handle;
-                muxInParams.muxNum      = hwAttrs->intcMuxNum;
-                muxInParams.muxInEvent  = hwAttrs->intcMuxInEvent;
-                muxInParams.muxOutEvent = hwAttrs->intcMuxOutEvent;
-                muxInParams.muxIntcFxn  = (MuxIntcFxn)(&GPMC_hwiFxn_v1);
-                GPMC_osalMuxIntcSetup(&muxInParams, &muxOutParams);
-
-                hwiFxn                  = (HwiP_Fxn)muxOutParams.muxIntcFxn;
-                hwiInputParams.arg      = muxOutParams.arg;
+                if(true == hwAttrs->intrEnable)
+                {
+                    object->intrPollMode = GPMC_OPER_MODE_BLOCKING;
+                }
+                else
+                {
+                    object->intrPollMode = GPMC_OPER_MODE_POLLING;
+                }
             }
             else
             {
-                hwiFxn                  = (HwiP_Fxn)(&GPMC_hwiFxn_v1);
-                hwiInputParams.arg      = (uintptr_t)handle;
+                object->intrPollMode = GPMC_OPER_MODE_CALLBACK;
             }
 
-            /* Setup Hardware Interrupt Controller */
-            hwiInputParams.name = NULL;
-            hwiInputParams.priority = 0x20;
+            /* Extract the polling mode from hardware attributes. */
+            if(GPMC_OPER_MODE_POLLING != object->intrPollMode)
+            {
+                if (hwAttrs->intcMuxNum != INVALID_INTC_MUX_NUM)
+                {
+                    /* Setup intc mux */
+                    muxInParams.arg         = (uintptr_t)handle;
+                    muxInParams.muxNum      = hwAttrs->intcMuxNum;
+                    muxInParams.muxInEvent  = hwAttrs->intcMuxInEvent;
+                    muxInParams.muxOutEvent = hwAttrs->intcMuxOutEvent;
+                    muxInParams.muxIntcFxn  = (MuxIntcFxn)(&GPMC_hwiFxn_v1);
+                    GPMC_osalMuxIntcSetup(&muxInParams, &muxOutParams);
+
+                    hwiFxn                  = (HwiP_Fxn)muxOutParams.muxIntcFxn;
+                    hwiInputParams.arg      = muxOutParams.arg;
+                }
+                else
+                {
+                    hwiFxn                  = (HwiP_Fxn)(&GPMC_hwiFxn_v1);
+                    hwiInputParams.arg      = (uintptr_t)handle;
+                }
+
+                /* Setup Hardware Interrupt Controller */
+                hwiInputParams.name = NULL;
+                hwiInputParams.priority = 0x20;
 #if defined (__ARM_ARCH_7A__)
-            hwiInputParams.evtId = 0; /* Event ID not used in GIC */
-            hwiInputParams.triggerSensitivity = 0x3; /* interrupt edge triggered */
+                hwiInputParams.evtId = 0; /* Event ID not used in GIC */
+                hwiInputParams.triggerSensitivity = 0x3; /* interrupt edge triggered */
 #else
-            hwiInputParams.evtId = hwAttrs->eventId;
+                hwiInputParams.evtId = hwAttrs->eventId;
 #endif
-            object->hwi = GPMC_osalRegisterInterrupt(hwAttrs->intrNum, hwiFxn, &hwiInputParams);
+                object->hwi = GPMC_osalRegisterInterrupt(hwAttrs->intrNum, hwiFxn, &hwiInputParams);
 
-            if(object->hwi == NULL)
-            {
-                GPMC_close_v1(handle);
-                handle = NULL;
-                retFlag = 1U;
+                if(object->hwi == NULL)
+                {
+                    GPMC_close_v1(handle);
+                    handle = NULL;
+                    retFlag = 1U;
+                }
             }
-        }
 
-        if(retFlag == 0U)
-        {
-            /*
-             * Construct thread safe handles for this GPMC peripheral
-             * Semaphore to provide exclusive access to the GPMC peripheral
-             */
-            GPMC_osalSemParamsInit(&semParams);
-            semParams.mode = SemaphoreP_Mode_BINARY;
-            object->mutex = GPMC_osalCreateBlockingLock(1U, &semParams);
-
-            /*
-             * Store a callback function that posts the transfer complete
-             * semaphore for synchronous mode
-             */
-            if (object->intrPollMode == GPMC_OPER_MODE_BLOCKING)
+            if(retFlag == 0U)
             {
                 /*
-                 * Semaphore to cause the waiting task to block for the GPMC
-                 * to finish
+                 * Construct thread safe handles for this GPMC peripheral
+                 * Semaphore to provide exclusive access to the GPMC peripheral
                  */
-                object->transferComplete = GPMC_osalCreateBlockingLock(0, &semParams);
+                GPMC_osalSemParamsInit(&semParams);
+                semParams.mode = SemaphoreP_Mode_BINARY;
+                object->mutex = GPMC_osalCreateBlockingLock(1U, &semParams);
 
-                /* Store internal callback function */
-                object->gpmcParams.transferCallbackFxn = &GPMC_transferCallback_v1;
+                /*
+                 * Store a callback function that posts the transfer complete
+                 * semaphore for synchronous mode
+                 */
+                if (object->intrPollMode == GPMC_OPER_MODE_BLOCKING)
+                {
+                    /*
+                     * Semaphore to cause the waiting task to block for the GPMC
+                     * to finish
+                     */
+                    object->transferComplete = GPMC_osalCreateBlockingLock(0, &semParams);
+
+                    /* Store internal callback function */
+                    object->gpmcParams.transferCallbackFxn = &GPMC_transferCallback_v1;
+                }
+
+                if(object->intrPollMode == GPMC_OPER_MODE_CALLBACK)
+                {
+                    /* Check to see if a callback function was defined for async mode */
+                    OSAL_Assert(object->gpmcParams.transferCallbackFxn == NULL);
+                }
+
+                /* Reset GPMC */
+                GPMCModuleSoftReset(hwAttrs->gpmcBaseAddr);
+                while(!GPMCModuleResetStatusGet(hwAttrs->gpmcBaseAddr));
             }
 
-            if(object->intrPollMode == GPMC_OPER_MODE_CALLBACK)
+            if(retFlag == 0U)
             {
-                /* Check to see if a callback function was defined for async mode */
-                OSAL_Assert(object->gpmcParams.transferCallbackFxn == NULL);
+                /* Set SYSCONFIG register to no idle mode */
+                GPMCIdleModeSelect(hwAttrs->gpmcBaseAddr, GPMC_IDLEMODE_NOIDLE);
+
+                /* Disable all interrupts */
+                GPMCIntDisableAll(hwAttrs->gpmcBaseAddr);
+
+                /* Timeout control disable */
+                GPMCTimeOutFeatureConfig(hwAttrs->gpmcBaseAddr, GPMC_TIMEOUTFEATURE_DISABLE);
+                GPMCTimeOutStartValSet(hwAttrs->gpmcBaseAddr, 0);
+
+                /* Set the wait pin polarity */
+                GPMCWaitPinSelect(hwAttrs->gpmcBaseAddr,
+                                  hwAttrs->chipSel,
+                                  hwAttrs->waitPinNum);
+                GPMCWaitPinPolaritySelect(hwAttrs->gpmcBaseAddr,
+                                          hwAttrs->waitPinNum,
+                                          hwAttrs->waitPinPol);
+
+                GPMCCSConfig(hwAttrs->gpmcBaseAddr, hwAttrs->chipSel, GPMC_CS_DISABLE);
+                GPMCTimeParaGranularitySelect(hwAttrs->gpmcBaseAddr,
+                                              hwAttrs->chipSel,
+                                              hwAttrs->timeLatency);
+
+                GPMCDevTypeSelect(hwAttrs->gpmcBaseAddr, hwAttrs->chipSel, hwAttrs->devType);
+
+                GPMCDevSizeSelect(hwAttrs->gpmcBaseAddr, hwAttrs->chipSel, hwAttrs->devSize);
+
+                GPMCAddrDataMuxProtocolSelect(hwAttrs->gpmcBaseAddr,
+                                              hwAttrs->chipSel,
+                                              hwAttrs->addrDataMux);
+
+                /* by default, read/write async single access */
+                GPMCReadTypeSelect(hwAttrs->gpmcBaseAddr,
+                                   hwAttrs->chipSel,
+                                   GPMC_READTYPE_ASYNC);
+                GPMCWriteTypeSelect(hwAttrs->gpmcBaseAddr,
+                                   hwAttrs->chipSel,
+                                   GPMC_WRITETYPE_ASYNC);
+
+                GPMCAccessTypeSelect(hwAttrs->gpmcBaseAddr,
+                                   hwAttrs->chipSel,
+                                   GPMC_MODE_READ,
+                                   GPMC_ACCESSTYPE_SINGLE);
+                GPMCAccessTypeSelect(hwAttrs->gpmcBaseAddr,
+                                   hwAttrs->chipSel,
+                                   GPMC_MODE_WRITE,
+                                   GPMC_ACCESSTYPE_SINGLE);
+
+                /* Set chip select address */
+                GPMCBaseAddrSet(hwAttrs->gpmcBaseAddr,
+                                hwAttrs->chipSel,
+                                hwAttrs->chipSelBaseAddr >> GPMC_CS_BASE_ADDR_SHIFT);
+                GPMCMaskAddrSet(hwAttrs->gpmcBaseAddr,
+                                hwAttrs->chipSel,
+                                hwAttrs->chipSelAddrSize);
+
+                /* CONFIG2 reister timing config, no extra delay */
+                timeConfig = GPMC_CS_TIMING_CONFIG(hwAttrs->timingParams.csWrOffTime,
+                                                   hwAttrs->timingParams.csRdOffTime,
+                                                   GPMC_CS_EXTRA_NODELAY,
+                                                   hwAttrs->timingParams.csOnTime);
+                GPMCCSTimingConfig(hwAttrs->gpmcBaseAddr,
+                                   hwAttrs->chipSel,
+                                   timeConfig);
+
+                /* CONFIG3 reister timing config, no extra delay */
+                timeConfig = GPMC_ADV_TIMING_CONFIG(hwAttrs->timingParams.advAadMuxWrOffTime,
+                                                    hwAttrs->timingParams.advAadMuxRdOffTime,
+                                                    hwAttrs->timingParams.advWrOffTime,
+                                                    hwAttrs->timingParams.advRdOffTime,
+                                                    GPMC_ADV_EXTRA_NODELAY,
+                                                    hwAttrs->timingParams.advAadMuxOnTime,
+                                                    hwAttrs->timingParams.advOnTime);
+                GPMCADVTimingConfig(hwAttrs->gpmcBaseAddr,
+                                        hwAttrs->chipSel,
+                                        timeConfig);
+
+                /* CONFIG4 reister timing config, no extra delay */
+                timeConfig = GPMC_WE_OE_TIMING_CONFIG(hwAttrs->timingParams.weOffTime,
+                                                      GPMC_WE_EXTRA_NODELAY,
+                                                      hwAttrs->timingParams.weOnTtime,
+                                                      hwAttrs->timingParams.oeAadMuxOffTime,
+                                                      hwAttrs->timingParams.oeOffTime,
+                                                      GPMC_OE_EXTRA_NODELAY,
+                                                      hwAttrs->timingParams.oeAadMuxOnTime,
+                                                      hwAttrs->timingParams.oeOnTime);
+                GPMCWEAndOETimingConfig(hwAttrs->gpmcBaseAddr,
+                                        hwAttrs->chipSel,
+                                        timeConfig);
+
+                /* CONFIG5 reister timing config */
+                timeConfig = GPMC_RDACCESS_CYCLETIME_TIMING_CONFIG(hwAttrs->timingParams.rdCycleTime,
+                                                                   hwAttrs->timingParams.wrCycleTime,
+                                                                   hwAttrs->timingParams.rdAccessTime,
+                                                                   hwAttrs->timingParams.pageBurstAccess);
+                GPMCRdAccessAndCycleTimeTimingConfig(hwAttrs->gpmcBaseAddr,
+                                                     hwAttrs->chipSel,
+                                                     timeConfig);
+
+                /* CONFIG6 reister timing config */
+                GPMCWrAccessAndWrDataOnADMUXBusTimingConfig(hwAttrs->gpmcBaseAddr,
+                                                            hwAttrs->chipSel,
+                                                            hwAttrs->timingParams.wrAcessTime,
+                                                            hwAttrs->timingParams.wrDataOnMuxBusTime);
+
+                timeConfig = GPMC_CYCLE2CYCLE_BUSTURNAROUND_TIMING_CONFIG(hwAttrs->timingParams.cycle2CycleDelay,
+                                                                          hwAttrs->timingParams.cycleDelaySameChipSel,
+                                                                          hwAttrs->timingParams.cycleDelayDiffChipSel,
+                                                                          hwAttrs->timingParams.busTurnAroundTime);
+                GPMCycle2CycleAndTurnArndTimeTimingConfig(hwAttrs->gpmcBaseAddr,
+                                                          hwAttrs->chipSel,
+                                                          timeConfig);
+
+                GPMCCSConfig(hwAttrs->gpmcBaseAddr, hwAttrs->chipSel, GPMC_CS_ENABLE);
             }
-
-            /* Reset GPMC */
-            GPMCModuleSoftReset(hwAttrs->gpmcBaseAddr);
-            while(!GPMCModuleResetStatusGet(hwAttrs->gpmcBaseAddr));
-        }
-
-        if(retFlag == 0U)
-        {
-			/* Set SYSCONFIG register to no idle mode */
-            GPMCIdleModeSelect(hwAttrs->gpmcBaseAddr, GPMC_IDLEMODE_NOIDLE);
-
-            /* Disable all interrupts */
-            GPMCIntDisableAll(hwAttrs->gpmcBaseAddr);
-
-            /* Timeout control disable */
-            GPMCTimeOutFeatureConfig(hwAttrs->gpmcBaseAddr, GPMC_TIMEOUTFEATURE_DISABLE);
-            GPMCTimeOutStartValSet(hwAttrs->gpmcBaseAddr, 0);
-
-            /* Set the wait pin polarity */
-            GPMCWaitPinSelect(hwAttrs->gpmcBaseAddr,
-                              hwAttrs->chipSel,
-                              hwAttrs->waitPinNum);
-            GPMCWaitPinPolaritySelect(hwAttrs->gpmcBaseAddr,
-                                      hwAttrs->waitPinNum,
-                                      hwAttrs->waitPinPol);
-
-            GPMCCSConfig(hwAttrs->gpmcBaseAddr, hwAttrs->chipSel, GPMC_CS_DISABLE);
-            GPMCTimeParaGranularitySelect(hwAttrs->gpmcBaseAddr,
-                                          hwAttrs->chipSel,
-                                          hwAttrs->timeLatency);
-
-            GPMCDevTypeSelect(hwAttrs->gpmcBaseAddr, hwAttrs->chipSel, hwAttrs->devType);
-
-            GPMCDevSizeSelect(hwAttrs->gpmcBaseAddr, hwAttrs->chipSel, hwAttrs->devSize);
-
-            GPMCAddrDataMuxProtocolSelect(hwAttrs->gpmcBaseAddr,
-                                          hwAttrs->chipSel,
-                                          hwAttrs->addrDataMux);
-
-            /* by default, read/write async single access */
-            GPMCReadTypeSelect(hwAttrs->gpmcBaseAddr,
-                               hwAttrs->chipSel,
-                               GPMC_READTYPE_ASYNC);
-            GPMCWriteTypeSelect(hwAttrs->gpmcBaseAddr,
-                               hwAttrs->chipSel,
-                               GPMC_WRITETYPE_ASYNC);
-
-            GPMCAccessTypeSelect(hwAttrs->gpmcBaseAddr,
-                               hwAttrs->chipSel,
-                               GPMC_MODE_READ,
-                               GPMC_ACCESSTYPE_SINGLE);
-            GPMCAccessTypeSelect(hwAttrs->gpmcBaseAddr,
-                               hwAttrs->chipSel,
-                               GPMC_MODE_WRITE,
-                               GPMC_ACCESSTYPE_SINGLE);
-
-            /* Set chip select address */
-            GPMCBaseAddrSet(hwAttrs->gpmcBaseAddr,
-                            hwAttrs->chipSel,
-                            hwAttrs->chipSelBaseAddr >> GPMC_CS_BASE_ADDR_SHIFT);
-            GPMCMaskAddrSet(hwAttrs->gpmcBaseAddr,
-                            hwAttrs->chipSel,
-                            hwAttrs->chipSelAddrSize);
-
-            /* CONFIG2 reister timing config, no extra delay */
-            timeConfig = GPMC_CS_TIMING_CONFIG(hwAttrs->timingParams.csWrOffTime,
-                                               hwAttrs->timingParams.csRdOffTime,
-                                               GPMC_CS_EXTRA_NODELAY,
-                                               hwAttrs->timingParams.csOnTime);
-            GPMCCSTimingConfig(hwAttrs->gpmcBaseAddr,
-                               hwAttrs->chipSel,
-                               timeConfig);
-
-            /* CONFIG3 reister timing config, no extra delay */
-            timeConfig = GPMC_ADV_TIMING_CONFIG(hwAttrs->timingParams.advAadMuxWrOffTime,
-                                                hwAttrs->timingParams.advAadMuxRdOffTime,
-                                                hwAttrs->timingParams.advWrOffTime,
-                                                hwAttrs->timingParams.advRdOffTime,
-                                                GPMC_ADV_EXTRA_NODELAY,
-                                                hwAttrs->timingParams.advAadMuxOnTime,
-                                                hwAttrs->timingParams.advOnTime);
-            GPMCADVTimingConfig(hwAttrs->gpmcBaseAddr,
-                                    hwAttrs->chipSel,
-                                    timeConfig);
-
-            /* CONFIG4 reister timing config, no extra delay */
-            timeConfig = GPMC_WE_OE_TIMING_CONFIG(hwAttrs->timingParams.weOffTime,
-                                                  GPMC_WE_EXTRA_NODELAY,
-                                                  hwAttrs->timingParams.weOnTtime,
-                                                  hwAttrs->timingParams.oeAadMuxOffTime,
-                                                  hwAttrs->timingParams.oeOffTime,
-                                                  GPMC_OE_EXTRA_NODELAY,
-                                                  hwAttrs->timingParams.oeAadMuxOnTime,
-                                                  hwAttrs->timingParams.oeOnTime);
-            GPMCWEAndOETimingConfig(hwAttrs->gpmcBaseAddr,
-                                    hwAttrs->chipSel,
-                                    timeConfig);
-
-            /* CONFIG5 reister timing config */
-            timeConfig = GPMC_RDACCESS_CYCLETIME_TIMING_CONFIG(hwAttrs->timingParams.rdCycleTime,
-                                                               hwAttrs->timingParams.wrCycleTime,
-                                                               hwAttrs->timingParams.rdAccessTime,
-                                                               hwAttrs->timingParams.pageBurstAccess);
-            GPMCRdAccessAndCycleTimeTimingConfig(hwAttrs->gpmcBaseAddr,
-                                                 hwAttrs->chipSel,
-                                                 timeConfig);
-
-            /* CONFIG6 reister timing config */
-            GPMCWrAccessAndWrDataOnADMUXBusTimingConfig(hwAttrs->gpmcBaseAddr,
-                                                        hwAttrs->chipSel,
-                                                        hwAttrs->timingParams.wrAcessTime,
-                                                        hwAttrs->timingParams.wrDataOnMuxBusTime);
-
-            timeConfig = GPMC_CYCLE2CYCLE_BUSTURNAROUND_TIMING_CONFIG(hwAttrs->timingParams.cycle2CycleDelay,
-                                                                      hwAttrs->timingParams.cycleDelaySameChipSel,
-                                                                      hwAttrs->timingParams.cycleDelayDiffChipSel,
-                                                                      hwAttrs->timingParams.busTurnAroundTime);
-            GPMCycle2CycleAndTurnArndTimeTimingConfig(hwAttrs->gpmcBaseAddr,
-                                                      hwAttrs->chipSel,
-                                                      timeConfig);
-
-            GPMCCSConfig(hwAttrs->gpmcBaseAddr, hwAttrs->chipSel, GPMC_CS_ENABLE);
         }
     }
     return(handle);
@@ -426,32 +426,33 @@ static void GPMC_close_v1(GPMC_Handle handle)
     GPMC_v1_HwAttrs const *hwAttrs = NULL;
 
     /* Input parameter validation */
-    OSAL_Assert(handle == NULL);
-
-    /* Get the pointer to the object and hwAttrs */
-    object = handle->object;
-    hwAttrs = handle->hwAttrs;
-
-    /* Mask I2C interrupts */
-    GPMCIntDisableAll(hwAttrs->gpmcBaseAddr);
-
-    /* Destruct the Hwi */
-    if(GPMC_OPER_MODE_POLLING != object->intrPollMode)
+    if (handle != NULL)
     {
-        GPMC_osalHardwareIntDestruct(object->hwi);
+        /* Get the pointer to the object and hwAttrs */
+        object = handle->object;
+        hwAttrs = handle->hwAttrs;
+
+        /* Mask I2C interrupts */
+        GPMCIntDisableAll(hwAttrs->gpmcBaseAddr);
+
+        /* Destruct the Hwi */
+        if(GPMC_OPER_MODE_POLLING != object->intrPollMode)
+        {
+            GPMC_osalHardwareIntDestruct(object->hwi);
+        }
+
+        /* Destruct the instance lock */
+        GPMC_osalDeleteBlockingLock(object->mutex);
+
+        /* Destruct the transfer completion lock */
+        if(GPMC_OPER_MODE_BLOCKING == object->intrPollMode)
+        {
+            GPMC_osalDeleteBlockingLock(object->transferComplete);
+        }
+
+        /* Open flag is set false */
+        object->isOpen = (bool)false;
     }
-
-    /* Destruct the instance lock */
-    GPMC_osalDeleteBlockingLock(object->mutex);
-
-    /* Destruct the transfer completion lock */
-    if(GPMC_OPER_MODE_BLOCKING == object->intrPollMode)
-    {
-        GPMC_osalDeleteBlockingLock(object->transferComplete);
-    }
-
-    /* Open flag is set false */
-    object->isOpen = (bool)false;
 
     return;
 }
@@ -492,21 +493,23 @@ static int32_t GPMC_nand_read_v1(GPMC_Handle handle,
 {
     GPMC_v1_Object *object = NULL;
     GPMC_v1_HwAttrs const *hwAttrs = NULL;
-    int32_t         retVal = 0;
+    int32_t         retVal = GPMC_STATUS_ERROR;
 
     /* Input parameter validation */
-    OSAL_Assert(!((handle != NULL) && (transaction != NULL)));
-
-    object = handle->object;
-    hwAttrs = handle->hwAttrs;
-
-    if(GPMC_OPER_MODE_POLLING == object->intrPollMode)
+    if ((handle != NULL) && (transaction != NULL))
     {
-		GPMC_ctrlNandReadData(hwAttrs, object->readBufIdx,
-		                      object->readCountIdx);
-    }
-    else
-    {
+        object = handle->object;
+        hwAttrs = handle->hwAttrs;
+
+        if(GPMC_OPER_MODE_POLLING == object->intrPollMode)
+        {
+            GPMC_ctrlNandReadData(hwAttrs, object->readBufIdx,
+                                  object->readCountIdx);
+        }
+        else
+        {
+        }
+        retVal = GPMC_STATUS_SUCCESS;
     }
     return(retVal);
 }
@@ -519,39 +522,41 @@ static int32_t GPMC_nor_read_v1(GPMC_Handle handle,
     uint16_t              *pData16, *pAddr16;
     uint8_t               *pData8, *pAddr8;
     uint32_t               size;
-    int32_t                retVal = 0;
+    int32_t                retVal = GPMC_STATUS_ERROR;
 
     /* Input parameter validation */
-    OSAL_Assert(!((handle != NULL) && (transaction != NULL)));
-
-    object = handle->object;
-    hwAttrs = handle->hwAttrs;
-
-    size = object->readCountIdx;
-    pData8 = (uint8_t *)(object->readBufIdx);
-    pAddr8 = (uint8_t *)(hwAttrs->chipSelBaseAddr + transaction->offset);
-    pData16 = (uint16_t *)(object->readBufIdx);
-    pAddr16 = (uint16_t *)(hwAttrs->chipSelBaseAddr + transaction->offset);
-
-    while(size > 0U)
+    if ((handle != NULL) && (transaction != NULL))
     {
-        if(hwAttrs->devSize == GPMC_DEVICESIZE_16BITS)
+        object = handle->object;
+        hwAttrs = handle->hwAttrs;
+
+        size = object->readCountIdx;
+        pData8 = (uint8_t *)(object->readBufIdx);
+        pAddr8 = (uint8_t *)(hwAttrs->chipSelBaseAddr + transaction->offset);
+        pData16 = (uint16_t *)(object->readBufIdx);
+        pAddr16 = (uint16_t *)(hwAttrs->chipSelBaseAddr + transaction->offset);
+
+        while(size > 0U)
         {
-			*pData16++ = *pAddr16++;
-			if (size == 1)
+            if(hwAttrs->devSize == GPMC_DEVICESIZE_16BITS)
             {
-                size = 0;
+                *pData16++ = *pAddr16++;
+                if (size == 1)
+                {
+                    size = 0;
+                }
+                else
+                {
+                    size -= 2;
+                }
             }
-			else
+            else
             {
-                size -= 2;
+                *pData8++ = *pAddr8++;
+                size--;
             }
         }
-        else
-        {
-			*pData8++ = *pAddr8++;
-            size--;
-        }
+        retVal = GPMC_STATUS_SUCCESS;
     }
     return(retVal);
 }
@@ -572,13 +577,13 @@ static void GPMC_ctrlNandWriteData(GPMC_v1_HwAttrs const *hwAttrs,
         {
 			HW_WR_REG16(hwAttrs->gpmcBaseAddr + GPMC_NAND_DATA_N(hwAttrs->chipSel), *pData16);
 			pData16++;
-			if (size == 1)
+			if (size == 1U)
             {
-                size = 0;
+                size = 0U;
             }
 			else
             {
-                size -= 2;
+                size -= 2U;
             }
         }
         else
@@ -595,21 +600,23 @@ static int32_t GPMC_nand_write_v1(GPMC_Handle handle,
 {
     GPMC_v1_Object *object = NULL;
     GPMC_v1_HwAttrs const *hwAttrs = NULL;
-    int32_t         retVal = 0;
+    int32_t         retVal = GPMC_STATUS_ERROR;
 
     /* Input parameter validation */
-    OSAL_Assert(!((handle != NULL) && (transaction != NULL)));
-
-    object = handle->object;
-    hwAttrs = handle->hwAttrs;
-
-    if(GPMC_OPER_MODE_POLLING == object->intrPollMode)
+    if ((handle != NULL) && (transaction != NULL))
     {
-		GPMC_ctrlNandWriteData(hwAttrs, object->writeBufIdx,
-		                       object->writeCountIdx);
-    }
-    else
-    {
+        object = handle->object;
+        hwAttrs = handle->hwAttrs;
+
+        if(GPMC_OPER_MODE_POLLING == object->intrPollMode)
+        {
+            GPMC_ctrlNandWriteData(hwAttrs, object->writeBufIdx,
+                                   object->writeCountIdx);
+        }
+        else
+        {
+        }
+        retVal = GPMC_STATUS_SUCCESS;
     }
     return(retVal);
 }
@@ -622,39 +629,41 @@ static int32_t GPMC_nor_write_v1(GPMC_Handle handle,
     uint16_t              *pData16, *pAddr16;
     uint8_t               *pData8, *pAddr8;
     uint32_t               size;
-    int32_t                retVal = 0;
+    int32_t                retVal = GPMC_STATUS_ERROR;
 
     /* Input parameter validation */
-    OSAL_Assert(!((handle != NULL) && (transaction != NULL)));
-
-    object = handle->object;
-    hwAttrs = handle->hwAttrs;
-
-    size = object->writeCountIdx;
-    pData8 = (uint8_t *)(object->writeBufIdx);
-    pAddr8 = (uint8_t *)(hwAttrs->chipSelBaseAddr + transaction->offset);
-    pData16 = (uint16_t *)(object->writeBufIdx);
-    pAddr16 = (uint16_t *)(hwAttrs->chipSelBaseAddr + transaction->offset);
-
-    while(size > 0U)
+    if ((handle != NULL) && (transaction != NULL))
     {
-        if(hwAttrs->devSize == GPMC_DEVICESIZE_16BITS)
+        object = handle->object;
+        hwAttrs = handle->hwAttrs;
+
+        size = object->writeCountIdx;
+        pData8 = (uint8_t *)(object->writeBufIdx);
+        pAddr8 = (uint8_t *)(hwAttrs->chipSelBaseAddr + transaction->offset);
+        pData16 = (uint16_t *)(object->writeBufIdx);
+        pAddr16 = (uint16_t *)(hwAttrs->chipSelBaseAddr + transaction->offset);
+
+        while(size > 0U)
         {
-			*pAddr16++ = *pData16++;
-			if (size == 1)
+            if(hwAttrs->devSize == GPMC_DEVICESIZE_16BITS)
             {
-                size = 0;
+                *pAddr16++ = *pData16++;
+                if (size == 1)
+                {
+                    size = 0U;
+                }
+                else
+                {
+                    size -= 2U;
+                }
             }
-			else
+            else
             {
-                size -= 2;
+                *pAddr8++ = *pData8++;
+                size--;
             }
         }
-        else
-        {
-			*pAddr8++ = *pData8++;
-            size--;
-        }
+        retVal = GPMC_STATUS_SUCCESS;
     }
 
     return(retVal);
@@ -668,59 +677,62 @@ static int32_t GPMC_primeTransfer_v1(GPMC_Handle handle,
 {
     GPMC_v1_Object        *object = NULL;
     GPMC_v1_HwAttrs const *hwAttrs = NULL;
-    int32_t                retVal = 0;
+    int32_t                retVal = GPMC_STATUS_ERROR;
 
     /* Input parameter validation */
-    OSAL_Assert(!((handle != NULL) && (transaction != NULL)));
-
-    /* Get the pointer to the object and hwAttrs */
-    object = handle->object;
-    hwAttrs = handle->hwAttrs;
-
-    /* Disable and clear the interrupts */
-    GPMCIntDisableAll(hwAttrs->gpmcBaseAddr);
-    GPMCIntClearAll(hwAttrs->gpmcBaseAddr);
-
-    /* Interrupt mode */
-    if(object->intrPollMode != GPMC_OPER_MODE_POLLING)
+    if ((handle != NULL) && (transaction != NULL))
     {
-        GPMCIntEnableAll(hwAttrs->gpmcBaseAddr);
-    }
+        retVal = GPMC_STATUS_SUCCESS;
 
-    /* Identify the direction of transfer (whether read/write) */
-    if(transaction->rxBuf)
-    {
-        if(hwAttrs->devType == GPMC_DEVICETYPE_NANDLIKE)
+        /* Get the pointer to the object and hwAttrs */
+        object = handle->object;
+        hwAttrs = handle->hwAttrs;
+
+        /* Disable and clear the interrupts */
+        GPMCIntDisableAll(hwAttrs->gpmcBaseAddr);
+        GPMCIntClearAll(hwAttrs->gpmcBaseAddr);
+
+        /* Interrupt mode */
+        if(object->intrPollMode != GPMC_OPER_MODE_POLLING)
         {
-            retVal = GPMC_nand_read_v1(handle, transaction);
+            GPMCIntEnableAll(hwAttrs->gpmcBaseAddr);
         }
-        else if(hwAttrs->devType == GPMC_DEVICETYPE_NORLIKE)
+
+        /* Identify the direction of transfer (whether read/write) */
+        if(transaction->rxBuf)
         {
-            retVal = GPMC_nor_read_v1(handle, transaction);
+            if(hwAttrs->devType == GPMC_DEVICETYPE_NANDLIKE)
+            {
+                retVal = GPMC_nand_read_v1(handle, transaction);
+            }
+            else if(hwAttrs->devType == GPMC_DEVICETYPE_NORLIKE)
+            {
+                retVal = GPMC_nor_read_v1(handle, transaction);
+            }
+            else
+            {
+                retVal = GPMC_STATUS_ERROR;
+            }
+        }
+        else if(transaction->txBuf)
+        {
+            if(hwAttrs->devType == GPMC_DEVICETYPE_NANDLIKE)
+            {
+                retVal = GPMC_nand_write_v1(handle, transaction);
+            }
+            else if(hwAttrs->devType == GPMC_DEVICETYPE_NORLIKE)
+            {
+                retVal = GPMC_nor_write_v1(handle, transaction);
+            }
+            else
+            {
+                retVal = GPMC_STATUS_ERROR;
+            }
         }
         else
         {
-            retVal = -1;
+            retVal = GPMC_STATUS_ERROR;
         }
-    }
-    else if(transaction->txBuf)
-    {
-        if(hwAttrs->devType == GPMC_DEVICETYPE_NANDLIKE)
-        {
-            retVal = GPMC_nand_write_v1(handle, transaction);
-        }
-        else if(hwAttrs->devType == GPMC_DEVICETYPE_NORLIKE)
-        {
-            retVal = GPMC_nor_write_v1(handle, transaction);
-        }
-        else
-        {
-            retVal = -1;
-        }
-    }
-    else
-    {
-        retVal = -1;
     }
 
     return(retVal);
@@ -730,56 +742,56 @@ static bool GPMC_transfer_v1(GPMC_Handle handle, GPMC_Transaction *transaction)
 {
     GPMC_v1_Object        *object;      /* GPMC object */
     GPMC_v1_HwAttrs const *hwAttrs;     /* GPMC hardware attributes */
-    bool                   ret = false; /* return value */
+    bool                   ret = (bool)false; /* return value */
 
     /* Input parameter validation */
-    OSAL_Assert(!((handle != NULL) && (transaction != NULL)));
-
-    /* Get the pointer to the object and hwAttrs */
-    object = handle->object;
-    hwAttrs = handle->hwAttrs;
-
-    /* Check if anything needs to be written or read */
-    if (0 != transaction->count)
+    if ((handle != NULL) && (transaction != NULL))
     {
-        /* Acquire the lock for this particular GPMC handle */
-        GPMC_osalPendLock(object->mutex, SemaphoreP_WAIT_FOREVER);
+        /* Get the pointer to the object and hwAttrs */
+        object = handle->object;
+        hwAttrs = handle->hwAttrs;
 
-        /* Book keeping of transmit and receive buffers. */
-        object->writeBufIdx = (uint8_t *)transaction->txBuf;
-        object->writeCountIdx = transaction->count;
-        object->readBufIdx =  (uint8_t *)transaction->rxBuf;
-        object->readCountIdx = transaction->count;
-
-        /*
-         * GPMC_primeTransfer_v1 is a longer process and
-         * protection is needed from the GPMC interrupt
-         */
-        if (GPMC_OPER_MODE_POLLING != object->intrPollMode)
+        /* Check if anything needs to be written or read */
+        if (0 != transaction->count)
         {
-            GPMC_osalHardwareIntrEnable(hwAttrs->intrNum);
-        }
+            /* Acquire the lock for this particular GPMC handle */
+            GPMC_osalPendLock(object->mutex, SemaphoreP_WAIT_FOREVER);
 
-        if (GPMC_primeTransfer_v1(handle, transaction) == 0)
-        {
-            if (object->intrPollMode == GPMC_OPER_MODE_BLOCKING)
-            {
-                GPMC_osalPendLock(object->transferComplete, SemaphoreP_WAIT_FOREVER);
+            /* Book keeping of transmit and receive buffers. */
+            object->writeBufIdx = (uint8_t *)transaction->txBuf;
+            object->writeCountIdx = transaction->count;
+            object->readBufIdx =  (uint8_t *)transaction->rxBuf;
+            object->readCountIdx = transaction->count;
 
-                /* transfer is completed and semaphore is posted. */
-            }
-            else
+            /*
+             * GPMC_primeTransfer_v1 is a longer process and
+             * protection is needed from the GPMC interrupt
+             */
+            if (GPMC_OPER_MODE_POLLING != object->intrPollMode)
             {
-                /* Always return true if in Asynchronous mode */
+                GPMC_osalHardwareIntrEnable(hwAttrs->intrNum);
             }
 
-            ret = true;
+            if (GPMC_primeTransfer_v1(handle, transaction) == 0)
+            {
+                if (object->intrPollMode == GPMC_OPER_MODE_BLOCKING)
+                {
+                    GPMC_osalPendLock(object->transferComplete, SemaphoreP_WAIT_FOREVER);
 
-            /* Release the lock for this particular GPMC handle */
-            GPMC_osalPostLock(object->mutex);
+                    /* transfer is completed and semaphore is posted. */
+                }
+                else
+                {
+                    /* Always return true if in Asynchronous mode */
+                }
+
+                ret = (bool)true;
+
+                /* Release the lock for this particular GPMC handle */
+                GPMC_osalPostLock(object->mutex);
+            }
         }
     }
-
     /* Return the number of bytes transferred by the I2C */
     return (ret);
 }
@@ -797,187 +809,171 @@ static int32_t GPMC_control_v1(GPMC_Handle handle, uint32_t cmd, void *arg)
     uint32_t              *params = (uint32_t *)arg;
     uint32_t               dataAddr;
     uint32_t               dataSize;
-    int32_t                retVal;
+    int32_t                retVal = GPMC_STATUS_ERROR;
 
     /* Input parameter validation */
-    OSAL_Assert(handle == NULL);
-
-    /* Get the pointer to the hwAttrs */
-    hwAttrs = handle->hwAttrs;
-
-    switch (cmd)
+    if ((handle != NULL) && (arg != NULL))
     {
-        case GPMC_V1_CMD_GETDEVSIZE:
+        retVal = GPMC_STATUS_SUCCESS;
+
+        /* Get the pointer to the hwAttrs */
+        hwAttrs = handle->hwAttrs;
+
+        switch (cmd)
         {
-            *params = hwAttrs->devSize;
-            retVal = GPMC_STATUS_SUCCESS;
-            break;
-        }
-
-        case GPMC_V1_CMD_GETDEVADDR:
-        {
-            *params = hwAttrs->chipSelBaseAddr;
-            retVal = GPMC_STATUS_SUCCESS;
-            break;
-        }
-
-		/* NAND device commands */
-        case GPMC_V1_CMD_SETNANDCMD:
-        {
-            HW_WR_REG8(hwAttrs->gpmcBaseAddr + GPMC_NAND_COMMAND_N(hwAttrs->chipSel),
-                       (uint8_t)(*params));
-            retVal = GPMC_STATUS_SUCCESS;
-            break;
-        }
-
-        case GPMC_V1_CMD_SETNANDADDR:
-        {
-            HW_WR_REG8(hwAttrs->gpmcBaseAddr + GPMC_NAND_ADDRESS_N(hwAttrs->chipSel),
-                       (uint8_t)(*params));
-            retVal = GPMC_STATUS_SUCCESS;
-            break;
-        }
-
-        case GPMC_V1_CMD_WRNANDDATA:
-        {
-			dataAddr = *params++;
-			dataSize = *params;
-
-            GPMC_ctrlNandWriteData(hwAttrs, (uint8_t *)dataAddr, dataSize);
-            retVal = GPMC_STATUS_SUCCESS;
-            break;
-        }
-
-        case GPMC_V1_CMD_RDNANDDATA:
-        {
-			dataAddr = *params++;
-			dataSize = *params;
-
-            GPMC_ctrlNandReadData(hwAttrs, (uint8_t *)dataAddr, dataSize);
-            retVal = GPMC_STATUS_SUCCESS;
-            break;
-        }
-
-        case GPMC_V1_CMD_GETWAITPINSTATUS:
-        {
-            *params = GPMCWaitPinStatusGet(hwAttrs->gpmcBaseAddr, hwAttrs->waitPinNum);
-            retVal = GPMC_STATUS_SUCCESS;
-            break;
-        }
-
-        case GPMC_V1_CMD_ECCCONTROL:
-        {
-            if (*params)
+            case GPMC_V1_CMD_GETDEVSIZE:
             {
-                GPMCECCEnable(hwAttrs->gpmcBaseAddr);
+                *params = hwAttrs->devSize;
+                break;
             }
-            else
+
+            case GPMC_V1_CMD_GETDEVADDR:
             {
-                GPMCECCDisable(hwAttrs->gpmcBaseAddr);
+                *params = hwAttrs->chipSelBaseAddr;
+                break;
             }
-            retVal = GPMC_STATUS_SUCCESS;
-            break;
-        }
 
-        case GPMC_V1_CMD_ECCGETINFO:
-        {
-            *params++ = hwAttrs->eccAlgo;
-            retVal = GPMC_STATUS_SUCCESS;
-            break;
-        }
+            /* NAND device commands */
+            case GPMC_V1_CMD_SETNANDCMD:
+            {
+                HW_WR_REG8(hwAttrs->gpmcBaseAddr + GPMC_NAND_COMMAND_N(hwAttrs->chipSel),
+                           (uint8_t)(*params));
+                break;
+            }
 
-        case GPMC_V1_CMD_ECCSETSIZE:
-        {
-            GPMC_eccSizeSet(hwAttrs, params);
-            retVal = GPMC_STATUS_SUCCESS;
-            break;
-        }
+            case GPMC_V1_CMD_SETNANDADDR:
+            {
+                HW_WR_REG8(hwAttrs->gpmcBaseAddr + GPMC_NAND_ADDRESS_N(hwAttrs->chipSel),
+                           (uint8_t)(*params));
+                break;
+            }
 
-        case GPMC_V1_CMD_ECCGETRESULT:
-        {
-            uint32_t eccResIdx;
+            case GPMC_V1_CMD_WRNANDDATA:
+            {
+                dataAddr = *params++;
+                dataSize = *params;
 
-            eccResIdx = *params++;
-            *params = GPMCECCResultGet(hwAttrs->gpmcBaseAddr, eccResIdx);
-            retVal = GPMC_STATUS_SUCCESS;
-            break;
-        }
+                GPMC_ctrlNandWriteData(hwAttrs, (uint8_t *)dataAddr, dataSize);
+                break;
+            }
+
+            case GPMC_V1_CMD_RDNANDDATA:
+            {
+                dataAddr = *params++;
+                dataSize = *params;
+
+                GPMC_ctrlNandReadData(hwAttrs, (uint8_t *)dataAddr, dataSize);
+                break;
+            }
+
+            case GPMC_V1_CMD_GETWAITPINSTATUS:
+            {
+                *params = GPMCWaitPinStatusGet(hwAttrs->gpmcBaseAddr, hwAttrs->waitPinNum);
+                break;
+            }
+
+            case GPMC_V1_CMD_ECCCONTROL:
+            {
+                if (*params)
+                {
+                    GPMCECCEnable(hwAttrs->gpmcBaseAddr);
+                }
+                else
+                {
+                    GPMCECCDisable(hwAttrs->gpmcBaseAddr);
+                }
+                break;
+            }
+
+            case GPMC_V1_CMD_ECCGETINFO:
+            {
+                *params++ = hwAttrs->eccAlgo;
+                break;
+            }
+
+            case GPMC_V1_CMD_ECCSETSIZE:
+            {
+                GPMC_eccSizeSet(hwAttrs, params);
+                break;
+            }
+
+            case GPMC_V1_CMD_ECCGETRESULT:
+            {
+                uint32_t eccResIdx;
+
+                eccResIdx = *params++;
+                *params = GPMCECCResultGet(hwAttrs->gpmcBaseAddr, eccResIdx);
+                break;
+            }
 
 
-        case GPMC_V1_CMD_ECCGETBCHRESULT:
-        {
-            uint32_t eccResIdx;
+            case GPMC_V1_CMD_ECCGETBCHRESULT:
+            {
+                uint32_t eccResIdx;
 
-            eccResIdx = *params++;
-            *params = GPMCECCBCHResultGet(hwAttrs->gpmcBaseAddr,
-                                          eccResIdx, hwAttrs->chipSel);
-            retVal = GPMC_STATUS_SUCCESS;
-            break;
-        }
+                eccResIdx = *params++;
+                *params = GPMCECCBCHResultGet(hwAttrs->gpmcBaseAddr,
+                                              eccResIdx, hwAttrs->chipSel);
+                break;
+            }
 
-        case GPMC_V1_CMD_ELMSETSYNDFRGMT:
-        {
-            uint32_t synFrgmtId = *params++;
-            uint32_t synFrgmtVal = *params;
+            case GPMC_V1_CMD_ELMSETSYNDFRGMT:
+            {
+                uint32_t synFrgmtId = *params++;
+                uint32_t synFrgmtVal = *params;
 
-            elmSyndromeFrgmtSet(hwAttrs->elmBaseAddr, synFrgmtId,
-                                synFrgmtVal, hwAttrs->chipSel);
-            retVal = GPMC_STATUS_SUCCESS;
-            break;
-        }
+                elmSyndromeFrgmtSet(hwAttrs->elmBaseAddr, synFrgmtId,
+                                    synFrgmtVal, hwAttrs->chipSel);
+                break;
+            }
 
-        case GPMC_V1_CMD_ELMSTARTERRLOCPROC:
-        {
-            elmErrLocProcessingStart(hwAttrs->elmBaseAddr, hwAttrs->chipSel);
-            retVal = GPMC_STATUS_SUCCESS;
-            break;
-        }
+            case GPMC_V1_CMD_ELMSTARTERRLOCPROC:
+            {
+                elmErrLocProcessingStart(hwAttrs->elmBaseAddr, hwAttrs->chipSel);
+                break;
+            }
 
-        case GPMC_V1_CMD_ELMGETINTSTATUS:
-        {
-            params[1] = elmIntStatusGet(hwAttrs->elmBaseAddr, params[0]);
-            retVal = GPMC_STATUS_SUCCESS;
-            break;
-        }
+            case GPMC_V1_CMD_ELMGETINTSTATUS:
+            {
+                params[1] = elmIntStatusGet(hwAttrs->elmBaseAddr, params[0]);
+                break;
+            }
 
-        case GPMC_V1_CMD_ELMCLRINTSTATUS:
-        {
-            elmIntStatusClear(hwAttrs->elmBaseAddr, *params);
-            retVal = GPMC_STATUS_SUCCESS;
-            break;
-        }
+            case GPMC_V1_CMD_ELMCLRINTSTATUS:
+            {
+                elmIntStatusClear(hwAttrs->elmBaseAddr, *params);
+                break;
+            }
 
-        case GPMC_V1_CMD_ELMGETERRLOCPROCSTATUS:
-        {
-            *params = elmErrLocProcessingStatusGet(hwAttrs->elmBaseAddr,
-                                                   hwAttrs->chipSel);
-            retVal = GPMC_STATUS_SUCCESS;
-            break;
-        }
+            case GPMC_V1_CMD_ELMGETERRLOCPROCSTATUS:
+            {
+                *params = elmErrLocProcessingStatusGet(hwAttrs->elmBaseAddr,
+                                                       hwAttrs->chipSel);
+                break;
+            }
 
-        case GPMC_V1_CMD_ELMGETNUMERRS:
-        {
-            *params = elmNumOfErrsGet(hwAttrs->elmBaseAddr,
-                                      hwAttrs->chipSel);
-            retVal = GPMC_STATUS_SUCCESS;
-            break;
-        }
-
-        case GPMC_V1_CMD_ELMGETERRLOCADDR:
-        {
-            uint32_t errNum;
-
-            errNum = *params++;
-            *params = elmErrLocBitAddrGet(hwAttrs->elmBaseAddr,
-                                          errNum,
+            case GPMC_V1_CMD_ELMGETNUMERRS:
+            {
+                *params = elmNumOfErrsGet(hwAttrs->elmBaseAddr,
                                           hwAttrs->chipSel);
-            retVal = GPMC_STATUS_SUCCESS;
+                break;
+            }
+
+            case GPMC_V1_CMD_ELMGETERRLOCADDR:
+            {
+                uint32_t errNum;
+
+                errNum = *params++;
+                *params = elmErrLocBitAddrGet(hwAttrs->elmBaseAddr,
+                                              errNum,
+                                              hwAttrs->chipSel);
+                break;
+            }
+
+            default:
+                retVal = GPMC_STATUS_UNDEFINEDCMD;
             break;
         }
-
-        default:
-        retVal = GPMC_STATUS_UNDEFINEDCMD;
-        break;
     }
 
     return retVal;
