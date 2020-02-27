@@ -204,7 +204,7 @@ static MCSPI_Handle    ESPI_open_v2(MCSPI_Handle mcHandle, const MCSPI_Params *p
   ESPI_v2_Object        *object = NULL;
   ESPI_SwIPAttrs const  *swipAttrs = NULL;
   uint32_t              key;
-  int32_t               ret_flag = 0;
+  int32_t               ret_flag = SPI_STATUS_SUCCESS;
   PRUSS_PruCores        bitbangPruInst = PRUICSS_MAX_PRU, controlPruInst = PRUICSS_MAX_PRU;
   ESPI_ICSS_INSTANCE    ICSSInst = ESPI_ICSS_INSTANCE_NONE;
 
@@ -264,14 +264,14 @@ static MCSPI_Handle    ESPI_open_v2(MCSPI_Handle mcHandle, const MCSPI_Params *p
 	      /* Register interrupts */
 	      SPI_osalRegisterInterrupt(&interruptRegParams,&(object->hwi));
 	      if(object->hwi == NULL) {
-		ret_flag = 1;
+		ret_flag = SPI_STATUS_ERROR;
 	      }
 	    }
 
 	  //SPI_osalHardwareIntrEnable((int32_t)swipAttrs->intNum);
 	  SPI_osalPostLock(object->icssMode.pruMode[controlPruInst].pruInstLock);
 
-	  if(ret_flag == 0)
+	  if(ret_flag == SPI_STATUS_SUCCESS)
 	    {
 	      /*
 	       * Construct thread safe handles for this SPI peripheral
@@ -285,7 +285,7 @@ static MCSPI_Handle    ESPI_open_v2(MCSPI_Handle mcHandle, const MCSPI_Params *p
 		}
 	    }
 
-	  if((ret_flag == 0) && (ICSSInst <= ESPI_ICSS_INSTANCE2))
+	  if((ret_flag == SPI_STATUS_SUCCESS) && (ICSSInst <= ESPI_ICSS_INSTANCE2))
 	    {
 	      /* Initialize PRU */
 	      SPI_osalPendLock(object->icssMode.pruMode[bitbangPruInst].pruInstLock, SemaphoreP_WAIT_FOREVER);
@@ -299,15 +299,15 @@ static MCSPI_Handle    ESPI_open_v2(MCSPI_Handle mcHandle, const MCSPI_Params *p
 	      SPI_osalPostLock(object->icssMode.pruMode[controlPruInst].pruInstLock);
             }
 
-	  if (ret_flag == 0)
+	  if (ret_flag == SPI_STATUS_SUCCESS)
 	    {
 	      ret_flag = ESPI_v2_setupPinMux(handle);
 	    }
-	  if (ret_flag == 0)
+	  if (ret_flag == SPI_STATUS_SUCCESS)
 	    {
 	      ret_flag =  ESPI_v2_enableModule(handle);
 	    }
-	  if (ret_flag == 1)
+	  if (ret_flag == SPI_STATUS_ERROR)
 	    {
 	      ESPI_close_v2(mcHandle);
 	      handle = NULL;
@@ -845,142 +845,149 @@ int32_t ESPI_v2_enableModule(SPI_Handle handle)
  */
 static int32_t ESPI_v2_pruIcssInit(SPI_Handle handle)
 {
-  ESPI_SwIPAttrs const    *swipAttrs  = NULL;
-  ESPI_v2_Object          *object     = NULL;
-  ESPI_ICSS_INSTANCE       icssInst   = ESPI_ICSS_INSTANCE_NONE;
-  PRUSS_PruCores           bitbangPruInst  = PRUICSS_MAX_PRU, controlPruInst = PRUICSS_MAX_PRU;
-  PRUICSS_Config          *pruIcssCfg = NULL;
-  PRUICSS_Handle           bitbangPruHandle  = NULL, controlPruHandle = NULL;
-  int32_t                  retVal     = 0;
+    ESPI_SwIPAttrs const    *swipAttrs  = NULL;
+    ESPI_v2_Object          *object     = NULL;
+    ESPI_ICSS_INSTANCE       icssInst   = ESPI_ICSS_INSTANCE_NONE;
+    PRUSS_PruCores           bitbangPruInst  = PRUICSS_MAX_PRU, controlPruInst = PRUICSS_MAX_PRU;
+    PRUICSS_Config          *pruIcssCfg = NULL;
+    PRUICSS_Handle           bitbangPruHandle  = NULL, controlPruHandle = NULL;
+    int32_t                  retVal = SPI_STATUS_ERROR;
 
-  /**
-   *  Input parameter validation
-   */
-  if(handle == NULL)
+    /**
+     *  Input parameter validation
+     */
+    if (handle != NULL)
     {
-      retVal = -1;
-      goto ERROR;
+        /**
+         * Get all useful pointers
+         */
+        swipAttrs = (ESPI_SwIPAttrs const *)handle->hwAttrs;
+        object    = (ESPI_v2_Object*)handle->object;
+        icssInst  = swipAttrs->icssInstance;
+        bitbangPruInst   = swipAttrs->bitbangPru;
+        controlPruInst   = swipAttrs->controlPru;
+
+        /**
+         * Initialize PRU-ICSS configuration
+         */
+        retVal = PRUICSS_socGetInitCfg(&pruIcssCfg);
+        if ((retVal != PRUICSS_RETURN_SUCCESS) || (icssInst > ESPI_ICSS_INSTANCE2))
+        {
+            retVal = SPI_STATUS_ERROR;
+        }
+        else
+        {
+            retVal = SPI_STATUS_SUCCESS;
+            /**
+             * Create PRU-ICSS handle
+             */
+            bitbangPruHandle = PRUICSS_create((PRUICSS_Config*) pruIcssCfg, icssInst);
+            controlPruHandle = PRUICSS_create((PRUICSS_Config*) pruIcssCfg, icssInst);
+            if ((bitbangPruHandle == NULL) || (controlPruHandle == NULL))
+            {
+                retVal = SPI_STATUS_ERROR;
+            }
+        }
+
+        if (retVal == SPI_STATUS_SUCCESS)
+        {
+            object->icssMode.pruMode[bitbangPruInst].pruIcssHandle = bitbangPruHandle;
+            object->icssMode.pruMode[controlPruInst].pruIcssHandle = controlPruHandle;
+
+            /**
+             * Pinmuxing
+             */
+            PRUICSS_pinMuxConfig(bitbangPruHandle, 0x0); /* enable PRUSS pinmuxing on the IO PRU */
+
+            /**
+             * Disable the PRU while it is initialized and configured
+             */
+            PRUICSS_pruDisable(bitbangPruHandle, bitbangPruInst);
+            PRUICSS_pruDisable(controlPruHandle, controlPruInst);
+
+            /**
+             * Initialize bitbang PRU core
+             */
+            retVal = ESPI_v2_initPruCore(bitbangPruInst, bitbangPruHandle, swipAttrs->icssMemBuffer);
+        }
+
+        if (retVal == SPI_STATUS_SUCCESS)
+        {
+            /**
+             * Initialize control PRU core
+             */
+            retVal = ESPI_v2_initPruCore(controlPruInst, controlPruHandle, swipAttrs->icssMemBuffer);
+        }
+
+        if (retVal == SPI_STATUS_SUCCESS)
+        {
+            /* Zero out the shared memory */
+            PRUICSS_pruInitMemory(controlPruHandle, PRU_ICSS_SHARED_RAM);
+
+            /**
+             * Start the PRU
+             */
+            PRUICSS_pruEnable(bitbangPruHandle, bitbangPruInst);
+            PRUICSS_pruEnable(controlPruHandle, controlPruInst);
+        }
     }
-    
-  /**
-   * Get all useful pointers
-   */
-  swipAttrs = (ESPI_SwIPAttrs const *)handle->hwAttrs;
-  object    = (ESPI_v2_Object*)handle->object;
-  icssInst  = swipAttrs->icssInstance;
-  bitbangPruInst   = swipAttrs->bitbangPru;
-  controlPruInst   = swipAttrs->controlPru;
-
-  /**
-   * Initialize PRU-ICSS configuration
-   */
-  retVal  = PRUICSS_socGetInitCfg(&pruIcssCfg);
-  if ((retVal != PRUICSS_RETURN_SUCCESS) || (icssInst > ESPI_ICSS_INSTANCE2))
-    {
-      retVal = 1;
-      goto ERROR;
-    }
-
-  /**
-   * Create PRU-ICSS handle
-   */
-  bitbangPruHandle = PRUICSS_create((PRUICSS_Config*) pruIcssCfg, icssInst);
-  controlPruHandle = PRUICSS_create((PRUICSS_Config*) pruIcssCfg, icssInst);
-  object->icssMode.pruMode[bitbangPruInst].pruIcssHandle = bitbangPruHandle;
-  object->icssMode.pruMode[controlPruInst].pruIcssHandle = controlPruHandle;
-
-  /**
-   * Pinmuxing
-   */
-  PRUICSS_pinMuxConfig(bitbangPruHandle, 0x0); /* enable PRUSS pinmuxing on the IO PRU */
-
-  /**
-   * Disable the PRU while it is initialized and configured
-   */
-  PRUICSS_pruDisable(bitbangPruHandle, bitbangPruInst);
-  PRUICSS_pruDisable(controlPruHandle, controlPruInst);
-      
-  /**
-   * Initialize PRU core
-   */
-  retVal = ESPI_v2_initPruCore(bitbangPruInst, bitbangPruHandle, swipAttrs->icssMemBuffer);
-  if (0 != retVal)
-    {
-      goto ERROR;
-    }
-
-  retVal = ESPI_v2_initPruCore(controlPruInst, controlPruHandle, swipAttrs->icssMemBuffer);
-  if (0 != retVal)
-    {
-      goto ERROR;
-    }
-
-  /* Zero out the shared memory */
-  PRUICSS_pruInitMemory(controlPruHandle, PRU_ICSS_SHARED_RAM);
-
-  /**
-   * Start the PRU
-   */
-  PRUICSS_pruEnable(bitbangPruHandle, bitbangPruInst);
-  PRUICSS_pruEnable(controlPruHandle, controlPruInst);
-
- ERROR:
-  return retVal;
+    return retVal;
 }
 
-static int32_t ESPI_v2_initPruCore(PRUSS_PruCores pruInst, PRUICSS_Handle pruIcssHandle,
-				   const ICSS_Mem_Ptr *icssMemBuffer)
+static int32_t ESPI_v2_initPruCore(PRUSS_PruCores pruInst,
+                                   PRUICSS_Handle pruIcssHandle,
+				                   const ICSS_Mem_Ptr *icssMemBuffer)
 {
     PRUICSS_IntcInitData pruss_intc_initdata = PRUSS_INTC_INITDATA;
-  int32_t              retVal = 0;
-  uint32_t *dramBufferStart, *dramBufferEnd, *iramBufferStart, *iramBufferEnd;
-  uint32_t  dramBufferLength, iramBufferLength;
+    int32_t              retVal = SPI_STATUS_SUCCESS;
+    uint32_t *dramBufferStart, *dramBufferEnd, *iramBufferStart, *iramBufferEnd;
+    uint32_t  dramBufferLength, iramBufferLength;
   
-  /**
-   * Initialize the PRU
-   */
-  PRUICSS_pruIntcInit(pruIcssHandle, &pruss_intc_initdata);        /* Initialize INTC */
-  PRUICSS_pruReset(pruIcssHandle, pruInst);                        /* Restart the PRU */  
-  PRUICSS_pruInitMemory(pruIcssHandle, PRU_ICSS_DATARAM(pruInst)); /* Initialize PRU data memory */
-  PRUICSS_pruInitMemory(pruIcssHandle, PRU_ICSS_IRAM(pruInst));    /* Initialize PRU instruction memory */
+    /**
+     * Initialize the PRU
+     */
+    PRUICSS_pruIntcInit(pruIcssHandle, &pruss_intc_initdata);        /* Initialize INTC */
+    PRUICSS_pruReset(pruIcssHandle, pruInst);                        /* Restart the PRU */
+    PRUICSS_pruInitMemory(pruIcssHandle, PRU_ICSS_DATARAM(pruInst)); /* Initialize PRU data memory */
+    PRUICSS_pruInitMemory(pruIcssHandle, PRU_ICSS_IRAM(pruInst));    /* Initialize PRU instruction memory */
 
-  /**
-   * Set PRU memory address values
-   */
-  if(PRUICCSS_PRU0 == pruInst)
-    { /* PRU0 */
-      dramBufferStart = icssMemBuffer->dram0MemBufferStart;
-      dramBufferEnd   = icssMemBuffer->dram0MemBufferEnd;      
-      iramBufferStart = icssMemBuffer->iram0MemBufferStart;
-      iramBufferEnd   = icssMemBuffer->iram0MemBufferEnd;
+    /**
+     * Set PRU memory address values
+     */
+    if(PRUICCSS_PRU0 == pruInst)
+    {   /* PRU0 */
+        dramBufferStart = icssMemBuffer->dram0MemBufferStart;
+        dramBufferEnd   = icssMemBuffer->dram0MemBufferEnd;
+        iramBufferStart = icssMemBuffer->iram0MemBufferStart;
+        iramBufferEnd   = icssMemBuffer->iram0MemBufferEnd;
     }
-  else if(PRUICCSS_PRU1 == pruInst)
-    { /* PRU1 */
-      dramBufferStart = icssMemBuffer->dram1MemBufferStart;
-      dramBufferEnd   = icssMemBuffer->dram1MemBufferEnd;      
-      iramBufferStart = icssMemBuffer->iram1MemBufferStart;
-      iramBufferEnd   = icssMemBuffer->iram1MemBufferEnd;
+    else if(PRUICCSS_PRU1 == pruInst)
+    {   /* PRU1 */
+        dramBufferStart = icssMemBuffer->dram1MemBufferStart;
+        dramBufferEnd   = icssMemBuffer->dram1MemBufferEnd;
+        iramBufferStart = icssMemBuffer->iram1MemBufferStart;
+        iramBufferEnd   = icssMemBuffer->iram1MemBufferEnd;
     }
-  else
-    { /* Invalid PRU number */
-      retVal = 1;
-      goto ERROR;
+    else
+    {   /* Invalid PRU number */
+        retVal = SPI_STATUS_ERROR;
     }
 
-  /**
-   * Calculate PRU memory buffer lengths
-   */
-  dramBufferLength = (uint32_t)((uint8_t*)dramBufferEnd) - (uint32_t)((uint8_t*)dramBufferStart);
-  iramBufferLength = (uint32_t)((uint8_t*)iramBufferEnd) - (uint32_t)((uint8_t*)iramBufferStart);
+    if (retVal == SPI_STATUS_SUCCESS)
+    {
+        /**
+         * Calculate PRU memory buffer lengths
+         */
+        dramBufferLength = (uint32_t)((uint8_t*)dramBufferEnd) - (uint32_t)((uint8_t*)dramBufferStart);
+        iramBufferLength = (uint32_t)((uint8_t*)iramBufferEnd) - (uint32_t)((uint8_t*)iramBufferStart);
 
-  /**
-   * Write PRU memory
-   */
-  PRUICSS_pruWriteMemory(pruIcssHandle, PRU_ICSS_DATARAM(pruInst), 0,
-			 dramBufferStart, dramBufferLength);
-  PRUICSS_pruWriteMemory(pruIcssHandle, PRU_ICSS_IRAM(pruInst), 0,
-			 iramBufferStart, iramBufferLength);
-  
- ERROR:
-  return retVal;
+        /**
+         * Write PRU memory
+         */
+        PRUICSS_pruWriteMemory(pruIcssHandle, PRU_ICSS_DATARAM(pruInst), 0,
+                   dramBufferStart, dramBufferLength);
+        PRUICSS_pruWriteMemory(pruIcssHandle, PRU_ICSS_IRAM(pruInst), 0,
+                   iramBufferStart, iramBufferLength);
+    }
+    return retVal;
 }

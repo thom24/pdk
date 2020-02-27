@@ -648,7 +648,7 @@ static int32_t I2C_v2_pruIcssInit(I2C_Handle handle, const I2C_Params *params)
     PRUICSS_Config          *pruIcssCfg;
     PRUICSS_HwAttrs const   *hwAttrs;
     PRUICSS_Handle           pruIcssHandle;
-    int32_t                  retVal = 0;
+    int32_t                  retVal = I2C_STATUS_ERROR;
     uint32_t                 icssRevIdMajor = 0U;
     uint32_t                 icssRevIdMinor = 0U;
     uint32_t                 iepCmpIncVal = 0U;
@@ -674,118 +674,122 @@ static int32_t I2C_v2_pruIcssInit(I2C_Handle handle, const I2C_Params *params)
             (ICSSInst > I2C_ICSS_INSTANCE2)    ||
             (PRUInst > PRUICCSS_PRU1))
         {
-            retVal = 1;
+            retVal = I2C_STATUS_ERROR;
         }
         else
         {
             pruIcssHandle = PRUICSS_create((PRUICSS_Config*) pruIcssCfg, ICSSInst);
-            CurrentICSSMode[ICSSInst].pruMode[PRUInst].pruIcssHandle = pruIcssHandle;
-            hwAttrs = (PRUICSS_HwAttrs const *)pruIcssHandle->hwAttrs;
+            if (pruIcssHandle == NULL)
+            {
+                retVal = I2C_STATUS_ERROR;
+            }
+            else
+            {
+                retVal = I2C_STATUS_SUCCESS;
+                CurrentICSSMode[ICSSInst].pruMode[PRUInst].pruIcssHandle = pruIcssHandle;
+                hwAttrs = (PRUICSS_HwAttrs const *)pruIcssHandle->hwAttrs;
 
-            PRUICSS_pinMuxConfig(pruIcssHandle, 0x0); /* PRUSS pinmuxing */
-            /*Disable PRUs - This is to ensure PRUs are not running when application is not initialized */
-            PRUICSS_pruDisable(pruIcssHandle, PRUInst);
-            PRUICSS_IntcInitData pruss_intc_initdata = PRUSS_INTC_INITDATA;
-            PRUICSS_pruIntcInit(pruIcssHandle, &pruss_intc_initdata);
+                PRUICSS_pinMuxConfig(pruIcssHandle, 0x0); /* PRUSS pinmuxing */
+                /*Disable PRUs - This is to ensure PRUs are not running when application is not initialized */
+                PRUICSS_pruDisable(pruIcssHandle, PRUInst);
+                PRUICSS_IntcInitData pruss_intc_initdata = PRUSS_INTC_INITDATA;
+                PRUICSS_pruIntcInit(pruIcssHandle, &pruss_intc_initdata);
 
-            PRUICSS_pruReset(pruIcssHandle, PRUInst);
+                PRUICSS_pruReset(pruIcssHandle, PRUInst);
+
+                PRUICSS_pruInitMemory(pruIcssHandle, PRU_ICSS_DATARAM(PRUInst));
+                PRUICSS_pruInitMemory(pruIcssHandle, PRU_ICSS_IRAM(PRUInst));
                 
-            PRUICSS_pruInitMemory(pruIcssHandle, PRU_ICSS_DATARAM(PRUInst));
-            PRUICSS_pruInitMemory(pruIcssHandle, PRU_ICSS_IRAM(PRUInst));
-            
-            if(PRUICCSS_PRU0 == PRUInst)
-            {
-                PRUICSS_pruWriteMemory(pruIcssHandle,PRU_ICSS_DATARAM(PRUInst),0,
-                                      ((ICSS_Mem_Ptr*)(swipAttrs->icssMemBuffer))->dram0MemBufferStart,
-                                      (uint32_t)((uint8_t*)(((ICSS_Mem_Ptr*)(swipAttrs->icssMemBuffer))->dram0MemBufferEnd)) - (uint32_t)((uint8_t*)(((ICSS_Mem_Ptr*)(swipAttrs->icssMemBuffer))->dram0MemBufferStart)));
-
-                PRUICSS_pruWriteMemory(pruIcssHandle,PRU_ICSS_IRAM(PRUInst),0,
-                                      ((ICSS_Mem_Ptr*)(swipAttrs->icssMemBuffer))->iram0MemBufferStart,
-                                      (uint32_t)((uint8_t*)(((ICSS_Mem_Ptr*)(swipAttrs->icssMemBuffer))->iram0MemBufferEnd)) - (uint32_t)((uint8_t*)(((ICSS_Mem_Ptr*)(swipAttrs->icssMemBuffer))->iram0MemBufferStart)));
-            }
-            else if(PRUICCSS_PRU1 == PRUInst)
-            {
-                PRUICSS_pruWriteMemory(pruIcssHandle,PRU_ICSS_DATARAM(PRUInst),0,
-                                      ((ICSS_Mem_Ptr*)(swipAttrs->icssMemBuffer))->dram1MemBufferStart,
-                                      (uint32_t)((uint8_t*)(((ICSS_Mem_Ptr*)(swipAttrs->icssMemBuffer))->dram1MemBufferEnd)) - (uint32_t)((uint8_t*)(((ICSS_Mem_Ptr*)(swipAttrs->icssMemBuffer))->dram1MemBufferStart)));
-
-                PRUICSS_pruWriteMemory(pruIcssHandle,PRU_ICSS_IRAM(PRUInst),0,
-                                      ((ICSS_Mem_Ptr*)(swipAttrs->icssMemBuffer))->iram1MemBufferStart,
-                                      (uint32_t)((uint8_t*)(((ICSS_Mem_Ptr*)(swipAttrs->icssMemBuffer))->iram1MemBufferEnd)) - (uint32_t)((uint8_t*)(((ICSS_Mem_Ptr*)(swipAttrs->icssMemBuffer))->iram1MemBufferStart)));
-            }
-            else
-            {
-                retVal = 1;
-            }
-
-            icssRevIdMajor = (PRUICSS_getICSSVersion(pruIcssHandle) & ((uint32_t)PRU_ICSS_REVISION_MAJOR_MASK)) >> 8;
-            icssRevIdMinor = PRUICSS_getICSSVersion(pruIcssHandle) & ((uint32_t)PRU_ICSS_REVISION_MINOR_MASK);
-
-            switch(CurrentICSSMode[ICSSInst].pruMode[PRUInst].pruConfig)
-            {
-                case I2C_ICSS_100KHZ_MODE:
-                    iepCmpIncVal = IEP_CMP_INCREMENT_VAL_100KHZ;
-                    iepCmpIncValHalf = IEP_CMP_INCREMENT_HALF_VAL_100KHZ;
-                    break;
-                case I2C_ICSS_400KHZ_MODE:
-                    iepCmpIncVal = IEP_CMP_INCREMENT_VAL_400KHZ;
-                    iepCmpIncValHalf = IEP_CMP_INCREMENT_HALF_VAL_400KHZ;
-                    break;
-                case I2C_ICSS_1MHZ_MODE:
-                    iepCmpIncVal = IEP_CMP_INCREMENT_VAL_1MHZ;
-                    iepCmpIncValHalf = IEP_CMP_INCREMENT_HALF_VAL_1MHZ;
-                    break;
-                default:
-                    iepCmpIncVal = 1U;
-                    iepCmpIncValHalf = 1U;
-                    break;
-            }
-
-            if((icssRevIdMajor <= 0x2U) && (icssRevIdMinor < 0x1U))
-            {
-    #if defined(SOC_AM335x) || defined(SOC_AM437x) || defined(SOC_AM572x)
-                /*    32-bit IEP Timer for ICSS v2.0 and below
-                 *     Reading IEP Counter Value
-                 */
-                tempAddr = hwAttrs->prussIepRegBase + ((uint32_t)CSL_ICSSM_IEP_COUNT);
-                iepCounter32 = *(uint32_t*)(tempAddr);
-                iepCounter32 /= iepCmpIncVal;
-                iepCounter32 += 15U;
-                iepCounter32 *= iepCmpIncVal;
-                if(PRUICCSS_PRU1 == PRUInst)
+                if(PRUICCSS_PRU0 == PRUInst)
                 {
-                    iepCounter32 += iepCmpIncValHalf;
+                    PRUICSS_pruWriteMemory(pruIcssHandle,PRU_ICSS_DATARAM(PRUInst),0,
+                                          ((ICSS_Mem_Ptr*)(swipAttrs->icssMemBuffer))->dram0MemBufferStart,
+                                          (uint32_t)((uint8_t*)(((ICSS_Mem_Ptr*)(swipAttrs->icssMemBuffer))->dram0MemBufferEnd)) - (uint32_t)((uint8_t*)(((ICSS_Mem_Ptr*)(swipAttrs->icssMemBuffer))->dram0MemBufferStart)));
+
+                    PRUICSS_pruWriteMemory(pruIcssHandle,PRU_ICSS_IRAM(PRUInst),0,
+                                          ((ICSS_Mem_Ptr*)(swipAttrs->icssMemBuffer))->iram0MemBufferStart,
+                                          (uint32_t)((uint8_t*)(((ICSS_Mem_Ptr*)(swipAttrs->icssMemBuffer))->iram0MemBufferEnd)) - (uint32_t)((uint8_t*)(((ICSS_Mem_Ptr*)(swipAttrs->icssMemBuffer))->iram0MemBufferStart)));
                 }
-                *(uint32_t*)(swipAttrs->configAddr) = iepCounter32;
-    #endif
-            }
-            else
-            {
-    #if defined(SOC_K2G) || defined(SOC_AM571x) || defined(SOC_AM572x) || defined(SOC_AM574x)
-                /*    64-bit IEP Timer for ICSS v2.1 and above
-                 *    Reading IEP Counter Value
-                 */
-                tempAddr = hwAttrs->prussIepRegBase + ((uint32_t)CSL_ICSSIEP_COUNT_REG0);
-                iepCounter64 = *(uint64_t*)(tempAddr);
-                iepCounter64 /= iepCmpIncVal;
-                iepCounter64 += 15U;
-                iepCounter64 *= iepCmpIncVal;
-                if(PRUICCSS_PRU1 == PRUInst)
+                else if(PRUICCSS_PRU1 == PRUInst)
                 {
-                    iepCounter64 += iepCmpIncValHalf;
+                    PRUICSS_pruWriteMemory(pruIcssHandle,PRU_ICSS_DATARAM(PRUInst),0,
+                                          ((ICSS_Mem_Ptr*)(swipAttrs->icssMemBuffer))->dram1MemBufferStart,
+                                          (uint32_t)((uint8_t*)(((ICSS_Mem_Ptr*)(swipAttrs->icssMemBuffer))->dram1MemBufferEnd)) - (uint32_t)((uint8_t*)(((ICSS_Mem_Ptr*)(swipAttrs->icssMemBuffer))->dram1MemBufferStart)));
+
+                    PRUICSS_pruWriteMemory(pruIcssHandle,PRU_ICSS_IRAM(PRUInst),0,
+                                          ((ICSS_Mem_Ptr*)(swipAttrs->icssMemBuffer))->iram1MemBufferStart,
+                                          (uint32_t)((uint8_t*)(((ICSS_Mem_Ptr*)(swipAttrs->icssMemBuffer))->iram1MemBufferEnd)) - (uint32_t)((uint8_t*)(((ICSS_Mem_Ptr*)(swipAttrs->icssMemBuffer))->iram1MemBufferStart)));
                 }
-                *(uint64_t*)(swipAttrs->configAddr) = iepCounter64;
-    #endif
+                else
+                {
+                    retVal = I2C_STATUS_ERROR;
+                }
+
+                icssRevIdMajor = (PRUICSS_getICSSVersion(pruIcssHandle) & ((uint32_t)PRU_ICSS_REVISION_MAJOR_MASK)) >> 8;
+                icssRevIdMinor = PRUICSS_getICSSVersion(pruIcssHandle) & ((uint32_t)PRU_ICSS_REVISION_MINOR_MASK);
+
+                switch(CurrentICSSMode[ICSSInst].pruMode[PRUInst].pruConfig)
+                {
+                    case I2C_ICSS_100KHZ_MODE:
+                        iepCmpIncVal = IEP_CMP_INCREMENT_VAL_100KHZ;
+                        iepCmpIncValHalf = IEP_CMP_INCREMENT_HALF_VAL_100KHZ;
+                        break;
+                    case I2C_ICSS_400KHZ_MODE:
+                        iepCmpIncVal = IEP_CMP_INCREMENT_VAL_400KHZ;
+                        iepCmpIncValHalf = IEP_CMP_INCREMENT_HALF_VAL_400KHZ;
+                        break;
+                    case I2C_ICSS_1MHZ_MODE:
+                        iepCmpIncVal = IEP_CMP_INCREMENT_VAL_1MHZ;
+                        iepCmpIncValHalf = IEP_CMP_INCREMENT_HALF_VAL_1MHZ;
+                        break;
+                    default:
+                        iepCmpIncVal = 1U;
+                        iepCmpIncValHalf = 1U;
+                        break;
+                }
+
+                if((icssRevIdMajor <= 0x2U) && (icssRevIdMinor < 0x1U))
+                {
+#if defined(SOC_AM335x) || defined(SOC_AM437x) || defined(SOC_AM572x)
+                    /*    32-bit IEP Timer for ICSS v2.0 and below
+                     *     Reading IEP Counter Value
+                     */
+                    tempAddr = hwAttrs->prussIepRegBase + ((uint32_t)CSL_ICSSM_IEP_COUNT);
+                    iepCounter32 = *(uint32_t*)(tempAddr);
+                    iepCounter32 /= iepCmpIncVal;
+                    iepCounter32 += 15U;
+                    iepCounter32 *= iepCmpIncVal;
+                    if(PRUICCSS_PRU1 == PRUInst)
+                    {
+                        iepCounter32 += iepCmpIncValHalf;
+                    }
+                    *(uint32_t*)(swipAttrs->configAddr) = iepCounter32;
+#endif
+                }
+                else
+                {
+#if defined(SOC_K2G) || defined(SOC_AM571x) || defined(SOC_AM572x) || defined(SOC_AM574x)
+                    /*    64-bit IEP Timer for ICSS v2.1 and above
+                     *    Reading IEP Counter Value
+                     */
+                    tempAddr = hwAttrs->prussIepRegBase + ((uint32_t)CSL_ICSSIEP_COUNT_REG0);
+                    iepCounter64 = *(uint64_t*)(tempAddr);
+                    iepCounter64 /= iepCmpIncVal;
+                    iepCounter64 += 15U;
+                    iepCounter64 *= iepCmpIncVal;
+                    if(PRUICCSS_PRU1 == PRUInst)
+                    {
+                        iepCounter64 += iepCmpIncValHalf;
+                    }
+                    *(uint64_t*)(swipAttrs->configAddr) = iepCounter64;
+#endif
+                }
+
+                retVal = I2C_v2_setBusFrequency(handle, CurrentICSSMode[ICSSInst].pruMode[PRUInst].pruConfig);
+
+                PRUICSS_pruEnable(pruIcssHandle, PRUInst);
             }
-
-            retVal = I2C_v2_setBusFrequency(handle, CurrentICSSMode[ICSSInst].pruMode[PRUInst].pruConfig);
-
-            PRUICSS_pruEnable(pruIcssHandle, PRUInst);
         }
-    }
-    else
-    {
-        retVal = (-((int32_t)1));
     }
 
     return retVal;
@@ -1893,7 +1897,7 @@ static void I2C_transfer_Callback_v2(I2C_Handle handle,
 
 static int32_t I2C_v2_setBusFrequency(I2C_Handle handle, I2C_ConfigMode busFrequency)
 {
-    int32_t                  retVal       = 0;
+    int32_t                  retVal       = I2C_STATUS_SUCCESS;
     I2C_SwIPAttrs const     *swipAttrs    = NULL;
 
     /* Input parameter validation */
@@ -1935,7 +1939,7 @@ static int32_t I2C_v2_setBusFrequency(I2C_Handle handle, I2C_ConfigMode busFrequ
     }
     else
     {
-        retVal = (-((int32_t)1));
+        retVal = I2C_STATUS_ERROR;
     }
 
     return retVal;
