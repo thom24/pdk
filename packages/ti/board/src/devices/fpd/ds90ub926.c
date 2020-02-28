@@ -466,7 +466,7 @@ Board_STATUS Board_fpdUb926GetPLLLockStatus(void *handle,
     {
         *pllLockStatus = 0;
     }
-    BOARD_DEBUG_LOG("FPD Deserializer Lock status : 0x%x\n", regData);
+    BOARD_DEVICES_STS_LOG("FPD Deserializer Lock status : 0x%x\n", regData);
     
     return BOARD_SOK;
 }
@@ -865,7 +865,7 @@ Board_STATUS Board_fpdUb926SetRmtAutoPwrDwnModeCtrl(void *handle,
 
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Auto power down read failed\n\r");
+        BOARD_DEVICES_ERR_LOG("Auto power down read failed\n\r");
         return BOARD_I2C_TRANSFER_FAIL;
     }
 
@@ -882,7 +882,7 @@ Board_STATUS Board_fpdUb926SetRmtAutoPwrDwnModeCtrl(void *handle,
 
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Auto power down write failed\n\r");
+        BOARD_DEVICES_ERR_LOG("Auto power down write failed\n\r");
         return BOARD_I2C_TRANSFER_FAIL;
     }
 

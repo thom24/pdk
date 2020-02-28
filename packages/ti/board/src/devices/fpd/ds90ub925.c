@@ -365,7 +365,7 @@ Board_STATUS Board_fpdUb925GetPCLKLockStatus(void *handle,
     {
         *pclkLockStatus = 0;
     }
-    BOARD_DEBUG_LOG("FPD Serializer Lock status : 0x%x\n", regData);
+    BOARD_DEVICES_STS_LOG("FPD Serializer Lock status : 0x%x\n", regData);
     
     return BOARD_SOK;
 }

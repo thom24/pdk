@@ -518,7 +518,7 @@ Board_STATUS Board_fpdUb941GetDsiGenSts(void *handle,
     }
 
     *errStatus = rdData;
-    BOARD_DEBUG_LOG("errStatus = %d\n\r",errStatus);
+    BOARD_DEVICES_STS_LOG("errStatus = %d\n\r",errStatus);
 
     return BOARD_SOK;
 
@@ -1198,7 +1198,7 @@ Board_STATUS Board_fpdUb941GetFpd3LinkRdySts(void *handle,
     }
 
     *stsFlag = (((regData & BOARD_FPD_UB941_FPD3_LINK_RDY_BIT_MASK) >> BOARD_FPD_UB941_FPD3_LINK_RDY_SHIFT_CNT) == 1) ?  true : false;
-    BOARD_DEBUG_LOG("stsFlag = %d\n\r",stsFlag);
+    BOARD_DEVICES_STS_LOG("stsFlag = %d\n\r",stsFlag);
 
     return BOARD_SOK;
 
@@ -1242,7 +1242,7 @@ Board_STATUS Board_fpdUb941GetFpd3LinkTxSts(void *handle,
     }
 
     *stsFlag = (((regData & BOARD_FPD_UB941_FPD3_TX_STS_BIT_MASK) >> BOARD_FPD_UB941_FPD3_TX_STS_SHIFT_CNT) == 1) ?  true : false;
-    BOARD_DEBUG_LOG("stsFlag = %d\n\r",stsFlag);
+    BOARD_DEVICES_STS_LOG("stsFlag = %d\n\r",stsFlag);
 
     return BOARD_SOK;
 
@@ -1286,7 +1286,7 @@ Board_STATUS Board_fpdUb941GetDsiClkDetSts(void *handle,
     }
 
     *stsFlag = (((regData & BOARD_FPD_UB941_DSI_CLK_DET_BIT_MASK) >> BOARD_FPD_UB941_DSI_CLK_DET_SHIFT_CNT) == 1) ?  true : false;
-    BOARD_DEBUG_LOG("stsFlag = %d\n\r",stsFlag);
+    BOARD_DEVICES_STS_LOG("stsFlag = %d\n\r",stsFlag);
 
     return BOARD_SOK;
 
@@ -1331,7 +1331,7 @@ Board_STATUS Board_fpdUb941GetSelPortDsiClkDetSts(void *handle,
     }
 
     *stsFlag = (((regData & BOARD_FPD_UB941_NO_DSI_CLK_BIT_MASK) >> BOARD_FPD_UB941_NO_DSI_CLK_SHIFT_CNT) == 1) ?  true : false;
-    BOARD_DEBUG_LOG("stsFlag = %d\n\r",stsFlag);
+    BOARD_DEVICES_STS_LOG("stsFlag = %d\n\r",stsFlag);
 
     return BOARD_SOK;
 
@@ -1375,7 +1375,7 @@ Board_STATUS Board_fpdUb941GetFreqStabilitySts(void *handle,
     }
 
     *stsFlag = (((regData & BOARD_FPD_UB941_FREQ_STABLE_BIT_MASK) >> BOARD_FPD_UB941_FREQ_STABLE_SHIFT_CNT) == 1) ?  true : false;
-    BOARD_DEBUG_LOG("stsFlag = %d\n\r",stsFlag);
+    BOARD_DEVICES_STS_LOG("stsFlag = %d\n\r",stsFlag);
 
     return BOARD_SOK;
 
@@ -1953,7 +1953,7 @@ Board_STATUS Board_fpdUb941SelPatt(void *handle,
                                    BOARD_FPD_MODE_ENABLE);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Enabling Color Bars failed\n");
+        BOARD_DEVICES_ERR_LOG("Enabling Color Bars failed\n");
         return -1;
     } 
 

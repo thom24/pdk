@@ -2355,6 +2355,6 @@ void Board_fpdUb9702GetI2CAddr(uint8_t hubInstance,
     }
     else
     {
-        BOARD_DEBUG_LOG("Enter the correct hub instance");
+        BOARD_DEVICES_STS_LOG("Enter the correct hub instance");
     }
 }

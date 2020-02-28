@@ -86,15 +86,23 @@ extern "C" {
 
 #define BOARD_DEVICES_CONFIG_END           (-1)
 
-#define BOARD_DEVICES_ENABLE_LOGS          (1U)
+/* Define below macros to enable the debug logs from board device library */
+/* Enables status logs */
+#undef BOARD_DEVICES_ENABLE_STATUS_LOGS
+/* Enables error logs which are displayed during function execution failure */
+#undef BOARD_DEVICES_ENABLE_ERROR_LOGS
 
-#if !defined(BOARD_DEBUG_LOG)
-#if defined(BOARD_DEVICES_ENABLE_LOGS)
-#define BOARD_DEBUG_LOG     UART_printf
+#if defined(BOARD_DEVICES_ENABLE_STATUS_LOGS)
+#define BOARD_DEVICES_STS_LOG     UART_printf
 #else
-#define BOARD_DEBUG_LOG(x, ...)
-#endif
-#endif  /* #if !defined(BOARD_DEBUG_LOG) */
+#define BOARD_DEVICES_STS_LOG(x, ...)
+#endif  /* #if defined(BOARD_DEVICES_ENABLE_STATUS_LOGS) */
+
+#if defined(BOARD_DEVICES_ENABLE_ERROR_LOGS)
+#define BOARD_DEVICES_ERR_LOG     UART_printf
+#else
+#define BOARD_DEVICES_ERR_LOG(x, ...)
+#endif  /* #if defined(BOARD_DEVICES_ENABLE_ERROR_LOGS) */
 
 #define BOARD_FPD_MAX_REMOTE_SENSOR_DEVICES                 (8U)
 

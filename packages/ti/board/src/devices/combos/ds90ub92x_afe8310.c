@@ -63,101 +63,101 @@ Board_STATUS Board_ub92xTunerCfg(void *handle,
 		return BOARD_INVALID_PARAM;
 	}
 
-    BOARD_DEBUG_LOG("Setting Deserializer configuration\n");
+    BOARD_DEVICES_STS_LOG("Setting Deserializer configuration\n");
 
-    BOARD_DEBUG_LOG("Disabling auto load from forward channel\n");
+    BOARD_DEVICES_STS_LOG("Disabling auto load from forward channel\n");
     ret = Board_fpdUb926SetI2SChBOverrideModeCtrl(handle,
                                                   fpdModuleParams,
                                                   BOARD_FPD_MODE_ENABLE);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Disabling auto load from forward channel failed\n");
+        BOARD_DEVICES_ERR_LOG("Disabling auto load from forward channel failed\n");
         ret = -1;
         return ret;
     }
-    Board_delay(500000);
+    Board_delay(BOARD_FPD_I2C_CFG_DELAY);
 
-    BOARD_DEBUG_LOG("Enabling Pass RGB independent of DE\n");
+    BOARD_DEVICES_STS_LOG("Enabling Pass RGB independent of DE\n");
     ret = Board_fpdUb926SetPassRGBModeCtrl(handle,
                                            fpdModuleParams,
                                            BOARD_FPD_MODE_ENABLE);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Enabling Pass RGB independent of DE failed\n");
+        BOARD_DEVICES_ERR_LOG("Enabling Pass RGB independent of DE failed\n");
         ret = -1;
         return ret;
     }
     Board_delay(BOARD_FPD_I2C_CFG_DELAY);
     
-    BOARD_DEBUG_LOG("Enabling not to sent packetized audio on RGB\n");
+    BOARD_DEVICES_STS_LOG("Enabling not to sent packetized audio on RGB\n");
     ret = Board_fpdUb926SetI2SGenModeCtrl(handle,
                                           fpdModuleParams,
                                           BOARD_FPD_MODE_ENABLE);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Enabling not to sent packetized audio on RGB failed\n");
+        BOARD_DEVICES_ERR_LOG("Enabling not to sent packetized audio on RGB failed\n");
         ret = -1;
         return ret;
     }
     Board_delay(BOARD_FPD_I2C_CFG_DELAY);
 
-    BOARD_DEBUG_LOG("Setting I2S forward channel frame transport mode\n");
+    BOARD_DEVICES_STS_LOG("Setting I2S forward channel frame transport mode\n");
     ret = Board_fpdUb926SetI2STransportSelModeCtrl(handle,
                                                    fpdModuleParams,
                                                    BOARD_FPD_MODE_ENABLE);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Setting I2S forward channel frame transport mode failed\n");
+        BOARD_DEVICES_ERR_LOG("Setting I2S forward channel frame transport mode failed\n");
         ret = -1;
         return ret;
     }
     Board_delay(BOARD_FPD_I2C_CFG_DELAY);
 
-    BOARD_DEBUG_LOG("Enabling RGB 18-bit mode\n");
+    BOARD_DEVICES_STS_LOG("Enabling RGB 18-bit mode\n");
     ret = Board_fpdUb926SetRGB18bitModeCtrl(handle,
                                             fpdModuleParams,
                                             BOARD_FPD_MODE_ENABLE);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Setting RGB 18-bit mode failed\n");
+        BOARD_DEVICES_ERR_LOG("Setting RGB 18-bit mode failed\n");
         ret = -1;
         return ret;
     }
     Board_delay(BOARD_FPD_I2C_CFG_DELAY);
 
-    BOARD_DEBUG_LOG("Setting Serializer configuration\n");
+    BOARD_DEVICES_STS_LOG("Setting Serializer configuration\n");
 
-    BOARD_DEBUG_LOG("Disabling Gate RGB dependent of DE\n");
+    BOARD_DEVICES_STS_LOG("Disabling Gate RGB dependent of DE\n");
     ret = Board_fpdUb925SetRGBGateDEModeCtrl(handle,
                                              fpdModuleParams,
                                              BOARD_FPD_MODE_DISABLE);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Disabling Gate RGB independent of DE failed\n");
+        BOARD_DEVICES_ERR_LOG("Disabling Gate RGB independent of DE failed\n");
         ret = -1;
         return ret;
     }
     Board_delay(BOARD_FPD_I2C_CFG_DELAY);
 
-    BOARD_DEBUG_LOG("Setting I2S forward channel frame transport mode\n");
+    BOARD_DEVICES_STS_LOG("Setting I2S forward channel frame transport mode\n");
     ret = Board_fpdUb925SetI2STransSelModeCtrl(handle,
                                                fpdModuleParams,
                                                BOARD_FPD_MODE_ENABLE);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Setting I2S forward channel frame transport mode failed\n");
+        BOARD_DEVICES_ERR_LOG("Setting I2S forward channel frame transport mode failed\n");
         ret = -1;
         return ret;
     }
     Board_delay(BOARD_FPD_I2C_CFG_DELAY);
 
-    BOARD_DEBUG_LOG("Enabling RGB 18-bit mode\n");
+    BOARD_DEVICES_STS_LOG("Enabling RGB 18-bit mode\n");
     ret = Board_fpdUb925SetRGB18bitModeCtrl(handle,
                                             fpdModuleParams,
                                             BOARD_FPD_MODE_ENABLE);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Setting RGB 18-bit mode failed\n");
+        BOARD_DEVICES_ERR_LOG("Setting RGB 18-bit mode failed\n");
         ret = -1;
         return ret;
     }
@@ -188,43 +188,43 @@ Board_STATUS Board_ub926DesInit(void *handle,
 		return BOARD_INVALID_PARAM;
 	}
 
-    BOARD_DEBUG_LOG("Disabling the Deserializer Auto power down mode...\n\r");
+    BOARD_DEVICES_STS_LOG("Disabling the Deserializer Auto power down mode...\n\r");
     boardStatus = Board_fpdUb926SetRmtAutoPwrDwnModeCtrl(handle,
                                                          fpdModuleParams,
                                                          BOARD_FPD_MODE_DISABLE);
     if(boardStatus != 0)
     {
-        BOARD_DEBUG_LOG("Disabling the Deserializer Auto power down mode failed\n\r");
+        BOARD_DEVICES_ERR_LOG("Disabling the Deserializer Auto power down mode failed\n\r");
         return boardStatus;
     }
 
-    BOARD_DEBUG_LOG("Resetting the Deserializer...\n\r");
+    BOARD_DEVICES_STS_LOG("Resetting the Deserializer...\n\r");
     boardStatus = Board_fpdUb926SetDigitalRst1ModeCtrl(handle,
                                                        fpdModuleParams,
                                                        BOARD_FPD_MODE_RESET);
     if(boardStatus != 0)
     {
-        BOARD_DEBUG_LOG("Resetting the Deserializer failed\n\r");
+        BOARD_DEVICES_ERR_LOG("Resetting the Deserializer failed\n\r");
         return boardStatus;
     }
 
-    BOARD_DEBUG_LOG("Disabling the BC Enable...\n\r");
+    BOARD_DEVICES_STS_LOG("Disabling the BC Enable...\n\r");
     boardStatus = Board_fpdUb926SetBackChModeCtrl(handle,
                                                   fpdModuleParams,
                                                   BOARD_FPD_MODE_ENABLE);
     if(boardStatus != 0)
     {
-        BOARD_DEBUG_LOG("Disabling the BC Enable failed\n\r");
+        BOARD_DEVICES_ERR_LOG("Disabling the BC Enable failed\n\r");
         return boardStatus;
     }
 
-    BOARD_DEBUG_LOG("Setting the Deserailizer bus frequency to 400kbits/sec...\n\r");
+    BOARD_DEVICES_STS_LOG("Setting the Deserailizer bus frequency to 400kbits/sec...\n\r");
     boardStatus = Board_fpdUb926SetI2CBusFreq(handle,
                                               fpdModuleParams,
                                               BOARD_FPD_KBPS_400);
     if(boardStatus != 0)
     {
-        BOARD_DEBUG_LOG("Setting the Deserailizer bus frequency to 400kbits/sec failed\n\r");
+        BOARD_DEVICES_ERR_LOG("Setting the Deserailizer bus frequency to 400kbits/sec failed\n\r");
         return boardStatus;
     }
 
@@ -255,46 +255,46 @@ Board_STATUS Board_fpdUb926RmtSlvDevAccEn(void *handle,
 		return BOARD_INVALID_PARAM;
 	}
 
-    BOARD_DEBUG_LOG("Enabling the I2C Pass-Through Mode...\n");
+    BOARD_DEVICES_STS_LOG("Enabling the I2C Pass-Through Mode...\n");
     ret = Board_fpdUb926SetI2CPassThrModeCtrl(handle,
 	                                          fpdModuleParams,
                                               BOARD_FPD_MODE_ENABLE);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Enabling the I2C Pass-Through Mode failed\n");
+        BOARD_DEVICES_ERR_LOG("Enabling the I2C Pass-Through Mode failed\n");
         return -1;
     }
     Board_delay(BOARD_FPD_I2C_CFG_DELAY);
 
-    BOARD_DEBUG_LOG("Enabling the I2C Pass-Through All Transactions...\n");
+    BOARD_DEVICES_STS_LOG("Enabling the I2C Pass-Through All Transactions...\n");
     ret = Board_fpdUb926SetI2CPassThrAllModeCtrl(handle,
 	                                             fpdModuleParams,
                                                  BOARD_FPD_MODE_ENABLE);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Enabling the I2C Pass-Through All Transactions failed\n");
+        BOARD_DEVICES_ERR_LOG("Enabling the I2C Pass-Through All Transactions failed\n");
         return -1;
     } 
     Board_delay(BOARD_FPD_I2C_CFG_DELAY);
 
-    BOARD_DEBUG_LOG("Setting the remote slave Alias addresses...\n");
+    BOARD_DEVICES_STS_LOG("Setting the remote slave Alias addresses...\n");
     ret = Board_fpdUb926RmtSerSlvDevAliasIdCfg(handle,
                                                fpdModuleParams,
                                                fpdRmtDevParams);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Setting the remote slave Alias address failed\n");
+        BOARD_DEVICES_ERR_LOG("Setting the remote slave Alias address failed\n");
         return -1;
     } 
     Board_delay(BOARD_FPD_I2C_CFG_DELAY);
 
-    BOARD_DEBUG_LOG("Disabling the I2C Pass-Through All Transactions...\n");
+    BOARD_DEVICES_STS_LOG("Disabling the I2C Pass-Through All Transactions...\n");
     ret = Board_fpdUb926SetI2CPassThrAllModeCtrl(handle,
                                                  fpdModuleParams,
                                                  BOARD_FPD_MODE_DISABLE);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Disabling the I2C Pass-Through All Transactions failed\n");
+        BOARD_DEVICES_ERR_LOG("Disabling the I2C Pass-Through All Transactions failed\n");
         return -1;
     } 
     Board_delay(BOARD_FPD_I2C_CFG_DELAY);

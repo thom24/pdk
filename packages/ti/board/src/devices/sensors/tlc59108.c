@@ -95,7 +95,7 @@ Board_STATUS Board_tlc59108PwmDutycycleCntrl(void *handle,
              regAddr = BOARD_FPD_TLC59108_PWM_CH7_REG_ADDR;
              break;
         default :
-            BOARD_DEBUG_LOG("\nInvalid channel\n");
+            BOARD_DEVICES_ERR_LOG("\nInvalid channel\n");
             break;
     }
 

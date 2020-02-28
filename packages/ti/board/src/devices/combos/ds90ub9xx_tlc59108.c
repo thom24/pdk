@@ -63,57 +63,57 @@ Board_STATUS Board_fpdUb941SerInit(void *handle,
         return BOARD_INVALID_PARAM;
     }
 
-    BOARD_DEBUG_LOG("Resetting the serializer...\n\r");
+    BOARD_DEVICES_STS_LOG("Resetting the serializer...\n\r");
     ret = Board_fpdUb941SetDigitalRst1ModeCtrl(handle,
                                                fpdModParams,
                                                BOARD_FPD_MODE_RESET);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Resetting the serializer failed\n\r");
+        BOARD_DEVICES_ERR_LOG("Resetting the serializer failed\n\r");
         return ret;
     }
 
-    BOARD_DEBUG_LOG("Setting the serializer bus frequency to 400kbits/sec...\n\r");
+    BOARD_DEVICES_STS_LOG("Setting the serializer bus frequency to 400kbits/sec...\n\r");
     ret = Board_fpdUb941SetI2CBusFreq(handle,
                                       fpdModParams,
                                       BOARD_FPD_KBPS_400);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Setting the serializer bus frequency to 400kbits/sec failed\n\r");
+        BOARD_DEVICES_ERR_LOG("Setting the serializer bus frequency to 400kbits/sec failed\n\r");
         return ret;
     }
 
-    BOARD_DEBUG_LOG("Enabling the I2C Pass-Through Mode...\n");
+    BOARD_DEVICES_STS_LOG("Enabling the I2C Pass-Through Mode...\n");
     ret = Board_fpdUb941SetI2CPassThrModeCfg(handle,
                                              fpdModParams,
                                              BOARD_FPD_MODE_ENABLE);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Enabling the I2C Pass-Through Mode failed\n");
+        BOARD_DEVICES_ERR_LOG("Enabling the I2C Pass-Through Mode failed\n");
         return -1;
     }
 
     Board_delay(BOARD_FPD_I2C_CFG_DELAY);
 
-    BOARD_DEBUG_LOG("Enabling the I2C Pass-Through All Transactions...\n");
+    BOARD_DEVICES_STS_LOG("Enabling the I2C Pass-Through All Transactions...\n");
     ret = Board_fpdUb941SetI2CPassAllModeCtrl(handle,
                                               fpdModParams,
                                               BOARD_FPD_MODE_ENABLE);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Enabling the I2C Pass-Through All Transactions failed\n");
+        BOARD_DEVICES_ERR_LOG("Enabling the I2C Pass-Through All Transactions failed\n");
         return -1;
     }
 
     Board_delay(BOARD_FPD_I2C_CFG_DELAY);
 
-    BOARD_DEBUG_LOG("Setting the remote device cfg...\n");
+    BOARD_DEVICES_STS_LOG("Setting the remote device cfg...\n");
     ret = Board_fpdUb941RmtDesAliasCfg(handle,
                                        fpdModParams,
                                        fpdRmtParams);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Setting the remote device cfg failed\n");
+        BOARD_DEVICES_ERR_LOG("Setting the remote device cfg failed\n");
         return -1;
     }
 
@@ -151,7 +151,7 @@ Board_STATUS Board_fpdUb941DsiModuleInit(void *handle,
                                          BOARD_FPD_MODE_RESET);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Disabling the DSI module failed\n");
+        BOARD_DEVICES_ERR_LOG("Disabling the DSI module failed\n");
         return -1;
     }
 
@@ -163,7 +163,7 @@ Board_STATUS Board_fpdUb941DsiModuleInit(void *handle,
                                          BOARD_FPD_UB941_PORT0_SEL);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Select the FPD-Link III Port0 failed\n");
+        BOARD_DEVICES_ERR_LOG("Select the FPD-Link III Port0 failed\n");
         return -1;
     }
 
@@ -175,7 +175,7 @@ Board_STATUS Board_fpdUb941DsiModuleInit(void *handle,
                                          BOARD_FPD_UB941_PORT1_I2C_EN);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Select the FPD-Link III Port1 I2C enable failed\n");
+        BOARD_DEVICES_ERR_LOG("Select the FPD-Link III Port1 I2C enable failed\n");
         return -1;
     }
 
@@ -187,7 +187,7 @@ Board_STATUS Board_fpdUb941DsiModuleInit(void *handle,
                                          BOARD_FPD_UB941_PORT0_SEL);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Select the FPD-Link III Port0 failed\n");
+        BOARD_DEVICES_ERR_LOG("Select the FPD-Link III Port0 failed\n");
         return -1;
     }
 
@@ -198,7 +198,7 @@ Board_STATUS Board_fpdUb941DsiModuleInit(void *handle,
                                           BOARD_FPD_MODE_ENABLE);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Enabling the Rx CRC failed\n");
+        BOARD_DEVICES_ERR_LOG("Enabling the Rx CRC failed\n");
         return -1;
     }
 
@@ -209,7 +209,7 @@ Board_STATUS Board_fpdUb941DsiModuleInit(void *handle,
                                     BOARD_FPD_MODE_ENABLE);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Enabling serializer filter failed\n");
+        BOARD_DEVICES_ERR_LOG("Enabling serializer filter failed\n");
         return -1;
     }
 
@@ -221,7 +221,7 @@ Board_STATUS Board_fpdUb941DsiModuleInit(void *handle,
                                              BOARD_FPD_MODE_ENABLE);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Enabling the I2C Pass-Through Mode for PORT0 failed\n");
+        BOARD_DEVICES_ERR_LOG("Enabling the I2C Pass-Through Mode for PORT0 failed\n");
         return -1;
     }
 
@@ -232,7 +232,7 @@ Board_STATUS Board_fpdUb941DsiModuleInit(void *handle,
                                              BOARD_FPD_MODE_ENABLE);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Enabling serializer PCLKAUTO for PORT0 failed\n");
+        BOARD_DEVICES_ERR_LOG("Enabling serializer PCLKAUTO for PORT0 failed\n");
         return -1;
     }
 
@@ -244,7 +244,7 @@ Board_STATUS Board_fpdUb941DsiModuleInit(void *handle,
                                          BOARD_FPD_UB941_PORT1_SEL);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Select the FPD-Link III Port1 failed\n");
+        BOARD_DEVICES_ERR_LOG("Select the FPD-Link III Port1 failed\n");
         return -1;
     }
 
@@ -255,7 +255,7 @@ Board_STATUS Board_fpdUb941DsiModuleInit(void *handle,
                                           BOARD_FPD_MODE_ENABLE);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Enabling CRC checker for PORT1 failed\n");
+        BOARD_DEVICES_ERR_LOG("Enabling CRC checker for PORT1 failed\n");
         return -1;
     }
 
@@ -266,7 +266,7 @@ Board_STATUS Board_fpdUb941DsiModuleInit(void *handle,
                                     BOARD_FPD_MODE_ENABLE);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Enabling serializer filter for PORT1 failed\n");
+        BOARD_DEVICES_ERR_LOG("Enabling serializer filter for PORT1 failed\n");
         return -1;
     }
 
@@ -278,7 +278,7 @@ Board_STATUS Board_fpdUb941DsiModuleInit(void *handle,
                                              BOARD_FPD_MODE_ENABLE);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Enabling the I2C Pass-Through Mode for PORT1 failed\n");
+        BOARD_DEVICES_ERR_LOG("Enabling the I2C Pass-Through Mode for PORT1 failed\n");
         return -1;
     }
 
@@ -289,7 +289,7 @@ Board_STATUS Board_fpdUb941DsiModuleInit(void *handle,
                                              BOARD_FPD_MODE_ENABLE);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Enabling serializer PCLKAUTO for PORT1 failed\n");
+        BOARD_DEVICES_ERR_LOG("Enabling serializer PCLKAUTO for PORT1 failed\n");
         return -1;
     }
 
@@ -301,7 +301,7 @@ Board_STATUS Board_fpdUb941DsiModuleInit(void *handle,
                                          BOARD_FPD_UB941_PORT0_SEL);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Select the FPD-Link III Port0 failed\n");
+        BOARD_DEVICES_ERR_LOG("Select the FPD-Link III Port0 failed\n");
         return -1;
     }
 
@@ -313,7 +313,7 @@ Board_STATUS Board_fpdUb941DsiModuleInit(void *handle,
                                           BOARD_FPD_UB941_DSI_PORT0_REG);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Accessing the DSI PORT0 registers failed\n");
+        BOARD_DEVICES_ERR_LOG("Accessing the DSI PORT0 registers failed\n");
         return -1;
     }
 
@@ -325,7 +325,7 @@ Board_STATUS Board_fpdUb941DsiModuleInit(void *handle,
                                         BOARD_FPD_UB941_Indirect_Register_Read_ENABLE);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Indirect register rd/wr mode selected failed\n");
+        BOARD_DEVICES_ERR_LOG("Indirect register rd/wr mode selected failed\n");
         return -1;
     }
 
@@ -341,7 +341,7 @@ Board_STATUS Board_fpdUb941DsiModuleInit(void *handle,
                                       regData);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Writing to the indirect register, DSI_CONFIG_1 failed\n");
+        BOARD_DEVICES_ERR_LOG("Writing to the indirect register, DSI_CONFIG_1 failed\n");
         return -1;
     }
 
@@ -353,7 +353,7 @@ Board_STATUS Board_fpdUb941DsiModuleInit(void *handle,
                                          BOARD_FPD_UB941_PORT1_SEL);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Select the FPD-Link III Port1 failed\n");
+        BOARD_DEVICES_ERR_LOG("Select the FPD-Link III Port1 failed\n");
         return -1;
     }
 
@@ -365,7 +365,7 @@ Board_STATUS Board_fpdUb941DsiModuleInit(void *handle,
                                           BOARD_FPD_UB941_DSI_PORT1_REG);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Accessing the DSI PORT0 registers failed\n");
+        BOARD_DEVICES_ERR_LOG("Accessing the DSI PORT0 registers failed\n");
         return -1;
     }
 
@@ -377,7 +377,7 @@ Board_STATUS Board_fpdUb941DsiModuleInit(void *handle,
                                         BOARD_FPD_UB941_Indirect_Register_Read_ENABLE);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Indirect register rd/wr mode selected failed\n");
+        BOARD_DEVICES_ERR_LOG("Indirect register rd/wr mode selected failed\n");
         return -1;
     }
 
@@ -393,7 +393,7 @@ Board_STATUS Board_fpdUb941DsiModuleInit(void *handle,
                                       regData);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Writing to the indirect register, DSI_CONFIG_1 failed\n");
+        BOARD_DEVICES_ERR_LOG("Writing to the indirect register, DSI_CONFIG_1 failed\n");
         return -1;
     }
 
@@ -405,7 +405,7 @@ Board_STATUS Board_fpdUb941DsiModuleInit(void *handle,
                                          BOARD_FPD_UB941_PORT0_SEL);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Select the FPD-Link III Port0 failed\n");
+        BOARD_DEVICES_ERR_LOG("Select the FPD-Link III Port0 failed\n");
         return -1;
     }
 
@@ -417,7 +417,7 @@ Board_STATUS Board_fpdUb941DsiModuleInit(void *handle,
                                 BOARD_FPD_UB941_FORCED_INDEPENDENT_2_2_MODE);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("forcing 2:2 mode failed\n");
+        BOARD_DEVICES_ERR_LOG("forcing 2:2 mode failed\n");
         return -1;
     }
 
@@ -429,7 +429,7 @@ Board_STATUS Board_fpdUb941DsiModuleInit(void *handle,
                                           BOARD_FPD_UB941_DSI_CONTINUOUS_CLK_ENABLE);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Enabling DSI_CONTINUOUS_CLOCK for Port1 failed\n");
+        BOARD_DEVICES_ERR_LOG("Enabling DSI_CONTINUOUS_CLOCK for Port1 failed\n");
         return -1;
     }
 
@@ -441,7 +441,7 @@ Board_STATUS Board_fpdUb941DsiModuleInit(void *handle,
                                            BOARD_FPD_UB941_LANES_4);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Enabling all 4 lanes of DSI Port 1 failed\n");
+        BOARD_DEVICES_ERR_LOG("Enabling all 4 lanes of DSI Port 1 failed\n");
         return -1;
     }
 
@@ -453,7 +453,7 @@ Board_STATUS Board_fpdUb941DsiModuleInit(void *handle,
                                          BOARD_FPD_UB941_PORT0_SEL);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Select the FPD-Link III Port0 failed\n");
+        BOARD_DEVICES_ERR_LOG("Select the FPD-Link III Port0 failed\n");
         return -1;
     }
 
@@ -465,7 +465,7 @@ Board_STATUS Board_fpdUb941DsiModuleInit(void *handle,
                                           BOARD_FPD_UB941_DSI_PORT0_REG);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Accessing the DSI PORT0 registers failed\n");
+        BOARD_DEVICES_ERR_LOG("Accessing the DSI PORT0 registers failed\n");
         return -1;
     }
 
@@ -477,7 +477,7 @@ Board_STATUS Board_fpdUb941DsiModuleInit(void *handle,
                                         BOARD_FPD_UB941_INDIRECT_REG_RD_DISABLE);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Indirect register rd/wr mode selected failed\n");
+        BOARD_DEVICES_ERR_LOG("Indirect register rd/wr mode selected failed\n");
         return -1;
     }
 
@@ -493,7 +493,7 @@ Board_STATUS Board_fpdUb941DsiModuleInit(void *handle,
                                       regData);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Writing to the indirect register, DPHY_SKIP_TIMING failed\n");
+        BOARD_DEVICES_ERR_LOG("Writing to the indirect register, DPHY_SKIP_TIMING failed\n");
         return -1;
     }
 
@@ -505,7 +505,7 @@ Board_STATUS Board_fpdUb941DsiModuleInit(void *handle,
                                          BOARD_FPD_UB941_PORT1_SEL);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Select the FPD-Link III Port1 failed\n");
+        BOARD_DEVICES_ERR_LOG("Select the FPD-Link III Port1 failed\n");
         return -1;
     }
 
@@ -517,7 +517,7 @@ Board_STATUS Board_fpdUb941DsiModuleInit(void *handle,
                                 BOARD_FPD_UB941_FORCED_INDEPENDENT_2_2_MODE);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("forcing 2:2 mode failed\n");
+        BOARD_DEVICES_ERR_LOG("forcing 2:2 mode failed\n");
         return -1;
     }
 
@@ -529,7 +529,7 @@ Board_STATUS Board_fpdUb941DsiModuleInit(void *handle,
                                           BOARD_FPD_UB941_DSI_CONTINUOUS_CLK_ENABLE);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Enabling DSI_CONTINUOUS_CLOCK for Port1 failed\n");
+        BOARD_DEVICES_ERR_LOG("Enabling DSI_CONTINUOUS_CLOCK for Port1 failed\n");
         return -1;
     }
 
@@ -541,7 +541,7 @@ Board_STATUS Board_fpdUb941DsiModuleInit(void *handle,
                                            BOARD_FPD_UB941_LANES_4);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Enabling all 4 lanes of DSI Port 1 failed\n");
+        BOARD_DEVICES_ERR_LOG("Enabling all 2 lanes of DSI Port 1 failed\n");
         return -1;
     }
 
@@ -553,7 +553,7 @@ Board_STATUS Board_fpdUb941DsiModuleInit(void *handle,
                                          BOARD_FPD_UB941_PORT0_SEL);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Select the FPD-Link III Port0 failed\n");
+        BOARD_DEVICES_ERR_LOG("Select the FPD-Link III Port0 failed\n");
         return -1;
     }
 
@@ -564,7 +564,7 @@ Board_STATUS Board_fpdUb941DsiModuleInit(void *handle,
                                           BOARD_FPD_UB941_DSI_PORT1_REG);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Accessing the DSI PORT0 registers failed\n");
+        BOARD_DEVICES_ERR_LOG("Accessing the DSI PORT0 registers failed\n");
         return -1;
     }
 
@@ -576,7 +576,7 @@ Board_STATUS Board_fpdUb941DsiModuleInit(void *handle,
                                         BOARD_FPD_UB941_INDIRECT_REG_RD_DISABLE);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Indirect register rd/wr mode selected failed\n");
+        BOARD_DEVICES_ERR_LOG("Indirect register rd/wr mode selected failed\n");
         return -1;
     }
 
@@ -592,7 +592,7 @@ Board_STATUS Board_fpdUb941DsiModuleInit(void *handle,
                                       regData);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Writing to the indirect register, DPHY_SKIP_TIMING failed\n");
+        BOARD_DEVICES_ERR_LOG("Writing to the indirect register, DPHY_SKIP_TIMING failed\n");
         return -1;
     }
 
@@ -604,7 +604,7 @@ Board_STATUS Board_fpdUb941DsiModuleInit(void *handle,
                                          BOARD_FPD_MODE_NORMAL);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Enabling the DSI module failed\n");
+        BOARD_DEVICES_ERR_LOG("Enabling the DSI module failed\n");
         return -1;
     }
 
@@ -641,7 +641,7 @@ Board_STATUS Board_fpdUb941PatternGenConfig(void *handle,
                                       regData);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Writing to the indirect register, PGCDC1 failed\n");
+        BOARD_DEVICES_ERR_LOG("Writing to the indirect register, PGCDC1 failed\n");
         return -1;
     }
 
@@ -657,7 +657,7 @@ Board_STATUS Board_fpdUb941PatternGenConfig(void *handle,
                                       regData);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Writing to the indirect register, PGAFS1 failed\n");
+        BOARD_DEVICES_ERR_LOG("Writing to the indirect register, PGAFS1 failed\n");
         return -1;
     }
 
@@ -673,7 +673,7 @@ Board_STATUS Board_fpdUb941PatternGenConfig(void *handle,
                                       regData);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Writing to the indirect register, PGAFS2 failed\n");
+        BOARD_DEVICES_ERR_LOG("Writing to the indirect register, PGAFS2 failed\n");
         return -1;
     }
 
@@ -689,7 +689,7 @@ Board_STATUS Board_fpdUb941PatternGenConfig(void *handle,
                                       regData);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Writing to the indirect register, PGAFS3 failed\n");
+        BOARD_DEVICES_ERR_LOG("Writing to the indirect register, PGAFS3 failed\n");
         return -1;
     }
 
@@ -705,7 +705,7 @@ Board_STATUS Board_fpdUb941PatternGenConfig(void *handle,
                                       regData);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Writing to the indirect register, PGTFS1 failed\n");
+        BOARD_DEVICES_ERR_LOG("Writing to the indirect register, PGTFS1 failed\n");
         return -1;
     }
 
@@ -721,7 +721,7 @@ Board_STATUS Board_fpdUb941PatternGenConfig(void *handle,
                                       regData);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Writing to the indirect register, PGTFS2 failed\n");
+        BOARD_DEVICES_ERR_LOG("Writing to the indirect register, PGTFS2 failed\n");
         return -1;
     }
 
@@ -737,7 +737,7 @@ Board_STATUS Board_fpdUb941PatternGenConfig(void *handle,
                                       regData);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Writing to the indirect register, PGTFS3 failed\n");
+        BOARD_DEVICES_ERR_LOG("Writing to the indirect register, PGTFS3 failed\n");
         return -1;
     }
 
@@ -753,7 +753,7 @@ Board_STATUS Board_fpdUb941PatternGenConfig(void *handle,
                                       regData);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Writing to the indirect register, PGHBP failed\n");
+        BOARD_DEVICES_ERR_LOG("Writing to the indirect register, PGHBP failed\n");
         return -1;
     }
 
@@ -769,7 +769,7 @@ Board_STATUS Board_fpdUb941PatternGenConfig(void *handle,
                                       regData);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Writing to the indirect register, PGVBP failed\n");
+        BOARD_DEVICES_ERR_LOG("Writing to the indirect register, PGVBP failed\n");
         return -1;
     }
 
@@ -781,7 +781,7 @@ Board_STATUS Board_fpdUb941PatternGenConfig(void *handle,
                                           BOARD_FPD_MODE_ENABLE);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Inverted color pattern select failed\n");
+        BOARD_DEVICES_ERR_LOG("Inverted color pattern select failed\n");
         return -1;
     }
 
@@ -793,7 +793,7 @@ Board_STATUS Board_fpdUb941PatternGenConfig(void *handle,
                                             BOARD_FPD_MODE_ENABLE);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Inverted color pattern select failed\n");
+        BOARD_DEVICES_ERR_LOG("Inverted color pattern select failed\n");
         return -1;
     }
 
@@ -805,7 +805,7 @@ Board_STATUS Board_fpdUb941PatternGenConfig(void *handle,
                                 BOARD_FPD_UB941_PATTERN_CHECKERBOARD);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("selecting pattern failed\n");
+        BOARD_DEVICES_ERR_LOG("selecting pattern failed\n");
         return -1;
     }
 
@@ -817,7 +817,7 @@ Board_STATUS Board_fpdUb941PatternGenConfig(void *handle,
                                   BOARD_FPD_MODE_ENABLE);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("selecting pattern failed\n");
+        BOARD_DEVICES_ERR_LOG("selecting pattern failed\n");
         return -1;
     }
 
@@ -853,7 +853,7 @@ Board_STATUS Board_fpdUb924ModuleInit(void *handle,
                                              BOARD_FPD_MODE_RESET);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Resetting the deserializer... failed\n");
+        BOARD_DEVICES_ERR_LOG("Resetting the deserializer... failed\n");
         return -1;
     }
 
@@ -865,7 +865,7 @@ Board_STATUS Board_fpdUb924ModuleInit(void *handle,
                                           BOARD_FPD_MODE_ENABLE);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Enabling the Rx CRC failed\n");
+        BOARD_DEVICES_ERR_LOG("Enabling the Rx CRC failed\n");
         return -1;
     }
 
@@ -877,7 +877,7 @@ Board_STATUS Board_fpdUb924ModuleInit(void *handle,
                                            BOARD_FPD_MODE_ENABLE);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Enabling deserializer filter failed\n");
+        BOARD_DEVICES_ERR_LOG("Enabling deserializer filter failed\n");
         return -1;
     }
 
@@ -889,7 +889,7 @@ Board_STATUS Board_fpdUb924ModuleInit(void *handle,
                                              BOARD_FPD_MODE_ENABLE);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Enabling the I2C Pass-Through Mode failed\n");
+        BOARD_DEVICES_ERR_LOG("Enabling the I2C Pass-Through Mode failed\n");
         return -1;
     }
 
@@ -901,7 +901,7 @@ Board_STATUS Board_fpdUb924ModuleInit(void *handle,
                                              BOARD_FPD_UB924_ACTIVE_LOW);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Enabling horizontal sync polarity failed\n");
+        BOARD_DEVICES_ERR_LOG("Enabling horizontal sync polarity failed\n");
         return -1;
     }
 
@@ -913,7 +913,7 @@ Board_STATUS Board_fpdUb924ModuleInit(void *handle,
                                              BOARD_FPD_UB924_ACTIVE_LOW);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Enabling vertical sync polarity failed\n");
+        BOARD_DEVICES_ERR_LOG("Enabling vertical sync polarity failed\n");
         return -1;
     }
 
@@ -925,7 +925,7 @@ Board_STATUS Board_fpdUb924ModuleInit(void *handle,
                                          BOARD_FPD_UB924_INT_CLK_SRC);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("pattern generation clock sel failed\n");
+        BOARD_DEVICES_ERR_LOG("pattern generation clock sel failed\n");
         return -1;
     }
 
@@ -937,7 +937,7 @@ Board_STATUS Board_fpdUb924ModuleInit(void *handle,
                                      BOARD_FPD_MODE_ENABLE);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Enabling pattern generation failed\n");
+        BOARD_DEVICES_ERR_LOG("Enabling pattern generation failed\n");
         return -1;
     }
 
@@ -949,7 +949,7 @@ Board_STATUS Board_fpdUb924ModuleInit(void *handle,
                                             BOARD_FPD_MODE_ENABLE);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Enabling color bar pattern failed\n");
+        BOARD_DEVICES_ERR_LOG("Enabling color bar pattern failed\n");
         return -1;
     }
 
@@ -961,7 +961,7 @@ Board_STATUS Board_fpdUb924ModuleInit(void *handle,
                                         BOARD_FPD_UB924_MODE_SEL_18);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Selecting pattern generator bit mode failed\n");
+        BOARD_DEVICES_ERR_LOG("Selecting pattern generator bit mode failed\n");
         return -1;
     }
 
@@ -973,7 +973,7 @@ Board_STATUS Board_fpdUb924ModuleInit(void *handle,
                                         BOARD_FPD_UB924_OWN_VIDEO_TIMING);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("video timing select failed\n");
+        BOARD_DEVICES_ERR_LOG("video timing select failed\n");
         return -1;
     }
 
@@ -985,7 +985,7 @@ Board_STATUS Board_fpdUb924ModuleInit(void *handle,
                                             BOARD_FPD_MODE_ENABLE);
     if(ret != 0)
     {
-        BOARD_DEBUG_LOG("Enabling Auto scroll for pattern failed\n");
+        BOARD_DEVICES_ERR_LOG("Enabling Auto scroll for pattern failed\n");
         return -1;
     }
 
@@ -1018,7 +1018,7 @@ Board_STATUS Board_tlc59108LedDrvCfg(void *handle,
         return BOARD_INVALID_PARAM;
     }
 
-    BOARD_DEBUG_LOG("Making the UB924 GPIO0 level high...\n\r");
+    BOARD_DEVICES_STS_LOG("Making the UB924 GPIO0 level high...\n\r");
     ret = Board_fpdUb924GpioOutputMode(handle,
                                        fpdModParams,
                                        BOARD_FPD_UB924_GPIO0,
@@ -1028,7 +1028,7 @@ Board_STATUS Board_tlc59108LedDrvCfg(void *handle,
         return ret;
     }
 
-    BOARD_DEBUG_LOG("Enabling the UB924 GPIO0...\n\r");
+    BOARD_DEVICES_STS_LOG("Enabling the UB924 GPIO0...\n\r");
     ret = Board_fpdUb924GpioEnMode(handle,
                                    fpdModParams,
                                    BOARD_FPD_UB924_GPIO0,
@@ -1038,7 +1038,7 @@ Board_STATUS Board_tlc59108LedDrvCfg(void *handle,
         return ret;
     }
 
-    BOARD_DEBUG_LOG("Configuring the LED output...\n\r");
+    BOARD_DEVICES_STS_LOG("Configuring the LED output...\n\r");
     ret = Board_tlc59108LedOut0Cfg(handle,
                                    fpdRmtParams,
                                    BOARD_FPD_TLC59108_LED2,
@@ -1049,7 +1049,7 @@ Board_STATUS Board_tlc59108LedDrvCfg(void *handle,
     }
     Board_delay(BOARD_FPD_I2C_CFG_DELAY);
 
-    BOARD_DEBUG_LOG("Configuring response mode...\n\r");
+    BOARD_DEVICES_STS_LOG("Configuring response mode...\n\r");
     ret = Board_tlc59108DeviceRespModeCfg(handle,
                                           fpdRmtParams,
                                           BOARD_FPD_MODE_ENABLE,

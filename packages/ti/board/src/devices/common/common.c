@@ -107,7 +107,7 @@ Board_STATUS Board_i2c16BitRegRd(void   *handle,
     ret = I2C_transfer(i2cHandle, &transaction);
     if(ret != I2C_STS_SUCCESS)
     {
-        BOARD_DEBUG_LOG("Failing while transmitting the rd reg addr with error code - %d\n", ret);
+        BOARD_DEVICES_ERR_LOG("Failing while transmitting the rd reg addr with error code - %d\n", ret);
         ret = -1;
         return ret;
     }
@@ -120,7 +120,7 @@ Board_STATUS Board_i2c16BitRegRd(void   *handle,
     ret = I2C_transfer(i2cHandle, &transaction);
     if(ret != I2C_STS_SUCCESS)
     {
-        BOARD_DEBUG_LOG("Failing while reading the register data by returning - %d\n", ret);
+        BOARD_DEVICES_ERR_LOG("Failing while reading the register data by returning - %d\n", ret);
         ret = -1;
         return ret;
     }
@@ -193,7 +193,7 @@ Board_STATUS Board_i2c16BitRegWr(void *handle,
     ret = I2C_transfer(i2cHandle, &transaction);
     if(ret != I2C_STS_SUCCESS)
     {
-        BOARD_DEBUG_LOG("Failing while writing data by returning - %d\n\r", ret);
+        BOARD_DEVICES_ERR_LOG("Failing while writing data by returning - %d\n\r", ret);
         ret = -1;
         return ret;
     }
@@ -240,7 +240,7 @@ Board_STATUS Board_i2c8BitRegRd(void   *handle,
     ret = I2C_transfer(i2cHandle, &transaction);
     if(ret != I2C_STS_SUCCESS)
     {
-        BOARD_DEBUG_LOG("Failing while transmitting the rd reg addr with error code - %d\n", ret);
+        BOARD_DEVICES_ERR_LOG("Failing while transmitting the rd reg addr with error code - %d\n", ret);
         ret = -1;
         return ret;
     }
@@ -253,7 +253,7 @@ Board_STATUS Board_i2c8BitRegRd(void   *handle,
     ret = I2C_transfer(i2cHandle, &transaction);
     if(ret != I2C_STS_SUCCESS)
     {
-        BOARD_DEBUG_LOG("Failing while reading the register data by returning - %d\n", ret);
+        BOARD_DEVICES_ERR_LOG("Failing while reading the register data by returning - %d\n", ret);
         ret = -1;
         return ret;
     }
@@ -313,7 +313,7 @@ Board_STATUS Board_i2c8BitRegWr(void *handle,
     ret = I2C_transfer(i2cHandle, &transaction);
     if(ret != I2C_STS_SUCCESS)
     {
-        BOARD_DEBUG_LOG("Failing while writing data by returning - %d\n\r", ret);
+        BOARD_DEVICES_ERR_LOG("Failing while writing data by returning - %d\n\r", ret);
         ret = -1;
         return ret;
     }
@@ -365,7 +365,7 @@ Board_STATUS Board_i2c10bit16bitRegRd(void *handle,
     boardStatus = I2C_transfer(i2cHandle, &transaction);
     if(boardStatus != I2C_STS_SUCCESS)
     {
-        BOARD_DEBUG_LOG("Failing while reading the register data by returning - %d\n", boardStatus);
+        BOARD_DEVICES_ERR_LOG("Failing while reading the register data by returning - %d\n", boardStatus);
         boardStatus = -1;
     }
     *regData = (uint16_t)(rx[0] << 8) | (rx[1]);
@@ -420,7 +420,7 @@ Board_STATUS Board_i2c10bit16bitRegWr(void *handle,
     boardStatus = I2C_transfer(i2cHandle, &transaction);
     if(boardStatus != I2C_STS_SUCCESS)
     {
-        BOARD_DEBUG_LOG("Failing while writing data by returning - %d\n\r", boardStatus);
+        BOARD_DEVICES_ERR_LOG("Failing while writing data by returning - %d\n\r", boardStatus);
         boardStatus = -1;
     }
     return 0;

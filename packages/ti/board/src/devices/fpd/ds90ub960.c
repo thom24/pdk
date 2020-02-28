@@ -766,11 +766,11 @@ Board_STATUS Board_fpdUb960DesInit(void *handle,
         return BOARD_INVALID_PARAM;
     }
 
-    BOARD_DEBUG_LOG("Configuring the deserializer with slave address - 0x%x...\n\r", fpdModParams->desSlvAddr);
+    BOARD_DEVICES_STS_LOG("Configuring the deserializer with slave address - 0x%x...\n\r", fpdModParams->desSlvAddr);
     while(Board_FpdUb960CfgObj[index].regAddr != BOARD_DEVICES_CONFIG_END)
     {
 #if defined(BOARD_FPD_I2C_CFG_RD_BACK_EN)
-        BOARD_DEBUG_LOG("regAddr - 0x%2x --- regData - 0x%2x\n\r", (uint8_t)Board_FpdUb960CfgObj[index].regAddr, Board_FpdUb960CfgObj[index].regData);
+        BOARD_DEVICES_STS_LOG("regAddr - 0x%2x --- regData - 0x%2x\n\r", (uint8_t)Board_FpdUb960CfgObj[index].regAddr, Board_FpdUb960CfgObj[index].regData);
 #endif
         ret = Board_i2c8BitRegWr(handle,
                                  fpdModParams->desSlvAddr,
@@ -798,7 +798,7 @@ Board_STATUS Board_fpdUb960DesInit(void *handle,
             return BOARD_I2C_TRANSFER_FAIL;
         }
 
-        BOARD_DEBUG_LOG(" --- read back data - 0x%2x\n\r", rdData);
+        BOARD_DEVICES_STS_LOG(" --- read back data - 0x%2x\n\r", rdData);
 #endif
         index++;
     }
@@ -820,11 +820,11 @@ Board_STATUS Board_fpdUb960DesInitFusionBoardTIDA1130(void *handle,
         return BOARD_INVALID_PARAM;
     }
 
-    BOARD_DEBUG_LOG("Configuring the deserializer with slave address - 0x%x...\n\r", fpdModParams->desSlvAddr);
+    BOARD_DEVICES_STS_LOG("Configuring the deserializer with slave address - 0x%x...\n\r", fpdModParams->desSlvAddr);
     while(Board_FpdUb960CfgObjOv2775[index].regAddr != BOARD_DEVICES_CONFIG_END)
     {
 #if defined(BOARD_FPD_I2C_CFG_RD_BACK_EN)
-        BOARD_DEBUG_LOG("regAddr - 0x%2x --- regData - 0x%2x\n\r", (uint8_t)Board_FpdUb960CfgObjOv2775[index].regAddr, Board_FpdUb960CfgObjOv2775[index].regData);
+        BOARD_DEVICES_STS_LOG("regAddr - 0x%2x --- regData - 0x%2x\n\r", (uint8_t)Board_FpdUb960CfgObjOv2775[index].regAddr, Board_FpdUb960CfgObjOv2775[index].regData);
 #endif
         ret = Board_i2c8BitRegWr(handle,
                                  fpdModParams->desSlvAddr,
@@ -852,7 +852,7 @@ Board_STATUS Board_fpdUb960DesInitFusionBoardTIDA1130(void *handle,
             return BOARD_I2C_TRANSFER_FAIL;
         }
 
-        BOARD_DEBUG_LOG(" --- read back data - 0x%2x\n\r", rdData);
+        BOARD_DEVICES_STS_LOG(" --- read back data - 0x%2x\n\r", rdData);
 #endif
         index++;
     }
@@ -888,11 +888,11 @@ Board_STATUS Board_fpdUb960Cfg(void *handle,
 
     if (ret == BOARD_SOK)
     {
-        BOARD_DEBUG_LOG("PG configurations for deserializer with slave address - 0x%x...\n\r", fpdModParams->desSlvAddr);
+        BOARD_DEVICES_STS_LOG("PG configurations for deserializer with slave address - 0x%x...\n\r", fpdModParams->desSlvAddr);
         while(ub960Cfg[index].regAddr != BOARD_DEVICES_CONFIG_END)
         {
 #if defined(BOARD_FPD_I2C_CFG_RD_BACK_EN)
-            BOARD_DEBUG_LOG("regAddr - 0x%2x --- regData - 0x%2x\n\r", (uint8_t)ub960Cfg[index].regAddr, ub960Cfg[index].regData);
+            BOARD_DEVICES_STS_LOG("regAddr - 0x%2x --- regData - 0x%2x\n\r", (uint8_t)ub960Cfg[index].regAddr, ub960Cfg[index].regData);
 #endif
             ret = Board_i2c8BitRegWr(handle,
                                      fpdModParams->desSlvAddr,
@@ -920,7 +920,7 @@ Board_STATUS Board_fpdUb960Cfg(void *handle,
                 return BOARD_I2C_TRANSFER_FAIL;
             }
 
-            BOARD_DEBUG_LOG(" --- read back data - 0x%2x\n\r", rdData);
+            BOARD_DEVICES_STS_LOG(" --- read back data - 0x%2x\n\r", rdData);
 #endif
             index++;
         }
