@@ -74,7 +74,7 @@ LNKFLAGS_INTERNAL_COMMON += --run_linker
 ifeq ($(CGT_ISA),$(filter $(CGT_ISA), M4 R5 M3))
   CFLAGS_INTERNAL = -c -qq -pdsw225 --endian=$(ENDIAN) -mv7$(CGT_ISA) --abi=$(CSWITCH_FORMAT) -eo.$(OBJEXT) -ea.$(ASMEXT) --symdebug:dwarf --embed_inline_assembly
   ifeq ($(CGT_ISA),$(filter $(CGT_ISA), R5))
-    CFLAGS_INTERNAL += --float_support=vfpv3d16 --code_state=16
+    CFLAGS_INTERNAL += --float_support=vfpv3d16
   else
     CFLAGS_INTERNAL += --float_support=vfplib
   endif
@@ -168,7 +168,7 @@ $(OBJ_PATHS): $(OBJDIR)/%.$(OBJEXT): %.c $(GEN_FILE) | $(OBJDIR) $(DEPDIR)
 	$(CC) $(_CFLAGS) $(INCLUDES) $(CFLAGS_DIROPTS) $(COMPILEMODE) $<
 
 #TODO: Check ASMFLAGS if really required
-ASMFLAGS = -me -g --code_state=16 --diag_warning=225
+ASMFLAGS = -me -g --code_state=32 --diag_warning=225
 
 # Object file creation
 $(OBJ_PATHS_ASM): $(OBJDIR)/%.$(OBJEXT): %.asm $(GEN_FILE) | $(OBJDIR) $(DEPDIR)
@@ -242,10 +242,10 @@ else
 endif
 
 ifneq ($(findstring mcu,$(CORE)),)
-BUILD_LIB_ONCE = $(CGT_PATH)/lib/rtsv7R4_T_le_v3D16_eabi.lib
+BUILD_LIB_ONCE = $(CGT_PATH)/lib/rtsv7R4_A_le_v3D16_eabi.lib
 $(BUILD_LIB_ONCE):
 	$(ECHO) \# $@ not found, building  $@ ...
-	$(CGT_PATH)/lib/mklib --pattern=rtsv7R4_T_le_v3D16_eabi.lib --parallel=$(NUM_PROCS) --compiler_bin_dir=$(CGT_PATH)/bin
+	$(CGT_PATH)/lib/mklib --pattern=rtsv7R4_A_le_v3D16_eabi.lib --parallel=$(NUM_PROCS) --compiler_bin_dir=$(CGT_PATH)/bin
 endif
 
 ifneq ($(XDC_CFG_FILE_$(CORE)),)
