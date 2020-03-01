@@ -542,3 +542,41 @@ static inline void Sciclient_configPrmsInit(Sciclient_ConfigPrms_t *pCfgPrms)
 #endif /* #ifndef SCICLIENT_H_ */
 
 /* @} */
+
+/**
+ * \ingroup DRV_SCICLIENT_MODULE
+ * \defgroup TISCI Texas Instruments System Controller Interface
+ *
+ *  @{
+ *  
+ * ##Power and Clock Management Features
+ * Public APIs are provided to:
+ * 
+ * - Enable and release a module, such as a UART or a core
+ * - This configures both power and clock details for the module and keeps track of its usage.
+ * - Configure the lowest/deepest low-power (sleep) mode allowed as well as EMIF details to enable self-refresh
+ * - Query thermal sensors
+ * 
+ * ##Resource Management Features
+ * Public APIs are provided to:
+ * 
+ * - Manage DMA/Navigator Resources
+ * - UDMAP
+ * - Ring Accelerator
+ * - PSI-L
+ * - Proxy
+ * - Program interrupts (interrupt aggregators and routers) both at SoC and subsystem (DMA/Navigator) level
+ * 
+ * ##Security Features
+ * Public APIs are provided to directly configure these features following polices and root of trust:
+ * 
+ * - ISC
+ * - Present at originator/master interfaces to control credentials from master
+ * - Firewall
+ * - Additional layer of access control beyond MMU/MPU located at each destination/slave interface to control memory and register access
+ * - SA2-UL Security Contexts
+ * - Contains actual keys for crypto accelerator
+ * - APIs are also provided to authenticate and/or decrypt blobs in memory.
+ */
+/* @} */
+
