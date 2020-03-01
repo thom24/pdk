@@ -775,7 +775,7 @@ int32_t Sciclient_service(const Sciclient_ReqPrm_t *pReqPrm,
             {
                 uint8_t * address = (uint8_t*)pLocalRespPayload;
                 uint8_t value = *(uint8_t*)(pTempWord + bytes);
-                *(uint8_t*)(address + i + bytes) = value;
+                *(uint8_t*)(address + i*4 + bytes) = value;
             }
         }
 
