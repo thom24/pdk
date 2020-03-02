@@ -4,7 +4,7 @@
  *
  */
 
-/* Copyright (C) {2016-2019} Texas Instruments Incorporated - http://www.ti.com/
+/* Copyright (C) {2016-2020} Texas Instruments Incorporated - http://www.ti.com/
 *
 *   Redistribution and use in source and binary forms, with or without 
 *   modification, are permitted provided that the following conditions 
@@ -90,7 +90,7 @@ uint32_t ICSS_EMAC_testIepCounterOffset = CSL_ICSSM_IEP_COUNT;
 #include <ti/starterware/include/hw/am437x.h>
 #include <ti/csl/src/ip/icss/V0/cslr_icssm_iep.h>
 uint32_t ICSS_EMAC_testIepCounterOffset = CSL_ICSSM_IEP_COUNT;
-#elif defined(idkAM572x)|| defined(idkAM571x) || defined(iceK2G) || defined(idkAM574x)
+#elif defined(idkAM572x)|| defined(idkAM571x) || defined(iceK2G) || defined(idkAM574x) || defined(am65xx_evm)
 #include <ti/csl/src/ip/icss/V1/cslr_icss_iep.h>
 uint32_t ICSS_EMAC_testIepCounterOffset = CSL_ICSSIEP_COUNT_REG0;
 #endif
@@ -107,11 +107,16 @@ uint32_t ICSS_EMAC_testIepCounterOffset = CSL_ICSSIEP_COUNT_REG0;
 #include <ti/drv/pruss/pruicss.h>
 #include <ti/drv/pruss/soc/pruicss_v1.h>
 
-#if defined (STP_SWITCH)
-#include <ti/drv/icss_emac/icss_emacFwLearning.h>
-#include <ti/drv/icss_emac/firmware/icss_switch/src/icss_stp_switch.h>
-#include "stp_switch_test_utils.h"
-#endif /* STP_SWITCH */
+#if defined(am65xx_evm)
+#include <ti\drv\icss_emac\firmware\icss_dualemac\bin\am65xx\a53_0\REV2\PRU0_bin.h>
+#include <ti\drv\icss_emac\firmware\icss_dualemac\bin\am65xx\a53_0\REV2\PRU1_bin.h>
+#endif
+
+#ifdef UNITY_INCLUDE_CONFIG_H
+#include <ti/build/unit-test/Unity/src/unity.h>
+#include <ti/build/unit-test/config/unity_config.h>
+#endif
+
 
 /* PG version of EVM */
 uint32_t ICSS_EMAC_testPgVersion = 0;
@@ -125,6 +130,23 @@ static uint32_t ICSS_EMAC_testPruInstance2Done = 0;
 #endif
 
 extern uint8_t ICSS_EMAC_testEvmType;
+
+#ifdef UNITY_INCLUDE_CONFIG_H
+/*
+ *  ======== Unity set up and tear down ========
+ */
+void setUp(void)
+{
+    /* Do nothing */
+}
+
+void tearDown(void)
+{
+    /* Do nothing */
+}
+#endif
+
+
 
 #ifdef __LINUX_USER_SPACE
 static inline void linux_sleep_ms(int ms) {
@@ -519,6 +541,7 @@ void ICSS_EMAC_testDrvInit(ICSS_EmacHandle handle, uint8_t instance)
     handle->object = (ICSS_EmacObject*)malloc(sizeof(ICSS_EmacObject));
     memset((void*)handle->object, 0, sizeof(ICSS_EmacObject));
     handle->hwAttrs= (ICSS_EmacHwAttrs*)malloc(sizeof(ICSS_EmacHwAttrs));
+    memset(handle->object, 0, sizeof(ICSS_EmacObject));
     memset((void*)handle->hwAttrs, 0, sizeof(ICSS_EmacHwAttrs));
 
     /* Callback mallocs */
@@ -584,6 +607,9 @@ void ICSS_EMAC_testDrvInit(ICSS_EmacHandle handle, uint8_t instance)
      */
 #ifndef iceK2G
     emacBaseAddr->l3OcmcBaseAddr =  (((emacBaseAddr->l3OcmcBaseAddr)&0xFFFF00)|0x40000000);
+#endif
+#if defined(am65xx_evm)
+    emacBaseAddr->l3OcmcBaseAddr =0x70100000; //mapping OCMC to MSMC_H
 #endif
     ICSS_EmacSocSetInitCfg((instance-1), emacBaseAddr );
 #endif
@@ -1139,6 +1165,7 @@ void ICSS_EMAC_testTtsCycPort2Callback()
     ICSS_EMAC_osalPostLock(ICSS_EMAC_testTtsP2TxSem);
 }
 
+#ifndef am65xx_evm
 #if defined (__ARM_ARCH_7A__) || defined (__TI_ARM_V7M4__)
 /**
 * @internal
@@ -1350,10 +1377,6 @@ ICSS_EMAC_osalHardwareIntRestore(cookie);
 
 }
 
-
-
-
-
 /**
 * @internal
 * @brief This function enables the EMAC interrupts
@@ -1405,7 +1428,7 @@ void ICSS_EMAC_testInterruptDisable(ICSS_EmacHandle icssEmacHandle)
 }
 #endif
 
-
+#endif
 /*
  *     ---function to create TTS Semaphores---
  */
@@ -2858,7 +2881,10 @@ Bool ICSS_EMAC_testDMemInit(PRUICSS_Handle ICSS_EMAC_testPruIcssHandle )
 {
 
     Bool retVal = FALSE;
+
+#ifndef am65xx_evm
     uint32_t size = 16U;
+#endif
 
 #if defined(idkAM572x)
     if (ICSS_EMAC_testPgVersion >= 2)
@@ -3349,8 +3375,10 @@ Void ICSS_EMAC_testTaskPruss1(UArg a0, UArg a1)
 #endif
 		
 #ifndef SWITCH_EMAC    
+#ifndef am65xx_evm
         ICSS_EMAC_testInterruptDisable(ICSS_EMAC_testHandle);
         ICSS_EMAC_testInterruptDisable(ICSS_EMAC_testHandle1);
+#endif
 
         ICSS_EmacDeInit(ICSS_EMAC_testHandle, ICSS_EMAC_MODE_MAC1|ICSS_EMAC_MODE_DUALMAC);
         ICSS_EmacDeInit(ICSS_EMAC_testHandle1, ICSS_EMAC_MODE_MAC2|ICSS_EMAC_MODE_DUALMAC);
@@ -4372,6 +4400,485 @@ void ICSS_EMAC_fwIntrPacingConfig(ICSSEMAC_Handle icssEmacHandle, uint8_t port, 
     
 }
 
+#ifdef am65xx_evm
+Void test_ICSS_EMAC_verify(void)
+{
+    Bool retVal = FALSE;
+    uint32_t count = 0;
+    uint32_t gFail_count = 0;
+    uint32_t fail_count= 0;
+    ICSSEMAC_IoctlCmd ioctlParams;
+    ICSS_EmacTxArgument txArgs;
+    ICSS_EmacPktInfo rxPktInfo;
+    memset(&txArgs, 0, sizeof(ICSS_EmacTxArgument));
+
+    PRUICSS_pruDisable(ICSS_EMAC_testPruIcssHandle2, ICSS_EMAC_PORT_1-1);
+    PRUICSS_pruDisable(ICSS_EMAC_testPruIcssHandle2, ICSS_EMAC_PORT_2-1);
+
+    uint32_t result_flag = 0;
+    result_flag = (PRUICSS_pruWriteMemory(ICSS_EMAC_testPruIcssHandle2, PRU_ICSS_IRAM(0) , 0,
+                              (uint32_t *) PRU0_b00,
+                              sizeof(PRU0_b00)));
+    if(result_flag)
+    {
+        UART_printf("load to PRU0 passed\n");
+        retVal = TRUE;
+    }
+    else
+    {
+        UART_printf("load to PRU0 failed\n");
+    }
+    result_flag = (PRUICSS_pruWriteMemory(ICSS_EMAC_testPruIcssHandle2, PRU_ICSS_IRAM(1) , 0,
+                                  (uint32_t *) PRU1_b00,
+                                  sizeof(PRU1_b00)));
+    if(result_flag)
+    {
+        UART_printf("load to PRU1 passed\n");
+        retVal = TRUE;
+    }
+    else
+    {
+        UART_printf("load to PRU0 failed\n");
+    }
+
+    if( retVal)
+    {
+        PRUICSS_pruEnable(ICSS_EMAC_testPruIcssHandle2, ICSS_EMAC_PORT_1-1);
+        PRUICSS_pruEnable(ICSS_EMAC_testPruIcssHandle2, ICSS_EMAC_PORT_2-1);
+
+
+        while (!ICSS_EMAC_testLinkIsrPru2Eth0)
+        {
+            PRINT("ICSS_EMAC_testTaskPruss2: LINK IS DOWN, pluggin loopback cable for PRU2 ETH0\n");
+            SLEEP(100);
+        }
+        ICSS_EMAC_testLinkUpCount++;
+        PRINT("ICSS_EMAC_testTaskPruss2: PRU2 ETH0: LINK IS UP, eth0 state: %d, link up count: %d\n",
+              ((ICSS_EmacObject*)ICSS_EMAC_testHandle2->object)->linkStatus[0], ICSS_EMAC_testLinkUpCount);
+
+        /* Creating Unicast packets in Non-Promiscuous Mode.*/
+        for (count=0;count < 6;count++)
+        {
+            ICSS_EMAC_testPkt2[count] = ICSS_EMAC_testLclMac2[count];
+        }
+
+        /* Sending Unicast packets in Non-Promiscuous Mode. The eth should be able to recieve packets as destination address == eth own address*/
+        PRINT("\n\n\n============================================================");
+        PRINT("\n ICSS_EMAC_testTaskPruss2: Testing NonPromiscuous Mode ");
+        PRINT("\n sending Unicast packets as destination address == eth own address");
+        PRINT("\n============================================================\n\n");
+        ICSS_EMAC_testPacketRcvdPort2 = 1;
+        
+        memset(&rxPktInfo,0, sizeof(ICSS_EmacPktInfo));
+
+        if (ICSS_EmacRxPktInfo2(ICSS_EMAC_testHandle2, &rxPktInfo) == 0)
+        {
+            PRINT("ICSS_EmacRxPktInfo2: no packet found, expected Result \n");
+        }
+        txArgs.icssEmacHandle = ICSS_EMAC_testHandle2;
+        txArgs.lengthOfPacket = ICSS_EMAC_TEST_PKT_SIZE;
+        txArgs.portNumber = 1;
+        txArgs.srcAddress = &ICSS_EMAC_testPkt2[0];
+
+        for (count=0;count < ICSS_EMAC_TEST_PKT_TX_COUNT;count++)
+        {
+            if(((ICSS_EmacObject*)ICSS_EMAC_testHandle2->object)->linkStatus[0] )
+            {
+                if(ICSS_EMAC_testPacketRcvdPort2 )
+                {
+                    ICSS_EMAC_testPacketRcvdPort2 = 0;
+                    /* test with invalid queue number */
+                    txArgs.queuePriority = 4;
+                    if (ICSS_EmacTxPacket(&txArgs, NULL) != 0)
+                    {
+                        PRINT("ICSS_EmacTxPacket: returned error with invalid queue number, expected Result \n");
+                        /* test with valid queue number */
+                        txArgs.queuePriority = 3;
+                        ICSS_EmacTxPacket(&txArgs, NULL);
+                    }
+                    while(!ICSS_EMAC_testPacketRcvdPort2)
+                    {
+                        SLEEP(100);
+                    }
+                }
+            }
+        }
+
+        /* Sending Unicast packets in Non-Promiscuous Mode. The eth should not be able to recieve packets as destination address != eth own address*/
+        PRINT("\n\n\n============================================================");
+        PRINT("\n ICSS_EMAC_testTaskPruss2: Testing NonPromiscuous Mode ");
+        PRINT("\n sending Unicast packets as destination address != eth own address");
+        PRINT("\n============================================================\n\n");
+        ICSS_EMAC_testPacketRcvdPort2 = 1;
+    
+        txArgs.icssEmacHandle = ICSS_EMAC_testHandle2;
+        txArgs.lengthOfPacket = ICSS_EMAC_TEST_PKT_SIZE;
+        txArgs.portNumber = 1;
+        txArgs.queuePriority = 3;
+        txArgs.srcAddress = &ICSS_EMAC_testPktPromicuous[0];
+        
+        for (count=0;count < ICSS_EMAC_TEST_PKT_TX_COUNT;count++)
+        {
+            if(((ICSS_EmacObject*)ICSS_EMAC_testHandle2->object)->linkStatus[0] )
+            {
+                if(ICSS_EMAC_testPacketRcvdPort2 )
+                {
+                    ICSS_EMAC_testPacketRcvdPort2 = 0;
+                    ICSS_EmacTxPacket(&txArgs, NULL);
+                    fail_count = 0;
+                    while(!ICSS_EMAC_testPacketRcvdPort2)
+                    {
+                        SLEEP(100);
+                        fail_count++;
+                        if(fail_count == 5)
+                        {
+                            PRINT("ICSS_EMAC_testTaskPruss2: Received no packet for PRU2 ETH0\n");
+                            ICSS_EMAC_testPacketRcvdPort2 = 1;
+                            break;
+                        }
+                    }                    
+                }
+            }
+        }
+        
+        /* Enabling Promiscuous Mode. Hence, disable -> reset -> change mmap -> enable */
+        PRUICSS_pruDisable(ICSS_EMAC_testPruIcssHandle2, ICSS_EMAC_PORT_1-1);
+        PRUICSS_pruDisable(ICSS_EMAC_testPruIcssHandle2, ICSS_EMAC_PORT_2-1);
+        PRUICSS_pruReset(ICSS_EMAC_testPruIcssHandle2, ICSS_EMAC_PORT_1-1);
+        PRUICSS_pruReset(ICSS_EMAC_testPruIcssHandle2, ICSS_EMAC_PORT_2-1);
+        
+        promisEnableFlag = 1;           /* enabling promiscuous mode */
+        ioctlParams.command = 0;
+        ioctlParams.ioctlVal = (void *)(&promisEnableFlag);
+        retVal = ICSS_EmacIoctl(ICSS_EMAC_testHandle2, ICSS_EMAC_IOCTL_PROMISCUOUS_CTRL, ICSS_EMAC_PORT_1, &ioctlParams);
+        retVal = ICSS_EmacIoctl(ICSS_EMAC_testHandle2, ICSS_EMAC_IOCTL_PROMISCUOUS_CTRL, ICSS_EMAC_PORT_2, &ioctlParams);
+        
+        PRUICSS_pruEnable(ICSS_EMAC_testPruIcssHandle2, ICSS_EMAC_PORT_1-1);
+        PRUICSS_pruEnable(ICSS_EMAC_testPruIcssHandle2, ICSS_EMAC_PORT_2-1);
+        
+        /* Sending Unicast packets in Promiscuous Mode. The eth should be able to recieve packets as destination address != eth own address*/
+        PRINT("\n\n\n============================================================");
+        PRINT("\n ICSS_EMAC_testTaskPruss2: Testing Promiscuous Mode ");
+        PRINT("\n sending Unicast packets as destination address != eth own address");
+        PRINT("\n============================================================\n\n");
+        ICSS_EMAC_testPacketRcvdPort2 = 1;
+    
+        txArgs.icssEmacHandle = ICSS_EMAC_testHandle2;
+        txArgs.lengthOfPacket = ICSS_EMAC_TEST_PKT_SIZE;
+        txArgs.portNumber = 1;
+        txArgs.queuePriority = 3;
+        txArgs.srcAddress = &ICSS_EMAC_testPktPromicuous[0];
+        
+        ((ICSS_EmacObject*)ICSS_EMAC_testHandle2->object)->linkStatus[0] = 1;
+        for (count=0;count < ICSS_EMAC_TEST_PKT_TX_COUNT;count++)
+        {
+            {
+                if(ICSS_EMAC_testPacketRcvdPort2 )
+                {
+                    ICSS_EMAC_testPacketRcvdPort2 = 0;
+                    ICSS_EmacTxPacket(&txArgs, NULL);
+                    fail_count = 0;
+                    while(!ICSS_EMAC_testPacketRcvdPort2)
+                    {
+                        SLEEP(100);
+                        fail_count++;
+                    }                    
+                }
+            }
+        }
+
+        /* Testing the multicast filtering logic introduced under firmware and driver */
+        /* Sending Unicast packets in Non-Promiscuous Mode. The eth should not be able to recieve packets as destination address != eth own address*/
+        PRINT("\n\n\n============================================================");
+        PRINT("\n ICSS_EMAC_testTaskPruss2: Testing Multicast filtering ");
+        PRINT("\n sending Multicast packets as destination address for MCF tests on EMAC Port 1");
+        PRINT("\n============================================================\n\n");
+
+        PRINT ("\nTesting multicast filtering logic begin\n");
+        if(!ICSS_EMAC_testMulticastFiltering_EmacPort1(ICSS_EMAC_testHandle2))
+        {
+            PRINT("ICSS_MEAC_testTaskPruss2:multicast filtering testing failed\n");
+            gFail_count++;
+        }
+        else
+        {
+            PRINT("ICSS_MEAC_testTaskPruss2:multicast filtering testing passed\n");
+        }
+        PRINT("ICSS_MEAC_testTaskPruss2:multicast filtering logic end\n");
+
+        /* Testing the vlan filtering logic introduced under firmware and driver */
+        /* Sending VLAN packets in Promiscuous Mode. The Pkt is received as per the VLAN filtering rule */
+        PRINT("\n\n\n============================================================");
+        PRINT("\n ICSS_EMAC_testTaskPruss2: Testing VLAN filtering ");
+        PRINT("\n sending VLAN test packets as destination address for Vlan filtering tests on Port 1");
+        PRINT("\n============================================================\n\n");
+        
+        PRINT ("\nTesting vlan filtering logic begin\n");
+        if(!ICSS_EMAC_testVlanFiltering_On_EmacPort(&ICSS_EMAC_testPruIcssHandle2, ICSS_EMAC_PORT_1))
+        {
+            PRINT("ICSS_MEAC_testTaskPruss2:vlan filtering testing failed on Port 1\n");
+            gFail_count++;
+        }
+        else
+        {
+            PRINT("ICSS_MEAC_testTaskPruss2:vlan filtering testing passed on Port 1\n");
+        }
+        PRINT("ICSS_MEAC_testTaskPruss2:vlan filtering logic end\n");
+
+        /* Disabling Promiscuous Mode. Hence, disable -> reset -> change mmap -> enable */
+        PRUICSS_pruDisable(ICSS_EMAC_testPruIcssHandle2, ICSS_EMAC_PORT_1-1);
+        PRUICSS_pruDisable(ICSS_EMAC_testPruIcssHandle2, ICSS_EMAC_PORT_2-1);
+        PRUICSS_pruReset(ICSS_EMAC_testPruIcssHandle2, ICSS_EMAC_PORT_1-1);
+        PRUICSS_pruReset(ICSS_EMAC_testPruIcssHandle2, ICSS_EMAC_PORT_2-1);
+        
+        promisEnableFlag = 0;           /* disabling promiscuous mode */
+        ioctlParams.command = 0;
+        ioctlParams.ioctlVal = (void *)(&promisEnableFlag);
+        retVal = ICSS_EmacIoctl(ICSS_EMAC_testHandle2, ICSS_EMAC_IOCTL_PROMISCUOUS_CTRL, ICSS_EMAC_PORT_1, &ioctlParams);
+        retVal = ICSS_EmacIoctl(ICSS_EMAC_testHandle2, ICSS_EMAC_IOCTL_PROMISCUOUS_CTRL, ICSS_EMAC_PORT_2, &ioctlParams);
+        
+        PRUICSS_pruEnable(ICSS_EMAC_testPruIcssHandle2, ICSS_EMAC_PORT_1-1);
+        PRUICSS_pruEnable(ICSS_EMAC_testPruIcssHandle2, ICSS_EMAC_PORT_2-1);
+        while (!ICSS_EMAC_testLinkIsrPru2Eth1)
+        {
+            PRINT("ICSS_EMAC_testTaskPruss2: LINK IS DOWN,skipping PRU2 ETH1\n");
+        }
+        ICSS_EMAC_testLinkUpCount++;
+        PRINT("ICSS_EMAC_testTaskPruss2: PRU2 ETH1: LINK IS UP, eth0 state: %d, link up count: %d\n",
+              ((ICSS_EmacObject*)ICSS_EMAC_testHandle3->object)->linkStatus[0], ICSS_EMAC_testLinkUpCount);
+
+        /* Creating Unicast packets in Non-Promiscuous Mode.*/
+        for (count=0;count < 6;count++)
+        {
+            ICSS_EMAC_testPkt3[count] = ICSS_EMAC_testLclMac3[count];
+        }
+
+        /* Sending Unicast packets in Non-Promiscuous Mode. The eth should be able to recieve packets as destination address == eth own address*/
+        PRINT("\n\n\n============================================================");
+        PRINT("\n ICSS_EMAC_testTaskPruss2: Testing NonPromiscuous Mode ");
+        PRINT("\n sending Unicast packets as destination address == eth own address");
+        PRINT("\n============================================================\n\n");
+        ICSS_EMAC_testPacketRcvdPort3 = 1;
+        txArgs.icssEmacHandle = ICSS_EMAC_testHandle3;
+        txArgs.lengthOfPacket = ICSS_EMAC_TEST_PKT_SIZE;
+        txArgs.portNumber = 2;
+        txArgs.queuePriority = 3;
+        txArgs.srcAddress = &ICSS_EMAC_testPkt3[0];
+        for (count=0;count < ICSS_EMAC_TEST_PKT_TX_COUNT;count++)
+        {
+            if(((ICSS_EmacObject*)ICSS_EMAC_testHandle3->object)->linkStatus[0] )
+            {
+                if(ICSS_EMAC_testPacketRcvdPort3 )
+                {
+                    ICSS_EMAC_testPacketRcvdPort3 = 0;
+                    ICSS_EmacTxPacket(&txArgs, NULL);
+                    while(!ICSS_EMAC_testPacketRcvdPort3)
+                    {
+                        SLEEP(100);
+                    }
+                }
+            }
+        }
+        /* Sending Unicast packets in Non-Promiscuous Mode. The eth should not be able to recieve packets as destination address != eth own address*/
+        PRINT("\n\n\n============================================================");
+        PRINT("\n ICSS_EMAC_testTaskPruss2: Testing NonPromiscuous Mode ");
+        PRINT("\n sending Unicast packets as destination address != eth own address");
+        PRINT("\n============================================================\n\n");
+        ICSS_EMAC_testPacketRcvdPort3 = 1;
+        txArgs.icssEmacHandle = ICSS_EMAC_testHandle3;
+        txArgs.lengthOfPacket = ICSS_EMAC_TEST_PKT_SIZE;
+        txArgs.portNumber = 2;
+        txArgs.queuePriority = 3;
+        txArgs.srcAddress = &ICSS_EMAC_testPktPromicuous[0];
+        for (count=0;count < ICSS_EMAC_TEST_PKT_TX_COUNT;count++)
+        {
+            if(((ICSS_EmacObject*)ICSS_EMAC_testHandle3->object)->linkStatus[0] )
+            {
+                if(ICSS_EMAC_testPacketRcvdPort3 )
+                {
+                    ICSS_EMAC_testPacketRcvdPort3 = 0;
+                    ICSS_EmacTxPacket(&txArgs, NULL);
+                    fail_count = 0;
+                    while(!ICSS_EMAC_testPacketRcvdPort3)
+                    {
+                        SLEEP(100);
+                        fail_count++;
+                        if(fail_count == 5)
+                        {
+                            PRINT("ICSS_EMAC_testTaskPruss2: Received no packet for PRU2 ETH1\n");
+                            ICSS_EMAC_testPacketRcvdPort3 = 1;
+                            break;
+                        }
+                    }
+                }
+            }
+        }      
+
+        /* Enabling Promiscuous Mode. Hence, disable -> reset -> change mmap -> enable */
+        PRUICSS_pruDisable(ICSS_EMAC_testPruIcssHandle2, ICSS_EMAC_PORT_1-1);
+        PRUICSS_pruDisable(ICSS_EMAC_testPruIcssHandle2, ICSS_EMAC_PORT_2-1);
+        PRUICSS_pruReset(ICSS_EMAC_testPruIcssHandle2, ICSS_EMAC_PORT_1-1);
+        PRUICSS_pruReset(ICSS_EMAC_testPruIcssHandle2, ICSS_EMAC_PORT_2-1);
+
+        promisEnableFlag = 1;           /* enabling promiscuous mode */
+        ioctlParams.command = 0;
+        ioctlParams.ioctlVal = (void *)(&promisEnableFlag);
+        retVal = ICSS_EmacIoctl(ICSS_EMAC_testHandle3, ICSS_EMAC_IOCTL_PROMISCUOUS_CTRL, ICSS_EMAC_PORT_1, &ioctlParams);
+        retVal = ICSS_EmacIoctl(ICSS_EMAC_testHandle3, ICSS_EMAC_IOCTL_PROMISCUOUS_CTRL, ICSS_EMAC_PORT_2, &ioctlParams);
+
+        PRUICSS_pruEnable(ICSS_EMAC_testPruIcssHandle2, ICSS_EMAC_PORT_1-1);
+        PRUICSS_pruEnable(ICSS_EMAC_testPruIcssHandle2, ICSS_EMAC_PORT_2-1);
+
+        /* Sending Unicast packets in Promiscuous Mode. The eth should be able to recieve packets as destination address != eth own address*/
+        PRINT("\n\n\n============================================================");
+        PRINT("\n ICSS_EMAC_testTaskPruss2: Testing Promiscuous Mode ");
+        PRINT("\n sending Unicast packets as destination address != eth own address");
+        PRINT("\n============================================================\n\n");
+        ICSS_EMAC_testPacketRcvdPort3 = 1;
+        txArgs.icssEmacHandle = ICSS_EMAC_testHandle3;
+        txArgs.lengthOfPacket = ICSS_EMAC_TEST_PKT_SIZE;
+        txArgs.portNumber = 2;
+        txArgs.queuePriority = 3;
+        txArgs.srcAddress = &ICSS_EMAC_testPktPromicuous[0];
+        for (count=0;count < ICSS_EMAC_TEST_PKT_TX_COUNT;count++)
+        {
+            if(((ICSS_EmacObject*)ICSS_EMAC_testHandle3->object)->linkStatus[0] )
+            {
+                if(ICSS_EMAC_testPacketRcvdPort3 )
+                {
+                    ICSS_EMAC_testPacketRcvdPort3 = 0;
+                    ICSS_EmacTxPacket(&txArgs, NULL);
+                    fail_count = 0;
+                    while(!ICSS_EMAC_testPacketRcvdPort3)
+                    {
+                        SLEEP(100);
+                        fail_count++;
+                    }
+                }
+            }
+        }
+
+        /* Testing the multicast filtering logic introduced under firmware and driver */
+        /* Sending Multicast packets in Promiscuous Mode, the packet is received as per the configurations */
+        PRINT("\n\n\n============================================================");
+        PRINT("\n ICSS_EMAC_testTaskPruss2: Testing Multicast filtering ");
+        PRINT("\n sending Multicast packets as destination address for MCF tests on EMAC Port 2");
+        PRINT("\n============================================================\n\n");
+        PRINT ("\nTesting multicast filtering logic begin\n");
+        if(!ICSS_EMAC_testMulticastFiltering_EmacPort2(ICSS_EMAC_testHandle3))
+        {
+            PRINT("ICSS_MEAC_testTaskPruss2:multicast filtering testing failed on Port 2\n");
+                gFail_count++;
+        }
+        else
+        {
+            PRINT("ICSS_MEAC_testTaskPruss2:multicast filtering testing passed on Port 2\n");
+        }
+        PRINT("ICSS_MEAC_testTaskPruss2:multicast filtering logic end\n");
+
+        /* Testing the vlan filtering logic introduced under firmware and driver */
+        /* Sending VLAN packets in Promiscuous Mode. The Pkt is received as per the VLAN filtering rule */
+        PRINT("\n\n\n============================================================");
+        PRINT("\n ICSS_EMAC_testTaskPruss2: Testing VLAN filtering ");
+        PRINT("\n sending VLAN test packets as destination address for Vlan filtering tests on Port 2");
+        PRINT("\n============================================================\n\n");
+        PRINT ("\nTesting vlan filtering logic begin\n");
+        if(!ICSS_EMAC_testVlanFiltering_On_EmacPort(&ICSS_EMAC_testPruIcssHandle2, ICSS_EMAC_PORT_2))
+        {
+            PRINT("ICSS_MEAC_testTaskPruss2:vlan filtering testing failed on Port 2\n");
+            gFail_count++;
+        }
+        else
+        {
+            PRINT("ICSS_MEAC_testTaskPruss2:vlan filtering testing passed on Port 2\n");
+        }
+        PRINT("ICSS_MEAC_testTaskPruss2:vlan filtering logic end\n");
+
+        /* Disabling Promiscuous Mode. Hence, disable -> reset -> change mmap -> enable */
+        PRUICSS_pruDisable(ICSS_EMAC_testPruIcssHandle2, ICSS_EMAC_PORT_1-1);
+        PRUICSS_pruDisable(ICSS_EMAC_testPruIcssHandle2, ICSS_EMAC_PORT_2-1);
+        PRUICSS_pruReset(ICSS_EMAC_testPruIcssHandle2, ICSS_EMAC_PORT_1-1);
+        PRUICSS_pruReset(ICSS_EMAC_testPruIcssHandle2, ICSS_EMAC_PORT_2-1);
+
+        promisEnableFlag = 0;           /* disabling promiscuous mode */
+        ioctlParams.command = 0;
+        ioctlParams.ioctlVal = (void *)(&promisEnableFlag);
+        retVal = ICSS_EmacIoctl(ICSS_EMAC_testHandle3, ICSS_EMAC_IOCTL_PROMISCUOUS_CTRL, ICSS_EMAC_PORT_1, &ioctlParams);
+        retVal = ICSS_EmacIoctl(ICSS_EMAC_testHandle3, ICSS_EMAC_IOCTL_PROMISCUOUS_CTRL, ICSS_EMAC_PORT_2, &ioctlParams);
+
+        PRUICSS_pruEnable(ICSS_EMAC_testPruIcssHandle2, ICSS_EMAC_PORT_1-1);
+        PRUICSS_pruEnable(ICSS_EMAC_testPruIcssHandle2, ICSS_EMAC_PORT_2-1);
+
+        while(!ICSS_EMAC_testLinkIsrPru2Eth0 && !ICSS_EMAC_testLinkIsrPru2Eth1)
+        {
+            PRINT("\nICSS_EMAC_testTaskPruss2: LINK IS DOWN, pluggin loopback cable for PRU2 ETH0 and PRU2 ETH1.\n");
+        }
+
+
+
+        PRINT("\nDone with PRU-ICSS Instance 2 Testing\n");
+
+        ICSS_EMAC_testGetPruStats(1, ICSS_EMAC_testHandle2);
+        ICSS_EMAC_testPruInstance2Done = 1;
+
+        ICSS_EmacDeInit(ICSS_EMAC_testHandle2, ICSS_EMAC_MODE_MAC1|ICSS_EMAC_MODE_DUALMAC);
+
+        if(ICSS_EMAC_testEvmType == ICSS_EMAC_TEST_BOARD_IDKAM572x)
+        {
+            ICSS_EMAC_testGetPruStats(2, ICSS_EMAC_testHandle3);
+            ICSS_EmacDeInit(ICSS_EMAC_testHandle3, ICSS_EMAC_MODE_MAC2|ICSS_EMAC_MODE_DUALMAC);
+        }
+
+        if ((gFail_count == 0) &&
+            (ICSS_EMAC_testTotalPktRcvd == (ICSS_EMAC_TEST_PKT_TX_COUNT*ICSS_EMAC_testLinkUpCount)))
+        {
+            PRINT("All tests have passed\n");
+#ifdef UNITY_INCLUDE_CONFIG_H
+            TEST_PASS();
+#endif
+        }
+        else
+        {
+            PRINT("Few/All tests have failed\n");
+#ifdef UNITY_INCLUDE_CONFIG_H
+            TEST_FAIL();
+#endif
+        }
+    }
+    else
+    {
+        PRINT("ICSS_EMAC_testTaskPruss2: firmware load failure\n");
+#ifdef UNITY_INCLUDE_CONFIG_H
+        TEST_FAIL();
+#endif
+    }
+}
+
+
+
+void test_Icss_Emac_TestApp_runner(void)
+{
+    /* @description:Test runner for ICSS-EMAC tests
+
+       @requirements: PRSDK-4441
+
+       @cores: mpu1_0*/
+
+    UNITY_BEGIN();
+    RUN_TEST(test_ICSS_EMAC_verify);
+    UNITY_END();
+    /* Function to print results defined in our unity_config.h file */
+    print_unityOutputBuffer_usingUARTstdio();
+}
+
+
+
+Void ICSS_EMAC_testTask_am65xx(UArg a0, UArg a1)
+{
+    test_Icss_Emac_TestApp_runner();
+}
+
+#else
 #ifdef __LINUX_USER_SPACE
 void *ICSS_EMAC_testTaskPruss2(void *a0)
 #else
@@ -4404,6 +4911,7 @@ Void ICSS_EMAC_testTaskPruss2(UArg a0, UArg a1)
     PRUICSS_pruDisable(ICSS_EMAC_testPruIcssHandle2, ICSS_EMAC_PORT_1-1);
     PRUICSS_pruDisable(ICSS_EMAC_testPruIcssHandle2, ICSS_EMAC_PORT_2-1);
 
+#ifndef am65xx_evm
     retVal = ICSS_EMAC_testDMemInit(ICSS_EMAC_testPruIcssHandle2);
     if (!retVal)
     {
@@ -4415,6 +4923,34 @@ Void ICSS_EMAC_testTaskPruss2(UArg a0, UArg a1)
         return;
     }
     retVal = ICSS_EMAC_testIMemInit(ICSS_EMAC_testPruIcssHandle2);
+
+#else
+    uint32_t result_flag = 0;
+    result_flag = (PRUICSS_pruWriteMemory(ICSS_EMAC_testPruIcssHandle2, PRU_ICSS_IRAM(0) , 0,
+                              (uint32_t *) PRU0_b00,
+                              sizeof(PRU0_b00)));
+    if(result_flag)
+    {
+        UART_printf("load to PRU0 passed\n");
+        retVal = TRUE;
+    }
+    else
+    {
+        UART_printf("load to PRU0 failed\n");
+    }
+    result_flag = (PRUICSS_pruWriteMemory(ICSS_EMAC_testPruIcssHandle2, PRU_ICSS_IRAM(1) , 0,
+                                  (uint32_t *) PRU1_b00,
+                                  sizeof(PRU1_b00)));
+    if(result_flag)
+    {
+        UART_printf("load to PRU1 passed\n");
+        retVal = TRUE;
+    }
+    else
+    {
+        UART_printf("load to PRU0 failed\n");
+    }
+#endif
 
     if( retVal)
     {
@@ -4892,13 +5428,17 @@ Void ICSS_EMAC_testTaskPruss2(UArg a0, UArg a1)
         ICSS_EMAC_testPruInstance2Done = 1;
 
 #ifndef SWITCH_EMAC 
+#ifndef am65xx_evm
         ICSS_EMAC_testInterruptDisable(ICSS_EMAC_testHandle2);
+#endif
         ICSS_EmacDeInit(ICSS_EMAC_testHandle2, ICSS_EMAC_MODE_MAC1|ICSS_EMAC_MODE_DUALMAC);
 
         if(ICSS_EMAC_testEvmType == ICSS_EMAC_TEST_BOARD_IDKAM572x)
         {
             ICSS_EMAC_testGetPruStats(2, ICSS_EMAC_testHandle3);
+#ifndef am65xx_evm
             ICSS_EMAC_testInterruptDisable(ICSS_EMAC_testHandle3);
+#endif
             ICSS_EmacDeInit(ICSS_EMAC_testHandle3, ICSS_EMAC_MODE_MAC2|ICSS_EMAC_MODE_DUALMAC);
         }
 #else
@@ -4938,4 +5478,4 @@ else
         PRINT("ICSS_EMAC_testTaskPruss2: firmware load failure\n");
     }
 }
-
+#endif

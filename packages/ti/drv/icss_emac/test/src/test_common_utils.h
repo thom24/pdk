@@ -119,7 +119,7 @@ typedef struct testVlanCfg_s
 #define ICSS_EMAC_TEST_TTS_CONFIG_TIME               350000
 #endif
 #else
-#if defined(idkAM574x) || defined(idkAM572x)|| defined(idkAM571x) || defined(icev2AM335x) || defined(iceK2G)
+#if defined(idkAM574x) || defined(idkAM572x)|| defined(idkAM571x) || defined(icev2AM335x) || defined(iceK2G) || defined(am65xx_evm)
 #define ICSS_EMAC_TEST_TTS_CYCLE_PERIOD_PORT1                350000
 #define ICSS_EMAC_TEST_TTS_CYCLE_PERIOD_PORT2                350000
 #define ICSS_EMAC_TEST_TTS_CONFIG_TIME                       120000
@@ -166,7 +166,7 @@ typedef struct testVlanCfg_s
 #define ICSS_EMAC_TEST_TIMER_PERIOD    100
 #endif
 
-#if (defined (idkAM574x) || defined (idkAM572x) || defined (idkAM571x))
+#if (defined (idkAM574x) || defined (idkAM572x) || defined (idkAM571x)) || defined(am65xx_evm)
 #ifndef __LINUX_USER_SPACE
 #include <ti/sysbios/timers/dmtimer/Timer.h>
 #endif
@@ -271,6 +271,7 @@ void *ICSS_EMAC_testTaskPruss2(void *a0);
 #else
 Void ICSS_EMAC_testTaskPruss1(UArg a0, UArg a1);
 Void ICSS_EMAC_testTaskPruss2(UArg a0, UArg a1);
+Void ICSS_EMAC_testTask_am65xx(UArg a0, UArg a1);
 
 #ifdef __cplusplus
 }
