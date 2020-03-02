@@ -1857,15 +1857,30 @@ static void PRUSSDRVPruMiiRtCfgInit(ICSS_EmacHandle emacSubSysHandle)
             CSL_ICSSMIIRT_TXCFG0_TX_32_MODE_EN , 1);
     }
 
-
-
-    if(ICSS_EMAC_MODE_SWITCH == (((ICSS_EmacObject*)emacSubSysHandle->object)->emacInitcfg)->portMask) { /*Switch mode*/
-        HW_WR_FIELD32((icssEmacBaseAddressHandle->prussMiiRtCfgRegsBaseAddr) + CSL_ICSSMIIRT_TXCFG0,
-                CSL_ICSSMIIRT_TXCFG0_TX_MUX_SEL , 1);
-    } else {
+    /* need this change for tx pin swap in mii mode for SOC_AM65XX only*/
+#if defined (ICSS_EMAC_MII_MODE) && defined (SOC_AM65XX)
+    if(ICSS_EMAC_MODE_SWITCH == (((ICSS_EmacObject*)emacSubSysHandle->object)->emacInitcfg)->portMask)
+    { /*Switch mode*/
         HW_WR_FIELD32((icssEmacBaseAddressHandle->prussMiiRtCfgRegsBaseAddr) + CSL_ICSSMIIRT_TXCFG0,
                 CSL_ICSSMIIRT_TXCFG0_TX_MUX_SEL , 0);
     }
+    else
+    {
+        HW_WR_FIELD32((icssEmacBaseAddressHandle->prussMiiRtCfgRegsBaseAddr) + CSL_ICSSMIIRT_TXCFG0,
+                CSL_ICSSMIIRT_TXCFG0_TX_MUX_SEL , 1);
+    }
+#else
+    if(ICSS_EMAC_MODE_SWITCH == (((ICSS_EmacObject*)emacSubSysHandle->object)->emacInitcfg)->portMask)
+    { /*Switch mode*/
+        HW_WR_FIELD32((icssEmacBaseAddressHandle->prussMiiRtCfgRegsBaseAddr) + CSL_ICSSMIIRT_TXCFG0,
+            CSL_ICSSMIIRT_TXCFG0_TX_MUX_SEL , 1);
+    } 
+    else 
+    {
+        HW_WR_FIELD32((icssEmacBaseAddressHandle->prussMiiRtCfgRegsBaseAddr) + CSL_ICSSMIIRT_TXCFG0,
+            CSL_ICSSMIIRT_TXCFG0_TX_MUX_SEL , 0);
+    }
+#endif
 
 
     HW_WR_FIELD32((icssEmacBaseAddressHandle->prussMiiRtCfgRegsBaseAddr) + CSL_ICSSMIIRT_TXCFG0,
@@ -1916,13 +1931,30 @@ static void PRUSSDRVPruMiiRtCfgInit(ICSS_EmacHandle emacSubSysHandle)
             CSL_ICSSMIIRT_TXCFG1_TX_32_MODE_EN , 1);
     }
 
-    if(ICSS_EMAC_MODE_SWITCH == (((ICSS_EmacObject*)emacSubSysHandle->object)->emacInitcfg)->portMask) { /*Switch mode*/
-        HW_WR_FIELD32((icssEmacBaseAddressHandle->prussMiiRtCfgRegsBaseAddr) + CSL_ICSSMIIRT_TXCFG1,
-                CSL_ICSSMIIRT_TXCFG1_TX_MUX_SEL , 0);
-    } else {
+    /* need this change for tx pin swap in mii mode for SOC_AM65XX only*/
+#if defined (ICSS_EMAC_MII_MODE) && defined (SOC_AM65XX)
+    if(ICSS_EMAC_MODE_SWITCH == (((ICSS_EmacObject*)emacSubSysHandle->object)->emacInitcfg)->portMask)
+    { /*Switch mode*/
         HW_WR_FIELD32((icssEmacBaseAddressHandle->prussMiiRtCfgRegsBaseAddr) + CSL_ICSSMIIRT_TXCFG1,
                 CSL_ICSSMIIRT_TXCFG1_TX_MUX_SEL , 1);
     }
+    else
+    {
+        HW_WR_FIELD32((icssEmacBaseAddressHandle->prussMiiRtCfgRegsBaseAddr) + CSL_ICSSMIIRT_TXCFG1,
+                CSL_ICSSMIIRT_TXCFG1_TX_MUX_SEL , 0);
+    }
+#else
+    if(ICSS_EMAC_MODE_SWITCH == (((ICSS_EmacObject*)emacSubSysHandle->object)->emacInitcfg)->portMask)
+    { /*Switch mode*/
+        HW_WR_FIELD32((icssEmacBaseAddressHandle->prussMiiRtCfgRegsBaseAddr) + CSL_ICSSMIIRT_TXCFG1,
+                CSL_ICSSMIIRT_TXCFG1_TX_MUX_SEL , 0);
+    }
+    else
+    {
+        HW_WR_FIELD32((icssEmacBaseAddressHandle->prussMiiRtCfgRegsBaseAddr) + CSL_ICSSMIIRT_TXCFG1,
+                CSL_ICSSMIIRT_TXCFG1_TX_MUX_SEL , 1);
+    }
+#endif
 
     HW_WR_FIELD32((icssEmacBaseAddressHandle->prussMiiRtCfgRegsBaseAddr) + CSL_ICSSMIIRT_TXCFG1,
             CSL_ICSSMIIRT_TXCFG1_TX_START_DELAY , 0x40);

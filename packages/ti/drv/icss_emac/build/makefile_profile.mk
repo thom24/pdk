@@ -35,7 +35,7 @@ include $(PDK_ICSS_EMAC_COMP_PATH)/src/src_files_common.mk
 
 MODULE_NAME = icss_emac_profile
 
-ifeq ($(SOC),$(filter $(SOC), am571x am572x am574x am437x am335x k2g))
+ifeq ($(SOC),$(filter $(SOC), am571x am572x am574x am437x am335x k2g am65xx))
 SRCDIR += soc/$(SOC)
 INCDIR += soc
 # Common source files across all platforms and cores
@@ -46,16 +46,20 @@ endif
 #  need to be included for this component
 INCLUDE_EXTERNAL_INTERFACES = pdk
                       
-ifeq ($(SOC),$(filter $(SOC), am571x am572x am574x am437x am335x k2g))
+ifeq ($(SOC),$(filter $(SOC), am571x am572x am574x am437x am335x k2g am65xx))
 PACKAGE_SRCS_COMMON += soc/$(SOC)
 endif
 
 ifeq ($(BUILDTYPE),$(filter $(BUILDTYPE), profile profiledma))
-  ifeq ($(CORE),$(filter $(CORE), a15_0 a9host a8host))
+  ifeq ($(CORE),$(filter $(CORE), a15_0 a9host a8host mpu1_0))
     CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) -finstrument-functions -gdwarf-3 -g -D_ENABLE_BM
   else
     CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) --entry_parm=address --exit_hook=ti_utils_exit --exit_parm=address --entry_hook=ti_utils_entry -g -D_ENABLE_BM
   endif
+endif
+
+ifeq ($(SOC),$(filter $(SOC), am65xx))
+CFLAGS_LOCAL_COMMON += -DICSS_EMAC_MII_MODE
 endif
 
 # Include common make files

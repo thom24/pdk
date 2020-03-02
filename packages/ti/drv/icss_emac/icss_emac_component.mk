@@ -68,17 +68,18 @@ ifeq ($(icss_emac_component_make_include), )
 
 # under other list
 drvicss_emac_BOARDLIST       = 
-drvicss_emac_SOCLIST         = am574x am572x am571x am437x am335x k2g
+drvicss_emac_SOCLIST         = am574x am572x am571x am437x am335x k2g am65xx
 drvicss_emac_am574x_CORELIST = c66x a15_0 ipu1_0 pru_0 pru_1
 drvicss_emac_am572x_CORELIST = c66x a15_0 ipu1_0 pru_0 pru_1
 drvicss_emac_am571x_CORELIST = c66x a15_0 ipu1_0 pru_0 pru_1
 drvicss_emac_am437x_CORELIST = a9host pru_0 pru_1
 drvicss_emac_am335x_CORELIST = a8host pru_0 pru_1
 drvicss_emac_k2g_CORELIST    = c66x a15_0 pru_0 pru_1
+drvicss_emac_am65xx_CORELIST = mpu1_0 mcu1_0
 ############################
-# uart package
-# List of components included under uart lib
-# The components included here are built and will be part of uart lib
+# icss_emac package
+# List of components included under icss_emac lib
+# The components included here are built and will be part of icss_emac lib
 ############################
 icss_emac_LIB_LIST = icss_emac icss_emac_indp icss_emac_profile icss_emac_profile_indp
 drvicss_emac_LIB_LIST = $(icss_emac_LIB_LIST)

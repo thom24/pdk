@@ -52,6 +52,8 @@ extern "C" {
 #include <ti/csl/src/ip/mdio/V2/cslr_mdio.h>
 #include <ti/csl/src/ip/mdio/V2/csl_mdio.h>
 #include <ti/csl/src/ip/mdio/V2/csl_mdioAux.h>
+#elif defined (SOC_AM65XX)
+#include <ti/csl/csl_mdio.h>
 #else
 #include <ti/csl/csl_mdioAux.h>
 #endif

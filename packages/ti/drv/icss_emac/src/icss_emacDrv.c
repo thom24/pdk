@@ -46,7 +46,11 @@
 #ifdef __LINUX_USER_SPACE
 #include <time.h>   /* for nanosleep() */
 #endif
-
+#if defined (SOC_AM65XX)
+#include <ti/csl/csl_mdio.h>
+#include <ti/csl/src/ip/icss/V2/cslr_icss_g.h>
+uint32_t icssEmacIepCountOffset = CSL_ICSS_G_PR1_IEP1_SLV_COUNT_REG0;
+#else
 /* For ICSS intc, only need to include V1 version of header file. 
    What is required by the driver from these header files are register macro 
    and  field definition macros defines which have the same values
@@ -54,7 +58,6 @@
 #include <ti/csl/src/ip/icss/V1/cslr_icss_intc.h>
 #include <ti/csl/src/ip/icss/V1/cslr_icss_iep.h>
 #include <ti/csl/src/ip/icss/V0/cslr_icssm_iep.h>
-
 
 #if defined (SOC_AM335x) || defined (SOC_AM437x)
 #include <ti/csl/src/ip/mdio/V2/cslr_mdio.h>
@@ -65,7 +68,7 @@ uint32_t icssEmacIepCountOffset = CSL_ICSSM_IEP_COUNT;
 #include <ti/csl/csl_mdioAux.h>
 uint32_t icssEmacIepCountOffset = CSL_ICSSIEP_COUNT_REG0;
 #endif
-
+#endif
 #include <ti/drv/pruss/pruicss.h>
 
 

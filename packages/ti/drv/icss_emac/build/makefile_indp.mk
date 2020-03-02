@@ -41,6 +41,10 @@ INCLUDE_EXTERNAL_INTERFACES = pdk edma
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS)
 
+ifeq ($(SOC),$(filter $(SOC), am65xx))
+CFLAGS_LOCAL_COMMON += -DICSS_EMAC_MII_MODE
+endif
+
 # Include common make files
 ifeq ($(MAKERULEDIR), )
 #Makerule path not defined, define this and assume relative path from ROOTDIR

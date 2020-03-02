@@ -40,11 +40,15 @@ MODULE_NAME = icss_emac_profile_indp
 INCLUDE_EXTERNAL_INTERFACES = pdk edma
 
 ifeq ($(BUILDTYPE),$(filter $(BUILDTYPE), profile profiledma))
-  ifeq ($(CORE),$(filter $(CORE), a15_0 a9host a8host))
+  ifeq ($(CORE),$(filter $(CORE), a15_0 a9host a8host mpu1_0))
     CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) -finstrument-functions -gdwarf-3 -g -D_ENABLE_BM
   else
     CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) --entry_parm=address --exit_hook=ti_utils_exit --exit_parm=address --entry_hook=ti_utils_entry -g -D_ENABLE_BM
   endif
+endif
+
+ifeq ($(SOC),$(filter $(SOC), am65xx))
+CFLAGS_LOCAL_COMMON += -DICSS_EMAC_MII_MODE
 endif
 
 # Include common make files
