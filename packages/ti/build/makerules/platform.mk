@@ -265,7 +265,7 @@ endif
 # MCU
 ifeq ($(CORE),$(filter $(CORE), mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1))
  ISA = r5f
- ISA_EXT = r5f
+ ISA_EXT = r5ft
  ARCH = armv7m
 endif
 
@@ -435,10 +435,10 @@ endif
 
 ifeq ($(ISA),r5f)
   ifeq ($(FORMAT),ELF)
-    TARGET_XDC = ti.targets.arm.elf.R5F
+    TARGET_XDC = ti.targets.arm.elf.R5Ft
     FORMAT_EXT = e
   else
-    TARGET_XDC = ti.targets.arm.R5F
+    TARGET_XDC = ti.targets.arm.R5Ft
   endif
 
   ifeq ($(BOARD),$(filter $(BOARD), am65xx_evm am65xx_idk am65xx_sim))
@@ -482,8 +482,9 @@ ifeq ($(ISA),r5f)
 
   # Define the file extensions
   OBJEXT = o$(FORMAT_EXT)$(ISA_EXT)$(ENDIAN_EXT)
-  LIBEXT = a$(FORMAT_EXT)$(ISA_EXT)$(ENDIAN_EXT)
-  EXEEXT = x$(FORMAT_EXT)$(ISA_EXT)$(ENDIAN_EXT)
+  # Retaining the r5f extension for backward compatibility 
+  LIBEXT = a$(FORMAT_EXT)$(ISA)$(ENDIAN_EXT)
+  EXEEXT = x$(FORMAT_EXT)$(ISA)$(ENDIAN_EXT)
   ASMEXT = s$(FORMAT_EXT)$(ISA_EXT)$(ENDIAN_EXT)
 endif
 

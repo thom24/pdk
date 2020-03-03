@@ -10,7 +10,7 @@
 #     4. a rule common for R5F ISA has to be added or modified
 
 CGT_ISA = R5
-CGT_EXT = r5f
+CGT_EXT = r5ft
 CGT_PATH = $(TOOLCHAIN_PATH_R5)
 include $(MAKERULEDIR)/rules_ti_cgt_arm.mk
 

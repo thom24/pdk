@@ -35,6 +35,6 @@
  *  Build configuration script for BSP drivers
  */
 /* load the required modules for the configuration */
-var R5F = xdc.useModule('ti.targets.arm.elf.R5F');
+var R5F = xdc.useModule('ti.targets.arm.elf.R5Ft');
 /* R5F compiler directory path                    */
 R5F.rootDir = java.lang.System.getenv("CGTOOLS");

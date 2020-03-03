@@ -75,6 +75,8 @@ ifeq ($(CGT_ISA),$(filter $(CGT_ISA), M4 R5 M3))
   CFLAGS_INTERNAL = -c -qq -pdsw225 --endian=$(ENDIAN) -mv7$(CGT_ISA) --abi=$(CSWITCH_FORMAT) -eo.$(OBJEXT) -ea.$(ASMEXT) --symdebug:dwarf --embed_inline_assembly
   ifeq ($(CGT_ISA),$(filter $(CGT_ISA), R5))
     CFLAGS_INTERNAL += --float_support=vfpv3d16
+    # Enabling thumb2 mode 
+    CFLAGS_INTERNAL += --code_state=16
   else
     CFLAGS_INTERNAL += --float_support=vfplib
   endif
@@ -88,7 +90,7 @@ endif
 CFLAGS_DIROPTS = -fr=$(OBJDIR) -fs=$(OBJDIR)
 
 ifeq ($(CGT_ISA),$(filter $(CGT_ISA),R5))
- XDC_TARGET_NAME=$(CGT_ISA)F
+ XDC_TARGET_NAME=$(CGT_ISA)Ft
 
  ifneq ($(EXTERNAL_LNKCMD_FILE_LOCAL),)
  EXTERNAL_LNKCMD_FILE = $(EXTERNAL_LNKCMD_FILE_LOCAL)
@@ -246,10 +248,11 @@ else
 endif
 
 ifneq ($(findstring mcu,$(CORE)),)
-BUILD_LIB_ONCE = $(CGT_PATH)/lib/rtsv7R4_A_le_v3D16_eabi.lib
+RTSLIB_NAME = rtsv7R4_T_le_v3D16_eabi.lib
+BUILD_LIB_ONCE = $(CGT_PATH)/lib/$(RTSLIB_NAME)
 $(BUILD_LIB_ONCE):
 	$(ECHO) \# $@ not found, building  $@ ...
-	$(CGT_PATH)/lib/mklib --pattern=rtsv7R4_A_le_v3D16_eabi.lib --parallel=$(NUM_PROCS) --compiler_bin_dir=$(CGT_PATH)/bin
+	$(CGT_PATH)/lib/mklib --pattern=$(RTSLIB_NAME) --parallel=$(NUM_PROCS) --compiler_bin_dir=$(CGT_PATH)/bin
 endif
 
 ifneq ($(XDC_CFG_FILE_$(CORE)),)
