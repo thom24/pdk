@@ -489,9 +489,9 @@ pcieRet_e pcieCfgDbi(Pcie_Handle handle, uint8_t enable)
  ****************************************************************************/
 pcieRet_e pcieCfgDbiRWE(Pcie_Handle handle, uint8_t enable)
 {
-  pcieRegisters_t        regs;
-  pcieRet_e              retVal;
+  pcieRet_e              retVal = pcie_RET_OK;
 #if defined(PCIE_REV2_HW)
+  pcieRegisters_t        regs;
   pciePlconfDbiRoWrEnReg_t dbiRo;
 
   memset (&dbiRo, 0, sizeof(dbiRo));
