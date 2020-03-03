@@ -435,6 +435,36 @@ I2C_Handle Board_getI2CHandle(uint8_t domainType,
 Board_STATUS Board_pinmuxConfig(void);
 
 /**
+ * \brief  Board pinmuxing enable function for main domain
+ *
+ * Enables pinmux for the board interfaces connected to main domain.
+ * Pin mux is done based on the default/primary functionality of the board.
+ * Any pins shared by multiple interfaces need to be reconfigured to access
+ * the secondary functionality.
+ *
+ * \param   void
+ *
+ * \return  BOARD_SOK in case of success or appropriate error code
+ *
+ */
+Board_STATUS Board_pinmuxConfigMain (void);
+
+/**
+ * \brief  Board pinmuxing enable function for wakeup/mcu domain
+ *
+ * Enables pinmux for the board interfaces connected to wakeup/mcu domain.
+ * Pin mux is done based on the default/primary functionality of the board.
+ * Any pins shared by multiple interfaces need to be reconfigured to access
+ * the secondary functionality.
+ *
+ * \param   void
+ *
+ * \return  BOARD_SOK in case of success or appropriate error code
+ *
+ */
+Board_STATUS Board_pinmuxConfigWkup (void);
+
+/**
  *
  * \brief  Board PLL initialization function
  *

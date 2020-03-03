@@ -324,13 +324,15 @@ typedef uint32_t Board_initCfg;
 #define BOARD_INIT_DDR                  (1 << 8U)
 #define BOARD_INIT_WATCHDOG_DISABLE     (1 << 9U)
 #define BOARD_INIT_PINMUX_CONFIG        (1 << 10U)
-#define BOARD_INIT_UART_STDIO           (1 << 11U)
-#define BOARD_INIT_ICSS_PINMUX          (1 << 12U)
-#define BOARD_INIT_ETH_PHY              (1 << 13U)
-#define BOARD_INIT_ECC                  (1 << 14U)
-#define BOARD_INIT_PLL_OPP_HIGH         (1 << 15U)
-#define BOARD_INIT_PLL_OPP_OD           (1 << 16U)
-#define BOARD_INIT_PLL_OPP_NOM          (1 << 17U)
+#define BOARD_INIT_PINMUX_CONFIG_MAIN   (1 << 11U)
+#define BOARD_INIT_PINMUX_CONFIG_MCU    (1 << 12U)
+#define BOARD_INIT_UART_STDIO           (1 << 13U)
+#define BOARD_INIT_ICSS_PINMUX          (1 << 14U)
+#define BOARD_INIT_ETH_PHY              (1 << 15U)
+#define BOARD_INIT_ECC                  (1 << 16U)
+#define BOARD_INIT_PLL_OPP_HIGH         (1 << 17U)
+#define BOARD_INIT_PLL_OPP_OD           (1 << 18U)
+#define BOARD_INIT_PLL_OPP_NOM          (1 << 19U)
 /* iceK2G requires board specific Ethernet configurations for
    proper operation of Ethernet interfaces. Applications
    using NSS(Gigabit) or ICSS(10/100mbps) Ethernet inteface
@@ -339,27 +341,27 @@ typedef uint32_t Board_initCfg;
    'BOARD_INIT_ICSS_ETH_PHY' to invoke the PRU_ICSS Ethernet PHY
    initialization */
 /* Config control bit definition for 10/100 Ethernet PHY intialization */
-#define BOARD_INIT_ICSS_ETH_PHY         (1 << 18U)
+#define BOARD_INIT_ICSS_ETH_PHY         (1 << 20U)
 /* Flag to enable EMIF pin mux configuration during Board_init.
    EMIF pin mux is done as part of default pin mux as configuring EMIF pinmux
    while system is running from SDRAM/DDR can corrupt the memory.
    Use this flag only from the applications which are not running from SDRAM/DDR
 */
-#define BOARD_INIT_EMIF_PINMUX          (1 << 19U)
+#define BOARD_INIT_EMIF_PINMUX          (1 << 21U)
 /* Applies only to devices with DDR ECC support */
-#define BOARD_INIT_DDR_ECC              (1 << 20U)
+#define BOARD_INIT_DDR_ECC              (1 << 22U)
 /* Initializes SerDes module */
-#define BOARD_INIT_SERDES_PHY           (1 << 21U)
+#define BOARD_INIT_SERDES_PHY           (1 << 23U)
 /* Initializes I2C controller instances used by the board */
-#define BOARD_INIT_I2C                  (1 << 22U)
+#define BOARD_INIT_I2C                  (1 << 24U)
 /* De-Initializes I2C controller instances used by the board */
-#define BOARD_DEINIT_I2C                (1 << 23U)
-#define BOARD_INIT_CPSW9G_ETH_PHY       (1 << 24U)
+#define BOARD_DEINIT_I2C                (1 << 25U)
+#define BOARD_INIT_CPSW9G_ETH_PHY       (1 << 26U)
 
 /* Configures ENET Control(mac mode, delay settings) for CPSW/ICCS ports */
-#define BOARD_INIT_ENETCTRL_CPSW2G      (1 << 25U)
-#define BOARD_INIT_ENETCTRL_CPSW9G      (1 << 26U)
-#define BOARD_INIT_ENETCTRL_ICSS        (1 << 27U)
+#define BOARD_INIT_ENETCTRL_CPSW2G      (1 << 27U)
+#define BOARD_INIT_ENETCTRL_CPSW9G      (1 << 28U)
+#define BOARD_INIT_ENETCTRL_ICSS        (1 << 29U)
 #define BOARD_INIT_DEFAULT              BOARD_INIT_ALL
 
 #define BOARD_DEINIT_ALL                (0xFFFFFFFFU)

@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -254,6 +254,16 @@ Board_STATUS Board_init(Board_initCfg cfg)
 
     if (cfg & BOARD_INIT_PINMUX_CONFIG)
         ret = Board_pinmuxConfig();
+    if (ret != BOARD_SOK)
+        return ret;
+
+    if (cfg & BOARD_INIT_PINMUX_CONFIG_MAIN)
+        ret = Board_pinmuxConfigMain();
+    if (ret != BOARD_SOK)
+        return ret;
+
+    if (cfg & BOARD_INIT_PINMUX_CONFIG_MCU)
+        ret = Board_pinmuxConfigWkup();
     if (ret != BOARD_SOK)
         return ret;
 

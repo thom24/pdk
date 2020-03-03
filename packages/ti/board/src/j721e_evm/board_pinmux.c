@@ -455,6 +455,105 @@ Board_STATUS Board_pinmuxConfig (void)
     return status;
 }
 
+/**
+ * \brief  Board pinmuxing enable function for main domain
+ *
+ * Enables pinmux for the board interfaces connected to main domain.
+ * Pin mux is done based on the default/primary functionality of the board.
+ * Any pins shared by multiple interfaces need to be reconfigured to access
+ * the secondary functionality.
+ *
+ * \param   void
+ *
+ * \return  BOARD_SOK in case of success or appropriate error code
+ *
+ */
+Board_STATUS Board_pinmuxConfigMain (void)
+{
+    Board_STATUS status = BOARD_SOK;
+
+    /* Pinmux for baseboard */
+    Board_pinmuxUpdate(gJ721E_MainPinmuxData,
+                       BOARD_SOC_DOMAIN_MAIN);
+
+    if((gBoardPinmuxCfg.gesiExp == BOARD_PINMUX_GESI_ICSSG) ||
+       (gBoardPinmuxCfg.gesiExp == BOARD_PINMUX_GESI_CPSW9G))
+    {
+        /* By default ICSSG RGMII is enabled */
+        Board_pinmuxUpdate(gJ721E_MainPinmuxDataGesiIcssg,
+                           BOARD_SOC_DOMAIN_MAIN);
+
+        if(gBoardPinmuxCfg.gesiExp == BOARD_PINMUX_GESI_CPSW9G)
+        {
+            /* Overwrite the ICSSG RGMII muc configurations with CPSW9G RGMII */
+            Board_pinmuxUpdate(gJ721E_MainPinmuxDataGesiCpsw9g,
+                               BOARD_SOC_DOMAIN_MAIN);
+        }
+    }
+    else if(gBoardPinmuxCfg.gesiExp == BOARD_PINMUX_INFO_VOUT)
+    {
+        Board_pinmuxUpdate(gJ721E_MainPinmuxDataInfo,
+                           BOARD_SOC_DOMAIN_MAIN);
+    }
+    else
+    {
+        return (BOARD_INVALID_PARAM);
+    }
+
+    return status;
+}
+
+/**
+ * \brief  Board pinmuxing enable function for wakeup/mcu domain
+ *
+ * Enables pinmux for the board interfaces connected to wakeup/mcu domain.
+ * Pin mux is done based on the default/primary functionality of the board.
+ * Any pins shared by multiple interfaces need to be reconfigured to access
+ * the secondary functionality.
+ *
+ * \param   void
+ *
+ * \return  BOARD_SOK in case of success or appropriate error code
+ *
+ */
+Board_STATUS Board_pinmuxConfigWkup (void)
+{
+    Board_STATUS status = BOARD_SOK;
+
+    Board_pinmuxUpdate(gJ721E_WkupPinmuxData,
+                       BOARD_SOC_DOMAIN_WKUP);
+
+    if((gBoardPinmuxCfg.gesiExp == BOARD_PINMUX_GESI_ICSSG) ||
+       (gBoardPinmuxCfg.gesiExp == BOARD_PINMUX_GESI_CPSW9G))
+    {
+        Board_pinmuxUpdate(gJ721E_WkupPinmuxDataGesiIcssg,
+                           BOARD_SOC_DOMAIN_WKUP);
+
+        if(gBoardPinmuxCfg.gesiExp == BOARD_PINMUX_GESI_CPSW9G)
+        {
+            Board_pinmuxUpdate(gJ721E_WkupPinmuxDataGesiCpsw9g,
+                               BOARD_SOC_DOMAIN_WKUP);
+        }
+    }
+    else if(gBoardPinmuxCfg.gesiExp == BOARD_PINMUX_INFO_VOUT)
+    {
+        Board_pinmuxUpdate(gJ721E_WkupPinmuxDataInfo,
+                           BOARD_SOC_DOMAIN_WKUP);
+    }
+    else
+    {
+        return (BOARD_INVALID_PARAM);
+    }
+
+    if(gBoardPinmuxCfg.fssCfg == BOARD_PINMUX_FSS_HPB)
+    {
+        Board_pinmuxUpdate(gJ721E_WkupPinmuxDataHpb,
+                           BOARD_SOC_DOMAIN_WKUP);
+    }
+
+    return status;
+}
+
 void Board_uartTxPinmuxConfig(void)
 {
     /* Unlock partition lock kick */
