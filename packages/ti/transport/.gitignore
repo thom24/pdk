@@ -9,7 +9,7 @@ pacages
 .interfaces
 Settings.h
 Settings.xdc
-ndk/nimu_icss/example/*/*/bios
+ndk/nimu_icss/example/*/*/bios/src
 ndk/*/docs/doxygen/html
 timeSync/docs/doxygen/html
 timeSync/example/src/bios/ccsProjects/*/src/

@@ -41,7 +41,7 @@ CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) -DNDK_NOUSERAPIS
 INCLUDE_EXTERNAL_INTERFACES = xdc pdk ndk bios
 
 ifeq ($(BUILDTYPE),$(filter $(BUILDTYPE), profile profiledma))
-  ifeq ($(CORE),$(filter $(CORE), a15_0 a9host a8host))
+  ifeq ($(CORE),$(filter $(CORE), a15_0 a9host a8host mpu1_0))
     CFLAGS_LOCAL_COMMON += -finstrument-functions -gdwarf-3 -g -D_ENABLE_BM
   else
     CFLAGS_LOCAL_COMMON += --entry_parm=address --exit_hook=ti_utils_exit --exit_parm=address --entry_hook=ti_utils_entry -g -D_ENABLE_BM

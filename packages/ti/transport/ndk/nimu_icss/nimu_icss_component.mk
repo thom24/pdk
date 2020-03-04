@@ -68,14 +68,14 @@ ifeq ($(nimu_icss_component_make_include), )
 
 # under other list
 drvnimu_icss_BOARDLIST       = 
-drvnimu_icss_SOCLIST         = am335x am437x am574x am572x am571x k2g
+drvnimu_icss_SOCLIST         = am335x am437x am574x am572x am571x k2g am65xx
 drvnimu_icss_am574x_CORELIST = c66x a15_0 ipu1_0
 drvnimu_icss_am572x_CORELIST = c66x a15_0 ipu1_0
 drvnimu_icss_am571x_CORELIST = c66x a15_0 ipu1_0
 drvnimu_icss_am437x_CORELIST = a9host
 drvnimu_icss_am335x_CORELIST = a8host
 drvnimu_icss_k2g_CORELIST    = c66x a15_0
-
+drvnimu_icss_am65xx_CORELIST = mpu1_0 mcu1_0
 ############################
 # uart package
 # List of components included under uart lib

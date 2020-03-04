@@ -39,6 +39,10 @@ function getLibs(prog)
         lib = lib + "/a9";
     else if (java.lang.String(suffix).contains('a8') )
         lib = lib + "/a8";        
+    else if (java.lang.String(suffix).contains('a53') )
+        lib = lib + "/a53";
+    else if (java.lang.String(suffix).contains('r5f') )
+        lib = lib + "/r5f";
     else
         throw new Error("\tUnknown target for: " + this.packageBase + lib);
    

@@ -42,6 +42,8 @@
 #include <ti/csl/src/ip/mdio/V2/cslr_mdio.h>
 #include <ti/csl/src/ip/mdio/V2/csl_mdio.h>
 #include <ti/csl/src/ip/mdio/V2/csl_mdioAux.h>
+#elif defined (SOC_AM65XX)
+#include <ti/csl/csl_mdio.h>
 #else
 #include <ti/csl/csl_mdioAux.h>
 #endif
@@ -399,6 +401,21 @@ static void NIMU_ICSS_macClose(uint32_t hPort,NIMU_IcssPdInfo * pi)
 
 }
 
+#if defined (__aarch64__) || defined (__TI_ARM_V7R4__)
+static void NIMU_ICSS_MDIO_init(uint32_t baseAddr,
+              uint32_t mdioInputFreq,
+              uint32_t mdioOutputFreq)
+{
+    uint32_t clkDiv = (mdioInputFreq/mdioOutputFreq) - 1U;
+    uint32_t regVal = 0U;
+
+    HW_SET_FIELD(regVal, CSL_MDIO_CONTROL_REG_ENABLE, CSL_MDIO_CONTROL_REG_ENABLE_0X1);
+    HW_SET_FIELD(regVal,  CSL_MDIO_CONTROL_REG_PREAMBLE, CSL_MDIO_CONTROL_REG_PREAMBLE_EN_0X1);
+    HW_SET_FIELD(regVal, CSL_MDIO_CONTROL_REG_FAULT_DETECT_ENABLE, CSL_MDIO_CONTROL_REG_FAULT_DETECT_ENABLE_0X1);
+    HW_SET_FIELD(regVal, CSL_MDIO_CONTROL_REG_CLKDIV, clkDiv);
+    HW_WR_REG32(baseAddr + CSL_MDIO_CONTROL_REG, regVal);
+}
+#endif
 void NIMU_ICSS_openPeripheral(NIMU_IcssPdInfo *pi)
 {
     uint32_t              i;
@@ -414,8 +431,13 @@ void NIMU_ICSS_openPeripheral(NIMU_IcssPdInfo *pi)
     }
     if(ICSS_EMAC_MODE_MAC2 != (((ICSS_EmacObject*)(pi->nimuDrvHandle)->object)->emacInitcfg)->portMask)
     {
+#if defined (__aarch64__) || defined (__TI_ARM_V7R4__)
+        NIMU_ICSS_MDIO_init((((ICSS_EmacHwAttrs*)(pi->nimuDrvHandle)->hwAttrs)->emacBaseAddrCfg)->prussMiiMdioRegs,
+                                 NIMU_ICSS_DEFAULT_MDIOCLOCKFREQ,NIMU_ICSS_DEFAULT_MDIOBUSFREQ);
+#else
         CSL_MDIO_init((((ICSS_EmacHwAttrs*)(pi->nimuDrvHandle)->hwAttrs)->emacBaseAddrCfg)->prussMiiMdioRegs,
                                  NIMU_ICSS_DEFAULT_MDIOCLOCKFREQ,NIMU_ICSS_DEFAULT_MDIOBUSFREQ);
+#endif
     }
 
     /* Open all ports */

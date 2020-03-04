@@ -95,7 +95,7 @@ void NIMU_ICSS_interruptEnd(NIMU_IcssPdInfo* pi)
 * @retval none
 */
 int32_t NIMU_ICSS_interruptInit(NIMU_IcssPdInfo* pi); /* misra warning */
-#if defined (__ARM_ARCH_7A__) || defined (__TI_ARM_V7M4__)
+#if defined (__ARM_ARCH_7A__) || defined (__TI_ARM_V7M4__) || defined(__aarch64__) || defined(__TI_ARM_V7R4__)
 int32_t NIMU_ICSS_interruptInit(NIMU_IcssPdInfo* pi)
 {
     int32_t retVal = 0;
@@ -230,7 +230,7 @@ void NIMU_ICSS_interruptDisable(NIMU_IcssPdInfo * pi)
     ICSS_EmacHandle handle = pi->nimuDrvHandle;
     key = ICSS_EMAC_osalHardwareIntDisable();
 
-#if defined (__ARM_ARCH_7A__) || defined (__TI_ARM_V7M4__)
+#if defined (__ARM_ARCH_7A__) || defined (__TI_ARM_V7M4__) || defined(__aarch64__) || defined(__TI_ARM_V7R4__)
     ICSS_EMAC_osalHardwareInterruptDisable((((ICSS_EmacObject*)handle->object)->emacInitcfg)->linkIntNum);
     ICSS_EMAC_osalHardwareInterruptDisable((((ICSS_EmacObject*)handle->object)->emacInitcfg)->rxIntNum);
 
@@ -257,8 +257,7 @@ void NIMU_ICSS_interruptDisable(NIMU_IcssPdInfo * pi)
 static void EnableEMACInterrupts(NIMU_IcssPdInfo * pi); /* misra warning */
 static void EnableEMACInterrupts(NIMU_IcssPdInfo * pi)
 {
-
-#if defined (__ARM_ARCH_7A__) || defined (__TI_ARM_V7M4__)
+#if defined (__ARM_ARCH_7A__) || defined (__TI_ARM_V7M4__) || defined(__aarch64__) || defined(__TI_ARM_V7R4__)
     uint32_t key = 0;
 
     ICSS_EmacHandle handle = pi->nimuDrvHandle;
