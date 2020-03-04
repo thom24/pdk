@@ -132,7 +132,7 @@ void McaspDevice_init(void)
             Mcasp_deviceInstInfo[i].dataAddress =
                 (CSL_AdataRegs *)CSL_MCASP1_DMA_BASE;
 
-            Mcasp_deviceInstInfo[i].numSerializers = 10;
+            Mcasp_deviceInstInfo[i].numSerializers = 12;
 
             Mcasp_deviceInstInfo[i].txMuxInEvent   = MCASP_UNASSIGNED_EVENTNUM;
             Mcasp_deviceInstInfo[i].rxMuxInEvent   = MCASP_UNASSIGNED_EVENTNUM;
@@ -161,7 +161,7 @@ void McaspDevice_init(void)
             Mcasp_deviceInstInfo[i].dataAddress =
                 (CSL_AdataRegs *)CSL_MCASP2_DMA_BASE;
 
-            Mcasp_deviceInstInfo[i].numSerializers = 4;
+            Mcasp_deviceInstInfo[i].numSerializers = 6;
 
             Mcasp_deviceInstInfo[i].txMuxInEvent   = MCASP_UNASSIGNED_MUX_EVENTNUM;
             Mcasp_deviceInstInfo[i].rxMuxInEvent   = MCASP_UNASSIGNED_MUX_EVENTNUM;
