@@ -49,6 +49,8 @@ extern "C" {
 #include <ti/drv/ipc/include/ipc_rsctypes.h>
 #ifdef BAREMETAL
 #include "ipc_trace.h"
+#else
+#include <xdc/runtime/SysMin.h>
 #endif
 
 /*
@@ -65,7 +67,7 @@ extern "C" {
 #define TRACEBUFADDR ((uintptr_t)&Ipc_traceBuffer)
 #else
 #define IPC_TRACE_BUFFER_MAX_SIZE     (0x80000)
-extern char xdc_runtime_SysMin_Module_State_0_outbuf__A;
+extern __T1_xdc_runtime_SysMin_Module_State__outbuf xdc_runtime_SysMin_Module_State_0_outbuf__A[];
 #define TRACEBUFADDR ((uintptr_t)&xdc_runtime_SysMin_Module_State_0_outbuf__A)
 #endif
 

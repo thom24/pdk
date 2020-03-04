@@ -872,7 +872,11 @@ int main ()
 
     if (Board_initI2C() == false)
     {
+#ifdef USE_BIOS
+        return;
+#else
         return(0);
+#endif        
     }
 
     for (i = 0; ; i++)

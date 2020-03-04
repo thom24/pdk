@@ -47,6 +47,11 @@ extern "C" {
 #endif
 
 #include <ti/drv/ipc/include/ipc_rsctypes.h>
+#ifdef BAREMETAL
+#include "ipc_trace.h"
+#else
+#include <xdc/runtime/SysMin.h>
+#endif
 
 /*
  * Sizes of the virtqueues (expressed in number of buffers supported,
@@ -64,8 +69,12 @@ extern "C" {
 #define RPMSG_C66_DSP_FEATURES  1U
 #define RPMSG_C7X_DSP_FEATURES  1U
 
-extern char xdc_runtime_SysMin_Module_State_0_outbuf__A;
+#ifdef BAREMETAL
+#define TRACEBUFADDR ((uintptr_t)&Ipc_traceBuffer)
+#else
+extern __T1_xdc_runtime_SysMin_Module_State__outbuf xdc_runtime_SysMin_Module_State_0_outbuf__A[];
 #define TRACEBUFADDR ((uintptr_t)&xdc_runtime_SysMin_Module_State_0_outbuf__A)
+#endif
 
 #define RPMSG_VRING_ADDR_ANY FW_RSC_ADDR_ANY
 

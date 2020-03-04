@@ -394,7 +394,7 @@ I2C_Eeprom_SMP_TestApp_PATH = $(PDK_I2C_COMP_PATH)/test/eeprom_read
 I2C_Eeprom_SMP_TestApp_BOARD_DEPENDENCY = yes
 I2C_Eeprom_SMP_TestApp_CORE_DEPENDENCY = no
 I2C_Eeprom_SMP_TestApp_MAKEFILE = -f makefile SMP=enable
-I2C_Eeprom_TestApp_XDC_CONFIGURO = yes
+I2C_Eeprom_SMP_TestApp_XDC_CONFIGURO = yes
 export I2C_Eeprom_SMP_TestApp_COMP_LIST
 export I2C_Eeprom_SMP_TestApp_BOARD_DEPENDENCY
 export I2C_Eeprom_SMP_TestApp_CORE_DEPENDENCY
