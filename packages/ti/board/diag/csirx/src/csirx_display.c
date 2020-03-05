@@ -37,10 +37,10 @@
  *  \brief CSIRX display APIs that displays the image captured by CSIRX.
  */
 
-#include "csirx_display.h"
+#include "csirx_test.h"
 
 BoardDiag_CsirxDispObj gDispObj;
-extern uint8_t gFrms[(4* 1)][1920*1080];
+extern uint8_t gFrms[(BOARD_DIAG_CSIRX_FRAMES_PER_CH * BOARD_DIAG_CSIRX_MAX_CH)][BOARD_DIAG_CSIRX_FRAME_SIZE];
 SemaphoreP_Handle gLockSem_dss;
 extern SemaphoreP_Handle gLockSem;
 
