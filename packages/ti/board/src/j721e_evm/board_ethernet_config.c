@@ -596,7 +596,6 @@ Board_STATUS Board_icssEthPhyConfig(void)
  */
 Board_STATUS Board_cpsw9gEthConfig(uint32_t portNum, uint8_t mode)
 {
-    Board_STATUS ret = BOARD_SOK;
     uint32_t status;
     uintptr_t modeSel;
     uint32_t regData;
@@ -614,12 +613,10 @@ Board_STATUS Board_cpsw9gEthConfig(uint32_t portNum, uint8_t mode)
     status = CSL_REG32_RD(modeSel);
     if (status != regData)
     {
-        ret = BOARD_FAIL;
+        return BOARD_FAIL;
     }
 
-    Board_lockMMR();
-
-    return ret;
+    return BOARD_SOK;
 }
 
 /**
@@ -687,10 +684,12 @@ Board_STATUS Board_ethConfigCpsw2g(void)
 
     /* Configures the MCU Ethernet */
     status = Board_cpsw2gMacModeConfig(CPSW2G_PORTNUM, RGMII);
+    if(status != BOARD_SOK)
+    {
+        return BOARD_FAIL;
+    }
 
-    Board_lockMMR();
-
-    return status;
+    return BOARD_SOK;
 }
 
 /**
@@ -759,11 +758,9 @@ Board_STATUS Board_ethConfigIcss(void)
         status = Board_icssEthConfig(portNum, RGMII);
         if(status != BOARD_SOK)
         {
-            break;
+            return BOARD_FAIL;
         }
     }
 
-    Board_lockMMR();
-
-    return status;
+    return BOARD_SOK;
 }

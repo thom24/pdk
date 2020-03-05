@@ -150,7 +150,6 @@ void Board_pinMuxSetMode(uint32_t offset, uint32_t mode)
     Board_pinmuxWriteProxy1Reg(BOARD_SOC_DOMAIN_MAIN, 
                                (baseAddr + offset), 
                                regVal);
-    Board_lockMMR();
 }
 
 /**
@@ -180,7 +179,6 @@ void Board_pinMuxSetModeWkup(uint32_t offset, uint32_t mode)
     Board_pinmuxWriteProxy1Reg(BOARD_SOC_DOMAIN_WKUP, 
                                (baseAddr + offset), 
                                regVal);
-    Board_lockMMR();
 }
 
 /**
@@ -219,8 +217,6 @@ Board_STATUS Board_pinmuxSetReg(uint8_t  domain,
     {
         status = BOARD_INVALID_PARAM;
     }
-
-    Board_lockMMR();
 
     return status;
 }
@@ -368,8 +364,6 @@ Board_STATUS Board_pinmuxUpdate (pinmuxBoardCfg_t *pinmuxData,
         /* Clear the RAT configuration to allow applications to use the region */
         Board_restoreRATCfg();
     }
-
-    Board_lockMMR();
 
     return status;
 }

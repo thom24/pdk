@@ -258,6 +258,16 @@ Board_STATUS Board_readMacAddrCount(uint32_t boardID,
 Board_STATUS Board_setI2cInitConfig(Board_I2cInitCfg_t *i2cCfg);
 
 /**
+ * \brief Configures drive strength for LVCMOS IOs
+ *
+ * This is temporary function added as workaround for
+ * eFuse drive strength configuration issue. Need to be
+ * removed after this issue is fixed in the silicon.
+ *
+ */
+void Board_lvcmosDrvStrengthCfg(void);
+
+/**
  * \brief Function to get board init params
  *
  *  This function shall be used to know the current board init
