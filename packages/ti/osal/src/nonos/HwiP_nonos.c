@@ -79,7 +79,7 @@ HwiP_Status HwiP_delete(HwiP_Handle handle)
 
     OSAL_Assert((handle == NULL_PTR));
 
-    if(handle!=NULL_PTR) { 
+    if(handle!=NULL_PTR) {
       status = OsalArch_HwiPDelete(handle);
 
       if (status == HwiP_OK)
@@ -89,11 +89,11 @@ HwiP_Status HwiP_delete(HwiP_Handle handle)
             gOsalHwiAllocCnt--;
         }
       }
-   } 
+   }
    else
    {
-      status = HwiP_FAILURE;   
-   }  
+      status = HwiP_FAILURE;
+   }
 
     return (status);
 }
@@ -126,7 +126,7 @@ void HwiP_enableInterrupt(int32_t interruptNum)
 
 int32_t HwiP_post(uint32_t interruptNum)
 {
-#if defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)
+#if defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_TPR12)
    return(OsalArch_postInterrupt(interruptNum));
 #else
    return (osal_UNSUPPORTED);
@@ -147,15 +147,15 @@ void HwiP_Params_init(HwiP_Params *params)
 #if defined (__ARM_ARCH_7A__) || defined(__aarch64__) || defined (__TI_ARM_V7R4__)
     params->triggerSensitivity = (uint32_t)OSAL_ARM_GIC_TRIG_TYPE_LEVEL;
 #if !defined (SOC_AM437x) &&  !defined(SOC_AM335x) && !defined (__TI_ARM_V7R4__)
-    { 
+    {
        Osal_HwAttrs hwAttrs;
 	   (void)Osal_getHwAttrs(&hwAttrs);
-	   if(hwAttrs.hwAccessType==OSAL_HWACCESS_UNRESTRICTED) 
+	   if(hwAttrs.hwAccessType==OSAL_HWACCESS_UNRESTRICTED)
 		{
 	      /* Do GIC init only in the case of unrestricted hw access */
     OsalArch_gicInit();
-		}  
-	  }	
+		}
+	  }
 #endif
 #endif
 }
@@ -172,7 +172,7 @@ void HwiP_restore(uintptr_t key)
 #ifdef _TMS320C6X
 /*
  *  ======== HwiP_getHandle ========
- *  Returns the HwiP handle associated with an interrupt number 
+ *  Returns the HwiP handle associated with an interrupt number
   */
 HwiP_Handle HwiP_getHandle(int32_t interruptNum)
 {

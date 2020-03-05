@@ -197,12 +197,26 @@ HwiP_Handle OsalArch_HwiPCreate(int32_t interruptNum, HwiP_Fxn hwiFxn,
             if (info.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_0)
             {
                 /* MCU SS Pulsar R5 SS */
-                gVimRegs = (CSL_vimRegs *)(uintptr_t)CSL_MCU_DOMAIN_VIM_BASE_ADDR;
+                if (info.cpuID == CSL_ARM_R5_CPU_ID_0)
+                {
+                    gVimRegs = (CSL_vimRegs *)(uintptr_t)CSL_MCU_DOMAIN_VIM_BASE_ADDR0;
+                }
+                else
+                {
+                    gVimRegs = (CSL_vimRegs *)(uintptr_t)CSL_MCU_DOMAIN_VIM_BASE_ADDR1;
+                }
             }
             else
             {
                 /* MAIN SS Pulsar R5 SS */
-                gVimRegs = (CSL_vimRegs *)(uintptr_t)CSL_MAIN_DOMAIN_VIM_BASE_ADDR;
+                if (info.cpuID == CSL_ARM_R5_CPU_ID_0)
+                {
+                    gVimRegs = (CSL_vimRegs *)(uintptr_t)CSL_MAIN_DOMAIN_VIM_BASE_ADDR0;
+                }
+                else
+                {
+                    gVimRegs = (CSL_vimRegs *)(uintptr_t)CSL_MAIN_DOMAIN_VIM_BASE_ADDR1;
+                }
             }
             gFirstTime = (bool)false;
             Intc_SystemEnable();

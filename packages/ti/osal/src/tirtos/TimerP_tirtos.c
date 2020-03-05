@@ -54,6 +54,12 @@
 #elif defined (SOC_C6678) || defined (SOC_K2G) || defined (SOC_K2H) || defined(SOC_K2K) || defined(SOC_K2L) || defined(SOC_K2E) || defined(SOC_C6657) || defined(SOC_C6678) || defined(SOC_OMAPL137) || defined(SOC_OMAPL138)
 #define  TIMER64_SUPPORT
 #include <ti/sysbios/timers/timer64/Timer.h>
+#elif defined (SOC_TPR12)
+#if defined(TIMER64_SUPPORT)
+#undef   TIMER64_SUPPORT
+#endif
+#define RTI_SUPPORT
+#include <ti/sysbios/timers/rti/Timer.h>
 #else
 #include <ti/sysbios/hal/Timer.h>
 #endif
@@ -93,14 +99,15 @@ void TimerP_Params_init(TimerP_Params *params)
       params->runMode     = (uint32_t)TimerP_RunMode_CONTINUOUS;
       params->startMode   = (uint32_t)TimerP_StartMode_AUTO;
       params->periodType  = (uint32_t)TimerP_PeriodType_MICROSECS;
+#if !defined(RTI_SUPPORT)
       params->intNum      = (int32_t)TimerP_USE_DEFAULT;
-
+#endif
 #if defined (TIMER64_SUPPORT)
       params->timerMode   = TimerP_Timer64Mode_UNCHAINED;
       params->timerHalf   = TimerP_Timer64Half_DEFAULT;
 #endif
 
-#if defined (_TMS320C6X)
+#if defined (_TMS320C6X) && !defined(RTI_SUPPORT)
       params->eventId     = TimerP_USE_DEFAULT;
 #endif
     }
@@ -119,7 +126,7 @@ TimerP_Handle TimerP_create(int32_t id,
 
     /* Grab the memory */
     key = HwiP_disable();
-    
+
     if(gOsalTimerAllocCnt==0U)
     {
 		(void)memset((void *)gOsalTimerPTiRtosPool,0,sizeof(gOsalTimerPTiRtosPool));
@@ -216,12 +223,12 @@ TimerP_Handle TimerP_create(int32_t id,
             if ( params->arg != NULL_PTR) {
                 timerParams.arg                   = (xdc_UArg) params->arg;
             }
-
+#if !defined(RTI_SUPPORT)
             if ( params->intNum != TimerP_USE_DEFAULT) {
                 timerParams.intNum = params->intNum;
             }
-
-#if defined (_TMS320C6X) && !defined(TIMER64_SUPPORT)
+#endif
+#if defined (_TMS320C6X) && !defined(TIMER64_SUPPORT) && !defined(RTI_SUPPORT)
             if ( params->eventId != TimerP_USE_DEFAULT) {
                 timerParams.eventId = params->eventId;
             }
@@ -259,7 +266,7 @@ TimerP_Status TimerP_delete(TimerP_Handle handle)
     TimerP_Status ret = TimerP_OK;
     uintptr_t   key;
     TimerP_tiRtos *timer = (TimerP_tiRtos *)handle;
-    
+
     if(timer != NULL_PTR)
     {
       Timer_destruct(&timer->timer);
@@ -272,7 +279,7 @@ TimerP_Status TimerP_delete(TimerP_Handle handle)
       }
       HwiP_restore(key);
       ret = TimerP_OK;
-    } 
+    }
     else
     {
       ret = TimerP_FAILURE;

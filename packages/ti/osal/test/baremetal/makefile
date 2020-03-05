@@ -21,7 +21,11 @@ INCDIR = ../src
 INCLUDE_EXTERNAL_INTERFACES = pdk csl_arch
 
 # List all the components required by the application
-COMP_LIST_COMMON += board uart osal_nonos i2c
+ifeq ($(SOC),$(filter $(SOC), tpr12))
+  COMP_LIST_COMMON += board osal_nonos
+else
+  COMP_LIST_COMMON += board uart osal_nonos i2c
+endif
 COMP_LIST_c66x = csl_intc
 COMP_LIST_c66xdsp_1 = csl_intc
 COMP_LIST_c66xdsp_2 = csl_intc
@@ -49,7 +53,7 @@ ifeq ($(MANUAL_CACHE_TEST),YES)
   CFLAGS_LOCAL_COMMON += -DMANUAL_CACHE_TEST
 endif
 
-ifeq ($(SOC),$(filter $(SOC), k2h k2k k2l k2e k2g c6678 c6657 am571x am572x am574x am437x am335x omapl137 omapl138 am65xx j721e j7200))
+ifeq ($(SOC),$(filter $(SOC), k2h k2k k2l k2e k2g c6678 c6657 am571x am572x am574x am437x am335x omapl137 omapl138 am65xx j721e j7200 tpr12))
   CFLAGS_LOCAL_COMMON += -DENABLE_TIMER_TEST
 endif
 

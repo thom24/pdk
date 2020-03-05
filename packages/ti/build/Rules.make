@@ -40,7 +40,6 @@ TOOLS_INSTALL_PATH ?= $(SDK_INSTALL_PATH)
 #Default BUILD_OS_TYPE (tirtos/baremetal/qnx)
 export BUILD_OS_TYPE ?= tirtos
 
-
 include $(PDK_INSTALL_PATH)/ti/build/procsdk_defs.mk
 
 # Default board
@@ -78,6 +77,9 @@ endif
 ifeq ($(BOARD),$(filter $(BOARD), j721e_hostemu j7200_hostemu))
   CORE = c7x-hostemu
 endif
+ifeq ($(BOARD),$(filter $(BOARD), tpr12_evm))
+  CORE ?= mcu1_0
+endif
 CORE ?= ipu1_0
 export CORE
 
@@ -94,6 +96,8 @@ BOARD_LIST_J7_TDA = j721e_sim j721e_hostemu j721e_ccqt j721e_loki j721e_qt j721e
 BOARD_LIST_J7_TDA += j7200_sim j7200_hostemu j7200_evm am64x_evm
 export BOARD_LIST_J7_TDA
 
+#Various boards support for TPR12 family of devices
+export BOARD_LIST_TPR12 = tpr12_evm
 
 ################################################################################
 # Other advanced configurable variables

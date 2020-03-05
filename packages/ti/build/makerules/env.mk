@@ -232,6 +232,24 @@ endif
 ifneq ($(PDK_QSPIFLASH_ROOT_PATH), $(pdk_PATH))
   pdk_INCLUDE += $(PDK_QSPIFLASH_ROOT_PATH)
 endif
+
+#Below applicable only for TPR12 devices
+ifneq ($(PDK_CRC_ROOT_PATH), $(pdk_PATH))
+  pdk_INCLUDE += $(PDK_CRC_ROOT_PATH)
+endif
+ifneq ($(PDK_EDMA_ROOT_PATH), $(pdk_PATH))
+  pdk_INCLUDE += $(PDK_EDMA_ROOT_PATH)
+endif
+ifneq ($(PDK_MAILBOX_ROOT_PATH), $(pdk_PATH))
+  pdk_INCLUDE += $(PDK_MAILBOX_ROOT_PATH)
+endif
+ifneq ($(PDK_ESM_ROOT_PATH), $(pdk_PATH))
+  pdk_INCLUDE += $(PDK_ESM_ROOT_PATH)
+endif
+ifneq ($(PDK_CAN_ROOT_PATH), $(pdk_PATH))
+  pdk_INCLUDE += $(PDK_CAN_ROOT_PATH)
+endif
+
 export pdk_INCLUDE
 
 include $(pdk_PATH)/ti/build/makerules/component.mk
@@ -304,6 +322,14 @@ ifeq ($(BUILD_OS_TYPE),baremetal)
         CONFIG_BLD_LNK_c7x   = $(pdk_PATH)/ti/build/$(SOC)/linker_c7x.lds
     endif
   endif
+  ifeq ($(SOC),$(filter $(SOC), tpr12))
+    ifeq ($(CONFIG_BLD_XDC_r5f),)
+        CONFIG_BLD_LNK_r5f   = $(pdk_PATH)/ti/build/$(SOC)/linker_r5.lds
+    endif
+    ifeq ($(CONFIG_BLD_XDC_c66),)
+        CONFIG_BLD_LNK_c66   = $(pdk_PATH)/ti/build/$(SOC)/linker_c66.cmd
+    endif
+  endif
 endif
 
 ifeq ($(BUILD_OS_TYPE),tirtos)
@@ -311,6 +337,18 @@ ifeq ($(BUILD_OS_TYPE),tirtos)
   # XDC specific ENV variables
   #
   # XDC Config.bld file (required for configuro); Derives from top-level pdk_PATH
+
+  ifeq ($(SOC),$(filter $(SOC), tpr12))
+    ifeq ($(CONFIG_BLD_XDC_r5f),)
+        CONFIG_BLD_XDC_r5f   = $(pdk_PATH)/ti/build/$(SOC)/config_$(SOC)_r5f.bld
+        CONFIG_BLD_LNK_r5f   = $(pdk_PATH)/ti/build/$(SOC)/linker_r5_sysbios.lds
+    endif
+    ifeq ($(CONFIG_BLD_XDC_c66),)
+        CONFIG_BLD_XDC_c66   = $(pdk_PATH)/ti/build/$(SOC)/config_$(SOC)_c66.bld
+        CONFIG_BLD_LNK_c66   = $(pdk_PATH)/ti/build/$(SOC)/linker_c66.cmd
+    endif
+  endif
+
   ifeq ($(SOC),tda2xx)
     ifeq ($(CONFIG_BLD_XDC_a15),)
      CONFIG_BLD_XDC_a15 = $(pdk_PATH)/ti/build/tda2xx/config_tda2xx_a15.bld

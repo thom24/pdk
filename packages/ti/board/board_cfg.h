@@ -134,6 +134,9 @@ extern "C" {
 #elif defined (j7200_evm)
 #include <ti/board/src/j7200_evm/include/board_cfg.h>
 
+#elif defined (tpr12_evm)
+#include <ti/board/src/tpr12_evm/include/board_cfg.h>
+
 #endif
 
 #ifdef __cplusplus

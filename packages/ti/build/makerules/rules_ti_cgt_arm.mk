@@ -100,7 +100,6 @@ else
  XDC_TARGET_NAME=$(CGT_ISA)
 endif
 
-
 XDC_HFILE_NAME = $(basename $(notdir $(XDC_CFG_FILE_$(CORE))))
 # CFLAGS based on profile selected
 ifeq ($(BUILD_PROFILE_$(CORE)), debug)
@@ -151,6 +150,11 @@ else
   ifneq ($(findstring xdc, $(INCLUDE_EXTERNAL_INTERFACES)),)
       _CFLAGS += $(CFLAGS_XDCINTERNAL)
   endif
+endif
+
+# For TPR12, fore enum type to int to be compatible with DSP
+ifeq ($(SOC),$(filter $(SOC), tpr12))
+  _CFLAGS += --enum_type=int
 endif
 
 # Decide the compile mode

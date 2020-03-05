@@ -190,6 +190,14 @@ ifeq ($(BOARD),$(filter $(BOARD), am64x_evm))
  SBL_DEV_ID=55
 endif
 
+# TPR12
+ifeq ($(BOARD),$(filter $(BOARD), tpr12_evm))
+ SOC = tpr12
+ SBL_RUN_ADDRESS=0x41C00100
+ SBL_DEV_ID=55
+endif
+
+
 #
 # Derive Target/ISA from CORE
 #
@@ -295,7 +303,7 @@ ifeq ($(CORE),$(filter $(CORE), c7x-hostemu))
  ARCH = c7x
 endif
 
-# DSP for tda2xx/tda2px/am572x/tda2ex/dra72x/dra75x/am571x/tda3xx/dra78x/k2h/k2k/k2l/k2e/c6657/c6678/am574x
+# DSP for tda2xx/tda2px/am572x/tda2ex/dra72x/dra75x/am571x/tda3xx/dra78x/k2h/k2k/k2l/k2e/c6657/c6678/am574x/tpr12
 ifeq ($(CORE),$(filter $(CORE), c66x c66xdsp_1 c66xdsp_2))
  ISA = c66
  ISA_EXT = 66
@@ -459,6 +467,11 @@ ifeq ($(ISA),r5f)
     else
       PLATFORM_XDC = "ti.platforms.cortexR:AM64X_MAIN"
     endif
+  endif
+
+  ifeq ($(SOC),$(filter $(SOC), tpr12))
+    # Use the platform define from TI RTOS but do not use the default linker command file (false)
+    PLATFORM_XDC = "ti.platforms.cortexR:TPR12:false"
   endif
 
   # If ENDIAN is set to "big", set ENDIAN_EXT to "e", that would be used in
@@ -687,6 +700,10 @@ ifeq ($(ISA),c66)
       PLATFORM_XDC = "ti.platforms.c6x:J7ES"
     endif
 
+    ifeq ($(SOC),$(filter $(SOC), tpr12))
+      PLATFORM_XDC = "ti.platforms.c6x:TPR12"
+    endif
+
   endif
 
   # If ENDIAN is set to "big", set ENDIAN_EXT to "e", that would be used in
@@ -851,6 +868,12 @@ ifeq ($(SOC),$(filter $(SOC), am65xx am64x j721e j7200))
   SBL_CORE_ID_c66xdsp_2 = 11
   SBL_CORE_ID_c7x_1 = 12
   SBL_CORE_ID_c7x-hostemu = 13
+endif
+
+ifeq ($(SOC),$(filter $(SOC), tpr12))
+  SBL_CORE_ID_mcu1_0 = 0
+  SBL_CORE_ID_mcu1_1 = 1
+  SBL_CORE_ID_c66xdsp_1 = 2
 endif
 
 export SOC

@@ -89,7 +89,7 @@ endif
 # XDC specific CFLAGS
 CFLAGS_XDCINTERNAL = -Dxdc_target_types__=gnu/targets/arm/std.h -Dxdc_target_name__=A15F -Dxdc_bld__profile_$(BUILD_PROFILE_$(CORE))
 ifndef MODULE_NAME
-  XDC_HFILE_NAME = $(basename $(XDC_CFG_FILE_$(CORE)))
+  XDC_HFILE_NAME = $(basename $(notdir $(XDC_CFG_FILE_$(CORE))))
   CFLAGS_XDCINTERNAL += -Dxdc_cfg__header__='$(CONFIGURO_DIR)/package/cfg/$(XDC_HFILE_NAME)_pa15fg.h'
 endif
 LNKFLAGS_INTERNAL_BUILD_PROFILE =

@@ -123,7 +123,7 @@ CFLAGS_NEW_DIROPTS = -fr=$(CFG_C_NEW_XDC) -fs=$(CFG_C_NEW_XDC)
 #########XDC Config File for DSP##########
 
 
-XDC_HFILE_NAME = $(basename $(XDC_CFG_FILE_$(CORE)))
+XDC_HFILE_NAME = $(basename $(notdir $(XDC_CFG_FILE_$(CORE))))
 # CFLAGS based on profile selected
 ifeq ($(BUILD_PROFILE_$(CORE)), debug)
  CFLAGS_INTERNAL +=

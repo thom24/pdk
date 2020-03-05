@@ -84,8 +84,14 @@ ifeq ($(SOC),$(filter $(SOC), omapl137 omapl138 c6747))
   SRCS_COMMON += MuxIntcP_nonos.c
 endif
 
+ifeq ($(SOC),$(filter $(SOC), tpr12))
+  SRCDIR += $(TIMER)/v2 $(DELAY)/v4
+  INCDIR += $(TIMER)/v2 $(DELAY)/v4
+  PACKAGE_SRCS_COMMON += $(TIMER)/v2 $(DELAY)/v4
+endif
 
-ifeq ($(SOC),$(filter $(SOC), k2h k2k k2l k2e k2g c6678 c6657 dra72x dra75x dra78x am571x am572x am574x am437x am335x omapl137 omapl138 c6747 am65xx j721e j7200))
+
+ifeq ($(SOC),$(filter $(SOC), k2h k2k k2l k2e k2g c6678 c6657 dra72x dra75x dra78x am571x am572x am574x am437x am335x omapl137 omapl138 c6747 am65xx j721e j7200 tpr12))
 SRCS_COMMON += TimerP_nonos.c delay.c
 endif
 

@@ -2,7 +2,7 @@
 SOC_LIST_J6_TDA   = tda2xx tda2ex tda3xx tda2px
 
 #Various SOC support for Catalog family of devices
-SOC_LIST_CATALOG   = am335x am572x am571x am574x k2h k2k k2e k2l k2g omapl138 omapl137 am437x c6678 c6657 am65xx j721e j7200 am64x
+SOC_LIST_CATALOG   = am335x am572x am571x am574x k2h k2k k2e k2l k2g omapl138 omapl137 am437x c6678 c6657 am65xx j721e j7200 am64x tpr12
 
 #Various SOC support for Infotainment family of devices
 SOC_LIST_INFOTAINMENT   = dra72x dra75x dra78x
@@ -28,6 +28,7 @@ BOARD_LIST_omapl138 =  lcdkOMAPL138
 BOARD_LIST_am65xx = am65xx_evm am65xx_idk
 BOARD_LIST_j721e = j721e_evm
 BOARD_LIST_j7200 = j7200_evm
+BOARD_LIST_tpr12 = tpr12_evm
 
 # LIST of cores for each SOC
 CORE_LIST_tda2xx = a15_0 ipu1_0 c66x arp32_1
@@ -57,3 +58,4 @@ CORE_LIST_j7200    = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 mpu1_1
 CORE_LIST_am64x    = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 ipu1_0
 CORE_LIST_k3_CORELIST = m3
 CORE_LIST_PRU = pru_0 pru_1
+CORE_LIST_tpr12    = mcu1_0 mcu1_1 c66xdsp_1

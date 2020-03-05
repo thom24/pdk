@@ -10,6 +10,7 @@ BOARD_LIST_ALL = evmDRA72x evmDRA75x evmDRA78x evmAM572x idkAM572x idkAM571x idk
 BOARD_LIST_ALL += $(BOARD_LIST_J6_TDA)
 BOARD_LIST_ALL += am65xx_sim
 BOARD_LIST_ALL += $(BOARD_LIST_J7_TDA)
+BOARD_LIST_ALL += $(BOARD_LIST_TPR12)
 else
   # If LIMIT_BOARDS is defined use it
   BOARD_LIST_ALL = $(LIMIT_BOARDS)
@@ -23,9 +24,13 @@ ifeq ($(BOARD),$(filter $(BOARD), $(BOARD_LIST_J7_TDA)))
   CORE_LIST_ALL += mcu2_0 mcu2_1 mcu3_0 mcu3_1
   CORE_LIST_ALL += c7x_1
   CORE_LIST_ALL += c66xdsp_1 c66xdsp_2
-else
+endif
+ifeq ($(BOARD),$(filter $(BOARD), $(BOARD_LIST_J6_TDA)))
   CORE_LIST_ALL = a15_0 ipu1_0 ipu1_1 ipu2_0 ipu2_1 c66x c66xdsp_1 c66xdsp_2 arp32_1 arp32_2 arp32_3 arp32_4 arm9_0 c674x
   CORE_LIST_ALL += mcu1_0 mcu1_1 mpu1_0 mpu1_1
+endif
+ifeq ($(BOARD),$(filter $(BOARD), $(BOARD_LIST_TPR12)))
+  CORE_LIST_ALL = mcu1_0 mcu1_1 c66xdsp_1
 endif
 else
   # If LIMIT_CORES is defined use it
@@ -33,8 +38,6 @@ else
 endif
 
 BUILD_PROFILE_LIST_ALL ?= release debug
-
-
 
 # Variables used
 

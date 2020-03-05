@@ -112,6 +112,7 @@ CFLAGS_GLOBAL_j7200_sim         = -DSOC_J7200 -Dj7200_sim=j7200_sim -DSIMULATOR
 CFLAGS_GLOBAL_j7200_hostemu     = -DSOC_J7200 -DHOST_EMULATION
 CFLAGS_GLOBAL_j7200_evm         = -DSOC_J7200 -Dj7200_evm=j7200_evm
 CFLAGS_GLOBAL_am64x_evm         = -DSOC_AM64X -Dam64x_evm=am64x_evm
+CFLAGS_GLOBAL_tpr12_evm         = -DSOC_TPR12 -Dtpr12_evm=tpr12_evm
 
 #
 # SOC specific
@@ -142,6 +143,8 @@ CFLAGS_GLOBAL_k3             = -DSOC_K3
 CFLAGS_GLOBAL_j721e          = -DSOC_J721E
 CFLAGS_GLOBAL_j7200          = -DSOC_J7200
 CFLAGS_GLOBAL_am64x          = -DSOC_AM64X
+CFLAGS_GLOBAL_tpr12          = -DSOC_TPR12
+
 #
 # Core specific options
 #

@@ -80,6 +80,14 @@ extern "C" {
 #endif
 #endif
 
+/* TPR Core CPU frequency */
+#if defined (SOC_TPR12)
+#if defined (_TMS320C6X)
+  #define OSAL_TEST_CPU_FREQ_KHZ   (450000)
+#else
+  #define OSAL_TEST_CPU_FREQ_KHZ   (400000)
+#endif
+#endif
 
 #ifdef __cplusplus
 }

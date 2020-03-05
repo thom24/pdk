@@ -600,7 +600,7 @@ ifeq ($(BOOTMODE),$(filter $(BOOTMODE), sd qspi qspi_sd))
 	$(MV) $(SBL_TIIMAGE_PATH) $(SBL_MLO_PATH)
   endif
 endif
-else ifeq ($(SOC),$(filter $(SOC), am65xx am64x j721e j7200))
+else ifeq ($(SOC),$(filter $(SOC), am65xx am64x j721e j7200 tpr12))
 ifneq ($(OS),Windows_NT)
 	$(CHMOD) a+x $(SBL_CERT_GEN)
 endif
@@ -613,7 +613,7 @@ endif
 ifeq ($(BUILD_HS),yes)
 $(SBL_IMAGE_PATH_SIGNED): $(SBL_IMAGE_PATH)
   # K3 build does not support the "secure_sign_sbl" target
-  ifneq ($(SOC), $(filter $(SOC), am65xx am64x j721e j7200))
+  ifneq ($(SOC), $(filter $(SOC), am65xx am64x j721e j7200 tpr12))
 	$(MAKE) secure_sign_sbl
   endif
 endif
@@ -680,7 +680,7 @@ ifeq ($(SOC),$(filter $(SOC), tda3xx))
 	$(SBL_CRC_IMAGE_GEN) $@ $(SBL_APPIMAGE_PATH_BE) >> $(SBL_STDOUT_FILE)
   endif
 else
- ifeq ($(SOC),$(filter $(SOC), am65xx am64x j721e j7200))
+ ifeq ($(SOC),$(filter $(SOC), am65xx am64x j721e j7200 tpr12))
    ifneq ($(OS),Windows_NT)
 	$(CHMOD) a+x $(SBL_CERT_GEN)
    endif

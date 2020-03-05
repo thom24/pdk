@@ -9,6 +9,11 @@ ifeq ($(SOC),$(filter $(SOC),am571x am572x am574x am335x am437x k2h k2k k2e k2l 
   SRCS_COMMON += TimerP_default.c
 endif
 
+ifeq ($(SOC),$(filter $(SOC), tpr12))
+  SRCDIR      += soc/$(SOC)
+  SRCS_COMMON += TimerP_default.c CycleprofilerP_nonos.c
+endif
+
 ifeq ($(CORE),mpu1_0)
   SRCDIR += arch/core/a53
   SRCS_COMMON += CacheP_nonos.c Arch_util.c

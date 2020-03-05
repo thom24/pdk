@@ -75,6 +75,7 @@ Steps to build
   j7200_evm             - J7200 EVM build
   j7200_sim             - J7200 SIM build
   am64x_evm             - AM64X EVM build
+  tpr12_evm             - TPR12 EVM build
 
   Valid values for BUILD_PROFILE_$(CORE) are:
   debug                 - Debug build with NO compiler optimizations

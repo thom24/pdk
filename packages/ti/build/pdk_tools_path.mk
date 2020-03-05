@@ -22,8 +22,13 @@ endif
   CG_XML_VERSION=2.61.00
 
   #Component versions for non-TDA builds
+ifeq ($(BOARD),$(filter $(BOARD), tpr12_evm))
+  BIOS_VERSION=6_82_00_06_eng
+  XDC_VERSION=3_61_00_10_core_eng
+else
   BIOS_VERSION=6_76_03_01
   XDC_VERSION=3_55_02_22_core
+endif
 
   EDMA_VERSION=2_12_05_30E
   SECDEV_VERSION=01_06_00_05

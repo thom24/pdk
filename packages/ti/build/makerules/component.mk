@@ -80,7 +80,7 @@ include $(PDK_INSTALL_PATH)/ti/build/soc_info.mk
 # Filter out PRU cores from default cores list for building components
 DEFAULT_CORELIST_EXCLUDE_CORES = $(CORE_LIST_PRU)
 
-# For J7 cores, mpu1_1 is not a part of default core list 
+# For J7 cores, mpu1_1 is not a part of default core list
 ifeq ($(SOC),$(filter $(SOC), j721e j7200))
 DEFAULT_CORELIST_EXCLUDE_CORES += mpu1_1
 endif
@@ -742,6 +742,63 @@ ifneq ($(sa_APP_LIB_LIST),)
 endif
 ifneq ($(sa_EXAMPLE_LIST),)
   pdk_EXAMPLE_LIST += $(sa_EXAMPLE_LIST)
+endif
+
+#Below applicable only for TPR12 devices
+# - used to ignore include if component not present
+-include $(PDK_CRC_COMP_PATH)/crc_component.mk
+ifneq ($(crc_LIB_LIST),)
+  pdk_LIB_LIST += $(crc_LIB_LIST)
+endif
+ifneq ($(crc_APP_LIB_LIST),)
+  pdk_APP_LIB_LIST += $(crc_APP_LIB_LIST)
+endif
+ifneq ($(crc_EXAMPLE_LIST),)
+  pdk_EXAMPLE_LIST += $(crc_EXAMPLE_LIST)
+endif
+# - used to ignore include if component not present
+-include $(PDK_EDMA_COMP_PATH)/edma_component.mk
+ifneq ($(edma_LIB_LIST),)
+  pdk_LIB_LIST += $(edma_LIB_LIST)
+endif
+ifneq ($(edma_APP_LIB_LIST),)
+  pdk_APP_LIB_LIST += $(edma_APP_LIB_LIST)
+endif
+ifneq ($(edma_EXAMPLE_LIST),)
+  pdk_EXAMPLE_LIST += $(edma_EXAMPLE_LIST)
+endif
+# - used to ignore include if component not present
+-include $(PDK_MAILBOX_COMP_PATH)/mailbox_component.mk
+ifneq ($(mailbox_LIB_LIST),)
+  pdk_LIB_LIST += $(mailbox_LIB_LIST)
+endif
+ifneq ($(mailbox_APP_LIB_LIST),)
+  pdk_APP_LIB_LIST += $(mailbox_APP_LIB_LIST)
+endif
+ifneq ($(mailbox_EXAMPLE_LIST),)
+  pdk_EXAMPLE_LIST += $(mailbox_EXAMPLE_LIST)
+endif
+# - used to ignore include if component not present
+-include $(PDK_ESM_COMP_PATH)/esm_component.mk
+ifneq ($(esm_LIB_LIST),)
+  pdk_LIB_LIST += $(esm_LIB_LIST)
+endif
+ifneq ($(esm_APP_LIB_LIST),)
+  pdk_APP_LIB_LIST += $(esm_APP_LIB_LIST)
+endif
+ifneq ($(esm_EXAMPLE_LIST),)
+  pdk_EXAMPLE_LIST += $(esm_EXAMPLE_LIST)
+endif
+# - used to ignore include if component not present
+-include $(PDK_CAN_COMP_PATH)/can_component.mk
+ifneq ($(can_LIB_LIST),)
+  pdk_LIB_LIST += $(can_LIB_LIST)
+endif
+ifneq ($(can_APP_LIB_LIST),)
+  pdk_APP_LIB_LIST += $(can_APP_LIB_LIST)
+endif
+ifneq ($(can_EXAMPLE_LIST),)
+  pdk_EXAMPLE_LIST += $(can_EXAMPLE_LIST)
 endif
 
 # Components included for non-baremetal OS

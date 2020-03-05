@@ -159,7 +159,23 @@ typedef struct TimerP_timer64Default_s {
     int32_t  eventIdHi;    /*< timer hi event Id */
 } TimerP_timer64Default;
 
-#if defined(SOC_AM571x) || defined(SOC_AM572x) || defined(SOC_AM574x) || defined(SOC_AM335x) || defined(SOC_AM437x) || defined(SOC_DRA72x) || defined(SOC_DRA75x) || defined(SOC_DRA78x) || defined(SOC_K2H) || defined(SOC_K2K) || defined(SOC_K2E) || defined(SOC_K2L) || defined(SOC_K2G) || defined(SOC_C6678) ||defined(SOC_C6657) || defined(SOC_OMAPL137) || defined(SOC_OMAPL138) || defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)
+/*
+ *  @brief    TimerP RTI Information structure
+ *
+ *  Structure that contains the timer info table for the
+ *  non-os use case for default initializations
+ */
+typedef struct TimerP_rtiTimerDefault_s {
+    const char  *name;       /*< Name of the timer instance. Memory must
+                             persist for the life of the clock instance.
+                             This can be used for debugging purposes, or
+                             set to NULL if not needed. */
+    uint32_t baseAddr;   /*< timer base address */
+    int32_t  intNum;     /*< timer Interrupt number */
+    int32_t  eventId;    /*< timer event Id (C66x only) */
+} TimerP_rtiTimerDefault;
+
+#if defined(SOC_AM571x) || defined(SOC_AM572x) || defined(SOC_AM574x) || defined(SOC_AM335x) || defined(SOC_AM437x) || defined(SOC_DRA72x) || defined(SOC_DRA75x) || defined(SOC_DRA78x) || defined(SOC_K2H) || defined(SOC_K2K) || defined(SOC_K2E) || defined(SOC_K2L) || defined(SOC_K2G) || defined(SOC_C6678) ||defined(SOC_C6657) || defined(SOC_OMAPL137) || defined(SOC_OMAPL138) || defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_TPR12)
 
 /* This function returns the lower 32 bits of the
  * internal frequency set for the timer
@@ -197,6 +213,9 @@ extern  TimerP_dmTimerDefault gDmTimerPInfoTbl[TimerP_numTimerDevices];
 
 /* Reference the default initializations for the timer 64 */
 extern  TimerP_timer64Default gTimer64InfoTbl[TimerP_numTimerDevices];
+
+/* Reference the default initializations for the rtitimers */
+extern  TimerP_rtiTimerDefault gRtiTimerPInfoTbl[TimerP_numTimerDevices];
 #endif
 
 /* This function enables the interrupt for a given interrupt number */

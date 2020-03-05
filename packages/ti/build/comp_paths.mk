@@ -100,6 +100,18 @@ export PDK_CPSW_COMP_PATH = $(PDK_CPSW_ROOT_PATH)/ti/drv/cpsw
 PDK_CSITX_ROOT_PATH ?= $(pdk_PATH)
 export PDK_CSITX_COMP_PATH = $(PDK_CSITX_ROOT_PATH)/ti/drv/csitx
 
+#Below applicable only for TPR12 devices
+PDK_CRC_ROOT_PATH ?= $(pdk_PATH)
+export PDK_CRC_COMP_PATH = $(PDK_CRC_ROOT_PATH)/ti/drv/crc
+PDK_EDMA_ROOT_PATH ?= $(pdk_PATH)
+export PDK_EDMA_COMP_PATH = $(PDK_EDMA_ROOT_PATH)/ti/drv/edma
+PDK_MAILBOX_ROOT_PATH ?= $(pdk_PATH)
+export PDK_MAILBOX_COMP_PATH = $(PDK_MAILBOX_ROOT_PATH)/ti/drv/mailbox
+PDK_ESM_ROOT_PATH ?= $(pdk_PATH)
+export PDK_ESM_COMP_PATH = $(PDK_ESM_ROOT_PATH)/ti/drv/esm
+PDK_CAN_ROOT_PATH ?= $(pdk_PATH)
+export PDK_CAN_COMP_PATH = $(PDK_CAN_ROOT_PATH)/ti/drv/can
+
 #Below applicable only for K3 DMSC; not applicable for PRSDK
 DMSC_ROOT_PATH ?= $(pdk_PATH)
 export DMSC_COMP_PATH = $(DMSC_ROOT_PATH)/ti/dmsc
