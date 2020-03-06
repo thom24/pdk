@@ -71,6 +71,8 @@ void app_test_task_init_emac(UArg arg0, UArg arg1);
 void app_test_task_poll_ctrl (UArg arg0, UArg arg1);
 
 void app_delay(uint32_t delay);
+void app_output_log(Char* str, UInt numChar);
+
 
 #ifdef __cplusplus
 }

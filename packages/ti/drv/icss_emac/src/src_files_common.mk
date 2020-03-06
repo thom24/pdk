@@ -9,6 +9,6 @@ PACKAGE_SRCS_COMMON = makefile icss_emac_component.mk icss_emacCommon.h \
                       icss_emacLearning.h icss_emacFwLearning.h icss_emac_osal.h \
                       icss_emacStatistics.h icss_emacStormControl.h \
                       docs/ReleaseNotes_ICSS_EMAC_LLD.pdf \
-                      src/ src/icss_emacSwitch.h src/phy.h \
+                      src/ \
                       build/makefile.mk build/makefile_indp.mk build/makefile_profile_indp.mk build/makefile_profile.mk src/src_files_common.mk
 

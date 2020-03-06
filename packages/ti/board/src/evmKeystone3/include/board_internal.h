@@ -39,7 +39,6 @@
  *****************************************************************************/
 #include <ti/csl/csl_types.h>
 #include <ti/csl/cslr_device.h>
-#include <ti/csl/csl_bootcfgAux.h>
 
 #include <ti/drv/i2c/I2C.h>
 #include <ti/drv/i2c/soc/I2C_soc.h>

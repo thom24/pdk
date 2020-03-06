@@ -349,7 +349,6 @@ endif
 
 export pruss_app_sorte_master_$(SOC)_CORELIST
 
-
 export drvpruss_LIB_LIST
 export pruss_LIB_LIST
 export drvpruss_FIRM_LIST

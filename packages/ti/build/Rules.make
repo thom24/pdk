@@ -94,6 +94,7 @@ export TREAT_WARNINGS_AS_ERROR ?= yes
 #Various boards support for J7 TDA family of devices
 BOARD_LIST_J7_TDA = j721e_sim j721e_hostemu j721e_ccqt j721e_loki j721e_qt j721e_vhwazebu j721e_evm
 BOARD_LIST_J7_TDA += j7200_sim j7200_hostemu j7200_evm am64x_evm
+BOARD_LIST_J7_TDA += am65xx_evm
 export BOARD_LIST_J7_TDA
 
 #Various boards support for TPR12 family of devices

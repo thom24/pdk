@@ -66,7 +66,10 @@ endif
 
 PACKAGE_SRCS_COMMON = makefile profilingHooks.h profiling_component.mk profiling_osal.h \
                       docs/ReleaseNotes_Utils.pdf src build/makefile_profile.mk \
-                      
+
+# Including trace modules here, as trace do not have source files and packaging
+PACKAGE_SRCS_COMMON += ../trace
+
 # Include common make files
 ifeq ($(MAKERULEDIR), )
 #Makerule path not defined, define this and assume relative path from ROOTDIR

@@ -566,6 +566,11 @@ void app_delay(int32_t delayValue)
     while (delay--);
 }
 
-
-
+void app_output_log(Char* str, UInt numChar)
+{
+    if (numChar > 0)
+    {
+        UART_printf(str);
+    }
+}
 

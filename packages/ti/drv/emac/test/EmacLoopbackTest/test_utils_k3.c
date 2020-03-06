@@ -1914,3 +1914,11 @@ int32_t  app_test_task_init_pruicss(uint32_t portNum)
 }
 #endif
 
+void app_output_log(Char* str, UInt numChar)
+{
+    if (numChar > 0)
+    {
+        UART_printf(str);
+    }
+}
+

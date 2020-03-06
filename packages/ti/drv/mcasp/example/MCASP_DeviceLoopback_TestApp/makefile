@@ -23,7 +23,7 @@ COMP_LIST_COMMON = csl mcasp osal_tirtos uart board
 
 CFLAGS_MCASP_UT = -DMCASP_MASTER -DDEVICE_LOOPBACK
 
-PACKAGE_SRCS_COMMON = . ../src ../include ../$(SOC)
+PACKAGE_SRCS_COMMON = . ../src ../include
 
 # Enable below to log various events
 CFLAGS_MCASP_UT += -DMCASP_ENABLE_DEBUG_LOG
@@ -46,6 +46,7 @@ ifeq ($(SOC),$(filter $(SOC), am65xx))
   # Enable XDC build for application by providing XDC CFG File per core
   XDC_CFG_FILE_$(CORE) = ../evmAM65xx/r5/mcaspUnitTest_r5.cfg
   endif
+  PACKAGE_SRCS_COMMON += ../evmAM65xx
 endif
 
 ifeq ($(SOC), $(filter $(SOC), j721e))
@@ -57,6 +58,7 @@ ifeq ($(SOC), $(filter $(SOC), j721e))
   # Enable XDC build for application by providing XDC CFG File per core
   XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
   XDC_CFG_UPDATE_$(CORE) = ../j721e/mcasp_extra_config.xs
+  PACKAGE_SRCS_COMMON += ../$(SOC)
 endif
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_MCASP_UT)

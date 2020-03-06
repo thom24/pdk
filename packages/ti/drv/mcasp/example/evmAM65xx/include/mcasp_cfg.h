@@ -62,7 +62,7 @@
 #include <Aic31.h>
 
 #include <ti/csl/soc.h>
-#include <ti/csl/csl_bootcfg.h>
+
 #ifdef __cplusplus
 extern "C"
 {

@@ -20,6 +20,6 @@ PACKAGE_SRCS_COMMON = makefile usb_drv.h usb_osal.h usbdaudio.h usbdmsc.h usbhms
 
 CFLAGS_LOCAL_COMMON = -Dgcc
 
-ifeq ($(SOC),$(filter $(SOC), j721e))
+ifeq ($(SOC),$(filter $(SOC), j721e am65xx))
 PACKAGE_SRCS_COMMON += example/bios/$(SOC) example/build/$(SOC)
 endif

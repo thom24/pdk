@@ -46,7 +46,6 @@
 #include "board_internal.h"
 #include "board_pll.h"
 #include "ti/csl/soc.h"
-#include <ti/csl/cslr_bootcfg.h>
 #include <ti/csl/hw_types.h>
 
 #define MAIN_PSC_BASE               (0x00400000)
