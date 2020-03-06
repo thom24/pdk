@@ -68,10 +68,10 @@ SECTIONS
     .data    	: {} palign(128) 	> DDR0
     .boardcfg_data        : {} palign(128)           > DDR0
 	.sysmem  	: {} 				> DDR0
-    .startup_text: { -l *sysbios.aer5f(.text)
-                     -l *boot.aer5f(.text)
-                     -l *auto_init.aer5f(.text)
-                     -l *emacUnitTest_r5_per5f.oer5f(.text)
+    .startup_text: { -l *sysbios.aer5f*(.text)
+                     -l *boot.aer5f*(.text)
+                     -l *auto_init.aer5f*(.text)
+                     -l *emacUnitTest_r5_per5f.oer5f*(.text)
                     } > MSMC3_H
     .stack  	: {} align(4)		> DDR0
 

@@ -21,7 +21,7 @@ SECTIONS
         __VECS_ENTRY_POINT = .;
     } palign(8) > RESET_VECTORS
     .text_boot {
-        *boot.aer5f<*boot.o*>(.text)
+        *boot.aer5f*<*boot.o*>(.text)
      }  palign(8)   > R5F_TCMB0
     .text:xdc_runtime_Startup_reset__I     : {} palign(8) > R5F_TCMB0
     .text:ti_sysbios_family_arm_v7r_Cache* : {} palign(8) > R5F_TCMB0

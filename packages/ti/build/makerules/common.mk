@@ -363,7 +363,7 @@ ifeq ($(TOOLCHAIN_$(ISA_EXT)),gcc)
   TOOLCHAINEXT = $(TOOLCHAIN_$(ISA_EXT))_
 endif
 
-include $(MAKERULEDIR)/rules_$(TOOLCHAINEXT)$(ISA).mk
+include $(MAKERULEDIR)/rules_$(TOOLCHAINEXT)$(ISA_EXT).mk
 package : $(PACKAGE_PATHS)
 
 ifdef MODULE_NAME

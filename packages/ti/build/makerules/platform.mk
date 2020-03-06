@@ -265,7 +265,7 @@ endif
 # MCU
 ifeq ($(CORE),$(filter $(CORE), mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1))
  ISA = r5f
- ISA_EXT = r5ft
+ ISA_EXT = r5f
  ARCH = armv7m
 endif
 
@@ -482,9 +482,12 @@ ifeq ($(ISA),r5f)
 
   # Define the file extensions
   OBJEXT = o$(FORMAT_EXT)$(ISA_EXT)$(ENDIAN_EXT)
+  # When thumb2 mode is used(default), the BIOS obj files have r5f't' extension
+  OBJEXT_BIOS = o$(FORMAT_EXT)r5ft$(ENDIAN_EXT)
+  PEXT_BIOS   = p$(FORMAT_EXT)r5ft$(ENDIAN_EXT)
   # Retaining the r5f extension for backward compatibility 
-  LIBEXT = a$(FORMAT_EXT)$(ISA)$(ENDIAN_EXT)
-  EXEEXT = x$(FORMAT_EXT)$(ISA)$(ENDIAN_EXT)
+  LIBEXT = a$(FORMAT_EXT)$(ISA_EXT)$(ENDIAN_EXT)
+  EXEEXT = x$(FORMAT_EXT)$(ISA_EXT)$(ENDIAN_EXT)
   ASMEXT = s$(FORMAT_EXT)$(ISA_EXT)$(ENDIAN_EXT)
 endif
 

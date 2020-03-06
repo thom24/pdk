@@ -312,6 +312,13 @@ else
   XDC_BUILD_ROOT = $(DEST_ROOT)
 endif
 
+ifneq ($(OBJEXT_BIOS),)
+# if BIOS' obj extensions are different, xdc generated files's objfiles need to have different extensions as well
+CFG_C_XDC_CFLAGS = $(subst -eo.$(OBJEXT),-eo.$(OBJEXT_BIOS),$(_CFLAGS))
+else
+CFG_C_XDC_CFLAGS = $(_CFLAGS)
+endif
+
 $(CFG_C_XDC) $(LNKCMD_FILE) : $(XDC_CFG_FILE_NAME) $(XDC_CFG_UPDATE)
 	$(ECHO) \# Invoking configuro...
 	$(MKDIR) -p $(XDC_BUILD_ROOT)
@@ -323,8 +330,8 @@ ifneq ($(XDC_CFG_FILE_$(CORE)),)
   ifndef MODULE_NAME
 $(OBJDIR)/$(CFG_COBJ_XDC) : $(CFG_C_XDC)
 	$(ECHO) \# Compiling generated $(CFG_COBJ_XDC)
-	$(CC) -ppd=$(DEPFILE).P $(_CFLAGS) $(INCLUDES) $(CFLAGS_DIROPTS) -fc $(CFG_C_XDC)
-	$(CC) $(_CFLAGS) $(INCLUDES) $(CFLAGS_DIROPTS) -fc $(CFG_C_XDC)
+	$(CC) -ppd=$(DEPFILE).P $(CFG_C_XDC_CFLAGS) $(INCLUDES) $(CFLAGS_DIROPTS) -fc $(CFG_C_XDC)
+	$(CC) $(CFG_C_XDC_CFLAGS) $(INCLUDES) $(CFLAGS_DIROPTS) -fc $(CFG_C_XDC)
   endif
 endif
 
