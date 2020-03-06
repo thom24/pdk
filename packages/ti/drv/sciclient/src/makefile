@@ -81,21 +81,28 @@ ifeq ($(MAKERULEDIR), )
 endif
 include $(MAKERULEDIR)/common.mk
 
+# Special case for Windows Build
 ifeq ($(OS),Windows_NT)
   EXE_EXT=.exe
 endif
+
+# ObjCopy Tool
 ifneq ("$(wildcard $(TOOLCHAIN_PATH_GCC)/bin/arm-none-eabi-objcopy$(EXE_EXT))","")
-SCICLIENT_OBJCOPY?=$(TOOLCHAIN_PATH_GCC)/bin/arm-none-eabi-objcopy$(EXE_EXT)
+  SCICLIENT_OBJCOPY?=$(TOOLCHAIN_PATH_GCC)/bin/arm-none-eabi-objcopy$(EXE_EXT)
 endif
 ifneq ("$(wildcard $(TOOLCHAIN_PATH_GCC_ARCH64)/bin/aarch64-elf-objcopy$(EXE_EXT))","")
-SCICLIENT_OBJCOPY?=$(TOOLCHAIN_PATH_GCC_ARCH64)/bin/aarch64-elf-objcopy$(EXE_EXT)
+  SCICLIENT_OBJCOPY?=$(TOOLCHAIN_PATH_GCC_ARCH64)/bin/aarch64-elf-objcopy$(EXE_EXT)
 endif
+
+# Other SBL Tools
 ifneq ("$(wildcard $(PDK_SBL_AUTO_COMP_PATH)/tools)","")
-SBL_TOOLS_PATH=$(PDK_SBL_AUTO_COMP_PATH)/tools
+  SBL_TOOLS_PATH=$(PDK_SBL_AUTO_COMP_PATH)/tools
 else
-SBL_TOOLS_PATH=$(PDK_SBL_COMP_PATH)/tools
+  SBL_TOOLS_PATH=$(PDK_SBL_COMP_PATH)/tools
 endif
 export SCICLIENT_OBJCOPY
+
+# Certificate Generation script
 ifeq ($(OS),Windows_NT)
   SCICLIENT_CERT_GEN=powershell -executionpolicy unrestricted -command $(ROOTDIR)/ti/build/makerules/x509CertificateGen.ps1
   BIN2C_EXE=bin2c.exe
@@ -103,7 +110,11 @@ else
   SCICLIENT_CERT_GEN=$(ROOTDIR)/ti/build/makerules/x509CertificateGen.sh
   BIN2C_EXE=bin2c.out
 endif
+
+# Bin to C header file tools
 BIN2C_GEN=$(ROOTDIR)/ti/drv/sciclient/tools/bin2c/$(BIN2C_EXE)
+
+# Certificate Keys
 ifeq ($(BUILD_HS),yes)
 SCICLIENT_CERT_KEY=$(ROOTDIR)/ti/build/makerules/k3_dev_mpk.pem
 else
@@ -140,38 +151,47 @@ all: $(HEXFILES)
 # Build the Board Configuration object files. A modified Configuration file
 # .. will trigger this chain for that particular configuration
 $(OBJDIR)/$(BRD_CFG)%.$(OBJEXT) : soc/$(SCICLIENT_SOCVER)/$(BRD_CFG)%.c
+ifeq ($(CORE), mcu1_0)
 	@echo "Build Board Configuration Obj Files"
 	$(MKDIR) -p $(OBJDIR)
 	$(CC) $(_CFLAGS) $(INCLUDES) $(CFLAGS_DIROPTS) $(COMPILEMODE) $<
+endif
 
 # Copy the raw binary into an intermediate file (will get deleted by make)
 $(OBJDIR)/$(BRD_CFG)%.bin.unsigned : $(OBJDIR)/$(BRD_CFG)%.$(OBJEXT)
+ifeq ($(CORE), mcu1_0)
 	@echo "Create unsigned Board Configuration binary"
 	$(SCICLIENT_OBJCOPY) -S -O binary $< $@
+endif
 
 # If an HS signature is required, sign it with the HS key (will get deleted by make)
 $(OBJDIR)/$(BRD_CFG)%.bin.hs.signed : $(OBJDIR)/$(BRD_CFG)%.bin.unsigned
+ifeq ($(CORE), mcu1_0)
 	@echo "Sign Board Configuration with HS key"
 ifneq ($(OS),Windows_NT)
 	$(CHMOD) a+x $(SCICLIENT_CERT_GEN)
 endif
 	$(SCICLIENT_CERT_GEN) -b $< -o $@ -k $(SCICLIENT_CERT_KEY) -f 1
+endif
 
 # If a GP signature is required, sign it with the GP key (will get deleted by make)
 $(OBJDIR)/$(BRD_CFG)%.bin.signed : $(OBJDIR)/$(BRD_CFG)%.bin.unsigned
+ifeq ($(CORE), mcu1_0)
 	@echo "Sign Board Configuration with GP key"
 	@echo "  (note: GP board configuration not ACTUALLY signed with anything)"
 	$(CP) $< $@
+endif
 
 # Generate the actual header file from the signed Board Configuration binary.
 # This rule determines the type of signature required in the previous rules.
 $(CFG_DIR)/%$(HEX_EXT) : $(OBJDIR)/%.bin$(SGN_EXT)
+ifeq ($(CORE), mcu1_0)
 	@echo "Generate include-able header file from signed Board Configuration"
 ifneq ($(OS),Windows_NT)
 	$(CHMOD) a+x $(BIN2C_GEN)
 endif
 	$(BIN2C_GEN) $< $*$(HEX_EXT) $(subst default,,$*) > $@
-
+endif
 
 
 # OBJs and libraries are built by using rule defined in rules_<target>.mk
