@@ -117,7 +117,27 @@ function connectTargets()
 
     // Connect the MCU R5F
     dsMCU1_0.target.connect();
-
+    // This is done to support other boot modes. OSPI is the most stable.
+    // MMC is not always stable.
+    bootMode = dsMCU1_0.memory.readWord(0, 0x43000030) & 0xF8;
+    if (bootMode != 0x38)
+    {
+        print("Disable MCU Timer for ROM clean up");
+        dsMCU1_0.memory.writeWord(0, 0x40400010, 0x1); /* Write reset to MCU Timer 0. Left running by ROM */
+        dsMCU1_0.memory.writeWord(0, 0x40F80430, 0xFFFFFFFF); /* Clear Pending Interrupts */
+        dsMCU1_0.memory.writeWord(0, 0x40F80018, 0x0); /* Clear Pending Interrupts */
+        // Reset the R5F to be in clean state.
+        dsMCU1_0.target.reset();
+        // Load the board configuration init file.
+        dsMCU1_0.expression.evaluate('GEL_Load("'+ ccs_init_elf_file +'")');
+        // Run Asynchronously
+        dsMCU1_0.target.runAsynch();
+        print ("Running Async");
+        // Halt the R5F and re-run.
+        dsMCU1_0.target.halt();
+    }
+    // Reset the R5F to be in clean state.
+    dsMCU1_0.target.reset();
     print("Running the board configuration initialization from R5!");
     // Load the board configuration init file.
     dsMCU1_0.memory.loadProgram(ccs_init_elf_file);
