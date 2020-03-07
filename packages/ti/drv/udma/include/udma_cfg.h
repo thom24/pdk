@@ -146,8 +146,10 @@ extern "C" {
 /** \brief Default RX channel bus order ID */
 #define UDMA_DEFAULT_UTC_CH_BUS_ORDERID     (0U)
 
+#if (UDMA_NUM_UTC_INSTANCE > 0)
 /** \brief Default DRU queue ID */
 #define UDMA_DEFAULT_UTC_DRU_QUEUE_ID       (CSL_DRU_QUEUE_ID_3)
+#endif
 
 /** \brief UDMA print buffer length */
 #define UDMA_CFG_PRINT_BUF_LEN              ((uint32_t) 1024U)

@@ -101,7 +101,7 @@
 
 #include "profiling.h"
 
-#if defined(SOC_AM65XX) || defined(SOC_J721E)
+#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)
 #include <ti/csl/src/ip/intr_router/V0/csl_intr_router.h>
 #endif
 /**********************************************************************
@@ -1216,7 +1216,7 @@ int32_t HSMMCSDReadWriteTest_RAW(mmcsdTestMMCProfile_t *testProfilePtr)
      goto raw_test_exit;
   } else {
      MMCSD_log ("\nMMCSD_Open() completed successfully\n");
-  }	  
+  }
   mmcStartSector=MMCSTARTSECTOR;
 
   /* Fill up the data pattern once */

@@ -150,10 +150,9 @@ uart_PKG_LIST = uart
 uart_INCLUDE = $(uart_PATH)
 uart_SOCLIST = tda2xx tda2px tda2ex tda3xx dra78x am574x am572x am571x dra72x dra75x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j7200
 export uart_SOCLIST
-ifeq ($(SOC),$(filter $(SOC), j721e j7200))
-uart_$(SOC)_CORELIST = $(drvuart_$(SOC)_CORELIST) c7x_1
-else
 uart_$(SOC)_CORELIST = $(drvuart_$(SOC)_CORELIST)
+ifeq ($(SOC),$(filter $(SOC), j721e))
+uart_$(SOC)_CORELIST += c7x_1
 endif
 export uart_$(SOC)_CORELIST
 

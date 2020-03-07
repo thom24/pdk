@@ -428,6 +428,7 @@ typedef struct
      *      TRUE = Suppress sending TD packet
      *   TODO: Should we allocate tdCq based on this flag?
      */
+#if (UDMA_NUM_UTC_INSTANCE > 0)
     /* Below fields are applicable only for DRU UTC */
     uint64_t                druOwner;
     /**< [IN] This field controls how the TR is received by the DRU.
@@ -445,6 +446,7 @@ typedef struct
      *        The priority queue is queue 0 the round robin
      *        queues are queues 1 - 4.
      */
+#endif
 } Udma_ChUtcPrms;
 
 /**
@@ -948,6 +950,7 @@ int32_t Udma_chGetStats(Udma_ChHandle chHandle, Udma_ChStats *chStats);
 /*                  Internal/Private Structure Declarations                   */
 /* ========================================================================== */
 
+#if (UDMA_NUM_UTC_INSTANCE > 0)
 /**
  *  \brief UDMA UTC instance information.
  *
@@ -977,6 +980,7 @@ typedef struct
     uint32_t                numQueue;
     /**< Number of queues present in a DRU*/
 } Udma_UtcInstInfo;
+#endif
 
 /**
  *  \brief UDMA channel object.
@@ -992,8 +996,10 @@ struct Udma_ChObj
     /**< Object to store the channel params. */
     Udma_DrvHandle          drvHandle;
     /**< Pointer to global driver handle. */
+#if (UDMA_NUM_UTC_INSTANCE > 0)
     const Udma_UtcInstInfo *utcInfo;
     /**< Pointer to global UTC instance info. */
+#endif
 
     uint32_t                txChNum;
     /**< Allocated TX channel number - this is relative channel number from
@@ -1056,10 +1062,12 @@ struct Udma_ChObj
     /**< Pointer to UDMAP External config register overlay */
     volatile CSL_udmap_txcrtRegs_chan   *pExtRtRegs;
     /**< Pointer to UDMAP External RT config register overlay */
+#if (UDMA_NUM_UTC_INSTANCE > 0)
     volatile CSL_DRU_CHNRTRegs_CHNRT    *pDruNrtRegs;
     /**< Pointer to DRU Non RT config register overlay */
     volatile CSL_DRU_CHRTRegs_CHRT      *pDruRtRegs;
     /**< Pointer to DRU RT config register overlay */
+#endif
 
     uint32_t                chInitDone;
     /**< Flag to set the channel object is init. */

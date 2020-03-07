@@ -90,8 +90,10 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle);
 void UdmaRmInitPrms_init(uint32_t instId, Udma_RmInitPrms *rmInitPrms);
 
 /* Private APIs */
+#if (UDMA_NUM_UTC_INSTANCE > 0)
 const Udma_UtcInstInfo *Udma_chGetUtcInst(Udma_DrvHandle drvHandle,
                                           uint32_t utcId);
+#endif
 
 /**
  *  \brief Default RA memory fence API used for CSL-FL to perform cache ops
@@ -126,12 +128,14 @@ uint32_t Udma_rmAllocTxUhcCh(uint32_t preferredChNum, Udma_DrvHandle drvHandle);
 void Udma_rmFreeTxUhcCh(uint32_t chNum, Udma_DrvHandle drvHandle);
 uint32_t Udma_rmAllocRxUhcCh(uint32_t preferredChNum, Udma_DrvHandle drvHandle);
 void Udma_rmFreeRxUhcCh(uint32_t chNum, Udma_DrvHandle drvHandle);
+#if (UDMA_NUM_UTC_INSTANCE > 0)
 uint32_t Udma_rmAllocExtCh(uint32_t preferredChNum,
                            Udma_DrvHandle drvHandle,
                            const Udma_UtcInstInfo *utcInfo);
 void Udma_rmFreeExtCh(uint32_t chNum,
                       Udma_DrvHandle drvHandle,
                       const Udma_UtcInstInfo *utcInfo);
+#endif
 /* Ring RM APIs */
 uint16_t Udma_rmAllocFreeRing(Udma_DrvHandle drvHandle);
 void Udma_rmFreeFreeRing(uint16_t ringNum, Udma_DrvHandle drvHandle);

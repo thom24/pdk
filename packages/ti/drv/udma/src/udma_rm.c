@@ -1043,12 +1043,12 @@ void Udma_rmFreeRxUhcCh(uint32_t chNum, Udma_DrvHandle drvHandle)
     return;
 }
 
+#if (UDMA_NUM_UTC_INSTANCE > 0)
 uint32_t Udma_rmAllocExtCh(uint32_t preferredChNum,
                            Udma_DrvHandle drvHandle,
                            const Udma_UtcInstInfo *utcInfo)
 {
     uint32_t            chNum = UDMA_DMA_CH_INVALID;
-#if (UDMA_NUM_UTC_INSTANCE > 0)
     uint32_t            i, offset, bitPos, bitMask;
     uint32_t            utcId;
     Udma_RmInitPrms    *rmInitPrms = &drvHandle->initPrms.rmInitPrms;
@@ -1103,7 +1103,6 @@ uint32_t Udma_rmAllocExtCh(uint32_t preferredChNum,
 
     Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.unlockMutex != (Udma_OsalMutexUnlockFxn) NULL_PTR);
     drvHandle->initPrms.osalPrms.unlockMutex(drvHandle->rmLock);
-#endif
 
     return (chNum);
 }
@@ -1112,7 +1111,6 @@ void Udma_rmFreeExtCh(uint32_t chNum,
                       Udma_DrvHandle drvHandle,
                       const Udma_UtcInstInfo *utcInfo)
 {
-#if (UDMA_NUM_UTC_INSTANCE > 0)
     uint32_t            i, offset, bitPos, bitMask;
     uint32_t            utcId;
     Udma_RmInitPrms    *rmInitPrms = &drvHandle->initPrms.rmInitPrms;
@@ -1136,10 +1134,10 @@ void Udma_rmFreeExtCh(uint32_t chNum,
 
     Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.unlockMutex != (Udma_OsalMutexUnlockFxn) NULL_PTR);
     drvHandle->initPrms.osalPrms.unlockMutex(drvHandle->rmLock);
-#endif
 
     return;
 }
+#endif
 
 uint16_t Udma_rmAllocFreeRing(Udma_DrvHandle drvHandle)
 {

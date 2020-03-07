@@ -1169,11 +1169,8 @@ static int32_t Udma_eventProgramSteering(Udma_DrvHandle drvHandle,
                                          Udma_EventHandle eventHandle)
 {
     int32_t                 retVal = UDMA_SOK;
-    uint32_t                evtNum;
     Udma_ChHandle           chHandle;
     Udma_EventPrms         *eventPrms;
-    uint32_t                utcChNum;
-    const Udma_UtcInstInfo *utcInfo;
 
     Udma_assert(drvHandle, eventHandle != NULL_PTR);
     eventPrms = &eventHandle->eventPrms;
@@ -1183,7 +1180,6 @@ static int32_t Udma_eventProgramSteering(Udma_DrvHandle drvHandle,
         Udma_assert(drvHandle, eventPrms->chHandle != NULL_PTR);
         chHandle = eventPrms->chHandle;
 
-        evtNum = Udma_eventGetId(eventHandle);
         if(((chHandle->chType & UDMA_CH_FLAG_BLK_COPY) == UDMA_CH_FLAG_BLK_COPY) ||
             ((chHandle->chType & UDMA_CH_FLAG_RX) == UDMA_CH_FLAG_RX))
         {
@@ -1195,6 +1191,12 @@ static int32_t Udma_eventProgramSteering(Udma_DrvHandle drvHandle,
         }
         else
         {
+#if (UDMA_NUM_UTC_INSTANCE > 0)
+            uint32_t                evtNum;
+            uint32_t                utcChNum;
+            const Udma_UtcInstInfo *utcInfo;
+
+            evtNum = Udma_eventGetId(eventHandle);
             utcInfo = chHandle->utcInfo;
             Udma_assert(drvHandle, utcInfo != NULL_PTR);
             if(UDMA_UTC_TYPE_DRU == utcInfo->utcType)
@@ -1216,6 +1218,7 @@ static int32_t Udma_eventProgramSteering(Udma_DrvHandle drvHandle,
                 Udma_printf(drvHandle,
                     "[Error] TR events not possible in other external channels!!\n");
             }
+#endif
         }
 
         if(UDMA_SOK == retVal)
@@ -1232,11 +1235,8 @@ static void Udma_eventResetSteering(Udma_DrvHandle drvHandle,
                                     Udma_EventHandle eventHandle)
 {
     int32_t                 retVal = UDMA_SOK;
-    uint32_t                evtNum;
     Udma_ChHandle           chHandle;
     Udma_EventPrms         *eventPrms;
-    uint32_t                utcChNum;
-    const Udma_UtcInstInfo *utcInfo;
 
     Udma_assert(drvHandle, eventHandle != NULL_PTR);
     eventPrms = &eventHandle->eventPrms;
@@ -1246,7 +1246,6 @@ static void Udma_eventResetSteering(Udma_DrvHandle drvHandle,
         Udma_assert(drvHandle, eventPrms->chHandle != NULL_PTR);
         chHandle = eventPrms->chHandle;
 
-        evtNum = UDMA_EVENT_INVALID;
         if(((chHandle->chType & UDMA_CH_FLAG_BLK_COPY) == UDMA_CH_FLAG_BLK_COPY) ||
             ((chHandle->chType & UDMA_CH_FLAG_RX) == UDMA_CH_FLAG_RX))
         {
@@ -1258,6 +1257,12 @@ static void Udma_eventResetSteering(Udma_DrvHandle drvHandle,
         }
         else
         {
+#if (UDMA_NUM_UTC_INSTANCE > 0)
+            uint32_t                evtNum;
+            uint32_t                utcChNum;
+            const Udma_UtcInstInfo *utcInfo;
+
+            evtNum = UDMA_EVENT_INVALID;
             utcInfo = chHandle->utcInfo;
             Udma_assert(drvHandle, utcInfo != NULL_PTR);
             if(UDMA_UTC_TYPE_DRU == utcInfo->utcType)
@@ -1279,6 +1284,7 @@ static void Udma_eventResetSteering(Udma_DrvHandle drvHandle,
                 Udma_printf(drvHandle,
                     "[Error] TR events not possible in other external channels!!\n");
             }
+#endif
         }
 
         if(UDMA_SOK == retVal)

@@ -7,7 +7,7 @@ APP_NAME = OSAL_TestApp
 # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
 LOCAL_APP_NAME =  OSAL_$(BOARD)_$(CORE)TestApp
 
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200, tpr12))
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 tpr12))
 SRCDIR = . ../src ../
 INCDIR = . ../src ../
 # Common source files across all platforms and cores

@@ -208,10 +208,8 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
     drvHandle->devIdIa      = TISCI_DEV_MCU_NAVSS0_INTAGGR_0;
 #if defined (BUILD_MCU1_0)
     drvHandle->devIdCore    = TISCI_DEV_MCU_R5FSS0_CORE0;
-    drvHandle->druCoreId    = UDMA_DRU_CORE_ID_MCU1_0;
 #else
     drvHandle->devIdCore    = TISCI_DEV_MCU_R5FSS0_CORE1;
-    drvHandle->druCoreId    = UDMA_DRU_CORE_ID_MCU1_1;
 #endif
 #else
     /* IA config init */
@@ -231,15 +229,12 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
     drvHandle->clecOffset   = 0U;
 #if defined (BUILD_MPU1_0)
     drvHandle->devIdCore    = TISCI_DEV_COMPUTE_CLUSTER0_GIC500SS;
-    drvHandle->druCoreId    = UDMA_DRU_CORE_ID_MPU1_0;
 #endif
 #if defined (BUILD_MCU2_0)
     drvHandle->devIdCore    = TISCI_DEV_R5FSS0_CORE0;
-    drvHandle->druCoreId    = UDMA_DRU_CORE_ID_MCU2_0;
 #endif
 #if defined (BUILD_MCU2_1)
     drvHandle->devIdCore    = TISCI_DEV_R5FSS0_CORE1;
-    drvHandle->druCoreId    = UDMA_DRU_CORE_ID_MCU2_1;
 #endif
 #endif
 

@@ -82,29 +82,8 @@ int32_t udmaTestPrintPsilMacro(UdmaTestTaskObj *taskObj)
               " ------------------------------------\r\n");
 
     GT_2trace(taskObj->traceMask, GT_INFO1,
-              " MAIN_SAUL0_TX       : Thread Offset: 0x%0.4X, Thread Count: %d\r\n",
-              UDMA_PSIL_CH_MAIN_SAUL0_TX, UDMA_PSIL_CH_MAIN_SAUL0_TX_CNT);
-    GT_2trace(taskObj->traceMask, GT_INFO1,
-              " MAIN_ICSS_G0_TX     : Thread Offset: 0x%0.4X, Thread Count: %d\r\n",
-              UDMA_PSIL_CH_MAIN_ICSS_G0_TX, UDMA_PSIL_CH_MAIN_ICSS_G0_TX_CNT);
-    GT_2trace(taskObj->traceMask, GT_INFO1,
-              " MAIN_ICSS_G1_TX     : Thread Offset: 0x%0.4X, Thread Count: %d\r\n",
-              UDMA_PSIL_CH_MAIN_ICSS_G1_TX, UDMA_PSIL_CH_MAIN_ICSS_G1_TX_CNT);
-    GT_2trace(taskObj->traceMask, GT_INFO1,
-              " MAIN_VPAC_TC0_TX    : Thread Offset: 0x%0.4X, Thread Count: %d\r\n",
-              UDMA_PSIL_CH_MAIN_VPAC_TC0_TX, UDMA_PSIL_CH_MAIN_VPAC_TC0_TX_CNT);
-    GT_2trace(taskObj->traceMask, GT_INFO1,
-              " MAIN_VPAC_TC1_TX    : Thread Offset: 0x%0.4X, Thread Count: %d\r\n",
-              UDMA_PSIL_CH_MAIN_VPAC_TC1_TX, UDMA_PSIL_CH_MAIN_VPAC_TC1_TX_CNT);
-    GT_2trace(taskObj->traceMask, GT_INFO1,
-              " MAIN_DMPAC_TC0_TX   : Thread Offset: 0x%0.4X, Thread Count: %d\r\n",
-              UDMA_PSIL_CH_MAIN_DMPAC_TC0_TX, UDMA_PSIL_CH_MAIN_DMPAC_TC0_TX_CNT);
-    GT_2trace(taskObj->traceMask, GT_INFO1,
-              " MAIN_CSI_TX         : Thread Offset: 0x%0.4X, Thread Count: %d\r\n",
-              UDMA_PSIL_CH_MAIN_CSI_TX, UDMA_PSIL_CH_MAIN_CSI_TX_CNT);
-    GT_2trace(taskObj->traceMask, GT_INFO1,
-              " MAIN_CPSW9_TX       : Thread Offset: 0x%0.4X, Thread Count: %d\r\n",
-              UDMA_PSIL_CH_MAIN_CPSW9_TX, UDMA_PSIL_CH_MAIN_CPSW9_TX_CNT);
+              " MAIN_CPSW5_TX       : Thread Offset: 0x%0.4X, Thread Count: %d\r\n",
+              UDMA_PSIL_CH_MAIN_CPSW5_TX, UDMA_PSIL_CH_MAIN_CPSW5_TX_CNT);
     GT_2trace(taskObj->traceMask, GT_INFO1,
               " MCU_CPSW0_TX        : Thread Offset: 0x%0.4X, Thread Count: %d\r\n",
               UDMA_PSIL_CH_MCU_CPSW0_TX, UDMA_PSIL_CH_MCU_CPSW0_TX_CNT);
@@ -114,29 +93,8 @@ int32_t udmaTestPrintPsilMacro(UdmaTestTaskObj *taskObj)
     GT_0trace(taskObj->traceMask, GT_INFO1, " \r\n");
 
     GT_2trace(taskObj->traceMask, GT_INFO1,
-              " MAIN_SAUL0_RX       : Thread Offset: 0x%0.4X, Thread Count: %d\r\n",
-              UDMA_PSIL_CH_MAIN_SAUL0_RX, UDMA_PSIL_CH_MAIN_SAUL0_RX_CNT);
-    GT_2trace(taskObj->traceMask, GT_INFO1,
-              " MAIN_ICSS_G0_RX     : Thread Offset: 0x%0.4X, Thread Count: %d\r\n",
-              UDMA_PSIL_CH_MAIN_ICSS_G0_RX, UDMA_PSIL_CH_MAIN_ICSS_G0_RX_CNT);
-    GT_2trace(taskObj->traceMask, GT_INFO1,
-              " MAIN_ICSS_G1_RX     : Thread Offset: 0x%0.4X, Thread Count: %d\r\n",
-              UDMA_PSIL_CH_MAIN_ICSS_G1_RX, UDMA_PSIL_CH_MAIN_ICSS_G1_RX_CNT);
-    GT_2trace(taskObj->traceMask, GT_INFO1,
-              " MAIN_VPAC_TC0_RX    : Thread Offset: 0x%0.4X, Thread Count: %d\r\n",
-              UDMA_PSIL_CH_MAIN_VPAC_TC0_RX, UDMA_PSIL_CH_MAIN_VPAC_TC0_RX_CNT);
-    GT_2trace(taskObj->traceMask, GT_INFO1,
-              " MAIN_VPAC_TC1_RX    : Thread Offset: 0x%0.4X, Thread Count: %d\r\n",
-              UDMA_PSIL_CH_MAIN_VPAC_TC1_RX, UDMA_PSIL_CH_MAIN_VPAC_TC1_RX_CNT);
-    GT_2trace(taskObj->traceMask, GT_INFO1,
-              " MAIN_DMPAC_TC0_RX   : Thread Offset: 0x%0.4X, Thread Count: %d\r\n",
-              UDMA_PSIL_CH_MAIN_DMPAC_TC0_RX, UDMA_PSIL_CH_MAIN_DMPAC_TC0_RX_CNT);
-    GT_2trace(taskObj->traceMask, GT_INFO1,
-              " MAIN_CSI_RX         : Thread Offset: 0x%0.4X, Thread Count: %d\r\n",
-              UDMA_PSIL_CH_MAIN_CSI_RX, UDMA_PSIL_CH_MAIN_CSI_RX_CNT);
-    GT_2trace(taskObj->traceMask, GT_INFO1,
-              " MAIN_CPSW9_RX       : Thread Offset: 0x%0.4X, Thread Count: %d\r\n",
-              UDMA_PSIL_CH_MAIN_CPSW9_RX, UDMA_PSIL_CH_MAIN_CPSW9_RX_CNT);
+              " MAIN_CPSW5_RX       : Thread Offset: 0x%0.4X, Thread Count: %d\r\n",
+              UDMA_PSIL_CH_MAIN_CPSW5_RX, UDMA_PSIL_CH_MAIN_CPSW5_RX_CNT);
     GT_2trace(taskObj->traceMask, GT_INFO1,
               " MCU_CPSW0_RX        : Thread Offset: 0x%0.4X, Thread Count: %d\r\n",
               UDMA_PSIL_CH_MCU_CPSW0_RX, UDMA_PSIL_CH_MCU_CPSW0_RX_CNT);
@@ -166,57 +124,6 @@ int32_t udmaTestPrintPdmaMacro(UdmaTestTaskObj *taskObj)
     GT_1trace(taskObj->traceMask, GT_INFO1,
               " MAIN_MCASP2_TX              : Thread ID: 0x%0.4X\r\n",
               UDMA_PDMA_CH_MAIN_MCASP2_TX);
-    GT_1trace(taskObj->traceMask, GT_INFO1,
-              " MAIN_MCASP3_TX              : Thread ID: 0x%0.4X\r\n",
-              UDMA_PDMA_CH_MAIN_MCASP3_TX);
-    GT_1trace(taskObj->traceMask, GT_INFO1,
-              " MAIN_MCASP4_TX              : Thread ID: 0x%0.4X\r\n",
-              UDMA_PDMA_CH_MAIN_MCASP4_TX);
-    GT_1trace(taskObj->traceMask, GT_INFO1,
-              " MAIN_MCASP5_TX              : Thread ID: 0x%0.4X\r\n",
-              UDMA_PDMA_CH_MAIN_MCASP5_TX);
-    GT_1trace(taskObj->traceMask, GT_INFO1,
-              " MAIN_MCASP6_TX              : Thread ID: 0x%0.4X\r\n",
-              UDMA_PDMA_CH_MAIN_MCASP6_TX);
-    GT_1trace(taskObj->traceMask, GT_INFO1,
-              " MAIN_MCASP7_TX              : Thread ID: 0x%0.4X\r\n",
-              UDMA_PDMA_CH_MAIN_MCASP7_TX);
-    GT_1trace(taskObj->traceMask, GT_INFO1,
-              " MAIN_MCASP8_TX              : Thread ID: 0x%0.4X\r\n",
-              UDMA_PDMA_CH_MAIN_MCASP8_TX);
-    GT_1trace(taskObj->traceMask, GT_INFO1,
-              " MAIN_MCASP9_TX              : Thread ID: 0x%0.4X\r\n",
-              UDMA_PDMA_CH_MAIN_MCASP9_TX);
-    GT_1trace(taskObj->traceMask, GT_INFO1,
-              " MAIN_MCASP10_TX             : Thread ID: 0x%0.4X\r\n",
-              UDMA_PDMA_CH_MAIN_MCASP10_TX);
-    GT_1trace(taskObj->traceMask, GT_INFO1,
-              " MAIN_MCASP11_TX             : Thread ID: 0x%0.4X\r\n",
-              UDMA_PDMA_CH_MAIN_MCASP11_TX);
-    GT_1trace(taskObj->traceMask, GT_INFO1,
-              " MAIN_AASRC0_CH0_TX          : Thread ID: 0x%0.4X\r\n",
-              UDMA_PDMA_CH_MAIN_AASRC0_CH0_TX);
-    GT_1trace(taskObj->traceMask, GT_INFO1,
-              " MAIN_AASRC0_CH1_TX          : Thread ID: 0x%0.4X\r\n",
-              UDMA_PDMA_CH_MAIN_AASRC0_CH1_TX);
-    GT_1trace(taskObj->traceMask, GT_INFO1,
-              " MAIN_AASRC0_CH2_TX          : Thread ID: 0x%0.4X\r\n",
-              UDMA_PDMA_CH_MAIN_AASRC0_CH2_TX);
-    GT_1trace(taskObj->traceMask, GT_INFO1,
-              " MAIN_AASRC0_CH3_TX          : Thread ID: 0x%0.4X\r\n",
-              UDMA_PDMA_CH_MAIN_AASRC0_CH3_TX);
-    GT_1trace(taskObj->traceMask, GT_INFO1,
-              " MAIN_AASRC0_CH4_TX          : Thread ID: 0x%0.4X\r\n",
-              UDMA_PDMA_CH_MAIN_AASRC0_CH4_TX);
-    GT_1trace(taskObj->traceMask, GT_INFO1,
-              " MAIN_AASRC0_CH5_TX          : Thread ID: 0x%0.4X\r\n",
-              UDMA_PDMA_CH_MAIN_AASRC0_CH5_TX);
-    GT_1trace(taskObj->traceMask, GT_INFO1,
-              " MAIN_AASRC0_CH6_TX          : Thread ID: 0x%0.4X\r\n",
-              UDMA_PDMA_CH_MAIN_AASRC0_CH6_TX);
-    GT_1trace(taskObj->traceMask, GT_INFO1,
-              " MAIN_AASRC0_CH7_TX          : Thread ID: 0x%0.4X\r\n",
-              UDMA_PDMA_CH_MAIN_AASRC0_CH7_TX);
     GT_1trace(taskObj->traceMask, GT_INFO1,
               " MAIN_UART0_TX               : Thread ID: 0x%0.4X\r\n",
               UDMA_PDMA_CH_MAIN_UART0_TX);
@@ -470,6 +377,42 @@ int32_t udmaTestPrintPdmaMacro(UdmaTestTaskObj *taskObj)
               " MAIN_MCAN13_CH2_TX          : Thread ID: 0x%0.4X\r\n",
               UDMA_PDMA_CH_MAIN_MCAN13_CH2_TX);
     GT_1trace(taskObj->traceMask, GT_INFO1,
+              " MAIN_MCAN14_CH0_TX          : Thread ID: 0x%0.4X\r\n",
+              UDMA_PDMA_CH_MAIN_MCAN14_CH0_TX);
+    GT_1trace(taskObj->traceMask, GT_INFO1,
+              " MAIN_MCAN14_CH1_TX          : Thread ID: 0x%0.4X\r\n",
+              UDMA_PDMA_CH_MAIN_MCAN14_CH1_TX);
+    GT_1trace(taskObj->traceMask, GT_INFO1,
+              " MAIN_MCAN14_CH2_TX          : Thread ID: 0x%0.4X\r\n",
+              UDMA_PDMA_CH_MAIN_MCAN14_CH2_TX);
+    GT_1trace(taskObj->traceMask, GT_INFO1,
+              " MAIN_MCAN15_CH0_TX          : Thread ID: 0x%0.4X\r\n",
+              UDMA_PDMA_CH_MAIN_MCAN15_CH0_TX);
+    GT_1trace(taskObj->traceMask, GT_INFO1,
+              " MAIN_MCAN15_CH1_TX          : Thread ID: 0x%0.4X\r\n",
+              UDMA_PDMA_CH_MAIN_MCAN15_CH1_TX);
+    GT_1trace(taskObj->traceMask, GT_INFO1,
+              " MAIN_MCAN15_CH2_TX          : Thread ID: 0x%0.4X\r\n",
+              UDMA_PDMA_CH_MAIN_MCAN15_CH2_TX);
+    GT_1trace(taskObj->traceMask, GT_INFO1,
+              " MAIN_MCAN16_CH0_TX          : Thread ID: 0x%0.4X\r\n",
+              UDMA_PDMA_CH_MAIN_MCAN16_CH0_TX);
+    GT_1trace(taskObj->traceMask, GT_INFO1,
+              " MAIN_MCAN16_CH1_TX          : Thread ID: 0x%0.4X\r\n",
+              UDMA_PDMA_CH_MAIN_MCAN16_CH1_TX);
+    GT_1trace(taskObj->traceMask, GT_INFO1,
+              " MAIN_MCAN16_CH2_TX          : Thread ID: 0x%0.4X\r\n",
+              UDMA_PDMA_CH_MAIN_MCAN16_CH2_TX);
+    GT_1trace(taskObj->traceMask, GT_INFO1,
+              " MAIN_MCAN17_CH0_TX          : Thread ID: 0x%0.4X\r\n",
+              UDMA_PDMA_CH_MAIN_MCAN17_CH0_TX);
+    GT_1trace(taskObj->traceMask, GT_INFO1,
+              " MAIN_MCAN17_CH1_TX          : Thread ID: 0x%0.4X\r\n",
+              UDMA_PDMA_CH_MAIN_MCAN17_CH1_TX);
+    GT_1trace(taskObj->traceMask, GT_INFO1,
+              " MAIN_MCAN17_CH2_TX          : Thread ID: 0x%0.4X\r\n",
+              UDMA_PDMA_CH_MAIN_MCAN17_CH2_TX);
+    GT_1trace(taskObj->traceMask, GT_INFO1,
               " MCU_MCSPI0_CH0_TX           : Thread ID: 0x%0.4X\r\n",
               UDMA_PDMA_CH_MCU_MCSPI0_CH0_TX);
     GT_1trace(taskObj->traceMask, GT_INFO1,
@@ -535,57 +478,6 @@ int32_t udmaTestPrintPdmaMacro(UdmaTestTaskObj *taskObj)
     GT_1trace(taskObj->traceMask, GT_INFO1,
               " MAIN_MCASP2_RX              : Thread ID: 0x%0.4X\r\n",
               UDMA_PDMA_CH_MAIN_MCASP2_RX);
-    GT_1trace(taskObj->traceMask, GT_INFO1,
-              " MAIN_MCASP3_RX              : Thread ID: 0x%0.4X\r\n",
-              UDMA_PDMA_CH_MAIN_MCASP3_RX);
-    GT_1trace(taskObj->traceMask, GT_INFO1,
-              " MAIN_MCASP4_RX              : Thread ID: 0x%0.4X\r\n",
-              UDMA_PDMA_CH_MAIN_MCASP4_RX);
-    GT_1trace(taskObj->traceMask, GT_INFO1,
-              " MAIN_MCASP5_RX              : Thread ID: 0x%0.4X\r\n",
-              UDMA_PDMA_CH_MAIN_MCASP5_RX);
-    GT_1trace(taskObj->traceMask, GT_INFO1,
-              " MAIN_MCASP6_RX              : Thread ID: 0x%0.4X\r\n",
-              UDMA_PDMA_CH_MAIN_MCASP6_RX);
-    GT_1trace(taskObj->traceMask, GT_INFO1,
-              " MAIN_MCASP7_RX              : Thread ID: 0x%0.4X\r\n",
-              UDMA_PDMA_CH_MAIN_MCASP7_RX);
-    GT_1trace(taskObj->traceMask, GT_INFO1,
-              " MAIN_MCASP8_RX              : Thread ID: 0x%0.4X\r\n",
-              UDMA_PDMA_CH_MAIN_MCASP8_RX);
-    GT_1trace(taskObj->traceMask, GT_INFO1,
-              " MAIN_MCASP9_RX              : Thread ID: 0x%0.4X\r\n",
-              UDMA_PDMA_CH_MAIN_MCASP9_RX);
-    GT_1trace(taskObj->traceMask, GT_INFO1,
-              " MAIN_MCASP10_RX             : Thread ID: 0x%0.4X\r\n",
-              UDMA_PDMA_CH_MAIN_MCASP10_RX);
-    GT_1trace(taskObj->traceMask, GT_INFO1,
-              " MAIN_MCASP11_RX             : Thread ID: 0x%0.4X\r\n",
-              UDMA_PDMA_CH_MAIN_MCASP11_RX);
-    GT_1trace(taskObj->traceMask, GT_INFO1,
-              " MAIN_AASRC0_CH0_RX          : Thread ID: 0x%0.4X\r\n",
-              UDMA_PDMA_CH_MAIN_AASRC0_CH0_RX);
-    GT_1trace(taskObj->traceMask, GT_INFO1,
-              " MAIN_AASRC0_CH1_RX          : Thread ID: 0x%0.4X\r\n",
-              UDMA_PDMA_CH_MAIN_AASRC0_CH1_RX);
-    GT_1trace(taskObj->traceMask, GT_INFO1,
-              " MAIN_AASRC0_CH2_RX          : Thread ID: 0x%0.4X\r\n",
-              UDMA_PDMA_CH_MAIN_AASRC0_CH2_RX);
-    GT_1trace(taskObj->traceMask, GT_INFO1,
-              " MAIN_AASRC0_CH3_RX          : Thread ID: 0x%0.4X\r\n",
-              UDMA_PDMA_CH_MAIN_AASRC0_CH3_RX);
-    GT_1trace(taskObj->traceMask, GT_INFO1,
-              " MAIN_AASRC0_CH4_RX          : Thread ID: 0x%0.4X\r\n",
-              UDMA_PDMA_CH_MAIN_AASRC0_CH4_RX);
-    GT_1trace(taskObj->traceMask, GT_INFO1,
-              " MAIN_AASRC0_CH5_RX          : Thread ID: 0x%0.4X\r\n",
-              UDMA_PDMA_CH_MAIN_AASRC0_CH5_RX);
-    GT_1trace(taskObj->traceMask, GT_INFO1,
-              " MAIN_AASRC0_CH6_RX          : Thread ID: 0x%0.4X\r\n",
-              UDMA_PDMA_CH_MAIN_AASRC0_CH6_RX);
-    GT_1trace(taskObj->traceMask, GT_INFO1,
-              " MAIN_AASRC0_CH7_RX          : Thread ID: 0x%0.4X\r\n",
-              UDMA_PDMA_CH_MAIN_AASRC0_CH7_RX);
     GT_1trace(taskObj->traceMask, GT_INFO1,
               " MAIN_UART0_RX               : Thread ID: 0x%0.4X\r\n",
               UDMA_PDMA_CH_MAIN_UART0_RX);
@@ -838,6 +730,42 @@ int32_t udmaTestPrintPdmaMacro(UdmaTestTaskObj *taskObj)
     GT_1trace(taskObj->traceMask, GT_INFO1,
               " MAIN_MCAN13_CH2_RX          : Thread ID: 0x%0.4X\r\n",
               UDMA_PDMA_CH_MAIN_MCAN13_CH2_RX);
+    GT_1trace(taskObj->traceMask, GT_INFO1,
+              " MAIN_MCAN14_CH0_RX          : Thread ID: 0x%0.4X\r\n",
+              UDMA_PDMA_CH_MAIN_MCAN14_CH0_RX);
+    GT_1trace(taskObj->traceMask, GT_INFO1,
+              " MAIN_MCAN14_CH1_RX          : Thread ID: 0x%0.4X\r\n",
+              UDMA_PDMA_CH_MAIN_MCAN14_CH1_RX);
+    GT_1trace(taskObj->traceMask, GT_INFO1,
+              " MAIN_MCAN14_CH2_RX          : Thread ID: 0x%0.4X\r\n",
+              UDMA_PDMA_CH_MAIN_MCAN14_CH2_RX);
+    GT_1trace(taskObj->traceMask, GT_INFO1,
+              " MAIN_MCAN15_CH0_RX          : Thread ID: 0x%0.4X\r\n",
+              UDMA_PDMA_CH_MAIN_MCAN15_CH0_RX);
+    GT_1trace(taskObj->traceMask, GT_INFO1,
+              " MAIN_MCAN15_CH1_RX          : Thread ID: 0x%0.4X\r\n",
+              UDMA_PDMA_CH_MAIN_MCAN15_CH1_RX);
+    GT_1trace(taskObj->traceMask, GT_INFO1,
+              " MAIN_MCAN15_CH2_RX          : Thread ID: 0x%0.4X\r\n",
+              UDMA_PDMA_CH_MAIN_MCAN15_CH2_RX);
+    GT_1trace(taskObj->traceMask, GT_INFO1,
+              " MAIN_MCAN16_CH0_RX          : Thread ID: 0x%0.4X\r\n",
+              UDMA_PDMA_CH_MAIN_MCAN16_CH0_RX);
+    GT_1trace(taskObj->traceMask, GT_INFO1,
+              " MAIN_MCAN16_CH1_RX          : Thread ID: 0x%0.4X\r\n",
+              UDMA_PDMA_CH_MAIN_MCAN16_CH1_RX);
+    GT_1trace(taskObj->traceMask, GT_INFO1,
+              " MAIN_MCAN16_CH2_RX          : Thread ID: 0x%0.4X\r\n",
+              UDMA_PDMA_CH_MAIN_MCAN16_CH2_RX);
+    GT_1trace(taskObj->traceMask, GT_INFO1,
+              " MAIN_MCAN17_CH0_RX          : Thread ID: 0x%0.4X\r\n",
+              UDMA_PDMA_CH_MAIN_MCAN17_CH0_RX);
+    GT_1trace(taskObj->traceMask, GT_INFO1,
+              " MAIN_MCAN17_CH1_RX          : Thread ID: 0x%0.4X\r\n",
+              UDMA_PDMA_CH_MAIN_MCAN17_CH1_RX);
+    GT_1trace(taskObj->traceMask, GT_INFO1,
+              " MAIN_MCAN17_CH2_RX          : Thread ID: 0x%0.4X\r\n",
+              UDMA_PDMA_CH_MAIN_MCAN17_CH2_RX);
     GT_1trace(taskObj->traceMask, GT_INFO1,
               " MCU_ADC0_CH0_RX             : Thread ID: 0x%0.4X\r\n",
               UDMA_PDMA_CH_MCU_ADC0_CH0_RX);

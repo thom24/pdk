@@ -95,7 +95,7 @@ endif
 export dmautils_CORE_DEPENDENCY = yes
 dmautils_PKG_LIST = dmautils
 dmautils_INCLUDE = $(dmautils_PATH)
-export dmautils_SOCLIST = $(drvudma_SOCLIST)
+export dmautils_SOCLIST = j721e
 export dmautils_$(SOC)_CORELIST = c7x_1 c7x-hostemu
 udma_LIB_LIST += dmautils
 

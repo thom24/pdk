@@ -76,9 +76,9 @@
 #include <ti/osal/osal.h>
 #include <ti/drv/sciclient/sciclient.h>
 
+#include <ti/drv/udma/soc/udma_soc.h>
 #include <ti/drv/udma/include/udma_cfg.h>
 #include <ti/drv/udma/include/udma_types.h>
-#include <ti/drv/udma/soc/udma_soc.h>
 #include <ti/drv/udma/include/udma_osal.h>
 #include <ti/drv/udma/include/udma_ring.h>
 #include <ti/drv/udma/include/udma_proxy.h>
@@ -86,7 +86,9 @@
 #include <ti/drv/udma/include/udma_event.h>
 #include <ti/drv/udma/include/udma_rm.h>
 #include <ti/drv/udma/include/udma_ch.h>
+#if (UDMA_NUM_UTC_INSTANCE > 0)
 #include <ti/drv/udma/include/udma_dru.h>
+#endif
 #include <ti/drv/udma/include/udma_utils.h>
 
 #ifdef __cplusplus
@@ -380,11 +382,13 @@ struct Udma_DrvObj
     /**< Proxy RM ID */
     uint16_t                devIdCore;
     /**< Core RM ID */
+#if (UDMA_NUM_UTC_INSTANCE > 0)
     uint32_t                druCoreId;
     /**< DRU core ID register to use for direct TR submission.
      *   Each CPU should have a unique submit register to avoid corrupting
      *   submit word when SW is running from multiple CPU at the same time.
      *   Refer \ref Udma_DruSubmitCoreId */
+#endif
 
     uint32_t                txChOffset;
     /**< TX channel offset. */

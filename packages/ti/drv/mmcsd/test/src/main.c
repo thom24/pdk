@@ -171,7 +171,7 @@ const FATFSConfigList FATFS_config = {
 #endif
 #include "profiling.h"
 
-#if defined(SOC_AM65XX) || defined(SOC_J721E)
+#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)
 #include <ti/csl/src/ip/intr_router/V0/csl_intr_router.h>
 #endif
 /**********************************************************************
@@ -394,7 +394,7 @@ Void InitMmu()
         goto mmu_exit;
     }
 
-#if defined(SOC_J721E) || defined(SOC_J7200)   
+#if defined(SOC_J721E) || defined(SOC_J7200)
     ret=Mmu_map(0x01800000, 0x01800000, 0x00200000, &attrs); /* gicv3       */
     if(ret==false) {
 		goto mmu_exit;
@@ -454,7 +454,7 @@ Void InitMmu()
 
 		goto mmu_exit;
 	}
-	    
+
 	ret=Mmu_map(0x42120000, 0x42120000, 0x00001000, &attrs); /* mmcsd        */
 
     if(ret==false) {
@@ -873,7 +873,7 @@ mmcsdTestSDProfile_t * mmcsdTestProfiles[] = {
 	&SDProfiles_1p8V_SDR25,
 	&SDProfiles_1p8V_SDR50,
 	&SDProfiles_1p8V_DDR50,
-	
+
 #if !defined(SOC_J721E) && !defined(SOC_J7200)
 	&SDProfiles_1p8V_SDR104,
 #endif
@@ -1070,7 +1070,7 @@ void mmcsd_test(UArg arg0, UArg arg1)
 	 hwAttrsConfigDefault.cardType=MMCSD_CARD_SD;
 	 hwAttrsConfig.supportedBusWidth= (MMCSD_BUS_WIDTH_1BIT | MMCSD_BUS_WIDTH_4BIT);
 #endif
- 
+
      readWriteTestFlag = 1;
 
 
@@ -1103,8 +1103,8 @@ void mmcsd_test(UArg arg0, UArg arg1)
 #ifdef MMCSD_DMA_ENABLED
      /* EDMA / ADMA2 / SDMA */
      hwAttrsConfig.enableDma=1;
-     
-     
+
+
 #ifdef MMCSD_EDMA_ENABLED
       hwAttrsConfig.edmaHandle = gEdmaHandle;
 #endif
@@ -1295,7 +1295,7 @@ int32_t fillMmcPageData(uint8_t *buf, int32_t length, uint8_t flag,uint32_t *ram
              *rampBase = *rampBase+1;
          }
 
-    } 
+    }
     else {
      for(i =0; i < length; i++)  {
         *(buf+i) = data;
@@ -1396,7 +1396,7 @@ int32_t HSMMCSDReadWriteTest_RAW(mmcsdTestSDProfile_t *testProfilePtr)
           goto raw_test_exit;
         }
      }
- 
+
 #ifdef MEASURE_TIME
      profile_end_point(PROFILE_MMCSD_WRITE);
 #endif
@@ -1417,7 +1417,7 @@ int32_t HSMMCSDReadWriteTest_RAW(mmcsdTestSDProfile_t *testProfilePtr)
           goto raw_test_exit;
         }
     }
-    
+
 
 #ifdef MEASURE_TIME
      profile_end_point(PROFILE_MMCSD_READ);

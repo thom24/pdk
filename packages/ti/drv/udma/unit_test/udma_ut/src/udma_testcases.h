@@ -1161,6 +1161,7 @@ static UdmaTestParams gUdmaTestCases[] =
         .runFlag    = (UDMA_TEST_RF_MAIN_BC_PACING),
         .ringPrmId  = UDMA_TEST_RING_PRMID_INVALID,
     },
+#if defined (UDMA_UTC_ID_MSMC_DRU0)
     {
         .enableTest = TEST_ENABLE,
         .tcId       = 3499U,
@@ -1481,6 +1482,7 @@ static UdmaTestParams gUdmaTestCases[] =
         .runFlag    = (UDMA_TEST_RF_DRU_MT),
         .ringPrmId  = UDMA_TEST_RING_PRMID_INVALID,
     },
+#endif  /* #if defined (UDMA_UTC_ID_MSMC_DRU0) */
     {
         .enableTest = TEST_ENABLE,
         .tcId       = 3507U,

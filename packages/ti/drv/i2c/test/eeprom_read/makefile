@@ -66,11 +66,14 @@ endif
 
 CFLAGS_I2C_UT =
 
-PACKAGE_SRCS_COMMON = src makefile $(SOC)
+PACKAGE_SRCS_COMMON = src makefile
+ifeq ($(SOC),$(filter $(SOC), am65xx))
+  PACKAGE_SRCS_COMMON += $(SOC)
+endif
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_I2C_UT) $(CFLAGS_OS_DEFINES)
 
 ifeq ($(SOC),$(filter $(SOC), j721e j7200))
-CFLAGS_LOCAL_COMMON += -DUNITY_INCLUDE_CONFIG_H 
+CFLAGS_LOCAL_COMMON += -DUNITY_INCLUDE_CONFIG_H
 endif
 # Core/SoC/platform specific source files and CFLAGS
 # Example:

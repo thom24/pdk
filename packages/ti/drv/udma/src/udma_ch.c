@@ -70,11 +70,13 @@ static int32_t Udma_chEnableLocal(Udma_ChHandle chHandle);
 static int32_t Udma_chDisableBlkCpyChan(Udma_ChHandle chHandle, uint32_t timeout);
 static int32_t Udma_chDisableTxChan(Udma_ChHandle chHandle, uint32_t timeout);
 static int32_t Udma_chDisableRxChan(Udma_ChHandle chHandle, uint32_t timeout);
+#if (UDMA_NUM_UTC_INSTANCE > 0)
 static int32_t Udma_chDisableExtChan(Udma_ChHandle chHandle, uint32_t timeout);
+#endif
 static uint32_t Udma_chGetTriggerEvent(Udma_DrvHandle drvHandle,
                                        Udma_ChHandle chHandle,
                                        uint32_t trigger);
-
+#if (UDMA_NUM_UTC_INSTANCE > 0)
 static int32_t Udma_psilcfgSetRtEnable(Udma_DrvHandle drvHandle,
                                        uint32_t threadId,
                                        uint32_t bEnable);
@@ -89,6 +91,7 @@ static int32_t Udma_psilcfgRead(Udma_DrvHandle drvHandle,
                                 uint32_t threadId,
                                 uint32_t regId,
                                 uint32_t *pData);
+#endif
 
 /* ========================================================================== */
 /*                            Global Variables                                */
@@ -133,7 +136,9 @@ int32_t Udma_chOpen(Udma_DrvHandle drvHandle,
         (void) memcpy(&chHandle->chPrms, chPrms, sizeof(Udma_ChPrms));
         chHandle->chType            = chType;
         chHandle->drvHandle         = drvHandle;
+#if (UDMA_NUM_UTC_INSTANCE > 0)
         chHandle->utcInfo           = (const Udma_UtcInstInfo *) NULL_PTR;
+#endif
         chHandle->txChNum           = UDMA_DMA_CH_INVALID;
         chHandle->rxChNum           = UDMA_DMA_CH_INVALID;
         chHandle->extChNum          = UDMA_DMA_CH_INVALID;
@@ -151,13 +156,16 @@ int32_t Udma_chOpen(Udma_DrvHandle drvHandle,
         chHandle->pRxRtRegs         = (volatile CSL_udmap_rxcrtRegs_chan *) NULL_PTR;
         chHandle->pExtCfgRegs       = (volatile CSL_udmap_txccfgRegs_chan *) NULL_PTR;
         chHandle->pExtRtRegs        = (volatile CSL_udmap_txcrtRegs_chan *) NULL_PTR;
+#if (UDMA_NUM_UTC_INSTANCE > 0)
         chHandle->pDruNrtRegs       = (volatile CSL_DRU_CHNRTRegs_CHNRT *) NULL_PTR;
         chHandle->pDruRtRegs        = (volatile CSL_DRU_CHRTRegs_CHRT *) NULL_PTR;
+#endif
         chHandle->chOesAllocDone    = FALSE;
         chHandle->trigger           = CSL_UDMAP_TR_FLAGS_TRIGGER_NONE;
 
         if((chHandle->chType & UDMA_CH_FLAG_UTC) == UDMA_CH_FLAG_UTC)
         {
+#if (UDMA_NUM_UTC_INSTANCE > 0)
             /* Get UTC instance object pointer */
             chHandle->utcInfo = Udma_chGetUtcInst(drvHandle, chPrms->utcId);
             if(NULL_PTR == chHandle->utcInfo)
@@ -165,6 +173,10 @@ int32_t Udma_chOpen(Udma_DrvHandle drvHandle,
                 retVal = UDMA_EINVALID_PARAMS;
                 Udma_printf(drvHandle, "[Error] Invalid UTC ID!!\n");
             }
+#else
+            retVal = UDMA_EFAIL;
+            Udma_printf(drvHandle, "[Error] UTC Not supported!!!\n");
+#endif
         }
     }
 
@@ -491,6 +503,7 @@ int32_t Udma_chConfigRx(Udma_ChHandle chHandle, const Udma_ChRxPrms *rxPrms)
 
 int32_t Udma_chConfigUtc(Udma_ChHandle chHandle, const Udma_ChUtcPrms *utcPrms)
 {
+#if (UDMA_NUM_UTC_INSTANCE > 0)
     int32_t                 retVal = UDMA_SOK;
     uint32_t                utcChNum;
     Udma_DrvHandle          drvHandle;
@@ -636,6 +649,9 @@ int32_t Udma_chConfigUtc(Udma_ChHandle chHandle, const Udma_ChUtcPrms *utcPrms)
         /* Copy the config */
         (void) memcpy(&chHandle->utcPrms, utcPrms, sizeof(chHandle->utcPrms));
     }
+#else
+    int32_t     retVal = UDMA_EFAIL;
+#endif
 
     return (retVal);
 }
@@ -759,10 +775,12 @@ int32_t Udma_chDisable(Udma_ChHandle chHandle, uint32_t timeout)
         {
             retVal = Udma_chDisableBlkCpyChan(chHandle, timeout);
         }
+#if (UDMA_NUM_UTC_INSTANCE > 0)
         else if((chHandle->chType & UDMA_CH_FLAG_UTC) == UDMA_CH_FLAG_UTC)
         {
             retVal = Udma_chDisableExtChan(chHandle, timeout);
         }
+#endif
         else
         {
             if((chHandle->chType & UDMA_CH_FLAG_TX) == UDMA_CH_FLAG_TX)
@@ -783,8 +801,10 @@ int32_t Udma_chPause(Udma_ChHandle chHandle)
 {
     int32_t                 retVal = UDMA_SOK;
     Udma_DrvHandle          drvHandle;
+#if (UDMA_NUM_UTC_INSTANCE > 0)
     uint32_t                utcChNum;
     const Udma_UtcInstInfo *utcInfo;
+#endif
 
     /* Error check */
     if((NULL_PTR == chHandle) || (chHandle->chInitDone != UDMA_INIT_DONE))
@@ -815,6 +835,7 @@ int32_t Udma_chPause(Udma_ChHandle chHandle)
             (void) CSL_udmapPauseRxChan(&drvHandle->udmapRegs, chHandle->rxChNum);
         }
 
+#if (UDMA_NUM_UTC_INSTANCE > 0)
         if((chHandle->chType & UDMA_CH_FLAG_UTC) == UDMA_CH_FLAG_UTC)
         {
             utcInfo = chHandle->utcInfo;
@@ -848,6 +869,7 @@ int32_t Udma_chPause(Udma_ChHandle chHandle)
                 }
             }
         }
+#endif
     }
 
     return (retVal);
@@ -857,8 +879,10 @@ int32_t Udma_chResume(Udma_ChHandle chHandle)
 {
     int32_t                 retVal = UDMA_SOK;
     Udma_DrvHandle          drvHandle;
+#if (UDMA_NUM_UTC_INSTANCE > 0)
     uint32_t                utcChNum;
     const Udma_UtcInstInfo *utcInfo;
+#endif
 
     /* Error check */
     if((NULL_PTR == chHandle) || (chHandle->chInitDone != UDMA_INIT_DONE))
@@ -889,6 +913,7 @@ int32_t Udma_chResume(Udma_ChHandle chHandle)
             (void) CSL_udmapUnpauseRxChan(&drvHandle->udmapRegs, chHandle->rxChNum);
         }
 
+#if (UDMA_NUM_UTC_INSTANCE > 0)
         if((chHandle->chType & UDMA_CH_FLAG_UTC) == UDMA_CH_FLAG_UTC)
         {
             utcInfo = chHandle->utcInfo;
@@ -922,6 +947,7 @@ int32_t Udma_chResume(Udma_ChHandle chHandle)
                 }
             }
         }
+#endif
     }
 
     return (retVal);
@@ -951,11 +977,13 @@ uint32_t Udma_chGetNum(Udma_ChHandle chHandle)
     {
         if((chHandle->chType & UDMA_CH_FLAG_UTC) == UDMA_CH_FLAG_UTC)
         {
+#if (UDMA_NUM_UTC_INSTANCE > 0)
             Udma_assert(drvHandle, chHandle->utcInfo != NULL_PTR);
             Udma_assert(drvHandle, chHandle->extChNum != UDMA_DMA_CH_INVALID);
             Udma_assert(drvHandle, chHandle->extChNum >= chHandle->utcInfo->startCh);
             /* Provide the channel offset within a UTC */
             chNum = chHandle->extChNum - chHandle->utcInfo->startCh;
+#endif
         }
         else
         {
@@ -1151,7 +1179,9 @@ int32_t Udma_chSetSwTrigger(Udma_ChHandle chHandle, uint32_t trigger)
 {
     int32_t                 retVal = UDMA_SOK;
     Udma_DrvHandle          drvHandle;
+#if (UDMA_NUM_UTC_INSTANCE > 0)
     const Udma_UtcInstInfo *utcInfo;
+#endif
 
     /* Error check */
     if((NULL_PTR == chHandle) ||
@@ -1187,6 +1217,7 @@ int32_t Udma_chSetSwTrigger(Udma_ChHandle chHandle, uint32_t trigger)
         }
         else
         {
+#if (UDMA_NUM_UTC_INSTANCE > 0)
             utcInfo = chHandle->utcInfo;
             Udma_assert(drvHandle, utcInfo != NULL_PTR);
             if(UDMA_UTC_TYPE_DRU == utcInfo->utcType)
@@ -1202,6 +1233,10 @@ int32_t Udma_chSetSwTrigger(Udma_ChHandle chHandle, uint32_t trigger)
                 Udma_printf(drvHandle,
                             "[Error] SW trigger not supported for other UTCs !!!\n");
             }
+#else
+            retVal = UDMA_EFAIL;
+            Udma_printf(drvHandle, "[Error] UTC Not supported!!!\n");
+#endif
         }
     }
 
@@ -1534,8 +1569,10 @@ void UdmaChUtcPrms_init(Udma_ChUtcPrms *utcPrms)
         utcPrms->dmaPriority    = UDMA_DEFAULT_UTC_CH_DMA_PRIORITY;
         utcPrms->burstSize      = TISCI_MSG_VALUE_RM_UDMAP_CH_BURST_SIZE_128_BYTES;
         utcPrms->supressTdCqPkt = TISCI_MSG_VALUE_RM_UDMAP_TX_CH_SUPPRESS_TD_DISABLED;
+#if (UDMA_NUM_UTC_INSTANCE > 0)
         utcPrms->druOwner       = CSL_DRU_OWNER_UDMAC_TR;
         utcPrms->druQueueId     = UDMA_DEFAULT_UTC_DRU_QUEUE_ID;
+#endif
     }
 
     return;
@@ -1553,12 +1590,12 @@ void UdmaChPdmaPrms_init(Udma_ChPdmaPrms *pdmaPrms)
     return;
 }
 
+#if (UDMA_NUM_UTC_INSTANCE > 0)
 const Udma_UtcInstInfo *Udma_chGetUtcInst(Udma_DrvHandle drvHandle,
                                           uint32_t utcId)
 
 {
     const Udma_UtcInstInfo *utcInfo = (const Udma_UtcInstInfo *) NULL_PTR;
-#if (UDMA_NUM_UTC_INSTANCE > 0)
     uint32_t                i;
 
     for(i = 0U; i < UDMA_NUM_UTC_INSTANCE; i++)
@@ -1569,10 +1606,10 @@ const Udma_UtcInstInfo *Udma_chGetUtcInst(Udma_DrvHandle drvHandle,
             break;
         }
     }
-#endif
 
     return (utcInfo);
 }
+#endif
 
 int32_t Udma_chGetStats(Udma_ChHandle chHandle, Udma_ChStats *chStats)
 {
@@ -1662,9 +1699,11 @@ static int32_t Udma_chAllocResource(Udma_ChHandle chHandle)
 {
     int32_t                 retVal = UDMA_SOK, tempRetVal;
     Udma_DrvHandle          drvHandle;
-    uint32_t                utcChNum;
     uint16_t                ringNum;
+#if (UDMA_NUM_UTC_INSTANCE > 0)
+    uint32_t                utcChNum;
     const Udma_UtcInstInfo *utcInfo;
+#endif
 
     drvHandle = chHandle->drvHandle;
 
@@ -1702,6 +1741,7 @@ static int32_t Udma_chAllocResource(Udma_ChHandle chHandle)
                 chHandle->rxChNum + drvHandle->udmapDestThreadOffset;
         }
     }
+#if (UDMA_NUM_UTC_INSTANCE > 0)
     else if((chHandle->chType & UDMA_CH_FLAG_UTC) == UDMA_CH_FLAG_UTC)
     {
         utcInfo = chHandle->utcInfo;
@@ -1729,6 +1769,7 @@ static int32_t Udma_chAllocResource(Udma_ChHandle chHandle)
             }
         }
     }
+#endif
     else
     {
         /* Allocate UDMAP for PDMA channels */
@@ -2013,12 +2054,14 @@ static int32_t Udma_chFreeResource(Udma_ChHandle chHandle)
         chHandle->defaultFlowObj.flowInitDone = UDMA_DEINIT_DONE;
         chHandle->defaultFlow                 = (Udma_FlowHandle) NULL_PTR;
     }
+#if (UDMA_NUM_UTC_INSTANCE > 0)
     if(UDMA_DMA_CH_INVALID != chHandle->extChNum)
     {
         /* External channel free */
         Udma_rmFreeExtCh(chHandle->extChNum, drvHandle, chHandle->utcInfo);
         chHandle->extChNum = UDMA_DMA_CH_INVALID;
     }
+#endif
     chHandle->pdmaChNum = UDMA_DMA_CH_INVALID;
     chHandle->peerThreadId = UDMA_THREAD_ID_INVALID;
 
@@ -2101,13 +2144,14 @@ static int32_t Udma_chUnpair(Udma_ChHandle chHandle)
 {
     int32_t         retVal = UDMA_SOK;
     Udma_DrvHandle  drvHandle;
-    uint32_t        dstThreadId;
     struct tisci_msg_rm_psil_unpair_req rmUnpairReq;
 
     drvHandle = chHandle->drvHandle;
 
     if((chHandle->chType & UDMA_CH_FLAG_UTC) == UDMA_CH_FLAG_UTC)
     {
+#if (UDMA_NUM_UTC_INSTANCE > 0)
+        uint32_t        dstThreadId;
         if(CSL_DRU_OWNER_UDMAC_TR == chHandle->utcPrms.druOwner)
         {
             /* For UTC, destination thread disable should be done */
@@ -2125,6 +2169,10 @@ static int32_t Udma_chUnpair(Udma_ChHandle chHandle)
                     "[Error] PSI UTC destination thread disable failed!!!\n");
             }
         }
+#else
+        retVal = UDMA_EFAIL;
+        Udma_printf(drvHandle, "[Error] UTC Not supported!!!\n");
+#endif
     }
     else
     {
@@ -2162,11 +2210,13 @@ static int32_t Udma_chEnableLocal(Udma_ChHandle chHandle)
 {
     int32_t                 retVal = UDMA_SOK;
     uint32_t                regVal;
-    uint32_t                utcChNum;
     Udma_DrvHandle          drvHandle;
-    const Udma_UtcInstInfo *utcInfo;
     CSL_UdmapRT             rtEnable;
+#if (UDMA_NUM_UTC_INSTANCE > 0)
+    uint32_t                utcChNum;
     uint32_t                srcThreadId;
+    const Udma_UtcInstInfo *utcInfo;
+#endif
 
     drvHandle = chHandle->drvHandle;
 
@@ -2209,6 +2259,7 @@ static int32_t Udma_chEnableLocal(Udma_ChHandle chHandle)
         CSL_REG32_WR(&chHandle->pRxRtRegs->PEER8, regVal);
     }
 
+#if (UDMA_NUM_UTC_INSTANCE > 0)
     if((chHandle->chType & UDMA_CH_FLAG_UTC) == UDMA_CH_FLAG_UTC)
     {
         utcInfo = chHandle->utcInfo;
@@ -2260,6 +2311,7 @@ static int32_t Udma_chEnableLocal(Udma_ChHandle chHandle)
                 &rtEnable);
         }
     }
+#endif
 
     return (retVal);
 }
@@ -2563,6 +2615,7 @@ static int32_t Udma_chDisableRxChan(Udma_ChHandle chHandle, uint32_t timeout)
     return (retVal);
 }
 
+#if (UDMA_NUM_UTC_INSTANCE > 0)
 static int32_t Udma_chDisableExtChan(Udma_ChHandle chHandle, uint32_t timeout)
 {
     int32_t                 retVal = UDMA_SOK;
@@ -2702,6 +2755,7 @@ static int32_t Udma_chDisableExtChan(Udma_ChHandle chHandle, uint32_t timeout)
 
     return (retVal);
 }
+#endif
 
 static uint32_t Udma_chGetTriggerEvent(Udma_DrvHandle drvHandle,
                                        Udma_ChHandle chHandle,
@@ -2749,6 +2803,7 @@ static uint32_t Udma_chGetTriggerEvent(Udma_DrvHandle drvHandle,
     return (triggerEvent);
 }
 
+#if (UDMA_NUM_UTC_INSTANCE > 0)
 static int32_t Udma_psilcfgSetRtEnable(Udma_DrvHandle drvHandle,
                                        uint32_t threadId,
                                        uint32_t bEnable)
@@ -2856,3 +2911,4 @@ static int32_t Udma_psilcfgRead(Udma_DrvHandle drvHandle,
 
     return (retVal);
 }
+#endif

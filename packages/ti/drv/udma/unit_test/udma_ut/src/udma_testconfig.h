@@ -172,8 +172,10 @@ static const UdmaTestUtcChPrm gUdmaTestUtcChPrm[] =
             .dmaPriority    = UDMA_DEFAULT_UTC_CH_DMA_PRIORITY,
             .burstSize      = TISCI_MSG_VALUE_RM_UDMAP_CH_BURST_SIZE_128_BYTES,
             .supressTdCqPkt = TISCI_MSG_VALUE_RM_UDMAP_TX_CH_SUPPRESS_TD_DISABLED,
+#if (UDMA_NUM_UTC_INSTANCE > 0)
             .druOwner       = CSL_DRU_OWNER_UDMAC_TR,
             .druQueueId     = CSL_DRU_QUEUE_ID_3,
+#endif
         }
     },
     {
@@ -190,8 +192,10 @@ static const UdmaTestUtcChPrm gUdmaTestUtcChPrm[] =
             .dmaPriority    = TISCI_MSG_VALUE_RM_UDMAP_CH_SCHED_PRIOR_HIGH,
             .burstSize      = TISCI_MSG_VALUE_RM_UDMAP_CH_BURST_SIZE_128_BYTES,
             .supressTdCqPkt = TISCI_MSG_VALUE_RM_UDMAP_TX_CH_SUPPRESS_TD_DISABLED,
+#if (UDMA_NUM_UTC_INSTANCE > 0)
             .druOwner       = CSL_DRU_OWNER_UDMAC_TR,
             .druQueueId     = CSL_DRU_QUEUE_ID_3,
+#endif
         }
     },
 };
@@ -317,6 +321,7 @@ static const UdmaTestChPrm gUdmaTestChPrm[] =
         .utcPrmId       = UDMA_TEST_UTCCH_PRMID_INVALID,
         .pdmaPrmId      = UDMA_TEST_PDMACH_PRMID_INVALID,
     },
+#if defined (UDMA_UTC_ID_MSMC_DRU0)
     {
         .chPrmId        = UDMA_TEST_CH_PRMID_DRU_DEF,
         .chType         = UDMA_CH_TYPE_UTC,
@@ -343,6 +348,7 @@ static const UdmaTestChPrm gUdmaTestChPrm[] =
         .utcPrmId       = UDMA_TEST_UTCCH_PRMID_DEF,
         .pdmaPrmId      = UDMA_TEST_PDMACH_PRMID_INVALID,
     },
+#endif
     {
         .chPrmId        = UDMA_TEST_CH_PRMID_BLKCPY_HC_DEF,
         .chType         = UDMA_CH_TYPE_TR_BLK_COPY_HC,

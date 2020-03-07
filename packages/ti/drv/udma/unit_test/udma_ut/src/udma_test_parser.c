@@ -639,11 +639,13 @@ static void udmaTestTask(void *arg0, void *arg1)
 static int32_t udmaTestInit(UdmaTestObj *testObj)
 {
     int32_t             retVal = UDMA_SOK;
-    Udma_DrvHandle      drvHandle;
     SemaphoreP_Params   semPrms;
+#if defined (UDMA_UTC_ID_MSMC_DRU0)
+    Udma_DrvHandle      drvHandle;
     uint32_t            utcId;
     uint32_t            numQueue, queId;
     CSL_DruQueueConfig  queueCfg;
+#endif
 
     SemaphoreP_Params_init(&semPrms);
     semPrms.mode = SemaphoreP_Mode_BINARY;
@@ -656,6 +658,7 @@ static int32_t udmaTestInit(UdmaTestObj *testObj)
     retVal += Utils_memInit();
     retVal += udmaTestInitDriver(testObj);
 
+#if defined (UDMA_UTC_ID_MSMC_DRU0)
     if(UDMA_SOK == retVal)
     {
         /* Init all DRU queue */
@@ -680,6 +683,7 @@ static int32_t udmaTestInit(UdmaTestObj *testObj)
             }
         }
     }
+#endif
 
     return (retVal);
 }
