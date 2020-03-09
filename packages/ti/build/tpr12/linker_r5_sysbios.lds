@@ -17,7 +17,7 @@
 MEMORY{
 PAGE 0:
     VECTORS  (X)  : origin=0x00000000 length=0x00000100
-    TCMA_RAM (RX) : origin=0x00020100 length=0x00003F00
+    TCMA_RAM (RX) : origin=0x00000100 length=0x00003F00
     TCMB_RAM (RW) : origin=0x00080000 length=0x00004000
     L2_RAM_BANK0 (RW) : origin=0x10200000 length=0x00080000
     L2_RAM_BANK1 (RW) : origin=0x10280000 length=0x00070000
@@ -53,6 +53,14 @@ SECTIONS{
     .pinit   : {} > L2_RAM_BANK1 | L2_RAM_BANK0
     .bss     : {} > L2_RAM_BANK1 | L2_RAM_BANK0
     .stack   : {} > TCMB_RAM | L2_RAM_BANK1 | L2_RAM_BANK0
+
+    .boot:{
+       *.*(*ti_sysbios_family_arm_MPU*)
+       boot.aer5f(*.text)
+       *.*(*startup*)
+       *.*(*Startup*)
+       *.*(*Cache*)
+     } > TCMA_RAM | TCMB_RAM
 }
 /*----------------------------------------------------------------------------*/
 

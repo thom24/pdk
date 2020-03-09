@@ -41,8 +41,12 @@
 #include <ti/csl/cslr_device.h>
 #include <ti/csl/soc.h>
 
+#if !defined(SOC_TPR12)
 #include <ti/drv/i2c/I2C.h>
 #include <ti/drv/i2c/soc/I2C_soc.h>
+#else
+typedef void      *I2C_Handle;
+#endif
 
 #include <ti/drv/uart/UART.h>
 #include <ti/drv/uart/UART_stdio.h>
@@ -56,7 +60,9 @@
 /*****************************************************************************
  * Internal Objects                                                          *
  *****************************************************************************/
+#if !defined(SOC_TPR12)
 extern const I2C_Config I2C_config[];
+#endif
 
 typedef struct
 {

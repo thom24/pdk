@@ -17,7 +17,7 @@ ifeq ($(ISA),$(filter $(ISA), a53 a72 c7x))
   SRCS_COMMON += bios_mmu.c
 endif
 
-PACKAGE_SRCS_COMMON = makefile HwiP.h SwiP.h MuxIntcP.h osal.h osal_component.mk SemaphoreP.h \
+PACKAGE_SRCS_COMMON = makefile HwiP.h SwiP.h MuxIntcP.h osal.h osal_component.mk SemaphoreP.h MemoryP.h CycleprofilerP.h \
                       arch/core src/tirtos src/src_common_nonos.mk  src/src_common_tirtos.mk \
                       docs/OSAL_SoftwareManifest.html docs/ReleaseNotes_OSAL.pdf \
                       build/makefile_nonos_indp.mk build/makefile_nonos.mk build/makefile_tirtos_indp.mk build/makefile_tirtos.mk
