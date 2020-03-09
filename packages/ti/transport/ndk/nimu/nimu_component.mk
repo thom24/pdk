@@ -231,7 +231,7 @@ export NIMU_Cpsw_ExampleApp_COMP_LIST
 export NIMU_Cpsw_ExampleApp_BOARD_DEPENDENCY
 export NIMU_Cpsw_ExampleApp_CORE_DEPENDENCY
 NIMU_Cpsw_ExampleApp_XDC_CONFIGURO = yes
-NIMU_Cpsw_ExampleApp_MAKEFILE = -f $(SOC)/cpsw/makefile
+NIMU_Cpsw_ExampleApp_MAKEFILE = -f $(SOC)/cpsw/makefile XDC_DISABLE_THUMB_MODE=yes
 NIMU_Cpsw_ExampleApp_PKG_LIST = NIMU_Cpsw_ExampleApp
 NIMU_Cpsw_ExampleApp_INCLUDE = $(NIMU_Cpsw_ExampleApp_PATH)
 NIMU_Cpsw_ExampleApp_BOARDLIST = am65xx_idk am65xx_evm j721e_evm
@@ -249,7 +249,7 @@ export NIMU_Cpsw_SMP_ExampleApp_COMP_LIST
 export NIMU_Cpsw_SMP_ExampleApp_BOARD_DEPENDENCY
 export NIMU_Cpsw_SMP_ExampleApp_CORE_DEPENDENCY
 NIMU_Cpsw_SMP_ExampleApp_XDC_CONFIGURO = yes
-NIMU_Cpsw_SMP_ExampleApp_MAKEFILE = -f $(SOC)/cpsw/makefile SMP=enable
+NIMU_Cpsw_SMP_ExampleApp_MAKEFILE = -f $(SOC)/cpsw/makefile SMP=enable XDC_DISABLE_THUMB_MODE=yes
 NIMU_Cpsw_SMP_ExampleApp_PKG_LIST = NIMU_Cpsw_SMP_ExampleApp
 NIMU_Cpsw_SMP_ExampleApp_INCLUDE = $(NIMU_Cpsw_SMP_ExampleApp_PATH)
 NIMU_Cpsw_SMP_ExampleApp_BOARDLIST = am65xx_idk
@@ -263,7 +263,7 @@ NIMU_FtpCpsw_ExampleApp_PATH = $(PDK_NIMU_COMP_PATH)/example/ftpApp
 NIMU_FtpCpsw_ExampleApp_BOARD_DEPENDENCY = yes
 NIMU_FtpCpsw_ExampleApp_CORE_DEPENDENCY = no
 NIMU_FtpCpsw_ExampleApp_XDC_CONFIGURO = yes
-NIMU_FtpCpsw_ExampleApp_MAKEFILE = -f $(SOC)/cpsw/makefile 
+NIMU_FtpCpsw_ExampleApp_MAKEFILE = -f $(SOC)/cpsw/makefile  XDC_DISABLE_THUMB_MODE=yes
 export NIMU_FtpCpsw_ExampleApp_COMP_LIST
 export NIMU_FtpCpsw_ExampleApp_BOARD_DEPENDENCY
 export NIMU_FtpCpsw_ExampleApp_CORE_DEPENDENCY
@@ -285,7 +285,7 @@ export NIMU_Icssg_ExampleApp_COMP_LIST
 export NIMU_Icssg_ExampleApp_BOARD_DEPENDENCY
 export NIMU_Icssg_ExampleApp_CORE_DEPENDENCY
 NIMU_Icssg_ExampleApp_XDC_CONFIGURO = yes
-NIMU_Icssg_ExampleApp_MAKEFILE = -f $(SOC)/icssg/makefile
+NIMU_Icssg_ExampleApp_MAKEFILE = -f $(SOC)/icssg/makefile XDC_DISABLE_THUMB_MODE=yes
 NIMU_Icssg_ExampleApp_PKG_LIST = NIMU_Icssg_ExampleApp 
 NIMU_Icssg_ExampleApp_INCLUDE = $(NIMU_Icssg_ExampleApp _PATH)
 NIMU_Icssg_ExampleApp_BOARDLIST = am65xx_idk am65xx_evm
@@ -299,7 +299,7 @@ NIMU_FtpIcssg_ExampleApp_PATH = $(PDK_NIMU_COMP_PATH)/example/ftpApp
 NIMU_FtpIcssg_ExampleApp_BOARD_DEPENDENCY = yes
 NIMU_FtpIcssg_ExampleApp_CORE_DEPENDENCY = no
 NIMU_FtpIcssg_ExampleApp_XDC_CONFIGURO = yes
-NIMU_FtpIcssg_ExampleApp_MAKEFILE = -f $(SOC)/icssg/makefile 
+NIMU_FtpIcssg_ExampleApp_MAKEFILE = -f $(SOC)/icssg/makefile XDC_DISABLE_THUMB_MODE=yes
 export NIMU_FtpIcssg_ExampleApp_COMP_LIST
 export NIMU_FtpIcssg_ExampleApp_BOARD_DEPENDENCY
 export NIMU_FtpIcssg_ExampleApp_CORE_DEPENDENCY
