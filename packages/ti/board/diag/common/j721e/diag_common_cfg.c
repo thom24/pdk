@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -150,6 +150,16 @@ static void BoardDiag_mmuStartup(void)
     /* 1GB for FSS0 OSPI1 */
     desc = CSL_mmuInitLevel1Desc(0x600000000, &attrs);
     gCSLa53Mmulevel1TableDiag[24] = desc;
+
+    /* 4GB DDR memory for 64-bit access */
+    desc = CSL_mmuInitLevel1Desc(0x900000000, &attrs);
+    gCSLa53Mmulevel1TableDiag[36] = desc;
+    desc = CSL_mmuInitLevel1Desc(0x940000000, &attrs);
+    gCSLa53Mmulevel1TableDiag[37] = desc;
+    desc = CSL_mmuInitLevel1Desc(0x980000000, &attrs);
+    gCSLa53Mmulevel1TableDiag[38] = desc;
+    desc = CSL_mmuInitLevel1Desc(0x9C0000000, &attrs);
+    gCSLa53Mmulevel1TableDiag[39] = desc;
 
     for (idx = 0, addr = 0x40000000; addr < 0x70000000; idx++, addr+=0x200000) {
       desc = CSL_mmuInitLevel2Desc(addr, &attrs);
