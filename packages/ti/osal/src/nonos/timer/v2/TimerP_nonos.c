@@ -41,7 +41,6 @@
 #include <ti/osal/TimerP.h>
 #include <ti/csl/hw_types.h>
 #include <ti/csl/soc.h>
-#include <ti/csl/csl_timer.h>
 #include <ti/csl/cslr_rti.h>
 #include <ti/csl/arch/csl_arch.h>
 #include <ti/osal/src/nonos/Nonos_config.h>

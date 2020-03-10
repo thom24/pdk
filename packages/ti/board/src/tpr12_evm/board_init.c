@@ -123,8 +123,10 @@ Board_STATUS Board_init(Board_initCfg cfg)
     if (ret != BOARD_SOK)
         return ret;
 
+#ifdef UART_DRV_INSTALLED
     if (cfg & BOARD_INIT_UART_STDIO)
         ret = Board_uartStdioInit();
+#endif
     if (ret != BOARD_SOK)
         return ret;
 
@@ -145,9 +147,10 @@ Board_STATUS Board_deinit(Board_initCfg cfg)
 {
     Board_STATUS ret = BOARD_SOK;
 
+#ifdef UART_DRV_INSTALLED
     if (cfg & BOARD_DEINIT_UART_STDIO)
         UART_stdioDeInit();
-
+#endif
     return ret;
 }
 

@@ -39,7 +39,6 @@
 #include <stdlib.h>
 #include <ti/csl/soc.h>
 #include <ti/osal/soc/osal_soc.h>
-#include <ti/csl/csl_timer.h>
 #include <ti/csl/arch/csl_arch.h>
 #include <ti/osal/src/nonos/Nonos_config.h>
 

@@ -48,9 +48,11 @@
 typedef void      *I2C_Handle;
 #endif
 
+#ifdef UART_DRV_INSTALLED
 #include <ti/drv/uart/UART.h>
 #include <ti/drv/uart/UART_stdio.h>
 #include <ti/drv/uart/soc/UART_soc.h>
+#endif
 
 #include <ti/board/board.h>
 #include <ti/csl/tistdtypes.h>
