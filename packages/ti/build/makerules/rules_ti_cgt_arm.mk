@@ -108,13 +108,20 @@ else
 endif
 
 XDC_HFILE_NAME = $(basename $(notdir $(XDC_CFG_FILE_$(CORE))))
+
+ifneq ($(PEXT_BIOS),)
+XDC_HFILE_EXT = $(PEXT_BIOS)
+else
+XDC_HFILE_EXT = p$(FORMAT_EXT)$(CGT_EXT)
+endif
+
 # CFLAGS based on profile selected
 ifeq ($(BUILD_PROFILE_$(CORE)), debug)
  LNKFLAGS_INTERNAL_BUILD_PROFILE =
  CFLAGS_XDCINTERNAL = -Dxdc_target_name__=$(XDC_TARGET_NAME) -Dxdc_target_types__=ti/targets/arm/elf/std.h -Dxdc_bld__profile_debug
  CFLAGS_INTERNAL += -D_DEBUG_=1
  ifndef MODULE_NAME
-  CFLAGS_XDCINTERNAL += -Dxdc_cfg__header__='$(CONFIGURO_DIR)/package/cfg/$(XDC_HFILE_NAME)_pe$(CGT_EXT).h'
+  CFLAGS_XDCINTERNAL += -Dxdc_cfg__header__='$(CONFIGURO_DIR)/package/cfg/$(XDC_HFILE_NAME)_$(XDC_HFILE_EXT).h'
  endif
 
 endif
@@ -128,14 +135,14 @@ ifeq ($(BUILD_PROFILE_$(CORE)), release)
    endif
    CFLAGS_XDCINTERNAL = -Dxdc_target_name__=$(XDC_TARGET_NAME) -Dxdc_target_types__=ti/targets/arm/elf/std.h -Dxdc_bld__profile_release
    ifndef MODULE_NAME
-     CFLAGS_XDCINTERNAL += -Dxdc_cfg__header__='$(CONFIGURO_DIR)/package/cfg/$(XDC_HFILE_NAME)_pe$(CGT_EXT).h'
+     CFLAGS_XDCINTERNAL += -Dxdc_cfg__header__='$(CONFIGURO_DIR)/package/cfg/$(XDC_HFILE_NAME)_$(XDC_HFILE_EXT).h'
    endif
  endif
  ifeq ($(CGT_ISA), Arm9)
         LNKFLAGS_INTERNAL_BUILD_PROFILE = -qq --diag_warning=225 --diag_suppress=23000 $(LNKFLAGS_GLOBAL_$(CORE))
 	CFLAGS_XDCINTERNAL = -Dxdc_target_name__=$(XDC_TARGET_NAME) -Dxdc_target_types__=ti/targets/arm/elf/std.h -Dxdc_bld__profile_release
 	ifndef MODULE_NAME
-	  CFLAGS_XDCINTERNAL += -Dxdc_cfg__header__='$(CONFIGURO_DIR)/package/cfg/$(XDC_HFILE_NAME)_pe$(CGT_EXT).h'
+	  CFLAGS_XDCINTERNAL += -Dxdc_cfg__header__='$(CONFIGURO_DIR)/package/cfg/$(XDC_HFILE_NAME)_$(XDC_HFILE_EXT).h'
 	endif
  endif
 endif
