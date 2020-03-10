@@ -108,7 +108,7 @@ uint32_t readLatency[LOGSIZE] __attribute__ ((aligned (64)));
 #ifdef __TI_ARM_V7R4__
 #pragma DATA_SECTION(readLatency, ".statBuf")
 #endif
-extern unsigned int lowPriAddr[3];
+extern const uint32_t lowPriAddr[3];
 #endif
 uint32_t loop_counter = 0;
 uint32_t t_overhead;
