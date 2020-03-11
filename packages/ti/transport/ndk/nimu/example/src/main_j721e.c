@@ -417,7 +417,7 @@ int main(void)
     Task_Params taskParams;
     Semaphore_Params semParams;
     Board_STATUS boardInitStatus =0;
-    Board_initCfg cfg = BOARD_INIT_UART_STDIO | BOARD_INIT_PINMUX_CONFIG | BOARD_INIT_MODULE_CLOCK  | BOARD_INIT_ETH_PHY;
+    Board_initCfg cfg = BOARD_INIT_UART_STDIO | BOARD_INIT_PINMUX_CONFIG | BOARD_INIT_MODULE_CLOCK | BOARD_INIT_ETH_PHY | BOARD_INIT_ENETCTRL_CPSW2G;
     boardInitStatus = Board_init(cfg);
     if (boardInitStatus !=BOARD_SOK)
     {
