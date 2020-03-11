@@ -254,29 +254,6 @@
  */
 #define TISCI_MSG_VALUE_RM_UDMAP_CH_BURST_SIZE_256_BYTES       (3U)
 
-/**
- * Value for
- * @ref tisci_msg_rm_udmap_tx_ch_get_cfg_req::get_reset_cfg
- * @ref tisci_msg_rm_udmap_rx_ch_get_cfg_req::get_reset_cfg
- * @ref tisci_msg_rm_udmap_flow_get_cfg_req::get_reset_cfg
- * @ref tisci_msg_rm_udmap_flow_size_thresh_get_cfg_req::get_reset_cfg
- * @ref tisci_msg_rm_udmap_gcfg_get_cfg_req::get_reset_cfg
- * used to return the non-real-time register configuration for a UDMAP
- * resource
- */
-#define TISCI_MSG_VALUE_RM_UDMAP_GET_CFG_REG    (0x0u)
-/**
- * Value for
- * @ref tisci_msg_rm_udmap_tx_ch_get_cfg_req::get_reset_cfg
- * @ref tisci_msg_rm_udmap_rx_ch_get_cfg_req::get_reset_cfg
- * @ref tisci_msg_rm_udmap_flow_get_cfg_req::get_reset_cfg
- * @ref tisci_msg_rm_udmap_flow_size_thresh_get_cfg_req::get_reset_cfg
- * @ref tisci_msg_rm_udmap_gcfg_get_cfg_req::get_reset_cfg
- * used to return the non-real-time register hardware reset configuration for
- * a UDMAP resource
- */
-#define TISCI_MSG_VALUE_RM_UDMAP_GET_CFG_RESET  (0x1u)
-
 /* UDMAP transmit channel declarations */
 
 /**
@@ -311,23 +288,23 @@
 #define TISCI_MSG_VALUE_RM_UDMAP_CH_TX_TDTYPE_VALID            ((uint32_t) 1U << 15U)
 
 /**
- * Descriptor extended packet info (if present) will be filtered by the DMA
- * controller for UDMAP transmit channels.
- */
-#define TISCI_MSG_VALUE_RM_UDMAP_TX_CH_FILT_EINFO_DISABLED        (0u)
-/**
  * Descriptor extended packet info (if present) will be passed by the DMA
  * controller to the back end application for UDMAP transmit channels.
  */
-#define TISCI_MSG_VALUE_RM_UDMAP_TX_CH_FILT_EINFO_ENABLED         (1u)
+#define TISCI_MSG_VALUE_RM_UDMAP_TX_CH_FILT_EINFO_DISABLED        (0u)
 /**
- * Descriptor protocol specific words (if present) will be filtered by the DMA
+ * Descriptor extended packet info (if present) will be filtered by the DMA
  * controller for UDMAP transmit channels.
  */
-#define TISCI_MSG_VALUE_RM_UDMAP_TX_CH_FILT_PSWORDS_DISABLED      (0u)
+#define TISCI_MSG_VALUE_RM_UDMAP_TX_CH_FILT_EINFO_ENABLED         (1u)
 /**
  * Descriptor protocol specific words (if present) will be passed by the DMA
  * controller to the back end application for UDMAP transmit channels.
+ */
+#define TISCI_MSG_VALUE_RM_UDMAP_TX_CH_FILT_PSWORDS_DISABLED      (0u)
+/**
+ * Descriptor protocol specific words (if present) will be filtered by the DMA
+ * controller for UDMAP transmit channels.
  */
 #define TISCI_MSG_VALUE_RM_UDMAP_TX_CH_FILT_PSWORDS_ENABLED       (1u)
 /**
@@ -661,6 +638,21 @@
  */
 #define TISCI_MSG_VALUE_RM_UDMAP_RX_FLOW_SOP_MAX               (255u)
 /**
+ * Enable usage of size threshold 0 in
+ * @ref tisci_msg_rm_udmap_flow_size_thresh_cfg_req::rx_size_thresh_en
+ */
+#define TISCI_MSG_VALUE_RM_UDMAP_RX_FLOW_SIZE_THRESH_0_ENABLE  (1U)
+/**
+ * Enable usage of size threshold 1 in
+ * @ref tisci_msg_rm_udmap_flow_size_thresh_cfg_req::rx_size_thresh_en
+ */
+#define TISCI_MSG_VALUE_RM_UDMAP_RX_FLOW_SIZE_THRESH_1_ENABLE  (2U)
+/**
+ * Enable usage of size threshold 2 in
+ * @ref tisci_msg_rm_udmap_flow_size_thresh_cfg_req::rx_size_thresh_en
+ */
+#define TISCI_MSG_VALUE_RM_UDMAP_RX_FLOW_SIZE_THRESH_2_ENABLE  (4U)
+/**
  * Maximum encoded size threshold setting in
  * @ref tisci_msg_rm_udmap_flow_size_thresh_cfg_req::rx_size_thresh_en
  */
@@ -756,94 +748,6 @@ struct tisci_msg_rm_udmap_gcfg_cfg_req {
  */
 struct tisci_msg_rm_udmap_gcfg_cfg_resp {
     struct tisci_header hdr;
-} __attribute__((__packed__));
-
-/**
- * \brief Get Navigator Subsystem UDMAP global configuration's non-real-time
- * register configuration. Gets the configuration of the non-real-time register
- * fields of a UDMAP global configuration.  The host, or a supervisor of the
- * host, who owns the gcfg region must be the requesting host.  The values of
- * the non-real-time registers are returned in
- * @ref tisci_msg_rm_udmap_gcfg_get_cfg_resp.  The reset_cfg parameter is used
- * to request either the existing non-real-time register values or the hardware
- * reset values for the UDMAP global configuration register fields.
- *
- * \param hdr
- * Standard TISCI header
- *
- * \param nav_id
- * SoC device ID of Navigator Subsystem in which the UDMAP global configuration
- * is located
- *
- * \param get_reset_cfg
- * Switch defining which UDMAP global configuration is returned:
- * @ref TISCI_MSG_VALUE_RM_UDMAP_GET_CFG_REG - Return non-real-time register
- * configuration
- * @ref TISCI_MSG_VALUE_RM_UDMAP_GET_CFG_RESET - Return non-real-time register
- * hardware reset value configuration
- */
-struct tisci_msg_rm_udmap_gcfg_get_cfg_req {
-    struct tisci_header    hdr;
-    uint16_t            nav_id;
-    uint8_t            get_reset_cfg;
-} __attribute__((__packed__));
-
-/**
- * \brief UDMAP global configuration get configuration response message.
- * Response received by host processor after RM has handled
- * @ref tisci_msg_rm_udmap_gcfg_get_cfg_req.  The response contains the
- * global configuration's non-real-time register values.
- *
- * \param hdr
- * Standard TISCI header
- *
- * \param revision
- * UDMAP module revision register.  This field is read-only.
- * Use @ref TISCI_MSG_VALUE_RM_UDMAP_GET_CFG_REG to retrieve this field's value.
- *
- * \param perf_ctrl
- * UDMAP performance control register
- *
- * \param emu_ctrl
- * UDMAP emulation control
- *
- * \param psil_to
- * UDMAP PSI-L proxy timeout register
- *
- * \param utc_ctrl
- * UDMAP external UTC control register
- *
- * \param cap0
- * UDMAP capabilities 0 register.  This field is read-only.  Use
- * @ref TISCI_MSG_VALUE_RM_UDMAP_GET_CFG_REG to retrieve this field's value.
- *
- * \param cap1
- * UDMAP capabilities 1 register.  This field is read-only.  Use
- * @ref TISCI_MSG_VALUE_RM_UDMAP_GET_CFG_REG to retrieve this field's value.
- *
- * \param cap2
- * UDMAP capabilities 2 register.  This field is read-only.  Use
- * @ref TISCI_MSG_VALUE_RM_UDMAP_GET_CFG_REG to retrieve this field's value.
- *
- * \param cap3
- * UDMAP capabilities 3 register.  This field is read-only.  Use
- * @ref TISCI_MSG_VALUE_RM_UDMAP_GET_CFG_REG to retrieve this field's value.
- *
- * \param rflowfwstat
- * UDMAP rx flow ID firewall status register
- */
-struct tisci_msg_rm_udmap_gcfg_get_cfg_resp {
-    struct tisci_header    hdr;
-    uint32_t            revision;
-    uint32_t            perf_ctrl;
-    uint32_t            emu_ctrl;
-    uint32_t            psil_to;
-    uint32_t            utc_ctrl;
-    uint32_t            cap0;
-    uint32_t            cap1;
-    uint32_t            cap2;
-    uint32_t            cap3;
-    uint32_t            rflowfwstat;
 } __attribute__((__packed__));
 
 /**
@@ -1094,122 +998,6 @@ struct tisci_msg_rm_udmap_tx_ch_cfg_resp {
 } __attribute__((__packed__));
 
 /**
- * \brief Get Navigator Subsystem UDMAP transmit channel's non-real-time
- * register configuration
- *
- * Gets the configuration of the non-real-time register fields of a UDMAP
- * transmit channel.  The host, or a supervisor of the host, who owns the
- * channel must be the requesting host.  The values of the non-real-time
- * registers are returned in @ref tisci_msg_rm_udmap_tx_ch_get_cfg_resp.
- * The reset_cfg parameter is used to request either the existing
- * non-real-time register values or the hardware reset values for the UDMAP
- * transmit channel's register fields.
- *
- * \param hdr
- * Standard TISCI header
- *
- * \param nav_id
- * SoC device ID of Navigator Subsystem in which the UDMAP transmit channel is
- * located
- *
- * \param index
- * UDMAP transmit channel index.
- *
- * \param get_reset_cfg
- * Switch defining which UDMAP tx ch configuration is returned:
- * @ref TISCI_MSG_VALUE_RM_UDMAP_GET_CFG_REG - Return non-real-time register
- * configuration
- * @ref TISCI_MSG_VALUE_RM_UDMAP_GET_CFG_RESET - Return non-real-time register
- * hardware reset value configuration
- */
-struct tisci_msg_rm_udmap_tx_ch_get_cfg_req {
-    struct tisci_header    hdr;
-    uint16_t            nav_id;
-    uint16_t            index;
-    uint8_t            get_reset_cfg;
-} __attribute__((__packed__));
-
-/**
- * \brief UDMAP transmit channel get configuration response message
- *
- * Response received by host processor after RM has handled
- * @ref tisci_msg_rm_udmap_tx_ch_get_cfg_req.  The response contains the
- * transmit channel's non-real-time register values.
- *
- * \param hdr
- * Standard TISCI header
- *
- * \param tx_pause_on_err
- * UDMAP transmit channel pause on error configuration
- *
- * \param tx_filt_einfo
- * UDMAP transmit channel extended packet information passing configuration
- *
- * \param tx_filt_pswords
- * UDMAP transmit channel protocol specific word passing configuration
- *
- * \param tx_atype
- * UDMAP transmit channel non Ring Accelerator access pointer interpretation
- *
- * \param tx_chan_type
- * UDMAP transmit channel functional channel type and work passing mechanism
- *
- * \param tx_supr_tdpkt
- * UDMAP transmit channel teardown packet generation suppression
- *
- * \param tx_fetch_size
- * UDMAP transmit channel number of 32-bit descriptor words to fetch
- *
- * \param tx_credit_count
- * UDMAP transmit channel transfer request credit count
- *
- * \param txcq_qnum
- * UDMAP transmit channel completion queue
- *
- * \param tx_priority
- * UDMAP transmit channel transmit priority
- *
- * \param tx_qos
- * UDMAP transmit channel transmit qos value
- *
- * \param tx_orderid
- * UDMAP transmit channel bus order id
- *
- * \param fdepth
- * UDMAP transmit channel FIFO depth
- *
- * \param tx_sched_priority
- * UDMAP transmit channel tx scheduling priority
- *
- * \param tx_burst_size
- * UDMAP transmit channel burst size.  This field is not supported on some SoCs.
- * Zeroes are returned on SoCs that do not support this field.
- *
- * \param tx_tdtype
- * UDMAP transmit channel teardown type configuration to be programmed
- * into the tdtype field of the TCHAN_TCFG register.
- */
-struct tisci_msg_rm_udmap_tx_ch_get_cfg_resp {
-    struct tisci_header    hdr;
-    uint8_t            tx_pause_on_err;
-    uint8_t            tx_filt_einfo;
-    uint8_t            tx_filt_pswords;
-    uint8_t            tx_atype;
-    uint8_t            tx_chan_type;
-    uint8_t            tx_supr_tdpkt;
-    uint16_t            tx_fetch_size;
-    uint8_t            tx_credit_count;
-    uint16_t            txcq_qnum;
-    uint8_t            tx_priority;
-    uint8_t            tx_qos;
-    uint8_t            tx_orderid;
-    uint16_t            fdepth;
-    uint8_t            tx_sched_priority;
-    uint8_t            tx_burst_size;
-    uint8_t            tx_tdtype;
-} __attribute__((__packed__));
-
-/**
  * \brief Configures a Navigator Subsystem UDMAP receive channel
  *
  * Configures the non-real-time registers of a Navigator Subsystem UDMAP
@@ -1435,113 +1223,6 @@ struct tisci_msg_rm_udmap_rx_ch_cfg_req {
  */
 struct tisci_msg_rm_udmap_rx_ch_cfg_resp {
     struct tisci_header hdr;
-} __attribute__((__packed__));
-
-/**
- * \brief Get Navigator Subsystem UDMAP receive channel's non-real-time
- * register configuration
- *
- * Gets the configuration of the non-real-time register fields of a UDMAP
- * receive channel.  The host, or a supervisor of the host, who owns the
- * channel must be the requesting host.  The values of the non-real-time
- * registers are returned in @ref tisci_msg_rm_udmap_rx_ch_get_cfg_resp.
- * The reset_cfg parameter is used to request either the existing
- * non-real-time register values or the hardware reset values for the UDMAP
- * receive channel's register fields.
- *
- * \param hdr
- * Standard TISCI header
- *
- * \param nav_id
- * SoC device ID of Navigator Subsystem in which the UDMAP receive channel is
- * located
- *
- * \param index
- * UDMAP receive channel index.
- *
- * \param get_reset_cfg
- * Switch defining which UDMAP rx ch configuration is returned:
- * @ref TISCI_MSG_VALUE_RM_UDMAP_GET_CFG_REG - Return non-real-time register
- * configuration
- * @ref TISCI_MSG_VALUE_RM_UDMAP_GET_CFG_RESET - Return non-real-time register
- * hardware reset value configuration
- */
-struct tisci_msg_rm_udmap_rx_ch_get_cfg_req {
-    struct tisci_header    hdr;
-    uint16_t            nav_id;
-    uint16_t            index;
-    uint8_t            get_reset_cfg;
-} __attribute__((__packed__));
-
-/**
- * \brief UDMAP receive channel get configuration response message
- *
- * Response received by host processor after RM has handled
- * @ref tisci_msg_rm_udmap_rx_ch_get_cfg_req.  The response contains the
- * receive channel's non-real-time register values.
- *
- * \param hdr
- * Standard TISCI header
- *
- * \param rx_fetch_size
- * UDMAP receive channel number of 32-bit descriptor words to fetch
- *
- * \param rxcq_qnum
- * UDMAP receive channel completion queue
- *
- * \param rx_priority
- * UDMAP receive channel receive priority
- *
- * \param rx_qos
- * UDMAP receive channel receive qos value
- *
- * \param rx_orderid
- * UDMAP receive channel bus order id
- *
- * \param rx_sched_priority
- * UDMAP receive channel rx scheduling priority
- *
- * \param flowid_start
- * UDMAP receive channel additional flows starting index
- *
- * \param flowid_cnt
- * UDMAP receive channel additional flows count
- *
- * \param rx_pause_on_err
- * UDMAP receive channel pause on error
- *
- * \param rx_atype
- * UDMAP receive channel non Ring Accelerator access pointer interpretation
- *
- * \param rx_chan_type
- * UDMAP receive channel functional channel type and work passing mechanism
- *
- * \param rx_ignore_short
- * UDMAP receive channel short packet treatment
- *
- * \param rx_ignore_long
- * UDMAP receive channel long packet treatment
- *
- * \param rx_burst_size
- * UDMAP receive channel burst size.  This field is not supported on some SoCs.
- * Zeroes are returned on SoCs that do not support this field.
- */
-struct tisci_msg_rm_udmap_rx_ch_get_cfg_resp {
-    struct tisci_header    hdr;
-    uint16_t            rx_fetch_size;
-    uint16_t            rxcq_qnum;
-    uint8_t            rx_priority;
-    uint8_t            rx_qos;
-    uint8_t            rx_orderid;
-    uint8_t            rx_sched_priority;
-    uint16_t            flowid_start;
-    uint16_t            flowid_cnt;
-    uint8_t            rx_pause_on_err;
-    uint8_t            rx_atype;
-    uint8_t            rx_chan_type;
-    uint8_t            rx_ignore_short;
-    uint8_t            rx_ignore_long;
-    uint8_t            rx_burst_size;
 } __attribute__((__packed__));
 
 /**
@@ -1865,132 +1546,6 @@ struct tisci_msg_rm_udmap_flow_cfg_resp {
 } __attribute__((__packed__));
 
 /**
- * \brief Get Navigator Subsystem UDMAP receive flow's non-real-time
- * register configuration
- *
- * Gets the configuration of the non-real-time register fields of a UDMAP
- * receive flow.  The host, or a supervisor of the host, who owns the flow
- * must be the requesting host.  The values of the non-real-time registers
- * are returned in @ref tisci_msg_rm_udmap_flow_get_cfg_resp.
- * The reset_cfg parameter is used to request either the existing
- * non-real-time register values or the hardware reset values for the UDMAP
- * flow's register fields.
- *
- * \param hdr
- * Standard TISCI header
- *
- * \param nav_id
- * SoC device ID of Navigator Subsystem in which the UDMAP receive flow is
- * located
- *
- * \param index
- * UDMAP receive flow index.
- *
- * \param get_reset_cfg
- * Switch defining which UDMAP flow configuration is returned:
- * @ref TISCI_MSG_VALUE_RM_UDMAP_GET_CFG_REG - Return non-real-time register
- * configuration
- * @ref TISCI_MSG_VALUE_RM_UDMAP_GET_CFG_RESET - Return non-real-time register
- * hardware reset value configuration
- */
-struct tisci_msg_rm_udmap_flow_get_cfg_req {
-    struct tisci_header    hdr;
-    uint16_t            nav_id;
-    uint16_t            index;
-    uint8_t            get_reset_cfg;
-} __attribute__((__packed__));
-
-/**
- * \brief UDMAP receive flow get configuration response message
- *
- * Response received by host processor after RM has handled
- * @ref tisci_msg_rm_udmap_flow_get_cfg_req.  The response contains
- * the receive flow's register values.
- *
- * \param hdr
- * Standard TISCI header
- *
- * \param rx_einfo_present
- * UDMAP receive flow extended packet info present configuration
- *
- * \param rx_psinfo_present
- * UDMAP receive flow PS words present configuration
- *
- * \param rx_error_handling
- * UDMAP receive flow error handling configuration
- *
- * \param rx_desc_type
- * UDMAP receive flow descriptor type
- *
- * \param rx_sop_offset
- * UDMAP receive flow start of packet offset
- *
- * \param rx_dest_qnum
- * UDMAP receive flow destination queue
- *
- * \param rx_src_tag_hi
- * UDMAP receive flow source tag high byte constant
- *
- * \param rx_src_tag_lo
- * UDMAP receive flow source tag low byte constant
- *
- * \param rx_dest_tag_hi
- * UDMAP receive flow destination tag high byte constant
- *
- * \param rx_dest_tag_lo
- * UDMAP receive flow destination tag low byte constant
- *
- * \param rx_src_tag_hi_sel
- * UDMAP receive flow source tag high byte selector
- *
- * \param rx_src_tag_lo_sel
- * UDMAP receive flow source tag low byte selector
- *
- * \param rx_dest_tag_hi_sel
- * UDMAP receive flow destination tag high byte selector
- *
- * \param rx_dest_tag_lo_sel
- * UDMAP receive flow destination tag low byte selector
- *
- * \param rx_fdq0_sz0_qnum
- * UDMAP receive flow free descriptor queue 0
- *
- * \param rx_fdq1_qnum
- * UDMAP receive flow free descriptor queue 1
- *
- * \param rx_fdq2_qnum
- * UDMAP receive flow free descriptor queue 2
- *
- * \param rx_fdq3_qnum
- * UDMAP receive flow free descriptor queue 3
- *
- * \param rx_ps_location
- * UDMAP receive flow PS words location
- */
-struct tisci_msg_rm_udmap_flow_get_cfg_resp {
-    struct tisci_header    hdr;
-    uint8_t            rx_einfo_present;
-    uint8_t            rx_psinfo_present;
-    uint8_t            rx_error_handling;
-    uint8_t            rx_desc_type;
-    uint16_t            rx_sop_offset;
-    uint16_t            rx_dest_qnum;
-    uint8_t            rx_src_tag_hi;
-    uint8_t            rx_src_tag_lo;
-    uint8_t            rx_dest_tag_hi;
-    uint8_t            rx_dest_tag_lo;
-    uint8_t            rx_src_tag_hi_sel;
-    uint8_t            rx_src_tag_lo_sel;
-    uint8_t            rx_dest_tag_hi_sel;
-    uint8_t            rx_dest_tag_lo_sel;
-    uint16_t            rx_fdq0_sz0_qnum;
-    uint16_t            rx_fdq1_qnum;
-    uint16_t            rx_fdq2_qnum;
-    uint16_t            rx_fdq3_qnum;
-    uint8_t            rx_ps_location;
-} __attribute__((__packed__));
-
-/**
  * \brief Configures a Navigator Subsystem UDMAP receive flow's size threshold
  *        fields.
  *
@@ -2138,85 +1693,6 @@ struct tisci_msg_rm_udmap_flow_size_thresh_cfg_req {
  */
 struct tisci_msg_rm_udmap_flow_size_thresh_cfg_resp {
     struct tisci_header hdr;
-} __attribute__((__packed__));
-
-/**
- * \brief Get Navigator Subsystem UDMAP receive flow's non-real-time
- * size threshold based queue routing register configuration
- *
- * Gets the configuration of the non-real-time register fields of a UDMAP
- * receive flow's size threshold routing registers.  The host, or a supervisor
- * of the host, who owns the flow must be the requesting host.  The values of
- * the non-real-time registers are returned in
- * @ref tisci_msg_rm_udmap_flow_size_thresh_get_cfg_resp.
- * The reset_cfg parameter is used to request either the existing
- * non-real-time register values or the hardware reset values for the UDMAP
- * flow's register fields.
- *
- * \param hdr
- * Standard TISCI header
- *
- * \param nav_id
- * SoC device ID of Navigator Subsystem in which the UDMAP receive flow is
- * located
- *
- * \param index
- * UDMAP receive flow index.
- *
- * \param get_reset_cfg
- * Switch defining which UDMAP flow configuration is returned:
- * @ref TISCI_MSG_VALUE_RM_UDMAP_GET_CFG_REG - Return non-real-time register
- * configuration
- * @ref TISCI_MSG_VALUE_RM_UDMAP_GET_CFG_RESET - Return non-real-time register
- * hardware reset value configuration
- */
-struct tisci_msg_rm_udmap_flow_size_thresh_get_cfg_req {
-    struct tisci_header    hdr;
-    uint16_t            nav_id;
-    uint16_t            index;
-    uint8_t            get_reset_cfg;
-} __attribute__((__packed__));
-
-/**
- * \brief UDMAP receive flow get size threshold configuration response message
- *
- * Response received by host processor after RM has handled
- * @ref tisci_msg_rm_udmap_flow_size_thresh_get_cfg_req.  The response contains
- * the receive flow's non-real-time size threshold routing register values.
- *
- * \param hdr
- * Standard TISCI header
- *
- * \param rx_size_thresh0
- * UDMAP receive flow packet size threshold 0
- *
- * \param rx_size_thresh1
- * UDMAP receive flow packet size threshold 1
- *
- * \param rx_size_thresh2
- * UDMAP receive flow packet size threshold 2
- *
- * \param rx_fdq0_sz1_qnum
- * UDMAP receive flow free descriptor queue for size threshold 1
- *
- * \param rx_fdq0_sz2_qnum
- * UDMAP receive flow free descriptor queue for size threshold 2
- *
- * \param rx_fdq0_sz3_qnum
- * UDMAP receive flow free descriptor queue for size threshold 3
- *
- * \param rx_size_thresh_en
- * UDMAP receive flow packet size based free buffer queue enable
- */
-struct tisci_msg_rm_udmap_flow_size_thresh_get_cfg_resp {
-    struct tisci_header    hdr;
-    uint16_t            rx_size_thresh0;
-    uint16_t            rx_size_thresh1;
-    uint16_t            rx_size_thresh2;
-    uint16_t            rx_fdq0_sz1_qnum;
-    uint16_t            rx_fdq0_sz2_qnum;
-    uint16_t            rx_fdq0_sz3_qnum;
-    uint8_t            rx_size_thresh_en;
 } __attribute__((__packed__));
 
 #endif /* RM_TISCI_UDMAP_H */

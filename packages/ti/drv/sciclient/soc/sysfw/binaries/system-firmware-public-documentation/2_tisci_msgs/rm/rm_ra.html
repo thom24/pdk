@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                19.12.02
+                20.01.00
               </div>
             
           
@@ -111,7 +111,6 @@
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Resource Management Ring Accelerator TISCI Message Description</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#introduction">Introduction</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#tisci-msg-rm-ring-cfg-ring-accelerator-ring-configure">TISCI_MSG_RM_RING_CFG - Ring Accelerator Ring Configure</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#tisci-msg-rm-ring-get-cfg-ring-accelerator-ring-get-configuration">TISCI_MSG_RM_RING_GET_CFG - Ring Accelerator Ring Get Configuration</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#tisci-msg-rm-ring-mon-cfg-ring-monitor-configuration">TISCI_MSG_RM_RING_MON_CFG - Ring Monitor Configuration</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ring-reset-procedure">Ring Reset Procedure</a></li>
 </ul>
@@ -207,15 +206,12 @@ TISCI message API parameters.</p>
 <td><a class="reference internal" href="#pub-rm-public-ra-cfg-response"><span class="std std-ref">TISCI_MSG_RM_RING_CFG Response</span></a></td>
 </tr>
 <tr class="row-even"><td>0x1111</td>
-<td><a class="reference internal" href="#pub-rm-public-ra-get-cfg"><span class="std std-ref">TISCI_MSG_RM_RING_GET_CFG</span></a></td>
+<td>RESERVED, DO NOT (RE)USE</td>
 </tr>
-<tr class="row-odd"><td>N/A</td>
-<td><a class="reference internal" href="#pub-rm-public-ra-get-cfg-response"><span class="std std-ref">TISCI_MSG_RM_RING_GET_CFG Response</span></a></td>
-</tr>
-<tr class="row-even"><td>0x1120</td>
+<tr class="row-odd"><td>0x1120</td>
 <td><a class="reference internal" href="#pub-rm-public-ra-mon-cfg"><span class="std std-ref">TISCI_MSG_RM_RING_MON_CFG</span></a></td>
 </tr>
-<tr class="row-odd"><td>N/A</td>
+<tr class="row-even"><td>N/A</td>
 <td><a class="reference internal" href="#pub-rm-public-ra-mon-cfg-response"><span class="std std-ref">TISCI_MSG_RM_RING_MON_CFG Response</span></a></td>
 </tr>
 </tbody>
@@ -508,17 +504,16 @@ return flags</td>
 </div>
 </div>
 </div>
-<div class="section" id="tisci-msg-rm-ring-get-cfg-ring-accelerator-ring-get-configuration">
-<h2>TISCI_MSG_RM_RING_GET_CFG - Ring Accelerator Ring Get Configuration<a class="headerlink" href="#tisci-msg-rm-ring-get-cfg-ring-accelerator-ring-get-configuration" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="ring-accelerator-ring-get-configuration-request">
-<span id="pub-rm-public-ra-get-cfg"></span><h3>Ring Accelerator Ring Get Configuration Request<a class="headerlink" href="#ring-accelerator-ring-get-configuration-request" title="Permalink to this headline">¶</a></h3>
-<p>The <strong>ring get cfg</strong> TISCI message API is used to retrieve the non-real-time
-register field settings, or the hardware reset register settings, for a ring.
-The host, or a supervisor of the host, who owns the ring must be the requesting
-host. The register field values are returned in the <strong>ring get cfg response</strong>
-message.</p>
-<p>The <strong>ring get cfg</strong> API can be used to retrieve ring configurations within any
-Navigator Subsystem Ring Accelerator on the device.</p>
+<div class="section" id="tisci-msg-rm-ring-mon-cfg-ring-monitor-configuration">
+<h2>TISCI_MSG_RM_RING_MON_CFG - Ring Monitor Configuration<a class="headerlink" href="#tisci-msg-rm-ring-mon-cfg-ring-monitor-configuration" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="ring-monitor-configuration-request">
+<span id="pub-rm-public-ra-mon-cfg"></span><h3>Ring Monitor Configuration Request<a class="headerlink" href="#ring-monitor-configuration-request" title="Permalink to this headline">¶</a></h3>
+<p>The <strong>ring_mon_cfg</strong> TISCI message API is used to configures the real-time
+registers of a Navigator Subsystem ring monitor.  The ring monitor
+index must be assigned to the host defined in the TISCI header via the RM
+board configuration resource assignment range list.  The channelized
+firewalls covering the ring monitor registers are configured to allow the
+host read-only access.</p>
 <div class="section" id="id1">
 <h4>Usage<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h4>
 <table border="1" class="docutils">
@@ -538,167 +533,6 @@ Navigator Subsystem Ring Accelerator on the device.</p>
 </div>
 <div class="section" id="id2">
 <h4>TISCI Message ID<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
-<p><p><code class="docutils literal"><span class="pre">TISCI_MSG_RM_RING_GET_CFG</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(0x1111U)</span></code></p>
-<p>RM TISCI message to get the register cfg for a Navigator Subsystem ring</p>
-</p>
-</div>
-<div class="section" id="ring-get-configuration-message-parameters">
-<h4>Ring Get Configuration Message Parameters<a class="headerlink" href="#ring-get-configuration-message-parameters" title="Permalink to this headline">¶</a></h4>
-<table border="1" class="docutils">
-<colgroup>
-<col width="10%" />
-<col width="26%" />
-<col width="48%" />
-<col width="17%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Parameter</th>
-<th class="head">Type</th>
-<th class="head">Valid Values</th>
-<th class="head">Description</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>hdr</td>
-<td>Generic TISCI message header (8 bytes)</td>
-<td><a class="reference internal" href="../../5_soc_doc/am6x/hosts.html"><span class="doc">Valid Host IDs</span></a></td>
-<td>Generic TISCI message
-header. Contains the
-message ID, host ID,
-sequence number, and any
-flags</td>
-</tr>
-<tr class="row-odd"><td>nav_id</td>
-<td>u16</td>
-<td><a class="reference internal" href="../../5_soc_doc/am6x/navss.html#pub-soc-am6x-navss-ids"><span class="std std-ref">Valid Navigator Subsystem Device IDs</span></a></td>
-<td>The SoC-specific Device
-ID of the Navigator
-subsystem Ring
-Accelerator in which the
-ring is located.</td>
-</tr>
-<tr class="row-even"><td>index</td>
-<td>u16</td>
-<td><a class="reference internal" href="../../5_soc_doc/am6x/navss.html#pub-soc-am6x-navss-rings"><span class="std std-ref">Valid Navigator Subsystem Ring Indices</span></a></td>
-<td>Specifies the ring index
-to be reconfigured.</td>
-</tr>
-<tr class="row-odd"><td>get_reset_cfg</td>
-<td>u8</td>
-<td><ol class="first last arabic simple" start="0">
-<li><ul class="first">
-<li>Get register cfg, (1) - Get register reset cfg</li>
-</ul>
-</li>
-</ol>
-</td>
-<td>Switching defining
-whether the ring’s
-non-real-time register
-settings or the hardware
-reset values are
-returned.</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<div class="section" id="ring-accelerator-ring-get-configuration-response">
-<span id="pub-rm-public-ra-get-cfg-response"></span><h3>Ring Accelerator Ring Get Configuration Response<a class="headerlink" href="#ring-accelerator-ring-get-configuration-response" title="Permalink to this headline">¶</a></h3>
-<p>The <strong>ring get cfg response</strong> TISCI message contains the ring’s
-non-real-time register field values.</p>
-<div class="section" id="ring-get-configuration-response-message-parameters">
-<h4>Ring Get Configuration Response Message Parameters<a class="headerlink" href="#ring-get-configuration-response-message-parameters" title="Permalink to this headline">¶</a></h4>
-<table border="1" class="docutils">
-<colgroup>
-<col width="5%" />
-<col width="18%" />
-<col width="26%" />
-<col width="52%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Parameter</th>
-<th class="head">Type</th>
-<th class="head">Valid Values</th>
-<th class="head">Description</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>hdr</td>
-<td>Generic TISCI message header (8 bytes)</td>
-<td><a class="reference internal" href="../../5_soc_doc/am6x/hosts.html"><span class="doc">Valid Host IDs</span></a></td>
-<td>Generic TISCI message header. Contains the message ID, host ID, sequence number, and any flags</td>
-</tr>
-<tr class="row-odd"><td>addr_lo</td>
-<td>u32</td>
-<td>32 LSBs of system address</td>
-<td>The ring base address.</td>
-</tr>
-<tr class="row-even"><td>addr_hi</td>
-<td>u32</td>
-<td>16 MSBs of system address (if applicable)</td>
-<td>See “addr_lo” description</td>
-</tr>
-<tr class="row-odd"><td>count</td>
-<td>u32</td>
-<td>Number of ring elements</td>
-<td>Number of ring elements.</td>
-</tr>
-<tr class="row-even"><td>mode</td>
-<td>u8</td>
-<td><ol class="first last arabic simple" start="0">
-<li><ul class="first">
-<li>RING, (1) - MESSAGE, (2) - CREDENTIALS, or (3) - QM</li>
-</ul>
-</li>
-</ol>
-</td>
-<td>Specifies the mode of the ring</td>
-</tr>
-<tr class="row-odd"><td>size</td>
-<td>u8</td>
-<td>Encoded ring element size</td>
-<td>Specifies the ring element size. To calculate the size in bytes from the encoded size use the formula 2^(size + 2).</td>
-</tr>
-<tr class="row-even"><td>order_id</td>
-<td>u8</td>
-<td>Ring bus order ID</td>
-<td>Specifies the ring’s bus order ID.</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div class="section" id="tisci-msg-rm-ring-mon-cfg-ring-monitor-configuration">
-<h2>TISCI_MSG_RM_RING_MON_CFG - Ring Monitor Configuration<a class="headerlink" href="#tisci-msg-rm-ring-mon-cfg-ring-monitor-configuration" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="ring-monitor-configuration-request">
-<span id="pub-rm-public-ra-mon-cfg"></span><h3>Ring Monitor Configuration Request<a class="headerlink" href="#ring-monitor-configuration-request" title="Permalink to this headline">¶</a></h3>
-<p>The <strong>ring_mon_cfg</strong> TISCI message API is used to configures the real-time
-registers of a Navigator Subsystem ring monitor.  The ring monitor
-index must be assigned to the host defined in the TISCI header via the RM
-board configuration resource assignment range list.  The channelized
-firewalls covering the ring monitor registers are configured to allow the
-host read-only access.</p>
-<div class="section" id="id3">
-<h4>Usage<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
-<table border="1" class="docutils">
-<colgroup>
-<col width="75%" />
-<col width="25%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><strong>Message Type</strong></td>
-<td>Normal</td>
-</tr>
-<tr class="row-even"><td><strong>Secure Queue Only?</strong></td>
-<td>No</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section" id="id4">
-<h4>TISCI Message ID<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h4>
 <p><p><code class="docutils literal"><span class="pre">TISCI_MSG_RM_RING_MON_CFG</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(0x1120U)</span></code></p>
 <p>RM TISCI message to configure a Navigator Subsystem ring monitor</p>
 </p>
@@ -853,9 +687,9 @@ doorbell rings needed.</li>
 implement the workaround.</li>
 </ul>
 </li>
-<li>Send the <strong>ring get cfg</strong> message to DMSC to retrieve the ring qmode if not
-already in ring/doorbell mode.  Save the qmode if the original mode was not
-ring/doorbell mode.</li>
+<li>Application directly reads the RINGACC CFG registers to retrieve the ring
+qmode if not already in ring/doorbell mode.  Save the qmode if the original
+mode was not ring/doorbell mode.</li>
 <li>Reset the ring by writing any value to the ring’s RINGACC CFG registers
 (i.e. enable the valid parameter bit for mode, size, or count in the
 <strong>ring cfg</strong> TISCI message)</li>
@@ -913,7 +747,7 @@ origin qmode (if not ring/doorbell mode).</li>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'19.12.02',
+            VERSION:'20.01.00',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

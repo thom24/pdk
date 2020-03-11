@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                19.12.02
+                20.01.00
               </div>
             
           
@@ -1445,6 +1445,38 @@ route</td>
 <td>18</td>
 <td>Virtual interrupt status bit</td>
 </tr>
+<tr class="row-even"><td rowspan="3">IRQ_IA_OES_SET</td>
+<td rowspan="3">46</td>
+<td rowspan="3">Set OES register in
+Interrupt Aggregator</td>
+<td>DEVICE_ID</td>
+<td>0</td>
+<td>IA Device ID</td>
+</tr>
+<tr class="row-odd"><td>EVENT</td>
+<td>3</td>
+<td>Global event</td>
+</tr>
+<tr class="row-even"><td>OES_REG_INDEX</td>
+<td>4</td>
+<td>OES register index</td>
+</tr>
+<tr class="row-odd"><td rowspan="3">IRQ_IA_OES_GET</td>
+<td rowspan="3">47</td>
+<td rowspan="3">Get OES register in
+Interrupt Aggregator</td>
+<td>DEVICE_ID</td>
+<td>0</td>
+<td>UDMAP Device ID</td>
+</tr>
+<tr class="row-even"><td>EVENT</td>
+<td>3</td>
+<td>Global event</td>
+</tr>
+<tr class="row-odd"><td>OES_REG_INDEX</td>
+<td>4</td>
+<td>OES register index</td>
+</tr>
 <tr class="row-even"><td>IRQ_IA_INIT</td>
 <td>48</td>
 <td>IA driver init
@@ -1533,29 +1565,6 @@ to output mapping</td>
 <tr class="row-odd"><td>IR_OUTPUT</td>
 <td>11</td>
 <td>IR output index</td>
-</tr>
-<tr class="row-even"><td rowspan="4">RESASG_VALIDATE_BRDCFG_LIST</td>
-<td rowspan="4">58</td>
-<td rowspan="4">RM board
-configuration
-resource
-assignment
-validation</td>
-<td>RESASG_UTYPE</td>
-<td>6</td>
-<td>Resource assignment unique type</td>
-</tr>
-<tr class="row-odd"><td>RESASG_VALIDATE_HOST</td>
-<td>10</td>
-<td>host ID</td>
-</tr>
-<tr class="row-even"><td>RESASG_VALIDATE_RES_START</td>
-<td>11</td>
-<td>Resource range start</td>
-</tr>
-<tr class="row-odd"><td>RESASG_VALIDATE_RES_NUM</td>
-<td>12</td>
-<td>Resource range number</td>
 </tr>
 <tr class="row-even"><td rowspan="4">RESASG_FIREWALL_CFG</td>
 <td rowspan="4">59</td>
@@ -1913,7 +1922,7 @@ to the requested device</td>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'19.12.02',
+            VERSION:'20.01.00',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

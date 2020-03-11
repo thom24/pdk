@@ -83,17 +83,11 @@
  * The virtid parameter is valid for RM ring configure TISCI message
  */
 #define TISCI_MSG_VALUE_RM_RING_VIRTID_VALID   (1u << 6u)
-
 /**
- * Value for @ref tisci_msg_rm_ring_get_cfg_req::get_reset_cfg used to return
- * the non-real-time register configuration for a ring
+ * The asel parameter is valid for RM ring configure TISCI message for SoCs
+ * that have ASEL capability for rings
  */
-#define TISCI_MSG_VALUE_RM_RING_GET_CFG_REG    (0x0u)
-/**
- * Value for @ref tisci_msg_rm_ring_get_cfg_req::get_reset_cfg used to return
- * the non-real-time register hardware reset configuration for a ring
- */
-#define TISCI_MSG_VALUE_RM_RING_GET_CFG_RESET  (0x1u)
+#define TISCI_MSG_VALUE_RM_RING_ASEL_VALID     (1U << 7U)
 
 /**
  * Exposed ring mode for @ref tisci_msg_rm_ring_cfg_req::mode
@@ -293,6 +287,14 @@
  * RING_CONTROL2 ISC region register.  This field is only valid if
  * @ref TISCI_MSG_VALUE_RM_RING_VIRTID_VALID is set in
  * @ref tisci_msg_rm_ring_cfg_req::valid_params.
+ *
+ * \param asel
+ * Ring ASEL (address select) value to be set into the ASEL field of the ring's
+ * RING_BA_HI register.  This field is only valid if
+ * @ref TISCI_MSG_VALUE_RM_RING_ASEL_VALID is set in
+ * @ref tisci_msg_rm_ring_cfg_req::valid_params.  This field is not
+ * supported on some SoCs.  On SoCs that do not support this field the input
+ * is quietly ignored even if the valid bit is set.
  */
 struct tisci_msg_rm_ring_cfg_req {
     struct tisci_header    hdr;
@@ -306,6 +308,7 @@ struct tisci_msg_rm_ring_cfg_req {
     uint8_t            size;
     uint8_t            order_id;
     uint16_t            virtid;
+    uint8_t            asel;
 } __attribute__((__packed__));
 
 /**
@@ -316,82 +319,6 @@ struct tisci_msg_rm_ring_cfg_req {
  */
 struct tisci_msg_rm_ring_cfg_resp {
     struct tisci_header hdr;
-} __attribute__((__packed__));
-
-/**
- * \brief Get Navigator Subsystem ring's non-real-time register configuration
- *
- * Gets the configuration of the non-real-time register fields of a ring.  The
- * host, or a supervisor of the host, who owns the ring must be the requesting
- * host.  The values of the non-real-time registers are returned in
- * @ref tisci_msg_rm_ring_get_cfg_resp.  The reset_cfg parameter is used to
- * request either the existing non-real-time register values or the hardware
- * reset values for the ring's register fields.
- *
- * \param hdr
- * Standard TISCI header
- *
- * \param nav_id
- * SoC device ID of Navigator Subsystem in which the ring is located
- *
- * \param index
- * Ring index.
- *
- * \param get_reset_cfg
- * Switch defining which ring configuration is returned:
- * @ref TISCI_MSG_VALUE_RM_RING_GET_CFG_REG - Return non-real-time register
- * configuration
- * @ref TISCI_MSG_VALUE_RM_RING_GET_CFG_RESET - Return non-real-time register
- * hardware reset value configuration
- */
-struct tisci_msg_rm_ring_get_cfg_req {
-    struct tisci_header    hdr;
-    uint16_t            nav_id;
-    uint16_t            index;
-    uint8_t            get_reset_cfg;
-} __attribute__((__packed__));
-
-/**
- * \brief Ring get configuration response message
- *
- * Response received by host processor after RM has handled
- * @ref tisci_msg_rm_ring_get_cfg_req.  The response contains the ring's
- * non-real-time register values.
- *
- * \param hdr
- * Standard TISCI header
- *
- * \param addr_lo
- * Ring 32 LSBs of base address.
- *
- * \param addr_hi
- * Ring 16 MSBs of base address.
- *
- * \param count
- * Ring number of elements.
- *
- * \param mode
- * Ring mode.  Will be a value from:
- * @ref TISCI_MSG_VALUE_RM_MON_MODE_DISABLED
- * @ref TISCI_MSG_VALUE_RM_MON_MODE_PUSH_POP
- * @ref TISCI_MSG_VALUE_RM_MON_MODE_THRESHOLD
- * @ref TISCI_MSG_VALUE_RM_MON_MODE_WATERMARK
- * @ref TISCI_MSG_VALUE_RM_MON_MODE_STARVATION
- *
- * \param size
- * Ring element size.
- *
- * \param order_id
- * Ring order ID.
- */
-struct tisci_msg_rm_ring_get_cfg_resp {
-    struct tisci_header    hdr;
-    uint32_t            addr_lo;
-    uint32_t            addr_hi;
-    uint32_t            count;
-    uint8_t            mode;
-    uint8_t            size;
-    uint8_t            order_id;
 } __attribute__((__packed__));
 
 /**

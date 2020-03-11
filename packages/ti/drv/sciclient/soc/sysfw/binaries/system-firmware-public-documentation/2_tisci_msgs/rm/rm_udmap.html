@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                19.12.02
+                20.01.00
               </div>
             
           
@@ -112,17 +112,10 @@
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Resource Management UDMAP TISCI Message Description</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#introduction">Introduction</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#tisci-msg-rm-udmap-tx-ch-cfg-udmap-transmit-channel-configure">TISCI_MSG_RM_UDMAP_TX_CH_CFG - UDMAP Transmit Channel Configure</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#tisci-msg-rm-udmap-tx-ch-get-cfg-udmap-transmit-channel-get-configuration">TISCI_MSG_RM_UDMAP_TX_CH_GET_CFG - UDMAP Transmit Channel Get Configuration</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#tisci-msg-rm-udmap-rx-ch-cfg-udmap-receive-channel-configure">TISCI_MSG_RM_UDMAP_RX_CH_CFG - UDMAP Receive Channel Configure</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#tisci-msg-rm-udmap-rx-ch-get-cfg-udmap-receive-channel-get-configuration">TISCI_MSG_RM_UDMAP_RX_CH_GET_CFG - UDMAP Receive Channel Get Configuration</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#udmap-receive-flow-configuration">UDMAP Receive Flow Configuration</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#udmap-receive-flow-optional-config">UDMAP Receive Flow Optional Config</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#tisci-msg-rm-udmap-flow-cfg-udmap-receive-flow-configure">TISCI_MSG_RM_UDMAP_FLOW_CFG - UDMAP Receive Flow Configure</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#tisci-msg-rm-udmap-flow-get-cfg-udmap-receive-flow-get-configuration">TISCI_MSG_RM_UDMAP_FLOW_GET_CFG - UDMAP Receive Flow Get Configuration</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#tisci-msg-rm-udmap-flow-size-thresh-cfg-udmap-receive-flow-size-threshold-configure">TISCI_MSG_RM_UDMAP_FLOW_SIZE_THRESH_CFG - UDMAP Receive Flow Size Threshold Configure</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#tisci-msg-rm-udmap-flow-size-thresh-get-cfg-udmap-receive-flow-size-threshold-get-configuration">TISCI_MSG_RM_UDMAP_FLOW_SIZE_THRESH_GET_CFG - UDMAP Receive Flow Size Threshold Get Configuration</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#tisci-msg-rm-udmap-gcfg-cfg-udmap-global-configuration-configure">TISCI_MSG_RM_UDMAP_GCFG_CFG - UDMAP Global Configuration Configure</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#tisci-msg-rm-udmap-gcfg-get-cfg-udmap-global-configuration-get-configuration">TISCI_MSG_RM_UDMAP_GCFG_GET_CFG - UDMAP Global Configuration Get Configuration</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="rm_psil.html">Resource Management PSI-L TISCI Message Description</a></li>
@@ -221,22 +214,16 @@ message API parameters.</p>
 <td><a class="reference internal" href="#pub-rm-public-udmap-tx-ch-cfg-response"><span class="std std-ref">TISCI_MSG_RM_UDMAP_TX_CH_CFG Response</span></a></td>
 </tr>
 <tr class="row-even"><td>0x1206</td>
-<td><a class="reference internal" href="#pub-rm-public-udmap-tx-ch-get-cfg"><span class="std std-ref">TISCI_MSG_RM_UDMAP_TX_CH_GET_CFG</span></a></td>
+<td>RESERVED, DO NOT (RE)USE</td>
 </tr>
-<tr class="row-odd"><td>N/A</td>
-<td><a class="reference internal" href="#pub-rm-public-udmap-tx-ch-get-cfg-response"><span class="std std-ref">TISCI_MSG_RM_UDMAP_TX_CH_GET_CFG Response</span></a></td>
-</tr>
-<tr class="row-even"><td>0x1215</td>
+<tr class="row-odd"><td>0x1215</td>
 <td><a class="reference internal" href="#pub-rm-public-udmap-rx-ch-cfg"><span class="std std-ref">TISCI_MSG_RM_UDMAP_RX_CH_CFG</span></a></td>
 </tr>
-<tr class="row-odd"><td>N/A</td>
+<tr class="row-even"><td>N/A</td>
 <td><a class="reference internal" href="#pub-rm-public-udmap-rx-ch-cfg-response"><span class="std std-ref">TISCI_MSG_RM_UDMAP_RX_CH_CFG Response</span></a></td>
 </tr>
-<tr class="row-even"><td>0x1216</td>
-<td><a class="reference internal" href="#pub-rm-public-udmap-rx-ch-get-cfg"><span class="std std-ref">TISCI_MSG_RM_UDMAP_RX_CH_GET_CFG</span></a></td>
-</tr>
-<tr class="row-odd"><td>N/A</td>
-<td><a class="reference internal" href="#pub-rm-public-udmap-rx-ch-get-cfg-response"><span class="std std-ref">TISCI_MSG_RM_UDMAP_RX_CH_GET_CFG Response</span></a></td>
+<tr class="row-odd"><td>0x1216</td>
+<td>RESERVED, DO NOT (RE)USE</td>
 </tr>
 <tr class="row-even"><td>0x1230</td>
 <td><a class="reference internal" href="#pub-rm-public-udmap-flow-cfg"><span class="std std-ref">TISCI_MSG_RM_UDMAP_FLOW_CFG</span></a></td>
@@ -251,16 +238,10 @@ message API parameters.</p>
 <td><a class="reference internal" href="#pub-rm-public-udmap-flow-size-thresh-cfg-response"><span class="std std-ref">TISCI_MSG_RM_UDMAP_FLOW_SIZE_THRESH_CFG Response</span></a></td>
 </tr>
 <tr class="row-even"><td>0x1232</td>
-<td><a class="reference internal" href="#pub-rm-public-udmap-flow-get-cfg"><span class="std std-ref">TISCI_MSG_RM_UDMAP_FLOW_GET_CFG</span></a></td>
+<td>RESERVED, DO NOT (RE)USE</td>
 </tr>
-<tr class="row-odd"><td>N/A</td>
-<td><a class="reference internal" href="#pub-rm-public-udmap-flow-get-cfg-response"><span class="std std-ref">TISCI_MSG_RM_UDMAP_FLOW_GET_CFG Response</span></a></td>
-</tr>
-<tr class="row-even"><td>0x1233</td>
-<td><a class="reference internal" href="#pub-rm-public-udmap-flow-size-thresh-get-cfg"><span class="std std-ref">TISCI_MSG_RM_UDMAP_FLOW_SIZE_THRESH_GET_CFG</span></a></td>
-</tr>
-<tr class="row-odd"><td>N/A</td>
-<td><a class="reference internal" href="#pub-rm-public-udmap-flow-size-thresh-get-cfg-response"><span class="std std-ref">TISCI_MSG_RM_UDMAP_FLOW_SIZE_THRESH_GET_CFG Response</span></a></td>
+<tr class="row-odd"><td>0x1233</td>
+<td>RESERVED, DO NOT (RE)USE</td>
 </tr>
 <tr class="row-even"><td>0x1240</td>
 <td><a class="reference internal" href="#pub-rm-public-udmap-gcfg-cfg"><span class="std std-ref">TISCI_MSG_RM_UDMAP_GCFG_CFG</span></a></td>
@@ -269,10 +250,7 @@ message API parameters.</p>
 <td><a class="reference internal" href="#pub-rm-public-udmap-gcfg-cfg-response"><span class="std std-ref">TISCI_MSG_RM_UDMAP_GCFG_CFG Response</span></a></td>
 </tr>
 <tr class="row-even"><td>0x1241</td>
-<td><a class="reference internal" href="#pub-rm-public-udmap-gcfg-get-cfg"><span class="std std-ref">TISCI_MSG_RM_UDMAP_GCFG_GET_CFG</span></a></td>
-</tr>
-<tr class="row-odd"><td>N/A</td>
-<td><a class="reference internal" href="#pub-rm-public-udmap-gcfg-get-cfg-response"><span class="std std-ref">TISCI_MSG_RM_UDMAP_GCFG_GET_CFG Response</span></a></td>
+<td>RESERVED, DO NOT (RE)USE</td>
 </tr>
 </tbody>
 </table>
@@ -690,184 +668,6 @@ return flags</td>
 </div>
 </div>
 </div>
-<div class="section" id="tisci-msg-rm-udmap-tx-ch-get-cfg-udmap-transmit-channel-get-configuration">
-<h2>TISCI_MSG_RM_UDMAP_TX_CH_GET_CFG - UDMAP Transmit Channel Get Configuration<a class="headerlink" href="#tisci-msg-rm-udmap-tx-ch-get-cfg-udmap-transmit-channel-get-configuration" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="udmap-transmit-channel-get-configuration-request">
-<span id="pub-rm-public-udmap-tx-ch-get-cfg"></span><h3>UDMAP Transmit Channel Get Configuration Request<a class="headerlink" href="#udmap-transmit-channel-get-configuration-request" title="Permalink to this headline">¶</a></h3>
-<p>The <strong>udmap_tx_ch get cfg</strong> TISCI message API is used to retrieve the
-non-real-time registers field settings, or the hardware reset register
-settings, for a UDMAP transmit channel.  The host, or a supervisor of the host,
-who owns the transmit channel must be the requesting host. The register field
-values are returned in the <strong>udmap_tx_ch get cfg response</strong> message.</p>
-<p>The <strong>udmap_tx_ch_get cfg</strong> API can be used to retrieve UDMAP transmit channel
-configurations within any Navigator Subsystem on the device.</p>
-<div class="section" id="id1">
-<h4>Usage<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h4>
-<table border="1" class="docutils">
-<colgroup>
-<col width="75%" />
-<col width="25%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><strong>Message Type</strong></td>
-<td>Normal</td>
-</tr>
-<tr class="row-even"><td><strong>Secure Queue Only?</strong></td>
-<td>No</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section" id="id2">
-<h4>TISCI Message ID<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
-<p><p><code class="docutils literal"><span class="pre">TISCI_MSG_RM_UDMAP_TX_CH_GET_CFG</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(0x1206U)</span></code></p>
-<p>RM TISCI message to get the register cfg for a Navigator Subsystem UDMAP
- transmit channel</p>
-</p>
-</div>
-<div class="section" id="udmap-transmit-channel-get-configuration-message-parameters">
-<h4>UDMAP Transmit Channel Get Configuration Message Parameters<a class="headerlink" href="#udmap-transmit-channel-get-configuration-message-parameters" title="Permalink to this headline">¶</a></h4>
-<p><p><strong>struct tisci_msg_rm_udmap_tx_ch_get_cfg_req</strong></p>
-<p>Get Navigator Subsystem UDMAP transmit channel’s non-real-time register configuration</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="5%" />
-<col width="7%" />
-<col width="88%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Parameter</th>
-<th class="head">Type</th>
-<th class="head">Description</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>hdr</td>
-<td>struct tisci_header</td>
-<td>Standard TISCI header</td>
-</tr>
-<tr class="row-odd"><td>nav_id</td>
-<td>u16</td>
-<td>SoC device ID of Navigator Subsystem in which the UDMAP transmit channel is located</td>
-</tr>
-<tr class="row-even"><td>index</td>
-<td>u16</td>
-<td>UDMAP transmit channel index.</td>
-</tr>
-<tr class="row-odd"><td>get_reset_cfg</td>
-<td>u8</td>
-<td>Switch defining which UDMAP tx ch configuration is returned: &#64;ref TISCI_MSG_VALUE_RM_UDMAP_GET_CFG_REG - Return non-real-time register configuration &#64;ref TISCI_MSG_VALUE_RM_UDMAP_GET_CFG_RESET - Return non-real-time register hardware reset value configuration</td>
-</tr>
-</tbody>
-</table>
-<p>Gets the configuration of the non-real-time register fields of a UDMAP
- transmit channel.  The host, or a supervisor of the host, who owns the
- channel must be the requesting host.  The values of the non-real-time
- registers are returned in &#64;ref tisci_msg_rm_udmap_tx_ch_get_cfg_resp.
- The reset_cfg parameter is used to request either the existing
- non-real-time register values or the hardware reset values for the UDMAP
- transmit channel’s register fields.</p>
-</p>
-</div>
-</div>
-<div class="section" id="udmap-transmit-channel-get-configuration-response">
-<span id="pub-rm-public-udmap-tx-ch-get-cfg-response"></span><h3>UDMAP Transmit Channel Get Configuration Response<a class="headerlink" href="#udmap-transmit-channel-get-configuration-response" title="Permalink to this headline">¶</a></h3>
-<p>The <strong>udmap_tx_ch get cfg response</strong> TISCI message contains the UDMAP transmit
-channel’s non-real-time register field values.</p>
-<div class="section" id="udmap-transmit-channel-get-configuration-response-message-parameters">
-<h4>UDMAP Transmit Channel Get Configuration Response Message Parameters<a class="headerlink" href="#udmap-transmit-channel-get-configuration-response-message-parameters" title="Permalink to this headline">¶</a></h4>
-<p><p><strong>struct tisci_msg_rm_udmap_tx_ch_get_cfg_resp</strong></p>
-<p>UDMAP transmit channel get configuration response message</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="11%" />
-<col width="12%" />
-<col width="78%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Parameter</th>
-<th class="head">Type</th>
-<th class="head">Description</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>hdr</td>
-<td>struct tisci_header</td>
-<td>Standard TISCI header</td>
-</tr>
-<tr class="row-odd"><td>tx_pause_on_err</td>
-<td>u8</td>
-<td>UDMAP transmit channel pause on error configuration</td>
-</tr>
-<tr class="row-even"><td>tx_filt_einfo</td>
-<td>u8</td>
-<td>UDMAP transmit channel extended packet information passing configuration</td>
-</tr>
-<tr class="row-odd"><td>tx_filt_pswords</td>
-<td>u8</td>
-<td>UDMAP transmit channel protocol specific word passing configuration</td>
-</tr>
-<tr class="row-even"><td>tx_atype</td>
-<td>u8</td>
-<td>UDMAP transmit channel non Ring Accelerator access pointer interpretation</td>
-</tr>
-<tr class="row-odd"><td>tx_chan_type</td>
-<td>u8</td>
-<td>UDMAP transmit channel functional channel type and work passing mechanism</td>
-</tr>
-<tr class="row-even"><td>tx_supr_tdpkt</td>
-<td>u8</td>
-<td>UDMAP transmit channel teardown packet generation suppression</td>
-</tr>
-<tr class="row-odd"><td>tx_fetch_size</td>
-<td>u16</td>
-<td>UDMAP transmit channel number of 32-bit descriptor words to fetch</td>
-</tr>
-<tr class="row-even"><td>tx_credit_count</td>
-<td>u8</td>
-<td>UDMAP transmit channel transfer request credit count</td>
-</tr>
-<tr class="row-odd"><td>txcq_qnum</td>
-<td>u16</td>
-<td>UDMAP transmit channel completion queue</td>
-</tr>
-<tr class="row-even"><td>tx_priority</td>
-<td>u8</td>
-<td>UDMAP transmit channel transmit priority</td>
-</tr>
-<tr class="row-odd"><td>tx_qos</td>
-<td>u8</td>
-<td>UDMAP transmit channel transmit qos value</td>
-</tr>
-<tr class="row-even"><td>tx_orderid</td>
-<td>u8</td>
-<td>UDMAP transmit channel bus order id</td>
-</tr>
-<tr class="row-odd"><td>fdepth</td>
-<td>u16</td>
-<td>UDMAP transmit channel FIFO depth</td>
-</tr>
-<tr class="row-even"><td>tx_sched_priority</td>
-<td>u8</td>
-<td>UDMAP transmit channel tx scheduling priority</td>
-</tr>
-<tr class="row-odd"><td>tx_burst_size</td>
-<td>u8</td>
-<td>UDMAP transmit channel burst size.  This field is not supported on some SoCs. Zeroes are returned on SoCs that do not support this field.</td>
-</tr>
-<tr class="row-even"><td>tx_tdtype</td>
-<td>u8</td>
-<td>UDMAP transmit channel teardown type configuration to be programmed into the tdtype field of the TCHAN_TCFG register.</td>
-</tr>
-</tbody>
-</table>
-<p>Response received by host processor after RM has handled
- &#64;ref tisci_msg_rm_udmap_tx_ch_get_cfg_req.  The response contains the
- transmit channel’s non-real-time register values.</p>
-</p>
-</div>
-</div>
-</div>
 <div class="section" id="tisci-msg-rm-udmap-rx-ch-cfg-udmap-receive-channel-configure">
 <h2>TISCI_MSG_RM_UDMAP_RX_CH_CFG - UDMAP Receive Channel Configure<a class="headerlink" href="#tisci-msg-rm-udmap-rx-ch-cfg-udmap-receive-channel-configure" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="udmap-receive-channel-configure">
@@ -887,8 +687,8 @@ of the <strong>UDMAP rx channel cfg</strong> API. They’re programmed internall
 <a class="reference internal" href="rm_irq.html#pub-rm-irq-route-set"><span class="std std-ref">RM IRQ Set</span></a> message.</p>
 <p>The <strong>UDMAP rx channel cfg</strong> API can be used to configure receive channels
 within any Navigator Subsystem UDMAP on the device.</p>
-<div class="section" id="id3">
-<h4>Usage<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="id1">
+<h4>Usage<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h4>
 <table border="1" class="docutils">
 <colgroup>
 <col width="75%" />
@@ -904,8 +704,8 @@ within any Navigator Subsystem UDMAP on the device.</p>
 </tbody>
 </table>
 </div>
-<div class="section" id="id4">
-<h4>TISCI Message ID<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="id2">
+<h4>TISCI Message ID<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
 <p><p><code class="docutils literal"><span class="pre">TISCI_MSG_RM_UDMAP_RX_CH_CFG</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(0x1215U)</span></code></p>
 <p>RM TISCI message to configure a Navigator Subsystem UDMAP receive channel</p>
 </p>
@@ -1235,519 +1035,6 @@ return flags</td>
 </div>
 </div>
 </div>
-<div class="section" id="tisci-msg-rm-udmap-rx-ch-get-cfg-udmap-receive-channel-get-configuration">
-<h2>TISCI_MSG_RM_UDMAP_RX_CH_GET_CFG - UDMAP Receive Channel Get Configuration<a class="headerlink" href="#tisci-msg-rm-udmap-rx-ch-get-cfg-udmap-receive-channel-get-configuration" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="udmap-receive-channel-get-configuration-request">
-<span id="pub-rm-public-udmap-rx-ch-get-cfg"></span><h3>UDMAP Receive Channel Get Configuration Request<a class="headerlink" href="#udmap-receive-channel-get-configuration-request" title="Permalink to this headline">¶</a></h3>
-<p>The <strong>udmap_rx_ch get cfg</strong> TISCI message API is used to retrieve the
-non-real-time registers field settings, or the hardware reset register
-settings, for a UDMAP receive channel.  The host, or a supervisor of the host,
-who owns the receive channel must be the requesting host. The register field
-values are returned in the <strong>udmap_rx_ch get cfg response</strong> message.</p>
-<p>The <strong>udmap_rx_ch_get cfg</strong> API can be used to retrieve UDMAP receive channel
-configurations within any Navigator Subsystem on the device.</p>
-<div class="section" id="id5">
-<h4>Usage<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h4>
-<table border="1" class="docutils">
-<colgroup>
-<col width="75%" />
-<col width="25%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><strong>Message Type</strong></td>
-<td>Normal</td>
-</tr>
-<tr class="row-even"><td><strong>Secure Queue Only?</strong></td>
-<td>No</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section" id="id6">
-<h4>TISCI Message ID<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h4>
-<p><p><code class="docutils literal"><span class="pre">TISCI_MSG_RM_UDMAP_RX_CH_GET_CFG</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(0x1216U)</span></code></p>
-<p>RM TISCI message to get the register cfg for a Navigator Subsystem UDMAP
- receive channel</p>
-</p>
-</div>
-<div class="section" id="udmap-receive-channel-get-configuration-message-parameters">
-<h4>UDMAP Receive Channel Get Configuration Message Parameters<a class="headerlink" href="#udmap-receive-channel-get-configuration-message-parameters" title="Permalink to this headline">¶</a></h4>
-<p><p><strong>struct tisci_msg_rm_udmap_rx_ch_get_cfg_req</strong></p>
-<p>Get Navigator Subsystem UDMAP receive channel’s non-real-time register configuration</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="5%" />
-<col width="7%" />
-<col width="88%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Parameter</th>
-<th class="head">Type</th>
-<th class="head">Description</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>hdr</td>
-<td>struct tisci_header</td>
-<td>Standard TISCI header</td>
-</tr>
-<tr class="row-odd"><td>nav_id</td>
-<td>u16</td>
-<td>SoC device ID of Navigator Subsystem in which the UDMAP receive channel is located</td>
-</tr>
-<tr class="row-even"><td>index</td>
-<td>u16</td>
-<td>UDMAP receive channel index.</td>
-</tr>
-<tr class="row-odd"><td>get_reset_cfg</td>
-<td>u8</td>
-<td>Switch defining which UDMAP rx ch configuration is returned: &#64;ref TISCI_MSG_VALUE_RM_UDMAP_GET_CFG_REG - Return non-real-time register configuration &#64;ref TISCI_MSG_VALUE_RM_UDMAP_GET_CFG_RESET - Return non-real-time register hardware reset value configuration</td>
-</tr>
-</tbody>
-</table>
-<p>Gets the configuration of the non-real-time register fields of a UDMAP
- receive channel.  The host, or a supervisor of the host, who owns the
- channel must be the requesting host.  The values of the non-real-time
- registers are returned in &#64;ref tisci_msg_rm_udmap_rx_ch_get_cfg_resp.
- The reset_cfg parameter is used to request either the existing
- non-real-time register values or the hardware reset values for the UDMAP
- receive channel’s register fields.</p>
-</p>
-</div>
-</div>
-<div class="section" id="udmap-receive-channel-get-configuration-response">
-<span id="pub-rm-public-udmap-rx-ch-get-cfg-response"></span><h3>UDMAP Receive Channel Get Configuration Response<a class="headerlink" href="#udmap-receive-channel-get-configuration-response" title="Permalink to this headline">¶</a></h3>
-<p>The <strong>udmap_rx_ch get cfg response</strong> TISCI message contains the UDMAP receive
-channel’s non-real-time register field values.</p>
-<div class="section" id="udmap-receive-channel-get-configuration-response-message-parameters">
-<h4>UDMAP Receive Channel Get Configuration Response Message Parameters<a class="headerlink" href="#udmap-receive-channel-get-configuration-response-message-parameters" title="Permalink to this headline">¶</a></h4>
-<p><p><strong>struct tisci_msg_rm_udmap_rx_ch_get_cfg_resp</strong></p>
-<p>UDMAP receive channel get configuration response message</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="11%" />
-<col width="12%" />
-<col width="78%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Parameter</th>
-<th class="head">Type</th>
-<th class="head">Description</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>hdr</td>
-<td>struct tisci_header</td>
-<td>Standard TISCI header</td>
-</tr>
-<tr class="row-odd"><td>rx_fetch_size</td>
-<td>u16</td>
-<td>UDMAP receive channel number of 32-bit descriptor words to fetch</td>
-</tr>
-<tr class="row-even"><td>rxcq_qnum</td>
-<td>u16</td>
-<td>UDMAP receive channel completion queue</td>
-</tr>
-<tr class="row-odd"><td>rx_priority</td>
-<td>u8</td>
-<td>UDMAP receive channel receive priority</td>
-</tr>
-<tr class="row-even"><td>rx_qos</td>
-<td>u8</td>
-<td>UDMAP receive channel receive qos value</td>
-</tr>
-<tr class="row-odd"><td>rx_orderid</td>
-<td>u8</td>
-<td>UDMAP receive channel bus order id</td>
-</tr>
-<tr class="row-even"><td>rx_sched_priority</td>
-<td>u8</td>
-<td>UDMAP receive channel rx scheduling priority</td>
-</tr>
-<tr class="row-odd"><td>flowid_start</td>
-<td>u16</td>
-<td>UDMAP receive channel additional flows starting index</td>
-</tr>
-<tr class="row-even"><td>flowid_cnt</td>
-<td>u16</td>
-<td>UDMAP receive channel additional flows count</td>
-</tr>
-<tr class="row-odd"><td>rx_pause_on_err</td>
-<td>u8</td>
-<td>UDMAP receive channel pause on error</td>
-</tr>
-<tr class="row-even"><td>rx_atype</td>
-<td>u8</td>
-<td>UDMAP receive channel non Ring Accelerator access pointer interpretation</td>
-</tr>
-<tr class="row-odd"><td>rx_chan_type</td>
-<td>u8</td>
-<td>UDMAP receive channel functional channel type and work passing mechanism</td>
-</tr>
-<tr class="row-even"><td>rx_ignore_short</td>
-<td>u8</td>
-<td>UDMAP receive channel short packet treatment</td>
-</tr>
-<tr class="row-odd"><td>rx_ignore_long</td>
-<td>u8</td>
-<td>UDMAP receive channel long packet treatment</td>
-</tr>
-<tr class="row-even"><td>rx_burst_size</td>
-<td>u8</td>
-<td>UDMAP receive channel burst size.  This field is not supported on some SoCs. Zeroes are returned on SoCs that do not support this field.</td>
-</tr>
-</tbody>
-</table>
-<p>Response received by host processor after RM has handled
- &#64;ref tisci_msg_rm_udmap_rx_ch_get_cfg_req.  The response contains the
- receive channel’s non-real-time register values.</p>
-</p>
-</div>
-</div>
-</div>
-<div class="section" id="udmap-receive-flow-configuration">
-<h2>UDMAP Receive Flow Configuration<a class="headerlink" href="#udmap-receive-flow-configuration" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="udmap-receive-flow-configuration-request">
-<span id="pub-rm-public-udmap-rx-flow-cfg"></span><h3>UDMAP Receive Flow Configuration Request<a class="headerlink" href="#udmap-receive-flow-configuration-request" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">This API is deprecated and will be removed in 2018.09.</p>
-</div>
-<p>The <strong>UDMAP rx flow cfg</strong> TISCI message API is used to configure an allocated
-SoC Navigator Subsystem UDMAP receive flow’s non-optional registers. The receive
-flow must be used by the specified receive channel and the host requesting the
-receive flow configuration must be the host, or the supervisor of the host, that
-owns the receive channel in order for the flow to be configured. It’s the user’s
-responsbility to make sure the receive channel is disabled when changing the
-receive flow configuration. Otherwise, unknown operation may occur.</p>
-<p>The UDMAP global invalid receive flow event register is not programmed as part
-of the <strong>UDMAP rx flow cfg</strong> API. It is programmed internally via the <a class="reference internal" href="rm_irq.html#pub-rm-irq-route-set"><span class="std std-ref">RM IRQ
-Set</span></a> message.</p>
-<p>The <strong>UDMAP rx flow cfg</strong> API can be used to configure receive flows within any
-Navigator Subsystem UDMAP on the device.</p>
-<div class="section" id="id7">
-<h4>Usage<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h4>
-<table border="1" class="docutils">
-<colgroup>
-<col width="75%" />
-<col width="25%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><strong>Message Type</strong></td>
-<td>Normal</td>
-</tr>
-<tr class="row-even"><td><strong>Secure Queue Only?</strong></td>
-<td>No</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section" id="udmap-receive-flow-configuration-message-parameters">
-<h4>UDMAP Receive Flow Configuration Message Parameters<a class="headerlink" href="#udmap-receive-flow-configuration-message-parameters" title="Permalink to this headline">¶</a></h4>
-<table border="1" class="docutils">
-<colgroup>
-<col width="4%" />
-<col width="7%" />
-<col width="31%" />
-<col width="58%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Parameter</th>
-<th class="head">Type</th>
-<th class="head">Valid Values</th>
-<th class="head">Description</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>hdr</td>
-<td>Generic TISCI message header (8 bytes)</td>
-<td><a class="reference internal" href="../../5_soc_doc/am6x/hosts.html"><span class="doc">Valid Host IDs</span></a></td>
-<td>Generic TISCI message header. Contains the message ID, host ID, sequence number, and any flags</td>
-</tr>
-<tr class="row-odd"><td>nav_id</td>
-<td>u32</td>
-<td><a class="reference internal" href="../../5_soc_doc/am6x/navss.html#pub-soc-am6x-navss-ids"><span class="std std-ref">Valid Navigator Subsystem UDMAP Device IDs</span></a></td>
-<td>The SoC-specific Device ID of the Navigator subsystem UDMAP in which the receie flow is located.</td>
-</tr>
-<tr class="row-even"><td>flow_index</td>
-<td>u32</td>
-<td><a class="reference internal" href="../../5_soc_doc/am6x/navss.html#pub-soc-am6x-udmap-channel-and-flow-indices"><span class="std std-ref">Valid Navigator Subsystem Receive Flow Indices</span></a></td>
-<td>Specifies the receive flow index for non-optional configuration.</td>
-</tr>
-<tr class="row-odd"><td>rx_ch_index</td>
-<td>u32</td>
-<td><a class="reference internal" href="../../5_soc_doc/am6x/navss.html#pub-soc-am6x-udmap-channel-and-flow-indices"><span class="std std-ref">Valid Navigator Subsystem Receive Channel Indices</span></a></td>
-<td>Specifies the receive channel index using the receive flow to be configured. The receive channel must be using the receive flow either through the static mapping of receive channels to receive flows or through the receive channel’s flow range specification.</td>
-</tr>
-<tr class="row-even"><td>rx_einfo_present</td>
-<td>u8</td>
-<td><ol class="first last arabic simple" start="0">
-<li><ul class="first">
-<li>Do not handle extended packet info in received packet descriptor, (1) - Handle extended packet info in received packet descriptor</li>
-</ul>
-</li>
-</ol>
-</td>
-<td>Receive flow extended packet info present</td>
-</tr>
-<tr class="row-odd"><td>rx_psinfo_present</td>
-<td>u8</td>
-<td><ol class="first last arabic simple" start="0">
-<li><ul class="first">
-<li>Do not handle PS info words in received descriptor, (1) - Handle present PS info words in received descriptor</li>
-</ul>
-</li>
-</ol>
-</td>
-<td>Receive flow PS words present</td>
-</tr>
-<tr class="row-even"><td>rx_error_handling</td>
-<td>u8</td>
-<td><ol class="first last arabic simple" start="0">
-<li><ul class="first">
-<li>Drop received packet on starvation error, (1) - Retry received packet on starvation error</li>
-</ul>
-</li>
-</ol>
-</td>
-<td>Receive flow error handling</td>
-</tr>
-<tr class="row-odd"><td>rx_desc_type</td>
-<td>u8</td>
-<td><ol class="first last arabic simple" start="0">
-<li><ul class="first">
-<li>Host descriptor, (1) - Monolithic descriptor</li>
-</ul>
-</li>
-</ol>
-</td>
-<td>Receive flow descriptor type</td>
-</tr>
-<tr class="row-even"><td>rx_sop_offset</td>
-<td>u16</td>
-<td>0 - 255 bytes</td>
-<td>Receive flow start of packet offset. See the UDMAP section of the TRM for more information on this setting.</td>
-</tr>
-<tr class="row-odd"><td>rx_dest_qnum</td>
-<td>u16</td>
-<td>Receive flow destination queue configuration</td>
-<td>The specified destination queue must be valid within the Navigator Subsystem and must be owned by the host, or a subordinate of the host, requesting allocation and configuration of the receive flow.</td>
-</tr>
-<tr class="row-even"><td>rx_ps_location</td>
-<td>u8</td>
-<td><ol class="first last arabic simple" start="0">
-<li><ul class="first">
-<li>Place PS words at end of packet descriptor, (1) - Place PS words at beginning of the data buffer</li>
-</ul>
-</li>
-</ol>
-</td>
-<td>Receive flow PS words location</td>
-</tr>
-<tr class="row-odd"><td>rx_src_tag_hi</td>
-<td>u8</td>
-<td>See the UDMAP section of the TRM for more information on this setting</td>
-<td>Receive flow source tag high byte constant</td>
-</tr>
-<tr class="row-even"><td>rx_src_tag_lo</td>
-<td>u8</td>
-<td>See the UDMAP section of the TRM for more information on this setting</td>
-<td>Receive flow source tag low byte constant</td>
-</tr>
-<tr class="row-odd"><td>rx_dest_tag_hi</td>
-<td>u8</td>
-<td>See the UDMAP section of the TRM for more information on this setting</td>
-<td>Receive flow destination tag high byte constant</td>
-</tr>
-<tr class="row-even"><td>rx_dest_tag_lo</td>
-<td>u8</td>
-<td>See the UDMAP section of the TRM for more information on this setting</td>
-<td>Receive flow destination tag low byte constant</td>
-</tr>
-<tr class="row-odd"><td>rx_src_tag_hi_sel</td>
-<td>u8</td>
-<td><ol class="first last arabic simple" start="0">
-<li><ul class="first">
-<li>Do not overwite, (1) - Overwrite with value in rx_src_tag_hi, (2) - Overwrite with flow_id[7:0], (4) - Overwrite with src_tag[7:0]</li>
-</ul>
-</li>
-</ol>
-</td>
-<td>Receive flow source tag high byte selector</td>
-</tr>
-<tr class="row-even"><td>rx_src_tag_lo_sel</td>
-<td>u8</td>
-<td><ol class="first last arabic simple" start="0">
-<li><ul class="first">
-<li>Do not overwite, (1) - Overwrite with value in rx_src_tag_lo, (2) - Overwrite with flow_id[7:0], (4) - Overwrite with src_tag[7:0]</li>
-</ul>
-</li>
-</ol>
-</td>
-<td>Receive flow source tag low byte selector</td>
-</tr>
-<tr class="row-odd"><td>rx_dest_tag_hi_sel</td>
-<td>u8</td>
-<td><ol class="first last arabic simple" start="0">
-<li><ul class="first">
-<li>Do not overwite, (1) - Overwrite with value in rx_dest_tag_hi, (2) - Overwrite with flow_id[7:0], (4) - Overwrite with src_tag[7:0], (5) - Overwrite with src_tag[15:8]</li>
-</ul>
-</li>
-</ol>
-</td>
-<td>Receive flow destination tag high byte selector</td>
-</tr>
-<tr class="row-even"><td>rx_dest_tag_lo_sel</td>
-<td>u8</td>
-<td><ol class="first last arabic simple" start="0">
-<li><ul class="first">
-<li>Do not overwite, (1) - Overwrite with value in rx_dest_tag_lo, (2) - Overwrite with flow_id[7:0], (4) - Overwrite with src_tag[7:0], (5) - Overwrite with src_tag[15:8]</li>
-</ul>
-</li>
-</ol>
-</td>
-<td>Receive flow destination tag low byte selector</td>
-</tr>
-<tr class="row-odd"><td>rx_size_thresh_en</td>
-<td>u8</td>
-<td>Receive flow packet size based free buffer queue enable, cannot be greater than 7</td>
-<td>See the UDMAP section of the TRM for more information on this setting. Configuration of the optional size thresholds when this configuration is enabled is done by sending the <a class="reference external" href="pub_rm_public_udmap_rx_flow_optional_cfg">Receive Flow Optional Config Message</a> to System Firmware for the receive flow allocated by this request.</td>
-</tr>
-<tr class="row-even"><td>rx_fdq0_sz0_qnum</td>
-<td>u16</td>
-<td>Receive flow free descriptor queue 0</td>
-<td>See the UDMAP section of the TRM for more information on this setting. The specified free queue must be valid within the Navigator Subsystem and must be owned by the host, or a subordinate of the host, requesting allocation and configuration of the receive flow.</td>
-</tr>
-<tr class="row-odd"><td>rx_fdq1_qnum</td>
-<td>u16</td>
-<td>Receive flow free descriptor queue 1</td>
-<td>See the UDMAP section of the TRM for more information on this setting. The specified free queue must be valid within the Navigator Subsystem and must be owned by the host, or a subordinate of the host, requesting allocation and configuration of the receive flow.</td>
-</tr>
-<tr class="row-even"><td>rx_fdq2_qnum</td>
-<td>u16</td>
-<td>Receive flow free descriptor queue 2</td>
-<td>See the UDMAP section of the TRM for more information on this setting. The specified free queue must be valid within the Navigator Subsystem and must be owned by the host, or a subordinate of the host, requesting allocation and configuration of the receive flow.</td>
-</tr>
-<tr class="row-odd"><td>rx_fdq3_qnum</td>
-<td>u16</td>
-<td>Receive flow free descriptor queue 3</td>
-<td>See the UDMAP section of the TRM for more information on this setting. The specified free queue must be valid within the Navigator Subsystem and must be owned by the host, or a subordinate of the host, requesting allocation and configuration of the receive flow.</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div class="section" id="udmap-receive-flow-optional-config">
-<h2>UDMAP Receive Flow Optional Config<a class="headerlink" href="#udmap-receive-flow-optional-config" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="udmap-receive-flow-optional-config-request">
-<span id="pub-rm-public-udmap-rx-flow-optional-cfg"></span><h3>UDMAP Receive Flow Optional Config Request<a class="headerlink" href="#udmap-receive-flow-optional-config-request" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">This API is deprecated and will be removed in 2018.09.</p>
-</div>
-<p>The <strong>UDMAP rx flow optional cfg</strong> TISCI message API is used to configure the
-optional registers for an allocated flow. The API allows programming of an
-allocated receive flow’s optional size threshold register fields if the flow’s
-rx_size_thresh_en field was set when the receive flow non-optional registers
-were configured using the <strong>UDMAP rx flow cfg</strong> TISCI message. The receive flow
-must be used by the specified receive channel and the host requesting the
-receive flow configuration must be the host, or the supervisor of the host, that
-owns the receive channel in order for the flows optional registers to be
-configured. It’s the user’s responsbility to make sure the receive channel is
-disabled when changing the receive flow optionawl configuration. Otherwise,
-unknown operation may occur.</p>
-<p>The <strong>UDMAP rx flow optional cfg</strong> API can be used to configure optional fields
-of receive flow within any Navigator Subsystem UDMAP on the device.</p>
-<div class="section" id="id8">
-<h4>Usage<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h4>
-<table border="1" class="docutils">
-<colgroup>
-<col width="75%" />
-<col width="25%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><strong>Message Type</strong></td>
-<td>Normal</td>
-</tr>
-<tr class="row-even"><td><strong>Secure Queue Only?</strong></td>
-<td>No</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section" id="udmap-receive-flow-optional-config-message-parameters">
-<h4>UDMAP Receive Flow Optional Config Message Parameters<a class="headerlink" href="#udmap-receive-flow-optional-config-message-parameters" title="Permalink to this headline">¶</a></h4>
-<table border="1" class="docutils">
-<colgroup>
-<col width="4%" />
-<col width="9%" />
-<col width="23%" />
-<col width="64%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Parameter</th>
-<th class="head">Type</th>
-<th class="head">Valid Values</th>
-<th class="head">Description</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>hdr</td>
-<td>Generic TISCI message header (8 bytes)</td>
-<td><a class="reference internal" href="../../5_soc_doc/am6x/hosts.html"><span class="doc">Valid Host IDs</span></a></td>
-<td>Generic TISCI message header. Contains the message ID, host ID, sequence number, and any flags</td>
-</tr>
-<tr class="row-odd"><td>nav_id</td>
-<td>u32</td>
-<td><a class="reference internal" href="../../5_soc_doc/am6x/navss.html#pub-soc-am6x-navss-ids"><span class="std std-ref">Valid Navigator Subsystem UDMAP Device IDs</span></a></td>
-<td>The SoC-specific Device ID of the Navigator subsystem UDMAP in which the receie flow is located.</td>
-</tr>
-<tr class="row-even"><td>flow_index</td>
-<td>u32</td>
-<td><a class="reference internal" href="../../5_soc_doc/am6x/navss.html#pub-soc-am6x-udmap-channel-and-flow-indices"><span class="std std-ref">Valid Navigator Subsystem Receive Flow Indices</span></a></td>
-<td>Specifies the receive flow index for optional configuration.</td>
-</tr>
-<tr class="row-odd"><td>rx_ch_index</td>
-<td>u32</td>
-<td><a class="reference internal" href="../../5_soc_doc/am6x/navss.html#pub-soc-am6x-udmap-channel-and-flow-indices"><span class="std std-ref">Valid Navigator Subsystem Receive Channel Indices</span></a></td>
-<td>Specifies the receive channel index using the receive flow to be configured. The receive channel must be using the receive flow either through the static mapping of receive channels to receive flows or through the receive channel’s flow range specification.</td>
-</tr>
-<tr class="row-even"><td>rx_size_thresh0</td>
-<td>u16</td>
-<td>Receive flow packet size threshold 0</td>
-<td>See the UDMAP section of the TRM for more information on this setting</td>
-</tr>
-<tr class="row-odd"><td>rx_size_thresh1</td>
-<td>u16</td>
-<td>Receive flow packet size threshold 1</td>
-<td>See the UDMAP section of the TRM for more information on this setting.</td>
-</tr>
-<tr class="row-even"><td>rx_size_thresh2</td>
-<td>u16</td>
-<td>Receive flow packet size threshold 2</td>
-<td>See the UDMAP section of the TRM for more information on this setting.</td>
-</tr>
-<tr class="row-odd"><td>rx_fdq0_sz1_qnum</td>
-<td>u16</td>
-<td>Receive flow free descriptor queue for size threshold 1</td>
-<td>See the UDMAP section of the TRM for more information on this setting. The specified free queue must be valid within the Navigator Subsystem and must be owned by the host, or a subordinate of the host, who owns the receive flow index and who is making the optional configuration request.</td>
-</tr>
-<tr class="row-even"><td>rx_fdq0_sz2_qnum</td>
-<td>u16</td>
-<td>Receive flow free descriptor queue for size threshold 2</td>
-<td>See the UDMAP section of the TRM for more information on this setting. The specified free queue must be valid within the Navigator Subsystem and must be owned by the host, or a subordinate of the host, who owns the receive flow index and who is making the optional configuration request.</td>
-</tr>
-<tr class="row-odd"><td>rx_fdq0_sz3_qnum</td>
-<td>u16</td>
-<td>Receive flow free descriptor queue for size threshold 3</td>
-<td>See the UDMAP section of the TRM for more information on this setting. The specified free queue must be valid within the Navigator Subsystem and must be owned by the host, or a subordinate of the host, who owns the receive flow index and who is making the optional configuration request.</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
 <div class="section" id="tisci-msg-rm-udmap-flow-cfg-udmap-receive-flow-configure">
 <h2>TISCI_MSG_RM_UDMAP_FLOW_CFG - UDMAP Receive Flow Configure<a class="headerlink" href="#tisci-msg-rm-udmap-flow-cfg-udmap-receive-flow-configure" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="udmap-receive-flow-configure-request">
@@ -1764,8 +1051,8 @@ of the <strong>UDMAP flow cfg</strong> API. It is programmed internally via the 
 Set</span></a> message.</p>
 <p>The <strong>UDMAP flow cfg</strong> API can be used to configure receive flows within any
 Navigator Subsystem UDMAP on the device.</p>
-<div class="section" id="id9">
-<h4>Usage<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="id3">
+<h4>Usage<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
 <table border="1" class="docutils">
 <colgroup>
 <col width="75%" />
@@ -1781,8 +1068,8 @@ Navigator Subsystem UDMAP on the device.</p>
 </tbody>
 </table>
 </div>
-<div class="section" id="id10">
-<h4>TISCI Message ID<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="id4">
+<h4>TISCI Message ID<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h4>
 <p><p><code class="docutils literal"><span class="pre">TISCI_MSG_RM_UDMAP_FLOW_CFG</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(0x1230U)</span></code></p>
 <p>RM TISCI message to configure a Navigator Subsystem UDMAP receive flow</p>
 </p>
@@ -2201,196 +1488,6 @@ return flags</td>
 </div>
 </div>
 </div>
-<div class="section" id="tisci-msg-rm-udmap-flow-get-cfg-udmap-receive-flow-get-configuration">
-<h2>TISCI_MSG_RM_UDMAP_FLOW_GET_CFG - UDMAP Receive Flow Get Configuration<a class="headerlink" href="#tisci-msg-rm-udmap-flow-get-cfg-udmap-receive-flow-get-configuration" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="udmap-receive-flow-get-configuration-request">
-<span id="pub-rm-public-udmap-flow-get-cfg"></span><h3>UDMAP Receive Flow Get Configuration Request<a class="headerlink" href="#udmap-receive-flow-get-configuration-request" title="Permalink to this headline">¶</a></h3>
-<p>The <strong>udmap_flow_get_cfg</strong> TISCI message API is used to retrieve the
-non-real-time registers field settings, or the hardware reset register settings,
-for a UDMAP receive flow.  The host, or a supervisor of the host, who owns the
-receive flow must be the requesting host.  The register field values are
-returned in the <strong>udmap_flow_get_cfg_response</strong> message.</p>
-<p>The <strong>udmap_flow_get_cfg</strong> API can be used to retrieve UDMAP receive flow
-configurations within any Navigator Subsystem on the device.</p>
-<div class="section" id="id11">
-<h4>Usage<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h4>
-<table border="1" class="docutils">
-<colgroup>
-<col width="75%" />
-<col width="25%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><strong>Message Type</strong></td>
-<td>Normal</td>
-</tr>
-<tr class="row-even"><td><strong>Secure Queue Only?</strong></td>
-<td>No</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section" id="id12">
-<h4>TISCI Message ID<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h4>
-<p><p><code class="docutils literal"><span class="pre">TISCI_MSG_RM_UDMAP_FLOW_GET_CFG</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(0x1232U)</span></code></p>
-<p>RM TISCI message to get the register cfg for a Navigator Subsystem UDMAP
- receive flow’s standard registers</p>
-</p>
-</div>
-<div class="section" id="udmap-receive-flow-get-configuration-message-parameters">
-<h4>UDMAP Receive Flow Get Configuration Message Parameters<a class="headerlink" href="#udmap-receive-flow-get-configuration-message-parameters" title="Permalink to this headline">¶</a></h4>
-<p><p><strong>struct tisci_msg_rm_udmap_flow_get_cfg_req</strong></p>
-<p>Get Navigator Subsystem UDMAP receive flow’s non-real-time register configuration</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="5%" />
-<col width="7%" />
-<col width="88%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Parameter</th>
-<th class="head">Type</th>
-<th class="head">Description</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>hdr</td>
-<td>struct tisci_header</td>
-<td>Standard TISCI header</td>
-</tr>
-<tr class="row-odd"><td>nav_id</td>
-<td>u16</td>
-<td>SoC device ID of Navigator Subsystem in which the UDMAP receive flow is located</td>
-</tr>
-<tr class="row-even"><td>index</td>
-<td>u16</td>
-<td>UDMAP receive flow index.</td>
-</tr>
-<tr class="row-odd"><td>get_reset_cfg</td>
-<td>u8</td>
-<td>Switch defining which UDMAP flow configuration is returned: &#64;ref TISCI_MSG_VALUE_RM_UDMAP_GET_CFG_REG - Return non-real-time register configuration &#64;ref TISCI_MSG_VALUE_RM_UDMAP_GET_CFG_RESET - Return non-real-time register hardware reset value configuration</td>
-</tr>
-</tbody>
-</table>
-<p>Gets the configuration of the non-real-time register fields of a UDMAP
- receive flow.  The host, or a supervisor of the host, who owns the flow
- must be the requesting host.  The values of the non-real-time registers
- are returned in &#64;ref tisci_msg_rm_udmap_flow_get_cfg_resp.
- The reset_cfg parameter is used to request either the existing
- non-real-time register values or the hardware reset values for the UDMAP
- flow’s register fields.</p>
-</p>
-</div>
-</div>
-<div class="section" id="udmap-receive-flow-get-configuration-response">
-<span id="pub-rm-public-udmap-flow-get-cfg-response"></span><h3>UDMAP Receive Flow Get Configuration Response<a class="headerlink" href="#udmap-receive-flow-get-configuration-response" title="Permalink to this headline">¶</a></h3>
-<p>The <strong>udmap_flow_get_cfg response</strong> TISCI message contains the UDMAP
-receive flow’s non-real-time register field values.</p>
-<div class="section" id="udmap-receive-flow-get-configuration-response-message-parameters">
-<h4>UDMAP Receive Flow Get Configuration Response Message Parameters<a class="headerlink" href="#udmap-receive-flow-get-configuration-response-message-parameters" title="Permalink to this headline">¶</a></h4>
-<p><p><strong>struct tisci_msg_rm_udmap_flow_get_cfg_resp</strong></p>
-<p>UDMAP receive flow get configuration response message</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="19%" />
-<col width="20%" />
-<col width="61%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Parameter</th>
-<th class="head">Type</th>
-<th class="head">Description</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>hdr</td>
-<td>struct tisci_header</td>
-<td>Standard TISCI header</td>
-</tr>
-<tr class="row-odd"><td>rx_einfo_present</td>
-<td>u8</td>
-<td>UDMAP receive flow extended packet info present configuration</td>
-</tr>
-<tr class="row-even"><td>rx_psinfo_present</td>
-<td>u8</td>
-<td>UDMAP receive flow PS words present configuration</td>
-</tr>
-<tr class="row-odd"><td>rx_error_handling</td>
-<td>u8</td>
-<td>UDMAP receive flow error handling configuration</td>
-</tr>
-<tr class="row-even"><td>rx_desc_type</td>
-<td>u8</td>
-<td>UDMAP receive flow descriptor type</td>
-</tr>
-<tr class="row-odd"><td>rx_sop_offset</td>
-<td>u16</td>
-<td>UDMAP receive flow start of packet offset</td>
-</tr>
-<tr class="row-even"><td>rx_dest_qnum</td>
-<td>u16</td>
-<td>UDMAP receive flow destination queue</td>
-</tr>
-<tr class="row-odd"><td>rx_src_tag_hi</td>
-<td>u8</td>
-<td>UDMAP receive flow source tag high byte constant</td>
-</tr>
-<tr class="row-even"><td>rx_src_tag_lo</td>
-<td>u8</td>
-<td>UDMAP receive flow source tag low byte constant</td>
-</tr>
-<tr class="row-odd"><td>rx_dest_tag_hi</td>
-<td>u8</td>
-<td>UDMAP receive flow destination tag high byte constant</td>
-</tr>
-<tr class="row-even"><td>rx_dest_tag_lo</td>
-<td>u8</td>
-<td>UDMAP receive flow destination tag low byte constant</td>
-</tr>
-<tr class="row-odd"><td>rx_src_tag_hi_sel</td>
-<td>u8</td>
-<td>UDMAP receive flow source tag high byte selector</td>
-</tr>
-<tr class="row-even"><td>rx_src_tag_lo_sel</td>
-<td>u8</td>
-<td>UDMAP receive flow source tag low byte selector</td>
-</tr>
-<tr class="row-odd"><td>rx_dest_tag_hi_sel</td>
-<td>u8</td>
-<td>UDMAP receive flow destination tag high byte selector</td>
-</tr>
-<tr class="row-even"><td>rx_dest_tag_lo_sel</td>
-<td>u8</td>
-<td>UDMAP receive flow destination tag low byte selector</td>
-</tr>
-<tr class="row-odd"><td>rx_fdq0_sz0_qnum</td>
-<td>u16</td>
-<td>UDMAP receive flow free descriptor queue 0</td>
-</tr>
-<tr class="row-even"><td>rx_fdq1_qnum</td>
-<td>u16</td>
-<td>UDMAP receive flow free descriptor queue 1</td>
-</tr>
-<tr class="row-odd"><td>rx_fdq2_qnum</td>
-<td>u16</td>
-<td>UDMAP receive flow free descriptor queue 2</td>
-</tr>
-<tr class="row-even"><td>rx_fdq3_qnum</td>
-<td>u16</td>
-<td>UDMAP receive flow free descriptor queue 3</td>
-</tr>
-<tr class="row-odd"><td>rx_ps_location</td>
-<td>u8</td>
-<td>UDMAP receive flow PS words location</td>
-</tr>
-</tbody>
-</table>
-<p>Response received by host processor after RM has handled
- &#64;ref tisci_msg_rm_udmap_flow_get_cfg_req.  The response contains
- the receive flow’s register values.</p>
-</p>
-</div>
-</div>
-</div>
 <div class="section" id="tisci-msg-rm-udmap-flow-size-thresh-cfg-udmap-receive-flow-size-threshold-configure">
 <h2>TISCI_MSG_RM_UDMAP_FLOW_SIZE_THRESH_CFG - UDMAP Receive Flow Size Threshold Configure<a class="headerlink" href="#tisci-msg-rm-udmap-flow-size-thresh-cfg-udmap-receive-flow-size-threshold-configure" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="udmap-receive-flow-size-threshold-configure-request">
@@ -2404,8 +1501,8 @@ flow are disabled when changing the receive flow configuration.  Otherwise,
 unknown operation may occur.</p>
 <p>The <strong>UDMAP flow size threshold cfg</strong> API can be used to configure receive
 flows within any Navigator Subsystem UDMAP on the device.</p>
-<div class="section" id="id13">
-<h4>Usage<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="id5">
+<h4>Usage<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h4>
 <table border="1" class="docutils">
 <colgroup>
 <col width="75%" />
@@ -2421,8 +1518,8 @@ flows within any Navigator Subsystem UDMAP on the device.</p>
 </tbody>
 </table>
 </div>
-<div class="section" id="id14">
-<h4>TISCI Message ID<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="id6">
+<h4>TISCI Message ID<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h4>
 <p><p><code class="docutils literal"><span class="pre">TISCI_MSG_RM_UDMAP_FLOW_SIZE_THRESH_CFG</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(0x1231U)</span></code></p>
 <p>RM TISCI message to configure a Navigator Subsystem UDMAP receive flow’s
  optional, size based free descriptor queue registers</p>
@@ -2669,150 +1766,6 @@ return flags</td>
 </div>
 </div>
 </div>
-<div class="section" id="tisci-msg-rm-udmap-flow-size-thresh-get-cfg-udmap-receive-flow-size-threshold-get-configuration">
-<h2>TISCI_MSG_RM_UDMAP_FLOW_SIZE_THRESH_GET_CFG - UDMAP Receive Flow Size Threshold Get Configuration<a class="headerlink" href="#tisci-msg-rm-udmap-flow-size-thresh-get-cfg-udmap-receive-flow-size-threshold-get-configuration" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="udmap-receive-flow-size-threshold-routing-get-configuration-request">
-<span id="pub-rm-public-udmap-flow-size-thresh-get-cfg"></span><h3>UDMAP Receive Flow Size Threshold Routing Get Configuration Request<a class="headerlink" href="#udmap-receive-flow-size-threshold-routing-get-configuration-request" title="Permalink to this headline">¶</a></h3>
-<p>The <strong>udmap_flow_size_thresh_get_cfg</strong> TISCI message API is used to retrieve the
-non-real-time registers field settings for a UDMAP receive flow’s size threshold
-routing registers, or the hardware reset settings.  The host, or a supervisor of
-the host, who owns the receive flow must be the requesting host. The register
-field values are returned in the <strong>udmap_flow_size_thresh_get_cfg_response</strong>
-message.</p>
-<p>The <strong>udmap_flow_size_thresh_get_cfg</strong> API can be used to retrieve UDMAP receive
-flow configurations within any Navigator Subsystem on the device.</p>
-<div class="section" id="id15">
-<h4>Usage<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h4>
-<table border="1" class="docutils">
-<colgroup>
-<col width="75%" />
-<col width="25%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><strong>Message Type</strong></td>
-<td>Normal</td>
-</tr>
-<tr class="row-even"><td><strong>Secure Queue Only?</strong></td>
-<td>No</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section" id="id16">
-<h4>TISCI Message ID<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h4>
-<p><p><code class="docutils literal"><span class="pre">TISCI_MSG_RM_UDMAP_FLOW_SIZE_THRESH_GET_CFG</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(0x1233U)</span></code></p>
-<p>RM TISCI message to get the register cfg for a Navigator Subsystem UDMAP
- receive flow’s size based free descriptor queue registers</p>
-</p>
-</div>
-<div class="section" id="udmap-receive-flow-size-threshold-routing-get-configuration-message-parameters">
-<h4>UDMAP Receive Flow Size Threshold Routing Get Configuration Message Parameters<a class="headerlink" href="#udmap-receive-flow-size-threshold-routing-get-configuration-message-parameters" title="Permalink to this headline">¶</a></h4>
-<p><p><strong>struct tisci_msg_rm_udmap_flow_size_thresh_get_cfg_req</strong></p>
-<p>Get Navigator Subsystem UDMAP receive flow’s non-real-time size threshold based queue routing register configuration</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="5%" />
-<col width="7%" />
-<col width="88%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Parameter</th>
-<th class="head">Type</th>
-<th class="head">Description</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>hdr</td>
-<td>struct tisci_header</td>
-<td>Standard TISCI header</td>
-</tr>
-<tr class="row-odd"><td>nav_id</td>
-<td>u16</td>
-<td>SoC device ID of Navigator Subsystem in which the UDMAP receive flow is located</td>
-</tr>
-<tr class="row-even"><td>index</td>
-<td>u16</td>
-<td>UDMAP receive flow index.</td>
-</tr>
-<tr class="row-odd"><td>get_reset_cfg</td>
-<td>u8</td>
-<td>Switch defining which UDMAP flow configuration is returned: &#64;ref TISCI_MSG_VALUE_RM_UDMAP_GET_CFG_REG - Return non-real-time register configuration &#64;ref TISCI_MSG_VALUE_RM_UDMAP_GET_CFG_RESET - Return non-real-time register hardware reset value configuration</td>
-</tr>
-</tbody>
-</table>
-<p>Gets the configuration of the non-real-time register fields of a UDMAP
- receive flow’s size threshold routing registers.  The host, or a supervisor
- of the host, who owns the flow must be the requesting host.  The values of
- the non-real-time registers are returned in
- &#64;ref tisci_msg_rm_udmap_flow_size_thresh_get_cfg_resp.
- The reset_cfg parameter is used to request either the existing
- non-real-time register values or the hardware reset values for the UDMAP
- flow’s register fields.</p>
-</p>
-</div>
-</div>
-<div class="section" id="udmap-receive-flow-size-threshold-routing-get-configuration-response">
-<span id="pub-rm-public-udmap-flow-size-thresh-get-cfg-response"></span><h3>UDMAP Receive Flow Size Threshold Routing Get Configuration Response<a class="headerlink" href="#udmap-receive-flow-size-threshold-routing-get-configuration-response" title="Permalink to this headline">¶</a></h3>
-<p>The <strong>udmap_flow_size_thresh_get_cfg response</strong> TISCI message contains the UDMAP
-receive flow’s non-real-time size threshold routing register field values.</p>
-<div class="section" id="udmap-receive-flow-size-threshold-routing-get-configuration-response-message-parameters">
-<h4>UDMAP Receive Flow Size Threshold Routing Get Configuration Response Message Parameters<a class="headerlink" href="#udmap-receive-flow-size-threshold-routing-get-configuration-response-message-parameters" title="Permalink to this headline">¶</a></h4>
-<p><p><strong>struct tisci_msg_rm_udmap_flow_size_thresh_get_cfg_resp</strong></p>
-<p>UDMAP receive flow get size threshold configuration response message</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="18%" />
-<col width="20%" />
-<col width="61%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Parameter</th>
-<th class="head">Type</th>
-<th class="head">Description</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>hdr</td>
-<td>struct tisci_header</td>
-<td>Standard TISCI header</td>
-</tr>
-<tr class="row-odd"><td>rx_size_thresh0</td>
-<td>u16</td>
-<td>UDMAP receive flow packet size threshold 0</td>
-</tr>
-<tr class="row-even"><td>rx_size_thresh1</td>
-<td>u16</td>
-<td>UDMAP receive flow packet size threshold 1</td>
-</tr>
-<tr class="row-odd"><td>rx_size_thresh2</td>
-<td>u16</td>
-<td>UDMAP receive flow packet size threshold 2</td>
-</tr>
-<tr class="row-even"><td>rx_fdq0_sz1_qnum</td>
-<td>u16</td>
-<td>UDMAP receive flow free descriptor queue for size threshold 1</td>
-</tr>
-<tr class="row-odd"><td>rx_fdq0_sz2_qnum</td>
-<td>u16</td>
-<td>UDMAP receive flow free descriptor queue for size threshold 2</td>
-</tr>
-<tr class="row-even"><td>rx_fdq0_sz3_qnum</td>
-<td>u16</td>
-<td>UDMAP receive flow free descriptor queue for size threshold 3</td>
-</tr>
-<tr class="row-odd"><td>rx_size_thresh_en</td>
-<td>u8</td>
-<td>UDMAP receive flow packet size based free buffer queue enable</td>
-</tr>
-</tbody>
-</table>
-<p>Response received by host processor after RM has handled
- &#64;ref tisci_msg_rm_udmap_flow_size_thresh_get_cfg_req.  The response contains
- the receive flow’s non-real-time size threshold routing register values.</p>
-</p>
-</div>
-</div>
-</div>
 <div class="section" id="tisci-msg-rm-udmap-gcfg-cfg-udmap-global-configuration-configure">
 <h2>TISCI_MSG_RM_UDMAP_GCFG_CFG - UDMAP Global Configuration Configure<a class="headerlink" href="#tisci-msg-rm-udmap-gcfg-cfg-udmap-global-configuration-configure" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="udmap-global-configuration-configure-request">
@@ -2823,8 +1776,8 @@ supervisor of the host, who owns the global configuration region must be the
 requesting host.  The API allows configuration of the global configuration
 region by passing the Navigator SoC device ID of the UDMAP subsystem in which
 the region is located.</p>
-<div class="section" id="id17">
-<h4>Usage<a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="id7">
+<h4>Usage<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h4>
 <table border="1" class="docutils">
 <colgroup>
 <col width="75%" />
@@ -2840,8 +1793,8 @@ the region is located.</p>
 </tbody>
 </table>
 </div>
-<div class="section" id="id18">
-<h4>TISCI Message ID<a class="headerlink" href="#id18" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="id8">
+<h4>TISCI Message ID<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h4>
 <p><p><code class="docutils literal"><span class="pre">TISCI_MSG_RM_UDMAP_GCFG_CFG</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(0x1240U)</span></code></p>
 <p>RM TISCI message to configure a Navigator Subsystem UDMAP global
  configuration</p>
@@ -2967,147 +1920,6 @@ processed <strong>udmap_gcfg_cfg</strong> message.</p>
 </div>
 </div>
 </div>
-<div class="section" id="tisci-msg-rm-udmap-gcfg-get-cfg-udmap-global-configuration-get-configuration">
-<h2>TISCI_MSG_RM_UDMAP_GCFG_GET_CFG - UDMAP Global Configuration Get Configuration<a class="headerlink" href="#tisci-msg-rm-udmap-gcfg-get-cfg-udmap-global-configuration-get-configuration" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="udmap-global-configuration-get-configuration-request">
-<span id="pub-rm-public-udmap-gcfg-get-cfg"></span><h3>UDMAP Global Configuration Get Configuration Request<a class="headerlink" href="#udmap-global-configuration-get-configuration-request" title="Permalink to this headline">¶</a></h3>
-<p>The <strong>udmap_gcfg_get_cfg</strong> TISCI message API is used to retrieve the
-non-real-time registers field settings for a UDMAP global configuration region
-registers, or the hardware reset settings.  The host, or a supervisor of
-the host, who owns the global configuration region must be the requesting host.
-The register field values are returned in the <strong>udmap_gcfg_get_cfg_response</strong>
-message.</p>
-<p>The <strong>udmap_gcfg_get_cfg</strong> API can be used to retrieve UDMAP global
-configuration within any Navigator Subsystem on the device.</p>
-<div class="section" id="id19">
-<h4>Usage<a class="headerlink" href="#id19" title="Permalink to this headline">¶</a></h4>
-<table border="1" class="docutils">
-<colgroup>
-<col width="75%" />
-<col width="25%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><strong>Message Type</strong></td>
-<td>Normal</td>
-</tr>
-<tr class="row-even"><td><strong>Secure Queue Only?</strong></td>
-<td>No</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section" id="id20">
-<h4>TISCI Message ID<a class="headerlink" href="#id20" title="Permalink to this headline">¶</a></h4>
-<p><p><code class="docutils literal"><span class="pre">TISCI_MSG_RM_UDMAP_GCFG_GET_CFG</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(0x1241U)</span></code></p>
-<p>RM TISCI message to get the register cfg for a Navigator Subsystem UDMAP
- global configuration</p>
-</p>
-</div>
-<div class="section" id="udmap-global-configuration-get-configuration-message-parameters">
-<h4>UDMAP Global Configuration Get Configuration Message Parameters<a class="headerlink" href="#udmap-global-configuration-get-configuration-message-parameters" title="Permalink to this headline">¶</a></h4>
-<p><p><strong>struct tisci_msg_rm_udmap_gcfg_get_cfg_req</strong></p>
-<p>Get Navigator Subsystem UDMAP global configuration’s non-real-time register configuration. Gets the configuration of the non-real-time register fields of a UDMAP global configuration.  The host, or a supervisor of the host, who owns the gcfg region must be the requesting host.  The values of the non-real-time registers are returned in &#64;ref tisci_msg_rm_udmap_gcfg_get_cfg_resp.  The reset_cfg parameter is used to request either the existing non-real-time register values or the hardware reset values for the UDMAP global configuration register fields.</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="5%" />
-<col width="7%" />
-<col width="88%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Parameter</th>
-<th class="head">Type</th>
-<th class="head">Description</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>hdr</td>
-<td>struct tisci_header</td>
-<td>Standard TISCI header</td>
-</tr>
-<tr class="row-odd"><td>nav_id</td>
-<td>u16</td>
-<td>SoC device ID of Navigator Subsystem in which the UDMAP global configuration is located</td>
-</tr>
-<tr class="row-even"><td>get_reset_cfg</td>
-<td>u8</td>
-<td>Switch defining which UDMAP global configuration is returned: &#64;ref TISCI_MSG_VALUE_RM_UDMAP_GET_CFG_REG - Return non-real-time register configuration &#64;ref TISCI_MSG_VALUE_RM_UDMAP_GET_CFG_RESET - Return non-real-time register hardware reset value configuration</td>
-</tr>
-</tbody>
-</table>
-</p>
-</div>
-</div>
-<div class="section" id="udmap-global-configuration-get-configuration-response">
-<span id="pub-rm-public-udmap-gcfg-get-cfg-response"></span><h3>UDMAP Global Configuration Get Configuration Response<a class="headerlink" href="#udmap-global-configuration-get-configuration-response" title="Permalink to this headline">¶</a></h3>
-<p>The <strong>udmap_gcfg_get_cfg response</strong> TISCI message contains the UDMAP
-global configuration’s non-real-time register field values.</p>
-<div class="section" id="udmap-global-configuration-get-configuration-response-message-parameters">
-<h4>UDMAP Global Configuration Get Configuration Response Message Parameters<a class="headerlink" href="#udmap-global-configuration-get-configuration-response-message-parameters" title="Permalink to this headline">¶</a></h4>
-<p><p><strong>struct tisci_msg_rm_udmap_gcfg_get_cfg_resp</strong></p>
-<p>UDMAP global configuration get configuration response message. Response received by host processor after RM has handled &#64;ref tisci_msg_rm_udmap_gcfg_get_cfg_req.  The response contains the global configuration’s non-real-time register values.</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="8%" />
-<col width="12%" />
-<col width="80%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Parameter</th>
-<th class="head">Type</th>
-<th class="head">Description</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>hdr</td>
-<td>struct tisci_header</td>
-<td>Standard TISCI header</td>
-</tr>
-<tr class="row-odd"><td>revision</td>
-<td>u32</td>
-<td>UDMAP module revision register.  This field is read-only. Use &#64;ref TISCI_MSG_VALUE_RM_UDMAP_GET_CFG_REG to retrieve this field’s value.</td>
-</tr>
-<tr class="row-even"><td>perf_ctrl</td>
-<td>u32</td>
-<td>UDMAP performance control register</td>
-</tr>
-<tr class="row-odd"><td>emu_ctrl</td>
-<td>u32</td>
-<td>UDMAP emulation control</td>
-</tr>
-<tr class="row-even"><td>psil_to</td>
-<td>u32</td>
-<td>UDMAP PSI-L proxy timeout register</td>
-</tr>
-<tr class="row-odd"><td>utc_ctrl</td>
-<td>u32</td>
-<td>UDMAP external UTC control register</td>
-</tr>
-<tr class="row-even"><td>cap0</td>
-<td>u32</td>
-<td>UDMAP capabilities 0 register.  This field is read-only.  Use &#64;ref TISCI_MSG_VALUE_RM_UDMAP_GET_CFG_REG to retrieve this field’s value.</td>
-</tr>
-<tr class="row-odd"><td>cap1</td>
-<td>u32</td>
-<td>UDMAP capabilities 1 register.  This field is read-only.  Use &#64;ref TISCI_MSG_VALUE_RM_UDMAP_GET_CFG_REG to retrieve this field’s value.</td>
-</tr>
-<tr class="row-even"><td>cap2</td>
-<td>u32</td>
-<td>UDMAP capabilities 2 register.  This field is read-only.  Use &#64;ref TISCI_MSG_VALUE_RM_UDMAP_GET_CFG_REG to retrieve this field’s value.</td>
-</tr>
-<tr class="row-odd"><td>cap3</td>
-<td>u32</td>
-<td>UDMAP capabilities 3 register.  This field is read-only.  Use &#64;ref TISCI_MSG_VALUE_RM_UDMAP_GET_CFG_REG to retrieve this field’s value.</td>
-</tr>
-<tr class="row-even"><td>rflowfwstat</td>
-<td>u32</td>
-<td>UDMAP rx flow ID firewall status register</td>
-</tr>
-</tbody>
-</table>
-</p>
-</div>
-</div>
-</div>
 </div>
 
 
@@ -3151,7 +1963,7 @@ global configuration’s non-real-time register field values.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'19.12.02',
+            VERSION:'20.01.00',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

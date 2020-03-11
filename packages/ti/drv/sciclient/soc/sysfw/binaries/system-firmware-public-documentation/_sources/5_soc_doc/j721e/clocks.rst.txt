@@ -2706,7 +2706,17 @@ Following is a mapping of Clocks IDs to function:
 Clocks for DMPAC_TOP_MAIN_0 Device
 ----------------------------------
 
-**This device has no defined clocks.**
+Device: :ref:`J721E_DEV_DMPAC_TOP_MAIN_0 <soc_doc_j721e_public_devices_desc_device_list>` (ID = 48)
+
+Following is a mapping of Clocks IDs to function:
+
++------------+----------------------------------+-------------+
+|   Clock ID | Name                             | Function    |
++============+==================================+=============+
+|          0 | DEV_DMPAC_TOP_MAIN_0_CLK         | Input clock |
++------------+----------------------------------+-------------+
+|          1 | DEV_DMPAC_TOP_MAIN_0_PLL_DCO_CLK | Input clock |
++------------+----------------------------------+-------------+
 
 .. _soc_doc_j721e_public_clks_dmsc_wkup_0:
 
@@ -10040,7 +10050,17 @@ Following is a mapping of Clocks IDs to function:
 Clocks for VPAC_TOP_MAIN_0 Device
 ---------------------------------
 
-**This device has no defined clocks.**
+Device: :ref:`J721E_DEV_VPAC_TOP_MAIN_0 <soc_doc_j721e_public_devices_desc_device_list>` (ID = 290)
+
+Following is a mapping of Clocks IDs to function:
+
++------------+---------------------------------+-------------+
+|   Clock ID | Name                            | Function    |
++============+=================================+=============+
+|          0 | DEV_VPAC_TOP_MAIN_0_CLK         | Input clock |
++------------+---------------------------------+-------------+
+|          1 | DEV_VPAC_TOP_MAIN_0_PLL_DCO_CLK | Input clock |
++------------+---------------------------------+-------------+
 
 .. _soc_doc_j721e_public_clks_vpfe0:
 
