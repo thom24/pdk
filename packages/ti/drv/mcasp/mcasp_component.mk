@@ -177,7 +177,10 @@ MCASP_AudioLoopback_TestApp_BOARDLIST = am65xx_evm am65xx_idk j721e_sim j721e_ev
 export MCASP_AudioLoopback_TestApp_BOARDLIST
 MCASP_AudioLoopback_TestApp_$(SOC)_CORELIST = $(drvmcasp_$(SOC)_CORELIST)
 export MCASP_AudioLoopback_TestApp_$(SOC)_CORELIST
-
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
+MCASP_AudioLoopback_TestApp_SBL_APPIMAGEGEN = yes
+export MCASP_AudioLoopback_TestApp_SBL_APPIMAGEGEN
+endif
 
 # McASP Audio Loopback example app with SMP enabled
 MCASP_DeviceLoopback_SMP_TestApp_COMP_LIST = MCASP_DeviceLoopback_SMP_TestApp
@@ -198,6 +201,10 @@ MCASP_DeviceLoopback_SMP_TestApp_BOARDLIST = am65xx_evm am65xx_idk
 export MCASP_DeviceLoopback_TestApp_BOARDLIST
 MCASP_DeviceLoopback_SMP_TestApp_$(SOC)_CORELIST = mpu1_0
 export MCASP_DeviceLoopback_SMP_TestApp_$(SOC)_CORELIST
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
+MCASP_DeviceLoopback_SMP_TestApp_SBL_APPIMAGEGEN = yes
+export MCASP_DeviceLoopback_SMP_TestApp_SBL_APPIMAGEGEN
+endif
 
 # McASP sysbios unit test app
 MCASP_DeviceLoopback_TestApp_COMP_LIST = MCASP_DeviceLoopback_TestApp
@@ -216,6 +223,10 @@ MCASP_DeviceLoopback_TestApp_BOARDLIST = am65xx_evm am65xx_idk j721e_sim j721e_e
 export MCASP_DeviceLoopback_TestApp_BOARDLIST
 MCASP_DeviceLoopback_TestApp_$(SOC)_CORELIST = $(drvmcasp_$(SOC)_CORELIST)
 export MCASP_DeviceLoopback_TestApp_$(SOC)_CORELIST
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
+MCASP_DeviceLoopback_TestApp_SBL_APPIMAGEGEN = yes
+export MCASP_DeviceLoopback_TestApp_SBL_APPIMAGEGEN
+endif
 
 # McASP sysbios  regression app
 MCASP_DeviceLoopback_Regression_TestApp_COMP_LIST = MCASP_DeviceLoopback_Regression_TestApp
@@ -234,6 +245,10 @@ MCASP_DeviceLoopback_Regression_TestApp_BOARDLIST = am65xx_evm am65xx_idk
 export MCASP_DeviceLoopback_Regression_TestApp_BOARDLIST
 MCASP_DeviceLoopback_Regression_TestApp_$(SOC)_CORELIST = $(drvmcasp_$(SOC)_CORELIST)
 export MCASP_DeviceLoopback_Regression_TestApp_$(SOC)_CORELIST
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
+MCASP_DeviceLoopback_Regression_TestApp_SBL_APPIMAGEGEN = yes
+export MCASP_DeviceLoopback_Regression_TestApp_SBL_APPIMAGEGEN
+endif
 
 # McASP Audio DC Analog Loopback example app
 MCASP_AudioDCAnalogLoopback_TestApp_COMP_LIST = MCASP_AudioDCAnalogLoopback_TestApp
@@ -252,6 +267,10 @@ MCASP_AudioDCAnalogLoopback_TestApp_BOARDLIST = j721e_evm
 export MCASP_AudioDCAnalogLoopback_TestApp_BOARDLIST
 MCASP_AudioDCAnalogLoopback_TestApp_$(SOC)_CORELIST = $(drvmcasp_$(SOC)_CORELIST)
 export MCASP_AudioDCAnalogLoopback_TestApp_$(SOC)_CORELIST
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
+MCASP_AudioDCAnalogLoopback_TestApp_SBL_APPIMAGEGEN = yes
+export MCASP_AudioDCAnalogLoopback_TestApp_SBL_APPIMAGEGEN
+endif
 
 # McASP Digital DC Analog Loopback example app
 MCASP_AudioDCDigitalLoopback_TestApp_COMP_LIST = MCASP_AudioDCDigitalLoopback_TestApp
@@ -270,6 +289,10 @@ MCASP_AudioDCDigitalLoopback_TestApp_BOARDLIST = j721e_evm
 export MCASP_AudioDCDigitalLoopback_TestApp_BOARDLIST
 MCASP_AudioDCDigitalLoopback_TestApp_$(SOC)_CORELIST = $(drvmcasp_$(SOC)_CORELIST)
 export MCASP_AudioDCDigitalLoopback_TestApp_$(SOC)_CORELIST
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
+MCASP_AudioDCDigitalLoopback_TestApp_SBL_APPIMAGEGEN = yes
+export MCASP_AudioDCDigitalLoopback_TestApp_SBL_APPIMAGEGEN
+endif
 
 export drvmcasp_LIB_LIST
 export mcasp_LIB_LIST
