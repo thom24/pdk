@@ -88,5 +88,8 @@ SECTIONS
     .far:      {} > L2SRAM
 
     .text: {} > L2SRAM
+    .l2ram: {} > L2SRAM
+    .l3ram: {} > L3SRAM
+
 }
 

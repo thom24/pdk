@@ -36,6 +36,7 @@ ifeq ($(edma_component_make_include), )
 
 drvedma_SOCLIST          = tpr12
 drvedma_tpr12_CORELIST   = $(DEFAULT_tpr12_CORELIST)
+drvedma_BOARDLIST        = tpr12_evm
 
 ############################
 # edma package
@@ -81,6 +82,19 @@ export edma_$(SOC)_CORELIST
 #
 # EDMA Examples
 #
+
+# EDMA memcpy test app
+export edma_memcpy_testapp_COMP_LIST = edma_memcpy_testapp
+edma_memcpy_testapp_RELPATH = ti/drv/edma/examples/edma_memcpy_test
+edma_memcpy_testapp_PATH = $(PDK_EDMA_COMP_PATH)/examples/edma_memcpy_test
+export edma_memcpy_testapp_BOARD_DEPENDENCY = yes
+export edma_memcpy_testapp_CORE_DEPENDENCY = yes
+export edma_memcpy_testapp_XDC_CONFIGURO = yes
+edma_memcpy_testapp_PKG_LIST = edma_memcpy_testapp
+edma_memcpy_testapp_INCLUDE = $(edma_memcpy_testapp_PATH)
+export edma_memcpy_testapp_BOARDLIST = $(drvedma_BOARDLIST)
+export edma_memcpy_testapp_$(SOC)_CORELIST = $(drvedma_$(SOC)_CORELIST)
+edma_EXAMPLE_LIST += edma_memcpy_testapp
 
 export edma_LIB_LIST
 export edma_EXAMPLE_LIST
