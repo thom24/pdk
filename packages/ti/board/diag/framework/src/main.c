@@ -52,7 +52,7 @@
 #include "framework.h"
 #include "board.h"
 
-#ifdef SOC_K2G
+#if defined(SOC_K2G) || defined(SOC_AM65XX) || defined(SOC_J721E)
 #include "diag_common_cfg.h"
 #endif
 
@@ -73,6 +73,10 @@ int main()
 
 #ifdef SOC_K2G
     DIAG_IntrInit();
+#endif
+
+#if (defined(SOC_AM65XX) || defined(SOC_J721E)) && !defined(__aarch64__)
+    BoardDiag_timerIntrDisable();
 #endif
 
 #ifdef SPI_BOOT_FRAMEWORK

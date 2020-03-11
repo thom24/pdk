@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2017 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -65,3 +65,4 @@ void BoardDiag_genPattern(uint8_t *buf, uint32_t length, uint8_t flag);
 int8_t BoardDiag_getUserInput(uint8_t instance);
 void enableMAINI2C(uint8_t instance, uint32_t baseAddr);
 void enableI2C(uint32_t baseAddr);
+void BoardDiag_timerIntrDisable(void);
