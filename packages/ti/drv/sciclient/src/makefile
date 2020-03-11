@@ -147,6 +147,19 @@ SGN_EXT := .signed
 HEX_EXT := _hex.h
 endif
 
+# Parser SOC derivation
+ifeq ($(SOC),$(filter $(SOC), j721e j7200))
+PARSER_SOC := j721e
+else
+ifeq ($(SOC),$(filter $(SOC), am65xx))
+PARSER_SOC := am6
+PARSER_SOC2 := am65x_sr2
+endif
+endif
+
+VALIDATOR_JSON := $(ROOTDIR)/ti/drv/sciclient/soc/sysfw/binaries/scripts/sysfw_boardcfg_rules.json
+VALIDATOR_SCRIPT := $(ROOTDIR)/ti/drv/sciclient/soc/sysfw/binaries/scripts/sysfw_boardcfg_validator.py
+
 # We want to create an include-able header file with a hex representation of
 # .. each board configuration (signed according to SoC). Because each Board
 # .. Configuration will require one of these header files, we can simply parse
@@ -170,10 +183,18 @@ ifeq ($(CORE), mcu1_0)
 endif
 
 # Copy the raw binary into an intermediate file (will get deleted by make)
+$(OBJDIR)/$(BRD_CFG)%.bin.unsigned : SHELL:=/bin/bash   # HERE: this is setting the shell for this step only
 $(OBJDIR)/$(BRD_CFG)%.bin.unsigned : $(OBJDIR)/$(BRD_CFG)%.$(OBJEXT)
 ifeq ($(CORE), mcu1_0)
 	@echo "Create unsigned Board Configuration binary"
 	$(SCICLIENT_OBJCOPY) -S -O binary $< $@
+	# If the file name has sr2 in the name, then we need to use a different soc in the validator.
+	@if [ "$(findstring sr2, $@)" == "sr2" ]; then \
+		python3 $(VALIDATOR_SCRIPT) -b $@ -s $(PARSER_SOC2) -l $(OBJDIR)/output_$(BRD_CFG).log -i -o $(OBJDIR)/temp.bin.unsigned -r $(VALIDATOR_JSON);\
+	else \
+		python3 $(VALIDATOR_SCRIPT) -b $@ -s $(PARSER_SOC) -l $(OBJDIR)/output_$(BRD_CFG).log -i -o $(OBJDIR)/temp.bin.unsigned -r $(VALIDATOR_JSON) ;\
+	fi
+	$(MV) $(OBJDIR)/temp.bin.unsigned $@
 endif
 
 # If an HS signature is required, sign it with the HS key (will get deleted by make)
