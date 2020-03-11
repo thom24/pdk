@@ -175,6 +175,8 @@ int32_t Ipc_perf_test(void)
     uint32_t            selfId     = Ipc_getCoreId();
     uint32_t            curHost    = FALSE;
     Ipc_Testcase*       tstcase    = NULL;
+    uint32_t            remoteEndPt;
+    uint32_t            remoteProcId;
 
     /* Setup the IPC framework */
     Ipc_perf_test_setup();
@@ -191,6 +193,16 @@ int32_t Ipc_perf_test(void)
     {
         curTestIndex = 0;
         tstcase = Ipc_getTestcase(curTestIndex);
+
+        Ipc_sendMessage(handle, myEndPt, tstcase->hostCore, IPC_PING);
+        status = RPMessage_getRemoteEndPt(tstcase->hostCore, SERVICE, &remoteProcId,
+            &remoteEndPt, BIOS_WAIT_FOREVER);
+        if(tstcase->hostCore != remoteProcId)
+        {
+            SystemP_printf("Ipc_runPerfTest (remote %d): RPMessage_getRemoteEndPt() failed %d\n",
+                    tstcase->hostCore, status);
+        }
+
         Ipc_sendNewTestIndex(handle, myEndPt, curTestIndex, tstcase->hostCore);
     }
 
@@ -219,7 +231,7 @@ int32_t Ipc_perf_test(void)
 
                     if((TRUE == gPrintHostCore) && (curTestIndex == 0))
                     {
-                        UART_printf("\n\nPerformance Test : Stared\n");
+                        UART_printf("\n\nPerformance Test : Started\n");
                     }
 
                     if((TRUE == gPrintHostCore) && (NULL == tstcase))
@@ -304,6 +316,10 @@ void Ipc_recvTaskFxn(uint32_t *arg0, uint32_t *arg1)
         {
             Ipc_processPerfCmd(handle, remoteEndPt, remoteProcId, 
                     myEndPt, buf, len);
+        }
+        else if (buf[0] == IPC_PING)
+        {
+            Ipc_sendMessage(handle, myEndPt, remoteProcId, IPC_PONG);
         }
     }
 }
@@ -403,12 +419,13 @@ void Ipc_runPerfTest(uint32_t coreId, uint32_t numCount, uint32_t testId)
     handle = Ipc_createRpmsg(tstBuf, RPMSG_DATA_SIZE, &myEndPt);
     if(NULL != handle)
     {
+        Ipc_sendMessage(handle, myEndPt, coreId, IPC_PING);
         status = RPMessage_getRemoteEndPt(coreId, SERVICE, &remoteProcId,
                 &remoteEndPt, BIOS_WAIT_FOREVER);
         if(coreId != remoteProcId) 
         {
             SystemP_printf("Ipc_runPerfTest (remote %d): RPMessage_getRemoteEndPt() failed %d\n",
-                    coreId);
+                    coreId, status);
             status = IPC_EFAIL;
         }
 
@@ -492,6 +509,27 @@ void Ipc_sendTestCompletedMsgCore(RPMessage_Handle handle, uint32_t srcEndPt, ui
     }
 }
 
+void Ipc_sendMessage(RPMessage_Handle handle, uint32_t srcEndPt, uint32_t dstCoreId, uint8_t msg)
+{
+    uint32_t bufSize;
+    uint8_t  buf[64];
+    int32_t  status = IPC_SOK;
+    uint32_t dstEndPt = ENDPT1;
+
+    /*
+     * opcode  - 1byte
+     */
+    bufSize = 1;
+
+    buf[0] = msg;
+
+    status = RPMessage_send(handle, dstCoreId, dstEndPt, srcEndPt, (Ptr)buf, bufSize);
+    if (status != IPC_SOK)
+    {
+        SystemP_printf("Ipc_sendPingMessage (remote %d): RPMessage_send "
+                " failed status %d\n", dstCoreId, status);
+    }
+}
 
 void Ipc_sendNewTestIndex(RPMessage_Handle handle, uint32_t srcEndPt, uint32_t testIndex, 
         uint32_t dstCoreId)
@@ -634,6 +672,7 @@ void Ipc_printTestReport()
     if(PRINT_HOST_CORE == selfId)
     {
         Ipc_printPerfTestReport();
+        UART_printf("\n\nPerformance Test : Completed\n");
     }    
 }
 

@@ -77,6 +77,8 @@ TaskP_Handle Ipc_createRcvThread(uint32_t *arg0, uint32_t *arg1);
 
 void Ipc_runPerfTest(uint32_t coreId, uint32_t numCount, uint32_t testId);
 
+void Ipc_sendMessage(RPMessage_Handle handle, uint32_t srcEndPt, uint32_t dstCoreId, uint8_t msg);
+
 void Ipc_sendNewTestIndex(RPMessage_Handle handle, uint32_t srcEndPt, uint32_t testIndex, 
         uint32_t dstCoreId);
 

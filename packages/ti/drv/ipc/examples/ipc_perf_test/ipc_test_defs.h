@@ -61,6 +61,8 @@ extern "C" {
 typedef enum Ipc_TestNames_e
 {
     IPC_PERF_TEST = 0x80,
+    IPC_PING,
+    IPC_PONG,
     IPC_TESTTYPE_COUNT
 }Ipc_TestNames;
 
