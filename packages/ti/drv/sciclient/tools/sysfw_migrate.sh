@@ -54,6 +54,10 @@ case $i in
 	SKIP_BUILD=YES
 	shift
 	;;
+    -sg|--skip-gen) # Skips the firmwareHeaderGen.sh step
+	SKIP_GEN_BIN=YES
+	shift
+	;;
     -sc|--skip-commit) # Skips the PDK commit step
 	SKIP_COMMIT=YES
 	shift
@@ -131,7 +135,7 @@ if [ "$SKIP_CHECKOUT" != "YES" ]; then
     $ECHO "Modifying SR2 headers such that they don't cause any collisions with the SR1 headers"
 
     # Include guards need to be modified to remove collision with SR1
-    sed -i 's/SOC_AM6_CLOCKS_H/&_SR2/' include/am65x_sr2/g2tisci_clocks.h
+    sed -i 's/SOC_AM6_CLOCKS_H/&_SR2/' include/am65x_sr2/tisci_clocks.h
     sed -i 's/SOC_TISCI_DEVICES_H/&_SR2/' include/am65x_sr2/tisci_devices.h
     sed -i 's/TISCI_BOARDCFG_CONSTRAINTS_H/&_SR2/' include/am65x_sr2/tisci_boardcfg_constraints.h
     sed -i 's/TISCI_HOSTS_H/&_SR2/' include/am65x_sr2/tisci_hosts.h
@@ -168,6 +172,17 @@ if [ "$SKIP_BUILD" != "YES" ]; then
     $COPY $ROOTDIR/ti/binary/sciclient_ccs_init/bin/am65xx/sciclient_ccs_init_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/am65xx/
     
     cd -
+fi
+
+################################################################################
+
+if [ "$SKIP_GEN_BIN" != "YES" ];  then
+
+    cd $ROOTDIR/ti/drv/sciclient/tools/
+    ./firmwareHeaderGen.sh am65x
+    ./firmwareHeaderGen.sh am65x_sr2
+    ./firmwareHeaderGen.sh j721e
+
 fi
 
 ################################################################################
