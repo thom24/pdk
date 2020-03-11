@@ -566,7 +566,7 @@ int32_t board_external_memory_test(void)
     int32_t status;
     int ret;
 
-#if (defined(SOC_AM65XX) || defined(SOC_J721E)) && defined(__aarch64__)
+#if (defined(SOC_AM65XX) || defined(SOC_J721E)) && defined(__aarch64__) && !defined(DIAG_COMPLIANCE_TEST)
     /* Printf complication due to UART_printf not supporting 64-bit */
     UART_printf("board_external_memory_test: Start address (0x%x%08x), \
            end address (0x%x%08x)\n",
@@ -590,7 +590,7 @@ int32_t board_external_memory_test(void)
 	}
 
 #ifdef DIAG_STRESS_TEST
-#if (defined(SOC_AM65XX) || defined(SOC_J721E)) && defined(__aarch64__)
+#if (defined(SOC_AM65XX) || defined(SOC_J721E)) && defined(__aarch64__) && !defined(DIAG_COMPLIANCE_TEST)
     status = board_walking1s_test(BOARD_DDR_EXT_MEM_START_ADDR, BOARD_DDR_EXT_MEM_END_ADDR);
 #else
     status = board_walking1s_test(BOARD_DDR_START_ADDR,BOARD_DDR_END_ADDR);
@@ -614,7 +614,7 @@ int32_t board_external_memory_test(void)
         return ret;
     }
 
-#if (defined(SOC_AM65XX) || defined(SOC_J721E)) && defined(__aarch64__)
+#if (defined(SOC_AM65XX) || defined(SOC_J721E)) && defined(__aarch64__) && !defined(DIAG_COMPLIANCE_TEST)
     status = board_walking0s_test(BOARD_DDR_EXT_MEM_START_ADDR, BOARD_DDR_EXT_MEM_END_ADDR);
 #else
     status = board_walking0s_test(BOARD_DDR_START_ADDR,BOARD_DDR_END_ADDR);
