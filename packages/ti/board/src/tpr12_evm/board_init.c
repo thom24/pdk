@@ -98,38 +98,6 @@ Board_STATUS Board_init(Board_initCfg cfg)
 {
     Board_STATUS ret = BOARD_SOK;
 
-    if (cfg & BOARD_INIT_UNLOCK_MMR)
-        ret = Board_unlockMMR();
-    if (ret != BOARD_SOK)
-        return ret;
-
-    if (cfg & BOARD_INIT_MODULE_CLOCK)
-        ret = Board_moduleClockInit();
-    if (ret != BOARD_SOK)
-        return ret;
-
-    if (cfg & BOARD_INIT_PINMUX_CONFIG)
-        ret = Board_pinmuxConfig();
-    if (ret != BOARD_SOK)
-        return ret;
-
-    if (cfg & BOARD_INIT_PLL)
-        ret = Board_PLLInitAll();
-    if (ret != BOARD_SOK)
-        return ret;
-
-    if (cfg & BOARD_INIT_ETH_PHY)
-        ret = Board_mcuEthConfig();
-    if (ret != BOARD_SOK)
-        return ret;
-
-#ifdef UART_DRV_INSTALLED
-    if (cfg & BOARD_INIT_UART_STDIO)
-        ret = Board_uartStdioInit();
-#endif
-    if (ret != BOARD_SOK)
-        return ret;
-
     return ret;
 }
 
@@ -147,10 +115,6 @@ Board_STATUS Board_deinit(Board_initCfg cfg)
 {
     Board_STATUS ret = BOARD_SOK;
 
-#ifdef UART_DRV_INSTALLED
-    if (cfg & BOARD_DEINIT_UART_STDIO)
-        UART_stdioDeInit();
-#endif
     return ret;
 }
 

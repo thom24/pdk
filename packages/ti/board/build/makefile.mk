@@ -38,6 +38,8 @@ MODULE_NAME = board
 SRCDIR = . src
 INCDIR = . src
 
+PACKAGE_SRCS_COMMON =
+
 ifeq ($(BOARD),$(filter $(BOARD),evmAM335x icev2AM335x iceAMIC110 skAM335x bbbAM335x evmAM437x idkAM437x skAM437x evmAM572x idkAM571x idkAM572x evmK2H evmK2K evmK2E evmK2L evmK2G iceK2G evmC6678 evmC6657 evmOMAPL137 lcdkOMAPL138 idkAM574x am65xx_evm am65xx_idk tpr12_evm))
 # Common source files across all platforms and cores
 SRCS_COMMON += board.c
@@ -78,7 +80,7 @@ include $(PDK_BOARD_COMP_PATH)/src/devices/src_files_devices.mk
 PACKAGE_SRCS_COMMON += src/$(BOARD)
 PACKAGE_SRCS_COMMON += src/devices
 endif
- 
+
 ifeq ($(BOARD),$(filter $(BOARD), j7200_evm))
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS)
 include $(PDK_BOARD_COMP_PATH)/src/$(BOARD)/src_files_$(BOARD).mk
@@ -90,9 +92,6 @@ endif
 
 ifeq ($(BOARD),$(filter $(BOARD), tpr12_evm))
 include $(PDK_BOARD_COMP_PATH)/src/$(BOARD)/src_files_$(BOARD).mk
-#include $(PDK_BOARD_COMP_PATH)/src/flash/src_files_flash.mk
-#include $(PDK_BOARD_COMP_PATH)/src/devices/src_files_devices.mk
-#include $(PDK_BOARD_COMP_PATH)/src/src_files_lld.mk
 PACKAGE_SRCS_COMMON += src/$(BOARD)
 endif
 
