@@ -154,7 +154,7 @@ $(OBJDIR)/$(BRD_CFG)%.$(OBJEXT) : soc/$(SCICLIENT_SOCVER)/$(BRD_CFG)%.c
 ifeq ($(CORE), mcu1_0)
 	@echo "Build Board Configuration Obj Files"
 	$(MKDIR) -p $(OBJDIR)
-	$(CC) $(_CFLAGS) $(INCLUDES) $(CFLAGS_DIROPTS) $(COMPILEMODE) $<
+	$(CC) $(_CFLAGS) $(INCLUDES) $(CFLAGS_DIROPTS) $(COMPILEMODE) --diag_suppress=179 --display_error_number $<
 endif
 
 # Copy the raw binary into an intermediate file (will get deleted by make)

@@ -48,7 +48,7 @@
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
 
-#define SCICLIENT_BOARDCFG_PM_SIZE_IN_BYTES (2U)
+#define SCICLIENT_BOARDCFG_PM_SIZE_IN_BYTES (0U)
 
 /* ========================================================================== */
 /*                         Structure Declarations                             */
@@ -66,6 +66,5 @@
 /*                            Global Variables                                */
 /* ========================================================================== */
 
-#define SCICLIENT_BOARDCFG_PM { \
-    0x00000100U,\
-} /* 2 bytes */
+#define SCICLIENT_BOARDCFG_PM {\
+} /* 0 bytes */
