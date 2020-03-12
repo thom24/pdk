@@ -52,7 +52,7 @@ extern "C" {
 
 #undef   TIMERP_TIMER_FREQ_LO
 #undef   TIMERP_TIMER_FREQ_HI
-#define  TIMERP_TIMER_FREQ_LO   ((int32_t) 40000000U)
+#define  TIMERP_TIMER_FREQ_LO   ((int32_t) 200000000U)
 #define  TIMERP_TIMER_FREQ_HI   ((int32_t) 0U)
 
 #if defined (_TMS320C6X)

@@ -184,7 +184,6 @@ static bool TimerP_rtiTimerCheckOverflow(uint32_t a, uint32_t b)
 static bool TimerP_rtiTimerSetMicroSeconds(TimerP_Struct *timer, uint32_t period)
 {
   uint64_t  counts;
-  uint32_t  prdCounts;
   uint32_t  freqKHz;
   uint32_t  baseAddr = TimerP_getTimerBaseAddr(timer->id);
 
@@ -199,8 +198,7 @@ static bool TimerP_rtiTimerSetMicroSeconds(TimerP_Struct *timer, uint32_t period
   if (counts > 0xffffffffU) {
     return (FALSE);
   }
-  prdCounts = (uint32_t)(counts - (uint32_t) 1u);
-  timer->period = prdCounts;
+  timer->period = (uint32_t)counts;
   timer->periodType = (uint32_t)TimerP_PeriodType_COUNTS;
   timer->prescale = 1;
 

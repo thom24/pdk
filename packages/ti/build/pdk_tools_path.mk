@@ -23,7 +23,7 @@ endif
 
   #Component versions for non-TDA builds
 ifeq ($(BOARD),$(filter $(BOARD), tpr12_evm))
-  BIOS_VERSION=6_82_00_06_eng
+  BIOS_VERSION=6_82_00_16
   XDC_VERSION=3_61_00_10_core_eng
 else
   BIOS_VERSION=6_76_03_01

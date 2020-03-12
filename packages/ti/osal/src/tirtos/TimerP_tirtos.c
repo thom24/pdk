@@ -338,12 +338,15 @@ TimerP_Status TimerP_setPeriodMicroSecs(TimerP_Handle handle, uint32_t microsecs
 
 uint64_t TimerP_getTimeInUsecs(void)
 {
-    Types_Timestamp64 bios_timestamp64;
-    Types_FreqHz bios_freq;
+    Types_Timestamp64 bios_timestamp64 = {0, 0};
+    Types_FreqHz bios_freq = {0, 400000000U};
     uint64_t cur_ts, freq;
 
+    /* TBD: enable when RTI timestamp is supported */
+#ifdef BIOS_RTI_TIMESTAMP_SUPPORT
     Timestamp_get64(&bios_timestamp64);
     Timestamp_getFreq(&bios_freq);
+#endif
 
     cur_ts = ((uint64_t) bios_timestamp64.hi << 32) | bios_timestamp64.lo;
     freq = ((uint64_t) bios_freq.hi << 32) | bios_freq.lo;

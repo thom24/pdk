@@ -43,7 +43,6 @@
 #include "board_internal.h"
 #include "board_cfg.h"
 #include <ti/csl/soc.h>
-#include <ti/csl/cslr_mdio.h>
 
 /**
  * \brief  Board specific configurations for MCU Ethernet PHY
