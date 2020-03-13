@@ -106,7 +106,7 @@ function connectTargets()
     if (dev_id == 0x0BB5A02F) {
         dsDMSC_0.memory.loadRaw(0, 0x40000, thisJsFileDirectory +"/../../../soc/sysfw/binaries/ti-sci-firmware-am65x-gp.bin", 32, false);
     } else if (dev_id == 0x1BB5A02F) {
-        dsDMSC_0.memory.loadRaw(0, 0x40000, thisJsFileDirectory +"/../../../soc/sysfw/binaries/ti-sci-firmware-am65x_pg2-gp.bin", 32, false);
+        dsDMSC_0.memory.loadRaw(0, 0x40000, thisJsFileDirectory +"/../../../soc/sysfw/binaries/ti-sci-firmware-am65x_sr2-gp.bin", 32, false);
     } else {
         print("Invalid Device ID!");
         return;
