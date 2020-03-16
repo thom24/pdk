@@ -14,7 +14,7 @@ RPRC_PREFIX = ipc_perf_test
 MULTICORE_IMG_PARAMS = $(foreach SOC_CORE_ID, $(ipc_perf_test_$(SOC)_CORELIST), $(SBL_CORE_ID_$(SOC_CORE_ID)) $(BINDIR)/$(RPRC_PREFIX)_$(SOC_CORE_ID)_$(BUILD_PROFILE_$(CORE)).rprc)
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS)
-PACKAGE_SRCS_COMMON = .
+PACKAGE_SRCS_COMMON = . ../ipc_multicore_perf_test.mk
 
 # List all the external components/interfaces, whose interface header files
 #  need to be included for this component
