@@ -126,7 +126,7 @@ extern PBMQ    PBMQ_rx;
 /**
  * @brief   EMAC packet size in bytes
  */
-#define     NIMU_EMAC_PKT_SIZE              1514
+#define     NIMU_EMAC_PKT_SIZE              1518
 
 
 
