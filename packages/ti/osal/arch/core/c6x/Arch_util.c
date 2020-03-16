@@ -89,6 +89,11 @@ void OsalArch_clearInterrupt(uint32_t intNum)
     CSL_intcInterruptClear((CSL_IntcVectId)intNum);
     return;
 }
+/* Below function posts the interrupt */
+int32_t OsalArch_postInterrupt(uint32_t intrNum)
+{
+    return (osal_UNSUPPORTED);
+}
 /* Below function globally disable interrupt in the chip level */
 uintptr_t OsalArch_globalDisableInterrupt(void)
 {
@@ -362,6 +367,5 @@ void osalArch_TimestampGet64(TimeStamp_Struct *tStamp)
     /* restore */
     HwiP_restore(key);
 }
-
 
 /* Nothing past this point */

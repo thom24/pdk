@@ -67,7 +67,7 @@
 #include <ti/osal/osal.h>
 #include "OSAL_log.h"
 
- #include "OSAL_board.h"
+#include "OSAL_board.h"
 /**********************************************************************
  ************************** Internal functions ************************
  **********************************************************************/
@@ -149,7 +149,7 @@ void Board_initOSAL(void)
  */
 volatile   uint64_t gTestlocalTimeout = 0x300000U;
 
-#if defined (SOC_AM65XX) || (defined(SOC_J721E) || defined(SOC_J7200) &&(!defined(BUILD_C66X_1))&&(!defined(BUILD_C66X_2))&&(!defined(BUILD_C7X_1)))
+#if (defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined (SOC_TPR12)) && (!defined(BUILD_C66X_1))&&(!defined(BUILD_C66X_2))&&(!defined(BUILD_C7X_1))
 #define INT_NUM_IRQ 32
 #define LOOP_CNT    100
 volatile uint64_t gFlagIRQ = 0;
@@ -161,6 +161,7 @@ void myIsrIRQ(uintptr_t arg)
 }
 bool  OSAL_core_hwi_test()
 {
+
     HwiP_Params hwiParams;
     HwiP_Handle handle;
     volatile int intCount = 0;
@@ -227,7 +228,7 @@ bool  OSAL_core_hwi_test()
 
 bool OSAL_hwi_test()
 {
-#if defined (SOC_AM65XX) || (defined(SOC_J721E)|| defined(SOC_J7200) &&(!defined(BUILD_C66X_1))&&(!defined(BUILD_C66X_2))&&(!defined(BUILD_C7X_1)))
+#if (defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined (SOC_TPR12)) && (!defined(BUILD_C66X_1))&&(!defined(BUILD_C66X_2))&&(!defined(BUILD_C7X_1))
   OSAL_core_hwi_test();
 #endif
   return true;

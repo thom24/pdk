@@ -52,7 +52,7 @@ extern void Osal_DebugP_assert(int32_t expression, const char *file, int32_t lin
 
 /* Local defines for the rti timer */
 #define TIMERP_RTI_MAX_PERIOD                (0xffffffffU)
-
+#define TIMERP_PRESCALE_DEF                  (1U)
 /* Local Timer Struct */
 typedef struct TimerP_Struct_s
 {
@@ -189,7 +189,10 @@ static bool TimerP_rtiTimerSetMicroSeconds(TimerP_Struct *timer, uint32_t period
 
   (void)TimerP_stop(timer);
 
-  freqKHz = (timer->freqLo + 500)/ 1000U;
+  /*
+   * The frequency of FRC is equal to the clock rate divided by (prescale + 1)
+   */
+  freqKHz = (timer->freqLo/(TIMERP_PRESCALE_DEF+1) + 500)/ 1000U;
   if (TimerP_rtiTimerCheckOverflow(freqKHz, period/1000U)) {
     return (FALSE);
   }
@@ -200,7 +203,7 @@ static bool TimerP_rtiTimerSetMicroSeconds(TimerP_Struct *timer, uint32_t period
   }
   timer->period = (uint32_t)counts;
   timer->periodType = (uint32_t)TimerP_PeriodType_COUNTS;
-  timer->prescale = 1;
+  timer->prescale = TIMERP_PRESCALE_DEF;
 
   return(TRUE);
 }

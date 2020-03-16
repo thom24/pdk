@@ -46,7 +46,7 @@ void CycleprofilerP_init(void)
 {
     TSCL = 0;
 }
-uint32_t Cycleprofiler_getTimeStamp(void)
+uint32_t CycleprofilerP_getTimeStamp(void)
 {
     return(TSCL);
 }
