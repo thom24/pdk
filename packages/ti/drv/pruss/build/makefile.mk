@@ -45,10 +45,6 @@ endif
 # List all the external components/interfaces, whose interface header files
 #  need to be included for this component
 INCLUDE_EXTERNAL_INTERFACES = pdk edma
-                      
-ifeq ($(SOC),$(filter $(SOC), am571x am572x am437x am335x k2g am574x am65xx))
-PACKAGE_SRCS_COMMON += soc/$(SOC)
-endif
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS)
 

@@ -7,11 +7,11 @@ APP_NAME = PCIE_Qos_ExampleProject
 LOCAL_APP_NAME =  PCIE_Qos__$(BOARD)_$(CORE)Example_Project
 
 
-ifeq ($(SOC),$(filter $(SOC), am65xx))
-SRCDIR = . src ../sample/am65xx/src ../sample/udma
-INCDIR = . src ../sample/am65xx/src ../sample/udma 
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e))
+SRCDIR = . src ../sample/$(SOC)/src ../sample/udma
+INCDIR = . src ../sample/$(SOC)/src ../sample/udma
 # Common source files across all platforms and cores
-SRCS_COMMON += pcie_qos_sample.c pcie_sample_board.c pcie_udma.c 
+SRCS_COMMON += pcie_qos_sample.c pcie_sample_board.c pcie_udma.c
 endif
 
 # List all the external components/interfaces, whose interface header files
@@ -19,17 +19,18 @@ endif
 INCLUDE_EXTERNAL_INTERFACES = bios xdc pdk
 
 # List all the components required by the application
-COMP_LIST_COMMON = pcie uart osal_tirtos csl board udma sciclient 
+COMP_LIST_COMMON = pcie uart osal_tirtos csl board udma sciclient
 
 ifeq ($(CORE),$(filter $(CORE), mpu1_0))
 # Enable XDC build for application by providing XDC CFG File per core
-XDC_CFG_FILE_$(CORE) = ../sample/am65xx/pciesample_a53.cfg
+XDC_CFG_FILE_$(CORE) = ../sample/$(SOC)/pciesample_a53.cfg
 endif
 
 ifeq ($(CORE),$(filter $(CORE), mcu1_0))
 # Enable XDC build for application by providing XDC CFG File per core
-XDC_CFG_FILE_$(CORE) = ../sample/am65xx/pciesample_r5.cfg
+XDC_CFG_FILE_$(CORE) = ../sample/$(SOC)/pciesample_r5.cfg
 endif
+
 PACKAGE_SRCS_COMMON = .
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) -DQOS
 
