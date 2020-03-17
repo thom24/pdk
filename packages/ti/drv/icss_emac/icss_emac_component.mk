@@ -68,7 +68,7 @@ ifeq ($(icss_emac_component_make_include), )
 
 # under other list
 drvicss_emac_BOARDLIST       = 
-drvicss_emac_SOCLIST         = am574x am572x am571x am437x am335x k2g am65xx
+drvicss_emac_SOCLIST         = am574x am572x am571x am437x am335x k2g
 drvicss_emac_am574x_CORELIST = c66x a15_0 ipu1_0 pru_0 pru_1
 drvicss_emac_am572x_CORELIST = c66x a15_0 ipu1_0 pru_0 pru_1
 drvicss_emac_am571x_CORELIST = c66x a15_0 ipu1_0 pru_0 pru_1

@@ -21,10 +21,6 @@ INCLUDE_EXTERNAL_INTERFACES = bios xdc pdk
 # List all the components required by the application
 COMP_LIST_COMMON = pcie uart osal_tirtos csl board udma sciclient 
 
-ifeq ($(SOC),$(filter $(SOC), am65xx))
-COMP_LIST_COMMON += sciclient
-endif
-
 ifeq ($(CORE),$(filter $(CORE), mpu1_0))
 # Enable XDC build for application by providing XDC CFG File per core
 XDC_CFG_FILE_$(CORE) = ../sample/am65xx/pciesample_a53.cfg

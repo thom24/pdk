@@ -60,19 +60,19 @@ SECTIONS
     .intvecs 	: {} palign(8) 		> VECTORS
     .intc_text 	: {} palign(8) 		> VECTORS
     .rstvectors 	: {} palign(8) 		> RESET_VECTORS
-    .text    	: {} palign(8) 		> MSMC3_H
+    .text    	: {} palign(8) 		> OCMRAM
     .const   	: {} palign(8) 		> OCMRAM
     .cinit   	: {} palign(8) 		> OCMRAM
     .pinit   	: {} palign(8) 		> OCMRAM
     .bss     	: {} align(4)  		> MSMC3
-    .data    	: {} palign(128) 	> OCMRAM
+    .data    	: {} palign(128) 	> MSMC3_H
     .boardcfg_data        : {} palign(128)           > OCMRAM
     .sysmem  	: {} 				> OCMRAM
     .startup_text: { -l *sysbios.aer5f*(.text)
                      -l *boot.aer5f*(.text)
                      -l *auto_init.aer5f*(.text)
                      -l *emacUnitTest_r5_per5f.oer5f*(.text)
-                    } > MSMC3_H
+                    } > OCMRAM
     .stack  	: {} align(4)		> MSMC3_H 
 
 /* Additional sections settings 	*/
