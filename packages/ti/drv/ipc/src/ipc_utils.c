@@ -283,7 +283,7 @@ void *IpcUtils_HeapAlloc(IpcUtils_HeapHandle *pHndl, uint32_t size,
                             uint32_t align)
 {
     void *rtnVal = NULL;
-    if (NULL != pHndl)
+    if (NULL != pHndl && !IpcUtils_QisEmpty(&pHndl->qHandle))
     {
         rtnVal = IpcUtils_QgetHead(&pHndl->qHandle);
         pHndl->numFreeBlocks--;

@@ -375,6 +375,7 @@ static int32_t RPMessage_enqueMsg(RPMessage_EndptPool *pool, RPMessage_MsgHeader
             else
             {
                 pOsalPrms->restoreAllIntr(key);
+                SystemP_printf("IpcUtils_HeapAlloc failed: Failed to allocate buffer for payload.\n");
                 status = IPC_EFAIL;
             }
         }
