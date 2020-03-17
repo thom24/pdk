@@ -468,6 +468,10 @@ void Virtio_kick(Virtio_Handle vq)
 {
     uint32_t selfId = Ipc_mpGetSelfId();
 
+#ifdef QNX_OS
+    asm("   DSB ST");
+#endif
+
     /* For now, simply interrupt remote processor */
     if (0 == (vq->vring.avail->flags & VRING_AVAIL_F_NO_INTERRUPT))
     {
@@ -493,6 +497,10 @@ int32_t Virtio_addUsedBuf(Virtio_Handle vq, int16_t head, int32_t len)
     used->id = head;
     used->len = len;
 
+#ifdef QNX_OS
+    asm("   DMB ST");
+#endif
+
     vq->vring.used->idx++;
 
     return (0);
@@ -512,6 +520,14 @@ void Virtio_addAvailBuf(Virtio_Handle vq, void *buf, uint16_t head)
     vq->vring.desc[head].flags  = 2;
     vq->vring.avail->ring[avail] = head;
 
+    /*
+     * Descriptors and available array need to be set before we expose the
+     * new available array entries.
+     */
+#ifdef QNX_OS
+    asm("   DMB ST");
+#endif
+
     vq->vring.avail->idx++;
 }
 
@@ -526,6 +542,10 @@ void *Virtio_getUsedBuf(Virtio_Handle vq, uint16_t *token)
     /* There's nothing available? */
     if (vq->last_used_idx != vq->vring.used->idx)
     {
+#ifdef QNX_OS
+        asm("   DMB SY");
+#endif
+
         head = (uint16_t)(vq->vring.used->ring[vq->last_used_idx % vq->vring.num].id);
         vq->last_used_idx++;
 
@@ -557,6 +577,12 @@ int16_t Virtio_getAvailBuf(Virtio_Handle vq, void **buf, int32_t *len)
          * Grab the next descriptor number they're advertising, and increment
          * the index we've seen.
          */
+
+#ifdef QNX_OS
+        /* Only get avail array entries after they have been exposed. */
+        asm("   DMB SY");
+#endif
+
         head = vq->vring.avail->ring[vq->last_avail_idx % vq->vring.num];
         vq->last_avail_idx++;
 
