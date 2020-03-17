@@ -35,6 +35,16 @@
  *  Build configuration script for BSP drivers
  */
 /* load the required modules for the configuration */
+
+var xdc_disable_thumb_mode = java.lang.System.getenv("XDC_DISABLE_THUMB_MODE");
+if(xdc_disable_thumb_mode != '' && xdc_disable_thumb_mode != null)
+{
+/* If XDC thumb mode is disabled, use the non-thumb mode xdc target */
 var R5F = xdc.useModule('ti.targets.arm.elf.R5F');
+}
+else
+{
+var R5F = xdc.useModule('ti.targets.arm.elf.R5Ft');
+}
 /* R5F compiler directory path                    */
 R5F.rootDir = java.lang.System.getenv("CGTOOLS");
