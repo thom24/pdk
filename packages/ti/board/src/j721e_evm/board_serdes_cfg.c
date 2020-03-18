@@ -60,7 +60,7 @@ static Board_STATUS Board_CfgSgmii(void)
     serdesLane0EnableParams.SSC_mode          = CSL_SERDES_NO_SSC;
     serdesLane0EnableParams.phyType           = CSL_SERDES_PHY_TYPE_SGMII;
     serdesLane0EnableParams.operatingMode     = CSL_SERDES_FUNCTIONAL_MODE;
-    serdesLane0EnableParams.phyInstanceNum    = SGMII_SERDES_INSTANCE;
+    serdesLane0EnableParams.phyInstanceNum    = SERDES_LANE_SELECT_CPSW;
     serdesLane0EnableParams.pcieGenType        = CSL_SERDES_PCIE_GEN3;
 
     serdesLane0EnableParams.laneCtrlRate[0]   = CSL_SERDES_LANE_FULL_RATE;
@@ -130,7 +130,7 @@ static Board_STATUS Board_CfgQsgmii(void)
     serdesLane0EnableParams.SSC_mode          = CSL_SERDES_NO_SSC;
     serdesLane0EnableParams.phyType           = CSL_SERDES_PHY_TYPE_QSGMII;
     serdesLane0EnableParams.operatingMode     = CSL_SERDES_FUNCTIONAL_MODE;
-    serdesLane0EnableParams.phyInstanceNum    = SGMII_SERDES_INSTANCE;
+    serdesLane0EnableParams.phyInstanceNum    = SERDES_LANE_SELECT_CPSW;
     serdesLane0EnableParams.pcieGenType        = CSL_SERDES_PCIE_GEN4;
 
     serdesLane0EnableParams.laneCtrlRate[0]   = CSL_SERDES_LANE_FULL_RATE;

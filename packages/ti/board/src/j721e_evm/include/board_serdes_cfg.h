@@ -72,6 +72,10 @@ extern "C" {
 #define PCIE0_LANE_NUM              (0U)
 #define SGMII_LANE_NUM              (1U)
 
+
+/* Select SERDES lane functionality. 0 value means CPSW SGMII/QSGMII. */
+#define SERDES_LANE_SELECT_CPSW     (0U)
+
 /**
  *  \brief serdes configurations for Sierra 1 in SGMII mode
  *
