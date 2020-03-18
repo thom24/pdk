@@ -54,6 +54,7 @@
  */
 
 #include "board_internal.h"
+#include "board_serdes_cfg.h"
 #include <ti/drv/sciclient/sciclient.h>
 
 Board_gblObj Board_obj = {NULL};

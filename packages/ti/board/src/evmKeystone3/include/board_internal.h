@@ -403,16 +403,6 @@ bool Board_detectBoard(boardPresDetect_t detectBoard);
  */
 Board_STATUS Board_unlockMMR(void);
 
-/**
- *  \brief Serdes configurations
- *
- *  The function detects the personality boards connected and configures the
- *  respective module.
- *
- *  \return   BOARD_SOK in case of success or appropriate error code
- *
- */
-Board_STATUS Board_serdesCfg(void);
 
 Board_STATUS Board_PLLInitAll(void);
 
