@@ -107,7 +107,7 @@ typedef struct FdbIndexTable_s {
 
 typedef struct FdbArbitration_s {
   uint8_t hostLock;
-  uint8_t pruLocks;
+  volatile uint8_t pruLocks;
 } FdbArbitration;
 
 typedef struct FdbFloodCfg_s
