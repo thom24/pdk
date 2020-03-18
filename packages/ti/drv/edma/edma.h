@@ -30,12 +30,6 @@
  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/** @file       edma.h
- *
- *  @brief      EDMA external driver interface.
- *
- */
-
 /** \defgroup DRV_EDMA_MODULE EDMA (Enhanced DMA) Driver
  *
  *  The EDMA IP in the ARxxxx SoCs can be programmed at a high-level using
@@ -149,6 +143,12 @@
  *
  */
 
+/** \file       drv/edma/edma.h
+ *
+ *  \brief      EDMA external driver interface.
+ *
+ */
+
 #ifndef EDMA_DRV_H_
 #define EDMA_DRV_H_
 
@@ -176,68 +176,68 @@ extern "C" {
 /******************************************************************************/
 /************************ QDMA Trigger Word Offset defines*********************/
 /******************************************************************************/
-/** @defgroup EDMA_TRIG_WORDS QDMA Trigger Word Offset Definitions
+/** \defgroup EDMA_TRIG_WORDS QDMA Trigger Word Offset Definitions
  *
  @{ */
 
-/*! @brief
+/*! \brief
  * Set the OPT field (Offset Address 0h Bytes)
  * as the QDMA trigger word
  */
 #define EDMA_QDMA_TRIG_WORD_OFFSET_OPT            (0U)
 
-/*! @brief
+/*! \brief
  * Set the SRC field (Offset Address 4h Bytes)
  * as the QDMA trigger word
  */
 #define EDMA_QDMA_TRIG_WORD_OFFSET_SRC            (1U)
 
-/*! @brief
+/*! \brief
  * Set the (ACNT + BCNT) field (Offset Address 8h Bytes)
  * as the QDMA trigger word
  */
 #define EDMA_QDMA_TRIG_WORD_OFFSET_ACNT_BCNT      (2U)
 
-/*! @brief
+/*! \brief
  * Set the DST field (Offset Address Ch Bytes)
  * as the QDMA trigger word
  */
 #define EDMA_QDMA_TRIG_WORD_OFFSET_DST            (3U)
 
-/*! @brief
+/*! \brief
  * Set the (SRCBIDX + DSTBIDX) field (Offset Address 10h Bytes)
  * as the QDMA trigger word
  */
 #define EDMA_QDMA_TRIG_WORD_OFFSET_SRC_DST_BIDX   (4U)
 
-/*! @brief
+/*! \brief
  * Set the (LINK + BCNTRLD) field (Offset Address 14h Bytes)
  * as the QDMA trigger word
  */
 #define EDMA_QDMA_TRIG_WORD_OFFSET_LINK_BCNTRLD   (5U)
 
-/*! @brief
+/*! \brief
  * Set the (SRCCIDX + DSTCIDX) field (Offset Address 18h Bytes)
  * as the QDMA trigger word
  */
 #define EDMA_QDMA_TRIG_WORD_OFFSET_SRC_DST_CIDX   (6U)
 
-/*! @brief
+/*! \brief
  * Set the (CCNT + RSVD) field (Offset Address 1Ch Bytes)
  * as the QDMA trigger word
  */
 #define EDMA_QDMA_TRIG_WORD_OFFSET_CCNT           (7U)
 
-/*! @brief Default Trigger Word is CCNT */
+/*! \brief Default Trigger Word is CCNT */
 #define EDMA_QDMA_TRIG_WORD_OFFSET_DEFAULT        (EDMA_QDMA_TRIG_WORD_OFFSET_CCNT)
 
 /** @}*/ /* end defgroup EDMA_TRIG_WORDS */
 /******************************************************************************/
 
-/*! @brief NULL Link Address */
+/*! \brief NULL Link Address */
 #define EDMA_NULL_LINK_ADDRESS 0xFFFFU
 
-/*! @brief This macro is provided for convenience of
+/*! \brief This macro is provided for convenience of
  *         type casting to the b index type */
 #ifdef EDMA_EXTENDED_B_INDICES
 #define EDMA_B_INDX_TYPE_CAST(x) ((int32_t)(x))
@@ -248,156 +248,156 @@ extern "C" {
 /******************************************************************************/
 /************************ Error code defines **********************************/
 /******************************************************************************/
-/** @defgroup EDMA_ERROR_CODES Error Codes
+/** \defgroup EDMA_ERROR_CODES Error Codes
  *
  @{ */
 /*****EDMA_E_INVALID__ : Invalid API parameters or parameter combinations *****/
 
-/*! @brief    Handle argument is NULL pointer. */
+/*! \brief    Handle argument is NULL pointer. */
 #define EDMA_E_INVALID__HANDLE_NULL                   (EDMA_ERRNO_BASE-0)
 
-/*! @brief    Config argument is NULL pointer. */
+/*! \brief    Config argument is NULL pointer. */
 #define EDMA_E_INVALID__CONFIG_POINTER_NULL           (EDMA_ERRNO_BASE-1)
 
-/*! @brief    Config's channelType is invalid. */
+/*! \brief    Config's channelType is invalid. */
 #define EDMA_E_INVALID__DMA_CHANNEL_TYPE              (EDMA_ERRNO_BASE-2)
 
-/*! @brief    Config's channelId out of range. */
+/*! \brief    Config's channelId out of range. */
 #define EDMA_E_INVALID__DMA_CHANNEL_ID                (EDMA_ERRNO_BASE-3)
 
-/*! @brief    Config's paramId out of range. */
+/*! \brief    Config's paramId out of range. */
 #define EDMA_E_INVALID__PARAM_ID                      (EDMA_ERRNO_BASE-4)
 
-/*! @brief    Config's eventQueueId out of range */
+/*! \brief    Config's eventQueueId out of range */
 #define EDMA_E_INVALID__EVENT_QUEUE_ID                (EDMA_ERRNO_BASE-5)
 
-/*! @brief Config's both interrupt completion flags are false but
+/*! \brief Config's both interrupt completion flags are false but
     transfer completion call back function is configured (non NULL). */
 #define EDMA_E_INVALID__TRNSFR_COMPLETION_PARAMS  (EDMA_ERRNO_BASE-6)
 
-/*! @brief    Config's transferCompletionCode is invalid. */
+/*! \brief    Config's transferCompletionCode is invalid. */
 #define EDMA_E_INVALID__TRANSFER_COMPLETION_CODE      (EDMA_ERRNO_BASE-7)
 
-/*! @brief    Config's transferType is invalid. */
+/*! \brief    Config's transferType is invalid. */
 #define EDMA_E_INVALID__TRANSFER_TYPE                 (EDMA_ERRNO_BASE-8)
 
-/*! @brief    Invalid Qdma channelId. */
+/*! \brief    Invalid Qdma channelId. */
 #define EDMA_E_INVALID__QDMA_CHANNEL_ID               (EDMA_ERRNO_BASE-9)
 
-/*! @brief    Invalid Instance Id during open. */
+/*! \brief    Invalid Instance Id during open. */
 #define EDMA_E_INVALID__INSTANCE_ID                   (EDMA_ERRNO_BASE-10)
 
-/*! @brief    Invalid QDMA trigger word. */
+/*! \brief    Invalid QDMA trigger word. */
 #define EDMA_E_INVALID__QDMA_TRIGGER_WORD             (EDMA_ERRNO_BASE-11)
 
-/*! @brief    Invalid transfer controller Id. */
+/*! \brief    Invalid transfer controller Id. */
 #define EDMA_E_INVALID__TRANSFER_CONTROLLER_ID        (EDMA_ERRNO_BASE-12)
 
-/*! @brief    Invalid transfer controller read rate */
+/*! \brief    Invalid transfer controller read rate */
 #define EDMA_E_INVALID__TRANSFER_CONTROLLER_READ_RATE (EDMA_ERRNO_BASE-13)
 
-/*! @brief    Invalid queue priority in performance config. */
+/*! \brief    Invalid queue priority in performance config. */
 #define EDMA_E_INVALID__QUEUE_PRIORITY               (EDMA_ERRNO_BASE-14)
 
-/*! @brief    During @ref EDMA_startTransfer,
+/*! \brief    During @ref EDMA_startTransfer,
               unexpected QDMA miss event detected. */
 #define EDMA_E_INVALID__EVENT_QUEUE_THRESHOLD        (EDMA_ERRNO_BASE-15)
 
-/*! @brief  During @ref EDMA_configChannel, param ID must be same
+/*! \brief  During @ref EDMA_configChannel, param ID must be same
  *          as channel ID for DMA channel because channel mapping does not exist
  *          in the hardware. */
 #define EDMA_E_INVALID__PARAM_ID_NOT_SAME_AS_CHANNEL_ID (EDMA_ERRNO_BASE-16)
 
-/*! @brief    Status argument is NULL pointer. */
+/*! \brief    Status argument is NULL pointer. */
 #define EDMA_E_INVALID__STATUS_POINTER_NULL           (EDMA_ERRNO_BASE-17)
 
-/*! @brief    InstanceInfo argument is NULL pointer. */
+/*! \brief    InstanceInfo argument is NULL pointer. */
 #define EDMA_E_INVALID__INSTANCEINFO_POINTER_NULL    (EDMA_ERRNO_BASE-18)
 
-/*! @brief    Error Call back function was expected to be NULL because error
+/*! \brief    Error Call back function was expected to be NULL because error
  *            interrupt is not connected to the CPU on the device */
 #define EDMA_E_INVALID__ERROR_CALL_BACK_FN_NON_NULL  (EDMA_ERRNO_BASE-19)
 
-/*! @brief    TC error Call back function was expected to be NULL because at least
+/*! \brief    TC error Call back function was expected to be NULL because at least
  *            one of the TC error interrupts are not connected to the CPU on the device */
 #define EDMA_E_INVALID__TC_ERROR_CALL_BACK_FN_NON_NULL  (EDMA_ERRNO_BASE-20)
 
-/*! @brief    Partial unification of CC and TC error interrupts is not supported */
+/*! \brief    Partial unification of CC and TC error interrupts is not supported */
 #define EDMA_E_INVALID__PARTIAL_UNIFICATION_OF_ERROR_INTERRUPTS (EDMA_ERRNO_BASE-21)
 
-/*! @brief   Applicable for extended B indices feature : sourceBindex out of range */
+/*! \brief   Applicable for extended B indices feature : sourceBindex out of range */
 #define EDMA_E_INVALID__SOURCE_B_INDEX              (EDMA_ERRNO_BASE-22)
 
-/*! @brief   Applicable for extended B indices feature : destinationBindex out of range */
+/*! \brief   Applicable for extended B indices feature : destinationBindex out of range */
 #define EDMA_E_INVALID__DESTINATION_B_INDEX         (EDMA_ERRNO_BASE-23)
 
 
 /************** EDMA_E_UNEXPECTED__ : Unexpected conditions *******************/
-/*! @brief    During @ref EDMA_startTransfer, unexpected DMA miss event detected.
+/*! \brief    During @ref EDMA_startTransfer, unexpected DMA miss event detected.
  */
 #define EDMA_E_UNEXPECTED__DMA_EVENT_MISS_DETECTED    (EDMA_ERRNO_BASE-25)
 
-/*! @brief    During @ref EDMA_startTransfer, unexpected QDMA miss event detected.
+/*! \brief    During @ref EDMA_startTransfer, unexpected QDMA miss event detected.
  */
 #define EDMA_E_UNEXPECTED__QDMA_EVENT_MISS_DETECTED  (EDMA_ERRNO_BASE-26)
 
-/*! @brief    Attempt to reopen and already opened instance. */
+/*! \brief    Attempt to reopen and already opened instance. */
 #define EDMA_E_UNEXPECTED__EDMA_INSTANCE_REOPEN       (EDMA_ERRNO_BASE-27)
 
-/*! @brief    Attempt to issue @ref EDMA_isTransferComplete despite non-NULL completion
+/*! \brief    Attempt to issue @ref EDMA_isTransferComplete despite non-NULL completion
         call-back function. */
 #define EDMA_E_UNEXPECTED__ATTEMPT_TO_TEST_COMPLETION (EDMA_ERRNO_BASE-28)
 
 /************** EDMA_E_OSAL__ : OSAL API related error conditions *************/
-/*! @brief HwiP_create returned NULL on transfer completion Isr creation. */
+/*! \brief HwiP_create returned NULL on transfer completion Isr creation. */
 #define EDMA_E_OSAL__HWIP_CREATE_TRANSFER_COMPLETION_ISR_RETURNED_NULL (EDMA_ERRNO_BASE-40)
 
-/*! @brief HwiP_create returned NULL on CC error Isr creation. */
+/*! \brief HwiP_create returned NULL on CC error Isr creation. */
 #define EDMA_E_OSAL__HWIP_CREATE_ERROR_ISR_RETURNED_NULL (EDMA_ERRNO_BASE-41)
 
-/*! @brief HwiP_create returned NULL on one of transfer controller error Isrs creation. */
+/*! \brief HwiP_create returned NULL on one of transfer controller error Isrs creation. */
 #define EDMA_E_OSAL__HWIP_CREATE_TRANSFER_CONTROLLER_ERROR_ISRS_RETURNED_NULL (EDMA_ERRNO_BASE-42)
 
-/*! @brief HwiP_delete returned NULL on transfer completion Isr deletion. */
+/*! \brief HwiP_delete returned NULL on transfer completion Isr deletion. */
 #define EDMA_E_OSAL__HWIP_DELETE_TRANSFER_COMPLETION_ISR_ERROR (EDMA_ERRNO_BASE-43)
 
-/*! @brief HwiP_delete returned NULL on CC error Isr deletion. */
+/*! \brief HwiP_delete returned NULL on CC error Isr deletion. */
 #define EDMA_E_OSAL__HWIP_DELETE_ERROR_ISR_ERROR (EDMA_ERRNO_BASE-44)
 
-/*! @brief HwiP_delete returned NULL on one of transfer controller error Isrs deletion. */
+/*! \brief HwiP_delete returned NULL on one of transfer controller error Isrs deletion. */
 #define EDMA_E_OSAL__HWIP_DELETE_TRANSFER_CONTROLLER_ERROR_ISRS_ERROR (EDMA_ERRNO_BASE-45)
 
-/*! @brief    Operation cannot be implemented because a previous operation
+/*! \brief    Operation cannot be implemented because a previous operation
               is still not complete. */
 #define EDMA_E_INUSE                 (EDMA_ERRNO_BASE-60)
 
-/*! @brief    Operation is not implemented. */
+/*! \brief    Operation is not implemented. */
 #define EDMA_E_NOTIMPL               (EDMA_ERRNO_BASE-80)
 
 /** @}*/ /* end defgroup EDMA_ERROR_CODES */
 
-/*! @brief    No Error. */
+/*! \brief    No Error. */
 #define EDMA_NO_ERROR ((int32_t)0)
 
 /******************************************************************************/
 /************************ Event queue threshold defines************************/
 /******************************************************************************/
-/** @defgroup EDMA_EVENT_QUEUE_THRESHOLD Event Queue Threshold Configuration Defines
+/** \defgroup EDMA_EVENT_QUEUE_THRESHOLD Event Queue Threshold Configuration Defines
  *
- * @brief
+ * \brief
  *  Special defines for event queue threshold configuration.
  *
  @{ */
-/*! @brief Disable thresholding */
+/*! \brief Disable thresholding */
 #define EDMA_EVENT_QUEUE_THRESHOLDING_DISABLED (0x11U)
 
-/*! @brief Queue ever used i.e queue had non-zero occupancy ever */
+/*! \brief Queue ever used i.e queue had non-zero occupancy ever */
 #define EDMA_EVENT_QUEUE_THRESHOLD_QUEUE_EVER_USED (0U)
 
-/*! @brief Queue ever full i.e was there ever a time when queue was full */
+/*! \brief Queue ever full i.e was there ever a time when queue was full */
 #define EDMA_EVENT_QUEUE_THRESHOLD_QUEUE_EVER_FULL (0x10U)
 
-/*! @brief Max queue threshold, same as queue ever full */
+/*! \brief Max queue threshold, same as queue ever full */
 #define EDMA_EVENT_QUEUE_THRESHOLD_MAX     (EDMA_EVENT_QUEUE_THRESHOLD_QUEUE_EVER_FULL)
 
 /** @}*/ /* end defgroup EDMA_EVENT_QUEUE_THRESHOLD */
@@ -405,36 +405,36 @@ extern "C" {
 /******************************************************************************/
 /************************ Read rate defines************************************/
 /******************************************************************************/
-/** @defgroup EDMA_READ_RATE_DEFINES Read Rate Definitions
+/** \defgroup EDMA_READ_RATE_DEFINES Read Rate Definitions
  *
- * @brief
+ * \brief
  *  Read rate defines for performance configuration.
  *
  @{ */
 
-/*! @brief as fast as possible */
+/*! \brief as fast as possible */
 #define EDMA_READ_RATE_AS_FAST_AS_POSSIBLE  (EDMA_TC_RDRATE_RDRATE_AFAP)
 
-/*! @brief 4 cycles between reads */
+/*! \brief 4 cycles between reads */
 #define EDMA_READ_RATE_EVERY_4_CYCLES       (EDMA_TC_RDRATE_RDRATE_READEVERY4CYCLES)
 
-/*! @brief 8 cycles between reads */
+/*! \brief 8 cycles between reads */
 #define EDMA_READ_RATE_EVERY_8_CYCLES       (EDMA_TC_RDRATE_RDRATE_READEVERY8CYCLES)
 
-/*! @brief 16 cycles between reads */
+/*! \brief 16 cycles between reads */
 #define EDMA_READ_RATE_EVERY_16_CYCLES      (EDMA_TC_RDRATE_RDRATE_READEVERY16CYCLES)
 
-/*! @brief 32 cycles between reads */
+/*! \brief 32 cycles between reads */
 #define EDMA_READ_RATE_EVERY_32_CYCLES      (EDMA_TC_RDRATE_RDRATE_READEVERY32CYCLES)
 /** @}*/ /* end defgroup EDMA_READ_RATE_DEFINES */
 
 /*!
- *  @brief      A handle that is returned from a @ref EDMA_open call.
+ *  \brief      A handle that is returned from a @ref EDMA_open call.
  */
 typedef void  *EDMA_Handle;
 
 /*!
-*  @brief      Transfer completion call back function definition.
+*  \brief      Transfer completion call back function definition.
 *  @param[out]  Argument that was registered during call back registeration during
 *               configuration.
 *      Handle to the EDMA instance obtained through call to @ref EDMA_open.
@@ -449,99 +449,99 @@ typedef void (*EDMA_transferCompletionCallbackFxn_t)  (uintptr_t arg,
 /* ========================================================================== */
 
 /*!
- *  @brief  Error Information structure. Information is from EMR(H), QEMR, CCERR
+ *  \brief  Error Information structure. Information is from EMR(H), QEMR, CCERR
  *     registers as per EDMA UG.
  */
 typedef struct EDMA_errorInfo_t_
 {
-    /*! @brief Each element of the array indicates whether a DMA channel event is missed
+    /*! \brief Each element of the array indicates whether a DMA channel event is missed
      *    for the corresponding DMA channel index. */
     bool isDmaChannelEventMiss[EDMA_NUM_DMA_CHANNELS];
 
-    /*! @brief Each element of the array indicates whether a QDMA channel event is missed
+    /*! \brief Each element of the array indicates whether a QDMA channel event is missed
      *    for the corresponding QDMA channel index. */
     bool isQdmaChannelEventMiss[EDMA_NUM_QDMA_CHANNELS];
 
-    /*! @brief CCERR::TCERR in EDMA UG */
+    /*! \brief CCERR::TCERR in EDMA UG */
     bool isOutstandingTransferCompletionTransfersExceededLimit;
 
-    /*! @brief CCERR::QTHRXCDx bits in EDMA UG */
+    /*! \brief CCERR::QTHRXCDx bits in EDMA UG */
     bool isEventQueueThresholdExceeded[EDMA_MAX_NUM_EVENT_QUEUES];
 
-    /*! @brief Number of event Queues of the opened CC provided as convenience
+    /*! \brief Number of event Queues of the opened CC provided as convenience
         these many elements will be relevent in the @ref isEventQueueThresholdExceeded
         array */
     uint8_t numEventQueues;
 } EDMA_errorInfo_t;
 
 /*!
-*  @brief  Error call back function.
+*  \brief  Error call back function.
 *  @param[out]  handle
 *      Handle to the EDMA instance obtained through call to @ref EDMA_open.
 *  @param[out] errorInfo
-*      Pointer to error information @ref EDMA_errorInfo_t_.
+*      Pointer to error information @ref EDMA_errorInfo_t.
 */
 typedef void (*EDMA_errorCallbackFxn_t)  (EDMA_Handle handle, EDMA_errorInfo_t *errorInfo);
 
 /*!
- *  @brief Transfer controller bus error information, relevant when
- *   @ref EDMA_transferControllerErrorInfo_t_::isBusError is true.
+ *  \brief Transfer controller bus error information, relevant when
+ *   @ref EDMA_transferControllerErrorInfo_t::isBusError is true.
  */
 typedef struct EDMA_transferControllerBusErrorInfo_t_
 {
-    /*! @brief ERRDET::STAT in EDMA UG. */
+    /*! \brief ERRDET::STAT in EDMA UG. */
     uint8_t errorCode;
 
-    /*! @brief ERRDET::TCC in EDMA UG. */
+    /*! \brief ERRDET::TCC in EDMA UG. */
     uint8_t transferCompletionCode;
 
-    /*! @brief ERRDET::TCCHEN in EDMA UG. */
+    /*! \brief ERRDET::TCCHEN in EDMA UG. */
     bool isFinalChainingEnabled;
 
-    /*! @brief ERRDET::TCINTEN in EDMA UG. */
+    /*! \brief ERRDET::TCINTEN in EDMA UG. */
     bool isFinalTransferInterruptEnabled;
 } EDMA_transferControllerBusErrorInfo_t;
 
 /*!
- *  @brief Transfer controller error information.
+ *  \brief Transfer controller error information.
  */
 typedef struct EDMA_transferControllerErrorInfo_t_
 {
-    /*! @brief ERRSTAT::TRERR in EDMA UG. */
+    /*! \brief ERRSTAT::TRERR in EDMA UG. */
     bool isTransferRequestError;
 
-    /*! @brief ERRSTAT::MMRAERR in EDMA UG. */
+    /*! \brief ERRSTAT::MMRAERR in EDMA UG. */
     bool isWriteToReservedConfigMemoryMap;
 
     /*!
-     *  @brief true if bus error, see @ref busErrorInfo for more details.
+     *  \brief true if bus error, see @ref busErrorInfo for more details.
      */
     bool isBusError;
 
     /*!
-     *  @brief Bus Error Information, relevant if @ref isBusError is true.
+     *  \brief Bus Error Information, relevant if @ref isBusError is true.
      */
     EDMA_transferControllerBusErrorInfo_t busErrorInfo;
 
-    /*! @brief Transfer controller Id of the errring transfer controller, can be
+    /*! \brief Transfer controller Id of the errring transfer controller, can be
        between 0 and (number of transfer controllers on the opened CC - 1). */
     uint8_t transferControllerId;
 } EDMA_transferControllerErrorInfo_t;
 
 /*!
-*  @brief  Transfer controller error call back function. Usually
+*  \brief  Transfer controller error call back function. Usually
 *          transfer controller errors are fatal.
 *  @param[out]  handle
 *      Handle to the EDMA instance obtained through call to @ref EDMA_open.
 *  @param[out] errorInfo
-*      Pointer to error information @ref EDMA_transferControllerErrorInfo_t_.
+*      Pointer to error information @ref EDMA_transferControllerErrorInfo_t.
 */
 typedef void (*edmaTransferControllerErrorCallbackFxn_t)  (EDMA_Handle handle,
                 EDMA_transferControllerErrorInfo_t *errorInfo);
 
 
 /*!
- *  @brief    PaRAM Set configuration.
+ *  \brief    PaRAM Set configuration.
  */
 typedef struct EDMA_paramSetConfig_t_
 {
@@ -676,7 +676,7 @@ typedef struct EDMA_paramSetConfig_t_
 } EDMA_paramSetConfig_t;
 
 /*!
- *  @brief Channel configuration. Specifies the full configuration for a DMA or
+ *  \brief Channel configuration. Specifies the full configuration for a DMA or
  *    QDMA channel with associated paramId and param Set configuration.
  */
 typedef struct EDMA_channelConfig_t_
@@ -740,7 +740,7 @@ typedef struct EDMA_channelConfig_t_
 } EDMA_channelConfig_t;
 
 /*!
- *  @brief Param configuration typically used for stand-alone param sets
+ *  \brief Param configuration typically used for stand-alone param sets
  *    (param sets not associated with any of the 64 DMA channels) such
  *    as for QDMA channels or for linking purposes.
  */
@@ -766,190 +766,190 @@ typedef struct EDMA_paramConfig_t_
 } EDMA_paramConfig_t;
 
 /*!
- *  @brief Error configuration for a transfer controller, allows enabling/disabling
+ *  \brief Error configuration for a transfer controller, allows enabling/disabling
  *    of various error conditions.
  */
 typedef struct EDMA_transferControllerErrorConfig_t_ {
-    /*! @brief ERREN::BUSERR in EDMA UG. */
+    /*! \brief ERREN::BUSERR in EDMA UG. */
     bool isBusErrorEnabled;
 
-    /*! @brief ERREN::TRERR in EDMA UG. */
+    /*! \brief ERREN::TRERR in EDMA UG. */
     bool isTransferRequestErrorEnabled;
 
-    /*! @brief ERREN:MMRAERR in EDMA UG. */
+    /*! \brief ERREN:MMRAERR in EDMA UG. */
     bool isWriteToReservedConfigMemoryMapEnabled;
 } EDMA_transferControllerErrorConfig_t;
 
 /*!
- *  @brief Error configuration for transfer controller, allows enabling/disabling
+ *  \brief Error configuration for transfer controller, allows enabling/disabling
  *    of various error conditions.
  */
 typedef struct EDMA_errorConfig_t_
 {
-    /*! @brief Set to true if want to configure all event queues. */
+    /*! \brief Set to true if want to configure all event queues. */
     bool isConfigAllEventQueues;
 
-    /*! @brief if @ref isConfigAllEventQueues is false, used to specify the
+    /*! \brief if @ref isConfigAllEventQueues is false, used to specify the
         event queue to be configured. */
     uint8_t eventQueueId;
 
-    /*! @brief Set to true if want to enable event queue thresholding. */
+    /*! \brief Set to true if want to enable event queue thresholding. */
     bool isEventQueueThresholdingEnabled;
 
-    /*! @brief event Queue threshold, should be in the range
+    /*! \brief event Queue threshold, should be in the range
      *    [0, @ref EDMA_EVENT_QUEUE_THRESHOLD_MAX], convenient defines in
      *    @ref EDMA_EVENT_QUEUE_THRESHOLD
      */
     uint8_t eventQueueThreshold;
 
-    /*! @brief Set to true if want to configure all transfer controllers. */
+    /*! \brief Set to true if want to configure all transfer controllers. */
     bool isConfigAllTransferControllers;
 
-    /*! @brief If @ref isConfigAllTransferControllers is false, used to
+    /*! \brief If @ref isConfigAllTransferControllers is false, used to
           specify the transfer controler Id to be configured. */
     uint8_t transferControllerId;
 
-    /*! @brief Set to true if want to enable all transfer controller errors,
+    /*! \brief Set to true if want to enable all transfer controller errors,
      *    this is provided for convenience so as not to have to specific each
      *    error in @ref transferControllerErrorConfig. */
     uint8_t isEnableAllTransferControllerErrors;
 
-    /*! @brief If @ref isEnableAllTransferControllerErrors is false, used to
+    /*! \brief If @ref isEnableAllTransferControllerErrors is false, used to
      *    specify which errors to enable. */
     EDMA_transferControllerErrorConfig_t transferControllerErrorConfig;
 
-    /*! @brief Call back function associated with CC errors. */
+    /*! \brief Call back function associated with CC errors. */
     EDMA_errorCallbackFxn_t callbackFxn;
 
-    /*! @brief Call back function associated with queue/TC (Transfer Controller)
+    /*! \brief Call back function associated with queue/TC (Transfer Controller)
      *    errors. */
     edmaTransferControllerErrorCallbackFxn_t transferControllerCallbackFxn;
 } EDMA_errorConfig_t;
 
 /*!
- *  @brief Queue entry information.
+ *  \brief Queue entry information.
  */
 typedef struct EDMA_queueEntryInfo_t_
 {
-    /*! @brief QxEy::ENUM in EDMA UG. */
+    /*! \brief QxEy::ENUM in EDMA UG. */
     uint8_t eventNumber;
 
-    /*! @brief QxEy::ETYPE in EDMA UG. */
+    /*! \brief QxEy::ETYPE in EDMA UG. */
     uint8_t eventType;
 } EDMA_queueEntryInfo_t;
 
 /*!
- *  @brief Queue status information.
+ *  \brief Queue status information.
  */
 typedef struct EDMA_queueStatusInfo_t_
 {
-    /*! @brief Outstanding entries are entries in the queue at the moment of
+    /*! \brief Outstanding entries are entries in the queue at the moment of
         status query that have not yet been serviced. The number
         of relevant entries in this array is @ref numOutstandingEntries. */
     EDMA_queueEntryInfo_t outstandingEntries[EDMA_NUM_QUEUE_ENTRIES];
 
-    /*! @brief Dequeued entries are entries in the queue at the moment of
+    /*! \brief Dequeued entries are entries in the queue at the moment of
         querying the queue status that have been serviced, the number of
         relevant entries in this array is @ref EDMA_NUM_QUEUE_ENTRIES
         - @ref numOutstandingEntries. */
     EDMA_queueEntryInfo_t dequeuedEntries[EDMA_NUM_QUEUE_ENTRIES];
 
-    /*! @brief status whether queue threshold is exceeded. */
+    /*! \brief status whether queue threshold is exceeded. */
     bool isThresholdExceeded;
 
-    /*! @brief Maximum number of entries ever in the queue since EDMA became operational
+    /*! \brief Maximum number of entries ever in the queue since EDMA became operational
         (after reset), if this maximum ever exceeded the set queue threshold and
         queue thresholding were enabled, it would trigger error condition. */
     uint8_t maxQueueEntries;
 
-    /*! @brief Number of outstanding (not yet serviced) entries in the queue,
+    /*! \brief Number of outstanding (not yet serviced) entries in the queue,
         QSTATN::NUMVAL in EDMA UG. */
     uint8_t numOutstandingEntries;
 } EDMA_queueStatusInfo_t;
 
 /*!
- * @brief EDMA status information at the time of querying status
+ * \brief EDMA status information at the time of querying status
  *  using @ref EDMA_getStatusInfo. This is not some software state but it is
  *  hardware state, typically used for debugging purposes.
  *  Note CCSTAT::QUEACTVx bits are not reported because they are redundant information
- *  given the @ref EDMA_queueStatusInfo_t_.
+ *  given the @ref EDMA_queueStatusInfo_t.
  */
 typedef struct EDMA_statusInfo_t_
 {
-    /*! @brief Queue status of each queue, number of entries that are relevant are
+    /*! \brief Queue status of each queue, number of entries that are relevant are
         the number of queues in the EDMA instance from call to @ref EDMA_open
-        in the returned structure @ref EDMA_instanceInfo_t_::numEventQueues. */
+        in the returned structure @ref EDMA_instanceInfo_t::numEventQueues. */
     EDMA_queueStatusInfo_t queue[EDMA_MAX_NUM_EVENT_QUEUES];
 
-    /*! @brief CCSTAT::COMPACTV in EDMA UG. */
+    /*! \brief CCSTAT::COMPACTV in EDMA UG. */
     uint8_t numOutstandingCompletionRequests;
 
-    /*! @brief CCSTAT::EVTACTV in EDMA UG. */
+    /*! \brief CCSTAT::EVTACTV in EDMA UG. */
     bool isAnyDmaChannelActive;
 
-    /*! @brief CCSTAT::QEVTACTV in EDMA UG. */
+    /*! \brief CCSTAT::QEVTACTV in EDMA UG. */
     bool isAnyQdmaChannelActive;
 
-    /*! @brief CCSTAT::WSTATACTV in EDMA UG. */
+    /*! \brief CCSTAT::WSTATACTV in EDMA UG. */
     bool isWriteStatusActive;
 
-    /*! @brief CCSTAT::TRACTV in EDMA UG. */
+    /*! \brief CCSTAT::TRACTV in EDMA UG. */
     bool isAnyTransferActive;
 
-    /*! @brief CCSTAT::ACTV in EDMA UG. */
+    /*! \brief CCSTAT::ACTV in EDMA UG. */
     bool isAnythingActive;
 } EDMA_statusInfo_t;
 
 /*!
- * @brief EDMA performance configuration.
+ * \brief EDMA performance configuration.
  */
 typedef struct EDMA_performanceConfig_t_
 {
-    /*! @brief If set to true, configures all transfer controllers with specified
+    /*! \brief If set to true, configures all transfer controllers with specified
         configuration (@ref transferControllerId is not relevant). */
     bool isConfigAllTransferControllers;
 
-    /*! @brief If @ref isConfigAllTransferControllers is false, then configures the
+    /*! \brief If @ref isConfigAllTransferControllers is false, then configures the
         transfer controller of this Id. */
     uint8_t transferControllerId;
 
-    /*! @brief Read rate is used to specify using @ref EDMA_READ_RATE_DEFINES the
+    /*! \brief Read rate is used to specify using @ref EDMA_READ_RATE_DEFINES the
         aggressiveness of read by the transfer controller,
         less cycles means more aggressive, see RDRATE in EDMA UG. */
     uint8_t transferControllerReadRate;
 
-    /*! @brief Queue priority, the defines EDMA_TPCC_QUEPRI_PRIQ0_PRIORITYX can be used
+    /*! \brief Queue priority, the defines EDMA_TPCC_QUEPRI_PRIQ0_PRIORITYX can be used
         here, where X is in the range [0,7], Note: 0 is highest priority and
         7 is lowest. Refer to QUEPRI in EDMA UG. */
     uint8_t queuePriority;
 } EDMA_performanceConfig_t;
 
 /*!
- * @brief EDMA instance properties information.
+ * \brief EDMA instance properties information.
  */
 typedef struct EDMA_instanceInfo_t_
 {
-    /*! @brief Number of event queues, same as number of transfer controllers */
+    /*! \brief Number of event queues, same as number of transfer controllers */
     uint8_t  numEventQueues;
 
-    /*! @brief Number of PaRAM sets. */
+    /*! \brief Number of PaRAM sets. */
     uint16_t numParamSets;
 
-    /*! @brief Shows if channel mapping feature is supported. If this is supported (true)
+    /*! \brief Shows if channel mapping feature is supported. If this is supported (true)
         then it is possible to associate any DMA channel with any PaRAM set,
         otherwise (false), the PaRAM set must be identical to DMA channel i.e
         DMA channels 0 to 63 correspond to PaRAM sets 0 to 63 respectively. */
     bool isChannelMapExist;
 
-    /*! @brief true if transfer completion interrupt is routed from EDMA to the
+    /*! \brief true if transfer completion interrupt is routed from EDMA to the
             processor interrupt controller. */
     bool isTransferCompletionInterruptConnected;
 
-    /*! @brief true if error interrupt is is routed from EDMA to the
+    /*! \brief true if error interrupt is is routed from EDMA to the
             processor interrupt controller. */
     bool isErrorInterruptConnected;
 
-    /*! @brief true if a transfer controller error interrupt is is routed from EDMA to the
+    /*! \brief true if a transfer controller error interrupt is is routed from EDMA to the
             processor interrupt controller. */
     bool isTransferControllerErrorInterruptConnected[EDMA_MAX_NUM_EVENT_QUEUES];
 
@@ -959,8 +959,8 @@ typedef struct EDMA_instanceInfo_t_
 /*                          Function Declarations                             */
 /* ========================================================================== */
 /**
-@defgroup EDMA_DRIVER_EXTERNAL_FUNCTION       EDMA Driver External Functions
-@brief
+\defgroup EDMA_DRIVER_EXTERNAL_FUNCTION       EDMA Driver External Functions
+\brief
 *   The section has a list of all the exported APIs which the application can
 *   invoke in order to use the driver.
  @{ */
@@ -973,7 +973,7 @@ typedef struct EDMA_instanceInfo_t_
 *  @param[in]  handle
 *      Handle to the EDMA instance obtained through call to @ref EDMA_open.
 *  @param[in] config
-*      pointer to @ref EDMA_channelConfig_t_
+*      pointer to @ref EDMA_channelConfig_t
 *  @param[in] isEnableChannel
 *      set to true if you want to enable the channel after configuration
 *      else set to false. For false case, it is expected that the
@@ -1255,7 +1255,7 @@ extern int32_t EDMA_setSourceAddress(EDMA_Handle handle,
 *  @param[in]  handle
 *      Handle to the EDMA instance obtained through call to @ref EDMA_open.
 *  @param[in] config
-*      pointer to error configuration @ref EDMA_errorConfig_t_.
+*      pointer to error configuration @ref EDMA_errorConfig_t.
 *
 *  @retval
 *      Success     - @ref EDMA_NO_ERROR
@@ -1328,8 +1328,8 @@ extern int32_t EDMA_getTransferControllerErrorStatus(EDMA_Handle handle,
 *  @n
 *     Query Status of EDMA. This is useful for debugging/diagnostic purposes.
 *     Typically called in the implementation of the error call back function
-*     of the application supplied in the @ref EDMA_errorConfig_t_::callbackFxn
-*     and/or @ref EDMA_errorConfig_t_::transferControllerCallbackFxn when
+*     of the application supplied in the @ref EDMA_errorConfig_t::callbackFxn
+*     and/or @ref EDMA_errorConfig_t::transferControllerCallbackFxn when
 *     issuing @ref EDMA_configErrorMonitoring, for additional post-mortem analysis.
 *
 *  @param[in]  handle

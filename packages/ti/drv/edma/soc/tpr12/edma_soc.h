@@ -69,25 +69,25 @@ extern "C" {
 
 /** @}*/ /* end defgroup EDMA_INSTANCE */
 
-/*! @brief Total number of DMA channels */
+/*! \brief Total number of DMA channels */
 #define EDMA_NUM_DMA_CHANNELS (64U)
 
-/*! @brief Total number of transfer completion codes */
+/*! \brief Total number of transfer completion codes */
 #define EDMA_NUM_TCC ((uint8_t)64)
 
-/*! @brief Total number of QDMA channels */
+/*! \brief Total number of QDMA channels */
 #define EDMA_NUM_QDMA_CHANNELS ((uint8_t)8)
 
-/*! @brief Maximum number of event queues in any EDMA IP */
+/*! \brief Maximum number of event queues in any EDMA IP */
 #define EDMA_MAX_NUM_EVENT_QUEUES ((uint8_t)8)
 
-/*! @brief Maximum number of transfer controllers in any EDMA IP */
+/*! \brief Maximum number of transfer controllers in any EDMA IP */
 #define EDMA_MAX_NUM_TRANSFER_CONTROLLERS (EDMA_MAX_NUM_EVENT_QUEUES)
 
-/*! @brief Number of entries in each queue in any EDMA IP */
+/*! \brief Number of entries in each queue in any EDMA IP */
 #define EDMA_NUM_QUEUE_ENTRIES ((uint8_t)16)
 
-/*! @brief Extended B Indx is applicable for TPR12 */
+/*! \brief Extended B Indx is applicable for TPR12 */
 #define EDMA_EXTENDED_B_INDICES ((uint8_t)1U)
 
 /* ========================================================================== */
