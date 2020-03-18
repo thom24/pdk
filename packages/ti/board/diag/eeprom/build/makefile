@@ -54,12 +54,6 @@ EXTERNAL_INTERFACES =
 XDC_CFG_FILE_mpu1_0 =
 XDC_CFG_FILE_mcu1_0 =
 
-ifeq ($(MODENAME), )
-ifeq ($(TESTMODE), STRESS_TEST)
-MODENAME = Stress
-endif
-endif
-
 # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
 LOCAL_APP_NAME =  $(DIAGNAME)$(MODENAME)_DiagExample_$(BOARD)_$(CORE)
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2019-2020 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -45,16 +45,11 @@
 #include <stdlib.h>
 #include <ti/drv/spi/SPI.h>
 #include <ti/board/src/flash/include/board_flash.h>
+#include <ti/board/src/flash/nor/ospi/nor_qspi.h>
 #include <ti/drv/spi/soc/SPI_soc.h>
 #include "board.h"
 #include "board_cfg.h"
 #include "diag_common_cfg.h"
-
-#if defined(SOC_J721E)
-#include <ti/drv/gpio/GPIO.h>
-#include <ti/drv/gpio/soc/GPIO_soc.h>
-#include <ti/csl/csl_gpio.h>
-#endif
 
 //#define UDMA_ENABLE
 #if defined(UDMA_ENABLE)
@@ -85,32 +80,16 @@
 extern "C" {
 #endif
 
-#ifdef DIAG_STRESS_TEST
-#define ONE_KB_SIZE                           (1024U) /* 1024 Bytes */
+#define BOARD_SPI_FIRST_PAGE                 (0)
 
-#define NOR_PAGE_SIZE                         (256 * ONE_KB_SIZE)
-#define TEST_DATA_LEN                         (NOR_PAGE_SIZE)
-#define BUFF_SIZE                             (TEST_DATA_LEN)
-#define MAX_BUFF_SIZE                         (257 * ONE_KB_SIZE)
-#define BOARD_SPI_LAST_PAGE                  (0x03FC0000)
+#ifdef DIAG_STRESS_TEST
+#define TEST_DATA_LEN                        (NOR_BLOCK_SIZE)
+#define BOARD_SPI_LAST_PAGE                  (0x03FF0000U)
 
 #else
-#define NOR_PAGE_SIZE                         (256U)
-#define TEST_DATA_LEN                         (NOR_PAGE_SIZE)
-#define BUFF_SIZE                             (TEST_DATA_LEN)
-#define MAX_BUFF_SIZE                         (260U)
-#define BOARD_SPI_LAST_PAGE         		  (0x03FFFF00)
+#define TEST_DATA_LEN                        (NOR_PAGE_SIZE)
+#define BOARD_SPI_LAST_PAGE         		 (0x03FFFF00U)
 #endif
-
-#define DATA_PATTERN_FF     (1)
-#define DATA_PATTERN_INC    (2)
-#define DATA_PATTERN_AA     (3)
-#define DATA_PATTERN_55     (4)
-#define DATA_PATTERN_RANDOM (5)
-
-#define BOARD_SPI_FIRST_PAGE        (0x0000)
-
-#define MAX_CLOCK  133000000 /* 133MHz */
 
 /**
  * \brief  NOR flash test function

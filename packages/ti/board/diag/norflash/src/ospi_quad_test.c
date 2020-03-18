@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -52,9 +52,9 @@
 #include <ti/board/src/flash/nor/nor.h>
 
 /* Buffer containing the known data that needs to be written to flash */
-uint8_t txBuf[MAX_BUFF_SIZE];
+uint8_t txBuf[TEST_DATA_LEN];
 /* Buffer containing the received data */
-uint8_t rxBuf[MAX_BUFF_SIZE];
+uint8_t rxBuf[TEST_DATA_LEN];
 
 #if defined(UDMA_ENABLE)
 /*
@@ -246,6 +246,11 @@ static int8_t BoardDiag_norFlashStressTest(void)
 #else
     ospi_cfg.dmaEnable  = false;
 #endif
+#if defined(j721e_evm)
+    ospi_cfg.phyEnable  = false;
+#endif
+    ospi_cfg.xferLines = OSPI_XFER_LINES_QUAD;
+    ospi_cfg.dtrEnable = false;
 
     /* Set the default OSPI init configurations */
     OSPI_socSetInitCfg(BOARD_SPI_NOR_INSTANCE, &ospi_cfg);
@@ -273,7 +278,7 @@ static int8_t BoardDiag_norFlashStressTest(void)
     UART_printf("\nVerifying the NOR Flash ...\n");
     /* This loop verifies the read/write access of whole memory */
 
-    for(offset = BOARD_SPI_FIRST_PAGE; offset <= BOARD_SPI_LAST_PAGE; offset += NOR_PAGE_SIZE)
+    for(offset = BOARD_SPI_FIRST_PAGE; offset <= BOARD_SPI_LAST_PAGE; offset += TEST_DATA_LEN)
     {
         testStatus = BoardDiag_norFlashReadWriteTest(boardHandle,offset);
         if(testStatus != 0)
@@ -293,7 +298,7 @@ static int8_t BoardDiag_norFlashStressTest(void)
         if((rdBuf == 'b') || (rdBuf == 'B'))
         {
             UART_printf("Received Test Termination... Exiting the Test\n");
-            offset+=NOR_PAGE_SIZE;
+            offset += TEST_DATA_LEN;
             UART_printf("NOR Flash Stress Test Status\n");
             UART_printf("============================================\n");
             UART_printf("\nNOR Flash Verified up-to Page - 0x%X\n", offset);
@@ -331,48 +336,12 @@ static int8_t BoardDiag_norFlashTest(void)
     bool testStatus = true;          /* return value */
     OSPI_v0_HwAttrs ospi_cfg;
 
-    UART_printf("\nReading Device ID in SPI Single Mode\n");
+    UART_printf("\nReading Device ID\n");
 
     /* Get the default OSPI init configurations */
     OSPI_socGetInitCfg(BOARD_SPI_NOR_INSTANCE, &ospi_cfg);
 
     /* Modify the default OSPI configurations if necessary */
-    /* Turning off interrupts for baremetal mode. May be re-enabled by app */
-    ospi_cfg.intrEnable = false;
-
-    ospi_cfg.dmaEnable  = false;
-#if defined(j721e_evm)
-    ospi_cfg.phyEnable  = false;
-#endif
-    ospi_cfg.xferLines = OSPI_XFER_LINES_SINGLE;
-    ospi_cfg.dtrEnable = false;
-
-    /* Set the default OSPI init configurations */
-    OSPI_socSetInitCfg(BOARD_SPI_NOR_INSTANCE, &ospi_cfg);
-
-    /* Open the Board NOR device with port 1
-       and use default NOR configurations */
-    boardHandle = Board_flashOpen(BOARD_FLASH_ID_MT25QU512ABB,
-                                  BOARD_SPI_NOR_INSTANCE, NULL);
-    if (!boardHandle)
-    {
-        UART_printf("\n Board_flashOpen Failed. \n");
-        return -1;
-    }
-    else
-    {
-        flashInfo = (Board_FlashInfo *)boardHandle;
-        UART_printf("\nNOR device ID: 0x%x, manufacturer ID: 0x%x \n",
-                flashInfo->device_id, flashInfo->manufacturer_id);
-    }
-    Board_flashClose(boardHandle);
-
-    UART_printf("\nReading Device ID in SPI Quad Mode\n");
-    /* Get the default OSPI init configurations */
-    OSPI_socGetInitCfg(BOARD_SPI_NOR_INSTANCE, &ospi_cfg);
-
-    /* Modify the default OSPI configurations if necessary */
-    /* Turning off interrupts for baremetal mode. May be re-enabled by app */
     ospi_cfg.intrEnable = false;
 
 #if defined(UDMA_ENABLE)
@@ -385,6 +354,7 @@ static int8_t BoardDiag_norFlashTest(void)
     ospi_cfg.phyEnable  = false;
 #endif
     ospi_cfg.xferLines = OSPI_XFER_LINES_QUAD;
+    ospi_cfg.dtrEnable = false;
 
     /* Set the default OSPI init configurations */
     OSPI_socSetInitCfg(BOARD_SPI_NOR_INSTANCE, &ospi_cfg);

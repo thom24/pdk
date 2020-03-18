@@ -561,12 +561,14 @@ int main(void)
         return ret;
     }
 
+#if !defined(DIAG_STRESS_TEST)
     ret = BoardDiag_runMlbHeaderToggleTest();
     if(ret != 0)
     {
         UART_printf("\nMLB Header Pin Toggle test failed\n");
         return ret;
     }
+#endif
 
     UART_printf("\nI2C IO-Expander Mux Configuration... \n\r");
 
