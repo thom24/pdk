@@ -419,14 +419,15 @@ static void RPMessage_swiFxn(uintptr_t arg0, uintptr_t arg1)
 {
     RPMessage_CallbackData *cbdata = (RPMessage_CallbackData*)arg0;
     RPMessage_MsgHeader    *msg;
+    uint16_t  token;
 
     /* Process all available buffers: */
-    while ((msg = (RPMessage_MsgHeader *) Virtio_getUsedBuf(cbdata->vq)) != NULL)
+    while ((msg = (RPMessage_MsgHeader *) Virtio_getUsedBuf(cbdata->vq, &token)) != NULL)
     {
        /* Pass to desitination queue (which is on this proc): */
         RPMessage_enqueMsg(cbdata->pool, msg);
 
-        Virtio_addAvailBuf(cbdata->vq, msg);
+        Virtio_addAvailBuf(cbdata->vq, msg, token);
     }
 }
 

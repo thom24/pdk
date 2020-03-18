@@ -231,7 +231,7 @@ uint8_t Virtio_isReady(Virtio_Handle vq);
  *
  *  \sa         Virtio_getUsedBuf
  */
-void Virtio_addAvailBuf(Virtio_Handle vq, void *buf);
+void Virtio_addAvailBuf(Virtio_Handle vq, void *buf, uint16_t token);
 
 /**
  *  \brief      Get the next used buffer.
@@ -243,7 +243,7 @@ void Virtio_addAvailBuf(Virtio_Handle vq, void *buf);
  *
  *  \sa         Virtio_addAvailBuf
  */
-void *Virtio_getUsedBuf(Virtio_Handle vq);
+void *Virtio_getUsedBuf(Virtio_Handle vq, uint16_t *token);
 
 /*
  *  ============================================================================

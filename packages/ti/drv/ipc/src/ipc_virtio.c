@@ -388,23 +388,24 @@ int32_t Virtio_addUsedBuf(Virtio_Handle vq, int16_t head, int32_t len)
 /**
  *  \brief Virtio_addAvailBuf
  */
-void Virtio_addAvailBuf(Virtio_Handle vq, void *buf)
+void Virtio_addAvailBuf(Virtio_Handle vq, void *buf, uint16_t head)
 {
     uint16_t avail;
 
     avail =  vq->vring.avail->idx % vq->vring.num;
-    vq->vring.avail->idx++;
 
-    vq->vring.desc[avail].addr   = mapVAtoPA(buf);
-    vq->vring.desc[avail].len    = RP_MSG_BUF_SIZE;
-    vq->vring.desc[avail].flags  = 2;
-    vq->vring.avail->ring[avail] = avail;
+    vq->vring.desc[head].addr   = mapVAtoPA(buf);
+    vq->vring.desc[head].len    = RP_MSG_BUF_SIZE;
+    vq->vring.desc[head].flags  = 2;
+    vq->vring.avail->ring[avail] = head;
+
+    vq->vring.avail->idx++;
 }
 
 /**
  *  \brief Virtio_getUsedBuf ========
  */
-void *Virtio_getUsedBuf(Virtio_Handle vq)
+void *Virtio_getUsedBuf(Virtio_Handle vq, uint16_t *token)
 {
     uint16_t head;
     void     *buf = NULL;
@@ -416,6 +417,7 @@ void *Virtio_getUsedBuf(Virtio_Handle vq)
         vq->last_used_idx++;
 
         buf = mapPAtoVA(vq->vring.desc[head].addr);
+        *token = head;
     }
 
     return (buf);
@@ -581,7 +583,7 @@ void Virtio_prime(Virtio_Object *vq, uint32_t addr, uint32_t num)
     buf = addr;
     for (i = 0; i < num; i++)
     {
-        Virtio_addAvailBuf(vq, (void *)(uintptr_t)buf);
+        Virtio_addAvailBuf(vq, (void *)(uintptr_t)buf, i);
         buf += RP_MSG_BUF_SIZE;
     }
 }
