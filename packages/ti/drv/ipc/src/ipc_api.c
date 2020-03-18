@@ -365,6 +365,11 @@ static int32_t RPMessage_enqueMsg(RPMessage_EndptPool *pool, RPMessage_MsgHeader
         }
         else
         {
+            if( obj->endPt != msg->dstAddr)
+            {
+                SystemP_printf("WARNING: %d != %d\n", obj->endPt, msg->dstAddr);
+            }
+
             /* Allocate a buffer to copy the payload: */
             size = msg->dataLen + sizeof(RPMessage_MsgElem);
 
@@ -1332,6 +1337,7 @@ int32_t RPMessage_recv(RPMessage_Handle handle, void* data, uint16_t *len,
 
         if (semStatus == IPC_ETIMEOUT)
         {
+            SystemP_printf(" Warning: RPMessage_recv: IPC_ETIMEOUT\n");
             status = IPC_ETIMEOUT;
         }
         else if (TRUE == obj->unblocked)
@@ -1348,11 +1354,19 @@ int32_t RPMessage_recv(RPMessage_Handle handle, void* data, uint16_t *len,
         {
             key = pOsalPrms->lockHIsrGate(module.gateSwi);
 
-            payload = (RPMessage_MsgElem *)IpcUtils_QgetHead(&obj->queue);
-            if ( (NULL == payload) ||
-                    (payload == (RPMessage_MsgElem *)&obj->queue))
+            if (IpcUtils_QisEmpty(&obj->queue)==TRUE)
             {
+                SystemP_printf(" ERROR: RPMessage_recv: IpcUtils_QisEmpty(&obj->queue)==TRUE\n");
                 status = IPC_EFAIL;
+            }
+
+            if (status == IPC_SOK)
+            {
+                payload = (RPMessage_MsgElem *)IpcUtils_QgetHead(&obj->queue);
+                if (payload == NULL)
+                {
+                    status = IPC_EFAIL;
+                }
             }
 
             if(status != IPC_EFAIL)
