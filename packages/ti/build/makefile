@@ -17,21 +17,23 @@ else
 endif
 
 ifeq ($(LIMIT_CORES),)
-#Limit core list based on board
-ifeq ($(BOARD),$(filter $(BOARD), $(BOARD_LIST_J7_TDA)))
-  CORE_LIST_ALL = mpu1_0
-  CORE_LIST_ALL += mcu1_0 mcu1_1
-  CORE_LIST_ALL += mcu2_0 mcu2_1 mcu3_0 mcu3_1
-  CORE_LIST_ALL += c7x_1
-  CORE_LIST_ALL += c66xdsp_1 c66xdsp_2
-endif
-ifeq ($(BOARD),$(filter $(BOARD), $(BOARD_LIST_J6_TDA)))
-  CORE_LIST_ALL = a15_0 ipu1_0 ipu1_1 ipu2_0 ipu2_1 c66x c66xdsp_1 c66xdsp_2 arp32_1 arp32_2 arp32_3 arp32_4 arm9_0 c674x
-  CORE_LIST_ALL += mcu1_0 mcu1_1 mpu1_0 mpu1_1
-endif
-ifeq ($(BOARD),$(filter $(BOARD), $(BOARD_LIST_TPR12)))
-  CORE_LIST_ALL = mcu1_0 mcu1_1 c66xdsp_1
-endif
+  #Limit core list based on board
+  ifeq ($(BOARD),$(filter $(BOARD), j721e_evm))
+    CORE_LIST_ALL = $(CORE_LIST_j721e)
+  endif
+  ifeq ($(BOARD),$(filter $(BOARD), j7200_evm))
+    CORE_LIST_ALL = $(CORE_LIST_j7200)
+  endif
+  ifeq ($(BOARD),$(filter $(BOARD), am65xx_evm am65xx_idk))
+    CORE_LIST_ALL = $(CORE_LIST_am65xx)
+  endif
+  ifeq ($(BOARD),$(filter $(BOARD), $(BOARD_LIST_J6_TDA)))
+    CORE_LIST_ALL = a15_0 ipu1_0 ipu1_1 ipu2_0 ipu2_1 c66x c66xdsp_1 c66xdsp_2 arp32_1 arp32_2 arp32_3 arp32_4 arm9_0 c674x
+    CORE_LIST_ALL += mcu1_0 mcu1_1 mpu1_0 mpu1_1
+  endif
+  ifeq ($(BOARD),$(filter $(BOARD), tpr12_evm))
+    CORE_LIST_ALL = $(CORE_LIST_tpr12)
+  endif
 else
   # If LIMIT_CORES is defined use it
   CORE_LIST_ALL = $(LIMIT_CORES)
