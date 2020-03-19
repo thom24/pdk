@@ -154,7 +154,7 @@ INCLUDE_INTERNAL_INTERFACES = csl
 
 PACKAGE_SRCS_COMMON += makefile board_component.mk board.h \
                        board_cfg.h build/makefile.mk
-ifeq ($(BOARD),$(filter $(BOARD), j721e_sim j721e_qt j721e_evm j7200_evm))
+ifeq ($(BOARD),$(filter $(BOARD), j721e_sim j721e_qt j721e_evm j7200_evm tpr12_evm))
 PACKAGE_SRCS_COMMON += src/board.c src/boardStub.c src/Module.xs \
                        src/src_files_lld.mk src/src_files_starterware.mk
 else

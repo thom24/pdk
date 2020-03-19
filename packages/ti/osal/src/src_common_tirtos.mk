@@ -18,7 +18,10 @@ ifeq ($(ISA),$(filter $(ISA), a53 a72 c7x))
 endif
 
 PACKAGE_SRCS_COMMON = makefile HwiP.h SwiP.h MuxIntcP.h osal.h osal_component.mk SemaphoreP.h MemoryP.h CycleprofilerP.h \
-                      arch/core src/tirtos src/src_common_nonos.mk  src/src_common_tirtos.mk \
-                      docs/OSAL_SoftwareManifest.html docs/ReleaseNotes_OSAL.pdf \
-                      build/makefile_nonos_indp.mk build/makefile_nonos.mk build/makefile_tirtos_indp.mk build/makefile_tirtos.mk
+                      CacheP.h EventCombinerP.h EventP.h Queue.h RegisterIntr.h TaskP.h TimerP.h soc/$(SOC) soc/osal_soc.h \
+                      src/tirtos/CacheP_tirtos.c src/tirtos/CycleprofilerP_tirtos.c src/tirtos/EventCombinerP_tirtos.c \
+                      src/tirtos/EventP_tirtos.c src/tirtos/HwiP_tirtos.c src/tirtos/SwiP_tirtos.c src/tirtos/MemoryP_tirtos.c \
+                      src/tirtos/Queue_tirtos.c src/tirtos/RegisterIntr_tirtos.c src/tirtos/SemaphoreP_tirtos.c src/tirtos/TaskP_tirtos.c \
+                      src/tirtos/TimerP_tirtos.c src/tirtos/Utils_tirtos.c src/tirtos/tirtos_config.h src/src_common_tirtos.mk \
+                      docs/OSAL_SoftwareManifest.html docs/ReleaseNotes_OSAL.pdf build/makefile_tirtos_indp.mk build/makefile_tirtos.mk
 
