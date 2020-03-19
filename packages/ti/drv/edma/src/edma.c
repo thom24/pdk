@@ -2265,7 +2265,7 @@ EDMA_Handle EDMA_open(uint8_t instanceId, int32_t *errorCode,
         Osal_RegisterInterrupt_initParams(&interruptRegParams);
         /* Populate the interrupt parameters */
         interruptRegParams.corepacConfig.arg=(uintptr_t)handle;
-        interruptRegParams.corepacConfig.name="EDMA_transferComplete_isr";
+        interruptRegParams.corepacConfig.name=(char *)("EDMA_transferComplete_isr");
         interruptRegParams.corepacConfig.isrRoutine=EDMA_transferComplete_isr;
     #if defined(_TMS320C6X)
         interruptRegParams.corepacConfig.corepacEventNum=(int32_t)hwAttrs->transferCompletionInterruptNum; /* Event going in to CPU */
@@ -2276,7 +2276,7 @@ EDMA_Handle EDMA_open(uint8_t instanceId, int32_t *errorCode,
         interruptRegParams.corepacConfig.corepacEventNum = (int32_t)hwAttrs->transferCompletionInterruptNum;
     #endif
         /* Register interrupts */
-        Osal_RegisterInterrupt(&interruptRegParams, edmaObj->hwiTransferCompleteHandle);
+        Osal_RegisterInterrupt(&interruptRegParams, &edmaObj->hwiTransferCompleteHandle);
 
         Osal_EnableInterrupt(interruptRegParams.corepacConfig.corepacEventNum, interruptRegParams.corepacConfig.intVecNum);
 
@@ -2343,18 +2343,18 @@ EDMA_Handle EDMA_open(uint8_t instanceId, int32_t *errorCode,
 
             //printf("mask written, read back = %x\n", HW_RD_REG32(hwAttrs->CCintAggMaskRegAddress));
             //exit(0);
-            interruptRegParams.corepacConfig.name="EDMA_aggregated_error_transferController_error_isr";
+            interruptRegParams.corepacConfig.name=(char *)("EDMA_aggregated_error_transferController_error_isr");
             interruptRegParams.corepacConfig.isrRoutine=EDMA_aggregated_error_transferController_error_isr;
 
         }
         else
 #endif
         {
-            interruptRegParams.corepacConfig.name="EDMA_error_isr";
+            interruptRegParams.corepacConfig.name=(char *)("EDMA_error_isr");
             interruptRegParams.corepacConfig.isrRoutine=EDMA_error_isr;
         }
         /* Register interrupts */
-        Osal_RegisterInterrupt(&interruptRegParams, edmaObj->hwiErrorHandle);
+        Osal_RegisterInterrupt(&interruptRegParams, &edmaObj->hwiErrorHandle);
 
         Osal_EnableInterrupt(interruptRegParams.corepacConfig.corepacEventNum, interruptRegParams.corepacConfig.intVecNum);
 
@@ -2373,7 +2373,7 @@ EDMA_Handle EDMA_open(uint8_t instanceId, int32_t *errorCode,
         Osal_RegisterInterrupt_initParams(&interruptRegParams);
         /* Populate the interrupt parameters */
         interruptRegParams.corepacConfig.arg=(uintptr_t)handle;
-        interruptRegParams.corepacConfig.name="EDMA_transferController_error_isr";
+        interruptRegParams.corepacConfig.name=(char *)("EDMA_transferController_error_isr");
         interruptRegParams.corepacConfig.isrRoutine=EDMA_transferController_error_isr;
 
         for (tc = 0; tc < hwAttrs->numEventQueues; tc++)
@@ -2392,7 +2392,7 @@ EDMA_Handle EDMA_open(uint8_t instanceId, int32_t *errorCode,
                 interruptRegParams.corepacConfig.corepacEventNum = (int32_t)hwAttrs->transferControllerErrorInterruptNum[tc];
             #endif
                 /* Register interrupts */
-                Osal_RegisterInterrupt(&interruptRegParams, edmaObj->hwiTransferControllerErrorHandle[tc]);
+                Osal_RegisterInterrupt(&interruptRegParams, &edmaObj->hwiTransferControllerErrorHandle[tc]);
 
                 Osal_EnableInterrupt(interruptRegParams.corepacConfig.corepacEventNum, interruptRegParams.corepacConfig.intVecNum);
 
