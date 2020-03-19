@@ -24,6 +24,10 @@ endif # ifeq ($(BOOTMODE), cust)
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(SBL_CFLAGS)
 PACKAGE_SRCS_COMMON = .
 
+ifeq ($(BUILD_HS),yes)
+CFLAGS_LOCAL_COMMON += -DBUILD_HS
+endif
+
 # List all the external components/interfaces, whose interface header files
 #  need to be included for this component
 INCLUDE_EXTERNAL_INTERFACES = pdk

@@ -463,7 +463,11 @@ export sbl_boot_xip_entry_SBL_APPIMAGEGEN
 
 # 0 - use cpu for reads (slower, no $ coherency ops needed), smaller SBL
 # 1 - use dma for data reads (faster, $ coherency ops needed), larger SBL
+ifeq ($(BUILD_HS), yes)
+SBL_CFLAGS += -DSBL_USE_DMA=0 # DMA not currently supported on HS devices
+else
 SBL_CFLAGS += -DSBL_USE_DMA=1
+endif
 
 ###### Use boot_perf_benchmark example#######
 ###### to fine tune the perf knobs  #########

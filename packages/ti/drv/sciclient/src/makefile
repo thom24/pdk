@@ -81,6 +81,12 @@ endif
 
 ifeq ($(SOC),$(filter $(SOC), j721e))
 PACKAGE_SRCS_COMMON += soc/sysfw/binaries/ti-sci-firmware-j721e-gp.bin
+
+ifeq ($(BUILD_HS),yes)
+PACKAGE_SRCS_COMMON += soc/sysfw/binaries/ti-sci-firmware-j721e-hs-cert.bin
+PACKAGE_SRCS_COMMON += soc/sysfw/binaries/ti-sci-firmware-j721e-hs-enc.bin
+CFLAGS_LOCAL_COMMON += -DBUILD_HS
+endif
 endif
 
 ifeq ($(SOC),$(filter $(SOC), am64x))

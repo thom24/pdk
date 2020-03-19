@@ -8,7 +8,7 @@
 include $(PDK_INSTALL_PATH)/ti/build/soc_info.mk
 
 # Below are the supported PDK_SOCs in Processor SDK
-export PROCSDK_SUPPORTED_PDK_SOCS = am335x am437x am437x-hs am57xx omapl137 omapl138 k2hk k2e k2l k2g k2g-hs c665x c667x am65xx am65xx-hs j7 am64x tpr12
+export PROCSDK_SUPPORTED_PDK_SOCS = am335x am437x am437x-hs am57xx omapl137 omapl138 k2hk k2e k2l k2g k2g-hs c665x c667x am65xx am65xx-hs j7 j7-hs am64x tpr12
 
 #if PDK_SOC is specified , derive LIMIT_SOCS/LIMIT_BOARDS/LIMIT_CORES from it (if not specified explicitly)
 ifneq ($(PDK_SOC),)
@@ -35,6 +35,7 @@ LIMIT_CORES_am64x     = $(CORE_LIST_am64x)
 LIMIT_CORES_tpr12     = $(CORE_LIST_tpr12)
 # Filter out c7x-hostemu as Processor SDK does not build use it
 LIMIT_CORES_j7        = $(filter-out c7x-hostemu,$(sort $(CORE_LIST_j721e) $(CORE_LIST_j7200)))
+LIMIT_CORES_j7-hs     = $(filter-out c7x-hostemu,$(sort $(CORE_LIST_j721e) $(CORE_LIST_j7200)))
 
 export LIMIT_CORES ?= $(LIMIT_CORES_$(PDK_SOC))
 
@@ -53,6 +54,7 @@ LIMIT_SOCS_am65xx    = am65xx
 LIMIT_SOCS_am65xx-hs = am65xx
 LIMIT_SOCS_am64x     = am64x
 LIMIT_SOCS_j7        = j721e j7200
+LIMIT_SOCS_j7-hs     = j721e
 LIMIT_SOCS_tpr12     = tpr12
 LIMIT_SOCS_omapl137  = omapl137
 LIMIT_SOCS_omapl138  = omapl138
@@ -64,6 +66,7 @@ export BUILD_HS ?= yes
 endif
 
 LIMIT_BOARDS_j7        = $(BOARD_LIST_j721e) $(BOARD_LIST_j7200)
+LIMIT_BOARDS_j7-hs     = $(BOARD_LIST_j721e)
 LIMIT_BOARDS_am335x    = $(BOARD_LIST_am335x)
 LIMIT_BOARDS_omapl137  = $(BOARD_LIST_omapl137)
 LIMIT_BOARDS_k2l       = $(BOARD_LIST_k2l)
