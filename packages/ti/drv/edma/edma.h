@@ -177,6 +177,7 @@ extern "C" {
 /************************ QDMA Trigger Word Offset defines*********************/
 /******************************************************************************/
 /** \defgroup EDMA_TRIG_WORDS QDMA Trigger Word Offset Definitions
+\ingroup DRV_EDMA_MODULE
  *
  @{ */
 
@@ -249,6 +250,7 @@ extern "C" {
 /************************ Error code defines **********************************/
 /******************************************************************************/
 /** \defgroup EDMA_ERROR_CODES Error Codes
+\ingroup DRV_EDMA_MODULE
  *
  @{ */
 /*****EDMA_E_INVALID__ : Invalid API parameters or parameter combinations *****/
@@ -383,6 +385,7 @@ extern "C" {
 /************************ Event queue threshold defines************************/
 /******************************************************************************/
 /** \defgroup EDMA_EVENT_QUEUE_THRESHOLD Event Queue Threshold Configuration Defines
+\ingroup DRV_EDMA_MODULE
  *
  * \brief
  *  Special defines for event queue threshold configuration.
@@ -406,6 +409,7 @@ extern "C" {
 /************************ Read rate defines************************************/
 /******************************************************************************/
 /** \defgroup EDMA_READ_RATE_DEFINES Read Rate Definitions
+\ingroup DRV_EDMA_MODULE
  *
  * \brief
  *  Read rate defines for performance configuration.
@@ -958,8 +962,10 @@ typedef struct EDMA_instanceInfo_t_
 /* ========================================================================== */
 /*                          Function Declarations                             */
 /* ========================================================================== */
+
 /**
 \defgroup EDMA_DRIVER_EXTERNAL_FUNCTION       EDMA Driver External Functions
+\ingroup DRV_EDMA_MODULE
 \brief
 *   The section has a list of all the exported APIs which the application can
 *   invoke in order to use the driver.

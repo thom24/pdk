@@ -51,6 +51,7 @@ extern "C" {
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
 /** @defgroup EDMA_INSTANCE Instance IDs
+\ingroup DRV_EDMA_MODULE
  *
  @{ */
 
