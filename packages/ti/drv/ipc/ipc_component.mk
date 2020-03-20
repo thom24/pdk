@@ -57,6 +57,9 @@ drvipc_DISABLE_PARALLEL_MAKE = yes
 ############################
 ipc_EXAMPLE_LIST =
 
+# IPC dependent examples which should be built after all examples are completed
+ipc_DUP_EXAMPLE_LIST =
+
 #
 # IPC Modules
 #
@@ -259,8 +262,7 @@ export ipc_perf_test_BOARDLIST
 ipc_perf_test_$(SOC)_CORELIST = $(drvipc_$(SOC)_CORELIST)
 export ipc_perf_test_$(SOC)_CORELIST
 ipc_EXAMPLE_LIST += ipc_perf_test
-ipc_perf_test_SBL_APPIMAGEGEN = yes
-export ipc_per_test_SBL_APPIMAGEGEN
+export ipc_perf_test_SBL_APPIMAGEGEN = yes
 
 # Multicore IPC performance test
 ipc_multicore_perf_test_COMP_LIST = ipc_multicore_perf_test
@@ -285,7 +287,7 @@ ipc_multicore_perf_test_BOARDLIST = $(drvipc_BOARDLIST)
 export ipc_multicore_perf_test_BOARDLIST
 ipc_multicore_perf_test_$(SOC)_CORELIST := $(drvipc_$(SOC)_LASTCORE)
 export ipc_multicore_perf_test_$(SOC)_CORELIST
-ipc_EXAMPLE_LIST += ipc_multicore_perf_test
+ipc_DUP_EXAMPLE_LIST += ipc_multicore_perf_test
 ipc_multicore_perf_test_SBL_APPIMAGEGEN = no
 export ipc_multicore_perf_test_SBL_APPIMAGEGEN
 
@@ -310,8 +312,10 @@ ipc_EXAMPLE_LIST += ex04_linux_baremetal_2core_echo_test
 
 export ipc_LIB_LIST
 export ipc_EXAMPLE_LIST
+export ipc_DUP_EXAMPLE_LIST
 export drvipc_LIB_LIST = $(ipc_LIB_LIST)
 export drvipc_EXAMPLE_LIST  = $(ipc_EXAMPLE_LIST)
+export drvipc_DUP_EXAMPLE_LIST  = $(ipc_DUP_EXAMPLE_LIST)
 
 IPC_CFLAGS =
 

@@ -87,7 +87,6 @@ endif
 
 DEFAULT_$(SOC)_CORELIST = $(filter-out $(DEFAULT_CORELIST_EXCLUDE_CORES), $(CORE_LIST_$(SOC)))
 
-
 # Core types (without the core IDs). This will be used to parse and order the establish the order of cores
 # in the case of building libraries for multiple cores
 
@@ -392,6 +391,9 @@ ifneq ($(ipc_APP_LIB_LIST),)
 endif
 ifneq ($(ipc_EXAMPLE_LIST),)
   pdk_EXAMPLE_LIST += $(ipc_EXAMPLE_LIST)
+endif
+ifneq ($(ipc_DUP_EXAMPLE_LIST),)
+  pdk_DUP_EXAMPLE_LIST += $(ipc_DUP_EXAMPLE_LIST)
 endif
 
 # - used to ignore include if component not present

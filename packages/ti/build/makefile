@@ -73,6 +73,7 @@ FINAL_APP_LIB_LIST_CLEAN = $(addsuffix _clean, $(FINAL_APP_LIB_LIST))
 FINAL_EXAMPLE_LIST_CLEAN = $(addsuffix _clean, $(FINAL_EXAMPLE_LIST))
 FINAL_FIRM_LIST_CLEAN = $(addsuffix _clean, $(FINAL_FIRM_LIST))
 FINAL_DUP_EXAMPLE_LIST_CLEAN = $(addsuffix _clean, $(FINAL_DUP_EXAMPLE_LIST))
+FINAL_DUP_EXAMPLE_LIST_PACKAGE = $(addsuffix _package, $(FINAL_DUP_EXAMPLE_LIST))
 FINAL_PKG_LIST_PACKAGE = $(addsuffix _package, $(FINAL_PKG_LIST_ALL))
 FINAL_PKG_LIST_ALL_CLEAN = $(addsuffix _clean, $(FINAL_PKG_LIST_ALL))
 
@@ -126,7 +127,8 @@ all_apps: all_libs
 
 all_libs: pdk_libs pdk_app_libs firm
 
-all_apps_core: pdk_examples pdk_dup_apps
+all_apps_core: pdk_examples
+	$(MAKE) pdk_dup_apps
 
 version:
 	$(ECHO) ------------------------------------------------------
@@ -171,7 +173,7 @@ all_libs_clean:
 	$(RM) -rf ../*/*/*/lib
 	$(RM) -rf ../*/*/*/*/lib
 
-package: $(FINAL_PKG_LIST_PACKAGE)
+package: $(FINAL_PKG_LIST_PACKAGE) $(FINAL_DUP_EXAMPLE_LIST_PACKAGE)
 
 help:
 	$(ECHO) ------------------------------------------------------
@@ -221,6 +223,11 @@ allcores:
 allcores_clean:
 	$(foreach current_core, $(CORE_LIST_ALL),\
 	$(MAKE) clean CORE=$(current_core) BOARD=$(BOARD) BUILD_PROFILE_$(current_core)=$(BUILD_PROFILE);\
+	)
+
+allcores_package:
+	$(foreach current_core, $(CORE_LIST_ALL),\
+	$(MAKE) package CORE=$(current_core) BOARD=$(BOARD) BUILD_PROFILE_$(current_core)=$(BUILD_PROFILE);\
 	)
 
 allboards:
@@ -298,7 +305,7 @@ lib: pdk_libs
 apps: examples
 app_libs: pdk_app_libs
 
-xdc_meta: 
+xdc_meta:
 	$(XDC) XDCBUILDCFG=config_mk.bld
 
 xdc_meta_clean:
@@ -322,7 +329,7 @@ endif
 
 tar: lib firm xdc_meta doxygen
 	$(ECHO) Creating the Release Tar ball for $(COMP)...
-	$(XDC) clean   XDCBUILDCFG=config_mk.bld	
+	$(XDC) clean   XDCBUILDCFG=config_mk.bld
 	$(XDC) release XDCBUILDCFG=config_mk.bld
 	$(ECHO) please check $(COMP)/packages folder for the release tarball
 
@@ -366,7 +373,7 @@ $(FINAL_PKG_LIST_ALL_CLEAN) $(FINAL_DUP_EXAMPLE_LIST_CLEAN):
 	$(if $(filter $(BOARD), $(subst emptyreplacement,,$($(subst _clean,,$@)_BOARDLIST))),\
 	        $(MAKE) -C $($(subst _clean,,$@)_PATH) $($(subst _clean,,$@)_MAKEFILE) clean,))
 
-$(FINAL_PKG_LIST_PACKAGE):
+$(FINAL_PKG_LIST_PACKAGE) $(FINAL_DUP_EXAMPLE_LIST_PACKAGE):
 	$(if $(filter $(SOC), $(subst emptyreplacement,,$($(subst _package,,$@)_SOCLIST))),\
 	        $(MAKE) -C $($(subst _package,,$@)_PATH) $($(subst _package,,$@)_MAKEFILE) package,\
 	$(if $(filter $(BOARD), $(subst emptyreplacement,,$($(subst _package,,$@)_BOARDLIST))),\
