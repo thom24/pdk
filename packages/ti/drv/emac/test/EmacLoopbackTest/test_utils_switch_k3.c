@@ -2350,5 +2350,11 @@ int32_t app_test_setup_default_settings()
     return retVal;
 }
 
-
+void app_output_log(Char* str, UInt numChar)
+{
+    if (numChar > 0)
+    {
+        UART_printf(str);
+    }
+}
 
