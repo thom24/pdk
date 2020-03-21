@@ -67,6 +67,21 @@ extern "C" {
 *      Max number of BC/MC packets blocked expressed as a percentage
 */
 #define MAX_PERCENTAGE    50
+/**
+* @def BC_STORM_PREVENTION
+*      flag indicating the settings should be done broadcast traffic
+*/
+#define BC_STORM_PREVENTION  0
+/**
+* @def MC_STORM_PREVENTION
+*      flag indicating the settings should be done multicast traffic
+*/
+#define MC_STORM_PREVENTION  1
+/**
+* @def UC_STORM_PREVENTION
+*      flag indicating the settings should be done unicast traffic
+*/
+#define UC_STORM_PREVENTION  2
 
 
 /**
@@ -74,55 +89,85 @@ extern "C" {
  */
 typedef struct {
     /** enable/disable storm prevention*/
-    uint16_t suppressionEnabled;
+    uint16_t suppressionEnabledBC;
+    uint16_t suppressionEnabledMC;
+    uint16_t suppressionEnabledUC;
     /** Number of packets allowed in a time interval*/
-    uint16_t credits;
+    uint16_t creditsBC;
+    uint16_t creditsMC;
+    uint16_t creditsUC;
 } stormPrevention_t;
 
 /**
 * @brief Initialize Storm Prevention
 * @param portnum Port Number
 * @param icssEmacHandle Pointer to ICSS EMAC Handle
+* @param spType storm prevention type, weather BC/MC/UC
 * @retval none
 */
-void ICSS_EmacInitStormPreventionTable(uint8_t portnum, ICSS_EmacHandle icssEmacHandle);
+void ICSS_EmacInitStormPreventionTable(uint8_t portnum, ICSS_EmacHandle icssEmacHandle, uint8_t spType);
 /**
 * @brief Disable Storm Prevention for a particular port
 * @param portnum  Port number for which Storm Prevention must be disabled
 * @param icssEmacHandle Pointer to ICSS EMAC Handle
+* @param spType storm prevention type, weather BC/MC/UC
 * @retval none
 */
-void ICSS_EmacDisableStormPrevention(uint8_t portnum, ICSS_EmacHandle icssEmacHandle);
+void ICSS_EmacDisableStormPrevention(uint8_t portnum, ICSS_EmacHandle icssEmacHandle, uint8_t spType);
 
 /**
 * @brief   Set the credit value for broadcast packets used in storm prevention
 *
 * @param creditValue number of packets allowed in a given time
 * @param stormPrevPtr Pointer to Storm Prevention member instance for that port
+* @param spType storm prevention type, weather BC/MC/UC
 *
 * @retval none
 */
-void setCreditValue(uint16_t creditValue, stormPrevention_t* stormPrevPtr);
+void setCreditValue(uint16_t creditValue, stormPrevention_t* stormPrevPtr, uint8_t spType);
 
 /**
 * @brief Enable Storm Prevention for a particular port
 * @param portnum  Port number for which Storm Prevention must be disabled
 * @param icssEmacHandle Pointer to ICSS EMAC Handle
+* @param spType storm prevention type, weather BC/MC/UC
 * @retval none
 */
-void ICSS_EmacEnableStormPrevention(uint8_t portnum, ICSS_EmacHandle icssEmacHandle);
+void ICSS_EmacEnableStormPrevention(uint8_t portnum, ICSS_EmacHandle icssEmacHandle, uint8_t spType);
 
 
 /**
 * @brief   Reset the credits at the end of time period, this time period is common to both broadcast and multicast packets
 * @param icssEmacHandle Pointer to ICSS EMAC Handle
+* @param spType storm prevention type, weather BC/MC/UC
 * @retval none
 */
-void ICSS_EmacResetStormPreventionCounter(ICSS_EmacHandle icssEmacHandle);
+void ICSS_EmacResetStormPreventionCounter(ICSS_EmacHandle icssEmacHandle, uint8_t spType);
 
-
+/**
+* @brief   Sets the stormPreventionOffset, suppressionEnabled and creditsPtr depending on storm prevention type
+*
+* @param stormPreventionOffsetPtr pointer to storm prevention offset
+* @param suppressionEnabledPtr pointer to stoprt prevention enbled/disabled info
+* @param creditsPtr pointer to credits for storm prevention
+* @param spType storm prevention type, weather BC/MC/UC
+* @param icssEmacHandle emac handle
+* @param stormPrevPtr storm prevention pointer
+*
+* @retval none
+*/
+void checkStormPreventionType(uint32_t** stormPreventionOffsetPtr, uint16_t** suppressionEnabledPtr, uint16_t** creditsPtr, uint8_t spType,  ICSS_EmacHandle icssEmacHandle, stormPrevention_t* stormPrevPtr);
 #ifdef __cplusplus
 }
 #endif
 
+/**
+* @brief   byte byy byte memcpy
+*
+* @param dst_ptr pointer of destination
+* @param src_ptr pointer of destination
+*
+* @retval none
+*/
+void byteCopy(uint8_t* dst_ptr, uint8_t* src_ptr, uint32_t size_bytes);
 #endif /* _ICSS_EMAC_STORMCONTROL_H_ */

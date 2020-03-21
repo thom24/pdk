@@ -349,7 +349,7 @@ typedef struct ICSS_EmacFwStaticMmap_s {
     uint32_t futureFeatureOffset;           /* Offset reserved for enhance features, future use*/
     uint32_t statisticsOffset;              /* Statistics offset */
     uint32_t statisticsSize;                /* Statistics block size */
-    uint32_t stormPreventionOffset;         /* Storm prevention offset */
+    uint32_t stormPreventionOffsetBC;         /* Storm prevention offset */
     uint32_t phySpeedOffset;                /* Phy Speed Offset */
     uint32_t portStatusOffset;              /* Port Status Offset */
     uint32_t portControlAddr;               /* Port Control Addr offset */

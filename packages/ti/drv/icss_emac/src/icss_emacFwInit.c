@@ -1653,20 +1653,80 @@ int8_t ICSS_EmacIoctl(ICSS_EmacHandle icssEmacHandle, uint32_t ioctlCommand, uin
             {
                 switch(ioctlCmd->command) {
                     case ICSS_EMAC_STORM_PREV_CTRL_ENABLE:
-                        ICSS_EmacEnableStormPrevention(portNo, icssEmacHandle);
-                        setCreditValue((*((uint16_t *)ioctlData)), (stormPrevention_t*)(((ICSS_EmacObject*)icssEmacHandle->object)->stormPrevPtr));
+                        ICSS_EmacEnableStormPrevention(portNo, icssEmacHandle, BC_STORM_PREVENTION);
+                        setCreditValue((*((uint16_t *)ioctlData)), ((stormPrevention_t*)(((ICSS_EmacObject*)icssEmacHandle->object)->stormPrevPtr)), BC_STORM_PREVENTION);
+                        ICSS_EmacEnableStormPrevention(portNo, icssEmacHandle, MC_STORM_PREVENTION);
+                        setCreditValue((*((uint16_t *)ioctlData)), ((stormPrevention_t*)(((ICSS_EmacObject*)icssEmacHandle->object)->stormPrevPtr)), MC_STORM_PREVENTION);
+                        ICSS_EmacEnableStormPrevention(portNo, icssEmacHandle, UC_STORM_PREVENTION);
+                        setCreditValue((*((uint16_t *)ioctlData)), ((stormPrevention_t*)(((ICSS_EmacObject*)icssEmacHandle->object)->stormPrevPtr)), UC_STORM_PREVENTION);
                         break;
                     case ICSS_EMAC_STORM_PREV_CTRL_DISABLE:
-                        ICSS_EmacDisableStormPrevention(portNo, icssEmacHandle);
+                        ICSS_EmacDisableStormPrevention(portNo, icssEmacHandle, BC_STORM_PREVENTION);
+                        ICSS_EmacDisableStormPrevention(portNo, icssEmacHandle, MC_STORM_PREVENTION);
+                        ICSS_EmacDisableStormPrevention(portNo, icssEmacHandle, UC_STORM_PREVENTION);
                         break;
                     case ICSS_EMAC_STORM_PREV_CTRL_SET_CREDITS:
-                        setCreditValue((*((uint16_t *)ioctlData)), (stormPrevention_t*)(((ICSS_EmacObject*)icssEmacHandle->object)->stormPrevPtr));
+                        setCreditValue((*((uint16_t *)ioctlData)), ((stormPrevention_t*)(((ICSS_EmacObject*)icssEmacHandle->object)->stormPrevPtr)), BC_STORM_PREVENTION);
+                        setCreditValue((*((uint16_t *)ioctlData)), ((stormPrevention_t*)(((ICSS_EmacObject*)icssEmacHandle->object)->stormPrevPtr)), MC_STORM_PREVENTION);
+                        setCreditValue((*((uint16_t *)ioctlData)), ((stormPrevention_t*)(((ICSS_EmacObject*)icssEmacHandle->object)->stormPrevPtr)), UC_STORM_PREVENTION);
                         break;
                     case ICSS_EMAC_STORM_PREV_CTRL_INIT:
-                        ICSS_EmacInitStormPreventionTable(portNo, icssEmacHandle);
+                        ICSS_EmacInitStormPreventionTable(portNo, icssEmacHandle, BC_STORM_PREVENTION);
+                        ICSS_EmacInitStormPreventionTable(portNo, icssEmacHandle, MC_STORM_PREVENTION);
+                        ICSS_EmacInitStormPreventionTable(portNo, icssEmacHandle, UC_STORM_PREVENTION);
                         break;
                     case ICSS_EMAC_STORM_PREV_CTRL_RESET:
-                        ICSS_EmacResetStormPreventionCounter(icssEmacHandle);
+                        ICSS_EmacResetStormPreventionCounter(icssEmacHandle, BC_STORM_PREVENTION);
+                        ICSS_EmacResetStormPreventionCounter(icssEmacHandle, MC_STORM_PREVENTION);
+                        ICSS_EmacResetStormPreventionCounter(icssEmacHandle, UC_STORM_PREVENTION);
+                        break;
+                    case ICSS_EMAC_STORM_PREV_CTRL_ENABLE_BC:
+                        ICSS_EmacEnableStormPrevention(portNo, icssEmacHandle, BC_STORM_PREVENTION);
+                        setCreditValue((*((uint16_t *)ioctlData)), ((stormPrevention_t*)(((ICSS_EmacObject*)icssEmacHandle->object)->stormPrevPtr)), BC_STORM_PREVENTION);
+                        break;
+                    case ICSS_EMAC_STORM_PREV_CTRL_DISABLE_BC:
+                        ICSS_EmacDisableStormPrevention(portNo, icssEmacHandle, BC_STORM_PREVENTION);
+                        break;
+                    case ICSS_EMAC_STORM_PREV_CTRL_SET_CREDITS_BC:
+                        setCreditValue((*((uint16_t *)ioctlData)), ((stormPrevention_t*)(((ICSS_EmacObject*)icssEmacHandle->object)->stormPrevPtr)), BC_STORM_PREVENTION);
+                        break;
+                    case ICSS_EMAC_STORM_PREV_CTRL_INIT_BC:
+                        ICSS_EmacInitStormPreventionTable(portNo, icssEmacHandle, BC_STORM_PREVENTION);
+                        break;
+                    case ICSS_EMAC_STORM_PREV_CTRL_RESET_BC:
+                        ICSS_EmacResetStormPreventionCounter(icssEmacHandle, BC_STORM_PREVENTION);
+                        break;
+                    case ICSS_EMAC_STORM_PREV_CTRL_ENABLE_MC:
+                        ICSS_EmacEnableStormPrevention(portNo, icssEmacHandle, MC_STORM_PREVENTION);
+                        setCreditValue((*((uint16_t *)ioctlData)), ((stormPrevention_t*)(((ICSS_EmacObject*)icssEmacHandle->object)->stormPrevPtr)), MC_STORM_PREVENTION);
+                        break;
+                    case ICSS_EMAC_STORM_PREV_CTRL_DISABLE_MC:
+                        ICSS_EmacDisableStormPrevention(portNo, icssEmacHandle, MC_STORM_PREVENTION);
+                        break;
+                    case ICSS_EMAC_STORM_PREV_CTRL_SET_CREDITS_MC:
+                        setCreditValue((*((uint16_t *)ioctlData)), ((stormPrevention_t*)(((ICSS_EmacObject*)icssEmacHandle->object)->stormPrevPtr)), MC_STORM_PREVENTION);
+                        break;
+                    case ICSS_EMAC_STORM_PREV_CTRL_INIT_MC:
+                        ICSS_EmacInitStormPreventionTable(portNo, icssEmacHandle, MC_STORM_PREVENTION);
+                        break;
+                    case ICSS_EMAC_STORM_PREV_CTRL_RESET_MC:
+                        ICSS_EmacResetStormPreventionCounter(icssEmacHandle, MC_STORM_PREVENTION);
+                        break;
+                    case ICSS_EMAC_STORM_PREV_CTRL_ENABLE_UC:
+                        ICSS_EmacEnableStormPrevention(portNo, icssEmacHandle, UC_STORM_PREVENTION);
+                        setCreditValue((*((uint16_t *)ioctlData)), ((stormPrevention_t*)(((ICSS_EmacObject*)icssEmacHandle->object)->stormPrevPtr)), UC_STORM_PREVENTION);
+                        break;
+                    case ICSS_EMAC_STORM_PREV_CTRL_DISABLE_UC:
+                        ICSS_EmacDisableStormPrevention(portNo, icssEmacHandle, UC_STORM_PREVENTION);
+                        break;
+                    case ICSS_EMAC_STORM_PREV_CTRL_SET_CREDITS_UC:
+                        setCreditValue((*((uint16_t *)ioctlData)), ((stormPrevention_t*)(((ICSS_EmacObject*)icssEmacHandle->object)->stormPrevPtr)), UC_STORM_PREVENTION);
+                        break;
+                    case ICSS_EMAC_STORM_PREV_CTRL_INIT_UC:
+                        ICSS_EmacInitStormPreventionTable(portNo, icssEmacHandle, UC_STORM_PREVENTION);
+                        break;
+                    case ICSS_EMAC_STORM_PREV_CTRL_RESET_UC:
+                        ICSS_EmacResetStormPreventionCounter(icssEmacHandle, UC_STORM_PREVENTION);
                         break;
                     default:
                         retVal = -((int8_t)1);

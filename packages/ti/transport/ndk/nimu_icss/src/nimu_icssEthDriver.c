@@ -579,22 +579,44 @@ void NIMU_ICSS_pktPoll( NIMU_IcssPdInfo *pi, uint32_t fTimerTick )
             }
         }
 
-        ioctlParams.command = ICSS_EMAC_STORM_PREV_CTRL_RESET;
+        
         /*Reset the credit values used for Storm prevention*/
         if(ICSS_EMAC_MODE_SWITCH == ((ICSS_EmacObject*)(pi->nimuDrvHandle)->object)->emacInitcfg->portMask)
         {
             strmPreventionEnable1 = (stormPrevention_t*)(((ICSS_EmacObject*)(pi->nimuDrvHandle)->object)->stormPrevPtr);
             strmPreventionEnable2 = ((stormPrevention_t*)(((ICSS_EmacObject*)(pi->nimuDrvHandle)->object)->stormPrevPtr)) + 1;
-            if((strmPreventionEnable1->suppressionEnabled) | (strmPreventionEnable2->suppressionEnabled))
+            if((strmPreventionEnable1->suppressionEnabledBC) | (strmPreventionEnable2->suppressionEnabledBC))
             {
+                ioctlParams.command = ICSS_EMAC_STORM_PREV_CTRL_RESET_BC;
+                ICSS_EmacIoctl(pi->nimuDrvHandle, ICSS_EMAC_IOCTL_STORM_PREV_CTRL, 0, (void*)&ioctlParams);
+            }
+            if((strmPreventionEnable1->suppressionEnabledMC) | (strmPreventionEnable2->suppressionEnabledMC))
+            {
+                ioctlParams.command = ICSS_EMAC_STORM_PREV_CTRL_RESET_MC;
+                ICSS_EmacIoctl(pi->nimuDrvHandle, ICSS_EMAC_IOCTL_STORM_PREV_CTRL, 0, (void*)&ioctlParams);
+            }
+            if((strmPreventionEnable1->suppressionEnabledUC) | (strmPreventionEnable2->suppressionEnabledUC))
+            {
+                ioctlParams.command = ICSS_EMAC_STORM_PREV_CTRL_RESET_UC;
                 ICSS_EmacIoctl(pi->nimuDrvHandle, ICSS_EMAC_IOCTL_STORM_PREV_CTRL, 0, (void*)&ioctlParams);
             }
         }
         else
         {
-            strmPreventionEnable1 = (stormPrevention_t*)(((ICSS_EmacObject*)(pi->nimuDrvHandle)->object)->stormPrevPtr);
-            if(strmPreventionEnable1->suppressionEnabled)
+            strmPreventionEnable1 = (stormPrevention_t*)(((ICSS_EmacObject*)(pi->nimuDrvHandle)->object)->stormPrevPtr);         
+            if(strmPreventionEnable1->suppressionEnabledBC)
             {
+                ioctlParams.command = ICSS_EMAC_STORM_PREV_CTRL_RESET_BC;
+                ICSS_EmacIoctl(pi->nimuDrvHandle, ICSS_EMAC_IOCTL_STORM_PREV_CTRL, (uint8_t)(pi->PhysIdx + 1U), (void*)&ioctlParams);
+            }           
+            if(strmPreventionEnable1->suppressionEnabledMC)
+            {
+                ioctlParams.command = ICSS_EMAC_STORM_PREV_CTRL_RESET_MC;
+                ICSS_EmacIoctl(pi->nimuDrvHandle, ICSS_EMAC_IOCTL_STORM_PREV_CTRL, (uint8_t)(pi->PhysIdx + 1U), (void*)&ioctlParams);
+            }
+            if(strmPreventionEnable1->suppressionEnabledUC)
+            {
+                ioctlParams.command = ICSS_EMAC_STORM_PREV_CTRL_RESET_UC;
                 ICSS_EmacIoctl(pi->nimuDrvHandle, ICSS_EMAC_IOCTL_STORM_PREV_CTRL, (uint8_t)(pi->PhysIdx + 1U), (void*)&ioctlParams);
             }
         }

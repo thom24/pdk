@@ -77,6 +77,37 @@ typedef struct ICSSEMAC_IoctlCmd_s {
 #define ICSS_EMAC_STORM_PREV_CTRL_INIT                      (3u)
 /**IOCTL Storm Control reset command */
 #define ICSS_EMAC_STORM_PREV_CTRL_RESET                     (4u)
+/**IOCTL Storm Control Enable command for BC traffic*/
+#define ICSS_EMAC_STORM_PREV_CTRL_ENABLE_BC                 (5u)
+/**IOCTL Storm Control Disable command for BC traffic*/
+#define ICSS_EMAC_STORM_PREV_CTRL_DISABLE_BC                (6u)
+/**IOCTL Storm Control set credit command for BC traffic*/
+#define ICSS_EMAC_STORM_PREV_CTRL_SET_CREDITS_BC            (7u)
+/**IOCTL Storm Control initialize command for BC traffic*/
+#define ICSS_EMAC_STORM_PREV_CTRL_INIT_BC                   (8u)
+/**IOCTL Storm Control reset command for BC traffic*/
+#define ICSS_EMAC_STORM_PREV_CTRL_RESET_BC                  (9u)
+/**IOCTL Storm Control Enable command for MC traffic*/
+#define ICSS_EMAC_STORM_PREV_CTRL_ENABLE_MC                 (10u)
+/**IOCTL Storm Control Disable command for MC traffic*/
+#define ICSS_EMAC_STORM_PREV_CTRL_DISABLE_MC                (11u)
+/**IOCTL Storm Control set credit command for MC traffic*/
+#define ICSS_EMAC_STORM_PREV_CTRL_SET_CREDITS_MC            (12u)
+/**IOCTL Storm Control initialize command for MC traffic*/
+#define ICSS_EMAC_STORM_PREV_CTRL_INIT_MC                   (13u)
+/**IOCTL Storm Control reset command for MC traffic*/
+#define ICSS_EMAC_STORM_PREV_CTRL_RESET_MC                  (14u)
+/**IOCTL Storm Control Enable command for UC traffic*/
+#define ICSS_EMAC_STORM_PREV_CTRL_ENABLE_UC                 (15u)
+/**IOCTL Storm Control Disable command for UC traffic*/
+#define ICSS_EMAC_STORM_PREV_CTRL_DISABLE_UC                (16u)
+/**IOCTL Storm Control set credit command for UC traffic*/
+#define ICSS_EMAC_STORM_PREV_CTRL_SET_CREDITS_UC            (17u)
+/**IOCTL Storm Control initialize command for UC traffic*/
+#define ICSS_EMAC_STORM_PREV_CTRL_INIT_UC                   (18u)
+/**IOCTL Storm Control reset command for UC traffic*/
+#define ICSS_EMAC_STORM_PREV_CTRL_RESET_UC                  (19u)
+
 
 /** @brief ICSS_EMAC_IOCTL_LEARNING_CTRL options */
 

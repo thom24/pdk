@@ -3360,6 +3360,13 @@ Void ICSS_EMAC_testTaskPruss1(UArg a0, UArg a1)
 #endif
         }
 #endif
+
+/*storm prevention unit tests start*/        
+#ifdef SWITCH_EMAC
+        ICSS_EMAC_testStormPrevention();
+#endif
+/*storm prevention unit tests end*/  
+
 #ifdef SWITCH_EMAC
         if (ICSS_EMAC_testTotalPktRcvd == (2*ICSS_EMAC_TEST_PKT_TX_COUNT * ICSS_EMAC_testLinkUpCount))
         {
@@ -4398,6 +4405,237 @@ void ICSS_EMAC_fwIntrPacingConfig(ICSSEMAC_Handle icssEmacHandle, uint8_t port, 
         *timeOutValuePru1 = timerExpiration;
     }
     
+}
+
+Void ICSS_EMAC_testStormPrevention()
+{
+    uint8_t testPassed = 1;
+    uint32_t value = 0;
+    uint8_t index = 0;
+    ICSSEMAC_IoctlCmd ioctlParams;
+    int8_t ioctlRetVal;
+    uint32_t* stormPreventionOffsetPtrBC[2]= {NULL, NULL};
+    uint32_t* stormPreventionOffsetPtrMC[2]= {NULL, NULL};
+    uint32_t* stormPreventionOffsetPtrUC[2]= {NULL, NULL};
+    stormPrevention_t* stormPrevPtr;
+    ICSS_EmacFwStaticMmap *pStaticMMap = (&((ICSS_EmacObject*)ICSS_EMAC_testHandle1->object)->fwStaticMMap);
+    stormPreventionOffsetPtrBC[0] = (uint32_t*)(((((ICSS_EmacHwAttrs*)ICSS_EMAC_testHandle1->hwAttrs)->emacBaseAddrCfg)->dataRam0BaseAddr + pStaticMMap->stormPreventionOffsetBC));
+    stormPreventionOffsetPtrBC[1] = (uint32_t*)(((((ICSS_EmacHwAttrs*)ICSS_EMAC_testHandle1->hwAttrs)->emacBaseAddrCfg)->dataRam1BaseAddr + pStaticMMap->stormPreventionOffsetBC));
+    stormPreventionOffsetPtrMC[0] = (uint32_t*)(((((ICSS_EmacHwAttrs*)ICSS_EMAC_testHandle1->hwAttrs)->emacBaseAddrCfg)->dataRam0BaseAddr + pStaticMMap->stormPreventionOffsetMC));
+    stormPreventionOffsetPtrMC[1] = (uint32_t*)(((((ICSS_EmacHwAttrs*)ICSS_EMAC_testHandle1->hwAttrs)->emacBaseAddrCfg)->dataRam1BaseAddr + pStaticMMap->stormPreventionOffsetMC));
+    stormPreventionOffsetPtrUC[0] = (uint32_t*)(((((ICSS_EmacHwAttrs*)ICSS_EMAC_testHandle1->hwAttrs)->emacBaseAddrCfg)->dataRam0BaseAddr + pStaticMMap->stormPreventionOffsetUC));
+    stormPreventionOffsetPtrUC[1] = (uint32_t*)(((((ICSS_EmacHwAttrs*)ICSS_EMAC_testHandle1->hwAttrs)->emacBaseAddrCfg)->dataRam1BaseAddr + pStaticMMap->stormPreventionOffsetUC));
+    uint8_t port[] = {ICSS_EMAC_PORT_0, ICSS_EMAC_PORT_1, ICSS_EMAC_PORT_2};
+
+    uint16_t credit = 2000;
+    uint32_t spResetVal = 512001;
+    ioctlParams.ioctlVal = (void*)(&credit);
+    for(index = 1 ; index < 3 ; index++)
+    {
+        stormPrevPtr = (stormPrevention_t*)(((ICSS_EmacObject*)ICSS_EMAC_testHandle1->object)->stormPrevPtr);
+        stormPrevPtr += (port[index] - 1u);
+
+        ioctlParams.command = ICSS_EMAC_STORM_PREV_CTRL_ENABLE_BC;
+        ioctlRetVal = ICSS_EmacIoctl(ICSS_EMAC_testHandle1, ICSS_EMAC_IOCTL_STORM_PREV_CTRL, port[index], (void*)&ioctlParams);
+        if(ioctlRetVal != 0)
+        {
+            PRINT("IOCTL(ICSS_EMAC_STORM_PREV_CTRL_ENABLE_BC) test for SWITCH failed\n");
+            testPassed = 0;
+        }
+        if(stormPrevPtr->suppressionEnabledBC != 1)
+        {
+            PRINT("stormPrevPtr->suppressionEnabledBC != 1 test for SWITCH failed\n");
+            testPassed = 0;
+        }
+        byteCopy((void*)(&value), (void*)(stormPreventionOffsetPtrBC[port[index] -1]), 4);
+        if(value != 1)
+        {
+            PRINT("*(stormPreventionOffsetPtrBC[port[index] -1]) != 1 test for SWITCH failed\n");
+            testPassed = 0;
+        }
+
+        ioctlParams.command = ICSS_EMAC_STORM_PREV_CTRL_DISABLE_BC;
+        ioctlRetVal = ICSS_EmacIoctl(ICSS_EMAC_testHandle1, ICSS_EMAC_IOCTL_STORM_PREV_CTRL, port[index], (void*)&ioctlParams);
+        if(ioctlRetVal != 0)
+        {
+            PRINT("IOCTL(ICSS_EMAC_STORM_PREV_CTRL_DISABLE_BC) test for SWITCH failed\n");
+            testPassed = 0;
+        }
+        if(stormPrevPtr->suppressionEnabledBC != 0)
+        {
+            PRINT("stormPrevPtr->suppressionEnabledBC != 0 test for SWITCH failed\n");
+            testPassed = 0;
+        }
+        byteCopy((void*)(&value), (void*)(stormPreventionOffsetPtrBC[port[index] -1]), 4);
+        if(value != 0)
+        {
+            PRINT("*(stormPreventionOffsetPtrBC[port[index] - 1]) != 0 test for SWITCH failed\n");
+            testPassed = 0;
+        }
+        stormPrevPtr->creditsBC = credit;
+        ioctlParams.command = ICSS_EMAC_STORM_PREV_CTRL_ENABLE_BC;
+        ioctlRetVal = ICSS_EmacIoctl(ICSS_EMAC_testHandle1, ICSS_EMAC_IOCTL_STORM_PREV_CTRL, port[index], (void*)&ioctlParams);
+        ioctlParams.command = ICSS_EMAC_STORM_PREV_CTRL_RESET_BC;
+        ioctlRetVal = ICSS_EmacIoctl(ICSS_EMAC_testHandle1, ICSS_EMAC_IOCTL_STORM_PREV_CTRL, port[index], (void*)&ioctlParams);
+        if(ioctlRetVal != 0)
+        {
+            PRINT("IOCTL(ICSS_EMAC_STORM_PREV_CTRL_RESET_BC) test for SWITCH failed\n");
+            testPassed = 0;
+        }
+        if(stormPrevPtr->suppressionEnabledBC != 1)
+        {
+            PRINT("stormPrevPtr->suppressionEnabledBC != 1 test for SWITCH failed\n");
+            testPassed = 0;
+        }
+        byteCopy((void*)(&value), (void*)(stormPreventionOffsetPtrBC[port[index] -1]), 4);
+        if(value != spResetVal)
+        {
+            PRINT("*(stormPreventionOffsetPtrBC[port[index] - 1]) != 1 test for SWITCH failed, actal value = %d\n", *(stormPreventionOffsetPtrBC[port[index] - 1]));
+            testPassed = 0;
+        }
+    }
+
+    for(index = 1 ; index < 3 ; index++)
+    {
+        stormPrevention_t* stormPrevPtr = (stormPrevention_t*)(((ICSS_EmacObject*)ICSS_EMAC_testHandle1->object)->stormPrevPtr);
+        stormPrevPtr += (port[index] - 1u);
+
+        ioctlParams.command = ICSS_EMAC_STORM_PREV_CTRL_ENABLE_MC;
+        ioctlRetVal = ICSS_EmacIoctl(ICSS_EMAC_testHandle1, ICSS_EMAC_IOCTL_STORM_PREV_CTRL, port[index], (void*)&ioctlParams);
+        if(ioctlRetVal != 0)
+        {
+            PRINT("IOCTL(ICSS_EMAC_STORM_PREV_CTRL_ENABLE_MC) test for SWITCH failed\n");
+            testPassed = 0;
+        }
+        if(stormPrevPtr->suppressionEnabledMC != 1)
+        {
+            PRINT("stormPrevPtr->suppressionEnabledMC != 1 test for SWITCH failed\n");
+            testPassed = 0;
+        }
+        byteCopy((void*)(&value), (void*)(stormPreventionOffsetPtrMC[port[index] -1]), 4);
+        if(value != 1)
+        {
+            PRINT("*(stormPreventionOffsetPtrMC[port[index] -1]) test for SWITCH failed\n");
+            testPassed = 0;
+        }
+
+        ioctlParams.command = ICSS_EMAC_STORM_PREV_CTRL_DISABLE_MC;
+        ioctlRetVal = ICSS_EmacIoctl(ICSS_EMAC_testHandle1, ICSS_EMAC_IOCTL_STORM_PREV_CTRL, port[index], (void*)&ioctlParams);
+        if(ioctlRetVal != 0)
+        {
+            PRINT("IOCTL(ICSS_EMAC_STORM_PREV_CTRL_DISABLE_MC) test for SWITCH failed\n");
+            testPassed = 0;
+        }
+        if(stormPrevPtr->suppressionEnabledMC != 0)
+        {
+            PRINT("stormPrevPtr->suppressionEnabledMC != 0 test for SWITCH failed\n");
+            testPassed = 0;
+        }
+        byteCopy((void*)(&value), (void*)(stormPreventionOffsetPtrMC[port[index] -1]), 4);
+        if(value != 0)
+        {
+            PRINT("*(stormPreventionOffsetPtrMC[port[index] - 1]) != 0 test for SWITCH failed\n");
+            testPassed = 0;
+        }
+        stormPrevPtr->creditsMC = credit;
+        ioctlParams.command = ICSS_EMAC_STORM_PREV_CTRL_ENABLE_MC;
+        ioctlRetVal = ICSS_EmacIoctl(ICSS_EMAC_testHandle1, ICSS_EMAC_IOCTL_STORM_PREV_CTRL, port[index], (void*)&ioctlParams);
+        ioctlParams.command = ICSS_EMAC_STORM_PREV_CTRL_RESET_MC;
+        ioctlRetVal = ICSS_EmacIoctl(ICSS_EMAC_testHandle1, ICSS_EMAC_IOCTL_STORM_PREV_CTRL, port[index], (void*)&ioctlParams);
+        if(ioctlRetVal != 0)
+        {
+            PRINT("IOCTL(ICSS_EMAC_STORM_PREV_CTRL_RESET_MC) test for SWITCH failed\n");
+            testPassed = 0;
+        }
+        if(stormPrevPtr->suppressionEnabledMC != 1)
+        {
+            PRINT("stormPrevPtr->suppressionEnabledMC != 1 test for SWITCH failed\n");
+            testPassed = 0;
+        }
+        byteCopy((void*)(&value), (void*)(stormPreventionOffsetPtrMC[port[index] -1]), 4);
+        if(value != spResetVal)
+        {
+            PRINT("*(stormPreventionOffsetPtrMC[port[index] - 1]) != 1 test for SWITCH failed\n");
+            testPassed = 0;
+        }
+    }
+    for(index = 1 ; index < 3 ; index++)
+    {
+        stormPrevention_t* stormPrevPtr = (stormPrevention_t*)(((ICSS_EmacObject*)ICSS_EMAC_testHandle1->object)->stormPrevPtr);
+        stormPrevPtr += (port[index] - 1u);
+
+        ioctlParams.command = ICSS_EMAC_STORM_PREV_CTRL_ENABLE_UC;
+        ioctlRetVal = ICSS_EmacIoctl(ICSS_EMAC_testHandle1, ICSS_EMAC_IOCTL_STORM_PREV_CTRL, port[index], (void*)&ioctlParams);
+        if(ioctlRetVal != 0)
+        {
+            PRINT("IOCTL(ICSS_EMAC_STORM_PREV_CTRL_ENABLE_UC) test for SWITCH failed\n");
+            testPassed = 0;
+        }
+        if(stormPrevPtr->suppressionEnabledUC != 1)
+        {
+            PRINT("stormPrevPtr->suppressionEnabledUC != 1 test for SWITCH failed\n");
+            testPassed = 0;
+        }
+        byteCopy((void*)(&value), (void*)(stormPreventionOffsetPtrUC[port[index] -1]), 4);
+        if(value != 1)
+        {
+            PRINT("*(stormPreventionOffsetPtrUC[port[index] -1]) != 1 test for SWITCH failed\n");
+            testPassed = 0;
+        }
+
+        ioctlParams.command = ICSS_EMAC_STORM_PREV_CTRL_DISABLE_UC;
+        ioctlRetVal = ICSS_EmacIoctl(ICSS_EMAC_testHandle1, ICSS_EMAC_IOCTL_STORM_PREV_CTRL, port[index], (void*)&ioctlParams);
+        if(ioctlRetVal != 0)
+        {
+            PRINT("IOCTL(ICSS_EMAC_STORM_PREV_CTRL_DISABLE_UC) test for SWITCH failed\n");
+            testPassed = 0;
+        }
+        if(stormPrevPtr->suppressionEnabledUC != 0)
+        {
+            PRINT("stormPrevPtr->suppressionEnabledUC != 0 test for SWITCH failed\n");
+            testPassed = 0;
+        }
+        byteCopy((void*)(&value), (void*)(stormPreventionOffsetPtrUC[port[index] -1]), 4);
+        if(value != 0)
+        {
+            PRINT("*(stormPreventionOffsetPtrUC[port[index] - 1]) != 0 test for SWITCH failed\n");
+            testPassed = 0;
+        }
+        stormPrevPtr->creditsUC = credit;
+        ioctlParams.command = ICSS_EMAC_STORM_PREV_CTRL_ENABLE_UC;
+        ioctlRetVal = ICSS_EmacIoctl(ICSS_EMAC_testHandle1, ICSS_EMAC_IOCTL_STORM_PREV_CTRL, port[index], (void*)&ioctlParams);
+        ioctlParams.command = ICSS_EMAC_STORM_PREV_CTRL_RESET_UC;
+        ioctlRetVal = ICSS_EmacIoctl(ICSS_EMAC_testHandle1, ICSS_EMAC_IOCTL_STORM_PREV_CTRL, port[index], (void*)&ioctlParams);
+        if(ioctlRetVal != 0)
+        {
+            PRINT("IOCTL(ICSS_EMAC_STORM_PREV_CTRL_RESET_UC) test for SWITCH failed\n");
+            testPassed = 0;
+        }
+        if(stormPrevPtr->suppressionEnabledUC != 1)
+        {
+            PRINT("stormPrevPtr->suppressionEnabledUC != 1\n");
+            testPassed = 0;
+        }
+        byteCopy((void*)(&value), (void*)(stormPreventionOffsetPtrUC[port[index] -1]), 4);
+        if(value != spResetVal)
+        {
+            PRINT("*(stormPreventionOffsetPtrUC[port[index] - 1]) != 1\n");
+            testPassed = 0;
+        }
+    }
+
+    if (testPassed == 0)
+    {
+        while(1)
+        {
+            PRINT("IOCTL test for SWITCH failed\n");
+            Task_sleep(100);
+        }
+    }
+    else
+    {
+        PRINT("IOCTL test for SWITCH passed\n");
+    }
 }
 
 #ifdef am65xx_evm
