@@ -36,28 +36,25 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-/** @defgroup MEMORYP_OSAL      MemoryP OSAL Porting Layer
- *
- *  @brief      Memory Management Module for the RTOS Porting Interface
- *
- *  The MemoryP module allows application to perform memory allocation
- *  and cleanup. The module provides seperate API for:-
- *  - Data Buffer
- *  - Control Buffer
- *
- *  On systems with different memories applications could port the data
- *  buffers to be allocated from fast memory while control buffers could
- *  be allocated from slower memories.
- */
-#ifndef ti_drivers_ports_MemoryP__include
-#define ti_drivers_ports_MemoryP__include
-
 /**
-@defgroup MEMORYP_OSAL_EXTERNAL_FUNCTION            MemoryP OSAL External Functions
-@ingroup MEMORYP_OSAL
-@brief
-* The section documents the external API exposed by the OSAL Porting layer.
-*/
+ *  \ingroup DRV_OSAL_MODULE
+ *  \defgroup DRV_OSAL_MemoryP MemoryP
+ *            MemoryP interface
+ *
+ *  @{
+ */
+
+/** ============================================================================
+ *  @file       MemoryP.h
+ *
+ *  @brief      Memory module for the RTOS Porting Interface
+ *
+ *
+ *  ============================================================================
+ */
+ 
+#ifndef ti_osal_MemoryP__include
+#define ti_osal_MemoryP__include
 
 #ifdef __cplusplus
 extern "C" {
@@ -88,8 +85,6 @@ typedef struct
  *  @param  alignment   Requested alignment in bytes
  *
  *  @return Pointer to the allocated memory on success or a NULL on an error
- *
- * \ingroup MEMORYP_OSAL_EXTERNAL_FUNCTION
  */
 extern void* MemoryP_ctrlAlloc(uint32_t size, uint8_t alignment);
 
@@ -100,8 +95,6 @@ extern void* MemoryP_ctrlAlloc(uint32_t size, uint8_t alignment);
  *  @param  size        Size of the memory which is being cleaned up
  *
  *  @return None
- *
- * \ingroup MEMORYP_OSAL_EXTERNAL_FUNCTION
  */
 extern void  MemoryP_ctrlFree(void* ptr, uint32_t size);
 
@@ -112,8 +105,6 @@ extern void  MemoryP_ctrlFree(void* ptr, uint32_t size);
  *  @param  alignment   Requested alignment in bytes
  *
  *  @return Pointer to the allocated memory on success or a NULL on an error
- *
- * \ingroup MEMORYP_OSAL_EXTERNAL_FUNCTION
  */
 extern void* MemoryP_dataAlloc(uint32_t size, uint8_t alignment);
 
@@ -124,8 +115,6 @@ extern void* MemoryP_dataAlloc(uint32_t size, uint8_t alignment);
  *  @param  size        Size of the memory which is being cleaned up
  *
  *  @return None
- *
- * \ingroup MEMORYP_OSAL_EXTERNAL_FUNCTION
  */
 extern void  MemoryP_dataFree(void* ptr, uint32_t size);
 
@@ -135,8 +124,6 @@ extern void  MemoryP_dataFree(void* ptr, uint32_t size);
  *  @param  stats         Pointer to memory stats structure
  *
  *  @return None
- *
- * \ingroup MEMORYP_OSAL_EXTERNAL_FUNCTION
  */
 extern void MemoryP_getStats(MemoryP_Stats *stats);
 
@@ -144,4 +131,5 @@ extern void MemoryP_getStats(MemoryP_Stats *stats);
 }
 #endif
 
-#endif /* ti_drivers_ports_MemoryP__include */
+#endif /* ti_osal_MemoryP__include */
+/* @} */

@@ -29,25 +29,25 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+/**
+ *  \ingroup DRV_OSAL_MODULE
+ *  \defgroup DRV_OSAL_CycleprofilerP CycleprofilerP
+ *            CycleprofilerP interface
+ *
+ *  @{
+ */
+
 /** ============================================================================
- *  @defgroup CYCLEPROFILERP_OSAL     CycleprofilerP OSAL Porting Layer
+ *  @file       CycleprofilerP.h
  *
- *  @brief      Cycle profiler module to measure CPU cycles
+ *  @brief      Cycle profiler module to measure CPU cycles for the RTOS Porting Interface
  *
- *  Cycle profiler module gives APIs that allows a segment of code to be profiled
- *  with the APIs to measure CPU cycles.
+ *
  *  ============================================================================
  */
 
-#ifndef ti_drivers_ports_CycleprofilerP__include
-#define ti_drivers_ports_CycleprofilerP__include
-
-/**
-@defgroup CYCLEPROFILERP_OSAL_EXTERNAL_FUNCTION            CycleprofilerP OSAL External Functions
-@ingroup CYCLEPROFILERP_OSAL
-@brief
-* The section documents the external API exposed by the OSAL Porting layer.
-*/
+#ifndef ti_osal_CycleprofilerP__include
+#define ti_osal_CycleprofilerP__include
 
 #ifdef __cplusplus
 extern "C" {
@@ -59,8 +59,6 @@ extern "C" {
 
 /*!
  *  @brief  Function to initialize cycle profiler
- *
- *  \ingroup CYCLEPROFILERP_OSAL_EXTERNAL_FUNCTION
  */
 extern void CycleprofilerP_init(void);
 
@@ -68,8 +66,6 @@ extern void CycleprofilerP_init(void);
  *  @brief  Function to delete a semaphore.
  *
  *  @return Get CPU cycle count time stamp
- *
- *  \ingroup CYCLEPROFILERP_OSAL_EXTERNAL_FUNCTION
  */
 extern uint32_t CycleprofilerP_getTimeStamp(void);
 
@@ -77,4 +73,5 @@ extern uint32_t CycleprofilerP_getTimeStamp(void);
 }
 #endif
 
-#endif /* ti_drivers_ports_CycleprofilerP__include */
+#endif /* ti_osal_CycleprofilerP__include */
+/* @} */

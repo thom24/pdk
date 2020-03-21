@@ -108,7 +108,7 @@
  */
 
 /**
- *   \file  crc.h
+ *   \file  drv/crc/crc.h
  *
  *   \brief
  *      This is the header file for the CRC driver which exposes the
