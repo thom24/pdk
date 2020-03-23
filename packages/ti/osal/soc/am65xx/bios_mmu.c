@@ -96,6 +96,14 @@ void Osal_initMmuDefault(void)
     Mmu_map(0x70000000U, 0x70000000U, 0x00200000U, &attrs); /* MSMC - 2MB */
     Mmu_map(0x41C00000U, 0x41C00000U, 0x00080000U, &attrs); /* OCMC - 512KB */
 
+    /*
+     * DDR range 0xA2000000 - 0xA2200000 : Used as RAM by multiple
+     * remote cores, no need to mmp_map this range.
+     * IPC VRing Buffer - uncached
+     */
+    attrs.attrIndx =  Mmu_AttrIndx_MAIR4;
+    (void)Mmu_map(0xA2000000U, 0xA2000000U, 0x00200000U, &attrs);
+
     return;
 }
 #endif
