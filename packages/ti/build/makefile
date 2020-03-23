@@ -128,7 +128,7 @@ all_apps: all_libs
 all_libs: pdk_libs pdk_app_libs firm
 
 all_apps_core: pdk_examples
-	$(MAKE) pdk_dup_apps
+	$(MAKE) -f $(PDK_INSTALL_PATH)/ti/build/makefile pdk_dup_apps
 
 version:
 	$(ECHO) ------------------------------------------------------
