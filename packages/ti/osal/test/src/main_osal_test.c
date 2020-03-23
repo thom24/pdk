@@ -1030,6 +1030,82 @@ bool OSAL_semaphore_test()
 }
 
 #ifndef BARE_METAL
+
+/*
+ *  ======== Queue test function ========
+ */
+typedef struct Test_Queue_Buf_s
+{
+    Osal_Queue_Elem lnk;
+    uint32_t        index;
+    uint8_t*        pkt;
+
+} Test_Queue_Buf;
+
+bool OSAL_queue_test()
+{
+    Osal_Queue_Elem queueList;
+    Osal_Queue_Handle   handle;
+    Test_Queue_Buf buf[10], *pBuf;
+    int i;
+
+    Osal_Queue_construct((void *)&queueList, (void *)NULL);
+    handle = Osal_Queue_handle((void *)&queueList);
+
+    if (handle == NULL_PTR)
+    {
+        OSAL_log("Failed to create queue \n");
+        return false;
+    }
+
+    for (i = 0; i < 10; i++)
+    {
+        buf[i].index = (uint32_t)i;
+        buf[i].pkt = NULL;
+    }
+
+    /* Test 1: queue push/pop test */
+    for (i = 0; i < 10; i++)
+    {
+        Osal_Queue_put(handle, (Osal_Queue_Elem *)&buf[i]);
+    }
+
+    for (i = 0; i < 10; i++)
+    {
+        pBuf = (Test_Queue_Buf *)Osal_Queue_get(handle);
+
+        if (pBuf == NULL_PTR)
+        {
+            OSAL_log("Failed to pop queue element %d \n", i);
+            return false;
+        }
+
+        if (pBuf->index != i)
+        {
+            OSAL_log("Pop element %d, but expect %d \n", pBuf->index, i);
+            return false;
+
+        }
+    }
+
+    /* Test 2: queue empty test */
+    if (!Osal_Queue_empty(handle))
+    {
+        OSAL_log("Empty queue check failed\n");
+        return false;
+    }
+
+    pBuf = (Test_Queue_Buf *)Osal_Queue_get(handle);
+
+    if (pBuf != (Test_Queue_Buf *)&queueList)
+    {
+        OSAL_log("Queue is still not empry with element %p handle %p queue struct %p\n", pBuf, handle, &queueList);
+        return false;
+    }
+
+    return true;
+}
+
 volatile bool gFlagSwi;
 void mySwiFxn(uintptr_t arg0, uintptr_t arg1)
 {
@@ -1240,6 +1316,16 @@ void osal_test(UArg arg0, UArg arg1)
     else
     {
         OSAL_log("\n SWI tests have failed. \n");
+        testFail = true;
+    }
+
+    if(OSAL_queue_test() == true)
+    {
+        OSAL_log("\n Queue tests have passed. \n");
+    }
+    else
+    {
+        OSAL_log("\n Queue tests have failed. \n");
         testFail = true;
     }
 #endif

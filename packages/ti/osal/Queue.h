@@ -56,15 +56,16 @@
 extern "C" {
 #endif
 /*!
- *  @brief  Function to write back and invalidate cache lines
+ *  @brief  Queue element
  *
- *  @param  addr  Start address of the cache line/s
- *
- *  @param  size  size (in bytes) of the memory to be written back and invalidate
+ *  Structure that defines a single queue element and/or a list of queue elements
  *
  */
 typedef struct {
+    /*! Pointer to the next queue element */
     struct Osal_QueueElem *next;
+
+    /*! Pointer to the previous queue element */
     struct Osal_QueueElem *prev;
 } Osal_Queue_Elem;
 
@@ -93,7 +94,7 @@ void Osal_Queue_construct(void * structPtr, const  void * queueParams);
 Osal_Queue_Handle Osal_Queue_handle(void *structPtr);
 
 /*!
- *  @brief  Function to empty the queue
+ *  @brief  Function to perform queue empty chcek
  *
  *  @param  queueHandle   The queue handle
  *
