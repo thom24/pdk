@@ -128,7 +128,7 @@ export pruss_$(SOC)_CORELIST
 pruss_indp_COMP_LIST = pruss_indp
 pruss_indp_RELPATH = ti/drv/pruss
 pruss_indp_PATH = $(PDK_PRUSS_COMP_PATH)
-pruss_indp_LIBNAME = ti.drv.pruss.indp
+pruss_indp_LIBNAME = ti.drv.pruss
 export pruss_indp_LIBNAME
 pruss_indp_LIBPATH = $(pruss_indp_PATH)/lib
 export pruss_indp_LIBPATH
