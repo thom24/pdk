@@ -340,9 +340,7 @@ void enableComplianceMode(uint32_t instanceNumber)
     USB_Config* usbConfig = &USB_config[instanceNumber];
     uint32_t baseAddr = 0;
     uint32_t PP = 0, CCS=0, PED=0, PR=0;
-#ifdef _DEBUG_
-    uint32_t PLS=0;
-#endif
+
     baseAddr = XhciRegBaseAddr(instanceNumber); 
 
     if ((instanceNumber == 0) && /* only port #0 supports SS */
@@ -367,12 +365,9 @@ void enableComplianceMode(uint32_t instanceNumber)
         CCS = HW_GET_FIELD(regVal,  DWC_USB_PORTSC2_CCS);
         PED = HW_GET_FIELD(regVal,  DWC_USB_PORTSC2_PED);
         PR  = HW_GET_FIELD(regVal,  DWC_USB_PORTSC2_PR);
-#ifdef _DEBUG_
-        PLS = HW_GET_FIELD(regVal,  DWC_USB_PORTSC2_PLS);
-#endif
 
         debug_printf("PORTSC2 = 0x%x. PP=%d. CCS=%d. PED=%d. PR=%d. PLS=%d\n",
-                      regVal, PP,CCS, PED, PR, PLS);
+                      regVal, PP,CCS, PED, PR, (HW_GET_FIELD(regVal,  DWC_USB_PORTSC2_PLS)));
 
         if ((PP != 1)|| (CCS!=0) || (PED!=0) || (PR!=0) )
         {
@@ -397,6 +392,7 @@ void enableComplianceMode(uint32_t instanceNumber)
 
 #if defined(PRINT_COMPLIANCE_STATUS)
         uint32_t timeOut = 0;
+	uint32_t PLS=0;
 
         /* if required, print to console if we get to compliance state or not
          * for operational confirmation. But we don't want this to interfere

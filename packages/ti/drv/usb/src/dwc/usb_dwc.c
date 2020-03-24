@@ -129,10 +129,10 @@ USB_Handle USB_open_dwc(USB_Handle handle, USB_Params *params)
     usb_osalSemParamsInit(&semParams);
     semParams.mode = SemaphoreP_Mode_BINARY;
 
-    semParams.name = "writeSem";
+    semParams.name = (char *) ("writeSem");
     params->writeSem = usb_osalCreateBlockingLock(0, &semParams);
 
-    semParams.name = "readSem";
+    semParams.name = (char *) ("readSem");
     params->readSem = usb_osalCreateBlockingLock(0, &semParams);
 
     switch (params->usbMode)
