@@ -105,6 +105,7 @@ void ipc_initSciclient()
 
 }
 
+#if !defined(A72_LINUX_OS)
 void ipc_boardInit()
 {
     Board_initCfg           boardCfg;
@@ -114,6 +115,7 @@ void ipc_boardInit()
     Board_init(boardCfg);
 
 }
+#endif
 
 int main(void)
 {
@@ -124,7 +126,9 @@ int main(void)
     /* It must be called before board init */
     ipc_initSciclient();
 
+#if !defined(A72_LINUX_OS)
     ipc_boardInit();
+#endif
 
     Error_init(&eb);
 
