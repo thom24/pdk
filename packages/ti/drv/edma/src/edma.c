@@ -1918,6 +1918,7 @@ int32_t EDMA_close(EDMA_Handle handle)
     int32_t errorCode = EDMA_NO_ERROR;
     uint8_t tc;
     bool isUnifiedErrorInterrupts;
+    int32_t interruptNum, corepacEvent;
 
 #ifdef EDMA_PARAM_CHECK
     if (handle == NULL)
@@ -1937,28 +1938,55 @@ int32_t EDMA_close(EDMA_Handle handle)
 
     if (hwAttrs->transferCompletionInterruptNum != EDMA_INTERRUPT_NOT_CONNECTED_ID)
     {
-        HwiP_delete(edmaObj->hwiTransferCompleteHandle);
+    #if defined(_TMS320C6X)
+        corepacEvent = (int32_t)hwAttrs->transferCompletionInterruptNum; /* Event going in to CPU */
+        interruptNum = OSAL_REGINT_INTVEC_EVENT_COMBINER; /* Host Interrupt vector */
+    #else
+        interruptNum = (int32_t)hwAttrs->transferCompletionInterruptNum; /* Host Interrupt vector */
+        corepacEvent = (int32_t)hwAttrs->transferCompletionInterruptNum;
+    #endif
+
+        Osal_DisableInterrupt(corepacEvent, interruptNum);
+        Osal_DeleteInterrupt(edmaObj->hwiTransferCompleteHandle, corepacEvent);
     }
 
     isUnifiedErrorInterrupts = (hwAttrs->errorInterruptNum != EDMA_INTERRUPT_NOT_CONNECTED_ID) &&
                                (hwAttrs->errorInterruptNum == hwAttrs->transferControllerErrorInterruptNum[0]);
+    #if defined(_TMS320C6X)
+        corepacEvent = (int32_t)hwAttrs->errorInterruptNum; /* Event going in to CPU */
+        interruptNum = OSAL_REGINT_INTVEC_EVENT_COMBINER; /* Host Interrupt vector */
+    #else
+        interruptNum = (int32_t)hwAttrs->errorInterruptNum; /* Host Interrupt vector */
+        corepacEvent = (int32_t)hwAttrs->errorInterruptNum;
+    #endif
 
     if (isUnifiedErrorInterrupts == true)
     {
-        HwiP_delete(edmaObj->hwiErrorHandle);
+        Osal_DisableInterrupt(corepacEvent, interruptNum);
+        Osal_DeleteInterrupt(edmaObj->hwiErrorHandle, corepacEvent);
     }
     else
     {
         if (hwAttrs->errorInterruptNum != EDMA_INTERRUPT_NOT_CONNECTED_ID)
         {
-            HwiP_delete(edmaObj->hwiErrorHandle);
+            Osal_DisableInterrupt(corepacEvent, interruptNum);
+            Osal_DeleteInterrupt(edmaObj->hwiErrorHandle, corepacEvent);
         }
 
         for (tc = 0; tc < hwAttrs->numEventQueues; tc++)
         {
             if (hwAttrs->transferControllerErrorInterruptNum[tc] != EDMA_INTERRUPT_NOT_CONNECTED_ID)
             {
-                HwiP_delete(edmaObj->hwiTransferControllerErrorHandle[tc]);
+            #if defined(_TMS320C6X)
+                corepacEvent = (int32_t)hwAttrs->transferControllerErrorInterruptNum[tc]; /* Event going in to CPU */
+                interruptNum = OSAL_REGINT_INTVEC_EVENT_COMBINER; /* Host Interrupt vector */
+            #else
+                interruptNum = (int32_t)hwAttrs->transferControllerErrorInterruptNum[tc]; /* Host Interrupt vector */
+                corepacEvent = (int32_t)hwAttrs->transferControllerErrorInterruptNum[tc];
+            #endif
+
+                Osal_DisableInterrupt(corepacEvent, interruptNum);
+                Osal_DeleteInterrupt(edmaObj->hwiTransferControllerErrorHandle[tc], corepacEvent);
             }
         }
     }

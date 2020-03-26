@@ -225,6 +225,17 @@
 //#define TEST_DBG_DISABLE_LINKED
 //#define TEST_DBG_DISABLE_ERROR
 
+#define QT_BUILD                    (1)
+/* Comment above line when running from the EVM. */
+
+#if defined (QT_BUILD)
+#define OSAL_DELAY_SMALL            (1U)
+#define OSAL_DELAY_BIG              (1U)
+#else
+#define OSAL_DELAY_SMALL            (1000U)
+#define OSAL_DELAY_BIG              (100000U)
+#endif
+
 /* ========================================================================== */
 /*                          Function Declarations                             */
 /* ========================================================================== */
@@ -2583,7 +2594,7 @@ bool Test_missedEvents(EDMA_Handle handle, uint8_t channelType, bool isErrorInte
     {
         /* wait for some time for any re-triggerings to die down, assumptions is
          * die-down will happen in the delay period */
-        Osal_delay(100000U);
+        Osal_delay(OSAL_DELAY_BIG);
     }
     else
     {
@@ -2592,7 +2603,7 @@ bool Test_missedEvents(EDMA_Handle handle, uint8_t channelType, bool isErrorInte
             /* allow some delay for re-triggerings because error conditions have been cleared
              * so that eventually we have cleaned error conditions else it can affect
              * subsequent tests */
-            Osal_delay(1000);
+            Osal_delay(OSAL_DELAY_SMALL);
 
             /* clean up re-triggerings which can happen as older state is cleared.  */
             if ((errorCode = EDMA_getErrorStatus(handle, &isAnyError, &errorInfo)) != EDMA_NO_ERROR)
@@ -2761,7 +2772,7 @@ bool Test_transferControllerErrors(EDMA_Handle handle, uint8_t testId,
     {
         /* wait for some time for any re-triggerings to die down, assumptions is
          * die-down will happen in the delay period */
-        Osal_delay(100000U);
+        Osal_delay(OSAL_DELAY_BIG);
     }
     else
     {
@@ -2770,7 +2781,7 @@ bool Test_transferControllerErrors(EDMA_Handle handle, uint8_t testId,
             /* allow some delay for re-triggerings because error conditions have been cleared
              * so that eventually we have cleaned error conditions else it can affect
              * subsequent tests */
-            Osal_delay(1000);
+            Osal_delay(OSAL_DELAY_SMALL);
 
             /* clean up re-triggerings which can happen as older state is cleared.  */
             if ((errorCode = EDMA_getTransferControllerErrorStatus(handle, config.eventQueueId,
