@@ -76,7 +76,7 @@ extern "C" {
 
 #define BOARD_FPD_UB9702_FPD3_PORT_SEL_REG_ADDR                 (0x4CU)
 
-#define BOARD_FPD_UB9702_BCC_STATUS_REG_ADDR                    (0x47U)                                                             
+#define BOARD_FPD_UB9702_BCC_STATUS_REG_ADDR                    (0x47U)
 #define BOARD_FPD_UB9702_BCC_CONFIG_REG_ADDR                    (0x58U)
 
 #define BOARD_FPD_UB9702_SER_ID_REG_ADDR                        (0x5BU)
@@ -236,7 +236,7 @@ extern "C" {
 #define BOARD_FPD_UB9702_DIGITAL_RESET1_BIT_MASK               (0x01 << BOARD_FPD_UB9702_DIGITAL_RESET1_SHIFT_CNT)
 #define BOARD_FPD_UB9702_DIGITAL_RESET0_BIT_MASK               (0x01 << BOARD_FPD_UB9702_DIGITAL_RESET0_SHIFT_CNT)
 
-/** GENERAL_CFG Register Field */               
+/** GENERAL_CFG Register Field */
 #define BOARD_FPD_UB9702_I2C_MASTER_EN_BIT_MASK                (0x01 << BOARD_FPD_UB9702_I2C_MASTER_EN_SHIFT_CNT)
 #define BOARD_FPD_UB9702_OUTPUT_EN_MODE_BIT_MASK               (0x01 << BOARD_FPD_UB9702_OUTPUT_EN_MODE_SHIFT_CNT)
 #define BOARD_FPD_UB9702_OUTPUT_ENABLE_BIT_MASK                (0x01 << BOARD_FPD_UB9702_OUTPUT_ENABLE_SHIFT_CNT)
@@ -244,16 +244,16 @@ extern "C" {
 #define BOARD_FPD_UB9702_RX_PARITY_CHECK_EN_BIT_MASK           (0x01 << BOARD_FPD_UB9702_RX_PARITY_CHECK_EN_SHIFT_CNT)
 #define BOARD_FPD_UB9702_FORCE_REFCLK_DET_BIT_MASK             (0x01 << BOARD_FPD_UB9702_FORCE_REFCLK_DET_SHIFT_CNT)
 
-/** BCC_Watchdog_Control Register Fields */          
+/** BCC_Watchdog_Control Register Fields */
 #define BOARD_FPD_UB9702_BCC_WATCHDOG_TIMER_BIT_MASK           (0x7F << BOARD_FPD_UB9702_BCC_WATCHDOG_TIMER_SHIFT_CNT)
 #define BOARD_FPD_UB9702_BCC_WATCHDOG_TIMER_DISABLE_BIT_MASK   (0x01 << BOARD_FPD_UB9702_BCC_WATCHDOG_TIMER_DISABLE_SHIFT_CNT)
 
-/** SCL_High_Time Register Fields */                           
+/** SCL_High_Time Register Fields */
 #define BOARD_FPD_UB9702_SCL_HIGH_TIME_BIT_MASK                (0xFF << BOARD_FPD_UB9702_SCL_HIGH_TIME_SHIFT_CNT)
-/** SCL_Low_Time Register Fields */                         
+/** SCL_Low_Time Register Fields */
 #define BOARD_FPD_UB9702_SCL_LOW_TIME_BIT_MASK                 (0xFF << BOARD_FPD_UB9702_SCL_LOW_TIME_SHIFT_CNT)
 
-/** RX_PORT_CTL Register Fields */                           
+/** RX_PORT_CTL Register Fields */
 #define BOARD_FPD_UB9702_BCC3_MAP_BIT_MASK                     (0x01 << BOARD_FPD_UB9702_BCC3_MAP_SHIFT_CNT)
 #define BOARD_FPD_UB9702_BCC2_MAP_BIT_MASK                     (0x01 << BOARD_FPD_UB9702_BCC2_MAP_SHIFT_CNT)
 #define BOARD_FPD_UB9702_BCC1_MAP_BIT_MASK                     (0x01 << BOARD_FPD_UB9702_BCC1_MAP_SHIFT_CNT)
@@ -263,28 +263,28 @@ extern "C" {
 #define BOARD_FPD_UB9702_PORT1_EN_BIT_MASK                     (0x01 << BOARD_FPD_UB9702_PORT1_EN_SHIFT_CNT)
 #define BOARD_FPD_UB9702_PORT0_EN_BIT_MASK                     (0x01 << BOARD_FPD_UB9702_PORT0_EN_SHIFT_CNT)
 
-/** IO_CTL Register Fields */                                  
+/** IO_CTL Register Fields */
 #define BOARD_FPD_UB9702_SEL3P3V_BIT_MASK                      (0x01 << BOARD_FPD_UB9702_SEL3P3V_SHIFT_CNT)
 #define BOARD_FPD_UB9702_IO_SUPPLY_MODE_OV_BIT_MASK            (0x01 << BOARD_FPD_UB9702_IO_SUPPLY_MODE_OV_SHIFT_CNT)
 #define BOARD_FPD_UB9702_IO_SUPPLY_MODE_BIT_MASK               (0x03 << BOARD_FPD_UB9702_IO_SUPPLY_MODE_SHIFT_CNT)
 
-/** FS_CTL Register Fields */                                  
+/** FS_CTL Register Fields */
 #define BOARD_FPD_UB9702_FS_MODE_BIT_MASK                      (0x0F << BOARD_FPD_UB9702_FS_MODE_SHIFT_CNT)
 #define BOARD_FPD_UB9702_FS_SINGLE_BIT_MASK                    (0x01 << BOARD_FPD_UB9702_FS_SINGLE_SHIFT_CNT)
 #define BOARD_FPD_UB9702_FS_INIT_STATE_BIT_MASK                (0x01 << BOARD_FPD_UB9702_FS_INIT_STATE_SHIFT_CNT)
 #define BOARD_FPD_UB9702_FS_GEN_MODE_BIT_MASK                  (0x01 << BOARD_FPD_UB9702_FS_GEN_MODE_SHIFT_CNT)
 #define BOARD_FPD_UB9702_FS_GEN_ENABLE_BIT_MASK                (0x01 << BOARD_FPD_UB9702_FS_GEN_ENABLE_SHIFT_CNT)
 
-/** FS_HIGH_TIME_1 Register Field */                           
+/** FS_HIGH_TIME_1 Register Field */
 #define BOARD_FPD_UB9702_FRAMESYNC_HIGH_TIME_1_BIT_MASK        (0xFF << BOARD_FPD_UB9702_FRAMESYNC_HIGH_TIME_1_SHIFT_CNT)
 
-/** FS_HIGH_TIME_0 Register Field */                           
+/** FS_HIGH_TIME_0 Register Field */
 #define BOARD_FPD_UB9702_FRAMESYNC_HIGH_TIME_0_BIT_MASK        (0xFF << BOARD_FPD_UB9702_FRAMESYNC_HIGH_TIME_0_SHIFT_CNT)
 
-/** FS_LOW_TIME_1 Register Field */                            
+/** FS_LOW_TIME_1 Register Field */
 #define BOARD_FPD_UB9702_FRAMESYNC_LOW_TIME_1_BIT_MASK         (0xFF << BOARD_FPD_UB9702_FRAMESYNC_LOW_TIME_1_SHIFT_CNT)
 
-/** FS_LOW_TIME_0 Register Field */                            
+/** FS_LOW_TIME_0 Register Field */
 #define BOARD_FPD_UB9702_FRAMESYNC_LOW_TIME_1_BIT_MASK         (0xFF << BOARD_FPD_UB9702_FRAMESYNC_LOW_TIME_1_SHIFT_CNT)
 
 /** MAX_FRM_HI Register Field */
@@ -470,7 +470,7 @@ extern "C" {
 
 #define BOARD_FPD_9702_FORWARD_ENABLE                           (0x00U)
 #define BOARD_FPD_9702_FORWARD_DISABLE                          (0x01U)
-    
+
 #define BOARD_FPD_9702_CSI2_DES_HUB1                            (0U)
 #define BOARD_FPD_9702_CSI2_DES_HUB2                            (1U)
 #define BOARD_FPD_9702_CSI2_DES_HUB3                            (2U)
@@ -478,6 +478,21 @@ extern "C" {
 #define BOARD_FPD_9702_CSI2_DES_HUB1_ADDR                       (0x3DU)
 #define BOARD_FPD_9702_CSI2_DES_HUB2_ADDR                       (0x30U)
 #define BOARD_FPD_9702_CSI2_DES_HUB3_ADDR                       (0x32U)
+
+/**
+ *  \anchor DESUB9702_patternType
+ *  \name   Pattern type for generation
+ *  \brief  Id for pattern generation.
+ *
+ *  @{
+ */
+/** \brief Pattern type: RGB888 1280x720 30fps */
+#define BOARD_FPD_UB9702_PG_RAW12_1920_1080_30_FPS             ((uint32_t) 0x0U)
+/** \brief Pattern type: RGB888 1920x1080 30fps */
+#define BOARD_FPD_UB9702_PG_RAW12_3840_2160_40_FPS             ((uint32_t) 0x1U)
+/** \brief Pattern type: Maximum Val */
+#define BOARD_FPD_UB9702_PG_MAX                                ((uint32_t) 0x2U)
+/* @} */
 
 /**
  * \brief  Set deserializer device Id
@@ -1082,7 +1097,7 @@ Board_STATUS Board_fpdUb9702GetBCCStatus(void *handle,
 /**
  * \brief  Select receive port read back register block
  *
- * This function is used to select the receive port register block for read back 
+ * This function is used to select the receive port register block for read back
  *
  * \param   handle         [IN]   Low level driver handle
  * \param   fpdModParams   [IN]   FPD module params
@@ -1241,6 +1256,22 @@ void Board_fpdUb9702GetI2CAddr(uint8_t hubInstance,
                                uint8_t *domain,
                                uint8_t *chNum,
                                uint8_t *i2cAddr);
+
+/**
+ * \brief  FPD UB902 pattern generation configurations.
+ *
+ * This function is used for configuring the pattern generator for FPD UB9702
+ *
+ * \param   handle          [IN]  Low level driver handle
+ * \param   fpdModParams    [IN]  FPD module params
+ * \param   pgType          [IN]  Pattern Generation Type
+ *                                See \ref DESUB9702_patternType for details.
+ *
+ * \return  BOARD_SOK in case of success or appropriate error code.
+ */
+Board_STATUS Board_fpdUb9702CfgPG(void *handle,
+                                  Board_FpdModuleObj *fpdModParams,
+                                  uint32_t pgType);
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

@@ -39,6 +39,100 @@
  */
 #include "ds90ub9702.h"
 
+/* DES UB9702 configurations for RAW12 1920x1080 30fps, 4 lanes @1.5Gbps */
+Board_I2cRegProgObj Board_FpdUb9702PGCfg0[] =
+{
+    {0x32, 0x01, 0x50},
+	{0x1F, 0x00, 0x50},
+	{0xC9, 0x1E, 0x50},
+	{0xB0, 0x1C, 0x50},
+	{0xB1, 0x92, 0x50},
+	{0xB2, 0x40, 0x50},
+	{0xB0, 0x01, 0x50},
+	{0xB1, 0x01, 0x50},
+	{0xB2, 0x01, 0x50},
+	{0xB1, 0x02, 0x50},
+	{0xB2, 0x33, 0x50},
+	{0xB1, 0x03, 0x50},
+	{0xB2, 0x2C, 0x50},
+	{0xB1, 0x04, 0x50},
+	{0xB2, 0x0B, 0x50},
+	{0xB1, 0x05, 0x50},
+	{0xB2, 0x40, 0x50},
+	{0xB1, 0x06, 0x50},
+	{0xB2, 0x01, 0x50},
+	{0xB1, 0x07, 0x50},
+	{0xB2, 0x68, 0x50},
+	{0xB1, 0x08, 0x50},
+	{0xB2, 0x04, 0x50},
+	{0xB1, 0x09, 0x50},
+	{0xB2, 0x38, 0x50},
+	{0xB1, 0x0A, 0x50},
+	{0xB2, 0x07, 0x50},
+	{0xB1, 0x0B, 0x50},
+	{0xB2, 0x98, 0x50},
+	{0xB1, 0x0C, 0x50},
+	{0xB2, 0x06, 0x50},
+	{0xB1, 0x0D, 0x50},
+	{0xB2, 0xB3, 0x50},
+	{0xB1, 0x0E, 0x50},
+	{0xB2, 0x07, 0x50},
+	{0xB1, 0x0F, 0x50},
+	{0xB2, 0x08, 0x50},
+	{0x33, 0x03, 0x50},
+    {BOARD_DEVICES_CONFIG_END},
+};
+
+/* DES UB9702 configurations for RAW12 3840x2160 40fps, 4 lanes @1.5Gbps */
+Board_I2cRegProgObj Board_FpdUb9702PGCfg1[] =
+{
+    {0x32, 0x01, 0x50},
+	{0x1F, 0x10, 0x50},
+	{0xC9, 0x32, 0x50},
+	{0xB0, 0x1C, 0x50},
+	{0xB1, 0x92, 0x50},
+	{0xB2, 0x40, 0x50},
+	{0xB0, 0x01, 0x50},
+	{0xB1, 0x01, 0x50},
+	{0xB2, 0x01, 0x50},
+	{0xB1, 0x02, 0x50},
+	{0xB2, 0x33, 0x50},
+	{0xB1, 0x03, 0x50},
+	{0xB2, 0x2C, 0x50},
+	{0xB1, 0x04, 0x50},
+	{0xB2, 0x16, 0x50},
+	{0xB1, 0x05, 0x50},
+	{0xB2, 0x80, 0x50},
+	{0xB1, 0x06, 0x50},
+	{0xB2, 0x02, 0x50},
+	{0xB1, 0x07, 0x50},
+	{0xB2, 0xD0, 0x50},
+	{0xB1, 0x08, 0x50},
+	{0xB2, 0x08, 0x50},
+	{0xB1, 0x09, 0x50},
+	{0xB2, 0x70, 0x50},
+	{0xB1, 0x0A, 0x50},
+	{0xB2, 0x08, 0x50},
+	{0xB1, 0x0B, 0x50},
+	{0xB2, 0x80, 0x50},
+	{0xB1, 0x0C, 0x50},
+	{0xB2, 0x04, 0x50},
+	{0xB1, 0x0D, 0x50},
+	{0xB2, 0x7D, 0x50},
+	{0xB1, 0x0E, 0x50},
+	{0xB2, 0x07, 0x50},
+	{0xB1, 0x0F, 0x50},
+	{0xB2, 0x08, 0x50},
+	{0x33, 0x03, 0x50},
+    {BOARD_DEVICES_CONFIG_END},
+};
+
+Board_I2cRegProgObj *Board_FpdUb9702PGCfg[BOARD_FPD_UB9702_PG_MAX] =
+{
+    &Board_FpdUb9702PGCfg0[0U],       /* RAW12 1920x1080 30fps */
+    &Board_FpdUb9702PGCfg1[0U],       /* RAW12 3840x2160 40fps */
+};
+
 /**
  * \brief  Set deserializer device Id
  *
@@ -122,10 +216,10 @@ Board_STATUS Board_fpdUb9702SetDigitalRst1ModeCtrl(void *handle,
     }
 
     /* Reset digital RESET1, resets the entire digital block including registers */
-       
+
     regData &= ~(BOARD_FPD_UB9702_DIGITAL_RESET1_BIT_MASK);
     regData |= (cfgMode << BOARD_FPD_UB9702_DIGITAL_RESET1_SHIFT_CNT);
-    
+
     boardStatus = Board_i2c8BitRegWr(handle,
                                      fpdModParams->desSlvAddr,
                                      regAddr,
@@ -174,7 +268,7 @@ Board_STATUS Board_fpdUb9702SetI2cMstrEnModeCtrl(void *handle,
 
     regData &= ~(BOARD_FPD_UB9702_I2C_MASTER_EN_BIT_MASK);
     regData |= (cfgMode << BOARD_FPD_UB9702_I2C_MASTER_EN_SHIFT_CNT);
-    
+
     boardStatus = Board_i2c8BitRegWr(handle,
                                      fpdModParams->desSlvAddr,
                                      regAddr,
@@ -223,7 +317,7 @@ Board_STATUS Board_fpdUb9702SetOutputEnMode(void *handle,
 
     regData &= ~(BOARD_FPD_UB9702_OUTPUT_EN_MODE_BIT_MASK);
     regData |= (cfgMode << BOARD_FPD_UB9702_OUTPUT_EN_MODE_SHIFT_CNT);
-    
+
     boardStatus = Board_i2c8BitRegWr(handle,
                                      fpdModParams->desSlvAddr,
                                      regAddr,
@@ -272,7 +366,7 @@ Board_STATUS Board_fpdUb9702SetOutputEnCtrlMode(void *handle,
 
     regData &= ~(BOARD_FPD_UB9702_OUTPUT_ENABLE_BIT_MASK);
     regData |= (cfgMode << BOARD_FPD_UB9702_OUTPUT_ENABLE_SHIFT_CNT);
-    
+
     boardStatus = Board_i2c8BitRegWr(handle,
                                      fpdModParams->desSlvAddr,
                                      regAddr,
@@ -323,7 +417,7 @@ Board_STATUS Board_fpdUb9702SetOSSSelModeCtrl(void *handle,
        including registers */
     regData &= ~(BOARD_FPD_UB9702_OUTPUT_SLEEP_STATE_SEL_BIT_MASK);
     regData |= (cfgMode << BOARD_FPD_UB9702_OUTPUT_SLEEP_STATE_SEL_SHIFT_CNT);
-    
+
     boardStatus = Board_i2c8BitRegWr(handle,
                                      fpdModParams->desSlvAddr,
                                      regAddr,
@@ -400,7 +494,7 @@ Board_STATUS Board_fpdUb9702SetBCCWatchDogTImer(void *handle,
 
     /* Enables and watch dog timer and sets the watch dog timer count */
     regData = ((timeoutCnt << BOARD_FPD_UB9702_BCC_WATCHDOG_TIMER_SHIFT_CNT) | BOARD_FPD_UB9702_BCC_WATCHDOG_TIMER_DISABLE_BIT_MASK);
-    
+
     boardStatus = Board_i2c8BitRegWr(handle,
                                      fpdModParams->desSlvAddr,
                                      regAddr,
@@ -471,7 +565,7 @@ Board_STATUS Board_fpdUb9702SetBCCI2CSlvPortMap(void *handle,
              boardStatus = -1;
              break;
     }
-    
+
     if(boardStatus == -1)
     {
         return boardStatus;
@@ -547,7 +641,7 @@ Board_STATUS Board_fpdUb9702SetRcvrPortEnModeCtrl(void *handle,
              boardStatus = -1;
              break;
     }
-    
+
     if(boardStatus != 0)
     {
         return boardStatus;
@@ -611,7 +705,7 @@ Board_STATUS Board_fpdUb9702SetIOPinSupply(void *handle,
 
     regData &= ~(BOARD_FPD_UB9702_SEL3P3V_BIT_MASK);
     regData |= (ioLevel << BOARD_FPD_UB9702_SEL3P3V_SHIFT_CNT);
-    
+
     boardStatus = Board_i2c8BitRegWr(handle,
                                      fpdModParams->desSlvAddr,
                                      regAddr,
@@ -697,7 +791,7 @@ Board_STATUS Board_fpdUb9702SetIOSupplyOverrideModeCtrl(void *handle,
 
     regData &= ~(BOARD_FPD_UB9702_IO_SUPPLY_MODE_OV_BIT_MASK);
     regData |= (cfgMode << BOARD_FPD_UB9702_IO_SUPPLY_MODE_OV_SHIFT_CNT);
-    
+
     boardStatus = Board_i2c8BitRegWr(handle,
                                      fpdModParams->desSlvAddr,
                                      regAddr,
@@ -756,7 +850,7 @@ Board_STATUS Board_fpdUb9702SetIOSupplyMode(void *handle,
 
     regData &= ~(BOARD_FPD_UB9702_IO_SUPPLY_MODE_BIT_MASK);
     regData |= (ioLevel << BOARD_FPD_UB9702_IO_SUPPLY_MODE_SHIFT_CNT);
-    
+
     boardStatus = Board_i2c8BitRegWr(handle,
                                      fpdModParams->desSlvAddr,
                                      regAddr,
@@ -841,7 +935,7 @@ Board_STATUS Board_fpdUb9702SetFSModeCtrl(void *handle,
 
     regData &= ~(BOARD_FPD_UB9702_FS_MODE_BIT_MASK);
     regData |= (frameSync << BOARD_FPD_UB9702_FS_MODE_SHIFT_CNT);
-    
+
     boardStatus = Board_i2c8BitRegWr(handle,
                                      fpdModParams->desSlvAddr,
                                      regAddr,
@@ -890,7 +984,7 @@ Board_STATUS Board_fpdUb9702SetFSPulseGenModeCtrl(void *handle,
 
     regData &= ~(BOARD_FPD_UB9702_FS_SINGLE_BIT_MASK);
     regData |= (cfgMode << BOARD_FPD_UB9702_FS_SINGLE_SHIFT_CNT);
-    
+
     boardStatus = Board_i2c8BitRegWr(handle,
                                      fpdModParams->desSlvAddr,
                                      regAddr,
@@ -939,7 +1033,7 @@ Board_STATUS Board_fpdUb9702SetFSGenEnModeCtrl(void *handle,
 
     regData &= ~(BOARD_FPD_UB9702_FS_GEN_ENABLE_BIT_MASK);
     regData |= (cfgMode << BOARD_FPD_UB9702_FS_GEN_ENABLE_SHIFT_CNT);
-    
+
     boardStatus = Board_i2c8BitRegWr(handle,
                                      fpdModParams->desSlvAddr,
                                      regAddr,
@@ -1192,7 +1286,7 @@ Board_STATUS Board_fpdUb9702SelOscClk(void *handle,
 
     regData &= ~(BOARD_FPD_UB9702_SEL_OSC_200M_BIT_MASK);
     regData |= (refClk << BOARD_FPD_UB9702_SEL_OSC_200M_SHIFT_CNT);
-    
+
      boardStatus = Board_i2c8BitRegWr(handle,
                                      fpdModParams->desSlvAddr,
                                      regAddr,
@@ -1241,7 +1335,7 @@ Board_STATUS Board_fpdUb9702SetRefClkModeCtrl(void *handle,
 
     regData &= ~(BOARD_FPD_UB9702_REF_CLK_MODE_BIT_MASK);
     regData |= (refClk << BOARD_FPD_UB9702_REF_CLK_MODE_SHIFT_CNT);
-    
+
     boardStatus = Board_i2c8BitRegWr(handle,
                                      fpdModParams->desSlvAddr,
                                      regAddr,
@@ -1290,7 +1384,7 @@ Board_STATUS Board_fpdUb9702SelCSITxSpeed(void *handle,
 
     regData &= ~(BOARD_FPD_UB9702_CSI_TX_SPEED_BIT_MASK);
     regData |= (txSpeed << BOARD_FPD_UB9702_CSI_TX_SPEED_SHIFT_CNT);
-    
+
     boardStatus = Board_i2c8BitRegWr(handle,
                                      fpdModParams->desSlvAddr,
                                      regAddr,
@@ -1338,7 +1432,7 @@ Board_STATUS Board_fpdUb9702SetFwdPortDisModeCtrl(void *handle,
     {
         return boardStatus;
     }
-    
+
     switch(fwdPort)
     {
         case BOARD_FPD_9702_FWD_PORT_3:
@@ -1361,7 +1455,7 @@ Board_STATUS Board_fpdUb9702SetFwdPortDisModeCtrl(void *handle,
              boardStatus = -1;
              break;
     }
-    
+
     if(boardStatus != 0)
     {
         return boardStatus;
@@ -1414,7 +1508,7 @@ Board_STATUS Board_fpdUb9702SetRxPortMap(void *handle,
     {
         return boardStatus;
     }
-    
+
     switch(rxPort)
     {
         case BOARD_FPD_9702_FWD_PORT_3:
@@ -1437,7 +1531,7 @@ Board_STATUS Board_fpdUb9702SetRxPortMap(void *handle,
              boardStatus = -1;
              break;
     }
-    
+
     if(boardStatus == -1)
     {
         return boardStatus;
@@ -1491,7 +1585,7 @@ Board_STATUS Board_fpdUb9702SelTxPortRdBackRegBlk(void *handle,
 
     regData &= ~(BOARD_FPD_UB9702_TX_READ_PORT_BIT_MASK);
     regData |= (regBlk << BOARD_FPD_UB9702_TX_READ_PORT_SHIFT_CNT);
-    
+
    boardStatus = Board_i2c8BitRegWr(handle,
                                      fpdModParams->desSlvAddr,
                                      regAddr,
@@ -1540,7 +1634,7 @@ Board_STATUS Board_fpdUb9702SetTxPort1WrEnModeCtrl(void *handle,
 
     regData &= ~(BOARD_FPD_UB9702_TX_WRITE_PORT_1_BIT_MASK);
     regData |= (cfgMode << BOARD_FPD_UB9702_TX_WRITE_PORT_1_SHIFT_CNT);
-    
+
     boardStatus = Board_i2c8BitRegWr(handle,
                                      fpdModParams->desSlvAddr,
                                      regAddr,
@@ -1589,7 +1683,7 @@ Board_STATUS Board_fpdUb9702SetTxPort0WrEnModeCtrl(void *handle,
 
     regData &= ~(BOARD_FPD_UB9702_TX_WRITE_PORT_0_BIT_MASK);
     regData |= (cfgMode << BOARD_FPD_UB9702_TX_WRITE_PORT_0_SHIFT_CNT);
-    
+
     boardStatus = Board_i2c8BitRegWr(handle,
                                      fpdModParams->desSlvAddr,
                                      regAddr,
@@ -1602,7 +1696,7 @@ Board_STATUS Board_fpdUb9702SetTxPort0WrEnModeCtrl(void *handle,
     }
 
     return 0;
-    
+
 }
 
 /**
@@ -1639,7 +1733,7 @@ Board_STATUS Board_fpdUb9702SetCSILaneCnt(void *handle,
 
     regData &= ~(BOARD_FPD_UB9702_CSI_LANE_COUNT_BIT_MASK);
     regData |= (laneCnt << BOARD_FPD_UB9702_CSI_LANE_COUNT_SHIFT_CNT);
-    
+
     boardStatus = Board_i2c8BitRegWr(handle,
                                      fpdModParams->desSlvAddr,
                                      regAddr,
@@ -1688,7 +1782,7 @@ Board_STATUS Board_fpdUb9702SetCSIContsClkModeCtrl(void *handle,
 
     regData &= ~(BOARD_FPD_UB9702_CSI_CONTS_CLOCK_BIT_MASK);
     regData |= (cfgMode << BOARD_FPD_UB9702_CSI_CONTS_CLOCK_SHIFT_CNT);
-    
+
     boardStatus = Board_i2c8BitRegWr(handle,
                                      fpdModParams->desSlvAddr,
                                      regAddr,
@@ -1737,7 +1831,7 @@ Board_STATUS Board_fpdUb9702SetCSIEnableModeCtrl(void *handle,
 
     regData &= ~(BOARD_FPD_UB9702_CSI_ENABLE_BIT_MASK);
     regData |= (cfgMode << BOARD_FPD_UB9702_CSI_ENABLE_SHIFT_CNT);
-    
+
     boardStatus = Board_i2c8BitRegWr(handle,
                                      fpdModParams->desSlvAddr,
                                      regAddr,
@@ -1786,7 +1880,7 @@ Board_STATUS Board_fpdUb9702SetCSIPassModeCtrl(void *handle,
 
     regData &= ~(BOARD_FPD_UB9702_CSI_PASS_MODE_BIT_MASK);
     regData |= (cfgMode << BOARD_FPD_UB9702_CSI_PASS_MODE_SHIFT_CNT);
-    
+
     boardStatus = Board_i2c8BitRegWr(handle,
                                      fpdModParams->desSlvAddr,
                                      regAddr,
@@ -1840,7 +1934,7 @@ Board_STATUS Board_fpdUb9702GetBCCStatus(void *handle,
 /**
  * \brief  Select receive port read back register block
  *
- * This function is used to select the receive port register block for read back 
+ * This function is used to select the receive port register block for read back
  *
  * \param   handle         [IN]   Low level driver handle
  * \param   fpdModParams   [IN]   FPD module params
@@ -1871,7 +1965,7 @@ Board_STATUS Board_fpdUb9702SelRxPortRdBackRegBlk(void *handle,
 
     regData &= ~(BOARD_FPD_UB9702_RX_READ_PORT_BIT_MASK);
     regData |= (regBlk << BOARD_FPD_UB9702_RX_READ_PORT_SHIFT_CNT);
-    
+
     boardStatus = Board_i2c8BitRegWr(handle,
                                      fpdModParams->desSlvAddr,
                                      regAddr,
@@ -1942,7 +2036,7 @@ Board_STATUS Board_fpdUb9702SetRxPortWrEnModeCtrl(void *handle,
              boardStatus = -1;
              break;
     }
-    
+
     if(boardStatus == -1)
     {
         return boardStatus;
@@ -1996,7 +2090,7 @@ Board_STATUS Board_fpdUb9702SetI2CPassThrAllModeCtrl(void *handle,
 
     regData &= ~(BOARD_FPD_UB9702_I2C_PASS_THROUGH_ALL_BIT_MASK);
     regData |= (cfgMode << BOARD_FPD_UB9702_I2C_PASS_THROUGH_ALL_SHIFT_CNT);
-    
+
     boardStatus = Board_i2c8BitRegWr(handle,
                                      fpdModParams->desSlvAddr,
                                      regAddr,
@@ -2045,7 +2139,7 @@ Board_STATUS Board_fpdUb9702SetI2CPassThrModeCtrl(void *handle,
 
     regData &= ~(BOARD_FPD_UB9702_I2C_PASS_THROUGH_BIT_MASK);
     regData |= (cfgMode << BOARD_FPD_UB9702_I2C_PASS_THROUGH_SHIFT_CNT);
-    
+
     boardStatus = Board_i2c8BitRegWr(handle,
                                      fpdModParams->desSlvAddr,
                                      regAddr,
@@ -2094,7 +2188,7 @@ Board_STATUS Board_fpdUb9702SetI2CAutoAckModeCtrl(void *handle,
 
     regData &= ~(BOARD_FPD_UB9702_AUTO_ACK_ALL_BIT_MASK);
     regData |= (cfgMode << BOARD_FPD_UB9702_AUTO_ACK_ALL_SHIFT_CNT);
-    
+
      boardStatus = Board_i2c8BitRegWr(handle,
                                      fpdModParams->desSlvAddr,
                                      regAddr,
@@ -2143,7 +2237,7 @@ Board_STATUS Board_fpdUb9702SetBCCEnModeCtrl(void *handle,
 
     regData &= ~(BOARD_FPD_UB9702_BC_ALWAYS_ON_BIT_MASK);
     regData |= (cfgMode << BOARD_FPD_UB9702_BC_ALWAYS_ON_SHIFT_CNT);
-    
+
     boardStatus = Board_i2c8BitRegWr(handle,
                                      fpdModParams->desSlvAddr,
                                      regAddr,
@@ -2192,7 +2286,7 @@ Board_STATUS Board_fpdUb9702SelBCFreq(void *handle,
 
     regData &= ~(BOARD_FPD_UB9702_BC_FREQ_SELECT_BIT_MASK);
     regData |= (bcFreq << BOARD_FPD_UB9702_BC_FREQ_SELECT_SHIFT_CNT);
-    
+
     boardStatus = Board_i2c8BitRegWr(handle,
                                      fpdModParams->desSlvAddr,
                                      regAddr,
@@ -2241,7 +2335,7 @@ Board_STATUS Board_fpdUb9702SetRmtSerId(void *handle,
 
     regData &= ~(BOARD_FPD_UB9702_SER_ID_BIT_MASK);
     regData |= ((rmtSerId << BOARD_FPD_UB9702_SER_ID_SHIFT_CNT) | BOARD_FPD_UB9702_FREEZE_DEVICE_ID_BIT_MASK);
-    
+
     boardStatus = Board_i2c8BitRegWr(handle,
                                      fpdModParams->desSlvAddr,
                                      regAddr,
@@ -2340,7 +2434,7 @@ void Board_fpdUb9702GetI2CAddr(uint8_t hubInstance,
 {
     *domain = BOARD_SOC_DOMAIN_MAIN;
     *chNum = 6U;
-    
+
     if(hubInstance == BOARD_FPD_9702_CSI2_DES_HUB1)
     {
         *i2cAddr = 0x3DU;
@@ -2357,4 +2451,67 @@ void Board_fpdUb9702GetI2CAddr(uint8_t hubInstance,
     {
         BOARD_DEVICES_STS_LOG("Enter the correct hub instance");
     }
+}
+
+Board_STATUS Board_fpdUb9702CfgPG(void *handle,
+                                  Board_FpdModuleObj *fpdModParams,
+                                  uint32_t pgType)
+{
+    Board_STATUS ret = BOARD_SOK;
+    uint16_t index = 0;
+#if defined(BOARD_FPD_I2C_CFG_RD_BACK_EN)
+    uint8_t rdData;
+#endif
+    Board_I2cRegProgObj *ub9702Cfg;
+
+    if((handle == NULL) && (pgType >= BOARD_FPD_UB9702_PG_MAX))
+    {
+        ret = BOARD_INVALID_PARAM;
+    }
+
+    if (ret == BOARD_SOK)
+    {
+        ub9702Cfg = Board_FpdUb9702PGCfg[pgType];
+        BOARD_DEVICES_STS_LOG("PG configurations for deserializer with slave address - 0x%x...\n\r",
+                              fpdModParams->desSlvAddr);
+        while(ub9702Cfg[index].regAddr != BOARD_DEVICES_CONFIG_END)
+        {
+#if defined(BOARD_FPD_I2C_CFG_RD_BACK_EN)
+            BOARD_DEVICES_STS_LOG("regAddr - 0x%2x --- regData - 0x%2x\n\r",
+                                  (uint8_t)ub9702Cfg[index].regAddr,
+                                  ub9702Cfg[index].regData);
+#endif
+            ret = Board_i2c8BitRegWr(handle,
+                                     fpdModParams->desSlvAddr,
+                                     (uint8_t)ub9702Cfg[index].regAddr,
+                                     (uint8_t *)(&ub9702Cfg[index].regData),
+                                     1U,
+                                     BOARD_I2C_TRANSACTION_TIMEOUT);
+            if(ret != 0)
+            {
+                return BOARD_I2C_TRANSFER_FAIL;
+            }
+
+            if(ub9702Cfg[index].i2cDelay != 0)
+                Board_delay(ub9702Cfg[index].i2cDelay);
+
+#if defined(BOARD_FPD_I2C_CFG_RD_BACK_EN)
+            ret = Board_i2c8BitRegRd(handle,
+                                     fpdModParams->desSlvAddr,
+                                     (uint8_t)ub9702Cfg[index].regAddr,
+                                     &rdData,
+                                     1U,
+                                     BOARD_I2C_TRANSACTION_TIMEOUT);
+            if(ret != 0)
+            {
+                return BOARD_I2C_TRANSFER_FAIL;
+            }
+
+            BOARD_DEVICES_STS_LOG(" --- read back data - 0x%2x\n\r", rdData);
+#endif
+            index++;
+        }
+    }
+
+    return (ret);
 }
