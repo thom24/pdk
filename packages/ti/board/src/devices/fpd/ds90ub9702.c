@@ -39,7 +39,8 @@
  */
 #include "ds90ub9702.h"
 
-/* DES UB9702 configurations for RAW12 1920x1080 30fps, 4 lanes @1.5Gbps */
+/* DES UB9702 configurations for RAW12 1920x1080 30fps, 4 lanes @1.5Gbps
+   Corresponding Macro(for passing to API call): BOARD_FPD_UB9702_PG_RAW12_1920_1080_30_FPS */
 Board_I2cRegProgObj Board_FpdUb9702PGCfg0[] =
 {
     {0x32, 0x01, 0x50},
@@ -79,16 +80,17 @@ Board_I2cRegProgObj Board_FpdUb9702PGCfg0[] =
 	{0xB2, 0x07, 0x50},
 	{0xB1, 0x0F, 0x50},
 	{0xB2, 0x08, 0x50},
-	{0x33, 0x03, 0x50},
+	{0x33, 0x33, 0x50},
     {BOARD_DEVICES_CONFIG_END},
 };
 
-/* DES UB9702 configurations for RAW12 3840x2160 40fps, 4 lanes @1.5Gbps */
+/* DES UB9702 configurations for RAW12 3840x2160 40fps, 4 lanes @1.5Gbps 
+   Corresponding Macro(for passing to API call): BOARD_FPD_UB9702_PG_RAW12_3840_2160_40_FPS */ 
 Board_I2cRegProgObj Board_FpdUb9702PGCfg1[] =
 {
     {0x32, 0x01, 0x50},
-	{0x1F, 0x10, 0x50},
-	{0xC9, 0x32, 0x50},
+	{0x1F, 0x00, 0x50},
+	{0xC9, 0x1E, 0x50},
 	{0xB0, 0x1C, 0x50},
 	{0xB1, 0x92, 0x50},
 	{0xB2, 0x40, 0x50},
@@ -123,7 +125,7 @@ Board_I2cRegProgObj Board_FpdUb9702PGCfg1[] =
 	{0xB2, 0x07, 0x50},
 	{0xB1, 0x0F, 0x50},
 	{0xB2, 0x08, 0x50},
-	{0x33, 0x03, 0x50},
+	{0x33, 0x73, 0x50},
     {BOARD_DEVICES_CONFIG_END},
 };
 
@@ -2464,7 +2466,7 @@ Board_STATUS Board_fpdUb9702CfgPG(void *handle,
 #endif
     Board_I2cRegProgObj *ub9702Cfg;
 
-    if((handle == NULL) && (pgType >= BOARD_FPD_UB9702_PG_MAX))
+    if((handle == NULL) || (pgType >= BOARD_FPD_UB9702_PG_MAX))
     {
         ret = BOARD_INVALID_PARAM;
     }
@@ -2474,7 +2476,9 @@ Board_STATUS Board_fpdUb9702CfgPG(void *handle,
         ub9702Cfg = Board_FpdUb9702PGCfg[pgType];
         BOARD_DEVICES_STS_LOG("PG configurations for deserializer with slave address - 0x%x...\n\r",
                               fpdModParams->desSlvAddr);
-        while(ub9702Cfg[index].regAddr != BOARD_DEVICES_CONFIG_END)
+        while ((ub9702Cfg[index].regAddr != BOARD_DEVICES_CONFIG_END) && 
+               (ret == BOARD_SOK))
+            
         {
 #if defined(BOARD_FPD_I2C_CFG_RD_BACK_EN)
             BOARD_DEVICES_STS_LOG("regAddr - 0x%2x --- regData - 0x%2x\n\r",
@@ -2489,7 +2493,7 @@ Board_STATUS Board_fpdUb9702CfgPG(void *handle,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
             if(ret != 0)
             {
-                return BOARD_I2C_TRANSFER_FAIL;
+                ret = BOARD_I2C_TRANSFER_FAIL;
             }
 
             if(ub9702Cfg[index].i2cDelay != 0)
@@ -2504,7 +2508,7 @@ Board_STATUS Board_fpdUb9702CfgPG(void *handle,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
             if(ret != 0)
             {
-                return BOARD_I2C_TRANSFER_FAIL;
+                ret = BOARD_I2C_TRANSFER_FAIL;
             }
 
             BOARD_DEVICES_STS_LOG(" --- read back data - 0x%2x\n\r", rdData);

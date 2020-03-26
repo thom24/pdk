@@ -486,9 +486,9 @@ extern "C" {
  *
  *  @{
  */
-/** \brief Pattern type: RGB888 1280x720 30fps */
+/** \brief Pattern type: RAW12 1920x1080 30fps, 4 lanes@1.5Gbps */
 #define BOARD_FPD_UB9702_PG_RAW12_1920_1080_30_FPS             ((uint32_t) 0x0U)
-/** \brief Pattern type: RGB888 1920x1080 30fps */
+/** \brief Pattern type: RAW12 3840x2160 40fps, 4 lanes@1.5Gbps */
 #define BOARD_FPD_UB9702_PG_RAW12_3840_2160_40_FPS             ((uint32_t) 0x1U)
 /** \brief Pattern type: Maximum Val */
 #define BOARD_FPD_UB9702_PG_MAX                                ((uint32_t) 0x2U)
