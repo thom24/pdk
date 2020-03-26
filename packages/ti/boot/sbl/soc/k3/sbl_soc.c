@@ -155,7 +155,7 @@ void SBL_DCacheClean(void *addr, uint32_t size)
     else
     {
         /* Invalidating full cache by set and way is more efficient */
-	for (set = 0; set < 64; set ++)
+	for (set = 0; set < 128; set ++)
         {
             for (way = 0; way < 4; way++)
             {

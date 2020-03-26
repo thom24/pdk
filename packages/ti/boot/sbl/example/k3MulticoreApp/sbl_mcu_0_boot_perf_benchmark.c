@@ -61,7 +61,7 @@ static void  BOOT_PERF_TEST_CacheCleanInvalidateDcacheSetWay (void)
 {
     uint32_t set = 0, way = 0;
 
-    for (set = 0; set < 64; set ++)
+    for (set = 0; set < 128; set ++)
     {
         for (way = 0; way < 4; way++)
         {
