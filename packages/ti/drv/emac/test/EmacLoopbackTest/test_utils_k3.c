@@ -1581,7 +1581,7 @@ void test_EMAC_verify_ut_dual_mac_icssg(void)
 {
     /* @description:Unit test for ICSSG dual mac use case
 
-       @requirements: PRSDK-3771, PRSDK-3767, PRSDK-3768, PRSDK-3774, PRSDK-3776
+       @requirements: PRSDK-3771, PRSDK-3767, PRSDK-3768, PRSDK-3774, PRSDK-3776,
                       PRSDK-3780, PRSDK-3782, PRSDK-3813, PRSDK-3815, PRSDK-4029
 
        @cores: mpu1_0, mcu1_0 */
@@ -1694,7 +1694,7 @@ void test_EMAC_verify_ut_cpsw(void)
 {
     /* @description:Unit test for ICSSG dual mac and CPSW use cases
 
-       @requirements: PRSDK-3485, PRSDK-3486, PRSDK-3487, PRSDK-3509
+       @requirements: PRSDK-3485, PRSDK-3486, PRSDK-3487, PRSDK-3509,
                       PRSDK-3726, PRSDK-3755, PRSDK-3765
 
        @cores: mpu1_0, mcu1_0 */
@@ -1765,7 +1765,7 @@ void test_Emac_Icssg_TestApp_runner(void)
 {
     /* @description: Test runner for EMAC ICSSG tests
 
-       @requirements: PRSDK-3771, PRSDK-3767, PRSDK-3768, PRSDK-3774, PRSDK-3776
+       @requirements: PRSDK-3771, PRSDK-3767, PRSDK-3768, PRSDK-3774, PRSDK-3776,
                       PRSDK-3780, PRSDK-3782, PRSDK-3813, PRSDK-3815, PRSDK-4029
 
        @cores: mpu1_0, mcu1_0 */
@@ -1782,7 +1782,7 @@ void test_Emac_Cpsw_TestApp_runner(void)
 {
     /* @description: Test runner for EMAC CPSW tests
 
-       @requirements: PRSDK-3485, PRSDK-3486, PRSDK-3487, PRSDK-3509
+       @requirements: PRSDK-3485, PRSDK-3486, PRSDK-3487, PRSDK-3509,
                       PRSDK-3726, PRSDK-3755, PRSDK-3765
 
        @cores: mpu1_0, mcu1_0 */

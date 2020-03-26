@@ -1804,7 +1804,7 @@ void test_EMAC_verify_icssg_switch(void)
 {
     /* @description:Unit test for ICSSG switch use case
     
-       @requirements: PRSDK-3848, PRSDK-3789, PRSDK-3790, PRSDK-3800, PRSDK-3805
+       @requirements: PRSDK-3848, PRSDK-3789, PRSDK-3790, PRSDK-3800, PRSDK-3805,
                       PRSDK-3840, PRSDK-3842, PRSDK-3846, PRSDK-5180, PRSDK-5181
     
        @cores: mpu1_0, mcu1_0 */
@@ -1945,7 +1945,7 @@ void test_Emac_Icssg_Switch_TestApp_runner(void)
 {
     /* @description:Test runner for EMAC icssg switch tests
 
-       @requirements: PRSDK-3848, PRSDK-3789, PRSDK-3790, PRSDK-3800, PRSDK-3805
+       @requirements: PRSDK-3848, PRSDK-3789, PRSDK-3790, PRSDK-3800, PRSDK-3805,
                       PRSDK-3840, PRSDK-3842, PRSDK-3846, PRSDK-5180, PRSDK-5181
 
        @cores: mpu1_0, mcu1_0 */
