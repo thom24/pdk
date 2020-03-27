@@ -226,7 +226,7 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
     /*        can work with direct ROM load once it is stable */
     /* true:  stable, CPU read @60Mbytes per sec, will not    */
     /*        work with ROM, as ROM needs byte accesses       */
-    ospi_cfg.dtrEnable = false;
+    ospi_cfg.dtrEnable = true;
 
     /* Set the default SPI init configurations */
     OSPI_socSetInitCfg(BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
