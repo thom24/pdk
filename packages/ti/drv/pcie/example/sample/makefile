@@ -43,7 +43,7 @@ ifeq ($(CORE),$(filter $(CORE), mpu1_0))
 XDC_CFG_FILE_$(CORE) = ./am65xx/pciesample_a53.cfg
 endif
 
-ifeq ($(CORE),$(filter $(CORE), mcu1_0))
+ifeq ($(CORE),$(filter $(CORE), mcu1_0 mcu1_1))
 # Enable XDC build for application by providing XDC CFG File per core
 XDC_CFG_FILE_$(CORE) = ./am65xx/pciesample_r5.cfg
 endif
@@ -55,6 +55,12 @@ XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
 
 PACKAGE_SRCS_COMMON = .
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS)
+endif
+
+ifeq ($(SOC),$(filter $(SOC), am65xx))
+ifeq ($(CORE),$(filter $(CORE), mpu1_0 mpu1_1))
+EXTERNAL_LNKCMD_FILE_LOCAL = ./$(SOC)/linker_a53.lds
+endif
 endif
 
 # Include common make files
