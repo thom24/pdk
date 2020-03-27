@@ -1073,26 +1073,28 @@ static int16_t I2C_primeTransfer_v1(I2C_Handle handle,
                     status = I2C_STS_SUCCESS;
                 }
 
-                /* generate stop when requested */
-                I2CMasterStop(hwAttrs->baseAddr);
+                if (object->readCountIdx == 0U)
+                {
+                    /* generate stop when there is no read following by write */
+                    I2CMasterStop(hwAttrs->baseAddr);
 
-                /* wait for stop to happen */
-                (void)I2C_v1_waitForPin(handle,
-                                        I2C_INT_STOP_CONDITION,
-                                        transaction->timeout,
-                                        &timeoutStatus);
+                    /* wait for stop to happen */
+                    (void)I2C_v1_waitForPin(handle,
+                                            I2C_INT_STOP_CONDITION,
+                                            transaction->timeout,
+                                            &timeoutStatus);
 
-                
-                /* wait for register access ready */
-                (void)I2C_v1_waitForPin(handle,
-                                        I2C_INT_ADRR_READY_ACESS,
-                                        transaction->timeout,
-                                        &timeoutStatus);
+                    
+                    /* wait for register access ready */
+                    (void)I2C_v1_waitForPin(handle,
+                                            I2C_INT_ADRR_READY_ACESS,
+                                            transaction->timeout,
+                                            &timeoutStatus);
 
-                if(((uint8_t)1U) == timeoutStatus) {
-                   status = I2C_STS_ERR_TIMEOUT;
+                    if(((uint8_t)1U) == timeoutStatus) {
+                       status = I2C_STS_ERR_TIMEOUT;
+                    }
                 }
-
             }
 
             if ((object->readCountIdx != 0U) && (status==I2C_STS_SUCCESS))
