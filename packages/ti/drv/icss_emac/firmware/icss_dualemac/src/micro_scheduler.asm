@@ -131,6 +131,7 @@
     .word    ICSS_FIRMWARE_RELEASE_2
     .word    ICSS_FIRMWARE_FEATURE_SET
     .word    ICSS_FIRMWARE_RESERVED_FEATURE_SET
+    .include ".version"
         .sect    ".text:micro_scheduler"
         .global  micro_scheduler
     

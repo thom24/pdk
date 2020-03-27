@@ -12,7 +12,7 @@ HEX = $(CL_PRU_INSTALL_PATH)/bin/hexpru
 HEX_LNKCMD_DIR = ../cmd
 
 SRCDIR += ./src ../icss_dualemac/src
-INCDIR += ./src ../icss_dualemac/src
+INCDIR += ./src ../icss_dualemac/src ./
 # Common source files across all platforms and cores
 SRCS += resource_table.c
 SRCS_ASM += micro_scheduler.asm emac_MII_Rcv.asm emac_MII_Xmt.asm emac_statistics.asm switch_collision_task.asm
@@ -73,12 +73,15 @@ endif
 .NOTPARALLEL:
 
 .PHONY: all _pru_revs _pru_cores $(PRU_VERSION_LIST) $(PRU_CORE_LIST) $(PRU_HOST_LIST)
-all: $(PRU_ALL_TARGET)
+all: .version $(PRU_ALL_TARGET)
 
 _pru_hosts: $(PRU_HOST_LIST)
 _pru_versions: $(PRU_VERSION_LIST)
 _pru_cores: $(PRU_CORE_LIST)
 _pru_firmware: $(PRU_FIRMWARE)
+
+.version:
+	@./makeversion.sh
 
 $(PRU_HOST_LIST) :
 	@$(MAKE) _pru_versions PRU_HOST=$@
@@ -113,3 +116,4 @@ clean:
 	@find . -name "*\.$(OBJEXT)" -exec rm -v {} \;
 	@find . -type d -empty -delete
 	@rm -rf $(BIN_DIR) $(ELF_DIR)
+	@rm -f .version
