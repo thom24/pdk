@@ -442,6 +442,54 @@ void RPMessage_unblock(RPMessage_Handle handle);
 int32_t RPMessage_getRemoteEndPt(uint32_t selfProcId, const char* name, uint32_t *remoteProcId,
                              uint32_t *remoteEndPt, uint32_t timeout);
 
+/*
+ *  \brief Wait for an endpoint to become available on another
+ *         processor with token.
+ *
+ *  Block the current task until the specified processor announces the
+ *  named endpoint.  The name is a string that identifies the service
+ *  that is offered on the endpoint.  This allows an application to both
+ *  wait for the remote processor to signal that it is ready to
+ *  communicate and to lookup services by name.  The procId can be that
+ *  of a specific processor or PRMessage_ANY to wait for any processor
+ *  to announce the named endpoint.  Suitable values for timeout are the
+ *  same as for the ti.sysbios.knl.Semaphore module.
+ *  This is the same as RPMessage_getRemoteEndPt, except that a token
+ *  can be taken with the request, which can be used by the application
+ *  to unblock the request in order to unblock it's waiting task.
+ *
+ *  \param selfProcId    [IN] Remote processor ID
+ *  \param name      [IN] Name of the endpoint
+ *  \param remoteProcId    [OUT] Remote processor ID
+ *  \param remoteEndPt    [OUT] Remote endpoint ID
+ *  \param timeout    [IN] Timeout value (in system ticks)
+ *  \param token      [IN] User-provided token that can be used to unblock the function
+ *
+ *  Restrictions:
+ *  -  The token passed must be unique for each call.
+ *
+ *  \return     - #IPC_SOK: Endpoint successfully returned
+ *              - #IPC_ETIMEOUT: Time out occured
+ *              - #IPC_EFAIL:    Invalid input
+ */
+int32_t RPMessage_getRemoteEndPtToken(uint32_t selfProcId, const char* name, uint32_t *remoteProcId,
+                             uint32_t *remoteEndPt, uint32_t timeout, uint32_t token);
+
+/**
+ *  \brief      Unblocks an RPMessage_getRemoteEndPtToken() call
+ *
+ *  Unblocks a thread that is blocked on a RPMessage_getRemoteEndPtToken.  The
+ *  RPMessage_getRemoteEndPtToken call will return with status an invalid remoteProcId
+ *  and remoteEndPt (RPMESSAGE_ANY) indicating that it returned due to a
+ *  RPMessage_unblockGetRemoteEndPt rather than by a timeout or receiving the
+ *  requested remote endpoint.
+ *
+ *  \param[in]  token      Token passed when calling RPMessage_getRemoteEndPtToken
+ *
+ *  \sa         RPMessage_getRemoteEndPtToken
+ */
+void RPMessage_unblockGetRemoteEndPt(uint32_t token);
+
 /**
  *  \brief Annouce the name of an endpoint and that it is ready to
  *         to receive messages.
