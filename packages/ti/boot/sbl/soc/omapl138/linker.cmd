@@ -1,6 +1,6 @@
 /****************************************************************************/
 /*  linker.cmd                                                              */
-/*  Copyright (c) 2010-2017 Texas Instruments Incorporated                  */
+/*  Copyright (c) 2010-2020 Texas Instruments Incorporated                  */
 /*  Author: Rafael de Souza                                                 */
 /*                                                                          */
 /*    Description: This file is a sample linker command file that can be    */
@@ -15,8 +15,8 @@
 /****************************************************************************/
 
 -e Entry
--heap  0x4000
--stack 0x6000
+-heap  0x2000
+-stack 0x2000
 
 MEMORY
 {
