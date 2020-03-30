@@ -59,6 +59,28 @@ extern uint16_t protocol_impl[MAX_NUM_PROTOCOL_IMPLEMENTED];
 int doNotUpdateStatsTX[NUM_PORTS];
 int doNotUpdateStatsRX[NUM_PORTS];
 #endif
+
+void icss_emac_hw_mem_cpy(const void* addr, const void *ptr, uint32_t element_count)
+{
+    uint32_t  i;
+    volatile uint32_t *dst = (volatile uint32_t *)(uintptr_t)addr;
+    uint32_t *src = (uint32_t *)ptr;
+    for (i = 0; i < element_count; i++)
+    {
+        *dst++ = *src++;
+    }
+}
+
+void icss_emac_hw_mem_set(const void* addr, const uint32_t val, uint32_t element_count)
+{
+    uint32_t  i;
+    volatile uint32_t *dst = (volatile uint32_t *)(uintptr_t)addr;
+    for (i = 0; i < element_count; i++)
+    {
+        *dst++ = val;
+    }
+}
+
 /* ========================================================================== */
 /*                          Function Definitions                              */
 /* ========================================================================== */
@@ -90,7 +112,7 @@ void ICSS_EmacReadStats(uint8_t portNum, ICSS_EmacHandle icssEmacHandle)
         statsPointer = (uint8_t*)(temp_addr);
     }
 
-    memcpy((void*)pruStatStructPtr, (void*)statsPointer, statsSize);
+    icss_emac_hw_mem_cpy((void*)pruStatStructPtr, (void*)statsPointer, (statsSize / sizeof(uint32_t)));
     return;
 }
 
@@ -123,7 +145,7 @@ void PurgeStats(uint8_t portNum, ICSS_EmacHandle icssEmacHandle) {
     }
 
     /*clear PRU  stats*/
-    memset(statsPointer, 0x0, pStaticMMap->statisticsSize);
+    icss_emac_hw_mem_set(statsPointer, 0x0, (pStaticMMap->statisticsSize / sizeof(uint32_t)));
 
     /*clear port stats*/
     memset(hostStatsPtr, 0x0, sizeof(ICSS_EmacHostStatistics_t));
