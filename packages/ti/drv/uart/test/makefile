@@ -20,12 +20,14 @@ BUILD_OS_TYPE = tirtos
 CFLAGS_OS_DEFINES = -DUSE_BIOS
 EXTERNAL_INTERFACES = bios xdc
 COMP_LIST_COMMON    = osal_tirtos
-XDC_CFG_FILE_mpu1_0 = ./$(SOC)/uartUnitTest_$(ISA).cfg
-XDC_CFG_FILE_mcu1_0 = ./$(SOC)/uartUnitTest_r5.cfg
 
 ifeq ($(SOC),$(filter $(SOC), j721e j7200 am65xx))
   XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
+else
+  XDC_CFG_FILE_mpu1_0 = ./$(SOC)/uartUnitTest_$(ISA).cfg
+  XDC_CFG_FILE_mcu1_0 = ./$(SOC)/uartUnitTest_r5.cfg
 endif
+
 endif
 
 SRCDIR = . src
