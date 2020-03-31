@@ -54,6 +54,7 @@ extern "C" {
 #include <ti/csl/src/ip/rat/V0/csl_rat.h>
 
 #include <ti/drv/sciclient/sciclient.h>
+#include <ti/drv/sciclient/src/sciclient_priv.h>
 #include <ti/drv/uart/UART.h>
 #include <ti/drv/uart/src/UART_osal.h>
 #include <ti/drv/uart/UART_stdio.h>

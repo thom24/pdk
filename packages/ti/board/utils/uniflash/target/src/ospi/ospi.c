@@ -310,6 +310,10 @@ static int8_t UFP_ospiFlashImage(uint8_t *flashAddr, uint8_t *checkAddr,
         return -1;
     }
 
+#if defined(SPI_DMA_ENABLE)
+    CacheP_wbInv((void *)checkAddr, (int32_t)size);
+#endif
+
 	return 0;
 }
 

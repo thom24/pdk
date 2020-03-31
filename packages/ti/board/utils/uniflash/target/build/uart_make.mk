@@ -88,7 +88,7 @@ endif
 SRCS_COMMON = uart_main.c xmodem.c soc.c
 
 ifeq ($(BOARD), $(filter $(BOARD), j721e_evm))
-SRCS_COMMON += ospi.c qspi.c hyperflash.c emmc.c diag_common_cfg.c
+SRCS_COMMON += ospi.c qspi.c hyperflash.c emmc.c
 EXTERNAL_LNKCMD_FILE_LOCAL = ../soc/k3/linker_j7.cmd
 endif
 

@@ -208,7 +208,10 @@ endif
 LIBDIR :=
 
 ifeq ($(SOC), AM65XX)
-INTERNALDEFS = -g -ms -DMAKEFILE_BUILD -c -qq -pdsw225  $(DEBUG_FLAG) -D$(BOARD) -DSOC_$(SOC) --endian=little -mv7R5 --abi=eabi -eo.oer5f --code_state=16 -ea.ser5f --symdebug:dwarf --embed_inline_assembly --float_support=vfpv3d16 -ms -oe -O2 -op0 -os --optimize_with_debug --inline_recursion_limit=20  -DBUILD_MCU1_0 -DBUILD_MCU -DBARE_METAL -DSPI_DMA_ENABLE
+INTERNALDEFS = -g -ms -DMAKEFILE_BUILD -c -qq -pdsw225  $(DEBUG_FLAG) -D$(BOARD) -DSOC_$(SOC) --endian=little -mv7R5 --abi=eabi -eo.oer5f --code_state=16 -ea.ser5f --symdebug:dwarf --embed_inline_assembly --float_support=vfpv3d16 -ms -oe -O2 -op0 -os --optimize_with_debug --inline_recursion_limit=20  -DBUILD_MCU1_0 -DBUILD_MCU -DBARE_METAL
+ifneq ($(BUILD_HS), yes)
+INTERNALDEFS += -DSPI_DMA_ENABLE
+endif
 # Linker options
 INTERNALLINKDEFS = --emit_warnings_as_errors -w -q -u _resetvectors -i "$(PDK_INSTALL_PATH)/ti/board/lib/$(BOARD)/r5f/release" -i "$(PDK_INSTALL_PATH)/ti/csl/lib/$(SOC_NAME)/r5f/release" $(WRTR_SOC_DIR)/$(WRTR_LINKER) -c -mv7R5 --diag_suppress=10063 --opt='--float_support=vfpv3d16 --endian=little -mv7R5 --abi=eabi -qq -pdsw225 -g -ms -DMAKEFILE_BUILD -oe --symdebug:dwarf -ms -op2 -O3 -os --optimize_with_debug --inline_recursion_limit=20 --diag_suppress=23000' --strict_compatibility=on -x --zero_init=on $(LNK_LIBS)
 
@@ -287,10 +290,6 @@ ENTRY_SRC = sbl_init.S
 endif
 ifeq ($(SOC), K2G)
 ENTRY_SRC = init.S
-endif
-
-ifeq ($(SOC), AM65XX)
-SRC_DRV += diag_common_cfg.c
 endif
 
 # FLAGS for the SourceFiles

@@ -55,8 +55,8 @@ extern "C" {
 
 #define EMMC_SECTOR_SIZE   				(512U)
 
-#define EMMC_FW_DELAY   				(1000)
-#define EMMC_FW_WRITE_DELAY   		    (500000)
+#define EMMC_FW_DELAY                   (1)
+#define EMMC_FW_WRITE_DELAY             (500)
 
 extern const UFP_fxnTable UFP_emmcFxnTable;
 

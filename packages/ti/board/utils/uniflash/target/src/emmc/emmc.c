@@ -43,6 +43,8 @@
 /* ========================================================================== */
 
 #include "emmc.h"
+#include <ti/drv/i2c/I2C.h>
+#include <ti/drv/i2c/soc/I2C_soc.h>
 
 /* ========================================================================== */
 /*                      Internal Function Declarations                        */
@@ -86,10 +88,14 @@ static void UFP_emmcReset(void)
 {
 #if !defined(SOC_J721E)
 #if defined(SOC_AM65XX) && !defined (__aarch64__)
-    /* MCU I2C instance will be active by default for R5 core.
-     * Need update HW attrs to enable MAIN I2C instance.
-     */
-    enableMAINI2C(0, CSL_I2C0_CFG_BASE);
+    I2C_HwAttrs i2cCfg;
+
+    I2C_socGetInitCfg(0, &i2cCfg);
+
+    i2cCfg.baseAddr = CSL_I2C0_CFG_BASE;
+    i2cCfg.enableIntr = 0;
+
+    I2C_socSetInitCfg(0, &i2cCfg);
 #endif
 
     Board_i2cIoExpInit();
@@ -106,7 +112,7 @@ static void UFP_emmcReset(void)
                               GPIO_SIGNAL_LEVEL_LOW);
     /* Wait for short duration before pulling the reset line high
        to initiate eMMC reset */
-    BOARD_delay(EMMC_FW_DELAY);
+    Osal_delay(EMMC_FW_DELAY);
 
     Board_i2cIoExpPinLevelSet(BOARD_I2C_IOEXP_DEVICE2_ADDR,
                               PORTNUM_0,
@@ -224,7 +230,7 @@ static int8_t UFP_emmcFlashImage(uint8_t *flashAddr, uint8_t *checkAddr,
     /* Wait few cycles for the eMMC flash to be ready for next transfer.
        Ideally, this is not needed but just to make sure multi-sector transfer
        busy state is exited  */
-    BOARD_delay(EMMC_FW_WRITE_DELAY);
+    Osal_delay(EMMC_FW_WRITE_DELAY);
 #endif
 
     ret = UFP_emmcFlashRead(checkAddr, offset, size);

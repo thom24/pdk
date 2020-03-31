@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2019-2020 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -204,6 +204,144 @@ static uint32_t UFP_isSysfwEnc(uint8_t *x509_cert_ptr)
 }
 
 /**
+ * @brief Function to initialize the sciclient module
+ *
+ * \param   sysfw    [IN]	System firmware pointer
+ *
+ * @return - int8_t
+ *      0 	- sciclient module initialization successful
+ *     -1 	- sciclient module initialization failed
+ *
+ */
+int8_t UFP_sciclientInit(void *sysfw)
+{
+    int32_t status = CSL_EFAIL;
+
+    Sciclient_ConfigPrms_t        config =
+    {
+        SCICLIENT_SERVICE_OPERATION_MODE_POLLED,
+    };
+
+    /* SYSFW board configurations */
+    Sciclient_BoardCfgPrms_t sblBoardCfgPrms =
+    {
+        .boardConfigLow = (uint32_t)gSciclient_boardCfgLow,
+        .boardConfigHigh = 0,
+        .boardConfigSize = SCICLIENT_BOARDCFG_SIZE_IN_BYTES,
+        .devGrp = DEVGRP_ALL
+    };
+
+    Sciclient_BoardCfgPrms_t sblBoardCfgPmPrms =
+    {
+        .boardConfigLow = (uint32_t)gSciclient_boardCfgLow_pm,
+        .boardConfigHigh = 0,
+        .boardConfigSize = SCICLIENT_BOARDCFG_PM_SIZE_IN_BYTES,
+        .devGrp = DEVGRP_ALL
+    };
+
+#if defined(SOC_AM65XX)
+    /* Configure RM based on Device ID */
+    /* AM65x SR1 and SR2 must be configured differently */
+    uint32_t pBoardConfigLow_rm;
+    uint16_t boardConfigSize_rm;
+    uint32_t dev_id = HW_RD_REG32((CSL_WKUP_CTRL_MMR0_CFG0_BASE +
+                                   CSL_WKUP_CTRL_MMR_CFG0_JTAGID));
+
+    if (dev_id == 0x0BB5A02F) /* SR1 */
+    {
+        /* RM */
+        pBoardConfigLow_rm = (uint32_t)gSciclient_boardCfgLow_rm;
+        boardConfigSize_rm = SCICLIENT_BOARDCFG_RM_SIZE_IN_BYTES;
+    }
+    else if (dev_id == 0x1BB5A02F) /* SR2 */
+    {
+        /* RM */
+        pBoardConfigLow_rm = (uint32_t)gSciclient_boardCfgLow_rm_sr2;
+        boardConfigSize_rm = SCICLIENT_BOARDCFG_RM_SR2_SIZE_IN_BYTES;
+    }
+    else
+    {
+        return (-1);
+    }
+
+    Sciclient_BoardCfgPrms_t sblBoardCfgRmPrms =
+    {
+        .boardConfigLow = pBoardConfigLow_rm,
+        .boardConfigHigh = 0,
+        .boardConfigSize = boardConfigSize_rm,
+        .devGrp = DEVGRP_ALL
+    };
+#else
+    /* Non-AM65x devices may configure as normal*/
+    Sciclient_BoardCfgPrms_t sblBoardCfgRmPrms =
+    {
+        .boardConfigLow = (uint32_t)gSciclient_boardCfgLow_rm,
+        .boardConfigHigh = 0,
+        .boardConfigSize = SCICLIENT_BOARDCFG_RM_SIZE_IN_BYTES,
+        .devGrp = DEVGRP_ALL
+    };
+#endif
+
+    Sciclient_BoardCfgPrms_t sblBoardCfgSecPrms =
+    {
+        .boardConfigLow = (uint32_t)gSciclient_boardCfgLow_sec,
+        .boardConfigHigh = 0,
+        .boardConfigSize = SCICLIENT_BOARDCFG_SECURITY_SIZE_IN_BYTES,
+        .devGrp = DEVGRP_ALL
+    };
+
+    UFP_isSysfwEnc((uint8_t *) sysfw);
+
+    status = Sciclient_loadFirmware((const uint32_t *)sysfw);
+    if (status != CSL_PASS)
+    {
+        return (-1);
+    }
+
+    status = Sciclient_init(&config);
+    if (status != CSL_PASS)
+    {
+        return (-1);
+    }
+
+    status = Sciclient_boardCfg(&sblBoardCfgPrms);
+    if (status != CSL_PASS)
+    {
+        return (-1);
+    }
+
+    status = Sciclient_boardCfgPm(&sblBoardCfgPmPrms);
+    if (status != CSL_PASS)
+    {
+        return (-1);
+    }
+
+    status = Sciclient_boardCfgRm(&sblBoardCfgRmPrms);
+    if (status != CSL_PASS)
+    {
+        return (-1);
+    }
+
+    status = Sciclient_boardCfgSec(&sblBoardCfgSecPrms);
+    if (status != CSL_PASS)
+    {
+        return (-1);
+    }
+
+    /* RTI seems to be turned on by ROM. Turning it off so that Power domain can transition */
+    Sciclient_pmSetModuleState(TISCI_DEV_MCU_RTI0,
+                               TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF,
+                               TISCI_MSG_FLAG_AOP,
+                               SCICLIENT_SERVICE_WAIT_FOREVER);
+    Sciclient_pmSetModuleState(TISCI_DEV_MCU_RTI1,
+                               TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF,
+                               TISCI_MSG_FLAG_AOP,
+                               SCICLIENT_SERVICE_WAIT_FOREVER);
+
+    return 0;
+}
+
+/**
  * @brief	This function initializes settings based on soc.
  *
  * \param   cfg		[IN]	Board initializing value
@@ -287,56 +425,10 @@ int8_t UFP_socInit(Board_initCfg *cfg)
  */
 int8_t UFP_loadSysFW(void *sysFW)
 {
-    int32_t status = CSL_EFAIL;
     Board_initCfg boardCfg;
     UART_HwAttrs uart_cfg;
 
-    Sciclient_ConfigPrms_t        config =
-    {
-        SCICLIENT_SERVICE_OPERATION_MODE_POLLED,
-    };
-
-    UFP_isSysfwEnc((uint8_t *) sysFW);
-
-    status = Sciclient_loadFirmware((const uint32_t *)sysFW);
-    if (status != CSL_PASS)
-    {
-        return (-1);
-    }
-
-    status = Sciclient_init(&config);
-    if (status != CSL_PASS)
-    {
-        return (-1);
-    }
-
-    status = Sciclient_boardCfg((Sciclient_BoardCfgPrms_t *)NULL);
-    if (status != CSL_PASS)
-    {
-        return (-1);
-    }
-
-    status = Sciclient_boardCfgRm((Sciclient_BoardCfgPrms_t *)NULL);
-    if (status != CSL_PASS)
-    {
-        return (-1);
-    }
-
-    status = Sciclient_boardCfgPm((Sciclient_BoardCfgPrms_t *)NULL);
-    if (status != CSL_PASS)
-    {
-        return (-1);
-    }
-
-    /* RTI seems to be turned on by ROM. Turning it off so that Power domain can transition */
-    Sciclient_pmSetModuleState(TISCI_DEV_MCU_RTI0,
-                               TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF,
-                               TISCI_MSG_FLAG_AOP,
-                               SCICLIENT_SERVICE_WAIT_FOREVER);
-    Sciclient_pmSetModuleState(TISCI_DEV_MCU_RTI1,
-                               TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF,
-                               TISCI_MSG_FLAG_AOP,
-                               SCICLIENT_SERVICE_WAIT_FOREVER);
+    UFP_sciclientInit(sysFW);
 
     /* Board Library Init. */
     boardCfg = (BOARD_INIT_PLL |
@@ -345,10 +437,10 @@ int8_t UFP_loadSysFW(void *sysFW)
     {
         return -1;
     }
-    
+
     /* Reconfigure the UART */
     UART_socGetInitCfg(BOARD_UART_INSTANCE, &uart_cfg);
-    /* Use UART fclk freq setup by ROM */
+    /* Use UART fclk freq setup by SYSFW */
     uart_cfg.frequency = UFP_SYSFW_UART_MODULE_INPUT_CLK;
     /* Disable the UART interrupt */
     uart_cfg.enableInterrupt = FALSE;
