@@ -79,12 +79,14 @@ GPMC_Handle GPMC_open(uint32_t index, GPMC_Params *params)
 {
     GPMC_Handle handle;
 
-    OSAL_Assert((GPMC_Handle)&(GPMC_config[index]) == NULL);
-
     /* Get handle for this driver instance */
     handle = (GPMC_Handle)&(GPMC_config[index]);
+    if (handle != NULL)
+    {
+        handle = handle->fxnTablePtr->openFxn(handle, params);
+    }
 
-    return (handle->fxnTablePtr->openFxn(handle, params));
+    return (handle);
 }
 
 /*
@@ -92,9 +94,10 @@ GPMC_Handle GPMC_open(uint32_t index, GPMC_Params *params)
  */
 void GPMC_close(GPMC_Handle handle)
 {
-    OSAL_Assert(handle == NULL);
-
-    handle->fxnTablePtr->closeFxn(handle);
+    if (handle != NULL)
+    {
+        handle->fxnTablePtr->closeFxn(handle);
+    }
 }
 
 /*
@@ -102,9 +105,10 @@ void GPMC_close(GPMC_Handle handle)
  */
 void GPMC_Params_init(GPMC_Params *params)
 {
-    OSAL_Assert(params == NULL);
-
-    *params = GPMC_defaultParams;
+    if (params != NULL)
+    {
+        *params = GPMC_defaultParams;
+    }
 }
 
 /*
@@ -112,9 +116,14 @@ void GPMC_Params_init(GPMC_Params *params)
  */
 bool GPMC_transfer(GPMC_Handle handle, GPMC_Transaction *transaction)
 {
-    OSAL_Assert(!((handle != NULL) && (transaction != NULL)));
+    bool retVal = (bool)false;
+    
+    if ((handle != NULL) && (transaction != NULL))
+    {
+        retVal = handle->fxnTablePtr->transferFxn(handle, transaction);
+    }
 
-    return (handle->fxnTablePtr->transferFxn(handle, transaction));
+    return (retVal);
 }
 
 /*
@@ -122,8 +131,13 @@ bool GPMC_transfer(GPMC_Handle handle, GPMC_Transaction *transaction)
  */
 int32_t GPMC_control(GPMC_Handle handle, uint32_t cmd, void *arg)
 {
-    OSAL_Assert(handle == NULL);
+    int32_t retVal = GPMC_STATUS_ERROR;
 
-    return (handle->fxnTablePtr->controlFxn(handle, cmd, arg));
+    if (handle != NULL)
+    {
+        retVal = handle->fxnTablePtr->controlFxn(handle, cmd, arg);
+    }
+
+    return (retVal);
 }
 
