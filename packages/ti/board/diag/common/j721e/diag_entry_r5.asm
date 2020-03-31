@@ -549,8 +549,9 @@ _cslRsvdHandler:
      b   _cslRsvdHandler
     .endasmfunc
 ;****************************************************************************
-; Setup Reset Vectors
+; Setup Reset Vectors always in ARM mode
 ;****************************************************************************
+    .arm
 	.global	_resetvectors
     .sect   ".rstvectors"
 _resetvectors:
