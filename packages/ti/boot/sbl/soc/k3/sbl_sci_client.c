@@ -128,9 +128,9 @@ void SBL_SciClientInit(void)
 
 #if defined(SOC_AM65XX)
     /* Configure RM based on Device ID */
-    /* Maxwell SR1 and SR2 must be configured differently */
-    uint32_t pBoardConfigLow_rm;
-    uint16_t boardConfigSize_rm;
+    /* Maxwell PG1 and PG2 must be configured differently */
+    uint32_t pBoardConfigLow_rm = 0U;
+    uint16_t boardConfigSize_rm = 0U;
     uint32_t dev_id = HW_RD_REG32((CSL_WKUP_CTRL_MMR0_CFG0_BASE
 				   + CSL_WKUP_CTRL_MMR_CFG0_JTAGID));
 

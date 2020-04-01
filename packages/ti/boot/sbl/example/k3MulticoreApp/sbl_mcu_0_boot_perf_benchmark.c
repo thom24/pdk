@@ -159,6 +159,8 @@ static void BOOT_PERF_TEST_printSblProfileLog(sblProfileInfo_t *sblProfileLog, u
 static int32_t BOOT_PERF_TEST_sysfwInit(void)
 {
     int32_t status = CSL_PASS;
+    uint32_t dev_id = HW_RD_REG32((CSL_WKUP_CTRL_MMR0_CFG0_BASE
+				   + CSL_WKUP_CTRL_MMR_CFG0_JTAGID));
 
 #if defined(SBL_SKIP_SYSFW_INIT)
     void *sysfw_ptr = (void *)&syfw_image;
@@ -174,7 +176,7 @@ static int32_t BOOT_PERF_TEST_sysfwInit(void)
     {
         .boardConfigLow = (uint32_t)&sblPerfTestBoardCfg,
 	.boardConfigHigh = 0,
-	.boardConfigSize = sizeof(sblPerfTestBoardCfg),
+	.boardConfigSize = SCICLIENT_BOARDCFG_SIZE_IN_BYTES,
 	.devGrp = SBL_PERF_TEST_DEVGRP
     };
 
@@ -190,15 +192,24 @@ static int32_t BOOT_PERF_TEST_sysfwInit(void)
     {
         .boardConfigLow = (uint32_t)&sblPerfTestBoardCfg_rm,
 	.boardConfigHigh = 0,
-	.boardConfigSize = sizeof(sblPerfTestBoardCfg_rm),
+	.boardConfigSize = SCICLIENT_BOARDCFG_RM_SIZE_IN_BYTES,
 	.devGrp = SBL_PERF_TEST_DEVGRP
     };
+
+#if defined(SOC_AM65XX)
+    /* Overwrite the cfg size for AM65xx SR2 */
+    if (dev_id == 0x1BB5A02F)
+    {
+      sblPerfTestBoardCfgRmPrms.boardConfigSize =
+	SCICLIENT_BOARDCFG_RM_SR2_SIZE_IN_BYTES;
+    }
+#endif
 
     Sciclient_BoardCfgPrms_t sblPerfTestBoardCfgSecPrms =
     {
         .boardConfigLow = (uint32_t)&sblPerfTestBoardCfg_sec,
 	.boardConfigHigh = 0,
-	.boardConfigSize = sizeof(sblPerfTestBoardCfg_sec),
+	.boardConfigSize = SCICLIENT_BOARDCFG_SECURITY_SIZE_IN_BYTES,
 	.devGrp = SBL_PERF_TEST_DEVGRP
     };
 #endif
@@ -225,7 +236,10 @@ static int32_t BOOT_PERF_TEST_sysfwInit(void)
 
 #if defined(SBL_SKIP_SYSFW_INIT) || defined(SBL_SKIP_BRD_CFG_BOARD) || defined(SBL_ENABLE_DEV_GRP_MCU)
 
-    memcpy((void *)&sblPerfTestBoardCfg, (void *)gSciclient_boardCfgLow, sizeof(sblPerfTestBoardCfg));
+    memcpy((void *)&sblPerfTestBoardCfg,
+	   (void *)gSciclient_boardCfgLow,
+	   sblPerfTestBoardCfgPrms.boardConfigSize);
+
     /* Redirect DMSC logs to UART 0 */
     sblPerfTestBoardCfg.debug_cfg.trace_dst_enables = TISCI_BOARDCFG_TRACE_DST_UART0;
     /* Enable full logs */
@@ -261,9 +275,13 @@ static int32_t BOOT_PERF_TEST_sysfwInit(void)
 #endif
 
 #if defined(SBL_SKIP_SYSFW_INIT) || defined(SBL_SKIP_BRD_CFG_RM) || defined(SBL_ENABLE_DEV_GRP_MCU)
-    memcpy((void *)&sblPerfTestBoardCfg_rm, (void *)gSciclient_boardCfgLow_rm, sizeof(sblPerfTestBoardCfg_rm));
+    memcpy((void *)&sblPerfTestBoardCfg_rm,
+	   (void *)gSciclient_boardCfgLow_rm,
+	   sblPerfTestBoardCfgRmPrms.boardConfigSize);
+
     BOOT_PERF_TEST_CacheCleanInvalidateDcacheSetWay();
     status = Sciclient_boardCfgRm(&sblPerfTestBoardCfgRmPrms);
+
     if (status != CSL_PASS)
     {
         return CSL_EFAIL;
@@ -276,9 +294,13 @@ static int32_t BOOT_PERF_TEST_sysfwInit(void)
     }
 
 #if defined(SBL_SKIP_SYSFW_INIT) || defined(SBL_SKIP_BRD_CFG_SEC) || defined(SBL_ENABLE_DEV_GRP_MCU)
-    memcpy((void *)&sblPerfTestBoardCfg_sec, (void *)gSciclient_boardCfgLow_sec, sizeof(sblPerfTestBoardCfg_sec));
+    memcpy((void *)&sblPerfTestBoardCfg_sec,
+	   (void *)gSciclient_boardCfgLow_sec,
+	   sblPerfTestBoardCfgSecPrms.boardConfigSize);
+
     BOOT_PERF_TEST_CacheCleanInvalidateDcacheSetWay();
     status = Sciclient_boardCfgSec(&sblPerfTestBoardCfgSecPrms);
+
     if (status != CSL_PASS)
     {
         return CSL_EFAIL;

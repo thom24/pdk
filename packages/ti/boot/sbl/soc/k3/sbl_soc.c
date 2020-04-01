@@ -446,6 +446,10 @@ void SBL_ConfigureCommonRails(sblCfgPmic_t *pmicVoltCfg, uint8_t powerResource)
     sblCfgPmic_t *commonRailPmicCfgPtr = NULL;
     sblCfgPmic_t commonRailPmicCfg;
 
+    /* Save the fist instance of a ganged rail */
+    commonRailPmicCfgPtr = pmicVoltCfg;
+    commonRailPmicCfg = *commonRailPmicCfgPtr;
+
     /* A ganged rail is a single source that is used  */
     /* to power multiple voltage domains that can run */
     /* at the same voltage, even though each domain   */
@@ -454,13 +458,6 @@ void SBL_ConfigureCommonRails(sblCfgPmic_t *pmicVoltCfg, uint8_t powerResource)
     {
         if(pmicVoltCfg->powerResource == powerResource)
         {
-            if(commonRailPmicCfgPtr == NULL)
-            {
-                /* Save the fist instance of a ganged rail */
-                commonRailPmicCfgPtr = pmicVoltCfg;
-                commonRailPmicCfg = *commonRailPmicCfgPtr;
-            }
-
             if(pmicVoltCfg->millivolts > commonRailMaxVoltage)
             {
                 /* Ganged rails must be set to the max value */
