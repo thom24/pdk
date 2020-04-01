@@ -146,7 +146,11 @@ void tearDown(void)
 }
 #endif
 
-
+#ifndef __LINUX_USER_SPACE
+#ifdef SWITCH_EMAC
+void ICSS_EMAC_testStormPrevention(void);
+#endif
+#endif
 
 #ifdef __LINUX_USER_SPACE
 static inline void linux_sleep_ms(int ms) {
@@ -3362,8 +3366,10 @@ Void ICSS_EMAC_testTaskPruss1(UArg a0, UArg a1)
 #endif
 
 /*storm prevention unit tests start*/        
+#ifndef __LINUX_USER_SPACE
 #ifdef SWITCH_EMAC
         ICSS_EMAC_testStormPrevention();
+#endif
 #endif
 /*storm prevention unit tests end*/  
 
@@ -4407,7 +4413,9 @@ void ICSS_EMAC_fwIntrPacingConfig(ICSSEMAC_Handle icssEmacHandle, uint8_t port, 
     
 }
 
-Void ICSS_EMAC_testStormPrevention()
+#ifndef __LINUX_USER_SPACE
+#ifdef SWITCH_EMAC
+void ICSS_EMAC_testStormPrevention(void)
 {
     uint8_t testPassed = 1;
     uint32_t value = 0;
@@ -4637,6 +4645,8 @@ Void ICSS_EMAC_testStormPrevention()
         PRINT("IOCTL test for SWITCH passed\n");
     }
 }
+#endif
+#endif
 
 #ifdef am65xx_evm
 Void test_ICSS_EMAC_verify(void)
