@@ -1704,7 +1704,7 @@ void test_EMAC_verify_ut_cpsw(void)
     /* @description:Unit test for ICSSG dual mac and CPSW use cases
 
        @requirements: PRSDK-3485, PRSDK-3486, PRSDK-3487, PRSDK-3509,
-                      PRSDK-3726, PRSDK-3755, PRSDK-3765
+                      PRSDK-3726, PRSDK-3755, PRSDK-3765, PRSDK-5567
 
        @cores: mpu1_0, mcu1_0 */
 
@@ -1792,7 +1792,7 @@ void test_Emac_Cpsw_TestApp_runner(void)
     /* @description: Test runner for EMAC CPSW tests
 
        @requirements: PRSDK-3485, PRSDK-3486, PRSDK-3487, PRSDK-3509,
-                      PRSDK-3726, PRSDK-3755, PRSDK-3765
+                      PRSDK-3726, PRSDK-3755, PRSDK-3765, PRSDK-5567
 
        @cores: mpu1_0, mcu1_0 */
 
