@@ -17,8 +17,8 @@
 MEMORY{
 PAGE 0:
     VECTORS  (X)  : origin=0x00000000 length=0x00000100
-    TCMA_RAM (RX) : origin=0x00000100 length=0x00003F00
-    TCMB_RAM (RW) : origin=0x00080000 length=0x00004000
+    TCMA_RAM (RX) : origin=0x00000100 length=0x00007F00
+    TCMB_RAM (RW) : origin=0x00080000 length=0x00008000
     L2_RAM_BANK0 (RW) : origin=0x10200000 length=0x00080000
     L2_RAM_BANK1 (RW) : origin=0x10280000 length=0x00070000
     L3_RAM (RW)   : origin=0x88000000 length=0x00300000
