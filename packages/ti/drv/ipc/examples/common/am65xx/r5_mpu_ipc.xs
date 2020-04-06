@@ -66,6 +66,8 @@ var MPU = xdc.useModule('ti.sysbios.family.arm.MPU');
 MPU.enableMPU = true;
 MPU.enableBackgroundRegion = true;
 
+var coreId = java.lang.System.getenv("CORE");
+
 var attrs = new MPU.RegionAttrs();
 MPU.initRegionAttrsMeta(attrs);
 
@@ -147,6 +149,27 @@ attrs.tex = 1;
 attrs.subregionDisableMask = 0;
 MPU.setRegionMeta(6, 0x80000000, MPU.RegionSize_2G, attrs);
 
+/* Linux Ring Buffer uncached.... */
+attrs.enable = true;
+attrs.bufferable = false;
+attrs.cacheable = false;
+attrs.shareable = true;
+attrs.noExecute = true;
+attrs.accPerm = 3;          /* RW at PL1 */
+attrs.tex = 0;
+attrs.subregionDisableMask = 0;
+
+if ( coreId == "mcu1_0")
+{
+    xdc.print("# !!! Core is [" + coreId + "] !!!" );
+    MPU.setRegionMeta(7, 0xA0000000, MPU.RegionSize_1M, attrs);
+}
+else if ( coreId == "mcu1_1")
+{
+    xdc.print("# !!! Core is [" + coreId + "] !!!" );
+    MPU.setRegionMeta(7, 0xA0000000, MPU.RegionSize_1M, attrs);
+}
+
 /* Ring Buffer uncached.... */
 attrs.enable = true;
 attrs.bufferable = false;
@@ -156,4 +179,4 @@ attrs.noExecute = true;
 attrs.accPerm = 3;          /* RW at PL1 */
 attrs.tex = 0;
 attrs.subregionDisableMask = 0;
-MPU.setRegionMeta(7, 0xA2000000, MPU.RegionSize_2M, attrs);
+MPU.setRegionMeta(8, 0xA2000000, MPU.RegionSize_2M, attrs);
