@@ -57,6 +57,7 @@ FINAL_FIRM_LIST = $(pdk_FIRM_LIST)
 FINAL_PKG_LIST_ALL = $(pdk_PKG_LIST_ALL)
 FINAL_DUP_EXAMPLE_LIST = $(pdk_DUP_EXAMPLE_LIST)
 FINAL_UTILS_LIST_ALL = $(pdk_UTILS_LIST)
+FINAL_EXAMPLE_LIST_INFO=$(pdk_EXAMPLE_LIST)
 
 else
 #if COMP is defined, this is built from within a component, eg) ti/drv/mmcsd> make all
@@ -69,6 +70,7 @@ FINAL_FIRM_LIST = $($(COMP)_FIRM_LIST)
 FINAL_DUP_EXAMPLE_LIST = $($(COMP)_DUP_EXAMPLE_LIST)
 FINAL_PKG_LIST_ALL=$($(COMP)_LIB_LIST) $($(COMP)_APP_LIB_LIST) $($(COMP)_EXAMPLE_LIST) $($(COMP)_FIRM_LIST) $($(COMP)_DUP_EXAMPLE_LIST)
 FINAL_UTILS_LIST_ALL = $($(COMP)_UTILS_LIST)
+FINAL_EXAMPLE_LIST_INFO=$($(COMP)_EXAMPLE_LIST) $($(COMP)_DUP_EXAMPLE_LIST)
 
 endif
 
@@ -82,6 +84,8 @@ FINAL_DUP_EXAMPLE_LIST_PACKAGE = $(addsuffix _package, $(FINAL_DUP_EXAMPLE_LIST)
 FINAL_PKG_LIST_PACKAGE = $(addsuffix _package, $(FINAL_PKG_LIST_ALL))
 FINAL_PKG_LIST_ALL_CLEAN = $(addsuffix _clean, $(FINAL_PKG_LIST_ALL))
 FINAL_UTILS_LIST_CLEAN = $(addsuffix _clean, $(FINAL_UTILS_LIST_ALL))
+FINAL_PKG_LIST_INFO = $(addsuffix _info, $(FINAL_EXAMPLE_LIST_INFO))
+FINAL_DUP_EXAMPLE_INFO = $(addsuffix _info, $(FINAL_DUP_EXAMPLE_LIST))
 
 # Create the _has_dep target for the <module> if _DEPENDS_ON is defined in the <module>_component.mk
 # For example, CREATE_DEP_TARGETS(nimu_icssg,FINAL_LIB_LIST) does the following:
@@ -126,7 +130,7 @@ FINAL_FIRM_HAS_DEP_LIST = $(addsuffix _has_dep, $(filter-out $(FINAL_FIRM_LIST_D
 FINAL_UTILS_LIST_ALL_HAS_DEP_LIST = $(addsuffix _has_dep, $(filter-out $(FINAL_UTILS_LIST_ALL_DEP_LIST),$(FINAL_UTILS_LIST_ALL)))
 
 
-.PHONY : all all_libs all_apps all_apps_core version pdk_examples pdk_libs lib app_lib apps tar firm doxygen xdc_meta pdk_libs_clean pdk_app_libs pdk_app_libs_clean examples examples_clean clean package $(pdk_PKG_LIST_ALL) $(pdk_DUP_EXAMPLE_LIST) all_firm firm  all_firm_versions all_apps pdk_examples pdk_dup_apps $(FINAL_LIB_HAS_DEP_LIST) $(FINAL_APP_LIB_HAS_DEP_LIST) $(FINAL_EXAMPLE_HAS_DEP_LIST)    $(FINAL_DUP_EXAMPLE_HAS_DEP_LIST) $(FINAL_FIRM_HAS_DEP_LIST) %_has_dep $(FINAL_UTILS_LIST_ALL)
+.PHONY : all all_libs all_apps all_apps_core version pdk_examples pdk_libs lib app_lib apps tar firm doxygen xdc_meta pdk_libs_clean pdk_app_libs pdk_app_libs_clean examples examples_clean clean package $(pdk_PKG_LIST_ALL) $(pdk_DUP_EXAMPLE_LIST) all_firm firm  all_firm_versions all_apps pdk_examples pdk_dup_apps $(FINAL_LIB_HAS_DEP_LIST) $(FINAL_APP_LIB_HAS_DEP_LIST) $(FINAL_EXAMPLE_HAS_DEP_LIST)    $(FINAL_DUP_EXAMPLE_HAS_DEP_LIST) $(FINAL_FIRM_HAS_DEP_LIST) %_has_dep $(FINAL_UTILS_LIST_ALL) $(FINAL_PKG_LIST_INFO) $(FINAL_DUP_EXAMPLE_INFO)
 
 all: version all_apps
 
@@ -162,6 +166,8 @@ all_firm_clean: $(FINAL_FIRM_LIST_CLEAN)
 examples: $(FINAL_EXAMPLE_HAS_DEP_LIST)
 
 examples_clean: $(FINAL_EXAMPLE_LIST_CLEAN)
+
+examples_info: $(FINAL_PKG_LIST_INFO) $(FINAL_DUP_EXAMPLE_INFO)
 
 clean: pdk_libs_clean pdk_app_libs_clean examples_clean all_firm_clean
 	$(foreach dup_app, $(FINAL_DUP_EXAMPLE_LIST_CLEAN),\
@@ -397,6 +403,12 @@ $(FINAL_PKG_LIST_PACKAGE) $(FINAL_DUP_EXAMPLE_LIST_PACKAGE):
 	        $(MAKE) -C $($(subst _package,,$@)_PATH) $($(subst _package,,$@)_MAKEFILE) package,\
 	$(if $(filter $(BOARD), $(subst emptyreplacement,,$($(subst _package,,$@)_BOARDLIST))),\
 	        $(MAKE) -C $($(subst _package,,$@)_PATH) $($(subst _package,,$@)_MAKEFILE) package,$(ECHO) Nothing to be done for $(SOC) $(subst _package,,$@)))
+
+$(FINAL_PKG_LIST_INFO) $(FINAL_DUP_EXAMPLE_INFO):
+	$(if $(filter $(SOC), $(subst emptyreplacement,,$($(subst _info,,$@)_SOCLIST))),\
+	        $(ECHO) $(subst _info,,$@) Applicable Cores: $($(subst _info,,$@)_$(SOC)_CORELIST) ,\
+	$(if $(filter $(BOARD), $(subst emptyreplacement,,$($(subst _info,,$@)_BOARDLIST))),\
+	        $(ECHO) $(subst _info,,$@) Applicable Cores: $($(subst _info,,$@)_$(SOC)_CORELIST) ,))
 
 #Below is used only for checking c++ build errors during development, not to be used for any other purpose
 cplusplus_build:
