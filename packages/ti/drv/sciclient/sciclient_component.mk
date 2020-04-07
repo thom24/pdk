@@ -58,6 +58,7 @@ sciclient_MAKEFILE = -fsrc/makefile
 export sciclient_MAKEFILE
 export sciclient_LIBNAME
 export sciclient_LIBPATH
+
 # Simulator versus Silicon has a different Firmware Image.
 sciclient_BOARD_DEPENDENCY = no
 ifeq ($(BOARD),$(filter $(BOARD), j721e_ccqt j721e_loki j721e_hostemu))
@@ -75,6 +76,17 @@ sciclient_BOARDLIST = $(drvsciclient_BOARDLIST)
 export sciclient_BOARDLIST
 sciclient_$(SOC)_CORELIST = $(drvsciclient_$(SOC)_CORELIST)
 export sciclient_$(SOC)_CORELIST
+
+export sciclient_UTILS_LIST = sciclient_boardcfg
+export sciclient_boardcfg_COMP_LIST = sciclient_boardcfg
+export sciclient_boardcfg_RELPATH = ti/drv/sciclient
+export sciclient_boardcfg_PATH = $(PDK_SCICLIENT_COMP_PATH)
+export sciclient_boardcfg_MAKEFILE = -fsrc/boardcfg_makefile
+export sciclient_boardcfg_BOARD_DEPENDENCY = yes
+export sciclient_boardcfg_CORE_DEPENDENCY = yes
+export sciclient_boardcfg_BOARDLIST = $(sciclient_BOARDLIST)
+export sciclient_boardcfg_$(SOC)_CORELIST = mcu1_0
+export sciclient_boardcfg_LIBNAME = sciclient_boardcfg
 
 ############################
 # sciclient examples

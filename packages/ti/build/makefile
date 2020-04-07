@@ -53,6 +53,7 @@ FINAL_EXAMPLE_LIST = $(pdk_EXAMPLE_LIST)
 FINAL_FIRM_LIST = $(pdk_FIRM_LIST)
 FINAL_PKG_LIST_ALL = $(pdk_PKG_LIST_ALL)
 FINAL_DUP_EXAMPLE_LIST = $(pdk_DUP_EXAMPLE_LIST)
+FINAL_UTILS_LIST_ALL = $(pdk_UTILS_LIST)
 
 else
 #if COMP is defined, this is built from within a component, eg) ti/drv/mmcsd> make all
@@ -64,6 +65,7 @@ FINAL_EXAMPLE_LIST=$($(COMP)_EXAMPLE_LIST)
 FINAL_FIRM_LIST = $($(COMP)_FIRM_LIST)
 FINAL_DUP_EXAMPLE_LIST = $($(COMP)_DUP_EXAMPLE_LIST)
 FINAL_PKG_LIST_ALL=$($(COMP)_LIB_LIST) $($(COMP)_APP_LIB_LIST) $($(COMP)_EXAMPLE_LIST) $($(COMP)_FIRM_LIST) $($(COMP)_DUP_EXAMPLE_LIST)
+FINAL_UTILS_LIST_ALL = $($(COMP)_UTILS_LIST)
 
 endif
 
@@ -76,6 +78,7 @@ FINAL_DUP_EXAMPLE_LIST_CLEAN = $(addsuffix _clean, $(FINAL_DUP_EXAMPLE_LIST))
 FINAL_DUP_EXAMPLE_LIST_PACKAGE = $(addsuffix _package, $(FINAL_DUP_EXAMPLE_LIST))
 FINAL_PKG_LIST_PACKAGE = $(addsuffix _package, $(FINAL_PKG_LIST_ALL))
 FINAL_PKG_LIST_ALL_CLEAN = $(addsuffix _clean, $(FINAL_PKG_LIST_ALL))
+FINAL_UTILS_LIST_CLEAN = $(addsuffix _clean, $(FINAL_UTILS_LIST_ALL))
 
 # Create the _has_dep target for the <module> if _DEPENDS_ON is defined in the <module>_component.mk
 # For example, CREATE_DEP_TARGETS(nimu_icssg,FINAL_LIB_LIST) does the following:
@@ -108,6 +111,7 @@ $(foreach APP_LIB,$(FINAL_APP_LIB_LIST),$(eval $(call CREATE_DEP_TARGETS,$(APP_L
 $(foreach EXAMPLE,$(FINAL_EXAMPLE_LIST),$(eval $(call CREATE_DEP_TARGETS,$(EXAMPLE),FINAL_EXAMPLE_LIST)))
 $(foreach DUP_EXAMPLE,$(FINAL_DUP_EXAMPLE_LIST),$(eval $(call CREATE_DEP_TARGETS,$(DUP_EXAMPLE),FINAL_DUP_EXAMPLE_LIST)))
 $(foreach FIRM,$(FINAL_FIRM_LIST),$(eval $(call CREATE_DEP_TARGETS,$(FIRM),FINAL_FIRM_LIST)))
+$(foreach UTIL,$(FINAL_UTILS_LIST_ALL),$(eval $(call CREATE_DEP_TARGETS,$(UTIL),FINAL_UTILS_LIST_ALL)))
 
 # Create *_has_dep targets , filtering out the duplicate entries (which already appeared as dependent targets to others
 # For example nimu_icssg_has_dep already builds emac (nimu_icssg_DEPENDS_ON = emac)
@@ -116,9 +120,10 @@ FINAL_APP_LIB_HAS_DEP_LIST = $(addsuffix _has_dep,$(filter-out $(FINAL_APP_LIB_L
 FINAL_EXAMPLE_HAS_DEP_LIST = $(addsuffix _has_dep, $(filter-out $(FINAL_EXAMPLE_LIST_DEP_LIST),$(FINAL_EXAMPLE_LIST)))
 FINAL_DUP_EXAMPLE_HAS_DEP_LIST = $(addsuffix _has_dep,$(filter-out $(FINAL_DUP_EXAMPLE_LIST_DEP_LIST),$(FINAL_DUP_EXAMPLE_LIST)))
 FINAL_FIRM_HAS_DEP_LIST = $(addsuffix _has_dep, $(filter-out $(FINAL_FIRM_LIST_DEP_LIST),$(FINAL_FIRM_LIST)))
+FINAL_UTILS_LIST_ALL_HAS_DEP_LIST = $(addsuffix _has_dep, $(filter-out $(FINAL_UTILS_LIST_ALL_DEP_LIST),$(FINAL_UTILS_LIST_ALL)))
 
 
-.PHONY : all all_libs all_apps all_apps_core version pdk_examples pdk_libs lib app_lib apps tar firm doxygen xdc_meta pdk_libs_clean pdk_app_libs pdk_app_libs_clean examples examples_clean clean package $(pdk_PKG_LIST_ALL) $(pdk_DUP_EXAMPLE_LIST) all_firm firm  all_firm_versions all_apps pdk_examples pdk_dup_apps $(FINAL_LIB_HAS_DEP_LIST) $(FINAL_APP_LIB_HAS_DEP_LIST) $(FINAL_EXAMPLE_HAS_DEP_LIST)    $(FINAL_DUP_EXAMPLE_HAS_DEP_LIST) $(FINAL_FIRM_HAS_DEP_LIST) %_has_dep
+.PHONY : all all_libs all_apps all_apps_core version pdk_examples pdk_libs lib app_lib apps tar firm doxygen xdc_meta pdk_libs_clean pdk_app_libs pdk_app_libs_clean examples examples_clean clean package $(pdk_PKG_LIST_ALL) $(pdk_DUP_EXAMPLE_LIST) all_firm firm  all_firm_versions all_apps pdk_examples pdk_dup_apps $(FINAL_LIB_HAS_DEP_LIST) $(FINAL_APP_LIB_HAS_DEP_LIST) $(FINAL_EXAMPLE_HAS_DEP_LIST)    $(FINAL_DUP_EXAMPLE_HAS_DEP_LIST) $(FINAL_FIRM_HAS_DEP_LIST) %_has_dep $(FINAL_UTILS_LIST_ALL)
 
 all: version all_apps
 
@@ -200,6 +205,9 @@ help:
 	$(ECHO) ""
 	$(ECHO) "<Module_App>   : Builds an application. Possible values:"
 	$(ECHO) "[$(FINAL_EXAMPLE_LIST) $(FINAL_DUP_EXAMPLE_LIST)]"
+	$(ECHO) ""
+	$(ECHO) "<Utils>        : Runs utilities which generate code. Possible values:"
+	$(ECHO) "[$(FINAL_UTILS_LIST_ALL) ]"
 	$(ECHO) ""
 	$(ECHO) "Optional make variables:"
 	$(ECHO) "------------------------"
@@ -372,6 +380,14 @@ $(FINAL_PKG_LIST_ALL_CLEAN) $(FINAL_DUP_EXAMPLE_LIST_CLEAN):
 	        $(MAKE) -C $($(subst _clean,,$@)_PATH) $($(subst _clean,,$@)_MAKEFILE) clean,\
 	$(if $(filter $(BOARD), $(subst emptyreplacement,,$($(subst _clean,,$@)_BOARDLIST))),\
 	        $(MAKE) -C $($(subst _clean,,$@)_PATH) $($(subst _clean,,$@)_MAKEFILE) clean,))
+
+$(FINAL_UTILS_LIST_ALL):
+	$(if $(filter $(SOC), $(subst emptyreplacement,,$($@_SOCLIST))),\
+	    $(if $(filter $(CORE), $(subst emptyreplacement,,$($@_$(SOC)_CORELIST))),\
+	        $(MAKE) -C $($@_PATH) $($@_MAKEFILE),$(ECHO) Nothing to be done for $(SOC) $(CORE) $@),\
+	$(if $(filter $(BOARD), $(subst emptyreplacement,,$($@_BOARDLIST))),\
+	    $(if $(filter $(CORE), $(subst emptyreplacement,,$($@_$(SOC)_CORELIST))),\
+	        $(MAKE) -C $($@_PATH) $($@_MAKEFILE),$(ECHO) Nothing to be done for $(BOARD) $(SOC) $(CORE) $@),$(ECHO) Nothing to be done for $(SOC) $@))
 
 $(FINAL_PKG_LIST_PACKAGE) $(FINAL_DUP_EXAMPLE_LIST_PACKAGE):
 	$(if $(filter $(SOC), $(subst emptyreplacement,,$($(subst _package,,$@)_SOCLIST))),\

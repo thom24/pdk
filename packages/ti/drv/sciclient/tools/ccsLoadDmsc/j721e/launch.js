@@ -62,8 +62,7 @@ pdkPath = "/ti/j7presi/workarea/pdk";
 ccs_init_elf_file = pdkPath+"/packages/ti/drv/sciclient/tools/ccsLoadDmsc/j721e/sciclient_ccs_init_mcu1_0_release.xer5f";
 
 //path to sysfw bin
-//sysfw_bin = pdkPath+"/packages/ti/drv/sciclient/soc/sysfw/binaries/ti-sci-firmware-j721e-gp.bin"
-sysfw_bin = "/home/piyali/WORK/PROJECTS/SYSFW/system-firmware-tools/system-firmware-releases/src/system-firmware/ti-sci-firmware-j721e-gp.bin"
+sysfw_bin = pdkPath+"/packages/ti/drv/sciclient/soc/sysfw/binaries/ti-sci-firmware-j721e-gp.bin"
 
 //<!!!!!! EDIT THIS !!!!!>
 
@@ -96,7 +95,6 @@ function connectTargets()
     print("Connecting to DMSC_Cortex_M3_0!");
     // Connect targets
     dsDMSC_0.target.connect();
-    dsDMSC_0.expression.evaluate("Configure_RAT()");
     print("Fill R5F ATCM memory...");
     dsDMSC_0.memory.fill(0x61000000, 0, 0x2000, 0);
     print("Writing While(1) for R5F")
@@ -145,14 +143,14 @@ function connectTargets()
     dsMCU1_0.memory.loadProgram(ccs_init_elf_file);
     // Halt the R5F and re-run.
     dsMCU1_0.target.halt();
-    //// Run Synchronously for the executable to finish
-    //dsMCU1_0.target.run();
+    // Run Synchronously for the executable to finish
+    dsMCU1_0.target.run();
 
-    ///* Run the DDR Configuration */
-    //print("Running the DDR configuration... Wait till it completes!");
-    //dsDMSC_0.target.halt();
-    //dsDMSC_0.expression.evaluate("J7ES_LPDDR4_Config_Late()");
-    //dsDMSC_0.target.runAsynch();
+    /* Run the DDR Configuration */
+    print("Running the DDR configuration... Wait till it completes!");
+    dsDMSC_0.target.halt();
+    dsDMSC_0.expression.evaluate("J7ES_LPDDR4_Config_Late()");
+    dsDMSC_0.target.runAsynch();
 }
 
 function disconnectTargets()
@@ -168,7 +166,7 @@ function doEverything()
 {
     printVars();
     connectTargets();
-    //disconnectTargets();
+    disconnectTargets();
     print("Okay you are good to go.. Happy Debugging!!");
 }
 

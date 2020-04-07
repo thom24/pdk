@@ -1534,7 +1534,7 @@ void UdmaChRxPrms_init(Udma_ChRxPrms *rxPrms, uint32_t chType)
         rxPrms->busOrderId          = UDMA_DEFAULT_RX_CH_BUS_ORDERID;
         rxPrms->dmaPriority         = UDMA_DEFAULT_RX_CH_DMA_PRIORITY;
         rxPrms->flowIdFwRangeStart  = 0U;       /* Reset value - to use default flow */
-        rxPrms->flowIdFwRangeCnt    = 0x4000U;  /* Reset value - to use default flow */
+        rxPrms->flowIdFwRangeCnt    = 0U;       /* Reset value - to use default flow */
         rxPrms->ignoreShortPkts     = TISCI_MSG_VALUE_RM_UDMAP_RX_CH_PACKET_EXCEPTION;
         rxPrms->ignoreLongPkts      = TISCI_MSG_VALUE_RM_UDMAP_RX_CH_PACKET_EXCEPTION;
         rxPrms->configDefaultFlow   = TRUE;

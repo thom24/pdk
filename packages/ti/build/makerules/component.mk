@@ -132,6 +132,14 @@ pdk_EXAMPLE_LIST =
 ############################
 pdk_DUP_EXAMPLE_LIST =
 
+###########################
+# PDK Utils list which are not built on every build
+# Example includes the sciclient board configruation.
+# This is specifically used when some additional tools are required to build
+# these utilities like python.
+###########################
+pdk_UTILS_LIST =
+
 # Components included independent of OS type
 
 #include each module component makefile
@@ -333,6 +341,9 @@ ifneq ($(sciclient_APP_LIB_LIST),)
 endif
 ifneq ($(sciclient_EXAMPLE_LIST),)
   pdk_EXAMPLE_LIST += $(sciclient_EXAMPLE_LIST)
+endif
+ifneq ($(sciclient_UTILS_LIST),)
+  pdk_UTILS_LIST += $(sciclient_UTILS_LIST)
 endif
 
 -include $(PDK_VHWA_COMP_PATH)/vhwa_component.mk
