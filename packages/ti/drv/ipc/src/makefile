@@ -13,7 +13,7 @@ SRCDIR = src
 ifeq ($(SOC),$(filter $(SOC), am65xx))
   SRCDIR += soc/V0
 endif
-ifeq ($(SOC),$(filter $(SOC), j721e))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200))
   SRCDIR += soc/V1
 endif
 INCDIR =
@@ -37,7 +37,7 @@ ifeq ($(SOC),$(filter $(SOC), am77xx))
   CFLAGS_LOCAL_COMMON += -DIPC_SUPPORT_SCICLIENT -DIPC_EXCLUDE_POLLED_RX -DMAILBOX_INTERRUPT_MODE
 endif
 
-ifeq ($(SOC),$(filter $(SOC), j721e))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200))
   CFLAGS_LOCAL_COMMON += -DIPC_SUPPORT_SCICLIENT -DIPC_EXCLUDE_POLLED_RX -DMAILBOX_INTERRUPT_MODE
 endif
 

@@ -279,7 +279,7 @@ uint64_t Ipc_getTimeInUsec(uint64_t frq)
 void Ipc_setCoreFrq(uint32_t selfId)
 {
     uint32_t clkMhz = 2000;
-#if defined(SOC_J721E)
+#if defined(SOC_J721E) || defined(SOC_J7200)
     switch(selfId)
     {
         case IPC_MPU1_0:    clkMhz = 2000;    break;
@@ -287,11 +287,13 @@ void Ipc_setCoreFrq(uint32_t selfId)
         case IPC_MCU1_1:    clkMhz = 1000;    break; 
         case IPC_MCU2_0:
         case IPC_MCU2_1:    clkMhz = 1000;    break;
+#if defined(SOC_J721E)
         case IPC_MCU3_0:
         case IPC_MCU3_1:    clkMhz = 1000;    break;
         case IPC_C66X_1:
         case IPC_C66X_2:    clkMhz = 1350;    break;
         case IPC_C7X_1:     clkMhz = 1000;    break;
+#endif
 
         default:            clkMhz = 2000;    break;
     }

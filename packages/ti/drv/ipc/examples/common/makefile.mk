@@ -18,7 +18,7 @@ ifeq ($(BUILD_OS_TYPE), baremetal)
   ifeq ($(ISA),$(filter $(ISA), a53, a72))
     LNKFLAGS_LOCAL_$(CORE) += --entry Entry
   endif
-  ifeq ($(SOC),$(filter $(SOC), j721e am65xx))
+  ifeq ($(SOC),$(filter $(SOC), j721e j7200 am65xx))
 	  EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/$(SOC)/linker_$(ISA)_$(CORE).lds
   endif
 else
@@ -27,7 +27,7 @@ else
   SRCS_COMMON += main_tirtos.c
   # Enable XDC build for application by providing XDC CFG File per core
   XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
-ifeq ($(SOC),$(filter $(SOC), j721e))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200))
   XDC_CFG_UPDATE_$(CORE) = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/j721e/ipc_override.cfg
   ifeq ($(ECHO_TEST_BTCM), 1)
     ifeq ($(ISA), r5f)

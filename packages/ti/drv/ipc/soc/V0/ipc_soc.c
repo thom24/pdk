@@ -185,13 +185,13 @@ int32_t Ipc_getMailboxInfoRx(uint32_t selfId, uint32_t remoteId,
 
 }
 
-uint32_t Ipc_getMailboxBaseAddr(uint32_t custerId)
+uint32_t Ipc_getMailboxBaseAddr(uint32_t clusterId)
 {
     uint32_t baseAddr = 0x00000000U;
 
-    if( custerId < IPC_MAX_PROCS)
+    if( clusterId < IPC_MAILBOX_CLUSTER_CNT)
     {
-        baseAddr = g_IPC_Mailbox_BaseAddr[custerId];
+        baseAddr = g_IPC_Mailbox_BaseAddr[clusterId];
     }
 
     return baseAddr;

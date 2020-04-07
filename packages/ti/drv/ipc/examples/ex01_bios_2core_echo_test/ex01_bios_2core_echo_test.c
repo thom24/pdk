@@ -120,6 +120,7 @@ uint8_t *pRecvTaskBuf = g_rspBuf;
 uint8_t *pSysVqBuf = sysVqBuf;
 
 /* am65x can only use MCU1_0 and MCU1_1 for this 2-core IPC echo test */
+/* j7200 uses MCU1_0 and MCU2_0 for this 2-core IPC echo test */
 
 #ifdef BUILD_MCU1_0
 uint32_t selfProcId = IPC_MCU1_0;
@@ -127,6 +128,9 @@ uint32_t remoteProc[] =
 {
 #if defined (SOC_AM65XX)
     IPC_MCU1_1
+#endif
+#if defined (SOC_J7200)
+    IPC_MCU2_0
 #endif
 };
 #endif
@@ -142,12 +146,18 @@ uint32_t remoteProc[] =
 #endif
 
 /* For j721e, we use MCU2_0 and C66X_1 for this 2-core IPC echo test */
+/* j7200 uses MCU1_0 and MCU2_0 for this 2-core IPC echo test */
 
 #ifdef BUILD_MCU2_0
 uint32_t selfProcId = IPC_MCU2_0;
 uint32_t remoteProc[] =
 {
+#if defined (SOC_J721E)
     IPC_C66X_1
+#endif
+#if defined (SOC_J7200)
+    IPC_MCU1_0
+#endif
 };
 #endif
 

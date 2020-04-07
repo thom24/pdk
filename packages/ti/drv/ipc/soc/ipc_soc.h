@@ -69,7 +69,7 @@ int32_t Ipc_getMailboxInfoRx(uint32_t selfId, uint32_t remoteId,
                  uint32_t *clusterId, uint32_t *userId, uint32_t *queueId);
 int32_t Ipc_getMailboxIntrRouterCfg(uint32_t selfId, uint32_t clusterId,
                  uint32_t userId, Ipc_MbConfig* cfg, uint32_t cnt);
-uint32_t Ipc_getMailboxBaseAddr(uint32_t custerId);
+uint32_t Ipc_getMailboxBaseAddr(uint32_t clusterId);
 
 /**
  * \brief Returns the core name for get core id
@@ -100,7 +100,7 @@ uint32_t Ipc_isCacheCoherent(void);
 #endif
 
 /* For J7ES device */
-#if defined (SOC_J721E) || defined (SOC_AM77X)
+#if defined (SOC_J721E) || defined (SOC_AM77X) || defined (SOC_J7200)
 #include <ti/drv/ipc/soc/V1/ipc_soc.h>
 #endif
 

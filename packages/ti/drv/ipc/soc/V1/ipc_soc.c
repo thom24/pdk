@@ -93,11 +93,13 @@ static Ipc_ProcInfo g_Ipc_mp_procInfo[IPC_MAX_PROCS] =
     {IPC_MCU1_1,      "mcu1_1"},      /**< ARM MCU  R5F - core1 */
     {IPC_MCU2_0,      "mcu2_0"},      /**< ARM Main R5F - core0 */
     {IPC_MCU2_1,      "mcu2_1"},      /**< ARM Main R5F - core1 */
+#if defined (SOC_J721E)
     {IPC_MCU3_0,      "mcu3_0"},      /**< ARM Main R5F - core2 */
     {IPC_MCU3_1,      "mcu3_1"},      /**< ARM Main R5F - core3 */
     {IPC_C66X_1,      "C66X_1"},      /**< DSP C66x - core0  */
     {IPC_C66X_2,      "C66X_2"},      /**< DSP C66x - core1  */
     {IPC_C7X_1,       "C7X_1"},       /**< DSP C7x - core0 */
+#endif
     {IPC_MPU1_1,      "mpu1_1"}       /**< ARM A72 - VM1 */
 };
 
@@ -127,11 +129,13 @@ static Ipc_MailboxInfo   g_IPC_MailboxInfo[IPC_MAX_PROCS][IPC_MAX_PROCS] =
         { {    0U,    0U,  2U}, {    0U,    0U,    3U} },  /* mcu-r5f1 */
         { {    1U,    0U,  0U}, {    1U,    0U,    1U} },  /* main-r5f0 */
         { {    1U,    0U,  2U}, {    1U,    0U,    3U} },  /* main-r5f1 */
+#if defined (SOC_J721E)
         { {    2U,    0U,  0U}, {    2U,    0U,    1U} },  /* main-r5f2 */
         { {    2U,    0U,  2U}, {    2U,    0U,    3U} },  /* main-r5f3 */
         { {    3U,    0U,  0U}, {    3U,    0U,    1U} },  /* C66x-0 */
         { {    3U,    0U,  2U}, {    3U,    0U,    3U} },  /* C66x-1 */
         { {    4U,    0U,  0U}, {    4U,    0U,    1U} },  /* C7x-1 */
+#endif
         { {    0U,    0U, 10U}, {    0U,    0U,   11U} }   /* A72-vm1 */
     },
     /* Host Processor - mcu1_0 	*/
@@ -141,11 +145,13 @@ static Ipc_MailboxInfo   g_IPC_MailboxInfo[IPC_MAX_PROCS][IPC_MAX_PROCS] =
         { {    0U,    1U,  4U }, {    0U,    1U,  5U} },  /* mcu-r5f1 */
         { {    7U,    0U,  0U }, {    5U, 0xFFU,  2U} },  /* main-r5f0 */
         { {    7U,    0U,  1U }, {    5U, 0xFFU, 10U} },  /* main-r5f1 */
+#if defined (SOC_J721E)
         { {    7U,    0U,  2U }, {    6U, 0xFFU,  2U} },  /* main-r5f2 */
         { {    7U,    0U,  3U }, {    6U, 0xFFU, 10U} },  /* main-r5f3 */
         { {    7U,    1U,  4U }, {    8U, 0xFFU,  4U} },  /* C66x-0 */
         { {    7U,    1U,  5U }, {    8U, 0xFFU, 12U} },  /* C66x-1 */
         { {    7U,    1U,  6U }, {    9U, 0xFFU,  4U} },  /* C7x-1 */
+#endif
         { {    0U,    1U,  7U }, {    0U,    1U,  6U} }   /* A72-vm1 */
     },
     /* Host Processor - mcu1_1 */
@@ -155,11 +161,13 @@ static Ipc_MailboxInfo   g_IPC_MailboxInfo[IPC_MAX_PROCS][IPC_MAX_PROCS] =
         { { 0xFFU, 0xFFU,  0U }, { 0xFFU, 0xFFU,  0U} },  /* Self - mcu-r5f1 */
         { {    7U,    2U,  8U }, {    5U, 0xFFU,  3U} },  /* main-r5f0 */
         { {    7U,    2U,  9U }, {    5U, 0xFFU, 11U} },  /* main-r5f1 */
+#if defined (SOC_J721E)
         { {    7U,    2U, 10U }, {    6U, 0xFFU,  3U} },  /* main-r5f2 */
         { {    7U,    2U, 11U }, {    6U, 0xFFU, 11U} },  /* main-r5f3 */
         { {    7U,    3U, 12U }, {    8U, 0xFFU,  5U} },  /* C66x-0 */
         { {    7U,    3U, 13U }, {    8U, 0xFFU, 13U} },  /* C66x-1 */
         { {    7U,    3U, 14U }, {    9U, 0xFFU,  5U} },  /* C7x-1 */
+#endif
         { {    0U,    2U,  9U }, {    0U,    2U,  8U} }   /* A72-vm1 */
     },
     /* Host Processor - mcu2_0  */
@@ -169,11 +177,13 @@ static Ipc_MailboxInfo   g_IPC_MailboxInfo[IPC_MAX_PROCS][IPC_MAX_PROCS] =
         { {    5U,    0U,  3U}, {    7U, 0xFFU, 8U} },  /* mcu-r5f1 */
         { { 0xFFU, 0xFFU,  0U}, { 0xFFU, 0xFFU, 0U} },  /* Self - main-r5f0 */
         { {    1U,    1U,  4U}, {    1U,    1U, 5U} },  /* main-r5f1 */
+#if defined (SOC_J721E)
         { {    5U,    0U,  0U}, {    6U, 0xFFU, 0U} },  /* main-r5f2 */
         { {    5U,    0U,  1U}, {    6U, 0xFFU, 8U} },  /* main-r5f3 */
         { {    5U,    1U,  4U}, {    8U, 0xFFU, 0U} },  /* C66x-0 */
         { {    5U,    1U,  5U}, {    8U, 0xFFU, 8U} },  /* C66x-1 */
         { {    5U,    1U,  6U}, {    9U, 0xFFU, 0U} },  /* C7x-1 */
+#endif
         { {    1U,    1U,  7U}, {    1U,    1U, 6U} }   /* A72-vm1 */
     },
     /* Host Processor - mcu2_1 */
@@ -183,13 +193,16 @@ static Ipc_MailboxInfo   g_IPC_MailboxInfo[IPC_MAX_PROCS][IPC_MAX_PROCS] =
         { {    5U,    2U, 11U }, {    7U, 0xFFU, 9U} },  /* mcu-r5f1 */
         { {    1U,    2U,  5U }, {    1U,    2U, 4U} },  /* main-r5f0 */
         { { 0xFFU, 0xFFU,  0U }, { 0xFFU, 0xFFU, 0U} },  /* Self - main-r5f1 */
+#if defined (SOC_J721E)
         { {    5U,    2U,  8U }, {    6U, 0xFFU, 1U} },  /* main-r5f2 */
         { {    5U,    2U,  9U }, {    6U, 0xFFU, 9U} },  /* main-r5f3 */
         { {    5U,    3U, 12U }, {    8U, 0xFFU, 1U} },  /* C66x-0 */
         { {    5U,    3U, 13U }, {    8U, 0xFFU, 9U} },  /* C66x-1 */
         { {    5U,    3U, 14U }, {    9U, 0xFFU, 1U} },  /* C7x-1 */
-        { {    0U,    2U,  9U }, {    0U,    2U, 8U} }   /* A72-vm1 */
+#endif
+        { {    1U,    2U,  9U }, {    1U,    2U, 8U} }   /* A72-vm1 */
     },
+#if defined (SOC_J721E)
     /* Host Processor - mcu3_0 */
     {
         { {    2U,    1U,  1U }, {    2U,    1U,  0U} },  /* A72-vm0 */
@@ -260,18 +273,21 @@ static Ipc_MailboxInfo   g_IPC_MailboxInfo[IPC_MAX_PROCS][IPC_MAX_PROCS] =
         { { 0xFFU, 0xFFU,  0U}, { 0xFFU, 0xFFU,  0U} },  /* Self - C7x-1 */
         { {    4U,    1U,  7U}, {    4U,    1U,  6U} }   /* A72-vm1 */
     },
+#endif
     /* Host Processor - A72-vm1	*/
     {
         { {    0U,    3U, 11U}, {    0U,    3U, 10U} },  /* A72-vm0 */
-        { {    3U,    3U,  6U}, {    3U,    3U,  7U} },  /* C66x-0 */
-        { {    3U,    3U,  8U}, {    3U,    3U,  9U} },  /* C66x-1 */
-        { {    1U,    3U,  6U}, {    1U,    3U,  7U} },  /* main-r5f0 */
-        { {    1U,    3U,  8U}, {    1U,    3U,  9U} },  /* main-r5f1 */
-        { {    2U,    3U,  6U}, {    2U,    3U,  7U} },  /* main-r5f2 */
-        { {    2U,    3U,  8U}, {    2U,    3U,  9U} },  /* main-r5f3 */
         { {    0U,    3U,  6U}, {    0U,    3U,  7U} },  /* mcu-r5f0 */
         { {    0U,    3U,  8U}, {    0U,    3U,  9U} },  /* mcu-r5f1 */
+	{ {    1U,    3U,  6U}, {    1U,    3U,  7U} },  /* main-r5f0 */
+        { {    1U,    3U,  8U}, {    1U,    3U,  9U} },  /* main-r5f1 */
+#if defined (SOC_J721E)
+	{ {    2U,    3U,  6U}, {    2U,    3U,  7U} },  /* main-r5f2 */
+        { {    2U,    3U,  8U}, {    2U,    3U,  9U} },  /* main-r5f3 */
+        { {    3U,    3U,  6U}, {    3U,    3U,  7U} },  /* C66x-0 */
+        { {    3U,    3U,  8U}, {    3U,    3U,  9U} },  /* C66x-1 */
         { {    4U,    3U,  6U}, {    4U,    3U,  7U} },  /* C7x-1 */
+#endif
         { { 0xFFU, 0xFFU,  0U}, { 0xFFU, 0xFFU,  0U} }   /* Self - A72-vm1 */
     }
 };
@@ -319,13 +335,13 @@ int32_t Ipc_getMailboxInfoRx(uint32_t selfId, uint32_t remoteId,
 
 }
 
-uint32_t Ipc_getMailboxBaseAddr(uint32_t custerId)
+uint32_t Ipc_getMailboxBaseAddr(uint32_t clusterId)
 {
     uint32_t baseAddr = 0x00000000U;
 
-    if( custerId < IPC_MAX_PROCS)
+    if( clusterId < IPC_MAILBOX_CLUSTER_CNT)
     {
-        baseAddr = g_IPC_Mailbox_BaseAddr[custerId];
+        baseAddr = g_IPC_Mailbox_BaseAddr[clusterId];
     }
 
     return baseAddr;
@@ -401,6 +417,7 @@ int32_t Ipc_setCoreEventId(uint32_t selfId, Ipc_MbConfig* cfg, uint32_t intrCnt)
         case IPC_MCU2_1:
             outIntrBaseNum = NAVSS512_MCU2R5F1_INPUT_MAILBOX_OFFSET;
             break;
+#if defined (SOC_J721E)
         case IPC_MCU3_0:
             outIntrBaseNum = NAVSS512_MCU3R5F0_INPUT_MAILBOX_OFFSET;
             break;
@@ -416,6 +433,7 @@ int32_t Ipc_setCoreEventId(uint32_t selfId, Ipc_MbConfig* cfg, uint32_t intrCnt)
         case IPC_C7X_1:
             outIntrBaseNum = NAVSS512_C7X1_INPUT_MAILBOX_OFFSET;
             break;
+#endif
         default:
             break;
     }
@@ -536,11 +554,13 @@ static const uint8_t map_dst_id[] =
     TISCI_DEV_MCU_R5FSS0_CORE1,
     TISCI_DEV_R5FSS0_CORE0,
     TISCI_DEV_R5FSS0_CORE1,
+#if defined (SOC_J721E)
     TISCI_DEV_R5FSS1_CORE0,
     TISCI_DEV_R5FSS1_CORE1,
     TISCI_DEV_C66SS0_CORE0,
     TISCI_DEV_C66SS1_CORE0,
     TISCI_DEV_COMPUTE_CLUSTER0_CLEC
+#endif
 };
 
 /* Indexed list of src ids */
@@ -568,11 +588,13 @@ static const uint16_t map_host_id[] =
     TISCI_HOST_ID_R5_2,
     TISCI_HOST_ID_MAIN_0_R5_0,
     TISCI_HOST_ID_MAIN_0_R5_2,
+#if defined (SOC_J721E)
     TISCI_HOST_ID_MAIN_1_R5_0,
     TISCI_HOST_ID_MAIN_1_R5_2,
     TISCI_HOST_ID_C6X_0_1,
     TISCI_HOST_ID_C6X_1_1,
     TISCI_HOST_ID_C7X_1
+#endif
 };
 /* Indexed list of req type */
 static const uint16_t req_type[] =
@@ -583,11 +605,13 @@ static const uint16_t req_type[] =
     TISCI_DEV_MCU_R5FSS0_CORE1,
     TISCI_DEV_R5FSS0_CORE0,
     TISCI_DEV_R5FSS0_CORE1,
+#if defined (SOC_J721E)
     TISCI_DEV_R5FSS1_CORE0,
     TISCI_DEV_R5FSS1_CORE1,
     TISCI_DEV_C66SS0_CORE0,
     TISCI_DEV_C66SS1_CORE0,
     TISCI_DEV_COMPUTE_CLUSTER0_CLEC
+#endif
 };
 
 /* Indexed list of req subtype */
@@ -599,11 +623,13 @@ static const uint16_t req_subtype[] =
     TISCI_RESASG_SUBTYPE_MCU_R5FSS0_CORE1_INTR_IRQ_GROUP0_FROM_NAVSS0_INTR_ROUTER_0,
     TISCI_RESASG_SUBTYPE_R5FSS0_CORE0_INTR_IRQ_GROUP0_FROM_NAVSS0_INTR_ROUTER_0,
     TISCI_RESASG_SUBTYPE_R5FSS0_CORE1_INTR_IRQ_GROUP0_FROM_NAVSS0_INTR_ROUTER_0,
+#if defined (SOC_J721E)
     TISCI_RESASG_SUBTYPE_R5FSS1_CORE0_INTR_IRQ_GROUP0_FROM_NAVSS0_INTR_ROUTER_0,
     TISCI_RESASG_SUBTYPE_R5FSS1_CORE1_INTR_IRQ_GROUP0_FROM_NAVSS0_INTR_ROUTER_0,
     TISCI_RESASG_SUBTYPE_C66SS0_CORE0_C66_EVENT_IN_SYNC_IRQ_GROUP1_FROM_C66SS0_INTROUTER0,
     TISCI_RESASG_SUBTYPE_C66SS1_CORE0_C66_EVENT_IN_SYNC_IRQ_GROUP1_FROM_C66SS1_INTROUTER0,
     TISCI_RESASG_SUBTYPE_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_IRQ_GROUP2_FROM_NAVSS0_INTR_ROUTER_0
+#endif
 };
 
 int32_t Ipc_sciclientIrqRelease(uint16_t coreId, uint32_t clusterId,

@@ -72,6 +72,7 @@ extern "C" {
 #define    IPC_MCU1_1           (2U)    /**< ARM MCU  R5F - core1 */
 #define    IPC_MCU2_0           (3U)    /**< ARM Main R5F - core0 */
 #define    IPC_MCU2_1           (4U)    /**< ARM Main R5F - core1 */
+#if defined (SOC_J721E)
 #define    IPC_MCU3_0           (5U)    /**< ARM Main R5F - core2 */
 #define    IPC_MCU3_1           (6U)    /**< ARM Main R5F - core3 */
 #define    IPC_C66X_1           (7U)    /**< DSP C66x - core0 */
@@ -79,6 +80,10 @@ extern "C" {
 #define    IPC_C7X_1            (9U)    /**< DSP C7x - core0 */
 #define    IPC_MPU1_1          (10U)    /**< ARM A72 - VM1 */
 #define    IPC_MAX_PROCS       (11U)    /**< Maximum Processors */
+#elif defined (SOC_J7200)
+#define    IPC_MPU1_1           (5U)    /**< ARM A72 - VM1 */
+#define    IPC_MAX_PROCS        (6U)    /**< Maximum Processors */
+#endif
 
 #define    IPC_MAILBOX_CLUSTER_CNT              (12U)
 #define    IPC_MAILBOX_USER_CNT                  (4U)
