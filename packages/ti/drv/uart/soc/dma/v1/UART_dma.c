@@ -239,7 +239,7 @@ void UART_receiveDMA(UART_Handle handle, const void *buffer, size_t size )
         paramSet.linkAddr   = 0xFFFFu;
         paramSet.bCntReload = (uint16_t) 0;
 
-#if !defined(SOC_AM437x)
+#if !defined(SOC_AM437x) && !defined(SOC_AM335X)
         /* Src is in INCR mode & Dest is in FIFO modes                            */
         paramSet.opt &= UART_EDMA3CC_OPT_DAM_INCR_MODE;
         paramSet.opt |= UART_EDMA3CC_OPT_SAM_CONST_MODE;
@@ -351,7 +351,7 @@ void UART_transmitDMA(UART_Handle handle, const void *buffer, size_t size )
                           & UART_EDMA3CC_PARAM_LINK_ADDR_MASK_VALUE);
         paramSet.bCntReload = (uint16_t) 0;
 
-#if !defined(SOC_AM437x)
+#if !defined(SOC_AM437x) && !defined(SOC_AM335X)
         /* Src is in INCR mode & Dest is in FIFO modes                            */
         paramSet.opt &= UART_EDMA3CC_OPT_SAM_INCR_MODE;
         paramSet.opt |= UART_EDMA3CC_OPT_DAM_CONST_MODE;
@@ -723,4 +723,3 @@ static void UART_txIsrHandler(uint32_t tcc, EDMA3_RM_TccStatus status, void* app
         }
     }
 }
-
