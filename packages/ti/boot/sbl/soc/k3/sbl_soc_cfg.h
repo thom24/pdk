@@ -38,7 +38,7 @@
 /*                             Include Files                                  */
 /* ========================================================================== */
 #include <ti/csl/soc.h>
-#include <ti/csl/cslr_vtm.h>
+#include <ti/csl/csl_vtm.h>
 #include <ti/drv/sciclient/sciclient.h>
 
 #if defined (SOC_J721E)

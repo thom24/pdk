@@ -662,8 +662,53 @@ static void J721E_SetupLeoPmicAvs(uint32_t opp)
     SBL_ADD_PROFILE_POINT;
 }
 
+
+#define J72XX_MAX_TEMP_VAL  (125000)
+#define J72XX_SAFE_TEMP_VAL (105000)
+static void J721E_EnableThermalMaxTempAlert(void)
+{
+    uint8_t id, numSens = 5;
+    int32_t retStatus = 0;
+    CSL_vtm_ts_ctrl_cfg ts_ctrl_cfg;
+    CSL_vtm_cfg2Regs    *p_vtm_cfg2_regs;
+
+    p_vtm_cfg2_regs = (CSL_vtm_cfg2Regs *) CSL_WKUP_VTM0_MMR_VBUSP_CFG2_BASE;
+
+    /* Cycle through all Temp sensors configs and program the Thermal shutdown values for each */
+    for (id = 0; id < numSens; id++)
+    {
+        ts_ctrl_cfg.valid_map = CSL_VTM_TS_CTRL_MAXT_OUTG_ALERT_VALID   |
+                                CSL_VTM_TS_CTRL_RESET_CTRL_VALID        |
+                                CSL_VTM_TS_CTRL_SOC_VALID               |
+                                CSL_VTM_TS_CTRL_MODE_VALID;
+
+        retStatus = CSL_vtmTsGetCtrl(p_vtm_cfg2_regs, id, &ts_ctrl_cfg);
+        if(retStatus != CSL_PASS)
+            SBL_log(SBL_LOG_ERR,"Failed to get Global Cfg values for Sensor ID %d \r\n", id);
+
+        ts_ctrl_cfg.valid_map = CSL_VTM_TS_CTRL_RESET_CTRL_VALID        |
+                                CSL_VTM_TS_CTRL_SOC_VALID               |
+                                CSL_VTM_TS_CTRL_MODE_VALID;
+
+        ts_ctrl_cfg.adc_stat   = CSL_VTM_TS_CTRL_SINGLESHOT_ADC_CONV_IN_PROGRESS;
+        ts_ctrl_cfg.mode       = CSL_VTM_TS_CTRL_CONTINUOUS_MODE;
+        ts_ctrl_cfg.tsReset    = CSL_VTM_TS_CTRL_SENSOR_NORM_OP;
+
+        retStatus = CSL_vtmTsSetCtrl(p_vtm_cfg2_regs, id, &ts_ctrl_cfg, FALSE);
+        if(retStatus != CSL_PASS)
+            SBL_log(SBL_LOG_ERR,"Failed to Set Global Cfg values for Sensor ID %d \r\n", id);
+
+        /* Set allowed Max Temp at which SoC will run, and the Safe Temp it needs to return to after hitting the Max */
+        retStatus = CSL_vtmTsSetMaxTOutRgAlertThr(p_vtm_cfg2_regs, id, (int32_t)J72XX_MAX_TEMP_VAL, (int32_t)J72XX_SAFE_TEMP_VAL);
+        if(retStatus != CSL_PASS)
+            SBL_log(SBL_LOG_ERR,"Failed to program TSHUT temp values for Sensor ID %d \r\n", id);
+    }
+}
+
 void SBL_SocLateInit(void)
 {
+    J721E_EnableThermalMaxTempAlert();
+
     SBL_ADD_PROFILE_POINT;
 
 	J721E_SetupLeoPmicAvs(SBL_OPP_NOM);
