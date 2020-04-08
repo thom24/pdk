@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2018-2019 Texas Instruments Incorporated
+ *  Copyright (C) 2018-2020 Texas Instruments Incorporated
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -112,12 +112,74 @@ int32_t Sciclient_rmGetResourceRange(
  *  \brief Configures a peripheral to processor IRQ
  *
  *  Configures an interrupt route between the peripheral and host processor
- *  specified within the #tisci_msg_rm_irq_set_req payload.  The interrupt destination
- *  is either the processor sending the request, or the secondary host if it's
- *  defined as a valid host.  The shortest route between the peripheral and the
- *  host processor is programmed.  Interrupts are not configured on the host
- *  processor.  Information received from the tisci_msg_rm_irq_set_resp
- *  message must be used by the host to complete hookup of the irq.
+ *  specified within the #tisci_msg_rm_irq_set_req payload.  The interrupt
+ *  destination is either the processor sending the request, or the secondary
+ *  host if it's defined as a valid host.  The following message valid_params
+ *  bit combinations are allowed:
+ *
+ *  Non-Event Sourced Direct Interrupt - Non-event peripheral interrupt direct
+ *                                       to destination processor.  One thing
+ *                                       to note is an IA unmapped VINT route
+ *                                       can be configured via this combination
+ *                                       by passing the IA ID and VINT values
+ *                                       as the src_id and src_index parameters.
+ *                                       An IA unmapped VINT route is considered
+ *                                       a non-event sourced direct interrupt
+ *                                       route until a global event is mapped
+ *                                       to the IA VINT:
+ *    dst_id valid bit == true
+ *    dst_host_irq valid bit == true
+ *    ia_id valid bit == false
+ *    vint valid bit == false
+ *    global_event valid bit == false
+ *    vint_status_bit_index valid bit == false
+ *
+ *  Event Sourced Direct Interrupt - Event-based peripheral interrupt direct
+ *                                   to destination processor:
+ *    dst_id valid bit == true
+ *    dst_host_irq valid bit == true
+ *    ia_id valid bit == true
+ *    vint valid bit == true
+ *    global_event valid bit == true
+ *    vint_status_bit_index valid bit == true
+ *
+ *  Unmapped VINT Direct Interrupt - Event-based peripheral interrupt direct to
+ *                                   processor with no global event to VINT
+ *                                   status bit mapping configured on allocation
+ *                                   of the VINT.  Allows all event to VINT
+ *                                   status bit mappings to take place at a
+ *                                   later time:
+ *    dst_id valid bit == true
+ *    dst_host_irq valid bit == true
+ *    ia_id valid bit == true
+ *    vint valid bit == true
+ *    global_event valid bit == false
+ *    vint_status_bit_index valid bit == false
+ *
+ *  Event to VINT Mapping Only - Configure, or add a mapping to, an event-based
+ *                               peripheral interrupt polled from IA VINT
+ *                               real-time registers.  Can also be used to add
+ *                               an event to VINT status bit mapping to an
+ *                               event-based direct interrupt route:
+ *    dst_id valid bit == false
+ *    dst_host_irq valid bit == false
+ *    ia_id valid bit == true
+ *    vint valid bit == true
+ *    global_event valid bit == true
+ *    vint_status_bit_index valid bit == true
+ *
+ *  OES Register Programming Only - Only programs the OES register of the
+ *                                  source.  Useful for setting UDMAP trigger
+ *                                  events and any other events that are not
+ *                                  translated to the interrupt domain:
+ *    dst_id valid bit == false
+ *    dst_host_irq valid bit == false
+ *    ia_id valid bit == false
+ *    vint valid bit == false
+ *    global_event valid bit == true
+ *    vint_status_bit_index valid bit == false
+ *  The shortest route between the peripheral and the host processor is
+ *  programmed.  Interrupts are not configured on the host processor.
  *
  *  \n<b>Message</b>:    #TISCI_MSG_RM_IRQ_SET
  *  \n<b>Request</b>:    #tisci_msg_rm_irq_set_req
@@ -141,7 +203,79 @@ int32_t Sciclient_rmIrqSet(const struct tisci_msg_rm_irq_set_req *req,
  *
  *  Releases a previously configured interrupt route between a peripheral and
  *  host processor.  The interrupt destination is either the processor sending
- *  the request, or the secondary host if it's defined as a valid host.
+ *  the request, or the secondary host if it's defined as a valid host.  The
+ *  following valid_params valid bit combinations are allowed:
+ *
+ *  Non-Event Sourced Direct Interrupt - Non-event peripheral interrupt direct
+ *                                       to destination processor.  One thing
+ *                                       to note is an IA unmapped VINT route
+ *                                       can be released via this combination
+ *                                       by passing the IA ID and VINT values
+ *                                       as the src_id and src_index parameters.
+ *                                       An IA unmapped VINT route is considered
+ *                                       a non-event sourced direct interrupt
+ *                                       route until a global event is mapped
+ *                                       to the IA VINT:
+ *    dst_id valid bit == true
+ *    dst_host_irq valid bit == true
+ *    ia_id valid bit == false
+ *    vint valid bit == false
+ *    global_event valid bit == false
+ *    vint_status_bit_index valid bit == false
+ *
+ *  Event Sourced Direct Interrupt - Event-based peripheral interrupt direct
+ *                                   to destination processor:
+ *    dst_id valid bit == true
+ *    dst_host_irq valid bit == true
+ *    ia_id valid bit == true
+ *    vint valid bit == true
+ *    global_event valid bit == true
+ *    vint_status_bit_index valid bit == true
+ *
+ *  Unmapped VINT Direct Interrupt - Clear event-based interrupt direct to
+ *                                   destination processor which does not have
+ *                                   any existing event to VINT status bit
+ *                                   mappings:
+ *    dst_id valid bit == true
+ *    dst_host_irq valid bit == true
+ *    ia_id valid bit == true
+ *    vint valid bit == true
+ *    global_event valid bit == false
+ *    vint_status_bit_index valid bit == false
+ *
+ *  Event to VINT Mapping Only - Clear only peripheral OES register and event to
+ *                               VINT status bit mapping from direct to processor
+ *                               and polled routes.  Event-based peripheral
+ *                               interrupt polled routes are polled from the IA
+ *                               VINT real-time registers.  For direct to
+ *                               processor routes the entire route is NOT
+ *                               released when the last event to VINT status bit
+ *                               is unmapped using this valid bit combination.
+ *                               This differs from using the Event Source Direct
+ *                               Interrupt valid bit combination where the entire
+ *                               route is released when the last event to VINT
+ *                               status bit mapping is cleared.  The Unmapped
+ *                               VINT Direct Interrupt valid bit combination is
+ *                               used to clear an event sourced direct interrupt
+ *                               with no existing event to VINT status bit
+ *                               mappings:
+ *    dst_id valid bit == false
+ *    dst_host_irq valid bit == false
+ *    ia_id valid bit == true
+ *    vint valid bit == true
+ *    global_event valid bit == true
+ *    vint_status_bit_index valid bit == true
+ *
+ *  OES Register Programming Only - Only clears the OES register of the
+ *                                  source.  Useful for clearing UDMAP trigger
+ *                                  events and any other events that are not
+ *                                  translated to the interrupt domain:
+ *    dst_id valid bit == false
+ *    dst_host_irq valid bit == false
+ *    ia_id valid bit == false
+ *    vint valid bit == false
+ *    global_event valid bit == true
+ *    vint_status_bit_index valid bit == false
  *
  *  \n<b>Message</b>:    #TISCI_MSG_RM_IRQ_RELEASE
  *  \n<b>Request</b>:    #tisci_msg_rm_irq_release_req
@@ -155,6 +289,53 @@ int32_t Sciclient_rmIrqSet(const struct tisci_msg_rm_irq_set_req *req,
  */
 int32_t Sciclient_rmIrqRelease(const struct tisci_msg_rm_irq_release_req *req,
                                uint32_t timeout);
+
+/**
+ *  \brief Configures individual peripherals within the interrupt subsystem
+ *         (interrupt routers, interrupt aggregators, etc.) according to the
+ *         configuration provided.  Each call of the API only configures a single
+ *         peripheral within the interrupt route.  Multiple calls of the API are
+ *         required to setup a complete interrupt connection between source and
+ *         destination which contains multiple hops.
+ *
+ *  \n<b>Message</b>:    #TISCI_MSG_RM_IRQ_SET
+ *  \n<b>Request</b>:    #tisci_msg_rm_irq_set_req
+ *  \n<b>Response</b>:   #tisci_msg_rm_irq_set_resp
+ *
+ *  \param  req             Pointer to interrupt peripheral set payload
+ *
+ *  \param  resp            Pointer to interrupt peripheral set response payload
+ *
+ *  \param  timeout         Gives a sense of how long to wait for the operation.
+ *                          Refer \ref Sciclient_ServiceOperationTimeout.
+ *
+ *  \return CSL_PASS on success, else failure
+ */
+int32_t Sciclient_rmIrqSetRaw(const struct tisci_msg_rm_irq_set_req *req,
+                              const struct tisci_msg_rm_irq_set_resp *resp,
+                              uint32_t timeout);
+
+/**
+ *  \brief Releases configurations within individual peripherals within the
+ *         interrupt subsystem (interrupt routers, interrupt aggregators, etc.)
+ *         according to the configuration provided.  Each call of the API only
+ *         releases a configuration within a single peripheral within the
+ *         interrupt route.  Multiple calls of the API are required to teardown
+ *         a complete interrupt connection between source and destination which
+ *         contains multiple hops.
+ *
+ *  \n<b>Message</b>:    #TISCI_MSG_RM_IRQ_RELEASE
+ *  \n<b>Request</b>:    #tisci_msg_rm_irq_release_req
+ *
+ *  \param  req             Pointer to interrupt peripheral release payload
+ *
+ *  \param  timeout         Gives a sense of how long to wait for the operation.
+ *                          Refer \ref Sciclient_ServiceOperationTimeout.
+ *
+ *  \return CSL_PASS on success, else failure
+ */
+int32_t Sciclient_rmIrqReleaseRaw(const struct tisci_msg_rm_irq_release_req *req,
+                                  uint32_t timeout);
 
 /**
  *  \brief Configures a Navigator Subsystem ring

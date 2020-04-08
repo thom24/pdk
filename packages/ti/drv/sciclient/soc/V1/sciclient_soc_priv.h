@@ -39,6 +39,8 @@
 #ifndef SCICLIENT_SOC_PRIV_H_
 #define SCICLIENT_SOC_PRIV_H_
 
+#include <ti/drv/sciclient/soc/V1/sciclient_irq_rm.h>
+
 #if defined (BUILD_HS)
 #include <ti/drv/sciclient/soc/V1/sciclient_defaultBoardcfg_hexhs.h>
 #include <ti/drv/sciclient/soc/V1/sciclient_defaultBoardcfg_rm_hexhs.h>

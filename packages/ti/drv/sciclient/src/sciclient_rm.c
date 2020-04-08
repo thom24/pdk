@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2019, Texas Instruments Incorporated
+ * Copyright (c) 2018-2020, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,6 +44,7 @@
 #include <stdint.h>
 #include <ti/csl/csl_types.h>
 #include <ti/drv/sciclient/sciclient.h>
+#include <ti/drv/sciclient/src/sciclient_rm_priv.h>
 #include <string.h>
 
 #include <ti/csl/tistdtypes.h>
@@ -115,6 +116,21 @@ int32_t Sciclient_rmIrqSet(const struct tisci_msg_rm_irq_set_req *req,
                            const struct tisci_msg_rm_irq_set_resp *resp,
                            uint32_t timeout)
 {
+    return Sciclient_rmProgramInterruptRoute(req, resp, timeout);
+}
+
+int32_t Sciclient_rmIrqRelease(const struct tisci_msg_rm_irq_release_req *req,
+                               uint32_t timeout)
+{
+    struct tisci_msg_rm_irq_release_resp resp;
+
+    return Sciclient_rmClearInterruptRoute(req, &resp, timeout);
+}
+
+int32_t Sciclient_rmIrqSetRaw(const struct tisci_msg_rm_irq_set_req *req,
+                              const struct tisci_msg_rm_irq_set_resp *resp,
+                              uint32_t timeout)
+{
     int32_t r;
     Sciclient_ReqPrm_t sciReq ;
     sciReq.messageType    = TISCI_MSG_RM_IRQ_SET;
@@ -138,8 +154,8 @@ int32_t Sciclient_rmIrqSet(const struct tisci_msg_rm_irq_set_req *req,
     return r;
 }
 
-int32_t Sciclient_rmIrqRelease(const struct tisci_msg_rm_irq_release_req *req,
-                               uint32_t timeout)
+int32_t Sciclient_rmIrqReleaseRaw(const struct tisci_msg_rm_irq_release_req *req,
+                                  uint32_t timeout)
 {
     int32_t r;
 

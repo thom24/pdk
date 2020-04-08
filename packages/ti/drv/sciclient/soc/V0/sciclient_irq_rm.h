@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2019-2020 Texas Instruments Incorporated
+ *  Copyright (C) 2020 Texas Instruments Incorporated
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -31,39 +31,40 @@
  *
  */
 /**
- *  \file V0/sciclient_soc_priv.h
+ *  \file V0/sciclient_irq_rm.h
  *
- *  \brief Private AM65xx specific SOC file
+ *  \brief Private AM65xx specific RM interrupt data
  */
 
-#ifndef SCICLIENT_SOC_PRIV_H_
-#define SCICLIENT_SOC_PRIV_H_
+#ifndef SCICLIENT_IRQ_RM_H_
+#define SCICLIENT_IRQ_RM_H_
 
-#include <ti/drv/sciclient/soc/V0/sciclient_irq_rm.h>
+/* ========================================================================== */
+/*                             Include Files                                  */
+/* ========================================================================== */
 
-#if defined (BUILD_HS)
-#include <ti/drv/sciclient/soc/V0/sciclient_defaultBoardcfg_hexhs.h>
-#include <ti/drv/sciclient/soc/V0/sciclient_defaultBoardcfg_rm_hexhs.h>
-#include <ti/drv/sciclient/soc/V0/sciclient_defaultBoardcfg_pm_hexhs.h>
-#include <ti/drv/sciclient/soc/V0/sciclient_defaultBoardcfg_security_hexhs.h>
-#else
-#include <ti/drv/sciclient/soc/V0/sciclient_defaultBoardcfg_hex.h>
-#include <ti/drv/sciclient/soc/V0/sciclient_defaultBoardcfg_rm_hex.h>
-#include <ti/drv/sciclient/soc/V0/sciclient_defaultBoardcfg_pm_hex.h>
-#include <ti/drv/sciclient/soc/V0/sciclient_defaultBoardcfg_security_hex.h>
-#endif
+#include <stdint.h>
 
-#if defined (BUILD_MCU1_0)
-#define SCICLIENT_CONTEXT_NONSEC    (SCICLIENT_CONTEXT_R5_NONSEC_0)
-#define SCICLIENT_CONTEXT_SEC       (SCICLIENT_CONTEXT_R5_SEC_0)
-#endif
-#if defined (BUILD_MCU1_1)
-#define SCICLIENT_CONTEXT_NONSEC    (SCICLIENT_CONTEXT_R5_NONSEC_1)
-#define SCICLIENT_CONTEXT_SEC       (SCICLIENT_CONTEXT_R5_SEC_1)
-#endif
-#if defined (BUILD_MPU1_0)
-#define SCICLIENT_CONTEXT_NONSEC    (SCICLIENT_CONTEXT_A53_NONSEC_0)
-#define SCICLIENT_CONTEXT_SEC       (SCICLIENT_CONTEXT_A53_SEC_0)
-#endif
+/* ========================================================================== */
+/*                           Macros & Typedefs                                */
+/* ========================================================================== */
 
-#endif /* SCICLIENT_SOC_PRIV_H_ */
+#define SCICLIENT_RM_IA_NUM_INST 4
+
+#define SCICLIENT_RM_IR_NUM_INST 8
+
+#define SCICLIENT_IRQ_MAX_ROUTE_DEPTH 3
+
+/* ========================================================================== */
+/*                         Structure Declarations                             */
+/* ========================================================================== */
+
+/* None */
+
+/* ========================================================================== */
+/*                            Global Variables                                */
+/* ========================================================================== */
+
+/* None */
+
+#endif /* SCICLIENT_IRQ_RM_H_ */

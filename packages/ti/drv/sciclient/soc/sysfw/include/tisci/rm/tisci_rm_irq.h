@@ -190,7 +190,7 @@
  * TISCI message header is the route destination.
  */
 struct tisci_msg_rm_irq_set_req {
-    struct tisci_header    hdr;
+    struct tisci_header hdr;
     uint32_t            valid_params;
     uint16_t            src_id;
     uint16_t            src_index;
@@ -199,8 +199,8 @@ struct tisci_msg_rm_irq_set_req {
     uint16_t            ia_id;
     uint16_t            vint;
     uint16_t            global_event;
-    uint8_t            vint_status_bit_index;
-    uint8_t            secondary_host;
+    uint8_t         vint_status_bit_index;
+    uint8_t         secondary_host;
 } __attribute__((__packed__));
 
 /**
@@ -224,20 +224,20 @@ struct tisci_msg_rm_irq_set_resp {
  *                                dst_host_irq.  Both the src_id and the
  *                                dst_id must be the device ID of the
  *                                IR being configured.
- *   @ref tisci_msg_rm_irq_set_req::dst_id valid bit == STRUE
- *   @ref tisci_msg_rm_irq_set_req::dst_host_irq valid bit == STRUE
- *   @ref tisci_msg_rm_irq_set_req::ia_id valid bit == SFALSE
- *   @ref tisci_msg_rm_irq_set_req::vint valid bit == SFALSE
- *   @ref tisci_msg_rm_irq_set_req::global_event valid bit == SFALSE
- *   @ref tisci_msg_rm_irq_set_req::vint_status_bit_index valid bit == SFALSE
+ *   @ref tisci_msg_rm_irq_release_req::dst_id valid bit == STRUE
+ *   @ref tisci_msg_rm_irq_release_req::dst_host_irq valid bit == STRUE
+ *   @ref tisci_msg_rm_irq_release_req::ia_id valid bit == SFALSE
+ *   @ref tisci_msg_rm_irq_release_req::vint valid bit == SFALSE
+ *   @ref tisci_msg_rm_irq_release_req::global_event valid bit == SFALSE
+ *   @ref tisci_msg_rm_irq_release_req::vint_status_bit_index valid bit == SFALSE
  * Event to VINT Unmap Only - Clear only peripheral OES register and event to
  *                            VINT status bit mapping
- *   @ref tisci_msg_rm_irq_set_req::dst_id valid bit == SFALSE
- *   @ref tisci_msg_rm_irq_set_req::dst_host_irq valid bit == SFALSE
- *   @ref tisci_msg_rm_irq_set_req::ia_id valid bit == STRUE
- *   @ref tisci_msg_rm_irq_set_req::vint valid bit == STRUE
- *   @ref tisci_msg_rm_irq_set_req::global_event valid bit == STRUE
- *   @ref tisci_msg_rm_irq_set_req::vint_status_bit_index valid bit == STRUE
+ *   @ref tisci_msg_rm_irq_release_req::dst_id valid bit == SFALSE
+ *   @ref tisci_msg_rm_irq_release_req::dst_host_irq valid bit == SFALSE
+ *   @ref tisci_msg_rm_irq_release_req::ia_id valid bit == STRUE
+ *   @ref tisci_msg_rm_irq_release_req::vint valid bit == STRUE
+ *   @ref tisci_msg_rm_irq_release_req::global_event valid bit == STRUE
+ *   @ref tisci_msg_rm_irq_release_req::vint_status_bit_index valid bit == STRUE
  * OES Register Programming Only - Only clears the OES register of the
  *                                 source.  Useful for clearing UDMAP trigger
  *                                 events and any other events that are not
@@ -316,7 +316,7 @@ struct tisci_msg_rm_irq_set_resp {
  * the TISCI message header is the route destination.
  */
 struct tisci_msg_rm_irq_release_req {
-    struct tisci_header    hdr;
+    struct tisci_header hdr;
     uint32_t            valid_params;
     uint16_t            src_id;
     uint16_t            src_index;
@@ -325,8 +325,8 @@ struct tisci_msg_rm_irq_release_req {
     uint16_t            ia_id;
     uint16_t            vint;
     uint16_t            global_event;
-    uint8_t            vint_status_bit_index;
-    uint8_t            secondary_host;
+    uint8_t         vint_status_bit_index;
+    uint8_t         secondary_host;
 } __attribute__((__packed__));
 
 /**
