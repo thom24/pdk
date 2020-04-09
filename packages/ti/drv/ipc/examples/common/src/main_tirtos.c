@@ -156,7 +156,21 @@ static Void taskFxn(UArg a0, UArg a1)
 extern void Osal_initMmuDefault(void);
 void InitMmu(void)
 {
+#if defined (__C7100__)
+    Mmu_MapAttrs attrs;
+#endif
+
     Osal_initMmuDefault();
+
+#if defined (__C7100__)
+    Mmu_initMapAttrs(&attrs);
+
+    /*
+     * Linux IPC VRing Buffer - uncached
+     */
+    attrs.attrIndx =  Mmu_AttrIndx_MAIR4;
+    (void)Mmu_map(0xA8000000U, 0xA8000000U, 0x00100000U, &attrs);
+#endif
 }
 #endif
 
