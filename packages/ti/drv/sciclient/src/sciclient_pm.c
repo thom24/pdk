@@ -598,16 +598,18 @@ int32_t Sciclient_pmEnableWdt(uint32_t timeout)
 {
     int32_t retVal = CSL_PASS;
     Sciclient_ReqPrm_t reqParam ;
+    struct tisci_msg_enable_wdt_req request = {0};
+    struct tisci_msg_enable_wdt_resp response = {0};
     reqParam.messageType    = (uint16_t) TISCI_MSG_ENABLE_WDT;
     reqParam.flags          = (uint32_t) TISCI_MSG_FLAG_AOP;
-    reqParam.pReqPayload    = (const uint8_t *) 0;
-    reqParam.reqPayloadSize = (uint32_t) 0;
+    reqParam.pReqPayload    = (const uint8_t *) &request;
+    reqParam.reqPayloadSize = (uint32_t) sizeof(request);
     reqParam.timeout        = (uint32_t) timeout;
 
     Sciclient_RespPrm_t respParam ;
     respParam.flags           = (uint32_t) 0;   /* Populated by the API */
-    respParam.pRespPayload    = (uint8_t *) 0;
-    respParam.respPayloadSize = (uint32_t) 0;
+    respParam.pRespPayload    = (uint8_t *) &response;
+    respParam.respPayloadSize = (uint32_t) sizeof(response);
 
     retVal = Sciclient_service(&reqParam, &respParam);
     if((retVal != CSL_PASS) ||
@@ -622,17 +624,19 @@ int32_t Sciclient_pmDisableWakeup(uint32_t timeout)
 {
     int32_t retVal = CSL_PASS;
 
-   Sciclient_ReqPrm_t reqParam;
-   reqParam.messageType    = (uint16_t) TISCI_MSG_WAKE_RESET;
-   reqParam.flags          = (uint32_t) TISCI_MSG_FLAG_AOP;
-   reqParam.pReqPayload    = (const uint8_t *) 0;
-   reqParam.reqPayloadSize = (uint32_t) 0;
-   reqParam.timeout        = (uint32_t) timeout;
+    Sciclient_ReqPrm_t reqParam;
+    struct tisci_msg_wake_reset_req request = {0};
+    struct tisci_msg_wake_reset_resp response = {0};
+    reqParam.messageType    = (uint16_t) TISCI_MSG_WAKE_RESET;
+    reqParam.flags          = (uint32_t) TISCI_MSG_FLAG_AOP;
+    reqParam.pReqPayload    = (const uint8_t *) &request;
+    reqParam.reqPayloadSize = (uint32_t) sizeof(request);
+    reqParam.timeout        = (uint32_t) timeout;
 
-   Sciclient_RespPrm_t respParam;
-   respParam.flags           = (uint32_t) 0;   /* Populated by the API */
-   respParam.pRespPayload    = (uint8_t *) 0;
-   respParam.respPayloadSize = (uint32_t) 0;
+    Sciclient_RespPrm_t respParam;
+    respParam.flags           = (uint32_t) 0;   /* Populated by the API */
+    respParam.pRespPayload    = (uint8_t *) &response;
+    respParam.respPayloadSize = (uint32_t) sizeof(response);
 
     retVal = Sciclient_service(&reqParam, &respParam);
     if((retVal != CSL_PASS) ||
@@ -651,11 +655,12 @@ int32_t Sciclient_pmGetWakeupReason(uint8_t   mode[32],
     int32_t retVal = CSL_PASS;
 
     struct tisci_msg_wake_reason_resp response = {0};
+    struct tisci_msg_wake_reason_req request = {0};
     Sciclient_ReqPrm_t reqParam ;
     reqParam.messageType    = (uint16_t) TISCI_MSG_WAKE_REASON;
     reqParam.flags          = (uint32_t) TISCI_MSG_FLAG_AOP;
-    reqParam.pReqPayload    = (const uint8_t *) 0;
-    reqParam.reqPayloadSize = (uint32_t) 0;
+    reqParam.pReqPayload    = (const uint8_t *) &request;
+    reqParam.reqPayloadSize = (uint32_t) sizeof(request);
     reqParam.timeout        = (uint32_t) timeout;
 
     Sciclient_RespPrm_t respParam ;
@@ -682,17 +687,19 @@ int32_t Sciclient_pmDevicePowerOff(uint32_t timeout)
 {
     int32_t retVal = CSL_PASS;
 
-   Sciclient_ReqPrm_t reqParam ;
-   reqParam.messageType    = (uint16_t) TISCI_MSG_GOODBYE;
-   reqParam.flags          = (uint32_t) TISCI_MSG_FLAG_AOP;
-   reqParam.pReqPayload    = (const uint8_t *) 0;
-   reqParam.reqPayloadSize = (uint32_t) 0;
-   reqParam.timeout        = (uint32_t) timeout;
+    Sciclient_ReqPrm_t reqParam;
+    struct tisci_msg_goodbye_req request = {0};
+    struct tisci_msg_goodbye_resp response = {0};
+    reqParam.messageType    = (uint16_t) TISCI_MSG_GOODBYE;
+    reqParam.flags          = (uint32_t) TISCI_MSG_FLAG_AOP;
+    reqParam.pReqPayload    = (const uint8_t *) &request;
+    reqParam.reqPayloadSize = (uint32_t) sizeof(request);
+    reqParam.timeout        = (uint32_t) timeout;
 
-   Sciclient_RespPrm_t respParam ;
-   respParam.flags           = (uint32_t) 0;   /* Populated by the API */
-   respParam.pRespPayload    = (uint8_t *) 0;
-   respParam.respPayloadSize = (uint32_t) 0;
+    Sciclient_RespPrm_t respParam ;
+    respParam.flags           = (uint32_t) 0;   /* Populated by the API */
+    respParam.pRespPayload    = (uint8_t *) &response;
+    respParam.respPayloadSize = (uint32_t) sizeof(response);
 
 
     retVal = Sciclient_service(&reqParam, &respParam);
@@ -709,16 +716,18 @@ int32_t Sciclient_pmDeviceReset(uint32_t timeout)
     int32_t retVal = CSL_PASS;
 
     Sciclient_ReqPrm_t reqParam ;
+    struct tisci_msg_sys_reset_req request = {0};
+    struct tisci_msg_sys_reset_resp response = {0};
     reqParam.messageType    = (uint16_t) TISCI_MSG_SYS_RESET;
     reqParam.flags          = (uint32_t) TISCI_MSG_FLAG_AOP;
-    reqParam.pReqPayload    = (const uint8_t *) 0;
-    reqParam.reqPayloadSize = (uint32_t) 0;
+    reqParam.pReqPayload    = (const uint8_t *) &request;
+    reqParam.reqPayloadSize = (uint32_t) sizeof(request);
     reqParam.timeout        = (uint32_t) timeout;
 
     Sciclient_RespPrm_t respParam ;
     respParam.flags           = (uint32_t) 0;   /* Populated by the API */
-    respParam.pRespPayload    = (uint8_t *) 0;
-    respParam.respPayloadSize = (uint32_t) 0;
+    respParam.pRespPayload    = (uint8_t *) &response;
+    respParam.respPayloadSize = (uint32_t) sizeof(response);
 
     retVal = Sciclient_service(&reqParam, &respParam);
     if((retVal != CSL_PASS) ||
