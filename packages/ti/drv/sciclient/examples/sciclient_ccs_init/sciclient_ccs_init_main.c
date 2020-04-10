@@ -337,9 +337,28 @@ static int32_t App_getRevisionTest(void)
     {
         printf("\nSciclient Common Board Configuration has failed \n");
     }
+
     if (CSL_PASS == status)
     {
         printf ("\nSciclient Dev Group 00 initilization done");
+#if defined(SOC_J721E) || defined (SOC_J7200)
+        /* This is specifically required if you are booting in MCU_ONLY boot mode. */
+        status = Sciclient_pmSetModuleState(TISCI_DEV_WKUPMCU2MAIN_VD,
+                                            TISCI_MSG_VALUE_DEVICE_SW_STATE_ON,
+                                            TISCI_MSG_FLAG_AOP | TISCI_MSG_FLAG_DEVICE_RESET_ISO,
+                                            0xFFFFFFFFU);
+        status += Sciclient_pmSetModuleState(TISCI_DEV_MAIN2WKUPMCU_VD,
+                                            TISCI_MSG_VALUE_DEVICE_SW_STATE_ON,
+                                            TISCI_MSG_FLAG_AOP | TISCI_MSG_FLAG_DEVICE_RESET_ISO,
+                                            0xFFFFFFFFU);
+        if (status == CSL_PASS)
+        {
+            printf("\nEnabled the TISCI_DEV_WKUPMCU2MAIN_VD, TISCI_DEV_MAIN2WKUPMCU_VD.");
+        }
+#endif
+    }
+    if (CSL_PASS == status)
+    {
         printf ("\nSciclient Dev Group 01 initilization started");
         Sciclient_BoardCfgPrms_t boardCfgPrms =
         {

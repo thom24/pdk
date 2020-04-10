@@ -62,6 +62,8 @@ uint32_t gBoardClkModuleMcuID[] = {
     TISCI_DEV_MCU_I2C1,
     TISCI_DEV_WKUP_I2C0,
     TISCI_DEV_MCU_SA2_UL0,
+    TISCI_DEV_WKUPMCU2MAIN_VD,
+    TISCI_DEV_MAIN2WKUPMCU_VD,
     TISCI_DEV_WKUP_UART0,  //Note: Keep the wakeup UART at end to skip it during clock deinit
 };
 
