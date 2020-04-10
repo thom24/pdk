@@ -69,6 +69,8 @@
 #define NOR_CMD_RDCR_VOL             (0x85U)
 #define NOR_CMD_RDCR_NVOL            (0xB5U)
 #define NOR_CMD_RDID                 (0x9FU)
+#define NOR_CMD_RSTEN                (0x66U)
+#define NOR_CMD_RST_MEM              (0x99U)
 
 /** Different commands for 4 byte addressing and 3 byte addressing */
 #ifdef EXT_ADDRESS_ENABLE

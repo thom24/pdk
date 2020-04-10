@@ -134,9 +134,6 @@ static NOR_STATUS Nor_ospiEnableDDR(SPI_Handle handle)
     NOR_STATUS             retVal;
     uint8_t                cmdWren = NOR_CMD_WREN;
     uint32_t               data[3];
-    uint32_t               dummyCycles;
-    uint32_t               rx_lines;
-    OSPI_v0_HwAttrs const *hwAttrs= (OSPI_v0_HwAttrs const *)handle->hwAttrs;
 
     /* Send Write Enable command */
     retVal = Nor_ospiCmdWrite(handle, &cmdWren, 1, 0);
@@ -154,18 +151,6 @@ static NOR_STATUS Nor_ospiEnableDDR(SPI_Handle handle)
         data[1] = 0;     /* Non-volatile config register address */
         data[2] = 0xE7U; /* set to Octal DDR in Nonvolatile Config Reg 0x0 */
         SPI_control(handle, SPI_V0_CMD_ENABLE_DDR, (void *)data);
-
-        /* Set opcodes */
-        dummyCycles = NOR_OCTAL_READ_DUMMY_CYCLE;
-        rx_lines    = hwAttrs->xferLines;
-        data[0]     = NOR_CMD_OCTAL_DDR_O_FAST_RD;
-        data[1]     = NOR_CMD_OCTAL_FAST_PROG;
-        data[2]     = NOR_CMD_RDSR;
-
-        /* Update the read opCode, rx lines and read dummy cycles */
-        SPI_control(handle, SPI_V0_CMD_RD_DUMMY_CLKS, (void *)&dummyCycles);
-        SPI_control(handle, SPI_V0_CMD_SET_XFER_LINES, (void *)&rx_lines);
-        SPI_control(handle, SPI_V0_CMD_XFER_OPCODE, (void *)data);
     }
 
     return retVal;
@@ -176,17 +161,14 @@ static NOR_STATUS Nor_ospiEnableSDR(SPI_Handle handle)
     NOR_STATUS             retVal;
     uint8_t                cmdWren = NOR_CMD_WREN;
     uint32_t               data[3];
-    uint32_t               dummyCycles;
-    uint32_t               rx_lines;
-    OSPI_v0_HwAttrs const *hwAttrs= (OSPI_v0_HwAttrs const *)handle->hwAttrs;
 
     /* Send Write Enable command */
     retVal = Nor_ospiCmdWrite(handle, &cmdWren, 1, 0);
 
-    /* Enable double transfer rate mode */
+    /* Enable single transfer rate mode */
     if (retVal == NOR_PASS)
     {
-        /* send write VCR command to reg addr 0x0 to set to DDR mode */
+        /* send write VCR command to reg addr 0x0 to set to SDR mode */
         data[0] = (NOR_CMD_WRITE_VCR << 24)         | /* write volatile config reg cmd */
                   (0 << 23)                         | /* read data disable */
                   (7 << 20)                         | /* read 8 data bytes */
@@ -197,20 +179,28 @@ static NOR_STATUS Nor_ospiEnableSDR(SPI_Handle handle)
         data[2] = 0xFFU; /* set to Extended SPI mode in Nonvolatile Config Reg 0x0 */
         SPI_control(handle, SPI_V0_CMD_ENABLE_SDR, (void *)data);
 
-        /* Set opcodes */
-        dummyCycles = NOR_OCTAL_READ_DUMMY_CYCLE;
-        rx_lines    = hwAttrs->xferLines;
-        data[0]     = NOR_CMD_OCTAL_IO_FAST_RD;
-        data[1]     = NOR_CMD_EXT_OCTAL_FAST_PROG;
-        data[2]     = NOR_CMD_RDSR;
-
-        /* Update the read opCode, rx lines and read dummy cycles */
-        SPI_control(handle, SPI_V0_CMD_RD_DUMMY_CLKS, (void *)&dummyCycles);
-        SPI_control(handle, SPI_V0_CMD_SET_XFER_LINES, (void *)&rx_lines);
-        SPI_control(handle, SPI_V0_CMD_XFER_OPCODE, (void *)data);
     }
 
-    return NOR_PASS;
+    return retVal;
+}
+
+static NOR_STATUS Nor_ospiResetMemory(SPI_Handle handle)
+{
+    NOR_STATUS             retVal;
+    uint8_t                cmd;
+
+    /* Send Reset Enable command */
+    cmd = NOR_CMD_RSTEN;
+    retVal = Nor_ospiCmdWrite(handle, &cmd, 1, 0);
+
+    if (retVal == NOR_PASS)
+    {
+        /* Send Reset Device Memory command */
+        cmd = NOR_CMD_RST_MEM;
+        retVal = Nor_ospiCmdWrite(handle, &cmd, 1, 0);
+    }
+
+    return (retVal);
 }
 
 static NOR_STATUS Nor_ospiXipEnable(SPI_Handle handle)
@@ -258,6 +248,44 @@ static NOR_STATUS Nor_ospiXipEnable(SPI_Handle handle)
     return retVal;
 }
 
+static void Nor_ospiSetOpcode(SPI_Handle handle)
+{
+    uint32_t               data[3];
+    uint32_t               dummyCycles;
+    uint32_t               rx_lines;
+    OSPI_v0_HwAttrs const *hwAttrs= (OSPI_v0_HwAttrs const *)handle->hwAttrs;
+
+    rx_lines = hwAttrs->xferLines;
+    if (rx_lines == OSPI_XFER_LINES_OCTAL)
+    {
+        dummyCycles = NOR_OCTAL_READ_DUMMY_CYCLE;
+        if (hwAttrs->dtrEnable == true)
+        {
+            data[0]     = NOR_CMD_OCTAL_DDR_O_FAST_RD;
+            data[1]     = NOR_CMD_OCTAL_FAST_PROG;
+        }
+        else
+        {
+            data[0]     = NOR_CMD_OCTAL_IO_FAST_RD;
+            data[1]     = NOR_CMD_EXT_OCTAL_FAST_PROG;
+        }
+    }
+    else
+    {
+        /* Set to legacy SPI mode 1-1-1 if not Octal mode */
+        dummyCycles = 0;
+        data[0]     = NOR_CMD_READ;
+        data[1]     = NOR_CMD_PAGE_PROG;
+    }
+    data[2]     = NOR_CMD_RDSR;
+
+    /* Update the read opCode, rx lines and read dummy cycles */
+    SPI_control(handle, SPI_V0_CMD_RD_DUMMY_CLKS, (void *)&dummyCycles);
+    SPI_control(handle, SPI_V0_CMD_SET_XFER_LINES, (void *)&rx_lines);
+    SPI_control(handle, SPI_V0_CMD_XFER_OPCODE, (void *)data);
+
+    return;
+}
 
 NOR_HANDLE Nor_ospiOpen(uint32_t norIntf, uint32_t portNum, void *params)
 {
@@ -290,14 +318,26 @@ NOR_HANDLE Nor_ospiOpen(uint32_t norIntf, uint32_t portNum, void *params)
         if (retVal == NOR_PASS)
         {
             OSPI_socGetInitCfg(portNum, &ospi_cfg);
-            if (ospi_cfg.dtrEnable == true)
+            if (ospi_cfg.xferLines == OSPI_XFER_LINES_OCTAL)
             {
-                Nor_ospiEnableDDR(hwHandle);
+                /* Enable DDR or SDR mode for Octal lines */
+                if (ospi_cfg.dtrEnable == true)
+                {
+                    Nor_ospiEnableDDR(hwHandle);
+                }
+                else
+                {
+                    Nor_ospiEnableSDR(hwHandle);
+                }
             }
             else
             {
-                Nor_ospiEnableSDR(hwHandle);
+                /* Reset device memory for all the other lines */
+                Nor_ospiResetMemory(hwHandle);
             }
+            
+            /* Set read/write opcode and read dummy cycles */
+            Nor_ospiSetOpcode(hwHandle);
 
             if (ospi_cfg.phyEnable == true)
             {

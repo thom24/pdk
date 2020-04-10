@@ -129,6 +129,7 @@ typedef struct OSPI_Tests_s
 #define OSPI_TEST_ID_DAC_166M     3   /* OSPI flash test in Direct Acess Controller mode at 166MHz RCLK */
 #define OSPI_TEST_ID_INDAC_166M   4   /* OSPI flash test in Indirect Acess Controller mode at 166MHz RCLK */
 #define OSPI_TEST_ID_DAC_DMA_166M 5   /* OSPI flash test in Direct Acess Controller DMA mode at 166MHz RCLK */
+#define OSPI_TEST_ID_DAC_133M_SPI 6   /* OSPI flash test in Direct Acess Controller legacy SPI mode at 133MHz RCLK */
 
 /* OSPI NOR flash offset address for read/write test */
 #define TEST_ADDR_OFFSET   (0U)
@@ -557,6 +558,17 @@ void OSPI_initConfig(OSPI_Tests *test)
         ospi_cfg.phyEnable = false;
     }
 
+    if (test->testId == OSPI_TEST_ID_DAC_133M_SPI)
+    {
+        /* Disable PHY in legacy SPI mode (1-1-1) */
+        ospi_cfg.phyEnable = false;
+        ospi_cfg.dtrEnable = false;
+        ospi_cfg.xferLines = OSPI_XFER_LINES_SINGLE;
+    }
+    else
+    {
+        ospi_cfg.xferLines = OSPI_XFER_LINES_OCTAL;
+    }
     ospi_cfg.funcClk = test->clk;
 
     /* Set the default OSPI init configurations */
@@ -785,6 +797,7 @@ OSPI_Tests Ospi_tests[] =
 #ifdef SPI_DMA_ENABLE
     {OSPI_flash_test, OSPI_TEST_ID_DAC_DMA_166M, true,   true,   OSPI_MODULE_CLK_166M, "\r\n OSPI flash test slave in DAC DMA mode at 166MHz RCLK"},
 #endif
+    {OSPI_flash_test, OSPI_TEST_ID_DAC_133M_SPI, true,   false,  OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave in DAC Legacy SPI mode at 133MHz RCLK"},
 
     {NULL, }
 };
@@ -801,8 +814,6 @@ void spi_test()
     uint32_t    i;
     bool        testFail = false;
     OSPI_Tests *test;
-    bool        clk133M = false;
-    bool        clk166M = false;
 
     /* Init SPI driver */
     SPI_init();
@@ -815,19 +826,7 @@ void spi_test()
             break;
         }
 
-        /* configure 133MHz reference clock only once */
-        if ((test->clk == OSPI_MODULE_CLK_133M) && (!clk133M))
-        {
-            OSPI_configClk(test->clk, true);
-            clk133M = true;
-        }
-
-        /* configure 166MHz reference clock only once */
-        if ((test->clk == OSPI_MODULE_CLK_166M) && (!clk166M))
-        {
-            OSPI_configClk(test->clk, true);
-            clk166M = true;
-        }
+        OSPI_configClk(test->clk, true);
 
         OSPI_test_print_test_desc(test);
         if (test->testFunc((void *)test) == true)
