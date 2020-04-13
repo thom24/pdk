@@ -98,7 +98,7 @@ Osal_HwAttrs  gOsal_HwAttrs = {
 void Osal_DebugP_assert(int32_t expression, const char *file, int32_t line)
 {
     if (expression != 0) {
-        xdc_runtime_Assert_raise__I(Module__MID, file, line, (uint32_t)NULL);
+        xdc_runtime_Assert_raise__I(Module__MID, file, line, Assert_E_assertFailed);
     }
 }
 
