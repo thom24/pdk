@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2018, Texas Instruments Incorporated
+ * Copyright (c) 2017-2020, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -132,20 +132,6 @@ static void Sciclient_sendMessage(uint32_t        thread,
                                   const uint8_t  *pHeader,
                                   const uint8_t  *pPayload,
                                   uint32_t        payloadSize);
-
-/**
- *  \brief   API to identify which mode the CPU is operating in. This utility
- *           function would read CPU related registers to know which mode
- *           (secure or non secure) the CPU is in and then would determine the
- *           context to be used. If more than one context is required for a
- *           a given code, users of SCICLENT would need to modify this function
- *           and recompile.
- *
- *  \param   messageType The Message ID to be checked.
- *
- *  \return  retVal     SCICLENT Context of the CPU
- */
-static uint32_t Sciclient_getCurrentContext(uint16_t messageType);
 
 /**
  *  \brief   This utility function would find the proxy map context id for
@@ -942,6 +928,36 @@ int32_t Sciclient_abiCheck(void)
     return status;
 }
 
+uint32_t Sciclient_getCurrentContext(uint16_t messageType)
+{
+    uint32_t retVal = SCICLIENT_CONTEXT_MAX_NUM;
+
+    if((TISCI_MSG_BOOT_NOTIFICATION == messageType) ||
+       (TISCI_MSG_BOARD_CONFIG == messageType) ||
+       (TISCI_MSG_BOARD_CONFIG_RM == messageType) ||
+       (TISCI_MSG_BOARD_CONFIG_SECURITY == messageType) ||
+       (TISCI_MSG_BOARD_CONFIG_PM == messageType))
+    {
+        retVal = SCICLIENT_CONTEXT_SEC;
+    }
+    else
+    {
+        /* For all other message type use non-secure context */
+        retVal = SCICLIENT_CONTEXT_NONSEC;
+#if defined (BUILD_C7X_1)
+        /* C7x is left in secure supervisor mode which causes
+         * the non-secure thread access to fail.
+         */
+        if(gSciclientHandle.isSecureMode == 1U)
+        {
+            retVal = SCICLIENT_CONTEXT_SEC;
+        }
+#endif
+    }
+
+    return retVal;
+}
+
 /* -------------------------------------------------------------------------- */
 /*                 Internal Function Definitions                              */
 /* -------------------------------------------------------------------------- */
@@ -1099,36 +1115,6 @@ static void Sciclient_sendMessage(uint32_t        thread,
         ((uintptr_t) gSciclient_maxMsgSizeBytes  - (uintptr_t) 4U) ;
         CSL_REG32_WR(threadAddr,0U);
     }
-}
-
-static uint32_t Sciclient_getCurrentContext(uint16_t messageType)
-{
-    uint32_t retVal = SCICLIENT_CONTEXT_MAX_NUM;
-
-    if((TISCI_MSG_BOOT_NOTIFICATION == messageType) ||
-       (TISCI_MSG_BOARD_CONFIG == messageType) ||
-       (TISCI_MSG_BOARD_CONFIG_RM == messageType) ||
-       (TISCI_MSG_BOARD_CONFIG_SECURITY == messageType) ||
-       (TISCI_MSG_BOARD_CONFIG_PM == messageType))
-    {
-        retVal = SCICLIENT_CONTEXT_SEC;
-    }
-    else
-    {
-        /* For all other message type use non-secure context */
-        retVal = SCICLIENT_CONTEXT_NONSEC;
-#if defined (BUILD_C7X_1)
-        /* C7x is left in secure supervisor mode which causes
-         * the non-secure thread access to fail.
-         */
-        if(gSciclientHandle.isSecureMode == 1U)
-        {
-            retVal = SCICLIENT_CONTEXT_SEC;
-        }
-#endif
-    }
-
-    return retVal;
 }
 
 static int32_t Sciclient_contextIdFromIntrNum(uint32_t intrNum)

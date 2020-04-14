@@ -195,6 +195,20 @@ extern const uint32_t gSciclient_boardCfgLow_pm[(SCICLIENT_BOARDCFG_PM_SIZE_IN_B
  */
 int32_t Sciclient_boardCfg(const Sciclient_BoardCfgPrms_t * pInPrms);
 
+/**
+ *  \brief   API to identify which mode the CPU is operating in. This utility
+ *           function would read CPU related registers to know which mode
+ *           (secure or non secure) the CPU is in and then would determine the
+ *           context to be used. If more than one context is required for a
+ *           a given code, users of SCICLENT would need to modify this function
+ *           and recompile.
+ *
+ *  \param   messageType The Message ID to be checked.
+ *
+ *  \return  retVal     SCICLENT Context of the CPU
+ */
+uint32_t Sciclient_getCurrentContext(uint16_t messageType);
+
 #ifdef __cplusplus
 }
 #endif
