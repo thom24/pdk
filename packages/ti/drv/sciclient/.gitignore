@@ -4,6 +4,9 @@ docs/doxygen/html/
 .executables
 .xdcenv.mak
 *.mak
+*.swp
+*.swo
+*.patch
 .interfaces
 .libraries
 package/*
