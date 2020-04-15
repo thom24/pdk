@@ -52,6 +52,8 @@ LIMIT_SOCS_am65xx    = am65xx
 LIMIT_SOCS_am65xx-hs = am65xx
 LIMIT_SOCS_j7        = j721e j7200
 LIMIT_SOCS_tpr12     = tpr12
+LIMIT_SOCS_omapl137  = omapl137
+LIMIT_SOCS_omapl138  = omapl138
 
 export LIMIT_SOCS ?= $(LIMIT_SOCS_$(PDK_SOC))
 
