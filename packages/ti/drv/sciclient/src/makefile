@@ -36,6 +36,7 @@ SRCS_COMMON  = sciclient.c
 SRCS_COMMON += sciclient_fmwSecureProxyMap.c
 SRCS_COMMON += sciclient_pm.c
 SRCS_COMMON += sciclient_rm.c 
+SRCS_COMMON += sciclient_firewall.c 
 SRCS_COMMON += sciclient_boardcfg.c
 SRCS_COMMON += sciclient_procboot.c
 SRCS_COMMON += sciclient_genericMsgs.c

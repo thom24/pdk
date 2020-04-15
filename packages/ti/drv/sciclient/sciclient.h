@@ -311,6 +311,7 @@ typedef uint8_t devgrp_t;
 #include <ti/drv/sciclient/include/sciclient_soc.h>
 #include <ti/drv/sciclient/include/sciclient_pm.h>
 #include <ti/drv/sciclient/include/sciclient_rm.h>
+#include <ti/drv/sciclient/include/sciclient_firewall.h>
 #include <ti/drv/sciclient/include/sciclient_genericMsgs.h>
 #include <ti/drv/sciclient/include/sciclient_procboot.h>
 #include <ti/drv/sciclient/include/sciclient_boardcfg.h>
