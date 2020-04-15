@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2018 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -703,6 +703,8 @@ static void Disable_DQS_PD()
 
 static uint8_t WriteLeveling_Training()
 {
+    uint32_t regVal;
+
     /* PHY Initialization Register */
     HW_WR_DDRPHY_REG32(CSL_EMIF_PHYCFG_PIR, 0x00000201);
 
@@ -715,7 +717,8 @@ static uint8_t WriteLeveling_Training()
     /* wait another 32 ctl_clk cycles before resuming further traffic  */
     boardDDRDelay();
 
-    if(HW_RD_DDRPHY_REG32(CSL_EMIF_PHYCFG_PGSR0) & 0x200000)
+    regVal = HW_RD_DDRPHY_REG32(CSL_EMIF_PHYCFG_PGSR0);
+    if(regVal & 0x200000)
 	return 0;
     else
 	return 1;
@@ -726,6 +729,8 @@ static uint8_t WriteLeveling_Training()
 
 static uint8_t DQSGate_Training()
 {
+    uint32_t regVal;
+
     /* PHY Initialization Register */
     HW_WR_DDRPHY_REG32(CSL_EMIF_PHYCFG_PIR, 0x0000401);
 
@@ -738,7 +743,8 @@ static uint8_t DQSGate_Training()
     /* wait another 32 ctl_clk cycles before resuming further traffic  */
     boardDDRDelay();
 
-    if(HW_RD_DDRPHY_REG32(CSL_EMIF_PHYCFG_PGSR0) & 0x400000)
+    regVal = HW_RD_DDRPHY_REG32(CSL_EMIF_PHYCFG_PGSR0);
+    if(regVal & 0x400000)
 	return 0;
     else
 	return 1;
@@ -748,6 +754,8 @@ static uint8_t DQSGate_Training()
 
 static uint8_t DDRx_Train_DQS2DQ()
 {
+    uint32_t regVal;
+
     HW_WR_DDRPHY_REG32(CSL_EMIF_PHYCFG_PIR, 0x00100001U); /* PHY Initialization Register */
     
     /* must wait 10 clock cycles before polling for init done */
@@ -759,7 +767,8 @@ static uint8_t DDRx_Train_DQS2DQ()
     /* wait another 32 ctl_clk cycles before resuming further traffic  */
     boardDDRDelay();     
 
-    if(HW_RD_DDRPHY_REG32(CSL_EMIF_PHYCFG_PGSR0) & 0x40000U)
+    regVal = HW_RD_DDRPHY_REG32(CSL_EMIF_PHYCFG_PGSR0);
+    if(regVal & 0x40000U)
         return 0;
     else
 	return 1;
@@ -770,6 +779,7 @@ static uint8_t DDRx_Train_DQS2DQ()
 
 static uint8_t WriteLevelAdjustment()
 {
+    uint32_t regVal;
     /* PHY Initialization Register */
     HW_WR_DDRPHY_REG32(CSL_EMIF_PHYCFG_PIR, 0x0000801);
 
@@ -782,7 +792,8 @@ static uint8_t WriteLevelAdjustment()
     /* wait another 32 ctl_clk cycles before resuming further traffic  */
     boardDDRDelay();
 
-    if(HW_RD_DDRPHY_REG32(CSL_EMIF_PHYCFG_PGSR0) & 0x800000)
+    regVal = HW_RD_DDRPHY_REG32(CSL_EMIF_PHYCFG_PGSR0);
+    if(regVal & 0x800000)
 	return 0;
     else
 	return 1;
@@ -793,6 +804,7 @@ static uint8_t WriteLevelAdjustment()
 static uint8_t Training2()
 {
     uint8_t status=1;
+    uint32_t regVal;
 
     /* Read deskew */
     /* PHY Initialization Register */
@@ -807,7 +819,8 @@ static uint8_t Training2()
     /* wait another 32 ctl_clk cycles before resuming further traffic  */
     boardDDRDelay();
 
-    if(HW_RD_DDRPHY_REG32(CSL_EMIF_PHYCFG_PGSR0) & 0x1000000)
+    regVal = HW_RD_DDRPHY_REG32(CSL_EMIF_PHYCFG_PGSR0);
+    if(regVal & 0x1000000)
 	status = 0;  //fail
    
     /* Write deskew */
@@ -824,7 +837,8 @@ static uint8_t Training2()
     /* wait another 32 ctl_clk cycles before resuming further traffic  */
     boardDDRDelay();
 
-    if(HW_RD_DDRPHY_REG32(CSL_EMIF_PHYCFG_PGSR0) & 0x2000000)
+    regVal = HW_RD_DDRPHY_REG32(CSL_EMIF_PHYCFG_PGSR0);
+    if(regVal & 0x2000000)
 	status = 0;  //fail
 
  
@@ -842,7 +856,8 @@ static uint8_t Training2()
     /* wait another 32 ctl_clk cycles before resuming further traffic  */
     boardDDRDelay();
 
-    if(HW_RD_DDRPHY_REG32(CSL_EMIF_PHYCFG_PGSR0) & 0x4000000)
+    regVal = HW_RD_DDRPHY_REG32(CSL_EMIF_PHYCFG_PGSR0);
+    if(regVal & 0x4000000)
 	status = 0;  //fail
 
     /* Write Eye training */
@@ -860,7 +875,8 @@ static uint8_t Training2()
     /* wait another 32 ctl_clk cycles before resuming further traffic  */
     boardDDRDelay();
 
-    if(HW_RD_DDRPHY_REG32(CSL_EMIF_PHYCFG_PGSR0) & 0x8000000)
+    regVal = HW_RD_DDRPHY_REG32(CSL_EMIF_PHYCFG_PGSR0);
+    if(regVal & 0x8000000)
 	status = 0;  //fail
 
     return status;
@@ -868,6 +884,8 @@ static uint8_t Training2()
 
 static uint8_t VREF_Training()
 {
+    uint32_t regVal;
+
     /* VREF training */
     /* PHY Initialization Register */
     HW_WR_DDRPHY_REG32(CSL_EMIF_PHYCFG_PIR, 0x0020001);
@@ -881,7 +899,8 @@ static uint8_t VREF_Training()
     /* wait another 32 ctl_clk cycles before resuming further traffic  */
     boardDDRDelay();
 
-    if(HW_RD_DDRPHY_REG32(CSL_EMIF_PHYCFG_PGSR0) & 0x80000)
+    regVal = HW_RD_DDRPHY_REG32(CSL_EMIF_PHYCFG_PGSR0);
+    if(regVal & 0x80000)
 	return 0;
     else
 	return 1;
@@ -1056,17 +1075,19 @@ static void Board_enableVTTRegulator(void)
 Board_STATUS Board_DDRInit(void)
 {
     uint8_t DDRType;
+    uint32_t regVal;
 
     Board_unlockMMR();
     Board_enableVTTRegulator();
     DDR_Controller_PHY_Config();
 
     //Determine which DDR is being used
-    if( (HW_RD_REG32(CSL_DDRSS0_CTL_CFG_BASE + CSL_EMIF_CTLCFG_MSTR) & 0x1) == 0x1)
+    regVal = HW_RD_REG32(CSL_DDRSS0_CTL_CFG_BASE + CSL_EMIF_CTLCFG_MSTR);
+    if( (regVal & 0x1) == 0x1)
 	DDRType = DDR3;
-    else if( (HW_RD_REG32(CSL_DDRSS0_CTL_CFG_BASE + CSL_EMIF_CTLCFG_MSTR) & 0x10) == 0x10)
+    else if( (regVal & 0x10) == 0x10)
 	DDRType = DDR4;
-    else if( (HW_RD_REG32(CSL_DDRSS0_CTL_CFG_BASE + CSL_EMIF_CTLCFG_MSTR) & 0x20) == 0x20)
+    else if( (regVal & 0x20) == 0x20)
 	DDRType = LPDDR4;
     else 
 	DDRType = NODDR;
@@ -1074,7 +1095,8 @@ Board_STATUS Board_DDRInit(void)
     if(DDRType == DDR4) {
 
     //if already initialized, don't re-initialize
-    if(HW_RD_DDRPHY_REG32(CSL_EMIF_PHYCFG_PGSR0)==0x80004FFF)
+    regVal = HW_RD_DDRPHY_REG32(CSL_EMIF_PHYCFG_PGSR0);
+    if(regVal==0x80004FFF)
     {
         return BOARD_SOK;
     }
@@ -1091,7 +1113,9 @@ Board_STATUS Board_DDRInit(void)
                                 Cleanup_Training();
             }
     }
-	if(HW_RD_DDRPHY_REG32(CSL_EMIF_PHYCFG_PGSR0)==0x80004FFF) 
+
+    regVal = HW_RD_DDRPHY_REG32(CSL_EMIF_PHYCFG_PGSR0);
+	if(regVal==0x80004FFF)
 	    return BOARD_SOK;
 	else
 	    return BOARD_INIT_DDR_FAIL;
@@ -1113,7 +1137,8 @@ Board_STATUS Board_DDRInit(void)
 	    }	
 	}
 
-	if(HW_RD_DDRPHY_REG32(CSL_EMIF_PHYCFG_PGSR0)==0x80000FFF) 
+    regVal = HW_RD_DDRPHY_REG32(CSL_EMIF_PHYCFG_PGSR0);
+	if(regVal==0x80000FFF)
 	    return BOARD_SOK;
 	else
 	    return BOARD_INIT_DDR_FAIL;
@@ -1141,8 +1166,9 @@ Board_STATUS Board_DDRInit(void)
 	HW_WR_DDRPHY_REG32(CSL_EMIF_PHYCFG_DX8SL0DXCTL2, 0x001C1830);
 	HW_WR_DDRPHY_REG32(CSL_EMIF_PHYCFG_DX8SL1DXCTL2, 0x001C1830);
 	HW_WR_DDRPHY_REG32(CSL_EMIF_PHYCFG_DX8SL2DXCTL2, 0x001C1830);
-	  
-	if(HW_RD_DDRPHY_REG32(CSL_EMIF_PHYCFG_PGSR0)==0x8000CFFF) 
+
+    regVal = HW_RD_DDRPHY_REG32(CSL_EMIF_PHYCFG_PGSR0);
+	if(regVal==0x8000CFFF)
 	    return BOARD_SOK;
 	else
 	    return BOARD_INIT_DDR_FAIL;
