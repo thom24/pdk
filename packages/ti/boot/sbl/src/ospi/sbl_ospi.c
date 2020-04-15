@@ -301,8 +301,14 @@ int32_t SBL_ospiInit(void *handle)
     ospi_cfg.dmaEnable = SBL_USE_DMA;
     Ospi_udma_init(&ospi_cfg);
 #endif
-    /* We set xipEnable = true only at the last open() */
+
+#ifndef SBL_HLOS_OWNS_FLASH
+    /* Setting flash config in XIP mode is only done when MCU R5 will continue to
+     * own the flash.  Else, it is difficult for the HLOS to take over control
+     * (reset the flash, etc.), once we have already configured it for XIP.
+     * We set xipEnable = true only at the last open() */
     ospi_cfg.xipEnable = true;
+#endif
 
     /* Set the default SPI init configurations */
     OSPI_socSetInitCfg(BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
