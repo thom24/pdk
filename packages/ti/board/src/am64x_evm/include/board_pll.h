@@ -53,6 +53,12 @@ extern "C" {
  *
  */
 
+#define KICK0_UNLOCK    0x68EF3490
+#define KICK1_UNLOCK    0xD172BC5A
+#define KICK_LOCK       0x00000000
+
+#define DDR_PLL_INDEX		12
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

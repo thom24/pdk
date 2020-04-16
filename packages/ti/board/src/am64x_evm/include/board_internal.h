@@ -56,6 +56,16 @@ extern "C" {
 #include <stdio.h>
 #include <stdbool.h>
 
+#undef ENABLE_LOGS
+
+#if !defined(BOARD_DEBUG_LOG)
+#if defined(ENABLE_LOGS)
+#define BOARD_DEBUG_LOG     UART_printf
+#else
+#define BOARD_DEBUG_LOG(x, ...)
+#endif
+#endif  /* #if !defined(BOARD_DEBUG_LOG) */
+
 #define MODE_PIN_MASK                        (0xFU)
 #define PINMUX_BIT_MASK                      (0xFFF8FFF0U)
 #define GPIO_PIN_MUX_CFG                     (0x50007U)
@@ -123,12 +133,13 @@ Board_STATUS Board_PLLInit(uint32_t modId, uint32_t clkId, uint64_t clkRate);
  *
  * Initializes the DDR timing parameters. Sets the DDR timing parameters
  * based in the DDR PLL controller configuration done by the board library.
- * Any changes to DDR PLL requires change to DDR timing.
+ * Any changes to DDR PLL requires change to DDR timing. Also supports
+ * enabling ECC
  *
  * \return  BOARD_SOK in case of success or appropriate error code
  *
  */
-Board_STATUS Board_DDRInit(void);
+Board_STATUS Board_DDRInit(Bool eccEnable);
 
 /**
  *
