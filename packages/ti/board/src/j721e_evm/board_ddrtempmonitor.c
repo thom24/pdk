@@ -232,7 +232,7 @@ Board_STATUS Board_DDRTempMonitoringInit(Board_thermalMgmtCallbackFunction_t cal
     struct tisci_msg_rm_irq_set_resp resp;
 
     /* Initialize LPDDR4 driver */
-    gBoard_DDRThermalMgmtInstance.boardDDRCfg.ctlBase = (struct LPDDR4_CtlRegs_s *)BOARD_DDR_SS_BASE;
+    gBoard_DDRThermalMgmtInstance.boardDDRCfg.ctlBase = (struct LPDDR4_CtlRegs_s *)BOARD_DDR_CTL_CFG_BASE;
 
     status = LPDDR4_Init(&(gBoard_DDRThermalMgmtInstance.boardRuntimeDDRPd), &(gBoard_DDRThermalMgmtInstance.boardDDRCfg));
 

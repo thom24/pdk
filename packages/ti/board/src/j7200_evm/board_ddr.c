@@ -222,7 +222,7 @@ static Board_STATUS Board_DDRInitDrv(void)
         return BOARD_FAIL;
     }
 
-    gBoardDdrCfg.ctlBase = (struct LPDDR4_CtlRegs_s *)BOARD_DDR_SS_BASE;
+    gBoardDdrCfg.ctlBase = (struct LPDDR4_CtlRegs_s *)BOARD_DDR_CTL_CFG_BASE;
     gBoardDdrCfg.infoHandler = (LPDDR4_InfoCallback) Board_DDRInfoHandler;
 
     status = LPDDR4_Init(&gBoardDdrPd, &gBoardDdrCfg);
