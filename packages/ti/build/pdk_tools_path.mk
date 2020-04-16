@@ -91,6 +91,7 @@ else
   #Paths for linux machine
   export TOOLCHAIN_PATH_GCC_ARCH64 ?= $(TOOLS_INSTALL_PATH)/gcc-arm-$(GCC_ARCH64_VERSION)-x86_64-aarch64-none-elf
 endif
+  export GCC_ARCH64_BIN_PREFIX     ?= $(GCC_ARCH64_BIN_PREFIX_STR)
 
 ifeq ($(BOARD),$(filter $(BOARD), am64x_evm))
   ifeq ($(OS),Windows_NT)
