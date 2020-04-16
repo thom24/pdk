@@ -208,12 +208,23 @@ extern "C" {
 #define GPIO_LED1_PORT_NUM       0 /* use WAKEUP GPIO0 */
 #endif
 
+#if defined (tpr12_evm)
+/* tpr12: Use MSS GIO port 0 pin 1 and pin 2 for testing on QT.
+          GIO port 0 pin1 and pin2 are connected to PADAC and PADAZ.
+          These are internally connected to TB_GIO port 0 pin 0 and 1.
+          TODO: To test on EVM update below based on schematics. */
+#define GPIO_INST                GPIO_INST_MCU /* MSS GIO Inst */
+#define GPIO_LED0_PIN_NUM        2 /* Pin 1 */
+#define GPIO_LED0_PORT_NUM       0 /* Port 1 */
+#define GPIO_LED1_PIN_NUM        1 /* Pin 2 */
+#define GPIO_LED1_PORT_NUM       0 /* Port 1 */
+#endif
+
 /* ON Board LED pins which are connected to GPIO pins. */
 typedef enum GPIO_LED {
     USER_LED0 = 0,
     USER_LED1
 }GPIO_LED;
-
 
 #define GPIO_PIN_VAL_LOW     (0U)
 #define GPIO_PIN_VAL_HIGH    (1U)

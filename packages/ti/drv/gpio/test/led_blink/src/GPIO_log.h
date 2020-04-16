@@ -48,9 +48,12 @@ extern "C" {
 
 #include <stdio.h>
 
+#if !defined (SOC_TPR12)
+// TODO: After 0.5 release move print to uart
 /* UART Header files */
 #include <ti/drv/uart/UART.h>
 #include <ti/drv/uart/UART_stdio.h>
+#endif
 #if defined(SOC_AM571x)||defined(SOC_AM572x)||defined(SOC_AM574x)
 #include <ti/csl/soc/am572x/src/cslr_control_core_pad_io.h>
 #endif
@@ -66,6 +69,11 @@ extern void ConsoleUtilsInit(void);
  **********************************************************************/
 /* Enable the below macro to have prints on the IO Console */
 //#define IO_CONSOLE
+
+#if defined (SOC_TPR12)
+// TODO: After 0.5 release move print to uart
+#define IO_CONSOLE
+#endif
 
 #ifndef IO_CONSOLE
 #define GPIO_log                UART_printf

@@ -5,7 +5,12 @@ ifeq ($(IS_BAREMETAL),yes)
 BUILD_OS_TYPE = baremetal
 CFLAGS_OS_DEFINES =
 LNKFLAGS_LOCAL_mpu1_0  += --entry Entry
-COMP_LIST_COMMON =  csl_init osal_nonos
+COMP_LIST_COMMON =  osal_nonos
+  ifeq ($(ARCH),c66x)
+    COMP_LIST_COMMON += csl_intc
+  else
+    COMP_LIST_COMMON += csl_init
+  endif
 EXTERNAL_INTERFACES =
 XDC_CFG_FILE_mpu1_0 =
 XDC_CFG_FILE_mcu1_0 =
@@ -18,7 +23,7 @@ ifeq ($(SOC),$(filter $(SOC), am65xx))
 XDC_CFG_FILE_mpu1_0 = ./am65xx/gpioLedBlinkTest_a53.cfg
 XDC_CFG_FILE_mcu1_0 = ./am65xx/gpioLedBlinkTest_r5.cfg
 endif
-ifeq ($(SOC),$(filter $(SOC), j721e j7200))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200 tpr12))
 XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
 endif
 endif
@@ -51,13 +56,22 @@ endif
 ifeq ($(SOC),$(filter $(SOC), j7200))
 SRCDIR += j7200
 endif
+
+ifeq ($(SOC),$(filter $(SOC), tpr12))
+SRCDIR += tpr12
+endif
+
 # List all the external components/interfaces, whose interface header files
 # need to be included for this component
 INCLUDE_EXTERNAL_INTERFACES = pdk $(EXTERNAL_INTERFACES)
 
 # List all the components required by the application
 #COMP_LIST_COMMON  += gpio_profile uart board csl profiling
-COMP_LIST_COMMON  += gpio uart board csl
+COMP_LIST_COMMON  += gpio board csl
+ifeq ($(SOC),$(filter $(SOC), tpr12))
+else
+COMP_LIST_COMMON  += uart
+endif
 
 ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
 COMP_LIST_COMMON += sciclient i2c

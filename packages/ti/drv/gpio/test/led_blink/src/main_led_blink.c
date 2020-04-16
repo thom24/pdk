@@ -77,7 +77,9 @@
 #include <ti/drv/sciclient/sciclient.h>
 #endif
 
+#if !defined (SOC_TPR12)
 #include <ti/csl/csl_clec.h>
+#endif
 
 #if defined (__C7100__)
 #include <ti/csl/arch/csl_arch.h>
@@ -86,7 +88,12 @@
 /**********************************************************************
  ************************** Macros ************************************
  **********************************************************************/
+#if defined (SOC_TPR12)
+/* TODO: To Test on EVM Update the delay macro. */
+#define DELAY_VALUE       (1)
+#else
 #define DELAY_VALUE       (500U)   /* 500 msec */
+#endif
 
 /**********************************************************************
  ************************** Internal functions ************************
@@ -353,6 +360,18 @@ static void Board_initGPIO(void)
     GPIO_socSetInitCfg(GPIO_LED0_PORT_NUM, &gpio_cfg);
 
 #endif
+#if defined (SOC_TPR12)
+    /* TODO: This is applicable only for QT. Remove when testing on EVM.
+             For EVM pinmux will be done in board module. */
+    /* Unlock the pad config region. */
+    *((volatile uint32_t *)(0x020C01F8)) = 0x83E70B13;
+    *((volatile uint32_t *)(0x020C01FC)) = 0x95A4F1E0;
+
+    /* PAD config for USER_LED0, PADAZ to mode 1 for MSS GPIO port 0 pin 2. */
+    *((volatile uint32_t *)(0x020C0064)) = 0x201;
+    /* PAD config for USER_LED1, PADAC to mode 1 for MSS GPIO port 0 pin 1. */
+    *((volatile uint32_t *)(0x020C0008)) = 0x201;
+#endif
 }
 
 /**********************************************************************
@@ -404,6 +423,22 @@ int main()
     Task_exit();
 #endif
 
+#elif defined (SOC_TPR12)
+    {
+        uint32_t loopCnt = 4;
+        while (loopCnt-- > 0U)
+        {
+            uint32_t pinVal;
+            while (!gpio_intr_triggered);
+            pinVal = GPIO_read(USER_LED0);
+            GPIO_log(" GPIO USER_LED0 Input pin Value: %d\n", pinVal);
+            gpio_intr_triggered = 0;
+            /* Toggle LED1 */
+            GPIO_toggle(USER_LED1);
+            AppDelay(DELAY_VALUE);
+        }
+        GPIO_log("\n All tests have passed \n");
+    }
 #else
 
     while(1)
@@ -496,6 +531,12 @@ void AppLoopDelay(uint32_t delayVal)
 /*
  *  ======== Callback function ========
  */
+#if defined (SOC_TPR12)
+void AppGpioCallbackFxn(void)
+{
+    gpio_intr_triggered = 1;
+}
+#else
 void AppGpioCallbackFxn(void)
 {
 #if !defined(SOC_J721E) || defined(SOC_J7200)
@@ -505,6 +546,7 @@ void AppGpioCallbackFxn(void)
 #endif
     gpio_intr_triggered = 1;
 }
+#endif
 
 #if defined(BUILD_MPU) || defined (__C7100__)
 extern void Osal_initMmuDefault(void);
