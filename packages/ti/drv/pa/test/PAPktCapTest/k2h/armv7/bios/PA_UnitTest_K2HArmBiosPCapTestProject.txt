@@ -19,6 +19,5 @@
 -ccs.linkFile "PDK_INSTALL_PATH/ti/csl/src/ip/serdes_sb/V0/csl_wiz8_sb_refclk125MHz_20bit_6p25Gbps.c"
 -ccs.linkFile "PDK_INSTALL_PATH/ti/csl/src/ip/serdes_sb/V0/csl_wiz8_sb_refclk156p25MHz_10bit_5Gbps.c"
 -ccs.linkFile "PDK_INSTALL_PATH/ti/csl/src/ip/serdes_sb/V0/csl_wiz8_sb_refclk156p25MHz_20bit_6p25Gbps.c"
--ccs.linkFile "PASS_INSTALL_PATH/ti/drv/pa/example/emacExample/k2h/armv7/bios/cpsw_example_k2h.cfg" 
 -ccs.setCompilerOptions "-c -mcpu=cortex-a15 -mtune=cortex-a15 -marm -mfloat-abi=hard -DSOC_K2H -DNUM_PORTS=5 -D_LITTLE_ENDIAN=1 -g -gstrict-dwarf -Wall -MMD -MP -I${PDK_INSTALL_PATH} -I${PDK_INSTALL_PATH}/ti/drv/pa/test/PAPktCapTest/src -I${PASS_INSTALL_PATH}/ti/drv/pa/example/emacExample/src -I${PASS_INSTALL_PATH}/ti/drv/pa/example/emacExample/src/armv7/bios -I${PDK_INSTALL_PATH}/ti/drv/cppi -I${PDK_INSTALL_PATH}/ti/drv/qmss"  -rtsc.enableRtsc
 -ccs.setLinkerOptions " -lrdimon -lgcc -lm -lnosys -nostartfiles -static -Wl,--gc-sections -L$(XDCTOOLS)/packages/gnu/targets/arm/libs/install-native/arm-none-eabi/lib/fpu "
