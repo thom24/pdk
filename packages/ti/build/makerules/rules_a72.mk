@@ -42,11 +42,11 @@
 #     4. a rule common for A72 ISA has to be added or modified
 
 # Set compiler/archiver/linker commands and include paths
-CODEGEN_INCLUDE = $(TOOLCHAIN_PATH_A72)/arm-none-eabi/include
-CC = $(TOOLCHAIN_PATH_A72)/bin/aarch64-elf-gcc
-AR = $(TOOLCHAIN_PATH_A72)/bin/aarch64-elf-ar
-LNK = $(TOOLCHAIN_PATH_A72)/bin/aarch64-elf-gcc
-SIZE = $(TOOLCHAIN_PATH_A72)/bin/aarch64-elf-size
+CODEGEN_INCLUDE = $(TOOLCHAIN_PATH_A72)/$(GCC_ARCH64_BIN_PREFIX)/include
+CC = $(TOOLCHAIN_PATH_A72)/bin/$(GCC_ARCH64_BIN_PREFIX)-gcc
+AR = $(TOOLCHAIN_PATH_A72)/bin/$(GCC_ARCH64_BIN_PREFIX)-ar
+LNK = $(TOOLCHAIN_PATH_A72)/bin/$(GCC_ARCH64_BIN_PREFIX)-gcc
+SIZE = $(TOOLCHAIN_PATH_A72)/bin/$(GCC_ARCH64_BIN_PREFIX)-size
 
 # Derive a part of RTS Library name based on ENDIAN: little/big
 ifeq ($(ENDIAN),little)
@@ -64,6 +64,8 @@ endif
 # Internal CFLAGS - normally doesn't change
 CFLAGS_INTERNAL = -Wimplicit -Wall -Wunused -Wunknown-pragmas -ffunction-sections -fdata-sections -c -mcpu=cortex-a72+fp+simd -g -mabi=lp64 -mcmodel=large -mstrict-align -std=gnu99 -fms-extensions
 CFLAGS_INTERNAL += -mfix-cortex-a53-835769 -mfix-cortex-a53-843419
+CFLAGS_INTERNAL += -Wno-address-of-packed-member
+CFLAGS_INTERNAL += -Wno-stringop-truncation
 ifeq ($(TREAT_WARNINGS_AS_ERROR), yes)
   CFLAGS_INTERNAL += -Werror
   LNKFLAGS_INTERNAL_COMMON += -Werror
@@ -178,7 +180,7 @@ LINKER2 = $(addprefix $(LNKCMD_PREFIX), $(LNKCMD_FILE))
 endif
 
 ifneq ($(XDC_CFG_FILE_$(CORE)),)
-  #LIB_PATHS_DIR = $(bios_PATH)/packages/gnu/targets/arm/libs/install-native/arm-none-eabi/lib/fpu
+  LIB_PATHS_DIR = $(bios_PATH)/packages/gnu/targets/arm/libs/install-native/aarch64-none-elf/lib/
   #LIB_PATHS     += $(bios_PATH)/packages/gnu/targets/arm/libs/install-native/arm-none-eabi/lib/fpu/librdimon.a
   # override the linker from build infrastructure with external linker cmd file name if provided
   ifneq ($(EXTERNAL_LNKCMD_FILE_LOCAL),)

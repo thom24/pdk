@@ -66,6 +66,10 @@
 /* ========================================================================== */
 
 void Osal_initMmuDefault(void);
+/**< Simple wrapper for SYSBIOS Mmu_map(), as the paramters for different arch
+		differ */
+static Bool OsalMmuMap(UInt64 vaddr, UInt64 paddr, SizeT size,
+						Mmu_MapAttrs *attrs, Bool secure);
 
 /* ========================================================================== */
 /*                            Global Variables                                */
@@ -76,6 +80,15 @@ void Osal_initMmuDefault(void);
 /* ========================================================================== */
 /*                          Function Definitions                              */
 /* ========================================================================== */
+static Bool OsalMmuMap(UInt64 vaddr, UInt64 paddr, SizeT size,
+						Mmu_MapAttrs *attrs, Bool secure)
+{
+#if defined (__C7100__)
+	return (Mmu_map(vaddr, paddr, size, attrs, secure));
+#else
+	return (Mmu_map(vaddr, paddr, size, attrs));
+#endif
+}
 
 #if defined(BUILD_MPU) || defined (__C7100__)
 void Osal_initMmuDefault(void)
@@ -86,21 +99,21 @@ void Osal_initMmuDefault(void)
     attrs.attrIndx = Mmu_AttrIndx_MAIR0;
 
     /* Register region */
-    (void)Mmu_map(0x00000000U, 0x00000000U, 0x20000000U, &attrs);
-    (void)Mmu_map(0x20000000U, 0x20000000U, 0x20000000U, &attrs);
-    (void)Mmu_map(0x40000000U, 0x40000000U, 0x20000000U, &attrs);
-    (void)Mmu_map(0x60000000U, 0x60000000U, 0x10000000U, &attrs);
-    (void)Mmu_map(0x78000000U, 0x78000000U, 0x08000000U, &attrs); /* CLEC */
+    (void)OsalMmuMap(0x00000000U, 0x00000000U, 0x20000000U, &attrs, FALSE);
+    (void)OsalMmuMap(0x20000000U, 0x20000000U, 0x20000000U, &attrs, FALSE);
+    (void)OsalMmuMap(0x40000000U, 0x40000000U, 0x20000000U, &attrs, FALSE);
+    (void)OsalMmuMap(0x60000000U, 0x60000000U, 0x10000000U, &attrs, FALSE);
+    (void)OsalMmuMap(0x78000000U, 0x78000000U, 0x08000000U, &attrs, FALSE); /* CLEC */
 
 #if defined(BUILD_MPU)
-    (void)Mmu_map(0x400000000U, 0x400000000U, 0x400000000U, &attrs); /* FSS0 data   */
+    (void)OsalMmuMap(0x400000000U, 0x400000000U, 0x400000000U, &attrs, FALSE); /* FSS0 data   */
 #endif
 
     attrs.attrIndx = Mmu_AttrIndx_MAIR7;
-    (void)Mmu_map(0x80000000U, 0x80000000U, 0x20000000U, &attrs); /* DDR */
-    (void)Mmu_map(0xA0000000U, 0xA0000000U, 0x20000000U, &attrs); /* DDR */
-    (void)Mmu_map(0x70000000U, 0x70000000U, 0x00800000U, &attrs); /* MSMC - 8MB */
-    (void)Mmu_map(0x41C00000U, 0x41C00000U, 0x00080000U, &attrs); /* OCMC - 512KB */
+    (void)OsalMmuMap(0x80000000U, 0x80000000U, 0x20000000U, &attrs, FALSE); /* DDR */
+    (void)OsalMmuMap(0xA0000000U, 0xA0000000U, 0x20000000U, &attrs, FALSE); /* DDR */
+    (void)OsalMmuMap(0x70000000U, 0x70000000U, 0x00800000U, &attrs, FALSE); /* MSMC - 8MB */
+    (void)OsalMmuMap(0x41C00000U, 0x41C00000U, 0x00080000U, &attrs, FALSE); /* OCMC - 512KB */
 
     /*
      * DDR range 0xA0000000 - 0xAA000000 : Used as RAM by multiple
@@ -108,7 +121,7 @@ void Osal_initMmuDefault(void)
      * IPC VRing Buffer - uncached
      */
     attrs.attrIndx =  Mmu_AttrIndx_MAIR4;
-    (void)Mmu_map(0xAA000000U, 0xAA000000U, 0x02000000U, &attrs);
+    (void)OsalMmuMap(0xAA000000U, 0xAA000000U, 0x02000000U, &attrs, FALSE);
 
     return;
 }

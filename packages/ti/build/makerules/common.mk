@@ -414,8 +414,8 @@ endif
 ifneq ("$(wildcard $(TOOLCHAIN_PATH_GCC)/bin/arm-none-eabi-objcopy$(EXE_EXT))","")
 SBL_OBJ_COPY?=$(TOOLCHAIN_PATH_GCC)/bin/arm-none-eabi-objcopy$(EXE_EXT)
 endif
-ifneq ("$(wildcard $(TOOLCHAIN_PATH_GCC_ARCH64)/bin/aarch64-elf-objcopy$(EXE_EXT))","")
-SBL_OBJ_COPY?=$(TOOLCHAIN_PATH_GCC_ARCH64)/bin/aarch64-elf-objcopy$(EXE_EXT)
+ifneq ("$(wildcard $(TOOLCHAIN_PATH_GCC_ARCH64)/bin/$(GCC_ARCH64_BIN_PREFIX)-objcopy$(EXE_EXT))","")
+SBL_OBJ_COPY?=$(TOOLCHAIN_PATH_GCC_ARCH64)/bin/$(GCC_ARCH64_BIN_PREFIX)-objcopy$(EXE_EXT)
 endif
 ifneq ("$(wildcard $(PDK_SBL_AUTO_COMP_PATH)/tools)","")
 SBL_TOOLS_PATH=$(PDK_SBL_AUTO_COMP_PATH)/tools

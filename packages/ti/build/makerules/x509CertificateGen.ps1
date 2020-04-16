@@ -32,7 +32,7 @@ $TEMP_X509="$WORK_DIR\x509-temp.cert"
 $CERT="$WORK_DIR\$CERT_SIGN" + '-cert.bin'
 $RAND_KEY="$WORK_DIR\eckey.pem"
 $VALID_CERT_SIGNS=@('R5', 'DMSC_I', 'DMSC_O')
-$OBJCOPY="$Env:TOOLCHAIN_PATH_A53" + '\bin\aarch64-elf-objcopy'
+$OBJCOPY="$Env:TOOLCHAIN_PATH_A53" + '\bin\aarch64-none-elf-objcopy'
 $X509_TEMPPLATE="$SCRIPT_DIR\x509template.txt"
 $VALID_R5_BOOTCORE_OPTS=@("EFUSE_DEFAULT", "SPLIT MODE")
 

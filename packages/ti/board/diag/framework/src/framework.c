@@ -184,7 +184,7 @@ void DIAG_parseApps()
                         {
                             if (strlen(DIAG_fileInfo.fname) < sizeof(DIAG_appTbl[DIAG_numApp].appName))
                             {
-                                strncpy(DIAG_appTbl[DIAG_numApp].appName, DIAG_fileInfo.fname, strlen(DIAG_fileInfo.fname));
+                                strncpy(DIAG_appTbl[DIAG_numApp].appName, DIAG_fileInfo.fname, (DIAG_APP_MAX_NAME_SIZE - 1U));
                                 DIAG_appTbl[DIAG_numApp].appName[strlen(DIAG_fileInfo.fname)] = '\0';
                                 DIAG_numApp++;
                             }
@@ -193,7 +193,7 @@ void DIAG_parseApps()
                         {
                             if (strlen(DIAG_fileInfo.fname) < sizeof(COMP_appTbl[COMP_numApp].appName))
                             {
-                                strncpy(COMP_appTbl[COMP_numApp].appName, DIAG_fileInfo.fname, strlen(DIAG_fileInfo.fname));
+                                strncpy(COMP_appTbl[COMP_numApp].appName, DIAG_fileInfo.fname, (DIAG_APP_MAX_NAME_SIZE - 1U));
                                 COMP_appTbl[COMP_numApp].appName[strlen(DIAG_fileInfo.fname)] = '\0';
                                 COMP_numApp++;
                             }
@@ -201,7 +201,7 @@ void DIAG_parseApps()
 #else
                         if (strlen(DIAG_fileInfo.fname) < sizeof(DIAG_appTbl[DIAG_numApp].appName))
                         {
-                            strncpy(DIAG_appTbl[DIAG_numApp].appName, DIAG_fileInfo.fname, strlen(DIAG_fileInfo.fname));
+                            strncpy(DIAG_appTbl[DIAG_numApp].appName, DIAG_fileInfo.fname, (DIAG_APP_MAX_NAME_SIZE - 1U));
                             DIAG_appTbl[DIAG_numApp].appName[strlen(DIAG_fileInfo.fname)] = '\0';
                             DIAG_numApp++;
                         }
@@ -217,7 +217,7 @@ void DIAG_parseApps()
                         {
                             if (strlen(DIAG_fileInfo.fname) < sizeof(DIAG_appTbl[DIAG_numApp].appName))
                             {
-                                strncpy(DIAG_appTbl[DIAG_numApp].appName, DIAG_fileInfo.fname, strlen(DIAG_fileInfo.fname));
+                                strncpy(DIAG_appTbl[DIAG_numApp].appName, DIAG_fileInfo.fname, (DIAG_APP_MAX_NAME_SIZE - 1U));
                                 DIAG_appTbl[DIAG_numApp].appName[strlen(DIAG_fileInfo.fname)] = '\0';
                                 DIAG_numApp++;
                             }
@@ -226,7 +226,7 @@ void DIAG_parseApps()
                         {
                             if (strlen(DIAG_fileInfo.fname) < sizeof(COMP_appTbl[COMP_numApp].appName))
                             {
-                                strncpy(COMP_appTbl[COMP_numApp].appName, DIAG_fileInfo.fname, strlen(DIAG_fileInfo.fname));
+                                strncpy(COMP_appTbl[COMP_numApp].appName, DIAG_fileInfo.fname, (DIAG_APP_MAX_NAME_SIZE - 1U));
                                 COMP_appTbl[COMP_numApp].appName[strlen(DIAG_fileInfo.fname)] = '\0';
                                 COMP_numApp++;
                             }
@@ -234,7 +234,7 @@ void DIAG_parseApps()
 #else
                         if (strlen(DIAG_fileInfo.fname) < sizeof(DIAG_appTbl[DIAG_numApp].appName))
                         {
-                            strncpy(DIAG_appTbl[DIAG_numApp].appName, DIAG_fileInfo.fname, strlen(DIAG_fileInfo.fname));
+                            strncpy(DIAG_appTbl[DIAG_numApp].appName, DIAG_fileInfo.fname, (DIAG_APP_MAX_NAME_SIZE - 1U));
                             DIAG_appTbl[DIAG_numApp].appName[strlen(DIAG_fileInfo.fname)] = '\0';
                             DIAG_numApp++;
                         }

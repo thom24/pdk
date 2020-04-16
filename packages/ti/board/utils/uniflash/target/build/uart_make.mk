@@ -106,7 +106,7 @@ CFLAGS_LOCAL_COMMON += -DSPI_DMA_ENABLE
 endif
 # endif
 
-SBL_OBJ_COPY := $(TOOLCHAIN_PATH_GCC_ARCH64)/bin/aarch64-elf-objcopy
+SBL_OBJ_COPY := $(TOOLCHAIN_PATH_GCC_ARCH64)/bin/$(GCC_ARCH64_BIN_PREFIX)-objcopy
 export SBL_OBJ_COPY
 
 # Include common make files

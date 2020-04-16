@@ -169,7 +169,7 @@ void InitMmu(void)
      * Linux IPC VRing Buffer - uncached
      */
     attrs.attrIndx =  Mmu_AttrIndx_MAIR4;
-    (void)Mmu_map(0xA8000000U, 0xA8000000U, 0x00100000U, &attrs);
+    (void)Mmu_map(0xA8000000U, 0xA8000000U, 0x00100000U, &attrs, FALSE);
 #endif
 }
 #endif

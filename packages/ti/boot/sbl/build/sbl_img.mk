@@ -85,7 +85,7 @@ endif
 
 # Select the SBL_OBJ_COPY to use.
 #
-SBL_OBJ_COPY := $(TOOLCHAIN_PATH_GCC_ARCH64)/bin/aarch64-elf-objcopy
+SBL_OBJ_COPY := $(TOOLCHAIN_PATH_GCC_ARCH64)/bin/$(GCC_ARCH64_BIN_PREFIX)-objcopy
 export SBL_OBJ_COPY
 
 # EFUSE_DEFAULT - R5 ROM will run the SBL in lockstep mode in lockstep

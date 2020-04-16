@@ -89,7 +89,7 @@ ifeq ($(SOC), AM65XX)
  AR = $(TOOLCHAIN_PATH_R5)/bin/armar
  LNK = $(TOOLCHAIN_PATH_R5)/bin/armlnk
  SIZE = $(TOOLCHAIN_PATH_R5)/bin/armofd
- BIN = $(TOOLCHAIN_PATH_GCC_ARCH64)/bin/aarch64-elf-objcopy
+ BIN = $(TOOLCHAIN_PATH_GCC_ARCH64)/bin/$(GCC_ARCH64_BIN_PREFIX)-objcopy
 else
 # Support backwards compatibility with KeyStone1 approach
  CC = $(TOOLCHAIN_PATH_A15)/bin/$(CROSS_TOOL_PRFX)gcc

@@ -96,6 +96,7 @@ SECTIONS
       boot.*<boot.oe71>(.text)
     } load > C7X_TEXT ALIGN(0x200000)
     .vecs       >       C7X_DDR_SPACE ALIGN(0x400000)
+    .secure_vecs >      C7X_DDR_SPACE
     .text       >       C7X_DDR_SPACE ALIGN(0x200000)
 
     .bss        >       C7X_DDR_SPACE  /* Zero-initialized data */
@@ -112,9 +113,12 @@ SECTIONS
 
     GROUP:              >  C7X_DDR_SPACE
     {
-        .data.ti_sysbios_family_c7x_Mmu_tableArray     : type=NOINIT
-        .data.ti_sysbios_family_c7x_Mmu_tableArraySlot : type=NOINIT
-        .data.ti_sysbios_family_c7x_Mmu_level1Table    : type=NOINIT
+        .data.ti_sysbios_family_c7x_Mmu_tableArray          : type=NOINIT
+        .data.ti_sysbios_family_c7x_Mmu_tableArraySlot      : type=NOINIT
+        .data.ti_sysbios_family_c7x_Mmu_level1Table         : type=NOINIT
+        .data.ti_sysbios_family_c7x_Mmu_tableArray_NS       : type=NOINIT
+        .data.ti_sysbios_family_c7x_Mmu_tableArraySlot_NS   : type=NOINIT
+        .data.ti_sysbios_family_c7x_Mmu_level1Table_NS      : type=NOINIT
     }
 
     .udma_buffer_msmc       >       MSMC3
