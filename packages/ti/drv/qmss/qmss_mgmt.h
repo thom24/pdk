@@ -178,11 +178,11 @@ static inline void Qmss_queuePush (Qmss_QueueHnd hnd, void *descAddr, uint32_t p
     /* List all the processors that support atomic 64 bit write */
 #if defined(_TMS320C6600) || defined(__ARM_ARCH_7A__)
     regCregDPtr = (volatile uint64_t *) (&qmssLObj[qSubSys].p.groupRegs[qGroup].qmQueMgmtDataReg->QUEUE_MGMT_GROUP[qNumber].QUEUE_REG_C);
-#ifdef _BIG_ENDIAN
-    dWord = ((((uint64_t)regc)<<32)|regd);
-#elif defined (_LITTLE_ENDIAN) || defined(__ARM_ARCH_7A__) 
+#if defined (_LITTLE_ENDIAN) || defined(__ARM_ARCH_7A__) 
 /* preceding __ARM_ARCH_7A__ avoids requirement to define _LITTLE_ENDIAN on ARM */
     dWord = ((((uint64_t)regd)<<32)|regc);
+#elif defined (_BIG_ENDIAN)
+    dWord = ((((uint64_t)regc)<<32)|regd);
 #else
 #error "Define _BIG_ENDIAN for Big Endian or _LITTLE_ENDIAN for Little Endian"
 #endif
