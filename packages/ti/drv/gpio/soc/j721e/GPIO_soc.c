@@ -660,7 +660,7 @@ uint32_t GPIO_PinBankUsageCount[GPIO_NUM_PORTS][GPIO_NUM_BANKS] = {0U, };
 int32_t GPIO_socConfigIntrPath(uint32_t portNum, uint32_t pinNum,void *hwAttrs,bool setIntrPath)
 {
 
-    GPIO_v0_HwAttrs *cfg = (GPIO_v0_HwAttrs *)hwAttrs;
+    GPIO_v0_HwAttrs   *cfg = (GPIO_v0_HwAttrs *)hwAttrs;
     GPIO_IntCfg       *intCfg;
     uint32_t           bankNum;
 	int32_t retVal=CSL_PASS;
@@ -673,7 +673,6 @@ int32_t GPIO_socConfigIntrPath(uint32_t portNum, uint32_t pinNum,void *hwAttrs,b
     uint16_t src_id,src_index,dst_id,dst_host_irq;
 
     intCfg = cfg->intCfg;
-    cfg->baseAddr = (uint32_t)CSL_WKUP_GPIO0_BASE; /* For AM65x GP EVM */
 
 #if defined(BUILD_MCU1_0) || defined(BUILD_MCU1_1) || defined(BUILD_MCU2_0) || defined(BUILD_MCU2_1) || defined(BUILD_MCU3_0) || defined(BUILD_MCU3_1)
     CSL_armR5GetCpuID(&r5CpuInfo);
