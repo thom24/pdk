@@ -64,7 +64,7 @@ extern "C" {
 #undef   TIMERP_TIMER_FREQ_HI
 #endif
 
-#define  TIMERP_TIMER_FREQ_LO   ((int32_t) 25000000)
+#define  TIMERP_TIMER_FREQ_LO   ((int32_t) 19200000)
 #define  TIMERP_TIMER_FREQ_HI   ((int32_t) 0)
 
 #define TimerP_numTimerDevices          ((uint32_t) 20U )
