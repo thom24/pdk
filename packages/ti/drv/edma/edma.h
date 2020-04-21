@@ -1433,6 +1433,24 @@ extern uint8_t EDMA_getNumInstances(void);
 */
 extern int32_t EDMA_init(uint8_t instanceId);
 
+/**
+*  @b Description
+*  @n
+*     Get Edma instance handle based on the instanceId passed.
+*
+*  @param[in]  instanceId
+*      Instance Id to for which handle is to be returned, 
+*      range is [0, number of instances-1], where
+*      number of instances is obtained from a call to @ref EDMA_getNumInstances.
+*      The edma instance should have been previously opened using edma_open()
+*  @param[out] instanceInfo
+*      Instance information.
+*
+*  @retval
+*      Handle to the EDMA instance. If instance was not previously opened then 
+*      returned will be NULL.
+*/
+extern EDMA_Handle EDMA_getHandle(uint8_t instanceId, EDMA_instanceInfo_t *instanceInfo);
 
 /** @}*/
 

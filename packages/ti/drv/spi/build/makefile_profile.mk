@@ -44,7 +44,11 @@ endif
 
 # List all the external components/interfaces, whose interface header files
 #  need to be included for this component
+ifeq ($(SOC),$(filter $(SOC), tpr12))
+INCLUDE_EXTERNAL_INTERFACES = pdk
+else
 INCLUDE_EXTERNAL_INTERFACES = pdk edma
+endif
 
 ifeq ($(SOC),$(filter $(SOC), tda2xx tda2px dra72x dra75x tda2ex am571x am572x am574x tda3xx dra78x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am64x))
 PACKAGE_SRCS_COMMON += soc/$(SOC) soc/SPI_soc.h
@@ -56,6 +60,9 @@ ifeq ($(BUILDTYPE),$(filter $(BUILDTYPE), profile profiledma))
   else
     CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) --entry_parm=address --exit_hook=ti_utils_exit --exit_parm=address --entry_hook=ti_utils_entry -g -D_ENABLE_BM
   endif
+endif
+ifeq ($(SOC),$(filter $(SOC), tpr12))
+CFLAGS_LOCAL_COMMON += $(MIBSPI_CFLAGS)
 endif
 
 # For all FW supporting devices source files in library and package

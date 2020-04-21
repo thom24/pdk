@@ -37,7 +37,11 @@ MODULE_NAME = spi_indp
 
 # List all the external components/interfaces, whose interface header files
 #  need to be included for this component
+ifeq ($(SOC),$(filter $(SOC), tpr12))
+INCLUDE_EXTERNAL_INTERFACES = pdk
+else
 INCLUDE_EXTERNAL_INTERFACES = pdk edma
+endif
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS)
 

@@ -2082,6 +2082,7 @@ int32_t EDMA_init(uint8_t instanceId)
     {
         EDMA3SetPaRAM(ccBaseAddr, (uint32_t)paramId, &paramSet);
     }
+    
 exit:
     return(errorCode);
 }
@@ -2631,3 +2632,57 @@ int32_t EDMA_configPerformance(EDMA_Handle handle,
 exit:
     return(errorCode);
 }
+
+
+EDMA_Handle EDMA_getHandle(uint8_t instanceId, EDMA_instanceInfo_t *instanceInfo)
+{
+    EDMA_Handle handle = NULL;
+    EDMA_Config_t *edmaConfig;
+    EDMA_Object_t *edmaObj;
+    EDMA_hwAttrs_t const *hwAttrs;
+    int32_t status = EDMA_NO_ERROR;
+    uint8_t tc;
+
+#ifdef EDMA_PARAM_CHECK
+    if (instanceId >= EDMA_NUM_CC)
+    {
+        status = EDMA_E_INVALID__INSTANCE_ID;
+        handle = NULL;
+    }
+    if (instanceInfo == NULL)
+    {
+        status = EDMA_E_INVALID__INSTANCEINFO_POINTER_NULL;
+        handle = NULL;
+    }
+#endif
+
+    if (EDMA_NO_ERROR == status)
+    {
+        /* Get handle for this driver instance */
+        handle = (EDMA_Handle)&(EDMA_config[instanceId]);
+        edmaConfig = (EDMA_Config_t *) handle;
+        edmaObj = edmaConfig->object;
+
+        if (edmaObj == NULL) {
+            handle = NULL;
+        }
+    }
+
+    if (handle != NULL)
+    {
+        hwAttrs =  edmaConfig->hwAttrs;
+        instanceInfo->numEventQueues = hwAttrs->numEventQueues;
+        instanceInfo->numParamSets = hwAttrs->numParamSets;
+        instanceInfo->isChannelMapExist = hwAttrs->isChannelMapExist;
+        instanceInfo->isTransferCompletionInterruptConnected =
+            (hwAttrs->transferCompletionInterruptNum != EDMA_INTERRUPT_NOT_CONNECTED_ID);
+        instanceInfo->isErrorInterruptConnected = (hwAttrs->errorInterruptNum != EDMA_INTERRUPT_NOT_CONNECTED_ID);
+        for (tc = 0; tc < hwAttrs->numEventQueues; tc++)
+        {
+            instanceInfo->isTransferControllerErrorInterruptConnected[tc] =
+                (hwAttrs->transferControllerErrorInterruptNum[tc] != EDMA_INTERRUPT_NOT_CONNECTED_ID);
+        }
+    }
+    return handle;
+}
+

@@ -158,6 +158,10 @@ typedef struct SPI_Transaction_s {
     void      *rxBuf;      /*!< void * to a buffer to receive data */
     void      *arg;        /*!< Argument to be passed to the callback function */
 
+    void      *custom;     /*!< Implementation specific argument passed to
+                                SPI_Transfer(). Refer the SPI_vX implementation
+                                documentation to see the specific use of this
+                                parameter. */
     /* User output (read-only) fields */
     SPI_Status status;     /*!< Status code set by SPI_transfer */
 

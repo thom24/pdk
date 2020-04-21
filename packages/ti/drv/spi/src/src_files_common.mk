@@ -30,9 +30,9 @@
 # EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 SOC_INDP_LIB_SOCS=k2h k2k k2l k2e k2g c6657 c6678 omapl137 omapl138 am571x am572x am574x  am335x am437x 
-SOC_DEP_LIB_SOCS=tda2xx tda3xx tda2px dra75x tda2ex dra72x dra78x j721e am77x j7200 am65xx am64x
+SOC_DEP_LIB_SOCS=tda2xx tda3xx tda2px dra75x tda2ex dra72x dra78x j721e am77x j7200 am65xx am64x tpr12
 
-PACKAGE_SRCS_COMMON = makefile SPI.h MCSPI.h spi_component.mk .gitignore \
+PACKAGE_SRCS_COMMON = makefile SPI.h MCSPI.h MIBSPI.h spi_component.mk .gitignore \
                       docs/ReleaseNotes_SPI_LLD.pdf \
                       src/SPI_drv.c src/SPI_osal.h src/src_files_common.mk \
                       build/makefile.mk build/makefile_profile.mk \
@@ -65,23 +65,62 @@ endif
 
 
 ifeq ($(SOC),$(filter $(SOC),$(SOC_DEP_LIB_SOCS) ))
-  # TDA & J7 targets include SPI_V1, QSPI_V1(for Sitara) , OSPI_V1(For J7)
-  SRCDIR = . src src/v1
-  INCDIR = . src src/v1
-  SRCS_COMMON += SPI_drv.c SPI_v1.c
-  PACKAGE_SRCS_COMMON += src/v1/SPI_v1.c soc/SPI_v1.h
+  ifeq ($(SOC),$(filter $(SOC), tpr12))
+    # TPR12 targets include SPI_V3
+    SRCDIR = . src src/v3
+    INCDIR = . src src/v3
+    SRCS_COMMON += SPI_drv.c SPI_v3.c MIBSPI_drv.c mibspi_trace.c mibspi_utils.c
+    PACKAGE_SRCS_COMMON += src/v3/SPI_v3.c soc/SPI_v3.h
+    PACKAGE_SRCS_COMMON += src/V3/mibspi_trace.c src/V3/mibspi_priv.h
+    PACKAGE_SRCS_COMMON += src/V3/mibspi_trace.h src/V3/mibspi_trace_config.h
+    PACKAGE_SRCS_COMMON += src/V3/mibspi_trace_priv.h src/V3/mibspi_utils.c
+    PACKAGE_SRCS_COMMON += src/V3/mibspi_utils.h
+  else
+    # TDA & J7 targets include SPI_V1, QSPI_V1(for Sitara) , OSPI_V1(For J7)
+    SRCDIR = . src src/v1
+    INCDIR = . src src/v1
+    SRCS_COMMON += SPI_drv.c SPI_v1.c
+    PACKAGE_SRCS_COMMON += src/v1/SPI_v1.c soc/SPI_v1.h
 
-  ifeq ($(SOC),$(filter $(SOC), tda2xx tda2px dra75x tda2ex dra72x tda3xx dra78x))
-     SRCS_COMMON += QSPI_v1.c
-     PACKAGE_SRCS_COMMON += src/v1/QSPI_v1.c soc/QSPI_v1.h 
-  endif
+    ifeq ($(SOC),$(filter $(SOC), tda2xx tda2px dra75x tda2ex dra72x tda3xx dra78x))
+       SRCS_COMMON += QSPI_v1.c
+       PACKAGE_SRCS_COMMON += src/v1/QSPI_v1.c soc/QSPI_v1.h 
+    endif
 
-  ifeq ($(SOC),$(filter $(SOC), j721e am77x j7200 am65xx am64x))
-    SRCDIR += src/v0
-    INCDIR += src/v0
-    SRCS_COMMON += OSPI_v0.c
-    PACKAGE_SRCS_COMMON += src/v0/OSPI_v0.c src/v0/OSPI_v0.h
+    ifeq ($(SOC),$(filter $(SOC), j721e am77x j7200 am65xx))
+      SRCDIR += src/v0
+      INCDIR += src/v0
+      SRCS_COMMON += OSPI_v0.c
+      PACKAGE_SRCS_COMMON += src/v0/OSPI_v0.c src/v0/OSPI_v0.h
+    endif
   endif
-  
+endif
+
+ifeq ($(SOC),$(filter $(SOC), j721e am77x j7200 am65xx am64x))
+  SRCDIR += src/v0
+  INCDIR += src/v0
+  SRCS_COMMON += OSPI_v0.c
+  PACKAGE_SRCS_COMMON += src/v0/OSPI_v0.c src/v0/OSPI_v0.h
+endif
+
+ifeq ($(SOC),$(filter $(SOC), tpr12))
+  MIBSPI_CFLAGS =
+  # Enable asserts and prints
+  MIBSPI_CFLAGS += -DMIBSPI_CFG_ASSERT_ENABLE
+  #MIBSPI_CFLAGS += -DMIBSPI_CFG_USE_STD_ASSERT
+  MIBSPI_CFLAGS += -DMIBSPI_CFG_PRINT_ENABLE
+  MIBSPI_CFLAGS += -DUART_ENABLED
+  # Trace level per build profile:
+  # 0 - None
+  # 1 - Error
+  # 2 - Warning
+  # 3 - Info
+  # 4 - Debug
+  # 5 - Verbose
+  ifeq ($(BUILD_PROFILE),debug)
+    MIBSPI_CFLAGS += -DMIBSPI_TRACE_CFG_TRACE_LEVEL=4
+    MIBSPI_CFLAGS += -DMIBSPI_CFG_DEV_ERROR
+  else
+    MIBSPI_CFLAGS += -DMIBSPI_TRACE_CFG_TRACE_LEVEL=3
 endif
 

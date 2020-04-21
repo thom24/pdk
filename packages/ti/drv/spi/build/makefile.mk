@@ -35,7 +35,7 @@ include $(PDK_SPI_COMP_PATH)/src/src_files_common.mk
 
 MODULE_NAME = spi
 
-ifeq ($(SOC),$(filter $(SOC), tda2xx tda2px dra72x dra75x tda2ex am571x am572x am574x tda3xx dra78x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j7200 am64x))
+ifeq ($(SOC),$(filter $(SOC), tda2xx tda2px dra72x dra75x tda2ex am571x am572x am574x tda3xx dra78x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j7200 am64x tpr12))
 SRCDIR += soc/$(SOC)
 INCDIR += soc
 # Common source files across all platforms and cores
@@ -44,13 +44,21 @@ endif
 
 # List all the external components/interfaces, whose interface header files
 #  need to be included for this component
+ifeq ($(SOC),$(filter $(SOC), tpr12))
+INCLUDE_EXTERNAL_INTERFACES = pdk
+else
 INCLUDE_EXTERNAL_INTERFACES = pdk edma
+endif
+
 
 ifeq ($(SOC),$(filter $(SOC), tda2xx tda2px dra72x dra75x tda2ex am571x am572x am574x tda3xx dra78x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am64x))
 PACKAGE_SRCS_COMMON += soc/$(SOC) soc/SPI_soc.h
 endif
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS)
+ifeq ($(SOC),$(filter $(SOC), tpr12))
+CFLAGS_LOCAL_COMMON += $(MIBSPI_CFLAGS)
+endif
 
 # For all FW supporting devices source files in library and package
 ifeq ($(SOC),$(filter $(SOC), am335x am437x))
