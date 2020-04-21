@@ -179,10 +179,6 @@ extern const uint32_t gSciclient_boardCfgLow_sec[(SCICLIENT_BOARDCFG_SECURITY_SI
 /** Board Configuration - PM array */
 extern const uint32_t gSciclient_boardCfgLow_pm[(SCICLIENT_BOARDCFG_PM_SIZE_IN_BYTES+3U)/4U];
 
-#if defined (SOC_AM65XX)
-extern const uint32_t gSciclient_boardCfgLow_rm_sr2[(SCICLIENT_BOARDCFG_RM_SR2_SIZE_IN_BYTES+3U)/4U];
-#endif
-
 /* ========================================================================== */
 /*                          Function Declarations                             */
 /* ========================================================================== */

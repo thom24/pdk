@@ -239,40 +239,6 @@ int8_t UFP_sciclientInit(void *sysfw)
         .devGrp = DEVGRP_ALL
     };
 
-#if defined(SOC_AM65XX)
-    /* Configure RM based on Device ID */
-    /* AM65x SR1 and SR2 must be configured differently */
-    uint32_t pBoardConfigLow_rm;
-    uint16_t boardConfigSize_rm;
-    uint32_t dev_id = HW_RD_REG32((CSL_WKUP_CTRL_MMR0_CFG0_BASE +
-                                   CSL_WKUP_CTRL_MMR_CFG0_JTAGID));
-
-    if (dev_id == 0x0BB5A02F) /* SR1 */
-    {
-        /* RM */
-        pBoardConfigLow_rm = (uint32_t)gSciclient_boardCfgLow_rm;
-        boardConfigSize_rm = SCICLIENT_BOARDCFG_RM_SIZE_IN_BYTES;
-    }
-    else if (dev_id == 0x1BB5A02F) /* SR2 */
-    {
-        /* RM */
-        pBoardConfigLow_rm = (uint32_t)gSciclient_boardCfgLow_rm_sr2;
-        boardConfigSize_rm = SCICLIENT_BOARDCFG_RM_SR2_SIZE_IN_BYTES;
-    }
-    else
-    {
-        return (-1);
-    }
-
-    Sciclient_BoardCfgPrms_t sblBoardCfgRmPrms =
-    {
-        .boardConfigLow = pBoardConfigLow_rm,
-        .boardConfigHigh = 0,
-        .boardConfigSize = boardConfigSize_rm,
-        .devGrp = DEVGRP_ALL
-    };
-#else
-    /* Non-AM65x devices may configure as normal*/
     Sciclient_BoardCfgPrms_t sblBoardCfgRmPrms =
     {
         .boardConfigLow = (uint32_t)gSciclient_boardCfgLow_rm,
@@ -280,7 +246,6 @@ int8_t UFP_sciclientInit(void *sysfw)
         .boardConfigSize = SCICLIENT_BOARDCFG_RM_SIZE_IN_BYTES,
         .devGrp = DEVGRP_ALL
     };
-#endif
 
     Sciclient_BoardCfgPrms_t sblBoardCfgSecPrms =
     {

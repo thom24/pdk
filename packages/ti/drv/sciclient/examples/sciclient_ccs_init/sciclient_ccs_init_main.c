@@ -232,11 +232,6 @@ static int32_t App_getRevisionTest(void)
         sizeof (response)
     };
 
-#if defined(SOC_AM65XX)
-    uint32_t dev_id = HW_RD_REG32((CSL_WKUP_CTRL_MMR0_CFG0_BASE
-				   + CSL_WKUP_CTRL_MMR_CFG0_JTAGID));
-#endif
-
     status = Sciclient_init(&config);
     dmtimer0_enable();
 #if !defined (SOC_AM64X)
@@ -284,35 +279,8 @@ static int32_t App_getRevisionTest(void)
                 .devGrp = DEVGRP_00
             };
 
-#if defined(SOC_AM65XX)
-            uint32_t boardCfgLow_sr2[] = SCICLIENT_BOARDCFG_RM_SR2;
-            Sciclient_BoardCfgPrms_t boardCfgPrms_rm_sr2 =
-            {
-                .boardConfigLow = (uint32_t) boardCfgLow_sr2,
-                .boardConfigHigh = 0,
-                .boardConfigSize = SCICLIENT_BOARDCFG_RM_SR2_SIZE_IN_BYTES,
-                .devGrp = DEVGRP_00
-            };
-#endif
             dmtimer0_read();
-
-#if defined(SOC_AM65XX)
-            if (dev_id == 0x0BB5A02F) /* SR1 */
-            {
-                status = Sciclient_boardCfgRm(&boardCfgPrms_rm);
-            }
-            else if (dev_id == 0x1BB5A02F) /* SR2 */
-            {
-                status = Sciclient_boardCfgRm(&boardCfgPrms_rm_sr2);
-            }
-            else
-            {
-                printf("\nInvaid Device ID: 0x%x \n", dev_id);
-                status = CSL_EFAIL;
-            }
-#else
             status = Sciclient_boardCfgRm(&boardCfgPrms_rm);
-#endif
             dmtimer0_read();
         }
         else
@@ -398,32 +366,7 @@ static int32_t App_getRevisionTest(void)
                 .devGrp = DEVGRP_01
             };
 
-#if defined(SOC_AM65XX)
-            uint32_t boardCfgLow_sr2[] = SCICLIENT_BOARDCFG_RM_SR2;
-            Sciclient_BoardCfgPrms_t boardCfgPrms_rm_sr2 =
-            {
-                .boardConfigLow = (uint32_t) boardCfgLow_sr2,
-                .boardConfigHigh = 0,
-                .boardConfigSize = SCICLIENT_BOARDCFG_RM_SR2_SIZE_IN_BYTES,
-                .devGrp = DEVGRP_01
-            };
-
-            if (dev_id == 0x0BB5A02F) /* SR1 */
-            {
-                status = Sciclient_boardCfgRm(&boardCfgPrms_rm);
-            }
-            else if (dev_id == 0x1BB5A02F) /* SR2 */
-            {
-                status = Sciclient_boardCfgRm(&boardCfgPrms_rm_sr2);
-            }
-            else
-            {
-                printf("\nInvaid Device ID: 0x%x \n", dev_id);
-                status = CSL_EFAIL;
-            }
-#else
             status = Sciclient_boardCfgRm(&boardCfgPrms_rm);
-#endif
         }
         else
         {

@@ -1,4 +1,4 @@
-/*
+*
  * Copyright (C) 2018-2020 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
@@ -113,70 +113,33 @@ void SBL_SciClientInit(void)
     Sciclient_BoardCfgPrms_t sblBoardCfgPrms =
     {
         .boardConfigLow = (uint32_t)gSciclient_boardCfgLow,
-	.boardConfigHigh = 0,
-	.boardConfigSize = SCICLIENT_BOARDCFG_SIZE_IN_BYTES,
-	.devGrp = SBL_DEVGRP
+        .boardConfigHigh = 0,
+        .boardConfigSize = SCICLIENT_BOARDCFG_SIZE_IN_BYTES,
+        .devGrp = SBL_DEVGRP
     };
 
     Sciclient_BoardCfgPrms_t sblBoardCfgPmPrms =
     {
         .boardConfigLow = (uint32_t)gSciclient_boardCfgLow_pm,
-	.boardConfigHigh = 0,
-	.boardConfigSize = SCICLIENT_BOARDCFG_PM_SIZE_IN_BYTES,
-	.devGrp = SBL_DEVGRP
+        .boardConfigHigh = 0,
+        .boardConfigSize = SCICLIENT_BOARDCFG_PM_SIZE_IN_BYTES,
+        .devGrp = SBL_DEVGRP
     };
 
-#if defined(SOC_AM65XX)
-    /* Configure RM based on Device ID */
-    /* Maxwell PG1 and PG2 must be configured differently */
-    uint32_t pBoardConfigLow_rm = 0U;
-    uint16_t boardConfigSize_rm = 0U;
-    uint32_t dev_id = HW_RD_REG32((CSL_WKUP_CTRL_MMR0_CFG0_BASE
-				   + CSL_WKUP_CTRL_MMR_CFG0_JTAGID));
-
-    SBL_log(SBL_LOG_ERR,"DEVICE ID 0x%x\n", dev_id);
-    if (dev_id == 0x0BB5A02F) /* SR1 */
-    {
-      /* RM */
-      pBoardConfigLow_rm = (uint32_t)gSciclient_boardCfgLow_rm;
-      boardConfigSize_rm = SCICLIENT_BOARDCFG_RM_SIZE_IN_BYTES;
-    }
-    else if (dev_id == 0x1BB5A02F) /* SR2 */
-    {
-      /* RM */
-      pBoardConfigLow_rm = (uint32_t)gSciclient_boardCfgLow_rm_sr2;
-      boardConfigSize_rm = SCICLIENT_BOARDCFG_RM_SR2_SIZE_IN_BYTES;
-    }
-    else
-    {
-      SBL_log(SBL_LOG_ERR,"Invalid device ID: 0x%x\n", dev_id);
-      SblErrLoop(__FILE__, __LINE__);
-    }
-    
-    Sciclient_BoardCfgPrms_t sblBoardCfgRmPrms =
-    {
-	.boardConfigLow = pBoardConfigLow_rm,
-	.boardConfigHigh = 0,
-	.boardConfigSize = boardConfigSize_rm,
-	.devGrp = SBL_DEVGRP
-    };
-#else
-    /* Non-Maxwell devices may configure as normal*/
     Sciclient_BoardCfgPrms_t sblBoardCfgRmPrms =
     {
         .boardConfigLow = (uint32_t)gSciclient_boardCfgLow_rm,
-	.boardConfigHigh = 0,
-	.boardConfigSize = SCICLIENT_BOARDCFG_RM_SIZE_IN_BYTES,
-	.devGrp = SBL_DEVGRP
+        .boardConfigHigh = 0,
+        .boardConfigSize = SCICLIENT_BOARDCFG_RM_SIZE_IN_BYTES,
+        .devGrp = SBL_DEVGRP
     };
-#endif
 
     Sciclient_BoardCfgPrms_t sblBoardCfgSecPrms =
     {
         .boardConfigLow = (uint32_t)gSciclient_boardCfgLow_sec,
-	.boardConfigHigh = 0,
-	.boardConfigSize = SCICLIENT_BOARDCFG_SECURITY_SIZE_IN_BYTES,
-	.devGrp = SBL_DEVGRP
+        .boardConfigHigh = 0,
+        .boardConfigSize = SCICLIENT_BOARDCFG_SECURITY_SIZE_IN_BYTES,
+        .devGrp = SBL_DEVGRP
     };
 
     Sciclient_ConfigPrms_t        config =
