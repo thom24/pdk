@@ -50,7 +50,8 @@ function getLibs(prog)
                      'am335x',
                      'am437x',
                      'k2g',
-                     'am65xx'
+                     'am65xx',
+                     'am64x',
                    ];
 
     /* Get the SOC */

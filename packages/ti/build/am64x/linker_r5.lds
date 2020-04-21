@@ -28,27 +28,14 @@ __SVC_STACK_SIZE = 0x1000;
 /* Memory Map */
 MEMORY
 {
-    VECTORS (X)             : origin=0x41C7F000 length=0x1000
+    VECTORS (X)             : origin=0x70000000 length=0x1000
     /*  Reset Vectors base address(RESET_VECTORS) should be 64 bytes aligned  */
-    RESET_VECTORS (X)       : origin=0x41C00000 length=0x100
-    /* MCU0_R5F_0 local view */
-    MCU0_R5F_TCMA_SBL_RSVD (X)  : origin=0x0        length=0x100
-    MCU0_R5F_TCMA (X)       : origin=0x100      length=0x8000 - 0x100
-    MCU0_R5F_TCMB0 (RWIX)   : origin=0x41010000 length=0x8000
-
-    /* MCU0_R5F_1 SoC view */
-    MCU0_R5F1_ATCM (RWIX)   : origin=0x41400000 length=0x8000
-    MCU0_R5F1_BTCM (RWIX)   : origin=0x41410000 length=0x8000
-
-    /* MCU0 share locations */
-    OCMRAM  (RWIX)          : origin=0x41C00100 length=0x80000 - 0x1100      /* ~510KB */
-
+    RESET_VECTORS (X)       : origin=0x00000000 length=0x100
     /* am64x MCMS3 locations */
-    /* am64x Reserved Memory for ARM Trusted Firmware */
-    MSMC3_ARM_FW   (RWIX)   : origin=0x70000000 length=0x40000         /* 256KB */
-    MSMC3   (RWIX)          : origin=0x70040000 length=0x7B0000        /* 8MB - 320KB */
-    /* am64x Reserved Memory for DMSC Firmware */
-    MSMC3_DMSC_FW  (RWIX)   : origin=0x707F0000 length=0x10000         /* 64KB */
+    MSMC3   (RWIX)          : origin=0x70001000 length=0x170000-0x1000 /* ~(1.5MB - 0x1000) */
+
+    /* Reserved for SYSFW Secure Proxy */
+    MSMC3_H (RWIX)          : origin=0x70170000 length=0x90000         /* ~0.5MB */
 
     DDR0    (RWIX)          : origin=0x80000000 length=0x80000000      /* 2GB */
 }
@@ -60,38 +47,38 @@ SECTIONS
     /* a range of +\- 16 MB */
     .intvecs       : {} palign(8)      > VECTORS
     .intc_text     : {} palign(8)      > VECTORS
-    .rstvectors    : {} palign(8)      > RESET_VECTORS
+    .rstvectors    : {} palign(8)      > RESET_VECTORS 
     .bootCode      : {} palign(8)      > MSMC3
     .startupCode   : {} palign(8)      > MSMC3
     .startupData   : {} palign(8)      > MSMC3, type = NOINIT
-    .text          : {} palign(8)      > DDR0
-    .const         : {} palign(8)      > DDR0
-    .cinit         : {} palign(8)      > DDR0
-    .pinit         : {} palign(8)      > DDR0
-    .bss           : {} align(4)       > DDR0
-    .far           : {} align(4)       > DDR0
-    .data          : {} palign(128)    > DDR0
+    .text          : {} palign(8)      > MSMC3
+    .const         : {} palign(8)      > MSMC3
+    .cinit         : {} palign(8)      > MSMC3
+    .pinit         : {} palign(8)      > MSMC3
+    .bss           : {} align(4)       > MSMC3
+    .far           : {} align(4)       > MSMC3
+    .data          : {} palign(128)    > MSMC3
     .boardcfg_data : {} palign(128)    > MSMC3
-    .sysmem        : {}                > DDR0
-    .data_buffer   : {} palign(128)    > DDR0
+    .sysmem        : {}                > MSMC3
+    .data_buffer   : {} palign(128)    > MSMC3
 
     /* USB or any other LLD buffer for benchmarking */
     .benchmark_buffer (NOLOAD) {} ALIGN (8) > DDR0
 
-    .stack      : {} align(4)       > DDR0  (HIGH)
-    .irqStack   : {. = . + __IRQ_STACK_SIZE;} align(4)      > DDR0  (HIGH)
+    .stack      : {} align(4)       > MSMC3  (HIGH)
+    .irqStack   : {. = . + __IRQ_STACK_SIZE;} align(4)      > MSMC3  (HIGH)
     RUN_START(__IRQ_STACK_START)
     RUN_END(__IRQ_STACK_END)
-    .fiqStack   : {. = . + __FIQ_STACK_SIZE;} align(4)      > DDR0  (HIGH)
+    .fiqStack   : {. = . + __FIQ_STACK_SIZE;} align(4)      > MSMC3  (HIGH)
     RUN_START(__FIQ_STACK_START)
     RUN_END(__FIQ_STACK_END)
-    .abortStack : {. = . + __ABORT_STACK_SIZE;} align(4)    > DDR0  (HIGH)
+    .abortStack : {. = . + __ABORT_STACK_SIZE;} align(4)    > MSMC3  (HIGH)
     RUN_START(__ABORT_STACK_START)
     RUN_END(__ABORT_STACK_END)
-    .undStack   : {. = . + __UND_STACK_SIZE;} align(4)      > DDR0  (HIGH)
+    .undStack   : {. = . + __UND_STACK_SIZE;} align(4)      > MSMC3  (HIGH)
     RUN_START(__UND_STACK_START)
     RUN_END(__UND_STACK_END)
-    .svcStack   : {. = . + __SVC_STACK_SIZE;} align(4)      > DDR0  (HIGH)
+    .svcStack   : {. = . + __SVC_STACK_SIZE;} align(4)      > MSMC3  (HIGH)
     RUN_START(__SVC_STACK_START)
     RUN_END(__SVC_STACK_END)
 }

@@ -105,13 +105,8 @@
 
 /* \brief Read ID command definitions */
 #define NOR_RDID_NUM_BYTES           (0x3U)
-#if defined(j721e_sim)
-#define NOR_MANF_ID                  (0x01U)    /* Manufacturer ID */
-#define NOR_DEVICE_ID                (0x2018)   /* Device ID */
-#else
 #define NOR_MANF_ID                  (0x2CU)    /* Manufacturer ID */
 #define NOR_DEVICE_ID                (0x5B1A)   /* Device ID */
-#endif
 
 /** Status Register, Write-in-Progress bit */
 #define NOR_SR_WIP                   (1U << 0U)

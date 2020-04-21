@@ -66,6 +66,7 @@ function getLibs(prog)
                      'c6657',
                      'am65xx',
                      'j721e',
+                     'am64x',
                      'j7200'
                    ];
 

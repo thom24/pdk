@@ -110,7 +110,7 @@ SemaphoreP_Handle SemaphoreP_create(uint32_t count,
     {
         /* pick up the external memory block configured */
         semPool        = (Sem_Struct *) gOsal_HwAttrs.extSemaphorePBlock.base;
-        temp           = ((uintptr_t) semPool) + gOsal_HwAttrs.extSemaphorePBlock.size;
+        temp           = (uintptr_t) gOsal_HwAttrs.extSemaphorePBlock.size;
         maxSemaphores  = (uint32_t)(temp/(sizeof(Sem_Struct)));
     }
     else

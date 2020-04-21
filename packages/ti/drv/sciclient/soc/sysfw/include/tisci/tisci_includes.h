@@ -75,6 +75,12 @@
 #include <j721e/tisci_sec_proxy.h>
 #include <j721e/tisci_boardcfg_constraints.h>
 #endif
+#if defined (SOC_AM64X)
+#include <am64x/tisci_resasg_types.h>
+#include <am64x/tisci_hosts.h>
+#include <am64x/tisci_sec_proxy.h>
+#include <am64x/tisci_boardcfg_constraints.h>
+#endif
 #include <tisci/security/tisci_firewall.h>
 #include <tisci/security/tisci_sec_macros.h>
 #include <tisci/security/tisci_soc_uid.h>

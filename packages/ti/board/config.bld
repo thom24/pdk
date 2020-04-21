@@ -360,6 +360,11 @@ var am65xx_idk = {
     targets: [A53LE],
 }
 
+var am64x_evm = {
+    name: "am64x_evm",
+    ccOpts: "-Dam64x_evm -DSOC_AM64X",
+    targets: [A53LE],
+
 var tpr12_evm = {
     name: "tpr12_evm",
     ccOpts: "-Dtpr12_evm -DSOC_TPR12",
@@ -368,5 +373,5 @@ var tpr12_evm = {
 
 /* List all the build targets here. */
 Build.targets = [ C66LE, C66BE, A15LE, M4LE, A9LE, A8LE, ARM9LE, C674LE A53LE ];
-var boards = [ evmAM335x, icev2AM335x, skAM335x, bbbAM335x, evmAM437x, idkAM437x, skAM437x, evmAM572x, idkAM571x, idkAM572x, evmK2H, evmK2K, evmK2E, evmK2L, evmK2G, evmC6678, evmC6657, evmOMAPL137 idkAM574x am65xx_evm am65xx_idk ];
+var boards = [ evmAM335x, icev2AM335x, skAM335x, bbbAM335x, evmAM437x, idkAM437x, skAM437x, evmAM572x, idkAM571x, idkAM572x, evmK2H, evmK2K, evmK2E, evmK2L, evmK2G, evmC6678, evmC6657, evmOMAPL137 idkAM574x am65xx_evm am65xx_idk am64x_evm ];
 

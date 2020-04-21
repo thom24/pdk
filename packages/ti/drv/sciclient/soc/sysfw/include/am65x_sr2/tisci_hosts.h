@@ -56,8 +56,8 @@
  * \brief Host IDs for AM6 device
  */
 
-#ifndef TISCI_HOSTS_H_SR2
-#define TISCI_HOSTS_H_SR2
+#ifndef TISCI_HOSTS_H
+#define TISCI_HOSTS_H
 
 /* Host IDs for AM6 Device */
 
@@ -107,6 +107,6 @@
 /** Number of unique hosts on the SoC */
 #define TISCI_HOST_ID_CNT (19U)
 
-#endif /* TISCI_HOSTS_H_SR2 */
+#endif /* TISCI_HOSTS_H */
 
 /* @} */

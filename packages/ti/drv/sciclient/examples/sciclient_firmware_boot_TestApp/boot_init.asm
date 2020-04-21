@@ -67,14 +67,6 @@ _sciclientTestAtcmEnAddr        .long _sciclientTestAtcmEn
 _sciclientTestEntry:
     .asmfunc
 
-    LDR   r0, _atcm_start                 ; Start address of ATCM
-    LDR   r1, _atcm_end                   ; End address of ATCM
-    MOV   r2, #0
-Loop:
-    STR   r2, [r0], #4                   ; Clear one word in ATCM
-    CMP   r0, r1
-    BLE   Loop                           ; Clear till ATCM end
-
     LDR   r0, _btcm_start                 ; Start address of BTCM
     LDR   r1, _btcm_end                   ; End address of BTCM
     MOV   r2, #0
@@ -99,10 +91,6 @@ _sciclientTestLoopForever:
 
     .endasmfunc
 
-_atcm_start:
-    .word 0x0
-_atcm_end:
-    .word 0x7FFC
 _btcm_start:
     .word 0x41010000
 _btcm_end:

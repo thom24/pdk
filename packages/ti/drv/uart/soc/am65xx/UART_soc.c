@@ -84,7 +84,9 @@ UART_HwAttrs uartInitCfg[CSL_UART_PER_CNT] =
         TRUE,                           /* enableInterrupt */
         UART16x_OPER_MODE,              /* operMode, 16x over sampling mode by default */
         NULL,                           /* dmaInfo */
-        NULL                            /* configSocIntrPath */
+        NULL,                           /* configSocIntrPath */
+        FALSE,                          /* dirEnable, RS-485 External Transceiver Direction */
+        UART_MDR3_DIR_POL_0,            /* dirPol, RS-485 External Transceiver Direction Polarity */
     },
     {
 #if defined (__aarch64__)
@@ -111,7 +113,9 @@ UART_HwAttrs uartInitCfg[CSL_UART_PER_CNT] =
         TRUE,
         UART16x_OPER_MODE,
         NULL,
-        NULL
+        NULL,
+        FALSE,
+        UART_MDR3_DIR_POL_0,
     },
     {
 #if defined (__aarch64__)
@@ -138,7 +142,9 @@ UART_HwAttrs uartInitCfg[CSL_UART_PER_CNT] =
         TRUE,
         UART16x_OPER_MODE,
         NULL,
-        NULL
+        NULL,
+        FALSE,
+        UART_MDR3_DIR_POL_0,
     },
 };
 

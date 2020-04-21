@@ -270,7 +270,8 @@ struct tisci_boardcfg_control {
  *                    This removes all MSMC memory demands
  *                    from DMSC but limits MPU channels to
  *                    one set of secure and one set of
- *                    insecure.
+ *                    insecure. Note this parameter is currently
+ *                    not used. Hence the value of '0' is used.
  */
 struct tisci_boardcfg_secproxy {
     struct tisci_boardcfg_substructure_header    subhdr;

@@ -39,6 +39,8 @@
 #if defined (j7200_evm)
 /* SPI entry offset is at index 5 of SPI config array */
 #define SPI_CONFIG_OFFSET     (5U)
+#elif defined (am64x_evm)
+#define SPI_CONFIG_OFFSET     (7U)
 #else
 #define SPI_CONFIG_OFFSET     CSL_MCSPI_PER_CNT
 #endif

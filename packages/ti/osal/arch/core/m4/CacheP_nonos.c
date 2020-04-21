@@ -46,30 +46,32 @@
 
 void CacheP_wb(const void * addr, int32_t size)
 {
-
+#if defined(UNICACHE_ENABLED)
   UNICACHEWriteBack(
       CSL_IPU_IPU1_UNICACHE_MMU_CONF_REGS_REGS,
       (uint32_t) addr,
       size,
       UNICACHE_WAIT_INFINITE);
-
+#endif
 }
 void CacheP_wbInv(const void * addr, int32_t size)
 {
+#if defined(UNICACHE_ENABLED)
   UNICACHEWriteBackAndInvalidate(
       CSL_IPU_IPU1_UNICACHE_MMU_CONF_REGS_REGS,
       (uint32_t) addr,
       size,
       UNICACHE_WAIT_INFINITE);
-
+#endif
 }
 
 void CacheP_Inv(const void * addr, int32_t size)
 {
+#if defined(UNICACHE_ENABLED)
   UNICACHEInvalidate(
       CSL_IPU_IPU1_UNICACHE_MMU_CONF_REGS_REGS,
       (uint32_t) addr,
       size,
       UNICACHE_WAIT_INFINITE);
-
+#endif
 }

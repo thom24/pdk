@@ -254,8 +254,13 @@ static int8_t BoardDiag_ospiFlashStressTest(void)
 
     /* Open the Board OSPI NOR device with SPI port 0
        and use default OSPI configurations */
+#if defined(am64x_evm)
+    boardHandle = Board_flashOpen(BOARD_FLASH_ID_MT35XU256ABA1G12,
+                                  BOARD_OSPI_INSTANCE, NULL);
+#else
     boardHandle = Board_flashOpen(BOARD_FLASH_ID_MT35XU512ABA1G12,
                                   BOARD_OSPI_INSTANCE, NULL);
+#endif
     if (!boardHandle)
     {
         UART_printf("\n Board_flashOpen Failed. \n");
@@ -356,8 +361,13 @@ static int8_t BoardDiag_ospiFlashTest(void)
     /* Open the Board OSPI NOR device with OSPI port 0
        and use default OSPI configurations */
 
+#if defined(am64x_evm)
+    boardHandle = Board_flashOpen(BOARD_FLASH_ID_MT35XU256ABA1G12,
+                                  BOARD_OSPI_INSTANCE, NULL);
+#else
     boardHandle = Board_flashOpen(BOARD_FLASH_ID_MT35XU512ABA1G12,
                                   BOARD_OSPI_INSTANCE, NULL);
+#endif
     if (!boardHandle)
     {
         UART_printf("\n Board_flashOpen Failed. \n");

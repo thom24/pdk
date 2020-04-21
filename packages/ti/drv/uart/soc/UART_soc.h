@@ -72,6 +72,12 @@ extern int32_t UART_socSetFwCfg(uint32_t index, const UART_SWIPAttrs *cfg);
 extern void UART_socInitFwCfg(void);
 #endif
 
+#if defined(SOC_AM64X)
+#define UART_MODULE_CLK_48M    (48000000U)
+#define UART_MODULE_CLK_96M    (96000000U)
+#define UART_MODULE_CLK_160M   (160000000U)
+#define UART_MODULE_CLOCK      UART_MODULE_CLK_48M
+#endif
 
 #ifdef __cplusplus
 }

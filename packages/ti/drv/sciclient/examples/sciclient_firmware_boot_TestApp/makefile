@@ -32,14 +32,20 @@ SRCS_COMMON = sciclient_firmware_boot_main.c \
               sciclient_appCommon.c
 
 ifeq ($(CORE), mcu1_0)
+ifeq ($(SOC),$(filter $(SOC), am65xx))
 	COMP_LIST_COMMON += mmcsd fatfs_indp
+endif
 	SRCS_ASM_COMMON += boot_init.asm
 endif
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) -DBARE_METAL
 PACKAGE_SRCS_COMMON = . ../common
 
+ifeq ($(SOC),$(filter $(SOC), am64x))
+CONFIG_BLD_LNK_r5f = $(PDK_INSTALL_PATH)/ti/drv/sciclient/examples/$(APP_NAME)/linker_r5_am64x.lds
+else
 CONFIG_BLD_LNK_r5f = $(PDK_INSTALL_PATH)/ti/drv/sciclient/examples/$(APP_NAME)/linker_r5.lds
+endif
 
 ifeq ($(CORE),mpu1_0)
     LNKFLAGS_LOCAL_mpu1_0 += --entry Entry

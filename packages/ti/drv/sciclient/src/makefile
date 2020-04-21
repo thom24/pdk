@@ -20,6 +20,9 @@ endif
 ifeq ($(SOC),$(filter $(SOC), j721e j7200))
   SCICLIENT_SOCVER = V1
 endif
+ifeq ($(SOC),$(filter $(SOC), am64x))
+  SCICLIENT_SOCVER = V3
+endif
 
 SRCDIR += soc/$(SCICLIENT_SOCVER)
 INCDIR += soc/$(SCICLIENT_SOCVER)
@@ -29,7 +32,7 @@ INCDIR += soc/$(SCICLIENT_SOCVER)
 INCLUDE_EXTERNAL_INTERFACES = pdk osal
 
 # Common source files and CFLAGS across all platforms and cores
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
 # Keep the sciclient.c the first file in this list. This is used to trigger
 # the generation of the header files from the firware binary file.
 SRCS_COMMON  = sciclient.c
@@ -79,6 +82,9 @@ ifeq ($(SOC),$(filter $(SOC), j721e))
 PACKAGE_SRCS_COMMON += soc/sysfw/binaries/ti-sci-firmware-j721e-gp.bin
 endif
 
+ifeq ($(SOC),$(filter $(SOC), am64x))
+PACKAGE_SRCS_COMMON += soc/sysfw/binaries/ti-sci-firmware-am64x-gp-vlab.bin
+endif
 
 # Core/SoC/platform specific source files and CFLAGS
 # Example:

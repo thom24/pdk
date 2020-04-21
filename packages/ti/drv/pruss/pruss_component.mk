@@ -68,7 +68,7 @@ ifeq ($(pruss_component_make_include), )
 
 # under other list
 drvpruss_BOARDLIST       = icev2AM335x idkAM437x idkAM571x idkAM572x iceK2G idkAM574x
-drvpruss_SOCLIST         = am574x am572x am571x am437x am335x k2g am65xx j721e
+drvpruss_SOCLIST         = am574x am572x am571x am437x am335x k2g am65xx j721e am64x
 drvpruss_am574x_CORELIST = c66x a15_0 ipu1_0 pru_0 pru_1
 drvpruss_am572x_CORELIST = c66x a15_0 ipu1_0 pru_0 pru_1
 drvpruss_k2g_CORELIST    = c66x a15_0 pru_0 pru_1
@@ -77,6 +77,7 @@ drvpruss_am437x_CORELIST = a9host pru_0 pru_1
 drvpruss_am335x_CORELIST = a8host pru_0 pru_1
 drvpruss_am65xx_CORELIST = mpu1_0 mcu1_0
 drvpruss_j721e_CORELIST  = mcu1_0 mpu1_0
+drvpruss_am64x_CORELIST  = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 ipu1_0
 
 ############################
 # uart package

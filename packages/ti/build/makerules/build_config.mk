@@ -150,7 +150,7 @@ CFLAGS_GLOBAL_tpr12          = -DSOC_TPR12
 #
 
 # MCU Cores
-ifeq ($(CORE),$(filter $(CORE), mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1))
+ifeq ($(CORE),$(filter $(CORE), mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 m4f_0))
   CFLAGS_GLOBAL_$(CORE) = -g -ms -DMAKEFILE_BUILD
   LNKFLAGS_GLOBAL_$(CORE) = -x --zero_init=on
 endif
@@ -164,6 +164,10 @@ endif
 # ipu1_0 - Benelli - Core 1 (Cortex-M4)
 CFLAGS_GLOBAL_ipu1_0 = -g -ms -DMAKEFILE_BUILD
 LNKFLAGS_GLOBAL_ipu1_0 = -x --zero_init=on
+
+# m4f_0 - Cortex M4F
+CFLAGS_GLOBAL_m4f_0 = -g -ms -DMAKEFILE_BUILD
+LNKFLAGS_GLOBAL_m4f_0 = -x --zero_init=on
 
 # ipu1_1 - Benneli - Core 0 (Cortex-M4)
 CFLAGS_GLOBAL_ipu1_1 = -g -ms -DMAKEFILE_BUILD

@@ -66,7 +66,7 @@
 #
 ifeq ($(osal_component_make_include), )
 
-libosal_BOARDLIST       = evmAM572x evmAM335x evmAM437x iceK2G idkAM574x idkAM572x idkAM571x idkAM437x am65xx_evm am65xx_idk evmOMAPL137 lcdkOMAPL138 evmK2E evmK2H evmK2K evmK2L j721e_evm j7200_evm tpr12_evm
+libosal_BOARDLIST       = evmAM572x evmAM335x evmAM437x iceK2G idkAM574x idkAM572x idkAM571x idkAM437x am65xx_evm am65xx_idk evmOMAPL137 lcdkOMAPL138 evmK2E evmK2H evmK2K evmK2L j721e_evm j7200_evm am64x_evm tpr12_evm
 libosal_SOCLIST         = tda2xx tda2px tda2ex tda3xx dra78x dra72x dra75x am574x am572x am571x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j7200 am64x tpr12
 libosal_tda2xx_CORELIST = a15_0 ipu1_0
 libosal_tda2px_CORELIST = a15_0 ipu1_0
@@ -243,8 +243,10 @@ OSAL_Baremetal_TestApp_BOARDLIST = $(libosal_BOARDLIST)
 export OSAL_Baremetal_TestApp_BOARDLIST
 ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
 OSAL_Baremetal_TestApp_SBL_APPIMAGEGEN = yes
-export OSAL_Baremetal_TestApp_SBL_APPIMAGEGEN
+else
+OSAL_Baremetal_TestApp_SBL_APPIMAGEGEN = no
 endif
+export OSAL_Baremetal_TestApp_SBL_APPIMAGEGEN
 
 # OSAL sysbios unit test app
 OSAL_TestApp_COMP_LIST = OSAL_TestApp
@@ -265,8 +267,10 @@ OSAL_TestApp_$(SOC)_CORELIST = $(osal_$(SOC)_CORELIST)
 export OSAL_TestApp_$(SOC)_CORELIST
 ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
 OSAL_TestApp_SBL_APPIMAGEGEN = yes
-export OSAL_TestApp_SBL_APPIMAGEGEN
+else
+OSAL_TestApp_SBL_APPIMAGEGEN = no
 endif
+export OSAL_TestApp_SBL_APPIMAGEGEN
 
 #Default Core List
 OSAL_Baremetal_TestApp_$(SOC)_CORELIST = a15_0 c66x
@@ -333,6 +337,9 @@ ifeq ($(SOC),$(filter $(SOC), dra78x))
 OSAL_Baremetal_TestApp_$(SOC)_CORELIST = ipu1_0 c66x
 endif
 
+ifeq ($(SOC),$(filter $(SOC), am64x))
+ OSAL_Baremetal_TestApp_$(SOC)_CORELIST = mcu1_0 mpu1_0 m4f_0
+endif
 
 ifeq ($(SOC),$(filter $(SOC), am65xx))
  OSAL_TestApp_$(SOC)_CORELIST = mpu1_0 mcu1_0
@@ -358,7 +365,12 @@ export OSAL_Baremetal_TestApp_$(SOC)_CORELIST
 export OSAL_TestApp_$(SOC)_CORELIST
 
 osal_EXAMPLE_LIST += OSAL_Baremetal_TestApp
+
+# do not support RTOS example for AM64x yet
+ifeq ($(SOC),$(filter $(SOC), am64x))
+else
 osal_EXAMPLE_LIST += OSAL_TestApp
+endif
 
 ifeq ($(CPLUSPLUS_BUILD), yes)
 #cpptest

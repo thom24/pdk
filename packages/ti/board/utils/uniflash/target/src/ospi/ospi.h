@@ -74,6 +74,8 @@ extern "C" {
 
 #if defined(SOC_AM65XX) || defined(j721e_evm)
 #define OSPI_FLASH_ID   BOARD_FLASH_ID_MT35XU512ABA1G12
+#else
+#define OSPI_FLASH_ID   BOARD_FLASH_ID_MT35XU256ABA1G12
 #endif
 
 #define OSPI_WR_LEN             (256U)

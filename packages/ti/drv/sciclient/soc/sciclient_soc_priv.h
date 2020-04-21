@@ -51,6 +51,10 @@
 #include <ti/drv/sciclient/soc/V1/sciclient_soc_priv.h>
 #endif
 
+#if defined (SOC_AM64X)
+#include <ti/drv/sciclient/soc/V3/sciclient_soc_priv.h>
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif

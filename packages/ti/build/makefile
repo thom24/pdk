@@ -8,9 +8,9 @@ XDC = $(XDC_INSTALL_PATH)/xdc
 ifeq ($(LIMIT_BOARDS),)
 BOARD_LIST_ALL = evmDRA72x evmDRA75x evmDRA78x evmAM572x idkAM572x idkAM571x idkAM574x
 BOARD_LIST_ALL += $(BOARD_LIST_J6_TDA)
-BOARD_LIST_ALL += am65xx_sim
 BOARD_LIST_ALL += $(BOARD_LIST_J7_TDA)
 BOARD_LIST_ALL += $(BOARD_LIST_TPR12)
+BOARD_LIST_ALL += am64x_evm
 else
   # If LIMIT_BOARDS is defined use it
   BOARD_LIST_ALL = $(LIMIT_BOARDS)
@@ -34,6 +34,9 @@ ifeq ($(LIMIT_CORES),)
   ifeq ($(BOARD),$(filter $(BOARD), tpr12_evm))
     CORE_LIST_ALL = $(CORE_LIST_tpr12)
   endif
+ifeq ($(BOARD),$(filter $(BOARD), am64x_evm))
+  CORE_LIST_ALL = $(CORE_LIST_am64x)
+endif
 else
   # If LIMIT_CORES is defined use it
   CORE_LIST_ALL = $(LIMIT_CORES)

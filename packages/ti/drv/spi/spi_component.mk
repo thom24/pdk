@@ -66,9 +66,9 @@
 #
 ifeq ($(spi_component_make_include), )
 
-drvspi_BOARDLIST       = am65xx_evm am65xx_idk j721e_sim j721e_evm j7200_evm
-drvspi_SOCLIST         = tda2xx tda2px tda2ex tda3xx dra72x dra75x dra78x am574x am572x am571x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j7200
-drvspi_SOCLISTLIM      = tda2xx tda2px tda2ex tda3xx dra72x dra75x dra78x am574x am572x am571x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx
+drvspi_BOARDLIST       = am65xx_evm am65xx_idk j721e_sim j721e_evm j7200_evm am64x_evm
+drvspi_SOCLIST         = tda2xx tda2px tda2ex tda3xx dra72x dra75x dra78x am574x am572x am571x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j7200 am64x
+drvspi_SOCLISTLIM      = tda2xx tda2px tda2ex tda3xx dra72x dra75x dra78x am574x am572x am571x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx am64x
 drvspi_dma_SOCLIST     = tda2xx tda2px tda2ex tda3xx dra72x dra75x dra78x am574x am572x am571x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j7200
 drvspi_am574x_CORELIST = c66x a15_0 ipu1_0
 drvspi_am572x_CORELIST = c66x a15_0 ipu1_0
@@ -91,10 +91,11 @@ drvspi_tda3xx_CORELIST = ipu1_0
 drvspi_dra72x_CORELIST = c66x a15_0 ipu1_0
 drvspi_dra75x_CORELIST = c66x a15_0 ipu1_0
 drvspi_dra78x_CORELIST = c66x ipu1_0
-drvspi_am65xx_CORELIST   = mpu1_0 mcu1_0
-drvspi_j721e_CORELIST     = $(DEFAULT_j721e_CORELIST)
+drvspi_am65xx_CORELIST = mpu1_0 mcu1_0
+drvspi_j721e_CORELIST  = $(DEFAULT_j721e_CORELIST)
 drvspi_j721e_CORELISTARM  = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1
 drvspi_j7200_CORELIST     = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
+drvspi_am64x_CORELIST  = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 m4f_0
 ############################
 # spi package
 # List of components included under spi lib
@@ -117,7 +118,7 @@ drvspi_FIRM_LIST = $(spi_FIRM_LIST)
 # All the tests mentioned in list are built when test target is called
 # List below all examples for allowed values
 ############################
-spi_EXAMPLE_LIST = drv_mcspi_loopback_app   MCSPI_Baremetal_MasterSlave_TestApp MCSPI_Baremetal_MasterSlave_Dma_TestApp MCSPI_MasterSlave_TestApp MCSPI_MasterSlave_Dma_TestApp  OSPI_Baremetal_Flash_TestApp  OSPI_Baremetal_Flash_Dma_TestApp OSPI_Flash_TestApp OSPI_Flash_SMP_TestApp OSPI_Flash_Dma_TestApp OSPI_Flash_Dma_SMP_TestApp
+spi_EXAMPLE_LIST = MCSPI_Baremetal_Master_TestApp MCSPI_Baremetal_Slave_TestApp OSPI_Baremetal_Flash_TestApp
 drvspi_EXAMPLE_LIST = $(spi_EXAMPLE_LIST)
 
 #
@@ -334,27 +335,49 @@ export drv_mcspi_loopback_app_SOCLIST
 drv_mcspi_loopback_app_$(SOC)_CORELIST = $(spi_$(SOC)_CORELIST)
 export drv_mcspi_loopback_app_$(SOC)_CORELIST
 
-# SPI baremetal master slave Test app
-MCSPI_Baremetal_MasterSlave_TestApp_COMP_LIST = MCSPI_Baremetal_MasterSlave_TestApp
-MCSPI_Baremetal_MasterSlave_TestApp_RELPATH = ti/drv/spi/example/mcspi_slavemode
-MCSPI_Baremetal_MasterSlave_TestApp_PATH = $(PDK_SPI_COMP_PATH)/example/mcspi_slavemode
-MCSPI_Baremetal_MasterSlave_TestApp_BOARD_DEPENDENCY = yes
-MCSPI_Baremetal_MasterSlave_TestApp_CORE_DEPENDENCY = no
-MCSPI_Baremetal_MasterSlave_TestApp_MAKEFILE = -f makefile IS_BAREMETAL=yes
-export MCSPI_Baremetal_MasterSlave_TestApp_COMP_LIST
-export MCSPI_Baremetal_MasterSlave_TestApp_BOARD_DEPENDENCY
-export MCSPI_Baremetal_MasterSlave_TestApp_CORE_DEPENDENCY
-export MCSPI_Baremetal_MasterSlave_TestApp_MAKEFILE
-MCSPI_Baremetal_MasterSlave_TestApp_PKG_LIST = MCSPI_Baremetal_MasterSlave_TestApp
-MCSPI_Baremetal_MasterSlave_TestApp_INCLUDE = $(MCSPI_Baremetal_MasterSlave_TestApp_PATH)
-MCSPI_Baremetal_MasterSlave_TestApp_BOARDLIST = $(drvspi_BOARDLIST)
-export MCSPI_Baremetal_MasterSlave_TestApp_BOARDLIST
+# SPI baremetal master Test app
+MCSPI_Baremetal_Master_TestApp_COMP_LIST = MCSPI_Baremetal_Master_TestApp
+export MCSPI_Baremetal_Master_TestApp_RELPATH = ti/drv/spi/example/mcspi_slavemode
+MCSPI_Baremetal_Master_TestApp_PATH = $(PDK_SPI_COMP_PATH)/example/mcspi_slavemode
+MCSPI_Baremetal_Master_TestApp_BOARD_DEPENDENCY = yes
+MCSPI_Baremetal_Master_TestApp_CORE_DEPENDENCY = no
+MCSPI_Baremetal_Master_TestApp_MAKEFILE = -f makefile IS_BAREMETAL=yes
+export MCSPI_Baremetal_Master_TestApp_COMP_LIST
+export MCSPI_Baremetal_Master_TestApp_BOARD_DEPENDENCY
+export MCSPI_Baremetal_Master_TestApp_CORE_DEPENDENCY
+export MCSPI_Baremetal_Master_TestApp_MAKEFILE
+MCSPI_Baremetal_Master_TestApp_PKG_LIST = MCSPI_Baremetal_Master_TestApp
+MCSPI_Baremetal_Master_TestApp_INCLUDE = $(MCSPI_Baremetal_Master_TestApp_PATH)
+MCSPI_Baremetal_Master_TestApp_BOARDLIST = $(drvspi_BOARDLIST)
+export MCSPI_Baremetal_Master_TestApp_BOARDLIST
 ifeq ($(SOC),$(filter $(SOC), j721e))
-MCSPI_Baremetal_MasterSlave_TestApp_$(SOC)_CORELIST = $(drvspi_j721e_CORELISTARM)
+MCSPI_Baremetal_Master_TestApp_$(SOC)_CORELIST = mcu1_0
 else
-MCSPI_Baremetal_MasterSlave_TestApp_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELIST)
+MCSPI_Baremetal_Master_TestApp_$(SOC)_CORELIST = mcu1_0
 endif
-export MCSPI_Baremetal_MasterSlave_TestApp_$(SOC)_CORELIST
+export MCSPI_Baremetal_Master_TestApp_$(SOC)_CORELIST
+
+# SPI baremetal slave Test app
+MCSPI_Baremetal_Slave_TestApp_COMP_LIST = MCSPI_Baremetal_Slave_TestApp
+export MCSPI_Baremetal_Slave_TestApp_RELPATH = ti/drv/spi/example/mcspi_slavemode
+MCSPI_Baremetal_Slave_TestApp_PATH = $(PDK_SPI_COMP_PATH)/example/mcspi_slavemode
+MCSPI_Baremetal_Slave_TestApp_BOARD_DEPENDENCY = yes
+MCSPI_Baremetal_Slave_TestApp_CORE_DEPENDENCY = no
+MCSPI_Baremetal_Slave_TestApp_MAKEFILE = -f makefile IS_BAREMETAL=yes
+export MCSPI_Baremetal_Slave_TestApp_COMP_LIST
+export MCSPI_Baremetal_Slave_TestApp_BOARD_DEPENDENCY
+export MCSPI_Baremetal_Slave_TestApp_CORE_DEPENDENCY
+export MCSPI_Baremetal_Slave_TestApp_MAKEFILE
+MCSPI_Baremetal_Slave_TestApp_PKG_LIST = MCSPI_Baremetal_Slave_TestApp
+MCSPI_Baremetal_Slave_TestApp_INCLUDE = $(MCSPI_Baremetal_Slave_TestApp_PATH)
+MCSPI_Baremetal_Slave_TestApp_BOARDLIST = $(drvspi_BOARDLIST)
+export MCSPI_Baremetal_Slave_TestApp_BOARDLIST
+ifeq ($(SOC),$(filter $(SOC), j721e))
+MCSPI_Baremetal_Slave_TestApp_$(SOC)_CORELIST = mpu1_0
+else
+MCSPI_Baremetal_Slave_TestApp_$(SOC)_CORELIST = mpu1_0
+endif
+export MCSPI_Baremetal_Slave_TestApp_$(SOC)_CORELIST
 
 # SPI baremetal dma master slave Test app
 MCSPI_Baremetal_MasterSlave_Dma_TestApp_COMP_LIST = MCSPI_Baremetal_MasterSlave_Dma_TestApp
@@ -510,7 +533,7 @@ export OSPI_Flash_SMP_TestApp_XDC_CONFIGURO
 export OSPI_Flash_SMP_TestApp_MAKEFILE
 OSPI_Flash_SMP_TestApp_PKG_LIST = OSPI_Flash_SMP_TestApp
 OSPI_Flash_SMP_TestApp_INCLUDE = $(OSPI_Flash_SMP_TestApp_PATH)
-OSPI_Flash_SMP_TestApp_BOARDLIST = am65xx_idk am65xx_evm
+OSPI_Flash_SMP_TestApp_BOARDLIST = am65xx_idk
 export OSPI_Flash_SMP_TestApp_BOARDLIST
 OSPI_Flash_SMP_TestApp_$(SOC)_CORELIST = mpu1_0
 export OSPI_Flash_SMP_TestApp_$(SOC)_CORELIST
@@ -554,7 +577,7 @@ export OSPI_Flash_Dma_SMP_TestApp_XDC_CONFIGURO
 export OSPI_Flash_Dma_SMP_TestApp_MAKEFILE
 OSPI_Flash_Dma_SMP_TestApp_PKG_LIST = OSPI_Flash_Dma_SMP_TestApp
 OSPI_Flash_Dma_SMP_TestApp_INCLUDE = $(OSPI_Flash_Dma_SMP_TestApp_PATH)
-OSPI_Flash_Dma_SMP_TestApp_BOARDLIST = am65xx_idk am65xx_evm
+OSPI_Flash_Dma_SMP_TestApp_BOARDLIST = am65xx_idk
 export OSPI_Flash_Dma_SMP_TestApp_BOARDLIST
 OSPI_Flash_Dma_SMP_TestApp_$(SOC)_CORELIST = mpu1_0
 export OSPI_Flash_Dma_SMP_TestApp_$(SOC)_CORELIST

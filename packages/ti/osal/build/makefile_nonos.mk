@@ -40,7 +40,7 @@ TIMER    = src/nonos/timer
 COUNTER_32K = src/nonos/counter_32k
 DELAY    = src/nonos/delay
 
-ifeq ($(SOC),$(filter $(SOC), tda2xx tda2px dra75x tda2ex dra72x am571x am572x am574x tda3xx dra78x am437x am335x am65xx j721e j7200))
+ifeq ($(SOC),$(filter $(SOC), tda2xx tda2px dra75x tda2ex dra72x am571x am572x am574x tda3xx dra78x am437x am335x am65xx j721e j7200 am64x))
   SRCDIR += $(TIMER)/v1
   INCDIR += $(TIMER)/v1
   PACKAGE_SRCS_COMMON += $(TIMER)/v1
@@ -65,7 +65,7 @@ ifeq ($(SOC),$(filter $(SOC), am335x am437x))
   PACKAGE_SRCS_COMMON += $(DELAY)/v1
 endif
 
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
   SRCDIR += $(DELAY)/v4
   INCDIR += $(DELAY)/v4
   PACKAGE_SRCS_COMMON += $(DELAY)/v4
@@ -91,7 +91,7 @@ ifeq ($(SOC),$(filter $(SOC), tpr12))
 endif
 
 
-ifeq ($(SOC),$(filter $(SOC), k2h k2k k2l k2e k2g c6678 c6657 dra72x dra75x dra78x am571x am572x am574x am437x am335x omapl137 omapl138 c6747 am65xx j721e j7200 tpr12))
+ifeq ($(SOC),$(filter $(SOC), k2h k2k k2l k2e k2g c6678 c6657 dra72x dra75x dra78x am571x am572x am574x am437x am335x omapl137 omapl138 c6747 am65xx j721e j7200 am64x tpr12))
 SRCS_COMMON += TimerP_nonos.c delay.c
 endif
 

@@ -35,7 +35,7 @@ include $(PDK_PRUSS_COMP_PATH)/src/src_files_common.mk
 
 MODULE_NAME = pruss
 
-ifeq ($(SOC),$(filter $(SOC), am571x am572x am437x am335x k2g am574x am65xx j721e))
+ifeq ($(SOC),$(filter $(SOC), am571x am572x am437x am335x k2g am574x am65xx j721e am64x))
 SRCDIR += soc/$(SOC)
 INCDIR += soc
 # Common source files across all platforms and cores

@@ -80,7 +80,7 @@ void OsalArch_compileTime_SizeChk(void)
 #if defined (SOC_AM65XX)
 #define GIC_BASE_ADDR               (CSL_GIC0_DISTRIBUTOR_BASE)
 #elif defined (SOC_AM64X)
-#define GIC_BASE_ADDR               (CSL_GIC500SS_1_2_0_GIC_BASE)
+#define GIC_BASE_ADDR               (CSL_GICSS0_GIC_BASE)
 #else
 #define GIC_BASE_ADDR               (CSL_COMPUTE_CLUSTER0_GIC_DISTRIBUTOR_BASE)
 #endif

@@ -891,8 +891,15 @@ static UART_Handle UART_open_v1(UART_Handle handle, const UART_Params *params)
                 UARTLoopbackModeControl(hwAttrs->baseAddr, UART_LOOPBACK_MODE_DISABLE);
             }
 
-            /* Enable UART */
+            /* Set UART operating mode */
             (void)UARTOperatingModeSelect(hwAttrs->baseAddr, hwAttrs->operMode);
+
+            /* Set RS-485 external transceiver direction control */
+            UARTDirEnControl(hwAttrs->baseAddr, hwAttrs->dirEnable);
+            if (hwAttrs->dirEnable == TRUE)
+            {
+                UARTDirPolSet(hwAttrs->baseAddr, hwAttrs->dirPol);
+            }
 
             UART_drv_log3("UART:(0x%x) CPU freq: %d; UART baudrate to %d",
                 hwAttrs->baseAddr, hwAttrs->frequency, object->params.baudRate);

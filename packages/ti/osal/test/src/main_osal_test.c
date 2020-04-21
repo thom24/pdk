@@ -130,8 +130,10 @@ void Board_initOSAL(void)
         BOARD_INIT_UART_STDIO;
 #else
     boardCfg = BOARD_INIT_PINMUX_CONFIG |
-        BOARD_INIT_MODULE_CLOCK |
-        BOARD_INIT_UART_STDIO;
+        BOARD_INIT_MODULE_CLOCK;
+    #if defined (UART_CONSOLE)
+        boardCfg |= BOARD_INIT_UART_STDIO;
+    #endif
 #endif
     status = Board_init(boardCfg);
 
@@ -149,7 +151,7 @@ void Board_initOSAL(void)
  */
 volatile   uint64_t gTestlocalTimeout = 0x300000U;
 
-#if (defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined (SOC_TPR12)) && (!defined(BUILD_C66X_1))&&(!defined(BUILD_C66X_2))&&(!defined(BUILD_C7X_1))
+#if (defined (SOC_AM65XX) || defined (SOC_AM64X) || defined(SOC_J721E) || defined(SOC_J7200) || defined (SOC_TPR12)) && (!defined(BUILD_C66X_1))&&(!defined(BUILD_C66X_2))&&(!defined(BUILD_C7X_1))
 #define INT_NUM_IRQ 32
 #define LOOP_CNT    100
 volatile uint64_t gFlagIRQ = 0;
@@ -228,7 +230,7 @@ bool  OSAL_core_hwi_test()
 
 bool OSAL_hwi_test()
 {
-#if (defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined (SOC_TPR12)) && (!defined(BUILD_C66X_1))&&(!defined(BUILD_C66X_2))&&(!defined(BUILD_C7X_1))
+#if (defined (SOC_AM65XX) || defined (SOC_AM64X) || defined(SOC_J721E) || defined(SOC_J7200) || defined (SOC_TPR12)) && (!defined(BUILD_C66X_1))&&(!defined(BUILD_C66X_2))&&(!defined(BUILD_C7X_1))
   OSAL_core_hwi_test();
 #endif
   return true;
@@ -336,6 +338,23 @@ UT_Timer_Type_t  timer_type =             UT_Timer_TIMER64;
     #define OSAL_TEST_TIMER_ID2               (5U)
     #define OSAL_TEST_TIMER_PERIOD            (5000U)
   #endif
+#elif defined(SOC_AM64X)
+  UT_Timer_Type_t  timer_type    =          UT_Timer_DMTIMER;
+  #if defined(BUILD_MCU)
+    #define OSAL_TEST_TIMER_ID                (1U)
+    #define OSAL_TEST_TIMER_ID2               (2U)
+    #define OSAL_TEST_TIMER_PERIOD            (5000U)
+  #endif
+  #if defined(BUILD_MPU)
+    #define OSAL_TEST_TIMER_ID                (4U)
+    #define OSAL_TEST_TIMER_ID2               (2U)
+    #define OSAL_TEST_TIMER_PERIOD            (5000U)
+  #endif
+  #if defined(BUILD_M4F)
+    #define OSAL_TEST_TIMER_ID                (1U)
+    #define OSAL_TEST_TIMER_ID2               (2U)
+    #define OSAL_TEST_TIMER_PERIOD            (5000U)
+  #endif
 #elif defined(SOC_TPR12)
     UT_Timer_Type_t  timer_type =           UT_Timer_RTITIMER;
 #define OSAL_TEST_TIMER_ID                    (TimerP_ANY)
@@ -366,6 +385,13 @@ UT_Timer_Type_t  timer_type   =           UT_Timer_DMTIMER;
 volatile uint32_t timerIsrCount = 0;
 volatile uint32_t timerIsr2Count = 0;
 
+#if defined(QT_BUILD)
+#define OSAL_TIMER_TEST_MAX_INTERRUPTS      (10U)
+#else
+#define OSAL_TIMER_TEST_MAX_INTERRUPTS      (100U)
+#endif
+
+
 #if defined (ENABLE_GET_TIME_TEST)
 uint64_t     gTestTimeRd[OSAL_GET_TIME_MAX_SAMPLES];
 #endif
@@ -375,6 +401,7 @@ void timerIsr(void *arg)
 #if defined(BARE_METAL) && defined(__TI_ARM_V5__)
     TimerP_ClearInterrupt(handle);
 #endif
+
 #if defined (ENABLE_GET_TIME_TEST)
     if (timerIsrCount < OSAL_GET_TIME_MAX_SAMPLES)
     {
@@ -398,19 +425,24 @@ void timerIsr2(void *arg)
 #if defined(QT_BUILD)
 #define OSAL_DELAY_TIME         1
 #else
-#define OSAL_DELAY_TIME         1000
+#define OSAL_DELAY_TIME         10
 #endif
 bool Osal_delay_test(void)
 {
+#if !defined(SOC_AM64X)
    int32_t i;
   /* This test assumes that Board init has been already
    * called outside this function
    */
    /* Notice a '.' on terminal for every 1 second */
+
    for (i=0; i<10;i++) {
+#endif
       Osal_delay(OSAL_DELAY_TIME);
       OSAL_log(".");
+#if !defined(SOC_AM64X)
    }
+#endif
    OSAL_log("\n");
 
   return(true);
@@ -438,12 +470,6 @@ bool Osal_getTime_test(void)
 /*
  *  ======== Timer test function ========
  */
-#if defined(QT_BUILD)
-#define TIMER_COUNT_THRESH      10
-#else
-#define TIMER_COUNT_THRESH      100
-#endif
-
 bool OSAL_timer_test()
 {
     TimerP_Params timerParams;
@@ -614,7 +640,7 @@ bool OSAL_timer_test()
 
       while (1)
       {
-        if (timerIsr2Count >= 100U) {
+        if (timerIsr2Count >= OSAL_TIMER_TEST_MAX_INTERRUPTS) {
           timerStatus = TimerP_stop(handle2);
           if (timerStatus != TimerP_OK) {
             OSAL_log("Err: Coult not stop the timer %d \n", id);
@@ -627,7 +653,7 @@ bool OSAL_timer_test()
 
       while (1)
       {
-        if (timerIsrCount >= TIMER_COUNT_THRESH) {
+        if (timerIsrCount >= OSAL_TIMER_TEST_MAX_INTERRUPTS) {
           timerStatus = TimerP_stop(handle);
           if (timerStatus != TimerP_OK) {
             OSAL_log("Err: Coult not stop the timer %d \n", id);

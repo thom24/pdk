@@ -77,7 +77,9 @@
 /** Indicate hardware state of the clock is that it is running. */
 #define TISCI_MSG_VALUE_CLOCK_HW_STATE_READY        1
 
-/** Allow this clock to be modified via spread spectrum clocking. */
+/** Allow this clock to be modified via spread spectrum clocking.
+ *  \note: The SSC feature is currently not supported in System Firmware.
+ */
 #define TISCI_MSG_FLAG_CLOCK_ALLOW_SSC                TISCI_BIT(8)
 
 /**
@@ -92,7 +94,9 @@
  */
 #define TISCI_MSG_FLAG_CLOCK_INPUT_TERM               TISCI_BIT(10)
 
-/** Indicate that SSC is active for this clock. */
+/** Indicate that SSC is active for this clock.
+ *  \note: The SSC feature is currently not supported in System Firmware.
+ */
 #define TISCI_MSG_FLAG_CLOCK_SSC_ACTIVE               TISCI_BIT(11)
 
 /**

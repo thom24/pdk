@@ -47,35 +47,43 @@ extern "C" {
 #endif
 
 #include <stdio.h>
-
-#if !defined(SOC_TPR12)
+#if defined (BUILD_M4F) || defined(SOC_TPR12)
+#undef  UART_CONSOLE
+#else
 #define UART_CONSOLE
 #endif
 
 #if defined(UART_CONSOLE)
-#if defined(SOC_J721E)&&(defined(BUILD_C66X_1)||defined(BUILD_C66X_2)||defined(BUILD_C7X_1))
-#define OSAL_log                printf
-#else
-/* UART Header files */
-#include <ti/drv/uart/UART.h>
-#include <ti/drv/uart/UART_stdio.h>
-/**********************************************************************
- ************************** Global Variables **************************
- **********************************************************************/
-extern void UART_printf(const char *pcString, ...);
-extern void ConsoleUtilsInit(void);
+    #if defined(SOC_J721E)&&(defined(BUILD_C66X_1)||defined(BUILD_C66X_2)||defined(BUILD_C7X_1))
+        #define OSAL_log                printf
+    #else
+        /* UART Header files */
+        #include <ti/drv/uart/UART.h>
+        #include <ti/drv/uart/UART_stdio.h>
+        /**********************************************************************
+         ************************** Global Variables **************************
+         **********************************************************************/
+        extern void UART_printf(const char *pcString, ...);
+        extern void ConsoleUtilsInit(void);
 
-/**********************************************************************
- ************************** Macros ************************************
- **********************************************************************/
-#define OSAL_log                UART_printf
-#endif
+        /**********************************************************************
+         ************************** Macros ************************************
+         **********************************************************************/
+        #define OSAL_log                UART_printf
+    #endif
 #else
-#if defined(BARE_METAL)
-#define OSAL_log                printf
-#else
-#define OSAL_log                System_printf
-#endif /* BARE_METAL */
+    #if defined(EMPTY_OSAL_LOG)
+        static void dummy_printf(const char *pcString, ...)
+        {
+        }
+        #define OSAL_log                dummy_printf
+    #else
+        #if defined(BARE_METAL)
+            #define OSAL_log                printf
+        #else
+            #define OSAL_log                System_printf
+        #endif /* BARE_METAL */
+    #endif /* EMPTY_OSAL_LOG */
 #endif /* UART_CONSOLE */
 
 #ifdef __cplusplus

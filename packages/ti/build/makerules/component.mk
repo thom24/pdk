@@ -1055,6 +1055,11 @@ ifeq ($(CORE),$(filter $(CORE), qnx_mpu1_0))
   PDK_LNKFLAGS += --define=QNX_OS --define=BUILD_MPU1_0
 endif
 
+ifeq ($(CORE),$(filter $(CORE), m4f_0))
+  PDK_CFLAGS += -DBUILD_M4F_0 -DBUILD_M4F
+  PDK_LNKFLAGS += --define=BUILD_M4F_0 --define=BUILD_M4F
+endif
+
 export PDK_CFLAGS
 export PDK_LNKFLAGS
 

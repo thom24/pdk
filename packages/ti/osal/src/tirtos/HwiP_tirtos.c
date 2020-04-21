@@ -138,7 +138,7 @@ HwiP_Handle HwiP_create(int32_t interruptNum, HwiP_Fxn hwiFxn,
     {
         /* pick up the external memory block configured */
         hwiPool        = (HwiP_tiRtos *) gOsal_HwAttrs.extHwiPBlock.base;
-        temp           = ((uintptr_t) hwiPool) + gOsal_HwAttrs.extHwiPBlock.size;
+        temp           = (uintptr_t)  gOsal_HwAttrs.extHwiPBlock.size;
         maxHwi         = (uint32_t)(temp/(sizeof(HwiP_tiRtos)));
     }
     else

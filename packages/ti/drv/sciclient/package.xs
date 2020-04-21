@@ -35,6 +35,7 @@ function getLibs(prog)
                      'am65xx',
                      'j721e',
                      'j7200',
+                     'am64x',
                    ];
     var libNames = [
                      'sciclient'

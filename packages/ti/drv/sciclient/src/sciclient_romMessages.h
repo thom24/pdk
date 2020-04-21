@@ -90,22 +90,17 @@ extern "C" {
  *  \name Sciclient load firmware ROM Thread Ids.
  *  @{
  */
-/** Thread ID's for each message type, DMSC Out Bound Normal Prioirty  */
-#define SCICLIENT_ROM_DMSC_TX_NORMAL_THREAD                         (0U)
-/** Thread ID's for each message type, DMSC In Bound Normal Priority   */
-#define SCICLIENT_ROM_DMSC_RX_NORMAL_THREAD                         (1U)
-/** Thread ID's for each message type, DMSC Out Bound High Priority    */
-#define SCICLIENT_ROM_DMSC_TX_HIGH_THREAD                           (2U)
-/** Thread ID's for each message type, DMSC In Bound High Priority     */
-#define SCICLIENT_ROM_DMSC_RX_HIGH_THREAD                           (3U)
+#if defined (SOC_AM64X)
+/** Thread ID's for each message type, R5 Out Bound Normal Priority    */
+#define SCICLIENT_ROM_R5_TX_NORMAL_THREAD                           (1U)
+/** Thread ID's for each message type, R5 In Bound Normal Priority    */
+#define SCICLIENT_ROM_R5_RX_NORMAL_THREAD                           (0U)
+#else
 /** Thread ID's for each message type, R5 Out Bound Normal Priority    */
 #define SCICLIENT_ROM_R5_TX_NORMAL_THREAD                           (4U)
 /** Thread ID's for each message type, R5 In Bound Normal Priority    */
 #define SCICLIENT_ROM_R5_RX_NORMAL_THREAD                           (5U)
-/** Thread ID's for each message type, R5 Out Bound High Priority    */
-#define SCICLIENT_ROM_R5_TX_HIGH_THREAD                             (6U)
-/** Thread ID's for each message type, R5 In Bound High Priority    */
-#define SCICLIENT_ROM_R5_RX_HIGH_THREAD                             (7U)
+#endif
 /* @} */
 
 /**

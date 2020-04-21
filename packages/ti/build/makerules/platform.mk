@@ -186,7 +186,7 @@ endif
 # AM64X
 ifeq ($(BOARD),$(filter $(BOARD), am64x_evm))
  SOC = am64x
- SBL_RUN_ADDRESS=0x41C00100
+ SBL_RUN_ADDRESS=0x70000100
  SBL_DEV_ID=55
 endif
 
@@ -248,6 +248,13 @@ ifeq ($(CORE),$(filter $(CORE), ipu1_0 ipu1_1 ipu2_0 ipu2_1))
  ARCH = armv7m
 endif
 
+# m4f single core
+ifeq ($(CORE),$(filter $(CORE), m4f_0))
+ ISA = m4f
+ ISA_EXT = m4f
+ ARCH = armv7m
+endif
+
 # m3
 ifeq ($(CORE),$(filter $(CORE), m3))
  ISA = m3
@@ -266,7 +273,7 @@ endif
 ifeq ($(CORE),$(filter $(CORE), mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1))
  ISA = r5f
  ISA_EXT = r5f
- ARCH = armv7m
+ ARCH = armv7r
 endif
 
 # MPU
@@ -379,7 +386,7 @@ ifeq ($(ISA),a15)
   ASMEXT = s$(FORMAT_EXT)$(ISA_EXT)$(ENDIAN_EXT)
 endif
 
-ifeq ($(ISA),m4)
+ifeq ($(ISA),$(filter $(ISA), m4 m4f))
   ifeq ($(FORMAT),ELF)
     TARGET_XDC = ti.targets.arm.elf.M4
     FORMAT_EXT = e
@@ -417,6 +424,10 @@ ifeq ($(ISA),m4)
       else
         PLATFORM_XDC = "ti.platforms.evmTDA3XX:IPU_1_1"
       endif
+    endif
+
+    ifeq ($(BOARD),$(filter $(SOC), am64x_evm))
+      PLATFORM_XDC = "ti.platforms.cortexM:AM64X_M4F"
     endif
   endif
 
@@ -467,11 +478,7 @@ ifeq ($(ISA),r5f)
   endif
 
   ifeq ($(BOARD),$(filter $(BOARD), am64x_evm))
-    ifeq ($(CORE),$(filter $(CORE), mcu1_0 mcu1_1))
-      PLATFORM_XDC = "ti.platforms.cortexR:AM64X_MCU"
-    else
-      PLATFORM_XDC = "ti.platforms.cortexR:AM64X_MAIN"
-    endif
+      PLATFORM_XDC = "ti.platforms.cortexR:AM64X"
   endif
 
   ifeq ($(SOC),$(filter $(SOC), tpr12))
@@ -516,6 +523,10 @@ ifeq ($(ISA),a53)
     PLATFORM_XDC = "ti.platforms.cortexA:SIMMAXWELL"
   endif
 
+  ifeq ($(BOARD),$(filter $(BOARD), am64x_evm))
+    PLATFORM_XDC = "ti.platforms.cortexA:AM64X"
+  endif
+
   ENDIAN_EXT = fg
   FORMAT_EXT =
 
@@ -545,10 +556,6 @@ ifeq ($(ISA),a72)
 
   ifeq ($(BOARD),$(filter $(BOARD), j7200_sim j7200_evm))
     PLATFORM_XDC = "ti.platforms.cortexA:J7200"
-  endif
-
-  ifeq ($(BOARD),$(filter $(BOARD), am64x_evm))
-    PLATFORM_XDC = "ti.platforms.cortexA:AM64X"
   endif
 
   ENDIAN_EXT = fg

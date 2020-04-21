@@ -80,6 +80,9 @@ extern "C" {
 #elif defined(SOC_J721E) || defined(SOC_J7200)
 #define I2C_HWIP_MAX_CNT         (7U)
 
+#elif defined(SOC_AM64X)
+#define I2C_HWIP_MAX_CNT         (6U)
+
 #endif
 /* I2C SoC HW IP level API */
 extern int32_t I2C_socGetInitCfg(uint32_t index, I2C_HwAttrs *cfg);

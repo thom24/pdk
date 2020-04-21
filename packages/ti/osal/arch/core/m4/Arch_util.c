@@ -101,6 +101,12 @@ void OsalArch_disableInterrupt(uint32_t intNum)
     Intc_SystemDisable((uint16_t)intNum);
     return;
 }
+/* Below function posts the interrupt */
+int32_t OsalArch_postInterrupt(uint32_t intrNum)
+{
+    Intc_IntSetPend(intrNum);
+    return (CSL_PASS);
+}
 
 /* Below function clears interrupt in the chip level */
 void OsalArch_clearInterrupt(uint32_t intNum)
@@ -139,7 +145,7 @@ HwiP_Handle OsalArch_HwiPCreate(int32_t interruptNum, HwiP_Fxn hwiFxn,
     {
         /* pick up the external memory block configured */
         hwiPool        = (HwiP_nonOs *) gOsal_HwAttrs.extHwiPBlock.base;
-        temp           = ((uintptr_t) hwiPool) + gOsal_HwAttrs.extHwiPBlock.size;
+        temp           = (uintptr_t) gOsal_HwAttrs.extHwiPBlock.size;
         maxHwi         = (uint32_t)(temp/(sizeof(Hwi_Struct)));
     }
     else

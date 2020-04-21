@@ -66,10 +66,10 @@
 #
 ifeq ($(i2c_component_make_include), )
 
-drvi2c_BOARDLIST       = am65xx_evm am65xx_idk j721e_sim j721e_evm j7200_evm
-drvi2c_BOARDLISTLIM    = am65xx_evm am65xx_idk
-drvi2c_SOCLIST         = am574x am572x am571x tda2xx tda2px tda2ex tda3xx dra78x dra72x dra75x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j7200
-drvi2c_SOCLISTLIM      = am574x am572x am571x tda2xx tda2px tda2ex tda3xx dra78x dra72x dra75x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx
+drvi2c_BOARDLIST       = am65xx_evm am65xx_idk j721e_sim j721e_evm j7200_evm am64x_evm
+drvi2c_BOARDLISTLIM    = am65xx_evm am65xx_idk am64x_evm
+drvi2c_SOCLIST         = am574x am572x am571x tda2xx tda2px tda2ex tda3xx dra78x dra72x dra75x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j7200 am64x
+drvi2c_SOCLISTLIM      = am574x am572x am571x tda2xx tda2px tda2ex tda3xx dra78x dra72x dra75x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx am64x
 drvi2c_tda2xx_CORELIST = ipu1_0
 drvi2c_tda2px_CORELIST = ipu1_0
 drvi2c_tda2ex_CORELIST = ipu1_0
@@ -94,7 +94,9 @@ drvi2c_am335x_CORELIST = a8host pru_0 pru_1
 drvi2c_am65xx_CORELIST   = mpu1_0 mcu1_0 mcu1_1
 drvi2c_j721e_CORELIST   = $(DEFAULT_j721e_CORELIST)
 drvi2c_j721e_CORELISTARM = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1
-drvi2c_j7200_CORELIST    = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
+drvi2c_j7200_CORELIST  = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
+drvi2c_am64x_CORELIST  = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 m4f_0
+
 ############################
 # i2c package
 # List of components included under i2c lib
@@ -117,7 +119,11 @@ drvi2c_FIRM_LIST = $(i2c_FIRM_LIST)
 # All the tests mentioned in list are built when test target is called
 # List below all examples for allowed values
 ############################
+ifeq ($(SOC),$(filter $(SOC), am64x))
+i2c_EXAMPLE_LIST = I2C_Baremetal_Eeprom_TestApp
+else
 i2c_EXAMPLE_LIST = drv_i2c_led_blink_test I2C_Baremetal_Eeprom_TestApp I2C_Eeprom_TestApp I2C_Eeprom_SMP_TestApp drv_i2c_utility
+endif
 drvi2c_EXAMPLE_LIST = $(i2c_EXAMPLE_LIST)
 
 #
@@ -402,7 +408,7 @@ export I2C_Eeprom_SMP_TestApp_XDC_CONFIGURO
 export I2C_Eeprom_SMP_TestApp_MAKEFILE
 I2C_Eeprom_SMP_TestApp_PKG_LIST = I2C_Eeprom_SMP_TestApp
 I2C_Eeprom_SMP_TestApp_INCLUDE = $(I2C_Eeprom_SMP_TestApp_PATH)
-I2C_Eeprom_SMP_TestApp_BOARDLIST = $(drvi2c_BOARDLISTLIM)
+I2C_Eeprom_SMP_TestApp_BOARDLIST = am65xx_evm am65xx_idk j721e_evm
 export I2C_Eeprom_SMP_TestApp_BOARDLIST
 I2C_Eeprom_SMP_TestApp_$(SOC)_CORELIST = mpu1_0
 export I2C_Eeprom_SMP_TestApp_$(SOC)_CORELIST

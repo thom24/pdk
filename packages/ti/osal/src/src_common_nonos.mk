@@ -12,7 +12,7 @@ PACKAGE_SRCS_COMMON = makefile HwiP.h SwiP.h MuxIntcP.h osal.h osal_component.mk
                       build/makefile_nonos_indp.mk build/makefile_nonos.mk
 
 
-ifeq ($(SOC),$(filter $(SOC),am571x am572x am574x am335x am437x k2h k2k k2e k2l k2g c6678 c6657 omapl137 omapl138 am65xx j721e j7200))
+ifeq ($(SOC),$(filter $(SOC),am571x am572x am574x am335x am437x k2h k2k k2e k2l k2g c6678 c6657 omapl137 omapl138 am65xx j721e j7200 am64x))
   SRCDIR      += soc/$(SOC)
   SRCS_COMMON += TimerP_default.c
 endif
@@ -60,11 +60,15 @@ ifeq ($(CORE),$(filter $(CORE), c7x_1 c7x-hostemu))
   PACKAGE_SRCS_COMMON += arch/core/c7x
 endif
 
-ifeq ($(CORE),ipu1_0)
-  ifeq ($(SOC),$(filter $(SOC),am571x am572x am574x dra72x dra75x dra78x))
+ifeq ($(CORE),$(filter $(CORE), ipu1_0 m4f_0))
+  ifeq ($(SOC),$(filter $(SOC),am571x am572x am574x dra72x dra75x dra78x am64x))
     SRCDIR += arch/core/m4
     SRCS_COMMON += CacheP_nonos.c Arch_util.c
     PACKAGE_SRCS_COMMON += arch/core/m4
+  endif
+
+  ifeq ($(SOC),$(filter $(SOC),am571x am572x am574x dra72x dra75x dra78x))
+    CFLAGS_LOCAL_COMMON += -DUNICACHE_ENABLED
   endif
 endif
 

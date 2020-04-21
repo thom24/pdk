@@ -62,6 +62,10 @@
 #include <ti/drv/sciclient/soc/V1/sciclient_defaultBoardcfg.h>
 #endif
 
+#if defined (SOC_AM64X)
+#include <ti/drv/sciclient/soc/V3/sciclient_defaultBoardcfg.h>
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -96,24 +100,26 @@ typedef struct
 
     uint32_t hostId;
     /**< CPU ID of the A53/A72/R5F/DSP */
-
+#if !defined (SOC_AM64X)
     uint32_t reqHighPrioThreadId;
     /**< Thread ID of the high priority thread(write) allowed for the CPU */
-
+#endif
     uint32_t reqLowPrioThreadId;
     /**< Thread ID of the low priority thread(write) allowed for the CPU */
 
+#if !defined (SOC_AM64X)
     uint32_t notificationRespThreadId;
     /**< Thread ID of the thread(write) for sending a notification to the
      *   firmware
      */
-
+#endif
     uint32_t respThreadId;
     /**< Thread ID of the response thread(read) available for the CPU */
 
+#if !defined (SOC_AM64X)
     uint32_t notificationThreadId;
     /**< Thread ID of the notification thread(read) available for the CPU */
-
+#endif
     uint32_t respIntrNum;
     /**< Response Interrupt Number. */
 } Sciclient_MapStruct_t;

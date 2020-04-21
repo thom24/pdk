@@ -21,11 +21,17 @@ CFLAGS_OS_DEFINES = -DUSE_BIOS
 EXTERNAL_INTERFACES = bios xdc
 COMP_LIST_COMMON    = osal_tirtos
 
-ifeq ($(SOC),$(filter $(SOC), j721e j7200 am65xx))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200 am65xx am64x))
   XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
 else
   XDC_CFG_FILE_mpu1_0 = ./$(SOC)/uartUnitTest_$(ISA).cfg
   XDC_CFG_FILE_mcu1_0 = ./$(SOC)/uartUnitTest_r5.cfg
+endif
+
+ifeq ($(SOC),$(filter $(SOC), am64x))
+ifeq ($(ISA),$(filter $(ISA), a53))
+  LIB_PATHS_DIR=$(BIOS_INSTALL_PATH)/packages/gnu/targets/arm/libs/install-native/aarch64-none-elf/lib/
+endif
 endif
 
 endif
@@ -76,7 +82,7 @@ else
     endif
     COMP_LIST_COMMON   += uart
 
-    ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
+    ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
     COMP_LIST_COMMON += sciclient i2c
     endif
 

@@ -130,7 +130,7 @@
 #ifdef SPI_DMA_ENABLE
 #include <ti/osal/CacheP.h>
 
-#if defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)
+#if defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined (SOC_AM64X)
 #include <ti/drv/udma/udma.h>
 #else
 /* EDMA3 Header files */
@@ -223,7 +223,7 @@ uint32_t spi_test_xfer_len[SPI_NUM_XFERS] =
 #define SPI_TEST_DATA_SIZE_16   16
 #define SPI_TEST_DATA_SIZE_32   32
 
-#if defined(SOC_DRA78x) || defined(SOC_TDA3XX) || defined(SOC_TDA2XX) || defined(SOC_TDA2EX) || defined (SOC_DRA72x) || defined (SOC_DRA75x) || defined(SOC_AM574x) || defined (SOC_AM572x) || defined (SOC_AM571x) || defined (SOC_AM437x) || defined (SOC_AM335x) || defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)
+#if defined(SOC_DRA78x) || defined(SOC_TDA3XX) || defined(SOC_TDA2XX) || defined(SOC_TDA2EX) || defined (SOC_DRA72x) || defined (SOC_DRA75x) || defined(SOC_AM574x) || defined (SOC_AM572x) || defined (SOC_AM571x) || defined (SOC_AM437x) || defined (SOC_AM335x) || defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined (SOC_AM64X)
 #define SPI_TEST_DATA_SIZE      SPI_TEST_DATA_SIZE_32
 #else
 #define SPI_TEST_DATA_SIZE      SPI_TEST_DATA_SIZE_16
@@ -423,10 +423,10 @@ SPI_Transaction   transaction;
 SemaphoreP_Params cbSemParams;
 SemaphoreP_Handle cbSem[MCSPI_MAX_NUM_CHN] = {NULL, NULL, NULL, NULL};
 
-bool          evmAM570x = false;
+static bool loopBackTest = false;
 
 #ifdef SPI_DMA_ENABLE
-#if !(defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200))
+#if !(defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined (SOC_AM64X))
 EDMA3_RM_Handle gEdmaHandle = NULL;
 
 /**
@@ -582,12 +582,12 @@ static void SPI_initConfig(uint32_t instance, SPI_Tests *test, uint32_t chn, boo
 #if defined(SOC_DRA78x) || defined(SOC_TDA3XX) || defined(SOC_TDA2XX) || defined(SOC_TDA2PX) || defined(SOC_TDA2EX) || defined (SOC_DRA75x) || \
     defined(SOC_AM574x) || defined (SOC_AM572x) || defined (SOC_AM571x) || defined (SOC_AM437x) || defined (SOC_AM335x) || \
     defined(SOC_K2H) || defined(SOC_K2K) || defined(SOC_K2L) || defined(SOC_K2E) || defined(SOC_K2G) || \
-    defined(SOC_C6678) || defined(SOC_C6657) || defined (SOC_AM65XX)  || defined(SOC_J721E) || defined(SOC_J7200)
+    defined(SOC_C6678) || defined(SOC_C6657) || defined (SOC_AM65XX)  || defined(SOC_J721E) || defined(SOC_J7200) || defined (SOC_AM64X)
 #ifdef SPI_DMA_ENABLE
         if (dmaMode == true)
         {
             /* Set the DMA related init config */
-#if defined (SOC_AM65XX)  || defined(SOC_J721E) || defined(SOC_J7200)
+#if defined (SOC_AM65XX)  || defined(SOC_J721E) || defined(SOC_J7200) || defined (SOC_AM64X)
             spi_cfg.edmaHandle = (void *)MCSPIApp_udmaInit(&spi_cfg);
 #else
             spi_cfg.edmaHandle = MCSPIApp_edmaInit();
@@ -674,7 +674,7 @@ static void SPI_initConfig(uint32_t instance, SPI_Tests *test, uint32_t chn, boo
 
     if ((testId == SPI_TEST_ID_WORD_LEN) || (testId == SPI_TEST_ID_CB_CANCEL) || (testId == SPI_TEST_ID_DMA_CB_CANCEL))
     {
-#if defined(SOC_DRA78x) || defined(SOC_TDA3XX) || defined(SOC_TDA2XX) || defined(SOC_TDA2EX) || defined (SOC_DRA72x) || defined (SOC_DRA75x) || defined (SOC_AM572x) || defined (SOC_AM571x) || defined (SOC_AM574x) || defined (SOC_AM437x) || defined (SOC_AM335x) || defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)
+#if defined(SOC_DRA78x) || defined(SOC_TDA3XX) || defined(SOC_TDA2XX) || defined(SOC_TDA2EX) || defined (SOC_DRA72x) || defined (SOC_DRA75x) || defined (SOC_AM572x) || defined (SOC_AM571x) || defined (SOC_AM574x) || defined (SOC_AM437x) || defined (SOC_AM335x) || defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined (SOC_AM64X)
         /* enalbe loopback mode */
         spi_cfg.chnCfg[chn].dataLineCommMode = MCSPI_DATA_LINE_COMM_MODE_4;
 #else
@@ -786,7 +786,7 @@ static bool SPI_test_mst_slv_xfer(void *spi, SPI_Tests *test, uint32_t xferLen, 
 #endif
 
     testLen = xferLen;
-#if defined(SOC_AM574x) || defined(SOC_AM572x)|| defined(SOC_AM571x) || defined (SOC_DRA72x)  || defined (SOC_DRA75x) || defined (SOC_DRA78x) || defined (SOC_AM335x) || defined (SOC_AM437x) || defined (SOC_AM65XX)  || defined(SOC_J721E) || defined(SOC_J7200)
+#if defined(SOC_AM574x) || defined(SOC_AM572x)|| defined(SOC_AM571x) || defined (SOC_DRA72x)  || defined (SOC_DRA75x) || defined (SOC_DRA78x) || defined (SOC_AM335x) || defined (SOC_AM437x) || defined (SOC_AM65XX)  || defined(SOC_J721E) || defined(SOC_J7200) || defined (SOC_AM64X)
 #ifdef SPI_DMA_ENABLE
     if (dmaMode == true)
     {
@@ -1514,9 +1514,9 @@ void slaveTaskFxn()
 
     for (i = 0; ; i++)
     {
-        if (evmAM570x == true)
+        if (loopBackTest == true)
         {
-            /* Slave mode test not supported on AM570x EVM */
+            /* Slave mode test not supported for loopback test */
             break;
         }
         test = &Spi_tests_slave[i];
@@ -1582,9 +1582,9 @@ void masterTaskFxn()
         if (test->testFunc == NULL)
             break;
 
-        if (evmAM570x == true)
+        if (loopBackTest == true)
         {
-            /* Only loopback test supported on AM570x EVM */
+            /* Only loopback test supported */
             if ((test->testId < SPI_TEST_ID_LOOPBACK)       &&
                 (test->testId != SPI_TEST_ID_TIMEOUT)       &&
                 (test->testId != SPI_TEST_ID_TIMEOUT_POLL))
@@ -1638,7 +1638,7 @@ int main(void)
 #endif
 
 #ifdef USE_BIOS
-#if defined(SOC_AM335x) || defined (SOC_AM437x) || defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)
+#if defined(SOC_AM335x) || defined (SOC_AM437x) || defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined (SOC_AM64X)
     Task_Handle task;
     Error_Block eb;
     Task_Params taskParams;
@@ -1692,6 +1692,18 @@ int main(void)
         return (0);
     }
 
+#if defined(SOC_AM64X)
+    boardCfg = BOARD_INIT_PINMUX_CONFIG |
+               BOARD_INIT_MODULE_CLOCK |
+               BOARD_INIT_UART_STDIO;
+    boardStatus = Board_init(boardCfg);
+    if (boardStatus != BOARD_SOK)
+    {
+        return (0);
+    }
+    loopBackTest = true;
+#endif
+
 #if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)
 #if defined (__TI_ARM_V7R4__)
     /* Configure the MCU SPI0_D1 pinmux, since it is not set by default in board */
@@ -1715,7 +1727,7 @@ int main(void)
         (id.boardName[1] == 'R') &&
         (id.boardName[2] == 'A'))
     {
-        evmAM570x = true;
+        loopBackTest = true;
     }
 #endif
 

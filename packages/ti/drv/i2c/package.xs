@@ -71,7 +71,8 @@ function getLibs(prog)
                      'c6747',
                      'am65xx',
                      'j721e',
-                     'j7200'
+                     'j7200',
+                     'am64x'
                    ];
 
     /* Get the SOC */

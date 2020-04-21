@@ -162,9 +162,13 @@ int32_t main(void)
 #if defined (SOC_J721E)
     /* Relocate CSL Vectors to ATCM*/
     memcpy((void *)CSL_MCU_ARMSS_ATCM_BASE, (void *)_resetvectors, 0x100);
-#else
+#elif defined (SOC_AM65XX)
     /* Relocate CSL Vectors to ATCM*/
     memcpy((void *)CSL_MCU_ATCM_BASE, (void *)_resetvectors, 0x100);
+    App_sciclientConsoleInit();
+#else
+    /* Relocate CSL Vectors to ATCM*/
+    memcpy((void *)CSL_R5FSS0_ATCM_BASE, (void *)_resetvectors, 0x100);
     App_sciclientConsoleInit();
 #endif
     App_loadFirmwareTest();
@@ -302,12 +306,13 @@ int32_t App_getRevisionTestPol(void)
         NULL
     };
 
+    struct tisci_msg_version_req request;
     const Sciclient_ReqPrm_t      reqPrm =
     {
         TISCI_MSG_VERSION,
         TISCI_MSG_FLAG_AOP,
-        NULL,
-        0,
+        (uint8_t *) &request,
+        sizeof(request),
         SCICLIENT_SERVICE_WAIT_FOREVER
     };
 
@@ -318,6 +323,7 @@ int32_t App_getRevisionTestPol(void)
         (uint8_t *) &response,
         sizeof (response)
     };
+ 
 
     start_ticks = TimerP_getTimeInUsecs();
     status = Sciclient_init(&config);
@@ -439,7 +445,7 @@ int32_t App_boardCfgTest(void)
                               " Board configuration for RM test...FAILED \n");
             status = CSL_EFAIL;
         }
-
+#if !defined (SOC_AM64X)
         if (Sciclient_boardCfgSec(NULL) == CSL_PASS)
         {
             App_sciclientPrintf(
@@ -451,6 +457,7 @@ int32_t App_boardCfgTest(void)
                               " Board configuration for SECURITY test...FAILED \n");
             status = CSL_EFAIL;
         }
+#endif
     }
     else
     {

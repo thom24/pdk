@@ -91,11 +91,11 @@ struct tisci_header {
     uint8_t    host;
     uint8_t    seq;
     uint32_t    flags;
-/* Windows Visual Studio build has issues with  payload[], changing it only for visual studio build */
-#ifdef _MSC_VER
-    uint32_t    *payload;
-#else
-    uint8_t    payload[];
+    /* Windows Visual Studio build has issues with  payload[], changing it only for visual studio build */ 
+#ifdef _MSC_VER 
+    uint8_t    payload; 
+#else 
+    uint8_t    payload[]; 
 #endif
 };
 

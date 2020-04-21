@@ -19,7 +19,7 @@ ifeq ($(SOC),$(filter $(SOC), am65xx))
 XDC_CFG_FILE_mpu1_0 = ./$(SOC)/ospiFlashTest_a53.cfg
 XDC_CFG_FILE_mcu1_0 = ./$(SOC)/ospiFlashTest_r5.cfg
 else
-ifeq ($(SOC),$(filter $(SOC), j721e j7200))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200 am64x))
 XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
 endif
 endif
@@ -82,6 +82,9 @@ COMP_LIST_COMMON  += csl board uart
 PACKAGE_SRCS_COMMON = .
 PACKAGE_SRCS_COMMON += ../src/SPI_log.h ../src/SPI_log.c
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_SPI_DMA) $(CFLAGS_OS_DEFINES)
+ifeq ($(SOC),$(filter $(SOC), am64x))
+CFLAGS_LOCAL_COMMON += -DVLAB_SIM
+endif
 # Core/SoC/platform specific source files and CFLAGS
 # Example:
 #   SRCS_<core/SoC/platform-name> =

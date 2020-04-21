@@ -141,7 +141,7 @@ char eepromData[I2C_EEPROM_TEST_LENGTH] = {0x55, 0x33, 0xEE, 0x41, 0x4d, 0x35, 0
 #elif defined (evmK2H) || defined (evmK2K) || defined (evmK2E) || defined (evmK2L) || defined (evmK2G) || defined (iceK2G) || defined (EVM_OMAPL137)
 char eepromData[I2C_EEPROM_TEST_LENGTH] = {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,
                               0x09, 0x10};
-#elif defined (evmC6678) || defined (evmC6657) || defined (am65xx_evm) || defined (am65xx_idk) || defined (j721e_sim) || defined (j721e_evm) || defined(j7200_evm)
+#elif defined (evmC6678) || defined (evmC6657) || defined (am65xx_evm) || defined (am65xx_idk) || defined (j721e_sim) || defined (j721e_evm) || defined(j7200_evm) || defined (am64x_evm)
 char eepromData[I2C_EEPROM_TEST_LENGTH] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                               0x00, 0x00};
 #else
@@ -420,11 +420,11 @@ static bool i2c_bitrate_test (I2C_BitRate bitRate, I2C_Tests *test)
         goto Err;
     }
 
-#if defined (evmK2H) || defined (evmK2K) || defined (evmK2E) || defined (evmK2L) || defined (evmK2G) || defined (iceK2G) || defined (am65xx_evm) || defined (am65xx_idk) || defined (j721e_sim) || defined (j721e_evm) || defined (j7200_evm)
+#if defined (evmK2H) || defined (evmK2K) || defined (evmK2E) || defined (evmK2L) || defined (evmK2G) || defined (iceK2G) || defined (am65xx_evm) || defined (am65xx_idk) || defined (j721e_sim) || defined (j721e_evm) || defined (j7200_evm) || defined (am64x_evm)
     BOARD_delay(I2C_EEPROM_TEST_DELAY);
 #endif
 #else
-#if defined (evmK2H) || defined (evmK2K) || defined (evmK2E) || defined (evmK2L) || defined (evmK2G) || defined (iceK2G) || defined (EVM_OMAPL137) || defined (am65xx_evm) || defined (am65xx_idk) || defined (j721e_sim) || defined (j721e_evm) || defined(j7200)
+#if defined (evmK2H) || defined (evmK2K) || defined (evmK2E) || defined (evmK2L) || defined (evmK2G) || defined (iceK2G) || defined (EVM_OMAPL137) || defined (am65xx_evm) || defined (am65xx_idk) || defined (j721e_sim) || defined (j721e_evm) || defined(j7200) || defined (am64x_evm)
     /* EEPROM write disabled on K2, need copy data */
     copyData = TRUE;
 #endif
@@ -449,7 +449,7 @@ static bool i2c_bitrate_test (I2C_BitRate bitRate, I2C_Tests *test)
     }
     else
     {
-#if defined (evmC6678) || defined (evmC6657) || defined (am65xx_evm) || defined (am65xx_idk) || defined (j721e_sim) || defined (j721e_evm) || defined (j7200_evm)
+#if defined (evmC6678) || defined (evmC6657) || defined (am65xx_evm) || defined (am65xx_idk) || defined (j721e_sim) || defined (j721e_evm) || defined (j7200_evm) || defined (am64x_evm)
         copyData = TRUE;
 #endif
 

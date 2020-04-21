@@ -183,7 +183,7 @@ typedef struct OSPI_dmaInfo_s {
  */
 typedef struct OSPI_v0_HwAttrs_s {
     /*! OSPI IP V0 Peripheral base address. */
-    uintptr_t        baseAddr;
+    uintptr_t       baseAddr;
     /*! OSPI Data base address */
     uintptr_t       dataAddr;
     /*! OSPI IP V0 functional clock */

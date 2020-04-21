@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (c) 2018, Texas Instruments Incorporated
+# Copyright (c) 2018-2020, Texas Instruments Incorporated
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -34,6 +34,7 @@
 #         For AM65XX-HS : ./firmwareHeaderGen.sh am65x-hs
 #         For J721E     : ./firmwareHeaderGen.sh j721e
 #         For J721E-HS  : ./firmwareHeaderGen.sh j721e-hs
+#         For AM64x     : ./firmwareHeaderGen.sh am64x
 export RM=rm
 export MV=mv
 export MAKE=gcc
@@ -101,8 +102,15 @@ export SCICLIENT_FIRMWARE_HEADER=sciclient_firmware_V1.h
 SYSFW_SE_SIGNED=$SCI_CLIENT_OUT_SOC_DIR/sysfw.bin
 fi
 
+if [ "$FW_SOC" = "am64x" ]; then
+export SCI_CLIENT_OUT_SOC_DIR=$SCI_CLIENT_DIR/soc/V3
+export FIRMWARE_SILICON=$SCI_CLIENT_IN_SOC_DIR/ti-sci-firmware-am64x-gp-vlab-rom.bin
+export SCICLIENT_FIRMWARE_HEADER=sciclient_firmware_V3.h
+SYSFW_SE_SIGNED=$SCI_CLIENT_OUT_SOC_DIR/sysfw.bin
+else
 export FIRMWARE_SILICON=$SCI_CLIENT_IN_SOC_DIR/ti-sci-firmware-$FW_SOC-$FW_SOC_TYPE.bin
 export SYSFW_SE_INNER_CERT=$SCI_CLIENT_IN_SOC_DIR/ti-sci-firmware-$FW_SOC-hs-cert.bin
+fi
 export SYSFW_SE_CUST_CERT=$SCI_CLIENT_OUT_SOC_DIR/sysfw_cert.bin
 
 # SBL_CERT_GEN may already be depending on how this is called
@@ -138,6 +146,7 @@ $CAT $SYSFW_SE_CUST_CERT $FIRMWARE_SILICON > $SYSFW_SE_SIGNED
 $RM -f $SYSFW_SE_CUST_CERT
 fi
 
+$ECHO "Generating the Header file for the soc in the folder"
 $BIN2C_GEN $SYSFW_SE_SIGNED $SCICLIENT_FIRMWARE_HEADER SCICLIENT_FIRMWARE > $SCI_CLIENT_OUT_SOC_DIR/$SCICLIENT_FIRMWARE_HEADER
 
 $ECHO "Done."

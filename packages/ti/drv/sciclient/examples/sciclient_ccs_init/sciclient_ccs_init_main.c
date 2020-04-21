@@ -86,7 +86,11 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
         /* Host-ID allowed to send SCI-message for main isolation.
          * If mismatch, SCI message will be rejected with NAK.
          */
+#if defined (SOC_AM64X)
+        .main_isolation_hostid = TISCI_HOST_ID_MAIN_0_R5_0,
+#else
         .main_isolation_hostid = TISCI_HOST_ID_R5_1,
+#endif
     },
 
     /* tisci_boardcfg_sec_proxy */
@@ -181,7 +185,7 @@ void dmtimer0_enable()
 /* ========================================================================== */
 
 static int32_t App_getRevisionTest(void);
-#if !defined (SOC_J721E)
+#if defined (SOC_AM65XX)
 static int32_t setPLLClk(uint32_t modId, uint32_t clkId, uint64_t clkRate);
 #endif
 
@@ -235,6 +239,7 @@ static int32_t App_getRevisionTest(void)
 
     status = Sciclient_init(&config);
     dmtimer0_enable();
+#if !defined (SOC_AM64X)
     if (CSL_PASS == status)
     {
         Sciclient_BoardCfgPrms_t boardCfgPrms =
@@ -267,6 +272,7 @@ static int32_t App_getRevisionTest(void)
         dmtimer0_read();
         status = Sciclient_boardCfgPm(&boardCfgPrms_pm);
         dmtimer0_read();
+
         if (status == CSL_PASS)
         {
             uint32_t boardCfgLow[] = SCICLIENT_BOARDCFG_RM;
@@ -444,6 +450,49 @@ static int32_t App_getRevisionTest(void)
     {
         printf("\nSciclient Devgrp_01 Board Configuration has failed \n");
     }
+#else
+    if (CSL_PASS == status)
+    {
+        printf(" \nDMSC Board Configuration with Debug enable \n");
+        dmtimer0_read();
+        status = Sciclient_boardCfg(NULL);
+        dmtimer0_read();
+    }
+    else
+    {
+        printf("\nSciclient Init Failed.\n");
+    }
+    if (CSL_PASS == status)
+    {
+        if (status == CSL_PASS)
+        {
+            dmtimer0_read();
+            status = Sciclient_boardCfgPm(NULL);
+            dmtimer0_read();
+        }
+    }
+    else
+    {
+        printf("\nSciclient Common Board Configuration has failed \n");
+    }
+    if (CSL_PASS == status)
+    {
+        if (status == CSL_PASS)
+        {
+            dmtimer0_read();
+            status = Sciclient_boardCfgRm(NULL);
+            dmtimer0_read();
+        }
+    }
+    else
+    {
+        printf("\nSciclient PM Board Configuration has failed \n");
+    }
+    if (status != CSL_PASS) 
+    {
+        printf("\nSciclient RM Board Configuration has failed \n");
+    }
+#endif
     if (status == CSL_PASS)
     {
         status = Sciclient_service(&reqPrm, &respPrm);
@@ -474,7 +523,7 @@ static int32_t App_getRevisionTest(void)
     }
     /* Set DDR PLL to 400 Mhz. SYSFW default sets this to 333.33 Mhz */
     /* Comment this code if LPDDR is used */
-    #if !defined(SOC_J721E)
+    #if defined(SOC_AM65XX)
     if (status == CSL_PASS)
     {
         /* Set DDR PLL to 400 Mhz. SYSFW default sets this to 333.33 Mhz */
@@ -503,7 +552,7 @@ static int32_t App_getRevisionTest(void)
     return status;
 }
 
-#if !defined(SOC_J721E)
+#if defined(SOC_AM65XX)
 /**
  * \brief  PLL clock configuration
  *

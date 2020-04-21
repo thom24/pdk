@@ -56,6 +56,13 @@
 #include <ti/drv/sciclient/soc/V1/sciclient_firmware_V1.h>
 #endif
 
+#if defined (SOC_AM64X)
+#include <ti/drv/sciclient/soc/sysfw/include/am64x/tisci_resasg_types.h>
+#include <ti/drv/sciclient/soc/V3/sciclient_fmwMsgParams.h>
+#include <ti/drv/sciclient/soc/V3/sciclient_firmware_V3.h>
+#endif
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif

@@ -125,7 +125,7 @@ void SPI_init(void)
 
     if (SPI_count == (-((int32_t)1))) {
         /* Call each driver's init function */
-        for (SPI_count = 0; SPI_config[SPI_count].fxnTablePtr != NULL; SPI_count++) {
+        for (SPI_count = 0; (SPI_count < (int32_t)SPI_MAX_CONFIG_CNT) && (SPI_config[SPI_count].fxnTablePtr != NULL); SPI_count++) {
             SPI_config[SPI_count].fxnTablePtr->spiInitFxn((SPI_Handle)&(SPI_config[SPI_count]));
         }
     }

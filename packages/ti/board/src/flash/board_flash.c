@@ -82,7 +82,12 @@ static uint32_t Board_getFlashIntf(uint32_t deviceId)
             break;
         }
 
+#if defined(VLAB_SIM)
         case BOARD_FLASH_ID_MT35XU512ABA1G12:
+#else
+        case BOARD_FLASH_ID_MT35XU512ABA1G12:
+        case BOARD_FLASH_ID_MT35XU256ABA1G12:
+#endif
         {
             flashIntf = BOARD_FLASH_NOR_OSPI;
             break;
@@ -138,6 +143,7 @@ Board_flashHandle Board_flashOpen(uint32_t deviceId, uint32_t portNum, void *par
         (deviceId == BOARD_FLASH_ID_NORN25Q128A13ESF40F) || \
         (deviceId == BOARD_FLASH_ID_MT25QU512ABB)        || \
         (deviceId == BOARD_FLASH_ID_MT35XU512ABA1G12)	 || \
+        (deviceId == BOARD_FLASH_ID_MT35XU256ABA1G12)    || \
         (deviceId == BOARD_FLASH_ID_S71KS512S)
        )
     {
@@ -234,6 +240,7 @@ Board_flash_STATUS Board_flashClose(Board_flashHandle handle)
         (flashInfo->device_id == BOARD_FLASH_ID_NORN25Q128A13ESF40F) || \
         (flashInfo->device_id == BOARD_FLASH_ID_MT25QU512ABB)        || \
         (flashInfo->device_id == BOARD_FLASH_ID_MT35XU512ABA1G12)	 || \
+        (flashInfo->device_id == BOARD_FLASH_ID_MT35XU256ABA1G12)    || \
         (flashInfo->device_id == BOARD_FLASH_ID_S71KS512S)
        )
     {
@@ -290,6 +297,7 @@ Board_flash_STATUS Board_flashRead(Board_flashHandle  handle,
         (flashInfo->device_id == BOARD_FLASH_ID_NORN25Q128A13ESF40F) || \
         (flashInfo->device_id == BOARD_FLASH_ID_MT25QU512ABB)        || \
         (flashInfo->device_id == BOARD_FLASH_ID_MT35XU512ABA1G12)	 || \
+        (flashInfo->device_id == BOARD_FLASH_ID_MT35XU256ABA1G12)    || \
         (flashInfo->device_id == BOARD_FLASH_ID_S71KS512S)
        )
     {
@@ -368,7 +376,8 @@ Board_flash_STATUS Board_flashOffsetToSectorPage(Board_flashHandle  handle,
         (flashInfo->device_id == BOARD_FLASH_ID_NORN25Q128)          || \
         (flashInfo->device_id == BOARD_FLASH_ID_NORN25Q128A13ESF40F) || \
         (flashInfo->device_id == BOARD_FLASH_ID_MT29F4G08ABAEAWP)    || \
-        (flashInfo->device_id == BOARD_FLASH_ID_MT35XU512ABA1G12)
+        (flashInfo->device_id == BOARD_FLASH_ID_MT35XU512ABA1G12)    || \
+        (flashInfo->device_id == BOARD_FLASH_ID_MT35XU256ABA1G12)
        )
     {
         block_count = flashInfo->block_count;
@@ -447,6 +456,7 @@ Board_flash_STATUS Board_flashOffsetToBlkPage(Board_flashHandle  handle,
         (flashInfo->device_id == BOARD_FLASH_ID_MT29F4G08ABAEAWP)    || \
         (flashInfo->device_id == BOARD_FLASH_ID_MT25QU512ABB)        || \
         (flashInfo->device_id == BOARD_FLASH_ID_MT35XU512ABA1G12)	 || \
+        (flashInfo->device_id == BOARD_FLASH_ID_MT35XU256ABA1G12)    || \
         (flashInfo->device_id == BOARD_FLASH_ID_S71KS512S)
        )
     {
@@ -514,6 +524,7 @@ Board_flash_STATUS Board_flashBlkPageToOffset(Board_flashHandle  handle,
         (flashInfo->device_id == BOARD_FLASH_ID_MT29F4G08ABAEAWP)    || \
         (flashInfo->device_id == BOARD_FLASH_ID_MT25QU512ABB)        || \
         (flashInfo->device_id == BOARD_FLASH_ID_MT35XU512ABA1G12)	 || \
+        (flashInfo->device_id == BOARD_FLASH_ID_MT35XU256ABA1G12)    || \
         (flashInfo->device_id == BOARD_FLASH_ID_S71KS512S)
        )
     {
@@ -575,6 +586,7 @@ Board_flash_STATUS Board_flashWrite(Board_flashHandle  handle,
         (flashInfo->device_id == BOARD_FLASH_ID_NORN25Q128A13ESF40F) || \
         (flashInfo->device_id == BOARD_FLASH_ID_MT25QU512ABB)        || \
         (flashInfo->device_id == BOARD_FLASH_ID_MT35XU512ABA1G12)	 || \
+        (flashInfo->device_id == BOARD_FLASH_ID_MT35XU256ABA1G12)    || \
         (flashInfo->device_id == BOARD_FLASH_ID_S71KS512S)
        )
     {
@@ -655,6 +667,7 @@ Board_flash_STATUS Board_flashEraseBlk(Board_flashHandle handle,
         (flashInfo->device_id == BOARD_FLASH_ID_NORN25Q128A13ESF40F) || \
         (flashInfo->device_id == BOARD_FLASH_ID_MT25QU512ABB)        || \
         (flashInfo->device_id == BOARD_FLASH_ID_MT35XU512ABA1G12)	 || \
+        (flashInfo->device_id == BOARD_FLASH_ID_MT35XU256ABA1G12)    || \
         (flashInfo->device_id == BOARD_FLASH_ID_S71KS512S)
        )
     {

@@ -223,6 +223,12 @@ typedef struct UART_HWAttrs {
     /*! Function pointer to set interrupt router path */
     UART_socCfgIntrPathFxn configSocIntrPath;
 
+    /**< UART RS-485 External Transceiver Direction Enable */
+    uint32_t      dirEnable;
+
+    /**< UART RS-485 External Transceiver Direction Polarity */
+    uint32_t      dirPol;
+
 } UART_HwAttrs;
 
 extern void UART_v1_callback(UART_Handle uartHnd, bool readTrans);

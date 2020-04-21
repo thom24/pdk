@@ -103,7 +103,9 @@ UART_HwAttrs uartInitCfg[CSL_UART_MAIN_CNT] =
         1U,                             /* enableInterrupt */
         UART16x_OPER_MODE,              /* operMode */
         NULL,                           /* dmaInfo */
-        UART_socConfigIntrPath          /* configSocIntrPath */
+        UART_socConfigIntrPath,         /* configSocIntrPath */
+        FALSE,                          /* dirEnable, RS-485 External Transceiver Direction */
+        UART_MDR3_DIR_POL_0,            /* dirPol, RS-485 External Transceiver Direction Polarity */
     },
     {
 #if defined (BUILD_MPU)
@@ -133,7 +135,9 @@ UART_HwAttrs uartInitCfg[CSL_UART_MAIN_CNT] =
         1U,
         UART16x_OPER_MODE,
         NULL,
-        UART_socConfigIntrPath
+        UART_socConfigIntrPath,
+        FALSE,
+        UART_MDR3_DIR_POL_0,
     },
     {
 #if defined (BUILD_MPU)
@@ -163,7 +167,9 @@ UART_HwAttrs uartInitCfg[CSL_UART_MAIN_CNT] =
         1U,
         UART16x_OPER_MODE,
         NULL,
-        UART_socConfigIntrPath
+        UART_socConfigIntrPath,
+        FALSE,
+        UART_MDR3_DIR_POL_0,
     },
     {
 #if defined (BUILD_MPU)
@@ -193,7 +199,9 @@ UART_HwAttrs uartInitCfg[CSL_UART_MAIN_CNT] =
         1U,
         UART16x_OPER_MODE,
         NULL,
-        UART_socConfigIntrPath
+        UART_socConfigIntrPath,
+        FALSE,
+        UART_MDR3_DIR_POL_0,
     },
     {
 #if defined (BUILD_MPU)
@@ -223,7 +231,9 @@ UART_HwAttrs uartInitCfg[CSL_UART_MAIN_CNT] =
         1U,
         UART16x_OPER_MODE,
         NULL,
-        UART_socConfigIntrPath
+        UART_socConfigIntrPath,
+        FALSE,
+        UART_MDR3_DIR_POL_0,
     },
     {
 #if defined (BUILD_MPU)
@@ -253,7 +263,9 @@ UART_HwAttrs uartInitCfg[CSL_UART_MAIN_CNT] =
         1U,
         UART16x_OPER_MODE,
         NULL,
-        UART_socConfigIntrPath
+        UART_socConfigIntrPath,
+        FALSE,
+        UART_MDR3_DIR_POL_0,
     },
     {
 #if defined (BUILD_MPU)
@@ -313,7 +325,9 @@ UART_HwAttrs uartInitCfg[CSL_UART_MAIN_CNT] =
         1U,
         UART16x_OPER_MODE,
         NULL,
-        UART_socConfigIntrPath
+        UART_socConfigIntrPath,
+        FALSE,
+        UART_MDR3_DIR_POL_0,
     },
     {
 #if defined (BUILD_MPU)
@@ -343,7 +357,9 @@ UART_HwAttrs uartInitCfg[CSL_UART_MAIN_CNT] =
         1U,
         UART16x_OPER_MODE,
         NULL,
-        UART_socConfigIntrPath
+        UART_socConfigIntrPath,
+        FALSE,
+        UART_MDR3_DIR_POL_0,
     },
     {
 #if defined (BUILD_MPU)
@@ -373,7 +389,9 @@ UART_HwAttrs uartInitCfg[CSL_UART_MAIN_CNT] =
         1U,
         UART16x_OPER_MODE,
         NULL,
-        UART_socConfigIntrPath
+        UART_socConfigIntrPath,
+        FALSE,
+        UART_MDR3_DIR_POL_0,
     },
 };
 
