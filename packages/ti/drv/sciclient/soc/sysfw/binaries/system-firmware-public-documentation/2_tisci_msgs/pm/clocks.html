@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                20.01.00
+                20.02.00
               </div>
             
           
@@ -223,6 +223,10 @@ clocks within the system.</p>
 <p class="last">Reference <a class="reference internal" href="../../5_soc_doc/index.html#pub-soc-family-doc"><span class="std std-ref">Chapter 5: SoC Family Specific Documentation</span></a> to see clock IDs and device IDs for
 your SoC.</p>
 </div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The SSC controls are not yet available in the system firmware.</p>
+</div>
 </div>
 <div class="section" id="macros-used-in-this-document">
 <h3>Macros Used in this Document<a class="headerlink" href="#macros-used-in-this-document" title="Permalink to this headline">¶</a></h3>
@@ -246,7 +250,8 @@ your SoC.</p>
 <p>Indicate hardware state of the clock is that it is running.</p>
 </p>
 <p><p><code class="docutils literal"><span class="pre">TISCI_MSG_FLAG_CLOCK_ALLOW_SSC</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">BIT(8)</span></code></p>
-<p>Allow this clock to be modified via spread spectrum clocking.</p>
+<p>Allow this clock to be modified via spread spectrum clocking.
+ note: The SSC feature is currently not supported in System Firmware.</p>
 </p>
 <p><p><code class="docutils literal"><span class="pre">TISCI_MSG_FLAG_CLOCK_ALLOW_FREQ_CHANGE</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">BIT(9)</span></code></p>
 <p>Allow this clock’s frequency to be changed while it is running
@@ -257,7 +262,8 @@ your SoC.</p>
  on the SoC pseudo-device, BOARD0.</p>
 </p>
 <p><p><code class="docutils literal"><span class="pre">TISCI_MSG_FLAG_CLOCK_SSC_ACTIVE</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">BIT(11)</span></code></p>
-<p>Indicate that SSC is active for this clock.</p>
+<p>Indicate that SSC is active for this clock.
+ note: The SSC feature is currently not supported in System Firmware.</p>
 </p>
 </div>
 <div class="section" id="large-clock-index-compatibility">
@@ -1216,7 +1222,7 @@ configuring internal dividers / multipliers as required.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'20.01.00',
+            VERSION:'20.02.00',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

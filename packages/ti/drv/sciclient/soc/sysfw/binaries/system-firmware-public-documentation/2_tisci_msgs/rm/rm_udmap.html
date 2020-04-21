@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                20.01.00
+                20.02.00
               </div>
             
           
@@ -311,263 +311,150 @@ within any Navigator Subsystem UDMAP on the device.</p>
 </div>
 <div class="section" id="udmap-transmit-channel-configure-message-parameters">
 <h4>UDMAP Transmit Channel Configure Message Parameters<a class="headerlink" href="#udmap-transmit-channel-configure-message-parameters" title="Permalink to this headline">¶</a></h4>
+<p><p><strong>struct tisci_msg_rm_udmap_tx_ch_cfg_req</strong></p>
+<p>Configures a Navigator Subsystem UDMAP transmit channel</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="9%" />
-<col width="20%" />
-<col width="52%" />
-<col width="18%" />
+<col width="1%" />
+<col width="2%" />
+<col width="97%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Parameter</th>
 <th class="head">Type</th>
-<th class="head">Valid Values</th>
 <th class="head">Description</th>
 </tr>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>hdr</td>
-<td>Generic TISCI message header (8 bytes)</td>
-<td><a class="reference internal" href="../../5_soc_doc/am6x/hosts.html"><span class="doc">Valid Host IDs</span></a></td>
-<td>Generic TISCI message header.
-Contains the message ID, host ID,
-sequence number, and any flags</td>
+<td>struct tisci_header</td>
+<td>Standard TISCI header</td>
 </tr>
 <tr class="row-odd"><td>valid_params</td>
 <td>u32</td>
-<td><a class="reference internal" href="#pub-rm-public-udmap-tx-ch-cfg-valid-params"><span class="std std-ref">UDMAP Transmit Channel Configuration Valid Parameters</span></a></td>
-<td>Bitfield defining validity of UDMAP
-transmit channel configuration
-parameters.  The channel
-configuration fields are not valid,
-and will not be used, if their
-corresponding valid bit is zero.</td>
+<td>Bitfield defining validity of tx channel configuration parameters.  The tx channel configuration fields are not valid, and will not be used for ch configuration, if their corresponding valid bit is zero.  Valid bit usage: 0 - Valid bit for &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::tx_pause_on_err 1 - Valid bit for &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::tx_atype 2 - Valid bit for &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::tx_chan_type 3 - Valid bit for &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::tx_fetch_size 4 - Valid bit for &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::txcq_qnum 5 - Valid bit for &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::tx_priority 6 - Valid bit for &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::tx_qos 7 - Valid bit for &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::tx_orderid 8 - Valid bit for &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::tx_sched_priority 9 - Valid bit for &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::tx_filt_einfo 10 - Valid bit for &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::tx_filt_pswords 11 - Valid bit for &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::tx_supr_tdpkt 12 - Valid bit for &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::tx_credit_count 13 - Valid bit for &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::fdepth 14 - Valid bit for &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::tx_burst_size 15 - Valid bit for &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::tx_tdtype</td>
 </tr>
 <tr class="row-even"><td>nav_id</td>
 <td>u16</td>
-<td><a class="reference internal" href="../../5_soc_doc/am6x/navss.html#pub-soc-am6x-navss-ids"><span class="std std-ref">Valid Navigator Subsystem UDMAP Device IDs</span></a></td>
-<td>The SoC-specific Device ID of the
-Navigator subsystem UDMAP in which
-the transmit channel is located.</td>
+<td>SoC device ID of Navigator Subsystem where tx channel is located</td>
 </tr>
 <tr class="row-odd"><td>index</td>
 <td>u16</td>
-<td><a class="reference internal" href="../../5_soc_doc/am6x/navss.html#pub-soc-am6x-udmap-channel-and-flow-indices"><span class="std std-ref">Valid Navigator Subsystem Transmit Channel Indices</span></a></td>
-<td>Specifies the requested transmit
-channel index for configuration</td>
+<td>UDMAP transmit channel index.</td>
 </tr>
 <tr class="row-even"><td>tx_pause_on_err</td>
 <td>u8</td>
-<td><ol class="first last arabic simple" start="0">
-<li><ul class="first">
-<li>Disabled or (1) - Enabled</li>
-</ul>
-</li>
-</ol>
-</td>
-<td>Transmit channel pause on error
-configuration.  The register field
-is programmed if tx_pause_on_err’s
-valid bit is set.</td>
+<td>UDMAP transmit channel pause on error configuration to be programmed into the tx_pause_on_err field of the channel’s TCHAN_TCFG register.  Can be set to: &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_PAUSE_ON_ERROR_DISABLED &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_PAUSE_ON_ERROR_ENABLED</td>
 </tr>
 <tr class="row-odd"><td>tx_filt_einfo</td>
 <td>u8</td>
-<td><ol class="first last arabic simple" start="0">
-<li><ul class="first">
-<li>Disabled or (1) - Enabled</li>
-</ul>
-</li>
-</ol>
-</td>
-<td>Transmit channel extended packet
-information.  The register field is
-programmed if tx_filt_einfo’s
-valid bit is set.</td>
+<td>UDMAP transmit channel extended packet information passing configuration to be programmed into the tx_filt_einfo field of the channel’s TCHAN_TCFG register.  Can be set to: &#64;ref TISCI_MSG_VALUE_RM_UDMAP_TX_CH_FILT_EINFO_DISABLED &#64;ref TISCI_MSG_VALUE_RM_UDMAP_TX_CH_FILT_EINFO_ENABLED</td>
 </tr>
 <tr class="row-even"><td>tx_filt_pswords</td>
 <td>u8</td>
-<td><ol class="first last arabic simple" start="0">
-<li><ul class="first">
-<li>Disabled or (1) - Enabled</li>
-</ul>
-</li>
-</ol>
-</td>
-<td>Transmit channel protocol specific
-word passing.  The register field
-is programmed if tx_filt_pswords’s
-valid bit is set.</td>
+<td>UDMAP transmit channel protocol specific word passing configuration to be programmed into the tx_filt_pswords field of the channel’s TCHAN_TCFG register.  Can be set to: &#64;ref TISCI_MSG_VALUE_RM_UDMAP_TX_CH_FILT_PSWORDS_DISABLED &#64;ref TISCI_MSG_VALUE_RM_UDMAP_TX_CH_FILT_PSWORDS_ENABLED</td>
 </tr>
 <tr class="row-odd"><td>tx_atype</td>
 <td>u8</td>
-<td><ol class="first last arabic simple" start="0">
-<li><ul class="first">
-<li>Physical addresses, (1) - Intermediate addresses, (2) - Virtual addresses</li>
-</ul>
-</li>
-</ol>
-</td>
-<td>Transmit channel non Ring
-Accelerator access pointer
-interpretation configuration.  The
-register field is programmed if
-tx_atype’s valid bit is set.</td>
+<td>UDMAP transmit channel non Ring Accelerator access pointer interpretation configuration to be programmed into the tx_atype field of the channel’s TCHAN_TCFG register.  Can be set to &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_ATYPE_PHYS &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_ATYPE_INTERMEDIATE &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_ATYPE_VIRTUAL</td>
 </tr>
 <tr class="row-even"><td>tx_chan_type</td>
 <td>u8</td>
-<td>(2) - Packet transfers using pass by reference rings, (10) - 3rd party DMA transfers using pass by
-reference rings, (11) - 3rd party DMA transfers using pass by value rings, (12) - 3rd party block copy
-DMA transfers using pass by reference rings, (13) - 3rd party block copy DMA transfers using pass by
-value rings | Transmit channel functional channel type and work passing mechanism.</td>
-<td>Transmit channel functional channel
-type and work passing mechanism.
-The parameter is valid if
-tx_chan_type’s valid bit is set.</td>
+<td>UDMAP transmit channel functional channel type and work passing mechanism configuration to be programmed into the tx_chan_type field of the channel’s TCHAN_TCFG register.  Can be set to &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_TYPE_PACKET &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_TYPE_3P_DMA_REF &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_TYPE_3P_DMA_VAL &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_TYPE_3P_BLOCK_REF &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_TYPE_3P_BLOCK_VAL</td>
 </tr>
 <tr class="row-odd"><td>tx_supr_tdpkt</td>
 <td>u8</td>
-<td><ol class="first last arabic simple" start="0">
-<li><ul class="first">
-<li>Disabled or (1) - Enabled</li>
-</ul>
-</li>
-</ol>
-</td>
-<td>Transmit channel tear down packet
-generation suppression.  The
-register field is programmed if
-tx_supr_tdpkt’s valid bit is set.</td>
+<td>UDMAP transmit channel teardown packet generation suppression configuration to be programmed into the tx_supr_tdpkt field of the channel’s TCHAN_TCFG register.  Can be set to: &#64;ref TISCI_MSG_VALUE_RM_UDMAP_TX_CH_SUPPRESS_TD_DISABLED &#64;ref TISCI_MSG_VALUE_RM_UDMAP_TX_CH_SUPPRESS_TD_ENABLED</td>
 </tr>
 <tr class="row-even"><td>tx_fetch_size</td>
 <td>u16</td>
-<td>Cannot be greater than 127</td>
-<td>Transmit channel number of 32-bit
-descriptor words to fetch. The user
-must make sure to set the maximum
-word count that can pass through
-the channel for any allowed
-descriptor type.  The register
-field is programmed if
-tx_fetch_size’s valid bit is set.</td>
+<td>UDMAP transmit channel number of 32-bit descriptor words to fetch configuration to be programmed into the tx_fetch_size field of the channel’s TCHAN_TCFG register.  The user must make sure to set the maximum word count that can pass through the channel for any allowed descriptor type.  Cannot be greater than &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_FETCH_SIZE_MAX</td>
 </tr>
 <tr class="row-odd"><td>tx_credit_count</td>
 <td>u8</td>
-<td>Cannot be greater than 7</td>
-<td>Transmit channel transfer request
-credit count. Specifies how many
-credits for complete TRs are
-available. This field is only used
-when configuring a transmit
-channel of external type.  The
-register field is programmed if
-tx_credit_count’s valid bit is
-set.</td>
+<td>UDMAP transmit channel transfer request credit count configuration to be programmed into the count field of the TCHAN_TCREDIT register.  Specifies how many credits for complete TRs are available.  This field is only used when configuring a transmit channel of external type and cannot be greater than &#64;ref TISCI_MSG_VALUE_RM_UDMAP_TX_CH_CREDIT_CNT_MAX</td>
 </tr>
 <tr class="row-even"><td>txcq_qnum</td>
 <td>u16</td>
-<td>Valid, assigned ring</td>
-<td>Transmit channel completion queue.
-The specified completion queue must
-be assigned to the host, or a
-subordinate of the host, requesting
-configuration of the transmit
-channel.  The register field is
-programmed if txcq_qnum’s valid
-bit is set.</td>
+<td>UDMAP transmit channel completion queue configuration to be programmed into the txcq_qnum field of the TCHAN_TCQ register.  The specified completion queue must be assigned to the host, or a subordinate of the host, requesting configuration of the transmit channel.</td>
 </tr>
 <tr class="row-odd"><td>tx_priority</td>
 <td>u8</td>
-<td>Transmit channel transmit priority</td>
-<td>The register field is programmed
-if tx_priority’s valid bit is set.</td>
+<td>UDMAP transmit channel transmit priority value to be programmed into the priority field of the channel’s TCHAN_TPRI_CTRL register.  This parameter cannot be greater than &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_PRIORITY_MAX.</td>
 </tr>
 <tr class="row-even"><td>tx_qos</td>
 <td>u8</td>
-<td>Transmit channel QoS value</td>
-<td>Transmit channel transmit qos
-value.  The register field is
-programmed if tx_qos’s valid bit
-is set.</td>
+<td>UDMAP transmit channel transmit qos value to be programmed into the qos field of the channel’s TCHAN_TPRI_CTRL register.  This parameter cannot be greater than &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_QOS_MAX.</td>
 </tr>
 <tr class="row-odd"><td>tx_orderid</td>
 <td>u8</td>
-<td>Transmit channel bus order ID</td>
-<td>Transmit channel bus order id.
-The register field is programmed
-if tx_orderid’s valid bit is set.</td>
+<td>UDMAP transmit channel bus order id value to be programmed into the orderid field of the channel’s TCHAN_TPRI_CTRL register.  This parameter cannot be greater than &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_ORDER_ID_MAX.</td>
 </tr>
 <tr class="row-even"><td>fdepth</td>
 <td>u16</td>
-<td>Check the UDMAP section of the TRM for restrictions regarding this parameter. Reset value is 0x400.</td>
-<td>Channel FIFO depth configuration.
-Sets the number of Tx FIFO bytes
-which are allowed to be stored for
-the channel.  The TISCI message
-is rejected if a non-zero, valid,
-value is provided during external
-channel configuration.
-The register field is programmed if
-fdepth’s valid bit is set.</td>
+<td>UDMAP transmit channel FIFO depth configuration to be programmed into the fdepth field of the TCHAN_TFIFO_DEPTH register.  Sets the number of Tx FIFO bytes which are allowed to be stored for the channel.  This field is not supported for external channels.  The TISCI message is rejected if a non-zero, valid, value is provided during external channel configuration. Check the UDMAP section of the TRM for restrictions regarding this parameter.</td>
 </tr>
 <tr class="row-odd"><td>tx_sched_priority</td>
 <td>u8</td>
-<td><ol class="first last arabic simple" start="0">
-<li><ul class="first">
-<li>High priority, (1) - Medium-high priority, (2) - Medium-low priority, (3) - Low priority</li>
-</ul>
-</li>
-</ol>
-</td>
-<td>Tx scheduling priority
-configuration.  The register field
-is programmed if
-tx_sched_priority’s valid bit is
-set.</td>
+<td>UDMAP transmit channel tx scheduling priority configuration to be programmed into the priority field of the channel’s TCHAN_TST_SCHED register.  Can be set to &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_SCHED_PRIOR_HIGH &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_SCHED_PRIOR_MEDHIGH &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_SCHED_PRIOR_MEDLOW &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_SCHED_PRIOR_LOW</td>
 </tr>
 <tr class="row-even"><td>tx_burst_size</td>
 <td>u8</td>
-<td><ol class="first last arabic simple">
-<li><ul class="first">
-<li>64 bytes, (2) - 128 bytes, (3) - 256 bytes</li>
-</ul>
-</li>
-</ol>
-</td>
-<td>UDMAP transmit channel burst size
-configuration.  The register is
-programmed if the corresponding
-valid bit is set.  This field is
-not supported on some SoCs.  On
-SoCs that do not support this
-field the input is quietly ignored
-even if the valid bit is set.</td>
+<td>UDMAP transmit channel burst size configuration to be programmed into the tx_burst_size field of the TCHAN_TCFG register.  Can be set to: &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_BURST_SIZE_64_BYTES &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_BURST_SIZE_128_BYTES &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_BURST_SIZE_256_BYTES This field is only valid if &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_BURST_SIZE_VALID is set in &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::valid_params.  This field is not supported on some SoCs.  On SoCs that do not support this field the input is quietly ignored even if the valid bit is set.</td>
 </tr>
 <tr class="row-odd"><td>tx_tdtype</td>
 <td>u8</td>
-<td><ol class="first last arabic simple" start="0">
-<li><ul class="first">
-<li>Immediate teardown, (1) - Teardown after receiving remote peer completion message</li>
-</ul>
-</li>
-</ol>
-</td>
-<td>UDMAP transmit channel teardown
-type configuration programmed
-into the tx_tdtype field of
-the TCHAN_TCFG register.  Can be
-set to 0 for immediate teardown or
-1 to wait for remote peer to send
-completion message for teardown.
-Only valid if
-corresponding valid bit is set.
-This field is not supported on
-some SoCs.  On SoCs that do not
-support this field the input is
-quietly ignored even if the valid
-bit is set.</td>
+<td>UDMAP transmit channel teardown type configuration to be programmed into the tdtype field of the TCHAN_TCFG register.  Can be set to: &#64;ref TISCI_MSG_VALUE_RM_UDMAP_TX_CH_TDTYPE_IMMEDIATE &#64;ref TISCI_MSG_VALUE_RM_UDMAP_TX_CH_TDTYPE_WAIT This field is only valid if &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_TX_TDTYPE_VALID is set in &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::valid_params.  This field is not supported on some SoCs.  On SoCs that do not support this field the input is quietly ignored even if the valid bit is set.</td>
 </tr>
 </tbody>
 </table>
+<p>Configures the non-real-time registers of a Navigator Subsystem UDMAP
+ transmit channel.  The channel index must be assigned to the host defined
+ in the TISCI header via the RM board configuration resource assignment
+ range list.
+ This field is only valid if
+ &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_PAUSE_ON_ERR_VALID is set in
+ &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::valid_params.
+ This field is only valid if
+ &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_TX_FILT_EINFO_VALID is set in
+ &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::valid_params.
+ This field is only valid if
+ &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_TX_FILT_PSWORDS_VALID is set in
+ &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::valid_params.
+ This field is only valid if
+ &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_ATYPE_VALID is set in
+ &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::valid_params.
+ This field is only valid if
+ &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_CHAN_TYPE_VALID is set in
+ &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::valid_params.
+ This field is only valid if
+ &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_TX_SUPR_TDPKT_VALID is set in
+ &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::valid_params.
+ This field is only valid if
+ &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_FETCH_SIZE_VALID is set in
+ &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::valid_params.
+ This field is only valid if
+ &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_TX_CREDIT_COUNT_VALID is set in
+ &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::valid_params.
+ This field is only valid if
+ &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_CQ_QNUM_VALID is set in
+ &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::valid_params.
+ This field is only valid if
+ &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_PRIORITY_VALID is set in
+ &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::valid_params.
+ This field is only valid if
+ &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_QOS_VALID is set in
+ &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::valid_params.
+ This field is only valid if
+ &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_ORDER_ID_VALID is set in
+ &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::valid_params.
+ This field is only valid if
+ &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_TX_FDEPTH_VALID is set in
+ &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::valid_params.
+ This field is only valid if
+ &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_SCHED_PRIORITY_VALID is set in
+ &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::valid_params.</p>
+</p>
 </div>
 <div class="section" id="udmap-transmit-channel-configuration-valid-parameters">
 <span id="pub-rm-public-udmap-tx-ch-cfg-valid-params"></span><h4>UDMAP Transmit Channel Configuration Valid Parameters<a class="headerlink" href="#udmap-transmit-channel-configuration-valid-parameters" title="Permalink to this headline">¶</a></h4>
@@ -639,32 +526,28 @@ channel configure message optional parameters:</p>
 processed <strong>udmap tx channel cfg</strong> message.</p>
 <div class="section" id="udmap-transmit-channel-configure-response-message-parameters">
 <h4>UDMAP Transmit Channel Configure Response Message Parameters<a class="headerlink" href="#udmap-transmit-channel-configure-response-message-parameters" title="Permalink to this headline">¶</a></h4>
+<p><p><strong>struct tisci_msg_rm_udmap_tx_ch_cfg_resp</strong></p>
+<p>Response to configuring a UDMAP transmit channel.</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="10%" />
-<col width="26%" />
-<col width="48%" />
-<col width="17%" />
+<col width="23%" />
+<col width="37%" />
+<col width="40%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Parameter</th>
 <th class="head">Type</th>
-<th class="head">Valid Values</th>
 <th class="head">Description</th>
 </tr>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>hdr</td>
-<td>Generic TISCI message header (8 bytes)</td>
-<td><a class="reference internal" href="../../5_soc_doc/am6x/hosts.html"><span class="doc">Valid Host IDs</span></a></td>
-<td>Generic TISCI message
-header. Contains the
-message ID, host ID,
-sequence number, and any
-return flags</td>
+<td>struct tisci_header</td>
+<td>Standard TISCI header</td>
 </tr>
 </tbody>
 </table>
+</p>
 </div>
 </div>
 </div>
@@ -712,232 +595,139 @@ within any Navigator Subsystem UDMAP on the device.</p>
 </div>
 <div class="section" id="udmap-receive-channel-configure-message-parameters">
 <h4>UDMAP Receive Channel Configure Message Parameters<a class="headerlink" href="#udmap-receive-channel-configure-message-parameters" title="Permalink to this headline">¶</a></h4>
+<p><p><strong>struct tisci_msg_rm_udmap_rx_ch_cfg_req</strong></p>
+<p>Configures a Navigator Subsystem UDMAP receive channel</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="9%" />
-<col width="20%" />
-<col width="52%" />
-<col width="18%" />
+<col width="2%" />
+<col width="2%" />
+<col width="97%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Parameter</th>
 <th class="head">Type</th>
-<th class="head">Valid Values</th>
 <th class="head">Description</th>
 </tr>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>hdr</td>
-<td>Generic TISCI message header (8 bytes)</td>
-<td><a class="reference internal" href="../../5_soc_doc/am6x/hosts.html"><span class="doc">Valid Host IDs</span></a></td>
-<td>Generic TISCI message header.
-Contains the message ID, host ID,
-sequence number, and any flags</td>
+<td>struct tisci_header</td>
+<td>Standard TISCI header</td>
 </tr>
 <tr class="row-odd"><td>valid_params</td>
 <td>u32</td>
-<td><a class="reference internal" href="#pub-rm-public-udmap-rx-ch-cfg-valid-params"><span class="std std-ref">UDMAP Receive Channel Configuration Valid Parameters</span></a></td>
-<td>Bitfield defining validity of UDMAP
-receive channel configuration
-parameters.  The channel
-configuration fields are not valid,
-and will not be used, if their
-corresponding valid bit is zero.</td>
+<td>Bitfield defining validity of rx channel configuration parameters.  The rx channel configuration fields are not valid, and will not be used for ch configuration, if their corresponding valid bit is zero.  Valid bit usage: 0 - Valid bit for &#64;ref tisci_msg_rm_udmap_rx_ch_cfg_req::rx_pause_on_err 1 - Valid bit for &#64;ref tisci_msg_rm_udmap_rx_ch_cfg_req::rx_atype 2 - Valid bit for &#64;ref tisci_msg_rm_udmap_rx_ch_cfg_req::rx_chan_type 3 - Valid bit for &#64;ref tisci_msg_rm_udmap_rx_ch_cfg_req::rx_fetch_size 4 - Valid bit for &#64;ref tisci_msg_rm_udmap_rx_ch_cfg_req::rxcq_qnum 5 - Valid bit for &#64;ref tisci_msg_rm_udmap_rx_ch_cfg_req::rx_priority 6 - Valid bit for &#64;ref tisci_msg_rm_udmap_rx_ch_cfg_req::rx_qos 7 - Valid bit for &#64;ref tisci_msg_rm_udmap_rx_ch_cfg_req::rx_orderid 8 - Valid bit for &#64;ref tisci_msg_rm_udmap_rx_ch_cfg_req::rx_sched_priority 9 - Valid bit for &#64;ref tisci_msg_rm_udmap_rx_ch_cfg_req::flowid_start 10 - Valid bit for &#64;ref tisci_msg_rm_udmap_rx_ch_cfg_req::flowid_cnt 11 - Valid bit for &#64;ref tisci_msg_rm_udmap_rx_ch_cfg_req::rx_ignore_short 12 - Valid bit for &#64;ref tisci_msg_rm_udmap_rx_ch_cfg_req::rx_ignore_long 14 - Valid bit for &#64;ref tisci_msg_rm_udmap_rx_ch_cfg_req::rx_burst_size</td>
 </tr>
 <tr class="row-even"><td>nav_id</td>
 <td>u16</td>
-<td><a class="reference internal" href="../../5_soc_doc/am6x/navss.html#pub-soc-am6x-navss-ids"><span class="std std-ref">Valid Navigator Subsystem UDMAP Device IDs</span></a></td>
-<td>The SoC-specific Device ID of the
-Navigator subsystem UDMAP in which
-the receive channel is located.</td>
+<td>SoC device ID of Navigator Subsystem where rx channel is located</td>
 </tr>
 <tr class="row-odd"><td>index</td>
 <td>u16</td>
-<td><a class="reference internal" href="../../5_soc_doc/am6x/navss.html#pub-soc-am6x-udmap-channel-and-flow-indices"><span class="std std-ref">Valid Navigator Subsystem Receive Channel Indices</span></a></td>
-<td>Specifies the requested receive
-channel index for configuration</td>
+<td>UDMAP receive channel index.</td>
 </tr>
 <tr class="row-even"><td>rx_fetch_size</td>
 <td>u16</td>
-<td>Cannot be greater than 127</td>
-<td>Receive channel number of 32-bit
-descriptor words to fetch. The user
-must make sure to set the maximum
-word count that can pass through
-the channel for any allowed
-descriptor type.  The register
-field is programmed if
-rx_fetch_size’s valid bit is set.</td>
+<td>UDMAP receive channel number of 32-bit descriptor words to fetch configuration to be programmed into the rx_fetch_size field of the channel’s RCHAN_RCFG register.  The user must make sure to set the maximum word count that can pass through the channel for any allowed descriptor type.  Cannot be greater than &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_FETCH_SIZE_MAX</td>
 </tr>
 <tr class="row-odd"><td>rxcq_qnum</td>
 <td>u16</td>
-<td>Valid, assigned ring</td>
-<td>Receive channel completion queue.
-The specified completion queue must
-be assigned to the host, or a
-subordinate of the host, requesting
-configuration of the receive
-channel.  The register field is
-programmed if rxcq_qnum’s valid
-bit is set.</td>
+<td>UDMAP receive channel completion queue configuration to be programmed into the rxcq_qnum field of the RCHAN_RCQ register.  The specified completion queue must be assigned to the host, or a subordinate of the host, requesting configuration of the receive channel.</td>
 </tr>
 <tr class="row-even"><td>rx_priority</td>
 <td>u8</td>
-<td>Receive channel receive priority</td>
-<td>The register field is programmed
-if rx_priority’s valid bit is set.</td>
+<td>UDMAP receive channel receive priority value to be programmed into the priority field of the channel’s RCHAN_RPRI_CTRL register.  This parameter cannot be greater than &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_PRIORITY_MAX.</td>
 </tr>
 <tr class="row-odd"><td>rx_qos</td>
 <td>u8</td>
-<td>Receive channel QoS value</td>
-<td>Receive channel receive qos
-value.  The register field is
-programmed if rx_qos’s valid bit
-is set.</td>
+<td>UDMAP receive channel receive qos value to be programmed into the qos field of the channel’s RCHAN_RPRI_CTRL register.  This parameter cannot be greater than &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_QOS_MAX.</td>
 </tr>
 <tr class="row-even"><td>rx_orderid</td>
 <td>u8</td>
-<td>Receive channel bus order ID</td>
-<td>Receive channel bus order id.
-The register field is programmed
-if rx_orderid’s valid bit is set.</td>
+<td>UDMAP receive channel bus order id value to be programmed into the orderid field of the channel’s RCHAN_RPRI_CTRL register.  This parameter cannot be greater than &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_ORDER_ID_MAX.</td>
 </tr>
 <tr class="row-odd"><td>rx_sched_priority</td>
 <td>u8</td>
-<td><ol class="first last arabic simple" start="0">
-<li><ul class="first">
-<li>High priority, (1) - Medium-high priority, (2) - Medium-low priority, (3) - Low priority</li>
-</ul>
-</li>
-</ol>
-</td>
-<td>Rx scheduling priority
-configuration.  The register field
-is programmed if
-rx_sched_priority’s valid bit is
-set.</td>
+<td>UDMAP receive channel rx scheduling priority configuration to be programmed into the priority field of the channel’s RCHAN_RST_SCHED register.  Can be set to &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_SCHED_PRIOR_HIGH &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_SCHED_PRIOR_MEDHIGH &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_SCHED_PRIOR_MEDLOW &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_SCHED_PRIOR_LOW</td>
 </tr>
 <tr class="row-even"><td>flowid_start</td>
 <td>u16</td>
-<td><a class="reference internal" href="../../5_soc_doc/am6x/navss.html#pub-soc-am6x-udmap-channel-and-flow-indices"><span class="std std-ref">Common Navigator Subsystem Receive Flow Indices</span></a></td>
-<td>Specifies the starting index for
-flow IDs the receive channel is to
-make use of beyond the default,
-statically mapped flow.  The
-additional flows must be assigned
-to the host, or a subordinate of
-the host, requesting configuration
-of the receive channel.  The
-register field is programmed if
-flowid_start and flowid_cnt valid
-bits are set.</td>
+<td>UDMAP receive channel additional flows starting index configuration to program into the flow_start field of the RCHAN_RFLOW_RNG register.  Specifies the starting index for flow IDs the receive channel is to make use of beyond the default flow.  flowid_start and &#64;ref flowid_cnt must be set as valid and configured together.  The starting flow ID set by &#64;ref flowid_cnt must be a flow index within the Navigator Subsystem’s subset of flows beyond the default flows statically mapped to receive channels.  The additional flows must be assigned to the host, or a subordinate of the host, requesting configuration of the receive channel.</td>
 </tr>
 <tr class="row-odd"><td>flowid_cnt</td>
 <td>u16</td>
-<td>flowid_cnt such that flowid_start + flowid_cnt cannot exceed number of receive flows in receive
-channel’s Navigator Subsystem</td>
-<td>Receive channel rx flow ID count
-starting at flowid_start index.
-This field specifies how many flow
-IDs are in the additional
-contiguous range of legal flow IDs
-for the channel.  The additional
-flows must be assigned to the host,
-or a subordinate of the host,
-requesting configuration of the
-receive channel.  The register
-field is programmed if flowid_start
-and flowid_cnt valid bits are set.</td>
+<td>UDMAP receive channel additional flows count configuration to program into the flowid_cnt field of the RCHAN_RFLOW_RNG register.  This field specifies how many flow IDs are in the additional contiguous range of legal flow IDs for the channel.  &#64;ref flowid_start and flowid_cnt must be set as valid and configured together.  Disabling the valid_params field bit for flowid_cnt indicates no flow IDs other than the default are to be allocated and used by the receive channel.  &#64;ref flowid_start plus flowid_cnt cannot be greater than the number of receive flows in the receive channel’s Navigator Subsystem.  The additional flows must be assigned to the host, or a subordinate of the host, requesting configuration of the receive channel.</td>
 </tr>
 <tr class="row-even"><td>rx_pause_on_err</td>
 <td>u8</td>
-<td><ol class="first last arabic simple" start="0">
-<li><ul class="first">
-<li>Disabled or (1) - Enabled</li>
-</ul>
-</li>
-</ol>
-</td>
-<td>Receive channel pause on error
-configuration.  The register field
-is programmed if rx_pause_on_err’s
-valid bit is set.</td>
+<td>UDMAP receive channel pause on error configuration to be programmed into the rx_pause_on_err field of the channel’s RCHAN_RCFG register.  Can be set to: &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_PAUSE_ON_ERROR_DISABLED &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_PAUSE_ON_ERROR_ENABLED</td>
 </tr>
 <tr class="row-odd"><td>rx_atype</td>
 <td>u8</td>
-<td><ol class="first last arabic simple" start="0">
-<li><ul class="first">
-<li>Physical addresses, (1) - Intermediate addresses, (2) - Virtual addresses</li>
-</ul>
-</li>
-</ol>
-</td>
-<td>Receive channel non Ring
-Accelerator access pointer
-interpretation configuration.  The
-register field is programmed if
-rx_atype’s valid bit is set.</td>
+<td>UDMAP receive channel non Ring Accelerator access pointer interpretation configuration to be programmed into the rx_atype field of the channel’s RCHAN_RCFG register.  Can be set to &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_ATYPE_PHYS &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_ATYPE_INTERMEDIATE &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_ATYPE_VIRTUAL</td>
 </tr>
 <tr class="row-even"><td>rx_chan_type</td>
 <td>u8</td>
-<td>(2) - Packet transfers using pass by reference rings, (3) - Packet transfers using pass by reference
-rings with single buffer packet mode enabled, (10) - 3rd party DMA transfers using pass by reference
-rings, (11) - 3rd party DMA transfers using pass by value rings, (12) - 3rd party block copy DMA
-transfers using pass by reference rings, (13) - 3rd party block copy DMA transfers using pass by value
-rings.</td>
-<td>Receive channel functional channel
-type and work passing mechanism.
-The register field is programmed if
-rx_chan_type’s valid bit is set.</td>
+<td>UDMAP receive channel functional channel type and work passing mechanism configuration to be programmed into the rx_chan_type field of the channel’s RCHAN_RCFG register.  Can be set to &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_TYPE_PACKET &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_TYPE_PACKET_SINGLE_BUF &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_TYPE_3P_DMA_REF &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_TYPE_3P_DMA_VAL &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_TYPE_3P_BLOCK_REF &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_TYPE_3P_BLOCK_VAL</td>
 </tr>
 <tr class="row-odd"><td>rx_ignore_short</td>
 <td>u8</td>
-<td><ol class="first last arabic simple" start="0">
-<li><ul class="first">
-<li>Short packets treated as exceptions, (1) - Short packets ignored</li>
-</ul>
-</li>
-</ol>
-</td>
-<td>Receive channel short packet
-treatment.  The register field is
-programmed if rx_ignore_short’s
-valid bit is set.</td>
+<td>UDMAP receive channel short packet treatment configuration to be programmed into the rx_ignore_short field of the RCHAN_RCFG register.  Can be set to: &#64;ref TISCI_MSG_VALUE_RM_UDMAP_RX_CH_PACKET_EXCEPTION &#64;ref TISCI_MSG_VALUE_RM_UDMAP_RX_CH_PACKET_IGNORED</td>
 </tr>
 <tr class="row-even"><td>rx_ignore_long</td>
 <td>u8</td>
-<td><ol class="first last arabic simple" start="0">
-<li><ul class="first">
-<li>Long packets treated as exceptions, (1) - Long packets ignored</li>
-</ul>
-</li>
-</ol>
-</td>
-<td>Receive channel long packet
-treatment.  The register field is
-programmed if rx_ignore_long’s
-valid bit is set.</td>
+<td>UDMAP receive channel long packet treatment configuration to be programmed into the rx_ignore_long field of the RCHAN_RCFG register.  Can be set to: &#64;ref TISCI_MSG_VALUE_RM_UDMAP_RX_CH_PACKET_EXCEPTION &#64;ref TISCI_MSG_VALUE_RM_UDMAP_RX_CH_PACKET_IGNORED</td>
 </tr>
 <tr class="row-odd"><td>rx_burst_size</td>
 <td>u8</td>
-<td><ol class="first last arabic simple">
-<li><ul class="first">
-<li>64 bytes, (2) - 128 bytes, (3) - 256 bytes</li>
-</ul>
-</li>
-</ol>
-</td>
-<td>UDMAP receive channel burst size
-configuration.  The register is
-programmed if the corresponding
-valid bit is set.  This field is
-not supported on some SoCs.  On
-SoCs that do not support this
-field the input is quietly ignored
-even if the valid bit is set.</td>
+<td>UDMAP receive channel burst size configuration to be programmed into the rx_burst_size field of the RCHAN_RCFG register.  Can be set to: &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_BURST_SIZE_64_BYTES &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_BURST_SIZE_128_BYTES &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_BURST_SIZE_256_BYTES This field is only valid if &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_BURST_SIZE_VALID is set in &#64;ref tisci_msg_rm_udmap_rx_ch_cfg_req::valid_params.  This field is not supported on some SoCs.  On SoCs that do not support this field the input is quietly ignored even if the valid bit is set.</td>
 </tr>
 </tbody>
 </table>
+<p>Configures the non-real-time registers of a Navigator Subsystem UDMAP
+ receive channel.  The channel index must be assigned to the host defined
+ in the TISCI header via the RM board configuration resource assignment
+ range list.
+ This field is only valid if
+ &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_FETCH_SIZE_VALID is set in
+ &#64;ref tisci_msg_rm_udmap_rx_ch_cfg_req::valid_params.
+ This field is only valid if
+ &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_CQ_QNUM_VALID is set in
+ &#64;ref tisci_msg_rm_udmap_rx_ch_cfg_req::valid_params.
+ This field is only valid if
+ &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_PRIORITY_VALID is set in
+ &#64;ref tisci_msg_rm_udmap_rx_ch_cfg_req::valid_params.
+ This field is only valid if
+ &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_QOS_VALID is set in
+ &#64;ref tisci_msg_rm_udmap_rx_ch_cfg_req::valid_params.
+ This field is only valid if
+ &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_ORDER_ID_VALID is set in
+ &#64;ref tisci_msg_rm_udmap_rx_ch_cfg_req::valid_params.
+ This field is only valid if
+ &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_SCHED_PRIORITY_VALID is set in
+ &#64;ref tisci_msg_rm_udmap_rx_ch_cfg_req::valid_params.
+ This field is only valid if
+ &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_RX_FLOWID_START_VALID is set in
+ &#64;ref tisci_msg_rm_udmap_rx_ch_cfg_req::valid_params.
+ This field is only valid if
+ &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_RX_FLOWID_CNT_VALID is set in
+ &#64;ref tisci_msg_rm_udmap_rx_ch_cfg_req::valid_params.
+ This field is only valid if
+ &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_PAUSE_ON_ERR_VALID is set in
+ &#64;ref tisci_msg_rm_udmap_rx_ch_cfg_req::valid_params.
+ This field is only valid if
+ &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_ATYPE_VALID is set in
+ &#64;ref tisci_msg_rm_udmap_rx_ch_cfg_req::valid_params.
+ This field is only valid if
+ &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_CHAN_TYPE_VALID is set in
+ &#64;ref tisci_msg_rm_udmap_rx_ch_cfg_req::valid_params.
+ This field is only valid if
+ &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_RX_IGNORE_SHORT_VALID is set in
+ &#64;ref tisci_msg_rm_udmap_rx_ch_cfg_req::valid_params.
+ This field is only valid if
+ &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_RX_IGNORE_LONG_VALID is set in
+ &#64;ref tisci_msg_rm_udmap_rx_ch_cfg_req::valid_params.</p>
+</p>
 </div>
 <div class="section" id="udmap-receive-channel-configuration-valid-parameters">
 <span id="pub-rm-public-udmap-rx-ch-cfg-valid-params"></span><h4>UDMAP Receive Channel Configuration Valid Parameters<a class="headerlink" href="#udmap-receive-channel-configuration-valid-parameters" title="Permalink to this headline">¶</a></h4>
@@ -1006,32 +796,28 @@ channel configure message optional parameters:</p>
 processed <strong>udmap rx channel cfg</strong> message.</p>
 <div class="section" id="udmap-receive-channel-configure-response-message-parameters">
 <h4>UDMAP Receive Channel Configure Response Message Parameters<a class="headerlink" href="#udmap-receive-channel-configure-response-message-parameters" title="Permalink to this headline">¶</a></h4>
+<p><p><strong>struct tisci_msg_rm_udmap_rx_ch_cfg_resp</strong></p>
+<p>Response to configuring a UDMAP receive channel.</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="10%" />
-<col width="26%" />
-<col width="48%" />
-<col width="17%" />
+<col width="23%" />
+<col width="37%" />
+<col width="40%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Parameter</th>
 <th class="head">Type</th>
-<th class="head">Valid Values</th>
 <th class="head">Description</th>
 </tr>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>hdr</td>
-<td>Generic TISCI message header (8 bytes)</td>
-<td><a class="reference internal" href="../../5_soc_doc/am6x/hosts.html"><span class="doc">Valid Host IDs</span></a></td>
-<td>Generic TISCI message
-header. Contains the
-message ID, host ID,
-sequence number, and any
-return flags</td>
+<td>struct tisci_header</td>
+<td>Standard TISCI header</td>
 </tr>
 </tbody>
 </table>
+</p>
 </div>
 </div>
 </div>
@@ -1076,306 +862,183 @@ Navigator Subsystem UDMAP on the device.</p>
 </div>
 <div class="section" id="udmap-receive-flow-configure-message-parameters">
 <h4>UDMAP Receive Flow Configure Message Parameters<a class="headerlink" href="#udmap-receive-flow-configure-message-parameters" title="Permalink to this headline">¶</a></h4>
+<p><p><strong>struct tisci_msg_rm_udmap_flow_cfg_req</strong></p>
+<p>Configures a Navigator Subsystem UDMAP receive flow</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="12%" />
-<col width="18%" />
-<col width="50%" />
-<col width="20%" />
+<col width="1%" />
+<col width="1%" />
+<col width="97%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Parameter</th>
 <th class="head">Type</th>
-<th class="head">Valid Values</th>
 <th class="head">Description</th>
 </tr>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>hdr</td>
-<td>Generic TISCI message header</td>
-<td><a class="reference internal" href="../../5_soc_doc/am6x/hosts.html"><span class="doc">Valid Host IDs</span></a></td>
-<td>Generic TISCI message header.
-Contains the message ID, host
-ID, sequence number, and any
-flags</td>
+<td>struct tisci_header</td>
+<td>Standard TISCI header</td>
 </tr>
 <tr class="row-odd"><td>valid_params</td>
 <td>u32</td>
-<td><a class="reference internal" href="#pub-rm-public-udmap-flow-cfg-valid-params"><span class="std std-ref">UDMAP Receive Flow Configure Valid Parameters</span></a></td>
-<td>Bitfield defining validity of
-UDMAP receive channel
-configuration parameters.  The
-channel configuration fields
-are not valid, and will not
-used, if their corresponding
-valid bit is zero.</td>
+<td>Bitfield defining validity of rx flow configuration parameters.  The rx flow configuration fields are not valid, and will not be used for flow configuration, if their corresponding valid bit is zero.  Valid bit usage: 0 - Valid bit for &#64;ref tisci_msg_rm_udmap_flow_cfg_req::rx_einfo_present 1 - Valid bit for &#64;ref tisci_msg_rm_udmap_flow_cfg_req::rx_psinfo_present 2 - Valid bit for &#64;ref tisci_msg_rm_udmap_flow_cfg_req::rx_error_handling 3 - Valid bit for &#64;ref tisci_msg_rm_udmap_flow_cfg_req::rx_desc_type 4 - Valid bit for &#64;ref tisci_msg_rm_udmap_flow_cfg_req::rx_sop_offset 5 - Valid bit for &#64;ref tisci_msg_rm_udmap_flow_cfg_req::rx_dest_qnum 6 - Valid bit for &#64;ref tisci_msg_rm_udmap_flow_cfg_req::rx_src_tag_hi 7 - Valid bit for &#64;ref tisci_msg_rm_udmap_flow_cfg_req::rx_src_tag_lo 8 - Valid bit for &#64;ref tisci_msg_rm_udmap_flow_cfg_req::rx_dest_tag_hi 9 - Valid bit for &#64;ref tisci_msg_rm_udmap_flow_cfg_req::rx_dest_tag_lo 10 - Valid bit for &#64;ref tisci_msg_rm_udmap_flow_cfg_req::rx_src_tag_hi_sel 11 - Valid bit for &#64;ref tisci_msg_rm_udmap_flow_cfg_req::rx_src_tag_lo_sel 12 - Valid bit for &#64;ref tisci_msg_rm_udmap_flow_cfg_req::rx_dest_tag_hi_sel 13 - Valid bit for &#64;ref tisci_msg_rm_udmap_flow_cfg_req::rx_dest_tag_lo_sel 14 - Valid bit for &#64;ref tisci_msg_rm_udmap_flow_cfg_req::rx_fdq0_sz0_qnum 15 - Valid bit for &#64;ref tisci_msg_rm_udmap_flow_cfg_req::rx_fdq1_qnum 16 - Valid bit for &#64;ref tisci_msg_rm_udmap_flow_cfg_req::rx_fdq2_qnum 17 - Valid bit for &#64;ref tisci_msg_rm_udmap_flow_cfg_req::rx_fdq3_qnum 18 - Valid bit for &#64;ref tisci_msg_rm_udmap_flow_cfg_req::rx_ps_location</td>
 </tr>
 <tr class="row-even"><td>nav_id</td>
 <td>u16</td>
-<td><a class="reference internal" href="../../5_soc_doc/am6x/navss.html#pub-soc-am6x-navss-ids"><span class="std std-ref">Valid Navigator Subsystem UDMAP Device IDs</span></a></td>
-<td>The SoC-specific Device ID of
-the Navigator subsystem UDMAP
-in which the receive flow is
-located.</td>
+<td>SoC device ID of Navigator Subsystem from which the receive flow is allocated</td>
 </tr>
 <tr class="row-odd"><td>flow_index</td>
 <td>u16</td>
-<td><a class="reference internal" href="../../5_soc_doc/am6x/navss.html#pub-soc-am6x-udmap-channel-and-flow-indices"><span class="std std-ref">Valid Receive Flow Indices</span></a></td>
-<td>Specifies the receive flow
-index</td>
+<td>UDMAP receive flow index for non-optional configuration.</td>
 </tr>
 <tr class="row-even"><td>rx_einfo_present</td>
 <td>u8</td>
-<td><ol class="first last arabic simple" start="0">
-<li><ul class="first">
-<li>Do not handle extended packet info in received packet descriptor,</li>
-</ul>
-</li>
-<li><ul class="first">
-<li>Handle extended packet info in received packet descriptor</li>
-</ul>
-</li>
-</ol>
-</td>
-<td>Receive flow extended packet
-info present.  The register
-field is programmed if
-rx_einfo_present’s valid bit is
-set.</td>
+<td>UDMAP receive flow extended packet info present configuration to be programmed into the rx_einfo_present field of the flow’s RFLOW_RFA register. Can be set to: &#64;ref TISCI_MSG_VALUE_RM_UDMAP_RX_FLOW_EINFO_NOT_PRESENT &#64;ref TISCI_MSG_VALUE_RM_UDMAP_RX_FLOW_EINFO_PRESENT</td>
 </tr>
 <tr class="row-odd"><td>rx_psinfo_present</td>
 <td>u8</td>
-<td><ol class="first last arabic simple" start="0">
-<li><ul class="first">
-<li>Do not handle PS info words in received descriptor,</li>
-</ul>
-</li>
-<li><ul class="first">
-<li>Handle present PS info words in received descriptor</li>
-</ul>
-</li>
-</ol>
-</td>
-<td>Receive flow PS words present.
-The register field is
-programmed if
-rx_psinfo_present’s valid bit
-is set.</td>
+<td>UDMAP receive flow PS words present configuration to be programmed into the rx_psinfo_present field of the flow’s RFLOW_RFA register. Can be set to: &#64;ref TISCI_MSG_VALUE_RM_UDMAP_RX_FLOW_PSINFO_NOT_PRESENT &#64;ref TISCI_MSG_VALUE_RM_UDMAP_RX_FLOW_PSINFO_PRESENT</td>
 </tr>
 <tr class="row-even"><td>rx_error_handling</td>
 <td>u8</td>
-<td><ol class="first last arabic simple" start="0">
-<li><ul class="first">
-<li>Drop received packet on starvation error,</li>
-</ul>
-</li>
-<li><ul class="first">
-<li>Retry received packet on starvation error</li>
-</ul>
-</li>
-</ol>
-</td>
-<td>Receive flow error handling.
-The register field is
-programmed if
-rx_error_handling’s valid bit
-is set.</td>
+<td>UDMAP receive flow error handling configuration to be programmed into the rx_error_handling field of the flow’s RFLOW_RFA register.  Can be set to: &#64;ref TISCI_MSG_VALUE_RM_UDMAP_RX_FLOW_ERR_DROP &#64;ref TISCI_MSG_VALUE_RM_UDMAP_RX_FLOW_ERR_RETRY</td>
 </tr>
 <tr class="row-odd"><td>rx_desc_type</td>
 <td>u8</td>
-<td><ol class="first last arabic simple" start="0">
-<li><ul class="first">
-<li>Host descriptor, (1) - Monolithic descriptor</li>
-</ul>
-</li>
-</ol>
-</td>
-<td>Receive flow descriptor type.
-The register field is
-programmed if rx_desc_types’s
-valid bit is set.</td>
+<td>UDMAP receive flow descriptor type configuration to be programmed into the rx_desc_type field field of the flow’s RFLOW_RFA register.  Can be set to &#64;ref TISCI_MSG_VALUE_RM_UDMAP_RX_FLOW_DESC_HOST &#64;ref TISCI_MSG_VALUE_RM_UDMAP_RX_FLOW_DESC_MONO</td>
 </tr>
 <tr class="row-even"><td>rx_sop_offset</td>
 <td>u16</td>
-<td>0 - 255 bytes</td>
-<td>Receive flow start of packet
-offset. See the UDMAP section
-of the TRM for more information
-on this setting.  The register
-field is programmed
-rx_sop_offset’s valid bit is
-set.</td>
+<td>UDMAP receive flow start of packet offset configuration to be programmed into the rx_sop_offset field of the RFLOW_RFA register.  See the UDMAP section of the TRM for more information on this setting.  Valid values for this field are 0-255 bytes.  The allocation request will be NACK’d if specified offset is greater than &#64;ref TISCI_MSG_VALUE_RM_UDMAP_RX_FLOW_SOP_MAX.</td>
 </tr>
 <tr class="row-odd"><td>rx_dest_qnum</td>
 <td>u16</td>
-<td>Receive flow destination queue configuration</td>
-<td>The specified destination queue
-must be valid within the
-Navigator Subsystem and must be
-owned by the host, or a
-subordinate of the host,
-requesting allocation and
-configuration of the receive
-flow.  The register field is
-programmed rx_dest_qnum’s valid
-bit is set.</td>
+<td>UDMAP receive flow destination queue configuration to be programmed into the rx_dest_qnum field of the flow’s RFLOW_RFA register.  The specified destination queue must be valid within the Navigator Subsystem and must be owned by the host, or a subordinate of the host, requesting allocation and configuration of the receive flow.</td>
 </tr>
 <tr class="row-even"><td>rx_src_tag_hi</td>
 <td>u8</td>
-<td>See the UDMAP section of the TRM for more information on this setting</td>
-<td>Receive flow source tag high
-byte constant.  The register
-field is programmed
-rx_src_tag_hi’s valid bit is
-set.</td>
+<td>UDMAP receive flow source tag high byte constant configuration to be programmed into the rx_src_tag_hi field of the flow’s RFLOW_RFB register. See the UDMAP section of the TRM for more information on this setting.</td>
 </tr>
 <tr class="row-odd"><td>rx_src_tag_lo</td>
 <td>u8</td>
-<td>See the UDMAP section of the TRM for more information on this setting</td>
-<td>Receive flow source tag low
-byte constant.  The register
-field is programmed
-rx_src_tag_lo’s valid bit is
-set.</td>
+<td>UDMAP receive flow source tag low byte constant configuration to be programmed into the rx_src_tag_lo field of the flow’s RFLOW_RFB register. See the UDMAP section of the TRM for more information on this setting.</td>
 </tr>
 <tr class="row-even"><td>rx_dest_tag_hi</td>
 <td>u8</td>
-<td>See the UDMAP section of the TRM for more information on this setting</td>
-<td>Receive flow destination tag
-high byte constant.  The
-register field is programmed
-rx_dest_tag_hi’s valid bit is
-set.</td>
+<td>UDMAP receive flow destination tag high byte constant configuration to be programmed into the rx_dest_tag_hi field of the flow’s RFLOW_RFB register. See the UDMAP section of the TRM for more information on this setting.</td>
 </tr>
 <tr class="row-odd"><td>rx_dest_tag_lo</td>
 <td>u8</td>
-<td>See the UDMAP section of the TRM for more information on this setting</td>
-<td>Receive flow destination tag
-low byte constant.  The
-register field is programmed
-rx_dest_tag_lo’s valid bit is
-set.</td>
+<td>UDMAP receive flow destination tag low byte constant configuration to be programmed into the rx_dest_tag_lo field of the flow’s RFLOW_RFB register. See the UDMAP section of the TRM for more information on this setting.</td>
 </tr>
 <tr class="row-even"><td>rx_src_tag_hi_sel</td>
 <td>u8</td>
-<td>(0) - Do not overwrite, (1) - Overwrite with value in rx_src_tag_hi,
-(2) - Overwrite with flow_id[7:0], (4) - Overwrite with src_tag[7:0],
-(5) - Overwrite with src_tag[15:8]</td>
-<td>Receive flow source tag
-high byte selector.  The
-register field is programmed if
-rx_src_tag_hi_sel’s valid bit
-is set.</td>
+<td>UDMAP receive flow source tag high byte selector configuration to be programmed into the rx_src_tag_hi_sel field of the RFLOW_RFC register.  See the UDMAP section of the TRM for more information on this setting.  Can be set to &#64;ref TISCI_MSG_VALUE_RM_UDMAP_RX_FLOW_SRC_SELECT_NONE &#64;ref TISCI_MSG_VALUE_RM_UDMAP_RX_FLOW_SRC_SELECT_CFG_TAG &#64;ref TISCI_MSG_VALUE_RM_UDMAP_RX_FLOW_SRC_SELECT_FLOW_ID &#64;ref TISCI_MSG_VALUE_RM_UDMAP_RX_FLOW_SRC_SELECT_SRC_TAG</td>
 </tr>
 <tr class="row-odd"><td>rx_src_tag_lo_sel</td>
 <td>u8</td>
-<td>(0) - Do not overwrite, (1) - Overwrite with value in rx_src_tag_lo,
-(2) - Overwrite with flow_id[7:0], (4) - Overwrite with src_tag[7:0],
-(5) - Overwrite with src_tag[15:8]</td>
-<td>Receive flow source tag
-low byte selector.  The
-register field is programmed if
-rx_src_tag_lo_sel’s valid bit
-is set.</td>
+<td>UDMAP receive flow source tag low byte selector configuration to be programmed into the rx_src_tag_lo_sel field of the RFLOW_RFC register.  See the UDMAP section of the TRM for more information on this setting.  Can be set to &#64;ref TISCI_MSG_VALUE_RM_UDMAP_RX_FLOW_SRC_SELECT_NONE &#64;ref TISCI_MSG_VALUE_RM_UDMAP_RX_FLOW_SRC_SELECT_CFG_TAG &#64;ref TISCI_MSG_VALUE_RM_UDMAP_RX_FLOW_SRC_SELECT_FLOW_ID &#64;ref TISCI_MSG_VALUE_RM_UDMAP_RX_FLOW_SRC_SELECT_SRC_TAG</td>
 </tr>
 <tr class="row-even"><td>rx_dest_tag_hi_sel</td>
 <td>u8</td>
-<td>(0) - Do not overwrite, (1) - Overwrite with value in rx_dest_tag_hi,
-(2) - Overwrite with flow_id[7:0], (4) - Overwrite with src_tag[7:0],
-(5) - Overwrite with src_tag[15:8]</td>
-<td>Receive flow destination tag
-high byte selector.  The
-register field is programmed if
-rx_dest_tag_hi_sel’s valid bit
-is set.</td>
+<td>UDMAP receive flow destination tag high byte selector configuration to be programmed into the rx_dest_tag_hi_sel field of the RFLOW_RFC register.  See the UDMAP section of the TRM for more information on this setting.  Can be set to &#64;ref TISCI_MSG_VALUE_RM_UDMAP_RX_FLOW_DEST_SELECT_NONE &#64;ref TISCI_MSG_VALUE_RM_UDMAP_RX_FLOW_DEST_SELECT_CFG_TAG &#64;ref TISCI_MSG_VALUE_RM_UDMAP_RX_FLOW_DEST_SELECT_FLOW_ID &#64;ref TISCI_MSG_VALUE_RM_UDMAP_RX_FLOW_DEST_SELECT_DEST_TAG_LO &#64;ref TISCI_MSG_VALUE_RM_UDMAP_RX_FLOW_DEST_SELECT_DEST_TAG_HI</td>
 </tr>
 <tr class="row-odd"><td>rx_dest_tag_lo_sel</td>
 <td>u8</td>
-<td>(0) - Do not overwrite, (1) - Overwrite with value in rx_dest_tag_lo,
-(2) - Overwrite with flow_id[7:0], (4) - Overwrite with src_tag[7:0],
-(5) - Overwrite with src_tag[15:8]</td>
-<td>Receive flow destination tag
-low byte selector.  The
-register field is programmed if
-rx_dest_tag_lo_sel’s valid bit
-is set.</td>
+<td>UDMAP receive flow destination tag low byte selector configuration to be programmed into the rx_dest_tag_lo_sel field of the RFLOW_RFC register.  See the UDMAP section of the TRM for more information on this setting.  Can be set to &#64;ref TISCI_MSG_VALUE_RM_UDMAP_RX_FLOW_DEST_SELECT_NONE &#64;ref TISCI_MSG_VALUE_RM_UDMAP_RX_FLOW_DEST_SELECT_CFG_TAG &#64;ref TISCI_MSG_VALUE_RM_UDMAP_RX_FLOW_DEST_SELECT_FLOW_ID &#64;ref TISCI_MSG_VALUE_RM_UDMAP_RX_FLOW_DEST_SELECT_DEST_TAG_LO &#64;ref TISCI_MSG_VALUE_RM_UDMAP_RX_FLOW_DEST_SELECT_DEST_TAG_HI</td>
 </tr>
 <tr class="row-even"><td>rx_fdq0_sz0_qnum</td>
 <td>u16</td>
-<td>Receive flow free descriptor queue 0</td>
-<td>See the UDMAP section of the
-TRM for more information on
-this setting. The specified
-free queue must be valid within
-the Navigator Subsystem and
-must be owned by the host, or a
-subordinate of the host,
-requesting allocation and
-configuration of the receive
-flow.</td>
+<td>UDMAP receive flow free descriptor queue 0 configuration to be programmed into the rx_fdq0_sz0_qnum field of the flow’s RFLOW_RFD register.  See the UDMAP section of the TRM for more information on this setting.  The specified free queue must be valid within the Navigator Subsystem and must be owned by the host, or a subordinate of the host, requesting allocation and configuration of the receive flow.</td>
 </tr>
 <tr class="row-odd"><td>rx_fdq1_qnum</td>
 <td>u16</td>
-<td>Receive flow free descriptor queue 1</td>
-<td>See the UDMAP section of the
-TRM for more information on
-this setting. The specified
-free queue must be valid within
-the Navigator Subsystem and
-must be owned by the host, or a
-subordinate of the host,
-requesting allocation and
-configuration of the receive
-flow.</td>
+<td>UDMAP receive flow free descriptor queue 1 configuration to be programmed into the rx_fdq1_qnum field of the flow’s RFLOW_RFD register.  See the UDMAP section of the TRM for more information on this setting.  The specified free queue must be valid within the Navigator Subsystem and must be owned by the host, or a subordinate of the host, requesting allocation and configuration of the receive flow.</td>
 </tr>
 <tr class="row-even"><td>rx_fdq2_qnum</td>
 <td>u16</td>
-<td>Receive flow free descriptor queue 2</td>
-<td>See the UDMAP section of the
-TRM for more information on
-this setting. The specified
-free queue must be valid within
-the Navigator Subsystem and
-must be owned by the host, or a
-subordinate of the host,
-requesting allocation and
-configuration of the receive
-flow.</td>
+<td>UDMAP receive flow free descriptor queue 2 configuration to be programmed into the rx_fdq2_qnum field of the flow’s RFLOW_RFE register.  See the UDMAP section of the TRM for more information on this setting.  The specified free queue must be valid within the Navigator Subsystem and must be owned by the host, or a subordinate of the host, requesting allocation and configuration of the receive flow.</td>
 </tr>
 <tr class="row-odd"><td>rx_fdq3_qnum</td>
 <td>u16</td>
-<td>Receive flow free descriptor queue 3</td>
-<td>See the UDMAP section of the
-TRM for more information on
-this setting. The specified
-free queue must be valid within
-the Navigator Subsystem and
-must be owned by the host, or a
-subordinate of the host,
-requesting allocation and
-configuration of the receive
-flow.</td>
+<td>UDMAP receive flow free descriptor queue 3 configuration to be programmed into the rx_fdq3_qnum field of the flow’s RFLOW_RFE register.  See the UDMAP section of the TRM for more information on this setting.  The specified free queue must be valid within the Navigator Subsystem and must be owned by the host, or a subordinate of the host, requesting allocation and configuration of the receive flow.</td>
 </tr>
 <tr class="row-even"><td>rx_ps_location</td>
 <td>u8</td>
-<td><ol class="first last arabic simple" start="0">
-<li><ul class="first">
-<li>Place PS words at end of packet descriptor,</li>
-</ul>
-</li>
-<li><ul class="first">
-<li>Place PS words at beginning of the data buffer</li>
-</ul>
-</li>
-</ol>
-</td>
-<td>Receive flow PS words location.
-The register field is
-programmed if rx_ps_location’s
-valid bit is set.</td>
+<td>UDMAP receive flow PS words location configuration to be programmed into the rx_ps_location field of the flow’s RFLOW_RFA register. Can be set to: &#64;ref TISCI_MSG_VALUE_RM_UDMAP_RX_FLOW_PS_END_PD &#64;ref TISCI_MSG_VALUE_RM_UDMAP_RX_FLOW_PS_BEGIN_DB</td>
 </tr>
 </tbody>
 </table>
+<p>Configures a Navigator Subsystem UDMAP receive flow’s registers.
+ Configuration does not include the flow registers which handle size-based
+ free descriptor queue routing.  The
+ &#64;ref tisci_msg_rm_udmap_flow_size_thresh_cfg_req message is used to
+ configure register fields related to size based free descriptor queues.
+ The flow index must be assigned to the host defined in the TISCI header via
+ the RM board configuration resource assignment range list.
+ It’s the user’s responsibility to make sure any receive channels using the
+ flow are disabled when changing the receive flow configuration.  Otherwise,
+ unknown operation may occur.
+ This field is only valid if
+ &#64;ref TISCI_MSG_VALUE_RM_UDMAP_FLOW_EINFO_PRESENT_VALID is set in
+ &#64;ref tisci_msg_rm_udmap_flow_cfg_req::valid_params.
+ This field is only valid if
+ &#64;ref TISCI_MSG_VALUE_RM_UDMAP_FLOW_PSINFO_PRESENT_VALID is set in
+ &#64;ref tisci_msg_rm_udmap_flow_cfg_req::valid_params.
+ This field is only valid if
+ &#64;ref TISCI_MSG_VALUE_RM_UDMAP_FLOW_ERROR_HANDLING_VALID is set in
+ &#64;ref tisci_msg_rm_udmap_flow_cfg_req::valid_params.
+ This field is only valid if
+ &#64;ref TISCI_MSG_VALUE_RM_UDMAP_FLOW_DESC_TYPE_VALID is set in
+ &#64;ref tisci_msg_rm_udmap_flow_cfg_req::valid_params.
+ This field is only valid if
+ &#64;ref TISCI_MSG_VALUE_RM_UDMAP_FLOW_SOP_OFFSET_VALID is set in
+ &#64;ref tisci_msg_rm_udmap_flow_cfg_req::valid_params.
+ This field is only valid if
+ &#64;ref TISCI_MSG_VALUE_RM_UDMAP_FLOW_DEST_QNUM_VALID is set in
+ &#64;ref tisci_msg_rm_udmap_flow_cfg_req::valid_params.
+ This field is only valid if
+ &#64;ref TISCI_MSG_VALUE_RM_UDMAP_FLOW_SRC_TAG_HI_VALID is set in
+ &#64;ref tisci_msg_rm_udmap_flow_cfg_req::valid_params.
+ This field is only valid if
+ &#64;ref TISCI_MSG_VALUE_RM_UDMAP_FLOW_SRC_TAG_LO_VALID is set in
+ &#64;ref tisci_msg_rm_udmap_flow_cfg_req::valid_params.
+ This field is only valid if
+ &#64;ref TISCI_MSG_VALUE_RM_UDMAP_FLOW_DEST_TAG_HI_VALID is set in
+ &#64;ref tisci_msg_rm_udmap_flow_cfg_req::valid_params.
+ This field is only valid if
+ &#64;ref TISCI_MSG_VALUE_RM_UDMAP_FLOW_DEST_TAG_LO_VALID is set in
+ &#64;ref tisci_msg_rm_udmap_flow_cfg_req::valid_params.
+ This field is only valid if
+ &#64;ref TISCI_MSG_VALUE_RM_UDMAP_FLOW_SRC_TAG_HI_SEL_VALID is set in
+ &#64;ref tisci_msg_rm_udmap_flow_cfg_req::valid_params.
+ This field is only valid if
+ &#64;ref TISCI_MSG_VALUE_RM_UDMAP_FLOW_SRC_TAG_LO_SEL_VALID is set in
+ &#64;ref tisci_msg_rm_udmap_flow_cfg_req::valid_params.
+ This field is only valid if
+ &#64;ref TISCI_MSG_VALUE_RM_UDMAP_FLOW_DEST_TAG_HI_SEL_VALID is set in
+ &#64;ref tisci_msg_rm_udmap_flow_cfg_req::valid_params.
+ This field is only valid if
+ &#64;ref TISCI_MSG_VALUE_RM_UDMAP_FLOW_DEST_TAG_LO_SEL_VALID is set in
+ &#64;ref tisci_msg_rm_udmap_flow_cfg_req::valid_params.
+ This field is only valid if
+ &#64;ref TISCI_MSG_VALUE_RM_UDMAP_FLOW_FDQ0_SZ0_QNUM_VALID is set in
+ &#64;ref tisci_msg_rm_udmap_flow_cfg_req::valid_params.
+ This field is only valid if
+ &#64;ref TISCI_MSG_VALUE_RM_UDMAP_FLOW_FDQ1_QNUM_VALID is set in
+ &#64;ref tisci_msg_rm_udmap_flow_cfg_req::valid_params.
+ This field is only valid if
+ &#64;ref TISCI_MSG_VALUE_RM_UDMAP_FLOW_FDQ2_QNUM_VALID is set in
+ &#64;ref tisci_msg_rm_udmap_flow_cfg_req::valid_params.
+ This field is only valid if
+ &#64;ref TISCI_MSG_VALUE_RM_UDMAP_FLOW_FDQ3_QNUM_VALID is set in
+ &#64;ref tisci_msg_rm_udmap_flow_cfg_req::valid_params.
+ This field is only valid if
+ &#64;ref TISCI_MSG_VALUE_RM_UDMAP_FLOW_PS_LOCATION_VALID is set in
+ &#64;ref tisci_msg_rm_udmap_flow_cfg_req::valid_params.</p>
+</p>
 </div>
 <div class="section" id="udmap-receive-flow-configure-valid-parameters">
 <span id="pub-rm-public-udmap-flow-cfg-valid-params"></span><h4>UDMAP Receive Flow Configure Valid Parameters<a class="headerlink" href="#udmap-receive-flow-configure-valid-parameters" title="Permalink to this headline">¶</a></h4>
@@ -1459,32 +1122,28 @@ flow configure message parameters:</p>
 processed <strong>udmap flow cfg</strong> message.</p>
 <div class="section" id="udmap-receive-flow-configure-response-message-parameters">
 <h4>UDMAP Receive Flow Configure Response Message Parameters<a class="headerlink" href="#udmap-receive-flow-configure-response-message-parameters" title="Permalink to this headline">¶</a></h4>
+<p><p><strong>struct tisci_msg_rm_udmap_flow_cfg_resp</strong></p>
+<p>Response to configuring a Navigator Subsystem UDMAP receive flow</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="10%" />
-<col width="26%" />
-<col width="48%" />
-<col width="17%" />
+<col width="23%" />
+<col width="37%" />
+<col width="40%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Parameter</th>
 <th class="head">Type</th>
-<th class="head">Valid Values</th>
 <th class="head">Description</th>
 </tr>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>hdr</td>
-<td>Generic TISCI message header (8 bytes)</td>
-<td><a class="reference internal" href="../../5_soc_doc/am6x/hosts.html"><span class="doc">Valid Host IDs</span></a></td>
-<td>Generic TISCI message
-header. Contains the
-message ID, host ID,
-sequence number, and any
-return flags</td>
+<td>struct tisci_header</td>
+<td>Standard TISCI header</td>
 </tr>
 </tbody>
 </table>
+</p>
 </div>
 </div>
 </div>
@@ -1527,169 +1186,95 @@ flows within any Navigator Subsystem UDMAP on the device.</p>
 </div>
 <div class="section" id="udmap-receive-flow-size-threshold-configure-message-parameters">
 <h4>UDMAP Receive Flow Size Threshold Configure Message Parameters<a class="headerlink" href="#udmap-receive-flow-size-threshold-configure-message-parameters" title="Permalink to this headline">¶</a></h4>
+<p><p><strong>struct tisci_msg_rm_udmap_flow_size_thresh_cfg_req</strong></p>
+<p>Configures a Navigator Subsystem UDMAP receive flow’s size threshold fields.</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="12%" />
-<col width="18%" />
-<col width="50%" />
-<col width="0%" />
-<col width="20%" />
+<col width="2%" />
+<col width="2%" />
+<col width="95%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Parameter</th>
 <th class="head">Type</th>
-<th class="head">Valid Values</th>
-<th class="head" colspan="2">Description</th>
+<th class="head">Description</th>
 </tr>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>hdr</td>
-<td>Generic TISCI message header</td>
-<td><a class="reference internal" href="../../5_soc_doc/am6x/hosts.html"><span class="doc">Valid Host IDs</span></a></td>
-<td colspan="2">Generic TISCI message header.
-Contains the message ID, host
-ID, sequence number, and any
-flags</td>
+<td>struct tisci_header</td>
+<td>Standard TISCI header</td>
 </tr>
 <tr class="row-odd"><td>valid_params</td>
 <td>u32</td>
-<td colspan="3"><dl class="first last docutils">
-<dt><a class="reference internal" href="#pub-rm-public-udmap-flow-size-thresh-cfg-valid-params"><span class="std std-ref">UDMAP Receive Flow Size Threshold Configure Valid Parameters</span></a>                     | Bitfield defining validity of</dt>
-<dd><div class="first last line-block">
-<div class="line">UDMAP receive channel</div>
-<div class="line">configuration parameters.  The</div>
-<div class="line">channel configuration fields are</div>
-<div class="line">not valid, and will not be used,</div>
-<div class="line">if their corresponding valid bit</div>
-<div class="line">is zero.</div>
-</div>
-</dd>
-</dl>
-</td>
+<td>Bitfield defining validity of rx flow configuration parameters.  The rx flow configuration fields are not valid, and will not be used for flow configuration, if their corresponding valid bit is zero.  Valid bit usage: 0 - Valid bit for &#64;ref tisci_msg_rm_udmap_flow_size_thresh_cfg_req::rx_size_thresh0 1 - Valid bit for &#64;ref tisci_msg_rm_udmap_flow_size_thresh_cfg_req::rx_size_thresh1 2 - Valid bit for &#64;ref tisci_msg_rm_udmap_flow_size_thresh_cfg_req::rx_size_thresh2 3 - Valid bit for &#64;ref tisci_msg_rm_udmap_flow_size_thresh_cfg_req::rx_fdq0_sz1_qnum 4 - Valid bit for &#64;ref tisci_msg_rm_udmap_flow_size_thresh_cfg_req::rx_fdq0_sz2_qnum 5 - Valid bit for &#64;ref tisci_msg_rm_udmap_flow_size_thresh_cfg_req::rx_fdq0_sz3_qnum 6 - Valid bit for &#64;ref tisci_msg_rm_udmap_flow_size_thresh_cfg_req::rx_size_thresh_en</td>
 </tr>
 <tr class="row-even"><td>nav_id</td>
 <td>u16</td>
-<td colspan="3"><dl class="first last docutils">
-<dt><a class="reference internal" href="../../5_soc_doc/am6x/navss.html#pub-soc-am6x-navss-ids"><span class="std std-ref">Valid Navigator Subsystem UDMAP Device IDs</span></a>       | The SoC-specific Device ID of</dt>
-<dd><div class="first last line-block">
-<div class="line">the Navigator subsystem UDMAP in</div>
-<div class="line">which the receive flow is</div>
-<div class="line">located.</div>
-</div>
-</dd>
-</dl>
-</td>
+<td>SoC device ID of Navigator Subsystem from which the receive flow is allocated</td>
 </tr>
 <tr class="row-odd"><td>flow_index</td>
 <td>u16</td>
-<td><a class="reference internal" href="../../5_soc_doc/am6x/navss.html#pub-soc-am6x-udmap-channel-and-flow-indices"><span class="std std-ref">Valid Receive Flow Indices</span></a></td>
-<td colspan="2">Specifies the receive flow
-index.</td>
+<td>UDMAP receive flow index for optional configuration.</td>
 </tr>
 <tr class="row-even"><td>rx_size_thresh0</td>
 <td>u16</td>
-<td>Receive flow packet size threshold 0</td>
-<td colspan="2">See the UDMAP section of the TRM
-for more information on this
-setting.
-The value must be provided in
-32-byte units due to a 5-bit
-left shift performed by the HW
-prior to comparison to packet
-size. The register field is
-programmed if rx_size_thresh0’s
-valid bit is set.</td>
+<td>UDMAP receive flow packet size threshold 0 configuration to be programmed into the rx_size_thresh0 field of the flow’s RFLOW_RFF register.  The value must be provided in 32-byte units due to a 5-bit left shift performed by the hardware prior to comparison to packet size.  See the UDMAP section of the TRM for more information on this setting and the shift on comparison.</td>
 </tr>
 <tr class="row-odd"><td>rx_size_thresh1</td>
 <td>u16</td>
-<td>Receive flow packet size threshold 1</td>
-<td colspan="2">See the UDMAP section of the TRM
-for more information on this
-setting.
-The value must be provided in
-32-byte units due to a 5-bit
-left shift performed by the HW
-prior to comparison to packet
-size. The register field is
-programmed if rx_size_thresh1’s
-valid bit is set.</td>
+<td>UDMAP receive flow packet size threshold 1 configuration to be programmed into the rx_size_thresh1 field of the flow’s RFLOW_RFF register.  The value must be provided in 32-byte units due to a 5-bit left shift performed by the hardware prior to comparison to packet size.  See the UDMAP section of the TRM for more information on this setting and the shift on comparison.</td>
 </tr>
 <tr class="row-even"><td>rx_size_thresh2</td>
 <td>u16</td>
-<td>Receive flow packet size threshold 2</td>
-<td colspan="2">See the UDMAP section of the TRM
-for more information on this
-setting.
-The value must be provided in
-32-byte unites due to a left
-performed by the HW prior to
-comparison to packet size.  The
-register field is
-programmed if rx_size_thresh2’s
-valid bit is set.</td>
+<td>UDMAP receive flow packet size threshold 2 configuration to be programmed into the rx_size_thresh2 field of the flow’s RFLOW_RFG register.  The value must be provided in 32-byte units due to a 5-bit left shift performed by the hardware prior to comparison to packet size.  See the UDMAP section of the TRM for more information on this setting and the shift on comparison.</td>
 </tr>
 <tr class="row-odd"><td>rx_fdq0_sz1_qnum</td>
 <td>u16</td>
-<td>Receive flow free descriptor queue for size threshold 1</td>
-<td colspan="2">See the UDMAP section of the TRM
-for more information on this
-setting. The specified free
-queue must be valid within the
-Navigator Subsystem and must be
-owned by the host, or a
-subordinate of the host, who
-owns the receive flow index and
-who is making the optional
-configuration request.  The
-register field is programmed if
-rx_fdq0_sz1_qnum’s valid bit is
-set.</td>
+<td>UDMAP receive flow free descriptor queue for size threshold 1 configuration to be programmed into the rx_fdq0_sz1_qnum field of the flow’s RFLOW_RFG register.  See the UDMAP section of the TRM for more information on this setting.  The specified free queue must be valid within the Navigator Subsystem and must be owned by the host, or a subordinate of the host, who owns the receive flow index and who is making the optional configuration request.</td>
 </tr>
 <tr class="row-even"><td>rx_fdq0_sz2_qnum</td>
 <td>u16</td>
-<td>Receive flow free descriptor queue for size threshold 2</td>
-<td colspan="2">See the UDMAP section of the TRM
-for more information on this
-setting. The specified free
-queue must be valid within the
-Navigator Subsystem and must be
-owned by the host, or a
-subordinate of the host, who
-owns the receive flow index and
-who is making the optional
-configuration request.  The
-register field is programmed if
-rx_fdq0_sz2_qnum’s valid bit is
-set.</td>
+<td>UDMAP receive flow free descriptor queue for size threshold 2 configuration to be programmed into the rx_fdq0_sz2_qnum field of the flow’s RFLOW_RFH register.  See the UDMAP section of the TRM for more information on this setting.  The specified free queue must be valid within the Navigator Subsystem and must be owned by the host, or a subordinate of the host, who owns the receive flow index and who is making the optional configuration request.</td>
 </tr>
 <tr class="row-odd"><td>rx_fdq0_sz3_qnum</td>
 <td>u16</td>
-<td>Receive flow free descriptor queue for size threshold 3</td>
-<td colspan="2">See the UDMAP section of the TRM
-for more information on this
-setting. The specified free
-queue must be valid within the
-Navigator Subsystem and must be
-owned by the host, or a
-subordinate of the host, who
-owns the receive flow index and
-who is making the optional
-configuration request.  The
-register field is programmed if
-rx_fdq0_sz3_qnum’s valid bit is
-set.</td>
+<td>UDMAP receive flow free descriptor queue for size threshold 3 configuration to be programmed into the rx_fdq0_sz3_qnum field of the flow’s RFLOW_RFH register.  See the UDMAP section of the TRM for more information on this setting.  The specified free queue must be valid within the Navigator Subsystem and must be owned by the host, or a subordinate of the host, who owns the receive flow index and who is making the optional configuration request.</td>
 </tr>
 <tr class="row-even"><td>rx_size_thresh_en</td>
 <td>u8</td>
-<td>Flow packet size based free queue routing enable, cannot be greater than 7</td>
-<td colspan="2">See the UDMAP section of the TRM
-for more information on this
-setting.  The register field is
-programmed if rx_size_thresh’s
-valid bit is set.</td>
+<td>UDMAP receive flow packet size based free buffer queue enable configuration to be programmed into the rx_size_thresh_en field of the RFLOW_RFC register. See the UDMAP section of the TRM for more information on this setting. This parameter can be no greater than &#64;ref TISCI_MSG_VALUE_RM_UDMAP_RX_FLOW_SIZE_THRESH_MAX</td>
 </tr>
 </tbody>
 </table>
+<p>Configures a Navigator Subsystem UDMAP receive flow’s size threshold fields
+ The flow index must be assigned to the host defined in the TISCI header via
+ the RM board configuration resource assignment range list.
+ It’s the user’s responsibility to make sure any receive channels using the
+ flow are disabled when changing the receive flow configuration.  Otherwise,
+ unknown operation may occur.
+ This field is only valid if
+ &#64;ref TISCI_MSG_VALUE_RM_UDMAP_FLOW_SIZE_THRESH0_VALID is set in
+ &#64;ref tisci_msg_rm_udmap_flow_size_thresh_cfg_req::valid_params.
+ This field is only valid if
+ &#64;ref TISCI_MSG_VALUE_RM_UDMAP_FLOW_SIZE_THRESH1_VALID is set in
+ &#64;ref tisci_msg_rm_udmap_flow_size_thresh_cfg_req::valid_params.
+ This field is only valid if
+ &#64;ref TISCI_MSG_VALUE_RM_UDMAP_FLOW_SIZE_THRESH2_VALID is set in
+ &#64;ref tisci_msg_rm_udmap_flow_size_thresh_cfg_req::valid_params.
+ This field is only valid if
+ &#64;ref TISCI_MSG_VALUE_RM_UDMAP_FLOW_FDQ0_SZ1_QNUM_VALID is set in
+ &#64;ref tisci_msg_rm_udmap_flow_size_thresh_cfg_req::valid_params.
+ This field is only valid if
+ &#64;ref TISCI_MSG_VALUE_RM_UDMAP_FLOW_FDQ0_SZ2_QNUM_VALID is set in
+ &#64;ref tisci_msg_rm_udmap_flow_size_thresh_cfg_req::valid_params.
+ This field is only valid if
+ &#64;ref TISCI_MSG_VALUE_RM_UDMAP_FLOW_FDQ0_SZ3_QNUM_VALID is set in
+ &#64;ref tisci_msg_rm_udmap_flow_size_thresh_cfg_req::valid_params.
+ This field is only valid if
+ &#64;ref TISCI_MSG_VALUE_RM_UDMAP_FLOW_SIZE_THRESH_EN_VALID is set in
+ &#64;ref tisci_msg_rm_udmap_flow_size_thresh_cfg_req::valid_params.</p>
+</p>
 </div>
 <div class="section" id="udmap-receive-flow-size-threshold-configure-valid-parameters">
 <span id="pub-rm-public-udmap-flow-size-thresh-cfg-valid-params"></span><h4>UDMAP Receive Flow Size Threshold Configure Valid Parameters<a class="headerlink" href="#udmap-receive-flow-size-threshold-configure-valid-parameters" title="Permalink to this headline">¶</a></h4>
@@ -1737,32 +1322,28 @@ flow size threshold configure message parameters:</p>
 status of the processed <strong>udmap flow size threshold cfg</strong> message.</p>
 <div class="section" id="udmap-receive-flow-size-threshold-configure-response-message-parameters">
 <h4>UDMAP Receive Flow Size Threshold Configure Response Message Parameters<a class="headerlink" href="#udmap-receive-flow-size-threshold-configure-response-message-parameters" title="Permalink to this headline">¶</a></h4>
+<p><p><strong>struct tisci_msg_rm_udmap_flow_size_thresh_cfg_resp</strong></p>
+<p>Response to configuring a Navigator Subsystem UDMAP receive flow’s size threshold fields.</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="10%" />
-<col width="26%" />
-<col width="48%" />
-<col width="17%" />
+<col width="23%" />
+<col width="37%" />
+<col width="40%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Parameter</th>
 <th class="head">Type</th>
-<th class="head">Valid Values</th>
 <th class="head">Description</th>
 </tr>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>hdr</td>
-<td>Generic TISCI message header (8 bytes)</td>
-<td><a class="reference internal" href="../../5_soc_doc/am6x/hosts.html"><span class="doc">Valid Host IDs</span></a></td>
-<td>Generic TISCI message
-header. Contains the
-message ID, host ID,
-sequence number, and any
-return flags</td>
+<td>struct tisci_header</td>
+<td>Standard TISCI header</td>
 </tr>
 </tbody>
 </table>
+</p>
 </div>
 </div>
 </div>
@@ -1963,7 +1544,7 @@ processed <strong>udmap_gcfg_cfg</strong> message.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'20.01.00',
+            VERSION:'20.02.00',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

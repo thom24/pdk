@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                20.01.00
+                20.02.00
               </div>
             
           
@@ -176,8 +176,8 @@
 <p>This chapter provides information on usage of the RM IRQ management TISCI message API parameters.</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="23%" />
-<col width="77%" />
+<col width="19%" />
+<col width="81%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">TISCI Message ID</th>
@@ -188,41 +188,37 @@
 <tr class="row-even"><td>0x1000</td>
 <td><a class="reference internal" href="#pub-rm-irq-route-set"><span class="std std-ref">TISCI_MSG_RM_IRQ_SET</span></a></td>
 </tr>
-<tr class="row-odd"><td>0x1001</td>
+<tr class="row-odd"><td>N/A</td>
+<td><a class="reference internal" href="#pub-rm-irq-route-set-response"><span class="std std-ref">TISCI_MSG_RM_IRQ_SET Response</span></a></td>
+</tr>
+<tr class="row-even"><td>0x1001</td>
 <td><a class="reference internal" href="#pub-rm-irq-route-release"><span class="std std-ref">TISCI_MSG_RM_IRQ_RELEASE</span></a></td>
+</tr>
+<tr class="row-odd"><td>N/A</td>
+<td><a class="reference internal" href="#pub-rm-irq-route-release-response"><span class="std std-ref">TISCI_MSG_RM_IRQ_RELEASE Response</span></a></td>
 </tr>
 </tbody>
 </table>
 </div>
 <div class="section" id="tisci-msg-rm-irq-set-irq-route-set">
 <span id="pub-rm-irq-route-set"></span><h2>TISCI_MSG_RM_IRQ_SET - IRQ Route Set<a class="headerlink" href="#tisci-msg-rm-irq-set-irq-route-set" title="Permalink to this headline">¶</a></h2>
-<p>The <strong>IRQ route set</strong> TISCI message API is used to allocate and configure an IRQ
-route between a device peripheral and a host processor. The IRQ route source is
-specified through a combination of the peripheral device ID and the IRQ output
-line ID from the specified peripheral. The IRQ destination is mapped to the
-processor on which the host ID, or secondary host ID (if valid), is executing.
-System Firmware attempts to allocate and configure the shortest route between
-the IRQ source and destination.</p>
-<p>The <strong>IRQ route set</strong> process does not configure destination processor interrupt
-controllers. A successful <strong>IRQ route set</strong> returns the destination processor’s
-interrupt controller IRQ input index to which the IRQ source has been routed.
-The HLOS must use the interrupt controller input value to complete configuration
-of the route by configuring the interrupt controller.</p>
-<p>Some IRQ routes are capable of sharing up to 64 peripheral sources. Route
-sharing only applies to IRQ routes which utilize Interrupt Aggregators (IAs).
-The IA allows up to 64 input events, such as from Navigator Subsystem peripheral
-sources, to be mapped to a single outgoing virtual interrupt (VINT).  Requests
-to map events to virtual interrupt status bits in an existing interrupt route
-results in only the event mapping taking place.  Any route configuration post
-virtual interrupt does not occur since the interrupt management subsystem
-assumes all events multiplexed in a virtual interrupt are destined for the same
-interrupt controller.</p>
-<p>Each time an event is mapped to a VINT status bit the mapping is enabled after
-it is configured. The OS can manipulate the status bit’s enable/disable setting
-on-the-fly via the VINT’s real-time registers.  The host is granted access to
-the virtual interrupt real-time registers via the SoC channelized firewalls
-based on the RM board configuration.  The OS can access the virtual interrupt
-real-time registers directly after interrupt route configuration is complete.</p>
+<p>The <strong>IRQ route set</strong> TISCI message API is used to configure peripherals within
+SoC interrupt architecture.  This includes, SoC dependent, peripheral output
+event steering (OES) registers, interrupt aggregators, and interrupt routers.
+To configure a desired interrupt route between a peripheral and host processor
+the <strong>IRQ route set</strong> API must be called to configure each hop in the route
+between source and destination.  What is configured in each call depends on the
+valid_params bit configuration and the SoC device ID and indexes provided.</p>
+<p>The <strong>IRQ route set</strong> API does not configure destination processor interrupt
+controllers.  This job is left to the HLOS.</p>
+<p>When configuring interrupt aggregator virtual interrupt global event to status
+bit mappings, each time an event is mapped to a VINT status bit the mapping is
+enabled after it is configured. The OS can manipulate the status bit’s
+enable/disable setting on-the-fly via the VINT’s real-time registers.  The host
+is granted access to the virtual interrupt real-time registers via the SoC
+channelized firewalls based on the RM board configuration.  The OS can access
+the virtual interrupt real-time registers directly after interrupt aggregator
+configuration is complete.</p>
 <p><strong>NOTE (Subject to Change):</strong></p>
 <p>Some System Firmware peripheral drivers have not implemented OES register
 management yet. The HLOS must program the global event value into peripheral’s
@@ -233,6 +229,7 @@ management thus far:</p>
 <ul class="simple">
 <li>Ring Accelerator</li>
 <li>UDMAP</li>
+<li>Proxy</li>
 </ul>
 <div class="section" id="usage">
 <h3>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h3>
@@ -259,78 +256,68 @@ management thus far:</p>
 </div>
 <div class="section" id="irq-route-set-message-parameters">
 <h3>IRQ Route Set Message Parameters<a class="headerlink" href="#irq-route-set-message-parameters" title="Permalink to this headline">¶</a></h3>
+<p><p><strong>struct tisci_msg_rm_irq_set_req</strong></p>
+<p>Configures peripherals within the interrupt subsystem according to the valid configuration provided.  The following &#64;ref tisci_msg_rm_irq_set_req::valid_params valid bit combinations are allowed: Interrupt Router Mux Configuration - Configures an IR input to output mux connection where the IR input is the src_index and the IR output is the dst_host_irq.  Both the src_id and the dst_id must be the device ID of the IR being configured. &#64;ref tisci_msg_rm_irq_set_req::dst_id valid bit == STRUE &#64;ref tisci_msg_rm_irq_set_req::dst_host_irq valid bit == STRUE &#64;ref tisci_msg_rm_irq_set_req::ia_id valid bit == SFALSE &#64;ref tisci_msg_rm_irq_set_req::vint valid bit == SFALSE &#64;ref tisci_msg_rm_irq_set_req::global_event valid bit == SFALSE &#64;ref tisci_msg_rm_irq_set_req::vint_status_bit_index valid bit == SFALSE Event to VINT Mapping Only - Configure peripheral OES register and add an event mapping to an IA VINT &#64;ref tisci_msg_rm_irq_set_req::dst_id valid bit == SFALSE &#64;ref tisci_msg_rm_irq_set_req::dst_host_irq valid bit == SFALSE &#64;ref tisci_msg_rm_irq_set_req::ia_id valid bit == STRUE &#64;ref tisci_msg_rm_irq_set_req::vint valid bit == STRUE &#64;ref tisci_msg_rm_irq_set_req::global_event valid bit == STRUE &#64;ref tisci_msg_rm_irq_set_req::vint_status_bit_index valid bit == STRUE OES Register Programming Only - Only programs the OES register of the source.  Useful for setting UDMAP trigger events and any other events that are not translated to the interrupt domain: &#64;ref tisci_msg_rm_irq_set_req::dst_id valid bit == SFALSE &#64;ref tisci_msg_rm_irq_set_req::dst_host_irq valid bit == SFALSE &#64;ref tisci_msg_rm_irq_set_req::ia_id valid bit == SFALSE &#64;ref tisci_msg_rm_irq_set_req::vint valid bit == SFALSE &#64;ref tisci_msg_rm_irq_set_req::global_event valid bit == STRUE &#64;ref tisci_msg_rm_irq_set_req::vint_status_bit_index valid bit == SFALSE</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="4%" />
-<col width="7%" />
-<col width="13%" />
-<col width="75%" />
+<col width="3%" />
+<col width="3%" />
+<col width="93%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Parameter</th>
 <th class="head">Type</th>
-<th class="head">Valid Values</th>
 <th class="head">Description</th>
 </tr>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>hdr</td>
-<td>Generic TISCI message header (8 bytes)</td>
-<td><a class="reference internal" href="../../5_soc_doc/am6x/hosts.html"><span class="doc">Valid Host IDs</span></a></td>
-<td>Generic TISCI message header. Contains the message ID, host ID, sequence number, and any flags</td>
+<td>struct tisci_header</td>
+<td>Standard TISCI header</td>
 </tr>
 <tr class="row-odd"><td>valid_params</td>
 <td>u32</td>
-<td><a class="reference internal" href="#pub-rm-irq-route-set-valid-params"><span class="std std-ref">IRQ Route Set Valid Parameters</span></a></td>
-<td>Bitfield defining validity of interrupt route set parameters.  The interrupt route set fields are not valid, and will not be used for route set, if their corresponding valid bit is zero.</td>
+<td>Bitfield defining validity of interrupt route set parameters.  The interrupt route set fields are not valid, and will not be used for route set, if their corresponding valid bit is zero.  Valid bit usage: 0 - Valid bit for &#64;ref tisci_msg_rm_irq_set_req::dst_id 1 - Valid bit for &#64;ref tisci_msg_rm_irq_set_req::dst_host_irq 2 - Valid bit for &#64;ref tisci_msg_rm_irq_set_req::ia_id 3 - Valid bit for &#64;ref tisci_msg_rm_irq_set_req::vint 4 - Valid bit for &#64;ref tisci_msg_rm_irq_set_req::global_event 5 - Valid bit for &#64;ref tisci_msg_rm_irq_set_req::vint_status_bit_index 31 - Valid bit for &#64;ref tisci_msg_rm_irq_set_req::secondary_host</td>
 </tr>
 <tr class="row-even"><td>src_id</td>
 <td>u16</td>
-<td><a class="reference internal" href="../../5_soc_doc/am6x/devices.html"><span class="doc">Valid Device IDs</span></a></td>
-<td>Specifies the SoC-specific device ID of the interrupt route source</td>
+<td>ID of interrupt source peripheral</td>
 </tr>
 <tr class="row-odd"><td>src_index</td>
 <td>u16</td>
-<td><a class="reference internal" href="../../5_soc_doc/am6x/irq_sources.html"><span class="doc">Device Interrupt Sources</span></a></td>
-<td>Specifies the interrupt output index sourcing the interrupt from the device peripheral identified by the device ID parameter</td>
+<td>Interrupt source index within source peripheral</td>
 </tr>
 <tr class="row-even"><td>dst_id</td>
 <td>u16</td>
-<td><a class="reference internal" href="../../5_soc_doc/am6x/irq_dsts.html"><span class="doc">Device Interrupt Destinations</span></a></td>
-<td>SoC device ID of interrupt destination.  Based on the device architecture can be an interrupt controller or processor.  Only valid if the dst_id’s corresponding valid bit is set.</td>
+<td>SoC IR device ID when the valid_params bits are set to configure an IR mux connection.  This field is only valid if &#64;ref TISCI_MSG_VALUE_RM_DST_ID_VALID is set in &#64;ref tisci_msg_rm_irq_set_req::valid_params.</td>
 </tr>
 <tr class="row-odd"><td>dst_host_irq</td>
 <td>u16</td>
-<td><a class="reference internal" href="../../5_soc_doc/am6x/irq_dsts.html"><span class="doc">Device Interrupt Destinations</span></a></td>
-<td>Specifies the destination host processor interrupt controller IRQ input.  Only valid if the dst_host_irq’s corresponding valid bit is set.</td>
+<td>SoC IR output index when the valid_params are set to configure an IR mux connection.  This field is only valid if &#64;ref TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID is set in &#64;ref tisci_msg_rm_irq_set_req::valid_params.</td>
 </tr>
 <tr class="row-even"><td>ia_id</td>
 <td>u16</td>
-<td><a class="reference internal" href="../../5_soc_doc/am6x/navss.html"><span class="doc">Valid Navigator SS IAs</span></a></td>
-<td>Device ID of interrupt aggregator in which the virtual interrupt resides.  Only valid if the ia_id’s corresponding valid bit is set.</td>
+<td>Device ID of interrupt aggregator in which the virtual interrupt resides. This field is only valid if &#64;ref TISCI_MSG_VALUE_RM_IA_ID_VALID is set in &#64;ref tisci_msg_rm_irq_set_req::valid_params.</td>
 </tr>
 <tr class="row-odd"><td>vint</td>
 <td>u16</td>
-<td><a class="reference internal" href="../../5_soc_doc/am6x/navss.html"><span class="doc">Valid VINT index</span></a></td>
-<td>Virtual interrupt number if the interrupt route is through an interrupt aggregator.  Only valid if the vint’s corresponding valid bit is set.</td>
+<td>Virtual interrupt number when configuring an interrupt aggregator.  This field is only valid if &#64;ref TISCI_MSG_VALUE_RM_VINT_VALID is set in &#64;ref tisci_msg_rm_irq_set_req::valid_params.</td>
 </tr>
 <tr class="row-even"><td>global_event</td>
 <td>u16</td>
-<td><a class="reference internal" href="../../5_soc_doc/am6x/navss.html"><span class="doc">Navigator Subsystem Global Events</span></a></td>
-<td>Global event mapped to interrupt aggregator virtual interrupt status bit.  The event is programmed into the OES register of the interrupt source.  Only valid if the global_events’s corresponding valid bit is set.</td>
+<td>Global event mapped to interrupt aggregator virtual interrupt status bit. The event is programmed into the OES register of the interrupt source.  This field is only applicable for interrupt source’s capable of generating global events.  This field is only valid if &#64;ref TISCI_MSG_VALUE_RM_GLOBAL_EVENT_VALID is set in &#64;ref tisci_msg_rm_irq_set_req::valid_params.</td>
 </tr>
 <tr class="row-odd"><td>vint_status_bit_index</td>
 <td>u8</td>
-<td>Status bit index from 0 to 63</td>
-<td>Virtual interrupt status bit to set if the interrupt route utilizes an interrupt aggregator virtual interrupt.  Only valid if the vint_status_bit_index’s corresponding valid bit is set.</td>
+<td>Virtual interrupt status bit to set if the interrupt route utilizes an interrupt aggregator virtual interrupt.  The host processor uses the status bit value within the interrupt aggregator vint status register to find the source event which triggered the interrupt.  This field is only valid if &#64;ref TISCI_MSG_VALUE_RM_VINT_STATUS_BIT_INDEX_VALID is set in &#64;ref tisci_msg_rm_irq_set_req::valid_params.</td>
 </tr>
 <tr class="row-even"><td>secondary_host</td>
 <td>u8</td>
-<td><a class="reference internal" href="../../5_soc_doc/am6x/hosts.html"><span class="doc">Valid Host IDs</span></a></td>
-<td>Specifies a host ID for which the TISCI header host ID is proxying the request for. This feature allows hosts incapable of making direct requests to be allocated resources by a supervisor host. For example firmware running on a PDMA will need to be allocated resources via a supervisor proxying a request. The secondary_host parameter should always be set as unused if request proxying is not intended.</td>
+<td>The interrupt route destination is the specified secondary host if the secondary_host’s corresponding valid bit is set in &#64;ref tisci_msg_rm_irq_set_req::valid_params.  Otherwise, the host within the TISCI message header is the route destination.</td>
 </tr>
 </tbody>
 </table>
+</p>
 </div>
 <div class="section" id="irq-route-set-valid-parameters">
 <span id="pub-rm-irq-route-set-valid-params"></span><h3>IRQ Route Set Valid Parameters<a class="headerlink" href="#irq-route-set-valid-parameters" title="Permalink to this headline">¶</a></h3>
@@ -371,17 +358,17 @@ message optional parameters:</p>
 </tbody>
 </table>
 <p>The following table describes the valid bit combinations used to configure
-the subsystems within the interrupt management architecture</p>
+the peripherals within the interrupt management architecture</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="9%" />
-<col width="2%" />
-<col width="3%" />
-<col width="2%" />
-<col width="1%" />
-<col width="3%" />
+<col width="13%" />
+<col width="7%" />
+<col width="12%" />
 <col width="6%" />
-<col width="73%" />
+<col width="5%" />
+<col width="12%" />
+<col width="20%" />
+<col width="25%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Configuration</th>
@@ -395,54 +382,85 @@ the subsystems within the interrupt management architecture</p>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>Non-Event Sourced Direct Interrupt</td>
+<tr class="row-even"><td>Interrupt
+Router Mux
+Configuration</td>
 <td>X</td>
 <td>X</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>Non-event source peripheral direct interrupt to destination processor.  One thing to note is an IA unmapped VINT route can be configured via this combination by passing the IA ID and VINT values as the src id and src index parameters.  An IA unmapped VINT route is considered a non-event
-sourced direct interrupt route until a global event is mapped to the IA VINT</td>
+<td>Configures an IR input to
+output mux connection where
+the IR input is the
+src_index and the IR output
+is the dst_host_irq.  Both
+src_id and dst_id must be
+be the device ID of the IR
+being configured.</td>
 </tr>
-<tr class="row-odd"><td>Event Sourced Direct Interrupt</td>
+<tr class="row-odd"><td>Event to VINT
+Mapping Only</td>
+<td>&#160;</td>
+<td>&#160;</td>
 <td>X</td>
 <td>X</td>
 <td>X</td>
 <td>X</td>
-<td>X</td>
-<td>X</td>
-<td>Event source peripheral direct interrupt to destination processor</td>
+<td>Configure peripheral OES
+register and add an event
+mapping to an IA VINT.</td>
 </tr>
-<tr class="row-even"><td>Unmapped VINT Direct Interrupt</td>
-<td>X</td>
-<td>X</td>
-<td>X</td>
-<td>X</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>Event-based peripheral interrupt direct to processor with no global event to VINT status bit mapping configured on allocation of the VINT.  Allows all event to VINT status bit mappings to take place at a later time.</td>
-</tr>
-<tr class="row-odd"><td>Event to VINT Mapping Only</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>X</td>
-<td>X</td>
-<td>X</td>
-<td>X</td>
-<td>Configure event-based peripheral interrupt polled from IA VINT real-time registers.  Can also be used to add a VINT status bit mapping to an event-based direct interrupt route.  In case of a polled interrupt the application must use IA VINT real-time register to poll/clear VINT status.</td>
-</tr>
-<tr class="row-even"><td>OES Register Programming Only</td>
+<tr class="row-even"><td>OES Register
+Programming
+Only</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>X</td>
 <td>&#160;</td>
-<td>Applicable only for source peripherals capable of generating an output event.  Only programs the OES register for the source peripheral.  No interrupt route configuration is performed.  Useful for setting UDMA trigger events or any other events that are not translated to the interrupt domain</td>
+<td>Only programs the OES
+register of the source.
+Useful for setting UDMAP
+trigger events and any
+other events that are not
+translated to the interrupt
+domain.</td>
 </tr>
 </tbody>
 </table>
+<div class="section" id="tisci-msg-rm-irq-set-irq-route-set-response">
+<span id="pub-rm-irq-route-set-response"></span><h4>TISCI_MSG_RM_IRQ_SET - IRQ Route Set Response<a class="headerlink" href="#tisci-msg-rm-irq-set-irq-route-set-response" title="Permalink to this headline">¶</a></h4>
+<p>The <strong>irq_set_response</strong> message returns the result status of the
+processed <strong>irq_set</strong> message.</p>
+</div>
+</div>
+<div class="section" id="irq-route-set-response-message-parameters">
+<h3>IRQ Route Set Response Message Parameters<a class="headerlink" href="#irq-route-set-response-message-parameters" title="Permalink to this headline">¶</a></h3>
+<p><p><strong>struct tisci_msg_rm_irq_set_resp</strong></p>
+<p>Response to setting a peripheral to processor interrupt.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="23%" />
+<col width="37%" />
+<col width="40%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>hdr</td>
+<td>struct tisci_header</td>
+<td>Standard TISCI header</td>
+</tr>
+</tbody>
+</table>
+</p>
 </div>
 </div>
 <div class="section" id="tisci-msg-rm-irq-release-irq-route-release">
@@ -457,6 +475,19 @@ and interrupt aggregator resources within the route.</p>
 <p>For routes utilizing an IA VINT event to status bit mapping, the status bit is
 disabled when the route is freed. The OS is not required to disable the status
 bit via the VINT’s real-time registers prior to route release</p>
+<p>The <strong>IRQ route release</strong> TISCI message API is used to clear peripherals within
+SoC interrupt architecture.  This includes, SoC dependent, peripheral output
+event steering (OES) registers, interrupt aggregators, and interrupt routers.
+To clear a desired interrupt route between a peripheral and host processor
+the <strong>IRQ route release</strong> API must be called to clear each hop in the route
+between source and destination.  What is cleared in each call depends on the
+valid_params bit configuration and the SoC device ID and indexes provided.</p>
+<p>The <strong>IRQ route release</strong> API does not clear destination processor interrupt
+controllers.  This job is left to the HLOS.</p>
+<p>When clearing interrupt aggregator virtual interrupt global event to status
+bit mappings, the status bit is disabled when the mapping is cleared. The OS is
+not required to disable the status bit via the VINT’s real-time registers prior
+to interrupt aggregator mapping clear.</p>
 <p><strong>NOTE (Subject to Change):</strong></p>
 <p>Some System Firmware peripheral drivers have not implemented OES register
 management yet.  The HLOS must also make sure to clear the peripheral OES
@@ -465,6 +496,7 @@ OES management thus far:</p>
 <ul class="simple">
 <li>Ring Accelerator</li>
 <li>UDMAP</li>
+<li>Proxy</li>
 </ul>
 <div class="section" id="id1">
 <h3>Usage<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
@@ -491,78 +523,68 @@ OES management thus far:</p>
 </div>
 <div class="section" id="irq-route-release-message-parameters">
 <h3>IRQ Route Release Message Parameters<a class="headerlink" href="#irq-route-release-message-parameters" title="Permalink to this headline">¶</a></h3>
+<p><p><strong>struct tisci_msg_rm_irq_release_req</strong></p>
+<p>Releases interrupt peripheral resources according to the valid configuration provided.  The following &#64;ref tisci_msg_rm_irq_release_req::valid_params valid bit combinations are allowed: Interrupt Router Mux Release - Release an IR input to output mux connection where the IR input is the src_index and the IR output is the dst_host_irq.  Both the src_id and the dst_id must be the device ID of the IR being configured. &#64;ref tisci_msg_rm_irq_set_req::dst_id valid bit == STRUE &#64;ref tisci_msg_rm_irq_set_req::dst_host_irq valid bit == STRUE &#64;ref tisci_msg_rm_irq_set_req::ia_id valid bit == SFALSE &#64;ref tisci_msg_rm_irq_set_req::vint valid bit == SFALSE &#64;ref tisci_msg_rm_irq_set_req::global_event valid bit == SFALSE &#64;ref tisci_msg_rm_irq_set_req::vint_status_bit_index valid bit == SFALSE Event to VINT Unmap Only - Clear only peripheral OES register and event to VINT status bit mapping &#64;ref tisci_msg_rm_irq_set_req::dst_id valid bit == SFALSE &#64;ref tisci_msg_rm_irq_set_req::dst_host_irq valid bit == SFALSE &#64;ref tisci_msg_rm_irq_set_req::ia_id valid bit == STRUE &#64;ref tisci_msg_rm_irq_set_req::vint valid bit == STRUE &#64;ref tisci_msg_rm_irq_set_req::global_event valid bit == STRUE &#64;ref tisci_msg_rm_irq_set_req::vint_status_bit_index valid bit == STRUE OES Register Programming Only - Only clears the OES register of the source.  Useful for clearing UDMAP trigger events and any other events that are not translated to the interrupt domain: &#64;ref tisci_msg_rm_irq_release_req::dst_id valid bit == SFALSE &#64;ref tisci_msg_rm_irq_release_req::dst_host_irq valid bit == SFALSE &#64;ref tisci_msg_rm_irq_release_req::ia_id valid bit == SFALSE &#64;ref tisci_msg_rm_irq_release_req::vint valid bit == SFALSE &#64;ref tisci_msg_rm_irq_release_req::global_event valid bit == STRUE &#64;ref tisci_msg_rm_irq_release_req::vint_status_bit_index valid bit == SFALSE</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="4%" />
-<col width="7%" />
-<col width="13%" />
-<col width="75%" />
+<col width="3%" />
+<col width="3%" />
+<col width="94%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Parameter</th>
 <th class="head">Type</th>
-<th class="head">Valid Values</th>
 <th class="head">Description</th>
 </tr>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>hdr</td>
-<td>Generic TISCI message header (8 bytes)</td>
-<td><a class="reference internal" href="../../5_soc_doc/am6x/hosts.html"><span class="doc">Valid Host IDs</span></a></td>
-<td>Generic TISCI message header. Contains the message ID, host ID, sequence number, and any flags</td>
+<td>struct tisci_header</td>
+<td>Standard TISCI header</td>
 </tr>
 <tr class="row-odd"><td>valid_params</td>
 <td>u32</td>
-<td><a class="reference internal" href="#pub-rm-irq-route-release-valid-params"><span class="std std-ref">IRQ Route Release Valid Parameters</span></a></td>
-<td>Bitfield defining validity of interrupt route release parameters.  The interrupt route release fields are not valid, and will not be used for route release, if their corresponding valid bit is zero.</td>
+<td>Bitfield defining validity of interrupt route release parameters.  The interrupt route release fields are not valid, and will not be used for route release, if their corresponding valid bit is zero.  Valid bit usage: 0 - Valid bit for &#64;ref tisci_msg_rm_irq_release_req::dst_id 1 - Valid bit for &#64;ref tisci_msg_rm_irq_release_req::dst_host_irq 2 - Valid bit for &#64;ref tisci_msg_rm_irq_release_req::ia_id 3 - Valid bit for &#64;ref tisci_msg_rm_irq_release_req::vint 4 - Valid bit for &#64;ref tisci_msg_rm_irq_release_req::global_event 5 - Valid bit for &#64;ref tisci_msg_rm_irq_release_req::vint_status_bit_index 31 - Valid bit for &#64;ref tisci_msg_rm_irq_release_req::secondary_host</td>
 </tr>
 <tr class="row-even"><td>src_id</td>
 <td>u16</td>
-<td><a class="reference internal" href="../../5_soc_doc/am6x/devices.html"><span class="doc">Valid Device IDs</span></a></td>
-<td>Specifies the SoC-specific device ID of the interrupt route source</td>
+<td>ID of interrupt source peripheral</td>
 </tr>
 <tr class="row-odd"><td>src_index</td>
 <td>u16</td>
-<td><a class="reference internal" href="../../5_soc_doc/am6x/irq_sources.html"><span class="doc">Device Interrupt Sources</span></a></td>
-<td>Specifies the interrupt output index sourcing the interrupt from the device peripheral identified by the device ID parameter</td>
+<td>Interrupt source index within source peripheral</td>
 </tr>
 <tr class="row-even"><td>dst_id</td>
 <td>u16</td>
-<td><a class="reference internal" href="../../5_soc_doc/am6x/irq_dsts.html"><span class="doc">Device Interrupt Destinations</span></a></td>
-<td>SoC device ID of interrupt destination.  Based on the device architecture can be an interrupt controller or processor.  Only valid if the dst_id’s corresponding valid bit is set.</td>
+<td>SoC IR device ID when the valid_params bits are set to release an IR mux connection.  This field is only valid if &#64;ref TISCI_MSG_VALUE_RM_DST_ID_VALID is set in &#64;ref tisci_msg_rm_irq_release_req::valid_params.</td>
 </tr>
 <tr class="row-odd"><td>dst_host_irq</td>
 <td>u16</td>
-<td><a class="reference internal" href="../../5_soc_doc/am6x/irq_dsts.html"><span class="doc">Device Interrupt Destinations</span></a></td>
-<td>Specifies the destination host processor interrupt controller IRQ input.  Only valid if the dst_host_irq’s corresponding valid bit is set.</td>
+<td>SoC IR output index when the valid_params are set to release an IR mux connection.  This field is only valid if &#64;ref TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID is set in &#64;ref tisci_msg_rm_irq_release_req::valid_params.</td>
 </tr>
 <tr class="row-even"><td>ia_id</td>
 <td>u16</td>
-<td><a class="reference internal" href="../../5_soc_doc/am6x/navss.html"><span class="doc">Valid Navigator SS IAs</span></a></td>
-<td>Device ID of interrupt aggregator in which the virtual interrupt resides.  Only valid if the ia_id’s corresponding valid bit is set.</td>
+<td>Device ID of interrupt aggregator in which the virtual interrupt resides. This field is only valid if &#64;ref TISCI_MSG_VALUE_RM_IA_ID_VALID is set in &#64;ref tisci_msg_rm_irq_release_req::valid_params.</td>
 </tr>
 <tr class="row-odd"><td>vint</td>
 <td>u16</td>
-<td>IA VINT index</td>
-<td>Virtual interrupt number if the interrupt route is through an interrupt aggregator.  Only valid if the vint’s corresponding valid bit is set.</td>
+<td>Virtual interrupt number if the interrupt route is through an interrupt aggregator.  This field is only valid if &#64;ref TISCI_MSG_VALUE_RM_VINT_VALID is set in &#64;ref tisci_msg_rm_irq_release_req::valid_params.</td>
 </tr>
 <tr class="row-even"><td>global_event</td>
 <td>u16</td>
-<td><a class="reference internal" href="../../5_soc_doc/am6x/navss.html"><span class="doc">Navigator Subsystem Global Events</span></a></td>
-<td>Global event mapped to interrupt aggregator virtual interrupt status bit.  The event is cleared from the OES register of the interrupt source.  Only valid if the global_events’s corresponding valid bit is set.</td>
+<td>Global event mapped to interrupt aggregator virtual interrupt status bit. The event is cleared from the OES register of the interrupt source.  This field is only applicable for interrupt source’s capable of generating global events.  This field is only valid if &#64;ref TISCI_MSG_VALUE_RM_GLOBAL_EVENT_VALID is set in &#64;ref tisci_msg_rm_irq_release_req::valid_params.</td>
 </tr>
 <tr class="row-odd"><td>vint_status_bit_index</td>
 <td>u8</td>
-<td>Status bit index from 0 to 63</td>
-<td>Virtual interrupt status bit to set if the interrupt route utilizes an interrupt aggregator virtual interrupt.  Only valid if the vint_status_bit_index’s corresponding valid bit is set.</td>
+<td>Virtual interrupt status bit to release if the interrupt route utilizes an interrupt aggregator virtual interrupt.  This field is only valid if &#64;ref TISCI_MSG_VALUE_RM_VINT_STATUS_BIT_INDEX_VALID is set in &#64;ref tisci_msg_rm_irq_release_req::valid_params.</td>
 </tr>
 <tr class="row-even"><td>secondary_host</td>
 <td>u8</td>
-<td><a class="reference internal" href="../../5_soc_doc/am6x/hosts.html"><span class="doc">Valid Host IDs</span></a></td>
-<td>Specifies a host ID for which the TISCI header host ID is proxying the request for. This feature allows hosts incapable of making direct requests to be allocated resources by a supervisor host. For example firmware running on a PDMA will need to be allocated resources via a supervisor proxying a request. The secondary_host parameter should always be set as unused if request proxying is not intended.</td>
+<td>The interrupt route destination is the specified secondary host if the secondary_host’s corresponding valid bit is set in &#64;ref tisci_msg_rm_irq_release_req::valid_params.  Otherwise, the host within the TISCI message header is the route destination.</td>
 </tr>
 </tbody>
 </table>
+</p>
 </div>
 <div class="section" id="irq-route-release-valid-parameters">
 <span id="pub-rm-irq-route-release-valid-params"></span><h3>IRQ Route Release Valid Parameters<a class="headerlink" href="#irq-route-release-valid-parameters" title="Permalink to this headline">¶</a></h3>
@@ -602,18 +624,18 @@ message optional parameters:</p>
 </tr>
 </tbody>
 </table>
-<p>The following table describes the valid bit combinations used to configure
-clearing of the subsystems within the interrupt management architecture</p>
+<p>The following table describes the valid bit combinations used to clear the
+peripherals within the interrupt management architecture</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="9%" />
-<col width="2%" />
-<col width="3%" />
-<col width="2%" />
-<col width="1%" />
-<col width="3%" />
+<col width="13%" />
+<col width="7%" />
+<col width="12%" />
 <col width="6%" />
-<col width="73%" />
+<col width="5%" />
+<col width="12%" />
+<col width="20%" />
+<col width="25%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Configuration</th>
@@ -627,56 +649,85 @@ clearing of the subsystems within the interrupt management architecture</p>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>Non-Event Sourced Direct Interrupt</td>
+<tr class="row-even"><td>Interrupt
+Router Mux
+Release</td>
 <td>X</td>
 <td>X</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>Non-event source peripheral direct interrupt to destination processor.  One thing to note is an IA unmapped VINT route can be released via this combination by passing the IA ID and VINT values as the src id and src index parameters.  An IA unmapped VINT route is considered a non-event
-sourced direct interrupt route until a global event is mapped to the IA VINT</td>
+<td>Releases an IR input to
+output mux connection where
+the IR input is the
+src_index and the IR output
+is the dst_host_irq.  Both
+src_id and dst_id must be
+the device ID of the IR
+being configured.</td>
 </tr>
-<tr class="row-odd"><td>Event Sourced Direct Interrupt</td>
+<tr class="row-odd"><td>Event to VINT
+Unmap Only</td>
+<td>&#160;</td>
+<td>&#160;</td>
 <td>X</td>
 <td>X</td>
 <td>X</td>
 <td>X</td>
-<td>X</td>
-<td>X</td>
-<td>Event source peripheral direct interrupt to destination processor</td>
+<td>Clear only peripheral OES
+register and event to VINT
+status bit mapping.</td>
 </tr>
-<tr class="row-even"><td>Unmapped VINT Direct Interrupt</td>
-<td>X</td>
-<td>X</td>
-<td>X</td>
-<td>X</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>Clear event-based interrupt direct to destination processor which does not have any existing event to VINT status bit mappings.</td>
-</tr>
-<tr class="row-odd"><td>Event to VINT Mapping Only</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>X</td>
-<td>X</td>
-<td>X</td>
-<td>X</td>
-<td>Clear only peripheral OES register and event to VINT status bit mapping from direct to processor and polled routes.  Event-based peripheral interrupt polled routes are polled from the IA VINT real-time registers.  For direct to processor routes the entire route is NOT released when the last
-event to VINT status bit is unmapped using this valid bit combination. This differs from using the Event Source Direct Interrupt valid bit combination where the entire route is released when the last event to VINT status bit mapping is cleared.  The Unmapped VINT Direct Interrupt valid bit
-combination is used to clear an event sourced direct interrupt with no existing event to VINT status bit mappings.</td>
-</tr>
-<tr class="row-even"><td>OES Register Programming Only</td>
+<tr class="row-even"><td>OES Register
+Programming
+Only</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>X</td>
 <td>&#160;</td>
-<td>Applicable only for source peripherals capable of generating an output event.  Only clears the OES register for the source peripheral.  No interrupt route clear is performed.  Useful for clearing UDMA trigger events or any other events that are not translated to the interrupt domain</td>
+<td>Only clears the OES
+register of the source.
+Useful for clearing UDMAP
+trigger events and any
+other events that are not
+translated to the interrupt
+domain.</td>
 </tr>
 </tbody>
 </table>
+<div class="section" id="tisci-msg-rm-irq-release-irq-route-release-response">
+<span id="pub-rm-irq-route-release-response"></span><h4>TISCI_MSG_RM_IRQ_RELEASE - IRQ Route Release Response<a class="headerlink" href="#tisci-msg-rm-irq-release-irq-route-release-response" title="Permalink to this headline">¶</a></h4>
+<p>The <strong>irq_releaes_response</strong> message returns the result status of the
+processed <strong>irq_release</strong> message.</p>
+</div>
+</div>
+<div class="section" id="irq-route-release-response-message-parameters">
+<h3>IRQ Route Release Response Message Parameters<a class="headerlink" href="#irq-route-release-response-message-parameters" title="Permalink to this headline">¶</a></h3>
+<p><p><strong>struct tisci_msg_rm_irq_release_resp</strong></p>
+<p>Response to releasing a peripheral to processor interrupt.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="23%" />
+<col width="37%" />
+<col width="40%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>hdr</td>
+<td>struct tisci_header</td>
+<td>Standard TISCI header</td>
+</tr>
+</tbody>
+</table>
+</p>
 </div>
 </div>
 </div>
@@ -722,7 +773,7 @@ combination is used to clear an event sourced direct interrupt with no existing 
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'20.01.00',
+            VERSION:'20.02.00',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

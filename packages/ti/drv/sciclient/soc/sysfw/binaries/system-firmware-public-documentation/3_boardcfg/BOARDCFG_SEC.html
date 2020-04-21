@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                20.01.00
+                20.02.00
               </div>
             
           
@@ -500,6 +500,16 @@ writes to OTP rows</td>
 </tbody>
 </table>
 <p>The magic number to be populated in the <code class="docutils literal"><span class="pre">subhdr</span></code> is <code class="docutils literal"><span class="pre">0x4081</span></code>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Wildcard host ID (128U/0x80) cannot be used in the <code class="docutils literal"><span class="pre">write_host</span></code> field. The host ID used here must map to
+a secure proxy thread.</p>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Even though OTP functionality is not available on GP devices, the boardcfg structure for OTP must be present.
+The header must be populated with the size and magic number correctly.</p>
+</div>
 <div class="section" id="extended-otp-row-entry">
 <span id="pub-boardcfg-otp-entry"></span><h4>Extended OTP Row Entry<a class="headerlink" href="#extended-otp-row-entry" title="Permalink to this headline">¶</a></h4>
 <table border="1" class="docutils">
@@ -581,7 +591,7 @@ writes to OTP rows</td>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'20.01.00',
+            VERSION:'20.02.00',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

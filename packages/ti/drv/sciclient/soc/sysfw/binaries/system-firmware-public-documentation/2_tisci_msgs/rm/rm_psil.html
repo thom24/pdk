@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                20.01.00
+                20.02.00
               </div>
             
           
@@ -245,43 +245,82 @@ any Navigator Subsystem on the device.</p>
 </div>
 <div class="section" id="psi-l-pair-message-parameters">
 <h3>PSI-L Pair Message Parameters<a class="headerlink" href="#psi-l-pair-message-parameters" title="Permalink to this headline">¶</a></h3>
+<p><p><strong>struct tisci_msg_rm_psil_pair_req</strong></p>
+<p>Pairs a PSI-L source thread to a destination thread</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="5%" />
-<col width="16%" />
-<col width="40%" />
-<col width="39%" />
+<col width="9%" />
+<col width="86%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Parameter</th>
 <th class="head">Type</th>
-<th class="head">Valid Values</th>
 <th class="head">Description</th>
 </tr>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>hdr</td>
-<td>Generic TISCI message header (8 bytes)</td>
-<td><a class="reference internal" href="../../5_soc_doc/am6x/hosts.html"><span class="doc">Valid Host IDs</span></a></td>
-<td>Generic TISCI message header. Contains the message ID, host ID, sequence number, and any flags</td>
+<td>struct tisci_header</td>
+<td>Standard TISCI header</td>
 </tr>
 <tr class="row-odd"><td>nav_id</td>
 <td>u32</td>
-<td><a class="reference internal" href="../../5_soc_doc/am6x/navss.html#pub-soc-am6x-navss-ids"><span class="std std-ref">Valid Navigator Subsystem Device IDs</span></a></td>
-<td>The SoC-specific Device ID of the Navigator subsystem in which the PSI-L proxy is located.</td>
+<td>SoC device ID of Navigator Subsystem whose PSI-L config proxy is used to pair the source and destination threads.</td>
 </tr>
 <tr class="row-even"><td>src_thread</td>
 <td>u32</td>
-<td><a class="reference internal" href="../../5_soc_doc/am6x/navss.html#pub-soc-am6x-psil-thread-ids"><span class="std std-ref">Valid Navigator Subsystem PSI-L Source Thread Indices</span></a></td>
-<td>Specifies the PSI-L source thread ID to be paired to the destination ID.</td>
+<td>PSI-L source thread ID within the PSI-L System thread map.</td>
 </tr>
 <tr class="row-odd"><td>dst_thread</td>
 <td>u32</td>
-<td><a class="reference internal" href="../../5_soc_doc/am6x/navss.html#pub-soc-am6x-psil-thread-ids"><span class="std std-ref">Valid Navigator Subsystem PSI-L Destination Thread Indices</span></a></td>
-<td>Specifies the PSI-L destination thread ID to be aired to the source thread ID.</td>
+<td>PSI-L destination thread ID within the PSI-L System thread map.  PSI-L destination threads start at index 0x8000.  The request is NACK’d if the destination thread is not greater than or equal to 0x8000.</td>
 </tr>
 </tbody>
 </table>
+<p>Pairs the specified PSI-L source thread to the specified destination thread
+ as long as both threads are unused.  A thread is determined to be in use if
+ the thread is enabled in the non-real-time registers.  The source thread’s
+ width and credit count parameters are set to the destination thread’s
+ capabilities.  Both the source and destination threads are non-real-time
+ enabled on successful pairing.
+ The host requesting the pair operation for threads mapped to UDMAP channels
+ must be the owner, or the supervisor of the host owning, the UDMAP channels.
+ Therefore, pair operations for UDMAP mapped threads must take place before
+ the channel(s) are freed.  For threads not mapped to UDMAP channels, the
+ host requesting the unpair operation must have access through the region
+ firewall covering the entity to which the thread is mapped.
+ The PSI-L configuration proxy used to pair the source and destination
+ threads is based on the Navigator Subsystem specified by &#64;ref nav_id.
+ UDMAP transmit channels mapped to source threads will have their
+ TCHAN_THRD_ID register programmed with the destination thread if the pairing
+ is successful.
+ UDMAP receive channels mapped to destination threads will have their
+ RCHAN_THRD_ID register programmed with the source thread if the pairing
+ is successful.</p>
+</p>
+<p><p><strong>struct tisci_msg_rm_psil_pair_resp</strong></p>
+<p>Response to pairing a PSI-L source thread to a destination thread</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="23%" />
+<col width="37%" />
+<col width="40%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>hdr</td>
+<td>struct tisci_header</td>
+<td>Standard TISCI header</td>
+</tr>
+</tbody>
+</table>
+</p>
 </div>
 </div>
 <div class="section" id="tisci-msg-rm-psil-unpair-psi-l-unpair">
@@ -324,43 +363,78 @@ within any Navigator Subsystem on the device.</p>
 </div>
 <div class="section" id="psi-l-unpair-message-parameters">
 <h3>PSI-L Unpair Message Parameters<a class="headerlink" href="#psi-l-unpair-message-parameters" title="Permalink to this headline">¶</a></h3>
+<p><p><strong>struct tisci_msg_rm_psil_unpair_req</strong></p>
+<p>Unpairs a PSI-L source thread from a destination thread</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="5%" />
-<col width="16%" />
-<col width="40%" />
-<col width="39%" />
+<col width="9%" />
+<col width="86%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Parameter</th>
 <th class="head">Type</th>
-<th class="head">Valid Values</th>
 <th class="head">Description</th>
 </tr>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>hdr</td>
-<td>Generic TISCI message header (8 bytes)</td>
-<td><a class="reference internal" href="../../5_soc_doc/am6x/hosts.html"><span class="doc">Valid Host IDs</span></a></td>
-<td>Generic TISCI message header. Contains the message ID, host ID, sequence number, and any flags</td>
+<td>struct tisci_header</td>
+<td>Standard TISCI header</td>
 </tr>
 <tr class="row-odd"><td>nav_id</td>
 <td>u32</td>
-<td><a class="reference internal" href="../../5_soc_doc/am6x/navss.html#pub-soc-am6x-navss-ids"><span class="std std-ref">Valid Navigator Subsystem Device IDs</span></a></td>
-<td>The SoC-specific Device ID of the Navigator subsystem in which the PSI-L proxy is located.</td>
+<td>SoC device ID of Navigator Subsystem whose PSI-L config proxy is used to unpair the source and destination threads.</td>
 </tr>
 <tr class="row-even"><td>src_thread</td>
 <td>u32</td>
-<td><a class="reference internal" href="../../5_soc_doc/am6x/navss.html#pub-soc-am6x-psil-thread-ids"><span class="std std-ref">Valid Navigator Subsystem PSI-L Source Thread Indices</span></a></td>
-<td>Specifies the PSI-L source thread ID to be unpaired from the destination ID.</td>
+<td>PSI-L source thread ID within the PSI-L System thread map.</td>
 </tr>
 <tr class="row-odd"><td>dst_thread</td>
 <td>u32</td>
-<td><a class="reference internal" href="../../5_soc_doc/am6x/navss.html#pub-soc-am6x-psil-thread-ids"><span class="std std-ref">Valid Navigator Subsystem PSI-L Destination Thread Indices</span></a></td>
-<td>Specifies the PSI-L destination thread ID to be unpaired from the source thread ID.</td>
+<td>PSI-L destination thread ID within the PSI-L System thread map.  PSI-L destination threads start at index 0x8000.  The request is NACK’d if the destination thread is not greater than or equal to 0x8000.</td>
 </tr>
 </tbody>
 </table>
+<p>Unpairs the specified PSI-L source thread from the specified destination
+ the thread.  The source thread’s width and credit count parameters are
+ cleared.  Both the source and destination threads are non-real-time
+ disabled on successful unpairing.
+ The host requesting the unpair operation for threads mapped to UDMAP
+ channels must be the owner, or the supervisor of the host owning, the UDMAP
+ channels.  Therefore, unpair operations for UDMAP mapped threads must
+ take place before the channel(s) are freed.  For threads not mapped to UDMAP
+ channels, the host requesting the unpair operation must have access through
+ the region firewall covering the entity to which the thread is mapped.
+ The PSI-L configuration proxy used to unpair the source and destination
+ threads is based on the Navigator Subsystem specified by &#64;ref nav_id.
+ UDMAP transmit channels mapped to source threads will have their
+ TCHAN_THRD_ID register cleared if the unpairing is successful.
+ UDMAP receive channels mapped to destination threads will have their
+ RCHAN_THRD_ID register cleared if the unpairing is successful.</p>
+</p>
+<p><p><strong>struct tisci_msg_rm_psil_unpair_resp</strong></p>
+<p>Response to unpairing a PSI-L source thread from a destination thread</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="23%" />
+<col width="37%" />
+<col width="40%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>hdr</td>
+<td>struct tisci_header</td>
+<td>Standard TISCI header</td>
+</tr>
+</tbody>
+</table>
+</p>
 </div>
 </div>
 <div class="section" id="tisci-msg-rm-psil-read-psi-l-thread-configuration-register-read">
@@ -596,7 +670,7 @@ configuration registers via a PSI-L configuration proxy.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'20.01.00',
+            VERSION:'20.02.00',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

@@ -35,6 +35,9 @@ Clock configuration and control APIs
    Reference :ref:`pub_soc_family_doc` to see clock IDs and device IDs for
    your SoC.
 
+.. note::
+   The SSC controls are not yet available in the system firmware.
+
 Macros Used in this Document
 ----------------------------
 

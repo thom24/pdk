@@ -57,12 +57,12 @@
 
 /**
  * The dst_id parameter is valid for any RM IRQ TISCI message
- * modifying interrupt routes.
+ * modifying interrupt routers.
  */
 #define TISCI_MSG_VALUE_RM_DST_ID_VALID                (1u << 0u)
 /**
  * The dst_host_irq parameter is valid for any RM IRQ TISCI message
- * modifying interrupt routes.
+ * modifying interrupt routers.
  */
 #define TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID          (1u << 1u)
 /**
@@ -87,64 +87,30 @@
 #define TISCI_MSG_VALUE_RM_VINT_STATUS_BIT_INDEX_VALID (1u << 5u)
 
 /**
- * \brief Configures a peripheral to processor interrupt
- *
- * Configures peripherals within the interrupt subsystem according to the
+ * \brief Configures peripherals within the interrupt subsystem according to the
  * valid configuration provided.  The following
  * @ref tisci_msg_rm_irq_set_req::valid_params valid bit combinations are
  * allowed:
- *
- * Non-Event Sourced Direct Interrupt - Non-event peripheral interrupt direct
- *                                      to destination processor.  One thing
- *                                      to note is an IA unmapped VINT route
- *                                      can be configured via this combination
- *                                      by passing the IA ID and VINT values
- *                                      as the src_id and src_index parameters.
- *                                      An IA unmapped VINT route is considered
- *                                      a non-event sourced direct interrupt
- *                                      route until a global event is mapped
- *                                      to the IA VINT:
+ * Interrupt Router Mux Configuration - Configures an IR input to output mux
+ *                                      connection where the IR input is the
+ *                                      src_index and the IR output is the
+ *                                      dst_host_irq.  Both the src_id and the
+ *                                      dst_id must be the device ID of the
+ *                                      IR being configured.
  *   @ref tisci_msg_rm_irq_set_req::dst_id valid bit == STRUE
  *   @ref tisci_msg_rm_irq_set_req::dst_host_irq valid bit == STRUE
  *   @ref tisci_msg_rm_irq_set_req::ia_id valid bit == SFALSE
  *   @ref tisci_msg_rm_irq_set_req::vint valid bit == SFALSE
  *   @ref tisci_msg_rm_irq_set_req::global_event valid bit == SFALSE
  *   @ref tisci_msg_rm_irq_set_req::vint_status_bit_index valid bit == SFALSE
- *
- * Event Sourced Direct Interrupt - Event-based peripheral interrupt direct
- *                                  to destination processor:
- *   @ref tisci_msg_rm_irq_set_req::dst_id valid bit == STRUE
- *   @ref tisci_msg_rm_irq_set_req::dst_host_irq valid bit == STRUE
- *   @ref tisci_msg_rm_irq_set_req::ia_id valid bit == STRUE
- *   @ref tisci_msg_rm_irq_set_req::vint valid bit == STRUE
- *   @ref tisci_msg_rm_irq_set_req::global_event valid bit == STRUE
- *   @ref tisci_msg_rm_irq_set_req::vint_status_bit_index valid bit == STRUE
- *
- * Unmapped VINT Direct Interrupt - Event-based peripheral interrupt direct to
- *                                  processor with no global event to VINT
- *                                  status bit mapping configured on allocation
- *                                  of the VINT.  Allows all event to VINT
- *                                  status bit mappings to take place at a
- *                                  later time:
- *   @ref tisci_msg_rm_irq_set_req::dst_id valid bit == STRUE
- *   @ref tisci_msg_rm_irq_set_req::dst_host_irq valid bit == STRUE
- *   @ref tisci_msg_rm_irq_set_req::ia_id valid bit == STRUE
- *   @ref tisci_msg_rm_irq_set_req::vint valid bit == STRUE
- *   @ref tisci_msg_rm_irq_set_req::global_event valid bit == SFALSE
- *   @ref tisci_msg_rm_irq_set_req::vint_status_bit_index valid bit == SFALSE
- *
- * Event to VINT Mapping Only - Configure, or add a mapping to, an event-based
- *                              peripheral interrupt polled from IA VINT
- *                              real-time registers.  Can also be used to add
- *                              an event to VINT status bit mapping to an
- *                              event-based direct interrupt route:
+ * Event to VINT Mapping Only - Configure peripheral OES register and add an
+ *                              event mapping to an IA VINT
  *   @ref tisci_msg_rm_irq_set_req::dst_id valid bit == SFALSE
  *   @ref tisci_msg_rm_irq_set_req::dst_host_irq valid bit == SFALSE
  *   @ref tisci_msg_rm_irq_set_req::ia_id valid bit == STRUE
  *   @ref tisci_msg_rm_irq_set_req::vint valid bit == STRUE
  *   @ref tisci_msg_rm_irq_set_req::global_event valid bit == STRUE
  *   @ref tisci_msg_rm_irq_set_req::vint_status_bit_index valid bit == STRUE
- *
  * OES Register Programming Only - Only programs the OES register of the
  *                                 source.  Useful for setting UDMAP trigger
  *                                 events and any other events that are not
@@ -155,11 +121,6 @@
  *   @ref tisci_msg_rm_irq_set_req::vint valid bit == SFALSE
  *   @ref tisci_msg_rm_irq_set_req::global_event valid bit == STRUE
  *   @ref tisci_msg_rm_irq_set_req::vint_status_bit_index valid bit == SFALSE
- *
- * The shortest route between the peripheral and the host processor that
- * satisfies the requirements for non-event and event direct interrupts is
- * programmed.  The host processor interrupt controller is not programmed
- * as part of the configuration.
  *
  * \param hdr
  * Standard TISCI header
@@ -183,32 +144,26 @@
  * Interrupt source index within source peripheral
  *
  * \param dst_id
- * SoC device ID of interrupt destination, based on the device architecture can
- * be an interrupt controller or processor.
- *
- * This field is only valid if
+ * SoC IR device ID when the valid_params bits are set to configure an IR
+ * mux connection.  This field is only valid if
  * @ref TISCI_MSG_VALUE_RM_DST_ID_VALID is set in
  * @ref tisci_msg_rm_irq_set_req::valid_params.
  *
  * \param dst_host_irq
- * Destination host processor interrupt controller IRQ input
- *
- * This field is only valid if
+ * SoC IR output index when the valid_params are set to configure an IR
+ * mux connection.  This field is only valid if
  * @ref TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID is set in
  * @ref tisci_msg_rm_irq_set_req::valid_params.
  *
  * \param ia_id
  * Device ID of interrupt aggregator in which the virtual interrupt resides.
- *
  * This field is only valid if
  * @ref TISCI_MSG_VALUE_RM_IA_ID_VALID is set in
  * @ref tisci_msg_rm_irq_set_req::valid_params.
  *
  * \param vint
- * Virtual interrupt number if the interrupt route is through an
- * interrupt aggregator.
- *
- * This field is only valid if
+ * Virtual interrupt number when configuring an interrupt aggregator.  This
+ * field is only valid if
  * @ref TISCI_MSG_VALUE_RM_VINT_VALID is set in
  * @ref tisci_msg_rm_irq_set_req::valid_params.
  *
@@ -216,19 +171,15 @@
  * Global event mapped to interrupt aggregator virtual interrupt status bit.
  * The event is programmed into the OES register of the interrupt source.  This
  * field is only applicable for interrupt source's capable of generating
- * global events.
- *
- * This field is only valid if
+ * global events.  This field is only valid if
  * @ref TISCI_MSG_VALUE_RM_GLOBAL_EVENT_VALID is set in
  * @ref tisci_msg_rm_irq_set_req::valid_params.
  *
  * \param vint_status_bit_index
  * Virtual interrupt status bit to set if the interrupt route utilizes an
  * interrupt aggregator virtual interrupt.  The host processor uses the status
- * bit value within the interrupt aggregator's vint status register to find the
- * source event which triggered the interrupt.
- *
- * This field is only valid if
+ * bit value within the interrupt aggregator vint status register to find the
+ * source event which triggered the interrupt.  This field is only valid if
  * @ref TISCI_MSG_VALUE_RM_VINT_STATUS_BIT_INDEX_VALID is set in
  * @ref tisci_msg_rm_irq_set_req::valid_params.
  *
@@ -263,73 +214,30 @@ struct tisci_msg_rm_irq_set_resp {
 } __attribute__((__packed__));
 
 /**
- * \brief Releases a peripheral to processor interrupt
- *
- * Releases peripherals within the interrupt subsystem according to the
- * valid configuration provided.  The following
+ * \brief Releases interrupt peripheral resources according to the valid
+ * configuration provided.  The following
  * @ref tisci_msg_rm_irq_release_req::valid_params valid bit combinations are
  * allowed:
- *
- * Non-Event Sourced Direct Interrupt - Non-event peripheral interrupt direct
- *                                      to destination processor.  One thing
- *                                      to note is an IA unmapped VINT route
- *                                      can be released via this combination
- *                                      by passing the IA ID and VINT values
- *                                      as the src_id and src_index parameters.
- *                                      An IA unmapped VINT route is considered
- *                                      a non-event sourced direct interrupt
- *                                      route until a global event is mapped
- *                                      to the IA VINT:
- *   @ref tisci_msg_rm_irq_release_req::dst_id valid bit == STRUE
- *   @ref tisci_msg_rm_irq_release_req::dst_host_irq valid bit == STRUE
- *   @ref tisci_msg_rm_irq_release_req::ia_id valid bit == SFALSE
- *   @ref tisci_msg_rm_irq_release_req::vint valid bit == SFALSE
- *   @ref tisci_msg_rm_irq_release_req::global_event valid bit == SFALSE
- *   @ref tisci_msg_rm_irq_release_req::vint_status_bit_index valid bit == SFALSE
- *
- * Event Sourced Direct Interrupt - Event-based peripheral interrupt direct
- *                                  to destination processor:
- *   @ref tisci_msg_rm_irq_release_req::dst_id valid bit == STRUE
- *   @ref tisci_msg_rm_irq_release_req::dst_host_irq valid bit == STRUE
- *   @ref tisci_msg_rm_irq_release_req::ia_id valid bit == STRUE
- *   @ref tisci_msg_rm_irq_release_req::vint valid bit == STRUE
- *   @ref tisci_msg_rm_irq_release_req::global_event valid bit == STRUE
- *   @ref tisci_msg_rm_irq_release_req::vint_status_bit_index valid bit == STRUE
- *
- * Unmapped VINT Direct Interrupt - Clear event-based interrupt direct to
- *                                  destination processor which does not have
- *                                  any existing event to VINT status bit
- *                                  mappings:
- *   @ref tisci_msg_rm_irq_release_req::dst_id valid bit == STRUE
- *   @ref tisci_msg_rm_irq_release_req::dst_host_irq valid bit == STRUE
- *   @ref tisci_msg_rm_irq_release_req::ia_id valid bit == STRUE
- *   @ref tisci_msg_rm_irq_release_req::vint valid bit == STRUE
- *   @ref tisci_msg_rm_irq_release_req::global_event valid bit == SFALSE
- *   @ref tisci_msg_rm_irq_release_req::vint_status_bit_index valid bit == SFALSE
- *
- * Event to VINT Mapping Only - Clear only peripheral OES register and event to
- *                              VINT status bit mapping from direct to processor
- *                              and polled routes.  Event-based peripheral
- *                              interrupt polled routes are polled from the IA
- *                              VINT real-time registers.  For direct to
- *                              processor routes the entire route is NOT
- *                              released when the last event to VINT status bit
- *                              is unmapped using this valid bit combination.
- *                              This differs from using the Event Source Direct
- *                              Interrupt valid bit combination where the entire
- *                              route is released when the last event to VINT
- *                              status bit mapping is cleared.  The Unmapped
- *                              VINT Direct Interrupt valid bit combination is
- *                              used to clear an event sourced direct interrupt
- *                              with no existing event to VINT status bit
- *                              mappings:
- *   @ref tisci_msg_rm_irq_release_req::dst_id valid bit == SFALSE
- *   @ref tisci_msg_rm_irq_release_req::dst_host_irq valid bit == SFALSE
- *   @ref tisci_msg_rm_irq_release_req::ia_id valid bit == STRUE
- *   @ref tisci_msg_rm_irq_release_req::vint valid bit == STRUE
- *   @ref tisci_msg_rm_irq_release_req::global_event valid bit == STRUE
- *   @ref tisci_msg_rm_irq_release_req::vint_status_bit_index valid bit == STRUE
- *
+ * Interrupt Router Mux Release - Release an IR input to output mux
+ *                                connection where the IR input is the
+ *                                src_index and the IR output is the
+ *                                dst_host_irq.  Both the src_id and the
+ *                                dst_id must be the device ID of the
+ *                                IR being configured.
+ *   @ref tisci_msg_rm_irq_set_req::dst_id valid bit == STRUE
+ *   @ref tisci_msg_rm_irq_set_req::dst_host_irq valid bit == STRUE
+ *   @ref tisci_msg_rm_irq_set_req::ia_id valid bit == SFALSE
+ *   @ref tisci_msg_rm_irq_set_req::vint valid bit == SFALSE
+ *   @ref tisci_msg_rm_irq_set_req::global_event valid bit == SFALSE
+ *   @ref tisci_msg_rm_irq_set_req::vint_status_bit_index valid bit == SFALSE
+ * Event to VINT Unmap Only - Clear only peripheral OES register and event to
+ *                            VINT status bit mapping
+ *   @ref tisci_msg_rm_irq_set_req::dst_id valid bit == SFALSE
+ *   @ref tisci_msg_rm_irq_set_req::dst_host_irq valid bit == SFALSE
+ *   @ref tisci_msg_rm_irq_set_req::ia_id valid bit == STRUE
+ *   @ref tisci_msg_rm_irq_set_req::vint valid bit == STRUE
+ *   @ref tisci_msg_rm_irq_set_req::global_event valid bit == STRUE
+ *   @ref tisci_msg_rm_irq_set_req::vint_status_bit_index valid bit == STRUE
  * OES Register Programming Only - Only clears the OES register of the
  *                                 source.  Useful for clearing UDMAP trigger
  *                                 events and any other events that are not
@@ -364,32 +272,26 @@ struct tisci_msg_rm_irq_set_resp {
  * Interrupt source index within source peripheral
  *
  * \param dst_id
- * SoC device ID of interrupt destination, based on the device architecture can
- * be an interrupt controller or processor.
- *
- * This field is only valid if
+ * SoC IR device ID when the valid_params bits are set to release an IR
+ * mux connection.  This field is only valid if
  * @ref TISCI_MSG_VALUE_RM_DST_ID_VALID is set in
  * @ref tisci_msg_rm_irq_release_req::valid_params.
  *
  * \param dst_host_irq
- * Destination host processor interrupt controller IRQ input
- *
- * This field is only valid if
+ * SoC IR output index when the valid_params are set to release an IR
+ * mux connection.  This field is only valid if
  * @ref TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID is set in
  * @ref tisci_msg_rm_irq_release_req::valid_params.
  *
  * \param ia_id
  * Device ID of interrupt aggregator in which the virtual interrupt resides.
- *
  * This field is only valid if
  * @ref TISCI_MSG_VALUE_RM_IA_ID_VALID is set in
  * @ref tisci_msg_rm_irq_release_req::valid_params.
  *
  * \param vint
  * Virtual interrupt number if the interrupt route is through an
- * interrupt aggregator.
- *
- * This field is only valid if
+ * interrupt aggregator.  This field is only valid if
  * @ref TISCI_MSG_VALUE_RM_VINT_VALID is set in
  * @ref tisci_msg_rm_irq_release_req::valid_params.
  *
@@ -397,17 +299,13 @@ struct tisci_msg_rm_irq_set_resp {
  * Global event mapped to interrupt aggregator virtual interrupt status bit.
  * The event is cleared from the OES register of the interrupt source.  This
  * field is only applicable for interrupt source's capable of generating
- * global events.
- *
- * This field is only valid if
+ * global events.  This field is only valid if
  * @ref TISCI_MSG_VALUE_RM_GLOBAL_EVENT_VALID is set in
  * @ref tisci_msg_rm_irq_release_req::valid_params.
  *
  * \param vint_status_bit_index
  * Virtual interrupt status bit to release if the interrupt route utilizes an
- * interrupt aggregator virtual interrupt.
- *
- * This field is only valid if
+ * interrupt aggregator virtual interrupt.  This field is only valid if
  * @ref TISCI_MSG_VALUE_RM_VINT_STATUS_BIT_INDEX_VALID is set in
  * @ref tisci_msg_rm_irq_release_req::valid_params.
  *

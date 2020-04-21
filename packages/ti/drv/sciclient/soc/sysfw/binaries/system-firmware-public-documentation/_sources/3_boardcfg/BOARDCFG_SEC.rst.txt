@@ -202,6 +202,16 @@ to understand the usage of the board configuration structure.
 
 The magic number to be populated in the ``subhdr`` is ``0x4081``.
 
+.. note::
+
+    Wildcard host ID (128U/0x80) cannot be used in the ``write_host`` field. The host ID used here must map to 
+    a secure proxy thread.
+
+.. warning::
+
+    Even though OTP functionality is not available on GP devices, the boardcfg structure for OTP must be present.
+    The header must be populated with the size and magic number correctly.
+
 .. _pub_boardcfg_otp_entry:
 
 Extended OTP Row Entry

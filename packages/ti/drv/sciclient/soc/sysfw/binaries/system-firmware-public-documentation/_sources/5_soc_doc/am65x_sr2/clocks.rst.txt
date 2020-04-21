@@ -4942,17 +4942,7 @@ Clocks for WKUP_DMSC0 Device
 Clocks for WKUP_DMSC0_CORTEX_M3_0 Device
 ----------------------------------------
 
-Device: :ref:`AM6_DEV_WKUP_DMSC0_CORTEX_M3_0 <soc_doc_am6_public_devices_desc_device_list>` (ID = 161)
-
-Following is a mapping of Clocks IDs to function:
-
-+------------+-----------------------------------------+-------------+
-|   Clock ID | Name                                    | Function    |
-+============+=========================================+=============+
-|          0 | DEV_WKUP_DMSC0_CORTEX_M3_0_BUS_VBUS_CLK | Input clock |
-+------------+-----------------------------------------+-------------+
-|          1 | DEV_WKUP_DMSC0_CORTEX_M3_0_BUS_DAP_CLK  | Input clock |
-+------------+-----------------------------------------+-------------+
+**This device has no defined clocks.**
 
 .. _soc_doc_am65x_sr2_public_clks_wkup_ecc_aggr0:
 

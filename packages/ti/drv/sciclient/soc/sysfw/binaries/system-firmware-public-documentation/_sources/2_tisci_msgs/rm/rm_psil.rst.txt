@@ -60,17 +60,9 @@ TISCI Message ID
 PSI-L Pair Message Parameters
 -----------------------------
 
-+------------+----------------------------------------+--------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------+
-| Parameter  |                  Type                  |                                           Valid Values                                           |                                          Description                                           |
-+============+========================================+==================================================================================================+================================================================================================+
-| hdr        | Generic TISCI message header (8 bytes) | :doc:`Valid Host IDs <../../5_soc_doc/am6x/hosts>`                                               | Generic TISCI message header. Contains the message ID, host ID, sequence number, and any flags |
-+------------+----------------------------------------+--------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------+
-| nav_id     | u32                                    | :ref:`Valid Navigator Subsystem Device IDs <pub_soc_am6x_navss_ids>`                             | The SoC-specific Device ID of the Navigator subsystem in which the PSI-L proxy is located.     |
-+------------+----------------------------------------+--------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------+
-| src_thread | u32                                    | :ref:`Valid Navigator Subsystem PSI-L Source Thread Indices <pub_soc_am6x_psil_thread_ids>`      | Specifies the PSI-L source thread ID to be paired to the destination ID.                       |
-+------------+----------------------------------------+--------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------+
-| dst_thread | u32                                    | :ref:`Valid Navigator Subsystem PSI-L Destination Thread Indices <pub_soc_am6x_psil_thread_ids>` | Specifies the PSI-L destination thread ID to be aired to the source thread ID.                 |
-+------------+----------------------------------------+--------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------+
+.. sysfwapistruct:: tisci_msg_rm_psil_pair_req
+
+.. sysfwapistruct:: tisci_msg_rm_psil_pair_resp
 
 .. _pub_rm_public_psil_unpair:
 
@@ -110,17 +102,9 @@ TISCI Message ID
 PSI-L Unpair Message Parameters
 -------------------------------
 
-+------------+----------------------------------------+--------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------+
-| Parameter  |                  Type                  |                                           Valid Values                                           |                                          Description                                           |
-+============+========================================+==================================================================================================+================================================================================================+
-| hdr        | Generic TISCI message header (8 bytes) | :doc:`Valid Host IDs <../../5_soc_doc/am6x/hosts>`                                               | Generic TISCI message header. Contains the message ID, host ID, sequence number, and any flags |
-+------------+----------------------------------------+--------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------+
-| nav_id     | u32                                    | :ref:`Valid Navigator Subsystem Device IDs <pub_soc_am6x_navss_ids>`                             | The SoC-specific Device ID of the Navigator subsystem in which the PSI-L proxy is located.     |
-+------------+----------------------------------------+--------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------+
-| src_thread | u32                                    | :ref:`Valid Navigator Subsystem PSI-L Source Thread Indices <pub_soc_am6x_psil_thread_ids>`      | Specifies the PSI-L source thread ID to be unpaired from the destination ID.                   |
-+------------+----------------------------------------+--------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------+
-| dst_thread | u32                                    | :ref:`Valid Navigator Subsystem PSI-L Destination Thread Indices <pub_soc_am6x_psil_thread_ids>` | Specifies the PSI-L destination thread ID to be unpaired from the source thread ID.            |
-+------------+----------------------------------------+--------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------+
+.. sysfwapistruct:: tisci_msg_rm_psil_unpair_req
+
+.. sysfwapistruct:: tisci_msg_rm_psil_unpair_resp
 
 .. _pub_rm_public_psil_read:
 

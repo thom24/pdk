@@ -39,8 +39,8 @@
         <link rel="search" title="Search" href="../../search.html"/>
     <link rel="top" title="TISCI User Guide" href="../../index.html"/>
         <link rel="up" title="Chapter 5: SoC Family Specific Documentation" href="../index.html"/>
-        <link rel="next" title="AM6 Peripheral IRQ Source Descriptions" href="irq_sources.html"/>
-        <link rel="prev" title="AM6 Clock Identifiers" href="clocks.html"/> 
+        <link rel="next" title="AM6 Interrupt Management Device Descriptions" href="interrupt_cfg.html"/>
+        <link rel="prev" title="AM6 PLL Defaults" href="pll_data.html"/> 
 
   
   <script src="../../_static/js/modernizr.min.js"></script>
@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                20.01.00
+                20.02.00
               </div>
             
           
@@ -106,28 +106,30 @@
 <li class="toctree-l1"><a class="reference internal" href="../../3_boardcfg/index.html">Chapter 3: Board Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../4_trace/index.html">Chapter 4: Interpreting Trace Data</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">Chapter 5: SoC Family Specific Documentation</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="../index.html#am6-soc-family">AM6 SoC Family</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#am65x-sr1">AM65x SR1</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="hosts.html">AM6 Host Descriptions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="devices.html">AM6 Devices Descriptions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="clocks.html">AM6 Clock Identifiers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pll_data.html">AM6 PLL Defaults</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">AM6 Board Configuration Resource Assignment Type Descriptions</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#introduction">Introduction</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#enumeration-of-resource-type-ids">Enumeration of Resource Type IDs</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="irq_sources.html">AM6 Peripheral IRQ Source Descriptions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="irq_dsts.html">AM6 Peripheral IRQ Destination Descriptions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="navss.html">AM6 Navigator Subsystem Descriptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="interrupt_cfg.html">AM6 Interrupt Management Device Descriptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ra_cfg.html">AM6 Ring Accelerator Device Descriptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dma_cfg.html">AM6 DMA Device Descriptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="psil_cfg.html">AM6 PSI-L Device Descriptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="proxy_cfg.html">AM6 Proxy Device Descriptions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="sec_proxy.html">AM6 Secure Proxy Descriptions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="processors.html">AM6 Processor Descriptions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="runtime_keystore.html">AM6 Runtime Keystore</a></li>
 <li class="toctree-l3"><a class="reference internal" href="firewalls.html">AM6 Firewall Descriptions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="soc_devgrps.html">AM6 Device Group descriptions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="extended_otp.html">AM65x Extended OTP Information</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../index.html#am65x-sr2">AM65x SR2</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#j721e-soc-family">J721E SoC Family</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#am65x-sr2">AM65x SR2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#j721e">J721E</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../6_topic_user_guides/index.html">Chapter 6: Topic User Guides</a></li>
@@ -180,582 +182,455 @@
 <div class="section" id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
 <p>This chapter provides information of Board Configuration resource assignment
-type IDs that are permitted in the AM6 SoC. These resource type IDs represent
-AM6 resources that can have ranges assigned to SoC processing entities (or PEs).</p>
-</div>
-<div class="section" id="enumeration-of-resource-type-ids">
-<h2>Enumeration of Resource Type IDs<a class="headerlink" href="#enumeration-of-resource-type-ids" title="Permalink to this headline">¶</a></h2>
+type IDs that are permitted in the AM6 SoC.  The resource type IDs represent AM6
+resources ranges assignable to SoC processing entities (or PEs).</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="13%" />
-<col width="6%" />
-<col width="19%" />
-<col width="7%" />
-<col width="9%" />
-<col width="46%" />
+<col width="20%" />
+<col width="8%" />
+<col width="23%" />
+<col width="8%" />
+<col width="11%" />
+<col width="14%" />
+<col width="15%" />
 </colgroup>
 <thead valign="bottom">
-<tr class="row-odd"><th class="head">Type Name</th>
-<th class="head">Type (10-bits)</th>
+<tr class="row-odd"><th class="head">Device Name</th>
+<th class="head">Device ID
+(10-bits)</th>
 <th class="head">Subtype Name</th>
-<th class="head">Subtype (6-bits)</th>
-<th class="head">Unique Type (16-bits)</th>
-<th class="head">Description</th>
+<th class="head">Subtype ID
+(6-bits)</th>
+<th class="head">Unique Type ID
+(16-bits)</th>
+<th class="head">Resource Range Start</th>
+<th class="head">Resource Range Number</th>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>RESASG_TYPE_MAIN_NAV_UDMASS_IA0</td>
-<td>0x000</td>
-<td>RESASG_SUBTYPE_MAIN_NAV_UDMASS_IA0_VINT</td>
-<td>0x00</td>
-<td>0x0000</td>
-<td>Resource type for Main Navigator IA driver UDMASS IA0 virtual interrupts</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_MAIN_NAV_UDMASS_IA0_SEVI</td>
-<td>0x01</td>
-<td>0x0001</td>
-<td>Resource type for Main Navigator UDMASS IA0 source events (SEVI)</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_MAIN_NAV_UDMASS_IA0_MEVI</td>
-<td>0x02</td>
-<td>0x0002</td>
-<td>Resource type for Main Navigator UDMASS IA0 multicast events (MEVI)</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_MAIN_NAV_UDMASS_IA0_GEVI</td>
-<td>0x03</td>
-<td>0x0003</td>
-<td>Resource type for Main Navigator UDMASS IA0 global counter events (GEVI)</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>RESASG_TYPE_MAIN_NAV_MODSS_IA0</td>
-<td>0x001</td>
-<td>RESASG_SUBTYPE_MAIN_NAV_MODSS_IA0_VINT</td>
-<td>0x00</td>
-<td>0x0040</td>
-<td>Resource type for Main Navigator IA driver MODSS IA0 virtual interrupts</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_MAIN_NAV_MODSS_IA0_SEVI</td>
-<td>0x01</td>
-<td>0x0041</td>
-<td>Resource type for Main Navigator MODSS IA0 source events (SEVI)</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>RESASG_TYPE_MAIN_NAV_MODSS_IA1</td>
-<td>0x002</td>
-<td>RESASG_SUBTYPE_MAIN_NAV_MODSS_IA1_VINT</td>
-<td>0x00</td>
-<td>0x0080</td>
-<td>Resource type for Main Navigator IA driver MODSS IA1 virtual interrupts</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_MAIN_NAV_MODSS_IA1_SEVI</td>
-<td>0x01</td>
-<td>0x0081</td>
-<td>Resource type for Main Navigator MODSS IA1 source events (SEVI)</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>RESASG_TYPE_MCU_NAV_UDMASS_IA0</td>
+<tr class="row-even"><td>AM6_DEV_CMPEVENT_INTRTR0</td>
 <td>0x003</td>
-<td>RESASG_SUBTYPE_MCU_NAV_UDMASS_IA0_VINT</td>
+<td>RESASG_SUBTYPE_IR_OUTPUT</td>
 <td>0x00</td>
 <td>0x00C0</td>
-<td>Resource type for MCU Navigator IA driver UDMASS IA0 virtual interrupts</td>
+<td>0</td>
+<td>32</td>
+</tr>
+<tr class="row-odd"><td>AM6_DEV_MAIN2MCU_LVL_INTRTR0</td>
+<td>0x061</td>
+<td>RESASG_SUBTYPE_IR_OUTPUT</td>
+<td>0x00</td>
+<td>0x1840</td>
+<td>0</td>
+<td>64</td>
+</tr>
+<tr class="row-even"><td>AM6_DEV_MAIN2MCU_PLS_INTRTR0</td>
+<td>0x062</td>
+<td>RESASG_SUBTYPE_IR_OUTPUT</td>
+<td>0x00</td>
+<td>0x1880</td>
+<td>0</td>
+<td>48</td>
+</tr>
+<tr class="row-odd"><td>AM6_DEV_GPIOMUX_INTRTR0</td>
+<td>0x064</td>
+<td>RESASG_SUBTYPE_IR_OUTPUT</td>
+<td>0x00</td>
+<td>0x1900</td>
+<td>0</td>
+<td>32</td>
+</tr>
+<tr class="row-even"><td>AM6_DEV_NAVSS0_INTR_ROUTER_0</td>
+<td>0x0B6</td>
+<td>RESASG_SUBTYPE_IR_OUTPUT</td>
+<td>0x00</td>
+<td>0x2D80</td>
+<td>16</td>
+<td>136</td>
+</tr>
+<tr class="row-odd"><td>AM6_DEV_NAVSS0_MODSS_INTA0</td>
+<td>0x0B4</td>
+<td>RESASG_SUBTYPE_IA_VINT</td>
+<td>0x0A</td>
+<td>0x2D0A</td>
+<td>0</td>
+<td>64</td>
 </tr>
 <tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
-<td>RESASG_SUBTYPE_MCU_NAV_UDMASS_IA0_SEVI</td>
+<td>RESASG_SUBTYPE_GLOBAL_EVENT_SEVT</td>
+<td>0x0D</td>
+<td>0x2D0D</td>
+<td>20480</td>
+<td>1024</td>
+</tr>
+<tr class="row-odd"><td>AM6_DEV_NAVSS0_MODSS_INTA1</td>
+<td>0x0B5</td>
+<td>RESASG_SUBTYPE_IA_VINT</td>
+<td>0x0A</td>
+<td>0x2D4A</td>
+<td>0</td>
+<td>64</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_GLOBAL_EVENT_SEVT</td>
+<td>0x0D</td>
+<td>0x2D4D</td>
+<td>22528</td>
+<td>1024</td>
+</tr>
+<tr class="row-odd"><td>AM6_DEV_NAVSS0_PROXY0</td>
+<td>0x0B9</td>
+<td>RESASG_SUBTYPE_PROXY_PROXIES</td>
+<td>0x00</td>
+<td>0x2E40</td>
+<td>1</td>
+<td>63</td>
+</tr>
+<tr class="row-even"><td>AM6_DEV_NAVSS0_RINGACC0</td>
+<td>0x0BB</td>
+<td>RESASG_SUBTYPE_RA_ERROR_OES</td>
+<td>0x00</td>
+<td>0x2EC0</td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_RA_GP</td>
 <td>0x01</td>
-<td>0x00C1</td>
-<td>Resource type for MCU Navigator UDMASS IA0 source events (SEVI)</td>
+<td>0x2EC1</td>
+<td>304</td>
+<td>464</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
-<td>RESASG_SUBTYPE_MCU_NAV_UDMASS_IA0_MEVI</td>
+<td>RESASG_SUBTYPE_RA_UDMAP_RX</td>
 <td>0x02</td>
-<td>0x00C2</td>
-<td>Resource type for MCU Navigator UDMASS IA0 multicast events (MEVI)</td>
+<td>0x2EC2</td>
+<td>160</td>
+<td>142</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
-<td>RESASG_SUBTYPE_MCU_NAV_UDMASS_IA0_GEVI</td>
+<td>RESASG_SUBTYPE_RA_UDMAP_TX</td>
 <td>0x03</td>
-<td>0x00C3</td>
-<td>Resource type for MCU Navigator UDMASS IA0 global counter events (GEVI)</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>RESASG_TYPE_MAIN_NAV_MCRC</td>
-<td>0x004</td>
-<td>RESASG_SUBTYPE_MAIN_NAV_MCRC_LEVI</td>
-<td>0x00</td>
-<td>0x0100</td>
-<td>Resource type for Main Navigator MCRC local events (LEVI)</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>RESASG_TYPE_MCU_NAV_MCRC</td>
-<td>0x005</td>
-<td>RESASG_SUBTYPE_MCU_NAV_MCRC_LEVI</td>
-<td>0x00</td>
-<td>0x0140</td>
-<td>Resource type for MCU Navigator MCRC local events (LEVI)</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>RESASG_TYPE_MAIN_NAV_UDMAP</td>
-<td>0x006</td>
-<td>RESASG_SUBTYPE_MAIN_NAV_UDMAP_TRIGGER</td>
-<td>0x00</td>
-<td>0x0180</td>
-<td>Resource type for Main Navigator UDMAP trigger events</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_MAIN_NAV_UDMAP_TX_HCHAN</td>
-<td>0x01</td>
-<td>0x0181</td>
-<td>Resource type for Main Navigator UDMAP driver high capacity transmit channels</td>
+<td>0x2EC3</td>
+<td>8</td>
+<td>112</td>
 </tr>
 <tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
-<td>RESASG_SUBTYPE_MAIN_NAV_UDMAP_TX_CHAN</td>
-<td>0x02</td>
-<td>0x0182</td>
-<td>Resource type for Main Navigator UDMAP driver standard transmit channels</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_MAIN_NAV_UDMAP_TX_ECHAN</td>
-<td>0x03</td>
-<td>0x0183</td>
-<td>Resource type for Main Navigator UDMAP driver external transmit channels</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_MAIN_NAV_UDMAP_RX_HCHAN</td>
+<td>RESASG_SUBTYPE_RA_UDMAP_TX_EXT</td>
 <td>0x04</td>
-<td>0x0184</td>
-<td>Resource type for Main Navigator UDMAP driver high capacity receive channels</td>
+<td>0x2EC4</td>
+<td>120</td>
+<td>32</td>
 </tr>
 <tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
-<td>RESASG_SUBTYPE_MAIN_NAV_UDMAP_RX_CHAN</td>
+<td>RESASG_SUBTYPE_RA_UDMAP_RX_H</td>
 <td>0x05</td>
-<td>0x0185</td>
-<td>Resource type for Main Navigator UDMAP driver standard receive channels</td>
+<td>0x2EC5</td>
+<td>153</td>
+<td>7</td>
 </tr>
 <tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
-<td>RESASG_SUBTYPE_MAIN_NAV_UDMAP_RX_FLOW_COMMON</td>
-<td>0x06</td>
-<td>0x0186</td>
-<td>Resource type for Main Navigator UDMAP driver common receive flows used by receive channel RCHAN_RFLOW_RNG parameters</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_MAIN_NAV_UDMAP_INVALID_FLOW_OES</td>
+<td>RESASG_SUBTYPE_RA_UDMAP_TX_H</td>
 <td>0x07</td>
-<td>0x0187</td>
-<td>Resource type for Main Navigator UDMAP driver global config invalid flow OES register</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_MAIN_NAV_UDMAP_GCFG</td>
-<td>0x08</td>
-<td>0x0188</td>
-<td>Resource type for Main Navigator UDMAP driver global configuration MMR region control</td>
+<td>0x2EC7</td>
+<td>1</td>
+<td>7</td>
 </tr>
 <tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
+<td>RESASG_SUBTYPE_RA_VIRTID</td>
+<td>0x0A</td>
+<td>0x2ECA</td>
+<td>0</td>
+<td>4096</td>
 </tr>
-<tr class="row-even"><td>RESASG_TYPE_MCU_NAV_UDMAP</td>
-<td>0x007</td>
-<td>RESASG_SUBTYPE_MCU_NAV_UDMAP_TRIGGER</td>
+<tr class="row-even"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_RA_MONITORS</td>
+<td>0x0B</td>
+<td>0x2ECB</td>
+<td>0</td>
+<td>32</td>
+</tr>
+<tr class="row-odd"><td>AM6_DEV_NAVSS0_UDMAP0</td>
+<td>0x0BC</td>
+<td>RESASG_SUBTYPE_UDMAP_RX_FLOW_COMMON</td>
 <td>0x00</td>
-<td>0x01C0</td>
-<td>Resource type for MCU Navigator UDMAP trigger events</td>
+<td>0x2F00</td>
+<td>150</td>
+<td>150</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
-<td>RESASG_SUBTYPE_MCU_NAV_UDMAP_TX_HCHAN</td>
+<td>RESASG_SUBTYPE_UDMAP_INVALID_FLOW_OES</td>
 <td>0x01</td>
-<td>0x01C1</td>
-<td>Resource type for MCU Navigator UDMAP driver high capacity transmit channels</td>
+<td>0x2F01</td>
+<td>0</td>
+<td>1</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
-<td>RESASG_SUBTYPE_MCU_NAV_UDMAP_TX_CHAN</td>
+<td>RESASG_SUBTYPE_GLOBAL_EVENT_TRIGGER</td>
 <td>0x02</td>
-<td>0x01C2</td>
-<td>Resource type for MCU Navigator UDMAP driver standard transmit channels</td>
+<td>0x2F02</td>
+<td>49152</td>
+<td>1024</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
-<td>RESASG_SUBTYPE_MCU_NAV_UDMAP_RX_HCHAN</td>
+<td>RESASG_SUBTYPE_UDMAP_GLOBAL_CONFIG</td>
 <td>0x03</td>
-<td>0x01C3</td>
-<td>Resource type for MCU Navigator UDMAP driver high capacity receive channels</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_MCU_NAV_UDMAP_RX_CHAN</td>
-<td>0x04</td>
-<td>0x01C4</td>
-<td>Resource type for MCU Navigator UDMAP driver standard receive channels</td>
+<td>0x2F03</td>
+<td>0</td>
+<td>1</td>
 </tr>
 <tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
-<td>RESASG_SUBTYPE_MCU_NAV_UDMAP_RX_FLOW_COMMON</td>
+<td>RESASG_SUBTYPE_UDMAP_RX_CHAN</td>
+<td>0x0A</td>
+<td>0x2F0A</td>
+<td>8</td>
+<td>142</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_UDMAP_RX_HCHAN</td>
+<td>0x0B</td>
+<td>0x2F0B</td>
+<td>2</td>
+<td>6</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_UDMAP_TX_CHAN</td>
+<td>0x0D</td>
+<td>0x2F0D</td>
+<td>8</td>
+<td>112</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_UDMAP_TX_ECHAN</td>
+<td>0x0E</td>
+<td>0x2F0E</td>
+<td>120</td>
+<td>32</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_UDMAP_TX_HCHAN</td>
+<td>0x0F</td>
+<td>0x2F0F</td>
+<td>1</td>
+<td>7</td>
+</tr>
+<tr class="row-even"><td>AM6_DEV_NAVSS0_UDMASS_INTA0</td>
+<td>0x0B3</td>
+<td>RESASG_SUBTYPE_IA_VINT</td>
+<td>0x0A</td>
+<td>0x2CCA</td>
+<td>16</td>
+<td>240</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_GLOBAL_EVENT_SEVT</td>
+<td>0x0D</td>
+<td>0x2CCD</td>
+<td>16</td>
+<td>4592</td>
+</tr>
+<tr class="row-even"><td>AM6_DEV_MCU_NAVSS0_INTR_ROUTER_0</td>
+<td>0x0BE</td>
+<td>RESASG_SUBTYPE_IR_OUTPUT</td>
+<td>0x00</td>
+<td>0x2F80</td>
+<td>4</td>
+<td>28</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>36</td>
+<td>28</td>
+</tr>
+<tr class="row-even"><td>AM6_DEV_MCU_NAVSS0_PROXY0</td>
+<td>0x0BF</td>
+<td>RESASG_SUBTYPE_PROXY_PROXIES</td>
+<td>0x00</td>
+<td>0x2FC0</td>
+<td>0</td>
+<td>64</td>
+</tr>
+<tr class="row-odd"><td>AM6_DEV_MCU_NAVSS0_RINGACC0</td>
+<td>0x0C3</td>
+<td>RESASG_SUBTYPE_RA_ERROR_OES</td>
+<td>0x00</td>
+<td>0x30C0</td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_RA_GP</td>
+<td>0x01</td>
+<td>0x30C1</td>
+<td>96</td>
+<td>160</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_RA_UDMAP_RX</td>
+<td>0x02</td>
+<td>0x30C2</td>
+<td>50</td>
+<td>46</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_RA_UDMAP_TX</td>
+<td>0x03</td>
+<td>0x30C3</td>
+<td>2</td>
+<td>46</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_RA_UDMAP_RX_H</td>
 <td>0x05</td>
-<td>0x01C5</td>
-<td>Resource type for MCU Navigator UDMAP driver common receive flows used by receive channel RCHAN_RFLOW_RNG parameters</td>
+<td>0x30C5</td>
+<td>48</td>
+<td>2</td>
 </tr>
 <tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
-<td>RESASG_SUBTYPE_MCU_NAV_UDMAP_INVALID_FLOW_OES</td>
-<td>0x06</td>
-<td>0x01C6</td>
-<td>Resource type for MCU Navigator UDMAP driver global config invalid flow OES register</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_MCU_NAV_UDMAP_GCFG</td>
+<td>RESASG_SUBTYPE_RA_UDMAP_TX_H</td>
 <td>0x07</td>
-<td>0x01C7</td>
-<td>Resource type for MCU Navigator UDMAP driver global configuration MMR region control</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>RESASG_TYPE_MSMC</td>
-<td>0x008</td>
-<td>RESASG_SUBTYPE_MSMC_DRU</td>
-<td>0x00</td>
-<td>0x0200</td>
-<td>Resource type for MSMC DRU events</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>RESASG_TYPE_MAIN_NAV_RA</td>
-<td>0x009</td>
-<td>RESASG_SUBTYPE_MAIN_NAV_RA_RING_UDMAP_TX</td>
-<td>0x00</td>
-<td>0x0240</td>
-<td>Resource type for Main Navigator RA driver UDMAP tx rings</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_MAIN_NAV_RA_RING_UDMAP_RX</td>
-<td>0x01</td>
-<td>0x0241</td>
-<td>Resource type for Main Navigator RA driver UDMAP rx rings</td>
+<td>0x30C7</td>
+<td>0</td>
+<td>2</td>
 </tr>
 <tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
-<td>RESASG_SUBTYPE_MAIN_NAV_RA_RING_GP</td>
+<td>RESASG_SUBTYPE_RA_VIRTID</td>
+<td>0x0A</td>
+<td>0x30CA</td>
+<td>0</td>
+<td>4096</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_RA_MONITORS</td>
+<td>0x0B</td>
+<td>0x30CB</td>
+<td>0</td>
+<td>32</td>
+</tr>
+<tr class="row-odd"><td>AM6_DEV_MCU_NAVSS0_UDMAP0</td>
+<td>0x0C2</td>
+<td>RESASG_SUBTYPE_UDMAP_RX_FLOW_COMMON</td>
+<td>0x00</td>
+<td>0x3080</td>
+<td>48</td>
+<td>48</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_UDMAP_INVALID_FLOW_OES</td>
+<td>0x01</td>
+<td>0x3081</td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_GLOBAL_EVENT_TRIGGER</td>
 <td>0x02</td>
-<td>0x0242</td>
-<td>Resource type for Main Navigator RA driver general purpose rings</td>
+<td>0x3082</td>
+<td>56320</td>
+<td>256</td>
 </tr>
 <tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
-<td>RESASG_SUBYTPE_MAIN_NAV_RA_ERROR_OES</td>
+<td>RESASG_SUBTYPE_UDMAP_GLOBAL_CONFIG</td>
 <td>0x03</td>
-<td>0x0243</td>
-<td>Resource type for Main Navigator RA driver global config error OES register</td>
+<td>0x3083</td>
+<td>0</td>
+<td>1</td>
 </tr>
 <tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
-<td>RESASG_SUBYTPE_MAIN_NAV_RA_VIRTID</td>
-<td>0x04</td>
-<td>0x0244</td>
-<td>Resource type for Main Navigator RA ring Virt ID range</td>
+<td>RESASG_SUBTYPE_UDMAP_RX_CHAN</td>
+<td>0x0A</td>
+<td>0x308A</td>
+<td>2</td>
+<td>46</td>
 </tr>
 <tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
-<td>RESASG_SUBYTPE_MAIN_NAV_RA_MONITOR</td>
-<td>0x05</td>
-<td>0x0245</td>
-<td>Resource type for Main Navigator RA ring monitor range</td>
+<td>RESASG_SUBTYPE_UDMAP_RX_HCHAN</td>
+<td>0x0B</td>
+<td>0x308B</td>
+<td>0</td>
+<td>2</td>
 </tr>
 <tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
+<td>RESASG_SUBTYPE_UDMAP_TX_CHAN</td>
+<td>0x0D</td>
+<td>0x308D</td>
+<td>2</td>
+<td>46</td>
 </tr>
-<tr class="row-even"><td>RESASG_TYPE_MCU_NAV_RA</td>
-<td>0x00A</td>
-<td>RESASG_SUBTYPE_MCU_NAV_RA_RING_UDMAP_TX</td>
+<tr class="row-even"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_UDMAP_TX_HCHAN</td>
+<td>0x0F</td>
+<td>0x308F</td>
+<td>0</td>
+<td>2</td>
+</tr>
+<tr class="row-odd"><td>AM6_DEV_MCU_NAVSS0_INTR_AGGR_0</td>
+<td>0x0BD</td>
+<td>RESASG_SUBTYPE_IA_VINT</td>
+<td>0x0A</td>
+<td>0x2F4A</td>
+<td>8</td>
+<td>248</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_GLOBAL_EVENT_SEVT</td>
+<td>0x0D</td>
+<td>0x2F4D</td>
+<td>16392</td>
+<td>1528</td>
+</tr>
+<tr class="row-odd"><td>AM6_DEV_TIMESYNC_INTRTR0</td>
+<td>0x091</td>
+<td>RESASG_SUBTYPE_IR_OUTPUT</td>
 <td>0x00</td>
-<td>0x0280</td>
-<td>Resource type for MCU Navigator RA driver UDMAP tx rings</td>
+<td>0x2440</td>
+<td>0</td>
+<td>40</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_MCU_NAV_RA_RING_UDMAP_RX</td>
-<td>0x01</td>
-<td>0x0281</td>
-<td>Resource type for MCU Navigator RA driver UDMAP rx rings</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_MCU_NAV_RA_RING_GP</td>
-<td>0x02</td>
-<td>0x0282</td>
-<td>Resource type for MCU Navigator RA driver general purpose rings</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBYTPE_MCU_NAV_RA_ERROR_OES</td>
-<td>0x03</td>
-<td>0x0283</td>
-<td>Resource type for MCU Navigator RA driver global config error OES register</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBYTPE_MCU_NAV_RA_VIRTID</td>
-<td>0x04</td>
-<td>0x0284</td>
-<td>Resource type for MCU Navigator RA ring Virt ID range</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBYTPE_MCU_NAV_RA_MONITOR</td>
-<td>0x05</td>
-<td>0x0285</td>
-<td>Resource type for MCU Navigator RA ring monitor range</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>RESASG_TYPE_GIC_IRQ</td>
-<td>0x00B</td>
-<td>RESASG_SUBTYPE_GIC_IRQ_MAIN_NAV_SET0</td>
+<tr class="row-even"><td>AM6_DEV_WKUP_GPIOMUX_INTRTR0</td>
+<td>0x09C</td>
+<td>RESASG_SUBTYPE_IR_OUTPUT</td>
 <td>0x00</td>
-<td>0x02C0</td>
-<td>Resource type for GIC IRQ inputs (64 - 127) from Main Navigator</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_GIC_IRQ_MAIN_GPIO</td>
-<td>0x01</td>
-<td>0x02C1</td>
-<td>Resource type for GIC IRQ inputs (392 - 423) from Main GPIO IR</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_GIC_IRQ_MAIN_NAV_SET1</td>
-<td>0x02</td>
-<td>0x02C2</td>
-<td>Resource type for GIC IRQ inputs (448 - 503) from Main Navigator</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_GIC_IRQ_COMP_EVT</td>
-<td>0x03</td>
-<td>0x02C3</td>
-<td>Resource type for GIC IRQ inputs (544 - 559) from Compare event IR</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_GIC_IRQ_WKUP_GPIO</td>
-<td>0x04</td>
-<td>0x02C4</td>
-<td>Resource type for GIC IRQ inputs (712 - 727) from Wakeup GPIO IR</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>RESASG_TYPE_PULSAR_C0_IRQ</td>
-<td>0x00C</td>
-<td>RESASG_SUBTYPE_PULSAR_C0_IRQ_MCU_NAV</td>
-<td>0x00</td>
-<td>0x0300</td>
-<td>Resource type for Pulsar core 0 VIM IRQ inputs (64 - 95) from MCU Navigator</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_PULSAR_C0_IRQ_WKUP_GPIO</td>
-<td>0x01</td>
-<td>0x0301</td>
-<td>Resource type for Pulsar core 0 VIM IRQ inputs (124 - 139) from Wakeup GPIO IR</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_PULSAR_C0_IRQ_MAIN2MCU_LVL</td>
-<td>0x02</td>
-<td>0x0302</td>
-<td>Resource type for Pulsar core 0 VIM IRQ inputs (160 - 223) from Main2MCU level IR</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_PULSAR_C0_IRQ_MAIN2MCU_PLS</td>
-<td>0x03</td>
-<td>0x0303</td>
-<td>Resource type for Pulsar core 0 VIM IRQ inputs (224 - 271) from Main2MCU pulse IR</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>RESASG_TYPE_PULSAR_C1_IRQ</td>
-<td>0x00D</td>
-<td>RESASG_SUBTYPE_PULSAR_C1_IRQ_MCU_NAV</td>
-<td>0x00</td>
-<td>0x0340</td>
-<td>Resource type for Pulsar core 1 VIM IRQ inputs (64 - 95) from MCU Navigator</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_PULSAR_C1_IRQ_WKUP_GPIO</td>
-<td>0x01</td>
-<td>0x0341</td>
-<td>Resource type for Pulsar core 1 VIM IRQ inputs (124 - 139) from Wakeup GPIO IR</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_PULSAR_C1_IRQ_MAIN2MCU_LVL</td>
-<td>0x02</td>
-<td>0x0342</td>
-<td>Resource type for Pulsar core 1 VIM IRQ inputs (160 - 223) from Main2MCU level IR</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_PULSAR_C1_IRQ_MAIN2MCU_PLS</td>
-<td>0x03</td>
-<td>0x0343</td>
-<td>Resource type for Pulsar core 1 VIM IRQ inputs (224 - 271) from Main2MCU pulse IR</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>RESASG_TYPE_ICSSG0_IRQ</td>
-<td>0x00E</td>
-<td>RESASG_SUBTYPE_ICSSG0_IRQ_MAIN_NAV</td>
-<td>0x00</td>
-<td>0x0380</td>
-<td>Resource type for ICSSG0 IRQ inputs (110 - 117) from Main Navigator</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_ICSSG0_IRQ_MAIN_GPIO</td>
-<td>0x01</td>
-<td>0x0381</td>
-<td>Resource type for ICSSG0 IRQ inputs (152 - 159) from Main GPIO IR</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>RESASG_TYPE_ICSSG1_IRQ</td>
-<td>0x00F</td>
-<td>RESASG_SUBTYPE_ICSSG1_IRQ_MAIN_NAV</td>
-<td>0x00</td>
-<td>0x03C0</td>
-<td>Resource type for ICSSG1 IRQ inputs (110 - 117) from Main Navigator</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_ICSSG1_IRQ_MAIN_GPIO</td>
-<td>0x01</td>
-<td>0x03C1</td>
-<td>Resource type for ICSSG1 IRQ inputs (152 - 159) from Main GPIO IR</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>RESASG_TYPE_ICSSG2_IRQ</td>
-<td>0x010</td>
-<td>RESASG_SUBTYPE_ICSSG1_IRQ_MAIN_NAV</td>
-<td>0x00</td>
-<td>0x0400</td>
-<td>Resource type for ICSSG2 IRQ inputs (110 - 117) from Main Navigator</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_ICSSG1_IRQ_MAIN_GPIO</td>
-<td>0x01</td>
-<td>0x0401</td>
-<td>Resource type for ICSSG2 IRQ inputs (152 - 159) from Main GPIO IR</td>
+<td>0x2700</td>
+<td>0</td>
+<td>16</td>
 </tr>
 </tbody>
 </table>
@@ -769,10 +644,10 @@ AM6 resources that can have ranges assigned to SoC processing entities (or PEs).
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="irq_sources.html" class="btn btn-neutral float-right" title="AM6 Peripheral IRQ Source Descriptions" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="interrupt_cfg.html" class="btn btn-neutral float-right" title="AM6 Interrupt Management Device Descriptions" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="clocks.html" class="btn btn-neutral" title="AM6 Clock Identifiers" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="pll_data.html" class="btn btn-neutral" title="AM6 PLL Defaults" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -803,7 +678,7 @@ AM6 resources that can have ranges assigned to SoC processing entities (or PEs).
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'20.01.00',
+            VERSION:'20.02.00',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

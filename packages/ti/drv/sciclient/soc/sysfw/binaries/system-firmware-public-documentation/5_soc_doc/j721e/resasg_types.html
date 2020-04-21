@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>j721e Board Configuration Resource Assignment Type Descriptions &mdash; TISCI User Guide</title>
+  <title>J721E Board Configuration Resource Assignment Type Descriptions &mdash; TISCI User Guide</title>
   
 
   
@@ -39,8 +39,8 @@
         <link rel="search" title="Search" href="../../search.html"/>
     <link rel="top" title="TISCI User Guide" href="../../index.html"/>
         <link rel="up" title="Chapter 5: SoC Family Specific Documentation" href="../index.html"/>
-        <link rel="next" title="j721e Peripheral Interrupt Source Descriptions" href="irq_sources.html"/>
-        <link rel="prev" title="J721E Clock Identifiers" href="clocks.html"/> 
+        <link rel="next" title="J721E Interrupt Management Device Descriptions" href="interrupt_cfg.html"/>
+        <link rel="prev" title="J721E PLL Defaults" href="pll_data.html"/> 
 
   
   <script src="../../_static/js/modernizr.min.js"></script>
@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                20.01.00
+                20.02.00
               </div>
             
           
@@ -106,18 +106,22 @@
 <li class="toctree-l1"><a class="reference internal" href="../../3_boardcfg/index.html">Chapter 3: Board Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../4_trace/index.html">Chapter 4: Interpreting Trace Data</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">Chapter 5: SoC Family Specific Documentation</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../index.html#am6-soc-family">AM6 SoC Family</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../index.html#j721e-soc-family">J721E SoC Family</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../index.html#am65x-sr1">AM65x SR1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#am65x-sr2">AM65x SR2</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#j721e">J721E</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="hosts.html">J721E Host Descriptions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="devices.html">J721E Devices Descriptions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="clocks.html">J721E Clock Identifiers</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">j721e Board Configuration Resource Assignment Type Descriptions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pll_data.html">J721E PLL Defaults</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">J721E Board Configuration Resource Assignment Type Descriptions</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#introduction">Introduction</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="irq_sources.html">j721e Peripheral Interrupt Source Descriptions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="irq_dsts.html">j721e Peripheral Interrupt Destination Descriptions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="navss.html">j721e Navigator Subsystem Descriptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="interrupt_cfg.html">J721E Interrupt Management Device Descriptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ra_cfg.html">J721E Ring Accelerator Device Descriptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dma_cfg.html">J721E DMA Device Descriptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="psil_cfg.html">J721E PSI-L Device Descriptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="proxy_cfg.html">J721E Proxy Device Descriptions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="sec_proxy.html">J721E Secure Proxy Descriptions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="processors.html">J721E Processor Descriptions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="firewalls.html">J721E Firewall Descriptions</a></li>
@@ -159,7 +163,7 @@
       
           <li><a href="../index.html">Chapter 5: SoC Family Specific Documentation</a> &raquo;</li>
       
-    <li>j721e Board Configuration Resource Assignment Type Descriptions</li>
+    <li>J721E Board Configuration Resource Assignment Type Descriptions</li>
       <li class="wy-breadcrumbs-aside">
         
           
@@ -172,19 +176,21 @@
            <div itemprop="articleBody">
             
   <div class="section" id="j721e-board-configuration-resource-assignment-type-descriptions">
-<h1>j721e Board Configuration Resource Assignment Type Descriptions<a class="headerlink" href="#j721e-board-configuration-resource-assignment-type-descriptions" title="Permalink to this headline">¶</a></h1>
+<h1>J721E Board Configuration Resource Assignment Type Descriptions<a class="headerlink" href="#j721e-board-configuration-resource-assignment-type-descriptions" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
 <p>This chapter provides information of Board Configuration resource assignment
-type IDs that are permitted in the j721e SoC.  The resource type IDs represent
-j721e resources ranges assignable to SoC processing entities (or PEs).</p>
+type IDs that are permitted in the J721E SoC.  The resource type IDs represent
+J721E resources ranges assignable to SoC processing entities (or PEs).</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="21%" />
-<col width="7%" />
-<col width="53%" />
 <col width="8%" />
-<col width="10%" />
+<col width="23%" />
+<col width="8%" />
+<col width="11%" />
+<col width="14%" />
+<col width="15%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Device Name</th>
@@ -195,848 +201,546 @@ j721e resources ranges assignable to SoC processing entities (or PEs).</p>
 (6-bits)</th>
 <th class="head">Unique Type ID
 (16-bits)</th>
+<th class="head">Resource Range Start</th>
+<th class="head">Resource Range Number</th>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>J721E_DEV_COMPUTE_CLUSTER0_CLEC</td>
-<td>0x006</td>
-<td>RESASG_SUBTYPE_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_IRQ_GROUP0_FROM_NAVSS0_INTR_ROUTER_0</td>
+<tr class="row-even"><td>J721E_DEV_C66SS0_INTROUTER0</td>
+<td>0x079</td>
+<td>RESASG_SUBTYPE_IR_OUTPUT</td>
 <td>0x00</td>
-<td>0x0180</td>
+<td>0x1E40</td>
+<td>4</td>
+<td>93</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_IRQ_GROUP0_FROM_GPIOMUX_INTRTR0</td>
-<td>0x01</td>
-<td>0x0181</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_IRQ_GROUP1_FROM_NAVSS0_INTR_ROUTER_0</td>
-<td>0x02</td>
-<td>0x0182</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_IRQ_GROUP0_FROM_CMPEVENT_INTRTR0</td>
-<td>0x03</td>
-<td>0x0183</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_IRQ_GROUP2_FROM_NAVSS0_INTR_ROUTER_0</td>
-<td>0x04</td>
-<td>0x0184</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_IRQ_GROUP0_FROM_WKUP_GPIOMUX_INTRTR0</td>
-<td>0x05</td>
-<td>0x0185</td>
-</tr>
-<tr class="row-even"><td>J721E_DEV_COMPUTE_CLUSTER0_GIC500SS</td>
-<td>0x00E</td>
-<td>RESASG_SUBTYPE_COMPUTE_CLUSTER0_GIC500SS_SPI_IRQ_GROUP0_FROM_NAVSS0_INTR_ROUTER_0</td>
+<tr class="row-odd"><td>J721E_DEV_C66SS1_INTROUTER0</td>
+<td>0x07A</td>
+<td>RESASG_SUBTYPE_IR_OUTPUT</td>
 <td>0x00</td>
-<td>0x0380</td>
+<td>0x1E80</td>
+<td>4</td>
+<td>93</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_COMPUTE_CLUSTER0_GIC500SS_SPI_IRQ_GROUP0_FROM_GPIOMUX_INTRTR0</td>
-<td>0x01</td>
-<td>0x0381</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_COMPUTE_CLUSTER0_GIC500SS_SPI_IRQ_GROUP1_FROM_NAVSS0_INTR_ROUTER_0</td>
-<td>0x02</td>
-<td>0x0382</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_COMPUTE_CLUSTER0_GIC500SS_SPI_IRQ_GROUP0_FROM_CMPEVENT_INTRTR0</td>
-<td>0x03</td>
-<td>0x0383</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_COMPUTE_CLUSTER0_GIC500SS_SPI_IRQ_GROUP2_FROM_NAVSS0_INTR_ROUTER_0</td>
-<td>0x04</td>
-<td>0x0384</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_COMPUTE_CLUSTER0_GIC500SS_SPI_IRQ_GROUP0_FROM_WKUP_GPIOMUX_INTRTR0</td>
-<td>0x05</td>
-<td>0x0385</td>
-</tr>
-<tr class="row-even"><td>J721E_DEV_MCU_CPSW0</td>
-<td>0x012</td>
-<td>RESASG_SUBTYPE_MCU_CPSW0_CPTS_HW3_PUSH_IRQ_GROUP0_FROM_TIMESYNC_INTRTR0</td>
+<tr class="row-even"><td>J721E_DEV_CMPEVENT_INTRTR0</td>
+<td>0x07B</td>
+<td>RESASG_SUBTYPE_IR_OUTPUT</td>
 <td>0x00</td>
-<td>0x0480</td>
+<td>0x1EC0</td>
+<td>0</td>
+<td>32</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_MCU_CPSW0_CPTS_HW4_PUSH_IRQ_GROUP0_FROM_TIMESYNC_INTRTR0</td>
-<td>0x01</td>
-<td>0x0481</td>
-</tr>
-<tr class="row-even"><td>J721E_DEV_CPSW0</td>
-<td>0x013</td>
-<td>RESASG_SUBTYPE_CPSW0_CPTS_HW1_PUSH_IRQ_GROUP0_FROM_TIMESYNC_INTRTR0</td>
+<tr class="row-odd"><td>J721E_DEV_MAIN2MCU_LVL_INTRTR0</td>
+<td>0x080</td>
+<td>RESASG_SUBTYPE_IR_OUTPUT</td>
 <td>0x00</td>
-<td>0x04C0</td>
+<td>0x2000</td>
+<td>0</td>
+<td>64</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_CPSW0_CPTS_HW2_PUSH_IRQ_GROUP0_FROM_TIMESYNC_INTRTR0</td>
-<td>0x01</td>
-<td>0x04C1</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_CPSW0_CPTS_HW3_PUSH_IRQ_GROUP0_FROM_TIMESYNC_INTRTR0</td>
-<td>0x02</td>
-<td>0x04C2</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_CPSW0_CPTS_HW4_PUSH_IRQ_GROUP0_FROM_TIMESYNC_INTRTR0</td>
-<td>0x03</td>
-<td>0x04C3</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_CPSW0_CPTS_HW5_PUSH_IRQ_GROUP0_FROM_TIMESYNC_INTRTR0</td>
-<td>0x04</td>
-<td>0x04C4</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_CPSW0_CPTS_HW6_PUSH_IRQ_GROUP0_FROM_TIMESYNC_INTRTR0</td>
-<td>0x05</td>
-<td>0x04C5</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_CPSW0_CPTS_HW7_PUSH_IRQ_GROUP0_FROM_TIMESYNC_INTRTR0</td>
-<td>0x06</td>
-<td>0x04C6</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_CPSW0_CPTS_HW8_PUSH_IRQ_GROUP0_FROM_TIMESYNC_INTRTR0</td>
-<td>0x07</td>
-<td>0x04C7</td>
-</tr>
-<tr class="row-even"><td>J721E_DEV_ESM0</td>
-<td>0x061</td>
-<td>RESASG_SUBTYPE_ESM0_ESM_PLS_EVENT0_IRQ_GROUP0_FROM_GPIOMUX_INTRTR0</td>
+<tr class="row-even"><td>J721E_DEV_MAIN2MCU_PLS_INTRTR0</td>
+<td>0x082</td>
+<td>RESASG_SUBTYPE_IR_OUTPUT</td>
 <td>0x00</td>
-<td>0x1840</td>
+<td>0x2080</td>
+<td>0</td>
+<td>48</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_ESM0_ESM_PLS_EVENT1_IRQ_GROUP0_FROM_GPIOMUX_INTRTR0</td>
-<td>0x01</td>
-<td>0x1841</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_ESM0_ESM_PLS_EVENT2_IRQ_GROUP0_FROM_GPIOMUX_INTRTR0</td>
-<td>0x02</td>
-<td>0x1842</td>
-</tr>
-<tr class="row-odd"><td>J721E_DEV_WKUP_ESM0</td>
-<td>0x063</td>
-<td>RESASG_SUBTYPE_WKUP_ESM0_ESM_PLS_EVENT0_IRQ_GROUP0_FROM_WKUP_GPIOMUX_INTRTR0</td>
+<tr class="row-odd"><td>J721E_DEV_GPIOMUX_INTRTR0</td>
+<td>0x083</td>
+<td>RESASG_SUBTYPE_IR_OUTPUT</td>
 <td>0x00</td>
-<td>0x18C0</td>
+<td>0x20C0</td>
+<td>0</td>
+<td>64</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_WKUP_ESM0_ESM_PLS_EVENT1_IRQ_GROUP0_FROM_WKUP_GPIOMUX_INTRTR0</td>
-<td>0x01</td>
-<td>0x18C1</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_WKUP_ESM0_ESM_PLS_EVENT2_IRQ_GROUP0_FROM_WKUP_GPIOMUX_INTRTR0</td>
-<td>0x02</td>
-<td>0x18C2</td>
-</tr>
-<tr class="row-even"><td>J721E_DEV_PRU_ICSSG0</td>
-<td>0x077</td>
-<td>RESASG_SUBTYPE_PRU_ICSSG0_PR1_EDC0_LATCH0_IN_IRQ_GROUP0_FROM_TIMESYNC_INTRTR0</td>
+<tr class="row-even"><td>J721E_DEV_R5FSS0_INTROUTER0</td>
+<td>0x086</td>
+<td>RESASG_SUBTYPE_IR_OUTPUT</td>
 <td>0x00</td>
-<td>0x1DC0</td>
+<td>0x2180</td>
+<td>0</td>
+<td>256</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_PRU_ICSSG0_PR1_EDC0_LATCH1_IN_IRQ_GROUP0_FROM_TIMESYNC_INTRTR0</td>
-<td>0x01</td>
-<td>0x1DC1</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_PRU_ICSSG0_PR1_EDC1_LATCH0_IN_IRQ_GROUP0_FROM_TIMESYNC_INTRTR0</td>
-<td>0x02</td>
-<td>0x1DC2</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_PRU_ICSSG0_PR1_EDC1_LATCH1_IN_IRQ_GROUP0_FROM_TIMESYNC_INTRTR0</td>
-<td>0x03</td>
-<td>0x1DC3</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_PRU_ICSSG0_PR1_IEP0_CAP_INTR_REQ_IRQ_GROUP0_FROM_GPIOMUX_INTRTR0</td>
-<td>0x04</td>
-<td>0x1DC4</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_PRU_ICSSG0_PR1_IEP1_CAP_INTR_REQ_IRQ_GROUP0_FROM_GPIOMUX_INTRTR0</td>
-<td>0x05</td>
-<td>0x1DC5</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_PRU_ICSSG0_PR1_SLV_INTR_IRQ_GROUP0_FROM_NAVSS0_INTR_ROUTER_0</td>
-<td>0x06</td>
-<td>0x1DC6</td>
-</tr>
-<tr class="row-odd"><td>J721E_DEV_PRU_ICSSG1</td>
-<td>0x078</td>
-<td>RESASG_SUBTYPE_PRU_ICSSG1_PR1_EDC0_LATCH0_IN_IRQ_GROUP0_FROM_TIMESYNC_INTRTR0</td>
+<tr class="row-odd"><td>J721E_DEV_R5FSS1_INTROUTER0</td>
+<td>0x087</td>
+<td>RESASG_SUBTYPE_IR_OUTPUT</td>
 <td>0x00</td>
-<td>0x1E00</td>
+<td>0x21C0</td>
+<td>0</td>
+<td>256</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_PRU_ICSSG1_PR1_EDC0_LATCH1_IN_IRQ_GROUP0_FROM_TIMESYNC_INTRTR0</td>
-<td>0x01</td>
-<td>0x1E01</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_PRU_ICSSG1_PR1_EDC1_LATCH0_IN_IRQ_GROUP0_FROM_TIMESYNC_INTRTR0</td>
-<td>0x02</td>
-<td>0x1E02</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_PRU_ICSSG1_PR1_EDC1_LATCH1_IN_IRQ_GROUP0_FROM_TIMESYNC_INTRTR0</td>
-<td>0x03</td>
-<td>0x1E03</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_PRU_ICSSG1_PR1_IEP0_CAP_INTR_REQ_IRQ_GROUP0_FROM_GPIOMUX_INTRTR0</td>
-<td>0x04</td>
-<td>0x1E04</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_PRU_ICSSG1_PR1_IEP1_CAP_INTR_REQ_IRQ_GROUP0_FROM_GPIOMUX_INTRTR0</td>
-<td>0x05</td>
-<td>0x1E05</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_PRU_ICSSG1_PR1_SLV_INTR_IRQ_GROUP0_FROM_NAVSS0_INTR_ROUTER_0</td>
-<td>0x06</td>
-<td>0x1E06</td>
-</tr>
-<tr class="row-even"><td>J721E_DEV_C66SS0_CORE0</td>
-<td>0x08E</td>
-<td>RESASG_SUBTYPE_C66SS0_CORE0_C66_EVENT_IN_SYNC_IRQ_GROUP0_FROM_C66SS0_INTROUTER0</td>
+<tr class="row-even"><td>J721E_DEV_TIMESYNC_INTRTR0</td>
+<td>0x088</td>
+<td>RESASG_SUBTYPE_IR_OUTPUT</td>
 <td>0x00</td>
-<td>0x2380</td>
+<td>0x2200</td>
+<td>0</td>
+<td>48</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_C66SS0_CORE0_C66_EVENT_IN_SYNC_IRQ_GROUP1_FROM_C66SS0_INTROUTER0</td>
-<td>0x01</td>
-<td>0x2381</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_C66SS0_CORE0_C66_EVENT_IN_SYNC_IRQ_GROUP2_FROM_C66SS0_INTROUTER0</td>
-<td>0x02</td>
-<td>0x2382</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_C66SS0_CORE0_C66_EVENT_IN_SYNC_IRQ_GROUP3_FROM_C66SS0_INTROUTER0</td>
-<td>0x03</td>
-<td>0x2383</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_C66SS0_CORE0_C66_EVENT_IN_SYNC_IRQ_GROUP4_FROM_C66SS0_INTROUTER0</td>
-<td>0x04</td>
-<td>0x2384</td>
-</tr>
-<tr class="row-odd"><td>J721E_DEV_C66SS1_CORE0</td>
-<td>0x08F</td>
-<td>RESASG_SUBTYPE_C66SS1_CORE0_C66_EVENT_IN_SYNC_IRQ_GROUP0_FROM_C66SS1_INTROUTER0</td>
+<tr class="row-odd"><td>J721E_DEV_WKUP_GPIOMUX_INTRTR0</td>
+<td>0x089</td>
+<td>RESASG_SUBTYPE_IR_OUTPUT</td>
 <td>0x00</td>
-<td>0x23C0</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_C66SS1_CORE0_C66_EVENT_IN_SYNC_IRQ_GROUP1_FROM_C66SS1_INTROUTER0</td>
-<td>0x01</td>
-<td>0x23C1</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_C66SS1_CORE0_C66_EVENT_IN_SYNC_IRQ_GROUP2_FROM_C66SS1_INTROUTER0</td>
-<td>0x02</td>
-<td>0x23C2</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_C66SS1_CORE0_C66_EVENT_IN_SYNC_IRQ_GROUP3_FROM_C66SS1_INTROUTER0</td>
-<td>0x03</td>
-<td>0x23C3</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_C66SS1_CORE0_C66_EVENT_IN_SYNC_IRQ_GROUP4_FROM_C66SS1_INTROUTER0</td>
-<td>0x04</td>
-<td>0x23C4</td>
-</tr>
-<tr class="row-even"><td>J721E_DEV_NAVSS512L_MAIN_0</td>
-<td>0x0C7</td>
-<td>RESASG_SUBTYPE_NAVSS512L_MAIN_0_CPTS0_HW1_PUSH_IRQ_GROUP0_FROM_TIMESYNC_INTRTR0</td>
-<td>0x00</td>
-<td>0x31C0</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_NAVSS512L_MAIN_0_CPTS0_HW2_PUSH_IRQ_GROUP0_FROM_TIMESYNC_INTRTR0</td>
-<td>0x01</td>
-<td>0x31C1</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_NAVSS512L_MAIN_0_CPTS0_HW3_PUSH_IRQ_GROUP0_FROM_TIMESYNC_INTRTR0</td>
-<td>0x02</td>
-<td>0x31C2</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_NAVSS512L_MAIN_0_CPTS0_HW4_PUSH_IRQ_GROUP0_FROM_TIMESYNC_INTRTR0</td>
-<td>0x03</td>
-<td>0x31C3</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_NAVSS512L_MAIN_0_CPTS0_HW5_PUSH_IRQ_GROUP0_FROM_TIMESYNC_INTRTR0</td>
-<td>0x04</td>
-<td>0x31C4</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_NAVSS512L_MAIN_0_CPTS0_HW6_PUSH_IRQ_GROUP0_FROM_TIMESYNC_INTRTR0</td>
-<td>0x05</td>
-<td>0x31C5</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_NAVSS512L_MAIN_0_CPTS0_HW7_PUSH_IRQ_GROUP0_FROM_TIMESYNC_INTRTR0</td>
-<td>0x06</td>
-<td>0x31C6</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_NAVSS512L_MAIN_0_CPTS0_HW8_PUSH_IRQ_GROUP0_FROM_TIMESYNC_INTRTR0</td>
-<td>0x07</td>
-<td>0x31C7</td>
+<td>0x2240</td>
+<td>0</td>
+<td>32</td>
 </tr>
 <tr class="row-even"><td>J721E_DEV_NAVSS0_MODSS_INTAGGR_0</td>
 <td>0x0CF</td>
 <td>RESASG_SUBTYPE_IA_VINT</td>
 <td>0x0A</td>
 <td>0x33CA</td>
+<td>0</td>
+<td>64</td>
 </tr>
 <tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_GLOBAL_EVENT_SEVT</td>
 <td>0x0D</td>
 <td>0x33CD</td>
+<td>20480</td>
+<td>1024</td>
 </tr>
 <tr class="row-even"><td>J721E_DEV_NAVSS0_MODSS_INTAGGR_1</td>
 <td>0x0D0</td>
 <td>RESASG_SUBTYPE_IA_VINT</td>
 <td>0x0A</td>
 <td>0x340A</td>
+<td>0</td>
+<td>64</td>
 </tr>
 <tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_GLOBAL_EVENT_SEVT</td>
 <td>0x0D</td>
 <td>0x340D</td>
+<td>22528</td>
+<td>1024</td>
 </tr>
 <tr class="row-even"><td>J721E_DEV_NAVSS0_UDMASS_INTAGGR_0</td>
 <td>0x0D1</td>
-<td>RESASG_SUBTYPE_NAVSS0_UDMASS_INTAGGR_0_INTAGGR_LEVI_PEND_IRQ_GROUP0_FROM_TIMESYNC_INTRTR0</td>
-<td>0x00</td>
-<td>0x3440</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_NAVSS0_UDMASS_INTAGGR_0_INTAGGR_LEVI_PEND_IRQ_GROUP0_FROM_CMPEVENT_INTRTR0</td>
-<td>0x01</td>
-<td>0x3441</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_NAVSS0_UDMASS_INTAGGR_0_INTAGGR_LEVI_PEND_IRQ_GROUP0_FROM_GPIOMUX_INTRTR0</td>
-<td>0x02</td>
-<td>0x3442</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
 <td>RESASG_SUBTYPE_IA_VINT</td>
 <td>0x0A</td>
 <td>0x344A</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_GLOBAL_EVENT_GEVT</td>
-<td>0x0B</td>
-<td>0x344B</td>
+<td>38</td>
+<td>218</td>
 </tr>
 <tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_GLOBAL_EVENT_MEVT</td>
-<td>0x0C</td>
-<td>0x344C</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_GLOBAL_EVENT_SEVT</td>
 <td>0x0D</td>
 <td>0x344D</td>
+<td>38</td>
+<td>4570</td>
+</tr>
+<tr class="row-even"><td>J721E_DEV_NAVSS0_PROXY_0</td>
+<td>0x0D2</td>
+<td>RESASG_SUBTYPE_PROXY_PROXIES</td>
+<td>0x00</td>
+<td>0x3480</td>
+<td>0</td>
+<td>64</td>
 </tr>
 <tr class="row-odd"><td>J721E_DEV_NAVSS0_RINGACC_0</td>
 <td>0x0D3</td>
 <td>RESASG_SUBTYPE_RA_ERROR_OES</td>
 <td>0x00</td>
 <td>0x34C0</td>
+<td>0</td>
+<td>1</td>
 </tr>
 <tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_RA_GP</td>
 <td>0x01</td>
 <td>0x34C1</td>
+<td>440</td>
+<td>534</td>
 </tr>
 <tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_RA_UDMAP_RX</td>
 <td>0x02</td>
 <td>0x34C2</td>
+<td>316</td>
+<td>124</td>
 </tr>
 <tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_RA_UDMAP_TX</td>
 <td>0x03</td>
 <td>0x34C3</td>
+<td>16</td>
+<td>124</td>
 </tr>
 <tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_RA_UDMAP_TX_EXT</td>
 <td>0x04</td>
 <td>0x34C4</td>
+<td>140</td>
+<td>160</td>
 </tr>
 <tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_RA_UDMAP_RX_H</td>
 <td>0x05</td>
 <td>0x34C5</td>
+<td>304</td>
+<td>12</td>
 </tr>
 <tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_RA_UDMAP_RX_UH</td>
 <td>0x06</td>
 <td>0x34C6</td>
+<td>300</td>
+<td>4</td>
 </tr>
 <tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_RA_UDMAP_TX_H</td>
 <td>0x07</td>
 <td>0x34C7</td>
+<td>4</td>
+<td>12</td>
 </tr>
 <tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_RA_UDMAP_TX_UH</td>
 <td>0x08</td>
 <td>0x34C8</td>
+<td>0</td>
+<td>4</td>
 </tr>
 <tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_RA_VIRTID</td>
 <td>0x0A</td>
 <td>0x34CA</td>
+<td>0</td>
+<td>4096</td>
 </tr>
 <tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_RA_MONITORS</td>
 <td>0x0B</td>
 <td>0x34CB</td>
+<td>0</td>
+<td>32</td>
 </tr>
 <tr class="row-even"><td>J721E_DEV_NAVSS0_UDMAP_0</td>
 <td>0x0D4</td>
 <td>RESASG_SUBTYPE_UDMAP_RX_FLOW_COMMON</td>
 <td>0x00</td>
 <td>0x3500</td>
+<td>140</td>
+<td>160</td>
 </tr>
 <tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_UDMAP_INVALID_FLOW_OES</td>
 <td>0x01</td>
 <td>0x3501</td>
+<td>0</td>
+<td>1</td>
 </tr>
 <tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_GLOBAL_EVENT_TRIGGER</td>
 <td>0x02</td>
 <td>0x3502</td>
+<td>49152</td>
+<td>1024</td>
 </tr>
 <tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_UDMAP_GLOBAL_CONFIG</td>
 <td>0x03</td>
 <td>0x3503</td>
+<td>0</td>
+<td>1</td>
 </tr>
 <tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_UDMAP_RX_CHAN</td>
 <td>0x0A</td>
 <td>0x350A</td>
+<td>16</td>
+<td>124</td>
 </tr>
 <tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_UDMAP_RX_HCHAN</td>
 <td>0x0B</td>
 <td>0x350B</td>
+<td>4</td>
+<td>12</td>
 </tr>
 <tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_UDMAP_RX_UHCHAN</td>
 <td>0x0C</td>
 <td>0x350C</td>
+<td>0</td>
+<td>4</td>
 </tr>
 <tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_UDMAP_TX_CHAN</td>
 <td>0x0D</td>
 <td>0x350D</td>
+<td>16</td>
+<td>124</td>
 </tr>
 <tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_UDMAP_TX_ECHAN</td>
 <td>0x0E</td>
 <td>0x350E</td>
+<td>140</td>
+<td>160</td>
 </tr>
 <tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_UDMAP_TX_HCHAN</td>
 <td>0x0F</td>
 <td>0x350F</td>
+<td>4</td>
+<td>12</td>
 </tr>
 <tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_UDMAP_TX_UHCHAN</td>
 <td>0x10</td>
 <td>0x3510</td>
+<td>0</td>
+<td>4</td>
 </tr>
-<tr class="row-odd"><td>J721E_DEV_MCU_NAVSS0_INTAGGR_0</td>
-<td>0x0E9</td>
-<td>RESASG_SUBTYPE_MCU_NAVSS0_INTAGGR_0_INTAGGR_LEVI_PEND_IRQ_GROUP0_FROM_WKUP_GPIOMUX_INTRTR0</td>
+<tr class="row-odd"><td>J721E_DEV_NAVSS0_INTR_ROUTER_0</td>
+<td>0x0D5</td>
+<td>RESASG_SUBTYPE_IR_OUTPUT</td>
 <td>0x00</td>
-<td>0x3A40</td>
+<td>0x3540</td>
+<td>10</td>
+<td>178</td>
 </tr>
 <tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
-<td>RESASG_SUBTYPE_IA_VINT</td>
-<td>0x0A</td>
-<td>0x3A4A</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>196</td>
+<td>28</td>
 </tr>
 <tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
-<td>RESASG_SUBTYPE_GLOBAL_EVENT_GEVT</td>
-<td>0x0B</td>
-<td>0x3A4B</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>228</td>
+<td>28</td>
 </tr>
 <tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
-<td>RESASG_SUBTYPE_GLOBAL_EVENT_MEVT</td>
-<td>0x0C</td>
-<td>0x3A4C</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>260</td>
+<td>28</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>292</td>
+<td>52</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>348</td>
+<td>28</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>380</td>
+<td>132</td>
+</tr>
+<tr class="row-even"><td>J721E_DEV_MCU_NAVSS0_INTAGGR_0</td>
+<td>0x0E9</td>
+<td>RESASG_SUBTYPE_IA_VINT</td>
+<td>0x0A</td>
+<td>0x3A4A</td>
+<td>8</td>
+<td>248</td>
 </tr>
 <tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_GLOBAL_EVENT_SEVT</td>
 <td>0x0D</td>
 <td>0x3A4D</td>
+<td>16392</td>
+<td>1528</td>
 </tr>
-<tr class="row-even"><td>J721E_DEV_MCU_NAVSS0_RINGACC_0</td>
+<tr class="row-even"><td>J721E_DEV_MCU_NAVSS0_PROXY_0</td>
+<td>0x0EA</td>
+<td>RESASG_SUBTYPE_PROXY_PROXIES</td>
+<td>0x00</td>
+<td>0x3A80</td>
+<td>1</td>
+<td>63</td>
+</tr>
+<tr class="row-odd"><td>J721E_DEV_MCU_NAVSS0_RINGACC_0</td>
 <td>0x0EB</td>
 <td>RESASG_SUBTYPE_RA_ERROR_OES</td>
 <td>0x00</td>
 <td>0x3AC0</td>
+<td>0</td>
+<td>1</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_RA_GP</td>
 <td>0x01</td>
 <td>0x3AC1</td>
+<td>96</td>
+<td>156</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_RA_UDMAP_RX</td>
 <td>0x02</td>
 <td>0x3AC2</td>
+<td>50</td>
+<td>43</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_RA_UDMAP_TX</td>
 <td>0x03</td>
 <td>0x3AC3</td>
+<td>2</td>
+<td>44</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_RA_UDMAP_RX_H</td>
 <td>0x05</td>
 <td>0x3AC5</td>
+<td>48</td>
+<td>2</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_RA_UDMAP_TX_H</td>
 <td>0x07</td>
 <td>0x3AC7</td>
+<td>0</td>
+<td>2</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_RA_VIRTID</td>
 <td>0x0A</td>
 <td>0x3ACA</td>
+<td>0</td>
+<td>4096</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_RA_MONITORS</td>
 <td>0x0B</td>
 <td>0x3ACB</td>
+<td>0</td>
+<td>32</td>
 </tr>
-<tr class="row-even"><td>J721E_DEV_MCU_NAVSS0_UDMAP_0</td>
+<tr class="row-odd"><td>J721E_DEV_MCU_NAVSS0_UDMAP_0</td>
 <td>0x0EC</td>
 <td>RESASG_SUBTYPE_UDMAP_RX_FLOW_COMMON</td>
 <td>0x00</td>
 <td>0x3B00</td>
+<td>48</td>
+<td>48</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_UDMAP_INVALID_FLOW_OES</td>
 <td>0x01</td>
 <td>0x3B01</td>
+<td>0</td>
+<td>1</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_GLOBAL_EVENT_TRIGGER</td>
 <td>0x02</td>
 <td>0x3B02</td>
+<td>56320</td>
+<td>256</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_UDMAP_GLOBAL_CONFIG</td>
 <td>0x03</td>
 <td>0x3B03</td>
+<td>0</td>
+<td>1</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_UDMAP_RX_CHAN</td>
 <td>0x0A</td>
 <td>0x3B0A</td>
+<td>2</td>
+<td>43</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_UDMAP_RX_HCHAN</td>
 <td>0x0B</td>
 <td>0x3B0B</td>
+<td>0</td>
+<td>2</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_UDMAP_TX_CHAN</td>
 <td>0x0D</td>
 <td>0x3B0D</td>
+<td>2</td>
+<td>44</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_UDMAP_TX_HCHAN</td>
 <td>0x0F</td>
 <td>0x3B0F</td>
+<td>0</td>
+<td>2</td>
 </tr>
-<tr class="row-even"><td>J721E_DEV_PCIE0</td>
-<td>0x0EF</td>
-<td>RESASG_SUBTYPE_PCIE0_PCIE_CPTS_HW2_PUSH_IRQ_GROUP0_FROM_TIMESYNC_INTRTR0</td>
+<tr class="row-odd"><td>J721E_DEV_MCU_NAVSS0_INTR_ROUTER_0</td>
+<td>0x0ED</td>
+<td>RESASG_SUBTYPE_IR_OUTPUT</td>
 <td>0x00</td>
-<td>0x3BC0</td>
-</tr>
-<tr class="row-odd"><td>J721E_DEV_PCIE1</td>
-<td>0x0F0</td>
-<td>RESASG_SUBTYPE_PCIE1_PCIE_CPTS_HW2_PUSH_IRQ_GROUP0_FROM_TIMESYNC_INTRTR0</td>
-<td>0x00</td>
-<td>0x3C00</td>
-</tr>
-<tr class="row-even"><td>J721E_DEV_PCIE2</td>
-<td>0x0F1</td>
-<td>RESASG_SUBTYPE_PCIE2_PCIE_CPTS_HW2_PUSH_IRQ_GROUP0_FROM_TIMESYNC_INTRTR0</td>
-<td>0x00</td>
-<td>0x3C40</td>
-</tr>
-<tr class="row-odd"><td>J721E_DEV_PCIE3</td>
-<td>0x0F2</td>
-<td>RESASG_SUBTYPE_PCIE3_PCIE_CPTS_HW2_PUSH_IRQ_GROUP0_FROM_TIMESYNC_INTRTR0</td>
-<td>0x00</td>
-<td>0x3C80</td>
-</tr>
-<tr class="row-even"><td>J721E_DEV_R5FSS0_CORE0</td>
-<td>0x0F5</td>
-<td>RESASG_SUBTYPE_R5FSS0_CORE0_INTR_IRQ_GROUP0_FROM_GPIOMUX_INTRTR0</td>
-<td>0x00</td>
-<td>0x3D40</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_R5FSS0_CORE0_INTR_IRQ_GROUP0_FROM_NAVSS0_INTR_ROUTER_0</td>
-<td>0x01</td>
-<td>0x3D41</td>
+<td>0x3B40</td>
+<td>4</td>
+<td>28</td>
 </tr>
 <tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
-<td>RESASG_SUBTYPE_R5FSS0_CORE0_INTR_IRQ_GROUP0_FROM_R5FSS0_INTROUTER0</td>
-<td>0x02</td>
-<td>0x3D42</td>
-</tr>
-<tr class="row-odd"><td>J721E_DEV_R5FSS0_CORE1</td>
-<td>0x0F6</td>
-<td>RESASG_SUBTYPE_R5FSS0_CORE1_INTR_IRQ_GROUP0_FROM_GPIOMUX_INTRTR0</td>
-<td>0x00</td>
-<td>0x3D80</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
-<td>RESASG_SUBTYPE_R5FSS0_CORE1_INTR_IRQ_GROUP0_FROM_NAVSS0_INTR_ROUTER_0</td>
-<td>0x01</td>
-<td>0x3D81</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
-<td>RESASG_SUBTYPE_R5FSS0_CORE1_INTR_IRQ_GROUP0_FROM_R5FSS0_INTROUTER0</td>
-<td>0x02</td>
-<td>0x3D82</td>
-</tr>
-<tr class="row-even"><td>J721E_DEV_R5FSS1_CORE0</td>
-<td>0x0F7</td>
-<td>RESASG_SUBTYPE_R5FSS1_CORE0_INTR_IRQ_GROUP0_FROM_GPIOMUX_INTRTR0</td>
-<td>0x00</td>
-<td>0x3DC0</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
-<td>RESASG_SUBTYPE_R5FSS1_CORE0_INTR_IRQ_GROUP0_FROM_NAVSS0_INTR_ROUTER_0</td>
-<td>0x01</td>
-<td>0x3DC1</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_R5FSS1_CORE0_INTR_IRQ_GROUP0_FROM_R5FSS1_INTROUTER0</td>
-<td>0x02</td>
-<td>0x3DC2</td>
-</tr>
-<tr class="row-odd"><td>J721E_DEV_R5FSS1_CORE1</td>
-<td>0x0F8</td>
-<td>RESASG_SUBTYPE_R5FSS1_CORE1_INTR_IRQ_GROUP0_FROM_GPIOMUX_INTRTR0</td>
-<td>0x00</td>
-<td>0x3E00</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_R5FSS1_CORE1_INTR_IRQ_GROUP0_FROM_NAVSS0_INTR_ROUTER_0</td>
-<td>0x01</td>
-<td>0x3E01</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_R5FSS1_CORE1_INTR_IRQ_GROUP0_FROM_R5FSS1_INTROUTER0</td>
-<td>0x02</td>
-<td>0x3E02</td>
-</tr>
-<tr class="row-even"><td>J721E_DEV_MCU_R5FSS0_CORE0</td>
-<td>0x0FA</td>
-<td>RESASG_SUBTYPE_MCU_R5FSS0_CORE0_INTR_IRQ_GROUP0_FROM_MCU_NAVSS0_INTR_ROUTER_0</td>
-<td>0x00</td>
-<td>0x3E80</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_MCU_R5FSS0_CORE0_INTR_IRQ_GROUP0_FROM_WKUP_GPIOMUX_INTRTR0</td>
-<td>0x01</td>
-<td>0x3E81</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_MCU_R5FSS0_CORE0_INTR_IRQ_GROUP0_FROM_MAIN2MCU_LVL_INTRTR0</td>
-<td>0x02</td>
-<td>0x3E82</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_MCU_R5FSS0_CORE0_INTR_IRQ_GROUP0_FROM_MAIN2MCU_PLS_INTRTR0</td>
-<td>0x03</td>
-<td>0x3E83</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_MCU_R5FSS0_CORE0_INTR_IRQ_GROUP0_FROM_NAVSS0_INTR_ROUTER_0</td>
-<td>0x04</td>
-<td>0x3E84</td>
-</tr>
-<tr class="row-odd"><td>J721E_DEV_MCU_R5FSS0_CORE1</td>
-<td>0x0FB</td>
-<td>RESASG_SUBTYPE_MCU_R5FSS0_CORE1_INTR_IRQ_GROUP0_FROM_MCU_NAVSS0_INTR_ROUTER_0</td>
-<td>0x00</td>
-<td>0x3EC0</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_MCU_R5FSS0_CORE1_INTR_IRQ_GROUP0_FROM_WKUP_GPIOMUX_INTRTR0</td>
-<td>0x01</td>
-<td>0x3EC1</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_MCU_R5FSS0_CORE1_INTR_IRQ_GROUP0_FROM_MAIN2MCU_LVL_INTRTR0</td>
-<td>0x02</td>
-<td>0x3EC2</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_MCU_R5FSS0_CORE1_INTR_IRQ_GROUP0_FROM_MAIN2MCU_PLS_INTRTR0</td>
-<td>0x03</td>
-<td>0x3EC3</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_MCU_R5FSS0_CORE1_INTR_IRQ_GROUP0_FROM_NAVSS0_INTR_ROUTER_0</td>
-<td>0x04</td>
-<td>0x3EC4</td>
+<td>36</td>
+<td>28</td>
 </tr>
 </tbody>
 </table>
@@ -1050,10 +754,10 @@ j721e resources ranges assignable to SoC processing entities (or PEs).</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="irq_sources.html" class="btn btn-neutral float-right" title="j721e Peripheral Interrupt Source Descriptions" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="interrupt_cfg.html" class="btn btn-neutral float-right" title="J721E Interrupt Management Device Descriptions" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="clocks.html" class="btn btn-neutral" title="J721E Clock Identifiers" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="pll_data.html" class="btn btn-neutral" title="J721E PLL Defaults" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -1084,7 +788,7 @@ j721e resources ranges assignable to SoC processing entities (or PEs).</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'20.01.00',
+            VERSION:'20.02.00',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

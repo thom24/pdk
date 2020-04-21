@@ -112,138 +112,7 @@ TISCI Message ID
 UDMAP Transmit Channel Configure Message Parameters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-+-------------------+----------------------------------------+----------------------------------------------------------------------------------------------------------+-------------------------------------+
-|     Parameter     |                  Type                  |                                             Valid Values                                                 |    Description                      |
-+===================+========================================+==========================================================================================================+=====================================+
-| hdr               | Generic TISCI message header (8 bytes) | :doc:`Valid Host IDs <../../5_soc_doc/am6x/hosts>`                                                       | Generic TISCI message header.       |
-|                   |                                        |                                                                                                          | Contains the message ID, host ID,   |
-|                   |                                        |                                                                                                          | sequence number, and any flags      |
-+-------------------+----------------------------------------+----------------------------------------------------------------------------------------------------------+-------------------------------------+
-| valid_params      | u32                                    | :ref:`pub_rm_public_udmap_tx_ch_cfg_valid_params`                                                        | Bitfield defining validity of UDMAP |
-|                   |                                        |                                                                                                          | transmit channel configuration      |
-|                   |                                        |                                                                                                          | parameters.  The channel            |
-|                   |                                        |                                                                                                          | configuration fields are not valid, |
-|                   |                                        |                                                                                                          | and will not be used, if their      |
-|                   |                                        |                                                                                                          | corresponding valid bit is zero.    |
-+-------------------+----------------------------------------+----------------------------------------------------------------------------------------------------------+-------------------------------------+
-| nav_id            | u16                                    | :ref:`Valid Navigator Subsystem UDMAP Device IDs <pub_soc_am6x_navss_ids>`                               | The SoC-specific Device ID of the   |
-|                   |                                        |                                                                                                          | Navigator subsystem UDMAP in which  |
-|                   |                                        |                                                                                                          | the transmit channel is located.    |
-+-------------------+----------------------------------------+----------------------------------------------------------------------------------------------------------+-------------------------------------+
-| index             | u16                                    | :ref:`Valid Navigator Subsystem Transmit Channel Indices <pub_soc_am6x_udmap_channel_and_flow_indices>`  | Specifies the requested transmit    |
-|                   |                                        |                                                                                                          | channel index for configuration     |
-+-------------------+----------------------------------------+----------------------------------------------------------------------------------------------------------+-------------------------------------+
-| tx_pause_on_err   | u8                                     | (0) - Disabled or (1) - Enabled                                                                          | Transmit channel pause on error     |
-|                   |                                        |                                                                                                          | configuration.  The register field  |
-|                   |                                        |                                                                                                          | is programmed if tx_pause_on_err's  |
-|                   |                                        |                                                                                                          | valid bit is set.                   |
-+-------------------+----------------------------------------+----------------------------------------------------------------------------------------------------------+-------------------------------------+
-| tx_filt_einfo     | u8                                     | (0) - Disabled or (1) - Enabled                                                                          | Transmit channel extended packet    |
-|                   |                                        |                                                                                                          | information.  The register field is |
-|                   |                                        |                                                                                                          | programmed if tx_filt_einfo's       |
-|                   |                                        |                                                                                                          | valid bit is set.                   |
-+-------------------+----------------------------------------+----------------------------------------------------------------------------------------------------------+-------------------------------------+
-| tx_filt_pswords   | u8                                     | (0) - Disabled or (1) - Enabled                                                                          | Transmit channel protocol specific  |
-|                   |                                        |                                                                                                          | word passing.  The register field   |
-|                   |                                        |                                                                                                          | is programmed if tx_filt_pswords's  |
-|                   |                                        |                                                                                                          | valid bit is set.                   |
-+-------------------+----------------------------------------+----------------------------------------------------------------------------------------------------------+-------------------------------------+
-| tx_atype          | u8                                     | (0) - Physical addresses, (1) - Intermediate addresses, (2) - Virtual addresses                          | Transmit channel non Ring           |
-|                   |                                        |                                                                                                          | Accelerator access pointer          |
-|                   |                                        |                                                                                                          | interpretation configuration.  The  |
-|                   |                                        |                                                                                                          | register field is programmed if     |
-|                   |                                        |                                                                                                          | tx_atype's valid bit is set.        |
-+-------------------+----------------------------------------+----------------------------------------------------------------------------------------------------------+-------------------------------------+
-| tx_chan_type      | u8                                     | (2) - Packet transfers using pass by reference rings, (10) - 3rd party DMA transfers using pass by       | Transmit channel functional channel |
-|                   |                                        | reference rings, (11) - 3rd party DMA transfers using pass by value rings, (12) - 3rd party block copy   | type and work passing mechanism.    |
-|                   |                                        | DMA transfers using pass by reference rings, (13) - 3rd party block copy DMA transfers using pass by     | The parameter is valid if           |
-|                   |                                        | value rings | Transmit channel functional channel type and work passing mechanism.                       | tx_chan_type's valid bit is set.    |
-+-------------------+----------------------------------------+----------------------------------------------------------------------------------------------------------+-------------------------------------+
-| tx_supr_tdpkt     | u8                                     | (0) - Disabled or (1) - Enabled                                                                          | Transmit channel tear down packet   |
-|                   |                                        |                                                                                                          | generation suppression.  The        |
-|                   |                                        |                                                                                                          | register field is programmed if     |
-|                   |                                        |                                                                                                          | tx_supr_tdpkt's valid bit is set.   |
-+-------------------+----------------------------------------+----------------------------------------------------------------------------------------------------------+-------------------------------------+
-| tx_fetch_size     | u16                                    | Cannot be greater than 127                                                                               | Transmit channel number of 32-bit   |
-|                   |                                        |                                                                                                          | descriptor words to fetch. The user |
-|                   |                                        |                                                                                                          | must make sure to set the maximum   |
-|                   |                                        |                                                                                                          | word count that can pass through    |
-|                   |                                        |                                                                                                          | the channel for any allowed         |
-|                   |                                        |                                                                                                          | descriptor type.  The register      |
-|                   |                                        |                                                                                                          | field is programmed if              |
-|                   |                                        |                                                                                                          | tx_fetch_size's valid bit is set.   |
-+-------------------+----------------------------------------+----------------------------------------------------------------------------------------------------------+-------------------------------------+
-| tx_credit_count   | u8                                     | Cannot be greater than 7                                                                                 | Transmit channel transfer request   |
-|                   |                                        |                                                                                                          | credit count. Specifies how many    |
-|                   |                                        |                                                                                                          | credits for complete TRs are        |
-|                   |                                        |                                                                                                          | available. This field is only used  |
-|                   |                                        |                                                                                                          | when configuring a transmit         |
-|                   |                                        |                                                                                                          | channel of external type.  The      |
-|                   |                                        |                                                                                                          | register field is programmed if     |
-|                   |                                        |                                                                                                          | tx_credit_count's valid bit is      |
-|                   |                                        |                                                                                                          | set.                                |
-+-------------------+----------------------------------------+----------------------------------------------------------------------------------------------------------+-------------------------------------+
-| txcq_qnum         | u16                                    | Valid, assigned ring                                                                                     | Transmit channel completion queue.  |
-|                   |                                        |                                                                                                          | The specified completion queue must |
-|                   |                                        |                                                                                                          | be assigned to the host, or a       |
-|                   |                                        |                                                                                                          | subordinate of the host, requesting |
-|                   |                                        |                                                                                                          | configuration of the transmit       |
-|                   |                                        |                                                                                                          | channel.  The register field is     |
-|                   |                                        |                                                                                                          | programmed if txcq_qnum's valid     |
-|                   |                                        |                                                                                                          | bit is set.                         |
-+-------------------+----------------------------------------+----------------------------------------------------------------------------------------------------------+-------------------------------------+
-| tx_priority       | u8                                     | Transmit channel transmit priority                                                                       | The register field is programmed    |
-|                   |                                        |                                                                                                          | if tx_priority's valid bit is set.  |
-+-------------------+----------------------------------------+----------------------------------------------------------------------------------------------------------+-------------------------------------+
-| tx_qos            | u8                                     | Transmit channel QoS value                                                                               | Transmit channel transmit qos       |
-|                   |                                        |                                                                                                          | value.  The register field is       |
-|                   |                                        |                                                                                                          | programmed if tx_qos's valid bit    |
-|                   |                                        |                                                                                                          | is set.                             |
-+-------------------+----------------------------------------+----------------------------------------------------------------------------------------------------------+-------------------------------------+
-| tx_orderid        | u8                                     | Transmit channel bus order ID                                                                            | Transmit channel bus order id.      |
-|                   |                                        |                                                                                                          | The register field is programmed    |
-|                   |                                        |                                                                                                          | if tx_orderid's valid bit is set.   |
-+-------------------+----------------------------------------+----------------------------------------------------------------------------------------------------------+-------------------------------------+
-| fdepth            | u16                                    | Check the UDMAP section of the TRM for restrictions regarding this parameter. Reset value is 0x400.      | Channel FIFO depth configuration.   |
-|                   |                                        |                                                                                                          | Sets the number of Tx FIFO bytes    |
-|                   |                                        |                                                                                                          | which are allowed to be stored for  |
-|                   |                                        |                                                                                                          | the channel.  The TISCI message     |
-|                   |                                        |                                                                                                          | is rejected if a non-zero, valid,   |
-|                   |                                        |                                                                                                          | value is provided during external   |
-|                   |                                        |                                                                                                          | channel configuration.              |
-|                   |                                        |                                                                                                          | The register field is programmed if |
-|                   |                                        |                                                                                                          | fdepth's valid bit is set.          |
-+-------------------+----------------------------------------+----------------------------------------------------------------------------------------------------------+-------------------------------------+
-| tx_sched_priority | u8                                     | (0) - High priority, (1) - Medium-high priority, (2) - Medium-low priority, (3) - Low priority           | Tx scheduling priority              |
-|                   |                                        |                                                                                                          | configuration.  The register field  |
-|                   |                                        |                                                                                                          | is programmed if                    |
-|                   |                                        |                                                                                                          | tx_sched_priority's valid bit is    |
-|                   |                                        |                                                                                                          | set.                                |
-+-------------------+----------------------------------------+----------------------------------------------------------------------------------------------------------+-------------------------------------+
-| tx_burst_size     | u8                                     | (1) - 64 bytes, (2) - 128 bytes, (3) - 256 bytes                                                         | UDMAP transmit channel burst size   |
-|                   |                                        |                                                                                                          | configuration.  The register is     |
-|                   |                                        |                                                                                                          | programmed if the corresponding     |
-|                   |                                        |                                                                                                          | valid bit is set.  This field is    |
-|                   |                                        |                                                                                                          | not supported on some SoCs.  On     |
-|                   |                                        |                                                                                                          | SoCs that do not support this       |
-|                   |                                        |                                                                                                          | field the input is quietly ignored  |
-|                   |                                        |                                                                                                          | even if the valid bit is set.       |
-+-------------------+----------------------------------------+----------------------------------------------------------------------------------------------------------+-------------------------------------+
-| tx_tdtype         | u8                                     | (0) - Immediate teardown, (1) - Teardown after receiving remote peer completion message                  | UDMAP transmit channel teardown     |
-|                   |                                        |                                                                                                          | type configuration programmed       |
-|                   |                                        |                                                                                                          | into the tx_tdtype field of         |
-|                   |                                        |                                                                                                          | the TCHAN_TCFG register.  Can be    |
-|                   |                                        |                                                                                                          | set to 0 for immediate teardown or  |
-|                   |                                        |                                                                                                          | 1 to wait for remote peer to send   |
-|                   |                                        |                                                                                                          | completion message for teardown.    |
-|                   |                                        |                                                                                                          | Only valid if                       |
-|                   |                                        |                                                                                                          | corresponding valid bit is set.     |
-|                   |                                        |                                                                                                          | This field is not supported on      |
-|                   |                                        |                                                                                                          | some SoCs.  On SoCs that do not     |
-|                   |                                        |                                                                                                          | support this field the input is     |
-|                   |                                        |                                                                                                          | quietly ignored even if the valid   |
-|                   |                                        |                                                                                                          | bit is set.                         |
-+-------------------+----------------------------------------+----------------------------------------------------------------------------------------------------------+-------------------------------------+
+.. sysfwapistruct:: tisci_msg_rm_udmap_tx_ch_cfg_req
 
 .. _pub_rm_public_udmap_tx_ch_cfg_valid_params:
 
@@ -298,15 +167,7 @@ processed **udmap tx channel cfg** message.
 UDMAP Transmit Channel Configure Response Message Parameters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-+---------------+----------------------------------------+--------------------------------------------------------------------------+--------------------------+
-| Parameter     |                  Type                  |                               Valid Values                               |         Description      |
-+===============+========================================+==========================================================================+==========================+
-| hdr           | Generic TISCI message header (8 bytes) | :doc:`Valid Host IDs <../../5_soc_doc/am6x/hosts>`                       | Generic TISCI message    |
-|               |                                        |                                                                          | header. Contains the     |
-|               |                                        |                                                                          | message ID, host ID,     |
-|               |                                        |                                                                          | sequence number, and any |
-|               |                                        |                                                                          | return flags             |
-+---------------+----------------------------------------+--------------------------------------------------------------------------+--------------------------+
+.. sysfwapistruct:: tisci_msg_rm_udmap_tx_ch_cfg_resp
 
 TISCI_MSG_RM_UDMAP_RX_CH_CFG - UDMAP Receive Channel Configure
 ==============================================================
@@ -351,124 +212,7 @@ TISCI Message ID
 UDMAP Receive Channel Configure Message Parameters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-+-------------------+----------------------------------------+----------------------------------------------------------------------------------------------------------+-------------------------------------+
-|     Parameter     |                  Type                  |                                             Valid Values                                                 |    Description                      |
-+===================+========================================+==========================================================================================================+=====================================+
-| hdr               | Generic TISCI message header (8 bytes) | :doc:`Valid Host IDs <../../5_soc_doc/am6x/hosts>`                                                       | Generic TISCI message header.       |
-|                   |                                        |                                                                                                          | Contains the message ID, host ID,   |
-|                   |                                        |                                                                                                          | sequence number, and any flags      |
-+-------------------+----------------------------------------+----------------------------------------------------------------------------------------------------------+-------------------------------------+
-| valid_params      | u32                                    | :ref:`pub_rm_public_udmap_rx_ch_cfg_valid_params`                                                        | Bitfield defining validity of UDMAP |
-|                   |                                        |                                                                                                          | receive channel configuration       |
-|                   |                                        |                                                                                                          | parameters.  The channel            |
-|                   |                                        |                                                                                                          | configuration fields are not valid, |
-|                   |                                        |                                                                                                          | and will not be used, if their      |
-|                   |                                        |                                                                                                          | corresponding valid bit is zero.    |
-+-------------------+----------------------------------------+----------------------------------------------------------------------------------------------------------+-------------------------------------+
-| nav_id            | u16                                    | :ref:`Valid Navigator Subsystem UDMAP Device IDs <pub_soc_am6x_navss_ids>`                               | The SoC-specific Device ID of the   |
-|                   |                                        |                                                                                                          | Navigator subsystem UDMAP in which  |
-|                   |                                        |                                                                                                          | the receive channel is located.     |
-+-------------------+----------------------------------------+----------------------------------------------------------------------------------------------------------+-------------------------------------+
-| index             | u16                                    | :ref:`Valid Navigator Subsystem Receive Channel Indices <pub_soc_am6x_udmap_channel_and_flow_indices>`   | Specifies the requested receive     |
-|                   |                                        |                                                                                                          | channel index for configuration     |
-+-------------------+----------------------------------------+----------------------------------------------------------------------------------------------------------+-------------------------------------+
-| rx_fetch_size     | u16                                    | Cannot be greater than 127                                                                               | Receive channel number of 32-bit    |
-|                   |                                        |                                                                                                          | descriptor words to fetch. The user |
-|                   |                                        |                                                                                                          | must make sure to set the maximum   |
-|                   |                                        |                                                                                                          | word count that can pass through    |
-|                   |                                        |                                                                                                          | the channel for any allowed         |
-|                   |                                        |                                                                                                          | descriptor type.  The register      |
-|                   |                                        |                                                                                                          | field is programmed if              |
-|                   |                                        |                                                                                                          | rx_fetch_size's valid bit is set.   |
-+-------------------+----------------------------------------+----------------------------------------------------------------------------------------------------------+-------------------------------------+
-| rxcq_qnum         | u16                                    | Valid, assigned ring                                                                                     | Receive channel completion queue.   |
-|                   |                                        |                                                                                                          | The specified completion queue must |
-|                   |                                        |                                                                                                          | be assigned to the host, or a       |
-|                   |                                        |                                                                                                          | subordinate of the host, requesting |
-|                   |                                        |                                                                                                          | configuration of the receive        |
-|                   |                                        |                                                                                                          | channel.  The register field is     |
-|                   |                                        |                                                                                                          | programmed if rxcq_qnum's valid     |
-|                   |                                        |                                                                                                          | bit is set.                         |
-+-------------------+----------------------------------------+----------------------------------------------------------------------------------------------------------+-------------------------------------+
-| rx_priority       | u8                                     | Receive channel receive priority                                                                         | The register field is programmed    |
-|                   |                                        |                                                                                                          | if rx_priority's valid bit is set.  |
-+-------------------+----------------------------------------+----------------------------------------------------------------------------------------------------------+-------------------------------------+
-| rx_qos            | u8                                     | Receive channel QoS value                                                                                | Receive channel receive qos         |
-|                   |                                        |                                                                                                          | value.  The register field is       |
-|                   |                                        |                                                                                                          | programmed if rx_qos's valid bit    |
-|                   |                                        |                                                                                                          | is set.                             |
-+-------------------+----------------------------------------+----------------------------------------------------------------------------------------------------------+-------------------------------------+
-| rx_orderid        | u8                                     | Receive channel bus order ID                                                                             | Receive channel bus order id.       |
-|                   |                                        |                                                                                                          | The register field is programmed    |
-|                   |                                        |                                                                                                          | if rx_orderid's valid bit is set.   |
-+-------------------+----------------------------------------+----------------------------------------------------------------------------------------------------------+-------------------------------------+
-| rx_sched_priority | u8                                     | (0) - High priority, (1) - Medium-high priority, (2) - Medium-low priority, (3) - Low priority           | Rx scheduling priority              |
-|                   |                                        |                                                                                                          | configuration.  The register field  |
-|                   |                                        |                                                                                                          | is programmed if                    |
-|                   |                                        |                                                                                                          | rx_sched_priority's valid bit is    |
-|                   |                                        |                                                                                                          | set.                                |
-+-------------------+----------------------------------------+----------------------------------------------------------------------------------------------------------+-------------------------------------+
-| flowid_start      | u16                                    | :ref:`Common Navigator Subsystem Receive Flow Indices <pub_soc_am6x_udmap_channel_and_flow_indices>`     | Specifies the starting index for    |
-|                   |                                        |                                                                                                          | flow IDs the receive channel is to  |
-|                   |                                        |                                                                                                          | make use of beyond the default,     |
-|                   |                                        |                                                                                                          | statically mapped flow.  The        |
-|                   |                                        |                                                                                                          | additional flows must be assigned   |
-|                   |                                        |                                                                                                          | to the host, or a subordinate of    |
-|                   |                                        |                                                                                                          | the host, requesting configuration  |
-|                   |                                        |                                                                                                          | of the receive channel.  The        |
-|                   |                                        |                                                                                                          | register field is programmed if     |
-|                   |                                        |                                                                                                          | flowid_start and flowid_cnt valid   |
-|                   |                                        |                                                                                                          | bits are set.                       |
-+-------------------+----------------------------------------+----------------------------------------------------------------------------------------------------------+-------------------------------------+
-| flowid_cnt        | u16                                    | flowid_cnt such that flowid_start + flowid_cnt cannot exceed number of receive flows in receive          | Receive channel rx flow ID count    |
-|                   |                                        | channel's Navigator Subsystem                                                                            | starting at flowid_start index.     |
-|                   |                                        |                                                                                                          | This field specifies how many flow  |
-|                   |                                        |                                                                                                          | IDs are in the additional           |
-|                   |                                        |                                                                                                          | contiguous range of legal flow IDs  |
-|                   |                                        |                                                                                                          | for the channel.  The additional    |
-|                   |                                        |                                                                                                          | flows must be assigned to the host, |
-|                   |                                        |                                                                                                          | or a subordinate of the host,       |
-|                   |                                        |                                                                                                          | requesting configuration of the     |
-|                   |                                        |                                                                                                          | receive channel.  The register      |
-|                   |                                        |                                                                                                          | field is programmed if flowid_start |
-|                   |                                        |                                                                                                          | and flowid_cnt valid bits are set.  |
-+-------------------+----------------------------------------+----------------------------------------------------------------------------------------------------------+-------------------------------------+
-| rx_pause_on_err   | u8                                     | (0) - Disabled or (1) - Enabled                                                                          | Receive channel pause on error      |
-|                   |                                        |                                                                                                          | configuration.  The register field  |
-|                   |                                        |                                                                                                          | is programmed if rx_pause_on_err's  |
-|                   |                                        |                                                                                                          | valid bit is set.                   |
-+-------------------+----------------------------------------+----------------------------------------------------------------------------------------------------------+-------------------------------------+
-| rx_atype          | u8                                     | (0) - Physical addresses, (1) - Intermediate addresses, (2) - Virtual addresses                          | Receive channel non Ring            |
-|                   |                                        |                                                                                                          | Accelerator access pointer          |
-|                   |                                        |                                                                                                          | interpretation configuration.  The  |
-|                   |                                        |                                                                                                          | register field is programmed if     |
-|                   |                                        |                                                                                                          | rx_atype's valid bit is set.        |
-+-------------------+----------------------------------------+----------------------------------------------------------------------------------------------------------+-------------------------------------+
-| rx_chan_type      | u8                                     | (2) - Packet transfers using pass by reference rings, (3) - Packet transfers using pass by reference     | Receive channel functional channel  |
-|                   |                                        | rings with single buffer packet mode enabled, (10) - 3rd party DMA transfers using pass by reference     | type and work passing mechanism.    |
-|                   |                                        | rings, (11) - 3rd party DMA transfers using pass by value rings, (12) - 3rd party block copy DMA         | The register field is programmed if |
-|                   |                                        | transfers using pass by reference rings, (13) - 3rd party block copy DMA transfers using pass by value   | rx_chan_type's valid bit is set.    |
-|                   |                                        | rings.                                                                                                   |                                     |
-+-------------------+----------------------------------------+----------------------------------------------------------------------------------------------------------+-------------------------------------+
-| rx_ignore_short   | u8                                     | (0) - Short packets treated as exceptions, (1) - Short packets ignored                                   | Receive channel short packet        |
-|                   |                                        |                                                                                                          | treatment.  The register field is   |
-|                   |                                        |                                                                                                          | programmed if rx_ignore_short's     |
-|                   |                                        |                                                                                                          | valid bit is set.                   |
-+-------------------+----------------------------------------+----------------------------------------------------------------------------------------------------------+-------------------------------------+
-| rx_ignore_long    | u8                                     | (0) - Long packets treated as exceptions, (1) - Long packets ignored                                     | Receive channel long packet         |
-|                   |                                        |                                                                                                          | treatment.  The register field is   |
-|                   |                                        |                                                                                                          | programmed if rx_ignore_long's      |
-|                   |                                        |                                                                                                          | valid bit is set.                   |
-+-------------------+----------------------------------------+----------------------------------------------------------------------------------------------------------+-------------------------------------+
-| rx_burst_size     | u8                                     | (1) - 64 bytes, (2) - 128 bytes, (3) - 256 bytes                                                         | UDMAP receive channel burst size    |
-|                   |                                        |                                                                                                          | configuration.  The register is     |
-|                   |                                        |                                                                                                          | programmed if the corresponding     |
-|                   |                                        |                                                                                                          | valid bit is set.  This field is    |
-|                   |                                        |                                                                                                          | not supported on some SoCs.  On     |
-|                   |                                        |                                                                                                          | SoCs that do not support this       |
-|                   |                                        |                                                                                                          | field the input is quietly ignored  |
-|                   |                                        |                                                                                                          | even if the valid bit is set.       |
-+-------------------+----------------------------------------+----------------------------------------------------------------------------------------------------------+-------------------------------------+
+.. sysfwapistruct:: tisci_msg_rm_udmap_rx_ch_cfg_req
 
 .. _pub_rm_public_udmap_rx_ch_cfg_valid_params:
 
@@ -521,15 +265,7 @@ processed **udmap rx channel cfg** message.
 UDMAP Receive Channel Configure Response Message Parameters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-+---------------+----------------------------------------+--------------------------------------------------------------------------+--------------------------+
-| Parameter     |                  Type                  |                               Valid Values                               |         Description      |
-+===============+========================================+==========================================================================+==========================+
-| hdr           | Generic TISCI message header (8 bytes) | :doc:`Valid Host IDs <../../5_soc_doc/am6x/hosts>`                       | Generic TISCI message    |
-|               |                                        |                                                                          | header. Contains the     |
-|               |                                        |                                                                          | message ID, host ID,     |
-|               |                                        |                                                                          | sequence number, and any |
-|               |                                        |                                                                          | return flags             |
-+---------------+----------------------------------------+--------------------------------------------------------------------------+--------------------------+
+.. sysfwapistruct:: tisci_msg_rm_udmap_rx_ch_cfg_resp
 
 TISCI_MSG_RM_UDMAP_FLOW_CFG - UDMAP Receive Flow Configure
 ==========================================================
@@ -573,169 +309,7 @@ TISCI Message ID
 UDMAP Receive Flow Configure Message Parameters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-+--------------------+------------------------------+----------------------------------------------------------------------------------+---------------------------------+
-|     Parameter      |             Type             |                                  Valid Values                                    |            Description          |
-+====================+==============================+==================================================================================+=================================+
-| hdr                | Generic TISCI message header | :doc:`Valid Host IDs <../../5_soc_doc/am6x/hosts>`                               | Generic TISCI message header.   |
-|                    |                              |                                                                                  | Contains the message ID, host   |
-|                    |                              |                                                                                  | ID, sequence number, and any    |
-|                    |                              |                                                                                  | flags                           |
-+--------------------+------------------------------+----------------------------------------------------------------------------------+---------------------------------+
-| valid_params       | u32                          | :ref:`pub_rm_public_udmap_flow_cfg_valid_params`                                 | Bitfield defining validity of   |
-|                    |                              |                                                                                  | UDMAP receive channel           |
-|                    |                              |                                                                                  | configuration parameters.  The  |
-|                    |                              |                                                                                  | channel configuration fields    |
-|                    |                              |                                                                                  | are not valid, and will not     |
-|                    |                              |                                                                                  | used, if their corresponding    |
-|                    |                              |                                                                                  | valid bit is zero.              |
-+--------------------+------------------------------+----------------------------------------------------------------------------------+---------------------------------+
-| nav_id             | u16                          | :ref:`Valid Navigator Subsystem UDMAP Device IDs <pub_soc_am6x_navss_ids>`       | The SoC-specific Device ID of   |
-|                    |                              |                                                                                  | the Navigator subsystem UDMAP   |
-|                    |                              |                                                                                  | in which the receive flow is    |
-|                    |                              |                                                                                  | located.                        |
-+--------------------+------------------------------+----------------------------------------------------------------------------------+---------------------------------+
-| flow_index         | u16                          | :ref:`Valid Receive Flow Indices <pub_soc_am6x_udmap_channel_and_flow_indices>`  | Specifies the receive flow      |
-|                    |                              |                                                                                  | index                           |
-+--------------------+------------------------------+----------------------------------------------------------------------------------+---------------------------------+
-| rx_einfo_present   | u8                           | (0) - Do not handle extended packet info in received packet descriptor,          | Receive flow extended packet    |
-|                    |                              | (1) - Handle extended packet info in received packet descriptor                  | info present.  The register     |
-|                    |                              |                                                                                  | field is programmed if          |
-|                    |                              |                                                                                  | rx_einfo_present's valid bit is |
-|                    |                              |                                                                                  | set.                            |
-+--------------------+------------------------------+----------------------------------------------------------------------------------+---------------------------------+
-| rx_psinfo_present  | u8                           | (0) - Do not handle PS info words in received descriptor,                        | Receive flow PS words present.  |
-|                    |                              | (1) - Handle present PS info words in received descriptor                        | The register field is           |
-|                    |                              |                                                                                  | programmed if                   |
-|                    |                              |                                                                                  | rx_psinfo_present's valid bit   |
-|                    |                              |                                                                                  | is set.                         |
-+--------------------+------------------------------+----------------------------------------------------------------------------------+---------------------------------+
-| rx_error_handling  | u8                           | (0) - Drop received packet on starvation error,                                  | Receive flow error handling.    |
-|                    |                              | (1) - Retry received packet on starvation error                                  | The register field is           |
-|                    |                              |                                                                                  | programmed if                   |
-|                    |                              |                                                                                  | rx_error_handling's valid bit   |
-|                    |                              |                                                                                  | is set.                         |
-+--------------------+------------------------------+----------------------------------------------------------------------------------+---------------------------------+
-| rx_desc_type       | u8                           | (0) - Host descriptor, (1) - Monolithic descriptor                               | Receive flow descriptor type.   |
-|                    |                              |                                                                                  | The register field is           |
-|                    |                              |                                                                                  | programmed if rx_desc_types's   |
-|                    |                              |                                                                                  | valid bit is set.               |
-+--------------------+------------------------------+----------------------------------------------------------------------------------+---------------------------------+
-| rx_sop_offset      | u16                          | 0 - 255 bytes                                                                    | Receive flow start of packet    |
-|                    |                              |                                                                                  | offset. See the UDMAP section   |
-|                    |                              |                                                                                  | of the TRM for more information |
-|                    |                              |                                                                                  | on this setting.  The register  |
-|                    |                              |                                                                                  | field is programmed             |
-|                    |                              |                                                                                  | rx_sop_offset's valid bit is    |
-|                    |                              |                                                                                  | set.                            |
-+--------------------+------------------------------+----------------------------------------------------------------------------------+---------------------------------+
-| rx_dest_qnum       | u16                          | Receive flow destination queue configuration                                     | The specified destination queue |
-|                    |                              |                                                                                  | must be valid within the        |
-|                    |                              |                                                                                  | Navigator Subsystem and must be |
-|                    |                              |                                                                                  | owned by the host, or a         |
-|                    |                              |                                                                                  | subordinate of the host,        |
-|                    |                              |                                                                                  | requesting allocation and       |
-|                    |                              |                                                                                  | configuration of the receive    |
-|                    |                              |                                                                                  | flow.  The register field is    |
-|                    |                              |                                                                                  | programmed rx_dest_qnum's valid |
-|                    |                              |                                                                                  | bit is set.                     |
-+--------------------+------------------------------+----------------------------------------------------------------------------------+---------------------------------+
-| rx_src_tag_hi      | u8                           | See the UDMAP section of the TRM for more information on this setting            | Receive flow source tag high    |
-|                    |                              |                                                                                  | byte constant.  The register    |
-|                    |                              |                                                                                  | field is programmed             |
-|                    |                              |                                                                                  | rx_src_tag_hi's valid bit is    |
-|                    |                              |                                                                                  | set.                            |
-+--------------------+------------------------------+----------------------------------------------------------------------------------+---------------------------------+
-| rx_src_tag_lo      | u8                           | See the UDMAP section of the TRM for more information on this setting            | Receive flow source tag low     |
-|                    |                              |                                                                                  | byte constant.  The register    |
-|                    |                              |                                                                                  | field is programmed             |
-|                    |                              |                                                                                  | rx_src_tag_lo's valid bit is    |
-|                    |                              |                                                                                  | set.                            |
-+--------------------+------------------------------+----------------------------------------------------------------------------------+---------------------------------+
-| rx_dest_tag_hi     | u8                           | See the UDMAP section of the TRM for more information on this setting            | Receive flow destination tag    |
-|                    |                              |                                                                                  | high byte constant.  The        |
-|                    |                              |                                                                                  | register field is programmed    |
-|                    |                              |                                                                                  | rx_dest_tag_hi's valid bit is   |
-|                    |                              |                                                                                  | set.                            |
-+--------------------+------------------------------+----------------------------------------------------------------------------------+---------------------------------+
-| rx_dest_tag_lo     | u8                           | See the UDMAP section of the TRM for more information on this setting            | Receive flow destination tag    |
-|                    |                              |                                                                                  | low byte constant.  The         |
-|                    |                              |                                                                                  | register field is programmed    |
-|                    |                              |                                                                                  | rx_dest_tag_lo's valid bit is   |
-|                    |                              |                                                                                  | set.                            |
-+--------------------+------------------------------+----------------------------------------------------------------------------------+---------------------------------+
-| rx_src_tag_hi_sel  | u8                           | (0) - Do not overwrite, (1) - Overwrite with value in rx_src_tag_hi,             | Receive flow source tag         |
-|                    |                              | (2) - Overwrite with flow_id[7:0], (4) - Overwrite with src_tag[7:0],            | high byte selector.  The        |
-|                    |                              | (5) - Overwrite with src_tag[15:8]                                               | register field is programmed if |
-|                    |                              |                                                                                  | rx_src_tag_hi_sel's valid bit   |
-|                    |                              |                                                                                  | is set.                         |
-+--------------------+------------------------------+----------------------------------------------------------------------------------+---------------------------------+
-| rx_src_tag_lo_sel  | u8                           | (0) - Do not overwrite, (1) - Overwrite with value in rx_src_tag_lo,             | Receive flow source tag         |
-|                    |                              | (2) - Overwrite with flow_id[7:0], (4) - Overwrite with src_tag[7:0],            | low byte selector.  The         |
-|                    |                              | (5) - Overwrite with src_tag[15:8]                                               | register field is programmed if |
-|                    |                              |                                                                                  | rx_src_tag_lo_sel's valid bit   |
-|                    |                              |                                                                                  | is set.                         |
-+--------------------+------------------------------+----------------------------------------------------------------------------------+---------------------------------+
-| rx_dest_tag_hi_sel | u8                           | (0) - Do not overwrite, (1) - Overwrite with value in rx_dest_tag_hi,            | Receive flow destination tag    |
-|                    |                              | (2) - Overwrite with flow_id[7:0], (4) - Overwrite with src_tag[7:0],            | high byte selector.  The        |
-|                    |                              | (5) - Overwrite with src_tag[15:8]                                               | register field is programmed if |
-|                    |                              |                                                                                  | rx_dest_tag_hi_sel's valid bit  |
-|                    |                              |                                                                                  | is set.                         |
-+--------------------+------------------------------+----------------------------------------------------------------------------------+---------------------------------+
-| rx_dest_tag_lo_sel | u8                           | (0) - Do not overwrite, (1) - Overwrite with value in rx_dest_tag_lo,            | Receive flow destination tag    |
-|                    |                              | (2) - Overwrite with flow_id[7:0], (4) - Overwrite with src_tag[7:0],            | low byte selector.  The         |
-|                    |                              | (5) - Overwrite with src_tag[15:8]                                               | register field is programmed if |
-|                    |                              |                                                                                  | rx_dest_tag_lo_sel's valid bit  |
-|                    |                              |                                                                                  | is set.                         |
-+--------------------+------------------------------+----------------------------------------------------------------------------------+---------------------------------+
-| rx_fdq0_sz0_qnum   | u16                          | Receive flow free descriptor queue 0                                             | See the UDMAP section of the    |
-|                    |                              |                                                                                  | TRM for more information on     |
-|                    |                              |                                                                                  | this setting. The specified     |
-|                    |                              |                                                                                  | free queue must be valid within |
-|                    |                              |                                                                                  | the Navigator Subsystem and     |
-|                    |                              |                                                                                  | must be owned by the host, or a |
-|                    |                              |                                                                                  | subordinate of the host,        |
-|                    |                              |                                                                                  | requesting allocation and       |
-|                    |                              |                                                                                  | configuration of the receive    |
-|                    |                              |                                                                                  | flow.                           |
-+--------------------+------------------------------+----------------------------------------------------------------------------------+---------------------------------+
-| rx_fdq1_qnum       | u16                          | Receive flow free descriptor queue 1                                             | See the UDMAP section of the    |
-|                    |                              |                                                                                  | TRM for more information on     |
-|                    |                              |                                                                                  | this setting. The specified     |
-|                    |                              |                                                                                  | free queue must be valid within |
-|                    |                              |                                                                                  | the Navigator Subsystem and     |
-|                    |                              |                                                                                  | must be owned by the host, or a |
-|                    |                              |                                                                                  | subordinate of the host,        |
-|                    |                              |                                                                                  | requesting allocation and       |
-|                    |                              |                                                                                  | configuration of the receive    |
-|                    |                              |                                                                                  | flow.                           |
-+--------------------+------------------------------+----------------------------------------------------------------------------------+---------------------------------+
-| rx_fdq2_qnum       | u16                          | Receive flow free descriptor queue 2                                             | See the UDMAP section of the    |
-|                    |                              |                                                                                  | TRM for more information on     |
-|                    |                              |                                                                                  | this setting. The specified     |
-|                    |                              |                                                                                  | free queue must be valid within |
-|                    |                              |                                                                                  | the Navigator Subsystem and     |
-|                    |                              |                                                                                  | must be owned by the host, or a |
-|                    |                              |                                                                                  | subordinate of the host,        |
-|                    |                              |                                                                                  | requesting allocation and       |
-|                    |                              |                                                                                  | configuration of the receive    |
-|                    |                              |                                                                                  | flow.                           |
-+--------------------+------------------------------+----------------------------------------------------------------------------------+---------------------------------+
-| rx_fdq3_qnum       | u16                          | Receive flow free descriptor queue 3                                             | See the UDMAP section of the    |
-|                    |                              |                                                                                  | TRM for more information on     |
-|                    |                              |                                                                                  | this setting. The specified     |
-|                    |                              |                                                                                  | free queue must be valid within |
-|                    |                              |                                                                                  | the Navigator Subsystem and     |
-|                    |                              |                                                                                  | must be owned by the host, or a |
-|                    |                              |                                                                                  | subordinate of the host,        |
-|                    |                              |                                                                                  | requesting allocation and       |
-|                    |                              |                                                                                  | configuration of the receive    |
-|                    |                              |                                                                                  | flow.                           |
-+--------------------+------------------------------+----------------------------------------------------------------------------------+---------------------------------+
-| rx_ps_location     | u8                           | (0) - Place PS words at end of packet descriptor,                                | Receive flow PS words location. |
-|                    |                              | (1) - Place PS words at beginning of the data buffer                             | The register field is           |
-|                    |                              |                                                                                  | programmed if rx_ps_location's  |
-|                    |                              |                                                                                  | valid bit is set.               |
-+--------------------+------------------------------+----------------------------------------------------------------------------------+---------------------------------+
+.. sysfwapistruct:: tisci_msg_rm_udmap_flow_cfg_req
 
 .. _pub_rm_public_udmap_flow_cfg_valid_params:
 
@@ -798,15 +372,7 @@ processed **udmap flow cfg** message.
 UDMAP Receive Flow Configure Response Message Parameters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-+---------------+----------------------------------------+--------------------------------------------------------------------------+--------------------------+
-| Parameter     |                  Type                  |                               Valid Values                               |         Description      |
-+===============+========================================+==========================================================================+==========================+
-| hdr           | Generic TISCI message header (8 bytes) | :doc:`Valid Host IDs <../../5_soc_doc/am6x/hosts>`                       | Generic TISCI message    |
-|               |                                        |                                                                          | header. Contains the     |
-|               |                                        |                                                                          | message ID, host ID,     |
-|               |                                        |                                                                          | sequence number, and any |
-|               |                                        |                                                                          | return flags             |
-+---------------+----------------------------------------+--------------------------------------------------------------------------+--------------------------+
+.. sysfwapistruct:: tisci_msg_rm_udmap_flow_cfg_resp
 
 TISCI_MSG_RM_UDMAP_FLOW_SIZE_THRESH_CFG - UDMAP Receive Flow Size Threshold Configure
 =====================================================================================
@@ -845,111 +411,7 @@ TISCI Message ID
 UDMAP Receive Flow Size Threshold Configure Message Parameters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-+-------------------+------------------------------+----------------------------------------------------------------------------------+----------------------------------+
-|    Parameter      |              Type            |                               Valid Values                                       |            Description           |
-+===================+==============================+==================================================================================+==================================+
-| hdr               | Generic TISCI message header | :doc:`Valid Host IDs <../../5_soc_doc/am6x/hosts>`                               | Generic TISCI message header.    |
-|                   |                              |                                                                                  | Contains the message ID, host    |
-|                   |                              |                                                                                  | ID, sequence number, and any     |
-|                   |                              |                                                                                  | flags                            |
-+-------------------+------------------------------+----------------------------------------------------------------------------------+----------------------------------+
-| valid_params      | u32                          | :ref:`pub_rm_public_udmap_flow_size_thresh_cfg_valid_params`                     | Bitfield defining validity of    |
-|                   |                              |                                                                                  | UDMAP receive channel            |
-|                   |                              |                                                                                  | configuration parameters.  The   |
-|                   |                              |                                                                                  | channel configuration fields are |
-|                   |                              |                                                                                  | not valid, and will not be used, |
-|                   |                              |                                                                                  | if their corresponding valid bit |
-|                   |                              |                                                                                  | is zero.                         |
-+-------------------+------------------------------+-----------------------------------------------------------------------------------+---------------------------------+
-| nav_id            | u16                          | :ref:`Valid Navigator Subsystem UDMAP Device IDs <pub_soc_am6x_navss_ids>`       | The SoC-specific Device ID of    |
-|                   |                              |                                                                                  | the Navigator subsystem UDMAP in |
-|                   |                              |                                                                                  | which the receive flow is        |
-|                   |                              |                                                                                  | located.                         |
-+-------------------+------------------------------+----------------------------------------------------------------------------------+----------------------------------+
-| flow_index        | u16                          | :ref:`Valid Receive Flow Indices <pub_soc_am6x_udmap_channel_and_flow_indices>`  | Specifies the receive flow       |
-|                   |                              |                                                                                  | index.                           |
-+-------------------+------------------------------+----------------------------------------------------------------------------------+----------------------------------+
-| rx_size_thresh0   | u16                          | Receive flow packet size threshold 0                                             | See the UDMAP section of the TRM |
-|                   |                              |                                                                                  | for more information on this     |
-|                   |                              |                                                                                  | setting.                         |
-|                   |                              |                                                                                  | The value must be provided in    |
-|                   |                              |                                                                                  | 32-byte units due to a 5-bit     |
-|                   |                              |                                                                                  | left shift performed by the HW   |
-|                   |                              |                                                                                  | prior to comparison to packet    |
-|                   |                              |                                                                                  | size. The register field is      |
-|                   |                              |                                                                                  | programmed if rx_size_thresh0's  |
-|                   |                              |                                                                                  | valid bit is set.                |
-+-------------------+------------------------------+----------------------------------------------------------------------------------+----------------------------------+
-| rx_size_thresh1   | u16                          | Receive flow packet size threshold 1                                             | See the UDMAP section of the TRM |
-|                   |                              |                                                                                  | for more information on this     |
-|                   |                              |                                                                                  | setting.                         |
-|                   |                              |                                                                                  | The value must be provided in    |
-|                   |                              |                                                                                  | 32-byte units due to a 5-bit     |
-|                   |                              |                                                                                  | left shift performed by the HW   |
-|                   |                              |                                                                                  | prior to comparison to packet    |
-|                   |                              |                                                                                  | size. The register field is      |
-|                   |                              |                                                                                  | programmed if rx_size_thresh1's  |
-|                   |                              |                                                                                  | valid bit is set.                |
-+-------------------+------------------------------+----------------------------------------------------------------------------------+----------------------------------+
-| rx_size_thresh2   | u16                          | Receive flow packet size threshold 2                                             | See the UDMAP section of the TRM |
-|                   |                              |                                                                                  | for more information on this     |
-|                   |                              |                                                                                  | setting.                         |
-|                   |                              |                                                                                  | The value must be provided in    |
-|                   |                              |                                                                                  | 32-byte unites due to a left     |
-|                   |                              |                                                                                  | performed by the HW prior to     |
-|                   |                              |                                                                                  | comparison to packet size.  The  |
-|                   |                              |                                                                                  | register field is                |
-|                   |                              |                                                                                  | programmed if rx_size_thresh2's  |
-|                   |                              |                                                                                  | valid bit is set.                |
-+-------------------+------------------------------+----------------------------------------------------------------------------------+----------------------------------+
-| rx_fdq0_sz1_qnum  | u16                          | Receive flow free descriptor queue for size threshold 1                          | See the UDMAP section of the TRM |
-|                   |                              |                                                                                  | for more information on this     |
-|                   |                              |                                                                                  | setting. The specified free      |
-|                   |                              |                                                                                  | queue must be valid within the   |
-|                   |                              |                                                                                  | Navigator Subsystem and must be  |
-|                   |                              |                                                                                  | owned by the host, or a          |
-|                   |                              |                                                                                  | subordinate of the host, who     |
-|                   |                              |                                                                                  | owns the receive flow index and  |
-|                   |                              |                                                                                  | who is making the optional       |
-|                   |                              |                                                                                  | configuration request.  The      |
-|                   |                              |                                                                                  | register field is programmed if  |
-|                   |                              |                                                                                  | rx_fdq0_sz1_qnum's valid bit is  |
-|                   |                              |                                                                                  | set.                             |
-+-------------------+------------------------------+----------------------------------------------------------------------------------+----------------------------------+
-| rx_fdq0_sz2_qnum  | u16                          | Receive flow free descriptor queue for size threshold 2                          | See the UDMAP section of the TRM |
-|                   |                              |                                                                                  | for more information on this     |
-|                   |                              |                                                                                  | setting. The specified free      |
-|                   |                              |                                                                                  | queue must be valid within the   |
-|                   |                              |                                                                                  | Navigator Subsystem and must be  |
-|                   |                              |                                                                                  | owned by the host, or a          |
-|                   |                              |                                                                                  | subordinate of the host, who     |
-|                   |                              |                                                                                  | owns the receive flow index and  |
-|                   |                              |                                                                                  | who is making the optional       |
-|                   |                              |                                                                                  | configuration request.  The      |
-|                   |                              |                                                                                  | register field is programmed if  |
-|                   |                              |                                                                                  | rx_fdq0_sz2_qnum's valid bit is  |
-|                   |                              |                                                                                  | set.                             |
-+-------------------+------------------------------+----------------------------------------------------------------------------------+----------------------------------+
-| rx_fdq0_sz3_qnum  | u16                          | Receive flow free descriptor queue for size threshold 3                          | See the UDMAP section of the TRM |
-|                   |                              |                                                                                  | for more information on this     |
-|                   |                              |                                                                                  | setting. The specified free      |
-|                   |                              |                                                                                  | queue must be valid within the   |
-|                   |                              |                                                                                  | Navigator Subsystem and must be  |
-|                   |                              |                                                                                  | owned by the host, or a          |
-|                   |                              |                                                                                  | subordinate of the host, who     |
-|                   |                              |                                                                                  | owns the receive flow index and  |
-|                   |                              |                                                                                  | who is making the optional       |
-|                   |                              |                                                                                  | configuration request.  The      |
-|                   |                              |                                                                                  | register field is programmed if  |
-|                   |                              |                                                                                  | rx_fdq0_sz3_qnum's valid bit is  |
-|                   |                              |                                                                                  | set.                             |
-+-------------------+------------------------------+----------------------------------------------------------------------------------+----------------------------------+
-| rx_size_thresh_en | u8                           | Flow packet size based free queue routing enable, cannot be greater than 7       | See the UDMAP section of the TRM |
-|                   |                              |                                                                                  | for more information on this     |
-|                   |                              |                                                                                  | setting.  The register field is  |
-|                   |                              |                                                                                  | programmed if rx_size_thresh's   |
-|                   |                              |                                                                                  | valid bit is set.                |
-+-------------------+------------------------------+----------------------------------------------------------------------------------+----------------------------------+
+.. sysfwapistruct:: tisci_msg_rm_udmap_flow_size_thresh_cfg_req
 
 .. _pub_rm_public_udmap_flow_size_thresh_cfg_valid_params:
 
@@ -988,15 +450,7 @@ status of the processed **udmap flow size threshold cfg** message.
 UDMAP Receive Flow Size Threshold Configure Response Message Parameters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-+---------------+----------------------------------------+--------------------------------------------------------------------------+--------------------------+
-| Parameter     |                  Type                  |                               Valid Values                               |         Description      |
-+===============+========================================+==========================================================================+==========================+
-| hdr           | Generic TISCI message header (8 bytes) | :doc:`Valid Host IDs <../../5_soc_doc/am6x/hosts>`                       | Generic TISCI message    |
-|               |                                        |                                                                          | header. Contains the     |
-|               |                                        |                                                                          | message ID, host ID,     |
-|               |                                        |                                                                          | sequence number, and any |
-|               |                                        |                                                                          | return flags             |
-+---------------+----------------------------------------+--------------------------------------------------------------------------+--------------------------+
+.. sysfwapistruct:: tisci_msg_rm_udmap_flow_size_thresh_cfg_resp
 
 TISCI_MSG_RM_UDMAP_GCFG_CFG - UDMAP Global Configuration Configure
 ==================================================================

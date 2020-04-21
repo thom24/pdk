@@ -161,7 +161,6 @@ class sysfw_boardcfg_rules:
 
                     if e_start >= v_start and e_end <= v_end:
                         valid = True
-                    break
 
             if not valid:
                 self.output_class.send_next_line(
@@ -320,7 +319,7 @@ class sysfw_boardcfg_rules:
                             # Delete the output binary if there's a failure
                             self.output_binary_class.delete()
                         self.output_class.send_next_line('Exiting...')
-                        exit()
+                        sys.exit(1)
                     else:
                         self.output_class.send_next_line('All entries valid')
 
@@ -355,8 +354,7 @@ class sysfw_boardcfg_rules:
                     # Realign the search to an even byte since no boardcfg
                     # structure will start on an odd byte
                     if self.input_binary_class.position() & 0x1:
-                        if self.input_binary_class.is_eof() is not True:
-                            self.get_bytes('B')[0]
+                        self.get_bytes('B')[0]
 
         # If there's one byte left...
         while self.input_binary_class.is_eof() is not True:
@@ -367,7 +365,7 @@ class sysfw_boardcfg_rules:
                 self.output_class.send_next_line(
                     'ERROR: Input and output binary file sizes do not match!')
                 self.output_class.send_next_line('Exiting...')
-                exit()
+                sys.exit(1)
 
         self.output_class.send_next_line('Validation complete.')
 

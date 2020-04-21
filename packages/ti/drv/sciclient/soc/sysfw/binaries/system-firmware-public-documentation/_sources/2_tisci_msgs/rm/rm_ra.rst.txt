@@ -107,91 +107,7 @@ TISCI Message ID
 Ring Configure Message Parameters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-+--------------+----------------------------------------+--------------------------------------------------------------------------+---------------------------+
-|   Parameter  |                  Type                  |                                          Valid Values                    |        Description        |
-+==============+========================================+==========================================================================+===========================+
-| hdr          | Generic TISCI message header (8 bytes) | :doc:`Valid Host IDs <../../5_soc_doc/am6x/hosts>`                       | Generic TISCI message     |
-|              |                                        |                                                                          | header. Contains the      |
-|              |                                        |                                                                          | message ID, host ID,      |
-|              |                                        |                                                                          | sequence number, and      |
-|              |                                        |                                                                          | any flags                 |
-+--------------+----------------------------------------+--------------------------------------------------------------------------+---------------------------+
-| valid_params | u32                                    | :ref:`pub_rm_ring_cfg_valid_params`                                      | Bitfield defining         |
-|              |                                        |                                                                          | validity of ring          |
-|              |                                        |                                                                          | configuration parameters. |
-|              |                                        |                                                                          | The ring configuration    |
-|              |                                        |                                                                          | fields are not valid, and |
-|              |                                        |                                                                          | will not be used, if      |
-|              |                                        |                                                                          | their corresponding valid |
-|              |                                        |                                                                          | bit is zero.              |
-+--------------+----------------------------------------+--------------------------------------------------------------------------+---------------------------+
-| nav_id       | u16                                    | :ref:`Valid Navigator Subsystem Device IDs <pub_soc_am6x_navss_ids>`     | The SoC-specific Device   |
-|              |                                        |                                                                          | ID of the Navigator       |
-|              |                                        |                                                                          | subsystem Ring            |
-|              |                                        |                                                                          | Accelerator in which the  |
-|              |                                        |                                                                          | ring is located.          |
-+--------------+----------------------------------------+--------------------------------------------------------------------------+---------------------------+
-| index        | u16                                    | :ref:`Valid Navigator Subsystem Ring Indices <pub_soc_am6x_navss_rings>` | Specifies the requested   |
-|              |                                        |                                                                          | ring index for allocation |
-|              |                                        |                                                                          | and configuration.        |
-+--------------+----------------------------------------+--------------------------------------------------------------------------+---------------------------+
-| addr_lo      | u32                                    | 32 LSBs of system address                                                | The ring base address     |
-|              |                                        |                                                                          | must be aligned to the    |
-|              |                                        |                                                                          | "size" parameter setting  |
-|              |                                        |                                                                          | when the ring is          |
-|              |                                        |                                                                          | configured for RING or    |
-|              |                                        |                                                                          | MESSAGE modes. For        |
-|              |                                        |                                                                          | CREDENTIALS and QM modes  |
-|              |                                        |                                                                          | the ring base address     |
-|              |                                        |                                                                          | must be aligned to a 4k   |
-|              |                                        |                                                                          | byte boundary. The        |
-|              |                                        |                                                                          | register field is         |
-|              |                                        |                                                                          | programmed if addr_lo's   |
-|              |                                        |                                                                          | valid bit is set.         |
-+--------------+----------------------------------------+--------------------------------------------------------------------------+---------------------------+
-| addr_hi      | u32                                    | 16 MSBs of system address (if applicable)                                | See "addr_lo"             |
-|              |                                        |                                                                          | description.  The         |
-|              |                                        |                                                                          | register field is         |
-|              |                                        |                                                                          | programmed if addr_hi's   |
-|              |                                        |                                                                          | valid bit is set.         |
-+--------------+----------------------------------------+--------------------------------------------------------------------------+---------------------------+
-| count        | u32                                    | Number of ring elements                                                  | Number of ring elements.  |
-|              |                                        |                                                                          | Must be even if mode is   |
-|              |                                        |                                                                          | CREDENTIALS or QM. The    |
-|              |                                        |                                                                          | register field is         |
-|              |                                        |                                                                          | programmed if count's     |
-|              |                                        |                                                                          | valid bit is set.         |
-+--------------+----------------------------------------+--------------------------------------------------------------------------+---------------------------+
-| mode         | u8                                     | (0) - RING, (1) - MESSAGE, (2) - CREDENTIALS, or (3) - QM                | Specifies the mode the    |
-|              |                                        |                                                                          | ring is to be configured  |
-|              |                                        |                                                                          | as. The register field is |
-|              |                                        |                                                                          | not programmed if mode's  |
-|              |                                        |                                                                          | valid bit is not set.     |
-+--------------+----------------------------------------+--------------------------------------------------------------------------+---------------------------+
-| size         | u8                                     | (0) - 4 bytes, (1) - 8 bytes, (2) - 16 bytes, (3) - 32 bytes,            | Specifies the ring        |
-|              |                                        | (4) - 64 bytes, (5) - 128 bytes, (6) - 256 bytes                         | element size. To          |
-|              |                                        |                                                                          | calculate the encoded     |
-|              |                                        |                                                                          | size use the formula      |
-|              |                                        |                                                                          | (log2(size_bytes) - 2),   |
-|              |                                        |                                                                          | where size_bytes cannot   |
-|              |                                        |                                                                          | be greater than 256. The  |
-|              |                                        |                                                                          | register field is         |
-|              |                                        |                                                                          | programmed if size's      |
-|              |                                        |                                                                          | valid bit is set.         |
-+--------------+----------------------------------------+--------------------------------------------------------------------------+---------------------------+
-| order_id     | u8                                     | Ring bus order ID                                                        | Specifies the ring's bus  |
-|              |                                        |                                                                          | order ID. The specified   |
-|              |                                        |                                                                          | order ID is programmed as |
-|              |                                        |                                                                          | the ring's bus order ID   |
-|              |                                        |                                                                          | if order_id's valid bit   |
-|              |                                        |                                                                          | is set.                   |
-+--------------+----------------------------------------+--------------------------------------------------------------------------+---------------------------+
-| virtid       | u16                                    | Ring Virt ID                                                             | Specifies the ring's ISC  |
-|              |                                        |                                                                          | Virt ID. The specified    |
-|              |                                        |                                                                          | Virt ID is programmed if  |
-|              |                                        |                                                                          | the ring's Virt ID valid  |
-|              |                                        |                                                                          | bit is set.               |
-+--------------+----------------------------------------+--------------------------------------------------------------------------+---------------------------+
+.. sysfwapistruct:: tisci_msg_rm_ring_cfg_req
 
 .. _pub_rm_ring_cfg_valid_params:
 
@@ -230,15 +146,7 @@ processed **ring cfg** message.
 Ring Configure Response Message Parameters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-+---------------+----------------------------------------+--------------------------------------------------------------------------+--------------------------+
-| Parameter     |                  Type                  |                               Valid Values                               |         Description      |
-+===============+========================================+==========================================================================+==========================+
-| hdr           | Generic TISCI message header (8 bytes) | :doc:`Valid Host IDs <../../5_soc_doc/am6x/hosts>`                       | Generic TISCI message    |
-|               |                                        |                                                                          | header. Contains the     |
-|               |                                        |                                                                          | message ID, host ID,     |
-|               |                                        |                                                                          | sequence number, and any |
-|               |                                        |                                                                          | return flags             |
-+---------------+----------------------------------------+--------------------------------------------------------------------------+--------------------------+
+.. sysfwapistruct:: tisci_msg_rm_ring_cfg_resp
 
 TISCI_MSG_RM_RING_MON_CFG - Ring Monitor Configuration
 ======================================================

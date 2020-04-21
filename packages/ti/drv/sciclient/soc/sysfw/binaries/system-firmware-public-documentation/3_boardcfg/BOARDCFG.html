@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                20.01.00
+                20.02.00
               </div>
             
           
@@ -425,9 +425,9 @@ match what is expected by System Firmware.</p>
 associated superstructure for data validation/API compatibility checks.</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="10%" />
-<col width="7%" />
-<col width="83%" />
+<col width="8%" />
+<col width="5%" />
+<col width="87%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Element</th>
@@ -438,7 +438,7 @@ associated superstructure for data validation/API compatibility checks.</p>
 <tbody valign="top">
 <tr class="row-even"><td>magic</td>
 <td>u16</td>
-<td>unique magic number for data integrity check</td>
+<td>unique magic number for data integrity check matching <a class="reference internal" href="#pub-boardcfg-subhdr-magic-numbers"><span class="std std-ref">boardcfg substructure header magic numbers</span></a></td>
 </tr>
 <tr class="row-odd"><td>size</td>
 <td>u16</td>
@@ -446,6 +446,64 @@ associated superstructure for data validation/API compatibility checks.</p>
 </tr>
 </tbody>
 </table>
+<div class="section" id="boardcfg-substructure-header-magic-numbers">
+<span id="pub-boardcfg-subhdr-magic-numbers"></span><h5>boardcfg substructure header magic numbers<a class="headerlink" href="#boardcfg-substructure-header-magic-numbers" title="Permalink to this headline">¶</a></h5>
+<p>A unique magic number must be provided for each of the boardcfg
+structures listed below. The exact value must be used in the
+<code class="docutils literal"><span class="pre">magic</span></code> field of <a class="reference internal" href="#pub-boardcfg-subhdr"><span class="std std-ref">boardcfg substructure header</span></a> or the boardcfg
+data will be rejected.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="45%" />
+<col width="44%" />
+<col width="11%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Boardcfg Structure</th>
+<th class="head">Macro Name</th>
+<th class="head">Value</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><a class="reference internal" href="#pub-boardcfg-control"><span class="std std-ref">boardcfg_control structure</span></a></td>
+<td>BOARDCFG_CONTROL_MAGIC_NUM</td>
+<td>0xC1D3U</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#pub-boardcfg-secproxy"><span class="std std-ref">boardcfg_secproxy structure</span></a></td>
+<td>BOARDCFG_SECPROXY_MAGIC_NUM</td>
+<td>0x1207U</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#pub-boardcfg-msmc"><span class="std std-ref">Design for boardcfg_msmc</span></a></td>
+<td>BOARDCFG_MSMC_MAGIC_NUM</td>
+<td>0xA5C3U</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="BOARDCFG_SEC.html#pub-boardcfg-proc-acl"><span class="std std-ref">Processor Access List</span></a></td>
+<td>BOARDCFG_PROC_ACL_MAGIC_NUM</td>
+<td>0xF1EAU</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="BOARDCFG_SEC.html#pub-boardcfg-host-hierarchy"><span class="std std-ref">Host Hierarchy</span></a></td>
+<td>BOARDCFG_HOST_HIERARCHY_MAGIC_NUM</td>
+<td>0x8D27U</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#pub-boardcfg-dbg-cfg"><span class="std std-ref">boardcfg_dbg_cfg</span></a></td>
+<td>BOARDCFG_DBG_CFG_MAGIC_NUM</td>
+<td>0x020CU</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="BOARDCFG_SEC.html#pub-boardcfg-ext-otp-config"><span class="std std-ref">Extended OTP array configuration</span></a></td>
+<td>BOARDCFG_OTP_CFG_MAGIC_NUM</td>
+<td>0x4081U</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="BOARDCFG_RM.html#pub-boardcfg-rm-host-cfg"><span class="std std-ref">boardcfg_rm_host_cfg structure</span></a></td>
+<td>BOARDCFG_RM_HOST_CFG_MAGIC_NUM</td>
+<td>0x4C41U</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="BOARDCFG_RM.html#pub-boardcfg-rm-resasg"><span class="std std-ref">boardcfg_rm_resasg structure</span></a></td>
+<td>BOARDCFG_RM_RESASG_MAGIC_NUM</td>
+<td>0x7B25U</td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 <div class="section" id="boardcfg-control-structure">
 <span id="pub-boardcfg-control"></span><h4>boardcfg_control structure<a class="headerlink" href="#boardcfg-control-structure" title="Permalink to this headline">¶</a></h4>
@@ -553,22 +611,27 @@ specified as bits (so all, some, or none can be enabled)</p>
 <span id="pub-boardcfg-dbg-dst-ports"></span><h4>boardcfg_dbg_dst_ports<a class="headerlink" href="#boardcfg-dbg-dst-ports" title="Permalink to this headline">¶</a></h4>
 <table border="1" class="docutils">
 <colgroup>
-<col width="34%" />
-<col width="66%" />
+<col width="27%" />
+<col width="13%" />
+<col width="60%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Bit</th>
+<th class="head">Value</th>
 <th class="head">Definition</th>
 </tr>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>TRACE_DST_UART0</td>
+<td>0x0001</td>
 <td>Traces to UART0 in wakeupss enabled</td>
 </tr>
 <tr class="row-odd"><td>TRACE_DST_ITM</td>
+<td>0x0004</td>
 <td>Traces to ITM (JTAG) enabled</td>
 </tr>
 <tr class="row-even"><td>TRACE_DST_MEM</td>
+<td>0x0008</td>
 <td>Traces to memory buffer enabled</td>
 </tr>
 </tbody>
@@ -578,31 +641,39 @@ specified as bits (so all, some, or none can be enabled)</p>
 <span id="pub-boardcfg-dbg-src"></span><h4>boardcfg_dbg_src<a class="headerlink" href="#boardcfg-dbg-src" title="Permalink to this headline">¶</a></h4>
 <table border="1" class="docutils">
 <colgroup>
-<col width="26%" />
-<col width="74%" />
+<col width="23%" />
+<col width="12%" />
+<col width="65%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Bit</th>
+<th class="head">Value</th>
 <th class="head">Definition</th>
 </tr>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>TRACE_SRC_PM</td>
+<td>0x0001</td>
 <td>Traces from power management are allowed</td>
 </tr>
 <tr class="row-odd"><td>TRACE_SRC_RM</td>
+<td>0x0002</td>
 <td>Traces from resource management are allowed</td>
 </tr>
 <tr class="row-even"><td>TRACE_SRC_SEC</td>
+<td>0x0004</td>
 <td>Traces from security management are allowed</td>
 </tr>
 <tr class="row-odd"><td>TRACE_SRC_BASE</td>
+<td>0x0008</td>
 <td>Traces from baseport are allowed</td>
 </tr>
 <tr class="row-even"><td>TRACE_SRC_USER</td>
+<td>0x0010</td>
 <td>Traces from user tasks are allowed</td>
 </tr>
 <tr class="row-odd"><td>TRACE_SRC_SUPR</td>
+<td>0x0020</td>
 <td>Traces from supervisor tasks are allowed</td>
 </tr>
 </tbody>
@@ -683,7 +754,7 @@ specified as bits (so all, some, or none can be enabled)</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'20.01.00',
+            VERSION:'20.02.00',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

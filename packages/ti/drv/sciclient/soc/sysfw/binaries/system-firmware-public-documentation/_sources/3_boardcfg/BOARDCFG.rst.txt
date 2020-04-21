@@ -157,13 +157,45 @@ boardcfg substructure header
 This contains a unique magic number for each substructure and the size of the
 associated superstructure for data validation/API compatibility checks.
 
-+---------+------+------------------------------------------------------------------------+
-| Element | Type |                              Description                               |
-+=========+======+========================================================================+
-| magic   | u16  | unique magic number for data integrity check                           |
-+---------+------+------------------------------------------------------------------------+
-| size    | u16  | sizeof(superstructure containing this header) for data integrity check |
-+---------+------+------------------------------------------------------------------------+
++---------+------+-------------------------------------------------------------------------------------------------+
+| Element | Type |                                           Description                                           |
++=========+======+=================================================================================================+
+| magic   | u16  | unique magic number for data integrity check matching :ref:`pub_boardcfg_subhdr_magic_numbers`  |
++---------+------+-------------------------------------------------------------------------------------------------+
+| size    | u16  | sizeof(superstructure containing this header) for data integrity check                          |
++---------+------+-------------------------------------------------------------------------------------------------+
+
+.. _pub_boardcfg_subhdr_magic_numbers:
+
+boardcfg substructure header magic numbers
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+A unique magic number must be provided for each of the boardcfg
+structures listed below. The exact value must be used in the
+``magic`` field of :ref:`pub_boardcfg_subhdr` or the boardcfg
+data will be rejected.
+
++------------------------------------+-----------------------------------+---------+
+|         Boardcfg Structure         |            Macro Name             |  Value  |
++====================================+===================================+=========+
+| :ref:`pub_boardcfg_control`        | BOARDCFG_CONTROL_MAGIC_NUM        | 0xC1D3U |
++------------------------------------+-----------------------------------+---------+
+| :ref:`pub_boardcfg_secproxy`       | BOARDCFG_SECPROXY_MAGIC_NUM       | 0x1207U |
++------------------------------------+-----------------------------------+---------+
+| :ref:`pub_boardcfg_msmc`           | BOARDCFG_MSMC_MAGIC_NUM           | 0xA5C3U |
++------------------------------------+-----------------------------------+---------+
+| :ref:`pub_boardcfg_proc_acl`       | BOARDCFG_PROC_ACL_MAGIC_NUM       | 0xF1EAU |
++------------------------------------+-----------------------------------+---------+
+| :ref:`pub_boardcfg_host_hierarchy` | BOARDCFG_HOST_HIERARCHY_MAGIC_NUM | 0x8D27U |
++------------------------------------+-----------------------------------+---------+
+| :ref:`pub_boardcfg_dbg_cfg`        | BOARDCFG_DBG_CFG_MAGIC_NUM        | 0x020CU |
++------------------------------------+-----------------------------------+---------+
+| :ref:`pub_boardcfg_ext_otp_config` | BOARDCFG_OTP_CFG_MAGIC_NUM        | 0x4081U |
++------------------------------------+-----------------------------------+---------+
+| :ref:`pub_boardcfg_rm_host_cfg`    | BOARDCFG_RM_HOST_CFG_MAGIC_NUM    | 0x4C41U |
++------------------------------------+-----------------------------------+---------+
+| :ref:`pub_boardcfg_rm_resasg`      | BOARDCFG_RM_RESASG_MAGIC_NUM      | 0x7B25U |
++------------------------------------+-----------------------------------+---------+
 
 .. _pub_boardcfg_control:
 
@@ -232,36 +264,36 @@ specified as bits (so all, some, or none can be enabled)
 boardcfg_dbg_dst_ports
 ^^^^^^^^^^^^^^^^^^^^^^
 
-+---------------------+----------------------------------------+
-|         Bit         |               Definition               |
-+=====================+========================================+
-| TRACE_DST_UART0     | Traces to UART0 in wakeupss enabled    |
-+---------------------+----------------------------------------+
-| TRACE_DST_ITM       | Traces to ITM (JTAG) enabled           |
-+---------------------+----------------------------------------+
-| TRACE_DST_MEM       | Traces to memory buffer enabled        |
-+---------------------+----------------------------------------+
++-----------------+--------+-------------------------------------+
+|       Bit       | Value  |             Definition              |
++=================+========+=====================================+
+| TRACE_DST_UART0 | 0x0001 | Traces to UART0 in wakeupss enabled |
++-----------------+--------+-------------------------------------+
+| TRACE_DST_ITM   | 0x0004 | Traces to ITM (JTAG) enabled        |
++-----------------+--------+-------------------------------------+
+| TRACE_DST_MEM   | 0x0008 | Traces to memory buffer enabled     |
++-----------------+--------+-------------------------------------+
 
 .. _pub_boardcfg_dbg_src:
 
 boardcfg_dbg_src
 ^^^^^^^^^^^^^^^^
 
-+----------------+---------------------------------------------+
-|      Bit       |                 Definition                  |
-+================+=============================================+
-| TRACE_SRC_PM   | Traces from power management are allowed    |
-+----------------+---------------------------------------------+
-| TRACE_SRC_RM   | Traces from resource management are allowed |
-+----------------+---------------------------------------------+
-| TRACE_SRC_SEC  | Traces from security management are allowed |
-+----------------+---------------------------------------------+
-| TRACE_SRC_BASE | Traces from baseport are allowed            |
-+----------------+---------------------------------------------+
-| TRACE_SRC_USER | Traces from user tasks are allowed          |
-+----------------+---------------------------------------------+
-| TRACE_SRC_SUPR | Traces from supervisor tasks are allowed    |
-+----------------+---------------------------------------------+
++----------------+--------+---------------------------------------------+
+|      Bit       | Value  |                 Definition                  |
++================+========+=============================================+
+| TRACE_SRC_PM   | 0x0001 | Traces from power management are allowed    |
++----------------+--------+---------------------------------------------+
+| TRACE_SRC_RM   | 0x0002 | Traces from resource management are allowed |
++----------------+--------+---------------------------------------------+
+| TRACE_SRC_SEC  | 0x0004 | Traces from security management are allowed |
++----------------+--------+---------------------------------------------+
+| TRACE_SRC_BASE | 0x0008 | Traces from baseport are allowed            |
++----------------+--------+---------------------------------------------+
+| TRACE_SRC_USER | 0x0010 | Traces from user tasks are allowed          |
++----------------+--------+---------------------------------------------+
+| TRACE_SRC_SUPR | 0x0020 | Traces from supervisor tasks are allowed    |
++----------------+--------+---------------------------------------------+
 
 .. _pub_boardcfg_dbg_cfg:
 
