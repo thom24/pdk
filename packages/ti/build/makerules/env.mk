@@ -114,6 +114,9 @@ endif
 ifneq ($(PDK_PM_ROOT_PATH), $(pdk_PATH))
   pdk_INCLUDE += $(PDK_PM_ROOT_PATH)
 endif
+ifneq ($(PDK_PMIC_ROOT_PATH), $(pdk_PATH))
+  pdk_INCLUDE += $(PDK_PMIC_ROOT_PATH)
+endif
 ifneq ($(PDK_OSAL_ROOT_PATH), $(pdk_PATH))
   pdk_INCLUDE += $(PDK_OSAL_ROOT_PATH)
 endif

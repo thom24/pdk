@@ -187,6 +187,18 @@ ifneq ($(pm_EXAMPLE_LIST),)
 endif
 
 # - used to ignore include if component not present
+-include $(PDK_PMIC_COMP_PATH)/pmic_component.mk
+ifneq ($(pmic_LIB_LIST),)
+  pdk_LIB_LIST += $(pmic_LIB_LIST)
+endif
+ifneq ($(pmic_APP_LIB_LIST),)
+  pdk_APP_LIB_LIST += $(pmic_APP_LIB_LIST)
+endif
+ifneq ($(pmic_EXAMPLE_LIST),)
+  pdk_EXAMPLE_LIST += $(pmic_EXAMPLE_LIST)
+endif
+
+# - used to ignore include if component not present
 -include $(PDK_AUD_COMP_PATH)/aud_component.mk
 ifneq ($(aud_LIB_LIST),)
   pdk_LIB_LIST += $(aud_LIB_LIST)
