@@ -170,8 +170,11 @@ uint8_t txBuf[TEST_BUF_LEN]  __attribute__((aligned(128))) __attribute__((sectio
 #endif
 #endif
 #if defined(SOC_J721E) || defined(SOC_J7200)
+#ifdef SPI_DMA_ENABLE
 uint8_t txBuf[TEST_BUF_LEN]  __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
-uint8_t rxBuf[TEST_BUF_LEN]  __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
+#else
+uint8_t txBuf[TEST_BUF_LEN]  __attribute__((aligned(128)));
+#endif
 #endif
 
 /* Buffer containing the received data */
@@ -180,6 +183,14 @@ uint8_t rxBuf[TEST_BUF_LEN]  __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
 uint8_t rxBuf[TEST_BUF_LEN]  __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT))) __attribute__((section(".benchmark_buffer")));
 #else
 uint8_t rxBuf[TEST_BUF_LEN]  __attribute__((aligned(128))) __attribute__((section(".benchmark_buffer")));
+#endif
+#endif
+
+#if defined(SOC_J721E) || defined(SOC_J7200)
+#ifdef SPI_DMA_ENABLE
+uint8_t rxBuf[TEST_BUF_LEN]  __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
+#else
+uint8_t rxBuf[TEST_BUF_LEN]  __attribute__((aligned(128)));
 #endif
 #endif
 

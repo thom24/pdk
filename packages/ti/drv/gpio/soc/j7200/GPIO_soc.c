@@ -501,7 +501,7 @@ int32_t GPIO_socConfigIntrPath(uint32_t portNum, uint32_t pinNum,void *hwAttrs,b
     struct tisci_msg_rm_irq_set_req     rmIrqReq;
     struct tisci_msg_rm_irq_set_resp    rmIrqResp;
     struct tisci_msg_rm_irq_release_req rmIrqRelease;
-    uint16_t src_id,src_index,dst_id,dst_host_irq;
+    uint16_t src_id = 0U, src_index = 0U, dst_id, dst_host_irq;
 
     intCfg = cfg->intCfg;
 

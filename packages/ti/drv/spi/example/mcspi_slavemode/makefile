@@ -72,6 +72,15 @@ CFLAGS_SPI_MS     = -DMCSPI_MASTER_TASK -Dam64x_evm=am64x_evm
 APP_MASTER_SLAVE  = Master
 endif
 
+ifeq ($(SOC),$(filter $(SOC), j7200))
+CFLAGS_SPI_MS    += -DMCSPI_MASTER_TASK -Dj7200_evm=j7200_evm
+APP_MASTER_SLAVE  = Master
+endif
+
+ifeq ($(SOC),$(filter $(SOC), j721e))
+CFLAGS_SPI_MS    += -Dj721e_evm=j721e_evm
+endif
+
 # DMA enabled build
 ifeq ($(DMA), enable)
 

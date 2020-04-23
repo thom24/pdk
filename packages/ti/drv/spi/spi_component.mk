@@ -118,7 +118,11 @@ drvspi_FIRM_LIST = $(spi_FIRM_LIST)
 # All the tests mentioned in list are built when test target is called
 # List below all examples for allowed values
 ############################
+ifeq ($(SOC),$(filter $(SOC), am64x))
 spi_EXAMPLE_LIST = MCSPI_Baremetal_Master_TestApp MCSPI_Baremetal_Slave_TestApp OSPI_Baremetal_Flash_TestApp
+else
+spi_EXAMPLE_LIST = drv_mcspi_loopback_app   MCSPI_Baremetal_MasterSlave_TestApp MCSPI_Baremetal_MasterSlave_Dma_TestApp MCSPI_MasterSlave_TestApp MCSPI_MasterSlave_Dma_TestApp  OSPI_Baremetal_Flash_TestApp  OSPI_Baremetal_Flash_Dma_TestApp OSPI_Flash_TestApp OSPI_Flash_SMP_TestApp OSPI_Flash_Dma_TestApp OSPI_Flash_Dma_SMP_TestApp
+endif
 drvspi_EXAMPLE_LIST = $(spi_EXAMPLE_LIST)
 
 #

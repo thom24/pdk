@@ -1965,10 +1965,12 @@ static bool UART_test_read_verify(bool dmaMode)
     UART_close(uart);
     uart = NULL;
 
+#if defined (SOC_AM64X)
     if (UART_test_rs485(dmaMode) == false)
     {
         ret = false;
     }
+#endif
 Err:
     if (uart != NULL)
     {
