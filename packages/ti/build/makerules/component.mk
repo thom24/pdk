@@ -158,6 +158,9 @@ endif
 ifneq ($(csl_EXAMPLE_LIST),)
   pdk_EXAMPLE_LIST += $(csl_EXAMPLE_LIST)
 endif
+ifneq ($(csl_DUP_EXAMPLE_LIST),)
+  pdk_DUP_EXAMPLE_LIST += $(csl_DUP_EXAMPLE_LIST)
+endif
 
 # - used to ignore include if component not present
 -include $(PDK_BOARD_COMP_PATH)/board_component.mk
