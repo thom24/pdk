@@ -92,6 +92,11 @@ typedef struct CSL_mboxRegAddr_
      */
     uintptr_t mboxReadReq;
     /**
+     * \brief  Mailbox read done ack for the remote proc.
+     *         This will generate an interrupt to the remote core.
+     */
+    uintptr_t mboxReadDoneAck;
+    /**
      * \brief  Mailbox read Done from the remote proc.
      *         This will be corresponding to the mboxWriteDone generated previously.
      */
@@ -194,6 +199,8 @@ void CSL_Mbox_clearTxAckInterrupt (CSL_mboxRegAddr* pMboxRegAddr, uint32_t proce
  *
  */
 uint32_t CSL_Mbox_getBoxFullIntr (CSL_mboxRegAddr* pMboxRegAddr);
+
+void CSL_Mbox_clearBoxFullInterrupt (CSL_mboxRegAddr* pMboxRegAddr, uint32_t processorId);
 
 /**
  * \brief   This API triggers the interrupt to other processor acknowledgin that

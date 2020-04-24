@@ -43,6 +43,7 @@
 
 #include <ti/drv/mailbox/soc/tpr12/csl_mbox.h>
 #include <ti/csl/hw_types.h>
+#include <ti/csl/soc.h>
 
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
@@ -104,12 +105,18 @@ uint32_t CSL_Mbox_getBoxFullIntr (CSL_mboxRegAddr* pMboxRegAddr)
     return (HW_RD_REG32(pMboxRegAddr->mboxReadReq));
 }
 
-void CSL_Mbox_triggerAckInterrupt (CSL_mboxRegAddr* pMboxRegAddr, uint32_t processorId)
+void CSL_Mbox_clearBoxFullInterrupt (CSL_mboxRegAddr* pMboxRegAddr, uint32_t processorId)
 {
     uint32_t     bits;
     bits = (processorId << 2U) ;
     /* raise interrupt to the processor */
     HW_WR_REG32(pMboxRegAddr->mboxReadReq, (1U << bits));
+}
+
+void CSL_Mbox_triggerAckInterrupt (CSL_mboxRegAddr* pMboxRegAddr, uint32_t processorId)
+{
+    /* raise interrupt to the processor */
+    HW_WR_REG32(pMboxRegAddr->mboxReadDoneAck, (1U << processorId));
 }
 
 uint32_t CSL_Mbox_getBoxEmptyIntr (CSL_mboxRegAddr* pMboxRegAddr)

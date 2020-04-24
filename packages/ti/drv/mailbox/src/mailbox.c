@@ -594,7 +594,7 @@ int32_t Mailbox_readFlush(Mbox_Handle handle)
         if(driver->hwCfg != NULL)
         {
             /* Send acknowledgement to remote endpoint */
-            // CSL_Mbox_triggerAckInterrupt(driver->hwCfg->mbxReg, driver->hwCfg->remoteProcNum);
+            CSL_Mbox_triggerAckInterrupt(driver->hwCfg->mbxReg, driver->hwCfg->remoteProcNum);
         }
         else
         {
@@ -912,7 +912,7 @@ static void Mailbox_boxFullISRProcessing(Mailbox_Driver* driver)
         /* Clear the status register */
         if(driver->hwCfg != NULL)
         {
-            CSL_Mbox_triggerAckInterrupt(driver->hwCfg->mbxReg, driver->hwCfg->remoteProcNum);
+            CSL_Mbox_clearBoxFullInterrupt(driver->hwCfg->mbxReg, driver->hwCfg->remoteProcNum);
         }
     }
 }
@@ -1008,7 +1008,7 @@ static void Mailbox_boxEmptyISRProcessing(Mailbox_Driver* driver)
     if(driver != NULL)
     {
         /* Acknowldedgement from remote endpoint has been received */
-        /* Local endpoint clears the "mailbox empty" interrupt (bit 1 of register) */
+        /* Local endpoint clears the "mailbox empty" interrupt */
         if(driver->hwCfg != NULL)
         {
             CSL_Mbox_clearTxAckInterrupt(driver->hwCfg->mbxReg, driver->hwCfg->remoteProcNum);

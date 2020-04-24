@@ -500,6 +500,8 @@ typedef struct Mailbox_initParams_t
 {
     /* \brief Local Mailbox endpoint. */
     Mailbox_Instance localEndpoint;
+    /* TODO: Add Memory Init paramterers.*/
+    /* TODO: Add Memory partitoining parameters.*/
 }Mailbox_initParams;
 
 /**

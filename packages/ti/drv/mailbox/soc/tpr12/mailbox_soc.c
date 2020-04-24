@@ -73,7 +73,8 @@ CSL_mboxRegAddr gMboxReg =
     .memInitStatus  = (uintptr_t)(CSL_MSS_CTRL_U_BASE + CSL_MSS_CTRL_MSS_MAILBOX_MEM_INIT_STATUS),
     .mboxWriteDone  = (uintptr_t)(CSL_MSS_CTRL_U_BASE + CSL_MSS_CTRL_MSS_CR5A_MBOX_WRITE_DONE),
     .mboxReadReq    = (uintptr_t)(CSL_MSS_CTRL_U_BASE + CSL_MSS_CTRL_MSS_CR5A_MBOX_READ_REQ),
-    .mboxReadDone   = (uintptr_t)(CSL_MSS_CTRL_U_BASE + CSL_MSS_CTRL_MSS_CR5A_MBOX_READ_DONE)
+    .mboxReadDone   = (uintptr_t)(CSL_MSS_CTRL_U_BASE + CSL_MSS_CTRL_MSS_CR5A_MBOX_READ_DONE),
+    .mboxReadDoneAck = (uintptr_t)(CSL_MSS_CTRL_U_BASE + CSL_MSS_CTRL_MSS_CR5A_B_MBOX_READ_DONE_ACK)
 };
 
 
@@ -101,6 +102,7 @@ CSL_mboxRegAddr gMboxReg =
     .mboxWriteDone  = (uintptr_t)(CSL_DSS_CTRL_U_BASE + CSL_DSS_CTRL_DSS_DSP_MBOX_WRITE_DONE),
     .mboxReadReq    = (uintptr_t)(CSL_DSS_CTRL_U_BASE + CSL_DSS_CTRL_DSS_DSP_MBOX_READ_REQ),
     .mboxReadDone   = (uintptr_t)(CSL_DSS_CTRL_U_BASE + CSL_DSS_CTRL_DSS_DSP_MBOX_READ_DONE),
+    .mboxReadDoneAck   = (uintptr_t)(CSL_DSS_CTRL_U_BASE + CSL_DSS_CTRL_DSS_DSP_MBOX_READ_DONE_ACK),
 };
 
 
