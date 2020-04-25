@@ -350,8 +350,7 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
                 .magic = TISCI_BOARDCFG_RM_RESASG_MAGIC_NUM,
                 .size  = sizeof(struct tisci_boardcfg_rm_resasg),
             },
-            .resasg_entries_size = TISCI_RESASG_UTYPE_CNT *
-                    sizeof(struct tisci_boardcfg_rm_resasg_entry),
+            .resasg_entries_size = 53U * sizeof(struct tisci_boardcfg_rm_resasg_entry),
         },
     },
 .resasg_entries = {
