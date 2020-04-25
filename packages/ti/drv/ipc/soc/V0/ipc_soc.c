@@ -354,18 +354,18 @@ int32_t Ipc_main2mcu_intRouter(Ipc_MbConfig *cfg)
 static const uint16_t req_type[] =
 {
     /* NOTE: This list should match the Core index */
-    TISCI_DEV_GIC0,
-    TISCI_DEV_MCU_ARMSS0_CPU0,
-    TISCI_DEV_MCU_ARMSS0_CPU1
+    TISCI_DEV_NAVSS0_INTR_ROUTER_0,
+    TISCI_DEV_MAIN2MCU_LVL_INTRTR0,
+    TISCI_DEV_MAIN2MCU_LVL_INTRTR0 
 };
 
 /* Indexed list of req subtype */
 static const uint16_t req_subtype[] =
 {
     /* NOTE: This list should match the Core index */
-    TISCI_RESASG_SUBTYPE_GIC0_SPI_IRQ_GROUP0_FROM_NAVSS0_INTR_ROUTER_0,
-    TISCI_RESASG_SUBTYPE_MCU_ARMSS0_CPU0_INTR_IRQ_GROUP0_FROM_MAIN2MCU_LVL_INTRTR0,
-    TISCI_RESASG_SUBTYPE_MCU_ARMSS0_CPU1_INTR_IRQ_GROUP0_FROM_MAIN2MCU_LVL_INTRTR0
+    TISCI_RESASG_SUBTYPE_IR_OUTPUT,
+    TISCI_RESASG_SUBTYPE_IR_OUTPUT,
+    TISCI_RESASG_SUBTYPE_IR_OUTPUT 
 };
 
 /* Indexed list of dst ids */

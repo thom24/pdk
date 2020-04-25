@@ -665,13 +665,13 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
             .type = TISCI_RESASG_UTYPE(TISCI_DEV_MCU_NAVSS0_INTR_ROUTER_0, TISCI_RESASG_SUBTYPE_IR_OUTPUT),
             .start_resource = 4U,
             .num_resource = 28U,
-            .host_id = TISCI_HOST_ID_ALL,
+            .host_id = TISCI_HOST_ID_R5_0,
         },
         {
             .type = TISCI_RESASG_UTYPE(TISCI_DEV_MCU_NAVSS0_INTR_ROUTER_0, TISCI_RESASG_SUBTYPE_IR_OUTPUT),
             .start_resource = 36U,
             .num_resource = 28U,
-            .host_id = TISCI_HOST_ID_ALL,
+            .host_id = TISCI_HOST_ID_R5_2,
         },
     },
 };
