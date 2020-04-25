@@ -98,7 +98,7 @@ extern "C" {
  */
 int32_t Sciclient_firewallChangeOwnerInfo(
     const struct tisci_msg_fwl_change_owner_info_req *req,
-    const struct tisci_msg_fwl_change_owner_info_resp *resp,
+    struct tisci_msg_fwl_change_owner_info_resp *resp,
     uint32_t timeout);
 
 /**
@@ -119,7 +119,7 @@ int32_t Sciclient_firewallChangeOwnerInfo(
  */
 int32_t Sciclient_firewallSetRegion(
     const struct tisci_msg_fwl_set_firewall_region_req *req,
-    const struct tisci_msg_fwl_set_firewall_region_resp *resp,
+    struct tisci_msg_fwl_set_firewall_region_resp *resp,
     uint32_t timeout);
 
 /**
@@ -140,7 +140,7 @@ int32_t Sciclient_firewallSetRegion(
  */
 int32_t Sciclient_firewallGetRegion(
     const struct tisci_msg_fwl_get_firewall_region_req *req,
-    const struct tisci_msg_fwl_get_firewall_region_resp *resp,
+    struct tisci_msg_fwl_get_firewall_region_resp *resp,
     uint32_t timeout);
 
 #ifdef __cplusplus
