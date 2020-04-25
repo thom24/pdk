@@ -382,7 +382,8 @@ typedef struct
     /**< Variable to check whether Core context is secure/non-secure. This has
      * to be given by the user via configParams. Default value is 0.
      */
-
+    uint32_t              c66xRatRegion;
+    /**< C66x Rat region to use for mapping the IR */
 } Sciclient_ConfigPrms_t;
 
 /**
@@ -539,6 +540,7 @@ static inline void Sciclient_configPrmsInit(Sciclient_ConfigPrms_t *pCfgPrms)
         pCfgPrms->opModeFlag     = SCICLIENT_SERVICE_OPERATION_MODE_POLLED;
         pCfgPrms->pBoardCfgPrms  = NULL;
         pCfgPrms->isSecureMode   = 0U;
+        pCfgPrms->c66xRatRegion  = 15U;
     }
 }
 

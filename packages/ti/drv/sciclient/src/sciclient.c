@@ -46,6 +46,7 @@
 #if defined(SOC_J721E) || defined(SOC_J7200)
 #include <ti/csl/csl_clec.h>
 #endif
+#include <ti/csl/csl_rat.h>
 
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
@@ -163,6 +164,12 @@ static void Sciclient_ISR(uintptr_t arg);
 
 /* This utility function is to be used to take care of  all non-aligned c66x accesses */
 void sciclient_util_byte_copy(uint8_t *src, uint8_t *dest,uint32_t num_bytes);
+
+#if defined(_TMS320C6X)
+/* This utility function is used to set the RAT for IRs for C66x */
+static int32_t Sciclient_C66xRatMap(uint32_t ratRegion);
+#endif
+
 /* ========================================================================== */
 /*                            Global Variables                                */
 /* ========================================================================== */
@@ -237,7 +244,45 @@ void sciclient_util_byte_copy(uint8_t *src, uint8_t *dest,uint32_t num_bytes)
   for(i=0;i<num_bytes;i++) { 
 	 *destP++ = *srcP++;
   }  
-}	
+}
+
+#if defined(_TMS320C6X)
+static int32_t Sciclient_C66xRatMap(uint32_t ratRegion)
+{
+    int32_t status = CSL_PASS;
+    CSL_ratRegs *pC66xRatRegs = (CSL_ratRegs *)CSL_C66_COREPAC_C66_RATCFG_BASE;
+    CSL_RatTranslationCfgInfo TranslationCfg;
+
+#if defined(BUILD_C66X_1)
+    TranslationCfg.sizeInBytes = CSL_C66SS0_INTROUTER0_INTR_ROUTER_CFG_SIZE;
+    TranslationCfg.baseAddress = CSL_C66SS0_INTROUTER0_INTR_ROUTER_CFG_BASE + CSL_C66_COREPAC_RAT_REGION_BASE;
+    TranslationCfg.translatedAddress = CSL_C66SS0_INTROUTER0_INTR_ROUTER_CFG_BASE;
+#endif
+#if defined(BUILD_C66X_2)
+    TranslationCfg.sizeInBytes = CSL_C66SS1_INTROUTER0_INTR_ROUTER_CFG_SIZE;
+    TranslationCfg.baseAddress = CSL_C66SS1_INTROUTER0_INTR_ROUTER_CFG_BASE + CSL_C66_COREPAC_RAT_REGION_BASE;
+    TranslationCfg.translatedAddress = CSL_C66SS1_INTROUTER0_INTR_ROUTER_CFG_BASE;
+#endif
+
+    if (ratRegion < CSL_ratGetMaxRegions(pC66xRatRegs)) {
+        if (CSL_ratIsRegionTranslationEnabled(pC66xRatRegs, ratRegion) == false) {
+            CSL_ratEnableRegionTranslation(pC66xRatRegs, ratRegion);
+            CSL_ratConfigRegionTranslation(pC66xRatRegs, ratRegion, &TranslationCfg);
+        }
+        else
+        {
+            status = CSL_EFAIL;
+        }
+    }
+    else
+    {
+        status = CSL_EBADARGS;
+    }
+
+    return status;
+}
+#endif
+
 /* ========================================================================== */
 /*                          Function Definitions                              */
 /* ========================================================================== */
@@ -537,6 +582,17 @@ int32_t Sciclient_init(const Sciclient_ConfigPrms_t *pCfgPrms)
                 status = CSL_EFAIL;
             }
         }
+
+#if defined(_TMS320C6X)
+        if (pCfgPrms != NULL)
+        {
+            status = Sciclient_C66xRatMap(pCfgPrms->c66xRatRegion);
+        }
+        else
+        {
+            status = Sciclient_C66xRatMap(SCICLIENT_RAT_ENTRY_DEFAULT);
+        }
+#endif
     }
     return status;
 }

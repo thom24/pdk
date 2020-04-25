@@ -98,4 +98,8 @@
 #define SCICLIENT_CONTEXT_SEC       (SCICLIENT_CONTEXT_C6X_1_SEC_0)
 #endif
 
+#if defined (_TMS320C6X)
+#define SCICLIENT_RAT_ENTRY_DEFAULT (15)
+#endif
+
 #endif /* SCICLIENT_SOC_PRIV_H_ */

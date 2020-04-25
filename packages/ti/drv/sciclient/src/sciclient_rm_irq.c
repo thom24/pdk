@@ -169,6 +169,17 @@ struct Sciclient_rmIrqCfg {
 /* ========================================================================== */
 
 /**
+ * \brief Get the interrupt router from the instance address.
+ *
+ * \param addr Address of the IR
+ *
+ * \param i    Iteration number
+ *
+ * \return Updated address
+ */
+static uint32_t * Sciclient_getIrAddr (uint32_t addr, uint32_t i);
+
+/**
  * \brief Check if a parameter is valid.  Uses a valid_params field and the bit
  *        mask for a parameter to check if a parameter is valid.
  *
@@ -966,6 +977,26 @@ int32_t Sciclient_rmClearInterruptRoute (const struct tisci_msg_rm_irq_release_r
 /* -------------------------------------------------------------------------- */
 /*                 Internal Function Definitions                              */
 /* -------------------------------------------------------------------------- */
+
+static uint32_t * Sciclient_getIrAddr (uint32_t addr, uint32_t i)
+{
+    uint32_t * int_ctrl_reg;
+#if defined (BUILD_MPU1_0) || defined(BUILD_MPU1_1)
+    int_ctrl_reg = (uint32_t *)((uint64_t)addr + (uint64_t)Sciclient_rmIrIntControlReg(i));
+#else
+    int_ctrl_reg = (uint32_t *)(addr + Sciclient_rmIrIntControlReg(i));
+#endif
+#if defined (BUILD_C66X_1) || defined (BUILD_C66X_2)
+    /* This corresponds to the IR registers for which the RAT is configured */
+    if (((uint32_t)int_ctrl_reg >= CSL_C66SS0_INTROUTER0_INTR_ROUTER_CFG_BASE) && 
+        ((uint32_t)int_ctrl_reg < (CSL_C66SS1_INTROUTER0_INTR_ROUTER_CFG_BASE + 
+                         CSL_C66SS1_INTROUTER0_INTR_ROUTER_CFG_SIZE)))
+    {
+        int_ctrl_reg = (uint32_t *)((uint32_t)int_ctrl_reg + CSL_C66_COREPAC_RAT_REGION_BASE);
+    }
+#endif
+    return int_ctrl_reg;
+}
 
 static bool Sciclient_rmParamIsValid(uint32_t valid_params, uint32_t param_mask)
 {
@@ -2440,11 +2471,7 @@ static int32_t Sciclient_rmIrInpIsFree(uint16_t id,
              * mapped to an outp
              */
             for (i = 0u; i < inst->n_outp; i++) {
-#if defined (BUILD_MPU1_0) || defined(BUILD_MPU1_1)
-                int_ctrl_reg = (volatile uint32_t *)((uint64_t)inst->cfg + (uint64_t)Sciclient_rmIrIntControlReg(i));
-#else
-                int_ctrl_reg = (volatile uint32_t *)(inst->cfg + Sciclient_rmIrIntControlReg(i));
-#endif
+                int_ctrl_reg = (volatile uint32_t *)Sciclient_getIrAddr(inst->cfg, i);
                 extracted_inp = CSL_REG32_FEXT(int_ctrl_reg,
                                                INTR_ROUTER_CFG_MUXCNTL_ENABLE);
                 if (extracted_inp == inp) {
@@ -2493,11 +2520,7 @@ static int32_t Sciclient_rmIrOutpIsFree(uint16_t    id,
     }
 
     if (r == CSL_PASS) {
-#if defined (BUILD_MPU1_0) || defined(BUILD_MPU1_1)
-        int_ctrl_reg = (volatile uint32_t *)((uint64_t)inst->cfg + (uint64_t)Sciclient_rmIrIntControlReg(outp));
-#else
-        int_ctrl_reg = (volatile uint32_t *)(inst->cfg + Sciclient_rmIrIntControlReg(outp));
-#endif
+        int_ctrl_reg = (volatile uint32_t *) Sciclient_getIrAddr (inst->cfg, outp);
         extracted_inp = CSL_REG32_FEXT(int_ctrl_reg,
                                        INTR_ROUTER_CFG_MUXCNTL_ENABLE);
         if ((extracted_inp != 0u) || (outp == inst->inp0_mapping)) {
@@ -2554,11 +2577,7 @@ static int32_t Sciclient_rmIrGetOutp(uint16_t   id,
          * input
          */
         for (i = 0u; i < inst->n_outp; i++) {
-#if defined (BUILD_MPU1_0) || defined(BUILD_MPU1_1)
-            int_ctrl_reg = (volatile uint32_t *)((uint64_t)inst->cfg + (uint64_t)Sciclient_rmIrIntControlReg(i));
-#else
-            int_ctrl_reg = (volatile uint32_t *)(inst->cfg + Sciclient_rmIrIntControlReg(i));
-#endif
+            int_ctrl_reg = (volatile uint32_t *) Sciclient_getIrAddr (inst->cfg, i);
             extracted_inp = CSL_REG32_FEXT(int_ctrl_reg,
                                            INTR_ROUTER_CFG_MUXCNTL_ENABLE);
             if (inp == extracted_inp) {
