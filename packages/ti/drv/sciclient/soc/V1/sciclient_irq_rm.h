@@ -49,7 +49,7 @@
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
 
-#ifdef SOC_J721E
+#if defined(SOC_J721E) || defined(SOC_J7200)
 #define SCICLIENT_RM_IA_NUM_INST 4
 
 #define SCICLIENT_RM_IR_NUM_INST 12
