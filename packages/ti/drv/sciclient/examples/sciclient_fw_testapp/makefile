@@ -7,7 +7,7 @@ else
 include $(RULES_MAKE)
 endif
 
-APP_NAME = sciclient_firewall_testapp
+APP_NAME = sciclient_fw_testapp
 BUILD_OS_TYPE=tirtos
 
 SRCDIR = . ../common
@@ -38,8 +38,7 @@ PACKAGE_SRCS_COMMON = . ../common
 
 # Enable XDC build for application by providing XDC CFG File per core
 XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/drv/sciclient/examples/sciclient_fw_testapp/sysbios_$(ISA).cfg
-
-# CONFIG_BLD_LNK_r5f = $(PDK_INSTALL_PATH)/ti/drv/sciclient/examples/$(APP_NAME)/linker_r5.lds
+CONFIG_BLD_LNK_r5f = $(PDK_INSTALL_PATH)/ti/drv/sciclient/examples/$(APP_NAME)/linker_r5_sysbios.lds
 
 # ifeq ($(CORE),mpu1_0)
 #     LNKFLAGS_LOCAL_mpu1_0 += --entry Entry
