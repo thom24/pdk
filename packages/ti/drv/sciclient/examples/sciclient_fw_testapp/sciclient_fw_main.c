@@ -105,7 +105,7 @@ int32_t Sciclient_fw_test(
         uint32_t fail_start_address,
         uint32_t fail_end_address,
         uint32_t hostId,
-        uint32_t privId);
+        uint32_t privId, uint32_t passTest, uint32_t failTest);
 
 /* ========================================================================== */
 /*                            Global Variables                                */
@@ -200,7 +200,7 @@ void mainTask(UArg arg0, UArg arg1)
                 MCU_SRAM_ADDRESS_FAIL_START,
                 MCU_SRAM_ADDRESS_FAIL_END,
                 TISCI_HOST_ID_R5_0,
-                96);
+                96, TRUE, TRUE);
         if (CSL_PASS == r)
         {
             App_sciclientPrintf(
@@ -227,7 +227,8 @@ void mainTask(UArg arg0, UArg arg1)
                 MSMC_RAM_ADDRESS_FAIL_START,
                 MSMC_RAM_ADDRESS_FAIL_END,
                 TISCI_HOST_ID_R5_0,
-                96);
+                96,
+                TRUE, TRUE);
         if (CSL_PASS == r)
         {
             App_sciclientPrintf(
@@ -242,9 +243,42 @@ void mainTask(UArg arg0, UArg arg1)
 
 
     /* Firewalling DDR */
-
-    /* Firewalling OSPI */ 
-
+    if (CSL_PASS == r) {
+        /*
+         * From MCU domain or UDMA coming from MCU domain – 
+         * There are two options. 
+         * a.Interdomain firewall from MCU to DDR can be 
+         * configured to filter accesses. – J721E ID 1280 |  AM65xx 1280
+         * b.Northbridge firewall between NAVSS and Compute cluster can 
+         * be configured. – J721E ID 4762, 4763 | AM65xx 4450
+         * The below example shows option a.
+         */
+        #define DRAM_ADDRESS_PASS_START (0x80000000)
+        #define DRAM_ADDRESS_PASS_END (0x81000000 + 4 * 1024 - 1)
+        #define DRAM_ADDRESS_FAIL_START (0x81000000 + 4 * 1024)
+        #define DRAM_ADDRESS_FAIL_END (0x81000000 + 8 * 1024)
+        /* Tests are not run to avoid overwriting DDR data sections */
+        r = Sciclient_fw_test(
+                1280U,
+                DRAM_ADDRESS_PASS_START,
+                DRAM_ADDRESS_PASS_END,
+                DRAM_ADDRESS_FAIL_START,
+                DRAM_ADDRESS_FAIL_END,
+                TISCI_HOST_ID_R5_0,
+                96,
+                FALSE, FALSE);
+        if (CSL_PASS == r)
+        {
+            App_sciclientPrintf("\nDRAM Tests Passed.\n");
+        }
+        else
+        {
+            App_sciclientPrintf(
+                              "\nDRAM Tests have FAILED.\n");
+        }
+    }
+    
+    
     if (CSL_PASS == r)
     {
         App_sciclientPrintf(
@@ -263,6 +297,7 @@ void mainTask(UArg arg0, UArg arg1)
 /*                 Internal Function Definitions                              */
 /* ========================================================================== */
 
+volatile uint32_t *p;
 int32_t Sciclient_fw_test(
         uint16_t fwl_id,
         uint32_t pass_start_address,
@@ -270,7 +305,7 @@ int32_t Sciclient_fw_test(
         uint32_t fail_start_address,
         uint32_t fail_end_address,
         uint32_t hostId,
-        uint32_t privId)
+        uint32_t privId, uint32_t passTest, uint32_t failTest)
 {   
     int32_t r = CSL_PASS;
     const uint32_t perm_for_access =
@@ -309,7 +344,7 @@ int32_t Sciclient_fw_test(
         .end_address = fail_end_address
         };
     struct tisci_msg_fwl_set_firewall_region_resp resp_fw_set = {0};
-    volatile uint32_t *p;
+    
     gAbortRecieved = 0U;
     App_sciclientPrintf( "\nTesting the MCU_SRAM Firewalls:");
     App_sciclientPrintf( "\n1. Changing the Firewall Owner for region 0.");
@@ -342,7 +377,7 @@ int32_t Sciclient_fw_test(
             App_sciclientPrintf( "\nThis Step Failed!!");
         }
     }
-    if (r == CSL_PASS)
+    if ((r == CSL_PASS) && (passTest == TRUE))
     {
         App_sciclientPrintf( "\n5. Reading content from Region 0 to make sure the address is accesible.");
         /* Access memory region to make sure able to read and write */
@@ -364,7 +399,7 @@ int32_t Sciclient_fw_test(
             App_sciclientPrintf( "\nThis Step Failed!!");
         }
     }
-    if (r == CSL_PASS)
+    if ((r == CSL_PASS) && (failTest == TRUE))
     {
         App_sciclientPrintf( "\n5. Reading content from Region 1 to make sure the address is not accesible.");
         /* Access memory region to make sure unable to read and write */
