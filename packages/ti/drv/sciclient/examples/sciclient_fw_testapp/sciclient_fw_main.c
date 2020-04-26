@@ -87,6 +87,20 @@
 #define NONSEC_USER_CACHEABLE_MASK (0x00004000U)
 #define NONSEC_USER_DEBUG_MASK (0x00008000U)
 
+#if defined (SOC_J721E)
+#define MCU_1_0_PRIVID (96)
+#define MCU_SRAM_FWL_ID (1050)
+#define MSMC_SRAM_FWL_ID (4761)
+#define DRAM_FWL_ID (1280)
+#endif
+
+#if defined (SOC_AM65XX)
+#define MCU_1_0_PRIVID (96)
+#define MCU_SRAM_FWL_ID (1050)
+#define MSMC_SRAM_FWL_ID (4449)
+#define DRAM_FWL_ID (1280)
+#endif
+
 /* ========================================================================== */
 /*                         Structures and Enums                               */
 /* ========================================================================== */
@@ -132,28 +146,15 @@ int main(void)
     Task_Params taskParams;
     Error_Block eb;
 
-    App_SciclientC7xPreInit();
+#if defined (SOC_J721E)
+    extern const UInt32 ti_sysbios_family_arm_v7r_keystone3_Hwi_vectors[];
+    memcpy((void*)CSL_MCU_ARMSS_ATCM_BASE, 
+           (void*) &ti_sysbios_family_arm_v7r_keystone3_Hwi_vectors,
+           0x60);
+    Cache_wbInvAll();
+#endif
 
     uint32_t retVal = CSL_PASS;
-    #if defined (__C7100__)
-    /* 256 CLEC interrupt number mapped to interrupt number 14 from BIOS for
-     * timer.
-     */
-    {
-        CSL_CLEC_EVTRegs * regs = (CSL_CLEC_EVTRegs *) CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
-        CSL_ClecEventConfig evtCfg;
-        evtCfg.secureClaimEnable = 0;
-        evtCfg.evtSendEnable = 1;
-        evtCfg.rtMap = 0x3C;
-        evtCfg.extEvtNum = 0x0;
-        evtCfg.c7xEvtNum = 14;
-        /* Clec interrupt number 1024 is connected to GIC interrupt number 32 in J721E.
-        * Due to this for CLEC programming one needs to add an offset of 992 (1024 - 32)
-        * to the event number which is shared between GIC and CLEC.
-        */
-        CSL_clecConfigEvent(regs, 256 + 992, &evtCfg);
-    }
-    #endif
 
     Task_Params_init(&taskParams);
     taskParams.priority = 2;
@@ -190,17 +191,17 @@ void mainTask(UArg arg0, UArg arg1)
     /* Firwalling MCU SRAM */
     {
         #define MCU_SRAM_ADDRESS_PASS_START (0x41C50000)
-        #define MCU_SRAM_ADDRESS_PASS_END (0x41C50000 + 4 * 1024)
-        #define MCU_SRAM_ADDRESS_FAIL_START (0x41C50000 + 8 * 1024)
-        #define MCU_SRAM_ADDRESS_FAIL_END (0x41C50000 + 12 * 1024)
+        #define MCU_SRAM_ADDRESS_PASS_END (0x41C50000 + 4 * 1024 - 1)
+        #define MCU_SRAM_ADDRESS_FAIL_START (0x41C50000 + 8 * 1024 - 1)
+        #define MCU_SRAM_ADDRESS_FAIL_END (0x41C50000 + 12 * 1024 - 1)
         r = Sciclient_fw_test(
-                1050U,
+                MCU_SRAM_FWL_ID,
                 MCU_SRAM_ADDRESS_PASS_START,
                 MCU_SRAM_ADDRESS_PASS_END,
                 MCU_SRAM_ADDRESS_FAIL_START,
                 MCU_SRAM_ADDRESS_FAIL_END,
                 TISCI_HOST_ID_R5_0,
-                96, TRUE, TRUE);
+                MCU_1_0_PRIVID, TRUE, TRUE);
         if (CSL_PASS == r)
         {
             App_sciclientPrintf(
@@ -212,23 +213,25 @@ void mainTask(UArg arg0, UArg arg1)
                               "\nMCU SRAM Tests have FAILED.\n");
         }
     }
-
+    
+#if !defined (SOC_J721E)
+    /* TODO Currently this is not working for J721E */
     /* Firewalling MSMC RAM */
     if (r == CSL_PASS)
     {
         #define MSMC_RAM_ADDRESS_PASS_START (0x70100000)
-        #define MSMC_RAM_ADDRESS_PASS_END (0x70100000 + 4 * 1024)
+        #define MSMC_RAM_ADDRESS_PASS_END (0x70100000 + 4 * 1024 - 1)
         #define MSMC_RAM_ADDRESS_FAIL_START (0x70100000 + 8 * 1024)
-        #define MSMC_RAM_ADDRESS_FAIL_END (0x70100000 + 12 * 1024)
+        #define MSMC_RAM_ADDRESS_FAIL_END (0x70100000 + 12 * 1024 - 1)
         r = Sciclient_fw_test(
-                4449U,
+                MSMC_SRAM_FWL_ID,
                 MSMC_RAM_ADDRESS_PASS_START,
                 MSMC_RAM_ADDRESS_PASS_END,
                 MSMC_RAM_ADDRESS_FAIL_START,
                 MSMC_RAM_ADDRESS_FAIL_END,
                 TISCI_HOST_ID_R5_0,
-                96,
-                TRUE, TRUE);
+                MCU_1_0_PRIVID,
+                FALSE, TRUE);
         if (CSL_PASS == r)
         {
             App_sciclientPrintf(
@@ -240,7 +243,7 @@ void mainTask(UArg arg0, UArg arg1)
                               "\nMSMC SRAM Tests have FAILED.\n");
         }
     }
-
+#endif
 
     /* Firewalling DDR */
     if (CSL_PASS == r) {
@@ -248,24 +251,24 @@ void mainTask(UArg arg0, UArg arg1)
          * From MCU domain or UDMA coming from MCU domain – 
          * There are two options. 
          * a.Interdomain firewall from MCU to DDR can be 
-         * configured to filter accesses. – J721E ID 1280 |  AM65xx 1280
+         * configured to filter accesses. – J721E ID DRAM_FWL_ID |  AM65xx DRAM_FWL_ID
          * b.Northbridge firewall between NAVSS and Compute cluster can 
          * be configured. – J721E ID 4762, 4763 | AM65xx 4450
          * The below example shows option a.
          */
-        #define DRAM_ADDRESS_PASS_START (0x80000000)
+        #define DRAM_ADDRESS_PASS_START (0x70000000)
         #define DRAM_ADDRESS_PASS_END (0x81000000 + 4 * 1024 - 1)
         #define DRAM_ADDRESS_FAIL_START (0x81000000 + 4 * 1024)
         #define DRAM_ADDRESS_FAIL_END (0x81000000 + 8 * 1024)
         /* Tests are not run to avoid overwriting DDR data sections */
         r = Sciclient_fw_test(
-                1280U,
+                DRAM_FWL_ID,
                 DRAM_ADDRESS_PASS_START,
                 DRAM_ADDRESS_PASS_END,
                 DRAM_ADDRESS_FAIL_START,
                 DRAM_ADDRESS_FAIL_END,
                 TISCI_HOST_ID_R5_0,
-                96,
+                MCU_1_0_PRIVID,
                 FALSE, FALSE);
         if (CSL_PASS == r)
         {
@@ -298,6 +301,28 @@ void mainTask(UArg arg0, UArg arg1)
 /* ========================================================================== */
 
 volatile uint32_t *p;
+/**
+ * \brief This function will first set up the firewalls to access a region of 
+ *        memory and not have any access to another region of memory. Once set
+ *        the CPU would try to write a known pattern to the region of memory
+ *        and check it is able to write and read back to the region where it
+ *        has access and cannot write and readback from the region it does not
+ *        have access.
+ *
+ * \param fwl_id             ID of the firewall being tested.
+ * \param pass_start_address Start Address of the pass region
+ * \param pass_end_address   End Address of the pass region
+ * \param fail_start_address Start Address of the fail region
+ * \param fail_end_address   End Address of the fail region
+ * \param hostId             Host ID being tested.
+ * \param privId             Priv ID being tested.
+ * \param passTest           Bool Flag to run the test of writing and
+ *                           reading patterns.
+ * \param failTest           Bool Flag to run the test of writing and
+ *                           reading patterns.
+ * 
+ * \return CSL_PASS/CSL_EFAIL based on the status of the test run.
+ */
 int32_t Sciclient_fw_test(
         uint16_t fwl_id,
         uint32_t pass_start_address,
@@ -320,7 +345,7 @@ int32_t Sciclient_fw_test(
     const uint32_t perm_for_no_access = 0;
     uint32_t timeout = 0xFFFFFFFFU;
     struct tisci_msg_fwl_change_owner_info_req req = {
-        .fwl_id = (uint16_t)1050,
+        .fwl_id = (uint16_t)MCU_SRAM_FWL_ID,
         .region = (uint16_t) 0,
         .owner_index = (uint8_t) hostId
         };
@@ -346,7 +371,7 @@ int32_t Sciclient_fw_test(
     struct tisci_msg_fwl_set_firewall_region_resp resp_fw_set = {0};
     
     gAbortRecieved = 0U;
-    App_sciclientPrintf( "\nTesting the MCU_SRAM Firewalls:");
+    App_sciclientPrintf( "\nTesting Firewalls:");
     App_sciclientPrintf( "\n1. Changing the Firewall Owner for region 0.");
     r = Sciclient_firewallChangeOwnerInfo(&req, &resp, timeout);
     if (r == CSL_PASS)
