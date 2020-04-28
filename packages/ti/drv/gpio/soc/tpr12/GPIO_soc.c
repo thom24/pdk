@@ -109,7 +109,7 @@ CSL_PUBLIC_CONST GPIOConfigList GPIO_config =
 {
     {
     #if defined (_TMS320C6X)
-        NULL,
+        &GPIO_FxnTable_v2,
         NULL,
         NULL
     #else

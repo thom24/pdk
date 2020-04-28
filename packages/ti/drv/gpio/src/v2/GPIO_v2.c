@@ -323,7 +323,7 @@ static void GPIO_init_v2(void)
     memset ((void *)&gGPIOMCB, 0, sizeof(GPIO_MCB));
 
     /* Initialize all entries with 'not configured' key */
-    for (i = 0; i < GPIO_INST_MAX; i++)
+    for (i = 0; i <= GPIO_INST_MAX; i++)
     {
 	    for (j = 0; j < GPIO_MAX_PORT; j++)
         {
@@ -334,7 +334,7 @@ static void GPIO_init_v2(void)
 	    }
 	}
 
-    for (instIndex = GPIO_INST_MIN; instIndex < GPIO_INST_MAX; instIndex++)
+    for (instIndex = GPIO_INST_MIN; instIndex <= GPIO_INST_MAX; instIndex++)
     {
         retVal = GPIO_getHwAttr(&gpioHwAttr, instIndex);
         if ((retVal == 0) && (gpioHwAttr != NULL))
