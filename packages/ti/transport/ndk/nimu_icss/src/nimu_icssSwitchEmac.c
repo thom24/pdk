@@ -42,7 +42,7 @@
 #include <ti/csl/src/ip/mdio/V2/cslr_mdio.h>
 #include <ti/csl/src/ip/mdio/V2/csl_mdio.h>
 #include <ti/csl/src/ip/mdio/V2/csl_mdioAux.h>
-#elif defined (SOC_AM65XX)
+#elif defined (SOC_AM65XX) || defined(SOC_AM64X)
 #include <ti/csl/csl_mdio.h>
 #else
 #include <ti/csl/csl_mdioAux.h>
@@ -401,7 +401,7 @@ static void NIMU_ICSS_macClose(uint32_t hPort,NIMU_IcssPdInfo * pi)
 
 }
 
-#if defined (__aarch64__) || defined (__TI_ARM_V7R4__)
+#if defined (__aarch64__) || defined (__TI_ARM_V7R4__) || defined (__TI_TMS470_V7M4__)
 static void NIMU_ICSS_MDIO_init(uint32_t baseAddr,
               uint32_t mdioInputFreq,
               uint32_t mdioOutputFreq)
@@ -431,7 +431,7 @@ void NIMU_ICSS_openPeripheral(NIMU_IcssPdInfo *pi)
     }
     if(ICSS_EMAC_MODE_MAC2 != (((ICSS_EmacObject*)(pi->nimuDrvHandle)->object)->emacInitcfg)->portMask)
     {
-#if defined (__aarch64__) || defined (__TI_ARM_V7R4__)
+#if defined (__aarch64__) || defined (__TI_ARM_V7R4__) || defined (__TI_TMS470_V7M4__)
         NIMU_ICSS_MDIO_init((((ICSS_EmacHwAttrs*)(pi->nimuDrvHandle)->hwAttrs)->emacBaseAddrCfg)->prussMiiMdioRegs,
                                  NIMU_ICSS_DEFAULT_MDIOCLOCKFREQ,NIMU_ICSS_DEFAULT_MDIOBUSFREQ);
 #else
