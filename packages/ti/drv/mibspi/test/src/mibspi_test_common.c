@@ -66,12 +66,13 @@
 #include <ti/sysbios/family/arm/v7a/Pmu.h>
 #include <ti/csl/soc.h>
 
-#include <ti/drv/spi/MIBSPI.h>
+#include <ti/drv/mibspi/MIBSPI.h>
 #include <ti/drv/edma/edma.h>
 #include <ti/osal/HwiP.h>
 
-#include "mibspi_test_common.h"
 
+#include "mibspi_test_common.h"
+#include "MIBSPI_log.h"
 
 /**************************************************************************
  *************************** Local Definitions *********************************
@@ -168,7 +169,7 @@ void Test_delay(uint32_t count)
  *  @retval
  *      Not Applicable.
  */
-void Test_benchmarkStart(counter)
+void Test_benchmarkStart(uint32_t counter)
 {
     /* Initialize counter to count cycles */
     Pmu_configureCounter(counter, 0x11, FALSE);
@@ -190,7 +191,7 @@ void Test_benchmarkStart(counter)
  *  @retval
  *      Current PMU counter value.
  */
-uint32_t Test_benchmarkStop(counter)
+uint32_t Test_benchmarkStop(uint32_t counter)
 {
     /* Stop PMU counter */
     Pmu_stopCounter(counter);
@@ -220,13 +221,13 @@ static int32_t Test_getSpiStats(const MIBSPI_Handle handle, bool printStats)
     {
         if(printStats)
         {
-            System_printf("SPI hardware stats:\n");
-            System_printf("datalen Error    = %d\n", stats.dlenErr);
-            System_printf("timeout          = %d\n", stats.timeout);
-            System_printf("Parity Error     = %d\n", stats.parErr);
-            System_printf("Desync error     = %d\n", stats.desync);
-            System_printf("Tx bit error     = %d\n", stats.bitErr);
-            System_printf("RX overrun       = %d\n", stats.rxOvrnErr);
+            MIBSPI_log("SPI hardware stats:\n");
+            MIBSPI_log("datalen Error    = %d\n", stats.dlenErr);
+            MIBSPI_log("timeout          = %d\n", stats.timeout);
+            MIBSPI_log("Parity Error     = %d\n", stats.parErr);
+            MIBSPI_log("Desync error     = %d\n", stats.desync);
+            MIBSPI_log("Tx bit error     = %d\n", stats.bitErr);
+            MIBSPI_log("RX overrun       = %d\n", stats.rxOvrnErr);
         }
     }
 
@@ -251,9 +252,9 @@ static int32_t Test_spiRead(const MIBSPI_Handle handle, uint32_t dataLen, void* 
     MIBSPI_Transaction transaction;
 
     /* Configure Data Transfer */
-    transaction.base.count = dataLen;
-    transaction.base.txBuf = NULL;
-    transaction.base.rxBuf = buffer;
+    transaction.count = dataLen;
+    transaction.txBuf = NULL;
+    transaction.rxBuf = buffer;
     transaction.slaveIndex = slaveIndex;
 
     /* Start Data Transfer */
@@ -282,9 +283,9 @@ static int32_t Test_spiWrite(const MIBSPI_Handle handle, uint32_t dataLen, void*
     MIBSPI_Transaction transaction;
 
     /* Configure Data Transfer */
-    transaction.base.count = dataLen;
-    transaction.base.txBuf = buffer;
-    transaction.base.rxBuf = NULL;
+    transaction.count = dataLen;
+    transaction.txBuf = buffer;
+    transaction.rxBuf = NULL;
     transaction.slaveIndex = slaveIndex;
 
     /* Start Data Transfer */
@@ -314,9 +315,9 @@ static int32_t Test_spiReadWrite(const MIBSPI_Handle handle, uint32_t dataLen, v
     MIBSPI_Transaction  transaction;
 
     /* Configure Data Transfer */
-    transaction.base.count = dataLen;
-    transaction.base.txBuf = outBuffer;
-    transaction.base.rxBuf = inBuffer;
+    transaction.count = dataLen;
+    transaction.txBuf = outBuffer;
+    transaction.rxBuf = inBuffer;
     transaction.slaveIndex = slaveIndex;
 
     /* Start Data Transfer */
@@ -375,17 +376,17 @@ static int32_t Test_spiLoopback(const MIBSPI_Handle handle, uint8_t slaveIndex, 
             /* Check data integrity */
             if (memcmp((void *)txBuf, (void *)rxBuf, len) != 0)
             {
-                System_printf("Error: MIBSPI_transfer is successful with incorrect data(0x%x), length = %d\n", rxBuf[0], len);
+                MIBSPI_log("Error: MIBSPI_transfer is successful with incorrect data(0x%x), length = %d\n", rxBuf[0], len);
                 failed++;
             }
         }
         else
         {
-            System_printf("Debug: MIBSPI_transfer failed for length = %d\n", len);
+            MIBSPI_log("Debug: MIBSPI_transfer failed for length = %d\n", len);
             failed++;
         }
     }
-    System_printf("Debug: Finished Digital loopback with various length test,  failed %d out of %d times\n", failed, loop);
+    MIBSPI_log("Debug: Finished Digital loopback with various length test,  failed %d out of %d times\n", failed, loop);
 
     /* Disable digital loopback */
     loopback = MIBSPI_LOOPBK_NONE;
@@ -430,24 +431,24 @@ static void Test_spiLoopBackDataThroughput(uint32_t inst, uint32_t bitRate)
      **************************************************************************/
     /* Setup the default SPI Parameters */
     MIBSPI_Params_init(&params);
-    params.spiParams.frameFormat = SPI_POL0_PHA0;
+    params.frameFormat = MIBSPI_POL0_PHA0;
 
     /* Enable DMA and set DMA channels to be used */
-    params.mibspiParams.dmaEnable = 1;
-    params.mibspiParams.eccEnable = 1;
+    params.dmaEnable = 1;
+    params.eccEnable = 1;
 
-    params.spiParams.mode = SPI_MASTER;
-    params.mibspiParams.u.masterParams.bitRate = bitRate;
+    params.mode = MIBSPI_MASTER;
+    params.u.masterParams.bitRate = bitRate;
 
-    params.mibspiParams.u.masterParams.numSlaves = 1U;
-    params.mibspiParams.u.masterParams.slaveProf[0].chipSelect = 0U;
-    params.mibspiParams.u.masterParams.slaveProf[0].ramBufLen = MIBSPI_RAM_MAX_ELEM;
-    params.mibspiParams.u.masterParams.slaveProf[0].dmaReqLine = 0U;
+    params.u.masterParams.numSlaves = 1U;
+    params.u.masterParams.slaveProf[0].chipSelect = 0U;
+    params.u.masterParams.slaveProf[0].ramBufLen = MIBSPI_RAM_MAX_ELEM;
+    params.u.masterParams.slaveProf[0].dmaReqLine = 0U;
 
     handle = MIBSPI_open(gMibspiInst[inst], &params);
     if (handle == NULL)
     {
-        System_printf("Error: Unable to open the SPI Instance\n");
+        MIBSPI_log("Error: Unable to open the SPI Instance\n");
 
         return;
     }
@@ -476,15 +477,15 @@ static void Test_spiLoopBackDataThroughput(uint32_t inst, uint32_t bitRate)
         txBuf[0] = loop;
 
         /* Configure Data Transfer */
-        transaction.base.count = SPI_DATA_BLOCK_SIZE;
-        transaction.base.txBuf = (void *)txBuf;
-        transaction.base.rxBuf = (void *)rxBuf;
+        transaction.count = SPI_DATA_BLOCK_SIZE;
+        transaction.txBuf = (void *)txBuf;
+        transaction.rxBuf = (void *)rxBuf;
         transaction.slaveIndex = 0U;
 
         /* Start Data Transfer */
         if (MIBSPI_transfer(handle, &transaction) != true)
         {
-            System_printf("Debug: MIBSPI_transfer failed for , loop=%d\n", loop);
+            MIBSPI_log("Debug: MIBSPI_transfer failed for , loop=%d\n", loop);
             failed++;
         }
     }
@@ -493,7 +494,7 @@ static void Test_spiLoopBackDataThroughput(uint32_t inst, uint32_t bitRate)
     cycles = Test_benchmarkStop(0);
     throughput = 8.0 * SPI_DATA_BLOCK_SIZE * loop  * VBUSP_FREQ / cycles;
 
-    System_printf("Debug: Finished Digital loopback througput test,  failed %d out of %d times\n", failed, loop);
+    MIBSPI_log("Debug: Finished Digital loopback througput test,  failed %d out of %d times\n", failed, loop);
 
     /* Disable SPI Digital loopback mode */
     loopback = MIBSPI_LOOPBK_NONE;
@@ -584,7 +585,7 @@ void Test_spiMasterWrite(const MIBSPI_Handle handle, uint8_t slaveIndex)
     throughput = 8.0 * SPI_TEST_MSGLEN * loop  * VBUSP_FREQ / (cycles - delayCycles);
 
     // Read and print the count
-    System_printf("Master write Throughput = %.2f Mbps\n", throughput);
+    MIBSPI_log("Master write Throughput = %.2f Mbps\n", throughput);
 }
 
 /**
@@ -625,7 +626,7 @@ void Test_spiMasterRead(const MIBSPI_Handle handle, uint8_t slaveIndex)
     throughput = 8.0 * SPI_TEST_MSGLEN * loop  * VBUSP_FREQ / (cycles -delayCycles) ;
 
     // Read and print the count
-    System_printf("Debug: Master read Throughput = %.2f Mbps\n", throughput);
+    MIBSPI_log("Debug: Master read Throughput = %.2f Mbps\n", throughput);
 
 }
 
@@ -704,48 +705,48 @@ void Test_spiAPI_twoInstance(void)
     MIBSPI_Params_init(&params);
 
     /* Enable DMA and set DMA channels */
-    params.mibspiParams.dmaEnable = 1;
-    params.mibspiParams.dmaHandle = gDmaHandle[instA];
+    params.dmaEnable = 1;
+    params.dmaHandle = gDmaHandle[instA];
 
-    params.spiParams.mode = SPI_SLAVE;
-    params.mibspiParams.u.slaveParams.dmaReqLine = 0;
+    params.mode = MIBSPI_SLAVE;
+    params.u.slaveParams.dmaReqLine = 0;
 
     /* Open the SPI Instance for MibSpiA */
     handleA = MIBSPI_open(gMibspiInst[instA], &params);
     if (handleA == NULL)
     {
-        System_printf("Error: Unable to open the SPI Instance\n");
+        MIBSPI_log("Error: Unable to open the SPI Instance\n");
         goto exit;
     }
-    System_printf("Debug: SPI Instance(%d) %p has been opened successfully\n", instA, handleA);
+    MIBSPI_log("Debug: SPI Instance(%d) %p has been opened successfully\n", instA, handleA);
 
     /* Setup the default SPIB Parameters */
     MIBSPI_Params_init(&params);
 
     /* Enable DMA and set DMA channels */
-    params.mibspiParams.dmaEnable = 1;
-    params.mibspiParams.dmaHandle = gDmaHandle[instB];
+    params.dmaEnable = 1;
+    params.dmaHandle = gDmaHandle[instB];
 
-    params.spiParams.mode = SPI_SLAVE;
-    params.mibspiParams.u.slaveParams.dmaReqLine = 0;
+    params.mode = MIBSPI_SLAVE;
+    params.u.slaveParams.dmaReqLine = 0;
 
     /* Open the SPI Instance for MibSpiB */
     handleB = MIBSPI_open(gMibspiInst[instB], &params);
     if (handleB == NULL)
     {
-        System_printf("Error: Unable to open the SPI Instance\n");
+        MIBSPI_log("Error: Unable to open the SPI Instance\n");
         goto exit;
     }
-    System_printf("Debug: SPI Instance(1) %p has been opened successfully\n", handleB);
+    MIBSPI_log("Debug: SPI Instance(1) %p has been opened successfully\n", handleB);
 
     /* Close SPIA */
     MIBSPI_close(handleA);
-    System_printf("Debug: SPI Instance(0) %p has been closed successfully\n", handleA);
+    MIBSPI_log("Debug: SPI Instance(0) %p has been closed successfully\n", handleA);
     handleA= NULL;
 
     /* Close SPIB */
     MIBSPI_close(handleB);
-    System_printf("Debug: SPI Instance(1) %p has been closed successfully\n", handleB);
+    MIBSPI_log("Debug: SPI Instance(1) %p has been closed successfully\n", handleB);
     handleB = NULL;
 
     /**************************************************************************
@@ -757,22 +758,22 @@ void Test_spiAPI_twoInstance(void)
     MIBSPI_Params_init(&params);
 
     /* Enable DMA and set DMA channels */
-    params.mibspiParams.dmaEnable = 1;
-    params.mibspiParams.dmaHandle = gDmaHandle[instA];
+    params.dmaEnable = 1;
+    params.dmaHandle = gDmaHandle[instA];
 
-    params.spiParams.mode = SPI_SLAVE;
-    params.mibspiParams.u.slaveParams.dmaReqLine = 0U;
+    params.mode = MIBSPI_SLAVE;
+    params.u.slaveParams.dmaReqLine = 0U;
 
 
     /* Open the SPI Instance for MibSpiA */
     handleA = MIBSPI_open(gMibspiInst[instA], &params);
     if (handleA != NULL)
     {
-        System_printf("Debug: SPI Instance(0) %p has been opened successfully\n", handleA);
+        MIBSPI_log("Debug: SPI Instance(0) %p has been opened successfully\n", handleA);
     }
     else
     {
-        System_printf("Error: Failed to open SPI Instance(0)\n");
+        MIBSPI_log("Error: Failed to open SPI Instance(0)\n");
         goto exit;
     }
 
@@ -780,34 +781,34 @@ void Test_spiAPI_twoInstance(void)
     MIBSPI_Params_init(&params);
 
     /* Enable DMA and set DMA channels that same as SPIA, test should fail */
-    params.mibspiParams.dmaEnable = 1;
-    params.mibspiParams.dmaHandle = gDmaHandle[instB];
+    params.dmaEnable = 1;
+    params.dmaHandle = gDmaHandle[instB];
 
-    params.spiParams.mode = SPI_SLAVE;
-    params.mibspiParams.u.slaveParams.dmaReqLine = 0U;
+    params.mode = MIBSPI_SLAVE;
+    params.u.slaveParams.dmaReqLine = 0U;
 
     /* Open the SPI Instance for MibSpiA */
     handleB = MIBSPI_open(gMibspiInst[instB], &params);
 
     if (handleB == NULL)
     {
-        System_printf("Debug: passed DMA channel number check for two SPI instances.\n");
+        MIBSPI_log("Debug: passed DMA channel number check for two SPI instances.\n");
     }
     else
     {
-        System_printf("Error: Failed DMA channel number check for two SPI instances\n");
+        MIBSPI_log("Error: Failed DMA channel number check for two SPI instances\n");
     }
 exit:
     if(handleA != NULL)
     {
         MIBSPI_close(handleA);
-        System_printf("Debug: SPI Instance %p has been closed successfully\n", handleA);
+        MIBSPI_log("Debug: SPI Instance %p has been closed successfully\n", handleA);
     }
 
     if(handleB != NULL)
     {
         MIBSPI_close(handleB);
-        System_printf("Debug: SPI Instance %p has been closed successfully\n", handleB);
+        MIBSPI_log("Debug: SPI Instance %p has been closed successfully\n", handleB);
     }
 
     return;
@@ -837,25 +838,25 @@ void Test_spiAPI_oneInstance(uint8_t inst)
     /* Setup the default SPI Parameters */
     MIBSPI_Params_init(&params);
 
-    params.spiParams.mode = SPI_SLAVE;
+    params.mode = MIBSPI_SLAVE;
 
     /* Enable DMA and set DMA channels */
-    params.mibspiParams.dmaEnable = (uint8_t)1U;
-    params.mibspiParams.dmaHandle = gDmaHandle[inst];
-    params.mibspiParams.u.slaveParams.dmaReqLine = 0U;
+    params.dmaEnable = (uint8_t)1U;
+    params.dmaHandle = gDmaHandle[inst];
+    params.u.slaveParams.dmaReqLine = 0U;
 
     /* Open the SPI Instance for MibSpi */
     handle = MIBSPI_open(gMibspiInst[inst], &params);
     if (handle == NULL)
     {
-        System_printf("Error: Unable to open the SPI Instance\n");
+        MIBSPI_log("Error: Unable to open the SPI Instance\n");
         return;
     }
-    System_printf("Debug: SPI Instance %p has been opened successfully\n", handle);
+    MIBSPI_log("Debug: SPI Instance %p has been opened successfully\n", handle);
 
     /* Close SPI */
     MIBSPI_close(handle);
-    System_printf("Debug: SPI Instance %p has been closed successfully\n", handle);
+    MIBSPI_log("Debug: SPI Instance %p has been closed successfully\n", handle);
 
     /**************************************************************************
      * Test: Verify SPI API for DMA channel configuration
@@ -865,24 +866,24 @@ void Test_spiAPI_oneInstance(uint8_t inst)
     /* Setup the default SPI Parameters */
     MIBSPI_Params_init(&params);
 
-    params.mibspiParams.dmaEnable = (uint8_t)1U;
-    params.mibspiParams.dmaHandle = gDmaHandle[inst];
+    params.dmaEnable = (uint8_t)1U;
+    params.dmaHandle = gDmaHandle[inst];
 
-    params.spiParams.mode = SPI_SLAVE;
+    params.mode = MIBSPI_SLAVE;
 
     /* Open the SPI Instance for MibSpiA */
     handle = MIBSPI_open(gMibspiInst[inst], &params);
     if (handle == NULL)
     {
-        System_printf("Debug: Passed DMA channel number check\n");
+        MIBSPI_log("Debug: Passed DMA channel number check\n");
     }
     else
     {
-        System_printf("Error: Failed SPI DMA channel number check\n");
+        MIBSPI_log("Error: Failed SPI DMA channel number check\n");
 
         /* Graceful shutdown */
         MIBSPI_close(handle);
-        System_printf("Debug: SPI Instance %p has been closed successfully\n", handle);
+        MIBSPI_log("Debug: SPI Instance %p has been closed successfully\n", handle);
     }
 
     /**************************************************************************
@@ -894,14 +895,14 @@ void Test_spiAPI_oneInstance(uint8_t inst)
     MIBSPI_Params_init(&params);
 
     /* Enable DMA and set DMA channels */
-    params.mibspiParams.dmaEnable = (uint8_t)1U;
-    params.mibspiParams.dmaHandle = gDmaHandle[inst];
-    params.mibspiParams.u.slaveParams.dmaReqLine = 0U;
+    params.dmaEnable = (uint8_t)1U;
+    params.dmaHandle = gDmaHandle[inst];
+    params.u.slaveParams.dmaReqLine = 0U;
 
-    params.spiParams.mode = SPI_SLAVE;
+    params.mode = MIBSPI_SLAVE;
 
     /* Incorrect chip select */
-    params.mibspiParams.u.slaveParams.chipSelect = (uint8_t)10U;
+    params.u.slaveParams.chipSelect = (uint8_t)10U;
 
     /* Open the SPI Instance for MibSpiA */
     handle = MIBSPI_open(gMibspiInst[inst], &params);
@@ -912,7 +913,7 @@ void Test_spiAPI_oneInstance(uint8_t inst)
     {
         /* Graceful shutdown */
         MIBSPI_close(handle);
-        System_printf("Debug: SPI Instance %p has been closed successfully\n", handle);
+        MIBSPI_log("Debug: SPI Instance %p has been closed successfully\n", handle);
     }
 
     /**************************************************************************
@@ -924,14 +925,14 @@ void Test_spiAPI_oneInstance(uint8_t inst)
     MIBSPI_Params_init(&params);
 
     /* Enable DMA and set DMA channels to be used */
-    params.mibspiParams.dmaEnable = (uint8_t)1U;
-    params.mibspiParams.dmaHandle = gDmaHandle[inst];
-    params.mibspiParams.u.slaveParams.dmaReqLine  = 0U;
+    params.dmaEnable = (uint8_t)1U;
+    params.dmaHandle = gDmaHandle[inst];
+    params.u.slaveParams.dmaReqLine  = 0U;
 
-    params.spiParams.mode = SPI_SLAVE;
+    params.mode = MIBSPI_SLAVE;
 
     /* Incorrect data Size */
-    params.spiParams.dataSize = 7U;
+    params.dataSize = 7U;
 
     /* Open the SPI Instance */
     handle = MIBSPI_open(gMibspiInst[inst], &params);
@@ -944,7 +945,7 @@ void Test_spiAPI_oneInstance(uint8_t inst)
 
         /* Graceful shutdown */
         MIBSPI_close(handle);
-        System_printf("Debug: SPI Instance %p has been closed successfully\n", handle);
+        MIBSPI_log("Debug: SPI Instance %p has been closed successfully\n", handle);
     }
 
     /**************************************************************************
@@ -956,12 +957,12 @@ void Test_spiAPI_oneInstance(uint8_t inst)
     MIBSPI_Params_init(&params);
 
     /* Enable DMA and set DMA channels */
-    params.mibspiParams.dmaEnable = (uint8_t)1U;
-    params.mibspiParams.dmaHandle = gDmaHandle[0];
-    params.mibspiParams.u.slaveParams.dmaReqLine  =0U;
+    params.dmaEnable = (uint8_t)1U;
+    params.dmaHandle = gDmaHandle[0];
+    params.u.slaveParams.dmaReqLine  =0U;
 
-    params.spiParams.mode = SPI_MASTER;
-    params.mibspiParams.u.masterParams.bitRate = 0;
+    params.mode = MIBSPI_MASTER;
+    params.u.masterParams.bitRate = 0;
 
     /* Open the SPI Instance for MibSpiA */
     handle = MIBSPI_open(gMibspiInst[0], &params);
@@ -975,7 +976,7 @@ void Test_spiAPI_oneInstance(uint8_t inst)
 
         /* Graceful shutdown */
         MIBSPI_close(handle);
-        System_printf("Debug: SPI Instance %p has been closed successfully\n", handle);
+        MIBSPI_log("Debug: SPI Instance %p has been closed successfully\n", handle);
     }
 
     /**************************************************************************
@@ -986,20 +987,20 @@ void Test_spiAPI_oneInstance(uint8_t inst)
     MIBSPI_Params_init(&params);
 
     /* Enable DMA and set DMA channels to be used */
-    params.mibspiParams.dmaEnable = (uint8_t)1U;
-    params.mibspiParams.dmaHandle = gDmaHandle[inst];
-    params.spiParams.dataSize = 16U;
+    params.dmaEnable = (uint8_t)1U;
+    params.dmaHandle = gDmaHandle[inst];
+    params.dataSize = 16U;
 
-    params.spiParams.mode = SPI_SLAVE;
-    params.mibspiParams.u.slaveParams.dmaReqLine  = 0U;
+    params.mode = MIBSPI_SLAVE;
+    params.u.slaveParams.dmaReqLine  = 0U;
 
-    System_printf("Debug: Open the SPI Instance for SPI transfer parameter check test\n");
+    MIBSPI_log("Debug: Open the SPI Instance for SPI transfer parameter check test\n");
 
     /* Open the SPI Instance for MibSpi */
     handle = MIBSPI_open(gMibspiInst[inst], &params);
     if (handle == NULL)
     {
-        System_printf("Error: Unable to open the SPI Instance\n");
+        MIBSPI_log("Error: Unable to open the SPI Instance\n");
     }
     else
     {
@@ -1007,47 +1008,47 @@ void Test_spiAPI_oneInstance(uint8_t inst)
         bool          ret;
 
         /* Configure Data Transfer */
-        transaction.base.count = (uint16_t)1U;
-        transaction.base.txBuf = (void *)txBuf;
-        transaction.base.rxBuf = (void *)rxBuf;
+        transaction.count = (uint16_t)1U;
+        transaction.txBuf = (void *)txBuf;
+        transaction.rxBuf = (void *)rxBuf;
         transaction.slaveIndex = (uint16_t)0U;
 
-        snprintf(testCase, 64, "MIBSPI_transfer API test - data size=%d validation (instance=%d)", transaction.base.count, inst);
+        snprintf(testCase, 64, "MIBSPI_transfer API test - data size=%d validation (instance=%d)", transaction.count, inst);
 
         /* Start Data Transfer */
         ret = MIBSPI_transfer(handle, &transaction);
         if (ret != true)
         {
-            System_printf("Debug: MIBSPI_transfer with data size = %d failed with error=%d.\n", transaction.base.count, transaction.base.status );
+            MIBSPI_log("Debug: MIBSPI_transfer with data size = %d failed with error=%d.\n", transaction.count, transaction.status );
         }
         else
         {
-            System_printf("Error: MIBSPI_transfer with data size = %d should fail.\n", transaction.base.count);
+            MIBSPI_log("Error: MIBSPI_transfer with data size = %d should fail.\n", transaction.count);
         }
 
         /* Configure Data Transfer */
-        transaction.base.count = (uint16_t)11U;
-        transaction.base.txBuf = (void *)txBuf;
-        transaction.base.rxBuf = (void *)rxBuf;
+        transaction.count = (uint16_t)11U;
+        transaction.txBuf = (void *)txBuf;
+        transaction.rxBuf = (void *)rxBuf;
         transaction.slaveIndex = (uint16_t)0U;
 
-        snprintf(testCase, 64, "MIBSPI_transfer API test - data size=%d validation (instance=%d)",transaction.base.count, inst);
+        snprintf(testCase, 64, "MIBSPI_transfer API test - data size=%d validation (instance=%d)",transaction.count, inst);
 
         /* Start Data Transfer */
         ret = MIBSPI_transfer(handle, &transaction);
         if (ret != true)
         {
-            System_printf("Debug: MIBSPI_transfer with data size = %d failed with error=%d. \n", transaction.base.count, transaction.base.status);
+            MIBSPI_log("Debug: MIBSPI_transfer with data size = %d failed with error=%d. \n", transaction.count, transaction.status);
         }
         else
         {
-            System_printf("Error: MIBSPI_transfer with data size = %d should fail.\n", transaction.base.count);
+            MIBSPI_log("Error: MIBSPI_transfer with data size = %d should fail.\n", transaction.count);
         }
 
         /* Configure Data Transfer */
-        transaction.base.count = (uint16_t)10U;
-        transaction.base.txBuf = (void *)NULL;
-        transaction.base.rxBuf = (void *)NULL;
+        transaction.count = (uint16_t)10U;
+        transaction.txBuf = (void *)NULL;
+        transaction.rxBuf = (void *)NULL;
         transaction.slaveIndex = (uint16_t)0U;
 
         snprintf(testCase, 64, "MIBSPI_transfer API test - buffer address validation (instance=%d)", inst);
@@ -1056,16 +1057,16 @@ void Test_spiAPI_oneInstance(uint8_t inst)
         ret = MIBSPI_transfer(handle, &transaction);
         if (ret != true)
         {
-            System_printf("Debug: MIBSPI_transfer failed with NULL pointers for both TX and RX. \n", transaction.base.status);
+            MIBSPI_log("Debug: MIBSPI_transfer failed with NULL pointers for both TX and RX. \n", transaction.status);
         }
         else
         {
-            System_printf("Error: MIBSPI_transfer with NULL pointers for both TX and RX should fail.\n");
+            MIBSPI_log("Error: MIBSPI_transfer with NULL pointers for both TX and RX should fail.\n");
         }
 
         /* Graceful shutdown */
         MIBSPI_close(handle);
-        System_printf("Debug: SPI Instance %p has been closed successfully\n", handle);
+        MIBSPI_log("Debug: SPI Instance %p has been closed successfully\n", handle);
     }
 }
 
@@ -1092,40 +1093,40 @@ void Test_loopback_oneInstance(uint32_t inst, uint8_t slaveIndex)
      **************************************************************************/
     /* Setup the default SPI Parameters */
     MIBSPI_Params_init(&params);
-    params.spiParams.frameFormat = SPI_POL0_PHA0;
+    params.frameFormat = MIBSPI_POL0_PHA0;
 
     /* Enable DMA and set DMA channels to be used */
-    params.mibspiParams.dmaEnable = 1;
-    params.mibspiParams.dmaHandle = gDmaHandle[inst];
-    params.mibspiParams.eccEnable = 1;
-    params.spiParams.mode = SPI_MASTER;
-    params.mibspiParams.u.masterParams.bitRate = 1000000U;
+    params.dmaEnable = 1;
+    params.dmaHandle = gDmaHandle[inst];
+    params.eccEnable = 1;
+    params.mode = MIBSPI_MASTER;
+    params.u.masterParams.bitRate = 1000000U;
 
     /* mibSPIA support only one slave */
     if(inst == 0)
     {
-        params.mibspiParams.u.masterParams.numSlaves = 1;
-        params.mibspiParams.u.masterParams.slaveProf[0].chipSelect = 0;
-        params.mibspiParams.u.masterParams.slaveProf[0].ramBufLen = MIBSPI_RAM_MAX_ELEM;
-        params.mibspiParams.u.masterParams.slaveProf[0].dmaReqLine = 0U;
+        params.u.masterParams.numSlaves = 1;
+        params.u.masterParams.slaveProf[0].chipSelect = 0;
+        params.u.masterParams.slaveProf[0].ramBufLen = MIBSPI_RAM_MAX_ELEM;
+        params.u.masterParams.slaveProf[0].dmaReqLine = 0U;
     }
     else if(inst == 1)
     {
         /* The total element size of 3 slaves is MIBSPI_RAM_MAX_ELEM
          * In this example, it is distributed among 3 slaves by MIBSPI_RAM_MAX_ELEM - 6U, 4U, and 2U
          */
-        memset((void *)&params.mibspiParams.u.masterParams.slaveProf[0], 0, sizeof(params.mibspiParams.u.masterParams.slaveProf));
+        memset((void *)&params.u.masterParams.slaveProf[0], 0, sizeof(params.u.masterParams.slaveProf));
 
-        params.mibspiParams.u.masterParams.numSlaves = 3;
-        params.mibspiParams.u.masterParams.slaveProf[0].chipSelect = 0;
-        params.mibspiParams.u.masterParams.slaveProf[0].ramBufLen = MIBSPI_RAM_MAX_ELEM/2;
-        params.mibspiParams.u.masterParams.slaveProf[0].dmaReqLine = 0U;
-        params.mibspiParams.u.masterParams.slaveProf[1].chipSelect = 1;
-        params.mibspiParams.u.masterParams.slaveProf[1].ramBufLen = MIBSPI_RAM_MAX_ELEM/4;
-        params.mibspiParams.u.masterParams.slaveProf[1].dmaReqLine = 1U;
-        params.mibspiParams.u.masterParams.slaveProf[2].chipSelect = 2;
-        params.mibspiParams.u.masterParams.slaveProf[2].ramBufLen = MIBSPI_RAM_MAX_ELEM/4;
-        params.mibspiParams.u.masterParams.slaveProf[2].dmaReqLine = 2U;
+        params.u.masterParams.numSlaves = 3;
+        params.u.masterParams.slaveProf[0].chipSelect = 0;
+        params.u.masterParams.slaveProf[0].ramBufLen = MIBSPI_RAM_MAX_ELEM/2;
+        params.u.masterParams.slaveProf[0].dmaReqLine = 0U;
+        params.u.masterParams.slaveProf[1].chipSelect = 1;
+        params.u.masterParams.slaveProf[1].ramBufLen = MIBSPI_RAM_MAX_ELEM/4;
+        params.u.masterParams.slaveProf[1].dmaReqLine = 1U;
+        params.u.masterParams.slaveProf[2].chipSelect = 2;
+        params.u.masterParams.slaveProf[2].ramBufLen = MIBSPI_RAM_MAX_ELEM/4;
+        params.u.masterParams.slaveProf[2].dmaReqLine = 2U;
     }
     else
     {
@@ -1135,13 +1136,13 @@ void Test_loopback_oneInstance(uint32_t inst, uint8_t slaveIndex)
     handle = MIBSPI_open(gMibspiInst[inst], &params);
     if (handle == NULL)
     {
-        System_printf("Error: Unable to open the SPI Instance\n");
+        MIBSPI_log("Error: Unable to open the SPI Instance\n");
         return;
     }
-    System_printf("Debug: SPI Instance %p has been reopened in master mode successfully\n", handle);
+    MIBSPI_log("Debug: SPI Instance %p has been reopened in master mode successfully\n", handle);
 
     /* Start Internal Loopback Test in master mode */
-    if(Test_spiLoopback(handle, slaveIndex, params.mibspiParams.u.masterParams.slaveProf[slaveIndex].ramBufLen, 2) == 0)
+    if(Test_spiLoopback(handle, slaveIndex, params.u.masterParams.slaveProf[slaveIndex].ramBufLen, 2) == 0)
     {
 
     }
@@ -1152,7 +1153,7 @@ void Test_loopback_oneInstance(uint32_t inst, uint8_t slaveIndex)
 
     /* Close the driver: */
     MIBSPI_close(handle);
-    System_printf("Debug: SPI Instance %p has been closed successfully\n", handle);
+    MIBSPI_log("Debug: SPI Instance %p has been closed successfully\n", handle);
 
     /**************************************************************************
      * Test: Reopen the driver in master mode for loopback test without DMA
@@ -1160,18 +1161,18 @@ void Test_loopback_oneInstance(uint32_t inst, uint8_t slaveIndex)
     snprintf(testCase, 64, "SPI loopback test - instance(%d), 16bits non-DMA mode", inst);
 
     /* Change dma configuration */
-    params.mibspiParams.dmaEnable = 0;
+    params.dmaEnable = 0;
 
     handle = MIBSPI_open(gMibspiInst[inst], &params);
     if (handle == NULL)
     {
-        System_printf("Error: Unable to open the SPI Instance\n");
+        MIBSPI_log("Error: Unable to open the SPI Instance\n");
         return;
     }
-    System_printf("Debug: SPI Instance %p has been opened successfully\n", handle);
+    MIBSPI_log("Debug: SPI Instance %p has been opened successfully\n", handle);
 
     /* Start Internal Loopback Test in master mode */
-    if(Test_spiLoopback(handle, slaveIndex, params.mibspiParams.u.masterParams.slaveProf[slaveIndex].ramBufLen, 2) == 0U)
+    if(Test_spiLoopback(handle, slaveIndex, params.u.masterParams.slaveProf[slaveIndex].ramBufLen, 2) == 0U)
     {
 
     }
@@ -1182,7 +1183,7 @@ void Test_loopback_oneInstance(uint32_t inst, uint8_t slaveIndex)
 
     /* Close the driver: */
     MIBSPI_close(handle);
-    System_printf("Debug: SPI Instance %p has been closed successfully\n", handle);
+    MIBSPI_log("Debug: SPI Instance %p has been closed successfully\n", handle);
 
     /**************************************************************************
      * Test: Reopen the driver in master mode for loopback test DMA enabled 8bits
@@ -1190,19 +1191,19 @@ void Test_loopback_oneInstance(uint32_t inst, uint8_t slaveIndex)
     snprintf(testCase, 64, "SPI loopback test - instance(%d), 8bits DMA mode", inst);
 
     /* Change dma configuration */
-    params.mibspiParams.dmaEnable = 1;
-    params.spiParams.dataSize =8;
+    params.dmaEnable = 1;
+    params.dataSize =8;
 
     handle = MIBSPI_open(gMibspiInst[inst], &params);
     if (handle == NULL)
     {
-        System_printf("Error: Unable to open the SPI Instance\n");
+        MIBSPI_log("Error: Unable to open the SPI Instance\n");
         return;
     }
-    System_printf("Debug: SPI Instance %p has been opened successfully\n", handle);
+    MIBSPI_log("Debug: SPI Instance %p has been opened successfully\n", handle);
 
     /* Start Internal Loopback Test in master mode */
-    if(Test_spiLoopback(handle, slaveIndex, params.mibspiParams.u.masterParams.slaveProf[slaveIndex].ramBufLen, 1) == 0U)
+    if(Test_spiLoopback(handle, slaveIndex, params.u.masterParams.slaveProf[slaveIndex].ramBufLen, 1) == 0U)
     {
 
     }
@@ -1213,7 +1214,7 @@ void Test_loopback_oneInstance(uint32_t inst, uint8_t slaveIndex)
 
     /* Close the driver: */
     MIBSPI_close(handle);
-    System_printf("Debug: SPI Instance %p has been closed successfully\n", handle);
+    MIBSPI_log("Debug: SPI Instance %p has been closed successfully\n", handle);
 
     /**************************************************************************
      * Test: Reopen the driver in master mode for loopback test DMA enabled 8bits
@@ -1221,19 +1222,19 @@ void Test_loopback_oneInstance(uint32_t inst, uint8_t slaveIndex)
     snprintf(testCase, 64, "SPI loopback test - instance(%d), 8bits non-DMA mode", inst);
 
     /* Change dma configuration */
-    params.mibspiParams.dmaEnable = 0;
-    params.spiParams.dataSize =8;
+    params.dmaEnable = 0;
+    params.dataSize =8;
 
     handle = MIBSPI_open(gMibspiInst[inst], &params);
     if (handle == NULL)
     {
-        System_printf("Error: Unable to open the SPI Instance\n");
+        MIBSPI_log("Error: Unable to open the SPI Instance\n");
         return;
     }
-    System_printf("Debug: SPI Instance %p has been opened successfully\n", handle);
+    MIBSPI_log("Debug: SPI Instance %p has been opened successfully\n", handle);
 
     /* Start Internal Loopback Test in master mode */
-    if(Test_spiLoopback(handle, slaveIndex, params.mibspiParams.u.masterParams.slaveProf[slaveIndex].ramBufLen, 1) == 0U)
+    if(Test_spiLoopback(handle, slaveIndex, params.u.masterParams.slaveProf[slaveIndex].ramBufLen, 1) == 0U)
     {
 
     }
@@ -1244,7 +1245,7 @@ void Test_loopback_oneInstance(uint32_t inst, uint8_t slaveIndex)
 
     /* Close the driver: */
     MIBSPI_close(handle);
-    System_printf("Debug: SPI Instance %p has been closed successfully\n", handle);
+    MIBSPI_log("Debug: SPI Instance %p has been closed successfully\n", handle);
 
     /**************************************************************************
      * Test: Reopen the driver in master mode for loopback throughput test

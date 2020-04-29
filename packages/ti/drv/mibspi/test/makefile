@@ -31,7 +31,7 @@ endif
 
 
 # Common source files across all platforms and cores
-SRCS_COMMON += main_mibspi_test.c mibspi_test_common.c SPI_log.c
+SRCS_COMMON += main_mibspi_test.c mibspi_test_common.c
 
 # List all the external components/interfaces, whose interface header files
 # need to be included for this component
@@ -45,8 +45,8 @@ APP_NAME = MIBSPI$(MIBSPI_OS_TESTPREFIX)_MasterSlave_Dma_TestApp
 # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
 LOCAL_APP_NAME =  MIBSPI$(MIBSPI_OS_TESTPREFIX)_MasterSlave_Dma_$(BOARD)_$(CORE)TestApp
 
-COMP_LIST_COMMON += spi_dma edma
-CFLAGS_SPI_DMA    = -DSPI_DMA_ENABLE
+COMP_LIST_COMMON += mibspi_dma edma
+CFLAGS_SPI_DMA    = -DMIBSPI_DMA_ENABLE
 else
 
 #Name of the directory created under packages/ti/binary/
@@ -56,7 +56,7 @@ APP_NAME = MIBSPI$(MIBSPI_OS_TESTPREFIX)_MasterSlave_TestApp
 LOCAL_APP_NAME =  MIBSPI$(MIBSPI_OS_TESTPREFIX)_MasterSlave_$(BOARD)_$(CORE)TestApp
 
 
-COMP_LIST_COMMON += spi
+COMP_LIST_COMMON += mibspi
 CFLAGS_SPI_DMA    =
 
 endif
@@ -80,7 +80,8 @@ ifeq ($(BOARD),$(filter $(BOARD), tpr12_evm))
 #CFLAGS_SPI_UT    = -DMIBSPI_MULT_CHANNEL
 endif
 
-PACKAGE_SRCS_COMMON = .
+PACKAGE_SRCS_COMMON = ../test
+
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_SPI_UT) $(CFLAGS_SPI_DMA) $(CFLAGS_SPI_MS) $(CFLAGS_OS_DEFINES)
 
 # Core/SoC/platform specific source files and CFLAGS

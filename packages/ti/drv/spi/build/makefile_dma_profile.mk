@@ -35,25 +35,20 @@ include $(PDK_SPI_COMP_PATH)/src/src_files_common.mk
 
 MODULE_NAME = spi_dma_profile
 
-ifeq ($(SOC),$(filter $(SOC), tda2xx tda2px dra72x dra75x tda2ex am571x am572x am574x tda3xx dra78x am437x am335x k2h k2k k2l k2e k2g c6678 c6657 omapl137 omapl138 am65xx j721e j7200 tpr12))
+ifeq ($(SOC),$(filter $(SOC), tda2xx tda2px dra72x dra75x tda2ex am571x am572x am574x tda3xx dra78x am437x am335x k2h k2k k2l k2e k2g c6678 c6657 omapl137 omapl138 am65xx j721e j7200))
 SRCDIR += soc/$(SOC)
 
 ifeq ($(SOC),$(filter $(SOC), k2h k2k k2l k2e k2g c6678 c6657 omapl137 omapl138))
     SRCDIR += soc/dma/v0
 else
-   ifeq ($(SOC),$(filter $(SOC), tda2xx tda2px dra72x dra75x tda2ex am571x am572x am574x tda3xx dra78x am437x am335x))
-        SRCDIR += soc/dma/v1
-    else
-        ifeq ($(SOC),$(filter $(SOC), tpr12))
-            SRCDIR += soc/dma/v3
-        else
-            SRCDIR += soc/dma/v2
-        endif
-    endif
+ifeq ($(SOC),$(filter $(SOC), tda2xx tda2px dra72x dra75x tda2ex am571x am572x am574x tda3xx dra78x am437x am335x))
+    SRCDIR += soc/dma/v1
+else
+    SRCDIR += soc/dma/v2
+endif
 endif
 
 INCDIR += soc
-# Common source files across all platforms and cores
 SRCS_COMMON += SPI_soc.c SPI_dma.c
 ifeq ($(SOC),$(filter $(SOC), am65xx j721e))
 SRCS_COMMON += OSPI_dma.c
@@ -62,7 +57,6 @@ endif
 ifeq ($(SOC),$(filter $(SOC), am571x am572x am574x am437x am335x))
 SRCS_COMMON += QSPI_dma.c
 endif
-
 endif
 
 # List all the external components/interfaces, whose interface header files
@@ -73,7 +67,7 @@ else
 INCLUDE_EXTERNAL_INTERFACES = pdk
 endif
 
-ifeq ($(SOC),$(filter $(SOC), tda2xx tda2px dra72x dra75x tda2ex am571x am572x am574x tda3xx dra78x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j7200 tpr12))
+ifeq ($(SOC),$(filter $(SOC), tda2xx tda2px dra72x dra75x tda2ex am571x am572x am574x tda3xx dra78x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j7200))
 PACKAGE_SRCS_COMMON += soc/$(SOC) soc/SPI_soc.h
 ifeq ($(SOC),$(filter $(SOC), k2h k2k k2l k2e k2g c6678 c6657 omapl137 omapl138))
     PACKAGE_SRCS_COMMON += soc/dma/v0
@@ -81,11 +75,7 @@ else
 ifeq ($(SOC),$(filter $(SOC), tda2xx tda2px dra72x dra75x tda2ex am571x am572x am574x tda3xx dra78x am437x am335x))
     PACKAGE_SRCS_COMMON += soc/dma/v1
 else
-    ifeq ($(SOC),$(filter $(SOC), tpr12))
-        PACKAGE_SRCS_COMMON += soc/dma/v3
-    else
-        PACKAGE_SRCS_COMMON += soc/dma/v2
-    endif
+    PACKAGE_SRCS_COMMON += soc/dma/v2
 endif
 endif
 endif
@@ -94,9 +84,6 @@ ifeq ($(CORE),$(filter $(CORE), mpu1_0 a15_0 a9host a8host))
   CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) -finstrument-functions -gdwarf-3 -g -D_ENABLE_BM -DSPI_DMA_ENABLE
 else
   CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) --entry_parm=address --exit_hook=ti_utils_exit --exit_parm=address --entry_hook=ti_utils_entry -g -D_ENABLE_BM -DSPI_DMA_ENABLE
-endif
-ifeq ($(SOC),$(filter $(SOC), tpr12))
-CFLAGS_LOCAL_COMMON += $(MIBSPI_CFLAGS)
 endif
 
 # Include common make files

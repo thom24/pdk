@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2016, Texas Instruments Incorporated
+# Copyright (c) 2017 - 2020, Texas Instruments Incorporated
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -31,15 +31,36 @@
 #
 
 include $(PDK_INSTALL_PATH)/ti/build/Rules.make
-include $(PDK_SPI_COMP_PATH)/src/src_files_common.mk
+include $(PDK_MIBSPI_COMP_PATH)/src/src_files_common.mk
 
-MODULE_NAME = spi_indp
+MODULE_NAME = mibspi_dma
+
+ifeq ($(SOC),$(filter $(SOC), tpr12))
+SRCDIR += soc/$(SOC)
+
+SRCDIR += soc/dma/v0
+
+INCDIR += soc
+# Common source files across all platforms and cores
+SRCS_COMMON += MIBSPI_soc.c MIBSPI_dma.c
+
+endif
 
 # List all the external components/interfaces, whose interface header files
 #  need to be included for this component
-INCLUDE_EXTERNAL_INTERFACES = pdk edma
+ifeq ($(SOC),$(filter $(SOC), tpr12))
+INCLUDE_EXTERNAL_INTERFACES = pdk
+endif
 
-CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS)
+ifeq ($(SOC),$(filter $(SOC), tpr12))
+PACKAGE_SRCS_COMMON += soc/$(SOC) soc/MIBSPI_soc.h
+PACKAGE_SRCS_COMMON += soc/dma
+endif
+
+CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) -DMIBSPI_DMA_ENABLE
+ifeq ($(SOC),$(filter $(SOC), tpr12))
+CFLAGS_LOCAL_COMMON += $(MIBSPI_CFLAGS)
+endif
 
 # Include common make files
 ifeq ($(MAKERULEDIR), )

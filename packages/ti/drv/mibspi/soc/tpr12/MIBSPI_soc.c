@@ -1,5 +1,5 @@
 /**
- *  \file   SPI_soc.c
+ *  \file   MIBSPI_soc.c
  *
  *  \brief  TPR12 device specific hardware attributes.
  *
@@ -40,10 +40,10 @@
 #include <string.h>
 
 #include <ti/csl/soc/tpr12/src/cslr_soc.h>
-#include <ti/drv/spi/soc/SPI_soc.h>
-#include <ti/drv/spi/soc/SPI_v3.h>
-#include <ti/drv/spi/src/v3/mibspi_utils.h>
-#include <ti/drv/spi/src/v3/mibspi_priv.h>
+#include <ti/drv/mibspi/soc/MIBSPI_soc.h>
+#include <ti/drv/mibspi/soc/MIBSPI_v0.h>
+#include <ti/drv/mibspi/src/mibspi_utils.h>
+#include <ti/drv/mibspi/src/mibspi_priv.h>
 
 #define MIBSPI_SPIREV_MINOR_VAL                                        (0x0008U)
 #define MIBSPI_SPIREV_CUSTOM_VAL                                       (0x0000U)
@@ -107,25 +107,25 @@
 
 
 /* SPI objects */
-MibSpiDriver_Object SpiObjects[MIBSPI_ENTRY_INDEX_CNT] = 
+MibSpiDriver_Object MibspiObjects[MIBSPI_ENTRY_INDEX_CNT] = 
 {
 #if defined (BUILD_MCU)
     [MIBSPI_ENTRY_INDEX_MSS_SPIA] = 
     {
-        .spiHandle = NULL,
+        .mibspiHandle = NULL,
     },
     [MIBSPI_ENTRY_INDEX_MSS_SPIB] = 
     {
-        .spiHandle = NULL,
+        .mibspiHandle = NULL,
     },
 #endif
     [MIBSPI_ENTRY_INDEX_RCSS_SPIA] =
     {
-        .spiHandle = NULL,
+        .mibspiHandle = NULL,
     },
     [MIBSPI_ENTRY_INDEX_RCSS_SPIB] = 
     {
-        .spiHandle = NULL,
+        .mibspiHandle = NULL,
     },
 };
 
@@ -135,9 +135,9 @@ MibSpiDriver_Object SpiObjects[MIBSPI_ENTRY_INDEX_CNT] =
  **************************************************************************/
 
 /**
- * @brief   This is TPR12 SPI platform configuration for MSS Subsystem.
+ * @brief   This is TPR12 MIBSPI platform configuration for MSS Subsystem.
  */
-MibSpi_HwCfg gSpiHwCfg[MIBSPI_ENTRY_INDEX_CNT] =
+MibSpi_HwCfg gMibspiHwCfg[MIBSPI_ENTRY_INDEX_CNT] =
 {
 #if defined (BUILD_MCU)
     [MIBSPI_ENTRY_INDEX_MSS_SPIA] = 
@@ -333,59 +333,55 @@ MibSpi_HwCfg gSpiHwCfg[MIBSPI_ENTRY_INDEX_CNT] =
  * developers can modify the configuration definition below as per
  * requirements.
  */
-SPI_Config SPI_config[MIBSPI_ENTRY_INDEX_CNT] =
+MIBSPI_Config MIBSPI_config[MIBSPI_ENTRY_INDEX_CNT] =
 {
 #if defined (BUILD_MCU)
     [MIBSPI_ENTRY_INDEX_MSS_SPIA] = 
     /* MSS MibSPIA driver config */
     {
-        &SPI_FxnTable_v3,                  /* SPI Driver Function Table            */
-        (void *)&SpiObjects[MIBSPI_ENTRY_INDEX_MSS_SPIA], /* SPI Driver Object */
-        (void *)&gSpiHwCfg[MIBSPI_ENTRY_INDEX_MSS_SPIA]  /* SPI Hw configuration */
+        .object  =  &MibspiObjects[MIBSPI_ENTRY_INDEX_MSS_SPIA], /* SPI Driver Object */
+        .hwAttrs =  &gMibspiHwCfg[MIBSPI_ENTRY_INDEX_MSS_SPIA]  /* SPI Hw configuration */
     },
 
     [MIBSPI_ENTRY_INDEX_MSS_SPIB] = 
     /* MSS MibSPIB driver config */
     {
-        &SPI_FxnTable_v3,                  /* SPI Driver Function Table            */
-        (void *)&SpiObjects[MIBSPI_ENTRY_INDEX_MSS_SPIB], /* SPI Driver Object */
-        (void *)&gSpiHwCfg[MIBSPI_ENTRY_INDEX_MSS_SPIB]   /* SPI Hw configuration */
+        .object  =  &MibspiObjects[MIBSPI_ENTRY_INDEX_MSS_SPIB], /* SPI Driver Object */
+        .hwAttrs =  &gMibspiHwCfg[MIBSPI_ENTRY_INDEX_MSS_SPIB]   /* SPI Hw configuration */
     },
 #endif
 
     [MIBSPI_ENTRY_INDEX_RCSS_SPIA] = 
     /* RCSS MibSPIA driver config */
     {
-        &SPI_FxnTable_v3,                  /* SPI Driver Function Table            */
-        (void *)&SpiObjects[MIBSPI_ENTRY_INDEX_RCSS_SPIA], /* SPI Driver Object */
-        (void *)&gSpiHwCfg[MIBSPI_ENTRY_INDEX_RCSS_SPIA]   /* SPI Hw configuration */
+        .object  =  &MibspiObjects[MIBSPI_ENTRY_INDEX_RCSS_SPIA], /* SPI Driver Object */
+        .hwAttrs =  &gMibspiHwCfg[MIBSPI_ENTRY_INDEX_RCSS_SPIA]   /* SPI Hw configuration */
     },
 
     [MIBSPI_ENTRY_INDEX_RCSS_SPIB] = 
     /* RCSS MibSPIB driver config */
     {
-        &SPI_FxnTable_v3,                  /* SPI Driver Function Table            */
-        (void *)&SpiObjects[MIBSPI_ENTRY_INDEX_RCSS_SPIB], /* SPI Driver Object */
-        (void *)&gSpiHwCfg[MIBSPI_ENTRY_INDEX_RCSS_SPIB]   /* SPI Hw configuration */
+        .object  =  &MibspiObjects[MIBSPI_ENTRY_INDEX_RCSS_SPIB], /* SPI Driver Object */
+        .hwAttrs =  &gMibspiHwCfg[MIBSPI_ENTRY_INDEX_RCSS_SPIB]   /* SPI Hw configuration */
     },
 };
 
-static int32_t SPI_socValidateCfg(const MibSpi_HwCfg *cfg)
+static int32_t MIBSPI_socValidateCfg(const MibSpi_HwCfg *cfg)
 {
-    int32_t status = SPI_STATUS_SUCCESS;
+    int32_t status = MIBSPI_STATUS_SUCCESS;
 
     
     if (cfg->numDmaReqLines > MIBSPI_UTILS_ARRAYSIZE(cfg->dmaReqlineCfg))
     {
-        status = SPI_STATUS_ERROR;
+        status = MIBSPI_STATUS_ERROR;
     }
     if (cfg->numCsPins > MIBSPI_MAX_CS)
     {
-        status = SPI_STATUS_ERROR;
+        status = MIBSPI_STATUS_ERROR;
     }
     if (cfg->numTransferGroups > MIBSPI_NUM_TRANS_GROUP)
     {
-        status = SPI_STATUS_ERROR;
+        status = MIBSPI_STATUS_ERROR;
     }
     return status;
 }
@@ -400,16 +396,16 @@ static int32_t SPI_socValidateCfg(const MibSpi_HwCfg *cfg)
  * \return 0 success: -1: error
  *
  */
-int32_t SPI_socGetInitCfg(enum MibSpi_InstanceId id, MibSpi_HwCfg *cfg)
+int32_t MIBSPI_socGetInitCfg(enum MibSpi_InstanceId id, MibSpi_HwCfg *cfg)
 {
     int32_t ret = 0;
     uint32_t index;
 
     ret = MIBSPI_socGetInstIndex(id, &index);
-    if (ret == SPI_STATUS_SUCCESS)
+    if (ret == MIBSPI_STATUS_SUCCESS)
     {
-        Mibspi_assert(SPI_socValidateCfg(&gSpiHwCfg[index]) == SPI_STATUS_SUCCESS);
-        *cfg = gSpiHwCfg[index];
+        Mibspi_assert(MIBSPI_socValidateCfg(&gMibspiHwCfg[index]) == MIBSPI_STATUS_SUCCESS);
+        *cfg = gMibspiHwCfg[index];
     }
     else
     {
@@ -427,16 +423,16 @@ int32_t SPI_socGetInitCfg(enum MibSpi_InstanceId id, MibSpi_HwCfg *cfg)
  * \return           0 success: -1: error
  *
  */
-int32_t SPI_socSetInitCfg(enum MibSpi_InstanceId id, const MibSpi_HwCfg *cfg)
+int32_t MIBSPI_socSetInitCfg(enum MibSpi_InstanceId id, const MibSpi_HwCfg *cfg)
 {
     int32_t ret = 0;
     uint32_t index;
 
     ret = MIBSPI_socGetInstIndex(id, &index);
-    if (ret == SPI_STATUS_SUCCESS)
+    if (ret == MIBSPI_STATUS_SUCCESS)
     {
-        Mibspi_assert(SPI_socValidateCfg(cfg) == SPI_STATUS_SUCCESS);
-        gSpiHwCfg[index] = *cfg;
+        Mibspi_assert(MIBSPI_socValidateCfg(cfg) == MIBSPI_STATUS_SUCCESS);
+        gMibspiHwCfg[index] = *cfg;
     }
     else
     {
@@ -446,37 +442,56 @@ int32_t SPI_socSetInitCfg(enum MibSpi_InstanceId id, const MibSpi_HwCfg *cfg)
 }
 
 /**
- * \brief  This API gets the SPI instance id  matching the SPI instance name
+ * \brief  This API gets the MIBSPI instance id  matching the MIBSPI instance name
  *
  * \param  mibspiInstName [in] Unique string identifying the MIBSPI instance
- * \param  idx[out]  SPI instance index.
+ * \param  idx[out]  MIBSPI instance index.
  *
- * \return           SPI_SUCCESS success: SPI_STATUS_ERROR : error
+ * \return           MIBSPI_SUCCESS success: MIBSPI_STATUS_ERROR : error
  *
  */
 int32_t MIBSPI_socGetInstIndex(enum MibSpi_InstanceId mibspiInstId, uint32_t *idx)
 {
-    int32_t status = SPI_STATUS_SUCCESS;
+    int32_t status = MIBSPI_STATUS_SUCCESS;
     uint32_t i;
 
-    for (i = 0; i< MIBSPI_UTILS_ARRAYSIZE(gSpiHwCfg); i++)
+    for (i = 0; i< MIBSPI_UTILS_ARRAYSIZE(gMibspiHwCfg); i++)
     {
-        if (mibspiInstId == gSpiHwCfg[i].mibspiInstId)
+        if (mibspiInstId == gMibspiHwCfg[i].mibspiInstId)
         {
             break;
         }
     }
-    if (i < MIBSPI_UTILS_ARRAYSIZE(gSpiHwCfg))
+    if (i < MIBSPI_UTILS_ARRAYSIZE(gMibspiHwCfg))
     {
         *idx   = i;
-        status = SPI_STATUS_SUCCESS;
+        status = MIBSPI_STATUS_SUCCESS;
     }
     else
     {
         *idx   = ~0U;
-        status = SPI_STATUS_ERROR;
+        status = MIBSPI_STATUS_ERROR;
     }
     return status;
 }
 
+MIBSPI_Handle MIBSPI_socGetInstHandle(enum MibSpi_InstanceId mibspiInstanceId)
+{
+    MIBSPI_Handle hMibspi;
+    uint32_t idx;
+    int32_t status;
+
+    status = MIBSPI_socGetInstIndex(mibspiInstanceId, &idx);
+    if (status == MIBSPI_STATUS_SUCCESS)
+    {
+        Mibspi_assert(idx < MIBSPI_UTILS_ARRAYSIZE(gMibspiHwCfg));
+        hMibspi = (MIBSPI_Handle)MIBSPI_config[idx].object;
+    
+    }
+    else
+    {
+        hMibspi = NULL;
+    }
+    return hMibspi;
+}
 

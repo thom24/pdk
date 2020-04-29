@@ -56,7 +56,7 @@ extern "C" {
 #include <string.h>
 #include <stdio.h>
 
-#include <ti/drv/spi/MIBSPI.h>
+#include <ti/drv/mibspi/MIBSPI.h>
 #include <ti/drv/edma/edma.h>
 
 #define MIBSPI_TEST_NUM_SPIINSTANCES                                   (2U)

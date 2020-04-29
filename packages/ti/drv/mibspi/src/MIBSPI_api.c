@@ -42,35 +42,27 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#include <ti/drv/spi/MIBSPI.h>
-#include <ti/drv/spi/SPI.h>
-#include <ti/drv/spi/src/SPI_osal.h>
-#include <ti/drv/spi/src/v3/mibspi_priv.h>
-#include <ti/drv/spi/src/v3/mibspi_utils.h>
+#include <ti/drv/mibspi/MIBSPI.h>
+#include <ti/drv/mibspi/src/MIBSPI_osal.h>
+#include <ti/drv/mibspi/src/mibspi_priv.h>
+#include <ti/drv/mibspi/src/mibspi_utils.h>
 
 /* Externs */
 
 /* Default SPI parameters structure */
 const MIBSPI_Params MIBSPI_defaultParams = {
-    .spiParams    = 
-    {
-        .mode               = SPI_SLAVE,
-        .dataSize           = 16U,
-        .frameFormat        = SPI_POL0_PHA0,
-        .transferMode       = SPI_MODE_BLOCKING,
-        .transferTimeout    = SPI_WAIT_FOREVER,
-        .transferCallbackFxn  = NULL,
-        .custom               = (void *) &MIBSPI_defaultParams.mibspiParams,
-    },
-    .mibspiParams =
-    {
-        .pinMode            = MIBSPI_PINMODE_4PIN_CS,
-        .shiftFormat        = MIBSPI_MSB_FIRST,
-        .dmaEnable          = (uint8_t)1U,
-        .eccEnable          = (uint8_t)1U,
-        .csHold             = (uint8_t)0U,
-        .txDummyValue       = (uint16_t)0xFFFFU,
-    },
+    .mode               = MIBSPI_SLAVE,
+    .dataSize           = 16U,
+    .frameFormat        = MIBSPI_POL0_PHA0,
+    .transferMode       = MIBSPI_MODE_BLOCKING,
+    .transferTimeout    = MIBSPI_WAIT_FOREVER,
+    .transferCallbackFxn  = NULL,
+    .pinMode            = MIBSPI_PINMODE_4PIN_CS,
+    .shiftFormat        = MIBSPI_MSB_FIRST,
+    .dmaEnable          = (uint8_t)1U,
+    .eccEnable          = (uint8_t)1U,
+    .csHold             = (uint8_t)0U,
+    .txDummyValue       = (uint16_t)0xFFFFU,
 };
 
 /* Default Master params */
@@ -116,53 +108,97 @@ const MIBSPI_SlaveModeParams MIBSPI_defaultSlaveParams =
     .chipSelect  = 0U, /* CS0 */               /*!< CS0-CS7 signal number from 0 -7 */
 };
 
+static void   *mibspiMutex = NULL;
+
+
+
 /*
  *  ======== MIBSPI_close ========
  */
-void MIBSPI_close(SPI_Handle handle)
+void MIBSPI_close(MIBSPI_Handle handle)
 {
-    SPI_close(handle);
+    if (handle != NULL)
+    {
+        if (mibspiMutex != NULL)
+        {
+            /* Acquire the the SPI driver semaphore */
+            (void)MIBSPI_osalPendLock(mibspiMutex, SemaphoreP_WAIT_FOREVER);
+        }
+
+        MIBSPI_closeCore(handle);
+
+        if (mibspiMutex != NULL)
+        {
+            /* Release the the SPI driver semaphorel */
+            (void)MIBSPI_osalPostLock(mibspiMutex);
+        }
+    }
 }
+
 
 /*
  *  ======== MIBSPI_control ========
  */
-int32_t MIBSPI_control(SPI_Handle handle, uint32_t cmd, void *arg)
+int32_t MIBSPI_control(MIBSPI_Handle handle, uint32_t cmd, void *arg)
 {
-    return SPI_control(handle, cmd, arg);
+    int32_t retVal = MIBSPI_STATUS_ERROR;
+
+    if (handle != NULL)
+    {
+        retVal = MIBSPI_controlCore(handle, cmd, arg);
+    }
+
+    return (retVal);
 }
 
 
 /*
  *  ======== MIBSPI_init ========
  */
-void MIBSPI_init(void)
+void MIBSPI_init(MIBSPI_UtilsPrms *pUtilsPrms)
 {
-    SPI_init();
+    SemaphoreP_Params     semParams;
+
+    /*
+     * Construct thread safe handles for SPI driver level
+     * Semaphore to provide exclusive access to the SPI APIs
+     */
+    if (mibspiMutex == NULL)
+    {
+        MIBSPI_osalSemParamsInit(&semParams);
+        semParams.mode = SemaphoreP_Mode_BINARY;
+        mibspiMutex = MIBSPI_osalCreateBlockingLock(1U, &semParams);
+    
+        MibspiUtils_init(pUtilsPrms);
+    }
 }
 
 /*
  *  ======== MIBSPI_open ========
  */
-SPI_Handle MIBSPI_open(enum MibSpi_InstanceId mibspiInstanceId, MIBSPI_Params *params)
+MIBSPI_Handle MIBSPI_open(enum MibSpi_InstanceId mibspiInstanceId, MIBSPI_Params *params)
 {
-    uint32_t idx;
-    int32_t spiStatus;
-    SPI_Handle hSpi;
+    MIBSPI_Handle hSpi;
 
-    spiStatus = MIBSPI_socGetInstIndex(mibspiInstanceId, &idx);
-    if (spiStatus == SPI_STATUS_SUCCESS)
+    hSpi = MIBSPI_socGetInstHandle(mibspiInstanceId);
+    if (hSpi != NULL)
     {
-        params->spiParams.custom = &params->mibspiParams;
-        hSpi = SPI_open(idx, &params->spiParams);
-    }
-    else
-    {
-        hSpi = NULL;
+        if (mibspiMutex != NULL)
+        {
+            /* Acquire the the SPI driver semaphore */
+            (void)MIBSPI_osalPendLock(mibspiMutex, SemaphoreP_WAIT_FOREVER);
+        }
+
+        hSpi = MIBSPI_openCore(hSpi, params);
+
+        if (mibspiMutex != NULL)
+        {
+            /* Release the the SPI driver semaphorel */
+            (void)MIBSPI_osalPostLock(mibspiMutex);
+        }
     }
     return hSpi;
 }
-
 
 /*
  *  ======== MIBSPI_Params_init ========
@@ -172,15 +208,15 @@ void MIBSPI_Params_init(MIBSPI_Params *params)
     if (params != NULL)
     {
         *params = MIBSPI_defaultParams;
-        if(params->spiParams.mode == SPI_MASTER)
+        if(params->mode == MIBSPI_MASTER)
         {
             /* Set Master Params */
-            params->mibspiParams.u.masterParams = MIBSPI_defaultMasterParams;
+            params->u.masterParams = MIBSPI_defaultMasterParams;
         }
         else
         {
             /* Set Slave Params */
-            params->mibspiParams.u.slaveParams = MIBSPI_defaultSlaveParams;
+            params->u.slaveParams = MIBSPI_defaultSlaveParams;
         }
     }
 }
@@ -188,53 +224,53 @@ void MIBSPI_Params_init(MIBSPI_Params *params)
 /*
  *  ======== MIBSPI_transfer ========
  */
-bool MIBSPI_transfer(SPI_Handle handle, MIBSPI_Transaction *spiTrans)
+bool MIBSPI_transfer(MIBSPI_Handle handle, MIBSPI_Transaction *transaction)
 {
-    bool status;
+    bool status = (bool)false;
 
-    spiTrans->size = sizeof(MIBSPI_Transaction);
-    spiTrans->base.custom = spiTrans;
-    status = SPI_transfer(handle, &spiTrans->base);
+    if ((handle != NULL) && (transaction != NULL))
+    {
+        status = MIBSPI_transferCore(handle, transaction);
+    }
     return status;
 }
 
 /*
  *  ======== MIBSPI_transferCancel ========
  */
-void MIBSPI_transferCancel(SPI_Handle handle)
+void MIBSPI_transferCancel(MIBSPI_Handle handle)
 {
-    SPI_transferCancel(handle);
+    if (handle != NULL)
+    {
+        MIBSPI_transferCancelCore(handle);
+    }
 }
 
 
 /*
  *  ======== MIBSPI_getStats ========
  */
-int32_t MIBSPI_getStats(SPI_Handle handle, MIBSPI_Stats *ptrStats)
+int32_t MIBSPI_getStats(MIBSPI_Handle handle, MIBSPI_Stats *ptrStats)
 {
-    return (SPI_control(handle, MIBSPI_CMD_GET_STATS, ptrStats));
+    return (MIBSPI_control(handle, MIBSPI_CMD_GET_STATS, ptrStats));
 
 }
 
-
-/*!
- * \brief Initialize utils module
- *
- * Utils module initialization function. Should be only called from the
- * CPSW top level module.
- *
- * \param pUtilsPrms   [IN] Pointer to the initialization parameters
- */
-void MIBSPI_utilsInit(MibspiUtils_Prms *pUtilsPrms)
-{
-    MibspiUtils_init(pUtilsPrms);
-}
 
 /*!
  * \brief De-initialize utils module
  */
-void MIBSPI_utilsDeInit(void)
+void MIBSPI_deInit(void)
 {
-    MibspiUtils_deInit();
+    /*
+     * Construct thread safe handles for SPI driver level
+     * Semaphore to provide exclusive access to the SPI APIs
+     */
+    if (mibspiMutex != NULL)
+    {
+        MIBSPI_osalDeleteBlockingLock(mibspiMutex);
+        mibspiMutex = NULL;
+        MibspiUtils_deInit();
+    }
 }
 

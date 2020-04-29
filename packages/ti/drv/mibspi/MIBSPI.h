@@ -44,7 +44,7 @@
  *
  *  The MIBSPI header file should be included in an application as follows:
  *  @code
- *  #include <ti/drv/spi/MIBSPI.h>
+ *  #include <ti/drv/mibspi/MIBSPI.h>
  *  @endcode
  *
  *  # Operation #
@@ -63,7 +63,7 @@
  *    specific peripheral implementations on chip select requirements.
  *
  *  - The SPI protocol does not account for a built-in handshaking mechanism and
- *    neither does this SPI driver. Therefore, when operating in ::SPI_SLAVE
+ *    neither does this SPI driver. Therefore, when operating in ::MIBSPI_SLAVE
  *    mode, the application must provide such a mechanism to ensure that the
  *    SPI slave is ready for the SPI master. The SPI slave must call
  *    SPI_transfer() *before* the SPI master starts transmitting. Some example
@@ -73,13 +73,13 @@
  *    - A form of GPIO flow control from the slave to the SPI master to notify
  *      the master when ready.
  *  - When SPI operates in ::SPI_MASTER, the partition of TX/RX RAM should be 
- *    provided by application by providing proper values in ::SPI_Params, such as 
+ *    provided by application by providing proper values in ::MIBSPI_Params, such as 
  *    number of slaves and slave profiles. 
  *    The maximum number of supported slaves is platform specfic, please refer to 
  *    TRM for the information. The maximum number of slaves supported in the 
  *    driver is ::MIBSPI_SLAVE_MAX.
  *
- *  The platform specific SPI file present in the ti/drivers/spi/platform
+ *  The platform specific SPI file present in the ti/drivers/mibspi/platform
  *  directory. This file is built as a part of the SPI Library for the specific
  *  platform.
  *
@@ -90,9 +90,9 @@
  *  Open SPI driver as ::SPI_MASTER
  *
  *  @code
- *  SPI_Handle      handle;
- *  SPI_Params      params;
- *  SPI_Transaction spiTransaction;
+ *  MIBSPI_Handle      handle;
+ *  MIBSPI_Params      params;
+ *  MIBSPI_Transaction spiTransaction;
  *
  *  SPI_Params_init(&params);
  *  params.mode  = SPI_MASTER;
@@ -114,15 +114,15 @@
  *  @endcode
  *
  *
- *  Open SPI driver as ::SPI_SLAVE
+ *  Open SPI driver as ::MIBSPI_SLAVE
  *
  *  @code
- *  SPI_Handle      handle;
- *  SPI_Params      params;
- *  SPI_Transaction spiTransaction;
+ *  MIBSPI_Handle      handle;
+ *  MIBSPI_Params      params;
+ *  MIBSPI_Transaction spiTransaction;
  *
  *  SPI_Params_init(&params);
- *  params.mode = SPI_SLAVE;
+ *  params.mode = MIBSPI_SLAVE;
  *  params.frameFormat = SPI_POL0_PHA0;
  *  params.pinMode = SPI_PINMODE_4PIN_CS;
  *  params.shiftFormat = SPI_MSB_FIRST;
@@ -138,11 +138,11 @@
  *
  *  ## Transferring data #
  *  Data transmitted and received by the SPI peripheral is performed using
- *  SPI_transfer(). SPI_transfer() accepts a pointer to a SPI_Transaction
+ *  SPI_transfer(). SPI_transfer() accepts a pointer to a MIBSPI_Transaction
  *  structure that dictates what quantity of data is sent and received.
  *
  *  @code
- *  SPI_Transaction spiTransaction;
+ *  MIBSPI_Transaction spiTransaction;
  *
  *  spiTransaction.count = someIntegerValue;
  *  spiTransaction.txBuf = transmitBufferPointer;
@@ -172,7 +172,7 @@
  *  implementations which are specified using a pointer to a SPI_FxnTable.
  *
  *  The SPI driver interface module is joined (at link time) to a
- *  NULL-terminated array of SPI_Config data structures named *SPI_config*.
+ *  NULL-terminated array of MIBSPI_Config data structures named *SPI_config*.
  *  *SPI_config* is implemented in the application with each entry being an
  *  instance of a SPI peripheral. Each entry in *SPI_config* contains a:
  *  - (SPI_FxnTable *) to a set of functions that implement a SPI peripheral
@@ -232,9 +232,59 @@
 extern "C" {
 #endif
 
-#include <ti/drv/spi/SPI.h>
-#include <ti/drv/spi/soc/SPI_soc.h>
+#include <ti/drv/mibspi/soc/MIBSPI_soc.h>
 
+/*!
+ * Common SPI_control command code reservation offset.
+ * SPI driver implementations should offset command codes with SPI_CMD_RESERVED
+ * growing positively
+ *
+ * Example implementation specific command codes:
+ * @code
+ * #define SPIXYZ_COMMAND0         SPI_CMD_RESERVED + 0
+ * #define SPIXYZ_COMMAND1         SPI_CMD_RESERVED + 1
+ * @endcode
+ */
+#define MIBSPI_CMD_RESERVED            (32U)
+
+/*!
+ * Common SPI_control status code reservation offset.
+ * SPI driver implementations should offset status codes with
+ * SPI_STATUS_RESERVED growing negatively.
+ *
+ * Example implementation specific status codes:
+ * @code
+ * #define SPIXYZ_STATUS_ERROR0    SPI_STATUS_RESERVED - 0
+ * #define SPIXYZ_STATUS_ERROR1    SPI_STATUS_RESERVED - 1
+ * #define SPIXYZ_STATUS_ERROR2    SPI_STATUS_RESERVED - 2
+ * @endcode
+ */
+#define MIBSPI_STATUS_RESERVED        (-((int32_t)32))
+
+/*!
+ * \brief   Successful status code returned by SPI_control().
+ *
+ * SPI_control() returns SPI_STATUS_SUCCESS if the control code was executed
+ * successfully.
+ */
+#define MIBSPI_STATUS_SUCCESS         (int32_t)(0)
+
+/*!
+ * \brief   Generic error status code returned by SPI_control().
+ *
+ * SPI_control() returns MIBSPI_STATUS_ERROR if the control code was not executed
+ * successfully.
+ */
+#define MIBSPI_STATUS_ERROR          (-((int32_t)1))
+
+/*!
+ * \brief   An error status code returned by SPI_control() for undefined
+ * command codes.
+ *
+ * SPI_control() returns SPI_STATUS_UNDEFINEDCMD if the control code is not
+ * recognized by the driver implementation.
+ */
+#define MIBSPI_STATUS_UNDEFINEDCMD   (-((int32_t)2))
 
 /**
  *  @defgroup SPI_CMD Command Codes
@@ -248,21 +298,26 @@ extern "C" {
  * @brief Command used by SPI_control to enable loopback
  *
  */
-#define MIBSPI_CMD_LOOPBACK_ENABLE                         (uint32_t)(SPI_CMD_RESERVED + 0)
+#define MIBSPI_CMD_LOOPBACK_ENABLE                         (uint32_t)(MIBSPI_CMD_RESERVED + 0)
 
 /*!
  * @brief Command used by SPI_control to set Clock phase and polarity
  *
  */
-#define MIBSPI_CMD_SET_CLOCK_PHASEPOLARITY                 (uint32_t)(SPI_CMD_RESERVED + 1)
+#define MIBSPI_CMD_SET_CLOCK_PHASEPOLARITY                 (uint32_t)(MIBSPI_CMD_RESERVED + 1)
 
 /*!
  * @brief Command used by SPI_control to get SPI driver stats
  *
  */
-#define MIBSPI_CMD_GET_STATS                               (uint32_t)(SPI_CMD_RESERVED + 2)
+#define MIBSPI_CMD_GET_STATS                               (uint32_t)(MIBSPI_CMD_RESERVED + 2)
 
 /** @}*/
+
+/*!
+ *  @brief    Wait forever define
+ */
+#define MIBSPI_WAIT_FOREVER                                             (~(0U))
 
 /*!
  *  @brief
@@ -299,10 +354,65 @@ typedef enum MIBSPI_DataShiftFmt_e
  */
 typedef enum MibSpi_LoopBackType_e
 {
-    MIBSPI_LOOPBK_DIGITAL= 0,    /*!< SPI digital loopback  mode */
-    MIBSPI_LOOPBK_ANALOG = 1,    /*!< SPI analog loopback  mode */
-    MIBSPI_LOOPBK_NONE = 2,    /*!< SPI loopback  disable */
+    MIBSPI_LOOPBK_DIGITAL= 0,    /*!< MIBSPI digital loopback  mode */
+    MIBSPI_LOOPBK_ANALOG = 1,    /*!< MIBSPI analog loopback  mode */
+    MIBSPI_LOOPBK_NONE = 2,    /*!< MIBSPI loopback  disable */
 } MibSpi_LoopBackType;
+
+/*!
+ *  @brief      Status codes that are set by the SPI driver.
+ */
+typedef enum MIBSPI_Status_s {
+    MIBSPI_TRANSFER_COMPLETED = 0,
+    MIBSPI_TRANSFER_STARTED,
+    MIBSPI_TRANSFER_CANCELED,
+    MIBSPI_TRANSFER_FAILED,
+    MIBSPI_TRANSFER_CSN_DEASSERT,
+    MIBSPI_TRANSFER_TIMEOUT
+} MIBSPI_Status;
+
+/*!
+ *  @brief
+ *  Definitions for various SPI modes of operation.
+ */
+typedef enum MIBSPI_Mode_s {
+    MIBSPI_MASTER      = 0,    /*!< SPI in master mode */
+    MIBSPI_SLAVE       = 1     /*!< SPI in slave mode */
+} MIBSPI_Mode;
+
+/*!
+ *  @brief
+ *  Definitions for various SPI data frame formats.
+ */
+typedef enum MIBSPI_FrameFormat_s {
+    MIBSPI_POL0_PHA0   = 0,    /*!< SPI mode Polarity 0 Phase 0 */
+    MIBSPI_POL0_PHA1   = 1,    /*!< SPI mode Polarity 0 Phase 1 */
+    MIBSPI_POL1_PHA0   = 2,    /*!< SPI mode Polarity 1 Phase 0 */
+    MIBSPI_POL1_PHA1   = 3,    /*!< SPI mode Polarity 1 Phase 1 */
+} MIBSPI_FrameFormat;
+
+/*!
+ *  @brief
+ *
+ *  SPI transfer mode determines the whether the SPI controller operates
+ *  synchronously or asynchronously. In ::SPI_MODE_BLOCKING mode SPI_transfer()
+ *  blocks code execution until the SPI transaction has completed. In
+ *  ::SPI_MODE_CALLBACK SPI_transfer() does not block code execution and instead
+ *  calls a ::SPI_CallbackFxn callback function when the transaction has
+ *  completed.
+ */
+typedef enum MIBSPI_TransferMode_s {
+    /*!
+     * MIBSPI_transfer() blocks execution. This mode can only be used when called
+     * within a Task context
+     */
+    MIBSPI_MODE_BLOCKING,
+    /*!
+     * SPI_transfer() does not block code execution and will call a
+     * ::SPI_CallbackFxn. This mode can be used in a Task, Swi, or Hwi context.
+     */
+    MIBSPI_MODE_CALLBACK
+} MIBSPI_TransferMode;
 
 /*!
  * \brief MIBSPI info/debug print function prototype
@@ -322,6 +432,8 @@ typedef int (*Mibspi_PrintFxnCb)(const char *str, ...);
  */
 typedef int (*Mibspi_TraceFxnCb)(const char *str, ...);
 
+
+
 /*!
  * \brief MIBSPI utils parameters
  */
@@ -335,12 +447,15 @@ typedef struct
      *  with appropriate string */
     Mibspi_TraceFxnCb traceFxn;
 
-} MibspiUtils_Prms;
+} MIBSPI_UtilsPrms;
+
+
+
 
 /*!
  *  @brief
  *  A ::MIBSPI_Transaction data structure is used with SPI_transfer(). It indicates
- *  how many ::SPI_FrameFormat frames are sent and received from the buffers
+ *  how many ::MIBSPI_FrameFormat frames are sent and received from the buffers
  *  pointed to txBuf and rxBuf.
  *
  *  \ingroup SPI_DRIVER_EXTERNAL_DATA_STRUCTURE
@@ -348,10 +463,18 @@ typedef struct
  */
 typedef struct MIBSPI_Transaction_t
 {
-    uint32_t        size; /*< Size of MIBSPI_Transaction structure. Used internally
-                              to identify extended class of SPI_Transaction base class
-                              */
-    SPI_Transaction base; /*!< Standard SPI transaction info  */
+    /* User input (write-only) fields */
+    size_t     count;      /*!< Number of frames for this transaction */
+    void      *txBuf;      /*!< void * to a buffer with data to be transmitted */
+    void      *rxBuf;      /*!< void * to a buffer to receive data */
+    void      *arg;        /*!< Argument to be passed to the callback function */
+
+    void      *custom;     /*!< Implementation specific argument passed to
+                                SPI_Transfer(). Refer the SPI_vX implementation
+                                documentation to see the specific use of this
+                                parameter. */
+    /* User output (read-only) fields */
+    MIBSPI_Status status;     /*!< Status code set by SPI_transfer */
     uint8_t   slaveIndex; /*!< Index of the slave enabled for this transfer */
 
 } MIBSPI_Transaction;
@@ -374,10 +497,6 @@ typedef struct MIBSPI_Stats_t
     uint32_t   rxOvrnErr;   /*!<Number of RX Overrun Error */
 } MIBSPI_Stats;
 
-/*!
- *  @brief      A handle that is returned from a SPI_open() call.
- */
-typedef SPI_Handle      MIBSPI_Handle;
 
 /*!
  *  @brief SPI slave profile Parameters
@@ -425,7 +544,7 @@ typedef struct MIBSPI_MasterModeParams_t
 /*!
  *  @brief SPI slave mode Parameters
  *
- *  SPI slave Parameters are used with the SPI_open() call when mode is set to SPI_SLAVE. 
+ *  SPI slave Parameters are used with the SPI_open() call when mode is set to MIBSPI_SLAVE. 
  *  Default values for these parameters are set using SPI_Params_init().
  *
  *  \ingroup SPI_DRIVER_EXTERNAL_DATA_STRUCTURE
@@ -440,21 +559,39 @@ typedef struct MIBSPI_SlaveModeParams_t
     
 } MIBSPI_SlaveModeParams;
 
+
 /*!
- *  @brief MIBSPI Extended Parameters
+ *  @brief      The definition of a callback function used by the SPI driver
+ *              when used in ::SPI_MODE_CALLBACK
  *
- *  MIBSPI Extended Parameters are MIBSPI specific parameter extension to 
- *  standard SPI_Params. The MIBSPI SPI extended Params are populated 
- *  as the driver specific custom member in SPI_Params.custom.
- *  The  specific params  used to with the SPI_open() call. Default values for
+ *  @param      MIBSPI_Handle          MIBSPI_Handle
+ *  @param      MIBSPI_Transaction*    MIBSPI_Transaction*
+ */
+typedef void        (*MIBSPI_CallbackFxn) (MIBSPI_Handle handle,
+                                           MIBSPI_Transaction * transaction);
+
+
+/*!
+ *  @brief MIBSPI Parameters
+ *
+ *  MIBSPI Parameters are used with the MIBSPI_open() call. Default values for
  *  these parameters are set using MIBSPI_Params_init().
  *
  *  \ingroup SPI_DRIVER_EXTERNAL_DATA_STRUCTURE
  *
  *  @sa         SPI_Params_init()
  */
-typedef struct MIBSPI_ExtendedParams_t
+typedef struct MIBSPI_Params_t
 {
+    MIBSPI_TransferMode    transferMode;       /*!< Blocking or Callback mode */
+    uint32_t               transferTimeout;    /*!< Transfer timeout in system
+                                                 ticks (Not supported with all
+                                                 implementations */
+    MIBSPI_CallbackFxn     transferCallbackFxn;/*!< Callback function pointer */
+    MIBSPI_Mode            mode;               /*!< Master or Slave mode */
+    uint32_t               bitRate;            /*!< SPI bit rate in Hz */
+    uint32_t               dataSize;           /*!< SPI data frame size in bits */
+    MIBSPI_FrameFormat     frameFormat;        /*!< SPI frame format */
     union 
     {
         MIBSPI_MasterModeParams  masterParams;        /*!< Configuration dedicated to master mode, refer to ::SPI_MasterModeParams_t */
@@ -487,22 +624,6 @@ typedef struct MIBSPI_ExtendedParams_t
      *       similar to edma3 drv
      */
     uint16_t           edmaLinkParamId;            /*!< Link param id */
-} MIBSPI_ExtendedParams;
-
-/*!
- *  @brief MIBSPI Parameters
- *
- *  MIBSPI Parameters are used with the MIBSPI_open() call. Default values for
- *  these parameters are set using MIBSPI_Params_init().
- *
- *  \ingroup SPI_DRIVER_EXTERNAL_DATA_STRUCTURE
- *
- *  @sa         SPI_Params_init()
- */
-typedef struct MIBSPI_Params_t
-{
-    SPI_Params spiParams;
-    MIBSPI_ExtendedParams mibspiParams;
 } MIBSPI_Params;
 
 /*!
@@ -514,7 +635,7 @@ typedef struct MIBSPI_Params_t
  *
  *  @sa     MIBSPI_open()
  */
-extern void MIBSPI_close(SPI_Handle handle);
+extern void MIBSPI_close(MIBSPI_Handle handle);
 
 /*!
  *  @brief  Function performs implementation specific features 
@@ -535,7 +656,7 @@ extern void MIBSPI_close(SPI_Handle handle);
  *
  *  @sa     MIBSPI_open()
  */
-extern int32_t MIBSPI_control(SPI_Handle handle, uint32_t cmd, void *arg);
+extern int32_t MIBSPI_control(MIBSPI_Handle handle, uint32_t cmd, void *arg);
 
 /*!
  *  @brief  This function initializes the MCSPI module.
@@ -545,7 +666,7 @@ extern int32_t MIBSPI_control(SPI_Handle handle, uint32_t cmd, void *arg);
  *          any other MIBSPI driver APIs. This function call does not modify any
  *          peripheral registers.
  */
-extern void MIBSPI_init(void);
+extern void MIBSPI_init(MIBSPI_UtilsPrms *pUtilsPrms);
 
 /*!
  *  @brief  This function opens a given channel of a given MCSPI peripheral.
@@ -566,7 +687,7 @@ extern void MIBSPI_init(void);
  *  @sa     MIBSPI_init()
  *  @sa     MIBSPI_close()
  */
-extern SPI_Handle MIBSPI_open(enum MibSpi_InstanceId mibspiInstanceId, MIBSPI_Params *params);
+extern MIBSPI_Handle MIBSPI_open(enum MibSpi_InstanceId mibspiInstanceId, MIBSPI_Params *params);
 
 /*!
  *  @brief  Function to initialize the MIBSPI_Params struct to its defaults
@@ -590,7 +711,7 @@ extern void MIBSPI_Params_init(MIBSPI_Params *params);
  *          a SPI peripheral specified by the MIBSPI handle.
  *
  *  If the MIBSPI is in ::SPI_MASTER mode, it will immediately start the
- *  transaction. If the MIBSPI is in ::SPI_SLAVE mode, it prepares itself for a
+ *  transaction. If the MIBSPI is in ::MIBSPI_SLAVE mode, it prepares itself for a
  *  transaction with a SPI master.
  *
  *  In ::SPI_MODE_BLOCKING, MIBSPI_transfer will block task execution until the
@@ -601,7 +722,7 @@ extern void MIBSPI_Params_init(MIBSPI_Params *params);
  *  within a Task, Swi, or Hwi context. The ::MIBSPI_Transaction structure must
  *  stay persistent until the MCSPI_transfer function has completed!
  *
- *  @param  handle      A SPI_Handle
+ *  @param  handle      A MIBSPI_Handle
  *
  *  @param  spiTrans    A pointer to a MIBSPI_Transaction. All of the fields within
  *                      transaction except MIBSPI_Transaction.count and
@@ -615,7 +736,7 @@ extern void MIBSPI_Params_init(MIBSPI_Params *params);
  *  @sa     MIBSPI_open
  *  @sa     MIBSPI_transferCancel
  */
-extern bool MIBSPI_transfer(SPI_Handle handle, MIBSPI_Transaction *spiTrans);
+extern bool MIBSPI_transfer(MIBSPI_Handle handle, MIBSPI_Transaction *spiTrans);
 
 /*!
  *  @brief  Function to cancel SPI transactions on channel of a
@@ -630,38 +751,24 @@ extern bool MIBSPI_transfer(SPI_Handle handle, MIBSPI_Transaction *spiTrans);
  *  function can determine if the transaction was successful or not by reading
  *  the ::MIBSPI_Status status value in the ::MIBSPI_Transaction structure.
  *
- *  @param  handle      A SPI_Handle
+ *  @param  handle      A MIBSPI_Handle
  *
  *  @sa     MIBSPI_open
  *  @sa     MIBSPI_transfer
  */
-extern void MIBSPI_transferCancel(SPI_Handle handle);
+extern void MIBSPI_transferCancel(MIBSPI_Handle handle);
 
 /*!
  *  @brief  Function to get driver statistics
  *
  *
- *  @param  handle      A SPI_Handle
+ *  @param  handle      A MIBSPI_Handle
  *
  *  @sa     MIBSPI_open
  *  @sa     MIBSPI_transfer
  */
-extern int32_t MIBSPI_getStats(SPI_Handle handle, MIBSPI_Stats *ptrStats);
+extern int32_t MIBSPI_getStats(MIBSPI_Handle handle, MIBSPI_Stats *ptrStats);
 
-/*!
- * \brief Initialize utils module
- *
- * Utils module initialization function. Should be only called from the
- * CPSW top level module.
- *
- * \param pUtilsPrms   [IN] Pointer to the initialization parameters
- */
-void MIBSPI_utilsInit(MibspiUtils_Prms *pUtilsPrms);
-
-/*!
- * \brief De-initialize utils module
- */
-void MIBSPI_utilsDeInit(void);
 
 
 #ifdef __cplusplus

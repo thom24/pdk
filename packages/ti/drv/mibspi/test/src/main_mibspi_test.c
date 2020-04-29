@@ -66,6 +66,7 @@
 #include <ti/drv/edma/edma.h>
 /* SPI test include files */
 #include "mibspi_test_common.h"
+#include "MIBSPI_log.h"
 
 /**************************************************************************
  *************************** Local Definitions *********************************
@@ -93,7 +94,6 @@ static bool Board_initMIBSPI(void)
 
     boardCfg = BOARD_INIT_PINMUX_CONFIG |  
                BOARD_INIT_MODULE_CLOCK  |
-               BOARD_INIT_PLL           |
                BOARD_INIT_UNLOCK_MMR;
 
     status = Board_init(boardCfg);
@@ -127,7 +127,7 @@ static void Test_initTask(UArg arg0, UArg arg1)
     int32_t         retVal = 0;
     MibSpi_HwCfg cfg;
     int32_t i;
-    MibspiUtils_Prms utilsPrms;
+    MIBSPI_UtilsPrms utilsPrms;
 
     if (Board_initMIBSPI() != true)
     {
@@ -136,13 +136,13 @@ static void Test_initTask(UArg arg0, UArg arg1)
     }
     for (i = 0; i < sizeof(gMibspiInst)/sizeof(gMibspiInst[0]); i++)
     {
-        retVal = SPI_socGetInitCfg(gMibspiInst[i], &cfg);
+        retVal = MIBSPI_socGetInitCfg(gMibspiInst[i], &cfg);
         if (retVal < 0)
         {
             printf("SPI_socGetInitCfg failed with error=%d\n", retVal);
             return;
         }
-#ifdef SPI_DMA_ENABLE
+#ifdef MIBSPI_DMA_ENABLE
         EDMA_instanceInfo_t instanceInfo;
         int32_t errorCode;
 
@@ -162,58 +162,57 @@ static void Test_initTask(UArg arg0, UArg arg1)
 #endif
     }
     /* Initialize the SPI */
-    MIBSPI_init();
+    utilsPrms.printFxn = MIBSPI_log;
+    utilsPrms.traceFxn = MIBSPI_log;
+    MIBSPI_init(&utilsPrms);
 
-    utilsPrms.printFxn = System_printf;
-    utilsPrms.traceFxn = System_printf;
-    MIBSPI_utilsInit(&utilsPrms);
     /**************************************************************************
      * Test: One instace API test - SPIA
      **************************************************************************/
     Test_spiAPI_oneInstance(0);
-    System_printf("Debug: Finished API Test for SPIA!\n");
+    MIBSPI_log("Debug: Finished API Test for SPIA!\n");
 
         /**************************************************************************
      * Test: One instace API test - SPIB
          **************************************************************************/
     Test_spiAPI_oneInstance(1);
-    System_printf("Debug: Finished API Test for SPIB!\n");
+    MIBSPI_log("Debug: Finished API Test for SPIB!\n");
 
         /**************************************************************************
      * Test: two instaces API test - SPIA & SPIB
          **************************************************************************/
     Test_spiAPI_twoInstance();
-    System_printf("Debug: Finished API Test for SPIA + SPIB!\n");
+    MIBSPI_log("Debug: Finished API Test for SPIA + SPIB!\n");
 
         /**************************************************************************
      * Test: LoopBack Test
          **************************************************************************/
     if(gXWR1xxxLoopbackTest)
     {
-        System_printf("Debug: SPI loopback Test for SPIA!\n");
+        MIBSPI_log("Debug: SPI loopback Test for SPIA!\n");
 
         /* MibSPIA loopback test , MibSPIA only supports one slave */
         Test_loopback_oneInstance(0U, 0U);
 
-        System_printf("Debug: SPI loopback Test for SPIB on Slave 0!\n");
+        MIBSPI_log("Debug: SPI loopback Test for SPIB on Slave 0!\n");
 
         /* MibSPIB loopback test, slave -0 */
         Test_loopback_oneInstance(1U, 0U);
 
-        System_printf("Debug: SPI loopback Test for SPIB on Slave 1!\n");
+        MIBSPI_log("Debug: SPI loopback Test for SPIB on Slave 1!\n");
 
         /* MibSPIB loopback test, slave -1 */
         Test_loopback_oneInstance(1U, 1U);
 
-        System_printf("Debug: SPI loopback Test for SPIB on Slave 2!\n");
+        MIBSPI_log("Debug: SPI loopback Test for SPIB on Slave 2!\n");
 
         /* MibSPIB loopback test, slave -2 */
         Test_loopback_oneInstance(1U, 2U);
-        System_printf("Debug: Loopback test finished!\n");
+        MIBSPI_log("Debug: Loopback test finished!\n");
     }
 
 
-    System_printf("Debug: SPI Test is done!\n");
+    MIBSPI_log("Debug: SPI Test is done!\n");
 
     /* After test all done, terminate DSP by calling BIOS_exit().
         This is required by MCPI test framework script.
@@ -238,9 +237,9 @@ int main (void)
     Task_Params      taskParams;
 
     /* Debug Message: */
-    System_printf ("******************************************\n");
-    System_printf ("Debug: MibSPI Driver Test Application Start \n");
-    System_printf ("******************************************\n");
+    MIBSPI_log ("******************************************\n");
+    MIBSPI_log ("Debug: MibSPI Driver Test Application Start \n");
+    MIBSPI_log ("******************************************\n");
 
     /* Initialize the Task Parameters. */
     Task_Params_init(&taskParams);

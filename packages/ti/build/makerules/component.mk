@@ -795,6 +795,18 @@ ifneq ($(mailbox_EXAMPLE_LIST),)
   pdk_EXAMPLE_LIST += $(mailbox_EXAMPLE_LIST)
 endif
 # - used to ignore include if component not present
+-include $(PDK_MIBSPI_COMP_PATH)/mibspi_component.mk
+ifneq ($(mibspi_LIB_LIST),)
+  pdk_LIB_LIST += $(mibspi_LIB_LIST)
+endif
+ifneq ($(mibspi_APP_LIB_LIST),)
+  pdk_APP_LIB_LIST += $(mibspi_APP_LIB_LIST)
+endif
+ifneq ($(mibspi_EXAMPLE_LIST),)
+  pdk_EXAMPLE_LIST += $(mibspi_EXAMPLE_LIST)
+endif
+
+# - used to ignore include if component not present
 -include $(PDK_ESM_COMP_PATH)/esm_component.mk
 ifneq ($(esm_LIB_LIST),)
   pdk_LIB_LIST += $(esm_LIB_LIST)

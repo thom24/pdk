@@ -47,8 +47,8 @@
 /* This is needed for memset/memcpy */
 #include <string.h>
 
-#include <ti/drv/spi/MIBSPI.h>
-#include <ti/drv/spi/src/SPI_osal.h>
+#include <ti/drv/mibspi/MIBSPI.h>
+#include <ti/drv/mibspi/src/MIBSPI_osal.h>
 #include "mibspi_trace_config.h"
 
 #include "mibspi_priv.h"
@@ -111,7 +111,7 @@ static SemaphoreP_Handle MibspiUtils_mutexCreate(void)
 
 
 
-void MibspiUtils_init(MibspiUtils_Prms *pUtilsPrms)
+void MibspiUtils_init(MIBSPI_UtilsPrms *pUtilsPrms)
 {
     memset(&gMibspiUtilsObj, 0U, sizeof(MibspiUtils_Obj));
 
@@ -126,9 +126,9 @@ void MibspiUtils_init(MibspiUtils_Prms *pUtilsPrms)
 
 void MibspiUtils_deInit(void)
 {
-    SPI_osalDeleteBlockingLock(gMibspiUtilsObj.printLock);
+    MIBSPI_osalDeleteBlockingLock(gMibspiUtilsObj.printLock);
 
-    SPI_osalDeleteBlockingLock(gMibspiUtilsObj.traceLock);
+    MIBSPI_osalDeleteBlockingLock(gMibspiUtilsObj.traceLock);
 
     gMibspiUtilsObj.printFxn = NULL;
 
@@ -148,7 +148,7 @@ void MibspiUtils_printf(const char *format,
 
     if (gMibspiUtilsObj.printFxn != NULL)
     {
-        SPI_osalPendLock(gMibspiUtilsObj.printLock, SemaphoreP_WAIT_FOREVER);
+        MIBSPI_osalPendLock(gMibspiUtilsObj.printLock, SemaphoreP_WAIT_FOREVER);
 
         buf = &gMibspiUtilsObj.printBuf[0];
         (void)va_start(vaArgPtr, format);
@@ -157,7 +157,7 @@ void MibspiUtils_printf(const char *format,
 
         gMibspiUtilsObj.printFxn(buf);
 
-        SPI_osalPostLock(gMibspiUtilsObj.printLock);
+        MIBSPI_osalPostLock(gMibspiUtilsObj.printLock);
     }
 #endif
 
@@ -172,14 +172,14 @@ void MibspiUtils_trace(const char *format,
 
     if (gMibspiUtilsObj.traceFxn != NULL)
     {
-        SPI_osalPendLock(gMibspiUtilsObj.traceLock, SemaphoreP_WAIT_FOREVER);
+        MIBSPI_osalPendLock(gMibspiUtilsObj.traceLock, SemaphoreP_WAIT_FOREVER);
 
         buf = &gMibspiUtilsObj.traceBuf[0];
         vsnprintf(buf, MIBSPI_CFG_TRACE_BUF_LEN, (const char *)format, vaArgPtr);
 
         gMibspiUtilsObj.traceFxn(buf);
 
-        SPI_osalPostLock(gMibspiUtilsObj.traceLock);
+        MIBSPI_osalPostLock(gMibspiUtilsObj.traceLock);
     }
 #endif
 }

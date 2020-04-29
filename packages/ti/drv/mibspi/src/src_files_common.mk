@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2016, Texas Instruments Incorporated
+# Copyright (c) 2020, Texas Instruments Incorporated
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -29,24 +29,50 @@
 # OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 # EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
+SOC_DEP_LIB_SOCS=tpr12
 
-include $(PDK_INSTALL_PATH)/ti/build/Rules.make
-include $(PDK_SPI_COMP_PATH)/src/src_files_common.mk
+PACKAGE_SRCS_COMMON = makefile MIBSPI.h mibspi_component.mk .gitignore \
+                      src/MIBSPI_osal.h src/src_files_common.mk \
+                      build/makefile.mk  \
+                      build/makefile_dma.mk
 
-MODULE_NAME = spi_indp
-
-# List all the external components/interfaces, whose interface header files
-#  need to be included for this component
-INCLUDE_EXTERNAL_INTERFACES = pdk edma
-
-CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS)
-
-# Include common make files
-ifeq ($(MAKERULEDIR), )
-#Makerule path not defined, define this and assume relative path from ROOTDIR
-  MAKERULEDIR := $(ROOTDIR)/ti/build/makerules
-  export MAKERULEDIR
+ifeq ($(SOC),$(filter $(SOC),$(SOC_DEP_LIB_SOCS) ))
+  ifeq ($(SOC),$(filter $(SOC), tpr12))
+    # TPR12 targets include SPI_V3
+    SRCDIR = . src
+    INCDIR = . src
+    SRCS_COMMON += mibspi_priv.c MIBSPI_api.c mibspi_trace.c mibspi_utils.c
+    PACKAGE_SRCS_COMMON += src/mibspi_priv.c soc/MIBSPI_v0.h
+    PACKAGE_SRCS_COMMON += src/mibspi_trace.c src/mibspi_priv.h
+    PACKAGE_SRCS_COMMON += src/mibspi_trace.h src/mibspi_trace_config.h
+    PACKAGE_SRCS_COMMON += src/mibspi_trace_priv.h src/mibspi_utils.c
+    PACKAGE_SRCS_COMMON += src/mibspi_utils.h src/MIBSPI_api.c
+    PACKAGE_SRCS_COMMON += test
+  endif
 endif
-include $(MAKERULEDIR)/common.mk
 
-# Nothing beyond this point
+
+ifeq ($(SOC),$(filter $(SOC), tpr12))
+  MIBSPI_CFLAGS =
+
+  # Enable asserts and prints
+  MIBSPI_CFLAGS += -DMIBSPI_CFG_ASSERT_ENABLE
+  #MIBSPI_CFLAGS += -DMIBSPI_CFG_USE_STD_ASSERT
+  MIBSPI_CFLAGS += -DMIBSPI_CFG_PRINT_ENABLE
+  #MIBSPI_CFLAGS += -DUART_ENABLED
+
+  # Trace level per build profile:
+  # 0 - None
+  # 1 - Error
+  # 2 - Warning
+  # 3 - Info
+  # 4 - Debug
+  # 5 - Verbose
+  ifeq ($(BUILD_PROFILE),debug)
+    MIBSPI_CFLAGS += -DMIBSPI_TRACE_CFG_TRACE_LEVEL=4
+    MIBSPI_CFLAGS += -DMIBSPI_CFG_DEV_ERROR
+  else
+    MIBSPI_CFLAGS += -DMIBSPI_TRACE_CFG_TRACE_LEVEL=3
+  endif
+endif
+

@@ -1,16 +1,16 @@
 /*
- *   @file  mibspi_dma.c
+ *   @file  mibspi_priv.c
  *
  *   @brief
  *      The file implements MIBSPI Driver with DMA.
  *
- *  The ti/drivers/spi/include/reg_mibspi.h has the register layer definitons for the
+ *  The ti/drivers/mibspi/include/reg_mibspi.h has the register layer definitons for the
  *  MIBSPI Module.
  *
  *
  *  \par
  *  NOTE:
- *      (C) Copyright 2017 Texas Instruments, Inc.
+ *      (C) Copyright 2020 Texas Instruments, Inc.
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -47,7 +47,7 @@
 #include <stdio.h>
 #include <ti/osal/osal.h>
 #include <ti/osal/MemoryP.h>
-#include <ti/drv/spi/MIBSPI.h>
+#include <ti/drv/mibspi/MIBSPI.h>
 #include "mibspi_priv.h"
 #include "mibspi_trace_priv.h"
 #include "mibspi_utils.h"
@@ -64,25 +64,17 @@
 /**************************************************************************
  ************************* MibSPI Driver Functions Prototype ********************
  **************************************************************************/
-/* Registered Driver  Functions: */
-static void SPI_init_v3( SPI_Handle handle);
-static SPI_Handle SPI_open_v3(SPI_Handle handle, const SPI_Params *params);
-static void SPI_close_v3(SPI_Handle handle);
-static int32_t SPI_control_v3(SPI_Handle handle, uint32_t cmd, const void *arg);
-static bool SPI_transfer_v3(SPI_Handle handle, SPI_Transaction *transaction);
-static void SPI_transferCancel_v3(SPI_Handle handle);
-static void SPI_serviceISR_v3(SPI_Handle handle);
 
 /* Local Driver Functions */
 #ifdef SPI_PARAMS_CHECK
-static int32_t MIBSPI_validateParams(const SPI_Params *params);
+static int32_t MIBSPI_validateParams(const MIBSPI_Params *params);
 static int32_t MIBSPI_validateTransferParams(const MIBSPI_Transaction *transaction, const MibSpiDriver_Object *ptrMibSpiDriver);
 #endif
 
-static void MIBSPI_initSlave(MibSpi_HwCfg* ptrHwCfg, const SPI_Params *params);
-static void MIBSPI_initMaster(MibSpi_HwCfg* ptrHwCfg, const SPI_Params *params);
-static int32_t MIBSPI_openSlaveMode(MibSpiDriver_Object *ptrMibSpiDriver, MibSpi_HwCfg* ptrHwCfg, const SPI_Params *params);
-static int32_t MIBSPI_openMasterMode(MibSpiDriver_Object *ptrMibSpiDriver, MibSpi_HwCfg* ptrHwCfg, const SPI_Params *params);
+static void MIBSPI_initSlave(MibSpi_HwCfg* ptrHwCfg, const MIBSPI_Params *params);
+static void MIBSPI_initMaster(MibSpi_HwCfg* ptrHwCfg, const MIBSPI_Params *params);
+static int32_t MIBSPI_openSlaveMode(MibSpiDriver_Object *ptrMibSpiDriver, MibSpi_HwCfg* ptrHwCfg, const MIBSPI_Params *params);
+static int32_t MIBSPI_openMasterMode(MibSpiDriver_Object *ptrMibSpiDriver, MibSpi_HwCfg* ptrHwCfg, const MIBSPI_Params *params);
 static void MIBSPI_enablePinSettings(CSL_mss_spiRegs  *ptrMibSpiReg, MIBSPI_PinMode pinMode, uint8_t chipSelectMask);
 static void MIBSPI_setMasterClockRate(CSL_mss_spiRegs *ptrMibSpiReg, uint32_t clockSrcFreq, uint32_t desiredSpiClock);
 static void MIBSPI_setResetMode(CSL_mss_spiRegs *ptrMibSpiReg, bool reset);
@@ -114,28 +106,18 @@ static void MIBSPI_ISR(uintptr_t arg);
 static void MIBSPI_initTransactionState(Mibspi_transactionState_t *transactionState, 
                                         MIBSPI_Transaction     *transaction);
 static void MIBSPI_resetTransactionState(Mibspi_transactionState_t *transactionState);
-static uint32_t MIBSPI_getPolarity(SPI_FrameFormat frameFormat);
-static uint32_t MIBSPI_getPhase(SPI_FrameFormat frameFormat);
-static int32_t MIBSPI_getDrvStats(SPI_Handle handle, MIBSPI_Stats *ptrStats);
+static uint32_t MIBSPI_getPolarity(MIBSPI_FrameFormat frameFormat);
+static uint32_t MIBSPI_getPhase(MIBSPI_FrameFormat frameFormat);
+static int32_t MIBSPI_getDrvStats(MIBSPI_Handle handle, MIBSPI_Stats *ptrStats);
 static void MIBSPI_validateIPVersionInfo(const MibSpi_HwCfg* ptrHwCfg);
 static void MIBSPI_getVersionInfo(const CSL_mss_spiRegs  *ptrMibSpiReg, MibSpi_VersionInfo *ver);
+static void MIBSPI_enableErrorInterrupt(CSL_mss_spiRegs  *ptrMibSpiReg, uint32_t enableFlag);
+static void MIBSPI_setErrorInterruptLevel(CSL_mss_spiRegs  *ptrMibSpiReg, uint32_t level);
 
 /**************************************************************************
  ************************** Global Variables **********************************
  **************************************************************************/
-/**
- * @brief   mibSPI Driver Function Table
- */
-const SPI_FxnTable SPI_FxnTable_v3 =
-{
-    .closeFxn          = &SPI_close_v3,
-    .controlFxn        = &SPI_control_v3,
-    .spiInitFxn        = &SPI_init_v3,
-    .openFxn           = &SPI_open_v3,
-    .transferFxn       = &SPI_transfer_v3,
-    .transferCancelFxn = &SPI_transferCancel_v3,
-    .serviceISRFxn     = &SPI_serviceISR_v3
-};
+/* NONE */
 
 /**************************************************************************
  ************************* MibSPI Driver Local Functions ************************
@@ -154,54 +136,54 @@ const SPI_FxnTable SPI_FxnTable_v3 =
  *  @retval    Successful          =0
  *             Failed              <0
  */
-static int32_t MIBSPI_validateParams(const SPI_Params *params)
+static int32_t MIBSPI_validateParams(const MIBSPI_Params *params)
 {
     int32_t     retVal = (int32_t)0;
     uint8_t     index;
     uint8_t     ramBufOffset = 0U;
-    MIBSPI_ExtendedParams *mibspiExtParams = params->custom;
+
 
     /* Validate dataSize, only 8bits and 16bits are supported */
     if( (params->dataSize != 8U) && (params->dataSize != 16U))
     {
-        retVal = SPI_STATUS_ERROR;
+        retVal = MIBSPI_STATUS_ERROR;
         goto Exit;
     }
 
 
     /* Validate bitRate */
-    if(params->mode == SPI_MASTER)
+    if(params->mode == MIBSPI_MASTER)
     {
-        if(mibspiExtParams->u.masterParams.bitRate == 0U)
+        if(params->u.masterParams.bitRate == 0U)
         {
-            retVal = SPI_STATUS_ERROR;
+            retVal = MIBSPI_STATUS_ERROR;
             goto Exit;
 
         }
-        if( (mibspiExtParams->u.masterParams.numSlaves == 0U) || (mibspiExtParams->u.masterParams.numSlaves > MIBSPI_SLAVE_MAX) )
+        if( (params->u.masterParams.numSlaves == 0U) || (params->u.masterParams.numSlaves > MIBSPI_SLAVE_MAX) )
         {
-            retVal = SPI_STATUS_ERROR;
+            retVal = MIBSPI_STATUS_ERROR;
             goto Exit;
         }
 
         /* Validate slave profile configuraiton */
-        for(index = 0; index < mibspiExtParams->u.masterParams.numSlaves; index++)
+        for(index = 0; index < params->u.masterParams.numSlaves; index++)
         {
-            MIBSPI_SlaveProfile    *ptrSlaveProf;
+            const MIBSPI_SlaveProfile    *ptrSlaveProf;
 
             /* Get the pointer to the slave profile */
-            ptrSlaveProf = &mibspiExtParams->u.masterParams.slaveProf[index];
+            ptrSlaveProf = &params->u.masterParams.slaveProf[index];
 
             /* Validate CS signal number */
             if(ptrSlaveProf->chipSelect >= MIBSPI_MAX_CS)
             {
-                retVal = SPI_STATUS_ERROR;
+                retVal = MIBSPI_STATUS_ERROR;
                 goto Exit;
             }
 
             if(ptrSlaveProf->ramBufLen > MIBSPI_RAM_MAX_ELEM)
             {
-                retVal = SPI_STATUS_ERROR;
+                retVal = MIBSPI_STATUS_ERROR;
                 goto Exit;
             }
 
@@ -212,28 +194,27 @@ static int32_t MIBSPI_validateParams(const SPI_Params *params)
         /* Validate total RAM Elements exceed the size of MibSPI RAM */
         if(ramBufOffset > MIBSPI_RAM_MAX_ELEM)
         {
-            retVal = SPI_STATUS_ERROR;
+            retVal = MIBSPI_STATUS_ERROR;
             goto Exit;
         }
     }
     else
     {
         /* Validate CS signal number */
-        if(mibspiExtParams->u.slaveParams.chipSelect >= MIBSPI_MAX_CS)
+        if(params->u.slaveParams.chipSelect >= MIBSPI_MAX_CS)
         {
-            retVal = SPI_STATUS_ERROR;
+            retVal = MIBSPI_STATUS_ERROR;
             goto Exit;
         }
     }
 
     /* Validate DMA driver handle */
-    if(mibspiExtParams->dmaEnable == (uint8_t)1U)
+    if(params->dmaEnable == (uint8_t)1U)
     {
-        /* TODO */
-        //if(params->dmaHandle == NULL)
-        //{
-        //    retVal = SPI_STATUS_ERROR;
-        //}
+        if(params->dmaHandle == NULL)
+        {
+            retVal = MIBSPI_STATUS_ERROR;
+        }
     }
 Exit:
     return retVal;
@@ -254,36 +235,36 @@ Exit:
 static int32_t MIBSPI_validateTransferParams(const MIBSPI_Transaction *transaction, const MibSpiDriver_Object *ptrMibSpiDriver)
 {
     MibSpi_HwCfg    const  *hwAttrs;
-    int32_t status = SPI_STATUS_SUCCESS;
+    int32_t status = MIBSPI_STATUS_SUCCESS;
     uintptr_t  key;
 
     hwAttrs = ptrMibSpiDriver->ptrHwCfg;
 
     /* Check the transaction arguments */
-    if (transaction->base.count == 0U)
+    if (transaction->count == 0U)
     {
-        status = SPI_STATUS_ERROR;
+        status = MIBSPI_STATUS_ERROR;
     }
 
     /* Sanity check of parameters */
     /* Both Tx and Rx cannot be dummy transaction */
-    if((transaction->base.txBuf == NULL) && (transaction->base.rxBuf == NULL))
+    if((transaction->txBuf == NULL) && (transaction->rxBuf == NULL))
     {
-        status = SPI_STATUS_ERROR;
+        status = MIBSPI_STATUS_ERROR;
     }
 
     if((transaction->slaveIndex >= MIBSPI_SLAVE_MAX)
        ||
        (transaction->slaveIndex >= hwAttrs->numDmaReqLines))
     {
-        status = SPI_STATUS_ERROR;
+        status = MIBSPI_STATUS_ERROR;
     }
 
-    if(ptrMibSpiDriver->params.spiParams.dataSize == 16U)
+    if(ptrMibSpiDriver->params.dataSize == 16U)
     {
-        if(transaction->base.count % 2U != 0)
+        if(transaction->count % 2U != 0)
         {
-            status = SPI_STATUS_ERROR;
+            status = MIBSPI_STATUS_ERROR;
         }
     }
 
@@ -291,20 +272,20 @@ static int32_t MIBSPI_validateTransferParams(const MIBSPI_Transaction *transacti
     {
         uint16_t   dataLength;
 
-        if(ptrMibSpiDriver->params.spiParams.dataSize == 16U)
+        if(ptrMibSpiDriver->params.dataSize == 16U)
         {
             /* MIBSPI reads in 2 bytes format */
-            dataLength = (uint16_t)transaction->base.count >> 1U;
+            dataLength = (uint16_t)transaction->count >> 1U;
         }
         else
         {
-            dataLength = transaction->base.count;
+            dataLength = transaction->count;
         }
 
         /* Check data elements */
         if(dataLength > hwAttrs->mibspiRamSize)
         {
-            status = SPI_STATUS_ERROR;
+            status = MIBSPI_STATUS_ERROR;
         }
     }
 #endif
@@ -314,7 +295,7 @@ static int32_t MIBSPI_validateTransferParams(const MIBSPI_Transaction *transacti
 
     if ( ptrMibSpiDriver->transactionState.transaction != NULL)
     {
-        status = SPI_STATUS_ERROR;
+        status = MIBSPI_STATUS_ERROR;
     }
 
     /* Transfer is in progress */
@@ -646,7 +627,8 @@ static void MIBSPI_setClockPhasePolarity(volatile CSL_mss_spiRegs *ptrMibSpiReg,
     CSL_FINS(ptrMibSpiReg->SPIGCR1,SPI_SPIGCR1_SPIEN, 0U);
 
     /* Set MibSpi Slave functional Mode Clock/polarity */
-    ptrMibSpiReg->SPIFMT[0] = CSL_FINSR(ptrMibSpiReg->SPIFMT[0], 17U, 16U, (uint32_t)clockFmt );
+    CSL_FINS(ptrMibSpiReg->SPIFMT[0], SPI_SPIFMT_PHASE, MIBSPI_getPhase((MIBSPI_FrameFormat)clockFmt));   /* PHASE */
+    CSL_FINS(ptrMibSpiReg->SPIFMT[0], SPI_SPIFMT_POLARITY, MIBSPI_getPolarity((MIBSPI_FrameFormat)clockFmt));   /* POLARITY */
 
     /* Finally start MIBSPI1 */
     CSL_FINS(ptrMibSpiReg->SPIGCR1,SPI_SPIGCR1_SPIEN, 1U);
@@ -748,7 +730,15 @@ static void MIBSPI_dmaCtrlGroupEnable(CSL_mss_spiRegs *ptrMibSpiReg, uint16_t bu
 static void MIBSPI_dmaCtrlGroupDisable(CSL_mss_spiRegs *ptrMibSpiReg, uint8_t dmaCtrlGroup)
 {
     /* Get MibSpi Register & Ram Base address */
-    ptrMibSpiReg->DMACTRL[dmaCtrlGroup] = CSL_FINSR(ptrMibSpiReg->DMACTRL[dmaCtrlGroup], 31U, 7U, 0U);
+    CSL_FINS(ptrMibSpiReg->DMACTRL[dmaCtrlGroup], SPI_DMACTRL_ONESHOT, 0U);
+    CSL_FINS(ptrMibSpiReg->DMACTRL[dmaCtrlGroup], SPI_DMACTRL_BUFID, 0U);
+    CSL_FINS(ptrMibSpiReg->DMACTRL[dmaCtrlGroup], SPI_DMACTRL_RXDMA_MAP, 0U);
+    CSL_FINS(ptrMibSpiReg->DMACTRL[dmaCtrlGroup], SPI_DMACTRL_TXDMA_MAP, 0U);
+    CSL_FINS(ptrMibSpiReg->DMACTRL[dmaCtrlGroup], SPI_DMACTRL_RXDMAENA, 0U);
+    CSL_FINS(ptrMibSpiReg->DMACTRL[dmaCtrlGroup], SPI_DMACTRL_TXDMAENA, 0U);
+    CSL_FINS(ptrMibSpiReg->DMACTRL[dmaCtrlGroup], SPI_DMACTRL_NOBRK, 0U);
+    CSL_FINS(ptrMibSpiReg->DMACTRL[dmaCtrlGroup], SPI_DMACTRL_ICOUNT, 0U);
+    CSL_FINS(ptrMibSpiReg->DMACTRL[dmaCtrlGroup], SPI_DMACTRL_BUFID7, 0U);
 }
 
  /**
@@ -763,7 +753,7 @@ static void MIBSPI_dmaCtrlGroupDisable(CSL_mss_spiRegs *ptrMibSpiReg, uint8_t dm
  *
  *  @retval None
  */
-static void MIBSPI_initMaster(MibSpi_HwCfg* ptrHwCfg, const SPI_Params *params)
+static void MIBSPI_initMaster(MibSpi_HwCfg* ptrHwCfg, const MIBSPI_Params * params)
 {
     CSL_mibspiRam           *ptrMibSpiRam;
     CSL_mss_spiRegs          *ptrMibSpiReg;
@@ -772,7 +762,6 @@ static void MIBSPI_initMaster(MibSpi_HwCfg* ptrHwCfg, const SPI_Params *params)
     uint8_t             csnr = 0;
     uint8_t             chipSelectMask;
     uint8_t             ramBufOffset = 0;
-    const MIBSPI_ExtendedParams *mibspiExtParams = params->custom;
 
     /* Get Register and RAM base */
     ptrMibSpiRam  = ptrHwCfg->ptrMibSpiRam;
@@ -792,11 +781,11 @@ static void MIBSPI_initMaster(MibSpi_HwCfg* ptrHwCfg, const SPI_Params *params)
     CSL_FINS(ptrMibSpiReg->SPIINT0,SPI_SPIINT0_ENABLEHIGHZ, 0U);
 
     /* Delays Configuration: this master only configuraion, hence set it to all zeros */
-    if( (mibspiExtParams->u.masterParams.c2tDelay != 0U) ||
-       (mibspiExtParams->u.masterParams.t2cDelay != 0U) )
+    if( (params->u.masterParams.c2tDelay != 0U) ||
+       (params->u.masterParams.t2cDelay != 0U) )
     {
-        CSL_FINS(ptrMibSpiReg->SPIDELAY, SPI_SPIDELAY_C2TDELAY, (uint32_t)mibspiExtParams->u.masterParams.c2tDelay);
-        CSL_FINS(ptrMibSpiReg->SPIDELAY, SPI_SPIDELAY_T2CDELAY, (uint32_t)mibspiExtParams->u.masterParams.t2cDelay);
+        CSL_FINS(ptrMibSpiReg->SPIDELAY, SPI_SPIDELAY_C2TDELAY, (uint32_t)params->u.masterParams.c2tDelay);
+        CSL_FINS(ptrMibSpiReg->SPIDELAY, SPI_SPIDELAY_T2CDELAY, (uint32_t)params->u.masterParams.t2cDelay);
     }
     else
     {
@@ -806,9 +795,9 @@ static void MIBSPI_initMaster(MibSpi_HwCfg* ptrHwCfg, const SPI_Params *params)
     /* Set Data Format 0 */
     CSL_FINS(ptrMibSpiReg->SPIFMT[0], SPI_SPIFMT_PHASE, MIBSPI_getPhase(params->frameFormat));   /* PHASE */
     CSL_FINS(ptrMibSpiReg->SPIFMT[0], SPI_SPIFMT_POLARITY, MIBSPI_getPolarity(params->frameFormat));   /* POLARITY */
-    CSL_FINS(ptrMibSpiReg->SPIFMT[0], SPI_SPIFMT_WDELAY, (uint32_t) mibspiExtParams->u.masterParams.wDelay);  /* WDELAY */
+    CSL_FINS(ptrMibSpiReg->SPIFMT[0], SPI_SPIFMT_WDELAY, (uint32_t) params->u.masterParams.wDelay);  /* WDELAY */
     CSL_FINS(ptrMibSpiReg->SPIFMT[0], SPI_SPIFMT_PRESCALE,  0U);                   /* PRESCALE */
-    CSL_FINS(ptrMibSpiReg->SPIFMT[0], SPI_SPIFMT_SHIFTDIR, (uint32_t) mibspiExtParams->shiftFormat);  /* SHIFTDIR */
+    CSL_FINS(ptrMibSpiReg->SPIFMT[0], SPI_SPIFMT_SHIFTDIR, (uint32_t) params->shiftFormat);  /* SHIFTDIR */
     CSL_FINS(ptrMibSpiReg->SPIFMT[0], SPI_SPIFMT_CHARLEN, (uint32_t) params->dataSize);        /* CHARlEN */
 
     /* Set Data Format 1 */
@@ -838,7 +827,7 @@ static void MIBSPI_initMaster(MibSpi_HwCfg* ptrHwCfg, const SPI_Params *params)
     }
 
     /* Enable ECC if enabled */
-    if(mibspiExtParams->eccEnable)
+    if(params->eccEnable)
     {
         /* Enable ECC detection and signal bit Error correction */
         CSL_FINS(ptrMibSpiReg->PAR_ECC_CTRL, SPI_PAR_ECC_CTRL_EDEN, 0xAU);
@@ -846,7 +835,7 @@ static void MIBSPI_initMaster(MibSpi_HwCfg* ptrHwCfg, const SPI_Params *params)
         CSL_FINS(ptrMibSpiReg->PAR_ECC_CTRL, SPI_PAR_ECC_CTRL_SBE_EVT_EN, 0xAU);
     }
 
-    for (index = 0; index < mibspiExtParams->u.masterParams.numSlaves; index++)
+    for (index = 0; index < params->u.masterParams.numSlaves; index++)
     {
         /* Initialize transfer groups for number of slaves connected to SPI master */
         CSL_FINS(ptrMibSpiReg->TGCTRL[index], SPI_TGCTRL_ONESHOT, 1U);  /* Oneshot trigger */
@@ -859,7 +848,7 @@ static void MIBSPI_initMaster(MibSpi_HwCfg* ptrHwCfg, const SPI_Params *params)
     CSL_FINS(ptrMibSpiReg->LTGPEND,SPI_LTGPEND_LPEND, 0xFFU);
 
     /* Initialize TX Buffer Ram */
-    for (index = 0; index < mibspiExtParams->u.masterParams.numSlaves; index++)
+    for (index = 0; index < params->u.masterParams.numSlaves; index++)
     {
         uint8_t    ramBufIndex = 0;
         uint8_t    wDelayEnable = 0;
@@ -869,10 +858,10 @@ static void MIBSPI_initMaster(MibSpi_HwCfg* ptrHwCfg, const SPI_Params *params)
          * CSHOLD: 0x0
          */
 
-        wDelayEnable = mibspiExtParams->u.masterParams.wDelay? (uint8_t)1U : (uint8_t)0U;
-        if(mibspiExtParams->pinMode == MIBSPI_PINMODE_4PIN_CS)
+        wDelayEnable = params->u.masterParams.wDelay? (uint8_t)1U : (uint8_t)0U;
+        if(params->pinMode == MIBSPI_PINMODE_4PIN_CS)
         {
-            chipSelectMask = (uint8_t)(0x1U << mibspiExtParams->u.masterParams.slaveProf[index].chipSelect);
+            chipSelectMask = (uint8_t)(0x1U << params->u.masterParams.slaveProf[index].chipSelect);
             csnr = ~chipSelectMask;
         }
         else
@@ -881,10 +870,10 @@ static void MIBSPI_initMaster(MibSpi_HwCfg* ptrHwCfg, const SPI_Params *params)
             csnr = (uint8_t)MIBSPI_CS_NONE;
         }
 
-        for (ramBufIndex = 0; ramBufIndex < mibspiExtParams->u.masterParams.slaveProf[index].ramBufLen; ramBufIndex++)
+        for (ramBufIndex = 0; ramBufIndex < params->u.masterParams.slaveProf[index].ramBufLen; ramBufIndex++)
         {
             CSL_MIBSPIRAM_SET_TX_BUFMODE(ptrMibSpiRam, ramBufOffset, MIBSPI_RAM_BUFFER_MODE);
-            CSL_MIBSPIRAM_SET_TX_CSHOLD(ptrMibSpiRam, ramBufOffset, mibspiExtParams->csHold);
+            CSL_MIBSPIRAM_SET_TX_CSHOLD(ptrMibSpiRam, ramBufOffset, params->csHold);
             CSL_MIBSPIRAM_SET_TX_WDEL(ptrMibSpiRam, ramBufOffset, wDelayEnable);
             CSL_MIBSPIRAM_SET_TX_CSNR(ptrMibSpiRam, ramBufOffset, csnr);
             ramBufOffset++;
@@ -903,28 +892,28 @@ static void MIBSPI_initMaster(MibSpi_HwCfg* ptrHwCfg, const SPI_Params *params)
     ptrMibSpiReg->TGINTFLAG |= 0xFFFFFFFFU;
 
     /* Enable Error interrupts: Lower 8bits  */
-    ptrMibSpiReg->SPIINT0 = CSL_FINSR(ptrMibSpiReg->SPIINT0, 7U, 0U, 0x5FU);
+    MIBSPI_enableErrorInterrupt(ptrMibSpiReg, 0x1U);
 
     /* Set Interrupt Levels - Interrupts are mapped to INT1 */
-    ptrMibSpiReg->SPILVL = CSL_FINSR(ptrMibSpiReg->SPILVL, 7U, 0U, 0x5FU);
+    MIBSPI_setErrorInterruptLevel(ptrMibSpiReg, 0x1U);
 
     /* Enable TG Interrupts to INT1 */
     ptrMibSpiReg->TGITENST|= 0xFFFFFFFFU;
 
     /* Pin settings for SPI signal */
-    if(mibspiExtParams->pinMode == MIBSPI_PINMODE_4PIN_CS)
+    if(params->pinMode == MIBSPI_PINMODE_4PIN_CS)
     {
         chipSelectMask = (uint8_t)0U;
-        for (index = 0; index < mibspiExtParams->u.masterParams.numSlaves; index++)
+        for (index = 0; index < params->u.masterParams.numSlaves; index++)
         {
-            chipSelectMask |= (uint8_t)(0x1U << mibspiExtParams->u.masterParams.slaveProf[index].chipSelect);
+            chipSelectMask |= (uint8_t)(0x1U << params->u.masterParams.slaveProf[index].chipSelect);
         }
     }
     else
     {
         chipSelectMask = (uint8_t)0x0U;
     }
-    MIBSPI_enablePinSettings(ptrMibSpiReg, mibspiExtParams->pinMode, chipSelectMask);
+    MIBSPI_enablePinSettings(ptrMibSpiReg, params->pinMode, chipSelectMask);
 
     /* Finally start MIBSPI1 */
     CSL_FINS(ptrMibSpiReg->SPIGCR1,SPI_SPIGCR1_SPIEN, 1U);
@@ -942,13 +931,12 @@ static void MIBSPI_initMaster(MibSpi_HwCfg* ptrHwCfg, const SPI_Params *params)
  *
  *  @retval None
  */
-static void MIBSPI_initSlave(MibSpi_HwCfg* ptrHwCfg, const SPI_Params *params)
+static void MIBSPI_initSlave(MibSpi_HwCfg* ptrHwCfg, const MIBSPI_Params *params)
 {
     CSL_mibspiRam        *ptrMibSpiRam;
     CSL_mss_spiRegs      *ptrMibSpiReg;
     uint32_t        flag;
     uint32_t        index;
-    MIBSPI_ExtendedParams *mibspiExtParams = params->custom;
 
     /* Get Register and RAM base */
     ptrMibSpiRam = ptrHwCfg->ptrMibSpiRam;
@@ -974,7 +962,7 @@ static void MIBSPI_initSlave(MibSpi_HwCfg* ptrHwCfg, const SPI_Params *params)
     CSL_FINS(ptrMibSpiReg->SPIFMT[0], SPI_SPIFMT_PHASE, MIBSPI_getPhase(params->frameFormat));         /* PHASE */
     CSL_FINS(ptrMibSpiReg->SPIFMT[0], SPI_SPIFMT_POLARITY, MIBSPI_getPolarity(params->frameFormat));   /* POLARITY */
     CSL_FINS(ptrMibSpiReg->SPIFMT[0], SPI_SPIFMT_PRESCALE, 4U);   /* PRESCALE */
-    CSL_FINS(ptrMibSpiReg->SPIFMT[0], SPI_SPIFMT_SHIFTDIR, (uint32_t)(mibspiExtParams->shiftFormat)); /* SHIFTDIR */
+    CSL_FINS(ptrMibSpiReg->SPIFMT[0], SPI_SPIFMT_SHIFTDIR, (uint32_t)(params->shiftFormat)); /* SHIFTDIR */
     CSL_FINS(ptrMibSpiReg->SPIFMT[0], SPI_SPIFMT_CHARLEN, (uint32_t)params->dataSize);  /* CHARlEN */
 
     /* Set Data Format 1,2,3. Used mulitple TG group transfer */
@@ -998,7 +986,7 @@ static void MIBSPI_initSlave(MibSpi_HwCfg* ptrHwCfg, const SPI_Params *params)
     }
 
     /* Enable ECC if enabled */
-    if(mibspiExtParams->eccEnable)
+    if(params->eccEnable)
     {
         /* Enable ECC detection and signal bit Error correction */
         CSL_FINS(ptrMibSpiReg->PAR_ECC_CTRL,SPI_PAR_ECC_CTRL_EDEN, 0xAU);
@@ -1022,7 +1010,7 @@ static void MIBSPI_initSlave(MibSpi_HwCfg* ptrHwCfg, const SPI_Params *params)
     for (index = 0; index < MIBSPI_RAM_MAX_ELEM; index++)
     {
         CSL_MIBSPIRAM_SET_TX_BUFMODE(ptrMibSpiRam, index, MIBSPI_RAM_BUFFER_MODE);
-        CSL_MIBSPIRAM_SET_TX_CSHOLD(ptrMibSpiRam, index, mibspiExtParams->csHold);
+        CSL_MIBSPIRAM_SET_TX_CSHOLD(ptrMibSpiRam, index, params->csHold);
         CSL_MIBSPIRAM_SET_TX_CSNR(ptrMibSpiRam, index, MIBSPI_CS_NONE);
     }
 
@@ -1033,16 +1021,16 @@ static void MIBSPI_initSlave(MibSpi_HwCfg* ptrHwCfg, const SPI_Params *params)
     ptrMibSpiReg->TGINTFLAG |= 0xFFFFFFFFU;
 
     /* Enable Error interrupts: Lower 8bits  */
-    ptrMibSpiReg->SPIINT0 = CSL_FINSR(ptrMibSpiReg->SPIINT0, 7U, 0U, 0x5FU);
+    MIBSPI_enableErrorInterrupt(ptrMibSpiReg, 0x1U);
 
     /* Set Interrupt Levels - Interrupts are mapped to INT0 */
-    ptrMibSpiReg->SPILVL = CSL_FINSR(ptrMibSpiReg->SPILVL, 7U, 0U, 0x5FU);
+    MIBSPI_setErrorInterruptLevel(ptrMibSpiReg, 0x1U);
 
     /* Enable TG Interrupts to INT1 */
     ptrMibSpiReg->TGITENST|= 0xFFFFFFFFU;
 
     /* Pin settings for SPI signal */
-    MIBSPI_enablePinSettings(ptrMibSpiReg, mibspiExtParams->pinMode, (uint8_t)(0x1U <<mibspiExtParams->u.slaveParams.chipSelect));
+    MIBSPI_enablePinSettings(ptrMibSpiReg, params->pinMode, (uint8_t)(0x1U <<params->u.slaveParams.chipSelect));
 
     /* Finally start MIBSPI1 */
     CSL_FINS(ptrMibSpiReg->SPIGCR1,SPI_SPIGCR1_SPIEN, 1U);
@@ -1087,7 +1075,7 @@ static void MIBSPI_writeDataRAM(MibSpiDriver_Object *ptrMibSpiDriver, uint8_t gr
     }
     else
     {
-        if(ptrMibSpiDriver->params.spiParams.dataSize == 16U)
+        if(ptrMibSpiDriver->params.dataSize == 16U)
         {
             for(index=start; index < (start + dataElem); index++)
             {
@@ -1168,7 +1156,7 @@ static uint32_t MIBSPI_readDataRAM(MibSpiDriver_Object *ptrMibSpiDriver, uint8_t
 
              mibspiFlags |= CSL_MIBSPIRAM_GET_RX_RXFLAGS(ptrMibSpiRam, index);
 
-             if(ptrMibSpiDriver->params.spiParams.dataSize == 16U)
+             if(ptrMibSpiDriver->params.dataSize == 16U)
              {
                  data[index-start] = CSL_MIBSPIRAM_GET_RX_RXDATA(ptrMibSpiRam, index);
              }
@@ -1300,7 +1288,7 @@ static void MIBSPI_ISR (uintptr_t arg)
  */
 static void MIBSPI_dataTransfer
 (
-    MibSpiDriver_Object *ptrMibSpiDriver,
+    MibSpiDriver_Object * ptrMibSpiDriver,
     uint8_t *srcData,
     uint8_t *dstData,
     uint16_t dataElemSize,
@@ -1312,7 +1300,6 @@ static void MIBSPI_dataTransfer
     uint8_t         ramOffset = 0U;
     uint16_t        bufId = 0U;
     uint8_t         iCount = 0U;
-    MIBSPI_ExtendedParams *mibspiExtendedParams = (MIBSPI_ExtendedParams *)ptrMibSpiDriver->params.spiParams.custom;
 
     /* Get MibSpi driver hardware config */
     ptrHwCfg = ptrMibSpiDriver->ptrHwCfg;
@@ -1324,7 +1311,7 @@ static void MIBSPI_dataTransfer
     MIBSPI_SPIEnable(ptrMibSpiReg);
 
     /* Find out bufId and RAM offset */
-    if(ptrMibSpiDriver->params.spiParams.mode == SPI_SLAVE)
+    if(ptrMibSpiDriver->params.mode == MIBSPI_SLAVE)
     {
         ramOffset = 0U;
 
@@ -1348,7 +1335,7 @@ static void MIBSPI_dataTransfer
 
         Mibspi_assert(group < MIBSPI_UTILS_ARRAYSIZE(ptrMibSpiDriver->rambufStart));
         ramOffset = ptrMibSpiDriver->rambufStart[group];
-        ramLen =  mibspiExtendedParams->u.masterParams.slaveProf[group].ramBufLen;
+        ramLen =  ptrMibSpiDriver->params.u.masterParams.slaveProf[group].ramBufLen;
 
         /* Find out iCound and bufid */
         if (dataElemSize > ramLen)
@@ -1379,12 +1366,12 @@ static void MIBSPI_dataTransfer
          Case 2: SrcData!=NULL, DstData=NULL   => Write data to SPI with dummy read
          Case 3: SrcData!=NULL, DstData!=NULL  => duplex Read/Write
      */
-    if(mibspiExtendedParams->dmaEnable == (uint8_t)1U)
+    if(ptrMibSpiDriver->params.dmaEnable == (uint8_t)1U)
     {
         /* Disable TG complete interrupt */
         MIBSPI_disableGroupInterrupt(ptrMibSpiReg, group);
 
-#ifdef SPI_DMA_ENABLE
+#ifdef MIBSPI_DMA_ENABLE
         MibSpi_dmaXferInfo_t dmaXferInfo;
         uint32_t   txRAMAddr;
         uint32_t   rxRAMAddr;
@@ -1403,7 +1390,7 @@ static void MIBSPI_dataTransfer
         dmaXferInfo.tx.daddr = txRAMAddr;
         dmaXferInfo.rx.saddr = rxRAMAddr;
         dmaXferInfo.rx.daddr = (uintptr_t) dstData;
-        if(ptrMibSpiDriver->params.spiParams.dataSize == 8U)
+        if(ptrMibSpiDriver->params.dataSize == 8U)
         {
             dmaXferInfo.size.elemSize = 1;
         }
@@ -1413,7 +1400,7 @@ static void MIBSPI_dataTransfer
         }
         dmaXferInfo.size.elemCnt = bufId + 1U;
         dmaXferInfo.size.frameCnt = iCount + 1U;
-        MIBSPI_dmaTransfer(ptrMibSpiDriver->spiHandle, &dmaXferInfo);
+        MIBSPI_dmaTransfer(ptrMibSpiDriver->mibspiHandle, &dmaXferInfo);
 #endif
         /* Disable SPI DMA */
         MIBSPI_dmaCtrlGroupDisable(ptrMibSpiReg, group);
@@ -1480,8 +1467,8 @@ static void MIBSPI_dataTransfer
 
             }
 
-            srcData = (srcData == (uint8_t *)NULL)? (uint8_t *)NULL : (uint8_t *)(srcData + size * ptrMibSpiDriver->params.spiParams.dataSize / 8U);
-            dstData = (dstData == (uint8_t *)NULL)? (uint8_t *)NULL : (uint8_t *)(dstData + size * ptrMibSpiDriver->params.spiParams.dataSize / 8U);
+            srcData = (srcData == (uint8_t *)NULL)? (uint8_t *)NULL : (uint8_t *)(srcData + size * ptrMibSpiDriver->params.dataSize / 8U);
+            dstData = (dstData == (uint8_t *)NULL)? (uint8_t *)NULL : (uint8_t *)(dstData + size * ptrMibSpiDriver->params.dataSize / 8U);
 
             /* Transfer finished, unblock the thread */
             SemaphoreP_post(ptrMibSpiDriver->transferCompleteSem);
@@ -1505,17 +1492,16 @@ static void MIBSPI_dataTransfer
  *  @retval    Successful         =0
  *                 Failed         <0
  */
-static int32_t MIBSPI_openSlaveMode(MibSpiDriver_Object *ptrMibSpiDriver, MibSpi_HwCfg* ptrHwCfg, const SPI_Params *params)
+static int32_t MIBSPI_openSlaveMode(MibSpiDriver_Object *ptrMibSpiDriver, MibSpi_HwCfg* ptrHwCfg, const MIBSPI_Params *params)
 {
     int32_t                 retVal = 0;
-    MIBSPI_ExtendedParams *mibspiExtParams = params->custom;
 
     /* Initializing mibspi as a SPI slave */
     MIBSPI_initSlave(ptrHwCfg, params);
 
-    if(mibspiExtParams->dmaEnable)
+    if(params->dmaEnable)
     {
-#ifdef SPI_DMA_ENABLE
+#ifdef MIBSPI_DMA_ENABLE
         MibSpi_driverDmaInfo    *ptrDmaInfo = NULL;
 
         /* Get DMA config params handle */
@@ -1524,14 +1510,14 @@ static int32_t MIBSPI_openSlaveMode(MibSpiDriver_Object *ptrMibSpiDriver, MibSpi
         ptrDmaInfo->dmaReqlineTx = ptrHwCfg->dmaReqlineCfg[MIBSPI_SLAVEMODE_TRANS_GROUP].txDmaReqLine;
         ptrDmaInfo->dmaReqlineRx = ptrHwCfg->dmaReqlineCfg[MIBSPI_SLAVEMODE_TRANS_GROUP].rxDmaReqLine;
 
-        retVal = MIBSPI_dmaConfig(ptrMibSpiDriver->spiHandle);
+        retVal = MIBSPI_dmaConfig(ptrMibSpiDriver->mibspiHandle);
         if(retVal < 0)
         {
-            retVal = SPI_STATUS_ERROR;
+            retVal = MIBSPI_STATUS_ERROR;
             goto exit;
         }
 #else
-        retVal = SPI_STATUS_ERROR;
+        retVal = MIBSPI_STATUS_ERROR;
         goto exit;
 #endif
     }
@@ -1558,26 +1544,25 @@ exit:
  *  @retval    Successful           =0
  *                 Failed           <0
  */
-static int32_t MIBSPI_openMasterMode(MibSpiDriver_Object *ptrMibSpiDriver, MibSpi_HwCfg* ptrHwCfg, const SPI_Params *params)
+static int32_t MIBSPI_openMasterMode(MibSpiDriver_Object *ptrMibSpiDriver, MibSpi_HwCfg* ptrHwCfg, const MIBSPI_Params *params)
 {
     int32_t                 retVal = 0;
     MibSpi_driverDmaInfo    *ptrDmaInfo = NULL;
     uint8_t                 index;
     uint8_t                 ramBufOffset = 0;
-    MIBSPI_ExtendedParams *mibspiExtParams = params->custom;
 
     /* Initializing mibspi as a SPI master */
     MIBSPI_initMaster(ptrHwCfg, params);
 
     /* Configure the Master clock prescaler */
-    MIBSPI_setMasterClockRate(ptrHwCfg->ptrSpiRegBase, ptrHwCfg->clockSrcFreq, mibspiExtParams->u.masterParams.bitRate);
+    MIBSPI_setMasterClockRate(ptrHwCfg->ptrSpiRegBase, ptrHwCfg->clockSrcFreq, params->u.masterParams.bitRate);
 
-    for(index = 0; index < mibspiExtParams->u.masterParams.numSlaves; index++)
+    for(index = 0; index < params->u.masterParams.numSlaves; index++)
     {
         /***************************************
          ****** DMA Configuration if enabled *******
          **************************************/
-        if(mibspiExtParams->dmaEnable)
+        if(params->dmaEnable)
         {
             /* Get DMA config params handle */
             ptrDmaInfo = &ptrMibSpiDriver->dmaInfo[index];
@@ -1591,16 +1576,16 @@ static int32_t MIBSPI_openMasterMode(MibSpiDriver_Object *ptrMibSpiDriver, MibSp
          ******** Save RAM offset information *******
          **************************************/
         ptrMibSpiDriver->rambufStart[index] = ramBufOffset;
-        ptrMibSpiDriver->rambufEnd[index] = ramBufOffset + mibspiExtParams->u.masterParams.slaveProf[index].ramBufLen;
+        ptrMibSpiDriver->rambufEnd[index] = ramBufOffset + params->u.masterParams.slaveProf[index].ramBufLen;
         ramBufOffset =ptrMibSpiDriver->rambufEnd[index];
     }
 
-    if (mibspiExtParams->dmaEnable)
+    if (params->dmaEnable)
     {
-#ifdef SPI_DMA_ENABLE
-        retVal = MIBSPI_dmaConfig(ptrMibSpiDriver->spiHandle);
+#ifdef MIBSPI_DMA_ENABLE
+        retVal = MIBSPI_dmaConfig(ptrMibSpiDriver->mibspiHandle);
 #else
-        retVal = SPI_STATUS_ERROR;
+        retVal = MIBSPI_STATUS_ERROR;
 #endif
     }
     return (retVal);
@@ -1609,22 +1594,6 @@ static int32_t MIBSPI_openMasterMode(MibSpiDriver_Object *ptrMibSpiDriver, MibSp
 /**************************************************************************
  ************************* MibSPI Exported Driver Functions *********************
  **************************************************************************/
-
-/**
- *  @b Description
- *  @n
- *      SPI interface funtion to init SPI device.
- *
- *   @param[in] handle      SPI device handle
- *
- *  \ingroup SPI_DRIVER_INTERNAL_FUNCTION
- *
- *  @retval    None.
- */
-static void SPI_init_v3( SPI_Handle handle)
-{
-    return;
-}
 
 /**
  *  @b Description
@@ -1638,19 +1607,18 @@ static void SPI_init_v3( SPI_Handle handle)
  *
  *  @retval    SPI device handle.
  */
-static SPI_Handle SPI_open_v3(SPI_Handle handle, const SPI_Params *params)
+MIBSPI_Handle MIBSPI_openCore(MIBSPI_Handle handle, const MIBSPI_Params *params)
 {
-    SPI_Config*             ptrSPIConfig;
+    MIBSPI_Config*             ptrSPIConfig;
     MibSpi_HwCfg*           ptrHwCfg;
     SemaphoreP_Params       semParams;
-    SPI_Handle              retHandle = (SPI_Handle)NULL;
+    MIBSPI_Handle              retHandle = (MIBSPI_Handle)NULL;
     MibSpiDriver_Object*    ptrMibSpiDriver = NULL;
     HwiP_Params             hwiParams;
     int32_t                 retVal = 0;
-    MIBSPI_ExtendedParams *mibspiExtendedParams = params->custom;
 
     /* Get the SPI driver Configuration: */
-    ptrSPIConfig = (SPI_Config*)handle;
+    ptrSPIConfig = (MIBSPI_Config*)handle;
 
     /* Get the hardware configuration: */
     ptrHwCfg = (MibSpi_HwCfg*)ptrSPIConfig->hwAttrs;
@@ -1659,7 +1627,6 @@ static SPI_Handle SPI_open_v3(SPI_Handle handle, const SPI_Params *params)
     Mibspi_assert(ptrHwCfg != NULL);
     Mibspi_assert(ptrHwCfg->ptrSpiRegBase != NULL);
     Mibspi_assert(ptrHwCfg->ptrMibSpiRam != NULL);
-    Mibspi_assert((uintptr_t)mibspiExtendedParams == (((uintptr_t)params) + offsetof(MIBSPI_Params, mibspiParams)));
 
 #ifdef SPI_PARAMS_CHECK
     /* Validate params for SPI driver */
@@ -1678,25 +1645,23 @@ static SPI_Handle SPI_open_v3(SPI_Handle handle, const SPI_Params *params)
         ptrMibSpiDriver = (MibSpiDriver_Object *)ptrSPIConfig->object;
 
         /* Check instance was not previously opened */
-        if (ptrMibSpiDriver->spiHandle == NULL)
+        if (ptrMibSpiDriver->mibspiHandle == NULL)
         {
             /* Initialize the memory: */
             memset ((void *)ptrMibSpiDriver, 0, sizeof(MibSpiDriver_Object));
 
             /* Save parameters and hardware configurations */
-            ptrMibSpiDriver->params.spiParams = *params;
-            ptrMibSpiDriver->params.mibspiParams = *mibspiExtendedParams;
-            ptrMibSpiDriver->params.spiParams.custom = &ptrMibSpiDriver->params.mibspiParams;
+            ptrMibSpiDriver->params = *params;
 
             /* Save the Driver handle and Hw config */
             ptrMibSpiDriver->ptrHwCfg = ptrHwCfg;
             MIBSPI_validateIPVersionInfo(ptrHwCfg);
-            ptrMibSpiDriver->spiHandle = handle;
-            ptrMibSpiDriver->txScratchBuffer = mibspiExtendedParams->txDummyValue;
+            ptrMibSpiDriver->mibspiHandle = handle;
+            ptrMibSpiDriver->txScratchBuffer = ptrMibSpiDriver->params.txDummyValue;
 
             MIBSPI_resetTransactionState(&ptrMibSpiDriver->transactionState);
             /* Call open function for the MibSPI operating mode */
-            if(params->mode == SPI_SLAVE)
+            if(params->mode == MIBSPI_SLAVE)
             {
                 retVal = MIBSPI_openSlaveMode(ptrMibSpiDriver, ptrHwCfg, params);
             }
@@ -1716,7 +1681,7 @@ static SPI_Handle SPI_open_v3(SPI_Handle handle, const SPI_Params *params)
 
             /* Register SPI Interrupt handling ISR */
             HwiP_Params_init(&hwiParams);
-            hwiParams.name = "MibSpiInt";
+            hwiParams.name = (char *)"MibSpiInt";
             hwiParams.arg  = (uintptr_t)ptrMibSpiDriver;
             ptrMibSpiDriver->hwiHandle = HwiP_create((int32_t)(ptrHwCfg->interrupt1Num), MIBSPI_ISR, &hwiParams);
 
@@ -1725,7 +1690,7 @@ static SPI_Handle SPI_open_v3(SPI_Handle handle, const SPI_Params *params)
         }
         else
         {
-            retVal = SPI_STATUS_ERROR;
+            retVal = MIBSPI_STATUS_ERROR;
         }
     }
 exit:
@@ -1752,11 +1717,10 @@ exit:
  *
  *  @retval    None.
  */
-static void SPI_close_v3(SPI_Handle handle)
+void MIBSPI_closeCore(MIBSPI_Handle handle)
 {
     MibSpiDriver_Object*    ptrMibSpiDriver;
     CSL_mss_spiRegs              *ptrMibSpiReg;
-    MIBSPI_ExtendedParams   *mibspiExtendenParams;
 
     /* Sanity check handle */
     Mibspi_assert(handle != NULL);
@@ -1771,12 +1735,11 @@ static void SPI_close_v3(SPI_Handle handle)
         ptrMibSpiReg = ptrMibSpiDriver->ptrHwCfg->ptrSpiRegBase;
 
         Mibspi_assert(ptrMibSpiDriver->transactionState.transaction == NULL);
-        mibspiExtendenParams = ptrMibSpiDriver->params.spiParams.custom;
 
-        if(mibspiExtendenParams->dmaEnable)
+        if(ptrMibSpiDriver->params.dmaEnable)
         {
-#ifdef SPI_DMA_ENABLE
-            MIBSPI_dmaFreeChannel(ptrMibSpiDriver->spiHandle);
+#ifdef MIBSPI_DMA_ENABLE
+            MIBSPI_dmaFreeChannel(ptrMibSpiDriver->mibspiHandle);
 #endif
         }
 
@@ -1817,22 +1780,22 @@ static void SPI_close_v3(SPI_Handle handle)
  *
  *  @retval    Status of SPI device command.
  */
-static int32_t SPI_control_v3(SPI_Handle handle, uint32_t cmd, const void *arg)
+int32_t MIBSPI_controlCore(MIBSPI_Handle handle, uint32_t cmd, const void *arg)
 {
     MibSpiDriver_Object     *ptrMibSpiDriver;
     CSL_mss_spiRegs              *ptrMibSpiReg;
-    int32_t                 status = SPI_STATUS_SUCCESS;
+    int32_t                 status = MIBSPI_STATUS_SUCCESS;
     MibSpi_LoopBackType     loopbacktype;
 
     /* Sanity check params */
     if( (handle == NULL) || (arg == NULL))
     {
-        status = SPI_STATUS_ERROR;
+        status = MIBSPI_STATUS_ERROR;
     }
     else
     {
         /* Get the Object from SPI Handle */
-        ptrMibSpiDriver = handle->object;
+        ptrMibSpiDriver = (typeof (ptrMibSpiDriver))handle->object;
 
         /* Get the Register base address from SPI Handle */
         ptrMibSpiReg = ptrMibSpiDriver->ptrHwCfg->ptrSpiRegBase;
@@ -1844,23 +1807,23 @@ static int32_t SPI_control_v3(SPI_Handle handle, uint32_t cmd, const void *arg)
                     loopbacktype = *(MibSpi_LoopBackType *)arg;
 
                     /* Sanity check the input parameters */
-                    if (ptrMibSpiDriver->params.spiParams.mode != SPI_MASTER)
+                    if (ptrMibSpiDriver->params.mode != MIBSPI_MASTER)
                     {
                         /* Loopback is not supported in Slave mode */
-                        status = SPI_STATUS_ERROR;
+                        status = MIBSPI_STATUS_ERROR;
                     }
                     else if ( (loopbacktype == MIBSPI_LOOPBK_DIGITAL) || (loopbacktype == MIBSPI_LOOPBK_ANALOG) )
                     {
                         /* Enable Loopback here in case Deice act as MibSPI Slave */
                         MIBSPI_enableLoopback(ptrMibSpiReg, loopbacktype);
-                        status = SPI_STATUS_SUCCESS;
+                        status = MIBSPI_STATUS_SUCCESS;
                     }
                     else
                     {
                         /* Disable MibSPI LoopBack */
                         MIBSPI_disableLoopback(ptrMibSpiReg);
 
-                        status = SPI_STATUS_SUCCESS;
+                        status = MIBSPI_STATUS_SUCCESS;
                     }
                 }
 
@@ -1875,15 +1838,15 @@ static int32_t SPI_control_v3(SPI_Handle handle, uint32_t cmd, const void *arg)
                     frameFmt = frameFmt & 0x3U;
 
                     /* Sanity check the input parameters */
-                    if (ptrMibSpiDriver->params.spiParams.mode != SPI_SLAVE)
+                    if (ptrMibSpiDriver->params.mode != MIBSPI_SLAVE)
                     {
                         /* Loopback is not supported in Master mode */
-                        status = SPI_STATUS_ERROR;
+                        status = MIBSPI_STATUS_ERROR;
                     }
                     else
                     {
                         MIBSPI_setClockPhasePolarity(ptrMibSpiReg, (uint8_t)frameFmt);
-                        status = SPI_STATUS_SUCCESS;
+                        status = MIBSPI_STATUS_SUCCESS;
                     }
                 }
                 break;
@@ -1898,7 +1861,7 @@ static int32_t SPI_control_v3(SPI_Handle handle, uint32_t cmd, const void *arg)
 
             default:
                 /* Command is not supported */
-                status = SPI_STATUS_UNDEFINEDCMD;
+                status = MIBSPI_STATUS_UNDEFINEDCMD;
                 break;
         }
     }
@@ -1914,7 +1877,7 @@ static void MIBSPI_initTransactionState(Mibspi_transactionState_t *transactionSt
     transactionState->edmaCbCheck = MIBSPI_NONE_EDMA_CALLBACK_OCCURED;
     transactionState->transferErr = MIBSPI_XFER_ERR_NONE;
     transactionState->transaction = transaction;
-    transactionState->transaction->base.status = SPI_TRANSFER_STARTED;
+    transactionState->transaction->status = MIBSPI_TRANSFER_STARTED;
 
     HwiP_restore(key);
 }
@@ -1945,78 +1908,73 @@ static void MIBSPI_resetTransactionState(Mibspi_transactionState_t *transactionS
  *  @retval    true          if transaction is successful
  *             false         if transaction is failed
  */
-static bool SPI_transfer_v3(SPI_Handle handle, SPI_Transaction *spiTransaction)
+bool MIBSPI_transferCore(MIBSPI_Handle handle, MIBSPI_Transaction *transaction)
 {
     uintptr_t               key;
     MibSpiDriver_Object     *ptrMibSpiDriver;
     SemaphoreP_Status       semaStatus;
     bool                    ret = false;
     uint16_t                dataLength;
-    MIBSPI_Transaction     *transaction = spiTransaction->custom;
-    int32_t                status = SPI_STATUS_SUCCESS;
+    int32_t                status = MIBSPI_STATUS_SUCCESS;
 
-    /* Assert we have been passed a MIBSPI_Transaction structure by application 
-     * by confirming the size field is correct
-     */
-    Mibspi_assert(transaction->size == sizeof(MIBSPI_Transaction));
 
     /* Get the MibSpi driver handle */
     ptrMibSpiDriver = (MibSpiDriver_Object *)handle->object;
 
 #ifdef SPI_PARAMS_CHECK
     status = MIBSPI_validateTransferParams(transaction, ptrMibSpiDriver);
-    if (status != SPI_STATUS_SUCCESS)
+    if (status != MIBSPI_STATUS_SUCCESS)
     {
         /* Initialiaze transaction as failed transer */
-        transaction->base.status = SPI_TRANSFER_FAILED;
+        transaction->status = MIBSPI_TRANSFER_FAILED;
         ret = false;
 
     }
 #endif
-    if (status == SPI_STATUS_SUCCESS)
+    if (status == MIBSPI_STATUS_SUCCESS)
     {
-        if(ptrMibSpiDriver->params.spiParams.dataSize == 16U)
+        if(ptrMibSpiDriver->params.dataSize == 16U)
         {
             /* MIBSPI reads in 2 bytes format */
-            dataLength = (uint16_t)transaction->base.count >> 1U;
+            dataLength = (uint16_t)transaction->count >> 1U;
         }
         else
         {
-            dataLength = transaction->base.count;
+            dataLength = transaction->count;
         }
 
         MIBSPI_initTransactionState(&ptrMibSpiDriver->transactionState, transaction);
 
 #ifndef SPI_MULT_ICOUNT_SUPPORT
-        if(ptrMibSpiDriver->params.spiParams.mode == SPI_SLAVE)
+        if(ptrMibSpiDriver->params.mode == MIBSPI_SLAVE)
         {
-            MIBSPI_dataTransfer(ptrMibSpiDriver, transaction->base.txBuf, transaction->base.rxBuf, dataLength, MIBSPI_SLAVEMODE_TRANS_GROUP);
+            MIBSPI_dataTransfer(ptrMibSpiDriver, transaction->txBuf, transaction->rxBuf, dataLength, MIBSPI_SLAVEMODE_TRANS_GROUP);
         }
         else
         {
-            MIBSPI_dataTransfer(ptrMibSpiDriver, transaction->base.txBuf, transaction->base.rxBuf, dataLength, transaction->slaveIndex);
+            MIBSPI_dataTransfer(ptrMibSpiDriver, transaction->txBuf, transaction->rxBuf, dataLength, transaction->slaveIndex);
         }
 
-        if (ptrMibSpiDriver->params.spiParams.transferMode == SPI_MODE_BLOCKING)
+        if (ptrMibSpiDriver->params.transferMode == MIBSPI_MODE_BLOCKING)
         {
-            semaStatus = SemaphoreP_pend(ptrMibSpiDriver->transferCompleteSem, ptrMibSpiDriver->params.spiParams.transferTimeout);
+            semaStatus = SemaphoreP_pend(ptrMibSpiDriver->transferCompleteSem, ptrMibSpiDriver->params.transferTimeout);
             if(semaStatus != SemaphoreP_OK)
             {
                 /* Populate status code */
-                transaction->base.status = SPI_TRANSFER_TIMEOUT;
+                transaction->status = MIBSPI_TRANSFER_TIMEOUT;
                 ret = false;
             }
             else
             {
                 /* Populate status code */
-                transaction->base.status = SPI_TRANSFER_COMPLETED;
+                transaction->status = MIBSPI_TRANSFER_COMPLETED;
                 ret = true;
             }
         }
         else
         {
             /* Execution should not reach here */
-            transaction->base.status = SPI_TRANSFER_FAILED;
+            transaction->status = MIBSPI_TRANSFER_FAILED;
             ret = false;
         }
 #else
@@ -2025,7 +1983,7 @@ static bool SPI_transfer_v3(SPI_Handle handle, SPI_Transaction *spiTransaction)
             uint16_t    remainSize;
             uint16_t    dataSizeInBytes = 2U;
 
-            if(ptrMibSpiDriver->params.spiParams.dataSize == 16U)
+            if(ptrMibSpiDriver->params.dataSize == 16U)
             {
                 dataSizeInBytes = 2U;
             }
@@ -2035,13 +1993,13 @@ static bool SPI_transfer_v3(SPI_Handle handle, SPI_Transaction *spiTransaction)
             }
 
             /* Find out rambuf size */
-            if(ptrMibSpiDriver->params.spiParams.mode == SPI_SLAVE)
+            if(ptrMibSpiDriver->params.mode == MIBSPI_SLAVE)
             {
                 ramSize = MIBSPI_RAM_MAX_ELEM;
             }
             else
             {
-                ramSize = ptrMibSpiDriver->params.mibspiParams.u.masterParams.slaveProf[transaction->slaveIndex].ramBufLen;
+                ramSize = ptrMibSpiDriver->params.u.masterParams.slaveProf[transaction->slaveIndex].ramBufLen;
             }
 
             /*
@@ -2058,36 +2016,36 @@ static bool SPI_transfer_v3(SPI_Handle handle, SPI_Transaction *spiTransaction)
                 dataLength -= remainSize;
             }
 
-            if(ptrMibSpiDriver->params.spiParams.mode == SPI_SLAVE)
+            if(ptrMibSpiDriver->params.mode == MIBSPI_SLAVE)
             {
-                MIBSPI_dataTransfer(ptrMibSpiDriver, transaction->base.txBuf, transaction->base.rxBuf, dataLength, MIBSPI_SLAVEMODE_TRANS_GROUP);
+                MIBSPI_dataTransfer(ptrMibSpiDriver, (uint8_t *)transaction->txBuf, (uint8_t *)transaction->rxBuf, dataLength, MIBSPI_SLAVEMODE_TRANS_GROUP);
             }
             else
             {
-                MIBSPI_dataTransfer(ptrMibSpiDriver, transaction->base.txBuf, transaction->base.rxBuf, dataLength, transaction->slaveIndex);
+                MIBSPI_dataTransfer(ptrMibSpiDriver, (uint8_t *)transaction->txBuf, (uint8_t *)transaction->rxBuf, dataLength, transaction->slaveIndex);
             }
 
-            if (ptrMibSpiDriver->params.spiParams.transferMode == SPI_MODE_BLOCKING)
+            if (ptrMibSpiDriver->params.transferMode == MIBSPI_MODE_BLOCKING)
             {
-                semaStatus = SemaphoreP_pend(ptrMibSpiDriver->transferCompleteSem, ptrMibSpiDriver->params.spiParams.transferTimeout);
+                semaStatus = SemaphoreP_pend(ptrMibSpiDriver->transferCompleteSem, ptrMibSpiDriver->params.transferTimeout);
                 if(semaStatus != SemaphoreP_OK)
                 {
                     /* Populate status code */
-                    transaction->base.status = SPI_TRANSFER_TIMEOUT;
+                    transaction->status = MIBSPI_TRANSFER_TIMEOUT;
                     ret = false;
                     remainSize = 0;
                 }
                 else
                 {
                     /* Populate status code */
-                    transaction->base.status = SPI_TRANSFER_COMPLETED;
+                    transaction->status = MIBSPI_TRANSFER_COMPLETED;
                     ret = true;
                 }
             }
             else
             {
                 /* Execution should not reach here */
-                transaction->base.status = SPI_TRANSFER_FAILED;
+                transaction->status = MIBSPI_TRANSFER_FAILED;
                 ret = false;
                 remainSize = 0;
             }
@@ -2099,40 +2057,40 @@ static bool SPI_transfer_v3(SPI_Handle handle, SPI_Transaction *spiTransaction)
             }
 
             /* Change buffer pointer and data size for the second transfer */
-            transaction->base.txBuf = (void *)((transaction->base.txBuf == NULL)? NULL: (uint8_t *)transaction->base.txBuf + dataLength * dataSizeInBytes);
-            transaction->base.rxBuf = (void *)((transaction->base.rxBuf == NULL)? NULL: (uint8_t *)transaction->base.rxBuf + dataLength * dataSizeInBytes);
+            transaction->txBuf = (void *)((transaction->txBuf == NULL)? NULL: (uint8_t *)transaction->txBuf + dataLength * dataSizeInBytes);
+            transaction->rxBuf = (void *)((transaction->rxBuf == NULL)? NULL: (uint8_t *)transaction->rxBuf + dataLength * dataSizeInBytes);
             dataLength = remainSize;
 
             /* Transfer the remaining size */
-            if(ptrMibSpiDriver->params.spiParams.mode == SPI_SLAVE)
+            if(ptrMibSpiDriver->params.mode == MIBSPI_SLAVE)
             {
-                MIBSPI_dataTransfer(ptrMibSpiDriver, transaction->base.txBuf, transaction->base.rxBuf, dataLength, MIBSPI_SLAVEMODE_TRANS_GROUP);
+                MIBSPI_dataTransfer(ptrMibSpiDriver, (uint8_t *)transaction->txBuf, (uint8_t *)transaction->rxBuf, dataLength, MIBSPI_SLAVEMODE_TRANS_GROUP);
             }
             else
             {
-                MIBSPI_dataTransfer(ptrMibSpiDriver, transaction->base.txBuf, transaction->base.rxBuf, dataLength, transaction->slaveIndex);
+                MIBSPI_dataTransfer(ptrMibSpiDriver, (uint8_t *)transaction->txBuf, (uint8_t *)transaction->rxBuf, dataLength, transaction->slaveIndex);
             }
 
-            if (ptrMibSpiDriver->params.spiParams.transferMode == SPI_MODE_BLOCKING)
+            if (ptrMibSpiDriver->params.transferMode == MIBSPI_MODE_BLOCKING)
             {
-                semaStatus = SemaphoreP_pend(ptrMibSpiDriver->transferCompleteSem, ptrMibSpiDriver->params.spiParams.transferTimeout);
+                semaStatus = SemaphoreP_pend(ptrMibSpiDriver->transferCompleteSem, ptrMibSpiDriver->params.transferTimeout);
                 if(semaStatus != SemaphoreP_OK)
                 {
                     /* Populate status code */
-                    transaction->base.status = SPI_TRANSFER_TIMEOUT;
+                    transaction->status = MIBSPI_TRANSFER_TIMEOUT;
                     ret = false;
                 }
                 else
                 {
                     /* Populate status code */
-                    transaction->base.status = SPI_TRANSFER_COMPLETED;
+                    transaction->status = MIBSPI_TRANSFER_COMPLETED;
                     ret = true;
                 }
             }
             else
             {
                 /* Execution should not reach here */
-                transaction->base.status = SPI_TRANSFER_FAILED;
+                transaction->status = MIBSPI_TRANSFER_FAILED;
                 ret = false;
             }
         }while(0);
@@ -2162,7 +2120,7 @@ static bool SPI_transfer_v3(SPI_Handle handle, SPI_Transaction *spiTransaction)
  *
  *  @retval    None
  */
-static void SPI_transferCancel_v3(SPI_Handle handle)
+void MIBSPI_transferCancelCore(MIBSPI_Handle handle)
 {
     /* Stop Transfer is in progress */
     MIBSPITRACE_ERROR("SPI:(%p) Error! Stop Transaction is  not supported\n", handle);
@@ -2173,21 +2131,6 @@ static void SPI_transferCancel_v3(SPI_Handle handle)
     return;
 }
 
-/**
- *  @b Description
- *  @n
- *      ISR service routine for SPI driver .
- *
- *   @param[in] handle          SPI device handle
- *
- *  \ingroup SPI_DRIVER_INTERNAL_FUNCTION
- *
- *  @retval    None
- */
-static void  SPI_serviceISR_v3(SPI_Handle handle)
-{
-    return;
-}
 
 /**
  *  @b Description
@@ -2201,7 +2144,7 @@ static void  SPI_serviceISR_v3(SPI_Handle handle)
  *
  *  @retval    None
  */
-static int32_t MIBSPI_getDrvStats(SPI_Handle handle, MIBSPI_Stats *ptrStats)
+static int32_t MIBSPI_getDrvStats(MIBSPI_Handle handle, MIBSPI_Stats *ptrStats)
 {
     MibSpiDriver_Object     *ptrMibSpiDriver;
     int32_t                 retCode = 0;
@@ -2209,7 +2152,7 @@ static int32_t MIBSPI_getDrvStats(SPI_Handle handle, MIBSPI_Stats *ptrStats)
     /* Validate input parameters */
     if((handle == NULL) || (ptrStats == NULL))
     {
-        retCode = SPI_STATUS_ERROR;
+        retCode = MIBSPI_STATUS_ERROR;
     }
     else
     {
@@ -2229,17 +2172,17 @@ static int32_t MIBSPI_getDrvStats(SPI_Handle handle, MIBSPI_Stats *ptrStats)
 
 
 
-void MIBSPI_dmaDoneCb(SPI_Handle spiHandle)
+void MIBSPI_dmaDoneCb(MIBSPI_Handle mibspiHandle)
 {
     MibSpiDriver_Object*    ptrMibSpiDriver = NULL;
-    SPI_Config*             ptrSPIConfig;
+    MIBSPI_Config*             ptrSPIConfig;
 
     /* Get the SPI driver Configuration: */
-    ptrSPIConfig = (SPI_Config*)spiHandle;
+    ptrSPIConfig = (MIBSPI_Config*)mibspiHandle;
 
     ptrMibSpiDriver = (MibSpiDriver_Object*)ptrSPIConfig->object;
 
-    if ((ptrMibSpiDriver->params.spiParams.transferMode == SPI_MODE_BLOCKING) && (ptrMibSpiDriver->transferCompleteSem != NULL) )
+    if ((ptrMibSpiDriver->params.transferMode == MIBSPI_MODE_BLOCKING) && (ptrMibSpiDriver->transferCompleteSem != NULL) )
     {
         /* MibSPI-RX DMA complete interrupt */
         SemaphoreP_post(ptrMibSpiDriver->transferCompleteSem);
@@ -2249,34 +2192,34 @@ void MIBSPI_dmaDoneCb(SPI_Handle spiHandle)
         if (ptrMibSpiDriver->transactionState.transaction != NULL)
         {
             /* Call the transfer completion callback function */
-            if ((ptrMibSpiDriver->transactionState.transaction->base.status == SPI_TRANSFER_STARTED) &&
+            if ((ptrMibSpiDriver->transactionState.transaction->status == MIBSPI_TRANSFER_STARTED) &&
                 (ptrMibSpiDriver->transactionState.transferErr == MIBSPI_XFER_ERR_NONE))
             {
-                ptrMibSpiDriver->transactionState.transaction->base.status = SPI_TRANSFER_COMPLETED;
+                ptrMibSpiDriver->transactionState.transaction->status = MIBSPI_TRANSFER_COMPLETED;
             }
             else
             {
-                ptrMibSpiDriver->transactionState.transaction->base.status = SPI_TRANSFER_FAILED;
+                ptrMibSpiDriver->transactionState.transaction->status = MIBSPI_TRANSFER_FAILED;
             }
 
-            ptrMibSpiDriver->params.spiParams.transferCallbackFxn(spiHandle, &ptrMibSpiDriver->transactionState.transaction->base);
+            ptrMibSpiDriver->params.transferCallbackFxn(mibspiHandle, ptrMibSpiDriver->transactionState.transaction);
             MIBSPI_resetTransactionState(&ptrMibSpiDriver->transactionState);
         }
     }
 }
 
-static uint32_t MIBSPI_getPhase(SPI_FrameFormat frameFormat)
+static uint32_t MIBSPI_getPhase(MIBSPI_FrameFormat frameFormat)
 {
     uint32_t phase = 0;
 
     switch (frameFormat)
     {
-        case SPI_POL0_PHA0:    /*!< SPI mode Polarity 0 Phase 0 */
-        case SPI_POL1_PHA0:    /*!< SPI mode Polarity 1 Phase 0 */
+        case MIBSPI_POL0_PHA0:    /*!< SPI mode Polarity 0 Phase 0 */
+        case MIBSPI_POL1_PHA0:    /*!< SPI mode Polarity 1 Phase 0 */
             phase = 0;
             break;
-        case SPI_POL0_PHA1:    /*!< SPI mode Polarity 0 Phase 1 */
-        case SPI_POL1_PHA1:    /*!< SPI mode Polarity 1 Phase 1 */
+        case MIBSPI_POL0_PHA1:    /*!< SPI mode Polarity 0 Phase 1 */
+        case MIBSPI_POL1_PHA1:    /*!< SPI mode Polarity 1 Phase 1 */
             phase = 1;
             break;
         default:
@@ -2285,18 +2228,18 @@ static uint32_t MIBSPI_getPhase(SPI_FrameFormat frameFormat)
     return phase;
 }
 
-static uint32_t MIBSPI_getPolarity(SPI_FrameFormat frameFormat)
+static uint32_t MIBSPI_getPolarity(MIBSPI_FrameFormat frameFormat)
 {
     uint32_t polarity = 0;
 
     switch (frameFormat)
     {
-        case SPI_POL0_PHA0:    /*!< SPI mode Polarity 0 Phase 0 */
-        case SPI_POL0_PHA1:    /*!< SPI mode Polarity 0 Phase 1 */
+        case MIBSPI_POL0_PHA0:    /*!< SPI mode Polarity 0 Phase 0 */
+        case MIBSPI_POL0_PHA1:    /*!< SPI mode Polarity 0 Phase 1 */
             polarity = 0;
             break;
-        case SPI_POL1_PHA0:    /*!< SPI mode Polarity 1 Phase 0 */
-        case SPI_POL1_PHA1:    /*!< SPI mode Polarity 1 Phase 1 */
+        case MIBSPI_POL1_PHA0:    /*!< SPI mode Polarity 1 Phase 0 */
+        case MIBSPI_POL1_PHA1:    /*!< SPI mode Polarity 1 Phase 1 */
             polarity = 1;
             break;
         default:
@@ -2328,4 +2271,26 @@ static void MIBSPI_validateIPVersionInfo(const MibSpi_HwCfg* ptrHwCfg)
     Mibspi_assert(versionInfo.functionality == ptrHwCfg->versionInfo.functionality);
     Mibspi_assert(versionInfo.scheme == ptrHwCfg->versionInfo.scheme);
 }
+
+static void MIBSPI_enableErrorInterrupt(CSL_mss_spiRegs  *ptrMibSpiReg, uint32_t enableFlag)
+{
+    CSL_FINS(ptrMibSpiReg->SPIINT0, SPI_SPIINT0_DLENERRENA, enableFlag);
+    CSL_FINS(ptrMibSpiReg->SPIINT0, SPI_SPIINT0_TIMEOUTENA, enableFlag);
+    CSL_FINS(ptrMibSpiReg->SPIINT0, SPI_SPIINT0_PARERRENA, enableFlag);
+    CSL_FINS(ptrMibSpiReg->SPIINT0, SPI_SPIINT0_DESYNCENA, enableFlag);
+    CSL_FINS(ptrMibSpiReg->SPIINT0, SPI_SPIINT0_BITERRENA, enableFlag);
+    CSL_FINS(ptrMibSpiReg->SPIINT0, SPI_SPIINT0_OVRNINTENA, enableFlag);
+
+}
+
+static void MIBSPI_setErrorInterruptLevel(CSL_mss_spiRegs  *ptrMibSpiReg, uint32_t level)
+{
+    CSL_FINS(ptrMibSpiReg->SPILVL, SPI_SPILVL_DLENERRLVL, level);
+    CSL_FINS(ptrMibSpiReg->SPILVL, SPI_SPILVL_TIMEOUTLVL, level);
+    CSL_FINS(ptrMibSpiReg->SPILVL, SPI_SPILVL_PARERRLVL, level);
+    CSL_FINS(ptrMibSpiReg->SPILVL, SPI_SPILVL_DESYNCLVL, level);
+    CSL_FINS(ptrMibSpiReg->SPILVL, SPI_SPILVL_BITERRLVL, level);
+    CSL_FINS(ptrMibSpiReg->SPILVL, SPI_SPILVL_OVRNINTLVL, level);
+}
+
 

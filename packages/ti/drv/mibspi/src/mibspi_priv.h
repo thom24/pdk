@@ -32,8 +32,8 @@
 #ifndef MIBSPI_PRIV_H
 #define MIBSPI_PRIV_H
 
-#include <ti/drv/spi/MIBSPI.h>
-#include <ti/drv/spi/soc/SPI_soc.h>
+#include <ti/drv/mibspi/MIBSPI.h>
+#include <ti/drv/mibspi/soc/MIBSPI_soc.h>
 #include <ti/drv/edma/edma.h>
 
 #ifdef __cplusplus
@@ -247,7 +247,7 @@ typedef struct MibSpiDriver_Object_t
     /**
      * @brief   SPI driver handle.
      */
-    SPI_Handle              spiHandle;
+    MIBSPI_Handle             mibspiHandle;
 
     /**
      * @brief   Pointer to MibSpi driver Hardware Configuration
@@ -316,10 +316,17 @@ typedef struct MibSpiDriver_Object_t
  * \param  mibspiInstName [in] Unique string identifying the MIBSPI instance
  * \param  idx[out]  SPI instance index.
  *
- * \return           SPI_SUCCESS success: SPI_STATUS_ERROR : error
+ * \return           SPI_SUCCESS success: MIBSPI_STATUS_ERROR : error
  *
  */
 int32_t MIBSPI_socGetInstIndex(enum MibSpi_InstanceId mibspiInstId, uint32_t *idx);
+MIBSPI_Handle MIBSPI_socGetInstHandle(enum MibSpi_InstanceId mibspiInstanceId);
+
+MIBSPI_Handle MIBSPI_openCore(MIBSPI_Handle handle, const MIBSPI_Params *params);
+void MIBSPI_closeCore(MIBSPI_Handle handle);
+int32_t MIBSPI_controlCore(MIBSPI_Handle handle, uint32_t cmd, const void *arg);
+bool MIBSPI_transferCore(MIBSPI_Handle handle, MIBSPI_Transaction *transaction);
+void MIBSPI_transferCancelCore(MIBSPI_Handle handle);
 
 /**@}*/
 #ifdef __cplusplus

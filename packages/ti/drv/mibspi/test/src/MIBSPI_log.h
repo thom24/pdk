@@ -1,5 +1,5 @@
 /**
- *  \file   SPI_log.h
+ *  \file   MIBSPI_log.h
  *
  *  \brief  This file contains the prototypes for the log print functions. By
             default the prints will be directed to serial console using UART.
@@ -7,7 +7,7 @@
  */
 
 /*
- * Copyright (C) 2016 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2020 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -39,40 +39,55 @@
  *
  */
 
-#ifndef _SPI_LOG_H
-#define _SPI_LOG_H
+#ifndef MIBSPI_LOG_H
+#define MIBSPI_LOG_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #include <stdio.h>
-
-/* UART Header files */
-#include <ti/drv/uart/UART.h>
-#include <ti/drv/uart/src/UART_osal.h>
-#include <ti/drv/uart/UART_stdio.h>
-
-/**********************************************************************
- ************************** Global Variables **************************
- **********************************************************************/
-extern void UART_printf(const char *pcString, ...);
-extern void ConsoleUtilsInit(void);
-
-/**********************************************************************
- ************************** Macros ************************************
- **********************************************************************/
-/* Enable the below macro to have prints on the IO Console */
-//#define IO_CONSOLE
-
-#ifndef IO_CONSOLE
-#define SPI_log                UART_printf
+#if defined (BUILD_M4F) || defined(SOC_TPR12)
+#undef  UART_CONSOLE
 #else
-#define SPI_log                printf
+#define UART_CONSOLE
 #endif
+
+#if defined(UART_CONSOLE)
+    #if defined(SOC_J721E)&&(defined(BUILD_C66X_1)||defined(BUILD_C66X_2)||defined(BUILD_C7X_1))
+        #define OSAL_log                printf
+    #else
+        /* UART Header files */
+        #include <ti/drv/uart/UART.h>
+        #include <ti/drv/uart/UART_stdio.h>
+        /**********************************************************************
+         ************************** Global Variables **************************
+         **********************************************************************/
+        extern void UART_printf(const char *pcString, ...);
+        extern void ConsoleUtilsInit(void);
+
+        /**********************************************************************
+         ************************** Macros ************************************
+         **********************************************************************/
+        #define MIBSPI_log                UART_printf
+    #endif
+#else
+    #if defined(EMPTY_OSAL_LOG)
+        static void dummy_printf(const char *pcString, ...)
+        {
+        }
+        #define MIBSPI_log                dummy_printf
+    #else
+        #if defined(BARE_METAL)
+            #define MIBSPI_log                printf
+        #else
+            #define MIBSPI_log                System_printf
+        #endif /* BARE_METAL */
+    #endif /* EMPTY_OSAL_LOG */
+#endif /* UART_CONSOLE */
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* _SPI_LOG_H */
+#endif /* MIBSPI_LOG_H */

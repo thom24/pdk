@@ -71,13 +71,6 @@
 #include <ti/drv/spi/src/v0/OSPI_v0.h>
 #endif
 
-#if defined(SOC_TPR12)
-#include <ti/drv/spi/SPI.h>
-#include <ti/drv/spi/soc/tpr12/SPI_soc.h>
-#include <ti/drv/spi/soc/SPI_v3.h>
-#define SPI_HWAttrs    SPI_v3_HWAttrs
-#endif
-
 #include <ti/osal/osal.h>
 
 #ifdef __cplusplus
@@ -122,11 +115,6 @@ extern int32_t ESPI_socGetFwCfg(uint32_t index, ESPI_SwIPAttrs *cfg);
 extern int32_t ESPI_socSetFwCfg(uint32_t index, const ESPI_SwIPAttrs *cfg);
 extern void ESPI_socInitFwCfg(void);
 #endif
-
-#if defined(SOC_TPR12)
-int32_t SPI_socGetInitCfg(enum MibSpi_InstanceId id, MibSpi_HwCfg *cfg);
-#endif
-
 
 #define SPI_MODULE_CLOCK_DIVIDER    (6U)
 

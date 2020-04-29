@@ -44,7 +44,7 @@
 /* ========================================================================== */
 
 #include <stdarg.h>
-#include <ti/drv/spi/MIBSPI.h>
+#include <ti/drv/mibspi/MIBSPI.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -183,7 +183,7 @@ void MibspiUtils_trace(const char *format,
  *
  * \param pUtilsPrms   [IN] Pointer to the initialization parameters
  */
-void MibspiUtils_init(MibspiUtils_Prms *pUtilsPrms);
+void MibspiUtils_init(MIBSPI_UtilsPrms *pUtilsPrms);
 
 /*!
  * \brief De-initialize utils module

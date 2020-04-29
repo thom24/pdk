@@ -30,23 +30,17 @@
 # EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
+ifeq ($(RULES_MAKE), )
 include $(PDK_INSTALL_PATH)/ti/build/Rules.make
-include $(PDK_SPI_COMP_PATH)/src/src_files_common.mk
-
-MODULE_NAME = spi_indp
-
-# List all the external components/interfaces, whose interface header files
-#  need to be included for this component
-INCLUDE_EXTERNAL_INTERFACES = pdk edma
-
-CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS)
-
-# Include common make files
-ifeq ($(MAKERULEDIR), )
-#Makerule path not defined, define this and assume relative path from ROOTDIR
-  MAKERULEDIR := $(ROOTDIR)/ti/build/makerules
-  export MAKERULEDIR
+else
+include $(RULES_MAKE)
 endif
-include $(MAKERULEDIR)/common.mk
 
-# Nothing beyond this point
+COMP = drvmibspi
+
+lib_$(COMP)_BUILD_DEPENDENCY = soc
+
+$(COMP)_DOXYGEN_SUPPORT = yes
+
+include $(PDK_INSTALL_PATH)/ti/build/comp_top.mk
+
