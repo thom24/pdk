@@ -127,6 +127,17 @@ int32_t Sciclient_rmIrqRelease(const struct tisci_msg_rm_irq_release_req *req,
     return Sciclient_rmClearInterruptRoute(req, &resp, timeout);
 }
 
+int32_t Sciclient_rmIrqTranslateIrOutput(uint16_t	ir_dev_id,
+                                         uint16_t	ir_output,
+					 uint16_t	dst_dev_id,
+					 uint16_t	*dst_input)
+{
+    return Sciclient_rmTranslateIrOutput(ir_dev_id,
+                                         ir_output,
+                                         dst_dev_id,
+                                         dst_input);
+}
+
 int32_t Sciclient_rmIrqSetRaw(const struct tisci_msg_rm_irq_set_req *req,
                               const struct tisci_msg_rm_irq_set_resp *resp,
                               uint32_t timeout)

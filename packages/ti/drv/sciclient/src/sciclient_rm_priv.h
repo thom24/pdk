@@ -231,6 +231,28 @@ int32_t Sciclient_rmClearInterruptRoute (const struct tisci_msg_rm_irq_release_r
                                          const struct tisci_msg_rm_irq_release_resp *resp,
                                          uint32_t timeout);
 
+/**
+ *  \brief Translates an interrupt router output to the peripheral input it's
+ *         connected to.  The primary use of the function is to retrieve the
+ *         processor input IRQ an interrupt router output is connected to.
+ *
+ *  \param  ir_dev_id       Interrupt router device ID
+ *
+ *  \param  ir_output       Interrupt router output index
+ *
+ *  \param  dst_dev_id      Device ID of entity connected to interrupt router
+ *                          output
+ *
+ *  \param  dst_input       Pointer to returned input index of entity connected
+ *                          to interrupt router output
+ *
+ *  \return CSL_PASS on successful translation, else failure
+ */
+int32_t Sciclient_rmTranslateIrOutput(uint16_t  ir_dev_id,
+                                      uint16_t  ir_output,
+                                      uint16_t  dst_dev_id,
+                                      uint16_t  *dst_input);
+
 /* ========================================================================== */
 /*                            Global Variables                                */
 /* ========================================================================== */

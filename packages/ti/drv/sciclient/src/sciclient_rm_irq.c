@@ -834,7 +834,7 @@ int32_t Sciclient_rmProgramInterruptRoute (const struct tisci_msg_rm_irq_set_req
         cfg.vint = req->vint;
         cfg.vint_sb = req->vint_status_bit_index;
         cfg.set_resp = resp;
-    
+
         if (Sciclient_rmIrqCfgIsDirectNonEvent(cfg.valid_params) == true) {
             if (Sciclient_rmIaIsIa(cfg.s_id) == true) {
                 /*
@@ -969,6 +969,55 @@ int32_t Sciclient_rmClearInterruptRoute (const struct tisci_msg_rm_irq_release_r
         } else {
             r = CSL_EBADARGS;
         }
+    }
+
+    return r;
+}
+
+int32_t Sciclient_rmTranslateIrOutput(uint16_t  ir_dev_id,
+                                      uint16_t  ir_output,
+                                      uint16_t  dst_dev_id,
+                                      uint16_t  *dst_input)
+{
+    int32_t r = CSL_PASS;
+    const struct Sciclient_rmIrqNode *cur_n;
+    const struct Sciclient_rmIrqIf *cur_if;
+    uint16_t i;
+    bool translated = false;
+
+    /* Only attempt to translate to destination input if an IR is passed */
+    if (Sciclient_rmIrIsIr(ir_dev_id) == true) {
+        /*
+         * Translate the specified IR output to the destination processor
+         * IRQ input
+         */
+        r = Sciclient_rmIrqGetNode(ir_dev_id, &cur_n);
+        if (r == CSL_PASS) {
+            for (i = 0; i < cur_n->n_if; i++) {
+                r = Sciclient_rmIrqGetNodeItf(cur_n, i, &cur_if);
+                if (r != CSL_PASS) {
+                    break;
+                }
+
+                if ((ir_output >= cur_if->lbase) &&
+                    (ir_output < (cur_if->lbase + cur_if->len)) &&
+                    (dst_dev_id == cur_if->rid)) {
+                    *dst_input = SCICLIENT_OUTP_TO_INP(ir_output,
+                                                       cur_if->lbase,
+                                                       cur_if->rbase);
+                    translated = true;
+                    break;
+                }
+            }
+
+            if ((r == CSL_PASS) &&
+                (translated == false)) {
+                /* No translatable destination found. */
+                r = CSL_EBADARGS;
+            }
+        }
+    } else {
+        r = CSL_EBADARGS;
     }
 
     return r;
