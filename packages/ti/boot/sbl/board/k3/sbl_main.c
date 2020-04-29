@@ -186,7 +186,9 @@ const CSL_ArmR5MpuRegionCfg gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
 
 int main()
 {
+#if !defined(SBL_USE_MCU_DOMAIN_ONLY)
     cpu_core_id_t core_id;
+#endif
 
     SBL_ADD_PROFILE_POINT;
 
@@ -239,13 +241,16 @@ int main()
 
     SBL_ADD_PROFILE_POINT;
 
+#if !defined(SBL_SKIP_PINMUX_ENABLE)
     /* Board pinmux. */
     Board_init(BOARD_INIT_PINMUX_CONFIG);
+#endif
 
+#if !defined(SBL_SKIP_LATE_INIT)
     SBL_ADD_PROFILE_POINT;
-
     /* Any SoC specific Init. */
     SBL_SocLateInit();
+#endif
 
 #if defined(SBL_ENABLE_PLL) && !defined(SBL_SKIP_SYSFW_INIT)
     SBL_log(SBL_LOG_MAX, "Initlialzing PLLs ...");
@@ -278,6 +283,14 @@ int main()
     sblProfileLogIndxAddr = &sblProfileLogIndx;
     sblProfileLogOvrFlwAddr = &sblProfileLogOvrFlw;
 
+#if defined(SBL_USE_MCU_DOMAIN_ONLY)
+    /* Boot just the MCU1 cores */
+    if (k3xx_evmEntry.CpuEntryPoint[MCU1_CPU0_ID] != SBL_INVALID_ENTRY_ADDR)
+    {
+        SBL_SlaveCoreBoot(MCU1_CPU0_ID, NULL, &k3xx_evmEntry);
+        SBL_SlaveCoreBoot(MCU1_CPU1_ID, NULL, &k3xx_evmEntry);
+    }
+#else
     for (core_id = MPU1_CPU0_ID; core_id <= DSP2_C7X_ID; core_id ++)
     {
         /* Try booting all cores other than the cluster running the SBL */
@@ -290,6 +303,7 @@ int main()
     if ((k3xx_evmEntry.CpuEntryPoint[MCU1_CPU1_ID] != SBL_INVALID_ENTRY_ADDR) ||
         (k3xx_evmEntry.CpuEntryPoint[MCU1_CPU0_ID] < SBL_INVALID_ENTRY_ADDR))
         SBL_SlaveCoreBoot(MCU1_CPU1_ID, NULL, &k3xx_evmEntry);
+#endif
 
     /* Execute a WFI */
     asm volatile (" wfi");
