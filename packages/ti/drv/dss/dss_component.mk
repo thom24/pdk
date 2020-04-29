@@ -37,7 +37,7 @@ ifeq ($(dss_component_make_include), )
 drvdss_SOCLIST         = am65xx j721e
 drvdss_BOARDLIST       = am65xx_evm j721e_evm
 drvdss_am65xx_CORELIST = mpu1_0
-drvdss_j721e_CORELIST  = mcu2_1
+drvdss_j721e_CORELIST  = mcu2_0
 
 ############################
 # DSS package
