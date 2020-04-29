@@ -49,10 +49,18 @@
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
 
-#if defined(SOC_J721E) || defined(SOC_J7200)
+#ifdef SOC_J721E
 #define SCICLIENT_RM_IA_NUM_INST 4
 
 #define SCICLIENT_RM_IR_NUM_INST 12
+
+#define SCICLIENT_IRQ_MAX_ROUTE_DEPTH 3
+#endif
+
+#ifdef SOC_J7200
+#define SCICLIENT_RM_IA_NUM_INST 4
+
+#define SCICLIENT_RM_IR_NUM_INST 8
 
 #define SCICLIENT_IRQ_MAX_ROUTE_DEPTH 3
 #endif
