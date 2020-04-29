@@ -100,9 +100,8 @@ typedef struct EDMA_transferControllerErrorIsrArgInfo_t_
         to be preserved between calls to EDMA APIs. */
 typedef struct EDMA_Object_t_
 {
-    /*! @brief true if EDMA is open else false, used for error checking only,
-           say if open is called when already open. */
-    bool isOpen;
+    /*! @brief true if EDMA is used else false. */
+    bool isUsed;
 
     /*! @brief handle for transfer completion interrupt object of the OS.
             Required to be stored to be able to delete during @ref EDMA_close API */
@@ -236,12 +235,17 @@ static void EDMA_getTransferControllerErrorStatusInfo(uint32_t tcBaseAddr,
 static void EDMA_clearTransferControllerErrors(uint32_t tcBaseAddr,
                 EDMA_transferControllerErrorInfo_t *errorInfo);
 
+static EDMA_Object_t* EDMA_getFreeEdmaObj(void);
+
 /* ========================================================================== */
 /*                            Global Variables                                */
 /* ========================================================================== */
 
+/* EDMA configuration structure */
+static EDMA_Config_t EDMA_config[EDMA_DRV_INST_MAX + 1U] = {0U};
+
 /*! @brief EDMA objects storage for each CC. */
-static EDMA_Object_t EDMA_object[EDMA_NUM_CC];
+static EDMA_Object_t EDMA_object[EDMA_NUM_CC] = {0U};
 
 /* ========================================================================== */
 /*                          Function Definitions                              */
@@ -1932,7 +1936,7 @@ int32_t EDMA_close(EDMA_Handle handle)
     edmaObj = edmaConfig->object;
     hwAttrs = edmaConfig->hwAttrs;
 
-    /*if (edmaObj->isOpen == false) {
+    /*if (edmaObj->isUsed == false) {
         generate error
     }*/
 
@@ -1991,7 +1995,7 @@ int32_t EDMA_close(EDMA_Handle handle)
         }
     }
 
-    edmaObj->isOpen = false;
+    edmaObj->isUsed = false;
 
 exit:
     return(errorCode);
@@ -2010,22 +2014,26 @@ int32_t EDMA_init(uint8_t instanceId)
     uint8_t channelId;
     EDMA3CCPaRAMEntry paramSet;
     int32_t errorCode = EDMA_NO_ERROR;
+    const EDMA_hwAttrs_t *hwAttrs = NULL;
 
 #if (true != 1)
 #error define "true" is not 1
 #endif
 
 #ifdef EDMA_PARAM_CHECK
-    if (instanceId >= EDMA_NUM_CC)
+    if (instanceId > EDMA_DRV_INST_MAX)
     {
         errorCode = EDMA_E_INVALID__INSTANCE_ID;
         goto exit;
     }
 #endif
 
-    /* initialize EDMA object */
-    memset(&EDMA_object[instanceId], 0, sizeof(EDMA_Object_t));
-    EDMA_object[instanceId].isOpen = false;
+    hwAttrs = EDMA_getHwAttrs(instanceId);
+    if (hwAttrs == NULL)
+    {
+        errorCode = EDMA_E_INVALID__INSTANCE_ID;
+        goto exit;
+    }
 
     /* h/w reset values of param set */
     memset(&paramSet, 0, sizeof(paramSet));
@@ -2038,7 +2046,7 @@ int32_t EDMA_init(uint8_t instanceId)
        is initialized to 0, intentionally indicate this through API */
     EDMAsetRegion(0);
 
-    ccBaseAddr = gEdmaHwAttrs[instanceId].CCbaseAddress;
+    ccBaseAddr = hwAttrs->CCbaseAddress;
     EDMA3Init(ccBaseAddr, (uint32_t)0);
     /* do things now that EDMA3Init is (unfortunately not doing) */
     /* disable DMA events */
@@ -2060,9 +2068,9 @@ int32_t EDMA_init(uint8_t instanceId)
         EDMA3QdmaClrMissEvt(ccBaseAddr, (uint32_t)channelId);
     }
     /* clear tansfer controller errors */
-    for (tc = 0; tc < gEdmaHwAttrs[instanceId].numEventQueues; tc++)
+    for (tc = 0; tc < hwAttrs->numEventQueues; tc++)
     {
-        tcBaseAddr = gEdmaHwAttrs[instanceId].TCbaseAddress[tc];
+        tcBaseAddr = hwAttrs->TCbaseAddress[tc];
         errClrRegAddr = tcBaseAddr + EDMA_TC_ERRCLR;
         HW_WR_FIELD32(errClrRegAddr, EDMA_TC_ERRCLR_TRERR, 1);
         HW_WR_FIELD32(errClrRegAddr, EDMA_TC_ERRCLR_MMRAERR, 1);
@@ -2070,7 +2078,7 @@ int32_t EDMA_init(uint8_t instanceId)
     }
     /* cleanup Params, note h/w reset state is all 0s, must be done after
        disabling/clearning channel events (in particular QDMA) */
-    for (paramId = 0; paramId < gEdmaHwAttrs[instanceId].numParamSets; paramId++)
+    for (paramId = 0; paramId < hwAttrs->numParamSets; paramId++)
     {
         EDMA3SetPaRAM(ccBaseAddr, (uint32_t)paramId, &paramSet);
     }
@@ -2161,65 +2169,31 @@ exit:
     return(errorCode);
 }
 
+static EDMA_Object_t* EDMA_getFreeEdmaObj(void)
+{
+    uint32_t i;
+    EDMA_Object_t *edmaObj = NULL;
+    for(i=0; i<EDMA_NUM_CC; i++)
+    {
+        if (EDMA_object[i].isUsed == FALSE)
+        {
+            edmaObj = &EDMA_object[i];
+        }
+    }
+    return edmaObj;
+}
+
 EDMA_Handle EDMA_open(uint8_t instanceId, int32_t *errorCode,
     EDMA_instanceInfo_t *instanceInfo)
 {
     EDMA_Handle handle = NULL;
     EDMA_Config_t *edmaConfig;
     EDMA_Object_t *edmaObj;
-    EDMA_hwAttrs_t const *hwAttrs;
+    const EDMA_hwAttrs_t *hwAttrs;
     OsalRegisterIntrParams_t interruptRegParams;
     uint8_t tc;
     bool isUnifiedErrorInterrupts;
-
-    /* EDMA configuration structure */
-    static const EDMA_Config_t EDMA_config[EDMA_NUM_CC] =
-    {
-    #if defined(SOC_XWR14XX)
-        {
-            .object   = &EDMA_object[0],
-            .hwAttrs  = &gEdmaHwAttrs[0]
-        }
-    #endif
-    #if (defined(SOC_XWR16XX) || defined(SOC_XWR18XX) || defined(SOC_XWR68XX))
-        {
-            .object  = &EDMA_object[0],
-            .hwAttrs = &gEdmaHwAttrs[0]
-        },
-        {
-            .object  = &EDMA_object[1],
-            .hwAttrs = &gEdmaHwAttrs[1]
-        }
-    #endif
-    #if defined(SOC_TPR12)
-        {
-            .object  = &EDMA_object[0],
-            .hwAttrs = &gEdmaHwAttrs[0]
-        },
-        {
-            .object  = &EDMA_object[1],
-            .hwAttrs = &gEdmaHwAttrs[1]
-        },
-        {
-            .object  = &EDMA_object[2],
-            .hwAttrs = &gEdmaHwAttrs[2]
-        },
-        {
-            .object  = &EDMA_object[3],
-            .hwAttrs = &gEdmaHwAttrs[3]
-        },
-    #ifdef BUILD_MCU
-        {
-            .object  = &EDMA_object[4],
-            .hwAttrs = &gEdmaHwAttrs[4]
-        },
-        {
-            .object  = &EDMA_object[5],
-            .hwAttrs = &gEdmaHwAttrs[5]
-        },
-    #endif
-    #endif
-    };
+    uint32_t key;
 
 #ifdef EDMA_PARAM_CHECK
     /* error checking */
@@ -2228,7 +2202,7 @@ EDMA_Handle EDMA_open(uint8_t instanceId, int32_t *errorCode,
         handle = NULL;
         goto exit;
     }
-    if (instanceId >= EDMA_NUM_CC)
+    if (instanceId > EDMA_DRV_INST_MAX)
     {
         *errorCode = EDMA_E_INVALID__INSTANCE_ID;
         handle = NULL;
@@ -2242,6 +2216,37 @@ EDMA_Handle EDMA_open(uint8_t instanceId, int32_t *errorCode,
     }
 #endif
 
+    if((EDMA_config[instanceId].hwAttrs != NULL) ||
+       (EDMA_config[instanceId].object != NULL))
+    {
+        /* Instance is already opened. */
+        *errorCode = EDMA_E_UNEXPECTED__EDMA_INSTANCE_REOPEN;
+        goto exit;
+    }
+    hwAttrs = EDMA_getHwAttrs(instanceId);
+    if (hwAttrs == NULL)
+    {
+        *errorCode = EDMA_E_INVALID__INSTANCE_ID;
+        handle = NULL;
+        goto exit;
+    }
+
+    key = HwiP_disable();
+    edmaObj = EDMA_getFreeEdmaObj();
+    if (edmaObj == NULL)
+    {
+        *errorCode = EDMA_E_INVALID__INSTANCE_ID;
+        handle = NULL;
+        goto exit;
+    }
+    else
+    {
+        edmaObj->isUsed = true;
+    }
+    HwiP_restore(key);
+
+    EDMA_config[instanceId].hwAttrs = hwAttrs;
+    EDMA_config[instanceId].object  = edmaObj;
     /* Get handle for this driver instance */
     handle = (EDMA_Handle)&(EDMA_config[instanceId]);
 
@@ -2251,11 +2256,6 @@ EDMA_Handle EDMA_open(uint8_t instanceId, int32_t *errorCode,
 #ifdef EDMA_DBG
     edmaDbg.edmaObj = edmaObj;
 #endif
-
-    if (edmaObj->isOpen == true) {
-        *errorCode = EDMA_E_UNEXPECTED__EDMA_INSTANCE_REOPEN;
-        goto exit;
-    }
 
     hwAttrs =  edmaConfig->hwAttrs;
     instanceInfo->numEventQueues = hwAttrs->numEventQueues;
@@ -2434,7 +2434,6 @@ EDMA_Handle EDMA_open(uint8_t instanceId, int32_t *errorCode,
         }
     }
 
-    edmaObj->isOpen = true;
     *errorCode = EDMA_NO_ERROR;
 
 exit:

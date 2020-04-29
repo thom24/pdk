@@ -2934,8 +2934,17 @@ bool Test_instance(uint8_t instanceId)
     handle = EDMA_open(instanceId, &errorCode, &instanceInfo);
     if (handle == NULL)
     {
-        printf("Error: Unable to open the edma Instance, erorCode = %d\n", errorCode);
-        goto exit;
+        if (errorCode == EDMA_E_INVALID__INSTANCE_ID)
+        {
+            printf("Edma Instance not supported. Skipping this instance\n");
+            isTestPass = true;
+            goto exit;
+        }
+        else
+        {
+            printf("Error: Unable to open the edma Instance, erorCode = %d\n", errorCode);
+            goto exit;
+        }
     }
     testEdmaHandle = handle;
 
@@ -3078,7 +3087,6 @@ void Test_updateTestConfig()
 
 void Test_task(UArg arg0, UArg arg1)
 {
-    uint8_t numInstances;
     time_t start, end;
     double duration;
     bool isTestPass = true;
@@ -3093,13 +3101,13 @@ void Test_task(UArg arg0, UArg arg1)
     /* Run-time update of test configs */
     Test_updateTestConfig();
 
-    numInstances = EDMA_getNumInstances();
-
     /* test one instance at a time, simultaneous instance testing not yet supported */
-    for (gInstanceId = 0; gInstanceId < numInstances; gInstanceId++)
+    for (gInstanceId = EDMA_DRV_INST_MIN; gInstanceId <= EDMA_DRV_INST_MAX; gInstanceId++)
     {
+        char instName[25];
+        EDMA_getInstanceName(gInstanceId, &instName[0], sizeof(instName));
         printf("\n=====================================================\n");
-        printf("============ Testing EDMA instance #%d ==============\n", gInstanceId);
+        printf("Testing EDMA instance #%d: %s\n", gInstanceId, instName);
         printf("=====================================================\n");
         result = Test_instance(gInstanceId);
         isTestPass = isTestPass && result;

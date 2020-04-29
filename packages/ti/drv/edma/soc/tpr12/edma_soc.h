@@ -68,6 +68,11 @@ extern "C" {
 /*! @brief RCSS_A instance of EDMA */
 #define EDMA_DRV_INST_RCSS_A                        (5U)
 
+/*! @brief First instance of EDMA */
+#define EDMA_DRV_INST_MIN                           (EDMA_DRV_INST_DSS_A)
+/*! @brief Last instance of EDMA */
+#define EDMA_DRV_INST_MAX                           (EDMA_DRV_INST_RCSS_A)
+
 /** @}*/ /* end defgroup EDMA_INSTANCE */
 
 /*! \brief Total number of DMA channels */
@@ -101,7 +106,7 @@ extern "C" {
 /*                          Function Declarations                             */
 /* ========================================================================== */
 
-/* None */
+void EDMA_getInstanceName (uint32_t instanceId, char *str, uint32_t size);
 
 /* ========================================================================== */
 /*                       Static Function Definitions                          */

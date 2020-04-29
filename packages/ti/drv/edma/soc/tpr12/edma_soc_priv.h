@@ -124,10 +124,7 @@ typedef struct EDMA_hwAttrs_t_
 /*                          Function Declarations                             */
 /* ========================================================================== */
 
-/* None. */
-
-/*! Global for EDMA Hardware attributes */
-extern const EDMA_hwAttrs_t gEdmaHwAttrs[EDMA_NUM_CC];
+const EDMA_hwAttrs_t* EDMA_getHwAttrs(uint32_t instanceId);
 
 #ifdef __cplusplus
 }
