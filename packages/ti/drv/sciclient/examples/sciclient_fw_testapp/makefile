@@ -38,12 +38,6 @@ PACKAGE_SRCS_COMMON = . ../common
 
 # Enable XDC build for application by providing XDC CFG File per core
 XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/drv/sciclient/examples/sciclient_fw_testapp/sysbios_$(ISA).cfg
-ifeq ($(SOC),$(filter $(SOC), am65xx))
-CONFIG_BLD_LNK_r5f = $(PDK_INSTALL_PATH)/ti/drv/sciclient/examples/$(APP_NAME)/linker_r5_sysbios.lds
-endif
-ifeq ($(SOC),$(filter $(SOC), j721e))
-CONFIG_BLD_LNK_r5f = $(PDK_INSTALL_PATH)/ti/drv/sciclient/examples/$(APP_NAME)/linker_r5_sysbios_j721e.lds
-endif
 
 # ifeq ($(CORE),mpu1_0)
 #     LNKFLAGS_LOCAL_mpu1_0 += --entry Entry

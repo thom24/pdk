@@ -90,7 +90,7 @@
 #if defined (SOC_J721E)
 #define MCU_1_0_PRIVID (96)
 #define MCU_SRAM_FWL_ID (1050)
-#define MSMC_SRAM_FWL_ID (4761)
+#define MSMC_SRAM_FWL_ID (4760)
 #define DRAM_FWL_ID (1280)
 #endif
 
@@ -120,6 +120,8 @@ int32_t Sciclient_fw_test(
         uint32_t fail_end_address,
         uint32_t hostId,
         uint32_t privId, uint32_t passTest, uint32_t failTest);
+
+int32_t Sciclient_firewallBackground();
 
 /* ========================================================================== */
 /*                            Global Variables                                */
@@ -187,13 +189,15 @@ void mainTask(UArg arg0, UArg arg1)
     App_sciclientPrintf( "\n=====================\n");
     App_sciclientPrintf( "\nSciclient FW Test\n");
     App_sciclientPrintf( "\n=====================\n");
-   
+  
+    r = Sciclient_firewallBackground(); 
     /* Firwalling MCU SRAM */
+    if (r == CSL_PASS)
     {
-        #define MCU_SRAM_ADDRESS_PASS_START (0x41C50000)
-        #define MCU_SRAM_ADDRESS_PASS_END (0x41C50000 + 4 * 1024 - 1)
-        #define MCU_SRAM_ADDRESS_FAIL_START (0x41C50000 + 8 * 1024 - 1)
-        #define MCU_SRAM_ADDRESS_FAIL_END (0x41C50000 + 12 * 1024 - 1)
+        #define MCU_SRAM_ADDRESS_PASS_START (0x41C3E000)
+        #define MCU_SRAM_ADDRESS_PASS_END (0x41C3E000 + 4 * 1024 - 1)
+        #define MCU_SRAM_ADDRESS_FAIL_START (0x41C3E000 + 8 * 1024 - 1)
+        #define MCU_SRAM_ADDRESS_FAIL_END (0x41C3E000 + 12 * 1024 - 1)
         r = Sciclient_fw_test(
                 MCU_SRAM_FWL_ID,
                 MCU_SRAM_ADDRESS_PASS_START,
@@ -214,8 +218,6 @@ void mainTask(UArg arg0, UArg arg1)
         }
     }
     
-#if !defined (SOC_J721E)
-    /* TODO Currently this is not working for J721E */
     /* Firewalling MSMC RAM */
     if (r == CSL_PASS)
     {
@@ -243,7 +245,6 @@ void mainTask(UArg arg0, UArg arg1)
                               "\nMSMC SRAM Tests have FAILED.\n");
         }
     }
-#endif
 
     /* Firewalling DDR */
     if (CSL_PASS == r) {
@@ -256,10 +257,10 @@ void mainTask(UArg arg0, UArg arg1)
          * be configured. – J721E ID 4762, 4763 | AM65xx 4450
          * The below example shows option a.
          */
-        #define DRAM_ADDRESS_PASS_START (0x70000000)
+        #define DRAM_ADDRESS_PASS_START (0x81000000)
         #define DRAM_ADDRESS_PASS_END (0x81000000 + 4 * 1024 - 1)
         #define DRAM_ADDRESS_FAIL_START (0x81000000 + 4 * 1024)
-        #define DRAM_ADDRESS_FAIL_END (0x81000000 + 8 * 1024)
+        #define DRAM_ADDRESS_FAIL_END (0x81000000 + 8 * 1024 - 1)
         /* Tests are not run to avoid overwriting DDR data sections */
         r = Sciclient_fw_test(
                 DRAM_FWL_ID,
@@ -269,7 +270,7 @@ void mainTask(UArg arg0, UArg arg1)
                 DRAM_ADDRESS_FAIL_END,
                 TISCI_HOST_ID_R5_0,
                 MCU_1_0_PRIVID,
-                FALSE, FALSE);
+                TRUE, TRUE);
         if (CSL_PASS == r)
         {
             App_sciclientPrintf("\nDRAM Tests Passed.\n");
@@ -299,6 +300,94 @@ void mainTask(UArg arg0, UArg arg1)
 /* ========================================================================== */
 /*                 Internal Function Definitions                              */
 /* ========================================================================== */
+
+int32_t Sciclient_firewallBackground()
+{
+    int32_t ret = CSL_PASS;
+    uint32_t fwl_id;
+    const uint32_t perm_for_access =
+            SEC_SUPV_WRITE_MASK | SEC_SUPV_READ_MASK | 
+            SEC_SUPV_CACHEABLE_MASK | SEC_SUPV_DEBUG_MASK |
+            SEC_USER_WRITE_MASK | SEC_USER_READ_MASK | 
+            SEC_USER_CACHEABLE_MASK | SEC_USER_DEBUG_MASK |
+            NONSEC_SUPV_WRITE_MASK | NONSEC_SUPV_READ_MASK | 
+            NONSEC_SUPV_CACHEABLE_MASK | NONSEC_SUPV_DEBUG_MASK |
+            NONSEC_USER_WRITE_MASK | NONSEC_USER_READ_MASK | 
+            NONSEC_USER_CACHEABLE_MASK | NONSEC_USER_DEBUG_MASK;
+    uint32_t timeout = 0xFFFFFFFFU;
+    struct tisci_msg_fwl_change_owner_info_req req = {
+        .fwl_id = (uint16_t)0,
+        .region = (uint16_t) 0,
+        .owner_index = (uint8_t) TISCI_HOST_ID_R5_0
+        };
+    struct tisci_msg_fwl_change_owner_info_resp resp = {0};
+    struct tisci_msg_fwl_set_firewall_region_resp resp_fw_set_pass = {0};
+    struct tisci_msg_fwl_set_firewall_region_req req_fw_set_pass = { 
+        .fwl_id = (uint16_t)0,
+        .region = (uint16_t) 0,
+        .n_permission_regs = (uint32_t) 3,
+        .control = (uint32_t) 0xA,
+        .permissions[0] = (uint32_t) 0,
+        .permissions[1] = (uint32_t) 0,
+        .permissions[2] = (uint32_t) 0,
+        .start_address = 0,
+        .end_address = 0
+        };
+    fwl_id = MCU_SRAM_FWL_ID;
+    /* Set this background region for access from the CPU core
+     */
+    req_fw_set_pass.fwl_id = fwl_id;
+    req_fw_set_pass.start_address = 0x41C00000;
+    req_fw_set_pass.end_address = 0x41c00000 + 512 *1024 - 1;
+    req_fw_set_pass.region = 0;
+    req_fw_set_pass.n_permission_regs = 3;
+    req_fw_set_pass.permissions[0] = 195 << 16 | perm_for_access;
+    req_fw_set_pass.permissions[1] = 0;
+    req_fw_set_pass.permissions[2] = 0;
+    req_fw_set_pass.control = 0x10A;
+    req.fwl_id = fwl_id;
+    req.region = 0;
+    ret = Sciclient_firewallChangeOwnerInfo(&req, &resp, timeout);
+    if (ret == CSL_PASS)
+    {
+        /* Set background region */
+        ret = Sciclient_firewallSetRegion(&req_fw_set_pass, &resp_fw_set_pass, timeout);
+    }
+    if (ret == CSL_PASS)
+    {
+        fwl_id = MSMC_SRAM_FWL_ID;
+        /* DMSC sets the default region accessible. Only change ownership for MSMC
+         */
+        req.fwl_id = fwl_id;
+        req.region = 0;
+        ret = Sciclient_firewallChangeOwnerInfo(&req, &resp, timeout);
+    }
+    if (ret == CSL_PASS)
+    {
+        fwl_id = DRAM_FWL_ID;
+        /* DMSC sets the default region accessible. Only change ownership for MSMC
+         */
+        req.fwl_id = fwl_id;
+        req.region = 0;
+        req_fw_set_pass.fwl_id = fwl_id;
+        req_fw_set_pass.start_address = 0x70000000;
+        req_fw_set_pass.end_address = 0xFFFFFFFF;
+        req_fw_set_pass.region = 0;
+        req_fw_set_pass.n_permission_regs = 3;
+        req_fw_set_pass.permissions[0] = 195 << 16 | perm_for_access;
+        req_fw_set_pass.permissions[1] = 0;
+        req_fw_set_pass.permissions[2] = 0;
+        req_fw_set_pass.control = 0x10A;
+ 
+        ret = Sciclient_firewallChangeOwnerInfo(&req, &resp, timeout);
+        if (ret == CSL_PASS)
+        {
+            /* Set background region */
+            ret = Sciclient_firewallSetRegion(&req_fw_set_pass, &resp_fw_set_pass, timeout);
+        }
+    }
+    return ret;
+}
 
 volatile uint32_t *p;
 /**
@@ -345,14 +434,14 @@ int32_t Sciclient_fw_test(
     const uint32_t perm_for_no_access = 0;
     uint32_t timeout = 0xFFFFFFFFU;
     struct tisci_msg_fwl_change_owner_info_req req = {
-        .fwl_id = (uint16_t)MCU_SRAM_FWL_ID,
-        .region = (uint16_t) 0,
+        .fwl_id = (uint16_t)fwl_id,
+        .region = (uint16_t) 1,
         .owner_index = (uint8_t) hostId
         };
     struct tisci_msg_fwl_change_owner_info_resp resp = {0};
     struct tisci_msg_fwl_set_firewall_region_req req_fw_set_pass = { 
         .fwl_id = (uint16_t)fwl_id,
-        .region = (uint16_t) 0,
+        .region = (uint16_t) 1,
         .n_permission_regs = (uint32_t) 1,
         .control = (uint32_t) 0xA,
         .permissions = (uint32_t) (privId << 16) | perm_for_access,
@@ -361,7 +450,7 @@ int32_t Sciclient_fw_test(
         };
     struct tisci_msg_fwl_set_firewall_region_req req_fw_set_fail = { 
         .fwl_id = (uint16_t)fwl_id,
-        .region = (uint16_t) 1,
+        .region = (uint16_t) 2,
         .n_permission_regs = (uint32_t) 1,
         .control = (uint32_t) 0xA,
         .permissions = (uint32_t) (privId << 16) | perm_for_no_access,
@@ -372,12 +461,12 @@ int32_t Sciclient_fw_test(
     
     gAbortRecieved = 0U;
     App_sciclientPrintf( "\nTesting Firewalls:");
-    App_sciclientPrintf( "\n1. Changing the Firewall Owner for region 0.");
+    App_sciclientPrintf( "\n1. Changing the Firewall Owner for region 1.");
     r = Sciclient_firewallChangeOwnerInfo(&req, &resp, timeout);
     if (r == CSL_PASS)
     {
-        req.region = (uint16_t) 1;
-        App_sciclientPrintf( "\n2. Changing the Firewall Owner for region 1.");
+        req.region = (uint16_t) 2;
+        App_sciclientPrintf( "\n2. Changing the Firewall Owner for region 2.");
         r = Sciclient_firewallChangeOwnerInfo(&req, &resp, timeout);
         if (r != CSL_PASS)
         {
@@ -386,7 +475,7 @@ int32_t Sciclient_fw_test(
     }
     if (r == CSL_PASS)
     {
-        App_sciclientPrintf( "\n3. Changing the Firewall Permissions for region 0.");
+        App_sciclientPrintf( "\n3. Changing the Firewall Permissions for region 1.");
         r = Sciclient_firewallSetRegion(&req_fw_set_pass, &resp_fw_set, timeout);
         if (r != CSL_PASS)
         {
@@ -395,7 +484,7 @@ int32_t Sciclient_fw_test(
     }
     if (r == CSL_PASS)
     {
-        App_sciclientPrintf( "\n4. Changing the Firewall Permissions for region 1.");
+        App_sciclientPrintf( "\n4. Changing the Firewall Permissions for region 2.");
         r = Sciclient_firewallSetRegion(&req_fw_set_fail, &resp_fw_set, timeout);
         if (r != CSL_PASS)
         {
@@ -404,7 +493,7 @@ int32_t Sciclient_fw_test(
     }
     if ((r == CSL_PASS) && (passTest == TRUE))
     {
-        App_sciclientPrintf( "\n5. Reading content from Region 0 to make sure the address is accesible.");
+        App_sciclientPrintf( "\n5. Reading content from Region 1 to make sure the address is accesible.");
         /* Access memory region to make sure able to read and write */
         p = (uint32_t*)pass_start_address;
         while (p < (uint32_t*)pass_end_address)
@@ -426,7 +515,7 @@ int32_t Sciclient_fw_test(
     }
     if ((r == CSL_PASS) && (failTest == TRUE))
     {
-        App_sciclientPrintf( "\n5. Reading content from Region 1 to make sure the address is not accesible.");
+        App_sciclientPrintf( "\n5. Reading content from Region 2 to make sure the address is not accesible.");
         /* Access memory region to make sure unable to read and write */
         p = (uint32_t*)fail_start_address;
         while (p < (uint32_t*) fail_end_address)
@@ -441,7 +530,7 @@ int32_t Sciclient_fw_test(
             }
             p++;
         }
-        if (gAbortRecieved == (fail_end_address - fail_start_address)/4U)
+        if (gAbortRecieved == (fail_end_address + 1 - fail_start_address)/4U)
         {
                 r = CSL_PASS;
         }
@@ -461,14 +550,4 @@ void Sciclient_fw_abort_C_handler()
 {
     gAbortRecieved++;
 }
-
-#if defined(BUILD_MPU) || defined (__C7100__)
-extern void Osal_initMmuDefault(void);
-void InitMmu(void)
-{
-    Osal_initMmuDefault();
-}
-#endif
-
-
 

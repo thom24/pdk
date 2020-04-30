@@ -204,7 +204,7 @@ export sciclient_fw_testapp_XDC_CONFIGURO = yes
 sciclient_fw_testapp_PKG_LIST = sciclient_fw_testapp
 export sciclient_fw_testapp_BOARDLIST = am65xx_evm j721e_evm
 export sciclient_fw_testapp_$(SOC)_CORELIST = mcu1_0
-export sciclient_fw_testapp_SBL_APPIMAGEGEN = no
+export sciclient_fw_testapp_SBL_APPIMAGEGEN = yes
 export sciclient_fw_testapp_SBL_IMAGEGEN = no
 ifeq ($(BUILD_OS_TYPE),tirtos)
 sciclient_EXAMPLE_LIST += sciclient_fw_testapp
