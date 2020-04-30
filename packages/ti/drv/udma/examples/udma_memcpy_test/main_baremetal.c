@@ -75,7 +75,8 @@ int main(void)
 {
     Board_initCfg           boardCfg;
 
-    boardCfg = BOARD_INIT_PINMUX_CONFIG |
+    boardCfg = BOARD_INIT_MODULE_CLOCK  |
+               BOARD_INIT_PINMUX_CONFIG |
                BOARD_INIT_UART_STDIO;
     Board_init(boardCfg);
 
