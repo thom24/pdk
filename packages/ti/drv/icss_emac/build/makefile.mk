@@ -50,6 +50,12 @@ ifeq ($(SOC),$(filter $(SOC), am571x am572x am574x am437x am335x k2g am65xx))
 PACKAGE_SRCS_COMMON += soc/$(SOC)
 endif
 
+#Package the associated header, ignore other non-required files
+PACKAGE_SRCS_COMMON += soc/icss_emacSoc.h
+
+# Package associated firmware
+PACKAGE_SRCS_COMMON += firmware
+
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS)
 
 ifeq ($(SOC),$(filter $(SOC), am65xx))
