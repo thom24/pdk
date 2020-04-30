@@ -2352,7 +2352,7 @@ int8_t ICSS_EmacOSInit(ICSS_EmacHandle icssEmacHandle)
 
     ICSS_EMAC_osalSemParamsInit(&semParams);
     semParams.mode = SemaphoreP_Mode_BINARY;
-    semParams.name= "linkSemaphore";
+    semParams.name= (char *) ("linkSemaphore");
     ((ICSS_EmacObject*)icssEmacHandle->object)->linkSemaphoreHandle =  ICSS_EMAC_osalCreateBlockingLock(0,&semParams);
     if (((ICSS_EmacObject*)icssEmacHandle->object)->linkSemaphoreHandle==NULL)
     {
@@ -2362,7 +2362,7 @@ int8_t ICSS_EmacOSInit(ICSS_EmacHandle icssEmacHandle)
 #ifndef __LINUX_USER_SPACE
     ICSS_EMAC_osalSemParamsInit(&semParams);
     semParams.mode = SemaphoreP_Mode_BINARY;
-    semParams.name= "rxSemaphore";
+    semParams.name= (char *) ("rxSemaphore");
 
     ((ICSS_EmacObject*)icssEmacHandle->object)->rxSemaphoreHandle =  ICSS_EMAC_osalCreateBlockingLock(0,&semParams);
 
@@ -2375,7 +2375,7 @@ int8_t ICSS_EmacOSInit(ICSS_EmacHandle icssEmacHandle)
     {
         ICSS_EMAC_osalSemParamsInit(&semParams);
         semParams.mode = SemaphoreP_Mode_BINARY;
-        semParams.name= "txSemaphore";
+        semParams.name= (char *) ("txSemaphore");
         ((ICSS_EmacObject*)icssEmacHandle->object)->txSemaphoreHandle =  ICSS_EMAC_osalCreateBlockingLock(0,&semParams);
         if(((ICSS_EmacObject*)icssEmacHandle->object)->txSemaphoreHandle==NULL)
         {
@@ -2406,7 +2406,7 @@ int8_t ICSS_EmacOSInit(ICSS_EmacHandle icssEmacHandle)
             /*    Create TTS Cyclic Packet Notification Semaphore    */
             ICSS_EMAC_osalSemParamsInit(&semParams);
             semParams.mode = SemaphoreP_Mode_BINARY;
-            semParams.name= "ttsCycSemaphore";
+            semParams.name= (char *) ("ttsCycSemaphore");
             ((ICSS_EmacObject*)icssEmacHandle->object)->ttsCycSemaphoreHandle =  ICSS_EMAC_osalCreateBlockingLock(0,&semParams);
             if(((ICSS_EmacObject*)icssEmacHandle->object)->ttsCycSemaphoreHandle==NULL)
             {
@@ -2956,8 +2956,8 @@ static inline void memcpy_local(void *dst, const void *src, size_t len)
              len % sizeof(long) == 0)
          {
 
-                 long *d = dst;
-                 const long *s = src;
+                 long *d = (long *) dst;
+                 const long *s = (const long *) src;
 
                  for (i=0; i<len/sizeof(long); i++) {
                          d[i] = s[i];
@@ -2965,8 +2965,8 @@ static inline void memcpy_local(void *dst, const void *src, size_t len)
          }
          else
          {
-                 char *d = dst;
-                 const char *s = src;
+                 char *d = (char *) dst;
+                 const char *s = (const char *) src;
 
                  for (i=0; i<len; i++)
                  {
