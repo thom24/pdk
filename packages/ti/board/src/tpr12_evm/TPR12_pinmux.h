@@ -148,22 +148,6 @@ enum pinOffsets
     PADDX_CFG_REG        = 0x0194U,
     PADDY_CFG_REG        = 0x0198U,
     PADDZ_CFG_REG        = 0x019CU,
-    PADEA_CFG_REG        = 0x01A0U,
-    PADEB_CFG_REG        = 0x01A4U,
-    PADEC_CFG_REG        = 0x01A8U,
-    PADED_CFG_REG        = 0x01ACU,
-    PADEE_CFG_REG        = 0x01B0U,
-    PADEF_CFG_REG        = 0x01B4U,
-    PADEG_CFG_REG        = 0x01B8U,
-    PADEH_CFG_REG        = 0x01BCU,
-    PADEI_CFG_REG        = 0x01C0U,
-    PADEJ_CFG_REG        = 0x01C4U,
-    PADEK_CFG_REG        = 0x01C8U,
-    PADEL_CFG_REG        = 0x01CCU,
-    PADEM_CFG_REG        = 0x01D0U,
-    PADEN_CFG_REG        = 0x01D4U,
-    PADEO_CFG_REG        = 0x01D8U,
-    PADEP_CFG_REG        = 0x01DCU,
 };
 
 /* ========================================================================== */
