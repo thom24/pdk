@@ -75,6 +75,7 @@ int32_t Udma_proxyAlloc(Udma_DrvHandle drvHandle,
                         Udma_ProxyHandle proxyHandle,
                         uint16_t proxyNum)
 {
+#if (UDMA_SOC_CFG_PROXY_PRESENT == 1)
     int32_t     retVal = UDMA_SOK;
     struct tisci_msg_rm_proxy_cfg_req req;
 
@@ -140,11 +141,16 @@ int32_t Udma_proxyAlloc(Udma_DrvHandle drvHandle,
         proxyHandle->proxyInitDone  = UDMA_INIT_DONE;
     }
 
+#else
+    int32_t             retVal = UDMA_EFAIL;
+#endif
+
     return (retVal);
 }
 
 int32_t Udma_proxyFree(Udma_ProxyHandle proxyHandle)
 {
+#if (UDMA_SOC_CFG_PROXY_PRESENT == 1)   
     int32_t         retVal = UDMA_SOK;
     Udma_DrvHandle  drvHandle;
 
@@ -180,12 +186,17 @@ int32_t Udma_proxyFree(Udma_ProxyHandle proxyHandle)
         proxyHandle->proxyInitDone   = UDMA_DEINIT_DONE;
     }
 
+#else
+    int32_t             retVal = UDMA_EFAIL;
+#endif
+
     return (retVal);
 }
 
 int32_t Udma_proxyConfig(Udma_ProxyHandle proxyHandle,
                          const Udma_ProxyCfg *proxyCfg)
 {
+#if (UDMA_SOC_CFG_PROXY_PRESENT == 1)
     int32_t             retVal = UDMA_SOK;
     Udma_DrvHandle      drvHandle;
     CSL_ProxyThreadCfg  threadCfg;
@@ -237,6 +248,10 @@ int32_t Udma_proxyConfig(Udma_ProxyHandle proxyHandle,
                     threadCfg.elSz);
         }
     }
+
+#else
+    int32_t             retVal = UDMA_EFAIL;
+#endif
 
     return (retVal);
 }

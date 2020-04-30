@@ -60,18 +60,6 @@
 /*                          Function Declarations                             */
 /* ========================================================================== */
 
-static inline int32_t Udma_ringProxyQueueRaw(Udma_RingHandle ringHandle,
-                                             Udma_DrvHandle drvHandle,
-                                             uint64_t phyDescMem);
-static int32_t Udma_ringProxyDequeueRaw(Udma_RingHandle ringHandle,
-                                        Udma_DrvHandle drvHandle,
-                                        uint64_t *phyDescMem);
-static int32_t Udma_ringCheckParams(Udma_DrvHandle drvHandle,
-                             const Udma_RingPrms *ringPrms);
-#if (UDMA_APPLY_RING_WORKAROUND == 1)
-static int32_t Udma_ringReset(Udma_DrvHandle drvHandle,
-                              Udma_RingHandle ringHandle);
-#endif
 
 /* ========================================================================== */
 /*                            Global Variables                                */
@@ -89,8 +77,8 @@ int32_t Udma_ringAlloc(Udma_DrvHandle drvHandle,
                        const Udma_RingPrms *ringPrms)
 {
     int32_t             retVal = UDMA_SOK;
+    uint64_t            physBase;
     uint32_t            allocDone = (uint32_t) FALSE;
-    CSL_RingAccRingCfg *ringCfg;
     struct tisci_msg_rm_ring_cfg_req    rmRingReq;
     struct tisci_msg_rm_ring_cfg_resp   rmRingResp;
 
@@ -143,37 +131,20 @@ int32_t Udma_ringAlloc(Udma_DrvHandle drvHandle,
 
     if(UDMA_SOK == retVal)
     {
-        ringCfg = &ringHandle->cfg;
-        ringCfg->virtBase    = (void *) ringPrms->ringMem;
-        ringCfg->physBase    =
-            Udma_virtToPhyFxn(ringPrms->ringMem, drvHandle, (Udma_ChHandle) NULL_PTR);
-        ringCfg->mode        = ringPrms->mode;
-        ringCfg->elCnt       = ringPrms->elemCnt;
-        /* CSL expects ring size in bytes */
-        ringCfg->elSz        = ((uint32_t) 1U << (ringPrms->elemSize + 2U));
-        ringCfg->evtNum      = UDMA_EVENT_INVALID;
-        ringCfg->credSecure  = 0U;
-        ringCfg->credPriv    = 0U;
-        ringCfg->credPrivId  = CSL_RINGACC_CRED_PASSTHRU;
-        ringCfg->credVirtId  = CSL_RINGACC_CRED_PASSTHRU;
-        CSL_ringaccInitRingObj(ringHandle->ringNum, ringCfg);
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)  
+        if(UDMA_RA_TYPE_NORMAL == drvHandle->raType)
+        {
+            Udma_ringSetCfgNormal(drvHandle, ringHandle, ringPrms);
+        }   
+#endif
+#if (UDMA_SOC_CFG_RA_LCDMA_PRESENT == 1)
+        if(UDMA_RA_TYPE_LCDMA == drvHandle->raType)
+        {
+            Udma_ringSetCfgLcdma(drvHandle, ringHandle, ringPrms);
+        }
+#endif
 
-        ringHandle->drvHandle = drvHandle;
-        ringHandle->proxyAddr =
-            CSL_proxyGetDataAddr(
-                &drvHandle->proxyCfg,
-                drvHandle->proxyTargetNumRing,
-                drvHandle->initPrms.rmInitPrms.proxyThreadNum,
-                ringCfg->elSz);
-        Udma_assert(drvHandle, drvHandle->raRegs.pCfgRegs != NULL_PTR);
-        Udma_assert(drvHandle, drvHandle->raRegs.pRtRegs != NULL_PTR);
-        Udma_assert(drvHandle, ringHandle->ringNum < 1024U);
-        ringHandle->pCfgRegs =
-            &drvHandle->raRegs.pCfgRegs->RING[ringHandle->ringNum];
-        ringHandle->pRtRegs         =
-            &drvHandle->raRegs.pRtRegs->RINGRT[ringHandle->ringNum];
-
-#if (UDMA_APPLY_RING_WORKAROUND == 1)
+#if (UDMA_SOC_CFG_APPLY_RING_WORKAROUND == 1)
         /* Perform ring reset */
         retVal = Udma_ringReset(drvHandle, ringHandle);
         if(UDMA_SOK != retVal)
@@ -194,8 +165,9 @@ int32_t Udma_ringAlloc(Udma_DrvHandle drvHandle,
                                   TISCI_MSG_VALUE_RM_RING_ORDER_ID_VALID;
         rmRingReq.nav_id        = drvHandle->devIdRing;
         rmRingReq.index         = ringHandle->ringNum;
-        rmRingReq.addr_lo       = (uint32_t)ringCfg->physBase;
-        rmRingReq.addr_hi       = (uint32_t)(ringCfg->physBase >> 32UL);
+        physBase = Udma_virtToPhyFxn(ringPrms->ringMem, drvHandle, (Udma_ChHandle) NULL_PTR);
+        rmRingReq.addr_lo       = (uint32_t)physBase;
+        rmRingReq.addr_hi       = (uint32_t)(physBase >> 32UL);
         rmRingReq.count         = ringPrms->elemCnt;
         rmRingReq.mode          = ringPrms->mode;
         rmRingReq.size          = ringPrms->elemSize;
@@ -257,8 +229,18 @@ int32_t Udma_ringFree(Udma_RingHandle ringHandle)
         Udma_rmFreeFreeRing(ringHandle->ringNum, drvHandle);
         ringHandle->ringNum         = UDMA_RING_INVALID;
         ringHandle->ringInitDone    = UDMA_DEINIT_DONE;
-        ringHandle->pCfgRegs        = (volatile CSL_ringacc_cfgRegs_RING *) NULL_PTR;
-        ringHandle->pRtRegs         = (volatile CSL_ringacc_rtRegs_RINGRT *) NULL_PTR;
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
+        if(UDMA_RA_TYPE_NORMAL == drvHandle->raType)
+        {
+            Udma_ringHandleClearRegsNormal(ringHandle);
+        }
+#endif
+#if (UDMA_SOC_CFG_RA_LCDMA_PRESENT == 1)
+        if(UDMA_RA_TYPE_LCDMA == drvHandle->raType)
+        {
+            Udma_ringHandleClearRegsLcdma(ringHandle);
+        }
+#endif
         ringHandle->drvHandle       = (Udma_DrvHandle) NULL_PTR;
     }
 
@@ -270,8 +252,6 @@ int32_t Udma_ringAttach(Udma_DrvHandle drvHandle,
                         uint16_t ringNum)
 {
     int32_t             retVal = UDMA_SOK;
-    uint32_t            addrHi, addrLo, elemSize;
-    CSL_RingAccRingCfg *ringCfg;
 
     /* Error check */
     if((NULL_PTR == drvHandle) || (NULL_PTR == ringHandle))
@@ -296,42 +276,19 @@ int32_t Udma_ringAttach(Udma_DrvHandle drvHandle,
 
     if(UDMA_SOK == retVal)
     {
-        /* Configure ring object */
-        ringHandle->drvHandle = drvHandle;
         ringHandle->ringNum = ringNum;
-        Udma_assert(drvHandle, drvHandle->raRegs.pCfgRegs != NULL_PTR);
-        Udma_assert(drvHandle, drvHandle->raRegs.pRtRegs != NULL_PTR);
-        Udma_assert(drvHandle, ringHandle->ringNum < 1024U);
-        ringHandle->pCfgRegs =
-            &drvHandle->raRegs.pCfgRegs->RING[ringHandle->ringNum];
-        ringHandle->pRtRegs         =
-            &drvHandle->raRegs.pRtRegs->RINGRT[ringHandle->ringNum];
-
-        /* Init CSL ring object */
-        ringCfg = &ringHandle->cfg;
-        addrHi = CSL_REG32_FEXT(&ringHandle->pCfgRegs->BA_HI, RINGACC_CFG_RING_BA_HI_ADDR_HI);
-        addrLo = CSL_REG32_FEXT(&ringHandle->pCfgRegs->BA_LO, RINGACC_CFG_RING_BA_LO_ADDR_LO);
-        ringCfg->physBase    = (uint64_t)((((uint64_t) addrHi) << 32UL) |
-                                           ((uint64_t) addrLo));
-        ringCfg->virtBase    = Udma_phyToVirtFxn(ringCfg->physBase, drvHandle, (Udma_ChHandle) NULL_PTR);
-        ringCfg->mode        = CSL_REG32_FEXT(&ringHandle->pCfgRegs->SIZE, RINGACC_CFG_RING_SIZE_QMODE);
-        ringCfg->elCnt       = CSL_REG32_FEXT(&ringHandle->pCfgRegs->SIZE, RINGACC_CFG_RING_SIZE_ELCNT);
-        elemSize             = CSL_REG32_FEXT(&ringHandle->pCfgRegs->SIZE, RINGACC_CFG_RING_SIZE_ELSIZE);
-        /* CSL expects ring size in bytes */
-        ringCfg->elSz        = ((uint32_t) 1U << (elemSize + 2U));
-        ringCfg->evtNum      = UDMA_EVENT_INVALID;
-        ringCfg->credSecure  = 0U;
-        ringCfg->credPriv    = 0U;
-        ringCfg->credPrivId  = CSL_RINGACC_CRED_PASSTHRU;
-        ringCfg->credVirtId  = CSL_RINGACC_CRED_PASSTHRU;
-        CSL_ringaccInitRingObj(ringHandle->ringNum, ringCfg);
-
-        ringHandle->proxyAddr =
-            CSL_proxyGetDataAddr(
-                &drvHandle->proxyCfg,
-                drvHandle->proxyTargetNumRing,
-                drvHandle->initPrms.rmInitPrms.proxyThreadNum,
-                ringCfg->elSz);
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)  
+        if(UDMA_RA_TYPE_NORMAL == drvHandle->raType)
+        {
+            Udma_ringSetCfgNormal(drvHandle, ringHandle, (Udma_RingPrms *) NULL_PTR);
+        }   
+#endif
+#if (UDMA_SOC_CFG_RA_LCDMA_PRESENT == 1)
+        if(UDMA_RA_TYPE_LCDMA == drvHandle->raType)
+        {
+            Udma_ringSetCfgLcdma(drvHandle, ringHandle, (Udma_RingPrms *) NULL_PTR);
+        }
+#endif
 
         ringHandle->ringInitDone = UDMA_INIT_DONE;
     }
@@ -370,9 +327,20 @@ int32_t Udma_ringDetach(Udma_RingHandle ringHandle)
         /* Clear handle object */
         Udma_assert(drvHandle, ringHandle->ringNum != UDMA_RING_INVALID);
         ringHandle->ringInitDone    = UDMA_DEINIT_DONE;
-        ringHandle->pCfgRegs        = (volatile CSL_ringacc_cfgRegs_RING *) NULL_PTR;
-        ringHandle->pRtRegs         = (volatile CSL_ringacc_rtRegs_RINGRT *) NULL_PTR;
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
+        if(UDMA_RA_TYPE_NORMAL == drvHandle->raType)
+        {
+            Udma_ringHandleClearRegsNormal(ringHandle);
+        }
+#endif
+#if (UDMA_SOC_CFG_RA_LCDMA_PRESENT == 1)
+        if(UDMA_RA_TYPE_LCDMA == drvHandle->raType)
+        {
+            Udma_ringHandleClearRegsLcdma(ringHandle);
+        }
         ringHandle->drvHandle       = (Udma_DrvHandle) NULL_PTR;
+#endif
+      
     }
 
     return (retVal);
@@ -405,21 +373,19 @@ int32_t Udma_ringQueueRaw(Udma_RingHandle ringHandle, uint64_t phyDescMem)
         Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.disableAllIntr != (Udma_OsalDisableAllIntrFxn) NULL_PTR);
         cookie = drvHandle->initPrms.osalPrms.disableAllIntr();
 
-        if(TISCI_MSG_VALUE_RM_RING_MODE_RING == ringHandle->cfg.mode)
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)  
+        if(UDMA_RA_TYPE_NORMAL == drvHandle->raType)
         {
-            /* Use direct memory access for RING mode */
-            retVal = CSL_ringaccPush64(
-                &ringHandle->drvHandle->raRegs,
-                &ringHandle->cfg,
-                (uint64_t) phyDescMem,
-                &Udma_ringaccMemOps);
+            retVal = Udma_ringQueueRawNormal(drvHandle,ringHandle,phyDescMem);
         }
-        else
+#endif
+#if (UDMA_SOC_CFG_RA_LCDMA_PRESENT == 1)
+        if(UDMA_RA_TYPE_LCDMA == drvHandle->raType)
         {
-            /* Use proxy for other modes */
-            retVal = Udma_ringProxyQueueRaw(ringHandle, drvHandle, phyDescMem);
+            retVal = Udma_ringQueueRawLcdma(drvHandle,ringHandle,phyDescMem);
         }
-
+#endif
+        
         Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.restoreAllIntr != (Udma_OsalRestoreAllIntrFxn) NULL_PTR);
         drvHandle->initPrms.osalPrms.restoreAllIntr(cookie);
     }
@@ -429,7 +395,7 @@ int32_t Udma_ringQueueRaw(Udma_RingHandle ringHandle, uint64_t phyDescMem)
 
 int32_t Udma_ringDequeueRaw(Udma_RingHandle ringHandle, uint64_t *phyDescMem)
 {
-    int32_t         retVal = UDMA_SOK, cslRetVal;
+    int32_t         retVal = UDMA_SOK;
     uintptr_t       cookie;
     Udma_DrvHandle  drvHandle;
 
@@ -454,24 +420,18 @@ int32_t Udma_ringDequeueRaw(Udma_RingHandle ringHandle, uint64_t *phyDescMem)
         Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.disableAllIntr != (Udma_OsalDisableAllIntrFxn) NULL_PTR);
         cookie = drvHandle->initPrms.osalPrms.disableAllIntr();
 
-        if(TISCI_MSG_VALUE_RM_RING_MODE_RING == ringHandle->cfg.mode)
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)  
+        if(UDMA_RA_TYPE_NORMAL == drvHandle->raType)
         {
-            /* Use direct memory access for RING mode */
-            cslRetVal = CSL_ringaccPop64(
-                &ringHandle->drvHandle->raRegs,
-                &ringHandle->cfg,
-                phyDescMem,
-                &Udma_ringaccMemOps);
-            if(0 != cslRetVal)
-            {
-                retVal = UDMA_ETIMEOUT;
-            }
+            retVal = Udma_ringDequeueRawNormal(drvHandle,ringHandle,phyDescMem);
         }
-        else
+#endif
+#if (UDMA_SOC_CFG_RA_LCDMA_PRESENT == 1)
+        if(UDMA_RA_TYPE_LCDMA == drvHandle->raType)
         {
-            /* Use proxy for other modes */
-            retVal = Udma_ringProxyDequeueRaw(ringHandle, drvHandle, phyDescMem);
+            retVal = Udma_ringDequeueRawLcdma(drvHandle,ringHandle,phyDescMem);
         }
+#endif  
 
         Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.restoreAllIntr != (Udma_OsalRestoreAllIntrFxn) NULL_PTR);
         drvHandle->initPrms.osalPrms.restoreAllIntr(cookie);
@@ -503,8 +463,18 @@ int32_t Udma_ringFlushRaw(Udma_RingHandle ringHandle, uint64_t *phyDescMem)
 
     if(UDMA_SOK == retVal)
     {
-        /* Same as proxy dequeue API as proxy can be used in all modes of ring */
-        retVal = Udma_ringProxyDequeueRaw(ringHandle, drvHandle, phyDescMem);
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)  
+        if(UDMA_RA_TYPE_NORMAL == drvHandle->raType)
+        {
+            retVal = Udma_ringFlushRawNormal(drvHandle,ringHandle,phyDescMem);
+        }
+#endif
+#if (UDMA_SOC_CFG_RA_LCDMA_PRESENT == 1)
+        if(UDMA_RA_TYPE_LCDMA == drvHandle->raType)
+        {
+            retVal = Udma_ringFlushRawLcdma(drvHandle,ringHandle,phyDescMem);
+        }
+#endif
     }
 
     return (retVal);
@@ -512,52 +482,37 @@ int32_t Udma_ringFlushRaw(Udma_RingHandle ringHandle, uint64_t *phyDescMem)
 
 void Udma_ringPrime(Udma_RingHandle ringHandle, uint64_t phyDescMem)
 {
-    volatile uint64_t        *ringPtr;
-    CSL_RingAccRingCfg       *pRing;
-    uintptr_t                 tempPtr;
-
-    pRing = &ringHandle->cfg;
-    tempPtr = (uintptr_t)(pRing->rwIdx * pRing->elSz) +
-              (uintptr_t)pRing->virtBase;
-    ringPtr = (volatile uint64_t *)(tempPtr);
-    *ringPtr = phyDescMem;
-
-    /* Book keeping */
-    pRing->waiting++;
-    pRing->rwIdx++;
-    if(pRing->rwIdx >= pRing->elCnt)
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
+    if(UDMA_RA_TYPE_NORMAL == ringHandle->drvHandle->raType)
     {
-        pRing->rwIdx = 0U;
+        Udma_ringPrimeNormal(ringHandle,phyDescMem);
     }
-    pRing->occ++;
+#endif
+#if (UDMA_SOC_CFG_RA_LCDMA_PRESENT == 1)
+    if(UDMA_RA_TYPE_LCDMA == ringHandle->drvHandle->raType)
+    {
+        Udma_ringPrimeLcdma(ringHandle,phyDescMem);
+    }
+#endif
 
     return;
 }
 
+
 void Udma_ringSetDoorBell(Udma_RingHandle ringHandle, int32_t count)
 {
-    uint32_t    regVal;
-    int32_t     dbRingCnt, thisDbRingCnt;
-    CSL_RingAccRingCfg       *pRing;
-
-    pRing = &ringHandle->cfg;
-    dbRingCnt = count;
-    while(dbRingCnt != 0)
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
+    if(UDMA_RA_TYPE_NORMAL == ringHandle->drvHandle->raType)
     {
-        if(dbRingCnt < UDMA_RING_MAX_DB_RING_CNT)
-        {
-            thisDbRingCnt = dbRingCnt;
-            regVal = CSL_FMK(RINGACC_RT_RINGRT_DB_CNT, thisDbRingCnt);
-        }
-        else
-        {
-            thisDbRingCnt = UDMA_RING_MAX_DB_RING_CNT;
-            regVal = CSL_FMK(RINGACC_RT_RINGRT_DB_CNT, thisDbRingCnt);
-        }
-        CSL_REG32_WR(&ringHandle->pRtRegs->DB, regVal);
-        pRing->waiting -= thisDbRingCnt;
-        dbRingCnt -= thisDbRingCnt;
+        Udma_ringSetDoorBellNormal(ringHandle,count);
     }
+#endif
+#if (UDMA_SOC_CFG_RA_LCDMA_PRESENT == 1)
+    if(UDMA_RA_TYPE_LCDMA == ringHandle->drvHandle->raType)
+    {
+        Udma_ringSetForwardDoorBellLcdma(ringHandle,count);
+    }
+#endif
 
     return;
 }
@@ -580,7 +535,18 @@ void *Udma_ringGetMemPtr(Udma_RingHandle ringHandle)
 
     if((NULL_PTR != ringHandle) && (UDMA_INIT_DONE == ringHandle->ringInitDone))
     {
-        ringMem = ringHandle->cfg.virtBase;
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)  
+        if(UDMA_RA_TYPE_NORMAL == ringHandle->drvHandle->raType)
+        {
+            ringMem = ringHandle->cfg.virtBase;
+        }
+#endif
+#if (UDMA_SOC_CFG_RA_LCDMA_PRESENT == 1)
+        if(UDMA_RA_TYPE_LCDMA == ringHandle->drvHandle->raType)
+        {
+            ringMem = ringHandle->lcdmaCfg.virtBase;
+        }
+#endif
     }
 
     return (ringMem);
@@ -590,6 +556,7 @@ int32_t Udma_ringMonAlloc(Udma_DrvHandle drvHandle,
                           Udma_RingMonHandle monHandle,
                           uint16_t ringMonNum)
 {
+#if (UDMA_SOC_CFG_RING_MON_PRESENT == 1)
     int32_t     retVal = UDMA_SOK;
     uint32_t    allocDone = (uint32_t) FALSE;
 
@@ -651,12 +618,17 @@ int32_t Udma_ringMonAlloc(Udma_DrvHandle drvHandle,
             Udma_rmFreeRingMon(monHandle->ringMonNum, drvHandle);
         }
     }
+#else
+    int32_t         retVal = UDMA_EFAIL;
+    Udma_printf(drvHandle, "[Error] Ring Monitor not supported!!!\n");
+#endif
 
     return (retVal);
 }
 
 int32_t Udma_ringMonFree(Udma_RingMonHandle monHandle)
 {
+#if (UDMA_SOC_CFG_RING_MON_PRESENT == 1)
     int32_t         retVal = UDMA_SOK;
     Udma_DrvHandle  drvHandle;
 
@@ -686,6 +658,9 @@ int32_t Udma_ringMonFree(Udma_RingMonHandle monHandle)
         monHandle->pMonRegs         = (volatile CSL_ringacc_monitorRegs_mon *) NULL_PTR;
         monHandle->ringMonInitDone  = UDMA_DEINIT_DONE;
     }
+#else
+    int32_t         retVal = UDMA_EFAIL;
+#endif
 
     return (retVal);
 }
@@ -693,6 +668,7 @@ int32_t Udma_ringMonFree(Udma_RingMonHandle monHandle)
 int32_t Udma_ringMonConfig(Udma_RingMonHandle monHandle,
                            const Udma_RingMonPrms *monPrms)
 {
+#if (UDMA_SOC_CFG_RING_MON_PRESENT == 1)
     int32_t             retVal = UDMA_SOK;
     Udma_DrvHandle      drvHandle;
     struct tisci_msg_rm_ring_mon_cfg_req    rmRingMonReq;
@@ -736,6 +712,9 @@ int32_t Udma_ringMonConfig(Udma_RingMonHandle monHandle,
             Udma_printf(drvHandle, "[Error] Ring monitor config failed!!!\n");
         }
     }
+#else
+    int32_t         retVal = UDMA_EFAIL;
+#endif
 
     return (retVal);
 }
@@ -743,6 +722,7 @@ int32_t Udma_ringMonConfig(Udma_RingMonHandle monHandle,
 int32_t Udma_ringMonGetData(Udma_RingMonHandle monHandle,
                             Udma_RingMonData *monData)
 {
+#if (UDMA_SOC_CFG_RING_MON_PRESENT == 1)
     int32_t         retVal = UDMA_SOK;
     Udma_DrvHandle  drvHandle;
 
@@ -769,6 +749,9 @@ int32_t Udma_ringMonGetData(Udma_RingMonHandle monHandle,
         monData->data0 = CSL_REG32_RD(&monHandle->pMonRegs->DATA0);
         monData->data1 = CSL_REG32_RD(&monHandle->pMonRegs->DATA1);
     }
+#else
+    int32_t         retVal = UDMA_EFAIL;
+#endif
 
     return (retVal);
 }
@@ -777,10 +760,12 @@ uint16_t Udma_ringMonGetNum(Udma_RingMonHandle monHandle)
 {
     uint16_t        ringMonNum = UDMA_RING_MON_INVALID;
 
+#if (UDMA_SOC_CFG_RING_MON_PRESENT == 1)
     if((NULL_PTR != monHandle) && (UDMA_INIT_DONE == monHandle->ringMonInitDone))
     {
         ringMonNum = monHandle->ringMonNum;
     }
+#endif
 
     return (ringMonNum);
 }
@@ -814,10 +799,11 @@ void UdmaRingMonPrms_init(Udma_RingMonPrms *monPrms)
     return;
 }
 
-static inline int32_t Udma_ringProxyQueueRaw(Udma_RingHandle ringHandle,
-                                             Udma_DrvHandle drvHandle,
-                                             uint64_t phyDescMem)
+int32_t Udma_ringProxyQueueRaw(Udma_RingHandle ringHandle,
+                               Udma_DrvHandle drvHandle,
+                               uint64_t phyDescMem)
 {
+#if (UDMA_SOC_CFG_PROXY_PRESENT == 1)
     int32_t             retVal = UDMA_SOK;
     uint32_t            ringHwOcc;
     CSL_ProxyThreadCfg  threadCfg;
@@ -848,13 +834,19 @@ static inline int32_t Udma_ringProxyQueueRaw(Udma_RingHandle ringHandle,
         }
     }
 
+#else
+    int32_t             retVal = UDMA_EFAIL;
+    Udma_printf(drvHandle, "[Error] Proxy not present!!!\n");
+#endif
+    
     return (retVal);
 }
 
-static int32_t Udma_ringProxyDequeueRaw(Udma_RingHandle ringHandle,
+int32_t Udma_ringProxyDequeueRaw(Udma_RingHandle ringHandle,
                                         Udma_DrvHandle drvHandle,
                                         uint64_t *phyDescMem)
 {
+#if (UDMA_SOC_CFG_PROXY_PRESENT == 1)    
     int32_t             retVal = UDMA_SOK;
     uint32_t            ringHwOcc;
     CSL_ProxyThreadCfg  threadCfg;
@@ -885,10 +877,15 @@ static int32_t Udma_ringProxyDequeueRaw(Udma_RingHandle ringHandle,
         }
     }
 
+#else
+    int32_t             retVal = UDMA_EFAIL;
+    Udma_printf(drvHandle, "[Error] Proxy not present!!!\n");
+#endif
+    
     return (retVal);
 }
 
-static int32_t Udma_ringCheckParams(Udma_DrvHandle drvHandle,
+int32_t Udma_ringCheckParams(Udma_DrvHandle drvHandle,
                                     const Udma_RingPrms *ringPrms)
 {
     int32_t     retVal = UDMA_SOK;
@@ -942,8 +939,8 @@ static int32_t Udma_ringCheckParams(Udma_DrvHandle drvHandle,
     return (retVal);
 }
 
-#if (UDMA_APPLY_RING_WORKAROUND == 1)
-static int32_t Udma_ringReset(Udma_DrvHandle drvHandle,
+#if (UDMA_SOC_CFG_APPLY_RING_WORKAROUND == 1)
+int32_t Udma_ringReset(Udma_DrvHandle drvHandle,
                               Udma_RingHandle ringHandle)
 {
     int32_t     retVal = UDMA_SOK;

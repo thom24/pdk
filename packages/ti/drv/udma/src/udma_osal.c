@@ -135,6 +135,7 @@ void UdmaOsalCachePrms_init(Udma_OsalCachePrms *cachePrms)
     return;
 }
 
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
 void Udma_ringaccMemOps(void *pVirtAddr, uint32_t size, uint32_t opsType)
 {
     uint32_t    isCacheCoherent = Udma_isCacheCoherent();
@@ -154,6 +155,28 @@ void Udma_ringaccMemOps(void *pVirtAddr, uint32_t size, uint32_t opsType)
 
     return;
 }
+#endif
+#if (UDMA_SOC_CFG_RA_LCDMA_PRESENT == 1)
+void Udma_lcdmaRingaccMemOps(void *pVirtAddr, uint32_t size, uint32_t opsType)
+{
+    uint32_t    isCacheCoherent = Udma_isCacheCoherent();
+
+    if(isCacheCoherent != TRUE)
+    {
+        if(CSL_LCDMA_RINGACC_MEM_OPS_TYPE_WR == opsType)
+        {
+            gUdmaOsalCachePrms.cacheWb(pVirtAddr, size);
+        }
+
+        if(CSL_LCDMA_RINGACC_MEM_OPS_TYPE_RD == opsType)
+        {
+            gUdmaOsalCachePrms.cacheInv(pVirtAddr, size);
+        }
+    }
+
+    return;
+}
+#endif
 
 static void *Udma_osalRegisterIntr(Udma_OsalIsrFxn isrFxn,
                                    uint32_t coreIntrNum,

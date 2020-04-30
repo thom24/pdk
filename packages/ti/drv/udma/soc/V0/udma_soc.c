@@ -56,6 +56,7 @@
 /** \brief DRU0 UTC baseaddress */
 #define UDMA_UTC_BASE_DRU0              (CSL_COMPUTE_CLUSTER0_DRU_BASE)
 
+
 /* ========================================================================== */
 /*                         Structure Declarations                             */
 /* ========================================================================== */
@@ -89,7 +90,9 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
     CSL_ProxyTargetParams *pProxyTargetRing;
 
     instId = drvHandle->initPrms.instId;
-
+    
+    drvHandle->instType = UDMA_INST_TYPE_NORMAL;
+    
     /*
      * UDMA config init
      */
@@ -123,6 +126,7 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
     /*
      * RA config init
      */
+    drvHandle->raType = UDMA_RA_TYPE_NORMAL;
     pRaRegs = &drvHandle->raRegs;
     if(UDMA_INST_ID_MCU_0 == instId)
     {
@@ -240,9 +244,14 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
     }
 
     /* Init other variables */
-    drvHandle->txChOffset   = 0U;
-    drvHandle->extChOffset  = drvHandle->txChOffset + pUdmapRegs->txChanCnt;
-    drvHandle->rxChOffset   =
+    drvHandle->srcIdRingIrq          = drvHandle->devIdRing;
+    drvHandle->blkCopyRingIrqOffset  = TISCI_RINGACC0_OES_IRQ_SRC_IDX_START; 
+    drvHandle->txRingIrqOffset       = TISCI_RINGACC0_OES_IRQ_SRC_IDX_START;
+    drvHandle->rxRingIrqOffset       = TISCI_RINGACC0_OES_IRQ_SRC_IDX_START;
+    drvHandle->blkCopyChOffset       = 0U; 
+    drvHandle->txChOffset            = 0U;
+    drvHandle->extChOffset           = drvHandle->txChOffset + pUdmapRegs->txChanCnt;
+    drvHandle->rxChOffset            =
         drvHandle->extChOffset + pUdmapRegs->txExtUtcChanCnt;
     if(UDMA_INST_ID_MCU_0 == instId)
     {

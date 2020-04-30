@@ -62,21 +62,40 @@
 
 #include <stdint.h>
 
+/* UDMA_SOC_CFG_* macros are defined udma_soc.h. 
+ * So including this first
+ */ 
+#include <ti/drv/udma/soc/udma_soc.h>
+
 #include <ti/csl/soc.h>
 #include <ti/csl/csl_cppi.h>
 #include <ti/csl/csl_psilcfg.h>
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
 #include <ti/csl/csl_ringacc.h>
+#endif 
+#if (UDMA_SOC_CFG_RA_LCDMA_PRESENT == 1)
+#include <ti/csl/csl_lcdma_ringacc.h>
+#endif
+#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
 #include <ti/csl/csl_udmap.h>
+#endif
+#if (UDMA_SOC_CFG_LCDMA_PRESENT == 1)
+#include <ti/csl/csl_bcdma.h>
+#include <ti/csl/csl_pktdma.h>
+#endif
 #include <ti/csl/csl_intaggr.h>
 #include <ti/csl/csl_intr_router.h>
 #include <ti/csl/csl_dru.h>
+#if (UDMA_SOC_CFG_PROXY_PRESENT == 1)
 #include <ti/csl/csl_proxy.h>
+#endif
+#if (UDMA_SOC_CFG_CLEC_PRESENT == 1)
 #include <ti/csl/csl_clec.h>
+#endif
 
 #include <ti/osal/osal.h>
 #include <ti/drv/sciclient/sciclient.h>
 
-#include <ti/drv/udma/soc/udma_soc.h>
 #include <ti/drv/udma/include/udma_cfg.h>
 #include <ti/drv/udma/include/udma_types.h>
 #include <ti/drv/udma/include/udma_osal.h>
@@ -321,13 +340,34 @@ static void *Udma_defaultPhyToVirtFxn(uint64_t phyAddr,
  *  used or modified by caller.
  */
 struct Udma_DrvObj
-{
+{   
+    uint32_t                instType;
+    /**< [IN] \ref Udma_InstanceType */
+    uint32_t                raType;
+    /**< [IN] \ref Udma_RingAccType */
+
+#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
     /*
      * NAVSS instance parameters
      */
     CSL_UdmapCfg            udmapRegs;
-    /**< UDMAP register configuration */
+    /**< UDMAP register configuration */ 
+#endif 
+#if (UDMA_SOC_CFG_LCDMA_PRESENT == 1)
+    /*
+     * LCDMA DMSS specific instance parameters
+     */
+    CSL_BcdmaCfg             bcdmaRegs;
+    /**< BCDMA register configuration */ 
+    CSL_PktdmaCfg            pktdmaRegs; 
+    /**< PKTDMA register configuration */ 
+#endif 
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)  
     CSL_RingAccCfg          raRegs;
+#endif
+#if (UDMA_SOC_CFG_RA_LCDMA_PRESENT == 1)  
+    CSL_LcdmaRingaccCfg     lcdmaRaRegs;
+#endif
     /**< RA register configuration */
     CSL_IntaggrCfg          iaRegs;
     /**< Interrupt Aggregator configuration */
@@ -344,8 +384,9 @@ struct Udma_DrvObj
     uint32_t                maxProxy;
     /**< Maximun number of proxy present in the NAVSS instance */
     uint32_t                maxRingMon;
-    /**< Maximun number of ring monitors present in the NAVSS instance */
+    /**< Maximun number of ring monitors present in the NAVSS instance */   
 
+#if (UDMA_SOC_CFG_PROXY_PRESENT == 1)
     /*
      * Proxy parameters
      */
@@ -355,7 +396,9 @@ struct Udma_DrvObj
     /*< Proxy ring target register configuration */
     uint32_t                proxyTargetNumRing;
     /*< Proxy ring target index */
+#endif    
 
+#if (UDMA_SOC_CFG_CLEC_PRESENT == 1)
     /*
      * Clec parameters
      */
@@ -366,6 +409,7 @@ struct Udma_DrvObj
      *   Refer \ref CSL_ClecRouteMap. */
     uint32_t                clecOffset;
     /**< GIC SPI to CLEC interrupt offset (they are not directly connected */
+#endif
 
     /*
      * TISCI RM parameters
@@ -378,8 +422,10 @@ struct Udma_DrvObj
     /**< PSIL RM ID */
     uint16_t                devIdIa;
     /**< IA RM ID */
+#if (UDMA_SOC_CFG_PROXY_PRESENT == 1)
     uint16_t                devIdProxy;
     /**< Proxy RM ID */
+#endif
     uint16_t                devIdCore;
     /**< Core RM ID */
 #if (UDMA_NUM_UTC_INSTANCE > 0)
@@ -388,14 +434,41 @@ struct Udma_DrvObj
      *   Each CPU should have a unique submit register to avoid corrupting
      *   submit word when SW is running from multiple CPU at the same time.
      *   Refer \ref Udma_DruSubmitCoreId */
-#endif
-
+#endif  
+    uint16_t                srcIdRingIrq;
+    /**< Ring completion event IRQ Source ID. */
+    uint32_t                blkCopyRingIrqOffset;
+    /**< Block Copy channel ring completion event IRQ offset. */
+    uint32_t                txRingIrqOffset;
+    /**< TX channel ring completion event IRQ offset. */
+    uint32_t                rxRingIrqOffset;
+    /**< RX channel ring completion event IRQ offset. */
+    /*   These IRQ offsets should be corresponding TISCI offset - ringNum Offset */
+    uint32_t                blkCopyChOffset;
+    /**< Block Copy channel offset. 
+     *   blkCopyChOffset is used to support Config of BCDMA Block Copy channel using same Sciclient API.
+     *
+     *  In case of BCDMA, the channels are spread across three MMR regions tchan, rchan, and bchan.
+     *  So when blkCopyChOffset is added to index, the tx_ch_cfg API RM knows it’s a block copy channel 
+     *  and programs within the bchan MMR region. Otherwise the tx_ch_cfg API RM knows it’s a 
+     *  split tr tx channel and programs within the tchan MMR region.
+     *
+     *  In case of UDMAP (type SOC's) blkCopyChOffset must be 0.*/
     uint32_t                txChOffset;
     /**< TX channel offset. */
     uint32_t                extChOffset;
     /**< External channel offset. */
     uint32_t                rxChOffset;
     /**< RX channel offset. */
+    /*
+     *  The driver allocates ringNum = chNum (for BlkCpoy)
+                                     = chNum + txChOffset (for SplitTR Tx)
+                                     = chNum + rxChOffset (for SplitTR Rx)
+
+        For CSL_bcdma* API's passed param ->channel_num = txChNum (for BlkCopy)
+                                                        = txChNum + txChOffset (for SplitTR Tx)
+                                                        = rxChNum + rxChOffset (for SplitTR Rx)
+    */
     uint32_t                iaGemOffset;
     /**< IA global event map offset to differentiate between main and MCU NAVSS */
     uint32_t                trigGemOffset;

@@ -68,12 +68,58 @@ extern "C" {
 /** \brief Maximum number of UDMA instance */
 #define UDMA_INST_ID_MAX                (2U)
 /* @} */
+ 
+/**
+ *  \anchor Udma_SocCfg
+ *  \name UDMA SOC Configuration
+ *
+ *  UDMA Soc Cfg - Flags to indicate the presnce of various SOC specific modules.
+ *
+ *  @{
+ */
+/** \brief Flag to indicate UDMAP module is present or not in the SOC*/
+#define UDMA_SOC_CFG_UDMAP_PRESENT               (1U)
+	
+/** \brief Flag to indicate LCDMA module is present or not in the SOC*/
+#define UDMA_SOC_CFG_LCDMA_PRESENT               (0U) 
+	
+/** \brief Flag to indicate Proxy is present or not in the SOC*/
+#define UDMA_SOC_CFG_PROXY_PRESENT               (1U) 
 
-/** \brief Number of UTC instance  - No UTC in J7200 */
-#define UDMA_NUM_UTC_INSTANCE           (CSL_NAVSS_UTC_CNT)
+/** \brief Flag to indicate Clec is present or not in the SOC*/
+#define UDMA_SOC_CFG_CLEC_PRESENT                (1U) 
+
+/** \brief Flag to indicate Normal RA is present or not in the SOC*/
+#define UDMA_SOC_CFG_RA_NORMAL_PRESENT           (1U) 
+
+/** \brief Flag to indicate LCDMA RA is present or not in the SOC*/
+#define UDMA_SOC_CFG_RA_LCDMA_PRESENT            (0U)
+
+/** \brief Flag to indicate Ring Monitor is present or not in the SOC*/
+#define UDMA_SOC_CFG_RING_MON_PRESENT            (1U)
 
 /** \brief Flag to indicate the SOC needs ring reset workaround */
-#define UDMA_APPLY_RING_WORKAROUND      (0)
+#define UDMA_SOC_CFG_APPLY_RING_WORKAROUND  	 (0U)
+/* @} */
+
+ /**
+ *  \anchor Udma_TxChFdepth
+ *  \name UDMA Tx Channels FDEPTH
+ *
+ *  UDMA Tx Ch Fdepth - Fdepth of various types of channels present in the SOC.
+ *
+ *  @{
+ */
+/** \brief Tx Ultra High Capacity Channel FDEPTH*/
+#define UDMA_TX_UHC_CHANS_FDEPTH         (CSL_NAVSS_UDMAP_TX_UHC_CHANS_FDEPTH)
+/** \brief Tx High Capacity Channel FDEPTH*/
+#define UDMA_TX_HC_CHANS_FDEPTH 		 (CSL_NAVSS_UDMAP_TX_HC_CHANS_FDEPTH)
+/** \brief Tx Normal Channel FDEPTH*/
+#define UDMA_TX_CHANS_FDEPTH 			 (CSL_NAVSS_UDMAP_TX_CHANS_FDEPTH)
+/* @} */
+
+/** \brief Number of UTC instance - No UTC in J7200 */
+#define UDMA_NUM_UTC_INSTANCE           (CSL_NAVSS_UTC_CNT)
 
 /**
  *  \anchor Udma_UtcIdSoc

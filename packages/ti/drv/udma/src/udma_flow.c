@@ -79,7 +79,7 @@ int32_t Udma_flowAlloc(Udma_DrvHandle drvHandle,
     uint32_t            flowStart = UDMA_FLOW_INVALID;
     uint32_t            i, j, offset, bitPos, bitMask, freeFlowCnt = 0U;
     Udma_RmInitPrms    *rmInitPrms = &drvHandle->initPrms.rmInitPrms;
-    uint32_t            freeFlowOffset;
+    uint32_t            freeFlowOffset = 0U;
 
     /* Error check */
     if((NULL_PTR == drvHandle) || (NULL_PTR == flowHandle) || (0U == flowCnt))
@@ -99,8 +99,26 @@ int32_t Udma_flowAlloc(Udma_DrvHandle drvHandle,
         Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.lockMutex != (Udma_OsalMutexLockFxn) NULL_PTR);
         drvHandle->initPrms.osalPrms.lockMutex(drvHandle->rmLock);
 
-        freeFlowOffset =
-            rmInitPrms->startFreeFlow + drvHandle->udmapRegs.rxChanCnt;
+#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
+        if(UDMA_INST_TYPE_NORMAL == drvHandle->instType)
+        {
+            freeFlowOffset =
+                rmInitPrms->startFreeFlow + drvHandle->udmapRegs.rxChanCnt;
+        }
+#endif
+#if (UDMA_SOC_CFG_LCDMA_PRESENT == 1)
+        if(UDMA_INST_TYPE_LCDMA_BCDMA == drvHandle->instType)
+        {
+            freeFlowOffset =
+                rmInitPrms->startFreeFlow + drvHandle->bcdmaRegs.rxChanCnt;
+        }
+        else
+        {
+            freeFlowOffset =
+                rmInitPrms->startFreeFlow + drvHandle->pktdmaRegs.rxChanCnt;
+        }
+#endif
+
         for(i = 0U; i < rmInitPrms->numFreeFlow; i++)
         {
             offset = i >> 5U;
@@ -158,7 +176,7 @@ int32_t Udma_flowFree(Udma_FlowHandle flowHandle)
     Udma_DrvHandle      drvHandle;
     uint32_t            i, j, offset, bitPos, bitMask;
     Udma_RmInitPrms    *rmInitPrms;
-    uint32_t            freeFlowOffset;
+    uint32_t            freeFlowOffset = 0U;
 
     /* Error check */
     if(NULL_PTR == flowHandle)
@@ -187,8 +205,27 @@ int32_t Udma_flowFree(Udma_FlowHandle flowHandle)
         drvHandle->initPrms.osalPrms.lockMutex(drvHandle->rmLock);
 
         rmInitPrms = &drvHandle->initPrms.rmInitPrms;
-        freeFlowOffset =
-            rmInitPrms->startFreeFlow + drvHandle->udmapRegs.rxChanCnt;
+
+#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
+        if(UDMA_INST_TYPE_NORMAL == drvHandle->instType)
+        {
+            freeFlowOffset =
+                rmInitPrms->startFreeFlow + drvHandle->udmapRegs.rxChanCnt;
+        }
+#endif
+#if (UDMA_SOC_CFG_LCDMA_PRESENT == 1)
+        if(UDMA_INST_TYPE_LCDMA_BCDMA == drvHandle->instType)
+        {
+            freeFlowOffset =
+                rmInitPrms->startFreeFlow + drvHandle->bcdmaRegs.rxChanCnt;
+        }
+        else
+        {
+            freeFlowOffset =
+                rmInitPrms->startFreeFlow + drvHandle->pktdmaRegs.rxChanCnt;
+        }
+#endif
+
         Udma_assert(drvHandle, flowHandle->flowStart >= freeFlowOffset);
         for(j = 0U; j < flowHandle->flowCnt; j++)
         {

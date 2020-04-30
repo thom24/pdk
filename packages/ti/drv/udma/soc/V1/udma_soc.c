@@ -75,6 +75,7 @@
 /** \brief Start thread ID of DMPAC TC0 UTC */
 #define UDMA_UTC_START_THREAD_ID_DMPAC_TC0  (CSL_PSILCFG_NAVSS_MAIN_DMPAC_TC0_CC_PSILD_THREAD_OFFSET)
 
+
 /* ========================================================================== */
 /*                         Structure Declarations                             */
 /* ========================================================================== */
@@ -249,7 +250,9 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
     CSL_ProxyTargetParams *pProxyTargetRing;
 
     instId = drvHandle->initPrms.instId;
-
+    
+    drvHandle->instType = UDMA_INST_TYPE_NORMAL;
+    
 #if defined (HOST_EMULATION)
     gHost_udmap_gcfgRegs.CAP0 = 0x000B800F;
     gHost_udmap_gcfgRegs.CAP1 = 0;
@@ -296,6 +299,7 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
     /*
      * RA config init
      */
+    drvHandle->raType = UDMA_RA_TYPE_NORMAL;
     pRaRegs = &drvHandle->raRegs;
     if(UDMA_INST_ID_MCU_0 == instId)
     {
@@ -482,9 +486,14 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
     }
 
     /* Init other variables */
-    drvHandle->txChOffset   = 0U;
-    drvHandle->extChOffset  = drvHandle->txChOffset + pUdmapRegs->txChanCnt;
-    drvHandle->rxChOffset   =
+    drvHandle->srcIdRingIrq          = drvHandle->devIdRing;
+    drvHandle->blkCopyRingIrqOffset  = TISCI_RINGACC0_OES_IRQ_SRC_IDX_START; 
+    drvHandle->txRingIrqOffset       = TISCI_RINGACC0_OES_IRQ_SRC_IDX_START;
+    drvHandle->rxRingIrqOffset       = TISCI_RINGACC0_OES_IRQ_SRC_IDX_START;
+    drvHandle->blkCopyChOffset       = 0U; 
+    drvHandle->txChOffset            = 0U;
+    drvHandle->extChOffset           = drvHandle->txChOffset + pUdmapRegs->txChanCnt;
+    drvHandle->rxChOffset            =
         drvHandle->extChOffset + pUdmapRegs->txExtUtcChanCnt;
     if(UDMA_INST_ID_MCU_0 == instId)
     {

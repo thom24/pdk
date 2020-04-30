@@ -473,7 +473,10 @@ void *Udma_ringGetMemPtr(Udma_RingHandle ringHandle);
 
 /**
  *  \brief UDMA ring monitor allocation API.
- *
+ *  
+ *  Note: In case of devices like AM64x where there is no ring monitor,
+ *  this API is not supported and will return error.
+ * 
  *  Requirement: DOX_REQ_TAG(PDK-3584)
  *
  *  \param drvHandle    [IN] UDMA driver handle pointer passed during
@@ -497,6 +500,9 @@ int32_t Udma_ringMonAlloc(Udma_DrvHandle drvHandle,
  *  \brief UDMA free ring monitor.
  *
  *  Freeup the ring monitor resources.
+ * 
+ *  Note: In case of devices like AM64x where there is no ring monitor,
+ *  this API is not supported and will return error.
  *
  *  Requirement: DOX_REQ_TAG(PDK-3584)
  *
@@ -509,6 +515,9 @@ int32_t Udma_ringMonFree(Udma_RingMonHandle monHandle);
 
 /**
  *  \brief UDMA ring monitor configure API.
+ * 
+ *  Note: In case of devices like AM64x where there is no ring monitor,
+ *  this API is not supported and will return error.
  *
  *  Requirement: DOX_REQ_TAG(PDK-3584)
  *
@@ -525,6 +534,9 @@ int32_t Udma_ringMonConfig(Udma_RingMonHandle monHandle,
  *  \brief UDMA ring monitor get data API.
  *
  *  Note: Reading the monitor register clears the read only counters.
+ * 
+ *  Note: In case of devices like AM64x where there is no ring monitor,
+ *  this API is not supported and will return error.
  *
  *  Requirement: DOX_REQ_TAG(PDK-3584)
  *
@@ -541,6 +553,9 @@ int32_t Udma_ringMonGetData(Udma_RingMonHandle monHandle,
  *  \brief Returns the ring monitor number.
  *
  *  Requirement: DOX_REQ_TAG(PDK-3584)
+ * 
+ *  Note: In case of devices like AM64x where there is no ring monitor,
+ *  this API is will always return UDMA_RING_MON_INVALID.
  *
  *  \param monHandle    [IN] UDMA ring monitor handle.
  *                           This parameter can't be NULL.
@@ -591,13 +606,10 @@ struct Udma_RingObj
 
     uint16_t                    ringNum;
     /**< Ring number */
+
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)    
     CSL_RingAccRingCfg          cfg;
     /**< Ring config */
-
-    /* Proxy address for the ring. Calculated at alloc time to reduce cycles at
-     * runtime */
-    uintptr_t                   proxyAddr;
-    /**< Proxy address for push/pop ring operation through proxy */
 
     /* Below register overlay pointers provided for debug purpose to
      * readily view the registers */
@@ -605,7 +617,26 @@ struct Udma_RingObj
     /**< Pointer to RA config register overlay */
     volatile CSL_ringacc_rtRegs_RINGRT *pRtRegs;
     /**< Pointer to RA RT config register overlay */
+#endif
+#if (UDMA_SOC_CFG_RA_LCDMA_PRESENT == 1)
+    CSL_LcdmaRingaccRingCfg          lcdmaCfg;
+    /**< Lcdma Ring config */
 
+    /* Below register overlay pointers provided for debug purpose to
+     * readily view the registers */
+    volatile CSL_lcdma_ringacc_ring_cfgRegs_RING  *pLcdmaCfgRegs;
+    /**< Pointer to Lcdma RA config register overlay */
+    volatile CSL_lcdma_ringacc_ringrtRegs_ring *pLcdmaRtRegs;
+    /**< Pointer to Lcdma RA RT config register overlay */
+#endif
+
+#if (UDMA_SOC_CFG_PROXY_PRESENT == 1)
+    /* Proxy address for the ring. Calculated at alloc time to reduce cycles at
+     * runtime */
+    uintptr_t                   proxyAddr;
+    /**< Proxy address for push/pop ring operation through proxy */
+#endif
+    
     uint32_t                    ringInitDone;
     /**< Flag to set the ring object is init. */
 };
@@ -624,10 +655,12 @@ struct Udma_RingMonObj
     uint16_t                    ringMonNum;
     /**< Ring number */
 
+#if (UDMA_SOC_CFG_RING_MON_PRESENT == 1)
     /* Below register overlay pointers provided for debug purpose to
      * readily view the registers */
     volatile CSL_ringacc_monitorRegs_mon  *pMonRegs;
     /**< Pointer to ring monitor register overlay */
+#endif
 
     uint32_t                    ringMonInitDone;
     /**< Flag to set the ring monitor object is init. */

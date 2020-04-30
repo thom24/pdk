@@ -236,11 +236,17 @@ typedef struct
     Udma_RingPrms           fqRingPrms;
     /**< [IN] Free queue ring params where descriptors are queued */
     Udma_RingPrms           cqRingPrms;
-    /**< [IN] Completion queue ring params where descriptors are dequeued */
+    /**< [IN] Completion queue ring params where descriptors are dequeued 
+     *   This is not used for AM64x kind of devices, but even if the application 
+     *   sets this it will be ignored. But its not required to be set.
+     */
     Udma_RingPrms           tdCqRingPrms;
     /**< [IN] Teardown completion queue ring params where teardown
      *   response and TR response incase of direct TR mode are received from
-     *   UDMA */
+     *   UDMA 
+     *   This is not used for AM64x kind of devices, but even if the application 
+     *   sets this it will be ignored. But its not required to be set.
+     */
 } Udma_ChPrms;
 
 /**
@@ -583,6 +589,8 @@ int32_t Udma_chConfigTx(Udma_ChHandle chHandle, const Udma_ChTxPrms *txPrms);
  *
  *  Configures the RX channel parameters. Note: This is applicable only
  *  when the channel type is RX
+ *  In case of BCDMA Block Copy, there is no need to configure RX Channel.
+ *  Therfore the function returns gracefully, without doing anything.
  *
  *  Note: This API can't be called after channel enable.
  *
@@ -799,6 +807,8 @@ Udma_FlowHandle Udma_chGetDefaultFlowHandle(Udma_ChHandle chHandle);
  *  when the queue is empty.
  *  Note: When executing a teardown sequence, the teardown ring should be
  *  popped using this API to avoid ring overflow.
+ *  Note: In case of devices like AM64x where there is no teardown function, 
+ *  this API is not supported and will return error.
  *
  *  Requirement: DOX_REQ_TAG(PDK-2589)
  *
@@ -1022,16 +1032,23 @@ struct Udma_ChObj
     Udma_RingHandle         fqRing;
     /**< Free queue ring handle */
     Udma_RingHandle         cqRing;
-    /**< Completion queue ring handle */
+    /**< Completion queue ring handle 
+    *    For AM64x kind of devices, where there is no seperate Completion queue,
+    *    this points to fqRing itself.
+    */
     Udma_RingHandle         tdCqRing;
     /**< Teardown completion queue ring handle */
 
     struct Udma_RingObj     fqRingObj;
     /**< Free queue ring object */
     struct Udma_RingObj     cqRingObj;
-    /**< Completion queue ring object */
+    /**< Completion queue ring object 
+    *    Not used for AM64x kind of devices, where there is no seperate Completion queue.       
+    */
     struct Udma_RingObj     tdCqRingObj;
-    /**< Teardown completion queue ring object */
+    /**< Teardown completion queue ring object 
+    *    Not used for AM64x kind of devices, where teardown function is not present.
+    */
 
     Udma_FlowHandle         defaultFlow;
     /**< Default flow handle */
@@ -1048,7 +1065,9 @@ struct Udma_ChObj
     Udma_ChUtcPrms          utcPrms;
     /**< UTC channel parameter passed during channel config. */
 
-    /* Below register overlay pointers provided for debug purpose to
+
+#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
+    /* Below UDMAP register overlay pointers provided for debug purpose to
      * readily view the registers */
     volatile CSL_udmap_txccfgRegs_chan  *pTxCfgRegs;
     /**< Pointer to UDMAP TX config register overlay */
@@ -1062,6 +1081,39 @@ struct Udma_ChObj
     /**< Pointer to UDMAP External config register overlay */
     volatile CSL_udmap_txcrtRegs_chan   *pExtRtRegs;
     /**< Pointer to UDMAP External RT config register overlay */
+#endif
+#if (UDMA_SOC_CFG_LCDMA_PRESENT == 1)
+    /* Below BCDMA register overlay pointers provided for debug purpose to
+     * readily view the registers */
+    volatile CSL_bcdma_bccfgRegs_chan   *pBcdmaBcCfgRegs;
+    /**< Pointer to BCDMA Block copy config register overlay */
+    volatile CSL_bcdma_bcrtRegs_chan    *pBcdmaBcRtRegs;
+    /**< Pointer to BCDMA Block copy RT config register overlay */
+    volatile CSL_bcdma_txccfgRegs_chan  *pBcdmaTxCfgRegs;
+    /**< Pointer to BCDMA TX config register overlay */
+    volatile CSL_bcdma_txcrtRegs_chan   *pBcdmaTxRtRegs;
+    /**< Pointer to BCDMA TX RT config register overlay */
+    volatile CSL_bcdma_rxccfgRegs_chan  *pBcdmaRxCfgRegs;
+    /**< Pointer to BCDMA RX config register overlay */
+    volatile CSL_bcdma_rxcrtRegs_chan   *pBcdmaRxRtRegs;
+    /**< Pointer to BCDMA RX RT config register overlay */
+
+    /* Below PKTDMA register overlay pointers provided for debug purpose to
+     * readily view the registers */
+    volatile CSL_pktdma_txccfgRegs_chan  *pPktdmaTxCfgRegs;
+    /**< Pointer to PKTDMA TX config register overlay */
+    volatile CSL_pktdma_txcrtRegs_chan   *pPktdmaTxRtRegs;
+    /**< Pointer to PKTDMA TX RT config register overlay */
+    volatile CSL_pktdma_rxccfgRegs_chan  *pPktdmaRxCfgRegs;
+    /**< Pointer to PKTDMA RX config register overlay */
+    volatile CSL_pktdma_rxcrtRegs_chan   *pPktdmaRxRtRegs;
+    /**< Pointer to PKTDMA RX RT config register overlay */
+    volatile CSL_pktdma_txccfgRegs_chan  *pPktdmaExtCfgRegs;
+    /**< Pointer to PKTDMA External config register overlay */
+    volatile CSL_pktdma_txcrtRegs_chan   *pPktdmaExtRtRegs;
+    /**< Pointer to PKTDMA External RT config register overlay */
+#endif
+    
 #if (UDMA_NUM_UTC_INSTANCE > 0)
     volatile CSL_DRU_CHNRTRegs_CHNRT    *pDruNrtRegs;
     /**< Pointer to DRU Non RT config register overlay */

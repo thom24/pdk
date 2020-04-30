@@ -98,6 +98,9 @@ typedef struct
 /**
  *  \brief UDMA proxy allocation API.
  *
+ *  Note: In case of devices like AM64x where there is no proxy,
+ *  this API is not supported and will return error.
+ * 
  *  Requirement: DOX_REQ_TAG(PDK-4156)
  *
  *  \param drvHandle    [IN] UDMA driver handle pointer passed during
@@ -121,6 +124,9 @@ int32_t Udma_proxyAlloc(Udma_DrvHandle drvHandle,
  *  \brief UDMA free proxy.
  *
  *  Freeup the proxy resources.
+ * 
+ *  Note: In case of devices like AM64x where there is no proxy,
+ *  this API is not supported and will return error.
  *
  *  Requirement: DOX_REQ_TAG(PDK-4156)
  *
@@ -140,6 +146,9 @@ int32_t Udma_proxyFree(Udma_ProxyHandle proxyHandle);
  *  If there is no change, the proxy queue/dequeue API can be called without
  *  the need to reconfigure the proxy (Thus saving CPU cycles)
  *
+ *  Note: In case of devices like AM64x where there is no proxy,
+ *  this API is not supported and will return error.
+ * 
  *  Requirement: DOX_REQ_TAG(PDK-4156)
  *
  *  \param proxyHandle  [IN] UDMA proxy handle.

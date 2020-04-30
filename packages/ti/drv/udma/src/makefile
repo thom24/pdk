@@ -19,6 +19,9 @@ endif
 ifeq ($(SOC),$(filter $(SOC), j7200))
   SRCDIR += soc/V2
 endif
+ifeq ($(SOC),$(filter $(SOC), am64x))
+  SRCDIR += soc/V3
+endif
 INCDIR =
 
 # List all the external components/interfaces, whose interface header files
@@ -29,12 +32,20 @@ INCLUDE_EXTERNAL_INTERFACES = pdk
 SRCS_COMMON += udma.c
 SRCS_COMMON += udma_rm.c udma_rmcfg.c
 SRCS_COMMON += udma_ch.c
-SRCS_COMMON += udma_ring.c udma_proxy.c udma_flow.c udma_event.c
+SRCS_COMMON += udma_ring_common.c udma_proxy.c udma_flow.c udma_event.c
 SRCS_COMMON += udma_osal.c udma_utils.c
 SRCS_COMMON += udma_soc.c
 #DRU is not present in all SOC
 ifeq ($(SOC),$(filter $(SOC), am65xx j721e))
 SRCS_COMMON += udma_dru.c
+endif
+#Normal RA is not present in all SOC
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
+SRCS_COMMON += udma_ring_normal.c
+endif
+#LCDMA RA is not present in all SOC
+ifeq ($(SOC),$(filter $(SOC), am64x))
+SRCS_COMMON += udma_ring_lcdma.c
 endif
 
 PACKAGE_SRCS_COMMON = udma.h udma_component.mk makefile .gitignore include docs $(SRCDIR)

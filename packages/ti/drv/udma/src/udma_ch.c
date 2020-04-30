@@ -59,6 +59,12 @@
 /*                          Function Declarations                             */
 /* ========================================================================== */
 
+static void  Udma_chAssignRegOverlay(Udma_DrvHandle drvHandle, Udma_ChHandle chHandle);
+static void  Udma_chInitRegs(Udma_ChHandle chHandle);
+static void  Udma_chPauseTxLocal(Udma_DrvHandle drvHandle, uint32_t txChNum, uint32_t chType);
+static void  Udma_chUnpauseTxLocal(Udma_DrvHandle drvHandle, uint32_t txChNum, uint32_t chType);
+static void  Udma_chPauseRxLocal(Udma_DrvHandle drvHandle, uint32_t rxChNum);
+static void  Udma_chUnpauseRxLocal(Udma_DrvHandle drvHandle, uint32_t rxChNum);
 static int32_t Udma_chCheckParams(Udma_DrvHandle drvHandle,
                                   uint32_t chType,
                                   const Udma_ChPrms *chPrms);
@@ -150,12 +156,7 @@ int32_t Udma_chOpen(Udma_DrvHandle drvHandle,
         UdmaChTxPrms_init(&chHandle->txPrms, chType);
         UdmaChRxPrms_init(&chHandle->rxPrms, chType);
         UdmaChUtcPrms_init(&chHandle->utcPrms);
-        chHandle->pTxCfgRegs        = (volatile CSL_udmap_txccfgRegs_chan *) NULL_PTR;
-        chHandle->pTxRtRegs         = (volatile CSL_udmap_txcrtRegs_chan *) NULL_PTR;
-        chHandle->pRxCfgRegs        = (volatile CSL_udmap_rxccfgRegs_chan *) NULL_PTR;
-        chHandle->pRxRtRegs         = (volatile CSL_udmap_rxcrtRegs_chan *) NULL_PTR;
-        chHandle->pExtCfgRegs       = (volatile CSL_udmap_txccfgRegs_chan *) NULL_PTR;
-        chHandle->pExtRtRegs        = (volatile CSL_udmap_txcrtRegs_chan *) NULL_PTR;
+        Udma_chInitRegs(chHandle);
 #if (UDMA_NUM_UTC_INSTANCE > 0)
         chHandle->pDruNrtRegs       = (volatile CSL_DRU_CHNRTRegs_CHNRT *) NULL_PTR;
         chHandle->pDruRtRegs        = (volatile CSL_DRU_CHRTRegs_CHRT *) NULL_PTR;
@@ -318,7 +319,6 @@ int32_t Udma_chConfigTx(Udma_ChHandle chHandle, const Udma_ChTxPrms *txPrms)
                                           TISCI_MSG_VALUE_RM_UDMAP_CH_BURST_SIZE_VALID |
                                           TISCI_MSG_VALUE_RM_UDMAP_CH_TX_CREDIT_COUNT_VALID;
         rmUdmaTxReq.nav_id              = drvHandle->devIdUdma;
-        rmUdmaTxReq.index               = (uint16_t)chHandle->txChNum;
         rmUdmaTxReq.tx_pause_on_err     = txPrms->pauseOnError;
         rmUdmaTxReq.tx_filt_einfo       = txPrms->filterEinfo;
         rmUdmaTxReq.tx_filt_pswords     = txPrms->filterPsWords;
@@ -332,6 +332,23 @@ int32_t Udma_chConfigTx(Udma_ChHandle chHandle, const Udma_ChTxPrms *txPrms)
         rmUdmaTxReq.tx_burst_size       = txPrms->burstSize;
         rmUdmaTxReq.tx_sched_priority   = txPrms->dmaPriority;
         rmUdmaTxReq.tx_credit_count     = txPrms->txCredit;
+        /* This workaround is to support Config of BCDMA Block Copy channel using same Sciclient API.
+        *
+        *  In case of BCDMA, the channels are spread across three MMR regions tchan, rchan, and bchan.
+        *  So when blkCopyChOffset is added to index, the tx_ch_cfg API RM knows it’s a block copy channel 
+        *  and programs within the bchan MMR region. Otherwise the tx_ch_cfg API RM knows it’s a 
+        *  split tr tx channel and programs within the tchan MMR region.
+        *
+        *  In case of UDMAP blkCopyChOffset must be 0.
+        */ 
+        if((chHandle->chType & UDMA_CH_FLAG_BLK_COPY) == UDMA_CH_FLAG_BLK_COPY)
+        {
+            rmUdmaTxReq.index           = (uint16_t) (chHandle->txChNum + drvHandle->blkCopyChOffset);
+        }
+        else
+        {
+            rmUdmaTxReq.index           = (uint16_t)chHandle->txChNum;
+        }
         if(NULL_PTR != chHandle->tdCqRing)
         {
             Udma_assert(drvHandle,
@@ -371,133 +388,140 @@ int32_t Udma_chConfigRx(Udma_ChHandle chHandle, const Udma_ChRxPrms *rxPrms)
     Udma_FlowPrms       flowPrms;
     uint16_t            cqRing, fqRing;
 
-    /* Error check */
-    if((NULL_PTR == chHandle) ||
-       (chHandle->chInitDone != UDMA_INIT_DONE) ||
-       ((chHandle->chType & UDMA_CH_FLAG_RX) != UDMA_CH_FLAG_RX))
+    if ((UDMA_INST_TYPE_LCDMA_BCDMA                 == chHandle->drvHandle->instType) && 
+        ((chHandle->chType & UDMA_CH_FLAG_BLK_COPY) == UDMA_CH_FLAG_BLK_COPY))
     {
-        retVal = UDMA_EBADARGS;
-    }
-    if(UDMA_SOK == retVal)
+        /* For BCDMA Block Copy, no need to configure Rx Channel.*/
+    } 
+    else
     {
-        drvHandle = chHandle->drvHandle;
-        if((NULL_PTR == drvHandle) || (drvHandle->drvInitDone != UDMA_INIT_DONE))
+        /* Error check */
+        if((NULL_PTR == chHandle) ||
+           (chHandle->chInitDone != UDMA_INIT_DONE) ||
+           ((chHandle->chType & UDMA_CH_FLAG_RX) != UDMA_CH_FLAG_RX))
         {
-            retVal = UDMA_EFAIL;
+            retVal = UDMA_EBADARGS;
         }
-    }
-
-    if(UDMA_SOK == retVal)
-    {
-        /* Note: Block copy uses same RX channel as TX */
-        Udma_assert(drvHandle, chHandle->rxChNum != UDMA_DMA_CH_INVALID);
-
-        /* Copy params */
-        rmUdmaRxReq.valid_params        = TISCI_MSG_VALUE_RM_UDMAP_CH_PAUSE_ON_ERR_VALID |
-                                          TISCI_MSG_VALUE_RM_UDMAP_CH_ATYPE_VALID |
-                                          TISCI_MSG_VALUE_RM_UDMAP_CH_CHAN_TYPE_VALID |
-                                          TISCI_MSG_VALUE_RM_UDMAP_CH_FETCH_SIZE_VALID |
-                                          TISCI_MSG_VALUE_RM_UDMAP_CH_CQ_QNUM_VALID |
-                                          TISCI_MSG_VALUE_RM_UDMAP_CH_PRIORITY_VALID |
-                                          TISCI_MSG_VALUE_RM_UDMAP_CH_QOS_VALID |
-                                          TISCI_MSG_VALUE_RM_UDMAP_CH_ORDER_ID_VALID |
-                                          TISCI_MSG_VALUE_RM_UDMAP_CH_SCHED_PRIORITY_VALID |
-                                          TISCI_MSG_VALUE_RM_UDMAP_CH_RX_FLOWID_START_VALID |
-                                          TISCI_MSG_VALUE_RM_UDMAP_CH_RX_FLOWID_CNT_VALID |
-                                          TISCI_MSG_VALUE_RM_UDMAP_CH_RX_IGNORE_SHORT_VALID |
-                                          TISCI_MSG_VALUE_RM_UDMAP_CH_RX_IGNORE_LONG_VALID |
-                                          TISCI_MSG_VALUE_RM_UDMAP_CH_BURST_SIZE_VALID;
-        rmUdmaRxReq.nav_id              = drvHandle->devIdUdma;
-        rmUdmaRxReq.index               = (uint16_t)chHandle->rxChNum;
-        rmUdmaRxReq.rx_pause_on_err     = rxPrms->pauseOnError;
-        rmUdmaRxReq.rx_atype            = rxPrms->addrType;
-        rmUdmaRxReq.rx_chan_type        = rxPrms->chanType;
-        rmUdmaRxReq.rx_fetch_size       = rxPrms->fetchWordSize;
-        rmUdmaRxReq.rx_priority         = rxPrms->busPriority;
-        rmUdmaRxReq.rx_qos              = rxPrms->busQos;
-        rmUdmaRxReq.rx_orderid          = rxPrms->busOrderId;
-        rmUdmaRxReq.rx_sched_priority   = rxPrms->dmaPriority;
-        rmUdmaRxReq.flowid_start        = rxPrms->flowIdFwRangeStart;
-        rmUdmaRxReq.flowid_cnt          = rxPrms->flowIdFwRangeCnt;
-        rmUdmaRxReq.rx_ignore_short     = rxPrms->ignoreShortPkts;
-        rmUdmaRxReq.rx_ignore_long      = rxPrms->ignoreLongPkts;
-        rmUdmaRxReq.rx_burst_size       = rxPrms->burstSize;
-        if(NULL_PTR != chHandle->tdCqRing)
+        if(UDMA_SOK == retVal)
         {
-            Udma_assert(drvHandle,
-                chHandle->tdCqRing->ringNum != UDMA_RING_INVALID);
-            /* used for pass by value and teardown */
-            rmUdmaRxReq.rxcq_qnum          = chHandle->tdCqRing->ringNum;
-        }
-        else
-        {
-            /* TD CQ not used */
-            rmUdmaRxReq.rxcq_qnum          = UDMA_RING_INVALID;
-        }
-
-        /* Config UDMAP RX channel */
-        retVal = Sciclient_rmUdmapRxChCfg(
-                     &rmUdmaRxReq, &rmUdmaRxResp, UDMA_SCICLIENT_TIMEOUT);
-        if(CSL_PASS != retVal)
-        {
-            Udma_printf(drvHandle, "[Error] UDMA RX config failed!!!\n");
-        }
-
-        /* Configure default flow for PDMA and other PSIL channels */
-        if((((chHandle->chType & UDMA_CH_FLAG_PDMA) == UDMA_CH_FLAG_PDMA) ||
-                ((chHandle->chType & UDMA_CH_FLAG_PSIL) == UDMA_CH_FLAG_PSIL)) &&
-           (TRUE == rxPrms->configDefaultFlow))
-        {
-            UdmaFlowPrms_init(&flowPrms, chHandle->chType);
-
-            if(NULL_PTR == chHandle->cqRing)
+            drvHandle = chHandle->drvHandle;
+            if((NULL_PTR == drvHandle) || (drvHandle->drvInitDone != UDMA_INIT_DONE))
             {
-                /* Ring not allocated */
-                cqRing = UDMA_RING_INVALID;
+                retVal = UDMA_EFAIL;
+            }
+        }
+
+        if(UDMA_SOK == retVal)
+        {
+            /* Note: Block copy uses same RX channel as TX */
+            Udma_assert(drvHandle, chHandle->rxChNum != UDMA_DMA_CH_INVALID);
+
+            /* Copy params */
+            rmUdmaRxReq.valid_params        = TISCI_MSG_VALUE_RM_UDMAP_CH_PAUSE_ON_ERR_VALID |
+                                              TISCI_MSG_VALUE_RM_UDMAP_CH_ATYPE_VALID |
+                                              TISCI_MSG_VALUE_RM_UDMAP_CH_CHAN_TYPE_VALID |
+                                              TISCI_MSG_VALUE_RM_UDMAP_CH_FETCH_SIZE_VALID |
+                                              TISCI_MSG_VALUE_RM_UDMAP_CH_CQ_QNUM_VALID |
+                                              TISCI_MSG_VALUE_RM_UDMAP_CH_PRIORITY_VALID |
+                                              TISCI_MSG_VALUE_RM_UDMAP_CH_QOS_VALID |
+                                              TISCI_MSG_VALUE_RM_UDMAP_CH_ORDER_ID_VALID |
+                                              TISCI_MSG_VALUE_RM_UDMAP_CH_SCHED_PRIORITY_VALID |
+                                              TISCI_MSG_VALUE_RM_UDMAP_CH_RX_FLOWID_START_VALID |
+                                              TISCI_MSG_VALUE_RM_UDMAP_CH_RX_FLOWID_CNT_VALID |
+                                              TISCI_MSG_VALUE_RM_UDMAP_CH_RX_IGNORE_SHORT_VALID |
+                                              TISCI_MSG_VALUE_RM_UDMAP_CH_RX_IGNORE_LONG_VALID |
+                                              TISCI_MSG_VALUE_RM_UDMAP_CH_BURST_SIZE_VALID;
+            rmUdmaRxReq.nav_id              = drvHandle->devIdUdma;
+            rmUdmaRxReq.index               = (uint16_t)chHandle->rxChNum;
+            rmUdmaRxReq.rx_pause_on_err     = rxPrms->pauseOnError;
+            rmUdmaRxReq.rx_atype            = rxPrms->addrType;
+            rmUdmaRxReq.rx_chan_type        = rxPrms->chanType;
+            rmUdmaRxReq.rx_fetch_size       = rxPrms->fetchWordSize;
+            rmUdmaRxReq.rx_priority         = rxPrms->busPriority;
+            rmUdmaRxReq.rx_qos              = rxPrms->busQos;
+            rmUdmaRxReq.rx_orderid          = rxPrms->busOrderId;
+            rmUdmaRxReq.rx_sched_priority   = rxPrms->dmaPriority;
+            rmUdmaRxReq.flowid_start        = rxPrms->flowIdFwRangeStart;
+            rmUdmaRxReq.flowid_cnt          = rxPrms->flowIdFwRangeCnt;
+            rmUdmaRxReq.rx_ignore_short     = rxPrms->ignoreShortPkts;
+            rmUdmaRxReq.rx_ignore_long      = rxPrms->ignoreLongPkts;
+            rmUdmaRxReq.rx_burst_size       = rxPrms->burstSize;
+            if(NULL_PTR != chHandle->tdCqRing)
+            {
+                Udma_assert(drvHandle,
+                    chHandle->tdCqRing->ringNum != UDMA_RING_INVALID);
+                /* used for pass by value and teardown */
+                rmUdmaRxReq.rxcq_qnum          = chHandle->tdCqRing->ringNum;
             }
             else
             {
-                cqRing = chHandle->cqRing->ringNum;
-                Udma_assert(drvHandle, cqRing != UDMA_RING_INVALID);
-            }
-            if(NULL_PTR == chHandle->fqRing)
-            {
-                /* Ring not allocated */
-                fqRing = UDMA_RING_INVALID;
-            }
-            else
-            {
-                fqRing = chHandle->fqRing->ringNum;
-                Udma_assert(drvHandle, fqRing != UDMA_RING_INVALID);
+                /* TD CQ not used */
+                rmUdmaRxReq.rxcq_qnum          = UDMA_RING_INVALID;
             }
 
-            flowPrms.defaultRxCQ    = cqRing;
-            /* Use the same free queue as default flow is not used in
-             * selecting different queues based on threshold */
-            flowPrms.fdq0Sz0Qnum    = fqRing;
-            flowPrms.fdq0Sz1Qnum    = fqRing;
-            flowPrms.fdq0Sz2Qnum    = fqRing;
-            flowPrms.fdq0Sz3Qnum    = fqRing;
-            flowPrms.fdq1Qnum       = fqRing;
-            flowPrms.fdq2Qnum       = fqRing;
-            flowPrms.fdq3Qnum       = fqRing;
-
-            /* Config default flow. Caller can overwite again if required */
-            retVal = Udma_flowConfig(chHandle->defaultFlow, 0U, &flowPrms);
-            if(UDMA_SOK != retVal)
+            /* Config UDMAP RX channel */
+            retVal = Sciclient_rmUdmapRxChCfg(
+                         &rmUdmaRxReq, &rmUdmaRxResp, UDMA_SCICLIENT_TIMEOUT);
+            if(CSL_PASS != retVal)
             {
-                Udma_printf(drvHandle,
-                    "[Error] UDMAP default RX flow config failed!!!\n");
+                Udma_printf(drvHandle, "[Error] UDMA RX config failed!!!\n");
+            }
+
+            /* Configure default flow for PDMA and other PSIL channels */
+            if((((chHandle->chType & UDMA_CH_FLAG_PDMA) == UDMA_CH_FLAG_PDMA) ||
+                    ((chHandle->chType & UDMA_CH_FLAG_PSIL) == UDMA_CH_FLAG_PSIL)) &&
+               (TRUE == rxPrms->configDefaultFlow))
+            {
+                UdmaFlowPrms_init(&flowPrms, chHandle->chType);
+
+                if(NULL_PTR == chHandle->cqRing)
+                {
+                    /* Ring not allocated */
+                    cqRing = UDMA_RING_INVALID;
+                }
+                else
+                {
+                    cqRing = chHandle->cqRing->ringNum;
+                    Udma_assert(drvHandle, cqRing != UDMA_RING_INVALID);
+                }
+                if(NULL_PTR == chHandle->fqRing)
+                {
+                    /* Ring not allocated */
+                    fqRing = UDMA_RING_INVALID;
+                }
+                else
+                {
+                    fqRing = chHandle->fqRing->ringNum;
+                    Udma_assert(drvHandle, fqRing != UDMA_RING_INVALID);
+                }
+
+                flowPrms.defaultRxCQ    = cqRing;
+                /* Use the same free queue as default flow is not used in
+                 * selecting different queues based on threshold */
+                flowPrms.fdq0Sz0Qnum    = fqRing;
+                flowPrms.fdq0Sz1Qnum    = fqRing;
+                flowPrms.fdq0Sz2Qnum    = fqRing;
+                flowPrms.fdq0Sz3Qnum    = fqRing;
+                flowPrms.fdq1Qnum       = fqRing;
+                flowPrms.fdq2Qnum       = fqRing;
+                flowPrms.fdq3Qnum       = fqRing;
+
+                /* Config default flow. Caller can overwite again if required */
+                retVal = Udma_flowConfig(chHandle->defaultFlow, 0U, &flowPrms);
+                if(UDMA_SOK != retVal)
+                {
+                    Udma_printf(drvHandle,
+                        "[Error] UDMAP default RX flow config failed!!!\n");
+                }
             }
         }
-    }
 
-    if(UDMA_SOK == retVal)
-    {
-        /* Copy the config */
-        (void) memcpy(&chHandle->rxPrms, rxPrms, sizeof(chHandle->rxPrms));
+        if(UDMA_SOK == retVal)
+        {
+            /* Copy the config */
+            (void) memcpy(&chHandle->rxPrms, rxPrms, sizeof(chHandle->rxPrms));
+        }
     }
-
     return (retVal);
 }
 
@@ -661,6 +685,7 @@ int32_t Udma_chConfigPdma(Udma_ChHandle chHandle,
 {
     int32_t         retVal = UDMA_SOK;
     uint32_t        regVal;
+    volatile uint32_t        *PEER8=NULL, *PEER0=NULL, *PEER1=NULL;
     Udma_DrvHandle  drvHandle;
 
     /* Error check */
@@ -682,36 +707,83 @@ int32_t Udma_chConfigPdma(Udma_ChHandle chHandle,
 
     if(UDMA_SOK == retVal)
     {
-        if((chHandle->chType & UDMA_CH_FLAG_TX) == UDMA_CH_FLAG_TX)
+        
+#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
+        if(UDMA_INST_TYPE_NORMAL == drvHandle->instType)
         {
-            Udma_assert(drvHandle, chHandle->pTxRtRegs != NULL_PTR);
+            if((chHandle->chType & UDMA_CH_FLAG_TX) == UDMA_CH_FLAG_TX)
+            {
+                Udma_assert(drvHandle, chHandle->pTxRtRegs != NULL_PTR);
 
-            regVal = CSL_REG32_RD(&chHandle->pTxRtRegs->PEER8);
-            CSL_FINS(regVal, PSILCFG_REG_RT_ENABLE_ENABLE, (uint32_t) 0U);
-            CSL_REG32_WR(&chHandle->pTxRtRegs->PEER8, regVal);
+                PEER8 = &chHandle->pTxRtRegs->PEER8;
+                PEER1 = &chHandle->pTxRtRegs->PEER1;
+                PEER0 = &chHandle->pTxRtRegs->PEER0;
+            }
+            else
+            {
+                Udma_assert(drvHandle, chHandle->pRxRtRegs != NULL_PTR);
 
-            regVal = CSL_FMK(PSILCFG_REG_STATIC_TR_X, pdmaPrms->elemSize) |
-                     CSL_FMK(PSILCFG_REG_STATIC_TR_Y, pdmaPrms->elemCnt);
-            CSL_REG32_WR(&chHandle->pTxRtRegs->PEER0, regVal);
-
-            regVal = CSL_FMK(PSILCFG_REG_STATIC_TR_Z, pdmaPrms->fifoCnt);
-            CSL_REG32_WR(&chHandle->pTxRtRegs->PEER1, regVal);
+                PEER8 = &chHandle->pRxRtRegs->PEER8;
+                PEER1 = &chHandle->pRxRtRegs->PEER1;
+                PEER0 = &chHandle->pRxRtRegs->PEER0;
+            }
         }
-        else
+#endif
+#if (UDMA_SOC_CFG_LCDMA_PRESENT == 1)
+        if(UDMA_INST_TYPE_LCDMA_BCDMA == drvHandle->instType)
         {
-            Udma_assert(drvHandle, chHandle->pRxRtRegs != NULL_PTR);
+            if((chHandle->chType & UDMA_CH_FLAG_TX) == UDMA_CH_FLAG_TX)
+            {
+                Udma_assert(drvHandle, chHandle->pBcdmaTxRtRegs != NULL_PTR);
 
-            regVal = CSL_REG32_RD(&chHandle->pRxRtRegs->PEER8);
-            CSL_FINS(regVal, PSILCFG_REG_RT_ENABLE_ENABLE, (uint32_t) 0U);
-            CSL_REG32_WR(&chHandle->pRxRtRegs->PEER8, regVal);
+                PEER8 = &chHandle->pBcdmaTxRtRegs->PEER8;
+                PEER1 = &chHandle->pBcdmaTxRtRegs->PEER1;
+                PEER0 = &chHandle->pBcdmaTxRtRegs->PEER0;
+            }
+            else
+            {
+                Udma_assert(drvHandle, chHandle->pBcdmaRxRtRegs != NULL_PTR);
 
-            regVal = CSL_FMK(PSILCFG_REG_STATIC_TR_X, pdmaPrms->elemSize) |
-                     CSL_FMK(PSILCFG_REG_STATIC_TR_Y, pdmaPrms->elemCnt);
-            CSL_REG32_WR(&chHandle->pRxRtRegs->PEER0, regVal);
+                PEER8 = &chHandle->pBcdmaRxRtRegs->PEER8;
+                PEER1 = &chHandle->pBcdmaRxRtRegs->PEER1;
+                PEER0 = &chHandle->pBcdmaRxRtRegs->PEER0;
+            }
 
-            regVal = CSL_FMK(PSILCFG_REG_STATIC_TR_Z, pdmaPrms->fifoCnt);
-            CSL_REG32_WR(&chHandle->pRxRtRegs->PEER1, regVal);
         }
+        else if(UDMA_INST_TYPE_LCDMA_PKTDMA == drvHandle->instType)
+        {
+            if((chHandle->chType & UDMA_CH_FLAG_TX) == UDMA_CH_FLAG_TX)
+            {
+                Udma_assert(drvHandle, chHandle->pPktdmaTxRtRegs != NULL_PTR);
+
+                PEER8 = &chHandle->pPktdmaTxRtRegs->PEER8;
+                PEER1 = &chHandle->pPktdmaTxRtRegs->PEER1;
+                PEER0 = &chHandle->pPktdmaTxRtRegs->PEER0;
+            }
+            else
+            {
+                Udma_assert(drvHandle, chHandle->pPktdmaRxRtRegs != NULL_PTR);
+
+                PEER8 = &chHandle->pPktdmaRxRtRegs->PEER8;
+                PEER1 = &chHandle->pPktdmaRxRtRegs->PEER1;
+                PEER0 = &chHandle->pPktdmaRxRtRegs->PEER0;
+            }
+        }
+#endif
+        Udma_assert(drvHandle, PEER8 != NULL_PTR);
+        regVal = CSL_REG32_RD(PEER8);
+        CSL_FINS(regVal, PSILCFG_REG_RT_ENABLE_ENABLE, (uint32_t) 0U);
+        CSL_REG32_WR(PEER8, regVal);
+
+        Udma_assert(drvHandle, PEER0 != NULL_PTR);
+        regVal = CSL_FMK(PSILCFG_REG_STATIC_TR_X, pdmaPrms->elemSize) |
+                    CSL_FMK(PSILCFG_REG_STATIC_TR_Y, pdmaPrms->elemCnt);
+        CSL_REG32_WR(PEER0, regVal);
+
+        Udma_assert(drvHandle, PEER1 != NULL_PTR);
+        regVal = CSL_FMK(PSILCFG_REG_STATIC_TR_Z, pdmaPrms->fifoCnt);
+        CSL_REG32_WR(PEER1, regVal);
+        
     }
 
     return (retVal);
@@ -825,14 +897,22 @@ int32_t Udma_chPause(Udma_ChHandle chHandle)
         if((chHandle->chType & UDMA_CH_FLAG_TX) == UDMA_CH_FLAG_TX)
         {
             Udma_assert(drvHandle, chHandle->txChNum != UDMA_DMA_CH_INVALID);
-            (void) CSL_udmapPauseTxChan(&drvHandle->udmapRegs, chHandle->txChNum);
+            Udma_chPauseTxLocal(drvHandle, chHandle->txChNum, chHandle->chType);
         }
 
         if((chHandle->chType & UDMA_CH_FLAG_RX) == UDMA_CH_FLAG_RX)
         {
             /* Note: Block copy uses same RX channel. So do for both TX/RX */
-            Udma_assert(drvHandle, chHandle->rxChNum != UDMA_DMA_CH_INVALID);
-            (void) CSL_udmapPauseRxChan(&drvHandle->udmapRegs, chHandle->rxChNum);
+            if ((UDMA_INST_TYPE_LCDMA_BCDMA                 == chHandle->drvHandle->instType) && 
+                ((chHandle->chType & UDMA_CH_FLAG_BLK_COPY) == UDMA_CH_FLAG_BLK_COPY))
+            {
+                /* In case of BCDMA Block Copy, No need to do for RX */
+            }
+            else
+            {
+                Udma_assert(drvHandle, chHandle->rxChNum != UDMA_DMA_CH_INVALID);
+                Udma_chPauseRxLocal(drvHandle, chHandle->rxChNum);
+            }
         }
 
 #if (UDMA_NUM_UTC_INSTANCE > 0)
@@ -848,9 +928,7 @@ int32_t Udma_chPause(Udma_ChHandle chHandle)
             /* Direct TR mode doesn't need UDMAP channel programming */
             if(CSL_DRU_OWNER_UDMAC_TR == chHandle->utcPrms.druOwner)
             {
-                (void) CSL_udmapPauseTxChan(
-                    &drvHandle->udmapRegs,
-                    chHandle->extChNum + drvHandle->extChOffset);
+                Udma_chPauseTxLocal(drvHandle, chHandle->extChNum + drvHandle->extChOffset, chHandle->chType);
             }
 
             /* Pause DRU incase of direct TR mode */
@@ -903,14 +981,21 @@ int32_t Udma_chResume(Udma_ChHandle chHandle)
         if((chHandle->chType & UDMA_CH_FLAG_TX) == UDMA_CH_FLAG_TX)
         {
             Udma_assert(drvHandle, chHandle->txChNum != UDMA_DMA_CH_INVALID);
-            (void) CSL_udmapUnpauseTxChan(&drvHandle->udmapRegs, chHandle->txChNum);
+            Udma_chUnpauseTxLocal(drvHandle, chHandle->txChNum, chHandle->chType);
         }
-
         if((chHandle->chType & UDMA_CH_FLAG_RX) == UDMA_CH_FLAG_RX)
         {
             /* Note: Block copy uses same RX channel. So do for both TX/RX */
-            Udma_assert(drvHandle, chHandle->rxChNum != UDMA_DMA_CH_INVALID);
-            (void) CSL_udmapUnpauseRxChan(&drvHandle->udmapRegs, chHandle->rxChNum);
+            if ((UDMA_INST_TYPE_LCDMA_BCDMA                 == chHandle->drvHandle->instType) && 
+                ((chHandle->chType & UDMA_CH_FLAG_BLK_COPY) == UDMA_CH_FLAG_BLK_COPY))
+            {
+                /* In case of BCDMA Block Copy, No need to do for RX */
+            }
+            else
+            {
+                Udma_assert(drvHandle, chHandle->rxChNum != UDMA_DMA_CH_INVALID);
+                Udma_chUnpauseRxLocal(drvHandle, chHandle->rxChNum); 
+            }
         }
 
 #if (UDMA_NUM_UTC_INSTANCE > 0)
@@ -926,9 +1011,7 @@ int32_t Udma_chResume(Udma_ChHandle chHandle)
             /* Direct TR mode doesn't need UDMAP channel programming */
             if(CSL_DRU_OWNER_UDMAC_TR == chHandle->utcPrms.druOwner)
             {
-                (void) CSL_udmapUnpauseTxChan(
-                    &drvHandle->udmapRegs,
-                    chHandle->extChNum + drvHandle->extChOffset);
+                Udma_chUnpauseTxLocal(drvHandle, chHandle->extChNum + drvHandle->extChOffset, chHandle->chType);
             }
 
             /* Resume DRU incase of direct TR mode */
@@ -1146,6 +1229,7 @@ Udma_FlowHandle Udma_chGetDefaultFlowHandle(Udma_ChHandle chHandle)
 int32_t Udma_chDequeueTdResponse(Udma_ChHandle chHandle,
                                  CSL_UdmapTdResponse *tdResponse)
 {
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
     int32_t     retVal = UDMA_SOK, cslRetVal;
     uint64_t    response;
 
@@ -1158,6 +1242,7 @@ int32_t Udma_chDequeueTdResponse(Udma_ChHandle chHandle,
             &chHandle->tdCqRing->cfg,
             &response,
             &Udma_ringaccMemOps);
+        
         if(0 != cslRetVal)
         {
             retVal = UDMA_ETIMEOUT;
@@ -1171,6 +1256,10 @@ int32_t Udma_chDequeueTdResponse(Udma_ChHandle chHandle,
     {
         retVal = UDMA_EFAIL;
     }
+#else
+    int32_t         retVal = UDMA_EFAIL;
+    Udma_printf(chHandle->drvHandle, "[Error] Teardown not supported!!!\n");
+#endif
 
     return (retVal);
 }
@@ -1205,9 +1294,29 @@ int32_t Udma_chSetSwTrigger(Udma_ChHandle chHandle, uint32_t trigger)
         if(((chHandle->chType & UDMA_CH_FLAG_BLK_COPY) == UDMA_CH_FLAG_BLK_COPY) ||
            ((chHandle->chType & UDMA_CH_FLAG_TX) == UDMA_CH_FLAG_TX))
         {
-            Udma_assert(drvHandle, chHandle->pTxRtRegs != NULL_PTR);
-            CSL_REG32_WR(
-                &chHandle->pTxRtRegs->SWTRIG, ((uint32_t)1U << (trigger - 1U)));
+
+#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
+            if(UDMA_INST_TYPE_NORMAL == drvHandle->instType)
+            {
+                Udma_assert(drvHandle, chHandle->pTxRtRegs != NULL_PTR);
+                CSL_REG32_WR(
+                    &chHandle->pTxRtRegs->SWTRIG, ((uint32_t)1U << (trigger - 1U)));
+            }
+#endif
+#if (UDMA_SOC_CFG_LCDMA_PRESENT == 1)
+            if(UDMA_INST_TYPE_LCDMA_BCDMA == drvHandle->instType)
+            {
+                Udma_assert(drvHandle, chHandle->pBcdmaTxRtRegs != NULL_PTR);
+                CSL_REG32_WR(
+                    &chHandle->pBcdmaTxRtRegs->SWTRIG, ((uint32_t)1U << (trigger - 1U)));
+            }
+            else if(UDMA_INST_TYPE_LCDMA_PKTDMA == drvHandle->instType)
+            {
+                retVal = UDMA_EFAIL;
+                Udma_printf(drvHandle,
+                            "[Error] SW trigger not supported for PKTDMA TX channels!!!\n");
+            }
+#endif
         }
         else if((chHandle->chType & UDMA_CH_FLAG_RX) == UDMA_CH_FLAG_RX)
         {
@@ -1498,17 +1607,17 @@ void UdmaChTxPrms_init(Udma_ChTxPrms *txPrms, uint32_t chType)
         txPrms->txCredit        = 0U;
         if((chType & UDMA_CH_FLAG_UHC) == UDMA_CH_FLAG_UHC)
         {
-            txPrms->fifoDepth   = (uint16_t)CSL_NAVSS_UDMAP_TX_UHC_CHANS_FDEPTH;
+            txPrms->fifoDepth   = (uint16_t)UDMA_TX_UHC_CHANS_FDEPTH;
             txPrms->burstSize   = TISCI_MSG_VALUE_RM_UDMAP_CH_BURST_SIZE_256_BYTES;
         }
         else if((chType & UDMA_CH_FLAG_HC) == UDMA_CH_FLAG_HC)
         {
-            txPrms->fifoDepth   = (uint16_t)CSL_NAVSS_UDMAP_TX_HC_CHANS_FDEPTH;
+            txPrms->fifoDepth   = (uint16_t)UDMA_TX_HC_CHANS_FDEPTH;
             txPrms->burstSize   = TISCI_MSG_VALUE_RM_UDMAP_CH_BURST_SIZE_256_BYTES;
         }
         else
         {
-            txPrms->fifoDepth   = (uint16_t)CSL_NAVSS_UDMAP_TX_CHANS_FDEPTH;
+            txPrms->fifoDepth   = (uint16_t)UDMA_TX_CHANS_FDEPTH;
             txPrms->burstSize   = TISCI_MSG_VALUE_RM_UDMAP_CH_BURST_SIZE_64_BYTES;
         }
         txPrms->supressTdCqPkt  = TISCI_MSG_VALUE_RM_UDMAP_TX_CH_SUPPRESS_TD_DISABLED;
@@ -1615,9 +1724,18 @@ int32_t Udma_chGetStats(Udma_ChHandle chHandle, Udma_ChStats *chStats)
 {
     int32_t            retVal = UDMA_SOK;
     Udma_DrvHandle     drvHandle;
-    CSL_UdmapChanStats chanStats;
     uint32_t           chNum;
-    CSL_UdmapChanDir   chDir;
+#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
+    CSL_UdmapChanStats udmapChanStats;
+    CSL_UdmapChanDir   udmapChDir;
+#endif
+#if (UDMA_SOC_CFG_LCDMA_PRESENT == 1)
+    CSL_BcdmaChanStats  bcdmaChanStats;
+    CSL_BcdmaChanDir    bcdmaChDir;
+
+    CSL_PktdmaChanStats pktdmaChanStats;
+    CSL_PktdmaChanDir   pktdmaChDir;
+#endif
 
     /* Error check */
     if ((NULL_PTR == chHandle)                   ||
@@ -1637,32 +1755,97 @@ int32_t Udma_chGetStats(Udma_ChHandle chHandle, Udma_ChStats *chStats)
 
     if(UDMA_SOK == retVal)
     {
-        if((chHandle->chType & UDMA_CH_FLAG_BLK_COPY) ==
-            UDMA_CH_FLAG_BLK_COPY)
+
+#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
+        if(UDMA_INST_TYPE_NORMAL == drvHandle->instType)
         {
-            chNum = chHandle->txChNum;
-            chDir = CSL_UDMAP_CHAN_DIR_TX;
-        }
-        else if((chHandle->chType & UDMA_CH_FLAG_UTC) == UDMA_CH_FLAG_UTC)
-        {
-            chNum = chHandle->extChNum + drvHandle->extChOffset;
-            chDir = CSL_UDMAP_CHAN_DIR_TX;
-        }
-        else
-        {
-            if((chHandle->chType & UDMA_CH_FLAG_TX) == UDMA_CH_FLAG_TX)
+            if((chHandle->chType & UDMA_CH_FLAG_BLK_COPY) == UDMA_CH_FLAG_BLK_COPY)
             {
-                chNum = chHandle->txChNum;
-                chDir = CSL_UDMAP_CHAN_DIR_TX;
+                chNum       = chHandle->txChNum;
+                udmapChDir = CSL_UDMAP_CHAN_DIR_TX;
+            }
+            else if((chHandle->chType & UDMA_CH_FLAG_UTC) == UDMA_CH_FLAG_UTC)
+            {
+                chNum       = chHandle->extChNum + drvHandle->extChOffset;
+                udmapChDir = CSL_UDMAP_CHAN_DIR_TX;
             }
             else
             {
-                chNum = chHandle->rxChNum;
-                chDir = CSL_UDMAP_CHAN_DIR_RX;
+                if((chHandle->chType & UDMA_CH_FLAG_TX) == UDMA_CH_FLAG_TX)
+                {
+                    chNum       = chHandle->txChNum;
+                    udmapChDir = CSL_UDMAP_CHAN_DIR_TX;
+                }
+                else
+                {
+                    chNum       = chHandle->rxChNum;
+                    udmapChDir = CSL_UDMAP_CHAN_DIR_RX;
+                }
             }
+            CSL_udmapGetChanStats(&drvHandle->udmapRegs, chNum, udmapChDir, &udmapChanStats);
+            (void)memcpy(chStats, &udmapChanStats, sizeof(Udma_ChStats));
         }
-        CSL_udmapGetChanStats(&drvHandle->udmapRegs, chNum, chDir, &chanStats);
-        (void)memcpy(chStats, &chanStats, sizeof(Udma_ChStats));
+#endif
+#if (UDMA_SOC_CFG_LCDMA_PRESENT == 1)
+        if(UDMA_INST_TYPE_LCDMA_BCDMA == drvHandle->instType)
+        {
+            if((chHandle->chType & UDMA_CH_FLAG_BLK_COPY) == UDMA_CH_FLAG_BLK_COPY)
+            {
+                chNum       = chHandle->txChNum;
+                bcdmaChDir = CSL_BCDMA_CHAN_DIR_TX;
+            }
+            else if((chHandle->chType & UDMA_CH_FLAG_UTC) == UDMA_CH_FLAG_UTC)
+            {
+                chNum       = chHandle->extChNum + drvHandle->extChOffset;
+                bcdmaChDir = CSL_BCDMA_CHAN_DIR_TX;
+            }
+            else
+            {
+                if((chHandle->chType & UDMA_CH_FLAG_TX) == UDMA_CH_FLAG_TX)
+                {
+                    /* Add offset to chNum, so that BCDMA can identify it as Tx channel*/
+                    chNum       = chHandle->txChNum + drvHandle->txChOffset;
+                    bcdmaChDir = CSL_BCDMA_CHAN_DIR_TX;
+                }
+                else
+                {
+                    /* Add offset to chNum, so that BCDMA can identify it as Rx channel*/
+                    chNum       = chHandle->rxChNum + drvHandle->rxChOffset;
+                    bcdmaChDir = CSL_BCDMA_CHAN_DIR_RX;
+                }
+            }
+            CSL_bcdmaGetChanStats(&drvHandle->bcdmaRegs, chNum, bcdmaChDir, &bcdmaChanStats);
+            (void)memcpy(chStats, &bcdmaChanStats, sizeof(Udma_ChStats));         
+        }
+        else if(UDMA_INST_TYPE_LCDMA_PKTDMA == drvHandle->instType)
+        {
+            if((chHandle->chType & UDMA_CH_FLAG_BLK_COPY) == UDMA_CH_FLAG_BLK_COPY)
+            {
+                chNum       = chHandle->txChNum;
+                pktdmaChDir = CSL_PKTDMA_CHAN_DIR_TX;
+            }
+            else if((chHandle->chType & UDMA_CH_FLAG_UTC) == UDMA_CH_FLAG_UTC)
+            {
+                chNum       = chHandle->extChNum + drvHandle->extChOffset;
+                pktdmaChDir = CSL_PKTDMA_CHAN_DIR_TX;
+            }
+            else
+            {
+                if((chHandle->chType & UDMA_CH_FLAG_TX) == UDMA_CH_FLAG_TX)
+                {
+                    chNum       = chHandle->txChNum;
+                    pktdmaChDir = CSL_PKTDMA_CHAN_DIR_TX;
+                }
+                else
+                {
+                    chNum       = chHandle->rxChNum;
+                    pktdmaChDir = CSL_PKTDMA_CHAN_DIR_RX;
+                }
+            }
+            CSL_pktdmaGetChanStats(&drvHandle->pktdmaRegs, chNum, pktdmaChDir, &pktdmaChanStats);
+            (void)memcpy(chStats, &pktdmaChanStats, sizeof(Udma_ChStats));         
+        }
+#endif
     }
 
     return (retVal);
@@ -1689,6 +1872,14 @@ static int32_t Udma_chCheckParams(Udma_DrvHandle drvHandle,
         {
             retVal = UDMA_EINVALID_PARAMS;
             Udma_printf(drvHandle, "[Error] Invalid Peer Channel Number!!!\n");
+        }
+    }
+    if(UDMA_INST_TYPE_NORMAL != drvHandle->instType)
+    {
+        if(TISCI_MSG_VALUE_RM_RING_MODE_RING != chPrms->fqRingPrms.mode)
+        {
+            retVal = UDMA_EINVALID_PARAMS;
+            Udma_printf(drvHandle, "[Error] Invalid Ring Mode for LCDMA!!!\n");
         }
     }
 
@@ -1732,13 +1923,24 @@ static int32_t Udma_chAllocResource(Udma_ChHandle chHandle)
         }
         else
         {
-            /* RX channel same as TX channel for block copy */
-            chHandle->rxChNum = chHandle->txChNum;
-            /* Add thread offset and or RX relative channel as the thread
-             * already has bit info (CSL_PSILCFG_DEST_THREAD_OFFSET)
-             * for destination thread */
-            chHandle->peerThreadId =
-                chHandle->rxChNum + drvHandle->udmapDestThreadOffset;
+            if (UDMA_INST_TYPE_LCDMA_BCDMA == chHandle->drvHandle->instType)
+            {
+                /* For BCDMA Block Copy, rxChNum is not used.*/
+                chHandle->rxChNum     = UDMA_DMA_CH_INVALID;  
+                /* For BCDMA Block Copy, PeerThreadID is not applicable (no pairing required). */
+                chHandle->peerThreadId = UDMA_THREAD_ID_INVALID;
+            }
+            else
+            {
+                /* RX channel same as TX channel for block copy */
+                chHandle->rxChNum = chHandle->txChNum;  
+                /* Add thread offset and or RX relative channel as the thread
+                 * already has bit info (CSL_PSILCFG_DEST_THREAD_OFFSET)
+                 * for destination thread */
+                chHandle->peerThreadId =
+                    chHandle->rxChNum + drvHandle->udmapDestThreadOffset;
+            }
+
         }
     }
 #if (UDMA_NUM_UTC_INSTANCE > 0)
@@ -1857,7 +2059,7 @@ static int32_t Udma_chAllocResource(Udma_ChHandle chHandle)
                 UDMA_CH_FLAG_BLK_COPY)
             {
                 /* Same as TX channel incase of block copy */
-                ringNum = (uint16_t)(chHandle->txChNum + drvHandle->txChOffset);
+                ringNum = (uint16_t)chHandle->txChNum;
             }
             else if((chHandle->chType & UDMA_CH_FLAG_UTC) == UDMA_CH_FLAG_UTC)
             {
@@ -1867,6 +2069,7 @@ static int32_t Udma_chAllocResource(Udma_ChHandle chHandle)
             {
                 if((chHandle->chType & UDMA_CH_FLAG_TX) == UDMA_CH_FLAG_TX)
                 {
+                    /* For UDMAP, txChOffset is 0 */
                     ringNum = (uint16_t)(chHandle->txChNum + drvHandle->txChOffset);
                 }
                 else
@@ -1891,6 +2094,7 @@ static int32_t Udma_chAllocResource(Udma_ChHandle chHandle)
 
     if(UDMA_SOK == retVal)
     {
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
         /* Allocate completion ring only when memory is provided */
         if(NULL_PTR != chHandle->chPrms.cqRingPrms.ringMem)
         {
@@ -1906,10 +2110,15 @@ static int32_t Udma_chAllocResource(Udma_ChHandle chHandle)
                 Udma_printf(drvHandle, "[Error] CQ ring alloc failed!!!\n");
             }
         }
+#else
+        /* In devices like AM64x, there is no seperate completion queue. */
+        chHandle->cqRing = &chHandle->fqRingObj;
+#endif
     }
 
     if(UDMA_SOK == retVal)
     {
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
         /* Allocate teardown completion ring only when memory is provided */
         if(NULL_PTR != chHandle->chPrms.tdCqRingPrms.ringMem)
         {
@@ -1925,6 +2134,10 @@ static int32_t Udma_chAllocResource(Udma_ChHandle chHandle)
                 Udma_printf(drvHandle, "[Error] TD CQ ring alloc failed!!!\n");
             }
         }
+#else
+        /* In devices like AM64x, teardown is not supported.*/
+        chHandle->tdCqRing = (Udma_RingHandle) NULL_PTR;
+#endif
     }
 
     if(UDMA_SOK != retVal)
@@ -1938,47 +2151,7 @@ static int32_t Udma_chAllocResource(Udma_ChHandle chHandle)
     else
     {
         /* Assign overlay pointers */
-        if(chHandle->txChNum != UDMA_DMA_CH_INVALID)
-        {
-            Udma_assert(drvHandle, drvHandle->udmapRegs.pTxChanCfgRegs != NULL_PTR);
-            Udma_assert(drvHandle, drvHandle->udmapRegs.pTxChanRtRegs != NULL_PTR);
-            Udma_assert(drvHandle,
-                chHandle->txChNum <
-                    (sizeof(CSL_udmap_txcrtRegs) /
-                        sizeof(CSL_udmap_txcrtRegs_chan)));
-            chHandle->pTxCfgRegs =
-                &drvHandle->udmapRegs.pTxChanCfgRegs->CHAN[chHandle->txChNum];
-            chHandle->pTxRtRegs  =
-                &drvHandle->udmapRegs.pTxChanRtRegs->CHAN[chHandle->txChNum];
-        }
-        if(chHandle->rxChNum != UDMA_DMA_CH_INVALID)
-        {
-            Udma_assert(drvHandle, drvHandle->udmapRegs.pRxChanCfgRegs != NULL_PTR);
-            Udma_assert(drvHandle, drvHandle->udmapRegs.pRxChanRtRegs != NULL_PTR);
-            Udma_assert(drvHandle,
-                chHandle->rxChNum <
-                    (sizeof(CSL_udmap_rxcrtRegs) /
-                        sizeof(CSL_udmap_rxcrtRegs_chan)));
-            chHandle->pRxCfgRegs =
-                &drvHandle->udmapRegs.pRxChanCfgRegs->CHAN[chHandle->rxChNum];
-            chHandle->pRxRtRegs  =
-                &drvHandle->udmapRegs.pRxChanRtRegs->CHAN[chHandle->rxChNum];
-        }
-        if(chHandle->extChNum != UDMA_DMA_CH_INVALID)
-        {
-            Udma_assert(drvHandle, drvHandle->udmapRegs.pTxChanCfgRegs != NULL_PTR);
-            Udma_assert(drvHandle, drvHandle->udmapRegs.pTxChanRtRegs != NULL_PTR);
-            Udma_assert(drvHandle,
-                (chHandle->extChNum + drvHandle->extChOffset) <
-                    (sizeof(CSL_udmap_txcrtRegs) /
-                        sizeof(CSL_udmap_txcrtRegs_chan)));
-            chHandle->pExtCfgRegs =
-                &drvHandle->udmapRegs.pTxChanCfgRegs->CHAN[
-                                chHandle->extChNum + drvHandle->extChOffset];
-            chHandle->pExtRtRegs  =
-                &drvHandle->udmapRegs.pTxChanRtRegs->CHAN[
-                                chHandle->extChNum + drvHandle->extChOffset];
-        }
+        Udma_chAssignRegOverlay(drvHandle, chHandle);
     }
 
     return (retVal);
@@ -2076,11 +2249,14 @@ static int32_t Udma_chFreeResource(Udma_ChHandle chHandle)
     }
     if(NULL_PTR != chHandle->cqRing)
     {
+
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
         retVal += Udma_ringFree(chHandle->cqRing);
         if(UDMA_SOK != retVal)
         {
             Udma_printf(drvHandle, "[Error] RM Free CQ ring failed!!!\n");
         }
+#endif
         chHandle->cqRing = (Udma_RingHandle) NULL_PTR;
     }
     if(NULL_PTR != chHandle->tdCqRing)
@@ -2108,6 +2284,11 @@ static int32_t Udma_chPair(Udma_ChHandle chHandle)
     {
         /* For UTC, pairing not required. Enable done as part of enable API */
     }
+    else if ((UDMA_INST_TYPE_LCDMA_BCDMA                 == drvHandle->instType) && 
+             ((chHandle->chType & UDMA_CH_FLAG_BLK_COPY) == UDMA_CH_FLAG_BLK_COPY))
+    {
+        /* For BCDMA Block Copy, pairing not required.*/
+    } 
     else
     {
         rmPairReq.nav_id = drvHandle->devIdPsil;
@@ -2174,6 +2355,11 @@ static int32_t Udma_chUnpair(Udma_ChHandle chHandle)
         Udma_printf(drvHandle, "[Error] UTC Not supported!!!\n");
 #endif
     }
+    else if ((UDMA_INST_TYPE_LCDMA_BCDMA                 == drvHandle->instType) && 
+             ((chHandle->chType & UDMA_CH_FLAG_BLK_COPY) == UDMA_CH_FLAG_BLK_COPY))
+    {
+        /* For BCDMA Block Copy, un-pairing / thread disbale not required.*/
+    } 
     else
     {
         rmUnpairReq.nav_id = drvHandle->devIdPsil;
@@ -2211,7 +2397,13 @@ static int32_t Udma_chEnableLocal(Udma_ChHandle chHandle)
     int32_t                 retVal = UDMA_SOK;
     uint32_t                regVal;
     Udma_DrvHandle          drvHandle;
-    CSL_UdmapRT             rtEnable;
+#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
+    CSL_UdmapRT             udmapRtEnable;
+#endif
+#if (UDMA_SOC_CFG_LCDMA_PRESENT == 1)
+    CSL_BcdmaRT             bcdmaRtEnable;
+    CSL_PktdmaRT            pktdmaRtEnable;
+#endif
 #if (UDMA_NUM_UTC_INSTANCE > 0)
     uint32_t                utcChNum;
     uint32_t                srcThreadId;
@@ -2220,44 +2412,152 @@ static int32_t Udma_chEnableLocal(Udma_ChHandle chHandle)
 
     drvHandle = chHandle->drvHandle;
 
-    /* Set only enable and clear all other flags which might be set from
-     * previous run */
-    rtEnable.enable         = TRUE;
-    rtEnable.teardown       = FALSE;
-    rtEnable.forcedTeardown = FALSE;
-    rtEnable.pause          = FALSE;
-    rtEnable.error          = FALSE;
+    
 
-    if((chHandle->chType & UDMA_CH_FLAG_TX) == UDMA_CH_FLAG_TX)
+#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
+    if(UDMA_INST_TYPE_NORMAL == drvHandle->instType)
     {
-        Udma_assert(drvHandle, chHandle->pTxRtRegs != NULL_PTR);
-        Udma_assert(drvHandle, chHandle->txChNum != UDMA_DMA_CH_INVALID);
+       /* Set only enable and clear all other flags which might be set from
+        * previous run */
+        udmapRtEnable.enable         = TRUE;
+        udmapRtEnable.teardown       = FALSE;
+        udmapRtEnable.forcedTeardown = FALSE;
+        udmapRtEnable.pause          = FALSE;
+        udmapRtEnable.error          = FALSE;
 
-        regVal = CSL_REG32_RD(&chHandle->pTxRtRegs->PEER8);
-        CSL_FINS(regVal, PSILCFG_REG_RT_ENABLE_ENABLE, (uint32_t) 1U);
-        CSL_REG32_WR(&chHandle->pTxRtRegs->PEER8, regVal);
+        if((chHandle->chType & UDMA_CH_FLAG_TX) == UDMA_CH_FLAG_TX)
+        {
+            Udma_assert(drvHandle, chHandle->pTxRtRegs != NULL_PTR);
+            Udma_assert(drvHandle, chHandle->txChNum != UDMA_DMA_CH_INVALID);
 
-        (void) CSL_udmapSetTxRT(&drvHandle->udmapRegs, chHandle->txChNum, &rtEnable);
+            regVal = CSL_REG32_RD(&chHandle->pTxRtRegs->PEER8);
+            CSL_FINS(regVal, PSILCFG_REG_RT_ENABLE_ENABLE, (uint32_t) 1U);
+            CSL_REG32_WR(&chHandle->pTxRtRegs->PEER8, regVal);
+
+            (void) CSL_udmapSetTxRT(&drvHandle->udmapRegs, chHandle->txChNum, &udmapRtEnable);
+        }
+
+        if((chHandle->chType & UDMA_CH_FLAG_RX) == UDMA_CH_FLAG_RX)
+        {
+            Udma_assert(drvHandle, chHandle->pRxRtRegs != NULL_PTR);
+            Udma_assert(drvHandle, chHandle->rxChNum != UDMA_DMA_CH_INVALID);
+
+            /*
+            * Note: UDMAP shoule be enabled first (receiver) before enabling
+            *       PEER/PDMA through PSIL (source)
+            *       This ensures UDMAP RX is ready to receive data
+            */
+            /* Note: Block copy uses same RX channel. So do for both TX/RX */
+            (void) CSL_udmapSetRxRT(
+                &drvHandle->udmapRegs, chHandle->rxChNum, &udmapRtEnable);
+
+            regVal = CSL_REG32_RD(&chHandle->pRxRtRegs->PEER8);
+            CSL_FINS(regVal, PSILCFG_REG_RT_ENABLE_ENABLE, (uint32_t) 1U);
+            CSL_REG32_WR(&chHandle->pRxRtRegs->PEER8, regVal);
+        }
     }
-
-    if((chHandle->chType & UDMA_CH_FLAG_RX) == UDMA_CH_FLAG_RX)
+#endif
+#if (UDMA_SOC_CFG_LCDMA_PRESENT == 1)
+    if(UDMA_INST_TYPE_LCDMA_BCDMA == drvHandle->instType)
     {
-        Udma_assert(drvHandle, chHandle->pRxRtRegs != NULL_PTR);
-        Udma_assert(drvHandle, chHandle->rxChNum != UDMA_DMA_CH_INVALID);
+       /* Set only enable and clear all other flags which might be set from
+        * previous run */
+        bcdmaRtEnable.enable         = TRUE;
+        bcdmaRtEnable.teardown       = FALSE;
+        bcdmaRtEnable.forcedTeardown = FALSE;
+        bcdmaRtEnable.pause          = FALSE;
+        bcdmaRtEnable.error          = FALSE;
 
-        /*
-         * Note: UDMAP shoule be enabled first (receiver) before enabling
-         *       PEER/PDMA through PSIL (source)
-         *       This ensures UDMAP RX is ready to receive data
-         */
-        /* Note: Block copy uses same RX channel. So do for both TX/RX */
-        (void) CSL_udmapSetRxRT(
-            &drvHandle->udmapRegs, chHandle->rxChNum, &rtEnable);
+        if((chHandle->chType & UDMA_CH_FLAG_BLK_COPY) == UDMA_CH_FLAG_BLK_COPY)
+        {
+            Udma_assert(drvHandle, chHandle->pBcdmaBcRtRegs != NULL_PTR);
+            Udma_assert(drvHandle, chHandle->txChNum != UDMA_DMA_CH_INVALID);
 
-        regVal = CSL_REG32_RD(&chHandle->pRxRtRegs->PEER8);
-        CSL_FINS(regVal, PSILCFG_REG_RT_ENABLE_ENABLE, (uint32_t) 1U);
-        CSL_REG32_WR(&chHandle->pRxRtRegs->PEER8, regVal);
+            /* PEER8 Reg param missing in CSL_bcdma_bcrtRegs_chan, So what to do here?*/
+            //regVal = CSL_REG32_RD(&chHandle->pBcdmaBcRtRegs->PEER8);
+            //CSL_FINS(regVal, PSILCFG_REG_RT_ENABLE_ENABLE, (uint32_t) 1U);
+            //CSL_REG32_WR(&chHandle->pBcdmaBcRtRegs->PEER8, regVal);
+
+            (void) CSL_bcdmaSetTxRT(&drvHandle->bcdmaRegs, chHandle->txChNum , &bcdmaRtEnable);
+        }
+
+        else if((chHandle->chType & UDMA_CH_FLAG_TX) == UDMA_CH_FLAG_TX)
+        {
+            Udma_assert(drvHandle, chHandle->pBcdmaTxRtRegs != NULL_PTR);
+            Udma_assert(drvHandle, chHandle->txChNum != UDMA_DMA_CH_INVALID);
+
+            regVal = CSL_REG32_RD(&chHandle->pBcdmaTxRtRegs->PEER8);
+            CSL_FINS(regVal, PSILCFG_REG_RT_ENABLE_ENABLE, (uint32_t) 1U);
+            CSL_REG32_WR(&chHandle->pBcdmaTxRtRegs->PEER8, regVal);
+
+            /* Add offset to ChNum so that BCDMA can identify it as Tx Channel */
+            (void) CSL_bcdmaSetTxRT(&drvHandle->bcdmaRegs, chHandle->txChNum + drvHandle->txChOffset, &bcdmaRtEnable);
+        }
+
+        else if ((chHandle->chType & UDMA_CH_FLAG_RX) == UDMA_CH_FLAG_RX)
+        {
+            Udma_assert(drvHandle, chHandle->pBcdmaRxRtRegs != NULL_PTR);
+            Udma_assert(drvHandle, chHandle->rxChNum != UDMA_DMA_CH_INVALID);
+
+            /*
+            * Note: UDMAP shoule be enabled first (receiver) before enabling
+            *       PEER/PDMA through PSIL (source)
+            *       This ensures UDMAP RX is ready to receive data
+            */
+            /* Add offset to ChNum so that BCDMA can identify it as Rx Channel */
+            (void) CSL_bcdmaSetRxRT(
+                &drvHandle->bcdmaRegs, chHandle->rxChNum + drvHandle->rxChOffset, &bcdmaRtEnable);
+
+            regVal = CSL_REG32_RD(&chHandle->pBcdmaRxRtRegs->PEER8);
+            CSL_FINS(regVal, PSILCFG_REG_RT_ENABLE_ENABLE, (uint32_t) 1U);
+            CSL_REG32_WR(&chHandle->pBcdmaRxRtRegs->PEER8, regVal);
+        }
     }
+    else if(UDMA_INST_TYPE_LCDMA_PKTDMA == drvHandle->instType)
+    {
+       /* Set only enable and clear all other flags which might be set from
+        * previous run */
+        pktdmaRtEnable.enable         = TRUE;
+        pktdmaRtEnable.teardown       = FALSE;
+        pktdmaRtEnable.forcedTeardown = FALSE;
+        pktdmaRtEnable.pause          = FALSE;
+        pktdmaRtEnable.error          = FALSE;
+
+        if((chHandle->chType & UDMA_CH_FLAG_TX) == UDMA_CH_FLAG_TX)
+        {
+            Udma_assert(drvHandle, chHandle->pPktdmaTxRtRegs != NULL_PTR);
+            Udma_assert(drvHandle, chHandle->txChNum != UDMA_DMA_CH_INVALID);
+
+            regVal = CSL_REG32_RD(&chHandle->pPktdmaTxRtRegs->PEER8);
+            CSL_FINS(regVal, PSILCFG_REG_RT_ENABLE_ENABLE, (uint32_t) 1U);
+            CSL_REG32_WR(&chHandle->pPktdmaTxRtRegs->PEER8, regVal);
+
+            (void) CSL_pktdmaSetTxRT(&drvHandle->pktdmaRegs, chHandle->txChNum, &pktdmaRtEnable);
+        }
+
+        if((chHandle->chType & UDMA_CH_FLAG_RX) == UDMA_CH_FLAG_RX)
+        {
+            Udma_assert(drvHandle, chHandle->pPktdmaRxRtRegs != NULL_PTR);
+            Udma_assert(drvHandle, chHandle->rxChNum != UDMA_DMA_CH_INVALID);
+
+            /*
+            * Note: UDMAP shoule be enabled first (receiver) before enabling
+            *       PEER/PDMA through PSIL (source)
+            *       This ensures UDMAP RX is ready to receive data
+            */
+            /* Note: Block copy uses same RX channel. So do for both TX/RX */
+            (void) CSL_pktdmaSetRxRT(
+                &drvHandle->pktdmaRegs, chHandle->rxChNum, &pktdmaRtEnable);
+
+            regVal = CSL_REG32_RD(&chHandle->pPktdmaRxRtRegs->PEER8);
+            CSL_FINS(regVal, PSILCFG_REG_RT_ENABLE_ENABLE, (uint32_t) 1U);
+            CSL_REG32_WR(&chHandle->pPktdmaRxRtRegs->PEER8, regVal);
+        }
+                    
+    }
+#endif
+
+    
 
 #if (UDMA_NUM_UTC_INSTANCE > 0)
     if((chHandle->chType & UDMA_CH_FLAG_UTC) == UDMA_CH_FLAG_UTC)
@@ -2305,10 +2605,32 @@ static int32_t Udma_chEnableLocal(Udma_ChHandle chHandle)
             /* Same TX channel CSL API is used for UTC as well - but need to
              * add the EXT channel offset */
             Udma_assert(drvHandle, chHandle->extChNum != UDMA_DMA_CH_INVALID);
-            (void) CSL_udmapSetTxRT(
-                &drvHandle->udmapRegs,
-                chHandle->extChNum + drvHandle->extChOffset,
-                &rtEnable);
+            
+#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
+            if(UDMA_INST_TYPE_NORMAL == drvHandle->instType)
+            {
+                (void) CSL_udmapSetTxRT(
+                    &drvHandle->udmapRegs,
+                    chHandle->extChNum + drvHandle->extChOffset,
+                    &udmapRtEnable);
+            }
+#endif
+#if (UDMA_SOC_CFG_LCDMA_PRESENT == 1)
+            if(UDMA_INST_TYPE_LCDMA_BCDMA == drvHandle->instType)
+            {
+                (void) CSL_bcdmaSetTxRT(
+                    &drvHandle->bcdmaRegs,
+                    chHandle->extChNum + drvHandle->extChOffset,
+                    &bcdmaRtEnable);
+            }
+            else if(UDMA_INST_TYPE_LCDMA_PKTDMA == drvHandle->instType)
+            {
+                (void) CSL_pktdmaSetTxRT(
+                    &drvHandle->pktdmaRegs,
+                    chHandle->extChNum + drvHandle->extChOffset,
+                    &pktdmaRtEnable);         
+            }
+#endif
         }
     }
 #endif
@@ -2321,14 +2643,38 @@ static int32_t Udma_chDisableBlkCpyChan(Udma_ChHandle chHandle, uint32_t timeout
     int32_t         retVal = UDMA_SOK;
     uint32_t        currTimeout = 0U;
     Udma_DrvHandle  drvHandle;
-    CSL_UdmapRT     rtStatus;
+#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
+    CSL_UdmapRT     udmapRtStatus;
+#endif
+#if (UDMA_SOC_CFG_LCDMA_PRESENT == 1)
+    CSL_BcdmaRT     bcdmaRtStatus;
+    CSL_PktdmaRT    pktdmaRtStatus;
+#endif
 
     drvHandle = chHandle->drvHandle;
     Udma_assert(drvHandle, chHandle->txChNum != UDMA_DMA_CH_INVALID);
 
     /* Initiate graceful teardown first - Source is udma thread for TX */
-    retVal = CSL_udmapTeardownTxChan(
-                 &drvHandle->udmapRegs, chHandle->txChNum, (bool)false, (bool)false);
+#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
+    if(UDMA_INST_TYPE_NORMAL == drvHandle->instType)
+    {
+        retVal = CSL_udmapTeardownTxChan(
+                    &drvHandle->udmapRegs, chHandle->txChNum, (bool)false, (bool)false);
+    }
+#endif
+#if (UDMA_SOC_CFG_LCDMA_PRESENT == 1)
+    if(UDMA_INST_TYPE_LCDMA_BCDMA == drvHandle->instType)
+    {
+        retVal = CSL_bcdmaTeardownTxChan(
+                 &drvHandle->bcdmaRegs, chHandle->txChNum, (bool)false, (bool)false);
+    }
+    else if(UDMA_INST_TYPE_LCDMA_PKTDMA == drvHandle->instType)
+    {
+        retVal = CSL_pktdmaTeardownTxChan(
+                 &drvHandle->pktdmaRegs, chHandle->txChNum, (bool)false, (bool)false);         
+    }
+#endif
+
     if(CSL_PASS != retVal)
     {
         Udma_printf(drvHandle, "[Error] UDMA Blkcpy teardown failed!!\n");
@@ -2337,13 +2683,37 @@ static int32_t Udma_chDisableBlkCpyChan(Udma_ChHandle chHandle, uint32_t timeout
     /* Check if graceful teardown is complete */
     while(UDMA_SOK == retVal)
     {
-        (void) CSL_udmapGetTxRT(&drvHandle->udmapRegs, chHandle->txChNum, &rtStatus);
-        if(FALSE == rtStatus.enable)
+#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
+        if(UDMA_INST_TYPE_NORMAL == drvHandle->instType)
         {
-            /* Teardown complete */
-            break;
+            (void) CSL_udmapGetTxRT(&drvHandle->udmapRegs, chHandle->txChNum, &udmapRtStatus);
+            if(FALSE == udmapRtStatus.enable)
+            {
+                /* Teardown complete */
+                break;
+            }
         }
-
+#endif
+#if (UDMA_SOC_CFG_LCDMA_PRESENT == 1)
+        if(UDMA_INST_TYPE_LCDMA_BCDMA == drvHandle->instType)
+        {
+            (void) CSL_bcdmaGetTxRT(&drvHandle->bcdmaRegs, chHandle->txChNum, &bcdmaRtStatus);
+            if(FALSE == bcdmaRtStatus.enable)
+            {
+                /* Teardown complete */
+                break;
+            }
+        }
+        else if(UDMA_INST_TYPE_LCDMA_PKTDMA == drvHandle->instType)
+        {
+            (void) CSL_pktdmaGetTxRT(&drvHandle->pktdmaRegs, chHandle->txChNum, &pktdmaRtStatus);
+            if(FALSE == pktdmaRtStatus.enable)
+            {
+                /* Teardown complete */
+                break;
+            }
+        }
+#endif
         if(currTimeout > timeout)
         {
             retVal = UDMA_ETIMEOUT;
@@ -2358,8 +2728,26 @@ static int32_t Udma_chDisableBlkCpyChan(Udma_ChHandle chHandle, uint32_t timeout
     if(UDMA_SOK != retVal)
     {
         /* Graceful teardown failed - initiate force teardown */
-        retVal = CSL_udmapTeardownTxChan(
-                     &drvHandle->udmapRegs, chHandle->txChNum, (bool)true, (bool)false);
+#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
+        if(UDMA_INST_TYPE_NORMAL == drvHandle->instType)
+        {
+            retVal = CSL_udmapTeardownTxChan(
+                        &drvHandle->udmapRegs, chHandle->txChNum, (bool)true, (bool)false);
+        }
+#endif
+#if (UDMA_SOC_CFG_LCDMA_PRESENT == 1)
+        if(UDMA_INST_TYPE_LCDMA_BCDMA == drvHandle->instType)
+        {
+            retVal = CSL_bcdmaTeardownTxChan(
+                        &drvHandle->bcdmaRegs, chHandle->txChNum, (bool)true, (bool)false);   
+        }
+        else if(UDMA_INST_TYPE_LCDMA_PKTDMA == drvHandle->instType)
+        {
+            retVal = CSL_pktdmaTeardownTxChan(
+                        &drvHandle->pktdmaRegs, chHandle->txChNum, (bool)true, (bool)false);
+        }
+#endif
+        
         if(CSL_PASS != retVal)
         {
             Udma_printf(drvHandle, "[Error] UDMA Blkcpy force disable failed!!\n");
@@ -2369,12 +2757,37 @@ static int32_t Udma_chDisableBlkCpyChan(Udma_ChHandle chHandle, uint32_t timeout
         currTimeout = 0U;
         while(UDMA_SOK == retVal)
         {
-            (void) CSL_udmapGetTxRT(&drvHandle->udmapRegs, chHandle->txChNum, &rtStatus);
-            if(FALSE == rtStatus.enable)
+#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
+            if(UDMA_INST_TYPE_NORMAL == drvHandle->instType)
             {
-                /* Teardown complete */
-                break;
+                (void) CSL_udmapGetTxRT(&drvHandle->udmapRegs, chHandle->txChNum, &udmapRtStatus);
+                if(FALSE == udmapRtStatus.enable)
+                {
+                    /* Teardown complete */
+                    break;
+                }
             }
+#endif
+#if (UDMA_SOC_CFG_LCDMA_PRESENT == 1)
+            if(UDMA_INST_TYPE_LCDMA_BCDMA == drvHandle->instType)
+            {
+                (void) CSL_bcdmaGetTxRT(&drvHandle->bcdmaRegs, chHandle->txChNum, &bcdmaRtStatus);
+                if(FALSE == bcdmaRtStatus.enable)
+                {
+                    /* Teardown complete */
+                    break;
+                }
+            }
+            else if(UDMA_INST_TYPE_LCDMA_PKTDMA == drvHandle->instType)
+            {
+                (void) CSL_pktdmaGetTxRT(&drvHandle->pktdmaRegs, chHandle->txChNum, &pktdmaRtStatus);
+                if(FALSE == pktdmaRtStatus.enable)
+                {
+                    /* Teardown complete */
+                    break;
+                }
+            }
+#endif
 
             if(currTimeout > timeout)
             {
@@ -2391,11 +2804,35 @@ static int32_t Udma_chDisableBlkCpyChan(Udma_ChHandle chHandle, uint32_t timeout
 
     if(UDMA_SOK == retVal)
     {
-        /* Clear teardown and enable bits in UDMAP */
-        rtStatus.enable   = FALSE;
-        rtStatus.teardown = FALSE;
-        rtStatus.forcedTeardown = FALSE;
-        (void) CSL_udmapSetTxRT(&drvHandle->udmapRegs, chHandle->txChNum, &rtStatus);
+#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
+        if(UDMA_INST_TYPE_NORMAL == drvHandle->instType)
+        {
+            /* Clear teardown and enable bits in UDMAP */
+            udmapRtStatus.enable   = FALSE;
+            udmapRtStatus.teardown = FALSE;
+            udmapRtStatus.forcedTeardown = FALSE;
+            (void) CSL_udmapSetTxRT(&drvHandle->udmapRegs, chHandle->txChNum, &udmapRtStatus);
+        }
+#endif
+#if (UDMA_SOC_CFG_LCDMA_PRESENT == 1)
+        if(UDMA_INST_TYPE_LCDMA_BCDMA == drvHandle->instType)
+        {
+            /* Clear teardown and enable bits in UDMAP */
+            bcdmaRtStatus.enable   = FALSE;
+            bcdmaRtStatus.teardown = FALSE;
+            bcdmaRtStatus.forcedTeardown = FALSE;
+            (void) CSL_bcdmaSetTxRT(&drvHandle->bcdmaRegs, chHandle->txChNum, &bcdmaRtStatus);
+        }
+        else if(UDMA_INST_TYPE_LCDMA_PKTDMA == drvHandle->instType)
+        {
+            /* Clear teardown and enable bits in UDMAP */
+            pktdmaRtStatus.enable   = FALSE;
+            pktdmaRtStatus.teardown = FALSE;
+            pktdmaRtStatus.forcedTeardown = FALSE;
+            (void) CSL_pktdmaSetTxRT(&drvHandle->pktdmaRegs, chHandle->txChNum, &pktdmaRtStatus);
+        }
+#endif
+
     }
 
     return (retVal);
@@ -2406,7 +2843,13 @@ static int32_t Udma_chDisableTxChan(Udma_ChHandle chHandle, uint32_t timeout)
     int32_t         retVal = UDMA_SOK;
     uint32_t        peerRtEnable = 0U, currTimeout = 0U;
     Udma_DrvHandle  drvHandle;
-    CSL_UdmapRT     rtStatus;
+#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
+    CSL_UdmapRT     udmapRtStatus;
+#endif
+#if (UDMA_SOC_CFG_LCDMA_PRESENT == 1)
+    CSL_BcdmaRT     bcdmaRtStatus;
+    CSL_PktdmaRT    pktdmaRtStatus;
+#endif
     uint32_t        rtEnableRegOffset;
 
     drvHandle = chHandle->drvHandle;
@@ -2414,8 +2857,27 @@ static int32_t Udma_chDisableTxChan(Udma_ChHandle chHandle, uint32_t timeout)
     rtEnableRegOffset = CSL_PSILCFG_REG_RT_ENABLE - CSL_PSILCFG_REG_STATIC_TR;
 
     /* Initiate graceful teardown first - Source is udma thread for TX */
-    retVal = CSL_udmapTeardownTxChan(
-                 &drvHandle->udmapRegs, chHandle->txChNum, (bool)false, (bool)false);
+#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
+    if(UDMA_INST_TYPE_NORMAL == drvHandle->instType)
+    {
+        retVal = CSL_udmapTeardownTxChan(
+                    &drvHandle->udmapRegs, chHandle->txChNum, (bool)false, (bool)false);
+    }
+#endif
+#if (UDMA_SOC_CFG_LCDMA_PRESENT == 1)
+    if(UDMA_INST_TYPE_LCDMA_BCDMA == drvHandle->instType)
+    {
+        /*Add offset to chNum, so that BCDMA can identify it as Tx Channel*/
+        retVal = CSL_bcdmaTeardownTxChan(
+                 &drvHandle->bcdmaRegs, chHandle->txChNum + drvHandle->txChOffset, (bool)false, (bool)false);
+    }
+    else if(UDMA_INST_TYPE_LCDMA_PKTDMA == drvHandle->instType)
+    {
+        retVal = CSL_pktdmaTeardownTxChan(
+                 &drvHandle->pktdmaRegs, chHandle->txChNum, (bool)false, (bool)false);         
+    }
+#endif
+
     if(CSL_PASS != retVal)
     {
         Udma_printf(drvHandle, "[Error] UDMA TX teardown failed!!\n");
@@ -2424,12 +2886,38 @@ static int32_t Udma_chDisableTxChan(Udma_ChHandle chHandle, uint32_t timeout)
     /* Check if graceful teardown is complete */
     while(UDMA_SOK == retVal)
     {
-        (void) CSL_udmapGetTxRT(&drvHandle->udmapRegs, chHandle->txChNum, &rtStatus);
-        if(FALSE == rtStatus.enable)
+#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
+        if(UDMA_INST_TYPE_NORMAL == drvHandle->instType)
         {
-            /* Teardown complete */
-            break;
+            (void) CSL_udmapGetTxRT(&drvHandle->udmapRegs, chHandle->txChNum, &udmapRtStatus);
+            if(FALSE == udmapRtStatus.enable)
+            {
+                /* Teardown complete */
+                break;
+            }
         }
+#endif
+#if (UDMA_SOC_CFG_LCDMA_PRESENT == 1)
+        if(UDMA_INST_TYPE_LCDMA_BCDMA == drvHandle->instType)
+        {
+            /*Add offset to chNum, so that BCDMA can identify it as Tx Channel*/
+            (void) CSL_bcdmaGetTxRT(&drvHandle->bcdmaRegs, chHandle->txChNum + drvHandle->txChOffset, &bcdmaRtStatus);
+            if(FALSE == bcdmaRtStatus.enable)
+            {
+                /* Teardown complete */
+                break;
+            }
+        }
+        else if(UDMA_INST_TYPE_LCDMA_PKTDMA == drvHandle->instType)
+        {
+            (void) CSL_pktdmaGetTxRT(&drvHandle->pktdmaRegs, chHandle->txChNum, &pktdmaRtStatus);
+            if(FALSE == pktdmaRtStatus.enable)
+            {
+                /* Teardown complete */
+                break;
+            }
+        }
+#endif
 
         if(currTimeout > timeout)
         {
@@ -2445,44 +2933,142 @@ static int32_t Udma_chDisableTxChan(Udma_ChHandle chHandle, uint32_t timeout)
     if(UDMA_SOK != retVal)
     {
         /* Graceful teardown failed - initiate force teardown */
-        retVal = CSL_udmapTeardownTxChan(
-                     &drvHandle->udmapRegs, chHandle->txChNum, (bool)true, (bool)false);
+#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
+        if(UDMA_INST_TYPE_NORMAL == drvHandle->instType)
+        {
+            retVal = CSL_udmapTeardownTxChan(
+                        &drvHandle->udmapRegs, chHandle->txChNum, (bool)true, (bool)false);
+        }
+#endif
+#if (UDMA_SOC_CFG_LCDMA_PRESENT == 1)
+        if(UDMA_INST_TYPE_LCDMA_BCDMA == drvHandle->instType)
+        {
+            /*Add offset to chNum, so that BCDMA can identify it as Tx Channel*/
+            retVal = CSL_bcdmaTeardownTxChan(
+                        &drvHandle->bcdmaRegs, chHandle->txChNum + drvHandle->txChOffset, (bool)true, (bool)false);   
+        }
+        else if(UDMA_INST_TYPE_LCDMA_PKTDMA == drvHandle->instType)
+        {
+            retVal = CSL_pktdmaTeardownTxChan(
+                        &drvHandle->pktdmaRegs, chHandle->txChNum, (bool)true, (bool)false);
+        }
+#endif
         if(CSL_PASS != retVal)
         {
             Udma_printf(drvHandle, "[Error] UDMA TX force disable failed!!\n");
         }
 
-        /* Set flush in peer */
-        (void) CSL_udmapGetChanPeerReg(
-            &drvHandle->udmapRegs,
-            chHandle->txChNum,
-            CSL_UDMAP_CHAN_DIR_TX,
-            rtEnableRegOffset,
-            &peerRtEnable);
-        CSL_FINS(peerRtEnable, PSILCFG_REG_RT_ENABLE_FLUSH, (uint32_t) 1U);
-        (void) CSL_udmapSetChanPeerReg(
-            &drvHandle->udmapRegs,
-            chHandle->txChNum,
-            CSL_UDMAP_CHAN_DIR_TX,
-            rtEnableRegOffset,
-            &peerRtEnable);
-
-        /* Wait for disable to complete */
-        currTimeout = 0U;
-        while(UDMA_SOK == retVal)
+#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
+        if(UDMA_INST_TYPE_NORMAL == drvHandle->instType)
         {
-            (void) CSL_udmapGetTxRT(&drvHandle->udmapRegs, chHandle->txChNum, &rtStatus);
+            /* Set flush in peer */
             (void) CSL_udmapGetChanPeerReg(
                 &drvHandle->udmapRegs,
                 chHandle->txChNum,
                 CSL_UDMAP_CHAN_DIR_TX,
-                rtEnableRegOffset, &peerRtEnable);
-            if((FALSE == rtStatus.enable) &&
-               (CSL_FEXT(peerRtEnable, PSILCFG_REG_RT_ENABLE_ENABLE) == FALSE))
+                rtEnableRegOffset,
+                &peerRtEnable);
+            CSL_FINS(peerRtEnable, PSILCFG_REG_RT_ENABLE_FLUSH, (uint32_t) 1U);
+            (void) CSL_udmapSetChanPeerReg(
+                &drvHandle->udmapRegs,
+                chHandle->txChNum,
+                CSL_UDMAP_CHAN_DIR_TX,
+                rtEnableRegOffset,
+                &peerRtEnable);
+        }
+#endif
+#if (UDMA_SOC_CFG_LCDMA_PRESENT == 1)
+        if(UDMA_INST_TYPE_LCDMA_BCDMA == drvHandle->instType)
+        {
+            /*Add offset to chNum, so that BCDMA can identify it as Tx Channel*/
+            /* Set flush in peer */
+            (void) CSL_bcdmaGetChanPeerReg(
+                &drvHandle->bcdmaRegs,
+                chHandle->txChNum + drvHandle->txChOffset,
+                CSL_BCDMA_CHAN_DIR_TX,
+                rtEnableRegOffset,
+                &peerRtEnable);
+            CSL_FINS(peerRtEnable, PSILCFG_REG_RT_ENABLE_FLUSH, (uint32_t) 1U);
+            (void) CSL_bcdmaSetChanPeerReg(
+                &drvHandle->bcdmaRegs,
+                chHandle->txChNum + drvHandle->txChOffset,
+                CSL_BCDMA_CHAN_DIR_TX,
+                rtEnableRegOffset,
+                &peerRtEnable);
+        }
+        else if(UDMA_INST_TYPE_LCDMA_PKTDMA == drvHandle->instType)
+        {
+            /* Set flush in peer */
+            (void) CSL_pktdmaGetChanPeerReg(
+                &drvHandle->pktdmaRegs,
+                chHandle->txChNum,
+                CSL_BCDMA_CHAN_DIR_TX,
+                rtEnableRegOffset,
+                &peerRtEnable);
+            CSL_FINS(peerRtEnable, PSILCFG_REG_RT_ENABLE_FLUSH, (uint32_t) 1U);
+            (void) CSL_pktdmaSetChanPeerReg(
+                &drvHandle->pktdmaRegs,
+                chHandle->txChNum,
+                CSL_PKTDMA_CHAN_DIR_TX,
+                rtEnableRegOffset,
+                &peerRtEnable);    
+        }
+#endif
+        /* Wait for disable to complete */
+        currTimeout = 0U;
+        while(UDMA_SOK == retVal)
+        {
+            
+#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
+            if(UDMA_INST_TYPE_NORMAL == drvHandle->instType)
             {
-                /* Teardown complete */
-                break;
+                (void) CSL_udmapGetTxRT(&drvHandle->udmapRegs, chHandle->txChNum, &udmapRtStatus);
+                (void) CSL_udmapGetChanPeerReg(
+                    &drvHandle->udmapRegs,
+                    chHandle->txChNum,
+                    CSL_UDMAP_CHAN_DIR_TX,
+                    rtEnableRegOffset, &peerRtEnable);
+                if((FALSE == udmapRtStatus.enable) &&
+                (CSL_FEXT(peerRtEnable, PSILCFG_REG_RT_ENABLE_ENABLE) == FALSE))
+                {
+                    /* Teardown complete */
+                    break;
+                }
             }
+#endif
+#if (UDMA_SOC_CFG_LCDMA_PRESENT == 1)
+            if(UDMA_INST_TYPE_LCDMA_BCDMA == drvHandle->instType)
+            {
+                /*Add offset to chNum, so that BCDMA can identify it as Tx Channel*/
+                (void) CSL_bcdmaGetTxRT(&drvHandle->bcdmaRegs, chHandle->txChNum + drvHandle->txChOffset, &bcdmaRtStatus);
+                (void) CSL_bcdmaGetChanPeerReg(
+                    &drvHandle->bcdmaRegs,
+                    chHandle->txChNum + drvHandle->txChOffset,
+                    CSL_BCDMA_CHAN_DIR_TX,
+                    rtEnableRegOffset, &peerRtEnable);
+                if((FALSE == bcdmaRtStatus.enable) &&
+                (CSL_FEXT(peerRtEnable, PSILCFG_REG_RT_ENABLE_ENABLE) == FALSE))
+                {
+                    /* Teardown complete */
+                    break;
+                }
+            }
+            else if(UDMA_INST_TYPE_LCDMA_PKTDMA == drvHandle->instType)
+            {
+                (void) CSL_pktdmaGetTxRT(&drvHandle->pktdmaRegs, chHandle->txChNum, &pktdmaRtStatus);
+                (void) CSL_pktdmaGetChanPeerReg(
+                    &drvHandle->pktdmaRegs,
+                    chHandle->txChNum,
+                    CSL_PKTDMA_CHAN_DIR_TX,
+                    rtEnableRegOffset, &peerRtEnable);
+                if((FALSE == pktdmaRtStatus.enable) &&
+                (CSL_FEXT(peerRtEnable, PSILCFG_REG_RT_ENABLE_ENABLE) == FALSE))
+                {
+                    /* Teardown complete */
+                    break;
+                }
+            }
+#endif
 
             if(currTimeout > timeout)
             {
@@ -2499,18 +3085,56 @@ static int32_t Udma_chDisableTxChan(Udma_ChHandle chHandle, uint32_t timeout)
 
     if(UDMA_SOK == retVal)
     {
-        /* Clear teardown and enable bits in both UDMAP and peer */
-        rtStatus.enable   = FALSE;
-        rtStatus.teardown = FALSE;
-        rtStatus.forcedTeardown = FALSE;
-        CSL_FINS(peerRtEnable, PSILCFG_REG_RT_ENABLE_TDOWN, (uint32_t) 0U);
-        (void) CSL_udmapSetTxRT(&drvHandle->udmapRegs, chHandle->txChNum, &rtStatus);
-        (void) CSL_udmapSetChanPeerReg(
-            &drvHandle->udmapRegs,
-            chHandle->txChNum,
-            CSL_UDMAP_CHAN_DIR_TX,
-            rtEnableRegOffset,
-            &peerRtEnable);
+#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
+        if(UDMA_INST_TYPE_NORMAL == drvHandle->instType)
+        {
+            /* Clear teardown and enable bits in both UDMAP and peer */
+            udmapRtStatus.enable   = FALSE;
+            udmapRtStatus.teardown = FALSE;
+            udmapRtStatus.forcedTeardown = FALSE;
+            CSL_FINS(peerRtEnable, PSILCFG_REG_RT_ENABLE_TDOWN, (uint32_t) 0U);
+            (void) CSL_udmapSetTxRT(&drvHandle->udmapRegs, chHandle->txChNum, &udmapRtStatus);
+            (void) CSL_udmapSetChanPeerReg(
+                &drvHandle->udmapRegs,
+                chHandle->txChNum,
+                CSL_UDMAP_CHAN_DIR_TX,
+                rtEnableRegOffset,
+                &peerRtEnable);
+        }
+#endif
+#if (UDMA_SOC_CFG_LCDMA_PRESENT == 1)
+        if(UDMA_INST_TYPE_LCDMA_BCDMA == drvHandle->instType)
+        {
+            /* Clear teardown and enable bits in both BCDMA and peer */
+            bcdmaRtStatus.enable   = FALSE;
+            bcdmaRtStatus.teardown = FALSE;
+            bcdmaRtStatus.forcedTeardown = FALSE;
+            CSL_FINS(peerRtEnable, PSILCFG_REG_RT_ENABLE_TDOWN, (uint32_t) 0U);
+            /*Add offset to chNum, so that BCDMA can identify it as Tx Channel*/
+            (void) CSL_bcdmaSetTxRT(&drvHandle->bcdmaRegs, chHandle->txChNum + drvHandle->txChOffset, &bcdmaRtStatus);
+            (void) CSL_bcdmaSetChanPeerReg(
+                &drvHandle->bcdmaRegs,
+                chHandle->txChNum + drvHandle->txChOffset,
+                CSL_BCDMA_CHAN_DIR_TX,
+                rtEnableRegOffset,
+                &peerRtEnable); 
+        }
+        else if(UDMA_INST_TYPE_LCDMA_PKTDMA == drvHandle->instType)
+        {
+            /* Clear teardown and enable bits in both PKTDMA and peer */
+            pktdmaRtStatus.enable   = FALSE;
+            pktdmaRtStatus.teardown = FALSE;
+            pktdmaRtStatus.forcedTeardown = FALSE;
+            CSL_FINS(peerRtEnable, PSILCFG_REG_RT_ENABLE_TDOWN, (uint32_t) 0U);
+            (void) CSL_pktdmaSetTxRT(&drvHandle->pktdmaRegs, chHandle->txChNum, &pktdmaRtStatus);
+            (void) CSL_pktdmaSetChanPeerReg(
+                &drvHandle->pktdmaRegs,
+                chHandle->txChNum,
+                CSL_PKTDMA_CHAN_DIR_TX,
+                rtEnableRegOffset,
+                &peerRtEnable);            
+        }
+#endif
     }
 
     return (retVal);
@@ -2521,7 +3145,13 @@ static int32_t Udma_chDisableRxChan(Udma_ChHandle chHandle, uint32_t timeout)
     int32_t         retVal = UDMA_SOK;
     uint32_t        currTimeout = 0U, regVal;
     Udma_DrvHandle  drvHandle;
-    CSL_UdmapRT     rtStatus;
+#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
+    CSL_UdmapRT     udmapRtStatus;
+#endif
+#if (UDMA_SOC_CFG_LCDMA_PRESENT == 1)
+    CSL_BcdmaRT     bcdmaRtStatus;
+    CSL_PktdmaRT    pktdmaRtStatus;
+#endif
     uint32_t        peerRtEnable = 0U, peerRtEnableBit = 0U;
     uint32_t        rtEnableRegOffset;
 
@@ -2529,21 +3159,66 @@ static int32_t Udma_chDisableRxChan(Udma_ChHandle chHandle, uint32_t timeout)
     Udma_assert(drvHandle, chHandle->rxChNum != UDMA_DMA_CH_INVALID);
     Udma_assert(drvHandle, chHandle->peerThreadId != UDMA_THREAD_ID_INVALID);
     rtEnableRegOffset = CSL_PSILCFG_REG_RT_ENABLE - CSL_PSILCFG_REG_STATIC_TR;
-
+    
     /* Initiate graceful teardown first - Source is peer thread for RX */
-    regVal = CSL_REG32_RD(&chHandle->pRxRtRegs->PEER8);
-    CSL_FINS(regVal, PSILCFG_REG_RT_ENABLE_TDOWN, (uint32_t) 1U);
-    CSL_REG32_WR(&chHandle->pRxRtRegs->PEER8, regVal);
+#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
+    if(UDMA_INST_TYPE_NORMAL == drvHandle->instType)
+    {
+        regVal = CSL_REG32_RD(&chHandle->pRxRtRegs->PEER8);
+        CSL_FINS(regVal, PSILCFG_REG_RT_ENABLE_TDOWN, (uint32_t) 1U);
+        CSL_REG32_WR(&chHandle->pRxRtRegs->PEER8, regVal);
+    }
+#endif
+#if (UDMA_SOC_CFG_LCDMA_PRESENT == 1)
+    if(UDMA_INST_TYPE_LCDMA_BCDMA == drvHandle->instType)
+    {
+        regVal = CSL_REG32_RD(&chHandle->pBcdmaRxRtRegs->PEER8);
+        CSL_FINS(regVal, PSILCFG_REG_RT_ENABLE_TDOWN, (uint32_t) 1U);
+        CSL_REG32_WR(&chHandle->pBcdmaRxRtRegs->PEER8, regVal);
+    }
+    else if(UDMA_INST_TYPE_LCDMA_PKTDMA == drvHandle->instType)
+    {
+        regVal = CSL_REG32_RD(&chHandle->pPktdmaRxRtRegs->PEER8);
+        CSL_FINS(regVal, PSILCFG_REG_RT_ENABLE_TDOWN, (uint32_t) 1U);
+        CSL_REG32_WR(&chHandle->pPktdmaRxRtRegs->PEER8, regVal);            
+    }
+#endif
 
     /* Check if graceful teardown is complete */
     while(UDMA_SOK == retVal)
     {
-        (void) CSL_udmapGetRxRT(&drvHandle->udmapRegs, chHandle->rxChNum, &rtStatus);
-        if(FALSE == rtStatus.enable)
+#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
+        if(UDMA_INST_TYPE_NORMAL == drvHandle->instType)
         {
-            /* Teardown complete */
-            break;
+            (void) CSL_udmapGetRxRT(&drvHandle->udmapRegs, chHandle->rxChNum, &udmapRtStatus);
+            if(FALSE == udmapRtStatus.enable)
+            {
+                /* Teardown complete */
+                break;
+            }
         }
+#endif
+#if (UDMA_SOC_CFG_LCDMA_PRESENT == 1)
+        if(UDMA_INST_TYPE_LCDMA_BCDMA == drvHandle->instType)
+        {
+            /*Add offset to chNum, so that BCDMA can identify it as Rx Channel*/
+            (void) CSL_bcdmaGetRxRT(&drvHandle->bcdmaRegs, chHandle->rxChNum + drvHandle->rxChOffset, &bcdmaRtStatus);
+            if(FALSE == bcdmaRtStatus.enable)
+            {
+                /* Teardown complete */
+                break;
+            }
+        }
+        else if(UDMA_INST_TYPE_LCDMA_PKTDMA == drvHandle->instType)
+        {
+            (void) CSL_pktdmaGetRxRT(&drvHandle->pktdmaRegs, chHandle->rxChNum, &pktdmaRtStatus);
+            if(FALSE == pktdmaRtStatus.enable)
+            {
+                /* Teardown complete */
+                break;
+            }
+        }
+#endif
 
         if(currTimeout > timeout)
         {
@@ -2559,8 +3234,26 @@ static int32_t Udma_chDisableRxChan(Udma_ChHandle chHandle, uint32_t timeout)
     if(UDMA_SOK != retVal)
     {
         /* Graceful teardown failed - initiate force teardown */
-        retVal = CSL_udmapTeardownRxChan(
-                     &drvHandle->udmapRegs, chHandle->rxChNum, (bool)true, (bool)false);
+#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
+        if(UDMA_INST_TYPE_NORMAL == drvHandle->instType)
+        {
+            retVal = CSL_udmapTeardownRxChan(
+                        &drvHandle->udmapRegs, chHandle->rxChNum, (bool)true, (bool)false);
+        }
+#endif
+#if (UDMA_SOC_CFG_LCDMA_PRESENT == 1)
+        if(UDMA_INST_TYPE_LCDMA_BCDMA == drvHandle->instType)
+        {
+            /*Add offset to chNum, so that BCDMA can identify it as Rx Channel*/
+            retVal = CSL_bcdmaTeardownRxChan(
+                        &drvHandle->bcdmaRegs, chHandle->rxChNum + drvHandle->rxChOffset, (bool)true, (bool)false);   
+        }
+        else if(UDMA_INST_TYPE_LCDMA_PKTDMA == drvHandle->instType)
+        {
+            retVal = CSL_pktdmaTeardownRxChan(
+                        &drvHandle->pktdmaRegs, chHandle->rxChNum, (bool)true, (bool)false);
+        }
+#endif
         if(CSL_PASS != retVal)
         {
             Udma_printf(drvHandle, "[Error] UDMA RX force disable failed!!\n");
@@ -2570,20 +3263,56 @@ static int32_t Udma_chDisableRxChan(Udma_ChHandle chHandle, uint32_t timeout)
         currTimeout = 0U;
         while(UDMA_SOK == retVal)
         {
-            (void) CSL_udmapGetRxRT(&drvHandle->udmapRegs, chHandle->rxChNum, &rtStatus);
-            (void) CSL_udmapGetChanPeerReg(
-                &drvHandle->udmapRegs,
-                chHandle->rxChNum,
-                CSL_UDMAP_CHAN_DIR_RX,
-                rtEnableRegOffset,
-                &peerRtEnable);
-            peerRtEnableBit = CSL_FEXT(peerRtEnable, PSILCFG_REG_RT_ENABLE_ENABLE);
-            if((FALSE == rtStatus.enable) && (FALSE == peerRtEnableBit))
+#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
+            if(UDMA_INST_TYPE_NORMAL == drvHandle->instType)
             {
-                /* Teardown complete */
-                break;
+                (void) CSL_udmapGetRxRT(&drvHandle->udmapRegs, chHandle->rxChNum, &udmapRtStatus);
+                (void) CSL_udmapGetChanPeerReg(
+                    &drvHandle->udmapRegs,
+                    chHandle->rxChNum,
+                    CSL_UDMAP_CHAN_DIR_RX,
+                    rtEnableRegOffset, &peerRtEnable);
+                peerRtEnableBit = CSL_FEXT(peerRtEnable, PSILCFG_REG_RT_ENABLE_ENABLE);
+               if((FALSE == udmapRtStatus.enable) && (FALSE == peerRtEnableBit))
+                {
+                    /* Teardown complete */
+                    break;
+                }
             }
-
+#endif
+#if (UDMA_SOC_CFG_LCDMA_PRESENT == 1)
+            if(UDMA_INST_TYPE_LCDMA_BCDMA == drvHandle->instType)
+            {
+                /*Add offset to chNum, so that BCDMA can identify it as Rx Channel*/
+                (void) CSL_bcdmaGetRxRT(&drvHandle->bcdmaRegs, chHandle->rxChNum + drvHandle->rxChOffset, &bcdmaRtStatus);
+                (void) CSL_bcdmaGetChanPeerReg(
+                    &drvHandle->bcdmaRegs,
+                    chHandle->rxChNum + drvHandle->rxChOffset,
+                    CSL_BCDMA_CHAN_DIR_RX,
+                    rtEnableRegOffset, &peerRtEnable);
+                peerRtEnableBit = CSL_FEXT(peerRtEnable, PSILCFG_REG_RT_ENABLE_ENABLE);
+                if((FALSE == bcdmaRtStatus.enable) && (FALSE == peerRtEnableBit))
+                {
+                    /* Teardown complete */
+                    break;
+                }
+            }
+            else if(UDMA_INST_TYPE_LCDMA_PKTDMA == drvHandle->instType)
+            {
+                (void) CSL_pktdmaGetRxRT(&drvHandle->pktdmaRegs, chHandle->rxChNum, &pktdmaRtStatus);
+                (void) CSL_pktdmaGetChanPeerReg(
+                    &drvHandle->pktdmaRegs,
+                    chHandle->rxChNum,
+                    CSL_PKTDMA_CHAN_DIR_RX,
+                    rtEnableRegOffset, &peerRtEnable);
+                peerRtEnableBit = CSL_FEXT(peerRtEnable, PSILCFG_REG_RT_ENABLE_ENABLE);
+                if((FALSE == pktdmaRtStatus.enable) && (FALSE == peerRtEnableBit))
+                {
+                    /* Teardown complete */
+                    break;
+                }
+            }
+#endif
             if(currTimeout > timeout)
             {
                 retVal = UDMA_ETIMEOUT;
@@ -2599,17 +3328,54 @@ static int32_t Udma_chDisableRxChan(Udma_ChHandle chHandle, uint32_t timeout)
 
     if(UDMA_SOK == retVal)
     {
-        /* Clear teardown bits in both the UDMAP and peer */
-        rtStatus.teardown = FALSE;   /* Note that other bits are cleared from previous call */
-        CSL_FINS(peerRtEnable, PSILCFG_REG_RT_ENABLE_TDOWN, (uint32_t) FALSE);
-        (void) CSL_udmapSetRxRT(
-            &drvHandle->udmapRegs, chHandle->rxChNum, &rtStatus);
-        (void) CSL_udmapSetChanPeerReg(
-            &drvHandle->udmapRegs,
-            chHandle->rxChNum,
-            CSL_UDMAP_CHAN_DIR_RX,
-            rtEnableRegOffset,
-            &peerRtEnable);
+
+#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
+        if(UDMA_INST_TYPE_NORMAL == drvHandle->instType)
+        {
+            /* Clear teardown bits in both the UDMAP and peer */
+            udmapRtStatus.teardown = FALSE;   /* Note that other bits are cleared from previous call */
+            CSL_FINS(peerRtEnable, PSILCFG_REG_RT_ENABLE_TDOWN, (uint32_t) FALSE);
+            (void) CSL_udmapSetRxRT(
+                &drvHandle->udmapRegs, chHandle->rxChNum, &udmapRtStatus);
+            (void) CSL_udmapSetChanPeerReg(
+                &drvHandle->udmapRegs,
+                chHandle->rxChNum,
+                CSL_UDMAP_CHAN_DIR_RX,
+                rtEnableRegOffset,
+                &peerRtEnable);
+        }
+#endif
+#if (UDMA_SOC_CFG_LCDMA_PRESENT == 1)
+        if(UDMA_INST_TYPE_LCDMA_BCDMA == drvHandle->instType)
+        {
+            /* Clear teardown bits in both the BCDMA and peer */
+            bcdmaRtStatus.teardown = FALSE;   /* Note that other bits are cleared from previous call */
+            CSL_FINS(peerRtEnable, PSILCFG_REG_RT_ENABLE_TDOWN, (uint32_t) FALSE);
+            /*Add offset to chNum, so that BCDMA can identify it as Rx Channel*/
+            (void) CSL_bcdmaSetRxRT(
+                &drvHandle->bcdmaRegs, chHandle->rxChNum + drvHandle->rxChOffset, &bcdmaRtStatus);
+            (void) CSL_bcdmaSetChanPeerReg(
+                &drvHandle->bcdmaRegs,
+                chHandle->rxChNum + drvHandle->rxChOffset,
+                CSL_BCDMA_CHAN_DIR_RX,
+                rtEnableRegOffset,
+                &peerRtEnable); 
+        }
+        else if(UDMA_INST_TYPE_LCDMA_PKTDMA == drvHandle->instType)
+        {
+            /* Clear teardown bits in both the PKTDMA and peer */
+            pktdmaRtStatus.teardown = FALSE;   /* Note that other bits are cleared from previous call */
+            CSL_FINS(peerRtEnable, PSILCFG_REG_RT_ENABLE_TDOWN, (uint32_t) FALSE);
+            (void) CSL_pktdmaSetRxRT(
+                &drvHandle->pktdmaRegs, chHandle->rxChNum, &pktdmaRtStatus);
+            (void) CSL_pktdmaSetChanPeerReg(
+                &drvHandle->pktdmaRegs,
+                chHandle->rxChNum,
+                CSL_PKTDMA_CHAN_DIR_RX,
+                rtEnableRegOffset,
+                &peerRtEnable);             
+        }
+#endif
     }
 
     return (retVal);
@@ -2713,9 +3479,29 @@ static int32_t Udma_chDisableExtChan(Udma_ChHandle chHandle, uint32_t timeout)
             }
 
             /* Disable External channel - this will clear the Enable bit */
-            retVal += CSL_udmapDisableTxChan(
-                          &drvHandle->udmapRegs,
-                          chHandle->extChNum + drvHandle->extChOffset);
+#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
+            if(UDMA_INST_TYPE_NORMAL == drvHandle->instType)
+            {
+                retVal += CSL_udmapDisableTxChan(
+                            &drvHandle->udmapRegs,
+                            chHandle->extChNum + drvHandle->extChOffset);
+            }
+#endif
+#if (UDMA_SOC_CFG_LCDMA_PRESENT == 1)
+            if(UDMA_INST_TYPE_LCDMA_BCDMA == drvHandle->instType)
+            {
+                retVal += CSL_bcdmaDisableTxChan(
+                            &drvHandle->bcdmaRegs,
+                            chHandle->extChNum + drvHandle->extChOffset);
+            }
+            else if(UDMA_INST_TYPE_LCDMA_PKTDMA == drvHandle->instType)
+            {
+                retVal += CSL_pktdmaDisableTxChan(
+                            &drvHandle->pktdmaRegs,
+                            chHandle->extChNum + drvHandle->extChOffset);
+                            
+            }
+#endif
             if(CSL_PASS != retVal)
             {
                 Udma_printf(drvHandle, "[Error] UDMA UTC disable failed!!\n");
@@ -2744,9 +3530,29 @@ static int32_t Udma_chDisableExtChan(Udma_ChHandle chHandle, uint32_t timeout)
         }
 
         /* Disable External channel - this will clear the Enable bit */
-        retVal += CSL_udmapDisableTxChan(
-                      &drvHandle->udmapRegs,
-                      chHandle->extChNum + drvHandle->extChOffset);
+#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
+        if(UDMA_INST_TYPE_NORMAL == drvHandle->instType)
+        {
+            retVal += CSL_udmapDisableTxChan(
+                        &drvHandle->udmapRegs,
+                        chHandle->extChNum + drvHandle->extChOffset);
+        }
+#endif
+#if (UDMA_SOC_CFG_LCDMA_PRESENT == 1)
+        if(UDMA_INST_TYPE_LCDMA_BCDMA == drvHandle->instType)
+        {
+            retVal += CSL_bcdmaDisableTxChan(
+                        &drvHandle->bcdmaRegs,
+                        chHandle->extChNum + drvHandle->extChOffset);
+        }
+        else if(UDMA_INST_TYPE_LCDMA_PKTDMA == drvHandle->instType)
+        {
+            retVal += CSL_pktdmaDisableTxChan(
+                        &drvHandle->pktdmaRegs,
+                        chHandle->extChNum + drvHandle->extChOffset);
+                        
+        }
+#endif
         if(CSL_PASS != retVal)
         {
             Udma_printf(drvHandle, "[Error] UDMA UTC disable failed!!\n");
@@ -2784,7 +3590,22 @@ static uint32_t Udma_chGetTriggerEvent(Udma_DrvHandle drvHandle,
             /* RX trigger is after TX channel triggers
              * Note: There is no external channel triggers - hence not
              * using rxChOffset */
-            triggerEvent  = (drvHandle->udmapRegs.txChanCnt * 2U);
+#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
+            if(UDMA_INST_TYPE_NORMAL == drvHandle->instType)
+            {
+                triggerEvent  = (drvHandle->udmapRegs.txChanCnt * 2U);
+            }
+#endif
+#if (UDMA_SOC_CFG_LCDMA_PRESENT == 1)
+            if(UDMA_INST_TYPE_LCDMA_BCDMA == drvHandle->instType)
+            {
+                triggerEvent  = (drvHandle->bcdmaRegs.txChanCnt * 2U);
+            }
+            else if(UDMA_INST_TYPE_LCDMA_PKTDMA == drvHandle->instType)
+            {
+                triggerEvent  = (drvHandle->pktdmaRegs.txChanCnt * 2U);  
+            }
+#endif
             triggerEvent += (chHandle->rxChNum * 2U);
             if(CSL_UDMAP_TR_FLAGS_TRIGGER_GLOBAL1 == trigger)
             {
@@ -2912,3 +3733,264 @@ static int32_t Udma_psilcfgRead(Udma_DrvHandle drvHandle,
     return (retVal);
 }
 #endif
+
+static void Udma_chAssignRegOverlay(Udma_DrvHandle drvHandle, Udma_ChHandle chHandle)
+{
+#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
+    if(UDMA_INST_TYPE_NORMAL == drvHandle->instType)
+    {
+        if(chHandle->txChNum != UDMA_DMA_CH_INVALID)
+        {
+            Udma_assert(drvHandle, drvHandle->udmapRegs.pTxChanCfgRegs != NULL_PTR);
+            Udma_assert(drvHandle, drvHandle->udmapRegs.pTxChanRtRegs != NULL_PTR);
+            Udma_assert(drvHandle,
+                chHandle->txChNum <
+                    (sizeof(CSL_udmap_txcrtRegs) /
+                        sizeof(CSL_udmap_txcrtRegs_chan)));
+            chHandle->pTxCfgRegs =
+                &drvHandle->udmapRegs.pTxChanCfgRegs->CHAN[chHandle->txChNum];
+            chHandle->pTxRtRegs  =
+                &drvHandle->udmapRegs.pTxChanRtRegs->CHAN[chHandle->txChNum];
+        }
+        if(chHandle->rxChNum != UDMA_DMA_CH_INVALID)
+        {
+            Udma_assert(drvHandle, drvHandle->udmapRegs.pRxChanCfgRegs != NULL_PTR);
+            Udma_assert(drvHandle, drvHandle->udmapRegs.pRxChanRtRegs != NULL_PTR);
+            Udma_assert(drvHandle,
+                chHandle->rxChNum <
+                    (sizeof(CSL_udmap_rxcrtRegs) /
+                        sizeof(CSL_udmap_rxcrtRegs_chan)));
+            chHandle->pRxCfgRegs =
+                &drvHandle->udmapRegs.pRxChanCfgRegs->CHAN[chHandle->rxChNum];
+            chHandle->pRxRtRegs  =
+                &drvHandle->udmapRegs.pRxChanRtRegs->CHAN[chHandle->rxChNum];
+        }
+        if(chHandle->extChNum != UDMA_DMA_CH_INVALID)
+        {
+            Udma_assert(drvHandle, drvHandle->udmapRegs.pTxChanCfgRegs != NULL_PTR);
+            Udma_assert(drvHandle, drvHandle->udmapRegs.pTxChanRtRegs != NULL_PTR);
+            Udma_assert(drvHandle,
+                (chHandle->extChNum + drvHandle->extChOffset) <
+                    (sizeof(CSL_udmap_txcrtRegs) /
+                        sizeof(CSL_udmap_txcrtRegs_chan)));
+            chHandle->pExtCfgRegs =
+                &drvHandle->udmapRegs.pTxChanCfgRegs->CHAN[
+                                chHandle->extChNum + drvHandle->extChOffset];
+            chHandle->pExtRtRegs  =
+                &drvHandle->udmapRegs.pTxChanRtRegs->CHAN[
+                                chHandle->extChNum + drvHandle->extChOffset];
+        }
+    }
+#endif
+#if (UDMA_SOC_CFG_LCDMA_PRESENT == 1)
+    if(UDMA_INST_TYPE_LCDMA_BCDMA == drvHandle->instType)
+    {
+        if(chHandle->txChNum != UDMA_DMA_CH_INVALID)
+        {
+            if((chHandle->chType & UDMA_CH_FLAG_BLK_COPY) == UDMA_CH_FLAG_BLK_COPY)
+            {
+                Udma_assert(drvHandle, drvHandle->bcdmaRegs.pBcChanCfgRegs != NULL_PTR);
+                Udma_assert(drvHandle, drvHandle->bcdmaRegs.pBcChanRtRegs != NULL_PTR);
+                Udma_assert(drvHandle,
+                    chHandle->txChNum <
+                        (sizeof(CSL_bcdma_bcrtRegs) /
+                            sizeof(CSL_bcdma_bcrtRegs_chan)));
+                chHandle->pBcdmaBcCfgRegs =
+                    &drvHandle->bcdmaRegs.pBcChanCfgRegs->CHAN[chHandle->txChNum];
+                chHandle->pBcdmaBcRtRegs  =
+                    &drvHandle->bcdmaRegs.pBcChanRtRegs->CHAN[chHandle->txChNum];
+            }
+            else
+            {
+                Udma_assert(drvHandle, drvHandle->bcdmaRegs.pTxChanCfgRegs != NULL_PTR);
+                Udma_assert(drvHandle, drvHandle->bcdmaRegs.pTxChanRtRegs != NULL_PTR);
+                Udma_assert(drvHandle,
+                    chHandle->txChNum <
+                        (sizeof(CSL_bcdma_txcrtRegs) /
+                            sizeof(CSL_bcdma_txcrtRegs_chan)));
+                chHandle->pBcdmaTxCfgRegs =
+                    &drvHandle->bcdmaRegs.pTxChanCfgRegs->CHAN[chHandle->txChNum];
+                chHandle->pBcdmaTxRtRegs  =
+                    &drvHandle->bcdmaRegs.pTxChanRtRegs->CHAN[chHandle->txChNum];
+            }  
+        }
+        if(chHandle->rxChNum != UDMA_DMA_CH_INVALID)
+        {
+            Udma_assert(drvHandle, drvHandle->bcdmaRegs.pRxChanCfgRegs != NULL_PTR);
+            Udma_assert(drvHandle, drvHandle->bcdmaRegs.pRxChanRtRegs != NULL_PTR);
+            Udma_assert(drvHandle,
+                chHandle->rxChNum <
+                    (sizeof(CSL_bcdma_rxcrtRegs) /
+                        sizeof(CSL_bcdma_rxcrtRegs_chan)));
+            chHandle->pBcdmaRxCfgRegs =
+                &drvHandle->bcdmaRegs.pRxChanCfgRegs->CHAN[chHandle->rxChNum];
+            chHandle->pBcdmaRxRtRegs  =
+                &drvHandle->bcdmaRegs.pRxChanRtRegs->CHAN[chHandle->rxChNum];
+        }
+    }
+    else if(UDMA_INST_TYPE_LCDMA_PKTDMA == drvHandle->instType)
+    {
+        if(chHandle->txChNum != UDMA_DMA_CH_INVALID)
+        {
+            Udma_assert(drvHandle, drvHandle->pktdmaRegs.pTxChanCfgRegs != NULL_PTR);
+            Udma_assert(drvHandle, drvHandle->pktdmaRegs.pTxChanRtRegs != NULL_PTR);
+            Udma_assert(drvHandle,
+                chHandle->txChNum <
+                    (sizeof(CSL_pktdma_txcrtRegs) /
+                        sizeof(CSL_pktdma_txcrtRegs_chan)));
+            chHandle->pPktdmaTxCfgRegs =
+                &drvHandle->pktdmaRegs.pTxChanCfgRegs->CHAN[chHandle->txChNum];
+            chHandle->pPktdmaTxRtRegs  =
+                &drvHandle->pktdmaRegs.pTxChanRtRegs->CHAN[chHandle->txChNum];
+        }
+        if(chHandle->rxChNum != UDMA_DMA_CH_INVALID)
+        {
+            Udma_assert(drvHandle, drvHandle->pktdmaRegs.pRxChanCfgRegs != NULL_PTR);
+            Udma_assert(drvHandle, drvHandle->pktdmaRegs.pRxChanRtRegs != NULL_PTR);
+            Udma_assert(drvHandle,
+                chHandle->rxChNum <
+                    (sizeof(CSL_pktdma_rxcrtRegs) /
+                        sizeof(CSL_pktdma_rxcrtRegs_chan)));
+            chHandle->pPktdmaRxCfgRegs =
+                &drvHandle->pktdmaRegs.pRxChanCfgRegs->CHAN[chHandle->rxChNum];
+            chHandle->pPktdmaRxRtRegs  =
+                &drvHandle->pktdmaRegs.pRxChanRtRegs->CHAN[chHandle->rxChNum];
+        }
+        if(chHandle->extChNum != UDMA_DMA_CH_INVALID)
+        {
+            Udma_assert(drvHandle, drvHandle->pktdmaRegs.pTxChanCfgRegs != NULL_PTR);
+            Udma_assert(drvHandle, drvHandle->pktdmaRegs.pTxChanRtRegs != NULL_PTR);
+            Udma_assert(drvHandle,
+                (chHandle->extChNum + drvHandle->extChOffset) <
+                    (sizeof(CSL_pktdma_txcrtRegs) /
+                        sizeof(CSL_pktdma_txcrtRegs_chan)));
+            chHandle->pPktdmaExtCfgRegs =
+                &drvHandle->pktdmaRegs.pTxChanCfgRegs->CHAN[
+                                chHandle->extChNum + drvHandle->extChOffset];
+            chHandle->pPktdmaExtRtRegs  =
+                &drvHandle->pktdmaRegs.pTxChanRtRegs->CHAN[
+                                chHandle->extChNum + drvHandle->extChOffset];
+        }           
+    }
+#endif
+}
+
+static void Udma_chInitRegs(Udma_ChHandle chHandle)
+{
+#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
+    chHandle->pTxCfgRegs        = (volatile CSL_udmap_txccfgRegs_chan *) NULL_PTR;
+    chHandle->pTxRtRegs         = (volatile CSL_udmap_txcrtRegs_chan *) NULL_PTR;
+    chHandle->pRxCfgRegs        = (volatile CSL_udmap_rxccfgRegs_chan *) NULL_PTR;
+    chHandle->pRxRtRegs         = (volatile CSL_udmap_rxcrtRegs_chan *) NULL_PTR;
+    chHandle->pExtCfgRegs       = (volatile CSL_udmap_txccfgRegs_chan *) NULL_PTR;
+    chHandle->pExtRtRegs        = (volatile CSL_udmap_txcrtRegs_chan *) NULL_PTR;
+#endif
+#if (UDMA_SOC_CFG_LCDMA_PRESENT == 1)
+    chHandle->pBcdmaBcCfgRegs    = (volatile CSL_bcdma_bccfgRegs_chan *) NULL_PTR;
+    chHandle->pBcdmaBcRtRegs     = (volatile CSL_bcdma_bcrtRegs_chan *) NULL_PTR;
+    chHandle->pBcdmaTxCfgRegs   = (volatile CSL_bcdma_txccfgRegs_chan *) NULL_PTR;
+    chHandle->pBcdmaTxRtRegs    = (volatile CSL_bcdma_txcrtRegs_chan *) NULL_PTR;
+    chHandle->pBcdmaRxCfgRegs   = (volatile CSL_bcdma_rxccfgRegs_chan *) NULL_PTR;
+    chHandle->pBcdmaRxRtRegs    = (volatile CSL_bcdma_rxcrtRegs_chan *) NULL_PTR;
+    
+    chHandle->pPktdmaTxCfgRegs  = (volatile CSL_pktdma_txccfgRegs_chan *) NULL_PTR;
+    chHandle->pPktdmaTxRtRegs   = (volatile CSL_pktdma_txcrtRegs_chan *) NULL_PTR;
+    chHandle->pPktdmaRxCfgRegs  = (volatile CSL_pktdma_rxccfgRegs_chan *) NULL_PTR;
+    chHandle->pPktdmaRxRtRegs   = (volatile CSL_pktdma_rxcrtRegs_chan *) NULL_PTR;
+    chHandle->pPktdmaExtCfgRegs = (volatile CSL_pktdma_txccfgRegs_chan *) NULL_PTR;
+    chHandle->pPktdmaExtRtRegs  = (volatile CSL_pktdma_txcrtRegs_chan *) NULL_PTR;
+#endif
+}
+
+
+static void Udma_chPauseTxLocal(Udma_DrvHandle drvHandle, uint32_t txChNum,uint32_t chType)
+{
+#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
+    if(UDMA_INST_TYPE_NORMAL == drvHandle->instType)
+    {
+        (void) CSL_udmapPauseTxChan(&drvHandle->udmapRegs, txChNum);
+    }
+#endif
+#if (UDMA_SOC_CFG_LCDMA_PRESENT == 1)
+    if(UDMA_INST_TYPE_LCDMA_BCDMA == drvHandle->instType)
+    {
+        if((chType & UDMA_CH_FLAG_BLK_COPY) != UDMA_CH_FLAG_BLK_COPY)
+        {
+            /*Add offset to chNum, so that BCDMA can identify it as Tx Channel*/
+            txChNum += drvHandle->txChOffset;
+        }
+        (void) CSL_bcdmaPauseTxChan(&drvHandle->bcdmaRegs, txChNum);
+    }
+    else if(UDMA_INST_TYPE_LCDMA_PKTDMA == drvHandle->instType)
+    {
+        (void) CSL_pktdmaPauseTxChan(&drvHandle->pktdmaRegs, txChNum);            
+    }
+#endif
+}
+
+static void Udma_chUnpauseTxLocal(Udma_DrvHandle drvHandle, uint32_t txChNum, uint32_t chType)
+{
+#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
+    if(UDMA_INST_TYPE_NORMAL == drvHandle->instType)
+    {
+        (void) CSL_udmapUnpauseTxChan(&drvHandle->udmapRegs, txChNum);
+    }
+#endif
+#if (UDMA_SOC_CFG_LCDMA_PRESENT == 1)
+    if(UDMA_INST_TYPE_LCDMA_BCDMA == drvHandle->instType)
+    {
+        if((chType & UDMA_CH_FLAG_BLK_COPY) != UDMA_CH_FLAG_BLK_COPY)
+        {
+            /*Add offset to chNum, so that BCDMA can identify it as Tx Channel*/
+            txChNum += drvHandle->txChOffset;
+        }
+        (void) CSL_bcdmaUnpauseTxChan(&drvHandle->bcdmaRegs, txChNum);
+    }
+    else if(UDMA_INST_TYPE_LCDMA_PKTDMA == drvHandle->instType)
+    {
+        (void) CSL_pktdmaUnpauseTxChan(&drvHandle->pktdmaRegs, txChNum);            
+    }
+#endif
+}
+
+static void Udma_chPauseRxLocal(Udma_DrvHandle drvHandle, uint32_t rxChNum)
+{
+#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
+    if(UDMA_INST_TYPE_NORMAL == drvHandle->instType)
+    {
+        (void) CSL_udmapPauseRxChan(&drvHandle->udmapRegs, rxChNum);
+    }
+#endif
+#if (UDMA_SOC_CFG_LCDMA_PRESENT == 1)
+    if(UDMA_INST_TYPE_LCDMA_BCDMA == drvHandle->instType)
+    {
+        /*Add offset to chNum, so that BCDMA can identify it as Rx Channel*/
+        (void) CSL_bcdmaPauseRxChan(&drvHandle->bcdmaRegs + drvHandle->rxChOffset, rxChNum);
+    }
+    else if(UDMA_INST_TYPE_LCDMA_PKTDMA == drvHandle->instType)
+    {
+        (void) CSL_pktdmaPauseRxChan(&drvHandle->pktdmaRegs, rxChNum);            
+    }
+#endif
+}
+
+static void Udma_chUnpauseRxLocal(Udma_DrvHandle drvHandle, uint32_t rxChNum)
+{
+#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
+    if(UDMA_INST_TYPE_NORMAL == drvHandle->instType)
+    {
+        (void) CSL_udmapUnpauseRxChan(&drvHandle->udmapRegs, rxChNum);
+    }
+#endif
+#if (UDMA_SOC_CFG_LCDMA_PRESENT == 1)
+    if(UDMA_INST_TYPE_LCDMA_BCDMA == drvHandle->instType)
+    {
+        /*Add offset to chNum, so that BCDMA can identify it as Rx Channel*/
+        (void) CSL_bcdmaUnpauseRxChan(&drvHandle->bcdmaRegs + drvHandle->rxChOffset, rxChNum);
+    }
+    else if(UDMA_INST_TYPE_LCDMA_PKTDMA == drvHandle->instType)
+    {
+        (void) CSL_pktdmaUnpauseRxChan(&drvHandle->pktdmaRegs, rxChNum);            
+    }
+#endif
+}

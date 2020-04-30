@@ -63,7 +63,7 @@ extern "C" {
 /* ========================================================================== */
 
 /** \brief Macro used to specify that event ID is invalid. */
-#define UDMA_EVENT_INVALID              ((uint32_t) CSL_UDMAP_NO_EVENT)
+#define UDMA_EVENT_INVALID              ((uint32_t) 0xFFFFU)
 /** \brief Macro used to specify that interrupt number is invalid. */
 #define UDMA_INTR_INVALID               ((uint32_t) 0xFFFF0000U)
 /**
@@ -324,6 +324,17 @@ typedef struct
  *
  *  Register event based on UDMA channel based and event parameters.
  *
+ *  Note: In case of devices like AM64x in which teardown is not supported,
+ *  for UDMA_EVENT_TYPE_TEARDOWN_PACKET it will return gracefully,
+ *  after populating eventHandle with DrvHandle and eventPrms.
+ *  Since the params InstType in drvHandle and evenType in eventPrms are needed
+ *  to bypass the eventReset of this particular event in Udma_eventUnRegister
+ *  (because only eventHandle is passed to Udma_eventUnRegister)
+ *  It wont allocate the resources/configure the event.
+ * 
+ *  Also, In case of devices like AM64x where there is no ring monitor,
+ *  for UDMA_EVENT_TYPE_RING_MON this function will return error.
+ *
  *  Requirement: DOX_REQ_TAG(PDK-2596)
  *
  *  \param drvHandle    [IN] UDMA driver handle pointer passed during
@@ -351,6 +362,13 @@ int32_t Udma_eventRegister(Udma_DrvHandle drvHandle,
  *  compared to other shared events since the resource is owned by the master
  *  event. This function returns error for master event if any other shared
  *  resource is still not unregistered.
+ *
+ *  In case of devices like AM64x in which teardown is not supported,
+ *  for UDMA_EVENT_TYPE_TEARDOWN_PACKET it will return gracefully,
+ *  without doing anything.
+ * 
+ *  Also, In case of devices like AM64x where there is no ring monitor,
+ *  for UDMA_EVENT_TYPE_RING_MON this function will return error.
  *
  *  Requirement: DOX_REQ_TAG(PDK-2597)
  *

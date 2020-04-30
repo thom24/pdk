@@ -55,6 +55,41 @@ extern "C" {
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
 
+
+/**
+ *  \anchor Udma_InstanceType
+ *  \name UDMA Instance Type
+ *
+ *  UDMA instance Type - UDMA/LCDMA_BCDMA/LCDMA_PKTDMA
+ *
+ *  @{
+ */
+/** \brief UDMA instance type*/
+#define UDMA_INST_TYPE_NORMAL            (0U)
+/** \brief LCDMA - Block Copy DMA instance type*/
+#define UDMA_INST_TYPE_LCDMA_BCDMA     (1U)
+/** \brief LCDMA - Packet DMA instance type*/
+#define UDMA_INST_TYPE_LCDMA_PKTDMA    (2U)
+/** \brief Maximum number of UDMA instance types */
+#define UDMA_INST_TYPE_MAX             (3U)
+/* @} */
+
+/**
+ *  \anchor Udma_RingAccType
+ *  \name UDMA Ring Accelerator Type
+ *
+ *  UDMA ring accelerator Type - Normal RA/Lcdma RA
+ *
+ *  @{
+ */
+/** \brief Normal RA type*/
+#define UDMA_RA_TYPE_NORMAL            (0U)
+/** \brief Lcdma RA type*/
+#define UDMA_RA_TYPE_LCDMA             (1U)
+/** \brief Maximum number of RA types */
+#define UDMA_RA_TYPE_MAX               (2U)
+/* @} */
+
 #if defined (UDMA_CFG_ASSERT_ENABLE)
 #define Udma_assert(drvHandle, cond)                                     \
     (Udma_assertLocal((drvHandle), (bool) (cond), (const char *) # cond, \
@@ -96,7 +131,7 @@ const Udma_UtcInstInfo *Udma_chGetUtcInst(Udma_DrvHandle drvHandle,
 #endif
 
 /**
- *  \brief Default RA memory fence API used for CSL-FL to perform cache ops
+ *  \brief Default Normal RA memory fence API used for CSL-FL to perform cache ops
  *
  *  \param pVirtAddr        [IN]    The virtual memory address written to
  *  \param size             [IN]    Number of bytes to writeback
@@ -104,6 +139,69 @@ const Udma_UtcInstInfo *Udma_chGetUtcInst(Udma_DrvHandle drvHandle,
  */
 void Udma_ringaccMemOps(void *pVirtAddr, uint32_t size, uint32_t opsType);
 
+/**
+ *  \brief Default Lcdma RA memory fence API used for CSL-FL to perform cache ops
+ *
+ *  \param pVirtAddr        [IN]    The virtual memory address written to
+ *  \param size             [IN]    Number of bytes to writeback
+ *  \param opsType          [IN]    \ref CSL_LcdmaRingAccMemoryOpsType
+ */
+void Udma_lcdmaRingaccMemOps(void *pVirtAddr, uint32_t size, uint32_t opsType);
+
+/*
+ * Ring APIs
+ */
+int32_t Udma_ringCheckParams(Udma_DrvHandle drvHandle,
+                             const Udma_RingPrms *ringPrms);
+
+#if (UDMA_SOC_CFG_APPLY_RING_WORKAROUND == 1)
+int32_t Udma_ringReset(Udma_DrvHandle drvHandle,
+                       Udma_RingHandle ringHandle);
+#endif
+
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
+/* Normal RA APIs*/
+void Udma_ringHandleClearRegsNormal(Udma_RingHandle ringHandle);
+void Udma_ringSetDoorBellNormal(Udma_RingHandle ringHandle, int32_t count);
+void Udma_ringPrimeNormal(Udma_RingHandle ringHandle, uint64_t phyDescMem);
+int32_t Udma_ringDequeueRawNormal(Udma_DrvHandle  drvHandle, 
+                                  Udma_RingHandle ringHandle, 
+                                  uint64_t *phyDescMem);
+int32_t Udma_ringQueueRawNormal(Udma_DrvHandle  drvHandle, 
+                                Udma_RingHandle ringHandle, 
+                                uint64_t phyDescMem); 
+int32_t Udma_ringFlushRawNormal(Udma_DrvHandle  drvHandle, 
+                                Udma_RingHandle ringHandle, 
+                                uint64_t *phyDescMem); 
+void Udma_ringSetCfgNormal(Udma_DrvHandle drvHandle,
+                           Udma_RingHandle ringHandle,
+                           const Udma_RingPrms *ringPrms);
+#endif
+#if (UDMA_SOC_CFG_RA_LCDMA_PRESENT == 1)
+/* LCDMA RA APIs*/
+void Udma_ringHandleClearRegsLcdma(Udma_RingHandle ringHandle);
+void Udma_ringSetForwardDoorBellLcdma(Udma_RingHandle ringHandle, int32_t count);
+void Udma_ringPrimeLcdma(Udma_RingHandle ringHandle, uint64_t phyDescMem);
+int32_t Udma_ringDequeueRawLcdma(Udma_DrvHandle  drvHandle, 
+                                 Udma_RingHandle ringHandle, 
+                                 uint64_t *phyDescMem);
+int32_t Udma_ringQueueRawLcdma(Udma_DrvHandle  drvHandle, 
+                               Udma_RingHandle ringHandle, 
+                               uint64_t phyDescMem); 
+int32_t Udma_ringFlushRawLcdma(Udma_DrvHandle  drvHandle, 
+                               Udma_RingHandle ringHandle, 
+                               uint64_t *phyDescMem); 
+void Udma_ringSetCfgLcdma(Udma_DrvHandle drvHandle,
+                          Udma_RingHandle ringHandle,
+                          const Udma_RingPrms *ringPrms);
+#endif
+/* Proxy APIs*/
+int32_t Udma_ringProxyQueueRaw(Udma_RingHandle ringHandle,
+                               Udma_DrvHandle drvHandle,
+                               uint64_t phyDescMem);
+int32_t Udma_ringProxyDequeueRaw(Udma_RingHandle ringHandle,
+                                 Udma_DrvHandle drvHandle,
+                                 uint64_t *phyDescMem);
 /*
  * RM APIs
  */

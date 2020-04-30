@@ -58,11 +58,30 @@
  * Application test parameters
  */
 /** \brief Number of bytes to copy and buffer allocation */
-#define UDMA_TEST_APP_NUM_BYTES         (1000U)
+#define UDMA_TEST_APP_NUM_BYTES         (1024U)
 /** \brief This ensures every channel memory is aligned */
 #define UDMA_TEST_APP_NUM_BYTES_ALIGN    ((UDMA_TEST_APP_NUM_BYTES + UDMA_CACHELINE_ALIGNMENT) & ~(UDMA_CACHELINE_ALIGNMENT - 1U))
-/** \brief Number of times to perform the memcpy operation */
-#define UDMA_TEST_APP_LOOP_CNT          (100U)
+
+/* Enable benchmark profiling - can be used only for baremetal */
+//#define UDMA_TEST_APP_PROFILE
+
+#ifdef UDMA_TEST_APP_PROFILE
+
+/* Enable PMU Cycle measurement */
+#if defined (BUILD_MCU)
+#define UDMA_TEST_APP_PMU_PROFILE
+#endif
+
+/** \brief In case of profiling, Set Number of times to perform the memcpy operation as 1  */
+#define UDMA_TEST_APP_LOOP_CNT                      (1U)
+/** \brief In case of profiling, Set Number of times to perform the channel open close operation as 1 */
+#define UDMA_TEST_APP_OPEN_CLOSE_TEST_LOOP_CNT      (1U)
+#else
+/** \brief Number of times to perform the memcpy operation*/
+#define UDMA_TEST_APP_LOOP_CNT                      (100U)
+/** \brief Number of times to perform the channel open close operation */
+#define UDMA_TEST_APP_OPEN_CLOSE_TEST_LOOP_CNT      (10U)
+#endif
 
 /*
  * Ring parameters
@@ -86,6 +105,7 @@
 /** \brief This ensures every channel memory is aligned */
 #define UDMA_TEST_APP_TRPD_SIZE_ALIGN   ((UDMA_TEST_APP_TRPD_SIZE + UDMA_CACHELINE_ALIGNMENT) & ~(UDMA_CACHELINE_ALIGNMENT - 1U))
 
+/* Enable interrupt instead of polling mode */
 #define UDMA_TEST_INTR
 
 /* ========================================================================== */
@@ -127,6 +147,13 @@ static void App_udmaTrpdInit(Udma_ChHandle chHandle,
 static void App_print(const char *str);
 static void App_printNum(const char *str, uint32_t num);
 
+#ifdef UDMA_TEST_APP_PMU_PROFILE
+#include <ti/csl/arch/csl_arch.h>
+extern uint32_t osal_TimestampProvider_getOverflowCCNT(void);
+
+static uint64_t App_getPmuCycleCnt (uint32_t hiCycleCnt);
+#endif
+
 /* ========================================================================== */
 /*                            Global Variables                                */
 /* ========================================================================== */
@@ -160,6 +187,16 @@ static uint8_t gUdmaTestDestBuf[UDMA_TEST_APP_NUM_BYTES_ALIGN] __attribute__((al
 static SemaphoreP_Handle gUdmaAppDoneSem = NULL;
 #endif
 
+#ifdef UDMA_TEST_APP_PROFILE
+/*
+ * Profiling Params
+ */
+static uint64_t gUdmaTotalTime;
+#ifdef UDMA_TEST_APP_PMU_PROFILE     
+static uint64_t gUdmaTotalCycle;
+#endif
+#endif
+
 /* Global test pass/fail flag */
 static volatile int32_t gUdmaAppResult = UDMA_SOK;
 
@@ -173,6 +210,7 @@ static volatile int32_t gUdmaAppResult = UDMA_SOK;
 int32_t Udma_memcpyTest(void)
 {
     int32_t         retVal;
+    uint32_t        loopCnt = 0U;
     Udma_DrvHandle  drvHandle = &gUdmaDrvObj;
     Udma_ChHandle   chHandle = &gUdmaChObj;
 
@@ -184,43 +222,55 @@ int32_t Udma_memcpyTest(void)
         App_print("[Error] UDMA App init failed!!\n");
     }
 
-    if(UDMA_SOK == retVal)
+    while(loopCnt < UDMA_TEST_APP_OPEN_CLOSE_TEST_LOOP_CNT)
     {
-        retVal = App_create(drvHandle, chHandle);
-        if(UDMA_SOK != retVal)
+        if(UDMA_SOK == retVal)
         {
-            App_print("[Error] UDMA App create failed!!\n");
-        }
-    }
-
-    if(UDMA_SOK == retVal)
-    {
-        retVal = App_memcpyTest(chHandle);
-        if(UDMA_SOK != retVal)
-        {
-            App_print("[Error] UDMA App memcpy test failed!!\n");
-        }
-        else
-        {
-            if (Udma_appIsUdmapStatsSupported() == TRUE)
+            retVal = App_create(drvHandle, chHandle);
+            if(UDMA_SOK != retVal)
             {
-                Udma_ChStats    chStats;
-                retVal = Udma_chGetStats(chHandle, &chStats);
-                if(UDMA_SOK == retVal)
-                {
-                    App_print("UDMA App memcpy test statistics:\n");
-                    App_printNum("Completed packet count       : %d\n", chStats.packetCnt);
-                    App_printNum("Completed payload byte count : %d\n", chStats.completedByteCnt);
-                    App_printNum("Started byte count           : %d\n", chStats.startedByteCnt);
-                }
+                App_print("[Error] UDMA App create failed!!\n");
             }
         }
-    }
 
-    retVal += App_delete(drvHandle, chHandle);
-    if(UDMA_SOK != retVal)
-    {
-        App_print("[Error] UDMA App delete failed!!\n");
+        if(UDMA_SOK == retVal)
+        {
+            retVal = App_memcpyTest(chHandle);
+            if(UDMA_SOK != retVal)
+            {
+                App_print("[Error] UDMA App memcpy test failed!!\n");
+            }
+            else
+            {
+                if (Udma_appIsUdmapStatsSupported() == TRUE)
+                {
+                    Udma_ChStats    chStats;
+                    retVal = Udma_chGetStats(chHandle, &chStats);
+                    if(UDMA_SOK == retVal)
+                    {
+                        App_print("UDMA App memcpy test statistics:\n");
+                        App_printNum("Completed packet count       : %d\n", chStats.packetCnt);
+                        App_printNum("Completed payload byte count : %d\n", chStats.completedByteCnt);
+                        App_printNum("Started byte count           : %d\n", chStats.startedByteCnt);
+                    }
+                }
+#ifdef UDMA_TEST_APP_PROFILE
+             App_printNum("Copied %d bytes in ", UDMA_TEST_APP_NUM_BYTES);
+#ifdef UDMA_TEST_APP_PMU_PROFILE
+             App_printNum("%lu PMU cycles, ",gUdmaTotalCycle);
+#endif
+             App_printNum("%d usec.\n",gUdmaTotalTime);
+#endif
+            }
+        }
+
+        retVal += App_delete(drvHandle, chHandle);
+        if(UDMA_SOK != retVal)
+        {
+            App_print("[Error] UDMA App delete failed!!\n");
+        }
+
+        loopCnt++;
     }
 
     retVal += App_deinit(drvHandle);
@@ -246,11 +296,12 @@ int32_t Udma_memcpyTest(void)
 static int32_t App_memcpyTest(Udma_ChHandle chHandle)
 {
     int32_t             retVal = UDMA_SOK;
-    uint32_t            i;
     uint32_t            loopCnt = 0U;
     uint8_t            *srcBuf = &gUdmaTestSrcBuf[0U];
     uint8_t            *destBuf = &gUdmaTestDestBuf[0U];
 
+#ifndef UDMA_TEST_APP_PROFILE    
+    uint32_t            i;
     /* Init buffers */
     for(i = 0U; i < UDMA_TEST_APP_NUM_BYTES; i++)
     {
@@ -260,6 +311,7 @@ static int32_t App_memcpyTest(Udma_ChHandle chHandle)
     /* Writeback source and destination buffer */
     Udma_appUtilsCacheWb(&gUdmaTestSrcBuf[0U], UDMA_TEST_APP_NUM_BYTES);
     Udma_appUtilsCacheWb(&gUdmaTestDestBuf[0U], UDMA_TEST_APP_NUM_BYTES);
+#endif
 
     while(loopCnt < UDMA_TEST_APP_LOOP_CNT)
     {
@@ -269,6 +321,7 @@ static int32_t App_memcpyTest(Udma_ChHandle chHandle)
                      destBuf,
                      srcBuf,
                      UDMA_TEST_APP_NUM_BYTES);
+#ifndef UDMA_TEST_APP_PROFILE        
         if(UDMA_SOK == retVal)
         {
             /* Compare data */
@@ -284,6 +337,7 @@ static int32_t App_memcpyTest(Udma_ChHandle chHandle)
                 }
             }
         }
+#endif
 
         if(UDMA_SOK != retVal)
         {
@@ -309,6 +363,13 @@ static int32_t App_udmaMemcpy(Udma_ChHandle chHandle,
     /* Update TR packet descriptor */
     App_udmaTrpdInit(chHandle, trpdMem, destBuf, srcBuf, length);
 
+#ifdef UDMA_TEST_APP_PROFILE
+    /* Initialize the profiling time counters and start */
+    gUdmaTotalTime  = TimerP_getTimeInUsecs();
+#ifdef UDMA_TEST_APP_PMU_PROFILE
+    gUdmaTotalCycle = App_getPmuCycleCnt((uint64_t)0U>>32U);
+#endif
+#endif
     /* Submit TRPD to channel */
     retVal = Udma_ringQueueRaw(
                  Udma_chGetFqRingHandle(chHandle), (uint64_t) trpdMem);
@@ -347,6 +408,13 @@ static int32_t App_udmaMemcpy(Udma_ChHandle chHandle,
             }
         }
     }
+#endif
+#ifdef UDMA_TEST_APP_PROFILE
+    /* Stop Timer */
+#ifdef UDMA_TEST_APP_PMU_PROFILE
+    gUdmaTotalCycle = App_getPmuCycleCnt(gUdmaTotalCycle>>32U) - gUdmaTotalCycle;
+#endif
+    gUdmaTotalTime  = TimerP_getTimeInUsecs() - gUdmaTotalTime;
 #endif
 
     if(UDMA_SOK == retVal)
@@ -429,12 +497,16 @@ static int32_t App_init(Udma_DrvHandle drvHandle)
     int32_t         retVal;
     Udma_InitPrms   initPrms;
     uint32_t        instId;
-
+#if defined (SOC_AM64X)
+    /* Use Block Copy DMA for AM64x */
+    instId = UDMA_INST_ID_BCDMA_0;
+#else
     /* Use MCU NAVSS for MCU domain cores. Rest cores all uses Main NAVSS */
 #if defined (BUILD_MCU1_0) || defined (BUILD_MCU1_1)
     instId = UDMA_INST_ID_MCU_0;
 #else
     instId = UDMA_INST_ID_MAIN_0;
+#endif
 #endif
     /* UDMA driver init */
     UdmaInitPrms_init(instId, &initPrms);
@@ -688,8 +760,10 @@ static void App_udmaTrpdInit(Udma_ChHandle chHandle,
 
 static void App_print(const char *str)
 {
+#ifndef SOC_AM64X
+    /* Temporarily disabling UART print for AM64x */
     UART_printf("%s", str);
-
+#endif
     if(TRUE == Udma_appIsPrintSupported())
     {
         printf("%s", str);
@@ -702,7 +776,10 @@ static void App_printNum(const char *str, uint32_t num)
     static char printBuf[200U];
 
     snprintf(printBuf, 200U, str, num);
+#ifndef SOC_AM64X
+    /* Temporarily disabling UART print for AM64x */
     UART_printf("%s", printBuf);
+#endif
 
     if(TRUE == Udma_appIsPrintSupported())
     {
@@ -711,3 +788,23 @@ static void App_printNum(const char *str, uint32_t num)
 
     return;
 }
+
+#ifdef UDMA_TEST_APP_PMU_PROFILE
+static uint64_t App_getPmuCycleCnt (uint32_t hiCycleCnt)
+{
+    uint32_t    ovsrStatus;
+    uint32_t    hiCnt = hiCycleCnt;
+    uint64_t    cycleCnt;
+    
+
+    cycleCnt = CSL_armR5PmuReadCntr(CSL_ARM_R5_PMU_CYCLE_COUNTER_NUM);
+    ovsrStatus = osal_TimestampProvider_getOverflowCCNT();
+    if (ovsrStatus != 0U)
+    {
+        hiCnt++;
+    }
+    cycleCnt |= (uint64_t)hiCnt << 32U;
+
+    return (cycleCnt);
+}
+#endif

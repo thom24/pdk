@@ -1141,7 +1141,10 @@ void Udma_rmFreeExtCh(uint32_t chNum,
 
 uint16_t Udma_rmAllocFreeRing(Udma_DrvHandle drvHandle)
 {
-    uint16_t            i, offset, ringNum = UDMA_RING_INVALID, temp;
+    uint16_t            ringNum = UDMA_RING_INVALID;
+
+#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
+    uint16_t            i, offset, temp;
     uint32_t            bitPos, bitMask;
     Udma_RmInitPrms    *rmInitPrms = &drvHandle->initPrms.rmInitPrms;
 
@@ -1169,12 +1172,15 @@ uint16_t Udma_rmAllocFreeRing(Udma_DrvHandle drvHandle)
 
     Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.unlockMutex != (Udma_OsalMutexUnlockFxn) NULL_PTR);
     drvHandle->initPrms.osalPrms.unlockMutex(drvHandle->rmLock);
+#endif
 
     return (ringNum);
 }
 
 void Udma_rmFreeFreeRing(uint16_t ringNum, Udma_DrvHandle drvHandle)
 {
+    
+#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
     uint32_t            i, offset, bitPos, bitMask;
     Udma_RmInitPrms    *rmInitPrms = &drvHandle->initPrms.rmInitPrms;
     uint32_t            freeRingOffset = rmInitPrms->startFreeRing +
@@ -1199,6 +1205,7 @@ void Udma_rmFreeFreeRing(uint16_t ringNum, Udma_DrvHandle drvHandle)
         Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.unlockMutex != (Udma_OsalMutexUnlockFxn) NULL_PTR);
         drvHandle->initPrms.osalPrms.unlockMutex(drvHandle->rmLock);
     }
+#endif
 
     return;
 }
