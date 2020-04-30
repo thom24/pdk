@@ -54,7 +54,7 @@
     defined(SOC_DRA75x) || defined(SOC_DRA78x)   || defined(SOC_K2H)      || defined(SOC_K2K)     || \
     defined(SOC_K2L)    || defined(SOC_K2E)      || defined(SOC_K2G)      || defined(SOC_C6678)   || \
     defined(SOC_C6657)  || defined(SOC_OMAPL137) || defined(SOC_OMAPL138) || defined (SOC_AM65XX) || \
-    defined(SOC_J721E)  || defined(SOC_J7200)    || defined(SOC_TPR12)
+    defined(SOC_J721E)  || defined(SOC_J7200)    || defined(SOC_TPR12)    || defined(SOC_AM64X)
 #include <ti/csl/csl_chip.h>
 #endif
 #include <ti/csl/soc.h>
@@ -171,12 +171,17 @@ UART_PAR uartParity = UART_PAR_NONE;
 /** \brief Total ring memory */
 #define UDMA_TEST_APP_RING_MEM_SIZE     (UDMA_TEST_APP_RING_ENTRIES * \
                                          UDMA_TEST_APP_RING_ENTRY_SIZE)
+/** \brief This ensures every channel memory is aligned */
+#define UDMA_TEST_APP_RING_MEM_SIZE_ALIGN ((UDMA_TEST_APP_RING_MEM_SIZE + UDMA_CACHELINE_ALIGNMENT) & ~(UDMA_CACHELINE_ALIGNMENT - 1U))
 
 /**
  *  \brief UDMA host mode buffer descriptor memory size.
  *  Make it multiple of UART_TEST_CACHE_LINE_SIZE alignment
  */
-#define UDMA_TEST_APP_DESC_SIZE         (sizeof(CSL_UdmapCppi5HMPD) + (UART_TEST_CACHE_LINE_SIZE - sizeof(CSL_UdmapCppi5HMPD)))
+/** \brief UDMA host mode buffer descriptor memory size. */
+#define UDMA_TEST_APP_DESC_SIZE         (sizeof(CSL_UdmapCppi5HMPD))
+/** \brief This ensures every channel memory is aligned */
+#define UDMA_TEST_APP_DESC_SIZE_ALIGN   ((UDMA_TEST_APP_DESC_SIZE + UDMA_CACHELINE_ALIGNMENT) & ~(UDMA_CACHELINE_ALIGNMENT - 1U))
 
 /*
  * UDMA driver objects
@@ -191,14 +196,14 @@ Udma_DrvHandle          gDrvHandle = NULL;
 /*
  * UDMA Memories
  */
-static uint8_t gTxRingMem[UDMA_TEST_APP_RING_MEM_SIZE] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
-static uint8_t gTxCompRingMem[UDMA_TEST_APP_RING_MEM_SIZE] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
-static uint8_t gTdTxCompRingMem[UDMA_TEST_APP_RING_MEM_SIZE] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
-static uint8_t gUdmaTxHpdMem[UDMA_TEST_APP_DESC_SIZE] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
-static uint8_t gRxRingMem[UDMA_TEST_APP_RING_MEM_SIZE] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
-static uint8_t gRxCompRingMem[UDMA_TEST_APP_RING_MEM_SIZE] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
-static uint8_t gTdRxCompRingMem[UDMA_TEST_APP_RING_MEM_SIZE] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
-static uint8_t gUdmaRxHpdMem[UDMA_TEST_APP_DESC_SIZE] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
+static uint8_t gTxRingMem[UDMA_TEST_APP_RING_MEM_SIZE_ALIGN] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
+static uint8_t gTxCompRingMem[UDMA_TEST_APP_RING_MEM_SIZE_ALIGN] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
+static uint8_t gTdTxCompRingMem[UDMA_TEST_APP_RING_MEM_SIZE_ALIGN] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
+static uint8_t gUdmaTxHpdMem[UDMA_TEST_APP_DESC_SIZE_ALIGN] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
+static uint8_t gRxRingMem[UDMA_TEST_APP_RING_MEM_SIZE_ALIGN] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
+static uint8_t gRxCompRingMem[UDMA_TEST_APP_RING_MEM_SIZE_ALIGN] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
+static uint8_t gTdRxCompRingMem[UDMA_TEST_APP_RING_MEM_SIZE_ALIGN] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
+static uint8_t gUdmaRxHpdMem[UDMA_TEST_APP_DESC_SIZE_ALIGN] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
 static UART_dmaInfo gUdmaInfo;
 
 Udma_DrvHandle UartApp_udmaInit(UART_HwAttrs *cfg)
@@ -210,10 +215,16 @@ Udma_DrvHandle UartApp_udmaInit(UART_HwAttrs *cfg)
     if (gDrvHandle == NULL)
     {
         /* UDMA driver init */
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM65XX)
 #if defined (BUILD_MCU1_0) || defined (BUILD_MCU1_1)
         instId = UDMA_INST_ID_MCU_0;
 #else
         instId = UDMA_INST_ID_MAIN_0;
+#endif
+#endif
+
+#if defined(SOC_AM64X)
+        instId = UDMA_INST_ID_PKTDMA_0;
 #endif
 
         UdmaInitPrms_init(instId, &initPrms);
@@ -225,12 +236,12 @@ Udma_DrvHandle UartApp_udmaInit(UART_HwAttrs *cfg)
          * requires numVintr > 2
          */
 #if defined (BUILD_MCU2_1)
-    initPrms.rmInitPrms.startVintr = 226U;
-    initPrms.rmInitPrms.numVintr = 18U;
+        initPrms.rmInitPrms.startVintr = 226U;
+        initPrms.rmInitPrms.numVintr = 18U;
 #endif
 #if (defined (BUILD_MCU1_1) || defined(BUILD_MCU1_0))
-    initPrms.rmInitPrms.startVintr = 124U;
-    initPrms.rmInitPrms.numVintr = 4U;
+        initPrms.rmInitPrms.startVintr = 124U;
+        initPrms.rmInitPrms.numVintr = 4U;
 #endif
   
 #endif

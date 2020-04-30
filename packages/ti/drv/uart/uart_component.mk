@@ -121,11 +121,7 @@ drvuart_FIRM_LIST = $(uart_FIRM_LIST)
 # List below all examples for allowed values
 ############################
 #uart_EXAMPLE_LIST = drv_uart_unit_test drv_uart_polling_mode_app drv_uart_intr_mode_app
-ifeq ($(SOC),$(filter $(SOC), am64x))
-uart_EXAMPLE_LIST = UART_Baremetal_TestApp UART_TestApp
-else
 uart_EXAMPLE_LIST = UART_Baremetal_TestApp UART_Baremetal_DMA_TestApp UART_TestApp UART_SMP_TestApp UART_DMA_TestApp UART_DMA_SMP_TestApp
-endif
 drvuart_EXAMPLE_LIST = $(uart_EXAMPLE_LIST)
 
 #
@@ -478,7 +474,11 @@ UART_DMA_TestApp_PKG_LIST = UART_DMA_TestApp
 UART_DMA_TestApp_INCLUDE = $(UART_DMA_TestApp_PATH)
 UART_DMA_TestApp_BOARDLIST = $(drvuart_BOARDLIST)
 export UART_DMA_TestApp_BOARDLIST
+ifeq ($(SOC),$(filter $(SOC), j721e j7200 am64x))
+UART_DMA_TestApp_$(SOC)_CORELIST = $(drvuart_$(SOC)_CORELISTARM)
+else
 UART_DMA_TestApp_$(SOC)_CORELIST = $(drvuart_$(SOC)_CORELIST)
+endif
 export UART_DMA_TestApp_$(SOC)_CORELIST
 ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
 UART_DMA_TestApp_SBL_APPIMAGEGEN = yes
