@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2019 Texas Instruments Incorporated
+ *  Copyright (C) 2019-2020 Texas Instruments Incorporated
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -33,11 +33,13 @@
 /**
  *  \file V3/sciclient_soc_priv.h
  *
- *  \brief Private AM65xx specific SOC file
+ *  \brief Private AM64x specific SOC file
  */
 
 #ifndef SCICLIENT_SOC_PRIV_H_
 #define SCICLIENT_SOC_PRIV_H_
+
+#include <ti/drv/sciclient/soc/V3/sciclient_irq_rm.h>
 
 #include <ti/drv/sciclient/soc/V3/sciclient_defaultBoardcfg_hex.h>
 #include <ti/drv/sciclient/soc/V3/sciclient_defaultBoardcfg_pm_hex.h>
