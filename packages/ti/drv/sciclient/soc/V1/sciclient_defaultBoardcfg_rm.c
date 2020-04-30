@@ -300,7 +300,7 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
                 .magic = TISCI_BOARDCFG_RM_RESASG_MAGIC_NUM,
                 .size = (uint16_t) sizeof(struct tisci_boardcfg_rm_resasg),
             },
-            .resasg_entries_size = 69U * sizeof(struct tisci_boardcfg_rm_resasg_entry),
+            .resasg_entries_size = 70U * sizeof(struct tisci_boardcfg_rm_resasg_entry),
         },
     },
     .resasg_entries = {
@@ -541,8 +541,14 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
         {
             .type = TISCI_RESASG_UTYPE(TISCI_DEV_NAVSS0_INTR_ROUTER_0, TISCI_RESASG_SUBTYPE_IR_OUTPUT),
             .start_resource = 10U,
-            .num_resource = 178U,
+            .num_resource = 118U,
             .host_id = TISCI_HOST_ID_ALL,
+        },
+        {
+            .type = TISCI_RESASG_UTYPE(TISCI_DEV_NAVSS0_INTR_ROUTER_0, TISCI_RESASG_SUBTYPE_IR_OUTPUT),
+            .start_resource = 128U,
+            .num_resource = 60U,
+            .host_id = TISCI_HOST_ID_C7X_1,
         },
         {
             .type = TISCI_RESASG_UTYPE(TISCI_DEV_NAVSS0_INTR_ROUTER_0, TISCI_RESASG_SUBTYPE_IR_OUTPUT),
