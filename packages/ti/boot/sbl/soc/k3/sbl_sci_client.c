@@ -58,7 +58,6 @@ uint32_t SBL_IsSysfwEnc(uint8_t *x509_cert_ptr)
 {
     static uint32_t retVal = SBL_SYSFW_NOT_PROCESSED;
     uint8_t *encSeqPtr = NULL;
-    uint32_t outer_cert_len = 0;
     uint8_t *innerCertStart = NULL;
     uint32_t inner_cert_len = 0;
     /* oid encoding of encryption seq extension for RBL - 1.3.6.1.4.1.294.1.4 */
@@ -70,9 +69,14 @@ uint32_t SBL_IsSysfwEnc(uint8_t *x509_cert_ptr)
     {
         uint32_t SBL_GetCertLen(uint8_t *x509_cert_ptr);
 
+#if defined (BUILD_HS)
+        uint32_t outer_cert_len = 0;
         outer_cert_len = SBL_GetCertLen(x509_cert_ptr);
         innerCertStart = x509_cert_ptr + outer_cert_len;
         inner_cert_len = SBL_GetCertLen(innerCertStart);
+#else
+        inner_cert_len = 0;
+#endif
     }
 
     if (inner_cert_len)
