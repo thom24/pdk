@@ -120,7 +120,7 @@ drvspi_FIRM_LIST = $(spi_FIRM_LIST)
 ############################
 ifeq ($(SOC),$(filter $(SOC), am64x))
 spi_EXAMPLE_LIST = MCSPI_Baremetal_Master_TestApp MCSPI_Baremetal_Slave_TestApp
-spi_EXAMPLE_LIST += OSPI_Baremetal_Flash_TestApp
+spi_EXAMPLE_LIST += OSPI_Baremetal_Flash_TestApp  OSPI_Baremetal_Flash_Dma_TestApp
 else
 spi_EXAMPLE_LIST = drv_mcspi_loopback_app
 spi_EXAMPLE_LIST += MCSPI_Baremetal_Master_TestApp MCSPI_Baremetal_Slave_TestApp
@@ -570,7 +570,11 @@ export OSPI_Baremetal_Flash_Dma_TestApp_BOARDLIST
 ifeq ($(SOC),$(filter $(SOC), j721e))
 OSPI_Baremetal_Flash_Dma_TestApp_$(SOC)_CORELIST = $(drvspi_j721e_CORELISTARM)
 else
+ifeq ($(SOC),$(filter $(SOC), am64x))
+OSPI_Baremetal_Flash_Dma_TestApp_$(SOC)_CORELIST = mpu1_0 mcu1_0
+else
 OSPI_Baremetal_Flash_Dma_TestApp_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELIST)
+endif
 endif
 export OSPI_Baremetal_Flash_Dma_TestApp_$(SOC)_CORELIST
 

@@ -144,7 +144,11 @@ typedef struct OSPI_Tests_s
 #define TEST_BUF_LEN       (0x100000U)
 #define TEST_DATA_LEN      (0x100U)
 
+#ifdef VLAB_SIM
+#define TEST_XFER_SEG_LEN  (0x10000U)
+#else
 #define TEST_XFER_SEG_LEN  (0x100000U)
+#endif
 /**********************************************************************
  ************************** Internal functions ************************
  **********************************************************************/
@@ -216,6 +220,9 @@ uint8_t rxBuf[TEST_BUF_LEN]  __attribute__((aligned(128)));
  */
 #define UDMA_TEST_APP_TRPD_SIZE         ((sizeof(CSL_UdmapTR15) * 2U) + 4U)
 
+/** \brief This ensures every channel memory is aligned */
+#define UDMA_TEST_APP_TRPD_SIZE_ALIGN   ((UDMA_TEST_APP_TRPD_SIZE + UDMA_CACHELINE_ALIGNMENT) & ~(UDMA_CACHELINE_ALIGNMENT - 1U))
+
 /*
  * UDMA driver objects
  */
@@ -230,7 +237,7 @@ Udma_DrvHandle          gDrvHandle = NULL;
 static uint8_t gTxRingMem[UDMA_TEST_APP_RING_MEM_SIZE] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
 static uint8_t gTxCompRingMem[UDMA_TEST_APP_RING_MEM_SIZE] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
 static uint8_t gTxTdCompRingMem[UDMA_TEST_APP_RING_MEM_SIZE] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
-static uint8_t gUdmaTprdMem[UDMA_TEST_APP_TRPD_SIZE] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
+static uint8_t gUdmaTprdMem[UDMA_TEST_APP_TRPD_SIZE_ALIGN] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
 static OSPI_dmaInfo gUdmaInfo;
 
 int32_t Ospi_udma_init(OSPI_v0_HwAttrs *cfg)
@@ -242,11 +249,18 @@ int32_t Ospi_udma_init(OSPI_v0_HwAttrs *cfg)
     if (gDrvHandle == NULL)
     {
         /* UDMA driver init */
-#if defined (__aarch64__)
-        instId = UDMA_INST_ID_MAIN_0;
+#if defined (SOC_AM64X)
+        /* Use Block Copy DMA instance for AM64x */
+        instId = UDMA_INST_ID_BCDMA_0;
 #else
+        /* Use MCU NAVSS for MCU domain cores. Rest cores all uses Main NAVSS */
+#if defined (BUILD_MCU1_0) || defined (BUILD_MCU1_1)
         instId = UDMA_INST_ID_MCU_0;
+#else
+        instId = UDMA_INST_ID_MAIN_0;
 #endif
+#endif
+
         UdmaInitPrms_init(instId, &initPrms);
         retVal = Udma_init(&gUdmaDrvObj, &initPrms);
         if(UDMA_SOK == retVal)
@@ -720,7 +734,7 @@ static bool OSPI_flash_test(void *arg)
 #endif
 
 #ifdef OSPI_WRITE
-    for (i = 0; i < testLen; i += NOR_SECTOR_SIZE)
+    for (i = 0; i < testLen; i += NOR_BLOCK_SIZE)
     {
         offset = TEST_ADDR_OFFSET + i;
         if (Board_flashOffsetToBlkPage(boardHandle, offset,
@@ -907,6 +921,7 @@ void spi_test()
         OSPI_configClk(test->clk, true);
 
         OSPI_test_print_test_desc(test);
+
         if (test->testFunc((void *)test) == true)
         {
             SPI_log("\r\n %s have passed\r\n", test->testDesc);
