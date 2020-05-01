@@ -350,7 +350,7 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
                 .magic = TISCI_BOARDCFG_RM_RESASG_MAGIC_NUM,
                 .size  = sizeof(struct tisci_boardcfg_rm_resasg),
             },
-            .resasg_entries_size = 53U * sizeof(struct tisci_boardcfg_rm_resasg_entry),
+            .resasg_entries_size = 59U * sizeof(struct tisci_boardcfg_rm_resasg_entry),
         },
     },
 .resasg_entries = {
@@ -627,8 +627,14 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
         {
             .type = TISCI_RESASG_UTYPE(TISCI_DEV_MAIN2MCU_LVL_INTRTR0, TISCI_RESASG_SUBTYPE_IR_OUTPUT),
             .start_resource = 0U,
-            .num_resource = 64U,
-            .host_id = TISCI_HOST_ID_ALL,
+            .num_resource = 32U,
+            .host_id = TISCI_HOST_ID_R5_0,
+        },
+        {
+            .type = TISCI_RESASG_UTYPE(TISCI_DEV_MAIN2MCU_LVL_INTRTR0, TISCI_RESASG_SUBTYPE_IR_OUTPUT),
+            .start_resource = 32U,
+            .num_resource = 32U,
+            .host_id = TISCI_HOST_ID_R5_2,
         },
         {
             .type = TISCI_RESASG_UTYPE(TISCI_DEV_MAIN2MCU_PLS_INTRTR0, TISCI_RESASG_SUBTYPE_IR_OUTPUT),
@@ -657,8 +663,38 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
         {
             .type = TISCI_RESASG_UTYPE(TISCI_DEV_NAVSS0_INTR_ROUTER_0, TISCI_RESASG_SUBTYPE_IR_OUTPUT),
             .start_resource = 16U,
-            .num_resource = 136U,
+            .num_resource = 104U,
             .host_id = TISCI_HOST_ID_ALL,
+        },
+        {
+            .type = TISCI_RESASG_UTYPE(TISCI_DEV_NAVSS0_INTR_ROUTER_0, TISCI_RESASG_SUBTYPE_IR_OUTPUT),
+            .start_resource = 120U,
+            .num_resource = 4U,
+            .host_id = TISCI_HOST_ID_R5_0,
+        },
+        {
+            .type = TISCI_RESASG_UTYPE(TISCI_DEV_NAVSS0_INTR_ROUTER_0, TISCI_RESASG_SUBTYPE_IR_OUTPUT),
+            .start_resource = 124U,
+            .num_resource = 4U,
+            .host_id = TISCI_HOST_ID_R5_2,
+        },
+        {
+            .type = TISCI_RESASG_UTYPE(TISCI_DEV_NAVSS0_INTR_ROUTER_0, TISCI_RESASG_SUBTYPE_IR_OUTPUT),
+            .start_resource = 128U,
+            .num_resource = 8U,
+            .host_id = TISCI_HOST_ID_ICSSG_0,
+        },
+        {
+            .type = TISCI_RESASG_UTYPE(TISCI_DEV_NAVSS0_INTR_ROUTER_0, TISCI_RESASG_SUBTYPE_IR_OUTPUT),
+            .start_resource = 136U,
+            .num_resource = 8U,
+            .host_id = TISCI_HOST_ID_ICSSG_1,
+        },
+        {
+            .type = TISCI_RESASG_UTYPE(TISCI_DEV_NAVSS0_INTR_ROUTER_0, TISCI_RESASG_SUBTYPE_IR_OUTPUT),
+            .start_resource = 144U,
+            .num_resource = 8U,
+            .host_id = TISCI_HOST_ID_ICSSG_2,
         },
         {
             .type = TISCI_RESASG_UTYPE(TISCI_DEV_MCU_NAVSS0_INTR_ROUTER_0, TISCI_RESASG_SUBTYPE_IR_OUTPUT),
