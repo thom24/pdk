@@ -302,8 +302,6 @@ typedef uint8_t devgrp_t;
 #include <ti/drv/sciclient/soc/sysfw/include/tisci/security/tisci_firewall.h>
 #include <ti/drv/sciclient/soc/sysfw/include/tisci/security/tisci_procboot.h>
 #include <ti/drv/sciclient/soc/sysfw/include/tisci/security/tisci_keystore.h>
-#include <ti/drv/sciclient/soc/sysfw/include/tisci/security/tisci_rng.h>
-#include <ti/drv/sciclient/soc/sysfw/include/tisci/security/tisci_sa2ul_pka.h>
 #include <ti/drv/sciclient/soc/sysfw/include/tisci/pm/tisci_pm_clock.h>
 #include <ti/drv/sciclient/soc/sysfw/include/tisci/pm/tisci_pm_device.h>
 #include <ti/drv/sciclient/soc/sysfw/include/tisci/pm/tisci_pm_core.h>

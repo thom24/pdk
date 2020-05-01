@@ -145,15 +145,6 @@ if [ "$SKIP_CHECKOUT" != "YES" ]; then
     # RM cfg count needs to be modified to remove collision with SR1
     sed -i 's/TISCI_RESASG_UTYPE_CNT/&_SR2/' include/am65x_sr2/tisci_resasg_types.h
 
-    # TIDL team requires pointer notation instead of array notation (when using VS)
-    vs_str='\/\* Windows Visual Studio build has issues with  payload\[\], changing it only for visual studio build \*\/\n'
-    vs_str+='#ifdef _MSC_VER\n'
-    vs_str+='    uint32_t    *payload;\n'
-    vs_str+='#else\n'
-    vs_str+='    uint8_t    payload[];\n'
-    vs_str+='#endif'
-
-    sed -i "/payload\[\]/c\\$vs_str" include/tisci/tisci_protocol.h
 fi
 
 ################################################################################
