@@ -122,7 +122,7 @@ if [ "$SKIP_CHECKOUT" != "YES" ]; then
     $RM binaries/t32-qt-lsf
     $RM binaries/*hs.bin
     $RM -fr binaries/am6
-    $RM -fr binaries/am6_sr2
+    $RM -fr binaries/am65x_sr2
     $RM -fr binaries/j721e
     $RM -fr binaries/memory
     $RM -fr scripts
