@@ -46,7 +46,7 @@ extern "C" {
  * @brief
  *  MibSPI RAM buffer mode
  */
-#define MIBSPI_RAM_BUFFER_MODE              6U
+#define MIBSPI_RAM_BUFFER_MODE              7U
 
 /**
  * @brief
@@ -202,16 +202,6 @@ typedef struct MibSpiDriverHWStats_t
 typedef struct MibSpi_driverDmaInfo_t
 {
     /**
-     * @brief   DMA reqline for TX.
-     */
-    uint32_t    dmaReqlineTx;
-
-    /**
-     * @brief   DMA reqline for RX.
-     */
-    uint32_t    dmaReqlineRx;
-
-    /**
      * @brief   Number of DMA Recieve Interrupts
      */
     uint32_t    rxDmaIntCnt;
@@ -224,7 +214,7 @@ typedef struct MibSpi_driverDmaInfo_t
 
 typedef struct Mibspi_transactionState_s
 {
-    enum MibSpi_edmaCBFlag_e edmaCbCheck;
+    volatile enum MibSpi_edmaCBFlag_e edmaCbCheck;
 
     enum MibSpi_xferErr_e    transferErr;
 

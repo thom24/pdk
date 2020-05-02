@@ -51,7 +51,6 @@
 
 static void MIBSPI_edmaCallback(MibSpiDriver_Object*    ptrMibSpiDriver);
 static int32_t MIBSPI_edmaChannelConfig(EDMA_Handle hEdma,
-                                        EDMA_channelConfig_t *chConfig,
                                         uint8_t chId,
                                         uint8_t queueId,
                                         uint8_t xferType);
@@ -85,14 +84,13 @@ static void MIBSPI_edmaRxIsrHandler(uintptr_t appData, uint8_t tcc);
 static void MIBSPI_edmaTxIsrHandler(uintptr_t appData, uint8_t tcc);
 
 
-int32_t MIBSPI_dmaConfig(MIBSPI_Handle handle)
+int32_t MIBSPI_dmaConfig(MIBSPI_Handle handle, uint32_t dmaReqLine)
 {
     MibSpi_HwCfg const   *hwAttrs;
     int32_t              spiStatus = MIBSPI_STATUS_SUCCESS;
     MibSpiDriver_Object*    ptrMibSpiDriver = NULL;
     MIBSPI_Config*             ptrSPIConfig;
-    EDMA_channelConfig_t    config;
-    int32_t i;
+    int32_t edmaStatus = EDMA_NO_ERROR;
 
     /* Get the SPI driver Configuration: */
     ptrSPIConfig = (MIBSPI_Config*)handle;
@@ -103,41 +101,40 @@ int32_t MIBSPI_dmaConfig(MIBSPI_Handle handle)
     hwAttrs = ptrMibSpiDriver->ptrHwCfg;
 
 
-    /* Check EDMA handle is not previously opened */
-    if (ptrMibSpiDriver->params.dmaHandle != NULL)
+    /* Check EDMA handle is not NULL */
+    if (ptrMibSpiDriver->params.dmaHandle == NULL)
     {
         spiStatus = MIBSPI_STATUS_ERROR;
     }
 
+    if (dmaReqLine >= hwAttrs->numDmaReqLines)
+    {
+        spiStatus = MIBSPI_STATUS_ERROR;
+    }
     /* RX Section Configuration */
     if (MIBSPI_STATUS_SUCCESS == spiStatus)
     {
-        for (i = 0; i < hwAttrs->numDmaReqLines; i++)
-        {
-            int32_t edmaStatus = EDMA_NO_ERROR;
 
-            edmaStatus = MIBSPI_edmaChannelConfig(ptrMibSpiDriver->params.dmaHandle,
-                                                  &config,
-                                                  hwAttrs->dmaReqlineCfg[i].rxDmaReqLine,
-                                                  MIBSPI_RXEVENTQUE,
-                                                  EDMA3_SYNC_AB);
-            /* TODO:Acquire the  PaRAM entries used for EDMA transfers linking */
-            if (EDMA_NO_ERROR != edmaStatus)
-            {
-                spiStatus = MIBSPI_STATUS_ERROR;
-                break;
-            }
-            edmaStatus = MIBSPI_edmaChannelConfig(ptrMibSpiDriver->params.dmaHandle, 
-                                                  &config, 
-                                                  hwAttrs->dmaReqlineCfg[i].txDmaReqLine,
-                                                  MIBSPI_TXEVENTQUE,
-                                                  EDMA3_SYNC_AB);
-            /* TODO:Acquire the  PaRAM entries used for EDMA transfers linking */
-            if (EDMA_NO_ERROR != edmaStatus)
-            {
-                spiStatus = MIBSPI_STATUS_ERROR;
-                break;
-            }
+        edmaStatus = MIBSPI_edmaChannelConfig(ptrMibSpiDriver->params.dmaHandle,
+                                              hwAttrs->dmaReqlineCfg[dmaReqLine].rxDmaReqLine,
+                                              MIBSPI_RXEVENTQUE,
+                                              EDMA3_SYNC_AB);
+        /* TODO:Acquire the  PaRAM entries used for EDMA transfers linking */
+        if (EDMA_NO_ERROR != edmaStatus)
+        {
+            spiStatus = MIBSPI_STATUS_ERROR;
+        }
+    }
+    if (MIBSPI_STATUS_SUCCESS == spiStatus)
+    {
+        edmaStatus = MIBSPI_edmaChannelConfig(ptrMibSpiDriver->params.dmaHandle, 
+                                              hwAttrs->dmaReqlineCfg[dmaReqLine].txDmaReqLine,
+                                              MIBSPI_TXEVENTQUE,
+                                              EDMA3_SYNC_AB);
+        /* TODO:Acquire the  PaRAM entries used for EDMA transfers linking */
+        if (EDMA_NO_ERROR != edmaStatus)
+        {
+            spiStatus = MIBSPI_STATUS_ERROR;
         }
     }
     return(spiStatus);
@@ -156,25 +153,24 @@ int32_t MIBSPI_dmaTransfer(MIBSPI_Handle handle, MibSpi_dmaXferInfo_t *xferInfo)
 
     Mibspi_assert(ptrMibSpiDriver->params.dmaHandle != NULL);
 
-    if (xferInfo->isMibspiRamXfer)
+    if (ptrMibSpiDriver->params.compatibilityMode)
     {
-        spiStatus = MIBSPI_edmaRamTransfer(ptrMibSpiDriver, xferInfo);
+        spiStatus = MIBSPI_edmaRegTransfer(ptrMibSpiDriver, xferInfo);
     }
     else
     {
-        spiStatus = MIBSPI_edmaRegTransfer(ptrMibSpiDriver, xferInfo);
+        spiStatus = MIBSPI_edmaRamTransfer(ptrMibSpiDriver, xferInfo);
     }
     return spiStatus;
 }
 
 
-int32_t MIBSPI_dmaFreeChannel(const MIBSPI_Handle handle)
+int32_t MIBSPI_dmaFreeChannel(const MIBSPI_Handle handle, uint32_t dmaReqLine)
 {
     MibSpi_HwCfg const   *hwAttrs;
     MibSpiDriver_Object*    ptrMibSpiDriver = NULL;
     MIBSPI_Config*             ptrSPIConfig;
     EDMA_paramConfig_t dummyParamSet;
-    int32_t i;
     int32_t edmaStatus, spiStatus = MIBSPI_STATUS_SUCCESS;
 
     /* Get the SPI driver Configuration: */
@@ -186,35 +182,37 @@ int32_t MIBSPI_dmaFreeChannel(const MIBSPI_Handle handle)
 
     Mibspi_assert(ptrMibSpiDriver->params.dmaHandle != NULL);
 
-    /* Dummy paramSet Configuration */
-    MIBSPI_edmaParamInit(&dummyParamSet.paramSetConfig, ptrMibSpiDriver->params.edmaLinkParamId, EDMA3_SYNC_A);
+    Mibspi_assert(dmaReqLine < hwAttrs->numDmaReqLines);
 
-    /* Unlink and free the channels */
-    edmaStatus = EDMA_configParamSet(ptrMibSpiDriver->params.dmaHandle,
-                                     ptrMibSpiDriver->params.edmaLinkParamId,
-                                     &dummyParamSet);
-
-    if (EDMA_NO_ERROR != edmaStatus)
+    if (ptrMibSpiDriver->params.compatibilityMode)
     {
-        spiStatus = MIBSPI_STATUS_ERROR;
+        /* Dummy paramSet Configuration */
+        MIBSPI_edmaParamInit(&dummyParamSet.paramSetConfig, ptrMibSpiDriver->params.edmaLinkParamId, EDMA3_SYNC_A);
+
+        /* Unlink and free the channels */
+        edmaStatus = EDMA_configParamSet(ptrMibSpiDriver->params.dmaHandle,
+                                         ptrMibSpiDriver->params.edmaLinkParamId,
+                                         &dummyParamSet);
+
+        if (EDMA_NO_ERROR != edmaStatus)
+        {
+            spiStatus = MIBSPI_STATUS_ERROR;
+        }
     }
-    
     if (MIBSPI_STATUS_SUCCESS == spiStatus)
     {
-        for (i = 0; i < hwAttrs->numDmaReqLines; i++)
+        edmaStatus = EDMA_disableChannel(ptrMibSpiDriver->params.dmaHandle, hwAttrs->dmaReqlineCfg[dmaReqLine].rxDmaReqLine, EDMA3_CHANNEL_TYPE_DMA);
+        if (EDMA_NO_ERROR != edmaStatus)
         {
-            edmaStatus = EDMA_disableChannel(ptrMibSpiDriver->params.dmaHandle, hwAttrs->dmaReqlineCfg[i].rxDmaReqLine, EDMA3_CHANNEL_TYPE_DMA);
-            if (EDMA_NO_ERROR != edmaStatus)
-            {
-                spiStatus = MIBSPI_STATUS_ERROR;
-                break;
-            }
-            edmaStatus = EDMA_disableChannel(ptrMibSpiDriver->params.dmaHandle, hwAttrs->dmaReqlineCfg[i].txDmaReqLine, EDMA3_CHANNEL_TYPE_DMA);
-            if (EDMA_NO_ERROR != edmaStatus)
-            {
-                spiStatus = MIBSPI_STATUS_ERROR;
-                break;
-            }
+            spiStatus = MIBSPI_STATUS_ERROR;
+        }
+    }
+    if (MIBSPI_STATUS_SUCCESS == spiStatus)
+    {
+        edmaStatus = EDMA_disableChannel(ptrMibSpiDriver->params.dmaHandle, hwAttrs->dmaReqlineCfg[dmaReqLine].txDmaReqLine, EDMA3_CHANNEL_TYPE_DMA);
+        if (EDMA_NO_ERROR != edmaStatus)
+        {
+            spiStatus = MIBSPI_STATUS_ERROR;
         }
     }
     return spiStatus;
@@ -255,27 +253,27 @@ static void MIBSPI_edmaParamInit(EDMA_paramSetConfig_t *param, uint8_t tcc, uint
 
 
 static int32_t MIBSPI_edmaChannelConfig(EDMA_Handle hEdma,
-                                        EDMA_channelConfig_t *chConfig,
                                         uint8_t chId,
                                         uint8_t queueId,
                                         uint8_t xferType)
 {
     int32_t status;
+    EDMA_channelConfig_t    chConfig;
 
-    chConfig->channelType  = EDMA3_CHANNEL_TYPE_DMA;
+    chConfig.channelType  = EDMA3_CHANNEL_TYPE_DMA;
 
-    chConfig->channelId = chId;
-    chConfig->eventQueueId = queueId;
-    chConfig->paramId      = chId;
+    chConfig.channelId = chId;
+    chConfig.eventQueueId = queueId;
+    chConfig.paramId      = chId;
     
-    MIBSPI_edmaParamInit(&chConfig->paramSetConfig, chId, xferType);
+    MIBSPI_edmaParamInit(&chConfig.paramSetConfig, chId, xferType);
 
-    chConfig->paramSetConfig.isFinalTransferInterruptEnabled = false;
+    chConfig.paramSetConfig.isFinalTransferInterruptEnabled = false;
 
-    chConfig->transferCompletionCallbackFxn = NULL;
-    chConfig->transferCompletionCallbackFxnArg = NULL;
+    chConfig.transferCompletionCallbackFxn = NULL;
+    chConfig.transferCompletionCallbackFxnArg = NULL;
 
-    status = EDMA_configChannel(hEdma, chConfig,false);
+    status = EDMA_configChannel(hEdma, &chConfig,false);
     return status;
 }
 
@@ -574,18 +572,18 @@ static void MIBSPI_edmaRamUpdateRxParams(const MibSpiDriver_Object*    ptrMibSpi
     /* Receive param set configuration */
     MIBSPI_edmaParamInit(&rxParamSet->paramSetConfig, hwAttrs->dmaReqlineCfg[dmaReqLine].rxDmaReqLine, EDMA3_SYNC_AB);
 
+    rxParamSet->paramSetConfig.sourceAddress = xferAddrInfo->saddr;
+
     if (!dummyRxXfer)
     {
-        /* Source address */
-        rxParamSet->paramSetConfig.sourceAddress = xferAddrInfo->saddr;
+        /* destinationAddress is address of memory location named buffer.*/
+        rxParamSet->paramSetConfig.destinationAddress = xferAddrInfo->daddr;
     }
     else
     {
         /* Source address */
-        rxParamSet->paramSetConfig.sourceAddress = (uintptr_t) &ptrMibSpiDriver->rxScratchBuffer;
+        rxParamSet->paramSetConfig.destinationAddress = (uintptr_t) &ptrMibSpiDriver->rxScratchBuffer;
     }
-    /* destinationAddress is address of memory location named buffer.*/
-    rxParamSet->paramSetConfig.destinationAddress = xferAddrInfo->daddr;
 
     /* aCount holds the number of bytes in an array.*/
     rxParamSet->paramSetConfig.aCount = xferSizeInfo->elemSize;
@@ -825,14 +823,14 @@ static int32_t MIBSPI_edmaRamTransfer(MibSpiDriver_Object*    ptrMibSpiDriver,
     if (EDMA_NO_ERROR == edmaStatus)
     {
         /* Program the RX side */
-        edmaStatus =  EDMA_enableChannel(ptrMibSpiDriver->params.dmaHandle,
+        edmaStatus =  EDMA_disableChannel(ptrMibSpiDriver->params.dmaHandle,
                                          hwAttrs->dmaReqlineCfg[xferInfo->dmaReqLine].rxDmaReqLine,
                                          EDMA3_CHANNEL_TYPE_DMA);
     }
     if (EDMA_NO_ERROR == edmaStatus)
     {
         /* Program the TX side */
-        edmaStatus =  EDMA_enableChannel(ptrMibSpiDriver->params.dmaHandle,
+        edmaStatus =  EDMA_disableChannel(ptrMibSpiDriver->params.dmaHandle,
                                          hwAttrs->dmaReqlineCfg[xferInfo->dmaReqLine].txDmaReqLine,
                                          EDMA3_CHANNEL_TYPE_DMA);
     }
@@ -843,4 +841,36 @@ static int32_t MIBSPI_edmaRamTransfer(MibSpiDriver_Object*    ptrMibSpiDriver,
     return spiStatus;
 }
 
+int32_t MIBSPI_dmaStartTransfer(MIBSPI_Handle handle, uint32_t dmaReqLine)
+{
+    MibSpiDriver_Object*    ptrMibSpiDriver;
+    int32_t              spiStatus = MIBSPI_STATUS_SUCCESS;
+    int32_t              edmaStatus;
+    MibSpi_HwCfg const   *hwAttrs;
+    MIBSPI_Config*             ptrSPIConfig;
 
+
+    /* Get the SPI driver Configuration: */
+    ptrSPIConfig = (MIBSPI_Config*)handle;
+
+    ptrMibSpiDriver = (MibSpiDriver_Object*)ptrSPIConfig->object;
+
+    hwAttrs = ptrMibSpiDriver->ptrHwCfg;
+
+    /* Program the RX side */
+    edmaStatus =  EDMA_enableChannel(ptrMibSpiDriver->params.dmaHandle,
+                                     hwAttrs->dmaReqlineCfg[dmaReqLine].rxDmaReqLine,
+                                     EDMA3_CHANNEL_TYPE_DMA);
+    if (EDMA_NO_ERROR == edmaStatus)
+    {
+        /* Program the TX side */
+        edmaStatus =  EDMA_enableChannel(ptrMibSpiDriver->params.dmaHandle,
+                                         hwAttrs->dmaReqlineCfg[dmaReqLine].txDmaReqLine,
+                                         EDMA3_CHANNEL_TYPE_DMA);
+    }
+    if (EDMA_NO_ERROR != edmaStatus)
+    {
+        spiStatus = MIBSPI_STATUS_ERROR;
+    }
+    return spiStatus;
+}

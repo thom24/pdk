@@ -60,9 +60,11 @@ const MIBSPI_Params MIBSPI_defaultParams = {
     .pinMode            = MIBSPI_PINMODE_4PIN_CS,
     .shiftFormat        = MIBSPI_MSB_FIRST,
     .dmaEnable          = (uint8_t)1U,
-    .eccEnable          = (uint8_t)1U,
+    .eccEnable          = (uint8_t)0U,
     .csHold             = (uint8_t)0U,
     .txDummyValue       = (uint16_t)0xFFFFU,
+    .compatibilityMode  = FALSE,
+    .dmaHandle          = NULL,
 };
 
 /* Default Master params */

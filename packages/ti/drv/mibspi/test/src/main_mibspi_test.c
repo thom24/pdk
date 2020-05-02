@@ -67,6 +67,7 @@
 /* SPI test include files */
 #include "mibspi_test_common.h"
 #include "MIBSPI_log.h"
+#include "utils_virt2phys.h"
 
 /**************************************************************************
  *************************** Local Definitions *********************************
@@ -149,6 +150,11 @@ static void Test_initTask(UArg arg0, UArg arg1)
         gDmaHandle[i] = EDMA_getHandle(cfg.edmaCCId, &instanceInfo);
         if(gDmaHandle[i] == NULL)
         {
+            if (EDMA_init(cfg.edmaCCId) != EDMA_NO_ERROR)
+            {
+                printf("EDMA_init failed \n");
+                return;
+            }
             /* Open DMA driver instance 0 for SPI test */
             gDmaHandle[i] = EDMA_open(cfg.edmaCCId, &errorCode, &instanceInfo);
         }
@@ -162,8 +168,10 @@ static void Test_initTask(UArg arg0, UArg arg1)
 #endif
     }
     /* Initialize the SPI */
+    memset(&utilsPrms, 0, sizeof(utilsPrms));
     utilsPrms.printFxn = MIBSPI_log;
     utilsPrms.traceFxn = MIBSPI_log;
+    utilsPrms.virt2phyFxn = UtilsMmap_virt2Phys;
     MIBSPI_init(&utilsPrms);
 
     /**************************************************************************

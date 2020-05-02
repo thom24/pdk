@@ -71,6 +71,8 @@ typedef struct MibspiUtils_Obj_s
 
     Mibspi_TraceFxnCb traceFxn;
 
+    Mibspi_VirtToPhyFxn virt2phyFxn;
+
     void *printLock;
 
     char printBuf[MIBSPI_CFG_PRINT_BUF_LEN];
@@ -120,6 +122,7 @@ void MibspiUtils_init(MIBSPI_UtilsPrms *pUtilsPrms)
 
     gMibspiUtilsObj.printFxn = pUtilsPrms->printFxn;
     gMibspiUtilsObj.traceFxn = pUtilsPrms->traceFxn;
+    gMibspiUtilsObj.virt2phyFxn = pUtilsPrms->virt2phyFxn;
 
     return;
 }
@@ -133,6 +136,8 @@ void MibspiUtils_deInit(void)
     gMibspiUtilsObj.printFxn = NULL;
 
     gMibspiUtilsObj.traceFxn = NULL;
+
+    gMibspiUtilsObj.virt2phyFxn = NULL;
 
     return;
 }
@@ -183,5 +188,21 @@ void MibspiUtils_trace(const char *format,
     }
 #endif
 }
+
+uint32_t MibspiUtils_virtToPhy (const void *virtAddr)
+{
+    uint32_t phyAddr;
+
+    if (gMibspiUtilsObj.virt2phyFxn != NULL)
+    {
+        phyAddr = gMibspiUtilsObj.virt2phyFxn(virtAddr);
+    }
+    else
+    {
+        phyAddr = (uintptr_t)(virtAddr);
+    }
+    return phyAddr;
+}
+
 
 /* end of file */

@@ -190,6 +190,16 @@ void MibspiUtils_init(MIBSPI_UtilsPrms *pUtilsPrms);
  */
 void MibspiUtils_deInit(void);
 
+/*!
+ * \brief Physical to Virtual Address conversion
+ */
+void *  MibspiUtils_phyToVirt (uint32_t phyAddr);
+
+/*!
+ * \brief Virtual to Physical Address conversion
+ */
+uint32_t MibspiUtils_virtToPhy (const void *virtAddr);
+
 
 /* ========================================================================== */
 /*                       Static Function Definitions                          */

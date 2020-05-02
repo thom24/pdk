@@ -298,7 +298,6 @@ typedef struct MibSpi_dmaXferInfo_s
     MibSpi_dmaXferAddrInfo_t rx;
     MibSpi_dmaXferSizeInfo_t size;
     uint32_t  dmaReqLine;
-    bool     isMibspiRamXfer;
 } MibSpi_dmaXferInfo_t;
 
 /*!
@@ -326,9 +325,10 @@ typedef struct MIBSPI_Config_s {
  */
 typedef struct MIBSPI_Config_s      *MIBSPI_Handle;
 
-int32_t MIBSPI_dmaConfig(MIBSPI_Handle handle);
+int32_t MIBSPI_dmaConfig(MIBSPI_Handle handle, uint32_t dmaReqLine);
 int32_t MIBSPI_dmaTransfer(MIBSPI_Handle handle, MibSpi_dmaXferInfo_t *xferInfo);
-int32_t MIBSPI_dmaFreeChannel(const MIBSPI_Handle handle);
+int32_t MIBSPI_dmaFreeChannel(const MIBSPI_Handle handle,  uint32_t dmaReqLine);
+int32_t MIBSPI_dmaStartTransfer(MIBSPI_Handle handle, uint32_t dmaReqLine);
 void MIBSPI_dmaDoneCb(MIBSPI_Handle mibspiHandle);
 
 #ifdef __cplusplus

@@ -61,6 +61,13 @@
 /* Support for multi icount in one transfer to achieve high throughput , this is only supported in blocking mode */
 #define SPI_MULT_ICOUNT_SUPPORT
 
+typedef enum Mibspi_DmaCtrlChType_tag
+{
+    MIBSPI_DMACTRL_CH_TX,
+    MIBSPI_DMACTRL_CH_RX,
+    MIBSPI_DMACTRL_CH_BOTH,
+} Mibspi_DmaCtrlChType_e;
+
 /**************************************************************************
  ************************* MibSPI Driver Functions Prototype ********************
  **************************************************************************/
@@ -84,13 +91,9 @@ static void MIBSPI_transferGroupEnable(CSL_mss_spiRegs *ptrMibSpiReg, uint8_t gr
 static void MIBSPI_transferGroupDisable(CSL_mss_spiRegs *ptrMibSpiReg, uint8_t group);
 static void MIBSPI_transferSetPStart(CSL_mss_spiRegs *ptrMibSpiReg, uint8_t group, uint8_t offset);
 static uint32_t MIBSPI_checkTGComplete(CSL_mss_spiRegs *ptrMibSpiReg, uint8_t group);
-static void MIBSPI_enableGroupInterrupt(CSL_mss_spiRegs *ptrMibSpiReg, uint8_t group, uint32_t intLine);
-static void MIBSPI_disableGroupInterrupt(CSL_mss_spiRegs *ptrMibSpiReg, uint8_t group);
 static void MIBSPI_enableLoopback(CSL_mss_spiRegs *ptrMibSpiReg, MibSpi_LoopBackType loopbacktype);
 static void MIBSPI_disableLoopback(CSL_mss_spiRegs *ptrMibSpiReg);
 static void MIBSPI_setClockPhasePolarity(volatile CSL_mss_spiRegs *ptrMibSpiReg, uint8_t clockFmt);
-static void MIBSPI_dmaCtrlGroupEnable(CSL_mss_spiRegs *ptrMibSpiReg, uint16_t bufId, uint8_t iCount, uint8_t dmaCtrlGroup);
-static void MIBSPI_dmaCtrlGroupDisable(CSL_mss_spiRegs *ptrMibSpiReg, uint8_t dmaCtrlGroup);
 static void MIBSPI_SPIEnable(CSL_mss_spiRegs *ptrMibSpiReg);
 static void MIBSPI_SPIDisable(CSL_mss_spiRegs *ptrMibSpiReg);
 static void MIBSPI_dataTransfer
@@ -113,6 +116,13 @@ static void MIBSPI_validateIPVersionInfo(const MibSpi_HwCfg* ptrHwCfg);
 static void MIBSPI_getVersionInfo(const CSL_mss_spiRegs  *ptrMibSpiReg, MibSpi_VersionInfo *ver);
 static void MIBSPI_enableErrorInterrupt(CSL_mss_spiRegs  *ptrMibSpiReg, uint32_t enableFlag);
 static void MIBSPI_setErrorInterruptLevel(CSL_mss_spiRegs  *ptrMibSpiReg, uint32_t level);
+#ifdef MIBSPI_DMA_ENABLE
+static void MIBSPI_enableGroupInterrupt(CSL_mss_spiRegs *ptrMibSpiReg, uint8_t group, uint32_t intLine);
+static void MIBSPI_disableGroupInterrupt(CSL_mss_spiRegs *ptrMibSpiReg, uint8_t group);
+static void MIBSPI_dmaCtrlGroupConfig(CSL_mss_spiRegs *ptrMibSpiReg, uint16_t bufId, uint8_t iCount, uint8_t dmaCtrlGroup);
+static void MIBSPI_dmaCtrlGroupStart(CSL_mss_spiRegs *ptrMibSpiReg, uint8_t dmaCtrlGroup, Mibspi_DmaCtrlChType_e chType );
+static void MIBSPI_dmaCtrlGroupDisable(CSL_mss_spiRegs *ptrMibSpiReg, uint8_t dmaCtrlGroup);
+#endif
 
 /**************************************************************************
  ************************** Global Variables **********************************
@@ -350,18 +360,22 @@ static void MIBSPI_enablePinSettings(CSL_mss_spiRegs  *ptrMibSpiReg, MIBSPI_PinM
     }
 
     /*  SPIPC7 Register: Set Port Pullup/Pulldown control: 0 to enable, 1 to disable  */
-    CSL_FINS(ptrMibSpiReg->SPIPC7, SPI_SPIPC7_SOMIPDIS0, 0);
-    CSL_FINS(ptrMibSpiReg->SPIPC7, SPI_SPIPC7_SIMOPDIS0, 0);
-    CSL_FINS(ptrMibSpiReg->SPIPC7, SPI_SPIPC7_CLKPDIS, 0);
-    CSL_FINS(ptrMibSpiReg->SPIPC7, SPI_SPIPC7_ENAPDIS, 0);
-    CSL_FINS(ptrMibSpiReg->SPIPC7, SPI_SPIPC7_SCSPDIS, 0);
+    regVal = ptrMibSpiReg->SPIPC7;
+    CSL_FINS(regVal, SPI_SPIPC7_SOMIPDIS0, 1);
+    CSL_FINS(regVal, SPI_SPIPC7_SIMOPDIS0, 1);
+    CSL_FINS(regVal, SPI_SPIPC7_CLKPDIS, 1);
+    CSL_FINS(regVal, SPI_SPIPC7_ENAPDIS, 1);
+    CSL_FINS(regVal, SPI_SPIPC7_SCSPDIS, 1);
+    ptrMibSpiReg->SPIPC7 = regVal;
 
     /*  SPIPC8 Register: Set Port Pullup/Pulldown value: 0 to pulldown, 1 to pullup  */
-    CSL_FINS(ptrMibSpiReg->SPIPC8, SPI_SPIPC8_SCSPSEL, 0xFFU);
-    CSL_FINS(ptrMibSpiReg->SPIPC8, SPI_SPIPC8_ENAPSEL, 1U);
-    CSL_FINS(ptrMibSpiReg->SPIPC8, SPI_SPIPC8_CLKPSEL, 1U);
-    CSL_FINS(ptrMibSpiReg->SPIPC8, SPI_SPIPC8_SIMOPSEL0, 1U);
-    CSL_FINS(ptrMibSpiReg->SPIPC8, SPI_SPIPC8_SOMIPSEL0, 1U);
+    regVal = ptrMibSpiReg->SPIPC8;
+    CSL_FINS(regVal, SPI_SPIPC8_SCSPSEL, 0x0U);
+    CSL_FINS(regVal, SPI_SPIPC8_ENAPSEL, 0U);
+    CSL_FINS(regVal, SPI_SPIPC8_CLKPSEL, 0U);
+    CSL_FINS(regVal, SPI_SPIPC8_SIMOPSEL0, 0U);
+    CSL_FINS(regVal, SPI_SPIPC8_SOMIPSEL0, 0U);
+    ptrMibSpiReg->SPIPC8 = regVal;
 
     return;
 }
@@ -571,19 +585,26 @@ static uint32_t MIBSPI_checkTGComplete(CSL_mss_spiRegs *ptrMibSpiReg, uint8_t gr
  */
 static void MIBSPI_enableLoopback(CSL_mss_spiRegs *ptrMibSpiReg, MibSpi_LoopBackType loopbacktype)
 {
+    uint32_t regVal;
+
     /* Put MibSpi module in reset */
     CSL_FINS(ptrMibSpiReg->SPIGCR1,SPI_SPIGCR1_SPIEN, 0U);
 
+    regVal = ptrMibSpiReg->IOLPBKTSTCR;
     /* Set Loopback either in Analog or Digital Mode */
-    CSL_FINS(ptrMibSpiReg->IOLPBKTSTCR,SPI_IOLPBKTSTCR_LPBKTYPE, loopbacktype);
+    CSL_FINS(regVal,SPI_IOLPBKTSTCR_LPBKTYPE, loopbacktype);
 
     /* Enable Loopback  */
-    CSL_FINS(ptrMibSpiReg->IOLPBKTSTCR,SPI_IOLPBKTSTCR_IOLPBKTSTENA, 0xAU);
+    CSL_FINS(regVal,SPI_IOLPBKTSTCR_IOLPBKTSTENA, 0xAU);
 
+    ptrMibSpiReg->IOLPBKTSTCR = regVal;
     /* Restart MIBSPI1 */
-    CSL_FINS(ptrMibSpiReg->SPIGCR1,SPI_SPIGCR1_SPIEN, 1U);
+    
+    regVal = ptrMibSpiReg->SPIGCR1;
+    CSL_FINS(regVal,SPI_SPIGCR1_SPIEN, 1U);
 
-    CSL_FINS(ptrMibSpiReg->SPIGCR1,SPI_SPIGCR1_LOOPBACK, 1U);
+    CSL_FINS(regVal,SPI_SPIGCR1_LOOPBACK, 1U);
+    ptrMibSpiReg->SPIGCR1 = regVal;
 }
 
 /**
@@ -623,17 +644,21 @@ static void MIBSPI_disableLoopback(CSL_mss_spiRegs *ptrMibSpiReg)
  */
 static void MIBSPI_setClockPhasePolarity(volatile CSL_mss_spiRegs *ptrMibSpiReg, uint8_t clockFmt)
 {
+    uint32_t regVal;
     /* Put MibSpi module in reset */
     CSL_FINS(ptrMibSpiReg->SPIGCR1,SPI_SPIGCR1_SPIEN, 0U);
 
     /* Set MibSpi Slave functional Mode Clock/polarity */
-    CSL_FINS(ptrMibSpiReg->SPIFMT[0], SPI_SPIFMT_PHASE, MIBSPI_getPhase((MIBSPI_FrameFormat)clockFmt));   /* PHASE */
-    CSL_FINS(ptrMibSpiReg->SPIFMT[0], SPI_SPIFMT_POLARITY, MIBSPI_getPolarity((MIBSPI_FrameFormat)clockFmt));   /* POLARITY */
+    regVal = ptrMibSpiReg->SPIFMT[0];
+    CSL_FINS(regVal, SPI_SPIFMT_PHASE, MIBSPI_getPhase((MIBSPI_FrameFormat)clockFmt));   /* PHASE */
+    CSL_FINS(regVal, SPI_SPIFMT_POLARITY, MIBSPI_getPolarity((MIBSPI_FrameFormat)clockFmt));   /* POLARITY */
+    ptrMibSpiReg->SPIFMT[0] = regVal;
 
     /* Finally start MIBSPI1 */
     CSL_FINS(ptrMibSpiReg->SPIGCR1,SPI_SPIGCR1_SPIEN, 1U);
 }
 
+#ifdef MIBSPI_DMA_ENABLE
 /**
  *  @b Description
  *  @n
@@ -697,21 +722,47 @@ static void MIBSPI_disableGroupInterrupt(CSL_mss_spiRegs *ptrMibSpiReg, uint8_t 
  *
  *  @retval   None.
  */
-static void MIBSPI_dmaCtrlGroupEnable(CSL_mss_spiRegs *ptrMibSpiReg, uint16_t bufId, uint8_t iCount, uint8_t dmaCtrlGroup)
+static void MIBSPI_dmaCtrlGroupConfig(CSL_mss_spiRegs *ptrMibSpiReg, uint16_t bufId, uint8_t iCount, uint8_t dmaCtrlGroup)
 {
+    uint32_t regVal = 0;
+
     /* Setting Transmit channel DMA request */
-    CSL_FINS(ptrMibSpiReg->DMACTRL[dmaCtrlGroup],SPI_DMACTRL_TXDMA_MAP, (uint32_t)dmaCtrlGroup * 2U);
-    CSL_FINS(ptrMibSpiReg->DMACTRL[dmaCtrlGroup],SPI_DMACTRL_TXDMAENA, 1U);
-    CSL_FINS(ptrMibSpiReg->DMACTRL[dmaCtrlGroup],SPI_DMACTRL_BUFID, (uint32_t)bufId);
-    CSL_FINS(ptrMibSpiReg->DMACTRL[dmaCtrlGroup],SPI_DMACTRL_ICOUNT, (uint32_t)iCount);
-    CSL_FINS(ptrMibSpiReg->DMACTRL[dmaCtrlGroup],SPI_DMACTRL_ONESHOT, 1U);
+    CSL_FINS(regVal,SPI_DMACTRL_TXDMA_MAP, (uint32_t)dmaCtrlGroup * 2U);
+    CSL_FINS(regVal,SPI_DMACTRL_TXDMAENA, 0U);
+    CSL_FINS(regVal,SPI_DMACTRL_BUFID, (uint32_t)bufId);
+    CSL_FINS(regVal,SPI_DMACTRL_ICOUNT, (uint32_t)iCount);
+    CSL_FINS(regVal,SPI_DMACTRL_ONESHOT, 1U);
 
     /* Setting Receive channel DMA request */
-    CSL_FINS(ptrMibSpiReg->DMACTRL[dmaCtrlGroup],SPI_DMACTRL_RXDMA_MAP, (uint32_t)dmaCtrlGroup * 2U + 1U);
-    CSL_FINS(ptrMibSpiReg->DMACTRL[dmaCtrlGroup],SPI_DMACTRL_RXDMAENA, 1U);
-    CSL_FINS(ptrMibSpiReg->DMACTRL[dmaCtrlGroup],SPI_DMACTRL_BUFID, (uint32_t)bufId);
-    CSL_FINS(ptrMibSpiReg->DMACTRL[dmaCtrlGroup],SPI_DMACTRL_ICOUNT, (uint32_t)iCount);
-    CSL_FINS(ptrMibSpiReg->DMACTRL[dmaCtrlGroup],SPI_DMACTRL_ONESHOT, 1U);
+    CSL_FINS(regVal,SPI_DMACTRL_RXDMA_MAP, (uint32_t)dmaCtrlGroup * 2U + 1);
+    CSL_FINS(regVal,SPI_DMACTRL_RXDMAENA, 0U);
+    CSL_FINS(regVal,SPI_DMACTRL_BUFID, (uint32_t)bufId);
+    CSL_FINS(regVal,SPI_DMACTRL_ICOUNT, (uint32_t)iCount);
+    CSL_FINS(regVal,SPI_DMACTRL_ONESHOT, 1U);
+
+    ptrMibSpiReg->DMACTRL[dmaCtrlGroup] = regVal;
+    return;
+}
+
+static void MIBSPI_dmaCtrlGroupStart(CSL_mss_spiRegs *ptrMibSpiReg, uint8_t dmaCtrlGroup, Mibspi_DmaCtrlChType_e chType )
+{
+    uint32_t regVal = ptrMibSpiReg->DMACTRL[dmaCtrlGroup];
+
+    if ((chType == MIBSPI_DMACTRL_CH_TX)
+        ||
+        (chType == MIBSPI_DMACTRL_CH_BOTH))
+    {
+        /* Setting Transmit channel DMA request */
+        CSL_FINS(regVal,SPI_DMACTRL_TXDMAENA, 1U);
+    }
+    if ((chType == MIBSPI_DMACTRL_CH_RX)
+        ||
+        (chType == MIBSPI_DMACTRL_CH_BOTH))
+    {
+        /* Setting Receive channel DMA request */
+        CSL_FINS(regVal,SPI_DMACTRL_RXDMAENA, 1U);
+    }
+    ptrMibSpiReg->DMACTRL[dmaCtrlGroup] = regVal;
     return;
 }
 
@@ -730,16 +781,21 @@ static void MIBSPI_dmaCtrlGroupEnable(CSL_mss_spiRegs *ptrMibSpiReg, uint16_t bu
 static void MIBSPI_dmaCtrlGroupDisable(CSL_mss_spiRegs *ptrMibSpiReg, uint8_t dmaCtrlGroup)
 {
     /* Get MibSpi Register & Ram Base address */
-    CSL_FINS(ptrMibSpiReg->DMACTRL[dmaCtrlGroup], SPI_DMACTRL_ONESHOT, 0U);
-    CSL_FINS(ptrMibSpiReg->DMACTRL[dmaCtrlGroup], SPI_DMACTRL_BUFID, 0U);
-    CSL_FINS(ptrMibSpiReg->DMACTRL[dmaCtrlGroup], SPI_DMACTRL_RXDMA_MAP, 0U);
-    CSL_FINS(ptrMibSpiReg->DMACTRL[dmaCtrlGroup], SPI_DMACTRL_TXDMA_MAP, 0U);
-    CSL_FINS(ptrMibSpiReg->DMACTRL[dmaCtrlGroup], SPI_DMACTRL_RXDMAENA, 0U);
-    CSL_FINS(ptrMibSpiReg->DMACTRL[dmaCtrlGroup], SPI_DMACTRL_TXDMAENA, 0U);
-    CSL_FINS(ptrMibSpiReg->DMACTRL[dmaCtrlGroup], SPI_DMACTRL_NOBRK, 0U);
-    CSL_FINS(ptrMibSpiReg->DMACTRL[dmaCtrlGroup], SPI_DMACTRL_ICOUNT, 0U);
-    CSL_FINS(ptrMibSpiReg->DMACTRL[dmaCtrlGroup], SPI_DMACTRL_BUFID7, 0U);
+    uint32_t regVal = ptrMibSpiReg->DMACTRL[dmaCtrlGroup];
+
+    CSL_FINS(regVal, SPI_DMACTRL_ONESHOT, 0U);
+    CSL_FINS(regVal, SPI_DMACTRL_BUFID, 0U);
+    CSL_FINS(regVal, SPI_DMACTRL_RXDMA_MAP, 0U);
+    CSL_FINS(regVal, SPI_DMACTRL_TXDMA_MAP, 0U);
+    CSL_FINS(regVal, SPI_DMACTRL_RXDMAENA, 0U);
+    CSL_FINS(regVal, SPI_DMACTRL_TXDMAENA, 0U);
+    CSL_FINS(regVal, SPI_DMACTRL_NOBRK, 0U);
+    CSL_FINS(regVal, SPI_DMACTRL_ICOUNT, 0U);
+    CSL_FINS(regVal, SPI_DMACTRL_BUFID7, 0U);
+    ptrMibSpiReg->DMACTRL[dmaCtrlGroup] = regVal;
+
 }
+#endif
 
  /**
  *  @b Description
@@ -762,6 +818,7 @@ static void MIBSPI_initMaster(MibSpi_HwCfg* ptrHwCfg, const MIBSPI_Params * para
     uint8_t             csnr = 0;
     uint8_t             chipSelectMask;
     uint8_t             ramBufOffset = 0;
+    uint32_t            regVal;
 
     /* Get Register and RAM base */
     ptrMibSpiRam  = ptrHwCfg->ptrMibSpiRam;
@@ -784,8 +841,10 @@ static void MIBSPI_initMaster(MibSpi_HwCfg* ptrHwCfg, const MIBSPI_Params * para
     if( (params->u.masterParams.c2tDelay != 0U) ||
        (params->u.masterParams.t2cDelay != 0U) )
     {
-        CSL_FINS(ptrMibSpiReg->SPIDELAY, SPI_SPIDELAY_C2TDELAY, (uint32_t)params->u.masterParams.c2tDelay);
-        CSL_FINS(ptrMibSpiReg->SPIDELAY, SPI_SPIDELAY_T2CDELAY, (uint32_t)params->u.masterParams.t2cDelay);
+        regVal = ptrMibSpiReg->SPIDELAY;
+        CSL_FINS(regVal, SPI_SPIDELAY_C2TDELAY, (uint32_t)params->u.masterParams.c2tDelay);
+        CSL_FINS(regVal, SPI_SPIDELAY_T2CDELAY, (uint32_t)params->u.masterParams.t2cDelay);
+        ptrMibSpiReg->SPIDELAY = regVal;
     }
     else
     {
@@ -793,24 +852,32 @@ static void MIBSPI_initMaster(MibSpi_HwCfg* ptrHwCfg, const MIBSPI_Params * para
     }
 
     /* Set Data Format 0 */
-    CSL_FINS(ptrMibSpiReg->SPIFMT[0], SPI_SPIFMT_PHASE, MIBSPI_getPhase(params->frameFormat));   /* PHASE */
-    CSL_FINS(ptrMibSpiReg->SPIFMT[0], SPI_SPIFMT_POLARITY, MIBSPI_getPolarity(params->frameFormat));   /* POLARITY */
-    CSL_FINS(ptrMibSpiReg->SPIFMT[0], SPI_SPIFMT_WDELAY, (uint32_t) params->u.masterParams.wDelay);  /* WDELAY */
-    CSL_FINS(ptrMibSpiReg->SPIFMT[0], SPI_SPIFMT_PRESCALE,  0U);                   /* PRESCALE */
-    CSL_FINS(ptrMibSpiReg->SPIFMT[0], SPI_SPIFMT_SHIFTDIR, (uint32_t) params->shiftFormat);  /* SHIFTDIR */
-    CSL_FINS(ptrMibSpiReg->SPIFMT[0], SPI_SPIFMT_CHARLEN, (uint32_t) params->dataSize);        /* CHARlEN */
+    regVal = ptrMibSpiReg->SPIFMT[0];
+    CSL_FINS(regVal, SPI_SPIFMT_PHASE, MIBSPI_getPhase(params->frameFormat));   /* PHASE */
+    CSL_FINS(regVal, SPI_SPIFMT_POLARITY, MIBSPI_getPolarity(params->frameFormat));   /* POLARITY */
+    CSL_FINS(regVal, SPI_SPIFMT_WDELAY, (uint32_t) params->u.masterParams.wDelay);  /* WDELAY */
+    CSL_FINS(regVal, SPI_SPIFMT_PRESCALE,  0U);                   /* PRESCALE */
+    CSL_FINS(regVal, SPI_SPIFMT_SHIFTDIR, (uint32_t) params->shiftFormat);  /* SHIFTDIR */
+    CSL_FINS(regVal, SPI_SPIFMT_CHARLEN, (uint32_t) params->dataSize);        /* CHARlEN */
+    ptrMibSpiReg->SPIFMT[0] = regVal;
 
     /* Set Data Format 1 */
-    CSL_FINS(ptrMibSpiReg->SPIFMT[1], SPI_SPIFMT_PRESCALE, 18U);                 /* PRESCALE */
-    CSL_FINS(ptrMibSpiReg->SPIFMT[1], SPI_SPIFMT_CHARLEN, (uint32_t) params->dataSize);  /* CHARlEN */
+    regVal = ptrMibSpiReg->SPIFMT[1];
+    CSL_FINS(regVal, SPI_SPIFMT_PRESCALE, 18U);                 /* PRESCALE */
+    CSL_FINS(regVal, SPI_SPIFMT_CHARLEN, (uint32_t) params->dataSize);  /* CHARlEN */
+    ptrMibSpiReg->SPIFMT[1] = regVal;
 
     /* Set Data Format 2 */
-    CSL_FINS(ptrMibSpiReg->SPIFMT[2], SPI_SPIFMT_PRESCALE, 18U);                 /* PRESCALE */
-    CSL_FINS(ptrMibSpiReg->SPIFMT[2], SPI_SPIFMT_CHARLEN, (uint32_t)params->dataSize);        /* CHARlEN */
+    regVal = ptrMibSpiReg->SPIFMT[2];
+    CSL_FINS(regVal, SPI_SPIFMT_PRESCALE, 18U);                 /* PRESCALE */
+    CSL_FINS(regVal, SPI_SPIFMT_CHARLEN, (uint32_t)params->dataSize);        /* CHARlEN */
+    ptrMibSpiReg->SPIFMT[2] = regVal;
 
     /* Set Data Format 3 */
-    CSL_FINS(ptrMibSpiReg->SPIFMT[3], SPI_SPIFMT_PRESCALE, 18U);                 /* PRESCALE */
-    CSL_FINS(ptrMibSpiReg->SPIFMT[3], SPI_SPIFMT_CHARLEN, (uint32_t)params->dataSize);        /* CHARlEN */
+    regVal = ptrMibSpiReg->SPIFMT[3];
+    CSL_FINS(regVal, SPI_SPIFMT_PRESCALE, 18U);                 /* PRESCALE */
+    CSL_FINS(regVal, SPI_SPIFMT_CHARLEN, (uint32_t)params->dataSize);        /* CHARlEN */
+    ptrMibSpiReg->SPIFMT[3] = regVal;
 
     /* Set Default Chip Select pattern: 1- chip select is set to "1" when SPI is IDLE
        Debug Note: Only CS0 can be set to 1 */
@@ -830,18 +897,22 @@ static void MIBSPI_initMaster(MibSpi_HwCfg* ptrHwCfg, const MIBSPI_Params * para
     if(params->eccEnable)
     {
         /* Enable ECC detection and signal bit Error correction */
-        CSL_FINS(ptrMibSpiReg->PAR_ECC_CTRL, SPI_PAR_ECC_CTRL_EDEN, 0xAU);
-        CSL_FINS(ptrMibSpiReg->PAR_ECC_CTRL, SPI_PAR_ECC_CTRL_EDAC_MODE, 0xAU);
-        CSL_FINS(ptrMibSpiReg->PAR_ECC_CTRL, SPI_PAR_ECC_CTRL_SBE_EVT_EN, 0xAU);
+        regVal = ptrMibSpiReg->PAR_ECC_CTRL;
+        CSL_FINS(regVal, SPI_PAR_ECC_CTRL_EDEN, 0xAU);
+        CSL_FINS(regVal, SPI_PAR_ECC_CTRL_EDAC_MODE, 0xAU);
+        CSL_FINS(regVal, SPI_PAR_ECC_CTRL_SBE_EVT_EN, 0xAU);
+        ptrMibSpiReg->PAR_ECC_CTRL = regVal;
     }
 
     for (index = 0; index < params->u.masterParams.numSlaves; index++)
     {
         /* Initialize transfer groups for number of slaves connected to SPI master */
-        CSL_FINS(ptrMibSpiReg->TGCTRL[index], SPI_TGCTRL_ONESHOT, 1U);  /* Oneshot trigger */
-        CSL_FINS(ptrMibSpiReg->TGCTRL[index], SPI_TGCTRL_TRIGEVT, 7U);  /* Trigger event : Always */
-        CSL_FINS(ptrMibSpiReg->TGCTRL[index], SPI_TGCTRL_TRIGSRC, 0U);  /* Trigger source : disabled */
-        CSL_FINS(ptrMibSpiReg->TGCTRL[index], SPI_TGCTRL_PSTART, 0U);   /* TG start address : 0 */
+        regVal = ptrMibSpiReg->TGCTRL[index];
+        CSL_FINS(regVal, SPI_TGCTRL_ONESHOT, 1U);  /* Oneshot trigger */
+        CSL_FINS(regVal, SPI_TGCTRL_TRIGEVT, 7U);  /* Trigger event : Always */
+        CSL_FINS(regVal, SPI_TGCTRL_TRIGSRC, 0U);  /* Trigger source : disabled */
+        CSL_FINS(regVal, SPI_TGCTRL_PSTART, 0U);   /* TG start address : 0 */
+        ptrMibSpiReg->TGCTRL[index] = regVal;
     }
 
     /* Initialize transfer groups end pointer */
@@ -937,6 +1008,7 @@ static void MIBSPI_initSlave(MibSpi_HwCfg* ptrHwCfg, const MIBSPI_Params *params
     CSL_mss_spiRegs      *ptrMibSpiReg;
     uint32_t        flag;
     uint32_t        index;
+    uint32_t        regVal;
 
     /* Get Register and RAM base */
     ptrMibSpiRam = ptrHwCfg->ptrMibSpiRam;
@@ -959,21 +1031,29 @@ static void MIBSPI_initSlave(MibSpi_HwCfg* ptrHwCfg, const MIBSPI_Params *params
     ptrMibSpiReg->SPIDELAY = 0x0U;
 
     /* Set Data Format 0 */
-    CSL_FINS(ptrMibSpiReg->SPIFMT[0], SPI_SPIFMT_PHASE, MIBSPI_getPhase(params->frameFormat));         /* PHASE */
-    CSL_FINS(ptrMibSpiReg->SPIFMT[0], SPI_SPIFMT_POLARITY, MIBSPI_getPolarity(params->frameFormat));   /* POLARITY */
-    CSL_FINS(ptrMibSpiReg->SPIFMT[0], SPI_SPIFMT_PRESCALE, 4U);   /* PRESCALE */
-    CSL_FINS(ptrMibSpiReg->SPIFMT[0], SPI_SPIFMT_SHIFTDIR, (uint32_t)(params->shiftFormat)); /* SHIFTDIR */
-    CSL_FINS(ptrMibSpiReg->SPIFMT[0], SPI_SPIFMT_CHARLEN, (uint32_t)params->dataSize);  /* CHARlEN */
+    regVal = ptrMibSpiReg->SPIFMT[0];
+    CSL_FINS(regVal, SPI_SPIFMT_PHASE, MIBSPI_getPhase(params->frameFormat));         /* PHASE */
+    CSL_FINS(regVal, SPI_SPIFMT_POLARITY, MIBSPI_getPolarity(params->frameFormat));   /* POLARITY */
+    CSL_FINS(regVal, SPI_SPIFMT_PRESCALE, 4U);   /* PRESCALE */
+    CSL_FINS(regVal, SPI_SPIFMT_SHIFTDIR, (uint32_t)(params->shiftFormat)); /* SHIFTDIR */
+    CSL_FINS(regVal, SPI_SPIFMT_CHARLEN, (uint32_t)params->dataSize);  /* CHARlEN */
+    ptrMibSpiReg->SPIFMT[0] = regVal;
 
     /* Set Data Format 1,2,3. Used mulitple TG group transfer */
-    CSL_FINS(ptrMibSpiReg->SPIFMT[1], SPI_SPIFMT_PRESCALE, 18U); /* PRESCALE */
-    CSL_FINS(ptrMibSpiReg->SPIFMT[1], SPI_SPIFMT_CHARLEN, (uint32_t)params->dataSize); /* CHARlEN */
+    regVal = ptrMibSpiReg->SPIFMT[1];
+    CSL_FINS(regVal, SPI_SPIFMT_PRESCALE, 18U); /* PRESCALE */
+    CSL_FINS(regVal, SPI_SPIFMT_CHARLEN, (uint32_t)params->dataSize); /* CHARlEN */
+    ptrMibSpiReg->SPIFMT[1] = regVal;
 
-    CSL_FINS(ptrMibSpiReg->SPIFMT[2], SPI_SPIFMT_PRESCALE, 18U); /* PRESCALE */
-    CSL_FINS(ptrMibSpiReg->SPIFMT[2], SPI_SPIFMT_CHARLEN, (uint32_t)params->dataSize);    /* CHARlEN */
+    regVal = ptrMibSpiReg->SPIFMT[2];
+    CSL_FINS(regVal, SPI_SPIFMT_PRESCALE, 18U); /* PRESCALE */
+    CSL_FINS(regVal, SPI_SPIFMT_CHARLEN, (uint32_t)params->dataSize);    /* CHARlEN */
+    ptrMibSpiReg->SPIFMT[2] = regVal;
 
-    CSL_FINS(ptrMibSpiReg->SPIFMT[3], SPI_SPIFMT_PRESCALE, 18U); /* PRESCALE */
-    CSL_FINS(ptrMibSpiReg->SPIFMT[3], SPI_SPIFMT_CHARLEN, (uint32_t)params->dataSize);    /* CHARlEN */
+    regVal = ptrMibSpiReg->SPIFMT[3];
+    CSL_FINS(regVal, SPI_SPIFMT_PRESCALE, 18U); /* PRESCALE */
+    CSL_FINS(regVal, SPI_SPIFMT_CHARLEN, (uint32_t)params->dataSize);    /* CHARlEN */
+    ptrMibSpiReg->SPIFMT[3] = regVal;
 
     /* Wait for buffer initialization complete before accessing MibSPI registers */
     while(1)
@@ -989,18 +1069,22 @@ static void MIBSPI_initSlave(MibSpi_HwCfg* ptrHwCfg, const MIBSPI_Params *params
     if(params->eccEnable)
     {
         /* Enable ECC detection and signal bit Error correction */
-        CSL_FINS(ptrMibSpiReg->PAR_ECC_CTRL,SPI_PAR_ECC_CTRL_EDEN, 0xAU);
-        CSL_FINS(ptrMibSpiReg->PAR_ECC_CTRL,SPI_PAR_ECC_CTRL_EDAC_MODE, 0xAU);
-        CSL_FINS(ptrMibSpiReg->PAR_ECC_CTRL,SPI_PAR_ECC_CTRL_SBE_EVT_EN, 0xAU);
+        regVal = ptrMibSpiReg->PAR_ECC_CTRL;
+        CSL_FINS(regVal,SPI_PAR_ECC_CTRL_EDEN, 0xAU);
+        CSL_FINS(regVal,SPI_PAR_ECC_CTRL_EDAC_MODE, 0xAU);
+        CSL_FINS(regVal,SPI_PAR_ECC_CTRL_SBE_EVT_EN, 0xAU);
+        ptrMibSpiReg->PAR_ECC_CTRL = regVal;
     }
 
     for (index = 0; index < MIBSPI_NUM_TRANS_GROUP; index++)
     {
         /* Initialize transfer groups */
-        CSL_FINS(ptrMibSpiReg->TGCTRL[index],SPI_TGCTRL_ONESHOT, 1U);  /* Oneshot trigger */
-        CSL_FINS(ptrMibSpiReg->TGCTRL[index],SPI_TGCTRL_TRIGEVT, 7U);  /* Trigger event : Always */
-        CSL_FINS(ptrMibSpiReg->TGCTRL[index],SPI_TGCTRL_TRIGSRC, 0U);  /* Trigger source : disabled */
-        CSL_FINS(ptrMibSpiReg->TGCTRL[index],SPI_TGCTRL_PSTART,  0U);  /* TG start address : 0 */
+        regVal = ptrMibSpiReg->TGCTRL[index];
+        CSL_FINS(regVal,SPI_TGCTRL_ONESHOT, 1U);  /* Oneshot trigger */
+        CSL_FINS(regVal,SPI_TGCTRL_TRIGEVT, 7U);  /* Trigger event : Always */
+        CSL_FINS(regVal,SPI_TGCTRL_TRIGSRC, 0U);  /* Trigger source : disabled */
+        CSL_FINS(regVal,SPI_TGCTRL_PSTART,  0U);  /* TG start address : 0 */
+        ptrMibSpiReg->TGCTRL[index] = regVal;
     }
 
     /* Initialize transfer groups end pointer */
@@ -1361,6 +1445,7 @@ static void MIBSPI_dataTransfer
     /* Initialize transfer groups end pointer */
     CSL_FINS(ptrMibSpiReg->LTGPEND,SPI_LTGPEND_LPEND, (uint32_t)bufId);
 
+#ifdef MIBSPI_DMA_ENABLE
      /* Configure DMA in the following 3 cases
          Case 1: SrcData=NULL, DstData!=NULL   => Read data from SPI with dummy write
          Case 2: SrcData!=NULL, DstData=NULL   => Write data to SPI with dummy read
@@ -1368,14 +1453,17 @@ static void MIBSPI_dataTransfer
      */
     if(ptrMibSpiDriver->params.dmaEnable == (uint8_t)1U)
     {
-        /* Disable TG complete interrupt */
-        MIBSPI_disableGroupInterrupt(ptrMibSpiReg, group);
-
-#ifdef MIBSPI_DMA_ENABLE
         MibSpi_dmaXferInfo_t dmaXferInfo;
         uint32_t   txRAMAddr;
         uint32_t   rxRAMAddr;
         CSL_mibspiRam       *ptrMibSpiRam;
+
+        /* Disable TG complete interrupt */
+        MIBSPI_disableGroupInterrupt(ptrMibSpiReg, group);
+
+        /* Disable SPI DMA */
+        MIBSPI_dmaCtrlGroupDisable(ptrMibSpiReg, group);
+
 
         ptrMibSpiRam  = ptrHwCfg->ptrMibSpiRam;
         /* Get MibSPI RAM address */
@@ -1384,12 +1472,11 @@ static void MIBSPI_dataTransfer
 
 
          /* Case 1: SrcData=NULL, DstData!=NULL  => Read data from SPI with dummy write */
-        dmaXferInfo.isMibspiRamXfer = true;
         dmaXferInfo.dmaReqLine = group;
-        dmaXferInfo.tx.saddr = (uintptr_t) srcData;
-        dmaXferInfo.tx.daddr = txRAMAddr;
-        dmaXferInfo.rx.saddr = rxRAMAddr;
-        dmaXferInfo.rx.daddr = (uintptr_t) dstData;
+        dmaXferInfo.tx.saddr = MibspiUtils_virtToPhy(srcData);
+        dmaXferInfo.tx.daddr = MibspiUtils_virtToPhy((const void *)txRAMAddr);
+        dmaXferInfo.rx.saddr = MibspiUtils_virtToPhy((const void *)rxRAMAddr);
+        dmaXferInfo.rx.daddr = MibspiUtils_virtToPhy(dstData);
         if(ptrMibSpiDriver->params.dataSize == 8U)
         {
             dmaXferInfo.size.elemSize = 1;
@@ -1400,21 +1487,28 @@ static void MIBSPI_dataTransfer
         }
         dmaXferInfo.size.elemCnt = bufId + 1U;
         dmaXferInfo.size.frameCnt = iCount + 1U;
-        MIBSPI_dmaTransfer(ptrMibSpiDriver->mibspiHandle, &dmaXferInfo);
-#endif
-        /* Disable SPI DMA */
-        MIBSPI_dmaCtrlGroupDisable(ptrMibSpiReg, group);
+        Mibspi_assert(MIBSPI_dmaTransfer(ptrMibSpiDriver->mibspiHandle, &dmaXferInfo) == MIBSPI_STATUS_SUCCESS);;
 
         /* Configuring the mibspi dmaCtrl for the channel */
-        MIBSPI_dmaCtrlGroupEnable(ptrMibSpiReg, bufId, iCount, group);
+        MIBSPI_dmaCtrlGroupConfig(ptrMibSpiReg, bufId, iCount, group);
 
         /* Setup TG interrupt */
         MIBSPI_enableGroupInterrupt(ptrMibSpiReg, group, MIBSPI_INT_LEVEL);
 
+        Mibspi_assert(MIBSPI_dmaStartTransfer(ptrMibSpiDriver->mibspiHandle, group) == MIBSPI_STATUS_SUCCESS);
+
+
+        MIBSPI_dmaCtrlGroupStart(ptrMibSpiReg, group, MIBSPI_DMACTRL_CH_TX);
+
+        MIBSPI_dmaCtrlGroupStart(ptrMibSpiReg, group, MIBSPI_DMACTRL_CH_RX);
+
         /* Start TG group transfer */
         MIBSPI_transferGroupEnable(ptrMibSpiReg, group);
+
+        
     }
     else
+#endif
     {
         uint32_t  index;
         uint16_t  size;
@@ -1502,15 +1596,8 @@ static int32_t MIBSPI_openSlaveMode(MibSpiDriver_Object *ptrMibSpiDriver, MibSpi
     if(params->dmaEnable)
     {
 #ifdef MIBSPI_DMA_ENABLE
-        MibSpi_driverDmaInfo    *ptrDmaInfo = NULL;
 
-        /* Get DMA config params handle */
-        ptrDmaInfo = &ptrMibSpiDriver->dmaInfo[MIBSPI_SLAVEMODE_TRANS_GROUP];
-
-        ptrDmaInfo->dmaReqlineTx = ptrHwCfg->dmaReqlineCfg[MIBSPI_SLAVEMODE_TRANS_GROUP].txDmaReqLine;
-        ptrDmaInfo->dmaReqlineRx = ptrHwCfg->dmaReqlineCfg[MIBSPI_SLAVEMODE_TRANS_GROUP].rxDmaReqLine;
-
-        retVal = MIBSPI_dmaConfig(ptrMibSpiDriver->mibspiHandle);
+        retVal = MIBSPI_dmaConfig(ptrMibSpiDriver->mibspiHandle, MIBSPI_SLAVEMODE_TRANS_GROUP);
         if(retVal < 0)
         {
             retVal = MIBSPI_STATUS_ERROR;
@@ -1547,7 +1634,6 @@ exit:
 static int32_t MIBSPI_openMasterMode(MibSpiDriver_Object *ptrMibSpiDriver, MibSpi_HwCfg* ptrHwCfg, const MIBSPI_Params *params)
 {
     int32_t                 retVal = 0;
-    MibSpi_driverDmaInfo    *ptrDmaInfo = NULL;
     uint8_t                 index;
     uint8_t                 ramBufOffset = 0;
 
@@ -1560,34 +1646,29 @@ static int32_t MIBSPI_openMasterMode(MibSpiDriver_Object *ptrMibSpiDriver, MibSp
     for(index = 0; index < params->u.masterParams.numSlaves; index++)
     {
         /***************************************
-         ****** DMA Configuration if enabled *******
-         **************************************/
-        if(params->dmaEnable)
-        {
-            /* Get DMA config params handle */
-            ptrDmaInfo = &ptrMibSpiDriver->dmaInfo[index];
-
-            ptrDmaInfo->dmaReqlineTx = ptrHwCfg->dmaReqlineCfg[index].txDmaReqLine;
-
-            ptrDmaInfo->dmaReqlineRx = ptrHwCfg->dmaReqlineCfg[index].rxDmaReqLine;
-        }
-
-        /***************************************
          ******** Save RAM offset information *******
          **************************************/
         ptrMibSpiDriver->rambufStart[index] = ramBufOffset;
         ptrMibSpiDriver->rambufEnd[index] = ramBufOffset + params->u.masterParams.slaveProf[index].ramBufLen;
         ramBufOffset =ptrMibSpiDriver->rambufEnd[index];
+
+        /***************************************
+         ****** DMA Configuration if enabled *******
+         **************************************/
+#ifdef MIBSPI_DMA_ENABLE
+        if(params->dmaEnable)
+        {
+            retVal = MIBSPI_dmaConfig(ptrMibSpiDriver->mibspiHandle, index);
+
+            if (retVal != MIBSPI_STATUS_SUCCESS)
+            {
+                break;
+            }
+        }
+#endif
+
     }
 
-    if (params->dmaEnable)
-    {
-#ifdef MIBSPI_DMA_ENABLE
-        retVal = MIBSPI_dmaConfig(ptrMibSpiDriver->mibspiHandle);
-#else
-        retVal = MIBSPI_STATUS_ERROR;
-#endif
-    }
     return (retVal);
 }
 
@@ -1736,12 +1817,25 @@ void MIBSPI_closeCore(MIBSPI_Handle handle)
 
         Mibspi_assert(ptrMibSpiDriver->transactionState.transaction == NULL);
 
+#ifdef MIBSPI_DMA_ENABLE
         if(ptrMibSpiDriver->params.dmaEnable)
         {
-#ifdef MIBSPI_DMA_ENABLE
-            MIBSPI_dmaFreeChannel(ptrMibSpiDriver->mibspiHandle);
-#endif
+
+            if (ptrMibSpiDriver->params.mode == MIBSPI_SLAVE)
+            {
+                MIBSPI_dmaFreeChannel(ptrMibSpiDriver->mibspiHandle, MIBSPI_SLAVEMODE_TRANS_GROUP);
+            }
+            else
+            {
+                uint32_t index;
+
+                for (index = 0; index < ptrMibSpiDriver->params.u.masterParams.numSlaves; index++)
+                {
+                    MIBSPI_dmaFreeChannel(ptrMibSpiDriver->mibspiHandle, index);
+                }
+            }
         }
+#endif
 
         /* Does the SPI Driver in Blocking mode? */
         if (ptrMibSpiDriver->transferCompleteSem)
@@ -1760,11 +1854,9 @@ void MIBSPI_closeCore(MIBSPI_Handle handle)
 
             HwiP_delete(ptrMibSpiDriver->hwiHandle);
         }
+        memset(ptrMibSpiDriver, 0, sizeof(*ptrMibSpiDriver));
 
     }
-
-    /* Reset the object handle : */
-    handle->object = NULL;
 }
 
 /**
@@ -2274,23 +2366,28 @@ static void MIBSPI_validateIPVersionInfo(const MibSpi_HwCfg* ptrHwCfg)
 
 static void MIBSPI_enableErrorInterrupt(CSL_mss_spiRegs  *ptrMibSpiReg, uint32_t enableFlag)
 {
-    CSL_FINS(ptrMibSpiReg->SPIINT0, SPI_SPIINT0_DLENERRENA, enableFlag);
-    CSL_FINS(ptrMibSpiReg->SPIINT0, SPI_SPIINT0_TIMEOUTENA, enableFlag);
-    CSL_FINS(ptrMibSpiReg->SPIINT0, SPI_SPIINT0_PARERRENA, enableFlag);
-    CSL_FINS(ptrMibSpiReg->SPIINT0, SPI_SPIINT0_DESYNCENA, enableFlag);
-    CSL_FINS(ptrMibSpiReg->SPIINT0, SPI_SPIINT0_BITERRENA, enableFlag);
-    CSL_FINS(ptrMibSpiReg->SPIINT0, SPI_SPIINT0_OVRNINTENA, enableFlag);
+    uint32_t regVal = ptrMibSpiReg->SPIINT0;
 
+    CSL_FINS(regVal, SPI_SPIINT0_DLENERRENA, enableFlag);
+    CSL_FINS(regVal, SPI_SPIINT0_TIMEOUTENA, enableFlag);
+    CSL_FINS(regVal, SPI_SPIINT0_PARERRENA, enableFlag);
+    CSL_FINS(regVal, SPI_SPIINT0_DESYNCENA, enableFlag);
+    CSL_FINS(regVal, SPI_SPIINT0_BITERRENA, enableFlag);
+    CSL_FINS(regVal, SPI_SPIINT0_OVRNINTENA, enableFlag);
+    ptrMibSpiReg->SPIINT0 = regVal;
 }
 
 static void MIBSPI_setErrorInterruptLevel(CSL_mss_spiRegs  *ptrMibSpiReg, uint32_t level)
 {
-    CSL_FINS(ptrMibSpiReg->SPILVL, SPI_SPILVL_DLENERRLVL, level);
-    CSL_FINS(ptrMibSpiReg->SPILVL, SPI_SPILVL_TIMEOUTLVL, level);
-    CSL_FINS(ptrMibSpiReg->SPILVL, SPI_SPILVL_PARERRLVL, level);
-    CSL_FINS(ptrMibSpiReg->SPILVL, SPI_SPILVL_DESYNCLVL, level);
-    CSL_FINS(ptrMibSpiReg->SPILVL, SPI_SPILVL_BITERRLVL, level);
-    CSL_FINS(ptrMibSpiReg->SPILVL, SPI_SPILVL_OVRNINTLVL, level);
+    uint32_t regVal = ptrMibSpiReg->SPILVL;
+
+    CSL_FINS(regVal, SPI_SPILVL_DLENERRLVL, level);
+    CSL_FINS(regVal, SPI_SPILVL_TIMEOUTLVL, level);
+    CSL_FINS(regVal, SPI_SPILVL_PARERRLVL, level);
+    CSL_FINS(regVal, SPI_SPILVL_DESYNCLVL, level);
+    CSL_FINS(regVal, SPI_SPILVL_BITERRLVL, level);
+    CSL_FINS(regVal, SPI_SPILVL_OVRNINTLVL, level);
+    ptrMibSpiReg->SPILVL = regVal;
 }
 
 

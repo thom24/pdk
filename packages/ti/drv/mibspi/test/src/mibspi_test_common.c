@@ -64,6 +64,7 @@
 #include <ti/sysbios/heaps/HeapMem.h>
 #include <ti/sysbios/knl/Event.h>
 #include <ti/sysbios/family/arm/v7a/Pmu.h>
+#include <ti/sysbios/hal/Cache.h>
 #include <ti/csl/soc.h>
 
 #include <ti/drv/mibspi/MIBSPI.h>
@@ -79,7 +80,7 @@
  **************************************************************************/
 
 /* Test flag for multiple icount */
-/* #define SPI_MULT_ICOUNT_SUPPORT */
+#define SPI_MULT_ICOUNT_SUPPORT
 
 /* VBUSP Frequency in MHz */
 #define VBUSP_FREQ              MSS_SYS_VCLK /1000000U
@@ -344,7 +345,7 @@ static int32_t Test_spiReadWrite(const MIBSPI_Handle handle, uint32_t dataLen, v
  */
 static int32_t Test_spiLoopback(const MIBSPI_Handle handle, uint8_t slaveIndex, uint32_t maxElem, uint8_t dataSize)
 {
-    uint8_t            loopback;
+    MibSpi_LoopBackType            loopback;
     uint32_t           loop;
     uint32_t           idx;
     uint32_t           failed = 0;
@@ -371,6 +372,8 @@ static int32_t Test_spiLoopback(const MIBSPI_Handle handle, uint8_t slaveIndex, 
         /* Clear receive buffer */
         memset((void *)&rxBuf[0], 0x0, SPI_DATA_BLOCK_SIZE);
 
+        Cache_wbInv((Ptr)txBuf, sizeof(txBuf), Cache_Type_ALL,TRUE);
+        Cache_wbInv((Ptr)rxBuf, sizeof(rxBuf), Cache_Type_ALL,TRUE);
         if(Test_spiReadWrite(handle, len, (void *)rxBuf, (void *)txBuf, slaveIndex) == 0)
         {
             /* Check data integrity */
@@ -417,15 +420,13 @@ static void Test_spiLoopBackDataThroughput(uint32_t inst, uint32_t bitRate)
     MIBSPI_Params       params;
     MIBSPI_Handle       handle;
     MIBSPI_Transaction  transaction;
-    uint8_t          loopback;
+    MibSpi_LoopBackType loopback;
     uint32_t         failed = 0;
     uint32_t         idx=0;
     uint32_t         loop;
     volatile uint32_t  cycles;
     float            throughput = 0;
-    char             testCase[64];
 
-    snprintf(testCase, 64, "SPI throughput test at bitRate %d Kbps", bitRate/1000);
     /**************************************************************************
      * Test: SPI Open
      **************************************************************************/
@@ -434,8 +435,14 @@ static void Test_spiLoopBackDataThroughput(uint32_t inst, uint32_t bitRate)
     params.frameFormat = MIBSPI_POL0_PHA0;
 
     /* Enable DMA and set DMA channels to be used */
+#ifdef MIBSPI_DMA_ENABLE
     params.dmaEnable = 1;
-    params.eccEnable = 1;
+    params.dmaHandle = gDmaHandle[inst];
+#else
+    params.dmaEnable = 0;
+    params.dmaHandle = NULL;
+#endif
+    params.eccEnable = 0;
 
     params.mode = MIBSPI_MASTER;
     params.u.masterParams.bitRate = bitRate;
@@ -468,14 +475,14 @@ static void Test_spiLoopBackDataThroughput(uint32_t inst, uint32_t bitRate)
 
     memset((void *)&rxBuf[0], 0x0, SPI_DATA_BLOCK_SIZE);
 
+    Cache_wbInv((Ptr)txBuf, sizeof(txBuf), Cache_Type_ALL,TRUE);
+    Cache_wbInv((Ptr)rxBuf, sizeof(rxBuf), Cache_Type_ALL,TRUE);
+
     // Start the counter
     Test_benchmarkStart(0);
 
-    for(loop=0; loop < 1000; loop++)
+    for(loop=0; loop < 10; loop++)
     {
-        /* Change only the first bytes in the TX buffer */
-        txBuf[0] = loop;
-
         /* Configure Data Transfer */
         transaction.count = SPI_DATA_BLOCK_SIZE;
         transaction.txBuf = (void *)txBuf;
@@ -506,7 +513,7 @@ static void Test_spiLoopBackDataThroughput(uint32_t inst, uint32_t bitRate)
     /* Check failures and return results */
     if(failed == 0)
     {
-        snprintf(testCase, 64, "SPI throughput at bitRate %d Kbps : %f Mbps", bitRate/1000, throughput);
+        MIBSPI_log("SPI throughput at bitRate %d Kbps : %f Mbps", bitRate/1000, throughput);
     }
     else
     {
@@ -704,9 +711,14 @@ void Test_spiAPI_twoInstance(void)
     /* Setup the default SPIA Parameters */
     MIBSPI_Params_init(&params);
 
+#ifdef MIBSPI_DMA_ENABLE
     /* Enable DMA and set DMA channels */
     params.dmaEnable = 1;
     params.dmaHandle = gDmaHandle[instA];
+#else
+    params.dmaEnable = 0;
+    params.dmaHandle = NULL;
+#endif
 
     params.mode = MIBSPI_SLAVE;
     params.u.slaveParams.dmaReqLine = 0;
@@ -723,9 +735,14 @@ void Test_spiAPI_twoInstance(void)
     /* Setup the default SPIB Parameters */
     MIBSPI_Params_init(&params);
 
+#ifdef MIBSPI_DMA_ENABLE
     /* Enable DMA and set DMA channels */
     params.dmaEnable = 1;
     params.dmaHandle = gDmaHandle[instB];
+#else
+    params.dmaEnable = 0;
+    params.dmaHandle = NULL;
+#endif
 
     params.mode = MIBSPI_SLAVE;
     params.u.slaveParams.dmaReqLine = 0;
@@ -757,9 +774,14 @@ void Test_spiAPI_twoInstance(void)
     /* Setup the default SPI Parameters */
     MIBSPI_Params_init(&params);
 
+#ifdef MIBSPI_DMA_ENABLE
     /* Enable DMA and set DMA channels */
     params.dmaEnable = 1;
     params.dmaHandle = gDmaHandle[instA];
+#else
+    params.dmaEnable = 0;
+    params.dmaHandle = NULL;
+#endif
 
     params.mode = MIBSPI_SLAVE;
     params.u.slaveParams.dmaReqLine = 0U;
@@ -777,27 +799,6 @@ void Test_spiAPI_twoInstance(void)
         goto exit;
     }
 
-    /* Setup the default SPIB Parameters */
-    MIBSPI_Params_init(&params);
-
-    /* Enable DMA and set DMA channels that same as SPIA, test should fail */
-    params.dmaEnable = 1;
-    params.dmaHandle = gDmaHandle[instB];
-
-    params.mode = MIBSPI_SLAVE;
-    params.u.slaveParams.dmaReqLine = 0U;
-
-    /* Open the SPI Instance for MibSpiA */
-    handleB = MIBSPI_open(gMibspiInst[instB], &params);
-
-    if (handleB == NULL)
-    {
-        MIBSPI_log("Debug: passed DMA channel number check for two SPI instances.\n");
-    }
-    else
-    {
-        MIBSPI_log("Error: Failed DMA channel number check for two SPI instances\n");
-    }
 exit:
     if(handleA != NULL)
     {
@@ -841,8 +842,14 @@ void Test_spiAPI_oneInstance(uint8_t inst)
     params.mode = MIBSPI_SLAVE;
 
     /* Enable DMA and set DMA channels */
+#ifdef MIBSPI_DMA_ENABLE
     params.dmaEnable = (uint8_t)1U;
     params.dmaHandle = gDmaHandle[inst];
+#else
+    params.dmaEnable = 0;
+    params.dmaHandle = NULL;
+#endif
+
     params.u.slaveParams.dmaReqLine = 0U;
 
     /* Open the SPI Instance for MibSpi */
@@ -859,34 +866,6 @@ void Test_spiAPI_oneInstance(uint8_t inst)
     MIBSPI_log("Debug: SPI Instance %p has been closed successfully\n", handle);
 
     /**************************************************************************
-     * Test: Verify SPI API for DMA channel configuration
-     **************************************************************************/
-    snprintf(testCase, 64, "MIBSPI_open API test - DMA channel validation (instance=%d)", inst);
-
-    /* Setup the default SPI Parameters */
-    MIBSPI_Params_init(&params);
-
-    params.dmaEnable = (uint8_t)1U;
-    params.dmaHandle = gDmaHandle[inst];
-
-    params.mode = MIBSPI_SLAVE;
-
-    /* Open the SPI Instance for MibSpiA */
-    handle = MIBSPI_open(gMibspiInst[inst], &params);
-    if (handle == NULL)
-    {
-        MIBSPI_log("Debug: Passed DMA channel number check\n");
-    }
-    else
-    {
-        MIBSPI_log("Error: Failed SPI DMA channel number check\n");
-
-        /* Graceful shutdown */
-        MIBSPI_close(handle);
-        MIBSPI_log("Debug: SPI Instance %p has been closed successfully\n", handle);
-    }
-
-    /**************************************************************************
      * Test: Verify SPI parameters check::chipSelect
      **************************************************************************/
     snprintf(testCase, 64, "MIBSPI_open API test - chip select validation (instance=%d)", inst);
@@ -895,9 +874,15 @@ void Test_spiAPI_oneInstance(uint8_t inst)
     MIBSPI_Params_init(&params);
 
     /* Enable DMA and set DMA channels */
+#ifdef MIBSPI_DMA_ENABLE
     params.dmaEnable = (uint8_t)1U;
     params.dmaHandle = gDmaHandle[inst];
+#else
+    params.dmaEnable = 0;
+    params.dmaHandle = NULL;
+#endif
     params.u.slaveParams.dmaReqLine = 0U;
+
 
     params.mode = MIBSPI_SLAVE;
 
@@ -925,9 +910,15 @@ void Test_spiAPI_oneInstance(uint8_t inst)
     MIBSPI_Params_init(&params);
 
     /* Enable DMA and set DMA channels to be used */
+#ifdef MIBSPI_DMA_ENABLE
     params.dmaEnable = (uint8_t)1U;
     params.dmaHandle = gDmaHandle[inst];
+#else
+    params.dmaEnable = 0;
+    params.dmaHandle = NULL;
+#endif
     params.u.slaveParams.dmaReqLine  = 0U;
+
 
     params.mode = MIBSPI_SLAVE;
 
@@ -957,8 +948,14 @@ void Test_spiAPI_oneInstance(uint8_t inst)
     MIBSPI_Params_init(&params);
 
     /* Enable DMA and set DMA channels */
+#ifdef MIBSPI_DMA_ENABLE
     params.dmaEnable = (uint8_t)1U;
     params.dmaHandle = gDmaHandle[0];
+#else
+    params.dmaEnable = 0;
+    params.dmaHandle = NULL;
+#endif
+
     params.u.slaveParams.dmaReqLine  =0U;
 
     params.mode = MIBSPI_MASTER;
@@ -987,8 +984,14 @@ void Test_spiAPI_oneInstance(uint8_t inst)
     MIBSPI_Params_init(&params);
 
     /* Enable DMA and set DMA channels to be used */
+#ifdef MIBSPI_DMA_ENABLE
     params.dmaEnable = (uint8_t)1U;
     params.dmaHandle = gDmaHandle[inst];
+#else
+    params.dmaEnable = 0;
+    params.dmaHandle = NULL;
+#endif
+
     params.dataSize = 16U;
 
     params.mode = MIBSPI_SLAVE;
@@ -1096,9 +1099,15 @@ void Test_loopback_oneInstance(uint32_t inst, uint8_t slaveIndex)
     params.frameFormat = MIBSPI_POL0_PHA0;
 
     /* Enable DMA and set DMA channels to be used */
+#ifdef MIBSPI_DMA_ENABLE
     params.dmaEnable = 1;
     params.dmaHandle = gDmaHandle[inst];
-    params.eccEnable = 1;
+#else
+    params.dmaEnable = 0;
+    params.dmaHandle = NULL;
+#endif
+
+    params.eccEnable = 0;
     params.mode = MIBSPI_MASTER;
     params.u.masterParams.bitRate = 1000000U;
 
@@ -1190,9 +1199,15 @@ void Test_loopback_oneInstance(uint32_t inst, uint8_t slaveIndex)
      **************************************************************************/
     snprintf(testCase, 64, "SPI loopback test - instance(%d), 8bits DMA mode", inst);
 
+#ifdef MIBSPI_DMA_ENABLE
     /* Change dma configuration */
     params.dmaEnable = 1;
     params.dataSize =8;
+#else
+    params.dmaEnable = 0;
+    params.dmaHandle = NULL;
+#endif
+
 
     handle = MIBSPI_open(gMibspiInst[inst], &params);
     if (handle == NULL)

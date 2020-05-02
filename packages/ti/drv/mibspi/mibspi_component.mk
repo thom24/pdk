@@ -68,8 +68,6 @@ ifeq ($(mibspi_component_make_include), )
 
 drvmibspi_BOARDLIST       = tpr12_evm
 drvmibspi_SOCLIST         = tpr12
-drvmibspi_SOCLISTLIM      = tpr12
-drvmibspi_dma_SOCLIST     = tpr12
 drvmibspi_tpr12_CORELIST   = mcu1_0 c66xdsp_1
 
 ############################
@@ -95,7 +93,7 @@ mibspi_EXAMPLE_LIST =
 # List below all examples for allowed values
 ############################
 ifeq ($(SOC),$(filter $(SOC), tpr12))
-mibspi_EXAMPLE_LIST = MIBSPI_MasterSlave_TestApp MIBSPI_MasterSlave_Dma_TestApp
+mibspi_EXAMPLE_LIST = MIBSPI_Loopback_TestApp MIBSPI_Loopback_Dma_TestApp
 endif
 
 drvmibspi_EXAMPLE_LIST = $(mibspi_EXAMPLE_LIST)
@@ -154,7 +152,7 @@ export mibspi_dma_SOC_DEPENDENCY
 mibspi_dma_PKG_LIST = mibspi_dma
 export mibspi_dma_PKG_LIST
 mibspi_dma_INCLUDE = $(mibspi_dma_PATH)
-mibspi_dma_SOCLIST = $(drvmibspi_dma_SOCLIST)
+mibspi_dma_SOCLIST = $(drvmibspi_SOCLIST)
 export mibspi_dma_SOCLIST
 mibspi_dma_$(SOC)_CORELIST = $(drvmibspi_$(SOC)_CORELIST)
 export mibspi_dma_$(SOC)_CORELIST
@@ -165,82 +163,50 @@ export mibspi_dma_$(SOC)_CORELIST
 # MIBSPI Examples
 #
 # MIBSPI baremetal master slave Test app
-#MIBSPI_Baremetal_MasterSlave_TestApp_COMP_LIST = MIBSPI_Baremetal_MasterSlave_TestApp
-#MIBSPI_Baremetal_MasterSlave_TestApp_RELPATH = ti/drv/mibspi/test
-#MIBSPI_Baremetal_MasterSlave_TestApp_PATH = $(PDK_MIBSPI_COMP_PATH)/test
-#MIBSPI_Baremetal_MasterSlave_TestApp_BOARD_DEPENDENCY = yes
-#MIBSPI_Baremetal_MasterSlave_TestApp_CORE_DEPENDENCY = no
-#MIBSPI_Baremetal_MasterSlave_TestApp_MAKEFILE = -f makefile IS_BAREMETAL=yes
-#export MIBSPI_Baremetal_MasterSlave_TestApp_COMP_LIST
-#export MIBSPI_Baremetal_MasterSlave_TestApp_BOARD_DEPENDENCY
-#export MIBSPI_Baremetal_MasterSlave_TestApp_CORE_DEPENDENCY
-#export MIBSPI_Baremetal_MasterSlave_TestApp_MAKEFILE
-#MIBSPI_Baremetal_MasterSlave_TestApp_PKG_LIST = MIBSPI_Baremetal_MasterSlave_TestApp
-#MIBSPI_Baremetal_MasterSlave_TestApp_INCLUDE = $(MIBSPI_Baremetal_MasterSlave_TestApp_PATH)
-#MIBSPI_Baremetal_MasterSlave_TestApp_BOARDLIST = $(drvmibspi_BOARDLIST)
-#export MIBSPI_Baremetal_MasterSlave_TestApp_BOARDLIST
-#MIBSPI_Baremetal_MasterSlave_TestApp_$(SOC)_CORELIST = mcu1_0
-#export MIBSPI_Baremetal_MasterSlave_TestApp_$(SOC)_CORELIST
 
 # MIBSPI baremetal dma master slave Test app
-#MIBSPI_Baremetal_MasterSlave_Dma_TestApp_COMP_LIST = MIBSPI_Baremetal_MasterSlave_Dma_TestApp
-#MIBSPI_Baremetal_MasterSlave_Dma_TestApp_RELPATH = ti/drv/mibspi/test
-#MIBSPI_Baremetal_MasterSlave_Dma_TestApp_PATH = $(PDK_MIBSPI_COMP_PATH)/test
-#MIBSPI_Baremetal_MasterSlave_Dma_TestApp_BOARD_DEPENDENCY = yes
-#MIBSPI_Baremetal_MasterSlave_Dma_TestApp_CORE_DEPENDENCY = no
-#MIBSPI_Baremetal_MasterSlave_Dma_TestApp_MAKEFILE = -f makefile IS_BAREMETAL=yes DMA=enable
-#export MIBSPI_Baremetal_MasterSlave_Dma_TestApp_COMP_LIST
-#export MIBSPI_Baremetal_MasterSlave_Dma_TestApp_BOARD_DEPENDENCY
-#export MIBSPI_Baremetal_MasterSlave_Dma_TestApp_CORE_DEPENDENCY
-#export MIBSPI_Baremetal_MasterSlave_Dma_TestApp_MAKEFILE
-#MIBSPI_Baremetal_MasterSlave_Dma_TestApp_PKG_LIST = MIBSPI_Baremetal_MasterSlave_Dma_TestApp
-#MIBSPI_Baremetal_MasterSlave_Dma_TestApp_INCLUDE = $(MIBSPI_Baremetal_MasterSlave_Dma_TestApp_PATH)
-#MIBSPI_Baremetal_MasterSlave_Dma_TestApp_BOARDLIST = $(drvmibspi_BOARDLIST)
-#export MIBSPI_Baremetal_MasterSlave_Dma_TestApp_BOARDLIST
-#MIBSPI_Baremetal_MasterSlave_Dma_TestApp_$(SOC)_CORELIST = mcu1_0
-#export MIBSPI_Baremetal_MasterSlave_Dma_TestApp_$(SOC)_CORELIST
 
 # MIBSPI rtos master slave Test app
-MIBSPI_MasterSlave_TestApp_COMP_LIST = MIBSPI_MasterSlave_TestApp
-MIBSPI_MasterSlave_TestApp_RELPATH = ti/drv/mibspi/test
-MIBSPI_MasterSlave_TestApp_PATH = $(PDK_MIBSPI_COMP_PATH)/test
-MIBSPI_MasterSlave_TestApp_BOARD_DEPENDENCY = yes
-MIBSPI_MasterSlave_TestApp_CORE_DEPENDENCY = no
-MIBSPI_MasterSlave_TestApp_XDC_CONFIGURO = yes
-MIBSPI_MasterSlave_TestApp_MAKEFILE = -f makefile
-export MIBSPI_MasterSlave_TestApp_COMP_LIST
-export MIBSPI_MasterSlave_TestApp_BOARD_DEPENDENCY
-export MIBSPI_MasterSlave_TestApp_CORE_DEPENDENCY
-export MIBSPI_MasterSlave_TestApp_XDC_CONFIGURO
-export MIBSPI_MasterSlave_TestApp_MAKEFILE
-MIBSPI_MasterSlave_TestApp_PKG_LIST = MIBSPI_MasterSlave_TestApp
-export MIBSPI_MasterSlave_TestApp_PKG_LIST
-MIBSPI_MasterSlave_TestApp_INCLUDE = $(MIBSPI_MasterSlave_TestApp_PATH)
-MIBSPI_MasterSlave_TestApp_BOARDLIST = $(drvmibspi_BOARDLIST)
-export MIBSPI_MasterSlave_TestApp_BOARDLIST
-MIBSPI_MasterSlave_TestApp_$(SOC)_CORELIST = mcu1_0
-export MIBSPI_MasterSlave_TestApp_$(SOC)_CORELIST
+MIBSPI_Loopback_TestApp_COMP_LIST = MIBSPI_Loopback_TestApp
+MIBSPI_Loopback_TestApp_RELPATH = ti/drv/mibspi/test
+MIBSPI_Loopback_TestApp_PATH = $(PDK_MIBSPI_COMP_PATH)/test
+MIBSPI_Loopback_TestApp_BOARD_DEPENDENCY = yes
+MIBSPI_Loopback_TestApp_CORE_DEPENDENCY = no
+MIBSPI_Loopback_TestApp_XDC_CONFIGURO = yes
+MIBSPI_Loopback_TestApp_MAKEFILE = -f makefile
+export MIBSPI_Loopback_TestApp_COMP_LIST
+export MIBSPI_Loopback_TestApp_BOARD_DEPENDENCY
+export MIBSPI_Loopback_TestApp_CORE_DEPENDENCY
+export MIBSPI_Loopback_TestApp_XDC_CONFIGURO
+export MIBSPI_Loopback_TestApp_MAKEFILE
+MIBSPI_Loopback_TestApp_PKG_LIST = MIBSPI_Loopback_TestApp
+export MIBSPI_Loopback_TestApp_PKG_LIST
+MIBSPI_Loopback_TestApp_INCLUDE = $(MIBSPI_Loopback_TestApp_PATH)
+MIBSPI_Loopback_TestApp_BOARDLIST = $(drvmibspi_BOARDLIST)
+export MIBSPI_Loopback_TestApp_BOARDLIST
+MIBSPI_Loopback_TestApp_$(SOC)_CORELIST = mcu1_0
+export MIBSPI_Loopback_TestApp_$(SOC)_CORELIST
 
 # SPI rtos dma master slave Test app
-MIBSPI_MasterSlave_Dma_TestApp_COMP_LIST = MIBSPI_MasterSlave_Dma_TestApp
-MIBSPI_MasterSlave_Dma_TestApp_RELPATH = ti/drv/mibspi/test
-MIBSPI_MasterSlave_Dma_TestApp_PATH = $(PDK_MIBSPI_COMP_PATH)/test
-MIBSPI_MasterSlave_Dma_TestApp_BOARD_DEPENDENCY = yes
-MIBSPI_MasterSlave_Dma_TestApp_CORE_DEPENDENCY = no
-MIBSPI_MasterSlave_Dma_TestApp_XDC_CONFIGURO = yes
-MIBSPI_MasterSlave_Dma_TestApp_MAKEFILE = -f makefile DMA=enable
-export MIBSPI_MasterSlave_Dma_TestApp_COMP_LIST
-export MIBSPI_MasterSlave_Dma_TestApp_BOARD_DEPENDENCY
-export MIBSPI_MasterSlave_Dma_TestApp_CORE_DEPENDENCY
-export MIBSPI_MasterSlave_Dma_TestApp_XDC_CONFIGURO
-export MIBSPI_MasterSlave_Dma_TestApp_MAKEFILE
-MIBSPI_MasterSlave_Dma_TestApp_PKG_LIST = MIBSPI_MasterSlave_Dma_TestApp
-export MIBSPI_MasterSlave_Dma_TestApp_PKG_LIST
-MIBSPI_MasterSlave_Dma_TestApp_INCLUDE = $(MIBSPI_MasterSlave_Dma_TestApp_PATH)
-MIBSPI_MasterSlave_Dma_TestApp_BOARDLIST = $(drvmibspi_BOARDLIST)
-export MIBSPI_MasterSlave_Dma_TestApp_BOARDLIST
-MIBSPI_MasterSlave_Dma_TestApp_$(SOC)_CORELIST = mcu1_0
-export MIBSPI_MasterSlave_Dma_TestApp_$(SOC)_CORELIST
+MIBSPI_Loopback_Dma_TestApp_COMP_LIST = MIBSPI_Loopback_Dma_TestApp
+MIBSPI_Loopback_Dma_TestApp_RELPATH = ti/drv/mibspi/test
+MIBSPI_Loopback_Dma_TestApp_PATH = $(PDK_MIBSPI_COMP_PATH)/test
+MIBSPI_Loopback_Dma_TestApp_BOARD_DEPENDENCY = yes
+MIBSPI_Loopback_Dma_TestApp_CORE_DEPENDENCY = no
+MIBSPI_Loopback_Dma_TestApp_XDC_CONFIGURO = yes
+MIBSPI_Loopback_Dma_TestApp_MAKEFILE = -f makefile DMA=enable
+export MIBSPI_Loopback_Dma_TestApp_COMP_LIST
+export MIBSPI_Loopback_Dma_TestApp_BOARD_DEPENDENCY
+export MIBSPI_Loopback_Dma_TestApp_CORE_DEPENDENCY
+export MIBSPI_Loopback_Dma_TestApp_XDC_CONFIGURO
+export MIBSPI_Loopback_Dma_TestApp_MAKEFILE
+MIBSPI_Loopback_Dma_TestApp_PKG_LIST = MIBSPI_Loopback_Dma_TestApp
+export MIBSPI_Loopback_Dma_TestApp_PKG_LIST
+MIBSPI_Loopback_Dma_TestApp_INCLUDE = $(MIBSPI_Loopback_Dma_TestApp_PATH)
+MIBSPI_Loopback_Dma_TestApp_BOARDLIST = $(drvmibspi_BOARDLIST)
+export MIBSPI_Loopback_Dma_TestApp_BOARDLIST
+MIBSPI_Loopback_Dma_TestApp_$(SOC)_CORELIST = mcu1_0
+export MIBSPI_Loopback_Dma_TestApp_$(SOC)_CORELIST
 
 
 export drvmibspi_LIB_LIST

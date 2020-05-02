@@ -44,11 +44,12 @@
 #include <ti/drv/mibspi/soc/MIBSPI_v0.h>
 #include <ti/drv/mibspi/src/mibspi_utils.h>
 #include <ti/drv/mibspi/src/mibspi_priv.h>
+#include <ti/drv/edma/edma.h>
 
-#define MIBSPI_SPIREV_MINOR_VAL                                        (0x0008U)
+#define MIBSPI_SPIREV_MINOR_VAL                                        (0x0009U)
 #define MIBSPI_SPIREV_CUSTOM_VAL                                       (0x0000U)
 #define MIBSPI_SPIREV_MAJOR_VAL                                        (0x0003U)
-#define MIBSPI_SPIREV_RTL_VAL                                          (0x0000U)
+#define MIBSPI_SPIREV_RTL_VAL                                          (0x0002U)
 #define MIBSPI_SPIREV_FUNC_VAL                                         (0x0A05U)
 #define MIBSPI_SPIREV_SCHEME_VAL                                       (0x0001U)
 
@@ -71,16 +72,6 @@
 #define MIBSPI_RCSS_SPIB_INT1                              (CSL_MSS_INTR_RCSS_SPIB_INT1)
 
 
-/* TODO. THese defines in edma_soc.h for the specific SOC and not defined here */
-#define EDMA_ID_MSS_TPCC_A                                 (0)
-#define EDMA_ID_MSS_TPCC_B                                 (1)
-#define EDMA_ID_DSS_TPCC_A                                 (2)
-#define EDMA_ID_DSS_TPCC_B                                 (3)
-#define EDMA_ID_DSS_TPCC_C                                 (4)
-#define EDMA_ID_RCSS_TPCC_A                                (5)
-#define EDMA_ID_RCSS_TPCC_B                                (6)
-#define EDMA_ID_HSM_TPCC_A                                 (7)
-
 #elif defined (BUILD_DSP_1)
 #define MIBSPI_ENTRY_INDEX_RCSS_SPIA                                (0)
 #define MIBSPI_ENTRY_INDEX_RCSS_SPIB                                (1)
@@ -90,13 +81,6 @@
 
 #define MIBSPI_RCSS_SPIB_INT0                              (CSL_DSS_INTR_RCSS_SPIB_INT0)
 #define MIBSPI_RCSS_SPIB_INT1                              (CSL_DSS_INTR_RCSS_SPIB_INT1)
-
-/* TODO. THese defines in edma_soc.h for the specific SOC and not defined here */
-#define EDMA_ID_DSS_TPCC_A                                 (0)
-#define EDMA_ID_DSS_TPCC_B                                 (1)
-#define EDMA_ID_DSS_TPCC_C                                 (2)
-#define EDMA_ID_RCSS_TPCC_A                                (3)
-#define EDMA_ID_RCSS_TPCC_B                                (4)
 
 #else
     #error "Unsupported target build"
@@ -149,7 +133,7 @@ MibSpi_HwCfg gMibspiHwCfg[MIBSPI_ENTRY_INDEX_CNT] =
         .clockSrcFreq = MSS_SYS_VCLK,
         .interrupt0Num = MIBSPI_MSS_SPIA_INT0,
         .interrupt1Num = MIBSPI_MSS_SPIA_INT1,
-        .edmaCCId = EDMA_ID_MSS_TPCC_A, /* MSS TPCC A */
+        .edmaCCId = EDMA_DRV_INST_MSS_A, /* MSS TPCC A */
         .mibspiRamSize       = CSL_MIBSPIRAM_MAX_ELEMENTS,
         .numTransferGroups   = MIBSPI_UTILS_ARRAYSIZE(((CSL_mss_spiRegs *)CSL_MSS_SPIA_U_BASE)->TGCTRL),
         .numCsPins           = 1,
@@ -195,7 +179,7 @@ MibSpi_HwCfg gMibspiHwCfg[MIBSPI_ENTRY_INDEX_CNT] =
         .interrupt0Num = MIBSPI_MSS_SPIB_INT0,
         .interrupt1Num = MIBSPI_MSS_SPIB_INT1,
 
-        .edmaCCId = EDMA_ID_MSS_TPCC_A, /* MSS TPCC A */
+        .edmaCCId = EDMA_DRV_INST_MSS_A, /* MSS TPCC A */
         .mibspiRamSize       = CSL_MIBSPIRAM_MAX_ELEMENTS,
         .numTransferGroups   = MIBSPI_UTILS_ARRAYSIZE(((CSL_mss_spiRegs *)CSL_MSS_SPIB_U_BASE)->TGCTRL),
         .numCsPins           = 3,
@@ -242,7 +226,7 @@ MibSpi_HwCfg gMibspiHwCfg[MIBSPI_ENTRY_INDEX_CNT] =
         .clockSrcFreq  = MSS_SYS_VCLK,
         .interrupt0Num = MIBSPI_RCSS_SPIA_INT0,
         .interrupt1Num = MIBSPI_RCSS_SPIA_INT1,
-        .edmaCCId      = EDMA_ID_RCSS_TPCC_A, /* RCSS TPCC A */
+        .edmaCCId      = EDMA_DRV_INST_RCSS_A, /* RCSS TPCC A */
         .mibspiRamSize       = CSL_MIBSPIRAM_MAX_ELEMENTS,
         .numTransferGroups   = MIBSPI_UTILS_ARRAYSIZE(((CSL_mss_spiRegs *)CSL_RCSS_SPIA_U_BASE)->TGCTRL),
         .numCsPins           = 2,
@@ -288,7 +272,7 @@ MibSpi_HwCfg gMibspiHwCfg[MIBSPI_ENTRY_INDEX_CNT] =
         .clockSrcFreq  = MSS_SYS_VCLK,
         .interrupt0Num = MIBSPI_RCSS_SPIB_INT0,
         .interrupt1Num = MIBSPI_RCSS_SPIB_INT1,
-        .edmaCCId      = EDMA_ID_RCSS_TPCC_A, /* RCSS TPCC A */
+        .edmaCCId      = EDMA_DRV_INST_RCSS_A, /* RCSS TPCC A */
         .mibspiRamSize       = CSL_MIBSPIRAM_MAX_ELEMENTS,
         .numTransferGroups   = MIBSPI_UTILS_ARRAYSIZE(((CSL_mss_spiRegs *)CSL_RCSS_SPIB_U_BASE)->TGCTRL),
         .numCsPins           = 2,
@@ -485,7 +469,7 @@ MIBSPI_Handle MIBSPI_socGetInstHandle(enum MibSpi_InstanceId mibspiInstanceId)
     if (status == MIBSPI_STATUS_SUCCESS)
     {
         Mibspi_assert(idx < MIBSPI_UTILS_ARRAYSIZE(gMibspiHwCfg));
-        hMibspi = (MIBSPI_Handle)MIBSPI_config[idx].object;
+        hMibspi = &MIBSPI_config[idx];
     
     }
     else

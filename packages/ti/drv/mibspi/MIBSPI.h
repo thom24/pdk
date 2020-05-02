@@ -432,6 +432,19 @@ typedef int (*Mibspi_PrintFxnCb)(const char *str, ...);
  */
 typedef int (*Mibspi_TraceFxnCb)(const char *str, ...);
 
+/*!
+ * \brief MIBSPI virtual-to-physical address translation callback function.
+ *
+ * This function is used by the driver to convert virtual address to physical
+ * address.
+ *
+ * \param virtAddr [IN] Virtual address
+ * \param chNum    [IN] Channel number passed during channel open
+ * \param appData  [IN] Callback pointer passed during channel open
+ *
+ * \return Corresponding physical address
+ */
+typedef uint32_t (*Mibspi_VirtToPhyFxn)(const void *virtAddr);
 
 
 /*!
@@ -446,6 +459,12 @@ typedef struct
     /*! If not NULL, this function will be called to log trace message
      *  with appropriate string */
     Mibspi_TraceFxnCb traceFxn;
+
+    /*! If not NULL, this function will be invoked to translate virtual address
+    * to system physical address. This is required to convert CPU addresses to
+    * DMA addresses
+    */
+    Mibspi_VirtToPhyFxn virt2phyFxn;
 
 } MIBSPI_UtilsPrms;
 
@@ -615,7 +634,12 @@ typedef struct MIBSPI_Params_t
     void               *dmaHandle;                 /*!< DMA handle */
 
     /**
+     * @brief  Enable Compatibility mode operation of MIBSPI. MIBSPI RAM will be disabled
+     */
+    bool               compatibilityMode;
+    /**
      * @brief  EDMA link channel id
+     * Needs to be set only if compatibility mode is FALSE
      * The SPI requries an additional param to terminate Tx transfer.
      * This should be from the pool of free param sets 
      * As EDMA driver currently does not support dynamic allocation of
@@ -627,38 +651,6 @@ typedef struct MIBSPI_Params_t
 } MIBSPI_Params;
 
 /*!
- *  @brief  Function to close a channel of a SPI peripheral specified by the MIBSPI handle
- *
- *  @pre    MIBSPI_open() has to be called first.
- *
- *  @param  handle A MCSPI handle returned from MCSPI_open()
- *
- *  @sa     MIBSPI_open()
- */
-extern void MIBSPI_close(MIBSPI_Handle handle);
-
-/*!
- *  @brief  Function performs implementation specific features 
- *          of a SPI peripheral specified by the SPI handle.
- *
- *  @pre    MIBSPI_open() has to be called first.
- *
- *  @param  handle      A SPI handle returned from MIBSPI_open()
- *
- *  @param  cmd         A command value defined by the driver specific
- *                      implementation
- *
- *  @param  arg         An optional R/W (read/write) argument that is
- *                      accompanied with cmd
- *
- *  @return Implementation specific return codes. Negative values indicate
- *          unsuccessful operations.
- *
- *  @sa     MIBSPI_open()
- */
-extern int32_t MIBSPI_control(MIBSPI_Handle handle, uint32_t cmd, void *arg);
-
-/*!
  *  @brief  This function initializes the MCSPI module.
  *
  *  @pre    The SPI_config structure must exist and be persistent before this
@@ -667,6 +659,23 @@ extern int32_t MIBSPI_control(MIBSPI_Handle handle, uint32_t cmd, void *arg);
  *          peripheral registers.
  */
 extern void MIBSPI_init(MIBSPI_UtilsPrms *pUtilsPrms);
+
+/*!
+ *  @brief  Function to initialize the MIBSPI_Params struct to its defaults
+ *
+ *  @param  params      An pointer to MIBSPI_Params structure for
+ *                      initialization
+ *
+ *  Defaults values are:
+ *      transferMode        = SPI_MODE_BLOCKING
+ *      transferTimeout     = SPI_WAIT_FOREVER
+ *      transferCallbackFxn = NULL
+ *      mode                = SPI_MASTER
+ *      bitRate             = 
+ *      dataSize            = 
+ *      frameFormat         = 
+ */
+extern void MIBSPI_Params_init(MIBSPI_Params *params);
 
 /*!
  *  @brief  This function opens a given channel of a given MCSPI peripheral.
@@ -690,21 +699,15 @@ extern void MIBSPI_init(MIBSPI_UtilsPrms *pUtilsPrms);
 extern MIBSPI_Handle MIBSPI_open(enum MibSpi_InstanceId mibspiInstanceId, MIBSPI_Params *params);
 
 /*!
- *  @brief  Function to initialize the MIBSPI_Params struct to its defaults
+ *  @brief  Function to close a channel of a SPI peripheral specified by the MIBSPI handle
  *
- *  @param  params      An pointer to MIBSPI_Params structure for
- *                      initialization
+ *  @pre    MIBSPI_open() has to be called first.
  *
- *  Defaults values are:
- *      transferMode        = SPI_MODE_BLOCKING
- *      transferTimeout     = SPI_WAIT_FOREVER
- *      transferCallbackFxn = NULL
- *      mode                = SPI_MASTER
- *      bitRate             = 
- *      dataSize            = 
- *      frameFormat         = 
+ *  @param  handle A MCSPI handle returned from MCSPI_open()
+ *
+ *  @sa     MIBSPI_open()
  */
-extern void MIBSPI_Params_init(MIBSPI_Params *params);
+extern void MIBSPI_close(MIBSPI_Handle handle);
 
 /*!
  *  @brief  Function to perform SPI transactions on a channel of
@@ -759,6 +762,27 @@ extern bool MIBSPI_transfer(MIBSPI_Handle handle, MIBSPI_Transaction *spiTrans);
 extern void MIBSPI_transferCancel(MIBSPI_Handle handle);
 
 /*!
+ *  @brief  Function performs implementation specific features 
+ *          of a SPI peripheral specified by the SPI handle.
+ *
+ *  @pre    MIBSPI_open() has to be called first.
+ *
+ *  @param  handle      A SPI handle returned from MIBSPI_open()
+ *
+ *  @param  cmd         A command value defined by the driver specific
+ *                      implementation
+ *
+ *  @param  arg         An optional R/W (read/write) argument that is
+ *                      accompanied with cmd
+ *
+ *  @return Implementation specific return codes. Negative values indicate
+ *          unsuccessful operations.
+ *
+ *  @sa     MIBSPI_open()
+ */
+extern int32_t MIBSPI_control(MIBSPI_Handle handle, uint32_t cmd, void *arg);
+
+/*!
  *  @brief  Function to get driver statistics
  *
  *
@@ -768,8 +792,6 @@ extern void MIBSPI_transferCancel(MIBSPI_Handle handle);
  *  @sa     MIBSPI_transfer
  */
 extern int32_t MIBSPI_getStats(MIBSPI_Handle handle, MIBSPI_Stats *ptrStats);
-
-
 
 #ifdef __cplusplus
 }

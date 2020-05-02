@@ -23,6 +23,11 @@ endif
 SRCDIR = . src
 INCDIR = . src
 
+ifeq ($(SOC),$(filter $(SOC), tpr12))
+SRCDIR += tpr12
+INCDIR += tpr12
+endif
+
 ifeq ($(BUILD_OS_TYPE), tirtos)
 MIBSPI_OS_TESTPREFIX=
 else
@@ -33,6 +38,10 @@ endif
 # Common source files across all platforms and cores
 SRCS_COMMON += main_mibspi_test.c mibspi_test_common.c
 
+ifeq ($(SOC),$(filter $(SOC), tpr12))
+SRCS_COMMON += utils_virt2phys.c
+endif
+
 # List all the external components/interfaces, whose interface header files
 # need to be included for this component
 INCLUDE_EXTERNAL_INTERFACES = pdk $(EXTERNAL_INTERFACES)
@@ -41,19 +50,19 @@ INCLUDE_EXTERNAL_INTERFACES = pdk $(EXTERNAL_INTERFACES)
 ifeq ($(DMA), enable)
 
 #Name of the directory created under packages/ti/binary/
-APP_NAME = MIBSPI$(MIBSPI_OS_TESTPREFIX)_MasterSlave_Dma_TestApp
+APP_NAME = MIBSPI$(MIBSPI_OS_TESTPREFIX)_Loopback_Dma_TestApp
 # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
-LOCAL_APP_NAME =  MIBSPI$(MIBSPI_OS_TESTPREFIX)_MasterSlave_Dma_$(BOARD)_$(CORE)TestApp
+LOCAL_APP_NAME =  MIBSPI$(MIBSPI_OS_TESTPREFIX)_Loopback_Dma_$(BOARD)_$(CORE)TestApp
 
 COMP_LIST_COMMON += mibspi_dma edma
 CFLAGS_SPI_DMA    = -DMIBSPI_DMA_ENABLE
 else
 
 #Name of the directory created under packages/ti/binary/
-APP_NAME = MIBSPI$(MIBSPI_OS_TESTPREFIX)_MasterSlave_TestApp
+APP_NAME = MIBSPI$(MIBSPI_OS_TESTPREFIX)_Loopback_TestApp
 
 # Name of the binary if different fmake clrom the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
-LOCAL_APP_NAME =  MIBSPI$(MIBSPI_OS_TESTPREFIX)_MasterSlave_$(BOARD)_$(CORE)TestApp
+LOCAL_APP_NAME =  MIBSPI$(MIBSPI_OS_TESTPREFIX)_Loopback_$(BOARD)_$(CORE)TestApp
 
 
 COMP_LIST_COMMON += mibspi
