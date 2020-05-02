@@ -92,10 +92,12 @@ struct tisci_msg_version_resp {
  * \brief Notification message to indicate the DMSC is available.
  *
  * \param hdr TISCI header
+ * \param extboot_status Status of extended boot. Applicable only for combined image
  */
 struct tisci_msg_boot_notification_req {
-    struct tisci_header hdr;
-};
+    struct tisci_header    hdr;
+    uint32_t            extboot_status;
+} __attribute__((__packed__));
 
 /**
  * \brief Response to notification message about firmware availability.

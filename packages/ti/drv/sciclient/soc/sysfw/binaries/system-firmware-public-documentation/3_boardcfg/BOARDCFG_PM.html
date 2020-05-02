@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                20.02.00
+                20.04.00
               </div>
             
           
@@ -108,9 +108,21 @@
 <li class="toctree-l2"><a class="reference internal" href="BOARDCFG_RM.html">Resource Management Board Configuration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="BOARDCFG_SEC.html">Security Board Configuration</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Power Management Board Configuration</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#power-management-configuration-in-system-firmware">Power Management Configuration in System Firmware</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#tisci-api-for-pm-board-config">TISCI API for PM Board Config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#introduction">Introduction</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#device-groups-for-power-management-board-configuration">Device Groups for Power Management Board Configuration</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tisci-api-for-power-management-board-config">TISCI API for Power Management Board Config</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#boardcfg-pm-structure">boardcfg_pm structure</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#power-management-initialization-after-receiving-board-configuration">Power Management Initialization after receiving board configuration</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#board-configuration-receive-and-validate">Board Configuration Receive and Validate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pm-initialization-dmsc-init">PM Initialization - DMSC Init</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pm-initialization-clock-init">PM Initialization - Clock Init</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pm-initialization-device-init">PM Initialization - Device Init</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pm-initialization-clock-messages-init">PM Initialization - Clock Messages Init</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pm-initialization-device-messages-init">PM Initialization - Device Messages Init</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pm-initialization-core-messages-init">PM Initialization - Core Messages Init</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#osal-pm-subsystem-init">OSAL PM Subsystem Init</a></li>
 </ul>
 </li>
 </ul>
@@ -166,41 +178,50 @@
             
   <div class="section" id="power-management-board-configuration">
 <h1>Power Management Board Configuration<a class="headerlink" href="#power-management-board-configuration" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="power-management-configuration-in-system-firmware">
-<span id="pub-boardcfg-pm-intro"></span><h2>Power Management Configuration in System Firmware<a class="headerlink" href="#power-management-configuration-in-system-firmware" title="Permalink to this headline">¶</a></h2>
-<p>The power management portion of system firmware has options that can be
-configured independently of the main Board Configuration. In addition,
-initialization of the power management portion of the system firmware
-can be deferred until this PM board configuration is sent to allow tuning of
-the system boot time.</p>
-<div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p>The TISCI_MSG_BOARD_CONFIG_PM message MUST be sent in order to initialize
-the power management capabilities of system firmware. Until it is received
-no power management functionality is available. <strong>IT IS HIGHLY RECOMMENDED
-THAT THIS MESSAGE BE SENT IMMEDIATELY AFTER TISCI_MSG_BOARD_CONFIG TO
-ENSURE RM AND SECURITY HAVE ALL RESOURCES CONFIGURED AS NEEDED.</strong></p>
+<div class="section" id="introduction">
+<span id="pub-boardcfg-pm-intro"></span><h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>The PM board configuration message initializes the PM subsystem.
+The PM subsystem is not considered functional until after the PM board
+configuration message is received by DMSC.  The PM board configuration data can
+be sent any time after the standard boardcfg message (<a class="reference internal" href="BOARDCFG.html#pub-boardcfg-cfg"><span class="std std-ref">Configuration substructure enumeration</span></a>)
+is received.</p>
 <p>The system remains in ROM configured PLL and clock configuration till this
-message is invoked. On invoking this call, standard OFC associated with the
-SoC is configured. This implies that many of three PLLs and clock tree will
-get reconfigured. IP level subdividers may need reconfiguration to continue
-operation at desired frequency after this switch over takes place. Though
-the ROM configured PLL is expected to be safe, it is usually suboptimal for
-complete operation of the SoC.</p>
-<p class="last">It is strongly recommended for proper care to be taken for key peripherals
+message is invoked. On invoking this call, the OFC associated with the
+SoC is configured. This implies that many of PLLs and clock tree will
+get reconfigured. The OFC settings set by the PM board configuration is as given in
+<a class="reference internal" href="../5_soc_doc/am6x/pll_data.html"><span class="doc">AM6 PLL Defaults</span></a>. Since the device is capable of deriving the
+clock from different supported input HFOSC frequencies, System Firmware reads the DEVSTAT
+to identify the HFOSC frequency and programs the PLLs and Dividers according to the
+input HFOSC to derive the Original Frequency Combination (OFC). The OFC is a fixed
+table built into the DMSC System Firmware. This is derived from silicon characterization
+data. The user is expected to ensure the device is first configured to this OFC
+frequency and then tweak specific device clock frequencies based on their usecase
+needs by using the PM messages for <a class="reference internal" href="../2_tisci_msgs/pm/clocks.html#pm-clocks-msg-set-freq"><span class="std std-ref">TISCI_MSG_SET_FREQ</span></a>
+and <a class="reference internal" href="../2_tisci_msgs/pm/clocks.html#pm-clocks-msg-set-clock-parent"><span class="std std-ref">TISCI_MSG_SET_CLOCK_PARENT</span></a>.</p>
+<p>It is strongly recommended for proper care to be taken for key peripherals
 that may be operational and communicating external to SoC. For example,
 depending on the SoC and product, pinmux can be used to move the IP’s pins
 into isolation to prevent glitch events from being exported from the IP at
 the point of reconfiguration of PLLs system wide to the official OFC
 configuration.</p>
+<div class="section" id="device-groups-for-power-management-board-configuration">
+<h3>Device Groups for Power Management Board Configuration<a class="headerlink" href="#device-groups-for-power-management-board-configuration" title="Permalink to this headline">¶</a></h3>
+<p>The PM board configuration TISCI message allows the user to specify the DEVGRP
+under which the PM subsystem operates.  A specified DEVGRP defines which PM
+driver instances are capable of usage by the host applications.  The host
+application can implement PM subsystem DEVGRP usage by sending a
+<a class="reference internal" href="#pub-boardcfg-pm-tisci"><span class="std std-ref">TISCI_MSG_PM_BOARD_CONFIG_PM</span></a> message with the
+boardcfg_pm_devgrp parameter populated with one or more SoC-specific device
+group values.  The DEVGRP value specifying whole device is mapped to zero so
+existing PM board configurations not explicitly defining a DEVGRP for the
+boardcfg_pm_devgrp parameter will be backwards compatible.</p>
+<p>DEVGRPS are cumulative so if multiple PM board configurations are received,
+each with a unique DEVGRP defined, all received DEVGRPs will be active.  To
+support accumulation of DEVGRPs the PM board configuration message can be sent
+any number of times.</p>
 </div>
-<p>A standalone board configuration message contains the power management data
-within a flat-typed array.  The power management configuration is provided
-separately to reduce DMSC boot time.  The power management board cfg message is
-sent any time after the boot notification message is sent and has no dependence
-upon receipt of the standard board configuration message.</p>
-<div class="section" id="tisci-api-for-pm-board-config">
-<span id="pub-boardcfg-pm-tisci"></span><h3>TISCI API for PM Board Config<a class="headerlink" href="#tisci-api-for-pm-board-config" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="tisci-api-for-power-management-board-config">
+<span id="pub-boardcfg-pm-tisci"></span><h3>TISCI API for Power Management Board Config<a class="headerlink" href="#tisci-api-for-power-management-board-config" title="Permalink to this headline">¶</a></h3>
 <p>The following are the parameters required in the TI-SCI message to pass power management
 board configuration data to DMSC after DMSC sends boot notification complete.
 The PM board configuration message is not dependent on receipt of the
@@ -312,6 +333,93 @@ encrypt board configuration on HS devices.</p>
 </div>
 </div>
 </div>
+<div class="section" id="power-management-initialization-after-receiving-board-configuration">
+<h2>Power Management Initialization after receiving board configuration<a class="headerlink" href="#power-management-initialization-after-receiving-board-configuration" title="Permalink to this headline">¶</a></h2>
+<p>Once the PM board configuration message is received by the System Firmware, it
+performs the following operations:</p>
+<div class="section" id="board-configuration-receive-and-validate">
+<h3>Board Configuration Receive and Validate<a class="headerlink" href="#board-configuration-receive-and-validate" title="Permalink to this headline">¶</a></h3>
+<p>The first step after receiving the board configuration by the
+tisci_msg_board_config_pm_handler is to identify which DEVGRP the message is for.</p>
+<img alt="../_images/PM_BRD_CFG_2.JPG" src="../_images/PM_BRD_CFG_2.JPG" />
+</div>
+<div class="section" id="pm-initialization-dmsc-init">
+<h3>PM Initialization - DMSC Init<a class="headerlink" href="#pm-initialization-dmsc-init" title="Permalink to this headline">¶</a></h3>
+<p>The next step of the tisci_msg_board_config_pm_handler is to perform the PM
+initialization. This involves multiple steps starting with DMSC initialization.
+The DMSC initialization involves unlocking the WKUP and MAIN CTRL MMRs. This is
+SoC specific.</p>
+<img alt="../_images/PM_BRD_CFG_3.JPG" src="../_images/PM_BRD_CFG_3.JPG" />
+</div>
+<div class="section" id="pm-initialization-clock-init">
+<h3>PM Initialization - Clock Init<a class="headerlink" href="#pm-initialization-clock-init" title="Permalink to this headline">¶</a></h3>
+<p>The next step of the tisci_msg_board_config_pm_handler is to perform the clock
+initialization. As part of this step the code initializes the PLLs and dividers
+as per the OFC for the input device group. The UART is re-initialized after the
+PLL is locked. The software reference counts for the clocks initialized at power
+up is updated.</p>
+<p>The Clock init initialization sequence is as below:</p>
+<img alt="../_images/PM_BRD_CFG_4.JPG" src="../_images/PM_BRD_CFG_4.JPG" />
+</div>
+<div class="section" id="pm-initialization-device-init">
+<h3>PM Initialization - Device Init<a class="headerlink" href="#pm-initialization-device-init" title="Permalink to this headline">¶</a></h3>
+<p>The next step of the tisci_msg_board_config_pm_handler is to perform the device
+initialization. As part of this step the code loops through all the devices in the
+devgrp. For each device the PSC connection is verified and the current state of
+the device PSC is captured. The module clock default flags are initialized in this
+function. After this the API clears the software state of the modules and clocks
+enabled at power up.</p>
+<p>The Device init initialization sequence is as below:</p>
+<img alt="../_images/PM_BRD_CFG_5.JPG" src="../_images/PM_BRD_CFG_5.JPG" />
+</div>
+<div class="section" id="pm-initialization-clock-messages-init">
+<h3>PM Initialization - Clock Messages Init<a class="headerlink" href="#pm-initialization-clock-messages-init" title="Permalink to this headline">¶</a></h3>
+<p>The next step of the tisci_msg_board_config_pm_handler is to
+register the software handler for the</p>
+<ul class="simple">
+<li><a class="reference internal" href="../2_tisci_msgs/pm/clocks.html#pm-clocks-msg-set-clock"><span class="std std-ref">TISCI_MSG_SET_CLOCK</span></a> message</li>
+<li><a class="reference internal" href="../2_tisci_msgs/pm/clocks.html#pm-clocks-msg-get-clock"><span class="std std-ref">TISCI_MSG_GET_CLOCK</span></a> message</li>
+<li><a class="reference internal" href="../2_tisci_msgs/pm/clocks.html#pm-clocks-msg-set-clock-parent"><span class="std std-ref">TISCI_MSG_SET_CLOCK_PARENT</span></a> message</li>
+<li><a class="reference internal" href="../2_tisci_msgs/pm/clocks.html#pm-clocks-msg-get-clock-parent"><span class="std std-ref">TISCI_MSG_GET_CLOCK_PARENT</span></a> message</li>
+<li><a class="reference internal" href="../2_tisci_msgs/pm/clocks.html#pm-clocks-msg-get-num-clock-parents"><span class="std std-ref">TISCI_MSG_GET_NUM_CLOCK_PARENTS</span></a> message</li>
+<li><a class="reference internal" href="../2_tisci_msgs/pm/clocks.html#pm-clocks-msg-set-freq"><span class="std std-ref">TISCI_MSG_SET_FREQ</span></a> message</li>
+<li><a class="reference internal" href="../2_tisci_msgs/pm/clocks.html#pm-clocks-msg-query-freq"><span class="std std-ref">TISCI_MSG_QUERY_FREQ</span></a> message</li>
+<li><a class="reference internal" href="../2_tisci_msgs/pm/clocks.html#pm-clocks-msg-get-freq"><span class="std std-ref">TISCI_MSG_GET_FREQ</span></a> message</li>
+</ul>
+<img alt="../_images/PM_BRD_CFG_6.JPG" src="../_images/PM_BRD_CFG_6.JPG" />
+</div>
+<div class="section" id="pm-initialization-device-messages-init">
+<h3>PM Initialization - Device Messages Init<a class="headerlink" href="#pm-initialization-device-messages-init" title="Permalink to this headline">¶</a></h3>
+<p>The next step of the tisci_msg_board_config_pm_handler is to
+register the software handler for the</p>
+<ul class="simple">
+<li><a class="reference internal" href="../2_tisci_msgs/pm/devices.html#pm-devices-msg-set-device"><span class="std std-ref">TISCI_MSG_SET_DEVICE</span></a> message</li>
+<li><a class="reference internal" href="../2_tisci_msgs/pm/devices.html#pm-devices-msg-get-device"><span class="std std-ref">TISCI_MSG_GET_DEVICE</span></a> message</li>
+<li><a class="reference internal" href="../2_tisci_msgs/pm/devices.html#pm-devices-msg-set-device-resets"><span class="std std-ref">TISCI_MSG_SET_DEVICE_RESETS</span></a> message</li>
+</ul>
+<img alt="../_images/PM_BRD_CFG_7.JPG" src="../_images/PM_BRD_CFG_7.JPG" />
+</div>
+<div class="section" id="pm-initialization-core-messages-init">
+<h3>PM Initialization - Core Messages Init<a class="headerlink" href="#pm-initialization-core-messages-init" title="Permalink to this headline">¶</a></h3>
+<p>The next step of the tisci_msg_board_config_pm_handler is to
+register the software handler for the</p>
+<ul class="simple">
+<li><a class="reference internal" href="../2_tisci_msgs/pm/sysreset.html#pm-sysreset-msg-sys-reset"><span class="std std-ref">TISCI_MSG_SYS_RESET</span></a> message</li>
+</ul>
+<img alt="../_images/PM_BRD_CFG_8.JPG" src="../_images/PM_BRD_CFG_8.JPG" />
+</div>
+<div class="section" id="osal-pm-subsystem-init">
+<h3>OSAL PM Subsystem Init<a class="headerlink" href="#osal-pm-subsystem-init" title="Permalink to this headline">¶</a></h3>
+<p>The UART clock dividers are re-programmed to make sure the UART logging function
+is still available from the system firmware after the PLLs are re-initialized.</p>
+<p>This is the last step in tisci_msg_board_config_pm_handler where the software
+state is updated to reflect the power management is initialized and now
+can accept power management messages.</p>
+<p>After this step the host response is sent. If for any reason any of the above
+steps fail the API would return with a NACK.</p>
+<img alt="../_images/PM_BRD_CFG_9.JPG" src="../_images/PM_BRD_CFG_9.JPG" />
+</div>
+</div>
 </div>
 
 
@@ -355,7 +463,7 @@ encrypt board configuration on HS devices.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'20.02.00',
+            VERSION:'20.04.00',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

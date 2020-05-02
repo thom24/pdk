@@ -1,3 +1,5 @@
+.. _pub_user_guides:
+
 ==============================
  Chapter 6: Topic User Guides
 ==============================
@@ -8,5 +10,7 @@
    ./devgrp_usage
    ./secure_boot_signing
    ./hs_boardcfg_signing
-   ./asymmetric_key_services
    ./extended_otp
+   ./dkek_management
+   ./firewall_faq
+   ./sa2ul_access

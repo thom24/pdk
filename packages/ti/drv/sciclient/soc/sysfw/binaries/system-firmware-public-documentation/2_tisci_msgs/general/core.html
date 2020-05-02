@@ -40,7 +40,7 @@
     <link rel="top" title="TISCI User Guide" href="../../index.html"/>
         <link rel="up" title="Chapter 2: TISCI Message Documentation" href="../index.html"/>
         <link rel="next" title="TISCI PM Device API Documentation" href="../pm/devices.html"/>
-        <link rel="prev" title="Chapter 2: TISCI Message Documentation" href="../index.html"/> 
+        <link rel="prev" title="Texas Instruments System Controller Interface (TISCI)" href="TISCI_header.html"/> 
 
   
   <script src="../../_static/js/modernizr.min.js"></script>
@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                20.02.00
+                20.04.00
               </div>
             
           
@@ -103,6 +103,7 @@
                 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../1_intro/index.html">Chapter 1: Introduction</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">Chapter 2: TISCI Message Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="TISCI_header.html">Texas Instruments System Controller Interface (TISCI)</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../index.html#general">General</a><ul class="current">
 <li class="toctree-l3 current"><a class="current reference internal" href="#">TISCI General Message API Documentation</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#tisci-msg-version">TISCI_MSG_VERSION</a></li>
@@ -315,9 +316,9 @@ is possible with system firmware.</p>
 <p>Notification message to indicate the DMSC is available.</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="27%" />
-<col width="43%" />
-<col width="31%" />
+<col width="16%" />
+<col width="21%" />
+<col width="62%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Parameter</th>
@@ -329,6 +330,10 @@ is possible with system firmware.</p>
 <tr class="row-even"><td>hdr</td>
 <td>struct tisci_header</td>
 <td>TISCI header</td>
+</tr>
+<tr class="row-odd"><td>extboot_status</td>
+<td>u32</td>
+<td>Status of extended boot. Applicable only for combined image</td>
 </tr>
 </tbody>
 </table>
@@ -373,7 +378,7 @@ is possible with system firmware.</p>
 </div>
 <div class="section" id="tisci-msg-board-config-pm">
 <h2>TISCI_MSG_BOARD_CONFIG_PM<a class="headerlink" href="#tisci-msg-board-config-pm" title="Permalink to this headline">¶</a></h2>
-<p>See <a class="reference internal" href="../../3_boardcfg/BOARDCFG_PM.html#pub-boardcfg-pm-tisci"><span class="std std-ref">TISCI API for PM Board Config</span></a>.</p>
+<p>See <a class="reference internal" href="../../3_boardcfg/BOARDCFG_PM.html#pub-boardcfg-pm-tisci"><span class="std std-ref">TISCI API for Power Management Board Config</span></a>.</p>
 </div>
 <div class="section" id="tisci-msg-query-msmc">
 <h2>TISCI_MSG_QUERY_MSMC<a class="headerlink" href="#tisci-msg-query-msmc" title="Permalink to this headline">¶</a></h2>
@@ -528,7 +533,7 @@ exception.</p>
         <a href="../pm/devices.html" class="btn btn-neutral float-right" title="TISCI PM Device API Documentation" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="../index.html" class="btn btn-neutral" title="Chapter 2: TISCI Message Documentation" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="TISCI_header.html" class="btn btn-neutral" title="Texas Instruments System Controller Interface (TISCI)" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -559,7 +564,7 @@ exception.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'20.02.00',
+            VERSION:'20.04.00',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

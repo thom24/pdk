@@ -190,7 +190,7 @@
  * TISCI message header is the route destination.
  */
 struct tisci_msg_rm_irq_set_req {
-    struct tisci_header hdr;
+    struct tisci_header    hdr;
     uint32_t            valid_params;
     uint16_t            src_id;
     uint16_t            src_index;
@@ -199,8 +199,8 @@ struct tisci_msg_rm_irq_set_req {
     uint16_t            ia_id;
     uint16_t            vint;
     uint16_t            global_event;
-    uint8_t         vint_status_bit_index;
-    uint8_t         secondary_host;
+    uint8_t            vint_status_bit_index;
+    uint8_t            secondary_host;
 } __attribute__((__packed__));
 
 /**
@@ -316,7 +316,7 @@ struct tisci_msg_rm_irq_set_resp {
  * the TISCI message header is the route destination.
  */
 struct tisci_msg_rm_irq_release_req {
-    struct tisci_header hdr;
+    struct tisci_header    hdr;
     uint32_t            valid_params;
     uint16_t            src_id;
     uint16_t            src_index;
@@ -325,8 +325,8 @@ struct tisci_msg_rm_irq_release_req {
     uint16_t            ia_id;
     uint16_t            vint;
     uint16_t            global_event;
-    uint8_t         vint_status_bit_index;
-    uint8_t         secondary_host;
+    uint8_t            vint_status_bit_index;
+    uint8_t            secondary_host;
 } __attribute__((__packed__));
 
 /**

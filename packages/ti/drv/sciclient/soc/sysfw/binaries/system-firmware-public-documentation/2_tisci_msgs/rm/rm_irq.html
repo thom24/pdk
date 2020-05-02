@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                20.02.00
+                20.04.00
               </div>
             
           
@@ -103,6 +103,7 @@
                 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../1_intro/index.html">Chapter 1: Introduction</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">Chapter 2: TISCI Message Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../general/TISCI_header.html">Texas Instruments System Controller Interface (TISCI)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#general">General</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#power-management-pm">Power Management (PM)</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../index.html#resource-management-rm">Resource Management (RM)</a><ul class="current">
@@ -524,7 +525,7 @@ OES management thus far:</p>
 <div class="section" id="irq-route-release-message-parameters">
 <h3>IRQ Route Release Message Parameters<a class="headerlink" href="#irq-route-release-message-parameters" title="Permalink to this headline">¶</a></h3>
 <p><p><strong>struct tisci_msg_rm_irq_release_req</strong></p>
-<p>Releases interrupt peripheral resources according to the valid configuration provided.  The following &#64;ref tisci_msg_rm_irq_release_req::valid_params valid bit combinations are allowed: Interrupt Router Mux Release - Release an IR input to output mux connection where the IR input is the src_index and the IR output is the dst_host_irq.  Both the src_id and the dst_id must be the device ID of the IR being configured. &#64;ref tisci_msg_rm_irq_set_req::dst_id valid bit == STRUE &#64;ref tisci_msg_rm_irq_set_req::dst_host_irq valid bit == STRUE &#64;ref tisci_msg_rm_irq_set_req::ia_id valid bit == SFALSE &#64;ref tisci_msg_rm_irq_set_req::vint valid bit == SFALSE &#64;ref tisci_msg_rm_irq_set_req::global_event valid bit == SFALSE &#64;ref tisci_msg_rm_irq_set_req::vint_status_bit_index valid bit == SFALSE Event to VINT Unmap Only - Clear only peripheral OES register and event to VINT status bit mapping &#64;ref tisci_msg_rm_irq_set_req::dst_id valid bit == SFALSE &#64;ref tisci_msg_rm_irq_set_req::dst_host_irq valid bit == SFALSE &#64;ref tisci_msg_rm_irq_set_req::ia_id valid bit == STRUE &#64;ref tisci_msg_rm_irq_set_req::vint valid bit == STRUE &#64;ref tisci_msg_rm_irq_set_req::global_event valid bit == STRUE &#64;ref tisci_msg_rm_irq_set_req::vint_status_bit_index valid bit == STRUE OES Register Programming Only - Only clears the OES register of the source.  Useful for clearing UDMAP trigger events and any other events that are not translated to the interrupt domain: &#64;ref tisci_msg_rm_irq_release_req::dst_id valid bit == SFALSE &#64;ref tisci_msg_rm_irq_release_req::dst_host_irq valid bit == SFALSE &#64;ref tisci_msg_rm_irq_release_req::ia_id valid bit == SFALSE &#64;ref tisci_msg_rm_irq_release_req::vint valid bit == SFALSE &#64;ref tisci_msg_rm_irq_release_req::global_event valid bit == STRUE &#64;ref tisci_msg_rm_irq_release_req::vint_status_bit_index valid bit == SFALSE</p>
+<p>Releases interrupt peripheral resources according to the valid configuration provided.  The following &#64;ref tisci_msg_rm_irq_release_req::valid_params valid bit combinations are allowed: Interrupt Router Mux Release - Release an IR input to output mux connection where the IR input is the src_index and the IR output is the dst_host_irq.  Both the src_id and the dst_id must be the device ID of the IR being configured. &#64;ref tisci_msg_rm_irq_release_req::dst_id valid bit == STRUE &#64;ref tisci_msg_rm_irq_release_req::dst_host_irq valid bit == STRUE &#64;ref tisci_msg_rm_irq_release_req::ia_id valid bit == SFALSE &#64;ref tisci_msg_rm_irq_release_req::vint valid bit == SFALSE &#64;ref tisci_msg_rm_irq_release_req::global_event valid bit == SFALSE &#64;ref tisci_msg_rm_irq_release_req::vint_status_bit_index valid bit == SFALSE Event to VINT Unmap Only - Clear only peripheral OES register and event to VINT status bit mapping &#64;ref tisci_msg_rm_irq_release_req::dst_id valid bit == SFALSE &#64;ref tisci_msg_rm_irq_release_req::dst_host_irq valid bit == SFALSE &#64;ref tisci_msg_rm_irq_release_req::ia_id valid bit == STRUE &#64;ref tisci_msg_rm_irq_release_req::vint valid bit == STRUE &#64;ref tisci_msg_rm_irq_release_req::global_event valid bit == STRUE &#64;ref tisci_msg_rm_irq_release_req::vint_status_bit_index valid bit == STRUE OES Register Programming Only - Only clears the OES register of the source.  Useful for clearing UDMAP trigger events and any other events that are not translated to the interrupt domain: &#64;ref tisci_msg_rm_irq_release_req::dst_id valid bit == SFALSE &#64;ref tisci_msg_rm_irq_release_req::dst_host_irq valid bit == SFALSE &#64;ref tisci_msg_rm_irq_release_req::ia_id valid bit == SFALSE &#64;ref tisci_msg_rm_irq_release_req::vint valid bit == SFALSE &#64;ref tisci_msg_rm_irq_release_req::global_event valid bit == STRUE &#64;ref tisci_msg_rm_irq_release_req::vint_status_bit_index valid bit == SFALSE</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="3%" />
@@ -773,7 +774,7 @@ processed <strong>irq_release</strong> message.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'20.02.00',
+            VERSION:'20.04.00',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

@@ -658,6 +658,24 @@
  */
 #define TISCI_MSG_VALUE_RM_UDMAP_RX_FLOW_SIZE_THRESH_MAX       (7u)
 
+/* Flow delegation declarations */
+
+/**
+ * The delegated_host parameter is valid for RM UDMAP flow delegation
+ * TISCI message
+ */
+#define TISCI_MSG_VALUE_RM_UDMAP_FLOW_DELEGATE_HOST_VALID      ((uint32_t) 1U << 0U)
+/**
+ * The clear parameter is valid for RM UDMAP flow delegation TISCI message
+ */
+#define TISCI_MSG_VALUE_RM_UDMAP_FLOW_DELEGATE_CLEAR_VALID     ((uint32_t) 1U << 1U)
+
+/**
+ * Clear flow delegation setting in
+ * @ref tisci_msg_rm_udmap_flow_delegate_req::clear
+ */
+#define TISCI_MSG_VALUE_RM_UDMAP_FLOW_DELEGATE_CLEAR           (1U)
+
 /* Global configuration declarations */
 
 /**
@@ -1692,6 +1710,60 @@ struct tisci_msg_rm_udmap_flow_size_thresh_cfg_req {
  * Standard TISCI header
  */
 struct tisci_msg_rm_udmap_flow_size_thresh_cfg_resp {
+    struct tisci_header hdr;
+} __attribute__((__packed__));
+
+/**
+ * \brief Delegates the specified flow to another host for configuration.  Only
+ *        the original owner of the flow, as specified in the RM board
+ *        configuration resource entries, can delegate an additional host as
+ *        able to configure the flow.  A flow's delegation can be cleared by
+ *        the original owner of the flow using the clear parameter.
+ *
+ * \param hdr Standard TISCI header
+ *
+ * \param valid_params Bitfield defining validity of flow delegation parameters.
+ *                     The flow delegation fields are not valid, and will not be
+ *                     used, if their corresponding valid bit is zero.  Valid
+ *                     bit usage:
+ *                     0 - Valid bit for
+ *                         @ref tisci_msg_rm_udmap_flow_delegate_req::delegated_host
+ *                     1 - Valid bit for
+ *                         @ref tisci_msg_rm_udmap_flow_delegate_req::clear
+ *
+ * \param dev_id SoC device ID of DMA in which the common flow exists.
+ *
+ * \param flow_index DMA common flow being delegated for configuration.
+ *
+ * \param delegated_host The host delegated configuration access to the flow.
+ *                       The host must be a valid host within the SoC.  This
+ *                       field is only valid if
+ *                       @ref TISCI_MSG_VALUE_RM_UDMAP_FLOW_DELEGATE_HOST_VALID
+ *                       is set in
+ *                       @ref tisci_msg_rm_udmap_flow_delegate_req::valid_params.
+ *
+ * \param clear Clears the flow delegation when enabled.  Set this parameter
+ *              to @ref TISCI_MSG_VALUE_RM_UDMAP_FLOW_DELEGATE_CLEAR.  This
+ *              field is only valid if
+ *              @ref TISCI_MSG_VALUE_RM_UDMAP_FLOW_DELEGATE_CLEAR_VALID is
+ *              set in @ref tisci_msg_rm_udmap_flow_delegate_req::valid_params.
+ */
+struct tisci_msg_rm_udmap_flow_delegate_req {
+    struct tisci_header    hdr;
+    uint32_t            valid_params;
+    uint16_t            dev_id;
+    uint16_t            flow_index;
+    uint8_t            delegated_host;
+    uint8_t            clear;
+} __attribute__((__packed__));
+
+/**
+ * \brief Response to delegating a flow to another host for configuration.
+ *
+ * \param hdr
+ * Standard TISCI header
+ */
+struct tisci_msg_rm_udmap_flow_delegate_resp {
     struct tisci_header hdr;
 } __attribute__((__packed__));
 

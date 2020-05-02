@@ -104,7 +104,10 @@ boardcfg structure does..
 +--------------------+------------------------------------+-----------------------------------------------------------+
 | otp_config         | :ref:`pub_boardcfg_ext_otp_config` | Extended OTP access configuration                         |
 +--------------------+------------------------------------+-----------------------------------------------------------+
-
+| dkek_config        | :ref:`pub_boardcfg_dkek_config`    | DKEK access configuration                                 |
++--------------------+------------------------------------+-----------------------------------------------------------+
+| reserved_cfg_entry | :ref:`pub_boardcfg_reserved_entry` | Reserved configuration entry                              |
++--------------------+------------------------------------+-----------------------------------------------------------+
 
 .. _pub_boardcfg_proc_acl:
 
@@ -230,3 +233,51 @@ Extended OTP Row Entry
 |                    |           | -  bit 1:0 - 10b - non-secure, any other value secure                              |
 |                    |           | -  bit 7:2 - Reserved for future use.                                              |
 +--------------------+-----------+------------------------------------------------------------------------------------+
+
+.. _pub_boardcfg_dkek_config:
+
+Derived KEK Management
+----------------------
+
+The below structure controls access to DKEK on the SOC.
+Please also refer to the below documents to understand the usage of the board configuration structure.
+
+1. :doc:`../6_topic_user_guides/dkek_management` and
+2. :doc:`../2_tisci_msgs/security/dkek_management` and
+
++------------------------------+----------------------------+---------------------------------------------------------------+
+|     Element                  |                 Type       |            Description                                        |
++==============================+============================+===============================================================+
+| subhdr                       | :ref:`pub_boardcfg_subhdr` | Magic and size for integrity check                            |
++------------------------------+----------------------------+---------------------------------------------------------------+
+| dkek_allowed_hosts           | u8[4]                      | Hosts allowed access to DKEK                                  |
+|                              |                            |                                                               |
+|                              |                            | Set one of the entries to 128 if DKEK must accessible to all  |
+|                              |                            | hosts.                                                        |
++------------------------------+----------------------------+---------------------------------------------------------------+
+| allow_dkek_export_tisci      | u8                         | Flag indicating whether DKEK can be exported via TISCI API    |
+|                              |                            |                                                               |
+|                              |                            | Set to 0x5A if TISCI export is allowed.                       |
++------------------------------+----------------------------+---------------------------------------------------------------+
+| rsvd                         | u8[3]                      | Reserved field. Currently unused. Set to 0.                   |
++------------------------------+----------------------------+---------------------------------------------------------------+
+
+The magic number to be populated in the ``subhdr`` is ``0x5170``.
+
+.. _pub_boardcfg_reserved_entry:
+
+Reserved Entry
+--------------
+
+The below entry is reserved for future use.
+
++---------------------+-----------------------------------------+------------------------------------------------------------------------+
+|     Element         |              Type                       |            Description                                                 |
++=====================+=========================================+========================================================================+
+| subhdr              | :ref:`pub_boardcfg_subhdr`              | Magic and size for integrity check                                     |
++---------------------+-----------------------------------------+------------------------------------------------------------------------+
+| rsvd                | u8[4]                                   | Reserved for future use. Set to 0                                      |
++---------------------+-----------------------------------------+------------------------------------------------------------------------+
+
+The magic number to be populated in the ``subhdr`` is ``0x23BE``.
+

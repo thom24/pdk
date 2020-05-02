@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                20.02.00
+                20.04.00
               </div>
             
           
@@ -103,6 +103,7 @@
                 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../1_intro/index.html">Chapter 1: Introduction</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">Chapter 2: TISCI Message Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../general/TISCI_header.html">Texas Instruments System Controller Interface (TISCI)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#general">General</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#power-management-pm">Power Management (PM)</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../index.html#resource-management-rm">Resource Management (RM)</a><ul class="current">
@@ -115,6 +116,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#tisci-msg-rm-udmap-rx-ch-cfg-udmap-receive-channel-configure">TISCI_MSG_RM_UDMAP_RX_CH_CFG - UDMAP Receive Channel Configure</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#tisci-msg-rm-udmap-flow-cfg-udmap-receive-flow-configure">TISCI_MSG_RM_UDMAP_FLOW_CFG - UDMAP Receive Flow Configure</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#tisci-msg-rm-udmap-flow-size-thresh-cfg-udmap-receive-flow-size-threshold-configure">TISCI_MSG_RM_UDMAP_FLOW_SIZE_THRESH_CFG - UDMAP Receive Flow Size Threshold Configure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tisci-msg-rm-udmap-flow-delegate-udmap-flow-delegate">TISCI_MSG_RM_UDMAP_FLOW_DELEGATE - UDMAP Flow Delegate</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#tisci-msg-rm-udmap-gcfg-cfg-udmap-global-configuration-configure">TISCI_MSG_RM_UDMAP_GCFG_CFG - UDMAP Global Configuration Configure</a></li>
 </ul>
 </li>
@@ -242,6 +244,12 @@ message API parameters.</p>
 </tr>
 <tr class="row-odd"><td>0x1233</td>
 <td>RESERVED, DO NOT (RE)USE</td>
+</tr>
+<tr class="row-even"><td>0x1234</td>
+<td><a class="reference internal" href="#pub-rm-public-udmap-flow-delegate"><span class="std std-ref">TISCI_MSG_RM_UDMAP_FLOW_DELEGATE</span></a></td>
+</tr>
+<tr class="row-odd"><td>N/A</td>
+<td><a class="reference internal" href="#pub-rm-public-udmap-flow-delegate-response"><span class="std std-ref">TISCI_MSG_RM_UDMAP_FLOW_DELEGATE Response</span></a></td>
 </tr>
 <tr class="row-even"><td>0x1240</td>
 <td><a class="reference internal" href="#pub-rm-public-udmap-gcfg-cfg"><span class="std std-ref">TISCI_MSG_RM_UDMAP_GCFG_CFG</span></a></td>
@@ -1347,16 +1355,18 @@ status of the processed <strong>udmap flow size threshold cfg</strong> message.<
 </div>
 </div>
 </div>
-<div class="section" id="tisci-msg-rm-udmap-gcfg-cfg-udmap-global-configuration-configure">
-<h2>TISCI_MSG_RM_UDMAP_GCFG_CFG - UDMAP Global Configuration Configure<a class="headerlink" href="#tisci-msg-rm-udmap-gcfg-cfg-udmap-global-configuration-configure" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="udmap-global-configuration-configure-request">
-<span id="pub-rm-public-udmap-gcfg-cfg"></span><h3>UDMAP Global Configuration Configure Request<a class="headerlink" href="#udmap-global-configuration-configure-request" title="Permalink to this headline">¶</a></h3>
-<p>The <strong>udmap_gcfg_cfg</strong> TISCI message API is used to configure non-real-time
-registers in the UDMAP subsystem’s global configuration region.  The host, or a
-supervisor of the host, who owns the global configuration region must be the
-requesting host.  The API allows configuration of the global configuration
-region by passing the Navigator SoC device ID of the UDMAP subsystem in which
-the region is located.</p>
+<div class="section" id="tisci-msg-rm-udmap-flow-delegate-udmap-flow-delegate">
+<h2>TISCI_MSG_RM_UDMAP_FLOW_DELEGATE - UDMAP Flow Delegate<a class="headerlink" href="#tisci-msg-rm-udmap-flow-delegate-udmap-flow-delegate" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="udmap-flow-delegate-request">
+<span id="pub-rm-public-udmap-flow-delegate"></span><h3>UDMAP Flow Delegate Request<a class="headerlink" href="#udmap-flow-delegate-request" title="Permalink to this headline">¶</a></h3>
+<p>The <strong>UDMAP flow delegate</strong> TISCI message API is used by a host to delegate
+configuration of an owned, according to the RM board configuration, common DMA
+flow to another host.  After delegation the host owning the flow and the
+delegated host are allowed to configure the flow via the flow configuration
+TISCI messages.  The delegation can be cleared by the host who owns the flow
+by setting the clear parameter of the flow delegate message.</p>
+<p>The flow index set for delegation must be assigned to the host defined in the
+TISCI header via the RM board configuration resource assignment range list.</p>
 <div class="section" id="id7">
 <h4>Usage<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h4>
 <table border="1" class="docutils">
@@ -1376,6 +1386,140 @@ the region is located.</p>
 </div>
 <div class="section" id="id8">
 <h4>TISCI Message ID<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h4>
+<p><p><code class="docutils literal"><span class="pre">TISCI_MSG_RM_UDMAP_FLOW_DELEGATE</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(0x1234U)</span></code></p>
+<p>RM TISCI message to delegate a DMA flow to another host for configuration</p>
+</p>
+</div>
+<div class="section" id="udmap-flow-delegate-message-parameters">
+<h4>UDMAP Flow Delegate Message Parameters<a class="headerlink" href="#udmap-flow-delegate-message-parameters" title="Permalink to this headline">¶</a></h4>
+<p><p><strong>struct tisci_msg_rm_udmap_flow_delegate_req</strong></p>
+<p>Delegates the specified flow to another host for configuration.  Only the original owner of the flow, as specified in the RM board configuration resource entries, can delegate an additional host as able to configure the flow.  A flow’s delegation can be cleared by the original owner of the flow using the clear parameter.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="4%" />
+<col width="6%" />
+<col width="90%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>hdr</td>
+<td>struct tisci_header</td>
+<td>Standard TISCI header</td>
+</tr>
+<tr class="row-odd"><td>valid_params</td>
+<td>u32</td>
+<td>Bitfield defining validity of flow delegation parameters. The flow delegation fields are not valid, and will not be used, if their corresponding valid bit is zero.  Valid bit usage: 0 - Valid bit for &#64;ref tisci_msg_rm_udmap_flow_delegate_req::delegated_host 1 - Valid bit for &#64;ref tisci_msg_rm_udmap_flow_delegate_req::clear</td>
+</tr>
+<tr class="row-even"><td>dev_id</td>
+<td>u16</td>
+<td>SoC device ID of DMA in which the common flow exists.</td>
+</tr>
+<tr class="row-odd"><td>flow_index</td>
+<td>u16</td>
+<td>DMA common flow being delegated for configuration.</td>
+</tr>
+<tr class="row-even"><td>delegated_host</td>
+<td>u8</td>
+<td>The host delegated configuration access to the flow. The host must be a valid host within the SoC.  This field is only valid if &#64;ref TISCI_MSG_VALUE_RM_UDMAP_FLOW_DELEGATE_HOST_VALID is set in &#64;ref tisci_msg_rm_udmap_flow_delegate_req::valid_params.</td>
+</tr>
+<tr class="row-odd"><td>clear</td>
+<td>u8</td>
+<td>Clears the flow delegation when enabled.  Set this parameter to &#64;ref TISCI_MSG_VALUE_RM_UDMAP_FLOW_DELEGATE_CLEAR.  This field is only valid if &#64;ref TISCI_MSG_VALUE_RM_UDMAP_FLOW_DELEGATE_CLEAR_VALID is set in &#64;ref tisci_msg_rm_udmap_flow_delegate_req::valid_params.</td>
+</tr>
+</tbody>
+</table>
+</p>
+</div>
+<div class="section" id="udmap-flow-delegate-valid-parameters">
+<span id="pub-rm-public-udmap-flow-delegate-valid-params"></span><h4>UDMAP Flow Delegate Valid Parameters<a class="headerlink" href="#udmap-flow-delegate-valid-parameters" title="Permalink to this headline">¶</a></h4>
+<p>The following table describes the valid bit mappings for the UDMAP flow
+delegate message parameters:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="23%" />
+<col width="78%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">valid_params Bit</th>
+<th class="head">Corresponding tisci_msg_rm_udmap_flow_delegate_req Parameter</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>0</td>
+<td>delegated_host</td>
+</tr>
+<tr class="row-odd"><td>1</td>
+<td>clear</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="udmap-flow-delegate-response">
+<span id="pub-rm-public-udmap-flow-delegate-response"></span><h3>UDMAP Flow Delegate Response<a class="headerlink" href="#udmap-flow-delegate-response" title="Permalink to this headline">¶</a></h3>
+<p>The <strong>udmap flow delegate response</strong> message returns the result status of the
+processed <strong>udmap flow delegate</strong> message.</p>
+<div class="section" id="udmap-flow-delegate-response-message-parameters">
+<h4>UDMAP Flow Delegate Response Message Parameters<a class="headerlink" href="#udmap-flow-delegate-response-message-parameters" title="Permalink to this headline">¶</a></h4>
+<p><p><strong>struct tisci_msg_rm_udmap_flow_delegate_resp</strong></p>
+<p>Response to delegating a flow to another host for configuration.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="23%" />
+<col width="37%" />
+<col width="40%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>hdr</td>
+<td>struct tisci_header</td>
+<td>Standard TISCI header</td>
+</tr>
+</tbody>
+</table>
+</p>
+</div>
+</div>
+</div>
+<div class="section" id="tisci-msg-rm-udmap-gcfg-cfg-udmap-global-configuration-configure">
+<h2>TISCI_MSG_RM_UDMAP_GCFG_CFG - UDMAP Global Configuration Configure<a class="headerlink" href="#tisci-msg-rm-udmap-gcfg-cfg-udmap-global-configuration-configure" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="udmap-global-configuration-configure-request">
+<span id="pub-rm-public-udmap-gcfg-cfg"></span><h3>UDMAP Global Configuration Configure Request<a class="headerlink" href="#udmap-global-configuration-configure-request" title="Permalink to this headline">¶</a></h3>
+<p>The <strong>udmap_gcfg_cfg</strong> TISCI message API is used to configure non-real-time
+registers in the UDMAP subsystem’s global configuration region.  The host, or a
+supervisor of the host, who owns the global configuration region must be the
+requesting host.  The API allows configuration of the global configuration
+region by passing the Navigator SoC device ID of the UDMAP subsystem in which
+the region is located.</p>
+<div class="section" id="id9">
+<h4>Usage<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h4>
+<table border="1" class="docutils">
+<colgroup>
+<col width="75%" />
+<col width="25%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><strong>Message Type</strong></td>
+<td>Normal</td>
+</tr>
+<tr class="row-even"><td><strong>Secure Queue Only?</strong></td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="id10">
+<h4>TISCI Message ID<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h4>
 <p><p><code class="docutils literal"><span class="pre">TISCI_MSG_RM_UDMAP_GCFG_CFG</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(0x1240U)</span></code></p>
 <p>RM TISCI message to configure a Navigator Subsystem UDMAP global
  configuration</p>
@@ -1544,7 +1688,7 @@ processed <strong>udmap_gcfg_cfg</strong> message.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'20.02.00',
+            VERSION:'20.04.00',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

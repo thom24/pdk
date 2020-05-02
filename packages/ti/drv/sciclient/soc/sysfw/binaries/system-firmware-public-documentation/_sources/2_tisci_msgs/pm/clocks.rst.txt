@@ -393,3 +393,335 @@ Message Data Structures
 .. sysfwapistruct:: tisci_msg_get_freq_req
 
 .. sysfwapistruct:: tisci_msg_get_freq_resp
+
+
+Power Management Clock Frequency Configuration Example
+======================================================
+
+.. _pm_clock_set_without_mux:
+
+Power Management Clock Frequency Configuration without Multiplexers
+-------------------------------------------------------------------
+
+An example sequence for setting the clock frequency for a given module is as given below.
+The input to this code snippet is as below:
+
+- ``device_id``: Refer to the :doc:`../../5_soc_doc/am6x/devices`
+- ``clk_id``: Refer to the :doc:`../../5_soc_doc/am6x/clocks`. Choose the Ids which are marked "Input Clock".
+- ``min_hz``: Minimum Frequency which should be set for this clock.
+- ``freq_hz``: Target Frequency which should be set for this clock.
+- ``max_hz``: Maximum Frequency which should be set for this clock.
+
+The simplified sequence of operations is as below:
+
+.. image:: ../../img/pm/Clocks_sequence_diagram.jpg
+
+.. code-block:: c
+
+    /* Allocate space for the messages */
+    u32 tisci_msg_data[13];
+    /* Pointer to the header */
+    struct tisci_header *hdr = (struct tisci_header *) tisci_msg_data;
+    struct tisci_msg_get_freq_req *get_freq_req;
+    struct tisci_msg_get_freq_resp *get_freq_resp;
+    struct tisci_msg_set_freq_req *set_freq_req;
+    struct tisci_msg_query_freq_resp *query_freq_resp;
+    int ret = 0;
+
+    /* Initialize the message data with 0s */
+    memset(tisci_msg_data, 0, sizeof(tisci_msg_data));
+    /* Get the current frequency of the device and corresponding clock */
+    hdr->host = 0x01;
+    hdr->flags = TISCI_MSG_FLAG_AOP;
+    /* Message for Getting the frequency for the clock of the device of interest */
+    hdr->type = TISCI_MSG_GET_FREQ;
+    get_freq_req = (struct tisci_msg_get_freq_req *) (hdr + 1);
+    /* Give the device ID from the devices list in the SoC Documentation */
+    get_freq_req->device = device_id;
+    /* The clock IDs can be less than 255 or greater than 255. If the clock
+     * ID is greater than 255, then set 2 fields in the message.
+     */
+    if (clk_id >= 255) {
+        get_freq_req->clk = 255;
+        get_freq_req->clk32 = clk_id;
+    } else {
+        get_freq_req->clk = clk_id;
+    }
+
+    /* Send a message to the System firmware on a specific Secure Proxy Queue.
+     * The same structure for the message data. The same can be used as the
+     * message data is copied to the secure proxy registers.
+     */
+    ret = send_receive_with_timeout(TISCI_MSG_QUEUE_NONSEC_HIGH_TX,
+                    (void *)tisci_msg_data,
+                    sizeof(tisci_msg_data),
+                    (void *)tisci_msg_data, sizeof(tisci_msg_data));
+
+    if (ret < 0)
+        return ret;
+
+    get_freq_resp = (struct tisci_msg_get_freq_resp *) (hdr + 1);
+    printf("Current: ");
+    print_freq(get_freq_resp->freq_hz);
+    printf("\n");
+
+    printf("Sending query: ");
+    print_freq(min_hz);
+    printf(", ");
+    print_freq(freq_hz);
+    printf(", ");
+    print_freq(max_hz);
+    printf("\n");
+
+    /* Initialize the message data with 0s */
+    memset(tisci_msg_data, 0, sizeof(tisci_msg_data));
+    hdr->host = 0x01;
+    hdr->flags = TISCI_MSG_FLAG_AOP;
+    /* Message for querying if the frequency is possible for the clock of the device of interest */
+    hdr->type = TISCI_MSG_QUERY_FREQ;
+    set_freq_req = (struct tisci_msg_set_freq_req *) (hdr + 1);
+    /* Give the device ID from the devices list in the SoC Documentation */
+    set_freq_req->device = device_id;
+    /* The clock IDs can be less than 255 or greater than 255. If the clock
+     * ID is greater than 255, then set 2 fields in the message.
+     */
+    if (clk_id >= 255) {
+        set_freq_req->clk = 255;
+        set_freq_req->clk32 = clk_id;
+    } else {
+        set_freq_req->clk = clk_id;
+    }
+    set_freq_req->min_freq_hz = min_hz;
+    set_freq_req->target_freq_hz = freq_hz;
+    set_freq_req->max_freq_hz = max_hz;
+
+    /* Send a message to the System firmware on a specific Secure Proxy Queue.
+     * The same structure for the message data. The same can be used as the
+     * message data is copied to the secure proxy registers.
+     */
+    ret = send_receive_with_timeout(TISCI_MSG_QUEUE_NONSEC_HIGH_TX,
+                    (void *)tisci_msg_data,
+                    sizeof(tisci_msg_data),
+                    (void *)tisci_msg_data, sizeof(tisci_msg_data));
+
+    if (ret == 0 && !(hdr->flags & TISCI_MSG_FLAG_ACK))
+        ret = -ENODEV;
+
+    if (ret == 0) {
+        query_freq_resp = (struct tisci_msg_query_freq_resp *) (hdr + 1);
+        printf("Query response: ");
+        print_freq(query_freq_resp->freq_hz);
+        printf("\n");
+
+        if (query_freq_resp->freq_hz < min_hz || query_freq_resp->freq_hz > max_hz)
+            ret = -EINVAL;
+    }
+    if (ret < 0)
+        return ret;
+
+    freq_hz = query_freq_resp->freq_hz;
+    printf("Sending set: ");
+    print_freq(freq_hz);
+    printf(", ");
+    print_freq(freq_hz);
+    printf(", ");
+    print_freq(freq_hz);
+    printf("\n");
+
+    /* Initialize the message data with 0s */
+    memset(tisci_msg_data, 0, sizeof(tisci_msg_data));
+    hdr->host = 0x01;
+    hdr->flags = TISCI_MSG_FLAG_AOP;
+    /* Message for setting the frequency for the clock of the device of interest. Actually changes the frequency */
+    hdr->type = TISCI_MSG_SET_FREQ;
+    set_freq_req = (struct tisci_msg_set_freq_req *) (hdr + 1);
+    /* Give the device ID from the devices list in the SoC Documentation */
+    set_freq_req->device = device_id;
+    /* The clock IDs can be less than 255 or greater than 255. If the clock
+     * ID is greater than 255, then set 2 fields in the message.
+     */
+    if (clk_id >= 255) {
+        set_freq_req->clk = 255;
+        set_freq_req->clk32 = clk_id;
+    } else {
+        set_freq_req->clk = clk_id;
+    }
+    set_freq_req->min_freq_hz = freq_hz;
+    set_freq_req->target_freq_hz = freq_hz;
+    set_freq_req->max_freq_hz = freq_hz;
+
+    /* Send a message to the System firmware on a specific Secure Proxy Queue.
+     * The same structure for the message data. The same can be used as the
+     * message data is copied to the secure proxy registers.
+     */
+    ret = send_receive_with_timeout(TISCI_MSG_QUEUE_NONSEC_HIGH_TX,
+                    (void *)tisci_msg_data,
+                    sizeof(tisci_msg_data),
+                    (void *)tisci_msg_data, sizeof(tisci_msg_data));
+
+    if (ret == 0 && !(hdr->flags & TISCI_MSG_FLAG_ACK))
+        ret = -ENODEV;
+    if (ret < 0)
+        return ret;
+
+    /* Initialize the message data with 0s */
+    memset(tisci_msg_data, 0, sizeof(tisci_msg_data));
+    hdr->host = 0x01;
+    hdr->flags = TISCI_MSG_FLAG_AOP;
+    /* Message for Getting the frequency for the clock of the device of interest */
+    hdr->type = TISCI_MSG_GET_FREQ;
+    get_freq_req = (struct tisci_msg_get_freq_req *) (hdr + 1);
+    /* Give the device ID from the devices list in the SoC Documentation */
+    get_freq_req->device = device_id;
+    /* The clock IDs can be less than 255 or greater than 255. If the clock
+     * ID is greater than 255, then set 2 fields in the message.
+     */
+    if (clk_id >= 255) {
+        get_freq_req->clk = 255;
+        get_freq_req->clk32 = clk_id;
+    } else {
+        get_freq_req->clk = clk_id;
+    }
+
+    /* Send a message to the System firmware on a specific Secure Proxy Queue.
+     * The same structure for the message data. The same can be used as the
+     * message data is copied to the secure proxy registers.
+     */
+    ret = send_receive_with_timeout(TISCI_MSG_QUEUE_NONSEC_HIGH_TX,
+                    (void *)tisci_msg_data,
+                    sizeof(tisci_msg_data),
+                    (void *)tisci_msg_data, sizeof(tisci_msg_data));
+
+    if (ret == 0) {
+        get_freq_resp = (struct tisci_msg_get_freq_resp *) (hdr + 1);
+        printf("New: ");
+        print_freq(get_freq_resp->freq_hz);
+        printf("\n");
+
+        if (freq_hz != get_freq_resp->freq_hz)
+            ret = -EINVAL;
+    }
+    if (ret < 0)
+        return ret;
+
+
+.. _pm_clock_set_with_mux:
+
+Power Management Clock Frequency Configuration Example with Mux programming
+---------------------------------------------------------------------------
+
+An example pseudo sequence for setting the clock frequency while searching for the
+right multiplexer parent is as below:
+
+- ``device_id``: Refer to the :doc:`../../5_soc_doc/am6x/devices`
+- ``clk_id``: Refer to the :doc:`../../5_soc_doc/am6x/clocks`. Choose the Ids which are marked "Input Clock".
+- ``min_hz``: Minimum Frequency which should be set for this clock.
+- ``freq_hz``: Target Frequency which should be set for this clock.
+- ``max_hz``: Maximum Frequency which should be set for this clock.
+
+The flow chart for the same is as below:
+
+.. image:: ../../img/pm/pm_clocks_example.svg
+
+
+
+.. code-block:: c
+
+    /* Check if the clock is enabled or not */
+    status = TISCI_MSG_GET_CLOCK(device_id,
+                                 clk_id,
+                                 &clockStatus);
+    if (status == PASS)
+    {
+        /* Get the number of parents for the clock */
+        status = TISCI_MSG_GET_NUM_CLOCK_PARENTS(device_id,
+                                                clk_id,
+                                                &numParents);
+        if ((status == PASS) && (numParents > 1U))
+        {
+            status = TISCI_MSG_GET_CLOCK_PARENT(device_id, clk_id, &origParent);
+        }
+    }
+    if (status == PASS)
+    {
+        /* Disabling the clock */
+        status = TISCI_MSG_SET_CLOCK(device_id,
+                                    clk_id,
+                                    TISCI_MSG_VALUE_CLOCK_SW_STATE_UNREQ);
+    }
+    if (status == PASS)
+    {
+        foundParent = 0U;
+        /* Try to loop and change parents of the clock */
+        for(i=0U;i<numParents;i++)
+        {
+            if (numParents > 1U)
+            {
+                /* Setting the new parent */
+                status = TISCI_MSG_SET_CLOCK_PARENT(
+                                            device_id,
+                                            clk_id,
+                                            clk_id+i+1U);
+                /* Check if the clock can be set to desirable freq. */
+                if (status == PASS)
+                {
+                    moduleClockParentChanged = 1U;
+                }
+            }
+            if (status == PASS)
+            {
+                status = TISCI_MSG_QUERY_FREQ(device_id,
+                                              clk_id,
+                                              freq_hz,
+                                              &respfreq_hz);
+            }
+            if ((status == PASS) && (respfreq_hz == freq_hz))
+            {
+                foundParent = 1U;
+                break;
+            }
+        }
+    }
+    if ((status == PASS) && (numParents == 0U))
+    {
+        status = TISCI_MSG_QUERY_FREQ(device_id,
+                                      clk_id,
+                                      freq_hz,
+                                      &respfreq_hz);
+        if ((status == PASS) && (respfreq_hz == freq_hz))
+        {
+            foundParent = 1U;
+        }
+    }
+    if (foundParent == 1U)
+    {
+        /* Set the clock at the desirable frequency*/
+        status = TISCI_MSG_SET_FREQ(
+                                device_id,
+                                clk_id,
+                                freq_hz,
+                                TISCI_MSG_FLAG_CLOCK_ALLOW_FREQ_CHANGE);
+    }
+    else
+    {
+        status = CSL_EFAIL;
+    }
+    if ((status == PASS) &&
+        (clockStatus == (uint32_t) TISCI_MSG_VALUE_CLOCK_SW_STATE_UNREQ))
+    {
+        /* Restore the clock again to original state */
+        status = TISCI_MSG_SET_CLOCK(
+                                     device_id,
+                                     clk_id,
+                                     clockStatus);
+    }
+    finalStatus = status;
+    if ((status != PASS) && (moduleClockParentChanged == 1U))
+    {
+        /* Setting the original parent if failure */
+        (void) TISCI_MSG_SET_CLOCK_PARENT(
+                                    device_id,
+                                    clk_id,
+                                    origParent);
+    }
+ 

@@ -1,3 +1,5 @@
+.. _pub_interpret_trace:
+
 ##################################
 Chapter 4: Interpreting Trace Data
 ##################################

@@ -1,6 +1,15 @@
+.. _pub_tisci_msg_doc:
+
 ######################################
 Chapter 2: TISCI Message Documentation
 ######################################
+
+.. toctree::
+   :maxdepth: 1
+
+   general/TISCI_header
+
+.. _general_messages:
 
 =======
 General
@@ -11,6 +20,9 @@ General
 
    general/core
 
+
+.. _pm_messages:
+
 =====================
 Power Management (PM)
 =====================
@@ -20,6 +32,8 @@ Power Management (PM)
    pm/devices
    pm/clocks
    pm/sysreset
+
+.. _rm_messages:
 
 ========================
 Resource Management (RM)
@@ -33,6 +47,8 @@ Resource Management (RM)
    rm/rm_udmap
    rm/rm_psil
 
+.. _security_messages:
+
 =================
 Secure Management
 =================
@@ -43,10 +59,6 @@ Secure Management
    security/PROC_BOOT
    security/firewall_api
    security/sec_ap_data_transfer
-   security/rng_api
-   security/keystore
-   security/asymmetric_key_services
    security/runtime_debug
    security/extended_otp
-
-
+   security/dkek_management

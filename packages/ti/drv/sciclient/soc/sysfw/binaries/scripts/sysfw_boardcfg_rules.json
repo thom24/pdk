@@ -223,6 +223,26 @@
                 "fmt": "B"
             }
         },
+        "boardcfg_dkek": {
+            "subhdr": {
+                "fmt": "boardcfg_substructure_header",
+                "value": {
+                    "magic": "0x5170",
+                    "size": "boardcfg_dkek"
+                }
+            },
+            "allowed_hosts": {
+                "fmt": "B",
+                "elements": 4
+            },
+            "allow_dkek_export_tisci": {
+                "fmt": "B"
+            },
+            "rsvd": {
+                "fmt": "B",
+                "elements": 3
+            }
+        },
         "boardcfg_sec": {
             "rev": {
                 "fmt": "boardcfg_abi_rev"
@@ -235,6 +255,9 @@
             },
             "otp_config": {
                 "fmt": "boardcfg_extended_otp"
+            },
+            "dkek_config": {
+                "fmt": "boardcfg_dkek"
             }
         },
         "boardcfg_orderid": {

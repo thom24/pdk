@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                20.02.00
+                20.04.00
               </div>
             
           
@@ -616,8 +616,8 @@ the range of a specific resource assigned to a host.</p>
 <p>Get resource range response message</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="12%" />
-<col width="19%" />
+<col width="13%" />
+<col width="17%" />
 <col width="70%" />
 </colgroup>
 <thead valign="bottom">
@@ -638,6 +638,14 @@ the range of a specific resource assigned to a host.</p>
 <tr class="row-even"><td>range_num</td>
 <td>u16</td>
 <td>Number of resources in the range.  Zero if the resource is not valid.</td>
+</tr>
+<tr class="row-odd"><td>range_start_sec</td>
+<td>u16</td>
+<td>Start index of retrieved secondary resource range.  Zero if the resource is not valid.</td>
+</tr>
+<tr class="row-even"><td>range_num_sec</td>
+<td>u16</td>
+<td>Number of resources in secondary range.  Zero if the resource is not valid.</td>
 </tr>
 </tbody>
 </table>
@@ -1092,7 +1100,7 @@ steps fail the API would return with a NACK.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'20.02.00',
+            VERSION:'20.04.00',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

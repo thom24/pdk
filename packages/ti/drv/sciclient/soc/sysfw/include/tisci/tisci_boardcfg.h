@@ -380,6 +380,38 @@ struct tisci_boardcfg_extended_otp {
     struct tisci_boardcfg_extended_otp_entry    otp_entry[MAX_NUM_EXT_OTP_MMRS];
     uint8_t                    write_host_id;
 } __attribute__((__packed__));
+
+
+#define MAX_NUM_DKEK_ALLOWED_HOSTS (4U)
+
+/**
+ * \brief Access configuration for DKEK
+ * \param subhdr Magic and size for integrity check
+ * \param allowed_hosts ID's of hosts allowed to use DKEK. Use TISCI_HOST_ID_ALL if any host is allowed
+ * \param allow_dkek_export_tisci If DKEK can be exported via TISCI interface to hosts. Set to 0x5A to allow.
+ * \param rsvd Reserved field for future use. Set to 0.
+ */
+struct tisci_boardcfg_dkek {
+    struct tisci_boardcfg_substructure_header    subhdr;
+    uint8_t                    allowed_hosts[MAX_NUM_DKEK_ALLOWED_HOSTS];
+    uint8_t                    allow_dkek_export_tisci;
+    uint8_t                    rsvd[3];
+} __attribute__((__packed__));
+
+/**
+ * \brief Configuration of SA2UL resources
+ *
+ * \param subhdr Magic and size for integrity check
+ * \param auth_resource_owner ID of the host allowed to acquire/release the
+ *                            authentication resources
+ * \param rsvd Reserved
+ */
+struct tisci_boardcfg_sa2ul_cfg {
+    struct tisci_boardcfg_substructure_header    subhdr;
+    uint8_t                    auth_resource_owner;
+    uint8_t                    rsvd[3];
+};
+
 /**
  * \brief Format of the complete board configuration.
  *
@@ -387,12 +419,16 @@ struct tisci_boardcfg_extended_otp {
  * \param tisci_boardcfg_proc_acl Processor Access control list
  * \param tisci_boardcfg_host_hierarchy Host hierarchy list
  * \param otp_config  OTP Configuration
+ * \param dkek_config  DKEK Configuration
+ * \param tisci_boardcfg_sa2ul_cfg SA2UL resource configuration
  */
 struct tisci_boardcfg_sec {
     struct tisci_boardcfg_abi_rev        rev;
     struct tisci_boardcfg_proc_acl    processor_acl_list;
     struct tisci_boardcfg_host_hierarchy    host_hierarchy;
     struct tisci_boardcfg_extended_otp    otp_config;
+    struct tisci_boardcfg_dkek        dkek_config;
+    struct tisci_boardcfg_sa2ul_cfg    sa2ul_auth_cfg;
 } __attribute__((__packed__));
 
 /**

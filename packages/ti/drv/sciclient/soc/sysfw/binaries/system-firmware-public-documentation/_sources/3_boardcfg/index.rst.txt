@@ -1,3 +1,5 @@
+.. _pub_boardcfg_messages_index:
+
 ##############################
 Chapter 3: Board Configuration
 ##############################

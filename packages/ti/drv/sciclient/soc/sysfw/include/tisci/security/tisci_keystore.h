@@ -156,35 +156,6 @@ struct tisci_msg_keystore_import_resp {
     struct tisci_header hdr;
 } __attribute__((__packed__));
 
-
-/* The below command requires both keystore and random number generator functionality */
-/**
- * \brief Request to generate symmetric key from RNG command
- *
- * \param hdr Generic TISCI message header.
- *
- * \param key_index Index in keystore where the generated key must be stored.
- *
- * \param key_len_bytes length of the key in bytes.
- */
-struct tisci_msg_keystore_gen_skey_from_rng_req {
-    struct tisci_header    hdr;
-    uint8_t            key_index;
-    uint8_t            key_len_bytes;
-};
-
-/**
- * \brief Response to generate symmetric key from RNG command
- *
- * \param hdr Generic TISCI message header. ACK response indicates that the
- *            symmetric key of requested length has been successfully generated
- *            and populated into the keystore. NACK response indicates that the
- *            operation could not be completed
- */
-struct tisci_msg_keystore_gen_skey_from_rng_resp {
-    struct tisci_header hdr;
-} __attribute__((__packed__));
-
 #endif /* TISCI_KEYSTORE_H_ */
 
 /* @} */

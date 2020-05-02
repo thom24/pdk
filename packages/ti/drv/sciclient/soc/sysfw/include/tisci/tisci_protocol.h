@@ -91,11 +91,11 @@ struct tisci_header {
     uint8_t    host;
     uint8_t    seq;
     uint32_t    flags;
-/* Windows Visual Studio build has issues with  payload[], changing it only for visual studio build */
-#ifdef _MSC_VER
-    uint32_t    *payload;
-#else
-    uint8_t    payload[];
+    /* Windows Visual Studio build has issues with  payload[], changing it only for visual studio build */ 
+#ifdef _MSC_VER 
+    uint8_t    payload; 
+#else 
+    uint8_t    payload[]; 
 #endif
 };
 
@@ -170,10 +170,10 @@ struct tisci_sec_header {
 #define TISCI_MSG_KEYSTORE_IMPORT_SKEY          (0x9005U)
 /** Message to erase a imported symmetric key in the keystore */
 #define TISCI_MSG_KEYSTORE_ERASE_SKEY           (0x9006U)
-/** Message to import a asymmetric key to the keystore */
-#define TISCI_MSG_KEYSTORE_IMPORT_ASKEY         (0x9007U)
-/** Message to erase a imported asymmetric key in the keystore */
-#define TISCI_MSG_KEYSTORE_ERASE_ASKEY          (0x9008U)
+/* Reserved ID not for (re)use */
+#define TISCI_MSG_SEC_RESERVED_9007             (0x9007U)
+/* Reserved ID not for (re)use */
+#define TISCI_MSG_SEC_RESERVED_9008             (0x9008U)
 /** Message to set a ISC region configuration */
 #define TISCI_MSG_SET_ISC_REGION                (0x9009U)
 /** Message to get a ISC region configuration */
@@ -194,24 +194,30 @@ struct tisci_sec_header {
 #define TISCI_MSG_KEYSTORE_EXPORT_ALL           (0x900EU)
 /** Message to import and decrypt a previously exported keystore blob */
 #define TISCI_MSG_KEYSTORE_IMPORT_ALL           (0x900FU)
-/** Message to perform the RSA signature primitive */
-#define TISCI_MSG_SA2UL_PKA_RSA_SIGN_PRIM       (0x9010U)
-/** Message to perform the RSA verification primitive */
-#define TISCI_MSG_SA2UL_PKA_RSA_VERIFY_PRIM     (0x9011U)
-/** Message to perform the RSA encryption primitive */
-#define TISCI_MSG_SA2UL_PKA_RSA_ENCRYPT_PRIM    (0x9012U)
-/** Message to perform the RSA decryption primitive */
-#define TISCI_MSG_SA2UL_PKA_RSA_DECRYPT_PRIM    (0x9013U)
-/** Message to sign a message hash with an EC private key */
-#define TISCI_MSG_SA2UL_PKA_ECDSA_SIGN          (0x9014U)
-/** Message to verify an EC signature */
-#define TISCI_MSG_SA2UL_PKA_ECDSA_VERIFY        (0x9015U)
+/* Reserved ID not for (re)use */
+#define TISCI_MSG_SEC_RESERVED_9010             (0x9010U)
+/* Reserved ID not for (re)use */
+#define TISCI_MSG_SEC_RESERVED_9011             (0x9011U)
+/* Reserved ID not for (re)use */
+#define TISCI_MSG_SEC_RESERVED_9012             (0x9012U)
+/* Reserved ID not for (re)use */
+#define TISCI_MSG_SEC_RESERVED_9013             (0x9013U)
+/* Reserved ID not for (re)use */
+#define TISCI_MSG_SEC_RESERVED_9014             (0x9014U)
+/* Reserved ID not for (re)use */
+#define TISCI_MSG_SEC_RESERVED_9015             (0x9015U)
 
-/** Message to generate a symmetric key via RNG and save it in the runtime keystore */
-#define TISCI_MSG_KEYSTORE_GEN_SKEY_FROM_RNG    (0x9016U)
+/* Reserved ID not for (re)use */
+#define TISCI_MSG_SEC_RESERVED_9016             (0x9016U)
 
-/** Message to get random numbers */
-#define TISCI_MSG_GET_RANDOM                    (0x9020U)
+/** Message to acquire authentication resources from sysfw */
+#define TISCI_MSG_SA2UL_AUTH_RES_ACQUIRE        (0x9017U)
+
+/** Message to release authentication resources back to sysfw */
+#define TISCI_MSG_SA2UL_AUTH_RES_RELEASE        (0x9018U)
+
+/* Reserved ID not for (re)use */
+#define TISCI_MSG_SEC_RESERVED_9020             (0x9020U)
 
 /** Message to get SOC UID */
 #define TISCI_MSG_GET_SOC_UID                   (0x9021U)
@@ -239,6 +245,9 @@ struct tisci_sec_header {
 
 /** Message ID reserved for write to secure OTP row */
 #define TISCI_MSG_RSVD_OTP_2                    (0x9028U)
+
+/** Message to derive a KEK and return it via TISCI */
+#define TISCI_MSG_SA2UL_GET_DKEK                (0x9029U)
 
 /******************************************************/
 
@@ -333,6 +342,10 @@ struct tisci_sec_header {
 #define TISCI_MSG_RM_RESERVED_1232              (0x1232U)
 /* Reserved ID not for (re)use */
 #define TISCI_MSG_RM_RESERVED_1233              (0x1233U)
+/**
+ * RM TISCI message to delegate a DMA flow to another host for configuration
+ */
+#define TISCI_MSG_RM_UDMAP_FLOW_DELEGATE        (0x1234U)
 /**
  * RM TISCI message to configure a Navigator Subsystem UDMAP global
  * configuration

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # System Firmware Board Configuration Validation
 # Copyright (C) 2020 Texas Instruments Incorporated - http://www.ti.com/
@@ -354,8 +354,7 @@ class sysfw_boardcfg_rules:
                     # Realign the search to an even byte since no boardcfg
                     # structure will start on an odd byte
                     if self.input_binary_class.position() & 0x1:
-                        if self.input_binary_class.is_eof() is not True:
-                            self.get_bytes('B')[0]
+                        self.get_bytes('B')[0]
 
         # If there's one byte left...
         while self.input_binary_class.is_eof() is not True:

@@ -68,6 +68,12 @@ DMA being described.
 | RX_CHAN           | 16 to 139                |
 +-------------------+--------------------------+
 
+
+**NOTE**: The host that owns configurable, also known as common or shared, flows
+is able to delegate them to another host for configuration in order to aid some
+use case configurations.  The configurable flows can be delegated using
+:ref:`TISCI_MSG_RM_UDMAP_FLOW_DELEGATE <pub_rm_public_udmap_flow_delegate>`
+
 +----------------+-----------------------+
 | Rx Flow Type   | Rx Flow Index Range   |
 +================+=======================+
@@ -100,6 +106,12 @@ DMA being described.
 | RX_CHAN                           | 45 to 47                 |
 | (**RESERVED BY SYSTEM FIRMWARE**) |                          |
 +-----------------------------------+--------------------------+
+
+
+**NOTE**: The host that owns configurable, also known as common or shared, flows
+is able to delegate them to another host for configuration in order to aid some
+use case configurations.  The configurable flows can be delegated using
+:ref:`TISCI_MSG_RM_UDMAP_FLOW_DELEGATE <pub_rm_public_udmap_flow_delegate>`
 
 +-----------------------------------+-----------------------+
 | Rx Flow Type                      | Rx Flow Index Range   |

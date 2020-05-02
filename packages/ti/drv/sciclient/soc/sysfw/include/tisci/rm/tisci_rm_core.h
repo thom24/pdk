@@ -112,11 +112,20 @@ struct tisci_msg_rm_get_resource_range_req {
  *
  * \param range_num
  * Number of resources in the range.  Zero if the resource is not valid.
+ *
+ * \param range_start_sec
+ * Start index of retrieved secondary resource range.  Zero if the resource
+ * is not valid.
+ *
+ * \param range_num_sec
+ * Number of resources in secondary range.  Zero if the resource is not valid.
  */
 struct tisci_msg_rm_get_resource_range_resp {
     struct tisci_header    hdr;
     uint16_t            range_start;
     uint16_t            range_num;
+    uint16_t            range_start_sec;
+    uint16_t            range_num_sec;
 } __attribute__((__packed__));
 
 #endif /* RM_TISCI_CORE_H */

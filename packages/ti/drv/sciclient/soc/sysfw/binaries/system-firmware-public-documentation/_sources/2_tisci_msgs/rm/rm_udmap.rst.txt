@@ -47,6 +47,10 @@ message API parameters.
 +------------------+---------------------------------------------------------------------------------------------------------------------+
 | 0x1233           | RESERVED, DO NOT (RE)USE                                                                                            |
 +------------------+---------------------------------------------------------------------------------------------------------------------+
+| 0x1234           | :ref:`TISCI_MSG_RM_UDMAP_FLOW_DELEGATE <pub_rm_public_udmap_flow_delegate>`                                         |
++------------------+---------------------------------------------------------------------------------------------------------------------+
+| N/A              | :ref:`TISCI_MSG_RM_UDMAP_FLOW_DELEGATE Response <pub_rm_public_udmap_flow_delegate_response>`                       |
++------------------+---------------------------------------------------------------------------------------------------------------------+
 | 0x1240           | :ref:`TISCI_MSG_RM_UDMAP_GCFG_CFG <pub_rm_public_udmap_gcfg_cfg>`                                                   |
 +------------------+---------------------------------------------------------------------------------------------------------------------+
 | N/A              | :ref:`TISCI_MSG_RM_UDMAP_GCFG_CFG Response <pub_rm_public_udmap_gcfg_cfg_response>`                                 |
@@ -451,6 +455,74 @@ UDMAP Receive Flow Size Threshold Configure Response Message Parameters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. sysfwapistruct:: tisci_msg_rm_udmap_flow_size_thresh_cfg_resp
+
+TISCI_MSG_RM_UDMAP_FLOW_DELEGATE - UDMAP Flow Delegate
+======================================================
+
+.. _pub_rm_public_udmap_flow_delegate:
+
+UDMAP Flow Delegate Request
+---------------------------
+
+The **UDMAP flow delegate** TISCI message API is used by a host to delegate
+configuration of an owned, according to the RM board configuration, common DMA
+flow to another host.  After delegation the host owning the flow and the
+delegated host are allowed to configure the flow via the flow configuration
+TISCI messages.  The delegation can be cleared by the host who owns the flow
+by setting the clear parameter of the flow delegate message.
+
+The flow index set for delegation must be assigned to the host defined in the
+TISCI header via the RM board configuration resource assignment range list.
+
+Usage
+^^^^^
+
++------------------------+--------+
+| **Message Type**       | Normal |
++------------------------+--------+
+| **Secure Queue Only?** | No     |
++------------------------+--------+
+
+TISCI Message ID
+^^^^^^^^^^^^^^^^
+
+.. sysfwapimacro:: TISCI_MSG_RM_UDMAP_FLOW_DELEGATE
+
+
+UDMAP Flow Delegate Message Parameters
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. sysfwapistruct:: tisci_msg_rm_udmap_flow_delegate_req
+
+.. _pub_rm_public_udmap_flow_delegate_valid_params:
+
+UDMAP Flow Delegate Valid Parameters
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The following table describes the valid bit mappings for the UDMAP flow
+delegate message parameters:
+
++------------------+--------------------------------------------------------------+
+| valid_params Bit | Corresponding tisci_msg_rm_udmap_flow_delegate_req Parameter |
++==================+==============================================================+
+|  0               | delegated_host                                               |
++------------------+--------------------------------------------------------------+
+|  1               | clear                                                        |
++------------------+--------------------------------------------------------------+
+
+.. _pub_rm_public_udmap_flow_delegate_response:
+
+UDMAP Flow Delegate Response
+----------------------------
+
+The **udmap flow delegate response** message returns the result status of the
+processed **udmap flow delegate** message.
+
+UDMAP Flow Delegate Response Message Parameters
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. sysfwapistruct:: tisci_msg_rm_udmap_flow_delegate_resp
+
 
 TISCI_MSG_RM_UDMAP_GCFG_CFG - UDMAP Global Configuration Configure
 ==================================================================
