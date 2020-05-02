@@ -153,11 +153,15 @@ if [ "$SKIP_BUILD" != "YES" ]; then
     cd $ROOTDIR/ti/build
 
     # J721e
+    make -j -s sciclient_boardcfg BOARD=j721e_evm
+    make -j -s sciclient_boardcfg BOARD=j721e_evm BUILD_HS=yes
     make -j -s sciclient_ccs_init_clean BOARD=j721e_evm
     make -j -s sciclient_ccs_init BOARD=j721e_evm
     $COPY $ROOTDIR/ti/binary/sciclient_ccs_init/bin/j721e/sciclient_ccs_init_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j721e/
 
     # AM65xx
+    make -j -s sciclient_boardcfg BOARD=am65xx_evm
+    make -j -s sciclient_boardcfg BOARD=am65xx_evm BUILD_HS=yes
     make -j -s sciclient_ccs_init_clean BOARD=am65xx_evm
     make -j -s sciclient_ccs_init BOARD=am65xx_evm
     $COPY $ROOTDIR/ti/binary/sciclient_ccs_init/bin/am65xx/sciclient_ccs_init_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/am65xx/
@@ -171,8 +175,10 @@ if [ "$SKIP_GEN_BIN" != "YES" ];  then
 
     cd $ROOTDIR/ti/drv/sciclient/tools/
     ./firmwareHeaderGen.sh am65x
+    ./firmwareHeaderGen.sh am65x-hs
     ./firmwareHeaderGen.sh am65x_sr2
     ./firmwareHeaderGen.sh j721e
+    ./firmwareHeaderGen.sh j721e-hs
 
 fi
 
