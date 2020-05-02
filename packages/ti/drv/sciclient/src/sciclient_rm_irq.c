@@ -1448,9 +1448,12 @@ static bool Sciclient_rmIrqRouteValidate(struct Sciclient_rmIrqCfg  *cfg)
     uint16_t i, j;
     const struct Sciclient_rmIrqNode *cur_n, *next_n = NULL;
     const struct Sciclient_rmIrqIf *cur_if;
-    bool cur_outp_valid, next_inp_valid;
+    bool cur_outp_valid, next_inp_valid, range_check_valid;
     uint32_t cur_inp;
     uint16_t cur_outp, next_inp;
+    struct tisci_msg_rm_get_resource_range_req req;
+    struct tisci_msg_rm_get_resource_range_resp host_resp;
+    struct tisci_msg_rm_get_resource_range_resp all_resp;
 
     if (cfg->s_ia == SCICLIENT_RM_DEV_NONE) {
         /* First node's interface must contain the source IRQ */
@@ -1518,7 +1521,6 @@ static bool Sciclient_rmIrqRouteValidate(struct Sciclient_rmIrqCfg  *cfg)
                                cur_if->rbase);
 
                 cur_outp = cfg->vint;
-                /* TODO: Compare against vint resource range retrieval */
                 cur_outp_valid = true;
                 if (Sciclient_rmIrInpIsFree(next_n->id, next_inp) ==
                     CSL_PASS) {
@@ -1545,7 +1547,6 @@ static bool Sciclient_rmIrqRouteValidate(struct Sciclient_rmIrqCfg  *cfg)
             } else {
                 /* outp is from source peripheral and specified
                  * by configuration so always valid */
-                /* TODO: Compare against IR output resource range retrieval */
                 cur_outp_valid = true;
                 next_inp_valid = false;
 
@@ -1561,18 +1562,50 @@ static bool Sciclient_rmIrqRouteValidate(struct Sciclient_rmIrqCfg  *cfg)
         }
 
         if ((i > 0u) && (i < (Sciclient_rmPsGetPsp() - 1u))) {
+            /* Get the IR output resource range host assignments */
+            req.secondary_host = cfg->host;
+            req.type = cur_n->id;
+            req.subtype = TISCI_RESASG_SUBTYPE_IR_OUTPUT;
+            if (Sciclient_rmGetResourceRange(&req, &host_resp,
+                    SCICLIENT_SERVICE_WAIT_FOREVER) != CSL_PASS) {
+                valid = false;
+                break;
+            }
+            req.secondary_host = TISCI_HOST_ID_ALL;
+            if (Sciclient_rmGetResourceRange(&req, &all_resp,
+                    SCICLIENT_SERVICE_WAIT_FOREVER) != CSL_PASS) {
+                valid = false;
+                break;
+            }
+
             for (j = cur_if->lbase; j < cur_if->lbase + cur_if->len;
                  j++) {
                 cur_outp_valid = false;
                 next_inp_valid = false;
+                range_check_valid = false;
 
                 cur_outp = j;
                 next_inp = SCICLIENT_OUTP_TO_INP(cur_outp, cur_if->lbase,
                                cur_if->rbase);
 
+                /* Check IR output against boardcfg ranges. First against
+                 * the passed host then against HOST_ID_ALL if the passed
+                 * host does not match */
+                if ((((cur_outp >= host_resp.range_start) &&
+                      (cur_outp < host_resp.range_start + host_resp.range_num)) ||
+                     ((cur_outp >= host_resp.range_start_sec) &&
+                      (cur_outp < host_resp.range_start_sec +
+                                  host_resp.range_num_sec))) ||
+                    (((cur_outp >= all_resp.range_start) &&
+                      (cur_outp < all_resp.range_start + all_resp.range_num)) ||
+                     ((cur_outp >= all_resp.range_start_sec) &&
+                      (cur_outp < all_resp.range_start_sec +
+                                  all_resp.range_num_sec)))) {
+                    range_check_valid = true;
+                }
+
                 if (Sciclient_rmIrOutpIsFree(cur_n->id, cur_outp) ==
                     CSL_PASS) {
-                    /* TODO: Compare against IR output resource range retrieval */
                     cur_outp_valid = true;
                 }
                 if (Sciclient_rmIrInpIsFree(next_n->id, next_inp) ==
@@ -1581,7 +1614,8 @@ static bool Sciclient_rmIrqRouteValidate(struct Sciclient_rmIrqCfg  *cfg)
                 }
 
                 if ((cur_outp_valid == true) &&
-                    (next_inp_valid == true)) {
+                    (next_inp_valid == true) &&
+                    (range_check_valid == true)) {
                     break;
                 }
             }
@@ -1603,7 +1637,6 @@ static bool Sciclient_rmIrqRouteValidate(struct Sciclient_rmIrqCfg  *cfg)
 
                 if (Sciclient_rmIrOutpIsFree(cur_n->id, cur_outp) ==
                     CSL_PASS) {
-                    /* TODO: Compare against IR output resource range retrieval */
                     cur_outp_valid = true;
                 }
             }
