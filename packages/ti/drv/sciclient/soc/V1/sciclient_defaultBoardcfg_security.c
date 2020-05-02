@@ -87,6 +87,25 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
         /* This is an array with 32 entries */
         .otp_entry = {0},
     }, 
+    /* DKEK configuration */
+    .dkek_config = {
+        .subhdr = {
+            .magic = TISCI_BOARDCFG_DKEK_CFG_MAGIC_NUM,
+            .size = sizeof(struct tisci_boardcfg_dkek),
+        },
+        .allowed_hosts = { TISCI_HOST_ID_ALL, 0, 0, 0 },
+        .allow_dkek_export_tisci = 0x5A,
+        .rsvd = {0, 0, 0},
+    },
+    /* SA2UL RM config */
+    .sa2ul_auth_cfg = {
+        .subhdr = {
+            .magic = TISCI_BOARDCFG_SA2UL_CFG_MAGIC_NUM_RSVD,
+            .size = 0,
+        },
+        .auth_resource_owner = 0,
+        .rsvd = {0, 0, 0},
+    },
 };
 #endif
 
