@@ -14,6 +14,8 @@ endif
   GCC_ARCH64_VERSION=9.2-2019.12
   GCC_ARCH64_BIN_PREFIX_STR=aarch64-elf
   CGT_VERSION=8.3.2
+  BIOS_VERSION=6_82_00_16
+  XDC_VERSION=3_61_00_16_core
 
   CGT_C7X_VERSION=1.3.0.STS
   CGT_ARM_VERSION=20.2.0.LTS
@@ -26,10 +28,6 @@ ifeq ($(BOARD),$(filter $(BOARD), am65xx_evm am65xx_idk j721e_evm j7200_evm))
   GCC_ARCH64_BIN_PREFIX_STR=aarch64-none-elf
 endif
 
-  #Component versions for non-TDA builds
-  BIOS_VERSION=6_76_03_01
-  XDC_VERSION=3_55_02_22_core
-  CGT_VERSION=8.3.2
 ifeq ($(BOARD),$(filter $(BOARD), tpr12_evm))
   BIOS_VERSION=6_82_00_16
   XDC_VERSION=3_61_00_16_core
@@ -48,6 +46,11 @@ endif
   IPC_VERSION=3_50_04_08
   NDK_VERSION=3_61_01_01
   NS_VERSION=2_60_01_06
+
+ifeq ($(BOARD),$(filter $(BOARD), am65xx_evm am65xx_idk j721e_evm j7200_evm))
+  NDK_VERSION=3_75_01_00
+  NS_VERSION=2_75_00_17
+endif
 
   UIA_VERSION=2_30_01_02
   XDAIS_VERSION=7_24_00_04
