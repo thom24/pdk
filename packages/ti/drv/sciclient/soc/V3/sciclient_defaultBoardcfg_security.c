@@ -39,7 +39,10 @@
 /* ========================================================================== */
 /*                             Include Files                                  */
 /* ========================================================================== */
+
 #include <ti/drv/sciclient/soc/V3/sciclient_defaultBoardcfg.h>
+#include <ti/drv/sciclient/soc/sysfw/include/j721e/tisci_hosts.h>
+#include <ti/drv/sciclient/soc/sysfw/include/j721e/tisci_boardcfg_constraints.h>
 
 /* ========================================================================== */
 /*                            Global Variables                                */
@@ -59,7 +62,7 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
     .processor_acl_list = {
         .subhdr = {
             .magic = TISCI_BOARDCFG_PROC_ACL_MAGIC_NUM,
-            .size = sizeof(struct tisci_boardcfg_proc_acl),
+            .size = (uint16_t) sizeof(struct tisci_boardcfg_proc_acl),
         },
         .proc_acl_entries = {0},
     },
@@ -68,9 +71,41 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
     .host_hierarchy = {
         .subhdr = {
             .magic = TISCI_BOARDCFG_HOST_HIERARCHY_MAGIC_NUM,
-            .size = sizeof(struct tisci_boardcfg_host_hierarchy),
+            .size = (uint16_t) sizeof(struct tisci_boardcfg_host_hierarchy),
         },
         .host_hierarchy_entries = {0},
     },
+
+    /* OTP access configuration */
+    .otp_config = {
+        .subhdr = {
+            .magic = TISCI_BOARDCFG_OTP_CFG_MAGIC_NUM,
+            .size = sizeof(struct tisci_boardcfg_extended_otp),
+        },
+        /* Host ID 0 is DMSC. This means no host has write acces to OTP array */
+        .write_host_id = 0,
+        /* This is an array with 32 entries */
+        .otp_entry = {0},
+    }, 
+    /* DKEK configuration */
+    .dkek_config = {
+        .subhdr = {
+            .magic = TISCI_BOARDCFG_DKEK_CFG_MAGIC_NUM,
+            .size = sizeof(struct tisci_boardcfg_dkek),
+        },
+        .allowed_hosts = { TISCI_HOST_ID_ALL, 0, 0, 0 },
+        .allow_dkek_export_tisci = 0x5A,
+        .rsvd = {0, 0, 0},
+    },
+    /* SA2UL RM config */
+    .sa2ul_auth_cfg = {
+        .subhdr = {
+            .magic = TISCI_BOARDCFG_SA2UL_CFG_MAGIC_NUM_RSVD,
+            .size = 0,
+        },
+        .auth_resource_owner = 0,
+        .rsvd = {0, 0, 0},
+    },
 };
 #endif
+

@@ -237,6 +237,12 @@ struct tisci_msg_proc_handover_resp {
 /** SSCLK_MODE_DIV_CLK_MODE_VALUE Div4 clock mode. */
 #define TISCI_MSG_VAL_PROC_BOOT_CFG_FLAG_C6X_SSCLKMV_DIV4    (0x00000003U)
 
+/* M4F Config Flags */
+
+/** M4F Invasive debug */
+#define TISCI_MSG_VAL_PROC_BOOT_CFG_FLAG_M4F_DBG_EN            (0x00000001U)
+/** M4F Non-Invasive debug */
+#define TISCI_MSG_VAL_PROC_BOOT_CFG_FLAG_M4F_DBG_NIDEN         (0x00000002U)
 /**
  * \brief Processor Boot Configuration
  * \param hdr Message header
@@ -389,6 +395,11 @@ struct tisci_msg_proc_get_status_req {
 #define TISCI_MSG_VAL_PROC_BOOT_STATUS_FLAG_R5_CLK_GATED      (0x00000004U)
 /** R5 Is Lockstep configuration permitted */
 #define TISCI_MSG_VAL_PROC_BOOT_STATUS_FLAG_R5_LOCKSTEP_PERMITTED     (0x00000100U)
+
+/* M4F Status Flags */
+
+/** M4F Set if the core is in WFI state */
+#define TISCI_MSG_VAL_PROC_BOOT_STATUS_FLAG_M4F_WFI            (0x00000002U)
 
 /**
  * \brief Processor Status Response

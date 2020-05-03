@@ -1079,7 +1079,7 @@ static const struct Sciclient_rmIrqNode tisci_irq_PCIE0 = {
 };
 
 
-const struct Sciclient_rmIrqNode * const irq_tree[] = {
+const struct Sciclient_rmIrqNode * const gRmIrqTree[] = {
     &tisci_irq_CMP_EVENT_INTROUTER0,
     &tisci_irq_MAIN_GPIOMUX_INTROUTER0,
     &tisci_irq_MCU_MCU_GPIOMUX_INTROUTER0,

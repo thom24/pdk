@@ -14,6 +14,9 @@ endif
 ifeq ($(SOC),$(filter $(SOC), j721e j7200))
   SCICLIENT_SOCVER = V1
 endif
+ifeq ($(SOC),$(filter $(SOC), am64x))
+  SCICLIENT_SOCVER = V3
+endif
 
 # Special case for Windows Build
 ifeq ($(OS),Windows_NT)
@@ -72,11 +75,13 @@ endif
 # Parser SOC derivation
 ifeq ($(SOC),$(filter $(SOC), j721e j7200))
 PARSER_SOC := j721e
-else
+endif
 ifeq ($(SOC),$(filter $(SOC), am65xx))
 PARSER_SOC := am6
 PARSER_SOC2 := am65x_sr2
 endif
+ifeq ($(SOC),$(filter $(SOC), am64x))
+PARSER_SOC := am64x
 endif
 
 VALIDATOR_JSON := $(ROOTDIR)/ti/drv/sciclient/soc/sysfw/binaries/scripts/sysfw_boardcfg_rules.json
