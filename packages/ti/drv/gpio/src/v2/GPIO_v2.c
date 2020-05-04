@@ -79,27 +79,27 @@ typedef struct GPIO_MCB_t
     /**
      * \brief   HWI Handle to the high priority interrupts
      */
-    HwiP_Handle         hwiHandleHigh[GPIO_INST_MAX];
+    HwiP_Handle         hwiHandleHigh[GPIO_INST_MAX + 1U];
 
     /**
      * \brief   HWI Handle to the low priority interrupts
      */
-    HwiP_Handle         hwiHandleLow[GPIO_INST_MAX];
+    HwiP_Handle         hwiHandleLow[GPIO_INST_MAX + 1U];
 
     /**
      * \brief   Number of high priority interrupts detected
      */
-    uint32_t            numHighPriorityInterrupts[GPIO_INST_MAX];
+    uint32_t            numHighPriorityInterrupts[GPIO_INST_MAX + 1U];
 
     /**
      * \brief   Number of low priority interrupts detected
      */
-    uint32_t            numLowPriorityInterrupts[GPIO_INST_MAX];
+    uint32_t            numLowPriorityInterrupts[GPIO_INST_MAX + 1U];
 
     /**
      * \brief   index in the GPIO_v2_config object corresponding to each pin.
      */
-    uint8_t             pinIndex[GPIO_INST_MAX][GPIO_MAX_PORT][GPIO_MAX_PINS_PER_PORT];
+    uint8_t             pinIndex[GPIO_INST_MAX + 1U][GPIO_MAX_PORT][GPIO_MAX_PINS_PER_PORT];
 }GPIO_MCB;
 
 
@@ -198,29 +198,37 @@ static void GPIO_HighPriorityISR (uintptr_t arg)
     uint32_t     pendingInterrupt;
     GPIO_v2_HwAttrs  *gpioHwAttr;
     uint32_t        inst;
+    int32_t         retVal;
 
     /* We need to process all the interrupts which are pending */
     while (1)
     {
         /* Get the hardware attrib structure. */
         inst   = (uint32_t) arg;
-        GPIO_getHwAttr(&gpioHwAttr, inst);
+        retVal = GPIO_getHwAttr(&gpioHwAttr, inst);
 
-        /* Get the high priority pending GPIO interrupt: */
-        pendingInterrupt = GPIO_getHighLevelPendingInterrupt(gpioHwAttr->gpioBaseAddr);
-
-        /* Have we processed all the GPIO interrupts? */
-        if (pendingInterrupt == 0U)
+        if ((retVal == 0) && (gpioHwAttr != NULL))
         {
-            /* YES: There are no more pending interrupts. */
+            /* Get the high priority pending GPIO interrupt: */
+            pendingInterrupt = GPIO_getHighLevelPendingInterrupt(gpioHwAttr->gpioBaseAddr);
+
+            /* Have we processed all the GPIO interrupts? */
+            if (pendingInterrupt == 0U)
+            {
+                /* YES: There are no more pending interrupts. */
+                break;
+            }
+
+            /* Increment the statistics: */
+            gGPIOMCB.numHighPriorityInterrupts[inst]++;
+
+            /* Process the pending interrupt: */
+            GPIO_processInterrupt (inst, pendingInterrupt);
+        }
+        else
+        {
             break;
         }
-
-        /* Increment the statistics: */
-        gGPIOMCB.numHighPriorityInterrupts[inst]++;
-
-        /* Process the pending interrupt: */
-        GPIO_processInterrupt (inst, pendingInterrupt);
     }
 }
 
@@ -237,29 +245,37 @@ static void GPIO_LowPriorityISR (uintptr_t arg)
     uint32_t     pendingInterrupt;
     GPIO_v2_HwAttrs  *gpioHwAttr;
     uint32_t        inst;
+    int32_t         retVal;
 
     /* We need to process all the interrupts which are pending */
     while (1)
     {
         /* Get the hardware attrib structure. */
         inst   = (uint32_t) arg;
-        GPIO_getHwAttr(&gpioHwAttr, inst);
+        retVal = GPIO_getHwAttr(&gpioHwAttr, inst);
 
-        /* Get the low priority pending GPIO interrupt: */
-        pendingInterrupt = GPIO_getLowLevelPendingInterrupt(gpioHwAttr->gpioBaseAddr);
-
-        /* Have we processed all the GPIO interrupts? */
-        if (pendingInterrupt == 0U)
+        if ((retVal == 0) && (gpioHwAttr != NULL))
         {
-            /* YES: There are no more pending interrupts. */
+            /* Get the low priority pending GPIO interrupt: */
+            pendingInterrupt = GPIO_getLowLevelPendingInterrupt(gpioHwAttr->gpioBaseAddr);
+
+            /* Have we processed all the GPIO interrupts? */
+            if (pendingInterrupt == 0U)
+            {
+                /* YES: There are no more pending interrupts. */
+                break;
+            }
+
+            /* Increment the statistics: */
+            gGPIOMCB.numLowPriorityInterrupts[inst]++;
+
+            /* Process the pending interrupt: */
+            GPIO_processInterrupt (inst, pendingInterrupt);
+        }
+        else
+        {
             break;
         }
-
-        /* Increment the statistics: */
-        gGPIOMCB.numLowPriorityInterrupts[inst]++;
-
-        /* Process the pending interrupt: */
-        GPIO_processInterrupt (inst, pendingInterrupt);
     }
 }
 
