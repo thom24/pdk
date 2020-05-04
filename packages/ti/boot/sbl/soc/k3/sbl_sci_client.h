@@ -53,6 +53,10 @@ extern "C" {
 #define SBL_SYSFW_MAX_SIZE         (0x41000U)
 #endif
 
+
+#define SBL_SYS_STATUS_REG              (0x44234100U)
+#define SBL_SYS_STATUS_DEV_TYPE_MASK    (0x0000000FU)
+#define SBL_SYS_STATUS_DEV_TYPE_GP      (0x3)
 /**
  * @brief - SBL_SciClientInit() - function to do load DMSC firmware.
  *

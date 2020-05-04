@@ -57,49 +57,23 @@ uint32_t gSciclient_firmware[1];
 uint32_t SBL_IsSysfwEnc(uint8_t *x509_cert_ptr)
 {
     static uint32_t retVal = SBL_SYSFW_NOT_PROCESSED;
-    uint8_t *encSeqPtr = NULL;
-    uint8_t *innerCertStart = NULL;
-    uint32_t inner_cert_len = 0;
-    /* oid encoding of encryption seq extension for RBL - 1.3.6.1.4.1.294.1.4 */
-    uint8_t enc_seq_oid[] = {0x06, 0x09, 0x2B, 0x06, 0x01, 0x04, 0x01, 0x82, 0x26, 0x01, 0x04};
+    uint32_t dev_type;
 
     SBL_ADD_PROFILE_POINT;
 
+    dev_type = CSL_REG32_RD(SBL_SYS_STATUS_REG) & SBL_SYS_STATUS_DEV_TYPE_MASK;
     if (x509_cert_ptr)
     {
-        uint32_t SBL_GetCertLen(uint8_t *x509_cert_ptr);
-
-#if defined (BUILD_HS)
-        uint32_t outer_cert_len = 0;
-        outer_cert_len = SBL_GetCertLen(x509_cert_ptr);
-        innerCertStart = x509_cert_ptr + outer_cert_len;
-        inner_cert_len = SBL_GetCertLen(innerCertStart);
-#else
-        inner_cert_len = 0;
-#endif
-    }
-
-    if (inner_cert_len)
-    {
-        uint8_t *SBL_FindSeq(uint8_t *x509_cert_ptr, uint32_t x509_cert_size, uint8_t *seq_oid, uint8_t seq_len);
-
-        encSeqPtr = SBL_FindSeq(innerCertStart, inner_cert_len, enc_seq_oid, sizeof(enc_seq_oid));
-        if (encSeqPtr)
+        if (dev_type == SBL_SYS_STATUS_DEV_TYPE_GP)
+        {
+            /* SYSFW is single signed */
+            retVal = SBL_SYSFW_CLEAR_TEXT;
+        }
+        else
         {
             /* SYSFW is double signed and encrypted */
             retVal = SBL_SYSFW_ENCRYPTED;
         }
-        else
-        {
-            /* SYSFW is double signed but not encrypted */
-            SBL_log(SBL_LOG_ERR,"invalid SYSFW signature \n");
-            SblErrLoop(__FILE__, __LINE__);
-        }
-    }
-    else if ((x509_cert_ptr) && (retVal == SBL_SYSFW_NOT_PROCESSED))
-    {
-        /* SYSFW is single signed */
-        retVal = SBL_SYSFW_CLEAR_TEXT;
     }
 
     SBL_ADD_PROFILE_POINT;
