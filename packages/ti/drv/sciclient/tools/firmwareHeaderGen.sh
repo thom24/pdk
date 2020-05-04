@@ -34,7 +34,8 @@
 #         For AM65XX-HS : ./firmwareHeaderGen.sh am65x-hs
 #         For J721E     : ./firmwareHeaderGen.sh j721e
 #         For J721E-HS  : ./firmwareHeaderGen.sh j721e-hs
-#         For AM64x     : ./firmwareHeaderGen.sh am64x
+#         For AM64x     : ./firmwareHeaderGen.sh am64x-vlab
+#         For AM64x     : ./firmwareHeaderGen.sh am64x-zebu
 export RM=rm
 export MV=mv
 export MAKE=gcc
@@ -102,9 +103,14 @@ export SCICLIENT_FIRMWARE_HEADER=sciclient_firmware_V1.h
 SYSFW_SE_SIGNED=$SCI_CLIENT_OUT_SOC_DIR/sysfw.bin
 fi
 
-if [ "$FW_SOC" = "am64x" ]; then
+if [ "$FW_SOC" = "am64x-vlab" ]; then
 export SCI_CLIENT_OUT_SOC_DIR=$SCI_CLIENT_DIR/soc/V3
 export FIRMWARE_SILICON=$SCI_CLIENT_IN_SOC_DIR/ti-sci-firmware-am64x-gp-vlab-rom.bin
+export SCICLIENT_FIRMWARE_HEADER=sciclient_firmware_V3_VLAB.h
+SYSFW_SE_SIGNED=$SCI_CLIENT_OUT_SOC_DIR/sysfw-vlab.bin
+elif [ "$FW_SOC" = "am64x-zebu" ]; then
+export SCI_CLIENT_OUT_SOC_DIR=$SCI_CLIENT_DIR/soc/V3
+export FIRMWARE_SILICON=$SCI_CLIENT_IN_SOC_DIR/ti-sci-firmware-am64x-gp-zebu-rom.bin
 export SCICLIENT_FIRMWARE_HEADER=sciclient_firmware_V3.h
 SYSFW_SE_SIGNED=$SCI_CLIENT_OUT_SOC_DIR/sysfw.bin
 else
