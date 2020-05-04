@@ -70,7 +70,6 @@ PACKAGE_SRCS_COMMON += soc/sysfw/include
 ifeq ($(SOC),$(filter $(SOC), am65xx))
 PACKAGE_SRCS_COMMON += soc/sysfw/binaries/ti-sci-firmware-am65x-gp.bin
 PACKAGE_SRCS_COMMON += soc/sysfw/binaries/ti-sci-firmware-am65x_sr2-gp.bin
-PACKAGE_SRCS_COMMON += soc/sysfw/binaries/am65x_sr2
 
 ifeq ($(BUILD_HS),yes)
 PACKAGE_SRCS_COMMON += soc/sysfw/binaries/ti-sci-firmware-am65x-hs-cert.bin
