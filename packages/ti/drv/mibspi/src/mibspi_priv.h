@@ -311,6 +311,7 @@ typedef struct MibSpiDriver_Object_t
  */
 int32_t MIBSPI_socGetInstIndex(enum MibSpi_InstanceId mibspiInstId, uint32_t *idx);
 MIBSPI_Handle MIBSPI_socGetInstHandle(enum MibSpi_InstanceId mibspiInstanceId);
+void MIBSPI_socMemInit(enum MibSpi_InstanceId mibspiInstanceId);
 
 MIBSPI_Handle MIBSPI_openCore(MIBSPI_Handle handle, const MIBSPI_Params *params);
 void MIBSPI_closeCore(MIBSPI_Handle handle);

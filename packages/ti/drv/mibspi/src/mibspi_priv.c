@@ -848,6 +848,17 @@ static void MIBSPI_initMaster(MibSpi_HwCfg* ptrHwCfg, const MIBSPI_Params * para
     /* Enable MibSpi multibuffered mode and enable buffer RAM */
     CSL_FINS(ptrMibSpiReg->MIBSPIE,SPI_MIBSPIE_MSPIENA, 1U);
 
+    /* Wait for buffer initialization complete before accessing MibSPI Ram */
+    while(1)
+    {
+        flag = CSL_FEXT(ptrMibSpiReg->SPIFLG,SPI_SPIFLG_BUFINITACTIVE);
+        if(flag == 0)
+        {
+            break;
+        }
+    }
+
+    MIBSPI_socMemInit(ptrHwCfg->mibspiInstId);
     /* Set MibSpi master mode and clock configuration */
     regVal = ptrMibSpiReg->SPIGCR1;
     CSL_FINS(regVal,SPI_SPIGCR1_MASTER, CSL_SPI_SPIGCR1_MASTER_MASTER);
@@ -903,16 +914,6 @@ static void MIBSPI_initMaster(MibSpi_HwCfg* ptrHwCfg, const MIBSPI_Params * para
        Debug Note: Only CS0 can be set to 1 */
     CSL_FINS(ptrMibSpiReg->SPIDEF,SPI_SPIDEF_CSDEF0, 0xFFU);
 
-    /* Wait for buffer initialization complete before accessing MibSPI Ram */
-    while(1)
-    {
-        flag = CSL_FEXT(ptrMibSpiReg->SPIFLG,SPI_SPIFLG_BUFINITACTIVE);
-        if(flag == 0)
-        {
-            break;
-        }
-    }
-
     /* Enable ECC if enabled */
     if(params->eccEnable)
     {
@@ -963,10 +964,24 @@ static void MIBSPI_initMaster(MibSpi_HwCfg* ptrHwCfg, const MIBSPI_Params * para
 
         for (ramBufIndex = 0; ramBufIndex < params->u.masterParams.slaveProf[index].ramBufLen; ramBufIndex++)
         {
-            CSL_MIBSPIRAM_SET_TX_BUFMODE(ptrMibSpiRam, ramBufOffset, MIBSPI_RAM_BUFFER_MODE);
-            CSL_MIBSPIRAM_SET_TX_CSHOLD(ptrMibSpiRam, ramBufOffset, params->csHold);
-            CSL_MIBSPIRAM_SET_TX_WDEL(ptrMibSpiRam, ramBufOffset, wDelayEnable);
-            CSL_MIBSPIRAM_SET_TX_CSNR(ptrMibSpiRam, ramBufOffset, csnr);
+            uint32_t txControlWd = 0;
+            uint16_t txCtrlWd16;
+            volatile uint16_t *txCtrlWdPtr;
+            
+            CSL_FINS(txControlWd, MIBSPIRAM_TX_BUFMODE, MIBSPI_RAM_BUFFER_MODE);
+            CSL_FINS(txControlWd, MIBSPIRAM_TX_CSHOLD, params->csHold);
+            CSL_FINS(txControlWd, MIBSPIRAM_TX_WDEL, wDelayEnable);
+            CSL_FINS(txControlWd, MIBSPIRAM_TX_CSNR, csnr);
+            txCtrlWd16 = ((txControlWd & 0xFFFF0000) >> 16);
+            txCtrlWdPtr = (uint16_t *)&ptrMibSpiRam->tx[ramBufOffset];
+#ifdef __little_endian__
+            txCtrlWdPtr++;
+#elif defined(__big_endian__)
+            //Do nothing. FIrst 16 bit word is the control word */
+#else
+#error "Unknown endianness"
+#endif
+            *txCtrlWdPtr = txCtrlWd16;
             ramBufOffset++;
         }
 
@@ -1041,6 +1056,18 @@ static void MIBSPI_initSlave(MibSpi_HwCfg* ptrHwCfg, const MIBSPI_Params *params
     /* Enable MIBSPI1 multibuffered mode and enable buffer RAM */
     CSL_FINS(ptrMibSpiReg->MIBSPIE,SPI_MIBSPIE_MSPIENA, 1U);
 
+    /* Wait for buffer initialization complete before accessing MibSPI registers */
+    while(1)
+    {
+        flag = CSL_FEXT(ptrMibSpiReg->SPIFLG,SPI_SPIFLG_BUFINITACTIVE);
+        if(flag == 0)
+        {
+            break;
+        }
+    }
+
+    MIBSPI_socMemInit(ptrHwCfg->mibspiInstId);
+
     regVal = ptrMibSpiReg->SPIGCR1;
     /* MIBSPI1 slave mode and clock configuration */
     CSL_FINS(regVal,SPI_SPIGCR1_MASTER, CSL_SPI_SPIGCR1_MASTER_SLAVE);
@@ -1078,15 +1105,6 @@ static void MIBSPI_initSlave(MibSpi_HwCfg* ptrHwCfg, const MIBSPI_Params *params
     CSL_FINS(regVal, SPI_SPIFMT_CHARLEN, (uint32_t)params->dataSize);    /* CHARlEN */
     ptrMibSpiReg->SPIFMT[3] = regVal;
 
-    /* Wait for buffer initialization complete before accessing MibSPI registers */
-    while(1)
-    {
-        flag = CSL_FEXT(ptrMibSpiReg->SPIFLG,SPI_SPIFLG_BUFINITACTIVE);
-        if(flag == 0)
-        {
-            break;
-        }
-    }
 
     /* Enable ECC if enabled */
     if(params->eccEnable)
@@ -1116,9 +1134,23 @@ static void MIBSPI_initSlave(MibSpi_HwCfg* ptrHwCfg, const MIBSPI_Params *params
     /* Initialize TX Buffer Ram, every element contains 16bits of data */
     for (index = 0; index < MIBSPI_RAM_MAX_ELEM; index++)
     {
-        CSL_MIBSPIRAM_SET_TX_BUFMODE(ptrMibSpiRam, index, MIBSPI_RAM_BUFFER_MODE);
-        CSL_MIBSPIRAM_SET_TX_CSHOLD(ptrMibSpiRam, index, params->csHold);
-        CSL_MIBSPIRAM_SET_TX_CSNR(ptrMibSpiRam, index, MIBSPI_CS_NONE);
+            uint32_t txControlWd = 0;
+            uint16_t txCtrlWd16;
+            uint16_t *txCtrlWdPtr;
+            
+            CSL_FINS(txControlWd, MIBSPIRAM_TX_BUFMODE, MIBSPI_RAM_BUFFER_MODE);
+            CSL_FINS(txControlWd, MIBSPIRAM_TX_CSHOLD, params->csHold);
+            CSL_FINS(txControlWd, MIBSPIRAM_TX_CSNR, MIBSPI_CS_NONE);
+            txCtrlWd16 = ((txControlWd & 0xFFFF0000) >> 16);
+            txCtrlWdPtr = (uint16_t *)&ptrMibSpiRam->tx[index];
+#ifdef __little_endian__
+            txCtrlWdPtr++;
+#elif defined(__big_endian__)
+            //Do nothing. FIrst 16 bit word is the control word */
+#else
+#error "Unknown endianness"
+#endif
+            *txCtrlWdPtr = txCtrlWd16;
     }
 
     /* Clear pending interrupts */
