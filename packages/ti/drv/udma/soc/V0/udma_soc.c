@@ -244,15 +244,6 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
     }
 
     /* Init other variables */
-    drvHandle->srcIdRingIrq          = drvHandle->devIdRing;
-    drvHandle->blkCopyRingIrqOffset  = TISCI_RINGACC0_OES_IRQ_SRC_IDX_START; 
-    drvHandle->txRingIrqOffset       = TISCI_RINGACC0_OES_IRQ_SRC_IDX_START;
-    drvHandle->rxRingIrqOffset       = TISCI_RINGACC0_OES_IRQ_SRC_IDX_START;
-    drvHandle->blkCopyChOffset       = 0U; 
-    drvHandle->txChOffset            = 0U;
-    drvHandle->extChOffset           = drvHandle->txChOffset + pUdmapRegs->txChanCnt;
-    drvHandle->rxChOffset            =
-        drvHandle->extChOffset + pUdmapRegs->txExtUtcChanCnt;
     if(UDMA_INST_ID_MCU_0 == instId)
     {
         drvHandle->udmapSrcThreadOffset = CSL_PSILCFG_NAVSS_MCU_UDMAP0_TSTRM_THREAD_OFFSET;
@@ -277,6 +268,15 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
         drvHandle->devIdUdma            = TISCI_DEV_NAVSS0_UDMAP0;
         drvHandle->devIdPsil            = TISCI_DEV_NAVSS0;
     }
+    drvHandle->srcIdRingIrq          = drvHandle->devIdRing;
+    drvHandle->blkCopyRingIrqOffset  = TISCI_RINGACC0_OES_IRQ_SRC_IDX_START; 
+    drvHandle->txRingIrqOffset       = TISCI_RINGACC0_OES_IRQ_SRC_IDX_START;
+    drvHandle->rxRingIrqOffset       = TISCI_RINGACC0_OES_IRQ_SRC_IDX_START;
+    drvHandle->blkCopyChOffset       = 0U; 
+    drvHandle->txChOffset            = 0U;
+    drvHandle->extChOffset           = drvHandle->txChOffset + pUdmapRegs->txChanCnt;
+    drvHandle->rxChOffset            =
+        drvHandle->extChOffset + pUdmapRegs->txExtUtcChanCnt;
 
     return;
 }

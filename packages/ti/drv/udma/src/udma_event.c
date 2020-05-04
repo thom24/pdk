@@ -128,7 +128,7 @@ int32_t Udma_eventRegister(Udma_DrvHandle drvHandle,
         eventHandle->pIaVintrRegs   = (volatile CSL_intaggr_intrRegs_vint *) NULL_PTR;
     }
 
-    if ((UDMA_RA_TYPE_NORMAL             != drvHandle->instType) && 
+    if ((UDMA_INST_TYPE_NORMAL           != drvHandle->instType) && 
         (UDMA_EVENT_TYPE_TEARDOWN_PACKET == eventPrms->eventType))
     {
         /* In case of devices like AM64x, Teardown is not supported.
@@ -217,7 +217,7 @@ int32_t Udma_eventRegister(Udma_DrvHandle drvHandle,
 int32_t Udma_eventUnRegister(Udma_EventHandle eventHandle)
 {
     int32_t         retVal = UDMA_SOK;
-    if ((UDMA_RA_TYPE_NORMAL             != eventHandle->drvHandle->instType) && 
+    if ((UDMA_INST_TYPE_NORMAL           != eventHandle->drvHandle->instType) && 
         (UDMA_EVENT_TYPE_TEARDOWN_PACKET == eventHandle->eventPrms.eventType))
     {
         /* In case of devices like AM64x, Teardown is not supported.
