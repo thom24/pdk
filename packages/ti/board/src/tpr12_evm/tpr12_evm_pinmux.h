@@ -61,7 +61,6 @@ extern "C" {
 #define PMUX_CTRL (CSL_MSS_IOMUX_U_BASE)
 
 
-
 /**
  *  \brief    This function used to set the specified pinMux
  *            mode for a specified pinMux offset address register.

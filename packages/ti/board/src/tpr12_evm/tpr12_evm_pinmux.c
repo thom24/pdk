@@ -49,9 +49,6 @@
  *  \param    offset     [IN]       Pad config offset address
  *            mode       [IN]       Pad config mux mode.
  *
- *  \return   int8_t
- *               0 - in case of success
- *              -1 - in case of failure.
  *
  */
 void Board_pinMuxSetMode(uint32_t offset, uint32_t mode)
