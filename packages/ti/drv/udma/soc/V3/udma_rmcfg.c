@@ -262,12 +262,12 @@ const Udma_RmInitPrms gUdmaRmDefCfg_Bcdma[UDMA_NUM_CORE] =
         0U,                                         /* startFreeRing */
         0U,                                         /* numFreeRing */
 
-        38U,                                        /* startGlobalEvent */
-        974U,                                       /* numGlobalEvent */
+        15U,                                        /* startGlobalEvent */
+        100U,                                       /* numGlobalEvent */
         44U,                                        /* startVintr */
-        28U,                                        /* numVintr */
+        14U,                                        /* numVintr */
         68U,                                        /* startIrIntr */
-        28U,                                        /* numIrIntr */
+        14U,                                        /* numIrIntr */
 
         0U,                                         /* proxyThreadNum */
         0U,                                         /* startC7xCoreIntr */
@@ -517,26 +517,26 @@ const Udma_RmInitPrms gUdmaRmDefCfg_Pktdma[UDMA_NUM_CORE] =
         0U,         /* startTxHcCh */
         0U,         /* numTxHcCh */
         0U,         /* startTxCh */
-        0U,         /* numTxCh */
+        16U,        /* numTxCh */
 
         0U,         /* startRxUhcCh */
         0U,         /* numRxUhcCh */
         0U,         /* startRxHcCh */
         0U,         /* numRxHcCh */
         0U,         /* startRxCh */
-        0U,         /* numRxCh */
+        16U,        /* numRxCh */
 
         0U,         /* startFreeFlow */
         0U,         /* numFreeFlow */
         0U,         /* startFreeRing */
         0U,         /* numFreeRing */
 
-        0U,         /* startGlobalEvent */
-        0U,         /* numGlobalEvent */
-        0U,         /* startVintr */
-        0U,         /* numVintr */
-        0U,         /* startIrIntr */
-        0U,         /* numIrIntr */
+        115U,       /* startGlobalEvent */
+        100U,       /* numGlobalEvent */
+        58U,        /* startVintr */
+        14U,        /* numVintr */
+        82U,        /* startIrIntr */
+        14U,        /* numIrIntr */
 
         0U,         /* proxyThreadNum */
         0U,         /* startC7xCoreIntr */

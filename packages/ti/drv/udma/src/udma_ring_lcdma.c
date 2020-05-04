@@ -83,7 +83,7 @@ void Udma_ringSetCfgLcdma(Udma_DrvHandle drvHandle,
     ringHandle->drvHandle = drvHandle;
     Udma_assert(drvHandle, drvHandle->lcdmaRaRegs.pRingCfgRegs != NULL_PTR);
     Udma_assert(drvHandle, drvHandle->lcdmaRaRegs.pRingRtRegs != NULL_PTR);
-    Udma_assert(drvHandle, ringHandle->ringNum < 100U);
+    Udma_assert(drvHandle, ringHandle->ringNum < 303U);//from AM64x DMSS Spec, need to be updated once CSL changes.
     ringHandle->pLcdmaCfgRegs =
         &drvHandle->lcdmaRaRegs.pRingCfgRegs->RING[ringHandle->ringNum];
     ringHandle->pLcdmaRtRegs  =

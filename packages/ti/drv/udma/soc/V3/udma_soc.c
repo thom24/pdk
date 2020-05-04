@@ -131,16 +131,16 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
     if(UDMA_INST_ID_BCDMA_0 == instId)
     {
 	    pLcdmaRaRegs->pRingCfgRegs   = (CSL_lcdma_ringacc_ring_cfgRegs *) CSL_DMASS0_BCDMA_RING_BASE; 
-	    pLcdmaRaRegs->pRingRtRegs   = (CSL_lcdma_ringacc_ringrtRegs *) CSL_DMASS0_BCDMA_RINGRT_BASE;
-	    pLcdmaRaRegs->pCredRegs    = (CSL_lcdma_ringacc_credRegs *) CSL_DMASS0_BCDMA_CRED_BASE; 
-	    pLcdmaRaRegs->maxRings   = CSL_DMSS_BCDMA_NUM_BC_CHANS + CSL_DMSS_BCDMA_NUM_TX_CHANS + CSL_DMSS_BCDMA_NUM_RX_CHANS;	
+	    pLcdmaRaRegs->pRingRtRegs    = (CSL_lcdma_ringacc_ringrtRegs *) CSL_DMASS0_BCDMA_RINGRT_BASE;
+	    pLcdmaRaRegs->pCredRegs      = (CSL_lcdma_ringacc_credRegs *) CSL_DMASS0_BCDMA_CRED_BASE; 
+	    pLcdmaRaRegs->maxRings       = CSL_DMSS_BCDMA_NUM_BC_CHANS + CSL_DMSS_BCDMA_NUM_TX_CHANS + CSL_DMSS_BCDMA_NUM_RX_CHANS;	
     }
     else
     {
     	pLcdmaRaRegs->pRingCfgRegs   = (CSL_lcdma_ringacc_ring_cfgRegs *) CSL_DMASS0_PKTDMA_RING_BASE; 
-	    pLcdmaRaRegs->pRingRtRegs   = (CSL_lcdma_ringacc_ringrtRegs *) CSL_DMASS0_PKTDMA_RINGRT_BASE;
-	    pLcdmaRaRegs->pCredRegs    = (CSL_lcdma_ringacc_credRegs *) CSL_DMASS0_PKTDMA_CRED_BASE; 
-	    pLcdmaRaRegs->maxRings   = CSL_DMSS_PKTDMA_NUM_TX_CHANS + CSL_DMSS_PKTDMA_NUM_RX_CHANS;	
+	    pLcdmaRaRegs->pRingRtRegs    = (CSL_lcdma_ringacc_ringrtRegs *) CSL_DMASS0_PKTDMA_RINGRT_BASE;
+	    pLcdmaRaRegs->pCredRegs      = (CSL_lcdma_ringacc_credRegs *) CSL_DMASS0_PKTDMA_CRED_BASE; 
+	    pLcdmaRaRegs->maxRings       = CSL_DMSS_PKTDMA_NUM_RX_FLOWS + CSL_DMSS_PKTDMA_NUM_TX_FLOWS;	
     }
 
     /* IA config init */
@@ -182,10 +182,6 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
 #endif
 
     /* Init other variables */
-    drvHandle->maxProxy     = 0U; 
-    drvHandle->maxRingMon   = CSL_DMSS_RINGACC_NUM_MONITORS;
-    drvHandle->extChOffset  = 0U;
-    drvHandle->srcIdRingIrq = drvHandle->devIdIa;
     if(UDMA_INST_ID_BCDMA_0 == instId)
     {
        /* DMSC differentiates block copy channel from split tr tx, if the index have an offset of 32.
@@ -208,18 +204,22 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
     else
     {
         drvHandle->blkCopyChOffset      = 0U; /* Not used for PktDMA Instance */ 
-        drvHandle->txChOffset           = 0U; /* Need to be updated, Since Special channels present */
-	    drvHandle->rxChOffset   		= drvHandle->txChOffset + pPktdmaRegs->txChanCnt;	/* Need to be updated, Since Special channels present */
-        drvHandle->blkCopyRingIrqOffset = 0U; 
-        drvHandle->txRingIrqOffset      = TISCI_PKTDMA0_TX_FLOW_OES_IRQ_SRC_IDX_START; /* Need to be updated, Since Special channels present */
+        drvHandle->txChOffset           = CSL_DMSS_PKTDMA_TX_FLOWS_UNMAPPED_START; /* Need to be updated, Since Special channels present */
+	    drvHandle->rxChOffset   		= CSL_DMSS_PKTDMA_RX_FLOWS_UNMAPPED_START;	/* Need to be updated, Since Special channels present */
+        drvHandle->blkCopyRingIrqOffset = 0U; /* Not used for PktDMA Instance */ 
+        drvHandle->txRingIrqOffset      = TISCI_PKTDMA0_TX_FLOW_OES_IRQ_SRC_IDX_START - drvHandle->txChOffset; /* Need to be updated, Since Special channels present */
         drvHandle->rxRingIrqOffset      = TISCI_PKTDMA0_RX_FLOW_OES_IRQ_SRC_IDX_START - drvHandle->rxChOffset; /* Need to be updated, Since Special channels present */
 	    drvHandle->udmapSrcThreadOffset = CSL_PSILCFG_DMSS_PKTDMA_STRM_PSILS_THREAD_OFFSET; 
 	    drvHandle->udmapDestThreadOffset= CSL_PSILCFG_DMSS_PKTDMA_STRM_PSILD_THREAD_OFFSET;
-	    drvHandle->maxRings             = CSL_DMSS_PKTDMA_NUM_TX_CHANS + CSL_DMSS_PKTDMA_NUM_RX_CHANS;
+	    drvHandle->maxRings             = CSL_DMSS_PKTDMA_NUM_RX_FLOWS + CSL_DMSS_PKTDMA_NUM_TX_FLOWS;
 	    drvHandle->devIdRing            = TISCI_DEV_DMASS0_PKTDMA_0;
 	    drvHandle->devIdUdma       		= TISCI_DEV_DMASS0_PKTDMA_0;
     }
     drvHandle->devIdPsil     = TISCI_DEV_DMASS0; 
+    drvHandle->maxProxy     = 0U; 
+    drvHandle->maxRingMon   = CSL_DMSS_RINGACC_NUM_MONITORS;
+    drvHandle->extChOffset  = 0U;
+    drvHandle->srcIdRingIrq = drvHandle->devIdIa;
 
     return;
 }
