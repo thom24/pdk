@@ -138,28 +138,28 @@ TimerP_dmTimerDefault gDmTimerPInfoTbl[TimerP_numTimerDevices] = {
   {
     "DMTimer0",        /* Timer Name */
      CSL_MCU_TIMER0_CFG_BASE + 0x60000000UL,  /* base address */
-     CSLR_MCU_M4FSS0_CORE0_NVIC_MCU_TIMER0_INTR_PEND_0 + 16U,           /* Interrupt Number */
+     CSLR_MCU_M4FSS0_CORE0_NVIC_MCU_TIMER0_INTR_PEND_0,           /* Interrupt Number */
      TIMERP_EVENT_NOT_AVAILABLE               /* Event Id */
   },
   /* Timer ID 1 */
   {
     "DMTimer1",        /* Timer Name */
      CSL_MCU_TIMER1_CFG_BASE + 0x60000000UL,  /* base address */
-     CSLR_MCU_M4FSS0_CORE0_NVIC_MCU_TIMER1_INTR_PEND_0 + 16U,               /* Interrupt Number */
+     CSLR_MCU_M4FSS0_CORE0_NVIC_MCU_TIMER1_INTR_PEND_0,               /* Interrupt Number */
      TIMERP_EVENT_NOT_AVAILABLE               /* Event Id */
   },
   /* Timer ID 3 */
   {
     "DMTimer2",        /* Timer Name */
      CSL_MCU_TIMER2_CFG_BASE + 0x60000000UL,  /* base address */
-     CSLR_MCU_M4FSS0_CORE0_NVIC_MCU_TIMER2_INTR_PEND_0 + 16U,               /* Interrupt Number */
+     CSLR_MCU_M4FSS0_CORE0_NVIC_MCU_TIMER2_INTR_PEND_0,               /* Interrupt Number */
      TIMERP_EVENT_NOT_AVAILABLE               /* Event Id */
   },
   /* Timer ID 4 */
   {
     "DMTimer3",        /* Timer Name */
      CSL_MCU_TIMER3_CFG_BASE + 0x60000000UL,  /* base address */
-     CSLR_MCU_M4FSS0_CORE0_NVIC_MCU_TIMER3_INTR_PEND_0 + 16U,               /* Interrupt Number */
+     CSLR_MCU_M4FSS0_CORE0_NVIC_MCU_TIMER3_INTR_PEND_0,               /* Interrupt Number */
      TIMERP_EVENT_NOT_AVAILABLE               /* Event Id */
   }
 };
