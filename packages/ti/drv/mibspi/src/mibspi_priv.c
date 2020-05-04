@@ -594,8 +594,22 @@ static void MIBSPI_enableLoopback(CSL_mss_spiRegs *ptrMibSpiReg, MibSpi_LoopBack
     /* Set Loopback either in Analog or Digital Mode */
     CSL_FINS(regVal,SPI_IOLPBKTSTCR_LPBKTYPE, loopbacktype);
 
-    /* Enable Loopback  */
-    CSL_FINS(regVal,SPI_IOLPBKTSTCR_IOLPBKTSTENA, 0xAU);
+    /* For IOLPBK in SLave mode, set loopback enable in MIBSPI_transaction as it immediately trigger TG0 */
+    if ((loopbacktype == MIBSPI_LOOPBK_ANALOG)
+        &&
+        (CSL_FEXT(ptrMibSpiReg->SPIGCR1,SPI_SPIGCR1_MASTER) == CSL_SPI_SPIGCR1_MASTER_SLAVE))
+    {
+        CSL_FINS(regVal,SPI_IOLPBKTSTCR_IOLPBKTSTENA, 0x5U);
+    }
+    else
+    {
+        /* Enable Loopback  */
+        CSL_FINS(regVal,SPI_IOLPBKTSTCR_IOLPBKTSTENA, 0xAU);
+    }
+    if (loopbacktype == MIBSPI_LOOPBK_ANALOG)
+    {
+        CSL_FINS(regVal,SPI_IOLPBKTSTCR_RXPENA, 0x1U);
+    }
 
     ptrMibSpiReg->IOLPBKTSTCR = regVal;
     /* Restart MIBSPI1 */
@@ -603,7 +617,10 @@ static void MIBSPI_enableLoopback(CSL_mss_spiRegs *ptrMibSpiReg, MibSpi_LoopBack
     regVal = ptrMibSpiReg->SPIGCR1;
     CSL_FINS(regVal,SPI_SPIGCR1_SPIEN, 1U);
 
-    CSL_FINS(regVal,SPI_SPIGCR1_LOOPBACK, 1U);
+    if (CSL_FEXT(ptrMibSpiReg->SPIGCR1,SPI_SPIGCR1_MASTER) == CSL_SPI_SPIGCR1_MASTER_MASTER)
+    {
+        CSL_FINS(regVal,SPI_SPIGCR1_LOOPBACK, 1U);
+    }
     ptrMibSpiReg->SPIGCR1 = regVal;
 }
 
@@ -832,7 +849,10 @@ static void MIBSPI_initMaster(MibSpi_HwCfg* ptrHwCfg, const MIBSPI_Params * para
     CSL_FINS(ptrMibSpiReg->MIBSPIE,SPI_MIBSPIE_MSPIENA, 1U);
 
     /* Set MibSpi master mode and clock configuration */
-    CSL_FINS(ptrMibSpiReg->SPIGCR1,SPI_SPIGCR1_MASTER, 3U);
+    regVal = ptrMibSpiReg->SPIGCR1;
+    CSL_FINS(regVal,SPI_SPIGCR1_MASTER, CSL_SPI_SPIGCR1_MASTER_MASTER);
+    CSL_FINS(regVal,SPI_SPIGCR1_CLKMOD, CSL_SPI_SPIGCR1_CLKMOD_INTERNAL);
+    ptrMibSpiReg->SPIGCR1 = regVal;
 
     /* SPIENV pin pulled high when not active */
     CSL_FINS(ptrMibSpiReg->SPIINT0,SPI_SPIINT0_ENABLEHIGHZ, 0U);
@@ -1021,8 +1041,11 @@ static void MIBSPI_initSlave(MibSpi_HwCfg* ptrHwCfg, const MIBSPI_Params *params
     /* Enable MIBSPI1 multibuffered mode and enable buffer RAM */
     CSL_FINS(ptrMibSpiReg->MIBSPIE,SPI_MIBSPIE_MSPIENA, 1U);
 
+    regVal = ptrMibSpiReg->SPIGCR1;
     /* MIBSPI1 slave mode and clock configuration */
-    CSL_FINS(ptrMibSpiReg->SPIGCR1,SPI_SPIGCR1_MASTER, 0U);
+    CSL_FINS(regVal,SPI_SPIGCR1_MASTER, CSL_SPI_SPIGCR1_MASTER_SLAVE);
+    CSL_FINS(regVal,SPI_SPIGCR1_CLKMOD, CSL_SPI_SPIGCR1_CLKMOD_EXTERNAL);
+    ptrMibSpiReg->SPIGCR1 = regVal;
 
     /* SPIENA pin pulled high when not active */
     CSL_FINS(ptrMibSpiReg->SPIINT0,SPI_SPIINT0_ENABLEHIGHZ, 0U);
@@ -1495,17 +1518,21 @@ static void MIBSPI_dataTransfer
         /* Setup TG interrupt */
         MIBSPI_enableGroupInterrupt(ptrMibSpiReg, group, MIBSPI_INT_LEVEL);
 
+        if ((CSL_FEXT(ptrMibSpiReg->IOLPBKTSTCR,SPI_IOLPBKTSTCR_LPBKTYPE) == MIBSPI_LOOPBK_ANALOG)
+            &&
+            (CSL_FEXT(ptrMibSpiReg->SPIGCR1,SPI_SPIGCR1_MASTER) == CSL_SPI_SPIGCR1_MASTER_SLAVE))
+        {
+            CSL_FINS(ptrMibSpiReg->IOLPBKTSTCR,SPI_IOLPBKTSTCR_IOLPBKTSTENA, 0xAU);
+        }
+
         Mibspi_assert(MIBSPI_dmaStartTransfer(ptrMibSpiDriver->mibspiHandle, group) == MIBSPI_STATUS_SUCCESS);
 
-
-        MIBSPI_dmaCtrlGroupStart(ptrMibSpiReg, group, MIBSPI_DMACTRL_CH_TX);
-
-        MIBSPI_dmaCtrlGroupStart(ptrMibSpiReg, group, MIBSPI_DMACTRL_CH_RX);
+        MIBSPI_dmaCtrlGroupStart(ptrMibSpiReg, group, MIBSPI_DMACTRL_CH_BOTH);
 
         /* Start TG group transfer */
         MIBSPI_transferGroupEnable(ptrMibSpiReg, group);
 
-        
+
     }
     else
 #endif
@@ -1695,8 +1722,8 @@ MIBSPI_Handle MIBSPI_openCore(MIBSPI_Handle handle, const MIBSPI_Params *params)
     SemaphoreP_Params       semParams;
     MIBSPI_Handle              retHandle = (MIBSPI_Handle)NULL;
     MibSpiDriver_Object*    ptrMibSpiDriver = NULL;
-    HwiP_Params             hwiParams;
-    int32_t                 retVal = 0;
+    int32_t                 retVal = MIBSPI_STATUS_SUCCESS;
+    OsalRegisterIntrParams_t interruptRegParams;
 
     /* Get the SPI driver Configuration: */
     ptrSPIConfig = (MIBSPI_Config*)handle;
@@ -1761,13 +1788,35 @@ MIBSPI_Handle MIBSPI_openCore(MIBSPI_Handle handle, const MIBSPI_Params *params)
             ptrMibSpiDriver->transferCompleteSem = SemaphoreP_create(0U, &semParams);
 
             /* Register SPI Interrupt handling ISR */
-            HwiP_Params_init(&hwiParams);
-            hwiParams.name = (char *)"MibSpiInt";
-            hwiParams.arg  = (uintptr_t)ptrMibSpiDriver;
-            ptrMibSpiDriver->hwiHandle = HwiP_create((int32_t)(ptrHwCfg->interrupt1Num), MIBSPI_ISR, &hwiParams);
+            /* Initialize with defaults */
+            Osal_RegisterInterrupt_initParams(&interruptRegParams);
+            /* Populate the interrupt parameters */
+            interruptRegParams.corepacConfig.arg=(uintptr_t)ptrMibSpiDriver;
+            interruptRegParams.corepacConfig.name=(char *)"MibSpiInt";
+            interruptRegParams.corepacConfig.isrRoutine=MIBSPI_ISR;
+        #if defined(_TMS320C6X)
+            interruptRegParams.corepacConfig.corepacEventNum=(int32_t)ptrHwCfg->interrupt1Num; /* Event going in to CPU */
+            interruptRegParams.corepacConfig.intVecNum      = OSAL_REGINT_INTVEC_EVENT_COMBINER; /* Host Interrupt vector */
+        #else
+            interruptRegParams.corepacConfig.priority = 0x1U;
+            interruptRegParams.corepacConfig.intVecNum=(int32_t)ptrHwCfg->interrupt1Num; /* Host Interrupt vector */
+            interruptRegParams.corepacConfig.corepacEventNum = (int32_t)ptrHwCfg->interrupt1Num;
+        #endif
+            /* Register interrupts */
+            Osal_RegisterInterrupt(&interruptRegParams, &ptrMibSpiDriver->hwiHandle);
 
-            /* Setup the return handle: */
-            retHandle = handle;
+            if (ptrMibSpiDriver->hwiHandle == NULL)
+            {
+                retVal = MIBSPI_STATUS_ERROR;
+            }
+
+            if (retVal == MIBSPI_STATUS_SUCCESS)
+            {
+                Osal_EnableInterrupt(interruptRegParams.corepacConfig.corepacEventNum, interruptRegParams.corepacConfig.intVecNum);
+
+                /* Setup the return handle: */
+                retHandle = handle;
+            }
         }
         else
         {
@@ -1780,7 +1829,7 @@ exit:
         /* Cleanup in case of error */
         if(ptrMibSpiDriver->hwiHandle)
         {
-            HwiP_delete(ptrMibSpiDriver->hwiHandle);
+            Osal_DeleteInterrupt(ptrMibSpiDriver->hwiHandle, ptrMibSpiDriver->ptrHwCfg->interrupt1Num);
         }
     }
 
@@ -1852,7 +1901,7 @@ void MIBSPI_closeCore(MIBSPI_Handle handle)
         {
         
 
-            HwiP_delete(ptrMibSpiDriver->hwiHandle);
+            Osal_DeleteInterrupt(ptrMibSpiDriver->hwiHandle, ptrMibSpiDriver->ptrHwCfg->interrupt1Num);
         }
         memset(ptrMibSpiDriver, 0, sizeof(*ptrMibSpiDriver));
 
@@ -1899,7 +1948,7 @@ int32_t MIBSPI_controlCore(MIBSPI_Handle handle, uint32_t cmd, const void *arg)
                     loopbacktype = *(MibSpi_LoopBackType *)arg;
 
                     /* Sanity check the input parameters */
-                    if (ptrMibSpiDriver->params.mode != MIBSPI_MASTER)
+                    if ((loopbacktype == MIBSPI_LOOPBK_DIGITAL) && (ptrMibSpiDriver->params.mode != MIBSPI_MASTER))
                     {
                         /* Loopback is not supported in Slave mode */
                         status = MIBSPI_STATUS_ERROR;
@@ -2268,11 +2317,22 @@ void MIBSPI_dmaDoneCb(MIBSPI_Handle mibspiHandle)
 {
     MibSpiDriver_Object*    ptrMibSpiDriver = NULL;
     MIBSPI_Config*             ptrSPIConfig;
+    CSL_mss_spiRegs  *ptrMibSpiReg;
 
     /* Get the SPI driver Configuration: */
     ptrSPIConfig = (MIBSPI_Config*)mibspiHandle;
 
     ptrMibSpiDriver = (MibSpiDriver_Object*)ptrSPIConfig->object;
+
+    ptrMibSpiReg = ptrMibSpiDriver->ptrHwCfg->ptrSpiRegBase;
+    if ((CSL_FEXT(ptrMibSpiReg->IOLPBKTSTCR,SPI_IOLPBKTSTCR_LPBKTYPE) == MIBSPI_LOOPBK_ANALOG)
+        &&
+        (CSL_FEXT(ptrMibSpiReg->SPIGCR1,SPI_SPIGCR1_MASTER) == CSL_SPI_SPIGCR1_MASTER_SLAVE)
+        &&
+        (CSL_FEXT(ptrMibSpiReg->IOLPBKTSTCR,SPI_IOLPBKTSTCR_IOLPBKTSTENA) ==  0xAU))
+    {
+        CSL_FINS(ptrMibSpiReg->IOLPBKTSTCR,SPI_IOLPBKTSTCR_IOLPBKTSTENA, 0x5U);
+    }
 
     if ((ptrMibSpiDriver->params.transferMode == MIBSPI_MODE_BLOCKING) && (ptrMibSpiDriver->transferCompleteSem != NULL) )
     {

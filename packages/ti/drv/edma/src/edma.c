@@ -2644,11 +2644,6 @@ EDMA_Handle EDMA_getHandle(uint8_t instanceId, EDMA_instanceInfo_t *instanceInfo
     uint8_t tc;
 
 #ifdef EDMA_PARAM_CHECK
-    if (instanceId >= EDMA_NUM_CC)
-    {
-        status = EDMA_E_INVALID__INSTANCE_ID;
-        handle = NULL;
-    }
     if (instanceInfo == NULL)
     {
         status = EDMA_E_INVALID__INSTANCEINFO_POINTER_NULL;

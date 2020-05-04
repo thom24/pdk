@@ -15,7 +15,12 @@ EXTERNAL_INTERFACES = bios xdc
 COMP_LIST_COMMON    = osal_tirtos
 
 ifeq ($(SOC),$(filter $(SOC), tpr12))
-XDC_CFG_FILE_$(CORE) = ./tpr12/mss.cfg
+ifeq ($(CORE),$(filter $(CORE), mcu1_0))
+  XDC_CFG_FILE_$(CORE) = ./tpr12/mss.cfg
+endif
+ifeq ($(CORE),$(filter $(CORE), c66xdsp_1))
+  XDC_CFG_FILE_$(CORE) = ./tpr12/dss.cfg
+endif
 endif
 
 endif
@@ -24,8 +29,8 @@ SRCDIR = . src
 INCDIR = . src
 
 ifeq ($(SOC),$(filter $(SOC), tpr12))
-SRCDIR += tpr12
-INCDIR += tpr12
+SRCDIR += $(SOC)
+INCDIR += $(SOC)
 endif
 
 ifeq ($(BUILD_OS_TYPE), tirtos)
@@ -77,7 +82,12 @@ ifeq ($(SOC),$(filter $(SOC), tpr12))
 ifeq ($(IS_BAREMETAL),yes)
 EXTERNAL_LNKCMD_FILE_LOCAL =  ./tpr12/mss_spi_linker.cmd
 else
-EXTERNAL_LNKCMD_FILE_LOCAL =  ./tpr12/mss_spi_linker.cmd
+ifeq ($(CORE),$(filter $(CORE), mcu1_0))
+  EXTERNAL_LNKCMD_FILE_LOCAL =  ./tpr12/mss_spi_linker.cmd
+endif
+ifeq ($(CORE),$(filter $(CORE), c66xdsp_1))
+  EXTERNAL_LNKCMD_FILE_LOCAL =  ./tpr12/dss_spi_linker.cmd
+endif
 endif
 endif
 

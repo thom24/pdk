@@ -88,7 +88,7 @@ static const Utils_mmapSegmentEntry gMemSegmentTblVirtCR5[] =
 };
 #endif
 
-#ifdef BUILD_DSP
+#ifdef BUILD_DSP_1
 static const Utils_mmapSegmentEntry gMemSegmentTblVirtDSP[] = 
 {
     {
@@ -146,7 +146,7 @@ static void UtilsMmap_getVirtAddrTblInfo(Utils_mmapSegmentEntry const **tblBase,
 #ifdef BUILD_MCU1_0
     *tblBase = &gMemSegmentTblVirtCR5[0];
     *tblLen = UTILSMMAP_ARRAYSIZE(gMemSegmentTblVirtCR5);
-#elif BUILD_DSP
+#elif BUILD_DSP_1
     *tblBase = &gMemSegmentTblVirtDSP[0];
     *tblLen = UTILSMMAP_ARRAYSIZE(gMemSegmentTblVirtDSP);
 #else

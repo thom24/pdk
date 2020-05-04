@@ -78,8 +78,13 @@
  **************************************************************************/
 /* System DMA handle, created in init Task */
 EDMA_Handle          gDmaHandle[MIBSPI_TEST_NUM_SPIINSTANCES] = {NULL,NULL};
+#ifdef BUILD_MCU1_0
 enum MibSpi_InstanceId gMibspiInst[MIBSPI_TEST_NUM_SPIINSTANCES] = {MIBSPI_INST_ID_MSS_SPIA, MIBSPI_INST_ID_MSS_SPIB};
-    
+#endif
+#ifdef BUILD_DSP_1
+enum MibSpi_InstanceId gMibspiInst[MIBSPI_TEST_NUM_SPIINSTANCES] = {MIBSPI_INST_ID_RCSS_SPIA, MIBSPI_INST_ID_RCSS_SPIB};
+#endif
+
 /* Test case global variables */
 bool gXWR1xxxLoopbackTest = true;
 bool gXWR1xxxSlaveReady = false;
@@ -217,6 +222,11 @@ static void Test_initTask(UArg arg0, UArg arg1)
         /* MibSPIB loopback test, slave -2 */
         Test_loopback_oneInstance(1U, 2U);
         MIBSPI_log("Debug: Loopback test finished!\n");
+
+        /* MibSPIA slave mode analog loopback test */
+        Test_loopbackSlave_oneInstance(0);
+        MIBSPI_log("Debug: Finished API Test for SPIA!\n");
+
     }
 
 

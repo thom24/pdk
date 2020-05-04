@@ -184,7 +184,7 @@ export MIBSPI_Loopback_TestApp_PKG_LIST
 MIBSPI_Loopback_TestApp_INCLUDE = $(MIBSPI_Loopback_TestApp_PATH)
 MIBSPI_Loopback_TestApp_BOARDLIST = $(drvmibspi_BOARDLIST)
 export MIBSPI_Loopback_TestApp_BOARDLIST
-MIBSPI_Loopback_TestApp_$(SOC)_CORELIST = mcu1_0
+MIBSPI_Loopback_TestApp_$(SOC)_CORELIST = mcu1_0 c66xdsp_1
 export MIBSPI_Loopback_TestApp_$(SOC)_CORELIST
 
 # SPI rtos dma master slave Test app
@@ -205,7 +205,7 @@ export MIBSPI_Loopback_Dma_TestApp_PKG_LIST
 MIBSPI_Loopback_Dma_TestApp_INCLUDE = $(MIBSPI_Loopback_Dma_TestApp_PATH)
 MIBSPI_Loopback_Dma_TestApp_BOARDLIST = $(drvmibspi_BOARDLIST)
 export MIBSPI_Loopback_Dma_TestApp_BOARDLIST
-MIBSPI_Loopback_Dma_TestApp_$(SOC)_CORELIST = mcu1_0
+MIBSPI_Loopback_Dma_TestApp_$(SOC)_CORELIST = mcu1_0 c66xdsp_1
 export MIBSPI_Loopback_Dma_TestApp_$(SOC)_CORELIST
 
 
