@@ -52,6 +52,20 @@ uint8_t vint_usage_count_NAVSS0_MODSS_INTAGGR_0[64] = {0};
 uint8_t vint_usage_count_NAVSS0_MODSS_INTAGGR_1[64] = {0};
 uint8_t vint_usage_count_NAVSS0_UDMASS_INTAGGR_0[256] = {0};
 uint8_t vint_usage_count_MCU_NAVSS0_INTAGGR_0[256] = {0};
+static struct Sciclient_rmIaUsedMapping rom_usage_MCU_NAVSS0_INTAGGR_0[3U] = {
+    {
+        .event = 16404U,
+        .cleared = false,
+    },
+    {
+        .event = 16405U,
+        .cleared = false,
+    },
+    {
+        .event = 16414U,
+        .cleared = false,
+    },
+};
 
 struct Sciclient_rmIaInst gRmIaInstances[SCICLIENT_RM_IA_NUM_INST] =
 {
@@ -63,6 +77,8 @@ struct Sciclient_rmIaInst gRmIaInstances[SCICLIENT_RM_IA_NUM_INST] =
         .n_vint             = 64,
         .vint_usage_count   = &vint_usage_count_NAVSS0_MODSS_INTAGGR_0[0],
         .v0_b0_evt          = SCICLIENT_RM_IA_GENERIC_EVT_RESETVAL,
+        .rom_usage          = NULL,
+        .n_rom_usage        = 0U,
     },
     {
         .dev_id             = TISCI_DEV_NAVSS0_MODSS_INTAGGR_1,
@@ -72,6 +88,8 @@ struct Sciclient_rmIaInst gRmIaInstances[SCICLIENT_RM_IA_NUM_INST] =
         .n_vint             = 64,
         .vint_usage_count   = &vint_usage_count_NAVSS0_MODSS_INTAGGR_1[0],
         .v0_b0_evt          = SCICLIENT_RM_IA_GENERIC_EVT_RESETVAL,
+        .rom_usage          = NULL,
+        .n_rom_usage        = 0U,
     },
     {
         .dev_id             = TISCI_DEV_NAVSS0_UDMASS_INTAGGR_0,
@@ -81,6 +99,8 @@ struct Sciclient_rmIaInst gRmIaInstances[SCICLIENT_RM_IA_NUM_INST] =
         .n_vint             = 256,
         .vint_usage_count   = &vint_usage_count_NAVSS0_UDMASS_INTAGGR_0[0],
         .v0_b0_evt          = SCICLIENT_RM_IA_GENERIC_EVT_RESETVAL,
+        .rom_usage          = NULL,
+        .n_rom_usage        = 0U,
     },
     {
         .dev_id             = TISCI_DEV_MCU_NAVSS0_INTAGGR_0,
@@ -90,7 +110,32 @@ struct Sciclient_rmIaInst gRmIaInstances[SCICLIENT_RM_IA_NUM_INST] =
         .n_vint             = 256,
         .vint_usage_count   = &vint_usage_count_MCU_NAVSS0_INTAGGR_0[0],
         .v0_b0_evt          = SCICLIENT_RM_IA_GENERIC_EVT_RESETVAL,
+        .rom_usage          = &rom_usage_MCU_NAVSS0_INTAGGR_0[0U],
+        .n_rom_usage        = 3,
     }
+};
+
+static struct Sciclient_rmIrUsedMapping rom_usage_MAIN2MCU_LVL_INTRTR0[2U] = {
+    {
+        .inp_start = 28U,
+        .outp_start = 32U,
+        .length = 2U,
+        .cleared = false,
+    },
+    {
+        .inp_start = 128U,
+        .outp_start = 34U,
+        .length = 16U,
+        .cleared = false,
+    },
+};
+static struct Sciclient_rmIrUsedMapping rom_usage_MCU_NAVSS0_INTR_ROUTER_0[1U] = {
+    {
+        .inp_start = 1U,
+        .outp_start = 0U,
+        .length = 2U,
+        .cleared = false,
+    },
 };
 
 struct Sciclient_rmIrInst gRmIrInstances[SCICLIENT_RM_IR_NUM_INST] =
@@ -101,6 +146,8 @@ struct Sciclient_rmIrInst gRmIrInstances[SCICLIENT_RM_IR_NUM_INST] =
         .n_inp          = 408U,
         .n_outp         = 97U,
         .inp0_mapping   = 0U,
+        .rom_usage      = NULL,
+        .n_rom_usage    = 0U,
     },
     {
         .dev_id         = TISCI_DEV_C66SS1_INTROUTER0,
@@ -108,6 +155,8 @@ struct Sciclient_rmIrInst gRmIrInstances[SCICLIENT_RM_IR_NUM_INST] =
         .n_inp          = 408U,
         .n_outp         = 97U,
         .inp0_mapping   = 0U,
+        .rom_usage      = NULL,
+        .n_rom_usage    = 0U,
     },
     {
         .dev_id         = TISCI_DEV_CMPEVENT_INTRTR0,
@@ -115,6 +164,8 @@ struct Sciclient_rmIrInst gRmIrInstances[SCICLIENT_RM_IR_NUM_INST] =
         .n_inp          = 96u,
         .n_outp         = 32u,
         .inp0_mapping   = SCICLIENT_RM_IR_MAPPING_FREE,
+        .rom_usage      = NULL,
+        .n_rom_usage    = 0U,
     },
     {
         .dev_id         = TISCI_DEV_MAIN2MCU_LVL_INTRTR0,
@@ -122,6 +173,8 @@ struct Sciclient_rmIrInst gRmIrInstances[SCICLIENT_RM_IR_NUM_INST] =
         .n_inp          = 320u,
         .n_outp         = 64u,
         .inp0_mapping   = SCICLIENT_RM_IR_MAPPING_FREE,
+        .rom_usage      = &rom_usage_MAIN2MCU_LVL_INTRTR0[0U],
+        .n_rom_usage    = 2,
     },
     {
         .dev_id         = TISCI_DEV_MAIN2MCU_PLS_INTRTR0,
@@ -129,6 +182,8 @@ struct Sciclient_rmIrInst gRmIrInstances[SCICLIENT_RM_IR_NUM_INST] =
         .n_inp          = 112u,
         .n_outp         = 48u,
         .inp0_mapping   = SCICLIENT_RM_IR_MAPPING_FREE,
+        .rom_usage      = NULL,
+        .n_rom_usage    = 0U,
     },
     {
         .dev_id         = TISCI_DEV_GPIOMUX_INTRTR0,
@@ -136,6 +191,8 @@ struct Sciclient_rmIrInst gRmIrInstances[SCICLIENT_RM_IR_NUM_INST] =
         .n_inp          = 304u,
         .n_outp         = 64u,
         .inp0_mapping   = SCICLIENT_RM_IR_MAPPING_FREE,
+        .rom_usage      = NULL,
+        .n_rom_usage    = 0U,
     },
     {
         .dev_id         = TISCI_DEV_R5FSS0_INTROUTER0,
@@ -143,6 +200,8 @@ struct Sciclient_rmIrInst gRmIrInstances[SCICLIENT_RM_IR_NUM_INST] =
         .n_inp          = 344U,
         .n_outp         = 256U,
         .inp0_mapping   = 0U,
+        .rom_usage      = NULL,
+        .n_rom_usage    = 0U,
     },
     {
         .dev_id         = TISCI_DEV_R5FSS1_INTROUTER0,
@@ -150,6 +209,8 @@ struct Sciclient_rmIrInst gRmIrInstances[SCICLIENT_RM_IR_NUM_INST] =
         .n_inp          = 344U,
         .n_outp         = 256U,
         .inp0_mapping   = 0U,
+        .rom_usage      = NULL,
+        .n_rom_usage    = 0U,
     },
     {
         .dev_id         = TISCI_DEV_TIMESYNC_INTRTR0,
@@ -157,6 +218,8 @@ struct Sciclient_rmIrInst gRmIrInstances[SCICLIENT_RM_IR_NUM_INST] =
         .n_inp          = 56u,
         .n_outp         = 48u,
         .inp0_mapping   = SCICLIENT_RM_IR_MAPPING_FREE,
+        .rom_usage      = NULL,
+        .n_rom_usage    = 0U,
     },
     {
         .dev_id         = TISCI_DEV_WKUP_GPIOMUX_INTRTR0,
@@ -164,6 +227,8 @@ struct Sciclient_rmIrInst gRmIrInstances[SCICLIENT_RM_IR_NUM_INST] =
         .n_inp          = 120u,
         .n_outp         = 32u,
         .inp0_mapping   = SCICLIENT_RM_IR_MAPPING_FREE,
+        .rom_usage      = NULL,
+        .n_rom_usage    = 0U,
     },
     {
         .dev_id         = TISCI_DEV_NAVSS0_INTR_ROUTER_0,
@@ -171,6 +236,8 @@ struct Sciclient_rmIrInst gRmIrInstances[SCICLIENT_RM_IR_NUM_INST] =
         .n_inp          = 456u,
         .n_outp         = 512u,
         .inp0_mapping   = SCICLIENT_RM_IR_MAPPING_FREE,
+        .rom_usage      = NULL,
+        .n_rom_usage    = 0U,
     },
     {
         .dev_id         = TISCI_DEV_MCU_NAVSS0_INTR_ROUTER_0,
@@ -178,6 +245,8 @@ struct Sciclient_rmIrInst gRmIrInstances[SCICLIENT_RM_IR_NUM_INST] =
         .n_inp          = 261u,
         .n_outp         = 64u,
         .inp0_mapping   = SCICLIENT_RM_IR_MAPPING_FREE,
+        .rom_usage      = &rom_usage_MCU_NAVSS0_INTR_ROUTER_0[0U],
+        .n_rom_usage    = 1,
     },
 };
 #endif
@@ -187,6 +256,20 @@ uint8_t vint_usage_count_NAVSS0_MODSS_INTAGGR_0[64] = {0};
 uint8_t vint_usage_count_NAVSS0_MODSS_INTAGGR_1[64] = {0};
 uint8_t vint_usage_count_NAVSS0_UDMASS_INTAGGR_0[256] = {0};
 uint8_t vint_usage_count_MCU_NAVSS0_INTAGGR_0[256] = {0};
+static struct Sciclient_rmIaUsedMapping rom_usage_MCU_NAVSS0_UDMASS_INTA_0[3U] = {
+    {
+        .event = 16404U,
+        .cleared = false,
+    },
+    {
+        .event = 16405U,
+        .cleared = false,
+    },
+    {
+        .event = 16414U,
+        .cleared = false,
+    },
+};
 
 struct Sciclient_rmIaInst gRmIaInstances[SCICLIENT_RM_IA_NUM_INST] =
 {
@@ -198,6 +281,8 @@ struct Sciclient_rmIaInst gRmIaInstances[SCICLIENT_RM_IA_NUM_INST] =
         .n_vint             = 64,
         .vint_usage_count   = &vint_usage_count_NAVSS0_MODSS_INTAGGR_0[0],
         .v0_b0_evt          = SCICLIENT_RM_IA_GENERIC_EVT_RESETVAL,
+        .rom_usage          = NULL,
+        .n_rom_usage        = 0U,
     },
     {
         .dev_id             = TISCI_DEV_NAVSS0_MODSS_INTA_1,
@@ -207,6 +292,8 @@ struct Sciclient_rmIaInst gRmIaInstances[SCICLIENT_RM_IA_NUM_INST] =
         .n_vint             = 64,
         .vint_usage_count   = &vint_usage_count_NAVSS0_MODSS_INTAGGR_1[0],
         .v0_b0_evt          = SCICLIENT_RM_IA_GENERIC_EVT_RESETVAL,
+        .rom_usage          = NULL,
+        .n_rom_usage        = 0U,
     },
     {
         .dev_id             = TISCI_DEV_NAVSS0_UDMASS_INTA_0,
@@ -216,6 +303,8 @@ struct Sciclient_rmIaInst gRmIaInstances[SCICLIENT_RM_IA_NUM_INST] =
         .n_vint             = 256,
         .vint_usage_count   = &vint_usage_count_NAVSS0_UDMASS_INTAGGR_0[0],
         .v0_b0_evt          = SCICLIENT_RM_IA_GENERIC_EVT_RESETVAL,
+        .rom_usage          = NULL,
+        .n_rom_usage        = 0U,
     },
     {
         .dev_id             = TISCI_DEV_MCU_NAVSS0_UDMASS_INTA_0,
@@ -225,7 +314,32 @@ struct Sciclient_rmIaInst gRmIaInstances[SCICLIENT_RM_IA_NUM_INST] =
         .n_vint             = 256,
         .vint_usage_count   = &vint_usage_count_MCU_NAVSS0_INTAGGR_0[0],
         .v0_b0_evt          = SCICLIENT_RM_IA_GENERIC_EVT_RESETVAL,
+        .rom_usage          = &rom_usage_MCU_NAVSS0_UDMASS_INTA_0[0U],
+        .n_rom_usage        = 3,
     }
+};
+
+static struct Sciclient_rmIrUsedMapping rom_usage_MAIN2MCU_LVL_INTRTR0[2U] = {
+    {
+        .inp_start = 28U,
+        .outp_start = 32U,
+        .length = 2U,
+        .cleared = false,
+    },
+    {
+        .inp_start = 128U,
+        .outp_start = 34U,
+        .length = 16U,
+        .cleared = false,
+    },
+};
+static struct Sciclient_rmIrUsedMapping rom_usage_MCU_NAVSS0_INTR_0[1U] = {
+    {
+        .inp_start = 1U,
+        .outp_start = 0U,
+        .length = 2U,
+        .cleared = false,
+    },
 };
 
 struct Sciclient_rmIrInst gRmIrInstances[SCICLIENT_RM_IR_NUM_INST] =
@@ -236,6 +350,8 @@ struct Sciclient_rmIrInst gRmIrInstances[SCICLIENT_RM_IR_NUM_INST] =
         .n_inp          = 320u,
         .n_outp         = 64u,
         .inp0_mapping   = SCICLIENT_RM_IR_MAPPING_FREE,
+        .rom_usage      = &rom_usage_MAIN2MCU_LVL_INTRTR0[0U],
+        .n_rom_usage    = 2,
     },
     {
         .dev_id         = TISCI_DEV_MAIN2MCU_PLS_INTRTR0,
@@ -243,6 +359,8 @@ struct Sciclient_rmIrInst gRmIrInstances[SCICLIENT_RM_IR_NUM_INST] =
         .n_inp          = 112u,
         .n_outp         = 48u,
         .inp0_mapping   = SCICLIENT_RM_IR_MAPPING_FREE,
+        .rom_usage      = NULL,
+        .n_rom_usage    = 0U,
     },
     {
         .dev_id         = TISCI_DEV_TIMESYNC_INTRTR0,
@@ -250,6 +368,8 @@ struct Sciclient_rmIrInst gRmIrInstances[SCICLIENT_RM_IR_NUM_INST] =
         .n_inp          = 56u,
         .n_outp         = 48u,
         .inp0_mapping   = SCICLIENT_RM_IR_MAPPING_FREE,
+        .rom_usage      = NULL,
+        .n_rom_usage    = 0U,
     },
     {
         .dev_id         = TISCI_DEV_WKUP_GPIOMUX_INTRTR0,
@@ -257,6 +377,8 @@ struct Sciclient_rmIrInst gRmIrInstances[SCICLIENT_RM_IR_NUM_INST] =
         .n_inp          = 120u,
         .n_outp         = 32u,
         .inp0_mapping   = SCICLIENT_RM_IR_MAPPING_FREE,
+        .rom_usage      = NULL,
+        .n_rom_usage    = 0U,
     },
     {
         .dev_id         = TISCI_DEV_GPIOMUX_INTRTR0,
@@ -264,6 +386,8 @@ struct Sciclient_rmIrInst gRmIrInstances[SCICLIENT_RM_IR_NUM_INST] =
         .n_inp          = 180u,
         .n_outp         = 64u,
         .inp0_mapping   = SCICLIENT_RM_IR_MAPPING_FREE,
+        .rom_usage      = NULL,
+        .n_rom_usage    = 0U,
     },
     {
         .dev_id         = TISCI_DEV_CMPEVENT_INTRTR0,
@@ -271,6 +395,8 @@ struct Sciclient_rmIrInst gRmIrInstances[SCICLIENT_RM_IR_NUM_INST] =
         .n_inp          = 16u,
         .n_outp         = 16u,
         .inp0_mapping   = SCICLIENT_RM_IR_MAPPING_FREE,
+        .rom_usage      = NULL,
+        .n_rom_usage    = 0U,
     },
     {
         .dev_id         = TISCI_DEV_NAVSS0_INTR_ROUTER_0,
@@ -278,6 +404,8 @@ struct Sciclient_rmIrInst gRmIrInstances[SCICLIENT_RM_IR_NUM_INST] =
         .n_inp          = 442u,
         .n_outp         = 512u,
         .inp0_mapping   = SCICLIENT_RM_IR_MAPPING_FREE,
+        .rom_usage      = NULL,
+        .n_rom_usage    = 0U,
     },
     {
         .dev_id         = TISCI_DEV_MCU_NAVSS0_INTR_0,
@@ -285,6 +413,8 @@ struct Sciclient_rmIrInst gRmIrInstances[SCICLIENT_RM_IR_NUM_INST] =
         .n_inp          = 261u,
         .n_outp         = 64u,
         .inp0_mapping   = SCICLIENT_RM_IR_MAPPING_FREE,
+        .rom_usage      = &rom_usage_MCU_NAVSS0_INTR_0[0U],
+        .n_rom_usage    = 1,
     },
 };
 

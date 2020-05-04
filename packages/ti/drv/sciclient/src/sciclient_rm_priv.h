@@ -70,6 +70,23 @@ extern "C" {
 /* ========================================================================== */
 
 /**
+ * \brief
+ * Describes the IA events used by ROM and if they've been cleared back to
+ * hardware reset values
+ *
+ * \param event
+ * IA event used by ROM
+ *
+ * \param cleared
+ * Boolean storing whether or not the event and the IA VINT status bit its
+ * been mapped to has been cleared
+ */
+struct Sciclient_rmIaUsedMapping {
+    uint16_t    event;
+    bool        cleared;
+};
+
+/**
  * \brief Interrupt aggregator instance containing data required to manage interrupt
  *        route discovery using an IA.
  *
@@ -98,15 +115,48 @@ extern "C" {
  * INTMAP registers is 0x0000 which translates to the INTMAP using VINT 0 bit
  * 0.  This field allows the IA driver to determine if VINT 0 bit 0 is truly
  * mapped to an IA event.
+ *
+ * \param rom_usage
+ * IA event to VINT mappings used by ROM during boot that need to be reset
+ * to hardware reset values
+ *
+ * \param n_rom_usage
+ * Number of entries in the rom_usage array
  */
 struct Sciclient_rmIaInst {
-    const uint16_t  dev_id;
-    const uint32_t  imap;
-    const uint16_t  sevt_offset;
-    const uint16_t  n_sevt;
-    const uint16_t  n_vint;
-    uint8_t         *vint_usage_count;
-    uint16_t        v0_b0_evt;
+    const uint16_t                          dev_id;
+    const uint32_t                          imap;
+    const uint16_t                          sevt_offset;
+    const uint16_t                          n_sevt;
+    const uint16_t                          n_vint;
+    uint8_t                                 *vint_usage_count;
+    uint16_t                                v0_b0_evt;
+    struct Sciclient_rmIaUsedMapping *const rom_usage;
+    const uint8_t                           n_rom_usage;
+};
+
+/**
+ * \brief
+ * Describes a range of IR input to output mappings used by ROM and if they've
+ * been cleared back to hardware reset values
+ *
+ * \param inp_start
+ * Start of IR input range
+ *
+ * \param outp_start
+ * Start of IR output range
+ *
+ * \param length
+ * Length of the mapping range
+ *
+ * \param cleared
+ * Boolean storing whether or not the mapped range has been cleared
+ */
+struct Sciclient_rmIrUsedMapping {
+    uint16_t    inp_start;
+    uint16_t    outp_start;
+    uint16_t    length;
+    bool        cleared;
 };
 
 /**
@@ -131,13 +181,21 @@ struct Sciclient_rmIaInst {
  * state for the output CONTROL registers is 0x0000 which translates to use of
  * IR input zero.  This field allows the IR driver to determine which IR
  * output input zero has been mapped to.
+ *
+ * \param rom_usage
+ * IR inputs and outputs used by ROM during boot that need to be reset to defaults
+ *
+ * \param n_rom_usage
+ * Number of entries in the rom_usage array
  */
 struct Sciclient_rmIrInst {
-    const uint16_t  dev_id;
-    const uint32_t  cfg;
-    const uint16_t  n_inp;
-    const uint16_t  n_outp;
-    uint16_t        inp0_mapping;
+    const uint16_t                          dev_id;
+    const uint32_t                          cfg;
+    const uint16_t                          n_inp;
+    const uint16_t                          n_outp;
+    uint16_t                                inp0_mapping;
+    struct Sciclient_rmIrUsedMapping *const rom_usage;
+    const uint8_t                           n_rom_usage;
 };
 
 /**

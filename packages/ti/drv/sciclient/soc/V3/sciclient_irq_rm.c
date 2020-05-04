@@ -48,6 +48,28 @@
 /* ========================================================================== */
 
 uint8_t vint_usage_count_DMASS0_INTAGGR_0[184] = {0};
+static struct Sciclient_rmIaUsedMapping rom_usage_DMASS0_INTAGGR_0[5U] = {
+    {
+        .event = 20U,
+        .cleared = false,
+    },
+    {
+        .event = 21U,
+        .cleared = false,
+    },
+    {
+        .event = 22U,
+        .cleared = false,
+    },
+    {
+        .event = 23U,
+        .cleared = false,
+    },
+    {
+        .event = 30U,
+        .cleared = false,
+    },
+};
 
 struct Sciclient_rmIaInst gRmIaInstances[SCICLIENT_RM_IA_NUM_INST] =
 {
@@ -59,6 +81,8 @@ struct Sciclient_rmIaInst gRmIaInstances[SCICLIENT_RM_IA_NUM_INST] =
         .n_vint             = 184,
         .vint_usage_count   = &vint_usage_count_DMASS0_INTAGGR_0[0],
         .v0_b0_evt          = SCICLIENT_RM_IA_GENERIC_EVT_RESETVAL,
+        .rom_usage          = &rom_usage_DMASS0_INTAGGR_0[0U],
+        .n_rom_usage        = 5,
     },
 };
 
@@ -70,6 +94,8 @@ struct Sciclient_rmIrInst gRmIrInstances[SCICLIENT_RM_IR_NUM_INST] =
         .n_inp          = 87u,
         .n_outp         = 43u,
         .inp0_mapping   = SCICLIENT_RM_IR_MAPPING_FREE,
+        .rom_usage      = NULL,
+        .n_rom_usage    = 0U,
     },
     {
         .dev_id         = TISCI_DEV_MAIN_GPIOMUX_INTROUTER0,
@@ -77,6 +103,8 @@ struct Sciclient_rmIrInst gRmIrInstances[SCICLIENT_RM_IR_NUM_INST] =
         .n_inp          = 200u,
         .n_outp         = 54u,
         .inp0_mapping   = SCICLIENT_RM_IR_MAPPING_FREE,
+        .rom_usage      = NULL,
+        .n_rom_usage    = 0U,
     },
     {
         .dev_id         = TISCI_DEV_MCU_MCU_GPIOMUX_INTROUTER0,
@@ -84,6 +112,8 @@ struct Sciclient_rmIrInst gRmIrInstances[SCICLIENT_RM_IR_NUM_INST] =
         .n_inp          = 32u,
         .n_outp         = 12u,
         .inp0_mapping   = SCICLIENT_RM_IR_MAPPING_FREE,
+        .rom_usage      = NULL,
+        .n_rom_usage    = 0U,
     },
     {
         .dev_id         = TISCI_DEV_TIMESYNC_EVENT_INTROUTER0,
@@ -91,6 +121,8 @@ struct Sciclient_rmIrInst gRmIrInstances[SCICLIENT_RM_IR_NUM_INST] =
         .n_inp          = 43u,
         .n_outp         = 41u,
         .inp0_mapping   = SCICLIENT_RM_IR_MAPPING_FREE,
+        .rom_usage      = NULL,
+        .n_rom_usage    = 0U,
     },
 };
 

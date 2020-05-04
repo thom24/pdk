@@ -595,6 +595,18 @@ static int32_t Sciclient_rmIrqClearOesRegister(
 static struct Sciclient_rmIaInst *Sciclient_rmIaGetInst(uint16_t  id);
 
 /**
+ * \brief Check if IA event is still ROM mapped after ROM handover
+ *
+ * \param inst Pointer to IA instance
+ *
+ * \param evt IA input event
+ *
+ * \return true if IA event is still ROM mapped, else false
+ */
+static bool Sciclient_rmIaEvtRomMapped(const struct Sciclient_rmIaInst  *inst,
+                                       uint16_t                         evt);
+
+/**
  * \brief Validate IA event for in use or free cases
  *
  * \param inst Pointer to IA instance
@@ -610,10 +622,10 @@ static struct Sciclient_rmIaInst *Sciclient_rmIaGetInst(uint16_t  id);
  * \return CSL_PASS if validation succeeds, else CSL_EBADARGS
  */
 static int32_t Sciclient_rmIaValidateEvt(const struct Sciclient_rmIaInst    *inst,
-                                     uint16_t                           evt,
-                                     uint16_t                           vint,
-                                     uint8_t                            vint_sb_index,
-                                     bool                               in_use);
+                                         uint16_t                           evt,
+                                         uint16_t                           vint,
+                                         uint8_t                            vint_sb_index,
+                                         bool                               in_use);
 
 /**
  * \brief Verifies the global event is not already mapped to a VINT status bit
@@ -709,6 +721,18 @@ static uint32_t Sciclient_rmIrIntControlReg(uint16_t    outp);
 static struct Sciclient_rmIrInst *Sciclient_rmIrGetInst(uint16_t    id);
 
 /**
+ * \brief Check if IR input is still ROM mapped after ROM handover
+ *
+ * \param inst Pointer to IR instance
+ *
+ * \param inp Input line to IR
+ *
+ * \return true if IR input is still ROM mapped, else false
+ */
+static bool Sciclient_rmIrInpRomMapped(const struct Sciclient_rmIrInst  *inst,
+                                       uint16_t                         inp);
+
+/**
  * \brief Checks output control registers to see if the input has been mapped to
  *        an output.
  *
@@ -724,6 +748,18 @@ static struct Sciclient_rmIrInst *Sciclient_rmIrGetInst(uint16_t    id);
  */
 static int32_t Sciclient_rmIrInpIsFree(uint16_t id,
                                        uint16_t inp);
+
+/**
+ * \brief Check if IR output is still ROM mapped after ROM handover
+ *
+ * \param inst Pointer to IR instance
+ *
+ * \param outp Output line to IR
+ *
+ * \return true if IR output is still ROM mapped, else false
+ */
+static bool Sciclient_rmIrOutpRomMapped(const struct Sciclient_rmIrInst  *inst,
+                                        uint16_t                         outp);
 
 /**
  * \brief Checks the output's control register to see if the output line has an
@@ -2321,6 +2357,26 @@ static struct Sciclient_rmIaInst *Sciclient_rmIaGetInst(uint16_t  id)
     return inst;
 }
 
+static bool Sciclient_rmIaEvtRomMapped(const struct Sciclient_rmIaInst  *inst,
+                                       uint16_t                         evt)
+{
+    bool rom_mapped = false;
+    uint8_t i;
+
+    if (inst->rom_usage != NULL) {
+        for (i = 0u; i < inst->n_rom_usage; i++) {
+            if ((inst->rom_usage[i].cleared == false) &&
+                (evt == (inst->rom_usage[i].event - inst->sevt_offset))) {
+                rom_mapped = true;
+                inst->rom_usage[i].cleared = true;
+                break;
+            }
+        }
+    }
+
+    return rom_mapped;
+}
+
 static int32_t Sciclient_rmIaValidateEvt(const struct Sciclient_rmIaInst    *inst,
                                          uint16_t                           evt,
                                          uint16_t                           vint,
@@ -2367,8 +2423,13 @@ static int32_t Sciclient_rmIaValidateEvt(const struct Sciclient_rmIaInst    *ins
                 }
             }
         } else {
-            /* Check if event is free */
-            if ((CSL_REG32_RD(entry_int_map_lo) != 0u) ||
+            /*
+             * Check if event is free.  Do not return as in use if event is
+             * mapped by ROM.  SYSFW will clear the mapping when it receives the
+             * request to configure the IA.
+             */
+            if (((CSL_REG32_RD(entry_int_map_lo) != 0u) &&
+                 (Sciclient_rmIaEvtRomMapped(inst, evt) == false)) ||
                 (evt == inst->v0_b0_evt)) {
                 r = CSL_EBADARGS;
             }
@@ -2524,6 +2585,28 @@ static struct Sciclient_rmIrInst *Sciclient_rmIrGetInst(uint16_t    id)
     return inst;
 }
 
+static bool Sciclient_rmIrInpRomMapped(const struct Sciclient_rmIrInst  *inst,
+                                       uint16_t                         inp)
+{
+    bool rom_mapped = false;
+    uint8_t i;
+
+    if (inst->rom_usage != NULL) {
+        for (i = 0u; i < inst->n_rom_usage; i++) {
+            if ((inst->rom_usage[i].cleared == false) &&
+                (inp >= inst->rom_usage[i].inp_start) &&
+                (inp < (inst->rom_usage[i].inp_start +
+                        inst->rom_usage[i].length))) {
+                rom_mapped = true;
+                inst->rom_usage[i].cleared = true;
+                break;
+            }
+        }
+    }
+
+    return rom_mapped;
+}
+
 static int32_t Sciclient_rmIrInpIsFree(uint16_t id,
                                        uint16_t inp)
 {
@@ -2556,7 +2639,13 @@ static int32_t Sciclient_rmIrInpIsFree(uint16_t id,
                 int_ctrl_reg = (volatile uint32_t *)Sciclient_getIrAddr(inst->cfg, i);
                 extracted_inp = CSL_REG32_FEXT(int_ctrl_reg,
                                                INTR_ROUTER_CFG_MUXCNTL_ENABLE);
-                if (extracted_inp == inp) {
+                /*
+                 * Do not return as in use if input is mapped by ROM.  SYSFW will
+                 * clear the mapping when it receives the request to configure
+                 * the IR.
+                 */
+                if ((extracted_inp == inp) &&
+                    (Sciclient_rmIrInpRomMapped(inst, inp) == false)) {
                     /* Input in use */
                     r = CSL_EFAIL;
                     break;
@@ -2568,22 +2657,28 @@ static int32_t Sciclient_rmIrInpIsFree(uint16_t id,
     return r;
 }
 
-/**
- * \brief Checks whether an IR output interface is free for use
- *
- * Checks the output's control register to see if the output line has an
- * input line mapped to it.
- *
- * \param id
- * IR SoC device ID.
- *
- * \param outp
- * Output line from IR
- *
- * \return
- *      CSL_PASS - Output line is free
- *      CSL_EFAIL - Output line is in use
- */
+static bool Sciclient_rmIrOutpRomMapped(const struct Sciclient_rmIrInst  *inst,
+                                        uint16_t                         outp)
+{
+    bool rom_mapped = false;
+    uint8_t i;
+
+    if (inst->rom_usage != NULL) {
+        for (i = 0u; i < inst->n_rom_usage; i++) {
+            if ((inst->rom_usage[i].cleared == false) &&
+                (outp >= inst->rom_usage[i].outp_start) &&
+                (outp < (inst->rom_usage[i].outp_start +
+                        inst->rom_usage[i].length))) {
+                rom_mapped = true;
+                inst->rom_usage[i].cleared = true;
+                break;
+            }
+        }
+    }
+
+    return rom_mapped;
+}
+
 static int32_t Sciclient_rmIrOutpIsFree(uint16_t    id,
                                         uint16_t    outp)
 {
@@ -2605,7 +2700,14 @@ static int32_t Sciclient_rmIrOutpIsFree(uint16_t    id,
         int_ctrl_reg = (volatile uint32_t *) Sciclient_getIrAddr (inst->cfg, outp);
         extracted_inp = CSL_REG32_FEXT(int_ctrl_reg,
                                        INTR_ROUTER_CFG_MUXCNTL_ENABLE);
-        if ((extracted_inp != 0u) || (outp == inst->inp0_mapping)) {
+        /*
+         * Do not return as in use if output is mapped by ROM.  SYSFW will
+         * clear the mapping when it receives the request to configure
+         * the IR.
+         */
+        if (((extracted_inp != 0u) &&
+             (Sciclient_rmIrOutpRomMapped(inst, outp) == false)) ||
+            (outp == inst->inp0_mapping)) {
             /*
              * MUX CONTROL register's default value is zero which
              * also signifies IR input zero.  Check the instance
