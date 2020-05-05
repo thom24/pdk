@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2013-2019, Texas Instruments Incorporated
+# Copyright (c) 2013-2020, Texas Instruments Incorporated
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -140,7 +140,7 @@ CFLAGS_GLOBAL_omapl137       = -DSOC_OMAPL137
 CFLAGS_GLOBAL_omapl138       = -DSOC_OMAPL138
 CFLAGS_GLOBAL_am65xx         = -DSOC_AM65XX
 CFLAGS_GLOBAL_k3             = -DSOC_K3
-CFLAGS_GLOBAL_j721e          = -DSOC_J721E
+CFLAGS_GLOBAL_j721e          = -DSOC_J721E -DI2128_SW_WORKAROUND
 CFLAGS_GLOBAL_j7200          = -DSOC_J7200
 CFLAGS_GLOBAL_am64x          = -DSOC_AM64X
 CFLAGS_GLOBAL_tpr12          = -DSOC_TPR12
