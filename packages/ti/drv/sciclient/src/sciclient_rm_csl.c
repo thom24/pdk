@@ -46,7 +46,6 @@
 #include <ti/drv/sciclient/sciclient.h>
 
 #include <ti/csl/soc.h>
-#include <ti/csl/csl_cppi.h>
 #include <ti/csl/csl_psilcfg.h>
 #include <ti/csl/csl_ringacc.h>
 #include <ti/csl/csl_udmap.h>

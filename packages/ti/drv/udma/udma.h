@@ -68,7 +68,6 @@
 #include <ti/drv/udma/soc/udma_soc.h>
 
 #include <ti/csl/soc.h>
-#include <ti/csl/csl_cppi.h>
 #include <ti/csl/csl_psilcfg.h>
 #if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
 #include <ti/csl/csl_ringacc.h>
@@ -85,7 +84,9 @@
 #endif
 #include <ti/csl/csl_intaggr.h>
 #include <ti/csl/csl_intr_router.h>
+#if (UDMA_NUM_UTC_INSTANCE > 0)
 #include <ti/csl/csl_dru.h>
+#endif
 #if (UDMA_SOC_CFG_PROXY_PRESENT == 1)
 #include <ti/csl/csl_proxy.h>
 #endif
@@ -342,9 +343,9 @@ static void *Udma_defaultPhyToVirtFxn(uint64_t phyAddr,
 struct Udma_DrvObj
 {   
     uint32_t                instType;
-    /**< [IN] \ref Udma_InstanceType */
+    /**< Udma Instance Type */
     uint32_t                raType;
-    /**< [IN] \ref Udma_RingAccType */
+    /**< Udma Ring Accelerator Type */
 
 #if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
     /*

@@ -464,11 +464,16 @@ static int32_t App_init(App_UdmaObj *appObj)
     uint32_t        i;
     uint8_t        *srcBuf;
 
+#if defined (SOC_AM64X)
+    /* Use Block Copy DMA for AM64x */
+    instId = UDMA_INST_ID_BCDMA_0;
+#else
     /* Use MCU NAVSS for MCU domain cores. Rest all cores uses Main NAVSS */
 #if defined (BUILD_MCU1_0) || defined (BUILD_MCU1_1)
     instId = UDMA_INST_ID_MCU_0;
 #else
     instId = UDMA_INST_ID_MAIN_0;
+#endif
 #endif
     /* UDMA driver init */
     UdmaInitPrms_init(instId, &initPrms);

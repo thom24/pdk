@@ -105,6 +105,9 @@
 #define APP_CRC_PATTERN_SIZE            ((uint32_t) 4U)
 #define APP_CRC_SECT_CNT                ((uint32_t) 1U)
 
+#if defined (SOC_AM64X)
+#define APP_CRC_BASE                    (CSL_MCU_MCRC64_0_REGS_BASE)
+#else
 /* Use MCU NAVSS/peripherals for MCU domain cores. Rest all uses Main NAVSS */
 #if defined (BUILD_MCU1_0) || defined (BUILD_MCU1_1)
 #define APP_CRC_BASE                    (CSL_MCU_NAVSS0_MCRC_BASE)
@@ -112,6 +115,7 @@
 #define APP_CRC_BASE                    (CSL_NAVSS0_MCRC_BASE)
 #endif
 
+#endif
 /* ========================================================================== */
 /*                         Structure Declarations                             */
 /* ========================================================================== */
@@ -406,11 +410,16 @@ static int32_t App_init(Udma_DrvHandle drvHandle)
     Udma_InitPrms   initPrms;
     uint32_t        instId;
 
+#if defined (SOC_AM64X)
+    /* Use Block Copy DMA for AM64x */
+    instId = UDMA_INST_ID_BCDMA_0;
+#else
     /* Use MCU NAVSS for MCU domain cores. Rest all cores uses Main NAVSS */
 #if defined (BUILD_MCU1_0) || defined (BUILD_MCU1_1)
     instId = UDMA_INST_ID_MCU_0;
 #else
     instId = UDMA_INST_ID_MAIN_0;
+#endif
 #endif
     /* UDMA driver init */
     UdmaInitPrms_init(instId, &initPrms);

@@ -58,9 +58,14 @@
 /*
  * Application test parameters
  */
-#define APP_ADC_MODULE                  (CSL_MCU_ADC0_BASE)
 #define APP_ADC_FIFO                    (ADC_FIFO_NUM_0)
+#if defined (SOC_AM64X)
+#define APP_ADC_MODULE                  (CSL_ADC0_BASE)
+#define APP_ADC_RX_PDMA_CH              (UDMA_PDMA_CH_MAIN1_ADC0_CH0_RX)
+#else
+#define APP_ADC_MODULE                  (CSL_MCU_ADC0_BASE)
 #define APP_ADC_RX_PDMA_CH              (UDMA_PDMA_CH_MCU_ADC0_CH0_RX)
+#endif
 #define APP_ADC_NUM_CH                  (8U)
 
 /*
@@ -402,7 +407,12 @@ static int32_t App_init(Udma_DrvHandle drvHandle)
     uint32_t        instId;
 
     /* UDMA driver init */
+#if defined (SOC_AM64X)
+    /* Use Packet DMA for AM64x */
+    instId = UDMA_INST_ID_PKTDMA_0;
+#else
     instId = UDMA_INST_ID_MCU_0;        /* Use the same domain NAVSS instance - ADC is in MCU domain */
+#endif
     UdmaInitPrms_init(instId, &initPrms);
     initPrms.printFxn = &App_print;
     retVal = Udma_init(drvHandle, &initPrms);
