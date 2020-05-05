@@ -628,14 +628,14 @@ static const struct Sciclient_rmIrqNode tisci_irq_TIMER9 = {
 };
 
 /* Start of ECAP0 interface definition */
-const struct Sciclient_rmIrqIf ecap_main_0_bus_ecap_int_0_0_to_main2mcu_pls_introuter_main_0_bus_in_16_16 = {
+const struct Sciclient_rmIrqIf ecap_main_0_bus_ecap_int_0_0_to_main2mcu_pls_introuter_main_0_bus_in_17_17 = {
     .lbase  = 0,
     .len    = 1,
     .rid    = TISCI_DEV_MAIN2MCU_PLS_INTRTR0,
-    .rbase  = 16,
+    .rbase  = 17,
 };
 const struct Sciclient_rmIrqIf *const tisci_if_ECAP0[] = {
-    &ecap_main_0_bus_ecap_int_0_0_to_main2mcu_pls_introuter_main_0_bus_in_16_16,
+    &ecap_main_0_bus_ecap_int_0_0_to_main2mcu_pls_introuter_main_0_bus_in_17_17,
 };
 static const struct Sciclient_rmIrqNode tisci_irq_ECAP0 = {
     .id = TISCI_DEV_ECAP0,
@@ -644,21 +644,21 @@ static const struct Sciclient_rmIrqNode tisci_irq_ECAP0 = {
 };
 
 /* Start of EHRPWM0 interface definition */
-const struct Sciclient_rmIrqIf ehrpwm_main_0_bus_epwm_etint_2_2_to_main2mcu_pls_introuter_main_0_bus_in_1_1 = {
+const struct Sciclient_rmIrqIf ehrpwm_main_0_bus_epwm_etint_2_2_to_main2mcu_pls_introuter_main_0_bus_in_2_2 = {
     .lbase  = 2,
     .len    = 1,
     .rid    = TISCI_DEV_MAIN2MCU_PLS_INTRTR0,
-    .rbase  = 1,
+    .rbase  = 2,
 };
-const struct Sciclient_rmIrqIf ehrpwm_main_0_bus_epwm_tripzint_0_0_to_main2mcu_pls_introuter_main_0_bus_in_7_7 = {
+const struct Sciclient_rmIrqIf ehrpwm_main_0_bus_epwm_tripzint_0_0_to_main2mcu_pls_introuter_main_0_bus_in_8_8 = {
     .lbase  = 0,
     .len    = 1,
     .rid    = TISCI_DEV_MAIN2MCU_PLS_INTRTR0,
-    .rbase  = 7,
+    .rbase  = 8,
 };
 const struct Sciclient_rmIrqIf *const tisci_if_EHRPWM0[] = {
-    &ehrpwm_main_0_bus_epwm_etint_2_2_to_main2mcu_pls_introuter_main_0_bus_in_1_1,
-    &ehrpwm_main_0_bus_epwm_tripzint_0_0_to_main2mcu_pls_introuter_main_0_bus_in_7_7,
+    &ehrpwm_main_0_bus_epwm_etint_2_2_to_main2mcu_pls_introuter_main_0_bus_in_2_2,
+    &ehrpwm_main_0_bus_epwm_tripzint_0_0_to_main2mcu_pls_introuter_main_0_bus_in_8_8,
 };
 static const struct Sciclient_rmIrqNode tisci_irq_EHRPWM0 = {
     .id = TISCI_DEV_EHRPWM0,
@@ -667,21 +667,21 @@ static const struct Sciclient_rmIrqNode tisci_irq_EHRPWM0 = {
 };
 
 /* Start of EHRPWM1 interface definition */
-const struct Sciclient_rmIrqIf ehrpwm_main_1_bus_epwm_etint_2_2_to_main2mcu_pls_introuter_main_0_bus_in_2_2 = {
+const struct Sciclient_rmIrqIf ehrpwm_main_1_bus_epwm_etint_2_2_to_main2mcu_pls_introuter_main_0_bus_in_3_3 = {
     .lbase  = 2,
     .len    = 1,
     .rid    = TISCI_DEV_MAIN2MCU_PLS_INTRTR0,
-    .rbase  = 2,
+    .rbase  = 3,
 };
-const struct Sciclient_rmIrqIf ehrpwm_main_1_bus_epwm_tripzint_0_0_to_main2mcu_pls_introuter_main_0_bus_in_8_8 = {
+const struct Sciclient_rmIrqIf ehrpwm_main_1_bus_epwm_tripzint_0_0_to_main2mcu_pls_introuter_main_0_bus_in_9_9 = {
     .lbase  = 0,
     .len    = 1,
     .rid    = TISCI_DEV_MAIN2MCU_PLS_INTRTR0,
-    .rbase  = 8,
+    .rbase  = 9,
 };
 const struct Sciclient_rmIrqIf *const tisci_if_EHRPWM1[] = {
-    &ehrpwm_main_1_bus_epwm_etint_2_2_to_main2mcu_pls_introuter_main_0_bus_in_2_2,
-    &ehrpwm_main_1_bus_epwm_tripzint_0_0_to_main2mcu_pls_introuter_main_0_bus_in_8_8,
+    &ehrpwm_main_1_bus_epwm_etint_2_2_to_main2mcu_pls_introuter_main_0_bus_in_3_3,
+    &ehrpwm_main_1_bus_epwm_tripzint_0_0_to_main2mcu_pls_introuter_main_0_bus_in_9_9,
 };
 static const struct Sciclient_rmIrqNode tisci_irq_EHRPWM1 = {
     .id = TISCI_DEV_EHRPWM1,
@@ -690,21 +690,21 @@ static const struct Sciclient_rmIrqNode tisci_irq_EHRPWM1 = {
 };
 
 /* Start of EHRPWM2 interface definition */
-const struct Sciclient_rmIrqIf ehrpwm_main_2_bus_epwm_etint_2_2_to_main2mcu_pls_introuter_main_0_bus_in_3_3 = {
+const struct Sciclient_rmIrqIf ehrpwm_main_2_bus_epwm_etint_2_2_to_main2mcu_pls_introuter_main_0_bus_in_4_4 = {
     .lbase  = 2,
     .len    = 1,
     .rid    = TISCI_DEV_MAIN2MCU_PLS_INTRTR0,
-    .rbase  = 3,
+    .rbase  = 4,
 };
-const struct Sciclient_rmIrqIf ehrpwm_main_2_bus_epwm_tripzint_0_0_to_main2mcu_pls_introuter_main_0_bus_in_9_9 = {
+const struct Sciclient_rmIrqIf ehrpwm_main_2_bus_epwm_tripzint_0_0_to_main2mcu_pls_introuter_main_0_bus_in_10_10 = {
     .lbase  = 0,
     .len    = 1,
     .rid    = TISCI_DEV_MAIN2MCU_PLS_INTRTR0,
-    .rbase  = 9,
+    .rbase  = 10,
 };
 const struct Sciclient_rmIrqIf *const tisci_if_EHRPWM2[] = {
-    &ehrpwm_main_2_bus_epwm_etint_2_2_to_main2mcu_pls_introuter_main_0_bus_in_3_3,
-    &ehrpwm_main_2_bus_epwm_tripzint_0_0_to_main2mcu_pls_introuter_main_0_bus_in_9_9,
+    &ehrpwm_main_2_bus_epwm_etint_2_2_to_main2mcu_pls_introuter_main_0_bus_in_4_4,
+    &ehrpwm_main_2_bus_epwm_tripzint_0_0_to_main2mcu_pls_introuter_main_0_bus_in_10_10,
 };
 static const struct Sciclient_rmIrqNode tisci_irq_EHRPWM2 = {
     .id = TISCI_DEV_EHRPWM2,
@@ -713,21 +713,21 @@ static const struct Sciclient_rmIrqNode tisci_irq_EHRPWM2 = {
 };
 
 /* Start of EHRPWM3 interface definition */
-const struct Sciclient_rmIrqIf ehrpwm_main_3_bus_epwm_etint_2_2_to_main2mcu_pls_introuter_main_0_bus_in_4_4 = {
+const struct Sciclient_rmIrqIf ehrpwm_main_3_bus_epwm_etint_2_2_to_main2mcu_pls_introuter_main_0_bus_in_5_5 = {
     .lbase  = 2,
     .len    = 1,
     .rid    = TISCI_DEV_MAIN2MCU_PLS_INTRTR0,
-    .rbase  = 4,
+    .rbase  = 5,
 };
-const struct Sciclient_rmIrqIf ehrpwm_main_3_bus_epwm_tripzint_0_0_to_main2mcu_pls_introuter_main_0_bus_in_10_10 = {
+const struct Sciclient_rmIrqIf ehrpwm_main_3_bus_epwm_tripzint_0_0_to_main2mcu_pls_introuter_main_0_bus_in_11_11 = {
     .lbase  = 0,
     .len    = 1,
     .rid    = TISCI_DEV_MAIN2MCU_PLS_INTRTR0,
-    .rbase  = 10,
+    .rbase  = 11,
 };
 const struct Sciclient_rmIrqIf *const tisci_if_EHRPWM3[] = {
-    &ehrpwm_main_3_bus_epwm_etint_2_2_to_main2mcu_pls_introuter_main_0_bus_in_4_4,
-    &ehrpwm_main_3_bus_epwm_tripzint_0_0_to_main2mcu_pls_introuter_main_0_bus_in_10_10,
+    &ehrpwm_main_3_bus_epwm_etint_2_2_to_main2mcu_pls_introuter_main_0_bus_in_5_5,
+    &ehrpwm_main_3_bus_epwm_tripzint_0_0_to_main2mcu_pls_introuter_main_0_bus_in_11_11,
 };
 static const struct Sciclient_rmIrqNode tisci_irq_EHRPWM3 = {
     .id = TISCI_DEV_EHRPWM3,
@@ -736,21 +736,21 @@ static const struct Sciclient_rmIrqNode tisci_irq_EHRPWM3 = {
 };
 
 /* Start of EHRPWM4 interface definition */
-const struct Sciclient_rmIrqIf ehrpwm_main_4_bus_epwm_etint_2_2_to_main2mcu_pls_introuter_main_0_bus_in_5_5 = {
+const struct Sciclient_rmIrqIf ehrpwm_main_4_bus_epwm_etint_2_2_to_main2mcu_pls_introuter_main_0_bus_in_6_6 = {
     .lbase  = 2,
     .len    = 1,
     .rid    = TISCI_DEV_MAIN2MCU_PLS_INTRTR0,
-    .rbase  = 5,
+    .rbase  = 6,
 };
-const struct Sciclient_rmIrqIf ehrpwm_main_4_bus_epwm_tripzint_0_0_to_main2mcu_pls_introuter_main_0_bus_in_11_11 = {
+const struct Sciclient_rmIrqIf ehrpwm_main_4_bus_epwm_tripzint_0_0_to_main2mcu_pls_introuter_main_0_bus_in_12_12 = {
     .lbase  = 0,
     .len    = 1,
     .rid    = TISCI_DEV_MAIN2MCU_PLS_INTRTR0,
-    .rbase  = 11,
+    .rbase  = 12,
 };
 const struct Sciclient_rmIrqIf *const tisci_if_EHRPWM4[] = {
-    &ehrpwm_main_4_bus_epwm_etint_2_2_to_main2mcu_pls_introuter_main_0_bus_in_5_5,
-    &ehrpwm_main_4_bus_epwm_tripzint_0_0_to_main2mcu_pls_introuter_main_0_bus_in_11_11,
+    &ehrpwm_main_4_bus_epwm_etint_2_2_to_main2mcu_pls_introuter_main_0_bus_in_6_6,
+    &ehrpwm_main_4_bus_epwm_tripzint_0_0_to_main2mcu_pls_introuter_main_0_bus_in_12_12,
 };
 static const struct Sciclient_rmIrqNode tisci_irq_EHRPWM4 = {
     .id = TISCI_DEV_EHRPWM4,
@@ -759,21 +759,21 @@ static const struct Sciclient_rmIrqNode tisci_irq_EHRPWM4 = {
 };
 
 /* Start of EHRPWM5 interface definition */
-const struct Sciclient_rmIrqIf ehrpwm_main_5_bus_epwm_etint_2_2_to_main2mcu_pls_introuter_main_0_bus_in_6_6 = {
+const struct Sciclient_rmIrqIf ehrpwm_main_5_bus_epwm_etint_2_2_to_main2mcu_pls_introuter_main_0_bus_in_7_7 = {
     .lbase  = 2,
     .len    = 1,
     .rid    = TISCI_DEV_MAIN2MCU_PLS_INTRTR0,
-    .rbase  = 6,
+    .rbase  = 7,
 };
-const struct Sciclient_rmIrqIf ehrpwm_main_5_bus_epwm_tripzint_0_0_to_main2mcu_pls_introuter_main_0_bus_in_12_12 = {
+const struct Sciclient_rmIrqIf ehrpwm_main_5_bus_epwm_tripzint_0_0_to_main2mcu_pls_introuter_main_0_bus_in_13_13 = {
     .lbase  = 0,
     .len    = 1,
     .rid    = TISCI_DEV_MAIN2MCU_PLS_INTRTR0,
-    .rbase  = 12,
+    .rbase  = 13,
 };
 const struct Sciclient_rmIrqIf *const tisci_if_EHRPWM5[] = {
-    &ehrpwm_main_5_bus_epwm_etint_2_2_to_main2mcu_pls_introuter_main_0_bus_in_6_6,
-    &ehrpwm_main_5_bus_epwm_tripzint_0_0_to_main2mcu_pls_introuter_main_0_bus_in_12_12,
+    &ehrpwm_main_5_bus_epwm_etint_2_2_to_main2mcu_pls_introuter_main_0_bus_in_7_7,
+    &ehrpwm_main_5_bus_epwm_tripzint_0_0_to_main2mcu_pls_introuter_main_0_bus_in_13_13,
 };
 static const struct Sciclient_rmIrqNode tisci_irq_EHRPWM5 = {
     .id = TISCI_DEV_EHRPWM5,
@@ -830,14 +830,14 @@ static const struct Sciclient_rmIrqNode tisci_irq_MMCSD1 = {
 };
 
 /* Start of EQEP0 interface definition */
-const struct Sciclient_rmIrqIf eqep_main_0_bus_eqep_int_0_0_to_main2mcu_pls_introuter_main_0_bus_in_13_13 = {
+const struct Sciclient_rmIrqIf eqep_main_0_bus_eqep_int_0_0_to_main2mcu_pls_introuter_main_0_bus_in_14_14 = {
     .lbase  = 0,
     .len    = 1,
     .rid    = TISCI_DEV_MAIN2MCU_PLS_INTRTR0,
-    .rbase  = 13,
+    .rbase  = 14,
 };
 const struct Sciclient_rmIrqIf *const tisci_if_EQEP0[] = {
-    &eqep_main_0_bus_eqep_int_0_0_to_main2mcu_pls_introuter_main_0_bus_in_13_13,
+    &eqep_main_0_bus_eqep_int_0_0_to_main2mcu_pls_introuter_main_0_bus_in_14_14,
 };
 static const struct Sciclient_rmIrqNode tisci_irq_EQEP0 = {
     .id = TISCI_DEV_EQEP0,
@@ -846,14 +846,14 @@ static const struct Sciclient_rmIrqNode tisci_irq_EQEP0 = {
 };
 
 /* Start of EQEP1 interface definition */
-const struct Sciclient_rmIrqIf eqep_main_1_bus_eqep_int_0_0_to_main2mcu_pls_introuter_main_0_bus_in_14_14 = {
+const struct Sciclient_rmIrqIf eqep_main_1_bus_eqep_int_0_0_to_main2mcu_pls_introuter_main_0_bus_in_15_15 = {
     .lbase  = 0,
     .len    = 1,
     .rid    = TISCI_DEV_MAIN2MCU_PLS_INTRTR0,
-    .rbase  = 14,
+    .rbase  = 15,
 };
 const struct Sciclient_rmIrqIf *const tisci_if_EQEP1[] = {
-    &eqep_main_1_bus_eqep_int_0_0_to_main2mcu_pls_introuter_main_0_bus_in_14_14,
+    &eqep_main_1_bus_eqep_int_0_0_to_main2mcu_pls_introuter_main_0_bus_in_15_15,
 };
 static const struct Sciclient_rmIrqNode tisci_irq_EQEP1 = {
     .id = TISCI_DEV_EQEP1,
@@ -862,14 +862,14 @@ static const struct Sciclient_rmIrqNode tisci_irq_EQEP1 = {
 };
 
 /* Start of EQEP2 interface definition */
-const struct Sciclient_rmIrqIf eqep_main_2_bus_eqep_int_0_0_to_main2mcu_pls_introuter_main_0_bus_in_15_15 = {
+const struct Sciclient_rmIrqIf eqep_main_2_bus_eqep_int_0_0_to_main2mcu_pls_introuter_main_0_bus_in_16_16 = {
     .lbase  = 0,
     .len    = 1,
     .rid    = TISCI_DEV_MAIN2MCU_PLS_INTRTR0,
-    .rbase  = 15,
+    .rbase  = 16,
 };
 const struct Sciclient_rmIrqIf *const tisci_if_EQEP2[] = {
-    &eqep_main_2_bus_eqep_int_0_0_to_main2mcu_pls_introuter_main_0_bus_in_15_15,
+    &eqep_main_2_bus_eqep_int_0_0_to_main2mcu_pls_introuter_main_0_bus_in_16_16,
 };
 static const struct Sciclient_rmIrqNode tisci_irq_EQEP2 = {
     .id = TISCI_DEV_EQEP2,
@@ -963,17 +963,17 @@ static const struct Sciclient_rmIrqNode tisci_irq_GPMC0 = {
 };
 
 /* Start of PRU_ICSSG0 interface definition */
-const struct Sciclient_rmIrqIf icss_g_main_0_bus_pr1_rx_sof_intr_req_284_285_to_main2mcu_pls_introuter_main_0_bus_in_19_20 = {
+const struct Sciclient_rmIrqIf icss_g_main_0_bus_pr1_rx_sof_intr_req_284_285_to_main2mcu_pls_introuter_main_0_bus_in_20_21 = {
     .lbase  = 284,
     .len    = 2,
     .rid    = TISCI_DEV_MAIN2MCU_PLS_INTRTR0,
-    .rbase  = 19,
+    .rbase  = 20,
 };
-const struct Sciclient_rmIrqIf icss_g_main_0_bus_pr1_tx_sof_intr_req_302_303_to_main2mcu_pls_introuter_main_0_bus_in_21_22 = {
+const struct Sciclient_rmIrqIf icss_g_main_0_bus_pr1_tx_sof_intr_req_302_303_to_main2mcu_pls_introuter_main_0_bus_in_22_23 = {
     .lbase  = 302,
     .len    = 2,
     .rid    = TISCI_DEV_MAIN2MCU_PLS_INTRTR0,
-    .rbase  = 21,
+    .rbase  = 22,
 };
 const struct Sciclient_rmIrqIf icss_g_main_0_bus_pr1_host_intr_req_286_293_to_cmp_event_introuter_main_0_bus_in_8_15 = {
     .lbase  = 286,
@@ -1030,8 +1030,8 @@ const struct Sciclient_rmIrqIf icss_g_main_0_bus_pr1_host_intr_pend_294_301_to_m
     .rbase  = 32,
 };
 const struct Sciclient_rmIrqIf *const tisci_if_PRU_ICSSG0[] = {
-    &icss_g_main_0_bus_pr1_rx_sof_intr_req_284_285_to_main2mcu_pls_introuter_main_0_bus_in_19_20,
-    &icss_g_main_0_bus_pr1_tx_sof_intr_req_302_303_to_main2mcu_pls_introuter_main_0_bus_in_21_22,
+    &icss_g_main_0_bus_pr1_rx_sof_intr_req_284_285_to_main2mcu_pls_introuter_main_0_bus_in_20_21,
+    &icss_g_main_0_bus_pr1_tx_sof_intr_req_302_303_to_main2mcu_pls_introuter_main_0_bus_in_22_23,
     &icss_g_main_0_bus_pr1_host_intr_req_286_293_to_cmp_event_introuter_main_0_bus_in_8_15,
     &icss_g_main_0_bus_pr1_iep0_cmp_intr_req_268_283_to_cmp_event_introuter_main_0_bus_in_32_47,
     &icss_g_main_0_bus_pr1_iep1_cmp_intr_req_256_261_to_cmp_event_introuter_main_0_bus_in_48_53,
@@ -1049,17 +1049,17 @@ static const struct Sciclient_rmIrqNode tisci_irq_PRU_ICSSG0 = {
 };
 
 /* Start of PRU_ICSSG1 interface definition */
-const struct Sciclient_rmIrqIf icss_g_main_1_bus_pr1_rx_sof_intr_req_284_285_to_main2mcu_pls_introuter_main_0_bus_in_23_24 = {
+const struct Sciclient_rmIrqIf icss_g_main_1_bus_pr1_rx_sof_intr_req_284_285_to_main2mcu_pls_introuter_main_0_bus_in_24_25 = {
     .lbase  = 284,
     .len    = 2,
     .rid    = TISCI_DEV_MAIN2MCU_PLS_INTRTR0,
-    .rbase  = 23,
+    .rbase  = 24,
 };
-const struct Sciclient_rmIrqIf icss_g_main_1_bus_pr1_tx_sof_intr_req_302_303_to_main2mcu_pls_introuter_main_0_bus_in_25_26 = {
+const struct Sciclient_rmIrqIf icss_g_main_1_bus_pr1_tx_sof_intr_req_302_303_to_main2mcu_pls_introuter_main_0_bus_in_26_27 = {
     .lbase  = 302,
     .len    = 2,
     .rid    = TISCI_DEV_MAIN2MCU_PLS_INTRTR0,
-    .rbase  = 25,
+    .rbase  = 26,
 };
 const struct Sciclient_rmIrqIf icss_g_main_1_bus_pr1_host_intr_req_286_293_to_cmp_event_introuter_main_0_bus_in_16_23 = {
     .lbase  = 286,
@@ -1116,8 +1116,8 @@ const struct Sciclient_rmIrqIf icss_g_main_1_bus_pr1_host_intr_pend_294_301_to_m
     .rbase  = 40,
 };
 const struct Sciclient_rmIrqIf *const tisci_if_PRU_ICSSG1[] = {
-    &icss_g_main_1_bus_pr1_rx_sof_intr_req_284_285_to_main2mcu_pls_introuter_main_0_bus_in_23_24,
-    &icss_g_main_1_bus_pr1_tx_sof_intr_req_302_303_to_main2mcu_pls_introuter_main_0_bus_in_25_26,
+    &icss_g_main_1_bus_pr1_rx_sof_intr_req_284_285_to_main2mcu_pls_introuter_main_0_bus_in_24_25,
+    &icss_g_main_1_bus_pr1_tx_sof_intr_req_302_303_to_main2mcu_pls_introuter_main_0_bus_in_26_27,
     &icss_g_main_1_bus_pr1_host_intr_req_286_293_to_cmp_event_introuter_main_0_bus_in_16_23,
     &icss_g_main_1_bus_pr1_iep0_cmp_intr_req_268_283_to_cmp_event_introuter_main_0_bus_in_64_79,
     &icss_g_main_1_bus_pr1_iep1_cmp_intr_req_256_261_to_cmp_event_introuter_main_0_bus_in_80_85,
@@ -1135,17 +1135,17 @@ static const struct Sciclient_rmIrqNode tisci_irq_PRU_ICSSG1 = {
 };
 
 /* Start of PRU_ICSSG2 interface definition */
-const struct Sciclient_rmIrqIf icss_g_main_2_bus_pr1_rx_sof_intr_req_284_285_to_main2mcu_pls_introuter_main_0_bus_in_27_28 = {
+const struct Sciclient_rmIrqIf icss_g_main_2_bus_pr1_rx_sof_intr_req_284_285_to_main2mcu_pls_introuter_main_0_bus_in_28_29 = {
     .lbase  = 284,
     .len    = 2,
     .rid    = TISCI_DEV_MAIN2MCU_PLS_INTRTR0,
-    .rbase  = 27,
+    .rbase  = 28,
 };
-const struct Sciclient_rmIrqIf icss_g_main_2_bus_pr1_tx_sof_intr_req_302_303_to_main2mcu_pls_introuter_main_0_bus_in_29_30 = {
+const struct Sciclient_rmIrqIf icss_g_main_2_bus_pr1_tx_sof_intr_req_302_303_to_main2mcu_pls_introuter_main_0_bus_in_30_31 = {
     .lbase  = 302,
     .len    = 2,
     .rid    = TISCI_DEV_MAIN2MCU_PLS_INTRTR0,
-    .rbase  = 29,
+    .rbase  = 30,
 };
 const struct Sciclient_rmIrqIf icss_g_main_2_bus_pr1_host_intr_req_286_293_to_cmp_event_introuter_main_0_bus_in_24_31 = {
     .lbase  = 286,
@@ -1202,8 +1202,8 @@ const struct Sciclient_rmIrqIf icss_g_main_2_bus_pr1_host_intr_pend_294_301_to_m
     .rbase  = 48,
 };
 const struct Sciclient_rmIrqIf *const tisci_if_PRU_ICSSG2[] = {
-    &icss_g_main_2_bus_pr1_rx_sof_intr_req_284_285_to_main2mcu_pls_introuter_main_0_bus_in_27_28,
-    &icss_g_main_2_bus_pr1_tx_sof_intr_req_302_303_to_main2mcu_pls_introuter_main_0_bus_in_29_30,
+    &icss_g_main_2_bus_pr1_rx_sof_intr_req_284_285_to_main2mcu_pls_introuter_main_0_bus_in_28_29,
+    &icss_g_main_2_bus_pr1_tx_sof_intr_req_302_303_to_main2mcu_pls_introuter_main_0_bus_in_30_31,
     &icss_g_main_2_bus_pr1_host_intr_req_286_293_to_cmp_event_introuter_main_0_bus_in_24_31,
     &icss_g_main_2_bus_pr1_iep0_cmp_intr_req_268_283_to_cmp_event_introuter_main_0_bus_in_96_111,
     &icss_g_main_2_bus_pr1_iep1_cmp_intr_req_256_261_to_cmp_event_introuter_main_0_bus_in_112_117,
