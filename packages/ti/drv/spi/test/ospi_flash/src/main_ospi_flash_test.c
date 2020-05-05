@@ -140,15 +140,18 @@ typedef struct OSPI_Tests_s
 /* OSPI NOR flash offset address for read/write test */
 #define TEST_ADDR_OFFSET   (0U)
 
-/* Test read/write data length in bytes */
-#define TEST_BUF_LEN       (0x100000U)
-#define TEST_DATA_LEN      (0x100U)
-
+/* Test read/write buffer length in bytes */
 #ifdef VLAB_SIM
-#define TEST_XFER_SEG_LEN  (0x10000U)
+#define TEST_BUF_LEN       (0x10000U)
 #else
-#define TEST_XFER_SEG_LEN  (0x100000U)
+#define TEST_BUF_LEN       (0x100000U)
 #endif
+
+/* Total read/write length in bytes */
+#define TEST_DATA_LEN      (TEST_BUF_LEN)
+
+/* Read/write sengment length in bytes */
+#define TEST_XFER_SEG_LEN  (TEST_BUF_LEN)
 /**********************************************************************
  ************************** Internal functions ************************
  **********************************************************************/
@@ -167,12 +170,17 @@ bool VerifyData(uint8_t *expData,
 
 /* Buffer containing the known data that needs to be written to flash */
 #if defined(SOC_AM65XX) || defined(SOC_AM64X)
+#ifdef VLAB_SIM
+uint8_t txBuf[TEST_BUF_LEN]  __attribute__((aligned(128)));
+#else
 #ifdef SPI_DMA_ENABLE
 uint8_t txBuf[TEST_BUF_LEN]  __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT))) __attribute__((section(".benchmark_buffer")));
 #else
 uint8_t txBuf[TEST_BUF_LEN]  __attribute__((aligned(128))) __attribute__((section(".benchmark_buffer")));
 #endif
 #endif
+#endif
+
 #if defined(SOC_J721E) || defined(SOC_J7200)
 #ifdef SPI_DMA_ENABLE
 uint8_t txBuf[TEST_BUF_LEN]  __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
@@ -183,10 +191,14 @@ uint8_t txBuf[TEST_BUF_LEN]  __attribute__((aligned(128)));
 
 /* Buffer containing the received data */
 #if defined(SOC_AM65XX) || defined(SOC_AM64X)
+#ifdef VLAB_SIM
+uint8_t rxBuf[TEST_BUF_LEN]  __attribute__((aligned(128)));
+#else
 #ifdef SPI_DMA_ENABLE
 uint8_t rxBuf[TEST_BUF_LEN]  __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT))) __attribute__((section(".benchmark_buffer")));
 #else
 uint8_t rxBuf[TEST_BUF_LEN]  __attribute__((aligned(128))) __attribute__((section(".benchmark_buffer")));
+#endif
 #endif
 #endif
 
@@ -552,10 +564,11 @@ void OSPI_configClk(uint32_t freq, bool usePHY)
     if (freq == OSPI_MODULE_CLK_166M)
     {
 #if defined (SOC_AM64X)
-        parClk = TISCI_DEV_FSS0_OSPI_0_OSPI_RCLK_CLK_PARENT_HSDIV4_16FFT_MAIN_0_HSDIVOUT1_CLK;  /* TBD */
+        parClk = TISCI_DEV_FSS0_OSPI_0_OSPI_RCLK_CLK_PARENT_HSDIV4_16FFT_MAIN_0_HSDIVOUT1_CLK;
 #else
         parClk = TISCI_DEV_MCU_FSS0_OSPI_0_OSPI_RCLK_CLK_PARENT_HSDIV4_16FFT_MCU_2_HSDIVOUT4_CLK;
 #endif
+
         retVal = Sciclient_pmSetModuleClkParent(devID[BOARD_OSPI_NOR_INSTANCE],
                                                 clkID[BOARD_OSPI_NOR_INSTANCE],
                                                 parClk,
@@ -564,7 +577,7 @@ void OSPI_configClk(uint32_t freq, bool usePHY)
     else
     {
 #if defined (SOC_AM64X)
-        parClk = TISCI_DEV_FSS0_OSPI_0_OSPI_RCLK_CLK_PARENT_POSTDIV1_16FFT_MAIN_1_HSDIVOUT5_CLK;  /* TBD */
+        parClk = TISCI_DEV_FSS0_OSPI_0_OSPI_RCLK_CLK_PARENT_HSDIV4_16FFT_MAIN_0_HSDIVOUT1_CLK;
 #else
         parClk = TISCI_DEV_MCU_FSS0_OSPI_0_OSPI_RCLK_CLK_PARENT_HSDIV4_16FFT_MCU_1_HSDIVOUT4_CLK;
 #endif
@@ -610,7 +623,7 @@ void OSPI_configClk(uint32_t freq, bool usePHY)
     SPI_log("\n OSPI RCLK running at %d Hz. \n", freq);
 
 clk_cfg_exit:
-      return;  
+      return;
 }	
 #endif
 	
@@ -681,9 +694,9 @@ static bool OSPI_flash_test(void *arg)
     uint32_t          i;
     uint32_t          offset;
     uint32_t          xferLen;
+    uint32_t          testLen = TEST_DATA_LEN;
     uint32_t          testSegLen = TEST_XFER_SEG_LEN;
 #ifdef OSPI_PROFILE
-    uint32_t          testLen = TEST_XFER_SEG_LEN;
     uint64_t          startTime; /* start time stamp in usec */
     uint64_t          elapsedTime; /* elapsed time in usec */
     float             xferRate;
@@ -691,8 +704,6 @@ static bool OSPI_flash_test(void *arg)
 #ifdef USE_BIOS
     uint32_t          cpuLoad;
 #endif
-#else
-    uint32_t          testLen = TEST_DATA_LEN;
 #endif
 
     OSPI_initConfig(test);
