@@ -32,27 +32,7 @@
 /** ============================================================================
  *  @file       MIBSPI_v0.h
  *
- *  @brief      MIBSPI driver implementation for a TPR12 MIBSPI controller.
- *
- *  The MIBSPI header file should be included in an application as follows:
- *  @code
- *  #include <ti/drv/mibspi/MIBSPI.h>
- *  #include <ti/drv/mibspi/soc/MIBSPI_v0.h>
- *  @endcode
- *
- *  This MIBSPI driver implementation is designed to operate on a TPR12 MIBSPI
- *
- *  ## MIBSPI data frames #
- *
- *  MIBSPI data frames can be any size from 2-bits to 16-bits. If the dataSize in
- *  ::MIBSPI_Params is greater that 8-bits, then the MIBSPI_v1 driver
- *  implementation will assume that the ::MIBSPI_Transaction txBuf and rxBuf
- *  point to an array of 16-bit uint16_t elements.
- *
- *  dataSize  | buffer element size |
- *  --------  | ------------------- |
- *  2-8 bits  | uint8_t             |
- *  9-16 bits | uint16_t            |
+ *  @brief      MIBSPI driver SoC specific interface.
  *
  *  ============================================================================
  */
@@ -69,6 +49,25 @@ extern "C" {
 #include <ti/csl/src/ip/mcspi/V1/spi.h>
 
 
+/**
+@defgroup MIBSPI_DRIVER_INTERNAL_FUNCTION            MIBSPI Driver Internal Functions
+@ingroup DRV_MIBSPI_MODULE
+@brief
+*   The section has a list of all internal API which are not exposed to the external
+*   applications.
+*/
+/**
+@defgroup MIBSPI_DRIVER_INTERNAL_DATA_STRUCTURE      MIBSPI Driver Internal Data Structures
+@ingroup DRV_MIBSPI_MODULE
+@brief
+*   The section has a list of all internal data structures which are used internally
+*   by the MIBSPI module.
+*/
+
+/**
+ *  @ingroup MIBSPI_DRIVER_EXTERNAL_DATA_STRUCTURE
+ *  @{
+ */
 
 /*!
  *  @brief    Maximum element in MibSPI RAM. 
@@ -98,12 +97,6 @@ extern "C" {
 
 /**
  * @brief
- *  CS configuration value when none of the CS is activated
- */
-#define MIBSPI_CS_NONE                      0xFFU
-
-/**
- * @brief
  *  Max number of transport group
  */
 #define MIBSPI_NUM_TRANS_GROUP              8U
@@ -116,9 +109,18 @@ extern "C" {
 
 
 /**
- *  @defgroup MIBSPI_FEATURE defines
- *  MIBSPI_FEATURE_* macros indicate presence of a particular features in 
- *  SPI instance on the given SoC.
+ * @brief
+ *  CS configuration value when none of the CS is activated
+ */
+#define MIBSPI_CS_NONE                      0xFFU
+
+/** @} */
+
+/**
+ *  @defgroup MIBSPI_FEATURE MIBSPI Feature defines
+ *  @ingroup  MIBSPI_DRIVER_INTERNAL_DATA_STRUCTURE
+ *  @brief    MIBSPI_FEATURE_* macros indicate presence of a particular features in 
+ *  SPI instance on the given SoC. Used internally in driver
  *  @{
  */
 /**
@@ -141,12 +143,12 @@ extern "C" {
 
 /**
  * @brief
- *  MIBSPI Driver DMA request line configuration
+ *  MIBSPI Driver DMA request line tie up for the SoC
  *
  * @details
  *  The structure is used to store the hardware specific configuration for DMA request lines.
  *
- *  \ingroup MIBSPI_DRIVER_INTERNAL_DATA_STRUCTURE
+ *  @ingroup DRV_MIBSPI_SOC_MODULE
  *
  */
 typedef struct MibSpi_DMAReqlineCfg_t
@@ -168,9 +170,10 @@ typedef struct MibSpi_DMAReqlineCfg_t
  *
  * @details
  *  The structure is used to store the hardware version info expected in the 
- *  MIBSPIREV register
+ *  MIBSPIREV register. This is used internally in driver to sanity check the
+ *  register base address and SPI clock is enabled
  *
- *  \ingroup MIBSPI_DRIVER_INTERNAL_DATA_STRUCTURE
+ *  @ingroup MIBSPI_DRIVER_INTERNAL_DATA_STRUCTURE
  *
  */
 typedef struct MibSpi_VersionInfo_t
@@ -192,7 +195,7 @@ typedef struct MibSpi_VersionInfo_t
  *  The structure is used to store the hardware specific configuration which is
  *  passed to MIBSPI driver instance
  *
- *  \ingroup MIBSPI_DRIVER_INTERNAL_DATA_STRUCTURE
+ *  @ingroup DRV_MIBSPI_SOC_MODULE
  *
  */
 typedef struct MibSpi_HwCfg_t
@@ -277,39 +280,75 @@ typedef struct MibSpi_HwCfg_t
     MibSpi_VersionInfo      versionInfo;
 } MibSpi_HwCfg;
 
+/**
+ * @brief
+ *  MIBSPI Driver HW configuration
+ *
+ *  @ingroup DRV_MIBSPI_SOC_MODULE
+ *
+ */
 typedef MibSpi_HwCfg MIBSPI_v0_HWAttrs;
 
+
+/**
+ * @brief
+ *  MIBSPI Driver DMA module Address info definition
+ *
+ *  Data structure used to exchange address info between the MIBSPI driver and
+ *  the SoC specific DMA engine implementation
+ *
+ *  @ingroup MIBSPI_DRIVER_INTERNAL_DATA_STRUCTURE
+ *
+ */
 typedef struct MibSpi_dmaXferAddrInfo_s
 {
-    uintptr_t saddr;
-    uintptr_t daddr;
+    uintptr_t saddr; /* Source address of transfer. Used by DMA engine so should be SoC system address */
+    uintptr_t daddr; /* Destination address of transfer. Used by DMA engine so should be SoC system address */
 } MibSpi_dmaXferAddrInfo_t;
 
+/**
+ * @brief
+ *  MIBSPI Driver DMA module Transfer size definition
+ *
+ *  Data structure used to exchange size of transaction between the MIBSPI driver and
+ *  the SoC specific DMA engine implementation
+ *
+ *  @ingroup MIBSPI_DRIVER_INTERNAL_DATA_STRUCTURE
+ *
+ */
 typedef struct MibSpi_dmaXferSizeInfo_s
 {
-    uint16_t elemSize;
-    uint16_t elemCnt;
-    uint16_t frameCnt;
+    uint16_t elemSize; /* Element Size of transfer in bytes */
+    uint16_t elemCnt;  /* Number of elements */
+    uint16_t frameCnt; /* Number of frames of elemCnt */
 } MibSpi_dmaXferSizeInfo_t;
 
+
+/**
+ * @brief
+ *  MIBSPI Driver DMA module Transfer Info definition
+ *
+ *  Data structure used to exchange transaction info between the MIBSPI driver and
+ *  the SoC specific DMA engine implementation
+ *
+ *  @ingroup MIBSPI_DRIVER_INTERNAL_DATA_STRUCTURE
+ *
+ */
 typedef struct MibSpi_dmaXferInfo_s
 {
-    MibSpi_dmaXferAddrInfo_t tx;
-    MibSpi_dmaXferAddrInfo_t rx;
-    MibSpi_dmaXferSizeInfo_t size;
-    uint32_t  dmaReqLine;
+    MibSpi_dmaXferAddrInfo_t tx; /* Transation Transmit info */
+    MibSpi_dmaXferAddrInfo_t rx; /* Transation Receive info */
+    MibSpi_dmaXferSizeInfo_t size; /* Transation size info */
+    uint32_t  dmaReqLine;          /* DMA request line to be used for the transaction */
 } MibSpi_dmaXferInfo_t;
 
 /*!
- *  @brief MIBSPI Global configuration
+ *  @brief MIBSPI Instance configuration
  *
- *  The MIBSPI_Config structure contains a set of pointers used to characterize
- *  the SPI driver implementation.
+ *  @ingroup MIBSPI_DRIVER_EXTERNAL_DATA_STRUCTURE
+ *  The MIBSPI_Config structure contains a set of pointers to MIBSPI instance
+ *  object and the SoC info associated with the specific MIBSPI instance
  *
- *  This structure needs to be defined before calling SPI_init() and it must
- *  not be changed thereafter.
- *
- *  @sa     MIBSPI_init()
  */
 typedef struct MIBSPI_Config_s {
     /*! Pointer to a driver specific data object */
@@ -322,14 +361,76 @@ typedef struct MIBSPI_Config_s {
 
 /*!
  *  @brief      A handle that is returned from a SPI_open() call.
+ *  @ingroup MIBSPI_DRIVER_EXTERNAL_DATA_STRUCTURE
  */
 typedef struct MIBSPI_Config_s      *MIBSPI_Handle;
 
+/** @defgroup MIBSPI_DMAIF_FUNCTIONS MIBSPI DMA interface functions
+ *  @ingroup MIBSPI_DRIVER_INTERNAL_FUNCTION
+ *
+ *  @brief
+ *  Functions internally invoked by driver to interface with the SoC DMA engine
+
+ @{ */
+/*!
+ *  @brief  Function to configure DMA channel pair for the specified DMA line
+ *
+ *  Function invoked during MIBSPI_open inside the driver to configure the
+ *  Tx and Rx DMA channel connected to the specified DMA request line
+ *
+ *  @param  handle      A MIBSPI_Handle
+ *  @param  dmaReqLine  DMA request line
+ *
+ */
 int32_t MIBSPI_dmaConfig(MIBSPI_Handle handle, uint32_t dmaReqLine);
+
+/*!
+ *  @brief  Function to configure the DMA transfer for the specified transaction
+ *
+ *  Function invoked during MIBSPI_transfer inside the driver to configure the
+ *  Tx and Rx DMA for the transaction
+ *
+ *  @param  handle      A MIBSPI_Handle
+ *  @param  xferInfo    Tx and Rx Transaction transfer info
+ *
+ */
 int32_t MIBSPI_dmaTransfer(MIBSPI_Handle handle, MibSpi_dmaXferInfo_t *xferInfo);
-int32_t MIBSPI_dmaFreeChannel(const MIBSPI_Handle handle,  uint32_t dmaReqLine);
+
+/*!
+ *  @brief  Function to trigger  previously configured DMA channels.
+ *
+ *  Function invoked during MIBSPI_transfer inside the driver to trigger the
+ *  Tx and Rx DMA for the transaction
+ *
+ *  @param  handle      A MIBSPI_Handle
+ *  @param  dmaReqLine  DMA request line 
+ *
+ */
 int32_t MIBSPI_dmaStartTransfer(MIBSPI_Handle handle, uint32_t dmaReqLine);
+
+/*!
+ *  @brief  Function invoked by the SoC DMA implementation to the driver on 
+ *          DMA transfer completion
+ *
+ *  @param  mibspiHandle  A MIBSPI_Handle
+ *
+ */
 void MIBSPI_dmaDoneCb(MIBSPI_Handle mibspiHandle);
+
+
+/*!
+ *  @brief  Function to free the DMA channels pair for the specified DMA line
+ *
+ *  Function invoked during MIBSPI_close inside the driver to uninitialize the
+ *  Tx and Rx DMA channels associated with the DMA request line
+ *
+ *  @param  handle      A MIBSPI_Handle
+ *  @param  dmaReqLine  DMA request line
+ *
+ */
+int32_t MIBSPI_dmaFreeChannel(const MIBSPI_Handle handle,  uint32_t dmaReqLine);
+
+/** @}*/
 
 #ifdef __cplusplus
 }

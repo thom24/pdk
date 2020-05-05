@@ -1,15 +1,3 @@
-/**
- *  \ingroup DRV_MIBSPI_MODULE
- *  \defgroup DRV_MIBSPI_SOC_MODULE SOC APIS
- *            Multi-Channel MIBSPI driver interface
- *  @{
- */
-
-/**
- * @file   MIBSPI_soc.h
- *
- * @brief  MIBSPI SoC level driver
- */
 /*
  * Copyright (c) 2015-2020, Texas Instruments Incorporated
  * All rights reserved.
@@ -42,6 +30,22 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+/**
+ *  @defgroup DRV_MIBSPI_SOC_MODULE MIBSPI SOC specific interface
+ *  @ingroup DRV_MIBSPI_MODULE
+ *
+ *  @brief
+ *  The section has a SoC specific interface definitions for the MIBSPI driver
+
+ *  @{
+ */
+
+/**
+ * @file   mibspi/soc/MIBSPI_soc.h
+ *
+ * @brief  MIBSPI LLD SoC specific file
+ */
+
 #ifndef MIBSPI_SOC_H
 #define MIBSPI_SOC_H
 
@@ -59,17 +63,21 @@
 extern "C" {
 #endif
 
-  /* SPI SoC level API */
-
-#if defined(SOC_TPR12)
+/*!
+ *  @brief  Get the SoC specific configuration for MIBSPI instance
+ *
+ *  @ingroup DRV_MIBSPI_SOC_MODULE
+ *  @param  id  MIBSPI instance id
+ *  @param  cfg MIBSPI SoC configuration to be populated
+ *
+ */
 int32_t MIBSPI_socGetInitCfg(enum MibSpi_InstanceId id, MibSpi_HwCfg *cfg);
-#endif
 
-
-#define MIBSPI_MODULE_CLOCK_DIVIDER    (6U)
 
 #ifdef __cplusplus
 }
 #endif
 
 #endif /* SPI_SOC_H */
+/* @} */
+

@@ -1,15 +1,3 @@
-/**
- *  \ingroup DRV_MIBSPI_MODULE
- *  \defgroup DRV_MIBSPI_SOC_MODULE SOC APIS
- *            Multi-Channel MIBSPI driver interface
- *  @{
- */
-
-/**
- * @file   MIBSPI_soc.h
- *
- * @brief  MIBSPI SoC level driver for TPR12
- */
 /*
  * Copyright (c) 2015-2020, Texas Instruments Incorporated
  * All rights reserved.
@@ -42,6 +30,18 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+/**
+ *  \ingroup DRV_MIBSPI_SOC_MODULE
+ *            
+ *  @{
+ */
+
+/**
+ * @file   mibspi/soc/tpr12/MIBSPI_soc.h
+ *
+ * @brief  MIBSPI driver TPR12 specific interface
+ */
+
 #ifndef MIBSPI_SOC_TPR12_H
 #define MIBSPI_SOC_TPR12_H
 
@@ -50,6 +50,13 @@
 extern "C" {
 #endif
 
+/*!
+ *  @brief
+ *  Definitions for  MIBSPI instances available on TPR12 SoC
+ *
+ *  @ingroup MIBSPI_DRIVER_EXTERNAL_DATA_STRUCTURE
+ *
+ */
 enum MibSpi_InstanceId
 {
     MIBSPI_INST_ID_MSS_SPIA  = 0xA,
@@ -63,3 +70,6 @@ enum MibSpi_InstanceId
 #endif
 
 #endif /* MIBSPI_SOC_H */
+
+/* @} */
+
