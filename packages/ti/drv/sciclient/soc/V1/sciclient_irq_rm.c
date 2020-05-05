@@ -47,7 +47,7 @@
 /*                            Global Variables                                */
 /* ========================================================================== */
 
-#ifdef SOC_J721E
+#if defined(SOC_J721E) || defined (SOC_J7200)
 uint8_t vint_usage_count_NAVSS0_MODSS_INTAGGR_0[64] = {0};
 uint8_t vint_usage_count_NAVSS0_MODSS_INTAGGR_1[64] = {0};
 uint8_t vint_usage_count_NAVSS0_UDMASS_INTAGGR_0[256] = {0};
@@ -251,7 +251,8 @@ struct Sciclient_rmIrInst gRmIrInstances[SCICLIENT_RM_IR_NUM_INST] =
 };
 #endif
 
-#ifdef SOC_J7200
+/* TODO: Should be added when J7200 Sciclient support is added */
+#if 0
 uint8_t vint_usage_count_NAVSS0_MODSS_INTAGGR_0[64] = {0};
 uint8_t vint_usage_count_NAVSS0_MODSS_INTAGGR_1[64] = {0};
 uint8_t vint_usage_count_NAVSS0_UDMASS_INTAGGR_0[256] = {0};
@@ -422,7 +423,7 @@ struct Sciclient_rmIrInst gRmIrInstances[SCICLIENT_RM_IR_NUM_INST] =
 
 /* IRQ Tree definition */
 
-#ifdef SOC_J721E
+#if defined(SOC_J721E) || defined (SOC_J7200)
 /* Start of MCU_ADC0 interface definition */
 const struct Sciclient_rmIrqIf MCU_ADC0_gen_level_0_0_to_C66SS0_INTROUTER0_in_399_399 = {
     .lbase  = 0,
@@ -11197,7 +11198,8 @@ const struct Sciclient_rmIrqNode *const gRmIrqTree[] = {
 };
 #endif
 
-#ifdef SOC_J7200
+/* TODO: To be enabled when J7200 Sciclient support is added */
+#if 0
 /* Start of DDR0 interface definition */
 const struct Sciclient_rmIrqIf DDR0_ddrss_pll_freq_change_req_2_2_to_MAIN2MCU_LVL_INTRTR0_in_9_9 = {
     .lbase = 2,

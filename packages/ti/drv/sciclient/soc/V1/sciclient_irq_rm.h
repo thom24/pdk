@@ -49,7 +49,7 @@
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
 
-#ifdef SOC_J721E
+#if defined (SOC_J721E) || defined (SOC_J7200)
 #define SCICLIENT_RM_IA_NUM_INST 4
 
 #define SCICLIENT_RM_IR_NUM_INST 12
@@ -57,7 +57,8 @@
 #define SCICLIENT_IRQ_MAX_ROUTE_DEPTH 3
 #endif
 
-#ifdef SOC_J7200
+/* TODO: To be enabled when J7200 support added to sciclient */
+#if 0
 #define SCICLIENT_RM_IA_NUM_INST 4
 
 #define SCICLIENT_RM_IR_NUM_INST 8

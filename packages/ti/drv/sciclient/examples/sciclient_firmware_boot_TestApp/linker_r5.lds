@@ -77,7 +77,7 @@ SECTIONS
     .startupCode 	: {} palign(8) 		> OCMRAM_sciclientTest
     .startupData 	: {} palign(8) 		> OCMRAM_sciclientTest, type = NOINIT
     .text                 : {} palign(8)                            > OCMRAM_sciclientTest
-    .const                : {} palign(8)                            > MCU0_R5F_TCMB0
+    .const                : {} palign(8)                            > OCMRAM_sciclientTest
     .cinit                : {} palign(8)                            > OCMRAM_sciclientTest
     .pinit                : {} palign(8)                            > OCMRAM_sciclientTest
     .data                 : {} palign(128)                          > OCMRAM_sciclientTest
