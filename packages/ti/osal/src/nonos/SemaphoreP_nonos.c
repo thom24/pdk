@@ -171,7 +171,7 @@ SemaphoreP_Status SemaphoreP_delete(SemaphoreP_Handle handle)
     uintptr_t   key;
     Sem_Struct *semS = (Sem_Struct *)handle;
     
-    if(semS != NULL_PTR) 
+    if((semS != NULL_PTR) && (semS->used))
     {
       key = HwiP_disable();
       semS->used = (bool)false;

@@ -543,19 +543,28 @@ TimerP_Status TimerP_delete(TimerP_Handle handle)
 {
       /* Release or free the memory */
       uint32_t key;
+      TimerP_Status ret = TimerP_OK;
       int index = ((uint32_t) handle - (uint32_t) gTimerStructs); /* struct subtraction */
       TimerP_Struct *timer = (TimerP_Struct *) handle;
 
       TIMOSAL_Assert((handle == NULL_PTR));
 
-      /* clear the ISR that was set before */
-      HwiP_delete(timer->hwi);
-
       key = HwiP_disable();
-      gTimerStructs[index].used  = false;
+
+      if((timer != NULL_PTR) && (gTimerStructs[index].used)) {
+        /* clear the ISR that was set before */
+        HwiP_delete(timer->hwi);
+
+        gTimerStructs[index].used  = false;
+      }
+      else
+      {
+        ret = TimerP_FAILURE;
+      }
+
       HwiP_restore(key);
 
-      return (TimerP_OK);
+      return (ret);
 }
 
 

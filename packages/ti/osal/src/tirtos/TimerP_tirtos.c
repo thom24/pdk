@@ -267,7 +267,7 @@ TimerP_Status TimerP_delete(TimerP_Handle handle)
     uintptr_t   key;
     TimerP_tiRtos *timer = (TimerP_tiRtos *)handle;
 
-    if(timer != NULL_PTR)
+    if((timer != NULL_PTR) && (timer->used==TRUE))
     {
       Timer_destruct(&timer->timer);
       key = HwiP_disable();

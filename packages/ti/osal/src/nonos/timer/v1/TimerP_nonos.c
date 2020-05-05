@@ -730,25 +730,27 @@ TimerP_Status TimerP_delete(TimerP_Handle handle)
     TimerP_Struct *timer = (TimerP_Struct *) handle;
     TIMOSAL_Assert((handle == NULL_PTR));
 
-    if(timer != NULL_PTR)
+    key = (uint32_t)HwiP_disable();
+
+    if((timer != NULL_PTR) && (gTimerStructs[index].used))
     {
       /* clear the ISR that was set before */
       (void)HwiP_delete(timer->hwi);
 
-      key = (uint32_t)HwiP_disable();
       gTimerStructs[index].used = (bool)false;
       /* Found the osal timer object to delete */
       if (gOsalTimerAllocCnt > 0U)
       {
         gOsalTimerAllocCnt--;
       }
-      HwiP_restore(key);
       ret = TimerP_OK;	
     } 
     else
     {
       ret = TimerP_FAILURE;	
     }
+
+    HwiP_restore(key);
 
     return (ret);
 }

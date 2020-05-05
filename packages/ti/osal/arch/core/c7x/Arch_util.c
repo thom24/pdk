@@ -200,17 +200,24 @@ HwiP_Status OsalArch_HwiPDelete(HwiP_Handle handle)
     //CSL_Status  status = CSL_SOK;
     HwiP_nonOs *hwi_hnd = (HwiP_nonOs*) handle;
     uintptr_t   key;
-    HwiP_Status ret_val;
+    HwiP_Status ret_val = HwiP_OK;
 
     /* mark that handle as free */
     key = OsalArch_globalDisableInterrupt();
-    hwi_hnd->used = FALSE;
+    if (hwi_hnd->used == TRUE)
+    {
+        hwi_hnd->used = FALSE;
+    }
+    else
+    {
+        ret_val = HwiP_FAILURE;
+    }
     OsalArch_globalRestoreInterrupt(key);
     //status = CSL_intcClose(hwi_hnd->hwi.handle);
 
     //if (status == CSL_SOK)
     //{
-      ret_val = (HwiP_OK);
+    //  ret_val = (HwiP_OK);
     //}
     //else
     //{

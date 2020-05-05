@@ -276,13 +276,21 @@ HwiP_Status OsalArch_HwiPDelete(HwiP_Handle handle)
 {
     HwiP_nonOs *hwi_hnd = (HwiP_nonOs*) handle;
     uintptr_t   key;
+    HwiP_Status ret_val = HwiP_OK;
 
     /* mark that handle as free */
     key = OsalArch_globalDisableInterrupt();
-    hwi_hnd->used = (bool)false;
-    Intc_IntUnregister((uint16_t)hwi_hnd->hwi.intNum );
+    if (hwi_hnd->used)
+    {
+        hwi_hnd->used = (bool)false;
+        Intc_IntUnregister((uint16_t)(hwi_hnd->hwi.intNum));
+    }
+    else
+    {
+        ret_val = HwiP_FAILURE;
+    }
     OsalArch_globalRestoreInterrupt(key);
-    return (HwiP_OK);
+    return (ret_val);
 }
 
 /* Return the cycle frequency used for timeStamp */

@@ -179,7 +179,7 @@ SemaphoreP_Status SemaphoreP_delete(SemaphoreP_Handle handle)
     SemaphoreP_Status ret = SemaphoreP_OK;
     SemaphoreP_tiRtos *semaphore = (SemaphoreP_tiRtos *)handle;
 
-    if(semaphore != NULL_PTR)
+    if((semaphore != NULL_PTR) && (semaphore->used==TRUE))
     {
    
       Semaphore_destruct(&semaphore->sem);

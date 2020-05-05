@@ -281,7 +281,7 @@ HwiP_Status HwiP_delete(HwiP_Handle handle)
     
     HwiP_tiRtos *hwi = (HwiP_tiRtos *)handle;
     
-    if(hwi!=NULL_PTR) {
+    if((hwi!=NULL_PTR) && (hwi->used==TRUE)) {
       Hwi_destruct(&hwi->hwi);
       key = HwiP_disable();
       hwi->used = FALSE;
