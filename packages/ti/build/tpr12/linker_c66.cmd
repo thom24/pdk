@@ -80,9 +80,12 @@ SECTIONS
     .data:     {} > L2SRAM
     .sysmem:   {} > L2SRAM
 
-    .rodata:   {} > L2SRAM
-    .bss:      {} > L2SRAM
-    .neardata: {} > L2SRAM
+    GROUP
+    {
+    .rodata:
+    .bss:
+    .neardata:
+    } > L2SRAM
     .stack:    {} > L2SRAM
     .cinit:    {} > L2SRAM
     .far:      {} > L2SRAM
