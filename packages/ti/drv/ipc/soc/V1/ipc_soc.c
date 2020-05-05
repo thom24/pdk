@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018
+ *  Copyright (c) Texas Instruments Incorporated 2018-2020
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -294,6 +294,8 @@ static Ipc_MailboxInfo   g_IPC_MailboxInfo[IPC_MAX_PROCS][IPC_MAX_PROCS] =
 
 uint32_t Ipc_getNavss512MailboxInputIntr(uint32_t clusterId, uint32_t userId);
 int32_t Ipc_setCoreEventId(uint32_t selfId, Ipc_MbConfig* cfg, uint32_t intrCnt);
+int32_t Ipc_sciclientIrqTranslate(uint16_t coreId, uint32_t eventId,
+        uint16_t *procIrq);
 
 
 int32_t Ipc_getMailboxInfoTx(uint32_t selfId, uint32_t remoteId,
@@ -366,6 +368,7 @@ int32_t Ipc_setCoreEventId(uint32_t selfId, Ipc_MbConfig* cfg, uint32_t intrCnt)
     int32_t    retVal          = IPC_SOK;
     uint32_t   outIntrBaseNum  = 0;
     uint32_t   vimEventBaseNum = 0;
+    uint16_t   proc_irq        = 0;
 
     /*
      * static variable to used to store the base for first
@@ -379,10 +382,10 @@ int32_t Ipc_setCoreEventId(uint32_t selfId, Ipc_MbConfig* cfg, uint32_t intrCnt)
     /* Get available CorePack IRQ number from DMSC */
     if( (start == 0) && (range == 0))
     {
-        Ipc_getIntNumRange(selfId, &start, &range);
+        retVal = Ipc_getIntNumRange(selfId, &start, &range);
     }
 
-    if((start > 0) && (range >= 1))
+    if((retVal == IPC_SOK) && (range >= 1))
     {
         /* Allocate the last 5  interrupts for IPC. Note that the IR allocation is
          * static so this needs to be carefully set. Currently first interrupt is
@@ -391,13 +394,26 @@ int32_t Ipc_setCoreEventId(uint32_t selfId, Ipc_MbConfig* cfg, uint32_t intrCnt)
          */
         if(range >= 5)
         {
-           offset = 5;
+            offset = 5;
         }
         else
         {
             offset = range;
         }
         vimEventBaseNum = (start + range) - offset;
+
+        /* Translation must happen after this offset */
+        retVal = Ipc_sciclientIrqTranslate(selfId, vimEventBaseNum,
+                                           &proc_irq);
+        if (CSL_PASS == retVal)
+        {
+            vimEventBaseNum = proc_irq;
+        }
+
+    }
+    else
+    {
+        retVal = IPC_EFAIL;
     }
 
     switch(selfId)
@@ -580,22 +596,6 @@ static const uint16_t map_src_id[] =
     TISCI_DEV_NAVSS0_MAILBOX_11,
 };
 
-/* Indexed list of host ids */
-static const uint16_t map_host_id[] =
-{
-    TISCI_HOST_ID_A72_0,
-    TISCI_HOST_ID_R5_0,
-    TISCI_HOST_ID_R5_2,
-    TISCI_HOST_ID_MAIN_0_R5_0,
-    TISCI_HOST_ID_MAIN_0_R5_2,
-#if defined (SOC_J721E)
-    TISCI_HOST_ID_MAIN_1_R5_0,
-    TISCI_HOST_ID_MAIN_1_R5_2,
-    TISCI_HOST_ID_C6X_0_1,
-    TISCI_HOST_ID_C6X_1_1,
-    TISCI_HOST_ID_C7X_1
-#endif
-};
 /* Indexed list of req type */
 static const uint16_t req_type[] =
 {
@@ -632,6 +632,15 @@ static const uint16_t req_subtype[] =
 #endif
 };
 
+int32_t Ipc_sciclientIrqTranslate(uint16_t coreId, uint32_t eventId,
+        uint16_t *procIrq)
+{
+    return Sciclient_rmIrqTranslateIrOutput(req_type[coreId],
+                                            eventId,
+                                            map_dst_id[coreId],
+                                            procIrq);
+}
+
 int32_t Ipc_sciclientIrqRelease(uint16_t coreId, uint32_t clusterId,
         uint32_t userId, uint32_t intNumber)
 {
@@ -644,8 +653,7 @@ int32_t Ipc_sciclientIrqRelease(uint16_t coreId, uint32_t clusterId,
     rmIrqRel.vint_status_bit_index  = 0U;
 
     rmIrqRel.valid_params   = TISCI_MSG_VALUE_RM_DST_ID_VALID |
-                              TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID |
-                              TISCI_MSG_VALUE_RM_SECONDARY_HOST_VALID;
+                              TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID;
     rmIrqRel.src_id         = map_src_id[clusterId];
     rmIrqRel.src_index      = (uint16_t)userId;
     rmIrqRel.dst_id         = (uint16_t)map_dst_id[coreId];
@@ -654,7 +662,7 @@ int32_t Ipc_sciclientIrqRelease(uint16_t coreId, uint32_t clusterId,
 #else
     rmIrqRel.dst_host_irq   = (uint16_t)intNumber;
 #endif
-    rmIrqRel.secondary_host = (uint8_t)map_host_id[coreId];
+    rmIrqRel.secondary_host = (uint8_t)TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
 
     retVal = Sciclient_rmIrqRelease(&rmIrqRel, IPC_SCICLIENT_TIMEOUT);
 
@@ -674,8 +682,7 @@ int32_t Ipc_sciclientIrqSet(uint16_t coreId, uint32_t clusterId,
     rmIrqReq.vint_status_bit_index  = 0U;
 
     rmIrqReq.valid_params   = TISCI_MSG_VALUE_RM_DST_ID_VALID |
-                              TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID |
-                              TISCI_MSG_VALUE_RM_SECONDARY_HOST_VALID;
+                              TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID;
     rmIrqReq.src_id         = map_src_id[clusterId];
     rmIrqReq.src_index      = (uint16_t)userId;
     rmIrqReq.dst_id         = (uint16_t)map_dst_id[coreId];
@@ -684,7 +691,7 @@ int32_t Ipc_sciclientIrqSet(uint16_t coreId, uint32_t clusterId,
 #else
     rmIrqReq.dst_host_irq   = (uint16_t)intNumber;
 #endif
-    rmIrqReq.secondary_host = (uint8_t)map_host_id[coreId];
+    rmIrqReq.secondary_host = (uint8_t)TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
 
     /* Config event */
     retVal = Sciclient_rmIrqSet(&rmIrqReq, &rmIrqResp, IPC_SCICLIENT_TIMEOUT);
@@ -701,7 +708,7 @@ int32_t Ipc_getIntNumRange(uint32_t coreIndex,
 
     req.type           = req_type[coreIndex];
     req.subtype        = req_subtype[coreIndex];
-    req.secondary_host = (uint8_t)map_host_id[coreIndex];
+    req.secondary_host = (uint8_t)TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
 
     res.range_num = 0;
     res.range_start = 0;

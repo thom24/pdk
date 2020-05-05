@@ -145,6 +145,8 @@ static Ipc_MailboxInfo   g_IPC_MailboxInfo[IPC_MAX_PROCS][IPC_MAX_PROCS] =
     }
 };
 
+int32_t Ipc_sciclientIrqTranslate(uint16_t coreId, uint32_t eventId,
+        uint16_t *procIrq);
 
 int32_t Ipc_getMailboxInfoTx(uint32_t selfId, uint32_t remoteId,
                  uint32_t *clusterId, uint32_t *userId, uint32_t *queueId)
@@ -216,6 +218,7 @@ int32_t Ipc_setCoreEventId(uint32_t selfId, Ipc_MbConfig* cfg, uint32_t intrCnt)
     int32_t    retVal          = IPC_SOK;
     uint32_t   outIntrBaseNum  = 0U;
     uint32_t   vimEventBaseNum = 0U;
+    uint16_t   proc_irq        = 0U;
 
     /*
      * static variable to used to store the base for first
@@ -229,10 +232,10 @@ int32_t Ipc_setCoreEventId(uint32_t selfId, Ipc_MbConfig* cfg, uint32_t intrCnt)
     /* Get available CorePack IRQ number from DMSC */
     if( (start == 0U) && (range == 0U))
     {
-        Ipc_getIntNumRange(selfId, &start, &range);
+        retVal = Ipc_getIntNumRange(selfId, &start, &range);
     }
 
-    if((start > 0U) && (range >= 1U))
+    if((retVal == IPC_SOK) && (range >= 1U))
     {
         /* Allocate the last 5 interrupts for IPC. Note that the IR allocation is
          * static so this needs to be carefully set. Currently first interrupt is
@@ -248,6 +251,19 @@ int32_t Ipc_setCoreEventId(uint32_t selfId, Ipc_MbConfig* cfg, uint32_t intrCnt)
             offset = range;
         }
         vimEventBaseNum = (start + range) - offset;
+
+        /* Translation must happen after this offset */
+        retVal = Ipc_sciclientIrqTranslate(selfId, vimEventBaseNum,
+                                           &proc_irq);
+        if (CSL_PASS == retVal)
+        {
+            vimEventBaseNum = proc_irq;
+        }
+
+    }
+    else
+    {
+        retVal = IPC_EFAIL;
     }
 
     switch(selfId)
@@ -284,7 +300,7 @@ int32_t Ipc_getMailboxIntrRouterCfg(uint32_t selfId, uint32_t clusterId, uint32_
 
     cfg->inputIntrNum  = mailboxIntrNum;
     cfg->priority      = 1U;
-    Ipc_setCoreEventId(selfId, cfg, cnt);
+    retVal = Ipc_setCoreEventId(selfId, cfg, cnt);
 
     return retVal;
 }
@@ -377,13 +393,14 @@ static const uint16_t map_src_id[] =
     TISCI_DEV_NAVSS0_MAILBOX0_CLUSTER11
 };
 
-/* Indexed list of host ids */
-static const uint16_t map_host_id[] =
+int32_t Ipc_sciclientIrqTranslate(uint16_t coreId, uint32_t eventId,
+        uint16_t *procIrq)
 {
-    TISCI_HOST_ID_A53_0,
-    TISCI_HOST_ID_R5_0,
-    TISCI_HOST_ID_R5_2
-};
+    return Sciclient_rmIrqTranslateIrOutput(req_type[coreId],
+                                            eventId,
+                                            map_dst_id[coreId],
+                                            procIrq);
+}
 
 int32_t Ipc_sciclientIrqRelease(uint16_t coreId, uint32_t clusterId,
         uint32_t userId, uint32_t intNumber)
@@ -397,13 +414,12 @@ int32_t Ipc_sciclientIrqRelease(uint16_t coreId, uint32_t clusterId,
     rmIrqRel.vint_status_bit_index  = 0U;
 
     rmIrqRel.valid_params   = TISCI_MSG_VALUE_RM_DST_ID_VALID |
-                              TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID |
-                              TISCI_MSG_VALUE_RM_SECONDARY_HOST_VALID;
+                              TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID;
     rmIrqRel.src_id         = map_src_id[clusterId];
     rmIrqRel.src_index      = userId;
     rmIrqRel.dst_id         = map_dst_id[coreId];
     rmIrqRel.dst_host_irq   = intNumber;
-    rmIrqRel.secondary_host = map_host_id[coreId];
+    rmIrqRel.secondary_host = TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
 
     if(IPC_SOK == retVal)
     {
@@ -428,13 +444,12 @@ int32_t Ipc_sciclientIrqSet(uint16_t coreId, uint32_t clusterId,
     rmIrqReq.vint_status_bit_index  = 0U;
 
     rmIrqReq.valid_params   = TISCI_MSG_VALUE_RM_DST_ID_VALID |
-                              TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID |
-                              TISCI_MSG_VALUE_RM_SECONDARY_HOST_VALID;
+                              TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID;
     rmIrqReq.src_id         = map_src_id[clusterId];
     rmIrqReq.src_index      = userId;
     rmIrqReq.dst_id         = map_dst_id[coreId];
     rmIrqReq.dst_host_irq   = intNumber;
-    rmIrqReq.secondary_host = map_host_id[coreId];
+    rmIrqReq.secondary_host = TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
 
     if(IPC_SOK == retVal)
     {
@@ -455,7 +470,7 @@ int32_t Ipc_getIntNumRange(uint32_t coreIndex,
 
     req.type           = req_type[coreIndex];
     req.subtype        = req_subtype[coreIndex];
-    req.secondary_host = map_host_id[coreIndex];
+    req.secondary_host = TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
 
     res.range_num = 0;
     res.range_start = 0;
