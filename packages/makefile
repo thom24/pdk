@@ -1,10 +1,10 @@
 #*******************************************************************************
-#* FILE PURPOSE: Top level makefile for Creating Component Libraries and example 
+#* FILE PURPOSE: Top level makefile for Creating Component Libraries and example
 #*               binaries of PDK
 #*******************************************************************************
 #* FILE NAME: makefile
 #*
-#* DESCRIPTION: Builds the PDK Drivers & Examples 
+#* DESCRIPTION: Builds the PDK Drivers & Examples
 #*
 #*
 #*******************************************************************************
@@ -13,7 +13,11 @@
 .NOTPARALLEL:
 # This make file is not parallel in its highest level. This is done to serialize the multiple SOCS,BOARDS,CORES.
 # However the subsequent makefiles invoked by this makefile have parallelism supported. i.e -j option given to this
-# makefile will be passed on to the subsequent makefiles resulting in parallel builds. 
+# makefile will be passed on to the subsequent makefiles resulting in parallel builds.
+
+#Default when PDK env script is not run
+PDK_INSTALL_PATH ?= $(abspath .)
+SDK_INSTALL_PATH ?= $(abspath ../../)
 
 ifeq ($(RULES_MAKE), )
 include $(PDK_INSTALL_PATH)/ti/build/Rules.make
@@ -56,7 +60,7 @@ CORE_LIST = $(filter-out $(PRUCORE_LIST),$(LIMIT_CORES))
 else
 CORE_LIST = $(CORE)
 endif
- 
+
 .PHONY: all all_libs all_examples clean env_check help xdc_meta \
    buildinfra_all buildinfra_clean buildinfra_pdk_examples \
    non-buildinfra_all non-buildinfra_clean buildinfra_pdk_libs  non-buildinfra_pdk_examples \
@@ -65,7 +69,7 @@ endif
 # Default BUILD profile is release
 BUILD_PROFILE ?= release
 #The top level makefile two kinds of sub modules. Ones which are supported by the 'build infrastructure' and which are not.
-# i.e The modules which supports 'build infrastructure' are included in ti/build/component.mk and follow a standard set of conventions and targets. 
+# i.e The modules which supports 'build infrastructure' are included in ti/build/component.mk and follow a standard set of conventions and targets.
 # They can be built using ti/build/makefile. Many newer targets such as AM3/4/5/6/7 have their modules in this category.
 # Those targets in this makefile has the 'buildinfra_' prefix in them.
 
@@ -101,7 +105,7 @@ non-buildinfra_all non-buildinfra_pdk_libs non-buildinfra_pdk_examples:
 env_check:
 ifneq ($(PDK_SOC),$(filter $(PDK_SOC), $(PROCSDK_SUPPORTED_PDK_SOCS)))
 	$(ECHO) "Warning !! PDK_SOC is not set properly!!!"
-	$(ECHO) "PDK_SOC should be set to any of the values: $(PROCSDK_SUPPORTED_PDK_SOCS)" 
+	$(ECHO) "PDK_SOC should be set to any of the values: $(PROCSDK_SUPPORTED_PDK_SOCS)"
 endif
 
 help: env_check
@@ -143,15 +147,15 @@ help: env_check
 	$(ECHO) "PDK_SOC=<soc>  This will specify the SOC version if the pdk directory does not specify it (if git clone pdk.git is used)"
 	$(ECHO) "If pdk is git cloned, PDK_SOC should be set to the <soc> where the original PDK directory from the installer was pdk_<soc>_<version>)"
 	$(ECHO) "For example if the original PDK installed directory (which got replaced by pdk.git) was <procsdk_install_dir>/pdk_am65xx_1_0_5, PDK_SOC=am65xx"
-	$(ECHO) " PDK_SOC should be set to any of the values: $(PROCSDK_SUPPORTED_PDK_SOCS)" 
+	$(ECHO) " PDK_SOC should be set to any of the values: $(PROCSDK_SUPPORTED_PDK_SOCS)"
 	$(ECHO) ""
 	$(ECHO) "BUILD_PROFILE=<release/debug>  This will determine the type of libraries/examples generated (release/debug friendly). Default is 'release "
 	$(ECHO) "Valid values of LIMIT_CORES are $(LIMIT_CORES)"
 	$(ECHO) ""
 	$(ECHO) "SOC=<soc> CORE=<core> BOARD=<board> This will build libraries/examples for the specified combination of <soc,core,board>"
 	$(ECHO) "Valid values of SOC/BOARD/CORE are found from LIMIT_SOC/BOARD/CORES above"
-	
-	
+
+
 
 
 # if PDK.git is initiated from a fresh clone, the XDC meta headers will not have been generated. (xdc meta headers are used for CCS based projects)
