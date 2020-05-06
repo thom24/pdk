@@ -66,12 +66,12 @@ extern "C" {
  */
 /* ABI Major revision - Major revision changes
 *       indicate backward compatibility breakage */
-#define SCICLIENT_FIRMWARE_ABI_MAJOR                     (2U)
+#define SCICLIENT_FIRMWARE_ABI_MAJOR                     (3U)
 /* ABI Minor revision - Minor revision changes
 *       indicate backward compatibility is maintained,
 *       however, new messages OR extensions to existing
 *       messages might have been adde */
-#define SCICLIENT_FIRMWARE_ABI_MINOR                     (9U)
+#define SCICLIENT_FIRMWARE_ABI_MINOR                     (0U)
 /* @} */
 
 /**
@@ -123,18 +123,19 @@ extern "C" {
  *  @{
  *  Processor IDs for the Processor Boot Configuration APIs.
  */
-/** COMPUTE_CLUSTER_MSMC0: (Cluster 0 Processor 0) */
-#define SCICLIENT_PROCID_A53_CL0_C0                       (0x20U)
-/** COMPUTE_CLUSTER_MSMC0: (Cluster 0 Processor 1) */
-#define SCICLIENT_PROCID_A53_CL0_C1                       (0x21U)
-/** COMPUTE_CLUSTER_MSMC0: (Cluster 1 Processor 0) */
-#define SCICLIENT_PROCID_A53_CL1_C0                       (0x22U)
-/** COMPUTE_CLUSTER_MSMC0: (Cluster 1 Processor 1) */
-#define SCICLIENT_PROCID_A53_CL1_C1                       (0x23U)
-/** MCU_SEC_MMR0: (Cluster 0 Processor 0) */
-#define SCICLIENT_PROCID_R5_CL0_C0                        (0x01U)
-/** MCU_SEC_MMR0: (Cluster 0 Processor 1) */
-#define SCICLIENT_PROCID_R5_CL0_C1                        (0x02U)
+
+/** AM64_MAIN_SEC_MMR_MAIN_0: (Cluster 9 Processor 0) */
+#define SCICLIENT_PROCID_A53_CL0_C0 (0x20U)
+/** AM64_MAIN_SEC_MMR_MAIN_0: (Cluster 9 Processor 1) */
+#define SCICLIENT_PROCID_A53_CL0_C1 (0x21U)
+/** AM64_MAIN_SEC_MMR_MAIN_0: (Cluster 0 Processor 0) */
+#define SCICLIENT_PROCID_R5_CL0_C0 (0x01U)
+/** AM64_MAIN_SEC_MMR_MAIN_0: (Cluster 0 Processor 1) */
+#define SCICLIENT_PROCID_R5_CL0_C1 (0x02U)
+/** AM64_MAIN_SEC_MMR_MAIN_0: (Cluster 1 Processor 0) */
+#define SCICLIENT_PROCID_R5_CL1_C0 (0x06U)
+/** AM64_MAIN_SEC_MMR_MAIN_0: (Cluster 1 Processor 1) */
+#define SCICLIENT_PROCID_R5_CL1_C1 (0x07U)
 /* @} */
 
 /** -------------------- Resource Management Parameters ---------------------*/
