@@ -159,6 +159,36 @@ typedef void *(*Udma_PhyToVirtFxn)(uint64_t phyAddr,
  */
 typedef void (*Udma_PrintFxn)(const char *str);
 
+/**
+ *  \brief Function prototypes for various local UDMA Ring API's.
+ */
+typedef void (*Udma_ringHandleClearRegsFxn)(Udma_RingHandle ringHandle);
+typedef void (*Udma_ringSetDoorBellFxn)(Udma_RingHandle ringHandle, 
+                                        int32_t count);
+typedef void (*Udma_ringPrimeFxn)(Udma_RingHandle ringHandle,
+                                  uint64_t phyDescMem);
+typedef void (*Udma_ringPrimeReadFxn)(Udma_RingHandle ringHandle, 
+                                      uint64_t *phyDescMem);
+typedef void *(*Udma_ringGetMemPtrFxn)(Udma_RingHandle ringHandle);
+typedef uint32_t (*Udma_ringGetModeFxn)(Udma_RingHandle ringHandle);
+typedef uint32_t (*Udma_ringGetElementCntFxn)(Udma_RingHandle ringHandle);
+typedef uint32_t (*Udma_ringGetForwardRingOccFxn)(Udma_RingHandle ringHandle);
+typedef uint32_t (*Udma_ringGetReverseRingOccFxn)(Udma_RingHandle ringHandle);
+typedef uint32_t (*Udma_ringGetWrIdxFxn)(Udma_RingHandle ringHandle);
+typedef uint32_t (*Udma_ringGetRdIdxFxn)(Udma_RingHandle ringHandle);
+typedef int32_t (*Udma_ringDequeueRawFxn)(Udma_DrvHandle  drvHandle, 
+                                          Udma_RingHandle ringHandle, 
+                                          uint64_t *phyDescMem);
+typedef int32_t (*Udma_ringQueueRawFxn)(Udma_DrvHandle  drvHandle, 
+                                        Udma_RingHandle ringHandle, 
+                                        uint64_t phyDescMem); 
+typedef int32_t (*Udma_ringFlushRawFxn)(Udma_DrvHandle  drvHandle, 
+                                        Udma_RingHandle ringHandle, 
+                                        uint64_t *phyDescMem); 
+typedef void (*Udma_ringSetCfgFxn)(Udma_DrvHandle drvHandle,
+                                   Udma_RingHandle ringHandle,
+                                   const Udma_RingPrms *ringPrms);
+
 /* ========================================================================== */
 /*                         Structure Declarations                             */
 /* ========================================================================== */
@@ -537,6 +567,42 @@ struct Udma_DrvObj
     /**< Mutex to protect print buffer. */
     char                    printBuf[UDMA_CFG_PRINT_BUF_LEN];
     /**< Print buffer */
+
+    /*
+     * UDMA Ring Local API's function pointers
+     * For Normal RA / LCDMA RA, these function pointers are used
+     * to call the appropriate function.
+     */
+    Udma_ringDequeueRawFxn	        ringDequeueRaw;
+    /**< UDMA Ring dequeue raw function pointer */		
+    Udma_ringQueueRawFxn	        ringQueueRaw;	
+    /**< UDMA Ring queue raw function pointer */		
+    Udma_ringFlushRawFxn	        ringFlushRaw;	
+    /**< UDMA Ring flush raw function pointer */		
+    Udma_ringGetElementCntFxn	    ringGetElementCnt;	
+    /**< UDMA Ring get element count function pointer */
+    Udma_ringGetMemPtrFxn           ringGetMemPtr;
+    /**< UDMA Ring get mem pointer function pointer */
+    Udma_ringGetModeFxn	            ringGetMode;	
+    /**< UDMA Ring get ring mode function pointer */	
+    Udma_ringGetForwardRingOccFxn	ringGetForwardRingOcc;	
+    /**< UDMA Ring get forward ring occupancy function pointer */
+    Udma_ringGetReverseRingOccFxn	ringGetReverseRingOcc;	
+    /**< UDMA Ring get reverse ring occupancy function pointer */		
+    Udma_ringGetWrIdxFxn	        ringGetWrIdx;	
+    /**< UDMA Ring get write index value function pointer */			
+    Udma_ringGetRdIdxFxn	        ringGetRdIdx;	
+    /**< UDMA Ring get read index value function pointer */	
+    Udma_ringPrimeFxn	            ringPrime;	
+    /**< UDMA Ring prime function pointer */		
+    Udma_ringPrimeReadFxn	        ringPrimeRead;	
+    /**< UDMA Ring prime read function pointer */	
+    Udma_ringSetDoorBellFxn	        ringSetDoorBell;
+    /**< UDMA Ring set doorbell function pointer */			
+    Udma_ringSetCfgFxn	            ringSetCfg;	
+    /**< UDMA Ring set Cfg function pointer */					
+    Udma_ringHandleClearRegsFxn	    ringHandleClearRegs;	
+    /**< UDMA Ring handle clear register function pointer */		
 };
 
 #ifdef __cplusplus

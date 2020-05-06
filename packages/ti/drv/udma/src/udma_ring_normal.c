@@ -298,6 +298,17 @@ void Udma_ringSetDoorBellNormal(Udma_RingHandle ringHandle, int32_t count)
     }
 }
 
+void *Udma_ringGetMemPtrNormal(Udma_RingHandle ringHandle)
+{
+    void   *ringMem = NULL_PTR;
+
+    if((NULL_PTR != ringHandle) && (UDMA_INIT_DONE == ringHandle->ringInitDone))
+    {
+        ringMem = ringHandle->cfg.virtBase;
+    }
+
+    return (ringMem);
+}
 uint32_t Udma_ringGetModeNormal(Udma_RingHandle ringHandle)
 {
     uint32_t ringMode = CSL_RINGACC_RING_MODE_INVALID;

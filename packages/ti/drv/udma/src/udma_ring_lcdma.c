@@ -320,6 +320,18 @@ void Udma_ringSetDoorBellLcdma(Udma_RingHandle ringHandle, int32_t count)
     return;
 }
 
+void *Udma_ringGetMemPtrLcdma(Udma_RingHandle ringHandle)
+{
+    void   *ringMem = NULL_PTR;
+
+    if((NULL_PTR != ringHandle) && (UDMA_INIT_DONE == ringHandle->ringInitDone))
+    {
+        ringMem = ringHandle->lcdmaCfg.virtBase;
+    }
+
+    return (ringMem);
+}
+
 uint32_t Udma_ringGetModeLcdma(Udma_RingHandle ringHandle)
 {
     uint32_t ringMode = CSL_LCDMA_RINGACC_RING_MODE_INVALID;
