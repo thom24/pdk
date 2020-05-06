@@ -414,7 +414,7 @@ int32_t Udma_ringFlushRaw(Udma_RingHandle ringHandle, uint64_t *phyDescMem);
  *
  *  Note: No error check is performed by this API to minimize the CPU cycles.
  *  The caller should ensure that the ring is in exposed/"RING" mode and
- *  there are enough room in te ring and the ring pointer is non-null.
+ *  there are enough room in the ring and the ring pointer is non-null.
  *
  *  This API is thread safe for a ring instance and can be called from
  *  interrupt or task context and also from multiple threads.
@@ -429,9 +429,47 @@ int32_t Udma_ringFlushRaw(Udma_RingHandle ringHandle, uint64_t *phyDescMem);
 void Udma_ringPrime(Udma_RingHandle ringHandle, uint64_t phyDescMem);
 
 /**
+ *  \brief UDMA read descriptor from a exposed/"RING" mode ring - raw version
+ *  (Reads physical pointers). This will read the descriptor address from the
+ *  ring memory without setting the doorbell (doesn't commit the pop).
+ *
+ *  This API can be used to read multiple descriptor addresses from the ring and
+ *  then set the doorbell using #Udma_ringSetDoorBell API.
+ *
+ *  Also no cache operation is performed to let the caller do the cache ops
+ *  once for the entire ring after reading multiple elements. This will yeild
+ *  better performance instead of doing cache ops for each ring pop.
+ *
+ *  Note: No error check is performed by this API to minimize the CPU cycles.
+ *  The caller should ensure that the ring is in exposed/"RING" mode and
+ *  descriptor addresses are in the ring and the ring pointer is non-null.
+ *
+ *  This API is thread safe for a ring instance and can be called from
+ *  interrupt or task context and also from multiple threads.
+ *
+ *  Requirement: DOX_REQ_TAG(PDK-3669)
+ *
+ *  \param ringHandle   [IN] UDMA ring handle.
+ *                           This parameter can't be NULL.
+ *  \param phyDescMem   [IN] Descriptor memory physical pointer to pop from the
+ *                           ring.
+ */
+void Udma_ringPrimeRead(Udma_RingHandle ringHandle, uint64_t *phyDescMem);
+
+/**
  *  \brief UDMA ring API to set the doorbell in exposed/"RING" mode ring.
  *  This will commit the previously primed operation using #Udma_ringPrime API.
  *
+ *  Note: The count will be positive when ring elements are queued into the ring
+ *  and count will be negative when ring elements are dequeued from the ring.
+ *  In case of devices like AM64x with LCDMA ring accelerator,
+ *  when the count is positive, it sets the forward doorbell of the common ring
+ *  and when the count is negative, it sets the reverse doorbell of the common ring.
+ *  For other devices with normal ring accelerator,
+ *  these sets the doorbell of the ring. Here its meaningful to 
+ *  pass the ringHandle of Free Queue Ring when the count is positive 
+ *  and pass the ringHandle of Completion Queue Ring when the count is negative.
+ * 
  *  Note: No error check is performed by this API to minimize the CPU cycles.
  *  The caller should ensure that the ring is in exposed/"RING" mode and
  *  there are enough room in te ring and the ring pointer is non-null.
@@ -470,6 +508,102 @@ uint16_t Udma_ringGetNum(Udma_RingHandle ringHandle);
  *  \return Ring memory pointer on success or NULL on error
  */
 void *Udma_ringGetMemPtr(Udma_RingHandle ringHandle);
+
+/**
+ *  \brief Returns the ring mode which is configured during ring alloc.
+ *
+ *  Requirement: DOX_REQ_TAG(PDK-5665)
+ *
+ *  \param ringHandle   [IN] UDMA ring handle.
+ *                           This parameter can't be NULL.
+ *
+ *  \return Ring mode on success or CSL_RINGACC_RING_MODE_INVALID on error
+ */
+uint32_t Udma_ringGetMode(Udma_RingHandle ringHandle);
+
+/**
+ *  \brief Returns the ring element count which is passed during ring alloc.
+ *
+ *  Requirement: DOX_REQ_TAG(PDK-5665)
+ *
+ *  \param ringHandle   [IN] UDMA ring handle.
+ *                           This parameter can't be NULL.
+ *
+ *  \return Ring element count on success or zero on error
+ */
+uint32_t Udma_ringGetElementCnt(Udma_RingHandle ringHandle);
+
+/**
+ *  \brief Returns the forward ring occupancy.
+ *
+ *  Note: In case of devices like AM64x with LCDMA ring accelerator,
+ *  this returns the forward ring occupancy count of the common ring.
+ *  For other devices with normal ring accelerator, 
+ *  this returns the the occupancy count of the ring. Here its meaningful
+ *  to pass the ringHandle of Free Queue Ring.
+ * 
+ *  Requirement: DOX_REQ_TAG(PDK-5665)
+ *
+ *  \param ringHandle   [IN] UDMA ring handle.
+ *                           This parameter can't be NULL.
+ *
+ *  \return Ring occupancy value from the register
+ */
+uint32_t Udma_ringGetForwardRingOcc(Udma_RingHandle ringHandle);
+
+/**
+ *  \brief Returns the reverse ring occupancy.
+ * 
+ *  Note: In case of devices like AM64x with LCDMA ring accelerator,
+ *  this returns the reverse ring occupancy count of the common ring.
+ *  For other devices with normal ring accelerator, 
+ *  this returns the the occupancy count of the ring. Here its meaningful
+ *  to pass the ringHandle of Completion Queue Ring.
+ *
+ *  Requirement: DOX_REQ_TAG(PDK-5665)
+ *
+ *  \param ringHandle   [IN] UDMA ring handle.
+ *                           This parameter can't be NULL.
+ *
+ *  \return Ring occupancy value from the register
+ */
+uint32_t Udma_ringGetReverseRingOcc(Udma_RingHandle ringHandle);
+
+/**
+ *  \brief Returns the ring write index value.
+ * 
+ *  Note: In case of devices like AM64x with LCDMA ring accelerator,
+ *  this returns the write index value of the common ring.
+ *  For other devices with normal ring accelerator, 
+ *  this returns the the read/write index value of the ring. Here its meaningful
+ *  to pass the ringHandle of Free Queue Ring.
+ *
+ *  Requirement: DOX_REQ_TAG(PDK-5665)
+ *
+ *  \param ringHandle   [IN] UDMA ring handle.
+ *                           This parameter can't be NULL.
+ *
+ *  \return Ring read/write index value
+ */
+uint32_t Udma_ringGetWrIdx(Udma_RingHandle ringHandle);
+
+/**
+ *  \brief Returns the ring read index value.
+ *
+ *  Note: In case of devices like AM64x with LCDMA ring accelerator,
+ *  this returns the read index value of the common ring.
+ *  For other devices with normal ring accelerator, 
+ *  this returns the the read/write index value of the ring. Here its meaningful
+ *  to pass the ringHandle of Completion Queue Ring.
+ * 
+ *  Requirement: DOX_REQ_TAG(PDK-5665)
+ *
+ *  \param ringHandle   [IN] UDMA ring handle.
+ *                           This parameter can't be NULL.
+ *
+ *  \return Ring read/write index value
+ */
+uint32_t Udma_ringGetRdIdx(Udma_RingHandle ringHandle);
 
 /**
  *  \brief UDMA ring monitor allocation API.

@@ -1408,6 +1408,30 @@ static int32_t udmaTestRingPrimeTestLoop(UdmaTestTaskObj *taskObj)
                 break;
             }
 
+            /* Check ring mode after allocation */
+            if (Udma_ringGetMode(ringHandle) != TISCI_MSG_VALUE_RM_RING_MODE_RING)
+            {
+                GT_0trace(taskObj->traceMask, GT_ERR, " Ring mode mismatch!!\n");
+                retVal = UDMA_EFAIL;
+                break;
+            }
+
+            /* Check ring elements count after allocation */
+            if (Udma_ringGetElementCnt(ringHandle) != elemCnt)
+            {
+                GT_0trace(taskObj->traceMask, GT_ERR, " Ring elements count mismatch!!\n");
+                retVal = UDMA_EFAIL;
+                break;
+            }
+
+            /* Check wrIdx of ring after allocation */
+            if (Udma_ringGetWrIdx(ringHandle) != 0U)
+            {
+                GT_0trace(taskObj->traceMask, GT_ERR, " Ring rwIdx value mismatch!!\n");
+                retVal = UDMA_EFAIL;
+                break;
+            }
+
             /* Queue through prime API */
             for(qCnt = 0U; qCnt < elemCnt; qCnt++)
             {
@@ -1435,17 +1459,23 @@ static int32_t udmaTestRingPrimeTestLoop(UdmaTestTaskObj *taskObj)
                 break;
             }
 
-            /* Dequeue through proxy */
+            /* Check wrIdx of ring after queuing, wrIdx should be back to zero as
+             * ring is full */
+            if (Udma_ringGetWrIdx(ringHandle) != 0U)
+            {
+                GT_0trace(taskObj->traceMask, GT_ERR, " Ring rwIdx value mismatch!!\n");
+                retVal = UDMA_EFAIL;
+                break;
+            }
+
+            /* Do Cache invalidate before reading ring elements */
+            Udma_appUtilsCacheInv(ringMem, ringMemSize);
+
+            /* Dequeue using prime read API */
             for(qCnt = 0U; qCnt < elemCnt; qCnt++)
             {
                 ringData = 0UL;
-                retVal = Udma_ringDequeueRaw(ringHandle, &ringData);
-                if(UDMA_SOK != retVal)
-                {
-                    GT_0trace(taskObj->traceMask, GT_ERR, " Proxy Ring dequeue failed!!\n");
-                    break;
-                }
-
+                Udma_ringPrimeRead(ringHandle, &ringData);
                 if(ringData != ((uint64_t) qCnt | (uint64_t) 0xDEADBEEF00000000UL))
                 {
                     GT_0trace(taskObj->traceMask, GT_ERR, " Ring data mismatch!!\n");
@@ -1456,6 +1486,17 @@ static int32_t udmaTestRingPrimeTestLoop(UdmaTestTaskObj *taskObj)
             {
                 break;
             }
+
+            /* Check if the HW occupancy is same as elemCnt as the queue is not committed */
+            if(udmaTestCompareRingHwOccDriver(ringHandle, elemCnt) != UDMA_SOK)
+            {
+                GT_0trace(taskObj->traceMask, GT_ERR, " Ring element count mismatch!!\n");
+                retVal = UDMA_EFAIL;
+                break;
+            }
+
+            /* Set door bell value as -1 * elemCnt to reduce ring occupancy after reading */
+            Udma_ringSetDoorBell(ringHandle, (-1 * (int32_t)elemCnt));
 
             /* Check if the HW occupancy is zero */
             if(udmaTestCompareRingHwOccDriver(ringHandle, 0U) != UDMA_SOK)

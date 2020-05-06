@@ -164,6 +164,13 @@ int32_t Udma_ringReset(Udma_DrvHandle drvHandle,
 void Udma_ringHandleClearRegsNormal(Udma_RingHandle ringHandle);
 void Udma_ringSetDoorBellNormal(Udma_RingHandle ringHandle, int32_t count);
 void Udma_ringPrimeNormal(Udma_RingHandle ringHandle, uint64_t phyDescMem);
+void Udma_ringPrimeReadNormal(Udma_RingHandle ringHandle, uint64_t *phyDescMem);
+uint32_t Udma_ringGetModeNormal(Udma_RingHandle ringHandle);
+uint32_t Udma_ringGetElementCntNormal(Udma_RingHandle ringHandle);
+uint32_t Udma_ringGetForwardRingOccNormal(Udma_RingHandle ringHandle);
+uint32_t Udma_ringGetReverseRingOccNormal(Udma_RingHandle ringHandle);
+uint32_t Udma_ringGetWrIdxNormal(Udma_RingHandle ringHandle);
+uint32_t Udma_ringGetRdIdxNormal(Udma_RingHandle ringHandle);
 int32_t Udma_ringDequeueRawNormal(Udma_DrvHandle  drvHandle, 
                                   Udma_RingHandle ringHandle, 
                                   uint64_t *phyDescMem);
@@ -180,8 +187,15 @@ void Udma_ringSetCfgNormal(Udma_DrvHandle drvHandle,
 #if (UDMA_SOC_CFG_RA_LCDMA_PRESENT == 1)
 /* LCDMA RA APIs*/
 void Udma_ringHandleClearRegsLcdma(Udma_RingHandle ringHandle);
-void Udma_ringSetForwardDoorBellLcdma(Udma_RingHandle ringHandle, int32_t count);
+void Udma_ringSetDoorBellLcdma(Udma_RingHandle ringHandle, int32_t count);
 void Udma_ringPrimeLcdma(Udma_RingHandle ringHandle, uint64_t phyDescMem);
+void Udma_ringPrimeReadLcdma(Udma_RingHandle ringHandle, uint64_t *phyDescMem);
+uint32_t Udma_ringGetModeLcdma(Udma_RingHandle ringHandle);
+uint32_t Udma_ringGetElementCntLcdma(Udma_RingHandle ringHandle);
+uint32_t Udma_ringGetForwardRingOccLcdma(Udma_RingHandle ringHandle);
+uint32_t Udma_ringGetReverseRingOccLcdma(Udma_RingHandle ringHandle);
+uint32_t Udma_ringGetWrIdxLcdma(Udma_RingHandle ringHandle);
+uint32_t Udma_ringGetRdIdxLcdma(Udma_RingHandle ringHandle);
 int32_t Udma_ringDequeueRawLcdma(Udma_DrvHandle  drvHandle, 
                                  Udma_RingHandle ringHandle, 
                                  uint64_t *phyDescMem);

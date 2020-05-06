@@ -498,6 +498,23 @@ void Udma_ringPrime(Udma_RingHandle ringHandle, uint64_t phyDescMem)
     return;
 }
 
+void Udma_ringPrimeRead(Udma_RingHandle ringHandle, uint64_t *phyDescMem)
+{
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
+    if(UDMA_RA_TYPE_NORMAL == ringHandle->drvHandle->raType)
+    {
+        Udma_ringPrimeReadNormal(ringHandle, phyDescMem);
+    }
+#endif
+#if (UDMA_SOC_CFG_RA_LCDMA_PRESENT == 1)
+    if(UDMA_RA_TYPE_LCDMA == ringHandle->drvHandle->raType)
+    {
+        Udma_ringPrimeReadLcdma(ringHandle, phyDescMem);
+    }
+#endif
+
+    return;
+}
 
 void Udma_ringSetDoorBell(Udma_RingHandle ringHandle, int32_t count)
 {
@@ -510,7 +527,7 @@ void Udma_ringSetDoorBell(Udma_RingHandle ringHandle, int32_t count)
 #if (UDMA_SOC_CFG_RA_LCDMA_PRESENT == 1)
     if(UDMA_RA_TYPE_LCDMA == ringHandle->drvHandle->raType)
     {
-        Udma_ringSetForwardDoorBellLcdma(ringHandle,count);
+        Udma_ringSetDoorBellLcdma(ringHandle,count);
     }
 #endif
 
@@ -550,6 +567,126 @@ void *Udma_ringGetMemPtr(Udma_RingHandle ringHandle)
     }
 
     return (ringMem);
+}
+
+uint32_t Udma_ringGetMode(Udma_RingHandle ringHandle)
+{
+    uint32_t ringMode;
+
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
+    if(UDMA_RA_TYPE_NORMAL == ringHandle->drvHandle->raType)
+    {
+        ringMode = Udma_ringGetModeNormal(ringHandle);
+    }
+#endif
+#if (UDMA_SOC_CFG_RA_LCDMA_PRESENT == 1)
+    if(UDMA_RA_TYPE_LCDMA == ringHandle->drvHandle->raType)
+    {
+        ringMode = Udma_ringGetModeLcdma(ringHandle);
+    }
+#endif
+
+    return (ringMode);
+}
+
+uint32_t Udma_ringGetElementCnt(Udma_RingHandle ringHandle)
+{
+    uint32_t size = 0U;
+
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
+    if(UDMA_RA_TYPE_NORMAL == ringHandle->drvHandle->raType)
+    {
+        size = Udma_ringGetElementCntNormal(ringHandle);
+    }
+#endif
+#if (UDMA_SOC_CFG_RA_LCDMA_PRESENT == 1)
+    if(UDMA_RA_TYPE_LCDMA == ringHandle->drvHandle->raType)
+    {
+        size = Udma_ringGetElementCntLcdma(ringHandle);
+    }
+#endif
+
+    return (size);
+}
+
+uint32_t Udma_ringGetForwardRingOcc(Udma_RingHandle ringHandle)
+{
+    uint32_t occ = 0U;
+
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
+    if(UDMA_RA_TYPE_NORMAL == ringHandle->drvHandle->raType)
+    {
+        occ = Udma_ringGetForwardRingOccNormal(ringHandle);
+    }
+#endif
+#if (UDMA_SOC_CFG_RA_LCDMA_PRESENT == 1)
+    if(UDMA_RA_TYPE_LCDMA == ringHandle->drvHandle->raType)
+    {
+        occ = Udma_ringGetForwardRingOccLcdma(ringHandle);
+    }
+#endif
+
+    return (occ);
+}
+
+uint32_t Udma_ringGetReverseRingOcc(Udma_RingHandle ringHandle)
+{
+    uint32_t occ = 0U;
+
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
+    if(UDMA_RA_TYPE_NORMAL == ringHandle->drvHandle->raType)
+    {
+        occ = Udma_ringGetReverseRingOccNormal(ringHandle);
+    }
+#endif
+#if (UDMA_SOC_CFG_RA_LCDMA_PRESENT == 1)
+    if(UDMA_RA_TYPE_LCDMA == ringHandle->drvHandle->raType)
+    {
+        occ = Udma_ringGetReverseRingOccLcdma(ringHandle);
+    }
+#endif
+
+    return (occ);
+}
+
+uint32_t Udma_ringGetWrIdx(Udma_RingHandle ringHandle)
+{
+    uint32_t idx = 0U;
+
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
+    if(UDMA_RA_TYPE_NORMAL == ringHandle->drvHandle->raType)
+    {
+        idx = Udma_ringGetWrIdxNormal(ringHandle);
+    }
+#endif
+#if (UDMA_SOC_CFG_RA_LCDMA_PRESENT == 1)
+    if(UDMA_RA_TYPE_LCDMA == ringHandle->drvHandle->raType)
+    {
+        idx = Udma_ringGetWrIdxLcdma(ringHandle);
+    }
+#endif
+
+    return (idx);
+}
+
+uint32_t Udma_ringGetRdIdx(Udma_RingHandle ringHandle)
+{
+    uint32_t idx = 0U;
+
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
+    if(UDMA_RA_TYPE_NORMAL == ringHandle->drvHandle->raType)
+    {
+        idx = Udma_ringGetRdIdxNormal(ringHandle);
+    }
+#endif
+#if (UDMA_SOC_CFG_RA_LCDMA_PRESENT == 1)
+    if(UDMA_RA_TYPE_LCDMA == ringHandle->drvHandle->raType)
+    {
+        idx = Udma_ringGetRdIdxLcdma(ringHandle);
+    }
+#endif
+
+    return (idx);
 }
 
 int32_t Udma_ringMonAlloc(Udma_DrvHandle drvHandle,
