@@ -40,8 +40,13 @@ drvudma_dru_BOARDLIST   = am65xx_evm am65xx_idk j721e_evm
 drvudma_am65xx_CORELIST = mpu1_0 mcu1_0 mcu1_1
 drvudma_j721e_CORELIST  = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 c66xdsp_1 c66xdsp_2 c7x_1 c7x-hostemu
 drvudma_j7200_CORELIST  = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
-#drvudma_am64x_CORELIST  = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 m4f_0
-drvudma_am64x_CORELIST  = mcu1_0 mcu1_1 mcu2_0 mcu2_1 #temporarily disabling build for a53 and m4f due to sysbios issue
+drvudma_am64x_CORELIST  = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 m4f_0
+
+ifneq ($(SOC),$(filter $(SOC), am64x))
+drvudma_$(SOC)_example_CORELIST = $(drvudma_$(SOC)_CORELIST)
+else
+drvudma_am64x_example_CORELIST  = mcu1_0 mcu1_1 mcu2_0 mcu2_1 #temporarily disabling build for a53 and m4f due to sysbios issue
+endif
 
 ############################
 # udma package
@@ -171,7 +176,7 @@ export udma_memcpy_testapp_BOARDLIST = $(drvudma_BOARDLIST)
 ifeq ($(SOC),$(filter $(SOC), j721e))
 export udma_memcpy_testapp_$(SOC)_CORELIST = mpu1_0 mcu1_0 mcu2_0 mcu2_1 mcu3_0 mcu3_1 c66xdsp_1 c66xdsp_2 c7x_1
 else
-export udma_memcpy_testapp_$(SOC)_CORELIST = $(drvudma_$(SOC)_CORELIST)
+export udma_memcpy_testapp_$(SOC)_CORELIST = $(drvudma_$(SOC)_example_CORELIST)
 endif
 export udma_memcpy_testapp_SBL_APPIMAGEGEN = yes
 udma_EXAMPLE_LIST += udma_memcpy_testapp
@@ -204,7 +209,7 @@ export udma_baremetal_memcpy_testapp_BOARDLIST = $(drvudma_BOARDLIST)
 ifeq ($(SOC),$(filter $(SOC), j721e))
 export udma_baremetal_memcpy_testapp_$(SOC)_CORELIST = mpu1_0 mcu1_0 mcu2_0
 else
-export udma_baremetal_memcpy_testapp_$(SOC)_CORELIST = $(drvudma_$(SOC)_CORELIST)
+export udma_baremetal_memcpy_testapp_$(SOC)_CORELIST = $(drvudma_$(SOC)_example_CORELIST)
 endif
 export udma_baremetal_memcpy_testapp_SBL_APPIMAGEGEN = yes
 udma_EXAMPLE_LIST += udma_baremetal_memcpy_testapp
@@ -222,7 +227,7 @@ export udma_chaining_testapp_BOARDLIST = $(drvudma_BOARDLIST)
 ifeq ($(SOC),$(filter $(SOC), j721e))
 export udma_chaining_testapp_$(SOC)_CORELIST = mpu1_0 mcu1_0
 else
-export udma_chaining_testapp_$(SOC)_CORELIST = $(drvudma_$(SOC)_CORELIST)
+export udma_chaining_testapp_$(SOC)_CORELIST = $(drvudma_$(SOC)_example_CORELIST)
 endif
 export udma_chaining_testapp_SBL_APPIMAGEGEN = yes
 udma_EXAMPLE_LIST += udma_chaining_testapp
@@ -240,7 +245,7 @@ export udma_dru_testapp_BOARDLIST = $(drvudma_dru_BOARDLIST)
 ifeq ($(SOC),$(filter $(SOC), j721e))
 export udma_dru_testapp_$(SOC)_CORELIST = mcu2_1 c66xdsp_1 c66xdsp_2 c7x_1
 else
-export udma_dru_testapp_$(SOC)_CORELIST = $(drvudma_$(SOC)_CORELIST)
+export udma_dru_testapp_$(SOC)_CORELIST = $(drvudma_$(SOC)_example_CORELIST)
 endif
 export udma_dru_testapp_SBL_APPIMAGEGEN = yes
 udma_EXAMPLE_LIST += udma_dru_testapp
@@ -258,7 +263,7 @@ export udma_dru_direct_tr_testapp_BOARDLIST = $(drvudma_dru_BOARDLIST)
 ifeq ($(SOC),$(filter $(SOC), j721e))
 export udma_dru_direct_tr_testapp_$(SOC)_CORELIST = mcu2_1 c66xdsp_1 c7x_1
 else
-export udma_dru_direct_tr_testapp_$(SOC)_CORELIST = $(drvudma_$(SOC)_CORELIST)
+export udma_dru_direct_tr_testapp_$(SOC)_CORELIST = $(drvudma_$(SOC)_example_CORELIST)
 endif
 export udma_dru_direct_tr_testapp_SBL_APPIMAGEGEN = yes
 udma_EXAMPLE_LIST += udma_dru_direct_tr_testapp
@@ -276,7 +281,7 @@ export udma_crc_testapp_BOARDLIST = $(drvudma_BOARDLIST)
 ifeq ($(SOC),$(filter $(SOC), j721e))
 export udma_crc_testapp_$(SOC)_CORELIST = mpu1_0 mcu1_0
 else
-export udma_crc_testapp_$(SOC)_CORELIST = $(drvudma_$(SOC)_CORELIST)
+export udma_crc_testapp_$(SOC)_CORELIST = $(drvudma_$(SOC)_example_CORELIST)
 endif
 export udma_crc_testapp_SBL_APPIMAGEGEN = yes
 udma_EXAMPLE_LIST += udma_crc_testapp
@@ -294,7 +299,7 @@ export udma_adc_testapp_BOARDLIST = $(drvudma_BOARDLIST)
 ifeq ($(SOC),$(filter $(SOC), j721e))
 export udma_adc_testapp_$(SOC)_CORELIST = mpu1_0 mcu1_0
 else
-export udma_adc_testapp_$(SOC)_CORELIST = $(drvudma_$(SOC)_CORELIST)
+export udma_adc_testapp_$(SOC)_CORELIST = $(drvudma_$(SOC)_example_CORELIST)
 endif
 export udma_adc_testapp_SBL_APPIMAGEGEN = yes
 udma_EXAMPLE_LIST += udma_adc_testapp
