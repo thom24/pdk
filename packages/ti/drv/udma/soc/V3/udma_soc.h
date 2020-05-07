@@ -118,6 +118,9 @@ extern "C" {
 #define UDMA_TX_CHANS_FDEPTH             (CSL_DMSS_UDMAP_TX_CHANS_FDEPTH)
 /* @} */
 
+/** \brief Invalid Ring Mode*/
+#define UDMA_RING_MODE_INVALID          (CSL_LCDMA_RINGACC_RING_MODE_INVALID)
+
 /** \brief Number of UTC instance - No UTC in AM64x */
 #define UDMA_NUM_UTC_INSTANCE           (CSL_DMSS_UTC_CNT)
 

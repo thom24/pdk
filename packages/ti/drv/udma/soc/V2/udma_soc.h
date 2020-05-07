@@ -118,6 +118,9 @@ extern "C" {
 #define UDMA_TX_CHANS_FDEPTH 			 (CSL_NAVSS_UDMAP_TX_CHANS_FDEPTH)
 /* @} */
 
+/** \brief Invalid Ring Mode*/
+#define UDMA_RING_MODE_INVALID          (CSL_RINGACC_RING_MODE_INVALID)
+
 /** \brief Number of UTC instance - No UTC in J7200 */
 #define UDMA_NUM_UTC_INSTANCE           (CSL_NAVSS_UTC_CNT)
 

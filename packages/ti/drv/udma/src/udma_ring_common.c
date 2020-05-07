@@ -571,7 +571,7 @@ void *Udma_ringGetMemPtr(Udma_RingHandle ringHandle)
 
 uint32_t Udma_ringGetMode(Udma_RingHandle ringHandle)
 {
-    uint32_t ringMode;
+    uint32_t ringMode = UDMA_RING_MODE_INVALID;
 
 #if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
     if(UDMA_RA_TYPE_NORMAL == ringHandle->drvHandle->raType)
