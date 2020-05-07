@@ -732,12 +732,14 @@ TimerP_Status TimerP_delete(TimerP_Handle handle)
 
     key = (uint32_t)HwiP_disable();
 
-    if((timer != NULL_PTR) && (gTimerStructs[index].used))
+    if((timer != NULL_PTR) && ((gTimerStructs[index].used) == (bool)true))
     {
       /* clear the ISR that was set before */
-      (void)HwiP_delete(timer->hwi);
+      if(timer->hwi != NULL_PTR) {
+        (void)HwiP_delete(timer->hwi);
+        gTimerStructs[index].used = (bool)false;
+      }
 
-      gTimerStructs[index].used = (bool)false;
       /* Found the osal timer object to delete */
       if (gOsalTimerAllocCnt > 0U)
       {
@@ -766,7 +768,7 @@ TimerP_Status TimerP_start(TimerP_Handle handle)
   TimerP_Struct *timer = (TimerP_Struct *) handle;
   uint32_t max_period = (uint32_t) 0xffffffffU;
   TimerP_Status retVal = TimerP_OK;
-  
+  uint32_t  eventId;
   uint32_t baseAddr = TimerP_getTimerBaseAddr(timer->timerId);
 
   if (baseAddr == 0U) {
@@ -797,8 +799,16 @@ TimerP_Status TimerP_start(TimerP_Handle handle)
   } while (status != (uint32_t) 0u);
 
   if(timer->hwi != NULL_PTR) {
-    HwiP_clearInterrupt(timer->intNum);
-    HwiP_enableInterrupt(timer->intNum);
+#if defined (_TMS320C6X)
+    eventId = timer->eventId;
+#else
+    eventId = 0u;
+#endif
+    Osal_ClearInterrupt(eventId, timer->intNum);
+    Osal_EnableInterrupt(eventId, timer->intNum);
+  }
+  else {
+      retVal = TimerP_FAILURE;
   }
 
   if (timer->runMode == (uint32_t)TimerP_RunMode_CONTINUOUS) {
@@ -811,14 +821,15 @@ TimerP_Status TimerP_start(TimerP_Handle handle)
       runMode = TIMERP_DM_TCLR_START_DYNAMIC;
   }
 
-  (void)TIMERModeConfigure(baseAddr, runMode);
+  if (retVal == TimerP_OK) {
+      (void)TIMERModeConfigure(baseAddr, runMode);
 
-  do {
-    status = (TIMERWritePostedStatusGet(baseAddr) & TIMERP_DM_TWPS_W_PEND_TCLR);
-  } while (status != (uint32_t) 0u);
+      do {
+        status = (TIMERWritePostedStatusGet(baseAddr) & TIMERP_DM_TWPS_W_PEND_TCLR);
+      } while (status != (uint32_t) 0u);
 
-  (void)TIMEREnable(baseAddr);
-
+      (void)TIMEREnable(baseAddr);
+  }
   HwiP_restore(key);
   }
   return (retVal);
@@ -834,7 +845,7 @@ TimerP_Status TimerP_stop(TimerP_Handle handle)
   uint32_t  tisr, status;
   TimerP_Struct *timer = (TimerP_Struct *) handle;
   TimerP_Status retVal = TimerP_OK;
-  
+  uint32_t eventId;
   uint32_t baseAddr = TimerP_getTimerBaseAddr(timer->timerId);
 
   if (baseAddr == 0U) {
@@ -851,9 +862,23 @@ TimerP_Status TimerP_stop(TimerP_Handle handle)
 
     tisr = TIMERIntStatusGet(baseAddr);
 
+
     if(tisr > 0U) {
-    /* Clear all pending interrupts */
-    (void)TIMERIntStatusClear(baseAddr, tisr);
+      /* Clear all pending interrupts */
+      (void)TIMERIntStatusClear(baseAddr, tisr);
+    }
+
+    if(timer->hwi != NULL_PTR) {
+#if defined (_TMS320C6X)
+      eventId = timer->eventId;
+#else
+      eventId = 0u;
+#endif
+      Osal_ClearInterrupt(eventId, timer->intNum);
+      Osal_DisableInterrupt(eventId, timer->intNum);
+    }
+    else {
+        retVal = TimerP_FAILURE;
     }
   }
   return(retVal);

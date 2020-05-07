@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2017, Texas Instruments Incorporated
+ * Copyright (c) 2015-2020, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -551,11 +551,12 @@ TimerP_Status TimerP_delete(TimerP_Handle handle)
 
       key = HwiP_disable();
 
-      if((timer != NULL_PTR) && (gTimerStructs[index].used)) {
+      if((timer != NULL_PTR) && ((gTimerStructs[index].used) == (bool)true)) {
         /* clear the ISR that was set before */
-        HwiP_delete(timer->hwi);
-
-        gTimerStructs[index].used  = false;
+        if(timer->hwi != NULL_PTR) {
+          HwiP_delete(timer->hwi);
+          gTimerStructs[index].used  = false;
+        }
       }
       else
       {
@@ -581,6 +582,8 @@ TimerP_Status TimerP_start(TimerP_Handle handle)
   CSL_TmrHwControlCmd startCmd;
   TimerP_Struct *timer = (TimerP_Struct *) handle;
   TIMOSAL_Assert((handle == NULL_PTR));
+  uint32_t       eventId;
+  TimerP_Status  status = TimerP_OK;
 
   key = HwiP_disable();
 
@@ -620,9 +623,17 @@ TimerP_Status TimerP_start(TimerP_Handle handle)
         break;
   }
 
-  if (timer->hwi) {
-      HwiP_clearInterrupt(timer->intNum);
-      HwiP_enableInterrupt(timer->intNum);
+  if(timer->hwi != NULL_PTR) {
+#if defined (_TMS320C6X)
+    eventId = timer->eventId;
+#else
+    eventId = 0u;
+#endif
+    Osal_ClearInterrupt(eventId, timer->intNum);
+    Osal_EnableInterrupt(eventId, timer->intNum);
+  }
+  else {
+      status = TimerP_FAILURE;
   }
 
   /* Load the period values */
@@ -670,7 +681,7 @@ TimerP_Status TimerP_start(TimerP_Handle handle)
 
   HwiP_restore(key);
 
-  return (TimerP_OK);
+  return (status);
 }
 
 /* Timer stop module function
@@ -682,6 +693,8 @@ TimerP_Status TimerP_stop(TimerP_Handle handle)
 {
   TimerP_Struct *timer = (TimerP_Struct *) handle;
   TIMOSAL_Assert((handle == NULL_PTR));
+  uint32_t          eventId;
+  TimerP_Status     status = TimerP_OK;
 
   if ((timer->mode == TimerP_Timer64Mode_CHAINED) || (timer->timerHalf == TimerP_Timer64Half_LOWER)) {
     /* Stop the Timer */
@@ -692,11 +705,20 @@ TimerP_Status TimerP_stop(TimerP_Handle handle)
     CSL_tmrHwControl(timer->hTmr, CSL_TMR_CMD_RESET_TIMHI, NULL_PTR);
   }
 
-  if (timer->hwi) {
-      HwiP_disableInterrupt(timer->intNum);
+  if(timer != NULL_PTR) {
+#if defined (_TMS320C6X)
+    eventId = timer->eventId;
+#else
+    eventId = 0u;
+#endif
+      Osal_ClearInterrupt(eventId, timer->intNum);
+      Osal_DisableInterrupt(eventId, timer->intNum);
+  }
+  else {
+      status = TimerP_FAILURE;
   }
 
-  return(TimerP_OK);
+  return(status);
 }
 
 /* Timer set micro seconds module function
