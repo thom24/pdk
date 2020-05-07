@@ -31,6 +31,7 @@
 # EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 # Usage : For AM65XX    : ./firmwareHeaderGen.sh am65x
+#         For AM65XX    : ./firmwareHeaderGen.sh am65x_sr2
 #         For AM65XX-HS : ./firmwareHeaderGen.sh am65x-hs
 #         For J721E     : ./firmwareHeaderGen.sh j721e
 #         For J721E-HS  : ./firmwareHeaderGen.sh j721e-hs
@@ -47,6 +48,7 @@ export CAT=cat
 # as ,for example, "j721e". Assumes device type is GP by default.
 export FW_SOC=am65x
 export FW_SOC_TYPE=gp
+export BIN_EXT=
 
 if [[ $OS == 'Windows_NT' ]]; then
 export BIN2C_EXE=bin2c.exe
@@ -81,6 +83,7 @@ fi
 if [[ $FW_SOC == *"hs"* ]]; then
   FW_SOC_TYPE=hs-enc
   FW_SOC=${FW_SOC%-hs}
+  BIN_EXT=-hs-enc
 fi
 
 export SCI_CLIENT_IN_SOC_DIR=$SCI_CLIENT_DIR/soc/sysfw/binaries
@@ -88,31 +91,31 @@ export SCI_CLIENT_IN_SOC_DIR=$SCI_CLIENT_DIR/soc/sysfw/binaries
 if [ "$FW_SOC" = "am65x" ]; then
 export SCI_CLIENT_OUT_SOC_DIR=$SCI_CLIENT_DIR/soc/V0
 export SCICLIENT_FIRMWARE_HEADER=sciclient_firmware_V0.h
-export SYSFW_SE_SIGNED=$SCI_CLIENT_OUT_SOC_DIR/sysfw.bin
+export SYSFW_SE_SIGNED=$SCI_CLIENT_OUT_SOC_DIR/sysfw$BIN_EXT.bin
 fi
 
 if [ "$FW_SOC" = "am65x_sr2" ]; then
 export SCI_CLIENT_OUT_SOC_DIR=$SCI_CLIENT_DIR/soc/V0
 export SCICLIENT_FIRMWARE_HEADER=sciclient_firmware_V0_sr2.h
-SYSFW_SE_SIGNED=$SCI_CLIENT_OUT_SOC_DIR/sysfw_sr2.bin
+SYSFW_SE_SIGNED=$SCI_CLIENT_OUT_SOC_DIR/sysfw_sr2$BIN_EXT.bin
 fi
 
 if [ "$FW_SOC" = "j721e" ]; then
 export SCI_CLIENT_OUT_SOC_DIR=$SCI_CLIENT_DIR/soc/V1
 export SCICLIENT_FIRMWARE_HEADER=sciclient_firmware_V1.h
-SYSFW_SE_SIGNED=$SCI_CLIENT_OUT_SOC_DIR/sysfw.bin
+SYSFW_SE_SIGNED=$SCI_CLIENT_OUT_SOC_DIR/sysfw$BIN_EXT.bin
 fi
 
 if [ "$FW_SOC" = "am64x-vlab" ]; then
 export SCI_CLIENT_OUT_SOC_DIR=$SCI_CLIENT_DIR/soc/V3
 export FIRMWARE_SILICON=$SCI_CLIENT_IN_SOC_DIR/ti-sci-firmware-am64x-gp-vlab-rom.bin
 export SCICLIENT_FIRMWARE_HEADER=sciclient_firmware_V3_VLAB.h
-SYSFW_SE_SIGNED=$SCI_CLIENT_OUT_SOC_DIR/sysfw-vlab.bin
+SYSFW_SE_SIGNED=$SCI_CLIENT_OUT_SOC_DIR/sysfw-vlab$BIN_EXT.bin
 elif [ "$FW_SOC" = "am64x-zebu" ]; then
 export SCI_CLIENT_OUT_SOC_DIR=$SCI_CLIENT_DIR/soc/V3
 export FIRMWARE_SILICON=$SCI_CLIENT_IN_SOC_DIR/ti-sci-firmware-am64x-gp-zebu-rom.bin
 export SCICLIENT_FIRMWARE_HEADER=sciclient_firmware_V3.h
-SYSFW_SE_SIGNED=$SCI_CLIENT_OUT_SOC_DIR/sysfw.bin
+SYSFW_SE_SIGNED=$SCI_CLIENT_OUT_SOC_DIR/sysfw$BIN_EXT.bin
 else
 export FIRMWARE_SILICON=$SCI_CLIENT_IN_SOC_DIR/ti-sci-firmware-$FW_SOC-$FW_SOC_TYPE.bin
 export SYSFW_SE_INNER_CERT=$SCI_CLIENT_IN_SOC_DIR/ti-sci-firmware-$FW_SOC-hs-cert.bin
