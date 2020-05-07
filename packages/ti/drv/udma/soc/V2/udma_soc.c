@@ -195,6 +195,7 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
     drvHandle->ringQueueRaw             = &Udma_ringQueueRawNormal;
     drvHandle->ringFlushRaw             = &Udma_ringFlushRawNormal;
     drvHandle->ringGetElementCnt        = &Udma_ringGetElementCntNormal;
+    drvHandle->ringGetMemPtr            = &Udma_ringGetMemPtrNormal;
     drvHandle->ringGetMode              = &Udma_ringGetModeNormal;
     drvHandle->ringGetForwardRingOcc    = &Udma_ringGetForwardRingOccNormal;
     drvHandle->ringGetReverseRingOcc    = &Udma_ringGetReverseRingOccNormal;

@@ -146,6 +146,7 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
     drvHandle->ringQueueRaw             = &Udma_ringQueueRawLcdma;
     drvHandle->ringFlushRaw             = &Udma_ringFlushRawLcdma;
     drvHandle->ringGetElementCnt        = &Udma_ringGetElementCntLcdma;
+    drvHandle->ringGetMemPtr            = &Udma_ringGetMemPtrLcdma;
     drvHandle->ringGetMode              = &Udma_ringGetModeLcdma;
     drvHandle->ringGetForwardRingOcc    = &Udma_ringGetForwardRingOccLcdma;
     drvHandle->ringGetReverseRingOcc    = &Udma_ringGetReverseRingOccLcdma;

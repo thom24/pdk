@@ -73,14 +73,13 @@
 /* ========================================================================== */
 
 void Udma_ringSetCfgLcdma(Udma_DrvHandle drvHandle,
-                                      Udma_RingHandle ringHandle,
-                                      const Udma_RingPrms *ringPrms)
+                          Udma_RingHandle ringHandle,
+                          const Udma_RingPrms *ringPrms)
 {
     uint32_t            addrHi, addrLo /*, elemSize*/;
     CSL_LcdmaRingaccRingCfg *lcdmaRingCfg;
 
     /* Configure ring object */
-    ringHandle->drvHandle = drvHandle;
     Udma_assert(drvHandle, drvHandle->lcdmaRaRegs.pRingCfgRegs != NULL_PTR);
     Udma_assert(drvHandle, drvHandle->lcdmaRaRegs.pRingRtRegs != NULL_PTR);
     Udma_assert(drvHandle, ringHandle->ringNum < 303U);//from AM64x DMSS Spec, need to be updated once CSL changes.

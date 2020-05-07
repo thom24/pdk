@@ -73,14 +73,13 @@
 /* ========================================================================== */
 
 void Udma_ringSetCfgNormal(Udma_DrvHandle drvHandle,
-                                       Udma_RingHandle ringHandle,
-                                       const Udma_RingPrms *ringPrms)
+                           Udma_RingHandle ringHandle,
+                           const Udma_RingPrms *ringPrms)
 {
     uint32_t            addrHi, addrLo, elemSize;
     CSL_RingAccRingCfg *ringCfg;
 
     /* Configure ring object */
-    ringHandle->drvHandle = drvHandle;
     Udma_assert(drvHandle, drvHandle->raRegs.pCfgRegs != NULL_PTR);
     Udma_assert(drvHandle, drvHandle->raRegs.pRtRegs != NULL_PTR);
     Udma_assert(drvHandle, ringHandle->ringNum < 1024U);

@@ -160,34 +160,57 @@ typedef void *(*Udma_PhyToVirtFxn)(uint64_t phyAddr,
 typedef void (*Udma_PrintFxn)(const char *str);
 
 /**
- *  \brief Function prototypes for various local UDMA Ring API's.
+ *  \anchor Udma_RingLocalApiPrototypes
+ *  \name UDMA Ring Local API's function prototypes
+ * 
+ *  Function prototypes for various local UDMA Ring API's.
+ *  For Normal RA / LCDMA RA, function pointers will be used
+ *  to call the appropriate function.
+ *
+ *  @{
  */
+/** \brief UDMA Ring handle clear register function protype */
 typedef void (*Udma_ringHandleClearRegsFxn)(Udma_RingHandle ringHandle);
+/** \brief UDMA Ring set doorbell function protype */
 typedef void (*Udma_ringSetDoorBellFxn)(Udma_RingHandle ringHandle, 
                                         int32_t count);
+/** \brief UDMA Ring prime function protype */
 typedef void (*Udma_ringPrimeFxn)(Udma_RingHandle ringHandle,
                                   uint64_t phyDescMem);
+/** \brief UDMA Ring prime read function protype */
 typedef void (*Udma_ringPrimeReadFxn)(Udma_RingHandle ringHandle, 
                                       uint64_t *phyDescMem);
+/** \brief UDMA Ring get mem pointer function protype */
 typedef void *(*Udma_ringGetMemPtrFxn)(Udma_RingHandle ringHandle);
+/** \brief UDMA Ring get ring mode function protype */
 typedef uint32_t (*Udma_ringGetModeFxn)(Udma_RingHandle ringHandle);
+/** \brief UDMA Ring get element count function protype */
 typedef uint32_t (*Udma_ringGetElementCntFxn)(Udma_RingHandle ringHandle);
+/** \brief UDMA Ring get forward ring occupancy function protype */
 typedef uint32_t (*Udma_ringGetForwardRingOccFxn)(Udma_RingHandle ringHandle);
+/** \brief UDMA Ring get reverse ring occupancy function protype */
 typedef uint32_t (*Udma_ringGetReverseRingOccFxn)(Udma_RingHandle ringHandle);
+/** \brief UDMA Ring get write index value function protype */
 typedef uint32_t (*Udma_ringGetWrIdxFxn)(Udma_RingHandle ringHandle);
+/** \brief UDMA Ring get read index value function protype */
 typedef uint32_t (*Udma_ringGetRdIdxFxn)(Udma_RingHandle ringHandle);
+/** \brief UDMA Ring dequeue raw function protype */
 typedef int32_t (*Udma_ringDequeueRawFxn)(Udma_DrvHandle  drvHandle, 
                                           Udma_RingHandle ringHandle, 
                                           uint64_t *phyDescMem);
+/** \brief UDMA Ring queue raw function protype */
 typedef int32_t (*Udma_ringQueueRawFxn)(Udma_DrvHandle  drvHandle, 
                                         Udma_RingHandle ringHandle, 
                                         uint64_t phyDescMem); 
+/** \brief UDMA Ring flush raw function protype */
 typedef int32_t (*Udma_ringFlushRawFxn)(Udma_DrvHandle  drvHandle, 
                                         Udma_RingHandle ringHandle, 
                                         uint64_t *phyDescMem); 
+/** \brief UDMA Ring set Cfg function protype */
 typedef void (*Udma_ringSetCfgFxn)(Udma_DrvHandle drvHandle,
                                    Udma_RingHandle ringHandle,
                                    const Udma_RingPrms *ringPrms);
+/* @} */
 
 /* ========================================================================== */
 /*                         Structure Declarations                             */
