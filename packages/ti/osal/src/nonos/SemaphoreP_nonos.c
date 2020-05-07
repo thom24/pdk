@@ -309,5 +309,13 @@ int32_t SemaphoreP_getCount(SemaphoreP_Handle handle)
     return (ret);
 }
 
+/*
+ *  ======== SemaphoreP_postFromISR ========
+ */
+SemaphoreP_Status SemaphoreP_postFromISR(SemaphoreP_Handle handle)
+{
+    return (SemaphoreP_post(handle));
+}
+
 /* Nothing past this point */
 
