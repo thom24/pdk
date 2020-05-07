@@ -39,6 +39,13 @@ PACKAGE_SRCS_COMMON = makefile UART.h uart_component.mk src/UART_osal.h \
                       build/makefile_profile_indp.mk build/makefile_dma.mk build/makefile_dma_profile.mk \
                       build/makefile_console.mk
 
+# For TPR12, the following v3 files are all that is shipped
+ifeq ($(SOC),$(filter $(SOC), tpr12))
+  SRCDIR = . src src/v3
+  INCDIR = . src src/v3
+  SRCS_COMMON += UART_drv.c uartsci.c
+  PACKAGE_SRCS_COMMON += src/v3
+else
 # The following v1 files are all that is shipped with TDA devices
   SRCDIR = . src src/v1
   INCDIR = . src src/v1
@@ -50,4 +57,5 @@ ifneq ($(SOC),$(filter $(SOC), tda2xx tda2px dra75x tda2ex tda3xx dra78x j721e j
   INCDIR += src/v0
   SRCS_COMMON += UART_v0.c
   PACKAGE_SRCS_COMMON += src/v0 src/v0/UART_v0.h
+endif
 endif

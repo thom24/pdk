@@ -6,7 +6,7 @@
  */
 
 /*
- * Copyright (C) 2015 - 2017 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2015 - 2020 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -52,6 +52,10 @@ extern "C" {
 #ifdef UART_DMA_ENABLE
 #if defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
 #include <ti/drv/udma/udma.h>
+#elif defined (SOC_TPR12)
+#include <ti/drv/edma/edma.h>
+#include <ti/drv/edma/soc/edma_soc.h>
+static EDMA_Handle UartApp_edmaInit(void);
 #else
 /* EDMA3 Header files */
 #include <ti/sdo/edma3/drv/edma3_drv.h>
@@ -68,6 +72,8 @@ extern EDMA3_RM_GblConfigParams sampleEdma3GblCfgParams[];
 
 #if defined(idkAM574x) || defined (idkAM572x) || defined (idkAM571x)
 #define UART_INSTANCE   (2U)
+#elif defined(SOC_TPR12)
+#define UART_INSTANCE   (0U)
 #else
 #define UART_INSTANCE   (BOARD_UART_INSTANCE)
 #endif

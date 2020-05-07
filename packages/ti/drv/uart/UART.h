@@ -139,6 +139,33 @@ extern "C" {
 #define UART_SUCCESS ((int32_t)(0))
 #define UART_ERROR   (-((int32_t)1))
 
+/** @defgroup UART_DRIVER_ERROR_CODE            UART Driver Error code
+\ingroup UART_DRIVER
+ *@note: The following error codes are not used by all the UART implementations,
+ *       some driver implementation only use UART_ERROR.
+ @{ */
+
+/** @brief UART driver error base */
+#define UART_ERRNO_BASE        (0)
+
+/**
+ * @brief   Error Code: Invalid argument
+ */
+#define UART_EINVAL            (UART_ERRNO_BASE-1)
+
+/**
+ * @brief   Error Code: Operation cannot be implemented because a previous
+ * operation is still not complete.
+ */
+#define UART_EINUSE            (UART_ERRNO_BASE-2)
+
+/**
+ * @brief   Error Code: Operation is not implemented.
+ */
+#define UART_ENOTIMPL          (UART_ERRNO_BASE-3)
+
+/** @}*/
+
 /*!
  *  @brief      A handle that is returned from a UART_open() call.
  */
@@ -273,7 +300,15 @@ typedef enum UART_DataMode_e {
 /*!
  *  @brief      UART echo settings
  *
- *  This enumeration defines if the driver will echo data.
+ *  This enumeration defines if the driver will echo data when uses in
+ *  UART_DATA_TEXT mode. This only applies to data received by the UART.
+ *
+ *  UART_ECHO_ON will echo back characters it received while in UART_DATA_TEXT
+ *  mode.
+ *  UART_ECHO_OFF will not echo back characters it received in UART_DATA_TEXT
+ *  mode.
+ *
+ *  @pre        UART driver must be used in UART_DATA_TEXT mode.
  */
 typedef enum UART_Echo_e {
     UART_ECHO_OFF = 0,  /*!< Data is not echoed */
@@ -368,15 +403,15 @@ typedef void        (*UART_CloseFxn)          (UART_Handle handle);
 
 /*!
  *  @brief      A function pointer to a driver specific implementation of
- *              UART_control().
+ *              UART_ControlFxn().
  */
-typedef int32_t         (*UART_ControlFxn)        (UART_Handle handle,
+typedef int32_t     (*UART_ControlFxn)        (UART_Handle handle,
                                                uint32_t cmd,
                                                void *arg);
 
 /*!
  *  @brief      A function pointer to a driver specific implementation of
- *              UART_init().
+ *              UART_InitFxn().
  */
 typedef void        (*UART_InitFxn)           (UART_Handle handle);
 
@@ -474,8 +509,17 @@ typedef struct UART_FxnTable_s {
     
 } UART_FxnTable;
 
-
-/*! @brief UART Global configuration */
+/*!
+ *  @brief  UART Global configuration
+ *
+ *  The UART_Config structure contains a set of pointers used to characterize
+ *  the UART driver implementation.
+ *
+ *  This structure needs to be defined before calling UART_init() and it must
+ *  not be changed thereafter.
+ *
+ *  @sa     UART_init()
+ */
 typedef struct UART_Config_s {
     /*! Pointer to a table of a driver-specific implementation of UART functions */
     UART_FxnTable const    *fxnTablePtr;
@@ -489,7 +533,6 @@ typedef struct UART_Config_s {
 
 #define UART_MAX_CONFIG_CNT (14U)  
 typedef UART_Config UART_config_list[UART_MAX_CONFIG_CNT];
-
 
 /*!
  *  @brief  Function to closes a given UART peripheral specified by the UART

@@ -32,7 +32,7 @@
  *
  *  \par
  *  NOTE:
- *      (C) Copyright 2014-2015 Texas Instruments, Inc.
+ *      (C) Copyright 2014-2020 Texas Instruments, Inc.
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -87,7 +87,6 @@ extern "C" {
 
 #define UART_osalPostLock(X)     (SemaphoreP_post(X))
 
-
 #define UART_osalHardwareIntDisable() (HwiP_disable())
 
 
@@ -123,6 +122,7 @@ extern "C" {
 
 #define UART_osalDelay(X)                   (Osal_delay(X))
 
+#define UART_osalAssert(expr)               (OSAL_Assert(!(expr)))
 
 #ifdef __cplusplus
 }

@@ -21,7 +21,7 @@ CFLAGS_OS_DEFINES = -DUSE_BIOS
 EXTERNAL_INTERFACES = bios xdc
 COMP_LIST_COMMON    = osal_tirtos
 
-ifeq ($(SOC),$(filter $(SOC), j721e j7200 am65xx am64x))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200 am65xx am64x tpr12))
   XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
 else
   XDC_CFG_FILE_mpu1_0 = ./$(SOC)/uartUnitTest_$(ISA).cfg
@@ -65,7 +65,11 @@ ifeq ($(DMA), enable)
         # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
         LOCAL_APP_NAME =  UART$(UART_OS_TYPE)_DMA_$(BOARD)_$(CORE)TestApp
     endif
-    COMP_LIST_COMMON   += uart_dma udma sciclient i2c
+    ifeq ($(SOC),$(filter $(SOC), tpr12))
+        COMP_LIST_COMMON   += uart_dma edma
+    else
+        COMP_LIST_COMMON   += uart_dma udma sciclient i2c
+    endif
     #COMP_LIST_COMMON   += uart_dma_profile udma
     CFLAGS_UART_DMA    = -DUART_DMA_ENABLE
 else
@@ -84,6 +88,10 @@ else
 
     ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
     COMP_LIST_COMMON += sciclient i2c
+    endif
+
+    ifeq ($(SOC),$(filter $(SOC), tpr12))
+    COMP_LIST_COMMON   += edma
     endif
 
     #COMP_LIST_COMMON   += uart_profile

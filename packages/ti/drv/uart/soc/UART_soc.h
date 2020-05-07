@@ -4,7 +4,7 @@
  * @brief  UART SoC level driver
  */
 /*
- * Copyright (c) 2015 - 2019, Texas Instruments Incorporated
+ * Copyright (c) 2015 - 2020, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,6 +43,8 @@
     defined(DEVICE_K2H) || defined(DEVICE_K2K) || defined(DEVICE_K2L) || defined(DEVICE_K2E) || defined(DEVICE_K2G) || defined(DEVICE_C6678) || defined(DEVICE_C6657) || defined(DEVICE_OMAPL137) || defined(DEVICE_OMAPL138)
 #include <ti/csl/src/ip/uart/V0/uart.h>
 #include <ti/drv/uart/src/v0/UART_v0.h>
+#elif defined(SOC_TPR12)
+#include <ti/drv/uart/src/v3/uartsci_soc.h>
 #else
 #include <ti/csl/src/ip/uart/V1/uart.h>
 #include <ti/drv/uart/src/v1/UART_v1.h>

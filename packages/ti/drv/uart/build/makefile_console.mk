@@ -41,7 +41,11 @@ include $(PDK_UART_COMP_PATH)/src/src_files_uart_console.mk
 
 # List all the external components/interfaces, whose interface header files
 #  need to be included for this component
-INCLUDE_EXTERNAL_INTERFACES = pdk edma
+ifeq ($(SOC),$(filter $(SOC), tpr12))
+  INCLUDE_EXTERNAL_INTERFACES = pdk
+else
+  INCLUDE_EXTERNAL_INTERFACES = pdk edma
+endif
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS)
 
