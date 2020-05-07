@@ -94,13 +94,13 @@ uint8_t      gHostDesc[EMAC_SIZE_HOST_DESC * NIMU_NUM_HOST_DESC] __attribute__ (
 #endif
 
 // Our NETCTRL callback functions
-static void   NetworkOpen();
-static void   NetworkClose();
-static void   NetworkIPAddr( uint32_t IPAddr, uint32_t IfIdx, uint32_t fAdd );
-
+void   myNetworkOpen();
+void   myNetworkClose();
+void   myNetworkIpAddr( uint32_t IPAddr, uint32_t IfIdx, uint32_t fAdd );
+void   nssPowerUp (void);
 
 // External references
-
+extern int32_t ftpserver_init(void);
 //---------------------------------------------------------------------------
 // Configuration
 //
@@ -126,46 +126,10 @@ char *DNSServer   = "0.0.0.0";          // Used when set to anything but zero
 //---------------------------------------------------------------------
 int main()
 {
-    /* Start the BIOS 6 Scheduler */
-    BIOS_start ();
-   return 0;
-}
 
-
-
-/***************************************************************************************
- * FUNCTION PURPOSE: Power up PA subsystem
- ***************************************************************************************
- * DESCRIPTION: this function powers up the PA subsystem domains
- ***************************************************************************************/
-void nssPowerUp (void)
-{
-    /* PASS power domain is turned OFF by default. It needs to be turned on before doing any 
-     * PASS device register access. This not required for the simulator. */
-
-    /* Set NSS Power domain to ON */        
-    CSL_PSC_enablePowerDomain (CSL_PSC_PD_NSS);
-
-    /* Enable the clocks for NSS modules */
-    CSL_PSC_setModuleNextState (CSL_PSC_LPSC_NSS, PSC_MODSTATE_ENABLE);
-
-    /* Start the state transition */
-    CSL_PSC_startStateTransition (CSL_PSC_PD_NSS);
-
-    /* Wait until the state transition process is completed. */
-    while (!CSL_PSC_isStateTransitionDone (CSL_PSC_PD_NSS));
-}
-
-//
-// Main Thread
-//
-int StackTest()
-{
-    int             rc;
-    void*          hCfg;
     EMAC_HwAttrs_V1 emac_cfg;
-    bool useDhcp = TRUE;
-Board_STATUS boardInitStatus =0;
+    Board_STATUS boardInitStatus =0;
+	
 #ifdef __ARM_ARCH_7A__
 
     /* Add MMU entries for MMR's required for example */
@@ -232,34 +196,53 @@ Board_STATUS boardInitStatus =0;
 #endif
     /* Now set the config after updating desc base address */
     EMAC_socSetInitCfg(0, &emac_cfg);
-
-    /* THIS MUST BE THE ABSOLUTE FIRST THING DONE IN AN APPLICATION before
-     *  using the stack!!
-     */
-    rc = NC_SystemOpen( NC_PRIORITY_LOW, NC_OPMODE_INTERRUPT );
-    if( rc )
-    {
-        platform_write("NC_SystemOpen Failed (%d)\n",rc);
-        for(;;);
-    }
+	
+	/* Start the BIOS 6 Scheduler */
+    BIOS_start ();
+    
+    return 0;
+}
 
 
-    /* Create and build the system configuration from scratch.
-     *
-     */
-    hCfg = CfgNew();
-    if( !hCfg )
-    {
-        platform_write("Unable to create configuration\n");
-        goto main_exit;
-    }
 
-    /* We better validate the length of the supplied names */
+/***************************************************************************************
+ * FUNCTION PURPOSE: Power up PA subsystem
+ ***************************************************************************************
+ * DESCRIPTION: this function powers up the PA subsystem domains
+ ***************************************************************************************/
+void nssPowerUp (void)
+{
+    /* PASS power domain is turned OFF by default. It needs to be turned on before doing any 
+     * PASS device register access. This not required for the simulator. */
+
+    /* Set NSS Power domain to ON */        
+    CSL_PSC_enablePowerDomain (CSL_PSC_PD_NSS);
+
+    /* Enable the clocks for NSS modules */
+    CSL_PSC_setModuleNextState (CSL_PSC_LPSC_NSS, PSC_MODSTATE_ENABLE);
+
+    /* Start the state transition */
+    CSL_PSC_startStateTransition (CSL_PSC_PD_NSS);
+
+    /* Wait until the state transition process is completed. */
+    while (!CSL_PSC_isStateTransitionDone (CSL_PSC_PD_NSS));
+}
+
+//
+// Main Thread
+//
+void stackInitHook(void* hCfg)
+{
+    int             rc;
+
+    rc = 16384; // increase stack size
+    CfgAddEntry(hCfg, CFGTAG_OS, CFGITEM_OS_TASKSTKBOOT,CFG_ADDMODE_UNIQUE, sizeof(uint32_t), (uint8_t *)&rc, 0 );
+
+    // We better validate the length of the supplied names
     if( strlen( DomainName ) >= CFG_DOMAIN_MAX ||
         strlen( HostName ) >= CFG_HOSTNAME_MAX )
     {
         platform_write("Names too long\n");
-        goto main_exit;
     }
 
     // Add our global hostname to hCfg (to be claimed in all connected domains)
@@ -269,6 +252,8 @@ Board_STATUS boardInitStatus =0;
     CI_IPNET NA;
     CI_ROUTE RT;
     uint32_t      IPTmp;
+
+    platform_write("StackTest: using localIp\n");
 
     // Setup manual IP address
     bzero( &NA, sizeof(NA) );
@@ -321,46 +306,41 @@ Board_STATUS boardInitStatus =0;
     rc = 4096; // increase stack size
     CfgAddEntry(hCfg, CFGTAG_OS, CFGITEM_OS_TASKSTKBOOT,
     CFG_ADDMODE_UNIQUE, sizeof(uint32_t), (uint8_t *)&rc, 0 );
-    /* Boot the system using this configuration
-     * We keep booting until the function returns 0. This allows
-     * us to have a "reboot" command.
-     *
-     */
-    do
-    {
-        rc = NC_NetStart( hCfg, NetworkOpen, NetworkClose, NetworkIPAddr );
-    }   while( rc > 0 );
 
-    /* Delete Configuration*/
-    CfgFree( hCfg );
-
-     /* Close the OS */
-main_exit:
-    UART_printf("StackTest: exiting\n");
-    NC_SystemClose();
-    return(0);
 }
 
-/* This function is called after the configuration has booted */
-static void NetworkOpen()
+//
+// NetworkOpen
+//
+// This function is called after the configuration has booted
+//
+void myNetworkOpen()
 {
     UART_printf("\n\rSYS/BIOS Ethernet/IP (CPSW) Sample application, EVM IP address: %s\n\r", LocalIPAddr);
 #ifdef NIMU_FTP_APP
     ftpserver_init();
 #endif
+
 }
 
-/* This function is called when the network is shutting down,
- * or when it no longer has any IP addresses assigned to it.
- */
-static void NetworkClose()
+//
+// NetworkClose
+//
+// This function is called when the network is shutting down,
+// or when it no longer has any IP addresses assigned to it.
+//
+void myNetworkClose()
 {
 }
 
-/* This function is called whenever an IP address binding is
- * added or removed from the system.
- */
-static void NetworkIPAddr( uint32_t IPAddr, uint32_t IfIdx, uint32_t fAdd )
+
+//
+// NetworkIPAddr
+//
+// This function is called whenever an IP address binding is
+// added or removed from the system.
+//
+void myNetworkIpAddr( uint32_t IPAddr, uint32_t IfIdx, uint32_t fAdd )
 {
     uint32_t IPTmp;
 

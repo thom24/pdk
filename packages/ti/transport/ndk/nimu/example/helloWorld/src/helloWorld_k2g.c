@@ -49,7 +49,6 @@
 #include <stdio.h>
 
 
-//#include <xdc/cfg/global.h>
 #include <xdc/std.h>
 #include <xdc/runtime/IHeap.h>
 #include <xdc/runtime/System.h>
@@ -115,9 +114,9 @@ bool useDhcp = TRUE;
 char *VerStr = "\nTCP/IP Stack 'Hello World!' Application\n\n";
 
 // Our NETCTRL callback functions
-static void   NetworkOpen();
-static void   NetworkClose();
-static void   NetworkIPAddr( uint32_t IPAddr, uint32_t IfIdx, uint32_t fAdd );
+void   myNetworkOpen();
+void   myNetworkClose();
+void   myNetworkIpAddr( uint32_t IPAddr, uint32_t IfIdx, uint32_t fAdd );
 
 // Fun reporting function
 static void   ServiceReport( uint32_t Item, uint32_t Status, uint32_t Report, void* hCfgEntry );
@@ -141,45 +140,10 @@ char *DNSServer   = "0.0.0.0";          // Used when set to anything but zero
 //---------------------------------------------------------------------
 int main()
 {
-    /* Start the BIOS 6 Scheduler */
-    BIOS_start ();
-   return 0;
-}
 
-
-
-/***************************************************************************************
- * FUNCTION PURPOSE: Power up PA subsystem
- ***************************************************************************************
- * DESCRIPTION: this function powers up the PA subsystem domains
- ***************************************************************************************/
-void nssPowerUp (void)
-{
-    /* PASS power domain is turned OFF by default. It needs to be turned on before doing any 
-     * PASS device register access. This not required for the simulator. */
-
-    /* Set NSS Power domain to ON */        
-    CSL_PSC_enablePowerDomain (CSL_PSC_PD_NSS);
-
-    /* Enable the clocks for NSS modules */
-    CSL_PSC_setModuleNextState (CSL_PSC_LPSC_NSS, PSC_MODSTATE_ENABLE);
-
-    /* Start the state transition */
-    CSL_PSC_startStateTransition (CSL_PSC_PD_NSS);
-
-    /* Wait until the state transition process is completed. */
-    while (!CSL_PSC_isStateTransitionDone (CSL_PSC_PD_NSS));
-}
-
-//
-// Main Thread
-//
-int StackTest()
-{
-    int             rc;
-    void*          hCfg;
     EMAC_HwAttrs_V1 emac_cfg;
-Board_STATUS boardInitStatus =0;
+    Board_STATUS boardInitStatus =0;
+	
 #ifdef __ARM_ARCH_7A__
 
     /* Add MMU entries for MMR's required for example */
@@ -226,19 +190,14 @@ Board_STATUS boardInitStatus =0;
     }
 #endif
 
-
     Board_initCfg cfg = BOARD_INIT_UART_STDIO | BOARD_INIT_PINMUX_CONFIG | BOARD_INIT_MODULE_CLOCK | BOARD_INIT_ETH_PHY ;
     boardInitStatus = Board_init(cfg);
     if (boardInitStatus !=0)
     {
-        //printf("board init failure\n");
         UART_printf("Board_init failure\n");
         return(0);
     }
-    //printf("Board init sucess\n");
     UART_printf("Board_init success\n");
-
-
 
     nssPowerUp();
 
@@ -250,48 +209,53 @@ Board_STATUS boardInitStatus =0;
 #endif
     /* Now set the config after updating desc base address */
     EMAC_socSetInitCfg(0, &emac_cfg);
-
-    //
-    // THIS MUST BE THE ABSOLUTE FIRST THING DONE IN AN APPLICATION before
-    //  using the stack!!
-    //
-    rc = NC_SystemOpen( NC_PRIORITY_LOW, NC_OPMODE_INTERRUPT );
-    if( rc )
-    {
-        platform_write("NC_SystemOpen Failed (%d)\n",rc);
-        for(;;);
-    }
+	
+	/* Start the BIOS 6 Scheduler */
+    BIOS_start ();
+    
+    return 0;
+}
 
 
-    //
-    // Create and build the system configuration from scratch.
-    //
 
-    // Create a new configuration
-    hCfg = CfgNew();
-    if( !hCfg )
-    {
-        platform_write("Unable to create configuration\n");
-        goto main_exit;
-    }
+/***************************************************************************************
+ * FUNCTION PURPOSE: Power up PA subsystem
+ ***************************************************************************************
+ * DESCRIPTION: this function powers up the PA subsystem domains
+ ***************************************************************************************/
+void nssPowerUp (void)
+{
+    /* PASS power domain is turned OFF by default. It needs to be turned on before doing any 
+     * PASS device register access. This not required for the simulator. */
 
-    // Create and build the system configuration from scratch.
-    //
+    /* Set NSS Power domain to ON */        
+    CSL_PSC_enablePowerDomain (CSL_PSC_PD_NSS);
 
-    // Create a new configuration
-    hCfg = CfgNew();
-    if( !hCfg )
-    {
-        platform_write("Unable to create configuration\n");
-        goto main_exit;
-    }
+    /* Enable the clocks for NSS modules */
+    CSL_PSC_setModuleNextState (CSL_PSC_LPSC_NSS, PSC_MODSTATE_ENABLE);
+
+    /* Start the state transition */
+    CSL_PSC_startStateTransition (CSL_PSC_PD_NSS);
+
+    /* Wait until the state transition process is completed. */
+    while (!CSL_PSC_isStateTransitionDone (CSL_PSC_PD_NSS));
+}
+
+//
+// Main Thread
+//
+void stackInitHook(void* hCfg)
+{
+    int             rc;
+
+    rc = 16384; // increase stack size
+    CfgAddEntry(hCfg, CFGTAG_OS, CFGITEM_OS_TASKSTKBOOT,CFG_ADDMODE_UNIQUE, sizeof(uint32_t), (uint8_t *)&rc, 0 );
 
     // We better validate the length of the supplied names
     if( strlen( DomainName ) >= CFG_DOMAIN_MAX ||
         strlen( HostName ) >= CFG_HOSTNAME_MAX )
     {
         platform_write("Names too long\n");
-        goto main_exit;
     }
 
     // Add our global hostname to hCfg (to be claimed in all connected domains)
@@ -373,25 +337,7 @@ Board_STATUS boardInitStatus =0;
     rc = 4096; // increase stack size
     CfgAddEntry(hCfg, CFGTAG_OS, CFGITEM_OS_TASKSTKBOOT,
     CFG_ADDMODE_UNIQUE, sizeof(uint32_t), (uint8_t *)&rc, 0 );
-    //
-    // Boot the system using this configuration
-    //
-    // We keep booting until the function returns 0. This allows
-    // us to have a "reboot" command.
-    //
-    do
-    {
-        rc = NC_NetStart( hCfg, NetworkOpen, NetworkClose, NetworkIPAddr );
-    } while( rc > 0 );
 
-    // Delete Configuration
-    CfgFree( hCfg );
-
-    // Close the OS
-main_exit:
-    printf("StackTest: exiting\n");
-    NC_SystemClose();
-    return(0);
 }
 
 
@@ -405,7 +351,7 @@ static void* hHello=0;
 //
 // This function is called after the configuration has booted
 //
-static void NetworkOpen()
+void myNetworkOpen()
 {
     if (!useDhcp)
     {
@@ -422,7 +368,7 @@ static void NetworkOpen()
 // This function is called when the network is shutting down,
 // or when it no longer has any IP addresses assigned to it.
 //
-static void NetworkClose()
+void myNetworkClose()
 {
     DaemonFree( hHello );
 }
@@ -434,7 +380,7 @@ static void NetworkClose()
 // This function is called whenever an IP address binding is
 // added or removed from the system.
 //
-static void NetworkIPAddr( uint32_t IPAddr, uint32_t IfIdx, uint32_t fAdd )
+void myNetworkIpAddr( uint32_t IPAddr, uint32_t IfIdx, uint32_t fAdd )
 {
     uint32_t IPTmp;
 
@@ -496,5 +442,4 @@ static void ServiceReport( uint32_t Item, uint32_t Status, uint32_t Report, void
                          0, sizeof(IPTmp), (uint8_t *)&IPTmp, 0 );
     }
 }
-
 

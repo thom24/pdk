@@ -92,6 +92,8 @@ uint32_t    coreKey [MAX_CORES];
 
 volatile uint32_t linkUp = 0;
 
+/* Used to indicate that descriptor is being used during packet TX */
+#define NIMU_TX_PKT_DESC ((uint32_t)1U)
 
 extern int32_t NIMU_stopCppi(NIMU_CPPI_CFG_TYPE       cfg_type);
 extern int32_t NIMU_stopQmss(void);
@@ -620,7 +622,7 @@ EmacSend (NETIF_DEVICE* ptr_net_device, PBM_Handle hPkt)
     pkt_desc->PktChannel = 0;
     pkt_desc->ValidLen = length;
     pkt_desc->PktLength = length;
-    pkt_desc->PktFrags = 1;    /* need to check this */
+    pkt_desc->PktFrags = NIMU_TX_PKT_DESC;
     pkt_desc->pNext = NULL;
     pkt_desc->pPrev= NULL;
     pkt_desc->pDataBuffer = buffer;
@@ -756,7 +758,10 @@ nimu_free_pkt
 {
 
     PBM_free((PBM_Handle)(p_pkt_desc->AppPrivate));
-    Osal_nimuFree(p_pkt_desc, sizeof(EMAC_PKT_DESC_T));
+    if(p_pkt_desc->PktFrags == NIMU_TX_PKT_DESC)
+    {
+        Osal_nimuFree(p_pkt_desc, sizeof(EMAC_PKT_DESC_T));
+    }
 }
 
 
@@ -912,9 +917,9 @@ static int EMACInit_Core (STKEVENT_Handle hEvent)
     open_cfg.loop_back = 0;
     open_cfg.master_core_flag = 1;
 #ifdef _TMS320C6X
-    open_cfg.max_pkt_size = 1514;
+    open_cfg.max_pkt_size = NIMU_EMAC_MAX_PKT_SIZE;
 #else
-    open_cfg.max_pkt_size = 1408; /* current limitation due to NDK PBM buffer size  for A15*/
+    open_cfg.max_pkt_size = NIMU_EMAC_MAX_PKT_SIZE; 
 #endif
     open_cfg.mdio_flag = 1;
     open_cfg.num_of_chans = 1;
