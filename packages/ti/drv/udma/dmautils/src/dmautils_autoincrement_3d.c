@@ -61,14 +61,8 @@
 #include "ti/drv/udma/dmautils/src/dmautils_autoincrement_3d_priv.h"
 #include "ti/drv/udma/dmautils/include/dmautils_autoincrement_3d.h"
 
-#if defined (HOST_EMULATION)
-  #if defined (__C7100__)
-    #include <c7x_host_emulation.h>
-  #endif
-#else
-  #if defined (__C7100__)
-    #include <c7x.h>
-  #endif
+#if defined (__C7100__)
+#include <c7x.h>
 #endif
 
 

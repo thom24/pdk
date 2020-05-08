@@ -39,8 +39,7 @@
 #     1. All environment variables for Visual Studio compiler
 
 # Set compiler/archiver/linker commands and include paths
-CODEGEN_INCLUDE = $(C7X_GEN_INSTALL_PATH)/host_emulation/include
-#CODEGEN_INCLUDE = $(C7X_GEN_INSTALL_PATH)/include
+CODEGEN_INCLUDE = $(C7X_GEN_INSTALL_PATH)/host_emulation/include/C7100
 
 
 ifeq ($(OS),Windows_NT)
@@ -121,14 +120,14 @@ $(EXE_NAME) : $(OBJ_PATHS) $(LIB_PATHS) $(LNKCMD_FILE)
 	$(ECHO) \#
 	$(ECHO) \# $@ created.
 	$(ECHO) \#
-    
-    
+
+
 else
 CC=g++-5 -c
 AR=gcc-ar-5
 LD=g++-5
 LNK = g++-5
-CFLAGS_DIROPTS = 
+CFLAGS_DIROPTS =
 
 
 ifeq ($(BUILD_PROFILE_$(CORE)), release)
@@ -160,7 +159,7 @@ endif
 $(OBJ_PATHS): $(OBJDIR)/%.$(OBJEXT): %.c | $(OBJDIR) $(DEPDIR)
 	$(ECHO) \# Compiling $(PRINT_MESSAGE): $<
 
-	$(CC) $(_CFLAGS) $(INCLUDES) $< -o $@ 
+	$(CC) $(_CFLAGS) $(INCLUDES) $< -o $@
 # Archive flags - normally doesn't change
 ARFLAGS :=rvs
 
