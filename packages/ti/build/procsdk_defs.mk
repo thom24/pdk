@@ -63,6 +63,8 @@ export LIMIT_SOCS ?= $(LIMIT_SOCS_$(PDK_SOC))
 
 ifeq ($(findstring hs,$(PDK_SOC)),hs)
 export BUILD_HS ?= yes
+else
+export BUILD_HS ?= no
 endif
 
 LIMIT_BOARDS_j7        = $(BOARD_LIST_j721e) $(BOARD_LIST_j7200)

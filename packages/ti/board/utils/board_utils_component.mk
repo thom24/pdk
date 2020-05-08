@@ -78,6 +78,8 @@ board_utils_LIB_LIST =
 # Board utils package
 # List of utils examples (apps) supported for below boards
 ############################
+board_utils_am65xx_BOARDLIST = am65xx_evm am65xx_idk
+board_utils_am65xx_CORELIST = mcu1_0
 board_utils_j721e_BOARDLIST = j721e_evm
 board_utils_j721e_CORELIST = mcu1_0
 
@@ -102,7 +104,7 @@ board_utils_uart_flash_programmer_COMP_LIST = board_utils_uart_flash_programmer
 board_utils_uart_flash_programmer_RELPATH = ti/board/utils/uniflash/target/build
 board_utils_uart_flash_programmer_CUSTOM_BINPATH = $(PDK_BOARD_UTILS_COMP_PATH)/uniflash/target/bin/$(BOARD)
 board_utils_uart_flash_programmer_PATH = $(PDK_BOARD_UTILS_COMP_PATH)/uniflash/target/build
-board_utils_uart_flash_programmer_MAKEFILE = -f uart_make.mk
+board_utils_uart_flash_programmer_MAKEFILE = -fuart_make.mk BUILD_HS=no
 board_utils_uart_flash_programmer_BOARD_DEPENDENCY = yes
 board_utils_uart_flash_programmer_CORE_DEPENDENCY = yes
 export board_utils_uart_flash_programmer_COMP_LIST
@@ -119,6 +121,30 @@ export board_utils_uart_flash_programmer_$(SOC)_CORELIST
 board_utils_EXAMPLE_LIST += board_utils_uart_flash_programmer
 board_utils_uart_flash_programmer_SBL_IMAGEGEN = yes
 export board_utils_uart_flash_programmer_SBL_IMAGEGEN
+
+board_utils_uart_flash_programmer_hs_COMP_LIST = board_utils_uart_flash_programmer_hs
+board_utils_uart_flash_programmer_hs_RELPATH = ti/board/utils/uniflash/target/build
+board_utils_uart_flash_programmer_hs_CUSTOM_BINPATH = $(PDK_BOARD_UTILS_COMP_PATH)/uniflash/target/bin/$(BOARD)
+board_utils_uart_flash_programmer_hs_PATH = $(PDK_BOARD_UTILS_COMP_PATH)/uniflash/target/build
+board_utils_uart_flash_programmer_hs_MAKEFILE = -fuart_make.mk BUILD_HS=yes
+board_utils_uart_flash_programmer_hs_BOARD_DEPENDENCY = yes
+board_utils_uart_flash_programmer_hs_CORE_DEPENDENCY = yes
+export board_utils_uart_flash_programmer_hs_COMP_LIST
+export board_utils_uart_flash_programmer_hs_BOARD_DEPENDENCY
+export board_utils_uart_flash_programmer_hs_CORE_DEPENDENCY
+export board_utils_uart_flash_programmer_hs_MAKEFILE
+export board_utils_uart_flash_programmer_hs_CUSTOM_BINPATH
+board_utils_uart_flash_programmer_hs_PKG_LIST = board_utils_uart_flash_programmer_hs
+board_utils_uart_flash_programmer_hs_INCLUDE = $(board_utils_uart_flash_programmer_hs_PATH)
+board_utils_uart_flash_programmer_hs_BOARDLIST = $(board_utils_$(SOC)_BOARDLIST)
+export board_utils_uart_flash_programmer_hs_BOARDLIST
+board_utils_uart_flash_programmer_hs_$(SOC)_CORELIST = $(board_utils_$(SOC)_CORELIST)
+export board_utils_uart_flash_programmer_hs_$(SOC)_CORELIST
+ifeq ($(BUILD_HS), yes)
+board_utils_EXAMPLE_LIST += board_utils_uart_flash_programmer_hs
+endif
+board_utils_uart_flash_programmer_hs_SBL_IMAGEGEN = yes
+export board_utils_uart_flash_programmer_hs_SBL_IMAGEGEN
 
 # Uniflash utils is not supported for any profile
 # other than release due to memory constraint

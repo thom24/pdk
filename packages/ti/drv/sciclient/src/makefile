@@ -7,7 +7,12 @@ else
 include $(RULES_MAKE)
 endif
 
-MODULE_NAME = sciclient
+HS_SUFFIX=
+ifeq ($(BUILD_HS), yes)
+HS_SUFFIX=_hs
+endif
+
+MODULE_NAME = sciclient$(HS_SUFFIX)
 
 SRCDIR = src
 INCDIR = soc/sysfw/include
@@ -38,10 +43,10 @@ ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
 SRCS_COMMON  = sciclient.c
 SRCS_COMMON += sciclient_fmwSecureProxyMap.c
 SRCS_COMMON += sciclient_pm.c
-SRCS_COMMON += sciclient_rm.c 
-SRCS_COMMON += sciclient_firewall.c 
-SRCS_COMMON += sciclient_irq_rm.c 
-SRCS_COMMON += sciclient_rm_irq.c 
+SRCS_COMMON += sciclient_rm.c
+SRCS_COMMON += sciclient_firewall.c
+SRCS_COMMON += sciclient_irq_rm.c
+SRCS_COMMON += sciclient_rm_irq.c
 SRCS_COMMON += sciclient_boardcfg.c
 SRCS_COMMON += sciclient_procboot.c
 SRCS_COMMON += sciclient_genericMsgs.c
@@ -70,10 +75,10 @@ PACKAGE_SRCS_COMMON += soc/sysfw/include
 ifeq ($(SOC),$(filter $(SOC), am65xx))
 PACKAGE_SRCS_COMMON += soc/sysfw/binaries/ti-sci-firmware-am65x-gp.bin
 PACKAGE_SRCS_COMMON += soc/sysfw/binaries/ti-sci-firmware-am65x_sr2-gp.bin
-
-ifeq ($(BUILD_HS),yes)
 PACKAGE_SRCS_COMMON += soc/sysfw/binaries/ti-sci-firmware-am65x-hs-cert.bin
 PACKAGE_SRCS_COMMON += soc/sysfw/binaries/ti-sci-firmware-am65x-hs-enc.bin
+
+ifeq ($(BUILD_HS),yes)
 CFLAGS_LOCAL_COMMON += -DBUILD_HS
 endif
 
@@ -81,10 +86,10 @@ endif
 
 ifeq ($(SOC),$(filter $(SOC), j721e))
 PACKAGE_SRCS_COMMON += soc/sysfw/binaries/ti-sci-firmware-j721e-gp.bin
-
-ifeq ($(BUILD_HS),yes)
 PACKAGE_SRCS_COMMON += soc/sysfw/binaries/ti-sci-firmware-j721e-hs-cert.bin
 PACKAGE_SRCS_COMMON += soc/sysfw/binaries/ti-sci-firmware-j721e-hs-enc.bin
+
+ifeq ($(BUILD_HS),yes)
 CFLAGS_LOCAL_COMMON += -DBUILD_HS
 endif
 endif

@@ -40,6 +40,9 @@ ifeq ($(sciclient_component_make_include), )
 # The components included here are built and will be part of sciclient lib
 ############################
 sciclient_LIB_LIST = sciclient
+ifeq ($(BUILD_HS), yes)
+sciclient_LIB_LIST += sciclient_hs
+endif
 
 drvsciclient_BOARDLIST = am65xx_evm am65xx_idk j721e_sim j721e_evm j7200_evm am64x_evm
 drvsciclient_SOCLIST = am65xx j721e j7200 am64x
@@ -49,34 +52,45 @@ drvsciclient_j7200_CORELIST = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
 drvsciclient_am64x_CORELIST = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 m4f_0
 drvsciclient_DISABLE_PARALLEL_MAKE = yes
 
-sciclient_COMP_LIST = sciclient
+export sciclient_COMP_LIST = sciclient
 sciclient_RELPATH = ti/drv/sciclient
+export sciclient_OBJPATH = ti/drv/sciclient
 sciclient_PATH = $(PDK_SCICLIENT_COMP_PATH)
-sciclient_LIBNAME = sciclient
-sciclient_LIBPATH = $(PDK_SCICLIENT_COMP_PATH)/lib
-sciclient_MAKEFILE = -fsrc/makefile
-
-export sciclient_MAKEFILE
-export sciclient_LIBNAME
-export sciclient_LIBPATH
-
+export sciclient_LIBNAME = sciclient
+export sciclient_LIBPATH = $(PDK_SCICLIENT_COMP_PATH)/lib
+export sciclient_MAKEFILE = -fsrc/makefile BUILD_HS=no
 # Simulator versus Silicon has a different Firmware Image.
 sciclient_BOARD_DEPENDENCY = no
 ifeq ($(BOARD),$(filter $(BOARD), j721e_ccqt j721e_loki j721e_hostemu))
 sciclient_BOARD_DEPENDENCY = yes
 endif
-sciclient_CORE_DEPENDENCY = yes
-export sciclient_COMP_LIST
 export sciclient_BOARD_DEPENDENCY
-export sciclient_CORE_DEPENDENCY
+export sciclient_CORE_DEPENDENCY = yes
 sciclient_PKG_LIST = sciclient
 sciclient_INCLUDE = $(sciclient_PATH)
-sciclient_SOCLIST = $(drvsciclient_SOCLIST)
-export sciclient_SOCLIST
-sciclient_BOARDLIST = $(drvsciclient_BOARDLIST)
-export sciclient_BOARDLIST
-sciclient_$(SOC)_CORELIST = $(drvsciclient_$(SOC)_CORELIST)
-export sciclient_$(SOC)_CORELIST
+export sciclient_SOCLIST = $(drvsciclient_SOCLIST)
+export sciclient_BOARDLIST = $(drvsciclient_BOARDLIST)
+export sciclient_$(SOC)_CORELIST = $(drvsciclient_$(SOC)_CORELIST)
+
+export sciclient_hs_COMP_LIST = sciclient_hs
+sciclient_hs_RELPATH = ti/drv/sciclient
+export sciclient_hs_OBJPATH = ti/drv/sciclient_hs
+sciclient_hs_PATH = $(PDK_SCICLIENT_COMP_PATH)
+export sciclient_hs_LIBNAME = sciclient_hs
+export sciclient_hs_LIBPATH = $(PDK_SCICLIENT_COMP_PATH)/lib
+export sciclient_hs_MAKEFILE = -fsrc/makefile BUILD_HS=yes
+# Simulator versus Silicon has a different Firmware Image.
+sciclient_hs_BOARD_DEPENDENCY = no
+ifeq ($(BOARD),$(filter $(BOARD), j721e_ccqt j721e_loki j721e_hostemu))
+sciclient_hs_BOARD_DEPENDENCY = yes
+endif
+export sciclient_hs_BOARD_DEPENDENCY
+export sciclient_hs_CORE_DEPENDENCY = yes
+sciclient_hs_PKG_LIST = sciclient_hs
+sciclient_hs_INCLUDE = $(sciclient_hs_PATH)
+export sciclient_hs_SOCLIST = $(drvsciclient_SOCLIST)
+export sciclient_hs_BOARDLIST = $(drvsciclient_BOARDLIST)
+export sciclient_hs_$(SOC)_CORELIST = $(drvsciclient_$(SOC)_CORELIST)
 
 export sciclient_UTILS_LIST = sciclient_boardcfg
 export sciclient_boardcfg_COMP_LIST = sciclient_boardcfg

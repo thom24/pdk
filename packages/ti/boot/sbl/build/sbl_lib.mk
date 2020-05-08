@@ -3,7 +3,12 @@
 #
 include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 
-MODULE_NAME = sbl_lib_$(BOOTMODE)
+HS_SUFFIX=
+ifeq ($(BUILD_HS), yes)
+HS_SUFFIX=_hs
+endif
+
+MODULE_NAME = sbl_lib_$(BOOTMODE)$(HS_SUFFIX)
 
 INCDIR	+= $(PDK_INSTALL_PATH)
 INCDIR	+= $(PDK_INSTALL_PATH)/ti/drv/uart/soc/$(SOC)

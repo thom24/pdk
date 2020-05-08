@@ -456,11 +456,13 @@ ifeq ($(LOCAL_APP_NAME),)
 else
   SBL_IMAGE_NAME=$(LOCAL_APP_NAME)_$(BUILD_PROFILE_$(CORE))
 endif
+ifeq ($(SOC),$(filter $(SOC), tda2xx tda2ex tda2px tda3xx dra78x))
 ifeq ($(BUILD_HS),yes)
   HS_SUFFIX=_unsigned
   SBL_HS_CHECK_MSHIELD_USES := $(shell grep SOC_VARIANT $(MSHIELD_DK_DIR)/src/config.mk | grep TDA2XX && echo "yes" || echo "no")
 else
   SBL_HS_CHECK_MSHIELD_USES := no
+endif
 endif
 
 ifeq ($(SOC),$(filter $(SOC), am65xx am64x j721e j7200))
@@ -479,6 +481,7 @@ SBL_APPIMAGE_PATH=$(BINDIR)/$(SBL_IMAGE_NAME).appimage
 SBL_APPIMAGE_PATH_BE=$(BINDIR)/$(SBL_IMAGE_NAME)_BE.appimage
 SBL_APP_BINIMAGE_PATH=$(EXE_NAME).bin
 SBL_APPIMAGE_PATH_SIGNED=$(BINDIR)/$(SBL_IMAGE_NAME).appimage.signed
+SBL_APPIMAGE_PATH_SIGNED_HS=$(BINDIR)/$(SBL_IMAGE_NAME)_hs.appimage.signed
 SBL_APPIMAGE_PATH_SIGNED_BE=$(BINDIR)/$(SBL_IMAGE_NAME)_BE.appimage.signed
 
 #MCUx_1 cores requires a dummy application to run from MCUx_0 core
@@ -499,11 +502,8 @@ ifeq ($(OS),Windows_NT)
 else
   SBL_CERT_GEN=$(PDK_INSTALL_PATH)/ti/build/makerules/x509CertificateGen.sh
 endif
-ifeq ($(BUILD_HS),yes)
-SBL_CERT_KEY=$(ROOTDIR)/ti/build/makerules/k3_dev_mpk.pem
-else
+SBL_CERT_KEY_HS=$(ROOTDIR)/ti/build/makerules/k3_dev_mpk.pem
 SBL_CERT_KEY=$(ROOTDIR)/ti/build/makerules/rom_degenerateKey.pem
-endif
 ifeq ($(BUILD_PROFILE_$(CORE)),release)
   SBL_MLO_PATH=$(BINDIR)/MLO$(HS_SUFFIX)
   SBL_MLO_PATH_SIGNED=$(BINDIR)/MLO
@@ -604,9 +604,12 @@ else ifeq ($(SOC),$(filter $(SOC), am65xx am64x j721e j7200 tpr12))
 ifneq ($(OS),Windows_NT)
 	$(CHMOD) a+x $(SBL_CERT_GEN)
 endif
+ifeq ($(BUILD_HS),yes)
+	$(SBL_CERT_GEN) -b $(SBL_BIN_PATH) -o $(SBL_TIIMAGE_PATH) -c R5 -l $(SBL_RUN_ADDRESS) -k $(SBL_CERT_KEY_HS) -d DEBUG -j DBG_FULL_ENABLE -m $(SBL_MCU_STARTUP_MODE)
+else
 	$(SBL_CERT_GEN) -b $(SBL_BIN_PATH) -o $(SBL_TIIMAGE_PATH) -c R5 -l $(SBL_RUN_ADDRESS) -k $(SBL_CERT_KEY) -d DEBUG -j DBG_FULL_ENABLE -m $(SBL_MCU_STARTUP_MODE)
 endif
-
+endif
 	$(ECHO) \# SBL image $@ created.
 	$(ECHO) \#
 
@@ -690,6 +693,9 @@ else
 	$(CHMOD) a+x $(SBL_CERT_GEN)
    endif
 	$(SBL_CERT_GEN) -b $@ -o $(SBL_APPIMAGE_PATH_SIGNED) -c R5 -l $(SBL_RUN_ADDRESS) -k $(SBL_CERT_KEY)
+   ifeq ($(BUILD_HS),yes)
+	$(SBL_CERT_GEN) -b $@ -o $(SBL_APPIMAGE_PATH_SIGNED_HS) -c R5 -l $(SBL_RUN_ADDRESS) -k $(SBL_CERT_KEY_HS)
+   endif
  endif
 endif
 	$(RM) -f $(SBL_STDOUT_FILE)
