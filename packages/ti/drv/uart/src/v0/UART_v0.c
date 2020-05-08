@@ -804,6 +804,19 @@ static void UART_close_v0(UART_Handle handle)
 {
     UART_V0_Object     *object = (UART_V0_Object*)handle->object;
     UART_HwAttrs const *hwAttrs = (UART_HwAttrs const *)handle->hwAttrs;
+    uint32_t            key;
+
+    /* Disable preemption while checking if the UART is open. */
+    key = UART_osalHardwareIntDisable();
+
+    if (object->isOpen == (uint32_t)FALSE)
+    {
+        UART_drv_log1("UART:(%p) is already closed", hwAttrs->baseAddr);
+        UART_osalHardwareIntRestore(key);
+        return;
+    }
+
+    UART_osalHardwareIntRestore(key);
 
     /* Wait for TX FIFO empty */
     UART_fifoWait_v0(hwAttrs->baseAddr);
