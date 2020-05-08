@@ -12,7 +12,7 @@ endif
   GCC_CROSS_TOOL_PREFIX=arm-none-eabi-
   GCC_CROSS_TOOL_TAG=7-2018-q2-update
   GCC_ARCH64_VERSION=9.2-2019.12
-  GCC_ARCH64_BIN_PREFIX_STR=aarch64-elf
+  GCC_ARCH64_BIN_PREFIX_STR=aarch64-none-elf
   CGT_VERSION=8.3.2
   BIOS_VERSION=6_82_00_16
   XDC_VERSION=3_61_00_16_core
@@ -24,10 +24,6 @@ endif
   CGT_ARP32_VERSION=1.0.8
   CG_XML_VERSION=2.61.00
 
-ifeq ($(BOARD),$(filter $(BOARD), am65xx_evm am65xx_idk j721e_evm j7200_evm))
-  GCC_ARCH64_BIN_PREFIX_STR=aarch64-none-elf
-endif
-
 ifeq ($(BOARD),$(filter $(BOARD), tpr12_evm))
   BIOS_VERSION=6_82_00_16
   XDC_VERSION=3_61_00_16_core
@@ -36,6 +32,8 @@ endif
 ifeq ($(BOARD),$(filter $(BOARD), am64x_evm))
   BIOS_VERSION=6_83_00_01_eng
   XDC_VERSION=3_61_00_16_core
+  GCC_ARCH64_VERSION=7.2.1-2017.11
+  GCC_ARCH64_BIN_PREFIX_STR=aarch64-elf
 endif
 
   EDMA_VERSION=2_12_05_30E
@@ -92,6 +90,17 @@ else
   #Paths for linux machine
   export TOOLCHAIN_PATH_GCC_ARCH64 ?= $(TOOLS_INSTALL_PATH)/gcc-arm-$(GCC_ARCH64_VERSION)-x86_64-aarch64-none-elf
 endif
+
+ifeq ($(BOARD),$(filter $(BOARD), am64x_evm))
+  ifeq ($(OS),Windows_NT)
+    #Paths for windows machine
+    export TOOLCHAIN_PATH_GCC_ARCH64 ?= $(TOOLS_INSTALL_PATH)/gcc-linaro-$(GCC_ARCH64_VERSION)-mingw-w64-i686-aarch64-elf
+  else
+    #Paths for linux machine
+    export TOOLCHAIN_PATH_GCC_ARCH64 ?= $(TOOLS_INSTALL_PATH)/gcc-linaro-$(GCC_ARCH64_VERSION)-x86_64-aarch64-elf
+  endif
+endif
+
   export GCC_ARCH64_BIN_PREFIX     ?= $(GCC_ARCH64_BIN_PREFIX_STR)
 
   export TOOLCHAIN_PATH_QNX_A72    ?= $(QNX_HOST)/usr/bin
