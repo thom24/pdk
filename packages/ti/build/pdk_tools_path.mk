@@ -86,36 +86,24 @@ GCC_VERSION_ARM_A15=$(GCC_CROSS_TOOL_PREFIX)$(GCC_CROSS_TOOL_TAG)
   export TOOLCHAIN_PATH_A9         ?= $(TOOLS_INSTALL_PATH)/gcc-$(GCC_VERSION_ARM_A9)
   export TOOLCHAIN_PATH_Arm9       ?= $(TOOLS_INSTALL_PATH)/ti-cgt-arm_$(CGT_ARM_VERSION)
   export TOOLCHAIN_PATH_A15        ?= $(TOOLS_INSTALL_PATH)/gcc-$(GCC_VERSION_ARM_A15)
-ifeq ($(OS),Windows_NT)
-  #Paths for windows machine
-  export TOOLCHAIN_PATH_GCC_ARCH64 ?= $(TOOLS_INSTALL_PATH)/gcc-arm-$(GCC_ARCH64_VERSION)-mingw-w64-i686-aarch64-none-elf
+
+ifeq ($(BOARD),$(filter $(BOARD), am64x_evm))
+  ifeq ($(OS),Windows_NT)
+    #Paths for windows machine
+    export TOOLCHAIN_PATH_GCC_ARCH64 ?= $(TOOLS_INSTALL_PATH)/gcc-linaro-$(GCC_ARCH64_VERSION)-mingw-w64-i686_aarch64-elf
+  else
+    #Paths for linux machine
+    export TOOLCHAIN_PATH_GCC_ARCH64 ?= $(TOOLS_INSTALL_PATH)/gcc-linaro-$(GCC_ARCH64_VERSION)-x86_64_aarch64-elf
+  endif
 else
-  #Paths for linux machine
-  export TOOLCHAIN_PATH_GCC_ARCH64 ?= $(TOOLS_INSTALL_PATH)/gcc-arm-$(GCC_ARCH64_VERSION)-x86_64-aarch64-none-elf
-endif
-
-ifeq ($(BOARD),$(filter $(BOARD), am64x_evm))
   ifeq ($(OS),Windows_NT)
     #Paths for windows machine
-    export TOOLCHAIN_PATH_GCC_ARCH64 ?= $(TOOLS_INSTALL_PATH)/gcc-linaro-$(GCC_ARCH64_VERSION)-mingw-w64-i686-aarch64-elf
+    export TOOLCHAIN_PATH_GCC_ARCH64 ?= $(TOOLS_INSTALL_PATH)/gcc-arm-$(GCC_ARCH64_VERSION)-mingw-w64-i686-aarch64-none-elf
   else
     #Paths for linux machine
-    export TOOLCHAIN_PATH_GCC_ARCH64 ?= $(TOOLS_INSTALL_PATH)/gcc-linaro-$(GCC_ARCH64_VERSION)-x86_64-aarch64-elf
+    export TOOLCHAIN_PATH_GCC_ARCH64 ?= $(TOOLS_INSTALL_PATH)/gcc-arm-$(GCC_ARCH64_VERSION)-x86_64-aarch64-none-elf
   endif
 endif
-
-  export GCC_ARCH64_BIN_PREFIX     ?= $(GCC_ARCH64_BIN_PREFIX_STR)
-
-ifeq ($(BOARD),$(filter $(BOARD), am64x_evm))
-  ifeq ($(OS),Windows_NT)
-    #Paths for windows machine
-    export TOOLCHAIN_PATH_GCC_ARCH64 ?= $(TOOLS_INSTALL_PATH)/gcc-linaro-$(GCC_ARCH64_VERSION)-mingw-w64-i686-aarch64-elf
-  else
-    #Paths for linux machine
-    export TOOLCHAIN_PATH_GCC_ARCH64 ?= $(TOOLS_INSTALL_PATH)/gcc-linaro-$(GCC_ARCH64_VERSION)-x86_64-aarch64-elf
-  endif
-endif
-
   export GCC_ARCH64_BIN_PREFIX     ?= $(GCC_ARCH64_BIN_PREFIX_STR)
 
   export TOOLCHAIN_PATH_QNX_A72    ?= $(QNX_HOST)/usr/bin
