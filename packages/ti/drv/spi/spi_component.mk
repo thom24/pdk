@@ -96,6 +96,7 @@ drvspi_j721e_CORELIST  = $(DEFAULT_j721e_CORELIST)
 drvspi_j721e_CORELISTARM  = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1
 drvspi_j7200_CORELIST     = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
 drvspi_am64x_CORELIST  = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 m4f_0
+drvspi_am64x_CORELISTARM  = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
 ############################
 # spi package
 # List of components included under spi lib
@@ -544,8 +545,8 @@ OSPI_Baremetal_Flash_TestApp_PKG_LIST = OSPI_Baremetal_Flash_TestApp
 OSPI_Baremetal_Flash_TestApp_INCLUDE = $(OSPI_Baremetal_Flash_TestApp_PATH)
 OSPI_Baremetal_Flash_TestApp_BOARDLIST = $(drvspi_BOARDLIST)
 export OSPI_Baremetal_Flash_TestApp_BOARDLIST
-ifeq ($(SOC),$(filter $(SOC), j721e))
-OSPI_Baremetal_Flash_TestApp_$(SOC)_CORELIST = $(drvspi_j721e_CORELISTARM)
+ifeq ($(SOC),$(filter $(SOC), j721e am64x))
+OSPI_Baremetal_Flash_TestApp_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELISTARM)
 else
 OSPI_Baremetal_Flash_TestApp_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELIST)
 endif
@@ -567,14 +568,10 @@ OSPI_Baremetal_Flash_Dma_TestApp_PKG_LIST = OSPI_Baremetal_Flash_Dma_TestApp
 OSPI_Baremetal_Flash_Dma_TestApp_INCLUDE = $(OSPI_Baremetal_Flash_Dma_TestApp_PATH)
 OSPI_Baremetal_Flash_Dma_TestApp_BOARDLIST = $(drvspi_BOARDLIST)
 export OSPI_Baremetal_Flash_Dma_TestApp_BOARDLIST
-ifeq ($(SOC),$(filter $(SOC), j721e))
-OSPI_Baremetal_Flash_Dma_TestApp_$(SOC)_CORELIST = $(drvspi_j721e_CORELISTARM)
-else
-ifeq ($(SOC),$(filter $(SOC), am64x))
-OSPI_Baremetal_Flash_Dma_TestApp_$(SOC)_CORELIST = mpu1_0 mcu1_0
+ifeq ($(SOC),$(filter $(SOC), j721e am64x))
+OSPI_Baremetal_Flash_Dma_TestApp_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELISTARM)
 else
 OSPI_Baremetal_Flash_Dma_TestApp_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELIST)
-endif
 endif
 export OSPI_Baremetal_Flash_Dma_TestApp_$(SOC)_CORELIST
 
@@ -595,8 +592,8 @@ OSPI_Flash_TestApp_PKG_LIST = OSPI_Flash_TestApp
 OSPI_Flash_TestApp_INCLUDE = $(OSPI_Flash_TestApp_PATH)
 OSPI_Flash_TestApp_BOARDLIST = $(drvspi_BOARDLIST)
 export OSPI_Flash_TestApp_BOARDLIST
-ifeq ($(SOC),$(filter $(SOC), j721e))
-OSPI_Flash_TestApp_$(SOC)_CORELIST = $(drvspi_j721e_CORELISTARM)
+ifeq ($(SOC),$(filter $(SOC), j721e am64x))
+OSPI_Flash_TestApp_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELISTARM)
 else
 OSPI_Flash_TestApp_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELIST)
 endif
@@ -639,8 +636,8 @@ OSPI_Flash_Dma_TestApp_PKG_LIST = OSPI_Flash_Dma_TestApp
 OSPI_Flash_Dma_TestApp_INCLUDE = $(OSPI_Flash_Dma_TestApp_PATH)
 OSPI_Flash_Dma_TestApp_BOARDLIST = $(drvspi_BOARDLIST)
 export OSPI_Flash_Dma_TestApp_BOARDLIST
-ifeq ($(SOC),$(filter $(SOC), j721e))
-OSPI_Flash_Dma_TestApp_$(SOC)_CORELIST = $(drvspi_j721e_CORELISTARM)
+ifeq ($(SOC),$(filter $(SOC), j721e am64x))
+OSPI_Flash_Dma_TestApp_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELISTARM)
 else
 OSPI_Flash_Dma_TestApp_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELIST)
 endif
