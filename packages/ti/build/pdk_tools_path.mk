@@ -16,9 +16,6 @@ endif
   CGT_VERSION=8.3.2
   BIOS_VERSION=6_82_00_16
   XDC_VERSION=3_61_00_16_core
-  CGT_VERSION=8.3.2
-  BIOS_VERSION=6_82_00_16
-  XDC_VERSION=3_61_00_16_core
 
   CGT_C7X_VERSION=1.3.0.STS
   CGT_ARM_VERSION=20.2.0.LTS
@@ -93,6 +90,17 @@ else
   #Paths for linux machine
   export TOOLCHAIN_PATH_GCC_ARCH64 ?= $(TOOLS_INSTALL_PATH)/gcc-arm-$(GCC_ARCH64_VERSION)-x86_64-aarch64-none-elf
 endif
+
+ifeq ($(BOARD),$(filter $(BOARD), am64x_evm))
+  ifeq ($(OS),Windows_NT)
+    #Paths for windows machine
+    export TOOLCHAIN_PATH_GCC_ARCH64 ?= $(TOOLS_INSTALL_PATH)/gcc-linaro-$(GCC_ARCH64_VERSION)-mingw-w64-i686-aarch64-elf
+  else
+    #Paths for linux machine
+    export TOOLCHAIN_PATH_GCC_ARCH64 ?= $(TOOLS_INSTALL_PATH)/gcc-linaro-$(GCC_ARCH64_VERSION)-x86_64-aarch64-elf
+  endif
+endif
+
   export GCC_ARCH64_BIN_PREFIX     ?= $(GCC_ARCH64_BIN_PREFIX_STR)
 
 ifeq ($(BOARD),$(filter $(BOARD), am64x_evm))
