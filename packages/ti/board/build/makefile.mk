@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2016-2019, Texas Instruments Incorporated
+# Copyright (c) 2016-2020, Texas Instruments Incorporated
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -40,12 +40,12 @@ INCDIR = . src
 
 PACKAGE_SRCS_COMMON =
 
-ifeq ($(BOARD),$(filter $(BOARD),evmAM335x icev2AM335x iceAMIC110 skAM335x bbbAM335x evmAM437x idkAM437x skAM437x evmAM572x idkAM571x idkAM572x evmK2H evmK2K evmK2E evmK2L evmK2G iceK2G evmC6678 evmC6657 evmOMAPL137 lcdkOMAPL138 idkAM574x am65xx_evm am65xx_idk am64x_evm tpr12_evm))
+ifeq ($(BOARD),$(filter $(BOARD),evmAM335x icev2AM335x iceAMIC110 skAM335x bbbAM335x evmAM437x idkAM437x skAM437x evmAM572x idkAM571x idkAM572x evmK2H evmK2K evmK2E evmK2L evmK2G iceK2G evmC6678 evmC6657 evmOMAPL137 lcdkOMAPL138 idkAM574x am65xx_evm am65xx_idk am64x_evm tpr12_evm tpr12_qt))
 # Common source files across all platforms and cores
 SRCS_COMMON += board.c
 endif
 
-ifeq ($(BOARD),$(filter $(BOARD),evmAM335x icev2AM335x iceAMIC110 skAM335x bbbAM335x evmAM437x idkAM437x skAM437x evmAM572x idkAM571x idkAM572x evmK2H evmK2K evmK2E evmK2L iceK2G evmC6678 evmC6657 evmOMAPL137 lcdkOMAPL138 idkAM574x evmDRA72x evmDRA75x evmDRA78x evmTDAxx j721e_sim j721e_qt j7200_evm tpr12_evm))
+ifeq ($(BOARD),$(filter $(BOARD),evmAM335x icev2AM335x iceAMIC110 skAM335x bbbAM335x evmAM437x idkAM437x skAM437x evmAM572x idkAM571x idkAM572x evmK2H evmK2K evmK2E evmK2L iceK2G evmC6678 evmC6657 evmOMAPL137 lcdkOMAPL138 idkAM574x evmDRA72x evmDRA75x evmDRA78x evmTDAxx j721e_sim j721e_qt j7200_evm tpr12_evm tpr12_qt))
 # Board stub function enabled for all the boards except evmK2G
 SRCS_COMMON += boardStub.c
 endif
@@ -91,7 +91,7 @@ PACKAGE_SRCS_COMMON += src/$(BOARD)
 PACKAGE_SRCS_COMMON += src/devices
 endif
 
-ifeq ($(BOARD),$(filter $(BOARD), tpr12_evm))
+ifeq ($(BOARD),$(filter $(BOARD), tpr12_evm tpr12_qt))
 include $(PDK_BOARD_COMP_PATH)/src/$(BOARD)/src_files_$(BOARD).mk
 PACKAGE_SRCS_COMMON += src/$(BOARD)
 endif
@@ -163,7 +163,7 @@ INCLUDE_INTERNAL_INTERFACES = csl
 
 PACKAGE_SRCS_COMMON += makefile board_component.mk board.h \
                        board_cfg.h build/makefile.mk
-ifeq ($(BOARD),$(filter $(BOARD), j721e_sim j721e_qt j721e_evm j7200_evm tpr12_evm))
+ifeq ($(BOARD),$(filter $(BOARD), j721e_sim j721e_qt j721e_evm j7200_evm tpr12_evm tpr12_qt))
 PACKAGE_SRCS_COMMON += src/board.c src/boardStub.c src/Module.xs \
                        src/src_files_lld.mk src/src_files_starterware.mk
 else

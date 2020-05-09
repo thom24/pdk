@@ -36,7 +36,7 @@ ifeq ($(edma_component_make_include), )
 
 drvedma_SOCLIST          = tpr12
 drvedma_tpr12_CORELIST   = $(DEFAULT_tpr12_CORELIST)
-drvedma_BOARDLIST        = tpr12_evm
+drvedma_BOARDLIST        = tpr12_evm tpr12_qt
 
 ############################
 # edma package

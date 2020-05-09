@@ -8,7 +8,7 @@
  *  and is responsible for configuration of the paths for the various
  *  tools required to build the library.
  *
- * Copyright (C) 2014-2015, Texas Instruments, Inc.
+ * Copyright (C) 2014-2020, Texas Instruments, Inc.
  *****************************************************************************/
 
 /* Get the Tools Base directory from the Environment Variable. */
@@ -368,6 +368,12 @@ var am64x_evm = {
 var tpr12_evm = {
     name: "tpr12_evm",
     ccOpts: "-Dtpr12_evm -DSOC_TPR12",
+    targets: [C66LE],
+}
+
+var tpr12_qt = {
+    name: "tpr12_qt",
+    ccOpts: "-Dtpr12_qt -DSOC_TPR12",
     targets: [C66LE],
 }
 

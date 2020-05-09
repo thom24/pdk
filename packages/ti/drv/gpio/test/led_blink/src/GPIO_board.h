@@ -208,7 +208,7 @@ extern "C" {
 #define GPIO_LED1_PORT_NUM       0 /* use WAKEUP GPIO0 */
 #endif
 
-#if defined (tpr12_evm)
+#if defined (tpr12_evm) || defined(tpr12_qt)
 #if defined (__TI_ARM_V7R4__)
 /* tpr12: Use MSS GIO port 0 pin 1 and pin 2 for testing on QT.
           MSS GIO port 0 pin1 and pin2 are connected to PADAC and PADAZ.

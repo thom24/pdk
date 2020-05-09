@@ -67,7 +67,7 @@
 ifeq ($(gpio_component_make_include), )
 
 # under other list
-drvgpio_BOARDLIST       = am65xx_evm am65xx_idk j721e_sim j721e_evm j7200_evm tpr12_evm
+drvgpio_BOARDLIST       = am65xx_evm am65xx_idk j721e_sim j721e_evm j7200_evm tpr12_evm tpr12_qt
 drvgpio_SOCLIST         = am574x am572x am571x dra72x dra75x dra78x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j7200 tpr12
 drvgpio_SOCPROFILELIST  = am574x am572x am571x dra72x dra75x dra78x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138
 drvgpio_am574x_CORELIST = c66x a15_0 ipu1_0

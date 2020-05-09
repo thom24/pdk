@@ -29,7 +29,7 @@ BOARD_LIST_am65xx = am65xx_evm am65xx_idk
 BOARD_LIST_am64x = am64x_evm
 BOARD_LIST_j721e = j721e_evm
 BOARD_LIST_j7200 = j7200_evm
-BOARD_LIST_tpr12 = tpr12_evm
+BOARD_LIST_tpr12 = tpr12_evm tpr12_qt
 
 # LIST of cores for each SOC
 CORE_LIST_tda2xx = a15_0 ipu1_0 c66x arp32_1

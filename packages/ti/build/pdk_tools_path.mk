@@ -24,7 +24,7 @@ endif
   CGT_ARP32_VERSION=1.0.8
   CG_XML_VERSION=2.61.00
 
-ifeq ($(BOARD),$(filter $(BOARD), tpr12_evm))
+ifeq ($(BOARD),$(filter $(BOARD), tpr12_evm tpr12_qt))
   BIOS_VERSION=6_82_00_16
   XDC_VERSION=3_61_00_16_core
   CGT_VERSION=8.3.3

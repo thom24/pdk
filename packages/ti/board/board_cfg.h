@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, Texas Instruments Incorporated
+ * Copyright (c) 2017-2020, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -136,6 +136,9 @@ extern "C" {
 
 #elif defined (am64x_evm)
 #include <ti/board/src/am64x_evm/include/board_cfg.h>
+
+#elif defined (tpr12_qt)
+#include <ti/board/src/tpr12_qt/include/board_cfg.h>
 
 #elif defined (tpr12_evm)
 #include <ti/board/src/tpr12_evm/include/board_cfg.h>

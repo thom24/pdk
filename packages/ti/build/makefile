@@ -31,7 +31,7 @@ ifeq ($(LIMIT_CORES),)
     CORE_LIST_ALL = a15_0 ipu1_0 ipu1_1 ipu2_0 ipu2_1 c66x c66xdsp_1 c66xdsp_2 arp32_1 arp32_2 arp32_3 arp32_4 arm9_0 c674x
     CORE_LIST_ALL += mcu1_0 mcu1_1 mpu1_0 mpu1_1
   endif
-  ifeq ($(BOARD),$(filter $(BOARD), tpr12_evm))
+  ifeq ($(BOARD),$(filter $(BOARD), tpr12_evm tpr12_qt))
     CORE_LIST_ALL = $(CORE_LIST_tpr12)
   endif
 ifeq ($(BOARD),$(filter $(BOARD), am64x_evm))

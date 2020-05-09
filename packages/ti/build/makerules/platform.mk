@@ -191,7 +191,7 @@ ifeq ($(BOARD),$(filter $(BOARD), am64x_evm))
 endif
 
 # TPR12
-ifeq ($(BOARD),$(filter $(BOARD), tpr12_evm))
+ifeq ($(BOARD),$(filter $(BOARD), tpr12_evm tpr12_qt))
  SOC = tpr12
  SBL_RUN_ADDRESS=0x41C00100
  SBL_DEV_ID=55

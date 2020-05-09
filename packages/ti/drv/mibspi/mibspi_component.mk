@@ -66,7 +66,7 @@
 #
 ifeq ($(mibspi_component_make_include), )
 
-drvmibspi_BOARDLIST       = tpr12_evm
+drvmibspi_BOARDLIST       = tpr12_evm tpr12_qt
 drvmibspi_SOCLIST         = tpr12
 drvmibspi_tpr12_CORELIST   = mcu1_0 c66xdsp_1
 

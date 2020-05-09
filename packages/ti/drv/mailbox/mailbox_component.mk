@@ -36,7 +36,7 @@ ifeq ($(mailbox_component_make_include), )
 
 drvmailbox_SOCLIST          = tpr12
 drvmailbox_tpr12_CORELIST   = mcu1_0 c66xdsp_1
-drvmailbox_BOARDLIST        = tpr12_evm
+drvmailbox_BOARDLIST        = tpr12_evm tpr12_qt
 
 ############################
 # mailbox package
