@@ -2865,7 +2865,7 @@ static inline uint32_t initConfigDev(CUSBD_PrivateData * dev, CUSBDMA_Config * d
     dev->device.maxSpeed = CH9_USB_SPEED_SUPER;
     dev->device.state = CH9_USB_STATE_DEFAULT; /* <----- check if we set status, probably higher layer sets it */
 #ifdef DEBUG
-    (void) strncpy(dev->device.name, SS_DEV_NAME, sizeof (SS_DEV_NAME));
+    (void) strncpy(dev->device.name, SS_DEV_NAME, (CUSBD_DEVICE_NAME_SIZE - 1U));
 #endif
 
     /* Creating DMA Controller */

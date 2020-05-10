@@ -38,6 +38,12 @@
 #include "cdn_stdtypes.h"
 #include "cusbd_if.h"
 
+/** Device name - Maximum size */
+#define	CUSBD_DEVICE_NAME_SIZE  (100U)
+/** Device Endpoint - Maximum size */
+#define	CUSBD_EP_NAME_SIZE      (100U)
+
+
 /** @defgroup DataStructure Dynamic Data Structures
  *  This section defines the data structures used by the driver to provide
  *  hardware information, modification and dynamic operation of the driver.
@@ -256,7 +262,7 @@ struct CUSBD_Ep_s
     /** enables organization of endpoints in linked list */
     LIST_ListHead epList;
     /** keeps name of endpoint */
-    char name[100];
+    char name[CUSBD_EP_NAME_SIZE];
     /** pointer to the private data of this endpoint */
     CUSBD_EpPrivate* epPrivate;
     /**
@@ -320,7 +326,7 @@ struct CUSBD_Dev_s
     /** Flags informs if device is scatter/gather transfer capable */
     uint8_t sgSupported;
     /** Full name of USB device controller */
-    char name[100];
+    char name[CUSBD_DEVICE_NAME_SIZE];
 };
 
 /**
