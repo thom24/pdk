@@ -256,7 +256,7 @@ int32_t PRUICSS_pruCounterEnable(PRUICSS_Handle handle, uint8_t pruNum)
 
     if ((handle != NULL) && (pruNum < PRUICSS_MAX_PRU))
     {
-        hwAttrs = (const PRUICSS_HwAttrs *)handle->hwAttrs;
+        hwAttrs = (PRUICSS_HwAttrs const *)handle->hwAttrs;
         baseaddr = pruicss_get_ctrl_addr (hwAttrs, pruNum);
         if(baseaddr != 0U)
         {
@@ -390,8 +390,7 @@ int32_t PRUICSS_pruInitMemory(
     uintptr_t               temp_addr = 0U;
     uint32_t                 i = 0;
     PRUSS_MemInfo           memInfo = {0U, 0U};
-    PRUICSS_HwAttrs const   *hwAttrs = (PRUICSS_HwAttrs const *)handle->hwAttrs;
-
+    PRUICSS_HwAttrs const   *hwAttrs;
     if (handle != NULL)
     {
         hwAttrs = (PRUICSS_HwAttrs const *)handle->hwAttrs;
@@ -558,28 +557,32 @@ int32_t PRUICSS_mapPruMem(PRUICSS_Handle handle,uint32_t pru_ram_id, void **addr
     uintptr_t baseaddr;
     PRUICSS_HwAttrs      const    *hwAttrs;
     uintptr_t temp_addr = 0U;
-    int32_t ret_val = PRUICSS_RETURN_SUCCESS;
+    int32_t ret_val = PRUICSS_RETURN_FAILURE;
 
-    hwAttrs = (PRUICSS_HwAttrs const *)handle->hwAttrs;
-    baseaddr = hwAttrs->baseAddr;
+    if (handle != NULL)
+    {
+        ret_val = PRUICSS_RETURN_SUCCESS;
+        hwAttrs = (PRUICSS_HwAttrs const *)handle->hwAttrs;
+        baseaddr = hwAttrs->baseAddr;
 
-    switch (pru_ram_id) {
-    case PRUICSS_PRU0_DATARAM:
-        temp_addr = (baseaddr + PRU_ICSS_DATARAM(0U));
-        *address = (void*)(temp_addr);
-        break;
-    case PRUICSS_PRU1_DATARAM:
-        temp_addr = (baseaddr + PRU_ICSS_DATARAM(1U));
-        *address = (void*)(temp_addr);
-        break;
-    case PRUICSS_SHARED_DATARAM:
-        temp_addr = (baseaddr + PRU_ICSS_SHARED_RAM);
-        *address = (void*)(temp_addr);
-        break;
-    default:
-        *address = 0;
-        ret_val = PRUICSS_RETURN_FAILURE;
-        break;
+        switch (pru_ram_id) {
+        case PRUICSS_PRU0_DATARAM:
+            temp_addr = (baseaddr + PRU_ICSS_DATARAM(0U));
+            *address = (void*)(temp_addr);
+            break;
+        case PRUICSS_PRU1_DATARAM:
+            temp_addr = (baseaddr + PRU_ICSS_DATARAM(1U));
+            *address = (void*)(temp_addr);
+            break;
+        case PRUICSS_SHARED_DATARAM:
+            temp_addr = (baseaddr + PRU_ICSS_SHARED_RAM);
+            *address = (void*)(temp_addr);
+            break;
+        default:
+            *address = 0;
+            ret_val = PRUICSS_RETURN_FAILURE;
+            break;
+        }
     }
     return ret_val;
 }
@@ -689,7 +692,7 @@ int32_t PRUICSS_pruExecProgram(PRUICSS_Handle handle,int32_t pruNum)
     if(handle != NULL)
     {
         object = (PRUICSS_V1_Object *)handle->object;
-        if((object->pruBinBuff[pruNum] != NULL) && (object->buffLen[pruNum] != 0U) && (pruNum <  PRUICSS_MAX_PRU))
+        if((pruNum <  PRUICSS_MAX_PRU) && (object->pruBinBuff[pruNum] != NULL) && (object->buffLen[pruNum] != 0U))
         {
             PRUICSS_pruDisable(handle,(uint8_t)pruNum);
             if (pruNum <= PRUICCSS_RTU1)
@@ -755,7 +758,7 @@ int32_t PRUICSS_pruExecProgram(PRUICSS_Handle handle,int32_t pruNum)
 void PRUICSS_pinMuxConfig(PRUICSS_Handle handle, uint64_t regVal)
 {
     uintptr_t baseaddr;
-    PRUICSS_HwAttrs const *hwAttrs = (PRUICSS_HwAttrs const *)handle->hwAttrs;
+    PRUICSS_HwAttrs const *hwAttrs;
 
     if (handle != NULL)
     {
