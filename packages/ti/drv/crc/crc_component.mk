@@ -36,6 +36,7 @@ ifeq ($(crc_component_make_include), )
 
 drvcrc_SOCLIST          = tpr12
 drvcrc_tpr12_CORELIST   = $(DEFAULT_tpr12_CORELIST)
+drvcrc_BOARDLIST        = tpr12_evm
 
 ############################
 # crc package
@@ -81,6 +82,20 @@ export crc_$(SOC)_CORELIST
 #
 # CRC Examples
 #
+
+# CRC memcpy test app
+export crc_testapp_COMP_LIST = crc_testapp
+crc_testapp_RELPATH = ti/drv/crc/test
+crc_testapp_PATH = $(PDK_CRC_COMP_PATH)/test
+export crc_testapp_BOARD_DEPENDENCY = yes
+export crc_testapp_CORE_DEPENDENCY = yes
+export crc_testapp_XDC_CONFIGURO = yes
+crc_testapp_PKG_LIST = crc_testapp
+crc_testapp_INCLUDE = $(crc_testapp_PATH)
+export crc_testapp_BOARDLIST = $(drvcrc_BOARDLIST)
+export crc_testapp_$(SOC)_CORELIST = $(drvcrc_$(SOC)_CORELIST)
+crc_EXAMPLE_LIST += crc_testapp
+
 
 export crc_LIB_LIST
 export crc_EXAMPLE_LIST

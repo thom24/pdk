@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018
+ *  Copyright (c) Texas Instruments Incorporated 2020
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -482,9 +482,6 @@ int32_t CRC_getTransactionId
         /* Release the critical section: */
         HwiP_restore(key);
 
-        /* Debug Message: */
-        //DebugP_log3 ("Debug: CRC Driver %p allocated Transaction Id: %d free Transaction Id: %d\n",
-        //            (uintptr_t)ptrCRCDriver, (uintptr_t)ptrCRCDriver->inUseTransactionId, (uintptr_t)ptrCRCDriver->freeTransactionId);
     }
     return retVal;
 }
