@@ -40,11 +40,11 @@
  * |--------------------------------------------------------------------------------------------------------------------|
  * | 0  | 0x00000000   | 4GB  | T  | uncacheable, Shareable                           | F  | RW at PL 1          | 0x0  |
  * |----|--------------|------|----|--------------------------------------------------|----|---------------------|------|
- * | 1  | 0 (local TCM)| 32K  | T  | Write-Back, Write-Allocate, Non-Shareable        | F  | RW at PL 1          | 0x0  |
+ * | 1  | 0 (local TCM)| 32K  | T  | Non-cacheable, Non-Shareable                     | F  | RW at PL 1          | 0x0  |
  * |----|--------------|------|----|--------------------------------------------------|----|---------------------|------|
- * | 2  | 0x41000000   | 32K  | T  | Write-Back, Write-Allocate, Non-Shareable        | F  | RW at PL 1          | 0x0  |
+ * | 2  | 0x41000000   | 32K  | T  | Non-cacheable, Non-Shareable                     | F  | RW at PL 1          | 0x0  |
  * |----|--------------|------|----|--------------------------------------------------|----|---------------------|------|
- * | 3  | 0x41010000   | 32K  | T  | Write-Back, Write-Allocate, Non-Shareable        | F  | RW at PL 1          | 0x0  |
+ * | 3  | 0x41010000   | 32K  | T  | Non-cacheable, Non-Shareable                     | F  | RW at PL 1          | 0x0  |
  * |----|--------------|------|----|--------------------------------------------------|----|---------------------|------|
  * | 4  | 0x41C00000   | 1MB  | T  | Write-Back, Write-Allocate, Non-Shareable        | F  | RW at PL 1          | 0x0  |
  * |----|--------------|------|----|--------------------------------------------------|----|---------------------|------|
@@ -83,9 +83,9 @@ MPU.setRegionMeta(0, 0x00000000, MPU.RegionSize_4G, attrs);
 
 /* This entry covers the ATCM mapped to 0 */
 attrs.enable = true;
-attrs.bufferable = true;
-attrs.cacheable = true;
-attrs.shareable = true;
+attrs.bufferable = false;
+attrs.cacheable = false;
+attrs.shareable = false;
 attrs.noExecute = false;
 attrs.accPerm = 1;          /* RW at PL1 */
 attrs.tex = 1;
@@ -94,8 +94,8 @@ MPU.setRegionMeta(1, 0x00000000, MPU.RegionSize_32K, attrs);
 
 /* This entry covers ATCM if mapped to 0x41000000 */
 attrs.enable = true;
-attrs.bufferable = true;
-attrs.cacheable = true;
+attrs.bufferable = false;
+attrs.cacheable = false;
 attrs.shareable = false;
 attrs.noExecute = false;
 attrs.accPerm = 1;          /* RW at PL1 */
@@ -105,8 +105,8 @@ MPU.setRegionMeta(2, 0x41000000, MPU.RegionSize_32K, attrs);
 
 /* This entry covers BTCM if mapped to 0x41010000 */
 attrs.enable = true;
-attrs.bufferable = true;
-attrs.cacheable = true;
+attrs.bufferable = false;
+attrs.cacheable = false;
 attrs.shareable = false;
 attrs.noExecute = false;
 attrs.accPerm = 1;          /* RW at PL1 */

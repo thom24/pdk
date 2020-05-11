@@ -40,11 +40,11 @@
  * |-------------------------------------------------------------------------------------------------------------|
  * | 0  | 0x00000000   | 4GB  | T  | Strongly Ordered, Shareable               | T  | RW at PL 1          | 0x0  |
  * |----|--------------|------|----|-------------------------------------------|----|---------------------|------|
- * | 1  | 0x00000000   | 1K   | T  | Write-Back, Write-Allocate, Non-Shareable | F  | RW at PL 1          | 0x0  |
+ * | 1  | 0x00000000   | 1K   | T  | Non-cacheable, Non-Shareable              | F  | RW at PL 1          | 0x0  |
  * |----|--------------|------|----|-------------------------------------------|----|---------------------|------|
- * | 2  | 0x41000000   | 32K  | T  | Write-Back, Write-Allocate, Non-Shareable | F  | RW at PL 1          | 0x0  |
+ * | 2  | 0x41000000   | 32K  | T  | Non-cacheable, Non-Shareable              | F  | RW at PL 1          | 0x0  |
  * |----|--------------|------|----|-------------------------------------------|----|---------------------|------|
- * | 3  | 0x41010000   | 32K  | T  | Write-Back, Write-Allocate, Non-Shareable | F  | RW at PL 1          | 0x0  |
+ * | 3  | 0x41010000   | 32K  | T  | Non-cacheable, Non-Shareable              | F  | RW at PL 1          | 0x0  |
  * |----|--------------|------|----|-------------------------------------------|----|---------------------|------|
  * | 4  | 0x41C00000   | 512K | T  | Write-Back, Write-Allocate, Non-Shareable | F  | RW at PL 1          | 0x0  |
  *  -------------------------------------------------------------------------------------------------------------
@@ -74,8 +74,8 @@ attrs.subregionDisableMask = 0;
 MPU.setRegionMeta(0, 0x00000000, MPU.RegionSize_4G, attrs);
 
 attrs.enable = true;
-attrs.bufferable = true;
-attrs.cacheable = true;
+attrs.bufferable = false;
+attrs.cacheable = false;
 attrs.shareable = false;
 attrs.noExecute = false;
 attrs.accPerm = 1;          /* RW at PL1 */
@@ -84,8 +84,8 @@ attrs.subregionDisableMask = 0;
 MPU.setRegionMeta(1, 0x00000000, MPU.RegionSize_32K, attrs);
 
 attrs.enable = true;
-attrs.bufferable = true;
-attrs.cacheable = true;
+attrs.bufferable = false;
+attrs.cacheable = false;
 attrs.shareable = false;
 attrs.noExecute = false;
 attrs.accPerm = 1;          /* RW at PL1 */
@@ -94,8 +94,8 @@ attrs.subregionDisableMask = 0;
 MPU.setRegionMeta(2, 0x41000000, MPU.RegionSize_32K, attrs);
 
 attrs.enable = true;
-attrs.bufferable = true;
-attrs.cacheable = true;
+attrs.bufferable = false;
+attrs.cacheable = false;
 attrs.shareable = false;
 attrs.noExecute = false;
 attrs.accPerm = 1;          /* RW at PL1 */
