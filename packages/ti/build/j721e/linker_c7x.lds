@@ -67,6 +67,7 @@
 --diag_suppress=10068 /* "no matching section" */
 --cinit_compression=off
 --retain="*(xdc.meta)"
+-e _c_int00_secure
 
 #define DDR0_ALLOCATED_START  0xA0000000
 #define C7X_ALLOCATED_START DDR0_ALLOCATED_START + 0x08000000
@@ -95,7 +96,8 @@ SECTIONS
       boot.*<boot.oe71>(.text)
     } load > C7X_TEXT ALIGN(0x200000)
     .vecs       >       C7X_DDR_SPACE ALIGN(0x400000)
-    .secure_vecs >      C7X_DDR_SPACE
+    .secure_vecs    >   C7X_DDR_SPACE ALIGN(0x200000)
+    .text:_c_int00_secure > C7X_DDR_SPACE ALIGN(0x200000)
     .text       >       C7X_DDR_SPACE ALIGN(0x200000)
 
     .bss        >       C7X_DDR_SPACE  /* Zero-initialized data */

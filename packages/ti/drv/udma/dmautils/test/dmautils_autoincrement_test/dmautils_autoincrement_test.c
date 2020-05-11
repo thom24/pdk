@@ -205,7 +205,6 @@ int32_t main()
     int32_t retVal = 0;
     Sciclient_ConfigPrms_t  sciClientCfg;
     Sciclient_configPrmsInit(&sciClientCfg);
-    sciClientCfg.isSecureMode = 1;
     retVal = Sciclient_init(&sciClientCfg);
     if(retVal!=0)
     {

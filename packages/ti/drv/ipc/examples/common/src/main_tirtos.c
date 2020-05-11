@@ -97,10 +97,6 @@ void ipc_initSciclient()
     /* Now reinitialize it as default parameter */
     Sciclient_configPrmsInit(&config);
 
-#if defined(BUILD_C7X_1)
-    config.isSecureMode  = 1;
-#endif
-
     Sciclient_init(&config);
 
 }

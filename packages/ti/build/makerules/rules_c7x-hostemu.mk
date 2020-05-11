@@ -61,6 +61,15 @@ else
  LNKFLAGS_INTERNAL_BUILD_PROFILE += /DEBUG
 endif
 
+#
+# Suppress this warning, 10063-D: entry-point symbol other than "_c_int00"
+# c7x boots in secure mode and to switch to non-secure mode we need to start at
+# a special entry point '_c_int00_secure' and later after switching to
+# non-secure mode, sysbios jumps to usual entry point of _c_int00. Hence we need
+# to suppress this warning
+#
+LNKFLAGS_INTERNAL_COMMON += --diag_suppress=10063
+
 ########################################
 
 # Assemble CFLAGS from all other CFLAGS definitions

@@ -548,7 +548,7 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
             .type = TISCI_RESASG_UTYPE(TISCI_DEV_NAVSS0_INTR_ROUTER_0, TISCI_RESASG_SUBTYPE_IR_OUTPUT),
             .start_resource = 128U,
             .num_resource = 60U,
-            .host_id = TISCI_HOST_ID_C7X_0,
+            .host_id = TISCI_HOST_ID_C7X_1,
         },
         {
             .type = TISCI_RESASG_UTYPE(TISCI_DEV_NAVSS0_INTR_ROUTER_0, TISCI_RESASG_SUBTYPE_IR_OUTPUT),
