@@ -608,28 +608,28 @@ typedef struct EMAC_IOCTL_FDB_ENTRY_S {
  */
 extern void emac_classifier_disable(uint32_t port_num);
 extern void emac_ioctl_icss_add_mac (uint32_t port_num, uint8_t*  macAddr);
-extern void emac_ioctl_icss_promiscous_ctrl(uint32_t port_num, void*  ctrl);
+extern EMAC_DRV_ERR_E emac_ioctl_icss_promiscous_ctrl(uint32_t port_num, void*  ctrl);
 extern void emac_ioctl_icss_debug_fw_mgmt_psi(uint32_t port_num, void*  ctrl);
-extern void emac_ioctl_test_multi_flow(uint32_t port_num, void*  ctrl);
-extern void emac_ioctl_vlan_ctrl_set_default_tbl(uint32_t port_num, void*  ctrl);
+extern EMAC_DRV_ERR_E emac_ioctl_test_multi_flow(uint32_t port_num, void*  ctrl);
+extern EMAC_DRV_ERR_E emac_ioctl_vlan_ctrl_set_default_tbl(uint32_t port_num, void*  ctrl);
 extern EMAC_DRV_ERR_E emac_ioctl_vlan_ctrl_set_default_vlan_id(uint32_t port_num, void* ctrl);
 extern EMAC_DRV_ERR_E emac_ioctl_vlan_ctrl_set_default_vlan_id_host_port(uint32_t port_num, void* ctrl);
 extern EMAC_DRV_ERR_E emac_ioctl_vlan_ctrl_set_entry(uint32_t port_num, void*  ctrl);
 extern EMAC_DRV_ERR_E emac_ioctl_vlan_ctrl_get_entry(uint32_t port_num, void*  ctrl);
 extern void emac_switch_vlan_init(uint32_t port_num, EMAC_OPEN_CONFIG_INFO_T* p_config);
-extern void emac_ioctl_port_prio_mapping_ctrl(uint32_t port_num, void*  ctrl);
+extern EMAC_DRV_ERR_E emac_ioctl_port_prio_mapping_ctrl(uint32_t port_num, void*  ctrl);
 extern EMAC_DRV_ERR_E emac_ioctl_port_state_ctrl(uint32_t port_num, void* p_params);
 extern EMAC_DRV_ERR_E emac_ioctl_fdb_entry_ctrl(uint32_t port_num, void* p_params);
 extern EMAC_DRV_ERR_E emac_ioctl_fdb_del_all(uint32_t port_num, void* p_params);
 EMAC_DRV_ERR_E emac_ioctl_accept_frame_check_ctrl(uint32_t port_num, void* p_params);
 extern void emac_switch_config_ft3_priority_tag(uint32_t port_num);
 extern EMAC_DRV_ERR_E emac_ioctl_prio_regen_mapping_ctrl(uint32_t port_num, void*  ctrl);
-extern EMAC_DRV_ERR_E emac_ioctl_uc_flooding_ctrl(uint32_t port_num, uint32_t switch_port, void* p_params);
-extern EMAC_DRV_ERR_E emac_ioctl_configure_interface_mac_ctrl(uint32_t port_num, uint32_t switch_port, void* p_params);
-extern EMAC_DRV_ERR_E emac_ioctl_configure_cut_through_or_prempt_select_ctrl(uint32_t port_num, uint32_t switch_port, void* p_params);
-extern EMAC_DRV_ERR_E emac_ioctl_configure_special_frame_prio_ctrl(uint32_t port_num, uint32_t switch_port, void* p_params);
-extern EMAC_DRV_ERR_E emac_ioctl_frame_premption_ctrl(uint32_t port_num, uint32_t switch_port, void* p_params);
-extern EMAC_DRV_ERR_E emac_ioctl_configure_fdb_ageing_interval(uint32_t port_num, uint32_t switch_port, void* p_params);
+extern EMAC_DRV_ERR_E emac_ioctl_uc_flooding_ctrl(uint32_t port_num, void* p_params);
+extern EMAC_DRV_ERR_E emac_ioctl_configure_interface_mac_ctrl(uint32_t port_num, void* p_params);
+extern EMAC_DRV_ERR_E emac_ioctl_configure_cut_through_or_prempt_select_ctrl(uint32_t port_num, void* p_params);
+extern EMAC_DRV_ERR_E emac_ioctl_configure_special_frame_prio_ctrl(uint32_t port_num, void* p_params);
+extern EMAC_DRV_ERR_E emac_ioctl_frame_premption_ctrl(uint32_t port_num, void* p_params);
+extern EMAC_DRV_ERR_E emac_ioctl_configure_fdb_ageing_interval(uint32_t port_num, void* p_params);
 extern EMAC_DRV_ERR_E emac_ioctl_speed_duplexity_cfg(uint32_t port_num, void* p_params);
 
 /*! @endcond */
@@ -657,10 +657,7 @@ typedef enum EMAC_IOctlR30Cmd_E{
     EMAC_PORT_MAX_COMMANDS
 } EMAC_IOctlR30Cmd;
 
-typedef enum EMAC_IcssgInstance_E{
-    EMAC_ICSSG_0 = 0,
-    EMAC_ICSSG_1
-} EMAC_IcssgInstance;
+
 
 #define EMAC_NONE           ((uint32_t)0xffff0000)
 #define EMAC_PRU0_P_DI      ((uint32_t)0xffff0004)

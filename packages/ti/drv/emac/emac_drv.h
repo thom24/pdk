@@ -165,6 +165,8 @@ typedef enum EMAC_DrvError_e
     /**< Invalid channel number specified                                           */
     EMAC_DRV_RESULT_ERR_UDMA_RING_ENQUEUE                   = (-(int32_t)24),
     /**< Error during Udma RING enqueue                                             */
+    EMAC_DRV_RESULT_API_NOT_SUPPORTED                       = (-(int32_t)25),
+    /**< API not supported                                                          */
     EMAC_DRV_RESULT_IOCTL_IN_PROGRESS                       = ((int32_t)1),
     /**< IOCTL command in progress                                                  */
 } EMAC_DrvError;
@@ -394,8 +396,6 @@ typedef struct EMAC_PKT_DESC_s
     /**<Transmit timestamp id used to correleate request with response     */
     uint32_t              TxPktTc;
     /**<TX packet traffic class indicates which TX port queue the ICSSG FW should use the transmit the packet to the PHY */
-    int32_t              RefCount;
-    /**< reference count used for PG1.0/Interposercard TSN SWITCH un-directed packets use case, LLD internal use only*/
 } EMAC_PKT_DESC_T;
 
 

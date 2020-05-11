@@ -2,7 +2,7 @@
  * @file   emac_fw_config_dual_mac.h
  */
 /*
- * Copyright (c) 2019, Texas Instruments Incorporated
+ * Copyright (c) 2019-2020, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,6 @@ extern "C" {
 
 #include <ti/drv/emac/src/v5/emac_drv_v5.h>
 
-#define EMAC_ICSSG_DUAL_MAC_FW_HOST_QUEUE_SIZE    ((uint32_t)6144U)       /* ~6.kB per host queue */
 
 extern int32_t emacGetDualMacFwConfig(uint32_t portNum, EMAC_PER_PORT_ICSSG_FW_CFG **pStaticMMap);
 extern int32_t emacSettDualMacFwConfig(uint32_t portNum, const EMAC_PER_PORT_ICSSG_FW_CFG *pStaticCfg);

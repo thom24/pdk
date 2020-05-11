@@ -120,15 +120,6 @@ uint32_t portNum = EMAC_PORT_ICSS + 4;
 uint32_t endPort = EMAC_PORT_ICSS + 5;
 #endif
 #endif
-
-
-
-void delay(unsigned int delayValue)
-{
-    volatile uint32_t delay = delayValue*100;
-    while (delay--) ;
-}
-
 #ifdef BUILD_MCU
 uint32_t AsmReadActlr(void);
 void AsmWriteActlr(uint32_t);

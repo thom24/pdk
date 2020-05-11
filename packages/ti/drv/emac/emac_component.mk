@@ -98,7 +98,7 @@ drvemac_LIB_LIST = $(emac_LIB_LIST)
 # All the tests mentioned in list are built when test target is called
 # List below all test apps for allowed values
 ############################
-emac_EXAMPLE_LIST = Emac_Icssg_Switch_TestApp Emac_Icssg_TestApp Emac_Cpsw_TestApp Emac_Cpsw_Smp_TestApp Emac_Icssg_WithoutDDR_TestApp Emac_Icssg_Switch_Benchmark_TestApp Emac_Icssg_Switch_LinkStatus_TestApp
+emac_EXAMPLE_LIST = Emac_Icssg_TestApp Emac_Cpsw_TestApp Emac_Cpsw_Smp_TestApp Emac_Icssg_WithoutDDR_TestApp
 drvemac_EXAMPLE_LIST = $(emac_EXAMPLE_LIST)
 
 #

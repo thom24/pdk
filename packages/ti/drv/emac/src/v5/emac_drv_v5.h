@@ -2,7 +2,7 @@
  * @file   emac_drv_v5.h
  */
 /*
- * Copyright (c) 2018-2019, Texas Instruments Incorporated
+ * Copyright (c) 2018-2020, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,13 +44,11 @@ extern "C" {
 /*                             Include Files                                  */
 /* ========================================================================== */
 
-#include <stdint.h>
 #include <ti/drv/udma/udma.h>
 #include <ti/drv/emac/emac_drv.h>
 #include <ti/drv/emac/src/v5/emac_mdio.h>
 #include <ti/drv/emac/src/emac_osal.h>
 #include <ti/drv/emac/emac_ioctl.h>
-
 
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
@@ -70,28 +68,50 @@ extern "C" {
 #define EMAC_INCOHERENT
 #endif
 
-
-
 #define EMAC_MAX_FREE_RINGS_PER_SUBCHAN ((uint32_t)9U)
 #define EMAC_MAX_RX_SUBCHAN_PER_CHAN ((uint32_t)16U)
 #define EMAC_TX_MAX_CHANNELS_PER_PORT ((uint32_t)4U)
 
+#define EMAC_AM65XX_PG1_0_VERSION (0x0BB5A02FU)
 
 #define EMAC_CACHELINE_ALIGNMENT ((uint32_t)64U)
-
 
 /* EMAC function table pointer */
 extern const EMAC_FxnTable EMAC_FxnTable_v5;
 
-/* For Dual MAC use case with interposer card */
-#define EMAC_INTERPOSER_PORT0 ((uint32_t)7U)
-#define EMAC_INTERPOSER_PORT1 ((uint32_t)8U)
+/* For Dual MAC use case*/
+#define EMAC_ICSSG0_PORT0 ((uint32_t)0U)
+#define EMAC_ICSSG0_PORT1 ((uint32_t)1U)
+#define EMAC_ICSSG1_PORT0 ((uint32_t)2U)
+#define EMAC_ICSSG1_PORT1 ((uint32_t)3U)
+#define EMAC_ICSSG2_PORT0 ((uint32_t)4U)
+#define EMAC_ICSSG3_PORT1 ((uint32_t)5U)
+#define EMAC_CPSW_PORT1 ((uint32_t)6U)
+#define EMAC_CPSW_PORT2 ((uint32_t)7U)              /* will need this for am64xx, place-holder */
 
-/* For switch case with interposer card */
-#define EMAC_SWITCH_PORT0 ((uint32_t)9U)  // host port
-#define EMAC_SWITCH_PORT1 ((uint32_t)10U) 
-#define EMAC_SWITCH_PORT2 ((uint32_t)11U)
-#define EMAC_SWITCH_PORT ((uint32_t)12U)  // used at time of emac_open to open/close software port 0,1,2,3, emac_send for undirected packet
+#define EMAC_ICSSG0_SWITCH_PORT  ((uint32_t)8U)     /* for emac open/close/certain IOCTL's, flooded packet */
+#define EMAC_ICSSG0_SWITCH_PORT0 ((uint32_t)9U)     /* host port for certain IOCTL's */
+#define EMAC_ICSSG0_SWITCH_PORT1 ((uint32_t)10U)    /* for directed send, stats, for certain IOCTL's */
+#define EMAC_ICSSG0_SWITCH_PORT2 ((uint32_t)11U)    /* for directed send, stats, for certain IOCTL's */
+
+#define EMAC_ICSSG1_SWITCH_PORT ((uint32_t)12U)      /* for emac open/close/certain IOCTL's, flooded packet */
+#define EMAC_ICSSG1_SWITCH_PORT0 ((uint32_t)13U)     /* host port for certain IOCTL's */
+#define EMAC_ICSSG1_SWITCH_PORT1 ((uint32_t)14U)    /* for directed send, stats, for certain IOCTL's */
+#define EMAC_ICSSG1_SWITCH_PORT2 ((uint32_t)15U)    /* for directed send, stats, for certain IOCTL's */
+
+#define EMAC_ICSSG2_SWITCH_PORT ((uint32_t)16U)      /* for emac open/close/certain IOCTL's, flooded packet */*/
+#define EMAC_ICSSG2_SWITCH_PORT0 ((uint32_t)17U)     /* host port for certain IOCTL's */
+#define EMAC_ICSSG2_SWITCH_PORT1 ((uint32_t)18U)    /* for directed send, stats, for certain IOCTL's */
+#define EMAC_ICSSG2_SWITCH_PORT2 ((uint32_t)19U)    /* for directed send, stats, for certain IOCTL's */
+#define EMAC_PORT_MAX            ((uint32_t)20U)    /* for directed send, stats, for certain IOCTL's */
+
+#define EMAC_MAX_ICSSG_INSTANCES ((uint32_t)3U)
+
+/* Compatibility defines for code base using Interposer card specific macros */
+#define EMAC_SWITCH_PORT0 EMAC_ICSSG0_SWITCH_PORT0  // host port
+#define EMAC_SWITCH_PORT1 EMAC_ICSSG0_SWITCH_PORT1
+#define EMAC_SWITCH_PORT2 EMAC_ICSSG0_SWITCH_PORT2
+#define EMAC_SWITCH_PORT EMAC_ICSSG0_SWITCH_PORT  // used at time of emac_open to open/close software port 0,1,2,3, emac_send for undirected packet
 
 #define EMAC_CPSW_PORT_NUM ((uint32_t)6U)
 #define EMAC_MAX_NUM_EMAC_PORTS ((uint32_t)7U)
@@ -99,7 +119,6 @@ extern const EMAC_FxnTable EMAC_FxnTable_v5;
 
 /* EMAC master control block (MCB) field macros */
 #define EMAC_CORE_NUM                       emac_mcb.core_num
-#define EMAC_MASTER_CORE(port_num)          emac_mcb.port_cb[port_num].master_core_flag
 #define EMAC_MDIO(port_num)                 emac_mcb.port_cb[port_num].mdio_flag
 #define EMAC_NUM_RX_PKTS(port_num)          emac_mcb.port_cb[port_num].num_of_rx_pkt_desc
 #define EMAC_NUM_TX_PKTS(port_num)          emac_mcb.port_cb[port_num].num_of_tx_pkt_desc
@@ -119,7 +138,7 @@ extern const EMAC_FxnTable EMAC_FxnTable_v5;
 /*!
  *  @brief    EMAC driver mode of operation
  */
-#define  EMAC_MODE_INTERRUPT    ((uint32_t)0U)
+#define EMAC_MODE_INTERRUPT     ((uint32_t)0U)
 #define EMAC_MODE_POLL          ((uint32_t)1U)
 
 /* ========================================================================== */
@@ -169,12 +188,9 @@ typedef struct EMAC_PRU_CFG_S {
     uint32_t seed;
 } EMAC_PRU_CFG_T;
 
-
 typedef void EMAC_PROCESS_DESCRIPTOR_FN_T
 (
     uint32_t port_num,
-    Udma_RingHandle freeRingHandle,
-    Udma_RingHandle compRingHandle,
     uint32_t ringNum
 );
 
@@ -192,10 +208,7 @@ typedef struct EMAC_POLLING_TABLE_S
    EMAC_POLLING_TABLE_ENTRY_T txCompletion[EMAC_TX_MAX_CHANNELS_PER_PORT];
 } EMAC_POLLING_TABLE_T;
 
-
-
-
-typedef struct EMAC_RX_SUBCHAN_s // (this is basically a flow)
+typedef struct EMAC_RX_SUBCHAN_s
 {
     /*! 1 typically, 4 max (to support a feature of flow) */
     uint32_t    nfreeRings;
@@ -217,7 +230,6 @@ typedef struct EMAC_RX_SUBCHAN_s // (this is basically a flow)
     uint32_t     elementCountCompletion;
 } EMAC_RX_SUBCHAN_T;
 
-
 typedef struct EMAC_CHANNEL_RX_s{
     /**< UDMA  channel handle */
     Udma_ChHandle rxChHandle;
@@ -230,10 +242,6 @@ typedef struct EMAC_CHANNEL_RX_s{
     /*! Thread ID  connect to/from emac psi to cpdma */
     uint32_t threadId;
 } EMAC_CHANNEL_RX_T;
-
-typedef struct EMAC_HwAttrs_V5_navBaseAddr_s {
-    CSL_MdioRegs           *mdioRegsBaseAddr[EMAC_MAX_PORTS];
-} EMAC_HwAttrs_V5_navBaseAddr;
 
 /**
  * @ingroup emaclld_api_structures
@@ -272,27 +280,27 @@ typedef struct EMAC_PER_CHANNEL_CFG_RX_s{
     EMAC_RX_SUBCHAN_T subChan[EMAC_MAX_RX_SUBCHAN_PER_CHAN];
     /*! Thread ID  connect to/from emac psi to cpdma */
     uint32_t threadId;
-} EMAC_PER_CHANNEL_CFG_RX; //can have 1 channel per/port with upto N flows
+} EMAC_PER_CHANNEL_CFG_RX;
 
-#define EMAC_NUM_TRANSMIT_FW_QUEUES ((uint32_t)8U) /* this is the number of TX port queues and number of TX host queues */
-#define EMAC_NUM_HOST_EGRESS_FW_QUEUES ((uint32_t)2U) /* this is the number of host egresss queues */
-
-#define EMAC_NRT_QUEUE_CONTEXT_SIZE ((uint32_t)16U)
+#define EMAC_ICSSG_MAX_NUM_BUFFER_POOLS ((uint32_t)24U)
 
 typedef struct EMAC_FW_APP_CONFIG_S {
-    uint32_t txPortQueueHighAddr;                           /* MSMC address high of transmit queues */
-    uint32_t txPortQueueLowAddr;                            /* MSMC address low of  transmit queues */
-    uint32_t txPortQueueSize;                               /* Total size required in bytes for all port queues */
+    uint32_t txPortQueueHighAddr;                           /* MSMC address high of transmit queues, only applicable PG1 */
+    uint32_t txPortQueueLowAddr;                            /* MSMC address low of  transmit queues, only applicable PG1 */
+    uint32_t txPortQueueSize;                               /* Total size required in bytes for all port queues, only applicable PG1  */
+    uint32_t bufferPoolHighAddr;                            /* MSMC address high of buffer pools, only applicable PG2 */
+    uint32_t bufferPoolLowAddr;                             /* MSMC address low of buffer pools, only applicable PG2 */
+    uint32_t numBufferPool;                                 /* NUmber of buffer pools, only applicable PG2 */
+    uint32_t bufferPoolSize[EMAC_ICSSG_MAX_NUM_BUFFER_POOLS]; /* Size in bytes of each buffer pool, only applicable PG2 */
 }EMAC_FW_APP_CONFIG;
 
 struct EMAC_FW_PORT_CFG;
 
+#define EMAC_NUM_TRANSMIT_FW_QUEUES ((uint32_t)8U) /* this is the number of TX port queues and number of TX host queues */
 /**
  * @brief ICSSG Switch firmware configuration structure 
  */
 typedef struct EMAC_ICSSG_SWITCH_FW_CFG_S {
-uint32_t queueContextOffset;                            /* SHARED MEM offset where we store TX queue context information for port/host Q context */
-uint32_t descQueueContextOffset;                        /* SHAREM MEM offset where we store TX desciptor queue context information fir port/host descQ context */
 uint32_t txPortQueueSize[EMAC_NUM_TRANSMIT_FW_QUEUES];  /* Size of each TX port queue */
 uint32_t txHostQueueSize[EMAC_NUM_TRANSMIT_FW_QUEUES];  /* Size of each TX host queue */
 uint32_t descQueueOffset;                              /* SHAREM MEM offset of actual descriptor queues */
@@ -303,7 +311,6 @@ uint32_t mgmtFlowIdOffset;                              /* SHARED MEM offset to 
 uint32_t switchPort0DefaultVlanOffset;                  /* SHARED MEM OFFSET to switch port 0/host port default VLAN entry */
 uint32_t switchPort1DefaultVlanOffset;                  /* SHARED MEM OFFSET to switch port 1 default VLAN entry */
 uint32_t switchPort2DefaultVlanOffset;                  /* SHARED MEM OFFSET to switch port 2 default VLAN entry */
-uint32_t startOfPortQueueReadPtrsOffset;                /* SHARED MEM OFFSET to start of port queue read pointers */
 uint32_t prioRegenTableOffset;                          /* DEM0 offset to priority regen tab */
 uint32_t txPortQueueDescSize;                           /* Size of each TX port descriptor queue */
 uint32_t txHostQueueDescSize;                           /* Size of each TX host descriptor queue */
@@ -322,6 +329,7 @@ uint32_t fdbSize;                                       /* FDB size */
 uint32_t prioMappingTableOffset;                         /* DEM0 offset to priority mapping table */
 uint32_t switchPort1UntaggedQueue;                       /* SHARED MEM OFFSET to switch port 1 untagged packet queue number */
 uint32_t switchPort2UntaggedQueue;                       /* SHARED MEM OFFSET to switch port 2 untagged packet queue number */
+uint32_t expressPremptiveQueueMaskOffset;                /* DMEM0 offset for express queue mask */
 } EMAC_ICSSG_SWITCH_FW_CFG;
 
 /**
@@ -331,11 +339,25 @@ typedef struct EMAC_ICSSG_DUALMAC_FW_CFG_S {
 uint32_t txHostQueueSize[EMAC_NUM_TRANSMIT_FW_QUEUES];  /* Size of each TX host queue */
 } EMAC_ICSSG_DUALMAC_FW_CFG;
 
+/**
+ * @brief ICSSG firmware configuration structure for Maxwell PG2.0/J7
+ */
+typedef struct EMAC_ICSSG_FW_CFG_PG2_S {
+    uintptr_t icssgBaseAddr;
+    uint32_t rxMgmtFlowStart;
+    uint32_t rxPktFlowStart;
+    uint32_t bufferPoolHighAddr;                           /* MSMC address high of buffer pool */
+    uint32_t bufferPoolLowAddr;                            /* MSMC address low of  buffer pool */
+    uint32_t numBufferPool;                                /* NUmber of buffer pools */
+    uint32_t bufferPoolSize[EMAC_ICSSG_MAX_NUM_BUFFER_POOLS];
+} EMAC_ICSSG_FW_CFG_PG2;
+
+typedef void EMAC_ICSSG_FW_FXN_T(uint32_t portNum, EMAC_ICSSG_FW_CFG_PG2 *pIcssgFwCfg);
 
 typedef struct EMAC_PER_PORT_ICSSG_FW_CFG_S {
     EMAC_FW_APP_CONFIG fwAppCfg;
-    /* NOTE: the fields below are ICSSG firmware  specific and should NOT be modified */
     struct EMAC_FW_PORT_CFG *pFwPortCfg;
+    EMAC_ICSSG_FW_FXN_T *pIcssgFwCfgFxn;
 }EMAC_PER_PORT_ICSSG_FW_CFG;
 
 
@@ -452,19 +474,43 @@ typedef struct EMAC_PORT_CB_V5_S
     EMAC_POLLING_TABLE_T pollTable;
     CSL_Xge_cpswRegs *hCpswRegs;
     CSL_AleRegs *hCpswAleRegs;
+    uint32_t pgVersion;
+    uint32_t            ioctlType;
 } EMAC_PORT_CB_V5_T;
+
+#define EMAC_ICSSG_IOCTL_TYPE_R30_OVER_DMEM ((uint32_t)1U)
 
 /* Port specficic control block for IOCTL interface*/
 typedef struct EMAC_IOCTL_CB_V5_S
 {
-    volatile int32_t ioctlCount;
-    EMAC_IOCTL_CMD_T *pCmd1Icssg;
-    EMAC_IOCTL_CMD_T *pCmd2Icssg;
-    uint8_t sequenceNumber;
-    bool             internalIoctl;
+    volatile int32_t    ioctlCount;
+    EMAC_IOCTL_CMD_T    *pCmd1Icssg;
+    uint8_t             sequenceNumber;
+    bool                internalIoctl;
+    bool                ioctlInProgress;
 } EMAC_IOCTL_CB_V5_T;
 
 
+/* emac port tpe macros */
+#define EMAC_PORT_TYPE_CPSW ((uint32_t)0U)
+#define EMAC_PORT_TYPE_ICSSG_DUAL_MAC ((uint32_t)1U)
+#define EMAC_PORT_TYPE_ICSSG_SWITCH  ((uint32_t)2U)
+
+/* icssg instance macros */
+#define EMAC_ICSSG0_INSTANCE ((uint32_t)0U)
+#define EMAC_ICSSG1_INSTANCE ((uint32_t)1U)
+#define EMAC_ICSSG2_INSTANCE ((uint32_t)2U)
+
+typedef struct EMAC_PORT_INFO_S {
+    int32_t type;
+    int32_t icssgInst;
+    int32_t num_ports;
+    int32_t portNum1;
+    int32_t portNum2;
+    int32_t pollPortNum;
+    int32_t ioctlPortNum;
+    const EMAC_FxnTable *fxnTable;
+} EMAC_PORT_INFO_T;
 
 typedef struct EMAC_MCB_V5_S {
     /* Port specific control block */
@@ -473,38 +519,6 @@ typedef struct EMAC_MCB_V5_S {
     EMAC_IOCTL_CB_V5_T   ioctl_cb;
     UTIL_TRACE_CB_T* drv_trace_cb;
 } EMAC_MCB_V5_T;
-
-void emac_free_hw_cppi_tx_desc(uint32_t p1, uint32_t ch1, EMAC_CPPI_DESC_T* pCppiDesc);
-bool emac_get_hw_cppi_tx_descs(uint32_t p1, uint32_t ch1, uint32_t p2, uint32_t ch2, EMAC_CPPI_DESC_T** pCppiDesc1, EMAC_CPPI_DESC_T** pCppiDesc2);
-bool emac_get_hw_cppi_tx_desc(uint32_t p1, uint32_t ch1, EMAC_CPPI_DESC_T** pCppiDesc);
-
-/**
- *  @b Description
- *  @n
- *      Atomically subtract a value from a 32-bit integer
- *  @param[in] p
-  *      a pointer to the 32-bit atomic integer
- *  @param[in] val
- *     The value to subtract from the 32-bit atomic integer.
- *  @retval
- *      return of atomic subtract operation
- */
-#if defined (__aarch64__)
-static inline int32_t emac_mAtomic32Sub(int32_t *p, int32_t val)
-{
-    return __sync_fetch_and_sub(p,val);
-}
-#else
-static inline int32_t emac_mAtomic32Sub(int32_t *p, int32_t val)
-{
-    int32_t retVal;
-    uintptr_t key= EMAC_osalHardwareIntDisable();
-    retVal = *p;
-    *p -= val;
-    EMAC_osalHardwareIntRestore(key);
-    return retVal;
-}
-#endif
 
 #ifdef __cplusplus
 }

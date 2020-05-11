@@ -55,9 +55,11 @@
 #include <ti/csl/cslr_icss.h>
 /* EMAC Driver Header File. */
 #include <ti/drv/emac/emac_drv.h>
-
 #include <ti/drv/emac/src/emac_osal.h>
 #include <ti/drv/emac/emac_ioctl.h>
+
+#include <ti/drv/emac/src/v5/emac_hwq.h>
+
 /* SOC Include Files. */
 #include <ti/drv/emac/soc/emac_soc_v5.h>
 
@@ -75,7 +77,6 @@
 
 #ifdef EMAC_TEST_APP_ICSSG
 #include <ti/drv/emac/firmware/icss_dualmac/config/emac_fw_config_dual_mac.h>
-#include <ti/drv/emac/firmware/icss_switch/config/emac_fw_config_switch.h>
 /* PRUSS Driver Header File. */
 #include <ti/drv/pruss/pruicss.h>
 #include <ti/drv/pruss/soc/pruicss_v1.h>
@@ -95,6 +96,8 @@ extern int port_en[];
 /**********************************************************************
  ************************** Global Variables **************************
  **********************************************************************/
+static uint8_t  gAppTestSequenceNumber  = 1;
+#ifdef EMAC_TEST_APP_ICSSG
 
 #ifdef SOC_J721E
 uint8_t icss_tx_port_queue[2][100352] __attribute__ ((aligned (UDMA_CACHELINE_ALIGNMENT))) __attribute__ ((section (".bss:emac_ocmc_mem")));
@@ -106,23 +109,30 @@ uint8_t icss_tx_port_queue[1][100352] __attribute__ ((aligned (UDMA_CACHELINE_AL
 #ifdef EMAC_BENCHMARK
 uint8_t icss_tx_port_queue[1][100352] __attribute__ ((aligned (UDMA_CACHELINE_ALIGNMENT))) __attribute__ ((section (".bss:emac_msmc_mem")));
 #else /* test all port for DUAL MAC */
-uint8_t icss_tx_port_queue[3][100352] __attribute__ ((aligned (UDMA_CACHELINE_ALIGNMENT))) __attribute__ ((section (".bss:emac_msmc_mem")));
+#define EMAC_ICSSG_DUAL_MAC_FW_BUFER_POOL_SIZE_PG2 0X14000 // 8 BUFFER POOLS EACH 0X2000 BYTES PLUS 0X4000 BYTES FOR RX Q CONTEXT info
+#define EMAC_ICSSG_BUFFER_POOL_SIZE_PG2 0x2000u
+#define EMAC_ICSSG_MAX_NUM_BUFFER_POOLS_PG2 8u
+uint8_t icss_tx_port_queue[6][EMAC_ICSSG_DUAL_MAC_FW_BUFER_POOL_SIZE_PG2] __attribute__ ((aligned (UDMA_CACHELINE_ALIGNMENT))) __attribute__ ((section (".bss:emac_msmc_mem")));
 #endif
 #endif
 #endif
 
-uint32_t interposerCardPresent = 0;
-
-#ifdef EMAC_TEST_APP_ICSSG
 PRUICSS_Handle prussHandle[EMAC_MAX_ICSS] = {NULL, NULL, NULL};
-int hs_index[EMAC_MAX_ICSS * EMAC_MAC_PORTS_PER_ICSS];    //one per icss slice
 #endif
 
-
+/* PG1.0 macro check */
 #define APP_TEST_AM65XX_PG1_0_VERSION (0x0BB5A02FU)
+
+/* Macro for test failure status return value. */
+#define APP_TEST_SUCCESS    0
+#define APP_TEST_FAILURE    -1
 
 /* Maxwell PG version */
 uint32_t gPgVersion;
+
+
+/* semaphore to sync up ICSSG management request and callback response */
+static SemaphoreP_Handle gAppTestIoctlWaitAckSem;
 
 
 /* Test will use network firmware to verify packet transmission
@@ -137,21 +147,22 @@ uint32_t gPgVersion;
 /* EMAC firmware header files */
 
 
-
+#if defined (SOC_AM65XX)
 /* PG 1.0 Firmware */
 #include <ti/drv/emac/firmware/icss_dualmac/bin/rxl2_txl2_rgmii0_bin.h>      /* PDSPcode */
 #include <ti/drv/emac/firmware/icss_dualmac/bin/rtu_test0_bin.h>             /* PDSP2code */
 #include <ti/drv/emac/firmware/icss_dualmac/bin/rxl2_txl2_rgmii1_bin.h>      /* PDSP3code */
 #include <ti/drv/emac/firmware/icss_dualmac/bin/rtu_test1_bin.h>             /* PDSP4code */
-
+#endif
 
 /* PG2.0 firmware */
-#include <ti/drv/emac/firmware/icss_dualmac/bin_pg2/rxl2_rgmii0_bin.h>      /* PDSPcode */
-#include <ti/drv/emac/firmware/icss_dualmac/bin_pg2/rtu_test0_bin.h>        /* PDSP2code */
-#include <ti/drv/emac/firmware/icss_dualmac/bin_pg2/rxl2_rgmii1_bin.h>      /* PDSP3code */
-#include <ti/drv/emac/firmware/icss_dualmac/bin_pg2/rtu_test1_bin.h>        /* PDSP4code */
-#include <ti/drv/emac/firmware/icss_dualmac/bin_pg2/txl2_rgmii0_bin.h>      /* PDSP5code */
-#include <ti/drv/emac/firmware/icss_dualmac/bin_pg2/txl2_rgmii1_bin.h>      /* PDSP6code */
+#include <ti/drv/emac/firmware/icss_dualmac/bin_pg2/RX_PRU_SLICE0_bin.h>
+#include <ti/drv/emac/firmware/icss_dualmac/bin_pg2/RX_PRU_SLICE1_bin.h>
+#include <ti/drv/emac/firmware/icss_dualmac/bin_pg2/RTU0_SLICE0_bin.h>
+#include <ti/drv/emac/firmware/icss_dualmac/bin_pg2/RTU0_SLICE1_bin.h>
+#include <ti/drv/emac/firmware/icss_dualmac/bin_pg2/TX_PRU_SLICE0_bin.h>
+#include <ti/drv/emac/firmware/icss_dualmac/bin_pg2/TX_PRU_SLICE1_bin.h>
+
 
 typedef struct {
     const uint32_t *pru;
@@ -163,22 +174,24 @@ typedef struct {
 } app_test_pru_rtu_fw_t;
 
 app_test_pru_rtu_fw_t firmware_pg1[2] = {
+#if defined (SOC_AM65XX)
     { PDSPcode_0, sizeof(PDSPcode_0), PDSP2code_0, sizeof(PDSP2code_0), NULL, 0},
     { PDSP3code_0, sizeof(PDSP3code_0), PDSP4code_0, sizeof(PDSP4code_0), NULL, 0}
+#endif
 };
-
 app_test_pru_rtu_fw_t firmware_pg2[2] = {
-    { PDSPcode_0_PG2, sizeof(PDSPcode_0_PG2), PDSP2code_0_PG2, sizeof(PDSP2code_0_PG2), PDSP5code_0_PG2, sizeof(PDSP5code_0_PG2)},
-    { PDSP3code_0_PG2, sizeof(PDSP3code_0_PG2), PDSP4code_0_PG2, sizeof(PDSP4code_0_PG2),  PDSP6code_0_PG2, sizeof(PDSP6code_0_PG2)}
+    {
+        RX_PRU_SLICE0_b00, sizeof(RX_PRU_SLICE0_b00), RTU0_SLICE0_b00, sizeof(RTU0_SLICE0_b00), TX_PRU_SLICE0_b00, sizeof(TX_PRU_SLICE0_b00)
+    },
+    {
+        RX_PRU_SLICE1_b00, sizeof(RX_PRU_SLICE1_b00), RTU0_SLICE1_b00, sizeof(RTU0_SLICE1_b00), TX_PRU_SLICE1_b00, sizeof(TX_PRU_SLICE1_b00)
+    }
 };
-
 #endif
 
 int32_t app_test_task_init_pruicss(uint32_t portNum);
 int32_t app_test_task_disable_pruicss(uint32_t portNum);
-
-
-
+void app_test_wait_mgmt_resp(uint32_t waitTimeMilliSec);
 
 uint32_t pollModeEnabled = 0;
 uint32_t linkStatus = 0;
@@ -410,152 +423,11 @@ static uint8_t app_test_mc_pkt[APP_TEST_PKT_SIZE] = {
     0xfe,0xfe, 0x00, 0x00
 };
 
-static uint8_t mac1_mc[6] = {0x01, 0x93, 0x20, 0x21, 0x22, 0x22};
-static uint8_t app_test_mc1_pkt[APP_TEST_PKT_SIZE] = {
-    0x01, 0x93, 0x20, 0x21, 0x22, 0x22,
-    0x48, 0x93, 0xfe, 0xfa, 0x18, 0x4a,
-    0x08, 0x06, 0x00, 0x01,
-    0x08, 0x00, 0x06, 0x04,
-    0x00,0x01,0x01, 0xbb,
-    0xcc, 0xdd, 0xee, 0xff,
-    0xc0, 0xa8, 0x01, 0x16,
-    0x00, 0x00, 0x00, 0x00,
-    0xc0, 0xa8,0x01, 0x02,
-    0x01,0x02,0x03,0x04,
-    0x01,0x02,0x03,0x04,
-    0x01,0x02,0x03,0x04,
-    0x01,0x02,0x03,0x04,
-    0x01,0x02,0x03,0x04,
-    0xfe,0xfe, 0x00, 0x00
-};
-
-
-static uint8_t mac2_mc[6] = {0x01, 0x93, 0x20, 0x21, 0x22, 0x24};
-static uint8_t mac3_mc[6] = {0x01, 0x93, 0x20, 0x21, 0x22, 0x26};
-static uint8_t mac4_mc[6] = {0x01, 0x93, 0x20, 0x21, 0x22, 0x28};
-
-
-static uint8_t app_test_mc2_pkt[APP_TEST_PKT_SIZE] = {
-    0x01, 0x93, 0x20, 0x21, 0x22, 0x24,
-    0x48, 0x93, 0xfe, 0xfa, 0x18, 0x4a,
-    0x08, 0x06, 0x00, 0x01,
-    0x08, 0x00, 0x06, 0x04,
-    0x00,0x01,0x01, 0xbb,
-    0xcc, 0xdd, 0xee, 0xff,
-    0xc0, 0xa8, 0x01, 0x16,
-    0x00, 0x00, 0x00, 0x00,
-    0xc0, 0xa8,0x01, 0x02,
-    0x01,0x02,0x03,0x04,
-    0x01,0x02,0x03,0x04,
-    0x01,0x02,0x03,0x04,
-    0x01,0x02,0x03,0x04,
-    0x01,0x02,0x03,0x04,
-    0xfe,0xfe, 0x00, 0x00
-};
-
-static uint8_t app_test_mc3_pkt[APP_TEST_PKT_SIZE] = {
-    0x01, 0x93, 0x20, 0x21, 0x22, 0x26,
-    0x48, 0x93, 0xfe, 0xfa, 0x18, 0x4a,
-    0x08, 0x06, 0x00, 0x01,
-    0x08, 0x00, 0x06, 0x04,
-    0x00,0x01,0x01, 0xbb,
-    0xcc, 0xdd, 0xee, 0xff,
-    0xc0, 0xa8, 0x01, 0x16,
-    0x00, 0x00, 0x00, 0x00,
-    0xc0, 0xa8,0x01, 0x02,
-    0x01,0x02,0x03,0x04,
-    0x01,0x02,0x03,0x04,
-    0x01,0x02,0x03,0x04,
-    0x01,0x02,0x03,0x04,
-    0x01,0x02,0x03,0x04,
-    0xfe,0xfe, 0x00, 0x00
-};
-
-static uint8_t app_test_mc4_pkt[APP_TEST_PKT_SIZE] = {
-    0x01, 0x93, 0x20, 0x21, 0x22, 0x28,
-    0x48, 0x93, 0xfe, 0xfa, 0x18, 0x4a,
-    0x08, 0x06, 0x00, 0x01,
-    0x08, 0x00, 0x06, 0x04,
-    0x00,0x01,0x01, 0xbb,
-    0xcc, 0xdd, 0xee, 0xff,
-    0xc0, 0xa8, 0x01, 0x16,
-    0x00, 0x00, 0x00, 0x00,
-    0xc0, 0xa8,0x01, 0x02,
-    0x01,0x02,0x03,0x04,
-    0x01,0x02,0x03,0x04,
-    0x01,0x02,0x03,0x04,
-    0x01,0x02,0x03,0x04,
-    0x01,0x02,0x03,0x04,
-    0xfe,0xfe, 0x00, 0x00
-
-};
-
-uint8_t app_test_128_pkt[128] = {
-        0x48, 0x93, 0xfe, 0xfa, 0x18, 0x44,
-        0x48, 0x93, 0xfe, 0xfa, 0x18, 0x4a,
-        0x08, 0x06, 0x00, 0x01,
-        0x08, 0x00, 0x06, 0x04,
-        0x00,0x01,0x01, 0xbb,
-        0xcc, 0xdd, 0xee, 0xff,
-        0xc0, 0xa8, 0x01, 0x16,
-        0x00, 0x00, 0x00, 0x00,
-        0xc0, 0xa8,0x01, 0x02,
-        0x01,0x02,0x03,0x04,
-        0x01,0x02,0x03,0x04,
-        0x01,0x02,0x03,0x04,
-        0x01,0x02,0x03,0x04,
-        0x01,0x02,0x03,0x04,
-        0xfe,0xfe, 0x00, 0x00,
-        0x48, 0x93, 0xfe, 0xfa,
-        0x18, 0x44, 0x18, 0x4a,
-        0x48, 0x93, 0xfe, 0xfa,
-        0x08, 0x06, 0x00, 0x01,
-        0x08, 0x00, 0x06, 0x04,
-        0x00,0x01,0x01, 0xbb,
-        0xcc, 0xdd, 0xee, 0xff,
-        0xc0, 0xa8, 0x01, 0x16,
-        0x00, 0x00, 0x00, 0x00,
-        0xc0, 0xa8,0x01, 0x02,
-        0x01,0x02,0x03,0x04,
-        0x01,0x02,0x03,0x04,
-        0x01,0x02,0x03,0x04,
-        0x01,0x02,0x03,0x04,
-        0x01,0x02,0x03,0x04,
-        0xfe,0xfe, 0x00, 0x00
-};
-
 static uint8_t *pTestPkt = (uint8_t*)(&app_test_uc_pkt[0]);
 
 /**********************************************************************
  ************************ EMAC TEST FUNCTIONS *************************
  **********************************************************************/
-
-/*
- *  ======== app_detect_interposer_card ========
- */
-bool app_detect_interposer_card(void)
-{
-#ifdef am65xx_idk
-    EMAC_socGetInitCfg(0, &emac_cfg);
-    CSL_MdioRegs *pBaseAddr = (CSL_MdioRegs*) (uintptr_t)(emac_cfg.portCfg[2].mdioRegsBaseAddr);
-#ifdef EMAC_TEST_APP_WITHOUT_DDR
-    Task_sleep(5000);
-#endif
-    if ((CSL_MDIO_isPhyAlive(pBaseAddr,emac_cfg.portCfg[2].phyAddr)) ||(CSL_MDIO_isPhyAlive(pBaseAddr,emac_cfg.portCfg[3].phyAddr)))
-    {
-        UART_printf("PHYs for ICSSG1 are ALIVE, interposer card is NOT present\n");
-        return FALSE;
-    }
-    else
-    {
-        UART_printf("PHYs for ICSSG1 are not ALIVE, interposer card is present\n");
-        return TRUE;
-    }
-#else
-    return FALSE;
-#endif
-}
-
 /**
  *  @b app_queue_pop
  *  @n
@@ -903,6 +775,42 @@ void app_test_task_poll_pkt (UArg arg0, UArg arg1)
         }
     }
 }
+/**
+*  @brief  This function is used to call back the network application when a
+*          config response packet is receive from ICSSG firmware.
+*/
+    void app_test_rx_mgmt_response_cb(uint32_t port_num, EMAC_IOCTL_CMD_RESP_T* pCmdResp)
+    {
+        if (pCmdResp != NULL)
+        {
+            if (pCmdResp->seqNumber == (gAppTestSequenceNumber -1))
+            {
+                UART_printf("app_test_rx_mgmt_response_cb: port: %d, status: 0x%x, sequence number: 0x%x\n",
+                            port_num, pCmdResp->status, pCmdResp->seqNumber);
+                if (pCmdResp->respParamsLength)
+                {
+                    UART_printf("app_test_rx_mgmt_response_cb: port: %d, 0x%x, 0x%x, 0x%x\n",
+                    port_num, pCmdResp->respParams[0],pCmdResp->respParams[1],pCmdResp->respParams[2]);
+                }
+                EMAC_osalPostLock(gAppTestIoctlWaitAckSem);
+            }
+            else
+            {
+                UART_printf("app_test_rx_mgmt_response_cb (incorrect sequence number): port: %d, status: 0x%x, sequence number: 0x%x\n",
+                            port_num, pCmdResp->status, pCmdResp->seqNumber);
+                if (pCmdResp->respParamsLength)
+                {
+                    UART_printf("app_test_rx_mgmt_response_cb: port: %d, resp length: 0x%x, 0x%x, 0x%x, 0x%x\n",
+                    port_num,
+                    pCmdResp->respParamsLength,
+                    pCmdResp->respParams[0],
+                    pCmdResp->respParams[1],
+                    pCmdResp->respParams[2]);
+                }
+                EMAC_osalPostLock(gAppTestIoctlWaitAckSem);
+            }
+        }
+    }
 
 void app_test_task_poll_ctrl (UArg arg0, UArg arg1)
 {
@@ -957,8 +865,7 @@ int32_t app_test_send(uint32_t pNum, uint8_t* pPkt, uint32_t pktChannel, uint32_
         /* only enable TX timestamp when in poll mode of operation, currently not support for SWITCH use case */
         if (pollModeEnabled)
         {
-            /* PG2.0 test firmware does not currently support TX TS */
-            if ((pNum != EMAC_CPSW_PORT_NUM) && (gPgVersion == APP_TEST_AM65XX_PG1_0_VERSION))
+            if ((pNum != EMAC_CPSW_PORT_NUM))
             {
                 p_pkt_desc->Flags = EMAC_PKT_FLAG_TX_TS_REQ;
                 p_pkt_desc->TxtimestampId = pNum + i;
@@ -974,6 +881,8 @@ int32_t app_test_send(uint32_t pNum, uint8_t* pPkt, uint32_t pktChannel, uint32_
         p_pkt_desc->pPrev = NULL;
         p_pkt_desc->PktChannel     = pktChannel;
         p_pkt_desc->PktLength      = pktSize;
+        if (pkt_send_count == 0)
+            Task_sleep (2000);
         sentRetVal = emac_send(pNum, p_pkt_desc);
         if(sentRetVal != EMAC_DRV_RESULT_OK)
         {
@@ -983,10 +892,14 @@ int32_t app_test_send(uint32_t pNum, uint8_t* pPkt, uint32_t pktChannel, uint32_
         }
         
 #if !defined(EMAC_BENCHMARK)
-
-    while((pkt_received == 0) || (timestamp_received == 0))
+    uint32_t timeout_count = 100;
+    while(((pkt_received == 0) || (timestamp_received == 0)) && (timeout_count-- > 0))
     {
-        Task_sleep(100);
+        Task_sleep(10);
+    }
+    if (timeout_count == 0)
+    {
+        UART_printf ("app_test_send: receive packet failed with timeout :%d\n", pkt_send_count);
     }
 #endif
 
@@ -1048,11 +961,6 @@ void app_test_tx_chans(void)
         if (!port_en[pNum])
             continue;
 
-        if (1 == interposerCardPresent)
-        {
-            if((pNum == 0) || (pNum == 2) ||  (pNum == 6))
-                 continue;
-        }
         for (txChannel = 0; txChannel < 4;txChannel++)
         {
             app_test_send(pNum, pTestPkt, txChannel, APP_TEST_PKT_SIZE);
@@ -1073,49 +981,6 @@ void app_test_poll_mode(void)
     UART_printf("EMAC_UT_%d begin test poll mode passed\n", app_test_id);
 }
 
-void app_test_multi_flows(void)
-{
-    uint32_t pNum;
-    EMAC_IOCTL_PARAMS params;
-    EMAC_MAC_ADDR_T macAddrs[4];
-
-    memcpy (&macAddrs[0], &mac1_mc[0], sizeof(EMAC_MAC_ADDR_T));
-    memcpy (&macAddrs[1], &mac2_mc[0], sizeof(EMAC_MAC_ADDR_T));
-    memcpy (&macAddrs[2], &mac3_mc[0], sizeof(EMAC_MAC_ADDR_T));
-    memcpy (&macAddrs[3], &mac4_mc[0], sizeof(EMAC_MAC_ADDR_T));
-
-    params.ioctlVal = (void*)&macAddrs[0];
-
-    for (pNum =portNum; pNum  <= endPort; pNum++)
-    {
-        if ((!port_en[pNum]) || (pNum == 6))
-            continue;
-        emac_ioctl(pNum,EMAC_IOCTL_TEST_MULTI_FLOW,(void*)(&params));
-    }
-    for (pNum =portNum; pNum  <= endPort; pNum++)
-    {
-        if (1 == interposerCardPresent)
-        {
-            if((pNum == 0) || (pNum == 2) ||  (pNum == 6))
-                continue;
-        }
-        if (!port_en[pNum])
-            continue;
-        pTestPkt = (uint8_t*)(&app_test_mc1_pkt[0]);
-        app_test_send(pNum, pTestPkt, 0,APP_TEST_PKT_SIZE);
-
-        pTestPkt = (uint8_t*)(&app_test_mc2_pkt[0]);
-        app_test_send(pNum, pTestPkt, 0, APP_TEST_PKT_SIZE);
-
-        pTestPkt = (uint8_t*)(&app_test_mc3_pkt[0]);
-        app_test_send(pNum, pTestPkt, 0,APP_TEST_PKT_SIZE);
-
-        pTestPkt = (uint8_t*)(&app_test_mc4_pkt[0]);
-        app_test_send(pNum, pTestPkt, 0,APP_TEST_PKT_SIZE);
-    }
-
-}
-
 int32_t app_test_send_receive(uint32_t startP, uint32_t endP, uint32_t displayResult)
 {
     uint32_t pNum;
@@ -1125,11 +990,6 @@ int32_t app_test_send_receive(uint32_t startP, uint32_t endP, uint32_t displayRe
         if (!port_en[pNum])
             continue;
 
-        if (1 == interposerCardPresent)
-        {
-            if((pNum == 0) || (pNum == 2))
-                 continue;
-        }
         UART_printf("app_test_send_receive: testing port: %d\n", pNum);
         status = app_test_send(pNum, pTestPkt, 0,APP_TEST_PKT_SIZE);
 
@@ -1150,13 +1010,12 @@ void app_test_setup_fw_dualmac(uint32_t port_num, EMAC_HwAttrs_V5 *pEmacCfg)
     emacGetDualMacFwAppInitCfg(port_num, &pFwAppCfg);
     if ((port_num % 2) == 0)
     {
-        pFwAppCfg->txPortQueueLowAddr = 0xFFFFFFFF & ((uintptr_t) &icss_tx_port_queue[port_num >> 1][0]);
+        pFwAppCfg->txPortQueueLowAddr = 0xFFFFFFFF & ((uintptr_t) &icss_tx_port_queue[port_num][0]);
     }
     else
     {
-        pFwAppCfg->txPortQueueLowAddr = 0xFFFFFFFF & ((uintptr_t) &icss_tx_port_queue[port_num >> 1][TX_BUFF_POOL_TOTAL_DUAL_MAC]);
+        pFwAppCfg->txPortQueueLowAddr = 0xFFFFFFFF & ((uintptr_t) &icss_tx_port_queue[port_num][TX_BUFF_POOL_TOTAL_DUAL_MAC]);
     }
-
     pFwAppCfg->txPortQueueHighAddr = 0;
 
     emacSetDualMacFwAppInitCfg(port_num, pFwAppCfg);
@@ -1164,6 +1023,26 @@ void app_test_setup_fw_dualmac(uint32_t port_num, EMAC_HwAttrs_V5 *pEmacCfg)
     /* Need to update the emac configuraiton with  function required by the driver to get the FW configuration to write to shared mem */
     pEmacCfg->portCfg[port_num].getFwCfg = &emacGetDualMacFwConfig;
 
+}
+
+
+void app_test_setup_fw_dualmac_pg2(uint32_t port_num, EMAC_HwAttrs_V5 *pEmacCfg)
+{
+    uint32_t i;
+    EMAC_FW_APP_CONFIG *pFwAppCfg;
+
+    emacGetDualMacFwAppInitCfg(port_num, &pFwAppCfg);
+    pFwAppCfg->bufferPoolLowAddr = 0xFFFFFFFF & ((uintptr_t) &icss_tx_port_queue[port_num][0]);
+    pFwAppCfg->bufferPoolHighAddr = 0;
+    pFwAppCfg->numBufferPool = EMAC_ICSSG_MAX_NUM_BUFFER_POOLS_PG2;
+
+    for(i = 0; i < EMAC_ICSSG_MAX_NUM_BUFFER_POOLS_PG2; i++)
+    {
+        pFwAppCfg->bufferPoolSize[i] = EMAC_ICSSG_BUFFER_POOL_SIZE_PG2;
+    }
+
+    emacSetDualMacFwAppInitCfg(port_num, pFwAppCfg);
+    pEmacCfg->portCfg[port_num].getFwCfg = &emacGetDualMacFwConfig;
 }
 #endif
 
@@ -1253,7 +1132,14 @@ int32_t app_test_emac_open(uint32_t mode)
         {
 
 #ifdef EMAC_TEST_APP_ICSSG
-            app_test_setup_fw_dualmac(pNum, &emac_cfg);
+            if (gPgVersion == APP_TEST_AM65XX_PG1_0_VERSION)
+            {
+                app_test_setup_fw_dualmac(pNum, &emac_cfg);
+            }
+            else
+            {
+                app_test_setup_fw_dualmac_pg2(pNum, &emac_cfg);
+            }
 #endif
         }
         EMAC_socSetInitCfg(0, &emac_cfg);
@@ -1264,6 +1150,7 @@ int32_t app_test_emac_open(uint32_t mode)
         open_cfg.free_pkt_cb = app_free_pkt;
         open_cfg.rx_pkt_cb = app_test_rx_pkt_cb;
         open_cfg.tx_ts_cb = app_test_ts_response_cb;
+        open_cfg.rx_mgmt_response_cb = app_test_rx_mgmt_response_cb;
         open_cfg.loop_back = 0U;
         /* Only need to enbale loopback for CPSW test application and when not doing benchmark testing */
 #ifndef EMAC_BENCHMARK
@@ -1486,20 +1373,41 @@ void app_test_udma_init(void)
     }
 }
 
+void app_test_set_port_state_ctrl(uint32_t startP, uint32_t endP)
+{
+    EMAC_DRV_ERR_E retVal;
+    EMAC_IOCTL_PARAMS params;
+    uint32_t pNum;
+
+    if (gPgVersion != APP_TEST_AM65XX_PG1_0_VERSION)
+    {
+        for (pNum = startP; pNum  <= endP; pNum++)
+        {
+            params.subCommand = EMAC_IOCTL_PORT_STATE_FORWARD;
+            params.seqNumber = gAppTestSequenceNumber++;
+            retVal = emac_ioctl(pNum, EMAC_IOCTL_PORT_STATE_CTRL, &params);
+
+            if(retVal != EMAC_DRV_RESULT_IOCTL_IN_PROGRESS)
+            {
+               UART_printf("app_test_set_port_state_ctrl:port_num: %d: failed with code %d\n", pNum, retVal);
+               while (1);
+            }
+            else
+            {
+                app_test_wait_mgmt_resp(1000);
+            }
+        }
+    }
+}
+
 void app_test_check_port_link(uint32_t startP, uint32_t endP)
 {
     uint32_t pNum;
     EMAC_LINK_INFO_T linkInfo;
-
     for (pNum = startP; pNum  <= endP; pNum++)
     {
         if (!port_en[pNum])
             continue;
-        if (1 == interposerCardPresent)
-        {
-            if((pNum == 2) || (pNum == 3))
-                continue;
-        }
         memset(&linkInfo, 0, sizeof(EMAC_LINK_INFO_T));
         do
         {
@@ -1509,7 +1417,6 @@ void app_test_check_port_link(uint32_t startP, uint32_t endP)
         } while(linkInfo.link_status == EMAC_LINKSTATUS_NOLINK);
         UART_printf("Link for port %d is now UP\n", pNum);
     }
-
 }
 
 #ifdef EMAC_BENCHMARK
@@ -1532,26 +1439,26 @@ void app_test_task_benchmark(UArg arg0, UArg arg1)
         while(1);
     }
     UART_printf("Board_init success benchmark\n");
-#if defined(SOC_J721E)
-#else
-    if (app_detect_interposer_card() == TRUE)
-    {
-        UART_printf("Interposer card is  present\n");
-        interposerCardPresent = 1;
-    }
-#endif
-    else
-    {
-        UART_printf("Interposer card is NOT present\n");
-    }
 
     app_init();
+
 #ifdef EMAC_TEST_APP_ICSSG
     PRUICSS_socGetInitCfg(&prussCfg);
     prussHandle[0] =  PRUICSS_create((PRUICSS_Config*)prussCfg,PRUICCSS_INSTANCE_ONE);
     prussHandle[1] =  PRUICSS_create((PRUICSS_Config*)prussCfg,PRUICCSS_INSTANCE_TWO);
+    if ((prussHandle[0] == NULL) || ((prussHandle[1] == NULL))
+    {
+       UART_printf("PRUICSS_create failure\n");
+        while(1);
+    }
 #if defined(SOC_AM65XX)
     prussHandle[2] =  PRUICSS_create((PRUICSS_Config*)prussCfg,PRUICCSS_INSTANCE_THREE);
+    if (prussHandle[2] == NULL)
+    {
+       UART_printf("PRUICSS_create failure\n");
+       while(1);
+    }
+
 #endif
 #endif
 
@@ -1562,6 +1469,7 @@ void app_test_task_benchmark(UArg arg0, UArg arg1)
         while(1);
     }
     app_test_check_port_link(portNum, endPort);
+    app_test_set_port_state_ctrl(portNum, endPort);
     app_test_config_promiscous_mode(1);
 
     initComplete = 1;
@@ -1577,6 +1485,7 @@ void app_test_task_benchmark(UArg arg0, UArg arg1)
 
 
 #ifdef EMAC_TEST_APP_ICSSG
+
 void test_EMAC_verify_ut_dual_mac_icssg(void)
 {
     /* @description:Unit test for ICSSG dual mac use case
@@ -1587,14 +1496,16 @@ void test_EMAC_verify_ut_dual_mac_icssg(void)
 
        @cores: mpu1_0, mcu1_0 */
     Board_STATUS boardInitStatus =0;
+    SemaphoreP_Params emac_app_test_sem_params;
+
 #ifdef EMAC_TEST_APP_ICSSG
     PRUICSS_Config *prussCfg;
 #endif
 
 #ifdef EMAC_TEST_APP_WITHOUT_DDR
-        Task_sleep(2000);
+    Task_sleep(2000);
 #endif
-    Board_initCfg cfg = BOARD_INIT_UART_STDIO | BOARD_INIT_PINMUX_CONFIG | BOARD_INIT_MODULE_CLOCK | BOARD_INIT_ICSS_ETH_PHY | BOARD_INIT_ETH_PHY;
+    Board_initCfg cfg = BOARD_INIT_UART_STDIO | BOARD_INIT_PINMUX_CONFIG | BOARD_INIT_MODULE_CLOCK | BOARD_INIT_ICSS_ETH_PHY | BOARD_INIT_ETH_PHY | BOARD_INIT_ENETCTRL_ICSS;
 
 #if defined(SOC_J721E)
     /* PINMUX config of GESI for ICSSG */
@@ -1604,94 +1515,94 @@ void test_EMAC_verify_ut_dual_mac_icssg(void)
     gesiIcssgPinmux.gesiExp = BOARD_PINMUX_GESI_ICSSG;
     Board_pinmuxSetCfg(&gesiIcssgPinmux);
 #endif
-        boardInitStatus = Board_init(cfg);
-        if (boardInitStatus !=BOARD_SOK)
-        {
-            UART_printf("Board_init failure\n");
-            while(1);
-        }
-        UART_printf("Board_init success for UT\n");
+    boardInitStatus = Board_init(cfg);
+    if (boardInitStatus !=BOARD_SOK)
+    {
+        UART_printf("Board_init failure\n");
+        while(1);
+    }
+    UART_printf("Board_init success for UT\n");
 
     gPgVersion = CSL_REG32_RD(CSL_WKUP_CTRL_MMR0_CFG0_BASE + CSL_WKUP_CTRL_MMR_CFG0_JTAGID);
 
-#if defined(SOC_J721E)
-#else
-        if (app_detect_interposer_card() == TRUE)
-        {
-            UART_printf("Interposer card is  present\n");
-            interposerCardPresent = 1;
-        }
-        else
-#endif
-        {
-            UART_printf("Interposer card is NOT present\n");
-        }
+    app_init();
 
-        app_init();
 #ifdef EMAC_TEST_APP_ICSSG
         PRUICSS_socGetInitCfg(&prussCfg);
         prussHandle[0] =  PRUICSS_create((PRUICSS_Config*)prussCfg,PRUICCSS_INSTANCE_ONE);
         prussHandle[1] =  PRUICSS_create((PRUICSS_Config*)prussCfg,PRUICCSS_INSTANCE_TWO);
+        if ((prussHandle[0] == NULL) || (prussHandle[1] == NULL))
+        {
+           UART_printf("PRUICSS_create failure\n");
+           while(1);
+        }
 #if defined(SOC_AM65XX)
         prussHandle[2] =  PRUICSS_create((PRUICSS_Config*)prussCfg,PRUICCSS_INSTANCE_THREE);
+        if (prussHandle[2] == NULL)
+        {
+           UART_printf("PRUICSS_create failure\n");
+           while(1);
+        }
 #endif
 #endif
+
+    EMAC_osalSemParamsInit(&emac_app_test_sem_params);
+    emac_app_test_sem_params.mode = SemaphoreP_Mode_BINARY;
+    gAppTestIoctlWaitAckSem =  EMAC_osalCreateBlockingLock(0,&emac_app_test_sem_params);
 
     app_test_udma_init();
 
-    if (app_test_emac_open(EMAC_MODE_INTERRUPT) != 0)
+    if (gPgVersion != APP_TEST_AM65XX_PG1_0_VERSION)
     {
-        while(1);
-    }
-    initComplete = 1;
-   
-    /* Need to poll for link for ICSSG ports as they are port 2 port tests */
-    /* For standalone CPSW test, we use internal loopback at CPSW-SS */
-    app_test_check_port_link(portNum, endPort);
-
-    /* Test with PORT_MAC address */
-    app_test_port_mac();
-
-#ifndef BUILD_MCU1_0
-    app_test_tx_chans();
-#endif
-    app_test_interrrupt_mode();
-
-    if (gPgVersion == APP_TEST_AM65XX_PG1_0_VERSION)
-    {
-        /* test close -re open sequence */
-        if(app_test_emac_close() == -1)
-        {
-            UART_printf("emac unit test app_test_emac_close failed\n");
-            while(1);
-        }
-        /* re-init the app */
-        app_init();
-
-        /* re-open in polling mode */
+        pollModeEnabled = 1;
         if (app_test_emac_open(EMAC_MODE_POLL) != 0)
         {
             while(1);
         }
-
-        app_test_poll_mode();
-#ifndef BUILD_MCU1_0
-            app_test_multi_flows();
-#endif
-        app_test_config_promiscous_mode(1);
-        app_test_promiscous_mode();
-        emac_test_get_icssg_stats();
     }
     else
     {
-        emac_test_get_icssg_stats();
-        /* test close -re open sequence */
-        if(app_test_emac_close() == -1)
+        if (app_test_emac_open(EMAC_MODE_INTERRUPT) != 0)
         {
-            UART_printf("emac unit test app_test_emac_close failed\n");
             while(1);
         }
     }
+
+    initComplete = 1;
+    /* Need to poll for link for ICSSG ports as they are port 2 port tests */
+    /* For standalone CPSW test, we use internal loopback at CPSW-SS */
+    app_test_check_port_link(portNum, endPort);
+
+    app_test_set_port_state_ctrl(portNum, endPort);
+    /* Test with PORT_MAC address */
+    app_test_port_mac();
+
+    app_test_tx_chans();
+
+    app_test_interrrupt_mode();
+
+    /* test close -re open sequence */
+    if(app_test_emac_close() == -1)
+    {
+        UART_printf("emac unit test app_test_emac_close failed\n");
+        while(1);
+    }
+    /* re-init the app */
+    app_init();
+
+    /* re-open in polling mode */
+    if (app_test_emac_open(EMAC_MODE_POLL) != 0)
+    {
+        while(1);
+    }
+
+    app_test_poll_mode();
+
+    app_test_config_promiscous_mode(1);
+    app_test_promiscous_mode();
+
+    emac_test_get_icssg_stats();
+
     UART_printf("All tests have passed\n");
 #ifdef UNITY_INCLUDE_CONFIG_H
     TEST_PASS();
@@ -1818,20 +1729,18 @@ void app_test_task_verify_ut_dual_mac_cpsw(UArg arg0, UArg arg1)
 
 #ifdef EMAC_TEST_APP_ICSSG
 /*
- *  ======== app_test_task_init_pruicss========
+ *  ======== app_test_task_disable_pruicss========
  */
 int32_t  app_test_task_disable_pruicss(uint32_t portNum)
 {
     PRUICSS_Handle prussDrvHandle;
     uint8_t pru_n, rtu_n, txpru_n, slice_n;
 
-    if (portNum > 5)
+    if (portNum > EMAC_ICSSG3_PORT1)
+    {
         return -1;
-
+    }
     prussDrvHandle =prussHandle[portNum >> 1];
-    if (prussDrvHandle == NULL)
-        return -1;
-
     slice_n = (portNum & 1);
     pru_n = (slice_n) ? PRUICCSS_PRU1 : PRUICCSS_PRU0;
     rtu_n = (slice_n) ? PRUICCSS_RTU1 : PRUICCSS_RTU0;
@@ -1852,8 +1761,6 @@ int32_t  app_test_task_disable_pruicss(uint32_t portNum)
 
     /* CLEAR SHARED MEM which is used for host/firmware handshake */
     PRUICSS_pruInitMemory(prussDrvHandle, PRU_ICSS_SHARED_RAM);
-
-
     return 0;
 }
 
@@ -1866,12 +1773,12 @@ int32_t  app_test_task_init_pruicss(uint32_t portNum)
     uint8_t pru_n, rtu_n, txpru_n, slice_n;
     app_test_pru_rtu_fw_t *firmware;
 
-    if (portNum > 5)
+    if (portNum > EMAC_ICSSG3_PORT1)
+    {
         return -1;
+    }
 
     prussDrvHandle =prussHandle[portNum >> 1];
-    if (prussDrvHandle == NULL)
-        return -1;
     slice_n = (portNum & 1);
     pru_n = (slice_n) ? PRUICCSS_PRU1 : PRUICCSS_PRU0;
     rtu_n = (slice_n) ? PRUICCSS_RTU1 : PRUICCSS_RTU0;
@@ -1900,6 +1807,8 @@ int32_t  app_test_task_init_pruicss(uint32_t portNum)
             return -1;
         }
     }
+
+
     if (PRUICSS_pruEnable(prussDrvHandle, pru_n) != 0)
     {
         UART_printf("PRUICSS_pruEnable for PRUICCSS_PRU%d failed\n", slice_n);
@@ -1930,4 +1839,25 @@ void app_output_log(Char* str, UInt numChar)
         UART_printf(str);
     }
 }
+
+
+
+/*
+ *  ======== app_test_wait_mgmt_resp ========
+ */
+void app_test_wait_mgmt_resp(uint32_t waitTimeMilliSec)
+{
+    int32_t retVal = APP_TEST_SUCCESS;
+
+    retVal = EMAC_osalPendLock(gAppTestIoctlWaitAckSem, waitTimeMilliSec);
+
+    if(SemaphoreP_TIMEOUT == retVal)
+    {
+        UART_printf("ERROR: IOCTL management response not received for %u ms, Semaphore_pend timed out! RC: %d\n\r",
+                    waitTimeMilliSec, retVal);
+        while (1);
+    }
+}
+
+
 
