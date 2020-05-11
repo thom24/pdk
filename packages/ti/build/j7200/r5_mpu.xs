@@ -134,7 +134,7 @@ attrs.noExecute = false;
 attrs.accPerm = 1;          /* RW at PL1 */
 attrs.tex = 1;
 attrs.subregionDisableMask = 0;
-MPU.setRegionMeta(5, 0x70000000, MPU.RegionSize_8M, attrs);
+MPU.setRegionMeta(5, 0x70000000, MPU.RegionSize_1M, attrs);
 
 /* This entry covers DDR memory */
 attrs.enable = true;
