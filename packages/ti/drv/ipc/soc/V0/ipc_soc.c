@@ -405,7 +405,7 @@ int32_t Ipc_sciclientIrqTranslate(uint16_t coreId, uint32_t eventId,
 int32_t Ipc_sciclientIrqRelease(uint16_t coreId, uint32_t clusterId,
         uint32_t userId, uint32_t intNumber)
 {
-    int32_t                               retVal = IPC_SOK;
+	int32_t                               retVal = IPC_SOK;
     struct tisci_msg_rm_irq_release_req   rmIrqRel;
 
     rmIrqRel.ia_id                  = 0U;
@@ -421,11 +421,8 @@ int32_t Ipc_sciclientIrqRelease(uint16_t coreId, uint32_t clusterId,
     rmIrqRel.dst_host_irq   = intNumber;
     rmIrqRel.secondary_host = TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
 
-    if(IPC_SOK == retVal)
-    {
-        retVal = Sciclient_rmIrqRelease(
-                     &rmIrqRel, IPC_SCICLIENT_TIMEOUT);
-    }
+    retVal = Sciclient_rmIrqRelease(
+                 &rmIrqRel, IPC_SCICLIENT_TIMEOUT);
 
     return retVal;
 }
@@ -434,7 +431,7 @@ int32_t Ipc_sciclientIrqRelease(uint16_t coreId, uint32_t clusterId,
 int32_t Ipc_sciclientIrqSet(uint16_t coreId, uint32_t clusterId,
         uint32_t userId, uint32_t intNumber)
 {
-    int32_t                           retVal = IPC_SOK;
+	int32_t                           retVal = IPC_SOK;
     struct tisci_msg_rm_irq_set_req   rmIrqReq;
     struct tisci_msg_rm_irq_set_resp  rmIrqResp;
 
@@ -451,12 +448,9 @@ int32_t Ipc_sciclientIrqSet(uint16_t coreId, uint32_t clusterId,
     rmIrqReq.dst_host_irq   = intNumber;
     rmIrqReq.secondary_host = TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
 
-    if(IPC_SOK == retVal)
-    {
-        /* Config event */
-        retVal = Sciclient_rmIrqSet(
-                     &rmIrqReq, &rmIrqResp, IPC_SCICLIENT_TIMEOUT);
-    }
+    /* Config event */
+    retVal = Sciclient_rmIrqSet(
+                 &rmIrqReq, &rmIrqResp, IPC_SCICLIENT_TIMEOUT);
 
     return retVal;
 }

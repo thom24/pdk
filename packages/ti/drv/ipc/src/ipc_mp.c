@@ -115,8 +115,7 @@ uint32_t Ipc_mpGetId(const char* name)
     {
         for(i = 0; i < pMpCfg->numProcessors; i++)
         {
-            if ((pMpCfg->procInfo[i].name != NULL) &&
-                (strncmp(name, pMpCfg->procInfo[i].name, IPC_MAX_PROC_NAMELEN) == 0U))
+            if ((strncmp(name, pMpCfg->procInfo[i].name, IPC_MAX_PROC_NAMELEN) == 0U))
             {
                 procId = pMpCfg->procInfo[i].procId;
             }

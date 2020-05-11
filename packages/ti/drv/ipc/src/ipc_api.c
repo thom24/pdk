@@ -311,15 +311,12 @@ static int32_t RPMessage_enqueMsg(RPMessage_EndptPool *pool, RPMessage_MsgHeader
     Ipc_OsalPrms        *pOsalPrms = &gIpcObject.initPrms.osalPrms;
 
     /* Protect from RPMessage_delete */
-    if (NULL != pOsalPrms)
+    if ((NULL != pOsalPrms->lockHIsrGate) &&
+			(NULL != pOsalPrms->unLockHIsrGate))
     {
-        if ((NULL != pOsalPrms->lockHIsrGate) &&
-            (NULL != pOsalPrms->unLockHIsrGate))
-        {
-            key = pOsalPrms->lockHIsrGate(module.gateSwi);
-            obj = RPMessage_lookupEndpt(pool, msg->dstAddr);
-            pOsalPrms->unLockHIsrGate(module.gateSwi, key);
-        }
+	    key = pOsalPrms->lockHIsrGate(module.gateSwi);
+	    obj = RPMessage_lookupEndpt(pool, msg->dstAddr);
+	    pOsalPrms->unLockHIsrGate(module.gateSwi, key);
     }
 
     if (NULL != obj)
@@ -532,14 +529,11 @@ static int32_t RPMessage_processAnnounceMsg(RPMessage_Announcement *amsg, uint32
              procId, amsg->endPt );
 #endif
 
-    if (NULL != pOsalPrms)
+    if (((NULL == pOsalPrms->lockHIsrGate) ||
+	        (NULL == pOsalPrms->unLockHIsrGate)) ||
+	        (NULL == pOsalPrms->unlockMutex))
     {
-        if (((NULL == pOsalPrms->lockHIsrGate) ||
-             (NULL == pOsalPrms->unLockHIsrGate)) ||
-            (NULL == pOsalPrms->unlockMutex))
-        {
-            rtnVal = IPC_EFAIL;
-        }
+	    rtnVal = IPC_EFAIL;
     }
 
     if (IPC_SOK == rtnVal)
@@ -662,19 +656,17 @@ int32_t RPMessage_getRemoteEndPt(uint32_t selfProcId, const char* name, uint32_t
         rtnVal = IPC_EFAIL;
     }
 
-    if (NULL != pOsalPrms)
+
+    if ((NULL == pOsalPrms->createMutex ||
+	        NULL == pOsalPrms->lockMutex) ||
+	        (NULL == pOsalPrms->deleteMutex))
     {
-        if ((NULL == pOsalPrms->createMutex ||
-             NULL == pOsalPrms->lockMutex) ||
-             (NULL == pOsalPrms->deleteMutex))
-        {
-            rtnVal = IPC_EFAIL;
-        }
-        if ((NULL == pOsalPrms->lockHIsrGate) ||
-            (NULL == pOsalPrms->unLockHIsrGate))
-        {
-            rtnVal = IPC_EFAIL;
-        }
+	    rtnVal = IPC_EFAIL;
+    }
+    if ((NULL == pOsalPrms->lockHIsrGate) ||
+	        (NULL == pOsalPrms->unLockHIsrGate))
+    {
+	    rtnVal = IPC_EFAIL;
     }
 
     if (IPC_SOK == rtnVal)
@@ -866,8 +858,7 @@ static RPMessage_Object* RPMessage_rawCreate(
 
     /* Returning NULL, here Fix ME TBD
         This function error checks would require an overhaul */
-    if ( (NULL == pOsalPrms) ||
-         (NULL == pOsalPrms->lockHIsrGate) ||
+    if ( (NULL == pOsalPrms->lockHIsrGate) ||
          (NULL == pOsalPrms->unLockHIsrGate))
     {
         status = IPC_EFAIL;
@@ -1146,14 +1137,13 @@ int32_t RPMessage_delete(RPMessage_Handle *handlePtr)
     int32_t                    key;
     Ipc_OsalPrms              *pOsalPrms = &gIpcObject.initPrms.osalPrms;
 
-    if (NULL != pOsalPrms)
+
+    if ((NULL != pOsalPrms->lockHIsrGate) &&
+	        (NULL != pOsalPrms->unLockHIsrGate))
     {
-        if ((NULL != pOsalPrms->lockHIsrGate) &&
-             (NULL != pOsalPrms->unLockHIsrGate))
-        {
-            status = IPC_SOK;
-        }
+	    status = IPC_SOK;
     }
+
     if ((handlePtr && (obj = (RPMessage_Object *)(*handlePtr))) &&
         (IPC_SOK == status))
     {
@@ -1333,17 +1323,15 @@ static int32_t RPMessage_rawSend(Virtio_Handle vq,
 
     bufSize = sizeof(RPMessage_MsgHeader) + len;
 
-    if (NULL != pOsalPrms)
+    if ((NULL != pOsalPrms->lockHIsrGate) &&
+	        (NULL != pOsalPrms->unLockHIsrGate))
     {
-        if ((NULL != pOsalPrms->lockHIsrGate) &&
-            (NULL != pOsalPrms->unLockHIsrGate))
-        {
-            /* Send to remote processor: */
-            key = pOsalPrms->lockHIsrGate(module.gateSwi);
-            token = Virtio_getAvailBuf(vq, (void **)&msg, &length);
-            pOsalPrms->unLockHIsrGate(module.gateSwi, key);
-        }
+        /* Send to remote processor: */
+	    key = pOsalPrms->lockHIsrGate(module.gateSwi);
+	    token = Virtio_getAvailBuf(vq, (void **)&msg, &length);
+	    pOsalPrms->unLockHIsrGate(module.gateSwi, key);
     }
+
     if(!msg)
     {
         SystemP_printf("RPMessage_rawSend ...NULL MsgHdr\n");
