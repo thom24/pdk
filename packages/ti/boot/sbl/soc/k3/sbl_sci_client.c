@@ -134,11 +134,6 @@ void SBL_SciClientInit(void)
         SBL_log(SBL_LOG_ERR,"SYSFW read...FAILED \n");
         SblErrLoop(__FILE__, __LINE__);
     }
-    else
-    {
-        SBL_ADD_PROFILE_POINT;
-        SBL_IsSysfwEnc((uint8_t *) sysfw_ptr);
-    }
 
 #ifndef SBL_SKIP_SYSFW_INIT
 
