@@ -99,6 +99,10 @@ extern int port_en[];
 static uint8_t  gAppTestSequenceNumber  = 1;
 #ifdef EMAC_TEST_APP_ICSSG
 
+#define EMAC_ICSSG_DUAL_MAC_FW_BUFER_POOL_SIZE_PG2 0X14000 // 8 BUFFER POOLS EACH 0X2000 BYTES PLUS 0X4000 BYTES FOR RX Q CONTEXT info
+#define EMAC_ICSSG_BUFFER_POOL_SIZE_PG2 0x2000u
+#define EMAC_ICSSG_MAX_NUM_BUFFER_POOLS_PG2 8u
+
 #ifdef SOC_J721E
 uint8_t icss_tx_port_queue[2][100352] __attribute__ ((aligned (UDMA_CACHELINE_ALIGNMENT))) __attribute__ ((section (".bss:emac_ocmc_mem")));
 #else
@@ -109,9 +113,6 @@ uint8_t icss_tx_port_queue[1][100352] __attribute__ ((aligned (UDMA_CACHELINE_AL
 #ifdef EMAC_BENCHMARK
 uint8_t icss_tx_port_queue[1][100352] __attribute__ ((aligned (UDMA_CACHELINE_ALIGNMENT))) __attribute__ ((section (".bss:emac_msmc_mem")));
 #else /* test all port for DUAL MAC */
-#define EMAC_ICSSG_DUAL_MAC_FW_BUFER_POOL_SIZE_PG2 0X14000 // 8 BUFFER POOLS EACH 0X2000 BYTES PLUS 0X4000 BYTES FOR RX Q CONTEXT info
-#define EMAC_ICSSG_BUFFER_POOL_SIZE_PG2 0x2000u
-#define EMAC_ICSSG_MAX_NUM_BUFFER_POOLS_PG2 8u
 uint8_t icss_tx_port_queue[6][EMAC_ICSSG_DUAL_MAC_FW_BUFER_POOL_SIZE_PG2] __attribute__ ((aligned (UDMA_CACHELINE_ALIGNMENT))) __attribute__ ((section (".bss:emac_msmc_mem")));
 #endif
 #endif
@@ -1383,6 +1384,8 @@ void app_test_set_port_state_ctrl(uint32_t startP, uint32_t endP)
     {
         for (pNum = startP; pNum  <= endP; pNum++)
         {
+            if (!port_en[pNum])
+                continue;
             params.subCommand = EMAC_IOCTL_PORT_STATE_FORWARD;
             params.seqNumber = gAppTestSequenceNumber++;
             retVal = emac_ioctl(pNum, EMAC_IOCTL_PORT_STATE_CTRL, &params);

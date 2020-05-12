@@ -1160,32 +1160,48 @@ EMAC_DRV_ERR_E emac_ioctl_configure_interface_mac_ctrl(uint32_t portNum, void* p
     temp =  *((int16_t *) &macAddr[4]);
     macHi = (int32_t) temp;
 
-    if ((portNum  == EMAC_ICSSG0_SWITCH_PORT1) ||
-        (portNum  == EMAC_ICSSG1_SWITCH_PORT1) ||
-        (portNum  == EMAC_ICSSG2_SWITCH_PORT1))
+    if((portNum  & 1) == 0)
     {
-        baseAddr = emac_mcb.port_cb[portNum].icssDram0BaseAddr + CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_REGS_BASE;
-
         CSL_REG32_WR(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_MAC_PRU0_0, macLo);
         CSL_REG32_WR(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_MAC_PRU0_1, macHi);
     }
-    if ((portNum  == EMAC_ICSSG0_SWITCH_PORT2) ||
-        (portNum  == EMAC_ICSSG1_SWITCH_PORT2) ||
-        (portNum  == EMAC_ICSSG2_SWITCH_PORT2))
+    else
     {
-        baseAddr = emac_mcb.port_cb[portNum].icssDram0BaseAddr + CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_REGS_BASE;
         CSL_REG32_WR(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_MAC_PRU1_0, macLo);
         CSL_REG32_WR(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_MAC_PRU1_1, macHi);
     }
     
-    if ((portNum  == EMAC_ICSSG0_SWITCH_PORT0) ||
-        (portNum  == EMAC_ICSSG1_SWITCH_PORT0) ||
-        (portNum  == EMAC_ICSSG2_SWITCH_PORT0))
-    {
-        baseAddr = emac_mcb.port_cb[portNum].icssDram0BaseAddr + CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_REGS_BASE;
-        CSL_REG32_WR(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_MAC_INTERFACE_0, macLo);
-        CSL_REG32_WR(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_MAC_INTERFACE_1, macHi);
-    }
+    UTILS_trace(UTIL_TRACE_LEVEL_INFO, emac_mcb.drv_trace_cb, "port: %d: EXIT with status: %d",portNum, retVal);
+    return retVal;
+
+}
+
+/*
+ *  ======== emac_ioctl_configure_interface_mac_ctrl_host_port ========
+ */
+EMAC_DRV_ERR_E emac_ioctl_configure_interface_mac_ctrl_host_port(uint32_t portNum, void* p_params)
+{
+    int32_t macLo;
+    int32_t macHi;
+    int16_t temp;
+    EMAC_DRV_ERR_E retVal = EMAC_DRV_RESULT_OK;
+    EMAC_IOCTL_PARAMS *pParams = (EMAC_IOCTL_PARAMS*) p_params;
+    EMAC_MAC_ADDR_T *entry = (EMAC_MAC_ADDR_T*)pParams->ioctlVal;
+    uintptr_t baseAddr;
+    uint8_t* macAddr = &(entry->addr[0]);
+
+    UTILS_trace(UTIL_TRACE_LEVEL_INFO, emac_mcb.drv_trace_cb, "port: %d: ENTER",portNum);
+
+    baseAddr = emac_mcb.port_cb[portNum].icssDram0BaseAddr + CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_REGS_BASE;
+
+    macLo =  *((int32_t *) &macAddr[0]);
+    temp =  *((int16_t *) &macAddr[4]);
+    macHi = (int32_t) temp;
+
+    /* add mac */
+    CSL_REG32_WR(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_MAC_INTERFACE_0, macLo);
+    CSL_REG32_WR(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_MAC_INTERFACE_1, macHi);
+
     UTILS_trace(UTIL_TRACE_LEVEL_INFO, emac_mcb.drv_trace_cb, "port: %d: EXIT with status: %d",portNum, retVal);
     return retVal;
 

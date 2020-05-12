@@ -73,7 +73,15 @@
 #include <ti/drv/emac/soc/emac_soc_v5.h>
 #include <ti/transport/ndk/nimu/src/v7/nimu_eth.h>
 
-/* Called by nimu driver at time of nimu_start to get udma handle */
+#include <ti/ndk/inc/netmain.h>
+#include <ti/ndk/inc/stkmain.h>
+#include <ti/ndk/inc/socket.h>
+#include <ti/ndk/inc/_stack.h>
+#include <ti/ndk/inc/tools/servers.h>
+#include <ti/ndk/inc/tools/console.h>
+
+extern int32_t (*NimuEmacInitFxn[NIMU_NUM_EMAC_PORTS])(STKEVENT_Handle hEvent);
+extern char *LocalIPAddr;
 
 /* Semaphore to sync NDK stack init to start after NIMU application init complete */
 static Semaphore_Handle gSyncSemHandle;
@@ -96,8 +104,6 @@ struct Udma_DrvObj gUdmaDrvObj;
 
 /* TX port queue memory for 3 icss-g instances */
 uint8_t icss_tx_port_queue[1][100352] __attribute__ ((aligned (UDMA_CACHELINE_ALIGNMENT))) __attribute__ ((section (".bss:nimu_msmc_mem")));
-#define TX_BUFF_POOL_SIZE 0X1800u
-#define TX_BUFF_POOL_TOTAL_DUAL_MAC (TX_BUFF_POOL_SIZE + 0x80) * 8U //50176 per PORT, total of 100352
 #endif
 
 
@@ -162,7 +168,7 @@ uint32_t portNum = NIMU_EMAC_PORT_CPSW;
 #else
 /* ICSSG case */
 #ifdef am65xx_idk
-uint32_t portNum = NIMU_EMAC_PORT_ICSS;
+uint32_t portNum = NIMU_EMAC_PORT_ICSS + 4;
 #else
 uint32_t portNum = NIMU_EMAC_PORT_ICSS + 4;
 #endif
@@ -171,9 +177,9 @@ uint32_t portNum = NIMU_EMAC_PORT_ICSS + 4;
 Task_Handle main_task;
 
 NIMU_DEVICE_TABLE_ENTRY NIMUDeviceTable[NIMU_NUM_EMAC_PORTS];
-extern int32_t (*NimuEmacInitFxn[NIMU_NUM_EMAC_PORTS])(STKEVENT_Handle hEvent);
 
-extern char *LocalIPAddr;
+uint32_t gPgVersion2;
+#define APP_TEST_AM65XX_PG1_0_VERSION (0x0BB5A02FU)
 
 void TaskFxn(UArg a0, UArg a1);
 
@@ -188,23 +194,36 @@ void nimu_app_setup_fw_dualmac(uint32_t port_num, EMAC_HwAttrs_V5 *pEmacCfg)
 {
     EMAC_FW_APP_CONFIG *pFwAppCfg;
     emacGetDualMacFwAppInitCfg(port_num, &pFwAppCfg);
-    if ((port_num % 2) == 0)
-    {
-        pFwAppCfg->txPortQueueLowAddr = 0xFFFFFFFF & ((uint32_t) &icss_tx_port_queue[0][0]);
-    }
-    else
-    {
-        pFwAppCfg->txPortQueueLowAddr = 0xFFFFFFFF & ((uint32_t) &icss_tx_port_queue[0][TX_BUFF_POOL_TOTAL_DUAL_MAC]);
-    }
-
+    pFwAppCfg->txPortQueueLowAddr = 0xFFFFFFFF & ((uint32_t) &icss_tx_port_queue[0][0]);
     pFwAppCfg->txPortQueueHighAddr = 0;
 
     emacSetDualMacFwAppInitCfg(port_num, pFwAppCfg);
-
     /* Need to update the emac configuraiton with  function required by the driver to get the FW configuration to write to shared mem */
     pEmacCfg->portCfg[port_num].getFwCfg = &emacGetDualMacFwConfig;
 
 }
+
+#define NIMU_BUFFER_POOL_SIZE_PG2 0x2000u
+#define NIMU_MAX_NUM_BUFFER_POOLS_PG2 8u
+void nimu_app_setup_fw_dualmac_pg2(uint32_t port_num, EMAC_HwAttrs_V5 *pEmacCfg)
+{
+    uint32_t i;
+    EMAC_FW_APP_CONFIG *pFwAppCfg;
+
+    emacGetDualMacFwAppInitCfg(port_num, &pFwAppCfg);
+    pFwAppCfg->bufferPoolLowAddr = 0xFFFFFFFF & ((uintptr_t) &icss_tx_port_queue[0][0]);
+    pFwAppCfg->bufferPoolHighAddr = 0;
+    pFwAppCfg->numBufferPool = NIMU_MAX_NUM_BUFFER_POOLS_PG2;
+
+    for(i = 0; i < NIMU_MAX_NUM_BUFFER_POOLS_PG2; i++)
+    {
+        pFwAppCfg->bufferPoolSize[i] = NIMU_BUFFER_POOL_SIZE_PG2;
+    }
+
+    emacSetDualMacFwAppInitCfg(port_num, pFwAppCfg);
+    pEmacCfg->portCfg[port_num].getFwCfg = &emacGetDualMacFwConfig;
+}
+
 #endif
 
 
@@ -262,11 +281,21 @@ void nimu_app_init_emac_k3(uint32_t portNum, uint32_t index)
     }
 
 #ifdef NIMU_APP_ICSSG
-    nimu_app_setup_fw_dualmac(portNum, &emac_cfg);
+    if (gPgVersion2 == APP_TEST_AM65XX_PG1_0_VERSION)
+    {
+        nimu_app_setup_fw_dualmac(portNum, &emac_cfg);
+    }
+    else
+    {
+        nimu_app_setup_fw_dualmac_pg2(portNum, &emac_cfg);
+    }
 #endif
 
     EMAC_socSetInitCfg(0, &emac_cfg);
 }
+
+uint32_t cpuLoadMax = 0;
+uint32_t cpuLoad = 0;
 
 /**
  *  \name NIMUStartUpTask
@@ -281,12 +310,35 @@ void NIMUStartUpTask(UArg a0, UArg a1)
     int32_t retVal;
     uint32_t nimu_device_index = 0U;
     Udma_InitPrms initPrms;
-#if defined (__aarch64__)
-    UdmaInitPrms_init(UDMA_INST_ID_MAIN_0, &initPrms);
+    uint32_t instId = 0;
+
+
+    gPgVersion2 = CSL_REG32_RD(CSL_WKUP_CTRL_MMR0_CFG0_BASE + CSL_WKUP_CTRL_MMR_CFG0_JTAGID);
+#if defined (SOC_AM65XX)
+#if defined (NIMU_APP_CPSW)
+        /* if A53 and pg 1.0 use mcu navss due to hw errata*/
+#if defined (BUILD_MPU1_0)
+        if (gPgVersion2 == APP_TEST_AM65XX_PG1_0_VERSION)
+        {
+            instId = UDMA_INST_ID_MCU_0;
+        }
+        else
+        {
+            instId = UDMA_INST_ID_MAIN_0;
+        }
 #else
-    UdmaInitPrms_init(UDMA_INST_ID_MCU_0, &initPrms);
+        instId = UDMA_INST_ID_MCU_0;
+#endif
+#else
+#if defined (__aarch64__)
+    instId = UDMA_INST_ID_MAIN_0;
+#else
+instId = UDMA_INST_ID_MCU_0;
+#endif
+#endif
 #endif
 
+    UdmaInitPrms_init(instId, &initPrms);
     gUdmaDrvHandle = &gUdmaDrvObj;
     retVal = Udma_init(gUdmaDrvHandle, &initPrms);
     if(UDMA_SOK == retVal)
@@ -306,6 +358,17 @@ void NIMUStartUpTask(UArg a0, UArg a1)
     NIMUDeviceTable[nimu_device_index].init =  NULL;
     /* NIMUStartUpTask complete can post the semaphore now */
     Semaphore_post(gSyncSemHandle);
+
+    while (1)
+    {
+        Task_sleep(10000);
+        cpuLoad = Load_getCPULoad();
+        if (cpuLoad > cpuLoadMax)
+        {
+            cpuLoadMax = cpuLoad;
+        }
+        UART_printf("\ncpu load: %d, max cpu load: %d\n", cpuLoad, cpuLoadMax);
+    }
 }
 
 /**
@@ -670,5 +733,34 @@ void stackInitHook(void* hCfg)
     CfgAddEntry(hCfg, CFGTAG_OS, CFGITEM_OS_TASKSTKBOOT,CFG_ADDMODE_UNIQUE, sizeof(uint32_t), (uint8_t *)&rc, 0 );
     /* Wait for NIMU startup to complete before proceeding */
     Semaphore_pend(gSyncSemHandle, SemaphoreP_WAIT_FOREVER);
+}
+
+static void *hEcho = 0;
+static void *hEchoUdp = 0;
+static void *hData = 0;
+static void *hNull = 0;
+static void *hOob = 0;
+void NimuApp_netOpenHook()
+{
+    /* Create our local servers */
+    hEcho = DaemonNew( SOCK_STREAMNC, 0, 7, dtask_tcp_echo,
+                       OS_TASKPRINORM, OS_TASKSTKNORM, 0, 3 );
+    hEchoUdp = DaemonNew( SOCK_DGRAM, 0, 7, dtask_udp_echo,
+                          OS_TASKPRINORM, OS_TASKSTKNORM, 0, 1 );
+    hData = DaemonNew( SOCK_STREAM, 0, 1000, dtask_tcp_datasrv,
+                       OS_TASKPRINORM, OS_TASKSTKNORM, 0, 3 );
+    hNull = DaemonNew( SOCK_STREAMNC, 0, 1001, dtask_tcp_nullsrv,
+                       OS_TASKPRINORM, OS_TASKSTKNORM, 0, 3 );
+    hOob  = DaemonNew( SOCK_STREAMNC, 0, 999, dtask_tcp_oobsrv,
+                       OS_TASKPRINORM, OS_TASKSTKNORM, 0, 3 );
+}
+
+void NimuApp_netCloseHook()
+{
+    DaemonFree(hOob);
+    DaemonFree(hNull);
+    DaemonFree(hData);
+    DaemonFree(hEchoUdp);
+    DaemonFree(hEcho);
 }
 

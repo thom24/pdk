@@ -49,34 +49,59 @@
 #include <ti/transport/ndk/nimu/src/NIMU_drv_log.h>
 #include <ti/transport/ndk/nimu/src/nimu_osal.h>
 
-#ifdef NIMU_ICSSG
-/* PRUSS Driver Header File. */
-#include <ti/drv/pruss/pruicss.h>
-#include <ti/drv/pruss/soc/pruicss_v1.h>
-/* DUAL MAC Firmware headers */
-#include <ti/drv/emac/firmware/icss_dualmac/bin/rxl2_txl2_rgmii0_bin.h>      /* PDSPcode */
-#include <ti/drv/emac/firmware/icss_dualmac/bin/rtu_test0_bin.h>             /* PDSP2code */
-#include <ti/drv/emac/firmware/icss_dualmac/bin/rxl2_txl2_rgmii1_bin.h>      /*PDSP3code */
-#include <ti/drv/emac/firmware/icss_dualmac/bin/rtu_test1_bin.h>             /* PDSP4code */
-#include <ti/drv/emac/firmware/icss_dualmac/config/emac_fw_config_dual_mac.h>
-
-/* PRUSS driver handle */
-PRUICSS_Handle prussHandle[3] = {NULL, NULL, NULL};
-
-static NIMU_PruRtuFw firmware[2] = {
-    { PDSPcode_0, sizeof(PDSPcode_0), PDSP2code_0, sizeof(PDSP2code_0) },
-    { PDSP3code_0, sizeof(PDSP3code_0), PDSP4code_0, sizeof(PDSP4code_0) },
-};
-
-int32_t nimu_init_pruicss(uint32_t portNum);
-int32_t nimu_disable_pruicss(uint32_t portNum);
-#endif
-
 extern Udma_DrvHandle nimu_app_get_udma_handle(void);
 extern void Osal_TaskCreate_v2(void* pCbFn, uint32_t arg);
 extern void* Osal_malloc(uint32_t  num_bytes);
 extern void Osal_free(void*       ptr, uint32_t      num_bytes);
 extern void Osal_TaskSleep(uint32_t sleepTime);
+
+
+#ifdef NIMU_ICSSG
+#include <ti/drv/pruss/pruicss.h>
+#include <ti/drv/pruss/soc/pruicss_v1.h>
+
+int32_t nimu_init_pruicss(uint32_t portNum);
+int32_t nimu_disable_pruicss(uint32_t portNum);
+
+typedef struct {
+    const uint32_t *pru;
+    uint32_t pru_size;
+    const uint32_t *rtu;
+    uint32_t rtu_size;
+    const uint32_t *txpru;
+    uint32_t txpru_size;
+} nimu_icssg_pru_rtu_fw_t;
+
+#if defined (SOC_AM65XX)
+/* PG 1.0 Firmware */
+#include <ti/drv/emac/firmware/icss_dualmac/bin/rxl2_txl2_rgmii0_bin.h>      /* PDSPcode */
+#include <ti/drv/emac/firmware/icss_dualmac/bin/rtu_test0_bin.h>             /* PDSP2code */
+#include <ti/drv/emac/firmware/icss_dualmac/bin/rxl2_txl2_rgmii1_bin.h>      /* PDSP3code */
+#include <ti/drv/emac/firmware/icss_dualmac/bin/rtu_test1_bin.h>             /* PDSP4code */
+#endif
+
+/* PG2.0 firmware */
+#include <ti/drv/emac/firmware/icss_dualmac/bin_pg2/RX_PRU_SLICE0_bin.h>
+#include <ti/drv/emac/firmware/icss_dualmac/bin_pg2/RX_PRU_SLICE1_bin.h>
+#include <ti/drv/emac/firmware/icss_dualmac/bin_pg2/RTU0_SLICE0_bin.h>
+#include <ti/drv/emac/firmware/icss_dualmac/bin_pg2/RTU0_SLICE1_bin.h>
+#include <ti/drv/emac/firmware/icss_dualmac/bin_pg2/TX_PRU_SLICE0_bin.h>
+#include <ti/drv/emac/firmware/icss_dualmac/bin_pg2/TX_PRU_SLICE1_bin.h>
+
+nimu_icssg_pru_rtu_fw_t firmware_pg1[2] = {
+#if defined (SOC_AM65XX)
+    { PDSPcode_0, sizeof(PDSPcode_0), PDSP2code_0, sizeof(PDSP2code_0), NULL, 0},
+    { PDSP3code_0, sizeof(PDSP3code_0), PDSP4code_0, sizeof(PDSP4code_0), NULL, 0}
+#endif
+};
+
+nimu_icssg_pru_rtu_fw_t firmware_pg2[2] = {
+    { RX_PRU_SLICE0_b00, sizeof(RX_PRU_SLICE0_b00), RTU0_SLICE0_b00, sizeof(RTU0_SLICE0_b00), TX_PRU_SLICE0_b00, sizeof(TX_PRU_SLICE0_b00)},
+    { RX_PRU_SLICE1_b00, sizeof(RX_PRU_SLICE1_b00), RTU0_SLICE1_b00, sizeof(RTU0_SLICE1_b00), TX_PRU_SLICE1_b00, sizeof(TX_PRU_SLICE1_b00)}
+};
+
+PRUICSS_Handle prussHandle[3] = {NULL, NULL, NULL};
+#endif
 
 #define NIMU_CPSW_PORT_NUM ((uint32_t)6U)
 #define NIMU_PORT_NAME_LEN ((uint32_t)5U)
@@ -93,6 +118,10 @@ NETIF_DEVICE   ptr_device[NIMU_NUM_EMAC_PORTS];
 
 static NIMU_PdInfo* pPDI[NIMU_NUM_EMAC_PORTS]={NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL};
 
+#define APP_TEST_AM65XX_PG1_0_VERSION (0x0BB5A02FU)
+
+/* Maxwell PG version */
+uint32_t gPgVersion;
 
 static int_fast32_t nimu_pkt_tx_next( NIMU_PdInfo *pi );
 int32_t nimu_pkt_ioctl(NIMU_PdInfo *pi, uint32_t cmd, void* param, uint32_t size);
@@ -206,6 +235,7 @@ static int_fast32_t NIMU_start (NETIF_DEVICE* ptr_net_device)
     /* Get the pointer to the private data */
     ptr_pvt_data = (NIMU_EMAC_DATA *)ptr_net_device->pvt_data;
 
+    gPgVersion = CSL_REG32_RD(CSL_WKUP_CTRL_MMR0_CFG0_BASE + CSL_WKUP_CTRL_MMR_CFG0_JTAGID);
     port_num = ptr_pvt_data->pdi.portNum;
 #ifdef NIMU_ICSSG
     PRUICSS_socGetInitCfg(&prussCfg);
@@ -214,81 +244,98 @@ static int_fast32_t NIMU_start (NETIF_DEVICE* ptr_net_device)
      {
         case 0:
         case 1:
-            prussHandle[0] =  PRUICSS_create((PRUICSS_Config*)prussCfg, PRUICCSS_INSTANCE_ONE);
-            nimu_disable_pruicss(port_num);
+            if ((prussHandle[0] =  PRUICSS_create((PRUICSS_Config*)prussCfg, PRUICCSS_INSTANCE_ONE)) == NULL)
+            {
+                NIMU_drv_log1("NIMU_start: port: %d: PRUICSS_create failed\n", port_num);
+                return -1;
+            }
+            retVal = nimu_disable_pruicss(port_num);
             break;
         case 2:
         case 3:
-            prussHandle[1] =  PRUICSS_create((PRUICSS_Config*)prussCfg, PRUICCSS_INSTANCE_TWO);
-            nimu_disable_pruicss(port_num);
+            if ((prussHandle[1] =  PRUICSS_create((PRUICSS_Config*)prussCfg, PRUICCSS_INSTANCE_TWO)) == NULL)
+            {
+                NIMU_drv_log1("NIMU_start: port: %d: PRUICSS_create failed\n", port_num);
+                return -1;
+            }
+            retVal = nimu_disable_pruicss(port_num);
             break;
         case 4:
         case 5:
-            prussHandle[2] =  PRUICSS_create((PRUICSS_Config*)prussCfg, PRUICCSS_INSTANCE_MAX);
-            nimu_disable_pruicss(port_num);
+            if ((prussHandle[2] =  PRUICSS_create((PRUICSS_Config*)prussCfg, PRUICCSS_INSTANCE_THREE)) == NULL)
+            {
+                NIMU_drv_log1("NIMU_start: port: %d: PRUICSS_create failed\n", port_num);
+                return -1;
+            }
+            retVal = nimu_disable_pruicss(port_num);
             break;
         default:
             break;
      }
 #endif
-    pPDI[port_num] = &(ptr_pvt_data->pdi);
-    /* Wait for link to come up */
+
+    if (retVal == 0)
+    {
+        pPDI[port_num] = &(ptr_pvt_data->pdi);
+        /* Wait for link to come up */
 #if defined(SOC_J721E) /// if it is J721E simluator then set txTree to 1    
-    ptr_pvt_data->pdi.txFree = 1U;
+        ptr_pvt_data->pdi.txFree = 1U;
 #else
-    ptr_pvt_data->pdi.txFree = 0U;
+        ptr_pvt_data->pdi.txFree = 0U;
 #endif
-    /* Copy the MAC Address into the network interface object here. */
-    mmCopy((void*)(&ptr_net_device->mac_address[0]), (void*)(&ptr_pvt_data->pdi.bMacAddr[0]), 6U);
+        /* Copy the MAC Address into the network interface object here. */
+        mmCopy((void*)(&ptr_net_device->mac_address[0]), (void*)(&ptr_pvt_data->pdi.bMacAddr[0]), 6U);
 
-    /* Set the 'initial' Receive Filter */
-    ptr_pvt_data->pdi.rxFilter = ETH_PKTFLT_ALL;
+        /* Set the 'initial' Receive Filter */
+        ptr_pvt_data->pdi.rxFilter = ETH_PKTFLT_ALL;
 
-    memset(&open_cfg, 0, sizeof(EMAC_OPEN_CONFIG_INFO_T));
-    EMAC_socGetInitCfg(0, &emac_cfg);
-    open_cfg.udmaHandle = nimu_app_get_udma_handle();
-    open_cfg.hwAttrs = (void*)&emac_cfg;
-    open_cfg.alloc_pkt_cb = &nimu_alloc_pkt;
-    open_cfg.free_pkt_cb = &nimu_free_pkt;
-    open_cfg.rx_pkt_cb = &nimu_rx_pkt_cb;
-    open_cfg.loop_back = 0;
-    open_cfg.master_core_flag = 1;
-    open_cfg.max_pkt_size = NIMU_PKT_MTU_DEFAULT;
-    open_cfg.mdio_flag = 1;
-    open_cfg.num_of_chans = 1;
-    open_cfg.num_of_rx_pkt_desc = 128U;
-    open_cfg.num_of_tx_pkt_desc = 128U;
-    open_cfg.phy_addr = 0;
-    open_cfg.mode_of_operation = EMAC_MODE_INTERRUPT;
-
-    chan_cfg[0].p_mac_addr = (EMAC_MAC_ADDR_T*)&ptr_pvt_data->pdi.bMacAddr[0];
-
-    /* Set the channel configuration */
-    chan_cfg[0].chan_num = 0;
-    chan_cfg[0].num_of_mac_addrs = 1;
-    open_cfg.p_chan_mac_addr = &chan_cfg[0];
-
-    if ((port_num % 2) == 0)
+        memset(&open_cfg, 0, sizeof(EMAC_OPEN_CONFIG_INFO_T));
+        EMAC_socGetInitCfg(0, &emac_cfg);
+        open_cfg.udmaHandle = nimu_app_get_udma_handle();
+        open_cfg.hwAttrs = (void*)&emac_cfg;
+        open_cfg.alloc_pkt_cb = &nimu_alloc_pkt;
+        open_cfg.free_pkt_cb = &nimu_free_pkt;
+        open_cfg.rx_pkt_cb = &nimu_rx_pkt_cb;
+        open_cfg.loop_back = 0;
+        open_cfg.master_core_flag = 1;
+        open_cfg.max_pkt_size = NIMU_PKT_MTU_DEFAULT;
+        open_cfg.mdio_flag = 1;
+        open_cfg.num_of_chans = 1;
+        open_cfg.num_of_rx_pkt_desc = 128U;
+        open_cfg.num_of_tx_pkt_desc = 128U;
         open_cfg.phy_addr = 0;
-    else
-        open_cfg.phy_addr = 3;
+        open_cfg.mode_of_operation = EMAC_MODE_INTERRUPT;
+        chan_cfg[0].p_mac_addr = (EMAC_MAC_ADDR_T*)&ptr_pvt_data->pdi.bMacAddr[0];
+        /* Set the channel configuration */
+        chan_cfg[0].chan_num = 0;
+        chan_cfg[0].num_of_mac_addrs = 1;
+        open_cfg.p_chan_mac_addr = &chan_cfg[0];
 
-    if ((emac_open(port_num, &open_cfg)) != EMAC_DRV_RESULT_OK)
-    {
-        NIMU_drv_log("EMACInit_Core failed\n");
-        retVal = -1;
-    }
-    else
-    {
-#ifdef NIMU_ICSSG
-        nimu_init_pruicss(port_num);
-#endif
-        Osal_TaskCreate_v2((void*)nimu_task_poll_pkt, port_num);
-#ifdef NIMU_ICSSG
-        Osal_TaskCreate_v2((void*)nimu_task_poll_ctrl, port_num);
-#endif
+        if ((port_num % 2) == 0)
+            open_cfg.phy_addr = 0;
+        else
+            open_cfg.phy_addr = 3;
 
-        NIMU_drv_log ("EMAC has been started successfully\n");
+        if ((emac_open(port_num, &open_cfg)) != EMAC_DRV_RESULT_OK)
+        {
+            NIMU_drv_log("NIMU_start failed\n");
+            retVal = -1;
+        }
+        else
+        {
+#ifdef NIMU_ICSSG
+            retVal = nimu_init_pruicss(port_num);
+#endif
+            if (retVal == 0)
+            {
+                Osal_TaskCreate_v2((void*)nimu_task_poll_pkt, port_num);
+            
+#ifdef NIMU_ICSSG
+                Osal_TaskCreate_v2((void*)nimu_task_poll_ctrl, port_num);
+#endif
+                NIMU_drv_log ("NIMU_start sucess \n");
+            }
+        }
     }
     return retVal;
 }
@@ -562,7 +609,7 @@ int32_t NimuEmacInit(uint32_t portNum, STKEVENT_Handle hEvent)
      return retVal;
 }
 
- int32_t NimuEmacInitP0(STKEVENT_Handle hEvent)
+int32_t NimuEmacInitP0(STKEVENT_Handle hEvent)
 {
     NimuEmacInit(0U, hEvent);
     return 0;
@@ -776,34 +823,45 @@ static void nimu_addr_get(uint32_t addrIdx, NIMU_MacAddr *p)
 
 #ifdef NIMU_ICSSG
 /*
- *  ======== nimu_init_pruicss========
+ *  ======== nimu_disable_pruicss========
  */
 int32_t  nimu_disable_pruicss(uint32_t portNum)
 {
     PRUICSS_Handle prussDrvHandle;
-    uint8_t pru_n, rtu_n, slice_n ;
+    uint8_t pru_n, rtu_n, txpru_n, slice_n;
 
     if (portNum > 5)
         return -1;
 
     prussDrvHandle =prussHandle[portNum >> 1];
-    if (prussDrvHandle == NULL)
-        return -1;
 
     slice_n = (portNum & 1);
     pru_n = (slice_n) ? PRUICCSS_PRU1 : PRUICCSS_PRU0;
     rtu_n = (slice_n) ? PRUICCSS_RTU1 : PRUICCSS_RTU0;
+    txpru_n = (slice_n) ? PRUICCSS_TPRU1 : PRUICCSS_TPRU0;
 
     if (PRUICSS_pruDisable(prussDrvHandle, pru_n) != 0)
+    {
+        NIMU_drv_log1("nimu_disable_pruicss: port: %d: PRUICSS_pruDisable failed for PRU\n", portNum);
         return -1;
-
+    }
     if (PRUICSS_pruDisable(prussDrvHandle, rtu_n) != 0)
+    {
+        NIMU_drv_log1("nimu_disable_pruicss: port: %d: PRUICSS_pruDisable failed for RTU\n", portNum);
         return -1;
+    }
 
+    /* pg version check: only disable txpru if NOT version PG1.0 */
+    if (gPgVersion != APP_TEST_AM65XX_PG1_0_VERSION)
+    {
+        if (PRUICSS_pruDisable(prussDrvHandle, txpru_n) != 0)
+        {
+            NIMU_drv_log1("nimu_disable_pruicss: port: %d: PRUICSS_pruDisable failed\ for TX PRUn", portNum);
+            return -1;
+        }
+    }
     /* CLEAR SHARED MEM which is used for host/firmware handshake */
-    PRUICSS_pruInitMemory(prussDrvHandle, PRU_ICSS_SHARED_RAM); 
-
-
+    PRUICSS_pruInitMemory(prussDrvHandle, PRU_ICSS_SHARED_RAM);
     return 0;
 }
 
@@ -813,8 +871,8 @@ int32_t  nimu_disable_pruicss(uint32_t portNum)
 int32_t  nimu_init_pruicss(uint32_t portNum)
 {
     PRUICSS_Handle prussDrvHandle;
-    uint8_t firmwareLoad_done = FALSE;
-    uint8_t pru_n, rtu_n, slice_n ;
+    uint8_t pru_n, rtu_n, txpru_n, slice_n;
+    nimu_icssg_pru_rtu_fw_t *firmware;
 
     if (portNum > 5)
         return -1;
@@ -822,27 +880,54 @@ int32_t  nimu_init_pruicss(uint32_t portNum)
     prussDrvHandle =prussHandle[portNum >> 1];
     if (prussDrvHandle == NULL)
         return -1;
-
     slice_n = (portNum & 1);
     pru_n = (slice_n) ? PRUICCSS_PRU1 : PRUICCSS_PRU0;
     rtu_n = (slice_n) ? PRUICCSS_RTU1 : PRUICCSS_RTU0;
+    txpru_n = (slice_n) ? PRUICCSS_TPRU1 : PRUICCSS_TPRU0;
 
-    if (PRUICSS_pruWriteMemory(prussDrvHandle,PRU_ICSS_IRAM(slice_n), 0,
-                               firmware[slice_n].pru, firmware[slice_n].pru_size)) {
-        if (PRUICSS_pruWriteMemory(prussDrvHandle,PRU_ICSS_IRAM(slice_n + 2), 0,
-                                   firmware[slice_n].rtu, firmware[slice_n].rtu_size))
-            firmwareLoad_done = TRUE;
-    }
+    firmware = (gPgVersion == APP_TEST_AM65XX_PG1_0_VERSION)?firmware_pg1:firmware_pg2;
 
-    if( firmwareLoad_done)
+
+    if (PRUICSS_pruWriteMemory(prussDrvHandle,PRU_ICSS_IRAM_PRU(slice_n), 0,
+                               firmware[slice_n].pru, firmware[slice_n].pru_size) == 0)
     {
-        if (PRUICSS_pruEnable(prussDrvHandle, pru_n) != 0)
-            return -1;
-        if (PRUICSS_pruEnable(prussDrvHandle, rtu_n) != 0)
-            return -1;
+        NIMU_drv_log1("nimu_init_pruicss: port: %d: PRUICSS_pruWriteMemory failed for PRU\n", portNum);
+        return -1;
     }
-
+    if (PRUICSS_pruWriteMemory(prussDrvHandle,PRU_ICSS_IRAM_RTU(slice_n), 0,
+                                   firmware[slice_n].rtu, firmware[slice_n].rtu_size) == 0)
+    {
+        NIMU_drv_log1("nimu_init_pruicss: port: %d: PRUICSS_pruWriteMemory failed for RTU\n", portNum);
+        return -1;
+    }
+    if (gPgVersion != APP_TEST_AM65XX_PG1_0_VERSION)
+    {
+        if (PRUICSS_pruWriteMemory(prussDrvHandle,PRU_ICSS_IRAM_TXPRU(slice_n), 0,
+                               firmware[slice_n].txpru, firmware[slice_n].txpru_size) == 0)
+        {
+            NIMU_drv_log1("nimu_init_pruicss: port: %d: PRUICSS_pruWriteMemory failed for TXPRU\n", portNum);
+            return -1;
+        }
+    }
+    if (PRUICSS_pruEnable(prussDrvHandle, pru_n) != 0)
+    {
+        NIMU_drv_log1("nimu_init_pruicss: port: %d: PRUICSS_pruEnable failed for PRU\n", portNum);
+        return -1;
+    }
+    if (PRUICSS_pruEnable(prussDrvHandle, rtu_n) != 0)
+    {
+        NIMU_drv_log1("nimu_init_pruicss: port: %d: PRUICSS_pruEnable failed for RTU\n", portNum);
+        return -1;
+    }
+    if (gPgVersion != APP_TEST_AM65XX_PG1_0_VERSION)
+    {
+        if (PRUICSS_pruEnable(prussDrvHandle, txpru_n) != 0)
+        {
+            NIMU_drv_log1("nimu_init_pruicss: port: %d: PRUICSS_pruEnable failed for TXPRU\n", portNum);
+            return -1;
+        }
+    }
     return 0;
 }
-
 #endif
+

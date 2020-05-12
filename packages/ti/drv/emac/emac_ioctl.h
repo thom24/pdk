@@ -626,6 +626,7 @@ extern void emac_switch_config_ft3_priority_tag(uint32_t port_num);
 extern EMAC_DRV_ERR_E emac_ioctl_prio_regen_mapping_ctrl(uint32_t port_num, void*  ctrl);
 extern EMAC_DRV_ERR_E emac_ioctl_uc_flooding_ctrl(uint32_t port_num, void* p_params);
 extern EMAC_DRV_ERR_E emac_ioctl_configure_interface_mac_ctrl(uint32_t port_num, void* p_params);
+extern EMAC_DRV_ERR_E emac_ioctl_configure_interface_mac_ctrl_host_port(uint32_t port_num, void* p_params);
 extern EMAC_DRV_ERR_E emac_ioctl_configure_cut_through_or_prempt_select_ctrl(uint32_t port_num, void* p_params);
 extern EMAC_DRV_ERR_E emac_ioctl_configure_special_frame_prio_ctrl(uint32_t port_num, void* p_params);
 extern EMAC_DRV_ERR_E emac_ioctl_frame_premption_ctrl(uint32_t port_num, void* p_params);

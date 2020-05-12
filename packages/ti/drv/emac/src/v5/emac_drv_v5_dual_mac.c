@@ -323,16 +323,7 @@ static EMAC_DRV_ERR_E emac_ioctl_v5_icssg_dual_mac(uint32_t portNum, EMAC_IOCTL_
                             retVal = emac_ioctl_vlan_ctrl_set_entry(portNum, ioctlData);
                             break;
                         case EMAC_IOCTL_VLAN_SET_DEFAULT_VLAN_ID:
-                            if ((portNum == EMAC_ICSSG0_SWITCH_PORT0) ||
-                                 (portNum == EMAC_ICSSG1_SWITCH_PORT0) ||
-                                 (portNum == EMAC_ICSSG1_SWITCH_PORT0))
-                            {
-                                retVal = emac_ioctl_vlan_ctrl_set_default_vlan_id_host_port(portNum, ioctlData);
-                            }
-                            else
-                            {
                                 retVal = emac_ioctl_vlan_ctrl_set_default_vlan_id(portNum, ioctlData);
-                            }
                             break;
                         case EMAC_IOCTL_VLAN_GET_ENTRY:
                             retVal = emac_ioctl_vlan_ctrl_get_entry(portNum, ioctlData);
