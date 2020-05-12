@@ -345,7 +345,7 @@ static int32_t RPMessage_enqueMsg(RPMessage_EndptPool *pool, RPMessage_MsgHeader
             size = msg->dataLen + sizeof(RPMessage_MsgElem);
 
             /* HeapBuf_alloc() is non-blocking, so needs protection: */
-            key = pOsalPrms->disableAllIntr();
+            key = (uint32_t)pOsalPrms->disableAllIntr();
             payload = (RPMessage_MsgElem *)IpcUtils_HeapAlloc(&obj->heap, size, 0);
 
             if (payload != NULL)
@@ -453,7 +453,7 @@ int32_t RPMessage_announce(uint32_t remoteProcId, uint32_t endPt, const char* na
     uint32_t                c;
     uint32_t                procId;
     int32_t                 status = IPC_SOK;
-    uint32_t                namelen;
+    size_t                  namelen;
 
 #if  DEBUG_PRINT
     SystemP_printf("RPMessage_announce : remote %d, endpt %d, name %s\n",
@@ -647,7 +647,7 @@ int32_t RPMessage_getRemoteEndPt(uint32_t selfProcId, const char* name, uint32_t
     int32_t            rtnVal = IPC_SOK;
     void              *semHandle;
     RPMessage_Waiter   taskWaiter;
-    uint32_t           namelen;
+    size_t             namelen;
     Ipc_OsalPrms      *pOsalPrms = &gIpcObject.initPrms.osalPrms;
 
     namelen = strlen(name);
@@ -682,7 +682,7 @@ int32_t RPMessage_getRemoteEndPt(uint32_t selfProcId, const char* name, uint32_t
          * not be an unprotected time between calling
          * RPMessage_lookupName() and the IpcUtils_Qput().
          */
-        key = pOsalPrms->disableAllIntr();
+        key = (uint32_t)pOsalPrms->disableAllIntr();
         lookupStatus = RPMessage_lookupName(selfProcId, name,
                                             remoteProcId, remoteEndPt);
         if(FALSE == lookupStatus)
@@ -849,8 +849,8 @@ static RPMessage_Object* RPMessage_rawCreate(
 {
     RPMessage_Object *obj   = NULL;
     uint8_t           found = FALSE;
-    int32_t           i;
-    uint16_t          queueIndex = 0;
+    uint32_t          i;
+    uint32_t          queueIndex = 0;
     int32_t           key;
     uint32_t          objSize = RPMessage_getObjMemRequired();
     Ipc_OsalPrms     *pOsalPrms = &gIpcObject.initPrms.osalPrms;
@@ -962,7 +962,7 @@ int32_t RPMessage_lateInit(uint32_t proc)
         module.VQ_callbacks[c].vq = Virtio_getHandle(proc, VIRTIO_RX);
 
         arg0 = (uintptr_t)&module.VQ_callbacks[c];
-        if (TRUE == Virtio_isRemoteLinux(proc))
+        if (TRUE == Virtio_isRemoteLinux((uint16_t)proc))
         {
             pOsalPrms->createHIsr(&module.VQ_callbacks[c].swi,
                     &RPMessage_swiLinuxFxn, (void *)arg0);
@@ -1047,7 +1047,7 @@ int32_t RPMessage_init(RPMessage_Params *params)
                 module.VQ_callbacks[c].vq = Virtio_getHandle(p, VIRTIO_RX);
 
                 arg0 = (uintptr_t)&module.VQ_callbacks[c];
-                if (TRUE == Virtio_isRemoteLinux(p))
+                if (TRUE == Virtio_isRemoteLinux((uint16_t)p))
                 {
                     pOsalPrms->createHIsr(&module.VQ_callbacks[c].swi,
                             &RPMessage_swiLinuxFxn, (void *)arg0);
@@ -1158,7 +1158,7 @@ int32_t RPMessage_delete(RPMessage_Handle *handlePtr)
             pOsalPrms->deleteMutex(obj->semHandle);
        }
 
-       key = gIpcObject.initPrms.osalPrms.disableAllIntr();
+       key = (uint32_t)gIpcObject.initPrms.osalPrms.disableAllIntr();
 
        /* Free/discard all queued message buffers: */
        while (0U == IpcUtils_QisEmpty(&obj->queue))
@@ -1227,7 +1227,7 @@ int32_t RPMessage_recv(RPMessage_Handle handle, void* data, uint16_t *len,
     }
     else
     {
-        key = gIpcObject.initPrms.osalPrms.disableAllIntr();
+        key = (uint32_t)gIpcObject.initPrms.osalPrms.disableAllIntr();
 
         payload = (RPMessage_MsgElem *)IpcUtils_QgetHead(&obj->queue);
         if ( (NULL == payload) ||
@@ -1240,7 +1240,7 @@ int32_t RPMessage_recv(RPMessage_Handle handle, void* data, uint16_t *len,
         {
             /* Now, copy payload to client and free our internal msg */
             memcpy(data, payload->data, payload->len);
-            *len        = payload->len;
+            *len        = (uint16_t)payload->len;
             *rplyEndPt  = payload->src;
             *rplyProcId = payload->procId;
             IpcUtils_HeapFree(&obj->heap, (void *)payload,
@@ -1275,14 +1275,14 @@ int32_t RPMessage_recvNb(RPMessage_Handle handle, void* data, uint16_t *len,
         status = IPC_ETIMEOUT;
         if (FALSE == IpcUtils_QisEmpty(&obj->queue))
         {
-            key = gIpcObject.initPrms.osalPrms.disableAllIntr();
+            key = (uint32_t)gIpcObject.initPrms.osalPrms.disableAllIntr();
 
             payload = (RPMessage_MsgElem *)IpcUtils_QgetHead(&obj->queue);
             if ((NULL != payload) && (payload != (RPMessage_MsgElem *)&obj->queue))
             {
                 /* Now, copy payload to client and free our internal msg */
                 memcpy(data, payload->data, payload->len);
-                *len = payload->len;
+                *len = (uint16_t)(payload->len);
                 *rplyEndPt = payload->src;
                 *rplyProcId = payload->procId;
 
@@ -1314,7 +1314,7 @@ static int32_t RPMessage_rawSend(Virtio_Handle vq,
                       uint16_t len)
 {
     int32_t               status = IPC_SOK;
-    int32_t               token = 0;
+    int16_t               token = 0;
     int32_t               key;
     int32_t               length = 0;
     uint32_t              bufSize;

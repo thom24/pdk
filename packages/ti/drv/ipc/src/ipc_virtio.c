@@ -327,7 +327,7 @@ static inline uint32_t mapVAtoPA(void * va)
     uint32_t pa;
 
     /* TBD : fixit */
-    pa = (uintptr_t)va;
+    pa = (uint32_t)((uintptr_t)va);
 
     return pa;
 }
@@ -392,7 +392,7 @@ void Virtio_addAvailBuf(Virtio_Handle vq, void *buf, uint16_t head)
 {
     uint16_t avail;
 
-    avail =  vq->vring.avail->idx % vq->vring.num;
+    avail = (uint16_t)(vq->vring.avail->idx % vq->vring.num);
 
     vq->vring.desc[head].addr   = mapVAtoPA(buf);
     vq->vring.desc[head].len    = RP_MSG_BUF_SIZE;
@@ -413,7 +413,7 @@ void *Virtio_getUsedBuf(Virtio_Handle vq, uint16_t *token)
     /* There's nothing available? */
     if (vq->last_used_idx != vq->vring.used->idx)
     {
-        head = vq->vring.used->ring[vq->last_used_idx % vq->vring.num].id;
+        head = (uint16_t)(vq->vring.used->ring[vq->last_used_idx % vq->vring.num].id);
         vq->last_used_idx++;
 
         buf = mapPAtoVA(vq->vring.desc[head].addr);
@@ -505,8 +505,8 @@ void Virtio_isr(uint32_t* msg, uint32_t priv)
     if (NULL != vq)
     {
         vq->callback       = callback;
-        vq->id             = vqId;
-        vq->procId         = procId;
+        vq->id             = (uint16_t)vqId;
+        vq->procId         = (uint16_t)procId;
         vq->status         = status;
         vq->last_avail_idx = 0;
         vq->last_used_idx  = 0;
@@ -529,7 +529,7 @@ void Virtio_isr(uint32_t* msg, uint32_t priv)
         {
             uint32_t selfId = Ipc_mpGetSelfId();
             queueRegistry[2*procId+1] = vq;
-            retVal = Ipc_mailboxRegister(selfId, procId, Virtio_isr, procId);
+            retVal = Ipc_mailboxRegister((uint16_t)selfId, (uint16_t)procId, Virtio_isr, procId);
             if (retVal != IPC_SOK)
             {
                  SystemP_printf("Virtio_create : Failed to register mailbox\n");
@@ -583,7 +583,7 @@ void Virtio_prime(Virtio_Object *vq, uint32_t addr, uint32_t num)
     buf = addr;
     for (i = 0; i < num; i++)
     {
-        Virtio_addAvailBuf(vq, (void *)(uintptr_t)buf, i);
+        Virtio_addAvailBuf(vq, (void *)(uintptr_t)buf, (uint16_t)i);
         buf += RP_MSG_BUF_SIZE;
     }
 }
@@ -734,17 +734,17 @@ void Ipc_updateVirtioInfo(uint32_t numProc, void *baseAddr, uint32_t vrBufSize,
 
     if(info->remoteId > info->selfId)
     {
-        info->daTx       = (uintptr_t)baseAddr + cnt * vrBufSize;
-        info->daRx       = (uintptr_t)baseAddr + (cnt+2) * vrBufSize;
-        info->primeBuf   = (uintptr_t)baseAddr + (cnt+1) * vrBufSize;
+        info->daTx       = (uint32_t)((uintptr_t)baseAddr + cnt * vrBufSize);
+        info->daRx       = (uint32_t)((uintptr_t)baseAddr + (cnt+2) * vrBufSize);
+        info->primeBuf   = (uint32_t)((uintptr_t)baseAddr + (cnt+1) * vrBufSize);
         info->txNotifyId = 1;
         info->rxNotifyId = 0;
     }
     else
     {
-        info->daTx       = (uintptr_t)baseAddr + (cnt+2) * vrBufSize;
-        info->daRx       = (uintptr_t)baseAddr + cnt * vrBufSize;
-        info->primeBuf   = (uintptr_t)baseAddr + (cnt+3) * vrBufSize;
+        info->daTx       = (uint32_t)((uintptr_t)baseAddr + (cnt+2) * vrBufSize);
+        info->daRx       = (uint32_t)((uintptr_t)baseAddr + cnt * vrBufSize);
+        info->primeBuf   = (uint32_t)((uintptr_t)baseAddr + (cnt+3) * vrBufSize);
         info->txNotifyId = 0;
         info->rxNotifyId = 1;
     }
@@ -752,7 +752,7 @@ void Ipc_updateVirtioInfo(uint32_t numProc, void *baseAddr, uint32_t vrBufSize,
     /* If remote core is Linux, and vdev is ready
      * update the address
      */
-    if(TRUE == Virtio_isRemoteLinux(info->remoteId))
+    if(TRUE == Virtio_isRemoteLinux((uint16_t)(info->remoteId)))
     {
         Ipc_ResourceTable *rsc = (Ipc_ResourceTable*)rscTable;
         info->daTx      = rsc->rpmsg_vring0.da;
@@ -792,7 +792,7 @@ int32_t VirtioIPC_init(Ipc_VirtIoParams *vqParams)
             continue;
         }
 
-        if(FALSE == Ipc_isRemoteReady(procId))
+        if(FALSE == Ipc_isRemoteReady((uint16_t)procId))
         {
             /* Linux on A72 is not ready, go to next core
              * Virtio is not created at this moment, it must be

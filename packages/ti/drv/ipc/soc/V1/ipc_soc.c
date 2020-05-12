@@ -403,7 +403,7 @@ int32_t Ipc_setCoreEventId(uint32_t selfId, Ipc_MbConfig* cfg, uint32_t intrCnt)
         vimEventBaseNum = (start + range) - offset;
 
         /* Translation must happen after this offset */
-        retVal = Ipc_sciclientIrqTranslate(selfId, vimEventBaseNum,
+        retVal = Ipc_sciclientIrqTranslate((uint16_t)selfId, vimEventBaseNum,
                                            &proc_irq);
         if (CSL_PASS == retVal)
         {
@@ -636,7 +636,7 @@ int32_t Ipc_sciclientIrqTranslate(uint16_t coreId, uint32_t eventId,
         uint16_t *procIrq)
 {
     return Sciclient_rmIrqTranslateIrOutput(req_type[coreId],
-                                            eventId,
+                                            (uint16_t)eventId,
                                             map_dst_id[coreId],
                                             procIrq);
 }
@@ -707,7 +707,7 @@ int32_t Ipc_getIntNumRange(uint32_t coreIndex,
     struct tisci_msg_rm_get_resource_range_req  req = {0};
 
     req.type           = req_type[coreIndex];
-    req.subtype        = req_subtype[coreIndex];
+    req.subtype        = (uint8_t)req_subtype[coreIndex];
     req.secondary_host = (uint8_t)TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
 
     res.range_num = 0;
@@ -721,7 +721,7 @@ int32_t Ipc_getIntNumRange(uint32_t coreIndex,
     if (CSL_PASS != retVal || res.range_num == 0) {
         /* Try with HOST_ID_ALL */
         req.type           = req_type[coreIndex];
-        req.subtype        = req_subtype[coreIndex];
+        req.subtype        = (uint8_t)req_subtype[coreIndex];
         req.secondary_host = TISCI_HOST_ID_ALL;
 
         retVal = Sciclient_rmGetResourceRange(
