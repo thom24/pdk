@@ -24,11 +24,11 @@ ifeq ($(OS),Windows_NT)
 endif
 
 # ObjCopy Tool
-ifneq ("$(wildcard $(TOOLCHAIN_PATH_GCC)/bin/arm-none-eabi-objcopy$(EXE_EXT))","")
-  SCICLIENT_OBJCOPY?=$(TOOLCHAIN_PATH_GCC)/bin/arm-none-eabi-objcopy$(EXE_EXT)
+ifneq ("$(wildcard $(TOOLCHAIN_PATH_GCC)/bin/$(GCC_ARCH64_BIN_PREFIX)-objcopy$(EXE_EXT))","")
+  SCICLIENT_OBJCOPY?=$(TOOLCHAIN_PATH_GCC)/bin/$(GCC_ARCH64_BIN_PREFIX)-objcopy$(EXE_EXT)
 endif
-ifneq ("$(wildcard $(TOOLCHAIN_PATH_GCC_ARCH64)/bin/aarch64-elf-objcopy$(EXE_EXT))","")
-  SCICLIENT_OBJCOPY?=$(TOOLCHAIN_PATH_GCC_ARCH64)/bin/aarch64-elf-objcopy$(EXE_EXT)
+ifneq ("$(wildcard $(TOOLCHAIN_PATH_GCC_ARCH64)/bin/$(GCC_ARCH64_BIN_PREFIX)-objcopy$(EXE_EXT))","")
+  SCICLIENT_OBJCOPY?=$(TOOLCHAIN_PATH_GCC_ARCH64)/bin/$(GCC_ARCH64_BIN_PREFIX)-objcopy$(EXE_EXT)
 endif
 
 # Other SBL Tools
