@@ -121,9 +121,34 @@ extern "C" {
 /** \brief Invalid Ring Mode*/
 #define UDMA_RING_MODE_INVALID          (CSL_RINGACC_RING_MODE_INVALID)
 
+/** \brief Number of Mapped TX Group */
+#define UDMA_NUM_MAPPED_TX_GROUP     (0U)
+/**
+ *  \anchor Udma_MappedTxGrpSoc
+ *  \name Mapped TX Group specific to a SOC
+ *
+ *  List of all mapped TX groups present in the SOC.
+ *
+ *  @{
+ */
+/* No mapped TX channels/rings in J721E */
+/* @} */
+
+/** \brief Number of Mapped RX Group */
+#define UDMA_NUM_MAPPED_RX_GROUP     (0U)
+/**
+ *  \anchor Udma_MappedRxGrpSoc
+ *  \name Mapped RX Group specific to a SOC
+ *
+ *  List of all mapped RX groups present in the SOC.
+ *
+ *  @{
+ */
+/* No mapped RX channels/rings in J721E */
+/* @} */
+
 /** \brief Number of UTC instance */
 #define UDMA_NUM_UTC_INSTANCE           (CSL_NAVSS_UTC_CNT)
-
 
 /**
  *  \anchor Udma_UtcIdSoc

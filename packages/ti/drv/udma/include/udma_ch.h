@@ -79,6 +79,8 @@ extern "C" {
 #define UDMA_DMA_CH_NA                  ((uint32_t) 0xFFFF0002U)
 /** \brief Macro used to specify that the UTC ID is invalid. */
 #define UDMA_UTC_ID_INVALID             ((uint32_t) 0xFFFF0003U)
+/** \brief Macro used to specify that the Mapped Channel Group is invalid. */
+#define UDMA_MAPPED_GROUP_INVALID       ((uint32_t) 0xFFFF0004U)
 
 /**
  *  \anchor Udma_ChFlag
@@ -104,6 +106,8 @@ extern "C" {
 #define UDMA_CH_FLAG_HC                 ((uint32_t) 0x0040U)
 /** \brief Ultra high capacity channel flag */
 #define UDMA_CH_FLAG_UHC                ((uint32_t) 0x0080U)
+/** \brief Mapped TX/RX channel flag */
+#define UDMA_CH_FLAG_MAPPED             ((uint32_t) 0x0100U)
 /* @} */
 
 /**
@@ -155,6 +159,19 @@ extern "C" {
 #define UDMA_CH_TYPE_PDMA_RX_HC         (UDMA_CH_FLAG_RX | UDMA_CH_FLAG_PDMA | UDMA_CH_FLAG_HC)
 /** \brief Ultra high capacity PDMA RX channel type */
 #define UDMA_CH_TYPE_PDMA_RX_UHC        (UDMA_CH_FLAG_RX | UDMA_CH_FLAG_PDMA | UDMA_CH_FLAG_UHC)
+
+/**
+ *  \brief Mapped TX channel. 
+ *  This could be different type of mapped TX channels. 
+ *  See \ref Udma_MappedTxGrpSoc for differnt types of SOC specific mapped TX channels.
+ */
+#define UDMA_CH_TYPE_TX_MAPPED          (UDMA_CH_FLAG_TX | UDMA_CH_FLAG_PSIL | UDMA_CH_FLAG_MAPPED)
+/**
+ *  \brief Mapped RX channel. 
+ *  This could be different type of mapped RX channels. 
+ *  See \ref Udma_MappedRxGrpSoc for differnt types of SOC specific mapped RX channels.
+ */
+#define UDMA_CH_TYPE_RX_MAPPED          (UDMA_CH_FLAG_RX | UDMA_CH_FLAG_PSIL | UDMA_CH_FLAG_MAPPED)
 
 /**
  *  \brief UTC channel. This could be
@@ -227,6 +244,14 @@ typedef struct
      *   Refer \ref Udma_UtcIdSoc macro for details.
      *
      *   For other channel type set to #UDMA_UTC_ID_INVALID
+     */
+    uint32_t                mappedChGrp;
+    /**< [IN] The Mapped channel group to use when channel type is 
+     *   #UDMA_CH_TYPE_TX_MAPPED or #UDMA_CH_TYPE_RX_MAPPED.
+     *   Refer \ref Udma_MappedTxGrpSoc macro for details about mapped TX channel groups
+     *   or \ref Udma_MappedRxGrpSoc macro for details about mapped RX channel groups.
+     *
+     *   For other channel type set to #UDMA_MAPPED_GROUP_INVALID
      */
     void                   *appData;
     /**< [IN] Application/caller context pointer passed back in all the channel

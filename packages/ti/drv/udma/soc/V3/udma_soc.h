@@ -121,8 +121,50 @@ extern "C" {
 /** \brief Invalid Ring Mode*/
 #define UDMA_RING_MODE_INVALID          (CSL_LCDMA_RINGACC_RING_MODE_INVALID)
 
-/** \brief Number of UTC instance - No UTC in AM64x */
+/** \brief Number of Mapped TX Group */
+#define UDMA_NUM_MAPPED_TX_GROUP     (4U)
+/**
+ *  \anchor Udma_MappedTxGrpSoc
+ *  \name Mapped TX Group specific to a SOC
+ *
+ *  List of all mapped TX groups present in the SOC.
+ *
+ *  @{
+ */
+#define UDMA_MAPPED_TX_GROUP_CPSW       (UDMA_MAPPED_GROUP0)
+#define UDMA_MAPPED_TX_GROUP_SAUL       (UDMA_MAPPED_GROUP1)
+#define UDMA_MAPPED_TX_GROUP_ICSSG_0    (UDMA_MAPPED_GROUP2)
+#define UDMA_MAPPED_TX_GROUP_ICSSG_1    (UDMA_MAPPED_GROUP3)
+/* @} */
+
+/** \brief Number of Mapped RX Group */
+#define UDMA_NUM_MAPPED_RX_GROUP     (4U)
+/**
+ *  \anchor Udma_MappedRxGrpSoc
+ *  \name Mapped RX Group specific to a SOC
+ *
+ *  List of all mapped RX groups present in the SOC.
+ *
+ *  @{
+ */
+#define UDMA_MAPPED_RX_GROUP_CPSW       (UDMA_MAPPED_GROUP4)
+#define UDMA_MAPPED_RX_GROUP_SAUL       (UDMA_MAPPED_GROUP5)
+#define UDMA_MAPPED_RX_GROUP_ICSSG_0    (UDMA_MAPPED_GROUP6)
+#define UDMA_MAPPED_RX_GROUP_ICSSG_1    (UDMA_MAPPED_GROUP7)
+/* @} */
+
+/** \brief Number of UTC instance */
 #define UDMA_NUM_UTC_INSTANCE           (CSL_DMSS_UTC_CNT)
+/**
+ *  \anchor Udma_UtcIdSoc
+ *  \name UTC ID specific to a SOC
+ *
+ *  List of all UTC's present in the SOC.
+ *
+ *  @{
+ */
+/* No UTC in AM64x  */
+/* @} */
 
 /**
  *  \anchor Udma_CoreId
@@ -157,15 +199,24 @@ extern "C" {
 
 #define UDMA_PSIL_CH_CPSW2_TX           (CSL_PSILCFG_DMSS_CPSW2_PSILD_THREAD_OFFSET)
 #define UDMA_PSIL_CH_SAUL0_TX           (CSL_PSILCFG_DMSS_SAUL0_PSILD_THREAD_OFFSET)
+#define UDMA_PSIL_CH_ICSS_G0_TX         (CSL_PSILCFG_DMSS_ICSS_G0_PSILD_THREAD_OFFSET)
+#define UDMA_PSIL_CH_ICSS_G1_TX         (CSL_PSILCFG_DMSS_ICSS_G1_PSILD_THREAD_OFFSET)
 
 #define UDMA_PSIL_CH_CPSW2_RX           (CSL_PSILCFG_DMSS_CPSW2_PSILS_THREAD_OFFSET)
 #define UDMA_PSIL_CH_SAUL0_RX           (CSL_PSILCFG_DMSS_SAUL0_PSILS_THREAD_OFFSET)
+#define UDMA_PSIL_CH_ICSS_G0_RX         (CSL_PSILCFG_DMSS_ICSS_G0_PSILS_THREAD_OFFSET)
+#define UDMA_PSIL_CH_ICSS_G1_RX         (CSL_PSILCFG_DMSS_ICSS_G1_PSILS_THREAD_OFFSET)
+
 
 #define UDMA_PSIL_CH_CPSW2_TX_CNT       (CSL_PSILCFG_DMSS_CPSW2_PSILD_THREAD_CNT)
 #define UDMA_PSIL_CH_SAUL0_TX_CNT       (CSL_PSILCFG_DMSS_SAUL0_PSILD_THREAD_CNT)
+#define UDMA_PSIL_CH_ICSS_G0_TX_CNT     (CSL_PSILCFG_DMSS_ICSS_G0_PSILD_THREAD_CNT)
+#define UDMA_PSIL_CH_ICSS_G1_TX_CNT     (CSL_PSILCFG_DMSS_ICSS_G1_PSILD_THREAD_CNT)
 
 #define UDMA_PSIL_CH_CPSW2_RX_CNT       (CSL_PSILCFG_DMSS_CPSW2_PSILS_THREAD_CNT)
 #define UDMA_PSIL_CH_SAUL0_RX_CNT       (CSL_PSILCFG_DMSS_SAUL0_PSILS_THREAD_CNT)
+#define UDMA_PSIL_CH_ICSS_G0_RX_CNT     (CSL_PSILCFG_DMSS_ICSS_G0_PSILS_THREAD_CNT)
+#define UDMA_PSIL_CH_ICSS_G1_RX_CNT     (CSL_PSILCFG_DMSS_ICSS_G1_PSILS_THREAD_CNT)
 
 /* @} */
 
@@ -329,6 +380,17 @@ extern "C" {
 /* @} */
 
 /* @} */
+
+/**
+ *  \brief UDMA mapped channel ring attributes.
+ */
+typedef struct
+{
+    uint32_t    startRing;
+    /**< Start ring number of a particular mapped channel. */
+    uint32_t    numRing; 
+    /**< Number of rings for a particular mapped channel. */
+}Udma_MappedChRingAttributes;
 
 /* ========================================================================== */
 /*                         Structure Declarations                             */

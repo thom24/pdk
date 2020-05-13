@@ -52,8 +52,9 @@
 #define UDMA_DMSS0_EVENT_CNT      (4608U)
 #define UDMA_DMSS0_VINTR_CNT      (184U)
 
-/* Channel needs to be checked against Normal Capacity/HC/UHC.Hence need three sets to compare */
-#define UDMA_RM_CHECK_MAX_ENTRY         (UDMA_NUM_CORE * 3U)
+/* Channel needs to be checked against different mapped ring groups(CPSW/SAUL/ICSSG0/ICSSG1) * (TX/RX). 
+ * Hence need #UDMA_NUM_MAPPED_TX_GROUP + #UDMA_NUM_MAPPED_RX_GROUP sets to compare */
+#define UDMA_RM_CHECK_MAX_ENTRY         (UDMA_NUM_CORE * (UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP))
 /* This is an assumption and should the max of all resource count across cores */
 #define UDMA_RM_CHECK_MAX_WORDS         (150U)
 
@@ -69,9 +70,15 @@
 typedef struct
 {
     uint32_t                maxBlkCopyCh;
-    uint32_t                maxTxCh;
-    uint32_t                maxRxCh;
+    uint32_t                maxTxCh; /* In AM64x, this represents unmapped TX channels */
+    uint32_t                maxRxCh; /* In AM64x, this represents unmapped RX channels */
     uint32_t                maxUtcCh;
+    uint32_t                maxMappedTxCh[UDMA_NUM_MAPPED_TX_GROUP];
+    uint32_t                maxMappedRxCh[UDMA_NUM_MAPPED_RX_GROUP];
+    uint32_t                maxMappedRing[UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP];
+    uint32_t                maxTotalMappedTxCh;
+    uint32_t                maxTotalMappedRxCh;
+    uint32_t                maxTotalMappedRing;
     uint32_t                maxFreeRing;
     uint32_t                maxFreeFlow;
     uint32_t                maxEvents;
@@ -125,6 +132,15 @@ const Udma_RmInitPrms gUdmaRmDefCfg_Bcdma[UDMA_NUM_CORE] =
         0U,                                         /* startRxCh */
         0U,                                         /* numRxCh */
 
+        {0U, 0U, 0U, 0U},                           /* startMappedTxCh[] */
+        {0U, 0U, 0U, 0U},                           /* numMappedTxCh[] */
+
+        {0U, 0U, 0U, 0U},                           /* startMappedRxCh[] */
+        {0U, 0U, 0U, 0U},                           /* numMappedRxCh[] */
+
+        {0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U},           /* startMappedRing[] */
+        {0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U},           /* numMappedRing[] */
+
         0U,                                         /* startFreeFlow */
         0U,                                         /* numFreeFlow */
         0U,                                         /* startFreeRing */
@@ -168,6 +184,15 @@ const Udma_RmInitPrms gUdmaRmDefCfg_Bcdma[UDMA_NUM_CORE] =
         0U,                                         /* numRxHcCh */
         0U,                                         /* startRxCh */
         0U,                                         /* numRxCh */
+
+        {0U, 0U, 0U, 0U},                           /* startMappedTxCh[] */
+        {0U, 0U, 0U, 0U},                           /* numMappedTxCh[] */
+
+        {0U, 0U, 0U, 0U},                           /* startMappedRxCh[] */
+        {0U, 0U, 0U, 0U},                           /* numMappedRxCh[] */
+
+        {0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U},           /* startMappedRing[] */
+        {0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U},           /* numMappedRing[] */
 
         0U,                                         /* startFreeFlow */
         0U,                                         /* numFreeFlow */
@@ -213,6 +238,15 @@ const Udma_RmInitPrms gUdmaRmDefCfg_Bcdma[UDMA_NUM_CORE] =
         0U,                                         /* startRxCh */
         0U,                                         /* numRxCh */
 
+        {0U, 0U, 0U, 0U},                           /* startMappedTxCh[] */
+        {0U, 0U, 0U, 0U},                           /* numMappedTxCh[] */
+
+        {0U, 0U, 0U, 0U},                           /* startMappedRxCh[] */
+        {0U, 0U, 0U, 0U},                           /* numMappedRxCh[] */
+
+        {0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U},           /* startMappedRing[] */
+        {0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U},           /* numMappedRing[] */
+
         0U,                                         /* startFreeFlow */
         0U,                                         /* numFreeFlow */
         0U,                                         /* startFreeRing */
@@ -256,6 +290,15 @@ const Udma_RmInitPrms gUdmaRmDefCfg_Bcdma[UDMA_NUM_CORE] =
         0U,                                         /* numRxHcCh */
         0U,                                         /* startRxCh */
         16U,                                        /* numRxCh */
+
+        {0U, 0U, 0U, 0U},                           /* startMappedTxCh[] */
+        {0U, 0U, 0U, 0U},                           /* numMappedTxCh[] */
+
+        {0U, 0U, 0U, 0U},                           /* startMappedRxCh[] */
+        {0U, 0U, 0U, 0U},                           /* numMappedRxCh[] */
+
+        {0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U},           /* startMappedRing[] */
+        {0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U},           /* numMappedRing[] */
 
         0U,                                         /* startFreeFlow */
         0U,                                         /* numFreeFlow */
@@ -301,6 +344,15 @@ const Udma_RmInitPrms gUdmaRmDefCfg_Bcdma[UDMA_NUM_CORE] =
         0U,                                         /* startRxCh */
         0U,                                         /* numRxCh */
 
+        {0U, 0U, 0U, 0U},                           /* startMappedTxCh[] */
+        {0U, 0U, 0U, 0U},                           /* numMappedTxCh[] */
+
+        {0U, 0U, 0U, 0U},                           /* startMappedRxCh[] */
+        {0U, 0U, 0U, 0U},                           /* numMappedRxCh[] */
+
+        {0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U},           /* startMappedRing[] */
+        {0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U},           /* numMappedRing[] */
+
         0U,                                         /* startFreeFlow */
         0U,                                         /* numFreeFlow */
         0U,                                         /* startFreeRing */
@@ -344,6 +396,15 @@ const Udma_RmInitPrms gUdmaRmDefCfg_Bcdma[UDMA_NUM_CORE] =
         0U,                                         /* numRxHcCh */
         0U,                                         /* startRxCh */
         0U,                                         /* numRxCh */
+
+        {0U, 0U, 0U, 0U},                           /* startMappedTxCh[] */
+        {0U, 0U, 0U, 0U},                           /* numMappedTxCh[] */
+
+        {0U, 0U, 0U, 0U},                           /* startMappedRxCh[] */
+        {0U, 0U, 0U, 0U},                           /* numMappedRxCh[] */
+
+        {0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U},           /* startMappedRing[] */
+        {0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U},           /* numMappedRing[] */
 
         0U,                                         /* startFreeFlow */
         0U,                                         /* numFreeFlow */
@@ -394,6 +455,15 @@ const Udma_RmInitPrms gUdmaRmDefCfg_Pktdma[UDMA_NUM_CORE] =
         0U,         /* startRxCh */
         0U,         /* numRxCh */
 
+        {0U, 0U, 0U, 0U},  /* startMappedTxCh[] */
+        {0U, 0U, 0U, 0U},  /* numMappedTxCh[] */
+
+        {0U, 0U, 0U, 0U},  /* startMappedRxCh[] */
+        {0U, 0U, 0U, 0U},  /* numMappedRxCh[] */
+
+        {0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U},   /* startMappedRing[] */
+        {0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U},   /* numMappedRing[] */
+
         0U,         /* startFreeFlow */
         0U,         /* numFreeFlow */
         0U,         /* startFreeRing */
@@ -437,6 +507,15 @@ const Udma_RmInitPrms gUdmaRmDefCfg_Pktdma[UDMA_NUM_CORE] =
         0U,         /* numRxHcCh */
         0U,         /* startRxCh */
         0U,         /* numRxCh */
+
+        {0U, 0U, 0U, 0U},  /* startMappedTxCh[] */
+        {0U, 0U, 0U, 0U},  /* numMappedTxCh[] */
+
+        {0U, 0U, 0U, 0U},  /* startMappedRxCh[] */
+        {0U, 0U, 0U, 0U},  /* numMappedRxCh[] */
+
+        {0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U},   /* startMappedRing[] */
+        {0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U},   /* numMappedRing[] */
 
         0U,         /* startFreeFlow */
         0U,         /* numFreeFlow */
@@ -482,6 +561,15 @@ const Udma_RmInitPrms gUdmaRmDefCfg_Pktdma[UDMA_NUM_CORE] =
         0U,         /* startRxCh */
         0U,         /* numRxCh */
 
+        {0U, 0U, 0U, 0U},  /* startMappedTxCh[] */
+        {0U, 0U, 0U, 0U},  /* numMappedTxCh[] */
+
+        {0U, 0U, 0U, 0U},  /* startMappedRxCh[] */
+        {0U, 0U, 0U, 0U},  /* numMappedRxCh[] */
+
+        {0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U},   /* startMappedRing[] */
+        {0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U},   /* numMappedRing[] */
+
         0U,         /* startFreeFlow */
         0U,         /* numFreeFlow */
         0U,         /* startFreeRing */
@@ -525,6 +613,15 @@ const Udma_RmInitPrms gUdmaRmDefCfg_Pktdma[UDMA_NUM_CORE] =
         0U,         /* numRxHcCh */
         0U,         /* startRxCh */
         16U,        /* numRxCh */
+
+        {16U, 24U, 26U, 34U},  /* startMappedTxCh[] */
+        {8U,  2U,  8U,  8U},   /* numMappedTxCh[] */
+
+        {16U, 17U, 21U, 25U},  /* startMappedRxCh[] */
+        {1U,  4U,  4U,  4U},   /* numMappedRxCh[] */
+
+        {16U, 80U, 96U, 104U, 128U, 144U, 160U, 224U},   /* startMappedRing[] */
+        {64U, 16U, 8U,  8U,   16U,  16U,  64U,  64U},    /* numMappedRing[] */
 
         0U,         /* startFreeFlow */
         0U,         /* numFreeFlow */
@@ -570,6 +667,15 @@ const Udma_RmInitPrms gUdmaRmDefCfg_Pktdma[UDMA_NUM_CORE] =
         0U,         /* startRxCh */
         0U,         /* numRxCh */
 
+        {0U, 0U, 0U, 0U},  /* startMappedTxCh[] */
+        {0U, 0U, 0U, 0U},  /* numMappedTxCh[] */
+
+        {0U, 0U, 0U, 0U},  /* startMappedRxCh[] */
+        {0U, 0U, 0U, 0U},  /* numMappedRxCh[] */
+
+        {0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U},   /* startMappedRing[] */
+        {0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U},   /* numMappedRing[] */
+
         0U,         /* startFreeFlow */
         0U,         /* numFreeFlow */
         0U,         /* startFreeRing */
@@ -613,6 +719,15 @@ const Udma_RmInitPrms gUdmaRmDefCfg_Pktdma[UDMA_NUM_CORE] =
         0U,         /* numRxHcCh */
         0U,         /* startRxCh */
         0U,         /* numRxCh */
+
+        {0U, 0U, 0U, 0U},  /* startMappedTxCh[] */
+        {0U, 0U, 0U, 0U},  /* numMappedTxCh[] */
+
+        {0U, 0U, 0U, 0U},  /* startMappedRxCh[] */
+        {0U, 0U, 0U, 0U},  /* numMappedRxCh[] */
+
+        {0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U},   /* startMappedRing[] */
+        {0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U},   /* numMappedRing[] */
 
         0U,         /* startFreeFlow */
         0U,         /* numFreeFlow */
@@ -676,20 +791,54 @@ int32_t Udma_rmCheckDefaultCfg(void)
     prms.maxEvents       = UDMA_DMSS0_EVENT_CNT;
     prms.maxVintr        = UDMA_DMSS0_VINTR_CNT;
     prms.maxRingMon      = CSL_DMSS_RINGACC_NUM_MONITORS;
+    memset(prms.maxMappedTxCh, 0, sizeof(prms.maxMappedTxCh)); /* No mapped TX Channels for BCDMA */
+    memset(prms.maxMappedRxCh, 0, sizeof(prms.maxMappedRxCh)); /* No mapped RX Channels for BCDMA */
+    memset(prms.maxMappedRing, 0, sizeof(prms.maxMappedRing)); /* No mapped rings for BCDMA */
+    prms.maxTotalMappedTxCh  = 0U;
+    prms.maxTotalMappedRxCh  = 0U;
+    prms.maxTotalMappedRing  = 0U;
+
     retVal += Udma_rmCheckInstOverlap(&prms);
 
     /* Check Pktdma instance */
     prms.selfCfg         = &gUdmaRmDefCfg_Pktdma[0U];
     prms.crossCfg        = &gUdmaRmDefCfg_Bcdma[0U];
     prms.maxBlkCopyCh    = 0;
-    prms.maxTxCh         = CSL_DMSS_PKTDMA_NUM_TX_CHANS;
-    prms.maxRxCh         = CSL_DMSS_PKTDMA_NUM_RX_CHANS;
+    prms.maxTxCh         = CSL_DMSS_PKTDMA_TX_CHANS_UNMAPPED_CNT;
+    prms.maxRxCh         = CSL_DMSS_PKTDMA_RX_CHANS_UNMAPPED_CNT;
     prms.maxUtcCh        = CSL_DMSS_PKTDMA_NUM_EXT_CHANS;
     prms.maxFreeRing     = 0;
     prms.maxFreeFlow     = 0;
     prms.maxEvents       = UDMA_DMSS0_EVENT_CNT;
     prms.maxVintr        = UDMA_DMSS0_VINTR_CNT;
     prms.maxRingMon      = CSL_DMSS_RINGACC_NUM_MONITORS;
+
+    prms.maxMappedTxCh[UDMA_MAPPED_TX_GROUP_CPSW]    = CSL_DMSS_PKTDMA_TX_CHANS_CPSW_CNT;
+    prms.maxMappedTxCh[UDMA_MAPPED_TX_GROUP_SAUL]    = CSL_DMSS_PKTDMA_TX_CHANS_SAUL0_CNT + CSL_DMSS_PKTDMA_TX_CHANS_SAUL1_CNT;
+    prms.maxMappedTxCh[UDMA_MAPPED_TX_GROUP_ICSSG_0] = CSL_DMSS_PKTDMA_TX_CHANS_ICSSG0_CNT;
+    prms.maxMappedTxCh[UDMA_MAPPED_TX_GROUP_ICSSG_1] = CSL_DMSS_PKTDMA_TX_CHANS_ICSSG1_CNT;
+
+    prms.maxMappedRxCh[UDMA_MAPPED_RX_GROUP_CPSW - UDMA_NUM_MAPPED_TX_GROUP]    = CSL_DMSS_PKTDMA_RX_CHANS_CPSW_CNT;
+    prms.maxMappedRxCh[UDMA_MAPPED_RX_GROUP_SAUL - UDMA_NUM_MAPPED_TX_GROUP]    = CSL_DMSS_PKTDMA_RX_CHANS_SAUL0_CNT + CSL_DMSS_PKTDMA_RX_CHANS_SAUL1_CNT +
+                                                                                    CSL_DMSS_PKTDMA_RX_CHANS_SAUL2_CNT + CSL_DMSS_PKTDMA_RX_CHANS_SAUL3_CNT;
+    prms.maxMappedRxCh[UDMA_MAPPED_RX_GROUP_ICSSG_0 - UDMA_NUM_MAPPED_TX_GROUP] = CSL_DMSS_PKTDMA_RX_CHANS_ICSSG0_CNT;
+    prms.maxMappedRxCh[UDMA_MAPPED_RX_GROUP_ICSSG_1 - UDMA_NUM_MAPPED_TX_GROUP] = CSL_DMSS_PKTDMA_RX_CHANS_ICSSG1_CNT;
+
+    prms.maxMappedRing[UDMA_MAPPED_TX_GROUP_CPSW]    = CSL_DMSS_PKTDMA_TX_FLOWS_CPSW_CNT;
+    prms.maxMappedRing[UDMA_MAPPED_TX_GROUP_SAUL]    = CSL_DMSS_PKTDMA_TX_FLOWS_SAUL0_CNT + CSL_DMSS_PKTDMA_TX_FLOWS_SAUL1_CNT;
+    prms.maxMappedRing[UDMA_MAPPED_TX_GROUP_ICSSG_0] = CSL_DMSS_PKTDMA_TX_FLOWS_ICSSG0_CNT;
+    prms.maxMappedRing[UDMA_MAPPED_TX_GROUP_ICSSG_1] = CSL_DMSS_PKTDMA_TX_FLOWS_ICSSG1_CNT;
+    prms.maxMappedRing[UDMA_MAPPED_RX_GROUP_CPSW]    = CSL_DMSS_PKTDMA_RX_FLOWS_CPSW_CNT;
+    /* SAUL1 RX flows are shared with SAUL0 & 
+     * SAUL3 RX flows are shared with SAUL2  */
+    prms.maxMappedRing[UDMA_MAPPED_RX_GROUP_SAUL]    = CSL_DMSS_PKTDMA_RX_FLOWS_SAUL0_CNT + CSL_DMSS_PKTDMA_RX_FLOWS_SAUL2_CNT;
+    prms.maxMappedRing[UDMA_MAPPED_RX_GROUP_ICSSG_0] = CSL_DMSS_PKTDMA_RX_FLOWS_ICSSG0_CNT;
+    prms.maxMappedRing[UDMA_MAPPED_RX_GROUP_ICSSG_1] = CSL_DMSS_PKTDMA_RX_FLOWS_ICSSG1_CNT;
+
+    prms.maxTotalMappedTxCh  = CSL_DMSS_PKTDMA_NUM_TX_CHANS;
+    prms.maxTotalMappedRxCh  = CSL_DMSS_PKTDMA_NUM_RX_CHANS;
+    prms.maxTotalMappedRing  = CSL_DMSS_PKTDMA_NUM_TX_FLOWS + CSL_DMSS_PKTDMA_NUM_RX_FLOWS;
+
     retVal += Udma_rmCheckInstOverlap(&prms);
 
     return (retVal);
@@ -700,8 +849,8 @@ static int32_t Udma_rmCheckInstOverlap(const Udma_RmInstCheckPrms *prms)
     int32_t     retVal = UDMA_SOK;
     uint32_t    startRes[UDMA_RM_CHECK_MAX_ENTRY];
     uint32_t    numRes[UDMA_RM_CHECK_MAX_ENTRY];
-    uint32_t    startIdx, numIdx;
-    uint32_t    coreId;
+    uint32_t    startIdx, numIdx, startMappedIdx;
+    uint32_t    mappedGrp, coreId;
 
     /* Check BlkCpy channels */
     startIdx = 0U; numIdx = 0U;
@@ -729,7 +878,6 @@ static int32_t Udma_rmCheckInstOverlap(const Udma_RmInstCheckPrms *prms)
     }
     retVal += Udma_rmCheckOverlap(startRes, numRes, startIdx, prms->maxTxCh);
 
-
     /* Check RX channels */
     startIdx = 0U; numIdx = 0U;
     for(coreId = 0U; coreId < UDMA_NUM_CORE; coreId++)
@@ -742,6 +890,85 @@ static int32_t Udma_rmCheckInstOverlap(const Udma_RmInstCheckPrms *prms)
         numRes[numIdx] = prms->selfCfg[coreId].numRxUhcCh; numIdx++;
     }
     retVal += Udma_rmCheckOverlap(startRes, numRes, startIdx, prms->maxRxCh);
+
+    /* Check Mapped TX channels */
+    startIdx = 0U; numIdx = 0U;
+    /* In AM64x, mapped channels start from CPSW */
+    startMappedIdx = CSL_DMSS_PKTDMA_TX_CHANS_CPSW_START;
+    for(mappedGrp = 0U; mappedGrp < UDMA_NUM_MAPPED_TX_GROUP; mappedGrp++)
+    {
+        for(coreId = 0U; coreId < UDMA_NUM_CORE; coreId++)
+        {
+            startRes[startIdx] = prms->selfCfg[coreId].startMappedTxCh[mappedGrp]; 
+            numRes[numIdx] = prms->selfCfg[coreId].numMappedTxCh[mappedGrp]; 
+            /* Check for each mapped group, whether the chNum is bound to its range*/
+            if((0 != numRes[numIdx]) &&
+               ((startRes[startIdx] < startMappedIdx) || 
+                (startRes[startIdx] + numRes[numIdx] > startMappedIdx + prms->maxMappedTxCh[mappedGrp])))
+            {
+                /* Resource going out of bound */
+                retVal += UDMA_EFAIL;
+            }
+            startIdx++; numIdx++; 
+        }
+        startMappedIdx += prms->maxMappedTxCh[mappedGrp];
+    }
+    retVal += Udma_rmCheckOverlap(startRes, numRes, startIdx, prms->maxTotalMappedTxCh);
+
+    /* Check Mapped RX channels */
+    startIdx = 0U; numIdx = 0U;
+    /* In AM64x, mapped channels start from CPSW */
+    startMappedIdx = CSL_DMSS_PKTDMA_RX_CHANS_CPSW_START;
+    for(mappedGrp = 0U; mappedGrp < UDMA_NUM_MAPPED_RX_GROUP; mappedGrp++)
+    {
+        for(coreId = 0U; coreId < UDMA_NUM_CORE; coreId++)
+        {
+            startRes[startIdx] = prms->selfCfg[coreId].startMappedRxCh[mappedGrp];
+            numRes[numIdx] = prms->selfCfg[coreId].numMappedRxCh[mappedGrp];
+            /* Check for each mapped group, whether the chNum is bound to its range*/
+            if((0 != numRes[numIdx]) &&
+               ((startRes[startIdx] < startMappedIdx) || 
+                (startRes[startIdx] + numRes[numIdx] > startMappedIdx + prms->maxMappedRxCh[mappedGrp])))
+            {
+                /* Resource going out of bound */
+                retVal += UDMA_EFAIL;
+            }
+            startIdx++; numIdx++; 
+        }
+        startMappedIdx += prms->maxMappedRxCh[mappedGrp];
+    }
+    retVal += Udma_rmCheckOverlap(startRes, numRes, startIdx, prms->maxTotalMappedRxCh);
+
+    /* Check Mapped rings */
+    startIdx = 0U; numIdx = 0U; 
+    /* In AM64x, mapped rings start from CPSW */
+    startMappedIdx = CSL_DMSS_PKTDMA_TX_FLOWS_CPSW_START; 
+    for(mappedGrp = 0U; mappedGrp < (UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP); mappedGrp++)
+    {
+        for(coreId = 0U; coreId < UDMA_NUM_CORE; coreId++)
+        {
+            startRes[startIdx] = prms->selfCfg[coreId].startMappedRing[mappedGrp]; 
+            numRes[numIdx] = prms->selfCfg[coreId].numMappedRing[mappedGrp]; 
+            /* Check for each mapped group, whether the ringNum is bound to its range*/
+            if((0 != numRes[numIdx]) &&
+               ((startRes[startIdx] < startMappedIdx) || 
+                (startRes[startIdx] + numRes[numIdx] > startMappedIdx + prms->maxMappedRing[mappedGrp])))
+            {
+                /* Resource going out of bound */
+                retVal += UDMA_EFAIL;
+            }
+            startIdx++; numIdx++; 
+        }
+        startMappedIdx += prms->maxMappedRing[mappedGrp];
+        /* In between mapped TX rings and RX rings, there are a set of unmapped RX rings.
+         * So If the mappedGrp is the last mapped TX ring group (in AM64x - UDMA_MAPPED_TX_GROUP_ICSSG_1),
+         * Then update the startMappedIdx as the start of first mapped RX ring ( in AM64x - CSL_DMSS_PKTDMA_RX_FLOWS_CPSW_START) */
+        if(UDMA_MAPPED_TX_GROUP_ICSSG_1 == mappedGrp)
+        {
+            startMappedIdx = CSL_DMSS_PKTDMA_RX_FLOWS_CPSW_START;
+        }
+    }
+    retVal += Udma_rmCheckOverlap(startRes, numRes, startIdx, prms->maxTotalMappedRing);
 
     /* Check free ring */
     startIdx = 0U; numIdx = 0U;

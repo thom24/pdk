@@ -132,6 +132,28 @@ typedef struct Udma_RingMonObj *        Udma_RingMonHandle;
 #define UDMA_UTC_ID3                    (3U)
 /* @} */
 
+/**
+ *  \anchor Udma_MappedGrp
+ *  \name UDMA Mapped Group
+ *
+ *  This represents the various Mapped TX & RX Channels/Rings in the SOC. The actual 
+ *  Mapped TX & RX groups present in the chip is SOC dependent. Refer soc file 
+ *  for the actual instance present.
+ *  Kindly use \ref Udma_MappedTxGrpSoc macros for Mapped TX SOC specific name
+ *  and \ref Udma_MappedRxGrpSoc macros for Mapped RX SOC specific name.
+ *
+ *  @{
+ */
+#define UDMA_MAPPED_GROUP0            (0U)
+#define UDMA_MAPPED_GROUP1            (1U)
+#define UDMA_MAPPED_GROUP2            (2U)
+#define UDMA_MAPPED_GROUP3            (3U)
+#define UDMA_MAPPED_GROUP4            (4U)
+#define UDMA_MAPPED_GROUP5            (5U)
+#define UDMA_MAPPED_GROUP6            (6U)
+#define UDMA_MAPPED_GROUP7            (7U)
+/* @} */
+
 /* ========================================================================== */
 /*                         Structure Declarations                             */
 /* ========================================================================== */

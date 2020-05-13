@@ -65,7 +65,53 @@
 /*                            Global Variables                                */
 /* ========================================================================== */
 
-/* None */
+const Udma_MappedChRingAttributes gUdmaTxMappedChRingAttributes[CSL_DMSS_PKTDMA_NUM_TX_CHANS - CSL_DMSS_PKTDMA_TX_CHANS_UNMAPPED_CNT] =
+{
+    {16U, 8U}, // Channel 16 - UDMA_MAPPED_TX_GROUP_CPSW Ch 0 
+    {24U, 8U}, // Channel 17 - UDMA_MAPPED_TX_GROUP_CPSW Ch 1
+    {32U, 8U}, // Channel 18 - UDMA_MAPPED_TX_GROUP_CPSW Ch 2
+    {40U, 8U}, // Channel 19 - UDMA_MAPPED_TX_GROUP_CPSW Ch 3
+    {48U, 8U}, // Channel 20 - UDMA_MAPPED_TX_GROUP_CPSW Ch 4
+    {56U, 8U}, // Channel 21 - UDMA_MAPPED_TX_GROUP_CPSW Ch 5
+    {64U, 8U}, // Channel 22 - UDMA_MAPPED_TX_GROUP_CPSW Ch 6
+    {72U, 8U}, // Channel 23 - UDMA_MAPPED_TX_GROUP_CPSW Ch 7
+    {80U, 8U}, // Channel 24 - UDMA_MAPPED_TX_GROUP_SAUL Ch 0 
+    {88U, 8U}, // Channel 25 - UDMA_MAPPED_TX_GROUP_SAUL Ch 1
+    {96U, 1U}, // Channel 26 - UDMA_MAPPED_TX_GROUP_ICSSG_0 Ch 0
+    {97U, 1U}, // Channel 27 - UDMA_MAPPED_TX_GROUP_ICSSG_0 Ch 1
+    {98U, 1U}, // Channel 28 - UDMA_MAPPED_TX_GROUP_ICSSG_0 Ch 2
+    {99U, 8U}, // Channel 29 - UDMA_MAPPED_TX_GROUP_ICSSG_0 Ch 3
+    {100U, 1U}, // Channel 30 - UDMA_MAPPED_TX_GROUP_ICSSG_0 Ch 4
+    {101U, 1U}, // Channel 31 - UDMA_MAPPED_TX_GROUP_ICSSG_0 Ch 5
+    {102U, 1U}, // Channel 32 - UDMA_MAPPED_TX_GROUP_ICSSG_0 Ch 6
+    {103U, 1U}, // Channel 33 - UDMA_MAPPED_TX_GROUP_ICSSG_0 Ch 7
+    {104U, 1U}, // Channel 34 - UDMA_MAPPED_TX_GROUP_ICSSG_1 Ch 0
+    {105U, 1U}, // Channel 35 - UDMA_MAPPED_TX_GROUP_ICSSG_1 Ch 1
+    {106U, 1U}, // Channel 36 - UDMA_MAPPED_TX_GROUP_ICSSG_1 Ch 2
+    {107U, 1U}, // Channel 37 - UDMA_MAPPED_TX_GROUP_ICSSG_1 Ch 3
+    {108U, 1U}, // Channel 38 - UDMA_MAPPED_TX_GROUP_ICSSG_1 Ch 4
+    {109U, 1U}, // Channel 39 - UDMA_MAPPED_TX_GROUP_ICSSG_1 Ch 5
+    {110U, 1U}, // Channel 40 - UDMA_MAPPED_TX_GROUP_ICSSG_1 Ch 6
+    {111U, 1U}, // Channel 41 - UDMA_MAPPED_TX_GROUP_ICSSG_1 Ch 7
+};
+
+const Udma_MappedChRingAttributes gUdmaRxMappedChRingAttributes[CSL_DMSS_PKTDMA_NUM_RX_CHANS - CSL_DMSS_PKTDMA_RX_CHANS_UNMAPPED_CNT] =
+{
+    /*RX Ring Offset of 112U added to the startRing */
+    {128U, 16U}, // Channel 16 - UDMA_MAPPED_RX_GROUP_CPSW Ch 0
+    {144U, 8U}, // Channel 17 - UDMA_MAPPED_RX_GROUP_SAUL Ch 0
+    {144U, 8U}, // Channel 18 - UDMA_MAPPED_RX_GROUP_SAUL Ch 1
+    {152U, 8U}, // Channel 19 - UDMA_MAPPED_RX_GROUP_SAUL Ch 2
+    {152U, 8U}, // Channel 20 - UDMA_MAPPED_RX_GROUP_SAUL Ch 3
+    {160U, 16U}, // Channel 21 - UDMA_MAPPED_RX_GROUP_ICSSG_0 Ch 0
+    {176U, 16U}, // Channel 22 - UDMA_MAPPED_RX_GROUP_ICSSG_0 Ch 1
+    {192U, 16U}, // Channel 23 - UDMA_MAPPED_RX_GROUP_ICSSG_0 Ch 2
+    {208U, 16U}, // Channel 24 - UDMA_MAPPED_RX_GROUP_ICSSG_0 Ch 3 
+    {224U, 16U}, // Channel 25 - UDMA_MAPPED_RX_GROUP_ICSSG_1 Ch 0
+    {240U, 16U}, // Channel 26 - UDMA_MAPPED_RX_GROUP_ICSSG_1 Ch 1
+    {256U, 16U}, // Channel 27 - UDMA_MAPPED_RX_GROUP_ICSSG_1 Ch 2
+    {272U, 16U}, // Channel 28 - UDMA_MAPPED_RX_GROUP_ICSSG_1 Ch 3
+};
 
 /* ========================================================================== */
 /*                          Function Definitions                              */
@@ -289,4 +335,32 @@ uint32_t Udma_isCacheCoherent(void)
 #endif
 
     return (isCacheCoherent);
+}
+
+void Udma_getMappedChRingAttributes(Udma_DrvHandle drvHandle, uint32_t chNum, uint32_t mappedGrp, Udma_MappedChRingAttributes *chAttr)
+{
+    const Udma_MappedChRingAttributes  *mappedChRingAttributes;
+    uint32_t index = 0U;
+
+    if(mappedGrp < UDMA_NUM_MAPPED_TX_GROUP) /* Mapped TX Channel */
+    {
+        /* Calculate index by subtracting the start idx of mapped channels 
+         * (For AM64x, mapped channel starts with CPSW channel.) */
+        index = chNum - CSL_DMSS_PKTDMA_TX_CHANS_CPSW_START;
+        /* Check that, index is less than total no.of mapped TX channels */
+        Udma_assert(drvHandle, index < (CSL_DMSS_PKTDMA_NUM_TX_CHANS - CSL_DMSS_PKTDMA_TX_CHANS_UNMAPPED_CNT));
+        mappedChRingAttributes = &gUdmaTxMappedChRingAttributes[index];
+    }
+    else /* Mapped RX Channel */
+    {
+        /* Calculate index by subtracting the start idx of mapped channels 
+         * (For AM64x, mapped channel starts with CPSW channel.) */
+        index = chNum - CSL_DMSS_PKTDMA_RX_CHANS_CPSW_START;
+        /* Check that, index is less than total no.of mapped RX channels */
+        Udma_assert(drvHandle, index < (CSL_DMSS_PKTDMA_NUM_RX_CHANS - CSL_DMSS_PKTDMA_RX_CHANS_UNMAPPED_CNT));
+        mappedChRingAttributes = &gUdmaRxMappedChRingAttributes[index];
+    }
+    (void) memcpy(chAttr, mappedChRingAttributes, sizeof (Udma_MappedChRingAttributes));
+
+    return ;
 }

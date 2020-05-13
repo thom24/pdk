@@ -123,7 +123,12 @@ extern "C" {
 /* SOC APIs */
 void Udma_initDrvHandle(Udma_DrvHandle drvHandle);
 void UdmaRmInitPrms_init(uint32_t instId, Udma_RmInitPrms *rmInitPrms);
-
+#if ((UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP) > 0)
+void Udma_getMappedChRingAttributes(Udma_DrvHandle drvHandle,
+                                    uint32_t chNum, 
+                                    uint32_t mappedGrp, 
+                                    Udma_MappedChRingAttributes *chAttr);
+#endif
 /* Private APIs */
 #if (UDMA_NUM_UTC_INSTANCE > 0)
 const Udma_UtcInstInfo *Udma_chGetUtcInst(Udma_DrvHandle drvHandle,
@@ -250,7 +255,31 @@ void Udma_rmFreeExtCh(uint32_t chNum,
                       Udma_DrvHandle drvHandle,
                       const Udma_UtcInstInfo *utcInfo);
 #endif
+#if (UDMA_NUM_MAPPED_TX_GROUP > 0)
+uint32_t Udma_rmAllocMappedTxCh(uint32_t preferredChNum,
+                                Udma_DrvHandle drvHandle,
+                                const uint32_t mappedChGrp);
+void Udma_rmFreeMappedTxCh(uint32_t chNum,
+                           Udma_DrvHandle drvHandle,
+                           const uint32_t mappedChGrp);
+#endif
+#if (UDMA_NUM_MAPPED_RX_GROUP > 0)
+uint32_t Udma_rmAllocMappedRxCh(uint32_t preferredChNum,
+                                Udma_DrvHandle drvHandle,
+                                const uint32_t mappedChGrp);
+void Udma_rmFreeMappedRxCh(uint32_t chNum,
+                           Udma_DrvHandle drvHandle,
+                           const uint32_t mappedChGrp);
+#endif
 /* Ring RM APIs */
+#if((UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP) > 0)
+uint32_t Udma_rmAllocMappedRing(Udma_DrvHandle drvHandle,
+                                const uint32_t mappedRingGrp,
+                                const uint32_t mappedChNum);
+void Udma_rmFreeMappedRing(uint32_t ringNum,
+                           Udma_DrvHandle drvHandle,
+                           const uint32_t mappedRingGrp);
+#endif
 uint16_t Udma_rmAllocFreeRing(Udma_DrvHandle drvHandle);
 void Udma_rmFreeFreeRing(uint16_t ringNum, Udma_DrvHandle drvHandle);
 uint16_t Udma_rmAllocRingMon(Udma_DrvHandle drvHandle);

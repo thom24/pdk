@@ -563,12 +563,25 @@ struct Udma_DrvObj
     uint32_t                rxHcChFlag[UDMA_RM_RX_HC_CH_ARR_SIZE];
     /**< UDMA high capacity RX channel allocation flag */
     uint32_t                rxUhcChFlag[UDMA_RM_RX_UHC_CH_ARR_SIZE];
-
-#if (UDMA_NUM_UTC_INSTANCE > 0)
     /**< UDMA ultra high capacity RX channel allocation flag */
+    
+#if (UDMA_NUM_UTC_INSTANCE > 0)
     uint32_t                utcChFlag[UDMA_NUM_UTC_INSTANCE][UDMA_RM_UTC_CH_ARR_SIZE];
-#endif
     /**< UDMA external UTC channel allocation flag */
+#endif
+#if (UDMA_NUM_MAPPED_TX_GROUP > 0)
+    uint32_t                mappedTxChFlag[UDMA_NUM_MAPPED_TX_GROUP][UDMA_RM_MAPPED_TX_CH_ARR_SIZE];
+    /**< UDMA mapped TX channel allocation flag */
+#endif
+#if (UDMA_NUM_MAPPED_RX_GROUP > 0)
+    uint32_t                mappedRxChFlag[UDMA_NUM_MAPPED_RX_GROUP][UDMA_RM_MAPPED_RX_CH_ARR_SIZE];
+    /**< UDMA mapped RX channel allocation flag */
+#endif
+#if ((UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP) > 0)
+    uint32_t                mappedRingFlag[UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP][UDMA_RM_MAPPED_RING_ARR_SIZE];
+    /**< UDMA mapped ring allocation flag */
+#endif
+
     uint32_t                freeRingFlag[UDMA_RM_FREE_RING_ARR_SIZE];
     /**< UDMA free ring allocation flag */
     uint32_t                freeFlowFlag[UDMA_RM_FREE_FLOW_ARR_SIZE];

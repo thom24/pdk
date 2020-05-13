@@ -144,6 +144,33 @@ typedef struct
      *   Note: This cannot exceed #UDMA_RM_MAX_UTC_CH_PER_INST */
 #endif
 
+#if (UDMA_NUM_MAPPED_TX_GROUP > 0)
+    uint32_t                startMappedTxCh[UDMA_NUM_MAPPED_TX_GROUP];
+    /**< Start Mapped TX channel from which this UDMA driver instance
+     *   manages */
+    uint32_t                numMappedTxCh[UDMA_NUM_MAPPED_TX_GROUP];
+    /**< Number of Mapped TX channel to be managed.
+     *   Note: This cannot exceed #UDMA_RM_MAX_MAPPED_TX_CH_PER_GROUP */
+#endif
+
+#if (UDMA_NUM_MAPPED_RX_GROUP > 0)
+    uint32_t                startMappedRxCh[UDMA_NUM_MAPPED_RX_GROUP];
+    /**< Start Mapped RX channel from which this UDMA driver instance
+     *   manages */
+    uint32_t                numMappedRxCh[UDMA_NUM_MAPPED_RX_GROUP];
+    /**< Number of Mapped RX channel to be managed.
+     *   Note: This cannot exceed #UDMA_RM_MAX_MAPPED_RX_CH_PER_GROUP */
+#endif
+
+#if ((UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP) > 0)
+    uint32_t                startMappedRing[UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP];
+    /**< Start Mapped ring from which this UDMA driver instance
+     *   manages */
+    uint32_t                numMappedRing[UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP];
+    /**< Number of Mapped ring to be managed.
+     *   Note: This cannot exceed #UDMA_RM_MAX_MAPPED_RING_PER_GROUP */
+#endif
+
     uint32_t                startFreeFlow;
     /**< Start free flow from which this UDMA driver instance manages */
     uint32_t                numFreeFlow;

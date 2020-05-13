@@ -153,6 +153,28 @@ typedef struct
     uint8_t                 orderId;
     /**< Ring bus order ID value to be programmed into the orderid field of
      *   the ring's RING_ORDERID register. */
+    uint32_t                mappedRingGrp;
+    /**< The Mapped ring group to use when channel type is 
+     *   #UDMA_CH_TYPE_TX_MAPPED or #UDMA_CH_TYPE_RX_MAPPED.
+     * 
+     *   Refer \ref Udma_MappedTxGrpSoc macro for details about mapped TX ring groups
+     *   or \ref Udma_MappedRxGrpSoc macro for details about mapped RX ring groups.
+     *
+     *   For unmapped case, set to #UDMA_MAPPED_GROUP_INVALID
+     */
+    uint32_t                mappedChNum;
+    /**< The assigned mapped channel number when channel type is 
+     *   #UDMA_CH_TYPE_TX_MAPPED or #UDMA_CH_TYPE_RX_MAPPED.
+     * 
+     *   This is used to allocate the corresponding mapped ring for the particular channel.
+     *   RM will derive an intersecting pool based on the rings reserved for the core (in rmcfg)
+     *   and the permissible range for the given channel(rings reserved for specific channels)
+     *   such that the allocated ring will be from this intersecting pool.
+     *  
+     *   For example, If the rings idx reserved for the core are 10 to 20 and 
+     *   the rings for the channel are 15 to 25. Then the intersecting pool of ring idx
+     *   will be 15 - 20 and rm will allocate from this range.
+     */
 } Udma_RingPrms;
 
 /**
@@ -773,6 +795,24 @@ struct Udma_RingObj
     
     uint32_t                    ringInitDone;
     /**< Flag to set the ring object is init. */
+
+    uint32_t                    mappedRingGrp;
+    /**< The allocated mapped ring group when channel type is 
+     *   #UDMA_CH_TYPE_TX_MAPPED or #UDMA_CH_TYPE_RX_MAPPED.
+     *   
+     *   This is needed to free the mapped ring.
+     * 
+     *   Refer \ref Udma_MappedTxGrpSoc macro for details about mapped TX ring groups
+     *   or \ref Udma_MappedRxGrpSoc macro for details about mapped RX ring groups.
+     *
+     *   For unmapped case, this will be #UDMA_MAPPED_GROUP_INVALID
+     */
+    uint32_t                    mappedChNum;
+    /**< The assigned mapped channel number when channel type is 
+     *   #UDMA_CH_TYPE_TX_MAPPED or #UDMA_CH_TYPE_RX_MAPPED.
+     * 
+     *   For unmapped case, this will be #UDMA_DMA_CH_INVALID.
+     */
 };
 
 /**

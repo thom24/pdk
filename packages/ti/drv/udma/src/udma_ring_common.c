@@ -106,7 +106,16 @@ int32_t Udma_ringAlloc(Udma_DrvHandle drvHandle,
         if(UDMA_RING_ANY == ringNum)
         {
             /* Alloc free ring */
-            ringHandle->ringNum = Udma_rmAllocFreeRing(drvHandle);
+            if(UDMA_MAPPED_GROUP_INVALID == ringPrms->mappedRingGrp)
+            {
+                ringHandle->ringNum = Udma_rmAllocFreeRing(drvHandle);
+            }
+#if((UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP) > 0)
+            else
+            {
+                ringHandle->ringNum = Udma_rmAllocMappedRing(drvHandle, ringPrms->mappedRingGrp, ringPrms->mappedChNum);
+            }
+#endif
             if(UDMA_RING_INVALID == ringHandle->ringNum)
             {
                 retVal = UDMA_EALLOC;
@@ -134,6 +143,10 @@ int32_t Udma_ringAlloc(Udma_DrvHandle drvHandle,
     {
         Udma_ringAssertFnPointers(drvHandle);
         ringHandle->drvHandle = drvHandle;
+        /* Set the mapped group in ringHandle, since only ringHandle is passed to rmFreeMappedRing() and
+         * the mapped group parameter is required to reset the appropriate flag */
+        ringHandle->mappedRingGrp   = ringPrms->mappedRingGrp;
+        ringHandle->mappedChNum     = ringPrms->mappedChNum;
         drvHandle->ringSetCfg(drvHandle, ringHandle, ringPrms);
 
 #if (UDMA_SOC_CFG_APPLY_RING_WORKAROUND == 1)
@@ -181,7 +194,16 @@ int32_t Udma_ringAlloc(Udma_DrvHandle drvHandle,
         /* Error. Free-up resource if allocated */
         if(((uint32_t) TRUE) == allocDone)
         {
-            Udma_rmFreeFreeRing(ringHandle->ringNum, drvHandle);
+            if(UDMA_MAPPED_GROUP_INVALID == ringPrms->mappedRingGrp)
+            {
+                Udma_rmFreeFreeRing(ringHandle->ringNum, drvHandle);
+            }
+#if((UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP) > 0)
+            else
+            {
+                Udma_rmFreeMappedRing(ringHandle->ringNum, drvHandle, ringHandle->mappedRingGrp);
+            }
+#endif 
         }
     }
 
@@ -218,7 +240,16 @@ int32_t Udma_ringFree(Udma_RingHandle ringHandle)
     {
         /* Free-up event resources */
         Udma_assert(drvHandle, ringHandle->ringNum != UDMA_RING_INVALID);
-        Udma_rmFreeFreeRing(ringHandle->ringNum, drvHandle);
+        if(UDMA_MAPPED_GROUP_INVALID == ringHandle->mappedRingGrp)
+        {
+            Udma_rmFreeFreeRing(ringHandle->ringNum, drvHandle);
+        }
+#if((UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP) > 0)
+        else
+        {
+            Udma_rmFreeMappedRing(ringHandle->ringNum, drvHandle, ringHandle->mappedRingGrp);
+        }
+#endif 
         ringHandle->ringNum         = UDMA_RING_INVALID;
         ringHandle->ringInitDone    = UDMA_DEINIT_DONE;
 
@@ -744,6 +775,8 @@ void UdmaRingPrms_init(Udma_RingPrms *ringPrms)
         ringPrms->elemCnt       = 0U;
         ringPrms->elemSize      = UDMA_RING_ES_8BYTES;
         ringPrms->orderId       = UDMA_DEFAULT_RING_ORDER_ID;
+        ringPrms->mappedRingGrp = UDMA_MAPPED_GROUP_INVALID;
+        ringPrms->mappedChNum   = UDMA_DMA_CH_INVALID;
     }
 
     return;

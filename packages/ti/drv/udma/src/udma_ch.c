@@ -1575,6 +1575,7 @@ void UdmaChPrms_init(Udma_ChPrms *chPrms, uint32_t chType)
             chPrms->peerChNum   = UDMA_DMA_CH_NA;
         }
         chPrms->utcId       = UDMA_UTC_ID_INVALID;
+        chPrms->mappedChGrp = UDMA_MAPPED_GROUP_INVALID;
         chPrms->appData     = NULL_PTR;
         UdmaRingPrms_init(&chPrms->fqRingPrms);
         UdmaRingPrms_init(&chPrms->cqRingPrms);
@@ -1874,6 +1875,27 @@ static int32_t Udma_chCheckParams(Udma_DrvHandle drvHandle,
             Udma_printf(drvHandle, "[Error] Invalid Peer Channel Number!!!\n");
         }
     }
+    if((chType & UDMA_CH_FLAG_MAPPED) == UDMA_CH_FLAG_MAPPED)
+    {
+        if(UDMA_MAPPED_GROUP_INVALID == chPrms->mappedChGrp)
+        {
+            retVal = UDMA_EINVALID_PARAMS;
+            Udma_printf(drvHandle, "[Error] Invalid Mapped Channel Group!!!\n");
+        }
+#if (UDMA_NUM_MAPPED_TX_GROUP > 0)
+        if((chType & UDMA_CH_FLAG_RX) == UDMA_CH_FLAG_RX)
+        {
+            /* Since RX mapped group index follows TX,
+             * check whether the group index is less than no.of tx groups
+             * when channel type is RX */
+            if(chPrms->mappedChGrp < UDMA_NUM_MAPPED_TX_GROUP)
+            {
+                retVal = UDMA_EINVALID_PARAMS;
+                Udma_printf(drvHandle, "[Error] Incorrect RX Mapped Channel Group!!!\n");
+            }
+        }
+#endif
+    }
     if(UDMA_INST_TYPE_NORMAL != drvHandle->instType)
     {
         if(TISCI_MSG_VALUE_RM_RING_MODE_RING != chPrms->fqRingPrms.mode)
@@ -1982,6 +2004,13 @@ static int32_t Udma_chAllocResource(Udma_ChHandle chHandle)
                 chHandle->txChNum =
                     Udma_rmAllocTxHcCh(chHandle->chPrms.chNum, drvHandle);
             }
+#if (UDMA_NUM_MAPPED_TX_GROUP > 0)
+            else if((chHandle->chType & UDMA_CH_FLAG_MAPPED) == UDMA_CH_FLAG_MAPPED)
+            {
+                chHandle->txChNum =
+                    Udma_rmAllocMappedTxCh(chHandle->chPrms.chNum, drvHandle, chHandle->chPrms.mappedChGrp);   
+            }
+#endif
             else if((chHandle->chType & UDMA_CH_FLAG_UHC) == UDMA_CH_FLAG_UHC)
             {
                 chHandle->txChNum =
@@ -2005,6 +2034,15 @@ static int32_t Udma_chAllocResource(Udma_ChHandle chHandle)
                 chHandle->rxChNum =
                     Udma_rmAllocRxHcCh(chHandle->chPrms.chNum, drvHandle);
             }
+#if (UDMA_NUM_MAPPED_RX_GROUP > 0)
+            else if((chHandle->chType & UDMA_CH_FLAG_MAPPED) == UDMA_CH_FLAG_MAPPED)
+            {
+                /* For RX, Subtract the #UDMA_NUM_MAPPED_TX_GROUP from mappedChGrp, because the group id for TX and RX are continous */
+                Udma_assert(drvHandle, chHandle->chPrms.mappedChGrp >= UDMA_NUM_MAPPED_TX_GROUP);
+                chHandle->rxChNum =
+                    Udma_rmAllocMappedRxCh(chHandle->chPrms.chNum, drvHandle, chHandle->chPrms.mappedChGrp - UDMA_NUM_MAPPED_TX_GROUP);   
+            }
+#endif
             else if((chHandle->chType & UDMA_CH_FLAG_UHC) == UDMA_CH_FLAG_UHC)
             {
                 chHandle->rxChNum =
@@ -2067,7 +2105,20 @@ static int32_t Udma_chAllocResource(Udma_ChHandle chHandle)
             }
             else
             {
-                if((chHandle->chType & UDMA_CH_FLAG_TX) == UDMA_CH_FLAG_TX)
+                if((chHandle->chType & UDMA_CH_FLAG_MAPPED) == UDMA_CH_FLAG_MAPPED)
+                {   
+                    ringNum = UDMA_RING_ANY;
+                    chHandle->chPrms.fqRingPrms.mappedRingGrp  = chHandle->chPrms.mappedChGrp;
+                    if((chHandle->chType & UDMA_CH_FLAG_TX) == UDMA_CH_FLAG_TX)
+                    {
+                        chHandle->chPrms.fqRingPrms.mappedChNum    = chHandle->txChNum;
+                    }
+                    else
+                    {
+                        chHandle->chPrms.fqRingPrms.mappedChNum    = chHandle->rxChNum;
+                    }
+                }
+                else if((chHandle->chType & UDMA_CH_FLAG_TX) == UDMA_CH_FLAG_TX)
                 {
                     /* For UDMAP, txChOffset is 0 */
                     ringNum = (uint16_t)(chHandle->txChNum + drvHandle->txChOffset);
@@ -2193,6 +2244,12 @@ static int32_t Udma_chFreeResource(Udma_ChHandle chHandle)
             {
                 Udma_rmFreeTxHcCh(chHandle->txChNum, drvHandle);
             }
+#if (UDMA_NUM_MAPPED_TX_GROUP > 0)
+            else if((chHandle->chType & UDMA_CH_FLAG_MAPPED) == UDMA_CH_FLAG_MAPPED)
+            {
+                Udma_rmFreeMappedTxCh(chHandle->txChNum, drvHandle, chHandle->chPrms.mappedChGrp);   
+            }
+#endif
             else if((chHandle->chType & UDMA_CH_FLAG_UHC) == UDMA_CH_FLAG_UHC)
             {
                 Udma_rmFreeTxUhcCh(chHandle->txChNum, drvHandle);
@@ -2210,6 +2267,13 @@ static int32_t Udma_chFreeResource(Udma_ChHandle chHandle)
             {
                 Udma_rmFreeRxHcCh(chHandle->rxChNum, drvHandle);
             }
+#if (UDMA_NUM_MAPPED_RX_GROUP > 0)
+            else if((chHandle->chType & UDMA_CH_FLAG_MAPPED) == UDMA_CH_FLAG_MAPPED)
+            {
+                Udma_assert(drvHandle, chHandle->chPrms.mappedChGrp >= UDMA_NUM_MAPPED_TX_GROUP);
+                Udma_rmFreeMappedRxCh(chHandle->rxChNum, drvHandle, chHandle->chPrms.mappedChGrp - UDMA_NUM_MAPPED_TX_GROUP);   
+            }
+#endif
             else if((chHandle->chType & UDMA_CH_FLAG_UHC) == UDMA_CH_FLAG_UHC)
             {
                 Udma_rmFreeRxUhcCh(chHandle->rxChNum, drvHandle);
