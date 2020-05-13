@@ -124,10 +124,10 @@ extern "C" {
 void Udma_initDrvHandle(Udma_DrvHandle drvHandle);
 void UdmaRmInitPrms_init(uint32_t instId, Udma_RmInitPrms *rmInitPrms);
 #if ((UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP) > 0)
-void Udma_getMappedChRingAttributes(Udma_DrvHandle drvHandle,
-                                    uint32_t chNum, 
-                                    uint32_t mappedGrp, 
-                                    Udma_MappedChRingAttributes *chAttr);
+int32_t Udma_getMappedChRingAttributes(Udma_DrvHandle drvHandle,
+                                       uint32_t mappedGrp,
+                                       uint32_t chNum,  
+                                       Udma_MappedChRingAttributes *chAttr);
 #endif
 /* Private APIs */
 #if (UDMA_NUM_UTC_INSTANCE > 0)

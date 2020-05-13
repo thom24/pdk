@@ -933,6 +933,15 @@ int32_t Udma_ringCheckParams(Udma_DrvHandle drvHandle,
                     ringPrms->orderId);
     }
 
+#if ((UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP) > 0)
+    if((UDMA_MAPPED_GROUP_INVALID != ringPrms->mappedRingGrp) &&
+       (ringPrms->mappedRingGrp >= (UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP)))
+    {
+        retVal = UDMA_EINVALID_PARAMS;
+        Udma_printf(drvHandle, "[Error] Incorrect Mapped Ring Group!!!\n");
+    }    
+#endif
+
     return (retVal);
 }
 

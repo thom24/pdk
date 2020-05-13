@@ -1130,7 +1130,7 @@ uint32_t Udma_rmAllocExtCh(uint32_t preferredChNum,
 
     Udma_assert(drvHandle, utcInfo != NULL_PTR);
     utcId = utcInfo->utcId;
-    Udma_assert(drvHandle, utcId <= UDMA_NUM_UTC_INSTANCE);
+    Udma_assert(drvHandle, utcId < UDMA_NUM_UTC_INSTANCE);
     Udma_assert(drvHandle,
         rmInitPrms->startUtcCh[utcId] >= utcInfo->startCh);
     Udma_assert(drvHandle,
@@ -1394,70 +1394,74 @@ uint32_t Udma_rmAllocMappedRing(Udma_DrvHandle drvHandle,
     uint32_t    ringNum = UDMA_RING_INVALID;
     uint32_t    i,offset, bitPos, bitMask;  
     uint32_t    loopStart, loopMax;      
+    int32_t     retVal = UDMA_SOK;
 
     Udma_RmInitPrms             *rmInitPrms = &drvHandle->initPrms.rmInitPrms;
     Udma_MappedChRingAttributes  chAttr;
 
     Udma_assert(drvHandle, mappedRingGrp < (UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP));
 
-    (void) Udma_getMappedChRingAttributes(drvHandle, mappedChNum, mappedRingGrp, &chAttr);
-
-    /* Derive the intersecting pool (loopStart and loopMax) based on the rings reserved for the core (rmcfg)
-     * and the permissible range for the given channel(rings reserved for specific channels).
-     * 
-     * Core_ring_Start (rmInitPrms->startMappedRing) & Core_ring_End (rmInitPrms->startMappedRing +rmInitPrms->numMappedRing)
-     * refers to the range of reserved rings for the core.
-     * Channel_ring_Start (chAttr->startRing) & Channel_ring_End (chAttr->startRing + chAttr->numRing) 
-     * refers to permissible range of rings for the particular channel.
-     * 
-     * CASE 'A' refers to those that affects the loopStart
-     * CASE 'B' refers to those that affects the loopMax
-     */
-
-    /* Default Loop Values*/
-    loopStart = 0;
-    loopMax   = rmInitPrms->numMappedRing[mappedRingGrp];
-
-    /* CASE_A_1 : Channel_ring_Start > Core_ring_Start */
-    if(chAttr.startRing > rmInitPrms->startMappedRing[mappedRingGrp])
+    retVal = Udma_getMappedChRingAttributes(drvHandle, mappedRingGrp, mappedChNum, &chAttr);
+    
+    if(UDMA_SOK == retVal)
     {
-        /* Update loopStart to start from Channel_ring_Start,
-         * so as to skip the starting rings which are reserved for the core, 
-         * but can't be used for the current channel */
-        loopStart = chAttr.startRing - rmInitPrms->startMappedRing[mappedRingGrp]; 
-    }
-    /* For all other CASE 'A's, loopStart should be 0 itself. */
+        /* Derive the intersecting pool (loopStart and loopMax) based on the rings reserved for the core (rmcfg)
+        * and the permissible range for the given channel(rings reserved for specific channels).
+        * 
+        * Core_ring_Start (rmInitPrms->startMappedRing) & Core_ring_End (rmInitPrms->startMappedRing +rmInitPrms->numMappedRing)
+        * refers to the range of reserved rings for the core.
+        * Channel_ring_Start (chAttr->startRing) & Channel_ring_End (chAttr->startRing + chAttr->numRing) 
+        * refers to permissible range of rings for the particular channel.
+        * 
+        * CASE 'A' refers to those that affects the loopStart
+        * CASE 'B' refers to those that affects the loopMax
+        */
 
-    /* CASE_B_1 : Channel_ring_End < Core_ring_End */
-    if((chAttr.startRing + chAttr.numRing) < (rmInitPrms->startMappedRing[mappedRingGrp] + rmInitPrms->numMappedRing[mappedRingGrp]))
-    {
-        /* Update loopMax to stop at Channel_ring_End,
-         * so as to skip the last rings which are reserved for the core, 
-         * but can't be used for the current channel */
-        loopMax = (chAttr.startRing + chAttr.numRing) - rmInitPrms->startMappedRing[mappedRingGrp];
-    }
-    /* For all other CASE 'B's, loopMax should be rmInitPrms->numMappedRing[mappedRingGrp] itself. */
+        /* Default Loop Values*/
+        loopStart = 0;
+        loopMax   = rmInitPrms->numMappedRing[mappedRingGrp];
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.lockMutex != (Udma_OsalMutexLockFxn) NULL_PTR);
-    drvHandle->initPrms.osalPrms.lockMutex(drvHandle->rmLock);
-
-    /* Search and allocate from derived intersecting pool */
-    for(i = loopStart; i < loopMax; i++)
-    {
-        offset = i >> 5U;
-        Udma_assert(drvHandle, offset < UDMA_RM_MAPPED_RING_ARR_SIZE);
-        bitPos = i - (offset << 5U);
-        bitMask = (uint32_t) 1U << bitPos;
-        if((drvHandle->mappedRingFlag[mappedRingGrp][offset] & bitMask) == bitMask)
+        /* CASE_A_1 : Channel_ring_Start > Core_ring_Start */
+        if(chAttr.startRing > rmInitPrms->startMappedRing[mappedRingGrp])
         {
-            drvHandle->mappedRingFlag[mappedRingGrp][offset] &= ~bitMask;
-            ringNum = i + rmInitPrms->startMappedRing[mappedRingGrp];  /* Add start offset */
-            break;
+            /* Update loopStart to start from Channel_ring_Start,
+            * so as to skip the starting rings which are reserved for the core, 
+            * but can't be used for the current channel */
+            loopStart = chAttr.startRing - rmInitPrms->startMappedRing[mappedRingGrp]; 
         }
-    }
+        /* For all other CASE 'A's, loopStart should be 0 itself. */
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.unlockMutex != (Udma_OsalMutexUnlockFxn) NULL_PTR);
-    drvHandle->initPrms.osalPrms.unlockMutex(drvHandle->rmLock);
+        /* CASE_B_1 : Channel_ring_End < Core_ring_End */
+        if((chAttr.startRing + chAttr.numRing) < (rmInitPrms->startMappedRing[mappedRingGrp] + rmInitPrms->numMappedRing[mappedRingGrp]))
+        {
+            /* Update loopMax to stop at Channel_ring_End,
+            * so as to skip the last rings which are reserved for the core, 
+            * but can't be used for the current channel */
+            loopMax = (chAttr.startRing + chAttr.numRing) - rmInitPrms->startMappedRing[mappedRingGrp];
+        }
+        /* For all other CASE 'B's, loopMax should be rmInitPrms->numMappedRing[mappedRingGrp] itself. */
+
+        Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.lockMutex != (Udma_OsalMutexLockFxn) NULL_PTR);
+        drvHandle->initPrms.osalPrms.lockMutex(drvHandle->rmLock);
+
+        /* Search and allocate from derived intersecting pool */
+        for(i = loopStart; i < loopMax; i++)
+        {
+            offset = i >> 5U;
+            Udma_assert(drvHandle, offset < UDMA_RM_MAPPED_RING_ARR_SIZE);
+            bitPos = i - (offset << 5U);
+            bitMask = (uint32_t) 1U << bitPos;
+            if((drvHandle->mappedRingFlag[mappedRingGrp][offset] & bitMask) == bitMask)
+            {
+                drvHandle->mappedRingFlag[mappedRingGrp][offset] &= ~bitMask;
+                ringNum = i + rmInitPrms->startMappedRing[mappedRingGrp];  /* Add start offset */
+                break;
+            }
+        }
+
+        Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.unlockMutex != (Udma_OsalMutexUnlockFxn) NULL_PTR);
+        drvHandle->initPrms.osalPrms.unlockMutex(drvHandle->rmLock);
+    }
 
     return (ringNum);
 }

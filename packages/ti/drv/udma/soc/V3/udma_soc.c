@@ -265,11 +265,11 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
     else
     {
         drvHandle->blkCopyChOffset      = 0U; /* Not used for PktDMA Instance */ 
-        drvHandle->txChOffset           = CSL_DMSS_PKTDMA_TX_FLOWS_UNMAPPED_START; /* Need to be updated, Since Special channels present */
-	    drvHandle->rxChOffset   		= CSL_DMSS_PKTDMA_RX_FLOWS_UNMAPPED_START;	/* Need to be updated, Since Special channels present */
+        drvHandle->txChOffset           = CSL_DMSS_PKTDMA_TX_FLOWS_UNMAPPED_START; 
+	    drvHandle->rxChOffset   		= CSL_DMSS_PKTDMA_RX_FLOWS_UNMAPPED_START;
         drvHandle->blkCopyRingIrqOffset = 0U; /* Not used for PktDMA Instance */ 
-        drvHandle->txRingIrqOffset      = TISCI_PKTDMA0_TX_FLOW_OES_IRQ_SRC_IDX_START - drvHandle->txChOffset; /* Need to be updated, Since Special channels present */
-        drvHandle->rxRingIrqOffset      = TISCI_PKTDMA0_RX_FLOW_OES_IRQ_SRC_IDX_START - drvHandle->rxChOffset; /* Need to be updated, Since Special channels present */
+        drvHandle->txRingIrqOffset      = TISCI_PKTDMA0_TX_FLOW_OES_IRQ_SRC_IDX_START - drvHandle->txChOffset; 
+        drvHandle->rxRingIrqOffset      = TISCI_PKTDMA0_RX_FLOW_OES_IRQ_SRC_IDX_START - drvHandle->rxChOffset; 
 	    drvHandle->udmapSrcThreadOffset = CSL_PSILCFG_DMSS_PKTDMA_STRM_PSILS_THREAD_OFFSET; 
 	    drvHandle->udmapDestThreadOffset= CSL_PSILCFG_DMSS_PKTDMA_STRM_PSILD_THREAD_OFFSET;
 	    drvHandle->maxRings             = CSL_DMSS_PKTDMA_NUM_RX_FLOWS + CSL_DMSS_PKTDMA_NUM_TX_FLOWS;
@@ -337,30 +337,51 @@ uint32_t Udma_isCacheCoherent(void)
     return (isCacheCoherent);
 }
 
-void Udma_getMappedChRingAttributes(Udma_DrvHandle drvHandle, uint32_t chNum, uint32_t mappedGrp, Udma_MappedChRingAttributes *chAttr)
+int32_t Udma_getMappedChRingAttributes(Udma_DrvHandle drvHandle, uint32_t mappedGrp, uint32_t chNum, Udma_MappedChRingAttributes *chAttr)
 {
     const Udma_MappedChRingAttributes  *mappedChRingAttributes;
     uint32_t index = 0U;
+    int32_t retVal = UDMA_SOK;
 
     if(mappedGrp < UDMA_NUM_MAPPED_TX_GROUP) /* Mapped TX Channel */
     {
-        /* Calculate index by subtracting the start idx of mapped channels 
-         * (For AM64x, mapped channel starts with CPSW channel.) */
-        index = chNum - CSL_DMSS_PKTDMA_TX_CHANS_CPSW_START;
-        /* Check that, index is less than total no.of mapped TX channels */
-        Udma_assert(drvHandle, index < (CSL_DMSS_PKTDMA_NUM_TX_CHANS - CSL_DMSS_PKTDMA_TX_CHANS_UNMAPPED_CNT));
-        mappedChRingAttributes = &gUdmaTxMappedChRingAttributes[index];
+        /* Check if the channel no. is out of range of mapped channel idx */ 
+        if((chNum < CSL_DMSS_PKTDMA_TX_CHANS_CPSW_START) ||
+           (chNum >= CSL_DMSS_PKTDMA_NUM_TX_CHANS))
+        {
+            retVal = UDMA_EINVALID_PARAMS;
+            Udma_printf(drvHandle, "[Error] Incorrect Mapped Channel number!!!\n");
+        }
+        if(UDMA_SOK == retVal)
+        {
+            /* Calculate index by subtracting the start idx of mapped channels 
+            * (For AM64x, mapped channel starts with CPSW channel.) */
+            index = chNum - CSL_DMSS_PKTDMA_TX_CHANS_CPSW_START;
+            /* Check that, index is less than total no.of mapped TX channels */
+            Udma_assert(drvHandle, index < (CSL_DMSS_PKTDMA_NUM_TX_CHANS - CSL_DMSS_PKTDMA_TX_CHANS_UNMAPPED_CNT));
+            mappedChRingAttributes = &gUdmaTxMappedChRingAttributes[index];
+        }
     }
     else /* Mapped RX Channel */
     {
-        /* Calculate index by subtracting the start idx of mapped channels 
-         * (For AM64x, mapped channel starts with CPSW channel.) */
-        index = chNum - CSL_DMSS_PKTDMA_RX_CHANS_CPSW_START;
-        /* Check that, index is less than total no.of mapped RX channels */
-        Udma_assert(drvHandle, index < (CSL_DMSS_PKTDMA_NUM_RX_CHANS - CSL_DMSS_PKTDMA_RX_CHANS_UNMAPPED_CNT));
-        mappedChRingAttributes = &gUdmaRxMappedChRingAttributes[index];
+        /* Check if the channel no. is out of range of mapped channel idx */ 
+        if((chNum < CSL_DMSS_PKTDMA_RX_CHANS_CPSW_START) ||
+           (chNum >= CSL_DMSS_PKTDMA_NUM_RX_CHANS))
+        {
+            retVal = UDMA_EINVALID_PARAMS;
+            Udma_printf(drvHandle, "[Error] Incorrect Mapped Channel number!!!\n");
+        }
+        if(UDMA_SOK == retVal)
+        {
+            /* Calculate index by subtracting the start idx of mapped channels 
+            * (For AM64x, mapped channel starts with CPSW channel.) */
+            index = chNum - CSL_DMSS_PKTDMA_RX_CHANS_CPSW_START;
+            /* Check that, index is less than total no.of mapped RX channels */
+            Udma_assert(drvHandle, index < (CSL_DMSS_PKTDMA_NUM_RX_CHANS - CSL_DMSS_PKTDMA_RX_CHANS_UNMAPPED_CNT));
+            mappedChRingAttributes = &gUdmaRxMappedChRingAttributes[index];
+        }
     }
     (void) memcpy(chAttr, mappedChRingAttributes, sizeof (Udma_MappedChRingAttributes));
 
-    return ;
+    return(retVal);
 }

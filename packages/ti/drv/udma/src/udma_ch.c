@@ -1877,18 +1877,27 @@ static int32_t Udma_chCheckParams(Udma_DrvHandle drvHandle,
     }
     if((chType & UDMA_CH_FLAG_MAPPED) == UDMA_CH_FLAG_MAPPED)
     {
-        if(UDMA_MAPPED_GROUP_INVALID == chPrms->mappedChGrp)
+        if(UDMA_MAPPED_GROUP_INVALID == chPrms->mappedChGrp) 
         {
             retVal = UDMA_EINVALID_PARAMS;
             Udma_printf(drvHandle, "[Error] Invalid Mapped Channel Group!!!\n");
         }
-#if (UDMA_NUM_MAPPED_TX_GROUP > 0)
+#if ((UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP) > 0)
+        if((chType & UDMA_CH_FLAG_TX) == UDMA_CH_FLAG_TX)
+        {
+            if(chPrms->mappedChGrp >= UDMA_NUM_MAPPED_TX_GROUP)
+            {
+                retVal = UDMA_EINVALID_PARAMS;
+                Udma_printf(drvHandle, "[Error] Incorrect TX Mapped Channel Group!!!\n");
+            }
+        }
         if((chType & UDMA_CH_FLAG_RX) == UDMA_CH_FLAG_RX)
         {
             /* Since RX mapped group index follows TX,
-             * check whether the group index is less than no.of tx groups
+             * also check whether the group index is less than no.of tx groups
              * when channel type is RX */
-            if(chPrms->mappedChGrp < UDMA_NUM_MAPPED_TX_GROUP)
+            if((chPrms->mappedChGrp < UDMA_NUM_MAPPED_TX_GROUP) ||
+               (chPrms->mappedChGrp >= (UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP)))
             {
                 retVal = UDMA_EINVALID_PARAMS;
                 Udma_printf(drvHandle, "[Error] Incorrect RX Mapped Channel Group!!!\n");
