@@ -376,6 +376,7 @@ void set_pinmux(pinmux_t *Array, uint8_t arraysize);
 void writeToPadConfigReg(pinmux_t * arrayPtr, uint32_t mmr_reg_value);
 uint32_t readFromPadConfigReg(pinmux_t * arrayPtr);
 
+#ifdef BOARD_QT_MANUAL_PINMUX_SETUP
 static const pinmux_t OSPI_COMPLETE_PINMUX_array [] = {
     //Pinmux Region,     Offset, Muxmode,           TX,                RX,                Pull Up/Down/None,  Drive Strength,           Schmitt Trigger,        Debounce Period
     {PINMUX_REGION_MAIN, 0x0000, PINMUX_MUX_MODE_0, PINMUX_TX_ENABLE,  PINMUX_RX_DISABLE, PINMUX_PULLTYPE_PULLDOWN, PINMUX_DRIVE_STRENGTH_IGNORE, PINMUX_SCHMITT_TRIG_IGNORE, PINMUX_DEBOUNCE_PERIOD_IGNORE}, //OSPI0 CLK
@@ -394,6 +395,7 @@ static const pinmux_t OSPI_COMPLETE_PINMUX_array [] = {
     {PINMUX_REGION_MAIN, 0x0034, PINMUX_MUX_MODE_2, PINMUX_TX_ENABLE,  PINMUX_RX_DISABLE, PINMUX_PULLTYPE_PULLUP, PINMUX_DRIVE_STRENGTH_IGNORE, PINMUX_SCHMITT_TRIG_IGNORE, PINMUX_DEBOUNCE_PERIOD_IGNORE}, //OSPI RESET_OUT1
     {PINMUX_REGION_MAIN, 0x0038, PINMUX_MUX_MODE_1, PINMUX_TX_ENABLE,  PINMUX_RX_DISABLE, PINMUX_PULLTYPE_PULLUP, PINMUX_DRIVE_STRENGTH_IGNORE, PINMUX_SCHMITT_TRIG_IGNORE, PINMUX_DEBOUNCE_PERIOD_IGNORE}, //OSPI RESET_OUT0
 };
+#endif
 
 void set_pinmux(pinmux_t *Array, uint8_t arraysize){
     uint32_t c = 0;
@@ -500,8 +502,51 @@ uint32_t readFromPadConfigReg(pinmux_t * arrayPtr) {
 
 Board_STATUS Board_pinmuxConfig (void)
 {
+#ifdef BOARD_QT_MANUAL_PINMUX_SETUP
     MAIN_PADCONFIG_MMR_unlock_all();
     set_pinmux((pinmux_t *)&OSPI_COMPLETE_PINMUX_array, (sizeof(OSPI_COMPLETE_PINMUX_array)/sizeof(pinmux_t)) );
+#else
+    pinmuxModuleCfg_t* pModuleData = NULL;
+    pinmuxPerCfg_t* pInstanceData = NULL;
+    int32_t i, j, k;
+
+    MAIN_PADCONFIG_MMR_unlock_all();
+
+    for(i = 0; PINMUX_END != gAM64xxMainPinmuxData[i].moduleId; i++)
+    {
+        pModuleData = gAM64xxMainPinmuxData[i].modulePinCfg;
+        for(j = 0; (PINMUX_END != pModuleData[j].modInstNum); j++)
+        {
+            if(pModuleData[j].doPinConfig == TRUE)
+            {
+                pInstanceData = pModuleData[j].instPins;
+                for(k = 0; (PINMUX_END != pInstanceData[k].pinOffset); k++)
+                {
+                    HW_WR_REG32((MAIN_PADCONFIG_MMR_BASE_ADDRESS + pInstanceData[k].pinOffset),
+                                (pInstanceData[k].pinSettings));
+                }
+            }
+        }
+    }
+
+	for(i = 0; PINMUX_END != gAM64xxWkupPinmuxData[i].moduleId; i++)
+    {
+        pModuleData = gAM64xxWkupPinmuxData[i].modulePinCfg;
+        for(j = 0; (PINMUX_END != pModuleData[j].modInstNum); j++)
+        {
+            if(pModuleData[j].doPinConfig == TRUE)
+            {
+                pInstanceData = pModuleData[j].instPins;
+                for(k = 0; (PINMUX_END != pInstanceData[k].pinOffset); k++)
+                {
+                    HW_WR_REG32((MCU_PADCONFIG_MMR_BASE_ADDRESS + pInstanceData[k].pinOffset),
+                                 (pInstanceData[k].pinSettings));
+                }
+            }
+        }
+    }
+
+#endif
 
     return BOARD_SOK;
 }

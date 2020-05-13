@@ -31,8 +31,8 @@
  *
  *****************************************************************************/
 
-#ifndef PINMUX_H
-#define PINMUX_H
+#ifndef _BOARD_PINMUX_H_
+#define _BOARD_PINMUX_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -48,55 +48,15 @@ extern "C" {
  */
 
 #include <ti/csl/tistdtypes.h>
+#include "AM64xx_pinmux.h"
 
 /* ========================================================================== */
 /*                         Structures and Enums                               */
 /* ========================================================================== */
 
-/**
- *  \brief Structure defining the pin configuration parameters.
- *
- */
-typedef struct pinmuxPerCfg
-{
-    int16_t pinOffset;
-    /**< Register offset for configuring the pin */
-    int32_t pinSettings;
-    /**< Value to be configured,
-          - Active mode configurations like mux mode, pull resistor, and buffer mode
-    */
-}pinmuxPerCfg_t;
-
-/**
- *  \brief Structure defining the pin configuration for different instances of
- *         a module.
- */
-typedef struct pinmuxModuleCfg
-{
-    int16_t modInstNum;
-    /**< Instance number of the ip */
-    int16_t doPinConfig;
-    /**< Flag indicating whether this instance has to be configured. This flag
-         can be altered with separate API (PinMuxConfigEnable()).
-         Default configuration will be set to TRUE, but can be altered for
-         different scenarios (like power management). */
-    pinmuxPerCfg_t* instPins;
-    /**< Pointer to list of pins corresponding to this instance */
-}pinmuxModuleCfg_t;
-
-/**
- *  \brief Structure defining the pin configuration of a board.
- */
-typedef struct pinmuxBoardCfg
-{
-    int32_t moduleId;
-    /**< Module ID */
-    pinmuxModuleCfg_t* modulePinCfg;
-    /**< Pin config info of a module: #pinmuxModuleCfg_t */
-}pinmuxBoardCfg_t;
 
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
 
-#endif
+#endif  /* _BOARD_PINMUX_H_ */
