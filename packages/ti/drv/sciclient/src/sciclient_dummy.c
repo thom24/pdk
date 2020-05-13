@@ -211,6 +211,12 @@ int32_t Sciclient_procBootAuthAndStart(
     return retVal;
 }
 
+/* Loki build also uses host emulation dma flow so enable host emulation */
+#if defined (LOKI_BUILD)
+#define HOST_EMULATION (1U)
+#endif
+
+
 /* Below function was not available in host emulation build, hence adding an empty function */
 #if defined (HOST_EMULATION)
 int32_t Sciclient_rmSetProxyCfg(const struct tisci_msg_rm_proxy_cfg_req *req, uint32_t timeout)
