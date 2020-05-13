@@ -727,7 +727,7 @@ Board_STATUS Board_fpdUb960CfgPG(void *handle,
 {
     Board_STATUS ret = BOARD_SOK;
 
-    if((handle == NULL) && (pgType >= BOARD_FPD_UB960_PG_MAX))
+    if((handle == NULL) || (pgType >= BOARD_FPD_UB960_PG_MAX))
     {
         ret = BOARD_INVALID_PARAM;
     }
@@ -902,7 +902,8 @@ Board_STATUS Board_fpdUb960Cfg(void *handle,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
             if(ret != 0)
             {
-                return BOARD_I2C_TRANSFER_FAIL;
+                ret = BOARD_I2C_TRANSFER_FAIL;
+                break;
             }
 
             if(ub960Cfg[index].i2cDelay != 0)
@@ -917,7 +918,8 @@ Board_STATUS Board_fpdUb960Cfg(void *handle,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
             if(ret != 0)
             {
-                return BOARD_I2C_TRANSFER_FAIL;
+                ret = return BOARD_I2C_TRANSFER_FAIL;
+                break;
             }
 
             BOARD_DEVICES_STS_LOG(" --- read back data - 0x%2x\n\r", rdData);
