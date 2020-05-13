@@ -122,6 +122,9 @@ mmcsd_INCLUDE = $(mmcsd_PATH)
 mmcsd_SOCLIST = $(drvmmcsd_SOCLIST)
 export mmcsd_SOCLIST
 mmcsd_$(SOC)_CORELIST = $(drvmmcsd_$(SOC)_CORELIST)
+ifeq ($(SOC),$(filter $(SOC), j721e))
+mmcsd_$(SOC)_CORELIST += c66xdsp_1 c66xdsp_2 c7x_1
+endif
 export mmcsd_$(SOC)_CORELIST
 
 # MMCSD LIB DEVICE INDEPENDENT
@@ -174,6 +177,9 @@ mmcsd_dma_INCLUDE = $(mmcsd_dma_PATH)
 mmcsd_dma_SOCLIST = $(drvmmcsd_dma_SOCLIST)
 export mmcsd_dma_SOCLIST
 mmcsd_dma_$(SOC)_CORELIST = $(drvmmcsd_$(SOC)_CORELIST)
+ifeq ($(SOC),$(filter $(SOC), j721e))
+mmcsd_dma_$(SOC)_CORELIST += c66xdsp_1 c66xdsp_2 c7x_1
+endif
 export mmcsd_dma_$(SOC)_CORELIST
 
 # MMCSD PROFILING SOC LIB
@@ -445,7 +451,7 @@ export MMCSD_Baremetal_EMMC_TestApp_CORE_DEPENDENCY
 export MMCSD_Baremetal_EMMC_TestApp_XDC_CONFIGURO
 MMCSD_Baremetal_EMMC_TestApp_PKG_LIST = MMCSD_Baremetal_EMMC_TestApp
 MMCSD_Baremetal_EMMC_TestApp_INCLUDE = $(MMCSD_Baremetal_EMMC_TestApp_PATH)
-MMCSD_Baremetal_EMMC_TestApp_BOARDLIST = am65xx_idk am65xx_evm j721e_sim j721e_evm j7200_evm 
+MMCSD_Baremetal_EMMC_TestApp_BOARDLIST = am65xx_idk am65xx_evm j721e_sim j721e_evm j7200_evm
 export MMCSD_Baremetal_EMMC_TestApp_BOARDLIST
 MMCSD_Baremetal_EMMC_TestApp_$(SOC)_CORELIST = $(drvmmcsd_$(SOC)_CORELIST)
 export MMCSD_Baremetal_EMMC_TestApp_$(SOC)_CORELIST
