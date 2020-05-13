@@ -40,6 +40,7 @@
  */
 
 
+#ifdef USE_BIOS
 /* XDCtools Header files */
 #include <xdc/std.h>
 #include <xdc/cfg/global.h>
@@ -50,8 +51,10 @@
 /* BIOS Header files */
 #include <ti/sysbios/BIOS.h>
 #include <xdc/runtime/Error.h>
-#include <ti/csl/soc.h>
+#endif /* #ifdef USE_BIOS */
+
 /* TI-RTOS Header files */
+#include <ti/csl/soc.h>
 #include <ti/drv/spi/SPI.h>
 #include <ti/drv/spi/soc/QSPI_v1.h>
 #include "SPI_log.h"
@@ -80,6 +83,9 @@
 #endif
 #if defined(SOC_AM574x) || defined (SOC_AM572x) || defined (SOC_AM571x)
 #define QSPI_OFFSET             (4U)
+#endif
+#if defined(SOC_TPR12)
+#define QSPI_OFFSET             (0U)
 #endif
 
 #define QSPI_TEST_LENGTH        (75U)  /* read/write test data size in 32-bit words */
@@ -351,7 +357,11 @@ QSPI_Tests qspi_tests[] =
 /*
  *  ======== test function ========
  */
+#ifdef USE_BIOS
 void spi_test(UArg arg0, UArg arg1)
+#else
+void spi_test()
+#endif
 {
     uint32_t    i;
     QSPI_Tests *test;
@@ -399,7 +409,8 @@ int main(void)
     /* Call board init functions */
     Board_initCfg boardCfg;
 
-#if defined (SOC_AM335x) || defined (SOC_AM437x)
+#if defined (SOC_AM335x) || defined (SOC_AM437x) || defined (SOC_TPR12)
+#ifdef USE_BIOS
     Task_Handle task;
     Error_Block eb;
 
@@ -409,6 +420,7 @@ int main(void)
         System_printf("Task_create() failed!\n");
         BIOS_exit(0);
     }
+#endif
 #endif
 
     boardCfg = BOARD_INIT_PINMUX_CONFIG |
@@ -420,8 +432,13 @@ int main(void)
     QSPI_board_crossbarInit();
 #endif
 
+#ifdef USE_BIOS
     /* Start BIOS */
     BIOS_start();
+#else
+    spi_test();
+#endif
+
     return (0);
 }
 

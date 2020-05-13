@@ -582,14 +582,13 @@ uint32_t FlashStatus(S25FL_Handle flashHandle)
     return (rxData & 0xFF);
 }
 
-#if defined(SOC_AM574x) || defined (SOC_AM571x) || defined (SOC_AM572x) || defined (SOC_DRA72x) || defined (SOC_DRA75x) || defined (SOC_DRA78x)
+#if defined(SOC_AM574x) || defined (SOC_AM571x) || defined (SOC_AM572x) || defined (SOC_DRA72x) || defined (SOC_DRA75x) || defined (SOC_DRA78x) || defined (SOC_TPR12)
 bool S25FLFlash_QuadModeEnable(S25FL_Handle flashHandle)
 {
     SPI_Handle handle = flashHandle->spiHandle; /* SPI handle */
     unsigned char writeVal = 0U;    /* data to be written */
     uint32_t norStatus;             /* flash status value */
     uint32_t configReg;             /* configuration register value */
-    uint32_t data;                  /* data to be written */
     bool retVal = false;            /* return value */
     unsigned int operMode;          /* temp variable to hold mode */
     unsigned int rxLines;           /* temp variable to hold rx lines */
@@ -664,16 +663,24 @@ bool S25FLFlash_QuadModeEnable(S25FL_Handle flashHandle)
 
     /* Set 2nd bit of configuration register to 1 to enable quad mode */
     configReg |= (QSPI_FLASH_QUAD_ENABLE_VALUE << QSPI_FLASH_QUAD_ENABLE_BIT);
-    data = (QSPI_LIB_CMD_WRITE_STATUS_REG << 16) | (norStatus << 8) | configReg;
 
     /* Set transfer length in bytes */
-    frmLength = 1;
+    frmLength = 1 + 1;
     SPI_control(handle, SPI_V1_CMD_SETFRAMELENGTH, (void *)&frmLength);
 
-
-    transaction.txBuf = (unsigned char *)&data;
+    writeVal = QSPI_LIB_CMD_QUAD_WR_CMD_REG;
+    transaction.txBuf = (unsigned char *)&writeVal;
     transaction.rxBuf = NULL;
-    transaction.count = 3;
+    transaction.count = 1;
+
+    transferType = SPI_TRANSACTION_TYPE_WRITE;
+    SPI_control(handle, SPI_V1_CMD_TRANSFERMODE_RW, (void *)&transferType);
+
+    retVal = SPI_transfer(handle, &transaction);
+
+    transaction.txBuf = (unsigned char *)&configReg;
+    transaction.rxBuf = NULL;
+    transaction.count = 1;
 
     transferType = SPI_TRANSACTION_TYPE_WRITE;
     SPI_control(handle, SPI_V1_CMD_TRANSFERMODE_RW, (void *)&transferType);

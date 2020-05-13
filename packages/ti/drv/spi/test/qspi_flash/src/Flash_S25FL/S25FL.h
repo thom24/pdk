@@ -55,7 +55,11 @@ extern "C" {
 /*!
  *  @brief Flash device size in bytes.
  */
+#ifdef TPR12_QT
+#define S25FL_FLASH_DEVICE_SIZE        (16 * 1024 *1024)
+#else
 #define S25FL_FLASH_DEVICE_SIZE        (32 * 1024 *1024)
+#endif
 
 /*!
  *  @brief Flash block size in bytes.
@@ -70,7 +74,11 @@ extern "C" {
 /*!
  *  @brief Flash device ID.
  */
+#ifdef TPR12_QT
+#define S25FL_FLASH_DEVICE_ID          (0x14)
+#else
 #define S25FL_FLASH_DEVICE_ID          (0x18)
+#endif
 
 /*!
  *  @brief Macro to enable quad mode.
@@ -123,7 +131,7 @@ typedef enum qspiLibCmd
     /**< Command to exit 4 byte addressing mode */
     QSPI_LIB_CMD_QUAD_RD_CMD_REG   = 0x35U,
     /**< command to read the register where the quad enable bit has to be set */
-    QSPI_LIB_CMD_QUAD_WR_CMD_REG   = 0x01U,
+    QSPI_LIB_CMD_QUAD_WR_CMD_REG   = 0x31U,
     /**< command to read the register where the quad enable bit has to be set */
     QSPI_LIB_CMD_READ_SINGLE_4B = 0x13U,
     /**< Single read from qspi flash device in 4 byte addressing mode */

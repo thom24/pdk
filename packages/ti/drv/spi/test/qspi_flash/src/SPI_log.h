@@ -48,6 +48,15 @@ extern "C" {
 
 #include <stdio.h>
 
+/**********************************************************************
+ ************************** Macros ************************************
+ **********************************************************************/
+/* Enable the below macro to have prints on the IO Console */
+#ifdef TPR12_QT
+#define IO_CONSOLE
+#endif
+
+#ifndef IO_CONSOLE
 /* UART Header files */
 #include <ti/drv/uart/UART.h>
 #include <ti/drv/uart/UART_stdio.h>
@@ -59,13 +68,6 @@ extern "C" {
 extern void UART_printf(const char *pcString, ...);
 extern void ConsoleUtilsInit(void);
 
-/**********************************************************************
- ************************** Macros ************************************
- **********************************************************************/
-/* Enable the below macro to have prints on the IO Console */
-//#define IO_CONSOLE
-
-#ifndef IO_CONSOLE
 #define SPI_log                UART_printf
 #else
 #define SPI_log                printf
