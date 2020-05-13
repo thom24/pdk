@@ -47,9 +47,6 @@
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
 
-/** \brief Max number of door bell ring that can be performed at one go */
-#define UDMA_RING_MAX_DB_RING_CNT       (CSL_LCDMA_RINGACC_MAX_DB_RING_CNT)
-
 /* ========================================================================== */
 /*                         Structure Declarations                             */
 /* ========================================================================== */
@@ -274,21 +271,27 @@ void Udma_ringPrimeReadLcdma(Udma_RingHandle ringHandle, uint64_t *phyDescMem)
 void Udma_ringSetDoorBellLcdma(Udma_RingHandle ringHandle, int32_t count)
 {
     uint32_t    regVal;
-    int32_t     thisDbRingCnt;
+    int32_t     thisDbRingCnt, maxDbRingCnt;
 
     /* count will be positive when ring elements are queued into the ring */
     if (count >= 0)
     {
+        /*-------------------------------------------------------------------------
+        * Set maxDbRingCnt to the largest positive value that can be written to
+        * the forward doorbell field (a two's compliment value).
+        *-----------------------------------------------------------------------*/
+        maxDbRingCnt = (int32_t)((((uint32_t)CSL_LCDMA_RINGACC_RINGRT_RING_FDB_CNT_MAX + 1U) >> 1) - 1U);
+
         while(count != 0)
         {
-            if(count < UDMA_RING_MAX_DB_RING_CNT)
+            if(count < maxDbRingCnt)
             {
                 thisDbRingCnt = count;
                 regVal = CSL_FMK(LCDMA_RINGACC_RINGRT_RING_FDB_CNT, (uint32_t)thisDbRingCnt);
             }
             else
             {
-                thisDbRingCnt = UDMA_RING_MAX_DB_RING_CNT;
+                thisDbRingCnt = maxDbRingCnt;
                 regVal = CSL_FMK(LCDMA_RINGACC_RINGRT_RING_FDB_CNT, (uint32_t)thisDbRingCnt);
             }
             CSL_REG32_WR(&ringHandle->pLcdmaRtRegs->FDB, regVal);
@@ -299,16 +302,22 @@ void Udma_ringSetDoorBellLcdma(Udma_RingHandle ringHandle, int32_t count)
     /* count will be negative when ring elements are dequeued from the ring */
     else
     {
+        /*-------------------------------------------------------------------------
+        * Set maxDbRingCnt to the largest positive value that can be written to
+        * the reverse doorbell field (a two's compliment value).
+        *-----------------------------------------------------------------------*/
+        maxDbRingCnt = (int32_t)((((uint32_t)CSL_LCDMA_RINGACC_RINGRT_RING_RDB_CNT_MAX + 1U) >> 1) - 1U);
+
         while(count != 0)
         {
-            if(count > (-1 * (int32_t)UDMA_RING_MAX_DB_RING_CNT))
+            if(count > (-1 * (int32_t)maxDbRingCnt))
             {
                 thisDbRingCnt = count;
                 regVal = CSL_FMK(LCDMA_RINGACC_RINGRT_RING_RDB_CNT, (uint32_t)thisDbRingCnt);
             }
             else
             {
-                thisDbRingCnt = (-1 * (int32_t)UDMA_RING_MAX_DB_RING_CNT);
+                thisDbRingCnt = (-1 * (int32_t)maxDbRingCnt);
                 regVal = CSL_FMK(LCDMA_RINGACC_RINGRT_RING_RDB_CNT, (uint32_t)thisDbRingCnt);
             }
             CSL_REG32_WR(&ringHandle->pLcdmaRtRegs->RDB, regVal);
