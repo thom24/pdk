@@ -40,7 +40,7 @@ INCDIR = . src
 
 PACKAGE_SRCS_COMMON =
 
-ifeq ($(BOARD),$(filter $(BOARD),evmAM335x icev2AM335x iceAMIC110 skAM335x bbbAM335x evmAM437x idkAM437x skAM437x evmAM572x idkAM571x idkAM572x evmK2H evmK2K evmK2E evmK2L evmK2G iceK2G evmC6678 evmC6657 evmOMAPL137 lcdkOMAPL138 idkAM574x am65xx_evm am65xx_idk am64x_evm tpr12_evm tpr12_qt))
+ifeq ($(BOARD),$(filter $(BOARD),evmAM335x icev2AM335x iceAMIC110 skAM335x bbbAM335x evmAM437x idkAM437x skAM437x evmAM572x idkAM571x idkAM572x evmK2H evmK2K evmK2E evmK2L evmK2G iceK2G evmC6678 evmC6657 evmOMAPL137 lcdkOMAPL138 idkAM574x am65xx_evm am65xx_idk am64x_evm am64x_svb tpr12_evm tpr12_qt))
 # Common source files across all platforms and cores
 SRCS_COMMON += board.c
 endif
