@@ -86,40 +86,47 @@ if [[ $FW_SOC == *"hs"* ]]; then
   BIN_EXT=-hs-enc
 fi
 
+if [[ $FW_SOC == *"vlab"* ]]; then
+  FW_SOC=${FW_SOC%-vlab}
+  FW_SOC_TYPE=gp-vlab-rom
+fi
+if [[ $FW_SOC == *"zebu"* ]]; then
+  FW_SOC=${FW_SOC%-zebu}
+  FW_SOC_TYPE=gp-zebu-rom
+fi
+
 export SCI_CLIENT_IN_SOC_DIR=$SCI_CLIENT_DIR/soc/sysfw/binaries
 
 if [ "$FW_SOC" = "am65x" ]; then
 export SCI_CLIENT_OUT_SOC_DIR=$SCI_CLIENT_DIR/soc/V0
 export SCICLIENT_FIRMWARE_HEADER=sciclient_firmware_V0.h
 export SYSFW_SE_SIGNED=$SCI_CLIENT_OUT_SOC_DIR/sysfw$BIN_EXT.bin
+export SYSFW_LOAD_ADDR=0x40000
 fi
 
 if [ "$FW_SOC" = "am65x_sr2" ]; then
 export SCI_CLIENT_OUT_SOC_DIR=$SCI_CLIENT_DIR/soc/V0
 export SCICLIENT_FIRMWARE_HEADER=sciclient_firmware_V0_sr2.h
 SYSFW_SE_SIGNED=$SCI_CLIENT_OUT_SOC_DIR/sysfw_sr2$BIN_EXT.bin
+export SYSFW_LOAD_ADDR=0x40000
 fi
 
 if [ "$FW_SOC" = "j721e" ]; then
 export SCI_CLIENT_OUT_SOC_DIR=$SCI_CLIENT_DIR/soc/V1
 export SCICLIENT_FIRMWARE_HEADER=sciclient_firmware_V1.h
 SYSFW_SE_SIGNED=$SCI_CLIENT_OUT_SOC_DIR/sysfw$BIN_EXT.bin
+export SYSFW_LOAD_ADDR=0x40000
 fi
 
-if [ "$FW_SOC" = "am64x-vlab" ]; then
+if [ "$FW_SOC" = "am64x" ]; then
 export SCI_CLIENT_OUT_SOC_DIR=$SCI_CLIENT_DIR/soc/V3
-export FIRMWARE_SILICON=$SCI_CLIENT_IN_SOC_DIR/ti-sci-firmware-am64x-gp-vlab-rom.bin
-export SCICLIENT_FIRMWARE_HEADER=sciclient_firmware_V3_VLAB.h
-SYSFW_SE_SIGNED=$SCI_CLIENT_OUT_SOC_DIR/sysfw-vlab$BIN_EXT.bin
-elif [ "$FW_SOC" = "am64x-zebu" ]; then
-export SCI_CLIENT_OUT_SOC_DIR=$SCI_CLIENT_DIR/soc/V3
-export FIRMWARE_SILICON=$SCI_CLIENT_IN_SOC_DIR/ti-sci-firmware-am64x-gp-zebu-rom.bin
-export SCICLIENT_FIRMWARE_HEADER=sciclient_firmware_V3.h
 SYSFW_SE_SIGNED=$SCI_CLIENT_OUT_SOC_DIR/sysfw$BIN_EXT.bin
-else
+export SCICLIENT_FIRMWARE_HEADER=sciclient_firmware_V3.h
+export SYSFW_LOAD_ADDR=0x44000
+fi
+
 export FIRMWARE_SILICON=$SCI_CLIENT_IN_SOC_DIR/ti-sci-firmware-$FW_SOC-$FW_SOC_TYPE.bin
 export SYSFW_SE_INNER_CERT=$SCI_CLIENT_IN_SOC_DIR/ti-sci-firmware-$FW_SOC-hs-cert.bin
-fi
 export SYSFW_SE_CUST_CERT=$SCI_CLIENT_OUT_SOC_DIR/sysfw_cert.bin
 
 # SBL_CERT_GEN may already be depending on how this is called
@@ -141,14 +148,14 @@ cd -
 $CHMOD a+x $SBL_CERT_GEN
 $CHMOD a+x $BIN2C_GEN
 
-if [ "$FW_SOC_TYPE" == "gp" ]; then
+if [[ $FW_SOC_TYPE == *"gp"* ]]; then
 $ECHO "Generating the Header file for " $FIRMWARE_SILICON
 export SBL_CERT_KEY=$ROOTDIR/ti/build/makerules/rom_degenerateKey.pem
-$SBL_CERT_GEN -b $FIRMWARE_SILICON -o $SYSFW_SE_SIGNED -c DMSC_I -l 0x40000 -k $SBL_CERT_KEY
+$SBL_CERT_GEN -b $FIRMWARE_SILICON -o $SYSFW_SE_SIGNED -c DMSC_I -l $SYSFW_LOAD_ADDR -k $SBL_CERT_KEY
 else
 $ECHO "Generating outer certificate for " $SYSFW_SE_INNER_CERT
 export SBL_CERT_KEY=$ROOTDIR/ti/build/makerules/k3_dev_mpk.pem
-$SBL_CERT_GEN -b $SYSFW_SE_INNER_CERT -o $SYSFW_SE_CUST_CERT -c DMSC_O -l 0x40000 -k $SBL_CERT_KEY
+$SBL_CERT_GEN -b $SYSFW_SE_INNER_CERT -o $SYSFW_SE_CUST_CERT -c DMSC_O -l $SYSFW_LOAD_ADDR -k $SBL_CERT_KEY
 
 $ECHO "Generating the Header file for " $FIRMWARE_SILICON
 $CAT $SYSFW_SE_CUST_CERT $FIRMWARE_SILICON > $SYSFW_SE_SIGNED
