@@ -388,7 +388,7 @@ static SPI_Handle QSPI_open_v1(SPI_Handle handle, const SPI_Params *params)
 
 static void QSPIMmapCsEnable(uint32_t baseAddr, uint32_t chipSelect)
 {
-#if !defined(SOC_AM437x)
+#if !(defined(SOC_AM437x) || defined(SOC_TPR12))
     uint32_t regVal;
 
     regVal = HW_RD_REG32(CTRL_CORE_CONTROL_IO_2);

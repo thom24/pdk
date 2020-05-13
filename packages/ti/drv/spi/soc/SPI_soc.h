@@ -71,6 +71,10 @@
 #include <ti/drv/spi/src/v0/OSPI_v0.h>
 #endif
 
+#if defined (SOC_TPR12)
+#include <ti/drv/spi/soc/QSPI_v1.h>
+#endif
+
 #include <ti/osal/osal.h>
 
 #ifdef __cplusplus
@@ -114,6 +118,11 @@ extern int32_t OSPI_socSetInitCfg(uint32_t idx, const OSPI_v0_HwAttrs *cfg);
 extern int32_t ESPI_socGetFwCfg(uint32_t index, ESPI_SwIPAttrs *cfg);
 extern int32_t ESPI_socSetFwCfg(uint32_t index, const ESPI_SwIPAttrs *cfg);
 extern void ESPI_socInitFwCfg(void);
+#endif
+
+#if defined (SOC_TPR12)
+extern int32_t QSPI_socGetInitCfg(uint32_t idx, QSPI_HwAttrs *cfg);
+extern int32_t QSPI_socSetInitCfg(uint32_t idx, const QSPI_HwAttrs *cfg);
 #endif
 
 #define SPI_MODULE_CLOCK_DIVIDER    (6U)
