@@ -62,19 +62,17 @@ uint32_t SBL_IsSysfwEnc(uint8_t *x509_cert_ptr)
     SBL_ADD_PROFILE_POINT;
 
     dev_type = CSL_REG32_RD(SBL_SYS_STATUS_REG) & SBL_SYS_STATUS_DEV_TYPE_MASK;
-    if (x509_cert_ptr)
+
+    if (dev_type == SBL_SYS_STATUS_DEV_TYPE_GP)
     {
-        if (dev_type == SBL_SYS_STATUS_DEV_TYPE_GP)
-        {
-            /* SYSFW is single signed */
-            retVal = SBL_SYSFW_CLEAR_TEXT;
-        }
-        else
-        {
-            /* SYSFW is double signed and encrypted */
-            retVal = SBL_SYSFW_ENCRYPTED;
-        }
+        /* SYSFW is single signed */
+        retVal = SBL_SYSFW_CLEAR_TEXT;
     }
+    else
+    {
+        /* SYSFW is double signed and encrypted */
+        retVal = SBL_SYSFW_ENCRYPTED;
+     }
 
     SBL_ADD_PROFILE_POINT;
 
