@@ -48,8 +48,8 @@
  * Data version: 000000_000000
  *
  */
-#ifndef SOC_TISCI_DEVICES_H_SR2
-#define SOC_TISCI_DEVICES_H_SR2
+#ifndef SOC_TISCI_DEVICES_H
+#define SOC_TISCI_DEVICES_H
 
 #define TISCI_DEV_MCU_ADC0 0
 #define TISCI_DEV_MCU_ADC1 1
@@ -296,6 +296,6 @@
 #define TISCI_DEV_MCU_FSS0_OSPI_0 248
 #define TISCI_DEV_MCU_FSS0_OSPI_1 249
 
-#endif /* SOC_TISCI_DEVICES_H_SR2 */
+#endif /* SOC_TISCI_DEVICES_H */
 
 /* @} */

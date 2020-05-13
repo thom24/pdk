@@ -52,8 +52,8 @@
  * Data version: 000000_000000
  *
  */
-#ifndef TISCI_RESASG_TYPES_H_SR2
-#define TISCI_RESASG_TYPES_H_SR2
+#ifndef TISCI_RESASG_TYPES_H
+#define TISCI_RESASG_TYPES_H
 
 /**
  * Resource assignment type shift
@@ -132,8 +132,8 @@
 /**
  * Total number of unique resource types for SoC
  */
-#define TISCI_RESASG_UTYPE_CNT_SR2 52U
+#define TISCI_RESASG_UTYPE_CNT 52U
 
-#endif /* TISCI_RESASG_TYPES_H_SR2 */
+#endif /* TISCI_RESASG_TYPES_H */
 
 /* @} */

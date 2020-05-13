@@ -24,6 +24,10 @@ endif
   CGT_ARP32_VERSION=1.0.8
   CG_XML_VERSION=2.61.00
 
+ifeq ($(BOARD),$(filter $(BOARD), am65xx_evm am65xx_idk j721e_evm j7200_evm am64x_evm))
+  GCC_ARCH64_BIN_PREFIX_STR=aarch64-none-elf
+endif
+
 ifeq ($(BOARD),$(filter $(BOARD), tpr12_evm tpr12_qt))
   BIOS_VERSION=6_82_00_16
   XDC_VERSION=3_61_00_16_core

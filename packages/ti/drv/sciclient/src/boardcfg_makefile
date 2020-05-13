@@ -24,11 +24,11 @@ ifeq ($(OS),Windows_NT)
 endif
 
 # ObjCopy Tool
-ifneq ("$(wildcard $(TOOLCHAIN_PATH_GCC)/bin/$(GCC_ARCH64_BIN_PREFIX)-objcopy$(EXE_EXT))","")
-  SCICLIENT_OBJCOPY?=$(TOOLCHAIN_PATH_GCC)/bin/$(GCC_ARCH64_BIN_PREFIX)-objcopy$(EXE_EXT)
+ifneq ("$(wildcard $(TOOLCHAIN_PATH_GCC)/bin/arm-none-eabi-objcopy$(EXE_EXT))","")
+SCICLIENT_OBJCOPY?=$(TOOLCHAIN_PATH_GCC)/bin/arm-none-eabi-objcopy$(EXE_EXT)
 endif
 ifneq ("$(wildcard $(TOOLCHAIN_PATH_GCC_ARCH64)/bin/$(GCC_ARCH64_BIN_PREFIX)-objcopy$(EXE_EXT))","")
-  SCICLIENT_OBJCOPY?=$(TOOLCHAIN_PATH_GCC_ARCH64)/bin/$(GCC_ARCH64_BIN_PREFIX)-objcopy$(EXE_EXT)
+SCICLIENT_OBJCOPY?=$(TOOLCHAIN_PATH_GCC_ARCH64)/bin/$(GCC_ARCH64_BIN_PREFIX)-objcopy$(EXE_EXT)
 endif
 
 # Other SBL Tools
@@ -134,6 +134,8 @@ $(OBJDIR)/$(1).bin.unsigned : SHELL:=/bin/bash   # HERE: this is setting the she
 $(OBJDIR)/$(1).bin.unsigned : $(OBJDIR)/$(1).$(OBJEXT)
 ifeq ($(CORE), mcu1_0)
 	@echo "Create unsigned Board Configuration binary"
+	@echo "$(SCICLIENT_OBJCOPY) = $(TOOLCHAIN_PATH_GCC)/bin/arm-none-eabi-objcopy$(EXE_EXT)"
+	@echo "$(SCICLIENT_OBJCOPY) = $(TOOLCHAIN_PATH_GCC_ARCH64)/bin/$(GCC_ARCH64_BIN_PREFIX)-objcopy$(EXE_EXT)"
 	$(SCICLIENT_OBJCOPY) -S -O binary $(OBJDIR)/$(notdir $(2)).$(OBJEXT) $(OBJDIR)/$(1).bin.unsigned
 	# If the file name has sr2 in the name, then we need to use a different soc in the validator.
 	@if [ "$(findstring sr2, $(OBJDIR)/$(BRD_CFG)$(1).bin.unsigned)" == "sr2" ]; then \

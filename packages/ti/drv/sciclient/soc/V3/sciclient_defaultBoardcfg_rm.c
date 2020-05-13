@@ -511,4 +511,3 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
     },
 };
 #endif
-

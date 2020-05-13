@@ -56,8 +56,8 @@
  * \brief Secure Proxy Indices for AM6 device
  */
 
-#ifndef AM6_TISCI_SEC_PROXY_H_SR2
-#define AM6_TISCI_SEC_PROXY_H_SR2
+#ifndef AM6_TISCI_SEC_PROXY_H
+#define AM6_TISCI_SEC_PROXY_H
 
 /*
  * -------------------------
@@ -497,6 +497,6 @@
 #define TISCI_SEC_PROXY_R5_3_NOTIFY_RESP_WRITE_NUM_MESSAGES (1U)
 
 
-#endif /* AM6_TISCI_SEC_PROXY_H_SR2 */
+#endif /* AM6_TISCI_SEC_PROXY_H */
 
 /* @} */
