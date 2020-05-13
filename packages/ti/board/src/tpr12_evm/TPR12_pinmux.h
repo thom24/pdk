@@ -53,7 +53,7 @@
 
 #include "pinmux.h"
 #include "csl_types.h"
-#include "ti/csl/soc/tpr12/src/cslr_mss_iomux.h"
+#include <ti/csl/soc/tpr12/src/cslr_mss_iomux.h>
 
 #ifdef __cplusplus
 extern "C" {
