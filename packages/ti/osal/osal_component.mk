@@ -90,7 +90,7 @@ libosal_c6657_CORELIST  = c66x
 libosal_am437x_CORELIST = a9host
 libosal_am335x_CORELIST = a8host
 libosal_am65xx_CORELIST = $(DEFAULT_am65xx_CORELIST)
-libosal_j721e_CORELIST = $(DEFAULT_j721e_CORELIST) c7x-hostemu
+libosal_j721e_CORELIST = $(DEFAULT_j721e_CORELIST)
 libosal_j7200_CORELIST = $(DEFAULT_j7200_CORELIST)
 libosal_am64x_CORELIST = $(DEFAULT_am64x_CORELIST)
 libosal_tpr12_CORELIST = $(DEFAULT_tpr12_CORELIST)
@@ -143,6 +143,9 @@ osal_nonos_INCLUDE = $(osal_nonos_PATH)
 osal_nonos_SOCLIST = $(libosal_SOCLIST)
 export osal_nonos_SOCLIST
 osal_nonos_$(SOC)_CORELIST = $(libosal_$(SOC)_CORELIST)
+ifeq ($(SOC),$(filter $(SOC), j721e))
+osal_nonos_$(SOC)_CORELIST += c7x-hostemu
+endif
 export osal_nonos_$(SOC)_CORELIST
 
 # OSAL NONOS LIB DEVICE INDEPENDENT
