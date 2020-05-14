@@ -1198,7 +1198,6 @@ EMAC_DRV_ERR_E emac_ioctl_configure_interface_mac_ctrl_host_port(uint32_t portNu
     temp =  *((int16_t *) &macAddr[4]);
     macHi = (int32_t) temp;
 
-    /* add mac */
     CSL_REG32_WR(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_MAC_INTERFACE_0, macLo);
     CSL_REG32_WR(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_MAC_INTERFACE_1, macHi);
 
@@ -1214,6 +1213,7 @@ EMAC_DRV_ERR_E emac_ioctl_configure_cut_through_or_prempt_select_ctrl(uint32_t p
 {
     EMAC_DRV_ERR_E retVal = EMAC_DRV_RESULT_OK;
 
+    uint8_t queue_mask = 0;
     uint8_t queue_num;
     uint8_t temp_byte;
     uintptr_t expressPremptiveQueueAddr;
@@ -1237,8 +1237,11 @@ EMAC_DRV_ERR_E emac_ioctl_configure_cut_through_or_prempt_select_ctrl(uint32_t p
     {
         temp_byte = (entry->pcpPreemptMap[queue_num] << 4U) | (entry->pcpCutThroughMap[queue_num] << 7U);   /*as per bit order in descriptor flags. Helps save PRU cycles*/
         CSL_REG8_WR(expressPremptiveQueueAddr+ queue_num, temp_byte);
+        queue_mask = queue_mask | ((entry->pcpPreemptMap[queue_num]) << queue_num);
     }
-
+    expressPremptiveQueueAddr = emac_mcb.port_cb[portNum].icssDram0BaseAddr + 0x2000*portNum
+                                + pSwitchFwCfg->expressPremptiveQueueMaskOffset;
+    CSL_REG8_WR(expressPremptiveQueueAddr, ~queue_mask);
     UTILS_trace(UTIL_TRACE_LEVEL_INFO, emac_mcb.drv_trace_cb, "port: %d: EXIT with status: %d",portNum, retVal);
     return retVal;
 

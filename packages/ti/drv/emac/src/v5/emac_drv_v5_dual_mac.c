@@ -306,162 +306,156 @@ static EMAC_DRV_ERR_E emac_ioctl_v5_icssg_dual_mac(uint32_t portNum, EMAC_IOCTL_
 
     if (emac_mcb.ioctl_cb.ioctlInProgress == false)
     {
-        if (emac_mcb.port_cb[portNum].emacState == EMAC_PORT_STATE_OPEN)
+        switch (emacIoctlCmd)
         {
-            switch (emacIoctlCmd)
-            {
-                case EMAC_IOCTL_PROMISCOUS_MODE_CTRL:
-                    retVal = emac_ioctl_icss_promiscous_ctrl(portNum, ioctlData);
-                    break;
-                case EMAC_IOCTL_VLAN_CTRL:
-                    switch (emacIoctlParams->subCommand)
-                    {
-                        case EMAC_IOCTL_VLAN_SET_DEFAULT_TBL:
-                            retVal = emac_ioctl_vlan_ctrl_set_default_tbl(portNum, ioctlData);
-                            break;
-                        case EMAC_IOCTL_VLAN_SET_ENTRY:
-                            retVal = emac_ioctl_vlan_ctrl_set_entry(portNum, ioctlData);
-                            break;
-                        case EMAC_IOCTL_VLAN_SET_DEFAULT_VLAN_ID:
-                                retVal = emac_ioctl_vlan_ctrl_set_default_vlan_id(portNum, ioctlData);
-                            break;
-                        case EMAC_IOCTL_VLAN_GET_ENTRY:
-                            retVal = emac_ioctl_vlan_ctrl_get_entry(portNum, ioctlData);
-                            break;
-                        default:
-                            retVal = EMAC_DRV_RESULT_IOCTL_ERR;
-                            break;
-                    }
-                    break;
-                case EMAC_IOCTL_PORT_PRIO_MAPPING_CTRL:
-                    retVal = emac_ioctl_port_prio_mapping_ctrl(portNum, ioctlData);
-                    break;
-                case EMAC_IOCTL_PORT_STATE_CTRL:
-                    switch (emacIoctlParams->subCommand)
-                    {
-                        case EMAC_IOCTL_PORT_STATE_DISABLE:
-                        case EMAC_IOCTL_PORT_STATE_BLOCKING:
-                        case EMAC_IOCTL_PORT_STATE_FORWARD:
-                        case EMAC_IOCTL_PORT_STATE_FORWARD_WO_LEARNING:
-                        case EMAC_IOCTL_PORT_STATE_TAS_TRIGGER:
-                        case EMAC_IOCTL_PORT_STATE_TAS_ENABLE:
-                        case EMAC_IOCTL_PORT_STATE_TAS_RESET:
-                        case EMAC_IOCTL_PORT_STATE_TAS_DISABLE:
-                            retVal = emac_ioctl_port_state_ctrl(portNum, (void*)emacIoctlParams);
+            case EMAC_IOCTL_PROMISCOUS_MODE_CTRL:
+                retVal = emac_ioctl_icss_promiscous_ctrl(portNum, ioctlData);
+                break;
+            case EMAC_IOCTL_VLAN_CTRL:
+                switch (emacIoctlParams->subCommand)
+                {
+                    case EMAC_IOCTL_VLAN_SET_DEFAULT_TBL:
+                        retVal = emac_ioctl_vlan_ctrl_set_default_tbl(portNum, ioctlData);
                         break;
-                        default:
-                            retVal = EMAC_DRV_RESULT_IOCTL_ERR;
-                            break;
-                    }
+                    case EMAC_IOCTL_VLAN_SET_ENTRY:
+                        retVal = emac_ioctl_vlan_ctrl_set_entry(portNum, ioctlData);
+                        break;
+                    case EMAC_IOCTL_VLAN_SET_DEFAULT_VLAN_ID:
+                            retVal = emac_ioctl_vlan_ctrl_set_default_vlan_id(portNum, ioctlData);
+                        break;
+                    case EMAC_IOCTL_VLAN_GET_ENTRY:
+                        retVal = emac_ioctl_vlan_ctrl_get_entry(portNum, ioctlData);
+                        break;
+                    default:
+                        retVal = EMAC_DRV_RESULT_IOCTL_ERR;
+                        break;
+                }
+                break;
+            case EMAC_IOCTL_PORT_PRIO_MAPPING_CTRL:
+                retVal = emac_ioctl_port_prio_mapping_ctrl(portNum, ioctlData);
+                break;
+            case EMAC_IOCTL_PORT_STATE_CTRL:
+                switch (emacIoctlParams->subCommand)
+                {
+                    case EMAC_IOCTL_PORT_STATE_DISABLE:
+                    case EMAC_IOCTL_PORT_STATE_BLOCKING:
+                    case EMAC_IOCTL_PORT_STATE_FORWARD:
+                    case EMAC_IOCTL_PORT_STATE_FORWARD_WO_LEARNING:
+                    case EMAC_IOCTL_PORT_STATE_TAS_TRIGGER:
+                    case EMAC_IOCTL_PORT_STATE_TAS_ENABLE:
+                    case EMAC_IOCTL_PORT_STATE_TAS_RESET:
+                    case EMAC_IOCTL_PORT_STATE_TAS_DISABLE:
+                        retVal = emac_ioctl_port_state_ctrl(portNum, (void*)emacIoctlParams);
                     break;
-                case EMAC_IOCTL_FDB_ENTRY_CTRL:
-                    switch (emacIoctlParams->subCommand)
-                    {
-                        case EMAC_IOCTL_FDB_ENTRY_ADD:
-                        case EMAC_IOCTL_FDB_ENTRY_DELETE:
-                            retVal = emac_ioctl_fdb_entry_ctrl(portNum, (void*)emacIoctlParams);
-                            break;
-                        case EMAC_IOCTL_FDB_ENTRY_DELETE_ALL:
-                        case EMAC_IOCTL_FDB_ENTRY_DELETE_ALL_AGEABLE:
-                            retVal = emac_ioctl_fdb_del_all(portNum,(void*)emacIoctlParams);
-                            break;
-                        default:
-                             retVal = EMAC_DRV_RESULT_IOCTL_ERR;
-                            break;
-                    }
-                    break;
-                case EMAC_IOCTL_ACCEPTABLE_FRAME_CHECK_CTRL:
-                    switch (emacIoctlParams->subCommand)
-                    {
-                        case EMAC_IOCTL_ACCEPTABLE_FRAME_CHECK_ONLY_VLAN_TAGGED:
-                        case EMAC_IOCTL_ACCEPTABLE_FRAME_CHECK_ONLY_UN_TAGGED_PRIO_TAGGED:
-                        case EMAC_IOCTL_ACCEPTABLE_FRAME_CHECK_ALL_FRAMES:
-                            retVal = emac_ioctl_accept_frame_check_ctrl(portNum, (void*)emacIoctlParams);
-                            break;
-                        default:
-                            retVal = EMAC_DRV_RESULT_IOCTL_ERR;
-                            break;
-                    }
-                    break;
-                case EMAC_IOCTL_PRIO_REGEN_CTRL:
-                    retVal = emac_ioctl_prio_regen_mapping_ctrl(portNum, ioctlData);
-                    break;
-                case EMAC_IOCTL_UC_FLOODING_CTRL:
-                    switch (emacIoctlParams->subCommand)
-                    {
-                        case EMAC_IOCTL_PORT_UC_FLOODING_ENABLE:
-                        case EMAC_IOCTL_PORT_UC_FLOODING_DISABLE:
-                            retVal = emac_ioctl_uc_flooding_ctrl(portNum, (void*)emacIoctlParams);
-                            break;
-                        default:
-                            retVal = EMAC_DRV_RESULT_IOCTL_ERR;
-                            break;
-                    }
-                    break;
-                case EMAC_IOCTL_INTERFACE_MAC_CONFIG:
-                    switch (emacIoctlParams->subCommand)
-                    {
-                        case EMAC_IOCTL_INTERFACE_MAC_ADD:
-                            retVal = emac_ioctl_configure_interface_mac_ctrl(portNum, (void*)emacIoctlParams);
-                            break;
-                        default:
-                            retVal = EMAC_DRV_RESULT_IOCTL_ERR;
-                            break;
-                    }
-                    break;
-                case EMAC_IOCTL_FRAME_PREEMPTION_CTRL:
-                    switch (emacIoctlParams->subCommand)
-                    {
-                        case EMAC_IOCTL_PREEMPT_TX_ENABLE:
-                        case EMAC_IOCTL_PREEMPT_TX_DISABLE:
-                        case EMAC_IOCTL_PREEMPT_GET_TX_ENABLE_STATUS:
-                        case EMAC_IOCTL_PREEMPT_GET_TX_ACTIVE_STATUS:
-                        case EMAC_IOCTL_PREEMPT_VERIFY_ENABLE:
-                        case EMAC_IOCTL_PREEMPT_VERIFY_DISABLE:
-                        case EMAC_IOCTL_PREEMPT_GET_VERIFY_STATE:
-                        case EMAC_IOCTL_PREEMPT_GET_MIN_FRAG_SIZE_LOCAL:
-                        case EMAC_IOCTL_PREEMPT_SET_MIN_FRAG_SIZE_REMOTE:
-                            retVal = emac_ioctl_frame_premption_ctrl(portNum, (void*)emacIoctlParams);
-                            break;
-                         default:
-                            retVal = EMAC_DRV_RESULT_IOCTL_ERR;
-                            break;
-                    }
-                    break;
-                case EMAC_IOCTL_CUT_THROUGH_PREEMPT_SELECT:
-                    retVal = emac_ioctl_configure_cut_through_or_prempt_select_ctrl(portNum, (void*)emacIoctlParams);
-                    break;
-                case EMAC_IOCTL_SPECIAL_FRAME_PRIO_CONFIG:
-                    retVal = emac_ioctl_configure_special_frame_prio_ctrl(portNum, (void*)emacIoctlParams);
-                    break;
-                case EMAC_IOCTL_FDB_AGEING_TIMEOUT_CTRL:
-                    retVal = emac_ioctl_configure_fdb_ageing_interval(portNum, (void*)emacIoctlParams);
-                    break;
-                case EMAC_IOCTL_TEST_MULTI_FLOW:
-                    retVal = emac_ioctl_test_multi_flow(portNum, ioctlData);
-                    break;
-                case EMAC_IOCTL_SPEED_DUPLEXITY_CTRL:
-                    switch (emacIoctlParams->subCommand)
-                    {
-                        case EMAC_IOCTL_SPEED_DUPLEXITY_10HD:
-                        case EMAC_IOCTL_SPEED_DUPLEXITY_10FD:
-                        case EMAC_IOCTL_SPEED_DUPLEXITY_100HD:
-                        case EMAC_IOCTL_SPEED_DUPLEXITY_100FD:
-                        case EMAC_IOCTL_SPEED_DUPLEXITY_GIGABIT:
-                        case EMAC_IOCTL_SPEED_DUPLEXITY_DISABLE:
-                            retVal = emac_ioctl_speed_duplexity_cfg(portNum, (void*)emacIoctlParams);
-                            break;
-                        default:
-                            retVal = EMAC_DRV_RESULT_IOCTL_ERR;
-                            break;
-                    }
-                default:
-                    break;
-            }
-        }
-        else
-        {
-            retVal =  EMAC_DRV_RESULT_IOCTL_ERR_PORT_CLOSED;
+                    default:
+                        retVal = EMAC_DRV_RESULT_IOCTL_ERR;
+                        break;
+                }
+                break;
+            case EMAC_IOCTL_FDB_ENTRY_CTRL:
+                switch (emacIoctlParams->subCommand)
+                {
+                    case EMAC_IOCTL_FDB_ENTRY_ADD:
+                    case EMAC_IOCTL_FDB_ENTRY_DELETE:
+                        retVal = emac_ioctl_fdb_entry_ctrl(portNum, (void*)emacIoctlParams);
+                        break;
+                    case EMAC_IOCTL_FDB_ENTRY_DELETE_ALL:
+                    case EMAC_IOCTL_FDB_ENTRY_DELETE_ALL_AGEABLE:
+                        retVal = emac_ioctl_fdb_del_all(portNum,(void*)emacIoctlParams);
+                        break;
+                    default:
+                         retVal = EMAC_DRV_RESULT_IOCTL_ERR;
+                        break;
+                }
+                break;
+            case EMAC_IOCTL_ACCEPTABLE_FRAME_CHECK_CTRL:
+                switch (emacIoctlParams->subCommand)
+                {
+                    case EMAC_IOCTL_ACCEPTABLE_FRAME_CHECK_ONLY_VLAN_TAGGED:
+                    case EMAC_IOCTL_ACCEPTABLE_FRAME_CHECK_ONLY_UN_TAGGED_PRIO_TAGGED:
+                    case EMAC_IOCTL_ACCEPTABLE_FRAME_CHECK_ALL_FRAMES:
+                        retVal = emac_ioctl_accept_frame_check_ctrl(portNum, (void*)emacIoctlParams);
+                        break;
+                    default:
+                        retVal = EMAC_DRV_RESULT_IOCTL_ERR;
+                        break;
+                }
+                break;
+            case EMAC_IOCTL_PRIO_REGEN_CTRL:
+                retVal = emac_ioctl_prio_regen_mapping_ctrl(portNum, ioctlData);
+                break;
+            case EMAC_IOCTL_UC_FLOODING_CTRL:
+                switch (emacIoctlParams->subCommand)
+                {
+                    case EMAC_IOCTL_PORT_UC_FLOODING_ENABLE:
+                    case EMAC_IOCTL_PORT_UC_FLOODING_DISABLE:
+                        retVal = emac_ioctl_uc_flooding_ctrl(portNum, (void*)emacIoctlParams);
+                        break;
+                    default:
+                        retVal = EMAC_DRV_RESULT_IOCTL_ERR;
+                        break;
+                }
+                break;
+            case EMAC_IOCTL_INTERFACE_MAC_CONFIG:
+                switch (emacIoctlParams->subCommand)
+                {
+                    case EMAC_IOCTL_INTERFACE_MAC_ADD:
+                        retVal = emac_ioctl_configure_interface_mac_ctrl(portNum, (void*)emacIoctlParams);
+                        break;
+                    default:
+                        retVal = EMAC_DRV_RESULT_IOCTL_ERR;
+                        break;
+                }
+                break;
+            case EMAC_IOCTL_FRAME_PREEMPTION_CTRL:
+                switch (emacIoctlParams->subCommand)
+                {
+                    case EMAC_IOCTL_PREEMPT_TX_ENABLE:
+                    case EMAC_IOCTL_PREEMPT_TX_DISABLE:
+                    case EMAC_IOCTL_PREEMPT_GET_TX_ENABLE_STATUS:
+                    case EMAC_IOCTL_PREEMPT_GET_TX_ACTIVE_STATUS:
+                    case EMAC_IOCTL_PREEMPT_VERIFY_ENABLE:
+                    case EMAC_IOCTL_PREEMPT_VERIFY_DISABLE:
+                    case EMAC_IOCTL_PREEMPT_GET_VERIFY_STATE:
+                    case EMAC_IOCTL_PREEMPT_GET_MIN_FRAG_SIZE_LOCAL:
+                    case EMAC_IOCTL_PREEMPT_SET_MIN_FRAG_SIZE_REMOTE:
+                        retVal = emac_ioctl_frame_premption_ctrl(portNum, (void*)emacIoctlParams);
+                        break;
+                     default:
+                        retVal = EMAC_DRV_RESULT_IOCTL_ERR;
+                        break;
+                }
+                break;
+            case EMAC_IOCTL_CUT_THROUGH_PREEMPT_SELECT:
+                retVal = emac_ioctl_configure_cut_through_or_prempt_select_ctrl(portNum, (void*)emacIoctlParams);
+                break;
+            case EMAC_IOCTL_SPECIAL_FRAME_PRIO_CONFIG:
+                retVal = emac_ioctl_configure_special_frame_prio_ctrl(portNum, (void*)emacIoctlParams);
+                break;
+            case EMAC_IOCTL_FDB_AGEING_TIMEOUT_CTRL:
+                retVal = emac_ioctl_configure_fdb_ageing_interval(portNum, (void*)emacIoctlParams);
+                break;
+            case EMAC_IOCTL_TEST_MULTI_FLOW:
+                retVal = emac_ioctl_test_multi_flow(portNum, ioctlData);
+                break;
+            case EMAC_IOCTL_SPEED_DUPLEXITY_CTRL:
+                switch (emacIoctlParams->subCommand)
+                {
+                    case EMAC_IOCTL_SPEED_DUPLEXITY_10HD:
+                    case EMAC_IOCTL_SPEED_DUPLEXITY_10FD:
+                    case EMAC_IOCTL_SPEED_DUPLEXITY_100HD:
+                    case EMAC_IOCTL_SPEED_DUPLEXITY_100FD:
+                    case EMAC_IOCTL_SPEED_DUPLEXITY_GIGABIT:
+                    case EMAC_IOCTL_SPEED_DUPLEXITY_DISABLE:
+                        retVal = emac_ioctl_speed_duplexity_cfg(portNum, (void*)emacIoctlParams);
+                        break;
+                    default:
+                        retVal = EMAC_DRV_RESULT_IOCTL_ERR;
+                        break;
+                }
+                break;
+            default:
+                break;
         }
     }
     return retVal;

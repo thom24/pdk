@@ -99,7 +99,7 @@ extern const EMAC_FxnTable EMAC_FxnTable_v5;
 #define EMAC_ICSSG1_SWITCH_PORT1 ((uint32_t)14U)    /* for directed send, stats, for certain IOCTL's */
 #define EMAC_ICSSG1_SWITCH_PORT2 ((uint32_t)15U)    /* for directed send, stats, for certain IOCTL's */
 
-#define EMAC_ICSSG2_SWITCH_PORT ((uint32_t)16U)      /* for emac open/close/certain IOCTL's, flooded packet */*/
+#define EMAC_ICSSG2_SWITCH_PORT ((uint32_t)16U)      /* for emac open/close/certain IOCTL's, flooded packet */
 #define EMAC_ICSSG2_SWITCH_PORT0 ((uint32_t)17U)     /* host port for certain IOCTL's */
 #define EMAC_ICSSG2_SWITCH_PORT1 ((uint32_t)18U)    /* for directed send, stats, for certain IOCTL's */
 #define EMAC_ICSSG2_SWITCH_PORT2 ((uint32_t)19U)    /* for directed send, stats, for certain IOCTL's */

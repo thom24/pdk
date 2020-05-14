@@ -105,7 +105,7 @@
 
 #define EMAC_ICSSG_DUAL_MAC_FW_HOST_QUEUE_SIZE_PG1  ((uint32_t)6144U)       /* ~6.kB per host queue */
 
-#define EMAC_ICSSG_DUAL_MAC_START_BUFFER_POOL_NUM ((uint32_t)7U)
+#define EMAC_ICSSG_DUAL_MAC_START_BUFFER_POOL_NUM ((uint32_t)8U)
 
 
 EMAC_ICSSG_DUALMAC_FW_CFG emac_dualmac_cfg_pg1 = {

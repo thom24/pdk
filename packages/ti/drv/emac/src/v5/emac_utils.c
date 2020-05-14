@@ -1362,14 +1362,17 @@ void emac_poll_mgmt_pkts(uint32_t portNum, uint32_t ringNum)
 
     if (emac_mcb.port_cb[portLoc].ioctlType == EMAC_ICSSG_IOCTL_TYPE_R30_OVER_DMEM)
     {
-        if ((emac_R30_is_done(portLoc) == 1) && (emac_mcb.port_cb[portLoc].rx_mgmt_response_cb != NULL))
+        if (emac_R30_is_done(portLoc) == 1)
         {
-            cmdResponse.seqNumber = emac_mcb.ioctl_cb.sequenceNumber;
-            cmdResponse.status = 1;
-            cmdResponse.respParamsLength = 0;
-            emac_mcb.port_cb[portLoc].rx_mgmt_response_cb(portLoc, &cmdResponse);
             emac_mcb.port_cb[portLoc].ioctlType = 0;
             emac_mcb.ioctl_cb.ioctlInProgress = false;
+            if (emac_mcb.port_cb[portLoc].rx_mgmt_response_cb != NULL)
+            {
+                cmdResponse.seqNumber = emac_mcb.ioctl_cb.sequenceNumber;
+                cmdResponse.status = 1;
+                cmdResponse.respParamsLength = 0;
+                emac_mcb.port_cb[portLoc].rx_mgmt_response_cb(portLoc, &cmdResponse);
+            }
         }
     }
     else
