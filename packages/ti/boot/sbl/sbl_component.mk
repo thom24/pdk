@@ -307,7 +307,7 @@ export sbl_mmcsd_img_SBL_IMAGEGEN
 # SBL MMCSD Image - For HS build
 export sbl_mmcsd_img_hs_COMP_LIST = sbl_mmcsd_img_hs
 sbl_mmcsd_img_hs_RELPATH = ti/boot/sbl/board/k3
-sbl_mmcsd_img_hs_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)/mmcsd/bin
+sbl_mmcsd_img_hs_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)/mmcsd/bin/hs
 sbl_mmcsd_img_hs_PATH = $(PDK_SBL_COMP_PATH)/board/k3
 export sbl_mmcsd_img_hs_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=mmcsd BUILD_HS=yes
 export sbl_mmcsd_img_hs_BOARD_DEPENDENCY = yes
@@ -345,7 +345,7 @@ export sbl_ospi_img_SBL_IMAGEGEN
 # SBL OSPI Image - For HS build
 export sbl_ospi_img_hs_COMP_LIST = sbl_ospi_img_hs
 sbl_ospi_img_hs_RELPATH = ti/boot/sbl/board/k3
-sbl_ospi_img_hs_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)/ospi/bin
+sbl_ospi_img_hs_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)/ospi/bin/hs
 sbl_ospi_img_hs_PATH = $(PDK_SBL_COMP_PATH)/board/k3
 export sbl_ospi_img_hs_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=ospi BUILD_HS=yes
 export sbl_ospi_img_hs_BOARD_DEPENDENCY = yes
@@ -383,7 +383,7 @@ export sbl_hyperflash_img_SBL_IMAGEGEN
 # SBL HYPERFLASH Image - For HS build
 export sbl_hyperflash_img_hs_COMP_LIST = sbl_hyperflash_img_hs
 sbl_hyperflash_img_hs_RELPATH = ti/boot/sbl/board/k3
-sbl_hyperflash_img_hs_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)/hyperflash/bin
+sbl_hyperflash_img_hs_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)/hyperflash/bin/hs
 sbl_hyperflash_img_hs_PATH = $(PDK_SBL_COMP_PATH)/board/k3
 export sbl_hyperflash_img_hs_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=hyperflash BUILD_HS=yes
 export sbl_hyperflash_img_hs_BOARD_DEPENDENCY = yes
@@ -421,7 +421,7 @@ export sbl_uart_img_SBL_IMAGEGEN
 # SBL HYPERFLASH Image - For HS build
 export sbl_uart_img_hs_COMP_LIST = sbl_uart_img_hs
 sbl_uart_img_hs_RELPATH = ti/boot/sbl/board/k3
-sbl_uart_img_hs_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)/uart/bin
+sbl_uart_img_hs_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)/uart/bin/hs
 sbl_uart_img_hs_PATH = $(PDK_SBL_COMP_PATH)/board/k3
 export sbl_uart_img_hs_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=uart BUILD_HS=yes
 export sbl_uart_img_hs_BOARD_DEPENDENCY = yes
