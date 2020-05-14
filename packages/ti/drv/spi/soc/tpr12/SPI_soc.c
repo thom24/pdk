@@ -49,7 +49,7 @@ QSPI_HwAttrs qspiInitCfg[CSL_QSPI_PER_CNT] =
     {
         CSL_MSS_QSPI_U_BASE,      /* register baseAddr */
         CSL_EXT_FLASH_U_BASE,     /* memMappedBaseAddr */
-        80000000U,                /* Input frequency   */
+        QSPI_MODULE_CLK_80M,      /* Input frequency   */
         CSL_MSS_INTR_MSS_QSPI_INT,/* Interrupt number  */
         CSL_MSS_INTR_MSS_QSPI_INT,/* Event id          */
         QSPI_OPER_MODE_MMAP,         /* operMode   */
@@ -73,7 +73,7 @@ QSPI_v1_Object QspiObjects[CSL_QSPI_PER_CNT];
 
 
 /* SPI configuration structure */
-const SPI_config_list SPI_config = {
+CSL_PUBLIC_CONST SPI_config_list SPI_config = {
     {
         &QSPI_FxnTable_v1,
         &QspiObjects[0],

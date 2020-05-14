@@ -123,6 +123,7 @@ extern void ESPI_socInitFwCfg(void);
 #if defined (SOC_TPR12)
 extern int32_t QSPI_socGetInitCfg(uint32_t idx, QSPI_HwAttrs *cfg);
 extern int32_t QSPI_socSetInitCfg(uint32_t idx, const QSPI_HwAttrs *cfg);
+#define QSPI_MODULE_CLK_80M   (80000000U)
 #endif
 
 #define SPI_MODULE_CLOCK_DIVIDER    (6U)
