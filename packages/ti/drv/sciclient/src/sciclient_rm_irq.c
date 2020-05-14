@@ -1486,10 +1486,10 @@ static bool Sciclient_rmIrqRouteValidate(struct Sciclient_rmIrqCfg  *cfg)
     const struct Sciclient_rmIrqIf *cur_if;
     bool cur_outp_valid, next_inp_valid;
     uint32_t cur_inp;
-    uint16_t cur_outp, next_inp;
-    struct tisci_msg_rm_get_resource_range_req req;
-    struct tisci_msg_rm_get_resource_range_resp host_resp;
-    struct tisci_msg_rm_get_resource_range_resp all_resp;
+    uint16_t cur_outp = 0, next_inp = 0;
+    struct tisci_msg_rm_get_resource_range_req req = {0};
+    struct tisci_msg_rm_get_resource_range_resp host_resp = {0};
+    struct tisci_msg_rm_get_resource_range_resp all_resp = {0};
 
     if (cfg->s_ia == SCICLIENT_RM_DEV_NONE) {
         /* First node's interface must contain the source IRQ */
@@ -1533,6 +1533,10 @@ static bool Sciclient_rmIrqRouteValidate(struct Sciclient_rmIrqCfg  *cfg)
         cur_if = cur_n->p_if[Sciclient_rmPsGetIfIdx(i)];
         if (i < (Sciclient_rmPsGetPsp() - 1u)) {
             next_n = Sciclient_rmPsGetIrqNode(i + 1u);
+            if (next_n == NULL) {
+                valid = false;
+                break;
+            }
         }
 
         if (i > 0u) {
@@ -1866,9 +1870,11 @@ static int32_t Sciclient_rmIrqProgramRoute(struct Sciclient_rmIrqCfg   *cfg,
                                       SCICLIENT_SERVICE_WAIT_FOREVER);
             if (r == CSL_PASS) {
                 ia_inst = Sciclient_rmIaGetInst(cur_n->id);
-                ia_inst->vint_usage_count[cur_outp]++;
-                if ((cur_outp == 0) && (cfg->vint_sb == 0)) {
-                    ia_inst->v0_b0_evt = cur_inp - ia_inst->sevt_offset;
+                if (ia_inst != NULL) {
+                    ia_inst->vint_usage_count[cur_outp]++;
+                    if ((cur_outp == 0) && (cfg->vint_sb == 0)) {
+                        ia_inst->v0_b0_evt = cur_inp - ia_inst->sevt_offset;
+                    }
                 }
             }
         }
@@ -1887,7 +1893,9 @@ static int32_t Sciclient_rmIrqProgramRoute(struct Sciclient_rmIrqCfg   *cfg,
                                       SCICLIENT_SERVICE_WAIT_FOREVER);
             if ((r == CSL_PASS) && (cur_outp == 0)) {
                 ir_inst = Sciclient_rmIrGetInst(cur_n->id);
-                ir_inst->inp0_mapping = cur_outp;
+                if (ir_inst != NULL) {
+                    ir_inst->inp0_mapping = cur_outp;
+                }
             }
         }
 
@@ -1949,9 +1957,11 @@ static int32_t Sciclient_rmIrqVintAdd(struct Sciclient_rmIrqCfg *cfg)
                                   SCICLIENT_SERVICE_WAIT_FOREVER);
         if (r == CSL_PASS) {
             ia_inst = Sciclient_rmIaGetInst(cfg->s_ia);
-            ia_inst->vint_usage_count[cfg->vint]++;
-            if ((cfg->vint == 0) && (cfg->vint_sb == 0)) {
-                ia_inst->v0_b0_evt = cfg->global_evt - ia_inst->sevt_offset;
+            if (ia_inst != NULL) {
+                ia_inst->vint_usage_count[cfg->vint]++;
+                if ((cfg->vint == 0) && (cfg->vint_sb == 0)) {
+                    ia_inst->v0_b0_evt = cfg->global_evt - ia_inst->sevt_offset;
+                }
             }
         }
     }
@@ -2199,9 +2209,11 @@ static int32_t Sciclient_rmIrqDeleteRoute(struct Sciclient_rmIrqCfg    *cfg,
                                           SCICLIENT_SERVICE_WAIT_FOREVER);
             if (r == CSL_PASS) {
                 ia_inst = Sciclient_rmIaGetInst(cur_n->id);
-                ia_inst->vint_usage_count[cur_outp]--;
-                if (ia_inst->v0_b0_evt == cur_inp - ia_inst->sevt_offset) {
-                    ia_inst->v0_b0_evt = SCICLIENT_RM_IA_GENERIC_EVT_RESETVAL;
+                if (ia_inst != NULL) {
+                    ia_inst->vint_usage_count[cur_outp]--;
+                    if (ia_inst->v0_b0_evt == cur_inp - ia_inst->sevt_offset) {
+                        ia_inst->v0_b0_evt = SCICLIENT_RM_IA_GENERIC_EVT_RESETVAL;
+                    }
                 }
             }
         }
@@ -2219,7 +2231,9 @@ static int32_t Sciclient_rmIrqDeleteRoute(struct Sciclient_rmIrqCfg    *cfg,
                                           SCICLIENT_SERVICE_WAIT_FOREVER);
             if ((r == CSL_PASS) && (cur_outp == 0)) {
                 ir_inst = Sciclient_rmIrGetInst(cur_n->id);
-                ir_inst->inp0_mapping = SCICLIENT_RM_IR_MAPPING_FREE;
+                if (ir_inst != NULL) {
+                    ir_inst->inp0_mapping = SCICLIENT_RM_IR_MAPPING_FREE;
+                }
             }
         }
     }
@@ -2282,9 +2296,11 @@ static int32_t Sciclient_rmIrqVintDelete(struct Sciclient_rmIrqCfg  *cfg)
                                       SCICLIENT_SERVICE_WAIT_FOREVER);
         if (r == CSL_PASS) {
             ia_inst = Sciclient_rmIaGetInst(cfg->s_ia);
-            ia_inst->vint_usage_count[cfg->vint]--;
-            if (ia_inst->v0_b0_evt == cfg->global_evt - ia_inst->sevt_offset) {
-                ia_inst->v0_b0_evt = SCICLIENT_RM_IA_GENERIC_EVT_RESETVAL;
+            if (ia_inst != NULL) {
+                ia_inst->vint_usage_count[cfg->vint]--;
+                if (ia_inst->v0_b0_evt == cfg->global_evt - ia_inst->sevt_offset) {
+                    ia_inst->v0_b0_evt = SCICLIENT_RM_IA_GENERIC_EVT_RESETVAL;
+                }
             }
         }
     }
