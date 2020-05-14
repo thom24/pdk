@@ -128,22 +128,22 @@ int32_t Udma_eventRegister(Udma_DrvHandle drvHandle,
         eventHandle->pIaVintrRegs   = (volatile CSL_intaggr_intrRegs_vint *) NULL_PTR;
     }
 
-    if ((UDMA_INST_TYPE_NORMAL           != drvHandle->instType) && 
-        (UDMA_EVENT_TYPE_TEARDOWN_PACKET == eventPrms->eventType))
+    if(UDMA_SOK == retVal)
     {
-        /* In case of devices like AM64x, Teardown is not supported.
-           Therefore no need to allocate resource and configure teardown event.
-           
-           eventHandle is already populated with drvHandle and eventPrms, 
-           becase during Unregistering this event, 
-           the instType in DrvHandle and evenType in eventPrms
-           are required to bypass the eventReset 
-           (Since only evenHandle is passed to eventUnRegister) */
-    }
-    else
-    {   
-        if(UDMA_SOK == retVal)
+        if ((UDMA_INST_TYPE_NORMAL           != drvHandle->instType) && 
+            (UDMA_EVENT_TYPE_TEARDOWN_PACKET == eventPrms->eventType))
         {
+            /* In case of devices like AM64x, Teardown is not supported.
+            Therefore no need to allocate resource and configure teardown event.
+            
+            eventHandle is already populated with drvHandle and eventPrms, 
+            becase during Unregistering this event, 
+            the instType in DrvHandle and evenType in eventPrms
+            are required to bypass the eventReset 
+            (Since only evenHandle is passed to eventUnRegister) */
+        }
+        else
+        {   
             /* Alloc event resources */
             retVal = Udma_eventAllocResource(drvHandle, eventHandle);
             if(UDMA_SOK == retVal)
@@ -154,60 +154,60 @@ int32_t Udma_eventRegister(Udma_DrvHandle drvHandle,
             {
                 Udma_printf(drvHandle, "[Error] Event resource allocation failed!!\n");
             }
-        }
 
-        if(UDMA_SOK == retVal)
-        {
-            /* Set init flag as events are allocated and event config expects
-             * this flag to be set */
-            eventHandle->eventInitDone = UDMA_INIT_DONE;
-
-            /* Configure Event */
-            retVal = Udma_eventConfig(drvHandle, eventHandle);
             if(UDMA_SOK == retVal)
             {
-                allocDone = (uint32_t) TRUE;
-            }
-            else
-            {
-                Udma_printf(drvHandle, "[Error] Event config failed!!\n");
-            }
-        }
+                /* Set init flag as events are allocated and event config expects
+                * this flag to be set */
+                eventHandle->eventInitDone = UDMA_INIT_DONE;
 
-        if(UDMA_SOK != retVal)
-        {
-            /* Error. Free-up resource if allocated */
-            if(((uint32_t) TRUE) == allocDone)
-            {
-                Udma_eventFreeResource(drvHandle, eventHandle);
-                eventHandle->eventInitDone = UDMA_DEINIT_DONE;
+                /* Configure Event */
+                retVal = Udma_eventConfig(drvHandle, eventHandle);
+                if(UDMA_SOK == retVal)
+                {
+                    allocDone = (uint32_t) TRUE;
+                }
+                else
+                {
+                    Udma_printf(drvHandle, "[Error] Event config failed!!\n");
+                }
             }
-        }
-        else
-        {
-            /* Copy the allocated resource info */
-            Udma_assert(drvHandle, eventHandle->pIaVintrRegs != NULL_PTR);
-            eventPrms->intrStatusReg    = &eventHandle->pIaVintrRegs->STATUSM;
-            eventPrms->intrClearReg     = &eventHandle->pIaVintrRegs->STATUS_CLEAR;
-            if(eventHandle->vintrBitNum != UDMA_EVENT_INVALID)
+
+            if(UDMA_SOK != retVal)
             {
-                eventPrms->intrMask     = ((uint64_t)1U << eventHandle->vintrBitNum);
-            }
-            else
-            {
-                /* No VINT bit for global master event */
-                eventPrms->intrMask     = 0U;
-            }
-            if(NULL_PTR == eventHandle->eventPrms.masterEventHandle)
-            {
-                /* This is master handle - copy directly from here itself */
-                eventPrms->coreIntrNum  = eventHandle->coreIntrNum;
+                /* Error. Free-up resource if allocated */
+                if(((uint32_t) TRUE) == allocDone)
+                {
+                    Udma_eventFreeResource(drvHandle, eventHandle);
+                    eventHandle->eventInitDone = UDMA_DEINIT_DONE;
+                }
             }
             else
             {
-                /* Copy core number from master handle */
-                eventPrms->coreIntrNum    =
-                    eventHandle->eventPrms.masterEventHandle->coreIntrNum;
+                /* Copy the allocated resource info */
+                Udma_assert(drvHandle, eventHandle->pIaVintrRegs != NULL_PTR);
+                eventPrms->intrStatusReg    = &eventHandle->pIaVintrRegs->STATUSM;
+                eventPrms->intrClearReg     = &eventHandle->pIaVintrRegs->STATUS_CLEAR;
+                if(eventHandle->vintrBitNum != UDMA_EVENT_INVALID)
+                {
+                    eventPrms->intrMask     = ((uint64_t)1U << eventHandle->vintrBitNum);
+                }
+                else
+                {
+                    /* No VINT bit for global master event */
+                    eventPrms->intrMask     = 0U;
+                }
+                if(NULL_PTR == eventHandle->eventPrms.masterEventHandle)
+                {
+                    /* This is master handle - copy directly from here itself */
+                    eventPrms->coreIntrNum  = eventHandle->coreIntrNum;
+                }
+                else
+                {
+                    /* Copy core number from master handle */
+                    eventPrms->coreIntrNum    =
+                        eventHandle->eventPrms.masterEventHandle->coreIntrNum;
+                }
             }
         }
     }
@@ -217,38 +217,38 @@ int32_t Udma_eventRegister(Udma_DrvHandle drvHandle,
 int32_t Udma_eventUnRegister(Udma_EventHandle eventHandle)
 {
     int32_t         retVal = UDMA_SOK;
-    if ((UDMA_INST_TYPE_NORMAL           != eventHandle->drvHandle->instType) && 
-        (UDMA_EVENT_TYPE_TEARDOWN_PACKET == eventHandle->eventPrms.eventType))
+    Udma_DrvHandle  drvHandle;
+
+    /* Error check */
+    if(NULL_PTR == eventHandle)
     {
-        /* In case of devices like AM64x, Teardown is not supported.
-           Therefore no need to unregister teardown event. */
+        retVal = UDMA_EBADARGS;
     }
-    else
+    if(UDMA_SOK == retVal)
     {
-        Udma_DrvHandle  drvHandle;
+        if(eventHandle->eventInitDone != UDMA_INIT_DONE)
+        {
+            retVal = UDMA_EFAIL;
+        }
+    }
+    if(UDMA_SOK == retVal)
+    {
+        drvHandle = eventHandle->drvHandle;
+        if((NULL_PTR == drvHandle) || (drvHandle->drvInitDone != UDMA_INIT_DONE))
+        {
+            retVal = UDMA_EFAIL;
+        }
+    }
 
-        /* Error check */
-        if(NULL_PTR == eventHandle)
+    if(UDMA_SOK == retVal)
+    {
+        if ((UDMA_INST_TYPE_NORMAL           != drvHandle->instType) && 
+            (UDMA_EVENT_TYPE_TEARDOWN_PACKET == eventHandle->eventPrms.eventType))
         {
-            retVal = UDMA_EBADARGS;
+            /* In case of devices like AM64x, Teardown is not supported.
+            Therefore no need to unregister teardown event. */
         }
-        if(UDMA_SOK == retVal)
-        {
-            if(eventHandle->eventInitDone != UDMA_INIT_DONE)
-            {
-                retVal = UDMA_EFAIL;
-            }
-        }
-        if(UDMA_SOK == retVal)
-        {
-            drvHandle = eventHandle->drvHandle;
-            if((NULL_PTR == drvHandle) || (drvHandle->drvInitDone != UDMA_INIT_DONE))
-            {
-                retVal = UDMA_EFAIL;
-            }
-        }
-
-        if(UDMA_SOK == retVal)
+        else
         {
             /* Can't free-up master event when shared events are still not yet
              * unregistered */
@@ -259,31 +259,31 @@ int32_t Udma_eventUnRegister(Udma_EventHandle eventHandle)
                 Udma_printf(drvHandle,
                     "[Error] Can't free master event when shared events are still registered!!!\n");
             }
-        }
 
-        if(UDMA_SOK == retVal)
-        {
-            if(NULL_PTR != eventHandle->hwiHandle)
+            if(UDMA_SOK == retVal)
             {
-                /* Disable able core interrupt to avoid having insane
-                 * state/variables when an interrupt occurs while processing
-                 * event free */
-                Udma_assert(drvHandle, eventHandle->coreIntrNum != UDMA_INTR_INVALID);
-                Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.disableIntr != (Udma_OsalDisableIntrFxn) NULL_PTR);
-                drvHandle->initPrms.osalPrms.disableIntr(eventHandle->coreIntrNum);
-            }
-            /* Reset and Free-up event resources */
-            retVal = Udma_eventReset(drvHandle, eventHandle);
-            if(UDMA_SOK != retVal)
-            {
-                Udma_printf(drvHandle, "[Error] Free Event resource failed!!!\n");
-            }
-            Udma_eventFreeResource(drvHandle, eventHandle);
+                if(NULL_PTR != eventHandle->hwiHandle)
+                {
+                    /* Disable able core interrupt to avoid having insane
+                    * state/variables when an interrupt occurs while processing
+                    * event free */
+                    Udma_assert(drvHandle, eventHandle->coreIntrNum != UDMA_INTR_INVALID);
+                    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.disableIntr != (Udma_OsalDisableIntrFxn) NULL_PTR);
+                    drvHandle->initPrms.osalPrms.disableIntr(eventHandle->coreIntrNum);
+                }
+                /* Reset and Free-up event resources */
+                retVal = Udma_eventReset(drvHandle, eventHandle);
+                if(UDMA_SOK != retVal)
+                {
+                    Udma_printf(drvHandle, "[Error] Free Event resource failed!!!\n");
+                }
+                Udma_eventFreeResource(drvHandle, eventHandle);
 
-            eventHandle->eventInitDone  = UDMA_DEINIT_DONE;
-            eventHandle->pIaGeviRegs    = (volatile CSL_intaggr_imapRegs_gevi *) NULL_PTR;
-            eventHandle->pIaVintrRegs   = (volatile CSL_intaggr_intrRegs_vint *) NULL_PTR;
-            eventHandle->drvHandle      = (Udma_DrvHandle) NULL_PTR;
+                eventHandle->eventInitDone  = UDMA_DEINIT_DONE;
+                eventHandle->pIaGeviRegs    = (volatile CSL_intaggr_imapRegs_gevi *) NULL_PTR;
+                eventHandle->pIaVintrRegs   = (volatile CSL_intaggr_intrRegs_vint *) NULL_PTR;
+                eventHandle->drvHandle      = (Udma_DrvHandle) NULL_PTR;
+            }
         }
     }
     return (retVal);

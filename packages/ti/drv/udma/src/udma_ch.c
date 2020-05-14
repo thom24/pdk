@@ -388,30 +388,30 @@ int32_t Udma_chConfigRx(Udma_ChHandle chHandle, const Udma_ChRxPrms *rxPrms)
     Udma_FlowPrms       flowPrms;
     uint16_t            cqRing, fqRing;
 
-    if ((UDMA_INST_TYPE_LCDMA_BCDMA                 == chHandle->drvHandle->instType) && 
-        ((chHandle->chType & UDMA_CH_FLAG_BLK_COPY) == UDMA_CH_FLAG_BLK_COPY))
+    /* Error check */
+    if((NULL_PTR == chHandle) ||
+        (chHandle->chInitDone != UDMA_INIT_DONE) ||
+        ((chHandle->chType & UDMA_CH_FLAG_RX) != UDMA_CH_FLAG_RX))
     {
-        /* For BCDMA Block Copy, no need to configure Rx Channel.*/
-    } 
-    else
+        retVal = UDMA_EBADARGS;
+    }
+    if(UDMA_SOK == retVal)
     {
-        /* Error check */
-        if((NULL_PTR == chHandle) ||
-           (chHandle->chInitDone != UDMA_INIT_DONE) ||
-           ((chHandle->chType & UDMA_CH_FLAG_RX) != UDMA_CH_FLAG_RX))
+        drvHandle = chHandle->drvHandle;
+        if((NULL_PTR == drvHandle) || (drvHandle->drvInitDone != UDMA_INIT_DONE))
         {
-            retVal = UDMA_EBADARGS;
+            retVal = UDMA_EFAIL;
         }
-        if(UDMA_SOK == retVal)
-        {
-            drvHandle = chHandle->drvHandle;
-            if((NULL_PTR == drvHandle) || (drvHandle->drvInitDone != UDMA_INIT_DONE))
-            {
-                retVal = UDMA_EFAIL;
-            }
-        }
+    }
 
-        if(UDMA_SOK == retVal)
+    if(UDMA_SOK == retVal)
+    {
+        if ((UDMA_INST_TYPE_LCDMA_BCDMA                 == drvHandle->instType) && 
+            ((chHandle->chType & UDMA_CH_FLAG_BLK_COPY) == UDMA_CH_FLAG_BLK_COPY))
+        {
+            /* For BCDMA Block Copy, no need to configure Rx Channel.*/
+        } 
+        else
         {
             /* Note: Block copy uses same RX channel as TX */
             Udma_assert(drvHandle, chHandle->rxChNum != UDMA_DMA_CH_INVALID);
@@ -514,12 +514,12 @@ int32_t Udma_chConfigRx(Udma_ChHandle chHandle, const Udma_ChRxPrms *rxPrms)
                         "[Error] UDMAP default RX flow config failed!!!\n");
                 }
             }
-        }
 
-        if(UDMA_SOK == retVal)
-        {
-            /* Copy the config */
-            (void) memcpy(&chHandle->rxPrms, rxPrms, sizeof(chHandle->rxPrms));
+            if(UDMA_SOK == retVal)
+            {
+                /* Copy the config */
+                (void) memcpy(&chHandle->rxPrms, rxPrms, sizeof(chHandle->rxPrms));
+            }
         }
     }
     return (retVal);
@@ -770,19 +770,24 @@ int32_t Udma_chConfigPdma(Udma_ChHandle chHandle,
             }
         }
 #endif
-        Udma_assert(drvHandle, PEER8 != NULL_PTR);
-        regVal = CSL_REG32_RD(PEER8);
-        CSL_FINS(regVal, PSILCFG_REG_RT_ENABLE_ENABLE, (uint32_t) 0U);
-        CSL_REG32_WR(PEER8, regVal);
+        if((UDMA_INST_TYPE_NORMAL       == drvHandle->instType) ||
+           (UDMA_INST_TYPE_LCDMA_BCDMA  == drvHandle->instType) ||
+           (UDMA_INST_TYPE_LCDMA_PKTDMA == drvHandle->instType))
+        {
+            Udma_assert(drvHandle, PEER8 != NULL_PTR);
+            regVal = CSL_REG32_RD(PEER8);
+            CSL_FINS(regVal, PSILCFG_REG_RT_ENABLE_ENABLE, (uint32_t) 0U);
+            CSL_REG32_WR(PEER8, regVal);
 
-        Udma_assert(drvHandle, PEER0 != NULL_PTR);
-        regVal = CSL_FMK(PSILCFG_REG_STATIC_TR_X, pdmaPrms->elemSize) |
-                    CSL_FMK(PSILCFG_REG_STATIC_TR_Y, pdmaPrms->elemCnt);
-        CSL_REG32_WR(PEER0, regVal);
+            Udma_assert(drvHandle, PEER0 != NULL_PTR);
+            regVal = CSL_FMK(PSILCFG_REG_STATIC_TR_X, pdmaPrms->elemSize) |
+                        CSL_FMK(PSILCFG_REG_STATIC_TR_Y, pdmaPrms->elemCnt);
+            CSL_REG32_WR(PEER0, regVal);
 
-        Udma_assert(drvHandle, PEER1 != NULL_PTR);
-        regVal = CSL_FMK(PSILCFG_REG_STATIC_TR_Z, pdmaPrms->fifoCnt);
-        CSL_REG32_WR(PEER1, regVal);
+            Udma_assert(drvHandle, PEER1 != NULL_PTR);
+            regVal = CSL_FMK(PSILCFG_REG_STATIC_TR_Z, pdmaPrms->fifoCnt);
+            CSL_REG32_WR(PEER1, regVal);
+        }
         
     }
 
