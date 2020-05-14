@@ -226,13 +226,6 @@ int32_t Udma_eventUnRegister(Udma_EventHandle eventHandle)
     }
     if(UDMA_SOK == retVal)
     {
-        if(eventHandle->eventInitDone != UDMA_INIT_DONE)
-        {
-            retVal = UDMA_EFAIL;
-        }
-    }
-    if(UDMA_SOK == retVal)
-    {
         drvHandle = eventHandle->drvHandle;
         if((NULL_PTR == drvHandle) || (drvHandle->drvInitDone != UDMA_INIT_DONE))
         {
@@ -250,16 +243,22 @@ int32_t Udma_eventUnRegister(Udma_EventHandle eventHandle)
         }
         else
         {
-            /* Can't free-up master event when shared events are still not yet
-             * unregistered */
-            if((NULL_PTR == eventHandle->eventPrms.masterEventHandle) &&
-               (NULL_PTR != eventHandle->nextEvent))
+            if(eventHandle->eventInitDone != UDMA_INIT_DONE)
             {
                 retVal = UDMA_EFAIL;
-                Udma_printf(drvHandle,
-                    "[Error] Can't free master event when shared events are still registered!!!\n");
             }
-
+            if(UDMA_SOK == retVal)
+            {
+                /* Can't free-up master event when shared events are still not yet
+                * unregistered */
+                if((NULL_PTR == eventHandle->eventPrms.masterEventHandle) &&
+                (NULL_PTR != eventHandle->nextEvent))
+                {
+                    retVal = UDMA_EFAIL;
+                    Udma_printf(drvHandle,
+                        "[Error] Can't free master event when shared events are still registered!!!\n");
+                }
+            }
             if(UDMA_SOK == retVal)
             {
                 if(NULL_PTR != eventHandle->hwiHandle)
