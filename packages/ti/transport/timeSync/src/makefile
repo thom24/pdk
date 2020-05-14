@@ -5,10 +5,11 @@ include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 
 MODULE_NAME = timeSync
 
+ifneq ($(SOC),$(filter $(SOC), j721e))
 ifeq ($(SOC),$(filter $(SOC), am574x am572x am571x am335x am437x k2g))
   SRCDIR = src
+  INCDIR = . ../include .. $(EDMA3LLD_BIOS6_INSTALLDIR)/packages  
 endif
-INCDIR = . ../include ..
 
 # List all the external components/interfaces, whose interface header files
 # need to be included for this component
@@ -30,6 +31,7 @@ CFLAGS_LOCAL_a9host = -mno-unaligned-access
 PACKAGE_SRCS_COMMON = icss_timeSyncApi.h icss_timeSync_component.mk makefile include docs $(SRCDIR) build
 PACKAGE_SRCS_COMMON += config_mk.bld package.bld package.xdc package.xs Settings.xdc.xdt timeSync_ver.h timeSync_ver.h.xdt
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(TIMESYNC_ICSS_CFLAGS)
+endif
 
 # Core/SoC/platform specific source files and CFLAGS
 # Example:
