@@ -86,6 +86,7 @@ MEMORY
 --diag_suppress=10068 /* "no matching section" */
 --cinit_compression=off
 --retain="*(xdc.meta)"
+-e _c_int00_secure
 
 ti_sysbios_family_c7x_Cache_l1dSize = 32768;
 ti_sysbios_family_c7x_Cache_l2Size = 32768;
@@ -99,7 +100,8 @@ SECTIONS
       boot.*<boot.oe71>(.text)
     } load > C7X_TEXT ALIGN(0x200000)
     .vecs       >       C7X_DDR_SPACE ALIGN(0x400000)
-    .secure_vecs >      C7X_DDR_SPACE
+    .secure_vecs >      C7X_DDR_SPACE ALIGN(0x200000)
+    .text:_c_int00_secure > C7X_DDR_SPACE ALIGN(0x200000)
     .text       >       C7X_DDR_SPACE ALIGN(0x200000)
 
     .bss        >       C7X_DDR_SPACE  /* Zero-initialized data */
