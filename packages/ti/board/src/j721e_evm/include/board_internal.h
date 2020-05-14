@@ -56,7 +56,7 @@ extern "C" {
 #include <stdio.h>
 #include <stdbool.h>
 
-#define BOARD_I2C_PORT_CNT               (9U)
+#define BOARD_I2C_PORT_CNT               (I2C_HWIP_MAX_CNT)
 
 #undef ENABLE_LOGS
 
@@ -73,15 +73,13 @@ extern "C" {
  *****************************************************************************/
 extern I2C_config_list I2C_config;
 
-typedef struct
+typedef struct Board_I2cObj_s
 {
     I2C_Handle    i2cHandle;
     uint8_t       i2cDomain;
     uint32_t      instNum;
     uint32_t      i2cBaseAddr;
-} Board_gblObj;
-
-extern Board_gblObj Board_obj[BOARD_I2C_PORT_CNT];
+} Board_I2cObj_t;
 
 /****************************************************************************/
 
