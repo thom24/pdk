@@ -34,18 +34,6 @@
 #include <ti/csl/csl_lpddr.h>
 #include "board_ddr.h"
 
-#define xstr(s) #s
-
-#define  CTL_SHIFT 11
-#define  PHY_SHIFT 11
-#define  PI_SHIFT 10
-
-#define TH_OFFSET_FROM_REG(REG, SHIFT, offset) do {\
-    volatile char *i, *pStr= xstr(REG); offset = 0;\
-    for (i = &pStr[SHIFT]; *i != '\0'; ++i) {\
-        offset = offset * 10 + (*i - '0'); }\
-    } while (0)
-
 #ifdef BUILD_MCU1_0
 typedef struct Board_DDRThermalMgmtInstance_s
 {
@@ -156,7 +144,6 @@ void Board_DDRInterruptHandler(uintptr_t arg)
     uint32_t regValue;
     uint32_t status;
     uint32_t tempCheckRefreshRateIndex;
-    uint32_t offset = 0U;
     
     /* Get DDR interrupt status to check on thermal events */
     LPDDR4_CheckCtlInterrupt (&(gBoard_DDRThermalMgmtInstance.boardRuntimeDDRPd), LPDDR4_TEMP_CHANGE, &irqStatus);
@@ -166,9 +153,8 @@ void Board_DDRInterruptHandler(uintptr_t arg)
          * Decide on refresh rate
          */
         /* Read Temp check register */
-        TH_OFFSET_FROM_REG(LPDDR4__AUTO_TEMPCHK_VAL_0__REG, CTL_SHIFT, offset);
         status = LPDDR4_ReadReg(&(gBoard_DDRThermalMgmtInstance.boardRuntimeDDRPd), LPDDR4_CTL_REGS,
-                                offset,
+                                LPDDR4__AUTO_TEMPCHK_VAL_0__REG_OFFSET,
                                 &regValue);
         if (status == 0U)
         {
