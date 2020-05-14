@@ -67,6 +67,8 @@
 #
 ifeq ($(board_diag_component_make_include), )
 
+#board_diag_am65xx_BOARDLIST = am65xx_evm am65xx_idk
+board_diag_am65xx_CORELIST = mcu1_0
 board_diag_j721e_BOARDLIST = j721e_evm
 board_diag_j721e_CORELIST = mpu1_0 mcu1_0
 
@@ -155,7 +157,7 @@ export bootEeprom_board_diag_CORE_DEPENDENCY
 export bootEeprom_board_diag_MAKEFILE
 bootEeprom_board_diag_PKG_LIST = bootEeprom_board_diag
 bootEeprom_board_diag_INCLUDE = $(bootEeprom_board_diag_PATH)
-bootEeprom_board_diag_BOARDLIST = $(board_diag_$(SOC)_BOARDLIST)
+bootEeprom_board_diag_BOARDLIST = $(board_diag_$(SOC)_BOARDLIST) am65xx_evm am65xx_idk
 bootEeprom_board_diag_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
 export bootEeprom_board_diag_$(SOC)_CORELIST
 export bootEeprom_board_diag_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)

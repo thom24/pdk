@@ -63,8 +63,15 @@ endif
 # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
 LOCAL_APP_NAME =  $(DIAGNAME)$(MODENAME)_DiagExample_$(BOARD)_$(CORE)
 
-SRCDIR = ../src ../../common/$(SOC) ./$(BOARD)
-INCDIR = ../../../../board ../src ../../../src/$(BOARD)/include ../../../src/$(BOARD) ../../../src/flash ../../common/$(SOC)
+SRCDIR = ../src ./$(BOARD)
+INCDIR = ../../../../board ../src ../../../src/$(BOARD)/include ../../../src/$(BOARD) ../../../src/flash
+ifeq ($(BOARD), $(filter $(BOARD), am65xx_evm am65xx_idk))
+  SRCDIR += ../../common/AM65XX
+  INCDIR += ../../common/AM65XX
+else
+  SRCDIR += ../../common/$(SOC)
+  INCDIR += ../../common/$(SOC)
+endif
 
 # List all the external components/interfaces, whose interface header files
 # need to be included for this component
@@ -72,14 +79,17 @@ INCLUDE_EXTERNAL_INTERFACES = pdk
 
 # List all the components required by the application
 COMP_LIST_COMMON = board csl csl_init osal_nonos uart gpio i2c
-ifeq ($(SOC), $(filter $(SOC), j721e))
+ifeq ($(SOC), $(filter $(SOC), j721e am65xx))
 COMP_LIST_COMMON += sciclient
 endif
 
-
 # Common source files and CFLAGS across all platforms and cores
 PACKAGE_SRCS_COMMON = ../src $(BOARD) makefile
+ifeq ($(BOARD), $(filter $(BOARD), am65xx_evm am65xx_idk))
+PACKAGE_SRCS_COMMON += ../../common/AM65XX
+else
 PACKAGE_SRCS_COMMON += ../../common/$(SOC)
+endif
 PACKAGE_SRCS_COMMON += ../../board_diag_component.mk
 PACKAGE_SRCS_COMMON += ../../create_sd.bat ../../create_sd.sh
 
@@ -88,16 +98,27 @@ SRCS_COMMON = eeprom_stress_test.c
 else
 SRCS_COMMON = boot_eeprom_test.c
 endif
-SRCS_COMMON += boot_eeprom_config.c diag_common_cfg.c
+SRCS_COMMON += diag_common_cfg.c
+ifeq ($(BOARD), $(filter $(BOARD), j721e_evm))
+SRCS_COMMON += boot_eeprom_config.c
+endif
 
 ifeq ($(CORE),$(filter $(CORE), mcu1_0))
 SRCS_ASM_COMMON += diag_entry_r5.asm
+ifeq ($(BOARD), $(filter $(BOARD), am65xx_evm am65xx_idk))
+EXTERNAL_LNKCMD_FILE_LOCAL = ../../common/AM65XX/linker_r5.lds
+else
 EXTERNAL_LNKCMD_FILE_LOCAL = ../../common/$(SOC)/linker_r5_mcu1_0.lds
+endif
 endif
 
 ifeq ($(CORE),$(filter $(CORE), mpu1_0))
 SRCS_ASM_COMMON += diag_entry.asm
+ifeq ($(BOARD), $(filter $(BOARD), am65xx_evm am65xx_idk))
+EXTERNAL_LNKCMD_FILE_LOCAL = ../../common/AM65XX/linker_a53.lds
+else
 EXTERNAL_LNKCMD_FILE_LOCAL = ../../common/$(SOC)/linker_a72_mpu1_0.lds
+endif
 endif
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) -DDIAG_$(TESTMODE) $(BOARD_DIAG_CFLAGS)
