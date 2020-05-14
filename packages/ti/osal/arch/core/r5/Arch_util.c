@@ -239,6 +239,9 @@ HwiP_Handle OsalArch_HwiPCreate(int32_t interruptNum, HwiP_Fxn hwiFxn,
 
         hwi_handle->intNum = (uint32_t)interruptNum;
 
+        /* Registering the Interrupt Service Routine(ISR). */
+        Intc_IntRegister((uint16_t)interruptNum, (IntrFuncPtr) hwiFxn, (void *)params->arg);
+
         /* Set the priority to default priority if priority is set un-initialized */
         if (params->priority == HWIP_USE_DEFAULT_PRIORITY)
         {
@@ -252,9 +255,6 @@ HwiP_Handle OsalArch_HwiPCreate(int32_t interruptNum, HwiP_Fxn hwiFxn,
         /* Setting the priority for the UART interrupt in INTC. */
         Intc_IntPrioritySet((uint16_t)interruptNum, priority, 0);
 
-        /* Registering the Interrupt Service Routine(ISR). */
-        Intc_IntRegister((uint16_t)interruptNum, (IntrFuncPtr) hwiFxn, (void *)params->arg);
-        
         /* Enabling the interrupt if configured */
         if (params->enableIntr == 1U)
         {
