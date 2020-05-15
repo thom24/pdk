@@ -967,9 +967,19 @@ static int32_t Udma_eventConfig(Udma_DrvHandle drvHandle,
         ringHandle = eventPrms->ringHandle;
         Udma_assert(drvHandle, ringHandle->ringNum != UDMA_RING_INVALID);
 
-        rmIrqReq.src_id     = drvHandle->devIdRing;
+        rmIrqReq.src_id     = drvHandle->srcIdRingIrq;
         rmIrqReq.src_index  = ringHandle->ringNum;
-        rmIrqReq.src_index += TISCI_RINGACC0_OES_IRQ_SRC_IDX_START;  //TODO: Need to be replaced.
+        rmIrqReq.src_index += drvHandle->txRingIrqOffset;
+
+#if ((UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP) > 0)
+        /* For mapped RX rings, subtract the already added TX offset and add RX offset */
+        if((ringHandle->mappedRingGrp >= UDMA_NUM_MAPPED_TX_GROUP) &&
+           (ringHandle->mappedRingGrp < (UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP)))
+        {
+            rmIrqReq.src_index -= drvHandle->txRingIrqOffset;
+            rmIrqReq.src_index += drvHandle->rxRingIrqOffset;
+        }
+#endif 
     }
 
     if(UDMA_EVENT_TYPE_RING_MON == eventPrms->eventType)
@@ -990,8 +1000,13 @@ static int32_t Udma_eventConfig(Udma_DrvHandle drvHandle,
 
     if(UDMA_EVENT_TYPE_ERR_OUT_OF_RANGE_FLOW == eventPrms->eventType)
     {
+#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
         rmIrqReq.src_id     = drvHandle->devIdUdma;
-        rmIrqReq.src_index  = TISCI_UDMAP0_RX_FLOW_EOES_IRQ_SRC_IDX_START;  //TODO: Need to be replaced.
+        rmIrqReq.src_index  = TISCI_UDMAP0_RX_FLOW_EOES_IRQ_SRC_IDX_START;  
+#else
+        retVal = UDMA_EFAIL;
+        Udma_printf(drvHandle, "[Error] Event for trapping out of range flow ID received on a packet, not supported!!!\n");
+#endif
     }
 
     if(UDMA_SOK == retVal)
@@ -1208,9 +1223,19 @@ static int32_t Udma_eventReset(Udma_DrvHandle drvHandle,
         ringHandle = eventPrms->ringHandle;
         Udma_assert(drvHandle, ringHandle->ringNum != UDMA_RING_INVALID);
 
-        rmIrqReq.src_id     = drvHandle->devIdRing;
+        rmIrqReq.src_id     = drvHandle->srcIdRingIrq;
         rmIrqReq.src_index  = ringHandle->ringNum;
-        rmIrqReq.src_index += TISCI_RINGACC0_OES_IRQ_SRC_IDX_START; //TODO: Need to be replaced.
+        rmIrqReq.src_index += drvHandle->txRingIrqOffset;
+
+#if ((UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP) > 0)
+        /* For mapped RX rings, subtract the already added TX offset and add RX offset */
+        if((ringHandle->mappedRingGrp >= UDMA_NUM_MAPPED_TX_GROUP) &&
+           (ringHandle->mappedRingGrp < (UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP)))
+        {
+            rmIrqReq.src_index -= drvHandle->txRingIrqOffset;
+            rmIrqReq.src_index += drvHandle->rxRingIrqOffset;
+        }
+#endif 
     }
 
     if(UDMA_EVENT_TYPE_RING_MON == eventPrms->eventType)
@@ -1231,8 +1256,13 @@ static int32_t Udma_eventReset(Udma_DrvHandle drvHandle,
 
     if(UDMA_EVENT_TYPE_ERR_OUT_OF_RANGE_FLOW == eventPrms->eventType)
     {
+#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
         rmIrqReq.src_id     = drvHandle->devIdUdma;
-        rmIrqReq.src_index  = TISCI_UDMAP0_RX_FLOW_EOES_IRQ_SRC_IDX_START; //TODO: Need to be replaced.
+        rmIrqReq.src_index  = TISCI_UDMAP0_RX_FLOW_EOES_IRQ_SRC_IDX_START;
+#else
+        retVal = UDMA_EFAIL;
+        Udma_printf(drvHandle, "[Error] Event for trapping out of range flow ID received on a packet is not supported!!!\n");
+#endif
     }
 
     if(UDMA_SOK == retVal)

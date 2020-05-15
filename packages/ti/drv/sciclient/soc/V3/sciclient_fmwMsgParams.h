@@ -200,12 +200,8 @@ extern "C" {
 #define TISCI_BCDMA0_RX_RC_OES_IRQ_SRC_IDX_START     (12288U)
 
 /* TO DO: Following should be removed later, Keeping for now to avoid compilation issues*/
-#define TISCI_RINGACC0_MON_IRQ_SRC_IDX_START        (1024U)
 #define TISCI_UDMAP0_TX_OES_IRQ_SRC_IDX_START       (0U)
-#define TISCI_UDMAP0_TX_EOES_IRQ_SRC_IDX_START      (4096U)
 #define TISCI_UDMAP0_RX_OES_IRQ_SRC_IDX_START       (8192U)
-#define TISCI_UDMAP0_RX_EOES_IRQ_SRC_IDX_START      (12288U)
-#define TISCI_UDMAP0_RX_FLOW_EOES_IRQ_SRC_IDX_START (16384U)
 /* @} */
 
 /* ========================================================================== */
