@@ -85,9 +85,10 @@ ifeq ($(SOC),$(filter $(SOC), omapl137 omapl138 c6747))
 endif
 
 ifeq ($(SOC),$(filter $(SOC), tpr12))
-  SRCDIR += $(TIMER)/v2 $(DELAY)/v4
-  INCDIR += $(TIMER)/v2 $(DELAY)/v4
-  PACKAGE_SRCS_COMMON += $(TIMER)/v2 $(DELAY)/v4
+  SRCDIR += $(MUXINTCP)/v2 $(TIMER)/v2 $(DELAY)/v4
+  INCDIR += $(MUXINTCP)/v2 $(TIMER)/v2 $(DELAY)/v4
+  PACKAGE_SRCS_COMMON += $(MUXINTCP)/v2 $(TIMER)/v2 $(DELAY)/v4
+  SRCS_COMMON += MuxIntcP_nonos.c
 endif
 
 
