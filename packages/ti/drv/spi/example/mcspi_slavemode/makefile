@@ -81,6 +81,12 @@ ifeq ($(SOC),$(filter $(SOC), j721e))
 CFLAGS_SPI_MS    += -Dj721e_evm=j721e_evm
 endif
 
+# Enable copy of vectors
+ifeq ($(ISA),$(filter $(ISA), r5f))
+  SRCDIR += $(PDK_VECT_COPY_PATH)
+  SRCS_ASM_COMMON += utilsCopyVecs2ATmc.asm
+endif
+
 # DMA enabled build
 ifeq ($(DMA), enable)
 

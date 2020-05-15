@@ -106,6 +106,11 @@ EXTERNAL_LNKCMD_FILE = $(PDK_INSTALL_PATH)/ti/build/tpr12/linker_c66.lds
 endif
 endif
 
+# Enable copy of vectors
+ifeq ($(ISA),$(filter $(ISA), r5f))
+  SRCDIR += $(PDK_VECT_COPY_PATH)
+  SRCS_ASM_COMMON += utilsCopyVecs2ATmc.asm
+endif
 
 PACKAGE_SRCS_COMMON = . ../src
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_OSAL_UT)

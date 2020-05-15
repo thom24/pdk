@@ -34,6 +34,10 @@ endif
 ifeq ($(SOC),$(filter $(SOC), j721e))
 ifeq ($(CORE),$(filter $(CORE), mcu1_0))
   COMP_LIST_COMMON += csl_init osal_nonos sciclient board uart i2c
+
+# Enable copy of vectors
+  SRCDIR += $(PDK_VECT_COPY_PATH)
+  SRCS_ASM_COMMON += utilsCopyVecs2ATmc.asm
 endif
 endif
 

@@ -81,6 +81,12 @@ ifeq ($(MAKERULEDIR), )
 endif
 include $(MAKERULEDIR)/common.mk
 
+# Enable copy of vectors
+ifeq ($(ISA),$(filter $(ISA), r5f))
+  SRCDIR += $(PDK_VECT_COPY_PATH)
+  SRCS_ASM_COMMON += utilsCopyVecs2ATmc.asm
+endif
+
 # OBJs and libraries are built by using rule defined in rules_<target>.mk
 #     and need not be explicitly specified here
 

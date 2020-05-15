@@ -65,6 +65,12 @@ else
 SRCS_COMMON += utils_prf.c utils_mem.c
 endif
 
+# Enable copy of vectors
+ifeq ($(ISA),$(filter $(ISA), r5f))
+  SRCDIR += $(PDK_VECT_COPY_PATH)
+  SRCS_ASM_COMMON += utilsCopyVecs2ATmc.asm
+endif
+
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(UDMA_CFLAGS) $(FVID2_CFLAGS)
 ifeq ($(UDMA_UT_MANUAL_ENTRY), yes)
   CFLAGS_LOCAL_COMMON += -DUDMA_UT_ENABLE_MANUAL_ENTRY

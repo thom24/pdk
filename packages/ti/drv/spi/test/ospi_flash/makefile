@@ -21,6 +21,13 @@ XDC_CFG_FILE_mcu1_0 = ./$(SOC)/ospiFlashTest_r5.cfg
 else
 ifeq ($(SOC),$(filter $(SOC), j721e j7200 am64x))
 XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
+
+# Enable copy of vectors
+ifeq ($(ISA),$(filter $(ISA), r5f))
+  SRCDIR += $(PDK_VECT_COPY_PATH)
+  SRCS_ASM_COMMON += utilsCopyVecs2ATmc.asm
+endif
+
 endif
 endif
 
