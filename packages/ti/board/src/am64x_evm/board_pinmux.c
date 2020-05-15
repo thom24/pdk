@@ -46,6 +46,7 @@
 #include "board_internal.h"
 #include "board_pinmux.h"
 
+#ifdef VLAB_SIM
 #define AVV_PASS   (1U)
 #define AVV_FAIL   (0U)
 
@@ -283,235 +284,38 @@ uint32_t MCU_PLL_MMR_change_all_locks(mmr_lock_actions_t target_state);
         if(errors==0) { return AVV_PASS; }
         else          { return AVV_FAIL; }
     }
-
-
-
-//Region of pinmux padconfigs
-//Can't find the CSL defines for the padconfig0 offset, need to replace
-//The offsets were found from the AM64X MAIN and MCU padcfg_ctrl pdf documents
-#define TEMP_REPLACE_WITH_CSL_MAIN_PADCONFIG0_OFFSET    (0x4000)
-#define TEMP_REPLACE_WITH_CSL_MCU_PADCONFIG0_OFFSET     (0x4000)
-typedef enum {
-    PINMUX_REGION_MAIN = CSL_PADCFG_CTRL0_CFG0_BASE + TEMP_REPLACE_WITH_CSL_MAIN_PADCONFIG0_OFFSET,
-    PINMUX_REGION_MCU = CSL_MCU_PADCFG_CTRL0_CFG0_BASE + TEMP_REPLACE_WITH_CSL_MCU_PADCONFIG0_OFFSET,
-} pinmux_regions_t;
-
-typedef enum {
-    PINMUX_TX_ENABLE=0,
-    PINMUX_TX_DISABLE=1,
-    PINMUX_TX_IGNORE,
-} tx_options_t;
-
-typedef enum {
-    PINMUX_DRIVE_STRENGTH_00 =0,
-    PINMUX_DRIVE_STRENGTH_01,
-    PINMUX_DRIVE_STRENGTH_10,
-    PINMUX_DRIVE_STRENGTH_11,
-    PINMUX_DRIVE_STRENGTH_IGNORE,
-} drive_strength_val_t;
-
-typedef enum {
-    PINMUX_RX_DISABLE=0,
-    PINMUX_RX_ENABLE=1,
-    PINMUX_RX_IGNORE,
-} rx_options_t;
-
-typedef enum {
-    PINMUX_PULLTYPE_PULLUP,
-    PINMUX_PULLTYPE_PULLDOWN,
-    PINMUX_PULLTYPE_DISABLE,
-    PINMUX_PULLTYPE_IGNORE,
-} pull_up_down_options_t;
-
-typedef enum {
-    PINMUX_SCHMITT_TRIG_DISABLE =0,
-    PINMUX_SCHMITT_TRIG_ENABLE =1,
-    PINMUX_SCHMITT_TRIG_IGNORE,
-} schmitt_trig_options_t;
-
-typedef enum {
-    PINMUX_MUX_MODE_0 = 0,
-    PINMUX_MUX_MODE_1,
-    PINMUX_MUX_MODE_2,
-    PINMUX_MUX_MODE_3,
-    PINMUX_MUX_MODE_4,
-    PINMUX_MUX_MODE_5,
-    PINMUX_MUX_MODE_6,
-    PINMUX_MUX_MODE_7,
-    PINMUX_MUX_MODE_8,
-    PINMUX_MUX_MODE_9,
-    PINMUX_MUX_MODE_10,
-    PINMUX_MUX_MODE_11,
-    PINMUX_MUX_MODE_12,
-    PINMUX_MUX_MODE_13,
-    PINMUX_MUX_MODE_14,
-    PINMUX_MUX_MODE_15,
-    PINMUX_MUX_MODE_IGNORE,
-} muxmode_t;
-typedef enum {
-    PINMUX_DEBOUNCE_PERIOD_000 = 0,
-    PINMUX_DEBOUNCE_PERIOD_001,
-    PINMUX_DEBOUNCE_PERIOD_010,
-    PINMUX_DEBOUNCE_PERIOD_011,
-    PINMUX_DEBOUNCE_PERIOD_100,
-    PINMUX_DEBOUNCE_PERIOD_101,
-    PINMUX_DEBOUNCE_PERIOD_110,
-    PINMUX_DEBOUNCE_PERIOD_111,
-    PINMUX_DEBOUNCE_PERIOD_IGNORE,
-} debounce_period_t;
-
-typedef struct{
-    pinmux_regions_t        mmrBaseAddress;
-    uint32_t                padOffset;
-    muxmode_t               muxMode;
-    tx_options_t            txEnable;
-    rx_options_t            rxEnable;
-    pull_up_down_options_t  pullType;
-    drive_strength_val_t    driveStrength;
-    schmitt_trig_options_t  schmittTrig;
-    debounce_period_t       debouncePeriod;
-} pinmux_t;
-
-void set_pinmux(pinmux_t *Array, uint8_t arraysize);
-void writeToPadConfigReg(pinmux_t * arrayPtr, uint32_t mmr_reg_value);
-uint32_t readFromPadConfigReg(pinmux_t * arrayPtr);
-
-#ifdef BOARD_QT_MANUAL_PINMUX_SETUP
-static const pinmux_t OSPI_COMPLETE_PINMUX_array [] = {
-    //Pinmux Region,     Offset, Muxmode,           TX,                RX,                Pull Up/Down/None,  Drive Strength,           Schmitt Trigger,        Debounce Period
-    {PINMUX_REGION_MAIN, 0x0000, PINMUX_MUX_MODE_0, PINMUX_TX_ENABLE,  PINMUX_RX_DISABLE, PINMUX_PULLTYPE_PULLDOWN, PINMUX_DRIVE_STRENGTH_IGNORE, PINMUX_SCHMITT_TRIG_IGNORE, PINMUX_DEBOUNCE_PERIOD_IGNORE}, //OSPI0 CLK
-    {PINMUX_REGION_MAIN, 0x0004, PINMUX_MUX_MODE_0, PINMUX_TX_ENABLE,  PINMUX_RX_ENABLE,  PINMUX_PULLTYPE_PULLDOWN, PINMUX_DRIVE_STRENGTH_IGNORE, PINMUX_SCHMITT_TRIG_IGNORE, PINMUX_DEBOUNCE_PERIOD_IGNORE}, //OSPI0 LBCLK
-    {PINMUX_REGION_MAIN, 0x0008, PINMUX_MUX_MODE_0, PINMUX_TX_DISABLE, PINMUX_RX_ENABLE,  PINMUX_PULLTYPE_PULLDOWN, PINMUX_DRIVE_STRENGTH_IGNORE, PINMUX_SCHMITT_TRIG_IGNORE, PINMUX_DEBOUNCE_PERIOD_IGNORE}, //OSPI0 DQS
-    {PINMUX_REGION_MAIN, 0x000C, PINMUX_MUX_MODE_0, PINMUX_TX_ENABLE,  PINMUX_RX_ENABLE,  PINMUX_PULLTYPE_IGNORE, PINMUX_DRIVE_STRENGTH_IGNORE, PINMUX_SCHMITT_TRIG_IGNORE, PINMUX_DEBOUNCE_PERIOD_IGNORE}, //OSPI D0
-    {PINMUX_REGION_MAIN, 0x0010, PINMUX_MUX_MODE_0, PINMUX_TX_ENABLE,  PINMUX_RX_ENABLE,  PINMUX_PULLTYPE_IGNORE, PINMUX_DRIVE_STRENGTH_IGNORE, PINMUX_SCHMITT_TRIG_IGNORE, PINMUX_DEBOUNCE_PERIOD_IGNORE}, //OSPI D1
-    {PINMUX_REGION_MAIN, 0x0014, PINMUX_MUX_MODE_0, PINMUX_TX_ENABLE,  PINMUX_RX_ENABLE,  PINMUX_PULLTYPE_IGNORE, PINMUX_DRIVE_STRENGTH_IGNORE, PINMUX_SCHMITT_TRIG_IGNORE, PINMUX_DEBOUNCE_PERIOD_IGNORE}, //OSPI D2
-    {PINMUX_REGION_MAIN, 0x0018, PINMUX_MUX_MODE_0, PINMUX_TX_ENABLE,  PINMUX_RX_ENABLE,  PINMUX_PULLTYPE_IGNORE, PINMUX_DRIVE_STRENGTH_IGNORE, PINMUX_SCHMITT_TRIG_IGNORE, PINMUX_DEBOUNCE_PERIOD_IGNORE}, //OSPI D3
-    {PINMUX_REGION_MAIN, 0x001C, PINMUX_MUX_MODE_0, PINMUX_TX_ENABLE,  PINMUX_RX_ENABLE,  PINMUX_PULLTYPE_IGNORE, PINMUX_DRIVE_STRENGTH_IGNORE, PINMUX_SCHMITT_TRIG_IGNORE, PINMUX_DEBOUNCE_PERIOD_IGNORE}, //OSPI D4
-    {PINMUX_REGION_MAIN, 0x0020, PINMUX_MUX_MODE_0, PINMUX_TX_ENABLE,  PINMUX_RX_ENABLE,  PINMUX_PULLTYPE_IGNORE, PINMUX_DRIVE_STRENGTH_IGNORE, PINMUX_SCHMITT_TRIG_IGNORE, PINMUX_DEBOUNCE_PERIOD_IGNORE}, //OSPI D5
-    {PINMUX_REGION_MAIN, 0x0024, PINMUX_MUX_MODE_0, PINMUX_TX_ENABLE,  PINMUX_RX_ENABLE,  PINMUX_PULLTYPE_IGNORE, PINMUX_DRIVE_STRENGTH_IGNORE, PINMUX_SCHMITT_TRIG_IGNORE, PINMUX_DEBOUNCE_PERIOD_IGNORE}, //OSPI D6
-    {PINMUX_REGION_MAIN, 0x0028, PINMUX_MUX_MODE_0, PINMUX_TX_ENABLE,  PINMUX_RX_ENABLE,  PINMUX_PULLTYPE_IGNORE, PINMUX_DRIVE_STRENGTH_IGNORE, PINMUX_SCHMITT_TRIG_IGNORE, PINMUX_DEBOUNCE_PERIOD_IGNORE}, //OSPI D7
-    {PINMUX_REGION_MAIN, 0x002C, PINMUX_MUX_MODE_0, PINMUX_TX_ENABLE,  PINMUX_RX_DISABLE, PINMUX_PULLTYPE_IGNORE, PINMUX_DRIVE_STRENGTH_IGNORE, PINMUX_SCHMITT_TRIG_IGNORE, PINMUX_DEBOUNCE_PERIOD_IGNORE}, //OSPI CS0
-    {PINMUX_REGION_MAIN, 0x0030, PINMUX_MUX_MODE_0, PINMUX_TX_ENABLE,  PINMUX_RX_DISABLE, PINMUX_PULLTYPE_IGNORE, PINMUX_DRIVE_STRENGTH_IGNORE, PINMUX_SCHMITT_TRIG_IGNORE, PINMUX_DEBOUNCE_PERIOD_IGNORE}, //OSPI CS1
-    {PINMUX_REGION_MAIN, 0x0034, PINMUX_MUX_MODE_2, PINMUX_TX_ENABLE,  PINMUX_RX_DISABLE, PINMUX_PULLTYPE_PULLUP, PINMUX_DRIVE_STRENGTH_IGNORE, PINMUX_SCHMITT_TRIG_IGNORE, PINMUX_DEBOUNCE_PERIOD_IGNORE}, //OSPI RESET_OUT1
-    {PINMUX_REGION_MAIN, 0x0038, PINMUX_MUX_MODE_1, PINMUX_TX_ENABLE,  PINMUX_RX_DISABLE, PINMUX_PULLTYPE_PULLUP, PINMUX_DRIVE_STRENGTH_IGNORE, PINMUX_SCHMITT_TRIG_IGNORE, PINMUX_DEBOUNCE_PERIOD_IGNORE}, //OSPI RESET_OUT0
-};
 #endif
 
-void set_pinmux(pinmux_t *Array, uint8_t arraysize){
-    uint32_t c = 0;
-    uint32_t i = 0;
-    uint32_t mmr_reg_value = 0;
-    uint32_t errors = 0;
-    uint16_t field_val = 0;
-    //Pointer for loop
-    pinmux_t * arrayPtr = NULL;
-    arrayPtr = Array;
+#ifdef VLAB_SIM
+/* am64xx_main_padcfg_ctrl_mmr */
+#define MAIN_PADCONFIG_CTRL_BASE    0x000F0000
+#define CTRL_MMR0_PARTITION_SIZE    0x4000
+#define MAIN_CTRL_PINCFG_BASE       (MAIN_PADCONFIG_CTRL_BASE + (1 * CTRL_MMR0_PARTITION_SIZE))
 
-    //Loop on each pinmux_t struct
-    for (i = 0; i < arraysize; i++){
+#define MAIN_UART0_RXD  0x0230
+#define MAIN_UART0_TXD  0x0234
+#define MAIN_UART0_CTSn 0x0238
+#define MAIN_UART0_RTSn 0x023c
 
-        //Read the PADCONFIG register
-        mmr_reg_value = readFromPadConfigReg(arrayPtr);
-
-        //Check if addressed padconfig is locked or not
-        if( (mmr_reg_value & (uint32_t)(1<<31)) == (uint32_t) (1<<31)) {
-            mmr_reg_value &= ~(1<<31);
-            writeToPadConfigReg(arrayPtr, mmr_reg_value);
-            for(c = 0; c < 20; c++);
-            if(readFromPadConfigReg(arrayPtr)!= mmr_reg_value) {
-                //Can print here details
-                //Increase error count and go to next mmr
-                errors++;
-                arrayPtr++;
-                continue;
-            }
-
-        }
-
-        //Mux mode selection
-        if(arrayPtr->muxMode != PINMUX_MUX_MODE_IGNORE){
-            mmr_reg_value  &= ~( 0b1111 <<0 );  //Clear out the 4 bits for mux mode
-            field_val = ((uint16_t) arrayPtr->muxMode) & 0b1111; //Mask the field
-            mmr_reg_value  |= ( field_val << 0 ); //Place the value in the correct position
-        }
-        //Transmit driver enable
-        if(arrayPtr->txEnable != PINMUX_TX_IGNORE){
-            mmr_reg_value  &= ~( 0b1 << 21 );  //Clear out the bit for tx
-            field_val = ((uint16_t) arrayPtr->txEnable) & 0b1; //Mask the field
-            mmr_reg_value  |= ( field_val << 21 ); //Place the value in the correct position
-        }
-        //Receive enable
-        if(arrayPtr->rxEnable != PINMUX_RX_IGNORE){
-            mmr_reg_value  &= ~( 0b1 << 18 );  //Clear out the bit for rx
-            field_val = ((uint16_t) arrayPtr->rxEnable) & 0b1; //Mask the field
-            mmr_reg_value  |= ( field_val << 18 ); //Place the value in the correct position
-        }
-        //PU-PD Selection
-        if(arrayPtr->pullType != PINMUX_PULLTYPE_IGNORE){
-            if(arrayPtr->pullType == PINMUX_PULLTYPE_DISABLE){
-                mmr_reg_value  |= ( 0b1 << 16 );  //Set the bit to disable pulls
-            } else {
-                mmr_reg_value  &= ~( 0b1 << 16 ); //Clear the bit to enable pulls
-                //With Pulls enabled, place in pull down or up
-                mmr_reg_value  &= ~( 0b1 << 17 );
-                field_val = ((uint16_t) arrayPtr->pullType) & 0b1; //Mask the field
-                mmr_reg_value  |= ( field_val << 17 ); //Place the value in the correct position
-            }
-        }
-
-        //Drive strength selection
-        if(arrayPtr->driveStrength != PINMUX_DRIVE_STRENGTH_IGNORE){
-            mmr_reg_value  &= ~( 0b11 << 19 );  //Clear out the 2 bits for mux mode
-            field_val = ((uint16_t) arrayPtr->driveStrength) & 0b11; //Mask the field
-            mmr_reg_value  |= ( field_val << 19 ); //Place the value in the correct position
-        }
-
-        //Schmitt Trigger
-        if(arrayPtr->schmittTrig != PINMUX_SCHMITT_TRIG_IGNORE){
-            mmr_reg_value  &= ~( 0b1 << 14 );  //Clear out the bit for rx
-            field_val = ((uint16_t) arrayPtr->schmittTrig) & 0b1; //Mask the field
-            mmr_reg_value  |= ( field_val << 14 ); //Place the value in the correct position
-        }
-        //Debounce period
-        if(arrayPtr->debouncePeriod != PINMUX_DEBOUNCE_PERIOD_IGNORE){
-            mmr_reg_value  &= ~( 0b111 << 11 ); //Clear out the bits for debounce period
-            field_val = ((uint16_t) arrayPtr->debouncePeriod) & 0b111; //Mask the field
-            mmr_reg_value |= (field_val << 11);
-        }
-        //Writing to Padconfig register
-        writeToPadConfigReg(arrayPtr, mmr_reg_value);
-        for(c = 0; c < 20; c++);
-        //Verify write
-        if(readFromPadConfigReg(arrayPtr)!= mmr_reg_value) {
-            errors++;
-        }
-
-        arrayPtr++;
-    }
+static void Board_uartPinmxCfg()
+{
+   *(volatile uint32_t*)(MAIN_CTRL_PINCFG_BASE + MAIN_UART0_RXD) = 0x54000;
+   *(volatile uint32_t*)(MAIN_CTRL_PINCFG_BASE + MAIN_UART0_TXD) = 0x54000;
+   *(volatile uint32_t*)(MAIN_CTRL_PINCFG_BASE + MAIN_UART0_CTSn) = 0x54000;
+   *(volatile uint32_t*)(MAIN_CTRL_PINCFG_BASE + MAIN_UART0_RTSn) = 0x54000;
 }
-
-void writeToPadConfigReg(pinmux_t * arrayPtr, uint32_t mmr_reg_value) {
-    volatile uint32_t * placeToWrite= (volatile uint32_t *)(uintptr_t)(arrayPtr->mmrBaseAddress + arrayPtr->padOffset);
-    *placeToWrite = mmr_reg_value;
-    //*(volatile uint32_t *)(uintptr_t)(arrayPtr->mmrBaseAddress + arrayPtr->padOffset) = mmr_reg_value;
-}
-
-uint32_t readFromPadConfigReg(pinmux_t * arrayPtr) {
-    return *(volatile uint32_t *)(uintptr_t)(arrayPtr->mmrBaseAddress + arrayPtr->padOffset);
-}
+#endif
 
 Board_STATUS Board_pinmuxConfig (void)
 {
-#ifdef BOARD_QT_MANUAL_PINMUX_SETUP
-    MAIN_PADCONFIG_MMR_unlock_all();
-    set_pinmux((pinmux_t *)&OSPI_COMPLETE_PINMUX_array, (sizeof(OSPI_COMPLETE_PINMUX_array)/sizeof(pinmux_t)) );
-#else
     pinmuxModuleCfg_t* pModuleData = NULL;
     pinmuxPerCfg_t* pInstanceData = NULL;
     int32_t i, j, k;
 
+#ifdef VLAB_SIM
     MAIN_PADCONFIG_MMR_unlock_all();
-
+    Board_uartPinmxCfg();
+#endif
     for(i = 0; PINMUX_END != gAM64xxMainPinmuxData[i].moduleId; i++)
     {
         pModuleData = gAM64xxMainPinmuxData[i].modulePinCfg;
@@ -545,8 +349,6 @@ Board_STATUS Board_pinmuxConfig (void)
             }
         }
     }
-
-#endif
 
     return BOARD_SOK;
 }

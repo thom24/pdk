@@ -1244,7 +1244,9 @@ static uint32_t UART_charPut_v1(UART_HwAttrs const *hwAttrs, uint8_t data, uint3
             }
             else
             {
+#ifndef VLAB_SIM
                 (void)UART_osalDelay(1U);
+#endif
                 timeoutCnt--;
             }
         }

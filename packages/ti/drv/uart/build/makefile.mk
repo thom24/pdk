@@ -65,6 +65,10 @@ ifeq ($(SOC),$(filter $(SOC), am335x))
   CFLAGS_LOCAL_COMMON += -DPRU_ICSS_FW
 endif
 
+ifeq ($(SOC),$(filter $(SOC), am64x))
+  CFLAGS_LOCAL_COMMON += -DVLAB_SIM
+endif
+
 # Include common make files
 ifeq ($(MAKERULEDIR), )
 #Makerule path not defined, define this and assume relative path from ROOTDIR

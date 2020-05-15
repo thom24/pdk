@@ -78,7 +78,12 @@ extern void UART_socInitFwCfg(void);
 #define UART_MODULE_CLK_48M    (48000000U)
 #define UART_MODULE_CLK_96M    (96000000U)
 #define UART_MODULE_CLK_160M   (160000000U)
+#define UART_MODULE_CLK_3M686  (3686400U)
+#ifdef VLAB_SIM
+#define UART_MODULE_CLOCK      UART_MODULE_CLK_3M686
+#else
 #define UART_MODULE_CLOCK      UART_MODULE_CLK_48M
+#endif
 #endif
 
 #ifdef __cplusplus
