@@ -381,7 +381,10 @@ int32_t Udma_getMappedChRingAttributes(Udma_DrvHandle drvHandle, uint32_t mapped
             mappedChRingAttributes = &gUdmaRxMappedChRingAttributes[index];
         }
     }
-    (void) memcpy(chAttr, mappedChRingAttributes, sizeof (Udma_MappedChRingAttributes));
+    if(UDMA_SOK == retVal)
+    {
+        (void) memcpy(chAttr, mappedChRingAttributes, sizeof (Udma_MappedChRingAttributes));
+    }
 
     return(retVal);
 }
