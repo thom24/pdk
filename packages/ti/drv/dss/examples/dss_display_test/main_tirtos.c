@@ -52,6 +52,9 @@
 #include <ti/board/board.h>
 #include <ti/drv/dss/examples/utils/app_utils.h>
 #include "dss_display_test.h"
+#include <ti/drv/sciclient/sciclient.h>
+#include <ti/csl/soc.h>
+#include <ti/drv/pm/pmlib.h>
 
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
@@ -111,6 +114,7 @@ int main(void)
 
 static Void taskFxn(UArg a0, UArg a1)
 {
+    int32_t retVal = CSL_PASS;
 #if(1U == DISP_APP_TEST_MULTISYNC)
     uint32_t regVal;
 #endif
@@ -171,7 +175,25 @@ static Void taskFxn(UArg a0, UArg a1)
 #endif
     App_configureSoC();
 
-    Dss_displayTest();
+    Sciclient_init(NULL);
+    retVal += Sciclient_pmSetModuleState(TISCI_DEV_DSS0,
+                                   TISCI_MSG_VALUE_DEVICE_SW_STATE_ON,
+                                   TISCI_MSG_FLAG_AOP,
+                                   SCICLIENT_SERVICE_WAIT_FOREVER);
+#if defined (SOC_J721E)
+    retVal += Sciclient_pmSetModuleState(TISCI_DEV_DSS_DSI0,
+                                   TISCI_MSG_VALUE_DEVICE_SW_STATE_ON,
+                                   TISCI_MSG_FLAG_AOP,
+                                   SCICLIENT_SERVICE_WAIT_FOREVER);
+    retVal += Sciclient_pmSetModuleState(TISCI_DEV_DSS_EDP0,
+                                   TISCI_MSG_VALUE_DEVICE_SW_STATE_ON,
+                                   TISCI_MSG_FLAG_AOP,
+                                   SCICLIENT_SERVICE_WAIT_FOREVER);
+#endif
+    if (retVal == CSL_PASS)
+    {
+        Dss_displayTest();
+    }
 
     return;
 }
