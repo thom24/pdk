@@ -408,6 +408,18 @@ ifneq ($(firewall_l3l4_EXAMPLE_LIST),)
 endif
 
 # - used to ignore include if component not present
+-include $(PDK_SDR_COMP_PATH)/sdr_component.mk
+ifneq ($(sdr_LIB_LIST),)
+  pdk_LIB_LIST += $(sdr_LIB_LIST)
+endif
+ifneq ($(sdr_APP_LIB_LIST),)
+  pdk_APP_LIB_LIST += $(sdr_APP_LIB_LIST)
+endif
+ifneq ($(sdr_EXAMPLE_LIST),)
+  pdk_EXAMPLE_LIST += $(sdr_EXAMPLE_LIST)
+endif
+
+# - used to ignore include if component not present
 -include $(PDK_IPC_COMP_PATH)/ipc_component.mk
 ifneq ($(ipc_LIB_LIST),)
   pdk_LIB_LIST += $(ipc_LIB_LIST)
