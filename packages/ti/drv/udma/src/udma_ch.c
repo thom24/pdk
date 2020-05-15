@@ -1409,7 +1409,7 @@ int32_t Udma_chSetChaining(Udma_ChHandle triggerChHandle,
     if(UDMA_SOK == retVal)
     {
         rmIrqReq.valid_params           = TISCI_MSG_VALUE_RM_GLOBAL_EVENT_VALID;
-        rmIrqReq.src_id                 = drvHandle->devIdUdma;
+        rmIrqReq.src_id                 = drvHandle->srcIdTrIrq;
         rmIrqReq.global_event           = (uint16_t) triggerEvent;
         rmIrqReq.src_index              = 0U;
         rmIrqReq.dst_id                 = 0U;
@@ -1419,14 +1419,30 @@ int32_t Udma_chSetChaining(Udma_ChHandle triggerChHandle,
         rmIrqReq.vint_status_bit_index  = 0U;
         rmIrqReq.secondary_host         = TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
 
-        if(((triggerChHandle->chType & UDMA_CH_FLAG_BLK_COPY) == UDMA_CH_FLAG_BLK_COPY) ||
-           ((triggerChHandle->chType & UDMA_CH_FLAG_RX) == UDMA_CH_FLAG_RX))
+        if(UDMA_INST_TYPE_LCDMA_PKTDMA == drvHandle->instType)
         {
-            /* Use RX channel for block copy as it signifies transfer done */
+            retVal = UDMA_EFAIL;
+            Udma_printf(drvHandle, "UDMA chaining not supported for PKTDMA instance!!!\n");
+        }
+        else if((triggerChHandle->chType & UDMA_CH_FLAG_BLK_COPY) == UDMA_CH_FLAG_BLK_COPY)
+        {
+            Udma_assert(drvHandle,
+                triggerChHandle->txChNum != UDMA_DMA_CH_INVALID);
+            rmIrqReq.src_index = (uint16_t)triggerChHandle->txChNum;
+            rmIrqReq.src_index += drvHandle->blkCopyTrIrqOffset;
+            retVal = Sciclient_rmIrqSet(
+                         &rmIrqReq, &rmIrqResp, UDMA_SCICLIENT_TIMEOUT);
+            if(CSL_PASS != retVal)
+            {
+                Udma_printf(drvHandle, "[Error] RM Block Copy Channel chain config failed!!!\n");
+            }
+        }
+        else if((triggerChHandle->chType & UDMA_CH_FLAG_RX) == UDMA_CH_FLAG_RX)
+        {
             Udma_assert(drvHandle,
                 triggerChHandle->rxChNum != UDMA_DMA_CH_INVALID);
             rmIrqReq.src_index = (uint16_t)triggerChHandle->rxChNum;
-            rmIrqReq.src_index += TISCI_UDMAP0_RX_OES_IRQ_SRC_IDX_START;
+            rmIrqReq.src_index += drvHandle->rxTrIrqOffset;
             retVal = Sciclient_rmIrqSet(
                          &rmIrqReq, &rmIrqResp, UDMA_SCICLIENT_TIMEOUT);
             if(CSL_PASS != retVal)
@@ -1439,7 +1455,7 @@ int32_t Udma_chSetChaining(Udma_ChHandle triggerChHandle,
             Udma_assert(drvHandle,
                 triggerChHandle->txChNum != UDMA_DMA_CH_INVALID);
             rmIrqReq.src_index = (uint16_t)triggerChHandle->txChNum;
-            rmIrqReq.src_index += TISCI_UDMAP0_TX_OES_IRQ_SRC_IDX_START;
+            rmIrqReq.src_index += drvHandle->txTrIrqOffset;
             retVal = Sciclient_rmIrqSet(
                          &rmIrqReq, &rmIrqResp, UDMA_SCICLIENT_TIMEOUT);
             if(CSL_PASS != retVal)
@@ -1525,14 +1541,29 @@ int32_t Udma_chBreakChaining(Udma_ChHandle triggerChHandle,
         rmIrqReq.vint_status_bit_index  = 0U;
         rmIrqReq.secondary_host         = TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
 
-        if(((triggerChHandle->chType & UDMA_CH_FLAG_BLK_COPY) == UDMA_CH_FLAG_BLK_COPY) ||
-           ((triggerChHandle->chType & UDMA_CH_FLAG_RX) == UDMA_CH_FLAG_RX))
+        if(UDMA_INST_TYPE_LCDMA_PKTDMA == drvHandle->instType)
         {
-            /* Use RX channel for block copy as it signifies transfer done */
+            retVal = UDMA_EFAIL;
+            Udma_printf(drvHandle, "UDMA chaining not supported for PKTDMA instance!!!\n");
+        }
+        else if((triggerChHandle->chType & UDMA_CH_FLAG_BLK_COPY) == UDMA_CH_FLAG_BLK_COPY)
+        {
+            Udma_assert(drvHandle,
+                triggerChHandle->txChNum != UDMA_DMA_CH_INVALID);
+            rmIrqReq.src_index = (uint16_t)triggerChHandle->txChNum;
+            rmIrqReq.src_index += drvHandle->blkCopyTrIrqOffset;
+            retVal = Sciclient_rmIrqRelease(&rmIrqReq, UDMA_SCICLIENT_TIMEOUT);
+            if(CSL_PASS != retVal)
+            {
+                Udma_printf(drvHandle, "[Error] RM Block Copy Channel chain reset failed!!!\n");
+            }
+        }
+        else if((triggerChHandle->chType & UDMA_CH_FLAG_RX) == UDMA_CH_FLAG_RX)
+        {
             Udma_assert(drvHandle,
                 triggerChHandle->rxChNum != UDMA_DMA_CH_INVALID);
             rmIrqReq.src_index = (uint16_t)triggerChHandle->rxChNum;
-            rmIrqReq.src_index += TISCI_UDMAP0_RX_OES_IRQ_SRC_IDX_START;
+            rmIrqReq.src_index += drvHandle->rxTrIrqOffset;
             retVal = Sciclient_rmIrqRelease(&rmIrqReq, UDMA_SCICLIENT_TIMEOUT);
             if(CSL_PASS != retVal)
             {
@@ -1544,7 +1575,7 @@ int32_t Udma_chBreakChaining(Udma_ChHandle triggerChHandle,
             Udma_assert(drvHandle,
                 triggerChHandle->txChNum != UDMA_DMA_CH_INVALID);
             rmIrqReq.src_index = (uint16_t)triggerChHandle->txChNum;
-            rmIrqReq.src_index += TISCI_UDMAP0_TX_OES_IRQ_SRC_IDX_START;
+            rmIrqReq.src_index += drvHandle->txTrIrqOffset;
             retVal = Sciclient_rmIrqRelease(&rmIrqReq, UDMA_SCICLIENT_TIMEOUT);
             if(CSL_PASS != retVal)
             {

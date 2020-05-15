@@ -489,6 +489,11 @@ struct Udma_DrvObj
      *   submit word when SW is running from multiple CPU at the same time.
      *   Refer \ref Udma_DruSubmitCoreId */
 #endif  
+    /*
+     * TISCI Ring event IRQ params
+     * 
+     * These IRQ offsets should be corresponding TISCI offset - ringNum Offset
+     */
     uint16_t                srcIdRingIrq;
     /**< Ring completion event IRQ Source ID. */
     uint32_t                blkCopyRingIrqOffset;
@@ -497,7 +502,22 @@ struct Udma_DrvObj
     /**< TX channel ring completion event IRQ offset. */
     uint32_t                rxRingIrqOffset;
     /**< RX channel ring completion event IRQ offset. */
-    /*   These IRQ offsets should be corresponding TISCI offset - ringNum Offset */
+    /*
+     * TISCI TR event IRQ params
+     * 
+     * These IRQ offsets should be corresponding TISCI offset - chNum Offset
+     */
+    uint16_t                srcIdTrIrq;
+    /**< TR event IRQ Source ID. */
+    uint32_t                blkCopyTrIrqOffset;
+    /**< Block Copy channel TR event IRQ offset. */
+    uint32_t                txTrIrqOffset;
+    /**< TX channel TR event IRQ offset. */
+    uint32_t                rxTrIrqOffset;
+    /**< RX channel TR event IRQ offset. */
+    /*
+     * Channel Offsets
+     */
     uint32_t                blkCopyChOffset;
     /**< Block Copy channel offset. 
      *   blkCopyChOffset is used to support Config of BCDMA Block Copy channel using same Sciclient API.
@@ -523,6 +543,9 @@ struct Udma_DrvObj
                                                         = txChNum + txChOffset (for SplitTR Tx)
                                                         = rxChNum + rxChOffset (for SplitTR Rx)
     */
+    /*
+     * Other Offsets
+     */
     uint32_t                iaGemOffset;
     /**< IA global event map offset to differentiate between main and MCU NAVSS */
     uint32_t                trigGemOffset;

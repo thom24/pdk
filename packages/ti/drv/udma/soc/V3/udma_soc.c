@@ -251,7 +251,8 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
         drvHandle->blkCopyChOffset      = 32U; 
         drvHandle->txChOffset           = pBcdmaRegs->bcChanCnt;
 	    drvHandle->rxChOffset   		= drvHandle->txChOffset + pBcdmaRegs->splitTxChanCnt;
-       /* The srcIdx passed to Sciclient_rmIrqset API, will be ringNum + the corresponding following offset. 
+       /* The srcIdx passed to Sciclient_rmIrqset API for configuring DMA Completion/Ring events, 
+        * will be ringNum + the corresponding following offset. 
         * So setting the offset as TISCI Start Idx - corresponding ringNum Offset (if any) */
         drvHandle->blkCopyRingIrqOffset = TISCI_BCDMA0_BC_RC_OES_IRQ_SRC_IDX_START; 
         drvHandle->txRingIrqOffset      = TISCI_BCDMA0_TX_RC_OES_IRQ_SRC_IDX_START - drvHandle->txChOffset;
@@ -261,6 +262,13 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
 	    drvHandle->maxRings             = CSL_DMSS_BCDMA_NUM_BC_CHANS + CSL_DMSS_BCDMA_NUM_TX_CHANS + CSL_DMSS_BCDMA_NUM_RX_CHANS;
 	    drvHandle->devIdRing            = TISCI_DEV_DMASS0_BCDMA_0;
 	    drvHandle->devIdUdma        	= TISCI_DEV_DMASS0_BCDMA_0;
+       /* The srcIdx passed to Sciclient_rmIrqset API for configuring TR events, 
+        * will be chNum + the corresponding following offset. 
+        * So setting the offset as TISCI Start Idx - corresponding chNum Offset (if any) */
+        drvHandle->srcIdTrIrq           = drvHandle->devIdIa;
+        drvHandle->blkCopyTrIrqOffset   = TISCI_BCDMA0_BC_DC_OES_IRQ_SRC_IDX_START; 
+        drvHandle->txTrIrqOffset        = TISCI_BCDMA0_TX_DC_OES_IRQ_SRC_IDX_START;
+        drvHandle->rxTrIrqOffset        = TISCI_BCDMA0_RX_DC_OES_IRQ_SRC_IDX_START;
     }
     else
     {
@@ -275,6 +283,11 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
 	    drvHandle->maxRings             = CSL_DMSS_PKTDMA_NUM_RX_FLOWS + CSL_DMSS_PKTDMA_NUM_TX_FLOWS;
 	    drvHandle->devIdRing            = TISCI_DEV_DMASS0_PKTDMA_0;
 	    drvHandle->devIdUdma       		= TISCI_DEV_DMASS0_PKTDMA_0;
+       /* TR Event is not supported for PKTMDA */
+        drvHandle->srcIdTrIrq           = 0U;
+        drvHandle->blkCopyTrIrqOffset   = 0U; 
+        drvHandle->txTrIrqOffset        = 0U;
+        drvHandle->rxTrIrqOffset        = 0U;
     }
     drvHandle->devIdPsil     = TISCI_DEV_DMASS0; 
     drvHandle->maxProxy     = 0U; 

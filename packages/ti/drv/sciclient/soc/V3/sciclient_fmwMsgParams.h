@@ -199,9 +199,6 @@ extern "C" {
 #define TISCI_BCDMA0_RX_DC_OES_IRQ_SRC_IDX_START     (11776U)
 #define TISCI_BCDMA0_RX_RC_OES_IRQ_SRC_IDX_START     (12288U)
 
-/* TO DO: Following should be removed later, Keeping for now to avoid compilation issues*/
-#define TISCI_UDMAP0_TX_OES_IRQ_SRC_IDX_START       (0U)
-#define TISCI_UDMAP0_RX_OES_IRQ_SRC_IDX_START       (8192U)
 /* @} */
 
 /* ========================================================================== */

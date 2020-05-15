@@ -925,39 +925,55 @@ static int32_t Udma_eventConfig(Udma_DrvHandle drvHandle,
         }
         else
         {
+            /* For devices like AM64x in which Teardown event is not supported,
+             * it dosen't reach here since it is bypassed in eventRegister */
             Udma_assert(drvHandle, chHandle->tdCqRing != NULL_PTR);
             Udma_assert(drvHandle,
                 chHandle->tdCqRing->ringNum != UDMA_RING_INVALID);
             rmIrqReq.src_index = chHandle->tdCqRing->ringNum;
-            rmIrqReq.src_index += TISCI_RINGACC0_OES_IRQ_SRC_IDX_START; //TODO: Need to be replaced.
+            rmIrqReq.src_index += TISCI_RINGACC0_OES_IRQ_SRC_IDX_START;
         }
     }
 
     if(UDMA_EVENT_TYPE_TR == eventPrms->eventType)
     {
-        Udma_assert(drvHandle, eventPrms->chHandle != NULL_PTR);
-        chHandle = eventPrms->chHandle;
-        rmIrqReq.src_id = drvHandle->devIdUdma;
-        if(((chHandle->chType & UDMA_CH_FLAG_BLK_COPY) == UDMA_CH_FLAG_BLK_COPY) ||
-           ((chHandle->chType & UDMA_CH_FLAG_RX) == UDMA_CH_FLAG_RX))
+        if(UDMA_INST_TYPE_LCDMA_PKTDMA == drvHandle->instType)
         {
-            Udma_assert(drvHandle, chHandle->rxChNum != UDMA_DMA_CH_INVALID);
-            rmIrqReq.src_index = (uint16_t)chHandle->rxChNum;
-            rmIrqReq.src_index += TISCI_UDMAP0_RX_OES_IRQ_SRC_IDX_START;   //TODO: Need to be replaced.
-        }
-        else if((chHandle->chType & UDMA_CH_FLAG_TX) == UDMA_CH_FLAG_TX)
-        {
-            Udma_assert(drvHandle, chHandle->txChNum != UDMA_DMA_CH_INVALID);
-            rmIrqReq.src_index = (uint16_t)chHandle->txChNum;
-            rmIrqReq.src_index += TISCI_UDMAP0_TX_OES_IRQ_SRC_IDX_START;  //TODO: Need to be replaced.
+            /* TR Event is not supported for PKTMDA */
+            retVal = UDMA_EFAIL;
+            Udma_printf(drvHandle, "[Error] TR event not supported for PKTDMA instance; Event config failed!!!\n");
         }
         else
         {
-            /* DMSC RM doesn't program the DRU OES - program locally for now
-             * in Udma_eventProgramSteering() */
-            /* Use a SRC which doesn't need a OES programming so that DMSC will skip */
-            rmIrqReq.src_id = drvHandle->devIdIa;
-            rmIrqReq.src_index = 0U;                /* Not used by DMSC RM */
+            Udma_assert(drvHandle, eventPrms->chHandle != NULL_PTR);
+            chHandle = eventPrms->chHandle;
+            rmIrqReq.src_id = drvHandle->srcIdTrIrq;
+            if((chHandle->chType & UDMA_CH_FLAG_BLK_COPY) == UDMA_CH_FLAG_BLK_COPY)
+            {
+                Udma_assert(drvHandle, chHandle->txChNum != UDMA_DMA_CH_INVALID);
+                rmIrqReq.src_index = (uint16_t)chHandle->txChNum;
+                rmIrqReq.src_index += drvHandle->blkCopyTrIrqOffset;
+            }
+            else if((chHandle->chType & UDMA_CH_FLAG_RX) == UDMA_CH_FLAG_RX)
+            {
+                Udma_assert(drvHandle, chHandle->rxChNum != UDMA_DMA_CH_INVALID);
+                rmIrqReq.src_index = (uint16_t)chHandle->rxChNum;
+                rmIrqReq.src_index += drvHandle->rxTrIrqOffset;
+            }
+            else if((chHandle->chType & UDMA_CH_FLAG_TX) == UDMA_CH_FLAG_TX)
+            {
+                Udma_assert(drvHandle, chHandle->txChNum != UDMA_DMA_CH_INVALID);
+                rmIrqReq.src_index = (uint16_t)chHandle->txChNum;
+                rmIrqReq.src_index += drvHandle->txTrIrqOffset;
+            }
+            else
+            {
+                /* DMSC RM doesn't program the DRU OES - program locally for now
+                * in Udma_eventProgramSteering() */
+                /* Use a SRC which doesn't need a OES programming so that DMSC will skip */
+                rmIrqReq.src_id = drvHandle->devIdIa;
+                rmIrqReq.src_index = 0U;                /* Not used by DMSC RM */
+            }
         }
     }
 
@@ -1181,39 +1197,55 @@ static int32_t Udma_eventReset(Udma_DrvHandle drvHandle,
         }
         else
         {
+            /* For devices like AM64x in which Teardown event is not supported,
+             * it dosen't reach here since its bypassed in eventUnregister */
             Udma_assert(drvHandle, chHandle->tdCqRing != NULL_PTR);
             Udma_assert(drvHandle,
                 chHandle->tdCqRing->ringNum != UDMA_RING_INVALID);
             rmIrqReq.src_index = chHandle->tdCqRing->ringNum;
-            rmIrqReq.src_index += TISCI_RINGACC0_OES_IRQ_SRC_IDX_START; //TODO: Need to be replaced.
+            rmIrqReq.src_index += TISCI_RINGACC0_OES_IRQ_SRC_IDX_START;
         }
     }
 
     if(UDMA_EVENT_TYPE_TR == eventPrms->eventType)
     {
-        Udma_assert(drvHandle, eventPrms->chHandle != NULL_PTR);
-        chHandle = eventPrms->chHandle;
-        rmIrqReq.src_id = drvHandle->devIdUdma;
-        if(((chHandle->chType & UDMA_CH_FLAG_BLK_COPY) == UDMA_CH_FLAG_BLK_COPY) ||
-           ((chHandle->chType & UDMA_CH_FLAG_RX) == UDMA_CH_FLAG_RX))
+        if(UDMA_INST_TYPE_LCDMA_PKTDMA == drvHandle->instType)
         {
-            Udma_assert(drvHandle, chHandle->rxChNum != UDMA_DMA_CH_INVALID);
-            rmIrqReq.src_index = (uint16_t)chHandle->rxChNum;
-            rmIrqReq.src_index += TISCI_UDMAP0_RX_OES_IRQ_SRC_IDX_START; //TODO: Need to be replaced.
-        }
-        else if((chHandle->chType & UDMA_CH_FLAG_TX) == UDMA_CH_FLAG_TX)
-        {
-            Udma_assert(drvHandle, chHandle->txChNum != UDMA_DMA_CH_INVALID);
-            rmIrqReq.src_index = (uint16_t)chHandle->txChNum;
-            rmIrqReq.src_index += TISCI_UDMAP0_TX_OES_IRQ_SRC_IDX_START; //TODO: Need to be replaced.
+            /* TR Event is not supported for PKTMDA */
+            retVal = UDMA_EFAIL;
+            Udma_printf(drvHandle, "[Error] TR event not supported for PKTDMA instance; Event reset failed!!!\n");
         }
         else
         {
-            /* DMSC RM doesn't program the DRU OES - program locally for now
-             * in Udma_eventProgramSteering() */
-            /* Use a SRC which doesn't need a OES programming so that DMSC will skip */
-            rmIrqReq.src_id = drvHandle->devIdIa;
-            rmIrqReq.src_index = 0U;                /* Not used by DMSC RM */
+            Udma_assert(drvHandle, eventPrms->chHandle != NULL_PTR);
+            chHandle = eventPrms->chHandle;
+            rmIrqReq.src_id = drvHandle->srcIdTrIrq;
+            if((chHandle->chType & UDMA_CH_FLAG_BLK_COPY) == UDMA_CH_FLAG_BLK_COPY)
+            {
+                Udma_assert(drvHandle, chHandle->txChNum != UDMA_DMA_CH_INVALID);
+                rmIrqReq.src_index = (uint16_t)chHandle->txChNum;
+                rmIrqReq.src_index += drvHandle->blkCopyTrIrqOffset;
+            }
+            else if((chHandle->chType & UDMA_CH_FLAG_RX) == UDMA_CH_FLAG_RX)
+            {
+                Udma_assert(drvHandle, chHandle->rxChNum != UDMA_DMA_CH_INVALID);
+                rmIrqReq.src_index = (uint16_t)chHandle->rxChNum;
+                rmIrqReq.src_index += drvHandle->rxTrIrqOffset;
+            }
+            else if((chHandle->chType & UDMA_CH_FLAG_TX) == UDMA_CH_FLAG_TX)
+            {
+                Udma_assert(drvHandle, chHandle->txChNum != UDMA_DMA_CH_INVALID);
+                rmIrqReq.src_index = (uint16_t)chHandle->txChNum;
+                rmIrqReq.src_index += drvHandle->txTrIrqOffset;
+            }
+            else
+            {
+                /* DMSC RM doesn't program the DRU OES - program locally for now
+                * in Udma_eventProgramSteering() */
+                /* Use a SRC which doesn't need a OES programming so that DMSC will skip */
+                rmIrqReq.src_id = drvHandle->devIdIa;
+                rmIrqReq.src_index = 0U;                /* Not used by DMSC RM */
+            }
         }
     }
 
