@@ -240,7 +240,7 @@ export csirx_board_diag_MAKEFILE
 csirx_board_diag_PKG_LIST = csirx_board_diag
 csirx_board_diag_INCLUDE = $(csirx_board_diag_PATH)
 csirx_board_diag_BOARDLIST = $(board_diag_$(SOC)_BOARDLIST)
-csirx_board_diag_$(SOC)_CORELIST = mcu2_1
+csirx_board_diag_$(SOC)_CORELIST = mcu2_0
 export csirx_board_diag_$(SOC)_CORELIST
 export csirx_board_diag_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
 
