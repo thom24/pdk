@@ -38,6 +38,13 @@ PACKAGE_SRCS_COMMON = makefile I2C.h i2c_component.mk \
                       build src/src_files_common.mk src/Module.xs \
                       config_mk.bld I2Cver.h I2Cver.h.xdt package.bld package.xdc package.xs Settings.xdc.xdt
 
+# For TPR12, the following v0 files are all that is shipped
+ifeq ($(SOC),$(filter $(SOC), tpr12))
+  SRCDIR = . src src/v0
+  INCDIR = . src src/v0
+  SRCS_COMMON += I2C_drv.c I2C_v0.c
+  PACKAGE_SRCS_COMMON += src/v0 soc/I2C_v0.h
+else
 # The following v1 files are all that is shipped with TDA devices
   SRCDIR = . src src/v1
   INCDIR = . src src/v1
@@ -51,7 +58,7 @@ ifneq ($(SOC),$(filter $(SOC), tda2xx tda2px dra75x tda2ex tda3xx dra78x j721e j
   SRCS_COMMON += I2C_v0.c
   PACKAGE_SRCS_COMMON += src/v0 soc/I2C_v0.h
 endif
-
+endif
 # List all the external components/interfaces, whose interface header files
 #  need to be included for this component
 INCLUDE_EXTERNAL_INTERFACES = pdk

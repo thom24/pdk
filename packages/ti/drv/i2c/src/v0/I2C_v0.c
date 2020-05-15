@@ -656,7 +656,11 @@ static I2C_Handle I2C_open_v0(I2C_Handle handle, const I2C_Params *params)
             interruptRegParams.corepacConfig.corepacEventNum=hwAttrs->eventId; /* Event going in to CPU */
             interruptRegParams.corepacConfig.intVecNum=hwAttrs->intNum; /* Host Interrupt vector */
 #if defined (__TI_ARM_V5__)
-	    interruptRegParams.corepacConfig.priority = hwAttrs->intNum;
+            interruptRegParams.corepacConfig.priority = hwAttrs->intNum;
+#elif defined (__TI_ARM_V7R4__)
+            interruptRegParams.corepacConfig.priority=0x8U;
+#elif defined (_TMS320C6X)
+            interruptRegParams.corepacConfig.priority=0x20U;
 #endif
 
              /* Register interrupts */
