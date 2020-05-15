@@ -52,8 +52,8 @@
  * Data version: 000000_000000
  *
  */
-#ifndef TISCI_RESASG_TYPES_H
-#define TISCI_RESASG_TYPES_H
+#ifndef TISCI_RESASG_TYPES_H_SR2
+#define TISCI_RESASG_TYPES_H_SR2
 
 /**
  * Resource assignment type shift
@@ -134,6 +134,6 @@
  */
 #define TISCI_RESASG_UTYPE_CNT 52U
 
-#endif /* TISCI_RESASG_TYPES_H */
+#endif /* TISCI_RESASG_TYPES_H_SR2 */
 
 /* @} */

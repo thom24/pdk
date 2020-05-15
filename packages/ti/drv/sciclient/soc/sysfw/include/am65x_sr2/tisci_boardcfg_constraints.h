@@ -56,8 +56,8 @@
  * \brief Boardcfg Constraints for AM6 Devices
  */
 
-#ifndef TISCI_BOARDCFG_CONSTRAINTS_H
-#define TISCI_BOARDCFG_CONSTRAINTS_H
+#ifndef TISCI_BOARDCFG_CONSTRAINTS_H_SR2
+#define TISCI_BOARDCFG_CONSTRAINTS_H_SR2
 
 
 #define TISCI_BOARDCFG_MAX_MAIN_HOST_COUNT                            (8U)
@@ -65,6 +65,6 @@
 
 #define TISCI_BOARDCFG_RM_RESASG_ENTRIES_MAX                          (TISCI_RESASG_UTYPE_CNT * 2U)
 
-#endif /* TISCI_BOARDCFG_CONSTRAINTS_H */
+#endif /* TISCI_BOARDCFG_CONSTRAINTS_H_SR2 */
 
 /* @} */
