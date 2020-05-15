@@ -4,6 +4,8 @@
 --heap_size=0x1000
 
 -e __VECS_ENTRY_POINT
+--retain="*(.utilsCopyVecsToAtcm)"
+
 
 MEMORY
 {
@@ -25,6 +27,7 @@ SECTIONS
     .text:xdc_runtime_Startup_reset__I     : {} palign(8) > R5F_TCMB0
     .text:ti_sysbios_family_arm_v7r_Cache* : {} palign(8) > R5F_TCMB0
     .text:ti_sysbios_family_arm_MPU*       : {} palign(8) > R5F_TCMB0
+    .utilsCopyVecsToAtcm                   : {} palign(8) > R5F_TCMB0
 
     .text       : {} palign(8)   > DDR0
     .cinit      : {} palign(8)   > DDR0

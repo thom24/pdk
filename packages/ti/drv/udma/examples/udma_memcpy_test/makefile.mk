@@ -29,6 +29,14 @@ else
   COMP_LIST_COMMON += osal_tirtos
   SRCS_COMMON = main_tirtos.c
   XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
+
+  ifeq ($(SOC),$(filter $(SOC), am65xx j721e))
+    ifeq ($(ISA),$(filter $(ISA), r5f))
+      SRCDIR += $(PDK_VECT_COPY_PATH)
+      SRCS_ASM_COMMON += utilsCopyVecs2ATmc.asm
+    endif
+  endif
+
 endif
 
 # Common source files and CFLAGS across all platforms and cores

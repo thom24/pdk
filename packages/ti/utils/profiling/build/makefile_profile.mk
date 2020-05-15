@@ -71,6 +71,9 @@ PACKAGE_SRCS_COMMON = makefile profilingHooks.h profiling_component.mk profiling
 # Including trace modules here, as trace do not have source files and packaging
 PACKAGE_SRCS_COMMON += ../trace
 
+# Including vector copy utility here, as trace do not have source files and packaging
+PACKAGE_SRCS_COMMON += ../copyVecs2Atcm
+
 # Include common make files
 ifeq ($(MAKERULEDIR), )
 #Makerule path not defined, define this and assume relative path from ROOTDIR
