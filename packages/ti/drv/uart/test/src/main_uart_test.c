@@ -260,7 +260,7 @@ Udma_DrvHandle UartApp_udmaInit(UART_HwAttrs *cfg)
         initPrms.rmInitPrms.startVintr = 124U;
         initPrms.rmInitPrms.numVintr = 4U;
 #endif
-  
+
 #endif
         retVal = Udma_init(&gUdmaDrvObj, &initPrms);
         if(UDMA_SOK == retVal)
@@ -313,7 +313,7 @@ int32_t UART_udma_deinit(void)
 int32_t UART_configClk(uint32_t freq)
 {
     int32_t retVal = CSL_PASS;
-#if 0 //TBD pm board config not supported in sciclient 
+#if 0 //TBD pm board config not supported in sciclient
     uint64_t uartClk;
     uint32_t parentID;
     uint32_t clkID[] = {
@@ -333,28 +333,28 @@ int32_t UART_configClk(uint32_t freq)
                            TISCI_DEV_UART4,
                            TISCI_DEV_UART5,
                            TISCI_DEV_UART6,
-                       };                           
-    
+                       };
+
     retVal = Sciclient_pmModuleClkRequest(modID[uartTestInstance],
                                           clkID[uartTestInstance],
                                           TISCI_MSG_VALUE_CLOCK_SW_STATE_REQ,
-                                          TISCI_MSG_FLAG_AOP,SCICLIENT_SERVICE_WAIT_FOREVER);    
+                                          TISCI_MSG_FLAG_AOP,SCICLIENT_SERVICE_WAIT_FOREVER);
     if (retVal == CSL_PASS)
     {
         if (freq == UART_MODULE_CLK_48M)
         {
-            parentID = TISCI_DEV_UART0_FCLK_CLK_PARENT_USART_PROGRAMMABLE_CLOCK_DIVIDER_OUT0; 
+            parentID = TISCI_DEV_UART0_FCLK_CLK_PARENT_USART_PROGRAMMABLE_CLOCK_DIVIDER_OUT0;
         }
         else
         {
-            parentID = TISCI_DEV_UART0_FCLK_CLK_PARENT_HSDIV4_16FFT_MAIN_1_HSDIVOUT1_CLK;  
-        }      
+            parentID = TISCI_DEV_UART0_FCLK_CLK_PARENT_HSDIV4_16FFT_MAIN_1_HSDIVOUT1_CLK;
+        }
         retVal = Sciclient_pmSetModuleClkParent(modID[uartTestInstance],
                                                 clkID[uartTestInstance],
                                                 parentID,
                                                 SCICLIENT_SERVICE_WAIT_FOREVER);
     }
-    
+
     if (retVal == CSL_PASS)
     {
         uartClk = (uint64_t)freq;
@@ -372,7 +372,7 @@ int32_t UART_configClk(uint32_t freq)
                                               clkID[BOARD_OSPI_NOR_INSTANCE],
                                               &uartClk,
                                               SCICLIENT_SERVICE_WAIT_FOREVER);
-    } 
+    }
 
     if (retVal == CSL_PASS)
     {
@@ -380,10 +380,10 @@ int32_t UART_configClk(uint32_t freq)
         {
             retVal = CSL_EFAIL;
         }
-    } 
+    }
 #endif
-    return (retVal);  
-}   
+    return (retVal);
+}
 #endif
 /*
  *  ======== UART init config ========
@@ -484,7 +484,7 @@ bool Board_initUART(void)
 
 /* --- TODO: move this into the board library --- */
 /* For SYSBIOS only */
-#ifndef BAREMETAL 
+#ifndef BAREMETAL
 #if defined (SOC_J721E)
 /* set up C7x CLEC for DMTimer0 */
 #if defined (BUILD_C7X_1)
@@ -548,7 +548,7 @@ bool Board_initUART(void)
 #endif /* for SOC_J721E || SOC_J7200 */
 #endif /* for SYSBIOS */
 /* --- TODO: move this into the board library --- */
-	
+
 #if defined (SOC_AM572x) || defined (SOC_AM571x) || defined (SOC_AM574x)
     CSL_l4per_cm_core_componentRegs *l4PerCmReg =
         (CSL_l4per_cm_core_componentRegs *) CSL_MPU_L4PER_CM_CORE_REGS;
@@ -1994,7 +1994,7 @@ static bool UART_test_rs485(bool dmaMode)
     verifyRS485    = TRUE;
     verifyLoopback = TRUE;
     UART_initConfig(dmaMode);
-    
+
     UART_Params_init(&uartParams);
     uart = UART_open(uartTestInstance, &uartParams);
     if (uart == NULL)
@@ -2044,10 +2044,9 @@ static bool UART_test_read_verify(bool dmaMode)
     int16_t          length = 0;
     bool             ret = false;
     uint8_t rBuff[UART_TEST_READ_LEN], tBuff[]="aaaabbbbccccddddeeee";
-#if !defined(UART_NO_FIFO)
-    uint8_t dummy = 'X';
-#endif
+#if defined(UART_NO_FIFO)
     int i;
+#endif
 
     verifyLoopback = TRUE;
     /* UART SoC init configuration */
@@ -2254,7 +2253,9 @@ static bool UART_test_read_write(bool dmaMode)
     UART_Params      uartParams;
     int              length = 0;
     uintptr_t        addrDataPrint, addrScanPrompt, addrEchoPrompt;
-    //UART_Transaction transaction;
+#if !defined(UART_API2_NOT_SUPPORTED)
+    UART_Transaction transaction;
+#endif
     bool             ret = false;
 
     /* UART SoC init configuration */
@@ -2883,15 +2884,19 @@ bool UART_test_profile_tx(bool dmaMode)
     uint32_t        numDataSize = sizeof(dataSize)/sizeof(uint32_t);
     uint32_t        baudRate =  921600;
     uintptr_t       ptrTxData;
+#if defined(SOC_TPR12)
     uint32_t        txTimeTaken;
     UART_Stats      stats;
+#endif
     char            testDescription[128];
 
 #if defined(QT_BUILD)
     numDataSize = 3;
 #endif
 
+#if defined(SOC_TPR12)
     CycleprofilerP_init();
+#endif
 
     /********************************************************************************
      * Execute the test for all data sizes
@@ -2984,17 +2989,21 @@ bool UART_test_profile_tx(bool dmaMode)
             /* Populate the transmit buffer: */
             UART_populateBuffer (uartDataBuf, dataSize[dataSizeIndex]);
 
+#if defined(SOC_TPR12)
             /****************************************************************
              * Profile the time taken to send out the data
              ****************************************************************/
             txTimeTaken = CycleprofilerP_getTimeStamp();
+#endif
 
             if ((testIndex == 0) || (testIndex == 1))
                 status = UART_write(handle, (void *)ptrTxData, dataSize[dataSizeIndex]);
             else
                 status = UART_writePolling(handle, (void *)ptrTxData, dataSize[dataSizeIndex]);
 
+#if defined(SOC_TPR12)
             txTimeTaken = CycleprofilerP_getTimeStamp() - txTimeTaken;
+#endif
 
             /* Were we able to send out the data */
             if (status != dataSize[dataSizeIndex])
@@ -3004,6 +3013,7 @@ bool UART_test_profile_tx(bool dmaMode)
                 return false;
             }
 
+#if defined(SOC_TPR12)
             /* Get the UART Statistics: */
             if (UART_control (handle, UART_CMD_GET_STATS, &stats) < 0)
             {
@@ -3018,6 +3028,7 @@ bool UART_test_profile_tx(bool dmaMode)
             printf ("Debug: Transmit         : %d ticks\n", txTimeTaken);
             printf ("Debug: Tx Interrupt     : %d\n", stats.numTxInterrupts);
             printf ("Debug: Tx DMA Interrupt : %d\n", stats.numTxDMAInterrupts);
+#endif
 
             /* Close the driver: */
             UART_close(handle);
@@ -3678,7 +3689,7 @@ void InitMmu(void)
 
 void Uart_appC7xPreInit(void)
 {
-#if defined (__C7100__) && !defined (SOC_J7200) 
+#if defined (__C7100__) && !defined (SOC_J7200)
     CSL_ClecEventConfig cfgClec;
 	CSL_CLEC_EVTRegs   *clecBaseAddr = (CSL_CLEC_EVTRegs*) CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
 
