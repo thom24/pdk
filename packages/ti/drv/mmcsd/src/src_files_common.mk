@@ -1,5 +1,4 @@
 
-
 # Common source files across all platforms and cores
 SRCS_COMMON += MMCSD_drv.c
 
@@ -9,7 +8,9 @@ PACKAGE_SRCS_COMMON = makefile MMCSD.h mmcsd_component.mk src/MMCSD_osal.h \
                       src/v1/MMCSD_v1_lld.h \
                       soc/MMCSD_soc.h \
                       build/makefile.mk build/makefile_dma.mk build/makefile_dma_profile.mk \
-                      build/makefile_profile.mk build/makefile_indp.mk build/makefile_profile_indp.mk src/src_files_common.mk
+                      build/makefile_profile.mk build/makefile_indp.mk build/makefile_profile_indp.mk \
+                      src/src_files_common.mk src/Module.xs config_mk.bld MMCSDver.h MMCSDver.h.xdt \
+                      package.bld package.xdc package.xs Settings.xdc.xdt
 
 ifeq ($(SOC), $(filter $(SOC), omapl137 omapl138))
 SRCDIR = . src src/v0

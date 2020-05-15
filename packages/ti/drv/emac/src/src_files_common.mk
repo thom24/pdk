@@ -27,13 +27,14 @@ PACKAGE_SRCS_COMMON += src/v5 soc/emac_soc_v5.h
 endif
 
 PACKAGE_SRCS_COMMON += makefile emac_component.mk nss_if.h \
+                       config_mk.bld emacver.h.xdt package.bld package.xdc package.xs Settings.xdc Settings.xdc.xdt \
                       emac_hwcfg.h emac_drv.h emac_ioctl.h emacver.h \
                       src/emac_osal.h \
                       build/makefile.mk \
 		      build/makefile_indp.mk \
 		      build/makefile_profile_indp.mk \
 		      build/makefile_profile.mk \
-		      src/src_files_common.mk
+		      src/src_files_common.mk src/Module.xs
 
 #Packaging the firmware
 PACKAGE_SRCS_COMMON += firmware/Module.xs \

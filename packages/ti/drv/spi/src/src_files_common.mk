@@ -29,15 +29,16 @@
 # OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 # EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-SOC_INDP_LIB_SOCS=k2h k2k k2l k2e k2g c6657 c6678 omapl137 omapl138 am571x am572x am574x  am335x am437x 
+SOC_INDP_LIB_SOCS=k2h k2k k2l k2e k2g c6657 c6678 omapl137 omapl138 am571x am572x am574x  am335x am437x
 SOC_DEP_LIB_SOCS=tda2xx tda3xx tda2px dra75x tda2ex dra72x dra78x j721e am77x j7200 am65xx am64x tpr12
 
 PACKAGE_SRCS_COMMON = makefile SPI.h MCSPI.h spi_component.mk .gitignore \
                       docs/ReleaseNotes_SPI_LLD.pdf \
-                      src/SPI_drv.c src/SPI_osal.h src/src_files_common.mk \
+                      src/SPI_drv.c src/SPI_osal.h src/src_files_common.mk src/Module.xs \
                       build/makefile.mk build/makefile_profile.mk \
                       build/makefile_indp.mk build/makefile_profile_indp.mk \
-                      build/makefile_dma.mk build/makefile_dma_profile.mk
+                      build/makefile_dma.mk build/makefile_dma_profile.mk \
+                      config_mk.bld package.bld package.xdc package.xs Settings.xdc.xdt SPIver.h SPIver.h.xdt
 
 
 ifeq ($(SOC),$(filter $(SOC), $(SOC_INDP_LIB_SOCS) ))
@@ -78,7 +79,7 @@ ifeq ($(SOC),$(filter $(SOC),$(SOC_DEP_LIB_SOCS) ))
 
   ifeq ($(SOC),$(filter $(SOC), tda2xx tda2px dra75x tda2ex dra72x tda3xx dra78x tpr12))
      SRCS_COMMON += QSPI_v1.c
-     PACKAGE_SRCS_COMMON += src/v1/QSPI_v1.c soc/QSPI_v1.h 
+     PACKAGE_SRCS_COMMON += src/v1/QSPI_v1.c soc/QSPI_v1.h
   endif
 
   ifeq ($(SOC),$(filter $(SOC), j721e am77x j7200 am65xx am64x))
@@ -87,6 +88,6 @@ ifeq ($(SOC),$(filter $(SOC),$(SOC_DEP_LIB_SOCS) ))
     SRCS_COMMON += OSPI_v0.c
     PACKAGE_SRCS_COMMON += src/v0/OSPI_v0.c src/v0/OSPI_v0.h
   endif
-  
+
 endif
 

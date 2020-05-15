@@ -27,7 +27,8 @@ TIMESYNC_ICSS_CFLAGS =
 CFLAGS_LOCAL_a15_0  = -mno-unaligned-access
 CFLAGS_LOCAL_a8host = -mno-unaligned-access
 CFLAGS_LOCAL_a9host = -mno-unaligned-access
-PACKAGE_SRCS_COMMON = icss_timeSyncApi.h icss_timeSync_component.mk makefile include docs $(SRCDIR)
+PACKAGE_SRCS_COMMON = icss_timeSyncApi.h icss_timeSync_component.mk makefile include docs $(SRCDIR) build
+PACKAGE_SRCS_COMMON += config_mk.bld package.bld package.xdc package.xs Settings.xdc.xdt timeSync_ver.h timeSync_ver.h.xdt
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(TIMESYNC_ICSS_CFLAGS)
 
 # Core/SoC/platform specific source files and CFLAGS

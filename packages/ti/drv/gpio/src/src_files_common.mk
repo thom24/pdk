@@ -26,7 +26,8 @@ PACKAGE_SRCS_COMMON = makefile GPIO.h gpio_component.mk src/GPIO_osal.h \
 	 	      build/makefile_indp.mk \
 	 	      build/makefile_profile.mk \
 	 	      build/makefile.mk \
-	 	      src/src_files_common.mk
+	 	      src/src_files_common.mk src/Module.xs \
+	 	      config_mk.bld GPIOver.h GPIOver.h.xdt package.bld package.xdc package.xs Settings.xdc.xdt
 
 ifeq ($(SOC),$(filter $(SOC),$(SOC_DEP_LIB_SOCS) ))
   ifeq ($(SOC),$(filter $(SOC),$(GPIO_V2_SOCS) ))
@@ -39,5 +40,5 @@ else
 PACKAGE_SRCS_COMMON += src/v0 src/v0/GPIO_v0.h src/v0/GPIO_v0.c \
 	 	      src/v1 src/v1/GPIO_v1.h src/v1/GPIO_v1.c test
 endif
-			  
+
 

@@ -45,7 +45,7 @@ endif
 
 ifeq ($(SOC),$(filter $(SOC), k2l k2e))
 include $(PDK_NIMU_COMP_PATH)/src/v3/src_files_v3.mk
-CFLAGS_LOCAL_COMMON += -DNSS_GEN2 
+CFLAGS_LOCAL_COMMON += -DNSS_GEN2
 endif
 
 ifeq ($(SOC),$(filter $(SOC), c6657))
@@ -74,7 +74,8 @@ endif
 INCLUDE_EXTERNAL_INTERFACES = pdk ndk
 
 PACKAGE_SRCS_COMMON += makefile nimu_eth.h nimu_component.mk \
-                      src/NIMU_drv_log.h src/nimu_osal.h
+                      src/NIMU_drv_log.h src/nimu_osal.h \
+                      config_mk.bld nimu_ver.h nimu_ver.h.xdt package.bld package.xdc package.xs Settings.xdc Settings.xdc.xdt
 
 CFLAGS_LOCAL_COMMON += $(PDK_CFLAGS)
 

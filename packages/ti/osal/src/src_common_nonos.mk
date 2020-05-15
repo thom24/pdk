@@ -7,9 +7,10 @@ SRCS_COMMON += HwiP_nonos.c SwiP_nonos.c Utils_nonos.c SemaphoreP_nonos.c Regist
 PACKAGE_SRCS_COMMON = makefile HwiP.h SwiP.h MuxIntcP.h osal.h osal_component.mk SemaphoreP.h \
                       TimerP.h RegisterIntr.h EventCombinerP.h CycleprofilerP.h CacheP.h soc/osal_soc.h soc/$(SOC) \
                       src/nonos/Nonos_config.h src/nonos/HwiP_nonos.c src/nonos/SwiP_nonos.c src/nonos/CycleprofilerP_nonos.c \
-                      src/nonos/RegisterIntr_nonos.c src/nonos/SemaphoreP_nonos.c src/nonos/Utils_nonos.c src/src_common_nonos.mk \
+                      src/nonos/RegisterIntr_nonos.c src/nonos/SemaphoreP_nonos.c src/nonos/Utils_nonos.c src/src_common_nonos.mk src/Module.xs \
                       arch/core/Core_utils.c docs/OSAL_SoftwareManifest.html docs/ReleaseNotes_OSAL.pdf \
-                      build/makefile_nonos_indp.mk build/makefile_nonos.mk
+                      build/makefile_nonos_indp.mk build/makefile_nonos.mk \
+                      config_mk.bld osalver.h osalver.h.xdt package.bld package.xdc package.xs Settings.xdc.xdt
 
 
 ifeq ($(SOC),$(filter $(SOC),am571x am572x am574x am335x am437x k2h k2k k2e k2l k2g c6678 c6657 omapl137 omapl138 am65xx j721e j7200 am64x))
