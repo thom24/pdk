@@ -285,7 +285,7 @@ export displayPort_board_diag_MAKEFILE
 displayPort_board_diag_PKG_LIST = displayPort_board_diag
 displayPort_board_diag_INCLUDE = $(displayPort_board_diag_PATH)
 displayPort_board_diag_BOARDLIST = $(board_diag_$(SOC)_BOARDLIST)
-displayPort_board_diag_$(SOC)_CORELIST = mcu2_1
+displayPort_board_diag_$(SOC)_CORELIST = mcu2_0
 export displayPort_board_diag_$(SOC)_CORELIST
 export displayPort_board_diag_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
 board_diag_EXAMPLE_LIST += displayPort_board_diag
@@ -465,7 +465,7 @@ export hdmi_board_diag_MAKEFILE
 hdmi_board_diag_PKG_LIST = hdmi_board_diag
 hdmi_board_diag_INCLUDE = $(hdmi_board_diag_PATH)
 hdmi_board_diag_BOARDLIST = $(board_diag_$(SOC)_BOARDLIST)
-hdmi_board_diag_$(SOC)_CORELIST = mcu2_1
+hdmi_board_diag_$(SOC)_CORELIST = mcu2_0
 export hdmi_board_diag_$(SOC)_CORELIST
 export hdmi_board_diag_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
 board_diag_EXAMPLE_LIST += hdmi_board_diag
