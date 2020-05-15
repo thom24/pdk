@@ -129,7 +129,7 @@ endif
 
 ifeq ($(BUILD_PROFILE_$(CORE)), release)
  LNKFLAGS_INTERNAL_BUILD_PROFILE =
- CFLAGS_INTERNAL += -o3 --optimize_with_debug
+ CFLAGS_INTERNAL += -o3 -g -mf3
  ifndef MODULE_NAME
   CFLAGS_XDCINTERNAL += -Dxdc_cfg__header__='$(CONFIGURO_DIR)/package/cfg/$(XDC_HFILE_NAME)_pe66.h'
  endif
