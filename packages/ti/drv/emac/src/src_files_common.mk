@@ -38,5 +38,4 @@ PACKAGE_SRCS_COMMON += makefile emac_component.mk nss_if.h \
 
 #Packaging the firmware
 PACKAGE_SRCS_COMMON += firmware/Module.xs \
-                        firmware/icss_dualmac \
-                        firmware/icss_switch
+                        firmware/icss_dualmac

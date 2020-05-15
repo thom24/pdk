@@ -46,7 +46,7 @@
 #include <ti/drv/emac/src/v5/emac_utils.h>
 #include <ti/drv/emac/src/v5/emac_hwq.h>
 
-#include <ti/drv/emac/firmware/icss_switch/bin/switch_mem_map.h>
+#include <ti/drv/emac/firmware/icss_dualmac/bin_pg2/fw_mem_map.h>
 
 extern EMAC_MCB_V5_T      emac_mcb;
 extern EMAC_PORT_INFO_T emac_port_info[];

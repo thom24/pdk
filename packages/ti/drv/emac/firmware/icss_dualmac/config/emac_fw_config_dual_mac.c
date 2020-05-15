@@ -71,7 +71,7 @@
 #include <ti/drv/emac/src/v5/emac_utils.h>
 
 #include <ti/drv/emac/firmware/icss_dualmac/config/emac_fw_config_dual_mac.h>
-#include <ti/drv/emac/firmware/icss_switch/bin/switch_mem_map.h>
+#include <ti/drv/emac/firmware/icss_dualmac/bin_pg2/fw_mem_map.h>
 
 #define EMAC_ICSSG_MAX_HWQ                      ((uint32_t)8U)
 #define EMAC_ICSSG_RECYCLE_Q_SLICE0             ((uint32_t)16U)

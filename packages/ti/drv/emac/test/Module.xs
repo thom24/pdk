@@ -84,21 +84,6 @@ function modBuild()
         Pkg.otherFiles[Pkg.otherFiles.length++] = documentFiles[k];
     }
     
-    var documentFiles = libUtility.listAllFiles ("makefile_switch", "./test");
-    for (var k = 0 ; k < documentFiles.length; k++) {
-        Pkg.otherFiles[Pkg.otherFiles.length++] = documentFiles[k];
-    }
-    
-    var documentFiles = libUtility.listAllFiles ("makefile_switch_benchmark", "./test");
-    for (var k = 0 ; k < documentFiles.length; k++) {
-        Pkg.otherFiles[Pkg.otherFiles.length++] = documentFiles[k];
-    }
-    
-    var documentFiles = libUtility.listAllFiles ("makefile_switch_link_status", "./test");
-    for (var k = 0 ; k < documentFiles.length; k++) {
-        Pkg.otherFiles[Pkg.otherFiles.length++] = documentFiles[k];
-    }
-
     var documentFiles = libUtility.listAllFiles (".cdtbuild", "./test");
     for (var k = 0 ; k < documentFiles.length; k++) {
         Pkg.otherFiles[Pkg.otherFiles.length++] = documentFiles[k];

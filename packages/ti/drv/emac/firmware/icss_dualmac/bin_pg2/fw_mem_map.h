@@ -26,15 +26,13 @@
 //**|                                                                             |**
 //**+-----------------------------------------------------------------------------+**
 //***********************************************************************************
-// file:     switch_mem_map.h
+// file:     fw_mem_map.h
 //
-// brief:    Contains memory map for Ethernet Switch.
-//           This file is used by Ethernet Switch driver.
+// brief:    Contains memory map for Ethernet dualmac 
 
-#ifndef ____switch_mem_map_h
-#define ____switch_mem_map_h 1
+#ifndef ____fw_mem_map_h
+#define ____fw_mem_map_h 1
 
-#include "switch_mmap_defines.h"
 
 //************************************************************************************
 //
@@ -123,4 +121,4 @@
 #define PA_STAT_32b_START_OFFSET                           0x0080    //Start of 32 bits PA_STAT counters
 
 
-#endif // ____switch_mem_map_h
+#endif // ____fw_mem_map_h

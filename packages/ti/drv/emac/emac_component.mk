@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2016-2019, Texas Instruments Incorporated
+# Copyright (c) 2016-2020, Texas Instruments Incorporated
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -303,68 +303,6 @@ export Emac_Icssg_WithoutDDR_TestApp_$(SOC)_CORELIST
 Emac_Icssg_WithoutDDR_TestApp_SBL_APPIMAGEGEN = yes
 export Emac_Icssg_WithoutDDR_TestApp_SBL_APPIMAGEGEN
 
-# EMAC SWITCH unit test app ICSSG
-Emac_Icssg_Switch_TestApp_COMP_LIST = Emac_Icssg_Switch_TestApp
-Emac_Icssg_Switch_TestApp_RELPATH = ti/drv/emac/test/EmacLoopbackTest
-Emac_Icssg_Switch_TestApp_PATH = $(PDK_EMAC_COMP_PATH)/test/EmacLoopbackTest
-Emac_Icssg_Switch_TestApp_BOARD_DEPENDENCY = yes
-Emac_Icssg_Switch_TestApp_CORE_DEPENDENCY = no
-Emac_Icssg_Switch_TestApp_XDC_CONFIGURO = yes
-Emac_Icssg_Switch_TestApp_MAKEFILE = -f am65xx/icssg/makefile_switch
-export Emac_Icssg_Switch_TestApp_MAKEFILE
-export Emac_Icssg_Switch_TestApp_board_dependency
-export Emac_Icssg_Switch_TestApp_core_dependency
-export Emac_Icssg_Switch_TestApp_xdc_configuro
-Emac_Icssg_Switch_TestApp_PKG_LIST = Emac_Icssg_Switch_TestApp
-Emac_Icssg_Switch_TestApp_INCLUDE = $(Emac_Icssg_Switch_TestApp_PATH)
-Emac_Icssg_Switch_TestApp_BOARDLIST = am65xx_idk
-export Emac_Icssg_Switch_TestApp_BOARDLIST
-Emac_Icssg_Switch_TestApp_$(SOC)_CORELIST = $(drvemac_$(SOC)_CORELIST)
-export Emac_Icssg_Switch_TestApp_$(SOC)_CORELIST
-
-Emac_Icssg_Switch_TestApp_SBL_APPIMAGEGEN = yes
-export Emac_Icssg_Switch_TestApp_SBL_APPIMAGEGEN
-
-# EMAC SWITCH Benchmark unit test app ICSSG
-Emac_Icssg_Switch_Benchmark_TestApp_COMP_LIST = Emac_Icssg_Switch_Benchmark_TestApp
-Emac_Icssg_Switch_Benchmark_TestApp_RELPATH = ti/drv/emac/test/EmacLoopbackTest
-Emac_Icssg_Switch_Benchmark_TestApp_PATH = $(PDK_EMAC_COMP_PATH)/test/EmacLoopbackTest
-Emac_Icssg_Switch_Benchmark_TestApp_BOARD_DEPENDENCY = yes
-Emac_Icssg_Switch_Benchmark_TestApp_CORE_DEPENDENCY = no
-Emac_Icssg_Switch_Benchmark_TestApp_XDC_CONFIGURO = yes
-Emac_Icssg_Switch_Benchmark_TestApp_MAKEFILE = -f am65xx/icssg/makefile_switch_benchmark
-export Emac_Icssg_Switch_Benchmark_TestApp_MAKEFILE
-export Emac_Icssg_Switch_Benchmark_TestApp_board_dependency
-export Emac_Icssg_Switch_Benchmark_TestApp_core_dependency
-export Emac_Icssg_Switch_Benchmark_TestApp_xdc_configuro
-Emac_Icssg_Switch_Benchmark_TestApp_PKG_LIST = Emac_Icssg_Switch_Benchmark_TestApp
-Emac_Icssg_Switch_Benchmark_TestApp_INCLUDE = $(Emac_Icssg_Switch_Benchmark_TestApp_PATH)
-Emac_Icssg_Switch_Benchmark_TestApp_BOARDLIST = am65xx_idk
-export Emac_Icssg_Switch_Benchmark_TestApp_BOARDLIST
-Emac_Icssg_Switch_Benchmark_TestApp_$(SOC)_CORELIST = $(drvemac_$(SOC)_CORELIST)
-export Emac_Icssg_Switch_Benchmark_TestApp_$(SOC)_CORELIST
-
-# EMAC SWITCH Link status check unit test app ICSSG
-Emac_Icssg_Switch_LinkStatus_TestApp_COMP_LIST = Emac_Icssg_Switch_LinkStatus_TestApp
-Emac_Icssg_Switch_LinkStatus_TestApp_RELPATH = ti/drv/emac/test/EmacLoopbackTest
-Emac_Icssg_Switch_LinkStatus_TestApp_PATH = $(PDK_EMAC_COMP_PATH)/test/EmacLoopbackTest
-Emac_Icssg_Switch_LinkStatus_TestApp_BOARD_DEPENDENCY = yes
-Emac_Icssg_Switch_LinkStatus_TestApp_CORE_DEPENDENCY = no
-Emac_Icssg_Switch_LinkStatus_TestApp_XDC_CONFIGURO = yes
-Emac_Icssg_Switch_LinkStatus_TestApp_MAKEFILE = -f am65xx/icssg/makefile_switch_link_status
-export Emac_Icssg_Switch_LinkStatus_TestApp_MAKEFILE
-export Emac_Icssg_Switch_LinkStatus_TestApp_board_dependency
-export Emac_Icssg_Switch_LinkStatus_TestApp_core_dependency
-export Emac_Icssg_Switch_LinkStatus_TestApp_xdc_configuro
-Emac_Icssg_Switch_LinkStatus_TestApp_PKG_LIST = Emac_Icssg_Switch_LinkStatus_TestApp
-Emac_Icssg_Switch_LinkStatus_TestApp_INCLUDE = $(Emac_Icssg_Switch_LinkStatus_TestApp_PATH)
-Emac_Icssg_Switch_LinkStatus_TestApp_BOARDLIST = am65xx_idk
-export Emac_Icssg_Switch_LinkStatus_TestApp_BOARDLIST
-Emac_Icssg_Switch_LinkStatus_TestApp_$(SOC)_CORELIST = $(drvemac_$(SOC)_CORELIST)
-export Emac_Icssg_Switch_LinkStatus_TestApp_$(SOC)_CORELIST
-
-Emac_Icssg_Switch_LinkStatus_TestApp_SBL_APPIMAGEGEN = yes
-export Emac_Icssg_Switch_LinkStatus_TestApp_SBL_APPIMAGEGEN
 export drvemac_LIB_LIST
 export emac_LIB_LIST
 export emac_EXAMPLE_LIST
