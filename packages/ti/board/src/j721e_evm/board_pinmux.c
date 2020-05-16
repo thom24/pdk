@@ -384,7 +384,6 @@ Board_STATUS Board_pinmuxUpdate (pinmuxBoardCfg_t *pinmuxData,
 Board_STATUS Board_pinmuxConfig (void)
 {
     Board_STATUS status = BOARD_SOK;
-    uint32_t i2cPinmux;
 
     /* Pinmux for baseboard */
     Board_pinmuxUpdate(gJ721E_MainPinmuxData,
@@ -395,17 +394,10 @@ Board_STATUS Board_pinmuxConfig (void)
     /* Pinmux for Application cards */
     if(gBoardPinmuxCfg.autoCfg)
     {
-        /* Enable pinmux for board ID I2C */
-        i2cPinmux = PIN_MODE(0) |  
-                    ((PIN_PULL_DIRECTION | 
-                      PIN_INPUT_ENABLE) & 
-                      (~PIN_PULL_DISABLE));
-        Board_pinmuxSetReg(BOARD_SOC_DOMAIN_WKUP, PIN_WKUP_I2C0_SCL, i2cPinmux);
-        Board_pinmuxSetReg(BOARD_SOC_DOMAIN_WKUP, PIN_WKUP_I2C0_SDA, i2cPinmux);
-
+        /* Auto detect the application boards connected and configure the pinmux */
         if(Board_detectBoard(BOARD_ID_GESI) == TRUE)
         {
-            gBoardPinmuxCfg.gesiExp = BOARD_PINMUX_GESI_ICSSG;
+            gBoardPinmuxCfg.gesiExp = BOARD_PINMUX_GESI_CPSW9G;
         }
         else
         {
@@ -476,6 +468,22 @@ Board_STATUS Board_pinmuxConfigMain (void)
     Board_pinmuxUpdate(gJ721E_MainPinmuxData,
                        BOARD_SOC_DOMAIN_MAIN);
 
+    if(gBoardPinmuxCfg.autoCfg)
+    {
+        /* Auto detect the application boards connected and configure the pinmux */
+        if(Board_detectBoard(BOARD_ID_GESI) == TRUE)
+        {
+            gBoardPinmuxCfg.gesiExp = BOARD_PINMUX_GESI_CPSW9G;
+        }
+        else
+        {
+            if(Board_detectBoard(BOARD_ID_INFOTAINMENT) == TRUE)
+            {
+                gBoardPinmuxCfg.gesiExp = BOARD_PINMUX_INFO_VOUT;
+            }
+        }
+    }
+
     if((gBoardPinmuxCfg.gesiExp == BOARD_PINMUX_GESI_ICSSG) ||
        (gBoardPinmuxCfg.gesiExp == BOARD_PINMUX_GESI_CPSW9G))
     {
@@ -522,6 +530,22 @@ Board_STATUS Board_pinmuxConfigWkup (void)
 
     Board_pinmuxUpdate(gJ721E_WkupPinmuxData,
                        BOARD_SOC_DOMAIN_WKUP);
+
+    if(gBoardPinmuxCfg.autoCfg)
+    {
+        /* Auto detect the application boards connected and configure the pinmux */
+        if(Board_detectBoard(BOARD_ID_GESI) == TRUE)
+        {
+            gBoardPinmuxCfg.gesiExp = BOARD_PINMUX_GESI_CPSW9G;
+        }
+        else
+        {
+            if(Board_detectBoard(BOARD_ID_INFOTAINMENT) == TRUE)
+            {
+                gBoardPinmuxCfg.gesiExp = BOARD_PINMUX_INFO_VOUT;
+            }
+        }
+    }
 
     if((gBoardPinmuxCfg.gesiExp == BOARD_PINMUX_GESI_ICSSG) ||
        (gBoardPinmuxCfg.gesiExp == BOARD_PINMUX_GESI_CPSW9G))
