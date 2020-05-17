@@ -256,12 +256,11 @@ int32_t IpcUtils_HeapCreate(IpcUtils_HeapHandle *pHndl,
             tempBufPtr = (uint8_t *)param->buf;
             for (idx = 0U; idx < param->numBlocks; idx++)
             {
-                tempBufPtr += param->blockSize;
-
                 /* Will flag MISRA C Violation for tempBufPtr casting,
                     no fix? */
                 IpcUtils_Qput(&pHndl->qHandle, (IpcUtils_QElem *) tempBufPtr);
 
+                tempBufPtr += param->blockSize;
                 pHndl->numFreeBlocks++;
             }
         }
