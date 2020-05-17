@@ -1,4 +1,4 @@
-# Copyright (C) 2019 Texas Instruments Incorporated - http://www.ti.com/
+# Copyright (C) 2020 Texas Instruments Incorporated - http://www.ti.com/
 #
 #
 #  Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,7 @@
 include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 
 # Board diag parameters which can be controlled outside this makefile
-DIAGNAME ?= extRtc
+DIAGNAME ?= usbHost
 PROFILE ?= release
 TESTMODE ?= FUNCTIONAL_TEST
 MODENAME ?=
@@ -54,25 +54,19 @@ EXTERNAL_INTERFACES =
 XDC_CFG_FILE_mpu1_0 =
 XDC_CFG_FILE_mcu1_0 =
 
-ifeq ($(MODENAME), )
-ifeq ($(TESTMODE), STRESS_TEST)
-MODENAME = Stress
-endif
-endif
-
 # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
 LOCAL_APP_NAME =  $(DIAGNAME)$(MODENAME)_DiagExample_$(BOARD)_$(CORE)
 
-SRCDIR = ../src ../../common/$(SOC)
-INCDIR = ../../../../board ../src ../../../src/$(BOARD)/include ../../../src/$(BOARD) ../../../src/flash ../../common/$(SOC)
+SRCDIR = ../src ../../common/$(SOC) ./$(BOARD)
+INCDIR = ../../../../board ../src ../../../src/$(BOARD)/include ../../../src/$(BOARD) ../../common/$(SOC) ../../../../csl ../../../../drv/usb ../../../../drv/usb/soc/$(SOC) ../../../../drv/usb/src/include ../../../../drv/usb/src/usb_func/include ../../../../drv/usb/example/common ../../../../fs/fatfs/example/console/src
 
 # List all the external components/interfaces, whose interface header files
 # need to be included for this component
 INCLUDE_EXTERNAL_INTERFACES = pdk
 
 # List all the components required by the application
-COMP_LIST_COMMON = board csl csl_init osal_nonos uart i2c
-ifeq ($(SOC), $(filter $(SOC), j721e am65xx))
+COMP_LIST_COMMON = uart osal_nonos csl csl_init board i2c usb fatfs_indp
+ifeq ($(SOC), $(filter $(SOC), am65xx))
 COMP_LIST_COMMON += sciclient
 endif
 
@@ -83,7 +77,7 @@ PACKAGE_SRCS_COMMON += ../../common/$(SOC)
 PACKAGE_SRCS_COMMON += ../../board_diag_component.mk
 PACKAGE_SRCS_COMMON += ../../create_sd.bat ../../create_sd.sh
 
-SRCS_COMMON += ext_rtc_test.c diag_common_cfg.c
+SRCS_COMMON += usb_host_test.c fatfs_port_usbmsc.c usb_osal.c fs_shell_app_utils.c timer.c diag_common_cfg.c
 
 ifeq ($(CORE),$(filter $(CORE), mcu1_0))
 SRCS_ASM_COMMON += diag_entry_r5.asm

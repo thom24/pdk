@@ -46,7 +46,7 @@
 /*                             Include Files                                  */
 /* ========================================================================== */
 
-#include "types.h"
+#include "ti/drv/usb/src/include/types.h"
 
 #include <ti/board/board.h>
 

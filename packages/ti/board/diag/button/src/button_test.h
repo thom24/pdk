@@ -54,7 +54,7 @@
 #endif
 
 #include <ti/drv/uart/UART_stdio.h>
-#include <soc.h>
+#include <ti/csl/soc.h>
 #if (!defined(SOC_AM65XX))
 #include <ti/starterware/include/interrupt.h>
 #endif

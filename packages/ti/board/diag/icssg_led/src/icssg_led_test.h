@@ -50,7 +50,7 @@
 #include <ti/drv/gpio/soc/GPIO_soc.h>
 #include <ti/drv/uart/UART.h>
 #include <ti/drv/uart/UART_stdio.h>
-#include <soc.h>
+#include <ti/csl/soc.h>
 
 #include "board.h"
 #include "board_cfg.h"
