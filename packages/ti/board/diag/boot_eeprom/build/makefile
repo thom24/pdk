@@ -63,15 +63,8 @@ endif
 # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
 LOCAL_APP_NAME =  $(DIAGNAME)$(MODENAME)_DiagExample_$(BOARD)_$(CORE)
 
-SRCDIR = ../src ./$(BOARD)
-INCDIR = ../../../../board ../src ../../../src/$(BOARD)/include ../../../src/$(BOARD) ../../../src/flash
-ifeq ($(BOARD), $(filter $(BOARD), am65xx_evm am65xx_idk))
-  SRCDIR += ../../common/AM65XX
-  INCDIR += ../../common/AM65XX
-else
-  SRCDIR += ../../common/$(SOC)
-  INCDIR += ../../common/$(SOC)
-endif
+SRCDIR = ../src ./$(BOARD) ../../common/$(SOC)
+INCDIR = ../../../../board ../src ../../../src/$(BOARD)/include ../../../src/$(BOARD) ../../common/$(SOC) ../../../src/flash
 
 # List all the external components/interfaces, whose interface header files
 # need to be included for this component
@@ -85,11 +78,7 @@ endif
 
 # Common source files and CFLAGS across all platforms and cores
 PACKAGE_SRCS_COMMON = ../src $(BOARD) makefile
-ifeq ($(BOARD), $(filter $(BOARD), am65xx_evm am65xx_idk))
-PACKAGE_SRCS_COMMON += ../../common/AM65XX
-else
 PACKAGE_SRCS_COMMON += ../../common/$(SOC)
-endif
 PACKAGE_SRCS_COMMON += ../../board_diag_component.mk
 PACKAGE_SRCS_COMMON += ../../create_sd.bat ../../create_sd.sh
 
@@ -105,20 +94,12 @@ endif
 
 ifeq ($(CORE),$(filter $(CORE), mcu1_0))
 SRCS_ASM_COMMON += diag_entry_r5.asm
-ifeq ($(BOARD), $(filter $(BOARD), am65xx_evm am65xx_idk))
-EXTERNAL_LNKCMD_FILE_LOCAL = ../../common/AM65XX/linker_r5.lds
-else
-EXTERNAL_LNKCMD_FILE_LOCAL = ../../common/$(SOC)/linker_r5_mcu1_0.lds
-endif
+EXTERNAL_LNKCMD_FILE_LOCAL = ../../common/$(SOC)/linker_$(CORE).lds
 endif
 
 ifeq ($(CORE),$(filter $(CORE), mpu1_0))
 SRCS_ASM_COMMON += diag_entry.asm
-ifeq ($(BOARD), $(filter $(BOARD), am65xx_evm am65xx_idk))
-EXTERNAL_LNKCMD_FILE_LOCAL = ../../common/AM65XX/linker_a53.lds
-else
-EXTERNAL_LNKCMD_FILE_LOCAL = ../../common/$(SOC)/linker_a72_mpu1_0.lds
-endif
+EXTERNAL_LNKCMD_FILE_LOCAL = ../../common/$(SOC)/linker_$(CORE).lds
 endif
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) -DDIAG_$(TESTMODE) $(BOARD_DIAG_CFLAGS)

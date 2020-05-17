@@ -1,5 +1,5 @@
 #*******************************************************************************
-#* FILE PURPOSE: makefile for libraries/apps built using RTSC or legacy makefiles 
+#* FILE PURPOSE: makefile for libraries/apps built using RTSC or legacy makefiles
 #*               which are not supported in ti/build/component.mk
 #*******************************************************************************
 #* FILE NAME: makefile_non-buildinfra
@@ -14,7 +14,7 @@ include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 NON_BUILDINFRA_RTSC_DRIVERS_LIST_DRV =  aif2 bcp cppi dfe fftc hyplnk iqn2 nwal pa qmss rm sa srio tcp3d tsip
 NON_BUILDINFRA_RTSC_DRIVERS_LIST_INSTR =  traceframework wdtimer fault_mgmt
 NON_BUILDINFRA_RTSC_DRIVERS_LIST_RUNTIME =  mmap pktlib
-NON_BUILDINFRA_RTSC_DRIVERS_LIST_DIAG =  
+NON_BUILDINFRA_RTSC_DRIVERS_LIST_DIAG =
 NON_BUILDINFRA_CUSTOM_DRIVERS_LIST =   starterware transportqmss transportsrio
 
 # Applications
@@ -64,32 +64,32 @@ $(NON_BUILDINFRA_RTSC_DRIVERS_LIST_DIAG_CLEAN) $(NON_BUILDINFRA_RTSC_EXAMPLES_LI
 	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/diag/$(subst _clean,,$@) clean
 
 # SOC (PDK_SOC) specific drivers not supported by build infrastructure (ti/build/)
-NON_BUILDINFRA_DRIVERS_LIST_am335x    = starterware  
-NON_BUILDINFRA_DRIVERS_LIST_am437x    = starterware 
-NON_BUILDINFRA_DRIVERS_LIST_am437x-hs = starterware 
-NON_BUILDINFRA_DRIVERS_LIST_am57xx    = 
-NON_BUILDINFRA_DRIVERS_LIST_am65xx    = 
-NON_BUILDINFRA_DRIVERS_LIST_am65xx-hs = 
-NON_BUILDINFRA_DRIVERS_LIST_k2hk      = bcp fault_mgmt fftc hyplnk nwal pa pktlib sa srio tcp3d  transportqmss transportsrio wdtimer 
-NON_BUILDINFRA_DRIVERS_LIST_k2e       = fault_mgmt hyplnk nwal pa sa transportqmss tsip wdtimer 
-NON_BUILDINFRA_DRIVERS_LIST_k2l       = bcp dfe fault_mgmt fftc iqn2 nwal pa sa tcp3d transportqmss 
+NON_BUILDINFRA_DRIVERS_LIST_am335x    = starterware
+NON_BUILDINFRA_DRIVERS_LIST_am437x    = starterware
+NON_BUILDINFRA_DRIVERS_LIST_am437x-hs = starterware
+NON_BUILDINFRA_DRIVERS_LIST_am57xx    =
+NON_BUILDINFRA_DRIVERS_LIST_am65xx    =
+NON_BUILDINFRA_DRIVERS_LIST_am65xx-hs =
+NON_BUILDINFRA_DRIVERS_LIST_k2hk      = bcp fault_mgmt fftc hyplnk nwal pa pktlib sa srio tcp3d  transportqmss transportsrio wdtimer
+NON_BUILDINFRA_DRIVERS_LIST_k2e       = fault_mgmt hyplnk nwal pa sa transportqmss tsip wdtimer
+NON_BUILDINFRA_DRIVERS_LIST_k2l       = bcp dfe fault_mgmt fftc iqn2 nwal pa sa tcp3d transportqmss
 NON_BUILDINFRA_DRIVERS_LIST_k2g       = cppi rm qmss sa mmap
 NON_BUILDINFRA_DRIVERS_LIST_k2g-hs    = cppi rm qmss sa mmap
 NON_BUILDINFRA_DRIVERS_LIST_c667x     = bcp cppi hyplnk nwal pa qmss sa srio tsip
 NON_BUILDINFRA_DRIVERS_LIST_c665x     = cppi hyplnk qmss srio tcp3d
-NON_BUILDINFRA_DRIVERS_LIST_omapl137  = 
-NON_BUILDINFRA_DRIVERS_LIST_omapl138  = 
+NON_BUILDINFRA_DRIVERS_LIST_omapl137  =
+NON_BUILDINFRA_DRIVERS_LIST_omapl138  =
 NON_BUILDINFRA_DRIVERS_LIST_j7        =
 NON_BUILDINFRA_DRIVERS_LIST_j7-hs     =
 NON_BUILDINFRA_DRIVERS_LIST_tpr12     =
 
 # SOC (PDK_SOC) specific examples/apps not supported by build infrastructure (ti/build/)
-NON_BUILDINFRA_EXAMPLES_LIST_am335x    = board-diag 
-NON_BUILDINFRA_EXAMPLES_LIST_am437x    = board-diag 
-NON_BUILDINFRA_EXAMPLES_LIST_am437x-hs = board-diag 
+NON_BUILDINFRA_EXAMPLES_LIST_am335x    = board-diag
+NON_BUILDINFRA_EXAMPLES_LIST_am437x    = board-diag
+NON_BUILDINFRA_EXAMPLES_LIST_am437x-hs = board-diag
 NON_BUILDINFRA_EXAMPLES_LIST_am57xx    = sbl board-diag
-NON_BUILDINFRA_EXAMPLES_LIST_am65xx    = board-diag
-NON_BUILDINFRA_EXAMPLES_LIST_am65xx-hs = board-diag
+NON_BUILDINFRA_EXAMPLES_LIST_am65xx    =
+NON_BUILDINFRA_EXAMPLES_LIST_am65xx-hs =
 NON_BUILDINFRA_EXAMPLES_LIST_k2hk      = board-diag
 NON_BUILDINFRA_EXAMPLES_LIST_k2e       = board-diag
 NON_BUILDINFRA_EXAMPLES_LIST_k2l       = board-diag
@@ -99,7 +99,7 @@ NON_BUILDINFRA_EXAMPLES_LIST_c667x     = board-diag
 NON_BUILDINFRA_EXAMPLES_LIST_c665x     = board-diag
 NON_BUILDINFRA_EXAMPLES_LIST_omapl137  = sbl board-diag
 NON_BUILDINFRA_EXAMPLES_LIST_omapl138  = sbl board-diag
-NON_BUILDINFRA_EXAMPLES_LIST_j7        = 
+NON_BUILDINFRA_EXAMPLES_LIST_j7        =
 NON_BUILDINFRA_EXAMPLES_LIST_j7-hs     =
 NON_BUILDINFRA_EXAMPLES_LIST_tpr12     = sbl board-diag
 
@@ -124,7 +124,7 @@ all: pdk_examples
 clean: pdk_libs_clean pdk_examples_clean
 
 #Examples depend on libs to be built first
-pdk_examples: pdk_libs 
+pdk_examples: pdk_libs
 	$(MAKE) -f $(PDK_INSTALL_PATH)/ti/build/makefile_non-buildinfra pdk_examples_core
 
 #Examples depend on libs to be built first
@@ -141,7 +141,7 @@ help:
 	$(ECHO) "Examples built for SOC $(PDK_SOC) is $(NON_BUILDINFRA_EXAMPLES_LIST_$(PDK_SOC))"
 
 # Building SBL for a PDK_SOC
-SBL_PLATFORM = 
+SBL_PLATFORM =
 SBL_PLATFORM_am57xx = am57xx
 SBL_PLATFORM_k2g = k2g
 SBL_PLATFORM_omapl137 = omapl137
@@ -179,13 +179,13 @@ board-diag:
 board-diag_clean:
 	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/board/diag clean ALL_BOARDS="$(LIMIT_BOARDS)"
 
-# Building starterware 
+# Building starterware
 STARTERWARE_PLATFORM_am335x = "am335x-evm"
 STARTERWARE_PLATFORM_am437x = "am43xx-evm"
 STARTERWARE_PLATFORM_am437x-hs = "am43xx-evm"
 
 starterware:
 	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/starterware all_profiles -j1 PLATFORM=$(STARTERWARE_PLATFORM_$(PDK_SOC))
-	
+
 starterware_clean:
 	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/starterware clean KW_BUILD=no

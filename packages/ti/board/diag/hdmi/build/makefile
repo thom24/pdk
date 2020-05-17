@@ -80,12 +80,12 @@ SRCS_COMMON += hdmi_test_v2.c diag_common_cfg.c
 
 ifeq ($(CORE),$(filter $(CORE), mcu1_0))
 SRCS_ASM_COMMON += diag_entry_r5.asm
-EXTERNAL_LNKCMD_FILE_LOCAL = ../../common/$(SOC)/linker_r5_mcu1_0.lds
+EXTERNAL_LNKCMD_FILE_LOCAL = ../../common/$(SOC)/linker_$(CORE).lds
 endif
 
 ifeq ($(CORE),$(filter $(CORE), mpu1_0))
 SRCS_ASM_COMMON += diag_entry.asm
-EXTERNAL_LNKCMD_FILE_LOCAL = ../../common/$(SOC)/linker_a72_mpu1_0.lds
+EXTERNAL_LNKCMD_FILE_LOCAL = ../../common/$(SOC)/linker_$(CORE).lds
 endif
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) -DDIAG_$(TESTMODE) $(BOARD_DIAG_CFLAGS)

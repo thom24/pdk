@@ -70,8 +70,8 @@ ifeq ($(BOARD), $(filter $(BOARD), j721e_evm am65xx_evm am65xx_idk))
   SRCDIR += ../soc/k3 ../src/ospi ../src/qspi ../src/hyperflash ../src/emmc ../../../../diag/common/$(SOC)
   INCDIR += ../soc/k3 ../src/ospi ../src/qspi ../src/hyperflash ../src/emmc ../../../../diag/common/$(SOC)
   ifeq ($(BOARD), $(filter $(BOARD), am65xx_evm am65xx_idk))
-    SRCDIR += ../../../../diag/common/AM65XX
-    INCDIR += ../../../../diag/common/AM65XX
+    SRCDIR += ../../../../diag/common/am65xx
+    INCDIR += ../../../../diag/common/am65xx
   endif
 endif
 

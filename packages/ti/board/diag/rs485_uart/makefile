@@ -48,10 +48,6 @@ ifeq ($(BOARD), idkAM571x)
 export DEVICE=AM571x
 endif
 
-ifeq ($(BOARD), am65xx_idk)
-export DEVICE=AM65XX
-endif
-
 ifeq ($(BOARD), idkAM572x)
 export DEVICE=AM572x
 endif

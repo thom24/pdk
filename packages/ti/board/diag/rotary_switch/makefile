@@ -47,10 +47,6 @@ ifeq ($(BOARD), iceK2G)
 export DEVICE=K2G
 endif
 
-ifeq ($(BOARD), am65xx_idk)
-export DEVICE=AM65XX
-endif
-
 # Common Macros used in make
 ifndef RM
 export RM = rm -f

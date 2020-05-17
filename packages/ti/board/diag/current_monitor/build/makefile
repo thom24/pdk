@@ -72,7 +72,7 @@ INCLUDE_EXTERNAL_INTERFACES = pdk
 
 # List all the components required by the application
 COMP_LIST_COMMON = board csl csl_init osal_nonos uart i2c
-ifeq ($(SOC), $(filter $(SOC), j721e))
+ifeq ($(SOC), $(filter $(SOC), j721e am65xx))
 COMP_LIST_COMMON += sciclient gpio
 endif
 
@@ -83,16 +83,19 @@ PACKAGE_SRCS_COMMON += ../../common/$(SOC)
 PACKAGE_SRCS_COMMON += ../../board_diag_component.mk
 PACKAGE_SRCS_COMMON += ../../create_sd.bat ../../create_sd.sh
 
-SRCS_COMMON += current_monitor_test.c current_monitor_config.c diag_common_cfg.c
+SRCS_COMMON += current_monitor_test.c diag_common_cfg.c
+ifeq ($(SOC), $(filter $(SOC), j721e))
+SRCS_COMMON += current_monitor_config.c
+endif
 
 ifeq ($(CORE),$(filter $(CORE), mcu1_0))
 SRCS_ASM_COMMON += diag_entry_r5.asm
-EXTERNAL_LNKCMD_FILE_LOCAL = ../../common/$(SOC)/linker_r5_mcu1_0.lds
+EXTERNAL_LNKCMD_FILE_LOCAL = ../../common/$(SOC)/linker_$(CORE).lds
 endif
 
 ifeq ($(CORE),$(filter $(CORE), mpu1_0))
 SRCS_ASM_COMMON += diag_entry.asm
-EXTERNAL_LNKCMD_FILE_LOCAL = ../../common/$(SOC)/linker_a72_mpu1_0.lds
+EXTERNAL_LNKCMD_FILE_LOCAL = ../../common/$(SOC)/linker_$(CORE).lds
 endif
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) -DDIAG_$(TESTMODE) $(BOARD_DIAG_CFLAGS)

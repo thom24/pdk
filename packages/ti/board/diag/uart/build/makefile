@@ -58,15 +58,15 @@ XDC_CFG_FILE_mcu1_0 =
 LOCAL_APP_NAME =  $(DIAGNAME)$(MODENAME)_DiagExample_$(BOARD)_$(CORE)
 
 SRCDIR = ../src ../../common/$(SOC) ./$(BOARD)
-INCDIR = ../../../../board ../src ../../../src/$(BOARD)/include ../../../src/$(BOARD) ../../../src/flash ../../common/$(SOC) ../../../../csl
+INCDIR = ../../../../board ../src ../../../src/$(BOARD)/include ../../../src/$(BOARD) ../../../src/flash ../../common/$(SOC) ../../../src/evmKeystone3/include
 
 # List all the external components/interfaces, whose interface header files
 # need to be included for this component
-INCLUDE_EXTERNAL_INTERFACES = pdk
+INCLUDE_EXTERNAL_INTERFACES = pdk csl
 
 # List all the components required by the application
 COMP_LIST_COMMON = board csl csl_init osal_nonos uart gpio i2c
-ifeq ($(SOC), $(filter $(SOC), j721e))
+ifeq ($(SOC), $(filter $(SOC), j721e am65xx))
 COMP_LIST_COMMON += sciclient udma
 endif
 
@@ -81,12 +81,12 @@ SRCS_COMMON += uart_diag.c diag_common_cfg.c
 
 ifeq ($(CORE),$(filter $(CORE), mcu1_0))
 SRCS_ASM_COMMON += diag_entry_r5.asm
-EXTERNAL_LNKCMD_FILE_LOCAL = ../../common/$(SOC)/linker_r5_mcu1_0.lds
+EXTERNAL_LNKCMD_FILE_LOCAL = ../../common/$(SOC)/linker_$(CORE).lds
 endif
 
 ifeq ($(CORE),$(filter $(CORE), mpu1_0))
 SRCS_ASM_COMMON += diag_entry.asm
-EXTERNAL_LNKCMD_FILE_LOCAL = ../../common/$(SOC)/linker_a72_mpu1_0.lds
+EXTERNAL_LNKCMD_FILE_LOCAL = ../../common/$(SOC)/linker_$(CORE).lds
 endif
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) -DDIAG_$(TESTMODE) $(BOARD_DIAG_CFLAGS)

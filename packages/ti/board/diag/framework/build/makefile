@@ -62,11 +62,11 @@ INCDIR = ../../../../board ../src ../../../src/$(BOARD)/include ../../../src/$(B
 
 # List all the external components/interfaces, whose interface header files
 # need to be included for this component
-INCLUDE_EXTERNAL_INTERFACES = pdk
+INCLUDE_EXTERNAL_INTERFACES = pdk csl
 
 # List all the components required by the application
-COMP_LIST_COMMON = csl csl_init osal_nonos uart gpio i2c fatfs_indp mmcsd board 
-ifeq ($(SOC), $(filter $(SOC), j721e))
+COMP_LIST_COMMON = csl csl_init osal_nonos uart gpio i2c fatfs_indp mmcsd board
+ifeq ($(SOC), $(filter $(SOC), j721e am65xx))
 COMP_LIST_COMMON += sciclient udma
 endif
 
@@ -79,6 +79,9 @@ PACKAGE_SRCS_COMMON += ../../create_sd.bat ../../create_sd.sh
 PACKAGE_SRCS_COMMON += ../../build/board_diag_img.mk
 
 SRCS_COMMON += framework.c main.c sbl_mmcsd.c sbl_rprc.c diag_common_cfg.c
+ifeq ($(SOC), $(filter $(SOC), am65xx))
+SRCS_COMMON += auto_tests.c
+endif
 
 ifeq ($(CORE),$(filter $(CORE), mpu1_0))
 SRCS_ASM_COMMON += framework_init.asm

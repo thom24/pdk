@@ -59,19 +59,16 @@ LOCAL_APP_NAME =  $(DIAGNAME)$(MODENAME)_DiagExample_$(BOARD)_$(CORE)
 
 SRCDIR = ../src ../../common/$(SOC)
 INCDIR = ../../../../board ../src ../../../src/$(BOARD)/include ../../../src/$(BOARD) ../../common/$(SOC)
-
-ifeq ($(BOARD), $(filter $(BOARD), j721e_evm))
 SRCDIR += ./$(BOARD)
 INCDIR += ./$(BOARD)
-endif
 
 # List all the external components/interfaces, whose interface header files
 # need to be included for this component
-INCLUDE_EXTERNAL_INTERFACES = pdk
+INCLUDE_EXTERNAL_INTERFACES = pdk csl
 
 # List all the components required by the application
 COMP_LIST_COMMON = board csl csl_init osal_nonos uart i2c gpio
-ifeq ($(SOC), $(filter $(SOC), j721e))
+ifeq ($(SOC), $(filter $(SOC), j721e am65xx))
 COMP_LIST_COMMON += sciclient
 endif
 
@@ -84,18 +81,18 @@ PACKAGE_SRCS_COMMON += ../../create_sd.bat ../../create_sd.sh
 
 SRCS_COMMON += boot_switch_test.c diag_common_cfg.c
 
-ifeq ($(BOARD), $(filter $(BOARD), j721e_evm))
+ifeq ($(BOARD), $(filter $(BOARD), j721e_evm am65xx_evm am65xx_idk))
 SRCS_COMMON += boot_switch_config.c
 endif
 
 ifeq ($(CORE),$(filter $(CORE), mcu1_0))
 SRCS_ASM_COMMON += diag_entry_r5.asm
-EXTERNAL_LNKCMD_FILE_LOCAL = ../../common/$(SOC)/linker_r5_mcu1_0.lds
+EXTERNAL_LNKCMD_FILE_LOCAL = ../../common/$(SOC)/linker_$(CORE).lds
 endif
 
 ifeq ($(CORE),$(filter $(CORE), mpu1_0))
 SRCS_ASM_COMMON += diag_entry.asm
-EXTERNAL_LNKCMD_FILE_LOCAL = ../../common/$(SOC)/linker_a72_mpu1_0.lds
+EXTERNAL_LNKCMD_FILE_LOCAL = ../../common/$(SOC)/linker_$(CORE).lds
 endif
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) -DDIAG_$(TESTMODE) $(BOARD_DIAG_CFLAGS)
