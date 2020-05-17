@@ -7,6 +7,7 @@
 --stack_size=0x2000
 --heap_size=0x1000
 --entry_point=ti_sysbios_family_arm_v7r_keystone3_Hwi_vectors /* Default BIOS */
+--retain="*(.utilsCopyVecsToAtcm)"
 
 -stack  0x2000                              /* SOFTWARE STACK SIZE           */
 -heap   0x2000                              /* HEAP AREA SIZE                */
@@ -48,6 +49,7 @@ SECTIONS
     .intvecs                : {} palign(8)      > VECTORS
     .intc_text              : {} palign(8)      > VECTORS
     .rstvectors             : {} palign(8)      > RESET_VECTORS
+    .utilsCopyVecsToAtcm    : {} palign(8)      > MCU0_R5F_TCMB0
     .text                   : {} palign(8)      > MSMC3
     .const                  : {} palign(8)      > MSMC3
     .cinit                  : {} palign(8)      > MSMC3

@@ -39,6 +39,13 @@ INCDIR = ./src
 SRCS_COMMON += main_console.c FATFS_log.c fs_shell_app_utils.c
 
 XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
+
+# Enable copy of vectors
+ifeq ($(ISA),$(filter $(ISA), r5f))
+  SRCDIR += $(PDK_VECT_COPY_PATH)
+  SRCS_ASM_COMMON += utilsCopyVecs2ATmc.asm
+endif
+
 endif
 
 # List all the external components/interfaces, whose interface header files
@@ -80,12 +87,6 @@ ifeq ($(MAKERULEDIR), )
   export MAKERULEDIR
 endif
 include $(MAKERULEDIR)/common.mk
-
-# Enable copy of vectors
-ifeq ($(ISA),$(filter $(ISA), r5f))
-  SRCDIR += $(PDK_VECT_COPY_PATH)
-  SRCS_ASM_COMMON += utilsCopyVecs2ATmc.asm
-endif
 
 # OBJs and libraries are built by using rule defined in rules_<target>.mk
 #     and need not be explicitly specified here

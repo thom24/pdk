@@ -104,6 +104,12 @@ COMP_LIST_COMMON  += csl board
 PACKAGE_SRCS_COMMON = .
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_UART_DMA) $(CFLAGS_OS_DEFINES)
 
+# Enable copy of vectors
+ifeq ($(ISA),$(filter $(ISA), r5f))
+  SRCDIR += $(PDK_VECT_COPY_PATH)
+  SRCS_ASM_COMMON += utilsCopyVecs2ATmc.asm
+endif
+
 # Include common make files
 ifeq ($(MAKERULEDIR), )
 #Makerule path not defined, define this and assume relative path from ROOTDIR
