@@ -7,9 +7,7 @@ PACKAGE_SRCS_COMMON = makefile MMCSD.h mmcsd_component.mk src/MMCSD_osal.h \
                       src/MMCSD_drv.c src/MMCSD_drv_log.h \
                       src/v1/MMCSD_v1_lld.h \
                       soc/MMCSD_soc.h \
-                      build/makefile.mk build/makefile_dma.mk build/makefile_dma_profile.mk \
-                      build/makefile_profile.mk build/makefile_indp.mk build/makefile_profile_indp.mk \
-                      src/src_files_common.mk src/Module.xs config_mk.bld MMCSDver.h MMCSDver.h.xdt \
+                      build  src/src_files_common.mk src/Module.xs config_mk.bld MMCSDver.h MMCSDver.h.xdt \
                       package.bld package.xdc package.xs Settings.xdc.xdt
 
 ifeq ($(SOC), $(filter $(SOC), omapl137 omapl138))

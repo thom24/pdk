@@ -47,8 +47,8 @@ SRCS_COMMON =
 INCLUDE_EXTERNAL_INTERFACES = pdk
 
 PACKAGE_SRCS_COMMON = makefile trace_component.mk trace.h \
-                      build/makefile_trace.mk src/trace.c \
-                      
+                      build src/trace.c
+
 # Include common make files
 ifeq ($(MAKERULEDIR), )
 #Makerule path not defined, define this and assume relative path from ROOTDIR

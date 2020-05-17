@@ -27,5 +27,5 @@ endif
 PACKAGE_SRCS_COMMON += makefile pcie.h pciever.h pcie_component.mk \
                       docs/ReleaseNotes_PCIE_LLD.pdf \
                       src/pcieloc.h src/pcie.c src/pcieinit.c \
-                      build/makefile.mk build/makefile_profile.mk build/makefile_indp.mk build/makefile_profile_indp.mk \
-                      src/src_files_common.mk src/Module.xs config_mk.bld package.bld package.xdc package.xs pciever.h.xdt Settings.xdc.xdt
+                      build src/src_files_common.mk src/Module.xs \
+                      config_mk.bld package.bld package.xdc package.xs pciever.h.xdt Settings.xdc.xdt

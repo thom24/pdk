@@ -16,7 +16,7 @@ endif
 SRCS_COMMON += mcasp_drv.c mcasp_ioctl.c mcasp_dma.c
 
 PACKAGE_SRCS_COMMON = makefile mcasp_component.mk \
-                      build/makefile.mk build/makefile_profile.mk src/src_files_common.mk src/Module.xs \
+                      build src/src_files_common.mk src/Module.xs \
                       config_mk.bld mcaspver.h mcaspver.h.xdt package.bld package.xdc package.xs Settings.h Settings.xdc Settings.xdc.xdt\
                       mcasp_osal.h mcasp_drv.h mcasp_types.h include/McaspLocal.h soc/mcasp_soc.h \
                       soc/$(SOC) $(foreach dir,$(SRCDIR),$(wildcard $(dir)/*.c)) \

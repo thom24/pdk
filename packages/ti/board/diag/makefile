@@ -111,14 +111,14 @@ CLEAN_DIRS = $(foreach a,$($(ctests)),$(a)_clean)
 ALL_SD = $(foreach a,$(ALL_BOARDS),$(a)_sd)
 ALL_SPI = $(foreach a,$(ALL_BOARDS),$(a)_spi)
 
-.NOTPARALLEL: 
+.NOTPARALLEL:
 .PHONY: $(ALL_BOARDS) $(BUILD_DIRS) $(CLEAN_TARGETS) $(CLEAN_DIRS) $(ALL_SD) $(ALL_SPI)
 
 all: $(ALL_BOARDS)
 
 $(ALL_BOARDS):
 	$(MAKE) buildtarget bboard=$@ btests=$@_DIAG
- 
+
 buildtarget: $(BUILD_DIRS)
 
 $(BUILD_DIRS):

@@ -12,9 +12,7 @@ PACKAGE_SRCS_COMMON = makefile usb_drv.h usb_osal.h usbdaudio.h usbdmsc.h usbhms
                       docs/ReleaseNotes_USB_LLD.pdf \
                       src src/include src/usb_func/common src/usb_func/device src/usb_func/host src/usb_func/include \
                       src/usb_drv.c src/src_files_common.mk src/src_files_starterware.mk src/Module.xs \
-                      build/makefile.mk build/makefile_indp.mk build/makefile_profile.mk \
-                      build/makefile_profile_indp.mk \
-                      config_mk.bld package.bld package.xdc package.xs Settings.xdc.xdt USBver.h USBver.h.xdt \
+                      build config_mk.bld package.bld package.xdc package.xs Settings.xdc.xdt USBver.h USBver.h.xdt \
                       example/common example/ramdisk example/mcasp example/shell example/usb_host example/usb_dev \
                       example/bios/biosMmu.c example/bios/dev_bulk_main.c example/bios/dev_msc_main.c \
                       example/bios/dev_msc_mmcsd.c example/bios/host_msc_main.c example/bios/dev_audio_main.c

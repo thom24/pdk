@@ -35,10 +35,7 @@ SOC_DEP_LIB_SOCS=tda2xx tda3xx tda2px dra75x tda2ex dra72x dra78x j721e am77x j7
 PACKAGE_SRCS_COMMON = makefile SPI.h MCSPI.h spi_component.mk .gitignore \
                       docs/ReleaseNotes_SPI_LLD.pdf \
                       src/SPI_drv.c src/SPI_osal.h src/src_files_common.mk src/Module.xs \
-                      build/makefile.mk build/makefile_profile.mk \
-                      build/makefile_indp.mk build/makefile_profile_indp.mk \
-                      build/makefile_dma.mk build/makefile_dma_profile.mk \
-                      config_mk.bld package.bld package.xdc package.xs Settings.xdc.xdt SPIver.h SPIver.h.xdt
+                      build config_mk.bld package.bld package.xdc package.xs Settings.xdc.xdt SPIver.h SPIver.h.xdt
 
 
 ifeq ($(SOC),$(filter $(SOC), $(SOC_INDP_LIB_SOCS) ))

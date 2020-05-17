@@ -23,5 +23,5 @@ PACKAGE_SRCS_COMMON = makefile HwiP.h SwiP.h MuxIntcP.h osal.h osal_component.mk
                       src/tirtos/EventP_tirtos.c src/tirtos/HwiP_tirtos.c src/tirtos/SwiP_tirtos.c src/tirtos/MemoryP_tirtos.c \
                       src/tirtos/Queue_tirtos.c src/tirtos/RegisterIntr_tirtos.c src/tirtos/SemaphoreP_tirtos.c src/tirtos/TaskP_tirtos.c \
                       src/tirtos/TimerP_tirtos.c src/tirtos/Utils_tirtos.c src/tirtos/tirtos_config.h src/src_common_tirtos.mk \
-                      docs/OSAL_SoftwareManifest.html docs/ReleaseNotes_OSAL.pdf build/makefile_tirtos_indp.mk build/makefile_tirtos.mk
+                      docs/OSAL_SoftwareManifest.html docs/ReleaseNotes_OSAL.pdf build
 

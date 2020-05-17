@@ -35,8 +35,7 @@ PACKAGE_SRCS_COMMON = makefile I2C.h i2c_component.mk \
                       docs/I2C_LLD_SDS.pdf docs/I2C_LLD_SoftwareManifest.html \
                       docs/ReleaseNotes_I2C_LLD.pdf \
                       src/I2C_drv.c src/I2C_drv_log.h src/I2C_osal.h \
-                      build/makefile.mk build/makefile_indp.mk build/makefile_profile_indp.mk \
-                      build/makefile_profile.mk src/src_files_common.mk src/Module.xs \
+                      build src/src_files_common.mk src/Module.xs \
                       config_mk.bld I2Cver.h I2Cver.h.xdt package.bld package.xdc package.xs Settings.xdc.xdt
 
 # The following v1 files are all that is shipped with TDA devices

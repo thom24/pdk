@@ -65,7 +65,7 @@ INCLUDE_EXTERNAL_INTERFACES += csl
 endif
 
 PACKAGE_SRCS_COMMON = makefile profilingHooks.h profiling_component.mk profiling_osal.h \
-                      docs/ReleaseNotes_Utils.pdf src build/makefile_profile.mk build/buildlib.xs \
+                      docs/ReleaseNotes_Utils.pdf src build \
                       config_mk.bld package.bld package.xdc package.xs profilingver.h profilingver.h.xdt README.dox Settings.xdc.xdt
 
 # Including trace modules here, as trace do not have source files and packaging

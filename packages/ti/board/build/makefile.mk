@@ -162,7 +162,7 @@ INCLUDE_EXTERNAL_INTERFACES = pdk edma
 INCLUDE_INTERNAL_INTERFACES = csl
 
 PACKAGE_SRCS_COMMON += makefile board_component.mk board.h \
-                       board_cfg.h build/makefile.mk
+                       board_cfg.h build
 ifeq ($(BOARD),$(filter $(BOARD), j721e_sim j721e_qt j721e_evm j7200_evm tpr12_evm tpr12_qt))
 PACKAGE_SRCS_COMMON += src/board.c src/boardStub.c src/Module.xs \
                        src/src_files_lld.mk src/src_files_starterware.mk

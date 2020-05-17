@@ -21,13 +21,9 @@ endif
 PACKAGE_SRCS_COMMON = makefile GPIO.h gpio_component.mk src/GPIO_osal.h \
               docs/ReleaseNotes_GPIO_LLD.pdf \
               src/GPIO_drv.c src/GPIO_drv_log.h \
-			  soc/GPIO_v1.h \
-	 	      build/makefile_profile_indp.mk \
-	 	      build/makefile_indp.mk \
-	 	      build/makefile_profile.mk \
-	 	      build/makefile.mk \
-	 	      src/src_files_common.mk src/Module.xs \
-	 	      config_mk.bld GPIOver.h GPIOver.h.xdt package.bld package.xdc package.xs Settings.xdc.xdt
+              soc/GPIO_v1.h \
+              build src/src_files_common.mk src/Module.xs \
+              config_mk.bld GPIOver.h GPIOver.h.xdt package.bld package.xdc package.xs Settings.xdc.xdt
 
 ifeq ($(SOC),$(filter $(SOC),$(SOC_DEP_LIB_SOCS) ))
   ifeq ($(SOC),$(filter $(SOC),$(GPIO_V2_SOCS) ))
