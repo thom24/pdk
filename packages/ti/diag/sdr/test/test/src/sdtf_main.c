@@ -1,4 +1,8 @@
 /*
+ * SDL TEST
+ *
+ * Software Diagnostics Library Test
+ *
  *  Copyright (c) 2018 Texas Instruments Incorporated
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -39,7 +43,7 @@
 #include "sdtf_common.h"
 #include "sdtf_init.h"
 #include "sdtf_test.h"
-#include "sdtf_platform.h"
+#include <sdtf_platform.h>
 
 /*****************************************************************************
  * This is the main function for the Safety Diagnostic Test framework test

@@ -35,19 +35,17 @@
 ifeq ($(sdr_component_make_include), )
 
 ############################
-# Software Diagnostics Reference (SDR) library
+# Software Diagnostics Reference (SDR)
 # List of components included under SDR
 # The components included here are built and will be part of SDR
 ############################
 sdr_LIB_LIST = sdr
 
 drvsdr_SOCLIST         = am65xx j721e
-drvsdr_BOARDLIST       = am65xx_evm am65xx_idk j721e_sim j721e_qt j721e_evm
+drvsdr_BOARDLIST       = am65xx_evm am65xx_idk j721e_evm
 drvsdr_am65xx_CORELIST = mcu1_0
-drvsdr_am65xx_LASTCORE := $(word $(words $(drvsdr_am65xx_CORELIST)), $(drvsdr_am65xx_CORELIST))
 drvsdr_j721e_CORELIST  = mcu1_0
 drvsdr_j721e_APPCORELIST = mcu1_0
-drvsdr_j721e_LASTCORE := $(word $(words $(drvsdr_j721e_APPCORELIST)), $(drvsdr_j721e_APPCORELIST))
 drvsdr_DISABLE_PARALLEL_MAKE = yes
 
 ############################
@@ -58,7 +56,7 @@ drvsdr_DISABLE_PARALLEL_MAKE = yes
 ############################
 sdr_EXAMPLE_LIST =
 
-# IPC dependent examples which should be built after all examples are completed
+# SDR dependent examples which should be built after all examples are completed
 sdr_DUP_EXAMPLE_LIST =
 
 #
@@ -119,11 +117,6 @@ export drvsdr_EXAMPLE_LIST  = $(sdr_EXAMPLE_LIST)
 export drvsdr_DUP_EXAMPLE_LIST  = $(sdr_DUP_EXAMPLE_LIST)
 
 SDR_CFLAGS =
-
-# Enable asserts and prints
-SDR_CFLAGS += -DIPC_CFG_ASSERT_ENABLE
-#SDR_CFLAGS += -DIPC_CFG_USE_STD_ASSERT
-SDR_CFLAGS += -DIPC_CFG_PRINT_ENABLE
 
 export SDR_CFLAGS
 

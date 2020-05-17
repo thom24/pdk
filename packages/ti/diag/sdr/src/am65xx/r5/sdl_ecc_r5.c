@@ -348,7 +348,7 @@ void SDL_ECC_disableECCEventCheck(SDL_ECC_MemType eccMemType,
 /** ============================================================================
  *
  * Requirement: REQ_TAG(PRSDK-3239)
- * Design: did_safeti_diagnostics_library did_ecc_vim_ram
+ * Design: did_software_diagnostics_reference did_ecc_vim_ram
  *
  * \brief   Register Handler for VIM DED ECC error
  *

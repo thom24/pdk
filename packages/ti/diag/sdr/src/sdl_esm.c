@@ -1,10 +1,38 @@
 /*
  * SDL ESM
  *
- * SafeTI Diagnostics Library module for Error Signaling Module
+ * Software Diagnostics Library module for Error Signaling Module
  *
- * Copyright (C) 2018-2019 Texas Instruments Incorporated - http://www.ti.com/
- * ALL RIGHTS RESERVED
+ *  Copyright (c) Texas Instruments Incorporated 2018-2020
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
+ *  are met:
+ *
+ *    Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ *
+ *    Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the
+ *    distribution.
+ *
+ *    Neither the name of Texas Instruments Incorporated nor the names of
+ *    its contributors may be used to endorse or promote products derived
+ *    from this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
  */
 #include <stddef.h>
 #include <stdbool.h>
@@ -38,7 +66,7 @@ static void SDL_ESM_processInterruptSource(uintptr_t arg, uint32_t intSrc);
 /** ============================================================================
  *
  * Requirement: REQ_TAG(PRSDK-2577) REQ_TAG(PRSDK-1696)
- * Design: did_safeti_diagnostics_library did_esm_diagnostics
+ * Design: did_software_diagnostics_reference did_esm_diagnostics
  *
  * \brief   Initializes ESM module for SDL
  *
@@ -195,7 +223,7 @@ SDL_Result SDL_ESM_init (const SDL_ESM_InitConfig_t *esmInitConfig)
 /** ============================================================================
  *
  * Requirement: REQ_TAG(PRSDK-2577) REQ_TAG(PRSDK-1696)
- * Design: did_safeti_diagnostics_library did_esm_diagnostics
+ * Design: did_software_diagnostics_reference did_esm_diagnostics
  *
  * \brief  Function sets the nERROR pin inactive.
  *
@@ -235,7 +263,7 @@ SDL_Result SDL_ESM_resetNError(void)
 /** ============================================================================ 
  *
  * Requirement: REQ_TAG(PRSDK-2577) REQ_TAG(PRSDK-1696)
- * Design: did_safeti_diagnostics_library did_esm_diagnostics
+ * Design: did_software_diagnostics_reference did_esm_diagnostics
  *
  * \brief   Function sets the nERROR pin active.
  *
@@ -252,7 +280,7 @@ void SDL_ESM_setNError(void){
 /** ============================================================================
  *
  * Requirement: REQ_TAG(PRSDK-2577) REQ_TAG(PRSDK-1696)
- * Design: did_safeti_diagnostics_library did_esm_diagnostics
+ * Design: did_software_diagnostics_reference did_esm_diagnostics
  *
  * \brief   Function returns the status of nERROR pin
  *
@@ -279,7 +307,7 @@ bool SDL_ESM_getNErrorStatus(void)
 /** ============================================================================
  *
  * Requirement: REQ_TAG(PRSDK-2577) REQ_TAG(PRSDK-1696)
- * Design: did_safeti_diagnostics_library did_esm_diagnostics
+ * Design: did_software_diagnostics_reference did_esm_diagnostics
  *
  * \brief   Insert ESM error
  *
@@ -310,7 +338,7 @@ SDL_Result SDL_ESM_errorInsert (const SDL_ESM_ErrorConfig_t *esmErrorConfig)
  * \brief   Execute self test of ESM module
  *
  * Requirement: REQ_TAG(PRSDK-2577) REQ_TAG(PRSDK-1696) REQ_TAG(PRSDK-5293)
- * Design: did_safeti_diagnostics_library did_esm_diagnostics
+ * Design: did_software_diagnostics_reference did_esm_diagnostics
  *
  * \param   loopCount: Number of tries to check status in a loop
  *
@@ -459,7 +487,7 @@ static void SDL_ESM_interruptHandler (esmIntrPriorityLvl_t esmIntrPriorityLvlTyp
 /** ============================================================================
  *
  * Requirement: REQ_TAG(PRSDK-2577) REQ_TAG(PRSDK-1696)
- * Design: did_safeti_diagnostics_library did_esm_diagnostics
+ * Design: did_software_diagnostics_reference did_esm_diagnostics
  *
  * \brief   Esm Hi Interrupt Handler
  *
@@ -482,7 +510,7 @@ void SDL_ESM_hiInterruptHandler (uintptr_t arg)
 /** ============================================================================
  *
  * Requirement: REQ_TAG(PRSDK-2577) REQ_TAG(PRSDK-1696)
- * Design: did_safeti_diagnostics_library did_esm_diagnostics
+ * Design: did_software_diagnostics_reference did_esm_diagnostics
  *
  * \brief   Esm Lo Interrupt Handler
  *
@@ -505,7 +533,7 @@ void SDL_ESM_loInterruptHandler (uintptr_t arg)
 /** ============================================================================
  *
  * Requirement: REQ_TAG(PRSDK-2577) REQ_TAG(PRSDK-1696)
- * Design: did_safeti_diagnostics_library did_esm_diagnostics
+ * Design: did_software_diagnostics_reference did_esm_diagnostics
  *
  * \brief   Esm Config Interrupt Handler
  *
@@ -526,7 +554,7 @@ void SDL_ESM_configInterruptHandler(uintptr_t arg)
 /** ============================================================================
  *
  * Requirement: REQ_TAG(PRSDK-2577) REQ_TAG(PRSDK-1696) REQ_TAG(PRSDK-1671)
- * Design: did_safeti_diagnostics_library did_esm_diagnostics did_ecc_diagnostics
+ * Design: did_software_diagnostics_reference did_esm_diagnostics did_ecc_diagnostics
  *
  * \brief   Register handler for ECC with ESM
  *
@@ -599,7 +627,7 @@ void SDL_ESM_deRegisterWDTHandler(void)
 /** ============================================================================
  *
  * Requirement: REQ_TAG(PRSDK-2577) REQ_TAG(PRSDK-1696)
- * Design: did_safeti_diagnostics_library did_esm_diagnostics
+ * Design: did_software_diagnostics_reference did_esm_diagnostics
  *
  * \brief   Esm get Interrupt Number corresponding to the
  *          input interrupt type

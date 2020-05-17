@@ -1,4 +1,8 @@
 /*
+ * SDTF Common
+ *
+ * Software Diagnostics Library Test common includes
+ *
  *  Copyright (c) 2018 Texas Instruments Incorporated
  *
  *  Redistribution and use in source and binary forms, with or without

@@ -1,10 +1,38 @@
 /*
  * SDL WDT
  *
- * SafeTI Diagnostics Library module for Watchdog Timer
+ * Software Diagnostics Library module for Watchdog Timer
  *
- * Copyright (C) 2018-2019 Texas Instruments Incorporated - http://www.ti.com/
- * ALL RIGHTS RESERVED
+ *  Copyright (c) Texas Instruments Incorporated 2018-2020
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
+ *  are met:
+ *
+ *    Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ *
+ *    Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the
+ *    distribution.
+ *
+ *    Neither the name of Texas Instruments Incorporated nor the names of
+ *    its contributors may be used to endorse or promote products derived
+ *    from this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
  */
 
 #include <stddef.h>
@@ -25,7 +53,7 @@ static uint32_t SDL_WDT_getBaseAddrforIntSrc(SDL_ESM_WDT_IntSrc intSrc);
 /** ============================================================================
  *
  * Requirement: REQ_TAG(PRSDK-2577) REQ_TAG(PRSDK-4211)
- * Design: did_safeti_diagnostics_library did_wdt_diagnostics
+ * Design: did_software_diagnostics_reference did_wdt_diagnostics
  *
  * \brief  Feeds configured Watchdog Timer
  *
@@ -46,7 +74,7 @@ void SDL_WDT_feedWatchdog(SDL_WDT_TimerId timerId)
 /** ============================================================================
  *
  * Requirement: REQ_TAG(PRSDK-2577) REQ_TAG(PRSDK-4211)
- * Design: did_safeti_diagnostics_library did_wdt_diagnostics
+ * Design: did_software_diagnostics_reference did_wdt_diagnostics
  *
  * \brief  Clear all events reported in status register
  *
@@ -72,7 +100,7 @@ void SDL_WDT_clearAllInterruptEvents(SDL_ESM_WDT_IntSrc intSrc)
 /** ============================================================================
  *
  * Requirement: REQ_TAG(PRSDK-2577) REQ_TAG(PRSDK-4211)
- * Design: did_safeti_diagnostics_library did_wdt_diagnostics
+ * Design: did_software_diagnostics_reference did_wdt_diagnostics
  *
  * \brief  Check if the event reported in the status register matches
  *         expected test type

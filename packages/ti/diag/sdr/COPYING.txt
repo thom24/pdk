@@ -1,8 +1,0 @@
-/*
- * SDR
- *
- * Software Diagnostics Reference
- *
- * Copyright (C) 2018-2020 Texas Instruments Incorporated - http://www.ti.com/
- * ALL RIGHTS RESERVED
- */
