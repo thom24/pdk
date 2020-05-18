@@ -94,6 +94,9 @@ SECTIONS {
         *(.ARM.extab* .gnu.linkonce.armextab.*)
     } > REGION_ARM_EXTAB AT> REGION_ARM_EXTAB
 
+    .bss:emac_ddr_mem  (NOLOAD) : ALIGN (128) {} > DDR_0
+    .bss:emac_msmc_mem (NOLOAD) : ALIGN (128) {} > MSMC_SRAM_H
+
     .bss : {
         __bss_start__ = .;
         *(.shbss)

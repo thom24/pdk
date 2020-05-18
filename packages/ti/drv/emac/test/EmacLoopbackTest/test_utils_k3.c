@@ -1151,6 +1151,7 @@ int32_t app_test_emac_open(uint32_t mode)
         open_cfg.free_pkt_cb = app_free_pkt;
         open_cfg.rx_pkt_cb = app_test_rx_pkt_cb;
         open_cfg.tx_ts_cb = app_test_ts_response_cb;
+        open_cfg.drv_trace_cb = NULL;
         open_cfg.rx_mgmt_response_cb = app_test_rx_mgmt_response_cb;
         open_cfg.loop_back = 0U;
         /* Only need to enbale loopback for CPSW test application and when not doing benchmark testing */
