@@ -42,7 +42,7 @@ ifeq ($(sdr_component_make_include), )
 sdr_LIB_LIST = sdr
 
 drvsdr_SOCLIST         = am65xx j721e
-drvsdr_BOARDLIST       = am65xx_evm am65xx_idk j721e_evm
+drvsdr_BOARDLIST       = am65xx_evm j721e_evm
 drvsdr_am65xx_CORELIST = mcu1_0
 drvsdr_j721e_CORELIST  = mcu1_0
 drvsdr_j721e_APPCORELIST = mcu1_0
