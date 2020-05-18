@@ -36,7 +36,7 @@
  */
 
 /**
- * @file  sdl_wdt.h
+ * @file  sdr_wdt.h
  *
  * @brief
  *  Header file contains enumerations, structure definitions and function

@@ -36,7 +36,7 @@
  */
 
 /**
- * @file  sdl_soc_r5.h
+ * @file  sdr_soc_r5.h
  *
  * @brief
  *  Header file for SDR R5 specific to SOC

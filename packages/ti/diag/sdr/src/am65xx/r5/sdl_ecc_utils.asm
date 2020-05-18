@@ -34,7 +34,7 @@
 ;  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ;
 ;******************************************************************************
-;  @file sdl_ecc_utils.asm 
+;  @file sdr_ecc_utils.asm
 ;
 ;  @brief
 ;   Implementation file for the ARM R5 ecc utils

@@ -36,7 +36,7 @@
  */
 
 /**
- * @file  sdl_exception.h
+ * @file  sdr_exception.h
  *
  * @brief
  *  Header file contains enumerations, structure definitions and function

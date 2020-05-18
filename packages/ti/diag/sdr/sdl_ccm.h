@@ -36,7 +36,7 @@
  */
 
 /**
- * @file  sdl_ccm.h
+ * @file  sdr_ccm.h
  *
  * @brief
  *  Header file contains enumerations, structure definitions and function

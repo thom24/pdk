@@ -36,7 +36,7 @@
  */
 
 /**
- * @file  sdl_esm.h
+ * @file  sdr_esm.h
  *
  * @brief
  *  Header file contains enumerations, structure definitions and function

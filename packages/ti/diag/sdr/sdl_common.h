@@ -36,7 +36,7 @@
  */
 
 /**
- * @file  sdl_common.h
+ * @file  sdr_common.h
  *
  * @brief
  *  Header file contains enumerations, structure definitions and function

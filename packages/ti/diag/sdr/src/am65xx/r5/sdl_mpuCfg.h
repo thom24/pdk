@@ -36,7 +36,7 @@
  */
 
 /**
- * @file  sdl_mpuCfg.h
+ * @file  sdr_mpuCfg.h
  *
  * @brief
  *  Header file for SDR MPU configuration interface.

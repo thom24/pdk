@@ -36,7 +36,7 @@
  */
 
 /**
- * @file  sdl_mpu.h
+ * @file  sdr_mpu.h
  *
  * @brief
  *  Header file contains enumerations, structure definitions and function
