@@ -42,13 +42,20 @@
 #include <ti/drv/uart/soc/UART_soc.h>
 
 #define CSL_UART_PER_CNT    (9U)  /* 7 Main UART + 2 MCU UART instances */
+#if defined (BUILD_M4F)
+#define UART_RAT_MAP_ADDR   (0x60000000U) /* RAT map address for UART */
+#endif
 
 /* UART configuration structure */
 UART_HwAttrs uartInitCfg[CSL_UART_PER_CNT] =
 {
     {
         /* UART0 on the Main domain */
+#if defined (BUILD_M4F)
+        CSL_UART0_BASE + UART_RAT_MAP_ADDR, /* baseAddr */
+#else
         CSL_UART0_BASE,                     /* baseAddr */
+#endif
 #if defined (BUILD_MPU)
         /* A53 cores on the Main domain */
         CSLR_GICSS0_SPI_UART0_USART_IRQ_0,  /* intNum */
@@ -88,7 +95,11 @@ UART_HwAttrs uartInitCfg[CSL_UART_PER_CNT] =
     },
     {
         /* UART1 on the Main domain */
+#if defined (BUILD_M4F)
+        CSL_UART1_BASE + UART_RAT_MAP_ADDR,
+#else
         CSL_UART1_BASE,
+#endif
 #if defined (BUILD_MPU)
         CSLR_GICSS0_SPI_UART1_USART_IRQ_0,
 #elif defined (BUILD_MCU)
@@ -123,7 +134,11 @@ UART_HwAttrs uartInitCfg[CSL_UART_PER_CNT] =
     },
     {
         /* UART2 on the Main domain */
+#if defined (BUILD_M4F)
+        CSL_UART2_BASE + UART_RAT_MAP_ADDR,
+#else
         CSL_UART2_BASE,
+#endif
 #if defined (BUILD_MPU)
         CSLR_GICSS0_SPI_UART2_USART_IRQ_0,
 #elif defined (BUILD_MCU)
@@ -158,7 +173,11 @@ UART_HwAttrs uartInitCfg[CSL_UART_PER_CNT] =
     },
     {
         /* UART3 on the Main domain */
+#if defined (BUILD_M4F)
+        CSL_UART3_BASE + UART_RAT_MAP_ADDR,
+#else
         CSL_UART3_BASE,
+#endif
 #if defined (BUILD_MPU)
         CSLR_GICSS0_SPI_UART3_USART_IRQ_0,
 #elif defined (BUILD_MCU)
@@ -193,7 +212,11 @@ UART_HwAttrs uartInitCfg[CSL_UART_PER_CNT] =
     },
     {
         /* UART4 on the Main domain */
+#if defined (BUILD_M4F)
+        CSL_UART4_BASE + UART_RAT_MAP_ADDR,
+#else
         CSL_UART4_BASE,
+#endif
 #if defined (BUILD_MPU)
         CSLR_GICSS0_SPI_UART4_USART_IRQ_0,
 #elif defined (BUILD_MCU)
@@ -228,7 +251,11 @@ UART_HwAttrs uartInitCfg[CSL_UART_PER_CNT] =
     },
     {
         /* UART5 on the Main domain */
+#if defined (BUILD_M4F)
+        CSL_UART5_BASE + UART_RAT_MAP_ADDR,
+#else
         CSL_UART5_BASE,
+#endif
 #if defined (BUILD_MPU)
         CSLR_GICSS0_SPI_UART5_USART_IRQ_0,
 #elif defined (BUILD_MCU)
@@ -263,7 +290,11 @@ UART_HwAttrs uartInitCfg[CSL_UART_PER_CNT] =
     },
     {
         /* UART6 on the Main domain */
+#if defined (BUILD_M4F)
+        CSL_UART6_BASE + UART_RAT_MAP_ADDR,
+#else
         CSL_UART6_BASE,
+#endif
 #if defined (BUILD_MPU)
         CSLR_GICSS0_SPI_UART6_USART_IRQ_0,
 #elif defined (BUILD_MCU)
@@ -298,7 +329,11 @@ UART_HwAttrs uartInitCfg[CSL_UART_PER_CNT] =
     },
     {
         /* UART0 on the MCU channel */
+#if defined (BUILD_M4F)
+        CSL_MCU_UART0_BASE + UART_RAT_MAP_ADDR,
+#else
         CSL_MCU_UART0_BASE,
+#endif
 #if defined (BUILD_MPU)
         CSLR_GICSS0_SPI_MCU_UART0_USART_IRQ_0,
 #elif defined (BUILD_MCU)
@@ -333,7 +368,11 @@ UART_HwAttrs uartInitCfg[CSL_UART_PER_CNT] =
     },
     {
         /* UART1 on the MCU channel */
+#if defined (BUILD_M4F)
+        CSL_MCU_UART1_BASE + UART_RAT_MAP_ADDR,
+#else
         CSL_MCU_UART1_BASE,
+#endif
 #if defined (BUILD_MPU)
         CSLR_GICSS0_SPI_MCU_UART1_USART_IRQ_0,
 #elif defined (BUILD_MCU)
