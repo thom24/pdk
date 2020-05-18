@@ -329,9 +329,6 @@ static void SDL_ECC_ESMCallBackFunction (uint32_t errorSrc, uint32_t errorAddr)
 }
 /** ============================================================================*
  *
- * Requirement: REQ_TAG(PRSDK-2577) REQ_TAG(PRSDK-1671) REQ_TAG(PRSDK-1705) REQ_TAG(PRSDK-1706) REQ_TAG(PRSDK-3240)
- * Design: did_software_diagnostics_reference did_ecc_diagnostics did_ecc_vim_ram
- *
  * \brief   Initializes ECC module for ECC detection
  *
  * \param1 eccAggrInstNumber Instance number of ECC aggregator
@@ -474,9 +471,6 @@ static SDL_Result SDL_ECC_memoryRefresh(uint32_t *memAddr, size_t size)
 
 /** ============================================================================
  *
- * Requirement: REQ_TAG(PRSDK-2577) REQ_TAG(PRSDK-1709)
- * Design: did_software_diagnostics_reference did_ecc_diagnostics
- *
  * \brief   Initializes Memory to be ready for ECC error detection.
  *          Assumes ECC is already enabled.
  *
@@ -526,9 +520,6 @@ static void SDL_ECC_triggerAccessForEcc(const uint32_t *pMemoryAccessAddr)
 }
 
 /** ============================================================================
- *
- * Requirement: REQ_TAG(PRSDK-2577) REQ_TAG(PRSDK-1709) REQ_TAG(PRSDK-1671) REQ_TAG(PRSDK-1705) REQ_TAG(PRSDK-1706) REQ_TAG(PRSDK-3240)
- * Design: did_software_diagnostics_reference did_ecc_diagnostics did_ecc_vim_ram
  *
  * \brief   Runs self test by injecting and error and monitor response
  *          Assumes ECC is already enabled.
@@ -675,9 +666,6 @@ static SDL_Result SDL_ECC_getBitLocation(uint32_t bitMask,
 }
 
 /** ============================================================================
- *
- * Requirement: REQ_TAG(PRSDK-2577) REQ_TAG(PRSDK-1709) REQ_TAG(PRSDK-1705) REQ_TAG(PRSDK-1706) REQ_TAG(PRSDK-3240)
- * Design: did_software_diagnostics_reference did_ecc_diagnostics did_ecc_vim_ram
  *
  * \brief   Injects ECC error at specified location
  *          Assumes ECC is already enabled.

@@ -105,9 +105,6 @@ static void  SDL_trigger_fault(const SDL_MPU_memConfig_t *pMemConfig)
 
 /** ============================================================================*
  *
- * Design: did_mpu_diagnostics
- * Requirement: REQ_TAG(PRSDK-1665)
- *
  * \brief   MPU SELF TEST Check Handler (NOT AN API for SDL MPU)
  *          corrects any mpu self test faults
  *
@@ -134,9 +131,6 @@ bool SDL_MPU_exceptionChkSelfTest(SDL_MPU_memAccessType faultType, uint32_t faul
 }
 
 /** ============================================================================
- *
- * Design: did_mpu_diagnostics
- * Requirement: REQ_TAG(PRSDK-1665)
  *
  * \brief   Runs self test by injecting a fault and monitor response
  *          Assumes MPU Settings from higher layer is already enabled.

@@ -90,9 +90,6 @@ SDL_Result SDL_CCM_CheckSelfTestErrorSource(SDL_CCM_MonitorType *monitorType);
 
 /**
  *
- * Requirement: REQ_TAG(PRSDK-2577) REQ_TAG(PRSDK-1616) REQ_TAG(PRSDK-1617)
- * Design: did_software_diagnostics_reference did_ccm_diagnostics
- *
  * \brief   Initializes CCM module and sets all three compare modules
  *          to compare active
  *
@@ -194,9 +191,6 @@ SDL_Result SDL_CCM_init (void)
 
 /**
  *
- * Requirement: REQ_TAG(PRSDK-2577) REQ_TAG(PRSDK-1616) REQ_TAG(PRSDK-1617)
- * Design: did_software_diagnostics_reference did_ccm_diagnostics
- *
  * \brief   Clear all CCM errors
  *
  *
@@ -286,8 +280,6 @@ SDL_Result  SDL_CCM_clearAllErrors (void)
 }
 
 /** ========================================================================
- * Requirement: REQ_TAG(PRSDK-2577) REQ_TAG(PRSDK-2538)
- * Design: did_software_diagnostics_reference did_ccm_diagnostics
  *
  * \brief   Injects forced error on CCM
  *
@@ -322,9 +314,6 @@ SDL_Result SDL_CCM_injectError (SDL_CCM_MonitorType monitorType)
 }
 
 /** ========================================================================
- *
- * Requirement: REQ_TAG(PRSDK-2577) REQ_TAG(PRSDK-2538)
- * Design: did_software_diagnostics_reference did_ccm_diagnostics
  *
  * \brief   Self test error can happen due to any of the two events
  *          Compare unit or Inactivity detection unit. This routine
@@ -392,9 +381,6 @@ SDL_Result SDL_CCM_CheckSelfTestErrorSource(SDL_CCM_MonitorType *monitorType)
 
 /** ========================================================================
  *
- * Requirement: REQ_TAG(PRSDK-2577) REQ_TAG(PRSDK-2538)
- * Design: did_software_diagnostics_reference did_ccm_diagnostics
- *
  * \brief   Execute Self test on CCM by inverting the polarity
  *
  * \param   polarityInversionMask: Mask used to invert polarity of
@@ -445,9 +431,6 @@ SDL_Result SDL_CCM_selfTestPolarityInvert (uint32_t polarityInversionMask,
 }
 
 /** ========================================================================
- *
- * Requirement: REQ_TAG(PRSDK-2577) REQ_TAG(PRSDK-2538)
- * Design: did_software_diagnostics_reference did_ccm_diagnostics
  *
  * \brief   Execute Self test on CCM
  *          This initiates error injection and checks for the expected
@@ -609,9 +592,6 @@ SDL_Result SDL_CCM_selfTest (SDL_CCM_MonitorType monitorType,
 }
 
 /** ========================================================================
- *
- * Requirement: REQ_TAG(PRSDK-2577)
- * Design: did_software_diagnostics_reference did_ccm_diagnostics
  *
  * \brief   CCM call back function registered with ESM handler
  *

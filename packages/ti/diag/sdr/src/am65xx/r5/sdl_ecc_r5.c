@@ -347,9 +347,6 @@ void SDL_ECC_disableECCEventCheck(SDL_ECC_MemType eccMemType,
 
 /** ============================================================================
  *
- * Requirement: REQ_TAG(PRSDK-3239)
- * Design: did_software_diagnostics_reference did_ecc_vim_ram
- *
  * \brief   Register Handler for VIM DED ECC error
  *
  * \param  VIMDEDHandler: This is function to be called when an Double bit ECC

@@ -89,10 +89,6 @@ static uint32_t SDL_CRC_getPatternSize(SDL_CRC_dataBitSize dataBitSize)
 
 /* Global functions */
 
-/**
- * Design: did_software_diagnostics_reference did_crc_diagnostics
- * Requirement: REQ_TAG(PRSDK-2577) REQ_TAG(PRSDK-4212)
- */
 void SDL_CRC_init (void)
 {
     sdlCrcInitMCB.baseAddr       = CSL_MCU_NAVSS0_MCRC_BASE;
@@ -100,10 +96,6 @@ void SDL_CRC_init (void)
     sdlCrcInitMCB.blkCompPreload = (uint32_t)(0U);
 }
 
-/**
- * Design: did_software_diagnostics_reference did_crc_diagnostics
- * Requirement: REQ_TAG(PRSDK-2577) REQ_TAG(PRSDK-4212)
- */
 SDL_Result SDL_CRC_selftest (uint32_t crcChannel, const SDL_CRC_dataConfig_t *pDataConfig)
 {
     SDL_Result            result = SDL_FAIL;

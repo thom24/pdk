@@ -94,9 +94,6 @@ static bool SDL_ESM_WDT_callBackFunction (SDL_ESM_WDT_IntSrc intSrc);
 
 /** ============================================================================
  *
- * Requirement: REQ_TAG(PRSDK-2577) REQ_TAG(PRSDK-4211)
- * Design: did_software_diagnostics_reference did_wdt_diagnostics
- *
  * \brief  Runs diagnostics on configured Watchdog Timer
  *
  * \param  pTimerConfig:  Pointer to timer configuration
@@ -228,9 +225,6 @@ SDL_Result SDL_WDT_selftest (const SDL_WDT_TimerConfig_t *pTimerConfig,
 
 /** ======================================================================
  *
- * Requirement: REQ_TAG(PRSDK-2577) REQ_TAG(PRSDK-4211)
- * Design: did_software_diagnostics_reference did_wdt_diagnostics
- *
  * \brief   WDT call back function registered with ESM handler
  *
  *
@@ -256,9 +250,6 @@ static bool SDL_ESM_WDT_callBackFunction (SDL_ESM_WDT_IntSrc intSrc)
 }
 
 /** ============================================================================
- *
- * Requirement: REQ_TAG(PRSDK-2577) REQ_TAG(PRSDK-4211)
- * Design: did_software_diagnostics_reference did_wdt_diagnostics
  *
  * \brief  Calculates the low timeout period for the windowed watchdog.
  *
@@ -309,9 +300,6 @@ static uint64_t SDL_WDT_getLowTimeout(const SDL_WDT_TimerConfig_t *pTimerConfig)
 }
 
 /** ============================================================================
- *
- * Requirement: REQ_TAG(PRSDK-2577) REQ_TAG(PRSDK-4211)
- * Design: did_software_diagnostics_reference did_wdt_diagnostics
  *
  * \brief  Gets watch dog timer interrupt source for the given Timer id
  *

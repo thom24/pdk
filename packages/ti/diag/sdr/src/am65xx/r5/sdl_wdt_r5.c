@@ -52,9 +52,6 @@ static uint32_t SDL_WDT_getBaseAddrforIntSrc(SDL_ESM_WDT_IntSrc intSrc);
 
 /** ============================================================================
  *
- * Requirement: REQ_TAG(PRSDK-2577) REQ_TAG(PRSDK-4211)
- * Design: did_software_diagnostics_reference did_wdt_diagnostics
- *
  * \brief  Feeds configured Watchdog Timer
  *
  * \param  timerId:  Timer id of the watchdog timer to feed.
@@ -72,9 +69,6 @@ void SDL_WDT_feedWatchdog(SDL_WDT_TimerId timerId)
 }
 
 /** ============================================================================
- *
- * Requirement: REQ_TAG(PRSDK-2577) REQ_TAG(PRSDK-4211)
- * Design: did_software_diagnostics_reference did_wdt_diagnostics
  *
  * \brief  Clear all events reported in status register
  *
@@ -98,9 +92,6 @@ void SDL_WDT_clearAllInterruptEvents(SDL_ESM_WDT_IntSrc intSrc)
 }
 
 /** ============================================================================
- *
- * Requirement: REQ_TAG(PRSDK-2577) REQ_TAG(PRSDK-4211)
- * Design: did_software_diagnostics_reference did_wdt_diagnostics
  *
  * \brief  Check if the event reported in the status register matches
  *         expected test type

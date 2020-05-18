@@ -65,9 +65,6 @@ static void SDL_ESM_processInterruptSource(uintptr_t arg, uint32_t intSrc);
 
 /** ============================================================================
  *
- * Requirement: REQ_TAG(PRSDK-2577) REQ_TAG(PRSDK-1696)
- * Design: did_software_diagnostics_reference did_esm_diagnostics
- *
  * \brief   Initializes ESM module for SDL
  *
  * \param   esmInitConfig: Configuration for ESM
@@ -222,9 +219,6 @@ SDL_Result SDL_ESM_init (const SDL_ESM_InitConfig_t *esmInitConfig)
 
 /** ============================================================================
  *
- * Requirement: REQ_TAG(PRSDK-2577) REQ_TAG(PRSDK-1696)
- * Design: did_software_diagnostics_reference did_esm_diagnostics
- *
  * \brief  Function sets the nERROR pin inactive.
  *
  * \param  None
@@ -262,9 +256,6 @@ SDL_Result SDL_ESM_resetNError(void)
 
 /** ============================================================================ 
  *
- * Requirement: REQ_TAG(PRSDK-2577) REQ_TAG(PRSDK-1696)
- * Design: did_software_diagnostics_reference did_esm_diagnostics
- *
  * \brief   Function sets the nERROR pin active.
  *
  * \param [in]    None
@@ -278,9 +269,6 @@ void SDL_ESM_setNError(void){
 }
 
 /** ============================================================================
- *
- * Requirement: REQ_TAG(PRSDK-2577) REQ_TAG(PRSDK-1696)
- * Design: did_software_diagnostics_reference did_esm_diagnostics
  *
  * \brief   Function returns the status of nERROR pin
  *
@@ -305,9 +293,6 @@ bool SDL_ESM_getNErrorStatus(void)
 }
 
 /** ============================================================================
- *
- * Requirement: REQ_TAG(PRSDK-2577) REQ_TAG(PRSDK-1696)
- * Design: did_software_diagnostics_reference did_esm_diagnostics
  *
  * \brief   Insert ESM error
  *
@@ -336,9 +321,6 @@ SDL_Result SDL_ESM_errorInsert (const SDL_ESM_ErrorConfig_t *esmErrorConfig)
 /** ============================================================================
  *
  * \brief   Execute self test of ESM module
- *
- * Requirement: REQ_TAG(PRSDK-2577) REQ_TAG(PRSDK-1696) REQ_TAG(PRSDK-5293)
- * Design: did_software_diagnostics_reference did_esm_diagnostics
  *
  * \param   loopCount: Number of tries to check status in a loop
  *
@@ -486,9 +468,6 @@ static void SDL_ESM_interruptHandler (esmIntrPriorityLvl_t esmIntrPriorityLvlTyp
 
 /** ============================================================================
  *
- * Requirement: REQ_TAG(PRSDK-2577) REQ_TAG(PRSDK-1696)
- * Design: did_software_diagnostics_reference did_esm_diagnostics
- *
  * \brief   Esm Hi Interrupt Handler
  *
  * \param1  arg: argument for handler
@@ -508,9 +487,6 @@ void SDL_ESM_hiInterruptHandler (uintptr_t arg)
 }
 
 /** ============================================================================
- *
- * Requirement: REQ_TAG(PRSDK-2577) REQ_TAG(PRSDK-1696)
- * Design: did_software_diagnostics_reference did_esm_diagnostics
  *
  * \brief   Esm Lo Interrupt Handler
  *
@@ -532,9 +508,6 @@ void SDL_ESM_loInterruptHandler (uintptr_t arg)
 
 /** ============================================================================
  *
- * Requirement: REQ_TAG(PRSDK-2577) REQ_TAG(PRSDK-1696)
- * Design: did_software_diagnostics_reference did_esm_diagnostics
- *
  * \brief   Esm Config Interrupt Handler
  *
  * \param1  arg: argument for handler
@@ -552,9 +525,6 @@ void SDL_ESM_configInterruptHandler(uintptr_t arg)
 }
 
 /** ============================================================================
- *
- * Requirement: REQ_TAG(PRSDK-2577) REQ_TAG(PRSDK-1696) REQ_TAG(PRSDK-1671)
- * Design: did_software_diagnostics_reference did_esm_diagnostics did_ecc_diagnostics
  *
  * \brief   Register handler for ECC with ESM
  *
@@ -625,9 +595,6 @@ void SDL_ESM_deRegisterWDTHandler(void)
 }
 
 /** ============================================================================
- *
- * Requirement: REQ_TAG(PRSDK-2577) REQ_TAG(PRSDK-1696)
- * Design: did_software_diagnostics_reference did_esm_diagnostics
  *
  * \brief   Esm get Interrupt Number corresponding to the
  *          input interrupt type
