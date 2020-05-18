@@ -655,7 +655,7 @@ mcasp_board_diag_INCLUDE = $(mcasp_board_diag_PATH)
 mcasp_board_diag_BOARDLIST = am65xx_evm
 export mcasp_board_diag_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
 export mcasp_board_diag_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
-board_diag_EXAMPLE_LIST += mcasp_board_diag
+#board_diag_EXAMPLE_LIST += mcasp_board_diag
 
 # LEO PMIC LIB
 leoPmicLib_board_diag_COMP_LIST = leoPmicLib_board_diag
