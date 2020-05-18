@@ -151,6 +151,12 @@ typedef struct Cal_CoreCaptOpenParams
     uint32_t                csi2PhyClock[CSL_CAL_CMPLXIO_CNT];
     /**< Specify the CSI2 PHY clock in MHz. e.g. if 400 MHz is the clock
      *      \code csi2PhyClock = 400; */
+    uint32_t               mFlagH;
+    /**< When no real time data is received, this should be 0xFF. A 8 bit value,
+     *  please refer spec for details while capturing real time data. */
+    uint32_t               mFlagL;
+    /**< When no real time data is received, this should be 0xFF. A 8 bit value,
+     *  please refer spec for details while capturing real time data. */
     void                   *arg;
     /**< Not Used as of now */
 } Cal_CoreCaptOpenParams_t;

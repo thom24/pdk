@@ -1,4 +1,4 @@
-/* 
+/*
  *  Copyright (c) Texas Instruments Incorporated 2018
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -123,7 +123,7 @@ int32_t calDrvCaptOpenCore(CalDrv_CaptInstObj *instObj)
 int32_t calDrvCaptCloseCore(CalDrv_CaptInstObj *instObj)
 {
     int32_t  retVal = FVID2_SOK;
-    
+
     GT_assert(CalTrace, (NULL != instObj));
     GT_assert(CalTrace, (NULL != instObj->coreOps));
     GT_assert(CalTrace, (NULL != instObj->coreOps->close));
@@ -200,6 +200,8 @@ static int32_t calDrvCaptOpenCoreInt(CalDrv_CaptInstObj *instObj)
 
     coreOpenParms.arg          = NULL;
     coreOpenParms.numStreams   = instObj->createPrms.numStream;
+    coreOpenParms.mFlagH       = instObj->createPrms.mFlagH;
+    coreOpenParms.mFlagL       = instObj->createPrms.mFlagL;
 
     if (FVID2_VIFM_SCH_CSI2 == instObj->createPrms.videoIfMode)
     {

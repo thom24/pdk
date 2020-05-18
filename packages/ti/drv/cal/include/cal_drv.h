@@ -1,4 +1,4 @@
-/* 
+/*
  *  Copyright (c) Texas Instruments Incorporated 2018
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -207,7 +207,7 @@
  *    <tr>
  *      <td>streamId</td>
  *      <td>
- *      Value can be from 0 .. Cal_CaptCreateParams.numStream-1 
+ *      Value can be from 0 .. Cal_CaptCreateParams.numStream-1
  *      </td>
  *    </tr>
  *  </table>
@@ -466,6 +466,12 @@ typedef struct
      *   Channel number must be unique across the whole system.
      *   Users can use Cal_captMakeChNum() to generate a system unique
      *   channel number. */
+    uint32_t mFlagH;
+    /**< When no real time data is received, this should be 0xFF. A 8 bit value,
+     *  please refer spec for details while capturing real time data. */
+    uint32_t mFlagL;
+    /**< When no real time data is received, this should be 0xFF. A 8 bit value,
+     *  please refer spec for details while capturing real time data. */
     void  *pAdditionalArgs;
     /**< [IN] Used by some driver to hold additional information. Please refer
      *          the device specific include, on expected use. */
@@ -792,8 +798,12 @@ static inline void CalCaptCreateParams_init(Cal_CaptCreateParams *createPrms)
         createPrms->videoIfWidth     = FVID2_VIFW_16BIT;
         createPrms->bufCaptMode      = CAL_CAPT_BCM_LAST_FRM_REPEAT;
         createPrms->chInQueueLength  = CAL_CAPT_QUEUE_LEN_PER_CH;
-        createPrms->numCh     = 1U;
-        createPrms->numStream = 1U;
+        createPrms->numCh            = 1U;
+        createPrms->numStream        = 1U;
+        /* By default every traffic is considered as non-real time,
+           Application can make it real time by changing following mFlags */
+        createPrms->mFlagL           = 0xFFU;
+        createPrms->mFlagH           = 0xFFU;
         for (streamId = 0U; streamId < CAL_CAPT_MAX_STREAMS; streamId++)
         {
             for (chId = 0U; chId < CAL_CAPT_CH_PER_PORT_MAX; chId++)

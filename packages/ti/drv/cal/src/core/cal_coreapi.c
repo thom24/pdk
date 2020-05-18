@@ -1053,6 +1053,8 @@ Cal_CoreHandle calCoreCaptOpen(Cal_CoreInst            inst,
                         IOCTL_CAL_HAL_GET_INSTANCECFG,
                         (void *) &pInstObj->instCfg, NULL);
 
+                    pInstObj->instCfg.mFlagH = pOpenParams->mFlagH;
+                    pInstObj->instCfg.mFlagL = pOpenParams->mFlagL;
                     for (i = 0; ((i < CAL_CAPT_MAX_CMPLXIO_INST) &&
                                  (FVID2_SOK == rtnVal)); i++)
                     {
