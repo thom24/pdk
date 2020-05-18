@@ -230,10 +230,10 @@ typedef struct EMAC_IOCTL_PRIO_REGEN_MAP_S {
 typedef struct EMAC_IOCTL_PREMPT_OR_CUT_THROUGH_MAP_S {
     uint8_t pcpPreemptMap[EMAC_IOCTL_PRIO_MAX];
     /**< Specifies mapping of 8 different PCP to preemption mapping.
-         Bit 7 determines if it will be cut-through. Set 1 for cut-through*/
+         Set to 1 for cut-through */
     uint8_t pcpCutThroughMap[EMAC_IOCTL_PRIO_MAX];
     /**< Specifies mapping of 8 different PCP to cut through mapping
-         bit 4 of the byte determines if packet will be pre-emptive on transmit.Set 1 for pre-emptive*/
+         Set to 1 for pre-emptive */
 }EMAC_IOCTL_PREMPT_OR_CUT_THROUGH_MAP;
 
 /**
