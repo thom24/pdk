@@ -64,8 +64,12 @@ extern "C" {
 /* default UART instance for A53 and R5 cores in the Main domain */ 
 #define BOARD_UART_INSTANCE                             (BOARD_UART0_INSTANCE)
 #else
+#ifdef VLAB_SIM
+#define BOARD_UART_INSTANCE                             (BOARD_UART0_INSTANCE)
+#else
 /* default UART instance for M4 core in the MCU domain */ 
 #define BOARD_UART_INSTANCE                             (BOARD_MCU_UART0_INSTANCE)
+#endif
 #endif
 
 /* ICSSG UART instance number */
