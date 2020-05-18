@@ -30,11 +30,9 @@
 # EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-ifeq ($(RULES_MAKE), )
 include $(PDK_INSTALL_PATH)/ti/build/Rules.make
-else
-include $(RULES_MAKE)
-endif
+
+APP_NAME = board_diag_img
 
 ifeq ($(OS),Windows_NT)
 SDSCRIPT=create_sd.bat

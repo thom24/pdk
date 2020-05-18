@@ -65,14 +65,14 @@
 #  -DNO_CLASS -> disable classifier use for pkt->flow mapping
 #  -DDO_PSI_ABORT  (define to enable psi abort sequence on bad pkts. this requires
 #               rx free ring to be in message mode!.  if not define, bad pkts
-#               will be delivered to host with word 3 of protocol specific area 
+#               will be delivered to host with word 3 of protocol specific area
 #               set to 0xBAD0)
 #-----------------------
 include $(RULES_MAKE)
 
 CLPRU = $(CL_PRU_INSTALL_PATH)/bin/clpru
 HEXPRU = $(CL_PRU_INSTALL_PATH)/bin/hexpru
-WIN_BIN = $(SDK_INSTALL_PATH)/pdk_$(PDK_SOC)_$(PDK_VERSION)/packages/ti/drv/emac/firmware/icss_dualmac/bin
+WIN_BIN = $(SDK_INSTALL_PATH)/$(PDK_INSTALL_PATH)/ti/drv/emac/firmware/icss_dualmac/bin
 
 all:
 	$(MAKE) mkversion
@@ -181,7 +181,7 @@ $(BLDT)/$(RTU1)_bin.h: $(RTUS).asm pru.cmd
 					      --exclude=.resource_table \
 					      $(BLDT)/$(RTU1)/$(RTUS).out -o $(BLDT)/$(RTU1)_bin.h
 
-clean:  
+clean:
 ifeq ($(OS),Windows_NT)
 	cmd /c "rmdir /Q /S ..\bin"
 else

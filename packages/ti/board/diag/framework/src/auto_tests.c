@@ -49,7 +49,9 @@
 #include <stdbool.h>
 #include <ti/csl/tistdtypes.h>
 #include <ti/fs/fatfs/ff.h>
+#if defined(SOC_K2G) || defined(SOC_AM572x) || defined(SOC_AM571x) || defined(SOC_AM574x)
 #include <ti/csl/csl_a15.h>
+#endif
 #include <ti/drv/uart/UART_stdio.h>
 #include <ti/boot/sbl/src/rprc/sbl_rprc_parse.h>
 
@@ -57,7 +59,7 @@
 #define GPIO_PADCONFIG_MUX_MODE (7u)
 
 /* Pad Config register offset address details */
-static uint32_t pinMuxgpio[PADCONFIG_MAX_COUNT] = 
+static uint32_t pinMuxgpio[PADCONFIG_MAX_COUNT] =
 {
     PIN_GPMC0_WPN,
     PIN_GPMC0_DIR,
@@ -126,7 +128,7 @@ void DIAG_runComplianceTest(void)
 {
     uint32_t noi,index, breakLoop;
     char iterations[10],rdBuf = 'y';
-    
+
     breakLoop = 1;
 
     /* Configure unused pins as GPIO for compliance test */
@@ -225,7 +227,7 @@ int32_t DIAG_testExecute(uint32_t n)
             {
                 UART_printf("Running %s\n", COMP_appTbl[n-1].appName);
                 COMP_appTbl[n-1].appRan++;
-                        
+
 #if defined(am65xx_evm) || defined(am65xx_idk)
 #if defined (__aarch64__)
                 func_ptr = (diagMainFxn) pEntry.CpuEntryPoint[MPU1_CPU0_ID];
@@ -257,7 +259,7 @@ int32_t DIAG_testExecute(uint32_t n)
                     COMP_appTbl[n-1].appPassed = 0;
                     retVal = -1;
                 }
-            
+
                 UART_printf("\nFinished running %s, result %s\n",
                             COMP_appTbl[n-1].appName,
                             (COMP_appTbl[n-1].appPassed == 1)? "passed!" : "failed!");
