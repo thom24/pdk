@@ -77,7 +77,7 @@ COMP_LIST_COMMON += sciclient
 endif
 
 # Common source files and CFLAGS across all platforms and cores
-PACKAGE_SRCS_COMMON = ../src $(BOARD) makefile
+PACKAGE_SRCS_COMMON = ../src makefile
 PACKAGE_SRCS_COMMON += ../../common/$(SOC)
 PACKAGE_SRCS_COMMON += ../../board_diag_component.mk
 PACKAGE_SRCS_COMMON += ../../create_sd.bat ../../create_sd.sh
@@ -90,6 +90,7 @@ endif
 SRCS_COMMON += diag_common_cfg.c
 ifeq ($(BOARD), $(filter $(BOARD), j721e_evm))
 SRCS_COMMON += boot_eeprom_config.c
+PACKAGE_SRCS_COMMON += $(BOARD)
 endif
 
 ifeq ($(CORE),$(filter $(CORE), mcu1_0))

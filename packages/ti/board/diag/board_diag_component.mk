@@ -535,7 +535,7 @@ icssgEmac_board_diag_INCLUDE = $(icssgEmac_board_diag_PATH)
 icssgEmac_board_diag_BOARDLIST = am65xx_evm am65xx_idk
 export icssgEmac_board_diag_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
 export icssgEmac_board_diag_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
-board_diag_EXAMPLE_LIST += icssgEmac_board_diag
+#board_diag_EXAMPLE_LIST += icssgEmac_board_diag
 
 # icssg_led
 export icssgLed_board_diag_COMP_LIST = icssgLed_board_diag
