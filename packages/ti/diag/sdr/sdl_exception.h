@@ -1,7 +1,7 @@
 /*
- * SDL EXCEPTION
+ * SDR EXCEPTION
  *
- * Software Diagnostics Library module for Exception handling
+ * Software Diagnostics Reference module for Exception handling
  *
  *  Copyright (c) Texas Instruments Incorporated 2018-2020
  *
@@ -40,18 +40,18 @@
  *
  * @brief
  *  Header file contains enumerations, structure definitions and function
- *  declarations for SDL EXCEPTION interface.
+ *  declarations for SDR EXCEPTION interface.
  *
- *  The SDL exception data structures include:
+ *  The SDR exception data structures include:
  *      1. Structure of call back functions for various exception events
  *
- *  The SDL exception APIs include:
- *      1. API to execute SDL Exception module initialization
+ *  The SDR exception APIs include:
+ *      1. API to execute SDR Exception module initialization
  *      2. APIs to handle various exceptions
  */
 
-#ifndef INCLUDE_SDL_EXCEPTION_H_
-#define INCLUDE_SDL_EXCEPTION_H_
+#ifndef INCLUDE_SDR_EXCEPTION_H_
+#define INCLUDE_SDR_EXCEPTION_H_
 #include "sdl_common.h"
 
 #ifdef __cplusplus
@@ -60,67 +60,67 @@ extern "C" {
 
 /** ===========================================================================
  *
- * @defgroup SDL_EXCEPTION_API SDL EXCEPTION API
+ * @defgroup SDR_EXCEPTION_API SDR EXCEPTION API
  *
  * ============================================================================
  */
 /**
-@defgroup SDL_EXCEPTION_DATASTRUCT  SDL EXCEPTION Data Structures
-@ingroup SDL_EXCEPTION_API
+@defgroup SDR_EXCEPTION_DATASTRUCT  SDR EXCEPTION Data Structures
+@ingroup SDR_EXCEPTION_API
 */
 /**
-@defgroup SDL_EXCEPTION_FUNCTION  SDL EXCEPTION Functions
-@ingroup SDL_EXCEPTION_API
+@defgroup SDR_EXCEPTION_FUNCTION  SDR EXCEPTION Functions
+@ingroup SDR_EXCEPTION_API
 */
 /**
-@defgroup SDL_EXCEPTION_MACROS SDL EXCEPTION Macro defines
-@ingroup SDL_EXCEPTION_API
+@defgroup SDR_EXCEPTION_MACROS SDR EXCEPTION Macro defines
+@ingroup SDR_EXCEPTION_API
 */
 
 /**
- *  \addtogroup SDL_EXCEPTION_MACROS
+ *  \addtogroup SDR_EXCEPTION_MACROS
  *  @{
  */
 
 
 /** \brief Format of Call back function for ECC error events */
-typedef void (*SDL_EXCEPTION_ECCCallback_t) (uint32_t intSource, uint32_t errorAddr);
+typedef void (*SDR_EXCEPTION_ECCCallback_t) (uint32_t intSource, uint32_t errorAddr);
 
 /** \brief Format of Call back function for exception */
-typedef void (*SDL_EXCEPTION_Callback_t) (void);
+typedef void (*SDR_EXCEPTION_Callback_t) (void);
 
 /* @} */
 
 /**
- *  \addtogroup SDL_EXCEPTION_DATASTRUCT
+ *  \addtogroup SDR_EXCEPTION_DATASTRUCT
  *  @{
  */
 /** \brief Structure of call back functions for various exception events */
-typedef struct SDL_EXCEPTION_CallbackFunctions_s
+typedef struct SDR_EXCEPTION_CallbackFunctions_s
 {
-    SDL_EXCEPTION_Callback_t udefExptnCallback;
+    SDR_EXCEPTION_Callback_t udefExptnCallback;
     /**< Undefined Instruction exception callback function */
-    SDL_EXCEPTION_Callback_t swiExptnCallback;
+    SDR_EXCEPTION_Callback_t swiExptnCallback;
     /**< Software Interrupt exception callback function  */
-    SDL_EXCEPTION_Callback_t pabtExptnCallback;
+    SDR_EXCEPTION_Callback_t pabtExptnCallback;
     /**< Prefetch Abort exception callback function */
-    SDL_EXCEPTION_Callback_t dabtExptnCallback;
+    SDR_EXCEPTION_Callback_t dabtExptnCallback;
     /**< Data Abort exception callback function */
-    SDL_EXCEPTION_Callback_t irqExptnCallback;
+    SDR_EXCEPTION_Callback_t irqExptnCallback;
     /**< Interrupt Request exception callback function.
      *   This will be used only if VIM is not enabled.
      */
-    SDL_EXCEPTION_Callback_t fiqExptnCallback;
+    SDR_EXCEPTION_Callback_t fiqExptnCallback;
     /**< Fast Interrupt Request callback function.
      *   This will be used only if VIM is not enabled.
      */
-}SDL_EXCEPTION_CallbackFunctions_t;
+}SDR_EXCEPTION_CallbackFunctions_t;
 
 
 /* @} */
 
 /**
- *  \addtogroup SDL_EXCEPTION_FUNCTION
+ *  \addtogroup SDR_EXCEPTION_FUNCTION
  *  @{
  */
 
@@ -132,7 +132,7 @@ typedef struct SDL_EXCEPTION_CallbackFunctions_s
  *
  * \return  None
  */
-void SDL_EXCEPTION_init(const SDL_EXCEPTION_CallbackFunctions_t *callbackFunctions);
+void SDR_EXCEPTION_init(const SDR_EXCEPTION_CallbackFunctions_t *callbackFunctions);
 
 /** ============================================================================
  *
@@ -142,7 +142,7 @@ void SDL_EXCEPTION_init(const SDL_EXCEPTION_CallbackFunctions_t *callbackFunctio
  *
  * \return  None
  */
-void SDL_EXCEPTION_registerECCHandler(SDL_EXCEPTION_ECCCallback_t ECCCallBackFunctionPtr);
+void SDR_EXCEPTION_registerECCHandler(SDR_EXCEPTION_ECCCallback_t ECCCallBackFunctionPtr);
 
 /** ============================================================================
  *
@@ -152,7 +152,7 @@ void SDL_EXCEPTION_registerECCHandler(SDL_EXCEPTION_ECCCallback_t ECCCallBackFun
  *
  * \return  None
  */
-void SDL_EXCEPTION_undefInstructionExptnHandler(void *param);
+void SDR_EXCEPTION_undefInstructionExptnHandler(void *param);
 
 /** ============================================================================
  *
@@ -162,7 +162,7 @@ void SDL_EXCEPTION_undefInstructionExptnHandler(void *param);
  *
  * \return  None
  */
-void SDL_EXCEPTION_swIntrExptnHandler(void *param);
+void SDR_EXCEPTION_swIntrExptnHandler(void *param);
 
 /** ============================================================================
  *
@@ -172,7 +172,7 @@ void SDL_EXCEPTION_swIntrExptnHandler(void *param);
  *
  * \return  None
  */
-void SDL_EXCEPTION_prefetchAbortExptnHandler(void *param);
+void SDR_EXCEPTION_prefetchAbortExptnHandler(void *param);
 
 /** ============================================================================
  *
@@ -182,7 +182,7 @@ void SDL_EXCEPTION_prefetchAbortExptnHandler(void *param);
  *
  * \return  None
  */
-void SDL_EXCEPTION_dataAbortExptnHandler(void *param);
+void SDR_EXCEPTION_dataAbortExptnHandler(void *param);
 
 /** ============================================================================
  *
@@ -192,7 +192,7 @@ void SDL_EXCEPTION_dataAbortExptnHandler(void *param);
  *
  * \return  None
  */
-void SDL_EXCEPTION_irqExptnHandler(void *param);
+void SDR_EXCEPTION_irqExptnHandler(void *param);
 
 /** ============================================================================
  *
@@ -202,7 +202,7 @@ void SDL_EXCEPTION_irqExptnHandler(void *param);
  *
  * \return  None
  */
-void SDL_EXCEPTION_fiqExptnHandler(void *param);
+void SDR_EXCEPTION_fiqExptnHandler(void *param);
 
 /* @} */
 
@@ -210,4 +210,4 @@ void SDL_EXCEPTION_fiqExptnHandler(void *param);
 }
 #endif  /* extern "C" */
 
-#endif /* INCLUDE_SDL_EXCEPTION_H_ */
+#endif /* INCLUDE_SDR_EXCEPTION_H_ */

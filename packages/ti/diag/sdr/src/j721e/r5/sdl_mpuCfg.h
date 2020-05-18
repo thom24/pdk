@@ -1,7 +1,7 @@
 /*
- * SDL MPU Configuration
+ * SDR MPU Configuration
  *
- * Software Diagnostics Library module for MPU configuration module
+ * Software Diagnostics Reference module for MPU configuration module
  *
  *  Copyright (c) Texas Instruments Incorporated 2020
  *
@@ -39,19 +39,19 @@
  * @file  sdl_mpuCfg.h
  *
  * @brief
- *  Header file for SDL MPU configuration interface.
+ *  Header file for SDR MPU configuration interface.
  *  ============================================================================
  */
 
-#ifndef INCLUDE_SDL_MPUCFG_H_
-#define INCLUDE_SDL_MPUCFG_H_
+#ifndef INCLUDE_SDR_MPUCFG_H_
+#define INCLUDE_SDR_MPUCFG_H_
 
 #include <sdl_common.h>
 #include <sdl_mpu.h>
 #include <ti/csl/arch/r5/csl_arm_r5_mpu.h>
 
-void SDL_MPUCfgAddRegion(const SDL_MPU_memConfig_t *pMemConfig);
-void SDL_MPUResolve(uint32_t baseAddr, uint32_t regId);
-void SDL_MPUCfgRemoveRegion(const SDL_MPU_memConfig_t *pMemConfig);
+void SDR_MPUCfgAddRegion(const SDR_MPU_memConfig_t *pMemConfig);
+void SDR_MPUResolve(uint32_t baseAddr, uint32_t regId);
+void SDR_MPUCfgRemoveRegion(const SDR_MPU_memConfig_t *pMemConfig);
 
-#endif /* INCLUDE_SDL_MPUCFG_H_ */
+#endif /* INCLUDE_SDR_MPUCFG_H_ */

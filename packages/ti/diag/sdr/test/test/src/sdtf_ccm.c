@@ -1,7 +1,7 @@
 /*
  * SDTF CCM
  *
- * Software Diagnostics Library Test for CCM module
+ * Software Diagnostics Reference Test for CCM module
  *
  *  Copyright (c) Texas Instruments Incorporated 2019-2020
  *
@@ -55,23 +55,23 @@
  */
 int32_t SDTF_runCCMSelfTest(void)
 {
-    SDL_Result result;
+    SDR_Result result;
     int32_t retVal=0;
 
-    SDL_CCM_ErrorStatus_t errorStatus;
+    SDR_CCM_ErrorStatus_t errorStatus;
 
     SDTF_printf("\n CCM self test: starting");
 
     SDTF_profileBegin(SDTF_PROFILE_ONESHOT);
 
-    result = SDL_CCM_selfTest(SDL_CCM_MONITOR_TYPE_OUTPUT_COMPARE_BLOCK,
-                              SDL_CCM_SELFTEST_TYPE_NORMAL,
+    result = SDR_CCM_selfTest(SDR_CCM_MONITOR_TYPE_OUTPUT_COMPARE_BLOCK,
+                              SDR_CCM_SELFTEST_TYPE_NORMAL,
                               10000000,
                               &errorStatus);
 
     SDTF_profileEnd(SDTF_PROFILE_ONESHOT);
 
-    if (result != SDL_PASS ) {
+    if (result != SDR_PASS ) {
         SDTF_printf("\n CCM self test failed");
         SDTF_printf("\n Error status cmp error %d, self test error %d, Self test error type %d",
                     errorStatus.compareErrorFlag,
@@ -98,23 +98,23 @@ int32_t SDTF_runCCMSelfTest(void)
  */
 int32_t SDTF_runCCMSelfTestErrorForce(void)
 {
-    SDL_Result result;
+    SDR_Result result;
     int32_t retVal=0;
 
-    SDL_CCM_ErrorStatus_t errorStatus;
+    SDR_CCM_ErrorStatus_t errorStatus;
 
     SDTF_printf("\n CCM self test with error forcing: starting");
 
     SDTF_profileBegin(SDTF_PROFILE_ONESHOT);
 
-    result = SDL_CCM_selfTest(SDL_CCM_MONITOR_TYPE_OUTPUT_COMPARE_BLOCK,
-                              SDL_CCM_SELFTEST_TYPE_ERR_FORCING,
+    result = SDR_CCM_selfTest(SDR_CCM_MONITOR_TYPE_OUTPUT_COMPARE_BLOCK,
+                              SDR_CCM_SELFTEST_TYPE_ERR_FORCING,
                               10000000,
                               &errorStatus);
 
     SDTF_profileEnd(SDTF_PROFILE_ONESHOT);
 
-    if (result != SDL_PASS ) {
+    if (result != SDR_PASS ) {
         SDTF_printf("\n CCM self test with error forcing failed");
         SDTF_printf("\n Error status cmp error %d, self test error %d, Self test error type %d",
                     errorStatus.compareErrorFlag,
@@ -140,18 +140,18 @@ int32_t SDTF_runCCMSelfTestErrorForce(void)
  */
 int32_t SDTF_runCCMInjectError(void)
 {
-    SDL_Result result;
+    SDR_Result result;
     int32_t retVal=0;
 
     SDTF_printf("\n CCM inject  error: test starting");
 
     SDTF_profileBegin(SDTF_PROFILE_ONESHOT);
 
-    result = SDL_CCM_injectError(SDL_CCM_MONITOR_TYPE_OUTPUT_COMPARE_BLOCK);
+    result = SDR_CCM_injectError(SDR_CCM_MONITOR_TYPE_OUTPUT_COMPARE_BLOCK);
 
     SDTF_profileEnd(SDTF_PROFILE_ONESHOT);
 
-    if (result != SDL_PASS ) {
+    if (result != SDR_PASS ) {
         SDTF_printf("\n CCM inject failed");
        retVal = -1;
     } else {
@@ -174,18 +174,18 @@ int32_t SDTF_runCCMInjectError(void)
  */
 int32_t SDTF_runCCMSelftestPolarityInvert(void)
 {
-    SDL_Result result;
+    SDR_Result result;
     int32_t retVal=0;
 
     SDTF_printf("\n CCM polarity invert self test: starting");
 
     SDTF_profileBegin(SDTF_PROFILE_ONESHOT);
 
-    result = SDL_CCM_selfTestPolarityInvert(0xff, 100000);
+    result = SDR_CCM_selfTestPolarityInvert(0xff, 100000);
 
     SDTF_profileEnd(SDTF_PROFILE_ONESHOT);
 
-    if (result != SDL_PASS ) {
+    if (result != SDR_PASS ) {
         SDTF_printf("\n CCM polarity invert self test failed");
        retVal = -1;
     } else {
@@ -207,23 +207,23 @@ int32_t SDTF_runCCMSelftestPolarityInvert(void)
  */
 int32_t SDTF_runCCMVIMSelfTest(void)
 {
-    SDL_Result result;
+    SDR_Result result;
     int32_t retVal=0;
 
-    SDL_CCM_ErrorStatus_t errorStatus;
+    SDR_CCM_ErrorStatus_t errorStatus;
 
     SDTF_printf("\n CCM VIM self test: starting");
 
     SDTF_profileBegin(SDTF_PROFILE_ONESHOT);
 
-    result = SDL_CCM_selfTest(SDL_CCM_MONITOR_TYPE_VIM,
-                              SDL_CCM_SELFTEST_TYPE_NORMAL,
+    result = SDR_CCM_selfTest(SDR_CCM_MONITOR_TYPE_VIM,
+                              SDR_CCM_SELFTEST_TYPE_NORMAL,
                               10000000,
                               &errorStatus);
 
     SDTF_profileEnd(SDTF_PROFILE_ONESHOT);
 
-    if (result != SDL_PASS ) {
+    if (result != SDR_PASS ) {
         SDTF_printf("\n CCM VIM self test failed");
         SDTF_printf("\n Error status cmp error %d, self test error %d, Self test error type %d",
                     errorStatus.compareErrorFlag,
@@ -249,23 +249,23 @@ int32_t SDTF_runCCMVIMSelfTest(void)
  */
 int32_t SDTF_runCCMInactivitySelfTest(void)
 {
-    SDL_Result result;
+    SDR_Result result;
     int32_t retVal=0;
 
-    SDL_CCM_ErrorStatus_t errorStatus;
+    SDR_CCM_ErrorStatus_t errorStatus;
 
     SDTF_printf("\n CCM inactivity monitor self test: starting");
 
     SDTF_profileBegin(SDTF_PROFILE_ONESHOT);
 
-    result = SDL_CCM_selfTest(SDL_CCM_MONITOR_TYPE_INACTIVITY_MONITOR,
-                              SDL_CCM_SELFTEST_TYPE_NORMAL,
+    result = SDR_CCM_selfTest(SDR_CCM_MONITOR_TYPE_INACTIVITY_MONITOR,
+                              SDR_CCM_SELFTEST_TYPE_NORMAL,
                               10000000,
                               &errorStatus);
 
     SDTF_profileEnd(SDTF_PROFILE_ONESHOT);
 
-    if (result != SDL_PASS ) {
+    if (result != SDR_PASS ) {
         SDTF_printf("\n CCM inactivity monitor self test failed");
         SDTF_printf("\n Error status cmp error %d, self test error %d, Self test error type %d",
                     errorStatus.compareErrorFlag,

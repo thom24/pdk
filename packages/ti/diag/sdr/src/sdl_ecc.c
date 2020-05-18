@@ -1,7 +1,7 @@
 /*
- * SDL ECC
+ * SDR ECC
  *
- * Software Diagnostics Library module for ECC
+ * Software Diagnostics Reference module for ECC
  *
  *  Copyright (c) Texas Instruments Incorporated 2018-2020
  *
@@ -54,7 +54,7 @@
 #include "sdl_ecc_priv.h"
 
 /* Local defines */
-#define SDL_ECC_INVALID_ERROR_SOURCE (0xffffffffu)
+#define SDR_ECC_INVALID_ERROR_SOURCE (0xffffffffu)
 
 #define BITS_PER_WORD (32u)
 
@@ -65,56 +65,56 @@
  * ----------------------------------------------------------------------------
  */
 typedef enum {
-    SDL_ECC_ERROR_FLAG_NONE=0,
+    SDR_ECC_ERROR_FLAG_NONE=0,
     /**< Flag set during ECC initialization or end of the ECC self test */
-    SDL_ECC_ERROR_FLAG_STARTING=1,
+    SDR_ECC_ERROR_FLAG_STARTING=1,
     /**< Flag set at the start of the ECC self test */
-    SDL_ECC_ERROR_FLAG_TRIGGERED=2,
+    SDR_ECC_ERROR_FLAG_TRIGGERED=2,
     /**< Flag set when ECC error happens during the ECC self test */
 
-} SDL_ECC_ErrorFlag;
+} SDR_ECC_ErrorFlag;
 
 /** ---------------------------------------------------------------------------
  * @brief This structure defines the elements of ECC software instance
  * ----------------------------------------------------------------------------
  */
-typedef struct SDL_ECC_Instance_s
+typedef struct SDR_ECC_Instance_s
 {
-   SDL_ECC_InitConfig_t eccInitConfig;
+   SDR_ECC_InitConfig_t eccInitConfig;
    /**< ecc Initial configuration */
-   SDL_ECC_ErrorFlag eccErrorFlag;
+   SDR_ECC_ErrorFlag eccErrorFlag;
    /**< Ecc error triggered flag */
-   SDL_ECC_InjectErrorType eccSelfTestErrorType;
+   SDR_ECC_InjectErrorType eccSelfTestErrorType;
    /**< Ecc self type error type in progress */
    uint32_t eccSelfTestRamId;
    /**< Ram id used in self test in progress */
    uint32_t *eccSelfTestAddr;
    /**< Address used in self test in progress */
-}  SDL_ECC_Instance_t;
+}  SDR_ECC_Instance_t;
 
 /* Global objects */
-static SDL_ECC_Instance_t SDL_ECC_instance[SDL_ECC_AGGREGATOR_MAX_ENTRIES];
+static SDR_ECC_Instance_t SDR_ECC_instance[SDR_ECC_AGGREGATOR_MAX_ENTRIES];
 
-extern const SDL_RAMIdEntry_t SDL_ECC_mcuArmssRamIdTable[SDL_PULSAR_CPU_RAM_ID_TABLE_MAX_ENTRIES];
+extern const SDR_RAMIdEntry_t SDR_ECC_mcuArmssRamIdTable[SDR_PULSAR_CPU_RAM_ID_TABLE_MAX_ENTRIES];
 
 /* Local functions */
-static SDL_Result SDL_ECC_getRamId(SDL_ECC_MemType eccMemType, SDL_ECC_MemSubType memSubType,
+static SDR_Result SDR_ECC_getRamId(SDR_ECC_MemType eccMemType, SDR_ECC_MemSubType memSubType,
                            uint32_t *ramIdP);
-static SDL_Result SDL_ECC_getAggregatorType(SDL_ECC_MemType eccMemType, SDL_ECC_MemSubType memSubType,
+static SDR_Result SDR_ECC_getAggregatorType(SDR_ECC_MemType eccMemType, SDR_ECC_MemSubType memSubType,
     bool *pIinjectOnly);
-static SDL_Result SDL_ECC_memoryRefresh(uint32_t *memAddr, size_t size);
-static void SDL_ECC_triggerAccessForEcc(const uint32_t *memoryAccessAddr);
+static SDR_Result SDR_ECC_memoryRefresh(uint32_t *memAddr, size_t size);
+static void SDR_ECC_triggerAccessForEcc(const uint32_t *memoryAccessAddr);
 
-static SDL_Result SDL_ECC_getMemConfig(SDL_ECC_MemType eccMemType, SDL_ECC_MemSubType memSubType,
-                               SDL_MemConfig_t *memConfig);
-static uint32_t SDL_ECC_getDetectErrorSource (SDL_ECC_InjectErrorType injectErorType);
-static SDL_Result SDL_ECC_getBitLocation(uint32_t bitMask,
+static SDR_Result SDR_ECC_getMemConfig(SDR_ECC_MemType eccMemType, SDR_ECC_MemSubType memSubType,
+                               SDR_MemConfig_t *memConfig);
+static uint32_t SDR_ECC_getDetectErrorSource (SDR_ECC_InjectErrorType injectErorType);
+static SDR_Result SDR_ECC_getBitLocation(uint32_t bitMask,
                             uint32_t startBitLocation,
                             uint32_t *bitLocation);
-static void SDL_ECC_handleEccAggrEvent (SDL_ECC_MemType eccMemType, uint32_t errorSrc,
+static void SDR_ECC_handleEccAggrEvent (SDR_ECC_MemType eccMemType, uint32_t errorSrc,
                                        uint32_t errorAddr);
-static void SDL_ECC_ESMCallBackFunction (uint32_t errorSrc, uint32_t errorAddr);
-static SDL_Result SDL_ECC_checkMemoryType(SDL_ECC_MemType eccMemType, SDL_ECC_MemSubType memSubType);
+static void SDR_ECC_ESMCallBackFunction (uint32_t errorSrc, uint32_t errorAddr);
+static SDR_Result SDR_ECC_checkMemoryType(SDR_ECC_MemType eccMemType, SDR_ECC_MemSubType memSubType);
 
 /** ============================================================================*
  *
@@ -126,30 +126,30 @@ static SDL_Result SDL_ECC_checkMemoryType(SDL_ECC_MemType eccMemType, SDL_ECC_Me
  *
  * \param1  errorType: error Type
  *
- * \return  error Source or SDL_ECC_INVALID_ERROR_SOURCE in case of error
+ * \return  error Source or SDR_ECC_INVALID_ERROR_SOURCE in case of error
  */
-static uint32_t SDL_ECC_getDetectErrorSource (SDL_ECC_InjectErrorType injectErorType)
+static uint32_t SDR_ECC_getDetectErrorSource (SDR_ECC_InjectErrorType injectErorType)
 {
     uint32_t errorSource;
 
     switch(injectErorType) {
-        case SDL_INJECT_ECC_ERROR_FORCING_1BIT_ONCE:
-        case SDL_INJECT_ECC_ERROR_FORCING_1BIT_N_ROW_ONCE:
-        case SDL_INJECT_ECC_ERROR_FORCING_1BIT_REPEAT:
-        case SDL_INJECT_ECC_ERROR_FORCING_1BIT_N_ROW_REPEAT:
-            errorSource = SDL_ESM_ECC_PARAM_MCU_CPU0_SEC_ERROR;
+        case SDR_INJECT_ECC_ERROR_FORCING_1BIT_ONCE:
+        case SDR_INJECT_ECC_ERROR_FORCING_1BIT_N_ROW_ONCE:
+        case SDR_INJECT_ECC_ERROR_FORCING_1BIT_REPEAT:
+        case SDR_INJECT_ECC_ERROR_FORCING_1BIT_N_ROW_REPEAT:
+            errorSource = SDR_ESM_ECC_PARAM_MCU_CPU0_SEC_ERROR;
             break;
 
 
-        case SDL_INJECT_ECC_ERROR_FORCING_2BIT_ONCE:
-        case SDL_INJECT_ECC_ERROR_FORCING_2BIT_N_ROW_ONCE:
-        case SDL_INJECT_ECC_ERROR_FORCING_2BIT_REPEAT:
-        case SDL_INJECT_ECC_ERROR_FORCING_2BIT_N_ROW_REPEAT:
-            errorSource = SDL_ESM_ECC_PARAM_MCU_CPU0_DED_ERROR;
+        case SDR_INJECT_ECC_ERROR_FORCING_2BIT_ONCE:
+        case SDR_INJECT_ECC_ERROR_FORCING_2BIT_N_ROW_ONCE:
+        case SDR_INJECT_ECC_ERROR_FORCING_2BIT_REPEAT:
+        case SDR_INJECT_ECC_ERROR_FORCING_2BIT_N_ROW_REPEAT:
+            errorSource = SDR_ESM_ECC_PARAM_MCU_CPU0_DED_ERROR;
             break;
 
         default:
-            errorSource = ((uint32_t)SDL_ECC_INVALID_ERROR_SOURCE);
+            errorSource = ((uint32_t)SDR_ECC_INVALID_ERROR_SOURCE);
             break;
     }
     return errorSource;
@@ -165,30 +165,30 @@ static uint32_t SDL_ECC_getDetectErrorSource (SDL_ECC_InjectErrorType injectEror
  *
  * \return  None
  */
-static void SDL_ECC_handleEccAggrEvent (SDL_ECC_MemType eccMemType, uint32_t errorSrc,
+static void SDR_ECC_handleEccAggrEvent (SDR_ECC_MemType eccMemType, uint32_t errorSrc,
                                        uint32_t errorAddr)
 {
     CSL_ecc_aggrRegs *eccAggrRegs;
     uint32_t ramId=0;
-    SDL_Result retVal;
-    SDL_ECC_MemSubType memSubType;
+    SDR_Result retVal;
+    SDR_ECC_MemSubType memSubType;
     uint32_t i;
     bool eventFound = ((bool)false);
     bool eventFound1;
     int32_t cslResult;
 
-    eccAggrRegs = (SDL_ECC_aggrBaseAddressTable[eccMemType]);
+    eccAggrRegs = (SDR_ECC_aggrBaseAddressTable[eccMemType]);
 
     /* Check which Ram Id triggered the error */
     for (i = ((uint32_t)0U);
-         i < SDL_ECC_instance[eccMemType].eccInitConfig.numRams;
+         i < SDR_ECC_instance[eccMemType].eccInitConfig.numRams;
          i++) {
         /* Get corresponding ram Id */
-        memSubType = SDL_ECC_instance[eccMemType].eccInitConfig.pMemSubTypeList[i];
-        retVal = SDL_ECC_getRamId(eccMemType, memSubType, &ramId);
-        if (retVal != SDL_PASS) {
+        memSubType = SDR_ECC_instance[eccMemType].eccInitConfig.pMemSubTypeList[i];
+        retVal = SDR_ECC_getRamId(eccMemType, memSubType, &ramId);
+        if (retVal != SDR_PASS) {
             /* Unexpected FAILURE: call Assert */
-            SDL_assertExternalFunction(SDL_ECC_RAM_ID_NOT_FOUND);
+            SDR_assertExternalFunction(SDR_ECC_RAM_ID_NOT_FOUND);
             continue;
         }
 
@@ -200,13 +200,13 @@ static void SDL_ECC_handleEccAggrEvent (SDL_ECC_MemType eccMemType, uint32_t err
             (void)CSL_ecc_aggrClrEccRamIntrPending(eccAggrRegs, ramId, errorSrc);
             /* If it matches self test set flag */
             if ((errorSrc
-                 == SDL_ECC_getDetectErrorSource(SDL_ECC_instance[eccMemType].eccSelfTestErrorType))
-                 && (ramId == SDL_ECC_instance[eccMemType].eccSelfTestRamId)) {
+                 == SDR_ECC_getDetectErrorSource(SDR_ECC_instance[eccMemType].eccSelfTestErrorType))
+                 && (ramId == SDR_ECC_instance[eccMemType].eccSelfTestRamId)) {
 
-                 SDL_ECC_instance[eccMemType].eccErrorFlag = SDL_ECC_ERROR_FLAG_TRIGGERED;
+                 SDR_ECC_instance[eccMemType].eccErrorFlag = SDR_ECC_ERROR_FLAG_TRIGGERED;
             } else {
                 /* Call application callback function to indicate error */
-                SDL_ECC_applicationCallbackFunction(errorSrc, errorAddr);
+                SDR_ECC_applicationCallbackFunction(errorSrc, errorAddr);
             }
         }
     }
@@ -215,7 +215,7 @@ static void SDL_ECC_handleEccAggrEvent (SDL_ECC_MemType eccMemType, uint32_t err
     cslResult = CSL_ecc_aggrAckIntr(eccAggrRegs, CSL_ECC_AGGR_INTR_SRC_SINGLE_BIT);
     if ((cslResult != CSL_PASS) || (!eventFound)) {
         /* Unexpected event; Call assert */
-        SDL_assertExternalFunction(SDL_ECC_INTERRUPT_WITH_NOEVENT);
+        SDR_assertExternalFunction(SDR_ECC_INTERRUPT_WITH_NOEVENT);
     }
     return;
 }
@@ -231,44 +231,44 @@ static void SDL_ECC_handleEccAggrEvent (SDL_ECC_MemType eccMemType, uint32_t err
  *
  * \return  None
  */
-static void SDL_ECC_callBackFunction (uint32_t errorSrc, uint32_t errorAddr)
+static void SDR_ECC_callBackFunction (uint32_t errorSrc, uint32_t errorAddr)
 {
-    SDL_ECC_MemType eccMemType;
+    SDR_ECC_MemType eccMemType;
 
 
     /* Check Error Source and call acknowledge appropriate interrupt */
     switch (errorSrc) {
-        case SDL_ESM_ECC_PARAM_MCU_CPU0_SEC_ERROR:
-        case SDL_ESM_ECC_PARAM_MCU_CPU0_DED_ERROR:
-        case SDL_ESM_ECC_PARAM_MCU_CPU1_SEC_ERROR:
-        case SDL_ESM_ECC_PARAM_MCU_CPU1_DED_ERROR:
+        case SDR_ESM_ECC_PARAM_MCU_CPU0_SEC_ERROR:
+        case SDR_ESM_ECC_PARAM_MCU_CPU0_DED_ERROR:
+        case SDR_ESM_ECC_PARAM_MCU_CPU1_SEC_ERROR:
+        case SDR_ESM_ECC_PARAM_MCU_CPU1_DED_ERROR:
             /* Get corresponding Memory type */
             switch(errorSrc)
             {
                 default:
-                case SDL_ESM_ECC_PARAM_MCU_CPU0_SEC_ERROR:
-                case SDL_ESM_ECC_PARAM_MCU_CPU0_DED_ERROR:
-                    eccMemType = SDL_ECC_MEMTYPE_MCU_R5F0_CORE;
+                case SDR_ESM_ECC_PARAM_MCU_CPU0_SEC_ERROR:
+                case SDR_ESM_ECC_PARAM_MCU_CPU0_DED_ERROR:
+                    eccMemType = SDR_ECC_MEMTYPE_MCU_R5F0_CORE;
                     break;
 
-                case SDL_ESM_ECC_PARAM_MCU_CPU1_SEC_ERROR:
-                case SDL_ESM_ECC_PARAM_MCU_CPU1_DED_ERROR:
-                    eccMemType = SDL_ECC_MEMTYPE_MCU_R5F1_CORE;
+                case SDR_ESM_ECC_PARAM_MCU_CPU1_SEC_ERROR:
+                case SDR_ESM_ECC_PARAM_MCU_CPU1_DED_ERROR:
+                    eccMemType = SDR_ECC_MEMTYPE_MCU_R5F1_CORE;
                     break;
 
             }
 
             /* If self test in progress, indicate triggered flag */
             if ((errorSrc
-                 == SDL_ECC_getDetectErrorSource(SDL_ECC_instance[eccMemType].eccSelfTestErrorType))
-                && ((errorAddr == ((uint32_t)SDL_ESM_ERRORADDR_INVALID))
+                 == SDR_ECC_getDetectErrorSource(SDR_ECC_instance[eccMemType].eccSelfTestErrorType))
+                && ((errorAddr == ((uint32_t)SDR_ESM_ERRORADDR_INVALID))
                 || (((uintptr_t)errorAddr)
-                    == ((uintptr_t)SDL_ECC_instance[eccMemType].eccSelfTestAddr)))
-                && (SDL_ECC_instance[eccMemType].eccErrorFlag == SDL_ECC_ERROR_FLAG_STARTING)) {
-                SDL_ECC_instance[eccMemType].eccErrorFlag = SDL_ECC_ERROR_FLAG_TRIGGERED;
+                    == ((uintptr_t)SDR_ECC_instance[eccMemType].eccSelfTestAddr)))
+                && (SDR_ECC_instance[eccMemType].eccErrorFlag == SDR_ECC_ERROR_FLAG_STARTING)) {
+                SDR_ECC_instance[eccMemType].eccErrorFlag = SDR_ECC_ERROR_FLAG_TRIGGERED;
             } else {
                 /* Execute call back */
-                SDL_ECC_applicationCallbackFunction(errorSrc, errorAddr);
+                SDR_ECC_applicationCallbackFunction(errorSrc, errorAddr);
             }
 
             break;
@@ -289,35 +289,35 @@ static void SDL_ECC_callBackFunction (uint32_t errorSrc, uint32_t errorAddr)
  *
  * \return  None
  */
-static void SDL_ECC_ESMCallBackFunction (uint32_t errorSrc, uint32_t errorAddr)
+static void SDR_ECC_ESMCallBackFunction (uint32_t errorSrc, uint32_t errorAddr)
 {
-    SDL_ECC_MemType eccMemType;
+    SDR_ECC_MemType eccMemType;
 
 
     /* Check Error Source and call acknowledge appropriate interrupt */
     switch (errorSrc) {
-        case SDL_ESM_ECC_PARAM_MCU_CPU0_SEC_ERROR:
-        case SDL_ESM_ECC_PARAM_MCU_CPU0_DED_ERROR:
-        case SDL_ESM_ECC_PARAM_MCU_CPU1_SEC_ERROR:
-        case SDL_ESM_ECC_PARAM_MCU_CPU1_DED_ERROR:
+        case SDR_ESM_ECC_PARAM_MCU_CPU0_SEC_ERROR:
+        case SDR_ESM_ECC_PARAM_MCU_CPU0_DED_ERROR:
+        case SDR_ESM_ECC_PARAM_MCU_CPU1_SEC_ERROR:
+        case SDR_ESM_ECC_PARAM_MCU_CPU1_DED_ERROR:
             /* Get corresponding Memory type */
             switch(errorSrc)
             {
                 default:
-                case SDL_ESM_ECC_PARAM_MCU_CPU0_SEC_ERROR:
-                case SDL_ESM_ECC_PARAM_MCU_CPU0_DED_ERROR:
-                    eccMemType = SDL_ECC_MEMTYPE_MCU_R5F0_CORE;
+                case SDR_ESM_ECC_PARAM_MCU_CPU0_SEC_ERROR:
+                case SDR_ESM_ECC_PARAM_MCU_CPU0_DED_ERROR:
+                    eccMemType = SDR_ECC_MEMTYPE_MCU_R5F0_CORE;
                     break;
 
-                case SDL_ESM_ECC_PARAM_MCU_CPU1_SEC_ERROR:
-                case SDL_ESM_ECC_PARAM_MCU_CPU1_DED_ERROR:
-                    eccMemType = SDL_ECC_MEMTYPE_MCU_R5F1_CORE;
+                case SDR_ESM_ECC_PARAM_MCU_CPU1_SEC_ERROR:
+                case SDR_ESM_ECC_PARAM_MCU_CPU1_DED_ERROR:
+                    eccMemType = SDR_ECC_MEMTYPE_MCU_R5F1_CORE;
                     break;
 
             }
 
             /* Handle ECC Aggregator event */
-            SDL_ECC_handleEccAggrEvent(eccMemType, errorSrc, errorAddr);
+            SDR_ECC_handleEccAggrEvent(eccMemType, errorSrc, errorAddr);
 
             break;
 
@@ -334,29 +334,29 @@ static void SDL_ECC_ESMCallBackFunction (uint32_t errorSrc, uint32_t errorAddr)
  * \param1 eccAggrInstNumber Instance number of ECC aggregator
  * \param2 pECCInitConfig     Pointer to Ecc init configuration
  *
- * \return  SDL_PASS : Success; SDL_FAIL for failures
+ * \return  SDR_PASS : Success; SDR_FAIL for failures
  *          NOTE: On failure the ECC peripheral registers may be initialized
  *          partially.
  */
-SDL_Result SDL_ECC_init (SDL_ECC_MemType eccMemType,
-                         const SDL_ECC_InitConfig_t *pECCInitConfig)
+SDR_Result SDR_ECC_init (SDR_ECC_MemType eccMemType,
+                         const SDR_ECC_InitConfig_t *pECCInitConfig)
 {
     CSL_ecc_aggrRegs *eccAggrRegs;
     uint32_t         numMemRegions;
-    SDL_Result retVal = SDL_PASS;
+    SDR_Result retVal = SDR_PASS;
     uint32_t ramId;
     uint32_t i;
     int32_t cslResult;
-    SDL_ECC_MemSubType memSubType;
+    SDR_ECC_MemSubType memSubType;
     bool injectOnlyFlag;
 
     if (pECCInitConfig == NULL) {
-        retVal = SDL_BADARGS;
+        retVal = SDR_BADARGS;
     }
 
-    if (retVal == SDL_PASS) {
+    if (retVal == SDR_PASS) {
 
-        eccAggrRegs = (SDL_ECC_aggrBaseAddressTable[eccMemType]);
+        eccAggrRegs = (SDR_ECC_aggrBaseAddressTable[eccMemType]);
 
         /* Disable all interrupts to start clean */
         (void)CSL_ecc_aggrDisableAllIntrs(eccAggrRegs);
@@ -364,39 +364,39 @@ SDL_Result SDL_ECC_init (SDL_ECC_MemType eccMemType,
         /* Get the number of RAMs */
         cslResult = CSL_ecc_aggrGetNumRams(eccAggrRegs, &numMemRegions);
         if ((cslResult != CSL_PASS) || (numMemRegions == 0U)) {
-            retVal = SDL_FAIL;
+            retVal = SDR_FAIL;
         }
     }
 
-    if (retVal == SDL_PASS) {
+    if (retVal == SDR_PASS) {
         /* Record the Init configuration */
-        SDL_ECC_instance[eccMemType].eccInitConfig = *pECCInitConfig;
+        SDR_ECC_instance[eccMemType].eccInitConfig = *pECCInitConfig;
 
         /* Enable the single bit ECC interrupts */
         /* Note: The following statement enables interrupts for all RAMs */
         cslResult = CSL_ecc_aggrEnableIntrs(eccAggrRegs,
                                 CSL_ECC_AGGR_INTR_SRC_SINGLE_BIT);
         if (cslResult != CSL_PASS) {
-            retVal = SDL_FAIL;
+            retVal = SDR_FAIL;
         }
     }
 
-    if (retVal == SDL_PASS) {
+    if (retVal == SDR_PASS) {
             /* Enable the Double bit ECC Interrupts */
             cslResult = CSL_ecc_aggrEnableIntrs(eccAggrRegs,
                                 CSL_ECC_AGGR_INTR_SRC_DOUBLE_BIT);
             if (cslResult != CSL_PASS) {
-                retVal = SDL_FAIL;
+                retVal = SDR_FAIL;
             }
     }
-    if (retVal == SDL_PASS) {
+    if (retVal == SDR_PASS) {
 
         /* Register error interrupt call back function */
         /* No need to check return value , as it is just based on null check*/
-        (void)SDL_ESM_registerECCHandler(&SDL_ECC_ESMCallBackFunction);
+        (void)SDR_ESM_registerECCHandler(&SDR_ECC_ESMCallBackFunction);
         /* currently as this is not reported by ESM, register with
            exception handler */
-        SDL_EXCEPTION_registerECCHandler(&SDL_ECC_callBackFunction);
+        SDR_EXCEPTION_registerECCHandler(&SDR_ECC_callBackFunction);
 
         /* Enable ECC */
         for ( i = ((uint32_t)0U); i < pECCInitConfig->numRams; i++) {
@@ -405,18 +405,18 @@ SDL_Result SDL_ECC_init (SDL_ECC_MemType eccMemType,
              memSubType = pECCInitConfig->pMemSubTypeList[i];
 
              /* Get the corresponding ram Id */
-             retVal = SDL_ECC_getRamId(eccMemType, memSubType, &ramId);
-             if (retVal == SDL_PASS) {
+             retVal = SDR_ECC_getRamId(eccMemType, memSubType, &ramId);
+             if (retVal == SDR_PASS) {
 
                  /* Get the corresponding ram Id */
-                 retVal = SDL_ECC_getAggregatorType(eccMemType, memSubType, &injectOnlyFlag);
+                 retVal = SDR_ECC_getAggregatorType(eccMemType, memSubType, &injectOnlyFlag);
              }
-             if (retVal == SDL_PASS) {
+             if (retVal == SDR_PASS) {
                  if (injectOnlyFlag) {
                      /* Call CSL APIs to enable ECC, specific to the module */
-                     retVal = SDL_ECC_configECCRam(ramId);
-                     if (retVal != SDL_PASS) {
-                         retVal = SDL_FAIL;
+                     retVal = SDR_ECC_configECCRam(ramId);
+                     if (retVal != SDR_PASS) {
+                         retVal = SDR_FAIL;
                      }
                  } else {
 
@@ -424,20 +424,20 @@ SDL_Result SDL_ECC_init (SDL_ECC_MemType eccMemType,
                      cslResult = CSL_ecc_aggrConfigEccRam(eccAggrRegs,
                                               ramId, (bool)true, (bool)true, (bool)true);
                      if (cslResult != CSL_PASS) {
-                         retVal = SDL_FAIL;
+                         retVal = SDR_FAIL;
                      }
                  }
              }
-             if (retVal != SDL_PASS) {
+             if (retVal != SDR_PASS) {
                  break;
              }
         }
 
         /* Initialize object for self test */
-        SDL_ECC_instance[eccMemType].eccErrorFlag = SDL_ECC_ERROR_FLAG_NONE;
-        SDL_ECC_instance[eccMemType].eccSelfTestErrorType = SDL_INJECT_ECC_NO_ERROR;
-        SDL_ECC_instance[eccMemType].eccSelfTestRamId = ((uint32_t)0u);
-        SDL_ECC_instance[eccMemType].eccSelfTestAddr = NULL;
+        SDR_ECC_instance[eccMemType].eccErrorFlag = SDR_ECC_ERROR_FLAG_NONE;
+        SDR_ECC_instance[eccMemType].eccSelfTestErrorType = SDR_INJECT_ECC_NO_ERROR;
+        SDR_ECC_instance[eccMemType].eccSelfTestRamId = ((uint32_t)0u);
+        SDR_ECC_instance[eccMemType].eccSelfTestAddr = NULL;
     }
 
     return retVal;
@@ -452,13 +452,13 @@ SDL_Result SDL_ECC_init (SDL_ECC_MemType eccMemType,
  * \param2  size: Size of memory region to refresh
  *                Should be multiple of 4
  *
- * \return  SDL_PASS : Success; SDL_FAIL for failures
+ * \return  SDR_PASS : Success; SDR_FAIL for failures
 
  */
-static SDL_Result SDL_ECC_memoryRefresh(uint32_t *memAddr, size_t size)
+static SDR_Result SDR_ECC_memoryRefresh(uint32_t *memAddr, size_t size)
 {
     uint32_t i;
-    SDL_Result result = SDL_PASS;
+    SDR_Result result = SDR_PASS;
     volatile uint32_t tmpValue;
 
     /* Simply read and copy back data */
@@ -477,22 +477,22 @@ static SDL_Result SDL_ECC_memoryRefresh(uint32_t *memAddr, size_t size)
  * \param  eccMemType ECC memory type
  * \param  memSubType: Memory subtype
  *
- * \return  SDL_PASS : Success; SDL_FAIL for failures
+ * \return  SDR_PASS : Success; SDR_FAIL for failures
  */
-SDL_Result SDL_ECC_initMemory (SDL_ECC_MemType eccMemType,
-                               SDL_ECC_MemSubType memSubType)
+SDR_Result SDR_ECC_initMemory (SDR_ECC_MemType eccMemType,
+                               SDR_ECC_MemSubType memSubType)
 {
-    SDL_Result result=SDL_PASS;
-    SDL_MemConfig_t memConfig;
+    SDR_Result result=SDR_PASS;
+    SDR_MemConfig_t memConfig;
 
     /* Get memory configuration */
-    result = SDL_ECC_getMemConfig(eccMemType, memSubType, &memConfig);
-    if (result == SDL_PASS) {
+    result = SDR_ECC_getMemConfig(eccMemType, memSubType, &memConfig);
+    if (result == SDR_PASS) {
 
         /* Initialize only if readable */
         if (memConfig.readable) {
             /* Initialised the whole memory so that ECC is updated */
-            result = SDL_ECC_memoryRefresh((uint32_t *)memConfig.memStartAddr,
+            result = SDR_ECC_memoryRefresh((uint32_t *)memConfig.memStartAddr,
                                        (size_t)memConfig.size);
         }
     }
@@ -509,7 +509,7 @@ SDL_Result SDL_ECC_initMemory (SDL_ECC_MemType eccMemType,
  * @return  None
 
  */
-static void SDL_ECC_triggerAccessForEcc(const uint32_t *pMemoryAccessAddr)
+static void SDR_ECC_triggerAccessForEcc(const uint32_t *pMemoryAccessAddr)
 {
     volatile uint32_t testLocationValue;
 
@@ -530,40 +530,40 @@ static void SDL_ECC_triggerAccessForEcc(const uint32_t *pMemoryAccessAddr)
  * \param4  pECCErrorConfig: Memory configuration self test area
  * \param4  selfTestTimeOut: Number of retries before time out
  *
- * \return  SDL_PASS : Success; SDL_FAIL for failures
+ * \return  SDR_PASS : Success; SDR_FAIL for failures
  */
-SDL_Result SDL_ECC_selfTest(SDL_ECC_MemType eccMemType,
-                                  SDL_ECC_MemSubType memSubType,
-                                  SDL_ECC_InjectErrorType errorType,
-                                  const SDL_ECC_InjectErrorConfig_t *pECCErrorConfig,
+SDR_Result SDR_ECC_selfTest(SDR_ECC_MemType eccMemType,
+                                  SDR_ECC_MemSubType memSubType,
+                                  SDR_ECC_InjectErrorType errorType,
+                                  const SDR_ECC_InjectErrorConfig_t *pECCErrorConfig,
                                   uint32_t selfTestTimeOut)
 {
-    SDL_Result retVal = SDL_PASS;
+    SDR_Result retVal = SDR_PASS;
     uint32_t timeCount = 0;
     uint32_t testLocationPreserve;
     uint32_t ramId;
     uint32_t retVal2;
     uint32_t *testLocationAddress;
-    SDL_MemConfig_t memConfig;
+    SDR_MemConfig_t memConfig;
 
     if (pECCErrorConfig == NULL) {
-        retVal = SDL_BADARGS;
+        retVal = SDR_BADARGS;
     }
 
-    if (retVal == SDL_PASS) {
+    if (retVal == SDR_PASS) {
         /* Configure error configuration based on Test type */
         /* Get Ram Id */
-        retVal = SDL_ECC_getRamId(eccMemType, memSubType,
+        retVal = SDR_ECC_getRamId(eccMemType, memSubType,
                                  &ramId);
     }
 
-    if (retVal == SDL_PASS) {
+    if (retVal == SDR_PASS) {
 
         /* Get memory configuration */
-        retVal = SDL_ECC_getMemConfig(eccMemType, memSubType, &memConfig);
+        retVal = SDR_ECC_getMemConfig(eccMemType, memSubType, &memConfig);
     }
 
-    if (retVal == SDL_PASS) {
+    if (retVal == SDR_PASS) {
 
         /* Get actual location address for the memory */
         testLocationAddress = pECCErrorConfig->pErrMem;
@@ -574,35 +574,35 @@ SDL_Result SDL_ECC_selfTest(SDL_ECC_MemType eccMemType,
         }
 
         /* Set self test error flag */
-        SDL_ECC_instance[eccMemType].eccErrorFlag = SDL_ECC_ERROR_FLAG_STARTING;
-        SDL_ECC_instance[eccMemType].eccSelfTestErrorType = errorType;
-        SDL_ECC_instance[eccMemType].eccSelfTestRamId = ramId;
-        SDL_ECC_instance[eccMemType].eccSelfTestAddr = testLocationAddress;
+        SDR_ECC_instance[eccMemType].eccErrorFlag = SDR_ECC_ERROR_FLAG_STARTING;
+        SDR_ECC_instance[eccMemType].eccSelfTestErrorType = errorType;
+        SDR_ECC_instance[eccMemType].eccSelfTestRamId = ramId;
+        SDR_ECC_instance[eccMemType].eccSelfTestAddr = testLocationAddress;
 
         /* Enable PMU to monitor event about to be triggerred */
-        SDL_ECC_enableECCEventCheck(eccMemType, memSubType, errorType);
+        SDR_ECC_enableECCEventCheck(eccMemType, memSubType, errorType);
 
         /* Inject error */
-        retVal = SDL_ECC_injectError(eccMemType,
+        retVal = SDR_ECC_injectError(eccMemType,
                                     memSubType, errorType,
                                     pECCErrorConfig);
     }
 
-    if (retVal == SDL_PASS) {
+    if (retVal == SDR_PASS) {
 
         if (memConfig.readable) {
             /* Trigger access for ECC error injection to complete */
-            SDL_ECC_triggerAccessForEcc(testLocationAddress);
+            SDR_ECC_triggerAccessForEcc(testLocationAddress);
         }
 
         /* Wait for error to take effect */
-        while((SDL_ECC_instance[eccMemType].eccErrorFlag != SDL_ECC_ERROR_FLAG_TRIGGERED)
+        while((SDR_ECC_instance[eccMemType].eccErrorFlag != SDR_ECC_ERROR_FLAG_TRIGGERED)
               && (timeCount < selfTestTimeOut)) {
 
             /* In cases there are no interrupts for the ECC event poll directly */
-            retVal2 = SDL_ECC_pollErrorEvent(eccMemType, memSubType, errorType);
-            if (retVal2 == SDL_ECC_EVENT_FOUND) {
-                SDL_ECC_instance[eccMemType].eccErrorFlag = SDL_ECC_ERROR_FLAG_TRIGGERED;
+            retVal2 = SDR_ECC_pollErrorEvent(eccMemType, memSubType, errorType);
+            if (retVal2 == SDR_ECC_EVENT_FOUND) {
+                SDR_ECC_instance[eccMemType].eccErrorFlag = SDR_ECC_ERROR_FLAG_TRIGGERED;
             }
 
             /* Increment timeout counter */
@@ -610,8 +610,8 @@ SDL_Result SDL_ECC_selfTest(SDL_ECC_MemType eccMemType,
         }
 
         /* Check expected error occurred or timeout */
-        if ((SDL_ECC_instance[eccMemType].eccErrorFlag != SDL_ECC_ERROR_FLAG_TRIGGERED)) {
-            retVal = SDL_FAIL;
+        if ((SDR_ECC_instance[eccMemType].eccErrorFlag != SDR_ECC_ERROR_FLAG_TRIGGERED)) {
+            retVal = SDR_FAIL;
         } else {
 
             if (memConfig.readable) {
@@ -622,10 +622,10 @@ SDL_Result SDL_ECC_selfTest(SDL_ECC_MemType eccMemType,
 
     }
     /* Disable any ECC event check */
-    SDL_ECC_disableECCEventCheck(eccMemType, errorType);
+    SDR_ECC_disableECCEventCheck(eccMemType, errorType);
 
     /* Reset self test error flag */
-    SDL_ECC_instance[eccMemType].eccErrorFlag = SDL_ECC_ERROR_FLAG_NONE;
+    SDR_ECC_instance[eccMemType].eccErrorFlag = SDR_ECC_ERROR_FLAG_NONE;
 
     return retVal;
 }
@@ -638,17 +638,17 @@ SDL_Result SDL_ECC_selfTest(SDL_ECC_MemType eccMemType,
  * \param2  startBitLocation: Bit location to start from
  * \param3  pPbitLocation: Pointer to Next location of 1b found
  *
- * \return  SDL_PASS : Success; SDL_FAIL for failures
+ * \return  SDR_PASS : Success; SDR_FAIL for failures
  */
-static SDL_Result SDL_ECC_getBitLocation(uint32_t bitMask,
+static SDR_Result SDR_ECC_getBitLocation(uint32_t bitMask,
                                          uint32_t startBitLocation,
                                          uint32_t *pPbitLocation)
 {
-    SDL_Result result = SDL_PASS;
+    SDR_Result result = SDR_PASS;
     uint32_t bitCount;
 
     if (startBitLocation >= BITS_PER_WORD) {
-        result = SDL_FAIL;
+        result = SDR_FAIL;
     } else {
         /* Find first bit error for single bit */
          for (bitCount=startBitLocation; bitCount < BITS_PER_WORD; bitCount++) {
@@ -659,7 +659,7 @@ static SDL_Result SDL_ECC_getBitLocation(uint32_t bitMask,
              }
          }
          if ( bitCount >= BITS_PER_WORD) {
-             result = SDL_FAIL;
+             result = SDR_FAIL;
          }
     }
     return result;
@@ -675,12 +675,12 @@ static SDL_Result SDL_ECC_getBitLocation(uint32_t bitMask,
  * \param3  errorType: ECC error type
  * \param4  pECCErrorConfig: Pointer to Error configuration
  *
- * \return  SDL_PASS : Success; SDL_FAIL for failures
+ * \return  SDR_PASS : Success; SDR_FAIL for failures
  */
-SDL_Result SDL_ECC_injectError(SDL_ECC_MemType eccMemType,
-                              SDL_ECC_MemSubType memSubType,
-                              SDL_ECC_InjectErrorType errorType,
-                              const SDL_ECC_InjectErrorConfig_t *pECCErrorConfig)
+SDR_Result SDR_ECC_injectError(SDR_ECC_MemType eccMemType,
+                              SDR_ECC_MemSubType memSubType,
+                              SDR_ECC_InjectErrorType errorType,
+                              const SDR_ECC_InjectErrorConfig_t *pECCErrorConfig)
 {
     uint32_t regValue;
     volatile uint32_t regValue2;
@@ -688,31 +688,31 @@ SDL_Result SDL_ECC_injectError(SDL_ECC_MemType eccMemType,
     uint32_t errAddrOffset;
     CSL_ecc_aggrRegs *eccAggrRegs;
     uint32_t ramId;
-    SDL_Result retVal = SDL_PASS;
+    SDR_Result retVal = SDR_PASS;
     int32_t cslRetval;
-    SDL_MemConfig_t memConfig;
+    SDR_MemConfig_t memConfig;
 
     if (pECCErrorConfig == NULL) {
-        retVal = SDL_BADARGS;
+        retVal = SDR_BADARGS;
     }
 
-    if (retVal == SDL_PASS) {
+    if (retVal == SDR_PASS) {
 
-        eccAggrRegs = (SDL_ECC_aggrBaseAddressTable[eccMemType]);
+        eccAggrRegs = (SDR_ECC_aggrBaseAddressTable[eccMemType]);
 
         /* Get Ram Id */
-        retVal = SDL_ECC_getRamId(eccMemType, memSubType,
+        retVal = SDR_ECC_getRamId(eccMemType, memSubType,
                                  &ramId);
     }
 
-    if (retVal == SDL_PASS) {
+    if (retVal == SDR_PASS) {
         /* Get memory configuration */
-        retVal = SDL_ECC_getMemConfig(eccMemType, memSubType, &memConfig);
+        retVal = SDR_ECC_getMemConfig(eccMemType, memSubType, &memConfig);
     }
 
-    if (retVal == SDL_PASS) {
+    if (retVal == SDR_PASS) {
         if ( ((uintptr_t)pECCErrorConfig->pErrMem) < memConfig.memStartAddr) {
-            retVal = SDL_FAIL;
+            retVal = SDR_FAIL;
         } else {
             /* Calculate error offset */
             errAddrOffset =  ((uintptr_t)pECCErrorConfig->pErrMem - memConfig.memStartAddr)
@@ -720,37 +720,37 @@ SDL_Result SDL_ECC_injectError(SDL_ECC_MemType eccMemType,
         }
      }
 
-    if (retVal == SDL_PASS) {
+    if (retVal == SDR_PASS) {
         /* Set error Address */
         cslRetval = CSL_ecc_aggrWriteEccRamErrCtrlReg(eccAggrRegs,
                                                       ramId, 0u,
                                                       errAddrOffset);
         if (cslRetval != CSL_PASS) {
-            retVal = SDL_FAIL;
+            retVal = SDR_FAIL;
         }
     }
 
-    if (retVal == SDL_PASS) {
+    if (retVal == SDR_PASS) {
 
         /* Read ECC Ram Control Register */
         cslRetval = CSL_ecc_aggrReadEccRamCtrlReg(eccAggrRegs,
                                                  ramId, &regValue);
         if (cslRetval != CSL_PASS) {
-            retVal = SDL_FAIL;
+            retVal = SDR_FAIL;
         }
     }
 
-    if (retVal == SDL_PASS) {
+    if (retVal == SDR_PASS) {
 
         switch (errorType) {
-             case SDL_INJECT_ECC_ERROR_FORCING_1BIT_ONCE:
-             case SDL_INJECT_ECC_ERROR_FORCING_1BIT_REPEAT:
-             case SDL_INJECT_ECC_ERROR_FORCING_1BIT_N_ROW_ONCE:
-             case SDL_INJECT_ECC_ERROR_FORCING_1BIT_N_ROW_REPEAT:
+             case SDR_INJECT_ECC_ERROR_FORCING_1BIT_ONCE:
+             case SDR_INJECT_ECC_ERROR_FORCING_1BIT_REPEAT:
+             case SDR_INJECT_ECC_ERROR_FORCING_1BIT_N_ROW_ONCE:
+             case SDR_INJECT_ECC_ERROR_FORCING_1BIT_N_ROW_REPEAT:
                  /* Get bit location */
-                 retVal = SDL_ECC_getBitLocation(pECCErrorConfig->flipBitMask,
+                 retVal = SDR_ECC_getBitLocation(pECCErrorConfig->flipBitMask,
                                                  0u, &firstBitLocation);
-                 if (retVal != SDL_PASS) {
+                 if (retVal != SDR_PASS) {
                      break;
                  }
 
@@ -758,19 +758,19 @@ SDL_Result SDL_ECC_injectError(SDL_ECC_MemType eccMemType,
                  cslRetval = CSL_ecc_aggrWriteEccRamErrCtrlReg(eccAggrRegs,
                                                    ramId, 1, firstBitLocation);
                  if (cslRetval != CSL_PASS) {
-                     retVal = SDL_FAIL;
+                     retVal = SDR_FAIL;
                      break;
                  }
-                 if ((errorType == SDL_INJECT_ECC_ERROR_FORCING_1BIT_ONCE) ||
-                     (errorType == SDL_INJECT_ECC_ERROR_FORCING_1BIT_N_ROW_ONCE)){
+                 if ((errorType == SDR_INJECT_ECC_ERROR_FORCING_1BIT_ONCE) ||
+                     (errorType == SDR_INJECT_ECC_ERROR_FORCING_1BIT_N_ROW_ONCE)){
                      /* Configure settings for inject error once  */
                      regValue |= CSL_ECC_RAM_CTRL_ERROR_ONCE_MASK;
                  } else {
                      /* Configure settings for inject error repeat */
                      regValue = (regValue & (~CSL_ECC_RAM_CTRL_ERROR_ONCE_MASK));
                  }
-                 if ((errorType == SDL_INJECT_ECC_ERROR_FORCING_1BIT_ONCE) ||
-                     (errorType == SDL_INJECT_ECC_ERROR_FORCING_1BIT_REPEAT)){
+                 if ((errorType == SDR_INJECT_ECC_ERROR_FORCING_1BIT_ONCE) ||
+                     (errorType == SDR_INJECT_ECC_ERROR_FORCING_1BIT_REPEAT)){
                      /* Configure settings for single bit error, specific row */
                      regValue = (regValue
                                  & (~(CSL_ECC_RAM_CTRL_FORCE_N_ROW_MASK | CSL_ECC_RAM_CTRL_FORCE_DED_MASK)))
@@ -784,21 +784,21 @@ SDL_Result SDL_ECC_injectError(SDL_ECC_MemType eccMemType,
                  }
                  break;
 
-             case SDL_INJECT_ECC_ERROR_FORCING_2BIT_ONCE:
-             case SDL_INJECT_ECC_ERROR_FORCING_2BIT_REPEAT:
-             case SDL_INJECT_ECC_ERROR_FORCING_2BIT_N_ROW_ONCE:
-             case SDL_INJECT_ECC_ERROR_FORCING_2BIT_N_ROW_REPEAT:
+             case SDR_INJECT_ECC_ERROR_FORCING_2BIT_ONCE:
+             case SDR_INJECT_ECC_ERROR_FORCING_2BIT_REPEAT:
+             case SDR_INJECT_ECC_ERROR_FORCING_2BIT_N_ROW_ONCE:
+             case SDR_INJECT_ECC_ERROR_FORCING_2BIT_N_ROW_REPEAT:
                  /* Get bit location */
-                 retVal = SDL_ECC_getBitLocation(pECCErrorConfig->flipBitMask,
+                 retVal = SDR_ECC_getBitLocation(pECCErrorConfig->flipBitMask,
                                              0, &firstBitLocation);
-                 if (retVal != SDL_PASS) {
+                 if (retVal != SDR_PASS) {
                      break;
                  }
 
                  /* Get Second bit location */
-                 retVal = SDL_ECC_getBitLocation(pECCErrorConfig->flipBitMask,
+                 retVal = SDR_ECC_getBitLocation(pECCErrorConfig->flipBitMask,
                                              firstBitLocation+1u, &secondBitLocation);
-                 if (retVal != SDL_PASS) {
+                 if (retVal != SDR_PASS) {
                      break;
                  }
 
@@ -809,19 +809,19 @@ SDL_Result SDL_ECC_injectError(SDL_ECC_MemType eccMemType,
                  cslRetval = CSL_ecc_aggrWriteEccRamErrCtrlReg(eccAggrRegs,
                                            ramId, 1, regValue2);
                  if (cslRetval != CSL_PASS) {
-                     retVal = SDL_FAIL;
+                     retVal = SDR_FAIL;
                      break;
                  }
-                 if ((errorType == SDL_INJECT_ECC_ERROR_FORCING_2BIT_ONCE) ||
-                         (errorType == SDL_INJECT_ECC_ERROR_FORCING_2BIT_N_ROW_ONCE)){
+                 if ((errorType == SDR_INJECT_ECC_ERROR_FORCING_2BIT_ONCE) ||
+                         (errorType == SDR_INJECT_ECC_ERROR_FORCING_2BIT_N_ROW_ONCE)){
                      /* Configure settings for Double bit error */
                      regValue |= CSL_ECC_RAM_CTRL_ERROR_ONCE_MASK;
                  } else {
                      /* Configure settings for single bit error */
                      regValue = (regValue & (~CSL_ECC_RAM_CTRL_ERROR_ONCE_MASK));
                  }
-                 if ((errorType == SDL_INJECT_ECC_ERROR_FORCING_2BIT_ONCE) ||
-                     (errorType == SDL_INJECT_ECC_ERROR_FORCING_2BIT_REPEAT)) {
+                 if ((errorType == SDR_INJECT_ECC_ERROR_FORCING_2BIT_ONCE) ||
+                     (errorType == SDR_INJECT_ECC_ERROR_FORCING_2BIT_REPEAT)) {
                      /* Configure settings for double bit error, specific row */
                      regValue = (regValue
                                  & (~(CSL_ECC_RAM_CTRL_FORCE_N_ROW_MASK+CSL_ECC_RAM_CTRL_FORCE_SEC_MASK)))
@@ -840,16 +840,16 @@ SDL_Result SDL_ECC_injectError(SDL_ECC_MemType eccMemType,
          }
     }
 
-    if (retVal == SDL_PASS) {
+    if (retVal == SDR_PASS) {
         /* Write bit error configuration to register */
         cslRetval = CSL_ecc_aggrWriteEccRamCtrlReg(eccAggrRegs,
                                                    ramId, regValue);
         if (cslRetval != CSL_PASS) {
-            retVal = SDL_FAIL;
+            retVal = SDR_FAIL;
         }
     }
 
-    if (retVal == SDL_PASS) {
+    if (retVal == SDR_PASS) {
         /* Just read back ctrl register to confirm write */
         /* NOTE: The read value may not be same as what is written as some fields
          * in the register are not writable or can self clear
@@ -858,7 +858,7 @@ SDL_Result SDL_ECC_injectError(SDL_ECC_MemType eccMemType,
                                             ramId,
                                             (uint32_t *)(&regValue2));
         if (cslRetval != CSL_PASS) {
-            retVal = SDL_FAIL;
+            retVal = SDR_FAIL;
         }
     }
 
@@ -873,25 +873,25 @@ SDL_Result SDL_ECC_injectError(SDL_ECC_MemType eccMemType,
  * \param2  memSubType: Memory subtype for self test
  * \param3  pRAMId: pointer to return Ram Id
  *
- * @return  SDL_PASS : Success; SDL_FAIL for failures
+ * @return  SDR_PASS : Success; SDR_FAIL for failures
  */
-static SDL_Result SDL_ECC_getRamId(SDL_ECC_MemType eccMemType, SDL_ECC_MemSubType memSubType,
+static SDR_Result SDR_ECC_getRamId(SDR_ECC_MemType eccMemType, SDR_ECC_MemSubType memSubType,
     uint32_t *pRAMId)
 {
-    SDL_Result retVal = SDL_PASS;
+    SDR_Result retVal = SDR_PASS;
 
-    retVal = SDL_ECC_checkMemoryType(eccMemType, memSubType);
-    if (retVal == SDL_PASS) {
-        if (eccMemType == SDL_ECC_MEMTYPE_MCU_R5F0_CORE) {
+    retVal = SDR_ECC_checkMemoryType(eccMemType, memSubType);
+    if (retVal == SDR_PASS) {
+        if (eccMemType == SDR_ECC_MEMTYPE_MCU_R5F0_CORE) {
 
             /* Get ram Id from table */
-            *pRAMId = SDL_ECC_mcuArmssRamIdTable[memSubType].RAMId;
+            *pRAMId = SDR_ECC_mcuArmssRamIdTable[memSubType].RAMId;
 
             /* To support other ecc aggregator instances,
              * need to add switch cases here
              */
         } else {
-            retVal = SDL_FAIL;
+            retVal = SDR_FAIL;
         }
     }
     return retVal;
@@ -904,24 +904,24 @@ static SDL_Result SDL_ECC_getRamId(SDL_ECC_MemType eccMemType, SDL_ECC_MemSubTyp
  * \param1  eccMemType: Memory type for self test
  * \param2  memSubType: Memory subtype for self test
  *
- * @return  SDL_PASS : Success; SDL_FAIL for failures
+ * @return  SDR_PASS : Success; SDR_FAIL for failures
  */
-static SDL_Result SDL_ECC_checkMemoryType(SDL_ECC_MemType eccMemType, SDL_ECC_MemSubType memSubType)
+static SDR_Result SDR_ECC_checkMemoryType(SDR_ECC_MemType eccMemType, SDR_ECC_MemSubType memSubType)
 {
-    SDL_Result retVal = SDL_PASS;
+    SDR_Result retVal = SDR_PASS;
 
-    if (eccMemType == SDL_ECC_MEMTYPE_MCU_R5F0_CORE) {
+    if (eccMemType == SDR_ECC_MEMTYPE_MCU_R5F0_CORE) {
         /* Do bound check */
         if (((uint32_t)memSubType)
-                >= ((uint32_t)(sizeof(SDL_ECC_mcuArmssRamIdTable)/sizeof(SDL_ECC_mcuArmssRamIdTable[0])))) {
-            retVal = SDL_FAIL;
+                >= ((uint32_t)(sizeof(SDR_ECC_mcuArmssRamIdTable)/sizeof(SDR_ECC_mcuArmssRamIdTable[0])))) {
+            retVal = SDR_FAIL;
         }
 
         /* To support other ecc aggregator instances,
          * need to add switch cases here
          */
     } else {
-        retVal = SDL_FAIL;
+        retVal = SDR_FAIL;
     }
     return retVal;
 }
@@ -935,20 +935,20 @@ static SDL_Result SDL_ECC_checkMemoryType(SDL_ECC_MemType eccMemType, SDL_ECC_Me
  * \param3  pInjectOnly: pointer to variable indicating ECC aggregator
  *                       inject only
  *
- * @return  SDL_PASS : Success; SDL_FAIL for failures
+ * @return  SDR_PASS : Success; SDR_FAIL for failures
  */
-static SDL_Result SDL_ECC_getAggregatorType(SDL_ECC_MemType eccMemType, SDL_ECC_MemSubType memSubType,
+static SDR_Result SDR_ECC_getAggregatorType(SDR_ECC_MemType eccMemType, SDR_ECC_MemSubType memSubType,
     bool *pIinjectOnly)
 {
-    SDL_Result retVal = SDL_PASS;
+    SDR_Result retVal = SDR_PASS;
 
-    retVal = SDL_ECC_checkMemoryType(eccMemType, memSubType);
-    if (retVal == SDL_PASS) {
-        if (eccMemType == SDL_ECC_MEMTYPE_MCU_R5F0_CORE) {
+    retVal = SDR_ECC_checkMemoryType(eccMemType, memSubType);
+    if (retVal == SDR_PASS) {
+        if (eccMemType == SDR_ECC_MEMTYPE_MCU_R5F0_CORE) {
             /* Get ram Id from table */
-            *pIinjectOnly = SDL_ECC_mcuArmssRamIdTable[memSubType].aggregatorTypeInjectOnly;
+            *pIinjectOnly = SDR_ECC_mcuArmssRamIdTable[memSubType].aggregatorTypeInjectOnly;
         } else {
-            retVal = SDL_FAIL;
+            retVal = SDR_FAIL;
         }
     }
     return retVal;
@@ -961,21 +961,21 @@ static SDL_Result SDL_ECC_getAggregatorType(SDL_ECC_MemType eccMemType, SDL_ECC_
  * \param2  memSubType: Memory subtype for self test
  * \param3  pMemConfig: pointer to return memory configuration
  *
- * \return  SDL_PASS : Success; SDL_FAIL for failures
+ * \return  SDR_PASS : Success; SDR_FAIL for failures
  */
-static SDL_Result SDL_ECC_getMemConfig(SDL_ECC_MemType eccMemType, SDL_ECC_MemSubType memSubType,
-                              SDL_MemConfig_t *pMemConfig)
+static SDR_Result SDR_ECC_getMemConfig(SDR_ECC_MemType eccMemType, SDR_ECC_MemSubType memSubType,
+                              SDR_MemConfig_t *pMemConfig)
 {
-    SDL_Result retVal = SDL_PASS;
+    SDR_Result retVal = SDR_PASS;
 
-    retVal = SDL_ECC_checkMemoryType(eccMemType, memSubType);
+    retVal = SDR_ECC_checkMemoryType(eccMemType, memSubType);
 
-    if (retVal == SDL_PASS) {
-        if (eccMemType == SDL_ECC_MEMTYPE_MCU_R5F0_CORE) {
+    if (retVal == SDR_PASS) {
+        if (eccMemType == SDR_ECC_MEMTYPE_MCU_R5F0_CORE) {
             /* Get memory configuration from table */
-            *pMemConfig = SDL_ECC_mcuArmssMemEntries[memSubType];
+            *pMemConfig = SDR_ECC_mcuArmssMemEntries[memSubType];
         } else {
-            retVal = SDL_FAIL;
+            retVal = SDR_FAIL;
         }
     }
 

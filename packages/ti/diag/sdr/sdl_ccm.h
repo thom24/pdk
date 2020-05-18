@@ -1,7 +1,7 @@
 /*
- * SDL CCM
+ * SDR CCM
  *
- * Software Diagnostics Library module for CPU Comparator Module
+ * Software Diagnostics Reference module for CPU Comparator Module
  *
  *  Copyright (c) Texas Instruments Incorporated 2018-2020
  *
@@ -40,25 +40,25 @@
  *
  * @brief
  *  Header file contains enumerations, structure definitions and function
- *  declarations for SDL CPU Comparator Module interface.
+ *  declarations for SDR CPU Comparator Module interface.
  *
- *  The SDL CCM enumerations include:
- *      1. SDL CCM monitor type
- *      2. SDL CCM self test type (normal or force error)
+ *  The SDR CCM enumerations include:
+ *      1. SDR CCM monitor type
+ *      2. SDR CCM self test type (normal or force error)
  *
- *  The SDL CCM data structures include:
- *      1. SDL CCM error status structure
+ *  The SDR CCM data structures include:
+ *      1. SDR CCM error status structure
  *
- *  The SDL CCM APIs include:
- *      1. API to initialize the SDL CCM
- *      2. API to inject a forced error on SDL CCM
- *      3. API to execute self test on SDL CCM
- *      4. API to execute Self test on SDL CCM by inverting the polarity
+ *  The SDR CCM APIs include:
+ *      1. API to initialize the SDR CCM
+ *      2. API to inject a forced error on SDR CCM
+ *      3. API to execute self test on SDR CCM
+ *      4. API to execute Self test on SDR CCM by inverting the polarity
  *      5. Application provided callback function for CCM error handling
  */
 
-#ifndef INCLUDE_SDL_CCM_H_
-#define INCLUDE_SDL_CCM_H_
+#ifndef INCLUDE_SDR_CCM_H_
+#define INCLUDE_SDR_CCM_H_
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -71,25 +71,25 @@ extern "C" {
 
 /** ===========================================================================
  *
- * @defgroup SDL_CCM_API SDL CCM API
+ * @defgroup SDR_CCM_API SDR CCM API
  *
  * ============================================================================
  */
 /**
-@defgroup SDL_CCM_DATASTRUCT  SDL CCM Data Structures
-@ingroup SDL_CCM_API
+@defgroup SDR_CCM_DATASTRUCT  SDR CCM Data Structures
+@ingroup SDR_CCM_API
 */
 /**
-@defgroup SDL_CCM_FUNCTION  SDL CCM Functions
-@ingroup SDL_CCM_API
+@defgroup SDR_CCM_FUNCTION  SDR CCM Functions
+@ingroup SDR_CCM_API
 */
 /**
-@defgroup SDL_CCM_ENUM SDL CCM Enumerated Data Types
-@ingroup SDL_CCM_API
+@defgroup SDR_CCM_ENUM SDR CCM Enumerated Data Types
+@ingroup SDR_CCM_API
 */
 
 /** ===========================================================================
- *  @addtogroup SDL_CCM_ENUM
+ *  @addtogroup SDR_CCM_ENUM
     @{
  * ============================================================================
  */
@@ -100,13 +100,13 @@ extern "C" {
  * ---------------------------------------------------------------------------
  */
 typedef enum {
-   SDL_CCM_MONITOR_TYPE_OUTPUT_COMPARE_BLOCK = 1,
+   SDR_CCM_MONITOR_TYPE_OUTPUT_COMPARE_BLOCK = 1,
     /**<  CCM monitor type Output compare block*/
-   SDL_CCM_MONITOR_TYPE_VIM = 2,
+   SDR_CCM_MONITOR_TYPE_VIM = 2,
     /**<  CCM monitor type VIM */
-  SDL_CCM_MONITOR_TYPE_INACTIVITY_MONITOR = 3,
+  SDR_CCM_MONITOR_TYPE_INACTIVITY_MONITOR = 3,
    /**<  CCM monitor type inactivity monitor */
-} SDL_CCM_MonitorType;
+} SDR_CCM_MonitorType;
 
 /** ---------------------------------------------------------------------------
  * \brief Types of self test for CCM module
@@ -114,16 +114,16 @@ typedef enum {
  * ---------------------------------------------------------------------------
  */
 typedef enum {
-   SDL_CCM_SELFTEST_TYPE_NORMAL = 1,
+   SDR_CCM_SELFTEST_TYPE_NORMAL = 1,
     /**<  Self Test type normal */
-   SDL_CCM_SELFTEST_TYPE_ERR_FORCING = 2,
+   SDR_CCM_SELFTEST_TYPE_ERR_FORCING = 2,
     /**<  Self Test type Error forcing */
-} SDL_CCM_SelfTestType;
+} SDR_CCM_SelfTestType;
 
 /* @} */
 
 /**
- *  \addtogroup SDL_CCM_DATASTRUCT
+ *  \addtogroup SDR_CCM_DATASTRUCT
  *  @{
  */
 
@@ -132,7 +132,7 @@ typedef enum {
  *
  * ----------------------------------------------------------------------------
  */
-typedef struct SDL_CCM_ErrorStatus_s
+typedef struct SDR_CCM_ErrorStatus_s
 {
     bool compareErrorFlag;
     /**< CCM compare error flag: true indicates error */
@@ -141,12 +141,12 @@ typedef struct SDL_CCM_ErrorStatus_s
     bool selfTestErrorTypeFlag;
     /**< CCM self test error type flag: true indicates error */
 
-} SDL_CCM_ErrorStatus_t;
+} SDR_CCM_ErrorStatus_t;
 
 /* @} */
 
 /**
- *  \addtogroup SDL_CCM_FUNCTION
+ *  \addtogroup SDR_CCM_FUNCTION
  *  @{
  */
 
@@ -156,10 +156,10 @@ typedef struct SDL_CCM_ErrorStatus_s
  *
  * \param  pInitConfig Init configuration structure pointer
  *
- * \return  SDL_PASS : Success; SDL_FAIL for failures
- *          NOTE: In case of SDL_FAIL the peripheral may be configured partially
+ * \return  SDR_PASS : Success; SDR_FAIL for failures
+ *          NOTE: In case of SDR_FAIL the peripheral may be configured partially
  */
-SDL_Result SDL_CCM_init (void);
+SDR_Result SDR_CCM_init (void);
 
 /** ============================================================================
  *
@@ -167,16 +167,16 @@ SDL_Result SDL_CCM_init (void);
  *
  * \param   monitorType: Type of monitor to inject error
  *
- * \pre     SDL_CCM_init should be called before calling this function
+ * \pre     SDR_CCM_init should be called before calling this function
  *
- * \return  SDL_PASS : Success; SDL_FAIL for failures
+ * \return  SDR_PASS : Success; SDR_FAIL for failures
  */
-SDL_Result SDL_CCM_injectError (SDL_CCM_MonitorType monitorType);
+SDR_Result SDR_CCM_injectError (SDR_CCM_MonitorType monitorType);
 
 /** ============================================================================
  *
  * \brief   Execute Self test on CCM
- *          NOTE: SDL_CCM_init should be called before calling this function
+ *          NOTE: SDR_CCM_init should be called before calling this function
  *
  * \param   monitorType: Monitor Type
  * \param   selfTestType: Self test type
@@ -186,12 +186,12 @@ SDL_Result SDL_CCM_injectError (SDL_CCM_MonitorType monitorType);
  *                        error status
  *
  *
- * \return  SDL_PASS : Success; SDL_FAIL for failures
+ * \return  SDR_PASS : Success; SDR_FAIL for failures
  */
-SDL_Result SDL_CCM_selfTest (SDL_CCM_MonitorType monitorType,
-                             SDL_CCM_SelfTestType selfTestType,
+SDR_Result SDR_CCM_selfTest (SDR_CCM_MonitorType monitorType,
+                             SDR_CCM_SelfTestType selfTestType,
                              uint32_t maxCheckCount,
-                             SDL_CCM_ErrorStatus_t *pErrorStatus);
+                             SDR_CCM_ErrorStatus_t *pErrorStatus);
 
 /** ============================================================================
  *
@@ -202,16 +202,16 @@ SDL_Result SDL_CCM_selfTest (SDL_CCM_MonitorType monitorType,
  *            manuals)
  * \param   maxCheckCount: Maximum count to recheck status of error trigger
  *
- * \return  SDL_PASS : Success; SDL_FAIL for failures
+ * \return  SDR_PASS : Success; SDR_FAIL for failures
  */
-SDL_Result SDL_CCM_selfTestPolarityInvert (uint32_t polarityInversionMask,
+SDR_Result SDR_CCM_selfTestPolarityInvert (uint32_t polarityInversionMask,
                                            uint32_t maxCheckCount);
 
 /** ============================================================================
  *
  * \brief   Application provided external callback function for CCM error handling
- *          Called inside the library functions when CCM errors occur.
- *          NOTE: This is application supplied and not part of the SDL Library
+ *          Called inside the reference functions when CCM errors occur.
+ *          NOTE: This is application supplied and not part of the SDR
  *          If not supplied by application this will result in an linker error
  *
  * \param  monitorType: Error source for the ECC error event.
@@ -220,8 +220,8 @@ SDL_Result SDL_CCM_selfTestPolarityInvert (uint32_t polarityInversionMask,
  *
  * \return  None
  */
-void SDL_CCM_applicationCallbackFunction(SDL_CCM_MonitorType monitorType,
-                                         SDL_CCM_ErrorStatus_t *pErrorStatus);
+void SDR_CCM_applicationCallbackFunction(SDR_CCM_MonitorType monitorType,
+                                         SDR_CCM_ErrorStatus_t *pErrorStatus);
 
 /* @} */
 
@@ -229,4 +229,4 @@ void SDL_CCM_applicationCallbackFunction(SDL_CCM_MonitorType monitorType,
 }
 #endif  /* extern "C" */
 
-#endif /* INCLUDE_SDL_CCM_H_ */
+#endif /* INCLUDE_SDR_CCM_H_ */

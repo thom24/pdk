@@ -1,7 +1,7 @@
 /*
  * SDTF CRC
  *
- * Software Diagnostics Library Test for CRC module
+ * Software Diagnostics Reference Test for CRC module
  *
  *  Copyright (c) Texas Instruments Incorporated 2019-2020
  *
@@ -63,9 +63,9 @@ uint8_t SDTF_crcTestData[SDTF_CRC_DATA_SIZE] __attribute__ ((aligned(128))) __at
  */
 int32_t SDTF_runCRCSelfTest(void)
 {
-    SDL_Result           result;
+    SDR_Result           result;
     int32_t              retVal=0;
-    SDL_CRC_dataConfig_t crcData;
+    SDR_CRC_dataConfig_t crcData;
     uint32_t             i;
     uint32_t  *pCRCData;
 
@@ -73,7 +73,7 @@ int32_t SDTF_runCRCSelfTest(void)
 
     crcData.pCRCData       = (uint32_t *)SDTF_crcTestData;
     crcData.size           = SDTF_CRC_DATA_SIZE;
-    crcData.dataBitSize    = SDL_CRC_DATA_32_BIT;
+    crcData.dataBitSize    = SDR_CRC_DATA_32_BIT;
     crcData.crcOpMode      = CRC_OPERATION_MODE_FULLCPU;
     crcData.refCRCValueMSW = SDTF_CRC_REF_SIGN_HIGH;
     crcData.refCRCValueLSW = SDTF_CRC_REF_SIGN_LOW;
@@ -86,14 +86,14 @@ int32_t SDTF_runCRCSelfTest(void)
 
     SDTF_profileBegin(SDTF_PROFILE_ONESHOT);
 
-    result = SDL_CRC_selftest(CRC_CHANNEL_1, &crcData);
+    result = SDR_CRC_selftest(CRC_CHANNEL_1, &crcData);
 
     SDTF_profileEnd(SDTF_PROFILE_ONESHOT);
 
-    if (result != SDL_PASS)
+    if (result != SDR_PASS)
     {
         SDTF_printf("\n CRC self test failed");
-        retVal = SDL_FAIL;
+        retVal = SDR_FAIL;
     }
     else
     {
@@ -107,19 +107,19 @@ int32_t SDTF_runCRCSelfTest(void)
 int32_t SDTF_runCRCNegativeTest(void)
 {
     int32_t              retVal = 0;
-    SDL_CRC_dataConfig_t crcData;
+    SDR_CRC_dataConfig_t crcData;
 
     SDTF_printf("\n CRC negative tests: starting");
 
-    /* SDL_CRC_selftest Negative tests with invalid params */
-    if (SDL_CRC_selftest(CRC_CHANNEL_1 - 1U, &crcData) != SDL_BADARGS)
+    /* SDR_CRC_selftest Negative tests with invalid params */
+    if (SDR_CRC_selftest(CRC_CHANNEL_1 - 1U, &crcData) != SDR_BADARGS)
     {
         retVal = -1;
     }
 
     if (retVal == 0)
     {
-        if (SDL_CRC_selftest(CRC_CHANNEL_4 + 1U, &crcData) != SDL_BADARGS)
+        if (SDR_CRC_selftest(CRC_CHANNEL_4 + 1U, &crcData) != SDR_BADARGS)
         {
             retVal = -1;
         }
@@ -127,7 +127,7 @@ int32_t SDTF_runCRCNegativeTest(void)
 
     if (retVal == 0)
     {
-        if (SDL_CRC_selftest(CRC_CHANNEL_1, NULL_PTR) != SDL_BADARGS)
+        if (SDR_CRC_selftest(CRC_CHANNEL_1, NULL_PTR) != SDR_BADARGS)
         {
             retVal = -1;
         }
@@ -136,7 +136,7 @@ int32_t SDTF_runCRCNegativeTest(void)
     if (retVal == 0)
     {
         crcData.pCRCData = NULL_PTR;
-        if (SDL_CRC_selftest(CRC_CHANNEL_1, NULL_PTR) != SDL_BADARGS)
+        if (SDR_CRC_selftest(CRC_CHANNEL_1, NULL_PTR) != SDR_BADARGS)
         {
             retVal = -1;
         }

@@ -63,7 +63,7 @@ sdr_DUP_EXAMPLE_LIST =
 # SDR Modules
 #
 
-# SDR library
+# SDR (Software Diagnostics Reference)
 sdr_COMP_LIST = sdr
 sdr_RELPATH = ti/diag/sdr
 sdr_PATH = $(PDK_SDR_COMP_PATH)

@@ -1,7 +1,7 @@
 /*
- * SDL ESM
+ * SDR ESM
  *
- * Software Diagnostics Library module for ESM
+ * Software Diagnostics Reference module for ESM
  *
  *  Copyright (c) Texas Instruments Incorporated 2018-2020
  *
@@ -35,8 +35,8 @@
  *
  */
 
-#ifndef INCLUDE_SDL_ESM_PRIV_H_
-#define INCLUDE_SDL_ESM_PRIV_H_
+#ifndef INCLUDE_SDR_ESM_PRIV_H_
+#define INCLUDE_SDR_ESM_PRIV_H_
 
 #include <stddef.h>
 #include <stdbool.h>
@@ -47,19 +47,19 @@
  * @brief This structure defines the elements of ESM software instance
  * ----------------------------------------------------------------------------
  */
-typedef struct SDL_ESM_Instance_s
+typedef struct SDR_ESM_Instance_s
 {
-    SDL_ESM_InitConfig_t esmInitConfig;
+    SDR_ESM_InitConfig_t esmInitConfig;
     /**< Store esm Init configuration */
-    SDL_ESM_ECCCallback_t eccCallBackFunction;
+    SDR_ESM_ECCCallback_t eccCallBackFunction;
     /**< Store ECC callback function */
-    SDL_ESM_CCMCallback_t CCMCallBackFunction;
+    SDR_ESM_CCMCallback_t CCMCallBackFunction;
     /**< Store CCM callback function */
-    SDL_ESM_WDTCallback_t WDTCallBackFunction;
+    SDR_ESM_WDTCallback_t WDTCallBackFunction;
     /**< Store WDT callback function */
     volatile bool selfTestFlag;
     /**< selfTest Flag */
-}  SDL_ESM_Instance_t;
+}  SDR_ESM_Instance_t;
 
 /** ============================================================================
  *
@@ -71,6 +71,6 @@ typedef struct SDL_ESM_Instance_s
  *
  * \return  true: if event handled; false if not handled
  */
-bool SDL_ESM_handleIntSrc(const SDL_ESM_Instance_t *pInstance, uint32_t intSrc);
+bool SDR_ESM_handleIntSrc(const SDR_ESM_Instance_t *pInstance, uint32_t intSrc);
 
-#endif /* INCLUDE_SDL_ESM_PRIV_H_ */
+#endif /* INCLUDE_SDR_ESM_PRIV_H_ */

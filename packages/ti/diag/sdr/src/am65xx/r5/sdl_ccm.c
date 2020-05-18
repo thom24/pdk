@@ -1,7 +1,7 @@
 /*
- * SDL CCM
+ * SDR CCM
  *
- * Software Diagnostics Library module for CPU Comparator Module
+ * Software Diagnostics Reference module for CPU Comparator Module
  *
  *  Copyright (c) Texas Instruments Incorporated 2018-2020
  *
@@ -45,32 +45,32 @@
 #include <sdl_ccm_soc.h>
 
 /** ---------------------------------------------------------------------------
- * \enum SDL_CCM_ErrorFlag
+ * \enum SDR_CCM_ErrorFlag
  * \brief Defines the values for CCM test error flag used to track self test
  * ----------------------------------------------------------------------------
  */
 typedef enum {
-    SDL_CCM_ERROR_FLAG_NONE=0,
+    SDR_CCM_ERROR_FLAG_NONE=0,
     /**< Error flag no action */
-    SDL_CCM_ERROR_FLAG_INPROGRESS=1,
+    SDR_CCM_ERROR_FLAG_INPROGRESS=1,
     /**< Error flag to indicate self test in progress */
-    SDL_CCM_ERROR_FLAG_TRIGGERED=2,
+    SDR_CCM_ERROR_FLAG_TRIGGERED=2,
     /**< Error flag to indicate error triggerred */
-} SDL_CCM_ErrorFlag;
+} SDR_CCM_ErrorFlag;
 
 /** ---------------------------------------------------------------------------
  * \brief This structure defines the elements of CCM software instance
  * ----------------------------------------------------------------------------
  */
-typedef struct SDL_CCM_instance_s
+typedef struct SDR_CCM_instance_s
 {
-   volatile SDL_CCM_ErrorFlag selfTestErrorFlag;
+   volatile SDR_CCM_ErrorFlag selfTestErrorFlag;
    /**< Flag to track self test */
-}  SDL_CCM_Instance_t;
+}  SDR_CCM_Instance_t;
 
 
-/* SDL CCM Instance */
-static SDL_CCM_Instance_t SDL_CCM_instance;
+/* SDR CCM Instance */
+static SDR_CCM_Instance_t SDR_CCM_instance;
 
 #define ALL_CCM_STATUS_BITS (CSL_MCU_ARMSS_CCMR5_COMPARE_WRAPPER_CFG_MMRS_CCMSR1_STE1_MASK \
                                             | CSL_MCU_ARMSS_CCMR5_COMPARE_WRAPPER_CFG_MMRS_CCMSR1_STET1_MASK \
@@ -78,15 +78,15 @@ static SDL_CCM_Instance_t SDL_CCM_instance;
                                             | CSL_MCU_ARMSS_CCMR5_COMPARE_WRAPPER_CFG_MMRS_CCMSR1_CMPE1_MASK)
 
 /* Function prototypes  */
-static void SDL_CCM_callBackFunction (SDL_ESM_CCM_IntSrc intSrc);
-static SDL_Result SDL_CCM_getMonitorTypeFromIntSrc (SDL_ESM_CCM_IntSrc intSrc,
-                                          SDL_CCM_MonitorType *pMonitorType);
-static SDL_Result SDL_CCM_getMonitorStatusRegister(SDL_CCM_MonitorType monitorType,
+static void SDR_CCM_callBackFunction (SDR_ESM_CCM_IntSrc intSrc);
+static SDR_Result SDR_CCM_getMonitorTypeFromIntSrc (SDR_ESM_CCM_IntSrc intSrc,
+                                          SDR_CCM_MonitorType *pMonitorType);
+static SDR_Result SDR_CCM_getMonitorStatusRegister(SDR_CCM_MonitorType monitorType,
                                                    CSL_McuArmssCcmR5RegId *pCCMR5RegId);
-static SDL_Result SDL_CCM_getMonitorKeyRegister(SDL_CCM_MonitorType monitorType,
+static SDR_Result SDR_CCM_getMonitorKeyRegister(SDR_CCM_MonitorType monitorType,
                                                 CSL_McuArmssCcmR5RegId *pCCMR5RegId);
-SDL_Result  SDL_CCM_clearAllErrors (void);
-SDL_Result SDL_CCM_CheckSelfTestErrorSource(SDL_CCM_MonitorType *monitorType);
+SDR_Result  SDR_CCM_clearAllErrors (void);
+SDR_Result SDR_CCM_CheckSelfTestErrorSource(SDR_CCM_MonitorType *monitorType);
 
 /**
  *
@@ -94,13 +94,13 @@ SDL_Result SDL_CCM_CheckSelfTestErrorSource(SDL_CCM_MonitorType *monitorType);
  *          to compare active
  *
  *
- * \return  SDL_PASS : Success; SDL_FAIL for failures
- *          NOTE: In case of SDL_FAIL the peripheral may be configured partially
+ * \return  SDR_PASS : Success; SDR_FAIL for failures
+ *          NOTE: In case of SDR_FAIL the peripheral may be configured partially
  */
-SDL_Result SDL_CCM_init (void)
+SDR_Result SDR_CCM_init (void)
 {
     int32_t cslResult;
-    SDL_Result retVal = SDL_PASS;
+    SDR_Result retVal = SDR_PASS;
     uint32_t keyValue;
 
     /* Enable Cpu output compare block active */
@@ -109,10 +109,10 @@ SDL_Result SDL_CCM_init (void)
                                                (uint32_t)CSL_MCU_ARMSS_CCMR5_MKEY_CMP_MODE_ACTIVE,
                                                ((void *)0u));
     if (cslResult != CSL_PASS) {
-        retVal = SDL_FAIL;
+        retVal = SDR_FAIL;
     }
 
-    if (retVal == SDL_PASS) {
+    if (retVal == SDR_PASS) {
 
         /* Read back Key register */
         cslResult = CSL_armR5ReadCCMRegister (SOC_CCM_BASE,
@@ -120,12 +120,12 @@ SDL_Result SDL_CCM_init (void)
                                               (uint32_t *)&keyValue,
                                               ((void *)0u));
         if ((cslResult != CSL_PASS) || (keyValue != (uint32_t)CSL_MCU_ARMSS_CCMR5_MKEY_CMP_MODE_ACTIVE)) {
-            retVal = SDL_FAIL;
+            retVal = SDR_FAIL;
         }
     }
 
 
-    if (retVal == SDL_PASS) {
+    if (retVal == SDR_PASS) {
 
         /* Enable Vim compare active */
         cslResult = CSL_armR5ConfigureCCMRegister(SOC_CCM_BASE,
@@ -133,11 +133,11 @@ SDL_Result SDL_CCM_init (void)
                                                    (uint32_t)CSL_MCU_ARMSS_CCMR5_MKEY_CMP_MODE_ACTIVE,
                                                    ((void *)0u));
         if (cslResult != CSL_PASS) {
-            retVal = SDL_FAIL;
+            retVal = SDR_FAIL;
         }
     }
 
-    if (retVal == SDL_PASS) {
+    if (retVal == SDR_PASS) {
 
         /* Read back Key register */
         cslResult = CSL_armR5ReadCCMRegister (SOC_CCM_BASE,
@@ -145,22 +145,22 @@ SDL_Result SDL_CCM_init (void)
                                               (uint32_t *)&keyValue,
                                               ((void *)0u));
         if ((cslResult != CSL_PASS) || (keyValue != (uint32_t)CSL_MCU_ARMSS_CCMR5_MKEY_CMP_MODE_ACTIVE)) {
-            retVal = SDL_FAIL;
+            retVal = SDR_FAIL;
         }
     }
 
-    if (retVal == SDL_PASS) {
+    if (retVal == SDR_PASS) {
         /* Enable Inactivity monitor compare block active */
         cslResult = CSL_armR5ConfigureCCMRegister(SOC_CCM_BASE,
                                                    CSL_MCU_ARMSS_CCMR5_CCMKEYR3_REGID,
                                                    (uint32_t)CSL_MCU_ARMSS_CCMR5_MKEY_CMP_MODE_ACTIVE,
                                                    ((void *)0u));
         if (cslResult != CSL_PASS) {
-            retVal = SDL_FAIL;
+            retVal = SDR_FAIL;
         }
     }
 
-    if (retVal == SDL_PASS) {
+    if (retVal == SDR_PASS) {
 
         /* Read back Key register */
         cslResult = CSL_armR5ReadCCMRegister (SOC_CCM_BASE,
@@ -168,23 +168,23 @@ SDL_Result SDL_CCM_init (void)
                                               (uint32_t *)&keyValue,
                                               ((void *)0u));
         if ((cslResult != CSL_PASS) || (keyValue != (uint32_t)CSL_MCU_ARMSS_CCMR5_MKEY_CMP_MODE_ACTIVE)) {
-            retVal = SDL_FAIL;
+            retVal = SDR_FAIL;
         }
     }
 
-    if (retVal == SDL_PASS) {
+    if (retVal == SDR_PASS) {
 
         /* Clear any pending errors */
-        retVal = SDL_CCM_clearAllErrors();
-        if (retVal == SDL_PASS) {
+        retVal = SDR_CCM_clearAllErrors();
+        if (retVal == SDR_PASS) {
 
             /* Register error interrupt call back function with ESM handler */
-            (void)SDL_ESM_registerCCMHandler(&SDL_CCM_callBackFunction);
+            (void)SDR_ESM_registerCCMHandler(&SDR_CCM_callBackFunction);
         }
 
     }
     /* Clear self test flag */
-    SDL_CCM_instance.selfTestErrorFlag = SDL_CCM_ERROR_FLAG_NONE;
+    SDR_CCM_instance.selfTestErrorFlag = SDR_CCM_ERROR_FLAG_NONE;
 
     return retVal;
 }
@@ -194,12 +194,12 @@ SDL_Result SDL_CCM_init (void)
  * \brief   Clear all CCM errors
  *
  *
- * \return  SDL_PASS : Success; SDL_FAIL for failures
- *          NOTE: In case of SDL_FAIL error may be cleared partially
+ * \return  SDR_PASS : Success; SDR_FAIL for failures
+ *          NOTE: In case of SDR_FAIL error may be cleared partially
  */
-SDL_Result  SDL_CCM_clearAllErrors (void)
+SDR_Result  SDR_CCM_clearAllErrors (void)
 {
-    SDL_Result retVal = SDL_PASS;
+    SDR_Result retVal = SDR_PASS;
     uint32_t statusValue;
     int32_t cslResult;
 
@@ -209,10 +209,10 @@ SDL_Result  SDL_CCM_clearAllErrors (void)
                                         ALL_CCM_STATUS_BITS,
                                         ((void *)0u));
     if (cslResult != CSL_PASS) {
-        retVal = SDL_FAIL;
+        retVal = SDR_FAIL;
     }
 
-    if (retVal == SDL_PASS) {
+    if (retVal == SDR_PASS) {
         /* Read status register of CPU output compare block  */
         cslResult = CSL_armR5ReadCCMRegister (SOC_CCM_BASE,
                                     CSL_MCU_ARMSS_CCMR5_CCMSR1_REGID,
@@ -220,12 +220,12 @@ SDL_Result  SDL_CCM_clearAllErrors (void)
                                     ((void *)0u));
 
         if ((cslResult != CSL_PASS) || (statusValue != 0u)) {
-            retVal = SDL_FAIL;
+            retVal = SDR_FAIL;
 
         }
     }
 
-    if (retVal == SDL_PASS) {
+    if (retVal == SDR_PASS) {
 
         /* Clear any errors in VIM compare */
         cslResult = CSL_armR5ConfigureCCMRegister(SOC_CCM_BASE,
@@ -233,11 +233,11 @@ SDL_Result  SDL_CCM_clearAllErrors (void)
                                             ALL_CCM_STATUS_BITS,
                                             ((void *)0u));
         if (cslResult != CSL_PASS) {
-            retVal = SDL_FAIL;
+            retVal = SDR_FAIL;
         }
     }
 
-    if (retVal == SDL_PASS) {
+    if (retVal == SDR_PASS) {
 
         /* Read status register of CPU output compare block  */
         cslResult = CSL_armR5ReadCCMRegister (SOC_CCM_BASE,
@@ -245,11 +245,11 @@ SDL_Result  SDL_CCM_clearAllErrors (void)
                                        (uint32_t *)&statusValue,
                                        ((void *)0u));
         if ((cslResult != CSL_PASS) || (statusValue != 0u)) {
-            retVal = SDL_FAIL;
+            retVal = SDR_FAIL;
         }
     }
 
-    if (retVal == SDL_PASS) {
+    if (retVal == SDR_PASS) {
 
         /* Clear any errors in Inactivity monitor */
         cslResult = CSL_armR5ConfigureCCMRegister(SOC_CCM_BASE,
@@ -258,11 +258,11 @@ SDL_Result  SDL_CCM_clearAllErrors (void)
                                              ((void *)0u));
 
         if (cslResult != CSL_PASS) {
-            retVal = SDL_FAIL;
+            retVal = SDR_FAIL;
         }
     }
 
-    if (retVal == SDL_PASS) {
+    if (retVal == SDR_PASS) {
 
         /* Read status register of Inactivity monitor  */
         cslResult = CSL_armR5ReadCCMRegister (SOC_CCM_BASE,
@@ -271,7 +271,7 @@ SDL_Result  SDL_CCM_clearAllErrors (void)
                                         ((void *)0u));
 
         if ((cslResult != CSL_PASS) || (statusValue != 0u)) {
-            retVal = SDL_FAIL;
+            retVal = SDR_FAIL;
         }
     }
 
@@ -285,19 +285,19 @@ SDL_Result  SDL_CCM_clearAllErrors (void)
  *
  * \param   monitorType: Type of monitor to inject error
  *
- * \return  SDL_PASS : Success; SDL_FAIL for failures
+ * \return  SDR_PASS : Success; SDR_FAIL for failures
  */
-SDL_Result SDL_CCM_injectError (SDL_CCM_MonitorType monitorType)
+SDR_Result SDR_CCM_injectError (SDR_CCM_MonitorType monitorType)
 {
 
     int32_t cslResult;
-    SDL_Result retVal = SDL_PASS;
+    SDR_Result retVal = SDR_PASS;
     CSL_McuArmssCcmR5RegId monitorTypeKeyRegister;
 
 
     /* Get the key register address corresponding to the monitor type */
-    retVal = SDL_CCM_getMonitorKeyRegister(monitorType, &monitorTypeKeyRegister);
-    if (retVal == SDL_PASS) {
+    retVal = SDR_CCM_getMonitorKeyRegister(monitorType, &monitorTypeKeyRegister);
+    if (retVal == SDR_PASS) {
 
         /* Configure error forcing mode to inject error by writing to the key register */
         cslResult = CSL_armR5ConfigureCCMRegister(SOC_CCM_BASE,
@@ -306,7 +306,7 @@ SDL_Result SDL_CCM_injectError (SDL_CCM_MonitorType monitorType)
                                                    ((void *)0u));
 
         if (cslResult != CSL_PASS) {
-            retVal = SDL_FAIL;
+            retVal = SDR_FAIL;
         }
     }
 
@@ -321,13 +321,13 @@ SDL_Result SDL_CCM_injectError (SDL_CCM_MonitorType monitorType)
  *
  * \param   monitorType: Returned Monitor Type pointer
  *
- * \return  SDL_PASS : Success; SDL_FAIL for failures
+ * \return  SDR_PASS : Success; SDR_FAIL for failures
  */
-SDL_Result SDL_CCM_CheckSelfTestErrorSource(SDL_CCM_MonitorType *monitorType)
+SDR_Result SDR_CCM_CheckSelfTestErrorSource(SDR_CCM_MonitorType *monitorType)
 {
     int32_t cslResult;
     uint32_t statusValue;
-    SDL_Result retVal = SDL_PASS;
+    SDR_Result retVal = SDR_PASS;
 
     /* Read status register of CPU output compare block  */
     cslResult = CSL_armR5ReadCCMRegister (SOC_CCM_BASE,
@@ -335,11 +335,11 @@ SDL_Result SDL_CCM_CheckSelfTestErrorSource(SDL_CCM_MonitorType *monitorType)
                                            &statusValue,
                                            ((void *)0u));
     if (cslResult != CSL_PASS) {
-        retVal = SDL_FAIL;
+        retVal = SDR_FAIL;
     } else {
         /* If status bit set, return output compare block */
         if ((statusValue & ALL_CCM_STATUS_BITS) != 0u) {
-            *monitorType =  SDL_CCM_MONITOR_TYPE_OUTPUT_COMPARE_BLOCK;
+            *monitorType =  SDR_CCM_MONITOR_TYPE_OUTPUT_COMPARE_BLOCK;
         } else {
 
             /* Read status register of VIM compare block  */
@@ -349,11 +349,11 @@ SDL_Result SDL_CCM_CheckSelfTestErrorSource(SDL_CCM_MonitorType *monitorType)
                                                    ((void *)0u));
             /* Check result */
             if (cslResult != CSL_PASS) {
-                retVal = SDL_FAIL;
+                retVal = SDR_FAIL;
             } else {
                 /* If status bit set, return VIM monitor block */
                 if ((statusValue & ALL_CCM_STATUS_BITS) != 0u) {
-                     *monitorType =  SDL_CCM_MONITOR_TYPE_VIM;
+                     *monitorType =  SDR_CCM_MONITOR_TYPE_VIM;
                  } else {
 
                      /* Read status register of Inactivity monitor block  */
@@ -362,13 +362,13 @@ SDL_Result SDL_CCM_CheckSelfTestErrorSource(SDL_CCM_MonitorType *monitorType)
                                                             &statusValue,
                                                             ((void *)0u));
                      if (cslResult != CSL_PASS) {
-                         retVal = SDL_FAIL;
+                         retVal = SDR_FAIL;
                      } else {
                          /* If status bit set, return Inactivity monitor block */
                          if ((statusValue & ALL_CCM_STATUS_BITS) != 0u) {
-                              *monitorType =  SDL_CCM_MONITOR_TYPE_INACTIVITY_MONITOR;
+                              *monitorType =  SDR_CCM_MONITOR_TYPE_INACTIVITY_MONITOR;
                           } else {
-                              retVal = SDL_FAIL;
+                              retVal = SDR_FAIL;
                           }
                      }
                  }
@@ -387,17 +387,17 @@ SDL_Result SDL_CCM_CheckSelfTestErrorSource(SDL_CCM_MonitorType *monitorType)
  *            selected signals. ( Meaning of signals refer to hardware
  *            manuals
  *
- * \return  SDL_PASS : Success; SDL_FAIL for failures
+ * \return  SDR_PASS : Success; SDR_FAIL for failures
  */
-SDL_Result SDL_CCM_selfTestPolarityInvert (uint32_t polarityInversionMask,
+SDR_Result SDR_CCM_selfTestPolarityInvert (uint32_t polarityInversionMask,
                              uint32_t maxCheckCount)
 {
     int32_t cslResult;
-    SDL_Result retVal = SDL_PASS;
+    SDR_Result retVal = SDR_PASS;
     uint32_t checkCount;
 
     /* Initialise Error flag to be starting */
-    SDL_CCM_instance.selfTestErrorFlag = SDL_CCM_ERROR_FLAG_INPROGRESS;
+    SDR_CCM_instance.selfTestErrorFlag = SDR_CCM_ERROR_FLAG_INPROGRESS;
 
     /* Write polarity inversion register to force polarity flip
      * Which should cause a compare error
@@ -407,12 +407,12 @@ SDL_Result SDL_CCM_selfTestPolarityInvert (uint32_t polarityInversionMask,
                                                polarityInversionMask,
                                                ((void *)0u));
     if ( cslResult != CSL_PASS) {
-        retVal = SDL_FAIL;
+        retVal = SDR_FAIL;
     } else {
         /* Initialize check count */
         checkCount = ((uint32_t)0u);
         /* Wait for Error flag to be triggerred in the interrupt call back function */
-        while((SDL_CCM_instance.selfTestErrorFlag != SDL_CCM_ERROR_FLAG_TRIGGERED)
+        while((SDR_CCM_instance.selfTestErrorFlag != SDR_CCM_ERROR_FLAG_TRIGGERED)
               && ((checkCount < maxCheckCount) || (maxCheckCount == 0u))) {
              /* Increment timeout counter */
              checkCount++;
@@ -420,12 +420,12 @@ SDL_Result SDL_CCM_selfTestPolarityInvert (uint32_t polarityInversionMask,
     }
 
     /* if error flag is not set, then it is a timeout */
-    if(SDL_CCM_instance.selfTestErrorFlag != SDL_CCM_ERROR_FLAG_TRIGGERED) {
-        retVal = SDL_FAIL;
+    if(SDR_CCM_instance.selfTestErrorFlag != SDR_CCM_ERROR_FLAG_TRIGGERED) {
+        retVal = SDR_FAIL;
     }
 
     /* Reset error flag to be none */
-    SDL_CCM_instance.selfTestErrorFlag = SDL_CCM_ERROR_FLAG_NONE;
+    SDR_CCM_instance.selfTestErrorFlag = SDR_CCM_ERROR_FLAG_NONE;
 
     return retVal;
 }
@@ -443,15 +443,15 @@ SDL_Result SDL_CCM_selfTestPolarityInvert (uint32_t polarityInversionMask,
  * @param   pErrorStatus: Pointer to Error status structure in case of error
  *                        or NULL if error status not required.
  *
- * \return  SDL_PASS : Success; SDL_FAIL for failures
+ * \return  SDR_PASS : Success; SDR_FAIL for failures
  */
-SDL_Result SDL_CCM_selfTest (SDL_CCM_MonitorType monitorType,
-                             SDL_CCM_SelfTestType selfTestType,
+SDR_Result SDR_CCM_selfTest (SDR_CCM_MonitorType monitorType,
+                             SDR_CCM_SelfTestType selfTestType,
                              uint32_t maxCheckCount,
-                             SDL_CCM_ErrorStatus_t *pErrorStatus)
+                             SDR_CCM_ErrorStatus_t *pErrorStatus)
 {
     int32_t cslResult;
-    SDL_Result retVal = SDL_PASS;
+    SDR_Result retVal = SDR_PASS;
     CSL_McuArmssCcmR5OpModeKey selfTestTypeValue;
     uint32_t statusValue;
     uint32_t timesCount=0;
@@ -461,32 +461,32 @@ SDL_Result SDL_CCM_selfTest (SDL_CCM_MonitorType monitorType,
 
 
     /* Get the Key register for the monitor type */
-    retVal = SDL_CCM_getMonitorKeyRegister(monitorType, &monitorTypeKeyRegister);
-    if ( retVal == SDL_PASS ) {
+    retVal = SDR_CCM_getMonitorKeyRegister(monitorType, &monitorTypeKeyRegister);
+    if ( retVal == SDR_PASS ) {
 
         switch(selfTestType) {
 
-            case SDL_CCM_SELFTEST_TYPE_NORMAL:
+            case SDR_CCM_SELFTEST_TYPE_NORMAL:
                 selfTestTypeValue = CSL_MCU_ARMSS_CCMR5_MKEY_SELF_TEST_MODE;
                 break;
 
-            case SDL_CCM_SELFTEST_TYPE_ERR_FORCING:
+            case SDR_CCM_SELFTEST_TYPE_ERR_FORCING:
                 selfTestTypeValue = CSL_MCU_ARMSS_CCMR5_MKEY_SELF_TEST_ERR_FORCE_MODE;
                 break;
 
             default:
-                retVal = SDL_FAIL;
+                retVal = SDR_FAIL;
                 break;
         }
     }
 
     /* Check for error in earlier steps */
-    if (retVal == SDL_PASS) {
+    if (retVal == SDR_PASS) {
         /* Get the status register for the monitor type */
-        retVal = SDL_CCM_getMonitorStatusRegister(monitorType, &monitorTypeStatusRegister);
+        retVal = SDR_CCM_getMonitorStatusRegister(monitorType, &monitorTypeStatusRegister);
     }
 
-    if (retVal == SDL_PASS) {
+    if (retVal == SDR_PASS) {
         /* Clear Status register */
         cslResult = CSL_armR5ConfigureCCMRegister (SOC_CCM_BASE,
                                                    monitorTypeStatusRegister,
@@ -494,15 +494,15 @@ SDL_Result SDL_CCM_selfTest (SDL_CCM_MonitorType monitorType,
                                                    ((void *)0u));
 
         if ( cslResult != CSL_PASS) {
-            retVal = SDL_FAIL;
+            retVal = SDR_FAIL;
         }
     }
 
     /* Check for error in earlier steps */
-    if (retVal == SDL_PASS) {
+    if (retVal == SDR_PASS) {
 
         /* Initialise Error flag to be starting */
-        SDL_CCM_instance.selfTestErrorFlag = SDL_CCM_ERROR_FLAG_INPROGRESS;
+        SDR_CCM_instance.selfTestErrorFlag = SDR_CCM_ERROR_FLAG_INPROGRESS;
 
         /* Configure mode to initiate self test */
         cslResult = CSL_armR5ConfigureCCMRegister(SOC_CCM_BASE,
@@ -511,12 +511,12 @@ SDL_Result SDL_CCM_selfTest (SDL_CCM_MonitorType monitorType,
                                                    ((void *)0u));
 
         if ( cslResult != CSL_PASS) {
-            retVal = SDL_FAIL;
+            retVal = SDR_FAIL;
         }
     }
 
     /* Check for error in earlier steps */
-    if (retVal == SDL_PASS) {
+    if (retVal == SDR_PASS) {
         /* Wait for error to take effect */
         while((maxCheckCount == 0u) || (timesCount < maxCheckCount)) {
             /* Check if the self test completed */
@@ -526,13 +526,13 @@ SDL_Result SDL_CCM_selfTest (SDL_CCM_MonitorType monitorType,
                                                    ((void *)0u));
 
             if (cslResult != CSL_PASS) {
-                retVal = SDL_FAIL;
+                retVal = SDR_FAIL;
             }
 
             /* Check if the status bit is set to indicate completion of self test */
             if(((statusValue & ALL_CCM_STATUS_BITS) != 0u)
-               || (SDL_CCM_instance.selfTestErrorFlag == SDL_CCM_ERROR_FLAG_TRIGGERED)
-               || (retVal != SDL_PASS)) {
+               || (SDR_CCM_instance.selfTestErrorFlag == SDR_CCM_ERROR_FLAG_TRIGGERED)
+               || (retVal != SDR_PASS)) {
                 break;
             }
             /* Increment timeout counter */
@@ -541,7 +541,7 @@ SDL_Result SDL_CCM_selfTest (SDL_CCM_MonitorType monitorType,
         }
     }
 
-    if (retVal == SDL_PASS) {
+    if (retVal == SDR_PASS) {
         /* Switch it back to active mode */
         cslResult = CSL_armR5ConfigureCCMRegister(SOC_CCM_BASE,
                                                   monitorTypeKeyRegister,
@@ -549,12 +549,12 @@ SDL_Result SDL_CCM_selfTest (SDL_CCM_MonitorType monitorType,
                                                   ((void *)0u));
 
          if (cslResult != CSL_PASS) {
-             retVal = SDL_FAIL;
+             retVal = SDR_FAIL;
          }
 
      }
 
-    if (retVal == SDL_PASS) {
+    if (retVal == SDR_PASS) {
         /* Use the earlier recorded status value to check each error flag */
         compareErrorFlag = ((statusValue
                              & CSL_MCU_ARMSS_CCMR5_COMPARE_WRAPPER_CFG_MMRS_CCMSR1_CMPE1_MASK)
@@ -581,12 +581,12 @@ SDL_Result SDL_CCM_selfTest (SDL_CCM_MonitorType monitorType,
                                                       ((void *)0u));
             }
 
-            retVal = SDL_FAIL;
+            retVal = SDR_FAIL;
         }
     }
 
     /* Reset error flag to be none */
-    SDL_CCM_instance.selfTestErrorFlag = SDL_CCM_ERROR_FLAG_NONE;
+    SDR_CCM_instance.selfTestErrorFlag = SDR_CCM_ERROR_FLAG_NONE;
 
     return retVal;
 }
@@ -599,34 +599,34 @@ SDL_Result SDL_CCM_selfTest (SDL_CCM_MonitorType monitorType,
  *
  * \return  None
  */
-static void SDL_CCM_callBackFunction (SDL_ESM_CCM_IntSrc intSrc)
+static void SDR_CCM_callBackFunction (SDR_ESM_CCM_IntSrc intSrc)
 {
     int32_t cslResult;
     uint32_t status;
     uint32_t polarityRegValue, keyRegValue;
     CSL_McuArmssCcmR5RegId monitorTypeStatusRegister = CSL_MCU_ARMSS_CCMR5_CCMSR1_REGID;
     CSL_McuArmssCcmR5RegId monitorTypeKeyRegister;
-    SDL_CCM_MonitorType monitorType;
-    SDL_CCM_ErrorStatus_t errorStatus;
-    SDL_Result retVal;
+    SDR_CCM_MonitorType monitorType;
+    SDR_CCM_ErrorStatus_t errorStatus;
+    SDR_Result retVal;
     bool moduleIndependentEvent = (bool)false;
 
     /* Check if it is self test related interrupt */
     switch (intSrc) {
-        case SDL_ESM_CCM_SELF_TEST_ERR_INT:
-        case SDL_ESM_CCM_STAT_ERR_INT:
+        case SDR_ESM_CCM_SELF_TEST_ERR_INT:
+        case SDR_ESM_CCM_STAT_ERR_INT:
             /* These events can come for any of the CCM block. Read status register to see which self test */
-            retVal = SDL_CCM_CheckSelfTestErrorSource(&monitorType);
-            if ( retVal != SDL_PASS) {
+            retVal = SDR_CCM_CheckSelfTestErrorSource(&monitorType);
+            if ( retVal != SDR_PASS) {
                 moduleIndependentEvent = (bool)true;
             }
             break;
 
         default:
             /* Get the monitor type based on interrupt source */
-            retVal = SDL_CCM_getMonitorTypeFromIntSrc(intSrc, &monitorType);
-            if (retVal != SDL_PASS ) {
-                SDL_assertExternalFunction(SDL_CCM_INVALID_INTERRUPT_SOURCE);
+            retVal = SDR_CCM_getMonitorTypeFromIntSrc(intSrc, &monitorType);
+            if (retVal != SDR_PASS ) {
+                SDR_assertExternalFunction(SDR_CCM_INVALID_INTERRUPT_SOURCE);
             }
             break;
     }
@@ -638,7 +638,7 @@ static void SDL_CCM_callBackFunction (SDL_ESM_CCM_IntSrc intSrc)
                                            &polarityRegValue,
                                            ((void *)0u));
     if ( cslResult != CSL_PASS) {
-        SDL_assertExternalFunction(SDL_CCM_READ_REG_FAILURE);
+        SDR_assertExternalFunction(SDR_CCM_READ_REG_FAILURE);
     } else {
         if(polarityRegValue != 0u) {
             /* If polarity reverted; switch back to 0 */
@@ -647,28 +647,28 @@ static void SDL_CCM_callBackFunction (SDL_ESM_CCM_IntSrc intSrc)
                                                        0u,
                                                        ((void *)0u));
             if ( cslResult != CSL_PASS) {
-                SDL_assertExternalFunction(SDL_CCM_CONFIG_REG_FAILURE);
+                SDR_assertExternalFunction(SDR_CCM_CONFIG_REG_FAILURE);
             }
-            if (SDL_CCM_instance.selfTestErrorFlag == SDL_CCM_ERROR_FLAG_INPROGRESS ) {
-                SDL_CCM_instance.selfTestErrorFlag = SDL_CCM_ERROR_FLAG_TRIGGERED;
+            if (SDR_CCM_instance.selfTestErrorFlag == SDR_CCM_ERROR_FLAG_INPROGRESS ) {
+                SDR_CCM_instance.selfTestErrorFlag = SDR_CCM_ERROR_FLAG_TRIGGERED;
             }
         }
         if (moduleIndependentEvent) {
-            if (SDL_CCM_instance.selfTestErrorFlag == SDL_CCM_ERROR_FLAG_INPROGRESS ) {
-                SDL_CCM_instance.selfTestErrorFlag = SDL_CCM_ERROR_FLAG_TRIGGERED;
+            if (SDR_CCM_instance.selfTestErrorFlag == SDR_CCM_ERROR_FLAG_INPROGRESS ) {
+                SDR_CCM_instance.selfTestErrorFlag = SDR_CCM_ERROR_FLAG_TRIGGERED;
             }
         } else {
             /* Get the status register and monitor type for the interrupt source */
-            retVal = SDL_CCM_getMonitorStatusRegister(monitorType, &monitorTypeStatusRegister);
+            retVal = SDR_CCM_getMonitorStatusRegister(monitorType, &monitorTypeStatusRegister);
 
-            if (retVal != SDL_PASS) {
+            if (retVal != SDR_PASS) {
                 /* Unexpected result call assert */
-                SDL_assertExternalFunction(SDL_CCM_READ_REG_FAILURE);
+                SDR_assertExternalFunction(SDR_CCM_READ_REG_FAILURE);
             }
         }
     }
 
-    if (retVal == SDL_PASS) {
+    if (retVal == SDR_PASS) {
         /* Read status register 1 */
         cslResult = CSL_armR5ReadCCMRegister (SOC_CCM_BASE,
                                                monitorTypeStatusRegister,
@@ -677,14 +677,14 @@ static void SDL_CCM_callBackFunction (SDL_ESM_CCM_IntSrc intSrc)
 
         if (cslResult != CSL_PASS) {
             /* Unexpected result call assert */
-            SDL_assertExternalFunction(SDL_CCM_READ_REG_FAILURE);
+            SDR_assertExternalFunction(SDR_CCM_READ_REG_FAILURE);
         }
 
         /* Get the Key register corresponding to the monitor type */
-        retVal = SDL_CCM_getMonitorKeyRegister(monitorType, &monitorTypeKeyRegister);
+        retVal = SDR_CCM_getMonitorKeyRegister(monitorType, &monitorTypeKeyRegister);
     }
 
-    if (retVal == SDL_PASS) {
+    if (retVal == SDR_PASS) {
         /* Read polarity convert register */
          /* Read status register 1 */
          cslResult = CSL_armR5ReadCCMRegister (SOC_CCM_BASE,
@@ -693,11 +693,11 @@ static void SDL_CCM_callBackFunction (SDL_ESM_CCM_IntSrc intSrc)
                                                 ((void *)0u));
          if (cslResult != CSL_PASS) {
              /* Unexpected result call assert */
-             SDL_assertExternalFunction(SDL_CCM_READ_REG_FAILURE);
+             SDR_assertExternalFunction(SDR_CCM_READ_REG_FAILURE);
          }
     }
 
-    if (retVal == SDL_PASS) {
+    if (retVal == SDR_PASS) {
         if (keyRegValue == (uint32_t)CSL_MCU_ARMSS_CCMR5_MKEY_SELF_TEST_MODE) {
             /* Switch it back to active mode */
             cslResult = CSL_armR5ConfigureCCMRegister(SOC_CCM_BASE,
@@ -706,7 +706,7 @@ static void SDL_CCM_callBackFunction (SDL_ESM_CCM_IntSrc intSrc)
                                                        ((void *)0u));
 
             if (cslResult != CSL_PASS) {
-                 SDL_assertExternalFunction(SDL_CCM_CONFIG_REG_FAILURE);
+                 SDR_assertExternalFunction(SDR_CCM_CONFIG_REG_FAILURE);
              }
         }
 
@@ -727,18 +727,18 @@ static void SDL_CCM_callBackFunction (SDL_ESM_CCM_IntSrc intSrc)
                                                    status,
                                                    ((void *)0u));
         if (cslResult != CSL_PASS) {
-             SDL_assertExternalFunction(SDL_CCM_CONFIG_REG_FAILURE);
+             SDR_assertExternalFunction(SDR_CCM_CONFIG_REG_FAILURE);
         } else {
-            if (SDL_CCM_instance.selfTestErrorFlag == SDL_CCM_ERROR_FLAG_NONE ) {
+            if (SDR_CCM_instance.selfTestErrorFlag == SDR_CCM_ERROR_FLAG_NONE ) {
                 /* Execute application call back */
-                SDL_CCM_applicationCallbackFunction(monitorType, &errorStatus);
+                SDR_CCM_applicationCallbackFunction(monitorType, &errorStatus);
             }
         }
     }
 }
 
 /** ========================================================================
- * \fn      SDL_CCM_getMonitorTypeFromIntSrc
+ * \fn      SDR_CCM_getMonitorTypeFromIntSrc
  *
  * \brief   Get Monitor type id from Interrupt source
  *
@@ -746,40 +746,40 @@ static void SDL_CCM_callBackFunction (SDL_ESM_CCM_IntSrc intSrc)
  * \param   pCCMR5RegId: Pointer to Monitor type corresponding to the
  *                     interrupt source
  *
- * \return  SDL_PASS : Success; SDL_FAIL for failures
+ * \return  SDR_PASS : Success; SDR_FAIL for failures
  */
-static SDL_Result SDL_CCM_getMonitorTypeFromIntSrc (SDL_ESM_CCM_IntSrc intSrc,
-                                          SDL_CCM_MonitorType *pMonitorType)
+static SDR_Result SDR_CCM_getMonitorTypeFromIntSrc (SDR_ESM_CCM_IntSrc intSrc,
+                                          SDR_CCM_MonitorType *pMonitorType)
 {
-    SDL_Result result = SDL_PASS;
+    SDR_Result result = SDR_PASS;
 
     /* Set default value */
-    *pMonitorType = SDL_CCM_MONITOR_TYPE_OUTPUT_COMPARE_BLOCK;
+    *pMonitorType = SDR_CCM_MONITOR_TYPE_OUTPUT_COMPARE_BLOCK;
 
     /* This finds the monitor type based on the interrupt source */
     switch(intSrc) {
-        case SDL_ESM_CCM_OUTPUT_COMPARE_BLOCK_INT:
-            *pMonitorType = SDL_CCM_MONITOR_TYPE_OUTPUT_COMPARE_BLOCK;
+        case SDR_ESM_CCM_OUTPUT_COMPARE_BLOCK_INT:
+            *pMonitorType = SDR_CCM_MONITOR_TYPE_OUTPUT_COMPARE_BLOCK;
             break;
 
-        case SDL_ESM_CCM_VIM_ERR_INT:
-            *pMonitorType = SDL_CCM_MONITOR_TYPE_VIM;
+        case SDR_ESM_CCM_VIM_ERR_INT:
+            *pMonitorType = SDR_CCM_MONITOR_TYPE_VIM;
             break;
 
-        case SDL_ESM_CCM_INACTIVITY_MONITOR_INT:
-            *pMonitorType = SDL_CCM_MONITOR_TYPE_INACTIVITY_MONITOR;
+        case SDR_ESM_CCM_INACTIVITY_MONITOR_INT:
+            *pMonitorType = SDR_CCM_MONITOR_TYPE_INACTIVITY_MONITOR;
             break;
 
         default:
             /* Invalid value return fail */
-            result = SDL_FAIL;
+            result = SDR_FAIL;
             break;
     }
     return result;
 }
 
 /** ========================================================================
- * \fn      SDL_CCM_getMonitorKeyRegister
+ * \fn      SDR_CCM_getMonitorKeyRegister
  *
  * \brief   Get Key Register Id for the given monitor type
  *
@@ -787,40 +787,40 @@ static SDL_Result SDL_CCM_getMonitorTypeFromIntSrc (SDL_ESM_CCM_IntSrc intSrc,
  * \param pCCMR5RegId: Pointer to Key Register Id corresponding to
  *                     the monitor type
  *
- * \return  SDL_PASS : Success; SDL_FAIL for failures
+ * \return  SDR_PASS : Success; SDR_FAIL for failures
  */
-static SDL_Result SDL_CCM_getMonitorKeyRegister(SDL_CCM_MonitorType monitorType,
+static SDR_Result SDR_CCM_getMonitorKeyRegister(SDR_CCM_MonitorType monitorType,
                                                 CSL_McuArmssCcmR5RegId *pCCMR5RegId)
 {
-    SDL_Result result = SDL_PASS;
+    SDR_Result result = SDR_PASS;
 
     /* Set default value */
     *pCCMR5RegId = CSL_MCU_ARMSS_CCMR5_CCMKEYR1_REGID;
 
     /* This gets the key register based on monitorType*/
     switch(monitorType) {
-        case SDL_CCM_MONITOR_TYPE_OUTPUT_COMPARE_BLOCK:
+        case SDR_CCM_MONITOR_TYPE_OUTPUT_COMPARE_BLOCK:
             *pCCMR5RegId = CSL_MCU_ARMSS_CCMR5_CCMKEYR1_REGID;
             break;
 
-        case SDL_CCM_MONITOR_TYPE_VIM:
+        case SDR_CCM_MONITOR_TYPE_VIM:
             *pCCMR5RegId = CSL_MCU_ARMSS_CCMR5_CCMKEYR2_REGID;
             break;
 
-        case SDL_CCM_MONITOR_TYPE_INACTIVITY_MONITOR:
+        case SDR_CCM_MONITOR_TYPE_INACTIVITY_MONITOR:
             *pCCMR5RegId = CSL_MCU_ARMSS_CCMR5_CCMKEYR3_REGID;
             break;
 
         default:
             /* Invalid value return fail */
-            result = SDL_FAIL;
+            result = SDR_FAIL;
             break;
     }
     return result;
 }
 
 /** ========================================================================
- * \fn      SDL_CCM_getMonitorStatusRegister
+ * \fn      SDR_CCM_getMonitorStatusRegister
  *
  * \brief   Get Status Register Id for the given monitor type
  *
@@ -828,30 +828,30 @@ static SDL_Result SDL_CCM_getMonitorKeyRegister(SDL_CCM_MonitorType monitorType,
  * \param pCCMR5RegId: Pointer to Status Register Id corresponding to
  *                     the monitor type
  *
- * \return  SDL_PASS : Success; SDL_FAIL for failures
+ * \return  SDR_PASS : Success; SDR_FAIL for failures
  */
-static SDL_Result SDL_CCM_getMonitorStatusRegister(SDL_CCM_MonitorType monitorType,
+static SDR_Result SDR_CCM_getMonitorStatusRegister(SDR_CCM_MonitorType monitorType,
                                                    CSL_McuArmssCcmR5RegId *pCCMR5RegId)
 {
-    SDL_Result result = SDL_PASS;
+    SDR_Result result = SDR_PASS;
 
     /* Get the monitor type register based on monitor type */
     switch(monitorType) {
-        case SDL_CCM_MONITOR_TYPE_OUTPUT_COMPARE_BLOCK:
+        case SDR_CCM_MONITOR_TYPE_OUTPUT_COMPARE_BLOCK:
             *pCCMR5RegId = CSL_MCU_ARMSS_CCMR5_CCMSR1_REGID;
             break;
 
-        case SDL_CCM_MONITOR_TYPE_VIM:
+        case SDR_CCM_MONITOR_TYPE_VIM:
             *pCCMR5RegId = CSL_MCU_ARMSS_CCMR5_CCMSR2_REGID;
             break;
 
-        case SDL_CCM_MONITOR_TYPE_INACTIVITY_MONITOR:
+        case SDR_CCM_MONITOR_TYPE_INACTIVITY_MONITOR:
             *pCCMR5RegId = CSL_MCU_ARMSS_CCMR5_CCMSR3_REGID;
             break;
 
         default:
             /* Invalid value return fail */
-            result = SDL_FAIL;
+            result = SDR_FAIL;
             break;
     }
     return result;

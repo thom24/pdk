@@ -1,7 +1,7 @@
 /*
- * SDL TEST
+ * SDR TEST
  *
- * Software Diagnostics Library Test
+ * Software Diagnostics Reference Test
  *
  *  Copyright (c) Texas Instruments Incorporated 2018-2020
  *
@@ -54,21 +54,21 @@ void *SDTF_ramTestaddr=(void *)0x41c50000;
  */
 int32_t SDTF_injectError(SDTF_errorType_t errorType)
 {
-    SDL_Result result;
+    SDR_Result result;
 
     switch(errorType) {
         case SDTF_ERROR_TYPE_ECC_RAM_SINGLE_BIT:
             {
-                SDL_ECC_InjectErrorConfig_t injectErrorConfig;
+                SDR_ECC_InjectErrorConfig_t injectErrorConfig;
 
                 injectErrorConfig.pErrMem =  SDTF_ramTestaddr;
                 injectErrorConfig.flipBitMask =  SDTF_RAM_TEST_1BIT;
-                /* Call SDL API to inject ecc single bit error */
-                result = SDL_ECC_injectError(SDL_ECC_MEMTYPE_MCU_R5F0_CORE,
-                                            SDL_ECC_R5F_MEM_SUBTYPE_ATCM0_BANK0_VECTOR_ID,
-                                            SDL_INJECT_ECC_ERROR_FORCING_1BIT_ONCE,
+                /* Call SDR API to inject ecc single bit error */
+                result = SDR_ECC_injectError(SDR_ECC_MEMTYPE_MCU_R5F0_CORE,
+                                            SDR_ECC_R5F_MEM_SUBTYPE_ATCM0_BANK0_VECTOR_ID,
+                                            SDR_INJECT_ECC_ERROR_FORCING_1BIT_ONCE,
                                             &injectErrorConfig);
-                if(result != SDL_PASS) {
+                if(result != SDR_PASS) {
                     SDTF_printf("\n SDTF_ERROR_TYPE_ECC_RAM_SINGLE_BIT test failed");
                     return -1;
                 }
@@ -76,18 +76,18 @@ int32_t SDTF_injectError(SDTF_errorType_t errorType)
             break;
 
         case SDTF_ERROR_TYPE_ECC_RAM_DOUBLE_BIT:
-	    /* Call SDL API to inject ecc double bit error */
+	    /* Call SDR API to inject ecc double bit error */
             {
-                SDL_ECC_InjectErrorConfig_t injectErrorConfig;
+                SDR_ECC_InjectErrorConfig_t injectErrorConfig;
 
                 injectErrorConfig.pErrMem =  SDTF_ramTestaddr;
                 injectErrorConfig.flipBitMask =  SDTF_RAM_TEST_2BIT;
-                /* Call SDL API to inject ecc double bit error */
-                result = SDL_ECC_injectError(SDL_ECC_MEMTYPE_MCU_R5F0_CORE,
-                                            SDL_ECC_R5F_MEM_SUBTYPE_ATCM0_BANK0_VECTOR_ID,
-                                            SDL_INJECT_ECC_ERROR_FORCING_2BIT_ONCE,
+                /* Call SDR API to inject ecc double bit error */
+                result = SDR_ECC_injectError(SDR_ECC_MEMTYPE_MCU_R5F0_CORE,
+                                            SDR_ECC_R5F_MEM_SUBTYPE_ATCM0_BANK0_VECTOR_ID,
+                                            SDR_INJECT_ECC_ERROR_FORCING_2BIT_ONCE,
                                             &injectErrorConfig);
-                if(result != SDL_PASS) {
+                if(result != SDR_PASS) {
                     SDTF_printf("\n SDTF_ERROR_TYPE_ECC_RAM_DOUBLE_BIT test failed");
                     return -1;
                 }

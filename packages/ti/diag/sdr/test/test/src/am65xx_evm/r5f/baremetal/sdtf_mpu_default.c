@@ -1,7 +1,7 @@
 /*
- * SDL TEST
+ * SDR TEST
  *
- * Software Diagnostics Library Test MPU default settings
+ * Software Diagnostics Reference Test MPU default settings
  *
  *  Copyright (c) Texas Instruments Incorporated 2018-2020
  *
@@ -45,11 +45,11 @@
 /*  Declarations    */
 /**
  * \brief  TEX[2:0], C and B values.
- *         gSdlTestMemAttr[x][0]: TEX[2:0] values
- *         gSdlTestMemAttr[x][1]: C bit value
- *         gSdlTestMemAttr[x][2]: B bit value
+ *         gSdrTestMemAttr[x][0]: TEX[2:0] values
+ *         gSdrTestMemAttr[x][1]: C bit value
+ *         gSdrTestMemAttr[x][2]: B bit value
  */
-static const uint32_t gSdlTestMemAttr[CSL_ARM_R5_MEM_ATTR_MAX][3U] =
+static const uint32_t gSdrTestMemAttr[CSL_ARM_R5_MEM_ATTR_MAX][3U] =
 {
 /*    TEX[2:0], C,     B bits */
     {   0x0U,   0x0U,  0x0U,}, /* Strongly-ordered.*/
@@ -61,7 +61,7 @@ static const uint32_t gSdlTestMemAttr[CSL_ARM_R5_MEM_ATTR_MAX][3U] =
     {   0x2U,   0x0U,  0x0U,}, /* Non-shareable Device.*/
 };
 
-const CSL_ArmR5MpuRegionCfg  gSdlR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
+const CSL_ArmR5MpuRegionCfg  gSdrR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
 {
     {
         /* Region 0 configuration: complete 32 bit address space = 4Gbits */
@@ -177,9 +177,9 @@ const CSL_ArmR5MpuRegionCfg  gSdlR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
     },
 };
 
-void SDL_armR5MPUCfg(void);
+void SDR_armR5MPUCfg(void);
 
-static void SDL_enable_cache()
+static void SDR_enable_cache()
 {
     CSL_armR5CacheEnableAllCache( 0 );      /* Disable I/D caches */
     CSL_armR5CacheEnableForceWrThru( 1 );   /* Enable force write-thru */
@@ -212,9 +212,9 @@ void __mpu_init(void)
         regAddr = CSL_MAIN_DOMAIN_VIM_BASE_ADDR;
     }
 
-    SDL_armR5MPUCfg();          /* Enable MPU */
+    SDR_armR5MPUCfg();          /* Enable MPU */
 #ifndef SDTF_CACHE_DISABLE
-    SDL_enable_cache();         /* Enable all caches */
+    SDR_enable_cache();         /* Enable all caches */
 #endif
     CSL_armR5FpuEnable( 1 );    /* Enable FPU */
     CSL_armR5IntrEnableVic(1);  /* Enable VIC */
@@ -231,7 +231,7 @@ void __mpu_init(void)
     CSL_armR5IntrEnableIrq(1);  /* Enable IRQ */
 }
 
-void SDL_armR5MPUCfg(void)
+void SDR_armR5MPUCfg(void)
 {
     uint32_t loopCnt = 0U;
     uint32_t baseAddrRegVal = 0U, sizeRegVal = 0U, accessCtrlRegVal = 0U, tex;
@@ -252,48 +252,48 @@ void SDL_armR5MPUCfg(void)
     /* Configure MPU regions only for provided configuration */
     for (loopCnt = 0U ; loopCnt < CSL_ARM_R5F_MPU_REGIONS_MAX ; loopCnt++)
     {
-        if (CSL_ARM_R5_MPU_REGION_SIZE_32B <= gSdlR5MpuCfg[loopCnt].size)
+        if (CSL_ARM_R5_MPU_REGION_SIZE_32B <= gSdrR5MpuCfg[loopCnt].size)
         {
             baseAddrRegVal = 0U;
             sizeRegVal = 0U;
             accessCtrlRegVal = 0U;
-            baseAddrRegVal   |= ( gSdlR5MpuCfg[loopCnt].baseAddr &
+            baseAddrRegVal   |= ( gSdrR5MpuCfg[loopCnt].baseAddr &
                                     CSL_ARM_R5_MPU_REGION_BASE_ADDR_MASK);
-            sizeRegVal       |= ( gSdlR5MpuCfg[loopCnt].enable <<
+            sizeRegVal       |= ( gSdrR5MpuCfg[loopCnt].enable <<
                                     CSL_ARM_R5_MPU_REGION_SZEN_EN_SHIFT);
-            sizeRegVal       |= ( gSdlR5MpuCfg[loopCnt].size <<
+            sizeRegVal       |= ( gSdrR5MpuCfg[loopCnt].size <<
                                     CSL_ARM_R5_MPU_REGION_SZEN_SZ_SHIFT);
-            sizeRegVal       |= ( gSdlR5MpuCfg[loopCnt].subRegionEnable <<
+            sizeRegVal       |= ( gSdrR5MpuCfg[loopCnt].subRegionEnable <<
                                     CSL_ARM_R5_MPU_REGION_SZEN_SRD_SHIFT);
-            accessCtrlRegVal |= ( gSdlR5MpuCfg[loopCnt].exeNeverControl <<
+            accessCtrlRegVal |= ( gSdrR5MpuCfg[loopCnt].exeNeverControl <<
                                    CSL_ARM_R5_MPU_REGION_AC_XN_SHIFT);
-            accessCtrlRegVal |= ( gSdlR5MpuCfg[loopCnt].accessPermission <<
+            accessCtrlRegVal |= ( gSdrR5MpuCfg[loopCnt].accessPermission <<
                                    CSL_ARM_R5_MPU_REGION_AC_AP_SHIFT);
-            accessCtrlRegVal |= ( gSdlR5MpuCfg[loopCnt].shareable <<
+            accessCtrlRegVal |= ( gSdrR5MpuCfg[loopCnt].shareable <<
                                    CSL_ARM_R5_MPU_REGION_AC_S_SHIFT);
-            if (gSdlR5MpuCfg[loopCnt].cacheable == (uint32_t)TRUE)
+            if (gSdrR5MpuCfg[loopCnt].cacheable == (uint32_t)TRUE)
             {
                 tex = (1U << 2U);
-                tex |= (gSdlR5MpuCfg[loopCnt].cachePolicy);
+                tex |= (gSdrR5MpuCfg[loopCnt].cachePolicy);
                 accessCtrlRegVal |=
                                 ( tex << CSL_ARM_R5_MPU_REGION_AC_TEX_SHIFT);
-                accessCtrlRegVal |= ( gSdlR5MpuCfg[loopCnt].cachePolicy <<
+                accessCtrlRegVal |= ( gSdrR5MpuCfg[loopCnt].cachePolicy <<
                                    CSL_ARM_R5_MPU_REGION_AC_CB_SHIFT);
             }
             else
             {
-                tex = gSdlTestMemAttr[gSdlR5MpuCfg[loopCnt].memAttr][0U];
+                tex = gSdrTestMemAttr[gSdrR5MpuCfg[loopCnt].memAttr][0U];
                 accessCtrlRegVal |=
                                 ( tex << CSL_ARM_R5_MPU_REGION_AC_TEX_SHIFT);
                 accessCtrlRegVal |=
-                                ( gSdlTestMemAttr[gSdlR5MpuCfg[loopCnt].memAttr][1U] <<
+                                ( gSdrTestMemAttr[gSdrR5MpuCfg[loopCnt].memAttr][1U] <<
                                 CSL_ARM_R5_MPU_REGION_AC_B_SHIFT);
                 accessCtrlRegVal |=
-                                ( gSdlTestMemAttr[gSdlR5MpuCfg[loopCnt].memAttr][2U] <<
+                                ( gSdrTestMemAttr[gSdrR5MpuCfg[loopCnt].memAttr][2U] <<
                                 CSL_ARM_R5_MPU_REGION_AC_C_SHIFT);
             }
             /* configure MPU region here */
-            CSL_armR5MpuCfgRegion(gSdlR5MpuCfg[loopCnt].regionId,
+            CSL_armR5MpuCfgRegion(gSdrR5MpuCfg[loopCnt].regionId,
                                   baseAddrRegVal,
                                   sizeRegVal,
                                   accessCtrlRegVal);

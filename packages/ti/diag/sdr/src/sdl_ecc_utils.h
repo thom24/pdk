@@ -1,7 +1,7 @@
 /*
- * SDL ECC
+ * SDR ECC
  *
- * Software Diagnostics Library module for ECC
+ * Software Diagnostics Reference module for ECC
  *
  *  Copyright (c) Texas Instruments Incorporated 2018-2020
  *
@@ -35,15 +35,15 @@
  *
  */
 
-#ifndef INCLUDE_SDL_ECC_UTILS_H_
-#define INCLUDE_SDL_ECC_UTILS_H_
+#ifndef INCLUDE_SDR_ECC_UTILS_H_
+#define INCLUDE_SDR_ECC_UTILS_H_
 
-void SDL_ECC_UTILS_enableECCATCM(void);
-void SDL_ECC_UTILS_enableECCB0TCM(void);
-void SDL_ECC_UTILS_enableECCB1TCM(void);
+void SDR_ECC_UTILS_enableECCATCM(void);
+void SDR_ECC_UTILS_enableECCB0TCM(void);
+void SDR_ECC_UTILS_enableECCB1TCM(void);
 
-void SDL_ECC_UTILS_configSecIntr(uint32_t eventCountInitValue,
+void SDR_ECC_UTILS_configSecIntr(uint32_t eventCountInitValue,
                                  uint32_t eventTypeBitMap,
                                  uint32_t counterNumber );
 
-#endif /* INCLUDE_SDL_ECC_UTILS_H_ */
+#endif /* INCLUDE_SDR_ECC_UTILS_H_ */

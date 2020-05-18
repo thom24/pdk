@@ -1,7 +1,7 @@
 /*
- * SDL ESM
+ * SDR ESM
  *
- * Software Diagnostics Library module for Error Signaling Module
+ * Software Diagnostics Reference module for Error Signaling Module
  *
  *  Copyright (c) Texas Instruments Incorporated 2018-2020
  *
@@ -40,23 +40,23 @@
  *
  * @brief
  *  Header file contains enumerations, structure definitions and function
- *  declarations for SDL Error Signaling Module interface.
+ *  declarations for SDR Error Signaling Module interface.
  *
- *  The SDL ESM enumerations include:
- *      1. SDL ESM interrupt types
- *      2. SDL ESM interrupt sources
- *      3. SDL ESM Watchdog Timer IDs
+ *  The SDR ESM enumerations include:
+ *      1. SDR ESM interrupt types
+ *      2. SDR ESM interrupt sources
+ *      3. SDR ESM Watchdog Timer IDs
  *
- *  The SDL ESM function macros include:
+ *  The SDR ESM function macros include:
  *      1. Application provided callback function type for ECC/CCM/WDT specific ESM events
  *
- *  The SDL ESM data structures include:
+ *  The SDR ESM data structures include:
  *      1. Structure of the ECC error sources which map to the ESM interrupt sources
  *      2. Structure of the ESM error configuration
  *      3. Structure of the initial ESM configuration
  *
- *  The SDL ESM APIs include:
- *      1. API to initialize the SDL ESM
+ *  The SDR ESM APIs include:
+ *      1. API to initialize the SDR ESM
  *      2. APIs to set/reset nERROR pin
  *      3. API to get nERROR pin status
  *      4. API to insert an ESM error
@@ -68,8 +68,8 @@
  *      10.Application provided external callback function for ESM handling
  */
 
-#ifndef INCLUDE_SDL_ESM_H_
-#define INCLUDE_SDL_ESM_H_
+#ifndef INCLUDE_SDR_ESM_H_
+#define INCLUDE_SDR_ESM_H_
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -82,33 +82,33 @@ extern "C" {
 
 /** ===========================================================================
  *
- * @defgroup SDL_ESM_API SDL ESM API
+ * @defgroup SDR_ESM_API SDR ESM API
  *
  * @section Overview
- * The SDL ESM module provides API to configure ESM events
+ * The SDR ESM module provides API to configure ESM events
  *
  * ============================================================================
  */
 /**
-@defgroup SDL_ESM_DATASTRUCT  SDL ESM Data Structures
-@ingroup SDL_ESM_API
+@defgroup SDR_ESM_DATASTRUCT  SDR ESM Data Structures
+@ingroup SDR_ESM_API
 */
 /**
-@defgroup SDL_ESM_FUNCTION  SDL ESM Functions
-@ingroup SDL_ESM_API
+@defgroup SDR_ESM_FUNCTION  SDR ESM Functions
+@ingroup SDR_ESM_API
 */
 /**
-@defgroup SDL_ESM_ENUM SDL ESM Enumerated Data Types
-@ingroup SDL_ESM_API
+@defgroup SDR_ESM_ENUM SDR ESM Enumerated Data Types
+@ingroup SDR_ESM_API
 */
 
 /**
-@defgroup SDL_ESM_MACROS SDL ESM Macro defines
-@ingroup SDL_ESM_API
+@defgroup SDR_ESM_MACROS SDR ESM Macro defines
+@ingroup SDR_ESM_API
 */
 
 /** ===========================================================================
- *  @addtogroup SDL_ESM_ENUM
+ *  @addtogroup SDR_ESM_ENUM
     @{
  * ============================================================================
  */
@@ -117,30 +117,30 @@ extern "C" {
  * ----------------------------------------------------------------------------
  */
 typedef enum {
-   SDL_ESM_INT_TYPE_HI = 1,
+   SDR_ESM_INT_TYPE_HI = 1,
     /**< Interrupt type Hi  */
-   SDL_ESM_INT_TYPE_LO = 2,
+   SDR_ESM_INT_TYPE_LO = 2,
     /**< Interrupt type Lo  */
-   SDL_ESM_INT_TYPE_CFG = 3,
+   SDR_ESM_INT_TYPE_CFG = 3,
     /**< Interrupt type Config  */
-} SDL_ESM_IntType;
+} SDR_ESM_IntType;
 
 /** ---------------------------------------------------------------------------
- * \brief Defines the different SDL ESM interrupt sources
+ * \brief Defines the different SDR ESM interrupt sources
  * ----------------------------------------------------------------------------
  */
 typedef enum {
-    SDL_ESM_CCM_OUTPUT_COMPARE_BLOCK_INT = 1,
+    SDR_ESM_CCM_OUTPUT_COMPARE_BLOCK_INT = 1,
     /**<  CCM Interrupt source  Output compare block*/
-    SDL_ESM_CCM_VIM_ERR_INT = 2,
+    SDR_ESM_CCM_VIM_ERR_INT = 2,
     /**<  CCM Interrupt source VIM compare */
-    SDL_ESM_CCM_INACTIVITY_MONITOR_INT = 3,
+    SDR_ESM_CCM_INACTIVITY_MONITOR_INT = 3,
    /**<  CCM Interrupt source inactivity monitor */
-    SDL_ESM_CCM_SELF_TEST_ERR_INT = 4,
+    SDR_ESM_CCM_SELF_TEST_ERR_INT = 4,
    /**<  CCM Interrupt source Self test error */
-    SDL_ESM_CCM_STAT_ERR_INT = 5,
+    SDR_ESM_CCM_STAT_ERR_INT = 5,
    /**<  CCM Interrupt source self test or split mode interrupt */
-} SDL_ESM_CCM_IntSrc;
+} SDR_ESM_CCM_IntSrc;
 
 
 /** ---------------------------------------------------------------------------
@@ -148,53 +148,53 @@ typedef enum {
  * ----------------------------------------------------------------------------
  */
 typedef enum {
-    SDL_ESM_TIMER_ID_0 = 1,
+    SDR_ESM_TIMER_ID_0 = 1,
     /**<  Timer Id 0*/
-    SDL_ESM_TIMER_ID_1 = 2,
+    SDR_ESM_TIMER_ID_1 = 2,
     /**<  Timer Id 1 */
-} SDL_ESM_WDT_IntSrc;
+} SDR_ESM_WDT_IntSrc;
 
 /* @} */
 
 /**
- *  \addtogroup SDL_ESM_MACROS
+ *  \addtogroup SDR_ESM_MACROS
  *  @{
  */
 
 
 /** \brief Invalid interrupt number */
-#define SDL_ESM_INTNUMBER_INVALID (0xffffffffu)
+#define SDR_ESM_INTNUMBER_INVALID (0xffffffffu)
 
 /** \brief Address field: Error Address invalid */
-#define SDL_ESM_ERRORADDR_INVALID (0xffffffffu)
+#define SDR_ESM_ERRORADDR_INVALID (0xffffffffu)
 
 /** \brief Maximum number of EVENT words */
-#define SDL_ESM_MAX_EVENT_MAP_NUM_WORDS (4u)
+#define SDR_ESM_MAX_EVENT_MAP_NUM_WORDS (4u)
 
 /**
- *  \anchor sdlEsmEccErrorSource_t
+ *  \anchor sdrEsmEccErrorSource_t
  *  \name ESM ECC Error source type
  *  @{
  */
 /**
  * \brief  Source of the ECC error which maps to the ESM interrupt source
  */
-typedef uint32_t sdlEsmEccErrorSource_t;
+typedef uint32_t sdrEsmEccErrorSource_t;
 
 /** \brief MCU CPU0 detected 1-bit ECC error source */
-#define SDL_ESM_ECC_PARAM_MCU_CPU0_SEC_ERROR (1u)
+#define SDR_ESM_ECC_PARAM_MCU_CPU0_SEC_ERROR (1u)
 /** \brief MCU CPU0 detected 2-bit ECC error source */
-#define SDL_ESM_ECC_PARAM_MCU_CPU0_DED_ERROR (2u)
+#define SDR_ESM_ECC_PARAM_MCU_CPU0_DED_ERROR (2u)
 /** \brief MCU CPU1 detected 1-bit ECC error source */
-#define SDL_ESM_ECC_PARAM_MCU_CPU1_SEC_ERROR (3u)
+#define SDR_ESM_ECC_PARAM_MCU_CPU1_SEC_ERROR (3u)
 /** \brief MCU CPU1 detected 2-bit ECC error source */
-#define SDL_ESM_ECC_PARAM_MCU_CPU1_DED_ERROR (4u)
+#define SDR_ESM_ECC_PARAM_MCU_CPU1_DED_ERROR (4u)
 /* @} */
 
 /* @} */
 
 /**
- *  \addtogroup SDL_ESM_DATASTRUCT
+ *  \addtogroup SDR_ESM_DATASTRUCT
  *  @{
  */
 
@@ -207,7 +207,7 @@ typedef uint32_t sdlEsmEccErrorSource_t;
  *
  * \return  None
  */
-typedef void (* SDL_ESM_ECCCallback_t) (uint32_t intSource, uint32_t errorAddr);
+typedef void (* SDR_ESM_ECCCallback_t) (uint32_t intSource, uint32_t errorAddr);
 
 /** ============================================================================
  *
@@ -217,7 +217,7 @@ typedef void (* SDL_ESM_ECCCallback_t) (uint32_t intSource, uint32_t errorAddr);
  *
  * \return  None
  */
-typedef void (* SDL_ESM_CCMCallback_t) (SDL_ESM_CCM_IntSrc intSrc);
+typedef void (* SDR_ESM_CCMCallback_t) (SDR_ESM_CCM_IntSrc intSrc);
 
 /** ============================================================================
  *
@@ -225,9 +225,9 @@ typedef void (* SDL_ESM_CCMCallback_t) (SDL_ESM_CCM_IntSrc intSrc);
  *
  * \param   intSrc:  Interrupt source for WDT events
  *
- * \return  SDL_RETURN_PASS : Success; SDL_RETURN_FAIL for failures
+ * \return  SDR_RETURN_PASS : Success; SDR_RETURN_FAIL for failures
  */
-typedef bool (* SDL_ESM_WDTCallback_t) (SDL_ESM_WDT_IntSrc intSrc);
+typedef bool (* SDR_ESM_WDTCallback_t) (SDR_ESM_WDT_IntSrc intSrc);
 
 /** ---------------------------------------------------------------------------
  * \brief ESM error configuration
@@ -235,13 +235,13 @@ typedef bool (* SDL_ESM_WDTCallback_t) (SDL_ESM_WDT_IntSrc intSrc);
  * This structure defines the elements ESM error configuration
  * ----------------------------------------------------------------------------
  */
-typedef struct SDL_ESM_Errorconfig_s
+typedef struct SDR_ESM_Errorconfig_s
 {
     uint32_t groupNumber;
     /**< Group number of error event  */
     uint32_t bitNumber;
     /**< Bit number within the group  */
-} SDL_ESM_ErrorConfig_t;
+} SDR_ESM_ErrorConfig_t;
 
 /** ---------------------------------------------------------------------------
  * \brief ESM init configuration
@@ -249,37 +249,37 @@ typedef struct SDL_ESM_Errorconfig_s
  * This structure defines ESM Init configuration
  * ----------------------------------------------------------------------------
  */
-typedef struct SDL_ESM_InitConfig_s
+typedef struct SDR_ESM_InitConfig_s
 {
-    SDL_ESM_ErrorConfig_t esmErrorConfig;
+    SDR_ESM_ErrorConfig_t esmErrorConfig;
     /**< Error event to be used for self test */
-    uint32_t eventMap[SDL_ESM_MAX_EVENT_MAP_NUM_WORDS];
+    uint32_t eventMap[SDR_ESM_MAX_EVENT_MAP_NUM_WORDS];
     /**< ESM Event bitmap */
-    uint32_t eventPriorityMap[SDL_ESM_MAX_EVENT_MAP_NUM_WORDS];
+    uint32_t eventPriorityMap[SDR_ESM_MAX_EVENT_MAP_NUM_WORDS];
     /**< ESM Event Priority bitmap */
-    uint32_t errorOutputMap[SDL_ESM_MAX_EVENT_MAP_NUM_WORDS];
+    uint32_t errorOutputMap[SDR_ESM_MAX_EVENT_MAP_NUM_WORDS];
     /**< ESM bitmap for driving error pin: When selected error event occurs
      *  the error output pin will be asserted
      *  It is the application responsibility to reset the error
      *  if the system did not crash or lockup */
-} SDL_ESM_InitConfig_t;
+} SDR_ESM_InitConfig_t;
 
 /* @} */
 
 /**
- *  \addtogroup SDL_ESM_FUNCTION
+ *  \addtogroup SDR_ESM_FUNCTION
  *  @{
  */
 
 /** ============================================================================
  *
- * \brief   Initializes ESM module for SDL
+ * \brief   Initializes ESM module for SDR
  *
  * \param   esmInitConfig: Configuration for ESM
  *
- * \return  SDL_RETURN_PASS : Success; SDL_RETURN_FAIL for failures
+ * \return  SDR_RETURN_PASS : Success; SDR_RETURN_FAIL for failures
  */
-SDL_Result SDL_ESM_init (const SDL_ESM_InitConfig_t *esmInitConfig);
+SDR_Result SDR_ESM_init (const SDR_ESM_InitConfig_t *esmInitConfig);
 
 /** ============================================================================ 
  *
@@ -287,15 +287,15 @@ SDL_Result SDL_ESM_init (const SDL_ESM_InitConfig_t *esmInitConfig);
  *
  * \return    None
  */
-void SDL_ESM_setNError(void);
+void SDR_ESM_setNError(void);
 
 /** ============================================================================
  *
  * \brief  Function sets the nERROR pin inactive.
  *
- * \return  SDL_RETURN_PASS : Success; SDL_RETURN_FAIL for failures
+ * \return  SDR_RETURN_PASS : Success; SDR_RETURN_FAIL for failures
  */
-SDL_Result SDL_ESM_resetNError(void);
+SDR_Result SDR_ESM_resetNError(void);
 
 /** ============================================================================
  *
@@ -303,7 +303,7 @@ SDL_Result SDL_ESM_resetNError(void);
  *
  * \return    true : active; false not active
  */
-bool SDL_ESM_getNErrorStatus(void);
+bool SDR_ESM_getNErrorStatus(void);
 
 /** ============================================================================
  *
@@ -311,9 +311,9 @@ bool SDL_ESM_getNErrorStatus(void);
  *
  * \param   esmErrorConfig: Configuration of ESM error
  *
- * \return  SDL_RETURN_PASS : Success; SDL_RETURN_FAIL for failures
+ * \return  SDR_RETURN_PASS : Success; SDR_RETURN_FAIL for failures
  */
-SDL_Result SDL_ESM_errorInsert (const SDL_ESM_ErrorConfig_t *esmErrorConfig);
+SDR_Result SDR_ESM_errorInsert (const SDR_ESM_ErrorConfig_t *esmErrorConfig);
 
 /** ============================================================================
  *
@@ -321,9 +321,9 @@ SDL_Result SDL_ESM_errorInsert (const SDL_ESM_ErrorConfig_t *esmErrorConfig);
  *
  * \param   loopCount: Number of iterations to check status before timing out
  *
- * \return  SDL_RETURN_PASS : Success; SDL_RETURN_FAIL for failures
+ * \return  SDR_RETURN_PASS : Success; SDR_RETURN_FAIL for failures
  */
-SDL_Result SDL_ESM_selfTest (uint32_t loopCount);
+SDR_Result SDR_ESM_selfTest (uint32_t loopCount);
 
 /** ============================================================================
  *
@@ -331,9 +331,9 @@ SDL_Result SDL_ESM_selfTest (uint32_t loopCount);
  *
  * \param  eccCallBackFunctionPtr: Call back function to register
  *
- * \return  SDL_RETURN_PASS : Success; SDL_RETURN_FAIL for failures
+ * \return  SDR_RETURN_PASS : Success; SDR_RETURN_FAIL for failures
  */
-SDL_Result SDL_ESM_registerECCHandler(SDL_ESM_ECCCallback_t eccCallBackFunctionPtr);
+SDR_Result SDR_ESM_registerECCHandler(SDR_ESM_ECCCallback_t eccCallBackFunctionPtr);
 
 
 /** ============================================================================
@@ -342,9 +342,9 @@ SDL_Result SDL_ESM_registerECCHandler(SDL_ESM_ECCCallback_t eccCallBackFunctionP
  *
  * \param   CCMCallBackFunctionPtr: Callback function pointer
  *
- * \return  SDL_PASS : Success; SDL_FAIL for failures
+ * \return  SDR_PASS : Success; SDR_FAIL for failures
  */
-SDL_Result SDL_ESM_registerCCMHandler(SDL_ESM_CCMCallback_t CCMCallBackFunctionPtr);
+SDR_Result SDR_ESM_registerCCMHandler(SDR_ESM_CCMCallback_t CCMCallBackFunctionPtr);
 
 
 /** ============================================================================
@@ -353,17 +353,17 @@ SDL_Result SDL_ESM_registerCCMHandler(SDL_ESM_CCMCallback_t CCMCallBackFunctionP
  *
  * \param   WDTCallBackFunctionPtr: Callback function pointer
  *
- * \return  SDL_PASS : Success; SDL_FAIL for failures
+ * \return  SDR_PASS : Success; SDR_FAIL for failures
  */
-SDL_Result SDL_ESM_registerWDTHandler(SDL_ESM_WDTCallback_t WDTCallBackFunctionPtr);
+SDR_Result SDR_ESM_registerWDTHandler(SDR_ESM_WDTCallback_t WDTCallBackFunctionPtr);
 
 /** ============================================================================
  *
  * \brief   De-Register callback function for WDT events
  *
- * \return  SDL_PASS : Success; SDL_FAIL for failures
+ * \return  SDR_PASS : Success; SDR_FAIL for failures
  */
-void SDL_ESM_deRegisterWDTHandler(void);
+void SDR_ESM_deRegisterWDTHandler(void);
 
 /** ============================================================================
  *
@@ -373,7 +373,7 @@ void SDL_ESM_deRegisterWDTHandler(void);
  *
  * \return  None
  */
-void SDL_ESM_hiInterruptHandler (uintptr_t arg);
+void SDR_ESM_hiInterruptHandler (uintptr_t arg);
 
 /** ============================================================================
  *
@@ -383,7 +383,7 @@ void SDL_ESM_hiInterruptHandler (uintptr_t arg);
  *
  * \return  None
  */
-void SDL_ESM_loInterruptHandler (uintptr_t arg);
+void SDR_ESM_loInterruptHandler (uintptr_t arg);
 
 /** ============================================================================
  *
@@ -394,7 +394,7 @@ void SDL_ESM_loInterruptHandler (uintptr_t arg);
  *
  * \return  None
  */
-void SDL_ESM_configInterruptHandler (uintptr_t arg);
+void SDR_ESM_configInterruptHandler (uintptr_t arg);
 
 /** ============================================================================
  *
@@ -403,15 +403,15 @@ void SDL_ESM_configInterruptHandler (uintptr_t arg);
  *
  * \param   esmIntType: ESM Interrupt type
  *
- * \return  Interrupt Number or SDL_ESM_INTNUMBER_INVALID error
+ * \return  Interrupt Number or SDR_ESM_INTNUMBER_INVALID error
  */
-uint32_t SDL_ESM_getIntNumber(SDL_ESM_IntType esmIntType);
+uint32_t SDR_ESM_getIntNumber(SDR_ESM_IntType esmIntType);
 
 /** ============================================================================
  *
  * \brief   Application provided external callback function for ESM handling
- *          Called inside the library functions when ESM error events occur.
- *          NOTE: This is application supplied and not part of the SDL Library
+ *          Called inside the reference functions when ESM error events occur.
+ *          NOTE: This is application supplied and not part of the SDR
  *          If not supplied by application this will result in an linker error
  *
  * \param  arg: Argument provided by application as part of interrupt registration
@@ -422,7 +422,7 @@ uint32_t SDL_ESM_getIntNumber(SDL_ESM_IntType esmIntType);
  *
  * \return  None
  */
-void SDL_ESM_applicationCallbackFunction(uintptr_t arg, uint32_t grpChannel, uint32_t index,
+void SDR_ESM_applicationCallbackFunction(uintptr_t arg, uint32_t grpChannel, uint32_t index,
                                          uint32_t intSrc);
 
 /* @} */
@@ -431,4 +431,4 @@ void SDL_ESM_applicationCallbackFunction(uintptr_t arg, uint32_t grpChannel, uin
 }
 #endif  /* extern "C" */
 
-#endif /* INCLUDE_SDL_ESM_H_ */
+#endif /* INCLUDE_SDR_ESM_H_ */

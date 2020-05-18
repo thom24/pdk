@@ -1,7 +1,7 @@
 /*
- * SDL ECC
+ * SDR ECC
  *
- * Software Diagnostics Library module for ECC
+ * Software Diagnostics Reference module for ECC
  *
  *  Copyright (c) Texas Instruments Incorporated 2018-2020
  *
@@ -35,20 +35,20 @@
  *
  */
 
-#ifndef INCLUDE_SDL_ECC_CORE_H_
-#define INCLUDE_SDL_ECC_CORE_H_
+#ifndef INCLUDE_SDR_ECC_CORE_H_
+#define INCLUDE_SDR_ECC_CORE_H_
 
 #include <stdint.h>
 #include <sdl_ecc.h>
 
-SDL_Result SDL_ECC_configECCRam(uint32_t ramId);
-uint32_t SDL_ECC_pollErrorEvent(SDL_ECC_MemType eccMemType,
-                               SDL_ECC_MemSubType memSubType,
-                               SDL_ECC_InjectErrorType errorType);
+SDR_Result SDR_ECC_configECCRam(uint32_t ramId);
+uint32_t SDR_ECC_pollErrorEvent(SDR_ECC_MemType eccMemType,
+                               SDR_ECC_MemSubType memSubType,
+                               SDR_ECC_InjectErrorType errorType);
 
-void SDL_ECC_enableECCEventCheck(SDL_ECC_MemType eccMemType,
-                                SDL_ECC_MemSubType memSubType,
-                                SDL_ECC_InjectErrorType errorType);
-void SDL_ECC_disableECCEventCheck(SDL_ECC_MemType eccMemType,
-                                 SDL_ECC_InjectErrorType errorType);
-#endif /* INCLUDE_SDL_ECC_CORE_H_ */
+void SDR_ECC_enableECCEventCheck(SDR_ECC_MemType eccMemType,
+                                SDR_ECC_MemSubType memSubType,
+                                SDR_ECC_InjectErrorType errorType);
+void SDR_ECC_disableECCEventCheck(SDR_ECC_MemType eccMemType,
+                                 SDR_ECC_InjectErrorType errorType);
+#endif /* INCLUDE_SDR_ECC_CORE_H_ */

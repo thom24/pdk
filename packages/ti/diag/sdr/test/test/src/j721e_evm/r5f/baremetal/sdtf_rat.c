@@ -1,7 +1,7 @@
 /*
  * SDTF RAT
  *
- * Software Diagnostics Library Test for RAT module
+ * Software Diagnostics Reference Test for RAT module
  *
  *  Copyright (c) Texas Instruments Incorporated 2019-2020
  *

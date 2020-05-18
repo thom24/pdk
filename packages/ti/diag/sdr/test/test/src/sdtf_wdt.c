@@ -1,7 +1,7 @@
 /*
  * SDTF WDT
  *
- * Software Diagnostics Library Test
+ * Software Diagnostics Reference Test
  *
  *  Copyright (c) Texas Instruments Incorporated 2019-2020
  *
@@ -171,27 +171,27 @@ void SDTF_WDT_feedWatchdogTimer(void)
  */
 int32_t SDTF_runWDTSelfTestEndViolation(void)
 {
-    SDL_WDT_TimerConfig_t timerConfig;
-    SDL_WDT_TestConfig_t testConfig;
-    SDL_Result result;
+    SDR_WDT_TimerConfig_t timerConfig;
+    SDR_WDT_TestConfig_t testConfig;
+    SDR_Result result;
     int32_t retVal=0;
 
     SDTF_printf("\n Watchdog self test end violation: starting");
 
     SDTF_profileBegin(SDTF_PROFILE_ONESHOT);
 
-    timerConfig.timerId = SDL_WDT_TIMER_1;
+    timerConfig.timerId = SDR_WDT_TIMER_1;
     timerConfig.timerPeriod = SDTF_RTI_DWWD_TIMEOUT_VALUE * SDTF_PROFILE_CLOCK_FREQUENCY;
     timerConfig.windowSize = SDTF_RTI_DWWDSIZE;
 
-    testConfig.testType = SDL_WDT_TEST_TYPE_END_VIOLATION;
+    testConfig.testType = SDR_WDT_TEST_TYPE_END_VIOLATION;
     testConfig.timeoutPeriod = (uint64_t)20000*SDTF_PROFILE_CLOCK_FREQUENCY;
 
-    result = SDL_WDT_selftest (&timerConfig, &testConfig);
+    result = SDR_WDT_selftest (&timerConfig, &testConfig);
 
     SDTF_profileEnd(SDTF_PROFILE_ONESHOT);
 
-    if (result != SDL_PASS ) {
+    if (result != SDR_PASS ) {
         SDTF_printf("\n Watchdog self test end violation failed");
        retVal = -1;
     } else {
@@ -212,27 +212,27 @@ int32_t SDTF_runWDTSelfTestEndViolation(void)
  */
 int32_t SDTF_runWDTSelfTestWindowViolation(void)
 {
-    SDL_WDT_TimerConfig_t timerConfig;
-    SDL_WDT_TestConfig_t testConfig;
-    SDL_Result result;
+    SDR_WDT_TimerConfig_t timerConfig;
+    SDR_WDT_TestConfig_t testConfig;
+    SDR_Result result;
     int32_t retVal=0;
 
     SDTF_printf("\n Watchdog self test window violation: starting");
 
     SDTF_profileBegin(SDTF_PROFILE_ONESHOT);
 
-    timerConfig.timerId = SDL_WDT_TIMER_1;
+    timerConfig.timerId = SDR_WDT_TIMER_1;
     timerConfig.timerPeriod = SDTF_RTI_DWWD_TIMEOUT_VALUE * SDTF_PROFILE_CLOCK_FREQUENCY;
     timerConfig.windowSize = SDTF_RTI_DWWDSIZE;
 
-    testConfig.testType = SDL_WDT_TEST_TYPE_WINDOW_VIOLATION;
+    testConfig.testType = SDR_WDT_TEST_TYPE_WINDOW_VIOLATION;
     testConfig.timeoutPeriod = (uint64_t)20000*SDTF_PROFILE_CLOCK_FREQUENCY;
 
-    result = SDL_WDT_selftest (&timerConfig, &testConfig);
+    result = SDR_WDT_selftest (&timerConfig, &testConfig);
 
     SDTF_profileEnd(SDTF_PROFILE_ONESHOT);
 
-    if (result != SDL_PASS ) {
+    if (result != SDR_PASS ) {
         SDTF_printf("\n Watchdog self test window violation failed");
        retVal = -1;
     } else {
@@ -253,32 +253,32 @@ int32_t SDTF_runWDTSelfTestWindowViolation(void)
  */
 int32_t SDTF_runWDTNegativeTests(void)
 {
-    SDL_WDT_TimerConfig_t timerConfig;
-    SDL_WDT_TestConfig_t testConfig;
-    SDL_Result result;
+    SDR_WDT_TimerConfig_t timerConfig;
+    SDR_WDT_TestConfig_t testConfig;
+    SDR_Result result;
     int32_t retVal=0;
 
     SDTF_printf("\n Watchdog negative tests: starting");
 
-    timerConfig.timerId = SDL_WDT_TIMER_1;
+    timerConfig.timerId = SDR_WDT_TIMER_1;
     timerConfig.timerPeriod = SDTF_RTI_DWWD_TIMEOUT_VALUE * SDTF_PROFILE_CLOCK_FREQUENCY;
     timerConfig.windowSize = SDTF_RTI_DWWDSIZE;
 
-    testConfig.testType = SDL_WDT_TEST_TYPE_END_VIOLATION;
+    testConfig.testType = SDR_WDT_TEST_TYPE_END_VIOLATION;
     testConfig.timeoutPeriod = (uint64_t)20000*SDTF_PROFILE_CLOCK_FREQUENCY;
 
-    result = SDL_WDT_selftest (NULL_PTR, &testConfig);
+    result = SDR_WDT_selftest (NULL_PTR, &testConfig);
 
     /* There is expecte error here */
-    if (result == SDL_PASS) {
+    if (result == SDR_PASS) {
         retVal = -1;
     }
 
     if (retVal == 0) {
-        result = SDL_WDT_selftest (&timerConfig, NULL_PTR);
+        result = SDR_WDT_selftest (&timerConfig, NULL_PTR);
 
         /* There is expecte error here */
-        if (result == SDL_PASS) {
+        if (result == SDR_PASS) {
             retVal = -1;
         }
     }
@@ -288,10 +288,10 @@ int32_t SDTF_runWDTNegativeTests(void)
         /* Specifically give lower timeout */
         testConfig.timeoutPeriod = (uint64_t)10*SDTF_PROFILE_CLOCK_FREQUENCY;
 
-        result = SDL_WDT_selftest (&timerConfig, &testConfig);
+        result = SDR_WDT_selftest (&timerConfig, &testConfig);
 
         /* There is expecte error here */
-        if (result == SDL_PASS) {
+        if (result == SDR_PASS) {
             retVal = -1;
         }
     }

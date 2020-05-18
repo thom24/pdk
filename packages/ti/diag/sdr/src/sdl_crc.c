@@ -1,7 +1,7 @@
 /*
- * SDL CRC
+ * SDR CRC
  *
- * Software Diagnostics Library module for CRC
+ * Software Diagnostics Reference module for CRC
  *
  *  Copyright (c) Texas Instruments Incorporated 2019-2020
  *
@@ -48,12 +48,12 @@
 /**
  * @brief CRC-64 polynomial: x^64 + x^4 + x^3 + x + 1
  */
-#define SDL_CRC_POLYNOMIAL   (0x1BULL)
+#define SDR_CRC_POLYNOMIAL   (0x1BULL)
 
 /**
  * @brief This structure defines initial configuration of CRC
  */
-typedef struct SDL_CrcInitMCB_s
+typedef struct SDR_CrcInitMCB_s
 {
    uint32_t baseAddr;
    /**< CRC instance base address */
@@ -61,22 +61,22 @@ typedef struct SDL_CrcInitMCB_s
    /**< Watch dog preload time */
    uint32_t blkCompPreload;
    /**< block complete preload time */
-}  SDL_CrcInitMCB_t;
+}  SDR_CrcInitMCB_t;
 
 /* Global objects */
-static SDL_CrcInitMCB_t sdlCrcInitMCB;
+static SDR_CrcInitMCB_t sdrCrcInitMCB;
 
 /* Local functions */
-static uint32_t SDL_CRC_getPatternSize(SDL_CRC_dataBitSize dataBitSize);
-static uint32_t SDL_CRC_getPatternSize(SDL_CRC_dataBitSize dataBitSize)
+static uint32_t SDR_CRC_getPatternSize(SDR_CRC_dataBitSize dataBitSize);
+static uint32_t SDR_CRC_getPatternSize(SDR_CRC_dataBitSize dataBitSize)
 {
     uint32_t patSize;
 
-    if (dataBitSize == SDL_CRC_DATA_8_BIT)
+    if (dataBitSize == SDR_CRC_DATA_8_BIT)
     {
         patSize = (uint32_t)(1U);
     }
-    else if (dataBitSize == SDL_CRC_DATA_16_BIT)
+    else if (dataBitSize == SDR_CRC_DATA_16_BIT)
     {
         patSize = (uint32_t)(2U);
     }
@@ -89,16 +89,16 @@ static uint32_t SDL_CRC_getPatternSize(SDL_CRC_dataBitSize dataBitSize)
 
 /* Global functions */
 
-void SDL_CRC_init (void)
+void SDR_CRC_init (void)
 {
-    sdlCrcInitMCB.baseAddr       = CSL_MCU_NAVSS0_MCRC_BASE;
-    sdlCrcInitMCB.wdPreload      = (uint32_t)(0U);
-    sdlCrcInitMCB.blkCompPreload = (uint32_t)(0U);
+    sdrCrcInitMCB.baseAddr       = CSL_MCU_NAVSS0_MCRC_BASE;
+    sdrCrcInitMCB.wdPreload      = (uint32_t)(0U);
+    sdrCrcInitMCB.blkCompPreload = (uint32_t)(0U);
 }
 
-SDL_Result SDL_CRC_selftest (uint32_t crcChannel, const SDL_CRC_dataConfig_t *pDataConfig)
+SDR_Result SDR_CRC_selftest (uint32_t crcChannel, const SDR_CRC_dataConfig_t *pDataConfig)
 {
-    SDL_Result            result = SDL_FAIL;
+    SDR_Result            result = SDR_FAIL;
     int32_t               status;
     crcSignatureRegAddr_t sigRegAddr;
     uint32_t              patSize;
@@ -111,20 +111,20 @@ SDL_Result SDL_CRC_selftest (uint32_t crcChannel, const SDL_CRC_dataConfig_t *pD
         (pDataConfig == (NULL_PTR))             ||
         (pDataConfig->pCRCData == (NULL_PTR)))
     {
-        result = SDL_BADARGS;
+        result = SDR_BADARGS;
     }
     else
     {
         /* Initialize the CRC channel */
-        status = CRCInitialize(sdlCrcInitMCB.baseAddr,
+        status = CRCInitialize(sdrCrcInitMCB.baseAddr,
                                crcChannel,
-                               sdlCrcInitMCB.wdPreload,
-                               sdlCrcInitMCB.blkCompPreload);
+                               sdrCrcInitMCB.wdPreload,
+                               sdrCrcInitMCB.blkCompPreload);
 
         if (status == CSL_PASS)
         {
             /* Get the CRC signature register address for the CRC channel */
-            status = CRCGetPSASigRegAddr(sdlCrcInitMCB.baseAddr,
+            status = CRCGetPSASigRegAddr(sdrCrcInitMCB.baseAddr,
                                          crcChannel,
                                          &sigRegAddr);
         }
@@ -132,16 +132,16 @@ SDL_Result SDL_CRC_selftest (uint32_t crcChannel, const SDL_CRC_dataConfig_t *pD
         if (status == CSL_PASS)
         {
             /* Reset the channel to clear the CRC signature to zero */
-            status = CRCChannelReset(sdlCrcInitMCB.baseAddr,
+            status = CRCChannelReset(sdrCrcInitMCB.baseAddr,
                                      crcChannel);
         }
 
         if (status == CSL_PASS)
         {
             /* Configure the operation mode and pattern/sector count for the channel */
-            patSize = SDL_CRC_getPatternSize(pDataConfig->dataBitSize);
+            patSize = SDR_CRC_getPatternSize(pDataConfig->dataBitSize);
             secCnt  = (uint32_t)(1U);
-            status = CRCConfigure(sdlCrcInitMCB.baseAddr,
+            status = CRCConfigure(sdrCrcInitMCB.baseAddr,
                                   crcChannel,
                                   pDataConfig->size / patSize,
                                   secCnt,
@@ -151,7 +151,7 @@ SDL_Result SDL_CRC_selftest (uint32_t crcChannel, const SDL_CRC_dataConfig_t *pD
         if (status == CSL_PASS)
         {
             /* Write CRC data */
-            if (pDataConfig->dataBitSize == SDL_CRC_DATA_8_BIT)
+            if (pDataConfig->dataBitSize == SDR_CRC_DATA_8_BIT)
             {
                 uint8_t *pData = (uint8_t *)(pDataConfig->pCRCData);
                 for (i = (uint32_t)(0U); i < pDataConfig->size; i++)
@@ -159,7 +159,7 @@ SDL_Result SDL_CRC_selftest (uint32_t crcChannel, const SDL_CRC_dataConfig_t *pD
                     HW_WR_REG8(sigRegAddr.regL, pData[i]);
                 }
             }
-            else if (pDataConfig->dataBitSize == SDL_CRC_DATA_16_BIT)
+            else if (pDataConfig->dataBitSize == SDR_CRC_DATA_16_BIT)
             {
                 uint16_t *pData = (uint16_t *)(pDataConfig->pCRCData);
                 for (i = (uint32_t)(0U); i < (pDataConfig->size / 2U); i++)
@@ -177,7 +177,7 @@ SDL_Result SDL_CRC_selftest (uint32_t crcChannel, const SDL_CRC_dataConfig_t *pD
             }
 
             /* Get the CRC signature value */
-            status = CRCGetPSASectorSig(sdlCrcInitMCB.baseAddr,
+            status = CRCGetPSASectorSig(sdrCrcInitMCB.baseAddr,
                                         crcChannel,
                                         &sectSignVal);
         }
@@ -191,7 +191,7 @@ SDL_Result SDL_CRC_selftest (uint32_t crcChannel, const SDL_CRC_dataConfig_t *pD
             if ((sectSignVal.regH == pDataConfig->refCRCValueMSW) &&
                 (sectSignVal.regL == pDataConfig->refCRCValueLSW))
             {
-                result = SDL_PASS;
+                result = SDR_PASS;
             }
         }
     }

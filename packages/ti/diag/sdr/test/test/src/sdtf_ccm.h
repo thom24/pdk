@@ -1,7 +1,7 @@
 /*
  * SDTF CCM
  *
- * Software Diagnostics Library Test for CCM Module
+ * Software Diagnostics Reference Test for CCM Module
  *
  *  Copyright (c) Texas Instruments Incorporated 2019-2020
  *

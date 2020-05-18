@@ -1,7 +1,7 @@
 /*
- * SDL TEST
+ * SDR TEST
  *
- * Software Diagnostics Library Test
+ * Software Diagnostics Reference Test
  *
  *  Copyright (c) Texas Instruments Incorporated 2018-2020
  *
@@ -87,14 +87,14 @@ MEMORY
     /* MCU0 share locations													  */
     OCMRAM 	(RWIX) 			: origin=0x41C60000 length=0x20000 - 0x2000	     /* ~124KB */
 
-    /* MCU0 Location RESERVED for SDL RAT Self Test */
-    SDL_OCMC_RAT_SELFTEST (R) : origin=0x41C7EFC0 length=32
+    /* MCU0 Location RESERVED for SDR RAT Self Test */
+    SDR_OCMC_RAT_SELFTEST (R) : origin=0x41C7EFC0 length=32
 
-    /* MCU0 Location RESERVED for SDL MPU Self Test */
-    SDL_OCMC_MPU_SELFTEST (R) : origin=0x41C7EFE0 length=32
+    /* MCU0 Location RESERVED for SDR MPU Self Test */
+    SDR_OCMC_MPU_SELFTEST (R) : origin=0x41C7EFE0 length=32
 
     /* AM65XX M4 locations													  */
-    MSMC3_SDL	(RWIX)	 		: origin=0x70000000 length=0x20000			/* 128 K */
+    MSMC3_SDR	(RWIX)	 		: origin=0x70000000 length=0x20000			/* 128 K */
     MSMC3	(RWIX)	 		: origin=0x70020000 length=0xD0000			/* 840 K */
     /* Reserved for DMSC */
     MSMC3_DMSC (RWIX)		: origin=0x700F0000 length=0x10000			/* 64K */
@@ -118,51 +118,51 @@ SECTIONS
     .rstvectors 	: {} palign(8) 		> MCU0_R5F_TCMA
     .sdl_text_esm align(8) : {
                               sdr.*<sdl_esm.o*> (.text)
-                        }  > MSMC3_SDL
+                        }  > MSMC3_SDR
     .sdl_text_ecc align(8) : {
                               sdr.*<sdl_ecc.o*> (.text)
-                        }  > MSMC3_SDL
+                        }  > MSMC3_SDR
     .sdl_text_ccm align(8) : {
                               sdr.*<sdl_ccm.o*> (.text)
-                        }  > MSMC3_SDL
+                        }  > MSMC3_SDR
     .sdl_text_crc align(8) : {
                               sdr.*<sdl_crc.o*> (.text)
-                        }  > MSMC3_SDL
+                        }  > MSMC3_SDR
     .sdl_text_mpu align(8) : {
                               sdr.*<sdl_mpu.o*> (.text)
-                        }  > MSMC3_SDL
+                        }  > MSMC3_SDR
     .sdl_text_wdt align(8) : {
                               sdr.*<sdl_wdt.o*> (.text)
-                        }  > MSMC3_SDL
+                        }  > MSMC3_SDR
     .sdl__esm align(8) : {
-                        }  > MSMC3_SDL
+                        }  > MSMC3_SDR
     .sdl_data_ecc align(8) : {
                               sdr.*<sdl_ecc.o*> (.const)
-                        }  > MSMC3_SDL
+                        }  > MSMC3_SDR
     .sdl_data_mpu align(8) : {
                               sdr.*<sdl_mpu*> (.const)
-                        }  > MSMC3_SDL
+                        }  > MSMC3_SDR
     .sdl_bss_esm align(8) : {
                               sdr.*<sdl_esm.o*> (.bss)
-                        }  > MSMC3_SDL
+                        }  > MSMC3_SDR
     .sdl_bss_ecc align(8) : {
                               sdr.*<sdl_ecc.o*> (.bss)
-                        }  > MSMC3_SDL
+                        }  > MSMC3_SDR
     .sdl_bss_ccm align(8) : {
                               sdr.*<sdl_ccm.o*> (.bss)
-                        }  > MSMC3_SDL
+                        }  > MSMC3_SDR
     .sdl_bss_crc align(8) : {
                               sdr.*<sdl_crc.o*> (.bss)
-                        }  > MSMC3_SDL
+                        }  > MSMC3_SDR
     .sdl_bss_mpu align(8) : {
                               sdr.*<sdl_mpu.o*> (.bss)
-                        }  > MSMC3_SDL
+                        }  > MSMC3_SDR
     .sdl_bss_wdt align(8) : {
                               sdr.*<sdl_wdt.o*> (.bss)
-                        }  > MSMC3_SDL
+                        }  > MSMC3_SDR
     .sdl_bss_exception align(8) : {
                               sdr.*<sdl_exception*> (.bss)
-                        }  > MSMC3_SDL
+                        }  > MSMC3_SDR
 
     .bootCode	: {} palign(8) 		> MSMC3
     .startupCode: {} palign(8)  	> MSMC3
@@ -193,7 +193,7 @@ SECTIONS
     RUN_END(__SVC_STACK_END)
 
 /* Additional sections settings 	*/
-    .sdtf_rat_testsection : {} palign(32) 	> SDL_OCMC_RAT_SELFTEST
+    .sdtf_rat_testsection : {} palign(32) 	> SDR_OCMC_RAT_SELFTEST
 
     .sdtf_ecc_testcodesection : {} palign(32) 	> MCU0_R5F_TCMA_TEST
 

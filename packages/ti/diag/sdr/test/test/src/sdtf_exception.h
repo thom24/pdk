@@ -1,7 +1,7 @@
 /*
  * SDTF EXCEPTION
  *
- * Software Diagnostics Library Test for handling exceptions
+ * Software Diagnostics Reference Test for handling exceptions
  *
  *  Copyright (c) 2018 Texas Instruments Incorporated
  *

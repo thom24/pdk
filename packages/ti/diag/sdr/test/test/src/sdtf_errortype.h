@@ -1,7 +1,7 @@
 /*
  * SDTF Error Types
  *
- * Software Diagnostics Library Test for error type definitions
+ * Software Diagnostics Reference Test for error type definitions
  *
  *  Copyright (c) 2018 Texas Instruments Incorporated
  *

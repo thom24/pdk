@@ -1,7 +1,7 @@
 /*
- * SDL TEST
+ * SDR TEST
  *
- * Software Diagnostics Library Test
+ * Software Diagnostics Reference Test
  *
  *  Copyright (c) Texas Instruments Incorporated 2018-2020
  *

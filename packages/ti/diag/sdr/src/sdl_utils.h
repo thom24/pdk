@@ -1,7 +1,7 @@
 /*
- * SDL UTILS
+ * SDR UTILS
  *
- * Software Diagnostics Library utilities
+ * Software Diagnostics Reference utilities
  *
  *  Copyright (c) Texas Instruments Incorporated 2018-2020
  *
@@ -35,17 +35,17 @@
  *
  */
 
-#ifndef INCLUDE_SDL_UTILS_H_
-#define INCLUDE_SDL_UTILS_H_
+#ifndef INCLUDE_SDR_UTILS_H_
+#define INCLUDE_SDR_UTILS_H_
 
-uint32_t SDL_UTILS_getCFLR(void);
+uint32_t SDR_UTILS_getCFLR(void);
 
-uint32_t SDL_UTILS_getPMOVSR(void);
+uint32_t SDR_UTILS_getPMOVSR(void);
 
-uint32_t SDL_UTILS_getDFSR( void );
-uint32_t SDL_UTILS_getDFAR( void );
+uint32_t SDR_UTILS_getDFSR( void );
+uint32_t SDR_UTILS_getDFAR( void );
 
-uint32_t SDL_UTILS_getIFSR( void );
-uint32_t SDL_UTILS_getIFAR( void );
+uint32_t SDR_UTILS_getIFSR( void );
+uint32_t SDR_UTILS_getIFAR( void );
 
-#endif /* INCLUDE_SDL_UTILS_H_ */
+#endif /* INCLUDE_SDR_UTILS_H_ */

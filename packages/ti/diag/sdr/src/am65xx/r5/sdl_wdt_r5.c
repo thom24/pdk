@@ -1,7 +1,7 @@
 /*
- * SDL WDT
+ * SDR WDT
  *
- * Software Diagnostics Library module for Watchdog Timer
+ * Software Diagnostics Reference module for Watchdog Timer
  *
  *  Copyright (c) Texas Instruments Incorporated 2018-2020
  *
@@ -47,8 +47,8 @@
 #include <sdl_wdt_priv.h>
 
 /* Local funcions */
-static uint32_t SDL_WDT_getBaseAddr(SDL_WDT_TimerId timerId);
-static uint32_t SDL_WDT_getBaseAddrforIntSrc(SDL_ESM_WDT_IntSrc intSrc);
+static uint32_t SDR_WDT_getBaseAddr(SDR_WDT_TimerId timerId);
+static uint32_t SDR_WDT_getBaseAddrforIntSrc(SDR_ESM_WDT_IntSrc intSrc);
 
 /** ============================================================================
  *
@@ -58,11 +58,11 @@ static uint32_t SDL_WDT_getBaseAddrforIntSrc(SDL_ESM_WDT_IntSrc intSrc);
  *
  * \return  none
  */
-void SDL_WDT_feedWatchdog(SDL_WDT_TimerId timerId)
+void SDR_WDT_feedWatchdog(SDR_WDT_TimerId timerId)
 {
     uint32_t baseAddr;
 
-    baseAddr = SDL_WDT_getBaseAddr(timerId);
+    baseAddr = SDR_WDT_getBaseAddr(timerId);
 
     (void)RTIDwwdService(baseAddr);
     return;
@@ -76,12 +76,12 @@ void SDL_WDT_feedWatchdog(SDL_WDT_TimerId timerId)
  *
  * \return  none
  */
-void SDL_WDT_clearAllInterruptEvents(SDL_ESM_WDT_IntSrc intSrc)
+void SDR_WDT_clearAllInterruptEvents(SDR_ESM_WDT_IntSrc intSrc)
 {
     uint32_t intrStatus;
     uint32_t baseAddr;
 
-    baseAddr = SDL_WDT_getBaseAddrforIntSrc(intSrc);
+    baseAddr = SDR_WDT_getBaseAddrforIntSrc(intSrc);
 
     (void)RTIDwwdGetStatus(baseAddr, &intrStatus);
     /* Clear status if non-zero bits */
@@ -101,8 +101,8 @@ void SDL_WDT_clearAllInterruptEvents(SDL_ESM_WDT_IntSrc intSrc)
  *
  * \return  none
  */
-bool SDL_WDT_checkWatchDogEvent(SDL_ESM_WDT_IntSrc intSrc,
-                                SDL_WDT_TestType testType)
+bool SDR_WDT_checkWatchDogEvent(SDR_ESM_WDT_IntSrc intSrc,
+                                SDR_WDT_TestType testType)
 {
     uint32_t intrStatus;
     uint32_t statusMask;
@@ -111,11 +111,11 @@ bool SDL_WDT_checkWatchDogEvent(SDL_ESM_WDT_IntSrc intSrc,
 
     retValue = (bool)false;
 
-    baseAddr = SDL_WDT_getBaseAddrforIntSrc(intSrc);
+    baseAddr = SDR_WDT_getBaseAddrforIntSrc(intSrc);
     (void)RTIDwwdGetStatus(baseAddr, &intrStatus);
 
     /* Determine status mask based on test type */
-    if (testType == SDL_WDT_TEST_TYPE_WINDOW_VIOLATION) {
+    if (testType == SDR_WDT_TEST_TYPE_WINDOW_VIOLATION) {
         statusMask = RTI_DWWD_STATUS_TIME_WINDOW_VIOLATION;
     } else {
         statusMask = RTI_DWWD_STATUS_ENDTIME_WINDOW_VIOLATION;
@@ -138,16 +138,16 @@ bool SDL_WDT_checkWatchDogEvent(SDL_ESM_WDT_IntSrc intSrc,
  *
  * \return  none
  */
-static uint32_t SDL_WDT_getBaseAddr(SDL_WDT_TimerId timerId)
+static uint32_t SDR_WDT_getBaseAddr(SDR_WDT_TimerId timerId)
 {
     uint32_t baseAddr;
 
     switch(timerId) {
-        case SDL_WDT_TIMER_1:
+        case SDR_WDT_TIMER_1:
             baseAddr = CSL_MCU_RTI1_CFG_BASE;
             break;
 
-        case SDL_WDT_TIMER_0:
+        case SDR_WDT_TIMER_0:
         default:
             baseAddr = CSL_MCU_RTI0_CFG_BASE;
             break;
@@ -163,16 +163,16 @@ static uint32_t SDL_WDT_getBaseAddr(SDL_WDT_TimerId timerId)
  *
  * \return  none
  */
-static uint32_t SDL_WDT_getBaseAddrforIntSrc(SDL_ESM_WDT_IntSrc intSrc)
+static uint32_t SDR_WDT_getBaseAddrforIntSrc(SDR_ESM_WDT_IntSrc intSrc)
 {
     uint32_t baseAddr;
 
     switch(intSrc) {
-        case SDL_ESM_TIMER_ID_1:
+        case SDR_ESM_TIMER_ID_1:
             baseAddr = CSL_MCU_RTI1_CFG_BASE;
             break;
 
-        case SDL_ESM_TIMER_ID_0:
+        case SDR_ESM_TIMER_ID_0:
         default:
             baseAddr = CSL_MCU_RTI0_CFG_BASE;
             break;

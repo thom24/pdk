@@ -1,7 +1,7 @@
 /*
- * SDL SOC R5
+ * SDR SOC R5
  *
- * Software Diagnostics Library module for MPU configuration module
+ * Software Diagnostics Reference module for MPU configuration module
  *
  *  Copyright (c) Texas Instruments Incorporated 2020
  *
@@ -39,13 +39,13 @@
  * @file  sdl_soc_r5.h
  *
  * @brief
- *  Header file for SDL R5 specific to SOC
+ *  Header file for SDR R5 specific to SOC
  *  ============================================================================
  */
 
-#ifndef INCLUDE_SDL_SOC_R5_H_
-#define INCLUDE_SDL_SOC_R5_H_
+#ifndef INCLUDE_SDR_SOC_R5_H_
+#define INCLUDE_SDR_SOC_R5_H_
 
-#define SDL_MCU_VIC_CFG_BASE CSL_MCU_VIC_CFG_BASE
+#define SDR_MCU_VIC_CFG_BASE CSL_MCU_VIC_CFG_BASE
 
-#endif /* INCLUDE_SDL_SOC_R5_H_ */
+#endif /* INCLUDE_SDR_SOC_R5_H_ */

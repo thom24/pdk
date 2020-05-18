@@ -1,7 +1,7 @@
 /*
  * SDTF MPU
  *
- * Software Diagnostics Library Test for MPU Module
+ * Software Diagnostics Reference Test for MPU Module
  *
  *  Copyright (c) Texas Instruments Incorporated 2019-2020
  *

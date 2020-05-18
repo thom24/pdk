@@ -1,7 +1,7 @@
 /*
  * SDTF ECC
  *
- * Software Diagnostics Library module for ECC Module
+ * Software Diagnostics Reference module for ECC Module
  *
  *  Copyright (c) Texas Instruments Incorporated 2019-2020
  *

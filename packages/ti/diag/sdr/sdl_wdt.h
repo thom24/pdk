@@ -1,7 +1,7 @@
 /*
- * SDL WDT
+ * SDR WDT
  *
- * Software Diagnostics Library module for Watch Dog Timer module
+ * Software Diagnostics Reference module for Watch Dog Timer module
  *
  *  Copyright (c) Texas Instruments Incorporated 2019-2020
  *
@@ -40,12 +40,12 @@
  *
  * @brief
  *  Header file contains enumerations, structure definitions and function
- *  declarations for SDL WDT interface.
+ *  declarations for SDR WDT interface.
  *  ============================================================================
  */
 
-#ifndef INCLUDE_SDL_WDT_H_
-#define INCLUDE_SDL_WDT_H_
+#ifndef INCLUDE_SDR_WDT_H_
+#define INCLUDE_SDR_WDT_H_
 
 #include "sdl_common.h"
 
@@ -55,33 +55,33 @@ extern "C" {
 
 /** ===========================================================================
  *
- * @defgroup SDL_WDT_API SDL WDT API
+ * @defgroup SDR_WDT_API SDR WDT API
  *
  * @section Overview
- * The SDL WDT module provides API for WatchDog Timer Diagnostics
+ * The SDR WDT module provides API for WatchDog Timer Diagnostics
  *
  * ============================================================================
  */
 /**
-@defgroup SDL_WDT_DATASTRUCT  SDL WDT Data Structures
-@ingroup SDL_WDT_API
+@defgroup SDR_WDT_DATASTRUCT  SDR WDT Data Structures
+@ingroup SDR_WDT_API
 */
 /**
-@defgroup SDL_WDT_FUNCTION  SDL WDT Functions
-@ingroup SDL_WDT_API
+@defgroup SDR_WDT_FUNCTION  SDR WDT Functions
+@ingroup SDR_WDT_API
 */
 /**
-@defgroup SDL_WDT_ENUM SDL WDT Enumerated Data Types
-@ingroup SDL_WDT_API
+@defgroup SDR_WDT_ENUM SDR WDT Enumerated Data Types
+@ingroup SDR_WDT_API
 */
 
 /**
-@defgroup SDL_WDT_MACROS SDL WDT Macro defines
-@ingroup SDL_WDT_API
+@defgroup SDR_WDT_MACROS SDR WDT Macro defines
+@ingroup SDR_WDT_API
 */
 
 /** ===========================================================================
- *  @addtogroup SDL_WDT_ENUM
+ *  @addtogroup SDR_WDT_ENUM
     @{
  * ============================================================================
  */
@@ -91,46 +91,46 @@ extern "C" {
  * ----------------------------------------------------------------------------
  */
 typedef enum {
-    SDL_WDT_TIMER_0 = 1,
+    SDR_WDT_TIMER_0 = 1,
     /**<  Timer id 0 */
-    SDL_WDT_TIMER_1 = 2,
+    SDR_WDT_TIMER_1 = 2,
     /**<  Timer id 1 */
-} SDL_WDT_TimerId;
+} SDR_WDT_TimerId;
 
 /** ---------------------------------------------------------------------------
  * \brief This enumerator defines the different Watchdog window sizes
  * ----------------------------------------------------------------------------
  */
 typedef enum {
-    SDL_WDT_WINDOWSIZE_100_PERCENT = 1,
+    SDR_WDT_WINDOWSIZE_100_PERCENT = 1,
     /**<  Watchdog window size 100 % */
-    SDL_WDT_WINDOWSIZE_50_PERCENT = 2,
+    SDR_WDT_WINDOWSIZE_50_PERCENT = 2,
     /**<  Watchdog window size 50 % */
-    SDL_WDT_WINDOWSIZE_25_PERCENT = 3,
+    SDR_WDT_WINDOWSIZE_25_PERCENT = 3,
     /**<  Watchdog window size 25 % */
-    SDL_WDT_WINDOWSIZE_12_5_PERCENT = 4,
+    SDR_WDT_WINDOWSIZE_12_5_PERCENT = 4,
     /**<  Watchdog window size 12.5 % */
-    SDL_WDT_WINDOWSIZE_6_25_PERCENT = 5,
+    SDR_WDT_WINDOWSIZE_6_25_PERCENT = 5,
     /**<  Watchdog window size 6.25 % */
-    SDL_WDT_WINDOWSIZE_3_125_PERCENT = 6,
+    SDR_WDT_WINDOWSIZE_3_125_PERCENT = 6,
     /**<  Watchdog window size 3.125 % */
-} SDL_WDT_WindowSize;
+} SDR_WDT_WindowSize;
 
 /** ---------------------------------------------------------------------------
  * \brief This enumerator defines the type of test
  * ----------------------------------------------------------------------------
  */
 typedef enum {
-    SDL_WDT_TEST_TYPE_END_VIOLATION = 1,
+    SDR_WDT_TEST_TYPE_END_VIOLATION = 1,
     /**<  Test type End Violation */
-    SDL_WDT_TEST_TYPE_WINDOW_VIOLATION = 2,
+    SDR_WDT_TEST_TYPE_WINDOW_VIOLATION = 2,
     /**<  Test type window Violation */
-} SDL_WDT_TestType;
+} SDR_WDT_TestType;
 
 /* @} */
 
 /**
- *  \addtogroup SDL_WDT_MACROS
+ *  \addtogroup SDR_WDT_MACROS
  *  @{
  */
 
@@ -138,7 +138,7 @@ typedef enum {
 /* @} */
 
 /**
- *  \addtogroup SDL_WDT_DATASTRUCT
+ *  \addtogroup SDR_WDT_DATASTRUCT
  *  @{
  */
 
@@ -148,15 +148,15 @@ typedef enum {
  * This structure defines the elements of the Timer configuration
  * ----------------------------------------------------------------------------
  */
-typedef struct SDL_WDT_TimerConfig_s
+typedef struct SDR_WDT_TimerConfig_s
 {
     uint64_t timerPeriod;
     /**< Watchdog timer period in timestamp units */
-    SDL_WDT_TimerId timerId;
+    SDR_WDT_TimerId timerId;
     /**< Unique Timer identifier  */
-    SDL_WDT_WindowSize windowSize;
+    SDR_WDT_WindowSize windowSize;
     /**< Window size  */
-} SDL_WDT_TimerConfig_t;
+} SDR_WDT_TimerConfig_t;
 
 /** ---------------------------------------------------------------------------
  * \brief Watchdog timer test configuation
@@ -164,18 +164,18 @@ typedef struct SDL_WDT_TimerConfig_s
  * This structure defines the elements of the test configuration
  * ----------------------------------------------------------------------------
  */
-typedef struct SDL_WDT_TestConfig_s
+typedef struct SDR_WDT_TestConfig_s
 {
     uint64_t timeoutPeriod;
     /**< Watchdog time out period in timestamp units  */
-    SDL_WDT_TestType testType;
+    SDR_WDT_TestType testType;
     /**< Test type  */
-} SDL_WDT_TestConfig_t;
+} SDR_WDT_TestConfig_t;
 
 /* @} */
 
 /**
- *  \addtogroup SDL_WDT_FUNCTION
+ *  \addtogroup SDR_WDT_FUNCTION
  *  @{
  */
 
@@ -186,10 +186,10 @@ typedef struct SDL_WDT_TestConfig_s
  * \param  pTimerConfig:  Pointer to timer configuration
  * \param  pTestConfig:   Pointer to test configuration
  *
- * \return  SDL_RETURN_PASS : Success; SDL_RETURN_FAIL for failures
+ * \return  SDR_RETURN_PASS : Success; SDR_RETURN_FAIL for failures
  */
-SDL_Result SDL_WDT_selftest (const SDL_WDT_TimerConfig_t *pTimerConfig,
-                             const SDL_WDT_TestConfig_t *pTestConfig);
+SDR_Result SDR_WDT_selftest (const SDR_WDT_TimerConfig_t *pTimerConfig,
+                             const SDR_WDT_TestConfig_t *pTestConfig);
 
 /* @} */
 
@@ -197,4 +197,4 @@ SDL_Result SDL_WDT_selftest (const SDL_WDT_TimerConfig_t *pTimerConfig,
 }
 #endif  /* extern "C" */
 
-#endif /* INCLUDE_SDL_WDT_H_ */
+#endif /* INCLUDE_SDR_WDT_H_ */

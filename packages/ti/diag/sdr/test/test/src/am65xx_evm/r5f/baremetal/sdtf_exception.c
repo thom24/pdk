@@ -1,7 +1,7 @@
 /*
- * SDL TEST
+ * SDR TEST
  *
- * Software Diagnostics Library Test
+ * Software Diagnostics Reference Test
  *
  *  Copyright (c) Texas Instruments Incorporated 2018-2020
  *
@@ -43,12 +43,12 @@
 /* This is the list of exception handle and the parameters */
 const CSL_R5ExptnHandlers SDTF_R5ExptnHandlers =
 {
-    .udefExptnHandler = &SDL_EXCEPTION_undefInstructionExptnHandler,
-    .swiExptnHandler = &SDL_EXCEPTION_swIntrExptnHandler,
-    .pabtExptnHandler = &SDL_EXCEPTION_prefetchAbortExptnHandler,
-    .dabtExptnHandler = &SDL_EXCEPTION_dataAbortExptnHandler,
-    .irqExptnHandler = &SDL_EXCEPTION_irqExptnHandler,
-    .fiqExptnHandler = &SDL_EXCEPTION_fiqExptnHandler,
+    .udefExptnHandler = &SDR_EXCEPTION_undefInstructionExptnHandler,
+    .swiExptnHandler = &SDR_EXCEPTION_swIntrExptnHandler,
+    .pabtExptnHandler = &SDR_EXCEPTION_prefetchAbortExptnHandler,
+    .dabtExptnHandler = &SDR_EXCEPTION_dataAbortExptnHandler,
+    .irqExptnHandler = &SDR_EXCEPTION_irqExptnHandler,
+    .fiqExptnHandler = &SDR_EXCEPTION_fiqExptnHandler,
     .udefExptnHandlerArgs = ((void *)0u),
     .swiExptnHandlerArgs = ((void *)0u),
     .pabtExptnHandlerArgs = ((void *)0u),
@@ -87,7 +87,7 @@ void SDTF_fiqExptnCallback(void)
 void SDTF_exceptionInit(void)
 {
 
-    SDL_EXCEPTION_CallbackFunctions_t exceptionCallbackFunctions =
+    SDR_EXCEPTION_CallbackFunctions_t exceptionCallbackFunctions =
             {
              .udefExptnCallback = SDTF_undefInstructionExptnCallback,
              .swiExptnCallback = SDTF_swIntrExptnCallback,
@@ -97,9 +97,9 @@ void SDTF_exceptionInit(void)
              .fiqExptnCallback = SDTF_fiqExptnCallback,
             };
 
-    /* Initialize SDL exception handler */
-    SDL_EXCEPTION_init(&exceptionCallbackFunctions);
-    /* Register SDL exception handler */
+    /* Initialize SDR exception handler */
+    SDR_EXCEPTION_init(&exceptionCallbackFunctions);
+    /* Register SDR exception handler */
     Intc_RegisterExptnHandlers(&SDTF_R5ExptnHandlers);
 
     return;
@@ -111,23 +111,23 @@ int32_t SDTF_runExceptionApiTests(void)
 
     SDTF_printf("\n Exception API tests: starting");
 
-    /* SDL_EXCEPTION_undefInstructionExptnHandler API test */
-    SDL_EXCEPTION_undefInstructionExptnHandler(param);
+    /* SDR_EXCEPTION_undefInstructionExptnHandler API test */
+    SDR_EXCEPTION_undefInstructionExptnHandler(param);
 
     /* SDTF_swIntrExptnCallback API test */
-    SDL_EXCEPTION_swIntrExptnHandler(param);
+    SDR_EXCEPTION_swIntrExptnHandler(param);
 
     /* SDTF_prefetchAbortExptnCallback API test */
-    SDL_EXCEPTION_prefetchAbortExptnHandler(param);
+    SDR_EXCEPTION_prefetchAbortExptnHandler(param);
 
     /* SDTF_dataAbortExptnCallback API test */
-    SDL_EXCEPTION_dataAbortExptnHandler(param);
+    SDR_EXCEPTION_dataAbortExptnHandler(param);
 
     /* SDTF_irqExptnCallback API test */
-    SDL_EXCEPTION_irqExptnHandler(param);
+    SDR_EXCEPTION_irqExptnHandler(param);
 
     /* SDTF_fiqExptnCallback API test */
-    SDL_EXCEPTION_fiqExptnHandler(param);
+    SDR_EXCEPTION_fiqExptnHandler(param);
 
     SDTF_printf("\n Exception API tests complete");
     return 0;

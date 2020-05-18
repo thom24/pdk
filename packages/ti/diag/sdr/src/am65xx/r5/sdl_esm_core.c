@@ -1,7 +1,7 @@
 /*
- * SDL ESM
+ * SDR ESM
  *
- * Software Diagnostics Library module for Error Signaling Module
+ * Software Diagnostics Reference module for Error Signaling Module
  *
  *  Copyright (c) Texas Instruments Incorporated 2018-2020
  *
@@ -53,83 +53,83 @@
  *
  * \return  true: if event handled; false if not handled
  */
-bool SDL_ESM_handleIntSrc(const SDL_ESM_Instance_t *pInstance, uint32_t intSrc)
+bool SDR_ESM_handleIntSrc(const SDR_ESM_Instance_t *pInstance, uint32_t intSrc)
 {
     bool handledFlag = ((bool)false);
 
     /* For each error bit */
     switch (intSrc) {
-        case SDL_ESM_MCU_R5_CORE0_SEC_INT:
+        case SDR_ESM_MCU_R5_CORE0_SEC_INT:
             if ( pInstance->eccCallBackFunction != ((void *)0u)) {
                 /* Call back function for Single bit ECC error */
-                pInstance->eccCallBackFunction(SDL_ESM_ECC_PARAM_MCU_CPU0_SEC_ERROR,
-                                                    SDL_ESM_ERRORADDR_INVALID);
+                pInstance->eccCallBackFunction(SDR_ESM_ECC_PARAM_MCU_CPU0_SEC_ERROR,
+                                                    SDR_ESM_ERRORADDR_INVALID);
                 handledFlag = ((bool)true);
             }
             break;
 
-        case SDL_ESM_MCU_R5_CORE0_DED_INT:
+        case SDR_ESM_MCU_R5_CORE0_DED_INT:
             if ( pInstance->eccCallBackFunction != ((void *)0u)) {
                 /* Call back function for Double bit ECC error */
-                pInstance->eccCallBackFunction(SDL_ESM_ECC_PARAM_MCU_CPU0_DED_ERROR,
-                                                    SDL_ESM_ERRORADDR_INVALID);
+                pInstance->eccCallBackFunction(SDR_ESM_ECC_PARAM_MCU_CPU0_DED_ERROR,
+                                                    SDR_ESM_ERRORADDR_INVALID);
                 handledFlag = ((bool)true);
             }
 
             break;
 
-        case SDL_ESM_MCU_R5_CPU_BUS_CMP_ERR:
+        case SDR_ESM_MCU_R5_CPU_BUS_CMP_ERR:
             if ( pInstance->CCMCallBackFunction != ((void *)0u)) {
             /* Call back function for CCM compare error */
-                pInstance->CCMCallBackFunction(SDL_ESM_CCM_OUTPUT_COMPARE_BLOCK_INT);
+                pInstance->CCMCallBackFunction(SDR_ESM_CCM_OUTPUT_COMPARE_BLOCK_INT);
                 handledFlag = ((bool)true);
             }
             break;
 
 
-        case SDL_ESM_MCU_R5_INACTIVITY_ERR_INT:
+        case SDR_ESM_MCU_R5_INACTIVITY_ERR_INT:
             if ( pInstance->CCMCallBackFunction != ((void *)0u)) {
                 /* Call back function for CCM inactivity monitor error */
-                pInstance->CCMCallBackFunction(SDL_ESM_CCM_INACTIVITY_MONITOR_INT);
+                pInstance->CCMCallBackFunction(SDR_ESM_CCM_INACTIVITY_MONITOR_INT);
                 handledFlag = ((bool)true);
             }
             break;
 
-        case SDL_ESM_MCU_R5_VIM_BUS_CMP_ERR_INT:
+        case SDR_ESM_MCU_R5_VIM_BUS_CMP_ERR_INT:
             if ( pInstance->CCMCallBackFunction != ((void *)0u)) {
                 /* Call back function for CCM VIM compare error */
-                pInstance->CCMCallBackFunction(SDL_ESM_CCM_VIM_ERR_INT);
+                pInstance->CCMCallBackFunction(SDR_ESM_CCM_VIM_ERR_INT);
                 handledFlag = ((bool)true);
             }
             break;
 
-        case SDL_ESM_MCU_R5_SELFTEST_ERR_INT:
+        case SDR_ESM_MCU_R5_SELFTEST_ERR_INT:
             if ( pInstance->CCMCallBackFunction != ((void *)0u)) {
                 /* Call back function for CCM VIM compare error */
-                pInstance->CCMCallBackFunction(SDL_ESM_CCM_SELF_TEST_ERR_INT);
+                pInstance->CCMCallBackFunction(SDR_ESM_CCM_SELF_TEST_ERR_INT);
                 handledFlag = ((bool)true);
             }
             break;
 
-        case SDL_ESM_MCU_R5_CCM_STAT_ERR_INT:
+        case SDR_ESM_MCU_R5_CCM_STAT_ERR_INT:
             if ( pInstance->CCMCallBackFunction != ((void *)0u)) {
                 /* Call back function for CCM VIM compare error */
-                pInstance->CCMCallBackFunction(SDL_ESM_CCM_STAT_ERR_INT);
+                pInstance->CCMCallBackFunction(SDR_ESM_CCM_STAT_ERR_INT);
                 handledFlag = ((bool)true);
             }
             break;
 
-        case SDL_ESM_MCU_RTI0_WWD_INT:
+        case SDR_ESM_MCU_RTI0_WWD_INT:
             if ( pInstance->WDTCallBackFunction != ((void *)0u)) {
                 /* Call back function for Windowed watchdog timer 0 */
-                handledFlag = pInstance->WDTCallBackFunction(SDL_ESM_TIMER_ID_0);
+                handledFlag = pInstance->WDTCallBackFunction(SDR_ESM_TIMER_ID_0);
             }
             break;
 
-        case SDL_ESM_MCU_RTI1_WWD_INT:
+        case SDR_ESM_MCU_RTI1_WWD_INT:
             if ( pInstance->WDTCallBackFunction != ((void *)0u)) {
                 /* Call back function for Windowed watchdog timer 1 */
-                handledFlag = pInstance->WDTCallBackFunction(SDL_ESM_TIMER_ID_1);
+                handledFlag = pInstance->WDTCallBackFunction(SDR_ESM_TIMER_ID_1);
             }
             break;
 

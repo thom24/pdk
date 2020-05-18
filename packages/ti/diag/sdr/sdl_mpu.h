@@ -1,7 +1,7 @@
 /*
- * SDL MPU
+ * SDR MPU
  *
- * Software Diagnostics Library module for MPU module
+ * Software Diagnostics Reference module for MPU module
  *
  *  Copyright (c) Texas Instruments Incorporated 2019-2020
  *
@@ -40,12 +40,12 @@
  *
  * @brief
  *  Header file contains enumerations, structure definitions and function
- *  declarations for SDL MPU interface.
+ *  declarations for SDR MPU interface.
  *  ============================================================================
  */
 
-#ifndef INCLUDE_SDL_MPU_H_
-#define INCLUDE_SDL_MPU_H_
+#ifndef INCLUDE_SDR_MPU_H_
+#define INCLUDE_SDR_MPU_H_
 
 #include "sdl_common.h"
 
@@ -55,33 +55,33 @@ extern "C" {
 
 /** ===========================================================================
  *
- * @defgroup SDL_MPU_API SDL MPU API
+ * @defgroup SDR_MPU_API SDR MPU API
  *
  * @section Overview
- * The SDL MPU module provides API for MPU Diagnostics
+ * The SDR MPU module provides API for MPU Diagnostics
  *
  * ============================================================================
  */
 /**
-@defgroup SDL_MPU_DATASTRUCT  SDL MPU Data Structures
-@ingroup SDL_MPU_API
+@defgroup SDR_MPU_DATASTRUCT  SDR MPU Data Structures
+@ingroup SDR_MPU_API
 */
 /**
-@defgroup SDL_MPU_FUNCTION  SDL MPU Functions
-@ingroup SDL_MPU_API
+@defgroup SDR_MPU_FUNCTION  SDR MPU Functions
+@ingroup SDR_MPU_API
 */
 /**
-@defgroup SDL_MPU_ENUM SDL MPU Enumerated Data Types
-@ingroup SDL_MPU_API
+@defgroup SDR_MPU_ENUM SDR MPU Enumerated Data Types
+@ingroup SDR_MPU_API
 */
 
 /**
-@defgroup SDL_MPU_MACROS SDL MPU Macro defines
-@ingroup SDL_MPU_API
+@defgroup SDR_MPU_MACROS SDR MPU Macro defines
+@ingroup SDR_MPU_API
 */
 
 /** ===========================================================================
- *  @addtogroup SDL_MPU_ENUM
+ *  @addtogroup SDR_MPU_ENUM
     @{
  * ============================================================================
  */
@@ -92,16 +92,16 @@ extern "C" {
  * ----------------------------------------------------------------------------
  */
 typedef enum {
-    SDL_MPU_DATA_READ_ACCESS = 1,
+    SDR_MPU_DATA_READ_ACCESS = 1,
     /**<  Use DATA Read access for MPU violation */
-    SDL_MPU_DATA_WRITE_ACCESS = 2,
+    SDR_MPU_DATA_WRITE_ACCESS = 2,
     /**<  Use DATA Write access for MPU violation */
-} SDL_MPU_memAccessType;
+} SDR_MPU_memAccessType;
 
 /* @} */
 
 /**
- *  \addtogroup SDL_MPU_MACROS
+ *  \addtogroup SDR_MPU_MACROS
  *  @{
  */
 
@@ -109,7 +109,7 @@ typedef enum {
 /* @} */
 
 /**
- *  \addtogroup SDL_MPU_DATASTRUCT
+ *  \addtogroup SDR_MPU_DATASTRUCT
  *  @{
  */
 
@@ -123,28 +123,28 @@ typedef enum {
  * MPU permission fault.
  * ----------------------------------------------------------------------------
  */
-typedef struct SDL_MPU_memConfig_s
+typedef struct SDR_MPU_memConfig_s
 {
     uint32_t *pMemLocation;
     /**< Pointer to 16 byte aligned 32 byte memory block for self test 
          example location as 0x41C7EFE0 */
-    SDL_MPU_memAccessType memAccessType;
+    SDR_MPU_memAccessType memAccessType;
     /**< Memory access type to be used to generate exception */
     uint32_t  mpuRegionId;
     /**< MPU Region ID to be used for MPU Self Test */
-} SDL_MPU_memConfig_t;
+} SDR_MPU_memConfig_t;
 
 /* @} */
 
 /**
- *  \addtogroup SDL_MPU_FUNCTION
+ *  \addtogroup SDR_MPU_FUNCTION
  *  @{
  */
 
 /** ============================================================================
  *
  * \brief   Self Test API for MPU module
- *         NOTE: Need to call SDL_MPU_init function before calling this API
+ *         NOTE: Need to call SDR_MPU_init function before calling this API
  *
  * \param   pMemConfig: Pointer to memory configuration to be used for MPU
  *                        exception
@@ -152,9 +152,9 @@ typedef struct SDL_MPU_memConfig_s
  * \param   loopCount: Based on this count the diagnostics will wait in a loop
  *                     value of 0 indicates WAIT_FOREVER
  *
- * \return  SDL_RETURN_PASS : Success; SDL_RETURN_FAIL for failures
+ * \return  SDR_RETURN_PASS : Success; SDR_RETURN_FAIL for failures
  */
-SDL_Result SDL_MPU_selfTest (const SDL_MPU_memConfig_t *pMemConfig,
+SDR_Result SDR_MPU_selfTest (const SDR_MPU_memConfig_t *pMemConfig,
                              uint32_t loopCount);
 
 /* @} */
@@ -163,4 +163,4 @@ SDL_Result SDL_MPU_selfTest (const SDL_MPU_memConfig_t *pMemConfig,
 }
 #endif  /* extern "C" */
 
-#endif /* INCLUDE_SDL_MPU_H_ */
+#endif /* INCLUDE_SDR_MPU_H_ */

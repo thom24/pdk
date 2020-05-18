@@ -1,7 +1,7 @@
 /*
- * SDL CRC
+ * SDR CRC
  *
- * Software Diagnostics Library module for CRC module
+ * Software Diagnostics Reference module for CRC module
  *
  *  Copyright (c) Texas Instruments Incorporated 2019-2020
  *
@@ -40,12 +40,12 @@
  *
  * @brief
  *  Header file contains enumerations, structure definitions and function
- *  declarations for SDL CRC interface.
+ *  declarations for SDR CRC interface.
  *  ============================================================================
  */
 
-#ifndef INCLUDE_SDL_CRC_H_
-#define INCLUDE_SDL_CRC_H_
+#ifndef INCLUDE_SDR_CRC_H_
+#define INCLUDE_SDR_CRC_H_
 
 #include "sdl_common.h"
 #include <ti/csl/csl_crc.h>
@@ -56,33 +56,33 @@ extern "C" {
 
 /** ===========================================================================
  *
- * @defgroup SDL_CRC_API SDL CRC API
+ * @defgroup SDR_CRC_API SDR CRC API
  *
  * @section Overview
- * The SDL CRC module provides API for WatchDog Timer Diagnostics
+ * The SDR CRC module provides API for WatchDog Timer Diagnostics
  *
  * ============================================================================
  */
 /**
-@defgroup SDL_CRC_DATASTRUCT  SDL CRC Data Structures
-@ingroup SDL_CRC_API
+@defgroup SDR_CRC_DATASTRUCT  SDR CRC Data Structures
+@ingroup SDR_CRC_API
 */
 /**
-@defgroup SDL_CRC_FUNCTION  SDL CRC Functions
-@ingroup SDL_CRC_API
+@defgroup SDR_CRC_FUNCTION  SDR CRC Functions
+@ingroup SDR_CRC_API
 */
 /**
-@defgroup SDL_CRC_ENUM SDL CRC Enumerated Data Types
-@ingroup SDL_CRC_API
+@defgroup SDR_CRC_ENUM SDR CRC Enumerated Data Types
+@ingroup SDR_CRC_API
 */
 
 /**
-@defgroup SDL_CRC_MACROS SDL CRC Macro defines
-@ingroup SDL_CRC_API
+@defgroup SDR_CRC_MACROS SDR CRC Macro defines
+@ingroup SDR_CRC_API
 */
 
 /** ===========================================================================
- *  @addtogroup SDL_CRC_ENUM
+ *  @addtogroup SDR_CRC_ENUM
     @{
  * ============================================================================
  */
@@ -91,17 +91,17 @@ extern "C" {
  * ----------------------------------------------------------------------------
  */
 typedef enum {
-    SDL_CRC_DATA_8_BIT = 1,
+    SDR_CRC_DATA_8_BIT = 1,
     /**< 8 Bit data packed */
-    SDL_CRC_DATA_16_BIT = 2,
+    SDR_CRC_DATA_16_BIT = 2,
     /**< 16 Bit data packed */
-    SDL_CRC_DATA_32_BIT = 3,
+    SDR_CRC_DATA_32_BIT = 3,
     /**< 32 Bit data packed */
-} SDL_CRC_dataBitSize;
+} SDR_CRC_dataBitSize;
 /* @} */
 
 /**
- *  \addtogroup SDL_CRC_MACROS
+ *  \addtogroup SDR_CRC_MACROS
  *  @{
  */
 
@@ -109,7 +109,7 @@ typedef enum {
 /* @} */
 
 /**
- *  \addtogroup SDL_CRC_DATASTRUCT
+ *  \addtogroup SDR_CRC_DATASTRUCT
  *  @{
  */
 
@@ -119,13 +119,13 @@ typedef enum {
  * This structure defines the elements of the CRC Data configuration
  * ----------------------------------------------------------------------------
  */
-typedef struct SDL_CRC_dataConfig_s
+typedef struct SDR_CRC_dataConfig_s
 {
     uint32_t *pCRCData;
     /**< Pointer to Data used for CRC  */
     uint32_t size;
     /**< Size of Data in Bytes  */
-    SDL_CRC_dataBitSize dataBitSize;
+    SDR_CRC_dataBitSize dataBitSize;
     /**< Data Bit size  */
     crcOperationMode_t crcOpMode;
     /**< CRC operation mode, only full CPU mode is supported  */
@@ -134,22 +134,22 @@ typedef struct SDL_CRC_dataConfig_s
     uint32_t refCRCValueMSW;
     /**< Reference CRC value Upper 32 bits */
 
-} SDL_CRC_dataConfig_t;
+} SDR_CRC_dataConfig_t;
 
 /* @} */
 
 /**
- *  \addtogroup SDL_CRC_FUNCTION
+ *  \addtogroup SDR_CRC_FUNCTION
  *  @{
  */
 
 /** ============================================================================
  *
- * \brief   Initializes CRC module for SDL
+ * \brief   Initializes CRC module for SDR
  *
  * \return  None
  */
-void SDL_CRC_init (void);
+void SDR_CRC_init (void);
 
 /** ============================================================================
  *
@@ -158,9 +158,9 @@ void SDL_CRC_init (void);
  * \param   crcChannel: CRC channel number to be used
  * \param   pDataConfig: Pointer to data configuration
  *
- * \return  SDL_PASS: Success; SDL_FAIL: Failure; SDL_BADARGS: Bad arguments error
+ * \return  SDR_PASS: Success; SDR_FAIL: Failure; SDR_BADARGS: Bad arguments error
  */
-SDL_Result SDL_CRC_selftest (uint32_t crcChannel, const SDL_CRC_dataConfig_t *pDataConfig);
+SDR_Result SDR_CRC_selftest (uint32_t crcChannel, const SDR_CRC_dataConfig_t *pDataConfig);
 
 /* @} */
 
@@ -168,4 +168,4 @@ SDL_Result SDL_CRC_selftest (uint32_t crcChannel, const SDL_CRC_dataConfig_t *pD
 }
 #endif  /* extern "C" */
 
-#endif /* INCLUDE_SDL_CRC_H_ */
+#endif /* INCLUDE_SDR_CRC_H_ */

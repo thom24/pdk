@@ -1,7 +1,7 @@
 /*
  * SDTF CRC
  *
- * Software Diagnostics Library Test for CRC Module
+ * Software Diagnostics Reference Test for CRC Module
  *
  *  Copyright (c) Texas Instruments Incorporated 2019-2020
  *

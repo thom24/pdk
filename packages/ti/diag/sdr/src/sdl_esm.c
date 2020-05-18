@@ -1,7 +1,7 @@
 /*
- * SDL ESM
+ * SDR ESM
  *
- * Software Diagnostics Library module for Error Signaling Module
+ * Software Diagnostics Reference module for Error Signaling Module
  *
  *  Copyright (c) Texas Instruments Incorporated 2018-2020
  *
@@ -46,34 +46,34 @@
 #include "sdl_esm_priv.h"
 
 /* Global ESM instance */
-static SDL_ESM_Instance_t SDL_ESM_instance;
+static SDR_ESM_Instance_t SDR_ESM_instance;
 
 /* Local Defines */
 #define BITS_PER_WORD (32u)
 #define GROUP_NUMBER_BIT_SHIFT  (5u)
 #define NO_EVENT_VALUE (0xffffu)
-#define SDL_ESM_EN_KEY_ENBALE_VAL (0xFU)
+#define SDR_ESM_EN_KEY_ENBALE_VAL (0xFU)
 
 
 
 /* Local functions  */
-static void SDL_ESM_interruptHandler (esmIntrPriorityLvl_t esmIntrPriorityLvlType, uintptr_t arg );
-static void SDL_ESM_selfTestCallback(void);
-static inline void SDL_ESM_getGroupNumberIndex(uint32_t intSrc, uint32_t *groupNumber,
+static void SDR_ESM_interruptHandler (esmIntrPriorityLvl_t esmIntrPriorityLvlType, uintptr_t arg );
+static void SDR_ESM_selfTestCallback(void);
+static inline void SDR_ESM_getGroupNumberIndex(uint32_t intSrc, uint32_t *groupNumber,
                                     uint32_t *intIndex);
-static void SDL_ESM_processInterruptSource(uintptr_t arg, uint32_t intSrc);
+static void SDR_ESM_processInterruptSource(uintptr_t arg, uint32_t intSrc);
 
 /** ============================================================================
  *
- * \brief   Initializes ESM module for SDL
+ * \brief   Initializes ESM module for SDR
  *
  * \param   esmInitConfig: Configuration for ESM
  *
- * \return  SDL_RETURN_PASS : Success; SDL_RETURN_FAIL for failures
+ * \return  SDR_RETURN_PASS : Success; SDR_RETURN_FAIL for failures
  */
-SDL_Result SDL_ESM_init (const SDL_ESM_InitConfig_t *esmInitConfig)
+SDR_Result SDR_ESM_init (const SDR_ESM_InitConfig_t *esmInitConfig)
 {
-    SDL_Result result = SDL_PASS;
+    SDR_Result result = SDR_PASS;
     int32_t cslRet;
     uint32_t intNum;
     uint32_t i,j;
@@ -83,18 +83,18 @@ SDL_Result SDL_ESM_init (const SDL_ESM_InitConfig_t *esmInitConfig)
     uint32_t influence;
 
     if ( esmInitConfig == ((void *)0u)) {
-            result = SDL_FAIL;
+            result = SDR_FAIL;
     } else {
 
         /* Record init config in instance */
-        SDL_ESM_instance.esmInitConfig = *esmInitConfig;
+        SDR_ESM_instance.esmInitConfig = *esmInitConfig;
 
 
         /* ESM reset and configure */
         cslRet = ESMReset((uint32_t)SOC_ESM_BASE);
 
         /* Enable interrupt for all events from init configuration*/
-        for(i=((uint32_t)0u); i< SDL_ESM_MAX_EVENT_MAP_NUM_WORDS; i++) {
+        for(i=((uint32_t)0u); i< SDR_ESM_MAX_EVENT_MAP_NUM_WORDS; i++) {
             for(j=((uint32_t)0u); j< BITS_PER_WORD; j++) {
                 intNum = (i*BITS_PER_WORD)+j;
                 /*
@@ -203,14 +203,14 @@ SDL_Result SDL_ESM_init (const SDL_ESM_InitConfig_t *esmInitConfig)
         }
         if (cslRet == CSL_PASS)
         {
-            if (intStatus != SDL_ESM_EN_KEY_ENBALE_VAL)
+            if (intStatus != SDR_ESM_EN_KEY_ENBALE_VAL)
             {
                 cslRet = CSL_EFAIL;
             }
         }
         if (cslRet != CSL_PASS)
         {
-            result = SDL_FAIL;
+            result = SDR_FAIL;
         }
     }
 
@@ -223,11 +223,11 @@ SDL_Result SDL_ESM_init (const SDL_ESM_InitConfig_t *esmInitConfig)
  *
  * \param  None
  *
- * \return  SDL_RETURN_PASS : Success; SDL_RETURN_FAIL for failures
+ * \return  SDR_RETURN_PASS : Success; SDR_RETURN_FAIL for failures
  */
-SDL_Result SDL_ESM_resetNError(void)
+SDR_Result SDR_ESM_resetNError(void)
 {
-    SDL_Result         result;
+    SDR_Result         result;
     int32_t            cslRet;
     uint32_t           status;
 
@@ -245,11 +245,11 @@ SDL_Result SDL_ESM_resetNError(void)
     }
     if (cslRet == CSL_PASS)
     {
-        result = SDL_PASS;
+        result = SDR_PASS;
     }
     else
     {
-        result = SDL_FAIL;
+        result = SDR_FAIL;
     }
     return result;
 }
@@ -263,7 +263,7 @@ SDL_Result SDL_ESM_resetNError(void)
  *
  * \return    None
  */
-void SDL_ESM_setNError(void){
+void SDR_ESM_setNError(void){
     /* Set Force Error output */
     (void)ESMSetMode(((uint32_t)SOC_ESM_BASE), ESM_OPERATION_MODE_ERROR_FORCE);
 }
@@ -277,7 +277,7 @@ void SDL_ESM_setNError(void){
  *
  * \return    1 : active; 0 not active
  */
-bool SDL_ESM_getNErrorStatus(void)
+bool SDR_ESM_getNErrorStatus(void)
 {
     uint32_t status;
     bool retValue;
@@ -298,20 +298,20 @@ bool SDL_ESM_getNErrorStatus(void)
  *
  * \param1   ESM_error_config: Configuration of ESM error
  *
- * \return  SDL_RETURN_PASS : Success; SDL_RETURN_FAIL for failures
+ * \return  SDR_RETURN_PASS : Success; SDR_RETURN_FAIL for failures
  */
-SDL_Result SDL_ESM_errorInsert (const SDL_ESM_ErrorConfig_t *esmErrorConfig)
+SDR_Result SDR_ESM_errorInsert (const SDR_ESM_ErrorConfig_t *esmErrorConfig)
 {
-    SDL_Result result = SDL_FAIL;
+    SDR_Result result = SDR_FAIL;
 
     if (esmErrorConfig != ((void *)0u)) {
-        if ((esmErrorConfig->groupNumber < SDL_ESM_MAX_EVENT_MAP_NUM_WORDS)
+        if ((esmErrorConfig->groupNumber < SDR_ESM_MAX_EVENT_MAP_NUM_WORDS)
          && (esmErrorConfig->bitNumber < BITS_PER_WORD)) {
             /* Insert error */
             (void)ESMSetIntrStatusRAW(((uint32_t)SOC_ESM_BASE),
                                 (esmErrorConfig->groupNumber*BITS_PER_WORD)
                                 + esmErrorConfig->bitNumber);
-            result = SDL_PASS;
+            result = SDR_PASS;
         }
     }
 
@@ -324,19 +324,19 @@ SDL_Result SDL_ESM_errorInsert (const SDL_ESM_ErrorConfig_t *esmErrorConfig)
  *
  * \param   loopCount: Number of tries to check status in a loop
  *
- * \return  SDL_RETURN_PASS : Success; SDL_RETURN_FAIL for failures
+ * \return  SDR_RETURN_PASS : Success; SDR_RETURN_FAIL for failures
  */
-SDL_Result SDL_ESM_selfTest (uint32_t loopCount)
+SDR_Result SDR_ESM_selfTest (uint32_t loopCount)
 {
     uint32_t timeCount = 0u;
-    SDL_Result result = SDL_PASS;
+    SDR_Result result = SDR_PASS;
 
     /* reset error and timout flags */
-    SDL_ESM_instance.selfTestFlag = (bool)false;
+    SDR_ESM_instance.selfTestFlag = (bool)false;
 
     /* Insert error for configured self test error number */
-    result = SDL_ESM_errorInsert(&SDL_ESM_instance.esmInitConfig.esmErrorConfig);
-    if (result == SDL_PASS) {
+    result = SDR_ESM_errorInsert(&SDR_ESM_instance.esmInitConfig.esmErrorConfig);
+    if (result == SDR_PASS) {
         do
         {
             timeCount++;
@@ -344,16 +344,16 @@ SDL_Result SDL_ESM_selfTest (uint32_t loopCount)
                 && (timeCount >= loopCount)) {
                 break;
             }
-        } while(!SDL_ESM_instance.selfTestFlag);
+        } while(!SDR_ESM_instance.selfTestFlag);
 
         /* Check expected error occurred or timeout */
-        if (!SDL_ESM_instance.selfTestFlag ) {
+        if (!SDR_ESM_instance.selfTestFlag ) {
             /* Timed out */
-            result = SDL_FAIL;
+            result = SDR_FAIL;
         }
     }
     /* reset error and timout flags */
-    SDL_ESM_instance.selfTestFlag = (bool)false;
+    SDR_ESM_instance.selfTestFlag = (bool)false;
 
     return result;
 }
@@ -366,9 +366,9 @@ SDL_Result SDL_ESM_selfTest (uint32_t loopCount)
  *
  * \return  None
  */
-static void SDL_ESM_selfTestCallback(void)
+static void SDR_ESM_selfTestCallback(void)
 {
-    SDL_ESM_instance.selfTestFlag  = (bool)true;
+    SDR_ESM_instance.selfTestFlag  = (bool)true;
 
     return;
 }
@@ -383,7 +383,7 @@ static void SDL_ESM_selfTestCallback(void)
  *
  * \return  None
  */
-static inline void SDL_ESM_getGroupNumberIndex(uint32_t intSrc, uint32_t *groupNumber,
+static inline void SDR_ESM_getGroupNumberIndex(uint32_t intSrc, uint32_t *groupNumber,
                                     uint32_t *intIndex)
 {
     *groupNumber = intSrc >> GROUP_NUMBER_BIT_SHIFT;
@@ -401,31 +401,31 @@ static inline void SDL_ESM_getGroupNumberIndex(uint32_t intSrc, uint32_t *groupN
  *
  * \return  None
  */
-static void SDL_ESM_processInterruptSource(uintptr_t arg, uint32_t intSrc)
+static void SDR_ESM_processInterruptSource(uintptr_t arg, uint32_t intSrc)
 {
 
     uint32_t groupNumber, intIndex;
     bool handledFlag;
 
     if (intSrc != NO_EVENT_VALUE) {
-        if (intSrc >= (BITS_PER_WORD*SDL_ESM_MAX_EVENT_MAP_NUM_WORDS)) {
+        if (intSrc >= (BITS_PER_WORD*SDR_ESM_MAX_EVENT_MAP_NUM_WORDS)) {
             /* Unexpected error */
             /* Call assert function */
-            SDL_assertExternalFunction(SDL_ESM_INT_SRC_OUT_OF_BOUNDS);
+            SDR_assertExternalFunction(SDR_ESM_INT_SRC_OUT_OF_BOUNDS);
         } else {
-            SDL_ESM_getGroupNumberIndex(intSrc, &groupNumber, &intIndex);
-            if((SDL_ESM_instance.esmInitConfig.eventMap[groupNumber]
+            SDR_ESM_getGroupNumberIndex(intSrc, &groupNumber, &intIndex);
+            if((SDR_ESM_instance.esmInitConfig.eventMap[groupNumber]
                & (((uint32_t)1u)<<intIndex)) != 0u) {
 
                 /* Check if this is due to self test */
                 if((groupNumber
-                    == SDL_ESM_instance.esmInitConfig.esmErrorConfig.groupNumber) &&
-                   (intIndex ==  SDL_ESM_instance.esmInitConfig.esmErrorConfig.bitNumber)){
-                    SDL_ESM_selfTestCallback();
+                    == SDR_ESM_instance.esmInitConfig.esmErrorConfig.groupNumber) &&
+                   (intIndex ==  SDR_ESM_instance.esmInitConfig.esmErrorConfig.bitNumber)){
+                    SDR_ESM_selfTestCallback();
                 } else {
-                    handledFlag = SDL_ESM_handleIntSrc(&SDL_ESM_instance, intSrc);
+                    handledFlag = SDR_ESM_handleIntSrc(&SDR_ESM_instance, intSrc);
                     if (!handledFlag) {
-                        SDL_ESM_applicationCallbackFunction(arg, groupNumber,
+                        SDR_ESM_applicationCallbackFunction(arg, groupNumber,
                                                             intIndex,
                                                             intSrc);
                     }
@@ -447,7 +447,7 @@ static void SDL_ESM_processInterruptSource(uintptr_t arg, uint32_t intSrc)
  *
  * \return  None
  */
-static void SDL_ESM_interruptHandler (esmIntrPriorityLvl_t esmIntrPriorityLvlType,
+static void SDR_ESM_interruptHandler (esmIntrPriorityLvl_t esmIntrPriorityLvlType,
                                            uintptr_t arg )
 {
     uint32_t intSrc1, intSrc2;
@@ -458,9 +458,9 @@ static void SDL_ESM_interruptHandler (esmIntrPriorityLvl_t esmIntrPriorityLvlTyp
         (void)ESMGetGroupIntrStatus(((uint32_t)SOC_ESM_BASE), (uint32_t)esmIntrPriorityLvlType,
                               &localEsmGroupIntrStatus);
         intSrc1 = localEsmGroupIntrStatus.highestPendPlsIntNum;
-        SDL_ESM_processInterruptSource(arg, intSrc1);
+        SDR_ESM_processInterruptSource(arg, intSrc1);
         intSrc2 = localEsmGroupIntrStatus.highestPendLvlIntNum;
-        SDL_ESM_processInterruptSource(arg, intSrc2);
+        SDR_ESM_processInterruptSource(arg, intSrc2);
     } while ((intSrc1 != (uint32_t)(NO_EVENT_VALUE)) || (intSrc2 != (uint32_t)(NO_EVENT_VALUE)));
 
     return;
@@ -474,11 +474,11 @@ static void SDL_ESM_interruptHandler (esmIntrPriorityLvl_t esmIntrPriorityLvlTyp
  *
  * \return  None
  */
-void SDL_ESM_hiInterruptHandler (uintptr_t arg)
+void SDR_ESM_hiInterruptHandler (uintptr_t arg)
 {
 
     /* Call common Interrupt handler */
-     SDL_ESM_interruptHandler(ESM_INTR_PRIORITY_LEVEL_HIGH, arg);
+     SDR_ESM_interruptHandler(ESM_INTR_PRIORITY_LEVEL_HIGH, arg);
 
     /* Write end of interrupt */
     (void)ESMWriteEOI(((uint32_t)SOC_ESM_BASE), (uint32_t)ESM_INTR_TYPE_HIGH_PRIO_ERROR);
@@ -494,11 +494,11 @@ void SDL_ESM_hiInterruptHandler (uintptr_t arg)
  *
  * \return  None
  */
-void SDL_ESM_loInterruptHandler (uintptr_t arg)
+void SDR_ESM_loInterruptHandler (uintptr_t arg)
 {
 
     /* Call common Interrupt handler */
-    SDL_ESM_interruptHandler(ESM_INTR_PRIORITY_LEVEL_LOW, arg);
+    SDR_ESM_interruptHandler(ESM_INTR_PRIORITY_LEVEL_LOW, arg);
 
     /* Write end of interrupt */
     (void)ESMWriteEOI(((uint32_t)SOC_ESM_BASE), (uint32_t)ESM_INTR_TYPE_LOW_PRIO_ERROR);
@@ -514,9 +514,9 @@ void SDL_ESM_loInterruptHandler (uintptr_t arg)
  *
  * \return  None
  */
-void SDL_ESM_configInterruptHandler(uintptr_t arg)
+void SDR_ESM_configInterruptHandler(uintptr_t arg)
 {
-    SDL_ESM_applicationCallbackFunction(arg, 0, 0, 0);
+    SDR_ESM_applicationCallbackFunction(arg, 0, 0, 0);
 
     /* Write end of interrupt */
     (void)ESMWriteEOI(((uint32_t)SOC_ESM_BASE), (uint32_t)ESM_INTR_TYPE_CONFIG_ERROR);
@@ -530,14 +530,14 @@ void SDL_ESM_configInterruptHandler(uintptr_t arg)
  *
  * \param1  eccCallBackFunctionPtr: Call back function to register
  *
- * \return  SDL_RETURN_PASS : Success; SDL_RETURN_FAIL for failures
+ * \return  SDR_RETURN_PASS : Success; SDR_RETURN_FAIL for failures
  */
-SDL_Result SDL_ESM_registerECCHandler(SDL_ESM_ECCCallback_t eccCallBackFunctionPtr)
+SDR_Result SDR_ESM_registerECCHandler(SDR_ESM_ECCCallback_t eccCallBackFunctionPtr)
 {
-    SDL_Result result = SDL_PASS;
+    SDR_Result result = SDR_PASS;
 
     /* Store call back function */
-    SDL_ESM_instance.eccCallBackFunction = eccCallBackFunctionPtr;
+    SDR_ESM_instance.eccCallBackFunction = eccCallBackFunctionPtr;
 
     return result;
 }
@@ -549,14 +549,14 @@ SDL_Result SDL_ESM_registerECCHandler(SDL_ESM_ECCCallback_t eccCallBackFunctionP
  *
  * \param   CCMCallBackFunctionPtr: Callback function pointer
  *
- * \return  SDL_PASS : Success; SDL_FAIL for failures
+ * \return  SDR_PASS : Success; SDR_FAIL for failures
  */
-SDL_Result SDL_ESM_registerCCMHandler(SDL_ESM_CCMCallback_t CCMCallBackFunctionPtr)
+SDR_Result SDR_ESM_registerCCMHandler(SDR_ESM_CCMCallback_t CCMCallBackFunctionPtr)
 {
-    SDL_Result result = SDL_PASS;
+    SDR_Result result = SDR_PASS;
 
     /* Store call back function */
-    SDL_ESM_instance.CCMCallBackFunction = CCMCallBackFunctionPtr;
+    SDR_ESM_instance.CCMCallBackFunction = CCMCallBackFunctionPtr;
 
     return result;
 }
@@ -567,14 +567,14 @@ SDL_Result SDL_ESM_registerCCMHandler(SDL_ESM_CCMCallback_t CCMCallBackFunctionP
  *
  * \param   WDTCallBackFunctionPtr: Callback function pointer
  *
- * \return  SDL_PASS : Success; SDL_FAIL for failures
+ * \return  SDR_PASS : Success; SDR_FAIL for failures
  */
-SDL_Result SDL_ESM_registerWDTHandler(SDL_ESM_WDTCallback_t WDTCallBackFunctionPtr)
+SDR_Result SDR_ESM_registerWDTHandler(SDR_ESM_WDTCallback_t WDTCallBackFunctionPtr)
 {
-    SDL_Result result = SDL_PASS;
+    SDR_Result result = SDR_PASS;
 
     /* Store call back function */
-    SDL_ESM_instance.WDTCallBackFunction = WDTCallBackFunctionPtr;
+    SDR_ESM_instance.WDTCallBackFunction = WDTCallBackFunctionPtr;
 
     return result;
 }
@@ -584,12 +584,12 @@ SDL_Result SDL_ESM_registerWDTHandler(SDL_ESM_WDTCallback_t WDTCallBackFunctionP
  * \brief   De-Register callback function for WDT events
  *
  *
- * \return  SDL_PASS : Success; SDL_FAIL for failures
+ * \return  SDR_PASS : Success; SDR_FAIL for failures
  */
-void SDL_ESM_deRegisterWDTHandler(void)
+void SDR_ESM_deRegisterWDTHandler(void)
 {
     /* Store call back function */
-    SDL_ESM_instance.WDTCallBackFunction = NULL;
+    SDR_ESM_instance.WDTCallBackFunction = NULL;
 
     return;
 }
@@ -601,25 +601,25 @@ void SDL_ESM_deRegisterWDTHandler(void)
  *
  * \param   Interrupt type
  *
- * \return  Interrupt Number or SDL_ESM_INTNUMBER_INVALID error
+ * \return  Interrupt Number or SDR_ESM_INTNUMBER_INVALID error
  */
-uint32_t SDL_ESM_getIntNumber(SDL_ESM_IntType esmIntType)
+uint32_t SDR_ESM_getIntNumber(SDR_ESM_IntType esmIntType)
 {
-    uint32_t intNum = SDL_ESM_INTNUMBER_INVALID;
+    uint32_t intNum = SDR_ESM_INTNUMBER_INVALID;
 
     switch(esmIntType)
     {
-        case SDL_ESM_INT_TYPE_HI:
-            intNum = SDL_ESM_HI_INTNO;
+        case SDR_ESM_INT_TYPE_HI:
+            intNum = SDR_ESM_HI_INTNO;
             break;
 
-        case SDL_ESM_INT_TYPE_CFG:
-            intNum = SDL_ESM_CFG_INTNO;
+        case SDR_ESM_INT_TYPE_CFG:
+            intNum = SDR_ESM_CFG_INTNO;
             break;
 
-        case SDL_ESM_INT_TYPE_LO:
+        case SDR_ESM_INT_TYPE_LO:
         default:
-            intNum = SDL_ESM_LO_INTNO;
+            intNum = SDR_ESM_LO_INTNO;
             break;
     }
 

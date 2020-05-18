@@ -1,7 +1,7 @@
 /*
- * SDL ECC
+ * SDR ECC
  *
- * Software Diagnostics Library module for ECC
+ * Software Diagnostics Reference module for ECC
  *
  *  Copyright (c) Texas Instruments Incorporated 2018-2020
  *
@@ -51,60 +51,60 @@
 #include <sdl_soc_r5.h>
 
 /* Local defines */
-#define SDL_ECC_R5_MONITOR_PMU_NUMBER (1u)
-#define SDL_ECC_R5_CFLR_ATCM_DATA_ERROR_MASK (0x1000001u)
-#define SDL_ECC_R5_CFLR_BTCM_DATA_ERROR_MASK (0x2000001u)
+#define SDR_ECC_R5_MONITOR_PMU_NUMBER (1u)
+#define SDR_ECC_R5_CFLR_ATCM_DATA_ERROR_MASK (0x1000001u)
+#define SDR_ECC_R5_CFLR_BTCM_DATA_ERROR_MASK (0x2000001u)
 
-#define SDL_PMU_CTR_MAX_VALUE (0xffffffffu)
+#define SDR_PMU_CTR_MAX_VALUE (0xffffffffu)
 
-#define SDL_ECC_ATCM_SINGLE_BIT_ERROR_EVENT (0x67u)
-#define SDL_ECC_B0TCM_SINGLE_BIT_ERROR_EVENT (0x68u)
-#define SDL_ECC_B1TCM_SINGLE_BIT_ERROR_EVENT (0x69u)
+#define SDR_ECC_ATCM_SINGLE_BIT_ERROR_EVENT (0x67u)
+#define SDR_ECC_B0TCM_SINGLE_BIT_ERROR_EVENT (0x68u)
+#define SDR_ECC_B1TCM_SINGLE_BIT_ERROR_EVENT (0x69u)
 
 /* Local functions */
-static inline void SDL_ECC_R5EnablePmuForEccEvent(SDL_ECC_MemType eccMemType,
-                              SDL_ECC_MemSubType memSubType,
-                              SDL_ECC_InjectErrorType errorType);
+static inline void SDR_ECC_R5EnablePmuForEccEvent(SDR_ECC_MemType eccMemType,
+                              SDR_ECC_MemSubType memSubType,
+                              SDR_ECC_InjectErrorType errorType);
 
-static inline void SDL_ECC_R5DisablePmuForEccEvent(void);
+static inline void SDR_ECC_R5DisablePmuForEccEvent(void);
 /*********************************************************************
  *
  * /brief   Configure ECC for given ram Id for the CPU
  *
  * /param  ramId: Ram Id of memory section
  *
- * /return  SDL_PASS : Success; SDL_FAIL for failures
+ * /return  SDR_PASS : Success; SDR_FAIL for failures
  */
-SDL_Result SDL_ECC_configECCRam(uint32_t ramId)
+SDR_Result SDR_ECC_configECCRam(uint32_t ramId)
 {
-    SDL_Result retVal= SDL_PASS;
+    SDR_Result retVal= SDR_PASS;
 
     switch(ramId) {
 
         case CSL_ECCAGGR_PULSAR_SL_CPU0_ATCM0_BANK0_VECTOR_ID:
         case CSL_ECCAGGR_PULSAR_SL_CPU0_ATCM0_BANK1_VECTOR_ID:
             /* Enable ECC for ATCM */
-            SDL_ECC_UTILS_enableECCATCM();
+            SDR_ECC_UTILS_enableECCATCM();
 
             break;
 
         case CSL_ECCAGGR_PULSAR_SL_CPU0_B0TCM0_BANK0_VECTOR_ID:
         case CSL_ECCAGGR_PULSAR_SL_CPU0_B0TCM0_BANK1_VECTOR_ID:
             /* Enable ECC for B0TCM */
-            SDL_ECC_UTILS_enableECCB0TCM();
+            SDR_ECC_UTILS_enableECCB0TCM();
 
             break;
 
         case CSL_ECCAGGR_PULSAR_SL_CPU0_B1TCM0_BANK0_VECTOR_ID:
         case CSL_ECCAGGR_PULSAR_SL_CPU0_B1TCM0_BANK1_VECTOR_ID:
             /* Enable ECC for B1TCM */
-            SDL_ECC_UTILS_enableECCB1TCM();
+            SDR_ECC_UTILS_enableECCB1TCM();
 
             break;
 
         default:
             if ( ramId > CSL_ECCAGGR_PULSAR_SL_CPU0_KS_VIM_RAMECC_VECTOR_ID) {
-                retVal = SDL_FAIL;
+                retVal = SDR_FAIL;
             }
             break;
     }
@@ -120,48 +120,48 @@ SDL_Result SDL_ECC_configECCRam(uint32_t ramId)
  * \param  memSubType: Memory subtype
  * \param  errorType:  Error type to poll
  *
- * \return SDL_ECC_EVENT_FOUND or if no events found
+ * \return SDR_ECC_EVENT_FOUND or if no events found
  */
-uint32_t SDL_ECC_pollErrorEvent(SDL_ECC_MemType eccMemType,
-                               SDL_ECC_MemSubType memSubType,
-                               SDL_ECC_InjectErrorType errorType)
+uint32_t SDR_ECC_pollErrorEvent(SDR_ECC_MemType eccMemType,
+                               SDR_ECC_MemSubType memSubType,
+                               SDR_ECC_InjectErrorType errorType)
 {
     uint32_t retValue = 0u;
     uint32_t regValue;
 
     /* Polling only for R5F core self test */
-    if ((eccMemType == SDL_ECC_MEMTYPE_MCU_R5F0_CORE)
-        || (eccMemType == SDL_ECC_MEMTYPE_MCU_R5F1_CORE)) {
+    if ((eccMemType == SDR_ECC_MEMTYPE_MCU_R5F0_CORE)
+        || (eccMemType == SDR_ECC_MEMTYPE_MCU_R5F1_CORE)) {
         switch(errorType) {
-            case SDL_INJECT_ECC_ERROR_FORCING_1BIT_ONCE:
+            case SDR_INJECT_ECC_ERROR_FORCING_1BIT_ONCE:
                 /* Only for single bit error do polling */
                 switch (memSubType) {
-                    case SDL_ECC_R5F_MEM_SUBTYPE_ATCM0_BANK0_VECTOR_ID:
-                    case SDL_ECC_R5F_MEM_SUBTYPE_ATCM0_BANK1_VECTOR_ID:
+                    case SDR_ECC_R5F_MEM_SUBTYPE_ATCM0_BANK0_VECTOR_ID:
+                    case SDR_ECC_R5F_MEM_SUBTYPE_ATCM0_BANK1_VECTOR_ID:
                         /* Check PMOVSR register */
-                        regValue =  SDL_UTILS_getPMOVSR();
-                        if(regValue == (1u <<SDL_ECC_R5_MONITOR_PMU_NUMBER)) {
+                        regValue =  SDR_UTILS_getPMOVSR();
+                        if(regValue == (1u <<SDR_ECC_R5_MONITOR_PMU_NUMBER)) {
                             /* Check CFLR register */
-                            regValue = SDL_UTILS_getCFLR();
-                            if((regValue & SDL_ECC_R5_CFLR_ATCM_DATA_ERROR_MASK)
-                               == SDL_ECC_R5_CFLR_ATCM_DATA_ERROR_MASK) {
-                                retValue = (uint32_t)(SDL_ECC_EVENT_FOUND);
+                            regValue = SDR_UTILS_getCFLR();
+                            if((regValue & SDR_ECC_R5_CFLR_ATCM_DATA_ERROR_MASK)
+                               == SDR_ECC_R5_CFLR_ATCM_DATA_ERROR_MASK) {
+                                retValue = (uint32_t)(SDR_ECC_EVENT_FOUND);
                             }
                         }
                         break;
 
-                    case SDL_ECC_R5F_MEM_SUBTYPE_B0TCM0_BANK0_VECTOR_ID:
-                    case SDL_ECC_R5F_MEM_SUBTYPE_B0TCM0_BANK1_VECTOR_ID:
-                    case SDL_ECC_R5F_MEM_SUBTYPE_B1TCM0_BANK0_VECTOR_ID:
-                    case SDL_ECC_R5F_MEM_SUBTYPE_B1TCM0_BANK1_VECTOR_ID:
+                    case SDR_ECC_R5F_MEM_SUBTYPE_B0TCM0_BANK0_VECTOR_ID:
+                    case SDR_ECC_R5F_MEM_SUBTYPE_B0TCM0_BANK1_VECTOR_ID:
+                    case SDR_ECC_R5F_MEM_SUBTYPE_B1TCM0_BANK0_VECTOR_ID:
+                    case SDR_ECC_R5F_MEM_SUBTYPE_B1TCM0_BANK1_VECTOR_ID:
                         /* Check PMOVSR register */
-                        regValue =  SDL_UTILS_getPMOVSR();
-                        if(regValue == (1u <<SDL_ECC_R5_MONITOR_PMU_NUMBER)) {
+                        regValue =  SDR_UTILS_getPMOVSR();
+                        if(regValue == (1u <<SDR_ECC_R5_MONITOR_PMU_NUMBER)) {
                             /* Check CFLR register */
-                            regValue = SDL_UTILS_getCFLR();
-                            if( (regValue & SDL_ECC_R5_CFLR_BTCM_DATA_ERROR_MASK)
-                                == SDL_ECC_R5_CFLR_BTCM_DATA_ERROR_MASK) {
-                                retValue = (uint32_t)(SDL_ECC_EVENT_FOUND);
+                            regValue = SDR_UTILS_getCFLR();
+                            if( (regValue & SDR_ECC_R5_CFLR_BTCM_DATA_ERROR_MASK)
+                                == SDR_ECC_R5_CFLR_BTCM_DATA_ERROR_MASK) {
+                                retValue = (uint32_t)(SDR_ECC_EVENT_FOUND);
                             }
                         }
                         break;
@@ -189,20 +189,20 @@ uint32_t SDL_ECC_pollErrorEvent(SDL_ECC_MemType eccMemType,
  *
  * \return  None
  */
-static inline void SDL_ECC_R5EnablePmuForEccEvent(SDL_ECC_MemType eccMemType,
-                              SDL_ECC_MemSubType memSubType,
-                              SDL_ECC_InjectErrorType errorType)
+static inline void SDR_ECC_R5EnablePmuForEccEvent(SDR_ECC_MemType eccMemType,
+                              SDR_ECC_MemSubType memSubType,
+                              SDR_ECC_InjectErrorType errorType)
 {
-    if ((eccMemType == SDL_ECC_MEMTYPE_MCU_R5F0_CORE)
-        || (eccMemType == SDL_ECC_MEMTYPE_MCU_R5F1_CORE)) {
+    if ((eccMemType == SDR_ECC_MEMTYPE_MCU_R5F0_CORE)
+        || (eccMemType == SDR_ECC_MEMTYPE_MCU_R5F1_CORE)) {
         switch (memSubType) {
-            case SDL_ECC_R5F_MEM_SUBTYPE_ATCM0_BANK0_VECTOR_ID:
-            case SDL_ECC_R5F_MEM_SUBTYPE_ATCM0_BANK1_VECTOR_ID:
+            case SDR_ECC_R5F_MEM_SUBTYPE_ATCM0_BANK0_VECTOR_ID:
+            case SDR_ECC_R5F_MEM_SUBTYPE_ATCM0_BANK1_VECTOR_ID:
                 switch(errorType) {
-                    case SDL_INJECT_ECC_ERROR_FORCING_1BIT_ONCE:
+                    case SDR_INJECT_ECC_ERROR_FORCING_1BIT_ONCE:
                        /* enable PMU event monitoring of ATCM 1 bit*/
-                       SDL_ECC_UTILS_configSecIntr(SDL_PMU_CTR_MAX_VALUE,
-                                                 SDL_ECC_ATCM_SINGLE_BIT_ERROR_EVENT,
+                       SDR_ECC_UTILS_configSecIntr(SDR_PMU_CTR_MAX_VALUE,
+                                                 SDR_ECC_ATCM_SINGLE_BIT_ERROR_EVENT,
                                                  1);
                        break;
 
@@ -211,13 +211,13 @@ static inline void SDL_ECC_R5EnablePmuForEccEvent(SDL_ECC_MemType eccMemType,
                 }
                 break;
 
-            case SDL_ECC_R5F_MEM_SUBTYPE_B0TCM0_BANK0_VECTOR_ID:
-            case SDL_ECC_R5F_MEM_SUBTYPE_B0TCM0_BANK1_VECTOR_ID:
+            case SDR_ECC_R5F_MEM_SUBTYPE_B0TCM0_BANK0_VECTOR_ID:
+            case SDR_ECC_R5F_MEM_SUBTYPE_B0TCM0_BANK1_VECTOR_ID:
                 switch(errorType) {
-                    case SDL_INJECT_ECC_ERROR_FORCING_1BIT_ONCE:
+                    case SDR_INJECT_ECC_ERROR_FORCING_1BIT_ONCE:
                        /* enable PMU event monitoring of ATCM 1 bit*/
-                       SDL_ECC_UTILS_configSecIntr(SDL_PMU_CTR_MAX_VALUE,
-                                                 SDL_ECC_B0TCM_SINGLE_BIT_ERROR_EVENT,
+                       SDR_ECC_UTILS_configSecIntr(SDR_PMU_CTR_MAX_VALUE,
+                                                 SDR_ECC_B0TCM_SINGLE_BIT_ERROR_EVENT,
                                                  1);
                        break;
 
@@ -226,13 +226,13 @@ static inline void SDL_ECC_R5EnablePmuForEccEvent(SDL_ECC_MemType eccMemType,
                 }
                 break;
 
-            case SDL_ECC_R5F_MEM_SUBTYPE_B1TCM0_BANK0_VECTOR_ID:
-            case SDL_ECC_R5F_MEM_SUBTYPE_B1TCM0_BANK1_VECTOR_ID:
+            case SDR_ECC_R5F_MEM_SUBTYPE_B1TCM0_BANK0_VECTOR_ID:
+            case SDR_ECC_R5F_MEM_SUBTYPE_B1TCM0_BANK1_VECTOR_ID:
                 switch(errorType) {
-                    case SDL_INJECT_ECC_ERROR_FORCING_1BIT_ONCE:
+                    case SDR_INJECT_ECC_ERROR_FORCING_1BIT_ONCE:
                        /* enable PMU event monitoring of ATCM 1 bit*/
-                       SDL_ECC_UTILS_configSecIntr(SDL_PMU_CTR_MAX_VALUE,
-                                                 SDL_ECC_B1TCM_SINGLE_BIT_ERROR_EVENT,
+                       SDR_ECC_UTILS_configSecIntr(SDR_PMU_CTR_MAX_VALUE,
+                                                 SDR_ECC_B1TCM_SINGLE_BIT_ERROR_EVENT,
                                                  1);
                        break;
 
@@ -257,12 +257,12 @@ static inline void SDL_ECC_R5EnablePmuForEccEvent(SDL_ECC_MemType eccMemType,
  *
  * \return  None
  */
-static inline void SDL_ECC_R5DisablePmuForEccEvent(void)
+static inline void SDR_ECC_R5DisablePmuForEccEvent(void)
 {
     /* PMU Disable counter */
-    (void)CSL_armR5PmuEnableCntr(SDL_ECC_R5_MONITOR_PMU_NUMBER, 0u );
+    (void)CSL_armR5PmuEnableCntr(SDR_ECC_R5_MONITOR_PMU_NUMBER, 0u );
     /* Disable counter overflow interrupt */
-    (void)CSL_armR5PmuEnableCntrOverflowIntr(SDL_ECC_R5_MONITOR_PMU_NUMBER, 0u);
+    (void)CSL_armR5PmuEnableCntrOverflowIntr(SDR_ECC_R5_MONITOR_PMU_NUMBER, 0u);
 
 }
 
@@ -276,22 +276,22 @@ static inline void SDL_ECC_R5DisablePmuForEccEvent(void)
  *
  * \return  None
  */
-void SDL_ECC_enableECCEventCheck(SDL_ECC_MemType eccMemType,
-                                SDL_ECC_MemSubType memSubType,
-                                SDL_ECC_InjectErrorType errorType)
+void SDR_ECC_enableECCEventCheck(SDR_ECC_MemType eccMemType,
+                                SDR_ECC_MemSubType memSubType,
+                                SDR_ECC_InjectErrorType errorType)
 {
     switch(eccMemType)
     {
-        case SDL_ECC_MEMTYPE_MCU_R5F0_CORE:
-        case SDL_ECC_MEMTYPE_MCU_R5F1_CORE:
+        case SDR_ECC_MEMTYPE_MCU_R5F0_CORE:
+        case SDR_ECC_MEMTYPE_MCU_R5F1_CORE:
 
             switch(errorType)
             {
-                case SDL_INJECT_ECC_ERROR_FORCING_1BIT_ONCE:
-                case SDL_INJECT_ECC_ERROR_FORCING_1BIT_N_ROW_ONCE:
-                case SDL_INJECT_ECC_ERROR_FORCING_1BIT_REPEAT:
-                case SDL_INJECT_ECC_ERROR_FORCING_1BIT_N_ROW_REPEAT:
-                    SDL_ECC_R5EnablePmuForEccEvent(eccMemType, memSubType, errorType);
+                case SDR_INJECT_ECC_ERROR_FORCING_1BIT_ONCE:
+                case SDR_INJECT_ECC_ERROR_FORCING_1BIT_N_ROW_ONCE:
+                case SDR_INJECT_ECC_ERROR_FORCING_1BIT_REPEAT:
+                case SDR_INJECT_ECC_ERROR_FORCING_1BIT_N_ROW_REPEAT:
+                    SDR_ECC_R5EnablePmuForEccEvent(eccMemType, memSubType, errorType);
                     break;
 
                 default:
@@ -315,21 +315,21 @@ void SDL_ECC_enableECCEventCheck(SDL_ECC_MemType eccMemType,
  *
  * \return  None
  */
-void SDL_ECC_disableECCEventCheck(SDL_ECC_MemType eccMemType,
-                                 SDL_ECC_InjectErrorType errorType)
+void SDR_ECC_disableECCEventCheck(SDR_ECC_MemType eccMemType,
+                                 SDR_ECC_InjectErrorType errorType)
 {
     switch(eccMemType)
      {
-         case SDL_ECC_MEMTYPE_MCU_R5F0_CORE:
-         case SDL_ECC_MEMTYPE_MCU_R5F1_CORE:
+         case SDR_ECC_MEMTYPE_MCU_R5F0_CORE:
+         case SDR_ECC_MEMTYPE_MCU_R5F1_CORE:
 
              switch(errorType)
              {
-                 case SDL_INJECT_ECC_ERROR_FORCING_1BIT_ONCE:
-                 case SDL_INJECT_ECC_ERROR_FORCING_1BIT_N_ROW_ONCE:
-                 case SDL_INJECT_ECC_ERROR_FORCING_1BIT_REPEAT:
-                 case SDL_INJECT_ECC_ERROR_FORCING_1BIT_N_ROW_REPEAT:
-                     SDL_ECC_R5DisablePmuForEccEvent();
+                 case SDR_INJECT_ECC_ERROR_FORCING_1BIT_ONCE:
+                 case SDR_INJECT_ECC_ERROR_FORCING_1BIT_N_ROW_ONCE:
+                 case SDR_INJECT_ECC_ERROR_FORCING_1BIT_REPEAT:
+                 case SDR_INJECT_ECC_ERROR_FORCING_1BIT_N_ROW_REPEAT:
+                     SDR_ECC_R5DisablePmuForEccEvent();
                      break;
 
                  default:
@@ -356,12 +356,12 @@ void SDL_ECC_disableECCEventCheck(SDL_ECC_MemType eccMemType,
  *
  * \return  None
  */
-void SDL_ECC_registerVIMDEDHandler(SDL_ECC_VIMDEDVector_t VIMDEDHandler)
+void SDR_ECC_registerVIMDEDHandler(SDR_ECC_VIMDEDVector_t VIMDEDHandler)
 {
     CSL_vimRegs     *pVimRegs;
 
     /* initialize the address */
-    pVimRegs        = (CSL_vimRegs *)(SDL_MCU_VIC_CFG_BASE);
+    pVimRegs        = (CSL_vimRegs *)(SDR_MCU_VIC_CFG_BASE);
 
     CSL_vimSetDedVectorAddr(pVimRegs, (uint32_t)VIMDEDHandler);
 }

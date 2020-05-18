@@ -1,7 +1,7 @@
 /*
- * SDL TEST
+ * SDR TEST
  *
- * Software Diagnostics Library Test
+ * Software Diagnostics Reference Test
  *
  *  Copyright (c) Texas Instruments Incorporated 2018-2020
  *
@@ -88,8 +88,8 @@ volatile uint32_t SDTF_periodTaskTrigger = 0u;
 int32_t SDTF_oneShotTestAllModules(void)
 {
 
-    SDL_ECC_InjectErrorConfig_t injectErrorConfig;
-    SDL_Result result;
+    SDR_ECC_InjectErrorConfig_t injectErrorConfig;
+    SDR_Result result;
 
     SDTF_printf("\nStarting: One Shot tests");
 
@@ -102,14 +102,14 @@ int32_t SDTF_oneShotTestAllModules(void)
     injectErrorConfig.pErrMem = (uint32_t *)(0x200u);
 
     injectErrorConfig.flipBitMask = 0x101;
-    result = SDL_ECC_selfTest(SDL_ECC_MEMTYPE_MCU_R5F0_CORE,
-                              SDL_ECC_R5F_MEM_SUBTYPE_ATCM0_BANK0_VECTOR_ID,
-                              SDL_INJECT_ECC_ERROR_FORCING_2BIT_ONCE,
+    result = SDR_ECC_selfTest(SDR_ECC_MEMTYPE_MCU_R5F0_CORE,
+                              SDR_ECC_R5F_MEM_SUBTYPE_ATCM0_BANK0_VECTOR_ID,
+                              SDR_INJECT_ECC_ERROR_FORCING_2BIT_ONCE,
                               &injectErrorConfig,
                               1000);
     SDTF_profileEnd(SDTF_PROFILE_ONESHOT);
 
-    if (result != SDL_PASS ) {
+    if (result != SDR_PASS ) {
         SDTF_printf("\n ATCM Double bit error: at pErrMem 0x%p: fixed location once test failed",
                     injectErrorConfig.pErrMem);
         return -1;
@@ -126,13 +126,13 @@ int32_t SDTF_oneShotTestAllModules(void)
 
     /* Run one shot test for ATCM 1 bit error */
     injectErrorConfig.flipBitMask = 0x10;
-    result = SDL_ECC_selfTest(SDL_ECC_MEMTYPE_MCU_R5F0_CORE,
-                                    SDL_ECC_R5F_MEM_SUBTYPE_ATCM0_BANK0_VECTOR_ID,
-                                    SDL_INJECT_ECC_ERROR_FORCING_1BIT_ONCE,
+    result = SDR_ECC_selfTest(SDR_ECC_MEMTYPE_MCU_R5F0_CORE,
+                                    SDR_ECC_R5F_MEM_SUBTYPE_ATCM0_BANK0_VECTOR_ID,
+                                    SDR_INJECT_ECC_ERROR_FORCING_1BIT_ONCE,
                                     &injectErrorConfig,
                                     100000);
     SDTF_profileEnd(SDTF_PROFILE_ONESHOT);
-    if (result != SDL_PASS ) {
+    if (result != SDR_PASS ) {
         SDTF_printf("\n ATCM Single bit error at pErrMem 0x%p test failed",
                     injectErrorConfig.pErrMem);
         return -1;
@@ -144,9 +144,9 @@ int32_t SDTF_oneShotTestAllModules(void)
     SDTF_printf("\n Starting: ESM test");
     SDTF_profileBegin(SDTF_PROFILE_ONESHOT);
     /* Run one shot self test of ESM */
-    result = SDL_ESM_selfTest(1000);
+    result = SDR_ESM_selfTest(1000);
     SDTF_profileEnd(SDTF_PROFILE_ONESHOT);
-    if (result != SDL_PASS ) {
+    if (result != SDR_PASS ) {
         SDTF_printf("\n ESM self test failed");
         return -1;
     }
@@ -206,7 +206,7 @@ void SDTF_triggerPeriodicTests(uintptr_t arg)
 */
 int32_t SDTF_runPeriodicTests(void)
 {
-    SDL_Result result;
+    SDR_Result result;
 
     if (( SDTF_periodTaskTrigger == SDTF_PERIODIC_TASK_TRIGGER_ENABLE)
         && (SDTF_allTasksEnded != 1u) ) {
@@ -229,21 +229,21 @@ int32_t SDTF_runPeriodicTests(void)
         /* -------------- Periodic Test start ------------------------- */
         {
             /* Run test for ECC */
-            SDL_ECC_InjectErrorConfig_t injectErrorConfig;
+            SDR_ECC_InjectErrorConfig_t injectErrorConfig;
 
             /* Note the address is relative to start of ram */
             injectErrorConfig.pErrMem = (uint32_t *)(0x00);
 
             /* Run one shot test for ATCM 1 bit error */
             injectErrorConfig.flipBitMask = 0x10;
-            result = SDL_ECC_selfTest(SDL_ECC_MEMTYPE_MCU_R5F0_CORE,
-                                           SDL_ECC_R5F_MEM_SUBTYPE_ATCM0_BANK0_VECTOR_ID,
-                                           SDL_INJECT_ECC_ERROR_FORCING_1BIT_ONCE,
+            result = SDR_ECC_selfTest(SDR_ECC_MEMTYPE_MCU_R5F0_CORE,
+                                           SDR_ECC_R5F_MEM_SUBTYPE_ATCM0_BANK0_VECTOR_ID,
+                                           SDR_INJECT_ECC_ERROR_FORCING_1BIT_ONCE,
                                            &injectErrorConfig,
                                            100000);
 
 
-            if (result != SDL_PASS ) {
+            if (result != SDR_PASS ) {
                 SDTF_printf("\n ATCM Single bit error at pErrMem 0x%p test failed",
                             injectErrorConfig.pErrMem);
                 return -1;
@@ -251,8 +251,8 @@ int32_t SDTF_runPeriodicTests(void)
         }
         {
              /* Run esm test 1*/
-             result = SDL_ESM_selfTest(1000);
-             if (result != SDL_PASS ) {
+             result = SDR_ESM_selfTest(1000);
+             if (result != SDR_PASS ) {
                  SDTF_printf("\n ESM self test 1 failed");
                  return -1;
              }

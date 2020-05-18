@@ -1,7 +1,7 @@
 /*
- * SDL EXCEPTION
+ * SDR EXCEPTION
  *
- * Software Diagnostics Library module for handling exceptions
+ * Software Diagnostics Reference module for handling exceptions
  *
  *  Copyright (c) Texas Instruments Incorporated 2018-2020
  *
@@ -35,8 +35,8 @@
  *
  */
 
-#ifndef INCLUDE_SDL_ECC_EXCEPTION_PRIV_H_
-#define INCLUDE_SDL_ECC_EXCEPTION_PRIV_H_
+#ifndef INCLUDE_SDR_ECC_EXCEPTION_PRIV_H_
+#define INCLUDE_SDR_ECC_EXCEPTION_PRIV_H_
 
 #include <stdint.h>
 
@@ -45,14 +45,14 @@
  * ----------------------------------------------------------------------------
  */
 
-typedef struct SDL_EXCEPTION_Instance_s
+typedef struct SDR_EXCEPTION_Instance_s
 {
-    SDL_EXCEPTION_CallbackFunctions_t callbackFunctions;
+    SDR_EXCEPTION_CallbackFunctions_t callbackFunctions;
     /**< Exception callback functions structure stored here */
-    SDL_EXCEPTION_ECCCallback_t ECCCallBackFunction;
+    SDR_EXCEPTION_ECCCallback_t ECCCallBackFunction;
     /**< Exception ECC callback function stored here */
     void *paramPtr;
     /**< Parameter pointer used for callback stored here */
-}  SDL_EXCEPTION_Instance_t;
+}  SDR_EXCEPTION_Instance_t;
 
-#endif /* INCLUDE_SDL_ECC_EXCEPTION_PRIV_H_ */
+#endif /* INCLUDE_SDR_ECC_EXCEPTION_PRIV_H_ */

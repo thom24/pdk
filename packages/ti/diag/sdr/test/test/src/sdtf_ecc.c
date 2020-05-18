@@ -1,7 +1,7 @@
 /*
  * SDTF ECC
  *
- * Software Diagnostics Library Test for ECC module
+ * Software Diagnostics Reference Test for ECC module
  *
  *  Copyright (c) Texas Instruments Incorporated 2019-2020
  *
@@ -72,10 +72,10 @@ void SDTF_ECC_dummyFunction(void)
  */
 int32_t SDTF_runECC1BitInjectTest(void)
 {
-    SDL_Result result;
+    SDR_Result result;
     int32_t retVal=0;
 
-    SDL_ECC_InjectErrorConfig_t injectErrorConfig;
+    SDR_ECC_InjectErrorConfig_t injectErrorConfig;
     volatile uint32_t testLocationValue;
 
     SDTF_printf("\n ATCM Single bit error inject: test starting");
@@ -86,14 +86,14 @@ int32_t SDTF_runECC1BitInjectTest(void)
 
     /* Run one shot test for ATCM 1 bit error */
     injectErrorConfig.flipBitMask = 0x10;
-    result = SDL_ECC_injectError(SDL_ECC_MEMTYPE_MCU_R5F0_CORE,
-                                 SDL_ECC_R5F_MEM_SUBTYPE_ATCM0_BANK0_VECTOR_ID,
-                                 SDL_INJECT_ECC_ERROR_FORCING_1BIT_ONCE,
+    result = SDR_ECC_injectError(SDR_ECC_MEMTYPE_MCU_R5F0_CORE,
+                                 SDR_ECC_R5F_MEM_SUBTYPE_ATCM0_BANK0_VECTOR_ID,
+                                 SDR_INJECT_ECC_ERROR_FORCING_1BIT_ONCE,
                                  &injectErrorConfig);
 
     SDTF_profileEnd(SDTF_PROFILE_ONESHOT);
 
-    if (result != SDL_PASS ) {
+    if (result != SDR_PASS ) {
         SDTF_printf("\n ATCM Single bit error inject at pErrMem 0x%p test failed",
                     injectErrorConfig.pErrMem);
         retVal = -1;
@@ -120,10 +120,10 @@ int32_t SDTF_runECC1BitInjectTest(void)
  */
 int32_t SDTF_runECC2BitInjectTest(void)
 {
-    SDL_Result result;
+    SDR_Result result;
     int32_t retVal=0;
 
-    SDL_ECC_InjectErrorConfig_t injectErrorConfig;
+    SDR_ECC_InjectErrorConfig_t injectErrorConfig;
     volatile uint32_t testLocationValue;
 
     SDTF_printf("\n ATCM Double bit error inject: starting");
@@ -134,16 +134,16 @@ int32_t SDTF_runECC2BitInjectTest(void)
     injectErrorConfig.pErrMem = (uint32_t *)(0x200u);
 
     injectErrorConfig.flipBitMask = 0x101;
-    result = SDL_ECC_injectError(SDL_ECC_MEMTYPE_MCU_R5F0_CORE,
-                                 SDL_ECC_R5F_MEM_SUBTYPE_ATCM0_BANK0_VECTOR_ID,
-                                 SDL_INJECT_ECC_ERROR_FORCING_2BIT_ONCE,
+    result = SDR_ECC_injectError(SDR_ECC_MEMTYPE_MCU_R5F0_CORE,
+                                 SDR_ECC_R5F_MEM_SUBTYPE_ATCM0_BANK0_VECTOR_ID,
+                                 SDR_INJECT_ECC_ERROR_FORCING_2BIT_ONCE,
                                  &injectErrorConfig);
 
     SDTF_profileEnd(SDTF_PROFILE_ONESHOT);
     /* Access the memory where injection is expected */
     testLocationValue = injectErrorConfig.pErrMem[0];
 
-    if (result != SDL_PASS ) {
+    if (result != SDR_PASS ) {
         SDTF_printf("\n ATCM Double bit error inject: at pErrMem 0x%p: fixed location once test failed",
                     injectErrorConfig.pErrMem);
        retVal = -1;
@@ -178,10 +178,10 @@ void SDTF_readVIMRAM(uint32_t offset)
  */
 int32_t SDTF_runECC1BitVIMRAMInjectTest(void)
 {
-    SDL_Result result;
+    SDR_Result result;
     int32_t retVal=0;
 
-    SDL_ECC_InjectErrorConfig_t injectErrorConfig;
+    SDR_ECC_InjectErrorConfig_t injectErrorConfig;
     volatile uint32_t testLocationValue;
 
     SDTF_printf("\n VIM RAM Single bit error inject: test starting");
@@ -192,14 +192,14 @@ int32_t SDTF_runECC1BitVIMRAMInjectTest(void)
 
     /* Run one shot test for ATCM 1 bit error */
     injectErrorConfig.flipBitMask = 0x10;
-    result = SDL_ECC_injectError(SDL_ECC_MEMTYPE_MCU_R5F0_CORE,
-                                 SDL_ECC_R5F_MEM_SUBTYPE_KS_VIM_RAM_VECTOR_ID,
-                                 SDL_INJECT_ECC_ERROR_FORCING_1BIT_ONCE,
+    result = SDR_ECC_injectError(SDR_ECC_MEMTYPE_MCU_R5F0_CORE,
+                                 SDR_ECC_R5F_MEM_SUBTYPE_KS_VIM_RAM_VECTOR_ID,
+                                 SDR_INJECT_ECC_ERROR_FORCING_1BIT_ONCE,
                                  &injectErrorConfig);
 
     SDTF_profileEnd(SDTF_PROFILE_ONESHOT);
 
-    if (result != SDL_PASS ) {
+    if (result != SDR_PASS ) {
         SDTF_printf("\n VIM RAM Single bit error inject at pErrMem 0x%p test failed",
                     injectErrorConfig.pErrMem);
         retVal = -1;
@@ -228,10 +228,10 @@ int32_t SDTF_runECC1BitVIMRAMInjectTest(void)
  */
 int32_t SDTF_runECC2BitVIMRAMInjectTest(void)
 {
-    SDL_Result result;
+    SDR_Result result;
     int32_t retVal=0;
 
-    SDL_ECC_InjectErrorConfig_t injectErrorConfig;
+    SDR_ECC_InjectErrorConfig_t injectErrorConfig;
     volatile uint32_t testLocationValue;
 
     SDTF_printf("\n VIM RAM Double bit error inject: starting");
@@ -242,14 +242,14 @@ int32_t SDTF_runECC2BitVIMRAMInjectTest(void)
     injectErrorConfig.pErrMem = (uint32_t *)(0x40F82004u);
 
     injectErrorConfig.flipBitMask = 0x101;
-    result = SDL_ECC_injectError(SDL_ECC_MEMTYPE_MCU_R5F0_CORE,
-                                 SDL_ECC_R5F_MEM_SUBTYPE_KS_VIM_RAM_VECTOR_ID,
-                                 SDL_INJECT_ECC_ERROR_FORCING_2BIT_ONCE,
+    result = SDR_ECC_injectError(SDR_ECC_MEMTYPE_MCU_R5F0_CORE,
+                                 SDR_ECC_R5F_MEM_SUBTYPE_KS_VIM_RAM_VECTOR_ID,
+                                 SDR_INJECT_ECC_ERROR_FORCING_2BIT_ONCE,
                                  &injectErrorConfig);
 
     SDTF_profileEnd(SDTF_PROFILE_ONESHOT);
 
-    if (result != SDL_PASS ) {
+    if (result != SDR_PASS ) {
         SDTF_printf("\n VIM RAM Double bit error inject: at pErrMem 0x%p: fixed location once test failed",
                     injectErrorConfig.pErrMem);
        retVal = -1;
@@ -277,10 +277,10 @@ int32_t SDTF_runECC2BitVIMRAMInjectTest(void)
  */
 int32_t SDTF_runECC2BitVIMRAMDEDvector(void)
 {
-    SDL_Result result;
+    SDR_Result result;
     int32_t retVal=0;
 
-    SDL_ECC_InjectErrorConfig_t injectErrorConfig;
+    SDR_ECC_InjectErrorConfig_t injectErrorConfig;
     volatile uint32_t testLocationValue;
 
     SDTF_printf("\n VIM RAM Double bit error inject: starting");
@@ -291,14 +291,14 @@ int32_t SDTF_runECC2BitVIMRAMDEDvector(void)
     injectErrorConfig.pErrMem = (uint32_t *)(0x40F82098u);
 
     injectErrorConfig.flipBitMask = 0x101;
-    result = SDL_ECC_injectError(SDL_ECC_MEMTYPE_MCU_R5F0_CORE,
-                                 SDL_ECC_R5F_MEM_SUBTYPE_KS_VIM_RAM_VECTOR_ID,
-                                 SDL_INJECT_ECC_ERROR_FORCING_2BIT_ONCE,
+    result = SDR_ECC_injectError(SDR_ECC_MEMTYPE_MCU_R5F0_CORE,
+                                 SDR_ECC_R5F_MEM_SUBTYPE_KS_VIM_RAM_VECTOR_ID,
+                                 SDR_INJECT_ECC_ERROR_FORCING_2BIT_ONCE,
                                  &injectErrorConfig);
 
     SDTF_profileEnd(SDTF_PROFILE_ONESHOT);
 
-    if (result != SDL_PASS ) {
+    if (result != SDR_PASS ) {
         SDTF_printf("\n VIM RAM Double bit error inject: at pErrMem 0x%p: fixed location once test failed",
                     injectErrorConfig.pErrMem);
        retVal = -1;
@@ -331,10 +331,10 @@ int32_t SDTF_runECC2BitVIMRAMDEDvector(void)
  */
 int32_t SDTF_runECC1BitVIMRAMSelfTest(void)
 {
-    SDL_Result result;
+    SDR_Result result;
     int32_t retVal=0;
 
-    SDL_ECC_InjectErrorConfig_t injectErrorConfig;
+    SDR_ECC_InjectErrorConfig_t injectErrorConfig;
     volatile uint32_t testLocationValue;
 
     SDTF_printf("\n VIM RAM Single bit error self test: starting");
@@ -345,15 +345,15 @@ int32_t SDTF_runECC1BitVIMRAMSelfTest(void)
 
     /* Run one shot test for ATCM 1 bit error */
     injectErrorConfig.flipBitMask = 0x10;
-    result = SDL_ECC_selfTest(SDL_ECC_MEMTYPE_MCU_R5F0_CORE,
-                              SDL_ECC_R5F_MEM_SUBTYPE_KS_VIM_RAM_VECTOR_ID,
-                              SDL_INJECT_ECC_ERROR_FORCING_1BIT_ONCE,
+    result = SDR_ECC_selfTest(SDR_ECC_MEMTYPE_MCU_R5F0_CORE,
+                              SDR_ECC_R5F_MEM_SUBTYPE_KS_VIM_RAM_VECTOR_ID,
+                              SDR_INJECT_ECC_ERROR_FORCING_1BIT_ONCE,
                               &injectErrorConfig,
                               100000);
 
     SDTF_profileEnd(SDTF_PROFILE_ONESHOT);
 
-    if (result != SDL_PASS ) {
+    if (result != SDR_PASS ) {
         SDTF_printf("\n VIM RAM Single bit error self test: at pErrMem 0x%p test failed",
                     injectErrorConfig.pErrMem);
         retVal = -1;
@@ -382,10 +382,10 @@ int32_t SDTF_runECC1BitVIMRAMSelfTest(void)
  */
 int32_t SDTF_runECC2BitVIMRAMSelfTest(void)
 {
-    SDL_Result result;
+    SDR_Result result;
     int32_t retVal=0;
 
-    SDL_ECC_InjectErrorConfig_t injectErrorConfig;
+    SDR_ECC_InjectErrorConfig_t injectErrorConfig;
     volatile uint32_t testLocationValue;
 
     SDTF_printf("\n VIM RAM Double bit error self test: starting");
@@ -396,15 +396,15 @@ int32_t SDTF_runECC2BitVIMRAMSelfTest(void)
     injectErrorConfig.pErrMem = (uint32_t *)(0x40F82004u);
 
     injectErrorConfig.flipBitMask = 0x101;
-    result = SDL_ECC_selfTest(SDL_ECC_MEMTYPE_MCU_R5F0_CORE,
-                              SDL_ECC_R5F_MEM_SUBTYPE_KS_VIM_RAM_VECTOR_ID,
-                              SDL_INJECT_ECC_ERROR_FORCING_2BIT_ONCE,
+    result = SDR_ECC_selfTest(SDR_ECC_MEMTYPE_MCU_R5F0_CORE,
+                              SDR_ECC_R5F_MEM_SUBTYPE_KS_VIM_RAM_VECTOR_ID,
+                              SDR_INJECT_ECC_ERROR_FORCING_2BIT_ONCE,
                               &injectErrorConfig,
                               100000);
 
     SDTF_profileEnd(SDTF_PROFILE_ONESHOT);
 
-    if (result != SDL_PASS ) {
+    if (result != SDR_PASS ) {
         SDTF_printf("\n VIM RAM Double bit error self test: at pErrMem 0x%p: fixed location once test failed",
                     injectErrorConfig.pErrMem);
        retVal = -1;
@@ -431,10 +431,10 @@ int32_t SDTF_runECC2BitVIMRAMSelfTest(void)
  */
 int32_t SDTF_runECC1BitSelfTest(void)
 {
-    SDL_Result result;
+    SDR_Result result;
     int32_t retVal=0;
 
-    SDL_ECC_InjectErrorConfig_t injectErrorConfig;
+    SDR_ECC_InjectErrorConfig_t injectErrorConfig;
 
     SDTF_printf("\n ATCM Single bit error self test: starting");
 
@@ -444,15 +444,15 @@ int32_t SDTF_runECC1BitSelfTest(void)
 
     /* Run one shot test for ATCM 1 bit error */
     injectErrorConfig.flipBitMask = 0x10;
-    result = SDL_ECC_selfTest(SDL_ECC_MEMTYPE_MCU_R5F0_CORE,
-                              SDL_ECC_R5F_MEM_SUBTYPE_ATCM0_BANK0_VECTOR_ID,
-                              SDL_INJECT_ECC_ERROR_FORCING_1BIT_ONCE,
+    result = SDR_ECC_selfTest(SDR_ECC_MEMTYPE_MCU_R5F0_CORE,
+                              SDR_ECC_R5F_MEM_SUBTYPE_ATCM0_BANK0_VECTOR_ID,
+                              SDR_INJECT_ECC_ERROR_FORCING_1BIT_ONCE,
                               &injectErrorConfig,
                               100000);
 
     SDTF_profileEnd(SDTF_PROFILE_ONESHOT);
 
-    if (result != SDL_PASS ) {
+    if (result != SDR_PASS ) {
          SDTF_printf("\n ATCM Single bit error self test at pErrMem 0x%p test failed",
                      injectErrorConfig.pErrMem);
         retVal = -1;
@@ -477,10 +477,10 @@ int32_t SDTF_runECC1BitSelfTest(void)
  */
 int32_t SDTF_runECC2BitSelfTest(void)
 {
-    SDL_Result result;
+    SDR_Result result;
     int32_t retVal=0;
 
-    SDL_ECC_InjectErrorConfig_t injectErrorConfig;
+    SDR_ECC_InjectErrorConfig_t injectErrorConfig;
 
     SDTF_printf("\n ATCM Double bit error self test: starting");
 
@@ -490,15 +490,15 @@ int32_t SDTF_runECC2BitSelfTest(void)
     injectErrorConfig.pErrMem = (uint32_t *)(0x400u);
 
     injectErrorConfig.flipBitMask = 0x101;
-    result = SDL_ECC_selfTest(SDL_ECC_MEMTYPE_MCU_R5F0_CORE,
-                              SDL_ECC_R5F_MEM_SUBTYPE_ATCM0_BANK0_VECTOR_ID,
-                              SDL_INJECT_ECC_ERROR_FORCING_2BIT_ONCE,
+    result = SDR_ECC_selfTest(SDR_ECC_MEMTYPE_MCU_R5F0_CORE,
+                              SDR_ECC_R5F_MEM_SUBTYPE_ATCM0_BANK0_VECTOR_ID,
+                              SDR_INJECT_ECC_ERROR_FORCING_2BIT_ONCE,
                               &injectErrorConfig,
                               1000);
 
     SDTF_profileEnd(SDTF_PROFILE_ONESHOT);
 
-    if (result != SDL_PASS ) {
+    if (result != SDR_PASS ) {
         SDTF_printf("\n ATCM Double bit error self test: at pErrMem 0x%p: fixed location once test failed",
                     injectErrorConfig.pErrMem);
         retVal = -1;
@@ -522,10 +522,10 @@ int32_t SDTF_runECC2BitSelfTest(void)
  */
 int32_t SDTF_runECC1BitB0TCM0Bank0SelfTest(void)
 {
-    SDL_Result result;
+    SDR_Result result;
     int32_t retVal=0;
 
-    SDL_ECC_InjectErrorConfig_t injectErrorConfig;
+    SDR_ECC_InjectErrorConfig_t injectErrorConfig;
 
     SDTF_printf("\n B0TCM0 Bank0 Single bit error self test: starting");
 
@@ -535,15 +535,15 @@ int32_t SDTF_runECC1BitB0TCM0Bank0SelfTest(void)
 
     /* Run one shot test for BTCM0 1 bit error */
     injectErrorConfig.flipBitMask = 0x20;
-    result = SDL_ECC_selfTest(SDL_ECC_MEMTYPE_MCU_R5F0_CORE,
-                              SDL_ECC_R5F_MEM_SUBTYPE_B0TCM0_BANK0_VECTOR_ID,
-                              SDL_INJECT_ECC_ERROR_FORCING_1BIT_ONCE,
+    result = SDR_ECC_selfTest(SDR_ECC_MEMTYPE_MCU_R5F0_CORE,
+                              SDR_ECC_R5F_MEM_SUBTYPE_B0TCM0_BANK0_VECTOR_ID,
+                              SDR_INJECT_ECC_ERROR_FORCING_1BIT_ONCE,
                               &injectErrorConfig,
                               100000);
 
     SDTF_profileEnd(SDTF_PROFILE_ONESHOT);
 
-    if (result != SDL_PASS ) {
+    if (result != SDR_PASS ) {
         SDTF_printf("\n B0TCM0 Bank0 Single bit error self test at pErrMem 0x%p test failed",
                     injectErrorConfig.pErrMem);
        retVal = -1;
@@ -568,10 +568,10 @@ int32_t SDTF_runECC1BitB0TCM0Bank0SelfTest(void)
  */
 int32_t SDTF_runECC2BitB0TCM0Bank0SelfTest(void)
 {
-    SDL_Result result;
+    SDR_Result result;
     int32_t retVal=0;
 
-    SDL_ECC_InjectErrorConfig_t injectErrorConfig;
+    SDR_ECC_InjectErrorConfig_t injectErrorConfig;
 
     SDTF_printf("\n B0TCM0 Bank0 Double bit error self test: starting");
 
@@ -581,15 +581,15 @@ int32_t SDTF_runECC2BitB0TCM0Bank0SelfTest(void)
     injectErrorConfig.pErrMem = (uint32_t *)(0x41010200u);
 
     injectErrorConfig.flipBitMask = 0x201;
-    result = SDL_ECC_selfTest(SDL_ECC_MEMTYPE_MCU_R5F0_CORE,
-                              SDL_ECC_R5F_MEM_SUBTYPE_B0TCM0_BANK0_VECTOR_ID,
-                              SDL_INJECT_ECC_ERROR_FORCING_2BIT_ONCE,
+    result = SDR_ECC_selfTest(SDR_ECC_MEMTYPE_MCU_R5F0_CORE,
+                              SDR_ECC_R5F_MEM_SUBTYPE_B0TCM0_BANK0_VECTOR_ID,
+                              SDR_INJECT_ECC_ERROR_FORCING_2BIT_ONCE,
                               &injectErrorConfig,
                               1000);
 
     SDTF_profileEnd(SDTF_PROFILE_ONESHOT);
 
-    if (result != SDL_PASS ) {
+    if (result != SDR_PASS ) {
         SDTF_printf("\n B0TCM0 Bank0 Double bit error self test: at pErrMem 0x%p: fixed location once test failed",
                     injectErrorConfig.pErrMem);
        retVal = -1;
@@ -613,10 +613,10 @@ int32_t SDTF_runECC2BitB0TCM0Bank0SelfTest(void)
  */
 int32_t SDTF_runECC1BitB0TCM0Bank1SelfTest(void)
 {
-    SDL_Result result;
+    SDR_Result result;
     int32_t retVal=0;
 
-    SDL_ECC_InjectErrorConfig_t injectErrorConfig;
+    SDR_ECC_InjectErrorConfig_t injectErrorConfig;
 
     SDTF_printf("\n B0TCM0 Bank1 Single bit error self test: starting");
 
@@ -626,15 +626,15 @@ int32_t SDTF_runECC1BitB0TCM0Bank1SelfTest(void)
 
     /* Run one shot test for BTCM0 1 bit error */
     injectErrorConfig.flipBitMask = 0x20;
-    result = SDL_ECC_selfTest(SDL_ECC_MEMTYPE_MCU_R5F0_CORE,
-                              SDL_ECC_R5F_MEM_SUBTYPE_B0TCM0_BANK1_VECTOR_ID,
-                              SDL_INJECT_ECC_ERROR_FORCING_1BIT_ONCE,
+    result = SDR_ECC_selfTest(SDR_ECC_MEMTYPE_MCU_R5F0_CORE,
+                              SDR_ECC_R5F_MEM_SUBTYPE_B0TCM0_BANK1_VECTOR_ID,
+                              SDR_INJECT_ECC_ERROR_FORCING_1BIT_ONCE,
                               &injectErrorConfig,
                               100000);
 
     SDTF_profileEnd(SDTF_PROFILE_ONESHOT);
 
-    if (result != SDL_PASS ) {
+    if (result != SDR_PASS ) {
         SDTF_printf("\n B0TCM0 Bank1 Single bit error self test at pErrMem 0x%p test failed",
                     injectErrorConfig.pErrMem);
         retVal = -1;
@@ -658,10 +658,10 @@ int32_t SDTF_runECC1BitB0TCM0Bank1SelfTest(void)
  */
 int32_t SDTF_runECC2BitB0TCM0Bank1SelfTest(void)
 {
-    SDL_Result result;
+    SDR_Result result;
     int32_t retVal=0;
 
-    SDL_ECC_InjectErrorConfig_t injectErrorConfig;
+    SDR_ECC_InjectErrorConfig_t injectErrorConfig;
 
     SDTF_printf("\n B0TCM0 Bank1 Double bit error self test: starting");
 
@@ -671,15 +671,15 @@ int32_t SDTF_runECC2BitB0TCM0Bank1SelfTest(void)
     injectErrorConfig.pErrMem = (uint32_t *)(0x41010204u);
 
     injectErrorConfig.flipBitMask = 0x201;
-    result = SDL_ECC_selfTest(SDL_ECC_MEMTYPE_MCU_R5F0_CORE,
-                              SDL_ECC_R5F_MEM_SUBTYPE_B0TCM0_BANK1_VECTOR_ID,
-                              SDL_INJECT_ECC_ERROR_FORCING_2BIT_ONCE,
+    result = SDR_ECC_selfTest(SDR_ECC_MEMTYPE_MCU_R5F0_CORE,
+                              SDR_ECC_R5F_MEM_SUBTYPE_B0TCM0_BANK1_VECTOR_ID,
+                              SDR_INJECT_ECC_ERROR_FORCING_2BIT_ONCE,
                               &injectErrorConfig,
                               1000);
 
     SDTF_profileEnd(SDTF_PROFILE_ONESHOT);
 
-    if (result != SDL_PASS ) {
+    if (result != SDR_PASS ) {
         SDTF_printf("\n B0TCM0 Bank1 Double bit error self test: at pErrMem 0x%p: fixed location once test failed",
                     injectErrorConfig.pErrMem);
         retVal = -1;
@@ -703,10 +703,10 @@ int32_t SDTF_runECC2BitB0TCM0Bank1SelfTest(void)
  */
 int32_t SDTF_runECC1BitB1TCM0Bank0SelfTest(void)
 {
-    SDL_Result result;
+    SDR_Result result;
     int32_t retVal=0;
 
-    SDL_ECC_InjectErrorConfig_t injectErrorConfig;
+    SDR_ECC_InjectErrorConfig_t injectErrorConfig;
 
     SDTF_printf("\n B1TCM0 Bank0 Single bit error self test: starting");
 
@@ -716,15 +716,15 @@ int32_t SDTF_runECC1BitB1TCM0Bank0SelfTest(void)
 
      /* Run one shot test for BTCM0 1 bit error */
      injectErrorConfig.flipBitMask = 0x20;
-     result = SDL_ECC_selfTest(SDL_ECC_MEMTYPE_MCU_R5F0_CORE,
-                               SDL_ECC_R5F_MEM_SUBTYPE_B1TCM0_BANK0_VECTOR_ID,
-                               SDL_INJECT_ECC_ERROR_FORCING_1BIT_ONCE,
+     result = SDR_ECC_selfTest(SDR_ECC_MEMTYPE_MCU_R5F0_CORE,
+                               SDR_ECC_R5F_MEM_SUBTYPE_B1TCM0_BANK0_VECTOR_ID,
+                               SDR_INJECT_ECC_ERROR_FORCING_1BIT_ONCE,
                                &injectErrorConfig,
                                100000);
 
      SDTF_profileEnd(SDTF_PROFILE_ONESHOT);
 
-     if (result != SDL_PASS ) {
+     if (result != SDR_PASS ) {
          SDTF_printf("\n B1TCM0 Bank0 Single bit error self test at pErrMem 0x%p test failed",
                      injectErrorConfig.pErrMem);
         retVal = -1;
@@ -748,10 +748,10 @@ int32_t SDTF_runECC1BitB1TCM0Bank0SelfTest(void)
  */
 int32_t SDTF_runECC2BitB1TCM0Bank0SelfTest(void)
 {
-    SDL_Result result;
+    SDR_Result result;
     int32_t retVal=0;
 
-    SDL_ECC_InjectErrorConfig_t injectErrorConfig;
+    SDR_ECC_InjectErrorConfig_t injectErrorConfig;
 
     SDTF_printf("\n B1TCM0 Bank0 Double bit error self test: starting");
 
@@ -761,15 +761,15 @@ int32_t SDTF_runECC2BitB1TCM0Bank0SelfTest(void)
     injectErrorConfig.pErrMem = (uint32_t *)(0x41010208u);
 
     injectErrorConfig.flipBitMask = 0x201;
-    result = SDL_ECC_selfTest(SDL_ECC_MEMTYPE_MCU_R5F0_CORE,
-                              SDL_ECC_R5F_MEM_SUBTYPE_B1TCM0_BANK0_VECTOR_ID,
-                              SDL_INJECT_ECC_ERROR_FORCING_2BIT_ONCE,
+    result = SDR_ECC_selfTest(SDR_ECC_MEMTYPE_MCU_R5F0_CORE,
+                              SDR_ECC_R5F_MEM_SUBTYPE_B1TCM0_BANK0_VECTOR_ID,
+                              SDR_INJECT_ECC_ERROR_FORCING_2BIT_ONCE,
                               &injectErrorConfig,
                               1000);
 
     SDTF_profileEnd(SDTF_PROFILE_ONESHOT);
 
-    if (result != SDL_PASS ) {
+    if (result != SDR_PASS ) {
         SDTF_printf("\n B1TCM0 Bank0 Double bit error self test: at pErrMem 0x%p: fixed location once test failed",
                     injectErrorConfig.pErrMem);
        retVal = -1;
@@ -793,10 +793,10 @@ int32_t SDTF_runECC2BitB1TCM0Bank0SelfTest(void)
  */
 int32_t SDTF_runECC1BitB1TCM0Bank1SelfTest(void)
 {
-    SDL_Result result;
+    SDR_Result result;
     int32_t retVal=0;
 
-    SDL_ECC_InjectErrorConfig_t injectErrorConfig;
+    SDR_ECC_InjectErrorConfig_t injectErrorConfig;
 
     SDTF_printf("\n B1TCM0 Bank1 Single bit error self test: starting");
 
@@ -806,15 +806,15 @@ int32_t SDTF_runECC1BitB1TCM0Bank1SelfTest(void)
 
     /* Run one shot test for BTCM0 1 bit error */
     injectErrorConfig.flipBitMask = 0x20;
-    result = SDL_ECC_selfTest(SDL_ECC_MEMTYPE_MCU_R5F0_CORE,
-                              SDL_ECC_R5F_MEM_SUBTYPE_B1TCM0_BANK1_VECTOR_ID,
-                              SDL_INJECT_ECC_ERROR_FORCING_1BIT_ONCE,
+    result = SDR_ECC_selfTest(SDR_ECC_MEMTYPE_MCU_R5F0_CORE,
+                              SDR_ECC_R5F_MEM_SUBTYPE_B1TCM0_BANK1_VECTOR_ID,
+                              SDR_INJECT_ECC_ERROR_FORCING_1BIT_ONCE,
                               &injectErrorConfig,
                               100000);
 
     SDTF_profileEnd(SDTF_PROFILE_ONESHOT);
 
-    if (result != SDL_PASS ) {
+    if (result != SDR_PASS ) {
         SDTF_printf("\n B1TCM0 Bank1 Single bit error self test at pErrMem 0x%p test failed",
                     injectErrorConfig.pErrMem);
        retVal = -1;
@@ -838,10 +838,10 @@ int32_t SDTF_runECC1BitB1TCM0Bank1SelfTest(void)
  */
 int32_t SDTF_runECC2BitB1TCM0Bank1SelfTest(void)
 {
-    SDL_Result result;
+    SDR_Result result;
     int32_t retVal=0;
 
-    SDL_ECC_InjectErrorConfig_t injectErrorConfig;
+    SDR_ECC_InjectErrorConfig_t injectErrorConfig;
 
     SDTF_printf("\n B1TCM0 Bank1 Double bit error self test: starting");
 
@@ -851,15 +851,15 @@ int32_t SDTF_runECC2BitB1TCM0Bank1SelfTest(void)
     injectErrorConfig.pErrMem = (uint32_t *)(0x4101020cu);
 
     injectErrorConfig.flipBitMask = 0x201;
-    result = SDL_ECC_selfTest(SDL_ECC_MEMTYPE_MCU_R5F0_CORE,
-                              SDL_ECC_R5F_MEM_SUBTYPE_B1TCM0_BANK1_VECTOR_ID,
-                              SDL_INJECT_ECC_ERROR_FORCING_2BIT_ONCE,
+    result = SDR_ECC_selfTest(SDR_ECC_MEMTYPE_MCU_R5F0_CORE,
+                              SDR_ECC_R5F_MEM_SUBTYPE_B1TCM0_BANK1_VECTOR_ID,
+                              SDR_INJECT_ECC_ERROR_FORCING_2BIT_ONCE,
                               &injectErrorConfig,
                               1000);
 
     SDTF_profileEnd(SDTF_PROFILE_ONESHOT);
 
-    if (result != SDL_PASS ) {
+    if (result != SDR_PASS ) {
         SDTF_printf("\n B1TCM0 Bank1 Double bit error self test: at pErrMem 0x%p: fixed location once test failed",
                     injectErrorConfig.pErrMem);
         retVal = -1;
@@ -892,10 +892,10 @@ int32_t SDTF_ECC_waitDEDTrigger(uint64_t timeCount)
     uint32_t startTimeStamp, curTimeStamp, lastTimeStamp, deltaTime;
     uint64_t elapsedTime = 0u;
 
-    startTimeStamp = SDL_getTime();
+    startTimeStamp = SDR_getTime();
     lastTimeStamp = startTimeStamp;
     while(SDTF_ECC_DEDTriggerFlag != true) {
-        curTimeStamp = SDL_getTime();
+        curTimeStamp = SDR_getTime();
         deltaTime = curTimeStamp-lastTimeStamp;
         lastTimeStamp = curTimeStamp;
         elapsedTime += deltaTime;
@@ -921,48 +921,48 @@ int32_t SDTF_ECC_waitDEDTrigger(uint64_t timeCount)
  */
 int32_t SDTF_ECC_runNegativeTests(void)
 {
-    SDL_Result result;
+    SDR_Result result;
     int32_t retVal = 0;
-    SDL_ECC_InjectErrorConfig_t injectErrorConfig;
+    SDR_ECC_InjectErrorConfig_t injectErrorConfig;
 
     SDTF_printf("\n ECC negative tests: starting");
 
     /* Negative tests with invalid mem type 33U */
-    result = SDL_ECC_initMemory(33U,
+    result = SDR_ECC_initMemory(33U,
                                 0U);
-    if (result == SDL_PASS) {
+    if (result == SDR_PASS) {
         retVal = -1;
     }
 
     if (retVal == 0) {
         /* Negative tests with invalid mem subtype 50U */
-        result = SDL_ECC_initMemory(SDL_ECC_MEMTYPE_MCU_R5F0_CORE,
+        result = SDR_ECC_initMemory(SDR_ECC_MEMTYPE_MCU_R5F0_CORE,
                                     50U);
-        if (result == SDL_PASS) {
+        if (result == SDR_PASS) {
             retVal = -1;
         }
     }
 
     if (retVal == 0) {
         /* Negative tests with invalid mem subtype 50U */
-        result = SDL_ECC_selfTest(SDL_ECC_MEMTYPE_MCU_R5F0_CORE,
-                                  SDL_ECC_R5F_MEM_SUBTYPE_ATCM0_BANK0_VECTOR_ID,
-                                  SDL_INJECT_ECC_ERROR_FORCING_1BIT_ONCE,
+        result = SDR_ECC_selfTest(SDR_ECC_MEMTYPE_MCU_R5F0_CORE,
+                                  SDR_ECC_R5F_MEM_SUBTYPE_ATCM0_BANK0_VECTOR_ID,
+                                  SDR_INJECT_ECC_ERROR_FORCING_1BIT_ONCE,
                                   NULL,
                                   1000);
-        if (result != SDL_BADARGS) {
+        if (result != SDR_BADARGS) {
             retVal = -1;
         }
     }
 
     if (retVal == 0) {
         /* Negative tests with invalid mem subtype 50U */
-        result = SDL_ECC_injectError(SDL_ECC_MEMTYPE_MCU_R5F0_CORE,
-                                  SDL_ECC_R5F_MEM_SUBTYPE_ATCM0_BANK0_VECTOR_ID,
-                                  SDL_INJECT_ECC_ERROR_FORCING_1BIT_ONCE,
+        result = SDR_ECC_injectError(SDR_ECC_MEMTYPE_MCU_R5F0_CORE,
+                                  SDR_ECC_R5F_MEM_SUBTYPE_ATCM0_BANK0_VECTOR_ID,
+                                  SDR_INJECT_ECC_ERROR_FORCING_1BIT_ONCE,
                                   NULL
                                   );
-        if (result != SDL_BADARGS) {
+        if (result != SDR_BADARGS) {
             retVal = -1;
         }
     }
@@ -974,12 +974,12 @@ int32_t SDTF_ECC_runNegativeTests(void)
         /* Set Error address */
         injectErrorConfig.pErrMem = (uint32_t *)(0x100);
         /* Negative tests with invalid mem subtype 50U */
-        result = SDL_ECC_selfTest(SDL_ECC_MEMTYPE_MCU_R5F0_CORE,
-                                  SDL_ECC_R5F_MEM_SUBTYPE_ATCM0_BANK0_VECTOR_ID,
-                                  SDL_INJECT_ECC_ERROR_FORCING_1BIT_ONCE,
+        result = SDR_ECC_selfTest(SDR_ECC_MEMTYPE_MCU_R5F0_CORE,
+                                  SDR_ECC_R5F_MEM_SUBTYPE_ATCM0_BANK0_VECTOR_ID,
+                                  SDR_INJECT_ECC_ERROR_FORCING_1BIT_ONCE,
                                   &injectErrorConfig,
                                   1000);
-        if (result == SDL_PASS) {
+        if (result == SDR_PASS) {
             retVal = -1;
         }
     }
@@ -990,12 +990,12 @@ int32_t SDTF_ECC_runNegativeTests(void)
         /* Set Error address */
         injectErrorConfig.pErrMem = (uint32_t *)(0x100);
         /* Negative tests with invalid mem subtype 50U */
-        result = SDL_ECC_selfTest(SDL_ECC_MEMTYPE_MCU_R5F0_CORE,
-                                  SDL_ECC_R5F_MEM_SUBTYPE_ATCM0_BANK0_VECTOR_ID,
-                                  SDL_INJECT_ECC_ERROR_FORCING_2BIT_ONCE,
+        result = SDR_ECC_selfTest(SDR_ECC_MEMTYPE_MCU_R5F0_CORE,
+                                  SDR_ECC_R5F_MEM_SUBTYPE_ATCM0_BANK0_VECTOR_ID,
+                                  SDR_INJECT_ECC_ERROR_FORCING_2BIT_ONCE,
                                   &injectErrorConfig,
                                   1000);
-        if (result == SDL_PASS) {
+        if (result == SDR_PASS) {
             retVal = -1;
         }
     }
@@ -1020,10 +1020,10 @@ int32_t SDTF_ECC_runNegativeTests(void)
  */
 int32_t SDTF_runECC2BitCodeInjectTest(void)
 {
-    SDL_Result result;
+    SDR_Result result;
     int32_t retVal=0;
 
-    SDL_ECC_InjectErrorConfig_t injectErrorConfig;
+    SDR_ECC_InjectErrorConfig_t injectErrorConfig;
     volatile uint32_t testLocationValue;
 
     SDTF_printf("\n ATCM Double bit Program section error inject: starting");
@@ -1034,9 +1034,9 @@ int32_t SDTF_runECC2BitCodeInjectTest(void)
 
     injectErrorConfig.flipBitMask = 0x101;
 
-    result = SDL_ECC_injectError(SDL_ECC_MEMTYPE_MCU_R5F0_CORE,
-                                 SDL_ECC_R5F_MEM_SUBTYPE_ATCM0_BANK0_VECTOR_ID,
-                                 SDL_INJECT_ECC_ERROR_FORCING_2BIT_ONCE,
+    result = SDR_ECC_injectError(SDR_ECC_MEMTYPE_MCU_R5F0_CORE,
+                                 SDR_ECC_R5F_MEM_SUBTYPE_ATCM0_BANK0_VECTOR_ID,
+                                 SDR_INJECT_ECC_ERROR_FORCING_2BIT_ONCE,
                                  &injectErrorConfig);
 
     SDTF_profileEnd(SDTF_PROFILE_ONESHOT);
@@ -1044,7 +1044,7 @@ int32_t SDTF_runECC2BitCodeInjectTest(void)
     /* Call progrem for the ECC error to take effect */
     SDTF_ECC_dummyFunction();
 
-    if (result != SDL_PASS ) {
+    if (result != SDR_PASS ) {
         SDTF_printf("\n ATCM Double bit Program section error inject: at pErrMem 0x%p: fixed location once test failed",
                     injectErrorConfig.pErrMem);
        retVal = -1;

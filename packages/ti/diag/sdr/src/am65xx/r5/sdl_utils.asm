@@ -1,7 +1,7 @@
 ;******************************************************************************
-; SDL UTILS
+; SDR UTILS
 ;
-; Software Diagnostics Library Utils module
+; Software Diagnostics Reference Utils module
 ;
 ;  (C) Copyright 2018-2019 Texas Instruments, Inc.
 ;
@@ -48,47 +48,47 @@
 ;==============================================================================
 ;   Get Correctable Fault Location Register (CFLR) value
 ;==============================================================================
-    .global SDL_UTILS_getCFLR
-SDL_UTILS_getCFLR:
+    .global SDR_UTILS_getCFLR
+SDR_UTILS_getCFLR:
     MRC p15, #0, r0, c15, c3, #0
     BX      lr
 
 ;==============================================================================
 ;   Get Performance Monitors Overflow Flag Status Register (PMOVSR) value
 ;==============================================================================
-    .global SDL_UTILS_getPMOVSR
-SDL_UTILS_getPMOVSR:
+    .global SDR_UTILS_getPMOVSR
+SDR_UTILS_getPMOVSR:
     MRC p15, #0, r0, c9, c12, #3
     BX      lr
 
 ;==============================================================================
 ;   Get Data Fault Status Register (DFSR) value
 ;==============================================================================
-    .global SDL_UTILS_getDFSR
-SDL_UTILS_getDFSR:
+    .global SDR_UTILS_getDFSR
+SDR_UTILS_getDFSR:
     MRC p15, #0, r0, c5, c0, #0
     BX      lr
 
 ;==============================================================================
 ;   Get Data Fault Address Register (DFAR) value
 ;==============================================================================
-    .global SDL_UTILS_getDFAR
-SDL_UTILS_getDFAR:
+    .global SDR_UTILS_getDFAR
+SDR_UTILS_getDFAR:
     MRC p15, #0, r0, c6, c0, #0
     BX      lr
 
 ;==============================================================================
 ;   Get Instruction Fault Status Register Register (IFSR) value
 ;==============================================================================
-    .global SDL_UTILS_getIFSR
-SDL_UTILS_getIFSR:
+    .global SDR_UTILS_getIFSR
+SDR_UTILS_getIFSR:
     MRC p15, #0, r0, c5, c0, #1
     BX      lr
 
 ;==============================================================================
 ;   Get Instruction Fault Address Register Register (IFAR) value
 ;==============================================================================
-    .global SDL_UTILS_getIFAR
-SDL_UTILS_getIFAR:
+    .global SDR_UTILS_getIFAR
+SDR_UTILS_getIFAR:
     MRC p15, #0, r0, c6, c0, #2
     BX      lr

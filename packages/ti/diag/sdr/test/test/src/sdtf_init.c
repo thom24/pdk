@@ -1,7 +1,7 @@
 /*
- * SDL TEST
+ * SDR TEST
  *
- * Software Diagnostics Library Test
+ * Software Diagnostics Reference Test
  *
  *  Copyright (c) Texas Instruments Incorporated 2018-2020
  *
@@ -73,7 +73,7 @@ int32_t SDTF_init (void);
 void SDTF_VIMDEDInterruptHandler(void);
 
 
-SDL_ESM_InitConfig_t SDTF_esmInitConfig =
+SDR_ESM_InitConfig_t SDTF_esmInitConfig =
 {
     .esmErrorConfig = {0u, 3u}, /* Self test error config */
     .eventMap = {0xffffffffu, 0xff0fffffu, 0xffffffffu, 0xffffffe7u},
@@ -85,17 +85,17 @@ SDL_ESM_InitConfig_t SDTF_esmInitConfig =
     /**< All events high priority: except timer, self test and selftest error events */
 };
 
-static SDL_ECC_MemSubType SDTF_R5FCoresubMemTypeList[MAX_MEM_SECTIONS] =
+static SDR_ECC_MemSubType SDTF_R5FCoresubMemTypeList[MAX_MEM_SECTIONS] =
 {
-    SDL_ECC_R5F_MEM_SUBTYPE_ATCM0_BANK0_VECTOR_ID,
-    SDL_ECC_R5F_MEM_SUBTYPE_ATCM0_BANK1_VECTOR_ID,
-    SDL_ECC_R5F_MEM_SUBTYPE_KS_VIM_RAM_VECTOR_ID,
-    SDL_ECC_R5F_MEM_SUBTYPE_B0TCM0_BANK0_VECTOR_ID,
-    SDL_ECC_R5F_MEM_SUBTYPE_B0TCM0_BANK1_VECTOR_ID,
-    SDL_ECC_R5F_MEM_SUBTYPE_B1TCM0_BANK0_VECTOR_ID,
-    SDL_ECC_R5F_MEM_SUBTYPE_B1TCM0_BANK1_VECTOR_ID,
+    SDR_ECC_R5F_MEM_SUBTYPE_ATCM0_BANK0_VECTOR_ID,
+    SDR_ECC_R5F_MEM_SUBTYPE_ATCM0_BANK1_VECTOR_ID,
+    SDR_ECC_R5F_MEM_SUBTYPE_KS_VIM_RAM_VECTOR_ID,
+    SDR_ECC_R5F_MEM_SUBTYPE_B0TCM0_BANK0_VECTOR_ID,
+    SDR_ECC_R5F_MEM_SUBTYPE_B0TCM0_BANK1_VECTOR_ID,
+    SDR_ECC_R5F_MEM_SUBTYPE_B1TCM0_BANK0_VECTOR_ID,
+    SDR_ECC_R5F_MEM_SUBTYPE_B1TCM0_BANK1_VECTOR_ID,
 };
-static SDL_ECC_InitConfig_t SDTF_R5FCoreECCInitConfig =
+static SDR_ECC_InitConfig_t SDTF_R5FCoreECCInitConfig =
 {
     .numRams = MAX_MEM_SECTIONS,
     /**< Number of Rams ECC is enabled  */
@@ -152,18 +152,18 @@ int32_t SDTF_EsmInitHandlerInit(void)
 
 
     /* Get the interrupt number corresponding to ESM HI interrupt */
-    intNumHi = SDL_ESM_getIntNumber(SDL_ESM_INT_TYPE_HI);
-    if ( intNumHi == SDL_ESM_INTNUMBER_INVALID ) {
+    intNumHi = SDR_ESM_getIntNumber(SDR_ESM_INT_TYPE_HI);
+    if ( intNumHi == SDR_ESM_INTNUMBER_INVALID ) {
         result = -1;
     } else {
         /* Get the interrupt number corresponding to ESM LO interrupt */
-        intNumLo = SDL_ESM_getIntNumber(SDL_ESM_INT_TYPE_LO);
-        if ( intNumLo == SDL_ESM_INTNUMBER_INVALID ) {
+        intNumLo = SDR_ESM_getIntNumber(SDR_ESM_INT_TYPE_LO);
+        if ( intNumLo == SDR_ESM_INTNUMBER_INVALID ) {
             result = -1;
         } else {
             /* Get the interrupt number corresponding to ESM Config interrupt */
-            intNumCfg = SDL_ESM_getIntNumber(SDL_ESM_INT_TYPE_CFG);
-            if ( intNumCfg == SDL_ESM_INTNUMBER_INVALID ) {
+            intNumCfg = SDR_ESM_getIntNumber(SDR_ESM_INT_TYPE_CFG);
+            if ( intNumCfg == SDR_ESM_INTNUMBER_INVALID ) {
                 result = -1;
             } else {
                 SDTF_printf("\n SDTF_EsmInitHandlerInit: Obtain interrupt number complete \n");
@@ -181,7 +181,7 @@ int32_t SDTF_EsmInitHandlerInit(void)
                 SDTF_printf("\n SDTF_EsmInitHandlerInit: HwiP_Params_init complete \n");
                 /* Register call back function for ESM Hi Interrupt */
                 SDTF_EsmHiHwiPHandle = HwiP_create(intNumHi,
-                                                   (HwiP_Fxn)SDL_ESM_hiInterruptHandler,
+                                                   (HwiP_Fxn)SDR_ESM_hiInterruptHandler,
                                                    (void *)&hwiParams);
                 SDTF_printf("\n SDTF_EsmInitHandlerInit: intNumHi registration complete \n");
                 if (SDTF_EsmHiHwiPHandle == (HwiP_Handle) NULL) {
@@ -190,7 +190,7 @@ int32_t SDTF_EsmInitHandlerInit(void)
                     hwiParams.arg = intNumLo;
                     /* Register call back function for ESM Lo Interrupt */
                     SDTF_EsmLoHwiPHandle = HwiP_create(intNumLo,
-                                                       (HwiP_Fxn)SDL_ESM_loInterruptHandler,
+                                                       (HwiP_Fxn)SDR_ESM_loInterruptHandler,
                                                        (void *)&hwiParams);
                     SDTF_printf("\n SDTF_EsmInitHandlerInit: intNumLo registration complete \n");
                     if (SDTF_EsmLoHwiPHandle == (HwiP_Handle) NULL) {
@@ -199,7 +199,7 @@ int32_t SDTF_EsmInitHandlerInit(void)
                         hwiParams.arg = intNumCfg;
                         /* Register call back function for ESM Config Interrupt */
                         SDTF_EsmCfgHwiPHandle = HwiP_create(intNumCfg,
-                                                   (HwiP_Fxn)SDL_ESM_configInterruptHandler,
+                                                   (HwiP_Fxn)SDR_ESM_configInterruptHandler,
                                                    (void *)&hwiParams);
                         SDTF_printf("\n SDTF_EsmInitHandlerInit: intNumCfg registration complete \n");
                         if (SDTF_EsmCfgHwiPHandle == (HwiP_Handle) NULL) {
@@ -232,19 +232,19 @@ int32_t SDTF_EsmInitHandlerInit(void)
 int32_t SDTF_negativeInitTests (void)
 {
     int32_t retValue=0;
-    SDL_Result result;
+    SDR_Result result;
 
     /* Run negative test on init functions */
-    result = SDL_ESM_init(NULL);
-    if (result == SDL_PASS) {
+    result = SDR_ESM_init(NULL);
+    if (result == SDR_PASS) {
         /* Negative test failed */
         SDTF_printf("SDTF_init: Error ESM Negative tests: result = %d\n", result);
         retValue = -1;
     }
 
     if (retValue == 0) {
-        result = SDL_ECC_init(SDL_ECC_MEMTYPE_MCU_R5F0_CORE, NULL);
-        if (result == SDL_PASS) {
+        result = SDR_ECC_init(SDR_ECC_MEMTYPE_MCU_R5F0_CORE, NULL);
+        if (result == SDR_PASS) {
             /* Negative test failed */
             SDTF_printf("SDTF_init: Error ECC Negative tests: result = %d\n", result);
             retValue = -2;
@@ -267,7 +267,7 @@ int32_t SDTF_negativeInitTests (void)
 int32_t SDTF_init (void)
 {
     int32_t retValue=0;
-    SDL_Result result;
+    SDR_Result result;
 #ifdef SDTF_BOARD
     Board_initCfg boardCfg;
 
@@ -299,7 +299,7 @@ int32_t SDTF_init (void)
     SDTF_printf("\nSDTF_init: Exception init complete \n");
 
     /* Register VIM DED interrupt handler */
-    SDL_ECC_registerVIMDEDHandler(&SDTF_VIMDEDInterruptHandler);
+    SDR_ECC_registerVIMDEDHandler(&SDTF_VIMDEDInterruptHandler);
 
     SDTF_printf("\nSDTF_init: register VIM DED Handler complete \n");
 
@@ -309,8 +309,8 @@ int32_t SDTF_init (void)
 
     if (retValue == 0) {
         /* Initialize ESM module */
-        result = SDL_ESM_init(&SDTF_esmInitConfig);
-        if (result != SDL_PASS) {
+        result = SDR_ESM_init(&SDTF_esmInitConfig);
+        if (result != SDR_PASS) {
             /* print error and quit */
              SDTF_printf("SDTF_init: Error initializing ESM: result = %d\n", result);
 
@@ -322,8 +322,8 @@ int32_t SDTF_init (void)
 
     if (retValue == 0) {
         /* Initialize ECC */
-        result = SDL_ECC_init(SDL_ECC_MEMTYPE_MCU_R5F0_CORE, &SDTF_R5FCoreECCInitConfig);
-        if (result != SDL_PASS) {
+        result = SDR_ECC_init(SDR_ECC_MEMTYPE_MCU_R5F0_CORE, &SDTF_R5FCoreECCInitConfig);
+        if (result != SDR_PASS) {
             /* print error and quit */
              SDTF_printf("SDTF_init: Error initializing R5F core ECC: result = %d\n", result);
 
@@ -336,8 +336,8 @@ int32_t SDTF_init (void)
     if (retValue == 0) {
         /* Initialize VIM ECC memory ; This is specifically for VIM in lockstep*/
         /* All other memories are auto initialized by hardware */
-        result = SDL_ECC_initMemory(SDL_ECC_MEMTYPE_MCU_R5F0_CORE, SDL_ECC_R5F_MEM_SUBTYPE_KS_VIM_RAM_VECTOR_ID);
-        if (result != SDL_PASS) {
+        result = SDR_ECC_initMemory(SDR_ECC_MEMTYPE_MCU_R5F0_CORE, SDR_ECC_R5F_MEM_SUBTYPE_KS_VIM_RAM_VECTOR_ID);
+        if (result != SDR_PASS) {
              /* print error and quit */
               SDTF_printf("SDTF_init: Error initializing ECC memory: retValue = %d\n", retValue);
              retValue = -1;;
@@ -351,8 +351,8 @@ int32_t SDTF_init (void)
         Osal_delay(2000);
 
         /* Initialize CCM module */
-        result = SDL_CCM_init();
-        if (result != SDL_PASS) {
+        result = SDR_CCM_init();
+        if (result != SDR_PASS) {
             /* print error and quit */
              SDTF_printf("SDTF_init: Error initializing CCM: result = %d\n", result);
 
@@ -374,8 +374,8 @@ int32_t SDTF_init (void)
 
     if (retValue == 0)
     {
-        /* Initialize CRC SDL */
-        SDL_CRC_init();
+        /* Initialize CRC SDR */
+        SDR_CRC_init();
         SDTF_printf("\nSDTF_init: Init CRC complete \n");
     }
 
@@ -392,7 +392,7 @@ int32_t SDTF_init (void)
     return retValue;
 }
 
-void SDL_assertExternalFunction(SDL_assertErrorNumber errorNumber)
+void SDR_assertExternalFunction(SDR_assertErrorNumber errorNumber)
 {
 
     SDTF_printf("\n  Assert called with error Number %d \n",
@@ -402,12 +402,12 @@ void SDL_assertExternalFunction(SDL_assertErrorNumber errorNumber)
 }
 
 
-uint32_t SDL_getTime(void)
+uint32_t SDR_getTime(void)
 {
     return SDTF_profileTimerRead();
 }
 
-void SDL_ESM_applicationCallbackFunction(uintptr_t arg, uint32_t grpChannel, uint32_t index,
+void SDR_ESM_applicationCallbackFunction(uintptr_t arg, uint32_t grpChannel, uint32_t index,
                                          uint32_t intSrc){
 
     SDTF_printf("\n  ESM Call back function called : arg 0x%x, grpChannel 0x%x, index 0x%x, intSrc 0x%x \n",
@@ -418,7 +418,7 @@ void SDL_ESM_applicationCallbackFunction(uintptr_t arg, uint32_t grpChannel, uin
 
 }
 
-void SDL_ECC_applicationCallbackFunction(uint32_t errorSrc, uint32_t address){
+void SDR_ECC_applicationCallbackFunction(uint32_t errorSrc, uint32_t address){
 
     SDTF_printf("\n  ECC Error Call back function called : errorSrc 0x%x, address 0x%x. \n",
                 errorSrc, address);
@@ -428,8 +428,8 @@ void SDL_ECC_applicationCallbackFunction(uint32_t errorSrc, uint32_t address){
 
 }
 
-void SDL_CCM_applicationCallbackFunction(SDL_CCM_MonitorType monitorType,
-                                         SDL_CCM_ErrorStatus_t *pErrorStatus)
+void SDR_CCM_applicationCallbackFunction(SDR_CCM_MonitorType monitorType,
+                                         SDR_CCM_ErrorStatus_t *pErrorStatus)
 {
     SDTF_printf("\n  CCM Call back function called : monitorType 0x%x, cmp error flag 0x%x,"
             "self test error flag  0x%x, self test error type 0x%x.\n",

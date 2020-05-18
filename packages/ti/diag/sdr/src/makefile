@@ -36,8 +36,8 @@
 #
 #  ============================================================================
 
-# PDK SDL Library
-PDK_SDL_DIR = $(PDK_INSTALL_PATH)/ti/diag/sdr
+# PDK SDR (Software Diagnostics Reference)
+PDK_SDR_DIR = $(PDK_INSTALL_PATH)/ti/diag/sdr
 
 ifeq ($(RULES_MAKE), )
 include $(PDK_INSTALL_PATH)/ti/build/Rules.make
@@ -78,16 +78,16 @@ endif
 PACKAGE_SRCS_COMMON = .
 
 # Set specific include directories
-INCDIR += $(PDK_SDL_DIR)
-INCDIR += $(PDK_SDL_DIR)/src
+INCDIR += $(PDK_SDR_DIR)
+INCDIR += $(PDK_SDR_DIR)/src
 
 ifeq ($(SOC),$(filter $(SOC), am65xx j721e))
-INCDIR += $(PDK_SDL_DIR)/src/$(SOC)
+INCDIR += $(PDK_SDR_DIR)/src/$(SOC)
 endif
 
 ifeq ($(CORE),$(filter $(CORE), mcu1_0))
 ifeq ($(SOC),$(filter $(SOC), am65xx j721e))
-INCDIR += $(PDK_SDL_DIR)/src/$(SOC)/r5
+INCDIR += $(PDK_SDR_DIR)/src/$(SOC)/r5
 endif
 endif
 

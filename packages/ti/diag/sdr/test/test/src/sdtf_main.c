@@ -1,7 +1,7 @@
 /*
- * SDL TEST
+ * SDR TEST
  *
- * Software Diagnostics Library Test
+ * Software Diagnostics Reference Test
  *
  *  Copyright (c) 2018 Texas Instruments Incorporated
  *
@@ -48,7 +48,7 @@
 /*****************************************************************************
  * This is the main function for the Software Diagnostic Test framework test
  * application.
- * Initializes the required peripherals and different SDL related modules
+ * Initializes the required peripherals and different SDR related modules
  * and calls the one shot test functions first and then initiates a periodic
  * function for periodic tests.
  */

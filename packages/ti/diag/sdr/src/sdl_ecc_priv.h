@@ -1,7 +1,7 @@
 /*
- * SDL ECC
+ * SDR ECC
  *
- * Software Diagnostics Library module for ECC
+ * Software Diagnostics Reference module for ECC
  *
  *  Copyright (c) Texas Instruments Incorporated 2018-2020
  *
@@ -35,14 +35,14 @@
  *
  */
 
-#ifndef INCLUDE_SDL_ECC_PRIV_H_
-#define INCLUDE_SDL_ECC_PRIV_H_
+#ifndef INCLUDE_SDR_ECC_PRIV_H_
+#define INCLUDE_SDR_ECC_PRIV_H_
 
 #include <stdbool.h>
 
-#define SDL_ECC_EVENT_FOUND (1u)
+#define SDR_ECC_EVENT_FOUND (1u)
 
-typedef struct SDL_RAMIdEntry_s
+typedef struct SDR_RAMIdEntry_s
 {
     uint32_t RAMId;
     /**< Unique Ram Identifier */
@@ -50,13 +50,13 @@ typedef struct SDL_RAMIdEntry_s
     /**< Variable to track if the ECC aggregator configuration
      * is only inject only or a full fledged ecc aggregator
      * including tracking of error status */
-} SDL_RAMIdEntry_t;
+} SDR_RAMIdEntry_t;
 
 /** ---------------------------------------------------------------------------
  * \brief This structure defines the elements of memory configuration
  * ----------------------------------------------------------------------------
  */
-typedef struct SDL_MemConfig_s
+typedef struct SDR_MemConfig_s
 {
     uintptr_t memStartAddr;
     /**< Memory start address */
@@ -66,6 +66,6 @@ typedef struct SDL_MemConfig_s
     /**< Stride of memory in bytes */
     bool readable;
     /**< Memory section whether it is directly readable */
-}  SDL_MemConfig_t;
+}  SDR_MemConfig_t;
 
-#endif /* INCLUDE_SDL_ECC_PRIV_H_ */
+#endif /* INCLUDE_SDR_ECC_PRIV_H_ */

@@ -1,7 +1,7 @@
 /*
  * SDTF ESM
  *
- * Software Diagnostics Library Test for ESM Module
+ * Software Diagnostics Reference Test for ESM Module
  *
  *  Copyright (c) Texas Instruments Incorporated 2019-2020
  *

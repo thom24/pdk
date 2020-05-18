@@ -1,9 +1,9 @@
 ;******************************************************************************
-; SDL ECC UTILS
+; SDR ECC UTILS
 ;
-; Software Diagnostics Library module for ECC
+; Software Diagnostics Reference module for ECC
 ;
-;  (C) Copyright 2018-2019 Texas Instruments, Inc.
+;  (C) Copyright 2018-2020 Texas Instruments, Inc.
 ;
 ;  Redistribution and use in source and binary forms, with or without
 ;  modification, are permitted provided that the following conditions
@@ -45,11 +45,11 @@
 ;******************************************************************************
     .text
 
-SDL_ECCUTILS_ATCM_ENABLE_MASK     .word        0x2000000
-SDL_ECCUTILS_B0TCM_ENABLE_MASK    .word        0x4000000
-SDL_ECCUTILS_B1TCM_ENABLE_MASK    .word        0x8000000
+SDR_ECCUTILS_ATCM_ENABLE_MASK     .word        0x2000000
+SDR_ECCUTILS_B0TCM_ENABLE_MASK    .word        0x4000000
+SDR_ECCUTILS_B1TCM_ENABLE_MASK    .word        0x8000000
 
-SDL_ECCUTILS_PMCINTSET_COUNT_ENABLE_VALUE    .word        0x80000002
+SDR_ECCUTILS_PMCINTSET_COUNT_ENABLE_VALUE    .word        0x80000002
 
 ;==============================================================================
 ;   void _enable_pmu_cntrs( void )
@@ -70,16 +70,16 @@ _enable_pmu_cntrs:
 
 
 ;==============================================================================
-;   void SDL_ECC_UTILS_configSecIntr( uint32_t eventCountInitValue,
+;   void SDR_ECC_UTILS_configSecIntr( uint32_t eventCountInitValue,
 ;                                    uint32_t eventTypeBitMap,
 ;                                    uint32_t counterNumber )
 ;==============================================================================
-    .global SDL_ECC_UTILS_configSecIntr
-SDL_ECC_UTILS_configSecIntr:
+    .global SDR_ECC_UTILS_configSecIntr
+SDR_ECC_UTILS_configSecIntr:
     PUSH {r4-r6}
     MOV r6, lr
     BL _enable_pmu_cntrs
-    LDR r4, SDL_ECCUTILS_PMCINTSET_COUNT_ENABLE_VALUE   ; Enable cycle counter and counter 0
+    LDR r4, SDR_ECCUTILS_PMCINTSET_COUNT_ENABLE_VALUE   ; Enable cycle counter and counter 0
     MCR p15, #0, r4, c9, c12, #1         ; Count Enable Set Register, PMCNTENSET enabling counter 0
     MCR p15, #0, r4, c9, c14, #1         ; Interrupt Enable Set Register, PMINTENSET
     MOV r4, r2
@@ -92,10 +92,10 @@ SDL_ECC_UTILS_configSecIntr:
     BX      lr
 
 ;==============================================================================
-;   void _SDL_ECC_UTILS_enableECC(uint32_t bitMask)
+;   void _SDR_ECC_UTILS_enableECC(uint32_t bitMask)
 ;==============================================================================
-    .global _SDL_ECC_UTILS_enableECC
-_SDL_ECC_UTILS_enableECC:
+    .global _SDR_ECC_UTILS_enableECC
+_SDR_ECC_UTILS_enableECC:
     ; Read ACTLR register
     MRC p15, #0, r1, c1, c0, #1
 
@@ -107,25 +107,25 @@ _SDL_ECC_UTILS_enableECC:
     BX      lr
 
 ;==============================================================================
-;   void SDL_ECC_UTILS_enableECCATCM(void)
+;   void SDR_ECC_UTILS_enableECCATCM(void)
 ;==============================================================================
-    .global SDL_ECC_UTILS_enableECCATCM
-SDL_ECC_UTILS_enableECCATCM:
-    LDR r0, SDL_ECCUTILS_ATCM_ENABLE_MASK
-    B _SDL_ECC_UTILS_enableECC
+    .global SDR_ECC_UTILS_enableECCATCM
+SDR_ECC_UTILS_enableECCATCM:
+    LDR r0, SDR_ECCUTILS_ATCM_ENABLE_MASK
+    B _SDR_ECC_UTILS_enableECC
 
 ;==============================================================================
-;   void SDL_ECC_UTILS_enableECCB0TCM(void)
+;   void SDR_ECC_UTILS_enableECCB0TCM(void)
 ;==============================================================================
-    .global SDL_ECC_UTILS_enableECCB0TCM
-SDL_ECC_UTILS_enableECCB0TCM:
-    LDR r0, SDL_ECCUTILS_B0TCM_ENABLE_MASK
-    B _SDL_ECC_UTILS_enableECC
+    .global SDR_ECC_UTILS_enableECCB0TCM
+SDR_ECC_UTILS_enableECCB0TCM:
+    LDR r0, SDR_ECCUTILS_B0TCM_ENABLE_MASK
+    B _SDR_ECC_UTILS_enableECC
 
 ;==============================================================================
-;   void SDL_ECC_UTILS_enableECCB1TCM(void)
+;   void SDR_ECC_UTILS_enableECCB1TCM(void)
 ;==============================================================================
-    .global SDL_ECC_UTILS_enableECCB1TCM
-SDL_ECC_UTILS_enableECCB1TCM:
-    LDR r0, SDL_ECCUTILS_B1TCM_ENABLE_MASK
-    B _SDL_ECC_UTILS_enableECC
+    .global SDR_ECC_UTILS_enableECCB1TCM
+SDR_ECC_UTILS_enableECCB1TCM:
+    LDR r0, SDR_ECCUTILS_B1TCM_ENABLE_MASK
+    B _SDR_ECC_UTILS_enableECC

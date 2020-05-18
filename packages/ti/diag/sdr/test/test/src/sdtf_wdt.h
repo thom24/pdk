@@ -1,7 +1,7 @@
 /*
  * SDTF WDT
  *
- * Software Diagnostics Library Test for Watchdog module
+ * Software Diagnostics Reference Test for Watchdog module
  *
  *  Copyright (c) Texas Instruments Incorporated 2019-2020
  *
@@ -46,7 +46,7 @@
 #define SDTF_RTI_CLOCK_SOURCE_32KHZ  (32u)
 /**< Clock source */
 
-#define SDTF_RTI_DWWDSIZE (SDL_WDT_WINDOWSIZE_50_PERCENT)
+#define SDTF_RTI_DWWDSIZE (SDR_WDT_WINDOWSIZE_50_PERCENT)
 
 /*********************************************************************
  *

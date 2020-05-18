@@ -1,7 +1,7 @@
 /*
- * SDL CCM
+ * SDR CCM
  *
- * Software Diagnostics Library module for CPU Comparator Module
+ * Software Diagnostics Reference module for CPU Comparator Module
  *
  *  Copyright (c) Texas Instruments Incorporated 2020
  *
@@ -35,11 +35,11 @@
  *
  */
 
-#ifndef INCLUDE_SDL_CCM_SOC_H_
-#define INCLUDE_SDL_CCM_SOC_H_
+#ifndef INCLUDE_SDR_CCM_SOC_H_
+#define INCLUDE_SDR_CCM_SOC_H_
 
 #include <ti/csl/csl_esm.h>
 
 #define SOC_CCM_BASE CSL_MCU_R5FSS0_COMPARE_CFG_BASE
 
-#endif /* INCLUDE_SDL_CCM_SOC_H_ */
+#endif /* INCLUDE_SDR_CCM_SOC_H_ */

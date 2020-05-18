@@ -1,7 +1,7 @@
 /*
- * SDL MPU Cfg
+ * SDR MPU Cfg
  *
- * Software Diagnostics Library module for MPU Configuration
+ * Software Diagnostics Reference module for MPU Configuration
  *
  *  Copyright (c) Texas Instruments Incorporated 2018-2020
  *
@@ -38,7 +38,7 @@
 #include <sdl_mpuCfg.h>
 
 /* Local functions */
-static void SDL_mpuCfg_local(const CSL_ArmR5MpuRegionCfg *pCfg);
+static void SDR_mpuCfg_local(const CSL_ArmR5MpuRegionCfg *pCfg);
 
 static const uint32_t gMemAttr[CSL_ARM_R5_MEM_ATTR_MAX][3U] =
 {
@@ -69,7 +69,7 @@ static  const CSL_ArmR5MpuRegionCfg   gCfg =
     };
 
 
-void SDL_MPUResolve(uint32_t baseAddr, uint32_t regId)
+void SDR_MPUResolve(uint32_t baseAddr, uint32_t regId)
 {
     CSL_ArmR5MpuRegionCfg   cfg = gCfg;
 
@@ -78,11 +78,11 @@ void SDL_MPUResolve(uint32_t baseAddr, uint32_t regId)
     cfg.regionId            = regId;
     cfg.accessPermission    = CSL_ARM_R5_ACC_PERM_PRIV_USR_RD_WR;
 
-    SDL_mpuCfg_local(&cfg);
+    SDR_mpuCfg_local(&cfg);
     return;
 }
 
-void SDL_MPUCfgAddRegion(const SDL_MPU_memConfig_t *pMemConfig)
+void SDR_MPUCfgAddRegion(const SDR_MPU_memConfig_t *pMemConfig)
 {
     CSL_ArmR5MpuRegionCfg   cfg = gCfg;
     /* Update the base addr and region ID configured */
@@ -90,19 +90,19 @@ void SDL_MPUCfgAddRegion(const SDL_MPU_memConfig_t *pMemConfig)
     cfg.regionId = pMemConfig->mpuRegionId;
 
     /* Update the access permission for the configured */
-    if (pMemConfig->memAccessType == SDL_MPU_DATA_WRITE_ACCESS) {
+    if (pMemConfig->memAccessType == SDR_MPU_DATA_WRITE_ACCESS) {
          cfg.accessPermission = CSL_ARM_R5_ACC_PERM_PRIV_USR_RD;
     }
     else {
          cfg.accessPermission = CSL_ARM_R5_ACC_PERM_NO_ACCESS;
     }
 
-    SDL_mpuCfg_local(&cfg);
+    SDR_mpuCfg_local(&cfg);
     return;
 }
 
 /* This is an internal implementation for MPU configuration for a given Region */
-static void SDL_mpuCfg_local(const CSL_ArmR5MpuRegionCfg *pCfg)
+static void SDR_mpuCfg_local(const CSL_ArmR5MpuRegionCfg *pCfg)
 {
     uint32_t baseAddrRegVal, sizeRegVal, accessCtrlRegVal, tex;
 
@@ -144,7 +144,7 @@ static void SDL_mpuCfg_local(const CSL_ArmR5MpuRegionCfg *pCfg)
 }
 
 /* Internal implementation to remove the MPU configuration */
-void SDL_MPUCfgRemoveRegion(const SDL_MPU_memConfig_t *pMemConfig)
+void SDR_MPUCfgRemoveRegion(const SDR_MPU_memConfig_t *pMemConfig)
 {
     uint32_t baseAddrRegVal = 0U, sizeRegVal = 0U, accessCtrlRegVal = 0U;
 

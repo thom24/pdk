@@ -1,7 +1,7 @@
 /*
- * SDL ESM
+ * SDR ESM
  *
- * Software Diagnostics Library module for Error Signaling Module
+ * Software Diagnostics Reference module for Error Signaling Module
  *
  *  Copyright (c) Texas Instruments Incorporated 2020
  *
@@ -35,11 +35,11 @@
  *
  */
 
-#ifndef INCLUDE_SDL_ESM_SOC_H_
-#define INCLUDE_SDL_ESM_SOC_H_
+#ifndef INCLUDE_SDR_ESM_SOC_H_
+#define INCLUDE_SDR_ESM_SOC_H_
 
 #include <ti/csl/csl_esm.h>
 
 #define SOC_ESM_BASE CSL_MCU_ESM0_CFG_BASE
 
-#endif /* INCLUDE_SDL_ESM_SOC_H_ */
+#endif /* INCLUDE_SDR_ESM_SOC_H_ */
