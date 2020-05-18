@@ -41,7 +41,7 @@
 /*********************************************************************
 * @fn      SDTF_init
 *
-* @brief   Initializes Safety Diagostics Test Framework
+* @brief   Initializes Software Diagostics Test Framework
 *
 * @param   None
 *

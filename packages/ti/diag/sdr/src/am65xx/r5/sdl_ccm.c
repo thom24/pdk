@@ -42,7 +42,7 @@
 #include <sdl_esm.h>
 
 
-#include "sdl_ccm_soc.h"
+#include <sdl_ccm_soc.h>
 
 /** ---------------------------------------------------------------------------
  * \enum SDL_CCM_ErrorFlag

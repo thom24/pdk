@@ -37,7 +37,7 @@
 
 #ifndef _INCLUDE_SDTF_PLATFORM_H_
 #define _INCLUDE_SDTF_PLATFORM_H_
-#include "sdtf_core.h"
+#include <sdtf_core.h>
 
 #define SDTF_UART_INSTANCE 0
 

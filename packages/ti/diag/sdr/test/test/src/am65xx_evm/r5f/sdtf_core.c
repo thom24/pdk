@@ -38,7 +38,7 @@
 #include <ti/csl/arch/r5/csl_arm_r5_pmu.h>
 #include <ti/csl/arch/r5/csl_cache.h>
 #include "sdtf_common.h"
-#include "sdtf_core.h"
+#include <sdtf_core.h>
 
 uint32_t SDTF_profileTimerRead(void)
 {

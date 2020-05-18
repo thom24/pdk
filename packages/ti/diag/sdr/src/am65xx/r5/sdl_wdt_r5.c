@@ -44,7 +44,7 @@
 #include <sdl_common.h>
 #include <sdl_wdt.h>
 
-#include "sdl_wdt_priv.h"
+#include <sdl_wdt_priv.h>
 
 /* Local funcions */
 static uint32_t SDL_WDT_getBaseAddr(SDL_WDT_TimerId timerId);

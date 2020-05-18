@@ -51,7 +51,7 @@
 
 /* Local SDTF header files */
 #include "sdtf_common.h"
-#include "sdtf_platform.h"
+#include <sdtf_platform.h>
 #include "sdtf_exception.h"
 #include "sdtf_profile.h"
 #include "sdtf_wdt.h"
@@ -258,7 +258,7 @@ int32_t SDTF_negativeInitTests (void)
 /*********************************************************************
 * @fn      SDTF_init
 *
-* @brief   Initializes Safety Diagostics Test Framework
+* @brief   Initializes Software Diagostics Test Framework
 *
 * @param   None
 *

@@ -64,7 +64,7 @@ extern "C" {
  *
  *
  * Software Diagnostics Library(SDL) provides software interface for
- * Diagnostic functions to be used for application involving Functional Safety.
+ * Diagnostic functions to be used for application.
  *
  * <b>
  * Also refer to top level user guide for detailed features,

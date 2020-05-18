@@ -42,8 +42,8 @@
 #include <sdl_mpu.h>
 #include <sdl_utils.h>
 
-#include "sdl_exception.h"
-#include "sdl_exception_priv.h"
+#include <sdl_exception.h>
+#include <sdl_exception_priv.h>
 
 /* Local defines */
 

@@ -40,7 +40,7 @@
 #include <sdl_common.h>
 #include <sdl_esm.h>
 
-#include "sdl_esm_soc.h"
+#include <sdl_esm_soc.h>
 #include "sdl_esm_core.h"
 
 #include "sdl_esm_priv.h"

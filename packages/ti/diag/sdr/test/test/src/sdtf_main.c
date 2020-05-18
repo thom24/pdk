@@ -39,14 +39,14 @@
 /* For UART print outputs */
 #include <ti/drv/uart/UART_stdio.h>
 
-/* Safety Diagnostics Test framework header files */
+/* Software Diagnostics Test framework header files */
 #include "sdtf_common.h"
 #include "sdtf_init.h"
 #include "sdtf_test.h"
 #include <sdtf_platform.h>
 
 /*****************************************************************************
- * This is the main function for the Safety Diagnostic Test framework test
+ * This is the main function for the Software Diagnostic Test framework test
  * application.
  * Initializes the required peripherals and different SDL related modules
  * and calls the one shot test functions first and then initiates a periodic
