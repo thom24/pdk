@@ -62,6 +62,12 @@ ifeq ($(IS_BAREMETAL),yes)
 EXTERNAL_LNKCMD_FILE_LOCAL =  $(PDK_INSTALL_PATH)/ti/drv/spi/example/mcspi_slavemode/j721e/linker_mcu.lds
 else
 EXTERNAL_LNKCMD_FILE_LOCAL =  $(PDK_INSTALL_PATH)/ti/drv/spi/example/mcspi_slavemode/j721e/linker_mcu_sysbios.lds
+# Enable copy of vectors
+ifeq ($(ISA),$(filter $(ISA), r5f))
+  SRCDIR += $(PDK_VECT_COPY_PATH)
+  SRCS_ASM_COMMON += utilsCopyVecs2ATcm.asm
+endif
+
 endif
 endif
 endif
@@ -79,12 +85,6 @@ endif
 
 ifeq ($(SOC),$(filter $(SOC), j721e))
 CFLAGS_SPI_MS    += -Dj721e_evm=j721e_evm
-endif
-
-# Enable copy of vectors
-ifeq ($(ISA),$(filter $(ISA), r5f))
-  SRCDIR += $(PDK_VECT_COPY_PATH)
-  SRCS_ASM_COMMON += utilsCopyVecs2ATmc.asm
 endif
 
 # DMA enabled build

@@ -37,7 +37,7 @@ ifeq ($(CORE),$(filter $(CORE), mcu1_0))
 
 # Enable copy of vectors
   SRCDIR += $(PDK_VECT_COPY_PATH)
-  SRCS_ASM_COMMON += utilsCopyVecs2ATmc.asm
+  SRCS_ASM_COMMON += utilsCopyVecs2ATcm.asm
 endif
 endif
 

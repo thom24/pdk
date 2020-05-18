@@ -30,18 +30,18 @@
 ;  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ;
 ;
-; ======== utilsCopyVecs2ATmc.asm ========
+; ======== utilsCopyVecs2ATcm.asm ========
 ; Copies sysbios defined vector to ATM area
 ;
     .text
     .sect   ".utilsCopyVecsToAtcm"
 ;==============================================================================
-;   void utilsCopyVecs2ATmc( void )
+;   void utilsCopyVecs2ATcm( void )
 ;==============================================================================
     .global ti_sysbios_family_arm_v7r_keystone3_Hwi_vectors
 
-    .global utilsCopyVecs2ATmc
-utilsCopyVecs2ATmc:
+    .global utilsCopyVecs2ATcm
+utilsCopyVecs2ATcm:
         .asmfunc
         mrc     p15, #0, r0, c9, c1, #1 ; read ATCM Region Register
         tst     r0, #1

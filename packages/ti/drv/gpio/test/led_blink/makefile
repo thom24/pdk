@@ -64,7 +64,7 @@ endif
 # Enable copy of vectors
 ifeq ($(ISA),$(filter $(ISA), r5f))
   SRCDIR += $(PDK_VECT_COPY_PATH)
-  SRCS_ASM_COMMON += utilsCopyVecs2ATmc.asm
+  SRCS_ASM_COMMON += utilsCopyVecs2ATcm.asm
 endif
 
 # List all the external components/interfaces, whose interface header files

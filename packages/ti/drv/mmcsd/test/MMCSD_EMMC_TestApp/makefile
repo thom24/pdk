@@ -73,7 +73,7 @@ CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_MMCSD_UT)
 # Enable copy of vectors
 ifeq ($(ISA),$(filter $(ISA), r5f))
   SRCDIR += $(PDK_VECT_COPY_PATH)
-  SRCS_ASM_COMMON += utilsCopyVecs2ATmc.asm
+  SRCS_ASM_COMMON += utilsCopyVecs2ATcm.asm
 endif
 
 # Core/SoC/platform specific source files and CFLAGS

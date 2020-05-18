@@ -15,6 +15,10 @@ CFLAGS_OS_DEFINES = -DUSE_BIOS
 EXTERNAL_INTERFACES = bios xdc
 COMP_LIST_COMMON    = osal_tirtos
 
+SRCDIR = . src
+INCDIR = . src
+
+
 ifeq ($(SOC),$(filter $(SOC), am65xx))
 XDC_CFG_FILE_mpu1_0 = ./$(SOC)/ospiFlashTest_a53.cfg
 XDC_CFG_FILE_mcu1_0 = ./$(SOC)/ospiFlashTest_r5.cfg
@@ -25,18 +29,16 @@ XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
 # Enable copy of vectors
 ifeq ($(ISA),$(filter $(ISA), r5f))
   SRCDIR += $(PDK_VECT_COPY_PATH)
-  SRCS_ASM_COMMON += utilsCopyVecs2ATmc.asm
+  SRCS_ASM_COMMON += utilsCopyVecs2ATcm.asm
 endif
 
 endif
 endif
 
 endif
-
-SRCDIR = . src
-INCDIR = . src
 
 # Common source files across all platforms and cores
+SRCDIR += . src
 SRCS_COMMON += main_ospi_flash_test.c
 
 ifeq ($(BUILD_OS_TYPE), tirtos)
