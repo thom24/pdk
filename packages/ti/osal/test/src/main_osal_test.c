@@ -6,7 +6,7 @@
  */
 
 /*
- * Copyright (C) 2016-2018 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2016-2020 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -1199,6 +1199,51 @@ bool OSAL_swi_test()
 }
 #endif
 
+#ifndef BARE_METAL
+#include <ti/sysbios/knl/Clock.h>
+#define   OSAL_TASKP_TEST_ITERATION    (10U)
+#define   OSAL_TASKP_TEST_1MS          (1000U)
+#define   OSAL_TASKP_TEST_TICKS        (1000U)
+bool OSAL_task_sleep_test(void)
+{
+    int32_t i;
+    uint32_t    start_time_nticks, end_time_nticks;
+    uint32_t    diff_nticks, diff_tout;
+
+    /* nTicks in OSAL is 1000 ticks per milli seconds
+     * hence the task sleep = 1000 milliseconds should
+     * provide the same sleep time as in TaskP_sleep(nTicks = 1000)
+     */
+    start_time_nticks = Clock_getTicks();
+
+    for (i=0; i < OSAL_TASKP_TEST_ITERATION; i++)
+    {
+       TaskP_sleep(OSAL_TASKP_TEST_TICKS);
+    }
+    end_time_nticks = Clock_getTicks();
+    diff_nticks     = end_time_nticks - start_time_nticks;
+
+    start_time_nticks = Clock_getTicks();
+
+    for (i=0; i < OSAL_TASKP_TEST_ITERATION; i++)
+    {
+       TaskP_sleepInMsecs(OSAL_TASKP_TEST_1MS);
+    }
+    end_time_nticks = Clock_getTicks();
+    diff_tout       = end_time_nticks - start_time_nticks;
+
+    OSAL_log(" \n \
+               diff_nticks = %d \n \
+               diff_tout   = %d \n \
+               Clock_tickPeriod = %d \n \
+               Clock_tickSource = %d ", diff_nticks, diff_tout, \
+                                        Clock_tickPeriod, Clock_tickSource);
+
+    return (true);
+
+}
+#endif
+
 /*
  *  ======== main test function ========
  */
@@ -1210,6 +1255,22 @@ void osal_test(UArg arg0, UArg arg1)
 {
     bool testFail = false;
     Osal_StaticMemStatus pMemStats;
+
+    OSAL_log(" OSAL Test Starting...\n Takes about 30 seconds ...\n"); 
+
+#if defined(BARE_METAL)
+    /* No TASKP test for BAREmetal */
+#else
+    /* TASK Sleep APIs test for RTOS */
+    if (OSAL_task_sleep_test() == true)
+    {
+        OSAL_log("\n TaskP tests have passed. \n");
+    }
+    else
+    {
+        OSAL_log("\n TaskP tests have failed. \n");
+    }
+#endif
 
     if(OSAL_hwi_test() == true)
     {
