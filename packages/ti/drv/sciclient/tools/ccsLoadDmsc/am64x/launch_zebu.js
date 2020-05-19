@@ -109,11 +109,11 @@ function connectTargets()
 
     print("Loading DMSC Firmware ... " + sysfw_bin);
     // Load the DMSC firmware
-    dsDMSC_0.memory.loadRaw(0, 0x40000, sysfw_bin, 32, false);
+    dsDMSC_0.memory.loadRaw(0, 0x44000, sysfw_bin, 32, false);
     print("DMSC Firmware Load Done...");
     // Set Stack pointer and Program Counter
-    stackPointer = dsDMSC_0.memory.readWord(0, 0x40000);
-    progCounter = dsDMSC_0.memory.readWord(0, 0x40004);
+    stackPointer = dsDMSC_0.memory.readWord(0, 0x44000);
+    progCounter = dsDMSC_0.memory.readWord(0, 0x44004);
     dsDMSC_0.memory.writeRegister("SP", stackPointer);
     dsDMSC_0.memory.writeRegister("PC", progCounter);
     print( "DMSC Firmware run starting now...");
