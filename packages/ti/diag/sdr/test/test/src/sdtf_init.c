@@ -36,10 +36,10 @@
  */
 
 #include <stdint.h>
-#include <sdl_common.h>
-#include <sdl_esm.h>
-#include <sdl_ccm.h>
-#include <sdl_crc.h>
+#include <sdr_common.h>
+#include <sdr_esm.h>
+#include <sdr_ccm.h>
+#include <sdr_crc.h>
 
 /* UART driver API header files */
 #include <ti/drv/uart/UART.h>

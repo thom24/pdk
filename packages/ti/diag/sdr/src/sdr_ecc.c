@@ -37,21 +37,21 @@
 
 #include <string.h>
 #include <stdint.h>
-#include <sdl_common.h>
-#include <sdl_ecc.h>
-#include <sdl_esm.h>
-#include <sdl_exception.h>
+#include <sdr_common.h>
+#include <sdr_ecc.h>
+#include <sdr_esm.h>
+#include <sdr_exception.h>
 
 
 #include <ti/csl/csl_ecc_aggr.h>
 
-#include "sdl_utils.h"
-#include "sdl_ecc_utils.h"
+#include "sdr_utils.h"
+#include "sdr_ecc_utils.h"
 
-#include "sdl_ecc_soc.h"
-#include "sdl_ecc_core.h"
+#include "sdr_ecc_soc.h"
+#include "sdr_ecc_core.h"
 
-#include "sdl_ecc_priv.h"
+#include "sdr_ecc_priv.h"
 
 /* Local defines */
 #define SDR_ECC_INVALID_ERROR_SOURCE (0xffffffffu)

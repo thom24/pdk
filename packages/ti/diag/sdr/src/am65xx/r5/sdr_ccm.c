@@ -37,12 +37,12 @@
 
 #include <ti/csl/arch/r5/csl_mcu_armss_ccmr5.h>
 
-#include <sdl_common.h>
-#include <sdl_ccm.h>
-#include <sdl_esm.h>
+#include <sdr_common.h>
+#include <sdr_ccm.h>
+#include <sdr_esm.h>
 
 
-#include <sdl_ccm_soc.h>
+#include <sdr_ccm_soc.h>
 
 /** ---------------------------------------------------------------------------
  * \enum SDR_CCM_ErrorFlag

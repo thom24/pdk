@@ -54,16 +54,16 @@ export BUILD_PROFILE_$(CORE) ?= $(BUILD_PROFILE)
 # need to be included for this component
 INCLUDE_EXTERNAL_INTERFACES =
 
-SRCS_COMMON += sdl_esm.c sdl_ecc.c
-SRCS_COMMON += sdl_exception.c sdl_mpuCfg.c
-SRCS_COMMON += sdl_ecc_r5.c
-SRCS_COMMON += sdl_ccm.c sdl_mpu.c
-SRCS_COMMON += sdl_esm_core.c
-SRCS_COMMON += sdl_crc.c
-SRCS_COMMON += sdl_wdt.c
-SRCS_COMMON += sdl_wdt_r5.c
-SRCS_ASM_COMMON += sdl_ecc_utils.asm
-SRCS_ASM_COMMON += sdl_utils.asm
+SRCS_COMMON += sdr_esm.c sdr_ecc.c
+SRCS_COMMON += sdr_exception.c sdr_mpuCfg.c
+SRCS_COMMON += sdr_ecc_r5.c
+SRCS_COMMON += sdr_ccm.c sdr_mpu.c
+SRCS_COMMON += sdr_esm_core.c
+SRCS_COMMON += sdr_crc.c
+SRCS_COMMON += sdr_wdt.c
+SRCS_COMMON += sdr_wdt_r5.c
+SRCS_ASM_COMMON += sdr_ecc_utils.asm
+SRCS_ASM_COMMON += sdr_utils.asm
 
 # Set specific source directories
 SRCDIR += src

@@ -1,9 +1,9 @@
 /*
- * SDR ECC
+ * SDR MPU Configuration
  *
- * Software Diagnostics Reference module for ECC
+ * Software Diagnostics Reference module for MPU configuration module
  *
- *  Copyright (c) Texas Instruments Incorporated 2018-2020
+ *  Copyright (c) Texas Instruments Incorporated 2019-2020
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -35,20 +35,23 @@
  *
  */
 
-#ifndef INCLUDE_SDR_ECC_CORE_H_
-#define INCLUDE_SDR_ECC_CORE_H_
+/**
+ * @file  sdr_mpuCfg.h
+ *
+ * @brief
+ *  Header file for SDR MPU configuration interface.
+ *  ============================================================================
+ */
 
-#include <stdint.h>
-#include <sdl_ecc.h>
+#ifndef INCLUDE_SDR_MPUCFG_H_
+#define INCLUDE_SDR_MPUCFG_H_
 
-SDR_Result SDR_ECC_configECCRam(uint32_t ramId);
-uint32_t SDR_ECC_pollErrorEvent(SDR_ECC_MemType eccMemType,
-                               SDR_ECC_MemSubType memSubType,
-                               SDR_ECC_InjectErrorType errorType);
+#include <sdr_common.h>
+#include <sdr_mpu.h>
+#include <ti/csl/arch/r5/csl_arm_r5_mpu.h>
 
-void SDR_ECC_enableECCEventCheck(SDR_ECC_MemType eccMemType,
-                                SDR_ECC_MemSubType memSubType,
-                                SDR_ECC_InjectErrorType errorType);
-void SDR_ECC_disableECCEventCheck(SDR_ECC_MemType eccMemType,
-                                 SDR_ECC_InjectErrorType errorType);
-#endif /* INCLUDE_SDR_ECC_CORE_H_ */
+void SDR_MPUCfgAddRegion(const SDR_MPU_memConfig_t *pMemConfig);
+void SDR_MPUResolve(uint32_t baseAddr, uint32_t regId);
+void SDR_MPUCfgRemoveRegion(const SDR_MPU_memConfig_t *pMemConfig);
+
+#endif /* INCLUDE_SDR_MPUCFG_H_ */

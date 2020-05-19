@@ -41,10 +41,10 @@
 #include <ti/csl/csl_rti.h>
 #include <ti/csl/soc.h>
 
-#include <sdl_common.h>
-#include <sdl_wdt.h>
+#include <sdr_common.h>
+#include <sdr_wdt.h>
 
-#include <sdl_wdt_priv.h>
+#include <sdr_wdt_priv.h>
 
 /* Local funcions */
 static uint32_t SDR_WDT_getBaseAddr(SDR_WDT_TimerId timerId);

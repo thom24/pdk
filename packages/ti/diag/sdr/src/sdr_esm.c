@@ -37,13 +37,13 @@
 #include <stddef.h>
 #include <stdbool.h>
 
-#include <sdl_common.h>
-#include <sdl_esm.h>
+#include <sdr_common.h>
+#include <sdr_esm.h>
 
-#include <sdl_esm_soc.h>
-#include "sdl_esm_core.h"
+#include <sdr_esm_soc.h>
+#include "sdr_esm_core.h"
 
-#include "sdl_esm_priv.h"
+#include "sdr_esm_priv.h"
 
 /* Global ESM instance */
 static SDR_ESM_Instance_t SDR_ESM_instance;

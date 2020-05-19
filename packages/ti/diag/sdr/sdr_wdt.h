@@ -47,7 +47,7 @@
 #ifndef INCLUDE_SDR_WDT_H_
 #define INCLUDE_SDR_WDT_H_
 
-#include "sdl_common.h"
+#include "sdr_common.h"
 
 #ifdef __cplusplus
 extern "C" {

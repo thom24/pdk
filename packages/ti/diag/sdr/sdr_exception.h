@@ -52,7 +52,7 @@
 
 #ifndef INCLUDE_SDR_EXCEPTION_H_
 #define INCLUDE_SDR_EXCEPTION_H_
-#include "sdl_common.h"
+#include "sdr_common.h"
 
 #ifdef __cplusplus
 extern "C" {

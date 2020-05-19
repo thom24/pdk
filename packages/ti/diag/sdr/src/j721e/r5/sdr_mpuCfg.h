@@ -3,7 +3,7 @@
  *
  * Software Diagnostics Reference module for MPU configuration module
  *
- *  Copyright (c) Texas Instruments Incorporated 2019-2020
+ *  Copyright (c) Texas Instruments Incorporated 2020
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -46,8 +46,8 @@
 #ifndef INCLUDE_SDR_MPUCFG_H_
 #define INCLUDE_SDR_MPUCFG_H_
 
-#include <sdl_common.h>
-#include <sdl_mpu.h>
+#include <sdr_common.h>
+#include <sdr_mpu.h>
 #include <ti/csl/arch/r5/csl_arm_r5_mpu.h>
 
 void SDR_MPUCfgAddRegion(const SDR_MPU_memConfig_t *pMemConfig);

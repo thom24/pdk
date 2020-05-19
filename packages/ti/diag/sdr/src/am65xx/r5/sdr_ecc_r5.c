@@ -36,19 +36,19 @@
  */
 
 #include <string.h>
-#include <sdl_ecc.h>
+#include <sdr_ecc.h>
 #include <ti/csl/csl_ecc_aggr.h>
 #include <ti/csl/soc.h>
 
 #include <ti/csl/arch/r5/csl_arm_r5_pmu.h>
 #include <ti/csl/arch/r5/csl_vim.h>
 
-#include <sdl_utils.h>
-#include <sdl_ecc_utils.h>
+#include <sdr_utils.h>
+#include <sdr_ecc_utils.h>
 
-#include <sdl_ecc_priv.h>
-#include <sdl_ecc_core.h>
-#include <sdl_soc_r5.h>
+#include <sdr_ecc_priv.h>
+#include <sdr_ecc_core.h>
+#include <sdr_soc_r5.h>
 
 /* Local defines */
 #define SDR_ECC_R5_MONITOR_PMU_NUMBER (1u)

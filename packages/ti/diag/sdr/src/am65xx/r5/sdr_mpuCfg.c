@@ -35,7 +35,7 @@
  *
  */
 
-#include <sdl_mpuCfg.h>
+#include <sdr_mpuCfg.h>
 
 /* Local functions */
 static void SDR_mpuCfg_local(const CSL_ArmR5MpuRegionCfg *pCfg);

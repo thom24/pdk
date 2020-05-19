@@ -38,10 +38,10 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#include <sdl_esm.h>
-#include <sdl_esm_soc.h>
-#include <sdl_esm_core.h>
-#include <sdl_esm_priv.h>
+#include <sdr_esm.h>
+#include <sdr_esm_soc.h>
+#include <sdr_esm_core.h>
+#include <sdr_esm_priv.h>
 
 /** ============================================================================
  *

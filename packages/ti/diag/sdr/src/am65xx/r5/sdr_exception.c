@@ -38,12 +38,12 @@
 #include <stddef.h>
 #include <stdbool.h>
 
-#include <sdl_esm.h>
-#include <sdl_mpu.h>
-#include <sdl_utils.h>
+#include <sdr_esm.h>
+#include <sdr_mpu.h>
+#include <sdr_utils.h>
 
-#include <sdl_exception.h>
-#include <sdl_exception_priv.h>
+#include <sdr_exception.h>
+#include <sdr_exception_priv.h>
 
 /* Local defines */
 

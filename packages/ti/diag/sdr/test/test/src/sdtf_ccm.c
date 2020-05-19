@@ -37,7 +37,7 @@
 
 #include <stdint.h>
 
-#include <sdl_ccm.h>
+#include <sdr_ccm.h>
 
 #include "sdtf_common.h"
 #include "sdtf_profile.h"

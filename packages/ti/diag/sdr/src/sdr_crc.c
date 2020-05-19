@@ -40,8 +40,8 @@
 
 #include <string.h>
 #include <stdint.h>
-#include <sdl_common.h>
-#include <sdl_crc.h>
+#include <sdr_common.h>
+#include <sdr_crc.h>
 
 /* Local defines */
 

@@ -3,7 +3,7 @@
  *
  * Software Diagnostics Reference module for ECC
  *
- *  Copyright (c) Texas Instruments Incorporated 2020
+ *  Copyright (c) Texas Instruments Incorporated 2018-2020
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -39,10 +39,10 @@
 #define INCLUDE_SDR_ECC_SOC_H_
 
 #include <stdint.h>
-#include <sdl_ecc.h>
+#include <sdr_ecc.h>
 #include <ti/csl/csl_ecc_aggr.h>
 
-#include "sdl_ecc_priv.h"
+#include "sdr_ecc_priv.h"
 
 /* define MAX entry based on list of Subtypes */
 #define SDR_PULSAR_CPU_RAM_ID_TABLE_MAX_ENTRIES (CSL_ECCAGGR_PULSAR_SL_CPU0_KS_VIM_RAMECC_VECTOR_ID+1u)
@@ -124,42 +124,21 @@ const SDR_MemConfig_t SDR_ECC_mcuArmssMemEntries[SDR_PULSAR_CPU_RAM_ID_TABLE_MAX
 
 CSL_ecc_aggrRegs * const SDR_ECC_aggrBaseAddressTable[SDR_ECC_AGGREGATOR_MAX_ENTRIES] =
 {
-    ((CSL_ecc_aggrRegs *)((uintptr_t)CSL_MCU_R5FSS0_CORE0_ECC_AGGR_BASE)),
-    ((CSL_ecc_aggrRegs *)((uintptr_t)0U)),
-    ((CSL_ecc_aggrRegs *)((uintptr_t)CSL_MCU_ADC0_ECC_REGS_BASE)),
-    ((CSL_ecc_aggrRegs *)((uintptr_t)CSL_MCU_ADC1_ECC_REGS_BASE)),
-    ((CSL_ecc_aggrRegs *)((uintptr_t)CSL_CPSW0_ECC_BASE)),
+    ((CSL_ecc_aggrRegs *)((uintptr_t)CSL_MCU_ARMSS0_CORE0_ECC_AGGR_BASE)),
+    ((CSL_ecc_aggrRegs *)((uintptr_t)CSL_MCU_ARMSS0_CORE1_ECC_AGGR_BASE)),
+    ((CSL_ecc_aggrRegs *)((uintptr_t)CSL_MCU_ADC0_ECC_BASE)),
+    ((CSL_ecc_aggrRegs *)((uintptr_t)CSL_MCU_ADC1_ECC_BASE)),
+    ((CSL_ecc_aggrRegs *)((uintptr_t)CSL_MCU_CPSW0_ECC_BASE)),
     ((CSL_ecc_aggrRegs *)((uintptr_t)CSL_MCU_FSS0_HPB_ECC_AGGR_BASE)),
     ((CSL_ecc_aggrRegs *)((uintptr_t)CSL_MCU_FSS0_OSPI0_ECC_AGGR_BASE)),
     ((CSL_ecc_aggrRegs *)((uintptr_t)CSL_MCU_FSS0_OSPI1_ECC_AGGR_BASE)),
     ((CSL_ecc_aggrRegs *)((uintptr_t)CSL_MCU_MCAN0_ECC_AGGR_BASE)),
     ((CSL_ecc_aggrRegs *)((uintptr_t)CSL_MCU_MCAN1_ECC_AGGR_BASE)),
-    ((CSL_ecc_aggrRegs *)((uintptr_t)CSL_MCU_MSRAM_1MB0_ECC_AGGR_REGS_BASE)),
+    ((CSL_ecc_aggrRegs *)((uintptr_t)CSL_MCU_MSRAM0_ECC_AGGR_BASE)),
     ((CSL_ecc_aggrRegs *)((uintptr_t)CSL_MCU_NAVSS0_ECCAGGR0_BASE)),
-    ((CSL_ecc_aggrRegs *)((uintptr_t)0U)),
-    ((CSL_ecc_aggrRegs *)((uintptr_t)0U)),
+    ((CSL_ecc_aggrRegs *)((uintptr_t)CSL_MCU_PDMA0_ECC_AGGR_BASE)),
+    ((CSL_ecc_aggrRegs *)((uintptr_t)CSL_MCU_PDMA1_ECC_AGGR_BASE)),
     ((CSL_ecc_aggrRegs *)((uintptr_t)CSL_PSRAMECC0_ECC_AGGR_BASE)),
 };
-
-const SDR_RAMIdEntry_t SDR_ECC_MSRAMRamIdTable =
-{
-    0u, ((bool)false)
-};
-
-const SDR_MemConfig_t SDR_ECC_MSRAMMemEntry =
-{
-     CSL_MCU_MSRAM_1MB0_RAM_BASE,  CSL_MCU_MSRAM_1MB0_RAM_SIZE, 4u, ((bool)true)
-};
-
-const SDR_RAMIdEntry_t SDR_ECC_MainMSMCECC0RamIdTable =
-{
-    0u, ((bool)false)
-};
-
-const SDR_MemConfig_t SDR_ECC_MainMSMCECC0MemEntry =
-{
-     CSL_MSRAM16KX256E0_RAM_BASE,  CSL_MSRAM16KX256E0_RAM_SIZE, 4u, ((bool)true)
-};
-
 
 #endif /* INCLUDE_SDR_ECC_SOC_H_ */

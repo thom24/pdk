@@ -41,8 +41,8 @@
 #include <ti/csl/csl_rti.h>
 #include <ti/csl/soc.h>
 
-#include <sdl_common.h>
-#include <sdl_wdt.h>
+#include <sdr_common.h>
+#include <sdr_wdt.h>
 
 #include <ti/osal/osal.h>
 

@@ -35,8 +35,8 @@
  *
  */
 
-#include <sdl_common.h>
-#include <sdl_ecc.h>
+#include <sdr_common.h>
+#include <sdr_ecc.h>
 #include "sdtf_errortype.h"
 #include "sdtf_common.h"
 #include "sdtf_injecterr.h"

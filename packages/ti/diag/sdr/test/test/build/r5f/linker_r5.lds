@@ -116,52 +116,52 @@ SECTIONS
     .intvecs 	: {} palign(8) 		> VECTORS
     .intc_text 	: {} palign(8) 		> VECTORS
     .rstvectors 	: {} palign(8) 		> MCU0_R5F_TCMA
-    .sdl_text_esm align(8) : {
-                              sdr.*<sdl_esm.o*> (.text)
+    .sdr_text_esm align(8) : {
+                              sdr.*<sdr_esm.o*> (.text)
                         }  > MSMC3_SDR
-    .sdl_text_ecc align(8) : {
-                              sdr.*<sdl_ecc.o*> (.text)
+    .sdr_text_ecc align(8) : {
+                              sdr.*<sdr_ecc.o*> (.text)
                         }  > MSMC3_SDR
-    .sdl_text_ccm align(8) : {
-                              sdr.*<sdl_ccm.o*> (.text)
+    .sdr_text_ccm align(8) : {
+                              sdr.*<sdr_ccm.o*> (.text)
                         }  > MSMC3_SDR
-    .sdl_text_crc align(8) : {
-                              sdr.*<sdl_crc.o*> (.text)
+    .sdr_text_crc align(8) : {
+                              sdr.*<sdr_crc.o*> (.text)
                         }  > MSMC3_SDR
-    .sdl_text_mpu align(8) : {
-                              sdr.*<sdl_mpu.o*> (.text)
+    .sdr_text_mpu align(8) : {
+                              sdr.*<sdr_mpu.o*> (.text)
                         }  > MSMC3_SDR
-    .sdl_text_wdt align(8) : {
-                              sdr.*<sdl_wdt.o*> (.text)
+    .sdr_text_wdt align(8) : {
+                              sdr.*<sdr_wdt.o*> (.text)
                         }  > MSMC3_SDR
-    .sdl__esm align(8) : {
+    .sdr__esm align(8) : {
                         }  > MSMC3_SDR
-    .sdl_data_ecc align(8) : {
-                              sdr.*<sdl_ecc.o*> (.const)
+    .sdr_data_ecc align(8) : {
+                              sdr.*<sdr_ecc.o*> (.const)
                         }  > MSMC3_SDR
-    .sdl_data_mpu align(8) : {
-                              sdr.*<sdl_mpu*> (.const)
+    .sdr_data_mpu align(8) : {
+                              sdr.*<sdr_mpu*> (.const)
                         }  > MSMC3_SDR
-    .sdl_bss_esm align(8) : {
-                              sdr.*<sdl_esm.o*> (.bss)
+    .sdr_bss_esm align(8) : {
+                              sdr.*<sdr_esm.o*> (.bss)
                         }  > MSMC3_SDR
-    .sdl_bss_ecc align(8) : {
-                              sdr.*<sdl_ecc.o*> (.bss)
+    .sdr_bss_ecc align(8) : {
+                              sdr.*<sdr_ecc.o*> (.bss)
                         }  > MSMC3_SDR
-    .sdl_bss_ccm align(8) : {
-                              sdr.*<sdl_ccm.o*> (.bss)
+    .sdr_bss_ccm align(8) : {
+                              sdr.*<sdr_ccm.o*> (.bss)
                         }  > MSMC3_SDR
-    .sdl_bss_crc align(8) : {
-                              sdr.*<sdl_crc.o*> (.bss)
+    .sdr_bss_crc align(8) : {
+                              sdr.*<sdr_crc.o*> (.bss)
                         }  > MSMC3_SDR
-    .sdl_bss_mpu align(8) : {
-                              sdr.*<sdl_mpu.o*> (.bss)
+    .sdr_bss_mpu align(8) : {
+                              sdr.*<sdr_mpu.o*> (.bss)
                         }  > MSMC3_SDR
-    .sdl_bss_wdt align(8) : {
-                              sdr.*<sdl_wdt.o*> (.bss)
+    .sdr_bss_wdt align(8) : {
+                              sdr.*<sdr_wdt.o*> (.bss)
                         }  > MSMC3_SDR
-    .sdl_bss_exception align(8) : {
-                              sdr.*<sdl_exception*> (.bss)
+    .sdr_bss_exception align(8) : {
+                              sdr.*<sdr_exception*> (.bss)
                         }  > MSMC3_SDR
 
     .bootCode	: {} palign(8) 		> MSMC3

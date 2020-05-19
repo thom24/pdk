@@ -37,11 +37,11 @@
 
 #include <stddef.h>
 
-#include <sdl_common.h>
-#include <sdl_wdt.h>
-#include <sdl_esm.h>
+#include <sdr_common.h>
+#include <sdr_wdt.h>
+#include <sdr_esm.h>
 
-#include "sdl_wdt_priv.h"
+#include "sdr_wdt_priv.h"
 
 /** ---------------------------------------------------------------------------
  *

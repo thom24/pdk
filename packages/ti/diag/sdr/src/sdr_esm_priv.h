@@ -1,9 +1,9 @@
 /*
- * SDR MPU Configuration
+ * SDR ESM
  *
- * Software Diagnostics Reference module for MPU configuration module
+ * Software Diagnostics Reference module for ESM
  *
- *  Copyright (c) Texas Instruments Incorporated 2020
+ *  Copyright (c) Texas Instruments Incorporated 2018-2020
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -35,23 +35,42 @@
  *
  */
 
-/**
- * @file  sdr_mpuCfg.h
- *
- * @brief
- *  Header file for SDR MPU configuration interface.
- *  ============================================================================
+#ifndef INCLUDE_SDR_ESM_PRIV_H_
+#define INCLUDE_SDR_ESM_PRIV_H_
+
+#include <stddef.h>
+#include <stdbool.h>
+
+#include <sdr_esm.h>
+
+/** ---------------------------------------------------------------------------
+ * @brief This structure defines the elements of ESM software instance
+ * ----------------------------------------------------------------------------
  */
+typedef struct SDR_ESM_Instance_s
+{
+    SDR_ESM_InitConfig_t esmInitConfig;
+    /**< Store esm Init configuration */
+    SDR_ESM_ECCCallback_t eccCallBackFunction;
+    /**< Store ECC callback function */
+    SDR_ESM_CCMCallback_t CCMCallBackFunction;
+    /**< Store CCM callback function */
+    SDR_ESM_WDTCallback_t WDTCallBackFunction;
+    /**< Store WDT callback function */
+    volatile bool selfTestFlag;
+    /**< selfTest Flag */
+}  SDR_ESM_Instance_t;
 
-#ifndef INCLUDE_SDR_MPUCFG_H_
-#define INCLUDE_SDR_MPUCFG_H_
+/** ============================================================================
+ *
+ * \brief   Handle any event that needs to be handled locally before
+ *          reporting to application
+ *
+ * \param  pInstance: Pointer to ESM instance
+ * \param  intSrc: Source interrupt number
+ *
+ * \return  true: if event handled; false if not handled
+ */
+bool SDR_ESM_handleIntSrc(const SDR_ESM_Instance_t *pInstance, uint32_t intSrc);
 
-#include <sdl_common.h>
-#include <sdl_mpu.h>
-#include <ti/csl/arch/r5/csl_arm_r5_mpu.h>
-
-void SDR_MPUCfgAddRegion(const SDR_MPU_memConfig_t *pMemConfig);
-void SDR_MPUResolve(uint32_t baseAddr, uint32_t regId);
-void SDR_MPUCfgRemoveRegion(const SDR_MPU_memConfig_t *pMemConfig);
-
-#endif /* INCLUDE_SDR_MPUCFG_H_ */
+#endif /* INCLUDE_SDR_ESM_PRIV_H_ */

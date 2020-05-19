@@ -50,7 +50,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "sdl_common.h"
+#include "sdr_common.h"
 
 #ifdef __cplusplus
 extern "C" {

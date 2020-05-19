@@ -37,8 +37,8 @@
 #ifndef INCLUDE_SDTF_COMMON_H_
 #define INCLUDE_SDTF_COMMON_H_
 
-#include <sdl_ecc.h>
-#include <sdl_common.h>
+#include <sdr_ecc.h>
+#include <sdr_common.h>
 
 #ifdef UART_PRINTF
 #include <ti/drv/uart/UART_stdio.h>

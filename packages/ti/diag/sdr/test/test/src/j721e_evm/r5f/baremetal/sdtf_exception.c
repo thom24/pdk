@@ -36,7 +36,7 @@
  */
 
 #include "sdtf_common.h"
-#include "sdl_exception.h"
+#include "sdr_exception.h"
 
 #include <ti/csl/arch/r5/interrupt.h>
 

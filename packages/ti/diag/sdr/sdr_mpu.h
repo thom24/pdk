@@ -1,7 +1,7 @@
 /*
- * SDR CRC
+ * SDR MPU
  *
- * Software Diagnostics Reference module for CRC module
+ * Software Diagnostics Reference module for MPU module
  *
  *  Copyright (c) Texas Instruments Incorporated 2019-2020
  *
@@ -36,19 +36,18 @@
  */
 
 /**
- * @file  sdr_crc.h
+ * @file  sdr_mpu.h
  *
  * @brief
  *  Header file contains enumerations, structure definitions and function
- *  declarations for SDR CRC interface.
+ *  declarations for SDR MPU interface.
  *  ============================================================================
  */
 
-#ifndef INCLUDE_SDR_CRC_H_
-#define INCLUDE_SDR_CRC_H_
+#ifndef INCLUDE_SDR_MPU_H_
+#define INCLUDE_SDR_MPU_H_
 
-#include "sdl_common.h"
-#include <ti/csl/csl_crc.h>
+#include "sdr_common.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -56,52 +55,53 @@ extern "C" {
 
 /** ===========================================================================
  *
- * @defgroup SDR_CRC_API SDR CRC API
+ * @defgroup SDR_MPU_API SDR MPU API
  *
  * @section Overview
- * The SDR CRC module provides API for WatchDog Timer Diagnostics
+ * The SDR MPU module provides API for MPU Diagnostics
  *
  * ============================================================================
  */
 /**
-@defgroup SDR_CRC_DATASTRUCT  SDR CRC Data Structures
-@ingroup SDR_CRC_API
+@defgroup SDR_MPU_DATASTRUCT  SDR MPU Data Structures
+@ingroup SDR_MPU_API
 */
 /**
-@defgroup SDR_CRC_FUNCTION  SDR CRC Functions
-@ingroup SDR_CRC_API
+@defgroup SDR_MPU_FUNCTION  SDR MPU Functions
+@ingroup SDR_MPU_API
 */
 /**
-@defgroup SDR_CRC_ENUM SDR CRC Enumerated Data Types
-@ingroup SDR_CRC_API
+@defgroup SDR_MPU_ENUM SDR MPU Enumerated Data Types
+@ingroup SDR_MPU_API
 */
 
 /**
-@defgroup SDR_CRC_MACROS SDR CRC Macro defines
-@ingroup SDR_CRC_API
+@defgroup SDR_MPU_MACROS SDR MPU Macro defines
+@ingroup SDR_MPU_API
 */
 
 /** ===========================================================================
- *  @addtogroup SDR_CRC_ENUM
+ *  @addtogroup SDR_MPU_ENUM
     @{
  * ============================================================================
  */
+
 /** ---------------------------------------------------------------------------
- * \brief This enumerator defines the Data size for input CRC DATA
+ * \brief This enumerator defines the type of Memory access to be used
+ *        to trigger MPU exception
  * ----------------------------------------------------------------------------
  */
 typedef enum {
-    SDR_CRC_DATA_8_BIT = 1,
-    /**< 8 Bit data packed */
-    SDR_CRC_DATA_16_BIT = 2,
-    /**< 16 Bit data packed */
-    SDR_CRC_DATA_32_BIT = 3,
-    /**< 32 Bit data packed */
-} SDR_CRC_dataBitSize;
+    SDR_MPU_DATA_READ_ACCESS = 1,
+    /**<  Use DATA Read access for MPU violation */
+    SDR_MPU_DATA_WRITE_ACCESS = 2,
+    /**<  Use DATA Write access for MPU violation */
+} SDR_MPU_memAccessType;
+
 /* @} */
 
 /**
- *  \addtogroup SDR_CRC_MACROS
+ *  \addtogroup SDR_MPU_MACROS
  *  @{
  */
 
@@ -109,58 +109,53 @@ typedef enum {
 /* @} */
 
 /**
- *  \addtogroup SDR_CRC_DATASTRUCT
+ *  \addtogroup SDR_MPU_DATASTRUCT
  *  @{
  */
 
 /** ---------------------------------------------------------------------------
- * \brief CRC Data configuration
+ * \brief MPU Data configuration
  *
- * This structure defines the elements of the CRC Data configuration
+ * This structure defines the elements of the MPU Data configuration
+ * Please refer to ARM R5 Technical Reference Manual for details on MPU
+ * The self test code assumes a free memory region ID to be provided which
+ * configures the test memory location sub region to trigger the intended
+ * MPU permission fault.
  * ----------------------------------------------------------------------------
  */
-typedef struct SDR_CRC_dataConfig_s
+typedef struct SDR_MPU_memConfig_s
 {
-    uint32_t *pCRCData;
-    /**< Pointer to Data used for CRC  */
-    uint32_t size;
-    /**< Size of Data in Bytes  */
-    SDR_CRC_dataBitSize dataBitSize;
-    /**< Data Bit size  */
-    crcOperationMode_t crcOpMode;
-    /**< CRC operation mode, only full CPU mode is supported  */
-    uint32_t refCRCValueLSW;
-    /**< Reference CRC value Lower 32 bits */
-    uint32_t refCRCValueMSW;
-    /**< Reference CRC value Upper 32 bits */
-
-} SDR_CRC_dataConfig_t;
+    uint32_t *pMemLocation;
+    /**< Pointer to 16 byte aligned 32 byte memory block for self test 
+         example location as 0x41C7EFE0 */
+    SDR_MPU_memAccessType memAccessType;
+    /**< Memory access type to be used to generate exception */
+    uint32_t  mpuRegionId;
+    /**< MPU Region ID to be used for MPU Self Test */
+} SDR_MPU_memConfig_t;
 
 /* @} */
 
 /**
- *  \addtogroup SDR_CRC_FUNCTION
+ *  \addtogroup SDR_MPU_FUNCTION
  *  @{
  */
 
 /** ============================================================================
  *
- * \brief   Initializes CRC module for SDR
+ * \brief   Self Test API for MPU module
+ *         NOTE: Need to call SDR_MPU_init function before calling this API
  *
- * \return  None
- */
-void SDR_CRC_init (void);
+ * \param   pMemConfig: Pointer to memory configuration to be used for MPU
+ *                        exception
 
-/** ============================================================================
+ * \param   loopCount: Based on this count the diagnostics will wait in a loop
+ *                     value of 0 indicates WAIT_FOREVER
  *
- * \brief   Self Test API for CRC module
- *
- * \param   crcChannel: CRC channel number to be used
- * \param   pDataConfig: Pointer to data configuration
- *
- * \return  SDR_PASS: Success; SDR_FAIL: Failure; SDR_BADARGS: Bad arguments error
+ * \return  SDR_RETURN_PASS : Success; SDR_RETURN_FAIL for failures
  */
-SDR_Result SDR_CRC_selftest (uint32_t crcChannel, const SDR_CRC_dataConfig_t *pDataConfig);
+SDR_Result SDR_MPU_selfTest (const SDR_MPU_memConfig_t *pMemConfig,
+                             uint32_t loopCount);
 
 /* @} */
 
@@ -168,4 +163,4 @@ SDR_Result SDR_CRC_selftest (uint32_t crcChannel, const SDR_CRC_dataConfig_t *pD
 }
 #endif  /* extern "C" */
 
-#endif /* INCLUDE_SDR_CRC_H_ */
+#endif /* INCLUDE_SDR_MPU_H_ */

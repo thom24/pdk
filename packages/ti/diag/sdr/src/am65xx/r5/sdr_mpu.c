@@ -38,14 +38,14 @@
 #include <string.h>
 #include <stdint.h>
 #include <stdbool.h>
-#include <sdl_common.h>
-#include <sdl_mpu.h>
-#include <sdl_exception.h>
-#include <sdl_mpuCfg.h>
+#include <sdr_common.h>
+#include <sdr_mpu.h>
+#include <sdr_exception.h>
+#include <sdr_mpuCfg.h>
 
 #include <ti/csl/soc.h>
 
-#include "sdl_utils.h"
+#include "sdr_utils.h"
 
 /** ---------------------------------------------------------------------------
  * @brief This enumerator defines the values for mpu self test flag

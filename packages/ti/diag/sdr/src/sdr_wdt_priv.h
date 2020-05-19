@@ -38,8 +38,8 @@
 #ifndef INCLUDE_SDR_WDT_PRIV_H_
 #define INCLUDE_SDR_WDT_PRIV_H_
 
-#include <sdl_wdt.h>
-#include <sdl_esm.h>
+#include <sdr_wdt.h>
+#include <sdr_esm.h>
 
 void SDR_WDT_feedWatchdog(SDR_WDT_TimerId timerId);
 void SDR_WDT_clearAllInterruptEvents(SDR_ESM_WDT_IntSrc intSrc);

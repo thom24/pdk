@@ -37,9 +37,9 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <sdl_common.h>
-#include <sdl_ecc.h>
-#include <sdl_esm.h>
+#include <sdr_common.h>
+#include <sdr_ecc.h>
+#include <sdr_esm.h>
 
 #include <ti/drv/uart/src/UART_utils_defs.h>
 #include <ti/drv/uart/UART_stdio.h>
