@@ -110,6 +110,10 @@ extern int32_t OSPI_socSetInitCfg(uint32_t idx, const OSPI_v0_HwAttrs *cfg);
 #define OSPI_MODULE_CLK_160M   (160000000U)
 #define OSPI_MODULE_CLK_200M   (200000000U)
 #define OSPI_MODULE_CLOCK      OSPI_MODULE_CLK_133M
+
+#define OSPI_DEV_DELAY_CSDA_2  (0x2U)  /* Chip Select De-Assert device delay in # of ref_clk */
+#define OSPI_DEV_DELAY_CSDA_3  (0x3U)
+#define OSPI_DEV_DELAY_CSDA    OSPI_DEV_DELAY_CSDA_2
 #endif
 
 

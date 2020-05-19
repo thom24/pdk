@@ -536,7 +536,7 @@ OSPI_v0_HwAttrs ospiInitCfg[SPI_OSPI_PER_CNT + 1U] =
             0,                             /* default Chip Select Start of Transfer Delay */
             0,                             /* default Chip Select End of Transfer Delay */
             0,                             /* default Chip Select De-Assert Different Slaves Delay */
-            0                              /* default Chip Select De-Assert Delay */
+            OSPI_DEV_DELAY_CSDA            /* default Chip Select De-Assert Delay */
         },
         256,                               /* device page size is 256 bytes  */
         17,                                /* device block size is 2 ^ 17 = 128K bytes */
@@ -572,7 +572,7 @@ OSPI_v0_HwAttrs ospiInitCfg[SPI_OSPI_PER_CNT + 1U] =
             0,
             0,
             0,
-            0
+            OSPI_DEV_DELAY_CSDA
         },
         256,
         17,

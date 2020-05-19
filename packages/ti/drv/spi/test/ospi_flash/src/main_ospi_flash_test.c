@@ -671,7 +671,15 @@ void OSPI_initConfig(OSPI_Tests *test)
     ospi_cfg.funcClk = test->clk;
 #if defined(VLAB_SIM)
     ospi_cfg.phyEnable = false;
-#endif    
+#endif
+    if (ospi_cfg.funcClk == OSPI_MODULE_CLK_133M)
+    {
+        ospi_cfg.devDelays[3] = OSPI_DEV_DELAY_CSDA;
+    }
+    else
+    {
+        ospi_cfg.devDelays[3] = OSPI_DEV_DELAY_CSDA_3;
+    }
     /* Set the default OSPI init configurations */
     OSPI_socSetInitCfg(BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
 }
