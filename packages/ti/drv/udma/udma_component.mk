@@ -243,7 +243,7 @@ udma_dru_testapp_PKG_LIST = udma_dru_testapp
 udma_dru_testapp_INCLUDE = $(udma_dru_testapp_PATH)
 export udma_dru_testapp_BOARDLIST = $(drvudma_dru_BOARDLIST)
 ifeq ($(SOC),$(filter $(SOC), j721e))
-export udma_dru_testapp_$(SOC)_CORELIST = mcu2_1 c66xdsp_1 c66xdsp_2 c7x_1
+export udma_dru_testapp_$(SOC)_CORELIST = mcu2_0 c66xdsp_1 c66xdsp_2 c7x_1
 else
 export udma_dru_testapp_$(SOC)_CORELIST = $(drvudma_$(SOC)_example_CORELIST)
 endif
@@ -261,7 +261,7 @@ udma_dru_direct_tr_testapp_PKG_LIST = udma_dru_direct_tr_testapp
 udma_dru_direct_tr_testapp_INCLUDE = $(udma_dru_direct_tr_testapp_PATH)
 export udma_dru_direct_tr_testapp_BOARDLIST = $(drvudma_dru_BOARDLIST)
 ifeq ($(SOC),$(filter $(SOC), j721e))
-export udma_dru_direct_tr_testapp_$(SOC)_CORELIST = mcu2_1 c66xdsp_1 c7x_1
+export udma_dru_direct_tr_testapp_$(SOC)_CORELIST = mcu2_0 c66xdsp_1 c7x_1
 else
 export udma_dru_direct_tr_testapp_$(SOC)_CORELIST = $(drvudma_$(SOC)_example_CORELIST)
 endif
