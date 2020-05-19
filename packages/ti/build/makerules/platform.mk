@@ -197,6 +197,14 @@ ifeq ($(BOARD),$(filter $(BOARD), tpr12_evm tpr12_qt))
  SBL_DEV_ID=55
 endif
 
+#
+# Package type
+#
+PDK_PACKAGE_TYPE = package_type_xdc
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 tpr12 am64x))
+PDK_PACKAGE_TYPE = package_type_makefile
+endif
+export PDK_PACKAGE_TYPE
 
 #
 # Derive Target/ISA from CORE
@@ -451,7 +459,7 @@ ifeq ($(ISA),r5f)
      TARGET_XDC = ti.targets.arm.elf.R5F
     else
      TARGET_XDC = ti.targets.arm.elf.R5Ft
-    endif    
+    endif
     FORMAT_EXT = e
   else
     TARGET_XDC = ti.targets.arm.R5Ft
@@ -501,8 +509,8 @@ ifeq ($(ISA),r5f)
   else
     OBJEXT_BIOS = o$(FORMAT_EXT)r5ft$(ENDIAN_EXT)
     PEXT_BIOS   = p$(FORMAT_EXT)r5ft$(ENDIAN_EXT)
-  endif  
-  # Retaining the r5f extension for backward compatibility 
+  endif
+  # Retaining the r5f extension for backward compatibility
   LIBEXT = a$(FORMAT_EXT)$(ISA_EXT)$(ENDIAN_EXT)
   EXEEXT = x$(FORMAT_EXT)$(ISA_EXT)$(ENDIAN_EXT)
   ASMEXT = s$(FORMAT_EXT)$(ISA_EXT)$(ENDIAN_EXT)

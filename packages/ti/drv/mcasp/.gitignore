@@ -1,1 +1,10 @@
-lib/
+lib/*
+.dlls
+.executables
+.xdcenv.mak
+*.mak
+.interfaces
+.libraries
+package/*
+Settings.h
+Settings.xdc

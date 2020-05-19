@@ -42,6 +42,8 @@ var gpmcRTSCFileName = "gpmc" + "_" +
                       driverReleaseVersion[0] + "_" +  driverReleaseVersion[1] + "_" +
                       driverReleaseVersion[2]  + "_" + driverReleaseVersion[3];
 
+var package_type = java.lang.System.getenv("PDK_PACKAGE_TYPE");
+
 /******************************************************************
  ************************ Release Banner **************************
  ******************************************************************/
@@ -54,7 +56,7 @@ print ("M4 Tools Directory              : " + m4ToolsBaseDir);
 print ("A15 Tools Directory             : " + a15ToolsBaseDir);
 print ("RTSC File Name                  : " + gpmcRTSCFileName);
 print ("gpmc Socket Driver LLD Path      : " + driverPath);
-if (pOpts == 1) 
+if (pOpts == 1)
 {
     print ("CC LE opts                      : " + C66LE.ccOpts.prefix);
     print ("CC BE opts                      : " + C66BE.ccOpts.prefix);
@@ -74,47 +76,50 @@ Pkg.defaultRelease = Pkg.addRelease (gpmcRTSCFileName, {prefix: "./packages/"});
  * uncompression into a temporary directory. XDC Tools with xdc-rXX support the ZIP archiver. */
 //Pkg.attrs = {archiver : "zip"};
 
-/* Cycle through all the sub-directories and build all the files */
-for (var i = 0; i < subDirectories.length; i++)
+if (package_type != "package_type_makefile")
 {
-    /* Load the capsule in the sub directory. */
-    var caps = xdc.loadCapsule (subDirectories[i]+"/Module.xs");
+    /* Cycle through all the sub-directories and build all the files */
+    for (var i = 0; i < subDirectories.length; i++)
+    {
+        /* Load the capsule in the sub directory. */
+        var caps = xdc.loadCapsule (subDirectories[i]+"/Module.xs");
 
-    print ("Building directory " + subDirectories[i]);
+        print ("Building directory " + subDirectories[i]);
 
-    /* Build the capsule. */
-    caps.modBuild();
+        /* Build the capsule. */
+        caps.modBuild();
 
-    /* Package the module.xs files for building via package */
-    Pkg.otherFiles[Pkg.otherFiles.length++] = subDirectories[i]+"/Module.xs";
+        /* Package the module.xs files for building via package */
+        Pkg.otherFiles[Pkg.otherFiles.length++] = subDirectories[i]+"/Module.xs";
+    }
+
+    /* Package the remaining files */
+    Pkg.otherFiles[Pkg.otherFiles.length++] = "config.bld";
+    Pkg.otherFiles[Pkg.otherFiles.length++] = "config_mk.bld";
+    Pkg.otherFiles[Pkg.otherFiles.length++] = "package.bld";
+    Pkg.otherFiles[Pkg.otherFiles.length++] = "package.xdc";
+    Pkg.otherFiles[Pkg.otherFiles.length++] = "package.xs";
+    Pkg.otherFiles[Pkg.otherFiles.length++] = "Settings.xdc";
+    Pkg.otherFiles[Pkg.otherFiles.length++] = "Settings.xdc.xdt";
+    Pkg.otherFiles[Pkg.otherFiles.length++] = "GPMC.h";
+    Pkg.otherFiles[Pkg.otherFiles.length++] = "GPMCver.h";
+    Pkg.otherFiles[Pkg.otherFiles.length++] = "GPMCver.h.xdt";
+    Pkg.otherFiles[Pkg.otherFiles.length++] = "docs/Doxyfile";
+    Pkg.otherFiles[Pkg.otherFiles.length++] = "docs/doxyfile.xdt";
+    Pkg.otherFiles[Pkg.otherFiles.length++] = "build/buildlib.xs";
+    Pkg.otherFiles[Pkg.otherFiles.length++] = "makefile";
+    Pkg.otherFiles[Pkg.otherFiles.length++] = "build/makefile.mk";
+    Pkg.otherFiles[Pkg.otherFiles.length++] = "build/makefile_profile.mk";
+    Pkg.otherFiles[Pkg.otherFiles.length++] = "build/makefile_indp.mk";
+    Pkg.otherFiles[Pkg.otherFiles.length++] = "build/makefile_profile_indp.mk";
+    Pkg.otherFiles[Pkg.otherFiles.length++] = "src/src_files_common.mk";
+    Pkg.otherFiles[Pkg.otherFiles.length++] = "gpmc_component.mk";
+    Pkg.otherFiles[Pkg.otherFiles.length++] = "./lib";
+
+    /* Generate Users Manual Doxyfile */
+    var tplt = xdc.loadTemplate("./docs/doxyfile.xdt");
+    tplt.genFile("./docs/Doxyfile",driverReleaseVersion);
 }
-
-/* Package the remaining files */
-Pkg.otherFiles[Pkg.otherFiles.length++] = "config.bld";
-Pkg.otherFiles[Pkg.otherFiles.length++] = "config_mk.bld";
-Pkg.otherFiles[Pkg.otherFiles.length++] = "package.bld";
-Pkg.otherFiles[Pkg.otherFiles.length++] = "package.xdc";
-Pkg.otherFiles[Pkg.otherFiles.length++] = "package.xs";
-Pkg.otherFiles[Pkg.otherFiles.length++] = "Settings.xdc";
-Pkg.otherFiles[Pkg.otherFiles.length++] = "Settings.xdc.xdt";
-Pkg.otherFiles[Pkg.otherFiles.length++] = "GPMC.h";
-Pkg.otherFiles[Pkg.otherFiles.length++] = "GPMCver.h";
-Pkg.otherFiles[Pkg.otherFiles.length++] = "GPMCver.h.xdt";
-Pkg.otherFiles[Pkg.otherFiles.length++] = "docs/Doxyfile";
-Pkg.otherFiles[Pkg.otherFiles.length++] = "docs/doxyfile.xdt";
-Pkg.otherFiles[Pkg.otherFiles.length++] = "build/buildlib.xs";
-Pkg.otherFiles[Pkg.otherFiles.length++] = "makefile";
-Pkg.otherFiles[Pkg.otherFiles.length++] = "build/makefile.mk";
-Pkg.otherFiles[Pkg.otherFiles.length++] = "build/makefile_profile.mk";
-Pkg.otherFiles[Pkg.otherFiles.length++] = "build/makefile_indp.mk";
-Pkg.otherFiles[Pkg.otherFiles.length++] = "build/makefile_profile_indp.mk";
-Pkg.otherFiles[Pkg.otherFiles.length++] = "src/src_files_common.mk";
-Pkg.otherFiles[Pkg.otherFiles.length++] = "gpmc_component.mk";
-Pkg.otherFiles[Pkg.otherFiles.length++] = "./lib";
-
-/* Generate Users Manual Doxyfile */
-var tplt = xdc.loadTemplate("./docs/doxyfile.xdt");
-tplt.genFile("./docs/Doxyfile",driverReleaseVersion);
 
 /* Generate Settings.xdc */
 var tplt = xdc.loadTemplate("./Settings.xdc.xdt");
@@ -123,5 +128,3 @@ tplt.genFile("./Settings.xdc",driverReleaseVersion);
 /* Generate paver.h */
 var tplt = xdc.loadTemplate("./GPMCver.h.xdt");
 tplt.genFile("./GPMCver.h",driverReleaseVersion);
-
-
