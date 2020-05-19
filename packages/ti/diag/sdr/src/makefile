@@ -65,8 +65,6 @@ SRCS_COMMON += sdl_wdt_r5.c
 SRCS_ASM_COMMON += sdl_ecc_utils.asm
 SRCS_ASM_COMMON += sdl_utils.asm
 
-#PACKAGE_SRCS_COMMON = sdl_common.h
-
 # Set specific source directories
 SRCDIR += src
 ifeq ($(SOC),$(filter $(SOC), am65xx j721e))
@@ -76,6 +74,8 @@ endif
 ifeq ($(CORE),$(filter $(CORE), mcu1_0))
 SRCDIR += src/am65xx/r5
 endif
+
+PACKAGE_SRCS_COMMON = .
 
 # Set specific include directories
 INCDIR += $(PDK_SDL_DIR)
