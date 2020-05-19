@@ -18,6 +18,12 @@ INCDIR = . src/
 INCDIR += $(bios_PATH)/packages/ti/posix/ccs
 SRCS_COMMON += main_am65xx.c nimu_osal.c
 
+# Enable copy of vectors
+ifeq ($(ISA),$(filter $(ISA), r5f))
+  SRCDIR += $(PDK_VECT_COPY_PATH)
+  SRCS_ASM_COMMON += utilsCopyVecs2ATcm.asm
+endif
+
 # List all the external components/interfaces, whose interface header files
 #  need to be included for this component
 INCLUDE_EXTERNAL_INTERFACES = bios xdc ndk pdk

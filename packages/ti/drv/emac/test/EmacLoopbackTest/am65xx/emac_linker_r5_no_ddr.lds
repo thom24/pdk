@@ -19,6 +19,7 @@
 --retain="*(.intc_text)"
 --retain="*(.rstvectors)"
 --fill_value=0
+--retain="*(.utilsCopyVecsToAtcm)"
 
 /*----------------------------------------------------------------------------*/
 /* Memory Map                                                                 */
@@ -60,6 +61,7 @@ SECTIONS
     .intvecs 	: {} palign(8) 		> VECTORS
     .intc_text 	: {} palign(8) 		> VECTORS
     .rstvectors 	: {} palign(8) 		> RESET_VECTORS
+    .utilsCopyVecsToAtcm : {} palign(8) > MCU0_R5F_TCMB0
     .text    	: {} palign(8) 		> OCMRAM
     .const   	: {} palign(8) 		> OCMRAM
     .cinit   	: {} palign(8) 		> OCMRAM

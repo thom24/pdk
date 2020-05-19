@@ -19,6 +19,7 @@
 --retain="*(.rstvectors)"
 --fill_value=0
 --entry_point=ti_sysbios_family_arm_v7r_keystone3_Hwi_vectors /* Default BIOS */
+--retain="*(.utilsCopyVecsToAtcm)"
 
 /*----------------------------------------------------------------------------*/
 /* Memory Map                                                                 */
@@ -67,7 +68,8 @@ SECTIONS
 /* a range of +\- 16 MB                                                       */
     .intvecs 	: {} palign(8) 		> VECTORS
     .intc_text 	: {} palign(8) 		> VECTORS
-    .rstvectors 	: {} palign(8) 		> RESET_VECTORS
+    .rstvectors : {} palign(8) 	    > RESET_VECTORS
+    .utilsCopyVecsToAtcm : {} palign(8) > MCU0_R5F_TCMB0
     .text    	: {} palign(8) 		> MSMC3
     .const   	: {} palign(8) 		> DDR0
     .cinit   	: {} palign(8) 		> DDR0
