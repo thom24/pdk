@@ -1,8 +1,13 @@
 #
 # This file is the makefile for building Software Diagnostics Reference test app
 #
-SRCDIR = test/src test/src/$(BOARD) test/src/$(BOARD)/r5f test/src/$(BOARD)/r5f/baremetal
-INCDIR = . ../ test/src test/src/$(BOARD) test/src/$(BOARD)/r5f
+SRCDIR = src \
+		 src/$(BOARD) \
+		 src/$(BOARD)/r5f \
+		 src/$(BOARD)/r5f/baremetal
+INCDIR = ../../ src \
+		 src/$(BOARD) \
+		 src/$(BOARD)/r5f
 
 # List all the external components/interfaces, whose interface header files
 #  need to be included for this component
@@ -26,7 +31,7 @@ ifeq ($(ISA),$(filter $(ISA), a53, a72))
   LNKFLAGS_LOCAL_$(CORE) += --entry Entry
 endif
 ifeq ($(SOC),$(filter $(SOC), j721e am65xx))
-  EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/diag/sdr/test/test/build/r5f/linker_r5.lds
+  EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/diag/sdr/test/sdtf-test/build/r5f/linker_r5.lds
 endif
 
 # Common source files and CFLAGS across all platforms and cores

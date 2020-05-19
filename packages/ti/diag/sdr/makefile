@@ -42,7 +42,7 @@ else
 include $(RULES_MAKE)
 endif
 
-COMP = drvsdr
+COMP = compsdr
 
 lib_$(COMP)_BUILD_DEPENDENCY =
 

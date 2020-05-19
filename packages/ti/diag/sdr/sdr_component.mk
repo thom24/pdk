@@ -41,12 +41,12 @@ ifeq ($(sdr_component_make_include), )
 ############################
 sdr_LIB_LIST = sdr
 
-drvsdr_SOCLIST         = am65xx j721e
-drvsdr_BOARDLIST       = am65xx_evm j721e_evm
-drvsdr_am65xx_CORELIST = mcu1_0
-drvsdr_j721e_CORELIST  = mcu1_0
-drvsdr_j721e_APPCORELIST = mcu1_0
-drvsdr_DISABLE_PARALLEL_MAKE = yes
+compsdr_SOCLIST         = am65xx j721e
+compsdr_BOARDLIST       = am65xx_evm j721e_evm
+compsdr_am65xx_CORELIST = mcu1_0
+compsdr_j721e_CORELIST  = mcu1_0
+compsdr_j721e_APPCORELIST = mcu1_0
+compsdr_DISABLE_PARALLEL_MAKE = yes
 
 ############################
 # SDR examples / Test applications
@@ -80,9 +80,9 @@ export sdr_BOARD_DEPENDENCY
 export sdr_CORE_DEPENDENCY
 sdr_PKG_LIST = sdr
 sdr_INCLUDE = $(sdr_PATH) $(bios_INCLUDE)
-sdr_SOCLIST = $(drvsdr_SOCLIST)
+sdr_SOCLIST = $(compsdr_SOCLIST)
 export sdr_SOCLIST
-sdr_$(SOC)_CORELIST = $(drvsdr_$(SOC)_CORELIST)
+sdr_$(SOC)_CORELIST = $(compsdr_$(SOC)_CORELIST)
 export sdr_$(SOC)_CORELIST
 
 #
@@ -91,8 +91,8 @@ export sdr_$(SOC)_CORELIST
 
 # SDR test
 sdr_test_COMP_LIST = sdr_test
-sdr_test_RELPATH = ti/diag/sdr/test
-sdr_test_PATH = $(PDK_SDR_COMP_PATH)/test
+sdr_test_RELPATH = ti/diag/sdr/test/sdtf-test
+sdr_test_PATH = $(PDK_SDR_COMP_PATH)/test/sdtf-test
 sdr_test_BOARD_DEPENDENCY = yes
 sdr_test_CORE_DEPENDENCY = yes
 sdr_test_XDC_CONFIGURO = no
@@ -102,9 +102,9 @@ export sdr_test_CORE_DEPENDENCY
 export sdr_test_XDC_CONFIGURO
 sdr_test_PKG_LIST = sdr_test
 sdr_test_INCLUDE = $(sdr_test_PATH)
-sdr_test_BOARDLIST = $(drvsdr_BOARDLIST)
+sdr_test_BOARDLIST = $(compsdr_BOARDLIST)
 export sdr_test_BOARDLIST
-sdr_test_$(SOC)_CORELIST = $(drvsdr_$(SOC)_CORELIST)
+sdr_test_$(SOC)_CORELIST = $(compsdr_$(SOC)_CORELIST)
 export sdr_test_$(SOC)_CORELIST
 sdr_EXAMPLE_LIST += sdr_test
 export sdr_test_SBL_APPIMAGEGEN = yes
@@ -112,9 +112,9 @@ export sdr_test_SBL_APPIMAGEGEN = yes
 export sdr_LIB_LIST
 export sdr_EXAMPLE_LIST
 export sdr_DUP_EXAMPLE_LIST
-export drvsdr_LIB_LIST = $(sdr_LIB_LIST)
-export drvsdr_EXAMPLE_LIST  = $(sdr_EXAMPLE_LIST)
-export drvsdr_DUP_EXAMPLE_LIST  = $(sdr_DUP_EXAMPLE_LIST)
+export compsdr_LIB_LIST = $(sdr_LIB_LIST)
+export compsdr_EXAMPLE_LIST  = $(sdr_EXAMPLE_LIST)
+export compsdr_DUP_EXAMPLE_LIST  = $(sdr_DUP_EXAMPLE_LIST)
 
 SDR_CFLAGS =
 
