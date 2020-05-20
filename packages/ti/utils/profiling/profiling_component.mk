@@ -67,7 +67,7 @@
 ifeq ($(profiling_component_make_include), )
 
 # under other list
-drvprofiling_SOCLIST         = tda2xx tda2ex tda3xx dra75x dra78x am572x am574x am571x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x am65xx j721e
+drvprofiling_SOCLIST         = tda2xx tda2ex tda3xx dra75x dra78x am572x am574x am571x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x am65xx j721e am64x
 drvprofiling_tda2xx_CORELIST = c66x a15_0 ipu1_0
 drvprofiling_tda2ex_CORELIST = c66x a15_0 ipu1_0
 drvprofiling_tda3xx_CORELIST = c66x ipu1_0
@@ -87,6 +87,7 @@ drvprofiling_am437x_CORELIST = a9host
 drvprofiling_am335x_CORELIST = a8host
 drvprofiling_am65xx_CORELIST = mpu1_0 mcu1_0
 drvprofiling_j721e_CORELIST  = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 c66xdsp_1 c66xdsp_2
+drvprofiling_am64x_CORELIST  = mpu1_0 mcu1_0
 
 ############################
 # profiling package
