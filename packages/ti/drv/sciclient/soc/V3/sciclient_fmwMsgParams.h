@@ -136,6 +136,10 @@ extern "C" {
 #define SCICLIENT_PROCID_R5_CL1_C0 (0x06U)
 /** AM64_MAIN_SEC_MMR_MAIN_0: (Cluster 1 Processor 1) */
 #define SCICLIENT_PROCID_R5_CL1_C1 (0x07U)
+/*** AM64_MAIN_SEC_MMR_MAIN_0: (Cluster 16 Processor 0) */
+#define SCICLIENT_PROCID_MCU_M4FSS0_C0 (0x18U)
+
+
 /* @} */
 
 /** -------------------- Resource Management Parameters ---------------------*/
