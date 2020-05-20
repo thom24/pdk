@@ -86,7 +86,7 @@ sbl_DISABLE_PARALLEL_MAKE = yes
 ############################
 sbl_LIB_LIST = sbl_lib_mmcsd sbl_lib_ospi sbl_lib_uart sbl_lib_hyperflash sbl_lib_cust
 ifeq ($(BUILD_HS), yes)
-sbl_LIB_LIST += sbl_lib_mmcsd_hs sbl_lib_ospi_hs sbl_lib_uart_hs sbl_lib_hyperflash_hs
+sbl_LIB_LIST += sbl_lib_mmcsd_hs sbl_lib_ospi_hs sbl_lib_uart_hs sbl_lib_hyperflash_hs sbl_lib_cust_hs
 endif
 
 ############################
@@ -722,6 +722,23 @@ export sbl_lib_cust_BOARDLIST
 sbl_lib_cust_$(SOC)_CORELIST = mcu1_0
 export sbl_lib_cust_$(SOC)_CORELIST
 
+# SBL Custom LIB - For HS build
+export sbl_lib_cust_hs_COMP_LIST = sbl_lib_cust_hs
+sbl_lib_cust_hs_RELPATH = ti/boot/sbl
+export sbl_lib_cust_hs_OBJPATH = ti/boot/sbl/cust_hs
+sbl_lib_cust_hs_PATH = $(PDK_SBL_COMP_PATH)
+export sbl_lib_cust_hs_LIBNAME = sbl_lib_cust_hs
+export sbl_lib_cust_hs_LIBPATH = $(PDK_SBL_COMP_PATH)/lib/cust
+export sbl_lib_cust_hs_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_lib.mk BOOTMODE=cust CUST_SBL_FLAGS=$(CUST_SBL_TEST_FLAGS) BUILD_HS=yes
+export sbl_lib_cust_hs_BOARD_DEPENDENCY = yes
+export sbl_lib_cust_hs_SOC_DEPENDENCY = yes
+export sbl_lib_cust_hs_CORE_DEPENDENCY = no
+sbl_lib_cust_hs_PKG_LIST = sbl_lib_cust_hs
+sbl_lib_cust_hs_INCLUDE = $(sbl_lib_cust_hs_PATH)
+export sbl_lib_cust_hs_SOCLIST = $(CUST_SBL_TEST_SOCS)
+export sbl_lib_cust_hs_BOARDLIST = $(CUST_SBL_TEST_BOARDS)
+export sbl_lib_cust_hs_$(SOC)_CORELIST = mcu1_0
+
 # SBL custom image
 sbl_cust_img_COMP_LIST = sbl_cust_img
 sbl_cust_img_RELPATH = ti/boot/sbl/board/k3
@@ -747,6 +764,25 @@ export sbl_cust_img_$(SOC)_CORELIST
 sbl_EXAMPLE_LIST += sbl_cust_img
 sbl_cust_img_SBL_IMAGEGEN = yes
 export sbl_cust_img_SBL_IMAGEGEN
+
+# SBL custom image - For HS build
+export sbl_cust_img_hs_COMP_LIST = sbl_cust_img_hs
+sbl_cust_img_hs_RELPATH = ti/boot/sbl/board/k3
+sbl_cust_img_hs_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)/cust/bin/hs
+sbl_cust_img_hs_PATH = $(PDK_SBL_COMP_PATH)/board/k3
+export sbl_cust_img_hs_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk CUST_SBL_FLAGS=$(CUST_SBL_TEST_FLAGS) BOOTMODE=cust BUILD_HS=yes
+export sbl_cust_img_hs_BOARD_DEPENDENCY = yes
+export sbl_cust_img_hs_SOC_DEPENDENCY = yes
+export sbl_cust_img_hs_CORE_DEPENDENCY = no
+sbl_cust_img_hs_PKG_LIST = sbl
+sbl_cust_img_hs_INCLUDE = $(sbl_cust_img_hs_PATH)
+export sbl_cust_img_hs_SOCLIST = $(CUST_SBL_TEST_SOCS)
+export sbl_cust_img_hs_BOARDLIST = $(CUST_SBL_TEST_BOARDS)
+export sbl_cust_img_hs_$(SOC)_CORELIST = mcu1_0
+export sbl_cust_img_hs_SBL_IMAGEGEN = yes
+ifeq ($(BUILD_HS), yes)
+sbl_EXAMPLE_LIST += sbl_cust_img_hs
+endif
 
 # R5 boot performance Test - works only with custom SBL
 sbl_boot_perf_test_COMP_LIST = sbl_boot_perf_test
