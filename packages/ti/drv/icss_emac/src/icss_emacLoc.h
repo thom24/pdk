@@ -44,10 +44,14 @@ extern "C" {
 #include <stdint.h>
 
 #include <ti/drv/icss_emac/icss_emacDrv.h>
-
+#if defined (SOC_AM64X)
+#include <ti/csl/src/ip/icss/V1/cslr_icss_intc.h>
+#include <ti/csl/src/ip/icss/V1/cslr_icss_iep.h>
+#else
 #include <ti/csl/src/ip/icss/V1/cslr_icss_intc.h>
 #include <ti/csl/src/ip/icss/V1/cslr_icss_iep.h>
 #include <ti/csl/src/ip/icss/V0/cslr_icssm_iep.h>
+#endif
 #if defined (SOC_AM335x) || defined (SOC_AM437x)
 #include <ti/csl/src/ip/mdio/V2/cslr_mdio.h>
 #include <ti/csl/src/ip/mdio/V2/csl_mdio.h>

@@ -46,9 +46,13 @@
 #ifdef __LINUX_USER_SPACE
 #include <time.h>   /* for nanosleep() */
 #endif
-#if defined (SOC_AM65XX) || defined (SOC_AM64X)
+#if defined (SOC_AM65XX)
 #include <ti/csl/csl_mdio.h>
 #include <ti/csl/src/ip/icss/V2/cslr_icss_g.h>
+uint32_t icssEmacIepCountOffset = CSL_ICSS_G_PR1_IEP1_SLV_COUNT_REG0;
+#elif defined (SOC_AM64X)
+#include <ti/csl/csl_mdio.h>
+#include <ti/csl/src/ip/icss/V3/cslr_icss_g.h>
 uint32_t icssEmacIepCountOffset = CSL_ICSS_G_PR1_IEP1_SLV_COUNT_REG0;
 #else
 /* For ICSS intc, only need to include V1 version of header file. 
