@@ -1552,7 +1552,7 @@ static bool Sciclient_rmIrqRouteValidate(struct Sciclient_rmIrqCfg  *cfg)
             }
         }
 
-        if (i == 0u) {
+        if ((i == 0u) && (i < (Sciclient_rmPsGetPsp() - 1u))) {
             if (Sciclient_rmIaIsIa(cur_n->id) == true) {
                 cur_outp_valid = false;
                 next_inp_valid = false;
