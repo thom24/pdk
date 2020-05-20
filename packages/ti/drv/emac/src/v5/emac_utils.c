@@ -1231,14 +1231,17 @@ void emac_poll_tx_ts_resp(uint32_t portNum, uint32_t ringNum)
         while (hwQLevel != 0)
         {
             pMgmtPkt = emac_hwq_pop(icssgInst, ((portLoc & 1) == 0) ? EMAC_ICSSG_TXTS_RX_HWQA_PORT0 : EMAC_ICSSG_TXTS_RX_HWQA_PORT1);
-            tx_timestamp = pMgmtPkt[4];
-            tx_timestamp = tx_timestamp << 32U | pMgmtPkt[3];
-            if(emac_mcb.port_cb[portLoc].tx_ts_cb != NULL)
+            if (pMgmtPkt != NULL)
             {
-                emac_mcb.port_cb[portLoc].tx_ts_cb(portLoc, pMgmtPkt[2], tx_timestamp, 1);
+                tx_timestamp = pMgmtPkt[4];
+                tx_timestamp = tx_timestamp << 32U | pMgmtPkt[3];
+                if(emac_mcb.port_cb[portLoc].tx_ts_cb != NULL)
+                {
+                    emac_mcb.port_cb[portLoc].tx_ts_cb(portLoc, pMgmtPkt[2], tx_timestamp, 1);
+                }
+                emac_hwq_push(icssgInst, ((portLoc & 1) == 0) ? EMAC_ICSSG_TXTS_FREE_HWQA_PORT0 : EMAC_ICSSG_TXTS_FREE_HWQA_PORT1, pMgmtPkt);
+                hwQLevel = emac_hwq_level(icssgInst, ((portLoc & 1) == 0) ? EMAC_ICSSG_TXTS_RX_HWQA_PORT0 : EMAC_ICSSG_TXTS_RX_HWQA_PORT1);
             }
-            emac_hwq_push(icssgInst, ((portLoc & 1) == 0) ? EMAC_ICSSG_TXTS_FREE_HWQA_PORT0 : EMAC_ICSSG_TXTS_FREE_HWQA_PORT1, pMgmtPkt);
-            hwQLevel = emac_hwq_level(icssgInst, ((portLoc & 1) == 0) ? EMAC_ICSSG_TXTS_RX_HWQA_PORT0 : EMAC_ICSSG_TXTS_RX_HWQA_PORT1);
         }
     }
 }
@@ -1381,27 +1384,30 @@ void emac_poll_mgmt_pkts(uint32_t portNum, uint32_t ringNum)
         while (hwQLevel != 0)
         {
             pMgmtPkt = emac_hwq_pop(icssgInst, ((portLoc & 1) == 0) ? EMAC_ICSSG_MGMT_RX_HWQA_PORT0: EMAC_ICSSG_MGMT_RX_HWQA_PORT1);
-            pIoctlData = (EMAC_IOCTL_CMD_T*)&pMgmtPkt[1];
-            cmdResponse.status = pIoctlData->commandParam;
-            cmdResponse.seqNumber = pIoctlData->seqNumber;
-            cmdResponse.respParamsLength = 0;
-            /* for command response with status 0x3, its cmd response for ADD FDB entry.
-               if adding entry results in removing aged-out FDB entry, that is returned to caller
-               in response Params*/
-            if (cmdResponse.status == 0x3)
+            if (pMgmtPkt != NULL)
             {
-                cmdResponse.respParamsLength = 2;
-                memcpy(&cmdResponse.respParams, pIoctlData->spare, 2);
-            }
-            if ((emac_mcb.port_cb[portLoc].rx_mgmt_response_cb != NULL) && (emac_mcb.ioctl_cb.internalIoctl == FALSE))
-            {
-                emac_mcb.port_cb[portLoc].rx_mgmt_response_cb(portLoc, &cmdResponse);
-            }
-            emac_mcb.ioctl_cb.internalIoctl = FALSE;
+                pIoctlData = (EMAC_IOCTL_CMD_T*)&pMgmtPkt[1];
+                cmdResponse.status = pIoctlData->commandParam;
+                cmdResponse.seqNumber = pIoctlData->seqNumber;
+                cmdResponse.respParamsLength = 0;
+                /* for command response with status 0x3, its cmd response for ADD FDB entry.
+                   if adding entry results in removing aged-out FDB entry, that is returned to caller
+                   in response Params*/
+                if (cmdResponse.status == 0x3)
+                {
+                    cmdResponse.respParamsLength = 2;
+                    memcpy(&cmdResponse.respParams, pIoctlData->spare, 2);
+                }
+                if ((emac_mcb.port_cb[portLoc].rx_mgmt_response_cb != NULL) && (emac_mcb.ioctl_cb.internalIoctl == false))
+                {
+                    emac_mcb.port_cb[portLoc].rx_mgmt_response_cb(portLoc, &cmdResponse);
+                }
+                emac_mcb.ioctl_cb.internalIoctl = false;
 
-            emac_hwq_push(icssgInst, ((portLoc & 1) == 0) ? EMAC_ICSSG_MGMT_FREE_HWQA_PORT0 : EMAC_ICSSG_MGMT_FREE_HWQA_PORT1, pMgmtPkt);
-            hwQLevel = emac_hwq_level(icssgInst, ((portLoc & 1) == 0) ? EMAC_ICSSG_MGMT_RX_HWQA_PORT0 : EMAC_ICSSG_MGMT_RX_HWQA_PORT1);
-            emac_mcb.ioctl_cb.ioctlInProgress = false;
+                emac_hwq_push(icssgInst, ((portLoc & 1) == 0) ? EMAC_ICSSG_MGMT_FREE_HWQA_PORT0 : EMAC_ICSSG_MGMT_FREE_HWQA_PORT1, pMgmtPkt);
+                hwQLevel = emac_hwq_level(icssgInst, ((portLoc & 1) == 0) ? EMAC_ICSSG_MGMT_RX_HWQA_PORT0 : EMAC_ICSSG_MGMT_RX_HWQA_PORT1);
+                emac_mcb.ioctl_cb.ioctlInProgress = false;
+            }
         }
     }
 }
