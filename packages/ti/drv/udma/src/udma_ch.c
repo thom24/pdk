@@ -68,6 +68,11 @@ static void  Udma_chUnpauseRxLocal(Udma_DrvHandle drvHandle, uint32_t rxChNum);
 static int32_t Udma_chCheckParams(Udma_DrvHandle drvHandle,
                                   uint32_t chType,
                                   const Udma_ChPrms *chPrms);
+static void Udma_chSetPeerReg(Udma_DrvHandle drvHandle, 
+                              const Udma_ChPdmaPrms *pdmaPrms,
+                              volatile uint32_t *PEER8, 
+                              volatile uint32_t *PEER1, 
+                              volatile uint32_t *PEER0);
 static int32_t Udma_chAllocResource(Udma_ChHandle chHandle);
 static int32_t Udma_chFreeResource(Udma_ChHandle chHandle);
 static int32_t Udma_chPair(Udma_ChHandle chHandle);
@@ -684,8 +689,7 @@ int32_t Udma_chConfigPdma(Udma_ChHandle chHandle,
                           const Udma_ChPdmaPrms *pdmaPrms)
 {
     int32_t         retVal = UDMA_SOK;
-    uint32_t        regVal;
-    volatile uint32_t        *PEER8=NULL, *PEER0=NULL, *PEER1=NULL;
+    volatile uint32_t  *PEER8=NULL, *PEER0=NULL, *PEER1=NULL;
     Udma_DrvHandle  drvHandle;
 
     /* Error check */
@@ -727,6 +731,7 @@ int32_t Udma_chConfigPdma(Udma_ChHandle chHandle,
                 PEER1 = &chHandle->pRxRtRegs->PEER1;
                 PEER0 = &chHandle->pRxRtRegs->PEER0;
             }
+            Udma_chSetPeerReg(drvHandle, pdmaPrms, PEER8, PEER1, PEER0);
         }
 #endif
 #if (UDMA_SOC_CFG_LCDMA_PRESENT == 1)
@@ -748,6 +753,7 @@ int32_t Udma_chConfigPdma(Udma_ChHandle chHandle,
                 PEER1 = &chHandle->pBcdmaRxRtRegs->PEER1;
                 PEER0 = &chHandle->pBcdmaRxRtRegs->PEER0;
             }
+            Udma_chSetPeerReg(drvHandle, pdmaPrms, PEER8, PEER1, PEER0);
 
         }
         else if(UDMA_INST_TYPE_LCDMA_PKTDMA == drvHandle->instType)
@@ -768,27 +774,9 @@ int32_t Udma_chConfigPdma(Udma_ChHandle chHandle,
                 PEER1 = &chHandle->pPktdmaRxRtRegs->PEER1;
                 PEER0 = &chHandle->pPktdmaRxRtRegs->PEER0;
             }
+            Udma_chSetPeerReg(drvHandle, pdmaPrms, PEER8, PEER1, PEER0);
         }
 #endif
-        if((UDMA_INST_TYPE_NORMAL       == drvHandle->instType) ||
-           (UDMA_INST_TYPE_LCDMA_BCDMA  == drvHandle->instType) ||
-           (UDMA_INST_TYPE_LCDMA_PKTDMA == drvHandle->instType))
-        {
-            Udma_assert(drvHandle, PEER8 != NULL_PTR);
-            regVal = CSL_REG32_RD(PEER8);
-            CSL_FINS(regVal, PSILCFG_REG_RT_ENABLE_ENABLE, (uint32_t) 0U);
-            CSL_REG32_WR(PEER8, regVal);
-
-            Udma_assert(drvHandle, PEER0 != NULL_PTR);
-            regVal = CSL_FMK(PSILCFG_REG_STATIC_TR_X, pdmaPrms->elemSize) |
-                        CSL_FMK(PSILCFG_REG_STATIC_TR_Y, pdmaPrms->elemCnt);
-            CSL_REG32_WR(PEER0, regVal);
-
-            Udma_assert(drvHandle, PEER1 != NULL_PTR);
-            regVal = CSL_FMK(PSILCFG_REG_STATIC_TR_Z, pdmaPrms->fifoCnt);
-            CSL_REG32_WR(PEER1, regVal);
-        }
-        
     }
 
     return (retVal);
@@ -4102,4 +4090,27 @@ static void Udma_chUnpauseRxLocal(Udma_DrvHandle drvHandle, uint32_t rxChNum)
         (void) CSL_pktdmaUnpauseRxChan(&drvHandle->pktdmaRegs, rxChNum);            
     }
 #endif
+}
+
+static void Udma_chSetPeerReg(Udma_DrvHandle drvHandle, 
+                              const Udma_ChPdmaPrms *pdmaPrms,
+                              volatile uint32_t *PEER8, 
+                              volatile uint32_t *PEER1, 
+                              volatile uint32_t *PEER0)
+{
+    uint32_t        regVal;
+    
+    Udma_assert(drvHandle, PEER8 != NULL_PTR);
+    regVal = CSL_REG32_RD(PEER8);
+    CSL_FINS(regVal, PSILCFG_REG_RT_ENABLE_ENABLE, (uint32_t) 0U);
+    CSL_REG32_WR(PEER8, regVal);
+
+    Udma_assert(drvHandle, PEER0 != NULL_PTR);
+    regVal = CSL_FMK(PSILCFG_REG_STATIC_TR_X, pdmaPrms->elemSize) |
+                CSL_FMK(PSILCFG_REG_STATIC_TR_Y, pdmaPrms->elemCnt);
+    CSL_REG32_WR(PEER0, regVal);
+
+    Udma_assert(drvHandle, PEER1 != NULL_PTR);
+    regVal = CSL_FMK(PSILCFG_REG_STATIC_TR_Z, pdmaPrms->fifoCnt);
+    CSL_REG32_WR(PEER1, regVal);
 }
