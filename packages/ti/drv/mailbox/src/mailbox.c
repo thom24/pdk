@@ -66,13 +66,6 @@
 static void Mailbox_boxFullISR(uintptr_t arg);
 static void Mailbox_boxEmptyISR(uintptr_t arg);
 
-//TODO
-#define DebugP_log0(x0)
-#define DebugP_log1(x0,x1)
-#define DebugP_log2(x0,x1,x2)
-#define DebugP_log3(x0,x1,x2,x3)
-#define DebugP_log4(x0,x1,x2,x3,x4)
-
 /* ========================================================================== */
 /*                            Global Variables                                */
 /* ========================================================================== */
