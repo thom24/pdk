@@ -391,7 +391,7 @@ int32_t SBL_VerifyMulticoreImage(void **img_handle,
             }
             else
             {
-                if (SBL_IsSysfwEnc(NULL) == SBL_SYSFW_CLEAR_TEXT)
+                if (SBL_IsAuthReq() == SBL_NEVER_AUTH_APP)
                 {
                     SBL_log(SBL_LOG_MAX,"Ignored on GP...");
                 }
@@ -417,7 +417,7 @@ int32_t SBL_VerifyMulticoreImage(void **img_handle,
     }
 
     if ((auth_retval != CSL_PASS) &&
-        (SBL_IsSysfwEnc(NULL) != SBL_SYSFW_CLEAR_TEXT))
+        (SBL_IsAuthReq() != SBL_NEVER_AUTH_APP))
     {
         SBL_log(SBL_LOG_ERR,"Is app signed correctly??\n\r");
         SBL_log(SBL_LOG_ERR,"App verification fails!! Boot Halted!!\n\r");

@@ -44,15 +44,20 @@
 extern "C" {
 #endif
 
-#define SBL_SYSFW_NOT_PROCESSED    (0x0U)
-#define SBL_SYSFW_CLEAR_TEXT       (0x55555555u)
-#define SBL_SYSFW_ENCRYPTED        (0xAAAAAAAAu)
+#define SBL_NEVER_AUTH_APP         (0x55555555u)
+#define SBL_ALWAYS_AUTH_APP        (0xAAAAAAAAu)
 #define SBL_SYSFW_MAX_SIZE         (0x42000U)
 
 
 #define SBL_SYS_STATUS_REG              (0x44234100U)
 #define SBL_SYS_STATUS_DEV_TYPE_MASK    (0x0000000FU)
-#define SBL_SYS_STATUS_DEV_TYPE_GP      (0x3)
+#define SBL_SYS_STATUS_DEV_SUBTYPE_MASK (0x00000F00U)
+
+
+#define SBL_SYS_STATUS_DEV_TYPE_GP      (0x3U)
+#define SBL_SYS_STATUS_DEV_TYPE_TEST    (0x5U)
+#define SBL_SYS_STATUS_DEV_SUBTYPE_FS   (0x00000A00U)
+
 /**
  * @brief - SBL_SciClientInit() - function to do load DMSC firmware.
  *
@@ -78,18 +83,17 @@ void SBL_SciClientInit(void);
 int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes);
 
 /**
- * @brief - SBL_IsSysfwEnc() - function to check if DMSC firmware is encrypted
+ * @brief - SBL_IsAuthReq() - function to check if SBL needs to authenticate app
  *
- * @param x509_cert_ptr  [IN] Pointer to SYSFW start
+ * @param  none
  *
- * @return SBL_SYSFW_NOT_PROCESSED if sysfw has not yet been autheticated
- *         SBL_SYSFW_CLEAR_TEXT    if sysfw is single signed or not encrypted (GP device)
- *         SBL_SYSFW_ENCRYPTED     if sysfw is dual sigend and encrypted (HS device)
+ * @return SBL_ALWAYS_AUTH_APP if apps have to be authenticated and/decrypted before being executed (SE subtype)
+ *         SBL_NEVER_AUTH_APP  if app authentication must not be done (no SMPK/BMPK present)
  *
  *      Loops forever if error occurs
  *
  */
-uint32_t SBL_IsSysfwEnc(uint8_t *x509_cert_ptr);
+uint32_t SBL_IsAuthReq(void);
 
 extern const struct tisci_boardcfg_pm gBoardConfigLow_pm;
   

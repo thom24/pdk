@@ -54,25 +54,24 @@ uint32_t gSciclient_firmware[1];
 #error "SYSFW too large...update SBL_SYSFW_MAX_SIZE"
 #endif
 
-uint32_t SBL_IsSysfwEnc(uint8_t *x509_cert_ptr)
+uint32_t SBL_IsAuthReq(void)
 {
-    static uint32_t retVal = SBL_SYSFW_NOT_PROCESSED;
+    uint32_t retVal = SBL_ALWAYS_AUTH_APP;
     uint32_t dev_type;
+    uint32_t dev_subtype;
 
     SBL_ADD_PROFILE_POINT;
 
     dev_type = CSL_REG32_RD(SBL_SYS_STATUS_REG) & SBL_SYS_STATUS_DEV_TYPE_MASK;
+    dev_subtype = CSL_REG32_RD(SBL_SYS_STATUS_REG) & SBL_SYS_STATUS_DEV_SUBTYPE_MASK;
 
-    if (dev_type == SBL_SYS_STATUS_DEV_TYPE_GP)
+    /* No auth possible, if valid SMPK/BMPK is not present */
+    if ((dev_subtype == SBL_SYS_STATUS_DEV_SUBTYPE_FS) ||
+        (dev_type == SBL_SYS_STATUS_DEV_TYPE_GP) || 
+        (dev_type == SBL_SYS_STATUS_DEV_TYPE_TEST))
     {
-        /* SYSFW is single signed */
-        retVal = SBL_SYSFW_CLEAR_TEXT;
+        retVal = SBL_NEVER_AUTH_APP;
     }
-    else
-    {
-        /* SYSFW is double signed and encrypted */
-        retVal = SBL_SYSFW_ENCRYPTED;
-     }
 
     SBL_ADD_PROFILE_POINT;
 
