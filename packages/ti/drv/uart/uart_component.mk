@@ -97,6 +97,7 @@ drvuart_j721e_CORELISTARM = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1
 drvuart_j7200_CORELIST = $(DEFAULT_j7200_CORELIST)
 drvuart_j7200_CORELISTARM = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
 drvuart_am64x_CORELIST = $(DEFAULT_am64x_CORELIST)
+drvuart_am64x_CORELISTARM = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
 drvuart_tpr12_CORELIST = mcu1_0 c66xdsp_1
 
 ############################
@@ -395,7 +396,7 @@ UART_Baremetal_DMA_TestApp_PKG_LIST = UART_Baremetal_DMA_TestApp
 UART_Baremetal_DMA_TestApp_INCLUDE = $(UART_Baremetal_DMA_TestApp_PATH)
 UART_Baremetal_DMA_TestApp_BOARDLIST = $(drvuart_BOARDLIST)
 export UART_Baremetal_DMA_TestApp_BOARDLIST
-ifeq ($(SOC),$(filter $(SOC), j721e j7200))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200 am64x))
 UART_Baremetal_DMA_TestApp_$(SOC)_CORELIST = $(drvuart_$(SOC)_CORELISTARM)
 else
 UART_Baremetal_DMA_TestApp_$(SOC)_CORELIST = $(drvuart_$(SOC)_CORELIST)
