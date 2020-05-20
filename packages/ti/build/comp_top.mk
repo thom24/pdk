@@ -49,7 +49,7 @@ TARGETS_FOR_MULT_SOC_BOARDS = all
 TARGETS_FOR_MULT_SOC_BOARDS += apps clean lib app_libs firm
 
 # BOARD,CORE,SOC independent targets
-TARGETS_SOC_BOARD_INDP      = tar help doxygen xdc_meta
+TARGETS_SOC_BOARD_INDP      = tar help doxygen xdc_meta xdc_meta_clean
 
 .PHONY : $(TARGETS_FOR_MULT_SOC_BOARDS) $(TARGETS_SOC_BOARD_INDP) release package
 
