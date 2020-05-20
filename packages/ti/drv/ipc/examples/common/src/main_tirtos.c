@@ -64,7 +64,8 @@
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
 
-/* None */
+/* Test application stack size */
+#define APP_TSK_STACK_MAIN              (16U * 1024U)
 
 /* ========================================================================== */
 /*                         Structure Declarations                             */
@@ -83,7 +84,9 @@ extern int32_t Ipc_echo_test(void);
 /*                            Global Variables                                */
 /* ========================================================================== */
 
-/* None */
+/* Test application stack */
+static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN]
+__attribute__ ((aligned(8192)));
 
 /* ========================================================================== */
 /*                          Function Definitions                              */
@@ -132,6 +135,8 @@ int main(void)
     Task_Params_init(&taskParams);
     /* Set the task priority higher than the default priority (1) */
     taskParams.priority = 2;
+    taskParams.stack        = gAppTskStackMain;
+    taskParams.stackSize    = sizeof (gAppTskStackMain);
 
     task = Task_create(taskFxn, &taskParams, &eb);
     if(NULL == task)
