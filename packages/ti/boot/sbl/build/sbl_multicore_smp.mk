@@ -58,6 +58,10 @@ ifneq ($(OS),Windows_NT)
 endif
 	$(SBL_CERT_GEN) -b $(BINDIR)/$(RPRC_PREFIX)_all_coresTestApp_$(BUILD_PROFILE_$(CORE)).appimage -o $(BINDIR)/$(RPRC_PREFIX)_all_coresTestApp_$(BUILD_PROFILE_$(CORE)).appimage.signed -c R5 -l $(SBL_RUN_ADDRESS) -k $(SBL_CERT_KEY)
 
+ifeq ($(BUILD_HS),yes)
+	$(SBL_CERT_GEN) -b $(BINDIR)/$(RPRC_PREFIX)_all_coresTestApp_$(BUILD_PROFILE_$(CORE)).appimage -o $(BINDIR)/$(RPRC_PREFIX)_all_coresTestApp_$(BUILD_PROFILE_$(CORE))_hs.appimage.signed -c R5 -l $(SBL_RUN_ADDRESS) -k $(SBL_CERT_KEY_HS)
+endif
+
 # Core/SoC/platform specific source files and CFLAGS
 # Example:
 #   SRCS_<core/SoC/platform-name> =
