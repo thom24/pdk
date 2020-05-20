@@ -802,6 +802,17 @@ ifneq ($(crc_EXAMPLE_LIST),)
   pdk_EXAMPLE_LIST += $(crc_EXAMPLE_LIST)
 endif
 # - used to ignore include if component not present
+-include $(PDK_HWA_COMP_PATH)/hwa_component.mk
+ifneq ($(hwa_LIB_LIST),)
+  pdk_LIB_LIST += $(hwa_LIB_LIST)
+endif
+ifneq ($(hwa_APP_LIB_LIST),)
+  pdk_APP_LIB_LIST += $(hwa_APP_LIB_LIST)
+endif
+ifneq ($(hwa_EXAMPLE_LIST),)
+  pdk_EXAMPLE_LIST += $(hwa_EXAMPLE_LIST)
+endif
+# - used to ignore include if component not present
 -include $(PDK_EDMA_COMP_PATH)/edma_component.mk
 ifneq ($(edma_LIB_LIST),)
   pdk_LIB_LIST += $(edma_LIB_LIST)
