@@ -53,13 +53,20 @@
 #define MAIN_UART0_TXD  0x0234
 #define MAIN_UART0_CTSn 0x0238
 #define MAIN_UART0_RTSn 0x023c
+#define MAIN_UART1_RXD  0x0240
+#define MAIN_UART1_TXD  0x0244
+#define MAIN_UART1_CTSn 0x0248
+#define MAIN_UART1_RTSn 0x024c
 
 static void Board_uartPinmxCfg()
 {
-   *(volatile uint32_t*)(MAIN_CTRL_PINCFG_BASE + MAIN_UART0_RXD) = 0x54000;
-   *(volatile uint32_t*)(MAIN_CTRL_PINCFG_BASE + MAIN_UART0_TXD) = 0x54000;
-   *(volatile uint32_t*)(MAIN_CTRL_PINCFG_BASE + MAIN_UART0_CTSn) = 0x54000;
-   *(volatile uint32_t*)(MAIN_CTRL_PINCFG_BASE + MAIN_UART0_RTSn) = 0x54000;
+    volatile uint32_t *addr = (volatile uint32_t *)(MAIN_CTRL_PINCFG_BASE + MAIN_UART0_RXD);
+    uint32_t i;
+
+    for (i = 0; i < 8; i++)
+    {
+        *addr++ = 0x54000;
+    }
 }
 #endif  /* #ifdef VLAB_SIM */
 #endif  /* #ifndef BUILD_M4F */
