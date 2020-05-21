@@ -10,7 +10,7 @@ SUFFIX=_hs
 endif
 
 APP_NAME = sbl_$(BOOTMODE)_img$(SUFFIX)
-LOCAL_APP_NAME=sbl_$(BOOTMODE)_img
+LOCAL_APP_NAME=sbl_$(BOOTMODE)_img_$(CORE)
 BUILD_OS_TYPE = baremetal
 
 SRCDIR      += $(PDK_SBL_COMP_PATH)/board/k3
