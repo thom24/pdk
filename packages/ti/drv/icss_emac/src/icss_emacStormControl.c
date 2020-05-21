@@ -94,7 +94,10 @@ void setCreditValue(uint16_t creditValue, stormPrevention_t* stormPrevPtr, uint8
         default:
             break;
     }
-    *(creditsPtr) = creditValue;
+    if (creditsPtr != NULL)
+    {
+        *(creditsPtr) = creditValue;
+    }
 }
 
 void ICSS_EmacDisableStormPrevention(uint8_t portnum, ICSS_EmacHandle icssEmacHandle, uint8_t spType)  {
@@ -223,6 +226,7 @@ inline uint8_t ifStormPreventionEnabled(const stormPrevention_t* stormPrevPtr, u
             suppressionEnabled = (stormPrevPtr->suppressionEnabledUC);
             break;
         default:
+            suppressionEnabled = 0U;
             break;
     }
     return suppressionEnabled;
