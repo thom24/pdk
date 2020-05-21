@@ -54,7 +54,7 @@ ifeq ($(DMA), enable)
         LOCAL_APP_NAME =  QSPI$(QSPI_OS_TESTPREFIX)_Flash_Dma_$(BOARD)_$(CORE)TestApp
     endif
 
-COMP_LIST_COMMON += spi_dma sciclient
+COMP_LIST_COMMON += spi_dma sciclient edma
 CFLAGS_SPI_DMA    = -DSPI_DMA_ENABLE
 else
     ifeq ($(SMP), enable)

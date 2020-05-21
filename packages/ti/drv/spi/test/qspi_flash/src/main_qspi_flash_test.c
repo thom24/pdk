@@ -67,9 +67,13 @@
 #ifdef SPI_DMA_ENABLE
 #include <ti/osal/CacheP.h>
 /* EDMA3 Header files */
+#if defined(SOC_TPR12)
+#include <ti/drv/edma/edma.h>
+#else
 #include <ti/sdo/edma3/drv/edma3_drv.h>
 #include <ti/sdo/edma3/rm/edma3_rm.h>
 #include <ti/sdo/edma3/rm/sample/bios6_edma3_rm_sample.h>
+#endif
 #endif
 
 /**********************************************************************
@@ -125,8 +129,11 @@ void QSPI_board_crossbarInit(void);
 #endif
 
 #ifdef SPI_DMA_ENABLE
+#if defined(SOC_TPR12)
+static EDMA_Handle QSPIApp_edmaInit(void);
+#else
 static EDMA3_RM_Handle QSPIApp_edmaInit(void);
-extern QSPI_HwAttrs qspiInitCfg[];
+#endif
 #endif
 
 /**********************************************************************
@@ -153,12 +160,41 @@ extern QSPI_HwAttrs qspiInitCfg[QSPI_PER_CNT];
 uint32_t transferLength = 0;
 
 #ifdef SPI_DMA_ENABLE
-EDMA3_RM_Handle gEdmaHandle = NULL;
-
 /**
  * \brief      Function to initialize the edma driver and get the handle to the
  *             edma driver;
  */
+#if defined (SOC_TPR12)
+EDMA_Handle  gEdmaHandle = NULL;
+
+static EDMA_Handle QSPIApp_edmaInit(void)
+{
+    uint32_t edma3Id = EDMA_DRV_INST_MSS_A;
+    EDMA_instanceInfo_t instanceInfo;
+    int32_t errorCode;
+
+    gEdmaHandle = EDMA_getHandle(edma3Id, &instanceInfo);
+    if(gEdmaHandle == NULL)
+    {
+        if (EDMA_init(edma3Id) != EDMA_NO_ERROR)
+        {
+            printf("EDMA_init failed \n");
+            return(gEdmaHandle);
+        }
+        /* Open DMA driver instance 0 for SPI test */
+        gEdmaHandle = EDMA_open(edma3Id, &errorCode, &instanceInfo);
+    }
+    if(gEdmaHandle == NULL)
+    {
+        printf("Open DMA driver failed with error=%d\n \n", errorCode);
+        return(gEdmaHandle);
+    }
+
+    return(gEdmaHandle);
+}
+#else
+EDMA3_RM_Handle gEdmaHandle = NULL;
+
 static EDMA3_RM_Handle QSPIApp_edmaInit(void)
 {
     EDMA3_DRV_Result edmaResult = EDMA3_DRV_E_INVALID_PARAM;
@@ -174,6 +210,7 @@ static EDMA3_RM_Handle QSPIApp_edmaInit(void)
 
     return(gEdmaHandle);
 }
+#endif
 #endif
 
 void QSPI_test_print_test_desc(QSPI_Tests *test)

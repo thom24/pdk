@@ -35,7 +35,7 @@ include $(PDK_SPI_COMP_PATH)/src/src_files_common.mk
 
 MODULE_NAME = spi_dma
 
-ifeq ($(SOC),$(filter $(SOC), tda2xx tda2px dra72x dra75x tda2ex am571x am572x am574x tda3xx dra78x am437x am335x k2h k2k k2l k2e k2g c6678 c6657 omapl137 omapl138 am65xx j721e j7200 am64x))
+ifeq ($(SOC),$(filter $(SOC), tda2xx tda2px dra72x dra75x tda2ex am571x am572x am574x tda3xx dra78x am437x am335x k2h k2k k2l k2e k2g c6678 c6657 omapl137 omapl138 am65xx j721e j7200 am64x tpr12))
 SRCDIR += soc/$(SOC)
 
 ifeq ($(SOC),$(filter $(SOC), k2h k2k k2l k2e k2g c6678 c6657 omapl137 omapl138))
@@ -44,18 +44,25 @@ else
 ifeq ($(SOC),$(filter $(SOC), tda2xx tda2px dra72x dra75x tda2ex am571x am572x am574x tda3xx dra78x am437x am335x))
     SRCDIR += soc/dma/v1
 else
+ifeq ($(SOC),$(filter $(SOC), tpr12))
+    SRCDIR += soc/dma/v3
+else
     SRCDIR += soc/dma/v2
+endif
 endif
 endif
 
 INCDIR += soc
 # Common source files across all platforms and cores
-SRCS_COMMON += SPI_soc.c SPI_dma.c
+SRCS_COMMON += SPI_soc.c
+ifneq ($(SOC),$(filter $(SOC), tpr12))
+SRCS_COMMON += SPI_dma.c
+endif
 ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
 SRCS_COMMON += OSPI_dma.c
 endif
 
-ifeq ($(SOC),$(filter $(SOC), am571x am572x am574x am437x am335x))
+ifeq ($(SOC),$(filter $(SOC), am571x am572x am574x am437x am335x tpr12))
 SRCS_COMMON += QSPI_dma.c
 endif
 endif
@@ -68,7 +75,7 @@ else
 INCLUDE_EXTERNAL_INTERFACES = pdk
 endif
 
-ifeq ($(SOC),$(filter $(SOC), tda2xx tda2px dra72x dra75x tda2ex am571x am572x am574x tda3xx dra78x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j7200 am64x))
+ifeq ($(SOC),$(filter $(SOC), tda2xx tda2px dra72x dra75x tda2ex am571x am572x am574x tda3xx dra78x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j7200 am64x tpr12))
 PACKAGE_SRCS_COMMON += soc/$(SOC) soc/SPI_soc.h
 ifeq ($(SOC),$(filter $(SOC), k2h k2k k2l k2e k2g c6678 c6657 omapl137 omapl138))
     PACKAGE_SRCS_COMMON += soc/dma/v0
@@ -76,7 +83,11 @@ else
 ifeq ($(SOC),$(filter $(SOC), tda2xx tda2px dra72x dra75x tda2ex am571x am572x am574x tda3xx dra78x am437x am335x))
     PACKAGE_SRCS_COMMON += soc/dma/v1
 else
+ifeq ($(SOC),$(filter $(SOC), tpr12))
+    PACKAGE_SRCS_COMMON += soc/dma/v3
+else
     PACKAGE_SRCS_COMMON += soc/dma/v2
+endif
 endif
 endif
 endif

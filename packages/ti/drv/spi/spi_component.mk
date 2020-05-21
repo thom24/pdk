@@ -69,7 +69,7 @@ ifeq ($(spi_component_make_include), )
 drvspi_BOARDLIST       = am65xx_evm am65xx_idk j721e_sim j721e_evm j7200_evm am64x_evm
 drvspi_SOCLIST         = tda2xx tda2px tda2ex tda3xx dra72x dra75x dra78x am574x am572x am571x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j7200 am64x tpr12
 drvspi_SOCLISTLIM      = tda2xx tda2px tda2ex tda3xx dra72x dra75x dra78x am574x am572x am571x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx am64x
-drvspi_dma_SOCLIST     = tda2xx tda2px tda2ex tda3xx dra72x dra75x dra78x am574x am572x am571x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j7200
+drvspi_dma_SOCLIST     = tda2xx tda2px tda2ex tda3xx dra72x dra75x dra78x am574x am572x am571x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j7200 tpr12
 drvspi_am574x_CORELIST = c66x a15_0 ipu1_0
 drvspi_am572x_CORELIST = c66x a15_0 ipu1_0
 drvspi_am571x_CORELIST = c66x a15_0 ipu1_0
@@ -129,7 +129,7 @@ spi_EXAMPLE_LIST += MCSPI_Baremetal_Master_TestApp MCSPI_Baremetal_Slave_TestApp
 spi_EXAMPLE_LIST += MCSPI_Master_TestApp MCSPI_Slave_TestApp
 spi_EXAMPLE_LIST += MCSPI_Baremetal_Master_Dma_TestApp MCSPI_Baremetal_Slave_Dma_TestApp
 spi_EXAMPLE_LIST += MCSPI_Master_Dma_TestApp MCSPI_Slave_Dma_TestApp
-spi_EXAMPLE_LIST += OSPI_Baremetal_Flash_TestApp  OSPI_Baremetal_Flash_Dma_TestApp OSPI_Flash_TestApp OSPI_Flash_SMP_TestApp OSPI_Flash_Dma_TestApp OSPI_Flash_Dma_SMP_TestApp QSPI_Baremetal_Flash_TestApp QSPI_Flash_TestApp
+spi_EXAMPLE_LIST += OSPI_Baremetal_Flash_TestApp  OSPI_Baremetal_Flash_Dma_TestApp OSPI_Flash_TestApp OSPI_Flash_SMP_TestApp OSPI_Flash_Dma_TestApp OSPI_Flash_Dma_SMP_TestApp QSPI_Baremetal_Flash_TestApp QSPI_Flash_TestApp QSPI_Baremetal_Flash_Dma_TestApp QSPI_Flash_Dma_TestApp
 endif
 drvspi_EXAMPLE_LIST = $(spi_EXAMPLE_LIST)
 
@@ -728,6 +728,42 @@ QSPI_Flash_TestApp_INCLUDE = $(QSPI_Flash_TestApp_PATH)
 QSPI_Flash_TestApp_BOARDLIST = tpr12_evm
 export QSPI_Flash_TestApp_BOARDLIST
 QSPI_Flash_TestApp_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELIST)
+
+# QSPI Baremetal dma Flash Test app
+QSPI_Baremetal_Flash_Dma_TestApp_COMP_LIST = QSPI_Baremetal_Flash_Dma_TestApp
+QSPI_Baremetal_Flash_Dma_TestApp_RELPATH = ti/drv/spi/test/qspi_flash
+QSPI_Baremetal_Flash_Dma_TestApp_PATH = $(PDK_SPI_COMP_PATH)/test/qspi_flash
+QSPI_Baremetal_Flash_Dma_TestApp_BOARD_DEPENDENCY = yes
+QSPI_Baremetal_Flash_Dma_TestApp_CORE_DEPENDENCY = no
+QSPI_Baremetal_Flash_Dma_TestApp_MAKEFILE = -f makefile IS_BAREMETAL=yes DMA=enable
+export QSPI_Baremetal_Flash_Dma_TestApp_COMP_LIST
+export QSPI_Baremetal_Flash_Dma_TestApp_BOARD_DEPENDENCY
+export QSPI_Baremetal_Flash_Dma_TestApp_CORE_DEPENDENCY
+export QSPI_Baremetal_Flash_Dma_TestApp_MAKEFILE
+QSPI_Baremetal_Flash_Dma_TestApp_PKG_LIST = QSPI_Baremetal_Flash_Dma_TestApp
+QSPI_Baremetal_Flash_Dma_TestApp_INCLUDE = $(QSPI_Baremetal_Flash_Dma_TestApp_PATH)
+QSPI_Baremetal_Flash_Dma_TestApp_BOARDLIST = tpr12_evm
+export QSPI_Baremetal_Flash_Dma_TestApp_BOARDLIST
+QSPI_Baremetal_Flash_Dma_TestApp_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELIST)
+
+# QSPI dma Flash Test app
+QSPI_Flash_Dma_TestApp_COMP_LIST = QSPI_Flash_Dma_TestApp
+QSPI_Flash_Dma_TestApp_RELPATH = ti/drv/spi/test/qspi_flash
+QSPI_Flash_Dma_TestApp_PATH = $(PDK_SPI_COMP_PATH)/test/qspi_flash
+QSPI_Flash_Dma_TestApp_BOARD_DEPENDENCY = yes
+QSPI_Flash_Dma_TestApp_CORE_DEPENDENCY = no
+QSPI_Flash_Dma_TestApp_XDC_CONFIGURO = yes
+QSPI_Flash_Dma_TestApp_MAKEFILE = -f makefile DMA=enable
+export QSPI_Flash_Dma_TestApp_COMP_LIST
+export QSPI_Flash_Dma_TestApp_BOARD_DEPENDENCY
+export QSPI_Flash_Dma_TestApp_CORE_DEPENDENCY
+export QSPI_Flash_Dma_TestApp_XDC_CONFIGURO
+export QSPI_Flash_Dma_TestApp_MAKEFILE
+QSPI_Flash_Dma_TestApp_PKG_LIST = QSPI_Flash_Dma_TestApp
+QSPI_Flash_Dma_TestApp_INCLUDE = $(QSPI_Flash_Dma_TestApp_PATH)
+QSPI_Flash_Dma_TestApp_BOARDLIST = tpr12_evm
+export QSPI_Flash_Dma_TestApp_BOARDLIST
+QSPI_Flash_Dma_TestApp_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELIST)
 
 export drvspi_LIB_LIST
 export spi_LIB_LIST
