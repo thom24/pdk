@@ -59,11 +59,18 @@ ifeq ($(DMA), enable)
         APP_NAME = OSPI$(OSPI_OS_TESTPREFIX)_Flash_Dma_SMP_TestApp
         # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
         LOCAL_APP_NAME =  OSPI$(OSPI_OS_TESTPREFIX)_Flash_Dma_$(BOARD)_$(CORE)_SMP_TestApp
+        ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
+            LOCAL_APP_NAME =  OSPI$(OSPI_OS_TESTPREFIX)_Flash_Dma_SMP_TestApp_$(CORE)
+        endif
+
     else
         #Name of the directory created under packages/ti/binary/
         APP_NAME = OSPI$(OSPI_OS_TESTPREFIX)_Flash_Dma_TestApp
         # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
         LOCAL_APP_NAME =  OSPI$(OSPI_OS_TESTPREFIX)_Flash_Dma_$(BOARD)_$(CORE)TestApp
+        ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
+            LOCAL_APP_NAME =  OSPI$(OSPI_OS_TESTPREFIX)_Flash_Dma_TestApp_$(CORE)
+        endif
     endif
 
 COMP_LIST_COMMON += spi_dma udma sciclient i2c

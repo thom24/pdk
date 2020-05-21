@@ -35,6 +35,9 @@ else
     APP_NAME = I2C$(I2C_OS_TESTPREFIX)_Eeprom_TestApp
     # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
     LOCAL_APP_NAME =  I2C$(I2C_OS_TESTPREFIX)_Eeprom_$(BOARD)_$(CORE)TestApp
+    ifeq ($(SOC),$(filter $(SOC), j721e j7200 am65xx))
+        LOCAL_APP_NAME =  I2C$(I2C_OS_TESTPREFIX)_Eeprom_TestApp_$(CORE)
+    endif
 endif
 
 SRCDIR = . src

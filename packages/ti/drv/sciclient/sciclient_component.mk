@@ -200,8 +200,13 @@ sciclient_unit_testapp_BOARDLIST = am65xx_evm j721e_sim j721e_evm
 export sciclient_unit_testapp_BOARDLIST
 sciclient_unit_testapp_$(SOC)_CORELIST = $(drvsciclient_$(SOC)_CORELIST)
 export sciclient_unit_testapp_$(SOC)_CORELIST
+
 sciclient_unit_testapp_SBL_APPIMAGEGEN = no
+ifeq ($(SOC),$(filter $(SOC), j721e am65xx j7200))
+  sciclient_unit_testapp_SBL_APPIMAGEGEN = yes
+endif
 export sciclient_unit_testapp_SBL_APPIMAGEGEN
+
 sciclient_unit_testapp_SBL_IMAGEGEN = no
 export sciclient_unit_testapp_SBL_IMAGEGEN
 ifeq ($(BUILD_OS_TYPE),tirtos)

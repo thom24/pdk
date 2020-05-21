@@ -168,6 +168,11 @@ export FATFS_Console_TestApp_BOARDLIST
 FATFS_Console_TestApp_$(SOC)_CORELIST = $(drvfatfs_$(SOC)_CORELIST)
 export FATFS_Console_TestApp_$(SOC)_CORELIST
 
+ifeq ($(SOC),$(filter $(SOC), j721e am65xx j7200))
+  FATFS_Console_TestApp_SBL_APPIMAGEGEN = yes
+  export FATFS_Console_TestApp_SBL_APPIMAGEGEN
+endif
+
 fatfs_EXAMPLE_LIST += FATFS_Console_TestApp
 
 # EMMC Readwrite test with SMP enabled

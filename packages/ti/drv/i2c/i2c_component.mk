@@ -372,8 +372,12 @@ I2C_Baremetal_Eeprom_TestApp_$(SOC)_CORELIST = $(drvi2c_j721e_CORELISTARM)
 else
 I2C_Baremetal_Eeprom_TestApp_$(SOC)_CORELIST = $(drvi2c_$(SOC)_CORELIST)
 endif
-
 export I2C_Baremetal_Eeprom_TestApp_$(SOC)_CORELIST
+
+ifeq ($(SOC),$(filter $(SOC), j721e am65xx j7200))
+  I2C_Baremetal_Eeprom_TestApp_SBL_APPIMAGEGEN = yes
+  export I2C_Baremetal_Eeprom_TestApp_testapp_SBL_APPIMAGEGEN
+endif
 
 # I2C rtos EEPROM test
 I2C_Eeprom_TestApp_COMP_LIST = I2C_Eeprom_TestApp
