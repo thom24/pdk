@@ -32,6 +32,7 @@ var socs = [];
 var devices = [];
 var buildArguments = [];
 var build_devices = [];
+Build.useTargets = null;
 Build.targets = []
 var boards = [];
 

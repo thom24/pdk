@@ -44,5 +44,6 @@ var socs = [];
 var soc_names = [];
 var devices = [];
 var build_devices = [];
+Build.useTargets = null;
 Build.targets = []
 

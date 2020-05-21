@@ -43,5 +43,6 @@ var pOpts = 0;
 var socs = [];
 var devices = [];
 var build_devices = [];
+Build.useTargets = null;
 Build.targets = []
 
