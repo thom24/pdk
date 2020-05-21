@@ -551,8 +551,12 @@ OSPI_Baremetal_Flash_TestApp_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELISTARM)
 else
 OSPI_Baremetal_Flash_TestApp_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELIST)
 endif
-
 export OSPI_Baremetal_Flash_TestApp_$(SOC)_CORELIST
+
+ifeq ($(SOC),$(filter $(SOC), j721e am65xx))
+OSPI_Baremetal_Flash_TestApp_SBL_APPIMAGEGEN = yes
+export OSPI_Baremetal_Flash_TestApp_SBL_APPIMAGEGEN
+endif
 
 # OSPI baremetal dma Flash Test app
 OSPI_Baremetal_Flash_Dma_TestApp_COMP_LIST = OSPI_Baremetal_Flash_Dma_TestApp
@@ -575,6 +579,11 @@ else
 OSPI_Baremetal_Flash_Dma_TestApp_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELIST)
 endif
 export OSPI_Baremetal_Flash_Dma_TestApp_$(SOC)_CORELIST
+
+ifeq ($(SOC),$(filter $(SOC), j721e am65xx))
+OSPI_Baremetal_Flash_Dma_TestApp_SBL_APPIMAGEGEN = yes
+export OSPI_Baremetal_Flash_Dma_TestApp_SBL_APPIMAGEGEN
+endif
 
 # OSPI rtos Flash Test app
 OSPI_Flash_TestApp_COMP_LIST = OSPI_Flash_TestApp
@@ -600,6 +609,11 @@ OSPI_Flash_TestApp_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELIST)
 endif
 export OSPI_Flash_TestApp_$(SOC)_CORELIST
 
+ifeq ($(SOC),$(filter $(SOC), j721e am65xx))
+OSPI_Flash_TestApp_SBL_APPIMAGEGEN = yes
+export OSPI_Flash_TestApp_SBL_APPIMAGEGEN
+endif
+
 # OSPI rtos Flash Test app with SMP enabled
 OSPI_Flash_SMP_TestApp_COMP_LIST = OSPI_Flash_SMP_TestApp
 OSPI_Flash_SMP_TestApp_RELPATH = ti/drv/spi/test/ospi_flash
@@ -619,6 +633,11 @@ OSPI_Flash_SMP_TestApp_BOARDLIST = am65xx_idk
 export OSPI_Flash_SMP_TestApp_BOARDLIST
 OSPI_Flash_SMP_TestApp_$(SOC)_CORELIST = mpu1_0
 export OSPI_Flash_SMP_TestApp_$(SOC)_CORELIST
+
+ifeq ($(SOC),$(filter $(SOC), j721e am65xx))
+OSPI_Flash_SMP_TestApp_SBL_APPIMAGEGEN = yes
+export OSPI_Flash_SMP_TestApp_SBL_APPIMAGEGEN
+endif
 
 # OSPI rtos DMA Flash Test app
 OSPI_Flash_Dma_TestApp_COMP_LIST = OSPI_Flash_Dma_TestApp
@@ -644,6 +663,11 @@ OSPI_Flash_Dma_TestApp_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELIST)
 endif
 export OSPI_Flash_Dma_TestApp_$(SOC)_CORELIST
 
+ifeq ($(SOC),$(filter $(SOC), j721e am65xx))
+OSPI_Flash_Dma_TestApp_SBL_APPIMAGEGEN = yes
+export OSPI_Flash_Dma_TestApp_SBL_APPIMAGEGEN
+endif
+
 # OSPI rtos DMA Flash Test app with SMP enabled
 OSPI_Flash_Dma_SMP_TestApp_COMP_LIST = OSPI_Flash_Dma_SMP_TestApp
 OSPI_Flash_Dma_SMP_TestApp_RELPATH = ti/drv/spi/test/ospi_flash
@@ -663,6 +687,11 @@ OSPI_Flash_Dma_SMP_TestApp_BOARDLIST = am65xx_idk
 export OSPI_Flash_Dma_SMP_TestApp_BOARDLIST
 OSPI_Flash_Dma_SMP_TestApp_$(SOC)_CORELIST = mpu1_0
 export OSPI_Flash_Dma_SMP_TestApp_$(SOC)_CORELIST
+
+ifeq ($(SOC),$(filter $(SOC), j721e am65xx))
+OSPI_Flash_Dma_SMP_TestApp_SBL_APPIMAGEGEN = yes
+export OSPI_Flash_Dma_SMP_TestApp_SBL_APPIMAGEGEN
+endif
 
 # QSPI Baremetal Flash Test app
 QSPI_Baremetal_Flash_TestApp_COMP_LIST = QSPI_Baremetal_Flash_TestApp
