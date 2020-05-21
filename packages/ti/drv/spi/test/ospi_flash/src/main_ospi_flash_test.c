@@ -142,7 +142,7 @@ typedef struct OSPI_Tests_s
 
 /* Test read/write buffer length in bytes */
 #ifdef VLAB_SIM
-#define TEST_BUF_LEN       (0x10000U)
+#define TEST_BUF_LEN       (0x100U)
 #else
 #define TEST_BUF_LEN       (0x100000U)
 #endif

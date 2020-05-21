@@ -58,7 +58,7 @@
 #define MAIN_UART1_CTSn 0x0248
 #define MAIN_UART1_RTSn 0x024c
 
-static void Board_uartPinmxCfg()
+void Board_uartPinmxCfg()
 {
     volatile uint32_t *addr = (volatile uint32_t *)(MAIN_CTRL_PINCFG_BASE + MAIN_UART0_RXD);
     uint32_t i;
@@ -68,20 +68,39 @@ static void Board_uartPinmxCfg()
         *addr++ = 0x54000;
     }
 }
+
+void Board_ospiPinmxCfg()
+{
+    volatile uint32_t *addr = (volatile uint32_t *)MAIN_CTRL_PINCFG_BASE;
+    uint32_t ospiData[15] =
+    {
+        0x24000, 0x64000, 0x264000, 0x54000,
+        0x54000, 0x54000, 0x054000, 0x54000,
+        0x54000, 0x54000, 0x054000, 0x14000,
+        0x14000, 0x04002, 0x4001
+    };
+    uint32_t i;
+
+    for (i = 0; i < 15; i++)
+    {
+        *addr++ = ospiData[i];
+    }
+}
+
 #endif  /* #ifdef VLAB_SIM */
 #endif  /* #ifndef BUILD_M4F */
 
 Board_STATUS Board_pinmuxConfig (void)
 {
-#if !defined(BUILD_M4F)
+#ifndef BUILD_M4F
+#ifdef VLAB_SIM
+    Board_uartPinmxCfg();
+    Board_ospiPinmxCfg();
+#else
     pinmuxModuleCfg_t* pModuleData = NULL;
     pinmuxPerCfg_t* pInstanceData = NULL;
     int32_t i, j, k;
 
-#ifndef BUILD_M4F
-#ifdef VLAB_SIM
-    Board_uartPinmxCfg();
-#endif
     for(i = 0; PINMUX_END != gAM64xxMainPinmuxData[i].moduleId; i++)
     {
         pModuleData = gAM64xxMainPinmuxData[i].modulePinCfg;
@@ -115,7 +134,7 @@ Board_STATUS Board_pinmuxConfig (void)
             }
         }
     }
-#endif
+#endif /* #ifdef VLAB_SIM */
 #endif /* #ifndef BUILD_M4F */
     return BOARD_SOK;
 }
