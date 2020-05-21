@@ -74,10 +74,8 @@ extern uint32_t app_test_recv_port;
 #include "ti/drv/emac/test/EmacLoopbackTest/test_loc.h"
 #include "ti/drv/emac/test/EmacLoopbackTest/test_utils.h"
 
-
 extern void app_test_task_verify_ut_dual_mac_cpsw(UArg arg0, UArg arg1);
 extern void app_test_task_benchmark(UArg arg0, UArg arg1);
-extern void app_test_task_verify_ut_switch(UArg arg0, UArg arg1);
 /*
  *  ======== Globals========
  */
@@ -85,10 +83,7 @@ extern void app_test_task_verify_ut_switch(UArg arg0, UArg arg1);
 const char* rxTaskName[7] =  {"rxPort0","rxPort1","rxPort2","rxPort3","rxPort4","rxPort5","rxPort6"};
 const char* rxMgmtTaskName[7] =  {"rxMgmtPort0","rxMgmtPort1","rxMgmtPort2","rxMgmtPort3","rxMgmtPort4","rxMgmtPort5","rxMgmtPort6"};
 
-#ifdef EMAC_TEST_APP_ICSSG_SWITCH
-int32_t port_en[EMAC_PORT_CPSW + 1] = {1, 1, 1, 1, 0, 0, 0};
-#else
-    #ifdef EMAC_TEST_APP_WITHOUT_DDR
+#ifdef EMAC_TEST_APP_WITHOUT_DDR
     int32_t port_en[EMAC_PORT_CPSW + 1] = {1, 1, 0, 0, 0, 0, 0};
     #else
         #ifdef EMAC_BENCHMARK
@@ -104,7 +99,6 @@ int32_t port_en[EMAC_PORT_CPSW + 1] = {1, 1, 1, 1, 0, 0, 0};
                 int32_t port_en[EMAC_PORT_CPSW + 1] = {0, 0, 0, 0, 0, 0, 1};
             #endif
         #endif
-    #endif
 #endif
 
 #ifdef EMAC_TEST_APP_CPSW
@@ -114,7 +108,7 @@ uint32_t endPort = EMAC_PORT_CPSW;
 /* ICSSG case */
 #ifdef am65xx_idk
 uint32_t portNum = EMAC_PORT_ICSS;
-uint32_t endPort = EMAC_PORT_ICSS+5;
+uint32_t endPort = EMAC_PORT_ICSS + 5;
 #else
 uint32_t portNum = EMAC_PORT_ICSS + 4;
 uint32_t endPort = EMAC_PORT_ICSS + 5;
@@ -123,6 +117,21 @@ uint32_t endPort = EMAC_PORT_ICSS + 5;
 #ifdef BUILD_MCU
 uint32_t AsmReadActlr(void);
 void AsmWriteActlr(uint32_t);
+#endif
+
+#ifdef APP_TEST_ENABLE_POLL_CTRL_TIMER
+extern uint32_t initComplete;
+void * gTimerHandle;
+SemaphoreP_Params emac_app_timer_sem_params;
+SemaphoreP_Handle gAppTestPollCtrlTimerSem;
+
+void app_test_timer_isr (UArg arg)
+{
+    if (initComplete != 0)
+    {
+        SemaphoreP_post(gAppTestPollCtrlTimerSem);
+    }
+}
 #endif
 
 /*
@@ -134,42 +143,45 @@ int main(void)
     Error_Block eb;
     Error_init(&eb);
 
-#ifdef EMAC_TEST_APP_ICSSG_SWITCH
-#ifndef EMAC_BENCHMARK
-        /* Create the  task start the unit test.*/
-        Task_Params_init(&taskParams);
-        taskParams.priority = 10;
-        taskParams.instance->name = "app_test_task_verify_ut_switch";
-        Task_create( app_test_task_verify_ut_switch, &taskParams, NULL);
-#else
-        /* Create the  task to start BENCHMARK testing.*/
-        Task_Params_init(&taskParams);
-        taskParams.priority = 11;
-        taskParams.arg0 = EMAC_SWITCH_PORT1;
-        taskParams.instance->name = "app_test_task_benchmark";
-        Task_create( app_test_task_benchmark, &taskParams, NULL);
+#ifdef APP_TEST_ENABLE_POLL_CTRL_TIMER
+    TimerP_Params timerParams;
+
+    TimerP_Params_init(&timerParams);
+    timerParams.runMode = TimerP_RunMode_CONTINUOUS;
+    timerParams.startMode = TimerP_StartMode_AUTO;
+    timerParams.periodType = TimerP_PeriodType_MICROSECS;
+    timerParams.period = 500;
+    timerParams.arg = (void*)portNum;
+    gTimerHandle = TimerP_create(TimerP_ANY, (TimerP_Fxn)app_test_timer_isr, &timerParams);
+    if ( gTimerHandle == NULL)
+    {
+        UART_printf("timer create failed\n");
+        while(1);
+    }
+
+    SemaphoreP_Params emac_app_timer_sem_params;
+    EMAC_osalSemParamsInit(&emac_app_timer_sem_params);
+    emac_app_timer_sem_params.mode = SemaphoreP_Mode_BINARY;
+    gAppTestPollCtrlTimerSem =  EMAC_osalCreateBlockingLock(0,&emac_app_timer_sem_params);
 #endif
 
-#ifndef EMAC_CHECK_LINK_STATUS
-    /* Create the  task to poll driver to rx pkts.*/
-    /* set the priority to 10 for both polling tasks */
-    taskParams.priority = 10;
-
-    taskParams.arg0 = EMAC_SWITCH_PORT1;
-    taskParams.instance->name = rxTaskName[0];
-    Task_create(app_test_task_poll_ctrl, &taskParams, NULL);
-
-    taskParams.arg0 = EMAC_SWITCH_PORT2;
-    taskParams.instance->name = rxTaskName[2];
-    Task_create(app_test_task_poll_ctrl, &taskParams, NULL);
-#endif
-#else
 #ifndef EMAC_BENCHMARK
     /* Create the  task start the unit test.*/
     Task_Params_init(&taskParams);
     taskParams.priority = 10;
     taskParams.instance->name = "app_test_task_verify_ut_dual_mac_cpsw";
     Task_create( app_test_task_verify_ut_dual_mac_cpsw, &taskParams, NULL);
+
+
+#ifndef EMAC_BENCHMARK
+        /* Create the  task to poll driver to rx cfg responses.*/
+        Task_Params_init(&taskParams);
+        taskParams.arg0 = 0;
+        taskParams.priority = 10;
+        taskParams.instance->name = rxMgmtTaskName[0];
+        Task_create(app_test_task_poll_ctrl, &taskParams, NULL);
+#endif
+
 #else
     /* Create the  task to start BENCHMARK testing.*/
     Task_Params_init(&taskParams);
@@ -196,17 +208,9 @@ int main(void)
             taskParams.instance->name = rxTaskName[i];
             Task_create(app_test_task_poll_pkt, &taskParams, NULL);
 
-#ifndef EMAC_BENCHMARK
-            /* Create the  task to poll driver to rx cfg responses.*/
-            Task_Params_init(&taskParams);
-            taskParams.arg0 = i;
-            taskParams.priority = 10;
-            taskParams.instance->name = rxMgmtTaskName[i];
-            Task_create(app_test_task_poll_ctrl, &taskParams, NULL);
-#endif
+
     }
 
-#endif
     {
 #ifdef BUILD_MCU
         uint32_t actlrRegVal = AsmReadActlr();

@@ -93,6 +93,10 @@ extern uint32_t portNum;
 extern uint32_t endPort;
 extern int port_en[];
 
+#ifdef APP_TEST_ENABLE_POLL_CTRL_TIMER
+extern SemaphoreP_Handle gAppTestPollCtrlTimerSem;
+#endif
+
 /**********************************************************************
  ************************** Global Variables **************************
  **********************************************************************/
@@ -195,7 +199,6 @@ int32_t app_test_task_disable_pruicss(uint32_t portNum);
 void app_test_wait_mgmt_resp(uint32_t waitTimeMilliSec);
 
 uint32_t pollModeEnabled = 0;
-uint32_t linkStatus = 0;
 uint32_t initComplete = 0;
 uint32_t app_test_id = 0;
 #if defined (EMAC_BENCHMARK)
@@ -730,8 +733,6 @@ void app_test_rx_pkt_cb(uint32_t port_num, EMAC_PKT_DESC_T* p_desc)
 #endif
 }
 
-
-
 /******************************************************************************
 * Function: EMAC RX timestamp_response back function
 ******************************************************************************/
@@ -753,7 +754,6 @@ void app_test_ts_response_cb(uint32_t port_num, uint32_t ts_id, uint64_t ts, boo
 void app_test_task_poll_pkt (UArg arg0, UArg arg1)
 {
     uint32_t port = (uint32_t) arg0;
-    linkStatus = 1;
     while(initComplete == 0)
     {
         Task_sleep(1);
@@ -813,34 +813,76 @@ void app_test_task_poll_pkt (UArg arg0, UArg arg1)
         }
     }
 
+#ifdef APP_TEST_ENABLE_POLL_CTRL_TIMER
 void app_test_task_poll_ctrl (UArg arg0, UArg arg1)
 {
-    uint32_t port = (uint32_t) arg0;
+    uint32_t pNum = 0;
 #ifdef EMAC_TEST_APP_ICSSG
-    uint32_t mgmtRings =0x7;
-    uint32_t pktRings =0x1ff;
-    uint32_t txRings = 0xf;
+        uint32_t mgmtRings =EMAC_POLL_RX_MGMT_RING2 | EMAC_POLL_RX_MGMT_RING3;
+        uint32_t pktRings =EMAC_POLL_RX_PKT_RING1 | EMAC_POLL_RX_PKT_RING2;
+        uint32_t txRings = EMAC_POLL_TX_COMPLETION_RING_ALL;
 #else
-    uint32_t mgmtRings =0x0;
-    uint32_t pktRings =0x1;
-    uint32_t txRings = 0x0;
+        uint32_t mgmtRings =0x0;
+        uint32_t pktRings =EMAC_POLL_RX_PKT_RING1;
+        uint32_t txRings = EMAC_POLL_TX_COMPLETION_RING1;
 #endif
-    linkStatus = 1;
     while(initComplete == 0)
     {
         Task_sleep(1);
     }
 
-    UART_printf("polling all pkts on port: %d\n", port);
+    UART_printf("app_test_task_poll_ctrl: timer based polling\n");
     while(1)
     {
-        if (pollModeEnabled == 1)
-            emac_poll_ctrl(port, pktRings,mgmtRings,txRings);
-        else
-            emac_poll_ctrl(port, 0,EMAC_POLL_RX_MGMT_RING2,txRings);
-        Task_sleep(2);
+        SemaphoreP_pend(gAppTestPollCtrlTimerSem, BIOS_WAIT_FOREVER);
+        
+        for (pNum = portNum; pNum  <= endPort; pNum++)
+        {
+            if (!port_en[pNum])
+                continue;
+            emac_poll_ctrl (pNum, pktRings, mgmtRings, txRings);
+        }
     }
 }
+#else
+void app_test_task_poll_ctrl (UArg arg0, UArg arg1)
+{
+    uint32_t pNum;
+#ifdef EMAC_TEST_APP_ICSSG
+    uint32_t mgmtRings =EMAC_POLL_RX_MGMT_RING2 | EMAC_POLL_RX_MGMT_RING3;
+    uint32_t pktRings =EMAC_POLL_RX_PKT_RING1 | EMAC_POLL_RX_PKT_RING2;
+    uint32_t txRings = EMAC_POLL_TX_COMPLETION_RING_ALL;
+#else
+    uint32_t mgmtRings =0x0;
+    uint32_t pktRings =EMAC_POLL_RX_PKT_RING1;
+    uint32_t txRings = EMAC_POLL_TX_COMPLETION_RING1;
+#endif
+    while(initComplete == 0)
+    {
+        Task_sleep(1);
+    }
+
+    UART_printf("app_test_task_poll_ctrl: sleep polling\n");
+    while(1)
+    {
+        for (pNum = portNum; pNum <= endPort; pNum++)
+        {
+            if (!port_en[pNum])
+                continue;
+            if (pollModeEnabled == 1)
+            {
+                emac_poll_ctrl(pNum, pktRings,mgmtRings,txRings);
+            }
+            else
+            {
+                emac_poll_ctrl(pNum, 0,EMAC_POLL_RX_MGMT_RING2,txRings);
+            }
+            Task_sleep(2);
+        }
+    }
+}
+
+#endif
 
 int32_t emac_send_fail = 0;
 
