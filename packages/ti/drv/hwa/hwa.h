@@ -120,24 +120,7 @@ extern "C" {
 #include <stdint.h>
 #include <stddef.h>
 #include <ti/drv/hwa/soc/hwa_soc.h>
-
-/*TODO: move all the complex definitions to PDK */
- /*! @brief  Complex data type for DC accumulator  */
-typedef struct __attribute__((aligned(8))) cmplx64ImRe_t_
-{
-    int64_t real; /*!< @brief real part */
-    int64_t imag; /*!< @brief imaginary part */
-} cmplx64ImRe_t;
-
-
-/*! @brief  Complex data type, natural for C674x complex
- * multiplication instructions */
-typedef struct cmplx32ImRe_t_
-{
-    int32_t imag; /*!< @brief imaginary part */
-    int32_t real; /*!< @brief real part */
-} cmplx32ImRe_t;
-
+#include <ti/csl/csl_complex_math_types.h>
 
 
 /** @addtogroup HWA_DRIVER_ERROR_CODE
