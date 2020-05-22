@@ -68,7 +68,7 @@
 ifeq ($(board_diag_component_make_include), )
 
 #board_diag_am65xx_BOARDLIST = am65xx_evm am65xx_idk
-board_diag_am65xx_CORELIST = mcu1_0
+board_diag_am65xx_CORELIST = mpu1_0 mcu1_0
 board_diag_j721e_BOARDLIST = j721e_evm
 board_diag_j721e_CORELIST = mpu1_0 mcu1_0
 
