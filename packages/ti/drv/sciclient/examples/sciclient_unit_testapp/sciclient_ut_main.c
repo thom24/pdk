@@ -90,7 +90,9 @@ static int32_t App_getRevisionTestPol(void);
 static int32_t App_getRevisionTestIntr(void);
 static int32_t App_timeoutTest(void);
 static int32_t App_invalidReqPrmTest(void);
+#if defined (SOC_AM65XX) || defined (SOC_J721E) || defined (SOC_J7200)
 static int32_t App_msmcQueryTest(void);
+#endif
 #if defined(SOC_AM65XX)
 static int32_t App_rmGetResourceRange(void);
 #endif
@@ -193,9 +195,11 @@ int32_t App_sciclientTestMain(App_sciclientTestParams_t *testParams)
         case 4:
             testParams->testResult = App_timeoutTest();
             break;
+#if defined (SOC_AM65XX) || defined (SOC_J721E) || defined (SOC_J7200)
         case 5:
             testParams->testResult = App_msmcQueryTest();
             break;
+#endif
 #if defined (SOC_AM65XX)
         case 6:
             testParams->testResult = App_rmGetResourceRange();
@@ -472,6 +476,7 @@ static int32_t App_timeoutTest(void)
     return status;
 }
 
+#if defined (SOC_AM65XX) || defined (SOC_J721E) || defined (SOC_J7200)
 static int32_t App_msmcQueryTest(void)
 {
     int32_t status = CSL_EFAIL;
@@ -504,6 +509,7 @@ static int32_t App_msmcQueryTest(void)
     }
     return status;
 }
+#endif
 
 #if defined (SOC_AM65XX)
 struct appSciclientRmGetRangeTest

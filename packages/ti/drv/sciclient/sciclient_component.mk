@@ -196,7 +196,7 @@ export sciclient_unit_testapp_CORE_DEPENDENCY
 export sciclient_unit_testapp_XDC_CONFIGURO
 sciclient_unit_testapp_PKG_LIST = sciclient_unit_testapp
 sciclient_unit_testapp_INCLUDE = $(sciclient_unit_testapp_PATH)
-sciclient_unit_testapp_BOARDLIST = am65xx_evm j721e_sim j721e_evm
+sciclient_unit_testapp_BOARDLIST = am65xx_evm j721e_sim j721e_evm am64x_evm
 export sciclient_unit_testapp_BOARDLIST
 sciclient_unit_testapp_$(SOC)_CORELIST = $(drvsciclient_$(SOC)_CORELIST)
 export sciclient_unit_testapp_$(SOC)_CORELIST

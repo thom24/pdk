@@ -203,7 +203,7 @@ App_sciclientTestParams_t gSciclientTestcaseParams[] =
         /** testType **/
         (APP_SCICLIENT_TEST_TYPE_NEGATIVE)
     },
-
+#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined (SOC_J7200)
     {
         /** enableTest **/
         TEST_ENABLE,
@@ -239,6 +239,7 @@ App_sciclientTestParams_t gSciclientTestcaseParams[] =
         /** testType **/
         (APP_SCICLIENT_TEST_TYPE_SANITY)
     },
+#endif
 #if defined(SOC_AM65XX)
     {
         /** enableTest **/
