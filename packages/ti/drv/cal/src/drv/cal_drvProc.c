@@ -1,4 +1,4 @@
-/* 
+/*
  *  Copyright (c) Texas Instruments Incorporated 2018
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -119,6 +119,8 @@ Cal_CoreFrame *calDrvCaptCoreReqFrameCb(void  *drvData,
         qObj->creditCnt++;
         coreFrm = &qObj->coreFrm;
         Fvid2Utils_queue(chObj->bmObj.curQ, &qObj->qElem, qObj);
+        GT_1trace(CalTrace, GT_DEBUG,
+              "CaptDrv: Queued buffer 0x%0.8x to core\r\n", coreFrm->addr[0]);
     }
     else
     {
@@ -136,8 +138,10 @@ Cal_CoreFrame *calDrvCaptCoreReqFrameCb(void  *drvData,
             GT_assert(CalTrace, (NULL != qObj));
             qObj->creditCnt++;
             coreFrm = &qObj->coreFrm;
+            GT_1trace(CalTrace, GT_DEBUG,
+              "CaptDrv: Queued buffer 0x%0.8x to core\r\n", coreFrm->addr[0]);
         }
-        else if(CAL_CAPT_BCM_CIRCULAR_FRM_REPEAT == 
+        else if(CAL_CAPT_BCM_CIRCULAR_FRM_REPEAT ==
                 instObj->createPrms.bufCaptMode)
         {
             /*
@@ -154,15 +158,14 @@ Cal_CoreFrame *calDrvCaptCoreReqFrameCb(void  *drvData,
 
             /* Queue back to the start */
             Fvid2Utils_queue(chObj->bmObj.curQ, &qObj->qElem, qObj);
+            GT_1trace(CalTrace, GT_DEBUG,
+              "CaptDrv: Queued buffer 0x%0.8x to core\r\n", coreFrm->addr[0]);
         }
         else
         {
             GT_assert(CalTrace, FALSE);
         }
     }
-
-    GT_1trace(CalTrace, GT_DEBUG,
-              "CaptDrv: Queued buffer 0x%0.8x to core\r\n", coreFrm->addr[0]);
 
     HwiP_restore(cookie);
 
