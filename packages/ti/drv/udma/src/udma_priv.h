@@ -173,8 +173,7 @@ void Udma_ringPrimeReadNormal(Udma_RingHandle ringHandle, uint64_t *phyDescMem);
 void *Udma_ringGetMemPtrNormal(Udma_RingHandle ringHandle);
 uint32_t Udma_ringGetModeNormal(Udma_RingHandle ringHandle);
 uint32_t Udma_ringGetElementCntNormal(Udma_RingHandle ringHandle);
-uint32_t Udma_ringGetForwardRingOccNormal(Udma_RingHandle ringHandle);
-uint32_t Udma_ringGetReverseRingOccNormal(Udma_RingHandle ringHandle);
+uint32_t Udma_ringGetRingOccNormal(Udma_RingHandle ringHandle);
 uint32_t Udma_ringGetWrIdxNormal(Udma_RingHandle ringHandle);
 uint32_t Udma_ringGetRdIdxNormal(Udma_RingHandle ringHandle);
 int32_t Udma_ringDequeueRawNormal(Udma_DrvHandle  drvHandle, 

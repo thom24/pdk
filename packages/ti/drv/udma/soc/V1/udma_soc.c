@@ -330,8 +330,8 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
     drvHandle->ringGetElementCnt        = &Udma_ringGetElementCntNormal;
     drvHandle->ringGetMemPtr            = &Udma_ringGetMemPtrNormal;
     drvHandle->ringGetMode              = &Udma_ringGetModeNormal;
-    drvHandle->ringGetForwardRingOcc    = &Udma_ringGetForwardRingOccNormal;
-    drvHandle->ringGetReverseRingOcc    = &Udma_ringGetReverseRingOccNormal;
+    drvHandle->ringGetForwardRingOcc    = &Udma_ringGetRingOccNormal;
+    drvHandle->ringGetReverseRingOcc    = &Udma_ringGetRingOccNormal;
     drvHandle->ringGetWrIdx             = &Udma_ringGetWrIdxNormal;
     drvHandle->ringGetRdIdx             = &Udma_ringGetRdIdxNormal;
     drvHandle->ringPrime                = &Udma_ringPrimeNormal;

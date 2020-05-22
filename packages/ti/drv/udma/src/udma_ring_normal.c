@@ -332,22 +332,7 @@ uint32_t Udma_ringGetElementCntNormal(Udma_RingHandle ringHandle)
     return (size);
 }
 
-uint32_t Udma_ringGetForwardRingOccNormal(Udma_RingHandle ringHandle)
-{
-    uint32_t occ = 0U;
-
-    if((NULL_PTR != ringHandle) && (UDMA_INIT_DONE == ringHandle->ringInitDone))
-    {
-        occ = CSL_ringaccGetRingHwOcc(&ringHandle->drvHandle->raRegs,
-                                      ringHandle->ringNum);
-        /* Update cfg->occ */  
-        ringHandle->cfg.occ = occ;
-    }
-
-    return (occ);
-}
-
-uint32_t Udma_ringGetReverseRingOccNormal(Udma_RingHandle ringHandle)
+uint32_t Udma_ringGetRingOccNormal(Udma_RingHandle ringHandle)
 {
     uint32_t occ = 0U;
 
