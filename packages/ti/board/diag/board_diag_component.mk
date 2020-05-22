@@ -1,5 +1,5 @@
 #  ============================================================================
-#  (C) Copyright 2019 Texas Instruments, Inc.
+#  (C) Copyright 2019-2020 Texas Instruments, Inc.
 #
 #  Redistribution and use in source and binary forms, with or without
 #  modification, are permitted provided that the following conditions
@@ -92,11 +92,7 @@ board_diag_EXAMPLE_LIST =
 #
 
 # ARCH is used for diag binary folder name to align with existing platforms
-ifeq ($(CORE),mpu1_0)
-board_diag_LOCAL_BINPATH = $(PDK_BOARD_DIAG_COMP_PATH)/../bin/$(BOARD)/armv8
-else
-board_diag_LOCAL_BINPATH = $(PDK_BOARD_DIAG_COMP_PATH)/../bin/$(BOARD)/armv7
-endif
+board_diag_LOCAL_BINPATH =
 
 board_diag_APPIMAGEGEN_CTRL = yes
 
@@ -104,798 +100,798 @@ board_diag_APPIMAGEGEN_CTRL = yes
 board_diag_COMP_LIST = board_diag
 
 # ADC
-adc_board_diag_COMP_LIST = adc_board_diag
-adc_board_diag_RELPATH = ti/board/diag/adc/build
-adc_board_diag_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/adc/build
-adc_board_diag_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
-adc_board_diag_MAKEFILE = -f makefile
-adc_board_diag_BOARD_DEPENDENCY = yes
-adc_board_diag_CORE_DEPENDENCY = yes
-export adc_board_diag_COMP_LIST
-export adc_board_diag_BOARD_DEPENDENCY
-export adc_board_diag_CORE_DEPENDENCY
-export adc_board_diag_MAKEFILE
-adc_board_diag_PKG_LIST = adc_board_diag
-adc_board_diag_INCLUDE = $(adc_board_diag_PATH)
-adc_board_diag_BOARDLIST = $(board_diag_$(SOC)_BOARDLIST)
-adc_board_diag_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
-export adc_board_diag_$(SOC)_CORELIST
-export adc_board_diag_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
-board_diag_EXAMPLE_LIST += adc_board_diag
+board_diag_adc_COMP_LIST = board_diag_adc
+board_diag_adc_RELPATH = ti/board/diag/adc/build
+board_diag_adc_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/adc/build
+board_diag_adc_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
+board_diag_adc_MAKEFILE = -f makefile
+board_diag_adc_BOARD_DEPENDENCY = yes
+board_diag_adc_CORE_DEPENDENCY = yes
+export board_diag_adc_COMP_LIST
+export board_diag_adc_BOARD_DEPENDENCY
+export board_diag_adc_CORE_DEPENDENCY
+export board_diag_adc_MAKEFILE
+board_diag_adc_PKG_LIST = board_diag_adc
+board_diag_adc_INCLUDE = $(board_diag_adc_PATH)
+board_diag_adc_BOARDLIST = j721e_evm
+board_diag_adc_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
+export board_diag_adc_$(SOC)_CORELIST
+export board_diag_adc_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
+board_diag_EXAMPLE_LIST += board_diag_adc
 
 # AUTOMATION HEADER
-automationHeader_board_diag_COMP_LIST = automationHeader_board_diag
-automationHeader_board_diag_RELPATH = ti/board/diag/automation_header/build
-automationHeader_board_diag_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/automation_header/build
-automationHeader_board_diag_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
-automationHeader_board_diag_MAKEFILE = -f makefile
-automationHeader_board_diag_BOARD_DEPENDENCY = yes
-automationHeader_board_diag_CORE_DEPENDENCY = yes
-export automationHeader_board_diag_COMP_LIST
-export automationHeader_board_diag_BOARD_DEPENDENCY
-export automationHeader_board_diag_CORE_DEPENDENCY
-export automationHeader_board_diag_MAKEFILE
-automationHeader_board_diag_PKG_LIST = automationHeader_board_diag
-automationHeader_board_diag_INCLUDE = $(automationHeader_board_diag_PATH)
-automationHeader_board_diag_BOARDLIST = $(board_diag_$(SOC)_BOARDLIST)
-automationHeader_board_diag_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
-export automationHeader_board_diag_$(SOC)_CORELIST
-export automationHeader_board_diag_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
-board_diag_EXAMPLE_LIST += automationHeader_board_diag
+board_diag_automationHeader_COMP_LIST = board_diag_automationHeader
+board_diag_automationHeader_RELPATH = ti/board/diag/automation_header/build
+board_diag_automationHeader_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/automation_header/build
+board_diag_automationHeader_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
+board_diag_automationHeader_MAKEFILE = -f makefile
+board_diag_automationHeader_BOARD_DEPENDENCY = yes
+board_diag_automationHeader_CORE_DEPENDENCY = yes
+export board_diag_automationHeader_COMP_LIST
+export board_diag_automationHeader_BOARD_DEPENDENCY
+export board_diag_automationHeader_CORE_DEPENDENCY
+export board_diag_automationHeader_MAKEFILE
+board_diag_automationHeader_PKG_LIST = board_diag_automationHeader
+board_diag_automationHeader_INCLUDE = $(board_diag_automationHeader_PATH)
+board_diag_automationHeader_BOARDLIST = j721e_evm
+board_diag_automationHeader_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
+export board_diag_automationHeader_$(SOC)_CORELIST
+export board_diag_automationHeader_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
+board_diag_EXAMPLE_LIST += board_diag_automationHeader
 
 # BOOT EEPROM
-bootEeprom_board_diag_COMP_LIST = bootEeprom_board_diag
-bootEeprom_board_diag_RELPATH = ti/board/diag/boot_eeprom/build
-bootEeprom_board_diag_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/boot_eeprom/build
-bootEeprom_board_diag_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
-bootEeprom_board_diag_MAKEFILE = -f makefile
-bootEeprom_board_diag_BOARD_DEPENDENCY = yes
-bootEeprom_board_diag_CORE_DEPENDENCY = yes
-export bootEeprom_board_diag_COMP_LIST
-export bootEeprom_board_diag_BOARD_DEPENDENCY
-export bootEeprom_board_diag_CORE_DEPENDENCY
-export bootEeprom_board_diag_MAKEFILE
-bootEeprom_board_diag_PKG_LIST = bootEeprom_board_diag
-bootEeprom_board_diag_INCLUDE = $(bootEeprom_board_diag_PATH)
-bootEeprom_board_diag_BOARDLIST = $(board_diag_$(SOC)_BOARDLIST) am65xx_evm am65xx_idk
-bootEeprom_board_diag_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
-export bootEeprom_board_diag_$(SOC)_CORELIST
-export bootEeprom_board_diag_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
-board_diag_EXAMPLE_LIST += bootEeprom_board_diag
+board_diag_bootEeprom_COMP_LIST = board_diag_bootEeprom
+board_diag_bootEeprom_RELPATH = ti/board/diag/boot_eeprom/build
+board_diag_bootEeprom_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/boot_eeprom/build
+board_diag_bootEeprom_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
+board_diag_bootEeprom_MAKEFILE = -f makefile
+board_diag_bootEeprom_BOARD_DEPENDENCY = yes
+board_diag_bootEeprom_CORE_DEPENDENCY = yes
+export board_diag_bootEeprom_COMP_LIST
+export board_diag_bootEeprom_BOARD_DEPENDENCY
+export board_diag_bootEeprom_CORE_DEPENDENCY
+export board_diag_bootEeprom_MAKEFILE
+board_diag_bootEeprom_PKG_LIST = board_diag_bootEeprom
+board_diag_bootEeprom_INCLUDE = $(board_diag_bootEeprom_PATH)
+board_diag_bootEeprom_BOARDLIST = j721e_evm am65xx_evm am65xx_idk
+board_diag_bootEeprom_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
+export board_diag_bootEeprom_$(SOC)_CORELIST
+export board_diag_bootEeprom_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
+board_diag_EXAMPLE_LIST += board_diag_bootEeprom
 
 # BOOST GPIO
-boostGpio_board_diag_COMP_LIST = boostGpio_board_diag
-boostGpio_board_diag_RELPATH = ti/board/diag/boost_gpio/build
-boostGpio_board_diag_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/boost_gpio/build
-boostGpio_board_diag_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
-boostGpio_board_diag_MAKEFILE = -f makefile
-boostGpio_board_diag_BOARD_DEPENDENCY = yes
-boostGpio_board_diag_CORE_DEPENDENCY = yes
-export boostGpio_board_diag_COMP_LIST
-export boostGpio_board_diag_BOARD_DEPENDENCY
-export boostGpio_board_diag_CORE_DEPENDENCY
-export boostGpio_board_diag_MAKEFILE
-boostGpio_board_diag_PKG_LIST = boostGpio_board_diag
-boostGpio_board_diag_INCLUDE = $(boostGpio_board_diag_PATH)
-boostGpio_board_diag_BOARDLIST = am65xx_evm
-boostGpio_board_diag_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
-export boostGpio_board_diag_$(SOC)_CORELIST
-export boostGpio_board_diag_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
-board_diag_EXAMPLE_LIST += boostGpio_board_diag
+board_diag_boostGpio_COMP_LIST = board_diag_boostGpio
+board_diag_boostGpio_RELPATH = ti/board/diag/boost_gpio/build
+board_diag_boostGpio_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/boost_gpio/build
+board_diag_boostGpio_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
+board_diag_boostGpio_MAKEFILE = -f makefile
+board_diag_boostGpio_BOARD_DEPENDENCY = yes
+board_diag_boostGpio_CORE_DEPENDENCY = yes
+export board_diag_boostGpio_COMP_LIST
+export board_diag_boostGpio_BOARD_DEPENDENCY
+export board_diag_boostGpio_CORE_DEPENDENCY
+export board_diag_boostGpio_MAKEFILE
+board_diag_boostGpio_PKG_LIST = board_diag_boostGpio
+board_diag_boostGpio_INCLUDE = $(board_diag_boostGpio_PATH)
+board_diag_boostGpio_BOARDLIST = am65xx_evm
+board_diag_boostGpio_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
+export board_diag_boostGpio_$(SOC)_CORELIST
+export board_diag_boostGpio_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
+board_diag_EXAMPLE_LIST += board_diag_boostGpio
 
 # BOOT SWITCH
-export bootSwitch_board_diag_COMP_LIST = bootSwitch_board_diag
-bootSwitch_board_diag_RELPATH = ti/board/diag/boot_switch/build
-bootSwitch_board_diag_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/boot_switch/build
-bootSwitch_board_diag_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
-export bootSwitch_board_diag_MAKEFILE = -f makefile
-export bootSwitch_board_diag_BOARD_DEPENDENCY = yes
-export bootSwitch_board_diag_CORE_DEPENDENCY = yes
-bootSwitch_board_diag_PKG_LIST = bootSwitch_board_diag
-bootSwitch_board_diag_INCLUDE = $(bootSwitch_board_diag_PATH)
-bootSwitch_board_diag_BOARDLIST = $(board_diag_$(SOC)_BOARDLIST) am65xx_evm am65xx_idk
-export bootSwitch_board_diag_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
-export bootSwitch_board_diag_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
-board_diag_EXAMPLE_LIST += bootSwitch_board_diag
+export board_diag_bootSwitch_COMP_LIST = board_diag_bootSwitch
+board_diag_bootSwitch_RELPATH = ti/board/diag/boot_switch/build
+board_diag_bootSwitch_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/boot_switch/build
+board_diag_bootSwitch_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
+export board_diag_bootSwitch_MAKEFILE = -f makefile
+export board_diag_bootSwitch_BOARD_DEPENDENCY = yes
+export board_diag_bootSwitch_CORE_DEPENDENCY = yes
+board_diag_bootSwitch_PKG_LIST = board_diag_bootSwitch
+board_diag_bootSwitch_INCLUDE = $(board_diag_bootSwitch_PATH)
+board_diag_bootSwitch_BOARDLIST = j721e_evm am65xx_evm am65xx_idk
+export board_diag_bootSwitch_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
+export board_diag_bootSwitch_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
+board_diag_EXAMPLE_LIST += board_diag_bootSwitch
 
 # BUTTON
-export button_board_diag_COMP_LIST = button_board_diag
-button_board_diag_RELPATH = ti/board/diag/button/build
-button_board_diag_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/button/build
-button_board_diag_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
-export button_board_diag_MAKEFILE = -f makefile
-export button_board_diag_BOARD_DEPENDENCY = yes
-export button_board_diag_CORE_DEPENDENCY = yes
-button_board_diag_PKG_LIST = button_board_diag
-button_board_diag_INCLUDE = $(button_board_diag_PATH)
-button_board_diag_BOARDLIST = am65xx_evm am65xx_idk
-export button_board_diag_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
-export button_board_diag_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
-board_diag_EXAMPLE_LIST += button_board_diag
+export board_diag_button_COMP_LIST = board_diag_button
+board_diag_button_RELPATH = ti/board/diag/button/build
+board_diag_button_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/button/build
+board_diag_button_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
+export board_diag_button_MAKEFILE = -f makefile
+export board_diag_button_BOARD_DEPENDENCY = yes
+export board_diag_button_CORE_DEPENDENCY = yes
+board_diag_button_PKG_LIST = board_diag_button
+board_diag_button_INCLUDE = $(board_diag_button_PATH)
+board_diag_button_BOARDLIST = am65xx_evm am65xx_idk
+export board_diag_button_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
+export board_diag_button_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
+board_diag_EXAMPLE_LIST += board_diag_button
 
 # CLOCK GENERATOR
-clockGen_board_diag_COMP_LIST = clockGen_board_diag
-clockGen_board_diag_RELPATH = ti/board/diag/clock_generator/build
-clockGen_board_diag_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/clock_generator/build
-clockGen_board_diag_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
-clockGen_board_diag_MAKEFILE = -f makefile
-clockGen_board_diag_BOARD_DEPENDENCY = yes
-clockGen_board_diag_CORE_DEPENDENCY = yes
-export clockGen_board_diag_COMP_LIST
-export clockGen_board_diag_BOARD_DEPENDENCY
-export clockGen_board_diag_CORE_DEPENDENCY
-export clockGen_board_diag_MAKEFILE
-clockGen_board_diag_PKG_LIST = clockGen_board_diag
-clockGen_board_diag_INCLUDE = $(clockGen_board_diag_PATH)
-clockGen_board_diag_BOARDLIST = $(board_diag_$(SOC)_BOARDLIST)
-clockGen_board_diag_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
-export clockGen_board_diag_$(SOC)_CORELIST
-export clockGen_board_diag_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
-board_diag_EXAMPLE_LIST += clockGen_board_diag
+board_diag_clockGen_COMP_LIST = board_diag_clockGen
+board_diag_clockGen_RELPATH = ti/board/diag/clock_generator/build
+board_diag_clockGen_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/clock_generator/build
+board_diag_clockGen_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
+board_diag_clockGen_MAKEFILE = -f makefile
+board_diag_clockGen_BOARD_DEPENDENCY = yes
+board_diag_clockGen_CORE_DEPENDENCY = yes
+export board_diag_clockGen_COMP_LIST
+export board_diag_clockGen_BOARD_DEPENDENCY
+export board_diag_clockGen_CORE_DEPENDENCY
+export board_diag_clockGen_MAKEFILE
+board_diag_clockGen_PKG_LIST = board_diag_clockGen
+board_diag_clockGen_INCLUDE = $(board_diag_clockGen_PATH)
+board_diag_clockGen_BOARDLIST = j721e_evm
+board_diag_clockGen_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
+export board_diag_clockGen_$(SOC)_CORELIST
+export board_diag_clockGen_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
+board_diag_EXAMPLE_LIST += board_diag_clockGen
 
 # CPSW EMAC
-cpsw_board_diag_COMP_LIST = cpsw_board_diag
-cpsw_board_diag_RELPATH = ti/board/diag/cpsw/build
-cpsw_board_diag_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/cpsw/build
-cpsw_board_diag_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
-cpsw_board_diag_MAKEFILE = -f makefile
-cpsw_board_diag_BOARD_DEPENDENCY = yes
-cpsw_board_diag_CORE_DEPENDENCY = yes
-export cpsw_board_diag_COMP_LIST
-export cpsw_board_diag_BOARD_DEPENDENCY
-export cpsw_board_diag_CORE_DEPENDENCY
-export cpsw_board_diag_MAKEFILE
-cpsw_board_diag_PKG_LIST = cpsw_board_diag
-cpsw_board_diag_INCLUDE = $(cpsw_board_diag_PATH)
-cpsw_board_diag_BOARDLIST = $(board_diag_$(SOC)_BOARDLIST)
-cpsw_board_diag_$(SOC)_CORELIST = mcu2_0
-export cpsw_board_diag_$(SOC)_CORELIST
-export cpsw_board_diag_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
+board_diag_cpsw_COMP_LIST = board_diag_cpsw
+board_diag_cpsw_RELPATH = ti/board/diag/cpsw/build
+board_diag_cpsw_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/cpsw/build
+board_diag_cpsw_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
+board_diag_cpsw_MAKEFILE = -f makefile
+board_diag_cpsw_BOARD_DEPENDENCY = yes
+board_diag_cpsw_CORE_DEPENDENCY = yes
+export board_diag_cpsw_COMP_LIST
+export board_diag_cpsw_BOARD_DEPENDENCY
+export board_diag_cpsw_CORE_DEPENDENCY
+export board_diag_cpsw_MAKEFILE
+board_diag_cpsw_PKG_LIST = board_diag_cpsw
+board_diag_cpsw_INCLUDE = $(board_diag_cpsw_PATH)
+board_diag_cpsw_BOARDLIST = j721e_evm
+board_diag_cpsw_$(SOC)_CORELIST = mcu2_0
+export board_diag_cpsw_$(SOC)_CORELIST
+export board_diag_cpsw_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
 
 # Add CPSW example only if the CPSW component path exists
 ifneq ($(wildcard $(PDK_CPSW_COMP_PATH)),)
-board_diag_EXAMPLE_LIST += cpsw_board_diag
+board_diag_EXAMPLE_LIST += board_diag_cpsw
 endif
 
 # csirx
-csirx_board_diag_COMP_LIST = csirx_board_diag
-csirx_board_diag_RELPATH = ti/board/diag/csirx/build
-csirx_board_diag_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/csirx/build
-csirx_board_diag_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
-csirx_board_diag_MAKEFILE = -f makefile
-csirx_board_diag_BOARD_DEPENDENCY = yes
-csirx_board_diag_CORE_DEPENDENCY = yes
-export csirx_board_diag_COMP_LIST
-export csirx_board_diag_BOARD_DEPENDENCY
-export csirx_board_diag_CORE_DEPENDENCY
-export csirx_board_diag_MAKEFILE
-csirx_board_diag_PKG_LIST = csirx_board_diag
-csirx_board_diag_INCLUDE = $(csirx_board_diag_PATH)
-csirx_board_diag_BOARDLIST = $(board_diag_$(SOC)_BOARDLIST)
-csirx_board_diag_$(SOC)_CORELIST = mcu2_0
-export csirx_board_diag_$(SOC)_CORELIST
-export csirx_board_diag_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
+board_diag_csirx_COMP_LIST = board_diag_csirx
+board_diag_csirx_RELPATH = ti/board/diag/csirx/build
+board_diag_csirx_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/csirx/build
+board_diag_csirx_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
+board_diag_csirx_MAKEFILE = -f makefile
+board_diag_csirx_BOARD_DEPENDENCY = yes
+board_diag_csirx_CORE_DEPENDENCY = yes
+export board_diag_csirx_COMP_LIST
+export board_diag_csirx_BOARD_DEPENDENCY
+export board_diag_csirx_CORE_DEPENDENCY
+export board_diag_csirx_MAKEFILE
+board_diag_csirx_PKG_LIST = board_diag_csirx
+board_diag_csirx_INCLUDE = $(board_diag_csirx_PATH)
+board_diag_csirx_BOARDLIST = j721e_evm
+board_diag_csirx_$(SOC)_CORELIST = mcu2_0
+export board_diag_csirx_$(SOC)_CORELIST
+export board_diag_csirx_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
 
 # Add CSIRX diagnostic test only if the CSIRX component path exists
 ifneq ($(wildcard $(PDK_CSIRX_COMP_PATH)),)
-board_diag_EXAMPLE_LIST += csirx_board_diag
+board_diag_EXAMPLE_LIST += board_diag_csirx
 endif
 
 
 # CURRENT MONITOR
-currentMonitor_board_diag_COMP_LIST = currentMonitor_board_diag
-currentMonitor_board_diag_RELPATH = ti/board/diag/current_monitor/build
-currentMonitor_board_diag_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/current_monitor/build
-currentMonitor_board_diag_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
-currentMonitor_board_diag_MAKEFILE = -f makefile
-currentMonitor_board_diag_BOARD_DEPENDENCY = yes
-currentMonitor_board_diag_CORE_DEPENDENCY = yes
-export currentMonitor_board_diag_COMP_LIST
-export currentMonitor_board_diag_BOARD_DEPENDENCY
-export currentMonitor_board_diag_CORE_DEPENDENCY
-export currentMonitor_board_diag_MAKEFILE
-currentMonitor_board_diag_PKG_LIST = currentMonitor_board_diag
-currentMonitor_board_diag_INCLUDE = $(currentMonitor_board_diag_PATH)
-currentMonitor_board_diag_BOARDLIST = $(board_diag_$(SOC)_BOARDLIST) am65xx_evm am65xx_idk
-currentMonitor_board_diag_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
-export currentMonitor_board_diag_$(SOC)_CORELIST
-export currentMonitor_board_diag_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
-board_diag_EXAMPLE_LIST += currentMonitor_board_diag
+board_diag_currentMonitor_COMP_LIST = board_diag_currentMonitor
+board_diag_currentMonitor_RELPATH = ti/board/diag/current_monitor/build
+board_diag_currentMonitor_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/current_monitor/build
+board_diag_currentMonitor_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
+board_diag_currentMonitor_MAKEFILE = -f makefile
+board_diag_currentMonitor_BOARD_DEPENDENCY = yes
+board_diag_currentMonitor_CORE_DEPENDENCY = yes
+export board_diag_currentMonitor_COMP_LIST
+export board_diag_currentMonitor_BOARD_DEPENDENCY
+export board_diag_currentMonitor_CORE_DEPENDENCY
+export board_diag_currentMonitor_MAKEFILE
+board_diag_currentMonitor_PKG_LIST = board_diag_currentMonitor
+board_diag_currentMonitor_INCLUDE = $(board_diag_currentMonitor_PATH)
+board_diag_currentMonitor_BOARDLIST = j721e_evm am65xx_evm am65xx_idk
+board_diag_currentMonitor_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
+export board_diag_currentMonitor_$(SOC)_CORELIST
+export board_diag_currentMonitor_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
+board_diag_EXAMPLE_LIST += board_diag_currentMonitor
 
 # DISPLAYPORT
-displayPort_board_diag_COMP_LIST = displayPort_board_diag
-displayPort_board_diag_RELPATH = ti/board/diag/display_port/build
-displayPort_board_diag_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/display_port/build
-displayPort_board_diag_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
-displayPort_board_diag_MAKEFILE = -f makefile
-displayPort_board_diag_BOARD_DEPENDENCY = yes
-displayPort_board_diag_CORE_DEPENDENCY = yes
-export displayPort_board_diag_COMP_LIST
-export displayPort_board_diag_BOARD_DEPENDENCY
-export displayPort_board_diag_CORE_DEPENDENCY
-export displayPort_board_diag_MAKEFILE
-displayPort_board_diag_PKG_LIST = displayPort_board_diag
-displayPort_board_diag_INCLUDE = $(displayPort_board_diag_PATH)
-displayPort_board_diag_BOARDLIST = $(board_diag_$(SOC)_BOARDLIST)
-displayPort_board_diag_$(SOC)_CORELIST = mcu2_0
-export displayPort_board_diag_$(SOC)_CORELIST
-export displayPort_board_diag_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
-board_diag_EXAMPLE_LIST += displayPort_board_diag
+board_diag_displayPort_COMP_LIST = board_diag_displayPort
+board_diag_displayPort_RELPATH = ti/board/diag/display_port/build
+board_diag_displayPort_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/display_port/build
+board_diag_displayPort_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
+board_diag_displayPort_MAKEFILE = -f makefile
+board_diag_displayPort_BOARD_DEPENDENCY = yes
+board_diag_displayPort_CORE_DEPENDENCY = yes
+export board_diag_displayPort_COMP_LIST
+export board_diag_displayPort_BOARD_DEPENDENCY
+export board_diag_displayPort_CORE_DEPENDENCY
+export board_diag_displayPort_MAKEFILE
+board_diag_displayPort_PKG_LIST = board_diag_displayPort
+board_diag_displayPort_INCLUDE = $(board_diag_displayPort_PATH)
+board_diag_displayPort_BOARDLIST = j721e_evm
+board_diag_displayPort_$(SOC)_CORELIST = mcu2_0
+export board_diag_displayPort_$(SOC)_CORELIST
+export board_diag_displayPort_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
+board_diag_EXAMPLE_LIST += board_diag_displayPort
 
-# DSI
-dsi_board_diag_COMP_LIST = dsi_board_diag
-dsi_board_diag_RELPATH = ti/board/diag/dsi/build
-dsi_board_diag_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/dsi/build
-dsi_board_diag_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
-dsi_board_diag_MAKEFILE = -f makefile
-dsi_board_diag_BOARD_DEPENDENCY = yes
-dsi_board_diag_CORE_DEPENDENCY = yes
-export dsi_board_diag_COMP_LIST
-export dsi_board_diag_BOARD_DEPENDENCY
-export dsi_board_diag_CORE_DEPENDENCY
-export dsi_board_diag_MAKEFILE
-dsi_board_diag_PKG_LIST = dsi_board_diag
-dsi_board_diag_INCLUDE = $(dsi_board_diag_PATH)
-dsi_board_diag_BOARDLIST = $(board_diag_$(SOC)_BOARDLIST)
-dsi_board_diag_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
-export dsi_board_diag_$(SOC)_CORELIST
-export dsi_board_diag_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
-board_diag_EXAMPLE_LIST += dsi_board_diag
+# DSI-FPD Device test
+board_diag_dsi_COMP_LIST = board_diag_dsi
+board_diag_dsi_RELPATH = ti/board/diag/dsi/build
+board_diag_dsi_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/dsi/build
+board_diag_dsi_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
+board_diag_dsi_MAKEFILE = -f makefile
+board_diag_dsi_BOARD_DEPENDENCY = yes
+board_diag_dsi_CORE_DEPENDENCY = yes
+export board_diag_dsi_COMP_LIST
+export board_diag_dsi_BOARD_DEPENDENCY
+export board_diag_dsi_CORE_DEPENDENCY
+export board_diag_dsi_MAKEFILE
+board_diag_dsi_PKG_LIST = board_diag_dsi
+board_diag_dsi_INCLUDE = $(board_diag_dsi_PATH)
+board_diag_dsi_BOARDLIST = j721e_evm
+board_diag_dsi_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
+export board_diag_dsi_$(SOC)_CORELIST
+export board_diag_dsi_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
+board_diag_EXAMPLE_LIST += board_diag_dsi
 
 # EEPROM
-eeprom_board_diag_COMP_LIST = eeprom_board_diag
-eeprom_board_diag_RELPATH = ti/board/diag/eeprom/build
-eeprom_board_diag_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/eeprom/build
-eeprom_board_diag_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
-eeprom_board_diag_MAKEFILE = -f makefile
-eeprom_board_diag_BOARD_DEPENDENCY = yes
-eeprom_board_diag_CORE_DEPENDENCY = yes
-export eeprom_board_diag_COMP_LIST
-export eeprom_board_diag_BOARD_DEPENDENCY
-export eeprom_board_diag_CORE_DEPENDENCY
-export eeprom_board_diag_MAKEFILE
-eeprom_board_diag_PKG_LIST = eeprom_board_diag
-eeprom_board_diag_INCLUDE = $(eeprom_board_diag_PATH)
-eeprom_board_diag_BOARDLIST = $(board_diag_$(SOC)_BOARDLIST) am65xx_evm am65xx_idk
-eeprom_board_diag_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
-export eeprom_board_diag_$(SOC)_CORELIST
-export eeprom_board_diag_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
-board_diag_EXAMPLE_LIST += eeprom_board_diag
+board_diag_eeprom_COMP_LIST = board_diag_eeprom
+board_diag_eeprom_RELPATH = ti/board/diag/eeprom/build
+board_diag_eeprom_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/eeprom/build
+board_diag_eeprom_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
+board_diag_eeprom_MAKEFILE = -f makefile
+board_diag_eeprom_BOARD_DEPENDENCY = yes
+board_diag_eeprom_CORE_DEPENDENCY = yes
+export board_diag_eeprom_COMP_LIST
+export board_diag_eeprom_BOARD_DEPENDENCY
+export board_diag_eeprom_CORE_DEPENDENCY
+export board_diag_eeprom_MAKEFILE
+board_diag_eeprom_PKG_LIST = board_diag_eeprom
+board_diag_eeprom_INCLUDE = $(board_diag_eeprom_PATH)
+board_diag_eeprom_BOARDLIST = j721e_evm am65xx_evm am65xx_idk
+board_diag_eeprom_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
+export board_diag_eeprom_$(SOC)_CORELIST
+export board_diag_eeprom_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
+board_diag_EXAMPLE_LIST += board_diag_eeprom
 
 # EMAC
-emac_board_diag_COMP_LIST = emac_board_diag
-emac_board_diag_RELPATH = ti/board/diag/emac/build
-emac_board_diag_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/emac/build
-emac_board_diag_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
-emac_board_diag_MAKEFILE = -f makefile
-emac_board_diag_BOARD_DEPENDENCY = yes
-emac_board_diag_CORE_DEPENDENCY = yes
-export emac_board_diag_COMP_LIST
-export emac_board_diag_BOARD_DEPENDENCY
-export emac_board_diag_CORE_DEPENDENCY
-export emac_board_diag_MAKEFILE
-emac_board_diag_PKG_LIST = emac_board_diag
-emac_board_diag_INCLUDE = $(emac_board_diag_PATH)
-emac_board_diag_BOARDLIST = am65xx_evm am65xx_idk
-emac_board_diag_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
-export emac_board_diag_$(SOC)_CORELIST
-export emac_board_diag_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
-board_diag_EXAMPLE_LIST += emac_board_diag
+board_diag_emac_COMP_LIST = board_diag_emac
+board_diag_emac_RELPATH = ti/board/diag/emac/build
+board_diag_emac_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/emac/build
+board_diag_emac_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
+board_diag_emac_MAKEFILE = -f makefile
+board_diag_emac_BOARD_DEPENDENCY = yes
+board_diag_emac_CORE_DEPENDENCY = yes
+export board_diag_emac_COMP_LIST
+export board_diag_emac_BOARD_DEPENDENCY
+export board_diag_emac_CORE_DEPENDENCY
+export board_diag_emac_MAKEFILE
+board_diag_emac_PKG_LIST = board_diag_emac
+board_diag_emac_INCLUDE = $(board_diag_emac_PATH)
+board_diag_emac_BOARDLIST = am65xx_evm am65xx_idk
+board_diag_emac_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
+export board_diag_emac_$(SOC)_CORELIST
+export board_diag_emac_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
+board_diag_EXAMPLE_LIST += board_diag_emac
 
 # EMMC
-emmc_board_diag_COMP_LIST = emmc_board_diag
-emmc_board_diag_RELPATH = ti/board/diag/emmc/build
-emmc_board_diag_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/emmc/build
-emmc_board_diag_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
-emmc_board_diag_MAKEFILE = -f makefile
-emmc_board_diag_BOARD_DEPENDENCY = yes
-emmc_board_diag_CORE_DEPENDENCY = yes
-export emmc_board_diag_COMP_LIST
-export emmc_board_diag_BOARD_DEPENDENCY
-export emmc_board_diag_CORE_DEPENDENCY
-export emmc_board_diag_MAKEFILE
-emmc_board_diag_PKG_LIST = emmc_board_diag
-emmc_board_diag_INCLUDE = $(emmc_board_diag_PATH)
-emmc_board_diag_BOARDLIST = $(board_diag_$(SOC)_BOARDLIST) am65xx_evm am65xx_idk
-emmc_board_diag_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
-export emmc_board_diag_$(SOC)_CORELIST
-export emmc_board_diag_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
-board_diag_EXAMPLE_LIST += emmc_board_diag
+board_diag_emmc_COMP_LIST = board_diag_emmc
+board_diag_emmc_RELPATH = ti/board/diag/emmc/build
+board_diag_emmc_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/emmc/build
+board_diag_emmc_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
+board_diag_emmc_MAKEFILE = -f makefile
+board_diag_emmc_BOARD_DEPENDENCY = yes
+board_diag_emmc_CORE_DEPENDENCY = yes
+export board_diag_emmc_COMP_LIST
+export board_diag_emmc_BOARD_DEPENDENCY
+export board_diag_emmc_CORE_DEPENDENCY
+export board_diag_emmc_MAKEFILE
+board_diag_emmc_PKG_LIST = board_diag_emmc
+board_diag_emmc_INCLUDE = $(board_diag_emmc_PATH)
+board_diag_emmc_BOARDLIST = j721e_evm am65xx_evm am65xx_idk
+board_diag_emmc_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
+export board_diag_emmc_$(SOC)_CORELIST
+export board_diag_emmc_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
+board_diag_EXAMPLE_LIST += board_diag_emmc
 
 # EXPANSION HEADER
-expHeader_board_diag_COMP_LIST = expHeader_board_diag
-expHeader_board_diag_RELPATH = ti/board/diag/exp_header/build
-expHeader_board_diag_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/exp_header/build
-expHeader_board_diag_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
-expHeader_board_diag_MAKEFILE = -f makefile
-expHeader_board_diag_BOARD_DEPENDENCY = yes
-expHeader_board_diag_CORE_DEPENDENCY = yes
-export expHeader_board_diag_COMP_LIST
-export expHeader_board_diag_BOARD_DEPENDENCY
-export expHeader_board_diag_CORE_DEPENDENCY
-export expHeader_board_diag_MAKEFILE
-expHeader_board_diag_PKG_LIST = expHeader_board_diag
-expHeader_board_diag_INCLUDE = $(expHeader_board_diag_PATH)
-expHeader_board_diag_BOARDLIST = $(board_diag_$(SOC)_BOARDLIST)
-expHeader_board_diag_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
-export expHeader_board_diag_$(SOC)_CORELIST
-export expHeader_board_diag_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
-board_diag_EXAMPLE_LIST += expHeader_board_diag
+board_diag_expHeader_COMP_LIST = board_diag_expHeader
+board_diag_expHeader_RELPATH = ti/board/diag/exp_header/build
+board_diag_expHeader_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/exp_header/build
+board_diag_expHeader_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
+board_diag_expHeader_MAKEFILE = -f makefile
+board_diag_expHeader_BOARD_DEPENDENCY = yes
+board_diag_expHeader_CORE_DEPENDENCY = yes
+export board_diag_expHeader_COMP_LIST
+export board_diag_expHeader_BOARD_DEPENDENCY
+export board_diag_expHeader_CORE_DEPENDENCY
+export board_diag_expHeader_MAKEFILE
+board_diag_expHeader_PKG_LIST = board_diag_expHeader
+board_diag_expHeader_INCLUDE = $(board_diag_expHeader_PATH)
+board_diag_expHeader_BOARDLIST = j721e_evm
+board_diag_expHeader_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
+export board_diag_expHeader_$(SOC)_CORELIST
+export board_diag_expHeader_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
+board_diag_EXAMPLE_LIST += board_diag_expHeader
 
 # EXTERNAL RTC
-extRtc_board_diag_COMP_LIST = extRtc_board_diag
-extRtc_board_diag_RELPATH = ti/board/diag/ext_rtc/build
-extRtc_board_diag_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/ext_rtc/build
-extRtc_board_diag_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
-extRtc_board_diag_MAKEFILE = -f makefile
-extRtc_board_diag_BOARD_DEPENDENCY = yes
-extRtc_board_diag_CORE_DEPENDENCY = yes
-export extRtc_board_diag_COMP_LIST
-export extRtc_board_diag_BOARD_DEPENDENCY
-export extRtc_board_diag_CORE_DEPENDENCY
-export extRtc_board_diag_MAKEFILE
-extRtc_board_diag_PKG_LIST = extRtc_board_diag
-extRtc_board_diag_INCLUDE = $(extRtc_board_diag_PATH)
-extRtc_board_diag_BOARDLIST = $(board_diag_$(SOC)_BOARDLIST) am65xx_evm am65xx_idk
-extRtc_board_diag_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
-export extRtc_board_diag_$(SOC)_CORELIST
-export extRtc_board_diag_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
-board_diag_EXAMPLE_LIST += extRtc_board_diag
+board_diag_extRtc_COMP_LIST = board_diag_extRtc
+board_diag_extRtc_RELPATH = ti/board/diag/ext_rtc/build
+board_diag_extRtc_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/ext_rtc/build
+board_diag_extRtc_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
+board_diag_extRtc_MAKEFILE = -f makefile
+board_diag_extRtc_BOARD_DEPENDENCY = yes
+board_diag_extRtc_CORE_DEPENDENCY = yes
+export board_diag_extRtc_COMP_LIST
+export board_diag_extRtc_BOARD_DEPENDENCY
+export board_diag_extRtc_CORE_DEPENDENCY
+export board_diag_extRtc_MAKEFILE
+board_diag_extRtc_PKG_LIST = board_diag_extRtc
+board_diag_extRtc_INCLUDE = $(board_diag_extRtc_PATH)
+board_diag_extRtc_BOARDLIST = j721e_evm am65xx_evm am65xx_idk
+board_diag_extRtc_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
+export board_diag_extRtc_$(SOC)_CORELIST
+export board_diag_extRtc_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
+board_diag_EXAMPLE_LIST += board_diag_extRtc
 
 # FPD LIB
-fpdLib_board_diag_COMP_LIST = fpdLib_board_diag
-fpdLib_board_diag_RELPATH = ti/board/diag/fpd_lib/build
-fpdLib_board_diag_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/fpd_lib/build
-fpdLib_board_diag_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
-fpdLib_board_diag_MAKEFILE = -f makefile
-fpdLib_board_diag_BOARD_DEPENDENCY = yes
-fpdLib_board_diag_CORE_DEPENDENCY = yes
-export fpdLib_board_diag_COMP_LIST
-export fpdLib_board_diag_BOARD_DEPENDENCY
-export fpdLib_board_diag_CORE_DEPENDENCY
-export fpdLib_board_diag_MAKEFILE
-fpdLib_board_diag_PKG_LIST = fpdLib_board_diag
-fpdLib_board_diag_INCLUDE = $(fpdLib_board_diag_PATH)
-fpdLib_board_diag_BOARDLIST = $(board_diag_$(SOC)_BOARDLIST)
-fpdLib_board_diag_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
-export fpdLib_board_diag_$(SOC)_CORELIST
-export fpdLib_board_diag_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
-board_diag_EXAMPLE_LIST += fpdLib_board_diag
+board_diag_fpdLib_COMP_LIST = board_diag_fpdLib
+board_diag_fpdLib_RELPATH = ti/board/diag/fpd_lib/build
+board_diag_fpdLib_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/fpd_lib/build
+board_diag_fpdLib_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
+board_diag_fpdLib_MAKEFILE = -f makefile
+board_diag_fpdLib_BOARD_DEPENDENCY = yes
+board_diag_fpdLib_CORE_DEPENDENCY = yes
+export board_diag_fpdLib_COMP_LIST
+export board_diag_fpdLib_BOARD_DEPENDENCY
+export board_diag_fpdLib_CORE_DEPENDENCY
+export board_diag_fpdLib_MAKEFILE
+board_diag_fpdLib_PKG_LIST = board_diag_fpdLib
+board_diag_fpdLib_INCLUDE = $(board_diag_fpdLib_PATH)
+board_diag_fpdLib_BOARDLIST = j721e_evm
+board_diag_fpdLib_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
+export board_diag_fpdLib_$(SOC)_CORELIST
+export board_diag_fpdLib_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
+board_diag_EXAMPLE_LIST += board_diag_fpdLib
 
 # Framework
-framework_board_diag_COMP_LIST = framework_board_diag
-framework_board_diag_RELPATH = ti/board/diag/framework/build
-framework_board_diag_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/framework/build
-framework_board_diag_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
-framework_board_diag_MAKEFILE = -f makefile
-framework_board_diag_BOARD_DEPENDENCY = yes
-framework_board_diag_CORE_DEPENDENCY = yes
-export framework_board_diag_COMP_LIST
-export framework_board_diag_BOARD_DEPENDENCY
-export framework_board_diag_CORE_DEPENDENCY
-export framework_board_diag_MAKEFILE
-framework_board_diag_PKG_LIST = framework_board_diag
-framework_board_diag_INCLUDE = $(framework_board_diag_PATH)
-framework_board_diag_BOARDLIST = $(board_diag_$(SOC)_BOARDLIST) am65xx_evm am65xx_idk
-framework_board_diag_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
-export framework_board_diag_$(SOC)_CORELIST
-export framework_board_diag_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
-board_diag_EXAMPLE_LIST += framework_board_diag
+board_diag_framework_COMP_LIST = board_diag_framework
+board_diag_framework_RELPATH = ti/board/diag/framework/build
+board_diag_framework_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/framework/build
+board_diag_framework_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
+board_diag_framework_MAKEFILE = -f makefile
+board_diag_framework_BOARD_DEPENDENCY = yes
+board_diag_framework_CORE_DEPENDENCY = yes
+export board_diag_framework_COMP_LIST
+export board_diag_framework_BOARD_DEPENDENCY
+export board_diag_framework_CORE_DEPENDENCY
+export board_diag_framework_MAKEFILE
+board_diag_framework_PKG_LIST = board_diag_framework
+board_diag_framework_INCLUDE = $(board_diag_framework_PATH)
+board_diag_framework_BOARDLIST = j721e_evm am65xx_evm am65xx_idk
+board_diag_framework_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
+export board_diag_framework_$(SOC)_CORELIST
+export board_diag_framework_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
+board_diag_EXAMPLE_LIST += board_diag_framework
 
 # HDMI
-hdmi_board_diag_COMP_LIST = hdmi_board_diag
-hdmi_board_diag_RELPATH = ti/board/diag/hdmi/build
-hdmi_board_diag_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/hdmi/build
-hdmi_board_diag_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
-hdmi_board_diag_MAKEFILE = -f makefile
-hdmi_board_diag_BOARD_DEPENDENCY = yes
-hdmi_board_diag_CORE_DEPENDENCY = yes
-export hdmi_board_diag_COMP_LIST
-export hdmi_board_diag_BOARD_DEPENDENCY
-export hdmi_board_diag_CORE_DEPENDENCY
-export hdmi_board_diag_MAKEFILE
-hdmi_board_diag_PKG_LIST = hdmi_board_diag
-hdmi_board_diag_INCLUDE = $(hdmi_board_diag_PATH)
-hdmi_board_diag_BOARDLIST = $(board_diag_$(SOC)_BOARDLIST)
-hdmi_board_diag_$(SOC)_CORELIST = mcu2_0
-export hdmi_board_diag_$(SOC)_CORELIST
-export hdmi_board_diag_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
-board_diag_EXAMPLE_LIST += hdmi_board_diag
+board_diag_hdmi_COMP_LIST = board_diag_hdmi
+board_diag_hdmi_RELPATH = ti/board/diag/hdmi/build
+board_diag_hdmi_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/hdmi/build
+board_diag_hdmi_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
+board_diag_hdmi_MAKEFILE = -f makefile
+board_diag_hdmi_BOARD_DEPENDENCY = yes
+board_diag_hdmi_CORE_DEPENDENCY = yes
+export board_diag_hdmi_COMP_LIST
+export board_diag_hdmi_BOARD_DEPENDENCY
+export board_diag_hdmi_CORE_DEPENDENCY
+export board_diag_hdmi_MAKEFILE
+board_diag_hdmi_PKG_LIST = board_diag_hdmi
+board_diag_hdmi_INCLUDE = $(board_diag_hdmi_PATH)
+board_diag_hdmi_BOARDLIST = j721e_evm
+board_diag_hdmi_$(SOC)_CORELIST = mcu2_0
+export board_diag_hdmi_$(SOC)_CORELIST
+export board_diag_hdmi_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
+board_diag_EXAMPLE_LIST += board_diag_hdmi
 
 # HYPERBUS
-hyperbus_board_diag_COMP_LIST = hyperbus_board_diag
-hyperbus_board_diag_RELPATH = ti/board/diag/hyperbus/build
-hyperbus_board_diag_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/hyperbus/build
-hyperbus_board_diag_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
-hyperbus_board_diag_MAKEFILE = -f makefile
-hyperbus_board_diag_BOARD_DEPENDENCY = yes
-hyperbus_board_diag_CORE_DEPENDENCY = yes
-export hyperbus_board_diag_COMP_LIST
-export hyperbus_board_diag_BOARD_DEPENDENCY
-export hyperbus_board_diag_CORE_DEPENDENCY
-export hyperbus_board_diag_MAKEFILE
-hyperbus_board_diag_PKG_LIST = hyperbus_board_diag
-hyperbus_board_diag_INCLUDE = $(hyperbus_board_diag_PATH)
-hyperbus_board_diag_BOARDLIST = $(board_diag_$(SOC)_BOARDLIST)
-hyperbus_board_diag_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
-export hyperbus_board_diag_$(SOC)_CORELIST
-export hyperbus_board_diag_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
-board_diag_EXAMPLE_LIST += hyperbus_board_diag
+board_diag_hyperbus_COMP_LIST = board_diag_hyperbus
+board_diag_hyperbus_RELPATH = ti/board/diag/hyperbus/build
+board_diag_hyperbus_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/hyperbus/build
+board_diag_hyperbus_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
+board_diag_hyperbus_MAKEFILE = -f makefile
+board_diag_hyperbus_BOARD_DEPENDENCY = yes
+board_diag_hyperbus_CORE_DEPENDENCY = yes
+export board_diag_hyperbus_COMP_LIST
+export board_diag_hyperbus_BOARD_DEPENDENCY
+export board_diag_hyperbus_CORE_DEPENDENCY
+export board_diag_hyperbus_MAKEFILE
+board_diag_hyperbus_PKG_LIST = board_diag_hyperbus
+board_diag_hyperbus_INCLUDE = $(board_diag_hyperbus_PATH)
+board_diag_hyperbus_BOARDLIST = j721e_evm
+board_diag_hyperbus_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
+export board_diag_hyperbus_$(SOC)_CORELIST
+export board_diag_hyperbus_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
+board_diag_EXAMPLE_LIST += board_diag_hyperbus
 
 # icssg_emac
-export icssgEmac_board_diag_COMP_LIST = icssgEmac_board_diag
-icssgEmac_board_diag_RELPATH = ti/board/diag/icssg_emac/build
-icssgEmac_board_diag_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/icssg_emac/build
-icssgEmac_board_diag_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
-export icssgEmac_board_diag_MAKEFILE = -f makefile
-export icssgEmac_board_diag_BOARD_DEPENDENCY = yes
-export icssgEmac_board_diag_CORE_DEPENDENCY = yes
-icssgEmac_board_diag_PKG_LIST = icssgEmac_board_diag
-icssgEmac_board_diag_INCLUDE = $(icssgEmac_board_diag_PATH)
-icssgEmac_board_diag_BOARDLIST = am65xx_evm am65xx_idk
-export icssgEmac_board_diag_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
-export icssgEmac_board_diag_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
-#board_diag_EXAMPLE_LIST += icssgEmac_board_diag
+export board_diag_icssgEmac_COMP_LIST = board_diag_icssgEmac
+board_diag_icssgEmac_RELPATH = ti/board/diag/icssg_emac/build
+board_diag_icssgEmac_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/icssg_emac/build
+board_diag_icssgEmac_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
+export board_diag_icssgEmac_MAKEFILE = -f makefile
+export board_diag_icssgEmac_BOARD_DEPENDENCY = yes
+export board_diag_icssgEmac_CORE_DEPENDENCY = yes
+board_diag_icssgEmac_PKG_LIST = board_diag_icssgEmac
+board_diag_icssgEmac_INCLUDE = $(board_diag_icssgEmac_PATH)
+board_diag_icssgEmac_BOARDLIST = am65xx_evm am65xx_idk
+export board_diag_icssgEmac_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
+export board_diag_icssgEmac_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
+#board_diag_EXAMPLE_LIST += board_diag_icssgEmac
 
 # icssg_led
-export icssgLed_board_diag_COMP_LIST = icssgLed_board_diag
-icssgLed_board_diag_RELPATH = ti/board/diag/icssg_led/build
-icssgLed_board_diag_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/icssg_led/build
-icssgLed_board_diag_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
-export icssgLed_board_diag_MAKEFILE = -f makefile
-export icssgLed_board_diag_BOARD_DEPENDENCY = yes
-export icssgLed_board_diag_CORE_DEPENDENCY = yes
-icssgLed_board_diag_PKG_LIST = icssgLed_board_diag
-icssgLed_board_diag_INCLUDE = $(icssgLed_board_diag_PATH)
-icssgLed_board_diag_BOARDLIST = am65xx_idk
-export icssgLed_board_diag_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
-export icssgLed_board_diag_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
-board_diag_EXAMPLE_LIST += icssgLed_board_diag
+export board_diag_icssgLed_COMP_LIST = board_diag_icssgLed
+board_diag_icssgLed_RELPATH = ti/board/diag/icssg_led/build
+board_diag_icssgLed_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/icssg_led/build
+board_diag_icssgLed_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
+export board_diag_icssgLed_MAKEFILE = -f makefile
+export board_diag_icssgLed_BOARD_DEPENDENCY = yes
+export board_diag_icssgLed_CORE_DEPENDENCY = yes
+board_diag_icssgLed_PKG_LIST = board_diag_icssgLed
+board_diag_icssgLed_INCLUDE = $(board_diag_icssgLed_PATH)
+board_diag_icssgLed_BOARDLIST = am65xx_idk
+export board_diag_icssgLed_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
+export board_diag_icssgLed_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
+board_diag_EXAMPLE_LIST += board_diag_icssgLed
 
 # lcd
-export lcd_board_diag_COMP_LIST = lcd_board_diag
-lcd_board_diag_RELPATH = ti/board/diag/lcd/build
-lcd_board_diag_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/lcd/build
-lcd_board_diag_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
-export lcd_board_diag_MAKEFILE = -f makefile
-export lcd_board_diag_BOARD_DEPENDENCY = yes
-export lcd_board_diag_CORE_DEPENDENCY = yes
-lcd_board_diag_PKG_LIST = lcd_board_diag
-lcd_board_diag_INCLUDE = $(lcd_board_diag_PATH)
-lcd_board_diag_BOARDLIST = am65xx_evm
-export lcd_board_diag_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
-export lcd_board_diag_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
-board_diag_EXAMPLE_LIST += lcd_board_diag
+export board_diag_lcd_COMP_LIST = board_diag_lcd
+board_diag_lcd_RELPATH = ti/board/diag/lcd/build
+board_diag_lcd_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/lcd/build
+board_diag_lcd_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
+export board_diag_lcd_MAKEFILE = -f makefile
+export board_diag_lcd_BOARD_DEPENDENCY = yes
+export board_diag_lcd_CORE_DEPENDENCY = yes
+board_diag_lcd_PKG_LIST = board_diag_lcd
+board_diag_lcd_INCLUDE = $(board_diag_lcd_PATH)
+board_diag_lcd_BOARDLIST = am65xx_evm
+export board_diag_lcd_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
+export board_diag_lcd_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
+board_diag_EXAMPLE_LIST += board_diag_lcd
 
 # LED
-led_board_diag_COMP_LIST = led_board_diag
-led_board_diag_RELPATH = ti/board/diag/led/build
-led_board_diag_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/led/build
-led_board_diag_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
-led_board_diag_MAKEFILE = -f makefile
-led_board_diag_BOARD_DEPENDENCY = yes
-led_board_diag_CORE_DEPENDENCY = yes
-export led_board_diag_COMP_LIST
-export led_board_diag_BOARD_DEPENDENCY
-export led_board_diag_CORE_DEPENDENCY
-export led_board_diag_MAKEFILE
-led_board_diag_PKG_LIST = led_board_diag
-led_board_diag_INCLUDE = $(led_board_diag_PATH)
-led_board_diag_BOARDLIST = $(board_diag_$(SOC)_BOARDLIST) am65xx_evm am65xx_idk
-led_board_diag_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
-export led_board_diag_$(SOC)_CORELIST
-export led_board_diag_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
-board_diag_EXAMPLE_LIST += led_board_diag
+board_diag_led_COMP_LIST = board_diag_led
+board_diag_led_RELPATH = ti/board/diag/led/build
+board_diag_led_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/led/build
+board_diag_led_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
+board_diag_led_MAKEFILE = -f makefile
+board_diag_led_BOARD_DEPENDENCY = yes
+board_diag_led_CORE_DEPENDENCY = yes
+export board_diag_led_COMP_LIST
+export board_diag_led_BOARD_DEPENDENCY
+export board_diag_led_CORE_DEPENDENCY
+export board_diag_led_MAKEFILE
+board_diag_led_PKG_LIST = board_diag_led
+board_diag_led_INCLUDE = $(board_diag_led_PATH)
+board_diag_led_BOARDLIST = j721e_evm am65xx_evm am65xx_idk
+board_diag_led_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
+export board_diag_led_$(SOC)_CORELIST
+export board_diag_led_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
+board_diag_EXAMPLE_LIST += board_diag_led
 
 # led_industrial
-export ledIndustrial_board_diag_COMP_LIST = ledIndustrial_board_diag
-ledIndustrial_board_diag_RELPATH = ti/board/diag/led_industrial/build
-ledIndustrial_board_diag_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/led_industrial/build
-ledIndustrial_board_diag_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
-export ledIndustrial_board_diag_MAKEFILE = -f makefile
-export ledIndustrial_board_diag_BOARD_DEPENDENCY = yes
-export ledIndustrial_board_diag_CORE_DEPENDENCY = yes
-ledIndustrial_board_diag_PKG_LIST = ledIndustrial_board_diag
-ledIndustrial_board_diag_INCLUDE = $(ledIndustrial_board_diag_PATH)
-ledIndustrial_board_diag_BOARDLIST = am65xx_evm am65xx_idk
-export ledIndustrial_board_diag_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
-export ledIndustrial_board_diag_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
-board_diag_EXAMPLE_LIST += ledIndustrial_board_diag
-
-# LIN
-lin_board_diag_COMP_LIST = lin_board_diag
-lin_board_diag_RELPATH = ti/board/diag/lin/build
-lin_board_diag_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/lin/build
-lin_board_diag_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
-lin_board_diag_MAKEFILE = -f makefile
-lin_board_diag_BOARD_DEPENDENCY = yes
-lin_board_diag_CORE_DEPENDENCY = yes
-export lin_board_diag_COMP_LIST
-export lin_board_diag_BOARD_DEPENDENCY
-export lin_board_diag_CORE_DEPENDENCY
-export lin_board_diag_MAKEFILE
-lin_board_diag_PKG_LIST = lin_board_diag
-lin_board_diag_INCLUDE = $(lin_board_diag_PATH)
-lin_board_diag_BOARDLIST = $(board_diag_$(SOC)_BOARDLIST)
-lin_board_diag_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
-export lin_board_diag_$(SOC)_CORELIST
-export lin_board_diag_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
-board_diag_EXAMPLE_LIST += lin_board_diag
-
-# MCAN
-mcan_board_diag_COMP_LIST = mcan_board_diag
-mcan_board_diag_RELPATH = ti/board/diag/mcan/build
-mcan_board_diag_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/mcan/build
-mcan_board_diag_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
-mcan_board_diag_MAKEFILE = -f makefile
-mcan_board_diag_BOARD_DEPENDENCY = yes
-mcan_board_diag_CORE_DEPENDENCY = yes
-export mcan_board_diag_COMP_LIST
-export mcan_board_diag_BOARD_DEPENDENCY
-export mcan_board_diag_CORE_DEPENDENCY
-export mcan_board_diag_MAKEFILE
-mcan_board_diag_PKG_LIST = mcan_board_diag
-mcan_board_diag_INCLUDE = $(mcan_board_diag_PATH)
-mcan_board_diag_BOARDLIST = $(board_diag_$(SOC)_BOARDLIST) am65xx_idk
-mcan_board_diag_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
-export mcan_board_diag_$(SOC)_CORELIST
-export mcan_board_diag_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
-board_diag_EXAMPLE_LIST += mcan_board_diag
-
-# mcasp
-export mcasp_board_diag_COMP_LIST = mcasp_board_diag
-mcasp_board_diag_RELPATH = ti/board/diag/mcasp/build
-mcasp_board_diag_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/mcasp/build
-mcasp_board_diag_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
-export mcasp_board_diag_MAKEFILE = -f makefile
-export mcasp_board_diag_BOARD_DEPENDENCY = yes
-export mcasp_board_diag_CORE_DEPENDENCY = yes
-mcasp_board_diag_PKG_LIST = mcasp_board_diag
-mcasp_board_diag_INCLUDE = $(mcasp_board_diag_PATH)
-mcasp_board_diag_BOARDLIST = am65xx_evm
-export mcasp_board_diag_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
-export mcasp_board_diag_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
-#board_diag_EXAMPLE_LIST += mcasp_board_diag
+export board_diag_ledIndustrial_COMP_LIST = board_diag_ledIndustrial
+board_diag_ledIndustrial_RELPATH = ti/board/diag/led_industrial/build
+board_diag_ledIndustrial_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/led_industrial/build
+board_diag_ledIndustrial_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
+export board_diag_ledIndustrial_MAKEFILE = -f makefile
+export board_diag_ledIndustrial_BOARD_DEPENDENCY = yes
+export board_diag_ledIndustrial_CORE_DEPENDENCY = yes
+board_diag_ledIndustrial_PKG_LIST = board_diag_ledIndustrial
+board_diag_ledIndustrial_INCLUDE = $(board_diag_ledIndustrial_PATH)
+board_diag_ledIndustrial_BOARDLIST = am65xx_evm am65xx_idk
+export board_diag_ledIndustrial_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
+export board_diag_ledIndustrial_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
+board_diag_EXAMPLE_LIST += board_diag_ledIndustrial
 
 # LEO PMIC LIB
-leoPmicLib_board_diag_COMP_LIST = leoPmicLib_board_diag
-leoPmicLib_board_diag_RELPATH = ti/board/diag/leo_pmic_lib/build
-leoPmicLib_board_diag_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/leo_pmic_lib/build
-leoPmicLib_board_diag_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
-leoPmicLib_board_diag_MAKEFILE = -f makefile
-leoPmicLib_board_diag_BOARD_DEPENDENCY = yes
-leoPmicLib_board_diag_CORE_DEPENDENCY = yes
-export leoPmicLib_board_diag_COMP_LIST
-export leoPmicLib_board_diag_BOARD_DEPENDENCY
-export leoPmicLib_board_diag_CORE_DEPENDENCY
-export leoPmicLib_board_diag_MAKEFILE
-leoPmicLib_board_diag_PKG_LIST = leoPmicLib_board_diag
-leoPmicLib_board_diag_INCLUDE = $(leoPmicLib_board_diag_PATH)
-leoPmicLib_board_diag_BOARDLIST = $(board_diag_$(SOC)_BOARDLIST)
-leoPmicLib_board_diag_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
-export leoPmicLib_board_diag_$(SOC)_CORELIST
-export leoPmicLib_board_diag_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
-board_diag_EXAMPLE_LIST += leoPmicLib_board_diag
+board_diag_leoPmicLib_COMP_LIST = board_diag_leoPmicLib
+board_diag_leoPmicLib_RELPATH = ti/board/diag/leo_pmic_lib/build
+board_diag_leoPmicLib_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/leo_pmic_lib/build
+board_diag_leoPmicLib_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
+board_diag_leoPmicLib_MAKEFILE = -f makefile
+board_diag_leoPmicLib_BOARD_DEPENDENCY = yes
+board_diag_leoPmicLib_CORE_DEPENDENCY = yes
+export board_diag_leoPmicLib_COMP_LIST
+export board_diag_leoPmicLib_BOARD_DEPENDENCY
+export board_diag_leoPmicLib_CORE_DEPENDENCY
+export board_diag_leoPmicLib_MAKEFILE
+board_diag_leoPmicLib_PKG_LIST = board_diag_leoPmicLib
+board_diag_leoPmicLib_INCLUDE = $(board_diag_leoPmicLib_PATH)
+board_diag_leoPmicLib_BOARDLIST = j721e_evm
+board_diag_leoPmicLib_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
+export board_diag_leoPmicLib_$(SOC)_CORELIST
+export board_diag_leoPmicLib_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
+board_diag_EXAMPLE_LIST += board_diag_leoPmicLib
+
+# LIN
+board_diag_lin_COMP_LIST = board_diag_lin
+board_diag_lin_RELPATH = ti/board/diag/lin/build
+board_diag_lin_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/lin/build
+board_diag_lin_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
+board_diag_lin_MAKEFILE = -f makefile
+board_diag_lin_BOARD_DEPENDENCY = yes
+board_diag_lin_CORE_DEPENDENCY = yes
+export board_diag_lin_COMP_LIST
+export board_diag_lin_BOARD_DEPENDENCY
+export board_diag_lin_CORE_DEPENDENCY
+export board_diag_lin_MAKEFILE
+board_diag_lin_PKG_LIST = board_diag_lin
+board_diag_lin_INCLUDE = $(board_diag_lin_PATH)
+board_diag_lin_BOARDLIST = j721e_evm
+board_diag_lin_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
+export board_diag_lin_$(SOC)_CORELIST
+export board_diag_lin_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
+board_diag_EXAMPLE_LIST += board_diag_lin
+
+# MCAN
+board_diag_mcan_COMP_LIST = board_diag_mcan
+board_diag_mcan_RELPATH = ti/board/diag/mcan/build
+board_diag_mcan_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/mcan/build
+board_diag_mcan_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
+board_diag_mcan_MAKEFILE = -f makefile
+board_diag_mcan_BOARD_DEPENDENCY = yes
+board_diag_mcan_CORE_DEPENDENCY = yes
+export board_diag_mcan_COMP_LIST
+export board_diag_mcan_BOARD_DEPENDENCY
+export board_diag_mcan_CORE_DEPENDENCY
+export board_diag_mcan_MAKEFILE
+board_diag_mcan_PKG_LIST = board_diag_mcan
+board_diag_mcan_INCLUDE = $(board_diag_mcan_PATH)
+board_diag_mcan_BOARDLIST = j721e_evm am65xx_idk
+board_diag_mcan_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
+export board_diag_mcan_$(SOC)_CORELIST
+export board_diag_mcan_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
+board_diag_EXAMPLE_LIST += board_diag_mcan
+
+# mcasp
+export board_diag_mcasp_COMP_LIST = board_diag_mcasp
+board_diag_mcasp_RELPATH = ti/board/diag/mcasp/build
+board_diag_mcasp_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/mcasp/build
+board_diag_mcasp_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
+export board_diag_mcasp_MAKEFILE = -f makefile
+export board_diag_mcasp_BOARD_DEPENDENCY = yes
+export board_diag_mcasp_CORE_DEPENDENCY = yes
+board_diag_mcasp_PKG_LIST = board_diag_mcasp
+board_diag_mcasp_INCLUDE = $(board_diag_mcasp_PATH)
+board_diag_mcasp_BOARDLIST = am65xx_evm
+export board_diag_mcasp_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
+export board_diag_mcasp_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
+#board_diag_EXAMPLE_LIST += board_diag_mcasp
 
 # MEM
-mem_board_diag_COMP_LIST = mem_board_diag
-mem_board_diag_RELPATH = ti/board/diag/mem/build
-mem_board_diag_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/mem/build
-mem_board_diag_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
-mem_board_diag_MAKEFILE = -f makefile
-mem_board_diag_BOARD_DEPENDENCY = yes
-mem_board_diag_CORE_DEPENDENCY = yes
-export mem_board_diag_COMP_LIST
-export mem_board_diag_BOARD_DEPENDENCY
-export mem_board_diag_CORE_DEPENDENCY
-export mem_board_diag_MAKEFILE
-mem_board_diag_PKG_LIST = mem_board_diag
-mem_board_diag_INCLUDE = $(mem_board_diag_PATH)
-mem_board_diag_BOARDLIST = $(board_diag_$(SOC)_BOARDLIST) am65xx_evm am65xx_idk
-mem_board_diag_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
-export mem_board_diag_$(SOC)_CORELIST
-export mem_board_diag_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
-board_diag_EXAMPLE_LIST += mem_board_diag
+board_diag_mem_COMP_LIST = board_diag_mem
+board_diag_mem_RELPATH = ti/board/diag/mem/build
+board_diag_mem_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/mem/build
+board_diag_mem_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
+board_diag_mem_MAKEFILE = -f makefile
+board_diag_mem_BOARD_DEPENDENCY = yes
+board_diag_mem_CORE_DEPENDENCY = yes
+export board_diag_mem_COMP_LIST
+export board_diag_mem_BOARD_DEPENDENCY
+export board_diag_mem_CORE_DEPENDENCY
+export board_diag_mem_MAKEFILE
+board_diag_mem_PKG_LIST = board_diag_mem
+board_diag_mem_INCLUDE = $(board_diag_mem_PATH)
+board_diag_mem_BOARDLIST = j721e_evm am65xx_evm am65xx_idk
+board_diag_mem_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
+export board_diag_mem_$(SOC)_CORELIST
+export board_diag_mem_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
+board_diag_EXAMPLE_LIST += board_diag_mem
 
 # MMCSD
-mmcsd_board_diag_COMP_LIST = mmcsd_board_diag
-mmcsd_board_diag_RELPATH = ti/board/diag/mmcsd/build
-mmcsd_board_diag_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/mmcsd/build
-mmcsd_board_diag_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
-mmcsd_board_diag_MAKEFILE = -f makefile
-mmcsd_board_diag_BOARD_DEPENDENCY = yes
-mmcsd_board_diag_CORE_DEPENDENCY = yes
-export mmcsd_board_diag_COMP_LIST
-export mmcsd_board_diag_BOARD_DEPENDENCY
-export mmcsd_board_diag_CORE_DEPENDENCY
-export mmcsd_board_diag_MAKEFILE
-mmcsd_board_diag_PKG_LIST = mmcsd_board_diag
-mmcsd_board_diag_INCLUDE = $(mmcsd_board_diag_PATH)
-mmcsd_board_diag_BOARDLIST = $(board_diag_$(SOC)_BOARDLIST) am65xx_evm am65xx_idk
-mmcsd_board_diag_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
-export mmcsd_board_diag_$(SOC)_CORELIST
-export mmcsd_board_diag_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
-board_diag_EXAMPLE_LIST += mmcsd_board_diag
+board_diag_mmcsd_COMP_LIST = board_diag_mmcsd
+board_diag_mmcsd_RELPATH = ti/board/diag/mmcsd/build
+board_diag_mmcsd_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/mmcsd/build
+board_diag_mmcsd_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
+board_diag_mmcsd_MAKEFILE = -f makefile
+board_diag_mmcsd_BOARD_DEPENDENCY = yes
+board_diag_mmcsd_CORE_DEPENDENCY = yes
+export board_diag_mmcsd_COMP_LIST
+export board_diag_mmcsd_BOARD_DEPENDENCY
+export board_diag_mmcsd_CORE_DEPENDENCY
+export board_diag_mmcsd_MAKEFILE
+board_diag_mmcsd_PKG_LIST = board_diag_mmcsd
+board_diag_mmcsd_INCLUDE = $(board_diag_mmcsd_PATH)
+board_diag_mmcsd_BOARDLIST = j721e_evm am65xx_evm am65xx_idk
+board_diag_mmcsd_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
+export board_diag_mmcsd_$(SOC)_CORELIST
+export board_diag_mmcsd_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
+board_diag_EXAMPLE_LIST += board_diag_mmcsd
 
 # NOR FLASH
-norflash_board_diag_COMP_LIST = norflash_board_diag
-norflash_board_diag_RELPATH = ti/board/diag/norflash/build
-norflash_board_diag_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/norflash/build
-norflash_board_diag_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
-norflash_board_diag_MAKEFILE = -f makefile
-norflash_board_diag_BOARD_DEPENDENCY = yes
-norflash_board_diag_CORE_DEPENDENCY = yes
-export norflash_board_diag_COMP_LIST
-export norflash_board_diag_BOARD_DEPENDENCY
-export norflash_board_diag_CORE_DEPENDENCY
-export norflash_board_diag_MAKEFILE
-norflash_board_diag_PKG_LIST = norflash_board_diag
-norflash_board_diag_INCLUDE = $(norflash_board_diag_PATH)
-norflash_board_diag_BOARDLIST = $(board_diag_$(SOC)_BOARDLIST) am65xx_evm am65xx_idk
-norflash_board_diag_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
-export norflash_board_diag_$(SOC)_CORELIST
-export norflash_board_diag_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
-board_diag_EXAMPLE_LIST += norflash_board_diag
+board_diag_norflash_COMP_LIST = board_diag_norflash
+board_diag_norflash_RELPATH = ti/board/diag/norflash/build
+board_diag_norflash_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/norflash/build
+board_diag_norflash_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
+board_diag_norflash_MAKEFILE = -f makefile
+board_diag_norflash_BOARD_DEPENDENCY = yes
+board_diag_norflash_CORE_DEPENDENCY = yes
+export board_diag_norflash_COMP_LIST
+export board_diag_norflash_BOARD_DEPENDENCY
+export board_diag_norflash_CORE_DEPENDENCY
+export board_diag_norflash_MAKEFILE
+board_diag_norflash_PKG_LIST = board_diag_norflash
+board_diag_norflash_INCLUDE = $(board_diag_norflash_PATH)
+board_diag_norflash_BOARDLIST = j721e_evm am65xx_evm am65xx_idk
+board_diag_norflash_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
+export board_diag_norflash_$(SOC)_CORELIST
+export board_diag_norflash_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
+board_diag_EXAMPLE_LIST += board_diag_norflash
 
 # OSPI
-ospi_board_diag_COMP_LIST = ospi_board_diag
-ospi_board_diag_RELPATH = ti/board/diag/ospi/build
-ospi_board_diag_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/ospi/build
-ospi_board_diag_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
-ospi_board_diag_MAKEFILE = -f makefile
-ospi_board_diag_BOARD_DEPENDENCY = yes
-ospi_board_diag_CORE_DEPENDENCY = yes
-export ospi_board_diag_COMP_LIST
-export ospi_board_diag_BOARD_DEPENDENCY
-export ospi_board_diag_CORE_DEPENDENCY
-export ospi_board_diag_MAKEFILE
-ospi_board_diag_PKG_LIST = ospi_board_diag
-ospi_board_diag_INCLUDE = $(ospi_board_diag_PATH)
-ospi_board_diag_BOARDLIST = $(board_diag_$(SOC)_BOARDLIST) am65xx_evm am65xx_idk
-ospi_board_diag_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
-export ospi_board_diag_$(SOC)_CORELIST
-export ospi_board_diag_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
-board_diag_EXAMPLE_LIST += ospi_board_diag
+board_diag_ospi_COMP_LIST = board_diag_ospi
+board_diag_ospi_RELPATH = ti/board/diag/ospi/build
+board_diag_ospi_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/ospi/build
+board_diag_ospi_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
+board_diag_ospi_MAKEFILE = -f makefile
+board_diag_ospi_BOARD_DEPENDENCY = yes
+board_diag_ospi_CORE_DEPENDENCY = yes
+export board_diag_ospi_COMP_LIST
+export board_diag_ospi_BOARD_DEPENDENCY
+export board_diag_ospi_CORE_DEPENDENCY
+export board_diag_ospi_MAKEFILE
+board_diag_ospi_PKG_LIST = board_diag_ospi
+board_diag_ospi_INCLUDE = $(board_diag_ospi_PATH)
+board_diag_ospi_BOARDLIST = j721e_evm am65xx_evm am65xx_idk
+board_diag_ospi_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
+export board_diag_ospi_$(SOC)_CORELIST
+export board_diag_ospi_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
+board_diag_EXAMPLE_LIST += board_diag_ospi
 
 # pcie
-export pcie_board_diag_COMP_LIST = pcie_board_diag
-pcie_board_diag_RELPATH = ti/board/diag/pcie/build
-pcie_board_diag_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/pcie/build
-pcie_board_diag_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
-export pcie_board_diag_MAKEFILE = -f makefile
-export pcie_board_diag_BOARD_DEPENDENCY = yes
-export pcie_board_diag_CORE_DEPENDENCY = yes
-pcie_board_diag_PKG_LIST = pcie_board_diag
-pcie_board_diag_INCLUDE = $(pcie_board_diag_PATH)
-pcie_board_diag_BOARDLIST = am65xx_evm am65xx_idk
-export pcie_board_diag_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
-export pcie_board_diag_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
-board_diag_EXAMPLE_LIST += pcie_board_diag
+export board_diag_pcie_COMP_LIST = board_diag_pcie
+board_diag_pcie_RELPATH = ti/board/diag/pcie/build
+board_diag_pcie_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/pcie/build
+board_diag_pcie_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
+export board_diag_pcie_MAKEFILE = -f makefile
+export board_diag_pcie_BOARD_DEPENDENCY = yes
+export board_diag_pcie_CORE_DEPENDENCY = yes
+board_diag_pcie_PKG_LIST = board_diag_pcie
+board_diag_pcie_INCLUDE = $(board_diag_pcie_PATH)
+board_diag_pcie_BOARDLIST = am65xx_evm am65xx_idk
+export board_diag_pcie_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
+export board_diag_pcie_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
+board_diag_EXAMPLE_LIST += board_diag_pcie
 
 # PMIC
-pmic_board_diag_COMP_LIST = pmic_board_diag
-pmic_board_diag_RELPATH = ti/board/diag/pmic/build
-pmic_board_diag_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/pmic/build
-pmic_board_diag_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
-pmic_board_diag_MAKEFILE = -f makefile
-pmic_board_diag_BOARD_DEPENDENCY = yes
-pmic_board_diag_CORE_DEPENDENCY = yes
-export pmic_board_diag_COMP_LIST
-export pmic_board_diag_BOARD_DEPENDENCY
-export pmic_board_diag_CORE_DEPENDENCY
-export pmic_board_diag_MAKEFILE
-pmic_board_diag_PKG_LIST = pmic_board_diag
-pmic_board_diag_INCLUDE = $(pmic_board_diag_PATH)
-pmic_board_diag_BOARDLIST = $(board_diag_$(SOC)_BOARDLIST)
-pmic_board_diag_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
-export pmic_board_diag_$(SOC)_CORELIST
-export pmic_board_diag_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
-board_diag_EXAMPLE_LIST += pmic_board_diag
+board_diag_pmic_COMP_LIST = board_diag_pmic
+board_diag_pmic_RELPATH = ti/board/diag/pmic/build
+board_diag_pmic_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/pmic/build
+board_diag_pmic_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
+board_diag_pmic_MAKEFILE = -f makefile
+board_diag_pmic_BOARD_DEPENDENCY = yes
+board_diag_pmic_CORE_DEPENDENCY = yes
+export board_diag_pmic_COMP_LIST
+export board_diag_pmic_BOARD_DEPENDENCY
+export board_diag_pmic_CORE_DEPENDENCY
+export board_diag_pmic_MAKEFILE
+board_diag_pmic_PKG_LIST = board_diag_pmic
+board_diag_pmic_INCLUDE = $(board_diag_pmic_PATH)
+board_diag_pmic_BOARDLIST = j721e_evm
+board_diag_pmic_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
+export board_diag_pmic_$(SOC)_CORELIST
+export board_diag_pmic_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
+board_diag_EXAMPLE_LIST += board_diag_pmic
 
 # rotary_switch
-export rotarySwitch_board_diag_COMP_LIST = rotarySwitch_board_diag
-rotarySwitch_board_diag_RELPATH = ti/board/diag/rotary_switch/build
-rotarySwitch_board_diag_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/rotary_switch/build
-rotarySwitch_board_diag_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
-export rotarySwitch_board_diag_MAKEFILE = -f makefile
-export rotarySwitch_board_diag_BOARD_DEPENDENCY = yes
-export rotarySwitch_board_diag_CORE_DEPENDENCY = yes
-rotarySwitch_board_diag_PKG_LIST = rotarySwitch_board_diag
-rotarySwitch_board_diag_INCLUDE = $(rotarySwitch_board_diag_PATH)
-rotarySwitch_board_diag_BOARDLIST = am65xx_idk
-export rotarySwitch_board_diag_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
-export rotarySwitch_board_diag_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
-board_diag_EXAMPLE_LIST += rotarySwitch_board_diag
+export board_diag_rotarySwitch_COMP_LIST = board_diag_rotarySwitch
+board_diag_rotarySwitch_RELPATH = ti/board/diag/rotary_switch/build
+board_diag_rotarySwitch_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/rotary_switch/build
+board_diag_rotarySwitch_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
+export board_diag_rotarySwitch_MAKEFILE = -f makefile
+export board_diag_rotarySwitch_BOARD_DEPENDENCY = yes
+export board_diag_rotarySwitch_CORE_DEPENDENCY = yes
+board_diag_rotarySwitch_PKG_LIST = board_diag_rotarySwitch
+board_diag_rotarySwitch_INCLUDE = $(board_diag_rotarySwitch_PATH)
+board_diag_rotarySwitch_BOARDLIST = am65xx_idk
+export board_diag_rotarySwitch_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
+export board_diag_rotarySwitch_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
+board_diag_EXAMPLE_LIST += board_diag_rotarySwitch
 
 # RS485 UART
-rs485Uart_board_diag_COMP_LIST = rs485Uart_board_diag
-rs485Uart_board_diag_RELPATH = ti/board/diag/rs485_uart/build
-rs485Uart_board_diag_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/rs485_uart/build
-rs485Uart_board_diag_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
-rs485Uart_board_diag_MAKEFILE = -f makefile
-rs485Uart_board_diag_BOARD_DEPENDENCY = yes
-rs485Uart_board_diag_CORE_DEPENDENCY = yes
-export rs485Uart_board_diag_COMP_LIST
-export rs485Uart_board_diag_BOARD_DEPENDENCY
-export rs485Uart_board_diag_CORE_DEPENDENCY
-export rs485Uart_board_diag_MAKEFILE
-rs485Uart_board_diag_PKG_LIST = rs485Uart_board_diag
-rs485Uart_board_diag_INCLUDE = $(rs485Uart_board_diag_PATH)
-rs485Uart_board_diag_BOARDLIST = am65xx_idk
-rs485Uart_board_diag_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
-export rs485Uart_board_diag_$(SOC)_CORELIST
-export rs485Uart_board_diag_SBL_APPIMAGEGEN = yes
-board_diag_EXAMPLE_LIST += rs485Uart_board_diag
+board_diag_rs485Uart_COMP_LIST = board_diag_rs485Uart
+board_diag_rs485Uart_RELPATH = ti/board/diag/rs485_uart/build
+board_diag_rs485Uart_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/rs485_uart/build
+board_diag_rs485Uart_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
+board_diag_rs485Uart_MAKEFILE = -f makefile
+board_diag_rs485Uart_BOARD_DEPENDENCY = yes
+board_diag_rs485Uart_CORE_DEPENDENCY = yes
+export board_diag_rs485Uart_COMP_LIST
+export board_diag_rs485Uart_BOARD_DEPENDENCY
+export board_diag_rs485Uart_CORE_DEPENDENCY
+export board_diag_rs485Uart_MAKEFILE
+board_diag_rs485Uart_PKG_LIST = board_diag_rs485Uart
+board_diag_rs485Uart_INCLUDE = $(board_diag_rs485Uart_PATH)
+board_diag_rs485Uart_BOARDLIST = am65xx_idk
+board_diag_rs485Uart_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
+export board_diag_rs485Uart_$(SOC)_CORELIST
+export board_diag_rs485Uart_SBL_APPIMAGEGEN = yes
+board_diag_EXAMPLE_LIST += board_diag_rs485Uart
 
 # TEMPERATURE
-temperature_board_diag_COMP_LIST = temperature_board_diag
-temperature_board_diag_RELPATH = ti/board/diag/temperature/build
-temperature_board_diag_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/temperature/build
-temperature_board_diag_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
-temperature_board_diag_MAKEFILE = -f makefile
-temperature_board_diag_BOARD_DEPENDENCY = yes
-temperature_board_diag_CORE_DEPENDENCY = yes
-export temperature_board_diag_COMP_LIST
-export temperature_board_diag_BOARD_DEPENDENCY
-export temperature_board_diag_CORE_DEPENDENCY
-export temperature_board_diag_MAKEFILE
-temperature_board_diag_PKG_LIST = temperature_board_diag
-temperature_board_diag_INCLUDE = $(temperature_board_diag_PATH)
-temperature_board_diag_BOARDLIST = $(board_diag_$(SOC)_BOARDLIST) am65xx_evm am65xx_idk
-temperature_board_diag_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
-export temperature_board_diag_$(SOC)_CORELIST
-export temperature_board_diag_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
-board_diag_EXAMPLE_LIST += temperature_board_diag
+board_diag_temperature_COMP_LIST = board_diag_temperature
+board_diag_temperature_RELPATH = ti/board/diag/temperature/build
+board_diag_temperature_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/temperature/build
+board_diag_temperature_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
+board_diag_temperature_MAKEFILE = -f makefile
+board_diag_temperature_BOARD_DEPENDENCY = yes
+board_diag_temperature_CORE_DEPENDENCY = yes
+export board_diag_temperature_COMP_LIST
+export board_diag_temperature_BOARD_DEPENDENCY
+export board_diag_temperature_CORE_DEPENDENCY
+export board_diag_temperature_MAKEFILE
+board_diag_temperature_PKG_LIST = board_diag_temperature
+board_diag_temperature_INCLUDE = $(board_diag_temperature_PATH)
+board_diag_temperature_BOARDLIST = j721e_evm am65xx_evm am65xx_idk
+board_diag_temperature_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
+export board_diag_temperature_$(SOC)_CORELIST
+export board_diag_temperature_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
+board_diag_EXAMPLE_LIST += board_diag_temperature
 
 # UART
-uart_board_diag_COMP_LIST = uart_board_diag
-uart_board_diag_RELPATH = ti/board/diag/uart/build
-uart_board_diag_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/uart/build
-uart_board_diag_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
-uart_board_diag_MAKEFILE = -f makefile
-uart_board_diag_BOARD_DEPENDENCY = yes
-uart_board_diag_CORE_DEPENDENCY = yes
-export uart_board_diag_COMP_LIST
-export uart_board_diag_BOARD_DEPENDENCY
-export uart_board_diag_CORE_DEPENDENCY
-export uart_board_diag_MAKEFILE
-uart_board_diag_PKG_LIST = uart_board_diag
-uart_board_diag_INCLUDE = $(uart_board_diag_PATH)
-uart_board_diag_BOARDLIST = $(board_diag_$(SOC)_BOARDLIST) am65xx_evm am65xx_idk
-uart_board_diag_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
-export uart_board_diag_$(SOC)_CORELIST
-export uart_board_diag_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
-board_diag_EXAMPLE_LIST += uart_board_diag
+board_diag_uart_COMP_LIST = board_diag_uart
+board_diag_uart_RELPATH = ti/board/diag/uart/build
+board_diag_uart_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/uart/build
+board_diag_uart_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
+board_diag_uart_MAKEFILE = -f makefile
+board_diag_uart_BOARD_DEPENDENCY = yes
+board_diag_uart_CORE_DEPENDENCY = yes
+export board_diag_uart_COMP_LIST
+export board_diag_uart_BOARD_DEPENDENCY
+export board_diag_uart_CORE_DEPENDENCY
+export board_diag_uart_MAKEFILE
+board_diag_uart_PKG_LIST = board_diag_uart
+board_diag_uart_INCLUDE = $(board_diag_uart_PATH)
+board_diag_uart_BOARDLIST = j721e_evm am65xx_evm am65xx_idk
+board_diag_uart_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
+export board_diag_uart_$(SOC)_CORELIST
+export board_diag_uart_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
+board_diag_EXAMPLE_LIST += board_diag_uart
 
 # usb_device
-export usbDevice_board_diag_COMP_LIST = usbDevice_board_diag
-usbDevice_board_diag_RELPATH = ti/board/diag/usb_device/build
-usbDevice_board_diag_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/usb_device/build
-usbDevice_board_diag_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
-export usbDevice_board_diag_MAKEFILE = -f makefile
-export usbDevice_board_diag_BOARD_DEPENDENCY = yes
-export usbDevice_board_diag_CORE_DEPENDENCY = yes
-usbDevice_board_diag_PKG_LIST = usbDevice_board_diag
-usbDevice_board_diag_INCLUDE = $(usbDevice_board_diag_PATH)
-usbDevice_board_diag_BOARDLIST = am65xx_evm am65xx_idk
-export usbDevice_board_diag_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
-export usbDevice_board_diag_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
-board_diag_EXAMPLE_LIST += usbDevice_board_diag
+export board_diag_usbDevice_COMP_LIST = board_diag_usbDevice
+board_diag_usbDevice_RELPATH = ti/board/diag/usb_device/build
+board_diag_usbDevice_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/usb_device/build
+board_diag_usbDevice_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
+export board_diag_usbDevice_MAKEFILE = -f makefile
+export board_diag_usbDevice_BOARD_DEPENDENCY = yes
+export board_diag_usbDevice_CORE_DEPENDENCY = yes
+board_diag_usbDevice_PKG_LIST = board_diag_usbDevice
+board_diag_usbDevice_INCLUDE = $(board_diag_usbDevice_PATH)
+board_diag_usbDevice_BOARDLIST = am65xx_evm am65xx_idk
+export board_diag_usbDevice_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
+export board_diag_usbDevice_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
+board_diag_EXAMPLE_LIST += board_diag_usbDevice
 
 # usb_host
-export usbHost_board_diag_COMP_LIST = usbHost_board_diag
-usbHost_board_diag_RELPATH = ti/board/diag/usb_host/build
-usbHost_board_diag_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/usb_host/build
-usbHost_board_diag_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
-export usbHost_board_diag_MAKEFILE = -f makefile
-export usbHost_board_diag_BOARD_DEPENDENCY = yes
-export usbHost_board_diag_CORE_DEPENDENCY = yes
-usbHost_board_diag_PKG_LIST = usbHost_board_diag
-usbHost_board_diag_INCLUDE = $(usbHost_board_diag_PATH)
-usbHost_board_diag_BOARDLIST = am65xx_evm am65xx_idk
-export usbHost_board_diag_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
-export usbHost_board_diag_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
-board_diag_EXAMPLE_LIST += usbHost_board_diag
+export board_diag_usbHost_COMP_LIST = board_diag_usbHost
+board_diag_usbHost_RELPATH = ti/board/diag/usb_host/build
+board_diag_usbHost_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/usb_host/build
+board_diag_usbHost_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
+export board_diag_usbHost_MAKEFILE = -f makefile
+export board_diag_usbHost_BOARD_DEPENDENCY = yes
+export board_diag_usbHost_CORE_DEPENDENCY = yes
+board_diag_usbHost_PKG_LIST = board_diag_usbHost
+board_diag_usbHost_INCLUDE = $(board_diag_usbHost_PATH)
+board_diag_usbHost_BOARDLIST = am65xx_evm am65xx_idk
+export board_diag_usbHost_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
+export board_diag_usbHost_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
+board_diag_EXAMPLE_LIST += board_diag_usbHost
 
 # Diagnostic test image creation for SD boot.
 # Keep this at the end to get executed after building all the diagnostic tests
@@ -911,7 +907,7 @@ export board_diag_img_BOARD_DEPENDENCY
 export board_diag_img_CORE_DEPENDENCY
 export board_diag_img_MAKEFILE
 board_diag_img_INCLUDE = $(board_diag_img_PATH)
-board_diag_img_BOARDLIST = $(board_diag_$(SOC)_BOARDLIST)
+board_diag_img_BOARDLIST = j721e_evm
 board_diag_img_$(SOC)_CORELIST = mpu1_0
 export board_diag_img_$(SOC)_CORELIST
 board_diag_EXAMPLE_LIST += board_diag_img

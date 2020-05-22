@@ -1,4 +1,4 @@
-# Copyright (C) 2019 Texas Instruments Incorporated - http://www.ti.com/
+# Copyright (C) 2019-2020 Texas Instruments Incorporated - http://www.ti.com/
 #
 #
 #  Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,7 @@ PROFILE ?= release
 TESTMODE ?= FUNCTIONAL_TEST
 MODENAME ?=
 BOARD_DIAG_CFLAGS ?=
-APP_NAME ?= $(DIAGNAME)_board_diag
+APP_NAME ?= board_diag_$(DIAGNAME)
 
 BUILD_PROFILE_$(CORE) = $(PROFILE)
 
@@ -59,9 +59,6 @@ ifeq ($(TESTMODE), STRESS_TEST)
 MODENAME = Stress
 endif
 endif
-
-# Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
-LOCAL_APP_NAME =  $(DIAGNAME)$(MODENAME)_DiagExample_$(BOARD)_$(CORE)
 
 SRCDIR = $(PDK_INSTALL_PATH)/ti/board/diag/$(DIAGNAME)/src $(PDK_INSTALL_PATH)/ti/board/diag/$(DIAGNAME)/build/$(BOARD) $(PDK_INSTALL_PATH)/ti/board/diag/common/$(SOC) $(PDK_INSTALL_PATH)/ti/csl
 INCDIR = $(PDK_INSTALL_PATH)/ti/board/ $(PDK_INSTALL_PATH)/ti/csl $(PDK_INSTALL_PATH)/ti/board/diag/$(DIAGNAME)/src $(PDK_INSTALL_PATH)/ti/board/src/$(BOARD)/include $(PDK_INSTALL_PATH)/ti/board/diag/common/$(SOC)

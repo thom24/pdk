@@ -1,4 +1,4 @@
-# Copyright (C) 2019 Texas Instruments Incorporated - http://www.ti.com/
+# Copyright (C) 2019-2020 Texas Instruments Incorporated - http://www.ti.com/
 #
 #
 #  Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,7 @@ PROFILE ?= release
 TESTMODE ?= FUNCTIONAL_TEST
 MODENAME ?=
 BOARD_DIAG_CFLAGS ?=
-APP_NAME ?= $(DIAGNAME)_board_diag
+APP_NAME ?= board_diag_$(DIAGNAME)
 
 BUILD_PROFILE_$(CORE) = $(PROFILE)
 
@@ -53,9 +53,6 @@ LNKFLAGS_LOCAL_mpu1_0  += --entry Entry
 EXTERNAL_INTERFACES =
 XDC_CFG_FILE_mpu1_0 =
 XDC_CFG_FILE_mcu1_0 =
-
-# Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
-LOCAL_APP_NAME =  $(DIAGNAME)$(MODENAME)_DiagExample_$(BOARD)_$(CORE)
 
 SRCDIR = ../src ../../common/$(SOC) ./$(BOARD)
 INCDIR = ../../../../board ../src ../../../src/$(BOARD)/include ../../../src/$(BOARD) ../../../src/flash ../../common/$(SOC) ../../../src/evmKeystone3/include
