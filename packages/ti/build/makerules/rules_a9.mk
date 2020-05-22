@@ -66,7 +66,7 @@ ifeq ($(FORMAT),ELF)
 endif
 
 # Internal CFLAGS - normally doesn't change
-CFLAGS_INTERNAL = -Wimplicit -Wall -Wunused -Wunknown-pragmas -ffunction-sections  -mlong-calls -fdata-sections -c -mcpu=cortex-a9 -g -mtune=cortex-a9 -march=armv7-a -mfpu=neon -mfloat-abi=hard -mabi=aapcs -mapcs-frame -D__ARMv7
+CFLAGS_INTERNAL = -Wimplicit -Wall -Wunused -Wunknown-pragmas -ffunction-sections  -mlong-calls -fdata-sections -c -mcpu=cortex-a9 -g -mfpu=neon -mfloat-abi=hard -mabi=aapcs -mapcs-frame -D__ARMv7
 ifeq ($(TREAT_WARNINGS_AS_ERROR), yes)
   CFLAGS_INTERNAL += -Werror
   LNKFLAGS_INTERNAL_COMMON += -Werror
