@@ -44,7 +44,7 @@
 #define SDTF_PROFILE_ONESHOT 0
 #define SDTF_PROFILE_PERIODIC 1
 
-#define SDTF_PROFILE_CLOCK_FREQUENCY (400000u)
+
 
 extern volatile uint32_t SDTF_allTasksEnded;
 

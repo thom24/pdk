@@ -50,6 +50,7 @@
 #include "sdtf_wdt.h"
 #include "sdtf_test.h"
 #include "sdtf_profile.h"
+#include <sdtf_core.h>
 
 typedef enum rtiClockSource
 {

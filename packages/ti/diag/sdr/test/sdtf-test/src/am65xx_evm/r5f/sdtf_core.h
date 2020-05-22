@@ -42,6 +42,12 @@
 
 #define TIMER_ID 1
 
+/* This is the basic clock frequency the core is running at in Hz:
+   For AM65XX: R5F running at 400 Mhz
+*/
+#d
+#define SDTF_PROFILE_CLOCK_FREQUENCY (400000u)
+
 extern uint32_t SDTF_EccNumMemCfgEntries;
 
 void SDTF_cpuCacheInv(const void * addr, int32_t size);
