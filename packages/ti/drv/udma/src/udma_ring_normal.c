@@ -340,6 +340,8 @@ uint32_t Udma_ringGetForwardRingOccNormal(Udma_RingHandle ringHandle)
     {
         occ = CSL_ringaccGetRingHwOcc(&ringHandle->drvHandle->raRegs,
                                       ringHandle->ringNum);
+        /* Update cfg->occ */  
+        ringHandle->cfg.occ = occ;
     }
 
     return (occ);
@@ -353,6 +355,8 @@ uint32_t Udma_ringGetReverseRingOccNormal(Udma_RingHandle ringHandle)
     {
         occ = CSL_ringaccGetRingHwOcc(&ringHandle->drvHandle->raRegs,
                                       ringHandle->ringNum);
+        /* Update cfg->occ */  
+        ringHandle->cfg.occ = occ;                      
     }
 
     return (occ);

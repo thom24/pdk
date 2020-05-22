@@ -373,6 +373,8 @@ uint32_t Udma_ringGetForwardRingOccLcdma(Udma_RingHandle ringHandle)
         occ = CSL_lcdma_ringaccGetForwardRingOcc(&ringHandle->drvHandle->lcdmaRaRegs,
                                                  ringHandle->ringNum,
                                                  ringHandle->lcdmaCfg.mode);
+        /* Update lcdmaCfg->wrOcc */  
+        ringHandle->lcdmaCfg.wrOcc = occ;                      
     }
 
     return (occ);
@@ -387,6 +389,8 @@ uint32_t Udma_ringGetReverseRingOccLcdma(Udma_RingHandle ringHandle)
         occ = CSL_lcdma_ringaccGetReverseRingOcc(&ringHandle->drvHandle->lcdmaRaRegs,
                                                  ringHandle->ringNum,
                                                  ringHandle->lcdmaCfg.mode);
+        /* Update lcdmaCfg->rdOcc */  
+        ringHandle->lcdmaCfg.rdOcc = occ;                      
     }
 
     return (occ);

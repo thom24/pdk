@@ -1470,7 +1470,10 @@ static int32_t udmaTestRingPrimeTestLoop(UdmaTestTaskObj *taskObj)
 
             /* Do Cache invalidate before reading ring elements */
             Udma_appUtilsCacheInv(ringMem, ringMemSize);
-
+            
+            /* Update cfg->occ count */
+            Udma_ringGetReverseRingOcc(ringHandle);
+            
             /* Dequeue using prime read API */
             for(qCnt = 0U; qCnt < elemCnt; qCnt++)
             {

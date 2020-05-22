@@ -427,7 +427,7 @@ int32_t Udma_ringFlushRaw(Udma_RingHandle ringHandle, uint64_t *phyDescMem);
  *  (Takes all physical pointers). This will write the descriptor to the
  *  ring memory without setting the doorbell (doesn't commit the push).
  *
- *  This API can be used to prime multiple request to the ring and then set the
+ *  This API can be used to prime multiple request to the free queue ring and then set the
  *  doorbell using #Udma_ringSetDoorBell API.
  *
  *  Also no cache operation is performed to let the caller do the cache ops
@@ -455,8 +455,8 @@ void Udma_ringPrime(Udma_RingHandle ringHandle, uint64_t phyDescMem);
  *  (Reads physical pointers). This will read the descriptor address from the
  *  ring memory without setting the doorbell (doesn't commit the pop).
  *
- *  This API can be used to read multiple descriptor addresses from the ring and
- *  then set the doorbell using #Udma_ringSetDoorBell API.
+ *  This API can be used to read multiple descriptor addresses from the completion queue 
+ *  ring and then set the doorbell using #Udma_ringSetDoorBell API.
  *
  *  Also no cache operation is performed to let the caller do the cache ops
  *  once for the entire ring after reading multiple elements. This will yeild
@@ -465,6 +465,8 @@ void Udma_ringPrime(Udma_RingHandle ringHandle, uint64_t phyDescMem);
  *  Note: No error check is performed by this API to minimize the CPU cycles.
  *  The caller should ensure that the ring is in exposed/"RING" mode and
  *  descriptor addresses are in the ring and the ring pointer is non-null.
+ *  Also make sure that its not reading more than the what #Udma_ringGetReverseRingOcc
+ *  returns.
  *
  *  This API is thread safe for a ring instance and can be called from
  *  interrupt or task context and also from multiple threads.
