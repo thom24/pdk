@@ -1,7 +1,7 @@
 ;******************************************************************************
 ;* BOOT  v16.9.4                                                              *
 ;*                                                                            *
-;* Copyright (c) 1996-2019 Texas Instruments Incorporated                     *
+;* Copyright (c) 1996-2020 Texas Instruments Incorporated                     *
 ;* http://www.ti.com/                                                         *
 ;*                                                                            *
 ;*  Redistribution and  use in source  and binary forms, with  or without     *
@@ -92,17 +92,38 @@
    .endif
 
 	.global	__stack
+
+;****************************************************************************
+;*  STACK ADDRESSES                                               *
+;****************************************************************************
+        .sect   ".bootCode"
+        .global __IRQ_STACK_END
+        .global __FIQ_STACK_END
+        .global __ABORT_STACK_END
+        .global __UND_STACK_END
+        .global __SVC_STACK_END
+IRQ_STACK_ADDR .long __IRQ_STACK_END
+FIQ_STACK_ADDR .long __FIQ_STACK_END
+ABORT_STACK_ADDR .long __ABORT_STACK_END
+UND_STACK_ADDR .long __UND_STACK_END
+SVC_STACK_ADDR .long __SVC_STACK_END
+
 ;***************************************************************
 ;* DEFINE THE USER MODE STACK (DEFAULT SIZE IS 512)
 ;***************************************************************
 __stack:.usect	".stack", 0, 4
 
 	.global	_c_int00
+    .global BoardDiag_timerIntrDisable
     .sect   ".bootCode"
 ;***************************************************************
 ;* FUNCTION DEF: _c_int00
 ;***************************************************************
 _c_int00: .asmfunc stack_usage(0)
+
+    PUSH {r1}   ;Store the context of diag framework
+    MOV r10, sp
+    MOV r11, lr
 
 	.if !__TI_ARM_V7M__ & !__TI_ARM_V6M0__
 	.if __TI_NEON_SUPPORT__ | __TI_VFP_SUPPORT__
@@ -124,6 +145,138 @@ _c_int00: .asmfunc stack_usage(0)
 	MOV      r0,#0x40000000
         FMXR     FPEXC,r0
         .endif ; __TI_NEON_SUPPORT__ | __TI_VFP_SUPPORT__
+
+        ;*------------------------------------------------------
+        ;* SET TO IRQ MODE
+        ;*------------------------------------------------------
+        MRS     r0, cpsr
+        BIC     r0, r0, #0x1F  ; CLEAR MODES
+        ORR     r0, r0, #0x12  ; SET IRQ MODE
+        MSR     cpsr_cf, r0
+
+        ;*------------------------------------------------------
+        ;* INITIALIZE THE IRQ MODE STACK
+        ;*------------------------------------------------------
+        .if __TI_AVOID_EMBEDDED_CONSTANTS
+        MOVW    sp, IRQ_STACK_ADDR
+        MOVT    sp, IRQ_STACK_ADDR
+        .else
+        LDR     sp, IRQ_STACK_ADDR
+        .endif
+
+        ;*------------------------------------------------------
+        ;* SET TO FIQ MODE
+        ;*------------------------------------------------------
+        MRS     r0, cpsr
+        BIC     r0, r0, #0x1F  ; CLEAR MODES
+        ORR     r0, r0, #0x11  ; SET FRQ MODE
+        MSR     cpsr_cf, r0
+
+        ;*------------------------------------------------------
+        ;* INITIALIZE THE FIQ MODE STACK
+        ;*------------------------------------------------------
+        .if __TI_AVOID_EMBEDDED_CONSTANTS
+        MOVW    sp, FIQ_STACK_ADDR
+        MOVT    sp, FIQ_STACK_ADDR
+        .else
+        LDR     sp, FIQ_STACK_ADDR
+        .endif
+
+        ;*------------------------------------------------------
+        ;* SET TO ABORT` MODE
+        ;*------------------------------------------------------
+        MRS     r0, cpsr
+        BIC     r0, r0, #0x1F  ; CLEAR MODES
+        ORR     r0, r0, #0x17  ; SET ABORT MODE
+        MSR     cpsr_cf, r0
+
+        ;*------------------------------------------------------
+        ;* INITIALIZE THE ABORT MODE STACK
+        ;*------------------------------------------------------
+        .if __TI_AVOID_EMBEDDED_CONSTANTS
+        MOVW    sp, ABORT_STACK_ADDR
+        MOVT    sp, ABORT_STACK_ADDR
+        .else
+        LDR     sp, ABORT_STACK_ADDR
+        .endif
+
+        ;*------------------------------------------------------
+        ;* SET TO UNDEFINED MODE
+        ;*------------------------------------------------------
+        MRS     r0, cpsr
+        BIC     r0, r0, #0x1F  ; CLEAR MODES
+        ORR     r0, r0, #0x1B  ; SET UNDEFINED MODE
+        MSR     cpsr_cf, r0
+
+        ;*------------------------------------------------------
+        ;* INITIALIZE THE UNDEFINED MODE STACK
+        ;*------------------------------------------------------
+        .if __TI_AVOID_EMBEDDED_CONSTANTS
+        MOVW    sp, UND_STACK_ADDR
+        MOVT    sp, UND_STACK_ADDR
+        .else
+        LDR     sp, UND_STACK_ADDR
+        .endif
+
+        ;*------------------------------------------------------
+        ;* SET TO SUPERVISOR MODE
+        ;*------------------------------------------------------
+        MRS     r0, cpsr
+        BIC     r0, r0, #0x1F  ; CLEAR MODES
+        ORR     r0, r0, #0x13  ; SET SUPERVISOR MODE
+        MSR     cpsr_cf, r0
+
+        ;*------------------------------------------------------
+        ;* INITIALIZE THE SUPERVISOR MODE STACK
+        ;*------------------------------------------------------
+        .if __TI_AVOID_EMBEDDED_CONSTANTS
+        MOVW    sp, SVC_STACK_ADDR
+        MOVT    sp, SVC_STACK_ADDR
+        .else
+        LDR     sp, SVC_STACK_ADDR
+        .endif
+
+        ;*------------------------------------------------------
+        ;* SET TO SYSTEM MODE
+        ;*------------------------------------------------------
+        MRS     r0, cpsr
+        BIC     r0, r0, #0x1F  ; CLEAR MODES
+        ORR     r0, r0, #0x1F  ; SET SYSTEM MODE
+        MSR     cpsr_cf, r0
+
+        ;*------------------------------------------------------
+        ;* INITIALIZE THE USER MODE STACK
+        ;*------------------------------------------------------
+        .if __TI_AVOID_EMBEDDED_CONSTANTS
+        MOVW    sp, __stack
+        MOVT    sp, __stack
+        MOVW    r0, __STACK_SIZE
+        MOVT    r0, __STACK_SIZE
+        .else
+        LDR     sp, c_stack
+        LDR     r0, c_STACK_SIZE
+        .endif
+        ADD     sp, sp, r0
+
+        ;*-----------------------------------------------------
+        ;* ALIGN THE STACK TO 64-BITS IF EABI.
+        ;*-----------------------------------------------------
+        .if __TI_EABI_ASSEMBLER
+        BIC     sp, sp, #0x07  ; Clear upper 3 bits for 64-bit alignment.
+        .endif
+
+        ;*-----------------------------------------------------
+        ;* SAVE CURRENT STACK POINTER FOR SDP ANALYSIS
+        ;*-----------------------------------------------------
+        .if __TI_AVOID_EMBEDDED_CONSTANTS
+        MOVW    r0, MAIN_FUNC_SP
+        MOVT    r0, MAIN_FUNC_SP
+        .else
+        LDR     r0, c_mf_sp
+        .endif
+        STR     sp, [r0]
+
+    STMFD sp!, {r10, r11}
     BL      __mpu_init
         ;------------------------------------------------------
 	;* SET TO SYS MODE
@@ -160,53 +313,6 @@ cpacr   .set     0xE000ED88			; CAPCR address
 	.endif ; __TI_TMS470_V7M4__ & __TI_VFP_SUPPORT__
 	.endif ; !__TI_ARM_V7M & !__TI_ARM_V6M0__
 
-	;*------------------------------------------------------
-        ;* INITIALIZE THE USER MODE STACK
-        ;*------------------------------------------------------
-	.if __TI_AVOID_EMBEDDED_CONSTANTS
-	.thumb
-	MOVW	r0, __stack
-	MOVT	r0, __stack
-	MOV	sp, r0
-	MOVW	r0, __STACK_SIZE
-	MOVT	r0, __STACK_SIZE
-	.thumb
-	.else ; __TI_AVOID_EMBEDDED_CONSTANTS
-	LDR     r0, c_stack
-	MOV	sp, r0
-        LDR     r0, c_STACK_SIZE
-	.endif ; __TI_AVOID_EMBEDDED_CONSTANTS
-	ADD	sp, r0
-
-	;*-----------------------------------------------------
-	;* ALIGN THE STACK TO 64-BITS IF EABI.
-	;*-----------------------------------------------------
-	.if __TI_EABI_ASSEMBLER
-	MOV	r7, sp
-	MOVS	r0, #0x07
-	BICS    r7, r0         ; Clear upper 3 bits for 64-bit alignment.
-	MOV	sp, r7
-	.endif
-
-	;*-----------------------------------------------------
-	;* SAVE CURRENT STACK POINTER FOR SDP ANALYSIS
-	;*-----------------------------------------------------
-	.if __TI_AVOID_EMBEDDED_CONSTANTS
-	.thumb
-	MOVW	r0, MAIN_FUNC_SP
-	MOVT	r0, MAIN_FUNC_SP
-	.thumb
-	.else
-	LDR	r0, c_mf_sp
-	.endif
-	MOV	r7, sp
-	STR	r7, [r0]
-
-        ;*------------------------------------------------------
-	;* Call the __mpu_init hook function.
-        ;*------------------------------------------------------
-        ;BL      __mpu_init
-
         ;*------------------------------------------------------
         ;* Perform all the required initializations when
         ;* _system_pre_init() returns non-zero:
@@ -223,7 +329,14 @@ bypass_auto_init:
         ;*------------------------------------------------------
 	;* CALL APPLICATION
         ;*------------------------------------------------------
+        BL      BoardDiag_timerIntrDisable
         BL      ARGS_MAIN_RTN
+
+        LDMFD sp!, {r1, r2} ;Load the context of diag framework
+        MOV sp, r1
+        POP {r1}
+        STR r0, [r1]
+        MOV pc, r2
 
         ;*------------------------------------------------------
 	;* IF APPLICATION DIDN'T CALL EXIT, CALL EXIT(1)
@@ -487,7 +600,6 @@ L1:     B       L1
 ;* FUNCTION DEF: HF
 ;***************************************************************
 		.global HF
-
 HF:     .asmfunc stack_usage(0)
 L2:     B   L2
 		.endasmfunc
