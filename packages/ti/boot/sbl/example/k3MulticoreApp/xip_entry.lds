@@ -14,10 +14,10 @@ _xipAppEntry=0x500e0000;
 
 MEMORY
 {
-    MSMC_XIP_ENTRY	        : origin=0x7002C000 length=0x2000	/* 8KB */
+    OCMRAM_SBL_SYSFW	        : origin=0x41C3E000 length=0x2000	/* 8KB */
 }
 
 SECTIONS
 {
-    .xip_entry 	        : {} palign(8) 		> MSMC_XIP_ENTRY
+    .xip_entry 	        : {} palign(8) 		> OCMRAM_SBL_SYSFW
 }
