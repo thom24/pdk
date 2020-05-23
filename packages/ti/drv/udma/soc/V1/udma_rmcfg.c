@@ -205,7 +205,7 @@ const Udma_RmInitPrms gUdmaRmDefCfg_MainNavss[UDMA_NUM_CORE] =
         0U,                                         /* startBlkCopyHcCh */
         0U,                                         /* numBlkCopyHcCh */
         138U,                                       /* startBlkCopyCh */
-        2U,                                         /* numBlkCopyCh */
+        1U,                                         /* numBlkCopyCh */
 
         0U,                                         /* startTxUhcCh */
         0U,                                         /* numTxUhcCh */
@@ -218,8 +218,8 @@ const Udma_RmInitPrms gUdmaRmDefCfg_MainNavss[UDMA_NUM_CORE] =
         0U,                                         /* numRxUhcCh */
         0U,                                         /* startRxHcCh */
         0U,                                         /* numRxHcCh */
-        0U,                                         /* startRxCh */
-        0U,                                         /* numRxCh */
+        139U,                                       /* startRxCh */
+        1U,                                         /* numRxCh */
 
         {0U, 0U, 0U, 0U},                           /* startUtcCh[] */
         {0U, 0U, 0U, 0U},                           /* numUtcCh[] */
