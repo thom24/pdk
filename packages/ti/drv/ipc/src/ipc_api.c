@@ -864,6 +864,12 @@ static RPMessage_Object* RPMessage_rawCreate(
         status = IPC_EFAIL;
     }
 
+    if(NULL == endPt)
+    {
+        SystemP_printf("RPMessage_rawCreate ...NULL endPt\n");
+        status = IPC_EFAIL;
+    }
+
     if(IPC_SOK == status)
     {
         key = pOsalPrms->lockHIsrGate(module.gateSwi);
@@ -1004,17 +1010,27 @@ int32_t RPMessage_init(RPMessage_Params *params)
     /* Clear module state */
     memset(&module, 0, sizeof(module));
 
-    /* Gate to protect module object and lists: */
-    if ((1U == is_aligned(params->buf,HEAPALIGNMENT)) &&
-        (NULL != pOsalPrms->createHIsrGate) &&
-        (NULL != pOsalPrms->createHIsr))
+    if((NULL == params) || (0 == params->bufSize) || (0 == params->stackSize)
+        || (NULL == params->buf) || (NULL == params->stackBuffer))
     {
-        module.gateSwi = pOsalPrms->createHIsrGate();
-    }
-    else
-    {
+        SystemP_printf("RPMessage_init ...Invalid params\n");
         retVal = IPC_EFAIL;
-        SystemP_printf("RPMessage_init : Memory misalignment  or invalid HIstGate fxn\n");
+    }
+
+    if( retVal != IPC_EFAIL)
+    {
+        /* Gate to protect module object and lists: */
+        if ((1U == is_aligned(params->buf,HEAPALIGNMENT)) &&
+                (NULL != pOsalPrms->createHIsrGate) &&
+                (NULL != pOsalPrms->createHIsr))
+        {
+            module.gateSwi = pOsalPrms->createHIsrGate();
+        }
+        else
+        {
+            retVal = IPC_EFAIL;
+            SystemP_printf("RPMessage_init : Memory misalignment  or invalid HIstGate fxn\n");
+        }
     }
 
     if( retVal != IPC_EFAIL)
@@ -1190,7 +1206,7 @@ int32_t RPMessage_recv(RPMessage_Handle handle, void* data, uint16_t *len,
 {
 #ifndef IPC_EXCLUDE_BLOCKING_RX
     int32_t             status = IPC_SOK;
-    RPMessage_Object   *obj = (RPMessage_Object *)handle;
+    RPMessage_Object   *obj = NULL;
     int32_t             semStatus;
     uint8_t             skiplist = FALSE;
     RPMessage_MsgElem  *payload;
@@ -1199,56 +1215,66 @@ int32_t RPMessage_recv(RPMessage_Handle handle, void* data, uint16_t *len,
         handling would require an overhaul */
     Ipc_OsalPrms *pOsalPrms = &gIpcObject.initPrms.osalPrms;
 
-    key = pOsalPrms->lockHIsrGate(module.gateSwi);
-    if (TRUE == IpcUtils_QisEmpty(&obj->queue))
+    if((NULL == handle) || (NULL == data))
     {
-        obj->recv_buffer = data;
-        skiplist = TRUE;
+        SystemP_printf("RPMessage_recv ...Invalid Args\n");
+        status = IPC_EFAIL;
     }
-    pOsalPrms->unLockHIsrGate(module.gateSwi, key);
 
-    /*  Block until notified. */
-    semStatus = IPC_SOK;
-    semStatus = pOsalPrms->lockMutex(obj->semHandle, timeout);
+    if(status == IPC_SOK)
+    {
+        obj = (RPMessage_Object *)handle;
 
-    if (semStatus == IPC_ETIMEOUT)
-    {
-        status = IPC_ETIMEOUT;
-    }
-    else if (TRUE == obj->unblocked)
-    {
-        status = IPC_E_UNBLOCKED;
-    }
-    else if(TRUE == skiplist)
-    {
-        *len = obj->payload.len;
-        *rplyEndPt = obj->payload.src;
-        *rplyProcId = obj->payload.procId;
-    }
-    else
-    {
-        key = (uint32_t)gIpcObject.initPrms.osalPrms.disableAllIntr();
-
-        payload = (RPMessage_MsgElem *)IpcUtils_QgetHead(&obj->queue);
-        if ( (NULL == payload) ||
-             (payload == (RPMessage_MsgElem *)&obj->queue))
+        key = pOsalPrms->lockHIsrGate(module.gateSwi);
+        if (TRUE == IpcUtils_QisEmpty(&obj->queue))
         {
-            status = IPC_EFAIL;
+            obj->recv_buffer = data;
+            skiplist = TRUE;
         }
+        pOsalPrms->unLockHIsrGate(module.gateSwi, key);
 
-        if(status != IPC_EFAIL)
+        /*  Block until notified. */
+        semStatus = IPC_SOK;
+        semStatus = pOsalPrms->lockMutex(obj->semHandle, timeout);
+
+        if (semStatus == IPC_ETIMEOUT)
         {
-            /* Now, copy payload to client and free our internal msg */
-            memcpy(data, payload->data, payload->len);
-            *len        = (uint16_t)payload->len;
-            *rplyEndPt  = payload->src;
-            *rplyProcId = payload->procId;
-            IpcUtils_HeapFree(&obj->heap, (void *)payload,
-                    (payload->len + sizeof(RPMessage_MsgElem)));
-            gIpcObject.initPrms.osalPrms.restoreAllIntr(key);
+            status = IPC_ETIMEOUT;
+        }
+        else if (TRUE == obj->unblocked)
+        {
+            status = IPC_E_UNBLOCKED;
+        }
+        else if(TRUE == skiplist)
+        {
+            *len = obj->payload.len;
+            *rplyEndPt = obj->payload.src;
+            *rplyProcId = obj->payload.procId;
+        }
+        else
+        {
+            key = (uint32_t)gIpcObject.initPrms.osalPrms.disableAllIntr();
+
+            payload = (RPMessage_MsgElem *)IpcUtils_QgetHead(&obj->queue);
+            if ( (NULL == payload) ||
+                    (payload == (RPMessage_MsgElem *)&obj->queue))
+            {
+                status = IPC_EFAIL;
+            }
+
+            if(status != IPC_EFAIL)
+            {
+                /* Now, copy payload to client and free our internal msg */
+                memcpy(data, payload->data, payload->len);
+                *len        = (uint16_t)payload->len;
+                *rplyEndPt  = payload->src;
+                *rplyProcId = payload->procId;
+                IpcUtils_HeapFree(&obj->heap, (void *)payload,
+                        (payload->len + sizeof(RPMessage_MsgElem)));
+                gIpcObject.initPrms.osalPrms.restoreAllIntr(key);
+            }
         }
     }
-
     return (status);
 #else
 
@@ -1320,6 +1346,12 @@ static int32_t RPMessage_rawSend(Virtio_Handle vq,
     uint32_t              bufSize;
     RPMessage_MsgHeader*  msg = NULL;
     Ipc_OsalPrms          *pOsalPrms = &gIpcObject.initPrms.osalPrms;
+
+    if(NULL == data)
+    {
+        SystemP_printf("RPMessage_rawSend ...NULL data\n");
+        status = IPC_EFAIL;
+    }
 
     bufSize = sizeof(RPMessage_MsgHeader) + len;
 

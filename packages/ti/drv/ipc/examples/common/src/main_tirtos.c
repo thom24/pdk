@@ -60,6 +60,10 @@
 #include <ti/drv/sciclient/sciclient.h>
 #include <ti/board/board.h>
 
+/* This needs to be enabled only for negative test cases */
+#ifdef IPC_NEGATIVE_TEST
+#include <ti/drv/ipc/examples/ex05_bios_multicore_echo_negative_test/ipc_neg_setup.h>
+#endif
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
@@ -150,7 +154,11 @@ int main(void)
 
 static Void taskFxn(UArg a0, UArg a1)
 {
+#ifdef IPC_NEGATIVE_TEST
+    Ipc_echo_neg_test();
+#else
     Ipc_echo_test();
+#endif
 }
 
 #if defined(BUILD_MPU) || defined (__C7100__)

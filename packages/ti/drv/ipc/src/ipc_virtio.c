@@ -245,7 +245,8 @@ int32_t Ipc_initVirtIO(Ipc_VirtIoParams *vqParam)
     int32_t   retVal = IPC_SOK;
 
     if( (vqParam == NULL) ||
-        (vqParam->vringBufSize < IPC_VRING_BUFFER_SIZE))
+        (vqParam->vringBufSize < IPC_VRING_BUFFER_SIZE) ||
+		(vqParam->vqBufSize == 0))
     {
         SystemP_printf("Ipc_initVirtIO : Invalid Memory, Failed\n");
         retVal = IPC_EFAIL;
