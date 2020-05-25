@@ -199,6 +199,9 @@ sciclient_unit_testapp_INCLUDE = $(sciclient_unit_testapp_PATH)
 sciclient_unit_testapp_BOARDLIST = am65xx_evm j721e_sim j721e_evm am64x_evm
 export sciclient_unit_testapp_BOARDLIST
 sciclient_unit_testapp_$(SOC)_CORELIST = $(drvsciclient_$(SOC)_CORELIST)
+ifeq ($(BOARD),$(filter $(BOARD), am64x_evm))
+sciclient_unit_testapp_$(SOC)_CORELIST = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
+endif
 export sciclient_unit_testapp_$(SOC)_CORELIST
 
 sciclient_unit_testapp_SBL_APPIMAGEGEN = no
