@@ -183,11 +183,11 @@ static EDMA_Handle QSPIApp_edmaInit(void)
         }
         /* Open DMA driver instance 0 for SPI test */
         gEdmaHandle = EDMA_open(edma3Id, &errorCode, &instanceInfo);
-    }
-    if(gEdmaHandle == NULL)
-    {
-        printf("Open DMA driver failed with error=%d\n \n", errorCode);
-        return(gEdmaHandle);
+        if(gEdmaHandle == NULL)
+        {
+            printf("Open DMA driver failed with error=%d\n \n", errorCode);
+            return(gEdmaHandle);
+        }
     }
 
     return(gEdmaHandle);

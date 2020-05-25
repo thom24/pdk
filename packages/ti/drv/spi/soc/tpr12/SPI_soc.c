@@ -62,8 +62,8 @@ QSPI_HwAttrs qspiInitCfg[CSL_QSPI_PER_CNT] =
         false,                       /* dmaEnable  */
         NULL,                        /* edmaHandle */
         0,                           /* edmaTcc    */
-        EDMA_MSS_TPCC_A_EVT_FREE_0,  /* edmaChId   */
-        4U                           /* clkDiv     */
+        EDMA_MSS_TPCC_A_EVT_QSPI_DMA_REQ0,  /* edmaChId   */
+        4U                                  /* clkDiv     */
     }
 };
 

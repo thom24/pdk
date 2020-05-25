@@ -698,7 +698,7 @@ QSPI_Baremetal_Flash_TestApp_COMP_LIST = QSPI_Baremetal_Flash_TestApp
 QSPI_Baremetal_Flash_TestApp_RELPATH = ti/drv/spi/test/qspi_flash
 QSPI_Baremetal_Flash_TestApp_PATH = $(PDK_SPI_COMP_PATH)/test/qspi_flash
 QSPI_Baremetal_Flash_TestApp_BOARD_DEPENDENCY = yes
-QSPI_Baremetal_Flash_TestApp_CORE_DEPENDENCY = no
+QSPI_Baremetal_Flash_TestApp_CORE_DEPENDENCY = yes
 QSPI_Baremetal_Flash_TestApp_MAKEFILE = -f makefile IS_BAREMETAL=yes
 export QSPI_Baremetal_Flash_TestApp_COMP_LIST
 export QSPI_Baremetal_Flash_TestApp_BOARD_DEPENDENCY
@@ -715,7 +715,7 @@ QSPI_Flash_TestApp_COMP_LIST = QSPI_Flash_TestApp
 QSPI_Flash_TestApp_RELPATH = ti/drv/spi/test/qspi_flash
 QSPI_Flash_TestApp_PATH = $(PDK_SPI_COMP_PATH)/test/qspi_flash
 QSPI_Flash_TestApp_BOARD_DEPENDENCY = yes
-QSPI_Flash_TestApp_CORE_DEPENDENCY = no
+QSPI_Flash_TestApp_CORE_DEPENDENCY = yes
 QSPI_Flash_TestApp_XDC_CONFIGURO = yes
 QSPI_Flash_TestApp_MAKEFILE = -f makefile
 export QSPI_Flash_TestApp_COMP_LIST
@@ -734,7 +734,7 @@ QSPI_Baremetal_Flash_Dma_TestApp_COMP_LIST = QSPI_Baremetal_Flash_Dma_TestApp
 QSPI_Baremetal_Flash_Dma_TestApp_RELPATH = ti/drv/spi/test/qspi_flash
 QSPI_Baremetal_Flash_Dma_TestApp_PATH = $(PDK_SPI_COMP_PATH)/test/qspi_flash
 QSPI_Baremetal_Flash_Dma_TestApp_BOARD_DEPENDENCY = yes
-QSPI_Baremetal_Flash_Dma_TestApp_CORE_DEPENDENCY = no
+QSPI_Baremetal_Flash_Dma_TestApp_CORE_DEPENDENCY = yes
 QSPI_Baremetal_Flash_Dma_TestApp_MAKEFILE = -f makefile IS_BAREMETAL=yes DMA=enable
 export QSPI_Baremetal_Flash_Dma_TestApp_COMP_LIST
 export QSPI_Baremetal_Flash_Dma_TestApp_BOARD_DEPENDENCY
@@ -751,7 +751,7 @@ QSPI_Flash_Dma_TestApp_COMP_LIST = QSPI_Flash_Dma_TestApp
 QSPI_Flash_Dma_TestApp_RELPATH = ti/drv/spi/test/qspi_flash
 QSPI_Flash_Dma_TestApp_PATH = $(PDK_SPI_COMP_PATH)/test/qspi_flash
 QSPI_Flash_Dma_TestApp_BOARD_DEPENDENCY = yes
-QSPI_Flash_Dma_TestApp_CORE_DEPENDENCY = no
+QSPI_Flash_Dma_TestApp_CORE_DEPENDENCY = yes
 QSPI_Flash_Dma_TestApp_XDC_CONFIGURO = yes
 QSPI_Flash_Dma_TestApp_MAKEFILE = -f makefile DMA=enable
 export QSPI_Flash_Dma_TestApp_COMP_LIST
