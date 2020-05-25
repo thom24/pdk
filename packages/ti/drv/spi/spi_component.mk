@@ -706,7 +706,7 @@ export QSPI_Baremetal_Flash_TestApp_CORE_DEPENDENCY
 export QSPI_Baremetal_Flash_TestApp_MAKEFILE
 QSPI_Baremetal_Flash_TestApp_PKG_LIST = QSPI_Baremetal_Flash_TestApp
 QSPI_Baremetal_Flash_TestApp_INCLUDE = $(QSPI_Baremetal_Flash_TestApp_PATH)
-QSPI_Baremetal_Flash_TestApp_BOARDLIST = tpr12_evm
+QSPI_Baremetal_Flash_TestApp_BOARDLIST = tpr12_evm tpr12_qt
 export QSPI_Baremetal_Flash_TestApp_BOARDLIST
 QSPI_Baremetal_Flash_TestApp_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELIST)
 
@@ -725,7 +725,7 @@ export QSPI_Flash_TestApp_XDC_CONFIGURO
 export QSPI_Flash_TestApp_MAKEFILE
 QSPI_Flash_TestApp_PKG_LIST = QSPI_Flash_TestApp
 QSPI_Flash_TestApp_INCLUDE = $(QSPI_Flash_TestApp_PATH)
-QSPI_Flash_TestApp_BOARDLIST = tpr12_evm
+QSPI_Flash_TestApp_BOARDLIST = tpr12_evm tpr12_qt
 export QSPI_Flash_TestApp_BOARDLIST
 QSPI_Flash_TestApp_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELIST)
 
@@ -742,7 +742,7 @@ export QSPI_Baremetal_Flash_Dma_TestApp_CORE_DEPENDENCY
 export QSPI_Baremetal_Flash_Dma_TestApp_MAKEFILE
 QSPI_Baremetal_Flash_Dma_TestApp_PKG_LIST = QSPI_Baremetal_Flash_Dma_TestApp
 QSPI_Baremetal_Flash_Dma_TestApp_INCLUDE = $(QSPI_Baremetal_Flash_Dma_TestApp_PATH)
-QSPI_Baremetal_Flash_Dma_TestApp_BOARDLIST = tpr12_evm
+QSPI_Baremetal_Flash_Dma_TestApp_BOARDLIST = tpr12_evm tpr12_qt
 export QSPI_Baremetal_Flash_Dma_TestApp_BOARDLIST
 QSPI_Baremetal_Flash_Dma_TestApp_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELIST)
 
@@ -761,7 +761,7 @@ export QSPI_Flash_Dma_TestApp_XDC_CONFIGURO
 export QSPI_Flash_Dma_TestApp_MAKEFILE
 QSPI_Flash_Dma_TestApp_PKG_LIST = QSPI_Flash_Dma_TestApp
 QSPI_Flash_Dma_TestApp_INCLUDE = $(QSPI_Flash_Dma_TestApp_PATH)
-QSPI_Flash_Dma_TestApp_BOARDLIST = tpr12_evm
+QSPI_Flash_Dma_TestApp_BOARDLIST = tpr12_evm tpr12_qt
 export QSPI_Flash_Dma_TestApp_BOARDLIST
 QSPI_Flash_Dma_TestApp_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELIST)
 
