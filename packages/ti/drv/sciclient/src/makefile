@@ -7,12 +7,7 @@ else
 include $(RULES_MAKE)
 endif
 
-HS_SUFFIX=
-ifeq ($(BUILD_HS), yes)
-HS_SUFFIX=_hs
-endif
-
-MODULE_NAME = sciclient$(HS_SUFFIX)
+MODULE_NAME = sciclient
 
 SRCDIR = src
 INCDIR = soc/sysfw/include
@@ -62,7 +57,7 @@ ifeq ($(BOARD),$(filter $(BOARD), j721e_hostemu j721e_loki))
  SRCS_COMMON = sciclient_rm_csl.c sciclient_dummy.c
 endif
 
-CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS)
+CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(SCICLIENT_CFLAGS)
 PACKAGE_SRCS_COMMON += sciclient.h sciclient_component.mk makefile .gitignore
 PACKAGE_SRCS_COMMON += include docs tools $(SRCDIR) soc/sciclient_soc_priv.h
 PACKAGE_SRCS_COMMON += config_mk.bld package.bld package.xdc package.xs
@@ -77,21 +72,12 @@ PACKAGE_SRCS_COMMON += soc/sysfw/binaries/ti-sci-firmware-am65x-gp.bin
 PACKAGE_SRCS_COMMON += soc/sysfw/binaries/ti-sci-firmware-am65x_sr2-gp.bin
 PACKAGE_SRCS_COMMON += soc/sysfw/binaries/ti-sci-firmware-am65x-hs-cert.bin
 PACKAGE_SRCS_COMMON += soc/sysfw/binaries/ti-sci-firmware-am65x-hs-enc.bin
-
-ifeq ($(BUILD_HS),yes)
-CFLAGS_LOCAL_COMMON += -DBUILD_HS
-endif
-
 endif
 
 ifeq ($(SOC),$(filter $(SOC), j721e))
 PACKAGE_SRCS_COMMON += soc/sysfw/binaries/ti-sci-firmware-j721e-gp.bin
 PACKAGE_SRCS_COMMON += soc/sysfw/binaries/ti-sci-firmware-j721e-hs-cert.bin
 PACKAGE_SRCS_COMMON += soc/sysfw/binaries/ti-sci-firmware-j721e-hs-enc.bin
-
-ifeq ($(BUILD_HS),yes)
-CFLAGS_LOCAL_COMMON += -DBUILD_HS
-endif
 endif
 
 ifeq ($(SOC),$(filter $(SOC), am64x))

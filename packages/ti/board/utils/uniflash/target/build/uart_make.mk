@@ -45,12 +45,7 @@ TESTMODE ?= FUNCTIONAL_TEST
 MODENAME ?=
 BOARD_UTILS_CFLAGS ?=
 
-HS_SUFFIX=
-ifeq ($(BUILD_HS), yes)
-HS_SUFFIX=_hs
-endif
-
-APP_NAME ?= board_utils_$(UNIFLASH)_flash_programmer$(HS_SUFFIX)
+APP_NAME ?= board_utils_$(UNIFLASH)_flash_programmer
 
 BUILD_PROFILE_$(CORE) = $(PROFILE)
 
@@ -84,7 +79,7 @@ COMP_LIST_COMMON = board csl csl_init osal_nonos uart i2c
 ifeq ($(BOARD), $(filter $(BOARD), j721e_evm am65xx_evm am65xx_idk))
 COMP_LIST_COMMON += spi_dma udma gpio mmcsd
 endif
-COMP_LIST_COMMON += sciclient$(HS_SUFFIX)
+COMP_LIST_COMMON += sciclient
 
 # Common source files and CFLAGS across all platforms and cores
 PACKAGE_SRCS_COMMON = ../../board ../../build ../../include ../../src ../../soc/soc.h
@@ -113,12 +108,6 @@ endif
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(BOARD_UTILS_CFLAGS) -DSOC_$(SOC) -D$(BOARD)
 ifeq ($(BOARD), $(filter $(BOARD), am65xx_evm am65xx_idk))
 CFLAGS_LOCAL_COMMON += -DSOC_AM65XX
-endif
-
-ifeq ($(BUILD_HS), yes)
-CFLAGS_LOCAL_COMMON += -DBUILD_HS
-else
-CFLAGS_LOCAL_COMMON += -DSPI_DMA_ENABLE
 endif
 
 SBL_OBJ_COPY := $(TOOLCHAIN_PATH_GCC_ARCH64)/bin/$(GCC_ARCH64_BIN_PREFIX)-objcopy

@@ -4,12 +4,7 @@
 #
 include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 
-SUFFIX=
-ifeq ($(BUILD_HS), yes)
-SUFFIX=_hs
-endif
-
-APP_NAME = sbl_$(BOOTMODE)_img$(SUFFIX)
+APP_NAME = sbl_$(BOOTMODE)_img
 LOCAL_APP_NAME=sbl_$(BOOTMODE)_img_$(CORE)
 BUILD_OS_TYPE = baremetal
 
@@ -28,7 +23,7 @@ PACKAGE_SRCS_COMMON = .
 INCLUDE_EXTERNAL_INTERFACES = pdk
 
 # List all the components required by the application
-COMP_LIST_COMMON += sbl_lib_$(BOOTMODE)$(SUFFIX) board uart sciclient$(SUFFIX) osal_nonos csl csl_init i2c
+COMP_LIST_COMMON += sbl_lib_$(BOOTMODE) board uart sciclient osal_nonos csl csl_init i2c
 
 # Check for custom flags
 ifeq ($(BOOTMODE), cust)
