@@ -108,4 +108,15 @@ int32_t SDTF_runPeriodicTests(void);
  */
 int32_t SDTF_runInteractiveTests(void);
 
+/*********************************************************************
+ * @fn      test_sdr_test
+ *
+ * @brief   Execute all sdr tests
+ *
+ * @param   None
+ *
+ * @return  None
+ */
+void test_sdr_test(void);
+
 #endif /*  _INCLUDE_SDTF_TEST_H_ */

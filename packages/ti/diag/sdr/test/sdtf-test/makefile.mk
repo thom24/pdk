@@ -41,6 +41,15 @@ SRCS_COMMON +=
 CFLAGS_LOCAL_COMMON += $(PDK_CFLAGS)
 CFLAGS_LOCAL_COMMON += -O2 -DUART_PRINTF
 
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e))
+ SRCDIR += $(PDK_INSTALL_PATH)/ti/build/unit-test/Unity/src
+ SRCDIR += $(PDK_INSTALL_PATH)/ti/build/unit-test/config
+ INCDIR += $(PDK_INSTALL_PATH)/ti/build/unit-test/Unity/src
+ INCDIR += $(PDK_INSTALL_PATH)/ti/build/unit-test/config
+ SRCS_COMMON += unity_config.c unity.c
+ CFLAGS_LOCAL_COMMON += -DUNITY_INCLUDE_CONFIG_H
+endif
+
 # Core/SoC/platform specific source files and CFLAGS
 # Example:
 #   SRCS_<core/SoC/platform-name> =

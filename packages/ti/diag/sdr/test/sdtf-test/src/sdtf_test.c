@@ -75,6 +75,11 @@ static uint32_t SDTF_periodicExecutionFirstTime=0;
 volatile uint32_t SDTF_allTasksEnded=0u;
 volatile uint32_t SDTF_periodTaskTrigger = 0u;
 
+#ifdef UNITY_INCLUDE_CONFIG_H
+#include <ti/build/unit-test/Unity/src/unity.h>
+#include <ti/build/unit-test/config/unity_config.h>
+#endif
+
 /*********************************************************************
  * @fn      SDTF_oneShotTestAllModules
  *
@@ -287,8 +292,16 @@ int32_t SDTF_runPeriodicTests(void)
  * Should match number of items in the special commands array below
  */
 #define SDTF_MAX_SPECIAL_COMMANDS (5u)
-/* Number of commands in the list to be used for Runall all command */
 
+#ifdef SOC_J721E
+/* Number of commands run by the "run_all" command
+ * Note: This should match number of entries in the tables below
+ */
+#define SDTF_NUM_RUNALL_TEST_COMMANDS (31u)
+
+/* Other commands not covered by run_all */
+#define SDTF_NUM_OTHER_TEST_COMMANDS (6u)
+#else
 /* Number of commands run by the "run_all" command
  * Note: This should match number of entries in the tables below
  */
@@ -296,6 +309,7 @@ int32_t SDTF_runPeriodicTests(void)
 
 /* Other commands not covered by run_all */
 #define SDTF_NUM_OTHER_TEST_COMMANDS (0u)
+#endif
 
 /* Maxumum number of commands
  * Note: This should match maximumum number of entries in the tables below
@@ -331,10 +345,6 @@ SDTF_commandList_t SDTF_commandList[SDTF_MAX_COMMANDS] =
     { "ecc2_b1tcm0selftest",         SDTF_runECC2BitB1TCM0Bank0SelfTest },
     { "ecc1_b1tcm0_b1selftest",      SDTF_runECC1BitB1TCM0Bank1SelfTest },
     { "ecc2_b1tcm0_b1selftest",      SDTF_runECC2BitB1TCM0Bank1SelfTest },
-    { "ccm_selftest",                SDTF_runCCMSelfTest },
-    { "ccm_selftest_errorforce",     SDTF_runCCMSelftestPolarityInvert },
-    { "ccm_inject",                  SDTF_runCCMInjectError },
-    { "ccm_selftest_polarityinvert", SDTF_runCCMSelfTestErrorForce },
     { "ecc1_vimraminject",           SDTF_runECC1BitVIMRAMInjectTest },
     { "ecc2_vimraminject",           SDTF_runECC2BitVIMRAMInjectTest },
     { "ecc1_vimramselftest",         SDTF_runECC1BitVIMRAMSelfTest },
@@ -348,11 +358,15 @@ SDTF_commandList_t SDTF_commandList[SDTF_MAX_COMMANDS] =
     { "RAT_test",                    SDTF_runtestRAT },
     { "ecc_runnegativetests",        SDTF_ECC_runNegativeTests },
     { "ecc2_programinject",          SDTF_runECC2BitCodeInjectTest },
-    { "ccm_vimselftest",             SDTF_runCCMVIMSelfTest },
-    { "ccm_inactivityselftest",      SDTF_runCCMInactivitySelfTest },
     { "exception_runapitests",       SDTF_runExceptionApiTests },
     { "ecc1_inject",                 SDTF_runECC1BitInjectTest },
     { "ecc2_vimramdedvector",        SDTF_runECC2BitVIMRAMDEDvector },
+    { "ccm_selftest",                SDTF_runCCMSelfTest },
+    { "ccm_selftest_polarityinvert", SDTF_runCCMSelfTestErrorForce },
+    { "ccm_vimselftest",             SDTF_runCCMVIMSelfTest },
+    { "ccm_inactivityselftest",      SDTF_runCCMInactivitySelfTest },
+    { "ccm_inject",                  SDTF_runCCMInjectError },
+    { "ccm_selftest_errorforce",     SDTF_runCCMSelftestPolarityInvert },
 
      /* The following tests are not covered by run all */
 
@@ -538,4 +552,43 @@ int32_t SDTF_runInteractiveTests(void)
     }
 
     return retVal;
+}
+
+/*********************************************************************
+ * @fn      test_sdr_test
+ *
+ * @brief   Execute all sdr tests
+ *
+ * @param   None
+ *
+ * @return  None
+ */
+void test_sdr_test(void)
+{
+    /* Declarations of variables */
+    int32_t retVal = 0;
+    int32_t i;
+
+    SDTF_printf("\n Running all sdr test commands supported");
+    for(i = 0u; i< SDTF_NUM_RUNALL_TEST_COMMANDS; i++) {
+        if (SDTF_commandList[i].commandFunction!= ((void *)(0u))) {
+            retVal = (*SDTF_commandList[i].commandFunction)();
+            if ( retVal != 0) {
+                break;
+            }
+        }
+    }
+
+    if (retVal == 0)
+    {
+        UART_printStatus("\n ALL TESTS PASSED \n");
+    }
+    else
+    {
+        UART_printStatus("\n Few/all tests Failed \n");
+    }
+
+#if defined (UNITY_INCLUDE_CONFIG_H)
+    TEST_ASSERT_EQUAL_INT32(0, retval);
+#endif
 }

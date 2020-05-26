@@ -45,6 +45,16 @@
 #include "sdtf_test.h"
 #include <sdtf_platform.h>
 
+#ifdef UNITY_INCLUDE_CONFIG_H
+#include <ti/build/unit-test/Unity/src/unity.h>
+#include <ti/build/unit-test/config/unity_config.h>
+#endif
+
+/*===========================================================================*/
+/*                         Internal function declarations                    */
+/*===========================================================================*/
+void test_sdr_test_runner(void);
+
 /*****************************************************************************
  * This is the main function for the Software Diagnostic Test framework test
  * application.
@@ -55,7 +65,6 @@
 
 int32_t main(void)
 {
-    
     int32_t retValue;
 
     TimerP_Params   periodicTimerParams;
@@ -122,6 +131,44 @@ int32_t main(void)
 
     SDTF_printf("\nSDTF Periodic tests: Complete");
 
+    test_sdr_test_runner();
+
+    /* Close timer task */
+
+    return 0;
+
+}
+
+#ifdef UNITY_INCLUDE_CONFIG_H
+/*
+ *  ======== Unity set up and tear down ========
+ */
+void setUp(void)
+{
+    /* Do nothing */
+}
+
+void tearDown(void)
+{
+    /* Do nothing */
+}
+#endif
+
+void test_sdr_test_runner(void)
+{
+    /* @description:Test runner for Software Diagnostics reference tests
+       @requirements: PDK-6061, PDK-6062, PDK-6065, PDK-6066, PDK-6067, PDK-6070, PDK-6071, PDK-6072, PDK-6075, PDK-6076, PDK-6077, PDK-6078, PDK-6079, PDK-6080, PDK-6081
+       @cores: mcu1_0 */
+
+#if defined(UNITY_INCLUDE_CONFIG_H)
+    UNITY_BEGIN();
+    RUN_TEST (test_sdr_test);
+    UNITY_END();
+    /* Function to print results defined in our unity_config.h file */
+    print_unityOutputBuffer_usingUARTstdio();
+#else
+    int32_t retValue;
+
     SDTF_printf("\nSDTF Interactive mode: Starting");
 
     /* Execute Interactive tests */
@@ -129,16 +176,12 @@ int32_t main(void)
 
     SDTF_printf("\nSDTF Interactive mode: Complete");
 
-    if ( retValue < 0) {
+    if (retValue < 0) {
         /* If failure: print and exit */
         SDTF_printf("\nERR: Interactive test failed");
-        return -1;
+    } else {
+        UART_printStatus("\n All Tests passed");
     }
-
-    UART_printStatus("\n All Tests passed");
-
-    /* Close timer task */
-
-    return 0;
-
+#endif
+    return;
 }
