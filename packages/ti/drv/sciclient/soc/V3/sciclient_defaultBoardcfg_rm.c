@@ -66,7 +66,7 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
                 .magic = TISCI_BOARDCFG_RM_RESASG_MAGIC_NUM,
                 .size = sizeof(struct tisci_boardcfg_rm_resasg),
             },
-            .resasg_entries_size = 73 * sizeof(struct tisci_boardcfg_rm_resasg_entry),
+            .resasg_entries_size = 82 * sizeof(struct tisci_boardcfg_rm_resasg_entry),
         },
     },
     .resasg_entries = {
@@ -157,8 +157,62 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
         {
             .type = TISCI_RESASG_UTYPE(TISCI_DEV_DMASS0_INTAGGR_0, TISCI_RESASG_SUBTYPE_IA_VINT),
             .start_resource = 44U,
-            .num_resource = 44U,
-            .host_id = TISCI_HOST_ID_ALL,
+            .num_resource = 14U,
+            .host_id = TISCI_HOST_ID_MAIN_0_R5_0,
+        },
+        {
+            .type = TISCI_RESASG_UTYPE(TISCI_DEV_DMASS0_INTAGGR_0, TISCI_RESASG_SUBTYPE_IA_VINT),
+            .start_resource = 58U,
+            .num_resource = 14U,
+            .host_id = TISCI_HOST_ID_MAIN_0_R5_2,
+        },
+        {
+            .type = TISCI_RESASG_UTYPE(TISCI_DEV_DMASS0_INTAGGR_0, TISCI_RESASG_SUBTYPE_IA_VINT),
+            .start_resource = 72U,
+            .num_resource = 8U,
+            .host_id = TISCI_HOST_ID_MAIN_0_R5_0,
+        },
+        {
+            .type = TISCI_RESASG_UTYPE(TISCI_DEV_DMASS0_INTAGGR_0, TISCI_RESASG_SUBTYPE_IA_VINT),
+            .start_resource = 80U,
+            .num_resource = 8U,
+            .host_id = TISCI_HOST_ID_MAIN_0_R5_2,
+        },
+        {
+            .type = TISCI_RESASG_UTYPE(TISCI_DEV_DMASS0_INTAGGR_0, TISCI_RESASG_SUBTYPE_IA_VINT),
+            .start_resource = 92U,
+            .num_resource = 14U,
+            .host_id = TISCI_HOST_ID_MAIN_1_R5_0,
+        },
+        {
+            .type = TISCI_RESASG_UTYPE(TISCI_DEV_DMASS0_INTAGGR_0, TISCI_RESASG_SUBTYPE_IA_VINT),
+            .start_resource = 106U,
+            .num_resource = 14U,
+            .host_id = TISCI_HOST_ID_MAIN_1_R5_2,
+        },
+        {
+            .type = TISCI_RESASG_UTYPE(TISCI_DEV_DMASS0_INTAGGR_0, TISCI_RESASG_SUBTYPE_IA_VINT),
+            .start_resource = 120U,
+            .num_resource = 8U,
+            .host_id = TISCI_HOST_ID_MAIN_1_R5_0,
+        },
+        {
+            .type = TISCI_RESASG_UTYPE(TISCI_DEV_DMASS0_INTAGGR_0, TISCI_RESASG_SUBTYPE_IA_VINT),
+            .start_resource = 128U,
+            .num_resource = 8U,
+            .host_id = TISCI_HOST_ID_MAIN_1_R5_2,
+        },
+        {
+            .type = TISCI_RESASG_UTYPE(TISCI_DEV_DMASS0_INTAGGR_0, TISCI_RESASG_SUBTYPE_IA_VINT),
+            .start_resource = 152U,
+            .num_resource = 8U,
+            .host_id = TISCI_HOST_ID_ICSSG_0,
+        },
+        {
+            .type = TISCI_RESASG_UTYPE(TISCI_DEV_DMASS0_INTAGGR_0, TISCI_RESASG_SUBTYPE_IA_VINT),
+            .start_resource = 168U,
+            .num_resource = 16U,
+            .host_id = TISCI_HOST_ID_M4_0,
         },
         {
             .type = TISCI_RESASG_UTYPE(TISCI_DEV_DMASS0_INTAGGR_0, TISCI_RESASG_SUBTYPE_GLOBAL_EVENT_SEVT),
