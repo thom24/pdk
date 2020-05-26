@@ -99,21 +99,21 @@ export SCI_CLIENT_IN_SOC_DIR=$SCI_CLIENT_DIR/soc/sysfw/binaries
 
 if [ "$FW_SOC" = "am65x" ]; then
 export SCI_CLIENT_OUT_SOC_DIR=$SCI_CLIENT_DIR/soc/V0
-export SCICLIENT_FIRMWARE_HEADER=sciclient_firmware_V0.h
+export SCICLIENT_FIRMWARE_HEADER=sciclient_firmware_V0$BIN_EXT.h
 export SYSFW_SE_SIGNED=$SCI_CLIENT_OUT_SOC_DIR/sysfw$BIN_EXT.bin
 export SYSFW_LOAD_ADDR=0x40000
 fi
 
 if [ "$FW_SOC" = "am65x_sr2" ]; then
 export SCI_CLIENT_OUT_SOC_DIR=$SCI_CLIENT_DIR/soc/V0
-export SCICLIENT_FIRMWARE_HEADER=sciclient_firmware_V0_sr2.h
+export SCICLIENT_FIRMWARE_HEADER=sciclient_firmware_V0_sr2$BIN_EXT.h
 SYSFW_SE_SIGNED=$SCI_CLIENT_OUT_SOC_DIR/sysfw_sr2$BIN_EXT.bin
 export SYSFW_LOAD_ADDR=0x40000
 fi
 
 if [ "$FW_SOC" = "j721e" ]; then
 export SCI_CLIENT_OUT_SOC_DIR=$SCI_CLIENT_DIR/soc/V1
-export SCICLIENT_FIRMWARE_HEADER=sciclient_firmware_V1.h
+export SCICLIENT_FIRMWARE_HEADER=sciclient_firmware_V1$BIN_EXT.h
 SYSFW_SE_SIGNED=$SCI_CLIENT_OUT_SOC_DIR/sysfw$BIN_EXT.bin
 export SYSFW_LOAD_ADDR=0x40000
 fi
@@ -121,7 +121,7 @@ fi
 if [ "$FW_SOC" = "am64x" ]; then
 export SCI_CLIENT_OUT_SOC_DIR=$SCI_CLIENT_DIR/soc/V3
 SYSFW_SE_SIGNED=$SCI_CLIENT_OUT_SOC_DIR/sysfw$BIN_EXT.bin
-export SCICLIENT_FIRMWARE_HEADER=sciclient_firmware_V3.h
+export SCICLIENT_FIRMWARE_HEADER=sciclient_firmware_V3$BIN_EXT.h
 export SYSFW_LOAD_ADDR=0x44000
 fi
 
