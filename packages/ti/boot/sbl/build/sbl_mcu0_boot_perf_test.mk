@@ -46,7 +46,7 @@ endif # ifeq ($(filter $(SBL_CFLAGS), -DBOOT_OSPI), -DBOOT_OSPI)
 
 SRCS_COMMON += sbl_mcu_0_boot_perf_benchmark.c sbl_printf.c
 SRCS_ASM_COMMON = sbl_smp_r5.asm
-ifeq ($(filter $(SBL_CFLAGS), -DSBL_USE_MCU_DOMAIN_ONLY), -DSBL_USE_MCU_DOMAIN_ONLY)
+ifeq ($(filter $(SBL_CFLAGS), -DSBL_ENABLE_DEV_GRP_MCU), -DSBL_ENABLE_DEV_GRP_MCU)
 EXTERNAL_LNKCMD_FILE_LOCAL =  $(PDK_SBL_COMP_PATH)/example/k3MulticoreApp/mcuBootPerfLinker_small.lds
 else
 SRCS_ASM_COMMON += sbl_boot_perf_r5.asm
