@@ -154,6 +154,20 @@ typedef enum {
     /**<  Timer Id 1 */
 } SDR_ESM_WDT_IntSrc;
 
+/** ---------------------------------------------------------------------------
+ * \brief Defines the different ESM instance types
+ * ----------------------------------------------------------------------------
+ */
+typedef enum {
+   SDR_ESM_INSTANCE_MCU = 1,
+    /**< MCU_ESM0 instance  */
+   SDR_ESM_INSTANCE_WKUP = 2,
+    /**< WKUP_ESM0 instance */
+   SDR_ESM_INSTANCE_MAIN = 3,
+    /**< ESM0 (Main domain) instance  */
+   SDR_ESM_INSTANCE_MAX=0xFFFF
+} SDR_ESM_InstanceType;
+
 /* @} */
 
 /**
@@ -165,11 +179,14 @@ typedef enum {
 /** \brief Invalid interrupt number */
 #define SDR_ESM_INTNUMBER_INVALID (0xffffffffu)
 
+/** \brief Invalid Esm Instance */
+#define SDR_ESM_INST_INVALID      (0xfffffffeu)
+
 /** \brief Address field: Error Address invalid */
 #define SDR_ESM_ERRORADDR_INVALID (0xffffffffu)
 
 /** \brief Maximum number of EVENT words */
-#define SDR_ESM_MAX_EVENT_MAP_NUM_WORDS (4u)
+#define SDR_ESM_MAX_EVENT_MAP_NUM_WORDS (32u)
 
 /**
  *  \anchor sdrEsmEccErrorSource_t
@@ -275,137 +292,217 @@ typedef struct SDR_ESM_InitConfig_s
  *
  * \brief   Initializes ESM module for SDR
  *
+ * \param   esmInstType: Instance of ESM
  * \param   esmInitConfig: Configuration for ESM
  *
  * \return  SDR_RETURN_PASS : Success; SDR_RETURN_FAIL for failures
  */
-SDR_Result SDR_ESM_init (const SDR_ESM_InitConfig_t *esmInitConfig);
+SDR_Result SDR_ESM_init (const SDR_ESM_InstanceType esmInstType,
+                         const SDR_ESM_InitConfig_t *esmInitConfig);
 
 /** ============================================================================ 
  *
  * \brief   Function sets the nERROR pin active.
  *
- * \return    None
+ * \param   esmInstType: Instance of ESM
+ * \return  None
  */
-void SDR_ESM_setNError(void);
+void SDR_ESM_setNError(const SDR_ESM_InstanceType esmInstType);
 
 /** ============================================================================
  *
- * \brief  Function sets the nERROR pin inactive.
+ * \brief   Function sets the nERROR pin inactive.
+ *
+ * \param   esmInstType: Instance of ESM
  *
  * \return  SDR_RETURN_PASS : Success; SDR_RETURN_FAIL for failures
  */
-SDR_Result SDR_ESM_resetNError(void);
+SDR_Result SDR_ESM_resetNError(const SDR_ESM_InstanceType esmInstType);
 
 /** ============================================================================
  *
  * \brief   Function returns the status of nERROR pin
  *
+ * \param   esmInstType: Instance of ESM
+ *
  * \return    true : active; false not active
  */
-bool SDR_ESM_getNErrorStatus(void);
+bool SDR_ESM_getNErrorStatus(const SDR_ESM_InstanceType esmInstType);
 
 /** ============================================================================
  *
  * \brief   Insert ESM error
  *
+ * \param   esmInstType: Instance of ESM
  * \param   esmErrorConfig: Configuration of ESM error
  *
  * \return  SDR_RETURN_PASS : Success; SDR_RETURN_FAIL for failures
  */
-SDR_Result SDR_ESM_errorInsert (const SDR_ESM_ErrorConfig_t *esmErrorConfig);
+SDR_Result SDR_ESM_errorInsert(const SDR_ESM_InstanceType esmInstType,
+                               const SDR_ESM_ErrorConfig_t *esmErrorConfig);
 
 /** ============================================================================
  *
- * \brief  Execute self test of ESM module
+ * \brief   Execute self test of ESM module
  *
+ * \param   esmInstType: Instance of ESM
  * \param   loopCount: Number of iterations to check status before timing out
  *
  * \return  SDR_RETURN_PASS : Success; SDR_RETURN_FAIL for failures
  */
-SDR_Result SDR_ESM_selfTest (uint32_t loopCount);
+SDR_Result SDR_ESM_selfTest (const SDR_ESM_InstanceType esmInstType,
+                             uint32_t loopCount);
 
 /** ============================================================================
  *
  * \brief   Register handler for ECC with ESM
  *
- * \param  eccCallBackFunctionPtr: Call back function to register
+ * \param   esmInstType: Instance of ESM
+ * \param   eccCallBackFunctionPtr: Call back function to register
  *
  * \return  SDR_RETURN_PASS : Success; SDR_RETURN_FAIL for failures
  */
-SDR_Result SDR_ESM_registerECCHandler(SDR_ESM_ECCCallback_t eccCallBackFunctionPtr);
+SDR_Result SDR_ESM_registerECCHandler(const SDR_ESM_InstanceType esmInstType,
+                                      SDR_ESM_ECCCallback_t eccCallBackFunctionPtr);
 
 
 /** ============================================================================
  *
  * \brief   Register callback function for CCM errrors
  *
+ * \param   esmInstType: Instance of ESM
  * \param   CCMCallBackFunctionPtr: Callback function pointer
  *
  * \return  SDR_PASS : Success; SDR_FAIL for failures
  */
-SDR_Result SDR_ESM_registerCCMHandler(SDR_ESM_CCMCallback_t CCMCallBackFunctionPtr);
+SDR_Result SDR_ESM_registerCCMHandler(const SDR_ESM_InstanceType esmInstType,
+                                      SDR_ESM_CCMCallback_t CCMCallBackFunctionPtr);
 
 
 /** ============================================================================
  *
  * \brief   Register callback function for WDT events
  *
+ * \param   esmInstType: Instance of ESM
  * \param   WDTCallBackFunctionPtr: Callback function pointer
  *
  * \return  SDR_PASS : Success; SDR_FAIL for failures
  */
-SDR_Result SDR_ESM_registerWDTHandler(SDR_ESM_WDTCallback_t WDTCallBackFunctionPtr);
+SDR_Result SDR_ESM_registerWDTHandler(const SDR_ESM_InstanceType esmInstType,
+                                      SDR_ESM_WDTCallback_t WDTCallBackFunctionPtr);
 
 /** ============================================================================
  *
  * \brief   De-Register callback function for WDT events
  *
+ * \param   esmInstType: Instance of ESM
+ *
  * \return  SDR_PASS : Success; SDR_FAIL for failures
  */
-void SDR_ESM_deRegisterWDTHandler(void);
+SDR_Result SDR_ESM_deRegisterWDTHandler(const SDR_ESM_InstanceType esmInstType);
 
 /** ============================================================================
  *
- * \brief   Esm Hi Interrupt Handler
+ * \brief   Esm Hi Interrupt Handler for MCU Esm Instance
  *
  * \param  arg: argument for handler
  *
  * \return  None
  */
-void SDR_ESM_hiInterruptHandler (uintptr_t arg);
+void SDR_ESM_hiInterruptHandler_MCU (uintptr_t arg);
 
 /** ============================================================================
  *
- * \brief   Esm Lo Interrupt Handler
+ * \brief   Esm Hi Interrupt Handler for WKUP Esm Instance
  *
  * \param  arg: argument for handler
  *
  * \return  None
  */
-void SDR_ESM_loInterruptHandler (uintptr_t arg);
+void SDR_ESM_hiInterruptHandler_WKUP (uintptr_t arg);
 
 /** ============================================================================
  *
- *
- * \brief   Esm Config Interrupt Handler
+ * \brief   Esm Hi Interrupt Handler for MAIN Esm Instance
  *
  * \param  arg: argument for handler
  *
  * \return  None
  */
-void SDR_ESM_configInterruptHandler (uintptr_t arg);
+void SDR_ESM_hiInterruptHandler_MAIN (uintptr_t arg);
+
+/** ============================================================================
+ *
+ * \brief   Esm Lo Interrupt Handler for MCU Esm Instance
+ *
+ * \param  arg: argument for handler
+ *
+ * \return  None
+ */
+void SDR_ESM_loInterruptHandler_MCU (uintptr_t arg);
+
+/** ============================================================================
+ *
+ * \brief   Esm Lo Interrupt Handler for WKUP Esm Instance
+ *
+ * \param  arg: argument for handler
+ *
+ * \return  None
+ */
+void SDR_ESM_loInterruptHandler_WKUP (uintptr_t arg);
+
+/** ============================================================================
+ *
+ * \brief   Esm Lo Interrupt Handler for MAIN Esm Instance
+ *
+ * \param  arg: argument for handler
+ *
+ * \return  None
+ */
+void SDR_ESM_loInterruptHandler_MAIN (uintptr_t arg);
+
+/** ============================================================================
+ *
+ * \brief   Esm Config Interrupt Handler for MCU Instance
+ *
+ * \param1  arg: argument for handler
+ *
+ * \return  None
+ */
+void SDR_ESM_configInterruptHandler_MCU(uintptr_t arg);
+
+/** ============================================================================
+ *
+ * \brief   Esm Config Interrupt Handler for WKUP Instance
+ *
+ * \param1  arg: argument for handler
+ *
+ * \return  None
+ */
+void SDR_ESM_configInterruptHandler_WKUP(uintptr_t arg);
+
+/** ============================================================================
+ *
+ * \brief   Esm Config Interrupt Handler for MAIN Instance
+ *
+ * \param1  arg: argument for handler
+ *
+ * \return  None
+ */
+void SDR_ESM_configInterruptHandler_MAIN(uintptr_t arg);
 
 /** ============================================================================
  *
  * \brief   Esm get Interrupt Number corresponding to the
  *          input interrupt type
  *
+ * \param   esmInstType: Instance of ESM
  * \param   esmIntType: ESM Interrupt type
  *
  * \return  Interrupt Number or SDR_ESM_INTNUMBER_INVALID error
  */
-uint32_t SDR_ESM_getIntNumber(SDR_ESM_IntType esmIntType);
+uint32_t SDR_ESM_getIntNumber(const SDR_ESM_InstanceType esmInstType,
+                              SDR_ESM_IntType esmIntType);
 
 /** ============================================================================
  *

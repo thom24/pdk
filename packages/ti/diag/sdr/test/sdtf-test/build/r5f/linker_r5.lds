@@ -142,9 +142,6 @@ SECTIONS
     .sdr_data_mpu align(8) : {
                               sdr.*<sdr_mpu*> (.const)
                         }  > MSMC3_SDR
-    .sdr_bss_esm align(8) : {
-                              sdr.*<sdr_esm.o*> (.bss)
-                        }  > MSMC3_SDR
     .sdr_bss_ecc align(8) : {
                               sdr.*<sdr_ecc.o*> (.bss)
                         }  > MSMC3_SDR

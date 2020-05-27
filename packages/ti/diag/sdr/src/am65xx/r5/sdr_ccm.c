@@ -178,8 +178,9 @@ SDR_Result SDR_CCM_init (void)
         retVal = SDR_CCM_clearAllErrors();
         if (retVal == SDR_PASS) {
 
-            /* Register error interrupt call back function with ESM handler */
-            (void)SDR_ESM_registerCCMHandler(&SDR_CCM_callBackFunction);
+            /* Register error interrupt call back function with MCU ESM handler */
+            (void)SDR_ESM_registerCCMHandler(SDR_ESM_INSTANCE_MCU,
+                                             &SDR_CCM_callBackFunction);
         }
 
     }

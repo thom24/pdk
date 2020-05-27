@@ -44,24 +44,20 @@
 #include "sdtf_esm.h"
 #include "sdtf_test.h"
 
-/*********************************************************************
- * @fn      SDTF_runESMSelfTest
- *
- * @brief   Execute ESM Self test
- *
- * @param   None
- *
- * @return  0 : Success; < 0 for failures
- */
-int32_t SDTF_runESMSelfTest(void)
+static int32_t SDTF_runESMSelfTestInstance(SDR_ESM_InstanceType esmType);
+static int32_t SDTF_runESMInjectInstance(SDR_ESM_InstanceType esmType,
+                                         uint32_t groupNumber,
+                                         uint32_t bitNumber);
+
+static int32_t SDTF_runESMSelfTestInstance(SDR_ESM_InstanceType esmType)
 {
     SDR_Result result;
     int32_t retVal=0;
 
-    SDTF_printf("\n ESM self test: starting");
+    SDTF_printf("\n ESM self test, ESM instance %d: starting", esmType);
     SDTF_profileBegin(SDTF_PROFILE_ONESHOT);
     /* Run esm test 1*/
-    result = SDR_ESM_selfTest(1000);
+    result = SDR_ESM_selfTest(esmType, 1000);
     SDTF_profileEnd(SDTF_PROFILE_ONESHOT);
     if (result != SDR_PASS ) {
         SDTF_printf("\n ESM self test  failed");
@@ -83,29 +79,139 @@ int32_t SDTF_runESMSelfTest(void)
  *
  * @return  0 : Success; < 0 for failures
  */
-int32_t SDTF_runESMInject(void)
+static int32_t SDTF_runESMInjectInstance(SDR_ESM_InstanceType esmType,
+                                         uint32_t groupNumber,
+                                         uint32_t bitNumber)
 {
     SDR_Result result;
     int32_t retVal=0;
 
     SDR_ESM_ErrorConfig_t esmErrorConfig;
 
-    esmErrorConfig.groupNumber = 1;
-    esmErrorConfig.bitNumber = 4;
+    esmErrorConfig.groupNumber = groupNumber;
+    esmErrorConfig.bitNumber = bitNumber;
 
-    SDTF_printf("\n ESM inject: test starting");
+    SDTF_printf("\n ESM inject: test starting for Esm instance %d", esmType);
 
     SDTF_profileBegin(SDTF_PROFILE_ONESHOT);
     /* Run esm test 2*/
-    result = SDR_ESM_errorInsert(&esmErrorConfig);
+    result = SDR_ESM_errorInsert(esmType, &esmErrorConfig);
     SDTF_profileEnd(SDTF_PROFILE_ONESHOT);
     if (result != SDR_PASS ) {
-        SDTF_printf("\n ESM inject test  failed");
+        SDTF_printf("\n ESM inject test for Esm instance %d failed", esmType);
         retVal = -1;
     } else {
-        SDTF_printf("\n ESM inject test  Done");
+        SDTF_printf("\n ESM inject test for Esm instance %d Done", esmType);
         SDTF_printf("\n Cycles taken %u", SDTF_profileDelta(SDTF_PROFILE_ONESHOT));
     }
+
+    return retVal;
+}
+
+/*********************************************************************
+ * @fn      SDTF_runESMSelfTest_MCU
+ *
+ * @brief   Execute ESM Self test for MCU
+ *
+ * @param   None
+ *
+ * @return  0 : Success; < 0 for failures
+ */
+int32_t SDTF_runESMSelfTest_MCU(void)
+{
+    int32_t retVal=0;
+
+    retVal = SDTF_runESMSelfTestInstance(SDR_ESM_INSTANCE_MCU);
+
+    return retVal;
+}
+
+/*********************************************************************
+ * @fn      SDTF_runESMSelfTest_WKUP
+ *
+ * @brief   Execute ESM Self test for WKUP
+ *
+ * @param   None
+ *
+ * @return  0 : Success; < 0 for failures
+ */
+int32_t SDTF_runESMSelfTest_WKUP(void)
+{
+    int32_t retVal=0;
+
+    retVal = SDTF_runESMSelfTestInstance(SDR_ESM_INSTANCE_WKUP);
+
+    return retVal;
+}
+
+/*********************************************************************
+ * @fn      SDTF_runESMSelfTest_MAIN
+ *
+ * @brief   Execute ESM Self test for MAIN
+ *
+ * @param   None
+ *
+ * @return  0 : Success; < 0 for failures
+ */
+int32_t SDTF_runESMSelfTest_MAIN(void)
+{
+    int32_t retVal=0;
+
+    retVal = SDTF_runESMSelfTestInstance(SDR_ESM_INSTANCE_MAIN);
+
+    return retVal;
+}
+
+/*********************************************************************
+ * @fn      SDTF_runESMInject_MCU
+ *
+ * @brief   Execute ESM Inject for MCU
+ *
+ * @param   None
+ *
+ * @return  0 : Success; < 0 for failures
+ */
+int32_t SDTF_runESMInject_MCU(void)
+{
+    int32_t retVal=0;
+
+    retVal = SDTF_runESMInjectInstance(SDR_ESM_INSTANCE_MCU, 1, 4);
+
+    return retVal;
+}
+
+/*********************************************************************
+ * @fn      SDTF_runESMInject_WKUP
+ *
+ * @brief   Execute ESM Inject for WKUP
+ *
+ * @param   None
+ *
+ * @return  0 : Success; < 0 for failures
+ */
+int32_t SDTF_runESMInject_WKUP(void)
+{
+    int32_t retVal=0;
+
+    retVal = SDTF_runESMInjectInstance(SDR_ESM_INSTANCE_WKUP, 0, 9);
+
+    return retVal;
+}
+
+/*********************************************************************
+ * @fn      SDTF_runESMInject_MAIN
+ *
+ * @brief   Execute ESM Inject for MAIN
+ *
+ * @param   None
+ *
+ * @return  0 : Success; < 0 for failures
+ */
+int32_t SDTF_runESMInject_MAIN(void)
+{
+    int32_t retVal=0;
+
+    retVal = SDTF_runESMInjectInstance(SDR_ESM_INSTANCE_MAIN, 3, 9);
 
     return retVal;
 }
@@ -127,19 +233,19 @@ int32_t SDTF_runESMAPITest(void)
     SDTF_printf("\n ESM API test: starting");
 
     /* Run Set N Error */
-    SDR_ESM_setNError();
+    SDR_ESM_setNError(SDR_ESM_INSTANCE_MCU);
 
     /* Get error status to check */
-    errorStatus = SDR_ESM_getNErrorStatus();
+    errorStatus = SDR_ESM_getNErrorStatus(SDR_ESM_INSTANCE_MCU);
     if (errorStatus) {
         retVal = -1;
     }
 
     if (retVal == 0) {
         /* Run Reset N Error */
-        SDR_ESM_resetNError();
+        SDR_ESM_resetNError(SDR_ESM_INSTANCE_MCU);
         /* Get error status to check */
-        errorStatus = SDR_ESM_getNErrorStatus();
+        errorStatus = SDR_ESM_getNErrorStatus(SDR_ESM_INSTANCE_MCU);
         if (!errorStatus) {
             retVal = -2;
         }
@@ -167,11 +273,27 @@ int32_t SDTF_runESMNegativeTest(void)
 {
     SDR_Result result;
     int32_t retVal=0;
+    SDR_ESM_ErrorConfig_t esmErrorConfig;
     volatile bool errorStatus;
 
     SDTF_printf("\n ESM Negative  test: starting");
 
-    result = SDR_ESM_errorInsert(NULL);
+    if (SDR_ESM_errorInsert((SDR_ESM_InstanceType)((uint16_t)SDR_ESM_INSTANCE_MCU - 1U),
+                            &esmErrorConfig) == SDR_PASS)
+    {
+        retVal = -1;
+    }
+
+    if (retVal == 0)
+    {
+        if (SDR_ESM_errorInsert((SDR_ESM_InstanceType)((uint16_t)SDR_ESM_INSTANCE_MAIN + 1U),
+                                &esmErrorConfig) == SDR_PASS)
+        {
+            retVal = -1;
+        }
+    }
+
+    result = SDR_ESM_errorInsert(SDR_ESM_INSTANCE_MCU, NULL);
 
     if ( result == SDR_PASS)
     {

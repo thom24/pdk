@@ -41,26 +41,70 @@
 #include <stdint.h>
 
 /*********************************************************************
- * @fn      SDTF_runESMSelfTest
+ * @fn      SDTF_runESMSelfTest_MCU
  *
- * @brief   Execute ESM Self test
+ * @brief   Execute ESM Self test for MCU
  *
  * @param   None
  *
  * @return  0 : Success; < 0 for failures
  */
-int32_t SDTF_runESMSelfTest(void);
+int32_t SDTF_runESMSelfTest_MCU(void);
 
 /*********************************************************************
- * @fn      SDTF_runESMInject
+ * @fn      SDTF_runESMSelfTest_WKUP
  *
- * @brief   Execute ESM Inject
+ * @brief   Execute ESM Self test for WKUP
  *
  * @param   None
  *
  * @return  0 : Success; < 0 for failures
  */
-int32_t SDTF_runESMInject(void);
+int32_t SDTF_runESMSelfTest_WKUP(void);
+
+/*********************************************************************
+ * @fn      SDTF_runESMSelfTest_MAIN
+ *
+ * @brief   Execute ESM Self test for MAIN
+ *
+ * @param   None
+ *
+ * @return  0 : Success; < 0 for failures
+ */
+int32_t SDTF_runESMSelfTest_MAIN(void);
+
+/*********************************************************************
+ * @fn      SDTF_runESMInject_MCU
+ *
+ * @brief   Execute ESM Inject for MCU
+ *
+ * @param   None
+ *
+ * @return  0 : Success; < 0 for failures
+ */
+int32_t SDTF_runESMInject_MCU(void);
+
+/*********************************************************************
+ * @fn      SDTF_runESMInject_WKUP
+ *
+ * @brief   Execute ESM Inject for WKUP
+ *
+ * @param   None
+ *
+ * @return  0 : Success; < 0 for failures
+ */
+int32_t SDTF_runESMInject_WKUP(void);
+
+/*********************************************************************
+ * @fn      SDTF_runESMInject_MAIN
+ *
+ * @brief   Execute ESM Inject for MAIN
+ *
+ * @param   None
+ *
+ * @return  0 : Success; < 0 for failures
+ */
+int32_t SDTF_runESMInject_MAIN(void);
 
 /*********************************************************************
  * @fn      SDTF_runESMAPITest

@@ -68,21 +68,119 @@
 /* Function prototypes */
 void SDTF_copyResetVector(void);
 void SDTF_uartStdioInit(void);
-int32_t SDTF_EsmInitHandlerInit(void);
+int32_t SDTF_EsmInitHandlerInit(SDR_ESM_InstanceType esmInstType);
 int32_t SDTF_init (void);
 void SDTF_VIMDEDInterruptHandler(void);
 
 
-SDR_ESM_InitConfig_t SDTF_esmInitConfig =
+SDR_ESM_InitConfig_t SDTF_esmInitConfig_MCU =
 {
     .esmErrorConfig = {0u, 3u}, /* Self test error config */
-    .eventMap = {0xffffffffu, 0xff0fffffu, 0xffffffffu, 0xffffffe7u},
-     /**< All events enable: except timer and self test  events */
+    .eventMap = {0xffffffffu, 0xff0fffffu, 0x7fffffffu, 0xffffffe7u,
+                 0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
+                 0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
+                 0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
+                 0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
+                 0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
+                 0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
+                 0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
+                },
+     /**< All events enable: except timer and self test  events, and Main ESM output */
     /* Temporarily disabling vim compare error as well*/
-    .eventPriorityMap = {0xffffffffu, 0xff0fffffu, 0xffffffffu, 0xffffffe6u},
-    /**< All events high priority: except timer, self test and selftest error events */
-    .errorOutputMap = {0xffffffffu, 0xff0fffffu, 0xffffffffu, 0xffffffe6u},
-    /**< All events high priority: except timer, self test and selftest error events */
+    .eventPriorityMap = {0xffffffffu, 0xff0fffffu, 0x7fffffffu, 0xffffffe6u,
+                         0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
+                         0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
+                         0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
+                         0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
+                         0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
+                         0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
+                         0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
+                        },
+    /**< All events high priority: except timer, selftest error events, and Main ESM output */
+    .errorOutputMap = {0xffffffffu, 0xff0fffffu, 0x7fffffffu, 0xffffffe6u,
+                       0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
+                       0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
+                       0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
+                       0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
+                       0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
+                       0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
+                       0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
+                      },
+    /**< All events high priority: except timer, selftest error events, and Main ESM output */
+};
+
+SDR_ESM_InitConfig_t SDTF_esmInitConfig_WKUP =
+{
+    .esmErrorConfig = {0u, 8u}, /* Self test error config */
+    .eventMap = {0xffffffffu, 0x00180003u, 0xffffffffu, 0x00000000u,
+                 0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
+                 0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
+                 0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
+                 0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
+                 0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
+                 0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
+                 0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
+                },
+     /**< All events enable: except clkstop events for unused clocks */
+    .eventPriorityMap = {0xffffffffu, 0x00180003u, 0xffffffffu, 0x00000000u,
+                         0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
+                         0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
+                         0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
+                         0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
+                         0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
+                         0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
+                         0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
+                        },
+    /**< All events high priority: except clkstop events for unused clocks */
+    .errorOutputMap = {0xffffffffu, 0x00180003u, 0xffffffffu, 0x00000000u,
+                       0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
+                       0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
+                       0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
+                       0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
+                       0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
+                       0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
+                       0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
+                      },
+    /**< All events high priority: except clkstop for unused clocks
+     *   and selftest error events */
+};
+
+SDR_ESM_InitConfig_t SDTF_esmInitConfig_MAIN =
+{
+    .esmErrorConfig = {1u, 8u}, /* Self test error config */
+    .eventMap = {0x00000000u, 0xfffffffbu, 0x7fffffffu, 0xffffffffu,
+                 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu,
+                 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu,
+                 0xffffffffu, 0xffffffffu, 0xffffffffu, 0x00000000u,
+                 0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
+                 0xffffffffu, 0x00000000u, 0x00000000u, 0x00000000u,
+                 0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
+                 0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
+                },
+     /**< All events enable: except clkstop events for unused clocks
+      *   and PCIE events */
+    .eventPriorityMap = {0x00000000u, 0xfffffffbu, 0x7fffffffu, 0xffffffffu,
+                         0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu,
+                         0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu,
+                         0xffffffffu, 0xffffffffu, 0xffffffffu, 0x00000000u,
+                         0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
+                         0xffffffffu, 0x00000000u, 0x00000000u, 0x00000000u,
+                         0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
+                         0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
+                        },
+    /**< All events high priority: except clkstop events for unused clocks
+     *   and PCIE events */
+    .errorOutputMap = {0x00000000u, 0xfffffffbu, 0x7fffffffu, 0xffffffffu,
+                       0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu,
+                       0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu,
+                       0xffffffffu, 0xffffffffu, 0xffffffffu, 0x00000000u,
+                       0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
+                       0xffffffffu, 0x00000000u, 0x00000000u, 0x00000000u,
+                       0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
+                       0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
+                      },
+    /**< All events high priority: except clkstop for unused clocks
+     *   and PCIE events */
 };
 
 static SDR_ECC_MemSubType SDTF_R5FCoresubMemTypeList[MAX_MEM_SECTIONS] =
@@ -144,25 +242,51 @@ void SDTF_uartStdioInit(void)
     return;
 }
 
-int32_t SDTF_EsmInitHandlerInit(void)
+int32_t SDTF_EsmInitHandlerInit(SDR_ESM_InstanceType esmInstType)
 {
     int32_t result = 0;
     uint32_t intNumHi, intNumLo, intNumCfg;
     HwiP_Params       hwiParams;
+    void (*pHiInterruptHandler)(uintptr_t);
+    void (*pLoInterruptHandler)(uintptr_t);
+    void (*pConfigInterruptHandler)(uintptr_t);
 
+    switch (esmInstType) {
+        case (SDR_ESM_INSTANCE_WKUP):
+            pHiInterruptHandler = &SDR_ESM_hiInterruptHandler_WKUP;
+            pLoInterruptHandler = &SDR_ESM_loInterruptHandler_WKUP;
+            pConfigInterruptHandler = &SDR_ESM_configInterruptHandler_WKUP;
+            break;
+
+        case (SDR_ESM_INSTANCE_MAIN):
+            pHiInterruptHandler = &SDR_ESM_hiInterruptHandler_MAIN;
+            pLoInterruptHandler = &SDR_ESM_loInterruptHandler_MAIN;
+            pConfigInterruptHandler = &SDR_ESM_configInterruptHandler_MAIN;
+            break;
+
+        case (SDR_ESM_INSTANCE_MCU):
+        default:
+            pHiInterruptHandler = &SDR_ESM_hiInterruptHandler_MCU;
+            pLoInterruptHandler = &SDR_ESM_loInterruptHandler_MCU;
+            pConfigInterruptHandler = &SDR_ESM_configInterruptHandler_MCU;
+            break;
+    }
 
     /* Get the interrupt number corresponding to ESM HI interrupt */
-    intNumHi = SDR_ESM_getIntNumber(SDR_ESM_INT_TYPE_HI);
+    intNumHi = SDR_ESM_getIntNumber(esmInstType,
+                                    SDR_ESM_INT_TYPE_HI);
     if ( intNumHi == SDR_ESM_INTNUMBER_INVALID ) {
         result = -1;
     } else {
         /* Get the interrupt number corresponding to ESM LO interrupt */
-        intNumLo = SDR_ESM_getIntNumber(SDR_ESM_INT_TYPE_LO);
+        intNumLo = SDR_ESM_getIntNumber(esmInstType,
+                                        SDR_ESM_INT_TYPE_LO);
         if ( intNumLo == SDR_ESM_INTNUMBER_INVALID ) {
             result = -1;
         } else {
             /* Get the interrupt number corresponding to ESM Config interrupt */
-            intNumCfg = SDR_ESM_getIntNumber(SDR_ESM_INT_TYPE_CFG);
+            intNumCfg = SDR_ESM_getIntNumber(esmInstType,
+                                             SDR_ESM_INT_TYPE_CFG);
             if ( intNumCfg == SDR_ESM_INTNUMBER_INVALID ) {
                 result = -1;
             } else {
@@ -179,9 +303,10 @@ int32_t SDTF_EsmInitHandlerInit(void)
 
                 hwiParams.arg = intNumHi;
                 SDTF_printf("\n SDTF_EsmInitHandlerInit: HwiP_Params_init complete \n");
+
                 /* Register call back function for ESM Hi Interrupt */
                 SDTF_EsmHiHwiPHandle = HwiP_create(intNumHi,
-                                                   (HwiP_Fxn)SDR_ESM_hiInterruptHandler,
+                                                   (HwiP_Fxn)(*pHiInterruptHandler),
                                                    (void *)&hwiParams);
                 SDTF_printf("\n SDTF_EsmInitHandlerInit: intNumHi registration complete \n");
                 if (SDTF_EsmHiHwiPHandle == (HwiP_Handle) NULL) {
@@ -190,7 +315,7 @@ int32_t SDTF_EsmInitHandlerInit(void)
                     hwiParams.arg = intNumLo;
                     /* Register call back function for ESM Lo Interrupt */
                     SDTF_EsmLoHwiPHandle = HwiP_create(intNumLo,
-                                                       (HwiP_Fxn)SDR_ESM_loInterruptHandler,
+                                                       (HwiP_Fxn)(*pLoInterruptHandler),
                                                        (void *)&hwiParams);
                     SDTF_printf("\n SDTF_EsmInitHandlerInit: intNumLo registration complete \n");
                     if (SDTF_EsmLoHwiPHandle == (HwiP_Handle) NULL) {
@@ -199,7 +324,7 @@ int32_t SDTF_EsmInitHandlerInit(void)
                         hwiParams.arg = intNumCfg;
                         /* Register call back function for ESM Config Interrupt */
                         SDTF_EsmCfgHwiPHandle = HwiP_create(intNumCfg,
-                                                   (HwiP_Fxn)SDR_ESM_configInterruptHandler,
+                                                   (HwiP_Fxn)(*pConfigInterruptHandler),
                                                    (void *)&hwiParams);
                         SDTF_printf("\n SDTF_EsmInitHandlerInit: intNumCfg registration complete \n");
                         if (SDTF_EsmCfgHwiPHandle == (HwiP_Handle) NULL) {
@@ -235,7 +360,7 @@ int32_t SDTF_negativeInitTests (void)
     SDR_Result result;
 
     /* Run negative test on init functions */
-    result = SDR_ESM_init(NULL);
+    result = SDR_ESM_init(SDR_ESM_INSTANCE_MCU, NULL);
     if (result == SDR_PASS) {
         /* Negative test failed */
         SDTF_printf("SDTF_init: Error ESM Negative tests: result = %d\n", result);
@@ -243,11 +368,32 @@ int32_t SDTF_negativeInitTests (void)
     }
 
     if (retValue == 0) {
+        if (SDR_ESM_init((SDR_ESM_InstanceType)((uint16_t)SDR_ESM_INSTANCE_MCU - 1U),
+                          &SDTF_esmInitConfig_MCU) == SDR_PASS)
+        {
+            SDTF_printf("SDTF_init: Error ESM Negative tests: ESM instance type below " \
+                        "valid SDR_ESM_InstanceType improperly passed\n");
+            retValue = -1;
+        }
+    }
+
+    if (retValue == 0)
+    {
+        if (SDR_ESM_init((SDR_ESM_InstanceType)((uint16_t)SDR_ESM_INSTANCE_MAIN + 1U),
+                         &SDTF_esmInitConfig_MCU) == SDR_PASS)
+        {
+            SDTF_printf("SDTF_init: Error ESM Negative tests: ESM instance type above " \
+                        "valid SDR_ESM_InstanceType improperly passed\n");
+            retValue = -1;
+        }
+    }
+
+    if (retValue == 0) {
         result = SDR_ECC_init(SDR_ECC_MEMTYPE_MCU_R5F0_CORE, NULL);
         if (result == SDR_PASS) {
             /* Negative test failed */
             SDTF_printf("SDTF_init: Error ECC Negative tests: result = %d\n", result);
-            retValue = -2;
+            retValue = -1;
         }
     }
     return retValue;
@@ -308,15 +454,41 @@ int32_t SDTF_init (void)
 #endif
 
     if (retValue == 0) {
-        /* Initialize ESM module */
-        result = SDR_ESM_init(&SDTF_esmInitConfig);
+        /* Initialize MCU ESM module */
+        result = SDR_ESM_init(SDR_ESM_INSTANCE_MCU, &SDTF_esmInitConfig_MCU);
         if (result != SDR_PASS) {
             /* print error and quit */
-             SDTF_printf("SDTF_init: Error initializing ESM: result = %d\n", result);
+             SDTF_printf("SDTF_init: Error initializing MCU ESM: result = %d\n", result);
 
             retValue = -1;
         } else {
-            SDTF_printf("\nSDTF_init: Init ESM complete \n");
+            SDTF_printf("\nSDTF_init: Init MCU ESM complete \n");
+        }
+    }
+
+    if (retValue == 0) {
+        /* Initialize WKUP ESM module */
+        result = SDR_ESM_init(SDR_ESM_INSTANCE_WKUP, &SDTF_esmInitConfig_WKUP);
+        if (result != SDR_PASS) {
+            /* print error and quit */
+             SDTF_printf("SDTF_init: Error initializing WKUP ESM: result = %d\n", result);
+
+            retValue = -1;
+        } else {
+            SDTF_printf("\nSDTF_init: Init WKUP ESM complete \n");
+        }
+    }
+
+    if (retValue == 0) {
+        /* Initialize MAIN ESM module */
+        result = SDR_ESM_init(SDR_ESM_INSTANCE_MAIN, &SDTF_esmInitConfig_MAIN);
+        if (result != SDR_PASS) {
+            /* print error and quit */
+             SDTF_printf("SDTF_init: Error initializing MAIN ESM: result = %d\n", result);
+
+            retValue = -1;
+        } else {
+            SDTF_printf("\nSDTF_init: Init MAIN ESM complete \n");
         }
     }
 
@@ -363,12 +535,28 @@ int32_t SDTF_init (void)
     }
 
     if (retValue == 0) {
-        /* Register Esm handlers */
-        retValue = SDTF_EsmInitHandlerInit();
+        /* Register MCU Esm handlers */
+        retValue = SDTF_EsmInitHandlerInit(SDR_ESM_INSTANCE_MCU);
         if (retValue != 0) {
-            SDTF_printf("\nSDTF_init: Init ESM handlers failed \n");
+            SDTF_printf("\nSDTF_init: Init MCU ESM handlers failed \n");
         } else {
-            SDTF_printf("\nSDTF_init: Init ESM handlers complete \n");
+            SDTF_printf("\nSDTF_init: Init MCU ESM handlers complete \n");
+        }
+
+        /* Register WKUP Esm handlers */
+        retValue = SDTF_EsmInitHandlerInit(SDR_ESM_INSTANCE_WKUP);
+        if (retValue != 0) {
+            SDTF_printf("\nSDTF_init: Init WKUP ESM handlers failed \n");
+        } else {
+            SDTF_printf("\nSDTF_init: Init WKUP ESM handlers complete \n");
+        }
+
+        /* Register MAIN Esm handlers */
+        retValue = SDTF_EsmInitHandlerInit(SDR_ESM_INSTANCE_MAIN);
+        if (retValue != 0) {
+            SDTF_printf("\nSDTF_init: Init MAIN ESM handlers failed \n");
+        } else {
+            SDTF_printf("\nSDTF_init: Init MAIN ESM handlers complete \n");
         }
     }
 

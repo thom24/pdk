@@ -149,7 +149,7 @@ int32_t SDTF_oneShotTestAllModules(void)
     SDTF_printf("\n Starting: ESM test");
     SDTF_profileBegin(SDTF_PROFILE_ONESHOT);
     /* Run one shot self test of ESM */
-    result = SDR_ESM_selfTest(1000);
+    result = SDR_ESM_selfTest(SDR_ESM_INSTANCE_MCU, 1000);
     SDTF_profileEnd(SDTF_PROFILE_ONESHOT);
     if (result != SDR_PASS ) {
         SDTF_printf("\n ESM self test failed");
@@ -256,7 +256,7 @@ int32_t SDTF_runPeriodicTests(void)
         }
         {
              /* Run esm test 1*/
-             result = SDR_ESM_selfTest(1000);
+             result = SDR_ESM_selfTest(SDR_ESM_INSTANCE_MCU,1000);
              if (result != SDR_PASS ) {
                  SDTF_printf("\n ESM self test 1 failed");
                  return -1;
@@ -297,7 +297,7 @@ int32_t SDTF_runPeriodicTests(void)
 /* Number of commands run by the "run_all" command
  * Note: This should match number of entries in the tables below
  */
-#define SDTF_NUM_RUNALL_TEST_COMMANDS (31u)
+#define SDTF_NUM_RUNALL_TEST_COMMANDS (35u)
 
 /* Other commands not covered by run_all */
 #define SDTF_NUM_OTHER_TEST_COMMANDS (6u)
@@ -305,7 +305,7 @@ int32_t SDTF_runPeriodicTests(void)
 /* Number of commands run by the "run_all" command
  * Note: This should match number of entries in the tables below
  */
-#define SDTF_NUM_RUNALL_TEST_COMMANDS (37u)
+#define SDTF_NUM_RUNALL_TEST_COMMANDS (41u)
 
 /* Other commands not covered by run_all */
 #define SDTF_NUM_OTHER_TEST_COMMANDS (0u)
@@ -330,10 +330,14 @@ typedef struct SDTF_commandList_s
 /* Full list of commands */
 SDTF_commandList_t SDTF_commandList[SDTF_MAX_COMMANDS] =
 {
-    { "esm_selftest",                SDTF_runESMSelfTest},
-    { "esm_inject",                  SDTF_runESMInject },
-    { "esm_apitest",                 SDTF_runESMAPITest },
-    { "esm_negativetest",            SDTF_runESMNegativeTest},
+    { "esm_selftest_MCU",            SDTF_runESMSelfTest_MCU},
+    { "esm_inject_MCU",              SDTF_runESMInject_MCU },
+    { "esm_apitest_MCU",             SDTF_runESMAPITest },
+    { "esm_negativetest_MCU",        SDTF_runESMNegativeTest},
+    { "esm_selftest_WKUP",           SDTF_runESMSelfTest_WKUP},
+    { "esm_inject_WKUP",             SDTF_runESMInject_WKUP },
+    { "esm_selftest_MAIN",           SDTF_runESMSelfTest_MAIN},
+    { "esm_inject_MAIN",             SDTF_runESMInject_MAIN },
     { "ecc1_selftest",               SDTF_runECC1BitSelfTest },
     { "ecc2_selftest",               SDTF_runECC2BitSelfTest },
     { "ecc2_inject",                 SDTF_runECC2BitInjectTest },

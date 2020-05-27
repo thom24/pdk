@@ -73,4 +73,43 @@ typedef struct SDR_ESM_Instance_s
  */
 bool SDR_ESM_handleIntSrc(const SDR_ESM_Instance_t *pInstance, uint32_t intSrc);
 
+/** ============================================================================
+ *                                                                                                                 * \brief   Check that ESM instance is valid for this device
+ *
+ * \param  [in]  esmInstType: ESM instance type
+ * \param  [out] esmBaseAddr: Base address for ESM instance's registers
+ *
+ * \return  true: if valid instance type; false if not valid instance type
+ */
+bool SDR_ESM_interpInstType(const SDR_ESM_InstanceType esmInstType,
+                            uint32_t *esmBaseAddr);
+
+/** ================================================================================
+ *
+ * \brief        Check that ESM instance type is valid for this device, and fill the
+ *               SDR_ESM instance
+ *
+ * \param [in]   esmInstType: ESM instance type
+ * \param [out]  pEsmInstancePtr: Pointer to location of ESM instance structure
+ *
+ * \return       true: if valid instance type; false if not valid instance type
+ */
+bool SDR_ESM_selectEsmInst(const SDR_ESM_InstanceType esmInstType,
+                           SDR_ESM_Instance_t **pEsmInstancePtr);
+
+/** ================================================================================
+ *
+ * \brief        Check that ESM instance type or ESM base address is valid for this
+ *               device, and fill the SDR_ESM instance
+ *
+ * \param [in]   esmInstBaseAddr: Base address for ESM instance's registers.
+ *                                Function fills pointer to instance for this
+ *                                set of registers
+ * \param [out]  pEsmInstancePtr: Pointer to location of ESM instance structure
+ *
+ * \return       true: if valid base address; false if not valid base address
+ */
+bool SDR_ESM_selectEsmInstFromAddr(uint32_t esmInstBaseAddr,
+                                   SDR_ESM_Instance_t **pEsmInstancePtr);
+
 #endif /* INCLUDE_SDR_ESM_PRIV_H_ */

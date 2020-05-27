@@ -120,8 +120,9 @@ SDR_Result SDR_WDT_selftest (const SDR_WDT_TimerConfig_t *pTimerConfig,
     }
 
     if ( result == SDR_PASS ) {
-        /* Register callback function with ESM */
-        (void)SDR_ESM_registerWDTHandler(&SDR_ESM_WDT_callBackFunction);
+        /* Register callback function with MCU ESM */
+        (void)SDR_ESM_registerWDTHandler(SDR_ESM_INSTANCE_MCU,
+                                         &SDR_ESM_WDT_callBackFunction);
 
         /* Calculate the low time out period */
         lowTimeout = SDR_WDT_getLowTimeout(pTimerConfig);
@@ -217,7 +218,7 @@ SDR_Result SDR_WDT_selftest (const SDR_WDT_TimerConfig_t *pTimerConfig,
             }
         }
         /* De-register WDT handler */
-        SDR_ESM_deRegisterWDTHandler();
+        SDR_ESM_deRegisterWDTHandler(SDR_ESM_INSTANCE_MCU);
     }
 
     return result;

@@ -393,7 +393,8 @@ SDR_Result SDR_ECC_init (SDR_ECC_MemType eccMemType,
 
         /* Register error interrupt call back function */
         /* No need to check return value , as it is just based on null check*/
-        (void)SDR_ESM_registerECCHandler(&SDR_ECC_ESMCallBackFunction);
+        (void)SDR_ESM_registerECCHandler(SDR_ESM_INSTANCE_MCU,
+                                         &SDR_ECC_ESMCallBackFunction);
         /* currently as this is not reported by ESM, register with
            exception handler */
         SDR_EXCEPTION_registerECCHandler(&SDR_ECC_callBackFunction);

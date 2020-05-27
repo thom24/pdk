@@ -43,6 +43,133 @@
 #include <sdr_esm_core.h>
 #include <sdr_esm_priv.h>
 
+static SDR_ESM_Instance_t SDR_ESM_instance_MCU;
+static SDR_ESM_Instance_t SDR_ESM_instance_WKUP;
+static SDR_ESM_Instance_t SDR_ESM_instance_MAIN;
+
+/** ================================================================================
+ *
+ * \brief        Check that ESM instance type is valid for this device, and fill the
+ *               ESM base address and SDR_ESM instance
+ *
+ * \param [in]   esmInstType: ESM instance type
+ * \param [out]  esmBaseAddr: Base address for ESM instance's registers
+ *
+ * \return       true: if valid instance type; false if not valid instance type
+ */
+bool SDR_ESM_interpInstType(const SDR_ESM_InstanceType esmInstType, uint32_t *esmBaseAddr)
+{
+    bool instValid = ((bool)false);
+
+    if (esmBaseAddr != NULL)
+    {
+        switch(esmInstType)
+        {
+            case SDR_ESM_INSTANCE_MCU:
+                instValid = ((bool)true);
+                *esmBaseAddr = SOC_MCU_ESM_BASE;
+                break;
+
+            case SDR_ESM_INSTANCE_WKUP:
+                instValid = ((bool)true);
+                *esmBaseAddr = SOC_WKUP_ESM_BASE;
+                break;
+
+            case SDR_ESM_INSTANCE_MAIN:
+                instValid = ((bool)true);
+                *esmBaseAddr = SOC_MAIN_ESM_BASE;
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    return (instValid);
+}
+
+/** ================================================================================
+ *
+ * \brief        Check that ESM instance type or ESM base address is valid for this
+ *               device, and fill the SDR_ESM instance
+ *
+ * \param [in]   esmInstType:     ESM instance type
+ * \param [out]  pEsmInstancePtr: Pointer to location of ESM instance structure
+ *
+ * \return       true: if valid instance type; false if not valid instance type
+ */
+bool SDR_ESM_selectEsmInst(const SDR_ESM_InstanceType esmInstType,
+                           SDR_ESM_Instance_t **pEsmInstancePtr)
+{
+    bool instValid = ((bool)true);
+
+    switch(esmInstType)
+    {
+        case SDR_ESM_INSTANCE_MCU:
+            *pEsmInstancePtr = (SDR_ESM_Instance_t *)(&SDR_ESM_instance_MCU);
+            break;
+
+        case SDR_ESM_INSTANCE_WKUP:
+            *pEsmInstancePtr = (SDR_ESM_Instance_t *)(&SDR_ESM_instance_WKUP);
+            break;
+
+        case SDR_ESM_INSTANCE_MAIN:
+            *pEsmInstancePtr = (SDR_ESM_Instance_t *)(&SDR_ESM_instance_MAIN);
+            break;
+
+        default:
+            /* Invalid instance input parameter */
+            instValid = ((bool)false);
+            break;
+    }
+
+    return (instValid);
+}
+
+/** ================================================================================
+ *
+ * \brief        Check that ESM instance type or ESM base address is valid for this
+ *               device, and fill the SDR_ESM instance
+ *
+ * \param [in]   esmInstBaseAddr: Base address for ESM instance's registers.
+ *                                Function fills pointer to instance for this
+ *                                set of registers
+ * \param [out]  pEsmInstancePtr: Pointer to location of ESM instance structure
+ *
+ * \return       true: if valid base address; false if not valid base address
+ */
+bool SDR_ESM_selectEsmInstFromAddr(uint32_t esmInstBaseAddr,
+                                   SDR_ESM_Instance_t **pEsmInstancePtr)
+{
+    bool instValid = ((bool)false);
+
+    switch(esmInstBaseAddr)
+    {
+        case SOC_MCU_ESM_BASE:
+            instValid = ((bool)true);
+            *pEsmInstancePtr = &SDR_ESM_instance_MCU;
+            break;
+
+        case SOC_WKUP_ESM_BASE:
+            instValid = ((bool)true);
+            *pEsmInstancePtr = &SDR_ESM_instance_WKUP;
+            break;
+
+        case SOC_MAIN_ESM_BASE:
+            instValid = ((bool)true);
+            *pEsmInstancePtr = &SDR_ESM_instance_MAIN;
+            break;
+
+        default:
+            break;
+    }
+
+    return (instValid);
+}
+
+
+
+
 /** ============================================================================
  *
  * \brief   Handle any event that needs to be handled locally before
