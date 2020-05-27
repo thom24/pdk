@@ -330,7 +330,7 @@ xdc_meta:
 xdc_meta_clean:
 	$(XDC) clean XDCBUILDCFG=config_mk.bld
 
-doxygen:
+doxygen: xdc_meta
 ifeq ($(DOXYGEN_SUPPORT),yes)
 	$(ECHO) Creating Doxygen API guide ...
 	@doxygen docs/Doxyfile
@@ -346,7 +346,7 @@ else
 	$(ECHO) No Doxygen Support available ...
 endif
 
-tar: lib firm xdc_meta doxygen
+tar: lib firm doxygen
 	$(ECHO) Creating the Release Tar ball for $(COMP)...
 	$(XDC) clean   XDCBUILDCFG=config_mk.bld
 	$(XDC) release XDCBUILDCFG=config_mk.bld
