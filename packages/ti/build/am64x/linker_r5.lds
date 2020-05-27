@@ -28,14 +28,22 @@ __SVC_STACK_SIZE = 0x1000;
 /* Memory Map */
 MEMORY
 {
-    VECTORS (X)             : origin=0x70000000 length=0x1000
+     
+    /* Reserved for SBL code/data */
+    SBL_RSVD (X)            : origin=0x70000000 length=0x80000
+    
     /*  Reset Vectors base address(RESET_VECTORS) should be 64 bytes aligned  */
-    RESET_VECTORS (X)       : origin=0x00000000 length=0x100
+    RESET_VECTORS (X)       : origin=0x70080000 length=0x100
     /* am64x MCMS3 locations */
-    MSMC3   (RWIX)          : origin=0x70001000 length=0x170000-0x1000 /* ~(1.5MB - 0x1000) */
+    MSMC3   (RWIX)          : origin=0x70080100 length=0x40000 - 0x1100
 
+    VECTORS (X)             : origin=0x700BF000 length=0x1000
     /* Reserved for SYSFW Secure Proxy */
-    MSMC3_H (RWIX)          : origin=0x70170000 length=0x90000         /* ~0.5MB */
+    MSMC3_H (RWIX)          : origin=0x700C0000 length=0x100000   
+
+    /* Reserved by ROM for SYSFW */
+    SYSFW_RSVD_1 (X)      : origin=0x71C00000 length=0x20000 
+    SYSFW_RSVD_2 (X)      : origin=0x71E00000 length=0x20000 
 
     DDR0    (RWIX)          : origin=0x80000000 length=0x80000000      /* 2GB */
 }

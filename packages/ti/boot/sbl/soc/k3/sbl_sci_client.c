@@ -109,6 +109,7 @@ void SBL_SciClientInit(void)
         .devGrp = SBL_DEVGRP
     };
 
+#ifndef SBL_SKIP_BRD_CFG_SEC
     Sciclient_BoardCfgPrms_t sblBoardCfgSecPrms =
     {
         .boardConfigLow = (uint32_t)gSciclient_boardCfgLow_sec,
@@ -116,6 +117,7 @@ void SBL_SciClientInit(void)
         .boardConfigSize = SCICLIENT_BOARDCFG_SECURITY_SIZE_IN_BYTES,
         .devGrp = SBL_DEVGRP
     };
+#endif
 
     Sciclient_ConfigPrms_t        config =
     {
@@ -250,8 +252,17 @@ void SBL_SciClientInit(void)
     /* RTI seems to be turned on by ROM. Turning it off so that Power domain can transition */
     Sciclient_pmSetModuleState(SBL_DEV_ID_RTI0, TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
     Sciclient_pmSetModuleState(SBL_DEV_ID_RTI1, TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
+#if defined(SOC_AM64X)
+    Sciclient_pmSetModuleState(SBL_DEV_ID_RTI8, TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
+    Sciclient_pmSetModuleState(SBL_DEV_ID_RTI9, TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
+    Sciclient_pmSetModuleState(SBL_DEV_ID_RTI10, TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
+    Sciclient_pmSetModuleState(SBL_DEV_ID_RTI11, TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
+    Sciclient_pmSetModuleState(SBL_DEV_ID_MCU_RTI0, TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
 #endif
 #endif
 
+    
+#endif
+    
     SBL_ADD_PROFILE_POINT;
 }

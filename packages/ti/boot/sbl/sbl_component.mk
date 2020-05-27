@@ -66,9 +66,9 @@
 #
 ifeq ($(sbl_component_make_include), )
 
-sbl_BOARDLIST = am65xx_evm am65xx_idk j721e_evm
+sbl_BOARDLIST = am65xx_evm am65xx_idk j721e_evm am64x_evm
 
-sbl_SOCLIST = am65xx j721e
+sbl_SOCLIST = am65xx j721e am64x
 
 am65xx_smp_CORELIST := mcu1_0 mpu1_0 mpu2_0
 sbl_am65xx_CORELIST := mcu1_0 mcu1_1 mpu1_0 mpu1_1 mpu2_0 mpu2_1
@@ -77,6 +77,10 @@ am65xx_LASTCORE := $(word $(words $(sbl_am65xx_CORELIST)), $(sbl_am65xx_CORELIST
 j721e_smp_CORELIST := mcu1_0 mcu2_0 mcu3_0 mpu1_0
 sbl_j721e_CORELIST := mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mpu1_0 mpu1_1
 j721e_LASTCORE := $(word $(words $(sbl_j721e_CORELIST)), $(sbl_j721e_CORELIST))
+
+am64x_smp_CORELIST := mcu1_0 mcu2_0 mpu1_0
+sbl_am64x_CORELIST := mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 mpu1_0 mpu1_1
+am64x_LASTCORE := $(word $(words $(sbl_am64x_CORELIST)), $(sbl_am64x_CORELIST))
 
 sbl_DISABLE_PARALLEL_MAKE = yes
 ############################
@@ -508,7 +512,14 @@ ifeq ($(BUILD_HS), yes)
 # DMA not currently supported on HS devices
 SBL_CFLAGS += -DSBL_USE_DMA=0 -DBUILD_HS
 else
-SBL_CFLAGS += -DSBL_USE_DMA=1
+#DMA is not enabled for AM64x yet
+ifneq ($(SOC),$(filter $(SOC), am64x))
+  SBL_CFLAGS += -DSBL_USE_DMA=1
+endif  
+endif
+
+ifeq ($(SOC), am64x)
+SBL_CFLAGS += -DSBL_BYPASS_OSPI_DRIVER -DDISABLE_ATCM
 endif
 
 ###### Use boot_perf_benchmark example#######
@@ -517,7 +528,7 @@ endif
 ###########START BOOT PERF KNOBS#############
 # SBL log level
 # no logs = 0, only errors =1, normal logs = 2, all logs = 3
-SBL_CFLAGS += -DSBL_LOG_LEVEL=2
+SBL_CFLAGS += -DSBL_LOG_LEVEL=3
 
 SBL_CFLAGS += -DSBL_ENABLE_PLL
 SBL_CFLAGS += -DSBL_ENABLE_CLOCKS
@@ -591,13 +602,24 @@ SBL_CFLAGS += -DSBL_ENABLE_DDR
 # enable MCU-only code to run.
 #SBL_CFLAGS += -DSBL_USE_MCU_DOMAIN_ONLY
 
+# If enabled, the SBL will skip configuring ATCM memory
+#SBL_CFLAGS += -DDISABLE_ATCM
+
+# If enabled for OSPI boot the SBL will bypass the 
+# OSPI driver completely and let ROM copy the sysftw/application 
+# from flash.
+#SBL_CFLAGS += -DSBL_BYPASS_OSPI_DRIVER
+
+# If enabled the SBL image is built for running on VLAB simulation.
+#SBL_CFLAGS += -DVLAB_SIM
+
 ###########END BOOT PERF KNOBS#############
 
 # Example - Building Custom SBL Images
 # Build and SBl with custom flags to change
 # different build configurations
-CUST_SBL_TEST_SOCS = am65xx j721e
-CUST_SBL_TEST_BOARDS = am65xx_evm j721e_evm
+CUST_SBL_TEST_SOCS = am65xx j721e am64x_evm 
+CUST_SBL_TEST_BOARDS = am65xx_evm j721e_evm am64x_evm
 #CUST_SBL_TEST_FLAGS =" -DSBL_USE_DMA=1 -DSBL_LOG_LEVEL=0 -DSBL_SCRATCH_MEM_START=0x70100000 -DSBL_SCRATCH_MEM_SIZE=0xF0000 -DSBL_SKIP_MCU_RESET  -DBOOT_OSPI "
 #CUST_SBL_TEST_FLAGS =" -DSBL_USE_DMA=1 -DSBL_LOG_LEVEL=0 -DSBL_SCRATCH_MEM_START=0x70100000 -DSBL_SKIP_MCU_RESET -DSBL_SKIP_BRD_CFG_PM -DBOOT_OSPI "
 #CUST_SBL_TEST_FLAGS =" -DSBL_USE_DMA=0 -DSBL_LOG_LEVEL=0 -DSBL_SCRATCH_MEM_START=0x70100000 -DSBL_SCRATCH_MEM_SIZE=0xF0000 -DSBL_SKIP_SYSFW_INIT -DSBL_SKIP_MCU_RESET -DBOOT_OSPI"
@@ -609,6 +631,8 @@ CUST_SBL_TEST_FLAGS =" -DSBL_USE_DMA=0 -DSBL_LOG_LEVEL=1 -DSBL_SCRATCH_MEM_START
 else
 CUST_SBL_TEST_FLAGS =" -DSBL_USE_DMA=0 -DSBL_LOG_LEVEL=1 -DSBL_SCRATCH_MEM_START=0x70100000 -DSBL_SCRATCH_MEM_SIZE=0xF0000 -DSBL_ENABLE_PLL -DSBL_ENABLE_CLOCKS -DSBL_SKIP_MCU_RESET -DBOOT_OSPI -DSBL_ENABLE_DEV_GRP_MCU -DSBL_HLOS_OWNS_FLASH"
 endif
+#Custom configuration for AM64x OSPI Boot
+#CUST_SBL_TEST_FLAGS =" -DSBL_USE_DMA=0 -DSBL_LOG_LEVEL=3 -DSBL_SCRATCH_MEM_START=0x70100000 -DSBL_SCRATCH_MEM_SIZE=0xF0000 -DSBL_ENABLE_PLL -DSBL_ENABLE_CLOCKS -DBOOT_OSPI -DSBL_ENABLE_DDR -DDISABLE_ATCM -DSBL_BYPASS_OSPI_DRIVER"
 
 # SBL Custom LIB
 sbl_lib_cust_COMP_LIST = sbl_lib_cust

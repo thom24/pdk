@@ -48,13 +48,13 @@ extern "C" {
  */
 
 #include <ti/csl/tistdtypes.h>
-#include "AM64xx_pinmux.h"
+#include <ti/board/src/am64x_evm/AM64xx_pinmux.h>
 
 /* ========================================================================== */
 /*                         Structures and Enums                               */
 /* ========================================================================== */
 
-
+void Board_uartTxPinmuxConfig(void);
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

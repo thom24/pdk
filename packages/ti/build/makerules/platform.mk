@@ -186,7 +186,7 @@ endif
 # AM64X
 ifeq ($(BOARD),$(filter $(BOARD), am64x_evm))
  SOC = am64x
- SBL_RUN_ADDRESS=0x70000100
+ SBL_RUN_ADDRESS=0x70000000
  SBL_DEV_ID=55
 endif
 
@@ -894,6 +894,8 @@ ifeq ($(SOC),$(filter $(SOC), am65xx am64x j721e j7200))
   SBL_CORE_ID_c66xdsp_2 = 11
   SBL_CORE_ID_c7x_1 = 12
   SBL_CORE_ID_c7x-hostemu = 13
+  SBL_CORE_ID_m4f_0 = 14
+
 endif
 
 ifeq ($(SOC),$(filter $(SOC), tpr12))

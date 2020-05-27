@@ -110,8 +110,11 @@
     void sbl_putui(unsigned int ul)  __attribute__((section(".sbl_mpu_2_1_resetvector")));
     void sbl_putsui(char *s, unsigned int ui, int crlf)  __attribute__((section(".sbl_mpu_2_1_resetvector")));
 #endif
-
+#if defined(SOC_AM64X)
+#define UART0_ADDR	((int)0x02800000)
+#else
 #define UART0_ADDR	((int)0x40A00000)
+#endif
 #define UART_RHR	((int)0x0U)
 #define UART_LSR	((int)0x14U)
 

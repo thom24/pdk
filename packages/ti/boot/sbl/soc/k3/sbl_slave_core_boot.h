@@ -62,17 +62,18 @@ typedef uint32_t cpu_core_id_t;
 #define DSP1_C66X_ID                    (10U)
 #define DSP2_C66X_ID                    (11U)
 #define DSP1_C7X_ID                     (12U)
-/* add additional MPU/MCU cores before this */
 #define DSP2_C7X_ID                     (13U)
+#define M4F_CPU0_ID                     (14U)
+/* add additional MPU/MCU cores before this */
 /* only SMP core ID should be after this */
-#define MPU1_SMP_ID                     (14U)
-#define MPU2_SMP_ID                     (15U)
-#define MPU_SMP_ID                      (16U)
-#define MCU1_SMP_ID                     (17U)
-#define MCU2_SMP_ID                     (18U)
-#define MCU3_SMP_ID                     (19U)
-#define ONLY_LOAD_ID                    (20U)
-#define NUM_CORES                       (21U)
+#define MPU1_SMP_ID                     (15U)
+#define MPU2_SMP_ID                     (16U)
+#define MPU_SMP_ID                      (17U)
+#define MCU1_SMP_ID                     (18U)
+#define MCU2_SMP_ID                     (19U)
+#define MCU3_SMP_ID                     (20U)
+#define ONLY_LOAD_ID                    (21U)
+#define NUM_CORES                       (22U)
 
 /* Structure holding the entry address of the applications for different cores. */
 typedef struct sblEntryPoint

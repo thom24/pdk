@@ -374,9 +374,6 @@ Board_STATUS MCU_PSC_Peripheral_PowerUp()
 {
     Board_STATUS status = BOARD_SOK;
 
-    status |= GP_Core_CTL_MCU_PowerUp();
-    status |= PD_M4F_PowerUp();
-
     return status;
 }
 #endif /* #ifdef BUILD_MPU/MCU */

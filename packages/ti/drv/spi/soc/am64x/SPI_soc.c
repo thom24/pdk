@@ -444,7 +444,7 @@ SPI_v1_HWAttrs spiInitCfg[MCSPI_PER_CNT] =
 SPI_v1_Object SpiObjects[MCSPI_PER_CNT];
 
 /* OSPI configuration structure */
-OSPI_v0_HwAttrs ospiInitCfg =
+OSPI_v0_HwAttrs ospiInitCfg[OSPI_PER_CNT] =
 {
     /* OSPI0 on the Main domain */
     CSL_FSS0_OSPI0_CTRL_BASE,          /* baseAddr, flash config register baseAddr */
@@ -533,7 +533,7 @@ CSL_PUBLIC_CONST SPI_config_list SPI_config = {
     {
         &OSPI_FxnTable_v0,
         &OspiObjects,
-        &ospiInitCfg
+        &ospiInitCfg[0]
     }
 };
 
@@ -758,7 +758,7 @@ int32_t OSPI_socGetInitCfg(uint32_t idx, OSPI_v0_HwAttrs *cfg)
 
     if (idx < OSPI_PER_CNT)
     {
-        *cfg = ospiInitCfg;
+        *cfg = ospiInitCfg[idx];
     }
     else
     {
@@ -783,7 +783,7 @@ int32_t OSPI_socSetInitCfg(uint32_t idx, const OSPI_v0_HwAttrs *cfg)
 
     if (idx < OSPI_PER_CNT)
     {
-        ospiInitCfg = *cfg;
+        ospiInitCfg[idx] = *cfg;
     }
     else
     {

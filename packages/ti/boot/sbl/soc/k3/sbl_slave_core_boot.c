@@ -181,9 +181,17 @@ static const sblSlaveCoreInfo_t sbl_slave_core_info[] =
     SBL_DEV_ID_DSP2_C7X,
     SBL_CLK_ID_DSP2_C7X,
     SBL_DSP2_C7X_FREQ_HZ,
+    },
+    /* M4F Core0 info*/
+    {
+    SBL_PROC_ID_M4F_CPU0,
+    SBL_DEV_ID_M4F_CPU0,
+    SBL_CLK_ID_M4F_CPU0,
+    SBL_M4F_CPU0_FREQ_HZ,
     }
 };
 
+#ifndef DISABLE_ATCM
 static const uint32_t SblAtcmAddr[] =
 {
 SBL_MCU_ATCM_BASE,
@@ -193,6 +201,7 @@ SBL_MCU2_CPU1_ATCM_BASE_ADDR_SOC,
 SBL_MCU3_CPU0_ATCM_BASE_ADDR_SOC,
 SBL_MCU3_CPU1_ATCM_BASE_ADDR_SOC
 };
+#endif
 
 static const uint32_t SblBtcmAddr[] =
 {
@@ -303,8 +312,7 @@ static void SBL_ConfigMcuLockStep(uint8_t enableLockStep, const sblSlaveCoreInfo
     status =  Sciclient_procBootSetProcessorCfg(&proc_set_config_req,  SCICLIENT_SERVICE_WAIT_FOREVER);
     if (status != CSL_PASS)
     {
-        SBL_log(SBL_LOG_ERR, "Sciclient_procBootSetProcessorCfg...FAILED \n");
-        SblErrLoop(__FILE__, __LINE__);
+        SBL_log(SBL_LOG_MAX, "Sciclient_procBootSetProcessorCfg lockstep...NOT DONE \n");
     }
 
     SBL_ADD_PROFILE_POINT;
@@ -432,12 +440,16 @@ void SBL_SetupCoreMem(uint32_t core_id)
             proc_set_config_req.bootvector_hi = cpuStatus.bootvector_hi;
             proc_set_config_req.config_flags_1_set = 0;
             proc_set_config_req.config_flags_1_clear = 0;
+#ifdef DISABLE_ATCM            
+            proc_set_config_req.config_flags_1_clear |= TISCI_MSG_VAL_PROC_BOOT_CFG_FLAG_R5_ATCM_EN;
+#else
+            proc_set_config_req.config_flags_1_set |= TISCI_MSG_VAL_PROC_BOOT_CFG_FLAG_R5_ATCM_EN;
+#endif
             SBL_log(SBL_LOG_MAX, "Enabling MCU TCMs after reset for core %d\n", core_id);
             proc_set_config_req.config_flags_1_set |= (TISCI_MSG_VAL_PROC_BOOT_CFG_FLAG_R5_BTCM_EN |
-                                                       TISCI_MSG_VAL_PROC_BOOT_CFG_FLAG_R5_ATCM_EN |
                                                        TISCI_MSG_VAL_PROC_BOOT_CFG_FLAG_R5_TCM_RSTBASE);
 
-            SBL_log(SBL_LOG_MAX, "Sciclient_procBootSetProcessorCfg, ProcId 0x%x, enabling TCMs...\n");
+            SBL_log(SBL_LOG_MAX, "Sciclient_procBootSetProcessorCfg enabling TCMs...\n");
             status =  Sciclient_procBootSetProcessorCfg(&proc_set_config_req,  SCICLIENT_SERVICE_WAIT_FOREVER);
             if (status != CSL_PASS)
             {
@@ -449,25 +461,49 @@ void SBL_SetupCoreMem(uint32_t core_id)
             {
                 SBL_log(SBL_LOG_MAX, "Sciclient_pmSetModuleState Off, DevId 0x%x... \n", sblSlaveCoreInfoPtr->tisci_dev_id);
                 Sciclient_pmSetModuleState(sblSlaveCoreInfoPtr->tisci_dev_id, TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
+
+#ifdef VLAB_SIM
+            /* HALT issue on VLAB causes the core to a immediate halt. ASTC Ticket #*/      
+              SBL_log(SBL_LOG_MAX, "Setting HALT for ProcId 0x%x...\n", sblSlaveCoreInfoPtr->tisci_proc_id);
+              status =  Sciclient_procBootSetSequenceCtrl(sblSlaveCoreInfoPtr->tisci_proc_id, TISCI_MSG_VAL_PROC_BOOT_CTRL_FLAG_R5_CORE_HALT, 0, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
+              if (status != CSL_PASS)
+              {
+                SBL_log(SBL_LOG_ERR, "Sciclient_procBootSetSequenceCtrl...FAILED \n");
+                SblErrLoop(__FILE__, __LINE__);
+              }
+#endif
             }
+
+#ifndef VLAB_SIM
+            /* In case of VLAB_SIM, the below step is done only for all but mcu1_0 shown above */
             SBL_log(SBL_LOG_MAX, "Setting HALT for ProcId 0x%x...\n", sblSlaveCoreInfoPtr->tisci_proc_id);
             status =  Sciclient_procBootSetSequenceCtrl(sblSlaveCoreInfoPtr->tisci_proc_id, TISCI_MSG_VAL_PROC_BOOT_CTRL_FLAG_R5_CORE_HALT, 0, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
             if (status != CSL_PASS)
             {
-                SBL_log(SBL_LOG_ERR, "Sciclient_procBootSetSequenceCtrl...FAILED \n");
-                SblErrLoop(__FILE__, __LINE__);
+              SBL_log(SBL_LOG_ERR, "Sciclient_procBootSetSequenceCtrl...FAILED \n");
+              SblErrLoop(__FILE__, __LINE__);
             }
+#endif
+
             /* SBL running on MCU0, don't fool around with its power & TCMs */
             if (core_id != MCU1_CPU0_ID)
             {
                 SBL_log(SBL_LOG_MAX, "Sciclient_pmSetModuleState On, DevId 0x%x... \n", sblSlaveCoreInfoPtr->tisci_dev_id);
                 Sciclient_pmSetModuleState(sblSlaveCoreInfoPtr->tisci_dev_id, TISCI_MSG_VALUE_DEVICE_SW_STATE_ON, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
 
+#ifndef DISABLE_ATCM
                 /* Initialize the TCMs - TCMs of MCU running SBL are already initialized by ROM & SBL */
                 SBL_log(SBL_LOG_MAX, "Clearing core_id %d  ATCM @ 0x%x ", core_id, SblAtcmAddr[core_id - MCU1_CPU0_ID]);
                 memset(((void *)(SblAtcmAddr[core_id - MCU1_CPU0_ID])), 0xFF, 0x8000);
+#endif                
+
+#ifndef VLAB_SIM
                 SBL_log(SBL_LOG_MAX, "& BTCM @0x%x\n", SblBtcmAddr[core_id - MCU1_CPU0_ID]);
                 memset(((void *)(SblBtcmAddr[core_id - MCU1_CPU0_ID])), 0xFF, 0x8000);
+#else
+/* BTCM is not recognized in VLAB : ASTC TICKET # TBD */
+                SBL_log(SBL_LOG_MAX, "&  ***Not Clearing*** BTCM @0x%x\n", SblBtcmAddr[core_id - MCU1_CPU0_ID]);
+#endif
             }
             break;
         case MPU1_SMP_ID:
@@ -481,6 +517,30 @@ void SBL_SetupCoreMem(uint32_t core_id)
         case MPU2_CPU1_ID:
             SBL_log(SBL_LOG_MAX, "Sciclient_pmSetModuleState On, DevId 0x%x... \n", SBL_DEV_ID_MPU_CLUSTER1);
             Sciclient_pmSetModuleState(SBL_DEV_ID_MPU_CLUSTER1, TISCI_MSG_VALUE_DEVICE_SW_STATE_ON, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
+            break;
+        case M4F_CPU0_ID:
+            SBL_log(SBL_LOG_MAX, "Sciclient_pmSetModuleState Off, DevId 0x%x... \n", sblSlaveCoreInfoPtr->tisci_dev_id);
+            status = Sciclient_pmSetModuleState(sblSlaveCoreInfoPtr->tisci_dev_id, TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
+            if (status != CSL_PASS)
+            {
+                SBL_log(SBL_LOG_ERR, "Sciclient_pmSetModuleState Off...FAILED \n");
+                SblErrLoop(__FILE__, __LINE__);
+            }
+            SBL_log(SBL_LOG_MAX, "Calling Sciclient_pmSetModuleRst, DevId 0x%x with RESET \n", sblSlaveCoreInfoPtr->tisci_dev_id);
+            status = Sciclient_pmSetModuleRst(sblSlaveCoreInfoPtr->tisci_dev_id,1,SCICLIENT_SERVICE_WAIT_FOREVER);
+            if (status != CSL_PASS)
+            {
+                SBL_log(SBL_LOG_ERR, "Sciclient_pmSetModuleRst RESET ...FAILED \n");
+                SblErrLoop(__FILE__, __LINE__);
+            }
+ 
+            SBL_log(SBL_LOG_MAX, "Sciclient_pmSetModuleState On, DevId 0x%x... \n", sblSlaveCoreInfoPtr->tisci_dev_id);
+            status = Sciclient_pmSetModuleState(sblSlaveCoreInfoPtr->tisci_dev_id, TISCI_MSG_VALUE_DEVICE_SW_STATE_ON, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
+            if (status != CSL_PASS)
+            {
+                SBL_log(SBL_LOG_ERR, "Sciclient_pmSetModuleState...FAILED \n");
+                SblErrLoop(__FILE__, __LINE__);
+            }
             break;
         case MPU_SMP_ID:
             /* Enable SMP on all MPU clusters. Enable SMP only if cluster is present */
@@ -528,8 +588,10 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
        (pAppEntry->CpuEntryPoint[core_id]) &&
        (pAppEntry->CpuEntryPoint[core_id] <  SBL_INVALID_ENTRY_ADDR))
     {
+#ifndef DISABLE_ATCM
         SBL_log(SBL_LOG_MAX, "Copying first 128 byptes from app to MCU ATCM @ 0x%x for core %d\n", SblAtcmAddr[core_id - MCU1_CPU0_ID], core_id);
         memcpy(((void *)(SblAtcmAddr[core_id - MCU1_CPU0_ID])), (void *)(pAppEntry->CpuEntryPoint[core_id]), 128);
+#endif        
         return;
     }
 
@@ -597,12 +659,21 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
                 /* Skip copy if R5 app entry point is already 0 */
                 if (pAppEntry->CpuEntryPoint[core_id])
                 {
+#ifndef DISABLE_ATCM
                     SBL_log(SBL_LOG_MAX, "Copying first 128 byptes from app to MCU ATCM @ 0x%x for core %d\n", SblAtcmAddr[core_id - MCU1_CPU0_ID], core_id);
                     memcpy(((void *)(SblAtcmAddr[core_id - MCU1_CPU0_ID])), (void *)(pAppEntry->CpuEntryPoint[core_id]), 128);
+#endif
                 }
             }
 
 #ifdef SBL_SKIP_MCU_RESET
+            if (pAppEntry->CpuEntryPoint[core_id] <  SBL_INVALID_ENTRY_ADDR)
+            {
+                Sciclient_procBootSetSequenceCtrl(SBL_PROC_ID_MCU1_CPU1, 0, TISCI_MSG_VAL_PROC_BOOT_CTRL_FLAG_R5_CORE_HALT, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
+                Sciclient_pmSetModuleState(SBL_DEV_ID_MCU1_CPU1, TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
+                Sciclient_pmSetModuleState(SBL_DEV_ID_MCU1_CPU1, TISCI_MSG_VALUE_DEVICE_SW_STATE_ON, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
+            }
+  
             /* Release the CPU and branch to app */
             status = Sciclient_procBootReleaseProcessor(sblSlaveCoreInfoPtr->tisci_proc_id, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
             if (status != CSL_PASS)
@@ -647,15 +718,32 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
             status = Sciclient_procBootReleaseProcessor(SBL_PROC_ID_MCU1_CPU1, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
 
             /* Power up cores as needed */
+#if defined(SOC_AM64X)
+            /* AM64X has different Power on sequence than other K3 SOCs.
+             * On AM64x, CORE0 has to be powered on first, followed by CORE 1*/
+            if (pAppEntry->CpuEntryPoint[core_id] <  SBL_INVALID_ENTRY_ADDR)
+            {
+                /* Multicore image has valid images for both core 0 and core 1 */ 
+                Sciclient_pmSetModuleState(SBL_DEV_ID_MCU1_CPU1, TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
+                Sciclient_pmSetModuleState(SBL_DEV_ID_MCU1_CPU0, TISCI_MSG_VALUE_DEVICE_SW_STATE_ON, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
+                Sciclient_pmSetModuleState(SBL_DEV_ID_MCU1_CPU1, TISCI_MSG_VALUE_DEVICE_SW_STATE_ON, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
+            }
+            else
+            {
+                /* Multicore image has valid images for core 0 and no image for core 1 */ 
+                Sciclient_pmSetModuleState(SBL_DEV_ID_MCU1_CPU0, TISCI_MSG_VALUE_DEVICE_SW_STATE_ON, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
+            }	
+#else
             Sciclient_pmSetModuleState(SBL_DEV_ID_MCU1_CPU0, TISCI_MSG_VALUE_DEVICE_SW_STATE_ON, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
             if (pAppEntry->CpuEntryPoint[core_id] <  SBL_INVALID_ENTRY_ADDR)
             {
                 Sciclient_pmSetModuleState(SBL_DEV_ID_MCU1_CPU1, TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
                 Sciclient_pmSetModuleState(SBL_DEV_ID_MCU1_CPU1, TISCI_MSG_VALUE_DEVICE_SW_STATE_ON, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
             }
+#endif
+            
             /* Execute a WFI */
             asm volatile ("    wfi");
-
 #endif
             break;
 
@@ -663,8 +751,10 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
             /* Skip copy if R5 app entry point is already 0 */
             if (pAppEntry->CpuEntryPoint[core_id])
             {
+#ifndef DISABLE_ATCM
                 SBL_log(SBL_LOG_MAX, "Copying first 128 byptes from app to MCU ATCM @ 0x%x for core %d\n", SblAtcmAddr[core_id - MCU1_CPU0_ID], core_id);
                 memcpy(((void *)(SblAtcmAddr[core_id - MCU1_CPU0_ID])), (void *)(proc_set_config_req.bootvector_lo), 128);
+#endif                
             }
             SBL_log(SBL_LOG_MAX, "Sciclient_procBootReleaseProcessor, ProcId 0x%x...\n", sblSlaveCoreInfoPtr->tisci_proc_id);
             status = Sciclient_procBootReleaseProcessor(sblSlaveCoreInfoPtr->tisci_proc_id, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
@@ -683,8 +773,10 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
                 /* Skip copy if R5 app entry point is already 0 */
                 if (pAppEntry->CpuEntryPoint[core_id])
                 {
+#ifndef DISABLE_ATCM
                     SBL_log(SBL_LOG_MAX, "Copying first 128 byptes from app to MCU ATCM @ 0x%x for core %d\n", SblAtcmAddr[core_id - MCU1_CPU0_ID], core_id);
                     memcpy(((void *)(SblAtcmAddr[core_id - MCU1_CPU0_ID])), (void *)(proc_set_config_req.bootvector_lo), 128);
+#endif                    
                 }
                 SBL_log(SBL_LOG_MAX, "Clearing HALT for ProcId 0x%x...\n", sblSlaveCoreInfoPtr->tisci_proc_id);
                 status =  Sciclient_procBootSetSequenceCtrl(sblSlaveCoreInfoPtr->tisci_proc_id, 0, TISCI_MSG_VAL_PROC_BOOT_CTRL_FLAG_R5_CORE_HALT, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
@@ -703,6 +795,25 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
                 SBL_log(SBL_LOG_ERR, "Sciclient_procBootReleaseProcessor, ProcId 0x%x...FAILED \n", sblSlaveCoreInfoPtr->tisci_proc_id);
                 SblErrLoop(__FILE__, __LINE__);
             }
+            SBL_ADD_PROFILE_POINT;
+            break;
+       case M4F_CPU0_ID:
+            SBL_log(SBL_LOG_MAX, "Calling Sciclient_pmSetModuleRst, ProcId 0x%x with RELEASE \n", sblSlaveCoreInfoPtr->tisci_proc_id);
+            status = Sciclient_pmSetModuleRst(sblSlaveCoreInfoPtr->tisci_dev_id,0,SCICLIENT_SERVICE_WAIT_FOREVER);
+            if (status != CSL_PASS)
+            {
+                SBL_log(SBL_LOG_ERR, "Sciclient_pmSetModuleRst RELEASE...FAILED \n");
+                SblErrLoop(__FILE__, __LINE__);
+            }
+
+            SBL_log(SBL_LOG_MAX, "Sciclient_procBootReleaseProcessor, ProcId 0x%x...\n", sblSlaveCoreInfoPtr->tisci_proc_id);
+            status = Sciclient_procBootReleaseProcessor(sblSlaveCoreInfoPtr->tisci_proc_id, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
+            if (status != CSL_PASS)
+            {
+                SBL_log(SBL_LOG_ERR, "Sciclient_procBootReleaseProcessor, ProcId 0x%x...FAILED \n", sblSlaveCoreInfoPtr->tisci_proc_id);
+                SblErrLoop(__FILE__, __LINE__);
+            }
+
             SBL_ADD_PROFILE_POINT;
             break;
         default:

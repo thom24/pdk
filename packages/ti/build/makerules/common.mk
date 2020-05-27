@@ -661,12 +661,7 @@ endif
 	$(ECHO) \#
 
 #SBL App image generation
-ifeq ($(SOC),$(filter $(SOC), am64x))
-sbl_appimagegen:
-	$(ECHO)  \# Temporarily disable SBL app image gen for AM64x
-else
 sbl_appimagegen: $(SBL_APPIMAGE_PATH) $(SBL_APP_BINIMAGE_PATH)
-endif
 
 $(SBL_APP_BINIMAGE_PATH): $(EXE_NAME)
   ifeq ($($(APP_NAME)_SBL_APP_BINIMAGEGEN),yes)

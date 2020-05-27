@@ -50,8 +50,13 @@ SRCS_ASM_COMMON += sbl_init.asm
 
 # scratch memory given to the SBL
 # for image load and parsing
-SBL_CFLAGS += -DSBL_SCRATCH_MEM_START=0xB8000000
-SBL_CFLAGS += -DSBL_SCRATCH_MEM_SIZE=0x4000000
+ifeq ($(SOC), am64x)
+  SBL_CFLAGS += -DSBL_SCRATCH_MEM_START=0x70100000 
+  SBL_CFLAGS += -DSBL_SCRATCH_MEM_SIZE=0xF0000
+else
+  SBL_CFLAGS += -DSBL_SCRATCH_MEM_START=0xB8000000
+  SBL_CFLAGS += -DSBL_SCRATCH_MEM_SIZE=0x4000000
+endif # ifeq ($(SOC), am64x)
 
 # Check for custom flags
 ifeq ($(BOOTMODE), cust)

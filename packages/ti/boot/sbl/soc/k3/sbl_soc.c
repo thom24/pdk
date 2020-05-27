@@ -47,11 +47,7 @@
 sblProfileInfo_t sblProfileLog[MAX_PROFILE_LOG_ENTRIES];
 uint32_t sblProfileLogIndx = 0, sblProfileLogOvrFlw = 0;
 
-#if defined (SOC_J721E)
 sblRatCfgInfo_t* sblRatCfgList = NULL;
-#elif defined (SOC_AM65XX)
-sblRatCfgInfo_t* sblRatCfgList = NULL;
-#endif
 
 void SBL_init_profile(void)
 {
@@ -485,7 +481,7 @@ void SBL_ConfigureCommonRails(sblCfgPmic_t *pmicVoltCfg, uint8_t powerResource)
 void SBL_SetupPmicCfg(sblCfgPmic_t *pmicVoltCfg, uint32_t opp)
 {
     uint32_t vd, vtmDevInfo, vtmOppVid;
-    uint32_t vtmOppVidMask = (CSL_VTM_CFG1_OPPVID_OPP_LOW_DFLT_MASK << opp);
+    uint32_t vtmOppVidMask = (SBL_VTM_OPP_VID_MASK << opp);
     sblCfgPmic_t *pmicCfg;
 
     SBL_ADD_PROFILE_POINT;
@@ -751,4 +747,17 @@ void SBL_SocEarlyInit(void)
     J721E_UART_InitPwrClk();
 }
 
+#endif
+
+
+#if defined(SOC_AM64X)
+#include <ti/board/src/am64x_evm/include/board_internal.h>
+void SBL_SocEarlyInit(void)
+{
+}
+
+void SBL_SocLateInit(void)
+{
+
+}
 #endif

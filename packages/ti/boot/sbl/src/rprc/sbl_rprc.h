@@ -50,12 +50,10 @@
 #include <soc/sbl_soc.h>
 #include <stdio.h>
 
-#if defined(SOC_AM65XX) || defined (SOC_J721E)
+#if defined(SOC_AM65XX) || defined (SOC_J721E) || defined(SOC_AM64X)
 #include "sbl_log.h"
 #include "sbl_soc_cfg.h"
 #include <ti/board/board.h>
-#include <ti/drv/pm/include/pm_types.h>
-#include <ti/drv/pm/include/pmlib_clkrate.h>
 #endif
 
 #ifdef __cplusplus

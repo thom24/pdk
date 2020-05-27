@@ -67,7 +67,95 @@ volatile uint32_t *sblProfileLogIndxAddr;
 volatile uint32_t *sblProfileLogOvrFlwAddr;
 
 sblEntryPoint_t k3xx_evmEntry;
-
+#if defined(SOC_AM64X)
+const CSL_ArmR5MpuRegionCfg gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
+{
+    {
+        /* Region 0 configuration: complete 32 bit address space = 4Gbits */
+        .regionId         = 0U,
+        .enable           = 1U,
+        .baseAddr         = 0x0U,
+        .size             = CSL_ARM_R5_MPU_REGION_SIZE_4GB,
+        .subRegionEnable  = CSL_ARM_R5_MPU_SUB_REGION_ENABLE_ALL,
+        .exeNeverControl  = 1U,
+        .accessPermission = CSL_ARM_R5_ACC_PERM_PRIV_USR_RD_WR,
+        .shareable        = 0U,
+        .cacheable        = (uint32_t)FALSE,
+        .cachePolicy      = 0U,
+        .memAttr          = 0U,
+    },
+    {
+        /* Region 1 configuration: 64K bytes ATCM for exception vector execution */
+        .regionId         = 1U,
+        .enable           = 1U,
+        .baseAddr         = 0x0U,
+        .size             = CSL_ARM_R5_MPU_REGION_SIZE_32KB,
+        .subRegionEnable  = CSL_ARM_R5_MPU_SUB_REGION_ENABLE_ALL,
+        .exeNeverControl  = 0U,
+        .accessPermission = CSL_ARM_R5_ACC_PERM_PRIV_USR_RD_WR,
+        .shareable        = 0U,
+        .cacheable        = (uint32_t)TRUE,
+        .cachePolicy      = CSL_ARM_R5_CACHE_POLICY_NON_CACHEABLE,
+        .memAttr          = 0U,
+    },
+    {
+        /* Region 2 configuration: 2 MB MCMS3 RAM */
+        .regionId         = 2U,
+        .enable           = 1U,
+        .baseAddr         = 0x70000000,
+        .size             = CSL_ARM_R5_MPU_REGION_SIZE_2MB,
+        .subRegionEnable  = CSL_ARM_R5_MPU_SUB_REGION_ENABLE_ALL,
+        .exeNeverControl  = 0U,
+        .accessPermission = CSL_ARM_R5_ACC_PERM_PRIV_USR_RD_WR,
+        .shareable        = 0U,
+        .cacheable        = (uint32_t)TRUE,
+        .cachePolicy      = CSL_ARM_R5_MEM_ATTR_CACHED_WT_NO_WA,
+        .memAttr          = 0U,
+    },
+    {
+        /* Region 3 configuration: 2 GB DDR RAM */
+        .regionId         = 3U,
+        .enable           = 1U,
+        .baseAddr         = 0x80000000,
+        .size             = CSL_ARM_R5_MPU_REGION_SIZE_2GB,
+        .subRegionEnable  = CSL_ARM_R5_MPU_SUB_REGION_ENABLE_ALL,
+        .exeNeverControl  = 0U,
+        .accessPermission = CSL_ARM_R5_ACC_PERM_PRIV_USR_RD_WR,
+        .shareable        = 0U,
+        .cacheable        = (uint32_t)TRUE,
+        .cachePolicy      = CSL_ARM_R5_MEM_ATTR_CACHED_WT_NO_WA,
+        .memAttr          = 0U,
+    },
+    {
+        /* Region 4 configuration: 64 KB BTCM */
+        .regionId         = 4U,
+        .enable           = 1U,
+        .baseAddr         = 0x41010000,
+        .size             = CSL_ARM_R5_MPU_REGION_SIZE_32KB,
+        .subRegionEnable  = CSL_ARM_R5_MPU_SUB_REGION_ENABLE_ALL,
+        .exeNeverControl  = 0U,
+        .accessPermission = CSL_ARM_R5_ACC_PERM_PRIV_USR_RD_WR,
+        .shareable        = 0U,
+        .cacheable        = (uint32_t)TRUE,
+        .cachePolicy      = CSL_ARM_R5_CACHE_POLICY_NON_CACHEABLE,
+        .memAttr          = 0U,
+    },
+    {
+        /* Region 5 configuration: 128 MB FSS DAT0 */
+        .regionId         = 5U,
+        .enable           = 1U,
+        .baseAddr         = 0x60000000,
+        .size             = CSL_ARM_R5_MPU_REGION_SIZE_128MB,
+        .subRegionEnable  = CSL_ARM_R5_MPU_SUB_REGION_ENABLE_ALL,
+        .exeNeverControl  = 0U,
+        .accessPermission = CSL_ARM_R5_ACC_PERM_PRIV_USR_RD_WR,
+        .shareable        = 0U,
+        .cacheable        = (uint32_t)TRUE,
+        .cachePolicy      = CSL_ARM_R5_MEM_ATTR_CACHED_WT_NO_WA,
+        .memAttr          = 0U,
+    }
+};
+#else
 const CSL_ArmR5MpuRegionCfg gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
 {
     {
@@ -184,6 +272,7 @@ const CSL_ArmR5MpuRegionCfg gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
     },
 };
 
+#endif
 int main()
 {
 #if !defined(SBL_USE_MCU_DOMAIN_ONLY)
@@ -282,7 +371,6 @@ int main()
     sblProfileLogAddr = sblProfileLog;
     sblProfileLogIndxAddr = &sblProfileLogIndx;
     sblProfileLogOvrFlwAddr = &sblProfileLogOvrFlw;
-
 #if defined(SBL_USE_MCU_DOMAIN_ONLY)
     /* Boot just the MCU1 cores */
     if (k3xx_evmEntry.CpuEntryPoint[MCU1_CPU0_ID] != SBL_INVALID_ENTRY_ADDR)
@@ -291,7 +379,7 @@ int main()
         SBL_SlaveCoreBoot(MCU1_CPU1_ID, NULL, &k3xx_evmEntry);
     }
 #else
-    for (core_id = MPU1_CPU0_ID; core_id <= DSP2_C7X_ID; core_id ++)
+    for (core_id = MPU1_CPU0_ID; core_id <= M4F_CPU0_ID; core_id ++)
     {
         /* Try booting all cores other than the cluster running the SBL */
         if ((k3xx_evmEntry.CpuEntryPoint[core_id] != SBL_INVALID_ENTRY_ADDR) &&

@@ -244,7 +244,7 @@ OSAL_Baremetal_TestApp_PKG_LIST = OSAL_Baremetal_TestApp
 OSAL_Baremetal_TestApp_INCLUDE = $(OSAL_Baremetal_TestApp_PATH)
 OSAL_Baremetal_TestApp_BOARDLIST = $(libosal_BOARDLIST)
 export OSAL_Baremetal_TestApp_BOARDLIST
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
 OSAL_Baremetal_TestApp_SBL_APPIMAGEGEN = yes
 else
 OSAL_Baremetal_TestApp_SBL_APPIMAGEGEN = no

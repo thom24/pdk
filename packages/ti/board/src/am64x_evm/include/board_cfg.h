@@ -45,6 +45,8 @@
 extern "C" {
 #endif
 
+#include <ti/board/src/am64x_evm/include/board_pinmux.h>
+
 /* Board ID information */
 #define BOARD_INFO_CPU_NAME     "am64x"
 #define BOARD_INFO_BOARD_NAME   "am64x_evm"

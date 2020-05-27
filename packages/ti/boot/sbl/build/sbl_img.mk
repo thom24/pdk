@@ -70,7 +70,7 @@ endif # ifeq ($(filter $(SBL_CFLAGS), -DBOOT_OSPI), -DBOOT_OSPI)
 
 SRCS_COMMON += sbl_main.c
 
-EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_SBL_COMP_PATH)/soc/k3/linker.cmd
+EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_SBL_COMP_PATH)/soc/k3/$(SOC)/linker.cmd
 
 # Core/SoC/platform specific source files and CFLAGS
 # Example:

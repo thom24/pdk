@@ -186,7 +186,7 @@ void SBL_BootCore(uint32_t entry, uint32_t CoreID, sblEntryPoint_t *pAppEntry)
 {
     switch (CoreID)
     {
-#if defined(SOC_AM65XX) || defined (SOC_J721E)
+#if defined(SOC_AM65XX) || defined (SOC_J721E) || defined(SOC_AM64X)
         case ONLY_LOAD_ID:
             /* Only loading, ignore entry point*/
             SBL_log(SBL_LOG_MAX, "Only load (not execute) image @0x%x\n", entry);
@@ -206,6 +206,8 @@ void SBL_BootCore(uint32_t entry, uint32_t CoreID, sblEntryPoint_t *pAppEntry)
         case MCU2_CPU1_ID:
         case MCU3_CPU0_ID:
         case MCU3_CPU1_ID:
+        case M4F_CPU0_ID:
+       
             /* All other cores*/
             SBL_log(SBL_LOG_MAX, "Setting entry point for core %d @0x%x\n", CoreID, entry);
             pAppEntry->CpuEntryPoint[CoreID] = entry;
@@ -664,7 +666,7 @@ static int32_t SBL_RprcImageParse(void *srcAddr,
 }
 #endif
 
-#if defined(SOC_AM65XX) || defined (SOC_J721E)
+#if defined(SOC_AM65XX) || defined (SOC_J721E) || defined(SOC_AM64X)
 /* */
 
 __attribute__((weak)) void SBL_SetupCoreMem(uint32_t CoreID);
@@ -727,6 +729,17 @@ static int32_t SBL_RprcImageParse(void *srcAddr,
     SBL_C7X1_L1DMEM_BASE_ADDR_SOC,
     SBL_C7X2_L1DMEM_BASE_ADDR_SOC
     };
+
+    const uint32_t SocM4fIramAddr[] =
+    {
+    SBL_M4F_IRAM_BASE_ADDR_SOC
+    };
+
+    const uint32_t SocM4fDramAddr[] =
+    {
+    SBL_M4F_DRAM_BASE_ADDR_SOC
+    };
+
 
     /*read application image header*/
     fp_readData(&header, srcAddr, sizeof (rprcFileHeader_t));
@@ -826,6 +839,31 @@ static int32_t SBL_RprcImageParse(void *srcAddr,
                         section.addr = section.addr - SBL_C7X_L1DMEM_BASE;
                         section.addr = SocC7xL1DmemAddr[CoreId - DSP1_C7X_ID] + section.addr;
                         SBL_log(SBL_LOG_MAX, "SoC C7x L2DMEM addr 0x%x\n", section.addr);
+                    }
+                    else
+                    {
+                        /* To remove MISRA C error */
+                    }
+                    break;
+
+               case M4F_CPU0_ID:
+                    /*Remap IRAM & DRAM address from M4F local to SoC memory map*/
+                    if (section.addr < (SBL_M4F_IRAM_BASE + SBL_M4F_IRAM_SIZE))
+                    {
+                        /* Get offset into IRAM */
+                        SBL_log(SBL_LOG_MAX, "Translating M4F local IRAM addr 0x%x to ", section.addr);
+                        section.addr = section.addr - SBL_M4F_IRAM_BASE;
+                        section.addr = SocM4fIramAddr[CoreId - M4F_CPU0_ID] + section.addr;
+                        SBL_log(SBL_LOG_MAX, "SoC M4F IRAM addr 0x%x\n", section.addr);
+                    }
+                    else  if ((section.addr >= SBL_M4F_DRAM_BASE) &&
+                              (section.addr < (SBL_M4F_DRAM_BASE + SBL_M4F_DRAM_SIZE)))
+                    {
+                        /* Get offset into DRAM */
+                        SBL_log(SBL_LOG_MAX, "Translating M4F local DRAM addr 0x%x to ", section.addr);
+                        section.addr = section.addr - SBL_M4F_DRAM_BASE;
+                        section.addr = SocM4fDramAddr[CoreId - M4F_CPU0_ID] + section.addr;
+                        SBL_log(SBL_LOG_MAX, "SoC M4F DRAM addr 0x%x\n", section.addr);
                     }
                     else
                     {

@@ -53,7 +53,10 @@
 
 /* TI-RTOS Header files */
 #include <ti/drv/spi/SPI.h>
+#if SBL_USE_DMA
 #include <ti/drv/udma/udma.h>
+#endif
+
 #include <ti/drv/spi/src/SPI_osal.h>
 #include <ti/drv/uart/UART_stdio.h>
 #include <ti/drv/spi/soc/SPI_soc.h>
@@ -100,7 +103,9 @@ void SBL_SysFwLoad(void *dst, void *src, uint32_t size);
 
 static void *boardHandle = NULL;
 
+#if !defined(SBL_BYPASS_OSPI_DRIVER)
 static OSPI_v0_HwAttrs ospi_cfg;
+#endif
 
 #ifdef SECURE_BOOT
 extern SBL_incomingBootData_S sblInBootData;
@@ -210,6 +215,7 @@ static int32_t Ospi_udma_deinit(void)
 
 int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
 {
+#if !defined(SBL_BYPASS_OSPI_DRIVER)
     Board_flashHandle h;
 
     SBL_ADD_PROFILE_POINT;
@@ -256,10 +262,25 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
 SBL_ADD_PROFILE_POINT;
 
     return CSL_PASS;
+#else
+   SBL_ADD_PROFILE_POINT;
+ 
+   if(pBuffer)
+   {
+      /* Set up ROM to load system firmware */
+      *pBuffer = (void *)(OSPI_FLASH_BASE_ADDR + OSPI_OFFSET_SYSFW);
+   }
+ 
+   SBL_ADD_PROFILE_POINT;
+
+   return CSL_PASS;
+#endif
+
 }
 
 int32_t SBL_ospiInit(void *handle)
 {
+#if !defined(SBL_BYPASS_OSPI_DRIVER)
     Board_flashHandle h = *(Board_flashHandle *) handle;
 
     SBL_ADD_PROFILE_POINT;
@@ -280,7 +301,9 @@ int32_t SBL_ospiInit(void *handle)
         };
         struct ospiClkParams ospiClkInfo[] = {
                                                 {SBL_DEV_ID_OSPI0, SBL_CLK_ID_OSPI0},
+#ifdef SBL_DEV_ID_OSPI1
                                                 {SBL_DEV_ID_OSPI1, SBL_CLK_ID_OSPI1},
+#endif                                                
                                              };
         uint64_t ospiFunClk;
 
@@ -329,6 +352,12 @@ int32_t SBL_ospiInit(void *handle)
     SBL_ADD_PROFILE_POINT;
 
     return 0;
+#else
+    SBL_ADD_PROFILE_POINT;
+
+    SBL_ADD_PROFILE_POINT;
+    return 0;
+#endif
 }
 
 int32_t SBL_ospiFlashRead(const void *handle, uint8_t *dst, uint32_t length,
@@ -337,7 +366,7 @@ int32_t SBL_ospiFlashRead(const void *handle, uint8_t *dst, uint32_t length,
     uint32_t start_time = SBL_ADD_PROFILE_POINT;
     uint32_t end_time = 0;
 
-#if SBL_USE_DMA
+#if defined(SBL_USE_DMA) && !defined(SBL_BYPASS_OSPI_DRIVER)
     if (length > 4 * 1024)
     {
         Board_flashHandle h = *(const Board_flashHandle *) handle;
@@ -379,17 +408,19 @@ int32_t SBL_ospiFlashRead(const void *handle, uint8_t *dst, uint32_t length,
 
 int32_t SBL_ospiClose(const void *handle)
 {
+#if !defined(SBL_BYPASS_OSPI_DRIVER)
     Board_flashHandle h = *(const Board_flashHandle *) handle;
-
-    SBL_ADD_PROFILE_POINT;
 
     SBL_log(SBL_LOG_MAX, "SBL_ospiClose called\n");
     Board_flashClose(h);
 #if SBL_USE_DMA
     Ospi_udma_deinit();
 #endif
-    SBL_ADD_PROFILE_POINT;
 
+#else
+    SBL_ADD_PROFILE_POINT;
+    SBL_ADD_PROFILE_POINT;
+#endif
     return 0;
 }
 

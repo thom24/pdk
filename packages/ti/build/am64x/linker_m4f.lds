@@ -13,6 +13,7 @@
 --fill_value=0
 --stack_size=0x2000
 --heap_size=0x1000
+--entry_point=vector_table
 
 -stack  0x2000                              /* SOFTWARE STACK SIZE           */
 -heap   0x2000                              /* HEAP AREA SIZE                */
