@@ -106,10 +106,12 @@ EXTERNAL_LNKCMD_FILE = $(PDK_INSTALL_PATH)/ti/build/tpr12/linker_c66.lds
 endif
 endif
 
+ifneq ($(SOC),$(filter $(SOC), tpr12))
 # Enable copy of vectors
 ifeq ($(ISA),$(filter $(ISA), r5f))
   SRCDIR += $(PDK_VECT_COPY_PATH)
   SRCS_ASM_COMMON += utilsCopyVecs2ATcm.asm
+endif
 endif
 
 PACKAGE_SRCS_COMMON = . ../src

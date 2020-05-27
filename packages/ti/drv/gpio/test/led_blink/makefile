@@ -61,10 +61,12 @@ ifeq ($(SOC),$(filter $(SOC), tpr12))
 SRCDIR += tpr12
 endif
 
+ifneq ($(SOC),$(filter $(SOC), tpr12))
 # Enable copy of vectors
 ifeq ($(ISA),$(filter $(ISA), r5f))
   SRCDIR += $(PDK_VECT_COPY_PATH)
   SRCS_ASM_COMMON += utilsCopyVecs2ATcm.asm
+endif
 endif
 
 # List all the external components/interfaces, whose interface header files
