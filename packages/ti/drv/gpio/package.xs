@@ -31,7 +31,7 @@ function getLibs(prog)
         profilingTag = ".profiling"
     }
     name = this.$name + profilingTag + ".a" + suffix;
-    
+
     /* Read LIBDIR variable */
     var lib = java.lang.System.getenv("LIBDIR");
 
@@ -42,8 +42,8 @@ function getLibs(prog)
     } else {
         print ("\tSystem environment LIBDIR variable defined : " + lib);
     }
-	
-    var socTypes = [ 
+
+    var socTypes = [
                      'am571x',
                      'am572x',
                      'am574x',
@@ -64,7 +64,8 @@ function getLibs(prog)
                      'c6747',
                      'am65xx',
                      'j721e',
-                     'j7200'
+                     'j7200',
+                     'am64x',
                    ];
 
     /* Get the SOC */
@@ -73,7 +74,7 @@ function getLibs(prog)
         if (socType.equals(soc))
         {
             lib = lib + "/" + soc;
-            name = this.$name + profilingTag + ".a" + suffix;	 
+            name = this.$name + profilingTag + ".a" + suffix;
             break;
         }
     }
@@ -90,7 +91,7 @@ function getLibs(prog)
     else if (java.lang.String(suffix).contains('a9') )
         lib = lib + "/a9";
     else if (java.lang.String(suffix).contains('a8') )
-        lib = lib + "/a8";        
+        lib = lib + "/a8";
     else if (java.lang.String(suffix).contains('e9') )
         lib = lib + "/arm9";
     else if (java.lang.String(suffix).contains('a53'))
@@ -109,7 +110,7 @@ function getLibs(prog)
             lib = lib + "/" + profile;
             break;
         }
-    }	
+    }
 
     /* Get library name with path */
     lib = lib + "/" + name;
@@ -131,7 +132,7 @@ xdc.loadPackage("ti.csl");
  *  ======== package.close ========
  */
 function close()
-{    
+{
     if (xdc.om.$name != 'cfg') {
         return;
     }

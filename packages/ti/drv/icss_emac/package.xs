@@ -31,7 +31,7 @@ function getLibs(prog)
         profilingTag = ".profiling"
     }
     name = this.$name + profilingTag + ".a" + suffix;
-    
+
     /* Read LIBDIR variable */
     var lib = java.lang.System.getenv("LIBDIR");
 
@@ -42,15 +42,16 @@ function getLibs(prog)
     } else {
         print ("\tSystem environment LIBDIR variable defined : " + lib);
     }
-	
-    var socTypes = [ 
+
+    var socTypes = [
                      'am571x',
                      'am572x',
                      'am574x',
                      'am335x',
                      'am437x',
                      'k2g',
-                     'am65xx'
+                     'am65xx',
+                     'am64x',
                    ];
 
     /* Get the SOC */
@@ -59,7 +60,7 @@ function getLibs(prog)
         if (socType.equals(soc))
         {
             lib = lib + "/" + soc;
-            name = this.$name + profilingTag + ".a" + suffix;	 
+            name = this.$name + profilingTag + ".a" + suffix;
             break;
         }
     }
@@ -74,14 +75,14 @@ function getLibs(prog)
     else if (java.lang.String(suffix).contains('a9') )
         lib = lib + "/a9";
     else if (java.lang.String(suffix).contains('a8') )
-        lib = lib + "/a8";        
+        lib = lib + "/a8";
     else if (java.lang.String(suffix).contains('a53') )
         lib = lib + "/a53";
     else if (java.lang.String(suffix).contains('r5f') )
         lib = lib + "/r5f";
     else
         throw new Error("\tUnknown target for: " + this.packageBase + lib);
-    
+
     var libProfiles = ["debug", "release"];
     /* get the configured library profile */
     for each(var profile in libProfiles)
@@ -91,7 +92,7 @@ function getLibs(prog)
             lib = lib + "/" + profile;
             break;
         }
-    }	
+    }
 
     /* Get library name with path */
     lib = lib + "/" + name;
@@ -113,7 +114,7 @@ xdc.loadPackage("ti.csl");
  *  ======== package.close ========
  */
 function close()
-{    
+{
     if (xdc.om.$name != 'cfg') {
         return;
     }
