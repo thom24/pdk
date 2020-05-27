@@ -82,15 +82,14 @@ static int32_t I2C_v1_setBusFrequency(I2C_Handle handle, uint32_t busFrequency);
 static int32_t I2C_v1_recoverBus(I2C_Handle handle, uint32_t i2cDelay);
 static int32_t I2C_v1_resetCtrl(I2C_Handle handle);
 static int32_t I2C_v1_ctrlInit(I2C_Handle handle);
-static uint32_t I2C_v1_waitForPin(I2C_Handle handle,
-                                  uint32_t               flag,
-                                  uint32_t               timeout,
-                                  uint8_t               *timeOutStatus);
+static uint32_t I2C_v1_waitForPin(I2C_Handle  handle,
+                                  uint32_t    flag,
+                                  uint32_t   *pTimeout);
 
 #define I2C_DELAY_MED     ((uint32_t) 10000U)
 #define I2C_DELAY_BIG     ((uint32_t) 30000U)
 #define I2C_DELAY_SMALL   ((uint32_t) 5000U)
-
+#define I2C_DELAY_USEC    ((uint32_t) 250U)
 
 /* I2C function table for I2C AM57x implementation */
 const I2C_FxnTable I2C_v1_FxnTable = {
@@ -870,6 +869,20 @@ static I2C_Handle I2C_open_v1(I2C_Handle handle, const I2C_Params *params)
     return (retHandle);
 }
 
+static bool I2C_checkTimeout(uint32_t *pUsecCnt)
+{
+    bool timeout = (bool)false;
+
+    *pUsecCnt = *pUsecCnt + 1U;
+    if (*pUsecCnt == 1000U)
+    {
+        *pUsecCnt = 0U;
+        timeout = (bool)true;
+    }
+
+    return (timeout);
+}
+
 /*
  *  ======== I2C_primeTransfer_v1 =======
  */
@@ -879,12 +892,12 @@ static int16_t I2C_primeTransfer_v1(I2C_Handle handle,
     I2C_v1_Object  *object = NULL;
     I2C_HwAttrs const *hwAttrs = NULL;
     int16_t status = I2C_STS_SUCCESS;
-    uint8_t timeoutStatus = 0;
     uint32_t errStat=0,fatalError=0;
     uint32_t regVal;
     uint32_t xsa;
     uint32_t timeout = transaction->timeout;
-	
+    uint32_t uSecTimeout = 0U;
+
     /* Get the pointer to the object and hwAttrs */
     object = (I2C_v1_Object*)handle->object;
     hwAttrs = (I2C_HwAttrs const *)handle->hwAttrs;
@@ -1009,8 +1022,11 @@ static int16_t I2C_primeTransfer_v1(I2C_Handle handle,
                 /* wait for bus busy */
                 while ((I2CMasterBusBusy(hwAttrs->baseAddr) == 0) && (timeout != 0))
                 {
-                    I2C_v1_udelay(I2C_DELAY_SMALL);
-                    timeout--;
+                    I2C_v1_udelay(I2C_DELAY_USEC);
+                    if (I2C_checkTimeout(&uSecTimeout))
+                    {
+                        timeout--;
+                    }
                 }
 
                 while ((object->writeCountIdx != 0U) && (timeout != 0))
@@ -1023,8 +1039,11 @@ static int16_t I2C_primeTransfer_v1(I2C_Handle handle,
                                                                        I2C_INT_STOP_CONDITION ) == 0U)) && \
                           (timeout != 0))
                     {
-                        I2C_v1_udelay(I2C_DELAY_SMALL);
-                        timeout--;
+                        I2C_v1_udelay(I2C_DELAY_USEC);
+                        if (I2C_checkTimeout(&uSecTimeout))
+                        {
+                            timeout--;
+                        }
                     }
 
                     errStat = I2CMasterIntRawStatusEx(hwAttrs->baseAddr, I2C_INT_ARBITRATION_LOST | \
@@ -1051,11 +1070,10 @@ static int16_t I2C_primeTransfer_v1(I2C_Handle handle,
                 
                 if ((fatalError == 0U) && (timeout != 0U))
                 {
-                   /* wait for register access ready */
-                    (void)I2C_v1_waitForPin(handle,
-                                            I2C_INT_ADRR_READY_ACESS,
-                                            transaction->timeout,
-                                            &timeoutStatus);
+                    /* wait for register access ready */
+                    timeout = I2C_v1_waitForPin(handle,
+                                                I2C_INT_ADRR_READY_ACESS,
+                                                &timeout);
                 }
 
                 if ((errStat & I2C_INT_ARBITRATION_LOST) == I2C_INT_ARBITRATION_LOST)
@@ -1070,7 +1088,7 @@ static int16_t I2C_primeTransfer_v1(I2C_Handle handle,
                 {
                     status = I2C_STS_ERR_ACCESS_ERROR;
                 }
-                else if ((timeoutStatus == (uint8_t)1U) || (timeout == 0U))
+                else if (timeout == 0U)
                 {
                     status = I2C_STS_ERR_TIMEOUT;
                 }
@@ -1087,19 +1105,17 @@ static int16_t I2C_primeTransfer_v1(I2C_Handle handle,
                     if ((fatalError == 0U) && (timeout != 0U))
                     {
                         /* wait for stop to happen */
-                        (void)I2C_v1_waitForPin(handle,
-                                                I2C_INT_STOP_CONDITION,
-                                                transaction->timeout,
-                                                &timeoutStatus);
+                        timeout = I2C_v1_waitForPin(handle,
+                                                    I2C_INT_STOP_CONDITION,
+                                                    &timeout);
 
 
                         /* wait for register access ready */
-                        (void)I2C_v1_waitForPin(handle,
-                                                I2C_INT_ADRR_READY_ACESS,
-                                                transaction->timeout,
-                                                &timeoutStatus);
+                        timeout = I2C_v1_waitForPin(handle,
+                                                    I2C_INT_ADRR_READY_ACESS,
+                                                    &timeout);
 
-                        if ((timeoutStatus == (uint8_t)1U) || (timeout == 0U))
+                        if (timeout == 0U)
                         {
                             status = I2C_STS_ERR_TIMEOUT;
                         }
@@ -1129,8 +1145,11 @@ static int16_t I2C_primeTransfer_v1(I2C_Handle handle,
                 /* wait for bus not busy */
                 while ((I2CMasterBusBusy(hwAttrs->baseAddr)==0) && (timeout != 0U))
                 {
-                    I2C_v1_udelay(I2C_DELAY_SMALL);
-                    timeout--;
+                    I2C_v1_udelay(I2C_DELAY_USEC);
+                    if (I2C_checkTimeout(&uSecTimeout))
+                    {
+                        timeout--;
+                    }
                 }
 
                 while ((object->readCountIdx != 0U) && (timeout != 0U))
@@ -1142,8 +1161,11 @@ static int16_t I2C_primeTransfer_v1(I2C_Handle handle,
                                                                        I2C_INT_ACCESS_ERROR ) == 0U)) && \
                           (timeout != 0U))
                     {
-                        I2C_v1_udelay(I2C_DELAY_SMALL);
-                        timeout--;
+                        I2C_v1_udelay(I2C_DELAY_USEC);
+                        if (I2C_checkTimeout(&uSecTimeout))
+                        {
+                            timeout--;
+                        }
                     }
 
                     errStat = I2CMasterIntRawStatusEx(hwAttrs->baseAddr, I2C_INT_ARBITRATION_LOST | \
@@ -1171,10 +1193,9 @@ static int16_t I2C_primeTransfer_v1(I2C_Handle handle,
                 if ((fatalError == 0U) && (timeout != 0U))
                 {
                     /* wait for register access ready */
-                    (void)I2C_v1_waitForPin(handle,
-                                            I2C_INT_ADRR_READY_ACESS,
-                                            transaction->timeout,
-                                            &timeoutStatus);
+                    timeout = I2C_v1_waitForPin(handle,
+                                                I2C_INT_ADRR_READY_ACESS,
+                                                &timeout);
                 }
 
                 if ((errStat & I2C_INT_ARBITRATION_LOST) == I2C_INT_ARBITRATION_LOST)
@@ -1189,7 +1210,7 @@ static int16_t I2C_primeTransfer_v1(I2C_Handle handle,
                 {
                     status = I2C_STS_ERR_ACCESS_ERROR;
                 }
-                else if (timeoutStatus == (uint8_t)1U)
+                else if (timeout == 0U)
                 {
                     status = I2C_STS_ERR_TIMEOUT;
                 }
@@ -1204,18 +1225,16 @@ static int16_t I2C_primeTransfer_v1(I2C_Handle handle,
                 if ((fatalError == 0U) && (timeout != 0U))
                 {
                     /* wait for stop to happen */
-                    (void)I2C_v1_waitForPin(handle,
-                                            I2C_INT_STOP_CONDITION,
-                                            transaction->timeout,
-                                            &timeoutStatus);
+                    timeout = I2C_v1_waitForPin(handle,
+                                                I2C_INT_STOP_CONDITION,
+                                                &timeout);
 
                     /* wait for register access ready */
-                    (void)I2C_v1_waitForPin(handle,
-                                            I2C_INT_ADRR_READY_ACESS,
-                                            transaction->timeout,
-                                            &timeoutStatus);
+                    timeout = I2C_v1_waitForPin(handle,
+                                                I2C_INT_ADRR_READY_ACESS,
+                                                &timeout);
 
-                    if ((timeoutStatus == (uint8_t)1U) || (timeout == 0U))
+                    if (timeout == 0U)
                     {
                         status = I2C_STS_ERR_TIMEOUT;
                     }
@@ -1920,32 +1939,31 @@ static int32_t I2C_v1_ctrlInit(I2C_Handle handle)
 /*
  *  ======== I2C_v1_waitForPin ========
  */
-static uint32_t I2C_v1_waitForPin(I2C_Handle handle,
-                                  uint32_t               flag,
-                                  uint32_t               timeout,
-                                  uint8_t               *timeOutStatus)
+static uint32_t I2C_v1_waitForPin(I2C_Handle  handle,
+                                  uint32_t    flag,
+                                  uint32_t   *pTimeout)
 {
-    uint32_t          status = 0;
-    I2C_HwAttrs const  *hwAttrs = NULL;
-    volatile uint32_t pinTimeout = timeout;
-
-    *timeOutStatus = 0;
+    uint32_t           status;
+    I2C_HwAttrs const *hwAttrs = NULL;
+    uint32_t           timeout = *pTimeout;
+    uint32_t           uSecTimeout = 0U;
 
     /* Get the pointer to hwAttrs */
     hwAttrs = (I2C_HwAttrs const *)handle->hwAttrs;
 
-    /*  For backware compatibility. Perform timeout check if value is greater
-     *  than 0 only.
-     */
-    if(pinTimeout > 0U)
+    if(timeout > 0U)
     {
         status = I2CMasterIntRawStatus(hwAttrs->baseAddr);
         while ((uint32_t) 0U == (status & flag))
         {
-            if ((uint32_t) 0U != pinTimeout)
+            if ((uint32_t) 0U != timeout)
             {
+                I2C_v1_udelay(I2C_DELAY_USEC);
+                if (I2C_checkTimeout(&uSecTimeout))
+                {
+                    timeout--;
+                }
                 status = I2CMasterIntRawStatus(hwAttrs->baseAddr);
-                pinTimeout = pinTimeout - 1U;
             }
             else
             {
@@ -1953,21 +1971,11 @@ static uint32_t I2C_v1_waitForPin(I2C_Handle handle,
             }
         }
 
-        if (0U != timeout)
+        if (timeout == 0U)
         {
-            if (pinTimeout == 0U)
-            {
-                *timeOutStatus = (uint8_t)1U;
-                I2CMasterIntClearEx(hwAttrs->baseAddr, I2C_INT_ALL);
-            }
-        }
-    }
-    else
-    {
-        while(I2CMasterIntRawStatusEx(hwAttrs->baseAddr, flag) == 0U)
-        {
+            I2CMasterIntClearEx(hwAttrs->baseAddr, I2C_INT_ALL);
         }
     }
 
-    return status;
+    return (timeout);
 }

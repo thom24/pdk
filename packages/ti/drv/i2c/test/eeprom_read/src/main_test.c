@@ -725,7 +725,6 @@ I2C_Tests I2c_tests[] =
 #if defined (SOC_AM335X) || defined (SOC_AM437x) || defined (SOC_AM571x) || defined (SOC_AM572x) || defined (SOC_AM574x) || defined (SOC_AM65XX) || defined (SOC_J721E) || defined (SOC_J7200)
     {I2C_Probe_BusFrequency_test, I2C_TEST_ID_PROBE_BUS_FREQ,  false, true,  false, SemaphoreP_WAIT_FOREVER, "\r\n I2C probe bus freq test in interrupt mode"},
     {I2C_timeout_test,            I2C_TEST_ID_TIMEOUT_INT,     false, true,  false, 1,                       "\r\n I2C timeout test in interrupt mode"},
-    {I2C_timeout_test,            I2C_TEST_ID_TIMEOUT_POLLING, false, false, false, 1,                       "\r\n I2C timeout test in polling mode"},
 #endif
     {NULL, },
 };
