@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                20.04.00
+                20.04.01
               </div>
             
           
@@ -235,9 +235,9 @@ can be found from the below section in the TRM.</p>
 <ol class="arabic simple">
 <li>Firewalls protecting DMSC-owned resources - e.g. secure proxies,
 firewall configuration port etc.
-These firewalls are marked as owned by <code class="docutils literal"><span class="pre">dmsc</span></code> in the firewall SOC data.</li>
+These firewalls are marked as owned by <code class="docutils literal notranslate"><span class="pre">dmsc</span></code> in the firewall SOC data.</li>
 <li>Firewalls protecting DMSC-managed resources i.e. NAVSS resources managed by RM.
-These firewalls are marked as owned by <code class="docutils literal"><span class="pre">rm</span></code> in the firewall SOC data.</li>
+These firewalls are marked as owned by <code class="docutils literal notranslate"><span class="pre">rm</span></code> in the firewall SOC data.</li>
 </ol>
 <p>The remaining firewalls are user programmable through the TISCI interface only.</p>
 <p>The list of firewalls owned/initialized by System Firmware are listed for AM65X SR1
@@ -253,10 +253,10 @@ devices at</p>
 A firewall region can be marked as owned by a specific host.
 This prevents the firewall region from being programmed/reprogrammed
 by another host and helps in firewall overlap checks.</p>
-<p>By default, only firewalls required from System Firmware use are marked as owned by <code class="docutils literal"><span class="pre">dmsc</span></code> or <code class="docutils literal"><span class="pre">rm</span></code>.
-Rest of the firewalls have ownership set to <code class="docutils literal"><span class="pre">none</span></code>.
-Firewalls with owner set as <code class="docutils literal"><span class="pre">none</span></code> can be programmed by any host.</p>
-<p>A host can claim ownership of a firewall region with owner set to <code class="docutils literal"><span class="pre">none</span></code> by using the
+<p>By default, only firewalls required from System Firmware use are marked as owned by <code class="docutils literal notranslate"><span class="pre">dmsc</span></code> or <code class="docutils literal notranslate"><span class="pre">rm</span></code>.
+Rest of the firewalls have ownership set to <code class="docutils literal notranslate"><span class="pre">none</span></code>.
+Firewalls with owner set as <code class="docutils literal notranslate"><span class="pre">none</span></code> can be programmed by any host.</p>
+<p>A host can claim ownership of a firewall region with owner set to <code class="docutils literal notranslate"><span class="pre">none</span></code> by using the
 <a class="reference internal" href="../2_tisci_msgs/security/firewall_api.html#change-firewall-owner"><span class="std std-ref">TISCI_MSG_CHANGE_FWL_OWNER</span></a> message. A host
 can use the same message to transfer a firewall region it owns to another host.</p>
 </div>
@@ -323,7 +323,7 @@ enabled trace method.
 The data sent out is the dump of the firewall exception registers as
 defined in below section in the corresponding device TRM.</p>
 <p>“System Interconnect” -&gt; “System Interconnect Registers” -&gt; “Firewall Exception Registers”</p>
-<div class="code highlight-cpp"><div class="highlight"><pre><span></span><span class="n">FWL</span> <span class="n">Exception</span>  <span class="mh">0x1116100</span>
+<div class="code highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">FWL</span> <span class="n">Exception</span>  <span class="mh">0x1116100</span>
 <span class="mh">0x70000</span>
 <span class="mh">0x70000000</span>
 <span class="mh">0x0</span>
@@ -389,7 +389,7 @@ will result in a firewall exception.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'20.04.00',
+            VERSION:'20.04.01',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
@@ -398,7 +398,7 @@ will result in a firewall exception.</p>
       <script type="text/javascript" src="../_static/jquery.js"></script>
       <script type="text/javascript" src="../_static/underscore.js"></script>
       <script type="text/javascript" src="../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" src="../_static/language_data.js"></script>
 
     <script src="http://www.ti.com/assets/js/headerfooter/analytics.js" type="text/javascript" charset="utf-8"></script>
 

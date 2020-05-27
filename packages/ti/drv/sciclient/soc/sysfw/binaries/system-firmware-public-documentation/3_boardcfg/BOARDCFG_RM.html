@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                20.04.00
+                20.04.01
               </div>
             
           
@@ -369,7 +369,7 @@ the pre-sorted and validated RM board configuration binary blob is as shown belo
 <p>Details on how to use the sysfw_boardcfg_validator.py can be found by using the
 “–help” option to the script. The details on how to use this script is as shown
 below:</p>
-<div class="code c highlight-cpp"><div class="highlight"><pre><span></span><span class="nl">usage</span><span class="p">:</span> <span class="n">sysfw_boardcfg_validator</span><span class="p">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="o">-</span><span class="n">b</span> <span class="n">BINARY_FILE</span> <span class="o">-</span><span class="n">s</span>
+<div class="code c highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="nl">usage</span><span class="p">:</span> <span class="n">sysfw_boardcfg_validator</span><span class="p">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="o">-</span><span class="n">b</span> <span class="n">BINARY_FILE</span> <span class="o">-</span><span class="n">s</span>
                                         <span class="p">{</span><span class="n">am65x_sr2</span><span class="p">,</span><span class="n">j721e</span><span class="p">,</span><span class="n">am6</span><span class="p">}</span>
                                         <span class="p">(</span><span class="o">-</span><span class="n">l</span> <span class="n">LOG_OUTPUT_FILE</span> <span class="o">|</span> <span class="o">-</span><span class="n">L</span><span class="p">)</span>
                                         <span class="p">[</span><span class="o">-</span><span class="n">o</span> <span class="n">OUTPUT_BINARY_FILE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">r</span> <span class="n">RULES_FILE</span><span class="p">]</span>
@@ -472,7 +472,7 @@ is not dependent on reception of the standard board configuration message.</p>
 </div>
 <div class="section" id="tisci-message-id">
 <h4>TISCI Message ID<a class="headerlink" href="#tisci-message-id" title="Permalink to this headline">¶</a></h4>
-<p><code class="docutils literal"><span class="pre">TISCI_MSG_BOARD_CONFIG_RM</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(0x000CU)</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">TISCI_MSG_BOARD_CONFIG_RM</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(0x000CU)</span></code></p>
 </div>
 <div class="section" id="message-data-structures">
 <h4>Message Data Structures<a class="headerlink" href="#message-data-structures" title="Permalink to this headline">¶</a></h4>
@@ -564,7 +564,7 @@ the range of a specific resource assigned to a host.</p>
 </div>
 <div class="section" id="id2">
 <h3>TISCI Message ID<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
-<p><p><code class="docutils literal"><span class="pre">TISCI_MSG_RM_GET_RESOURCE_RANGE</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(0x1500U)</span></code></p>
+<p><p><code class="docutils literal notranslate"><span class="pre">TISCI_MSG_RM_GET_RESOURCE_RANGE</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(0x1500U)</span></code></p>
 <p>RM TISCI message to request a resource range assignment for a host</p>
 </p>
 </div>
@@ -867,7 +867,7 @@ in place of resasg_entries[].</td>
 </tbody>
 </table>
 <p>Example user structure for RM boardcfg:</p>
-<div class="code c highlight-cpp"><div class="highlight"><pre><span></span><span class="cp">#define RESASG_ENTRIES (100)</span>
+<div class="code c highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#define RESASG_ENTRIES (100)</span>
 
 <span class="k">struct</span> <span class="n">local_rm_boardcfg</span> <span class="p">{</span>
     <span class="k">struct</span> <span class="n">boardcfg_rm</span>        <span class="n">rm_boardcfg</span><span class="p">;</span>
@@ -1100,7 +1100,7 @@ steps fail the API would return with a NACK.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'20.04.00',
+            VERSION:'20.04.01',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
@@ -1109,7 +1109,7 @@ steps fail the API would return with a NACK.</p>
       <script type="text/javascript" src="../_static/jquery.js"></script>
       <script type="text/javascript" src="../_static/underscore.js"></script>
       <script type="text/javascript" src="../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" src="../_static/language_data.js"></script>
 
     <script src="http://www.ti.com/assets/js/headerfooter/analytics.js" type="text/javascript" charset="utf-8"></script>
 

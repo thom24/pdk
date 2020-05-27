@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                20.04.00
+                20.04.01
               </div>
             
           
@@ -326,15 +326,15 @@ required to be populated by ROM need to be populated as well.</p>
 PKH, include the <a class="reference internal" href="../2_tisci_msgs/security/sec_cert_format.html#sysfw-hs-bcfg-ext"><span class="std std-ref">System Firmware HS Board Configuration Extension</span></a> in the counter signing
 certificate. Populate different fields of the extension as shown below.</p>
 <ol class="arabic simple">
-<li>Populate the <code class="docutils literal"><span class="pre">initialVector</span></code> field with the IV from step 2.3 in
+<li>Populate the <code class="docutils literal notranslate"><span class="pre">initialVector</span></code> field with the IV from step 2.3 in
 <a class="reference internal" href="#sysfw-pub-sec-bcfg-encrypt"><span class="std std-ref">Encrypting the security board configuration</span></a>.</li>
-<li>Populate the <code class="docutils literal"><span class="pre">randomString</span></code> field with the RS from step 2.2 in
+<li>Populate the <code class="docutils literal notranslate"><span class="pre">randomString</span></code> field with the RS from step 2.2 in
 <a class="reference internal" href="#sysfw-pub-sec-bcfg-encrypt"><span class="std std-ref">Encrypting the security board configuration</span></a>.</li>
-<li>Set <code class="docutils literal"><span class="pre">iterationCnt</span></code> and <code class="docutils literal"><span class="pre">salt</span></code> to zero.</li>
+<li>Set <code class="docutils literal notranslate"><span class="pre">iterationCnt</span></code> and <code class="docutils literal notranslate"><span class="pre">salt</span></code> to zero.</li>
 <li>Calculate SHA2-512 hash of the encrypted binary created in
-<a class="reference internal" href="#sysfw-pub-sec-bcfg-encrypt"><span class="std std-ref">Encrypting the security board configuration</span></a> and populate the <code class="docutils literal"><span class="pre">secBoardCfgHash</span></code> field.</li>
-<li>Set the <code class="docutils literal"><span class="pre">secBoardCfgVer</span></code> field to zero.</li>
-<li>Populate <code class="docutils literal"><span class="pre">pmBoardCfgHash</span></code> , <code class="docutils literal"><span class="pre">rmBoardCfgHash</span></code> and <code class="docutils literal"><span class="pre">boardCfgHash</span></code> with
+<a class="reference internal" href="#sysfw-pub-sec-bcfg-encrypt"><span class="std std-ref">Encrypting the security board configuration</span></a> and populate the <code class="docutils literal notranslate"><span class="pre">secBoardCfgHash</span></code> field.</li>
+<li>Set the <code class="docutils literal notranslate"><span class="pre">secBoardCfgVer</span></code> field to zero.</li>
+<li>Populate <code class="docutils literal notranslate"><span class="pre">pmBoardCfgHash</span></code> , <code class="docutils literal notranslate"><span class="pre">rmBoardCfgHash</span></code> and <code class="docutils literal notranslate"><span class="pre">boardCfgHash</span></code> with
 the SHA2-512 hashes of PM Board configuration, RM board configuration and the
 core board configuration blobs respectively.</li>
 </ol>
@@ -490,7 +490,7 @@ boardcfg</td>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'20.04.00',
+            VERSION:'20.04.01',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
@@ -499,7 +499,7 @@ boardcfg</td>
       <script type="text/javascript" src="../_static/jquery.js"></script>
       <script type="text/javascript" src="../_static/underscore.js"></script>
       <script type="text/javascript" src="../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" src="../_static/language_data.js"></script>
 
     <script src="http://www.ti.com/assets/js/headerfooter/analytics.js" type="text/javascript" charset="utf-8"></script>
 

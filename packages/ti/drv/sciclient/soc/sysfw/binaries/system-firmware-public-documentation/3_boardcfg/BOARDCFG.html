@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                20.04.00
+                20.04.01
               </div>
             
           
@@ -273,7 +273,7 @@ notification complete.</p>
 </div>
 <div class="section" id="tisci-message-id">
 <h4>TISCI Message ID<a class="headerlink" href="#tisci-message-id" title="Permalink to this headline">¶</a></h4>
-<p><code class="docutils literal"><span class="pre">TISCI_MSG_BOARD_CONFIG</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(0x000BU)</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">TISCI_MSG_BOARD_CONFIG</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(0x000BU)</span></code></p>
 </div>
 <div class="section" id="message-data-structures">
 <h4>Message Data Structures<a class="headerlink" href="#message-data-structures" title="Permalink to this headline">¶</a></h4>
@@ -347,7 +347,7 @@ in MCU OCMC SRAM.</p>
 </div>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
-<p class="last">Please ensure that MSMC is not being accessed when <code class="docutils literal"><span class="pre">TISCI_MSG_BOARD_CONFIG</span></code>
+<p class="last">Please ensure that MSMC is not being accessed when <code class="docutils literal notranslate"><span class="pre">TISCI_MSG_BOARD_CONFIG</span></code>
 is sent. System Firmware reconfigures the MSMC firewall on receiving this message.
 MSMC needs to be inactive for the firewall reconfiguration to succeed.</p>
 </div>
@@ -450,7 +450,7 @@ associated superstructure for data validation/API compatibility checks.</p>
 <span id="pub-boardcfg-subhdr-magic-numbers"></span><h5>boardcfg substructure header magic numbers<a class="headerlink" href="#boardcfg-substructure-header-magic-numbers" title="Permalink to this headline">¶</a></h5>
 <p>A unique magic number must be provided for each of the boardcfg
 structures listed below. The exact value must be used in the
-<code class="docutils literal"><span class="pre">magic</span></code> field of <a class="reference internal" href="#pub-boardcfg-subhdr"><span class="std std-ref">boardcfg substructure header</span></a> or the boardcfg
+<code class="docutils literal notranslate"><span class="pre">magic</span></code> field of <a class="reference internal" href="#pub-boardcfg-subhdr"><span class="std std-ref">boardcfg substructure header</span></a> or the boardcfg
 data will be rejected.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -762,7 +762,7 @@ specified as bits (so all, some, or none can be enabled)</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'20.04.00',
+            VERSION:'20.04.01',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
@@ -771,7 +771,7 @@ specified as bits (so all, some, or none can be enabled)</p>
       <script type="text/javascript" src="../_static/jquery.js"></script>
       <script type="text/javascript" src="../_static/underscore.js"></script>
       <script type="text/javascript" src="../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" src="../_static/language_data.js"></script>
 
     <script src="http://www.ti.com/assets/js/headerfooter/analytics.js" type="text/javascript" charset="utf-8"></script>
 

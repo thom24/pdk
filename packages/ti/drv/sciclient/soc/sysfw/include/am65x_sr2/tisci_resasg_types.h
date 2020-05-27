@@ -132,7 +132,7 @@
 /**
  * Total number of unique resource types for SoC
  */
-#define TISCI_RESASG_UTYPE_CNT 52U
+#define TISCI_RESASG_UTYPE_CNT_SR2 52U
 
 #endif /* TISCI_RESASG_TYPES_H_SR2 */
 
