@@ -228,53 +228,6 @@ static int32_t QSPI_edmaChannelConfig(EDMA_Handle hEdma,
     return status;
 }
 
-/**
- *  @b Description
- *  @n
- *      Utility function which converts a local GEM L2 memory address
- *      to global memory address.
- *
- *  @param[in]  addr
- *      Local address to be converted
- *
- *  @retval
- *      Computed L2 global Address
- */
-static uintptr_t l2_global_address (uintptr_t addr)
-{
-#if defined (SOC_TPR12)
-    #ifdef _TMS320C6X
-        if ((addr>=0x00800000 && addr<=0x00860000) || (addr>=0x00F00000 && addr<=0x00F08000))
-        {
-            return (addr | 0x80000000);
-        }
-        else
-        {
-            return (addr);
-        }
-    #else
-        if(addr < 0x80000)
-        {
-            return (addr | 0xC1000000);
-        }
-        else if (addr < 0x100000)
-        {
-            return ((addr & 0xFFFF) | 0xC1800000);
-        }
-        else if ((addr >= 0x10200000) && (addr <= 0x102F0000))
-        {
-            return((addr & 0x00FFFFFF) | 0xC0000000);
-        }
-        else
-        {
-            return (addr);
-        }
-    #endif
-#else
-    return addr;
-#endif
-}
-
 static int32_t QSPI_dmaMemcpy(SPI_Handle     handle,
                               uintptr_t      destBuf,
                               uintptr_t      srcBuf,
@@ -294,10 +247,10 @@ static int32_t QSPI_dmaMemcpy(SPI_Handle     handle,
     QSPI_edmaParamInit(&paramSet.paramSetConfig, hwAttrs->edmaChId, EDMA3_SYNC_AB);
 
     /* Set source address */
-    paramSet.paramSetConfig.sourceAddress = (uint32_t)l2_global_address(srcBuf);
+    paramSet.paramSetConfig.sourceAddress = (uint32_t)srcBuf;
 
     /* set destination address */
-    paramSet.paramSetConfig.destinationAddress = (uint32_t)l2_global_address(destBuf);
+    paramSet.paramSetConfig.destinationAddress = (uint32_t)destBuf;
 
     /* aCount holds the number of bytes in an array. */
     paramSet.paramSetConfig.aCount = (uint16_t)1;

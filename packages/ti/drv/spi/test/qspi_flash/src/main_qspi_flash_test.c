@@ -261,6 +261,54 @@ static void QSPI_initConfig(uint32_t instance, QSPI_Tests *test)
     }
 }
 
+/**
+ *  @b Description
+ *  @n
+ *      Utility function which converts a local GEM L2 memory address
+ *      to global memory address.
+ *
+ *  @param[in]  addr
+ *      Local address to be converted
+ *
+ *  @retval
+ *      Computed L2 global Address
+ */
+#ifdef SPI_DMA_ENABLE
+static uintptr_t l2_global_address (uintptr_t addr)
+{
+#if defined (SOC_TPR12)
+    #ifdef _TMS320C6X
+        if ((addr>=0x00800000 && addr<=0x00860000) || (addr>=0x00F00000 && addr<=0x00F08000))
+        {
+            return (addr | 0x80000000);
+        }
+        else
+        {
+            return (addr);
+        }
+    #else
+        if(addr < 0x80000)
+        {
+            return (addr | 0xC1000000);
+        }
+        else if (addr < 0x100000)
+        {
+            return ((addr & 0xFFFF) | 0xC1800000);
+        }
+        else if ((addr >= 0x10200000) && (addr <= 0x102F0000))
+        {
+            return((addr & 0x00FFFFFF) | 0xC0000000);
+        }
+        else
+        {
+            return (addr);
+        }
+    #endif
+#else
+    return addr;
+#endif
+}
+#endif
 
 static bool QSPI_test_func (void *arg)
 {
@@ -321,8 +369,18 @@ static bool QSPI_test_func (void *arg)
             CacheP_wbInv((void *)txBuf, (int32_t)sizeof(txBuf));
         }
 #endif
+
         /* Update transaction parameters */
-        flashTransaction.data        = (uint8_t *)&txBuf[0];
+#ifdef SPI_DMA_ENABLE
+        if (test->dmaMode)
+        {
+            flashTransaction.data    = (uint8_t *)l2_global_address((uintptr_t)&txBuf[0]);
+        }
+        else
+#endif
+        {
+            flashTransaction.data    = (uint8_t *)&txBuf[0];
+        }
 
         if (test->mmapMode)
         {
@@ -347,7 +405,17 @@ static bool QSPI_test_func (void *arg)
         }
 
         /* Update transaction parameters */
-        flashTransaction.data        = (uint8_t *)&rxBuf[0];
+#ifdef SPI_DMA_ENABLE
+        if (test->dmaMode)
+        {
+            flashTransaction.data    = (uint8_t *)l2_global_address((uintptr_t)&rxBuf[0]);
+        }
+        else
+#endif
+        {
+            flashTransaction.data    = (uint8_t *)&rxBuf[0];
+        }
+
         if (test->mmapMode)
         {
             flashTransaction.address = addrValue;
