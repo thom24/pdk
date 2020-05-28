@@ -51,6 +51,13 @@ cd ..
 CURDIR_LAST=${PWD##*/}
 IFS='_' read -ra ADDR <<< "$CURDIR_LAST"
 
+# When pdk folder represents a device family, set a default SOC for that family
+if [ ${ADDR[1]} == "jacinto" ]; then
+    ADDR[1]="am65xx"
+fi
+if [ ${ADDR[1]} == "sitara" ]; then
+    ADDR[1]="am64x"
+fi
 
 if [ -z $PDK_SOC ]; then
    export PDK_SOC=${ADDR[1]}

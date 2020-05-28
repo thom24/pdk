@@ -46,6 +46,14 @@ for %%a  in (%s%) do (
 for /f "tokens=1,2,3,4,5 delims=/_" %%a in ("%pdkdir%") do set pdksoc=%%b&set v1=%%c&set v2=%%d&set v3=%%e
 set pdkdir_ver=%v1%_%v2%_%v3%
 
+@REM When pdk folder represents a device family, set a default SOC for that family
+if %pdksoc% == jacinto (
+    set pdksoc=am65xx
+)
+if %pdksoc% == sitara (
+    set pdksoc=am64x
+)
+
 @REM Go to the SDK install directory
 cd %PDK_INSTALL_PATH%\..\..
 
