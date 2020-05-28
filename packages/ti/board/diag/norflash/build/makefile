@@ -77,12 +77,21 @@ endif
 
 
 # Common source files and CFLAGS across all platforms and cores
-PACKAGE_SRCS_COMMON = ../src/ospi_quad_test.c ../src/ospi_quad_test.h makefile
-PACKAGE_SRCS_COMMON += ../../common/$(SOC)
+ifeq ($(BOARD), $(filter $(BOARD), am65xx_evm am65xx_idk))
+PACKAGE_SRCS_COMMON = ../src/am65xx_spi_test.c ../src/am65xx_spi_test.h
+else
+PACKAGE_SRCS_COMMON = ../src/ospi_quad_test.c ../src/ospi_quad_test.h
+endif
+PACKAGE_SRCS_COMMON += ../../common/$(SOC) makefile
 PACKAGE_SRCS_COMMON += ../../board_diag_component.mk
 PACKAGE_SRCS_COMMON += ../../create_sd.bat ../../create_sd.sh
 
-SRCS_COMMON += ospi_quad_test.c diag_common_cfg.c
+ifeq ($(BOARD), $(filter $(BOARD), am65xx_evm am65xx_idk))
+SRCS_COMMON += am65xx_spi_test.c
+else
+SRCS_COMMON += ospi_quad_test.c
+endif
+SRCS_COMMON += diag_common_cfg.c
 
 ifeq ($(CORE),$(filter $(CORE), mcu1_0))
 SRCS_ASM_COMMON += diag_entry_r5.asm
