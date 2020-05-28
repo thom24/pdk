@@ -191,13 +191,13 @@ struct lookUpTablesPRU0
 {
     uint8_t sampleratelut[256U];
     uint8_t startbitfilterlut[256U];
-} __attribute__((packed));
+} __attribute__((packed)) __attribute__ ((aligned (4)));
 
 struct lookUpTablesPRU1
 {
     uint8_t symbolfilterlut[256U];
     uint8_t paritylut[256U];
-} __attribute__((packed));
+} __attribute__((packed)) __attribute__ ((aligned (4)));
 
 /* 8 bit look-up table initialization */
 lookUpTablesPRU0 initData0 =

@@ -142,7 +142,7 @@ void usbEp0reqComplete(struct usbGadgetObj * pUsbGadgetObj,
  * \param transferType The type of transfer which has to be initiated.
  */
 void usbSetupEpReq(void * pUsbGadgetObj,
-    uint32_t epNum, uint32_t * pUsbData, usbTokenType_t tokenType,
+    uint32_t epNum, void * pUsbData, usbTokenType_t tokenType,
     uint32_t length, usbTransferType_t transferType);
 
 #ifdef __cplusplus

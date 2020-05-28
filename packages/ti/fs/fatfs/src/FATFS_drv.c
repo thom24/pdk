@@ -300,6 +300,7 @@ FATFS_Error FATFS_open(uint32_t index,
         /*
          * Register the filesystem with FatFs.
          */
+        if ((volIndex >= 0) && (volIndex < FATFS_NUM_OF_PARTITIONS))
         {
             snprintf(drive_path,sizeof(drive_path),"%d:",(int)volIndex);
             /*Mount First partition of device to read the MBR*/
@@ -733,7 +734,7 @@ static FATFS_Error FATFS_readBootSector(BYTE drv)
         pt = buffer + FATFS_MBR_TABLE + ptOffset * FATFS_SZ_PTE;
         if(pt[FATFS_MBR_PT_TYPE_OFFSET])
         {
-            if(index >= 0)
+            if ((index >= 0) && (index < FATFS_NUM_OF_PARTITIONS))
             {
                 /*Mount the partition(s) */
                 snprintf(drive_path,sizeof(drive_path),"%d:",(int)index);

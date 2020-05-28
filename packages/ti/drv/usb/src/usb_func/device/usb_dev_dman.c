@@ -777,7 +777,7 @@ void usbEp0reqComplete(struct usbGadgetObj * pUsbGadgetObj,
 }
 
 void usbSetupEpReq(void * pUsbGadgetObj,
-    uint32_t epNum, uint32_t * pUsbData, usbTokenType_t tokenType,
+    uint32_t epNum, void * pUsbData, usbTokenType_t tokenType,
     uint32_t length, usbTransferType_t transferType)
 {
     /* Setup endpoint request for the required endpoint */

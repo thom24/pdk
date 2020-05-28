@@ -10,7 +10,7 @@ endif
 
   #Tool versions for non-TDA builds
   GCC_CROSS_TOOL_PREFIX=arm-none-eabi-
-  GCC_CROSS_TOOL_TAG=7-2018-q2-update
+  GCC_CROSS_TOOL_TAG=9-2019-q4-major
   GCC_ARCH64_VERSION=9.2-2019.12
   GCC_ARCH64_BIN_PREFIX_STR=aarch64-none-elf
   CGT_VERSION=8.3.2

@@ -670,7 +670,7 @@ HandleEndpoints(struct usbGadgetObj *pUsbGadgetObj,
 
                    usbSetupEpReq(pUsbGadgetObj,
                                  psInst->ucINEndpoint,
-                                (uint32_t *)psInst->pulBuffer,
+                                (void *)psInst->pulBuffer,
                                  USB_TOKEN_TYPE_IN,
                                  MAX_TRANSFER_SIZE,
                                  USB_TRANSFER_TYPE_BULK);
@@ -1285,7 +1285,7 @@ USBDSCSIRequestSense(const tUSBDMSCDevice *psDevice, void * pUsbGadgetObj)
      */
     usbSetupEpReq(pUsbGadgetObj,
            psInst->ucINEndpoint,
-           (uint32_t *)g_pucCommand ,
+           (void *)g_pucCommand ,
            USB_TOKEN_TYPE_IN,
            18,
            USB_TRANSFER_TYPE_BULK);
@@ -1365,7 +1365,7 @@ USBDSCSIRead10(const tUSBDMSCDevice *psDevice, tMSCCBW *pSCSICBW,
 
         usbSetupEpReq(pUsbGadgetObj,
                       psInst->ucINEndpoint,
-                      (uint32_t *)psInst->pulBuffer ,
+                      (void *)psInst->pulBuffer ,
                       USB_TOKEN_TYPE_IN,
                       MAX_TRANSFER_SIZE,
                       USB_TRANSFER_TYPE_BULK);
@@ -1440,7 +1440,7 @@ USBDSCSIWrite10(const tUSBDMSCDevice *psDevice, tMSCCBW *pSCSICBW,
          */
         usbSetupEpReq(pUsbGadgetObj,
                       psInst->ucOUTEndpoint,
-                      (uint32_t *)psInst->pulBuffer ,
+                      (void *)psInst->pulBuffer ,
                       USB_TOKEN_TYPE_OUT,
                       512U,
                       USB_TRANSFER_TYPE_BULK);
@@ -1501,7 +1501,7 @@ USBDSCSIModeSense6(const tUSBDMSCDevice *psDevice, tMSCCBW *pSCSICBW,
          */
         usbSetupEpReq(pUsbGadgetObj,
                       psInst->ucINEndpoint,
-                      (uint32_t *)g_pucCommand,
+                      (void *)g_pucCommand,
                       USB_TOKEN_TYPE_IN,
                       4,
                       USB_TRANSFER_TYPE_BULK);
@@ -1551,7 +1551,7 @@ USBDSCSISendStatus(const tUSBDMSCDevice *psDevice, void * pUsbGadgetObj)
 
     usbSetupEpReq(pUsbGadgetObj,
                   psInst->ucINEndpoint,
-                 (uint32_t *)&g_sSCSICSW,
+                  (void *)(&g_sSCSICSW),
                   USB_TOKEN_TYPE_IN,
                   13,
                   USB_TRANSFER_TYPE_BULK);

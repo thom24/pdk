@@ -73,7 +73,7 @@ export edma_COMP_LIST
 export edma_BOARD_DEPENDENCY
 export edma_CORE_DEPENDENCY
 edma_PKG_LIST = edma
-edma_INCLUDE = $(edma_PATH)
+edma_INCLUDE ?= $(edma_PATH)
 edma_SOCLIST = $(drvedma_SOCLIST)
 export edma_SOCLIST
 edma_$(SOC)_CORELIST = $(drvedma_$(SOC)_CORELIST)
