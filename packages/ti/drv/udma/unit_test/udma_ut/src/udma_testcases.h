@@ -1482,6 +1482,194 @@ static UdmaTestParams gUdmaTestCases[] =
         .runFlag    = (UDMA_TEST_RF_DRU_MT),
         .ringPrmId  = UDMA_TEST_RING_PRMID_INVALID,
     },
+//Enable after adding testcase in Qmetry
+#if 0
+    {
+        .enableTest = TEST_ENABLE,
+        .tcId       = 9000U,
+        .tcName     = "DRU Blockcpy circular 1KB DDR to DDR 1KB ICNT1 TR event type test",
+        .disableInfo= NULL,
+        .printEnable= PRINT_ENABLE,
+        .prfEnable  = PRF_DISABLE,
+        .tcType     = (UDMA_TCT_SANITY | UDMA_TCT_FUNCTIONAL),
+        .dcEnable   = DATA_CHECK_ENABLE,
+        .loopCnt    = 1U,
+        .numTasks   = 1U,
+        .testType   = {UDMA_TT_DRU_INDIRECT},
+        .testFxnPtr = {&udmaTestBlkcpyTc},
+        .pacingTime = {PACING_NONE},
+        .numCh      = {1U},
+        .instId     = {UDMA_INST_ID_MAIN_0},
+        .chPrmId    = {UDMA_TEST_CH_PRMID_DRU_EVENTSIZE_ICNT1},
+        .qdepth     = {USE_DEF_QDEPTH},
+        .icnt       = {
+                        {1*KB, 1U, 1U, 1U}
+                      },
+        .dicnt      = {
+                        {1*KB, 1U, 1U, 1U}
+                      },
+        .dim        = {
+                        {0U, 0U, 0U}
+                      },
+        .ddim       = {
+                        {1*KB, 0U, 0U}
+                      },
+        .heapIdSrc  = {DEF_HEAP_ID},
+        .heapIdDest = {DEF_HEAP_ID},
+        .srcBufSize = {1*KB},
+        .destBufSize= {1*KB},
+        .runFlag    = (UDMA_TEST_RF_DRU),
+        .ringPrmId  = UDMA_TEST_RING_PRMID_INVALID,
+    },
+    {
+        .enableTest = TEST_ENABLE,
+        .tcId       = 9001U,
+        .tcName     = "DRU Blockcpy circular 1KB DDR to DDR 1KB ICNT2 TR event type test",
+        .disableInfo= NULL,
+        .printEnable= PRINT_ENABLE,
+        .prfEnable  = PRF_DISABLE,
+        .tcType     = (UDMA_TCT_SANITY | UDMA_TCT_FUNCTIONAL),
+        .dcEnable   = DATA_CHECK_ENABLE,
+        .loopCnt    = 1U,
+        .numTasks   = 1U,
+        .testType   = {UDMA_TT_DRU_INDIRECT},
+        .testFxnPtr = {&udmaTestBlkcpyTc},
+        .pacingTime = {PACING_NONE},
+        .numCh      = {1U},
+        .instId     = {UDMA_INST_ID_MAIN_0},
+        .chPrmId    = {UDMA_TEST_CH_PRMID_DRU_EVENTSIZE_ICNT2},
+        .qdepth     = {USE_DEF_QDEPTH},
+        .icnt       = {
+                        {1*KB, 1U, 1U, 1U}
+                      },
+        .dicnt      = {
+                        {1*KB, 1U, 1U, 1U}
+                      },
+        .dim        = {
+                        {0U, 0U, 0U}
+                      },
+        .ddim       = {
+                        {1*KB, 0U, 0U}
+                      },
+        .heapIdSrc  = {DEF_HEAP_ID},
+        .heapIdDest = {DEF_HEAP_ID},
+        .srcBufSize = {1*KB},
+        .destBufSize= {1*KB},
+        .runFlag    = (UDMA_TEST_RF_DRU),
+        .ringPrmId  = UDMA_TEST_RING_PRMID_INVALID,
+    },
+    {
+        .enableTest = TEST_ENABLE,
+        .tcId       = 9002U,
+        .tcName     = "DRU Blockcpy circular 1KB DDR to DDR 1KB ICNT3 TR event type test",
+        .disableInfo= NULL,
+        .printEnable= PRINT_ENABLE,
+        .prfEnable  = PRF_DISABLE,
+        .tcType     = (UDMA_TCT_SANITY | UDMA_TCT_FUNCTIONAL),
+        .dcEnable   = DATA_CHECK_ENABLE,
+        .loopCnt    = 1U,
+        .numTasks   = 1U,
+        .testType   = {UDMA_TT_DRU_INDIRECT},
+        .testFxnPtr = {&udmaTestBlkcpyTc},
+        .pacingTime = {PACING_NONE},
+        .numCh      = {1U},
+        .instId     = {UDMA_INST_ID_MAIN_0},
+        .chPrmId    = {UDMA_TEST_CH_PRMID_DRU_EVENTSIZE_ICNT3},
+        .qdepth     = {USE_DEF_QDEPTH},
+        .icnt       = {
+                        {1*KB, 1U, 1U, 1U}
+                      },
+        .dicnt      = {
+                        {1*KB, 1U, 1U, 1U}
+                      },
+        .dim        = {
+                        {0U, 0U, 0U}
+                      },
+        .ddim       = {
+                        {1*KB, 0U, 0U}
+                      },
+        .heapIdSrc  = {DEF_HEAP_ID},
+        .heapIdDest = {DEF_HEAP_ID},
+        .srcBufSize = {1*KB},
+        .destBufSize= {1*KB},
+        .runFlag    = (UDMA_TEST_RF_DRU),
+        .ringPrmId  = UDMA_TEST_RING_PRMID_INVALID,
+    },
+    {
+        .enableTest = TEST_ENABLE,
+        .tcId       = 9003U,
+        .tcName     = "DRU DDR to DDR SW global 0 trigger test in polling mode",
+        .disableInfo= NULL,
+        .printEnable= PRINT_ENABLE,
+        .prfEnable  = PRF_DISABLE,
+        .tcType     = (UDMA_TCT_SANITY | UDMA_TCT_FUNCTIONAL),
+        .dcEnable   = DATA_CHECK_ENABLE,
+        .loopCnt    = USE_DEF_LP_CNT,
+        .numTasks   = 1U,
+        .testType   = {UDMA_TT_DRU_INDIRECT},
+        .testFxnPtr = {&udmaTestBlkcpyTc},
+        .pacingTime = {PACING_NONE},
+        .numCh      = {1U},
+        .instId     = {UDMA_INST_ID_MAIN_0},
+        .chPrmId    = {UDMA_TEST_CH_PRMID_DRU_TRIGGER_GLOBAL0},
+        .qdepth     = {USE_DEF_QDEPTH},
+        .icnt       = {
+                        {UDMA_TEST_DEF_ICNT0, 1U, 1U, 1U}
+                      },
+        .dicnt      = {
+                        {UDMA_TEST_DEF_DICNT0, 1U, 1U, 1U}
+                      },
+        .dim        = {
+                        {0U, 0U, 0U}
+                      },
+        .ddim       = {
+                        {0U, 0U, 0U}
+                      },
+        .heapIdSrc  = {DEF_HEAP_ID},
+        .heapIdDest = {DEF_HEAP_ID},
+        .srcBufSize = {UDMA_TEST_DEF_ICNT0},
+        .destBufSize= {UDMA_TEST_DEF_DICNT0},
+        .runFlag    = (UDMA_TEST_RF_DRU),
+        .ringPrmId  = UDMA_TEST_RING_PRMID_INVALID,
+    },
+    {
+        .enableTest = TEST_ENABLE,
+        .tcId       = 9004U,
+        .tcName     = "DRU DDR to DDR SW global 0 trigger test in interrupt mode",
+        .disableInfo= NULL,
+        .printEnable= PRINT_ENABLE,
+        .prfEnable  = PRF_DISABLE,
+        .tcType     = (UDMA_TCT_SANITY | UDMA_TCT_FUNCTIONAL),
+        .dcEnable   = DATA_CHECK_ENABLE,
+        .loopCnt    = USE_DEF_LP_CNT,
+        .numTasks   = 1U,
+        .testType   = {UDMA_TT_DRU_INDIRECT},
+        .testFxnPtr = {&udmaTestBlkcpyTc},
+        .pacingTime = {PACING_NONE},
+        .numCh      = {1U},
+        .instId     = {UDMA_INST_ID_MAIN_0},
+        .chPrmId    = {UDMA_TEST_CH_PRMID_TRIGGER_GLOBAL0_INTR},
+        .qdepth     = {USE_DEF_QDEPTH},
+        .icnt       = {
+                        {UDMA_TEST_DEF_ICNT0, 1U, 1U, 1U}
+                      },
+        .dicnt      = {
+                        {UDMA_TEST_DEF_DICNT0, 1U, 1U, 1U}
+                      },
+        .dim        = {
+                        {0U, 0U, 0U}
+                      },
+        .ddim       = {
+                        {0U, 0U, 0U}
+                      },
+        .heapIdSrc  = {DEF_HEAP_ID},
+        .heapIdDest = {DEF_HEAP_ID},
+        .srcBufSize = {UDMA_TEST_DEF_ICNT0},
+        .destBufSize= {UDMA_TEST_DEF_DICNT0},
+        .runFlag    = (UDMA_TEST_RF_DRU),
+        .ringPrmId  = UDMA_TEST_RING_PRMID_INVALID,
+    },
+#endif
 #endif  /* #if defined (UDMA_UTC_ID_MSMC_DRU0) */
     {
         .enableTest = TEST_ENABLE,
