@@ -90,6 +90,10 @@
 /* Board Header files */
 #include <ti/board/board.h>
 
+#if defined(SOC_TPR12)
+#define QT_BUILD
+#endif
+
 /*
  * slave address for master/slave board to board test, by default,
  * all the AM boards own slave address is set to 0x70 and all the
@@ -124,6 +128,7 @@
 #define I2C_TEST_ID_INT         1   /* I2C non-DMA interrupt mode test */
 #define I2C_TEST_ID_CB          2   /* I2C callback mode test */
 #define I2C_TEST_ID_XA          3   /* I2C 10-bit address mode test */
+#define I2C_TEST_ID_POLL        4   /* I2C polling mode test */
 
 /* Define the I2C test interface */
 typedef struct I2C_Tests_s
@@ -304,7 +309,7 @@ static void I2C_initConfig(uint32_t instance, I2C_Tests *test)
         }
     }
 
-#if defined (evmK2H) || defined (evmK2K) || defined (evmK2E) || defined (evmK2L) || defined (evmK2G) || defined (LCDK_OMAPL138)
+#if defined (evmK2H) || defined (evmK2K) || defined (evmK2E) || defined (evmK2L) || defined (evmK2G) || defined (LCDK_OMAPL138) || defined (SOC_TPR12)
     i2c_cfg.ownSlaveAddr = ownSlaveAddr;
 #else
     i2c_cfg.ownSlaveAddr[0] = ownSlaveAddr;
@@ -529,6 +534,10 @@ static bool I2C_test_master_slave(void *arg)
             i2cParams.transferCallbackFxn = I2C_callbackSlave;
         }
     }
+    if (test->testId & 0x01)
+    {
+        i2cParams.bitRate = I2C_400kHz;
+    }
     i2c = I2C_open(instance, &i2cParams);
 
     if (i2c == NULL)
@@ -541,6 +550,7 @@ static bool I2C_test_master_slave(void *arg)
         I2C_log("I2C initialized\n");
     }
 
+#if !defined(QT_BUILD)
     if (cbMode == true)
     {
         testNum = I2C_NUM_XFERS;
@@ -550,6 +560,10 @@ static bool I2C_test_master_slave(void *arg)
         /* do not test restart transfer in non-callback mode */
         testNum = I2C_NUM_XFERS - 2;
     }
+#else
+    /* Only Master TX transfers can be performed at QT */
+    testNum = 2;
+#endif
 
     for (i = 0; i < testNum; i++)
     {
@@ -573,7 +587,11 @@ static bool I2C_test_master_slave(void *arg)
              * master sleep for 1 second after each transfer
              * to sync with slave transfer
              */
+	    #if !defined(QT_BUILD)
             Task_sleep(1000);
+	    #else
+            Task_sleep(10);
+	    #endif
         }
     }
 
@@ -606,9 +624,9 @@ void I2C_test_print_test_desc(I2C_Tests *test)
 }
 
 #ifdef I2C_DMA_ENABLE
-#define I2C_NUM_TESTS   4
+#define I2C_NUM_TESTS   5
 #else
-#define I2C_NUM_TESTS   3
+#define I2C_NUM_TESTS   4
 #endif
 
 I2C_Tests I2c_tests_master[I2C_NUM_TESTS] =
@@ -620,6 +638,7 @@ I2C_Tests I2c_tests_master[I2C_NUM_TESTS] =
     {I2C_test_master_slave, I2C_TEST_ID_INT, true, false, false, false, SemaphoreP_WAIT_FOREVER, "\r\n I2C master slave test master in non-dma interrupt mode"},
     {I2C_test_master_slave, I2C_TEST_ID_CB, true, false, true, false, SemaphoreP_WAIT_FOREVER, "\r\n I2C master slave test master in callback mode"},
     {I2C_test_master_slave, I2C_TEST_ID_XA, true, false, false, false, SemaphoreP_WAIT_FOREVER, "\r\n I2C master slave test master 10-bit address mode"},
+    {I2C_test_master_slave, I2C_TEST_ID_POLL, true, true, false, false, SemaphoreP_WAIT_FOREVER, "\r\n I2C master slave test master in polling mode"},
 };
 
 I2C_Tests I2c_tests_slave[I2C_NUM_TESTS] =
@@ -630,6 +649,7 @@ I2C_Tests I2c_tests_slave[I2C_NUM_TESTS] =
     {I2C_test_master_slave, I2C_TEST_ID_INT, false, false, false, false, SemaphoreP_WAIT_FOREVER, "\r\n I2C master slave test slave in non-dma interrupt mode"},
     {I2C_test_master_slave, I2C_TEST_ID_CB, false, false, true, false, SemaphoreP_WAIT_FOREVER, "\r\n I2C master slave test slave in callback mode"},
     {I2C_test_master_slave, I2C_TEST_ID_XA, false, false, false, false, SemaphoreP_WAIT_FOREVER, "\r\n I2C master slave test slave 10-bit address mode"},
+    {I2C_test_master_slave, I2C_TEST_ID_POLL, false, true, false, false, SemaphoreP_WAIT_FOREVER, "\r\n I2C master slave test slave in polling mode"},
 };
 
 /*
@@ -665,11 +685,19 @@ Void slaveTaskFxn (UArg arg0, UArg arg1)
 
     if(testFail == true)
     {
+#if !defined(QT_BUILD)
         UART_printStatus("\n Some tests have failed. \n");
+#else
+        I2C_log("\n Some tests have failed. \n");
+#endif
     }
     else
     {
+#if !defined(QT_BUILD)
         UART_printStatus("\n All tests have passed. \n");
+#else
+        I2C_log("\n All tests have passed. \n");
+#endif
     }
 
     I2C_log("Done\n");
@@ -710,11 +738,19 @@ Void masterTaskFxn (UArg arg0, UArg arg1)
 
     if(testFail == true)
     {
+#if !defined(QT_BUILD)
         UART_printStatus("\n Some tests have failed. \n");
+#else
+        I2C_log("\n Some tests have failed. \n");
+#endif
     }
     else
     {
+#if !defined(QT_BUILD)
         UART_printStatus("\n All tests have passed. \n");
+#else
+        I2C_log("\n All tests have passed. \n");
+#endif
     }
 
     I2C_log("Done\n");
@@ -735,7 +771,7 @@ int main(void)
     Board_SoCInfo socInfo;
 #endif
 
-#if defined(SOC_AM335x) || defined (SOC_AM437x)
+#if defined(SOC_AM335x) || defined (SOC_AM437x) || defined (SOC_TPR12)
     Task_Handle task;
     Error_Block eb;
 
@@ -748,7 +784,7 @@ int main(void)
 
     if (task == NULL)
     {
-        System_printf("Task_create() failed!\n");
+        I2C_log("Task_create() failed!\n");
         BIOS_exit(0);
     }
 #endif /* Soc type */

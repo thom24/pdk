@@ -124,7 +124,7 @@ drvi2c_FIRM_LIST = $(i2c_FIRM_LIST)
 ifeq ($(SOC),$(filter $(SOC), am64x))
 i2c_EXAMPLE_LIST = I2C_Baremetal_Eeprom_TestApp
 else
-i2c_EXAMPLE_LIST = drv_i2c_led_blink_test I2C_Baremetal_Eeprom_TestApp I2C_Eeprom_TestApp I2C_Eeprom_SMP_TestApp drv_i2c_utility
+i2c_EXAMPLE_LIST = drv_i2c_led_blink_test I2C_Baremetal_Eeprom_TestApp I2C_Eeprom_TestApp I2C_Eeprom_SMP_TestApp drv_i2c_utility I2C_Master_TestApp  I2C_Slave_TestApp
 endif
 drvi2c_EXAMPLE_LIST = $(i2c_EXAMPLE_LIST)
 
@@ -446,6 +446,46 @@ ifeq ($(SOC),$(filter $(SOC), j7200))
 drv_i2c_utility_$(SOC)_CORELIST = $(drvi2c_j7200_CORELIST)
 endif
 export drv_i2c_utility_$(SOC)_CORELIST
+
+# I2C rtos Master test
+I2C_Master_TestApp_COMP_LIST = I2C_Master_TestApp
+I2C_Master_TestApp_RELPATH = ti/drv/i2c/test/master_slave
+I2C_Master_TestApp_PATH = $(PDK_I2C_COMP_PATH)/test/master_slave
+I2C_Master_TestApp_BOARD_DEPENDENCY = yes
+I2C_Master_TestApp_CORE_DEPENDENCY = no
+I2C_Master_TestApp_MAKEFILE = -f makefile IS_MASTER=yes
+I2C_Master_TestApp_XDC_CONFIGURO = yes
+export I2C_Master_TestApp_COMP_LIST
+export I2C_Master_TestApp_BOARD_DEPENDENCY
+export I2C_Master_TestApp_CORE_DEPENDENCY
+export I2C_Master_TestApp_XDC_CONFIGURO
+export I2C_Master_TestApp_MAKEFILE
+I2C_Master_TestApp_PKG_LIST = I2C_Master_TestApp
+I2C_Master_TestApp_INCLUDE = $(I2C_Master_TestApp_PATH)
+I2C_Master_TestApp_BOARDLIST = tpr12_evm tpr12_qt
+export I2C_Master_TestApp_BOARDLIST
+I2C_Master_TestApp_$(SOC)_CORELIST = $(i2c_$(SOC)_CORELIST)
+export I2C_Master_TestApp_$(SOC)_CORELIST
+
+# I2C rtos Slave test
+I2C_Slave_TestApp_COMP_LIST = I2C_Slave_TestApp
+I2C_Slave_TestApp_RELPATH = ti/drv/i2c/test/master_slave
+I2C_Slave_TestApp_PATH = $(PDK_I2C_COMP_PATH)/test/master_slave
+I2C_Slave_TestApp_BOARD_DEPENDENCY = yes
+I2C_Slave_TestApp_CORE_DEPENDENCY = no
+I2C_Slave_TestApp_MAKEFILE = -f makefile
+I2C_Slave_TestApp_XDC_CONFIGURO = yes
+export I2C_Slave_TestApp_COMP_LIST
+export I2C_Slave_TestApp_BOARD_DEPENDENCY
+export I2C_Slave_TestApp_CORE_DEPENDENCY
+export I2C_Slave_TestApp_XDC_CONFIGURO
+export I2C_Slave_TestApp_MAKEFILE
+I2C_Slave_TestApp_PKG_LIST = I2C_Slave_TestApp
+I2C_Slave_TestApp_INCLUDE = $(I2C_Slave_TestApp_PATH)
+I2C_Slave_TestApp_BOARDLIST = tpr12_evm tpr12_qt
+export I2C_Slave_TestApp_BOARDLIST
+I2C_Slave_TestApp_$(SOC)_CORELIST = $(i2c_$(SOC)_CORELIST)
+export I2C_Slave_TestApp_$(SOC)_CORELIST
 
 export drvi2c_LIB_LIST
 export drvi2c_EXAMPLE_LIST

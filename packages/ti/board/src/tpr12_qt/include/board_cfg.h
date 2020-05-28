@@ -52,6 +52,12 @@ extern "C" {
 /* UART LLD instance number for primary UART port */
 #define BOARD_UART_INSTANCE                     (0U)
 
+/* I2C instance as master for master/slave test example */
+#define BOARD_I2C_MASTER_INSTANCE       	(0U)
+
+/* I2C instance as salve for master/slave test example */
+#define BOARD_I2C_SLAVE_INSTANCE		(0U)
+
 /* I2C instance connected to PMIC - WKUP I2C0 */
 #define BOARD_I2C_PMIC_INSTANCE                 (0U)
 

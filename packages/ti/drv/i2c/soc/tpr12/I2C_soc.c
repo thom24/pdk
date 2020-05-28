@@ -254,3 +254,17 @@ int32_t I2C_socSetInitCfg(uint32_t index, const I2C_HwAttrs *cfg)
     return ret;
 }
 
+#if defined (BUILD_MCU)
+/**
+ * \brief  This API initializes the SoC level of I2C configuration
+ *         based on the core and domain
+ *
+ * \param  none
+ *
+ * \return none
+ *
+ */
+void I2C_socInit(void)
+{
+}
+#endif
