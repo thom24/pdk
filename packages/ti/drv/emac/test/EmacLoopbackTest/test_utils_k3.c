@@ -107,18 +107,14 @@ static uint8_t  gAppTestSequenceNumber  = 1;
 #define EMAC_ICSSG_BUFFER_POOL_SIZE_PG2 0x2000u
 #define EMAC_ICSSG_MAX_NUM_BUFFER_POOLS_PG2 8u
 
-#ifdef SOC_J721E
-uint8_t icss_tx_port_queue[2][100352] __attribute__ ((aligned (UDMA_CACHELINE_ALIGNMENT))) __attribute__ ((section (".bss:emac_ocmc_mem")));
-#else
 #ifdef EMAC_TEST_APP_WITHOUT_DDR
 /* DDR less test, can only test with 2 ports due to msmc memory constraints */
-uint8_t icss_tx_port_queue[1][100352] __attribute__ ((aligned (UDMA_CACHELINE_ALIGNMENT))) __attribute__ ((section (".bss:emac_msmc_mem")));
+uint8_t icss_tx_port_queue[EMAC_MAC_PORTS_PER_ICSS][EMAC_ICSSG_DUAL_MAC_FW_BUFER_POOL_SIZE_PG2] __attribute__ ((aligned (UDMA_CACHELINE_ALIGNMENT))) __attribute__ ((section (".bss:emac_msmc_mem")));
 #else
 #ifdef EMAC_BENCHMARK
-uint8_t icss_tx_port_queue[1][100352] __attribute__ ((aligned (UDMA_CACHELINE_ALIGNMENT))) __attribute__ ((section (".bss:emac_msmc_mem")));
+uint8_t icss_tx_port_queue[1][EMAC_ICSSG_DUAL_MAC_FW_BUFER_POOL_SIZE_PG2] __attribute__ ((aligned (UDMA_CACHELINE_ALIGNMENT))) __attribute__ ((section (".bss:emac_msmc_mem")));
 #else /* test all port for DUAL MAC */
-uint8_t icss_tx_port_queue[6][EMAC_ICSSG_DUAL_MAC_FW_BUFER_POOL_SIZE_PG2] __attribute__ ((aligned (UDMA_CACHELINE_ALIGNMENT))) __attribute__ ((section (".bss:emac_msmc_mem")));
-#endif
+uint8_t icss_tx_port_queue[EMAC_MAX_ICSS *EMAC_MAC_PORTS_PER_ICSS][EMAC_ICSSG_DUAL_MAC_FW_BUFER_POOL_SIZE_PG2] __attribute__ ((aligned (UDMA_CACHELINE_ALIGNMENT))) __attribute__ ((section (".bss:emac_msmc_mem")));
 #endif
 #endif
 
@@ -1004,7 +1000,7 @@ void app_test_tx_chans(void)
         if (!port_en[pNum])
             continue;
 
-        for (txChannel = 0; txChannel < 4;txChannel++)
+        for (txChannel = 0; txChannel < emac_cfg.portCfg[pNum].nTxChans;txChannel++)
         {
             app_test_send(pNum, pTestPkt, txChannel, APP_TEST_PKT_SIZE);
         }
