@@ -485,9 +485,12 @@ SBL_APPIMAGE_PATH_SIGNED_HS=$(BINDIR)/$(SBL_IMAGE_NAME)_hs.appimage.signed
 SBL_APPIMAGE_PATH_SIGNED_BE=$(BINDIR)/$(SBL_IMAGE_NAME)_BE.appimage.signed
 
 #MCUx_1 cores requires a dummy application to run from MCUx_0 core
-#Not applicable for MCU1_1 as MCU1_0 is already running SBL
+#as MCUx_1 cores cannot be at a higher power state than MCUx_0 core
 MULTI_CORE_APP_PARAMS=
 ifeq ($(SOC),$(filter $(SOC), j721e j7200 am64x))
+  ifeq ($(CORE),$(filter $(CORE), mcu1_1))
+  MULTI_CORE_APP_PARAMS += $(SBL_CORE_ID_mcu1_0) $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sbl_mcux_0_dummy_app.rprc
+  endif
   ifeq ($(CORE),$(filter $(CORE), mcu2_1))
   MULTI_CORE_APP_PARAMS += $(SBL_CORE_ID_mcu2_0) $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sbl_mcux_0_dummy_app.rprc
   endif
