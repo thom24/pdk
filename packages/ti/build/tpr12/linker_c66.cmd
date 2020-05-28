@@ -44,8 +44,8 @@ PAGE 0:
     L1DSRAM:        o = 0x00F00000, l = (0x00008000 - L1D_CACHE_SIZE)
 #endif
     L2SRAM:   o = 0x00800000, l = 0x00060000
-    L3SRAM:   o = 0x88000000, l = 0x00300000
-    HWA_RAM : o = 0x28000000, l = 0x00020000
+    L3SRAM:   o = 0x88000000, l = 0x00390000
+    HWA_RAM:  o = 0x82000000, l = 0x00020000
 
     /* PAGEs 1 and onwards are for overlay purposes for memory optimization.
        Some examples:
@@ -55,7 +55,7 @@ PAGE 0:
           sleep/low power).
     */
 PAGE 1:
-    L3SRAM:   o = 0x88000000, l = 0x00300000
+    L3SRAM:   o = 0x88000000, l = 0x00390000
 }
 
 -stack  0x2000                              /* SOFTWARE STACK SIZE           */
