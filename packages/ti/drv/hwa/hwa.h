@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Texas Instruments Incorporated
+ * Copyright (c) 2019 - 2020, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,7 +30,7 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
  /** ============================================================================
- *  @file       hwa_2p0.h
+ *  @file       hwa.h
  *
  *  @brief      HWA driver interface for HWA2.0
  * 
@@ -43,7 +43,7 @@
  *
  *  The HWA header file should be included in an application as follows:
  *  @code
- *  #include <ti/drivers/hwa/hwa.h>
+ *  #include <ti/drv/hwa/hwa.h>
  *  @endcode
  *  
  *  ## Initializing the driver #
@@ -85,7 +85,7 @@
  *
  *  ## Hardware Register Map #
  *  The hardware register map used by this driver can be found at 
- *  include/reg_dsshwacc.h and include/reg_dsshwacc_param_tpr12.h
+ *  include csl/src/ip/hwa/V1/hw_hwa_commonreg.h and csl/src/ip/hwa/V1/hw_hwa_paramset.h
  *
  *  ============================================================================
  */

@@ -1,12 +1,12 @@
 /*
- *   @file  main_2p0.c
+ *   @file  main.c
  *
  *   @brief
  *      Unit Test code for the HWA
  *
  *  \par
  *  NOTE:
- *      (C) Copyright 2019 Texas Instruments, Inc.
+ *      (C) Copyright 2019 - 2020 Texas Instruments, Inc.
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -70,6 +70,8 @@
 #include <ti/osal/CycleprofilerP.h>
 #include <ti/drv/hwa/hwa.h>
 #include <ti/drv/hwa/soc/hwa_soc.h>
+#include <ti/board/board_cfg.h>
+#include <ti/board/board.h>
 
 /* input vector */
 #include "hwa_testvector_input.h"
@@ -124,11 +126,14 @@ volatile uint8_t intr2ParamDoneCount = 0;
 
 #define HWA_MEMn_SIZE                     16*1024 //16K size
 
-//#define HWA_TEST_COLLECTBENCHMARK
+/* benchmark collect flag, if defined, benchmark is collected after functional test pass, if un-defined, no benchmark is collcted after the funtional test
+ * default is HWA_TEST_COLLECTBENCHMARK defined
+ */
+#define HWA_TEST_COLLECTBENCHMARK
 
 
-#define SOC_HWA_MEM0  SOC_TPR12_HWA_MEM0_BASE_ADDRESS
-#define SOC_HWA_MEM1  (SOC_TPR12_HWA_MEM0_BASE_ADDRESS + 0x4000)
+#define SOC_HWA_MEM0  CSL_DSS_HWA_DMA0_U_BASE
+#define SOC_HWA_MEM1  (CSL_DSS_HWA_DMA0_U_BASE + 0x4000)
 
 cmplx32ImRe_t     DCEstResult[2 * HWA_TEST_NUM_RX_ANT];
 uint32_t          magEstResult[HWA_TEST_NUM_RX_ANT];
@@ -1506,7 +1511,13 @@ static void HWA_fft4k_test(HWA_Handle handle)
     }
 
     /* common configuration */
-    gCommonConfig.configMask = HWA_COMMONCONFIG_MASK_STATEMACHINE_CFG;
+    gCommonConfig.configMask = HWA_COMMONCONFIG_MASK_STATEMACHINE_CFG |
+                    HWA_COMMONCONFIG_MASK_TWIDDITHERENABLE |
+                    HWA_COMMONCONFIG_MASK_LFSRSEED;
+
+     gCommonConfig.fftConfig.twidDitherEnable = 1;
+     gCommonConfig.fftConfig.lfsrSeed = 0x1234567;
+
 
     gCommonConfig.paramStartIdx = 0;
     gCommonConfig.paramStopIdx = paramsetIdx;
@@ -3239,7 +3250,12 @@ static void HWA_azimfft_test(HWA_Handle handle)
         HWA_COMMONCONFIG_MASK_ZEROINSERT_NUM_MASK |
         HWA_COMMONCONFIG_MASK_COMPLEXMULT_SCALEARRAY |
         HWA_COMMONCONFIG_MASK_CDFCNT_THRESHOLD |
-        HWA_COMMONCONFIG_MASK_MAX2D_OFFSETBOTHDIM ;
+        HWA_COMMONCONFIG_MASK_MAX2D_OFFSETBOTHDIM |
+        HWA_COMMONCONFIG_MASK_TWIDDITHERENABLE |
+        HWA_COMMONCONFIG_MASK_LFSRSEED;
+
+    gCommonConfig.fftConfig.twidDitherEnable = 1;
+    gCommonConfig.fftConfig.lfsrSeed = 0x1234567;
 
     /* 2D maximum value offset, visually check the values written into the register */
     gCommonConfig.advStatConfig.max2DoffsetDim1 = -1;
@@ -4777,22 +4793,27 @@ static void Test_initTask(UArg arg0, UArg arg1)
     HWA_fftwithPreproc_test(handle);
 
     /* test complex multiply*/
+    errCode = HWA_reset(handle);
     HWA_complexmultiply_test(handle);
 
     /* test the azim fft calculation*/
+    errCode = HWA_reset(handle);
     HWA_azimfft_test(handle);
 
     /* test histogram only */
+    errCode = HWA_reset(handle);
     HWA_histogram_test(handle);
 
     /* test compression/decompression */
+    errCode = HWA_reset(handle);
     HWA_compress_test(handle);
 
     /* 2D fft test */
+    errCode = HWA_reset(handle);
     HWA_2dfft_test(handle);
 
-    HWA_reset(handle);
     /*fft stitching test */
+    HWA_reset(handle);
     HWA_fft4k_test(handle);
 
     /* test context switch */
@@ -4840,25 +4861,17 @@ static void Test_initTask(UArg arg0, UArg arg1)
 int main (void)
 {
     Task_Params     taskParams;
-    //SOC_Cfg         socCfg;
+    Board_initCfg   boardCfg;
+    Board_STATUS  boardStatus;
 
-#ifdef SYSTEM_MSS
-    /* Initialize the ESM: Dont clear errors as TI RTOS does it */
-    ESM_init(0U);
-#endif
 
-    /* Initialize the SOC confiugration: */
-    //memset ((void *)&socCfg, 0, sizeof(SOC_Cfg));
+    boardCfg = BOARD_INIT_UNLOCK_MMR | BOARD_INIT_MODULE_CLOCK;
 
-    /* Populate the SOC configuration: */
-    //socCfg.clockCfg = SOC_SysClock_INIT;
-
-    /* Initialize the SOC Module: This is done as soon as the application is started
-     * to ensure that the MPU is correctly configured. */
-  //  gSOCHandle = NULL;
-
-    /* Initialize test logger */
-    // MCPI_Initialize();
+    boardStatus = Board_init (boardCfg);
+    if (boardStatus != BOARD_SOK)
+    {
+        System_printf ("Debug: Board Init Fail \n");
+    }
 
     CycleprofilerP_init();
 

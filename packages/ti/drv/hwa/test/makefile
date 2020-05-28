@@ -21,7 +21,7 @@ INCLUDE_EXTERNAL_INTERFACES = pdk
 
 # List all the components required by the application
 #COMP_LIST_COMMON = csl hwa board
-COMP_LIST_COMMON = hwa
+COMP_LIST_COMMON = hwa board
 INCLUDE_EXTERNAL_INTERFACES += xdc bios pdk
 COMP_LIST_COMMON += osal_tirtos
 XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg

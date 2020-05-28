@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Texas Instruments Incorporated
+ * Copyright (c) 2019 - 2020, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,7 +31,7 @@
  */
 
  /*
-  *  ======== hwa_2p0.c ========
+  *  ======== hwa.c ========
   */
 
 
@@ -46,7 +46,8 @@
 #include <ti/drv/hwa/src/V1/hwa_internal.h>
 #include <ti/drv/hwa/soc/hwa_soc.h>
 #include <ti/csl/cslr_hwa.h>
-
+#include <ti/drv/hwa/src/hwa_drv_log.h>
+#include <ti/drv/hwa/src/hwa_osal.h>
 
 #define HWA_PARAM_CHECK
 
@@ -805,7 +806,7 @@ static void HWA_paramDoneIntr1ISR(uintptr_t arg)
     else
     {
         /* Throw fatal error as driver is not in valid state */
-        //DebugP_assert (0U);
+        HWA_DRV_assert (0U);
     }
 }
 
@@ -875,185 +876,8 @@ static void HWA_paramDoneIntr2ISR(uintptr_t arg)
     else
     {
         /* Throw fatal error as driver is not in valid state */
-        //DebugP_assert(0U);
+        HWA_DRV_assert(0U);
     }
-}
-
-/*!
-*  @brief  Function to poll the PARAM_DONE_SET_STATUS_0 and PARAM_DONE_SET_STATUS_1 registers to check if the
-*          specified paramsets are finished.
-*
-*  @pre    HWA_open() has been called.
-*
-*  @param  handle          A HWA_Handle returned from HWA_open()
-*
-*  @param  numParamSets    number of paramsets need to poll.
-*
-*  @param  paramsetsArray  the specified paramset array
-*
-*  @return 0 upon success. error code if an error occurs.
-*
-*  @sa     HWA_open()
-*/
-extern int32_t HWA_paramSetDonePolling(HWA_Handle handle, uint8_t numParamSets, uint8_t *paramsetsArray)
-{
-    HWA_Driver          *ptrHWADriver = NULL;
-    int32_t              retCode = 0;
-    volatile uint32_t             * paramDoneRegister1;
-    volatile uint32_t             * paramDoneRegister2;
-    uint32_t             checkBits1 = 0;
-    uint32_t             checkBits2 = 0;
-    uint32_t             paramCount;
-    DSSHWACCRegs        *ctrlBaseAddr;
-    uint8_t              pollingFlag;
-
-    HWA_GET_DRIVER_STRUCT(handle); /* this fills the ptrHWADriver */
-
-     /* validate driver acccess */
-    retCode = HWA_getDriverAccess(ptrHWADriver, true, false, 0);
-    if (retCode == 0)
-    {
-#ifdef HWA_PARAM_CHECK
-        if ((numParamSets == 0) || (numParamSets > ptrHWADriver->hwAttrs->numHwaParamSets))
-        {
-            /* invalid config */
-            retCode = HWA_EINVAL;
-        }
-        else if (paramsetsArray == NULL)
-        {
-            /* invalid config */
-            retCode = HWA_EINVAL;
-        }
-        else
-#endif
-        {
-            pollingFlag = 1;
-
-            for (paramCount = 0; paramCount < numParamSets; paramCount++)
-            {
-                /* check if interrupt is enabled for each paramset */
-                if ((ptrHWADriver->interrupt1ParamSetMask & (1<< paramsetsArray[paramCount])) ||
-                    (ptrHWADriver->interrupt2ParamSetMask & (1 << paramsetsArray[paramCount])))
-                {
-                    pollingFlag = 0;
-                    break;
-                }
-            }
-            if (pollingFlag)
-            {
-                ctrlBaseAddr = (DSSHWACCRegs *)ptrHWADriver->hwAttrs->ctrlBaseAddr;
-                paramDoneRegister1 = (uint32_t *)&ctrlBaseAddr->PARAM_DONE_SET_STATUS[0];
-                paramDoneRegister2 = (uint32_t *)&ctrlBaseAddr->PARAM_DONE_SET_STATUS[1];
-
-                for (paramCount = 0; paramCount < numParamSets; paramCount++)
-                {
-                    if (paramsetsArray[paramCount] < 32)
-                    {
-                        checkBits1 |= (1 << paramsetsArray[paramCount]);
-                    }
-                    else
-                    {
-                        checkBits2 |= (1 << (paramsetsArray[paramCount] - 32));
-                    }
-                }
-                while (((*paramDoneRegister1 & checkBits1) != checkBits1) && ((*paramDoneRegister2 & checkBits2) != checkBits2))
-               {
-
-                }
-                /* clear the paramdone registers*/
-                ctrlBaseAddr->PARAM_DONE_CLR[0] = checkBits1;
-                ctrlBaseAddr->PARAM_DONE_CLR[1] = checkBits2;
-            }
-            else
-            {
-                retCode = HWA_PARAMSET_POLLINGNOTALLOWED;
-            }
-        }
-        HWA_releaseDriverAccess(ptrHWADriver, true, false, 0);
-    }
-
-    /* return */
-    return retCode;
-}
-
-/*!
-*  @brief  Function to poll the PARAM_DONE_SET_STATUS_0 or PARAM_DONE_SET_STATUS_1 registers to check if one single
-*          specified paramset is finished.
-*
-*  @pre    HWA_open() has been called.
-*
-*  @param  handle          A HWA_Handle returned from HWA_open()
-*
-*  @param  paramsetIndex    the specified paramset index
-*
-*  @return 0 upon success. error code if an error occurs.
-*
-*  @sa     HWA_open()
-*/
-extern int32_t HWA_singleParamSetDonePolling(HWA_Handle handle, uint8_t paramsetIndex)
-{
-    HWA_Driver          *ptrHWADriver = NULL;
-    int32_t              retCode = 0;
-    volatile uint32_t             * paramDoneRegister;
-    uint32_t             checkBits = 0;
-    DSSHWACCRegs         *ctrlBaseAddr;
-
-    HWA_GET_DRIVER_STRUCT(handle); /* this fills the ptrHWADriver */
-
-    /* validate driver acccess */
-    retCode = HWA_getDriverAccess(ptrHWADriver, true, false, 0);
-    if (retCode == 0)
-    {
-#ifdef HWA_PARAM_CHECK
-        if (paramsetIndex > ptrHWADriver->hwAttrs->numHwaParamSets)
-        {
-            /* invalid config */
-            retCode = HWA_EINVAL;
-        }
-        else
-#endif
-        {
-            /* check to see if the paramset interrupt is disable */
-            if ((ptrHWADriver->interrupt1ParamSetMask & (1 << paramsetIndex)) || (ptrHWADriver->interrupt2ParamSetMask & (1 << paramsetIndex)))
-            {
-                /* polling not allowed */
-                retCode = HWA_PARAMSET_POLLINGNOTALLOWED;
-            }
-            else
-            {
-                ctrlBaseAddr = (DSSHWACCRegs *)ptrHWADriver->hwAttrs->ctrlBaseAddr;
-
-                if (paramsetIndex < 32)
-                {
-                    paramDoneRegister = (uint32_t *)&ctrlBaseAddr->PARAM_DONE_SET_STATUS[0];
-                    checkBits = (1 << paramsetIndex);
-                }
-                else
-                {
-                    paramDoneRegister = (uint32_t *)&ctrlBaseAddr->PARAM_DONE_SET_STATUS[1];
-                    checkBits = (1 << (paramsetIndex - 32));
-                }
-
-                while (!(*paramDoneRegister & checkBits))
-                {
-
-                }
-                /* clear the paramdone registers*/
-                if (paramsetIndex < 32)
-                {
-                    ctrlBaseAddr->PARAM_DONE_CLR[0] = checkBits;
-                }
-                else
-                {
-                    ctrlBaseAddr->PARAM_DONE_CLR[1] = checkBits;
-                }
-            }
-        }
-        HWA_releaseDriverAccess(ptrHWADriver, true, false, 0);
-    }
-
-    /* return */
-    return retCode;
 }
 
 
@@ -1086,7 +910,7 @@ static void HWA_allParamDoneISR(uintptr_t arg)
     else
     {
         /* Fatal error as driver is not in valid state */
-       // DebugP_assert (0U);
+        HWA_DRV_assert (0U);
     }
 }
 
@@ -1120,7 +944,7 @@ static void HWA_allALTParamDoneISR(uintptr_t arg)
     else
     {
         /* Fatal error as driver is not in valid state */
-        //DebugP_assert(0U);
+        HWA_DRV_assert(0U);
     }
 }
 
@@ -1248,7 +1072,7 @@ HWA_Handle HWA_open(uint32_t  index, int32_t* errCode)
             if (gHWADriverPtr[index] == NULL)
             {
                 /* Error: Out of memory */
-               // DebugP_log2 ("Debug: HWA Driver (%d) Out of memory (requested size: %d)\n",index,(uint32_t)sizeof(HWA_Driver));
+                HWA_DRV_log2 ("Debug: HWA Driver (%d) Out of memory (requested size: %d)\n",index,(uint32_t)sizeof(HWA_Driver));
                 retCode = HWA_EOUTOFMEM;
             }
             else
@@ -1265,8 +1089,8 @@ HWA_Handle HWA_open(uint32_t  index, int32_t* errCode)
                 if (gHWADriverPtr[index]->interruptCtxParamSet == NULL)
                 {
                     /* Error: Out of memory */
-                  //  DebugP_log2 ("Debug: HWA Driver (%d) Out of memory for interruptCtxParamSet(requested size: %d)\n",
-                   //               index,memReqSize);
+                    HWA_DRV_log2 ("Debug: HWA Driver (%d) Out of memory for interruptCtxParamSet(requested size: %d)\n",
+                                  index,memReqSize);
                     retCode = HWA_EOUTOFMEM;
                 }
                 else
@@ -1371,8 +1195,6 @@ HWA_Handle HWA_open(uint32_t  index, int32_t* errCode)
 
 
             {
-                //uint32_t * mssToprcmRegPtr;
-                CSL_mss_toprcmRegs * mssToprcmRegPtr;
 
                 //uint32_t * dbgAckCtl1Ptr;
                 CSL_dss_ctrlRegs        *dssCtrlRegsPtr;
@@ -1381,17 +1203,6 @@ HWA_Handle HWA_open(uint32_t  index, int32_t* errCode)
                 ctrlBaseAddr->LOCK0_KICK0 = 0x01234567;
                 ctrlBaseAddr->LOCK0_KICK1 = 0xFEDCBA8;
 
-                /* TODO: move this in SOC function?? unlock the param mem */
-                //mssToprcmRegPtr = (uint32_t *)0x02141008;  //TPR:MSS_TOPRCM:LOCK0_KICK0 physical address
-                //*mssToprcmRegPtr = 0x01234567;
-               // mssToprcmRegPtr = (uint32_t *)0x0214100C;  //TPR:MSS_TOPRCM:LOCK1_KICK1 physical address
-               // *mssToprcmRegPtr = 0xFEDCBA8;
-               // mssToprcmRegPtr = (uint32_t *)0x02140444;  //TPR:MSS_TOPRCM:SYS_CLK_DIV_VAL
-               // *mssToprcmRegPtr = 0x111;
-                mssToprcmRegPtr  = (CSL_mss_toprcmRegs*) SOC_TPR12_MSS_TOPRCM_BASE_ADDRESS;
-                mssToprcmRegPtr->LOCK0_KICK0 = 0x01234567;
-                mssToprcmRegPtr->LOCK0_KICK1 = 0xFEDCBA8;
-                mssToprcmRegPtr->SYS_CLK_DIV_VAL = 0x111;
 
                 /* set DBG_ACK_CTL1_DSS_HWA in DSS_CTRL:DBG_ACK_CTL1*/
                 //dbgAckCtl1Ptr = (uint32_t *) (gHWADriverPtr[index]->hwAttrs->dssBaseAddr + 0x58C);
@@ -2583,7 +2394,7 @@ int32_t HWA_configParamSet(HWA_Handle handle, uint8_t paramsetIdx, HWA_ParamConf
             }
             if (paramConfig->accelMode==HWA_ACCELMODE_NONE)
             {
-               /*TODO: not implemented yet*/
+               /* nothing needs to be done here */
             }
             if (paramConfig->accelMode == HWA_ACCELMODE_COMPRESS)
             {
@@ -2723,6 +2534,184 @@ int32_t HWA_getHWAMemInfo(HWA_Handle handle, HWA_MemInfo *memInfo)
 
     return(retCode);
 }
+
+/*!
+*  @brief  Function to poll the PARAM_DONE_SET_STATUS_0 and PARAM_DONE_SET_STATUS_1 registers to check if the
+*          specified paramsets are finished.
+*
+*  @pre    HWA_open() has been called.
+*
+*  @param  handle          A HWA_Handle returned from HWA_open()
+*
+*  @param  numParamSets    number of paramsets need to poll.
+*
+*  @param  paramsetsArray  the specified paramset array
+*
+*  @return 0 upon success. error code if an error occurs.
+*
+*  @sa     HWA_open()
+*/
+extern int32_t HWA_paramSetDonePolling(HWA_Handle handle, uint8_t numParamSets, uint8_t *paramsetsArray)
+{
+    HWA_Driver          *ptrHWADriver = NULL;
+    int32_t              retCode = 0;
+    volatile uint32_t             * paramDoneRegister1;
+    volatile uint32_t             * paramDoneRegister2;
+    uint32_t             checkBits1 = 0;
+    uint32_t             checkBits2 = 0;
+    uint32_t             paramCount;
+    DSSHWACCRegs        *ctrlBaseAddr;
+    uint8_t              pollingFlag;
+
+    HWA_GET_DRIVER_STRUCT(handle); /* this fills the ptrHWADriver */
+
+     /* validate driver acccess */
+    retCode = HWA_getDriverAccess(ptrHWADriver, true, false, 0);
+    if (retCode == 0)
+    {
+#ifdef HWA_PARAM_CHECK
+        if ((numParamSets == 0) || (numParamSets > ptrHWADriver->hwAttrs->numHwaParamSets))
+        {
+            /* invalid config */
+            retCode = HWA_EINVAL;
+        }
+        else if (paramsetsArray == NULL)
+        {
+            /* invalid config */
+            retCode = HWA_EINVAL;
+        }
+        else
+#endif
+        {
+            pollingFlag = 1;
+
+            for (paramCount = 0; paramCount < numParamSets; paramCount++)
+            {
+                /* check if interrupt is enabled for each paramset */
+                if ((ptrHWADriver->interrupt1ParamSetMask & (1<< paramsetsArray[paramCount])) ||
+                    (ptrHWADriver->interrupt2ParamSetMask & (1 << paramsetsArray[paramCount])))
+                {
+                    pollingFlag = 0;
+                    break;
+                }
+            }
+            if (pollingFlag)
+            {
+                ctrlBaseAddr = (DSSHWACCRegs *)ptrHWADriver->hwAttrs->ctrlBaseAddr;
+                paramDoneRegister1 = (uint32_t *)&ctrlBaseAddr->PARAM_DONE_SET_STATUS[0];
+                paramDoneRegister2 = (uint32_t *)&ctrlBaseAddr->PARAM_DONE_SET_STATUS[1];
+
+                for (paramCount = 0; paramCount < numParamSets; paramCount++)
+                {
+                    if (paramsetsArray[paramCount] < 32)
+                    {
+                        checkBits1 |= (1 << paramsetsArray[paramCount]);
+                    }
+                    else
+                    {
+                        checkBits2 |= (1 << (paramsetsArray[paramCount] - 32));
+                    }
+                }
+                while (((*paramDoneRegister1 & checkBits1) != checkBits1) && ((*paramDoneRegister2 & checkBits2) != checkBits2))
+               {
+
+                }
+                /* clear the paramdone registers*/
+                ctrlBaseAddr->PARAM_DONE_CLR[0] = checkBits1;
+                ctrlBaseAddr->PARAM_DONE_CLR[1] = checkBits2;
+            }
+            else
+            {
+                retCode = HWA_PARAMSET_POLLINGNOTALLOWED;
+            }
+        }
+        HWA_releaseDriverAccess(ptrHWADriver, true, false, 0);
+    }
+
+    /* return */
+    return retCode;
+}
+
+/*!
+*  @brief  Function to poll the PARAM_DONE_SET_STATUS_0 or PARAM_DONE_SET_STATUS_1 registers to check if one single
+*          specified paramset is finished.
+*
+*  @pre    HWA_open() has been called.
+*
+*  @param  handle          A HWA_Handle returned from HWA_open()
+*
+*  @param  paramsetIndex    the specified paramset index
+*
+*  @return 0 upon success. error code if an error occurs.
+*
+*  @sa     HWA_open()
+*/
+extern int32_t HWA_singleParamSetDonePolling(HWA_Handle handle, uint8_t paramsetIndex)
+{
+    HWA_Driver          *ptrHWADriver = NULL;
+    int32_t              retCode = 0;
+    volatile uint32_t             * paramDoneRegister;
+    uint32_t             checkBits = 0;
+    DSSHWACCRegs         *ctrlBaseAddr;
+
+    HWA_GET_DRIVER_STRUCT(handle); /* this fills the ptrHWADriver */
+
+    /* validate driver acccess */
+    retCode = HWA_getDriverAccess(ptrHWADriver, true, false, 0);
+    if (retCode == 0)
+    {
+#ifdef HWA_PARAM_CHECK
+        if (paramsetIndex > ptrHWADriver->hwAttrs->numHwaParamSets)
+        {
+            /* invalid config */
+            retCode = HWA_EINVAL;
+        }
+        else
+#endif
+        {
+            /* check to see if the paramset interrupt is disable */
+            if ((ptrHWADriver->interrupt1ParamSetMask & (1 << paramsetIndex)) || (ptrHWADriver->interrupt2ParamSetMask & (1 << paramsetIndex)))
+            {
+                /* polling not allowed */
+                retCode = HWA_PARAMSET_POLLINGNOTALLOWED;
+            }
+            else
+            {
+                ctrlBaseAddr = (DSSHWACCRegs *)ptrHWADriver->hwAttrs->ctrlBaseAddr;
+
+                if (paramsetIndex < 32)
+                {
+                    paramDoneRegister = (uint32_t *)&ctrlBaseAddr->PARAM_DONE_SET_STATUS[0];
+                    checkBits = (1 << paramsetIndex);
+                }
+                else
+                {
+                    paramDoneRegister = (uint32_t *)&ctrlBaseAddr->PARAM_DONE_SET_STATUS[1];
+                    checkBits = (1 << (paramsetIndex - 32));
+                }
+
+                while (!(*paramDoneRegister & checkBits))
+                {
+
+                }
+                /* clear the paramdone registers*/
+                if (paramsetIndex < 32)
+                {
+                    ctrlBaseAddr->PARAM_DONE_CLR[0] = checkBits;
+                }
+                else
+                {
+                    ctrlBaseAddr->PARAM_DONE_CLR[1] = checkBits;
+                }
+            }
+        }
+        HWA_releaseDriverAccess(ptrHWADriver, true, false, 0);
+    }
+
+    /* return */
+    return retCode;
+}
+
 
 /*!
  *  @brief  Function to get the dma destination index with a given EDMA channel number

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Texas Instruments Incorporated
+ * Copyright (c) 2019 - 2020, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -50,16 +50,16 @@
 HWA_Driver *gHWADriverPtr[HWA_NUM_INSTANCES] = { NULL };
 
 HWA_RAMAttrs gHWARAMCfg[HWA_NUM_RAMS] = {
-    { SOC_TPR12_HWA_WINDOM_RAM_ADDRESS , HWA_RAM_WINDOW_SIZE_IN_BYTES },
-    { SOC_TPR12_HWA_MULT_RAM_ADDRESS , HWA_RAM_VECTORMULTIPLY_SIZE_IN_BYTES },
-    { SOC_TRP12_HWA_DEROT_RAM_ADDRESS , HWA_RAM_LUT_FREQ_DEROTATE_SIZE_IN_BYTES } ,
-    { SOC_TPR12_HWA_SHUFFLE_RAM_ADDRESS ,HWA_RAM_SHUFFLE_RAM_SIZE_IN_BYTES } ,
-    { SOC_TPR12_HWA_HIST_THRESH_RAM_ADDRESS , HWA_RAM_HIST_THRESH_RAM_SIZE_IN_BYTES } ,
-    { SOC_TPR12_HWA_2DSTAT_ITER_VAL_RAM_ADDRESS , HWA_RAM_2DSTAT_ITER_VAL_SIZE_IN_BYTES } ,
-    { SOC_TPR12_HWA_2DSTAT_ITER_IDX_RAM_ADDRESS , HWA_RAM_2DSTAT_ITER_IDX_SIZE_IN_BYTES },
-    { SOC_TPR12_HWA_2DSTAT_SMPL_VAL_RAM_ADDRESS , HWA_RAM_2DSTAT_SMPL_VAL_SIZE_IN_BYTES } ,
-    { SOC_TPR12_HWA_2DSTAT_SMPL_IDX_RAM_ADDRESS , HWA_RAM_2DSTAT_SMPL_IDX_SIZE_IN_BYTES } ,
-    { SOC_TPR12_HWA_HIST_RAM_ADDRESS , HWA_RAM_HIST_RAM_SIZE_IN_BYTES }
+    { CSL_DSS_HWA_WINDOW_RAM_U_BASE , HWA_RAM_WINDOW_SIZE_IN_BYTES },
+    { CSL_DSS_HWA_MULT_RAM_U_BASE , HWA_RAM_VECTORMULTIPLY_SIZE_IN_BYTES },
+    { CSL_DSS_HWA_DEROT_RAM_U_BASE , HWA_RAM_LUT_FREQ_DEROTATE_SIZE_IN_BYTES } ,
+    { CSL_DSS_HWA_SHUFFLE_RAM_U_BASE ,HWA_RAM_SHUFFLE_RAM_SIZE_IN_BYTES } ,
+    { CSL_DSS_HWA_HIST_THRESH_RAM_U_BASE , HWA_RAM_HIST_THRESH_RAM_SIZE_IN_BYTES } ,
+    { CSL_DSS_HWA_2DSTAT_ITER_VAL_RAM_U_BASE , HWA_RAM_2DSTAT_ITER_VAL_SIZE_IN_BYTES } ,
+    { CSL_DSS_HWA_2DSTAT_ITER_IDX_RAM_U_BASE , HWA_RAM_2DSTAT_ITER_IDX_SIZE_IN_BYTES },
+    { CSL_DSS_HWA_2DSTAT_SMPL_VAL_RAM_U_BASE , HWA_RAM_2DSTAT_SMPL_VAL_SIZE_IN_BYTES } ,
+    { CSL_DSS_HWA_2DSTAT_SMPL_IDX_RAM_U_BASE , HWA_RAM_2DSTAT_SMPL_IDX_SIZE_IN_BYTES } ,
+    { CSL_DSS_HWA_HIST_RAM_U_BASE , HWA_RAM_HIST_RAM_SIZE_IN_BYTES }
 
 };
 /* TPR12 DSS/MSS specific HWA hardware attributes */
@@ -69,24 +69,25 @@ HWA_HWAttrs gHWAHwCfg[HWA_NUM_INSTANCES] =
      */
     {
         0U,
-        SOC_TPR12_HWA_COMMON_BASE_ADDRESS,    /* HWA base address for control/common register */
-        SOC_TPR12_HWA_PARAM_BASE_ADDRESS,     /* HWA base address for the paramset */
-        SOC_TPR12_HWA_WINDOM_RAM_ADDRESS,     /* HWA base address for window ram */
-        SOC_TPR12_DSS_DSSREG_BASE_ADDRESS,    /* DSS_CTRL base address */
+        CSL_DSS_HWA_CFG_U_BASE,                               /* HWA base address for control/common register */
+        CSL_DSS_HWA_PARAM_U_BASE,                          /* HWA base address for the paramset */
+        CSL_DSS_HWA_WINDOW_RAM_U_BASE,            /* HWA base address for window ram */
+        CSL_DSS_CTRL_U_BASE,                                       /* DSS_CTRL base address */
         NUM_HWA_PARAMSETS_PER_INSTANCE,       /* number of HWA paramsets */
 #ifdef BUILD_DSP_1
-        SOC_TPR12_DSS_INTC_EVENT1_HW_ACC_PARAM_DONE,    /* intNumParamSet HWA Peripheral's interrupt vector 1 for individual paramset completion */
-        SOC_TPR12_DSS_INTC_EVENT2_HW_ACC_PARAM_DONE,    /* intNumParamSet HWA Peripheral's interrupt vector 2 for individual paramset completion */
-        SOC_TPR12_DSS_INTC_EVENT_HW_ACC_DONE,           /* intNumDone HWA Peripheral's interrupt vector for completion of all programmed paramset */
-        SOC_TPR12_DSS_INTC_EVENT_HW_ACC_ALT_DONE,       /* intNumDone HWA Peripheral's interrupt vector for completion of all programmed paramset in ALT thread */
-#else //BUILD_MCU
-        SOC_TPR12_MSS_INTC_EVENT1_HW_ACC_PARAM_DONE,    /* intNumParamSet HWA Peripheral's interrupt vector 1 for individual paramset completion */
-        SOC_TPR12_MSS_INTC_EVENT2_HW_ACC_PARAM_DONE,    /* intNumParamSet HWA Peripheral's interrupt vector 2 for individual paramset completion */
-        SOC_TPR12_MSS_INTC_EVENT_HW_ACC_DONE,           /* intNumDone HWA Peripheral's interrupt vector for completion of all programmed paramset */
-        SOC_TPR12_MSS_INTC_EVENT_HW_ACC_ALT_DONE,       /* intNumDone HWA Peripheral's interrupt vector for completion of all programmed paramset in ALT thread  */
+        CSL_DSS_INTR_DSS_HWA_PARAM_DONE_INTR1,    /* intNumParamSet HWA Peripheral's interrupt vector 1 for individual paramset completion */
+        CSL_DSS_INTR_DSS_HWA_PARAM_DONE_INTR2,    /* intNumParamSet HWA Peripheral's interrupt vector 2 for individual paramset completion */
+        CSL_DSS_INTR_DSS_HWA_LOOP_INTR1,                  /* intNumDone HWA Peripheral's interrupt vector for completion of all programmed paramset */
+        CSL_DSS_INTR_DSS_HWA_LOOP_INTR2,                  /* intNumDone HWA Peripheral's interrupt vector for completion of all programmed paramset in ALT thread */
+#endif
+#ifdef BUILD_MCU
+        CSL_MSS_INTR_DSS_HWA_PARAM_DONE_INTR1,    /* intNumParamSet HWA Peripheral's interrupt vector 1 for individual paramset completion */
+        CSL_MSS_INTR_DSS_HWA_PARAM_DONE_INTR2,    /* intNumParamSet HWA Peripheral's interrupt vector 2 for individual paramset completion */
+        CSL_MSS_INTR_DSS_HWA_LOOP_INTR1,           /* intNumDone HWA Peripheral's interrupt vector for completion of all programmed paramset */
+        CSL_MSS_INTR_DSS_HWA_LOOP_INTR2,       /* intNumDone HWA Peripheral's interrupt vector for completion of all programmed paramset in ALT thread  */
 #endif
         NUM_HWA_DMACHANNELS_PER_INSTANCE,          /* number of DMA channels available for HWA */
-        SOC_TPR12_HWA_MEM0_BASE_ADDRESS,             /* HWA Accelerator processing memory base address */
+        CSL_DSS_HWA_DMA0_U_BASE,                     /* HWA Accelerator processing memory base address */
         SOC_HWA_MEM_SIZE,                                /* HWA Accelerator processing memory size in bytes */
         true
     }
