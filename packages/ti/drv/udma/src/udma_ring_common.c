@@ -203,7 +203,7 @@ int32_t Udma_ringAlloc(Udma_DrvHandle drvHandle,
             {
                 Udma_rmFreeMappedRing(ringHandle->ringNum, drvHandle, ringHandle->mappedRingGrp);
             }
-#endif 
+#endif
         }
     }
 
@@ -249,12 +249,12 @@ int32_t Udma_ringFree(Udma_RingHandle ringHandle)
         {
             Udma_rmFreeMappedRing(ringHandle->ringNum, drvHandle, ringHandle->mappedRingGrp);
         }
-#endif 
+#endif
         ringHandle->ringNum         = UDMA_RING_INVALID;
         ringHandle->ringInitDone    = UDMA_DEINIT_DONE;
 
         drvHandle->ringHandleClearRegs(ringHandle);
-        
+
         ringHandle->drvHandle       = (Udma_DrvHandle) NULL_PTR;
     }
 
@@ -291,7 +291,7 @@ int32_t Udma_ringAttach(Udma_DrvHandle drvHandle,
     if(UDMA_SOK == retVal)
     {
         ringHandle->ringNum = ringNum;
-
+        ringHandle->drvHandle = drvHandle;
         drvHandle->ringSetCfg(drvHandle, ringHandle, (Udma_RingPrms *) NULL_PTR);
 
         ringHandle->ringInitDone = UDMA_INIT_DONE;
@@ -335,7 +335,7 @@ int32_t Udma_ringDetach(Udma_RingHandle ringHandle)
         drvHandle->ringHandleClearRegs(ringHandle);
 
         ringHandle->drvHandle       = (Udma_DrvHandle) NULL_PTR;
-      
+
     }
 
     return (retVal);
@@ -368,7 +368,7 @@ int32_t Udma_ringQueueRaw(Udma_RingHandle ringHandle, uint64_t phyDescMem)
         cookie = drvHandle->initPrms.osalPrms.disableAllIntr();
 
         retVal = drvHandle->ringQueueRaw(drvHandle,ringHandle,phyDescMem);
-        
+
         drvHandle->initPrms.osalPrms.restoreAllIntr(cookie);
     }
 
@@ -400,7 +400,7 @@ int32_t Udma_ringDequeueRaw(Udma_RingHandle ringHandle, uint64_t *phyDescMem)
     if(UDMA_SOK == retVal)
     {
         cookie = drvHandle->initPrms.osalPrms.disableAllIntr();
-        
+
         retVal = drvHandle->ringDequeueRaw(drvHandle,ringHandle,phyDescMem);
 
         drvHandle->initPrms.osalPrms.restoreAllIntr(cookie);
@@ -450,7 +450,7 @@ void Udma_ringPrime(Udma_RingHandle ringHandle, uint64_t phyDescMem)
 void Udma_ringPrimeRead(Udma_RingHandle ringHandle, uint64_t *phyDescMem)
 {
     Udma_DrvHandle  drvHandle = ringHandle->drvHandle;
-    
+
     drvHandle->ringPrimeRead(ringHandle,phyDescMem);
 
     return;
@@ -835,7 +835,7 @@ int32_t Udma_ringProxyQueueRaw(Udma_RingHandle ringHandle,
     int32_t             retVal = UDMA_EFAIL;
     Udma_printf(drvHandle, "[Error] Proxy not present!!!\n");
 #endif
-    
+
     return (retVal);
 }
 
@@ -843,7 +843,7 @@ int32_t Udma_ringProxyDequeueRaw(Udma_RingHandle ringHandle,
                                         Udma_DrvHandle drvHandle,
                                         uint64_t *phyDescMem)
 {
-#if (UDMA_SOC_CFG_PROXY_PRESENT == 1)    
+#if (UDMA_SOC_CFG_PROXY_PRESENT == 1)
     int32_t             retVal = UDMA_SOK;
     uint32_t            ringHwOcc;
     CSL_ProxyThreadCfg  threadCfg;
@@ -878,7 +878,7 @@ int32_t Udma_ringProxyDequeueRaw(Udma_RingHandle ringHandle,
     int32_t             retVal = UDMA_EFAIL;
     Udma_printf(drvHandle, "[Error] Proxy not present!!!\n");
 #endif
-    
+
     return (retVal);
 }
 
@@ -939,7 +939,7 @@ int32_t Udma_ringCheckParams(Udma_DrvHandle drvHandle,
     {
         retVal = UDMA_EINVALID_PARAMS;
         Udma_printf(drvHandle, "[Error] Incorrect Mapped Ring Group!!!\n");
-    }    
+    }
 #endif
 
     return (retVal);
