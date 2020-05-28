@@ -196,11 +196,13 @@ LIB_PATHS += $(RTSLIB_PATH)
 #if float type is not FPU use hard lib
 ifneq ($(GCC_FLOAT_PATH),FPU)
 ifneq ($(XDC_CFG_FILE_$(CORE)),)
-  LIB_PATHS_DIR = $(bios_PATH)/packages/gnu/targets/arm/libs/install-native/arm-none-eabi/lib/hard
+  LIB_PATHS_DIR = $(bios_PATH)/packages/gnu/targets/arm/libs/install-native/arm-none-eabi/lib/thumb/v7-a/hard/
 else
   LIB_PATHS_DIR  = $(HARDLIB_PATH)
-  LIB_PATHS_DIR += $(TOOLCHAIN_PATH_A15)/arm-none-eabi/lib/hard
-  LIB_PATHS     += $(HARDLIB_PATH)/libgcc.a $(TOOLCHAIN_PATH_A15)/arm-none-eabi/lib/hard/libc_nano.a $(TOOLCHAIN_PATH_A15)/arm-none-eabi/lib/hard/libm.a  $(TOOLCHAIN_PATH_A15)/arm-none-eabi/lib/hard/librdimon_nano.a $(TOOLCHAIN_PATH_A15)/arm-none-eabi/lib/hard/libg_nano.a
+  THUMB_HARD     = thumb/v7+fp/hard/
+  THUMB_PATH     = $(TOOLCHAIN_PATH_A15)/arm-none-eabi/lib/$(THUMB_HARD)
+  LIB_PATHS_DIR += $(THUMB_PATH)
+  LIB_PATHS     += $(HARDLIB_PATH)/$(THUMB_HARD)/libgcc.a $(THUMB_PATH)/libc_nano.a $(THUMB_PATH)/libm.a $(THUMB_PATH)/librdimon_nano.a $(THUMB_PATH)/libg_nano.a
 endif
 else
 ifneq ($(XDC_CFG_FILE_$(CORE)),)

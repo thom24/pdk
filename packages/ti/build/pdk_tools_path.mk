@@ -19,7 +19,7 @@ endif
 
   CGT_C7X_VERSION=1.3.0.STS
   CGT_ARM_VERSION=20.2.0.LTS
-  GCC_VERSION_HARDLIB=7.3.1
+  GCC_VERSION_HARDLIB=9.2.1
 
   CGT_ARP32_VERSION=1.0.8
   CG_XML_VERSION=2.61.00
@@ -138,13 +138,13 @@ endif
   export M4_TOOLCHAIN_INSTALL_DIR  ?= $(TOOLCHAIN_PATH_M4)
 
 ifeq ($(SOC),$(filter $(SOC), am335x))
-  export HARDLIB_PATH ?= $(TOOLCHAIN_PATH_A8)/lib/gcc/arm-none-eabi/$(GCC_VERSION_HARDLIB)/hard
+  export HARDLIB_PATH ?= $(TOOLCHAIN_PATH_A8)/lib/gcc/arm-none-eabi/$(GCC_VERSION_HARDLIB)
   export FPULIB_PATH ?= $(TOOLCHAIN_PATH_A8)/lib/gcc/arm-none-eabi/$(GCC_VERSION_FPULIB)/fpu
 else ifeq  ($(SOC),$(filter $(SOC), am437x))
-  export HARDLIB_PATH ?= $(TOOLCHAIN_PATH_A9)/lib/gcc/arm-none-eabi/$(GCC_VERSION_HARDLIB)/hard
+  export HARDLIB_PATH ?= $(TOOLCHAIN_PATH_A9)/lib/gcc/arm-none-eabi/$(GCC_VERSION_HARDLIB)
   export FPULIB_PATH ?= $(TOOLCHAIN_PATH_A9)/lib/gcc/arm-none-eabi/$(GCC_VERSION_FPULIB)/fpu
 else
-  export HARDLIB_PATH ?= $(TOOLCHAIN_PATH_A15)/lib/gcc/arm-none-eabi/$(GCC_VERSION_HARDLIB)/hard
+  export HARDLIB_PATH ?= $(TOOLCHAIN_PATH_A15)/lib/gcc/arm-none-eabi/$(GCC_VERSION_HARDLIB)
   export FPULIB_PATH ?= $(TOOLCHAIN_PATH_A15)/lib/gcc/arm-none-eabi/$(GCC_VERSION_FPULIB)/fpu
 endif
 
