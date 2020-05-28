@@ -609,6 +609,42 @@ static void BoardDiag_emacPhyExtendedRegRead (uint32_t baseAddr,
 }
 
 /**
+ * \brief  Checks for ethrnet PHY link status
+ *
+ * \param   linkFlag [IN]    Link status check flag
+ *                           0 - Wait for link Down
+ *                           0 - Wait for link UP
+ * \param   timeout [IN]     Timeout for link check wait
+ *
+ * \return  int8_t
+ *              0  - in case of success
+ *             -1  - in case of failure
+ *
+ */
+static int8_t BoardDiag_checkPhyLink (uint32_t linkFlag, uint32_t timeout)
+{
+	uint16_t regData;
+
+	linkCheckTime = 0;
+
+	regData = 0;
+	do
+	{
+		BoardDiag_emacPhyRegRead(baseAddr, phyAddrs, 0x11,
+                                 &regData);
+		BOARD_delay(10000);
+
+		linkCheckTime++;
+		if(linkCheckTime > timeout)
+		{
+			return (-1);
+		}
+	} while (((regData & 0x400) >> 10) != linkFlag);
+
+	return (0);
+}
+
+/**
  * \brief  Ethernet PHY initialization
  *
  * This function initializes the PHY to enter external loopback mode
@@ -620,9 +656,7 @@ static void BoardDiag_emacPhyExtendedRegRead (uint32_t baseAddr,
  */
 static int8_t BoardDiag_initEthPhy (void)
 {
-	uint16_t regData;
-
-	linkCheckTime = 0;
+    int8_t linkStatus = 0;
 
 	/*
      * Configure Ethernet PHY to enter External Loopback mode
@@ -635,22 +669,13 @@ static int8_t BoardDiag_initEthPhy (void)
     BoardDiag_emacPhyRegWrite(baseAddr, phyAddrs, 9, 0x1000);
 
 	UART_printf("Waiting for Link Status\n");
-	regData = 0;
-	while ((regData & 0x400) == 0)
-	{
-		BoardDiag_emacPhyRegRead(baseAddr, phyAddrs, 0x11,
-                            &regData);
-		BOARD_delay(10000);
+	linkStatus = BoardDiag_checkPhyLink(1, 1000);
+    if(linkStatus == 0)
+    {
+        UART_printf("Link is UP!!\n\n");
+    }
 
-		linkCheckTime++;
-		if(linkCheckTime > 1000)
-		{
-			return (-1);
-		}
-	}
-
-	UART_printf("Link is UP!!\n\n");
-	return (0);
+	return (linkStatus);
 }
 
 /**
@@ -1044,6 +1069,12 @@ static int8_t BoardDiag_emacLoopbackTest(uint32_t port_num)
 static int8_t BoardDiag_emacCableDisconTest(uint32_t port_num)
 {
     UART_printf("Please disconnect the loopback cable \n");
+
+    /* EMAC poll function is not able to detect the link status properly.
+       Using PHY register status as a workaround. Enable poll function after
+       driver fix.
+     */
+#ifdef BOARD_DIAG_ENABLE_EMAC_POLL
     /* Waiting to disconnect the Ethernet cable
      * After disconnecting the cable shows the link status
      */
@@ -1058,11 +1089,22 @@ static int8_t BoardDiag_emacCableDisconTest(uint32_t port_num)
             break;
         }
     }
+#else
+    if(BoardDiag_checkPhyLink(0, 0x10000) == 0)
+    {
+        UART_printf("Link is Down!\n");
+    }
+    else
+    {
+        UART_printf("Link Timeout!!\n");
+    }
+#endif
 
     UART_printf("Please reconnect the loopback cable \n");
     /* Waiting to reconnect the Ethernet cable
      * After connecting the cable shows the link status
      */
+#ifdef BOARD_DIAG_ENABLE_EMAC_POLL
     while(1)
     {
         emac_poll(port_num, &link_info);
@@ -1074,6 +1116,17 @@ static int8_t BoardDiag_emacCableDisconTest(uint32_t port_num)
             break;
         }
     }
+#else
+    if(BoardDiag_checkPhyLink(1, 0x10000) == 0)
+    {
+        UART_printf("Link is UP!\n");
+    }
+    else
+    {
+        UART_printf("Link Timeout!!\n");
+    }
+#endif
+
     return BoardDiag_emacLoopbackTest(port_num);
 }
 #endif
