@@ -532,8 +532,10 @@ SBL_CFLAGS += -DSBL_LOG_LEVEL=3
 
 SBL_CFLAGS += -DSBL_ENABLE_PLL
 SBL_CFLAGS += -DSBL_ENABLE_CLOCKS
-SBL_CFLAGS += -DSBL_ENABLE_DDR
 
+ifneq ($(SOC), am64x)
+SBL_CFLAGS += -DSBL_ENABLE_DDR
+endif
 ############################################
 # DISABLING the options above this caption
 # improves boot time at the cost of moving
