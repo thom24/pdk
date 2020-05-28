@@ -520,7 +520,7 @@ void SBL_SetupCoreMem(uint32_t core_id)
             break;
         case M4F_CPU0_ID:
             SBL_log(SBL_LOG_MAX, "Sciclient_pmSetModuleState Off, DevId 0x%x... \n", sblSlaveCoreInfoPtr->tisci_dev_id);
-            status = Sciclient_pmSetModuleState(sblSlaveCoreInfoPtr->tisci_dev_id, TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
+            status = Sciclient_pmSetModuleState(sblSlaveCoreInfoPtr->tisci_dev_id, TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
             if (status != CSL_PASS)
             {
                 SBL_log(SBL_LOG_ERR, "Sciclient_pmSetModuleState Off...FAILED \n");
@@ -533,9 +533,9 @@ void SBL_SetupCoreMem(uint32_t core_id)
                 SBL_log(SBL_LOG_ERR, "Sciclient_pmSetModuleRst RESET ...FAILED \n");
                 SblErrLoop(__FILE__, __LINE__);
             }
- 
+
             SBL_log(SBL_LOG_MAX, "Sciclient_pmSetModuleState On, DevId 0x%x... \n", sblSlaveCoreInfoPtr->tisci_dev_id);
-            status = Sciclient_pmSetModuleState(sblSlaveCoreInfoPtr->tisci_dev_id, TISCI_MSG_VALUE_DEVICE_SW_STATE_ON, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
+            status = Sciclient_pmSetModuleState(sblSlaveCoreInfoPtr->tisci_dev_id, TISCI_MSG_VALUE_DEVICE_SW_STATE_ON, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
             if (status != CSL_PASS)
             {
                 SBL_log(SBL_LOG_ERR, "Sciclient_pmSetModuleState...FAILED \n");

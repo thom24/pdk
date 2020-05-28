@@ -528,7 +528,7 @@ endif
 ###########START BOOT PERF KNOBS#############
 # SBL log level
 # no logs = 0, only errors =1, normal logs = 2, all logs = 3
-SBL_CFLAGS += -DSBL_LOG_LEVEL=3
+SBL_CFLAGS += -DSBL_LOG_LEVEL=2
 
 SBL_CFLAGS += -DSBL_ENABLE_PLL
 SBL_CFLAGS += -DSBL_ENABLE_CLOCKS

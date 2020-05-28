@@ -1536,16 +1536,9 @@ void sysIdleLoop(void)
 
 #endif
 
-#if defined(SOC_AM64X) && defined(BUILD_M4F)
-#define OSAL_TEST_SPIN_FOREVER 1
-#endif
 /*
  *  ======== main ========
  */
-#ifdef OSAL_TEST_SPIN_FOREVER
-volatile uint32_t emuwait_main_osal=1;
-#endif
-
 int main(void)
 {
 #if defined(BUILD_C66X_1) || defined(BUILD_C66X_2)
@@ -1559,9 +1552,6 @@ int main(void)
     C7x_ConfigureTimerOutput();
 #endif
 
-#ifdef OSAL_TEST_SPIN_FOREVER
-  	while(emuwait_main_osal);
-#endif
     Board_initOSAL();
     OSAL_log("\n M4 test \n");
 
