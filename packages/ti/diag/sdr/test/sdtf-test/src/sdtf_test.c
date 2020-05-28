@@ -589,6 +589,6 @@ void test_sdr_test(void)
     }
 
 #if defined (UNITY_INCLUDE_CONFIG_H)
-    TEST_ASSERT_EQUAL_INT32(0, retval);
+    TEST_ASSERT_EQUAL_INT32(0, retVal);
 #endif
 }
