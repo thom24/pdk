@@ -411,12 +411,14 @@ int32_t SBL_ospiClose(const void *handle)
 #if !defined(SBL_BYPASS_OSPI_DRIVER)
     Board_flashHandle h = *(const Board_flashHandle *) handle;
 
+    SBL_ADD_PROFILE_POINT;
+
     SBL_log(SBL_LOG_MAX, "SBL_ospiClose called\n");
     Board_flashClose(h);
 #if SBL_USE_DMA
     Ospi_udma_deinit();
 #endif
-
+    SBL_ADD_PROFILE_POINT;
 #else
     SBL_ADD_PROFILE_POINT;
     SBL_ADD_PROFILE_POINT;
