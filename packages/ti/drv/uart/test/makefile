@@ -102,6 +102,14 @@ COMP_LIST_COMMON  += csl board
 #COMP_LIST_COMMON  += osal_tirtos csl board profiling
 
 PACKAGE_SRCS_COMMON = .
+
+ifeq ($(SOC),$(filter $(SOC), am64x))
+ifeq ($(CORE),$(filter $(CORE), m4f_0))
+CONFIG_BLD_LNK_m4f = am64x/uart_linker_m4f.lds
+PACKAGE_SRCS_COMMON += $(SOC)
+endif
+endif
+
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_UART_DMA) $(CFLAGS_OS_DEFINES)
 
 ifneq ($(SOC),$(filter $(SOC), tpr12))
