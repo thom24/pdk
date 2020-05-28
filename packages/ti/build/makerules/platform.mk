@@ -198,12 +198,9 @@ ifeq ($(BOARD),$(filter $(BOARD), tpr12_evm tpr12_qt))
 endif
 
 #
-# Package type
+# Package type: package_type_xdc or package_type_makefile
 #
-PDK_PACKAGE_TYPE = package_type_xdc
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 tpr12 am64x))
-PDK_PACKAGE_TYPE = package_type_makefile
-endif
+PDK_PACKAGE_TYPE ?= package_type_xdc
 export PDK_PACKAGE_TYPE
 
 #
