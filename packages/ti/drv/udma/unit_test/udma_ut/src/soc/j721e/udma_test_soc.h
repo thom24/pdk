@@ -62,7 +62,6 @@ extern "C" {
 #define UDMA_TEST_RF_MAIN_BC_HC         (UDMA_TEST_RF_SOC | \
                                          UDMA_TEST_RF_CORE_MPU1_0 | \
                                          UDMA_TEST_RF_CORE_MCU2_0 | \
-                                         UDMA_TEST_RF_CORE_MCU2_1 | \
                                          UDMA_TEST_RF_CFG_DEF)
 #define UDMA_TEST_RF_MAIN_BC            (UDMA_TEST_RF_SOC | UDMA_TEST_RF_CORE_ALL | UDMA_TEST_RF_CFG_DEF)
 #define UDMA_TEST_RF_MCU_BC_HC          (UDMA_TEST_RF_SOC | \
@@ -80,10 +79,21 @@ extern "C" {
                                          UDMA_TEST_RF_CORE_MCU1_0 | \
                                          UDMA_TEST_RF_CFG_DEF)
 #define UDMA_TEST_RF_DRU                (UDMA_TEST_RF_SOC | \
-                                         UDMA_TEST_RF_CORE_MCU2_1 | \
+                                         UDMA_TEST_RF_CORE_MCU2_0 | \
                                          UDMA_TEST_RF_CORE_C7X_1 | \
                                          UDMA_TEST_RF_CORE_C66X_1 | \
                                          UDMA_TEST_RF_CORE_C66X_2 | \
+                                         UDMA_TEST_RF_CFG_DEF)
+/* Need at least two channels - so enable only for those cores */
+#define UDMA_TEST_RF_CHAIN              (UDMA_TEST_RF_SOC | \
+                                         UDMA_TEST_RF_CORE_MPU1_0 | \
+                                         UDMA_TEST_RF_CORE_MCU2_0 | \
+                                         UDMA_TEST_RF_CORE_MCU3_0 | \
+                                         UDMA_TEST_RF_CORE_MCU3_1 | \
+                                         UDMA_TEST_RF_CORE_C7X_1 | \
+                                         UDMA_TEST_RF_CORE_C66X_1 | \
+                                         UDMA_TEST_RF_CORE_C66X_2 | \
+                                         UDMA_TEST_RF_CORE_MCU1_0 | \
                                          UDMA_TEST_RF_CFG_DEF)
 
 /* Multipe task testcases - some have only one instance. Doesn't make sense to run from 1 task */

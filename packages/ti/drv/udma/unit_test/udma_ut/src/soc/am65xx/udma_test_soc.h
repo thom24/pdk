@@ -64,6 +64,8 @@ extern "C" {
 #define UDMA_TEST_RF_MCU_BC_HC          (UDMA_TEST_RF_SOC | UDMA_TEST_RF_CORE_MCU1_0 | UDMA_TEST_RF_CFG_DEF)
 #define UDMA_TEST_RF_MCU_BC             (UDMA_TEST_RF_SOC | UDMA_TEST_RF_CORE_ALL | UDMA_TEST_RF_CFG_DEF)
 #define UDMA_TEST_RF_DRU                (UDMA_TEST_RF_SOC | UDMA_TEST_RF_CORE_ALL | UDMA_TEST_RF_CFG_DEF)
+/* Need at least two channels - so enable only for those cores */
+#define UDMA_TEST_RF_CHAIN              (UDMA_TEST_RF_SOC | UDMA_TEST_RF_CORE_ALL | UDMA_TEST_RF_CFG_DEF)
 
 /* Multipe task testcases - some have only one instance. Doesn't make sense to run from 1 task */
 #define UDMA_TEST_RF_MAIN_BC_HC_MT      (UDMA_TEST_RF_SOC | UDMA_TEST_RF_CORE_MPU1_0 | UDMA_TEST_RF_CFG_DEF)
