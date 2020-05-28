@@ -79,10 +79,12 @@ endif
 #   SRCS_<core/SoC/platform-name> =
 #   CFLAGS_LOCAL_<core/SoC/platform-name> =
 
+ifneq ($(SOC),$(filter $(SOC), tpr12))
 # Enable copy of vectors
 ifeq ($(ISA),$(filter $(ISA), r5f))
   SRCDIR += $(PDK_VECT_COPY_PATH)
   SRCS_ASM_COMMON += utilsCopyVecs2ATcm.asm
+endif
 endif
 
 # Include common make files
