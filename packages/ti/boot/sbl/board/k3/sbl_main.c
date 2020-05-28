@@ -379,7 +379,7 @@ int main()
         SBL_SlaveCoreBoot(MCU1_CPU1_ID, NULL, &k3xx_evmEntry);
     }
 #else
-    for (core_id = MPU1_CPU0_ID; core_id <= M4F_CPU0_ID; core_id ++)
+    for (core_id = MPU1_CPU0_ID; core_id <= SBL_LAST_CORE_ID; core_id ++)
     {
         /* Try booting all cores other than the cluster running the SBL */
         if ((k3xx_evmEntry.CpuEntryPoint[core_id] != SBL_INVALID_ENTRY_ADDR) &&

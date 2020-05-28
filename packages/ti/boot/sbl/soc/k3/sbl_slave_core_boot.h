@@ -64,6 +64,8 @@ typedef uint32_t cpu_core_id_t;
 #define DSP1_C7X_ID                     (12U)
 #define DSP2_C7X_ID                     (13U)
 #define M4F_CPU0_ID                     (14U)
+/* Last core in the list of supported cores */
+#define SBL_LAST_CORE_ID         (M4F_CPU0_ID)
 /* add additional MPU/MCU cores before this */
 /* only SMP core ID should be after this */
 #define MPU1_SMP_ID                     (15U)
