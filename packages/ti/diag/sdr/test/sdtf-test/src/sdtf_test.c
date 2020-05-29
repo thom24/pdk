@@ -232,6 +232,7 @@ int32_t SDTF_runPeriodicTests(void)
 
         SDTF_profileBegin(SDTF_PROFILE_PERIODIC);
         /* -------------- Periodic Test start ------------------------- */
+#if defined(SOC_AM65XX)
         {
             /* Run test for ECC */
             SDR_ECC_InjectErrorConfig_t injectErrorConfig;
@@ -254,6 +255,7 @@ int32_t SDTF_runPeriodicTests(void)
                 return -1;
              }
         }
+#endif
         {
              /* Run esm test 1*/
              result = SDR_ESM_selfTest(1000);
