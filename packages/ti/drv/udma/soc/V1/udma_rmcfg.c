@@ -393,21 +393,21 @@ const Udma_RmInitPrms gUdmaRmDefCfg_MainNavss[UDMA_NUM_CORE] =
         0U,                                         /* startBlkCopyHcCh */
         0U,                                         /* numBlkCopyHcCh */
         94U,                                        /* startBlkCopyCh */
-        2U,                                         /* numBlkCopyCh */
+        8U,                                         /* numBlkCopyCh */
 
         0U,                                         /* startTxUhcCh */
         0U,                                         /* numTxUhcCh */
         0U,                                         /* startTxHcCh */
         0U,                                         /* numTxHcCh */
-        96U,                                       /* startTxCh */
-        14U,                                        /* numTxCh */
+        102U,                                       /* startTxCh */
+        8U,                                         /* numTxCh */
 
         0U,                                         /* startRxUhcCh */
         0U,                                         /* numRxUhcCh */
         0U,                                         /* startRxHcCh */
         0U,                                         /* numRxHcCh */
-        96U,                                        /* startRxCh */
-        14U,                                        /* numRxCh */
+        102U,                                       /* startRxCh */
+        8U,                                         /* numRxCh */
 
         {16U, 0U, 0U, 0U},                          /* startUtcCh[] */
         {6U, 0U, 0U, 0U},                           /* numUtcCh[] */
