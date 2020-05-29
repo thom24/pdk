@@ -143,7 +143,7 @@ export sbl_lib_mmcsd_$(SOC)_CORELIST
 
 # SBL OSPI LIB
 sbl_lib_ospi_COMP_LIST = sbl_lib_ospi
-sbl_lib_ospi_RELPATH = ti/boot/sbl/ospi
+sbl_lib_ospi_RELPATH = ti/boot/sbl
 ifeq ($(BUILD_HS), yes)
 export sbl_lib_ospi_OBJPATH = ti/boot/sbl/ospi_hs
 sbl_lib_ospi_LIBNAME = sbl_lib_ospi_hs

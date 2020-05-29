@@ -72,7 +72,7 @@ all:
 
 # This target is used to build all configurations for a particular SBL_PLATFORM
 all_sbl_images:
-ifeq ($(SBL_PLATFORM),$(filter $(SBL_PLATFORM), am65xx j721e))
+ifeq ($(SBL_PLATFORM),$(filter $(SBL_PLATFORM), am65xx j721e am64x_evm))
 	# All keystone 3
 	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/boot/sbl/build all
 	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/boot/sbl/build all
