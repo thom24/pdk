@@ -45,7 +45,12 @@ TESTMODE ?= FUNCTIONAL_TEST
 MODENAME ?=
 BOARD_UTILS_CFLAGS ?=
 
-APP_NAME ?= board_utils_$(UNIFLASH)_flash_programmer
+HS_SUFFIX=
+ifeq ($(BUILD_HS),yes)
+HS_SUFFIX=_hs
+endif
+
+APP_NAME ?= board_utils_$(UNIFLASH)_flash_programmer$(HS_SUFFIX)
 
 BUILD_PROFILE_$(CORE) = $(PROFILE)
 
@@ -56,7 +61,7 @@ XDC_CFG_FILE_mpu1_0 =
 XDC_CFG_FILE_mcu1_0 =
 
 # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
-LOCAL_APP_NAME =  $(UNIFLASH)_$(BOARD)_flash_programmer
+LOCAL_APP_NAME = $(UNIFLASH)_$(BOARD)_flash_programmer
 
 SRCDIR = ../src ./$(BOARD)
 INCDIR = ../../../../../board ../src ../include ../../../../src/$(BOARD)/include ../../../../src/$(BOARD) ../../../../src/flash ../../../../../csl
@@ -79,7 +84,7 @@ COMP_LIST_COMMON = board csl csl_init osal_nonos uart i2c
 ifeq ($(BOARD), $(filter $(BOARD), j721e_evm am65xx_evm am65xx_idk))
 COMP_LIST_COMMON += spi_dma udma gpio mmcsd
 endif
-COMP_LIST_COMMON += sciclient
+COMP_LIST_COMMON += sciclient$(HS_SUFFIX)
 
 # Common source files and CFLAGS across all platforms and cores
 PACKAGE_SRCS_COMMON = ../../board ../../build ../../include ../../src ../../soc/soc.h
@@ -88,7 +93,6 @@ PACKAGE_SRCS_COMMON += ../../../../board_utils_component.mk
 ifeq ($(BOARD), $(filter $(BOARD), j721e_evm am65xx_evm am65xx_idk))
 PACKAGE_SRCS_COMMON += ../../soc/k3
 endif
-
 
 SRCS_COMMON = uart_main.c xmodem.c soc.c
 
@@ -108,6 +112,12 @@ endif
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(BOARD_UTILS_CFLAGS) -DSOC_$(SOC) -D$(BOARD)
 ifeq ($(BOARD), $(filter $(BOARD), am65xx_evm am65xx_idk))
 CFLAGS_LOCAL_COMMON += -DSOC_AM65XX
+endif
+
+ifeq ($(BUILD_HS),yes)
+CFLAGS_LOCAL_COMMON += -DBUILD_HS
+else
+CFLAGS_LOCAL_COMMON += -DSPI_DMA_ENABLE
 endif
 
 SBL_OBJ_COPY := $(TOOLCHAIN_PATH_GCC_ARCH64)/bin/$(GCC_ARCH64_BIN_PREFIX)-objcopy

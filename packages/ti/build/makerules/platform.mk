@@ -197,6 +197,10 @@ ifeq ($(BOARD),$(filter $(BOARD), tpr12_evm tpr12_qt))
  SBL_DEV_ID=55
 endif
 
+# SBL related macro
+export SBL_CERT_KEY_HS=$(ROOTDIR)/ti/build/makerules/k3_dev_mpk.pem
+export SBL_CERT_KEY=$(ROOTDIR)/ti/build/makerules/rom_degenerateKey.pem
+
 #
 # Package type: package_type_xdc or package_type_makefile
 #

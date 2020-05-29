@@ -3,7 +3,15 @@
 #
 include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 
+ifeq ($(SBL_USE_DMA),no)
+  ifneq ($(BOOTMODE), cust)
+    MODULE_NAME = sbl_lib_$(BOOTMODE)_nondma
+  else
+    MODULE_NAME = sbl_lib_$(BOOTMODE)
+  endif
+else
 MODULE_NAME = sbl_lib_$(BOOTMODE)
+endif
 
 INCDIR	+= $(PDK_INSTALL_PATH)
 INCDIR	+= $(PDK_INSTALL_PATH)/ti/drv/uart/soc/$(SOC)
@@ -33,6 +41,12 @@ INCLUDE_EXTERNAL_INTERFACES =
 INCLUDE_INTERNAL_INTERFACES =
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(SBL_CFLAGS)
+ifeq ($(SBL_USE_DMA),no)
+CFLAGS_LOCAL_COMMON += -DSBL_USE_DMA=0
+else
+CFLAGS_LOCAL_COMMON += -DSBL_USE_DMA=1
+endif
+
 PACKAGE_SRCS_COMMON  = ./build ./src ./tools
 PACKAGE_SRCS_COMMON += ./soc/sbl_soc.h ./soc/k3
 PACKAGE_SRCS_COMMON += ./.gitignore ./sbl_component.mk ./makefile ./sbl_ver.h
@@ -51,7 +65,7 @@ SRCS_ASM_COMMON += sbl_init.asm
 # scratch memory given to the SBL
 # for image load and parsing
 ifeq ($(SOC), am64x)
-  SBL_CFLAGS += -DSBL_SCRATCH_MEM_START=0x70100000 
+  SBL_CFLAGS += -DSBL_SCRATCH_MEM_START=0x70100000
   SBL_CFLAGS += -DSBL_SCRATCH_MEM_SIZE=0xF0000
 else
   ifeq ($(SOC), j721e)

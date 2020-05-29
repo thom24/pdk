@@ -19,7 +19,7 @@ SBL_CORE_ID_mcu2_0_smp = 19
 SBL_CORE_ID_mcu3_0_smp = 20
 SBL_CORE_ID_only_load = 21
 
-  
+
 # Local name of SBL test app
 RPRC_PREFIX = sbl_$(BUILD_OS_TYPE)_smp_test_$(BOARD)
 
@@ -57,10 +57,7 @@ ifneq ($(OS),Windows_NT)
 	$(CHMOD) a+x $(SBL_CERT_GEN)
 endif
 	$(SBL_CERT_GEN) -b $(BINDIR)/$(RPRC_PREFIX)_all_coresTestApp_$(BUILD_PROFILE_$(CORE)).appimage -o $(BINDIR)/$(RPRC_PREFIX)_all_coresTestApp_$(BUILD_PROFILE_$(CORE)).appimage.signed -c R5 -l $(SBL_RUN_ADDRESS) -k $(SBL_CERT_KEY)
-
-ifeq ($(BUILD_HS),yes)
 	$(SBL_CERT_GEN) -b $(BINDIR)/$(RPRC_PREFIX)_all_coresTestApp_$(BUILD_PROFILE_$(CORE)).appimage -o $(BINDIR)/$(RPRC_PREFIX)_all_coresTestApp_$(BUILD_PROFILE_$(CORE))_hs.appimage.signed -c R5 -l $(SBL_RUN_ADDRESS) -k $(SBL_CERT_KEY_HS)
-endif
 
 # Core/SoC/platform specific source files and CFLAGS
 # Example:

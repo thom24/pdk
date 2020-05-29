@@ -4,7 +4,16 @@
 #
 include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 
-APP_NAME = sbl_$(BOOTMODE)_img
+HS_SUFFIX=
+ifeq ($(BUILD_HS),yes)
+HS_SUFFIX=_hs
+endif
+DMA_SUFFIX=
+ifeq ($(SBL_USE_DMA),no)
+DMA_SUFFIX=_nondma
+endif
+
+APP_NAME = sbl_$(BOOTMODE)_img$(HS_SUFFIX)
 LOCAL_APP_NAME=sbl_$(BOOTMODE)_img_$(CORE)
 BUILD_OS_TYPE = baremetal
 
@@ -14,8 +23,6 @@ INCDIR      += $(PDK_SBL_COMP_PATH)
 INCDIR      += $(PDK_SBL_COMP_PATH)/soc
 INCDIR      += $(PDK_SBL_COMP_PATH)/soc/k3
 
-CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(SBL_CFLAGS)
-
 PACKAGE_SRCS_COMMON = .
 
 # List all the external components/interfaces, whose interface header files
@@ -23,11 +30,29 @@ PACKAGE_SRCS_COMMON = .
 INCLUDE_EXTERNAL_INTERFACES = pdk
 
 # List all the components required by the application
-COMP_LIST_COMMON += sbl_lib_$(BOOTMODE) board uart sciclient osal_nonos csl csl_init i2c
+COMP_LIST_COMMON += board uart osal_nonos csl csl_init i2c sciclient$(HS_SUFFIX)
+ifeq ($(BUILD_HS),yes)
+  SBL_CFLAGS += -DBUILD_HS
+endif
+
+CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(SBL_CFLAGS)
 
 # Check for custom flags
 ifeq ($(BOOTMODE), cust)
   SBL_CFLAGS = $(CUST_SBL_FLAGS)
+  COMP_LIST_COMMON += sbl_lib_$(BOOTMODE)
+else
+  ifeq ($(SBL_USE_DMA),yes)
+    ifneq ($(SOC),$(filter $(SOC), am64x))
+      SBL_CFLAGS += -DSBL_USE_DMA=1
+    else
+      # DMA not yet enabled for AM64x
+      SBL_CFLAGS += -DSBL_USE_DMA=0
+    endif
+  else
+    SBL_CFLAGS += -DSBL_USE_DMA=0
+  endif
+  COMP_LIST_COMMON += sbl_lib_$(BOOTMODE)$(DMA_SUFFIX)
 endif # ifeq ($(BOOTMODE), cust)
 
 # BOOTMODE specific CFLAGS

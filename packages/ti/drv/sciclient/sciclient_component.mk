@@ -39,13 +39,10 @@ ifeq ($(sciclient_component_make_include), )
 # List of components included under sciclient
 # The components included here are built and will be part of sciclient lib
 ############################
-sciclient_LIB_LIST = sciclient
-
-SCICLIENT_CFLAGS =
-ifeq ($(BUILD_HS), yes)
-SCICLIENT_CFLAGS += -DBUILD_HS
+sciclient_LIB_LIST = sciclient 
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e))
+sciclient_LIB_LIST += sciclient_hs
 endif
-export SCICLIENT_CFLAGS
 
 drvsciclient_BOARDLIST = am65xx_evm am65xx_idk j721e_sim j721e_evm j7200_evm am64x_evm
 drvsciclient_SOCLIST = am65xx j721e j7200 am64x
@@ -57,16 +54,11 @@ drvsciclient_DISABLE_PARALLEL_MAKE = yes
 
 export sciclient_COMP_LIST = sciclient
 sciclient_RELPATH = ti/drv/sciclient
-ifeq ($(BUILD_HS), yes)
-export sciclient_OBJPATH = ti/drv/sciclient_hs
-export sciclient_LIBNAME = sciclient_hs
-else
 export sciclient_OBJPATH = ti/drv/sciclient
 export sciclient_LIBNAME = sciclient
-endif
 sciclient_PATH = $(PDK_SCICLIENT_COMP_PATH)
 export sciclient_LIBPATH = $(PDK_SCICLIENT_COMP_PATH)/lib
-export sciclient_MAKEFILE = -fsrc/makefile
+export sciclient_MAKEFILE = -fsrc/makefile BUILD_HS=no
 # Simulator versus Silicon has a different Firmware Image.
 sciclient_BOARD_DEPENDENCY = no
 ifeq ($(BOARD),$(filter $(BOARD), j721e_ccqt j721e_loki j721e_hostemu))
@@ -79,6 +71,26 @@ sciclient_INCLUDE = $(sciclient_PATH)
 export sciclient_SOCLIST = $(drvsciclient_SOCLIST)
 export sciclient_BOARDLIST = $(drvsciclient_BOARDLIST)
 export sciclient_$(SOC)_CORELIST = $(drvsciclient_$(SOC)_CORELIST)
+
+export sciclient_hs_COMP_LIST = sciclient_hs
+sciclient_hs_RELPATH = ti/drv/sciclient
+export sciclient_hs_OBJPATH = ti/drv/sciclient_hs
+sciclient_hs_PATH = $(PDK_SCICLIENT_COMP_PATH)
+export sciclient_hs_LIBNAME = sciclient_hs
+export sciclient_hs_LIBPATH = $(PDK_SCICLIENT_COMP_PATH)/lib
+export sciclient_hs_MAKEFILE = -fsrc/makefile BUILD_HS=yes
+# Simulator versus Silicon has a different Firmware Image.
+sciclient_hs_BOARD_DEPENDENCY = no
+ifeq ($(BOARD),$(filter $(BOARD), j721e_ccqt j721e_loki j721e_hostemu))
+sciclient_hs_BOARD_DEPENDENCY = yes
+endif
+export sciclient_hs_BOARD_DEPENDENCY
+export sciclient_hs_CORE_DEPENDENCY = yes
+sciclient_hs_PKG_LIST = sciclient_hs
+sciclient_hs_INCLUDE = $(sciclient_hs_PATH)
+export sciclient_hs_SOCLIST = $(drvsciclient_SOCLIST)
+export sciclient_hs_BOARDLIST = $(drvsciclient_BOARDLIST)
+export sciclient_hs_$(SOC)_CORELIST = $(drvsciclient_$(SOC)_CORELIST)
 
 export sciclient_UTILS_LIST = sciclient_boardcfg
 export sciclient_boardcfg_COMP_LIST = sciclient_boardcfg

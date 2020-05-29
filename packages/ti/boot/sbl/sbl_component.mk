@@ -93,6 +93,7 @@ ifeq ($(SOC), am64x)
 sbl_LIB_LIST = sbl_lib_ospi
 else
 sbl_LIB_LIST = sbl_lib_mmcsd sbl_lib_ospi sbl_lib_uart sbl_lib_hyperflash sbl_lib_cust
+sbl_LIB_LIST += sbl_lib_ospi_nondma
 endif
 
 ############################
@@ -105,7 +106,9 @@ ifeq ($(SOC), am64x)
 sbl_EXAMPLE_LIST = sbl_ospi_img
 else
 sbl_EXAMPLE_LIST = sbl_mmcsd_img sbl_ospi_img sbl_hyperflash_img sbl_uart_img
+sbl_EXAMPLE_LIST += sbl_mmcsd_img_hs sbl_ospi_img_hs sbl_hyperflash_img_hs sbl_uart_img_hs
 endif
+
 #
 # SBL Modules
 #
@@ -113,16 +116,11 @@ endif
 # SBL MMCSD LIB
 sbl_lib_mmcsd_COMP_LIST = sbl_lib_mmcsd
 sbl_lib_mmcsd_RELPATH = ti/boot/sbl
-ifeq ($(BUILD_HS), yes)
-export sbl_lib_mmcsd_OBJPATH = ti/boot/sbl/mmcsd_hs/
-sbl_lib_mmcsd_LIBNAME = sbl_lib_mmcsd_hs
-else
 export sbl_lib_mmcsd_OBJPATH = ti/boot/sbl/mmcsd
 sbl_lib_mmcsd_LIBNAME = sbl_lib_mmcsd
-endif
 sbl_lib_mmcsd_PATH = $(PDK_SBL_COMP_PATH)
 sbl_lib_mmcsd_LIBPATH = $(PDK_SBL_COMP_PATH)/lib/mmcsd
-sbl_lib_mmcsd_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_lib.mk BOOTMODE=mmcsd
+sbl_lib_mmcsd_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_lib.mk BOOTMODE=mmcsd SBL_USE_DMA=yes
 export sbl_lib_mmcsd_MAKEFILE
 export sbl_lib_mmcsd_LIBNAME
 export sbl_lib_mmcsd_LIBPATH
@@ -144,16 +142,11 @@ export sbl_lib_mmcsd_$(SOC)_CORELIST
 # SBL OSPI LIB
 sbl_lib_ospi_COMP_LIST = sbl_lib_ospi
 sbl_lib_ospi_RELPATH = ti/boot/sbl
-ifeq ($(BUILD_HS), yes)
-export sbl_lib_ospi_OBJPATH = ti/boot/sbl/ospi_hs
-sbl_lib_ospi_LIBNAME = sbl_lib_ospi_hs
-else
 export sbl_lib_ospi_OBJPATH = ti/boot/sbl/ospi
 sbl_lib_ospi_LIBNAME = sbl_lib_ospi
-endif
 sbl_lib_ospi_PATH = $(PDK_SBL_COMP_PATH)
 sbl_lib_ospi_LIBPATH = $(PDK_SBL_COMP_PATH)/lib/ospi
-sbl_lib_ospi_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_lib.mk BOOTMODE=ospi
+sbl_lib_ospi_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_lib.mk BOOTMODE=ospi SBL_USE_DMA=yes
 export sbl_lib_ospi_MAKEFILE
 export sbl_lib_ospi_LIBNAME
 export sbl_lib_ospi_LIBPATH
@@ -172,19 +165,31 @@ export sbl_lib_ospi_BOARDLIST
 sbl_lib_ospi_$(SOC)_CORELIST = mcu1_0
 export sbl_lib_ospi_$(SOC)_CORELIST
 
+# SBL OSPI LIB with NON-DMA - Needed for HS SBL
+export sbl_lib_ospi_nondma_COMP_LIST = sbl_lib_ospi_nondma
+sbl_lib_ospi_nondma_RELPATH = ti/boot/sbl
+export sbl_lib_ospi_nondma_OBJPATH = ti/boot/sbl/ospi_nondma
+sbl_lib_ospi_nondma_PATH = $(PDK_SBL_COMP_PATH)
+export sbl_lib_ospi_nondma_LIBNAME = sbl_lib_ospi_nondma
+export sbl_lib_ospi_nondma_LIBPATH = $(PDK_SBL_COMP_PATH)/lib/ospi
+export sbl_lib_ospi_nondma_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_lib.mk BOOTMODE=ospi SBL_USE_DMA=no
+export sbl_lib_ospi_nondma_BOARD_DEPENDENCY = yes
+export sbl_lib_ospi_nondma_SOC_DEPENDENCY = yes
+export sbl_lib_ospi_nondma_CORE_DEPENDENCY = no
+sbl_lib_ospi_nondma_PKG_LIST = sbl_lib_ospi_nondma
+sbl_lib_ospi_nondma_INCLUDE = $(sbl_lib_ospi_nondma_PATH)
+export sbl_lib_ospi_nondma_SOCLIST = $(sbl_SOCLIST)
+export sbl_lib_ospi_nondma_BOARDLIST = $(sbl_BOARDLIST)
+export sbl_lib_ospi_nondma_$(SOC)_CORELIST = mcu1_0
+
 # SBL HYPERFLASH LIB
 sbl_lib_hyperflash_COMP_LIST = sbl_lib_hyperflash
-sbl_lib_hyperflash_RELPATH = ti/boot/sbl/hyperflash
-ifeq ($(BUILD_HS), yes)
-export sbl_lib_hyperflash_OBJPATH = ti/boot/sbl/hyperflash_hs
-sbl_lib_hyperflash_LIBNAME = sbl_lib_hyperflash_hs
-else
+sbl_lib_hyperflash_RELPATH = ti/boot/sbl
 export sbl_lib_hyperflash_OBJPATH = ti/boot/sbl/hyperflash
 sbl_lib_hyperflash_LIBNAME = sbl_lib_hyperflash
-endif
 sbl_lib_hyperflash_PATH = $(PDK_SBL_COMP_PATH)
 sbl_lib_hyperflash_LIBPATH = $(PDK_SBL_COMP_PATH)/lib/hyperflash
-sbl_lib_hyperflash_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_lib.mk BOOTMODE=hyperflash
+sbl_lib_hyperflash_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_lib.mk BOOTMODE=hyperflash SBL_USE_DMA=yes
 export sbl_lib_hyperflash_MAKEFILE
 export sbl_lib_hyperflash_LIBNAME
 export sbl_lib_hyperflash_LIBPATH
@@ -206,17 +211,12 @@ export sbl_lib_hyperflash_$(SOC)_CORELIST
 # SBL UART LIB
 sbl_lib_uart_COMP_LIST = sbl_lib_uart
 sbl_lib_uart_RELPATH = ti/boot/sbl
-ifeq ($(BUILD_HS), yes)
-export sbl_lib_uart_OBJPATH = ti/boot/sbl/uart_hs
-sbl_lib_uart_LIBNAME = sbl_lib_uart_hs
-else
 export sbl_lib_uart_OBJPATH = ti/boot/sbl/uart
 sbl_lib_uart_LIBNAME = sbl_lib_uart
-endif
 sbl_lib_uart_PATH = $(PDK_SBL_COMP_PATH)
 sbl_lib_uart_LIBNAME = sbl_lib_uart
 sbl_lib_uart_LIBPATH = $(PDK_SBL_COMP_PATH)/lib/uart
-sbl_lib_uart_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_lib.mk BOOTMODE=uart
+sbl_lib_uart_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_lib.mk BOOTMODE=uart SBL_USE_DMA=yes
 export sbl_lib_uart_MAKEFILE
 export sbl_lib_uart_LIBNAME
 export sbl_lib_uart_LIBPATH
@@ -241,16 +241,11 @@ export sbl_lib_uart_$(SOC)_CORELIST
 # SBL MMCSD Image
 sbl_mmcsd_img_COMP_LIST = sbl_mmcsd_img
 sbl_mmcsd_img_RELPATH = ti/boot/sbl/board/k3
-ifeq ($(BUILD_HS), yes)
-sbl_mmcsd_img_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)/mmcsd/bin/hs
-sbl_mmcsd_img_OBJPATH = $(DEST_ROOT)/sbl_mmcsd_img_hs/obj
-else
 sbl_mmcsd_img_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)/mmcsd/bin
-sbl_mmcsd_img_OBJPATH = $(DEST_ROOT)/sbl_mmcsd_img/obj
-endif
 sbl_mmcsd_img_PATH = $(PDK_SBL_COMP_PATH)/board/k3
-sbl_mmcsd_img_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=mmcsd
+sbl_mmcsd_img_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=mmcsd SBL_USE_DMA=yes BUILD_HS=no
 export sbl_mmcsd_img_MAKEFILE
+export sbl_mmcsd_img_SBL_CERT_KEY=$(SBL_CERT_KEY)
 sbl_mmcsd_img_BOARD_DEPENDENCY = yes
 sbl_mmcsd_img_SOC_DEPENDENCY = yes
 sbl_mmcsd_img_CORE_DEPENDENCY = no
@@ -267,19 +262,30 @@ export sbl_mmcsd_img_$(SOC)_CORELIST
 sbl_mmcsd_img_SBL_IMAGEGEN = yes
 export sbl_mmcsd_img_SBL_IMAGEGEN
 
+# SBL MMCSD Image - For HS build
+export sbl_mmcsd_img_hs_COMP_LIST = sbl_mmcsd_img_hs
+sbl_mmcsd_img_hs_RELPATH = ti/boot/sbl/board/k3
+sbl_mmcsd_img_hs_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)_hs/mmcsd/bin
+sbl_mmcsd_img_hs_PATH = $(PDK_SBL_COMP_PATH)/board/k3
+export sbl_mmcsd_img_hs_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=mmcsd SBL_USE_DMA=no BUILD_HS=yes
+export sbl_mmcsd_img_hs_SBL_CERT_KEY=$(SBL_CERT_KEY_HS)
+export sbl_mmcsd_img_hs_BOARD_DEPENDENCY = yes
+export sbl_mmcsd_img_hs_SOC_DEPENDENCY = yes
+export sbl_mmcsd_img_hs_CORE_DEPENDENCY = no
+sbl_mmcsd_img_hs_PKG_LIST = sbl
+sbl_mmcsd_img_hs_INCLUDE = $(sbl_mmcsd_img_hs_PATH)
+export sbl_mmcsd_img_hs_BOARDLIST = $(sbl_BOARDLIST)
+export sbl_mmcsd_img_hs_$(SOC)_CORELIST = mcu1_0
+export sbl_mmcsd_img_hs_SBL_IMAGEGEN = yes
+
 # SBL OSPI Image
 sbl_ospi_img_COMP_LIST = sbl_ospi_img
 sbl_ospi_img_RELPATH = ti/boot/sbl/board/k3
-ifeq ($(BUILD_HS), yes)
-sbl_ospi_img_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)/ospi/bin/hs
-sbl_ospi_img_OBJPATH = $(DEST_ROOT)/sbl_ospi_img_hs/obj
-else
 sbl_ospi_img_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)/ospi/bin
-sbl_ospi_img_OBJPATH = $(DEST_ROOT)/sbl_ospi_img/obj
-endif
 sbl_ospi_img_PATH = $(PDK_SBL_COMP_PATH)/board/k3
-sbl_ospi_img_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=ospi
+sbl_ospi_img_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=ospi SBL_USE_DMA=yes BUILD_HS=no
 export sbl_ospi_img_MAKEFILE
+export sbl_ospi_img_SBL_CERT_KEY=$(SBL_CERT_KEY)
 sbl_ospi_img_BOARD_DEPENDENCY = yes
 sbl_ospi_img_SOC_DEPENDENCY = yes
 sbl_ospi_img_CORE_DEPENDENCY = no
@@ -296,18 +302,29 @@ export sbl_ospi_img_$(SOC)_CORELIST
 sbl_ospi_img_SBL_IMAGEGEN = yes
 export sbl_ospi_img_SBL_IMAGEGEN
 
+# SBL OSPI Image - For HS build
+export sbl_ospi_img_hs_COMP_LIST = sbl_ospi_img_hs
+sbl_ospi_img_hs_RELPATH = ti/boot/sbl/board/k3
+sbl_ospi_img_hs_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)_hs/ospi/bin
+sbl_ospi_img_hs_PATH = $(PDK_SBL_COMP_PATH)/board/k3
+export sbl_ospi_img_hs_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=ospi SBL_USE_DMA=no BUILD_HS=yes
+export sbl_ospi_img_hs_SBL_CERT_KEY=$(SBL_CERT_KEY_HS)
+export sbl_ospi_img_hs_BOARD_DEPENDENCY = yes
+export sbl_ospi_img_hs_SOC_DEPENDENCY = yes
+export sbl_ospi_img_hs_CORE_DEPENDENCY = no
+sbl_ospi_img_hs_PKG_LIST = sbl
+sbl_ospi_img_hs_INCLUDE = $(sbl_ospi_img_hs_PATH)
+export sbl_ospi_img_hs_BOARDLIST = $(sbl_BOARDLIST)
+export sbl_ospi_img_hs_$(SOC)_CORELIST = mcu1_0
+export sbl_ospi_img_hs_SBL_IMAGEGEN = yes
+
 # SBL HYPERFLASH Image
 sbl_hyperflash_img_COMP_LIST = sbl_hyperflash_img
 sbl_hyperflash_img_RELPATH = ti/boot/sbl/board/k3
-ifeq ($(BUILD_HS), yes)
-sbl_hyperflash_img_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)/hyperflash/bin/hs
-sbl_hyperflash_img_OBJPATH = $(DEST_ROOT)/sbl_hyperflash_img_hs/obj
-else
 sbl_hyperflash_img_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)/hyperflash/bin
-sbl_hyperflash_img_OBJPATH = $(DEST_ROOT)/sbl_hyperflash_img/obj
-endif
 sbl_hyperflash_img_PATH = $(PDK_SBL_COMP_PATH)/board/k3
-sbl_hyperflash_img_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=hyperflash
+sbl_hyperflash_img_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=hyperflash SBL_USE_DMA=yes BUILD_HS=no
+export sbl_hyperflash_img_SBL_CERT_KEY=$(SBL_CERT_KEY)
 export sbl_hyperflash_img_MAKEFILE
 sbl_hyperflash_img_BOARD_DEPENDENCY = yes
 sbl_hyperflash_img_SOC_DEPENDENCY = yes
@@ -325,19 +342,31 @@ export sbl_hyperflash_img_$(SOC)_CORELIST
 sbl_hyperflash_img_SBL_IMAGEGEN = yes
 export sbl_hyperflash_img_SBL_IMAGEGEN
 
+# SBL HYPERFLASH Image - For HS build
+export sbl_hyperflash_img_hs_COMP_LIST = sbl_hyperflash_img_hs
+sbl_hyperflash_img_hs_RELPATH = ti/boot/sbl/board/k3
+sbl_hyperflash_img_hs_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)_hs/hyperflash/bin
+sbl_hyperflash_img_hs_PATH = $(PDK_SBL_COMP_PATH)/board/k3
+export sbl_hyperflash_img_hs_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=hyperflash SBL_USE_DMA=no BUILD_HS=yes
+export sbl_hyperflash_img_hs_SBL_CERT_KEY=$(SBL_CERT_KEY_HS)
+export sbl_hyperflash_img_hs_BOARD_DEPENDENCY = yes
+export sbl_hyperflash_img_SOC_DEPENDENCY = yes
+export sbl_hyperflash_img_hs_CORE_DEPENDENCY = no
+sbl_hyperflash_img_hs_PKG_LIST = sbl
+sbl_hyperflash_img_hs_INCLUDE = $(sbl_hyperflash_img_hs_PATH)
+export sbl_hyperflash_img_hs_BOARDLIST = j721e_evm
+export sbl_hyperflash_img_hs_$(SOC)_CORELIST = mcu1_0
+export sbl_hyperflash_img_hs_SBL_IMAGEGEN = yes
+
 # SBL UART Image
 sbl_uart_img_COMP_LIST = sbl_uart_img
 sbl_uart_img_RELPATH = ti/boot/sbl/board/k3
-ifeq ($(BUILD_HS), yes)
-sbl_uart_img_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)/uart/bin/hs
-sbl_uart_img_OBJPATH = $(DEST_ROOT)/sbl_uart_img_hs/obj
-else
 sbl_uart_img_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)/uart/bin
 sbl_uart_img_OBJPATH = $(DEST_ROOT)/sbl_uart_img/obj
-endif
 sbl_uart_img_PATH = $(PDK_SBL_COMP_PATH)/board/k3
-sbl_uart_img_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=uart
+sbl_uart_img_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=uart SBL_USE_DMA=yes BUILD_HS=no
 export sbl_uart_img_MAKEFILE
+export sbl_uart_img_SBL_CERT_KEY=$(SBL_CERT_KEY)
 sbl_uart_img_BOARD_DEPENDENCY = yes
 sbl_uart_img_SOC_DEPENDENCY = yes
 sbl_uart_img_CORE_DEPENDENCY = no
@@ -353,6 +382,22 @@ sbl_uart_img_$(SOC)_CORELIST = mcu1_0
 export sbl_uart_img_$(SOC)_CORELIST
 sbl_uart_img_SBL_IMAGEGEN = yes
 export sbl_uart_img_SBL_IMAGEGEN
+
+# SBL HYPERFLASH Image - For HS build
+export sbl_uart_img_hs_COMP_LIST = sbl_uart_img_hs
+sbl_uart_img_hs_RELPATH = ti/boot/sbl/board/k3
+sbl_uart_img_hs_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)_hs/uart/bin
+sbl_uart_img_hs_PATH = $(PDK_SBL_COMP_PATH)/board/k3
+export sbl_uart_img_hs_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=uart SBL_USE_DMA=no BUILD_HS=yes
+export sbl_uart_img_hs_SBL_CERT_KEY=$(SBL_CERT_KEY_HS)
+export sbl_uart_img_hs_BOARD_DEPENDENCY = yes
+export sbl_uart_img_hs_SOC_DEPENDENCY = yes
+export sbl_uart_img_hs_CORE_DEPENDENCY = no
+sbl_uart_img_hs_PKG_LIST = sbl
+sbl_uart_img_hs_INCLUDE = $(sbl_uart_img_hs_PATH)
+export sbl_uart_img_hs_BOARDLIST = $(sbl_BOARDLIST)
+export sbl_uart_img_hs_$(SOC)_CORELIST = mcu1_0
+export sbl_uart_img_hs_SBL_IMAGEGEN = yes
 
 # Individual Core Boot Test
 sbl_boot_test_COMP_LIST = sbl_boot_test
@@ -522,18 +567,6 @@ export sbl_boot_xip_entry_SBL_APPIMAGEGEN
 # debugging and tuning performace knobs
 #SBL_CFLAGS += -DSBL_DISPLAY_PROFILE_INFO
 
-# 0 - use cpu for reads (slower, no $ coherency ops needed), smaller SBL
-# 1 - use dma for data reads (faster, $ coherency ops needed), larger SBL
-ifeq ($(BUILD_HS), yes)
-# DMA not currently supported on HS devices
-SBL_CFLAGS += -DSBL_USE_DMA=0 -DBUILD_HS
-else
-#DMA is not enabled for AM64x yet
-ifneq ($(SOC),$(filter $(SOC), am64x))
-  SBL_CFLAGS += -DSBL_USE_DMA=1
-endif  
-endif
-
 ifeq ($(SOC), am64x)
 SBL_CFLAGS += -DSBL_BYPASS_OSPI_DRIVER -DDISABLE_ATCM
 endif
@@ -623,8 +656,8 @@ endif
 # If enabled, the SBL will skip configuring ATCM memory
 #SBL_CFLAGS += -DDISABLE_ATCM
 
-# If enabled for OSPI boot the SBL will bypass the 
-# OSPI driver completely and let ROM copy the sysftw/application 
+# If enabled for OSPI boot the SBL will bypass the
+# OSPI driver completely and let ROM copy the sysftw/application
 # from flash.
 #SBL_CFLAGS += -DSBL_BYPASS_OSPI_DRIVER
 
@@ -636,7 +669,7 @@ endif
 # Example - Building Custom SBL Images
 # Build and SBl with custom flags to change
 # different build configurations
-CUST_SBL_TEST_SOCS = am65xx j721e am64x_evm 
+CUST_SBL_TEST_SOCS = am65xx j721e am64x_evm
 CUST_SBL_TEST_BOARDS = am65xx_evm j721e_evm am64x_evm
 #CUST_SBL_TEST_FLAGS =" -DSBL_USE_DMA=1 -DSBL_LOG_LEVEL=0 -DSBL_SCRATCH_MEM_START=0x70100000 -DSBL_SCRATCH_MEM_SIZE=0xF0000 -DSBL_SKIP_MCU_RESET  -DBOOT_OSPI "
 #CUST_SBL_TEST_FLAGS =" -DSBL_USE_DMA=1 -DSBL_LOG_LEVEL=0 -DSBL_SCRATCH_MEM_START=0x70100000 -DSBL_SKIP_MCU_RESET -DSBL_SKIP_BRD_CFG_PM -DBOOT_OSPI "
@@ -655,17 +688,12 @@ endif
 # SBL Custom LIB
 sbl_lib_cust_COMP_LIST = sbl_lib_cust
 sbl_lib_cust_RELPATH = ti/boot/sbl
-ifeq ($(BUILD_HS), yes)
-export sbl_lib_cust_OBJPATH = ti/boot/sbl/cust_hs
-sbl_lib_cust_LIBNAME = sbl_lib_cust_hs
-else
-export sbl_lib_cust_OBJPATH = ti/boot/sbl/cust
+export sbl_lib_cust_OBJPATH = $(DEST_ROOT)/sbl_lib_cust/obj
 sbl_lib_cust_LIBNAME = sbl_lib_cust
-endif
 sbl_lib_cust_PATH = $(PDK_SBL_COMP_PATH)
 sbl_lib_cust_LIBNAME = sbl_lib_cust
 sbl_lib_cust_LIBPATH = $(PDK_SBL_COMP_PATH)/lib/cust
-sbl_lib_cust_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_lib.mk BOOTMODE=cust CUST_SBL_FLAGS=$(CUST_SBL_TEST_FLAGS)
+sbl_lib_cust_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_lib.mk BOOTMODE=cust SBL_USE_DMA=no CUST_SBL_FLAGS=$(CUST_SBL_TEST_FLAGS)
 export sbl_lib_cust_MAKEFILE
 export sbl_lib_cust_LIBNAME
 export sbl_lib_cust_LIBPATH
@@ -687,16 +715,11 @@ export sbl_lib_cust_$(SOC)_CORELIST
 # SBL custom image
 sbl_cust_img_COMP_LIST = sbl_cust_img
 sbl_cust_img_RELPATH = ti/boot/sbl/board/k3
-ifeq ($(BUILD_HS), yes)
-sbl_cust_img_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)/cust/bin/hs
-sbl_cust_img_OBJPATH = $(DEST_ROOT)/sbl_cust_img_hs/obj
-else
 sbl_cust_img_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)/cust/bin
-sbl_cust_img_OBJPATH = $(DEST_ROOT)/sbl_cust_img/obj
-endif
 sbl_cust_img_PATH = $(PDK_SBL_COMP_PATH)/board/k3
-sbl_cust_img_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=cust CUST_SBL_FLAGS=$(CUST_SBL_TEST_FLAGS)
+sbl_cust_img_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=cust SBL_USE_DMA=no BUILD_HS=no CUST_SBL_FLAGS=$(CUST_SBL_TEST_FLAGS)
 export sbl_cust_img_MAKEFILE
+export sbl_cust_img_SBL_CERT_KEY=$(SBL_CERT_KEY)
 sbl_cust_img_BOARD_DEPENDENCY = yes
 sbl_cust_img_SOC_DEPENDENCY = yes
 sbl_cust_img_CORE_DEPENDENCY = no
@@ -712,9 +735,31 @@ export sbl_cust_img_SOCLIST
 export sbl_cust_img_BOARDLIST
 sbl_cust_img_$(SOC)_CORELIST = mcu1_0
 export sbl_cust_img_$(SOC)_CORELIST
+ifneq ($(SOC), am64x)
 sbl_EXAMPLE_LIST += sbl_cust_img
+endif
 sbl_cust_img_SBL_IMAGEGEN = yes
 export sbl_cust_img_SBL_IMAGEGEN
+
+# SBL custom image - For HS build
+export sbl_cust_img_hs_COMP_LIST = sbl_cust_img_hs
+sbl_cust_img_hs_RELPATH = ti/boot/sbl/board/k3
+sbl_cust_img_hs_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)_hs/cust/bin
+sbl_cust_img_hs_PATH = $(PDK_SBL_COMP_PATH)/board/k3
+export sbl_cust_img_hs_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk CUST_SBL_FLAGS=$(CUST_SBL_TEST_FLAGS) BOOTMODE=cust SBL_USE_DMA=no BUILD_HS=yes
+export sbl_cust_img_hs_SBL_CERT_KEY=$(SBL_CERT_KEY_HS)
+export sbl_cust_img_hs_BOARD_DEPENDENCY = yes
+export sbl_cust_img_hs_SOC_DEPENDENCY = yes
+export sbl_cust_img_hs_CORE_DEPENDENCY = no
+sbl_cust_img_hs_PKG_LIST = sbl
+sbl_cust_img_hs_INCLUDE = $(sbl_cust_img_hs_PATH)
+export sbl_cust_img_hs_SOCLIST = $(CUST_SBL_TEST_SOCS)
+export sbl_cust_img_hs_BOARDLIST = $(CUST_SBL_TEST_BOARDS)
+export sbl_cust_img_hs_$(SOC)_CORELIST = mcu1_0
+export sbl_cust_img_hs_SBL_IMAGEGEN = yes
+ifneq ($(SOC), am64x)
+sbl_EXAMPLE_LIST += sbl_cust_img_hs
+endif
 
 # R5 boot performance Test - works only with custom SBL
 sbl_boot_perf_test_COMP_LIST = sbl_boot_perf_test

@@ -505,8 +505,6 @@ ifeq ($(OS),Windows_NT)
 else
   SBL_CERT_GEN=$(PDK_INSTALL_PATH)/ti/build/makerules/x509CertificateGen.sh
 endif
-SBL_CERT_KEY_HS=$(ROOTDIR)/ti/build/makerules/k3_dev_mpk.pem
-SBL_CERT_KEY=$(ROOTDIR)/ti/build/makerules/rom_degenerateKey.pem
 ifeq ($(BUILD_PROFILE_$(CORE)),release)
   SBL_MLO_PATH=$(BINDIR)/MLO$(HS_SUFFIX)
   SBL_MLO_PATH_SIGNED=$(BINDIR)/MLO
@@ -607,11 +605,7 @@ else ifeq ($(SOC),$(filter $(SOC), am65xx am64x j721e j7200 tpr12))
 ifneq ($(OS),Windows_NT)
 	$(CHMOD) a+x $(SBL_CERT_GEN)
 endif
-ifeq ($(BUILD_HS),yes)
-	$(SBL_CERT_GEN) -b $(SBL_BIN_PATH) -o $(SBL_TIIMAGE_PATH) -c R5 -l $(SBL_RUN_ADDRESS) -k $(SBL_CERT_KEY_HS) -d DEBUG -j DBG_FULL_ENABLE -m $(SBL_MCU_STARTUP_MODE)
-else
-	$(SBL_CERT_GEN) -b $(SBL_BIN_PATH) -o $(SBL_TIIMAGE_PATH) -c R5 -l $(SBL_RUN_ADDRESS) -k $(SBL_CERT_KEY) -d DEBUG -j DBG_FULL_ENABLE -m $(SBL_MCU_STARTUP_MODE)
-endif
+	$(SBL_CERT_GEN) -b $(SBL_BIN_PATH) -o $(SBL_TIIMAGE_PATH) -c R5 -l $(SBL_RUN_ADDRESS) -k $($(APP_NAME)_SBL_CERT_KEY) -d DEBUG -j DBG_FULL_ENABLE -m $(SBL_MCU_STARTUP_MODE)
 endif
 	$(ECHO) \# SBL image $@ created.
 	$(ECHO) \#
@@ -690,10 +684,8 @@ else
    ifneq ($(OS),Windows_NT)
 	$(CHMOD) a+x $(SBL_CERT_GEN)
    endif
-	$(SBL_CERT_GEN) -b $@ -o $(SBL_APPIMAGE_PATH_SIGNED) -c R5 -l $(SBL_RUN_ADDRESS) -k $(SBL_CERT_KEY)
-   ifeq ($(BUILD_HS),yes)
+	$(SBL_CERT_GEN) -b $@ -o $(SBL_APPIMAGE_PATH_SIGNED)    -c R5 -l $(SBL_RUN_ADDRESS) -k $(SBL_CERT_KEY)
 	$(SBL_CERT_GEN) -b $@ -o $(SBL_APPIMAGE_PATH_SIGNED_HS) -c R5 -l $(SBL_RUN_ADDRESS) -k $(SBL_CERT_KEY_HS)
-   endif
  endif
 endif
 	$(RM) -f $(SBL_STDOUT_FILE)
