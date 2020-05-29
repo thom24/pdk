@@ -11,13 +11,13 @@ SRCDIR      += $(PDK_SBL_COMP_PATH)/example/k3MulticoreApp
 
 # Must exactly match values defined in enum cpu_core_id
 # in sbl_slave_core_boot.h
-SBL_CORE_ID_mpu1_0_smp = 14
-SBL_CORE_ID_mpu2_0_smp = 15
-SBL_CORE_ID_mpu_smp = 16
-SBL_CORE_ID_mcu1_0_smp = 17
-SBL_CORE_ID_mcu2_0_smp = 18
-SBL_CORE_ID_mcu3_0_smp = 19
-SBL_CORE_ID_only_load = 20
+SBL_CORE_ID_mpu1_0_smp = 15
+SBL_CORE_ID_mpu2_0_smp = 16
+SBL_CORE_ID_mpu_smp = 17
+SBL_CORE_ID_mcu1_0_smp = 18
+SBL_CORE_ID_mcu2_0_smp = 19
+SBL_CORE_ID_mcu3_0_smp = 20
+SBL_CORE_ID_only_load = 21
 
   
 # Local name of SBL test app
