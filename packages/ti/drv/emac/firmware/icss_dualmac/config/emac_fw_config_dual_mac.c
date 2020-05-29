@@ -119,6 +119,15 @@ struct EMAC_ICSSG_BUF_POOL_CFG_s {
     uint32_t poolLen;
 } EMAC_ICSSG_BUF_POOL_CFG;
 
+static void hwqa_reset(uintptr_t baseAddr, uint32_t qNum)
+{
+    HW_WR_REG32(baseAddr +
+                CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_REGS_BASE +
+                CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_QUEUE_RESET,
+                qNum);
+}
+
+
 void emac_icssg_dual_mac_fw_config_fxn(uint32_t portNum, EMAC_ICSSG_FW_CFG_PG2 *pIcssgFwCfg)
 {
     uint32_t startAddr;
@@ -201,34 +210,16 @@ void emac_icssg_dual_mac_fw_config_fxn(uint32_t portNum, EMAC_ICSSG_FW_CFG_PG2 *
 
         for (hwQueueNum = 0; hwQueueNum < EMAC_ICSSG_MAX_HWQ; hwQueueNum++)
         {
-            HW_WR_REG32(icssgBaseAddr +
-                   CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_REGS_BASE +
-                   CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_QUEUE_RESET,
-                   hwQueueNum);
+            hwqa_reset(icssgBaseAddr, hwQueueNum);
         }
-        HW_WR_REG32(icssgBaseAddr +
-                    CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_REGS_BASE+
-                    CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_QUEUE_RESET, EMAC_ICSSG_RECYCLE_Q_SLICE0);
-        HW_WR_REG32(icssgBaseAddr +
-                    CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_REGS_BASE +
-                    CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_QUEUE_RESET,
-                    EMAC_ICSSG_PORT_HF_Q_SLICE0);
-        HW_WR_REG32(icssgBaseAddr +
-                    CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_REGS_BASE +
-                    CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_QUEUE_RESET,
-                    EMAC_ICSSG_PORT_LF_Q_SLICE0);
-        HW_WR_REG32(icssgBaseAddr +
-                    CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_REGS_BASE +
-                    CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_QUEUE_RESET,
-                    EMAC_ICSSG_HOST_HF_Q_SLICE0);
-        HW_WR_REG32(icssgBaseAddr +
-                    CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_REGS_BASE +
-                    CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_QUEUE_RESET,
-                    EMAC_ICSSG_HOST_LF_Q_SLICE0);
-        HW_WR_REG32(icssgBaseAddr +
-                    CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_REGS_BASE +
-                    CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_QUEUE_RESET,
-                    EMAC_ICSSG_HOST_SF_Q_SLICE0);
+
+        hwqa_reset(icssgBaseAddr, EMAC_ICSSG_RECYCLE_Q_SLICE0);
+        hwqa_reset(icssgBaseAddr, EMAC_ICSSG_PORT_HF_Q_SLICE0);
+        hwqa_reset(icssgBaseAddr, EMAC_ICSSG_PORT_LF_Q_SLICE0);
+        hwqa_reset(icssgBaseAddr, EMAC_ICSSG_HOST_HF_Q_SLICE0);
+        hwqa_reset(icssgBaseAddr, EMAC_ICSSG_HOST_LF_Q_SLICE0);
+        hwqa_reset(icssgBaseAddr, EMAC_ICSSG_HOST_SF_Q_SLICE0);
+
         //Now do PDs PORTQ LOW & HI, HOSTQ LOW & HI
         for (i = 0; i < MaxNumNormalPDs; i++)
         {
@@ -363,35 +354,16 @@ void emac_icssg_dual_mac_fw_config_fxn(uint32_t portNum, EMAC_ICSSG_FW_CFG_PG2 *
 
         for (hwQueueNum = EMAC_ICSSG_MAX_HWQ; hwQueueNum < EMAC_ICSSG_MAX_HWQ*2; hwQueueNum++)
         {
-            HW_WR_REG32(icssgBaseAddr +
-                        CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_REGS_BASE +
-                        CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_QUEUE_RESET,
-                        hwQueueNum);
+            hwqa_reset(icssgBaseAddr, hwQueueNum);
         }
-        HW_WR_REG32(icssgBaseAddr +
-                    CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_REGS_BASE +
-                    CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_QUEUE_RESET,
-                    EMAC_ICSSG_RECYCLE_Q_SLICE1);
-        HW_WR_REG32(icssgBaseAddr +
-                    CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_REGS_BASE +
-                    CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_QUEUE_RESET,
-                    EMAC_ICSSG_PORT_HF_Q_SLICE1);
-       HW_WR_REG32(icssgBaseAddr +
-                    CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_REGS_BASE +
-                    CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_QUEUE_RESET,
-                    EMAC_ICSSG_PORT_LF_Q_SLICE1);
-        HW_WR_REG32(icssgBaseAddr +
-                    CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_REGS_BASE +
-                    CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_QUEUE_RESET,
-                    EMAC_ICSSG_HOST_HF_Q_SLICE1);
-        HW_WR_REG32(icssgBaseAddr +
-                    CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_REGS_BASE +
-                    CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_QUEUE_RESET,
-                    EMAC_ICSSG_HOST_LF_Q_SLICE1);
-        HW_WR_REG32(icssgBaseAddr +
-                    CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_REGS_BASE +
-                    CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_QUEUE_RESET,
-                    EMAC_ICSSG_HOST_SF_Q_SLICE1);
+
+        hwqa_reset(icssgBaseAddr, EMAC_ICSSG_RECYCLE_Q_SLICE1);
+        hwqa_reset(icssgBaseAddr, EMAC_ICSSG_PORT_HF_Q_SLICE1);
+        hwqa_reset(icssgBaseAddr, EMAC_ICSSG_PORT_LF_Q_SLICE1);
+        hwqa_reset(icssgBaseAddr, EMAC_ICSSG_HOST_HF_Q_SLICE1);
+        hwqa_reset(icssgBaseAddr, EMAC_ICSSG_HOST_LF_Q_SLICE1);
+        hwqa_reset(icssgBaseAddr, EMAC_ICSSG_HOST_SF_Q_SLICE1);
+
         //Now do PDs PORTQ LOW & HI, HOSTQ LOW & HI
         for (i = 0; i < MaxNumNormalPDs; i++)
         {
