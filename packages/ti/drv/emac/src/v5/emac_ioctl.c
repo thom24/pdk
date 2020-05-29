@@ -125,7 +125,7 @@ void emac_update_cmd(uint32_t portNum, uint32_t ioctlCmd, EMAC_IOCTL_CMD_T *pCmd
                     memcpy((void*)(&pCmd->spare[1]), (void*)(&pEntry->mac[4]), 2);
                     pCmd->spare[2] = broadSideSlot;
                     pCmd->spare[1] = pCmd->spare[1] | (fid << 16);
-                    pCmd->spare[1] = pCmd->spare[1] | (pEntry->fdbEntry[portLoc]<< 24); //FIXME: Double check with Tinku
+                    pCmd->spare[1] = pCmd->spare[1] | (pEntry->fdbEntry[portLoc]<< 24);
                 }
                 break;
             case EMAC_IOCTL_FDB_ENTRY_DELETE_ALL:
@@ -250,141 +250,6 @@ EMAC_DRV_ERR_E emac_ioctl_icss_promiscous_ctrl(uint32_t portNum, void*  ctrl)
     return EMAC_DRV_RESULT_OK;
 }
 
-/*
- *  ======== emac_ioctl_test_multi_flow ========
- */
-EMAC_DRV_ERR_E emac_ioctl_test_multi_flow(uint32_t portNum, void*  ctrl)
-{
-    uint32_t tempVal;
-    int32_t macLo;
-    int32_t macHi;
-    int16_t temp;
-    EMAC_MAC_ADDR_T * pMacAddr = (EMAC_MAC_ADDR_T*)ctrl;
-    uintptr_t baseAddr = emac_mcb.port_cb[portNum].icssDram0BaseAddr + CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_REGS_BASE;
-    UTILS_trace(UTIL_TRACE_LEVEL_INFO, emac_mcb.drv_trace_cb, "port: %d: ENTER",portNum);
-    if ((portNum % 2U) == 0)
-    {
-        macLo =  *((int32_t *) &pMacAddr->addr[0]);
-        temp =  *((int16_t *) &pMacAddr->addr[4]);
-        macHi = (int32_t) temp;
-        /* Update filter with mac address */
-        CSL_REG32_WR(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT1_1_DA0_PRU0, macLo);
-        CSL_REG32_WR(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT1_1_DA1_PRU0, macHi);
-        CSL_REG32_WR(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT1_1_DA_MASK0_PRU0, 0);
-        CSL_REG32_WR(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT1_1_DA_MASK1_PRU0, 0);
-
-        /* Update the classi */
-        tempVal = CSL_REG32_RD(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RX_CLASS0_OR_EN_PRU0);
-        tempVal |= 0x20000;
-        CSL_REG32_WR(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RX_CLASS0_OR_EN_PRU0, tempVal);
-
-        pMacAddr++;
-        macLo =  *((int32_t *) &pMacAddr->addr[0]);
-        temp =  *((int16_t *) &pMacAddr->addr[4]);
-        macHi = (int32_t) temp;
-        CSL_REG32_WR(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT1_2_DA0_PRU0, macLo);
-        CSL_REG32_WR(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT1_2_DA1_PRU0, macHi);
-        CSL_REG32_WR(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT1_2_DA_MASK0_PRU0, 0);
-        CSL_REG32_WR(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT1_2_DA_MASK1_PRU0, 0);
-        /* Update the classi */
-        tempVal = CSL_REG32_RD(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RX_CLASS1_OR_EN_PRU0);
-        tempVal |= 0x40000;
-        CSL_REG32_WR(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RX_CLASS1_OR_EN_PRU0, tempVal);
-
-        pMacAddr++;
-        macLo =  *((int32_t *) &pMacAddr->addr[0]);
-        temp =  *((int16_t *) &pMacAddr->addr[4]);
-        macHi = (int32_t) temp;
-        CSL_REG32_WR(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT1_3_DA0_PRU0, macLo);
-        CSL_REG32_WR(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT1_3_DA1_PRU0, macHi);
-        CSL_REG32_WR(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT1_3_DA_MASK0_PRU0, 0);
-        CSL_REG32_WR(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT1_3_DA_MASK1_PRU0, 0);
-        /* Update the classi */
-        tempVal = CSL_REG32_RD(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RX_CLASS2_OR_EN_PRU0);
-        tempVal |= 0x80000;
-        CSL_REG32_WR(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RX_CLASS2_OR_EN_PRU0, tempVal);
-
-        pMacAddr++;
-        macLo =  *((int32_t *) &pMacAddr->addr[0]);
-        temp =  *((int16_t *) &pMacAddr->addr[4]);
-        macHi = (int32_t) temp;
-        CSL_REG32_WR(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT1_4_DA0_PRU0, macLo);
-        CSL_REG32_WR(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT1_4_DA1_PRU0, macHi);
-        CSL_REG32_WR(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT1_4_DA_MASK0_PRU0, 0);
-        CSL_REG32_WR(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT1_4_DA_MASK1_PRU0, 0);
-        /* Update the classi */
-        tempVal = CSL_REG32_RD(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RX_CLASS3_OR_EN_PRU0);
-        tempVal |= 0x100000;
-        CSL_REG32_WR(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RX_CLASS3_OR_EN_PRU0, tempVal);
-
-        /* Allow packet to be excepted */
-        tempVal = CSL_REG32_RD(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RX_CLASS4_OR_EN_PRU0);
-        tempVal |= 0x1E0000;
-        CSL_REG32_WR(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RX_CLASS4_OR_EN_PRU0, tempVal);
-    }
-    else
-    {
-        macLo =  *((int32_t *) &pMacAddr->addr[0]);
-        temp =  *((int16_t *) &pMacAddr->addr[4]);
-        macHi = (int32_t) temp;
-        CSL_REG32_WR(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT1_1_DA0_PRU1, macLo);
-        CSL_REG32_WR(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT1_1_DA1_PRU1, macHi);
-        CSL_REG32_WR(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT1_1_DA_MASK0_PRU1, 0);
-        CSL_REG32_WR(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT1_1_DA_MASK1_PRU1, 0);
-        /* Update the classi */
-        tempVal = CSL_REG32_RD(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RX_CLASS0_OR_EN_PRU1);
-        tempVal |= 0x20000;
-        CSL_REG32_WR(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RX_CLASS0_OR_EN_PRU1, tempVal);
-
-        pMacAddr++;
-        macLo =  *((int32_t *) &pMacAddr->addr[0]);
-        temp =  *((int16_t *) &pMacAddr->addr[4]);
-        macHi = (int32_t) temp;
-        CSL_REG32_WR(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT1_2_DA0_PRU1, macLo);
-        CSL_REG32_WR(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT1_2_DA1_PRU1, macHi);
-        CSL_REG32_WR(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT1_2_DA_MASK0_PRU1, 0);
-        CSL_REG32_WR(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT1_2_DA_MASK1_PRU1, 0);
-        /* Update the classi */
-        tempVal = CSL_REG32_RD(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RX_CLASS1_OR_EN_PRU1);
-        tempVal |= 0x40000;
-        CSL_REG32_WR(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RX_CLASS1_OR_EN_PRU1, tempVal);
-
-        pMacAddr++;
-        macLo =  *((int32_t *) &pMacAddr->addr[0]);
-        temp =  *((int16_t *) &pMacAddr->addr[4]);
-        macHi = (int32_t) temp;
-        CSL_REG32_WR(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT1_3_DA0_PRU1, macLo);
-        CSL_REG32_WR(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT1_3_DA1_PRU1, macHi);
-        CSL_REG32_WR(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT1_3_DA_MASK0_PRU1, 0);
-        CSL_REG32_WR(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT1_3_DA_MASK1_PRU1, 0);
-        /* Update the classi */
-        tempVal = CSL_REG32_RD(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RX_CLASS2_OR_EN_PRU1);
-        tempVal |= 0x80000;
-        CSL_REG32_WR(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RX_CLASS2_OR_EN_PRU1, tempVal);
-
-       pMacAddr++;
-        macLo =  *((int32_t *) &pMacAddr->addr[0]);
-        temp =  *((int16_t *) &pMacAddr->addr[4]);
-        macHi = (int32_t) temp;
-        CSL_REG32_WR(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT1_4_DA0_PRU1, macLo);
-        CSL_REG32_WR(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT1_4_DA1_PRU1, macHi);
-        CSL_REG32_WR(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT1_4_DA_MASK0_PRU1, 0);
-        CSL_REG32_WR(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT1_4_DA_MASK1_PRU1, 0);
-        /* Update the classi */
-        tempVal = CSL_REG32_RD(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RX_CLASS3_OR_EN_PRU1);
-        tempVal |= 0x100000;
-        CSL_REG32_WR(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RX_CLASS3_OR_EN_PRU1, tempVal);
-
-        /* Allow packet to be excepted */
-        tempVal = CSL_REG32_RD(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RX_CLASS4_OR_EN_PRU1);
-        tempVal |= 0x1E0000;
-        CSL_REG32_WR(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RX_CLASS4_OR_EN_PRU1, tempVal);
-    }
-    UTILS_trace(UTIL_TRACE_LEVEL_INFO, emac_mcb.drv_trace_cb, "port: %d: EXIT",portNum);
-    return EMAC_DRV_RESULT_OK;
-
-}
-
 /* classifer  utilities*/
 /*
  *  ======== emac_make_class_addr ========
@@ -457,7 +322,6 @@ void emac_switch_vlan_init(uint32_t portNum,EMAC_OPEN_CONFIG_INFO_T *p_config)
     int32_t vlanEntry;
 
     UTILS_trace(UTIL_TRACE_LEVEL_INFO, emac_mcb.drv_trace_cb, "port: %d: ENTER",portNum);
-    //FIXME: if((portNum % 2) ==0)
     emac_ioctl_get_fw_config(portNum, &pEmacFwCfg);
     pSwitchFwCfg = (EMAC_ICSSG_SWITCH_FW_CFG*) pEmacFwCfg->pFwPortCfg;
     vlanDefaultTblOffset = pSwitchFwCfg->defaultVlanTblOffset;
@@ -469,12 +333,10 @@ void emac_switch_vlan_init(uint32_t portNum,EMAC_OPEN_CONFIG_INFO_T *p_config)
 
     /*Program VLAN TABLE address in MMR*/
     regAddr = hwAttrs->portCfg[portNum].icssgCfgRegBaseAddr + CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FDB_GEN_CFG1;
-    //regVal = CSL_REG32_RD (regAddr); //FIXME: Is this needed ?
     CSL_REG32_FINS(regAddr,
                ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FDB_GEN_CFG1_SMEM_VLAN_OFFSET,
                CSL_ICSS_G_RAM_SLV_RAM_REGS_BASE + vlanDefaultTblOffset);
 
-    //regVal = CSL_REG32_RD (regAddr); //FIXME: Is this needed ?
     /* Enable VLAN FDB in MMR */
     regAddr = hwAttrs->portCfg[portNum].icssgCfgRegBaseAddr + CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FDB_GEN_CFG2;
     regVal =CSL_REG32_RD (regAddr);
@@ -484,7 +346,7 @@ void emac_switch_vlan_init(uint32_t portNum,EMAC_OPEN_CONFIG_INFO_T *p_config)
               (0x1 << CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FDB_GEN_CFG2_FDB_HOST_EN_SHIFT)| 
               (0x1 << CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FDB_GEN_CFG2_FDB_VLAN_EN_SHIFT);
     CSL_REG32_WR (regAddr,regVal);
-    //regVal = CSL_REG32_RD (regAddr); //FIXME: Is this needed ?
+
     /* Initialize VLAN-FID table to 0, do two entries at a time (4 byte) */
     for(vlanEntry=0; vlanEntry<2048; vlanEntry++) 
         CSL_REG32_WR((hwAttrs->portCfg[portNum].icssSharedRamBaseAddr+ vlanDefaultTblOffset) + vlanEntry*4, 0);
@@ -549,7 +411,6 @@ EMAC_DRV_ERR_E emac_ioctl_vlan_ctrl_set_entry(uint32_t portNum, void* ctrl)
     }
     else
     {
-     //FIXME :  if ((port_num & 1) == 0)
         emac_ioctl_get_fw_config(portNum, &pEmacFwCfg);
         pSwitchFwCfg = (EMAC_ICSSG_SWITCH_FW_CFG*) pEmacFwCfg->pFwPortCfg;
         vlanEntry = (pVlanTblEntry->vlanFidPrams.hostMember) | (pVlanTblEntry->vlanFidPrams.p1Member << 1) |
@@ -575,7 +436,6 @@ EMAC_DRV_ERR_E emac_ioctl_vlan_ctrl_set_default_tbl(uint32_t portNum, void* ctrl
     uint16_t vlanEntry;
  
     UTILS_trace(UTIL_TRACE_LEVEL_INFO, emac_mcb.drv_trace_cb, "port: %d: ENTER",portNum);
-    //FIXME :     if ((port_num & 1) == 0)
     emac_mcb.port_cb[portNum].getFwCfg(portNum,&pEmacFwCfg);
     pSwitchFwCfg = (EMAC_ICSSG_SWITCH_FW_CFG*) pEmacFwCfg->pFwPortCfg;
     vlanEntry = (pVlanTblEntryParams->hostMember) | (pVlanTblEntryParams->p1Member << 1) |
@@ -962,7 +822,7 @@ EMAC_DRV_ERR_E emac_ioctl_fdb_entry_ctrl(uint32_t portNum, void* p_params)
         broadSideSlot = emac_util_fdb_helper( vlanDefaultTblAddr, entry->vlanId, entry->mac, &fid);
         emac_update_cmd(0, EMAC_IOCTL_FDB_ENTRY_CTRL, emac_mcb.ioctl_cb.pCmd1Icssg, pParams, entry, EMAC_FW_MGMT_FDB_CMD_TYPE, broadSideSlot, fid);
 
-        retVal = emac_ioctl_send_mgmt_msg(0, emac_mcb.ioctl_cb.pCmd1Icssg, NULL); //FIXME: Need to be slice specific
+        retVal = emac_ioctl_send_mgmt_msg(portNum, emac_mcb.ioctl_cb.pCmd1Icssg, NULL);
     }
     else
     {
@@ -979,7 +839,6 @@ EMAC_DRV_ERR_E emac_ioctl_accept_frame_check_ctrl(uint32_t portNum, void* p_para
 {
     EMAC_DRV_ERR_E retVal = EMAC_DRV_RESULT_IOCTL_ERR; 
     EMAC_IOCTL_PARAMS *pParams = (EMAC_IOCTL_PARAMS*) p_params;
-//    EMAC_PORT_INFO_T * pPortInfo = &emac_port_info[portNum];
     UTILS_trace(UTIL_TRACE_LEVEL_INFO, emac_mcb.drv_trace_cb, "port: %d: ENTER",portNum);
 
     if (retVal == EMAC_DRV_RESULT_IOCTL_IN_PROGRESS)
@@ -1118,7 +977,6 @@ EMAC_DRV_ERR_E emac_ioctl_uc_flooding_ctrl(uint32_t portNum, void* p_params)
 {
     EMAC_DRV_ERR_E retVal = EMAC_DRV_RESULT_IOCTL_ERR;
     EMAC_IOCTL_PARAMS *pParams = (EMAC_IOCTL_PARAMS*) p_params;
-//    EMAC_PORT_INFO_T * pPortInfo = &emac_port_info[portNum];
     UTILS_trace(UTIL_TRACE_LEVEL_INFO, emac_mcb.drv_trace_cb, "port: %d: ENTER",portNum);
 
     switch (pParams->subCommand)
@@ -1230,7 +1088,7 @@ EMAC_DRV_ERR_E emac_ioctl_configure_cut_through_or_prempt_select_ctrl(uint32_t p
     UTILS_trace(UTIL_TRACE_LEVEL_INFO, emac_mcb.drv_trace_cb, "port: %d: ENTER",portNum);
     
 
-    emac_mcb.port_cb[portNum].getFwCfg(portNum,&pEmacFwCfg); //FIXME : Check for NULL pointer ?
+    emac_mcb.port_cb[portNum].getFwCfg(portNum,&pEmacFwCfg);
     pSwitchFwCfg = (EMAC_ICSSG_SWITCH_FW_CFG*) pEmacFwCfg->pFwPortCfg;
     expressPremptiveQueueAddr = emac_mcb.port_cb[portNum].icssDram0BaseAddr + 0x2000*portLoc + pSwitchFwCfg->expressPremptiveQueueOffset;
     for (queue_num = 0U; queue_num < EMAC_IOCTL_PRIO_MAX; queue_num++)
@@ -1256,8 +1114,6 @@ EMAC_DRV_ERR_E emac_ioctl_frame_premption_ctrl(uint32_t portNum, void* p_params)
     EMAC_IOCTL_PREEMPTION_ENTRY *entry = (EMAC_IOCTL_PREEMPTION_ENTRY*)pParams->ioctlVal;
     EMAC_PER_PORT_ICSSG_FW_CFG *pEmacFwCfg;
     EMAC_ICSSG_SWITCH_FW_CFG *pSwitchFwCfg;
-    //FIXME : EMAC_PORT_INFO_T * pPortInfo = &emac_port_info[portNum];
-    //FIXME : int32_t icssgInst = pPortInfo->icssgInst;
     uintptr_t premptionTxEnabledStatusAddr, premptionTxActiveStatusAddr, premptionVerifyStateStatusAddr, premptionVerifyStateValueAddr, premptionMinFragSizeAddr, premptionMinFragAddAddr;
     uint32_t portLoc = 0;
     if((portNum  & 1) == 1)
@@ -1347,7 +1203,6 @@ EMAC_DRV_ERR_E emac_ioctl_configure_special_frame_prio_ctrl(uint32_t portNum, vo
     {
         portLoc = 1;
     }
-    //if (emac_mcb.port_cb[port_num].getFwCfg) //FIXME : Needed ?
     emac_mcb.port_cb[portNum].getFwCfg(portNum,&pEmacFwCfg);
     pSwitchFwCfg = (EMAC_ICSSG_SWITCH_FW_CFG*) pEmacFwCfg->pFwPortCfg;
     splPacketDefaultPrioAddr = emac_mcb.port_cb[portNum].icssDram0BaseAddr + 0x2000*portLoc + pSwitchFwCfg->splPacketDefaultPrioOffset;

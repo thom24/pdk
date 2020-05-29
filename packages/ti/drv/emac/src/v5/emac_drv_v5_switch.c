@@ -534,9 +534,6 @@ static EMAC_DRV_ERR_E emac_ioctl_v5_icssg_switch(uint32_t portNum, EMAC_IOCTL_CM
             case EMAC_IOCTL_FDB_AGEING_TIMEOUT_CTRL:
                 retVal = emac_ioctl_configure_fdb_ageing_interval(portLoc, (void*)emacIoctlParams);
                 break;
-            case EMAC_IOCTL_TEST_MULTI_FLOW:
-                retVal = emac_ioctl_test_multi_flow(portLoc, ioctlData);
-                break;
             case EMAC_IOCTL_SPEED_DUPLEXITY_CTRL:
                 switch (emacIoctlParams->subCommand)
                 {

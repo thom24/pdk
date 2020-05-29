@@ -610,7 +610,6 @@ extern void emac_classifier_disable(uint32_t port_num);
 extern void emac_ioctl_icss_add_mac (uint32_t port_num, uint8_t*  macAddr);
 extern EMAC_DRV_ERR_E emac_ioctl_icss_promiscous_ctrl(uint32_t port_num, void*  ctrl);
 extern void emac_ioctl_icss_debug_fw_mgmt_psi(uint32_t port_num, void*  ctrl);
-extern EMAC_DRV_ERR_E emac_ioctl_test_multi_flow(uint32_t port_num, void*  ctrl);
 extern EMAC_DRV_ERR_E emac_ioctl_vlan_ctrl_set_default_tbl(uint32_t port_num, void*  ctrl);
 extern EMAC_DRV_ERR_E emac_ioctl_vlan_ctrl_set_default_vlan_id(uint32_t port_num, void* ctrl);
 extern EMAC_DRV_ERR_E emac_ioctl_vlan_ctrl_set_default_vlan_id_host_port(uint32_t port_num, void* ctrl);
@@ -621,7 +620,7 @@ extern EMAC_DRV_ERR_E emac_ioctl_port_prio_mapping_ctrl(uint32_t port_num, void*
 extern EMAC_DRV_ERR_E emac_ioctl_port_state_ctrl(uint32_t port_num, void* p_params);
 extern EMAC_DRV_ERR_E emac_ioctl_fdb_entry_ctrl(uint32_t port_num, void* p_params);
 extern EMAC_DRV_ERR_E emac_ioctl_fdb_del_all(uint32_t port_num, void* p_params);
-EMAC_DRV_ERR_E emac_ioctl_accept_frame_check_ctrl(uint32_t port_num, void* p_params);
+extern EMAC_DRV_ERR_E emac_ioctl_accept_frame_check_ctrl(uint32_t port_num, void* p_params);
 extern void emac_switch_config_ft3_priority_tag(uint32_t port_num);
 extern EMAC_DRV_ERR_E emac_ioctl_prio_regen_mapping_ctrl(uint32_t port_num, void*  ctrl);
 extern EMAC_DRV_ERR_E emac_ioctl_uc_flooding_ctrl(uint32_t port_num, void* p_params);

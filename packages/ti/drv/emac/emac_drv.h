@@ -897,7 +897,6 @@ typedef enum EMAC_IOCTL_CMD_E{
     EMAC_IOCTL_PORT_PRIO_MAPPING_CTRL,      /**< Configure traffic class mapping to port queue ioctl */
     EMAC_IOCTL_ACCEPTABLE_FRAME_CHECK_CTRL, /**< Configure Acceptable frame check control ioctl */
     EMAC_IOCTL_PRIO_REGEN_CTRL,             /**< Configure priority regen table ioctl*/
-    EMAC_IOCTL_TEST_MULTI_FLOW,             /**< Test multi-flow support ioctl */
     EMAC_IOCTL_UC_FLOODING_CTRL,            /**< UC flooding control ioctl */
     EMAC_IOCTL_INTERFACE_MAC_CONFIG,        /**< interface mac config ioctl */
     EMAC_IOCTL_CUT_THROUGH_PREEMPT_SELECT,  /**< cut through or prempt select config ioctl */
