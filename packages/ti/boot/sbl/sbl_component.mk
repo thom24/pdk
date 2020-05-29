@@ -88,7 +88,12 @@ sbl_DISABLE_PARALLEL_MAKE = yes
 # List of components included under sbl
 # The components included here are built and will be part of sbl
 ############################
+
+ifeq ($(SOC), am64x)
+sbl_LIB_LIST = sbl_lib_ospi
+else
 sbl_LIB_LIST = sbl_lib_mmcsd sbl_lib_ospi sbl_lib_uart sbl_lib_hyperflash sbl_lib_cust
+endif
 
 ############################
 # sbl example
@@ -96,8 +101,11 @@ sbl_LIB_LIST = sbl_lib_mmcsd sbl_lib_ospi sbl_lib_uart sbl_lib_hyperflash sbl_li
 # All the tests mentioned in list are built when test target is called
 # List below all examples for allowed values
 ############################
+ifeq ($(SOC), am64x)
+sbl_EXAMPLE_LIST = sbl_ospi_img
+else
 sbl_EXAMPLE_LIST = sbl_mmcsd_img sbl_ospi_img sbl_hyperflash_img sbl_uart_img
-
+endif
 #
 # SBL Modules
 #
@@ -417,7 +425,9 @@ sbl_smp_test_BOARDLIST = $(sbl_BOARDLIST)
 export sbl_smp_test_BOARDLIST
 sbl_smp_test_$(SOC)_CORELIST = $($(SOC)_smp_CORELIST)
 export sbl_smp_test_$(SOC)_CORELIST
+ifneq ($(SOC), am64x)
 sbl_EXAMPLE_LIST += sbl_smp_test
+endif
 sbl_smp_test_SBL_APPIMAGEGEN = yes
 export sbl_smp_test_SBL_APPIMAGEGEN
 
@@ -444,7 +454,9 @@ sbl_multicore_smp_BOARDLIST = $(sbl_BOARDLIST)
 export sbl_multicore_smp_BOARDLIST
 sbl_multicore_smp_$(SOC)_CORELIST := $($(SOC)_LASTCORE)
 export sbl_multicore_smp_$(SOC)_CORELIST
+ifneq ($(SOC), am64x)
 sbl_EXAMPLE_LIST += sbl_multicore_smp
+endif
 sbl_multicore_smp_SBL_APPIMAGEGEN = no
 export sbl_multicore_smp_SBL_APPIMAGEGEN
 
@@ -468,7 +480,9 @@ sbl_boot_xip_test_BOARDLIST = $(sbl_BOARDLIST)
 export sbl_boot_xip_test_BOARDLIST
 sbl_boot_xip_test_$(SOC)_CORELIST = mcu1_0
 export sbl_boot_xip_test_$(SOC)_CORELIST
+ifneq ($(SOC), am64x)
 sbl_EXAMPLE_LIST += sbl_boot_xip_test
+endif
 sbl_boot_xip_test_SBL_APPIMAGEGEN = yes
 sbl_boot_xip_test_SBL_APP_BINIMAGEGEN = yes
 sbl_boot_xip_test_SBL_APP_BIN_SECTIONS = --only-section .rstvectors --only-section .sbl_mcu_1_0_resetvector
@@ -496,7 +510,9 @@ sbl_boot_xip_entry_BOARDLIST = $(sbl_BOARDLIST)
 export sbl_boot_xip_entry_BOARDLIST
 sbl_boot_xip_entry_$(SOC)_CORELIST = mcu1_0
 export sbl_boot_xip_entry_$(SOC)_CORELIST
+ifneq ($(SOC), am64x)
 sbl_EXAMPLE_LIST += sbl_boot_xip_entry
+endif
 sbl_boot_xip_entry_SBL_APPIMAGEGEN = yes
 export sbl_boot_xip_entry_SBL_APPIMAGEGEN
 
@@ -722,7 +738,9 @@ export sbl_boot_perf_test_SOCLIST
 export sbl_boot_perf_test_BOARDLIST
 sbl_boot_perf_test_$(SOC)_CORELIST = mcu1_0
 export sbl_boot_perf_test_$(SOC)_CORELIST
+ifneq ($(SOC), am64x)
 sbl_EXAMPLE_LIST += sbl_boot_perf_test
+endif
 sbl_boot_perf_test_SBL_APPIMAGEGEN = yes
 export sbl_boot_perf_test_SBL_APPIMAGEGEN
 
