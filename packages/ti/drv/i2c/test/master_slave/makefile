@@ -73,7 +73,7 @@ ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
 COMP_LIST_COMMON += sciclient
 endif
 
-PACKAGE_SRCS_COMMON = src makefile
+PACKAGE_SRCS_COMMON = src ../src makefile
 ifeq ($(SOC),$(filter $(SOC), am65xx))
   PACKAGE_SRCS_COMMON += $(SOC)
 endif
