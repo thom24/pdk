@@ -74,13 +74,9 @@
 #include "sbl_sec.h"
 #endif
 
-extern OSPI_v0_HwAttrs ospiInitCfg[];
-
 /* Macro representing the offset where the App Image has to be written/Read from
    the OSPI Flash.
 */
-#define OSPI_FLASH_BASE_ADDR        ((uint32_t)(ospiInitCfg[BOARD_OSPI_NOR_INSTANCE].dataAddr))
-#define OSPI_CTLR_BASE_ADDR         (ospiInitCfg[BOARD_OSPI_NOR_INSTANCE].baseAddr)
 #define OSPI_OFFSET_SI              (0xA0000U)
 #define OSPI_OFFSET_SYSFW           (0x40000U)
 #define OSPI_MPU_REGION_NUM         (0x6)
@@ -103,9 +99,7 @@ void SBL_SysFwLoad(void *dst, void *src, uint32_t size);
 
 static void *boardHandle = NULL;
 
-#if !defined(SBL_BYPASS_OSPI_DRIVER)
 static OSPI_v0_HwAttrs ospi_cfg;
-#endif
 
 #ifdef SECURE_BOOT
 extern SBL_incomingBootData_S sblInBootData;
@@ -245,10 +239,10 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
         SBL_ADD_PROFILE_POINT;
 
         /* Enable PHY pipeline mode  even though DMA is not used */
-        CSL_ospiPipelinePhyEnable((const CSL_ospi_flash_cfgRegs *)(OSPI_CTLR_BASE_ADDR), TRUE);
+        CSL_ospiPipelinePhyEnable((const CSL_ospi_flash_cfgRegs *)(ospi_cfg.baseAddr), TRUE);
 
         /* Optimized CPU copy loop - can be removed once ROM load is working */
-        SBL_SysFwLoad((void *)(*pBuffer), (void *)(OSPI_FLASH_BASE_ADDR + OSPI_OFFSET_SYSFW), num_bytes);
+        SBL_SysFwLoad((void *)(*pBuffer), (void *)(ospi_cfg.dataAddr + OSPI_OFFSET_SYSFW), num_bytes);
 
         /* Update handle for later use*/
         boardHandle = (void *)h;
@@ -265,10 +259,13 @@ SBL_ADD_PROFILE_POINT;
 #else
    SBL_ADD_PROFILE_POINT;
  
+     /* Get default OSPI cfg */
+    OSPI_socGetInitCfg(BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
+
    if(pBuffer)
    {
       /* Set up ROM to load system firmware */
-      *pBuffer = (void *)(OSPI_FLASH_BASE_ADDR + OSPI_OFFSET_SYSFW);
+      *pBuffer = (void *)(ospi_cfg.dataAddr + OSPI_OFFSET_SYSFW);
    }
  
    SBL_ADD_PROFILE_POINT;
@@ -393,10 +390,10 @@ int32_t SBL_ospiFlashRead(const void *handle, uint8_t *dst, uint32_t length,
     }
     else
     {
-        memcpy((void *)dst, (void *)(OSPI_FLASH_BASE_ADDR + offset), length);
+        memcpy((void *)dst, (void *)(ospi_cfg.dataAddr + offset), length);
     }
 #else
-    memcpy((void *)dst, (void *)(OSPI_FLASH_BASE_ADDR + offset), length);
+    memcpy((void *)dst, (void *)(ospi_cfg.dataAddr + offset), length);
 #endif
 
     end_time = SBL_ADD_PROFILE_POINT;
