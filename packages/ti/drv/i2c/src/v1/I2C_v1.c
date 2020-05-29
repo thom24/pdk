@@ -1014,13 +1014,9 @@ static int16_t I2C_primeTransfer_v1(I2C_Handle handle,
                 {
                     regVal |= I2C_CFG_HS_MOD;
                 }
-                I2CMasterControl(hwAttrs->baseAddr, regVal);
-
-                /* generate start */
-                I2CMasterStart(hwAttrs->baseAddr);
 
                 /* wait for bus busy */
-                while ((I2CMasterBusBusy(hwAttrs->baseAddr) == 0) && (timeout != 0))
+                while ((I2CMasterBusBusy(hwAttrs->baseAddr) == 1) && (timeout != 0))
                 {
                     I2C_v1_udelay(I2C_DELAY_USEC);
                     if (I2C_checkTimeout(&uSecTimeout))
@@ -1028,6 +1024,11 @@ static int16_t I2C_primeTransfer_v1(I2C_Handle handle,
                         timeout--;
                     }
                 }
+
+                I2CMasterControl(hwAttrs->baseAddr, regVal);
+
+                /* generate start */
+                I2CMasterStart(hwAttrs->baseAddr);
 
                 while ((object->writeCountIdx != 0U) && (timeout != 0))
                 {
@@ -1137,20 +1138,27 @@ static int16_t I2C_primeTransfer_v1(I2C_Handle handle,
                 {
                     regVal |= I2C_CFG_HS_MOD;
                 }
+
+                /* wait for bus not busy.
+                 * Check bus busy for read-only transfers to support
+                 * repeat start condition during write address and read data.
+                 */
+                if((object->writeBufIdx) == NULL)
+                {
+                    while ((I2CMasterBusBusy(hwAttrs->baseAddr) == 1) && (timeout != 0U))
+                    {
+                        I2C_v1_udelay(I2C_DELAY_USEC);
+                        if (I2C_checkTimeout(&uSecTimeout))
+                        {
+                            timeout--;
+                        }
+                    }
+                }
+
                 I2CMasterControl(hwAttrs->baseAddr, regVal);
 
                 /* generate start */
                 I2CMasterStart(hwAttrs->baseAddr);
-
-                /* wait for bus not busy */
-                while ((I2CMasterBusBusy(hwAttrs->baseAddr)==0) && (timeout != 0U))
-                {
-                    I2C_v1_udelay(I2C_DELAY_USEC);
-                    if (I2C_checkTimeout(&uSecTimeout))
-                    {
-                        timeout--;
-                    }
-                }
 
                 while ((object->readCountIdx != 0U) && (timeout != 0U))
                 {
@@ -1629,7 +1637,7 @@ static int32_t I2C_v1_waitForBb(uint32_t baseAddr, uint32_t timeout)
     }
     else
     {
-        while(I2CMasterBusBusy(baseAddr)==0)
+        while(I2CMasterBusBusy(baseAddr) == 1)
         {
         }
     }
