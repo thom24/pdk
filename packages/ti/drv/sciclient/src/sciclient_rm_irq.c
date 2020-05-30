@@ -1666,18 +1666,51 @@ static bool Sciclient_rmIrqRouteValidate(struct Sciclient_rmIrqCfg  *cfg)
             cur_outp_valid = false;
             next_inp_valid = true;
 
-            if ((cur_if->rid == cfg->d_id) &&
-                (cfg->d_irq >= (cur_if->rbase)) &&
-                (cfg->d_irq < (cur_if->rbase + cur_if->len))) {
-                cur_outp = SCICLIENT_INP_TO_OUTP(cfg->d_irq,
-                               cur_if->rbase,
-                               cur_if->lbase);
-
-                if (Sciclient_rmIrOutpIsFree(cur_n->id, cur_outp) ==
-                    CSL_PASS) {
-                    cur_outp_valid = true;
-                }
+            /* Get the IR output resource range host assignments */
+            req.secondary_host = cfg->host;
+            req.type = cur_n->id;
+            req.subtype = TISCI_RESASG_SUBTYPE_IR_OUTPUT;
+            if (Sciclient_rmGetResourceRange(&req, &host_resp,
+                    SCICLIENT_SERVICE_WAIT_FOREVER) != CSL_PASS) {
+                valid = false;
+                break;
             }
+            req.secondary_host = TISCI_HOST_ID_ALL;
+            if (Sciclient_rmGetResourceRange(&req, &all_resp,
+                    SCICLIENT_SERVICE_WAIT_FOREVER) != CSL_PASS) {
+                valid = false;
+                break;
+            }
+
+            cur_outp = SCICLIENT_INP_TO_OUTP(cfg->d_irq,
+                           cur_if->rbase,
+                           cur_if->lbase);
+
+            /* Check IR output against boardcfg ranges. First against
+             * the passed host then against HOST_ID_ALL if the passed
+             * host does not match.  Validate the output by
+             * checking the hardware if the output validates against
+             * the board configuration range. */
+            if ((((cur_outp >= host_resp.range_start) &&
+                  (cur_outp < host_resp.range_start + host_resp.range_num)) ||
+                 ((cur_outp >= host_resp.range_start_sec) &&
+                  (cur_outp < host_resp.range_start_sec +
+                              host_resp.range_num_sec))) ||
+                (((cur_outp >= all_resp.range_start) &&
+                  (cur_outp < all_resp.range_start + all_resp.range_num)) ||
+                 ((cur_outp >= all_resp.range_start_sec) &&
+                  (cur_outp < all_resp.range_start_sec +
+                              all_resp.range_num_sec)))) {
+                if ((cur_if->rid == cfg->d_id) &&
+                    (cfg->d_irq >= (cur_if->rbase)) &&
+                    (cfg->d_irq < (cur_if->rbase + cur_if->len))) {
+
+                    if (Sciclient_rmIrOutpIsFree(cur_n->id, cur_outp) ==
+                        CSL_PASS) {
+                        cur_outp_valid = true;
+                    }
+                }
+	    }
         }
 
         if ((cur_outp_valid == true) && (next_inp_valid == true)) {
