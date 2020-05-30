@@ -170,7 +170,7 @@ $(OBJ_PATHS): $(OBJDIR)/%.$(OBJEXT): %.c | $(OBJDIR) $(DEPDIR)
 
 	$(CC) $(_CFLAGS) $(INCLUDES) $< -o $@
 # Archive flags - normally doesn't change
-ARFLAGS :=rvs
+ARFLAGS :=rcs
 
 # Archive/library file creation
 $(LIBDIR)/$(LIBNAME).$(LIBEXT) : $(OBJ_PATHS) | $(LIBDIR)
