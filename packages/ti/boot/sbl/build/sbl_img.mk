@@ -12,6 +12,10 @@ DMA_SUFFIX=
 ifeq ($(SBL_USE_DMA),no)
 DMA_SUFFIX=_nondma
 endif
+# DMA not yet enabled for AM64x
+ifeq ($(SOC),$(filter $(SOC), am64x))
+DMA_SUFFIX=_nondma
+endif
 
 APP_NAME = sbl_$(BOOTMODE)_img$(HS_SUFFIX)
 LOCAL_APP_NAME=sbl_$(BOOTMODE)_img_$(CORE)

@@ -90,7 +90,7 @@ sbl_DISABLE_PARALLEL_MAKE = yes
 ############################
 
 ifeq ($(SOC), am64x)
-sbl_LIB_LIST = sbl_lib_ospi
+sbl_LIB_LIST = sbl_lib_ospi_nondma
 else
 sbl_LIB_LIST = sbl_lib_mmcsd sbl_lib_ospi sbl_lib_uart sbl_lib_hyperflash sbl_lib_cust
 sbl_LIB_LIST += sbl_lib_ospi_nondma
