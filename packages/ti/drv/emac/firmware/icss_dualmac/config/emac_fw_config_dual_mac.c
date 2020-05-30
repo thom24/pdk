@@ -127,6 +127,25 @@ static void hwqa_reset(uintptr_t baseAddr, uint32_t qNum)
                 qNum);
 }
 
+static void hwqa_push(uintptr_t baseAddr, uint32_t ofs, uint32_t val)
+{
+    HW_WR_REG32(baseAddr + CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_REGS_BASE +
+                CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_QUEUE0 + ofs, val);
+}
+
+static void pd_init_and_push(uintptr_t icssgAddr, uint32_t pool_addr, uint32_t ofs,
+                             uint32_t w0, uint32_t bdSize, uint32_t bdNum)
+{
+    uint32_t    j;
+    uint32_t    *pool_ptr = (uint32_t*)(icssgAddr + CSL_ICSS_G_RAM_SLV_RAM_REGS_BASE + pool_addr); 
+
+    for (j = 0; j < bdNum; j++)
+    {
+        *pool_ptr = w0;
+        hwqa_push(icssgAddr, ofs, (uint32_t)pool_ptr);
+        pool_ptr += bdSize;
+    }
+}
 
 void emac_icssg_dual_mac_fw_config_fxn(uint32_t portNum, EMAC_ICSSG_FW_CFG_PG2 *pIcssgFwCfg)
 {
@@ -134,7 +153,7 @@ void emac_icssg_dual_mac_fw_config_fxn(uint32_t portNum, EMAC_ICSSG_FW_CFG_PG2 *
     uint32_t endAddr;
     uint32_t regVal, hwQueueNum, i;
     uint32_t MaxNumNormalPDs = 64, MaxNumSpecialPDs = 16;
-    uint32_t pdWord[5], pdAddr;
+    uint32_t pdWord[5];
     memset ((void*)&pdWord, 0, sizeof(pdWord));
     uintptr_t icssgBaseAddr = pIcssgFwCfg->icssgBaseAddr;
 
@@ -220,70 +239,13 @@ void emac_icssg_dual_mac_fw_config_fxn(uint32_t portNum, EMAC_ICSSG_FW_CFG_PG2 *
         hwqa_reset(icssgBaseAddr, EMAC_ICSSG_HOST_LF_Q_SLICE0);
         hwqa_reset(icssgBaseAddr, EMAC_ICSSG_HOST_SF_Q_SLICE0);
 
-        //Now do PDs PORTQ LOW & HI, HOSTQ LOW & HI
-        for (i = 0; i < MaxNumNormalPDs; i++)
-        {
-            pdWord[0] = pdWord[0] & 0xFF00FFFFU; //Clear flags
-            pdWord[0] = pdWord[0] | 0x000000U; //Set Pool, Slice ID
-            pdAddr = PORT_DESC0_LO + i*EMAC_ICSSG_NORMAL_PD_SIZE;
-            //Init PD Word
-            emac_hw_mem_write ((icssgBaseAddr + CSL_ICSS_G_RAM_SLV_RAM_REGS_BASE + pdAddr), pdWord, EMAC_ICSSG_NORMAL_PD_SIZE/2);
-            //Push to EMAC_ICSSG_PORT_LF_Q_SLICE0_OFFSET
-            HW_WR_REG32(icssgBaseAddr +
-                        CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_REGS_BASE +
-                        CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_QUEUE0 +
-                        EMAC_ICSSG_PORT_LF_Q_SLICE0_OFFSET,
-                        pdAddr);
-            pdWord[0] = pdWord[0] & 0xFF00FFFFU; //Clear flags
-            pdWord[0] = pdWord[0] | 0x200000U; //Set Pool, Slice ID
-            pdAddr = PORT_DESC0_HI + i*EMAC_ICSSG_NORMAL_PD_SIZE;
-            //Init PD Word
-            emac_hw_mem_write ((icssgBaseAddr + CSL_ICSS_G_RAM_SLV_RAM_REGS_BASE + pdAddr), pdWord, EMAC_ICSSG_NORMAL_PD_SIZE_BYTE_COUNT);
-            //Push to EMAC_ICSSG_PORT_HF_Q_SLICE0off
-            HW_WR_REG32(icssgBaseAddr +
-                        CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_REGS_BASE +
-                        CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_QUEUE0 +
-                        EMAC_ICSSG_PORT_HF_Q_SLICE0off,
-                        pdAddr);
-            pdWord[0] = pdWord[0] & 0xFF00FFFFU; //Clear flags
-            pdWord[0] = pdWord[0] | 0x000000U; //Set Pool, Slice ID
-            pdAddr = HOST_DESC0_LO + i*EMAC_ICSSG_NORMAL_PD_SIZE;
-            //Init PD Word
-            emac_hw_mem_write ((icssgBaseAddr + CSL_ICSS_G_RAM_SLV_RAM_REGS_BASE + pdAddr), pdWord, EMAC_ICSSG_NORMAL_PD_SIZE_BYTE_COUNT);
-            //Push to EMAC_ICSSG_HOST_LF_Q_SLICE0_OFFSET
-            HW_WR_REG32(icssgBaseAddr +
-                        CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_REGS_BASE +
-                        CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_QUEUE0 +
-                        EMAC_ICSSG_HOST_LF_Q_SLICE0_OFFSET,
-                        pdAddr);
-            pdWord[0] = pdWord[0] & 0xFF00FFFFU; //Clear flags
-            pdWord[0] = pdWord[0] | 0x200000U; //Set Pool, Slice ID
-            pdAddr = HOST_DESC0_HI + i*EMAC_ICSSG_NORMAL_PD_SIZE;
-            //Init PD Word
-            emac_hw_mem_write ((icssgBaseAddr + CSL_ICSS_G_RAM_SLV_RAM_REGS_BASE + pdAddr), pdWord, EMAC_ICSSG_NORMAL_PD_SIZE_BYTE_COUNT);
-            //Push to EMAC_ICSSG_HOST_HF_Q_SLICE0_OFFSET
-            HW_WR_REG32(icssgBaseAddr +
-                        CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_REGS_BASE +
-                        CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_QUEUE0 +
-                        EMAC_ICSSG_HOST_HF_Q_SLICE0_OFFSET,
-                        pdAddr);
-        }
-        //Create special PD pools
-        for (i = 0; i < MaxNumSpecialPDs; i++)
-        {
-            pdWord[0] = pdWord[0] & 0xFF00FFFFU; //Clear flags
-            pdWord[0] = pdWord[0] | 0x400000U; //Set Pool, Slice ID
-            pdAddr = HOST_SPPD0 + i*EMAC_ICSSG_SPECIAL_PD_SIZE;
-            //Init PD Word
-            emac_hw_mem_write ((icssgBaseAddr + CSL_ICSS_G_RAM_SLV_RAM_REGS_BASE + pdAddr), pdWord, EMAC_ICSSG_SPECIAL_PD_SIZE_BYTE_COUNT);
-            //Push to EMAC_ICSSG_HOST_SF_Q_SLICE0_OFFSET
-            HW_WR_REG32(icssgBaseAddr +
-                        CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_REGS_BASE +
-                        CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_QUEUE0 +
-                        EMAC_ICSSG_HOST_SF_Q_SLICE0_OFFSET,
-                        pdAddr);
-        }
-                    //Initialize 24 Buffer Pools per slice
+        pd_init_and_push(icssgBaseAddr, PORT_DESC0_LO, EMAC_ICSSG_PORT_LF_Q_SLICE0_OFFSET, 0x000000U, 2, MaxNumNormalPDs);
+        pd_init_and_push(icssgBaseAddr, PORT_DESC0_HI, EMAC_ICSSG_PORT_HF_Q_SLICE0off,     0x200000U, 2, MaxNumNormalPDs);
+        pd_init_and_push(icssgBaseAddr, HOST_DESC0_LO, EMAC_ICSSG_HOST_LF_Q_SLICE0_OFFSET, 0x000000U, 2, MaxNumNormalPDs);
+        pd_init_and_push(icssgBaseAddr, HOST_DESC0_HI, EMAC_ICSSG_HOST_HF_Q_SLICE0_OFFSET, 0x200000U, 2, MaxNumNormalPDs);
+        pd_init_and_push(icssgBaseAddr, HOST_SPPD0,    EMAC_ICSSG_HOST_SF_Q_SLICE0_OFFSET, 0x400000U, 5, MaxNumSpecialPDs);
+
+        //Initialize 24 Buffer Pools per slice
         EMAC_ICSSG_BUF_POOL_CFG.poolBase = pIcssgFwCfg->bufferPoolLowAddr;
         for (i = EMAC_ICSSG_DUAL_MAC_START_BUFFER_POOL_NUM; i < (EMAC_ICSSG_DUAL_MAC_START_BUFFER_POOL_NUM +pIcssgFwCfg->numBufferPool); i++)
         {
@@ -364,73 +326,13 @@ void emac_icssg_dual_mac_fw_config_fxn(uint32_t portNum, EMAC_ICSSG_FW_CFG_PG2 *
         hwqa_reset(icssgBaseAddr, EMAC_ICSSG_HOST_LF_Q_SLICE1);
         hwqa_reset(icssgBaseAddr, EMAC_ICSSG_HOST_SF_Q_SLICE1);
 
-        //Now do PDs PORTQ LOW & HI, HOSTQ LOW & HI
-        for (i = 0; i < MaxNumNormalPDs; i++)
-        {
-            pdWord[0] = pdWord[0] & 0xFF00FFFFU; //Clear flags
-            pdWord[0] = pdWord[0] | 0x800000U; //Set Pool, Slice ID
-            pdAddr = PORT_DESC1_LO + i*EMAC_ICSSG_NORMAL_PD_SIZE;
-            //Init PD Word
-            emac_hw_mem_write ((icssgBaseAddr + CSL_ICSS_G_RAM_SLV_RAM_REGS_BASE + pdAddr), pdWord, EMAC_ICSSG_NORMAL_PD_SIZE_BYTE_COUNT);
-            //Push to EMAC_ICSSG_PORT_LF_Q_SLICE1_OFFSET
-            HW_WR_REG32(icssgBaseAddr +
-                        CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_REGS_BASE +
-                        CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_QUEUE0 +
-                        EMAC_ICSSG_PORT_LF_Q_SLICE1_OFFSET, 
-                        pdAddr);
+        pd_init_and_push(icssgBaseAddr, PORT_DESC1_LO, EMAC_ICSSG_PORT_LF_Q_SLICE1_OFFSET, 0x800000U, 2, MaxNumNormalPDs);
+        pd_init_and_push(icssgBaseAddr, PORT_DESC1_HI, EMAC_ICSSG_PORT_HF_Q_SLICE1off,     0xA00000U, 2, MaxNumNormalPDs);
+        pd_init_and_push(icssgBaseAddr, HOST_DESC1_LO, EMAC_ICSSG_HOST_LF_Q_SLICE1_OFFSET, 0x800000U, 2, MaxNumNormalPDs);
+        pd_init_and_push(icssgBaseAddr, HOST_DESC1_HI, EMAC_ICSSG_HOST_HF_Q_SLICE1_OFFSET, 0xA00000U, 2, MaxNumNormalPDs);
+        pd_init_and_push(icssgBaseAddr, HOST_SPPD1,    EMAC_ICSSG_HOST_SF_Q_SLICE1_OFFSET, 0xC00000U, 5, MaxNumSpecialPDs);
 
-            pdWord[0] = pdWord[0] & 0xFF00FFFFU; //Clear flags
-            pdWord[0] = pdWord[0] | 0xA00000U; //Set Pool, Slice ID
-            pdAddr = PORT_DESC1_HI + i*EMAC_ICSSG_NORMAL_PD_SIZE;
-            //Init PD Word
-            emac_hw_mem_write ((icssgBaseAddr + CSL_ICSS_G_RAM_SLV_RAM_REGS_BASE + pdAddr), pdWord, EMAC_ICSSG_NORMAL_PD_SIZE_BYTE_COUNT);
-            //Push to EMAC_ICSSG_PORT_HF_Q_SLICE1off
-            HW_WR_REG32(icssgBaseAddr +
-                        CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_REGS_BASE +
-                        CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_QUEUE0 +
-                        EMAC_ICSSG_PORT_HF_Q_SLICE1off,
-                        pdAddr);
-
-            pdWord[0] = pdWord[0] & 0xFF00FFFFU; //Clear flags
-            pdWord[0] = pdWord[0] | 0x800000U; //Set Pool, Slice ID
-            pdAddr = HOST_DESC1_LO + i*EMAC_ICSSG_NORMAL_PD_SIZE;
-            //Init PD Word
-            emac_hw_mem_write ((icssgBaseAddr + CSL_ICSS_G_RAM_SLV_RAM_REGS_BASE + pdAddr), pdWord, EMAC_ICSSG_NORMAL_PD_SIZE_BYTE_COUNT);
-            //Push to EMAC_ICSSG_HOST_LF_Q_SLICE1_OFFSET
-            HW_WR_REG32(icssgBaseAddr +
-                        CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_REGS_BASE +
-                        CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_QUEUE0 +
-                        EMAC_ICSSG_HOST_LF_Q_SLICE1_OFFSET,
-                        pdAddr);
-
-            pdWord[0] = pdWord[0] & 0xFF00FFFFU; //Clear flags
-            pdWord[0] = pdWord[0] | 0xA00000U; //Set Pool, Slice ID
-            pdAddr = HOST_DESC1_HI + i*EMAC_ICSSG_NORMAL_PD_SIZE;
-            //Init PD Word
-            emac_hw_mem_write ((icssgBaseAddr + CSL_ICSS_G_RAM_SLV_RAM_REGS_BASE + pdAddr), pdWord, EMAC_ICSSG_NORMAL_PD_SIZE_BYTE_COUNT);
-            //Push to EMAC_ICSSG_HOST_HF_Q_SLICE1_OFFSET
-            HW_WR_REG32(icssgBaseAddr +
-                        CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_REGS_BASE +
-                        CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_QUEUE0 + 
-                        EMAC_ICSSG_HOST_HF_Q_SLICE1_OFFSET,
-                        pdAddr);
-        }
-        //Create special PD pools
-        for (i = 0; i < MaxNumSpecialPDs; i++)
-        {
-            pdWord[0] = pdWord[0] & 0xFF00FFFFU; //Clear flags
-            pdWord[0] = pdWord[0] | 0xC00000U; //Set Pool, Slice ID
-            pdAddr = HOST_SPPD1 + i*EMAC_ICSSG_SPECIAL_PD_SIZE;
-            //Init PD Word
-            emac_hw_mem_write ((icssgBaseAddr + CSL_ICSS_G_RAM_SLV_RAM_REGS_BASE + pdAddr), pdWord, EMAC_ICSSG_SPECIAL_PD_SIZE_BYTE_COUNT);
-            //Push to EMAC_ICSSG_HOST_SF_Q_SLICE1_OFFSET
-            HW_WR_REG32(icssgBaseAddr +
-                        CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_REGS_BASE +
-                        CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_QUEUE0 +
-                        EMAC_ICSSG_HOST_SF_Q_SLICE1_OFFSET,
-                        pdAddr);
-        }
-                //Initialize 24 Buffer Pools per slice
+        //Initialize 24 Buffer Pools per slice
         EMAC_ICSSG_BUF_POOL_CFG.poolBase = pIcssgFwCfg->bufferPoolLowAddr;
         for (i = EMAC_ICSSG_DUAL_MAC_START_BUFFER_POOL_NUM; i < (EMAC_ICSSG_DUAL_MAC_START_BUFFER_POOL_NUM +pIcssgFwCfg->numBufferPool); i++)
         {
@@ -592,7 +494,4 @@ int32_t emacSetDualMacFwAppInitCfg(uint32_t portNum, EMAC_FW_APP_CONFIG *pFwAppC
      }
      return ret;
 }
-
-
-
 
