@@ -685,33 +685,7 @@ static uintptr_t l2_global_address (uintptr_t addr)
     return addr;
 #endif
 #elif defined (SOC_TPR12)
-    #ifdef _TMS320C6X
-        if ((addr>=0x00800000 && addr<=0x00860000) || (addr>=0x00F00000 && addr<=0x00F08000))
-        {
-            return (addr | 0x80000000);
-        }
-        else
-        {
-            return (addr);
-        }
-    #else
-        if(addr < 0x80000)
-        {
-            return (addr | 0xC1000000);
-        }
-        else if (addr < 0x100000)
-        {
-            return ((addr & 0xFFFF) | 0xC1800000);
-        }
-        else if ((addr >= 0x10200000) && (addr <= 0x102F0000))
-        {
-            return((addr & 0x00FFFFFF) | 0xC0000000);
-        }
-        else
-        {
-            return (addr);
-        }
-    #endif
+    return ((uintptr_t)CSL_locToGlobAddr(addr));
 #else
     return addr;
 #endif
