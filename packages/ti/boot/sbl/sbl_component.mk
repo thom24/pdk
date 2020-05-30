@@ -267,7 +267,7 @@ export sbl_mmcsd_img_hs_COMP_LIST = sbl_mmcsd_img_hs
 sbl_mmcsd_img_hs_RELPATH = ti/boot/sbl/board/k3
 sbl_mmcsd_img_hs_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)_hs/mmcsd/bin
 sbl_mmcsd_img_hs_PATH = $(PDK_SBL_COMP_PATH)/board/k3
-export sbl_mmcsd_img_hs_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=mmcsd SBL_USE_DMA=no BUILD_HS=yes
+export sbl_mmcsd_img_hs_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=mmcsd SBL_USE_DMA=yes BUILD_HS=yes
 export sbl_mmcsd_img_hs_SBL_CERT_KEY=$(SBL_CERT_KEY_HS)
 export sbl_mmcsd_img_hs_BOARD_DEPENDENCY = yes
 export sbl_mmcsd_img_hs_SOC_DEPENDENCY = yes
@@ -347,7 +347,7 @@ export sbl_hyperflash_img_hs_COMP_LIST = sbl_hyperflash_img_hs
 sbl_hyperflash_img_hs_RELPATH = ti/boot/sbl/board/k3
 sbl_hyperflash_img_hs_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)_hs/hyperflash/bin
 sbl_hyperflash_img_hs_PATH = $(PDK_SBL_COMP_PATH)/board/k3
-export sbl_hyperflash_img_hs_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=hyperflash SBL_USE_DMA=no BUILD_HS=yes
+export sbl_hyperflash_img_hs_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=hyperflash SBL_USE_DMA=yes BUILD_HS=yes
 export sbl_hyperflash_img_hs_SBL_CERT_KEY=$(SBL_CERT_KEY_HS)
 export sbl_hyperflash_img_hs_BOARD_DEPENDENCY = yes
 export sbl_hyperflash_img_SOC_DEPENDENCY = yes
@@ -388,7 +388,7 @@ export sbl_uart_img_hs_COMP_LIST = sbl_uart_img_hs
 sbl_uart_img_hs_RELPATH = ti/boot/sbl/board/k3
 sbl_uart_img_hs_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)_hs/uart/bin
 sbl_uart_img_hs_PATH = $(PDK_SBL_COMP_PATH)/board/k3
-export sbl_uart_img_hs_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=uart SBL_USE_DMA=no BUILD_HS=yes
+export sbl_uart_img_hs_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=uart SBL_USE_DMA=yes BUILD_HS=yes
 export sbl_uart_img_hs_SBL_CERT_KEY=$(SBL_CERT_KEY_HS)
 export sbl_uart_img_hs_BOARD_DEPENDENCY = yes
 export sbl_uart_img_hs_SOC_DEPENDENCY = yes
