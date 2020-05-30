@@ -1201,9 +1201,15 @@ bool OSAL_swi_test()
 
 #ifndef BARE_METAL
 #include <ti/sysbios/knl/Clock.h>
+#ifndef QT_BUILD
 #define   OSAL_TASKP_TEST_ITERATION    (10U)
 #define   OSAL_TASKP_TEST_1MS          (1000U)
 #define   OSAL_TASKP_TEST_TICKS        (1000U)
+#else
+#define   OSAL_TASKP_TEST_ITERATION    (2U)
+#define   OSAL_TASKP_TEST_1MS          (10U)
+#define   OSAL_TASKP_TEST_TICKS        (10U)
+#endif
 bool OSAL_task_sleep_test(void)
 {
     int32_t i;
