@@ -81,7 +81,7 @@ PACKAGE_SRCS_COMMON += ../../board_diag_component.mk
 PACKAGE_SRCS_COMMON += ../../create_sd.bat ../../create_sd.sh
 
 SRCS_COMMON += led_test.c diag_common_cfg.c
-ifeq ($(SOC), $(filter $(SOC), am65xx))
+ifeq ($(SOC), $(filter $(SOC), am65xx, tpr12))
 SRCS_COMMON += GPIO_LED_config.c
 PACKAGE_SRCS_COMMON += $(BOARD)
 endif

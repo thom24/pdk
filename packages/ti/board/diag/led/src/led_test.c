@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2019 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2015-2020 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -41,12 +41,12 @@
  *  Operation: This test verifies by toggling all available general
  *             purpose LEDs.
  *
- *  Supported SoCs: AM335x, AM437x, AM571x, AM572x, K2G, AM65xx & J721E.
+ *  Supported SoCs: AM335x, AM437x, AM571x, AM572x, K2G, AM65xx, J721E & TPR12.
  *
  *  Supported Platforms: bbbAM335x, skAM335x, icev2AM335x, iceAMIC110,
  *                       evmAM437x, idkAM437x, skAM437x, evmAM571x, idkAM571x,
  *                       evmAM572x, idkAM572x, evmK2G, iceK2G, am65xx_evm,
- *                       am65xx_idk & j721e_evm.
+ *                       am65xx_idk, j721e_evm & tpr12_evm.
  */
 
 #include "led_test.h"
@@ -62,7 +62,7 @@
  *  \param    delayValue          [IN]   Delay count.
  *
  */
-#if (!(defined(AM65XX) || defined(SOC_J721E)))
+#if (!(defined(AM65XX) || defined(SOC_J721E) || defined(SOC_TPR12)))
 void BoardDiag_AppDelay(uint32_t delayVal)
 {
     uint32_t cnt = 0;
@@ -257,7 +257,7 @@ static int8_t led_run_test(void)
 #endif
                     }
                 }
-#if (!(defined(SOC_AM65XX) || defined(SOC_J721E)))
+#if (!(defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_TPR12)))
                 BoardDiag_AppDelay(5000000);
 #else
                 BOARD_delay(250000);

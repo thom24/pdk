@@ -58,6 +58,11 @@ extern "C" {
 /* UART LLD instance number for RCSS UART port */
 #define BOARD_RCSS_UART_INSTANCE                (3U)
 
+/* I2C instance as master for master/slave test example */
+#define BOARD_I2C_MASTER_INSTANCE              (0U)
+/* I2C instance as salve for master/slave test example */
+#define BOARD_I2C_SLAVE_INSTANCE               (0U)
+
 /* UART LLD instance number for primary UART port */
 #define BOARD_UART_INSTANCE                     (BOARD_MSS_UART_INSTANCE)
 

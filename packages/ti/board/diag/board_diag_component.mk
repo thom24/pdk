@@ -71,6 +71,7 @@ ifeq ($(board_diag_component_make_include), )
 board_diag_am65xx_CORELIST = mpu1_0 mcu1_0
 board_diag_j721e_BOARDLIST = j721e_evm
 board_diag_j721e_CORELIST = mpu1_0 mcu1_0
+board_diag_tpr12_CORELIST = mcu1_0
 
 ############################
 # Board diagnostic package
@@ -94,7 +95,11 @@ board_diag_EXAMPLE_LIST =
 # ARCH is used for diag binary folder name to align with existing platforms
 board_diag_LOCAL_BINPATH =
 
+ifeq ($(SOC),$(filter $(SOC), tpr12))
+board_diag_APPIMAGEGEN_CTRL = no
+else
 board_diag_APPIMAGEGEN_CTRL = yes
+endif
 
 # Board Diagnostic
 board_diag_COMP_LIST = board_diag
@@ -577,7 +582,7 @@ export board_diag_led_CORE_DEPENDENCY
 export board_diag_led_MAKEFILE
 board_diag_led_PKG_LIST = board_diag_led
 board_diag_led_INCLUDE = $(board_diag_led_PATH)
-board_diag_led_BOARDLIST = j721e_evm am65xx_evm am65xx_idk
+board_diag_led_BOARDLIST = j721e_evm am65xx_evm am65xx_idk tpr12_evm
 board_diag_led_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
 export board_diag_led_$(SOC)_CORELIST
 export board_diag_led_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
