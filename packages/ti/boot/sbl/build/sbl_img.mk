@@ -35,9 +35,6 @@ INCLUDE_EXTERNAL_INTERFACES = pdk
 
 # List all the components required by the application
 COMP_LIST_COMMON += board uart osal_nonos csl csl_init i2c sciclient$(HS_SUFFIX)
-ifeq ($(BUILD_HS),yes)
-  SBL_CFLAGS += -DBUILD_HS
-endif
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(SBL_CFLAGS)
 

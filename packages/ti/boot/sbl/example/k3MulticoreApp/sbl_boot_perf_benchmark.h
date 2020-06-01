@@ -30,7 +30,6 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <ti/drv/sciclient/src/sciclient_priv.h>
 #include <stdio.h>
 #include "sbl_profile.h"
 #include "sbl_soc_cfg.h"

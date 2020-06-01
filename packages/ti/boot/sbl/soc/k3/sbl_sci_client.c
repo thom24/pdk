@@ -67,7 +67,7 @@ uint32_t SBL_IsAuthReq(void)
 
     /* No auth possible, if valid SMPK/BMPK is not present */
     if ((dev_subtype == SBL_SYS_STATUS_DEV_SUBTYPE_FS) ||
-        (dev_type == SBL_SYS_STATUS_DEV_TYPE_GP) || 
+        (dev_type == SBL_SYS_STATUS_DEV_TYPE_GP) ||
         (dev_type == SBL_SYS_STATUS_DEV_TYPE_TEST))
     {
         retVal = SBL_NEVER_AUTH_APP;
@@ -85,40 +85,13 @@ void SBL_SciClientInit(void)
 
 #ifndef SBL_SKIP_SYSFW_INIT
     /* SYSFW board configurations */
-    Sciclient_BoardCfgPrms_t sblBoardCfgPrms =
-    {
-        .boardConfigLow = (uint32_t)gSciclient_boardCfgLow,
-        .boardConfigHigh = 0,
-        .boardConfigSize = SCICLIENT_BOARDCFG_SIZE_IN_BYTES,
-        .devGrp = SBL_DEVGRP
-    };
-
-    Sciclient_BoardCfgPrms_t sblBoardCfgPmPrms =
-    {
-        .boardConfigLow = (uint32_t)gSciclient_boardCfgLow_pm,
-        .boardConfigHigh = 0,
-        .boardConfigSize = SCICLIENT_BOARDCFG_PM_SIZE_IN_BYTES,
-        .devGrp = SBL_DEVGRP
-    };
-
-    Sciclient_BoardCfgPrms_t sblBoardCfgRmPrms =
-    {
-        .boardConfigLow = (uint32_t)gSciclient_boardCfgLow_rm,
-        .boardConfigHigh = 0,
-        .boardConfigSize = SCICLIENT_BOARDCFG_RM_SIZE_IN_BYTES,
-        .devGrp = SBL_DEVGRP
-    };
-
+    Sciclient_DefaultBoardCfgInfo_t boardCfgInfo;
+    Sciclient_BoardCfgPrms_t sblBoardCfgPrms;
+    Sciclient_BoardCfgPrms_t sblBoardCfgPmPrms;
+    Sciclient_BoardCfgPrms_t sblBoardCfgRmPrms;
 #ifndef SBL_SKIP_BRD_CFG_SEC
-    Sciclient_BoardCfgPrms_t sblBoardCfgSecPrms =
-    {
-        .boardConfigLow = (uint32_t)gSciclient_boardCfgLow_sec,
-        .boardConfigHigh = 0,
-        .boardConfigSize = SCICLIENT_BOARDCFG_SECURITY_SIZE_IN_BYTES,
-        .devGrp = SBL_DEVGRP
-    };
+    Sciclient_BoardCfgPrms_t sblBoardCfgSecPrms;
 #endif
-
     Sciclient_ConfigPrms_t        config =
     {
         SCICLIENT_SERVICE_OPERATION_MODE_POLLED,
@@ -135,8 +108,15 @@ void SBL_SciClientInit(void)
     }
 
 #ifndef SBL_SKIP_SYSFW_INIT
-
     SBL_ADD_PROFILE_POINT;
+
+    status = Sciclient_getDefaultBoardCfgInfo(&boardCfgInfo);
+    if (status != CSL_PASS)
+    {
+        SBL_log(SBL_LOG_ERR,"SYSFW get default board config...FAILED \n");
+        SblErrLoop(__FILE__, __LINE__);
+    }
+
     status = Sciclient_loadFirmware((const uint32_t *) sysfw_ptr);
     if (status != CSL_PASS)
     {
@@ -154,6 +134,10 @@ void SBL_SciClientInit(void)
 
 #ifndef SBL_SKIP_BRD_CFG_BOARD
     SBL_ADD_PROFILE_POINT;
+    sblBoardCfgPrms.boardConfigLow = (uint32_t)boardCfgInfo.boardCfgLow;
+    sblBoardCfgPrms.boardConfigHigh = 0;
+    sblBoardCfgPrms.boardConfigSize = boardCfgInfo.boardCfgLowSize;
+    sblBoardCfgPrms.devGrp = SBL_DEVGRP;
     status = Sciclient_boardCfg(&sblBoardCfgPrms);
     if (status != CSL_PASS)
     {
@@ -169,13 +153,17 @@ void SBL_SciClientInit(void)
         UART_stdioDeInit();
     }
     SBL_ADD_PROFILE_POINT;
+    sblBoardCfgPmPrms.boardConfigLow = (uint32_t)boardCfgInfo.boardCfgLowPm;
+    sblBoardCfgPmPrms.boardConfigHigh = 0;
+    sblBoardCfgPmPrms.boardConfigSize = boardCfgInfo.boardCfgLowPmSize;
+    sblBoardCfgPmPrms.devGrp = SBL_DEVGRP;
     status = Sciclient_boardCfgPm(&sblBoardCfgPmPrms);
     if (status != CSL_PASS)
     {
         SBL_log(SBL_LOG_ERR,"SYSFW board config pm...FAILED \n")
         SblErrLoop(__FILE__, __LINE__);
     }
-    
+
     if (SBL_LOG_LEVEL > SBL_LOG_NONE)
     {
         /* Re-init UART for logging */
@@ -191,6 +179,10 @@ void SBL_SciClientInit(void)
 
 #ifndef SBL_SKIP_BRD_CFG_RM
     SBL_ADD_PROFILE_POINT;
+    sblBoardCfgRmPrms.boardConfigLow = (uint32_t)boardCfgInfo.boardCfgLowRm;
+    sblBoardCfgRmPrms.boardConfigHigh = 0;
+    sblBoardCfgRmPrms.boardConfigSize = boardCfgInfo.boardCfgLowRmSize;
+    sblBoardCfgRmPrms.devGrp = SBL_DEVGRP;
     status = Sciclient_boardCfgRm(&sblBoardCfgRmPrms);
     if (status != CSL_PASS)
     {
@@ -201,6 +193,10 @@ void SBL_SciClientInit(void)
 
 #ifndef SBL_SKIP_BRD_CFG_SEC
     SBL_ADD_PROFILE_POINT;
+    sblBoardCfgSecPrms.boardConfigLow = (uint32_t)boardCfgInfo.boardCfgLowSec;
+    sblBoardCfgSecPrms.boardConfigHigh = 0;
+    sblBoardCfgSecPrms.boardConfigSize = boardCfgInfo.boardCfgLowSecSize;
+    sblBoardCfgSecPrms.devGrp = SBL_DEVGRP;
     status = Sciclient_boardCfgSec(&sblBoardCfgSecPrms);
     if (status != CSL_PASS)
     {
@@ -261,8 +257,8 @@ void SBL_SciClientInit(void)
 #endif
 #endif
 
-    
+
 #endif
-    
+
     SBL_ADD_PROFILE_POINT;
 }

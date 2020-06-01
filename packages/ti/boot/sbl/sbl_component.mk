@@ -362,7 +362,6 @@ export sbl_hyperflash_img_hs_SBL_IMAGEGEN = yes
 sbl_uart_img_COMP_LIST = sbl_uart_img
 sbl_uart_img_RELPATH = ti/boot/sbl/board/k3
 sbl_uart_img_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)/uart/bin
-sbl_uart_img_OBJPATH = $(DEST_ROOT)/sbl_uart_img/obj
 sbl_uart_img_PATH = $(PDK_SBL_COMP_PATH)/board/k3
 sbl_uart_img_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=uart SBL_USE_DMA=yes BUILD_HS=no
 export sbl_uart_img_MAKEFILE
@@ -383,7 +382,7 @@ export sbl_uart_img_$(SOC)_CORELIST
 sbl_uart_img_SBL_IMAGEGEN = yes
 export sbl_uart_img_SBL_IMAGEGEN
 
-# SBL HYPERFLASH Image - For HS build
+# SBL UART Image - For HS build
 export sbl_uart_img_hs_COMP_LIST = sbl_uart_img_hs
 sbl_uart_img_hs_RELPATH = ti/boot/sbl/board/k3
 sbl_uart_img_hs_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)_hs/uart/bin
@@ -688,7 +687,7 @@ endif
 # SBL Custom LIB
 sbl_lib_cust_COMP_LIST = sbl_lib_cust
 sbl_lib_cust_RELPATH = ti/boot/sbl
-export sbl_lib_cust_OBJPATH = $(DEST_ROOT)/sbl_lib_cust/obj
+export sbl_lib_cust_OBJPATH = ti/boot/sbl/cust
 sbl_lib_cust_LIBNAME = sbl_lib_cust
 sbl_lib_cust_PATH = $(PDK_SBL_COMP_PATH)
 sbl_lib_cust_LIBNAME = sbl_lib_cust

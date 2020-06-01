@@ -221,39 +221,12 @@ int8_t UFP_sciclientInit(void *sysfw)
     {
         SCICLIENT_SERVICE_OPERATION_MODE_POLLED,
     };
-
     /* SYSFW board configurations */
-    Sciclient_BoardCfgPrms_t sblBoardCfgPrms =
-    {
-        .boardConfigLow = (uint32_t)gSciclient_boardCfgLow,
-        .boardConfigHigh = 0,
-        .boardConfigSize = SCICLIENT_BOARDCFG_SIZE_IN_BYTES,
-        .devGrp = DEVGRP_ALL
-    };
-
-    Sciclient_BoardCfgPrms_t sblBoardCfgPmPrms =
-    {
-        .boardConfigLow = (uint32_t)gSciclient_boardCfgLow_pm,
-        .boardConfigHigh = 0,
-        .boardConfigSize = SCICLIENT_BOARDCFG_PM_SIZE_IN_BYTES,
-        .devGrp = DEVGRP_ALL
-    };
-
-    Sciclient_BoardCfgPrms_t sblBoardCfgRmPrms =
-    {
-        .boardConfigLow = (uint32_t)gSciclient_boardCfgLow_rm,
-        .boardConfigHigh = 0,
-        .boardConfigSize = SCICLIENT_BOARDCFG_RM_SIZE_IN_BYTES,
-        .devGrp = DEVGRP_ALL
-    };
-
-    Sciclient_BoardCfgPrms_t sblBoardCfgSecPrms =
-    {
-        .boardConfigLow = (uint32_t)gSciclient_boardCfgLow_sec,
-        .boardConfigHigh = 0,
-        .boardConfigSize = SCICLIENT_BOARDCFG_SECURITY_SIZE_IN_BYTES,
-        .devGrp = DEVGRP_ALL
-    };
+    Sciclient_DefaultBoardCfgInfo_t boardCfgInfo;
+    Sciclient_BoardCfgPrms_t sblBoardCfgPrms;
+    Sciclient_BoardCfgPrms_t sblBoardCfgPmPrms;
+    Sciclient_BoardCfgPrms_t sblBoardCfgRmPrms;
+    Sciclient_BoardCfgPrms_t sblBoardCfgSecPrms;
 
     UFP_isSysfwEnc((uint8_t *) sysfw);
 
@@ -269,24 +242,46 @@ int8_t UFP_sciclientInit(void *sysfw)
         return (-1);
     }
 
+    status = Sciclient_getDefaultBoardCfgInfo(&boardCfgInfo);
+    if (status != CSL_PASS)
+    {
+        return (-1);
+    }
+
+    sblBoardCfgPrms.boardConfigLow = (uint32_t)boardCfgInfo.boardCfgLow;
+    sblBoardCfgPrms.boardConfigHigh = 0;
+    sblBoardCfgPrms.boardConfigSize = boardCfgInfo.boardCfgLowSize;
+    sblBoardCfgPrms.devGrp = DEVGRP_ALL;
     status = Sciclient_boardCfg(&sblBoardCfgPrms);
     if (status != CSL_PASS)
     {
         return (-1);
     }
 
+    sblBoardCfgPmPrms.boardConfigLow = (uint32_t)boardCfgInfo.boardCfgLowPm;
+    sblBoardCfgPmPrms.boardConfigHigh = 0;
+    sblBoardCfgPmPrms.boardConfigSize = boardCfgInfo.boardCfgLowPmSize;
+    sblBoardCfgPmPrms.devGrp = DEVGRP_ALL;
     status = Sciclient_boardCfgPm(&sblBoardCfgPmPrms);
     if (status != CSL_PASS)
     {
         return (-1);
     }
 
+    sblBoardCfgRmPrms.boardConfigLow = (uint32_t)boardCfgInfo.boardCfgLowRm;
+    sblBoardCfgRmPrms.boardConfigHigh = 0;
+    sblBoardCfgRmPrms.boardConfigSize = boardCfgInfo.boardCfgLowRmSize;
+    sblBoardCfgRmPrms.devGrp = DEVGRP_ALL;
     status = Sciclient_boardCfgRm(&sblBoardCfgRmPrms);
     if (status != CSL_PASS)
     {
         return (-1);
     }
 
+    sblBoardCfgSecPrms.boardConfigLow = (uint32_t)boardCfgInfo.boardCfgLowSec;
+    sblBoardCfgSecPrms.boardConfigHigh = 0;
+    sblBoardCfgSecPrms.boardConfigSize = boardCfgInfo.boardCfgLowSecSize;
+    sblBoardCfgSecPrms.devGrp = DEVGRP_ALL;
     status = Sciclient_boardCfgSec(&sblBoardCfgSecPrms);
     if (status != CSL_PASS)
     {

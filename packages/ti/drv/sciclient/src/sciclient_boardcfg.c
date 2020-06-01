@@ -157,7 +157,7 @@ int32_t Sciclient_boardCfgRm(const Sciclient_BoardCfgPrms_t * pInPrms)
         .tisci_boardcfg_rm_size  = (uint16_t) SCICLIENT_BOARDCFG_RM_SIZE_IN_BYTES,
         .tisci_boardcfg_rm_devgrp = (uint8_t) DEVGRP_ALL
     };
-    
+
     /* NULL pInPrms will retain default values */
     if (pInPrms != NULL)
     {
@@ -210,7 +210,7 @@ int32_t Sciclient_boardCfgSec(const Sciclient_BoardCfgPrms_t * pInPrms)
 
     Sciclient_ReqPrm_t reqParam = {
         .messageType    = (uint16_t) TISCI_MSG_BOARD_CONFIG_SECURITY,
-        .flags          = (uint32_t) TISCI_MSG_FLAG_AOP, 
+        .flags          = (uint32_t) TISCI_MSG_FLAG_AOP,
         .pReqPayload    = (const uint8_t *) &request,
         .reqPayloadSize = (uint32_t) sizeof (request),
         .timeout        = (uint32_t) SCICLIENT_SERVICE_WAIT_FOREVER
@@ -230,5 +230,28 @@ int32_t Sciclient_boardCfgSec(const Sciclient_BoardCfgPrms_t * pInPrms)
     return retVal;
 }
 
+int32_t Sciclient_getDefaultBoardCfgInfo(Sciclient_DefaultBoardCfgInfo_t *pBoardCfgInfo)
+{
+    int32_t retVal = CSL_PASS;
+
+    if(NULL == pBoardCfgInfo)
+    {
+        retVal = CSL_EFAIL;
+    }
+
+    if(CSL_PASS == retVal)
+    {
+        pBoardCfgInfo->boardCfgLow          = &gSciclient_boardCfgLow[0U];
+        pBoardCfgInfo->boardCfgLowRm        = &gSciclient_boardCfgLow_rm[0U];
+        pBoardCfgInfo->boardCfgLowSec       = &gSciclient_boardCfgLow_sec[0U];
+        pBoardCfgInfo->boardCfgLowPm        = &gSciclient_boardCfgLow_pm[0U];
+        pBoardCfgInfo->boardCfgLowSize      = SCICLIENT_BOARDCFG_SIZE_IN_BYTES;
+        pBoardCfgInfo->boardCfgLowRmSize    = SCICLIENT_BOARDCFG_RM_SIZE_IN_BYTES;
+        pBoardCfgInfo->boardCfgLowSecSize   = SCICLIENT_BOARDCFG_SECURITY_SIZE_IN_BYTES;
+        pBoardCfgInfo->boardCfgLowPmSize    = SCICLIENT_BOARDCFG_PM_SIZE_IN_BYTES;
+    }
+
+    return retVal;
+}
 #endif
 

@@ -51,8 +51,6 @@ evmAM572x_UTILS = uartAppLoader
 idkAM574x_UTILS = uartAppLoader uniflash/target
 evmK2G_UTILS = uartAppLoader uniflash/target
 iceK2G_UTILS = uartAppLoader uniflash/target
-am65xx_evm_UTILS = uniflash/target
-am65xx_idk_UTILS = uniflash/target
 evmOMAPL137_UTILS = uartAppLoader
 lcdkOMAPL138_UTILS = uartAppLoader
 

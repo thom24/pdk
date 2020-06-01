@@ -421,6 +421,29 @@ typedef struct
     /**< [IN] Size of the response payload(in bytes) */
 } Sciclient_RespPrm_t;
 
+/**
+ *  \brief Input parameters for #Sciclient_service function.
+ */
+typedef struct
+{
+    const uint32_t     *boardCfgLow;
+    /**< [OUT] Pointer to default board config */
+    const uint32_t     *boardCfgLowRm;
+    /**< [OUT] Pointer to default board config for RM */
+    const uint32_t     *boardCfgLowSec;
+    /**< [OUT] Pointer to default board config for Security */
+    const uint32_t     *boardCfgLowPm;
+    /**< [OUT] Pointer to default board config for PM */
+    uint32_t            boardCfgLowSize;
+    /**< [OUT] Size in bytes for default board config */
+    uint32_t            boardCfgLowRmSize;
+    /**< [OUT] Size in bytes for default board config for RM */
+    uint32_t            boardCfgLowSecSize;
+    /**< [OUT] Size in bytes for default board config for Security */
+    uint32_t            boardCfgLowPmSize;
+    /**< [OUT] Size in bytes for default board config for PM */
+} Sciclient_DefaultBoardCfgInfo_t;
+
 /* ========================================================================== */
 /*                          Function Declarations                             */
 /* ========================================================================== */
@@ -514,6 +537,13 @@ int32_t Sciclient_deinit(void);
  */
 int32_t Sciclient_abiCheck(void);
 
+/**
+ *  \brief API to get the default board config info.
+ *
+ *  \return CSL_PASS on success, else failure
+ */
+int32_t Sciclient_getDefaultBoardCfgInfo(Sciclient_DefaultBoardCfgInfo_t *pBoardCfgInfo);
+
 /*
  * Structure Init functions
  *
@@ -555,28 +585,28 @@ static inline void Sciclient_configPrmsInit(Sciclient_ConfigPrms_t *pCfgPrms)
  * \defgroup TISCI Texas Instruments System Controller Interface
  *
  *  @{
- *  
+ *
  * ##Power and Clock Management Features
  * Public APIs are provided to:
- * 
+ *
  * - Enable and release a module, such as a UART or a core
  * - This configures both power and clock details for the module and keeps track of its usage.
  * - Configure the lowest/deepest low-power (sleep) mode allowed as well as EMIF details to enable self-refresh
  * - Query thermal sensors
- * 
+ *
  * ##Resource Management Features
  * Public APIs are provided to:
- * 
+ *
  * - Manage DMA/Navigator Resources
  * - UDMAP
  * - Ring Accelerator
  * - PSI-L
  * - Proxy
  * - Program interrupts (interrupt aggregators and routers) both at SoC and subsystem (DMA/Navigator) level
- * 
+ *
  * ##Security Features
  * Public APIs are provided to directly configure these features following polices and root of trust:
- * 
+ *
  * - ISC
  * - Present at originator/master interfaces to control credentials from master
  * - Firewall

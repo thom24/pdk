@@ -38,7 +38,6 @@
 #include "sbl_profile.h"
 #include <ti/board/board.h>
 #include <ti/drv/sciclient/sciclient.h>
-#include <ti/drv/sciclient/src/sciclient_priv.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -96,7 +95,7 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes);
 uint32_t SBL_IsAuthReq(void);
 
 extern const struct tisci_boardcfg_pm gBoardConfigLow_pm;
-  
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

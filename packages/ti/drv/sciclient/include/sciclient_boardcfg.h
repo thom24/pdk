@@ -57,19 +57,19 @@ extern "C" {
  */
 typedef struct
 {
-    const uint32_t boardConfigLow;
-    /**< Low 32-bits of physical pointer to \#tisci_boardConfig / 
+    uint32_t boardConfigLow;
+    /**< Low 32-bits of physical pointer to \#tisci_boardConfig /
     \#tisci_boardcfg_pm / \#local_rm_boardcfg / \#tisci_boardcfg_sec .
      struct.
      */
-    const uint32_t boardConfigHigh;
-    /**< High 32-bits of physical pointer to \#tisci_boardConfig / 
+    uint32_t boardConfigHigh;
+    /**< High 32-bits of physical pointer to \#tisci_boardConfig /
     \#tisci_boardcfg_pm / \#local_rm_boardcfg / \#tisci_boardcfg_sec .
      struct.
      */
-    const uint16_t boardConfigSize;
+    uint16_t boardConfigSize;
     /**< (uint16_t) sizeof(<board configuration structure>) */
-    const uint8_t  devGrp;
+    uint8_t  devGrp;
     /**< SoC defined SYSFW devgrp. Example: #DEVGRP_ALL
      */
 } Sciclient_BoardCfgPrms_t;
@@ -80,64 +80,64 @@ typedef struct
 /**
  *  \brief  One time board configuration to be done from R5.
  *
- *          User needs to define a section ".boardcfg_data" in the 
- *          linker file for the default configuration, which needs to be present 
- *          in OCMRAM . If user provides custom board_cfg, then the data must 
+ *          User needs to define a section ".boardcfg_data" in the
+ *          linker file for the default configuration, which needs to be present
+ *          in OCMRAM . If user provides custom board_cfg, then the data must
  *          be present on OCMRAM.
  *
  *  \param pInPrms        [IN]  Pointer to #Sciclient_BoardCfgPrms_t . NULL
  *                          results in default config.
  *
  *  \return CSL_PASS on success, else failure .
- *   
+ *
  *
  */
 int32_t Sciclient_boardCfg(const Sciclient_BoardCfgPrms_t * pInPrms);
 
 /**
  *  \brief  One time board configuration to be done from R5 for PM.
- *          User needs to define a section ".boardcfg_data" in the 
- *          linker file for the default configuration, which needs to be present 
- *          in OCMRAM . If user provides custom board_cfg, then the data must 
+ *          User needs to define a section ".boardcfg_data" in the
+ *          linker file for the default configuration, which needs to be present
+ *          in OCMRAM . If user provides custom board_cfg, then the data must
  *          be present on OCMRAM.
  *
  *  \param pInPrms        [IN]  Pointer to \#Sciclient_BoardCfgPrms_t . NULL
  *                          results in default config.
  *
  *  \return CSL_PASS on success, else failure .
- *          
+ *
  *
  */
 int32_t Sciclient_boardCfgPm(const Sciclient_BoardCfgPrms_t * pInPrms);
 
 /**
  *  \brief  One time board configuration to be done from R5 for RM .
- *          User needs to define a section ".boardcfg_data" in the 
- *          linker file for the default configuration, which needs to be present 
- *          in OCMRAM . If user provides custom board_cfg, then the data must 
+ *          User needs to define a section ".boardcfg_data" in the
+ *          linker file for the default configuration, which needs to be present
+ *          in OCMRAM . If user provides custom board_cfg, then the data must
  *          be present on OCMRAM.
  *
  *  \param pInPrms        [IN]  Pointer to \#Sciclient_BoardCfgPrms_t . NULL
  *                          results in default config.
  *
  *  \return CSL_PASS on success, else failure .
- *          
+ *
  *
  */
 int32_t Sciclient_boardCfgRm(const Sciclient_BoardCfgPrms_t * pInPrms);
 
 /**
  *  \brief  One time board configuration to be done from R5 for SECURITY
- *          User needs to define a section ".boardcfg_data" in the 
- *          linker file for the default configuration, which needs to be present 
- *          in OCMRAM . If user provides custom board_cfg, then the data must 
+ *          User needs to define a section ".boardcfg_data" in the
+ *          linker file for the default configuration, which needs to be present
+ *          in OCMRAM . If user provides custom board_cfg, then the data must
  *          be present on OCMRAM.
  *
  *  \param pInPrms        [IN]  Pointer to \#Sciclient_BoardCfgPrms_t . NULL
  *                          results in default config.
  *
  *  \return CSL_PASS on success, else failure .
- *          
+ *
  *
  */
 int32_t Sciclient_boardCfgSec(const Sciclient_BoardCfgPrms_t * pInPrms);
