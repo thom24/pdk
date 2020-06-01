@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright (C) 2017-2019 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2017-2020 Texas Instruments Incorporated - http://www.ti.com/
  */
 /*
  *  Redistribution and use in source and binary forms, with or without
@@ -83,7 +83,7 @@ void displayVersion( void )
 {
 	cout <<"\n----------------------------------------------------------------------------";
 	cout <<"\nProcessorSDKSerialFlash CLI Tool";
-	cout <<"\nCopyright (C) 2017-2019 Texas Instruments Incorporated - http://www.ti.com/";
+	cout <<"\nCopyright (C) 2017-2020 Texas Instruments Incorporated - http://www.ti.com/";
 	cout <<"\nVersion " <<VERSION;
 	cout <<"\n----------------------------------------------------------------------------";
 }

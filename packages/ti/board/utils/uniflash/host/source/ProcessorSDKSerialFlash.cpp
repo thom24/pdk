@@ -4,7 +4,7 @@
  * \brief Command Line Application for File Transfer over UART
  */
 /*
-* Copyright (C) 2017-2019 Texas Instruments Incorporated - http://www.ti.com/
+* Copyright (C) 2017-2020 Texas Instruments Incorporated - http://www.ti.com/
 */
 /*
 *  Redistribution and use in source and binary forms, with or without
@@ -117,7 +117,7 @@ int SerialPort::connect( wchar_t* device, unsigned int baudrate ) {
 	wchar_t append_str[20] = L"\\\\.\\";
 	wchar_t* port_name;
 	DCB dcb = {0};
-	COMMTIMEOUTS timeouts = {0};
+	COMMTIMEOUTS timeout = {0};
     port_name = wcscat(append_str, device);
 
 	if(*device == NULL)
@@ -188,6 +188,26 @@ int SerialPort::connect( wchar_t* device, unsigned int baudrate ) {
 	else {
 		clear();
 	}
+
+    if (error == 0)
+    {
+        /* Clear the timeout values to default.
+           Some of the serial console applications change the default timeout values for COM port
+           which causes failures for Uniflash operation.
+          */
+#ifdef DEBUG
+        GetCommTimeouts(serialPortHandle,&timeout);
+        cout <<"\nTimeout Values:\n" <<timeout.ReadIntervalTimeout <<"\t"  <<timeout.ReadTotalTimeoutConstant <<"\t"  <<timeout.ReadTotalTimeoutMultiplier <<"\t"  <<timeout.WriteTotalTimeoutConstant <<"\t" <<timeout.WriteTotalTimeoutMultiplier <<"\n";
+#endif
+        timeout.ReadIntervalTimeout         = 0;
+        timeout.ReadTotalTimeoutConstant    = 0;
+        timeout.ReadTotalTimeoutMultiplier  = 0;
+        timeout.WriteTotalTimeoutConstant   = 0;
+        timeout.WriteTotalTimeoutMultiplier = 0;
+
+        SetCommTimeouts(serialPortHandle, &timeout);
+    }
+
 	return error;
 }
 
