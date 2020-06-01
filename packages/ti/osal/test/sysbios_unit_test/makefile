@@ -7,6 +7,8 @@ APP_NAME = OSAL_TestApp
 # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
 LOCAL_APP_NAME =  OSAL_$(BOARD)_$(CORE)TestApp
 
+PACKAGE_SRCS_COMMON = . ../src
+
 ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 tpr12))
 SRCDIR = . ../src ../
 INCDIR = . ../src ../
@@ -93,17 +95,8 @@ endif
 endif
 
 ifeq ($(SOC),$(filter $(SOC), tpr12))
-ifeq ($(CORE),$(filter $(CORE), mcu1_0))
-# Enable XDC build for application by providing XDC CFG File per core
-XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/tpr12/sysbios_r5f.cfg
-EXTERNAL_LNKCMD_FILE = $(PDK_INSTALL_PATH)/ti/build/tpr12/linker_r5.lds
-endif
-
-ifeq ($(CORE),$(filter $(CORE), c66xdsp_1))
-# Enable XDC build for application by providing XDC CFG File per core
-XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/tpr12/sysbios_c66.cfg
-EXTERNAL_LNKCMD_FILE = $(PDK_INSTALL_PATH)/ti/build/tpr12/linker_c66.lds
-endif
+  XDC_CFG_FILE_$(CORE) = ../$(SOC)/sysbios_$(ISA).cfg
+  PACKAGE_SRCS_COMMON += ../$(SOC)
 endif
 
 ifneq ($(SOC),$(filter $(SOC), tpr12))
@@ -114,7 +107,6 @@ ifeq ($(ISA),$(filter $(ISA), r5f))
 endif
 endif
 
-PACKAGE_SRCS_COMMON = . ../src
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_OSAL_UT)
 CFLAGS_LOCAL_COMMON += -DENABLE_TIMER_TEST
 

@@ -72,7 +72,10 @@
  ************************** Internal functions ************************
  **********************************************************************/
 #define TWO_TIMER_INTERRUPT_TEST 0
-//#define QT_BUILD
+#if defined(SOC_TPR12)
+#define QT_BUILD
+#define ENABLE_DEBUG_LOG_TEST	1
+#endif
 
 #include <ti/csl/soc.h>
 
@@ -1199,6 +1202,23 @@ bool OSAL_swi_test()
 }
 #endif
 
+#if ENABLE_DEBUG_LOG_TEST
+bool OSAL_log_test()
+{
+    bool        retVal = true;
+
+    OSAL_log("BegugP Log test starts!\n");
+
+    DebugP_log0 ("debugP_log0 run successfully\n");
+    DebugP_log1 ("debugP_log1 run with %u argument uccessfully\n", 1U);
+    DebugP_log2 ("debugP_log2 run with %u arguments (2, %d) successfully\n", 2U, 2);
+    DebugP_log3 ("debugP_log3 run with %u arguments (3, %d, %d) successfully\n", 3U, 3, 3);
+    DebugP_log4 ("debugP_log4 run with %u arguments (4, %d, %d, 0x%x) successfully\n", 4U, 4, 4, 64);
+
+    return (retVal);
+}
+#endif
+
 #ifndef BARE_METAL
 #include <ti/sysbios/knl/Clock.h>
 #ifndef QT_BUILD
@@ -1419,6 +1439,18 @@ void osal_test(UArg arg0, UArg arg1)
     else
     {
         OSAL_log("\n Queue tests have failed. \n");
+        testFail = true;
+    }
+#endif
+
+#if ENABLE_DEBUG_LOG_TEST
+    if(OSAL_log_test() == true)
+    {
+        OSAL_log("\n DebugP Log tests have passed. \n");
+    }
+    else
+    {
+        OSAL_log("\n DebugP Log tests have failed. \n");
         testFail = true;
     }
 #endif
