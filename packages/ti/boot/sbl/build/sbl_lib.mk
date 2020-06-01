@@ -68,15 +68,9 @@ ifeq ($(SOC), am64x)
   SBL_CFLAGS += -DSBL_SCRATCH_MEM_START=0x70100000
   SBL_CFLAGS += -DSBL_SCRATCH_MEM_SIZE=0xF0000
 else
-  ifeq ($(SOC), j721e)
-    # Workaround for J721E HS to auth. signed images in MSMC, until image auth. in DDR works
-    SBL_CFLAGS += -DSBL_SCRATCH_MEM_START=0x70100000
-    SBL_CFLAGS += -DSBL_SCRATCH_MEM_SIZE=0x700000
-  else
-    SBL_CFLAGS += -DSBL_SCRATCH_MEM_START=0xB8000000
-    SBL_CFLAGS += -DSBL_SCRATCH_MEM_SIZE=0x4000000
-  endif
-endif
+  SBL_CFLAGS += -DSBL_SCRATCH_MEM_START=0xB8000000
+  SBL_CFLAGS += -DSBL_SCRATCH_MEM_SIZE=0x4000000
+endif # ifeq ($(SOC), am64x)
 
 # Check for custom flags
 ifeq ($(BOOTMODE), cust)
