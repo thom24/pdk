@@ -139,15 +139,16 @@ void C66x_intrConfig(void)
 
     /* src_index 0 for TIMER0 is intr_pend signal */
     irqSetReq.src_index = 0;
-    irqSetReq.dst_id = TISCI_DEV_C66SS0_CORE0;
 
     /* On C66x builds we define OS timer tick in the configuration file to
      * trigger event #21 or #20 for C66x_1 or C66x_2, respectively.
      */
 #if defined (BUILD_C66X_1)
     irqSetReq.dst_host_irq = 21;
+    irqSetReq.dst_id = TISCI_DEV_C66SS0_CORE0;
 #elif defined (BUILD_C66X_2)
     irqSetReq.dst_host_irq = 20;
+    irqSetReq.dst_id = TISCI_DEV_C66SS1_CORE0;
 #endif
 
     ret = Sciclient_rmIrqSet(&irqSetReq, &irqSetResp, SCICLIENT_SERVICE_WAIT_FOREVER);
