@@ -320,6 +320,25 @@ const Sciclient_MapStruct_t gSciclientMap[SCICLIENT_CONTEXT_MAX_NUM] =
         *    TODO: Interrupt usage from DMSC is still not clear. */
         0U
 
+    },
+
+    /* TBD: This host hasn't officially been defined by SYSFW yet so
+     * simply copying the existing M4 non-secure context */
+    {
+        /** Context **/
+        SCICLIENT_NON_SECURE_CONTEXT,
+
+        /** CPU ID of the A53/A72/R5F/DSP */
+        TISCI_HOST_ID_M4_0,
+
+        /** Thread ID of the low priority thread(write) allowed for the CPU */
+        TISCI_SEC_PROXY_M4_0_WRITE_LOW_PRIORITY_THREAD_ID,
+
+        /** Thread ID of the response thread(read) available for the CPU */
+        TISCI_SEC_PROXY_M4_0_READ_RESPONSE_THREAD_ID,
+
+        /** Notification Interrupt Number */
+        0
     }
 };
 

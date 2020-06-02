@@ -96,25 +96,23 @@ extern "C" {
 #define SCICLIENT_CONTEXT_A53_NONSEC_1                 (6U)
 /** a53(Non Secure): Cortex A53 context 3 */
 #define SCICLIENT_CONTEXT_A53_NONSEC_2                 (7U)
-/** a53(Non Secure): Cortex A53 context 4 */
-#define SCICLIENT_CONTEXT_A53_NONSEC_3                 (8U)
 /** M4 (Non Secure): Cortex M4 context 1 */
-#define SCICLIENT_CONTEXT_M4_NONSEC_0                  (9U)
+#define SCICLIENT_CONTEXT_M4_NONSEC_0                  (8U)
 /** r5(Secure): Cortex R5 Context 0 */
-#define SCICLIENT_CONTEXT_R5_1_SEC_0                   (10U)
+#define SCICLIENT_CONTEXT_R5_1_SEC_0                   (9U)
 /** r5(Non Secure): Cortex R5 Context 1 */
-#define SCICLIENT_CONTEXT_R5_1_NONSEC_0                (11U)
+#define SCICLIENT_CONTEXT_R5_1_NONSEC_0                (10U)
 /** r5(Secure): Cortex R5 Context 2 */
-#define SCICLIENT_CONTEXT_R5_1_SEC_1                   (12U)
+#define SCICLIENT_CONTEXT_R5_1_SEC_1                   (11U)
 /** r5(Non Secure): Cortex R5 Context 3 */
-#define SCICLIENT_CONTEXT_R5_1_NONSEC_1                (13U)
+#define SCICLIENT_CONTEXT_R5_1_NONSEC_1                (12U)
 /** ICSSG (Non Secure) : ICSSG Non Secure Context */
-#define SCICLIENT_CONTEXT_ICSSG_NONSEC_0               (14U)
+#define SCICLIENT_CONTEXT_ICSSG_NONSEC_0               (13U)
 /** M4 (Secure): Cortex M4 context 1 */
-#define SCICLIENT_CONTEXT_M4_SEC_0                     (15U) /* TBD */
+#define SCICLIENT_CONTEXT_M4_SEC_0                     (14U) /* TBD */
 
 /** Total number of possible contexts for application. */
-#define SCICLIENT_CONTEXT_MAX_NUM                      (16U)
+#define SCICLIENT_CONTEXT_MAX_NUM                      (15U)
 /* @} */
 
 /**
