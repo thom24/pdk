@@ -60,18 +60,20 @@ EXTERNAL_INTERFACES =
 XDC_CFG_FILE_mpu1_0 =
 XDC_CFG_FILE_mcu1_0 =
 
+UNIFLASH_BASE_DIR=$(PDK_BOARD_UTILS_COMP_PATH)/uniflash/target
+
 # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
 LOCAL_APP_NAME = $(UNIFLASH)_$(BOARD)_flash_programmer
 
-SRCDIR = ../src ./$(BOARD)
-INCDIR = ../../../../../board ../src ../include ../../../../src/$(BOARD)/include ../../../../src/$(BOARD) ../../../../src/flash ../../../../../csl
+SRCDIR = $(UNIFLASH_BASE_DIR)/src
+INCDIR = $(PDK_BOARD_COMP_PATH) $(UNIFLASH_BASE_DIR)/src $(UNIFLASH_BASE_DIR)/include $(PDK_BOARD_COMP_PATH)/src/$(BOARD)/include $(PDK_BOARD_COMP_PATH)/src/$(BOARD) $(PDK_BOARD_COMP_PATH)/src/flash $(PDK_CSL_COMP_PATH)
 
 ifeq ($(BOARD), $(filter $(BOARD), j721e_evm am65xx_evm am65xx_idk))
-  SRCDIR += ../soc/k3 ../src/ospi ../src/qspi ../src/hyperflash ../src/emmc ../../../../diag/common/$(SOC)
-  INCDIR += ../soc/k3 ../src/ospi ../src/qspi ../src/hyperflash ../src/emmc ../../../../diag/common/$(SOC)
+  SRCDIR += $(UNIFLASH_BASE_DIR)/soc/k3 $(UNIFLASH_BASE_DIR)/src/ospi $(UNIFLASH_BASE_DIR)/src/qspi $(UNIFLASH_BASE_DIR)/src/hyperflash $(UNIFLASH_BASE_DIR)/src/emmc $(PDK_BOARD_COMP_PATH)/diag/common/$(SOC)
+  INCDIR += $(UNIFLASH_BASE_DIR)/soc/k3 $(UNIFLASH_BASE_DIR)/src/ospi $(UNIFLASH_BASE_DIR)/src/qspi $(UNIFLASH_BASE_DIR)/src/hyperflash $(UNIFLASH_BASE_DIR)/src/emmc $(PDK_BOARD_COMP_PATH)/diag/common/$(SOC)
   ifeq ($(BOARD), $(filter $(BOARD), am65xx_evm am65xx_idk))
-    SRCDIR += ../../../../diag/common/am65xx
-    INCDIR += ../../../../diag/common/am65xx
+    SRCDIR += $(PDK_BOARD_COMP_PATH)/diag/common/am65xx
+    INCDIR += $(PDK_BOARD_COMP_PATH)/diag/common/am65xx
   endif
 endif
 
@@ -87,22 +89,28 @@ endif
 COMP_LIST_COMMON += sciclient$(HS_SUFFIX)
 
 # Common source files and CFLAGS across all platforms and cores
-PACKAGE_SRCS_COMMON = ../../board ../../build ../../include ../../src ../../soc/soc.h
-PACKAGE_SRCS_COMMON += ../../../host
-PACKAGE_SRCS_COMMON += ../../../../board_utils_component.mk
-ifeq ($(BOARD), $(filter $(BOARD), j721e_evm am65xx_evm am65xx_idk))
-PACKAGE_SRCS_COMMON += ../../soc/k3
+ifeq ($(BUILD_HS),yes)
+  # Already packaged in non HS build. Relative paths are different. So better to skip
+  PACKAGE_SRCS_COMMON =
+else
+  PACKAGE_SRCS_COMMON = ../../board ../../build ../../include ../../src ../../soc/soc.h
+  PACKAGE_SRCS_COMMON += ../../../host
+  PACKAGE_SRCS_COMMON += ../../../../board_utils_component.mk
+  ifeq ($(BOARD), $(filter $(BOARD), j721e_evm am65xx_evm am65xx_idk))
+  PACKAGE_SRCS_COMMON += ../../soc/k3
+  endif
+  PACKAGE_SRCS_COMMON = ../../target ../../host ../../../board_utils_component.mk
 endif
 
 SRCS_COMMON = uart_main.c xmodem.c soc.c
 
 ifeq ($(BOARD), $(filter $(BOARD), j721e_evm))
 SRCS_COMMON += ospi.c emmc.c qspi.c hyperflash.c
-EXTERNAL_LNKCMD_FILE_LOCAL = ../soc/k3/linker_j7.cmd
+EXTERNAL_LNKCMD_FILE_LOCAL = $(UNIFLASH_BASE_DIR)/soc/k3/linker_j7.cmd
 endif
 ifeq ($(BOARD), $(filter $(BOARD), am65xx_evm am65xx_idk))
 SRCS_COMMON += ospi.c emmc.c
-EXTERNAL_LNKCMD_FILE_LOCAL = ../soc/k3/linker.cmd
+EXTERNAL_LNKCMD_FILE_LOCAL = $(UNIFLASH_BASE_DIR)/soc/k3/linker.cmd
 endif
 
 ifeq ($(NOJTAG), yes)
