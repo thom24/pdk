@@ -186,9 +186,8 @@ const CSL_ArmR5MpuRegionCfg gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         .cachePolicy      = CSL_ARM_R5_CACHE_POLICY_NON_CACHEABLE,
         .memAttr          = 0U,
     },
-#if defined(SOC_J721E) || defined(SOC_J7200)
     {
-        /* Region 2 configuration: 1 MB OCMS RAM */
+        /* Region 2 configuration: 1 MB OCMS RAM - Covers RAM sizes for multiple SoCs */
         .regionId         = 2U,
         .enable           = 1U,
         .baseAddr         = 0x41C00000,
@@ -201,22 +200,6 @@ const CSL_ArmR5MpuRegionCfg gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         .cachePolicy      = CSL_ARM_R5_MEM_ATTR_CACHED_WT_NO_WA,
         .memAttr          = 0U,
     },
-#else
-    {
-        /* Region 2 configuration: 512 KB OCMS RAM */
-        .regionId         = 2U,
-        .enable           = 1U,
-        .baseAddr         = 0x41C00000,
-        .size             = CSL_ARM_R5_MPU_REGION_SIZE_512KB,
-        .subRegionEnable  = CSL_ARM_R5_MPU_SUB_REGION_ENABLE_ALL,
-        .exeNeverControl  = 0U,
-        .accessPermission = CSL_ARM_R5_ACC_PERM_PRIV_USR_RD_WR,
-        .shareable        = 0U,
-        .cacheable        = (uint32_t)TRUE,
-        .cachePolicy      = CSL_ARM_R5_MEM_ATTR_CACHED_WT_NO_WA,
-        .memAttr          = 0U,
-    },
-#endif
     {
         /* Region 3 configuration: 2 MB MCMS3 RAM */
         .regionId         = 3U,
