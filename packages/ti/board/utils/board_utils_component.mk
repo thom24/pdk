@@ -125,8 +125,14 @@ export board_utils_uart_flash_programmer_SBL_IMAGEGEN
 board_utils_uart_flash_programmer_hs_COMP_LIST = board_utils_uart_flash_programmer_hs
 board_utils_uart_flash_programmer_hs_RELPATH = ti/board/utils/uniflash/target/build
 board_utils_uart_flash_programmer_hs_CUSTOM_BINPATH = $(PDK_BOARD_UTILS_COMP_PATH)/uniflash/target/bin/$(BOARD)_hs
-board_utils_uart_flash_programmer_hs_PATH = $(PDK_BOARD_UTILS_COMP_PATH)/uniflash/target/build
-board_utils_uart_flash_programmer_hs_MAKEFILE = -fuart_make.mk BUILD_HS=yes
+#Note: The below variable is purposefully set to build folder - different than
+#non-hs app.
+#The APPNAME or app -C directory (_PATH variable) should be unique as the complier
+#creates lto_$APPNAME optimization file in the directory in which -C is called
+#Because of this multiple lto_ files with same name can be created if app name
+#and app path are same
+board_utils_uart_flash_programmer_hs_PATH = $(PDK_BOARD_UTILS_COMP_PATH)/uniflash
+board_utils_uart_flash_programmer_hs_MAKEFILE = -ftarget/build/uart_make.mk BUILD_HS=yes
 export board_utils_uart_flash_programmer_hs_SBL_CERT_KEY=$(SBL_CERT_KEY_HS)
 board_utils_uart_flash_programmer_hs_BOARD_DEPENDENCY = yes
 board_utils_uart_flash_programmer_hs_CORE_DEPENDENCY = yes
