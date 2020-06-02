@@ -37,6 +37,11 @@
  *
  */
 
+/*!
+ * \addtogroup TIMESYNC_PTP_API
+ * @{
+ */
+
 #ifndef TIMESYNC_PTP_H_
 #define TIMESYNC_PTP_H_
 
@@ -304,7 +309,7 @@ TimeSyncPtp_Handle TimeSyncPtp_init(TimeSyncPtp_Config *ptpConfig);
 
 /**
  * @brief De-initialize PTP stack
- * @param ptpConfig Pointer to PTP configuration
+ * @param hTimeSyncPtp Pointer to PTP Handle structure
  * @return None
  */
 void TimeSyncPtp_deInit(TimeSyncPtp_Handle hTimeSyncPtp);
@@ -358,7 +363,7 @@ uint8_t TimeSyncPtp_isEnabled(TimeSyncPtp_Handle timeSyncPtpHandle);
 /**
  *  @brief  Change from Slave to Master if not already.
  *          This should be invoked by the BMCA algorithm.
- *  @param  timeSyncHandle pointer to PTP Handle structure
+ *  @param  timeSyncPtpHandle pointer to PTP Handle structure
  *
  *  @retval None
  *
@@ -368,13 +373,14 @@ void TimeSyncPtp_enableMaster(TimeSyncPtp_Handle timeSyncPtpHandle);
 /**
  *  @brief  Change from Master mode to slave mode.
  *          This should be invoked by the BMCA algorithm.
- *  @param  timeSyncHandle pointer to PTP Handle structure
+ *  @param  timeSyncPtpHandle pointer to PTP Handle structure
  *
  *  @retval None
  *
  */
 void TimeSyncPtp_disableMaster(TimeSyncPtp_Handle timeSyncPtpHandle);
 
+#endif /* TIMESYNC_PTP_H_ */
+
 /** @} */
 
-#endif /* TIMESYNC_PTP_H_ */

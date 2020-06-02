@@ -37,6 +37,30 @@
  *        for PTP stack
  */
 
+/**
+ * \defgroup DRV_TIMESYNC_MODULE TimeSync Driver
+ *
+ * The TimeSync driver provides time synchronization support to
+ * CPSW and ICSS using HAL and PTP stack.
+ *
+ *  @{
+ */
+
+/*!
+ * \defgroup TIMESYNC_HAL_API TIMESYNC HAL API
+ */
+
+/*!
+ * \defgroup TIMESYNC_PTP_API TIMESYNC PTP API
+ */
+
+/* @} */
+
+/*!
+ * \addtogroup TIMESYNC_HAL_API
+ * @{
+ */
+
 #ifndef TIMESYNC_H_
 #define TIMESYNC_H_
 
@@ -712,3 +736,6 @@ void TimeSync_writeTsSingleStepSync(TimeSync_Handle timeSyncHandle,
 #endif
 
 #endif /* TIMESYNC_H_ */
+
+/* @} */
+

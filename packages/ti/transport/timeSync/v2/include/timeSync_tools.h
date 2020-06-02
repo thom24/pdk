@@ -37,6 +37,11 @@
  *        of timeSync driver
  */
 
+/*!
+ * \addtogroup TIMESYNC_HAL_API
+ * @{
+ */
+
 #ifndef TIMESYNC_TOOLS_H
 #define TIMESYNC_TOOLS_H
 
@@ -231,3 +236,6 @@ void TimeSync_convEnd6to8(volatile void *src,
                           void *dst);
 
 #endif /* TIMESYNC_TOOLS_H */
+
+/* @} */
+
