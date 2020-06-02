@@ -1778,7 +1778,7 @@ int32_t  app_test_task_disable_pruicss(uint32_t portNum)
     PRUICSS_Handle prussDrvHandle;
     uint8_t pru_n, rtu_n, txpru_n, slice_n;
 
-    if (portNum > EMAC_ICSSG3_PORT1)
+    if (portNum > EMAC_ICSSG2_PORT1)
     {
         return -1;
     }
@@ -1815,7 +1815,7 @@ int32_t  app_test_task_init_pruicss(uint32_t portNum)
     uint8_t pru_n, rtu_n, txpru_n, slice_n;
     app_test_pru_rtu_fw_t *firmware;
 
-    if (portNum > EMAC_ICSSG3_PORT1)
+    if (portNum > EMAC_ICSSG2_PORT1)
     {
         return -1;
     }

@@ -51,8 +51,12 @@ extern "C" {
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
-extern void emac_hw_mem_write(uintptr_t addr, const void *ptr, uint32_t element_count);
+#define EMAC_ICSSG_CONFIG_TX_IPG_960_NS_PG1     ((uint32_t)(0x166))     /* 960 NS TX IPG for PG1 */
+#define EMAC_ICSSG_CONFIG_TX_IPG_960_NS         ((uint32_t)(0x17))      /* 960 NS TX IPG for PG2 */
+#define EMAC_ICSSG_CONFIG_TX_IPG_104_NS_PG1     ((uint32_t)(0x1A))      /* 104 NS TX IPG for PG1 */
+#define EMAC_ICSSG_CONFIG_TX_IPG_104_NS         ((uint32_t)(0xB))       /* 104 NS TX IPG for PG2 */
 
+extern void emac_hw_mem_write(uintptr_t addr, const void *ptr, uint32_t element_count);
 extern EMAC_DRV_ERR_E emac_close_v5_common( uint32_t port_num);
 extern int32_t emac_close_tx_subsystem (uint32_t port_num);
 extern int32_t emac_close_rx_subsystem (uint32_t port_num);
@@ -91,4 +95,20 @@ extern void emac_config_icssg_fw(uint32_t portNum, EMAC_HwAttrs_V5 *hwAttrs);
 void emac_R30_cmd_init(uint32_t portNum);
 int32_t emac_R30_is_done(uint32_t portNum);
 EMAC_DRV_ERR_E emac_send_R30_cmd(EMAC_IOctlR30Cmd cmd, uint32_t port, uint8_t sequenceNumber);
+extern uintptr_t emac_get_icssg_cfg_base_addr(uint32_t portNum);
+extern uintptr_t emac_get_icssg_rgmii_cfg_base_addr(uint32_t portNum);
+extern uintptr_t emac_get_icssg_tx_ipg_cfg_base_addr(uint32_t portNum);
+extern void emac_icssg_update_rgmii_cfg_100hd(uint32_t portNum, uintptr_t icssgRgmiiCfgBaseAddr);
+extern void emac_icssg_update_rgmii_cfg_100fd(uint32_t portNum, uintptr_t icssgRgmiiCfgBaseAddr);
+extern void emac_icssg_update_rgmii_cfg_100MB(uint32_t portNum, uintptr_t icssgRgmiiCfgBaseAddr, uint32_t link_status);
+extern void emac_icssg_update_rgmii_cfg_1G(uint32_t portNum, uintptr_t icssgRgmiiCfgBaseAddr);
+extern void emac_icssg_update_rgmii_cfg_10hd(uint32_t portNum, uintptr_t icssgRgmiiCfgBaseAddr);
+extern void emac_icssg_update_rgmii_cfg_10fd(uint32_t portNum, uintptr_t icssgRgmiiCfgBaseAddr);
+extern void emac_configure_link_speed_duplexity(uint32_t portNum, uint32_t val);
+extern void emac_icssg_update_link_speed_100MB(uint32_t portNum, uint32_t link_status);
+extern void emac_icssg_update_link_speed_1G(uint32_t portNum);
+extern void emac_icssg_update_rgmii_cfg_10MB(uint32_t portNum, uintptr_t icssgRgmiiCfgBaseAddr, uint32_t link_status);
+extern void emac_icssg_update_link_speed_10MB(uint32_t portNum, uint32_t link_status);
+extern void emac_icssg_link_down(uint32_t portNum);
+extern void emac_icssg_update_link_params(uint32_t portNum, EMAC_LINK_INFO_T *p_info);
 #endif

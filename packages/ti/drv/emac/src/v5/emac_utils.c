@@ -40,6 +40,7 @@
  */
 
 #include <stdint.h>
+#include <ti/csl/cslr_icss.h>
 #include <ti/drv/emac/emac_drv.h>
 #include <ti/drv/emac/src/v5/emac_drv_v5.h>
 #include <ti/drv/emac/emac_ioctl.h>
@@ -1869,6 +1870,370 @@ void emac_config_icssg_fw(uint32_t portNum, EMAC_HwAttrs_V5 *hwAttrs)
     {
         emac_config_icssg_dual_mac_fw_pg2(portNum, hwAttrs);
 
+    }
+}
+
+uint32_t txIpgPortMap [EMAC_MAX_ICSSG_INSTANCES*EMAC_MAC_PORTS_PER_ICSS][EMAC_MAC_PORTS_PER_ICSS] =
+{
+    {EMAC_ICSSG0_PORT0,EMAC_ICSSG0_PORT1},
+    {EMAC_ICSSG0_PORT1,EMAC_ICSSG0_PORT0},
+    {EMAC_ICSSG1_PORT0,EMAC_ICSSG1_PORT1},
+    {EMAC_ICSSG1_PORT1,EMAC_ICSSG1_PORT0},
+    {EMAC_ICSSG2_PORT0,EMAC_ICSSG2_PORT1},
+    {EMAC_ICSSG2_PORT1,EMAC_ICSSG2_PORT0}
+};
+
+/*
+ *  ======== emac_get_icssg_cfg_base_addr ========
+ */
+uintptr_t emac_get_icssg_cfg_base_addr(uint32_t portNum)
+{
+    return (emac_mcb.port_cb[portNum].icssDram0BaseAddr);
+}
+
+/*
+ *  ======== emac_get_icssg_rgmii_cfg_base_addr ========
+ */
+uintptr_t emac_get_icssg_rgmii_cfg_base_addr(uint32_t portNum)
+{
+    uintptr_t baseAddr = emac_get_icssg_cfg_base_addr(portNum);
+    baseAddr += CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_REGS_BASE +
+               CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RGMII_CFG;
+    return baseAddr;
+}
+
+/*
+ *  ======== emac_get_icssg_tx_ipg_cfg_base_addr ========
+ */
+uintptr_t emac_get_icssg_tx_ipg_cfg_base_addr(uint32_t portNum)
+{
+    uintptr_t baseAddr = emac_get_icssg_cfg_base_addr(portNum);
+    if ((portNum & 1) == 0)
+    {
+        baseAddr += CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_CFG_REGS_BASE +
+                    CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_CFG_TX_IPG0;
+    }
+    else
+    {
+        baseAddr += CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_CFG_REGS_BASE +
+                    CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_CFG_TX_IPG1;
+    }
+    return baseAddr;
+}
+
+/*
+ *  ======== emac_icssg_update_rgmii_cfg_100hd ========
+ */
+void emac_icssg_update_rgmii_cfg_100hd(uint32_t portNum, uintptr_t icssgRgmiiCfgBaseAddr)
+{
+    uint32_t regVal;
+
+    regVal = CSL_REG32_RD(icssgRgmiiCfgBaseAddr);
+    /* Need to clear bit 17 for slice 0 or bit 21 for slice 1 of ICSSG_RGMII_CFG to configure 100 mpbs */
+    /* Need to clear bit 18 for slice 0 or bit 22 for slice 1 of ICSSG_RGMII_CFG to configure half duplex */
+    if ((portNum & 1) == 0)
+    {
+        regVal &= ~CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RGMII_CFG_RGMII0_GIG_IN_MASK;
+        regVal &= ~CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RGMII_CFG_RGMII0_FULLDUPLEX_IN_MASK;
+    }
+    else
+    {
+        regVal &= ~CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RGMII_CFG_RGMII1_GIG_IN_MASK;
+        regVal &= ~CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RGMII_CFG_RGMII1_FULLDUPLEX_IN_MASK;
+    }
+    CSL_REG32_WR (icssgRgmiiCfgBaseAddr, regVal);
+}
+/*
+ *  ======== emac_icssg_update_rgmii_cfg_100fd ========
+ */
+void emac_icssg_update_rgmii_cfg_100fd(uint32_t portNum, uintptr_t icssgRgmiiCfgBaseAddr)
+{
+    uint32_t regVal;
+    regVal = CSL_REG32_RD(icssgRgmiiCfgBaseAddr);
+
+    /* Need to clear bit 17 for slice 0 or bit 21 for slice 1 of ICSSG_RGMII_CFG to configure 100 mpbs */
+    /* Need to set bit 18 for slice 0 or bit 22 for slice 1 of ICSSG_RGMII_CFG to configure full duplex */
+    if ((portNum & 1) == 0)
+    {
+        regVal &= ~CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RGMII_CFG_RGMII0_GIG_IN_MASK;
+        regVal |= CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RGMII_CFG_RGMII0_FULLDUPLEX_IN_MASK;
+    }
+    else
+    {
+        regVal &= ~CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RGMII_CFG_RGMII1_GIG_IN_MASK;
+        regVal |= CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RGMII_CFG_RGMII1_FULLDUPLEX_IN_MASK;
+
+    }
+    CSL_REG32_WR(icssgRgmiiCfgBaseAddr, regVal);
+}
+/*
+ *  ======== emac_icssg_update_rgmii_cfg_100MB ========
+ */
+void emac_icssg_update_rgmii_cfg_100MB(uint32_t portNum, uintptr_t icssgRgmiiCfgBaseAddr, uint32_t link_status)
+{
+    if (link_status == EMAC_MDIO_LINKSTATUS_HD100)
+    {
+        emac_icssg_update_rgmii_cfg_100hd(portNum, icssgRgmiiCfgBaseAddr);
+    }
+    else
+    {
+        emac_icssg_update_rgmii_cfg_100fd(portNum, icssgRgmiiCfgBaseAddr);
+    }
+}
+/*
+ *  ======== emac_icssg_update_rgmii_cfg_1G ========
+ */
+void emac_icssg_update_rgmii_cfg_1G(uint32_t portNum, uintptr_t icssgRgmiiCfgBaseAddr)
+{
+    uint32_t regVal;
+
+    regVal = CSL_REG32_RD(icssgRgmiiCfgBaseAddr);
+    if ((portNum & 1) == 0)
+    {
+        regVal |= CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RGMII_CFG_RGMII0_GIG_IN_MASK;
+        regVal |= CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RGMII_CFG_RGMII0_FULLDUPLEX_IN_MASK;
+    }
+    else
+    {
+        regVal |= CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RGMII_CFG_RGMII1_GIG_IN_MASK;
+        regVal |= CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RGMII_CFG_RGMII1_FULLDUPLEX_IN_MASK;
+    }
+    CSL_REG32_WR (icssgRgmiiCfgBaseAddr, regVal);
+}
+
+/*
+ *  ======== emac_icssg_update_rgmii_cfg_10hd ========
+ */
+void emac_icssg_update_rgmii_cfg_10hd(uint32_t portNum, uintptr_t icssgRgmiiCfgBaseAddr)
+{
+    uint32_t regVal;
+
+    regVal = CSL_REG32_RD(icssgRgmiiCfgBaseAddr);
+    if ((portNum & 1) == 0)
+    {
+        regVal &= ~CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RGMII_CFG_RGMII0_GIG_IN_MASK;
+        regVal |= CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RGMII_CFG_RGMII0_INBAND_MASK;
+        regVal &= ~CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RGMII_CFG_RGMII0_FULLDUPLEX_IN_MASK;
+    }
+    else
+    {
+        regVal &= ~CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RGMII_CFG_RGMII1_GIG_IN_MASK;
+        regVal |= CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RGMII_CFG_RGMII1_INBAND_MASK;
+        regVal &= ~CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RGMII_CFG_RGMII1_FULLDUPLEX_IN_MASK;
+    }
+
+    CSL_REG32_WR (icssgRgmiiCfgBaseAddr, regVal);
+}
+
+/*
+ *  ======== emac_icssg_update_rgmii_cfg_10fd ========
+ */
+void emac_icssg_update_rgmii_cfg_10fd(uint32_t portNum, uintptr_t icssgRgmiiCfgBaseAddr)
+{
+    uint32_t regVal;
+
+    regVal = CSL_REG32_RD(icssgRgmiiCfgBaseAddr);
+    if ((portNum & 1) == 0)
+    {
+        regVal &= ~CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RGMII_CFG_RGMII0_GIG_IN_MASK;
+        regVal |= CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RGMII_CFG_RGMII0_INBAND_MASK;
+        regVal |= CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RGMII_CFG_RGMII0_FULLDUPLEX_IN_MASK;
+    }
+    else
+    {
+        regVal &= ~CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RGMII_CFG_RGMII1_GIG_IN_MASK;
+        regVal |= CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RGMII_CFG_RGMII1_INBAND_MASK;
+        regVal |= CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RGMII_CFG_RGMII1_FULLDUPLEX_IN_MASK;
+    }
+
+    CSL_REG32_WR (icssgRgmiiCfgBaseAddr, regVal);
+}
+
+/*
+ *  ======== emac_icssg_update_rgmii_cfg_10MB ========
+ */
+void emac_icssg_update_rgmii_cfg_10MB(uint32_t portNum, uintptr_t icssgRgmiiCfgBaseAddr, uint32_t link_status)
+{
+    if (link_status == EMAC_MDIO_LINKSTATUS_HD10)
+    {
+        emac_icssg_update_rgmii_cfg_10hd(portNum, icssgRgmiiCfgBaseAddr);
+    }
+    else
+    {
+        emac_icssg_update_rgmii_cfg_10fd(portNum, icssgRgmiiCfgBaseAddr);
+    }
+}
+
+/*
+ *  ======== emac_icssg_update_link_speed_10MB ========
+ */
+void emac_icssg_update_link_speed_10MB(uint32_t portNum, uint32_t link_status)
+{
+    uintptr_t icssgRgmiiCfgAddr;
+
+    icssgRgmiiCfgAddr = emac_get_icssg_rgmii_cfg_base_addr(portNum);
+    emac_icssg_update_rgmii_cfg_10MB(portNum, icssgRgmiiCfgAddr, link_status);
+     /* issue speed_duplexity ioctl to fw */
+    if (link_status == EMAC_MDIO_LINKSTATUS_HD10)
+    {
+        emac_configure_link_speed_duplexity(portNum, EMAC_IOCTL_SPEED_DUPLEXITY_10HD);
+    }
+    else
+    {
+        emac_configure_link_speed_duplexity(portNum, EMAC_IOCTL_SPEED_DUPLEXITY_10FD);
+    }
+}
+/*
+ *  ======== emac_icssg_update_link_speed_100MB ========
+ */
+void emac_icssg_update_link_speed_100MB(uint32_t portNum, uint32_t link_status)
+{
+    uintptr_t icssgRgmiiCfgAddr, icssgTxIpgCfgAddr;
+    uint32_t regVal;
+    
+
+    icssgRgmiiCfgAddr = emac_get_icssg_rgmii_cfg_base_addr(portNum);
+    emac_icssg_update_rgmii_cfg_100MB(portNum, icssgRgmiiCfgAddr, link_status);
+    if (link_status == EMAC_MDIO_LINKSTATUS_HD100)
+    {
+        emac_configure_link_speed_duplexity(portNum, EMAC_IOCTL_SPEED_DUPLEXITY_100HD);
+    }
+    else
+    {
+        emac_configure_link_speed_duplexity(portNum, EMAC_IOCTL_SPEED_DUPLEXITY_100FD);
+    }
+
+    /*Configuring 960ns TX IPG in ICSSG HW MMR*/
+    if (emac_mcb.port_cb[portNum].pgVersion == EMAC_AM65XX_PG1_0_VERSION)
+    {
+        regVal = EMAC_ICSSG_CONFIG_TX_IPG_960_NS_PG1;
+        icssgTxIpgCfgAddr  = emac_get_icssg_tx_ipg_cfg_base_addr(portNum);
+    }
+    else
+    {
+    
+        regVal = EMAC_ICSSG_CONFIG_TX_IPG_960_NS;
+        icssgTxIpgCfgAddr  = emac_get_icssg_tx_ipg_cfg_base_addr(txIpgPortMap[portNum][0]);
+        CSL_REG32_WR (icssgTxIpgCfgAddr, regVal);
+
+        /* HW Errata: work-around to do RMW to TXIPG0 so that TXIPG1 will be latched by HW */
+        if ((portNum & 1) == 1)
+        {
+            icssgTxIpgCfgAddr  = emac_get_icssg_tx_ipg_cfg_base_addr(txIpgPortMap[portNum][1]);
+            regVal = CSL_REG32_RD(icssgTxIpgCfgAddr);
+            CSL_REG32_WR (icssgTxIpgCfgAddr, regVal);
+        }
+    }
+}
+
+/*
+ *  ======== emac_icssg_update_link_speed_1G ========
+ */
+void emac_icssg_update_link_speed_1G(uint32_t portNum)
+{
+    uintptr_t icssgRgmiiCfgAddr, icssgTxIpgCfgAddr;
+    uint32_t regVal;
+
+    icssgRgmiiCfgAddr = emac_get_icssg_rgmii_cfg_base_addr(portNum);
+    emac_icssg_update_rgmii_cfg_1G(portNum, icssgRgmiiCfgAddr);
+    /* issue speed_duplexity ioctl to fw */
+    emac_configure_link_speed_duplexity(portNum, EMAC_IOCTL_SPEED_DUPLEXITY_GIGABIT);
+    /*Configuring 104ns TX IPG ICSSG HW MMR */
+    if (emac_mcb.port_cb[portNum].pgVersion == EMAC_AM65XX_PG1_0_VERSION)
+    {
+        regVal = EMAC_ICSSG_CONFIG_TX_IPG_104_NS_PG1;
+        icssgTxIpgCfgAddr  = emac_get_icssg_tx_ipg_cfg_base_addr(portNum);
+        CSL_REG32_WR (icssgTxIpgCfgAddr, regVal);
+    }
+    else
+    {
+        regVal = EMAC_ICSSG_CONFIG_TX_IPG_104_NS;
+        icssgTxIpgCfgAddr  = emac_get_icssg_tx_ipg_cfg_base_addr(txIpgPortMap[portNum][0]);
+        CSL_REG32_WR (icssgTxIpgCfgAddr, regVal);
+
+        /* HW Errata: work-around to do RMW to TXIPG0 so that TXIPG1 will be latched by HW */
+        if ((portNum & 1) == 1)
+        {
+            icssgTxIpgCfgAddr  = emac_get_icssg_tx_ipg_cfg_base_addr(txIpgPortMap[portNum][1]);
+            regVal = CSL_REG32_RD(icssgTxIpgCfgAddr);
+            CSL_REG32_WR (icssgTxIpgCfgAddr, regVal);
+        }
+    }
+}
+
+/*
+ *  ======== emac_configure_link_speed_duplexity ========
+ */
+void emac_configure_link_speed_duplexity(uint32_t portNum, uint32_t val)
+{
+    
+    if (emac_mcb.port_cb[portNum].pgVersion == EMAC_AM65XX_PG1_0_VERSION)
+    {
+        EMAC_IOCTL_PARAMS params = {0};
+        EMAC_DRV_ERR_E status;
+        if (portNum < (EMAC_MAX_PORTS -1))
+        {
+            params.subCommand = val;
+            params.seqNumber = emac_mcb.ioctl_cb.sequenceNumber++;
+
+            if (emac_mcb.ioctl_cb.ioctlInProgress == false)
+            {
+                emac_mcb.ioctl_cb.internalIoctl = TRUE;
+                status = emac_ioctl_speed_duplexity_cfg(portNum, &params);
+                if (status != EMAC_DRV_RESULT_IOCTL_IN_PROGRESS)
+                {
+                    emac_mcb.ioctl_cb.internalIoctl = FALSE;
+                    UTILS_trace(UTIL_TRACE_LEVEL_ERR, emac_mcb.drv_trace_cb, "port: %d: error in sending speed duplexity IOCTL",portNum);
+                }
+            }
+        }
+    }
+}
+
+/*
+ *  ======== emac_icssg_link_down ========
+ */
+void emac_icssg_link_down(uint32_t portNum)
+{
+    uint32_t regVal;
+    uintptr_t icssgRgmiiCfgAddr;
+
+    icssgRgmiiCfgAddr = emac_get_icssg_rgmii_cfg_base_addr(portNum);
+    regVal = CSL_REG32_RD(icssgRgmiiCfgAddr);
+    if ((portNum & 1) == 0)
+    {
+        regVal |= CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RGMII_CFG_RGMII0_GIG_IN_MASK;
+        regVal |= CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RGMII_CFG_RGMII0_FULLDUPLEX_IN_MASK;
+        regVal &= ~CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RGMII_CFG_RGMII0_INBAND_MASK;
+    }
+    else
+    {
+        regVal |= CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RGMII_CFG_RGMII1_GIG_IN_MASK;
+        regVal |= CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RGMII_CFG_RGMII1_FULLDUPLEX_IN_MASK;
+        regVal &= ~CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RGMII_CFG_RGMII1_INBAND_MASK;
+    }
+    CSL_REG32_WR (icssgRgmiiCfgAddr, regVal);
+    emac_configure_link_speed_duplexity(portNum, EMAC_IOCTL_SPEED_DUPLEXITY_DISABLE);
+}
+
+void emac_icssg_update_link_params(uint32_t portNum, EMAC_LINK_INFO_T *p_info)
+{
+    switch(p_info->link_status)
+    {
+        case EMAC_MDIO_LINKSTATUS_FD1000:
+            emac_icssg_update_link_speed_1G(portNum);
+            break;
+        case EMAC_MDIO_LINKSTATUS_FD100:
+        case EMAC_MDIO_LINKSTATUS_HD100:
+            emac_icssg_update_link_speed_100MB(portNum, p_info->link_status);
+            break;
+        case EMAC_MDIO_LINKSTATUS_FD10:
+        case EMAC_MDIO_LINKSTATUS_HD10:
+            emac_icssg_update_link_speed_10MB(portNum, p_info->link_status);
+            break;
+        default:
+            emac_icssg_link_down(portNum);
+            break;
     }
 }
 

@@ -85,7 +85,7 @@ extern const EMAC_FxnTable EMAC_FxnTable_v5;
 #define EMAC_ICSSG1_PORT0 ((uint32_t)2U)
 #define EMAC_ICSSG1_PORT1 ((uint32_t)3U)
 #define EMAC_ICSSG2_PORT0 ((uint32_t)4U)
-#define EMAC_ICSSG3_PORT1 ((uint32_t)5U)
+#define EMAC_ICSSG2_PORT1 ((uint32_t)5U)
 #define EMAC_CPSW_PORT1 ((uint32_t)6U)
 #define EMAC_CPSW_PORT2 ((uint32_t)7U)              /* will need this for am64xx, place-holder */
 

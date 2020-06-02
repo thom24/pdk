@@ -63,8 +63,6 @@ void emac_setup_cpsw_ss(uint32_t portNum);
  **********************************************************************/
 
 /* EMAC_v5 local functions */
-void emac_configure_link_speed_duplexity_cpsw(uint32_t portNum, uint32_t val);
-
 static EMAC_DRV_ERR_E emac_open_v5_cpsw(uint32_t portNum,  EMAC_OPEN_CONFIG_INFO_T *pConfig);
 
 static EMAC_DRV_ERR_E emac_config_v5_cpsw(uint32_t portNum,  EMAC_CONFIG_INFO_T *pConfig);
