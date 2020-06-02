@@ -63,7 +63,7 @@
 #include <ti/drv/sciclient/sciclient.h>
 #endif
 
-#if defined (SOC_J721E) || defined(SOC_J7200)
+#if defined (SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM65XX) || defined(SOC_AM64X)
 #include <ti/csl/soc.h>
 #if defined (BUILD_DSP_1) || defined (BUILD_DSP_2)
 #include <ti/csl/csl_chipAux.h>
@@ -79,7 +79,7 @@
 #include <ti/csl/arch/csl_arch.h>
 #endif
 
-#if defined(UNITY_INCLUDE_CONFIG_H) && (defined(SOC_J721E) || defined(SOC_J7200))
+#if defined(UNITY_INCLUDE_CONFIG_H) && (defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM65XX) || defined(SOC_AM64X))
 #include <ti/build/unit-test/Unity/src/unity.h>
 #include <ti/build/unit-test/config/unity_config.h>
 #endif
@@ -493,7 +493,7 @@ static bool I2C_bitrate_test(void *arg)
 }
 
 
-#if defined (SOC_AM335X) || defined (SOC_AM437x) || defined (SOC_AM571x) || defined (SOC_AM572x) || defined (SOC_AM574x) || defined (SOC_AM65XX) || defined (SOC_J721E) || defined (SOC_J7200)
+#if defined (SOC_AM335X) || defined (SOC_AM437x) || defined (SOC_AM571x) || defined (SOC_AM572x) || defined (SOC_AM574x) || defined (SOC_AM65XX) || defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_AM64X)
 static bool I2C_Probe_BusFrequency_test(void *arg)
 {
     I2C_Handle      handle;
@@ -722,7 +722,7 @@ I2C_Tests I2c_tests[] =
 {
     /* testFunc                   testID                       dma    intr   cbMode timeout                  testDesc */
     {I2C_bitrate_test,            I2C_TEST_ID_BIT_RATE,        false, true,  false, SemaphoreP_WAIT_FOREVER, "\r\n I2C bit rate test in interrupt mode"},
-#if defined (SOC_AM335X) || defined (SOC_AM437x) || defined (SOC_AM571x) || defined (SOC_AM572x) || defined (SOC_AM574x) || defined (SOC_AM65XX) || defined (SOC_J721E) || defined (SOC_J7200)
+#if defined (SOC_AM335X) || defined (SOC_AM437x) || defined (SOC_AM571x) || defined (SOC_AM572x) || defined (SOC_AM574x) || defined (SOC_AM65XX) || defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_AM64X)
     {I2C_Probe_BusFrequency_test, I2C_TEST_ID_PROBE_BUS_FREQ,  false, true,  false, SemaphoreP_WAIT_FOREVER, "\r\n I2C probe bus freq test in interrupt mode"},
     {I2C_timeout_test,            I2C_TEST_ID_TIMEOUT_INT,     false, true,  false, 1,                       "\r\n I2C timeout test in interrupt mode"},
 #endif
@@ -730,7 +730,7 @@ I2C_Tests I2c_tests[] =
 };
 
 
-#if defined(UNITY_INCLUDE_CONFIG_H) && (defined(SOC_J721E) || defined(SOC_J7200))
+#if defined(UNITY_INCLUDE_CONFIG_H) && (defined(SOC_J721E) || defined(SOC_J7200) || defined (SOC_AM65XX) || defined (SOC_AM64X))
 /*
  *  ======== Unity set up and tear down ========
  */
@@ -862,7 +862,7 @@ void i2c_test(UArg arg0, UArg arg1)
 int main ()
 #endif
 {
-#if defined(UNITY_INCLUDE_CONFIG_H) && (defined(SOC_J721E) || defined(SOC_J7200))
+#if defined(UNITY_INCLUDE_CONFIG_H) && (defined(SOC_J721E) || defined(SOC_J7200) || defined (SOC_AM65XX) || defined (SOC_AM64X))
     test_I2C_Eeprom_TestApp_runner();
 #else
     bool       testResult = true;
@@ -932,7 +932,7 @@ int main(void)
     }
 #endif
 
-#if defined (SOC_J721E) || defined(SOC_J7200)
+#if defined (SOC_J721E) || defined(SOC_J7200) || defined (SOC_AM65XX) || defined (SOC_AM64X)
     Task_Handle task;
     Error_Block eb;
     Task_Params taskParams;

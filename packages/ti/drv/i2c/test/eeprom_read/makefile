@@ -14,7 +14,7 @@ BUILD_OS_TYPE = tirtos
 CFLAGS_OS_DEFINES = -DUSE_BIOS
 EXTERNAL_INTERFACES = bios xdc
 COMP_LIST_COMMON    = osal_tirtos
-ifeq ($(SOC),$(filter $(SOC), j721e j7200 am65xx))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200 am65xx am64x))
 XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
 endif
 endif
@@ -35,7 +35,7 @@ else
     APP_NAME = I2C$(I2C_OS_TESTPREFIX)_Eeprom_TestApp
     # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
     LOCAL_APP_NAME =  I2C$(I2C_OS_TESTPREFIX)_Eeprom_$(BOARD)_$(CORE)TestApp
-    ifeq ($(SOC),$(filter $(SOC), j721e j7200 am65xx))
+    ifeq ($(SOC),$(filter $(SOC), j721e j7200 am65xx am64x))
         LOCAL_APP_NAME =  I2C$(I2C_OS_TESTPREFIX)_Eeprom_TestApp_$(CORE)
     endif
 endif
@@ -45,7 +45,7 @@ INCDIR = . src
 # Common source files across all platforms and cores
 SRCS_COMMON += main_test.c
 
-ifeq ($(SOC),$(filter $(SOC),j721e j7200))
+ifeq ($(SOC),$(filter $(SOC),j721e j7200 am65xx am64x))
 SRCDIR += $(PDK_INSTALL_PATH)/ti/build/unit-test/Unity/src $(PDK_INSTALL_PATH)/ti/build/unit-test/config
 INCDIR += $(PDK_INSTALL_PATH)/ti/build/unit-test/Unity/src $(PDK_INSTALL_PATH)/ti/build/unit-test/config
 SRCS_COMMON += unity_config.c unity.c
@@ -59,7 +59,7 @@ INCLUDE_EXTERNAL_INTERFACES = pdk $(EXTERNAL_INTERFACES)
 #COMP_LIST_COMMON  = i2c_profile uart board csl profiling
 COMP_LIST_COMMON  += i2c uart board csl
 
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
 COMP_LIST_COMMON += sciclient
 endif
 
@@ -71,7 +71,7 @@ ifeq ($(SOC),$(filter $(SOC), am65xx))
 endif
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_I2C_UT) $(CFLAGS_OS_DEFINES)
 
-ifeq ($(SOC),$(filter $(SOC), j721e j7200))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200 am65xx am64x))
 CFLAGS_LOCAL_COMMON += -DUNITY_INCLUDE_CONFIG_H
 endif
 # Core/SoC/platform specific source files and CFLAGS
