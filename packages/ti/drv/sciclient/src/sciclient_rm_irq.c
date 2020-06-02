@@ -1484,7 +1484,7 @@ static bool Sciclient_rmIrqRouteValidate(struct Sciclient_rmIrqCfg  *cfg)
     uint16_t i, j;
     const struct Sciclient_rmIrqNode *cur_n, *next_n = NULL;
     const struct Sciclient_rmIrqIf *cur_if;
-    bool cur_outp_valid, next_inp_valid;
+    bool cur_outp_valid = false, next_inp_valid = false;
     uint32_t cur_inp;
     uint16_t cur_outp = 0, next_inp = 0;
     struct tisci_msg_rm_get_resource_range_req req = {0};
@@ -1523,12 +1523,7 @@ static bool Sciclient_rmIrqRouteValidate(struct Sciclient_rmIrqCfg  *cfg)
     }
 
     /* Validate input and output line usage of each node */
-    for (i = 0u; i < Sciclient_rmPsGetPsp(); i++) {
-        if (valid == false) {
-            /* Previous checks failed, break immediately */
-            break;
-        }
-
+    for (i = 0u; (i < Sciclient_rmPsGetPsp()) && (valid == true); i++) {
         cur_n = Sciclient_rmPsGetIrqNode(i);
         cur_if = cur_n->p_if[Sciclient_rmPsGetIfIdx(i)];
         if (i < (Sciclient_rmPsGetPsp() - 1u)) {
