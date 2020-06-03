@@ -297,7 +297,7 @@ uint32_t SBL_GetMsgLen(uint8_t *x509_cert_ptr, uint32_t x509_cert_size)
         *msg_len_ptr = *boot_seq_ptr;
         *(msg_len_ptr + 1) = *(boot_seq_ptr - 1);
     }
-    else if ( (*(boot_seq_ptr - 3) == 0x02) &&
+    else if ( (*(boot_seq_ptr - 2) == 0x02) &&
          (*(boot_seq_ptr - 1) == 0x01) )
     {
         /* msg length encoded in 1 byte */
