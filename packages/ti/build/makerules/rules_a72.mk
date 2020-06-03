@@ -200,6 +200,10 @@ else
   endif
 endif
 
+ifneq ($(APPEND_LNKCMD_FILE),)
+    LINKER_APPEND = $(addprefix $(LNKCMD_PREFIX), $(APPEND_LNKCMD_FILE))
+endif
+
 LNK_LIBS = $(addprefix -L,$(LIB_PATHS_DIR))
 LNK_LIBS += $(addprefix -L,$(LIB_PATHS))
 LNK_LIBS += $(addprefix -L,$(EXT_LIB_PATHS))
@@ -228,7 +232,7 @@ $(EXE_NAME) : $(OBJ_PATHS_ASM) $(OBJ_PATHS) $(OBJ_PATHS_CPP) $(LIB_PATHS) $(LNKC
 endif
 	$(ECHO) \# Linking into $(EXE_NAME)...
 	$(ECHO) \#
-	$(LNK) $(_LNKFLAGS) $(OBJ_PATHS_ASM) $(OBJ_PATHS) $(OBJ_PATHS_CPP) -Wl,--build-id=none -Wl,-Map=$@.map -o $@ $(EXT_LIB_a72_0) $(EXT_LIB_PATHS)  -Wl,--start-group $(LIB_PATHS) -Wl,--end-group $(LINKER1) $(LINKER2) $(LNK_LIBS)
+	$(LNK) $(_LNKFLAGS) $(OBJ_PATHS_ASM) $(OBJ_PATHS) $(OBJ_PATHS_CPP) -Wl,--build-id=none -Wl,-Map=$@.map -o $@ $(EXT_LIB_a72_0) $(EXT_LIB_PATHS)  -Wl,--start-group $(LIB_PATHS) -Wl,--end-group $(LINKER1) $(LINKER2)  $(LINKER_APPEND) $(LNK_LIBS)
 	$(ECHO) \#
 	$(ECHO) \# $@ created.
 	$(ECHO) \#

@@ -248,7 +248,7 @@ $(EXE_NAME) : $(OBJ_PATHS_ASM) $(OBJ_PATHS) $(LIB_PATHS) $(LNKCMD_FILE)
 endif
 	$(ECHO) \# Linking into $(EXE_NAME)...
 	$(ECHO) \#
-	$(LNK) $(_LNKFLAGS) $(OBJ_PATHS_ASM) $(OBJ_PATHS) -l$(LNKCMD_FILE) $(EXTERNAL_LNKCMD_FILE) -o $@ -m $@.map $(LNK_LIBS)
+	$(LNK) $(_LNKFLAGS) $(OBJ_PATHS_ASM) $(OBJ_PATHS) -l$(LNKCMD_FILE) $(EXTERNAL_LNKCMD_FILE) $(APPEND_LNKCMD_FILE) -o $@ -m $@.map $(LNK_LIBS)
 	$(ECHO) \#
 	$(ECHO) \# $@ created.
 	$(ECHO) \#

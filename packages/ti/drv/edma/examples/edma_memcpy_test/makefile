@@ -25,6 +25,11 @@ INCLUDE_EXTERNAL_INTERFACES += xdc bios pdk
 COMP_LIST_COMMON += osal_tirtos
 XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
 
+ifeq ($(SOC),$(filter $(SOC), tpr12))
+# Append local auxilia·ry linker command file
+APPEND_LNKCMD_FILE = ./$(SOC)/linker_$(ISA).cmd
+endif
+
 # Common source files and CFLAGS across all platforms and cores
 PACKAGE_SRCS_COMMON = .
 SRCS_COMMON += main.c
