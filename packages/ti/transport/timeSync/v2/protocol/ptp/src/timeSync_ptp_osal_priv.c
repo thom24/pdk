@@ -398,7 +398,7 @@ int8_t TimeSyncPtp_createPtpTasks(TimeSyncPtp_Handle hTimeSyncPtp)
 
     /* NRT Task to process peer delay frames*/
     TaskP_Params_init(&taskParams);
-    taskParams.priority = 8;
+    taskParams.priority = 2;
     taskParams.arg0 = (void *)hTimeSyncPtp;
     hTimeSyncPtp->nRTTask = TaskP_create(TimeSyncPtp_nRTTask,
                                          &taskParams);
@@ -639,6 +639,13 @@ static void TimeSyncPtp_nRTTask(UArg a0,
                     {
                         TimeSyncPtp_forced2StepBDCalc(hTimeSyncPtp, port);
                     }
+                }
+                else
+                {
+                    /* linkStatus being false is not an issue, wait for sometime and retry.
+                     * Note: Do not remove this sleep, this is required to prevent the task from
+                     * becoming while(1); when only one port is used and the link is down for that port.*/
+                    TaskP_sleep(1);
                 }
             }
         }
