@@ -57,7 +57,7 @@ extern "C" {
 #if defined (SIMULATOR)
 #define OSAL_DELAY_COUNT                (10U)
 #else
-#define OSAL_DELAY_COUNT                (1000U)
+#define OSAL_DELAY_COUNT                (30000U)
 #endif
 
 #define DISP_APP_LCD_WIDTH              (1280U)
