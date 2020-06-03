@@ -1005,9 +1005,11 @@ static int32_t UART_write_v1(UART_Handle handle, const void *buffer, size_t size
             pTrans->buf = (void *)buffer;
             pTrans->timeout = object->params.writeTimeout;
             pTrans->count = (uint32_t)size;
-            (void)UART_write2_v1(handle, pTrans);
-
-            ret_val = (int32_t)(pTrans->count);
+            ret_val = UART_write2_v1(handle, pTrans);
+            if (ret_val == UART_SUCCESS)
+            {
+                ret_val = (int32_t)(pTrans->count);
+            }
         }
     }
     else
@@ -1029,6 +1031,7 @@ static int32_t UART_write2_v1(UART_Handle handle, UART_Transaction * transaction
     /* Input parameter validation */
     if ((handle == NULL)           ||
         (transaction == NULL)      ||
+        (transaction->buf == NULL) ||
         (transaction->count == 0U))
     {
         ret_val = UART_ERROR;
@@ -1273,54 +1276,64 @@ static int32_t UART_writePolling_v1(UART_Handle handle, const void *buf,
     uint32_t            timeoutErr = FALSE;
     size_t              wrSize = size;
 
-    /* Get the pointer to the object and hwAttrs */
-    UART_V1_Object     *object = (UART_V1_Object*)handle->object;
-    UART_HwAttrs const *hwAttrs = (UART_HwAttrs const *)handle->hwAttrs;
-
-    timeout = object->params.writeTimeout;
-
-    /* Write characters. */
-    while ((wrSize != (size_t)0) && (timeoutErr == FALSE))
+    if ((handle == NULL)           ||
+        (buf == NULL)              ||
+        (size == 0U))
     {
-        if ((object->params.writeDataMode == UART_DATA_TEXT) && (*buffer == ((uint8_t)('\n'))))
-        {
-            if (UART_charPut_v1(hwAttrs, ((uint8_t)('\r')), &timeout) == FALSE)
-            {
-                timeoutErr = TRUE;
-            }
-            else
-            {
-                count++;
-            }
-        }
-
-        if (timeoutErr == FALSE)
-        {
-            if (UART_charPut_v1(hwAttrs, *buffer, &timeout) == FALSE)
-            {
-                timeoutErr = TRUE;
-            }
-            else
-            {
-                UART_drv_log2("UART:(0x%x) Wrote character 0x%x",
-                    hwAttrs->baseAddr, *buffer);
-
-                buffer++;
-                count++;
-                wrSize--;
-            }
-        }
-    }
-
-    if (timeoutErr == TRUE)
-    {
-        UART_drv_log2("UART:(0x%x) Write polling timed out, %d bytes written",
-                      hwAttrs->baseAddr, (int32_t)count);
+        count = UART_ERROR;
     }
     else
     {
-        UART_drv_log2("UART:(0x%x) Write polling finished, %d bytes written",
-                      hwAttrs->baseAddr, (int32_t)count);
+        /* Get the pointer to the object and hwAttrs */
+        UART_V1_Object     *object = (UART_V1_Object*)handle->object;
+        UART_HwAttrs const *hwAttrs = (UART_HwAttrs const *)handle->hwAttrs;
+
+        timeout = object->params.writeTimeout;
+
+        /* Write characters. */
+        while ((wrSize != (size_t)0) && (timeoutErr == FALSE))
+        {
+            if ((object->params.writeDataMode == UART_DATA_TEXT) && (*buffer == ((uint8_t)('\n'))))
+            {
+                if (UART_charPut_v1(hwAttrs, ((uint8_t)('\r')), &timeout) == FALSE)
+                {
+                    timeoutErr = TRUE;
+                }
+                else
+                {
+                    count++;
+                }
+            }
+
+            if (timeoutErr == FALSE)
+            {
+                if (UART_charPut_v1(hwAttrs, *buffer, &timeout) == FALSE)
+                {
+                    timeoutErr = TRUE;
+                }
+                else
+                {
+                    UART_drv_log2("UART:(0x%x) Wrote character 0x%x",
+                        hwAttrs->baseAddr, *buffer);
+
+                    buffer++;
+                    count++;
+                    wrSize--;
+                }
+            }
+        }
+
+        if (timeoutErr == TRUE)
+        {
+            UART_drv_log2("UART:(0x%x) Write polling timed out, %d bytes written",
+                          hwAttrs->baseAddr, (int32_t)count);
+            count = UART_ERROR;
+        }
+        else
+        {
+            UART_drv_log2("UART:(0x%x) Write polling finished, %d bytes written",
+                          hwAttrs->baseAddr, (int32_t)count);
+        }
     }
 
     return (count);
@@ -1382,8 +1395,11 @@ static int32_t UART_read_v1(UART_Handle handle, void *buffer, size_t size)
            pTrans->buf = (void *)buffer;
            pTrans->timeout = object->params.readTimeout;
            pTrans->count = (uint32_t)size;
-           (void)UART_read2_v1(handle, pTrans);
-           ret_val = (int32_t)(pTrans->count);
+           ret_val = UART_read2_v1(handle, pTrans);
+           if (ret_val == UART_SUCCESS)
+           {
+               ret_val = (int32_t)(pTrans->count);
+           }
        }
    }
    else
@@ -1406,24 +1422,14 @@ static int32_t UART_read2_v1(UART_Handle handle, UART_Transaction *transaction)
     SemaphoreP_Status      semStatus;
 
     /* Input parameter validation */
-    if (handle == NULL)
-    {
-        ret_val = UART_ERROR;
-    }
-
-    if (transaction == NULL)
+    if ((handle == NULL)           ||
+        (transaction == NULL)      ||
+        (transaction->buf == NULL) ||
+        (transaction->count == 0U))
     {
         ret_val = UART_ERROR;
     }
     else
-    {
-        if (transaction->count == 0U)
-        {
-            ret_val = UART_ERROR;
-        }
-    }
-
-    if (ret_val == UART_SUCCESS)
     {
     /* Get the pointer to the hwAttrs */
     hwAttrs = (UART_HwAttrs const *)handle->hwAttrs;
@@ -1660,81 +1666,94 @@ static uint32_t UART_charGet_v1(UART_HwAttrs const *hwAttrs, uint8_t *data, uint
 static int32_t UART_readPolling_v1(UART_Handle handle, void *buf, size_t size)
 {
     int32_t                count = 0;
-    UART_V1_Object     *object = (UART_V1_Object*)handle->object;
-    UART_HwAttrs const *hwAttrs = (UART_HwAttrs const *)handle->hwAttrs;
-    uint8_t               *buffer = (uint8_t *)buf;
+    UART_V1_Object        *object;
+    UART_HwAttrs const    *hwAttrs;
+    uint8_t               *buffer;
     uint32_t               timeout;
     uint8_t                ret_flag = 0U;
     uint32_t               timeoutErr = FALSE;
     size_t                 rdSize = size;
 
-    timeout = object->params.readTimeout;
-
-    /* Read characters. */
-    while ((rdSize != (size_t)0) && (timeoutErr == FALSE))
+    if ((handle == NULL)           ||
+        (buf == NULL)              ||
+        (size == 0U))
     {
-        if (UART_charGet_v1(hwAttrs, buffer, &timeout) == FALSE)
-        {
-            timeoutErr = TRUE;
-        }
-        else
-        {
-            UART_drv_log2("UART:(0x%x) Read character 0x%x",
-                hwAttrs->baseAddr, *buffer);
+        count = UART_ERROR;
+    }
+    else
+    {
+        object  = (UART_V1_Object*)handle->object;
+        hwAttrs = (UART_HwAttrs const *)handle->hwAttrs;
+        buffer  = (uint8_t *)buf;
 
-            count++;
-            rdSize--;
+        timeout = object->params.readTimeout;
 
-            if ((object->params.readDataMode == UART_DATA_TEXT) && (*buffer == ((uint8_t)('\r'))))
+        /* Read characters. */
+        while ((rdSize != (size_t)0) && (timeoutErr == FALSE))
+        {
+            if (UART_charGet_v1(hwAttrs, buffer, &timeout) == FALSE)
             {
-                /* Echo character if enabled. */
-                if (object->params.readEcho == UART_ECHO_ON)
+                timeoutErr = TRUE;
+            }
+            else
+            {
+                UART_drv_log2("UART:(0x%x) Read character 0x%x",
+                    hwAttrs->baseAddr, *buffer);
+
+                count++;
+                rdSize--;
+
+                if ((object->params.readDataMode == UART_DATA_TEXT) && (*buffer == ((uint8_t)('\r'))))
                 {
-                    if (UART_charPut_v1(hwAttrs, ((uint8_t)('\r')), &timeout) == FALSE)
+                    /* Echo character if enabled. */
+                    if (object->params.readEcho == UART_ECHO_ON)
+                    {
+                        if (UART_charPut_v1(hwAttrs, ((uint8_t)('\r')), &timeout) == FALSE)
+                        {
+                            timeoutErr = TRUE;
+                        }
+                    }
+                    if (timeoutErr == FALSE)
+                    {
+                        *buffer = ((uint8_t)('\n'));
+                    }
+                }
+
+                /* Echo character if enabled. */
+                if ((timeoutErr == FALSE) && (object->params.readEcho == UART_ECHO_ON))
+                {
+                    if (UART_charPut_v1(hwAttrs, *buffer, &timeout) == FALSE)
                     {
                         timeoutErr = TRUE;
                     }
                 }
-                if (timeoutErr == FALSE)
-                {
-                    *buffer = ((uint8_t)('\n'));
-                }
-            }
 
-            /* Echo character if enabled. */
-            if ((timeoutErr == FALSE) && (object->params.readEcho == UART_ECHO_ON))
-            {
-                if (UART_charPut_v1(hwAttrs, *buffer, &timeout) == FALSE)
+                /* If read return mode is newline, finish if a newline was received. */
+                if ((timeoutErr == FALSE) &&
+                    (object->params.readReturnMode == UART_RETURN_NEWLINE) &&
+                    (*buffer == ((uint8_t)('\n'))))
                 {
-                    timeoutErr = TRUE;
+                    ret_flag = 1U;
+                    break;
                 }
-            }
-
-            /* If read return mode is newline, finish if a newline was received. */
-            if ((timeoutErr == FALSE) &&
-                (object->params.readReturnMode == UART_RETURN_NEWLINE) &&
-                (*buffer == ((uint8_t)('\n'))))
-            {
-                ret_flag = 1U;
-                break;
-            }
-            else
-            {
-                buffer++;
+                else
+                {
+                    buffer++;
+                }
             }
         }
-    }
 
-    if(timeoutErr == FALSE)
-    {
-        UART_drv_log2("UART:(0x%x) Read polling timed out, %d bytes read",
-                      hwAttrs->baseAddr, (int32_t)count);
-    }
-
-    if(ret_flag == 0U)
-    {
-        UART_drv_log2("UART:(0x%x) Read polling finished, %d bytes read",
-        hwAttrs->baseAddr, (int32_t)count);
+        if(ret_flag == 0U)
+        {
+            UART_drv_log2("UART:(0x%x) Read polling finished, %d bytes read",
+            hwAttrs->baseAddr, (int32_t)count);
+        }
+        if(timeoutErr == TRUE)
+        {
+            UART_drv_log2("UART:(0x%x) Read polling timed out, %d bytes read",
+                          hwAttrs->baseAddr, (int32_t)count);
+            count = UART_ERROR;
+        }
     }
 
     return (count);
