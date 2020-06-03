@@ -9,7 +9,7 @@ endif
 
 APP_NAME = ipc_echo_testb
 
-SRCDIR = ../ ../../common/src
+SRCDIR = . ../ ../../common/src
 SRCS_COMMON = ipc_echo_test.c
 
 ECHO_TEST_BTCM = 1

@@ -31,7 +31,12 @@ ifeq ($(SOC),$(filter $(SOC), j721e j7200))
   XDC_CFG_UPDATE_$(CORE) = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/j721e/ipc_override.cfg
   ifeq ($(ECHO_TEST_BTCM), 1)
     ifeq ($(ISA), r5f)
-	  XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/j721e/sysbios_$(ISA).cfg
+      ifeq ($(CORE),mcu1_0)
+	    XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/j721e/sysbios_$(ISA)_btcm.cfg
+	    SRCS_ASM_COMMON += ipcCopyVecs2Exc.asm
+      else
+	    XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/j721e/sysbios_$(ISA).cfg
+      endif
 	  EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/j721e/linker_$(ISA)_$(CORE)_btcm_sysbios.lds
     else
 	  EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/j721e/linker_$(ISA)_$(CORE)_sysbios.lds

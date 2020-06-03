@@ -58,6 +58,7 @@
 #define BTCM_START 0x41010000
 
 -e __VECS_ENTRY_POINT
+--retain="*(.ipcCopyVecsToExc)"
 
 /*----------------------------------------------------------------------------*/
 /* Memory Map                                                                 */
@@ -119,6 +120,7 @@ SECTIONS
     .bootCode    	: {} palign(8) 		> MCU1_R5F0_BTCM
     .startupCode 	: {} palign(8) 		> MCU1_R5F0_BTCM
     .startupData 	: {} palign(8) 		> MCU1_R5F0_BTCM, type = NOINIT
+    .ipcCopyVecsToExc                   : {} palign(8) > MCU1_R5F0_BTCM
     .text	: {} palign(8)		> MCU1_0_DDR_SPACE
     .const   	: {} palign(8) 		> MCU1_0_DDR_SPACE
     .cinit   	: {} palign(8) 		> MCU1_0_DDR_SPACE
