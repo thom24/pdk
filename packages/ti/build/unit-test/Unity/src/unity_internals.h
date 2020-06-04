@@ -7,8 +7,10 @@
 #ifndef UNITY_INTERNALS_H
 #define UNITY_INTERNALS_H
 
-#ifdef UNITY_INCLUDE_CONFIG_H
+#if defined(UNITY_INCLUDE_CONFIG_H)
 #include "unity_config.h"
+#elif defined(UNITY_INCLUDE_CONFIG_V2_H) 
+#include "unity_config_v2.h"
 #endif
 
 #ifndef UNITY_EXCLUDE_SETJMP_H
