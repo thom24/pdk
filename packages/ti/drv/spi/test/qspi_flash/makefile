@@ -18,7 +18,6 @@ COMP_LIST_COMMON    = osal_tirtos
 ifeq ($(SOC),$(filter $(SOC), tpr12))
 # Enable XDC build for application by providing XDC CFG File per core
 XDC_CFG_FILE_mcu1_0 = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_r5f.cfg
-EXTERNAL_LNKCMD_FILE = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/linker_r5.lds
 endif
 
 endif
