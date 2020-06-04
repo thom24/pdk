@@ -206,12 +206,18 @@ void SBL_BootCore(uint32_t entry, uint32_t CoreID, sblEntryPoint_t *pAppEntry)
         case MCU2_CPU1_ID:
         case MCU3_CPU0_ID:
         case MCU3_CPU1_ID:
-        case M4F_CPU0_ID:
-       
             /* All other cores*/
             SBL_log(SBL_LOG_MAX, "Setting entry point for core %d @0x%x\n", CoreID, entry);
             pAppEntry->CpuEntryPoint[CoreID] = entry;
             break;
+
+        case M4F_CPU0_ID:
+            /* M4F entry point is always set to 0x0 */
+            entry=0x0;
+            SBL_log(SBL_LOG_MAX, "Setting entry point for core %d @0x%x\n", CoreID, entry);
+            pAppEntry->CpuEntryPoint[CoreID] = entry;
+            break;
+      
         case MPU1_SMP_ID:
             /* Cluster 1 SMP*/
             SBL_log(SBL_LOG_MAX, "Setting SMP entry point for MPU1 @0x%x\n", entry);
