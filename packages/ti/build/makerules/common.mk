@@ -481,7 +481,6 @@ SBL_APPIMAGE_PATH=$(BINDIR)/$(SBL_IMAGE_NAME).appimage
 SBL_APPIMAGE_PATH_BE=$(BINDIR)/$(SBL_IMAGE_NAME)_BE.appimage
 SBL_APP_BINIMAGE_PATH=$(EXE_NAME).bin
 SBL_APPIMAGE_PATH_SIGNED=$(BINDIR)/$(SBL_IMAGE_NAME).appimage.signed
-SBL_APPIMAGE_PATH_SIGNED_HS=$(BINDIR)/$(SBL_IMAGE_NAME)_hs.appimage.signed
 SBL_APPIMAGE_PATH_SIGNED_BE=$(BINDIR)/$(SBL_IMAGE_NAME)_BE.appimage.signed
 
 #MCUx_1 cores requires a dummy application to run from MCUx_0 core
@@ -684,8 +683,7 @@ else
    ifneq ($(OS),Windows_NT)
 	$(CHMOD) a+x $(SBL_CERT_GEN)
    endif
-	$(SBL_CERT_GEN) -b $@ -o $(SBL_APPIMAGE_PATH_SIGNED)    -c R5 -l $(SBL_RUN_ADDRESS) -k $(SBL_CERT_KEY)
-	$(SBL_CERT_GEN) -b $@ -o $(SBL_APPIMAGE_PATH_SIGNED_HS) -c R5 -l $(SBL_RUN_ADDRESS) -k $(SBL_CERT_KEY_HS)
+	$(SBL_CERT_GEN) -b $@ -o $(SBL_APPIMAGE_PATH_SIGNED)    -c R5 -l $(SBL_RUN_ADDRESS) -k $(SBL_CERT_KEY_HS)
  endif
 endif
 	$(RM) -f $(SBL_STDOUT_FILE)
