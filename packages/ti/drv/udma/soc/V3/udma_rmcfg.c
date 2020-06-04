@@ -446,14 +446,14 @@ const Udma_RmInitPrms gUdmaRmDefCfg_Pktdma[UDMA_NUM_CORE] =
         0U,         /* startTxHcCh */
         0U,         /* numTxHcCh */
         0U,         /* startTxCh */
-        0U,         /* numTxCh */
+        8U,         /* numTxCh */
 
         0U,         /* startRxUhcCh */
         0U,         /* numRxUhcCh */
         0U,         /* startRxHcCh */
         0U,         /* numRxHcCh */
         0U,         /* startRxCh */
-        0U,         /* numRxCh */
+        8U,         /* numRxCh */
 
         {0U, 0U, 0U, 0U},  /* startMappedTxCh[] */
         {0U, 0U, 0U, 0U},  /* numMappedTxCh[] */
@@ -469,12 +469,12 @@ const Udma_RmInitPrms gUdmaRmDefCfg_Pktdma[UDMA_NUM_CORE] =
         0U,         /* startFreeRing */
         0U,         /* numFreeRing */
 
-        0U,         /* startGlobalEvent */
-        0U,         /* numGlobalEvent */
-        0U,         /* startVintr */
-        0U,         /* numVintr */
-        0U,         /* startIrIntr */
-        0U,         /* numIrIntr */
+        115U,         /* startGlobalEvent */
+        50U,         /* numGlobalEvent */
+        22U,         /* startVintr */
+        18U,         /* numVintr */
+        86U,         /* startIrIntr */
+        18U,         /* numIrIntr */
 
         0U,         /* proxyThreadNum */
         0U,         /* startC7xCoreIntr */
@@ -604,15 +604,15 @@ const Udma_RmInitPrms gUdmaRmDefCfg_Pktdma[UDMA_NUM_CORE] =
         0U,         /* numTxUhcCh */
         0U,         /* startTxHcCh */
         0U,         /* numTxHcCh */
-        0U,         /* startTxCh */
-        16U,        /* numTxCh */
+        8U,         /* startTxCh */
+        8U,        /* numTxCh */
 
         0U,         /* startRxUhcCh */
         0U,         /* numRxUhcCh */
         0U,         /* startRxHcCh */
         0U,         /* numRxHcCh */
-        0U,         /* startRxCh */
-        16U,        /* numRxCh */
+        8U,         /* startRxCh */
+        8U,        /* numRxCh */
 
         {16U, 24U, 26U, 34U},  /* startMappedTxCh[] */
         {8U,  2U,  8U,  8U},   /* numMappedTxCh[] */
@@ -628,12 +628,12 @@ const Udma_RmInitPrms gUdmaRmDefCfg_Pktdma[UDMA_NUM_CORE] =
         0U,         /* startFreeRing */
         0U,         /* numFreeRing */
 
-        115U,       /* startGlobalEvent */
-        100U,       /* numGlobalEvent */
-        58U,        /* startVintr */
-        14U,        /* numVintr */
-        82U,        /* startIrIntr */
-        14U,        /* numIrIntr */
+        165U,       /* startGlobalEvent */
+        50U,       /* numGlobalEvent */
+        72U,        /* startVintr */
+        8U,        /* numVintr */
+        8U,        /* startIrIntr */
+        8U,        /* numIrIntr */
 
         0U,         /* proxyThreadNum */
         0U,         /* startC7xCoreIntr */
