@@ -70,6 +70,9 @@ MuxIntcP_Status MuxIntcP_create(MuxIntcP_inParams *inParams, MuxIntcP_outParams 
  */
 void MuxIntcP_enableInEvent(int32_t muxNum, int32_t muxInEvent)
 {
+    /* Workaround to resolve the Misra-C 2012 Rule 2.7 issue */
+    (void)muxNum;
+    (void)muxInEvent;
 }
 
 /*
@@ -77,6 +80,9 @@ void MuxIntcP_enableInEvent(int32_t muxNum, int32_t muxInEvent)
  */
 void MuxIntcP_disableInEvent(int32_t muxNum, int32_t muxInEvent)
 {
+    /* Workaround to resolve the Misra-C 2012 Rule 2.7 issue */
+    (void)muxNum;
+    (void)muxInEvent;
 }
 
 /*
@@ -84,6 +90,9 @@ void MuxIntcP_disableInEvent(int32_t muxNum, int32_t muxInEvent)
  */
 void MuxIntcP_clearInEvent(int32_t muxNum, int32_t muxInEvent)
 {
+    /* Workaround to resolve the Misra-C 2012 Rule 2.7 issue */
+    (void)muxNum;
+    (void)muxInEvent;
 }
 
 /*
@@ -91,6 +100,9 @@ void MuxIntcP_clearInEvent(int32_t muxNum, int32_t muxInEvent)
  */
 void MuxIntcP_enableOutEvent(int32_t muxNum, int32_t muxOutEvent)
 {
+    /* Workaround to resolve the Misra-C 2012 Rule 2.7 issue */
+    (void)muxNum;
+    (void)muxOutEvent;
 }
 
 /*
@@ -98,4 +110,7 @@ void MuxIntcP_enableOutEvent(int32_t muxNum, int32_t muxOutEvent)
  */
 void MuxIntcP_disableOutEvent(int32_t muxNum, int32_t muxOutEvent)
 {
+    /* Workaround to resolve the Misra-C 2012 Rule 2.7 issue */
+    (void)muxNum;
+    (void)muxOutEvent;
 }

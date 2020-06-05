@@ -68,7 +68,7 @@ typedef struct TimerP_Struct_s
   void*    arg;        /* Argument passed into the timer function. */
   uint32_t availMask;   /* Available timer mask */
   HwiP_Handle hwi;      /* Hwi handle for tickFxn */
-  uint32_t eventId;     /* Event Id for C66x */
+  int32_t  eventId;     /* Event Id for C66x */
   int32_t  intNum;      /* Interrupt Number */
   uint32_t prescale;
 }TimerP_Struct;
@@ -87,7 +87,7 @@ extern uint32_t  gOsalTimerAllocCnt, gOsalTimerPeak;
 /* Local functions  */
 static uint32_t TimerP_getTimerBaseAddr(uint32_t timer_id);
 static void TimerP_rtiTimerStub(uintptr_t arg);
-static void  TimerP_rtiTimerInitDevice(TimerP_Struct *timer, uint32_t baseAddr);
+static void  TimerP_rtiTimerInitDevice(const TimerP_Struct *timer, uint32_t baseAddr);
 static bool TimerP_rtiTimerCheckOverflow(uint32_t a, uint32_t b);
 static bool TimerP_rtiTimerSetMicroSeconds(TimerP_Struct *timer, uint32_t period);
 static TimerP_Status TimerP_rtiTimerDeviceCfg(TimerP_Struct *timer, uint32_t baseAddr);
@@ -122,31 +122,34 @@ static void TimerP_rtiTimerStub(uintptr_t arg)
 
   /* Disable the Timer interrupts */
 
-   if (timer->runMode == (uint32_t)TimerP_RunMode_ONESHOT)
-     TimerP_stop((TimerP_Handle) timer);
+  if (timer->runMode == (uint32_t)TimerP_RunMode_ONESHOT) {
+    (void)TimerP_stop((TimerP_Handle) timer);
+  }
 
   /* acknowledge the interrupt */
-  if (timer->id & 0x01)
+  if ((timer->id & 0x01U) != 0U) {
     HW_WR_FIELD32(baseAddr + RTI_RTIINTFLAG, RTI_RTIINTFLAG_INT1, 1);
-  else
+  }
+  else {
     HW_WR_FIELD32(baseAddr + RTI_RTIINTFLAG, RTI_RTIINTFLAG_INT0, 1);
+  }
 
   /* call the user's ISR */
   timer->tickFxn((uintptr_t)timer->arg);
 
-   /* Enable the Timer interrupts */
+  /* Enable the Timer interrupts */
 }
 
 /*
  * This priviate function initializes the timer registers
  */
-static void  TimerP_rtiTimerInitDevice(TimerP_Struct *timer, uint32_t baseAddr)
+static void  TimerP_rtiTimerInitDevice(const TimerP_Struct *timer, uint32_t baseAddr)
 {
   uint32_t key;
 
   key = (uint32_t)HwiP_disable();
 
-  if (timer->id & 0x01) {
+  if ((timer->id & 0x01U) != 0U) {
     HW_WR_FIELD32(baseAddr + RTI_RTIGCTRL, RTI_RTIGCTRL_CNT1EN, 0);
     HW_WR_REG32(baseAddr + RTI_RTIUDCP1, 0);
     HW_WR_REG32(baseAddr + RTI_RTICOMP1, 0);
@@ -159,7 +162,7 @@ static void  TimerP_rtiTimerInitDevice(TimerP_Struct *timer, uint32_t baseAddr)
     HW_WR_REG32(baseAddr + RTI_RTICPUC0, 0);
   }
 
-  if (timer->hwi) {
+  if (timer->hwi != NULL_PTR) {
     /* clear any previously latched timer interrupts */
     Osal_ClearInterrupt(timer->eventId, timer->intNum);
     Osal_DisableInterrupt(timer->eventId, timer->intNum);
@@ -174,7 +177,7 @@ static void  TimerP_rtiTimerInitDevice(TimerP_Struct *timer, uint32_t baseAddr)
  */
 static bool TimerP_rtiTimerCheckOverflow(uint32_t a, uint32_t b)
 {
-  return ((b > 0u) && (a > (TimerP_MAX_PERIOD/b)));
+  return ((b > 0U) && (a > (TimerP_MAX_PERIOD/b)));
 }
 
 /*
@@ -185,27 +188,31 @@ static bool TimerP_rtiTimerSetMicroSeconds(TimerP_Struct *timer, uint32_t period
 {
   uint64_t  counts;
   uint32_t  freqKHz;
-  uint32_t  baseAddr = TimerP_getTimerBaseAddr(timer->id);
+  bool      ret = (bool) true;
 
   (void)TimerP_stop(timer);
 
   /*
    * The frequency of FRC is equal to the clock rate divided by (prescale + 1)
    */
-  freqKHz = (timer->freqLo/(TIMERP_PRESCALE_DEF+1) + 500)/ 1000U;
+  freqKHz = ((timer->freqLo/(TIMERP_PRESCALE_DEF+1U)) + 500U)/ 1000U;
   if (TimerP_rtiTimerCheckOverflow(freqKHz, period/1000U)) {
-    return (FALSE);
+    ret = (bool) false;
   }
 
-  counts = ((uint64_t)freqKHz * (uint64_t)period) / (uint64_t)1000U;
-  if (counts > 0xffffffffU) {
-    return (FALSE);
+  if (ret == (bool) true) {
+    counts = ((uint64_t)freqKHz * (uint64_t)period) / (uint64_t)1000U;
+    if (counts > 0xffffffffU) {
+      ret = (bool) false;
+    }
   }
-  timer->period = (uint32_t)counts;
-  timer->periodType = (uint32_t)TimerP_PeriodType_COUNTS;
-  timer->prescale = TIMERP_PRESCALE_DEF;
 
-  return(TRUE);
+  if (ret == (bool) true) {
+    timer->period = (uint32_t)counts;
+    timer->periodType = (uint32_t)TimerP_PeriodType_COUNTS;
+    timer->prescale = TIMERP_PRESCALE_DEF;
+  }
+  return(ret);
 }
 
 /*
@@ -233,7 +240,7 @@ static TimerP_Status TimerP_rtiTimerDeviceCfg(TimerP_Struct *timer, uint32_t bas
   if(retVal == TimerP_OK)
   {
     /* Set prescaler, enable interrupt and select counter for comparator */
-    if (timer->id & 0x1) {
+    if ((timer->id & 0x01U) != 0U) {
       HW_WR_REG32(baseAddr + RTI_RTICPUC1, timer->prescale);
       HW_WR_FIELD32(baseAddr + RTI_RTICOMPCTRL, RTI_RTICOMPCTRL_COMPSEL1, 1);
       HW_WR_FIELD32(baseAddr + RTI_RTISETINT, RTI_RTISETINT_SETINT1, 1);
@@ -293,33 +300,33 @@ static TimerP_Status TimerP_rtiTimerInitObj(TimerP_Struct *timer, TimerP_Fxn tic
     timer->period   = 0u;
   }
 
-   if ( params->arg != NULL_PTR) {
-     timer->arg     = params->arg;
-   }
+  if ( params->arg != NULL_PTR) {
+    timer->arg     = params->arg;
+  }
 
-   if ( params->intNum != TimerP_USE_DEFAULT) {
-     timer->intNum = params->intNum;
-   }
-   else {
-     timer->intNum = gRtiTimerPInfoTbl[timer->id].intNum;
-   }
+  if ( params->intNum != TimerP_USE_DEFAULT) {
+    timer->intNum = params->intNum;
+  }
+  else {
+    timer->intNum = gRtiTimerPInfoTbl[timer->id].intNum;
+  }
 
 #if defined (_TMS320C6X)
-   if ( params->eventId != TimerP_USE_DEFAULT) {
-     timer->eventId = (uint32_t)params->eventId;
-   }
-   else {
-     timer->eventId = (uint32_t)gRtiTimerPInfoTbl[timer->id].eventId;
-   }
+  if ( params->eventId != TimerP_USE_DEFAULT) {
+    timer->eventId = params->eventId;
+  }
+  else {
+    timer->eventId = gRtiTimerPInfoTbl[timer->id].eventId;
+  }
 #else
-   timer->eventId = 0;
+  timer->eventId = 0;
 #endif
 
-   timer->periodType = params->periodType;
-   timer->startMode  = params->startMode;
-   timer->runMode    = params->runMode;
+  timer->periodType = params->periodType;
+  timer->startMode  = params->startMode;
+  timer->runMode    = params->runMode;
 
-   return(TimerP_OK);
+  return(TimerP_OK);
 }
 
 /*
@@ -356,12 +363,12 @@ static TimerP_Status TimerP_rtiTimerInstanceInit(TimerP_Struct *timer, uint32_t 
     key = (uint32_t)HwiP_disable();
 
     if (id == TimerP_ANY) {
-      for (i = 0u; i < TimerP_numTimerDevices; i++) {
+      for (i = 0U; i < TimerP_numTimerDevices; i++) {
         uint32_t shift, nshift;
-        shift  = ((uint32_t) 1u) << i;
+        shift  = ((uint32_t) 1U) << i;
         nshift = ~shift;
-        if (((timerPAnyMask    & shift) != (uint32_t) 0u ) &&
-            ((timer->availMask & shift) != (uint32_t) 0u )) {
+        if (((timerPAnyMask    & shift) != (uint32_t) 0U ) &&
+            ((timer->availMask & shift) != (uint32_t) 0U )) {
           timer->availMask &= nshift;
           tempId = i;
           break;
@@ -414,7 +421,6 @@ static TimerP_Status TimerP_rtiTimerInstanceInit(TimerP_Struct *timer, uint32_t 
 
 #if defined (__ARM_ARCH_7A__) || defined (__aarch64__) || defined (__TI_ARM_V7R4__)
 #if defined(SOC_AM335x) || defined(SOC_AM437x) || defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)
-    /* TBD */
       interruptRegParams.corepacConfig.triggerSensitivity =  (uint32_t)OSAL_ARM_GIC_TRIG_TYPE_HIGH_LEVEL;
       interruptRegParams.corepacConfig.priority = 0x20U;
 #else
@@ -423,7 +429,7 @@ static TimerP_Status TimerP_rtiTimerInstanceInit(TimerP_Struct *timer, uint32_t 
 #endif
 
 #if defined(_TMS320C6X)
-      interruptRegParams.corepacConfig.corepacEventNum=(int32_t)timer->eventId; /* Event going in to CPU */
+      interruptRegParams.corepacConfig.corepacEventNum= timer->eventId; /* Event going in to CPU */
 #endif
       interruptRegParams.corepacConfig.intVecNum=intNum; /* Host Interrupt vector */
 
@@ -582,8 +588,9 @@ TimerP_Status TimerP_delete(TimerP_Handle handle)
   if((timer != NULL_PTR) && (gTimerStructs[index].used))
   {
     /* clear the ISR that was set before */
-    if (timer->hwi)
+    if (timer->hwi != NULL) {
       (void)HwiP_delete(timer->hwi);
+    }
 
     gTimerStructs[index].used = (bool)false;
     /* Found the osal timer object to delete */
@@ -626,7 +633,7 @@ TimerP_Status TimerP_start(TimerP_Handle handle)
 
     (void)TimerP_stop(handle);
 
-    if (timer->id & 0x01) {
+    if ((timer->id & 0x01U) != 0U) {
       HW_WR_REG32(baseAddr + RTI_RTIUC1, 0);
       HW_WR_REG32(baseAddr + RTI_RTIFRC1, 0);
       HW_WR_REG32(baseAddr + RTI_RTICOMP1, timer->period);
@@ -646,7 +653,7 @@ TimerP_Status TimerP_start(TimerP_Handle handle)
       Osal_EnableInterrupt(timer->eventId, timer->intNum);
     }
 
-    if (timer->id & 0x01) {
+    if ((timer->id & 0x01U) != 0U) {
       HW_WR_FIELD32(baseAddr + RTI_RTIGCTRL, RTI_RTIGCTRL_CNT1EN, 1);
     }
     else {
@@ -678,7 +685,7 @@ TimerP_Status TimerP_stop(TimerP_Handle handle)
   {
     key = (uint32_t)HwiP_disable();
 
-    if (timer->id & 0x01) {
+    if ((timer->id & 0x01U) != 0U) {
       HW_WR_FIELD32(baseAddr + RTI_RTIGCTRL, RTI_RTIGCTRL_CNT1EN, 0);
     }
     else {
@@ -715,7 +722,7 @@ uint64_t TimerP_getTimeInUsecs(void)
 {
     TimeStamp_Struct timestamp64;
     uint64_t         cur_ts, freq;
-    uint32_t             tsFreqKHz;
+    uint32_t         tsFreqKHz;
 
     /* Get the timestamp */
     osalArch_TimestampGet64(&timestamp64);

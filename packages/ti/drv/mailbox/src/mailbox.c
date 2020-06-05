@@ -343,7 +343,7 @@ extern Mbox_Handle Mailbox_open(Mailbox_openParams *openParam,  int32_t* errCode
         Osal_RegisterInterrupt(&interruptRegParams, &(gMailboxMCB.hwiHandles.mailboxFull));
         /* Debug Message: */
         DebugP_log2 ("MAILBOX: Mailbox Driver Registering Mailbox Full HWI ISR [%p] for Interrupt %d\n",
-                      gMailboxMCB.hwiHandles.mailboxFull, (mailboxDriver->hwCfg)->boxFullIntNum);
+                      (uintptr_t)gMailboxMCB.hwiHandles.mailboxFull, (mailboxDriver->hwCfg)->boxFullIntNum);
         Osal_EnableInterrupt(interruptRegParams.corepacConfig.corepacEventNum, interruptRegParams.corepacConfig.intVecNum);
 
         /************** Mailbox empty ***********/
@@ -365,7 +365,7 @@ extern Mbox_Handle Mailbox_open(Mailbox_openParams *openParam,  int32_t* errCode
         Osal_RegisterInterrupt(&interruptRegParams, &(gMailboxMCB.hwiHandles.mailboxEmpty));
         /* Debug Message: */
         DebugP_log2 ("MAILBOX: Mailbox Driver Registering Mailbox Full to Core HWI ISR [%p] for Interrupt %d\n",
-                      gMailboxMCB.hwiHandles.mailboxEmpty, (mailboxDriver->hwCfg)->boxEmptyIntNum);
+                      (uintptr_t)gMailboxMCB.hwiHandles.mailboxEmpty, (mailboxDriver->hwCfg)->boxEmptyIntNum);
         Osal_EnableInterrupt(interruptRegParams.corepacConfig.corepacEventNum, interruptRegParams.corepacConfig.intVecNum);
     }
 
@@ -401,7 +401,7 @@ extern Mbox_Handle Mailbox_open(Mailbox_openParams *openParam,  int32_t* errCode
         remoteCfg->handleArray[openParam->cfg.chId] = retHandle;
     }
 
-    DebugP_log1("MAILBOX: Mailbox Driver (%p) open successful.\n", mailboxDriver);
+    DebugP_log1("MAILBOX: Mailbox Driver (%p) open successful.\n", (uintptr_t)mailboxDriver);
 
 exit:
     if (*errCode != 0)
@@ -433,7 +433,7 @@ int32_t Mailbox_read(Mbox_Handle handle, uint8_t *buffer, uint32_t size)
     if((size == 0) || (buffer == NULL) || (handle == NULL))
     {
         /* Error: Invalid Arguments */
-        DebugP_log3 ("MAILBOX: Mailbox_read Error! Invalid param. Size=%d Buffer=(%p) handle=(%p)\n", size, buffer, handle);
+        DebugP_log3 ("MAILBOX: Mailbox_read Error! Invalid param. Size=%d Buffer=(%p) handle=(%p)\n", size, (uintptr_t)buffer, (uintptr_t)handle);
         retVal = MAILBOX_EINVAL;
     }
     else
@@ -459,7 +459,7 @@ int32_t Mailbox_read(Mbox_Handle handle, uint8_t *buffer, uint32_t size)
 
                     /* Report the error condition: */
                     DebugP_log2 ("MAILBOX:(%p) Mailbox_read timed out. Number of RX messages = %d.\n",
-                                 driver, driver->rxCount);
+                                 (uintptr_t)driver, driver->rxCount);
                 }
             }
 
@@ -618,7 +618,7 @@ int32_t Mailbox_write(Mbox_Handle handle, const uint8_t *buffer, uint32_t size)
     if((size == 0) || (size > MAILBOX_DATA_BUFFER_SIZE) || (buffer == NULL) || (handle == NULL) || (driver->hwCfg == NULL))
     {
         /* Error: Invalid Arguments */
-        DebugP_log4 ("MAILBOX: Mailbox_write Error! Invalid param. Size=%d Buffer=(%p) handle=(%p) hwCfgPtr=(%p)\n", size, buffer, handle, driver->hwCfg);
+        DebugP_log4 ("MAILBOX: Mailbox_write Error! Invalid param. Size=%d Buffer=(%p) handle=(%p) hwCfgPtr=(%p)\n", size, (uintptr_t)buffer, (uintptr_t)handle, (uintptr_t)driver->hwCfg);
         retVal = MAILBOX_EINVAL;
         goto exit;
     }
@@ -637,7 +637,7 @@ int32_t Mailbox_write(Mbox_Handle handle, const uint8_t *buffer, uint32_t size)
         else
         {
             /* Error: TX mailbox is being used by another mailbox instance*/
-            DebugP_log2 ("MAILBOX: Mailbox_write Error! handle=(%p). Write attempt with TX box in use by channel ID %d\n",driver, driver->remoteCfgPtr->writeChIDInUse);
+            DebugP_log2 ("MAILBOX: Mailbox_write Error! handle=(%p). Write attempt with TX box in use by channel ID %d\n",(uintptr_t)driver, driver->remoteCfgPtr->writeChIDInUse);
             retVal = MAILBOX_ECHINUSE;
             /* Release the critical section: */
             HwiP_restore(key);
@@ -650,7 +650,7 @@ int32_t Mailbox_write(Mbox_Handle handle, const uint8_t *buffer, uint32_t size)
         /* Error: TX mailbox is full, can not write new message until acknowledge is received from remote endpoint */
         /* Note that this should take care that the DMA has been completed as well because this flag is cleaned only after
            copy is done */
-        DebugP_log1("MAILBOX: Mailbox_write Error! handle=(%p). Write attempt with txBoxStatus == MAILBOX_TX_BOX_FULL\n", handle);
+        DebugP_log1("MAILBOX: Mailbox_write Error! handle=(%p). Write attempt with txBoxStatus == MAILBOX_TX_BOX_FULL\n", (uintptr_t)handle);
         retVal = MAILBOX_ETXFULL;
         goto exit;
     }
@@ -704,7 +704,7 @@ int32_t Mailbox_write(Mbox_Handle handle, const uint8_t *buffer, uint32_t size)
 
             /* Report the error condition: */
             DebugP_log2 ("MAILBOX:(%p) Write acknowledge timed out. Ack was never received. Number of received TX messages = %d.\n",
-                         driver, driver->txCount);
+                         (uintptr_t)driver, driver->txCount);
         }
     }
 

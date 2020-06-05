@@ -37,23 +37,34 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
+#include <ti/osal/DebugP.h>
+
+#if DebugP_LOG_ENABLED
 extern volatile bool Osal_DebugP_Assert_Val;
 
 /*
  *  ======== _DebugP_assert ========
  */
-void _DebugP_assert(int expression, const char *file, int line)
+void Osal_DebugP_assert_fcn(bool expression, const char *file, int32_t line)
 {
+    /* Workaround to resolve the Misra-C 2012 Rule 2.7 issue */
+    (void)file;
+    (void)line;
+
     if (!expression) {
         while (Osal_DebugP_Assert_Val == (bool)true) {};
     }
 }
+#endif
 
+#if DebugP_LOG_ENABLED
 /*
  *  ======== DebugP_log0 ========
  */
 void DebugP_log0(const char *format)
 {
+    /* Workaround to resolve the Misra-C 2012 Rule 2.7 issue */
+    (void)format;
 }
 
 /*
@@ -61,6 +72,9 @@ void DebugP_log0(const char *format)
  */
 void DebugP_log1(const char *format, uintptr_t p1)
 {
+    /* Workaround to resolve the Misra-C 2012 Rule 2.7 issue */
+    (void)format;
+    (void)p1;
 }
 
 /*
@@ -68,6 +82,10 @@ void DebugP_log1(const char *format, uintptr_t p1)
  */
 void DebugP_log2(const char *format, uintptr_t p1, uintptr_t p2)
 {
+    /* Workaround to resolve the Misra-C 2012 Rule 2.7 issue */
+    (void)format;
+    (void)p1;
+    (void)p2;
 }
 
 /*
@@ -75,6 +93,11 @@ void DebugP_log2(const char *format, uintptr_t p1, uintptr_t p2)
  */
 void DebugP_log3(const char *format, uintptr_t p1, uintptr_t p2, uintptr_t p3)
 {
+    /* Workaround to resolve the Misra-C 2012 Rule 2.7 issue */
+    (void)format;
+    (void)p1;
+    (void)p2;
+    (void)p3;
 }
 
 /*
@@ -82,4 +105,11 @@ void DebugP_log3(const char *format, uintptr_t p1, uintptr_t p2, uintptr_t p3)
  */
 void DebugP_log4(const char *format, uintptr_t p1, uintptr_t p2, uintptr_t p3, uintptr_t p4)
 {
+    /* Workaround to resolve the Misra-C 2012 Rule 2.7 issue */
+    (void)format;
+    (void)p1;
+    (void)p2;
+    (void)p3;
+    (void)p4;
 }
+#endif

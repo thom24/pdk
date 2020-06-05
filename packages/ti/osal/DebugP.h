@@ -75,6 +75,9 @@ extern "C" {
 #include <stdbool.h>
 #include <stddef.h>
 
+#define DebugP_ASSERT_ENABLED 1
+#define DebugP_LOG_ENABLED    1
+
 /*!
  *  @brief    Assert Enabled
  *
@@ -107,9 +110,9 @@ extern "C" {
  *
  */
 #if DebugP_ASSERT_ENABLED
-extern void _DebugP_assert(int expression, const char *file, int line);
-#define DebugP_assert(expression) (_DebugP_assert(expression,      \
-                                                  __FILE__, __LINE__))
+extern void Osal_DebugP_assert_fcn(bool expression, const char *file, int32_t line);
+#define DebugP_assert(expression) (Osal_DebugP_assert_fcn(expression,         \
+                                                         __FILE__, __LINE__))
 #else
 #define DebugP_assert(expression)
 #endif

@@ -92,6 +92,9 @@ void OsalArch_clearInterrupt(uint32_t intNum)
 /* Below function posts the interrupt */
 int32_t OsalArch_postInterrupt(uint32_t intrNum)
 {
+    /* Workaround to resolve the Misra-C 2012 Rule 2.7 issue */
+    (void)intrNum;
+
     return (osal_UNSUPPORTED);
 }
 /* Below function globally disable interrupt in the chip level */

@@ -39,16 +39,21 @@
 #include <xdc/runtime/Assert.h>
 #include <xdc/runtime/Diags.h>
 #include <xdc/runtime/Log.h>
+#include <ti/osal/DebugP.h>
 
+#if DebugP_ASSERT_ENABLED
 /*
  *  ======== _DebugP_assert ========
  */
-void _DebugP_assert(int expression, const char *file, int line)
+void Osal_DebugP_assert_fcn(bool expression, const char *file, int32_t line)
 {
     if (!expression) {
-        xdc_runtime_Assert_raise__I(Module__MID, file, line, (xdc_runtime_Assert_Id)0);
+        xdc_runtime_Assert_raise__I(Module__MID, (xdc_CString)file, (xdc_Int)line, (xdc_runtime_Assert_Id)0);
     }
 }
+#endif
+
+#if DebugP_LOG_ENABLED
 /*
  *  ======== DebugP_log0 ========
  */
@@ -87,3 +92,4 @@ void DebugP_log4(const char *format, uintptr_t p1, uintptr_t p2, uintptr_t p3, u
     Log_print4(Diags_USER1, format, (xdc_IArg)p1,
               (xdc_IArg)p2, (xdc_IArg)p3, (xdc_IArg)p4);
 }
+#endif

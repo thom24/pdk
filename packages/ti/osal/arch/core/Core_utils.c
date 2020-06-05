@@ -58,7 +58,7 @@ void CacheP_fenceCpu2Dma(uintptr_t addr, uint32_t size, Osal_CacheP_isCoherent i
     /* CPU to DMA would be to do Wb call if it is not coherent */
     if (isCoherent == OSAL_CACHEP_NOT_COHERENT)
     {
-        CacheP_wb( (const void *) addr, size);
+        CacheP_wb( (const void *)addr, (int32_t)size);
     }
 }
 
@@ -67,7 +67,7 @@ void CacheP_fenceDma2Cpu(uintptr_t addr, uint32_t size, Osal_CacheP_isCoherent i
     /* DMA to CPU would be to do Cache inv call if it is not coherent */
     if (isCoherent == OSAL_CACHEP_NOT_COHERENT)
     {
-        CacheP_Inv( (const void *) addr, size);
+        CacheP_Inv( (const void *)addr, (int32_t)size);
     }
 }
 /* Nothing past this point */

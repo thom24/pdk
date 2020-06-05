@@ -87,6 +87,10 @@ void MemoryP_dataFree(void* ptr, uint32_t size)
  */
 void MemoryP_getStats(MemoryP_Stats *stats)
 {
-    Memory_getStats(NULL, (Memory_Stats *)stats);
+    xdc_runtime_Memory_Stats memStats;
+
+    Memory_getStats(NULL, &memStats);
+    stats->totalSize = (uint32_t)memStats.totalSize;
+    stats->totalFreeSize = (uint32_t)memStats.totalFreeSize;
 }
 

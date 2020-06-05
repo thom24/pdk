@@ -46,28 +46,28 @@ TimerP_rtiTimerDefault gRtiTimerPInfoTbl[TimerP_numTimerDevices] = {
   /* Timer ID 0 */
   {
     "RTITimer1",                                /* Timer Name */
-     CSL_DSS_RTIA_U_BASE,                       /* base address */
+     (uint32_t)CSL_DSS_RTIA_U_BASE,             /* base address */
      OSAL_REGINT_INTVEC_EVENT_COMBINER,         /* Interrupt Number */
      CSL_DSS_INTR_DSS_RTIA_0,                   /* Event Id */
   },
   /* Timer ID 1 */
   {
     "RTITimer2",                                /* Timer Name */
-     CSL_DSS_RTIA_U_BASE,                       /* base address */
+     (uint32_t)CSL_DSS_RTIA_U_BASE,             /* base address */
      OSAL_REGINT_INTVEC_EVENT_COMBINER,         /* Interrupt Number */
      CSL_DSS_INTR_DSS_RTIA_1,                   /* Event Id */
   },
   /* Timer ID 2 */
   {
     "RTITimer3",                                /* Timer Name */
-     CSL_DSS_RTIB_U_BASE,                       /* base address */
+     (uint32_t)CSL_DSS_RTIB_U_BASE,             /* base address */
      OSAL_REGINT_INTVEC_EVENT_COMBINER,         /* Interrupt Number */
      CSL_DSS_INTR_DSS_RTIB_0,                   /* Event Id */
   },
   /* Timer ID 3 */
   {
     "RTITimer4",                                /* Timer Name */
-     CSL_DSS_RTIB_U_BASE,                       /* base address */
+     (uint32_t)CSL_DSS_RTIB_U_BASE,             /* base address */
      OSAL_REGINT_INTVEC_EVENT_COMBINER,         /* Interrupt Number */
      CSL_DSS_INTR_DSS_RTIB_0,                   /* Event Id */
   }
@@ -77,42 +77,42 @@ TimerP_rtiTimerDefault gRtiTimerPInfoTbl[TimerP_numTimerDevices] = {
   /* Timer ID 0 */
   {
     "RTITimer1",                                /* Timer Name */
-     CSL_MSS_RTIA_U_BASE,                       /* base address */
+     (uint32_t)CSL_MSS_RTIA_U_BASE,             /* base address */
      CSL_MSS_INTR_MSS_RTIA_INT0,                /* Interrupt Number */
      TIMERP_EVENT_NOT_AVAILABLE,                /* Event Id */
   },
   /* Timer ID 1 */
   {
     "RTITimer2",                                /* Timer Name */
-     CSL_MSS_RTIA_U_BASE,                       /* base address */
+     (uint32_t)CSL_MSS_RTIA_U_BASE,             /* base address */
      CSL_MSS_INTR_MSS_RTIA_INT1,                /* Interrupt Number */
      TIMERP_EVENT_NOT_AVAILABLE,                /* Event Id */
   },
   /* Timer ID 2 */
   {
     "RTITimer3",                                /* Timer Name */
-     CSL_MSS_RTIB_U_BASE,                       /* base address */
+     (uint32_t)CSL_MSS_RTIB_U_BASE,             /* base address */
      CSL_MSS_INTR_MSS_RTIB_INT0,                /* Interrupt Number */
      TIMERP_EVENT_NOT_AVAILABLE,                /* Event Id */
   },
   /* Timer ID 3 */
   {
     "RTITimer4",                                /* Timer Name */
-     CSL_MSS_RTIB_U_BASE,                       /* base address */
+     (uint32_t)CSL_MSS_RTIB_U_BASE,             /* base address */
      CSL_MSS_INTR_MSS_RTIB_INT1,                /* Interrupt Number */
      TIMERP_EVENT_NOT_AVAILABLE,                /* Event Id */
   },
   /* Timer ID 4 */
   {
     "RTITimer5",                                /* Timer Name */
-     CSL_MSS_RTIC_U_BASE,                       /* base address */
+     (uint32_t)CSL_MSS_RTIC_U_BASE,             /* base address */
      CSL_MSS_INTR_MSS_RTIC_INT0,                /* Interrupt Number */
      TIMERP_EVENT_NOT_AVAILABLE,                /* Event Id */
   },
   /* Timer ID 5 */
   {
     "RTITimer6",                                /* Timer Name */
-     CSL_MSS_RTIC_U_BASE,                       /* base address */
+     (uint32_t)CSL_MSS_RTIC_U_BASE,             /* base address */
      CSL_MSS_INTR_MSS_RTIC_INT1,                /* Interrupt Number */
      TIMERP_EVENT_NOT_AVAILABLE,                /* Event Id */
   }
@@ -122,6 +122,9 @@ TimerP_rtiTimerDefault gRtiTimerPInfoTbl[TimerP_numTimerDevices] = {
 /* Returns the default frquency lower 32 bits */
 int32_t TimerP_getDefaultFreqLo(uint32_t timerId)
 {
+    /* Workaround to resolve the Misra-C 2012 Rule 2.7 issue */
+    (void)timerId;
+
     /* return the same default frequency for all timer Ids */
     return(TIMERP_TIMER_FREQ_LO);
 }
@@ -129,6 +132,9 @@ int32_t TimerP_getDefaultFreqLo(uint32_t timerId)
 /* Returns the default frquency higher 32 bits */
 int32_t TimerP_getDefaultFreqHi(uint32_t timerId)
 {
+    /* Workaround to resolve the Misra-C 2012 Rule 2.7 issue */
+    (void)timerId;
+
     /* return the same default frequency for all timer Ids */
     return(TIMERP_TIMER_FREQ_HI);
 }
