@@ -39,7 +39,7 @@ ifeq ($(sciclient_component_make_include), )
 # List of components included under sciclient
 # The components included here are built and will be part of sciclient lib
 ############################
-sciclient_LIB_LIST = sciclient 
+sciclient_LIB_LIST = sciclient
 ifeq ($(SOC),$(filter $(SOC), am65xx j721e))
 sciclient_LIB_LIST += sciclient_hs
 endif
@@ -115,6 +115,7 @@ sciclient_EXAMPLE_LIST =
 sciclient_firmware_boot_TestApp_COMP_LIST = sciclient_firmware_boot_TestApp
 sciclient_firmware_boot_TestApp_RELPATH = ti/drv/sciclient/examples/sciclient_firmware_boot_TestApp
 sciclient_firmware_boot_TestApp_PATH = $(PDK_SCICLIENT_COMP_PATH)/examples/sciclient_firmware_boot_TestApp
+export sciclient_firmware_boot_TestApp_SBL_CERT_KEY=$(SBL_CERT_KEY)
 sciclient_firmware_boot_TestApp_BOARD_DEPENDENCY = no
 sciclient_firmware_boot_TestApp_CORE_DEPENDENCY = yes
 export sciclient_firmware_boot_TestApp_COMP_LIST
@@ -140,6 +141,7 @@ sciclient_EXAMPLE_LIST += sciclient_firmware_boot_TestApp
 sciclient_ccs_init_COMP_LIST = sciclient_ccs_init
 sciclient_ccs_init_RELPATH = ti/drv/sciclient/examples/sciclient_ccs_init
 sciclient_ccs_init_PATH = $(PDK_SCICLIENT_COMP_PATH)/examples/sciclient_ccs_init
+export sciclient_ccs_init_SBL_CERT_KEY=$(SBL_CERT_KEY)
 sciclient_ccs_init_BOARD_DEPENDENCY = no
 sciclient_ccs_init_CORE_DEPENDENCY = yes
 export sciclient_ccs_init_COMP_LIST
