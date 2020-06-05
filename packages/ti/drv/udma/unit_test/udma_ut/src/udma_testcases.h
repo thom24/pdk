@@ -592,7 +592,7 @@ static UdmaTestParams gUdmaTestCases[] =
         .heapIdDest = {UTILS_MEM_HEAP_ID_INTERNAL},
         .srcBufSize = {UDMA_TEST_DEF_ICNT0},
         .destBufSize= {UDMA_TEST_DEF_DICNT0},
-        .runFlag    = (UDMA_TEST_RF_MCU_BC),
+        .runFlag    = (UDMA_TEST_RF_MCU_BC_INTERNAL_MEM),
         .ringPrmId  = UDMA_TEST_RING_PRMID_INVALID,
     },
     {
@@ -777,7 +777,7 @@ static UdmaTestParams gUdmaTestCases[] =
         .heapIdDest = {UTILS_MEM_HEAP_ID_INTERNAL},
         .srcBufSize = {1*KB},
         .destBufSize= {1*KB},
-        .runFlag    = (UDMA_TEST_RF_MCU_BC),
+        .runFlag    = (UDMA_TEST_RF_MCU_BC_INTERNAL_MEM),
         .ringPrmId  = UDMA_TEST_RING_PRMID_INVALID,
     },
     {

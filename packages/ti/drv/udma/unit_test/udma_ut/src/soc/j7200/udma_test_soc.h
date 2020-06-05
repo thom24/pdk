@@ -74,6 +74,7 @@ extern "C" {
                                          UDMA_TEST_RF_CORE_MCU2_1 | \
                                          UDMA_TEST_RF_CORE_MCU1_0 | \
                                          UDMA_TEST_RF_CFG_ALL)
+#define UDMA_TEST_RF_MCU_BC_INTERNAL_MEM (UDMA_TEST_RF_MCU_BC)
 #define UDMA_TEST_RF_DRU                (0U)
 /* Need at least two channels - so enable only for those cores */
 #define UDMA_TEST_RF_CHAIN              (UDMA_TEST_RF_SOC | UDMA_TEST_RF_CORE_ALL | UDMA_TEST_RF_CFG_DEF)
