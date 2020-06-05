@@ -47,6 +47,8 @@ static void UART_dmaTxIsrHandler(Udma_EventHandle  eventHandle,
                                  uint32_t          eventType,
                                  void             *appData);
 
+static inline uint32_t UART_dmaIsCacheCoherent(void);
+
 void UART_disableDmaChannel(UART_Handle handle, bool txChan)
 {
     UART_HwAttrs const *hwAttrs;
@@ -124,9 +126,10 @@ static void UART_udmaHpdInit(Udma_ChHandle  chHandle,
     CSL_udmapCppi5SetOrgBufferAddr(pHpd, (uint64_t) bufPtr);
     CSL_udmapCppi5SetOrgBufferLen(pHpd, length);
 
-#if !defined (__aarch64__)
-    CacheP_wbInv((const void *)pHpd, (int32_t)(sizeof(CSL_UdmapCppi5HMPD)));
-#endif
+    if(UART_dmaIsCacheCoherent() != TRUE)
+    {
+        CacheP_wbInv((const void *)pHpd, (int32_t)(sizeof(CSL_UdmapCppi5HMPD)));
+    }
     return;
 }
 
@@ -359,9 +362,10 @@ static void UART_dmaRxIsrHandler(Udma_EventHandle  eventHandle,
         hwAttrs = (UART_HwAttrs const *)handle->hwAttrs;
         object  = (UART_V1_Object *)handle->object;
 
-#if !defined (__aarch64__)
-        CacheP_Inv((const void *)hwAttrs->dmaInfo->cqRxRingMem, (int32_t)(sizeof(void *)));
-#endif
+        if(UART_dmaIsCacheCoherent() != TRUE)
+        {
+            CacheP_Inv((const void *)hwAttrs->dmaInfo->cqRxRingMem, (int32_t)(sizeof(void *)));
+        }
         /*
          * Dequeue the descriptor from the RX completion queue
          * to be re-used for the next transfer
@@ -431,9 +435,11 @@ static void UART_dmaTxIsrHandler(Udma_EventHandle  eventHandle,
         hwAttrs = (UART_HwAttrs const *)handle->hwAttrs;
         object = (UART_V1_Object *)handle->object;
 
-#if !defined (__aarch64__)
-        CacheP_Inv((const void *)hwAttrs->dmaInfo->cqTxRingMem, (int32_t)(sizeof(void *)));
-#endif
+        if(UART_dmaIsCacheCoherent() != TRUE)
+        {
+            CacheP_Inv((const void *)hwAttrs->dmaInfo->cqTxRingMem, (int32_t)(sizeof(void *)));
+        }
+
         /*
          * Dequeue the descriptor from the TX completion queue
          * to be re-used for the next transfer
@@ -459,5 +465,18 @@ static void UART_dmaTxIsrHandler(Udma_EventHandle  eventHandle,
             UARTInt2Enable(hwAttrs->baseAddr, UART_INT2_TX_EMPTY);
         }
     }
+}
+
+static inline uint32_t UART_dmaIsCacheCoherent(void)
+{
+    uint32_t isCacheCoherent;
+
+#if (!defined (__aarch64__) || defined(SOC_AM64X))
+    isCacheCoherent = FALSE;
+#else
+    isCacheCoherent = TRUE;
+#endif
+
+    return (isCacheCoherent);
 }
 
