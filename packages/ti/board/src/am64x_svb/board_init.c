@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -61,7 +61,7 @@ Board_gblObj Board_obj = {NULL};
 static bool gBoardSysInitDone = 0;
 
 /**
- * \brief  Board global initilizations
+ * \brief  Board global initializations
  *
  * \return  BOARD_SOK in case of success or appropriate error code
  *
@@ -75,7 +75,9 @@ static Board_STATUS Board_sysInit(void)
     if(gBoardSysInitDone == 0)
     {
         Sciclient_configPrmsInit(&config);
+
         ret = Sciclient_init(&config);
+
         if(ret != 0)
         {
             status = BOARD_FAIL;

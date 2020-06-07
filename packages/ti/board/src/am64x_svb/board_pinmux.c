@@ -58,7 +58,7 @@
 #define MAIN_UART1_CTSn 0x0248
 #define MAIN_UART1_RTSn 0x024c
 
-static void Board_uartPinmxCfg()
+void Board_uartPinmxCfg()
 {
     volatile uint32_t *addr = (volatile uint32_t *)(MAIN_CTRL_PINCFG_BASE + MAIN_UART0_RXD);
     uint32_t i;
@@ -68,20 +68,63 @@ static void Board_uartPinmxCfg()
         *addr++ = 0x54000;
     }
 }
+
+void Board_ospiPinmxCfg()
+{
+    volatile uint32_t *addr = (volatile uint32_t *)MAIN_CTRL_PINCFG_BASE;
+    uint32_t ospiData[15] =
+    {
+        0x24000, 0x64000, 0x264000, 0x54000,
+        0x54000, 0x54000, 0x054000, 0x54000,
+        0x54000, 0x54000, 0x054000, 0x14000,
+        0x14000, 0x04002, 0x4001
+    };
+    uint32_t i;
+
+    for (i = 0; i < 15; i++)
+    {
+        *addr++ = ospiData[i];
+    }
+}
+
 #endif  /* #ifdef VLAB_SIM */
 #endif  /* #ifndef BUILD_M4F */
 
+/* Default pinmux configuration of UART Tx pin used by ROM/SBL */
+#define BOARD_UART_TX_PINMUX_VAL            (PIN_MODE(0) | ((PIN_PULL_DISABLE) & \
+                                                 (~PIN_PULL_DIRECTION & ~PIN_INPUT_ENABLE)))
+#define BOARD_SYSFW_UART_TX_PINMUX_ADDR           (MAIN_PADCONFIG_CTRL_BASE + CSL_MAIN_PADCFG_CTRL_MMR_CFG0_PADCONFIG141)
+#define BOARD_SBL_UART_TX_PINMUX_ADDR           (MAIN_PADCONFIG_CTRL_BASE + CSL_MAIN_PADCFG_CTRL_MMR_CFG0_PADCONFIG145)
+#define BOARD_UART_TX_LOCK_KICK_ADDR        (MAIN_PADCONFIG_CTRL_BASE + \
+                                                 CSL_MAIN_PADCFG_CTRL_MMR_CFG0_LOCK1_KICK0)
+
+
 Board_STATUS Board_pinmuxConfig (void)
 {
-#if !defined(BUILD_M4F)
+#ifndef BUILD_M4F
+#ifdef VLAB_SIM
+
+#if VLAB_TEST_ONLY     /* This needs to be turned on to test in VLAB */
+    /* Unlock partition lock kick */
+    /* This needs to be turned on to test in VLAB */
+    HW_WR_REG32(BOARD_UART_TX_LOCK_KICK_ADDR, KICK0_UNLOCK_VAL);
+    HW_WR_REG32(BOARD_UART_TX_LOCK_KICK_ADDR + 4U, KICK1_UNLOCK_VAL);
+#endif
+
+    Board_uartPinmxCfg();
+    Board_ospiPinmxCfg();
+
+#if VLAB_TEST_ONLY
+   /* Lock partition lock kick */
+    HW_WR_REG32(BOARD_UART_TX_LOCK_KICK_ADDR + 4U, 0);
+    HW_WR_REG32(BOARD_UART_TX_LOCK_KICK_ADDR, 0);
+#endif
+
+#else
     pinmuxModuleCfg_t* pModuleData = NULL;
     pinmuxPerCfg_t* pInstanceData = NULL;
     int32_t i, j, k;
 
-#ifndef BUILD_M4F
-#ifdef VLAB_SIM
-    Board_uartPinmxCfg();
-#endif
     for(i = 0; PINMUX_END != gAM64xxMainPinmuxData[i].moduleId; i++)
     {
         pModuleData = gAM64xxMainPinmuxData[i].modulePinCfg;
@@ -115,7 +158,26 @@ Board_STATUS Board_pinmuxConfig (void)
             }
         }
     }
-#endif
+#endif /* #ifdef VLAB_SIM */
 #endif /* #ifndef BUILD_M4F */
     return BOARD_SOK;
+}
+
+void Board_uartTxPinmuxConfig(void)
+{
+#ifndef BUILD_M4F
+    /* Unlock partition lock kick */
+    HW_WR_REG32(BOARD_UART_TX_LOCK_KICK_ADDR, KICK0_UNLOCK_VAL);
+    HW_WR_REG32(BOARD_UART_TX_LOCK_KICK_ADDR + 4U, KICK1_UNLOCK_VAL);
+
+    /* Configure pinmux for UART Tx pin */
+    HW_WR_REG32(BOARD_SBL_UART_TX_PINMUX_ADDR, BOARD_UART_TX_PINMUX_VAL);     
+
+    /* Configure pinmux for SYSFW Tx pin */
+    HW_WR_REG32(BOARD_SYSFW_UART_TX_PINMUX_ADDR, BOARD_UART_TX_PINMUX_VAL);
+    
+    /* Lock partition lock kick */
+    HW_WR_REG32(BOARD_UART_TX_LOCK_KICK_ADDR + 4U, 0);
+    HW_WR_REG32(BOARD_UART_TX_LOCK_KICK_ADDR, 0);
+#endif
 }

@@ -45,10 +45,23 @@
 extern "C" {
 #endif
 
+#include <ti/board/src/am64x_svb/include/board_pinmux.h>
+
 /* Board ID information */
 #define BOARD_INFO_CPU_NAME     "am64x"
-#define BOARD_INFO_BOARD_NAME   "am64x_evm"
+#define BOARD_INFO_BOARD_NAME   "am64x_svb"
 
+#define BOARD_SOC_DDR_START_ADDR                        (0x80000000U)
+
+#ifdef VLAB_SIM
+/* Memory sections */
+#define BOARD_DDR_START_ADDR                            (0x90000000U)
+#define BOARD_DDR_SIZE                                  (512* 1024 * 1024UL)
+#define BOARD_DDR_END_ADDR                              (0x900FFFFFU)
+
+/* Note with ECC enabled, all memory is not usable: 1/8 memory used for inline ECC */
+#define BOARD_DDR_ECC_END_ADDR                          (0x9006FFFFU)
+#else
 /* Memory sections */
 #define BOARD_DDR_START_ADDR                            (0x80000000U)
 #define BOARD_DDR_SIZE                                  (2048 * 1024 * 1024UL)
@@ -56,6 +69,7 @@ extern "C" {
 
 /* Note with ECC enabled, all memory is not usable: 1/8 memory used for inline ECC */
 #define BOARD_DDR_ECC_END_ADDR                          (0xF1FFFFFFU)
+#endif /* VLAB_SIM */
 
 /* UART LLD instance number for MAIN UART0 port */
 #define BOARD_UART0_INSTANCE                            (0U)
