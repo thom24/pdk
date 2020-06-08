@@ -72,7 +72,7 @@ include $(RULES_MAKE)
 
 CLPRU = $(CL_PRU_INSTALL_PATH)/bin/clpru
 HEXPRU = $(CL_PRU_INSTALL_PATH)/bin/hexpru
-WIN_BIN = $(SDK_INSTALL_PATH)/$(PDK_INSTALL_PATH)/ti/drv/emac/firmware/icss_dualmac/bin
+WIN_BIN = $(PDK_INSTALL_PATH)/ti/drv/emac/firmware/icss_dualmac/bin
 
 all:
 	$(MAKE) mkversion
