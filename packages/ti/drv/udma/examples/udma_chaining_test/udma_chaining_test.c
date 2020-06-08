@@ -104,19 +104,25 @@ typedef struct
 
     struct Udma_ChObj       chObj;
     struct Udma_EventObj    cqEventObj;
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
     struct Udma_EventObj    tdCqEventObj;
+#endif
 
     Udma_ChHandle           chHandle;
     Udma_EventHandle        cqEventHandle;
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
     Udma_EventHandle        tdCqEventHandle;
+#endif
 
     Udma_DrvHandle          drvHandle;
     SemaphoreP_Handle       transferDoneSem;
     /**< Semaphore to indicate transfer completion */
 
     uint8_t                 *txRingMem;
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
     uint8_t                 *txCompRingMem;
     uint8_t                 *txTdCompRingMem;
+#endif
     uint8_t                 *trpdMem;
 
     uint8_t                 *srcBuf;
@@ -139,9 +145,11 @@ static int32_t App_udmaChaining(App_UdmaObj *appObj);
 static void App_udmaEventDmaCb(Udma_EventHandle eventHandle,
                                uint32_t eventType,
                                void *appData);
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
 static void App_udmaEventTdCb(Udma_EventHandle eventHandle,
                               uint32_t eventType,
                               void *appData);
+#endif
 
 static int32_t App_init(App_UdmaObj *appObj);
 static int32_t App_deinit(App_UdmaObj *appObj);
@@ -166,8 +174,10 @@ App_UdmaObj gUdmaAppObj;
  * UDMA Memories
  */
 static uint8_t gTxRingMem[UDMA_TEST_APP_NUM_CH][UDMA_TEST_APP_RING_MEM_SIZE_ALIGN] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
 static uint8_t gTxCompRingMem[UDMA_TEST_APP_NUM_CH][UDMA_TEST_APP_RING_MEM_SIZE_ALIGN] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
 static uint8_t gTxTdCompRingMem[UDMA_TEST_APP_NUM_CH][UDMA_TEST_APP_RING_MEM_SIZE_ALIGN] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
+#endif
 static uint8_t gUdmaTrpdMem[UDMA_TEST_APP_NUM_CH][UDMA_TEST_APP_TRPD_SIZE_ALIGN] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
 
 /*
@@ -305,7 +315,7 @@ static int32_t App_udmaChaining(App_UdmaObj *appObj)
         chHandle = appChObj->chHandle;
         retVal = Udma_ringQueueRaw(
                      Udma_chGetFqRingHandle(chHandle),
-                     (uint64_t) appChObj->trpdMem);
+                     (uint64_t) Udma_appVirtToPhyFxn(appChObj->trpdMem, 0U, NULL));
         if(UDMA_SOK != retVal)
         {
             App_print("[Error] Channel queue failed!!\n");
@@ -346,7 +356,7 @@ static int32_t App_udmaChaining(App_UdmaObj *appObj)
                  * Sanity check
                  */
                 /* Check returned descriptor pointer */
-                if(pDesc != ((uint64_t) trpdMem))
+                if(((uint64_t) Udma_appPhyToVirtFxn(pDesc, 0U, NULL)) != ((uint64_t) trpdMem))
                 {
                     App_print("[Error] TR descriptor pointer returned doesn't "
                            "match the submitted address!!\n");
@@ -420,6 +430,7 @@ static void App_udmaEventDmaCb(Udma_EventHandle eventHandle,
     return;
 }
 
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
 static void App_udmaEventTdCb(Udma_EventHandle eventHandle,
                               uint32_t eventType,
                               void *appData)
@@ -452,6 +463,7 @@ static void App_udmaEventTdCb(Udma_EventHandle eventHandle,
 
     return;
 }
+#endif
 
 static int32_t App_init(App_UdmaObj *appObj)
 {
@@ -477,7 +489,9 @@ static int32_t App_init(App_UdmaObj *appObj)
 #endif
     /* UDMA driver init */
     UdmaInitPrms_init(instId, &initPrms);
-    initPrms.printFxn = &App_print;
+    initPrms.virtToPhyFxn   = &Udma_appVirtToPhyFxn;
+    initPrms.phyToVirtFxn   = &Udma_appPhyToVirtFxn;
+    initPrms.printFxn       = &App_print;
     retVal = Udma_init(drvHandle, &initPrms);
     if(UDMA_SOK != retVal)
     {
@@ -489,15 +503,18 @@ static int32_t App_init(App_UdmaObj *appObj)
     {
         appChObj                    = &appObj->appChObj[chIdx];
         appChObj->chIdx             = chIdx;
-
         appChObj->chHandle          = &appChObj->chObj;
         appChObj->cqEventHandle     = NULL;
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
         appChObj->tdCqEventHandle   = NULL;
+#endif
         appChObj->drvHandle         = drvHandle;
         appChObj->transferDoneSem   = NULL;
         appChObj->txRingMem         = &gTxRingMem[chIdx][0U];
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
         appChObj->txCompRingMem     = &gTxCompRingMem[chIdx][0U];
         appChObj->txTdCompRingMem   = &gTxTdCompRingMem[chIdx][0U];
+#endif
         appChObj->trpdMem           = &gUdmaTrpdMem[chIdx][0U];
         if(0U == chIdx)
         {
@@ -571,14 +588,20 @@ static int32_t App_create(App_UdmaObj *appObj)
             chType = UDMA_CH_TYPE_TR_BLK_COPY;
             UdmaChPrms_init(&chPrms, chType);
             chPrms.fqRingPrms.ringMem   = appChObj->txRingMem;
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
             chPrms.cqRingPrms.ringMem   = appChObj->txCompRingMem;
             chPrms.tdCqRingPrms.ringMem = appChObj->txTdCompRingMem;
+#endif
             chPrms.fqRingPrms.ringMemSize   = UDMA_TEST_APP_RING_MEM_SIZE;
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
             chPrms.cqRingPrms.ringMemSize   = UDMA_TEST_APP_RING_MEM_SIZE;
             chPrms.tdCqRingPrms.ringMemSize = UDMA_TEST_APP_RING_MEM_SIZE;
+#endif
             chPrms.fqRingPrms.elemCnt   = UDMA_TEST_APP_RING_ENTRIES;
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
             chPrms.cqRingPrms.elemCnt   = UDMA_TEST_APP_RING_ENTRIES;
             chPrms.tdCqRingPrms.elemCnt = UDMA_TEST_APP_RING_ENTRIES;
+#endif
 
             /* Open channel for block copy */
             retVal = Udma_chOpen(drvHandle, chHandle, chType, &chPrms);
@@ -636,6 +659,7 @@ static int32_t App_create(App_UdmaObj *appObj)
             }
         }
 
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
         if(UDMA_SOK == retVal)
         {
             /* Register teardown ring completion callback */
@@ -657,6 +681,7 @@ static int32_t App_create(App_UdmaObj *appObj)
                 appChObj->tdCqEventHandle = eventHandle;
             }
         }
+#endif 
 
         if(UDMA_SOK == retVal)
         {
@@ -766,6 +791,7 @@ static int32_t App_delete(App_UdmaObj *appObj)
             }
             appChObj->cqEventHandle = NULL;
         }
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
         if(NULL != appChObj->tdCqEventHandle)
         {
             retVal += Udma_eventUnRegister(appChObj->tdCqEventHandle);
@@ -775,6 +801,7 @@ static int32_t App_delete(App_UdmaObj *appObj)
             }
             appChObj->tdCqEventHandle = NULL;
         }
+#endif
 
         retVal += Udma_chClose(chHandle);
         if(UDMA_SOK != retVal)
@@ -828,7 +855,7 @@ static void App_udmaTrpdInit(App_UdmaChObj *appChObj)
     pTr->dim1     = pTr->icnt0;
     pTr->dim2     = (pTr->icnt0 * pTr->icnt1);
     pTr->dim3     = (pTr->icnt0 * pTr->icnt1 * pTr->icnt2);
-    pTr->addr     = (uint64_t) appChObj->srcBuf;
+    pTr->addr     = (uint64_t) Udma_appVirtToPhyFxn(appChObj->srcBuf, 0U, NULL);
     pTr->fmtflags = 0x00000000U;        /* Linear addressing, 1 byte per elem.
                                            Replace with CSL-FL API */
     pTr->dicnt0   = UDMA_TEST_APP_NUM_BYTES;
@@ -838,7 +865,7 @@ static void App_udmaTrpdInit(App_UdmaChObj *appChObj)
     pTr->ddim1    = pTr->dicnt0;
     pTr->ddim2    = (pTr->dicnt0 * pTr->dicnt1);
     pTr->ddim3    = (pTr->dicnt0 * pTr->dicnt1 * pTr->dicnt2);
-    pTr->daddr    = (uint64_t) appChObj->destBuf;
+    pTr->daddr    = (uint64_t) Udma_appVirtToPhyFxn(appChObj->destBuf, 0U, NULL);
 
     /* Clear TR response memory */
     *pTrResp = 0xFFFFFFFFU;

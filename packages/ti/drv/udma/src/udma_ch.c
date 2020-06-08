@@ -1519,7 +1519,7 @@ int32_t Udma_chBreakChaining(Udma_ChHandle triggerChHandle,
     if(UDMA_SOK == retVal)
     {
         rmIrqReq.valid_params           = TISCI_MSG_VALUE_RM_GLOBAL_EVENT_VALID;
-        rmIrqReq.src_id                 = drvHandle->devIdUdma;
+        rmIrqReq.src_id                 = drvHandle->srcIdTrIrq;
         rmIrqReq.src_index              = 0U;
         rmIrqReq.global_event           = (uint16_t)triggerEvent;
         rmIrqReq.dst_id                 = 0U;
