@@ -61,6 +61,7 @@ static inline void SDR_ESM_getGroupNumberIndex(uint32_t intSrc,
                                                uint32_t *intIndex);
 static void SDR_ESM_processInterruptSource(uint32_t esmInstBaseAddr,
                                            uintptr_t arg,
+                                           SDR_ESM_IntType esmIntType,
                                            uint32_t intSrc);
 
 /** ============================================================================
@@ -439,14 +440,18 @@ static inline void SDR_ESM_getGroupNumberIndex(uint32_t intSrc, uint32_t *groupN
  */
 static void SDR_ESM_processInterruptSource(uint32_t esmInstBaseAddr,
                                            uintptr_t arg,
+                                           SDR_ESM_IntType esmIntType,
                                            uint32_t intSrc)
 {
     SDR_ESM_Instance_t *SDR_ESM_instance;
+    SDR_ESM_InstanceType esmInstType;
     uint32_t groupNumber, intIndex;
     bool handledFlag;
 
     /* Get the proper ESM SW instance here based on esmInstBaseAddr register base */
-    if (SDR_ESM_selectEsmInstFromAddr(esmInstBaseAddr, &SDR_ESM_instance) == ((bool)true)) {
+    if (SDR_ESM_selectEsmInstFromAddr(esmInstBaseAddr,
+                                      &esmInstType,
+                                      &SDR_ESM_instance) == ((bool)true)) {
         if (intSrc != NO_EVENT_VALUE) {
             if (intSrc >= (BITS_PER_WORD*SDR_ESM_MAX_EVENT_MAP_NUM_WORDS)) {
                 /* Unexpected error */
@@ -464,8 +469,8 @@ static void SDR_ESM_processInterruptSource(uint32_t esmInstBaseAddr,
                     } else {
                         handledFlag = SDR_ESM_handleIntSrc(SDR_ESM_instance, intSrc);
                         if (!handledFlag) {
-                            SDR_ESM_applicationCallbackFunction(arg, groupNumber,
-                                                                intIndex,
+                            SDR_ESM_applicationCallbackFunction(esmInstType, esmIntType,
+                                                                groupNumber, intIndex,
                                                                 intSrc);
                         }
                     }
@@ -494,6 +499,13 @@ static void SDR_ESM_interruptHandler (uint32_t esmInstBaseAddr,
 {
     uint32_t intSrc1, intSrc2;
     esmGroupIntrStatus_t localEsmGroupIntrStatus;
+    SDR_ESM_IntType esmIntType;
+
+    if (esmIntrPriorityLvlType == ESM_INTR_PRIORITY_LEVEL_HIGH) {
+        esmIntType = SDR_ESM_INT_TYPE_HI;
+    } else if (esmIntrPriorityLvlType == ESM_INTR_PRIORITY_LEVEL_LOW) {
+        esmIntType = SDR_ESM_INT_TYPE_LO;
+    }
 
     /* Check on the highest priority event and handle it */
     do {
@@ -501,9 +513,9 @@ static void SDR_ESM_interruptHandler (uint32_t esmInstBaseAddr,
                                     (uint32_t)esmIntrPriorityLvlType,
                                     &localEsmGroupIntrStatus);
         intSrc1 = localEsmGroupIntrStatus.highestPendPlsIntNum;
-        SDR_ESM_processInterruptSource((uint32_t)esmInstBaseAddr, arg, intSrc1);
+        SDR_ESM_processInterruptSource((uint32_t)esmInstBaseAddr, arg, esmIntType, intSrc1);
         intSrc2 = localEsmGroupIntrStatus.highestPendLvlIntNum;
-        SDR_ESM_processInterruptSource((uint32_t)esmInstBaseAddr, arg, intSrc2);
+        SDR_ESM_processInterruptSource((uint32_t)esmInstBaseAddr, arg, esmIntType, intSrc2);
     } while ((intSrc1 != (uint32_t)(NO_EVENT_VALUE)) || (intSrc2 != (uint32_t)(NO_EVENT_VALUE)));
 
     return;
@@ -641,7 +653,9 @@ void SDR_ESM_loInterruptHandler_MAIN (uintptr_t arg)
  */
 void SDR_ESM_configInterruptHandler_MCU(uintptr_t arg)
 {
-    SDR_ESM_applicationCallbackFunction(arg, 0, 0, 0);
+    SDR_ESM_applicationCallbackFunction(SDR_ESM_INSTANCE_MCU,
+                                        SDR_ESM_INT_TYPE_CFG,
+                                        0, 0, 0);
 
     /* Write end of interrupt */
     (void)ESMWriteEOI(((uint32_t)SOC_MCU_ESM_BASE), (uint32_t)ESM_INTR_TYPE_CONFIG_ERROR);
@@ -659,7 +673,9 @@ void SDR_ESM_configInterruptHandler_MCU(uintptr_t arg)
  */
 void SDR_ESM_configInterruptHandler_WKUP(uintptr_t arg)
 {
-    SDR_ESM_applicationCallbackFunction(arg, 0, 0, 0);
+    SDR_ESM_applicationCallbackFunction(SDR_ESM_INSTANCE_WKUP,
+                                        SDR_ESM_INT_TYPE_CFG,
+                                        0, 0, 0);
 
     /* Write end of interrupt */
     (void)ESMWriteEOI(((uint32_t)SOC_WKUP_ESM_BASE), (uint32_t)ESM_INTR_TYPE_CONFIG_ERROR);
@@ -677,7 +693,9 @@ void SDR_ESM_configInterruptHandler_WKUP(uintptr_t arg)
  */
 void SDR_ESM_configInterruptHandler_MAIN(uintptr_t arg)
 {
-    SDR_ESM_applicationCallbackFunction(arg, 0, 0, 0);
+    SDR_ESM_applicationCallbackFunction(SDR_ESM_INSTANCE_MAIN,
+                                        SDR_ESM_INT_TYPE_CFG,
+                                        0, 0, 0);
 
     /* Write end of interrupt */
     (void)ESMWriteEOI(((uint32_t)SOC_MAIN_ESM_BASE), (uint32_t)ESM_INTR_TYPE_CONFIG_ERROR);

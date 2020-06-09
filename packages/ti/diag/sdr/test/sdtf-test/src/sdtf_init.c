@@ -595,11 +595,15 @@ uint32_t SDR_getTime(void)
     return SDTF_profileTimerRead();
 }
 
-void SDR_ESM_applicationCallbackFunction(uintptr_t arg, uint32_t grpChannel, uint32_t index,
+void SDR_ESM_applicationCallbackFunction(SDR_ESM_InstanceType esmInstType,
+                                         SDR_ESM_IntType esmIntType,
+                                         uint32_t grpChannel,
+                                         uint32_t index,
                                          uint32_t intSrc){
 
-    SDTF_printf("\n  ESM Call back function called : arg 0x%x, grpChannel 0x%x, index 0x%x, intSrc 0x%x \n",
-                arg, grpChannel, index, intSrc);
+    SDTF_printf("\n  ESM Call back function called : instType 0x%x, intType 0x%x, " \
+                "grpChannel 0x%x, index 0x%x, intSrc 0x%x \n",
+                esmInstType, esmIntType, grpChannel, index, intSrc);
     SDTF_printf("  Take action \n");
 
     /* Any additional customer specific actions can be added here */

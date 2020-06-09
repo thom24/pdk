@@ -134,11 +134,13 @@ bool SDR_ESM_selectEsmInst(const SDR_ESM_InstanceType esmInstType,
  * \param [in]   esmInstBaseAddr: Base address for ESM instance's registers.
  *                                Function fills pointer to instance for this
  *                                set of registers
+ * \param [out]  pEsmInstType:    Pointer to ESM instance type
  * \param [out]  pEsmInstancePtr: Pointer to location of ESM instance structure
  *
  * \return       true: if valid base address; false if not valid base address
  */
 bool SDR_ESM_selectEsmInstFromAddr(uint32_t esmInstBaseAddr,
+                                   SDR_ESM_InstanceType *pEsmInstType,
                                    SDR_ESM_Instance_t **pEsmInstancePtr)
 {
     bool instValid = ((bool)false);
@@ -148,16 +150,19 @@ bool SDR_ESM_selectEsmInstFromAddr(uint32_t esmInstBaseAddr,
         case SOC_MCU_ESM_BASE:
             instValid = ((bool)true);
             *pEsmInstancePtr = &SDR_ESM_instance_MCU;
+            *pEsmInstType = SDR_ESM_INSTANCE_MCU;
             break;
 
         case SOC_WKUP_ESM_BASE:
             instValid = ((bool)true);
             *pEsmInstancePtr = &SDR_ESM_instance_WKUP;
+            *pEsmInstType = SDR_ESM_INSTANCE_WKUP;
             break;
 
         case SOC_MAIN_ESM_BASE:
             instValid = ((bool)true);
             *pEsmInstancePtr = &SDR_ESM_instance_MAIN;
+            *pEsmInstType = SDR_ESM_INSTANCE_MAIN;
             break;
 
         default:

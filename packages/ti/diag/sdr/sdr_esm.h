@@ -511,7 +511,8 @@ uint32_t SDR_ESM_getIntNumber(const SDR_ESM_InstanceType esmInstType,
  *          NOTE: This is application supplied and not part of the SDR
  *          If not supplied by application this will result in an linker error
  *
- * \param  arg: Argument provided by application as part of interrupt registration
+ * \param  esmInstType: Instance of ESM
+ * \param  esmIntType: ESM Interrupt type
  * \param  grpChannel: Group channel number of the event source
  * \param  index: index within the group of the event source
  * \param  instSrc: Interrupt source number which is the esm event number
@@ -519,7 +520,10 @@ uint32_t SDR_ESM_getIntNumber(const SDR_ESM_InstanceType esmInstType,
  *
  * \return  None
  */
-void SDR_ESM_applicationCallbackFunction(uintptr_t arg, uint32_t grpChannel, uint32_t index,
+void SDR_ESM_applicationCallbackFunction(SDR_ESM_InstanceType esmInstType,
+                                         SDR_ESM_IntType esmIntType,
+                                         uint32_t grpChannel,
+                                         uint32_t index,
                                          uint32_t intSrc);
 
 /* @} */
