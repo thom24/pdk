@@ -594,7 +594,7 @@ static int32_t HWA_validateParamSetConfig(HWA_Driver *ptrHWADriver, HWA_ParamCon
                  )
             )||
             ((paramConfig->accelModeArgs.fftMode.preProcCfg.complexMultiply.cmultMode == HWA_COMPLEX_MULTIPLY_MODE_SCALAR_MULT)
-              &&(paramConfig->accelModeArgs.fftMode.preProcCfg.complexMultiply.modeCfg.scalerMultiply.cmultScaleEn > HWA_FEATURE_BIT_ENABLE)
+              &&(paramConfig->accelModeArgs.fftMode.preProcCfg.complexMultiply.modeCfg.scalerMultiply.scaleCmultScaleEn > HWA_FEATURE_BIT_ENABLE)
             ) ||
             ((paramConfig->accelModeArgs.fftMode.preProcCfg.complexMultiply.cmultMode == HWA_COMPLEX_MULTIPLY_MODE_VECTOR_MULT)
                 &&(paramConfig->accelModeArgs.fftMode.preProcCfg.complexMultiply.modeCfg.vectorMultiplyMode1.cmultScaleEn > HWA_FEATURE_BIT_ENABLE)
@@ -2230,7 +2230,7 @@ int32_t HWA_configParamSet(HWA_Handle handle, uint8_t paramsetIdx, HWA_ParamConf
                     /*TWIDINCR specify the de-rotation frequency, how much the phase should change for each successive input */
                     paramReg.accelModeParam.FFTPATH.PREPROC2 |= CSL_FMKR(PREPROC2_TWIDINCR_END,
                                                                          PREPROC2_TWIDINCR_START,
-                                                                         paramConfig->accelModeArgs.fftMode.preProcCfg.complexMultiply.modeCfg.freqShift.twiddleIncr);
+                                                                         paramConfig->accelModeArgs.fftMode.preProcCfg.complexMultiply.modeCfg.freqShift.freqShiftTwiddleIncr);
                 }
 
                 /* cmul is slow dft mode */
@@ -2264,7 +2264,7 @@ int32_t HWA_configParamSet(HWA_Handle handle, uint8_t paramsetIdx, HWA_ParamConf
                 {
                     paramReg.accelModeParam.FFTPATH.PREPROC1 |= CSL_FMKR(PREPROC1_CMULT_SCALE_EN_END,
                                                                         PREPROC1_CMULT_SCALE_EN_START,
-                                                                        paramConfig->accelModeArgs.fftMode.preProcCfg.complexMultiply.modeCfg.scalerMultiply.cmultScaleEn);
+                                                                        paramConfig->accelModeArgs.fftMode.preProcCfg.complexMultiply.modeCfg.scalerMultiply.scaleCmultScaleEn);
 
                 }
                 /* cmul is HWA_COMPLEX_MULTIPLY_MODE_VECTOR_MULT,  */
@@ -2276,7 +2276,7 @@ int32_t HWA_configParamSet(HWA_Handle handle, uint8_t paramsetIdx, HWA_ParamConf
 
                     /* 12 msb set as ram address offset */
                     paramReg.accelModeParam.FFTPATH.PREPROC2 |= CSL_FMKR(13U, 2U,
-                                                                      paramConfig->accelModeArgs.fftMode.preProcCfg.complexMultiply.modeCfg.vectorMultiplyMode1.ramAddrOffset);
+                                                                      paramConfig->accelModeArgs.fftMode.preProcCfg.complexMultiply.modeCfg.vectorMultiplyMode1.vecMultiMode1RamAddrOffset);
 
 
                 }
@@ -2285,7 +2285,7 @@ int32_t HWA_configParamSet(HWA_Handle handle, uint8_t paramsetIdx, HWA_ParamConf
                 {
                     /* 12 msb set as ram address offset */
                     paramReg.accelModeParam.FFTPATH.PREPROC2 |= CSL_FMKR(13U, 2U,
-                                                                        paramConfig->accelModeArgs.fftMode.preProcCfg.complexMultiply.modeCfg.vectorMultiplyMode2.ramAddrOffset);
+                                                                        paramConfig->accelModeArgs.fftMode.preProcCfg.complexMultiply.modeCfg.vectorMultiplyMode2.vecMultiMode2RamAddrOffset);
 
                 }
                 /* HWA_COMPLEX_MULTIPLY_MODE_RECURSIVE_WIN */

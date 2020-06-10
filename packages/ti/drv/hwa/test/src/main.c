@@ -378,7 +378,7 @@ static void HWA_contextswitch_test(HWA_Handle handle)
     gHWATestParamConfig[paramsetIdx].accelModeArgs.fftMode.postProcCfg.magLogEn = HWA_FFT_MODE_MAGNITUDE_LOG2_DISABLED;
     gHWATestParamConfig[paramsetIdx].accelModeArgs.fftMode.postProcCfg.fftOutMode = HWA_FFT_MODE_OUTPUT_DEFAULT;
     gHWATestParamConfig[paramsetIdx].accelModeArgs.fftMode.preProcCfg.complexMultiply.cmultMode = HWA_COMPLEX_MULTIPLY_MODE_VECTOR_MULT;
-    gHWATestParamConfig[paramsetIdx].accelModeArgs.fftMode.preProcCfg.complexMultiply.modeCfg.vectorMultiplyMode1.ramAddrOffset = 5;
+    gHWATestParamConfig[paramsetIdx].accelModeArgs.fftMode.preProcCfg.complexMultiply.modeCfg.vectorMultiplyMode1.vecMultiMode1RamAddrOffset = 5;
     gHWATestParamConfig[paramsetIdx].accelModeArgs.fftMode.preProcCfg.complexMultiply.modeCfg.vectorMultiplyMode1.cmultScaleEn = 0;
 
     /* gHWATestParamConfig[1] is the ALT thread paramset */
@@ -447,7 +447,7 @@ static void HWA_contextswitch_test(HWA_Handle handle)
     }
     errCode = HWA_configRam(handle, HWA_RAM_TYPE_VECTORMULTIPLY_RAM, (uint8_t *)vectorArray,
         HWA_TEST_NUM_SAMPLES * 8,  //complex coefficients, with 21 bits I and 21 bits Q
-        gHWATestParamConfig[0].accelModeArgs.fftMode.preProcCfg.complexMultiply.modeCfg.vectorMultiplyMode1.ramAddrOffset * 8);
+        gHWATestParamConfig[0].accelModeArgs.fftMode.preProcCfg.complexMultiply.modeCfg.vectorMultiplyMode1.vecMultiMode1RamAddrOffset * 8);
 
 
     /**************************************************************************
@@ -2846,7 +2846,7 @@ static void HWA_complexmultiply_test(HWA_Handle handle)
     gHWATestParamConfig[paramsetIdx].accelModeArgs.fftMode.postProcCfg.magLogEn = HWA_FFT_MODE_MAGNITUDE_LOG2_DISABLED;
     gHWATestParamConfig[paramsetIdx].accelModeArgs.fftMode.postProcCfg.fftOutMode = HWA_FFT_MODE_OUTPUT_DEFAULT;
     gHWATestParamConfig[paramsetIdx].accelModeArgs.fftMode.preProcCfg.complexMultiply.cmultMode = HWA_COMPLEX_MULTIPLY_MODE_VECTOR_MULT;
-    gHWATestParamConfig[paramsetIdx].accelModeArgs.fftMode.preProcCfg.complexMultiply.modeCfg.vectorMultiplyMode1.ramAddrOffset = 5;
+    gHWATestParamConfig[paramsetIdx].accelModeArgs.fftMode.preProcCfg.complexMultiply.modeCfg.vectorMultiplyMode1.vecMultiMode1RamAddrOffset = 5;
     gHWATestParamConfig[paramsetIdx].accelModeArgs.fftMode.preProcCfg.complexMultiply.modeCfg.vectorMultiplyMode1.cmultScaleEn = 0;
     gHWATestParamConfig[paramsetIdx].dest.dstAddr = (uint32_t)((uint32_t)dstAddr  - SOC_HWA_MEM0); // address is relative to start of MEM0
     errCode = HWA_configParamSet(handle, paramsetIdx + startParamIdx, &gHWATestParamConfig[paramsetIdx], NULL);
@@ -2921,7 +2921,7 @@ static void HWA_complexmultiply_test(HWA_Handle handle)
     }
     errCode = HWA_configRam(handle, HWA_RAM_TYPE_VECTORMULTIPLY_RAM, (uint8_t *)vectorArray,
                   HWA_TEST_NUM_SAMPLES * 8,  //complex coefficients, with 21 bits I and 21 bits Q
-                  gHWATestParamConfig[paramsetIdx].accelModeArgs.fftMode.preProcCfg.complexMultiply.modeCfg.vectorMultiplyMode1.ramAddrOffset * 8);
+                  gHWATestParamConfig[paramsetIdx].accelModeArgs.fftMode.preProcCfg.complexMultiply.modeCfg.vectorMultiplyMode1.vecMultiMode1RamAddrOffset * 8);
 
     if (errCode != 0)
     {

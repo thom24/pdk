@@ -60,20 +60,16 @@ extern "C" {
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
-/** @defgroup HWA_INSTANCE Instance IDs
-\ingroup DRV_HWA_MODULE
- *
- @{ */
 
-/*! @brief Peripheral number of instance definition of HWA */
+/*! \brief number of HWA instance */
 #define HWA_NUM_INSTANCES            (1U)
-
+/*! \brief number of HWA memory banks */
 #define SOC_HWA_NUM_MEM_BANKS           (8U)
-
+/*! \brief number of HWA parameter sets */
 #define SOC_HWA_NUM_PARAM_SETS          (64U)
-
+/*! \brief number of HWA MDA channels */
 #define SOC_HWA_NUM_DAM_CHANNEL         (32U)
-
+/*! \brief number of HWA memory size in bytes */
 #define SOC_HWA_MEM_SIZE                (131072U)
 
 #define HWA_RAM_WINDOW_SIZE_IN_BYTES                     8192      /*!<  Window RAM size in bytes. See \ref HWA_configRam */
@@ -87,7 +83,7 @@ extern "C" {
 #define HWA_RAM_2DSTAT_SMPL_IDX_SIZE_IN_BYTES            512       /*!<  2-D maximum array, 256 elements with 10 bits each, for maximum locations correspoinding to each sample index */
 #define HWA_RAM_HIST_RAM_SIZE_IN_BYTES                   8192      /*!< histogram output corresponding to each sample index */
 
-
+/*! \brief transfer the CPU address to HWA address */
 #define ADDR_TRANSLATE_CPU_TO_HWA(x)  (uint32_t)(((uint32_t)(x) - CSL_DSS_HWA_DMA0_U_BASE) & 0x000FFFFFU)
 
 /* ========================================================================== */
