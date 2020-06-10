@@ -184,7 +184,7 @@ ifeq ($(BOARD),$(filter $(BOARD), j7200_sim j7200_hostemu j7200_evm))
 endif
 
 # AM64X
-ifeq ($(BOARD),$(filter $(BOARD), am64x_evm))
+ifeq ($(BOARD),$(filter $(BOARD), am64x_evm am64x_svb))
  SOC = am64x
  SBL_RUN_ADDRESS=0x70000000
  SBL_DEV_ID=55
@@ -435,7 +435,7 @@ ifeq ($(ISA),$(filter $(ISA), m4 m4f))
       endif
     endif
 
-    ifeq ($(BOARD),$(filter $(SOC), am64x_evm))
+    ifeq ($(BOARD),$(filter $(SOC), am64x_evm am64x_svb))
       PLATFORM_XDC = "ti.platforms.cortexM:AM64X_M4F"
     endif
   endif
@@ -486,7 +486,7 @@ ifeq ($(ISA),r5f)
     endif
   endif
 
-  ifeq ($(BOARD),$(filter $(BOARD), am64x_evm))
+  ifeq ($(BOARD),$(filter $(BOARD), am64x_evm am64x_svb))
       PLATFORM_XDC = "ti.platforms.cortexR:AM64X"
   endif
 
@@ -532,7 +532,7 @@ ifeq ($(ISA),a53)
     PLATFORM_XDC = "ti.platforms.cortexA:SIMMAXWELL"
   endif
 
-  ifeq ($(BOARD),$(filter $(BOARD), am64x_evm))
+  ifeq ($(BOARD),$(filter $(BOARD), am64x_evm am64x_svb))
     PLATFORM_XDC = "ti.platforms.cortexA:AM64X"
   endif
 

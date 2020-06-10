@@ -254,7 +254,7 @@ static int8_t BoardDiag_ospiFlashStressTest(void)
 
     /* Open the Board OSPI NOR device with SPI port 0
        and use default OSPI configurations */
-#if defined(am64x_evm)
+#if defined(am64x_evm) || defined(am64x_svb)
     boardHandle = Board_flashOpen(BOARD_FLASH_ID_MT35XU256ABA1G12,
                                   BOARD_OSPI_INSTANCE, NULL);
 #else

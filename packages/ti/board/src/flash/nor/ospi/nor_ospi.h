@@ -47,7 +47,7 @@
 #include <ti/board/src/flash/nor/nor.h>
 #include <ti/drv/spi/SPI.h>
 #include <ti/drv/spi/soc/SPI_soc.h>
-#if defined(am64x_evm)
+#if defined(am64x_evm) || defined(am64x_svb)
 #include <ti/board/src/flash/nor/device/m35xu256.h>
 #else
 #include <ti/board/src/flash/nor/device/m35xu512.h>

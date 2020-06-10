@@ -137,6 +137,9 @@ extern "C" {
 #elif defined (am64x_evm)
 #include <ti/board/src/am64x_evm/include/board_cfg.h>
 
+#elif defined (am64x_svb)
+#include <ti/board/src/am64x_svb/include/board_cfg.h>
+
 #elif defined (tpr12_qt)
 #include <ti/board/src/tpr12_qt/include/board_cfg.h>
 

@@ -144,7 +144,7 @@ include $(PDK_BOARD_COMP_PATH)/src/$(BOARD)/src_files_$(BOARD).mk
 CFLAGS_LOCAL_$(BOARD) += -D$(BOARD)=$(BOARD)
 endif
 
-ifeq ($(BOARD),$(filter $(BOARD), am64x_evm))
+ifeq ($(BOARD),$(filter $(BOARD), am64x_evm am64x_svb))
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS)
 CFLAGS_LOCAL_COMMON += -DVLAB_SIM
 include $(PDK_BOARD_COMP_PATH)/src/$(BOARD)/src_files_$(BOARD).mk
