@@ -504,14 +504,12 @@ static int32_t App_init(App_UdmaObj *appObj)
         appChObj                    = &appObj->appChObj[chIdx];
         appChObj->chIdx             = chIdx;
         appChObj->chHandle          = &appChObj->chObj;
-        appChObj->cqEventHandle     = NULL;
-#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
-        appChObj->tdCqEventHandle   = NULL;
-#endif
         appChObj->drvHandle         = drvHandle;
         appChObj->transferDoneSem   = NULL;
+        appChObj->cqEventHandle     = NULL;
         appChObj->txRingMem         = &gTxRingMem[chIdx][0U];
 #if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
+        appChObj->tdCqEventHandle   = NULL;
         appChObj->txCompRingMem     = &gTxCompRingMem[chIdx][0U];
         appChObj->txTdCompRingMem   = &gTxTdCompRingMem[chIdx][0U];
 #endif
@@ -587,20 +585,16 @@ static int32_t App_create(App_UdmaObj *appObj)
             /* Init channel parameters */
             chType = UDMA_CH_TYPE_TR_BLK_COPY;
             UdmaChPrms_init(&chPrms, chType);
-            chPrms.fqRingPrms.ringMem   = appChObj->txRingMem;
-#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
-            chPrms.cqRingPrms.ringMem   = appChObj->txCompRingMem;
-            chPrms.tdCqRingPrms.ringMem = appChObj->txTdCompRingMem;
-#endif
+            chPrms.fqRingPrms.ringMem       = appChObj->txRingMem;
             chPrms.fqRingPrms.ringMemSize   = UDMA_TEST_APP_RING_MEM_SIZE;
+            chPrms.fqRingPrms.elemCnt       = UDMA_TEST_APP_RING_ENTRIES;
 #if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
+            chPrms.cqRingPrms.ringMem       = appChObj->txCompRingMem;
             chPrms.cqRingPrms.ringMemSize   = UDMA_TEST_APP_RING_MEM_SIZE;
+            chPrms.cqRingPrms.elemCnt       = UDMA_TEST_APP_RING_ENTRIES;
+            chPrms.tdCqRingPrms.ringMem     = appChObj->txTdCompRingMem;
             chPrms.tdCqRingPrms.ringMemSize = UDMA_TEST_APP_RING_MEM_SIZE;
-#endif
-            chPrms.fqRingPrms.elemCnt   = UDMA_TEST_APP_RING_ENTRIES;
-#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
-            chPrms.cqRingPrms.elemCnt   = UDMA_TEST_APP_RING_ENTRIES;
-            chPrms.tdCqRingPrms.elemCnt = UDMA_TEST_APP_RING_ENTRIES;
+            chPrms.tdCqRingPrms.elemCnt     = UDMA_TEST_APP_RING_ENTRIES;
 #endif
 
             /* Open channel for block copy */

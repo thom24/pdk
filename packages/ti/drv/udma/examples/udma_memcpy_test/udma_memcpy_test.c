@@ -127,9 +127,11 @@ static int32_t App_udmaMemcpy(Udma_ChHandle chHandle,
 static void App_udmaEventDmaCb(Udma_EventHandle eventHandle,
                                uint32_t eventType,
                                void *appData);
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
 static void App_udmaEventTdCb(Udma_EventHandle eventHandle,
                               uint32_t eventType,
                               void *appData);
+#endif
 #endif
 
 static int32_t App_init(Udma_DrvHandle drvHandle);
@@ -165,15 +167,19 @@ struct Udma_DrvObj      gUdmaDrvObj;
 struct Udma_ChObj       gUdmaChObj;
 #if defined (UDMA_TEST_INTR)
 struct Udma_EventObj    gUdmaCqEventObj;
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
 struct Udma_EventObj    gUdmaTdCqEventObj;
+#endif
 #endif
 
 /*
  * UDMA Memories
  */
 static uint8_t gTxRingMem[UDMA_TEST_APP_RING_MEM_SIZE_ALIGN] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
 static uint8_t gTxCompRingMem[UDMA_TEST_APP_RING_MEM_SIZE_ALIGN] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
 static uint8_t gTxTdCompRingMem[UDMA_TEST_APP_RING_MEM_SIZE_ALIGN] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
+#endif
 static uint8_t gUdmaTrpdMem[UDMA_TEST_APP_TRPD_SIZE_ALIGN] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
 
 /*
@@ -372,7 +378,7 @@ static int32_t App_udmaMemcpy(Udma_ChHandle chHandle,
 #endif
     /* Submit TRPD to channel */
     retVal = Udma_ringQueueRaw(
-                 Udma_chGetFqRingHandle(chHandle), (uint64_t) trpdMem);
+                 Udma_chGetFqRingHandle(chHandle), (uint64_t) Udma_appVirtToPhyFxn(trpdMem, 0U, NULL));
     if(UDMA_SOK != retVal)
     {
         App_print("[Error] Channel queue failed!!\n");
@@ -423,7 +429,7 @@ static int32_t App_udmaMemcpy(Udma_ChHandle chHandle,
          * Sanity check
          */
         /* Check returned descriptor pointer */
-        if(pDesc != ((uint64_t) trpdMem))
+        if(((uint64_t) Udma_appPhyToVirtFxn(pDesc, 0U, NULL)) != ((uint64_t) trpdMem))
         {
             App_print("[Error] TR descriptor pointer returned doesn't "
                    "match the submitted address!!\n");
@@ -466,6 +472,7 @@ static void App_udmaEventDmaCb(Udma_EventHandle eventHandle,
     return;
 }
 
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
 static void App_udmaEventTdCb(Udma_EventHandle eventHandle,
                               uint32_t eventType,
                               void *appData)
@@ -491,6 +498,7 @@ static void App_udmaEventTdCb(Udma_EventHandle eventHandle,
     return;
 }
 #endif
+#endif
 
 static int32_t App_init(Udma_DrvHandle drvHandle)
 {
@@ -510,7 +518,9 @@ static int32_t App_init(Udma_DrvHandle drvHandle)
 #endif
     /* UDMA driver init */
     UdmaInitPrms_init(instId, &initPrms);
-    initPrms.printFxn = &App_print;
+    initPrms.virtToPhyFxn   = &Udma_appVirtToPhyFxn;
+    initPrms.phyToVirtFxn   = &Udma_appPhyToVirtFxn;
+    initPrms.printFxn       = &App_print;
     retVal = Udma_init(drvHandle, &initPrms);
     if(UDMA_SOK != retVal)
     {
@@ -559,15 +569,17 @@ static int32_t App_create(Udma_DrvHandle drvHandle, Udma_ChHandle chHandle)
         /* Init channel parameters */
         chType = UDMA_CH_TYPE_TR_BLK_COPY;
         UdmaChPrms_init(&chPrms, chType);
-        chPrms.fqRingPrms.ringMem   = &gTxRingMem[0U];
-        chPrms.cqRingPrms.ringMem   = &gTxCompRingMem[0U];
-        chPrms.tdCqRingPrms.ringMem = &gTxTdCompRingMem[0U];
+        chPrms.fqRingPrms.ringMem       = &gTxRingMem[0U];
         chPrms.fqRingPrms.ringMemSize   = UDMA_TEST_APP_RING_MEM_SIZE;
+        chPrms.fqRingPrms.elemCnt       = UDMA_TEST_APP_RING_ENTRIES;
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
+        chPrms.cqRingPrms.ringMem       = &gTxCompRingMem[0U];
         chPrms.cqRingPrms.ringMemSize   = UDMA_TEST_APP_RING_MEM_SIZE;
+        chPrms.cqRingPrms.elemCnt       = UDMA_TEST_APP_RING_ENTRIES;
+        chPrms.tdCqRingPrms.ringMem     = &gTxTdCompRingMem[0U];
         chPrms.tdCqRingPrms.ringMemSize = UDMA_TEST_APP_RING_MEM_SIZE;
-        chPrms.fqRingPrms.elemCnt   = UDMA_TEST_APP_RING_ENTRIES;
-        chPrms.cqRingPrms.elemCnt   = UDMA_TEST_APP_RING_ENTRIES;
-        chPrms.tdCqRingPrms.elemCnt = UDMA_TEST_APP_RING_ENTRIES;
+        chPrms.tdCqRingPrms.elemCnt     = UDMA_TEST_APP_RING_ENTRIES;
+#endif
 
         /* Open channel for block copy */
         retVal = Udma_chOpen(drvHandle, chHandle, chType, &chPrms);
@@ -618,6 +630,7 @@ static int32_t App_create(Udma_DrvHandle drvHandle, Udma_ChHandle chHandle)
         }
     }
 
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
     if(UDMA_SOK == retVal)
     {
         /* Register teardown ring completion callback */
@@ -634,6 +647,7 @@ static int32_t App_create(Udma_DrvHandle drvHandle, Udma_ChHandle chHandle)
             App_print("[Error] UDMA Teardown CQ event register failed!!\n");
         }
     }
+#endif
 #endif
 
     if(UDMA_SOK == retVal)
@@ -667,8 +681,10 @@ static int32_t App_delete(Udma_DrvHandle drvHandle, Udma_ChHandle chHandle)
     /* Unregister all events */
     eventHandle = &gUdmaTdCqEventObj;
     retVal += Udma_eventUnRegister(eventHandle);
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
     eventHandle = &gUdmaCqEventObj;
     retVal += Udma_eventUnRegister(eventHandle);
+#endif
     if(UDMA_SOK != retVal)
     {
         App_print("[Error] UDMA event unregister failed!!\n");
@@ -737,7 +753,7 @@ static void App_udmaTrpdInit(Udma_ChHandle chHandle,
     pTr->dim1     = pTr->icnt0;
     pTr->dim2     = (pTr->icnt0 * pTr->icnt1);
     pTr->dim3     = (pTr->icnt0 * pTr->icnt1 * pTr->icnt2);
-    pTr->addr     = (uint64_t) srcBuf;
+    pTr->addr     = (uint64_t) Udma_appVirtToPhyFxn(srcBuf, 0U, NULL);
     pTr->fmtflags = 0x00000000U;        /* Linear addressing, 1 byte per elem.
                                            Replace with CSL-FL API */
     pTr->dicnt0   = length;
@@ -747,7 +763,7 @@ static void App_udmaTrpdInit(Udma_ChHandle chHandle,
     pTr->ddim1    = pTr->dicnt0;
     pTr->ddim2    = (pTr->dicnt0 * pTr->dicnt1);
     pTr->ddim3    = (pTr->dicnt0 * pTr->dicnt1 * pTr->dicnt2);
-    pTr->daddr    = (uint64_t) destBuf;
+    pTr->daddr    = (uint64_t) Udma_appVirtToPhyFxn(destBuf, 0U, NULL);
 
     /* Clear TR response memory */
     *pTrResp = 0xFFFFFFFFU;
@@ -760,10 +776,7 @@ static void App_udmaTrpdInit(Udma_ChHandle chHandle,
 
 static void App_print(const char *str)
 {
-#ifndef SOC_AM64X
-    /* Temporarily disabling UART print for AM64x */
     UART_printf("%s", str);
-#endif
     if(TRUE == Udma_appIsPrintSupported())
     {
         printf("%s", str);
@@ -776,10 +789,7 @@ static void App_printNum(const char *str, uint32_t num)
     static char printBuf[200U];
 
     snprintf(printBuf, 200U, str, num);
-#ifndef SOC_AM64X
-    /* Temporarily disabling UART print for AM64x */
     UART_printf("%s", printBuf);
-#endif
 
     if(TRUE == Udma_appIsPrintSupported())
     {
