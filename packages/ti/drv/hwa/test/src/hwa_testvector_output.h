@@ -4232,6 +4232,9 @@ uint32_t gHWATest_contextswitchParamIdx_output[] =
     0x0000000B,
     0x00000022
 };
+#ifdef BUILD_DSP_1
+#pragma DATA_SECTION(gHWATest_FFT4K_output, ".FFT4KtestVector");
+#endif
 uint32_t gHWATest_FFT4K_output[] = {
                                     0xFFFFFFC6,
                                     0x00000012,

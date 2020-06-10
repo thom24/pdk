@@ -403,7 +403,9 @@ uint32_t gHWATest_2DFFT_input[] = {
     0xa8721748,
     0x577d1762
 };
-
+#ifdef BUILD_DSP_1
+#pragma DATA_SECTION(gHWATest_4KFFT_input, ".FFT4KtestVector");
+#endif
 uint32_t gHWATest_4KFFT_input[] = {
     0x2d4c0009,
     0x286d148c,

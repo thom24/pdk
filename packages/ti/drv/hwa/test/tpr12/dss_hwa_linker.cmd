@@ -92,6 +92,7 @@ SECTIONS
 	 systemHeap :    { } > L2SRAM
     .benchmarkL2    : { } > L2SRAM
 	.benchmarkL1     : { } > L1DSRAM
+	.FFT4KtestVector : { } > L3SRAM
 
 }
 
