@@ -50,8 +50,7 @@ else
 
 # Enable copy of vectors
   ifeq ($(ISA),$(filter $(ISA), r5f))
-    SRCDIR += $(PDK_VECT_COPY_PATH)
-    SRCS_ASM_COMMON += utilsCopyVecs2ATcm.asm
+    COMP_LIST_COMMON += copyvecs
   endif
 
 endif

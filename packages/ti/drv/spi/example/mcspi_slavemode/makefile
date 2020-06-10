@@ -64,8 +64,7 @@ else
 EXTERNAL_LNKCMD_FILE_LOCAL =  $(PDK_INSTALL_PATH)/ti/drv/spi/example/mcspi_slavemode/j721e/linker_mcu_sysbios.lds
 # Enable copy of vectors
 ifeq ($(ISA),$(filter $(ISA), r5f))
-  SRCDIR += $(PDK_VECT_COPY_PATH)
-  SRCS_ASM_COMMON += utilsCopyVecs2ATcm.asm
+  COMP_LIST_COMMON += copyvecs
 endif
 
 endif

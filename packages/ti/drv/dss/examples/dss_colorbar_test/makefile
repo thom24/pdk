@@ -32,8 +32,7 @@ SRCS_COMMON += dss_colorbar_test.c
 CFLAGS_LOCAL_COMMON += $(PDK_CFLAGS) $(DSS_CFLAGS)
 
 ifeq ($(ISA),$(filter $(ISA), r5f))
-  SRCDIR += $(PDK_VECT_COPY_PATH)
-  SRCS_ASM_COMMON += utilsCopyVecs2ATcm.asm
+  COMP_LIST_COMMON += copyvecs
 endif
 
 # Core/SoC/platform specific source files and CFLAGS

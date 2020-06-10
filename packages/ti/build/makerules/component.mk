@@ -597,6 +597,11 @@ endif
 ifneq ($(profiling_EXAMPLE_LIST),)
   pdk_EXAMPLE_LIST += $(profiling_EXAMPLE_LIST)
 endif
+# - used to ignore include if component not present
+-include $(PDK_COPYVECS_COMP_PATH)/copyvecs_component.mk
+ifneq ($(copyvecs_LIB_LIST),)
+  pdk_LIB_LIST += $(copyvecs_LIB_LIST)
+endif
 
 # - used to ignore include if component not present
 -include $(PDK_TRACE_COMP_PATH)/trace_component.mk

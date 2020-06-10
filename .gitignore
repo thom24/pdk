@@ -11,3 +11,7 @@ packages/ti/drv/pm/
 packages/ti/drv/pmic/
 packages/ti/drv/sa/
 packages/ti/drv/vhwa/
+packages/ti/*/lib
+packages/ti/*/*/lib
+packages/ti/*/*/*/lib
+

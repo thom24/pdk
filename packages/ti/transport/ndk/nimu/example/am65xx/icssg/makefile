@@ -15,8 +15,7 @@ SRCS_COMMON += main_am65xx.c nimu_osal.c emac_fw_config_dual_mac.c
 
 # Enable copy of vectors
 ifeq ($(ISA),$(filter $(ISA), r5f))
-  SRCDIR += $(PDK_VECT_COPY_PATH)
-  SRCS_ASM_COMMON += utilsCopyVecs2ATcm.asm
+  COMP_LIST_COMMON += copyvecs
 endif
 
 # List all the external components/interfaces, whose interface header files
