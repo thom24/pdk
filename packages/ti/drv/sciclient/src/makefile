@@ -97,6 +97,7 @@ endif
 
 ifeq ($(SOC),$(filter $(SOC), am64x))
 PACKAGE_SRCS_COMMON += soc/sysfw/binaries/ti-sci-firmware-am64x-gp-vlab.bin
+PACKAGE_SRCS_COMMON += soc/sysfw/binaries/ti-sci-firmware-am64x-gp-zebu.bin
 endif
 
 # Core/SoC/platform specific source files and CFLAGS
