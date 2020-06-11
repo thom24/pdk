@@ -378,10 +378,17 @@ typedef struct
     /**< [IN] Number of valid flow ID's starting from flowIdFwRangeStart
      *   for firewall check */
     uint8_t                flowEInfoPresent;
-    /**< [IN] default flow config parameter for EPIB */
+    /**< [IN] default flow config parameter for EPIB 
+     *   Refer \ref tisci_msg_rm_udmap_flow_cfg_req::rx_einfo_present */
     uint8_t                flowPsInfoPresent;
-    /**< [IN] default flow config parameter for psInfo */
-
+    /**< [IN] default flow config parameter for psInfo
+     *   Refer \ref tisci_msg_rm_udmap_flow_cfg_req::rx_psinfo_present */
+    uint8_t                flowErrorHandling;
+    /**< [IN] default flow config parameter for Error Handling 
+     *   Refer \ref tisci_msg_rm_udmap_flow_cfg_req::rx_error_handling */
+    uint8_t                flowSopOffset;
+    /**< [IN] default flow config parameter for SOP offset
+     *   Refer \ref tisci_msg_rm_udmap_flow_cfg_req::rx_sop_offset */
     uint8_t                 ignoreShortPkts;
     /**< [IN] Bool: This field controls whether or not short packets will be
      *   treated as exceptions (FALSE) or ignored (TRUE) for the channel.
