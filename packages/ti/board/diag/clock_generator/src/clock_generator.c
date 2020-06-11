@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2019, Texas Instruments Incorporated
+ * Copyright (c) 2016-2020, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,14 +47,14 @@
 #include <ti/drv/i2c/soc/I2C_soc.h>
 #include <ti/drv/uart/UART_stdio.h>
 
-#if defined(SOC_K2G) || defined(SOC_J721E)
+#if defined(SOC_K2G) || defined(SOC_J721E) || defined(SOC_J7200)
 #include "diag_common_cfg.h"
 #endif
 
 #include "board.h"
 #include "board_cfg.h"
 
-#if defined(SOC_J721E)
+#if defined(SOC_J721E)|| defined(SOC_J7200)
 #include "board_i2c_io_exp.h"
 
 /* Platform test return type */
@@ -105,7 +105,7 @@ clockGenCfg_t clockConfig[NUM_CLOCK_GEN] =
         BOARD_I2C_CLOCK_GENERATOR
     }
 };
-#elif defined(SOC_J721E)
+#elif defined(SOC_J721E)|| defined(SOC_J7200)
 clockGenCfg_t clockConfig[NUM_CLOCK_GEN] =
 {
     {
@@ -260,13 +260,13 @@ static TEST_STATUS run_clock_generator_test(void)
     TEST_STATUS testStatus = TEST_FAIL;
     uint32_t index;
 
-#if defined(SOC_J721E)
+#if defined(SOC_J721E)|| defined(SOC_J7200)
     Board_I2cInitCfg_t i2cCfg;
     int32_t boardDetect = 0;
 #endif
     UART_printf("\nRunning Clock generator Detect Test\n");
 
-#if defined(SOC_J721E)
+#if defined(SOC_J721E)|| defined(SOC_J7200)
     /* Quad ENET Expansion board detect */
     if(Board_detectBoard(BOARD_ID_ENET))
     {
@@ -297,7 +297,7 @@ static TEST_STATUS run_clock_generator_test(void)
 
     for(index = 0; index < NUM_CLOCK_GEN; index++)
     {
-#if defined(SOC_J721E)
+#if defined(SOC_J721E)|| defined(SOC_J7200)
         enableI2C(CSL_I2C0_CFG_BASE);
 
         if(clockConfig[index].clockGenModule == CDCI6214_QSGMII && boardDetect)
