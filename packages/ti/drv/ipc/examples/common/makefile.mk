@@ -61,7 +61,7 @@ PACKAGE_SRCS_COMMON = . ../common ../../common
 ifneq ($(BUILD_OS_TYPE), baremetal)
 SRCS_COMMON += ipc_utils.c ipc_testsetup.c
 else
-SRCS_COMMON += ipc_trace.c ipctest_baremetal.c
+SRCS_COMMON += ipc_trace.c
 endif
 
 CFLAGS_LOCAL_COMMON += $(PDK_CFLAGS)

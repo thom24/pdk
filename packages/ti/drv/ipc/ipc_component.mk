@@ -328,7 +328,7 @@ ex04_linux_baremetal_2core_echo_test_PKG_LIST = ex04_linux_baremetal_2core_echo_
 ex04_linux_baremetal_2core_echo_test_INCLUDE = $(ex04_linux_baremetal_2core_echo_test_PATH)
 ex04_linux_baremetal_2core_echo_test_BOARDLIST = am65xx_evm
 export ex04_linux_baremetal_2core_echo_test_BOARDLIST
-ex04_linux_baremetal_2core_echo_test_$(SOC)_CORELIST = mcu1_0
+ex04_linux_baremetal_2core_echo_test_$(SOC)_CORELIST = mcu1_0 mcu1_1
 export ex04_linux_baremetal_2core_echo_test_$(SOC)_CORELIST
 ipc_EXAMPLE_LIST += ex04_linux_baremetal_2core_echo_test
 

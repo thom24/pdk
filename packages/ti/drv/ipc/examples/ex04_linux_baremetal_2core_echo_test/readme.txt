@@ -11,8 +11,6 @@ Other files
 ../common/src/ipc_trace.h,.c           : This file has functions to support the trace functionality, which allows to see the trace
                                          from the linux host
 
-../common/src/ipctest_baremetal.h,.c   : This file has some baremetal specific os abstraction functions.
-
 Functional description
 ----------------------
 

@@ -58,7 +58,6 @@
 #include <ti/drv/ipc/ipcver.h>
 #include <ti/drv/ipc/examples/common/src/ipc_setup.h>
 #include "../common/src/ipc_trace.h"
-#include "../common/src/ipctest_baremetal.h"
 #ifndef BUILD_MPU1_0
 #if defined(SOC_AM65XX)
 #include "../common/src/ipc_am65xx_rsctable.h"
@@ -133,10 +132,14 @@ uint32_t remoteProc[] =
 {
     IPC_MPU1_0
 };
-#endif
-
+#elif defined(BUILD_MCU1_1)
+uint32_t selfProcId = IPC_MCU1_1;
+uint32_t remoteProc[] =
+{
+    IPC_MPU1_0
+};
+#else
 /* NOTE: all other cores are not used in this test, but must be built as part of full PDK build */
-#if !defined(BUILD_MPU1_0) && !defined(BUILD_MCU1_0)
 uint32_t selfProcId = 0;
 uint32_t remoteProc[] = {};
 #endif
@@ -208,7 +211,6 @@ void rpmsg_responderFxn(uintptr_t arg0, uintptr_t arg1)
     int32_t		     n;
     int32_t		     status = 0;
     void		     *buf;
-    uint32_t         t;
     uint32_t         lastNumMessagesReceived = 0;
     uint32_t         emptyReceiveCalls = 0;
 
@@ -235,10 +237,7 @@ void rpmsg_responderFxn(uintptr_t arg0, uintptr_t arg1)
         System_printf("RecvTask: Failed to create endpoint\n");
         return;
     }
-    for (t = 0; t < gNumRemoteProc; t++)
-    {
-        Ipc_mailboxEnableNewMsgInt(selfProcId, t);
-    }
+
 #if !defined(BUILD_MPU1_0) && defined(A72_LINUX_OS) && defined(A72_LINUX_OS_IPC_ATTACH)
     RecvEndPt = myEndPt;
 #endif
@@ -252,13 +251,9 @@ void rpmsg_responderFxn(uintptr_t arg0, uintptr_t arg1)
 
     while(!g_exitRespTsk)
     {
-        /* Wait for messages to show up */
-        while(gMessagesReceived == lastNumMessagesReceived);
-        /* NOTE: The following function may need to be replaced by a blocking
-          function RPMessage_recv in later implementations */
-        status = RPMessage_recvNb(handle,
+        status = RPMessage_recv(handle,
                                   (Ptr)str, &len, &remoteEndPt,
-                                  &remoteProcId);
+                                  &remoteProcId, IPC_RPMESSAGE_TIMEOUT_FOREVER);
         if(status != IPC_SOK)
         {
 #ifdef DEBUG_PRINT
@@ -444,98 +439,6 @@ void rpmsg_senderFxn(uintptr_t arg0, uintptr_t arg1)
     RPMessage_delete(&handle);
 }
 
-#define INTRTR_CFG_MAIN_DOMAIN_MBX_CLST0_USR1_OUT_INT_NO  (17U)
-#define INTRTR_CFG_START_LEVEL_INT_NUMBER \
-            (CSL_MCU0_INTR_MAIN2MCU_LVL_INTR0_OUTL_0)
-#define CDD_IPC_CORE_MPU1_0            (0u)
-#define APP_SCICLIENT_TIMEOUT          (SCICLIENT_SERVICE_WAIT_FOREVER)
-/*
- * This function calls the Ipc lld ISR handler to service the interrupt
- */
-void IpcTestBaremetalIrqMbxFromMpu_10(void)
-{
-    Ipc_newMessageIsr(CDD_IPC_CORE_MPU1_0);
-    return;
-}
-/*
- * This function needs to be registered as an interrupt
- * handler for IPC mailbox events
- */
-void IpcTestBaremetalAppMsgFromMpu10Isr(uintptr_t notUsed)
-{
-    /* Invoke MPU 10 Isr handler */
-    IpcTestBaremetalIrqMbxFromMpu_10();
-}
-/*
- * This function is the callback function the ipc lld library calls when a
- * message is received.
- */
-static void IpcTestBaremetalNewMsgCb(uint32_t srcEndPt, uint32_t procId)
-{
-    /* Add code here to take action on any incoming messages */
-    gMessagesReceived++;
-    return;
-}
-
-/*
- * This function registers the interrupt handlers
- * NOTE: This code may change and may be abstracted into the lld code 
- *       or a seperate osal file in a future release.
- */
-int32_t IpctestConfigureInterruptHandlers(void)
-{
-    OsalRegisterIntrParams_t    intrPrms;
-    OsalInterruptRetCode_e      osalRetVal;
-    HwiP_Handle hwiHandle;
-    struct tisci_msg_rm_irq_set_req     rmIrqReq;
-    struct tisci_msg_rm_irq_set_resp    rmIrqResp;
-    int32_t retVal;
-
-    rmIrqReq.valid_params           = TISCI_MSG_VALUE_RM_DST_ID_VALID;
-    rmIrqReq.valid_params          |= TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID;
-    rmIrqReq.src_id                 = TISCI_DEV_NAVSS0_MAILBOX0_CLUSTER0;
-    rmIrqReq.global_event           = 0U;
-    rmIrqReq.src_index              = 1U; /* 0 for User 0, 1 for user 1... */
-    rmIrqReq.dst_id                 = TISCI_DEV_MCU_ARMSS0_CPU0;
-    rmIrqReq.dst_host_irq           =
-                        (INTRTR_CFG_MAIN_DOMAIN_MBX_CLST0_USR1_OUT_INT_NO +
-                         INTRTR_CFG_START_LEVEL_INT_NUMBER);
-
-    rmIrqReq.ia_id                  = 0U;
-    rmIrqReq.vint                   = 0U;
-    rmIrqReq.vint_status_bit_index  = 0U;
-    rmIrqReq.secondary_host         = TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
-    retVal = Sciclient_rmIrqSet(
-                 &rmIrqReq, &rmIrqResp, APP_SCICLIENT_TIMEOUT);
-    if(CSL_PASS != retVal)
-    {
-        System_printf(": Error in SciClient Interrupt Params Configuration!!!\n");
-        return -1;
-    }
-
-    /* Interrupt hook up */
-    Osal_RegisterInterrupt_initParams(&intrPrms);
-    intrPrms.corepacConfig.arg          = (uintptr_t)NULL;
-    intrPrms.corepacConfig.isrRoutine   = &IpcTestBaremetalAppMsgFromMpu10Isr;
-    intrPrms.corepacConfig.priority     = 1U;
-    intrPrms.corepacConfig.corepacEventNum = 0U;
-    intrPrms.corepacConfig.intVecNum    =
-        (INTRTR_CFG_MAIN_DOMAIN_MBX_CLST0_USR1_OUT_INT_NO +
-         INTRTR_CFG_START_LEVEL_INT_NUMBER);
-
-    osalRetVal = Osal_RegisterInterrupt(&intrPrms, &hwiHandle);
-
-    if(OSAL_INT_SUCCESS != osalRetVal)
-    {
-        System_printf( ": Error Could not register ISR to receive"
-                         " from MCU 1 1 !!!\n");
-        return -1;
-    }
-    Osal_EnableInterrupt(0, intrPrms.corepacConfig.intVecNum);
-    return 0;
-
-}
-
 /*
  * This is the main test function which initializes and runs the Sender and 
  * responder functions.
@@ -547,8 +450,8 @@ int32_t Ipc_echo_test(void)
 {
     uint32_t          t;
     uint32_t          numProc = gNumRemoteProc;
-    Ipc_VirtIoParams  vqParam;
     Ipc_InitPrms      initPrms;
+    Ipc_VirtIoParams  vqParam;
 
     /* Step1 : Initialize the multiproc */
     if (IPC_SOK == Ipc_mpSetConfig(selfProcId, numProc, pRemoteProcArray))
@@ -556,24 +459,8 @@ int32_t Ipc_echo_test(void)
         System_printf("IPC_echo_test (core : %s) .....\r\n%s\r\n",
                 Ipc_mpGetSelfName(), IPC_DRV_VERSION_STR);
 
-        initPrms.instId = 0U;
-        initPrms.osalPrms.disableAllIntr = &IpcTestBaremetalCriticalSectionIntEnter;
-        initPrms.osalPrms.restoreAllIntr = &IpcTestBaremetalCriticalSectionIntExit;
-
-        initPrms.osalPrms.createHIsr     = &IpcTestBaremetalHIsrCreate;
-        initPrms.osalPrms.deleteHIsr     = &IpcTestBaremetalHIsrDelete;
-        initPrms.osalPrms.postHIsr       = &IpcTestBaremetalHIsrPost;
-        initPrms.osalPrms.createHIsrGate = &IpcTestBaremetalHIsrGateCreate;
-        initPrms.osalPrms.deleteHIsrGate = &IpcTestBaremetalHIsrGateDelete;
-        initPrms.osalPrms.lockHIsrGate   = &IpcTestBaremetalHIsrGateEnter;
-        initPrms.osalPrms.unLockHIsrGate = &IpcTestBaremetalHIsrGateExit;
-
-        initPrms.osalPrms.createMutex    = (Ipc_OsalMutexCreateFxn) NULL_PTR;
-        initPrms.osalPrms.deleteMutex    = (Ipc_OsalMutexDeleteFxn) NULL_PTR;
-        initPrms.osalPrms.lockMutex      = (Ipc_OsalMutexLockFxn) NULL_PTR;
-        initPrms.osalPrms.unlockMutex    = (Ipc_OsalMutexUnlockFxn) NULL_PTR;
-
-        initPrms.newMsgFxn = &IpcTestBaremetalNewMsgCb;
+        /* Initialize params with defaults */
+        IpcInitPrms_init(0U, &initPrms);
 
         if (IPC_SOK != Ipc_init(&initPrms))
         {
@@ -628,13 +515,6 @@ int32_t Ipc_echo_test(void)
     cntrlParam.stackBuffer = NULL;
     cntrlParam.stackSize   = 0U;
     RPMessage_init(&cntrlParam);
-
-    /* Step 4: Setup IPC interrupt handling for baremetal */
-    if(IpctestConfigureInterruptHandlers() != 0)
-    {
-        System_printf("IpctestConfigureInterruptHandlers Failed!!!\n");
-        return -1;
-    }
 
 #if !defined(BUILD_MPU1_0) && defined(A72_LINUX_OS) && defined(A72_LINUX_OS_IPC_ATTACH)
     rpmsg_vdevMonitorFxn();
