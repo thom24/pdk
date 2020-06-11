@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2018-2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -41,9 +41,9 @@
  *  Operation: This test display the board details by reading
  *			   Board id EEPROM
  *
- *  Supported SoCs: AM65XX, J721E.
+ *  Supported SoCs: AM65XX, J721E & J7200.
  *
- *  Supported Platforms: am65xx_evm, am65xx_idk & j721e_evm.
+ *  Supported Platforms: am65xx_evm, am65xx_idk, j721e_evm & j7200_evm.
  *
  */
 
@@ -56,6 +56,20 @@ boardProgInfo_t boardProgInfo[MAX_NUM_OF_BOARDS] = {
     {"LCD Display Board\0",         LCD_EEPROM_SLAVE_ADDR,      false},
     {"SERDES Personality Card\0",   SERDES_EEPROM_SLAVE_ADDR,   false}
 };
+#elif defined(j7200_evm)
+boardProgInfo_t boardProgInfo[MAX_NUM_OF_BOARDS] = {
+    {"SoM Board\0",				BOARD_SOM_EEPROM_SLAVE_ADDR,	true},
+    {"CP Board\0",				BOARD_CP_EEPROM_SLAVE_ADDR,		true},
+    {"GESI Board\0",			BOARD_GESI_EEPROM_SLAVE_ADDR,	false},
+    {"Quad ENET expansion\0",	BOARD_ENET_EEPROM_SLAVE_ADDR,	false}
+};
+Board_I2cInitCfg_t boardI2cInitCfg[MAX_NUM_OF_BOARDS] = {
+    {0,     BOARD_SOC_DOMAIN_WKUP, false},
+    {0,     BOARD_SOC_DOMAIN_WKUP, false},
+    {0,     BOARD_SOC_DOMAIN_WKUP, false},
+    {0,     BOARD_SOC_DOMAIN_WKUP, false},
+};
+
 #else
 boardProgInfo_t boardProgInfo[MAX_NUM_OF_BOARDS] = {
     {"SoM Board\0",                 SOM_EEPROM_SLAVE_ADDR,          true},
@@ -68,7 +82,6 @@ boardProgInfo_t boardProgInfo[MAX_NUM_OF_BOARDS] = {
     {"Quad ENET expansion\0",       ENET_EXP_EEPROM_SLAVE_ADDR,     false},
     {"Display adapter board\0",     DISPLAY_ADP_EEPROM_SLAVE_ADDR,  false}
 };
-
 Board_I2cInitCfg_t boardI2cInitCfg[MAX_NUM_OF_BOARDS] = {
     {0,     BOARD_SOC_DOMAIN_WKUP, false},
     {0,     BOARD_SOC_DOMAIN_WKUP, false},

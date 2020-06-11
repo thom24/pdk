@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2018-2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -53,7 +53,7 @@
 
 #include "board.h"
 #include "board_cfg.h"
-#if defined(j721e_evm)
+#if (defined(j721e_evm) || defined(j7200_evm))
 #include "board_utils.h"
 #endif
 
@@ -86,7 +86,12 @@ extern "C" {
 #define STARTING_BOARD_NUM                      (1U)
 
 #else
+#if defined (j7200_evm)
+#define MAX_NUM_OF_BOARDS                       (4U)
+#define STARTING_BOARD_NUM                      (0U)
+#else
 #define MAX_NUM_OF_BOARDS                       (9U)
+#define STARTING_BOARD_NUM                      (2U)
 
 #define SOM_EEPROM_SLAVE_ADDR                   (0x50U)
 #define CP_EEPROM_SLAVE_ADDR                    (0x51U)
@@ -94,8 +99,7 @@ extern "C" {
 #define CSI2_EXP_EEPROM_SLAVE_ADDR              (0x52U)
 #define ENET_EXP_EEPROM_SLAVE_ADDR              (0x54U)
 #define DISPLAY_ADP_EEPROM_SLAVE_ADDR           (0x00U) //J7ES_TBD: Need to update salve addr
-
-#define STARTING_BOARD_NUM                      (2U)
+#endif
 #endif
 
 #define BOARD_NAME_LENGTH                       (7U)
