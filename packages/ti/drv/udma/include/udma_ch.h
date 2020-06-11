@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018
+ *  Copyright (c) Texas Instruments Incorporated 2018-2020
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -377,6 +377,11 @@ typedef struct
     uint16_t                flowIdFwRangeCnt;
     /**< [IN] Number of valid flow ID's starting from flowIdFwRangeStart
      *   for firewall check */
+    uint8_t                flowEInfoPresent;
+    /**< [IN] default flow config parameter for EPIB */
+    uint8_t                flowPsInfoPresent;
+    /**< [IN] default flow config parameter for psInfo */
+
     uint8_t                 ignoreShortPkts;
     /**< [IN] Bool: This field controls whether or not short packets will be
      *   treated as exceptions (FALSE) or ignored (TRUE) for the channel.

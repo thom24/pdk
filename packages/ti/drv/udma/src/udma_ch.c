@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018
+ *  Copyright (c) Texas Instruments Incorporated 2018-2020
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -479,6 +479,16 @@ int32_t Udma_chConfigRx(Udma_ChHandle chHandle, const Udma_ChRxPrms *rxPrms)
             {
                 UdmaFlowPrms_init(&flowPrms, chHandle->chType);
 
+                if (rxPrms->flowPsInfoPresent == (uint8_t)1U)
+                {
+                    /* update the parameter */
+                    flowPrms.psInfoPresent = TISCI_MSG_VALUE_RM_UDMAP_RX_FLOW_PSINFO_PRESENT;
+                }
+                if (rxPrms->flowEInfoPresent == (uint8_t) 1U)
+                {
+                    /* update the parameter */
+                    flowPrms.einfoPresent = TISCI_MSG_VALUE_RM_UDMAP_RX_FLOW_EINFO_PRESENT;
+                }
                 if(NULL_PTR == chHandle->cqRing)
                 {
                     /* Ring not allocated */
@@ -1669,6 +1679,8 @@ void UdmaChRxPrms_init(Udma_ChRxPrms *rxPrms, uint32_t chType)
         rxPrms->dmaPriority         = UDMA_DEFAULT_RX_CH_DMA_PRIORITY;
         rxPrms->flowIdFwRangeStart  = 0U;       /* Reset value - to use default flow */
         rxPrms->flowIdFwRangeCnt    = 0U;       /* Reset value - to use default flow */
+        rxPrms->flowEInfoPresent    = 0U;       /* Default no EINFO */
+        rxPrms->flowPsInfoPresent   = 0U;       /* Default no PSINFO */
         rxPrms->ignoreShortPkts     = TISCI_MSG_VALUE_RM_UDMAP_RX_CH_PACKET_EXCEPTION;
         rxPrms->ignoreLongPkts      = TISCI_MSG_VALUE_RM_UDMAP_RX_CH_PACKET_EXCEPTION;
         rxPrms->configDefaultFlow   = TRUE;
