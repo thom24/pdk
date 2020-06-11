@@ -386,10 +386,12 @@ extern "C" {
  */
 typedef struct
 {
-    uint32_t    startRing;
-    /**< Start ring number of a particular mapped channel. */
-    uint32_t    numRing; 
-    /**< Number of rings for a particular mapped channel. */
+    uint32_t    defaultRing;
+    /**< Default ring number of a particular mapped channel. */
+    uint32_t    startFreeRing;
+    /**< Start free ring number of a particular mapped channel. */
+    uint32_t    numFreeRing; 
+    /**< Number of free rings for a particular mapped channel. */
 }Udma_MappedChRingAttributes;
 
 /* ========================================================================== */

@@ -1958,6 +1958,9 @@ static int32_t Udma_chAllocResource(Udma_ChHandle chHandle)
     uint32_t                utcChNum;
     const Udma_UtcInstInfo *utcInfo;
 #endif
+#if((UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP) > 0)
+    Udma_MappedChRingAttributes  chAttr;
+#endif
 
     drvHandle = chHandle->drvHandle;
 
@@ -2148,16 +2151,25 @@ static int32_t Udma_chAllocResource(Udma_ChHandle chHandle)
             {
                 if((chHandle->chType & UDMA_CH_FLAG_MAPPED) == UDMA_CH_FLAG_MAPPED)
                 {   
-                    ringNum = UDMA_RING_ANY;
+#if ((UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP) > 0)
                     chHandle->chPrms.fqRingPrms.mappedRingGrp  = chHandle->chPrms.mappedChGrp;
                     if((chHandle->chType & UDMA_CH_FLAG_TX) == UDMA_CH_FLAG_TX)
                     {
                         chHandle->chPrms.fqRingPrms.mappedChNum    = chHandle->txChNum;
+                        /* Get default ringNum for the mapped TX channel */
+                        retVal = Udma_getMappedChRingAttributes(drvHandle, chHandle->chPrms.mappedChGrp, chHandle->txChNum, &chAttr);
+                        Udma_assert(drvHandle, retVal == UDMA_SOK);
+                        ringNum = chAttr.defaultRing;
                     }
                     else
                     {
                         chHandle->chPrms.fqRingPrms.mappedChNum    = chHandle->rxChNum;
+                        /* Get default ringNum for the mapped RX channel */
+                        retVal = Udma_getMappedChRingAttributes(drvHandle, chHandle->chPrms.mappedChGrp, chHandle->rxChNum, &chAttr);
+                        Udma_assert(drvHandle, retVal == UDMA_SOK);
+                        ringNum = chAttr.defaultRing;
                     }
+#endif
                 }
                 else if((chHandle->chType & UDMA_CH_FLAG_TX) == UDMA_CH_FLAG_TX)
                 {

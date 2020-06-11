@@ -1406,12 +1406,12 @@ uint32_t Udma_rmAllocMappedRing(Udma_DrvHandle drvHandle,
     if(UDMA_SOK == retVal)
     {
         /* Derive the intersecting pool (loopStart and loopMax) based on the rings reserved for the core (rmcfg)
-        * and the permissible range for the given channel(rings reserved for specific channels).
+        * and the permissible range for the given channel(free rings reserved for specific channels).
         * 
         * Core_ring_Start (rmInitPrms->startMappedRing) & Core_ring_End (rmInitPrms->startMappedRing +rmInitPrms->numMappedRing)
         * refers to the range of reserved rings for the core.
-        * Channel_ring_Start (chAttr->startRing) & Channel_ring_End (chAttr->startRing + chAttr->numRing) 
-        * refers to permissible range of rings for the particular channel.
+        * Channel_ring_Start (chAttr->startFreeRing) & Channel_ring_End (chAttr->startFreeRing + chAttr->numFreeRing) 
+        * refers to permissible range of free rings for the particular channel.
         * 
         * CASE 'A' refers to those that affects the loopStart
         * CASE 'B' refers to those that affects the loopMax
@@ -1422,22 +1422,22 @@ uint32_t Udma_rmAllocMappedRing(Udma_DrvHandle drvHandle,
         loopMax   = rmInitPrms->numMappedRing[mappedRingGrp];
 
         /* CASE_A_1 : Channel_ring_Start > Core_ring_Start */
-        if(chAttr.startRing > rmInitPrms->startMappedRing[mappedRingGrp])
+        if(chAttr.startFreeRing > rmInitPrms->startMappedRing[mappedRingGrp])
         {
             /* Update loopStart to start from Channel_ring_Start,
             * so as to skip the starting rings which are reserved for the core, 
             * but can't be used for the current channel */
-            loopStart = chAttr.startRing - rmInitPrms->startMappedRing[mappedRingGrp]; 
+            loopStart = chAttr.startFreeRing - rmInitPrms->startMappedRing[mappedRingGrp]; 
         }
         /* For all other CASE 'A's, loopStart should be 0 itself. */
 
         /* CASE_B_1 : Channel_ring_End < Core_ring_End */
-        if((chAttr.startRing + chAttr.numRing) < (rmInitPrms->startMappedRing[mappedRingGrp] + rmInitPrms->numMappedRing[mappedRingGrp]))
+        if((chAttr.startFreeRing + chAttr.numFreeRing) < (rmInitPrms->startMappedRing[mappedRingGrp] + rmInitPrms->numMappedRing[mappedRingGrp]))
         {
             /* Update loopMax to stop at Channel_ring_End,
             * so as to skip the last rings which are reserved for the core, 
             * but can't be used for the current channel */
-            loopMax = (chAttr.startRing + chAttr.numRing) - rmInitPrms->startMappedRing[mappedRingGrp];
+            loopMax = (chAttr.startFreeRing + chAttr.numFreeRing) - rmInitPrms->startMappedRing[mappedRingGrp];
         }
         /* For all other CASE 'B's, loopMax should be rmInitPrms->numMappedRing[mappedRingGrp] itself. */
 
