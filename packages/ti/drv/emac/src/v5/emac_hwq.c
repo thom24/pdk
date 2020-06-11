@@ -42,8 +42,8 @@
 #include <ti/csl/cslr_icss.h>
 #include <ti/drv/emac/src/v5/emac_drv_v5.h>
 
-#define EMAC_HWQ_MAX         64 /* 64 registers, 1 per queue */
-#define EMAC_HWQ_PEEK_MAX    16 /* 16 peekable hw queues, currently not used */
+#define EMAC_HWQ_MAX         ((int32_t)64) /* 64 registers, 1 per queue */
+#define EMAC_HWQ_PEEK_MAX    ((int32_t)16) /* 16 peekable hw queues, currently not used */
 
 typedef struct EMAC_HWQ_IP_MMAP_S
 {
@@ -73,7 +73,7 @@ static EMAC_HWQ_IP_T *emac_hwq_a[EMAC_MAX_ICSSG_INSTANCES-1] =
 
 void *emac_hwq_pop(int32_t icssg, int32_t qn)
 {
-    if (qn >= EMAC_HWQ_MAX || icssg >= EMAC_MAX_ICSSG_INSTANCES )
+    if (qn >= EMAC_HWQ_MAX || icssg >= (int32_t)EMAC_MAX_ICSSG_INSTANCES )
         return (void *)NULL;
 
     /* (emac_hwq_a[icssg]->hwq[qn]  will get you a 16 bit address from the mmr of the descriptor, this is actually a pop */
@@ -82,7 +82,7 @@ void *emac_hwq_pop(int32_t icssg, int32_t qn)
 
 void emac_hwq_push(int32_t icssg, int32_t qn, void *p)
 {
-    if (qn >= EMAC_HWQ_MAX || icssg >= EMAC_MAX_ICSSG_INSTANCES )
+    if (qn >= EMAC_HWQ_MAX || icssg >= (int32_t)EMAC_MAX_ICSSG_INSTANCES )
         return;
 
     emac_hwq_a[icssg]->hwq[qn] = (uint32_t)(uintptr_t)p;
@@ -90,7 +90,7 @@ void emac_hwq_push(int32_t icssg, int32_t qn, void *p)
 
 void *emac_hwq_peek(int32_t icssg, int32_t qn)
 {
-    if (qn >= EMAC_HWQ_PEEK_MAX || icssg >= EMAC_MAX_ICSSG_INSTANCES )
+    if (qn >= EMAC_HWQ_PEEK_MAX || icssg >= (int32_t)EMAC_MAX_ICSSG_INSTANCES )
         return (void *)0;
 
     return (void *)(uintptr_t)((emac_hwq_a[icssg]->hwq_peek[qn] | emac_hwq_smem_start[icssg]));
@@ -98,7 +98,7 @@ void *emac_hwq_peek(int32_t icssg, int32_t qn)
 
 int32_t emac_hwq_level(int32_t icssg, int32_t qn)
 {
-    if (qn >= EMAC_HWQ_MAX || icssg >= EMAC_MAX_ICSSG_INSTANCES )
+    if (qn >= EMAC_HWQ_MAX || icssg >= (int32_t)EMAC_MAX_ICSSG_INSTANCES )
         return 0;
 
     return emac_hwq_a[icssg]->hwq_len[qn];

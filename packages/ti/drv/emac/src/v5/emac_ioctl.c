@@ -1243,7 +1243,7 @@ EMAC_DRV_ERR_E  emac_ioctl_send_mgmt_msg(uint32_t portNum, EMAC_IOCTL_CMD_T* pMg
     EMAC_PORT_INFO_T * pPortInfo = &emac_port_info[portNum];
     int32_t icssgInst = pPortInfo->icssgInst;
 
-    pMgmtPkt = emac_hwq_pop(icssgInst,((portNum & 1) == 0) ? EMAC_ICSSG_MGMT_FREE_HWQA_PORT0 : EMAC_ICSSG_MGMT_FREE_HWQA_PORT1);
+    pMgmtPkt = (EMAC_MGMT_PKT_T*)(emac_hwq_pop(icssgInst,((portNum & 1) == 0) ? EMAC_ICSSG_MGMT_FREE_HWQA_PORT0 : EMAC_ICSSG_MGMT_FREE_HWQA_PORT1));
     if (pMgmtPkt == NULL)
     {
         UTILS_trace(UTIL_TRACE_LEVEL_ERR, emac_mcb.drv_trace_cb,

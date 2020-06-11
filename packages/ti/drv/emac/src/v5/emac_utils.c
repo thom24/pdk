@@ -1231,7 +1231,7 @@ void emac_poll_tx_ts_resp(uint32_t portNum, uint32_t ringNum)
 
         while (hwQLevel != 0)
         {
-            pMgmtPkt = emac_hwq_pop(icssgInst, ((portLoc & 1) == 0) ? EMAC_ICSSG_TXTS_RX_HWQA_PORT0 : EMAC_ICSSG_TXTS_RX_HWQA_PORT1);
+            pMgmtPkt =(uint32_t*)(emac_hwq_pop(icssgInst, ((portLoc & 1) == 0) ? EMAC_ICSSG_TXTS_RX_HWQA_PORT0 : EMAC_ICSSG_TXTS_RX_HWQA_PORT1));
             if (pMgmtPkt != NULL)
             {
                 tx_timestamp = pMgmtPkt[4];
@@ -1384,7 +1384,7 @@ void emac_poll_mgmt_pkts(uint32_t portNum, uint32_t ringNum)
         int32_t hwQLevel = emac_hwq_level(icssgInst, ((portLoc & 1) == 0) ? EMAC_ICSSG_MGMT_RX_HWQA_PORT0 : EMAC_ICSSG_MGMT_RX_HWQA_PORT1);
         while (hwQLevel != 0)
         {
-            pMgmtPkt = emac_hwq_pop(icssgInst, ((portLoc & 1) == 0) ? EMAC_ICSSG_MGMT_RX_HWQA_PORT0: EMAC_ICSSG_MGMT_RX_HWQA_PORT1);
+            pMgmtPkt = (uint32_t*)(emac_hwq_pop(icssgInst, ((portLoc & 1) == 0) ? EMAC_ICSSG_MGMT_RX_HWQA_PORT0: EMAC_ICSSG_MGMT_RX_HWQA_PORT1));
             if (pMgmtPkt != NULL)
             {
                 pIoctlData = (EMAC_IOCTL_CMD_T*)&pMgmtPkt[1];
@@ -1758,7 +1758,7 @@ EMAC_DRV_ERR_E EMAC_send_v5_common(uint32_t portNum, EMAC_PKT_DESC_T* pDesc, EMA
  */
 static void emac_config_icssg_dual_mac_fw_pg1(uint32_t portNum, EMAC_HwAttrs_V5 *hwAttrs)
 {
-    int32_t bufferPoolNum;
+    uint32_t bufferPoolNum;
     EMAC_PER_PORT_ICSSG_FW_CFG *pEmacFwCfg;
     EMAC_PRU_CFG_T pruCfg;
     Udma_FlowHandle flowHandle;
@@ -1794,7 +1794,7 @@ static void emac_config_icssg_dual_mac_fw_pg1(uint32_t portNum, EMAC_HwAttrs_V5 
         pruCfg.mgr_flow= Udma_flowGetNum( flowHandle);
     }
 
-    for (bufferPoolNum = 8; bufferPoolNum < EMAC_NUM_TRANSMIT_FW_QUEUES*2;bufferPoolNum++)
+    for (bufferPoolNum = 8U; bufferPoolNum < EMAC_NUM_TRANSMIT_FW_QUEUES*2U;bufferPoolNum++)
     {
         pruCfg.tx_bs[bufferPoolNum] = pDmFwCfg->txHostQueueSize[bufferPoolNum-8];
     }
