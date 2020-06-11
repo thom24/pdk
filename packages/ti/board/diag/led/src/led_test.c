@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (C) 2015-2020 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,17 +41,17 @@
  *  Operation: This test verifies by toggling all available general
  *             purpose LEDs.
  *
- *  Supported SoCs: AM335x, AM437x, AM571x, AM572x, K2G, AM65xx, J721E & TPR12.
+ *  Supported SoCs: AM335x, AM437x, AM571x, AM572x, K2G, AM65xx, J721E, TPR12 & J7200.
  *
  *  Supported Platforms: bbbAM335x, skAM335x, icev2AM335x, iceAMIC110,
  *                       evmAM437x, idkAM437x, skAM437x, evmAM571x, idkAM571x,
  *                       evmAM572x, idkAM572x, evmK2G, iceK2G, am65xx_evm,
- *                       am65xx_idk, j721e_evm & tpr12_evm.
+ *                       am65xx_idk, j721e_evm, tpr12_evm & j7200_evm.
  */
 
 #include "led_test.h"
 
-#if defined(SOC_J721E)
+#if (defined(SOC_J721E) || defined(SOC_J7200))
     i2cIoExpPinNumber_t gUserLeds[BOARD_GPIO_LED_NUM] = { PIN_NUM_6,
                                                           PIN_NUM_7 };
 #endif
@@ -62,7 +62,7 @@
  *  \param    delayValue          [IN]   Delay count.
  *
  */
-#if (!(defined(AM65XX) || defined(SOC_J721E) || defined(SOC_TPR12)))
+#if (!(defined(AM65XX) || defined(SOC_J721E) || defined(SOC_TPR12) || defined(SOC_J7200)))
 void BoardDiag_AppDelay(uint32_t delayVal)
 {
     uint32_t cnt = 0;
@@ -142,7 +142,7 @@ void AppGpioCallbackFxn(void)
  */
 static int8_t led_run_test(void)
 {
-#if defined(SOC_J721E)
+#if (defined(SOC_J721E) || defined(SOC_J7200))
     Board_I2cInitCfg_t i2cCfg;
 #endif
     char p = 'y';
@@ -167,7 +167,7 @@ static int8_t led_run_test(void)
     gpioCfg.baseAddr = CSL_WKUP_GPIO0_BASE;
     GPIO_socSetInitCfg(0, &gpioCfg);
     GPIO_init();
-#elif defined(SOC_J721E)
+#elif (defined(SOC_J721E) || defined(SOC_J7200))
     i2cCfg.i2cInst   = BOARD_I2C_IOEXP_DEVICE2_INSTANCE;
     i2cCfg.socDomain = BOARD_SOC_DOMAIN_MAIN;
     i2cCfg.enableIntr = false;
@@ -206,7 +206,7 @@ static int8_t led_run_test(void)
     UART_printf("Blinking LEDs...\n");
 
     for (i=0; i<BOARD_GPIO_LED_NUM; i++) {
-#if defined(SOC_J721E)
+#if (defined(SOC_J721E) || defined(SOC_J7200))
         Board_i2cIoExpSetPinDirection(BOARD_I2C_IOEXP_DEVICE2_ADDR,
                                       THREE_PORT_IOEXP,
                                       PORTNUM_2,
@@ -235,7 +235,7 @@ static int8_t led_run_test(void)
 #if defined (iceK2G)
                         gLedNum = k;
                         GPIO_toggle(USER_LED0);
-#elif defined(SOC_J721E)
+#elif (defined(SOC_J721E) || defined(SOC_J7200))
                         Board_i2cIoExpPinLevelSet(BOARD_I2C_IOEXP_DEVICE2_ADDR,
                                                   THREE_PORT_IOEXP,
                                                   PORTNUM_2,
@@ -246,7 +246,7 @@ static int8_t led_run_test(void)
 #endif
                     }
                     else {
-#if defined(SOC_J721E)
+#if (defined(SOC_J721E) || defined(SOC_J7200))
                         Board_i2cIoExpPinLevelSet(BOARD_I2C_IOEXP_DEVICE2_ADDR,
                                                   THREE_PORT_IOEXP,
                                                   PORTNUM_2,
@@ -257,7 +257,7 @@ static int8_t led_run_test(void)
 #endif
                     }
                 }
-#if (!(defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_TPR12)))
+#if (!(defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_TPR12) || defined(SOC_J7200)))
                 BoardDiag_AppDelay(5000000);
 #else
                 BOARD_delay(250000);
@@ -276,7 +276,7 @@ static int8_t led_run_test(void)
     } while (p == 'r');
 
     for (i=0; i<BOARD_GPIO_LED_NUM; i++) {
-#if defined(SOC_J721E)
+#if (defined(SOC_J721E) || defined(SOC_J7200))
     /* Turn OFF the user LEDs */
     Board_i2cIoExpPinLevelSet(BOARD_I2C_IOEXP_DEVICE2_ADDR,
                               THREE_PORT_IOEXP,
@@ -292,7 +292,7 @@ static int8_t led_run_test(void)
 
 #if defined(SOC_AM65XX) && defined(AM65XX_BETA_BOARD)
     I2C_close(handle);
-#elif defined(SOC_J721E)
+#elif (defined(SOC_J721E) || defined(SOC_J7200))
     Board_i2cIoExpDeInit();
 #endif
 

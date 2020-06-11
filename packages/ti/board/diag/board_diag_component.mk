@@ -159,7 +159,7 @@ export board_diag_bootEeprom_CORE_DEPENDENCY
 export board_diag_bootEeprom_MAKEFILE
 board_diag_bootEeprom_PKG_LIST = board_diag_bootEeprom
 board_diag_bootEeprom_INCLUDE = $(board_diag_bootEeprom_PATH)
-board_diag_bootEeprom_BOARDLIST = j721e_evm am65xx_evm am65xx_idk
+board_diag_bootEeprom_BOARDLIST = j721e_evm am65xx_evm am65xx_idk j7200_evm
 board_diag_bootEeprom_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
 export board_diag_bootEeprom_$(SOC)_CORELIST
 export board_diag_bootEeprom_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
@@ -229,7 +229,7 @@ export board_diag_clockGen_CORE_DEPENDENCY
 export board_diag_clockGen_MAKEFILE
 board_diag_clockGen_PKG_LIST = board_diag_clockGen
 board_diag_clockGen_INCLUDE = $(board_diag_clockGen_PATH)
-board_diag_clockGen_BOARDLIST = j721e_evm
+board_diag_clockGen_BOARDLIST = j721e_evm j7200_evm
 board_diag_clockGen_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
 export board_diag_clockGen_$(SOC)_CORELIST
 export board_diag_clockGen_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
@@ -298,7 +298,7 @@ export board_diag_currentMonitor_CORE_DEPENDENCY
 export board_diag_currentMonitor_MAKEFILE
 board_diag_currentMonitor_PKG_LIST = board_diag_currentMonitor
 board_diag_currentMonitor_INCLUDE = $(board_diag_currentMonitor_PATH)
-board_diag_currentMonitor_BOARDLIST = j721e_evm am65xx_evm am65xx_idk
+board_diag_currentMonitor_BOARDLIST = j721e_evm am65xx_evm am65xx_idk j7200_evm
 board_diag_currentMonitor_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
 export board_diag_currentMonitor_$(SOC)_CORELIST
 export board_diag_currentMonitor_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
@@ -358,7 +358,7 @@ export board_diag_eeprom_CORE_DEPENDENCY
 export board_diag_eeprom_MAKEFILE
 board_diag_eeprom_PKG_LIST = board_diag_eeprom
 board_diag_eeprom_INCLUDE = $(board_diag_eeprom_PATH)
-board_diag_eeprom_BOARDLIST = j721e_evm am65xx_evm am65xx_idk
+board_diag_eeprom_BOARDLIST = j721e_evm am65xx_evm am65xx_idk j7200_evm
 board_diag_eeprom_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
 export board_diag_eeprom_$(SOC)_CORELIST
 export board_diag_eeprom_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
@@ -438,7 +438,7 @@ export board_diag_extRtc_CORE_DEPENDENCY
 export board_diag_extRtc_MAKEFILE
 board_diag_extRtc_PKG_LIST = board_diag_extRtc
 board_diag_extRtc_INCLUDE = $(board_diag_extRtc_PATH)
-board_diag_extRtc_BOARDLIST = j721e_evm am65xx_evm am65xx_idk
+board_diag_extRtc_BOARDLIST = j721e_evm am65xx_evm am65xx_idk j7200_evm
 board_diag_extRtc_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
 export board_diag_extRtc_$(SOC)_CORELIST
 export board_diag_extRtc_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
@@ -583,7 +583,7 @@ export board_diag_led_CORE_DEPENDENCY
 export board_diag_led_MAKEFILE
 board_diag_led_PKG_LIST = board_diag_led
 board_diag_led_INCLUDE = $(board_diag_led_PATH)
-board_diag_led_BOARDLIST = j721e_evm am65xx_evm am65xx_idk tpr12_evm
+board_diag_led_BOARDLIST = j721e_evm am65xx_evm am65xx_idk tpr12_evm j7200_evm
 board_diag_led_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
 export board_diag_led_$(SOC)_CORELIST
 export board_diag_led_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
