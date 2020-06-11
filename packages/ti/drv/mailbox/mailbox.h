@@ -83,8 +83,8 @@
 /* ========================================================================== */
 
 #include <stdint.h>
-#include "ti/osal/osal.h"
 #include "ti/drv/mailbox/soc/mailbox_soc.h"
+#include "ti/drv/mailbox/include/mailbox_osal.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -179,6 +179,10 @@ extern "C" {
  */
 #define MAILBOX_ECHINUSE               (MAILBOX_ERRNO_BASE-12)
 
+/**
+ * \brief   Error Code: Generic timeout from Driver pending on a semaphore.
+ */
+#define MAILBOX_ETIMEOUT               (MAILBOX_ERRNO_BASE-13)
 
 /** @}*/
 
@@ -193,9 +197,15 @@ extern "C" {
 #define MAILBOX_DATA_BUFFER_SIZE        ((uint32_t)2044U)
 
 /*!
- *  \brief    Wait forever define
+ *  \brief  Wait forever define
  */
-#define MAILBOX_WAIT_FOREVER            (SemaphoreP_WAIT_FOREVER)
+#define MAILBOX_WAIT_FOREVER            (~((uint32_t) 0U))
+
+/*!
+ *  \brief  Macro used to request default priority for osal interrupt
+ *          registration
+ */
+#define MAILBOX_OSAL_DEFAULT_PRIORITY   (~((uint32_t) 0U))
 
 /** @addtogroup MAILBOX_DRIVER_EXTERNAL_DATA_STRUCTURE
 \ingroup DRV_MAILBOX_MODULE
@@ -233,7 +243,14 @@ typedef enum
       *  previously transmitted message. Application still needs to call the Mailbox_read() API
       *  to handle the received message.
       */
-    MAILBOX_MODE_CALLBACK
+    MAILBOX_MODE_CALLBACK,
+    /*!
+     *   Fast mode.
+     *   Please refer to Mailbox_write() and Mailbox_read() APIs for specific information.
+     *   In this mode, for performance reasons there is no protection and limited error checking. Application
+     *   must take care to protect access to the mailbox.
+     */
+    MAILBOX_MODE_FAST
 } Mailbox_Mode;
 
 /*!
@@ -370,6 +387,29 @@ typedef enum
  */
 typedef void        (*Mailbox_Callback)    (Mbox_Handle handle, Mailbox_Instance remoteEndpoint);
 
+/*
+ *  \brief MAILBOX Virtual to Physical address translation callback function.
+ *
+ *  This function is used by the driver to convert virtual address to physical
+ *  address.
+ *
+ *  \param virtAddr [IN] Virtual address
+ *
+ *  \return Corresponding physical address
+ */
+typedef uint64_t (*Mailbox_VirtToPhyFxn)(const void *virtAddr);
+/**
+ *  \brief MAILBOX Physical to Virtual address translation callback function.
+ *
+ *  This function is used by the driver to convert physical address to virtual
+ *  address.
+ *
+ *  \param phyAddr  [IN] Physical address
+ *
+ *  \return Corresponding virtual address
+ */
+typedef void *(*Mailbox_PhyToVirtFxn)(uint64_t phyAddr);
+
 /* ========================================================================== */
 /*                         Structure Declarations                             */
 /* ========================================================================== */
@@ -499,7 +539,17 @@ typedef struct Mailbox_Stats_t
 typedef struct Mailbox_initParams_t
 {
     /* \brief Local Mailbox endpoint. */
-    Mailbox_Instance localEndpoint;
+    Mailbox_Instance     localEndpoint;
+
+    /* \brief OSAL callback parameters. */
+    Mbox_OsalPrms        osalPrms;
+
+    /* \brief Virtual to Physical Address conversion function */
+    Mailbox_VirtToPhyFxn virtToPhyFxn;
+
+    /* \brief Physical to Virtual Address conversion function */
+    Mailbox_PhyToVirtFxn phyToVirtFxn;
+
     /* TODO: Add Memory Init paramterers.*/
     /* TODO: Add Memory partitoining parameters.*/
 }Mailbox_initParams;
@@ -675,6 +725,15 @@ extern int32_t Mailbox_write(Mbox_Handle handle, const uint8_t *buffer, uint32_t
  * Application is responsible for calling Mailbox_read() to read the new message.
  * Mailbox_read() copies the data into the application buffer and then exit.
  *
+ * In Mailbox_MODE_FAST: \n
+ * The driver will invoke the application callback function (if provided) when a new message is received in the mailbox.
+ * If not callback is provided, then the application must call Mailbox_read() in a polling manner to retrieve messages.
+ * Application is responsible for calling Mailbox_read() to read the new message.
+ * Mailbox_read() copies the data into the application buffer and then exit.
+ * For performance reasons, no protection and limited error checking is provided in this mode. The application takes the
+ * responsibility of making sure that access to the API is properly protected.
+ * Please see the soc-specific documentation for support for this mode as this mode is not supported in all cases.
+ *
  * In any of the modes described above, Mailbox_readFlush() needs to be issued after the message is fully read by the application.
  *
  *  @pre    Mailbox_open() has been called
@@ -714,6 +773,24 @@ extern int32_t Mailbox_read(Mbox_Handle handle, uint8_t *buffer, uint32_t size);
 extern int32_t Mailbox_readFlush(Mbox_Handle handle);
 
 /*!
+ *  \brief  Function that retrieves the number of messages available to be read.
+ *
+ * If the mailbox HW is capable of supporting multiple messages at a time, then the
+ * number of messages currently available in the mailbox can be retrieved by calling
+ * this function. The application can use this information, for example, to determine
+ * how many messasges to read after receiving a callback.
+ *
+ *  @pre    Mailbox_open() has been called
+ *
+ *  @param[in]  handle        A Mbox_Handle
+ *
+ *  @return Returns the number of messages available in the mailbox.
+ *
+ *  \ingroup MAILBOX_DRIVER_EXTERNAL_FUNCTION
+ */
+extern uint32_t Mailbox_GetMessageCount(Mbox_Handle handle);
+
+/*!
  *  \brief  Function that collects mailbox driver statistics
  *
  * This function is used to collect mailbox driver statistics.
@@ -751,6 +828,28 @@ extern int32_t Mailbox_close(Mbox_Handle handle);
 /** @} */ /* end defgroup MAILBOX_DRIVER_EXTERNAL_FUNCTION */
 
 /* ========================================================================== */
+/*      Internal Function Declarations                                        */
+/* ========================================================================== */
+
+/**
+ *  \brief Default virtual to physical translation function.
+ *
+ *  \param virtAddr [IN] Virtual address
+ *
+ *  \return Corresponding physical address
+ */
+extern uint64_t Mailbox_defaultVirtToPhyFxn(const void *virtAddr);
+
+/**
+ *  \brief Default physical to virtual translation function.
+ *
+ *  \param phyAddr  [IN] Physical address
+ *
+ *  \return Corresponding virtual address
+ */
+extern void *Mailbox_defaultPhyToVirtFxn(uint64_t phyAddr);
+
+/* ========================================================================== */
 /*                       Static Function Definitions                          */
 /* ========================================================================== */
 
@@ -760,6 +859,9 @@ static inline int32_t Mailbox_initParams_init (Mailbox_initParams *initParam)
     if(initParam != NULL)
     {
         initParam->localEndpoint = MAILBOX_INST_INVALID;
+        initParam->virtToPhyFxn = &Mailbox_defaultVirtToPhyFxn;
+        initParam->phyToVirtFxn = &Mailbox_defaultPhyToVirtFxn;
+        MboxOsalPrms_init(&initParam->osalPrms);
         retVal = MAILBOX_SOK;
     }
     return retVal;

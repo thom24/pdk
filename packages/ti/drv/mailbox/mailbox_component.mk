@@ -34,9 +34,13 @@
 #
 ifeq ($(mailbox_component_make_include), )
 
-drvmailbox_SOCLIST          = tpr12
+drvmailbox_SOCLIST          = tpr12 am64x
 drvmailbox_tpr12_CORELIST   = mcu1_0 c66xdsp_1
-drvmailbox_BOARDLIST        = tpr12_evm tpr12_qt
+drvmailbox_am64x_CORELIST   = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 m4f_0
+drvmailbox_am64x_rtos_CORELIST = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
+drvmailbox_BOARDLIST        = tpr12_evm tpr12_qt am64x_evm
+drvmailbox_k3_BOARDLIST     = am64x_evm
+drvmailbox_tpr_BOARDLIST    = tpr12_evm tpr12_qt
 
 ############################
 # mailbox package
@@ -71,6 +75,22 @@ mailbox_INCLUDE = $(mailbox_PATH)
 export mailbox_SOCLIST = $(drvmailbox_SOCLIST)
 export mailbox_$(SOC)_CORELIST = $(drvmailbox_$(SOC)_CORELIST)
 
+# Mailbox baremetal Library
+export mailbox_baremetal_COMP_LIST = mailbox_baremetal
+mailbox_baremetal_RELPATH = ti/drv/mailbox
+mailbox_baremetal_PATH = $(PDK_MAILBOX_COMP_PATH)
+export mailbox_baremetal_LIBNAME = mailbox_baremetal
+export mailbox_baremetal_LIBPATH = $(PDK_MAILBOX_COMP_PATH)/lib
+export mailbox_baremetal_OBJPATH = $(mailbox_baremetal_RELPATH)/mailbox_baremetal
+export mailbox_baremetal_MAKEFILE = -fsrc/makefile_baremetal
+export mailbox_baremetal_BOARD_DEPENDENCY = no
+export mailbox_baremetal_CORE_DEPENDENCY = yes
+mailbox_baremetal_PKG_LIST = mailbox_baremetal
+mailbox_baremetal_INCLUDE = $(mailbox_baremetal_PATH)
+export mailbox_baremetal_SOCLIST = $(drvmailbox_SOCLIST)
+export mailbox_baremetal_$(SOC)_CORELIST = $(drvmailbox_$(SOC)_CORELIST)
+mailbox_LIB_LIST += mailbox_baremetal
+
 #
 # Mailbox Examples
 #
@@ -84,10 +104,35 @@ export mailbox_msg_testapp_CORE_DEPENDENCY = yes
 export mailbox_msg_testapp_XDC_CONFIGURO = yes
 mailbox_msg_testapp_PKG_LIST = mailbox_msg_testapp
 mailbox_msg_testapp_INCLUDE = $(mailbox_msg_testapp_PATH)
-export mailbox_msg_testapp_BOARDLIST = $(drvmailbox_BOARDLIST)
+export mailbox_msg_testapp_BOARDLIST = $(drvmailbox_tpr_BOARDLIST)
 export mailbox_msg_testapp_$(SOC)_CORELIST = $(drvmailbox_$(SOC)_CORELIST)
 mailbox_EXAMPLE_LIST += mailbox_msg_testapp
 
+# mailbox perf test app
+export mailbox_perf_testapp_COMP_LIST = mailbox_perf_testapp
+mailbox_perf_testapp_RELPATH = ti/drv/mailbox/examples/mailbox_perf_testapp
+mailbox_perf_testapp_PATH = $(PDK_MAILBOX_COMP_PATH)/examples/mailbox_perf_testapp
+export mailbox_perf_testapp_BOARD_DEPENDENCY = yes
+export mailbox_perf_testapp_CORE_DEPENDENCY = yes
+export mailbox_perf_testapp_XDC_CONFIGURO = yes
+mailbox_perf_testapp_PKG_LIST = mailbox_perf_testapp
+mailbox_perf_testapp_INCLUDE = $(mailbox_perf_testapp_PATH)
+export mailbox_perf_testapp_BOARDLIST = $(drvmailbox_k3_BOARDLIST)
+export mailbox_perf_testapp_$(SOC)_CORELIST = $(drvmailbox_$(SOC)_rtos_CORELIST)
+mailbox_EXAMPLE_LIST += mailbox_perf_testapp
+
+# mailbox baremetal perf test app
+export mailbox_baremetal_perf_testapp_COMP_LIST = mailbox_baremetal_perf_testapp
+mailbox_baremetal_perf_testapp_RELPATH = ti/drv/mailbox/examples/mailbox_perf_testapp
+mailbox_baremetal_perf_testapp_PATH = $(PDK_MAILBOX_COMP_PATH)/examples/mailbox_perf_testapp
+mailbox_baremetal_perf_testapp_MAKEFILE = -fmakefile_baremetal
+export mailbox_baremetal_perf_testapp_BOARD_DEPENDENCY = yes
+export mailbox_baremetal_perf_testapp_CORE_DEPENDENCY = yes
+mailbox_baremetal_perf_testapp_PKG_LIST = mailbox_baremetal_perf_testapp
+mailbox_baremetal_perf_testapp_INCLUDE = $(mailbox_baremetal_perf_testapp_PATH)
+export mailbox_baremetal_perf_testapp_BOARDLIST = $(drvmailbox_k3_BOARDLIST)
+export mailbox_baremetal_perf_testapp_$(SOC)_CORELIST = $(drvmailbox_$(SOC)_CORELIST)
+mailbox_EXAMPLE_LIST += mailbox_baremetal_perf_testapp
 
 export mailbox_LIB_LIST
 export mailbox_EXAMPLE_LIST

@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2020
+ *  Copyright (C) 2020 Texas Instruments Incorporated - http://www.ti.com/
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -28,59 +28,59 @@
  *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
-/**
- *  \file mailbox_soc.h
  *
- *  \brief MAILBOX Low Level Driver SOC specific file.
  */
-
-#ifndef MAILBOX_SOC_TOP_H_
-#define MAILBOX_SOC_TOP_H_
-
-/* ========================================================================== */
-/*                             Include Files                                  */
-/* ========================================================================== */
-
-#if defined (SOC_TPR12)
-#include <ti/drv/mailbox/soc/tpr12/mailbox_soc.h>
-#endif
-
-#if defined (SOC_AM64X)
-#include <ti/drv/mailbox/soc/am64x/mailbox_soc.h>
-#endif
+ /**
+ *  \file   ipc_config.h
+ *
+ *  \brief  This file has the configuration for specific SOC
+ *
+ *  \details
+ *
+ **/
+#ifndef IPC_CONFIG_H_
+#define IPC_CONFIG_H_
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /* ========================================================================== */
-/*                           Macros & Typedefs                                */
+/*                             Include Files                                  */
 /* ========================================================================== */
+#include <stdint.h>
 
-/* None */
+//#include <ti/csl/soc.h>
+#include <ti/drv/sciclient/sciclient.h>
 
-/* ========================================================================== */
-/*                         Structure Declarations                             */
-/* ========================================================================== */
-
-/* None */
-
-/* ========================================================================== */
-/*                          Function Declarations                             */
-/* ========================================================================== */
-
-/* None */
+#if defined (SOC_AM64X)
+#include <ti/csl/cslr_gtc.h>
+#endif
 
 /* ========================================================================== */
-/*                       Static Function Definitions                          */
+/*                                 Macros                                     */
+/* ========================================================================== */
+#ifdef BUILD_MPU
+#define MAILBOX_TEST_TIMER_FREQ_IN_HZ 200000000U
+#endif
+
+#ifdef BUILD_MCU
+#define MAILBOX_TEST_TIMER_FREQ_IN_HZ 800000000U
+#endif
+
+#ifdef BUILD_M4F
+#define MAILBOX_TEST_TIMER_FREQ_IN_HZ 200000000U
+#endif
+
+/* ========================================================================== */
+/*                                 Structures                                 */
 /* ========================================================================== */
 
 /* None */
 
 #ifdef __cplusplus
 }
-#endif
+#endif /* extern "C" */
 
-#endif /* #ifndef MAILBOX_SOC_TOP_H_ */
+#endif /* MAILBOX_APP_H_ */
+/********************************* End of file ******************************/

@@ -77,7 +77,7 @@ extern "C" {
 /**
  * @brief   Mailbox number of remote endpoints
  */
-#define MAILBOX_MAX_NUM_REMOTES_ENDPOINTS   (1U)
+#define MAILBOX_MAX_NUM_REMOTES_ENDPOINTS   (10U)
 /*!
  *  @brief      Mailbox TX box status enum
  *
@@ -138,61 +138,6 @@ typedef enum
 /*                         Structure Declarations                             */
 /* ========================================================================== */
 
-/*!
- *  @brief Mailbox hardware addresses for one mailbox in one direction
- *
- *  This Structure contains the register and data memory addresses for one logical mailbox in one direction.
- *
- *  \ingroup MAILBOX_DRIVER_INTERNAL_DATA_STRUCTURE
- */
-typedef struct Mailbox_Base_t
-{
-    /**
-     * @brief  Register base.
-     */
-    // MAILBOXRegs   *reg;
-
-    /**
-     * @brief  Data memory base.
-     */
-    uint8_t        *data;
-
-} Mailbox_Base;
-
-/**
- * @brief
- *  Mailbox Driver HW configuration
- *
- * @details
- *  The structure is used to store the hardware specific configuration which is
- *  passed to each driver instance
- *
- */
-typedef struct Mailbox_HwCfg_t
-{
-    CSL_mboxRegAddr   *mbxReg;
-    /**
-     * @brief  Register and memory base for localEndpoint to remoteEndpoint communication.
-     */
-    Mailbox_Base       baseLocalToRemote;
-    /**
-     * @brief  Register and memory base for remoteEndpoint to localEndpoint communication.
-     */
-    Mailbox_Base       baseRemoteToLocal;
-    /**
-     * @brief  Mailbox Full Interrupt Number
-     */
-    uint32_t           boxFullIntNum;
-    /**
-     * @brief  Mailbox Empty Interrupt Number
-     */
-    uint32_t           boxEmptyIntNum;
-    /**
-     * @brief  Remote End Point processor Number
-     */
-    uint32_t           remoteProcNum;
-}Mailbox_HwCfg;
-
 typedef struct Mailbox_RemoteCfg_t
 {
     /**
@@ -235,7 +180,7 @@ typedef struct Mailbox_RemoteCfg_t
      * @brief
      *  Stores a pointer for the hardware configuration used by the MSS<->DSS communication.
      */
-    Mailbox_HwCfg* hwCfgPtr;
+    void* hwCfgPtr;
     /**
      * @brief
      *  Array that stores handles for all mailbox instances. Used in extended mode for MSS<->DSS communication only.
@@ -261,19 +206,19 @@ typedef struct Mailbox_Driver_t
     /**
      * @brief   Local type of Mailbox
      */
-    Mailbox_Instance          localEndpoint;
+    Mailbox_Instance      localEndpoint;
     /**
      * @brief  Remote type of Mailbox
      */
-    Mailbox_Instance          remoteEndpoint;
+    Mailbox_Instance      remoteEndpoint;
     /**
      * @brief  Handle to the Read semaphore.
      */
-    SemaphoreP_Handle     readSem;
+    void                  *readSem;
     /**
      * @brief  Handle to the Write semaphore.
      */
-    SemaphoreP_Handle     writeSem;
+    void                  *writeSem;
     /**
      * @brief   Status of TX box (full or empty)
      */
@@ -298,7 +243,7 @@ typedef struct Mailbox_Driver_t
     /**
      * @brief  Pointer to hardware configuration.
      */
-    Mailbox_HwCfg         *hwCfg;
+    void                  *hwCfg;
     /**
      * @brief   Number of full box isr received
      */
@@ -315,6 +260,14 @@ typedef struct Mailbox_Driver_t
      * @brief   Pointer to the common remote config structure maintained by driver.
      */
     Mailbox_RemoteCfg     *remoteCfgPtr;
+    /**
+     * @brief   Base Address of the Tx Mailbox for this instance (used for am65xx/am64x/j721e/j7200)
+     */
+    uint32_t              baseAddrTx;
+    /**
+     * @brief   Base Address of the Rx Mailbox for this instance (used for am65xx/am64x/j721e/j7200)
+     */
+    uint32_t              baseAddrRx;
 }Mailbox_Driver;
 
 /*!
@@ -344,11 +297,11 @@ typedef struct
     /**
      * @brief  Registered Mailbox Full Interrupt Handler to communicate with BSS.
      */
-    HwiP_Handle mailboxFull;
+    void *mailboxFull;
     /**
      * @brief  Registered Mailbox empty Interrupt Handler to communicate with BSS.
      */
-    HwiP_Handle mailboxEmpty;
+    void *mailboxEmpty;
 } Mailbox_HwiHandles_t;
 
 /*!
@@ -388,6 +341,11 @@ typedef struct Mailbox_MCB_t
      *  Store ISR error conditions.
      */
     Mailbox_ISRErrorCnt_t errCnt;
+    /**
+     * @brief
+     * Store the init params
+     */
+    Mailbox_initParams initParam;
 
 } Mailbox_MCB;
 
@@ -399,9 +357,17 @@ int32_t Mailbox_validateLocalEndPoint(Mailbox_Instance localEndpoint);
 
 int32_t Mailbox_validateRemoteEndPoint(Mailbox_Instance localEndpoint, Mailbox_Instance remoteEndpoint);
 
+int32_t Mailbox_validateDataTransferMode(Mailbox_DataTransferMode dataTransferMode);
+
+int32_t Mailbox_validateReadWriteMode(Mailbox_Mode readMode, Mailbox_Mode writeMode);
+
 int32_t Mailbox_isMultiChannelSupported(Mailbox_Instance localEndpoint, Mailbox_Instance remoteEndpoint);
 
-Mailbox_HwCfg* Mailbox_getHwCfg(Mailbox_Instance remoteEndpoint);
+Mbox_Handle Mailbox_allocDriver(Mailbox_Instance remoteEndpoint);
+
+int32_t Mailbox_freeDriver(Mbox_Handle handle);
+
+void* Mailbox_getHwCfg(Mailbox_Instance remoteEndpoint);
 
 int32_t Mailbox_getBoxFullRemoteInst(Mailbox_Instance *remoteEndpoint);
 
@@ -410,6 +376,10 @@ int32_t Mailbox_getBoxEmptyRemoteInst(Mailbox_Instance *remoteEndpoint);
 int32_t Mailbox_initHw(Mbox_Handle handle);
 
 static inline void Mailbox_RemoteCfg_init (Mailbox_RemoteCfg* remoteCfg);
+
+int32_t Mailbox_registerInterrupts(Mbox_Handle handle);
+
+int32_t Mailbox_unregisterInterrupts(Mbox_Handle handle);
 
 /* ========================================================================== */
 /*                       Static Function Definition                           */

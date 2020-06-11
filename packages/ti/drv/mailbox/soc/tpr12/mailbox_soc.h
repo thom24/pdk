@@ -97,4 +97,4 @@ typedef uint32_t Mailbox_Instance;
 }
 #endif
 
-#endif /* #ifndef EDMA_SOC_TOP_H_ */
+#endif /* #ifndef MAILBOX_SOC_H_ */
