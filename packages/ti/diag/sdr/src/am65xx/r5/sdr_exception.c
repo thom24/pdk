@@ -121,7 +121,7 @@ void SDR_EXCEPTION_undefInstructionExptnHandler(void *param)
     SDR_EXCEPTION_instance.paramPtr = param;
 
     /* Execute callback function */
-    if (SDR_EXCEPTION_instance.callbackFunctions.udefExptnCallback != ((void *)0u)) {
+    if ((void *)SDR_EXCEPTION_instance.callbackFunctions.udefExptnCallback != ((void *)0u)) {
         SDR_EXCEPTION_instance.callbackFunctions.udefExptnCallback();
     }
 
@@ -143,7 +143,7 @@ void SDR_EXCEPTION_swIntrExptnHandler(void *param)
 
 
     /* Execute callback function */
-    if (SDR_EXCEPTION_instance.callbackFunctions.swiExptnCallback != ((void *)0u)) {
+    if ((void *)SDR_EXCEPTION_instance.callbackFunctions.swiExptnCallback != ((void *)0u)) {
         SDR_EXCEPTION_instance.callbackFunctions.swiExptnCallback();
     }
 }
@@ -172,7 +172,7 @@ void SDR_EXCEPTION_prefetchAbortExptnHandler(void *param)
         == SDR_EXCEPTION_SYNC_PARITY_OR_ECC_ERROR_MASK) {
         ifarValue = SDR_UTILS_getIFAR();
         /* Execute callback function */
-        if (SDR_EXCEPTION_instance.ECCCallBackFunction != ((void *)0u)) {
+        if ((void *)SDR_EXCEPTION_instance.ECCCallBackFunction != ((void *)0u)) {
             SDR_EXCEPTION_instance.ECCCallBackFunction(
                 SDR_LOCAL_EXCEPTION_DED_ERROR,
                 ifarValue);
@@ -180,14 +180,14 @@ void SDR_EXCEPTION_prefetchAbortExptnHandler(void *param)
     } else if ((ifsrValue & SDR_EXCEPTION_ASYNC_PARITY_OR_ECC_ERROR_MASK)
             == SDR_EXCEPTION_ASYNC_PARITY_OR_ECC_ERROR_MASK) {
              /* Execute callback function */
-            if (SDR_EXCEPTION_instance.ECCCallBackFunction != ((void *)0u)) {
+            if ((void *)SDR_EXCEPTION_instance.ECCCallBackFunction != ((void *)0u)) {
                 SDR_EXCEPTION_instance.ECCCallBackFunction(
                     SDR_LOCAL_EXCEPTION_DED_ERROR,
                     SDR_ESM_ERRORADDR_INVALID);
             }
     } else {
         /* Execute callback function */
-        if (SDR_EXCEPTION_instance.callbackFunctions.pabtExptnCallback != ((void *)0u)) {
+        if ((void *)SDR_EXCEPTION_instance.callbackFunctions.pabtExptnCallback != ((void *)0u)) {
             SDR_EXCEPTION_instance.callbackFunctions.pabtExptnCallback();
         }
     }
@@ -218,7 +218,7 @@ void SDR_EXCEPTION_dataAbortExptnHandler(void *param)
        == SDR_EXCEPTION_SYNC_PARITY_OR_ECC_ERROR_MASK) {
        dfarValue = SDR_UTILS_getDFAR();
        /* Execute callback function */
-       if (SDR_EXCEPTION_instance.ECCCallBackFunction != ((void *)0u)) {
+       if ((void *)SDR_EXCEPTION_instance.ECCCallBackFunction != ((void *)0u)) {
            SDR_EXCEPTION_instance.ECCCallBackFunction(
                SDR_ESM_ECC_PARAM_MCU_CPU0_DED_ERROR,
                dfarValue);
@@ -226,7 +226,7 @@ void SDR_EXCEPTION_dataAbortExptnHandler(void *param)
    } else if ((dfsrValue & SDR_EXCEPTION_ASYNC_PARITY_OR_ECC_ERROR_MASK)
            == SDR_EXCEPTION_ASYNC_PARITY_OR_ECC_ERROR_MASK) {
             /* Execute callback function */
-           if (SDR_EXCEPTION_instance.ECCCallBackFunction != ((void *)0u)) {
+           if ((void *)SDR_EXCEPTION_instance.ECCCallBackFunction != ((void *)0u)) {
                SDR_EXCEPTION_instance.ECCCallBackFunction(
                    SDR_ESM_ECC_PARAM_MCU_CPU0_DED_ERROR,
                    SDR_ESM_ERRORADDR_INVALID);
@@ -252,7 +252,7 @@ void SDR_EXCEPTION_dataAbortExptnHandler(void *param)
 
        /* Execute callback function */
        if ((!isMPUSelfTest) &&
-           (SDR_EXCEPTION_instance.callbackFunctions.dabtExptnCallback != ((void *)0u))) {
+           ((void *)SDR_EXCEPTION_instance.callbackFunctions.dabtExptnCallback != ((void *)0u))) {
            SDR_EXCEPTION_instance.callbackFunctions.dabtExptnCallback();
        }
    }
@@ -273,7 +273,7 @@ void SDR_EXCEPTION_irqExptnHandler(void *param)
     SDR_EXCEPTION_instance.paramPtr = param;
 
     /* Execute callback function */
-    if (SDR_EXCEPTION_instance.callbackFunctions.irqExptnCallback != ((void *)0u)) {
+    if ((void *)SDR_EXCEPTION_instance.callbackFunctions.irqExptnCallback != ((void *)0u)) {
         SDR_EXCEPTION_instance.callbackFunctions.irqExptnCallback();
     }
 }
@@ -293,7 +293,7 @@ void SDR_EXCEPTION_fiqExptnHandler(void *param)
     SDR_EXCEPTION_instance.paramPtr = param;
 
     /* Execute callback function */
-    if (SDR_EXCEPTION_instance.callbackFunctions.fiqExptnCallback != ((void *)0u)) {
+    if ((void *)SDR_EXCEPTION_instance.callbackFunctions.fiqExptnCallback != ((void *)0u)) {
         SDR_EXCEPTION_instance.callbackFunctions.fiqExptnCallback();
     }
 }

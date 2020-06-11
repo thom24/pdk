@@ -107,7 +107,7 @@ SDR_Result SDR_CCM_init (void)
     cslResult = CSL_armR5ConfigureCCMRegister(SOC_CCM_BASE,
                                                CSL_MCU_ARMSS_CCMR5_CCMKEYR1_REGID,
                                                (uint32_t)CSL_MCU_ARMSS_CCMR5_MKEY_CMP_MODE_ACTIVE,
-                                               ((void *)0u));
+                                               ((int32_t *)0u));
     if (cslResult != CSL_PASS) {
         retVal = SDR_FAIL;
     }
@@ -118,7 +118,7 @@ SDR_Result SDR_CCM_init (void)
         cslResult = CSL_armR5ReadCCMRegister (SOC_CCM_BASE,
                                               CSL_MCU_ARMSS_CCMR5_CCMKEYR1_REGID,
                                               (uint32_t *)&keyValue,
-                                              ((void *)0u));
+                                              ((int32_t *)0u));
         if ((cslResult != CSL_PASS) || (keyValue != (uint32_t)CSL_MCU_ARMSS_CCMR5_MKEY_CMP_MODE_ACTIVE)) {
             retVal = SDR_FAIL;
         }
@@ -131,7 +131,7 @@ SDR_Result SDR_CCM_init (void)
         cslResult = CSL_armR5ConfigureCCMRegister(SOC_CCM_BASE,
                                                    CSL_MCU_ARMSS_CCMR5_CCMKEYR2_REGID,
                                                    (uint32_t)CSL_MCU_ARMSS_CCMR5_MKEY_CMP_MODE_ACTIVE,
-                                                   ((void *)0u));
+                                                   ((int32_t *)0u));
         if (cslResult != CSL_PASS) {
             retVal = SDR_FAIL;
         }
@@ -143,7 +143,7 @@ SDR_Result SDR_CCM_init (void)
         cslResult = CSL_armR5ReadCCMRegister (SOC_CCM_BASE,
                                               CSL_MCU_ARMSS_CCMR5_CCMKEYR2_REGID,
                                               (uint32_t *)&keyValue,
-                                              ((void *)0u));
+                                              ((int32_t *)0u));
         if ((cslResult != CSL_PASS) || (keyValue != (uint32_t)CSL_MCU_ARMSS_CCMR5_MKEY_CMP_MODE_ACTIVE)) {
             retVal = SDR_FAIL;
         }
@@ -154,7 +154,7 @@ SDR_Result SDR_CCM_init (void)
         cslResult = CSL_armR5ConfigureCCMRegister(SOC_CCM_BASE,
                                                    CSL_MCU_ARMSS_CCMR5_CCMKEYR3_REGID,
                                                    (uint32_t)CSL_MCU_ARMSS_CCMR5_MKEY_CMP_MODE_ACTIVE,
-                                                   ((void *)0u));
+                                                   ((int32_t *)0u));
         if (cslResult != CSL_PASS) {
             retVal = SDR_FAIL;
         }
@@ -166,7 +166,7 @@ SDR_Result SDR_CCM_init (void)
         cslResult = CSL_armR5ReadCCMRegister (SOC_CCM_BASE,
                                               CSL_MCU_ARMSS_CCMR5_CCMKEYR3_REGID,
                                               (uint32_t *)&keyValue,
-                                              ((void *)0u));
+                                              ((int32_t *)0u));
         if ((cslResult != CSL_PASS) || (keyValue != (uint32_t)CSL_MCU_ARMSS_CCMR5_MKEY_CMP_MODE_ACTIVE)) {
             retVal = SDR_FAIL;
         }
@@ -207,7 +207,7 @@ SDR_Result  SDR_CCM_clearAllErrors (void)
     cslResult = CSL_armR5ConfigureCCMRegister(SOC_CCM_BASE,
                                         CSL_MCU_ARMSS_CCMR5_CCMSR1_REGID,
                                         ALL_CCM_STATUS_BITS,
-                                        ((void *)0u));
+                                        ((int32_t *)0u));
     if (cslResult != CSL_PASS) {
         retVal = SDR_FAIL;
     }
@@ -217,7 +217,7 @@ SDR_Result  SDR_CCM_clearAllErrors (void)
         cslResult = CSL_armR5ReadCCMRegister (SOC_CCM_BASE,
                                     CSL_MCU_ARMSS_CCMR5_CCMSR1_REGID,
                                     (uint32_t *)&statusValue,
-                                    ((void *)0u));
+                                    ((int32_t *)0u));
 
         if ((cslResult != CSL_PASS) || (statusValue != 0u)) {
             retVal = SDR_FAIL;
@@ -231,7 +231,7 @@ SDR_Result  SDR_CCM_clearAllErrors (void)
         cslResult = CSL_armR5ConfigureCCMRegister(SOC_CCM_BASE,
                                             CSL_MCU_ARMSS_CCMR5_CCMSR2_REGID,
                                             ALL_CCM_STATUS_BITS,
-                                            ((void *)0u));
+                                            ((int32_t *)0u));
         if (cslResult != CSL_PASS) {
             retVal = SDR_FAIL;
         }
@@ -243,7 +243,7 @@ SDR_Result  SDR_CCM_clearAllErrors (void)
         cslResult = CSL_armR5ReadCCMRegister (SOC_CCM_BASE,
                                        CSL_MCU_ARMSS_CCMR5_CCMSR2_REGID,
                                        (uint32_t *)&statusValue,
-                                       ((void *)0u));
+                                       ((int32_t *)0u));
         if ((cslResult != CSL_PASS) || (statusValue != 0u)) {
             retVal = SDR_FAIL;
         }
@@ -255,7 +255,7 @@ SDR_Result  SDR_CCM_clearAllErrors (void)
         cslResult = CSL_armR5ConfigureCCMRegister(SOC_CCM_BASE,
                                              CSL_MCU_ARMSS_CCMR5_CCMSR3_REGID,
                                              ALL_CCM_STATUS_BITS,
-                                             ((void *)0u));
+                                             ((int32_t *)0u));
 
         if (cslResult != CSL_PASS) {
             retVal = SDR_FAIL;
@@ -268,7 +268,7 @@ SDR_Result  SDR_CCM_clearAllErrors (void)
         cslResult = CSL_armR5ReadCCMRegister (SOC_CCM_BASE,
                                         CSL_MCU_ARMSS_CCMR5_CCMSR3_REGID,
                                         (uint32_t *)&statusValue,
-                                        ((void *)0u));
+                                        ((int32_t *)0u));
 
         if ((cslResult != CSL_PASS) || (statusValue != 0u)) {
             retVal = SDR_FAIL;
@@ -303,7 +303,7 @@ SDR_Result SDR_CCM_injectError (SDR_CCM_MonitorType monitorType)
         cslResult = CSL_armR5ConfigureCCMRegister(SOC_CCM_BASE,
                                                    monitorTypeKeyRegister,
                                                    (uint32_t)CSL_MCU_ARMSS_CCMR5_MKEY_ERR_FORCE_MODE,
-                                                   ((void *)0u));
+                                                   ((int32_t *)0u));
 
         if (cslResult != CSL_PASS) {
             retVal = SDR_FAIL;
@@ -333,7 +333,7 @@ SDR_Result SDR_CCM_CheckSelfTestErrorSource(SDR_CCM_MonitorType *monitorType)
     cslResult = CSL_armR5ReadCCMRegister (SOC_CCM_BASE,
                                            CSL_MCU_ARMSS_CCMR5_CCMSR1_REGID,
                                            &statusValue,
-                                           ((void *)0u));
+                                           ((int32_t *)0u));
     if (cslResult != CSL_PASS) {
         retVal = SDR_FAIL;
     } else {
@@ -346,7 +346,7 @@ SDR_Result SDR_CCM_CheckSelfTestErrorSource(SDR_CCM_MonitorType *monitorType)
             cslResult = CSL_armR5ReadCCMRegister (SOC_CCM_BASE,
                                                    CSL_MCU_ARMSS_CCMR5_CCMSR2_REGID,
                                                    &statusValue,
-                                                   ((void *)0u));
+                                                   ((int32_t *)0u));
             /* Check result */
             if (cslResult != CSL_PASS) {
                 retVal = SDR_FAIL;
@@ -360,7 +360,7 @@ SDR_Result SDR_CCM_CheckSelfTestErrorSource(SDR_CCM_MonitorType *monitorType)
                      cslResult = CSL_armR5ReadCCMRegister (SOC_CCM_BASE,
                                                             CSL_MCU_ARMSS_CCMR5_CCMSR3_REGID,
                                                             &statusValue,
-                                                            ((void *)0u));
+                                                            ((int32_t *)0u));
                      if (cslResult != CSL_PASS) {
                          retVal = SDR_FAIL;
                      } else {
@@ -405,7 +405,7 @@ SDR_Result SDR_CCM_selfTestPolarityInvert (uint32_t polarityInversionMask,
     cslResult = CSL_armR5ConfigureCCMRegister(SOC_CCM_BASE,
                                                CSL_MCU_ARMSS_CCMR5_POLCNTRL_REGID,
                                                polarityInversionMask,
-                                               ((void *)0u));
+                                               ((int32_t *)0u));
     if ( cslResult != CSL_PASS) {
         retVal = SDR_FAIL;
     } else {
@@ -491,7 +491,7 @@ SDR_Result SDR_CCM_selfTest (SDR_CCM_MonitorType monitorType,
         cslResult = CSL_armR5ConfigureCCMRegister (SOC_CCM_BASE,
                                                    monitorTypeStatusRegister,
                                                    ALL_CCM_STATUS_BITS,
-                                                   ((void *)0u));
+                                                   ((int32_t *)0u));
 
         if ( cslResult != CSL_PASS) {
             retVal = SDR_FAIL;
@@ -508,7 +508,7 @@ SDR_Result SDR_CCM_selfTest (SDR_CCM_MonitorType monitorType,
         cslResult = CSL_armR5ConfigureCCMRegister(SOC_CCM_BASE,
                                                    monitorTypeKeyRegister,
                                                    (uint32_t)selfTestTypeValue,
-                                                   ((void *)0u));
+                                                   ((int32_t *)0u));
 
         if ( cslResult != CSL_PASS) {
             retVal = SDR_FAIL;
@@ -523,7 +523,7 @@ SDR_Result SDR_CCM_selfTest (SDR_CCM_MonitorType monitorType,
             cslResult = CSL_armR5ReadCCMRegister (SOC_CCM_BASE,
                                                    monitorTypeStatusRegister,
                                                    &statusValue,
-                                                   ((void *)0u));
+                                                   ((int32_t *)0u));
 
             if (cslResult != CSL_PASS) {
                 retVal = SDR_FAIL;
@@ -546,7 +546,7 @@ SDR_Result SDR_CCM_selfTest (SDR_CCM_MonitorType monitorType,
         cslResult = CSL_armR5ConfigureCCMRegister(SOC_CCM_BASE,
                                                   monitorTypeKeyRegister,
                                                   (uint32_t)CSL_MCU_ARMSS_CCMR5_MKEY_CMP_MODE_ACTIVE,
-                                                  ((void *)0u));
+                                                  ((int32_t *)0u));
 
          if (cslResult != CSL_PASS) {
              retVal = SDR_FAIL;
@@ -578,7 +578,7 @@ SDR_Result SDR_CCM_selfTest (SDR_CCM_MonitorType monitorType,
                 (void) CSL_armR5ConfigureCCMRegister (SOC_CCM_BASE,
                                                       monitorTypeStatusRegister,
                                                       statusValue,
-                                                      ((void *)0u));
+                                                      ((int32_t *)0u));
             }
 
             retVal = SDR_FAIL;
@@ -636,7 +636,7 @@ static void SDR_CCM_callBackFunction (SDR_ESM_CCM_IntSrc intSrc)
     cslResult = CSL_armR5ReadCCMRegister (SOC_CCM_BASE,
                                            CSL_MCU_ARMSS_CCMR5_POLCNTRL_REGID,
                                            &polarityRegValue,
-                                           ((void *)0u));
+                                           ((int32_t *)0u));
     if ( cslResult != CSL_PASS) {
         SDR_assertExternalFunction(SDR_CCM_READ_REG_FAILURE);
     } else {
@@ -645,7 +645,7 @@ static void SDR_CCM_callBackFunction (SDR_ESM_CCM_IntSrc intSrc)
             cslResult = CSL_armR5ConfigureCCMRegister(SOC_CCM_BASE,
                                                        CSL_MCU_ARMSS_CCMR5_POLCNTRL_REGID,
                                                        0u,
-                                                       ((void *)0u));
+                                                       ((int32_t *)0u));
             if ( cslResult != CSL_PASS) {
                 SDR_assertExternalFunction(SDR_CCM_CONFIG_REG_FAILURE);
             }
@@ -673,7 +673,7 @@ static void SDR_CCM_callBackFunction (SDR_ESM_CCM_IntSrc intSrc)
         cslResult = CSL_armR5ReadCCMRegister (SOC_CCM_BASE,
                                                monitorTypeStatusRegister,
                                                &status,
-                                               ((void *)0u));
+                                               ((int32_t *)0u));
 
         if (cslResult != CSL_PASS) {
             /* Unexpected result call assert */
@@ -690,7 +690,7 @@ static void SDR_CCM_callBackFunction (SDR_ESM_CCM_IntSrc intSrc)
          cslResult = CSL_armR5ReadCCMRegister (SOC_CCM_BASE,
                                                 monitorTypeKeyRegister,
                                                 &keyRegValue,
-                                                ((void *)0u));
+                                                ((int32_t *)0u));
          if (cslResult != CSL_PASS) {
              /* Unexpected result call assert */
              SDR_assertExternalFunction(SDR_CCM_READ_REG_FAILURE);
@@ -703,7 +703,7 @@ static void SDR_CCM_callBackFunction (SDR_ESM_CCM_IntSrc intSrc)
             cslResult = CSL_armR5ConfigureCCMRegister(SOC_CCM_BASE,
                                                        monitorTypeKeyRegister,
                                                        ((uint32_t)CSL_MCU_ARMSS_CCMR5_MKEY_CMP_MODE_ACTIVE),
-                                                       ((void *)0u));
+                                                       ((int32_t *)0u));
 
             if (cslResult != CSL_PASS) {
                  SDR_assertExternalFunction(SDR_CCM_CONFIG_REG_FAILURE);
@@ -725,7 +725,7 @@ static void SDR_CCM_callBackFunction (SDR_ESM_CCM_IntSrc intSrc)
         cslResult = CSL_armR5ConfigureCCMRegister (SOC_CCM_BASE,
                                                    monitorTypeStatusRegister,
                                                    status,
-                                                   ((void *)0u));
+                                                   ((int32_t *)0u));
         if (cslResult != CSL_PASS) {
              SDR_assertExternalFunction(SDR_CCM_CONFIG_REG_FAILURE);
         } else {
