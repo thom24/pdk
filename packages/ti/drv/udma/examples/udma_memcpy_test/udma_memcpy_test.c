@@ -679,12 +679,12 @@ static int32_t App_delete(Udma_DrvHandle drvHandle, Udma_ChHandle chHandle)
 
 #if defined (UDMA_TEST_INTR)
     /* Unregister all events */
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
     eventHandle = &gUdmaTdCqEventObj;
     retVal += Udma_eventUnRegister(eventHandle);
-#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
+#endif
     eventHandle = &gUdmaCqEventObj;
     retVal += Udma_eventUnRegister(eventHandle);
-#endif
     if(UDMA_SOK != retVal)
     {
         App_print("[Error] UDMA event unregister failed!!\n");
