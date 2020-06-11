@@ -83,12 +83,26 @@
 #include <ti/csl/arch/csl_arch.h>
 #endif
 
+//#define CIO_DRV_CONSOLE
+
+#ifdef CIO_DRV_CONSOLE
+#define UART_test_log            printf
+#define UART_test_log1           printf
+#define UART_test_log2           printf
+#define UART_test_log3           printf
+#else
+#define UART_test_log(x)
+#define UART_test_log1(x,y)
+#define UART_test_log2(x,y,z)
+#define UART_test_log3(x,y,z,l)
+#endif
+
+
 #if defined(SOC_TPR12)
 #define QT_BUILD
 #define UART_RX_LOOPBACK_ONLY
 #define UART_API2_NOT_SUPPORTED
 #define UART_NO_FIFO
-//#define UART_RW_INT_ONLY
 #endif
 
 void Uart_appC7xPreInit(void);
@@ -158,7 +172,9 @@ char readTimeoutPrompt[60] = "\r\n Read timed out \r\n";
 char breakErrPrompt[60] = "\r\n Received a break condition error \r\n";
 char rdCancelPrompt[60] = "\r\n Previous read canceled \r\n";
 char wrCancelPrompt[60] = "\r\n Previous write canceled \r\n";
-char fifoTrgLvlData[MAX_TEST_BUFFER_SIZE] = "0123456789112345678921234567893123456789412345678951234567896123456789712345678981234567899123456789";
+char fifoTrgLvlData[MAX_TEST_BUFFER_SIZE] = "0123456789112345678921234567893123456789412345678951234567896123456789712345678981234567899123456789"
+					    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789abcedef12345"
+					    "6789ABCDEF012345678901234567899876543210deadbeef89512345";
 
 char stdioPrint[64] = "\r\n enter the data of 16 character and press ENTER \r\n";
 
@@ -689,35 +705,6 @@ static uintptr_t l2_global_address (uintptr_t addr)
     return addr;
 #endif
 
-}
-
-/**
- *  @b Description
- *  @n
- *      The function is used to populate the *test* buffer with a predefined
- *      signature
- *
- *  @param[in]  ptrBuffer
- *      Buffer to be populated
- *  @param[in]  size
- *      Size of the buffer
- *
- *  @retval
- *      Not applicable
- */
-void UART_populateBuffer (uint8_t* ptrBuffer, uint32_t size)
-{
-    uint32_t index;
-    char     ch = 'A';
-
-    /* Populate the data buffer: */
-    for (index = 0; index < size; index++)
-    {
-        *(ptrBuffer + index) = ch++;
-        if (ch == ('Z'+1))
-            ch = 'A';
-    }
-    return;
 }
 
 void UART_callback(UART_Handle handle, void *buf, size_t count)
@@ -2015,7 +2002,6 @@ static bool UART_test_read_verify(bool dmaMode)
     length = UART_read(uart, (void *)&rBuff[12], UART_RDVERIFY_READ_LEN);
 #else
     memset(rBuff, 0, UART_TEST_READ_LEN);
-    Osal_delay(1);
     for (i =0; i < UART_TEST_READ_LEN;i++)
     {
         if (UART_write(uart, (void *)&tBuff[i], 1) == UART_ERROR)
@@ -2058,7 +2044,6 @@ static bool UART_test_read_verify(bool dmaMode)
     UART_read(uart, (void *)&rBuff[0], UART_TEST_READ_LEN);
 #else
     memset(rBuff, 0, UART_TEST_READ_LEN);
-    Osal_delay(1);
     for (i =0; i < UART_TEST_READ_LEN;i++)
     {
         if (UART_write(uart, (void *)&tBuff[i], 1) == UART_ERROR)
@@ -2098,7 +2083,6 @@ static bool UART_test_read_verify(bool dmaMode)
     UART_read(uart, (void *)&rBuff[0], UART_TEST_READ_LEN);
 #else
     memset(rBuff, 0, UART_TEST_READ_LEN);
-    Osal_delay(1);
     for (i =0; i < UART_TEST_READ_LEN;i++)
     {
         if (UART_write(uart, (void *)&tBuff[i], 1) == UART_ERROR)
@@ -2137,7 +2121,6 @@ static bool UART_test_read_verify(bool dmaMode)
     UART_read(uart, (void *)&rBuff[0], UART_TEST_READ_LEN);
 #else
     memset(rBuff, 0, UART_TEST_READ_LEN);
-    Osal_delay(2);
     for (i =0; i < UART_TEST_READ_LEN;i++)
     {
         if (UART_write(uart, (void *)&tBuff[i], 1) == UART_ERROR)
@@ -2638,7 +2621,7 @@ static bool UART_writeInvalidArgs(UART_Handle handle)
     status = UART_write(handle, NULL, 128);
     if (status >= 0)
     {
-        printf("Error: UART Write with invalid buffer returned %d\n", status);
+        UART_test_log1("Error: UART Write with invalid buffer returned %d\n", status);
         return false;
     }
 
@@ -2648,7 +2631,7 @@ static bool UART_writeInvalidArgs(UART_Handle handle)
     status = UART_write(handle, &buffer[0], 0);
     if (status >= 0)
     {
-        printf("Error: UART Write with invalid size returned %d\n", status);
+        UART_test_log1("Error: UART Write with invalid size returned %d\n", status);
         return false;
     }
 
@@ -2658,7 +2641,7 @@ static bool UART_writeInvalidArgs(UART_Handle handle)
     status = UART_writePolling(handle, NULL, 128);
     if (status >= 0)
     {
-        printf("Error: UART Write with invalid buffer returned %d\n", status);
+        UART_test_log1("Error: UART Write with invalid buffer returned %d\n", status);
         return false;
     }
 
@@ -2668,7 +2651,7 @@ static bool UART_writeInvalidArgs(UART_Handle handle)
     status = UART_writePolling(handle, &buffer[0], 0);
     if (status >= 0)
     {
-        printf("Error: UART Write with invalid size returned %d\n", status);
+        UART_test_log1("Error: UART Write with invalid size returned %d\n", status);
         return false;
     }
 
@@ -2700,7 +2683,7 @@ static bool UART_readInvalidArgs(UART_Handle handle)
     status = UART_read(handle, NULL, 128);
     if (status != UART_EINVAL)
     {
-        printf("Error: UART Read with invalid buffer returned %d\n", status);
+        UART_test_log1("Error: UART Read with invalid buffer returned %d\n", status);
         return false;
     }
 
@@ -2710,7 +2693,7 @@ static bool UART_readInvalidArgs(UART_Handle handle)
     status = UART_read(handle, &buffer[0], 0);
     if (status != UART_EINVAL)
     {
-        printf("Error: UART Read with invalid size returned %d\n", status);
+        UART_test_log1("Error: UART Read with invalid size returned %d\n", status);
         return false;
     }
 
@@ -2720,7 +2703,7 @@ static bool UART_readInvalidArgs(UART_Handle handle)
     status = UART_readPolling(handle, NULL, 128);
     if (status != UART_EINVAL)
     {
-        printf("Error: UART Read with invalid buffer returned %d\n", status);
+        UART_test_log1("Error: UART Read with invalid buffer returned %d\n", status);
         return false;
     }
 
@@ -2730,7 +2713,7 @@ static bool UART_readInvalidArgs(UART_Handle handle)
     status = UART_readPolling(handle, &buffer[0], 0);
     if (status != UART_EINVAL)
     {
-        printf("Error: UART Read with invalid size returned %d\n", status);
+        UART_test_log1("Error: UART Read with invalid size returned %d\n", status);
         return false;
     }
 
@@ -2762,7 +2745,7 @@ bool UART_test_api (bool dmaMode)
     handle = UART_open(uartTestInstance, &params);
     if (handle == NULL)
     {
-        printf("Error: Unable to open the UART Instance\n");
+        UART_test_log("Error: Unable to open the UART Instance\n");
         return false;
     }
     /**************************************************************************
@@ -2776,7 +2759,7 @@ bool UART_test_api (bool dmaMode)
     handle = UART_open(0, &params);
     if (handle == NULL)
     {
-        printf("Error: Unable to open the UART Instance\n");
+        UART_test_log("Error: Unable to open the UART Instance\n");
         return false;
     }
 
@@ -2793,6 +2776,37 @@ bool UART_test_api (bool dmaMode)
     return true;
 }
 
+#if defined(SOC_TPR12)
+
+/**
+ *  @b Description
+ *  @n
+ *      The function is used to populate the *test* buffer with a predefined
+ *      signature
+ *
+ *  @param[in]  ptrBuffer
+ *      Buffer to be populated
+ *  @param[in]  size
+ *      Size of the buffer
+ *
+ *  @retval
+ *      Not applicable
+ */
+void UART_populateBuffer (char* ptrBuffer, uint32_t size)
+{
+    uint32_t index;
+    char     ch = 'A';
+
+    /* Populate the data buffer: */
+    for (index = 0; index < size; index++)
+    {
+        *(ptrBuffer + index) = ch++;
+        if (ch == ('Z'+1))
+            ch = 'A';
+    }
+    return;
+}
+
 /**
  *  @b Description
  *  @n
@@ -2804,7 +2818,12 @@ bool UART_test_api (bool dmaMode)
  *  @retval
  *      Error   -   <0
  */
-uint8_t uartDataBuf[0x2000];
+#if (defined(_TMS320C6X) || defined (__TI_ARM_V7M4__))
+#pragma DATA_ALIGN (uartDataBuf, UART_TEST_CACHE_LINE_SIZE)
+char uartDataBuf[0x2000];
+#else
+char uartDataBuf[0x2000] __attribute__ ((aligned (UART_TEST_CACHE_LINE_SIZE)));
+#endif
 
 bool UART_test_profile_tx(bool dmaMode)
 {
@@ -2817,19 +2836,15 @@ bool UART_test_profile_tx(bool dmaMode)
     uint32_t        numDataSize = sizeof(dataSize)/sizeof(uint32_t);
     uint32_t        baudRate =  921600;
     uintptr_t       ptrTxData;
-#if defined(SOC_TPR12)
     uint32_t        txTimeTaken;
     UART_Stats      stats;
-#endif
     char            testDescription[128];
 
 #if defined(QT_BUILD)
     numDataSize = 3;
 #endif
 
-#if defined(SOC_TPR12)
     CycleprofilerP_init();
-#endif
 
     /********************************************************************************
      * Execute the test for all data sizes
@@ -2875,7 +2890,7 @@ bool UART_test_profile_tx(bool dmaMode)
             handle = UART_open(uartTestInstance, &params);
             if (handle == NULL)
             {
-                printf ("Error: Unable to open the UART Driver while profiling Transmit Data\n");
+                UART_test_log ("Error: Unable to open the UART Driver while profiling Transmit Data\n");
                 return false;
             }
 
@@ -2922,31 +2937,31 @@ bool UART_test_profile_tx(bool dmaMode)
             /* Populate the transmit buffer: */
             UART_populateBuffer (uartDataBuf, dataSize[dataSizeIndex]);
 
-#if defined(SOC_TPR12)
+            if (dmaMode)
+            {
+                CacheP_wbInv((void *)(uintptr_t)uartDataBuf, (int32_t)dataSize[dataSizeIndex]);
+            }
+
             /****************************************************************
              * Profile the time taken to send out the data
              ****************************************************************/
             txTimeTaken = CycleprofilerP_getTimeStamp();
-#endif
 
             if ((testIndex == 0) || (testIndex == 1))
                 status = UART_write(handle, (void *)ptrTxData, dataSize[dataSizeIndex]);
             else
                 status = UART_writePolling(handle, (void *)ptrTxData, dataSize[dataSizeIndex]);
 
-#if defined(SOC_TPR12)
             txTimeTaken = CycleprofilerP_getTimeStamp() - txTimeTaken;
-#endif
 
             /* Were we able to send out the data */
             if (status != dataSize[dataSizeIndex])
             {
-                printf ("Error: Unable to send out the data [Status %d]\n", status);
+                UART_test_log1 ("Error: Unable to send out the data [Status %d]\n", status);
                 UART_close(handle);
                 return false;
             }
 
-#if defined(SOC_TPR12)
             /* Get the UART Statistics: */
             if (UART_control (handle, UART_CMD_GET_STATS, &stats) < 0)
             {
@@ -2955,13 +2970,12 @@ bool UART_test_profile_tx(bool dmaMode)
             }
 
             /* Debug Message: */
-            printf ("Debug: Transmit Measurements\n");
-            printf ("Debug: Baud Rate        : %d\n", baudRate);
-            printf ("Debug: Data Size        : %d\n", dataSize[dataSizeIndex]);
-            printf ("Debug: Transmit         : %d ticks\n", txTimeTaken);
-            printf ("Debug: Tx Interrupt     : %d\n", stats.numTxInterrupts);
-            printf ("Debug: Tx DMA Interrupt : %d\n", stats.numTxDMAInterrupts);
-#endif
+            UART_test_log ("Debug: Transmit Measurements\n");
+            UART_test_log1 ("Debug: Baud Rate        : %d\n", baudRate);
+            UART_test_log1 ("Debug: Data Size        : %d\n", dataSize[dataSizeIndex]);
+            UART_test_log1 ("Debug: Transmit         : %d ticks\n", txTimeTaken);
+            UART_test_log1 ("Debug: Tx Interrupt     : %d\n", stats.numTxInterrupts);
+            UART_test_log1 ("Debug: Tx DMA Interrupt : %d\n", stats.numTxDMAInterrupts);
 
             /* Close the driver: */
             UART_close(handle);
@@ -2985,7 +2999,7 @@ bool UART_test_profile_tx(bool dmaMode)
         handle = UART_open(uartTestInstance, &params);
         if (!handle)
         {
-            printf ("Error: Unable to open the UART Driver while printing the test banner\n");
+            UART_test_log ("Error: Unable to open the UART Driver while printing the test banner\n");
             return false;
         }
 
@@ -2999,6 +3013,7 @@ bool UART_test_profile_tx(bool dmaMode)
 
     return true;
 }
+#endif
 
 bool UART_test_loopback_data(bool dmaMode)
 {
@@ -3017,7 +3032,7 @@ bool UART_test_loopback_data(bool dmaMode)
     callbackSem = UART_osalCreateBlockingLock(0, &semParams);
 
     /* enable the loopback */
-    verifyLoopback = 1;
+    verifyLoopback = TRUE;
 
     /* UART SoC init configuration */
     UART_initConfig(dmaMode);
@@ -3032,6 +3047,7 @@ bool UART_test_loopback_data(bool dmaMode)
     handle = UART_open(uartTestInstance, &params);
     if (handle == NULL)
     {
+        UART_test_log ("Error: Unable to open the UART Driver!\n");
         goto Err;
     }
 
@@ -3054,6 +3070,7 @@ bool UART_test_loopback_data(bool dmaMode)
     status = UART_read(handle, (void *)pRxBuf, MAX_TEST_BUFFER_SIZE);
     if (status < 0)
     {
+        UART_test_log1 ("Error: UART_read() return %d!\n", status);
         goto Err;
     }
 
@@ -3061,12 +3078,14 @@ bool UART_test_loopback_data(bool dmaMode)
     status = UART_write(handle, (void *)pTxBuf, MAX_TEST_BUFFER_SIZE);
     if (status < 0)
     {
+        UART_test_log1 ("Error: UART_write() return %d!\n", status);
         goto Err;
     }
 
     /* Wait for RX call back */
-    if (UART_osalPendLock(callbackSem, params.writeTimeout) != SemaphoreP_OK)
+    if ((status = UART_osalPendLock(callbackSem, params.writeTimeout)) != SemaphoreP_OK)
     {
+        UART_test_log1 ("Error: UART_osalPendLock() return %d!\n", status);
         goto Err;
     }
 
@@ -3075,6 +3094,7 @@ bool UART_test_loopback_data(bool dmaMode)
     {
         if (scanPrompt[i] != fifoTrgLvlData[i])
         {
+            UART_test_log3 ("Error: UART_test_loopback_data: data fails at index %d (%c != %c)\n", i, scanPrompt[i], fifoTrgLvlData[i]);
             goto Err;
         }
     }
@@ -3146,7 +3166,9 @@ UART_Tests Uart_tests[] =
 #endif
 #endif
     {UART_test_api, false, UART_TEST_ID_API, "\r\n UART API Test"},
+#if defined(SOC_TPR12)
     {UART_test_profile_tx, false, UART_TEST_ID_PROF_TX, "\r\n UART non-DMA/DMA Blocking/Polling transmit profiling"},
+#endif
 #ifdef UART_DMA_ENABLE
     {UART_test_loopback_data, true, UART_TEST_ID_DMA_LB_DATA, "\r\n UART DMA read write test with loopback"},
 #endif

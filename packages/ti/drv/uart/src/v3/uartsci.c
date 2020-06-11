@@ -2294,6 +2294,17 @@ static int32_t UartSci_control(UART_Handle handle, uint32_t cmd, void *arg)
                 /* Get the loopback status from the argument */
                 loopback = (uint32_t*)arg;
                 UartSci_loopbackControl(ptrHwCfg->ptrSCIRegs, *loopback);
+
+                /*
+                 * Silicon workaround: It has been identified that it will take a while
+                 *                     for the loopback mode to take effect, therefore,
+                 *                     introduce some delay here to avoid tx operation
+                 *                     to be triggered prior to that.
+                 */
+                if (*loopback)
+                {
+                    UART_osalDelay(2);
+                }
             }
             break;
         }
@@ -2619,6 +2630,16 @@ static UART_Handle UartSci_open(UART_Handle handle, const UART_Params* params)
 
     /* Start the SCI: */
     UartSci_disableSwReset (ptrSCIRegs);
+
+    /*
+     * Silicon workaround: It has been identified that it will take a while for the loopback mode
+     *                     to take effect, therefore, introduce some delay here to avoid tx operation
+     *                     to be triggered prior to that.
+     */
+    if (ptrHwCfg->swCfg.loopback)
+    {
+        UART_osalDelay(2);
+    }
 
     /* Mark the driver to be operational */
     ptrUartSciDriver->status = UartSci_DriverStatus_OPERATIONAL;
