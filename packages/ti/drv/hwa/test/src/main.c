@@ -345,7 +345,7 @@ static void HWA_contextswitch_test(HWA_Handle handle)
     paramsetIdx = 0;
     gHWATestParamConfig[paramsetIdx].triggerMode = HWA_TRIG_MODE_SOFTWARE;
     gHWATestParamConfig[paramsetIdx].accelMode = HWA_ACCELMODE_FFT;
-    gHWATestParamConfig[paramsetIdx].source.srcAddr = ADDR_TRANSLATE_CPU_TO_HWA(srcAddr) ; //(uint32_t)((uint32_t)srcAddr - SOC_HWA_MEM0); // address is relative to start of MEM0
+    gHWATestParamConfig[paramsetIdx].source.srcAddr = HWADRV_ADDR_TRANSLATE_CPU_TO_HWA(srcAddr) ; //(uint32_t)((uint32_t)srcAddr - SOC_HWA_MEM0); // address is relative to start of MEM0
     gHWATestParamConfig[paramsetIdx].source.srcAcnt = HWA_TEST_NUM_SAMPLES - 1; //this is samples - 1
     gHWATestParamConfig[paramsetIdx].source.srcAIdx = HWA_TEST_NUM_RX_ANT * HWA_TEST_COMPLEX_16BIT_SIZE; // 16 bytes
     gHWATestParamConfig[paramsetIdx].source.srcBcnt = HWA_TEST_NUM_RX_ANT - 1;
@@ -356,7 +356,7 @@ static void HWA_contextswitch_test(HWA_Handle handle)
     gHWATestParamConfig[paramsetIdx].source.srcConjugate = HWA_FEATURE_BIT_DISABLE; //no conjugate
     gHWATestParamConfig[paramsetIdx].source.srcScale = 8;
 
-    gHWATestParamConfig[paramsetIdx].dest.dstAddr = ADDR_TRANSLATE_CPU_TO_HWA(dstAddr) ;//(uint32_t)((uint32_t)dstAddr - SOC_HWA_MEM0); // address is relative to start of MEM0
+    gHWATestParamConfig[paramsetIdx].dest.dstAddr = HWADRV_ADDR_TRANSLATE_CPU_TO_HWA(dstAddr) ;//(uint32_t)((uint32_t)dstAddr - SOC_HWA_MEM0); // address is relative to start of MEM0
     gHWATestParamConfig[paramsetIdx].dest.dstAcnt = HWA_TEST_NUM_SAMPLES - 1; //this is samples - 1
     gHWATestParamConfig[paramsetIdx].dest.dstAIdx = HWA_TEST_NUM_RX_ANT * HWA_TEST_COMPLEX_16BIT_SIZE; // 16 bytes
     gHWATestParamConfig[paramsetIdx].dest.dstBIdx = HWA_TEST_COMPLEX_16BIT_SIZE; //should be dont care
@@ -385,7 +385,7 @@ static void HWA_contextswitch_test(HWA_Handle handle)
     paramsetIdx = 1;
     gHWATestParamConfig[paramsetIdx].triggerMode = HWA_TRIG_MODE_IMMEDIATE;
     gHWATestParamConfig[paramsetIdx].accelMode = HWA_ACCELMODE_FFT;
-    gHWATestParamConfig[paramsetIdx].source.srcAddr = ADDR_TRANSLATE_CPU_TO_HWA ( (uint32_t) srcAddr + (2*0x4000)); //(uint32_t)((uint32_t)srcAddr + (2 * 0x4000) - SOC_HWA_MEM0); // address is relative to start of MEM0
+    gHWATestParamConfig[paramsetIdx].source.srcAddr = HWADRV_ADDR_TRANSLATE_CPU_TO_HWA ( (uint32_t) srcAddr + (2*0x4000)); //(uint32_t)((uint32_t)srcAddr + (2 * 0x4000) - SOC_HWA_MEM0); // address is relative to start of MEM0
     gHWATestParamConfig[paramsetIdx].source.srcAcnt = HWA_TEST_NUM_SAMPLES - 1; //this is samples - 1
     gHWATestParamConfig[paramsetIdx].source.srcAIdx = HWA_TEST_NUM_RX_ANT * HWA_TEST_COMPLEX_16BIT_SIZE; // 16 bytes
     gHWATestParamConfig[paramsetIdx].source.srcBcnt = HWA_TEST_NUM_RX_ANT - 1; //no iterations here
@@ -398,7 +398,7 @@ static void HWA_contextswitch_test(HWA_Handle handle)
 
     gHWATestParamConfig[paramsetIdx].accelModeArgs.fftMode.bpmEnable = HWA_FEATURE_BIT_DISABLE;
     /* M1*/
-    gHWATestParamConfig[paramsetIdx].dest.dstAddr = ADDR_TRANSLATE_CPU_TO_HWA ((uint32_t) dstAddr + (2 * 0x4000));//(uint32_t)((uint32_t)dstAddr + (2 * 0x4000) - SOC_HWA_MEM0); // address is relative to start of MEM0
+    gHWATestParamConfig[paramsetIdx].dest.dstAddr = HWADRV_ADDR_TRANSLATE_CPU_TO_HWA ((uint32_t) dstAddr + (2 * 0x4000));//(uint32_t)((uint32_t)dstAddr + (2 * 0x4000) - SOC_HWA_MEM0); // address is relative to start of MEM0
     gHWATestParamConfig[paramsetIdx].dest.dstAcnt = HWA_TEST_1DFFT_SIZE - 1; //this is samples - 1
     gHWATestParamConfig[paramsetIdx].dest.dstAIdx = HWA_TEST_NUM_RX_ANT * HWA_TEST_COMPLEX_16BIT_SIZE; // 16 bytes
     gHWATestParamConfig[paramsetIdx].dest.dstBIdx = HWA_TEST_COMPLEX_16BIT_SIZE; //should be dont care
@@ -2108,7 +2108,7 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
     pingParamSetIdx = paramsetIdx;
     gHWATestParamConfig[paramsetIdx].triggerMode = HWA_TRIG_MODE_IMMEDIATE; //Immediate following first - in demo this should be HWA_TRIG_MODE_DFE
     gHWATestParamConfig[paramsetIdx].accelMode = HWA_ACCELMODE_FFT; //do FFT
-    gHWATestParamConfig[paramsetIdx].source.srcAddr = ADDR_TRANSLATE_CPU_TO_HWA(srcAddr);// (uint32_t)((uint32_t)srcAddr - SOC_HWA_MEM0); // address is relative to start of MEM0
+    gHWATestParamConfig[paramsetIdx].source.srcAddr = HWADRV_ADDR_TRANSLATE_CPU_TO_HWA(srcAddr);// (uint32_t)((uint32_t)srcAddr - SOC_HWA_MEM0); // address is relative to start of MEM0
     gHWATestParamConfig[paramsetIdx].source.srcAcnt = HWA_TEST_NUM_SAMPLES - 1; //this is samples - 1
     gHWATestParamConfig[paramsetIdx].source.srcAIdx = HWA_TEST_NUM_RX_ANT * HWA_TEST_COMPLEX_16BIT_SIZE; // 16 bytes
     gHWATestParamConfig[paramsetIdx].source.srcBcnt = HWA_TEST_NUM_RX_ANT - 1; //no iterations here
@@ -2121,7 +2121,7 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
 
     gHWATestParamConfig[paramsetIdx].accelModeArgs.fftMode.bpmEnable = HWA_FEATURE_BIT_DISABLE;
     /* M1*/
-    gHWATestParamConfig[paramsetIdx].dest.dstAddr = ADDR_TRANSLATE_CPU_TO_HWA(dstAddr); //(uint32_t)((uint32_t)dstAddr - SOC_HWA_MEM0); // address is relative to start of MEM0
+    gHWATestParamConfig[paramsetIdx].dest.dstAddr = HWADRV_ADDR_TRANSLATE_CPU_TO_HWA(dstAddr); //(uint32_t)((uint32_t)dstAddr - SOC_HWA_MEM0); // address is relative to start of MEM0
     gHWATestParamConfig[paramsetIdx].dest.dstAcnt = HWA_TEST_1DFFT_SIZE - 1; //this is samples - 1
     gHWATestParamConfig[paramsetIdx].dest.dstAIdx = HWA_TEST_NUM_RX_ANT * HWA_TEST_COMPLEX_16BIT_SIZE; // 16 bytes
     gHWATestParamConfig[paramsetIdx].dest.dstBIdx = HWA_TEST_COMPLEX_16BIT_SIZE; //should be dont care
@@ -2189,7 +2189,7 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
     gHWATestParamConfig[paramsetIdx] = gHWATestParamConfig[pingParamSetIdx];
 
     /* M2*/
-    gHWATestParamConfig[paramsetIdx].dest.dstAddr = ADDR_TRANSLATE_CPU_TO_HWA ((uint32_t) dstAddr + HWA_MEMn_SIZE) ;//(uint32_t)((uint32_t)dstAddr + HWA_MEMn_SIZE - SOC_HWA_MEM0); // M2
+    gHWATestParamConfig[paramsetIdx].dest.dstAddr = HWADRV_ADDR_TRANSLATE_CPU_TO_HWA ((uint32_t) dstAddr + HWA_MEMn_SIZE) ;//(uint32_t)((uint32_t)dstAddr + HWA_MEMn_SIZE - SOC_HWA_MEM0); // M2
 
     /*disable the DC estimation */
     gHWATestParamConfig[paramsetIdx].accelModeArgs.fftMode.preProcCfg.dcEstResetMode = HWA_DCEST_INTERFSUM_RESET_MODE_NOUPDATE;
@@ -2226,7 +2226,7 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
     paramsetIdx++;
     gHWATestParamConfig[paramsetIdx] = gHWATestParamConfig[pongParamSetIdx];
     /*M3*/
-    gHWATestParamConfig[paramsetIdx].dest.dstAddr = ADDR_TRANSLATE_CPU_TO_HWA ( (uint32_t ) dstAddr + (2 * HWA_MEMn_SIZE));//(uint32_t)((uint32_t)dstAddr + HWA_MEMn_SIZE * 2 - SOC_HWA_MEM0); // M3
+    gHWATestParamConfig[paramsetIdx].dest.dstAddr = HWADRV_ADDR_TRANSLATE_CPU_TO_HWA ( (uint32_t ) dstAddr + (2 * HWA_MEMn_SIZE));//(uint32_t)((uint32_t)dstAddr + HWA_MEMn_SIZE * 2 - SOC_HWA_MEM0); // M3
 
     /* enable interference localization*/
     gHWATestParamConfig[paramsetIdx].accelModeArgs.fftMode.preProcCfg.interfLocalize.thresholdEnable = HWA_FEATURE_BIT_ENABLE;
@@ -2282,7 +2282,7 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
     gHWATestParamConfig[paramsetIdx].accelModeArgs.fftMode.preProcCfg.zeroInsertEn = HWA_FEATURE_BIT_ENABLE;
 
     /* mem4*/
-    gHWATestParamConfig[paramsetIdx].dest.dstAddr = ADDR_TRANSLATE_CPU_TO_HWA ( (uint32_t) dstAddr + 3 * HWA_MEMn_SIZE);//(uint32_t)((uint32_t)dstAddr + HWA_MEMn_SIZE * 3 - SOC_HWA_MEM0); // address is relative to start of MEM0
+    gHWATestParamConfig[paramsetIdx].dest.dstAddr = HWADRV_ADDR_TRANSLATE_CPU_TO_HWA ( (uint32_t) dstAddr + 3 * HWA_MEMn_SIZE);//(uint32_t)((uint32_t)dstAddr + HWA_MEMn_SIZE * 3 - SOC_HWA_MEM0); // address is relative to start of MEM0
     errCode = HWA_configParamSet(handle, paramsetIdx, &gHWATestParamConfig[paramsetIdx], NULL);
     if (errCode != 0)
     {
@@ -2813,7 +2813,7 @@ static void HWA_complexmultiply_test(HWA_Handle handle)
      /*this paramset disable the FFT, vector multiplication mode 1 using data from internal ram */
     gHWATestParamConfig[paramsetIdx].triggerMode = HWA_TRIG_MODE_IMMEDIATE;
     gHWATestParamConfig[paramsetIdx].accelMode = HWA_ACCELMODE_FFT;
-    gHWATestParamConfig[paramsetIdx].source.srcAddr = ADDR_TRANSLATE_CPU_TO_HWA(srcAddr); //(uint32_t)((uint32_t)srcAddr - SOC_HWA_MEM0); // address is relative to start of MEM0
+    gHWATestParamConfig[paramsetIdx].source.srcAddr = HWADRV_ADDR_TRANSLATE_CPU_TO_HWA(srcAddr); //(uint32_t)((uint32_t)srcAddr - SOC_HWA_MEM0); // address is relative to start of MEM0
     gHWATestParamConfig[paramsetIdx].source.srcAcnt = HWA_TEST_NUM_SAMPLES - 1; //this is samples - 1
     gHWATestParamConfig[paramsetIdx].source.srcAIdx = HWA_TEST_NUM_RX_ANT * HWA_TEST_COMPLEX_16BIT_SIZE; // 16 bytes
     gHWATestParamConfig[paramsetIdx].source.srcBcnt = HWA_TEST_NUM_RX_ANT - 1;
@@ -2824,7 +2824,7 @@ static void HWA_complexmultiply_test(HWA_Handle handle)
     gHWATestParamConfig[paramsetIdx].source.srcConjugate = HWA_FEATURE_BIT_DISABLE; //no conjugate
     gHWATestParamConfig[paramsetIdx].source.srcScale = 8;
 
-    gHWATestParamConfig[paramsetIdx].dest.dstAddr = ADDR_TRANSLATE_CPU_TO_HWA(dstAddr); //(uint32_t)((uint32_t)dstAddr - SOC_HWA_MEM0); // address is relative to start of MEM0
+    gHWATestParamConfig[paramsetIdx].dest.dstAddr = HWADRV_ADDR_TRANSLATE_CPU_TO_HWA(dstAddr); //(uint32_t)((uint32_t)dstAddr - SOC_HWA_MEM0); // address is relative to start of MEM0
     gHWATestParamConfig[paramsetIdx].dest.dstAcnt = HWA_TEST_NUM_SAMPLES - 1; //this is samples - 1
     gHWATestParamConfig[paramsetIdx].dest.dstAIdx = HWA_TEST_NUM_RX_ANT * HWA_TEST_COMPLEX_16BIT_SIZE; // 16 bytes
     gHWATestParamConfig[paramsetIdx].dest.dstBIdx = HWA_TEST_COMPLEX_16BIT_SIZE; //should be dont care
@@ -2878,7 +2878,7 @@ static void HWA_complexmultiply_test(HWA_Handle handle)
     gHWATestParamConfig[paramsetIdx].accelModeArgs.fftMode.preProcCfg.complexMultiply.cmultMode = HWA_COMPLEX_MULTIPLY_MODE_MAG_SQUARED;
 
      /* mem2*/
-    gHWATestParamConfig[paramsetIdx].dest.dstAddr = ADDR_TRANSLATE_CPU_TO_HWA ( (uint32_t) dstAddr + 0x4000); //(uint32_t)((uint32_t)dstAddr + HWA_MEMn_SIZE - SOC_HWA_MEM0); // address is relative to start of MEM0
+    gHWATestParamConfig[paramsetIdx].dest.dstAddr = HWADRV_ADDR_TRANSLATE_CPU_TO_HWA ( (uint32_t) dstAddr + 0x4000); //(uint32_t)((uint32_t)dstAddr + HWA_MEMn_SIZE - SOC_HWA_MEM0); // address is relative to start of MEM0
     errCode = HWA_configParamSet(handle, paramsetIdx + startParamIdx, &gHWATestParamConfig[paramsetIdx], NULL);
     if (errCode != 0)
     {
@@ -3088,7 +3088,7 @@ static void HWA_azimfft_test(HWA_Handle handle)
     /* add complex multiply with HWA_COMPLEX_MULTIPLY_MODE_VECTOR_MULT mode, with 32 bits complex input */
     gHWATestParamConfig[paramsetIdx].triggerMode = HWA_TRIG_MODE_SOFTWARE;
     gHWATestParamConfig[paramsetIdx].accelMode = HWA_ACCELMODE_FFT;
-    gHWATestParamConfig[paramsetIdx].source.srcAddr = ADDR_TRANSLATE_CPU_TO_HWA(srcAddr) ;//(uint32_t)((uint32_t)srcAddr - SOC_HWA_MEM0); // address is relative to start of MEM0
+    gHWATestParamConfig[paramsetIdx].source.srcAddr = HWADRV_ADDR_TRANSLATE_CPU_TO_HWA(srcAddr) ;//(uint32_t)((uint32_t)srcAddr - SOC_HWA_MEM0); // address is relative to start of MEM0
 
     gHWATestParamConfig[paramsetIdx].source.srcAcnt = numInputSymbols - 1;
     gHWATestParamConfig[paramsetIdx].source.srcAIdx = HWA_TEST_COMPLEX_32BIT_SIZE; //32 bits complex
@@ -3131,7 +3131,7 @@ static void HWA_azimfft_test(HWA_Handle handle)
     gHWATestParamConfig[paramsetIdx].accelModeArgs.fftMode.preProcCfg.complexMultiply.modeCfg.vectorMultiplyMode1.cmultScaleEn = HWA_FEATURE_BIT_ENABLE;
 
     /* mem1*/
-    gHWATestParamConfig[paramsetIdx].dest.dstAddr = ADDR_TRANSLATE_CPU_TO_HWA(dstAddr);//(uint32_t)((uint32_t)dstAddr - SOC_HWA_MEM0); // address is relative to start of MEM0
+    gHWATestParamConfig[paramsetIdx].dest.dstAddr = HWADRV_ADDR_TRANSLATE_CPU_TO_HWA(dstAddr);//(uint32_t)((uint32_t)dstAddr - SOC_HWA_MEM0); // address is relative to start of MEM0
     errCode = HWA_configParamSet(handle, paramsetIdx, &gHWATestParamConfig[paramsetIdx], NULL);
     if (errCode != 0)
     {
@@ -3186,7 +3186,7 @@ static void HWA_azimfft_test(HWA_Handle handle)
     gHWATestParamConfig[paramsetIdx].triggerMode = HWA_TRIG_MODE_IMMEDIATE;
     gHWATestParamConfig[paramsetIdx].accelMode = HWA_ACCELMODE_FFT;
     //M2
-    gHWATestParamConfig[paramsetIdx].source.srcAddr = ADDR_TRANSLATE_CPU_TO_HWA((uint32_t) dstAddr + 0x4000); //(uint32_t)((uint32_t)dstAddr + HWA_MEMn_SIZE - SOC_HWA_MEM0); // address is relative to start of MEM0
+    gHWATestParamConfig[paramsetIdx].source.srcAddr = HWADRV_ADDR_TRANSLATE_CPU_TO_HWA((uint32_t) dstAddr + 0x4000); //(uint32_t)((uint32_t)dstAddr + HWA_MEMn_SIZE - SOC_HWA_MEM0); // address is relative to start of MEM0
 
     gHWATestParamConfig[paramsetIdx].source.srcAcnt = 16 - 1;
     gHWATestParamConfig[paramsetIdx].source.srcAIdx = 4;
@@ -3219,7 +3219,7 @@ static void HWA_azimfft_test(HWA_Handle handle)
     gHWATestParamConfig[paramsetIdx].accelModeArgs.fftMode.postProcCfg.histogramScaleSelect = 11;
     gHWATestParamConfig[paramsetIdx].accelModeArgs.fftMode.postProcCfg.histogramSizeSelect = 6;
     /* M3*/
-    gHWATestParamConfig[paramsetIdx].dest.dstAddr =  ADDR_TRANSLATE_CPU_TO_HWA((uint32_t) dstAddr + 2 * 0x4000); //(uint32_t)((uint32_t)dstAddr + 2 * HWA_MEMn_SIZE - SOC_HWA_MEM0);
+    gHWATestParamConfig[paramsetIdx].dest.dstAddr =  HWADRV_ADDR_TRANSLATE_CPU_TO_HWA((uint32_t) dstAddr + 2 * 0x4000); //(uint32_t)((uint32_t)dstAddr + 2 * HWA_MEMn_SIZE - SOC_HWA_MEM0);
 
     /* memcopy the data to MEM2 */
     memcpy((uint8_t *)((uint32_t)dstAddr + HWA_MEMn_SIZE), (uint8_t *)gHWATest_1DFFT_input, 256 * 16 * 4);
@@ -3544,7 +3544,7 @@ void HWA_histogram_test(HWA_Handle handle)
     /* histogram calculation */
     gHWATestParamConfig[paramsetIdx].triggerMode = HWA_TRIG_MODE_SOFTWARE;
     gHWATestParamConfig[paramsetIdx].accelMode = HWA_ACCELMODE_FFT;
-    gHWATestParamConfig[paramsetIdx].source.srcAddr = ADDR_TRANSLATE_CPU_TO_HWA (srcAddr);//(uint32_t)((uint32_t)srcAddr - SOC_HWA_MEM0); // address is relative to start of MEM0
+    gHWATestParamConfig[paramsetIdx].source.srcAddr = HWADRV_ADDR_TRANSLATE_CPU_TO_HWA (srcAddr);//(uint32_t)((uint32_t)srcAddr - SOC_HWA_MEM0); // address is relative to start of MEM0
 
     gHWATestParamConfig[paramsetIdx].source.srcAcnt = 5 - 1;
     gHWATestParamConfig[paramsetIdx].source.srcAIdx = 2;
@@ -3577,7 +3577,7 @@ void HWA_histogram_test(HWA_Handle handle)
     gHWATestParamConfig[paramsetIdx].accelModeArgs.fftMode.postProcCfg.histogramScaleSelect = 11;
     gHWATestParamConfig[paramsetIdx].accelModeArgs.fftMode.postProcCfg.histogramSizeSelect = 6;
 
-    gHWATestParamConfig[paramsetIdx].dest.dstAddr = ADDR_TRANSLATE_CPU_TO_HWA (dstAddr);//(uint32_t)((uint32_t)dstAddr - SOC_HWA_MEM0);
+    gHWATestParamConfig[paramsetIdx].dest.dstAddr = HWADRV_ADDR_TRANSLATE_CPU_TO_HWA (dstAddr);//(uint32_t)((uint32_t)dstAddr - SOC_HWA_MEM0);
 
     errCode = HWA_configParamSet(handle, paramsetIdx, &gHWATestParamConfig[paramsetIdx], NULL);
     if (errCode != 0)

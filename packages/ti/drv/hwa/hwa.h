@@ -128,191 +128,79 @@ extern "C" {
  *  
  *
  @{ */
-/**
- * @brief   HWA driver error base
- */
+ 
+ 
+/** @brief   HWA driver error base */
 #define HWA_ERRNO_BASE        (-2800)
-/**
- * @brief   Error Code: Invalid argument
- */
+/** @brief   Error Code: Invalid argument */
 #define HWA_EINVAL                  (HWA_ERRNO_BASE-1)
-
-/**
- * @brief   Error Code: Operation cannot be done as HWA_init is not done.
- */
+/** @brief   Error Code: Operation cannot be done as HWA_init is not done */
 #define HWA_ENOINIT                 (HWA_ERRNO_BASE-2)
-
-/**
- * @brief   Error Code: input argument out of range
- */
+/** @brief   Error Code: input argument out of range */
 #define HWA_EOUTOFRANGE             (HWA_ERRNO_BASE-3)
-
-/**
- * @brief   Error Code: out of memory
- */
+/** @brief   Error Code: out of memory */
 #define HWA_EOUTOFMEM               (HWA_ERRNO_BASE-4)
-
-/**
- * @brief   Error Code: feature not supported
- */
+/** @brief   Error Code: feature not supported */
 #define HWA_ENOTSUPP                (HWA_ERRNO_BASE-5)
-
-/**
- * @brief   Error Code: channel or resource in use
- */
+/** @brief   Error Code: channel or resource in use */
 #define HWA_EINUSE                  (HWA_ERRNO_BASE-6)
-
-/**
- * @brief   Error Code: address is not aligned to the expected boundary
- */
+/** @brief   Error Code: address is not aligned to the expected boundary */
 #define HWA_ENOTALIGNED             (HWA_ERRNO_BASE-7)
-
-
-/**
- * @brief   Error Code: Invalid argument: paramset Start/Stop Idx and numLoops in common register 
- */
+/** @brief   Error Code: Invalid argument: paramset Start/Stop Idx and numLoops in common register */
 #define HWA_EINVAL_COMMON_REGISTER_PARAMSET               (HWA_ERRNO_BASE-8)
-
- /**
- * @brief   Error Code: Invalid argument: paramset Start/Stop Idx and numLoops for context switching in common register
- */
+/** @brief   Error Code: Invalid argument: paramset Start/Stop Idx and numLoops for context switching in common register */
 #define HWA_EINVAL_COMMON_REGISTER_PARAMSET_ALT          (HWA_ERRNO_BASE-9)
-
-
-/**
- * @brief   Error Code: Invalid argument: for FFT config in common register
- */
+/** @brief   Error Code: Invalid argument: for FFT config in common register */
 #define HWA_EINVAL_COMMON_REGISTER_FFTCONFIG              (HWA_ERRNO_BASE-10)
-
- /**
- * @brief   Error Code: Invalid argument: for DC estimation in common register
- */
+/** @brief   Error Code: Invalid argument: for DC estimation in common register */
 #define HWA_EINVAL_COMMON_REGISTER_DCEST                  (HWA_ERRNO_BASE-11)
-
- /**
- * @brief   Error Code: Invalid argument: for CFAR config in common register
- */
+/** @brief   Error Code: Invalid argument: for CFAR config in common register */
 #define HWA_EINVAL_COMMON_REGISTER_CFAR                   (HWA_ERRNO_BASE-12)
-
-/**
- * @brief   Error Code: Invalid argument: for interference localization/mitigation in common register
- */
+/** @brief   Error Code: Invalid argument: for interference localization/mitigation in common register */
 #define HWA_EINVAL_COMMON_REGISTER_INTERFERENCE           (HWA_ERRNO_BASE-13)
-
-/**
- * @brief   Error Code: Invalid argument: for complex multiply in common register
- */
+/** @brief   Error Code: Invalid argument: for complex multiply in common register */
 #define HWA_EINVAL_COMMON_REGISTER_COMPLEXMULT            (HWA_ERRNO_BASE-14)
-
-/**
- * @brief   Error Code: Invalid argument: for channel combine in common register
- */
+/** @brief   Error Code: Invalid argument: for channel combine in common register */
 #define HWA_EINVAL_COMMON_REGISTER_CHANCOMB               (HWA_ERRNO_BASE-15)
-
-
-/**
- * @brief   Error Code: Invalid argument: for zero insert in common register
- */
+/** @brief   Error Code: Invalid argument: for zero insert in common register */
 #define HWA_EINVAL_COMMON_REGISTER_ZEROINSERT             (HWA_ERRNO_BASE-16)
-
-
-/**
- * @brief   Error Code: Invalid argument: for advanced statistics in common register
- */
+/** @brief   Error Code: Invalid argument: for advanced statistics in common register */
 #define HWA_EINVAL_COMMON_REGISTER_ADVSTAT                (HWA_ERRNO_BASE-17)
-        
-/**
- * @brief   Error Code: Invalid argument: for compress/decompression in common register
- */
+/** @brief   Error Code: Invalid argument: for compress/decompression in common register */
 #define HWA_EINVAL_COMMON_REGISTER_COMPRESS               (HWA_ERRNO_BASE-18)
-
- /**
- * @brief   Error Code: Invalid argument: for local maximum in common register
- */
+/** @brief   Error Code: Invalid argument: for local maximum in common register */
 #define HWA_EINVAL_COMMON_REGISTER_LOCALMAXIMUM           (HWA_ERRNO_BASE-19)
-
-        
-/**
- * @brief   Error Code: Invalid argument: general config in paramset 
- */
+/** @brief   Error Code: Invalid argument: general config in paramset  */
 #define HWA_EINVAL_PARAMSET_GENERALCONFIG                 (HWA_ERRNO_BASE - 20)
-
-
-/**
- * @brief   Error Code: Invalid argument: source(input formatter) in paramset 
- */
+/** @brief   Error Code: Invalid argument: source(input formatter) in paramset */
 #define HWA_EINVAL_PARAMSET_SOURCE                        (HWA_ERRNO_BASE - 21)
-
-
-/**
- * @brief   Error Code: Invalid argument: destination(output formatter) in paramset 
- */
+/** @brief   Error Code: Invalid argument: destination(output formatter) in paramset */
 #define HWA_EINVAL_PARAMSET_DEST                          (HWA_ERRNO_BASE - 22)
-
-/**
- * @brief   Error Code: Invalid argument: src and dst address in paramset 
- */
+/** @brief   Error Code: Invalid argument: src and dst address in paramset */
 #define HWA_EINVAL_PARAMSET_SRCDST_ADDRESS                (HWA_ERRNO_BASE - 23)
-
-
-/**
- * @brief   Error Code: Invalid argument: FFT mode: general config in paramset 
- */
+/** @brief   Error Code: Invalid argument: FFT mode: general config in paramset */
 #define HWA_EINVAL_PARAMSET_FFTMODE_GENERALCONFIG         (HWA_ERRNO_BASE - 24)
-
-/**
- * @brief   Error Code: Invalid argument: FFT mode: FFT size in paramset 
- */
+/** @brief   Error Code: Invalid argument: FFT mode: FFT size in paramset */
 #define HWA_EINVAL_PARAMSET_FFTMODE_SIZE                  (HWA_ERRNO_BASE - 25)
-
-/**
- * @brief   Error Code: Invalid argument: FFT mode: post processing in paramset 
- */
+/** @brief   Error Code: Invalid argument: FFT mode: post processing in paramset */
 #define HWA_EINVAL_PARAMSET_FFTMODE_POSTPROC              (HWA_ERRNO_BASE - 26)
-
-/**
- * @brief   Error Code: Invalid argument: FFT mode: pre-processing in paramset 
- */
+/** @brief   Error Code: Invalid argument: FFT mode: pre-processing in paramset */
 #define HWA_EINVAL_PARAMSET_FFTMODE_PREPROC               (HWA_ERRNO_BASE - 27)
-
-/**
- * @brief   Error Code: Invalid argument: FFT mode: pre-processing interference localization/statistics/mitigation in paramset 
- */
+/** @brief   Error Code: Invalid argument: FFT mode: pre-processing interference localization/statistics/mitigation in paramset */
 #define HWA_EINVAL_PARAMSET_FFTMODE_PREPROC_INTERF        (HWA_ERRNO_BASE - 28)
-
-/**
- * @brief   Error Code: Invalid argument: FFT mode: pre-processing complex multiply block in paramset 
- */
+/** @brief   Error Code: Invalid argument: FFT mode: pre-processing complex multiply block in paramset */
 #define HWA_EINVAL_PARAMSET_FFTMODE_PREPROC_COMPLEXMULT   (HWA_ERRNO_BASE - 29)
-
-/**
- * @brief   Error Code: Invalid argument: CFAR mode: general configuration in paramset 
- */
+/** @brief   Error Code: Invalid argument: CFAR mode: general configuration in paramset */
 #define HWA_EINVAL_PARAMSET_CFARMODE_GENERALCONFIG        (HWA_ERRNO_BASE - 30)
-	
-/**
- * @brief   Error Code: Invalid argument: CFAR mode: CFAR-OS configuration in paramset 
- */
+/** @brief   Error Code: Invalid argument: CFAR mode: CFAR-OS configuration in paramset */
 #define HWA_EINVAL_PARAMSET_CFARMODE_OSCONFIG             (HWA_ERRNO_BASE - 31)
-
-/**
- * @brief   Error Code: Invalid argument: CFAR mode: CFAR-CA configuration in paramset 
- */
+/** @brief   Error Code: Invalid argument: CFAR mode: CFAR-CA configuration in paramset */
 #define HWA_EINVAL_PARAMSET_CFARMODE_CACONFIG             (HWA_ERRNO_BASE - 32)
-
-/**
- * @brief   Error Code: Invalid argument: compress/decompress mode: compress/decompress configuration in paramset 
- */
+/** @brief   Error Code: Invalid argument: compress/decompress mode: compress/decompress configuration in paramset */
 #define HWA_EINVAL_PARAMSET_COMPRESSMODE                  (HWA_ERRNO_BASE - 33)
-
-/**
- * @brief   Error Code: Invalid argument: local maxima mode: local maxima configuration in paramset 
- */
+/** @brief   Error Code: Invalid argument: local maxima mode: local maxima configuration in paramset */
 #define HWA_EINVAL_PARAMSET_LOCALMAXMODE                  (HWA_ERRNO_BASE - 34)
-
- /**
-  * @brief   Error Code: if paramset interrupt is enabled, polling should be disabled 
-  */
+/** @brief   Error Code: if paramset interrupt is enabled, polling should be disabled */
 #define HWA_PARAMSET_POLLINGNOTALLOWED                    (HWA_ERRNO_BASE - 35)
 
 /** @}*/ /* end of addgroup HWA_DRIVER_ERROR_CODE */
@@ -884,7 +772,7 @@ extern "C" {
  *
  
 */
-typedef enum HWA_Paramset_Contextswitch_cfg_e
+typedef enum HWA_ParamsetContextswitchCfg_e
 {
 	/**
 	* @brief   disable the context switch in the paramset
@@ -902,7 +790,7 @@ typedef enum HWA_Paramset_Contextswitch_cfg_e
 	*/
 	HWA_PARAMSET_CONTEXTSWITCH_FORCE_ENABLE
 
-}HWA_Paramset_Contextswitch_cfg;
+}HWA_ParamsetContextswitchCfg;
 
 
 
@@ -1045,7 +933,7 @@ typedef struct HWA_CommonConfig_t {
                                                     Sets the LFSR_SEED bits in LFSR_SEED */
 
         uint8_t         fftSumDiv;             /*!<  5-bit value: specifies the number of bits to right-shift the sum statistic (36-bit)
-                                                     before it is written to destination memory (24-bit), applied if \ref HWA_postProc_stat::fftOutMode 
+                                                     before it is written to destination memory (24-bit), applied if \ref HWA_PostProcStat::fftOutMode 
                                                      is set to HWA_FFT_MODE_OUTPUT_MAX_STATS or HWA_FFT_MODE_OUTPUT_SUM_STATS.
                                                      Sets the FFTSUMDIV bits in FFTSUMDIV register */
     } fftConfig;
@@ -1200,16 +1088,16 @@ typedef struct HWA_CommonConfig_t {
     struct {
 
         int32_t         max2DoffsetDim1;           /*!<  24 bit value: sets offset to be added to dimension 1 maxima result,
-                                                        if \ref HWA_postProc_stat::max2Denable is enabled.
+                                                        if \ref HWA_PostProcStat::max2Denable is enabled.
                                                         sets MAX2D_OFFSET_DIM1 bits in  MAX2D_OFFSET_DIM1 register */
                                                
         int32_t         max2DoffsetDim2;           /*!<  24 bit value: sets offset to be added to dimension 2 maxima result,
-                                                        if \ref HWA_postProc_stat::max2Denable is enabled.
+                                                        if \ref HWA_PostProcStat::max2Denable is enabled.
                                                         sets IM2_MAX2D_OFFSET_DIM2 in  MAX2D_OFFSET_DIM2 register */
                                                
                                                
         uint16_t        cdfCntThresh;              /*!<  12 bit value: is applied in CDF count threshold mode of operation, i.e.
-                                                        if \ref HWA_postProc_stat::histogramMode is set to HWA_HISTOGRAM_MODE_CDF_THRESHOLD.
+                                                        if \ref HWA_PostProcStat::histogramMode is set to HWA_HISTOGRAM_MODE_CDF_THRESHOLD.
                                                         CDF is computed over the histogram till the value of CDF exceeds the cdfCntThresh 
                                                         value is 0-4095
                                                         sets CDF_CNT_THRESH bits in CDF_CNT_THRESH register */
@@ -1434,7 +1322,7 @@ typedef struct HWA_DestConfig_t {
 *  HWA paramset config parameters for post-processing and the statistics control register inside HWA_ParamConfig which is used with the HWA_ConfigParamSet() call.
 *
 */
-typedef struct HWA_postProc_stat_t {
+typedef struct HWA_PostProcStat_t {
 
     uint8_t       magLogEn;                 /*!<  See \ref HWA_FFT_MODE_MAGNITUDE_LOG2 macros for correct values.
                                             Enable/Disable for Magnitude and Log2 computation
@@ -1468,7 +1356,7 @@ typedef struct HWA_postProc_stat_t {
                                                  histogram sizes of 8,16,32, and 64.
                                                  sets the bits HIST_SIZE_SEL of register POSTPROCWIN in paramset */
 
-} HWA_postProc_stat;
+} HWA_PostProcStat;
 
 
 /*!
@@ -1731,7 +1619,7 @@ typedef struct HWA_AccelModeFFT_t{
     uint8_t      bpmPhase;                  /*!<  4 bit value: Specifies the starting phase of the BPM pattern
                                                  Sets the BPM_PHASE bits of the register BFLYFFT in paramset */
 
-    HWA_postProc_stat   postProcCfg;        /*!<  advanced statistics config */
+    HWA_PostProcStat   postProcCfg;        /*!<  advanced statistics config */
 
     HWA_PreProcessing preProcCfg;           /*!< pre-processing block config */
     
@@ -1896,7 +1784,7 @@ typedef struct HWA_ParamConfig_t {
         HWA_AccelModeCompress     compressMode;           /*!<  compression and decompression related params */
     } accelModeArgs;
 
-	HWA_Paramset_Contextswitch_cfg	contextswitchCfg;     /*!< enable/disable the context switch, if enabled, specify if it is forced or not-forced enable */												        
+	HWA_ParamsetContextswitchCfg	contextswitchCfg;     /*!< enable/disable the context switch, if enabled, specify if it is forced or not-forced enable */												        
 	
 } HWA_ParamConfig;
 
