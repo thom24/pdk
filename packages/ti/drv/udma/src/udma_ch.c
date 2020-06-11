@@ -1953,7 +1953,7 @@ static int32_t Udma_chAllocResource(Udma_ChHandle chHandle)
 {
     int32_t                 retVal = UDMA_SOK, tempRetVal;
     Udma_DrvHandle          drvHandle;
-    uint16_t                ringNum;
+    uint16_t                ringNum = UDMA_RING_INVALID;
 #if (UDMA_NUM_UTC_INSTANCE > 0)
     uint32_t                utcChNum;
     const Udma_UtcInstInfo *utcInfo;
