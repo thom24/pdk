@@ -192,42 +192,8 @@ void emac_icssg_dual_mac_fw_config_fxn(uint32_t portNum, EMAC_ICSSG_FW_CFG_PG2 *
         HW_WR_REG32(icssgBaseAddr + CSL_ICSS_G_PR1_PDSP0_IRAM_REGS_BASE + CSL_ICSS_G_PR1_PDSP0_IRAM_CONSTANT_TABLE_PROG_PTR_0, 0x100U);
         HW_WR_REG32(icssgBaseAddr + CSL_ICSS_G_PR1_RTU0_PR1_RTU0_IRAM_REGS_BASE + CSL_ICSS_G_PR1_PDSP0_IRAM_CONSTANT_TABLE_PROG_PTR_0, 0x100U);
         HW_WR_REG32(icssgBaseAddr + CSL_ICSS_G_PR1_PDSP_TX0_IRAM_REGS_BASE + CSL_ICSS_G_PR1_PDSP0_IRAM_CONSTANT_TABLE_PROG_PTR_0, 0x100U);
-        /* Program task manager configurations for all 3 PRUs */
-        /* RX tasks run on RX_PRU0 */
-        /*Configure RXBK1 Size = 20Bytes, RXBK2 Size = 12 Bytes, RXBKn Size = 32 Bytes. */
-        HW_WR_REG32(icssgBaseAddr +
-                    CSL_ICSS_G_PR1_TASKS_MGR_PRU0_PR1_TASKS_MGR_PRU0_MMR_REGS_BASE +
-                    CSL_ICSS_G_PR1_TASKS_MGR_PRU0_PR1_TASKS_MGR_PRU0_MMR_RX_CFG, 
-                    (19U << CSL_ICSS_G_PR1_TASKS_MGR_PRU0_PR1_TASKS_MGR_PRU0_MMR_RX_CFG_BK1_SIZE_SHIFT)|
-                    (11U << CSL_ICSS_G_PR1_TASKS_MGR_PRU0_PR1_TASKS_MGR_PRU0_MMR_RX_CFG_BK2_SIZE_SHIFT)|
-                    (31U << CSL_ICSS_G_PR1_TASKS_MGR_PRU0_PR1_TASKS_MGR_PRU0_MMR_RX_CFG_BKN_SIZE_SHIFT));
-        /* RX FIFO WM configuration on RTU0 */ 
-        HW_WR_REG32(icssgBaseAddr +
-                    CSL_ICSS_G_PR1_TASKS_MGR_RTU0_PR1_TASKS_MGR_RTU0_MMR_REGS_BASE +
-                    CSL_ICSS_G_PR1_TASKS_MGR_RTU0_PR1_TASKS_MGR_RTU0_MMR_RX_CFG,
-                    (19U << CSL_ICSS_G_PR1_TASKS_MGR_RTU0_PR1_TASKS_MGR_RTU0_MMR_RX_CFG_BK1_SIZE_SHIFT) |
-                    (11U << CSL_ICSS_G_PR1_TASKS_MGR_RTU0_PR1_TASKS_MGR_RTU0_MMR_RX_CFG_BK2_SIZE_SHIFT) |
-                    (31U << CSL_ICSS_G_PR1_TASKS_MGR_RTU0_PR1_TASKS_MGR_RTU0_MMR_RX_CFG_BKN_SIZE_SHIFT));
-        HW_WR_REG32(icssgBaseAddr +
-                    CSL_ICSS_G_PR1_TASKS_MGR_PRU_TX0_PR1_TASKS_MGR_PRU_TX0_MMR_REGS_BASE +
-                    CSL_ICSS_G_PR1_TASKS_MGR_PRU_TX0_PR1_TASKS_MGR_PRU_TX0_MMR_TX_CFG,
-                    30U);
-        /* Enable task manager nesting for PRUs and RTUs for TS1 tasks only */
-        regVal = 0x1FU;
-        HW_WR_REG32(icssgBaseAddr +
-                    CSL_ICSS_G_PR1_TASKS_MGR_PRU0_PR1_TASKS_MGR_PRU0_MMR_REGS_BASE +
-                    CSL_ICSS_G_PR1_TASKS_MGR_PRU0_PR1_TASKS_MGR_PRU0_MMR_CAP_EN_CFG,
-                    regVal);
-        HW_WR_REG32(icssgBaseAddr +
-                    CSL_ICSS_G_PR1_TASKS_MGR_RTU0_PR1_TASKS_MGR_RTU0_MMR_REGS_BASE +
-                    CSL_ICSS_G_PR1_TASKS_MGR_RTU0_PR1_TASKS_MGR_RTU0_MMR_CAP_EN_CFG,
-                    regVal);
-        HW_WR_REG32(icssgBaseAddr +
-                    CSL_ICSS_G_PR1_TASKS_MGR_PRU_TX0_PR1_TASKS_MGR_PRU_TX0_MMR_REGS_BASE +
-                    CSL_ICSS_G_PR1_TASKS_MGR_PRU_TX0_PR1_TASKS_MGR_PRU_TX0_MMR_CAP_EN_CFG,
-                    regVal);
 
-        for (hwQueueNum = 0; hwQueueNum < EMAC_ICSSG_MAX_HWQ; hwQueueNum++)
+	for (hwQueueNum = 0; hwQueueNum < EMAC_ICSSG_MAX_HWQ; hwQueueNum++)
         {
             hwqa_reset(icssgBaseAddr, hwQueueNum);
         }
@@ -278,43 +244,8 @@ void emac_icssg_dual_mac_fw_config_fxn(uint32_t portNum, EMAC_ICSSG_FW_CFG_PG2 *
         HW_WR_REG32(icssgBaseAddr + CSL_ICSS_G_PR1_PDSP1_IRAM_REGS_BASE + CSL_ICSS_G_PR1_PDSP1_IRAM_CONSTANT_TABLE_PROG_PTR_0, 0x100U);
         HW_WR_REG32(icssgBaseAddr + CSL_ICSS_G_PR1_RTU1_PR1_RTU1_IRAM_REGS_BASE + CSL_ICSS_G_PR1_PDSP1_IRAM_CONSTANT_TABLE_PROG_PTR_0, 0x100U);
         HW_WR_REG32(icssgBaseAddr + CSL_ICSS_G_PR1_PDSP_TX1_IRAM_REGS_BASE + CSL_ICSS_G_PR1_PDSP1_IRAM_CONSTANT_TABLE_PROG_PTR_0, 0x100U);
-        /* Program task manager configurations for all 3 PRUs */
-        /* RX tasks run on RX_PRU1 */
-        /*Configure RXBK1 Size = 20Bytes, RXBK2 Size = 12 Bytes, RXBKn Size = 32 Bytes. */
-        HW_WR_REG32(icssgBaseAddr + 
-                    CSL_ICSS_G_PR1_TASKS_MGR_PRU1_PR1_TASKS_MGR_PRU1_MMR_REGS_BASE +
-                    CSL_ICSS_G_PR1_TASKS_MGR_PRU1_PR1_TASKS_MGR_PRU1_MMR_RX_CFG,
-                    (19U << CSL_ICSS_G_PR1_TASKS_MGR_PRU1_PR1_TASKS_MGR_PRU1_MMR_RX_CFG_BK1_SIZE_SHIFT) |
-                    (11U << CSL_ICSS_G_PR1_TASKS_MGR_PRU1_PR1_TASKS_MGR_PRU1_MMR_RX_CFG_BK2_SIZE_SHIFT) |
-                    (31U << CSL_ICSS_G_PR1_TASKS_MGR_PRU1_PR1_TASKS_MGR_PRU1_MMR_RX_CFG_BKN_SIZE_SHIFT));
-        /* RX FIFO WM configuration on RTU1 */ 
-        HW_WR_REG32(icssgBaseAddr +
-                    CSL_ICSS_G_PR1_TASKS_MGR_RTU1_PR1_TASKS_MGR_RTU1_MMR_REGS_BASE +
-                    CSL_ICSS_G_PR1_TASKS_MGR_RTU1_PR1_TASKS_MGR_RTU1_MMR_RX_CFG,
-                    (19U << CSL_ICSS_G_PR1_TASKS_MGR_RTU1_PR1_TASKS_MGR_RTU1_MMR_RX_CFG_BK1_SIZE_SHIFT) |
-                    (11U << CSL_ICSS_G_PR1_TASKS_MGR_RTU1_PR1_TASKS_MGR_RTU1_MMR_RX_CFG_BK2_SIZE_SHIFT) |
-                    (31U << CSL_ICSS_G_PR1_TASKS_MGR_RTU1_PR1_TASKS_MGR_RTU1_MMR_RX_CFG_BKN_SIZE_SHIFT));
-        //Configure TX WM to zero
-        HW_WR_REG32(icssgBaseAddr +
-                    CSL_ICSS_G_PR1_TASKS_MGR_PRU_TX1_PR1_TASKS_MGR_PRU_TX1_MMR_REGS_BASE +
-                    CSL_ICSS_G_PR1_TASKS_MGR_PRU_TX1_PR1_TASKS_MGR_PRU_TX1_MMR_TX_CFG,
-                    30U);
-        /*Enable task manager nesting for PRUs and RTUs for TS1 tasks only */
-        regVal = 0x1FU;
-        HW_WR_REG32(icssgBaseAddr +
-                    CSL_ICSS_G_PR1_TASKS_MGR_PRU1_PR1_TASKS_MGR_PRU1_MMR_REGS_BASE +
-                    CSL_ICSS_G_PR1_TASKS_MGR_PRU1_PR1_TASKS_MGR_PRU1_MMR_CAP_EN_CFG,
-                    regVal);
-        HW_WR_REG32(icssgBaseAddr +
-                    CSL_ICSS_G_PR1_TASKS_MGR_RTU1_PR1_TASKS_MGR_RTU1_MMR_REGS_BASE +
-                    CSL_ICSS_G_PR1_TASKS_MGR_RTU1_PR1_TASKS_MGR_RTU1_MMR_CAP_EN_CFG,
-                    regVal);
-        HW_WR_REG32(icssgBaseAddr +
-                    CSL_ICSS_G_PR1_TASKS_MGR_PRU_TX1_PR1_TASKS_MGR_PRU_TX1_MMR_REGS_BASE +
-                    CSL_ICSS_G_PR1_TASKS_MGR_PRU_TX1_PR1_TASKS_MGR_PRU_TX1_MMR_CAP_EN_CFG,
-                    regVal);
 
-        for (hwQueueNum = EMAC_ICSSG_MAX_HWQ; hwQueueNum < EMAC_ICSSG_MAX_HWQ*2; hwQueueNum++)
+	for (hwQueueNum = EMAC_ICSSG_MAX_HWQ; hwQueueNum < EMAC_ICSSG_MAX_HWQ*2; hwQueueNum++)
         {
             hwqa_reset(icssgBaseAddr, hwQueueNum);
         }
