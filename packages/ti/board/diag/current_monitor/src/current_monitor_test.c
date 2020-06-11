@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2019 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2016-2020 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -44,9 +44,9 @@
  *  bus voltage, power, current readings and displaying it on to the serial
  *  console.
  *
- *  Supported SoCs: K2G, AM65XX & J721E
+ *  Supported SoCs: K2G, AM65XX, J721E & J7200
  *
- *  Supported Platforms: iceK2G, am65xx_evm, am65xx_idk & j721e_evm.
+ *  Supported Platforms: iceK2G, am65xx_evm, am65xx_idk, j721e_evm & j7200_evm.
  *
  */
 
@@ -82,6 +82,41 @@ inaCfgObj_t inaDevice[NUM_OF_INA_DEVICES] = {
     {"VDA_PLL_1V8",         0x4CU, {0.01, 0.0025, 1.25, 0.000198,  0.0000079, 64528}},
     {"VDD_PHYIO_1V8",       0x4DU, {0.01, 0.0025, 1.25,  0.000687,  0.0000275, 18641}},
     {"DA_USB_3V3",          0x4EU, {0.01, 0.0025, 1.25,  0.000198,  0.0000079, 64528}},
+    {"VDD_IO_1V8",          0x40U, {0.01, 0.0025, 1.25,  0.000229,  0.0000092, 55924}},
+    {"VDD_IO_3V3",          0x41U, {0.01, 0.0025, 1.25, 0.000763, 0.0000305, 16777}},
+    {"VDD_SD_DV",           0x42U, {0.01, 0.0025, 1.25,  0.000198,  0.0000079, 64528}},
+    {"VDD1",                0x43U, {0.01, 0.0025, 1.25, 0.000381,  0.0000153, 33554}},
+    {"VDD2",                0x44U, {0.01, 0.0025, 1.25,  0.000381,  0.0000153, 33554}},
+    {"VDDQ_LPDDR4_DV",      0x45U, {0.01, 0.0025, 1.25, 0.000198,  0.0000079, 64527}},
+    {"VSYS_MCUIO_1V8",      0x46U, {0.01, 0.0025, 1.25,  0.000381,  0.0000153, 33554}},
+    {"VSYS_MCUIO_3V3",      0x47U, {0.01, 0.0025, 1.25,  0.000198,  0.0000079, 64528}},
+    {"VSYS_IO_1V8",         0x48U, {0.01, 0.0025, 1.25,  0.000229,  0.0000092, 55924}},
+    {"VSYS_IO_3V3",         0x49U, {0.01, 0.0025, 1.25, 0.000381, 0.0000153, 33554}},
+    {"VCC_12V0",            0x4AU, {0.01, 0.0025, 1.25,  0.006104,  0.0002441, 2097}},
+    {"VSYS_5V0",            0x4BU, {0.01, 0.0025, 1.25, 0.003815,  0.0001526, 3355}},
+    {"VSYS_3V3",            0x4CU, {0.01, 0.0025, 1.25,  0.0015259,  0.0000610, 8389}},
+    {"VSYS_3V3_SOM",        0x4DU, {0.01, 0.0025, 1.25, 0.006104,  0.0002441, 2097}},
+    {"VDDA_DLL_0V8",        0x4EU, {0.01, 0.0025, 1.25,  0.0001983,  0.0000079, 64528}},
+    {"EXP_3V3",             0x4FU, {0.01, 0.0025, 1.25,  0.007629,  0.0003052, 1677}}
+};
+#elif defined(SOC_J7200)
+inaCfgObj_t inaDevice[NUM_OF_INA_DEVICES] = {
+    {"VDD_MCU_0V85",        0x40U, {0.01, 0.0025, 1.25, 0.000839, 0.0000336, 15252}},
+    {"VDD_MCU_RAM_0V85",    0x41U, {0.01, 0.0025, 1.25,  0.000198,  0.0000079, 64528}},
+    {"VDA_MCU_1V8",         0x42U, {0.01, 0.0025, 1.25, 0.000198,  0.0000079, 64528}},
+    {"VDD_MCUIO_3V3",       0x43U, {0.01, 0.0025, 1.25,  0.000198,  0.0000079, 64528}},
+    {"VDD_MCUIO_1V8",       0x44U, {0.01, 0.0025, 1.25, 0.000763,  0.0000305, 16777}},
+    {"VDD_CORE_0V8",        0x45U, {0.01, 0.0025, 1.25,  0.008392,  0.0003357, 1525}},
+    {"VDD_CORE_RAM_0V85",   0x46U, {0.01, 0.0025, 1.25,  0.000381,  0.0000153, 33554}},
+    {"VDD_CPU_RAM_0V85",    0x47U, {0.01, 0.0025, 1.25,  0.000305,  0.0000122, 41943}},
+    {"VDD_CPU_AVS",         0x48U, {0.01, 0.0025, 1.25, 0.00534, 0.0002136, 2397}},
+    {"VDDR_BIAS_1V1",       0x49U, {0.01, 0.0025, 1.25,  0.000198,  0.0000079, 64528}},
+    {"VDDR_IO_DV",          0x4AU, {0.01, 0.0025, 1.25, 0.000267,  0.0000107, 47935}},
+    {"VDD_PHYCORE_0V8",     0x4BU, {0.01, 0.0025, 1.25,  0.000198,  0.0000079, 64528}},
+    {"VDA_PLL_1V8",         0x4CU, {0.01, 0.0025, 1.25, 0.000198,  0.0000079, 64528}},
+    {"VDD_PHYIO_1V8",       0x4DU, {0.01, 0.0025, 1.25,  0.000687,  0.0000275, 18641}},
+    {"DA_USB_3V3",          0x4EU, {0.01, 0.0025, 1.25,  0.000198,  0.0000079, 64528}},
+    {"SPARE",               0x4FU, {0.01, 0.0025, 1.25,  0.007629,  0.0003052, 1677}},
     {"VDD_IO_1V8",          0x40U, {0.01, 0.0025, 1.25,  0.000229,  0.0000092, 55924}},
     {"VDD_IO_3V3",          0x41U, {0.01, 0.0025, 1.25, 0.000763, 0.0000305, 16777}},
     {"VDD_SD_DV",           0x42U, {0.01, 0.0025, 1.25,  0.000198,  0.0000079, 64528}},
@@ -469,7 +504,7 @@ static int8_t BoardDiag_run_current_monitor_test(void)
 
     /* Initializes the I2C Parameters */
     I2C_Params_init(&i2cParams);
-#if (defined(SOC_AM65XX) || defined(SOC_J721E))
+#if (defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200))
     i2cParams.bitRate = I2C_400kHz;
 #endif
     /* Configures the I2C instance with the passed parameters*/
@@ -484,8 +519,8 @@ static int8_t BoardDiag_run_current_monitor_test(void)
 
     for(index = 0; index < NUM_OF_INA_DEVICES; index++)
     {
-#if defined(SOC_J721E)
-        if (index == (TOT_INA_IN_PM1))
+#if defined(SOC_J721E) || defined(SOC_J7200)
+        if (index == TOT_INA_IN_PM1)
         {
              /* Selecting PM2 I2C */
 		    GPIO_write(0U, SIGNAL_LEVEL_HIGH);
@@ -587,14 +622,11 @@ static int8_t BoardDiag_run_current_monitor_test(void)
 int8_t BoardDiag_currentMonitorFuctionalTest(void)
 {
     int8_t ret = 0;
-#if defined(SOC_J721E)
+#if defined(SOC_J721E) || defined(SOC_J7200)
     Board_I2cInitCfg_t i2cCfg;
-#endif
-
-#if defined(SOC_J721E)
     i2cIoExpSignalLevel_t signalLev = GPIO_SIGNAL_LEVEL_LOW;
 #endif
-#if defined(SOC_J721E)
+#if defined(SOC_J721E) || defined(SOC_J7200)
 	
 #if !defined (__aarch64__)
 	enableI2C(CSL_I2C0_CFG_BASE);
@@ -730,7 +762,7 @@ int8_t BoardDiag_currentMonitorStressTest(void)
  *            -1 - in case of failure.
  *
  */
-#if (defined(SOC_AM65XX) || defined(SOC_J721E))
+#if (defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200))
 int main(void)
 {
     Board_STATUS status;
@@ -758,7 +790,7 @@ int main(void)
 	enableMAINI2C(2, CSL_I2C2_CFG_BASE);
 #endif
 
-#if defined(SOC_J721E) && !defined (__aarch64__)
+#if (defined(SOC_J721E) || defined(SOC_J7200)) && !defined (__aarch64__)
     /* MCU I2C instance will be active by default for R5 core.
      * Need update HW attrs to enable MAIN I2C instance.
      */
