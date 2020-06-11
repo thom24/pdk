@@ -1010,12 +1010,22 @@ int32_t RPMessage_init(RPMessage_Params *params)
     /* Clear module state */
     memset(&module, 0, sizeof(module));
 
-    if((NULL == params) || (0 == params->bufSize) || (0 == params->stackSize)
-        || (NULL == params->buf) || (NULL == params->stackBuffer))
+    if((NULL == params) || (0 == params->bufSize) || (NULL == params->buf))
     {
         SystemP_printf("RPMessage_init ...Invalid params\n");
         retVal = IPC_EFAIL;
     }
+
+#ifndef IPC_EXCLUDE_CTRL_TASKS
+    if( retVal != IPC_EFAIL)
+    {
+        if((0 == params->stackSize) || (NULL == params->stackBuffer))
+        {
+            SystemP_printf("RPMessage_init ...Invalid params\n");
+            retVal = IPC_EFAIL;
+        }
+    }
+#endif /* IPC_EXCLUDE_CTRL_TASKS */
 
     if( retVal != IPC_EFAIL)
     {

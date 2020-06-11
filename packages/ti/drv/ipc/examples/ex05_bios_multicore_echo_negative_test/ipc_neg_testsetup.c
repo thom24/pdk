@@ -758,6 +758,7 @@ int32_t ipc_neg_test(void)
             return IPC_EFAIL;
         }
     }
+#ifndef IPC_EXCLUDE_CTRL_TASKS
     else if(test_rpmsg_param_stkbuf_null_flag)
     {
         cntrlParam.stackBuffer = NULL;
@@ -790,6 +791,7 @@ int32_t ipc_neg_test(void)
             return IPC_EFAIL;
         }
     }
+#endif /* IPC_EXCLUDE_CTRL_TASKS */
     else
     {
         RPMessage_init(&cntrlParam);
@@ -871,19 +873,20 @@ int32_t Ipc_echo_neg_test(void)
 
     Task_sleep(20000);
 
-    /* set stackSize to zero as init param for RPmessage */
+    /* set buf to NULL as init param for RPmessage */
     g_neg_exitRespTsk = 0;
     clear_all_test_flags();
-    test_rpmsg_param_stk_size_zero_flag = 1;
+    test_rpmsg_param_buf_null_flag = 1;
     ipc_neg_test();
     rpmsg_neg_exit_responseTask();
 
     Task_sleep(20000);
 
-    /* set buf to NULL as init param for RPmessage */
+#ifndef IPC_EXCLUDE_CTRL_TASKS
+    /* set stackSize to zero as init param for RPmessage */
     g_neg_exitRespTsk = 0;
     clear_all_test_flags();
-    test_rpmsg_param_buf_null_flag = 1;
+    test_rpmsg_param_stk_size_zero_flag = 1;
     ipc_neg_test();
     rpmsg_neg_exit_responseTask();
 
@@ -897,6 +900,7 @@ int32_t Ipc_echo_neg_test(void)
     rpmsg_neg_exit_responseTask();
 
     Task_sleep(20000);
+#endif /* IPC_EXCLUDE_CTRL_TASKS */
 
     /* send NULL params as part of init virtIO */
     g_neg_exitRespTsk = 0;
