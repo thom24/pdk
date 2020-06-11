@@ -277,7 +277,8 @@ uint32_t Udma_rmAllocMappedRing(Udma_DrvHandle drvHandle,
                                 const uint32_t mappedChNum);
 void Udma_rmFreeMappedRing(uint32_t ringNum,
                            Udma_DrvHandle drvHandle,
-                           const uint32_t mappedRingGrp);
+                           const uint32_t mappedRingGrp,
+                           const uint32_t mappedChNum);
 #endif
 uint16_t Udma_rmAllocFreeRing(Udma_DrvHandle drvHandle);
 void Udma_rmFreeFreeRing(uint16_t ringNum, Udma_DrvHandle drvHandle);

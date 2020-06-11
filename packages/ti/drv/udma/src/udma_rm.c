@@ -1468,29 +1468,40 @@ uint32_t Udma_rmAllocMappedRing(Udma_DrvHandle drvHandle,
 
 void Udma_rmFreeMappedRing(uint32_t ringNum,
                            Udma_DrvHandle drvHandle,
-                           const uint32_t mappedRingGrp)
+                           const uint32_t mappedRingGrp,
+                           const uint32_t mappedChNum)
 {
     uint32_t            i, offset, bitPos, bitMask;
     Udma_RmInitPrms    *rmInitPrms = &drvHandle->initPrms.rmInitPrms;
+    Udma_MappedChRingAttributes  chAttr;   
+    int32_t     retVal = UDMA_SOK;
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.lockMutex != (Udma_OsalMutexLockFxn) NULL_PTR);
-    drvHandle->initPrms.osalPrms.lockMutex(drvHandle->rmLock);
+    Udma_assert(drvHandle, mappedRingGrp < (UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP));
 
-    Udma_assert(drvHandle, ringNum >= rmInitPrms->startMappedRing[mappedRingGrp]);
-    Udma_assert(drvHandle,
-        ringNum < (rmInitPrms->startMappedRing[mappedRingGrp] + rmInitPrms->numMappedRing[mappedRingGrp]));
-    i = ringNum - rmInitPrms->startMappedRing[mappedRingGrp];
-    offset = i >> 5U;
-    Udma_assert(drvHandle, offset < UDMA_RM_MAPPED_RING_ARR_SIZE);
-    bitPos = i - (offset << 5U);
-    bitMask = (uint32_t) 1U << bitPos;
-    Udma_assert(drvHandle,
-        (drvHandle->mappedRingFlag[mappedRingGrp][offset] & bitMask) == 0U);
-    drvHandle->mappedRingFlag[mappedRingGrp][offset] |= bitMask;
+    retVal = Udma_getMappedChRingAttributes(drvHandle, mappedRingGrp, mappedChNum, &chAttr);
+    Udma_assert(drvHandle, UDMA_SOK == retVal);
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.unlockMutex != (Udma_OsalMutexUnlockFxn) NULL_PTR);
-    drvHandle->initPrms.osalPrms.unlockMutex(drvHandle->rmLock);
+    /* Free up only the free mapped ring - ignore default mapped ring */
+    if(ringNum != chAttr.defaultRing)
+    {
+        Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.lockMutex != (Udma_OsalMutexLockFxn) NULL_PTR);
+        drvHandle->initPrms.osalPrms.lockMutex(drvHandle->rmLock);
 
+        Udma_assert(drvHandle, ringNum >= rmInitPrms->startMappedRing[mappedRingGrp]);
+        Udma_assert(drvHandle,
+            ringNum < (rmInitPrms->startMappedRing[mappedRingGrp] + rmInitPrms->numMappedRing[mappedRingGrp]));
+        i = ringNum - rmInitPrms->startMappedRing[mappedRingGrp];
+        offset = i >> 5U;
+        Udma_assert(drvHandle, offset < UDMA_RM_MAPPED_RING_ARR_SIZE);
+        bitPos = i - (offset << 5U);
+        bitMask = (uint32_t) 1U << bitPos;
+        Udma_assert(drvHandle,
+            (drvHandle->mappedRingFlag[mappedRingGrp][offset] & bitMask) == 0U);
+        drvHandle->mappedRingFlag[mappedRingGrp][offset] |= bitMask;
+
+        Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.unlockMutex != (Udma_OsalMutexUnlockFxn) NULL_PTR);
+        drvHandle->initPrms.osalPrms.unlockMutex(drvHandle->rmLock);
+    }
     return;
 }
 #endif

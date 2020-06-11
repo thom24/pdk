@@ -201,7 +201,7 @@ int32_t Udma_ringAlloc(Udma_DrvHandle drvHandle,
 #if((UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP) > 0)
             else
             {
-                Udma_rmFreeMappedRing(ringHandle->ringNum, drvHandle, ringHandle->mappedRingGrp);
+                Udma_rmFreeMappedRing(ringHandle->ringNum, drvHandle, ringHandle->mappedRingGrp, ringHandle->mappedChNum);
             }
 #endif
         }
@@ -247,7 +247,7 @@ int32_t Udma_ringFree(Udma_RingHandle ringHandle)
 #if((UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP) > 0)
         else
         {
-            Udma_rmFreeMappedRing(ringHandle->ringNum, drvHandle, ringHandle->mappedRingGrp);
+            Udma_rmFreeMappedRing(ringHandle->ringNum, drvHandle, ringHandle->mappedRingGrp, ringHandle->mappedChNum);
         }
 #endif
         ringHandle->ringNum         = UDMA_RING_INVALID;
