@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014-2019 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2014-2020 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -43,10 +43,10 @@
  *  using I2C interface and display it on the serial console
  *  by converting it to actual temperature reading(i.e; degree centigrade).
  *
- *  Supported SoCs: K2G, AM571x, AM572x, AM437x, AM335x, AM65xx & J721E.
+ *  Supported SoCs: K2G, AM571x, AM572x, AM437x, AM335x, AM65xx, J721E & J7200
  *
  *  Supported Platforms: evmK2G, evmAM571x, evmAM572x, idkAM437x, evmAM335x,
- *  am65xx_evm, am65xx_idk & j721e_evm.
+ *  am65xx_evm, am65xx_idk, j721e_evm, j7200_evm.
  *
  */
 
@@ -60,7 +60,7 @@ extern I2C_config_list I2C_config;
  *  \param    delayVal            [IN]   Delay count.
  *
  */
-#if (!((defined(SOC_AM65XX)) || (defined(SOC_J721E))))
+#if (!((defined(SOC_AM65XX)) || (defined(SOC_J721E)) || (defined(SOC_J7200))))
 void BoardDiag_AppDelay(uint32_t delayVal)
 {
 	uint32_t cnt = 0;
@@ -176,7 +176,7 @@ int8_t BoardDiag_run_temperature_test(void)
     I2C_HwAttrs i2cConfig;
     I2C_Handle handle = NULL;
 
-#if ((defined(SOC_J721E)) && (defined (__aarch64__)))
+#if (((defined(SOC_J721E)) || (defined(SOC_J7200))) && (defined (__aarch64__)))
     /* Enabling MCU I2C */
     enableI2C(CSL_MCU_I2C0_CFG_BASE);
 #endif
@@ -192,7 +192,7 @@ int8_t BoardDiag_run_temperature_test(void)
 
     /* Initializes the I2C Parameters */
     I2C_Params_init(&i2cParams);
-#if ((defined(SOC_AM65XX)) || (defined(SOC_J721E)))
+#if ((defined(SOC_AM65XX)) || (defined(SOC_J721E)) || (defined(SOC_J7200)))
     i2cParams.bitRate = I2C_400kHz;
 #endif
     /* Configures the I2C instance with the passed parameters*/
@@ -222,7 +222,7 @@ int8_t BoardDiag_run_temperature_test(void)
                      BoardDiag_convert_temp(temp));
     }
 
-#if ((defined(SOC_AM65XX)) || (defined(SOC_J721E)))
+#if ((defined(SOC_AM65XX)) || (defined(SOC_J721E)) || (defined(SOC_J7200)))
     ret = BoardDiag_read_temp(handle,
 	                          TEMP_SLAVE_DEVICE2_ADDR,
                               &temp);
