@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2017-2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2017-2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -53,7 +53,7 @@ extern "C" {
 #include <ti/drv/i2c/soc/I2C_soc.h>
 #include <ti/drv/uart/UART.h>
 #include <ti/drv/uart/UART_stdio.h>
-#if defined(SOC_J721E)
+#if (defined(SOC_J721E) || defined(SOC_J7200))
 #include <ti/drv/gpio/GPIO.h>
 #include <ti/drv/gpio/soc/GPIO_soc.h>
 #include <ti/csl/csl_gpio.h>
