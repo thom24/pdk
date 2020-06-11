@@ -49,8 +49,8 @@ static LPDDR4_PrivateData gBoardDdrPd;
 /* Local function prototypes */
 static int32_t emif_ConfigureECC(void);
 
-#define SIMULATION
-#ifndef SIMULATION
+#define VLAB_SIM
+#ifndef VLAB_SIM
 /**
  * \brief   Set DDR PLL to bypass, efectively 20MHz or 19.2MHz (on silicon).
  *
@@ -73,6 +73,8 @@ static void Board_DDRSetPLLExtBypass(void)
 
 }
 
+#endif /* VLAB_SIM */
+
 /**
  * \brief   Set DDR PLL clock value
  *
@@ -92,7 +94,6 @@ static Board_STATUS Board_DDRSetPLLClock(void)
 
     return status;
 }
-#endif /* SIMULATION */
 
 /**
  * \brief   Controls the DDR PLL clock change sequence during inits
@@ -101,7 +102,11 @@ static Board_STATUS Board_DDRSetPLLClock(void)
  */
 static void Board_DDRChangeFreqAck(void)
 {
-    BOARD_DEBUG_LOG("--->>> Frequency Change request handshake is completed... <<<---\n");
+
+    /* Configure PLL Clock */
+    Board_DDRSetPLLClock();
+
+    BOARD_DEBUG_LOG("--->>> DDR PLL clock configured ... <<<---\n");
 }
 
 /**
@@ -242,7 +247,7 @@ static Board_STATUS Board_DDRStart(void)
         return BOARD_FAIL;
     }
 
-    status = LPDDR4_DDR4_Start(&gBoardDdrPd);
+    status = LPDDR4_Start(&gBoardDdrPd);
     if (status > 0U)
     {
         BOARD_DEBUG_LOG("Board_DDRStart: FAIL\n");
@@ -288,8 +293,8 @@ static Board_STATUS emif_ConfigureECC(void)
     emifCfg.bECCCheck = true;
     emifCfg.bWriteAlloc = true;
     emifCfg.ECCThreshold = 1U;
-    emifCfg.pMemEccCfg.startAddr[0] = BOARD_DDR_START_ADDR-BOARD_DDR_START_ADDR;
-    emifCfg.pMemEccCfg.endAddr[0] = BOARD_DDR_ECC_END_ADDR-BOARD_DDR_START_ADDR;
+    emifCfg.pMemEccCfg.startAddr[0] = BOARD_DDR_START_ADDR-BOARD_SOC_DDR_START_ADDR;
+    emifCfg.pMemEccCfg.endAddr[0] = BOARD_DDR_ECC_END_ADDR-BOARD_SOC_DDR_START_ADDR;
     cslResult = CSL_emifConfig((CSL_emif_sscfgRegs *)CSL_DDR16SS0_SS_CFG_BASE,
                                &emifCfg);
 
@@ -333,10 +338,10 @@ static Board_STATUS emif_ConfigureECC(void)
 Board_STATUS Board_DDRInit(Bool eccEnable)
 {
     Board_STATUS status = BOARD_SOK;
-#ifndef SIMULATION
+#ifndef VLAB_SIM
     /* PLL should be bypassed while configuring the DDR */
     Board_DDRSetPLLExtBypass();
-#endif /* SIMULATION */
+#endif /* VLAB_SIM */
     /* Partition5 lockkey0 */
     HW_WR_REG32((CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK5_KICK0),
                 KICK0_UNLOCK);

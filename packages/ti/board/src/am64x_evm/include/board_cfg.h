@@ -51,6 +51,8 @@ extern "C" {
 #define BOARD_INFO_CPU_NAME     "am64x"
 #define BOARD_INFO_BOARD_NAME   "am64x_evm"
 
+#define BOARD_SOC_DDR_START_ADDR                        (0x80000000U)
+
 #ifdef VLAB_SIM
 /* Memory sections */
 #define BOARD_DDR_START_ADDR                            (0x90000000U)
