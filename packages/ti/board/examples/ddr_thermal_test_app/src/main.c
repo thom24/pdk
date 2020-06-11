@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2019
+ *  Copyright (c) Texas Instruments Incorporated 2019-2020
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -34,6 +34,18 @@
  * main.c
  */
 #include <stdint.h>
+
+#ifdef USE_BIOS
+/* XDCtools Header files */
+#include <xdc/std.h>
+#include <xdc/runtime/Error.h>
+#include <xdc/runtime/System.h>
+
+/* BIOS Header files */
+#include <ti/sysbios/BIOS.h>
+#include <ti/sysbios/knl/Task.h>
+#endif /* #ifdef USE_BIOS */
+
 #include <ti/drv/uart/UART.h>
 #include <ti/drv/uart/UART_stdio.h>
 #include <ti/board/board.h>
@@ -72,13 +84,20 @@ void Test_DDRTempMonitorCallback(Board_DDRTempEventType DDRTempEventType)
             break;
     }
 }
-
+#ifdef USE_BIOS
+/*
+ *  ======== taskFxn ========
+ */
+Void taskFxn(UArg a0, UArg a1)
+#else
 int main(void)
+#endif /* #ifdef USE_BIOS */
 {
-    Board_initCfg boardCfg;
-    Board_STATUS  boardStatus;
     int32_t       retVal = 0;
     char inputChar;
+#ifndef USE_BIOS
+    Board_initCfg boardCfg;
+    Board_STATUS  boardStatus;
 
     boardCfg = BOARD_INIT_PINMUX_CONFIG
                | BOARD_INIT_UART_STDIO;
@@ -88,11 +107,12 @@ int main(void)
         retVal = -1;
         UART_printf("[Error] Board init failed!!\n");
     }
-
+#endif /* USE_BIOS */
     if (retVal == 0)
     {
         Board_DDRTempMonitoringInit(&Test_DDRTempMonitorCallback);
     }
+
     do
     {
         UART_printf("\n Press any key to continue... Press q to quit");
@@ -105,6 +125,49 @@ int main(void)
         }
     } while(inputChar != 'q');
 
+#ifdef USE_BIOS
+    return;
+#else
     return retVal;
+#endif /* USE_BIOS */
 }
+#ifdef USE_BIOS
+/*
+ *  ======== main ========
+ */
+Int main()
+{
+    Task_Handle task;
+    Error_Block eb;
+    Task_Params taskParams;
 
+    Board_initCfg boardCfg;
+    Board_STATUS  boardStatus;
+
+    boardCfg = BOARD_INIT_PINMUX_CONFIG
+               | BOARD_INIT_UART_STDIO;
+    boardStatus = Board_init(boardCfg);
+    if (boardStatus != BOARD_SOK)
+    {
+        UART_printf("[Error] Board init failed!!\n");
+        return(-1);
+    }
+
+    Error_init(&eb);
+
+    /* Initialize the task params */
+    Task_Params_init(&taskParams);
+
+    /* Set the task priority higher than the default priority (1) */
+    taskParams.priority = 2;
+    taskParams.stackSize = 0x6000;
+
+    task = Task_create(taskFxn, &taskParams, &eb);
+    if (task == NULL) {
+
+        BIOS_exit(0);
+    }
+        BIOS_start();    /* does not return */
+    return(0);
+}
+#endif /* USE_BIOS */

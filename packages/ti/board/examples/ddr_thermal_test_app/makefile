@@ -3,10 +3,16 @@
 #
 include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 
-APP_NAME = board_ddr_thermal_test_app
 
 ifeq ($(IS_BAREMETAL),yes)
-BUILD_OS_TYPE = baremetal
+APP_NAME = board_baremetal_ddr_thermal_test_app
+else
+APP_NAME = board_ddr_thermal_test_app
+endif
+
+ifeq ($(IS_BAREMETAL),yes)
+BUILD_OS_TYPE       = baremetal
+COMP_LIST_COMMON    = osal_nonos
 else
 BUILD_OS_TYPE = tirtos
 CFLAGS_OS_DEFINES = -DUSE_BIOS
@@ -25,15 +31,15 @@ INCLUDE_EXTERNAL_INTERFACES = pdk $(EXTERNAL_INTERFACES)
 INCLUDE_INTERNAL_INTERFACES =
 
 ifeq ($(CSL_BUILD),$(filter $(CSL_BUILD), CSL))
-  COMP_LIST_COMMON = csl
+  COMP_LIST_COMMON += csl
 else
-  COMP_LIST_COMMON = csl2 csl_trim
+  COMP_LIST_COMMON += csl2 csl_trim
 endif
 
 # List all the components required by the application
 ifeq ($(SOC),$(filter $(SOC), j721e))
 ifeq ($(CORE),$(filter $(CORE), mcu1_0))
-  COMP_LIST_COMMON += csl_init osal_nonos sciclient board uart i2c
+  COMP_LIST_COMMON += csl_init  sciclient board uart i2c
 
 # Enable copy of vectors
   COMP_LIST_COMMON += copyvecs
@@ -44,7 +50,7 @@ endif
 PACKAGE_SRCS_COMMON = .
 SRCS_COMMON = main.c
 
-CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS)
+CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_OS_DEFINES)
 
 # Core/SoC/platform specific source files and CFLAGS
 # Example:
