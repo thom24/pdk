@@ -2181,6 +2181,15 @@ static int32_t Udma_chAllocResource(Udma_ChHandle chHandle)
                 chHandle->fqRing = (Udma_RingHandle) NULL_PTR;
                 Udma_printf(drvHandle, "[Error] FQ ring alloc failed!!!\n");
             }
+            else if(((chHandle->chType & UDMA_CH_FLAG_MAPPED) == UDMA_CH_FLAG_MAPPED) && 
+                    ((chHandle->chType & UDMA_CH_FLAG_RX) == UDMA_CH_FLAG_RX))
+            {
+                /* Assign the default flow start id as the allocated default ring num(without offset) for mapped RX channels.
+                 * This is because the default flow start idx is not equal to rxChNum, 
+                 * since there may be 1 to many mapping between RX Channels and dedicated flows */
+                Udma_assert(drvHandle, chHandle->fqRing->ringNum >= drvHandle->rxChOffset);
+                chHandle->defaultFlow->flowStart    = chHandle->fqRing->ringNum - drvHandle->rxChOffset;
+            }
         }
     }
 
