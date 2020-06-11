@@ -309,14 +309,12 @@ int32_t Ipc_mailboxRegister(uint16_t selfId, uint16_t remoteProcId,
     uint32_t              baseAddr;
     uint32_t              n;
     Ipc_MailboxData      *mbox = NULL;
-#ifndef IPC_EXCLUDE_INTERRUPT_REG
     uintptr_t             key   = 0U;
     Ipc_Object           *pObj  = NULL;
     Ipc_OsalPrms         *pOsal = NULL;
 
     pObj = getIpcObjInst(0U);
     pOsal = &pObj->initPrms.osalPrms;
-#endif
 
     Ipc_getMailboxInfoRx(selfId, remoteProcId,
         &clusterId, &userId, &queueId);
@@ -349,65 +347,65 @@ int32_t Ipc_mailboxRegister(uint16_t selfId, uint16_t remoteProcId,
             mbox->fifoCnt  = 0;
             mbox->userId   = userId;
 
-#ifndef IPC_EXCLUDE_INTERRUPT_REG
-            /* Disable global interrupts */
-            if (NULL != pOsal->disableAllIntr)
+            if (NULL != pOsal->registerIntr)
             {
-                key = pOsal->disableAllIntr();
-            }
+                /* Disable global interrupts */
+                if  (NULL != pOsal->disableAllIntr)
+                {
+                    key = pOsal->disableAllIntr();
+                }
 
-            /* Clear Mailbox cluster queue */
-            Ipc_mailboxClear(baseAddr, queueId);
+                /* Clear Mailbox cluster queue */
+                Ipc_mailboxClear(baseAddr, queueId);
 
-            /* Restore global interrupts */
-            if (NULL != pOsal->restoreAllIntr)
-            {
-                pOsal->restoreAllIntr(key);
-            }
+                /* Restore global interrupts */
+                if (NULL != pOsal->restoreAllIntr)
+                {
+                    pOsal->restoreAllIntr(key);
+                }
 
 #ifdef MAILBOX_INTERRUPT_MODE
-            {
-                Ipc_MbConfig cfg;
+                {
+                    Ipc_MbConfig cfg;
 
-                MailboxClrNewMsgStatus(baseAddr, userId, queueId);
+                    MailboxClrNewMsgStatus(baseAddr, userId, queueId);
 
 #ifdef IPC_SUPPORT_SCICLIENT
-                /* Get the Interrupt Configuration */
-                Ipc_getMailboxIntrRouterCfg(selfId, clusterId, userId, &cfg, g_ipc_mBoxCnt);
+                    /* Get the Interrupt Configuration */
+                    Ipc_getMailboxIntrRouterCfg(selfId, clusterId, userId, &cfg, g_ipc_mBoxCnt);
 
-                {
-                    /* Release the resource first */
-                    retVal = Ipc_sciclientIrqRelease(selfId, clusterId, userId, cfg.eventId);
-
-                    uint32_t timeout_cnt = 10;
-                    do
                     {
-                        retVal = Ipc_sciclientIrqSet(selfId, clusterId, userId, cfg.eventId);
-                        if(retVal != 0)
+                        /* Release the resource first */
+                        retVal = Ipc_sciclientIrqRelease(selfId, clusterId, userId, cfg.eventId);
+
+                        uint32_t timeout_cnt = 10;
+                        do
                         {
-                            SystemP_printf("Failed to register irq through sciclient...%x\n", retVal);
+                            retVal = Ipc_sciclientIrqSet(selfId, clusterId, userId, cfg.eventId);
+                            if(retVal != 0)
+                            {
+                                SystemP_printf("Failed to register irq through sciclient...%x\n", retVal);
+                            }
+                            timeout_cnt--;
+                        }while((retVal != 0) && (timeout_cnt > 0));
+
+                        if(timeout_cnt == 0)
+                        {
+                            retVal = IPC_EFAIL;
                         }
-                        timeout_cnt--;
-                    }while((retVal != 0) && (timeout_cnt > 0));
-
-                    if(timeout_cnt == 0)
-                    {
-                        retVal = IPC_EFAIL;
                     }
-                }
 #endif
-                /* Register Mailbox interrupt now... */
-                if ( (retVal == IPC_SOK) &&
-                     (NULL != pOsal->registerIntr))
-                {
-                    pObj->interruptHandle = pOsal->registerIntr(
-                            &cfg,Ipc_mailboxInternalCallback,
-                            (uintptr_t)mbox);
-                }
+                    /* Register Mailbox interrupt now... */
+                    if (retVal == IPC_SOK)
+                    {
+                        pObj->interruptHandle = pOsal->registerIntr(
+                                &cfg,Ipc_mailboxInternalCallback,
+                                (uintptr_t)mbox);
+                    }
 
-            }
+                }
 #endif /* MAILBOX_INTERRUPT_MODE */
-#endif /* IPC_EXCLUDE_INTERRUPT_REG */
+	    }
 
 #ifndef IPC_EXCLUDE_POLLED_RX
 #ifndef MAILBOX_INTERRUPT_MODE
@@ -439,10 +437,11 @@ int32_t Ipc_mailboxRegister(uint16_t selfId, uint16_t remoteProcId,
                 g_ipc_mBoxCnt);
 #endif
 
-#ifndef IPC_EXCLUDE_INTERRUPT_REG
-        /* enable the mailbox interrupt */
-        Ipc_mailboxEnable(baseAddr, userId, queueId);
-#endif /* IPC_EXCLUDE_INTERRUPT_REG */
+        if (NULL != pOsal->registerIntr)
+        {
+            /* enable the mailbox interrupt */
+            Ipc_mailboxEnable(baseAddr, userId, queueId);
+        }
     }
 
     return retVal;
@@ -466,7 +465,7 @@ void Ipc_mailboxIsr(uint32_t remoteProcId)
 }
 
 /*!
- *  ======== Mailbox_intShmStub ========
+ *  ======== Ipc_mailboxInternalCallback ========
  */
 void Ipc_mailboxInternalCallback(uintptr_t arg)
 {

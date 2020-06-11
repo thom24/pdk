@@ -31,20 +31,8 @@ SRCS_COMMON += ipc_mailbox.c ipc_osal.c ipc_utils.c
 PACKAGE_SRCS_COMMON = ipc.h ipc_component.mk makefile .gitignore include $(SRCDIR)
 PACKAGE_SRCS_COMMON += soc/ipc_soc.h
 PACKAGE_SRCS_COMMON += config_mk.bld ipcver.h
-CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(IPC_CFLAGS)
+CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(IPC_CFLAGS) -DIPC_SUPPORT_SCICLIENT -DIPC_EXCLUDE_POLLED_RX -DMAILBOX_INTERRUPT_MODE
 
-ifeq ($(SOC),$(filter $(SOC), am77xx))
-  CFLAGS_LOCAL_COMMON += -DIPC_SUPPORT_SCICLIENT -DIPC_EXCLUDE_POLLED_RX -DMAILBOX_INTERRUPT_MODE
-endif
-
-ifeq ($(SOC),$(filter $(SOC), j721e j7200))
-  CFLAGS_LOCAL_COMMON += -DIPC_SUPPORT_SCICLIENT -DIPC_EXCLUDE_POLLED_RX -DMAILBOX_INTERRUPT_MODE
-endif
-
-ifeq ($(SOC),$(filter $(SOC), am65xx))
-  CFLAGS_LOCAL_COMMON += -DIPC_SUPPORT_SCICLIENT -DIPC_EXCLUDE_POLLED_RX -DMAILBOX_INTERRUPT_MODE
-endif
- 
 #Temporarily adding it until we have official support of C7x in Bios
 CFLAGS_LOCAL_c7x = -Dxdc_target_name__=C71 -Dxdc_target_types__=ti/targets/elf/nda/std.h
 

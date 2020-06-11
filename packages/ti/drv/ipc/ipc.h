@@ -165,14 +165,33 @@ typedef struct RPMessage_Params_s
 /*                          Function Declarations                             */
 /* ========================================================================== */
 /**
+ *  \brief      Initialize IPC init params
+ *
+ *              Can be called to initialize the #Ipc_initPrms to the default
+ *              values.
+ *
+ *  \param instId [IN] Ipc_InstanceId. Only 1 instance is supported in this
+ *                     implementation. The value shall be 0
+ *
+ *  \param initPrms [IN] Pointer to param structure to be initialized. When
+ *                       building for tirtos environment, it will be filled
+ *                       with tirtos-compatible definitions. When using the
+ *                       ipc_baremetal implementation, it will be filled with
+ *                       baremetal definitions.
+ *
+ *  \return      #IPC_SOK or #IPC_EINVALID_PARAMS or #IPC_EFAIL
+ */
+void IpcInitPrms_init(uint32_t instId, Ipc_InitPrms *initPrms);
+
+/**
  *  \brief      Initialize IPC module
  *
  *              Very first API to be invoked to initialize internal data
  *              structure and utilities required.
  *
- *  \param cfg [IN] Initialization parameters. Expected to be NULL in case of
- *              expected use in tirtos environment and non-null in case of
- *              baremetal
+ *  \param cfg [IN] Initialization parameters. May be NULL in order to use
+ *                  the module default implementation. May be non-NULL in
+ *                  order to use user-specified implementation.
  *
  *  \return      #IPC_SOK or #IPC_EINVALID_PARAMS or #IPC_EFAIL
  */

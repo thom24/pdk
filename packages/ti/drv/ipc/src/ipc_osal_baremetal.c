@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018
+ *  Copyright (c) Texas Instruments Incorporated 2020
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -32,9 +32,9 @@
  */
 
 /**
- *  \file ipc_osal.c
+ *  \file ipc_osal_baremetal.c
  *
- *  \brief Implementation of ipc sysbios osal
+ *  \brief Implementation of ipc baremetal osal
  *
  */
 
@@ -43,57 +43,47 @@
 /* ========================================================================== */
 #include "ipc_osal.h"
 
-/* Calling SysBios header file directly, need to move to OSAL */
-#include <ti/sysbios/gates/GateSwi.h>
-#include <xdc/runtime/System.h>
-
-#include <ti/osal/SwiP.h>
-
 #include <ti/drv/ipc/ipc.h>
 #include <ti/drv/ipc/soc/ipc_soc.h>
 #include <ti/drv/ipc/include/ipc_types.h>
 
-#include <stdio.h>
 
 /* GateSwi related */
 static void *Ipc_osalHIsrGateCreate(void)
 {
-    GateSwi_Params   gatePrms;
-    GateSwi_Params_init(&gatePrms);
-    return (void *) GateSwi_create(&gatePrms, NULL);
+    /* Nothing required here because interrupt locking is sufficient. */
+    return (void *) 1U;
 }
 
 static void Ipc_osalHIsrGateDelete(Ipc_OsalHIsrGateHandle *handle)
 {
-    GateSwi_delete((GateSwi_Handle *)handle);
+    /* Nothing required here because interrupt locking is sufficient. */
+    return;
 }
 
 static int32_t Ipc_osalHIsrGateEnter(Ipc_OsalHIsrGateHandle handle)
 {
-    return (int32_t)GateSwi_enter((GateSwi_Handle)handle);
+    return (int32_t)HwiP_disable();
 }
 
 static void Ipc_osalHIsrGateExit(Ipc_OsalHIsrGateHandle handle, int32_t key)
 {
-    GateSwi_leave((GateSwi_Handle)handle, (IArg)key);
+    HwiP_restore((uintptr_t)key);
+    return;
 }
 
 static int32_t Ipc_osalHIsrCreate(Ipc_OsalHIsrHandle *handle,
                                     Ipc_OsalHIsrFxn fxn, void *arg)
 {
-    SwiP_Params       params;
     int32_t rtnVal = IPC_EBADARGS;
 
     if ((NULL != handle) && ((NULL != fxn) && (NULL != arg)))
     {
-        SwiP_Params_init(&params);
-        params.arg0     = (uintptr_t) arg;
-
-        handle->arg0    = (uintptr_t)NULL;
+        handle->arg0    = (uintptr_t)arg;
         handle->arg1    = (uintptr_t)NULL;
-        handle->hIsrFxn = NULL;
-        handle->hLosHisrHandle = (void *)SwiP_create((SwiP_Fxn)fxn,
-                                                        &params);
+        handle->hIsrFxn = fxn;
+        handle->hLosHisrHandle = NULL;
+
         rtnVal = IPC_SOK;
     }
 
@@ -104,7 +94,10 @@ static void Ipc_osalHIsrDelete(Ipc_OsalHIsrHandle *handle)
 {
     if (NULL != handle)
     {
-        SwiP_delete((SwiP_Handle *)handle->hLosHisrHandle);
+        handle->arg0    = (uintptr_t)NULL;
+        handle->arg1    = (uintptr_t)NULL;
+        handle->hIsrFxn = NULL;
+        handle->hLosHisrHandle = NULL;
     }
 }
 
@@ -114,7 +107,7 @@ static int32_t Ipc_osalHIsrPost(Ipc_OsalHIsrHandle *handle)
 
     if (NULL != handle)
     {
-        SwiP_post((SwiP_Handle)handle->hLosHisrHandle);
+        handle->hIsrFxn(handle->arg0, (uintptr_t)NULL);
         rtnVal = IPC_SOK;
     }
     return (rtnVal);
@@ -122,11 +115,8 @@ static int32_t Ipc_osalHIsrPost(Ipc_OsalHIsrHandle *handle)
 
 int32_t SystemP_printf(const char* fmt, ...)
 {
-    int32_t ret;
-    va_list args;
-    va_start(args, fmt);
-    ret = System_vprintf(fmt, args);
-    va_end(args);
+    int32_t ret = 0U;
+
     return ret;
 }
 
@@ -234,6 +224,7 @@ static void Ipc_osalMutexUnlock(void *mutexHandle)
 {
     SemaphoreP_post((SemaphoreP_Handle) mutexHandle);
 }
+
 
 void IpcOsalPrms_init (Ipc_OsalPrms *initPrms)
 {

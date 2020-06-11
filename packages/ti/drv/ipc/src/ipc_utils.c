@@ -304,17 +304,6 @@ void IpcUtils_HeapFree(IpcUtils_HeapHandle *pHndl, void* block, uint32_t size)
     return;
 }
 
-#ifdef IPC_EXCLUDE_CTRL_TASKS
-/* Fix Me : Move it from here */
-int32_t SystemP_printf(const char* fmt, ...)
-{
-    int32_t ret = 0U;
-
-    return ret;
-}
-#endif
-
-
 /* ========================================================================== */
 /*                          Local Functions                                   */
 /* ========================================================================== */

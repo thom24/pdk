@@ -48,7 +48,7 @@ extern "C" {
 
 #define IPC_TRACE_BUFFER_MAX_SIZE     (0x80000)
 
-void Ipc_Trace_printf(const char *format, ...);
+int32_t Ipc_Trace_printf(const char *format, ...);
 
 extern char Ipc_traceBuffer[IPC_TRACE_BUFFER_MAX_SIZE];
 

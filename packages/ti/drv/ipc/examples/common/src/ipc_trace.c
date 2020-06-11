@@ -53,7 +53,7 @@ char Ipc_traceBuffer[IPC_TRACE_BUFFER_MAX_SIZE];
 
 static uint32_t gTraceBufIndex = 0U;
 
-void Ipc_Trace_printf(const char *format, ...)
+int32_t Ipc_Trace_printf(const char *format, ...)
 {
     char buffer[IPC_TRACE_MAX_LINE_LENGTH];
     va_list args;
@@ -67,9 +67,9 @@ void Ipc_Trace_printf(const char *format, ...)
     {
         Ipc_traceBuffer[gTraceBufIndex++] = buffer[i];
 
-        /* Last 8 bytes are used for writeIdx/readIdx fields */
-        if (gTraceBufIndex == IPC_TRACE_BUFFER_MAX_SIZE - 8) {
+        if (gTraceBufIndex == IPC_TRACE_BUFFER_MAX_SIZE) {
             gTraceBufIndex = 0;
         }
     }
+    return 0;
 }
