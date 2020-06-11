@@ -79,11 +79,11 @@ SDR_ECC_UTILS_configSecIntr:
     PUSH {r4-r6}
     MOV r6, lr
     BL _enable_pmu_cntrs
-    LDR r4, SDR_ECCUTILS_PMCINTSET_COUNT_ENABLE_VALUE   ; Enable cycle counter and counter 0
-    MCR p15, #0, r4, c9, c12, #1         ; Count Enable Set Register, PMCNTENSET enabling counter 0
+    LDR r4, SDR_ECCUTILS_PMCINTSET_COUNT_ENABLE_VALUE   ; Enable cycle counter and counter 1
+    MCR p15, #0, r4, c9, c12, #1         ; Count Enable Set Register, PMCNTENSET enabling counter 1
     MCR p15, #0, r4, c9, c14, #1         ; Interrupt Enable Set Register, PMINTENSET
     MOV r4, r2
-    MCR p15, #0, r4, c9, c12, #5         ; Event Counter Selection Register, PMSELR, Event counter 0 is selected
+    MCR p15, #0, r4, c9, c12, #5         ; Event Counter Selection Register, PMSELR, Event counter 1 is selected
     MCR p15, #0, r0, c9, c13, #2         ; Event Count Register, PMXEVCNTR, Set inital count value to 0xFFFFFFF0
     MOV r4, r1                           ; get event type from parameters
     MCR p15, #0, r4, c9, c13, #1         ; Event Type Select Register, PMXEVTYPER Count event in secured/non-secured USER/PRIVILEGED, Event number 0x4D

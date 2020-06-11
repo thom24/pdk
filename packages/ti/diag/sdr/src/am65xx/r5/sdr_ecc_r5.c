@@ -140,7 +140,7 @@ uint32_t SDR_ECC_pollErrorEvent(SDR_ECC_MemType eccMemType,
                     case SDR_ECC_R5F_MEM_SUBTYPE_ATCM0_BANK1_VECTOR_ID:
                         /* Check PMOVSR register */
                         regValue =  SDR_UTILS_getPMOVSR();
-                        if(regValue == (1u <<SDR_ECC_R5_MONITOR_PMU_NUMBER)) {
+                        if(regValue & (1u <<SDR_ECC_R5_MONITOR_PMU_NUMBER)) {
                             /* Check CFLR register */
                             regValue = SDR_UTILS_getCFLR();
                             if((regValue & SDR_ECC_R5_CFLR_ATCM_DATA_ERROR_MASK)
@@ -156,7 +156,7 @@ uint32_t SDR_ECC_pollErrorEvent(SDR_ECC_MemType eccMemType,
                     case SDR_ECC_R5F_MEM_SUBTYPE_B1TCM0_BANK1_VECTOR_ID:
                         /* Check PMOVSR register */
                         regValue =  SDR_UTILS_getPMOVSR();
-                        if(regValue == (1u <<SDR_ECC_R5_MONITOR_PMU_NUMBER)) {
+                        if(regValue & (1u <<SDR_ECC_R5_MONITOR_PMU_NUMBER)) {
                             /* Check CFLR register */
                             regValue = SDR_UTILS_getCFLR();
                             if( (regValue & SDR_ECC_R5_CFLR_BTCM_DATA_ERROR_MASK)
