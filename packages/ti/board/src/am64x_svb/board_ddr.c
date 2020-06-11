@@ -49,7 +49,6 @@ static LPDDR4_PrivateData gBoardDdrPd;
 /* Local function prototypes */
 static int32_t emif_ConfigureECC(void);
 
-#define VLAB_SIM
 #ifndef VLAB_SIM
 /**
  * \brief   Set DDR PLL to bypass, efectively 20MHz or 19.2MHz (on silicon).
