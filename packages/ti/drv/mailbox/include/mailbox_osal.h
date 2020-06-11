@@ -31,6 +31,15 @@
  */
 
 /**
+ *  \ingroup DRV_MAILBOX_MODULE
+ *  \defgroup DRV_MAILBOX_OSAL_MODULE MAILBOX Driver OSAL API
+ *            This is MAILBOX driver OSAL related configuration parameters and
+ *            API
+ *
+ *  @{
+ */
+
+/**
  *  \file mailbox_osal.h
  *
  *  \brief Mailbox Osal definitions
@@ -54,9 +63,6 @@ extern "C" {
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
-
-/** @addtogroup MAILBOX_DRIVER_INTERNAL_DATA_STRUCTURE
- @{ */
 
 /**
  *  \brief Mailbox OSAL interrupt disable function prototype.
@@ -182,19 +188,27 @@ typedef struct Mbox_OsalPrms_s
 /*                          Function Declarations                             */
 /* ========================================================================== */
 
+/*
+ * Structure Init functions
+ */
+/**
+ *  \brief Mbox_OsalPrms structure init function.
+ *
+ *  \param osalPrms     [IN] Pointer to #Mbox_OsalPrms structure.
+ *
+ */
 void MboxOsalPrms_init (Mbox_OsalPrms *osalPrms);
 
 /* ========================================================================== */
 /*                       Static Function Definition                           */
 /* ========================================================================== */
 
-
-/**
-@}
-*/
+/* None */
 
 #ifdef __cplusplus
 }
 #endif
 
 #endif /* MAILBOX_OSAL_H_ */
+
+/* @} */
