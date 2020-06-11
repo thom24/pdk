@@ -627,23 +627,38 @@ Board_STATUS Board_moduleClockInit(void)
     Board_STATUS  status = BOARD_SOK;
     uint32_t index;
     uint32_t loopCount;
+    int32_t  ret;
+    uint64_t cpuClkFreq, cpuModuleId, cpuClockId;
 
-#if defined(__TI_ARM_V7R4__)
-    int32_t      ret;
-    uint64_t     mcuClkFreq;
-#if 0
-    ret = Sciclient_pmGetModuleClkFreq(TISCI_DEV_MCU_ARMSS0_CPU0,
-                                       TISCI_DEV_MCU_ARMSS0_CPU0_BUS_CPU_CLK,
-                                       &mcuClkFreq,
+#ifdef BUILD_M4F_0
+    cpuModuleId = TISCI_DEV_MCU_M4FSS0_CORE0;
+    cpuClockId = TISCI_DEV_MCU_M4FSS0_CORE0_DAP_CLK;
+#endif
+#ifdef BUILD_MCU1_0
+    cpuModuleId = TISCI_DEV_R5FSS0_CORE0;
+    cpuClockId = TISCI_DEV_R5FSS0_CORE0_CPU_CLK;
+#endif
+#ifdef BUILD_MCU1_1
+    cpuModuleId = TISCI_DEV_R5FSS0_CORE1;
+    cpuClockId = TISCI_DEV_R5FSS0_CORE1_CPU_CLK;
+#endif
+#ifdef BUILD_MCU2_0
+    cpuModuleId = TISCI_DEV_R5FSS1_CORE0;
+    cpuClockId = TISCI_DEV_R5FSS1_CORE0_CPU_CLK;
+#endif
+#ifdef BUILD_MCU2_1
+    cpuModuleId = TISCI_DEV_R5FSS1_CORE1;
+    cpuClockId = TISCI_DEV_R5FSS1_CORE1_CPU_CLK;
+#endif
+#ifdef BUILD_MPU
+    cpuModuleId = TISCI_DEV_A53SS0_CORE_0;
+    cpuClockId = TISCI_DEV_A53SS0_CORE_0_A53_CORE0_ARM_CLK_CLK;
+#endif
+    ret = Sciclient_pmGetModuleClkFreq(cpuModuleId,
+                                       cpuClockId,
+                                       &cpuClkFreq,
                                        SCICLIENT_SERVICE_WAIT_FOREVER);
-#else
-    /* 
-     * Temporary hard-code R5 core clock to 800 MHz (default on Zebu)
-     * until Sciclent PM is supported
-     */
-    mcuClkFreq = 800000000U;
-    ret = 0U;
-#endif /* defined(__TI_ARM_V7R4__) */
+
     if(ret == 0)
     {
         Osal_HwAttrs  hwAttrs;
@@ -656,7 +671,7 @@ Board_STATUS Board_moduleClockInit(void)
              * Change the timer input clock frequency configuration
                based on R5 CPU clock configured
              */
-            hwAttrs.cpuFreqKHz = (int32_t)(mcuClkFreq/1000U);
+            hwAttrs.cpuFreqKHz = (int32_t)(cpuClkFreq/1000U);
             ctrlBitmap         = OSAL_HWATTR_SET_CPU_FREQ;
             ret = Osal_setHwAttrs(ctrlBitmap, &hwAttrs);
         }
@@ -665,7 +680,7 @@ Board_STATUS Board_moduleClockInit(void)
     {
         status = BOARD_INIT_CLOCK_FAIL;
     }
-#endif 
+
 #ifdef ENABLE_PSC_REG_ACCESS   
 #ifdef VLAB_SIM
 #ifdef BUILD_MPU
