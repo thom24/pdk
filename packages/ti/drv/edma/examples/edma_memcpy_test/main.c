@@ -84,6 +84,7 @@
 #endif
 #endif
 
+#include <ti/csl/soc.h>
 #include "ti/osal/osal.h"
 #include "ti/osal/CycleprofilerP.h"
 
@@ -158,48 +159,13 @@
 #define TEST_BUF_LENGTH (TEST_MAX_A_COUNT * TEST_MAX_B_COUNT * TEST_MAX_C_COUNT)
 
 #ifdef SOC_TPR12
-/* TODO_TPR12 : Translation to move to soc */
- #ifdef BUILD_DSP_1
-  #define ADDR_TRANSLATE_CPU_TO_EDMA(x)         (0x80000000 | x)
- #endif
- #ifdef BUILD_MCU
-    /* Local
-    #define TCMA_RAM_CR5A_U_BASE                (CRED_BASE_OFFSET + 0x20000ul)
-    #define TCMB_CR5A_U_BASE                    (CRED_BASE_OFFSET + 0x80000ul
-    */
-
-    /* Global
-    #define MSS_L2_U_BASE                       (CRED_BASE_OFFSET + 0xC0200000ul)
-    #define MSS_TCMA_CR5A_U_BASE                (CRED_BASE_OFFSET + 0xC1000000ul)
-    #define MSS_TCMB_CR5A_U_BASE                (CRED_BASE_OFFSET + 0xC1800000ul)
-
-    However the TCMA global address is corresponding to local address 0, not 0x20000
-    So the TCMA translation is 0xC1000000 | x
-    The TCMB translation is 0xC1000000 | (x << 4)
-    */
-    uint32_t SOC_translateAddressTPR12_MSS(uint32_t x)
-    {
-        if ((x) < 0x80000ul)
-        {
-            return(0xC1000000ul | (x));
-        }
-        else
-        {
-            if ((x) < (0x80000ul + 0x4000ul))
-            {
-                return(0xC1000000ul | ((x) << 4ul));
-            }
-            else
-            {
-                return(x);
-            }
-        }
-    }
-
-#define ADDR_TRANSLATE_CPU_TO_EDMA(x)           SOC_translateAddressTPR12_MSS(x)
-
-#endif
+uint32_t SOC_translateAddressTPR12(uint32_t x)
+{
+    return((uint32_t)CSL_locToGlobAddr((uintptr_t)(x)));
+}
+#define ADDR_TRANSLATE_CPU_TO_EDMA(x)           SOC_translateAddressTPR12(x)
 #else
+/* TBD: only TPR12 is supported for now */
 #define ADDR_TRANSLATE_CPU_TO_EDMA(x)           SOC_translateAddress(x,SOC_TranslateAddr_Dir_TO_EDMA,NULL)
 #endif
 
@@ -307,22 +273,30 @@ typedef struct testLinkedChannelsConfig_t_
 /* ========================================================================== */
 /*                            Global Variables                                */
 /* ========================================================================== */
+#define TF_CACHE_LINESZ    (128U)
+#define TF_ROUND_UP(x, y)   (((x) + ((y)-1))/(y)*(y))
 
 /**
  * @brief
  *  Initialize the MCPI Log Message Buffer
  */
 #pragma DATA_SECTION(testSrcBuf, ".l3ram");
-uint8_t testSrcBuf[TEST_MAX_NUM_SIMULTANEOUS_CHANNELS]
-                  [TEST_BUF_LENGTH];
-
-#ifdef BUILD_DSP_1
 #pragma DATA_SECTION(testDstBuf, ".l2ram");
-#else
-#pragma DATA_SECTION(testDstBuf, ".l3ram");
-#endif
+
+#if (defined(_TMS320C6X) || defined (__TI_ARM_V7M4__))
+#pragma DATA_ALIGN (testSrcBuf, TF_CACHE_LINESZ)
+#pragma DATA_ALIGN (testDstBuf, TF_CACHE_LINESZ)
+uint8_t testSrcBuf[TEST_MAX_NUM_SIMULTANEOUS_CHANNELS]
+                  [TF_ROUND_UP(TEST_BUF_LENGTH, TF_CACHE_LINESZ)];
 uint8_t testDstBuf[TEST_MAX_NUM_SIMULTANEOUS_CHANNELS]
-                  [TEST_BUF_LENGTH];
+                  [TF_ROUND_UP(TEST_BUF_LENGTH, TF_CACHE_LINESZ)];
+
+#else
+uint8_t testSrcBuf[TEST_MAX_NUM_SIMULTANEOUS_CHANNELS]
+                  [TF_ROUND_UP(TEST_BUF_LENGTH, TF_CACHE_LINESZ)]   __attribute__ ((aligned (TF_CACHE_LINESZ)));
+uint8_t testDstBuf[TEST_MAX_NUM_SIMULTANEOUS_CHANNELS]
+                  [TF_ROUND_UP(TEST_BUF_LENGTH, TF_CACHE_LINESZ)]   __attribute__ ((aligned (TF_CACHE_LINESZ)));
+#endif
 
 EDMA_Handle testEdmaHandle;
 volatile int8_t gInstanceId;
