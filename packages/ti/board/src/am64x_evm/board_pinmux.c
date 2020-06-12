@@ -58,6 +58,8 @@
 #define MAIN_UART1_CTSn 0x0248
 #define MAIN_UART1_RTSn 0x024c
 
+#define MAIN_SPI0_CS0   0x0208U
+
 void Board_uartPinmxCfg()
 {
     volatile uint32_t *addr = (volatile uint32_t *)(MAIN_CTRL_PINCFG_BASE + MAIN_UART0_RXD);
@@ -87,6 +89,25 @@ void Board_ospiPinmxCfg()
     }
 }
 
+void Board_spiPinmxCfg()
+{
+    volatile uint32_t *addr = (volatile uint32_t *)(MAIN_CTRL_PINCFG_BASE + MAIN_SPI0_CS0);
+    uint32_t spiData[5] =
+    {
+        PIN_MODE(0) | ((~PIN_PULL_DISABLE) & (PIN_PULL_DIRECTION & ~PIN_INPUT_ENABLE)), /* SPI0_CS0 */
+        PIN_MODE(0) | ((~PIN_PULL_DISABLE) & (PIN_PULL_DIRECTION & ~PIN_INPUT_ENABLE)), /* SPI0_CS1 */
+        PIN_MODE(0) | ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION)),  /* SPI0_CLK */
+        PIN_MODE(0) | ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION)),  /* SPI0_D0 */
+        PIN_MODE(0) | ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))   /* SPI0_D1 */
+     };
+    uint32_t i;
+
+    for (i = 0; i < 5; i++)
+    {
+        *addr++ = spiData[i];
+    }
+}
+
 #endif  /* #ifdef VLAB_SIM */
 #endif  /* #ifndef BUILD_M4F */
 
@@ -113,6 +134,7 @@ Board_STATUS Board_pinmuxConfig (void)
 
     Board_uartPinmxCfg();
     Board_ospiPinmxCfg();
+    Board_spiPinmxCfg();
 
 #if VLAB_TEST_ONLY
    /* Lock partition lock kick */
