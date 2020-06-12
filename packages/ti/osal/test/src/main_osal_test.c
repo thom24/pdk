@@ -1591,7 +1591,10 @@ int main(void)
 #endif
 
     Board_initOSAL();
+
+#ifdef BUILD_M4F    
     OSAL_log("\n M4 test \n");
+#endif
 
 #ifdef BARE_METAL
     osal_test();

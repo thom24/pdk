@@ -45,9 +45,7 @@ MEMORY
     SYSFW_RSVD_1 (X)      : origin=0x71C00000 length=0x20000 
     SYSFW_RSVD_2 (X)      : origin=0x71E00000 length=0x20000 
 
-    RESET_VECTORS_DDR0 (X)  : origin=0x80000000 length=0x100
-    VECTORS_DDR0 (X)        : origin=0x80000100 length=0x1000
-    DDR0    (RWIX)          : origin=0x80001100 length=0x80000000 - 0x1100      /* ~2GB */
+    DDR0    (RWIX)          : origin=0x80000000 length=0x80000000  /* 2GB */
 }
 
 /* Section Configuration */
