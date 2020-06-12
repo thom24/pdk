@@ -20,7 +20,7 @@ SRCS_COMMON += main_am65xx.c nimu_osal.c
 
 # Enable copy of vectors
 ifeq ($(ISA),$(filter $(ISA), r5f))
-  COMP_LIST_COMMON += copyvecs
+  COMP_LIST_COMMON = copyvecs
 endif
 
 # List all the external components/interfaces, whose interface header files
@@ -28,7 +28,7 @@ endif
 INCLUDE_EXTERNAL_INTERFACES = bios xdc ndk pdk
 
 # List all the components required by the application
-COMP_LIST_COMMON = emac uart uart_console osal_tirtos csl board nimu udma sciclient
+COMP_LIST_COMMON += emac uart uart_console osal_tirtos csl board nimu udma sciclient
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) -DNDK_NOUSERAPIS -DNIMU_APP_CPSW
 

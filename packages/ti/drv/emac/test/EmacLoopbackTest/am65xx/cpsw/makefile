@@ -22,7 +22,7 @@ SRCS_COMMON += main_am65xx.c test_utils_k3.c unity_config.c unity.c
 
 # Enable copy of vectors
 ifeq ($(ISA),$(filter $(ISA), r5f))
-  COMP_LIST_COMMON += copyvecs
+  COMP_LIST_COMMON = copyvecs
 endif
 
 # List all the external components/interfaces, whose interface header files
@@ -30,7 +30,7 @@ endif
 INCLUDE_EXTERNAL_INTERFACES = bios xdc pdk
 
 # List all the components required by the application
-COMP_LIST_COMMON = emac uart uart_console osal_tirtos csl board udma sciclient
+COMP_LIST_COMMON += emac uart uart_console osal_tirtos csl board udma sciclient
 
 
 ifeq ($(CORE),$(filter $(CORE), mpu1_0))
