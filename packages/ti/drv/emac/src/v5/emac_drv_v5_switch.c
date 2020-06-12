@@ -263,26 +263,39 @@ static EMAC_DRV_ERR_E emac_send_v5_icssg_switch(uint32_t portNum, EMAC_PKT_DESC_
 {
     EMAC_DRV_ERR_E retVal = EMAC_DRV_RESULT_OK;
     EMAC_CPPI_DESC_T *pCppiDesc = NULL;
+    uint32_t emacTxChPortNum;
 
-    if (pDesc->PktChannel > (EMAC_TX_MAX_CHANNELS_PER_PORT -1))
+    if (pDesc->PktChannel > (EMAC_TX_MAX_CHANNELS_PER_SWITCH -1))
     {
         UTILS_trace(UTIL_TRACE_LEVEL_ERR,emac_mcb.drv_trace_cb,"port: %d: TX channel number invalid during emac_send: %d",portNum);
         retVal = EMAC_DRV_RESULT_ERR_INVALID_CHANNEL;
     }
     else
     {
-        emac_get_hw_cppi_tx_desc(portNum, pDesc->PktChannel, &pCppiDesc);
+        emacTxChPortNum = emac_port_info[portNum].portNum1;;
+        /* if the PktChannel is greater than EMAC_TX_MAX_CHANNELS_PER_PORT, then use slice 1 udma resources */
+        if (pDesc->PktChannel >= EMAC_TX_MAX_CHANNELS_PER_PORT)
+        {
+            emacTxChPortNum +=1U;
+            pDesc->PktChannel -= EMAC_TX_MAX_CHANNELS_PER_PORT;
+        }
+        emac_get_hw_cppi_tx_desc(emacTxChPortNum, pDesc->PktChannel, &pCppiDesc);
+
         if (pCppiDesc != NULL)
         {
             /* bits 0-7: specify the port number to direct the packet out, DstTag Low */
             /* bits 8-15: specify the tx port queue to use, DstTag High */
             pCppiDesc->hostDesc.srcDstTag = 0;
             pCppiDesc->hostDesc.srcDstTag = pDesc->TxPktTc <<8;
-            if ((portNum == EMAC_ICSSG0_SWITCH_PORT1) || (portNum == EMAC_ICSSG1_SWITCH_PORT1) || (portNum == EMAC_ICSSG2_SWITCH_PORT1))
+            if ((portNum == EMAC_ICSSG0_SWITCH_PORT1) ||
+                (portNum == EMAC_ICSSG1_SWITCH_PORT1) ||
+                (portNum == EMAC_ICSSG2_SWITCH_PORT1))
             {
                 pCppiDesc->hostDesc.srcDstTag |= 1;
             }
-            else if ((portNum == EMAC_ICSSG0_SWITCH_PORT2) || (portNum == EMAC_ICSSG1_SWITCH_PORT2) || (portNum == EMAC_ICSSG2_SWITCH_PORT2))
+            else if ((portNum == EMAC_ICSSG0_SWITCH_PORT2) ||
+                     (portNum == EMAC_ICSSG1_SWITCH_PORT2) ||
+                     (portNum == EMAC_ICSSG2_SWITCH_PORT2))
             {
                 pCppiDesc->hostDesc.srcDstTag |= 2;
             }
@@ -297,7 +310,7 @@ static EMAC_DRV_ERR_E emac_send_v5_icssg_switch(uint32_t portNum, EMAC_PKT_DESC_
                 pCppiDesc->psinfo[1] = 0x80000000; /*tx_ts_request */
             }
 
-            retVal = EMAC_send_v5_common(portNum, pDesc, pCppiDesc);
+            retVal = EMAC_send_v5_common(emacTxChPortNum, pDesc, pCppiDesc);
         }
         else
         {

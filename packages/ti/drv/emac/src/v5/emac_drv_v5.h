@@ -56,7 +56,12 @@ extern "C" {
 
 #define EMAC_MAX_NUM_TX_BUFF_POOL_SIZE ((uint32_t)16U)
 #define EMAC_MAC_PORTS_PER_ICSS     ((uint32_t)2U)
-#define EMAC_MAX_ICSS               ((uint32_t)3U)
+#if defined (SOC_AM65XX)
+#define EMAC_MAX_ICSS                   ((uint32_t)3U)
+#else
+#define EMAC_MAX_ICSS                   ((uint32_t)2U)
+#endif
+#define EMAC_MAX_ICSSG_INSTANCES        EMAC_MAX_ICSS
 #define EMAC_MAX_CPSW               ((uint32_t)1U)
 #define EMAC_MAX_PORTS              ((EMAC_MAX_ICSS)*(EMAC_MAC_PORTS_PER_ICSS) +\
                                     (EMAC_MAX_CPSW))
@@ -71,6 +76,7 @@ extern "C" {
 #define EMAC_MAX_FREE_RINGS_PER_SUBCHAN ((uint32_t)9U)
 #define EMAC_MAX_RX_SUBCHAN_PER_CHAN ((uint32_t)16U)
 #define EMAC_TX_MAX_CHANNELS_PER_PORT ((uint32_t)4U)
+#define EMAC_TX_MAX_CHANNELS_PER_SWITCH ((uint32_t)8U)
 
 #define EMAC_AM65XX_PG1_0_VERSION (0x0BB5A02FU)
 
@@ -87,25 +93,22 @@ extern const EMAC_FxnTable EMAC_FxnTable_v5;
 #define EMAC_ICSSG2_PORT0 ((uint32_t)4U)
 #define EMAC_ICSSG2_PORT1 ((uint32_t)5U)
 #define EMAC_CPSW_PORT1 ((uint32_t)6U)
-#define EMAC_CPSW_PORT2 ((uint32_t)7U)              /* will need this for am64xx, place-holder */
 
-#define EMAC_ICSSG0_SWITCH_PORT  ((uint32_t)8U)     /* for emac open/close/certain IOCTL's, flooded packet */
-#define EMAC_ICSSG0_SWITCH_PORT0 ((uint32_t)9U)     /* host port for certain IOCTL's */
-#define EMAC_ICSSG0_SWITCH_PORT1 ((uint32_t)10U)    /* for directed send, stats, for certain IOCTL's */
-#define EMAC_ICSSG0_SWITCH_PORT2 ((uint32_t)11U)    /* for directed send, stats, for certain IOCTL's */
+#define EMAC_ICSSG0_SWITCH_PORT  ((uint32_t)7U)     /* for emac open/close/certain IOCTL's, flooded packet */
+#define EMAC_ICSSG0_SWITCH_PORT0 ((uint32_t)8U)     /* host port for certain IOCTL's */
+#define EMAC_ICSSG0_SWITCH_PORT1 ((uint32_t)9U)    /* for directed send, stats, for certain IOCTL's */
+#define EMAC_ICSSG0_SWITCH_PORT2 ((uint32_t)10U)    /* for directed send, stats, for certain IOCTL's */
 
-#define EMAC_ICSSG1_SWITCH_PORT ((uint32_t)12U)      /* for emac open/close/certain IOCTL's, flooded packet */
-#define EMAC_ICSSG1_SWITCH_PORT0 ((uint32_t)13U)     /* host port for certain IOCTL's */
-#define EMAC_ICSSG1_SWITCH_PORT1 ((uint32_t)14U)    /* for directed send, stats, for certain IOCTL's */
-#define EMAC_ICSSG1_SWITCH_PORT2 ((uint32_t)15U)    /* for directed send, stats, for certain IOCTL's */
+#define EMAC_ICSSG1_SWITCH_PORT ((uint32_t)11U)      /* for emac open/close/certain IOCTL's, flooded packet */
+#define EMAC_ICSSG1_SWITCH_PORT0 ((uint32_t)12U)     /* host port for certain IOCTL's */
+#define EMAC_ICSSG1_SWITCH_PORT1 ((uint32_t)13U)    /* for directed send, stats, for certain IOCTL's */
+#define EMAC_ICSSG1_SWITCH_PORT2 ((uint32_t)14U)    /* for directed send, stats, for certain IOCTL's */
 
-#define EMAC_ICSSG2_SWITCH_PORT ((uint32_t)16U)      /* for emac open/close/certain IOCTL's, flooded packet */
-#define EMAC_ICSSG2_SWITCH_PORT0 ((uint32_t)17U)     /* host port for certain IOCTL's */
-#define EMAC_ICSSG2_SWITCH_PORT1 ((uint32_t)18U)    /* for directed send, stats, for certain IOCTL's */
-#define EMAC_ICSSG2_SWITCH_PORT2 ((uint32_t)19U)    /* for directed send, stats, for certain IOCTL's */
-#define EMAC_PORT_MAX            ((uint32_t)20U)    /* for directed send, stats, for certain IOCTL's */
-
-#define EMAC_MAX_ICSSG_INSTANCES ((uint32_t)3U)
+#define EMAC_ICSSG2_SWITCH_PORT ((uint32_t)15U)      /* for emac open/close/certain IOCTL's, flooded packet */
+#define EMAC_ICSSG2_SWITCH_PORT0 ((uint32_t)16U)     /* host port for certain IOCTL's */
+#define EMAC_ICSSG2_SWITCH_PORT1 ((uint32_t)17U)    /* for directed send, stats, for certain IOCTL's */
+#define EMAC_ICSSG2_SWITCH_PORT2 ((uint32_t)18U)    /* for directed send, stats, for certain IOCTL's */
+#define EMAC_PORT_MAX            ((uint32_t)19U)    /* for directed send, stats, for certain IOCTL's */
 
 /* Compatibility defines for code base using Interposer card specific macros */
 #define EMAC_SWITCH_PORT0 EMAC_ICSSG0_SWITCH_PORT0  // host port
@@ -490,25 +493,19 @@ typedef struct EMAC_IOCTL_CB_V5_S
     bool                ioctlInProgress;
 } EMAC_IOCTL_CB_V5_T;
 
-
-/* emac port tpe macros */
-#define EMAC_PORT_TYPE_CPSW ((uint32_t)0U)
-#define EMAC_PORT_TYPE_ICSSG_DUAL_MAC ((uint32_t)1U)
-#define EMAC_PORT_TYPE_ICSSG_SWITCH  ((uint32_t)2U)
-
 /* icssg instance macros */
 #define EMAC_ICSSG0_INSTANCE ((uint32_t)0U)
 #define EMAC_ICSSG1_INSTANCE ((uint32_t)1U)
 #define EMAC_ICSSG2_INSTANCE ((uint32_t)2U)
 
 typedef struct EMAC_PORT_INFO_S {
-    int32_t type;
     int32_t icssgInst;
-    int32_t num_ports;
+    int32_t swithPortNum;
     int32_t portNum1;
     int32_t portNum2;
     int32_t pollPortNum;
     int32_t ioctlPortNum;
+    int32_t sendPortNum;
     const EMAC_FxnTable *fxnTable;
 } EMAC_PORT_INFO_T;
 
