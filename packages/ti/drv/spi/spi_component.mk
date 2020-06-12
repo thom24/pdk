@@ -69,7 +69,7 @@ ifeq ($(spi_component_make_include), )
 drvspi_BOARDLIST       = am65xx_evm am65xx_idk j721e_sim j721e_evm j7200_evm am64x_evm
 drvspi_SOCLIST         = tda2xx tda2px tda2ex tda3xx dra72x dra75x dra78x am574x am572x am571x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j7200 am64x tpr12
 drvspi_SOCLISTLIM      = tda2xx tda2px tda2ex tda3xx dra72x dra75x dra78x am574x am572x am571x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx am64x
-drvspi_dma_SOCLIST     = tda2xx tda2px tda2ex tda3xx dra72x dra75x dra78x am574x am572x am571x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j7200 tpr12
+drvspi_dma_SOCLIST     = tda2xx tda2px tda2ex tda3xx dra72x dra75x dra78x am574x am572x am571x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j7200 tpr12 am64x
 drvspi_am574x_CORELIST = c66x a15_0 ipu1_0
 drvspi_am572x_CORELIST = c66x a15_0 ipu1_0
 drvspi_am571x_CORELIST = c66x a15_0 ipu1_0
@@ -120,17 +120,12 @@ drvspi_FIRM_LIST = $(spi_FIRM_LIST)
 # All the tests mentioned in list are built when test target is called
 # List below all examples for allowed values
 ############################
-ifeq ($(SOC),$(filter $(SOC), am64x))
-spi_EXAMPLE_LIST = MCSPI_Baremetal_Master_TestApp MCSPI_Baremetal_Slave_TestApp
-spi_EXAMPLE_LIST += OSPI_Baremetal_Flash_TestApp  OSPI_Baremetal_Flash_Dma_TestApp
-else
 spi_EXAMPLE_LIST = drv_mcspi_loopback_app
 spi_EXAMPLE_LIST += MCSPI_Baremetal_Master_TestApp MCSPI_Baremetal_Slave_TestApp
 spi_EXAMPLE_LIST += MCSPI_Master_TestApp MCSPI_Slave_TestApp
 spi_EXAMPLE_LIST += MCSPI_Baremetal_Master_Dma_TestApp MCSPI_Baremetal_Slave_Dma_TestApp
 spi_EXAMPLE_LIST += MCSPI_Master_Dma_TestApp MCSPI_Slave_Dma_TestApp
 spi_EXAMPLE_LIST += OSPI_Baremetal_Flash_TestApp  OSPI_Baremetal_Flash_Dma_TestApp OSPI_Flash_TestApp OSPI_Flash_SMP_TestApp OSPI_Flash_Dma_TestApp OSPI_Flash_Dma_SMP_TestApp QSPI_Baremetal_Flash_TestApp QSPI_Flash_TestApp QSPI_Baremetal_Flash_Dma_TestApp QSPI_Flash_Dma_TestApp
-endif
 drvspi_EXAMPLE_LIST = $(spi_EXAMPLE_LIST)
 
 #
@@ -382,13 +377,9 @@ export MCSPI_Baremetal_Slave_TestApp_CORE_DEPENDENCY
 export MCSPI_Baremetal_Slave_TestApp_MAKEFILE
 MCSPI_Baremetal_Slave_TestApp_PKG_LIST = MCSPI_Baremetal_Slave_TestApp
 MCSPI_Baremetal_Slave_TestApp_INCLUDE = $(MCSPI_Baremetal_Slave_TestApp_PATH)
-MCSPI_Baremetal_Slave_TestApp_BOARDLIST = $(drvspi_BOARDLIST)
+MCSPI_Baremetal_Slave_TestApp_BOARDLIST = am65xx_evm am65xx_idk j721e_sim j721e_evm j7200_evm
 export MCSPI_Baremetal_Slave_TestApp_BOARDLIST
-ifeq ($(SOC),$(filter $(SOC), j721e))
 MCSPI_Baremetal_Slave_TestApp_$(SOC)_CORELIST = mpu1_0
-else
-MCSPI_Baremetal_Slave_TestApp_$(SOC)_CORELIST = mpu1_0
-endif
 export MCSPI_Baremetal_Slave_TestApp_$(SOC)_CORELIST
 
 # SPI baremetal master Test app
@@ -426,13 +417,9 @@ export MCSPI_Baremetal_Slave_Dma_TestApp_CORE_DEPENDENCY
 export MCSPI_Baremetal_Slave_Dma_TestApp_MAKEFILE
 MCSPI_Baremetal_Slave_Dma_TestApp_PKG_LIST = MCSPI_Baremetal_Slave_Dma_TestApp
 MCSPI_Baremetal_Slave_Dma_TestApp_INCLUDE = $(MCSPI_Baremetal_Slave_Dma_TestApp_PATH)
-MCSPI_Baremetal_Slave_Dma_TestApp_BOARDLIST = $(drvspi_BOARDLIST)
+MCSPI_Baremetal_Slave_Dma_TestApp_BOARDLIST = am65xx_evm am65xx_idk j721e_sim j721e_evm j7200_evm
 export MCSPI_Baremetal_Slave_Dma_TestApp_BOARDLIST
-ifeq ($(SOC),$(filter $(SOC), j721e))
 MCSPI_Baremetal_Slave_Dma_TestApp_$(SOC)_CORELIST = mpu1_0
-else
-MCSPI_Baremetal_Slave_Dma_TestApp_$(SOC)_CORELIST = mpu1_0
-endif
 export MCSPI_Baremetal_Slave_Dma_TestApp_$(SOC)_CORELIST
 
 # SPI master Test app
@@ -474,7 +461,7 @@ export MCSPI_Slave_TestApp_XDC_CONFIGURO
 export MCSPI_Slave_TestApp_MAKEFILE
 MCSPI_Slave_TestApp_PKG_LIST = MCSPI_Slave_TestApp
 MCSPI_Slave_TestApp_INCLUDE = $(MCSPI_Slave_TestApp_PATH)
-MCSPI_Slave_TestApp_BOARDLIST = $(drvspi_BOARDLIST)
+MCSPI_Slave_TestApp_BOARDLIST = am65xx_evm am65xx_idk j721e_sim j721e_evm j7200_evm
 export MCSPI_Slave_TestApp_BOARDLIST
 ifeq ($(SOC),$(filter $(SOC), j721e))
 MCSPI_Slave_TestApp_$(SOC)_CORELIST = mpu1_0
@@ -522,13 +509,9 @@ export MCSPI_Slave_Dma_TestApp_XDC_CONFIGURO
 export MCSPI_Slave_Dma_TestApp_MAKEFILE
 MCSPI_Slave_Dma_TestApp_PKG_LIST = MCSPI_Slave_Dma_TestApp
 MCSPI_Slave_Dma_TestApp_INCLUDE = $(MCSPI_Slave_Dma_TestApp_PATH)
-MCSPI_Slave_Dma_TestApp_BOARDLIST = $(drvspi_BOARDLIST)
+MCSPI_Slave_Dma_TestApp_BOARDLIST = am65xx_evm am65xx_idk j721e_sim j721e_evm j7200_evm
 export MCSPI_Slave_Dma_TestApp_BOARDLIST
-ifeq ($(SOC),$(filter $(SOC), j721e))
 MCSPI_Slave_Dma_TestApp_$(SOC)_CORELIST = mpu1_0
-else
-MCSPI_Slave_Dma_TestApp_$(SOC)_CORELIST = mpu1_0
-endif
 export MCSPI_Slave_Dma_TestApp_$(SOC)_CORELIST
 
 # OSPI baremetal Flash Test app

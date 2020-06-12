@@ -261,7 +261,9 @@ uint32_t spi_test_xfer_len[SPI_NUM_XFERS] =
 #define PIN_OUTPUT_DISABLE              (0x1U << 21U)
 /** \brief Wakeup enable */
 #define PIN_WAKEUP_ENABLE               (0x1U << 29U)
+#endif
 
+#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
 #ifdef SPI_DMA_ENABLE
 /*
  * Ring parameters
@@ -273,12 +275,13 @@ uint32_t spi_test_xfer_len[SPI_NUM_XFERS] =
 /** \brief Total ring memory */
 #define UDMA_TEST_APP_RING_MEM_SIZE     (UDMA_TEST_APP_RING_ENTRIES * \
                                          UDMA_TEST_APP_RING_ENTRY_SIZE)
+/** \brief This ensures every channel memory is aligned */
+#define UDMA_TEST_APP_RING_MEM_SIZE_ALIGN ((UDMA_TEST_APP_RING_MEM_SIZE + UDMA_CACHELINE_ALIGNMENT) & ~(UDMA_CACHELINE_ALIGNMENT - 1U))
 
-/**
- *  \brief UDMA host mode buffer descriptor memory size.
- *  Make it multiple of 128 byte alignment
- */
-#define UDMA_TEST_APP_DESC_SIZE         (sizeof(CSL_UdmapCppi5HMPD) + (128U - sizeof(CSL_UdmapCppi5HMPD)))
+/** \brief UDMA host mode buffer descriptor memory size. */
+#define UDMA_TEST_APP_DESC_SIZE         (sizeof(CSL_UdmapCppi5HMPD))
+/** \brief This ensures every channel memory is aligned */
+#define UDMA_TEST_APP_DESC_SIZE_ALIGN   ((UDMA_TEST_APP_DESC_SIZE + UDMA_CACHELINE_ALIGNMENT) & ~(UDMA_CACHELINE_ALIGNMENT - 1U))
 
 /*
  * UDMA driver objects
@@ -293,12 +296,12 @@ Udma_DrvHandle          gDrvHandle = NULL;
 /*
  * UDMA Memories
  */
-static uint8_t gTxRingMem[UDMA_TEST_APP_RING_MEM_SIZE] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
-static uint8_t gTxCompRingMem[UDMA_TEST_APP_RING_MEM_SIZE] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
-static uint8_t gUdmaTxHpdMem[UDMA_TEST_APP_DESC_SIZE] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
-static uint8_t gRxRingMem[UDMA_TEST_APP_RING_MEM_SIZE] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
-static uint8_t gRxCompRingMem[UDMA_TEST_APP_RING_MEM_SIZE] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
-static uint8_t gUdmaRxHpdMem[UDMA_TEST_APP_DESC_SIZE] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
+static uint8_t gTxRingMem[UDMA_TEST_APP_RING_MEM_SIZE_ALIGN] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
+static uint8_t gTxCompRingMem[UDMA_TEST_APP_RING_MEM_SIZE_ALIGN] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
+static uint8_t gUdmaTxHpdMem[UDMA_TEST_APP_DESC_SIZE_ALIGN] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
+static uint8_t gRxRingMem[UDMA_TEST_APP_RING_MEM_SIZE_ALIGN] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
+static uint8_t gRxCompRingMem[UDMA_TEST_APP_RING_MEM_SIZE_ALIGN] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
+static uint8_t gUdmaRxHpdMem[UDMA_TEST_APP_DESC_SIZE_ALIGN] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
 
 static SPI_dmaInfo gUdmaInfo;
 
@@ -311,10 +314,14 @@ Udma_DrvHandle MCSPIApp_udmaInit(SPI_v1_HWAttrs *cfg)
     if (gDrvHandle == NULL)
     {
         /* UDMA driver init */
+#if defined(SOC_AM64X)
+        instId = UDMA_INST_ID_PKTDMA_0;
+#else
 #if defined (__aarch64__)
         instId = UDMA_INST_ID_MAIN_0;
 #else
         instId = UDMA_INST_ID_MCU_0;
+#endif
 #endif
         UdmaInitPrms_init(instId, &initPrms);
         retVal = Udma_init(&gUdmaDrvObj, &initPrms);
@@ -525,7 +532,7 @@ static void SPI_initConfigDefault(SPI_HWAttrs *cfg, uint32_t chn)
 {
     cfg->chNum                        = chn;
     cfg->chnCfg[chn].tcs              = MCSPI_CS_TCS_0PNT5_CLK;
-#if defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)
+#if defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
     /* SPIDAT[1] for TX and SPIDAT[0] for RX */
     cfg->chnCfg[chn].dataLineCommMode = MCSPI_DATA_LINE_COMM_MODE_1;
 #else
@@ -609,7 +616,7 @@ static void SPI_initConfig(uint32_t instance, SPI_Tests *test, uint32_t chn, boo
     {
     case (SPI_TEST_ID_TX_ONLY):
         spi_cfg.chnCfg[chn].trMode = MCSPI_TX_ONLY_MODE;
-#if defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)
+#if defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
         /* Data line 1 TX enabled, data line 0 RX enabled TX disabled */
         spi_cfg.chnCfg[chn].dataLineCommMode = MCSPI_DATA_LINE_COMM_MODE_1;
 #else
@@ -620,7 +627,7 @@ static void SPI_initConfig(uint32_t instance, SPI_Tests *test, uint32_t chn, boo
 
     case (SPI_TEST_ID_RX_ONLY):
         spi_cfg.chnCfg[chn].trMode = MCSPI_RX_ONLY_MODE;
-#if defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)
+#if defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
     /* Data line 1 TX disabled, data line 0 RX enabled TX disabled */
         spi_cfg.chnCfg[chn].dataLineCommMode = MCSPI_DATA_LINE_COMM_MODE_3;
 #else
@@ -774,7 +781,7 @@ static bool SPI_test_mst_slv_xfer(void *spi, SPI_Tests *test, uint32_t xferLen, 
     memset(masterRxBuffer, 0, sizeof(masterRxBuffer));
     memset(slaveRxBuffer, 0, sizeof(slaveRxBuffer));
 #ifdef SPI_DMA_ENABLE
-#if !defined (__aarch64__)
+#if !defined (__aarch64__) || defined (SOC_AM64X)
     if (dmaMode)
     {
         CacheP_wbInv((void *)addrMasterRxBuf, (int32_t)sizeof(masterRxBuffer));
@@ -1091,7 +1098,7 @@ static bool SPI_test_single_channel(void *arg)
         }
         else
         {
-#if defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)
+#if defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
             num_xfers = 1;
 #else
             num_xfers = SPI_NUM_XFERS;
@@ -1334,7 +1341,7 @@ static bool SPI_test_multi_channel(void *arg)
         }
     }
 
-#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)
+#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
     for (i = 0; i < 1; i++)
 #else
     for (i = 0; i < SPI_NUM_XFERS; i++)

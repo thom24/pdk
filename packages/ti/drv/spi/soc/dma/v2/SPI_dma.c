@@ -7,7 +7,7 @@
  */
 
 /*
- * Copyright (c) 2017 - 2018, Texas Instruments Incorporated
+ * Copyright (c) 2017 - 2020, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -60,6 +60,8 @@ static void MCSPI_dmaCompleteIOCallback(MCSPI_Handle mcHandle);
 int32_t MCSPI_dmaConfig(MCSPI_Handle mcHandle);
 void MCSPI_dmaTransfer(MCSPI_Handle mcHandle, SPI_Transaction *transaction);
 void MCSPI_dmaFreeChannel(MCSPI_Handle handle);
+
+static inline uint32_t MCSPI_dmaIsCacheCoherent(void);
 
 int32_t MCSPI_dmaConfig(MCSPI_Handle mcHandle)
 {
@@ -200,9 +202,10 @@ static void MCSPI_udmaHpdInit(Udma_ChHandle  chHandle,
     CSL_udmapCppi5SetOrgBufferAddr(pHpd, (uint64_t) bufPtr);
     CSL_udmapCppi5SetOrgBufferLen(pHpd, length);
 
-#if !defined (__aarch64__)
-    CacheP_wbInv((void *)pHpd, (int32_t)sizeof(CSL_UdmapCppi5HMPD));
-#endif
+    if(MCSPI_dmaIsCacheCoherent() != TRUE)
+    {
+        CacheP_wbInv((void *)pHpd, (int32_t)sizeof(CSL_UdmapCppi5HMPD));
+    }
     return;
 }
 
@@ -446,6 +449,10 @@ static void MCSPI_dmaTxIsrHandler(Udma_EventHandle  eventHandle,
         /* Update the transaction status and word count transfered */
         if (eventType == UDMA_EVENT_TYPE_DMA_COMPLETION)
         {
+            if(MCSPI_dmaIsCacheCoherent() != TRUE)
+            {
+                CacheP_Inv((const void *)hwAttrs->dmaInfo->cqTxRingMem, (int32_t)(sizeof(void *)));
+            }
             /*
              * Dequeue the descriptor from the TX completion queue
              * to be re-used for the next transfer
@@ -519,6 +526,10 @@ static void MCSPI_dmaRxIsrHandler(Udma_EventHandle  eventHandle,
         /* Update the transaction status and word count transfered */
         if (eventType == UDMA_EVENT_TYPE_DMA_COMPLETION)
         {
+            if(MCSPI_dmaIsCacheCoherent() != TRUE)
+            {
+                CacheP_Inv((const void *)hwAttrs->dmaInfo->cqRxRingMem, (int32_t)(sizeof(void *)));
+            }
             /*
              * Dequeue the descriptor from the RX completion queue
              * to be re-used for the next transfer
@@ -602,3 +613,17 @@ static void MCSPI_dmaCompleteIOCallback(MCSPI_Handle mcHandle)
     chObj->transaction->status = SPI_TRANSFER_COMPLETED;
     MCSPI_transferCallback_v1(mcHandle, chObj->transaction);
 }
+
+static inline uint32_t MCSPI_dmaIsCacheCoherent(void)
+{
+    uint32_t isCacheCoherent;
+
+#if (!defined (__aarch64__) || defined(SOC_AM64X))
+    isCacheCoherent = FALSE;
+#else
+    isCacheCoherent = TRUE;
+#endif
+
+    return (isCacheCoherent);
+}
+
