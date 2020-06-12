@@ -107,6 +107,8 @@ PDK_CSITX_ROOT_PATH ?= $(pdk_PATH)
 export PDK_CSITX_COMP_PATH = $(PDK_CSITX_ROOT_PATH)/ti/drv/csitx
 PDK_SDR_ROOT_PATH ?= $(pdk_PATH)
 export PDK_SDR_COMP_PATH = $(pdk_PATH)/ti/diag/sdr
+PDK_DIAG_EX_ROOT_PATH ?= $(pdk_PATH)
+export PDK_DIAG_EX_COMP_PATH = $(pdk_PATH)/ti/diag/examples
 
 #Below applicable only for TPR12 devices
 PDK_CRC_ROOT_PATH ?= $(pdk_PATH)

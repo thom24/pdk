@@ -420,6 +420,18 @@ ifneq ($(sdr_EXAMPLE_LIST),)
 endif
 
 # - used to ignore include if component not present
+-include $(PDK_DIAG_EX_COMP_PATH)/diag_ex_component.mk
+ifneq ($(diag_ex_LIB_LIST),)
+  pdk_LIB_LIST += $(diag_ex_LIB_LIST)
+endif
+ifneq ($(diag_ex_APP_LIB_LIST),)
+  pdk_APP_LIB_LIST += $(diag_ex_APP_LIB_LIST)
+endif
+ifneq ($(diag_ex_EXAMPLE_LIST),)
+  pdk_EXAMPLE_LIST += $(diag_ex_EXAMPLE_LIST)
+endif
+
+# - used to ignore include if component not present
 -include $(PDK_IPC_COMP_PATH)/ipc_component.mk
 ifneq ($(ipc_LIB_LIST),)
   pdk_LIB_LIST += $(ipc_LIB_LIST)
