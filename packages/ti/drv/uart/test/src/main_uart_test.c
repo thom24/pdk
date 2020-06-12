@@ -313,7 +313,6 @@ int32_t UART_udma_deinit(void)
 int32_t UART_configClk(uint32_t freq)
 {
     int32_t retVal = CSL_PASS;
-#if 0 //TBD pm board config not supported in sciclient
     uint64_t uartClk;
     uint32_t parentID;
     uint32_t clkID[] = {
@@ -381,7 +380,7 @@ int32_t UART_configClk(uint32_t freq)
             retVal = CSL_EFAIL;
         }
     }
-#endif
+
     return (retVal);
 }
 #endif
