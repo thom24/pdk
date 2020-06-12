@@ -813,6 +813,8 @@ struct Udma_RingObj
     /**< The assigned mapped channel number when channel type is 
      *   #UDMA_CH_TYPE_TX_MAPPED or #UDMA_CH_TYPE_RX_MAPPED.
      * 
+     *   This is needed to free the mapped ring.
+     * 
      *   For unmapped case, this will be #UDMA_DMA_CH_INVALID.
      */
 };

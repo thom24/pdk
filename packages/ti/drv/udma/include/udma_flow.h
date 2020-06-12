@@ -206,6 +206,28 @@ typedef struct
      * request. */
 } Udma_FlowPrms;
 
+/**
+ *  \brief UDMA RX channel mapped flow alloc parameters.
+ */
+typedef struct
+{
+    uint32_t                mappedFlowGrp;
+    /**< The Mapped flow group to use when channel type is 
+     *   #UDMA_CH_TYPE_RX_MAPPED.
+     * 
+     *   The driver will allocate mapped flows from this group.
+     *   Refer \ref Udma_MappedRxGrpSoc macro for details about mapped RX flow groups.
+     */
+    uint32_t                mappedChNum;
+    /**< The assigned mapped channel number when channel type is 
+     *   #UDMA_CH_TYPE_RX_MAPPED.
+     * 
+     *   This is used to allocate the corresponding mapped flow for the particular channel.
+     *   The driver will allocate from the mapped flows which are dedicated
+     *   for this particular channel.
+     */
+} Udma_FlowAllocMappedPrms;
+
 /* ========================================================================== */
 /*                          Function Declarations                             */
 /* ========================================================================== */
@@ -230,9 +252,36 @@ int32_t Udma_flowAlloc(Udma_DrvHandle drvHandle,
                        uint32_t flowCnt);
 
 /**
+ *  \brief UDMA mapped flow allocation API. In devices like AM64x, 
+ *  flows are tied to channels. This API is used to allocate a single flow 
+ *  from the mapped free flows which are dedicated for a particular channel.
+ * 
+ *  Note: Allocation of mapped flows have to be done after Udma_chOpen, Since the 
+ *  mapped flow have to be allocated from the dedicated flows for the particular channel.
+ * 
+ *  \param drvHandle           [IN] UDMA driver handle pointer passed during
+ *                                  #Udma_init
+ *  \param flowHandle          [IN/OUT] UDMA flow handle. The caller need to
+ *                                  allocate memory for this object and pass this
+ *                                  pointer to all further APIs. The caller should
+ *                                  not change any parameters as this is owned and
+ *                                  maintained by the driver.
+ *  \param flowAllocMappedPrms [IN] UDMA mapped flow alloc parameters.
+ *                                  This parameter can't be NULL.
+ *
+ *  \return \ref Udma_ErrorCodes
+ */
+int32_t Udma_flowAllocMapped(Udma_DrvHandle drvHandle,
+                             Udma_FlowHandle flowHandle,
+                             const Udma_FlowAllocMappedPrms *flowAllocMappedPrms);
+
+/**
  *  \brief UDMA free flows.
  *
  *  Freeup the flow resources.
+ *
+ *  Note: This API can be used to free mapped flow also, 
+ *  which are allocated using #Udma_flowAllocMapped.
  *
  *  Requirement: TODO
  *
@@ -264,7 +313,7 @@ int32_t Udma_flowFree(Udma_FlowHandle flowHandle);
  *                           core. The driver doesn't check the validity of
  *                           this field at the time of attach. But the flow
  *                           config API may fail if wrong flow index is used or
- *                           when the core does own the flow as per DMSC board
+ *                           when the core doesn't own the flow as per DMSC board
  *                           config.
  *  \param flowCnt      [IN] Flow count - to attach to more than 1 flow
  *                           which is contiguous from flow start. This is
@@ -281,10 +330,47 @@ int32_t Udma_flowAttach(Udma_DrvHandle drvHandle,
                         uint32_t flowCnt);
 
 /**
+ *  \brief UDMA mapped flow attach API. This API is used to attach to an already
+ *  allocated mapped flow. This API differs from mapped flow alloc API in
+ *  this aspect - it doesn't allocate resource from RM. Once the flow is
+ *  attached to, #Udma_flowConfig API can be used to configure the flow
+ *  through sciclient/DMSC API.
+ *
+ *  Requirement: DOX_REQ_TAG(PDK-3418)
+ *
+ *  \param drvHandle           [IN] UDMA driver handle pointer passed during
+ *                                  #Udma_init
+ *  \param flowHandle          [IN/OUT] UDMA flow handle. The caller need to
+ *                                  allocate memory for this object and pass this
+ *                                  pointer to all further APIs. The caller should
+ *                                  not change any parameters as this is owned and
+ *                                  maintained by the driver.
+ *  \param mappepdFlowNum      [IN] Mapped flow index to attach to. This paramter should
+  *                                   be a valid mapped flow number allowed to be used by a
+  *                                 core and by the mapped channel. The driver doesn't check the 
+  *                                 validity of this field at the time of attach. But the flow
+  *                                 config API may fail if wrong mapped flow index is used or
+  *                                 when the core doesn't own the mapped flow as per DMSC board
+  *                                 config or if the mapped flow dosen't belong to the deicated 
+  *                                 flows for the particular channel.
+ *  \param flowAllocMappedPrms [IN] UDMA mapped flow alloc parameters.
+ *                                  This parameter can't be NULL.
+ *
+ *  \return \ref Udma_ErrorCodes
+ */
+int32_t Udma_flowAttachMapped(Udma_DrvHandle drvHandle,
+                              Udma_FlowHandle flowHandle,
+                              uint32_t mappepdFlowNum,
+                              const Udma_FlowAllocMappedPrms *flowAllocMappedPrms);
+
+/**
  *  \brief UDMA flow detach API.
  *
  *  Since no allocation is done in attach, this API just clears up the
  *  flow handle.
+ *
+ *  Note: This API can be used to detach mapped flow also, 
+ *  which are attached using #Udma_flowAttachMapped.
  *
  *  Requirement: DOX_REQ_TAG(PDK-3418)
  *
@@ -305,10 +391,11 @@ int32_t Udma_flowDetach(Udma_FlowHandle flowHandle);
  *                           contiguously, all the flows needs to be configured
  *                           one after the other. This is the relative index
  *                           from the start of the flow allocated.
- *                           In case of configuring the default flow, this
- *                           should be set to zero.
  *                           If the index goes beyond what is allocated, then
  *                           the function returns error.
+ *                           Note: In case of configuring the default flow and 
+ *                           mapped flow(in devices like AM64x), 
+ *                           this should be set to "zero".
  *  \param flowPrms     [IN] Pointer to flow configuration.
  *
  *  \return \ref Udma_ErrorCodes
@@ -319,7 +406,10 @@ int32_t Udma_flowConfig(Udma_FlowHandle flowHandle,
 
 /**
  *  \brief Returns the start flow number managed by this flow handle.
- *
+ *  
+ *  Note: In case off mapped flow(in devices like AM64x), this returns the 
+ *  mapped flow number.
+ * 
  *  Requirement: TODO
  *
  *  \param flowHandle   [IN] UDMA flow handle.
@@ -332,6 +422,9 @@ uint32_t Udma_flowGetNum(Udma_FlowHandle flowHandle);
 /**
  *  \brief Returns the number of flows managed by this flow handle.
  *
+ *  Note: In case of mapped flow(in devices like AM64x), this 
+ *  always returns 1, since only one mapped flow is managed by a flow handle.
+ * 
  *  Requirement: DOX_REQ_TAG(PDK-3718)
  *
  *  \param flowHandle   [IN] UDMA flow handle.
@@ -375,12 +468,40 @@ struct Udma_FlowObj
     /**< Pointer to global driver handle. */
 
     uint32_t                flowStart;
-    /**< Flow ID start number */
+    /**< Flow ID start number.
+     * 
+     *   Note: In case of mapped flow(in devices like AM64x), this indicates the
+     *   mapped flow idx managed by this flow handle.
+     * 
+    */
     uint32_t                flowCnt;
-    /**< Number of flow IDs allocated - Contiguos flows are allocated */
+    /**< Number of flow IDs allocated - Contiguos flows are allocated 
+     * 
+     *   Note: In case of mapped flow(in devices like AM64x), this will be 1
+     *   since only one mapped flow is managed by a flow handle.
+    */
 
     uint32_t                flowInitDone;
     /**< Flag to set the flow object is init. */
+
+    uint32_t                mappedFlowGrp;
+    /**< The allocated mapped flow group when channel type is 
+     *   #UDMA_CH_TYPE_RX_MAPPED.
+     *   
+     *   This is needed to free the mapped flow.
+     * 
+     *   Refer \ref Udma_MappedRxGrpSoc macro for details about mapped RX flow groups.
+     *
+     *   For unmapped case, this will be #UDMA_MAPPED_GROUP_INVALID
+     */
+    uint32_t                mappedChNum;
+    /**< The assigned mapped channel number when channel type is 
+     *   #UDMA_CH_TYPE_RX_MAPPED.
+     * 
+     *   This is needed to free the mapped flow.
+     * 
+     *   For unmapped case, this will be #UDMA_DMA_CH_INVALID.
+     */
 };
 
 #ifdef __cplusplus
