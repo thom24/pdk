@@ -357,8 +357,8 @@ MCSPI_Baremetal_Master_TestApp_PKG_LIST = MCSPI_Baremetal_Master_TestApp
 MCSPI_Baremetal_Master_TestApp_INCLUDE = $(MCSPI_Baremetal_Master_TestApp_PATH)
 MCSPI_Baremetal_Master_TestApp_BOARDLIST = $(drvspi_BOARDLIST)
 export MCSPI_Baremetal_Master_TestApp_BOARDLIST
-ifeq ($(SOC),$(filter $(SOC), j721e))
-MCSPI_Baremetal_Master_TestApp_$(SOC)_CORELIST = mcu1_0
+ifeq ($(SOC),$(filter $(SOC), am64x))
+MCSPI_Baremetal_Master_TestApp_$(SOC)_CORELIST = mcu1_0 mpu1_0
 else
 MCSPI_Baremetal_Master_TestApp_$(SOC)_CORELIST = mcu1_0
 endif
@@ -397,8 +397,8 @@ MCSPI_Baremetal_Master_Dma_TestApp_PKG_LIST = MCSPI_Baremetal_Master_Dma_TestApp
 MCSPI_Baremetal_Master_Dma_TestApp_INCLUDE = $(MCSPI_Baremetal_Master_Dma_TestApp_PATH)
 MCSPI_Baremetal_Master_Dma_TestApp_BOARDLIST = $(drvspi_BOARDLIST)
 export MCSPI_Baremetal_Master_Dma_TestApp_BOARDLIST
-ifeq ($(SOC),$(filter $(SOC), j721e))
-MCSPI_Baremetal_Master_Dma_TestApp_$(SOC)_CORELIST = mcu1_0
+ifeq ($(SOC),$(filter $(SOC), am64x))
+MCSPI_Baremetal_Master_Dma_TestApp_$(SOC)_CORELIST = mcu1_0 mpu1_0
 else
 MCSPI_Baremetal_Master_Dma_TestApp_$(SOC)_CORELIST = mcu1_0
 endif
@@ -439,8 +439,8 @@ MCSPI_Master_TestApp_PKG_LIST = MCSPI_Master_TestApp
 MCSPI_Master_TestApp_INCLUDE = $(MCSPI_Master_TestApp_PATH)
 MCSPI_Master_TestApp_BOARDLIST = $(drvspi_BOARDLIST)
 export MCSPI_Master_TestApp_BOARDLIST
-ifeq ($(SOC),$(filter $(SOC), j721e))
-MCSPI_Master_TestApp_$(SOC)_CORELIST = mcu1_0
+ifeq ($(SOC),$(filter $(SOC), am64x))
+MCSPI_Master_TestApp_$(SOC)_CORELIST = mcu1_0 mpu1_0
 else
 MCSPI_Master_TestApp_$(SOC)_CORELIST = mcu1_0
 endif
@@ -487,8 +487,8 @@ MCSPI_Master_Dma_TestApp_PKG_LIST = MCSPI_Master_Dma_TestApp
 MCSPI_Master_Dma_TestApp_INCLUDE = $(MCSPI_Master_Dma_TestApp_PATH)
 MCSPI_Master_Dma_TestApp_BOARDLIST = $(drvspi_BOARDLIST)
 export MCSPI_Master_Dma_TestApp_BOARDLIST
-ifeq ($(SOC),$(filter $(SOC), j721e))
-MCSPI_Master_Dma_TestApp_$(SOC)_CORELIST = mcu1_0
+ifeq ($(SOC),$(filter $(SOC), am64x))
+MCSPI_Master_Dma_TestApp_$(SOC)_CORELIST = mcu1_0 mpu1_0
 else
 MCSPI_Master_Dma_TestApp_$(SOC)_CORELIST = mcu1_0
 endif
