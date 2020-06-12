@@ -317,13 +317,13 @@ static int32_t HWA_getDriverAccess(HWA_Driver *ptrHWADriver, bool checkConfigPro
         /* check config first */
         if (checkConfigProgress==true)
         {
-            if (ptrHWADriver->configInProgress == 1)
+            if (ptrHWADriver->configInProgress == 1U)
             {
                 retCode = HWA_EINUSE;
             }
             else
             {
-                ptrHWADriver->configInProgress = 1;
+                ptrHWADriver->configInProgress = 1U;
             }
         }
         /* next check paramset */
@@ -423,282 +423,286 @@ static int32_t HWA_validateParamSetConfig(HWA_Driver *ptrHWADriver, HWA_ParamCon
         /* invalid config */
         retCode = HWA_EINVAL;
     }
-    else if (
+    else  //(paramConfig!=NULL)
+	{	
+		/*general configuratio */
+		if (
         (paramConfig->triggerMode > HWA_TRIG_MODE_M4CONTROL) ||
         (paramConfig->dmaTriggerSrc > (ptrHWADriver->hwAttrs->numDmaChannels - 1)) ||
         (paramConfig->accelMode > HWA_ACCELMODE_NONE) ||
-        (paramConfig->contextswitchCfg > HWA_PARAMSET_CONTEXTSWITCH_FORCE_ENABLE)
+        ((paramConfig->contextswitchCfg != HWA_PARAMSET_CONTEXTSWITCH_FORCE_ENABLE) &&(paramConfig->contextswitchCfg != HWA_PARAMSET_CONTEXTSWITCH_DISABLE ) &&(paramConfig->contextswitchCfg != HWA_PARAMSET_CONTEXTSWITCH_NONFORCE_ENABLE))
         )
-    {
-        /* invalid config */
-        retCode = HWA_EINVAL_PARAMSET_GENERALCONFIG;
-    }
-    else if (
-        (paramConfig->source.srcAcnt >= (1 << 12)) ||
-        (paramConfig->source.srcBcnt >= (1 << 12)) ||
-        (paramConfig->source.srcAIdx > 65535) ||
-        (paramConfig->source.srcBIdx > 65535) ||
-        (paramConfig->source.srcAcircShift >= (1 << 12)) ||
-        (paramConfig->source.srcBcircShift >= (1 << 12)) ||
-        (paramConfig->source.srcAcircShiftWrap >= (1 << 4)) ||
-        (paramConfig->source.srcBcircShiftWrap >= (1 << 4)) ||
-        (paramConfig->source.srcCircShiftWrap3 >= (1 << 3)) ||
-        (paramConfig->source.srcRealComplex > HWA_SAMPLES_FORMAT_REAL) ||
-        (paramConfig->source.srcWidth > HWA_SAMPLES_WIDTH_32BIT) ||
-        (paramConfig->source.srcSign > HWA_SAMPLES_SIGNED) ||
-        (paramConfig->source.srcConjugate > HWA_FEATURE_BIT_ENABLE) ||
-        (paramConfig->source.srcScale > 8) ||
-        (paramConfig->source.srcIQSwap > HWA_FEATURE_BIT_ENABLE) ||
-        (paramConfig->source.shuffleMode > HWA_SRC_SHUFFLE_AB_MODE_BDIM) ||
-        (paramConfig->source.wrapComb >= (1 << 20)) ||
-        (paramConfig->source.shuffleStart >= (1 << 4)))
-    {
-        /* invalid config */
-        retCode = HWA_EINVAL_PARAMSET_SOURCE;
-    }
-    else if (
-        (paramConfig->dest.dstAcnt >= (1 << 12)) ||
-        (paramConfig->dest.dstRealComplex > HWA_SAMPLES_FORMAT_REAL) ||
-        (paramConfig->dest.dstWidth > HWA_SAMPLES_WIDTH_32BIT) ||
-        (paramConfig->dest.dstSign > HWA_SAMPLES_SIGNED) ||
-        (paramConfig->dest.dstAIdx > 65535) ||
-        (paramConfig->dest.dstBIdx > 65535) ||
-        (paramConfig->dest.dstConjugate > HWA_FEATURE_BIT_ENABLE) ||
-        (paramConfig->dest.dstScale > 8) ||
-        (paramConfig->dest.dstSkipInit >= (1 << 10)) ||
-        (paramConfig->dest.dstIQswap > HWA_FEATURE_BIT_ENABLE))
-    {
-        /* invalid config */
-        retCode = HWA_EINVAL_PARAMSET_DEST;
-    }
-    /* check the src, and dst address */
-    else if (paramConfig->accelMode != HWA_ACCELMODE_NONE)
-    {
-       /* same memory bank*/
-       if ((paramConfig->source.srcAddr >> 14) == (paramConfig->dest.dstAddr >> 14))
-       {
-            /* invalid config */
-            retCode = HWA_EINVAL_PARAMSET_SRCDST_ADDRESS;
-       }
-    }
-    if (paramConfig->accelMode == HWA_ACCELMODE_FFT)
-    {
-        /* if FFT mode, then fftEn should be checked for correct values */
-        if ((paramConfig->accelModeArgs.fftMode.fftEn > HWA_FEATURE_BIT_ENABLE) ||
-            (paramConfig->accelModeArgs.fftMode.butterflyScaling >= (1 << 12U)) ||
-            (paramConfig->accelModeArgs.fftMode.windowEn > HWA_FEATURE_BIT_ENABLE) ||
-            (paramConfig->accelModeArgs.fftMode.winSymm > HWA_FFT_WINDOW_SYMMETRIC) ||
-            (paramConfig->accelModeArgs.fftMode.windowMode > HWA_WINDOW_MODE_COMPLEX) ||
-            ( (paramConfig->accelModeArgs.fftMode.windowMode == HWA_WINDOW_MODE_18BITREAL) &&
-              (paramConfig->accelModeArgs.fftMode.windowStart > 2047U) )||
-            ((paramConfig->accelModeArgs.fftMode.windowMode == HWA_WINDOW_MODE_16BITREAL) &&
-             (paramConfig->accelModeArgs.fftMode.windowStart > 4095U)) ||
-            ((paramConfig->accelModeArgs.fftMode.windowMode == HWA_WINDOW_MODE_COMPLEX) &&
-             (paramConfig->accelModeArgs.fftMode.windowStart > 2047U)) ||
-            (paramConfig->accelModeArgs.fftMode.fftSize3xEn > HWA_FEATURE_BIT_ENABLE) ||
-            (paramConfig->accelModeArgs.fftMode.butterflyScalingFFT3x > HWA_FFT3x_BFLY_SCALING_LSBROUNDED) ||
-            (paramConfig->accelModeArgs.fftMode.bpmEnable > HWA_FEATURE_BIT_ENABLE) ||
-            (paramConfig->accelModeArgs.fftMode.bpmPhase > (1 << 4U))
-            )
-        {
-            /* invalid config */
-            retCode = HWA_EINVAL_PARAMSET_FFTMODE_GENERALCONFIG;
-        }
-        else if ((/* if fftEn is set to Enable, fftSize3xEn is disabled then fftSize should be checked for correct values for 2^N*/
-            (paramConfig->accelModeArgs.fftMode.fftEn == HWA_FEATURE_BIT_ENABLE) &&
-            (!paramConfig->accelModeArgs.fftMode.fftSize3xEn) &&
-            (!paramConfig->accelModeArgs.fftMode.fftSizeDim2) &&
-            (
-                /* minimum fftsize is 2, N= 1 to 11*/
-            (paramConfig->accelModeArgs.fftMode.fftSize < 1) ||
-                (paramConfig->accelModeArgs.fftMode.fftSize > 11)
-                )
-            ) ||
-            ( /* if fftEn is set to Enable, fftSize3xEn is enabled, then fftSize should be checked for correct values for 3x2^N */
-            (paramConfig->accelModeArgs.fftMode.fftEn == HWA_FEATURE_BIT_ENABLE) &&
-                (paramConfig->accelModeArgs.fftMode.fftSize3xEn) &&
-                (!paramConfig->accelModeArgs.fftMode.fftSizeDim2) &&
-                /*fftSize is 0 - 9, minimum fftsize is 3 */
-                (paramConfig->accelModeArgs.fftMode.fftSize > 9)
-                ) ||
-                (
-                    /* if fftEn is set to Enable, fftSize3xEn is disabled, 2D fft is enabled */
-            (paramConfig->accelModeArgs.fftMode.fftEn == HWA_FEATURE_BIT_ENABLE) &&
-                    (!paramConfig->accelModeArgs.fftMode.fftSize3xEn) &&
-                    (paramConfig->accelModeArgs.fftMode.fftSizeDim2) &&
-                    ((paramConfig->accelModeArgs.fftMode.fftSizeDim2 > 10) ||
-                     (paramConfig->accelModeArgs.fftMode.fftSizeDim2 > paramConfig->accelModeArgs.fftMode.fftSize))
-                    )
-            )
-        {
-            /* invalid config */
-            retCode = HWA_EINVAL_PARAMSET_FFTMODE_SIZE;
-        }
-        else if (
-            (paramConfig->accelModeArgs.fftMode.postProcCfg.magLogEn > HWA_FFT_MODE_MAGNITUDE_LOG2_ENABLED) ||
-            (paramConfig->accelModeArgs.fftMode.postProcCfg.fftOutMode > HWA_FFT_MODE_OUTPUT_SUM_STATS) ||
-            (paramConfig->accelModeArgs.fftMode.postProcCfg.max2Denable > HWA_FEATURE_BIT_ENABLE) ||
-            ((paramConfig->accelModeArgs.fftMode.postProcCfg.max2Denable == HWA_FEATURE_BIT_ENABLE)
-                && ((paramConfig->source.srcAcnt > 255) || (paramConfig->source.srcAcnt < 1)  //valid SRCACNT is 1 to 255
-                    || (paramConfig->source.srcBcnt > 1023)   //valid SRCBCNT is 0 to 1023
-                    )
-                ) ||
-                (paramConfig->accelModeArgs.fftMode.postProcCfg.histogramMode > HWA_HISTOGRAM_MODE_CDF_THRESHOLD) ||
-                ((paramConfig->accelModeArgs.fftMode.postProcCfg.histogramMode > HWA_HISTOGRAM_MODE_DISABLED) &&
-                  ((paramConfig->accelModeArgs.fftMode.postProcCfg.histogramScaleSelect < 7) ||
-                   (paramConfig->accelModeArgs.fftMode.postProcCfg.histogramScaleSelect > 13) ||
-                   (paramConfig->accelModeArgs.fftMode.postProcCfg.histogramSizeSelect < 3) ||
-                   (paramConfig->accelModeArgs.fftMode.postProcCfg.histogramSizeSelect > 6)  ||
-                   (paramConfig->source.srcAcnt < 1) || (paramConfig->source.srcAcnt > 63)
-                  )
-                )
-            )
-        {
-            /* invalid config */
-            retCode = HWA_EINVAL_PARAMSET_FFTMODE_POSTPROC;
-        }
-        else if (
-            (paramConfig->accelModeArgs.fftMode.preProcCfg.dcEstResetMode > HWA_DCEST_INTERFSUM_RESET_MODE_PARAMRESET_ZEROLPCONT) ||
-            (paramConfig->accelModeArgs.fftMode.preProcCfg.dcSubEnable > HWA_FEATURE_BIT_ENABLE) ||
-            (paramConfig->accelModeArgs.fftMode.preProcCfg.dcSubSelect > HWA_DCSUB_SELECT_DCEST) ||
-            (paramConfig->accelModeArgs.fftMode.preProcCfg.chanCombEn > HWA_FEATURE_BIT_ENABLE)  ||
-            (paramConfig->accelModeArgs.fftMode.preProcCfg.zeroInsertEn > HWA_FEATURE_BIT_ENABLE) ||
-            /* for fft stitching, first paramset, using the winInterpolateMode, but the cmultMode is set to disable,
-               only second paramset is set to stitching mode */
-            ((paramConfig->accelModeArgs.fftMode.preProcCfg.complexMultiply.cmultMode == HWA_COMPLEX_MULTIPLY_MODE_DISABLE) &&
-             (paramConfig->accelModeArgs.fftMode.preProcCfg.complexMultiply.modeCfg.FFTstitching.winInterpolateMode > HWA_FFT_WINDOW_INTERPOLATE_MODE_4K))
-            )
-        {
-            /* invalid config */
-            retCode = HWA_EINVAL_PARAMSET_FFTMODE_PREPROC;
-        }
-        else if (
-            (paramConfig->accelModeArgs.fftMode.preProcCfg.interfLocalize.thresholdEnable > HWA_FEATURE_BIT_ENABLE) ||
-            (paramConfig->accelModeArgs.fftMode.preProcCfg.interfLocalize.thresholdMode > HWA_INTERFTHRESH_MODE_MAG_AND_MAGDIFF) ||
-            (paramConfig->accelModeArgs.fftMode.preProcCfg.interfLocalize.thresholdSelect > HWA_INTERFTHRESH_SELECT_EST_INDIVIDUAL) ||
-            (paramConfig->accelModeArgs.fftMode.preProcCfg.interfStat.resetMode > HWA_DCEST_INTERFSUM_RESET_MODE_PARAMRESET_ZEROLPCONT) ||
-            (paramConfig->accelModeArgs.fftMode.preProcCfg.interfMitigation.enable > HWA_FEATURE_BIT_ENABLE) ||
-            (paramConfig->accelModeArgs.fftMode.preProcCfg.interfMitigation.countThreshold > 31) ||
-            (paramConfig->accelModeArgs.fftMode.preProcCfg.interfMitigation.pathSelect > HWA_INTERFMITIGATION_PATH_UNUSED) ||
-            (paramConfig->accelModeArgs.fftMode.preProcCfg.interfMitigation.leftHystOrder > 15) ||
-            (paramConfig->accelModeArgs.fftMode.preProcCfg.interfMitigation.rightHystOrder > 15))
-        {
-            /* invalid config */
-            retCode = HWA_EINVAL_PARAMSET_FFTMODE_PREPROC_INTERF;
-        }
-        else if (
-            (paramConfig->accelModeArgs.fftMode.preProcCfg.complexMultiply.cmultMode > HWA_COMPLEX_MULTIPLY_MODE_FREQSHIFT_FREQINCREMENT) ||
-            ( (paramConfig->accelModeArgs.fftMode.preProcCfg.complexMultiply.cmultMode == HWA_COMPLEX_MULTIPLY_MODE_FFT_STITCHING) /*stitching mode*/
-              && ((paramConfig->accelModeArgs.fftMode.preProcCfg.complexMultiply.modeCfg.FFTstitching.twiddlePattern != HWA_FFT_STITCHING_TWID_PATTERN_8K) &&
-                  (paramConfig->accelModeArgs.fftMode.preProcCfg.complexMultiply.modeCfg.FFTstitching.twiddlePattern != HWA_FFT_STITCHING_TWID_PATTERN_4K)
-                 )
-            )||
-            ((paramConfig->accelModeArgs.fftMode.preProcCfg.complexMultiply.cmultMode == HWA_COMPLEX_MULTIPLY_MODE_SCALAR_MULT)
-              &&(paramConfig->accelModeArgs.fftMode.preProcCfg.complexMultiply.modeCfg.scalerMultiply.scaleCmultScaleEn > HWA_FEATURE_BIT_ENABLE)
-            ) ||
-            ((paramConfig->accelModeArgs.fftMode.preProcCfg.complexMultiply.cmultMode == HWA_COMPLEX_MULTIPLY_MODE_VECTOR_MULT)
-                &&(paramConfig->accelModeArgs.fftMode.preProcCfg.complexMultiply.modeCfg.vectorMultiplyMode1.cmultScaleEn > HWA_FEATURE_BIT_ENABLE)
-            ) ||
-            ((paramConfig->accelModeArgs.fftMode.preProcCfg.complexMultiply.cmultMode == HWA_COMPLEX_MULTIPLY_MODE_RECURSIVE_WIN)
-               &&
-                (paramConfig->accelModeArgs.fftMode.preProcCfg.complexMultiply.modeCfg.recursiveWin.recwinModeSel > HWA_FFT_STITCHING_TWID_PATTERN_EXE_COUNT)
-            )||
-            ((paramConfig->accelModeArgs.fftMode.preProcCfg.complexMultiply.cmultMode == HWA_COMPLEX_MULTIPLY_MODE_LUT_FREQ_DEROTATE)
-              &&
-            (paramConfig->accelModeArgs.fftMode.preProcCfg.complexMultiply.modeCfg.lutFreqDerotate.ramIdxIncrMode > HWA_LUT_FREQ_DEROTATE_RAMIDX_NONINCR)
-            )
-            )
-        {
-            /* invalid config */
-            retCode = HWA_EINVAL_PARAMSET_FFTMODE_PREPROC_COMPLEXMULT;
-        }
-    }
-    if (paramConfig->accelMode == HWA_ACCELMODE_CFAR)
-    {
-        if ((paramConfig->accelModeArgs.cfarMode.numGuardCells >= (1 << 3)) ||
-            (paramConfig->accelModeArgs.cfarMode.nAvgDivFactor > 8) ||
-            (paramConfig->accelModeArgs.cfarMode.nAvgMode > HWA_NOISE_AVG_MODE_CFAR_OS) ||
-            (paramConfig->accelModeArgs.cfarMode.operMode > HWA_CFAR_OPER_MODE_LOG_INPUT_COMPLEX_LINEARCFAR) ||
-            ((paramConfig->accelModeArgs.cfarMode.outputMode > HWA_CFAR_OUTPUT_MODE_I_PEAK_IDX_Q_CUT) &&
-             (!paramConfig->accelModeArgs.cfarMode.cfarAdvOutMode)) ||
-            (paramConfig->accelModeArgs.cfarMode.peakGroupEn > HWA_FEATURE_BIT_ENABLE) ||
-            (paramConfig->accelModeArgs.cfarMode.cyclicModeEn > HWA_FEATURE_BIT_ENABLE) ||
-            (paramConfig->accelModeArgs.cfarMode.cfarAdvOutMode > HWA_FEATURE_BIT_ENABLE)
-            )
-        {
-            /* invalid config */
-            retCode = HWA_EINVAL_PARAMSET_CFARMODE_GENERALCONFIG;
-        }
-        else if       /* cfar os */
-            ((paramConfig->accelModeArgs.cfarMode.nAvgMode == HWA_NOISE_AVG_MODE_CFAR_OS) &&
-            (   (paramConfig->accelModeArgs.cfarMode.cfarOsKvalue > 128) ||
-                (paramConfig->accelModeArgs.cfarMode.cfarOsEdgeKScaleEn > HWA_FEATURE_BIT_ENABLE) ||
-                (paramConfig->accelModeArgs.cfarMode.numNoiseSamplesLeft != paramConfig->accelModeArgs.cfarMode.numNoiseSamplesRight)
-                || ((paramConfig->accelModeArgs.cfarMode.numNoiseSamplesLeft != 0) && (paramConfig->accelModeArgs.cfarMode.numNoiseSamplesLeft != 4)
-                    && (paramConfig->accelModeArgs.cfarMode.numNoiseSamplesLeft != 6) && (paramConfig->accelModeArgs.cfarMode.numNoiseSamplesLeft != 8)
-                    && (paramConfig->accelModeArgs.cfarMode.numNoiseSamplesLeft != 12) && (paramConfig->accelModeArgs.cfarMode.numNoiseSamplesLeft != 16)
-                    && (paramConfig->accelModeArgs.cfarMode.numNoiseSamplesLeft != 24) && (paramConfig->accelModeArgs.cfarMode.numNoiseSamplesLeft != 32)
-                    ))
-                )
-        {
-            /* invalid config */
-            retCode = HWA_EINVAL_PARAMSET_CFARMODE_OSCONFIG;
-        }
-        else if  /* cfar CA */
-            ((paramConfig->accelModeArgs.cfarMode.nAvgMode != HWA_NOISE_AVG_MODE_CFAR_OS) &&
-            ((paramConfig->accelModeArgs.cfarMode.numNoiseSamplesLeft >= (1 << 6)) ||
-                (paramConfig->accelModeArgs.cfarMode.numNoiseSamplesRight >= (1 << 6)) ||
-                (paramConfig->accelModeArgs.cfarMode.numNoiseSamplesLeft == 1) ||
-                (paramConfig->accelModeArgs.cfarMode.numNoiseSamplesRight == 1)
-                )
-                )
-        {
-            /* invalid config */
-            retCode = HWA_EINVAL_PARAMSET_CFARMODE_CACONFIG;
-        }
+		{
+			/* invalid config */
+			retCode = HWA_EINVAL_PARAMSET_GENERALCONFIG;
+		}
+		else if (  /* source configuration */
+			(paramConfig->source.srcAcnt >= (1U << 12U)) ||
+			(paramConfig->source.srcBcnt >= (1U << 12U)) ||
+			(paramConfig->source.srcAIdx > 65535U) ||
+			(paramConfig->source.srcBIdx > 65535U) ||
+			(paramConfig->source.srcAcircShift >= (1U << 12U)) ||
+			(paramConfig->source.srcBcircShift >= (1U << 12U)) ||
+			(paramConfig->source.srcAcircShiftWrap >= (1U << 4U)) ||
+			(paramConfig->source.srcBcircShiftWrap >= (1U << 4U)) ||
+			(paramConfig->source.srcCircShiftWrap3 >= (1U << 3U)) ||
+			(paramConfig->source.srcRealComplex > HWA_SAMPLES_FORMAT_REAL) ||
+			(paramConfig->source.srcWidth > HWA_SAMPLES_WIDTH_32BIT) ||
+			(paramConfig->source.srcSign > HWA_SAMPLES_SIGNED) ||
+			(paramConfig->source.srcConjugate > HWA_FEATURE_BIT_ENABLE) ||
+			(paramConfig->source.srcScale > 8U) ||
+			(paramConfig->source.srcIQSwap > HWA_FEATURE_BIT_ENABLE) ||
+			(paramConfig->source.shuffleMode > HWA_SRC_SHUFFLE_AB_MODE_BDIM) ||
+			(paramConfig->source.wrapComb >= (1U << 20U)) ||
+			(paramConfig->source.shuffleStart >= (1U << 4U)))
+		{
+			/* invalid config */
+			retCode = HWA_EINVAL_PARAMSET_SOURCE;
+		}
+		else if (  /* dst configuration */
+			(paramConfig->dest.dstAcnt >= (1U << 12U)) ||
+			(paramConfig->dest.dstRealComplex > HWA_SAMPLES_FORMAT_REAL) ||
+			(paramConfig->dest.dstWidth > HWA_SAMPLES_WIDTH_32BIT) ||
+			(paramConfig->dest.dstSign > HWA_SAMPLES_SIGNED) ||
+			(paramConfig->dest.dstAIdx > 65535U) ||
+			(paramConfig->dest.dstBIdx > 65535U) ||
+			(paramConfig->dest.dstConjugate > HWA_FEATURE_BIT_ENABLE) ||
+			(paramConfig->dest.dstScale > 8U) ||
+			(paramConfig->dest.dstSkipInit >= (1U << 10U)) ||
+			(paramConfig->dest.dstIQswap > HWA_FEATURE_BIT_ENABLE))
+		{
+			/* invalid config */
+			retCode = HWA_EINVAL_PARAMSET_DEST;
+		}
+		/* check the src, and dst address */
+		else if (paramConfig->accelMode != HWA_ACCELMODE_NONE)
+		{
+		   /* same memory bank*/
+		   if ((paramConfig->source.srcAddr >> 14U) == (paramConfig->dest.dstAddr >> 14U))
+		   {
+				/* invalid config */
+				retCode = HWA_EINVAL_PARAMSET_SRCDST_ADDRESS;
+		   }
+		}
+		if (paramConfig->accelMode == HWA_ACCELMODE_FFT) 
+		{
+			/* if FFT mode, then fftEn should be checked for correct values */
+			if ((paramConfig->accelModeArgs.fftMode.fftEn > HWA_FEATURE_BIT_ENABLE) ||
+				(paramConfig->accelModeArgs.fftMode.butterflyScaling >= (1U << 12U)) ||
+				(paramConfig->accelModeArgs.fftMode.windowEn > HWA_FEATURE_BIT_ENABLE) ||
+				(paramConfig->accelModeArgs.fftMode.winSymm > HWA_FFT_WINDOW_SYMMETRIC) ||
+				(paramConfig->accelModeArgs.fftMode.windowMode > HWA_WINDOW_MODE_COMPLEX) ||
+				( (paramConfig->accelModeArgs.fftMode.windowMode == HWA_WINDOW_MODE_18BITREAL) &&
+				  (paramConfig->accelModeArgs.fftMode.windowStart > 2047U) )||
+				((paramConfig->accelModeArgs.fftMode.windowMode == HWA_WINDOW_MODE_16BITREAL) &&
+				 (paramConfig->accelModeArgs.fftMode.windowStart > 4095U)) ||
+				((paramConfig->accelModeArgs.fftMode.windowMode == HWA_WINDOW_MODE_COMPLEX) &&
+				 (paramConfig->accelModeArgs.fftMode.windowStart > 2047U)) ||
+				(paramConfig->accelModeArgs.fftMode.fftSize3xEn > HWA_FEATURE_BIT_ENABLE) ||
+				(paramConfig->accelModeArgs.fftMode.butterflyScalingFFT3x > HWA_FFT3x_BFLY_SCALING_LSBROUNDED) ||
+				(paramConfig->accelModeArgs.fftMode.bpmEnable > HWA_FEATURE_BIT_ENABLE) ||
+				(paramConfig->accelModeArgs.fftMode.bpmPhase > (1U << 4U))
+				)
+			{
+				/* invalid config */
+				retCode = HWA_EINVAL_PARAMSET_FFTMODE_GENERALCONFIG;
+			}
+			else if ((/* if fftEn is set to Enable, fftSize3xEn is disabled then fftSize should be checked for correct values for 2^N*/
+				(paramConfig->accelModeArgs.fftMode.fftEn == HWA_FEATURE_BIT_ENABLE) &&
+				(!paramConfig->accelModeArgs.fftMode.fftSize3xEn) &&
+				(!paramConfig->accelModeArgs.fftMode.fftSizeDim2) &&
+				(
+					/* minimum fftsize is 2, N= 1 to 11*/
+				(paramConfig->accelModeArgs.fftMode.fftSize < 1U) ||
+					(paramConfig->accelModeArgs.fftMode.fftSize > 11U)
+					)
+				) ||
+				( /* if fftEn is set to Enable, fftSize3xEn is enabled, then fftSize should be checked for correct values for 3x2^N */
+				(paramConfig->accelModeArgs.fftMode.fftEn == HWA_FEATURE_BIT_ENABLE) &&
+					(paramConfig->accelModeArgs.fftMode.fftSize3xEn) &&
+					(!paramConfig->accelModeArgs.fftMode.fftSizeDim2) &&
+					/*fftSize is 0 - 9, minimum fftsize is 3 */
+					(paramConfig->accelModeArgs.fftMode.fftSize > 9U)
+					) ||
+					(
+						/* if fftEn is set to Enable, fftSize3xEn is disabled, 2D fft is enabled */
+				(paramConfig->accelModeArgs.fftMode.fftEn == HWA_FEATURE_BIT_ENABLE) &&
+						(!paramConfig->accelModeArgs.fftMode.fftSize3xEn) &&
+						(paramConfig->accelModeArgs.fftMode.fftSizeDim2) &&
+						((paramConfig->accelModeArgs.fftMode.fftSizeDim2 > 10U) ||
+						 (paramConfig->accelModeArgs.fftMode.fftSizeDim2 > paramConfig->accelModeArgs.fftMode.fftSize))
+						)
+				)
+			{
+				/* invalid config */
+				retCode = HWA_EINVAL_PARAMSET_FFTMODE_SIZE;
+			}
+			else if (
+				(paramConfig->accelModeArgs.fftMode.postProcCfg.magLogEn > HWA_FFT_MODE_MAGNITUDE_LOG2_ENABLED) ||
+				(paramConfig->accelModeArgs.fftMode.postProcCfg.fftOutMode > HWA_FFT_MODE_OUTPUT_SUM_STATS) ||
+				(paramConfig->accelModeArgs.fftMode.postProcCfg.max2Denable > HWA_FEATURE_BIT_ENABLE) ||
+				((paramConfig->accelModeArgs.fftMode.postProcCfg.max2Denable == HWA_FEATURE_BIT_ENABLE)
+					&& ((paramConfig->source.srcAcnt > 255U) || (paramConfig->source.srcAcnt < 1U)  //valid SRCACNT is 1 to 255
+						|| (paramConfig->source.srcBcnt > 1023U)   //valid SRCBCNT is 0 to 1023
+						)
+					) ||
+					(paramConfig->accelModeArgs.fftMode.postProcCfg.histogramMode > HWA_HISTOGRAM_MODE_CDF_THRESHOLD) ||
+					((paramConfig->accelModeArgs.fftMode.postProcCfg.histogramMode > HWA_HISTOGRAM_MODE_DISABLED) &&
+					  ((paramConfig->accelModeArgs.fftMode.postProcCfg.histogramScaleSelect < 7U) ||
+					   (paramConfig->accelModeArgs.fftMode.postProcCfg.histogramScaleSelect > 13U) ||
+					   (paramConfig->accelModeArgs.fftMode.postProcCfg.histogramSizeSelect < 3U) ||
+					   (paramConfig->accelModeArgs.fftMode.postProcCfg.histogramSizeSelect > 6U)  ||
+					   (paramConfig->source.srcAcnt < 1U) || (paramConfig->source.srcAcnt > 63U)
+					  )
+					)
+				)
+			{
+				/* invalid config */
+				retCode = HWA_EINVAL_PARAMSET_FFTMODE_POSTPROC;
+			}
+			else if (
+				(paramConfig->accelModeArgs.fftMode.preProcCfg.dcEstResetMode > HWA_DCEST_INTERFSUM_RESET_MODE_PARAMRESET_ZEROLPCONT) ||
+				(paramConfig->accelModeArgs.fftMode.preProcCfg.dcSubEnable > HWA_FEATURE_BIT_ENABLE) ||
+				(paramConfig->accelModeArgs.fftMode.preProcCfg.dcSubSelect > HWA_DCSUB_SELECT_DCEST) ||
+				(paramConfig->accelModeArgs.fftMode.preProcCfg.chanCombEn > HWA_FEATURE_BIT_ENABLE)  ||
+				(paramConfig->accelModeArgs.fftMode.preProcCfg.zeroInsertEn > HWA_FEATURE_BIT_ENABLE) ||
+				/* for fft stitching, first paramset, using the winInterpolateMode, but the cmultMode is set to disable,
+				   only second paramset is set to stitching mode */
+				((paramConfig->accelModeArgs.fftMode.preProcCfg.complexMultiply.cmultMode == HWA_COMPLEX_MULTIPLY_MODE_DISABLE) &&
+				 (paramConfig->accelModeArgs.fftMode.preProcCfg.complexMultiply.modeCfg.FFTstitching.winInterpolateMode > HWA_FFT_WINDOW_INTERPOLATE_MODE_4K))
+				)
+			{
+				/* invalid config */
+				retCode = HWA_EINVAL_PARAMSET_FFTMODE_PREPROC;
+			}
+			else if (
+				(paramConfig->accelModeArgs.fftMode.preProcCfg.interfLocalize.thresholdEnable > HWA_FEATURE_BIT_ENABLE) ||
+				(paramConfig->accelModeArgs.fftMode.preProcCfg.interfLocalize.thresholdMode > HWA_INTERFTHRESH_MODE_MAG_AND_MAGDIFF) ||
+				(paramConfig->accelModeArgs.fftMode.preProcCfg.interfLocalize.thresholdSelect > HWA_INTERFTHRESH_SELECT_EST_INDIVIDUAL) ||
+				(paramConfig->accelModeArgs.fftMode.preProcCfg.interfStat.resetMode > HWA_DCEST_INTERFSUM_RESET_MODE_PARAMRESET_ZEROLPCONT) ||
+				(paramConfig->accelModeArgs.fftMode.preProcCfg.interfMitigation.enable > HWA_FEATURE_BIT_ENABLE) ||
+				(paramConfig->accelModeArgs.fftMode.preProcCfg.interfMitigation.countThreshold > 31U) ||
+				(paramConfig->accelModeArgs.fftMode.preProcCfg.interfMitigation.pathSelect > HWA_INTERFMITIGATION_PATH_UNUSED) ||
+				(paramConfig->accelModeArgs.fftMode.preProcCfg.interfMitigation.leftHystOrder > 15U) ||
+				(paramConfig->accelModeArgs.fftMode.preProcCfg.interfMitigation.rightHystOrder > 15U))
+			{
+				/* invalid config */
+				retCode = HWA_EINVAL_PARAMSET_FFTMODE_PREPROC_INTERF;
+			}
+			else if (
+				(paramConfig->accelModeArgs.fftMode.preProcCfg.complexMultiply.cmultMode > HWA_COMPLEX_MULTIPLY_MODE_FREQSHIFT_FREQINCREMENT) ||
+				( (paramConfig->accelModeArgs.fftMode.preProcCfg.complexMultiply.cmultMode == HWA_COMPLEX_MULTIPLY_MODE_FFT_STITCHING) /*stitching mode*/
+				  && ((paramConfig->accelModeArgs.fftMode.preProcCfg.complexMultiply.modeCfg.FFTstitching.twiddlePattern != HWA_FFT_STITCHING_TWID_PATTERN_8K) &&
+					  (paramConfig->accelModeArgs.fftMode.preProcCfg.complexMultiply.modeCfg.FFTstitching.twiddlePattern != HWA_FFT_STITCHING_TWID_PATTERN_4K)
+					 )
+				)||
+				((paramConfig->accelModeArgs.fftMode.preProcCfg.complexMultiply.cmultMode == HWA_COMPLEX_MULTIPLY_MODE_SCALAR_MULT)
+				  &&(paramConfig->accelModeArgs.fftMode.preProcCfg.complexMultiply.modeCfg.scalerMultiply.scaleCmultScaleEn > HWA_FEATURE_BIT_ENABLE)
+				) ||
+				((paramConfig->accelModeArgs.fftMode.preProcCfg.complexMultiply.cmultMode == HWA_COMPLEX_MULTIPLY_MODE_VECTOR_MULT)
+					&&(paramConfig->accelModeArgs.fftMode.preProcCfg.complexMultiply.modeCfg.vectorMultiplyMode1.cmultScaleEn > HWA_FEATURE_BIT_ENABLE)
+				) ||
+				((paramConfig->accelModeArgs.fftMode.preProcCfg.complexMultiply.cmultMode == HWA_COMPLEX_MULTIPLY_MODE_RECURSIVE_WIN)
+				   &&
+					(paramConfig->accelModeArgs.fftMode.preProcCfg.complexMultiply.modeCfg.recursiveWin.recwinModeSel > HWA_FFT_STITCHING_TWID_PATTERN_EXE_COUNT)
+				)||
+				((paramConfig->accelModeArgs.fftMode.preProcCfg.complexMultiply.cmultMode == HWA_COMPLEX_MULTIPLY_MODE_LUT_FREQ_DEROTATE)
+				  &&
+				(paramConfig->accelModeArgs.fftMode.preProcCfg.complexMultiply.modeCfg.lutFreqDerotate.ramIdxIncrMode > HWA_LUT_FREQ_DEROTATE_RAMIDX_NONINCR)
+				)
+				)
+			{
+				/* invalid config */
+				retCode = HWA_EINVAL_PARAMSET_FFTMODE_PREPROC_COMPLEXMULT;
+			}
+		}
+		if (paramConfig->accelMode == HWA_ACCELMODE_CFAR)
+		{
+			if ((paramConfig->accelModeArgs.cfarMode.numGuardCells >= (1U << 3U)) ||
+				(paramConfig->accelModeArgs.cfarMode.nAvgDivFactor > 8U) ||
+				(paramConfig->accelModeArgs.cfarMode.nAvgMode > HWA_NOISE_AVG_MODE_CFAR_OS) ||
+				(paramConfig->accelModeArgs.cfarMode.operMode > HWA_CFAR_OPER_MODE_LOG_INPUT_COMPLEX_LINEARCFAR) ||
+				((paramConfig->accelModeArgs.cfarMode.outputMode > HWA_CFAR_OUTPUT_MODE_I_PEAK_IDX_Q_CUT) &&
+				 (!paramConfig->accelModeArgs.cfarMode.cfarAdvOutMode)) ||
+				(paramConfig->accelModeArgs.cfarMode.peakGroupEn > HWA_FEATURE_BIT_ENABLE) ||
+				(paramConfig->accelModeArgs.cfarMode.cyclicModeEn > HWA_FEATURE_BIT_ENABLE) ||
+				(paramConfig->accelModeArgs.cfarMode.cfarAdvOutMode > HWA_FEATURE_BIT_ENABLE)
+				)
+			{
+				/* invalid config */
+				retCode = HWA_EINVAL_PARAMSET_CFARMODE_GENERALCONFIG;
+			}
+			else if       /* cfar os */
+				((paramConfig->accelModeArgs.cfarMode.nAvgMode == HWA_NOISE_AVG_MODE_CFAR_OS) &&
+				(   (paramConfig->accelModeArgs.cfarMode.cfarOsKvalue > 128U) ||
+					(paramConfig->accelModeArgs.cfarMode.cfarOsEdgeKScaleEn > HWA_FEATURE_BIT_ENABLE) ||
+					(paramConfig->accelModeArgs.cfarMode.numNoiseSamplesLeft != paramConfig->accelModeArgs.cfarMode.numNoiseSamplesRight)
+					|| ((paramConfig->accelModeArgs.cfarMode.numNoiseSamplesLeft != 0U) && (paramConfig->accelModeArgs.cfarMode.numNoiseSamplesLeft != 4U)
+						&& (paramConfig->accelModeArgs.cfarMode.numNoiseSamplesLeft != 6U) && (paramConfig->accelModeArgs.cfarMode.numNoiseSamplesLeft != 8U)
+						&& (paramConfig->accelModeArgs.cfarMode.numNoiseSamplesLeft != 12U) && (paramConfig->accelModeArgs.cfarMode.numNoiseSamplesLeft != 16U)
+						&& (paramConfig->accelModeArgs.cfarMode.numNoiseSamplesLeft != 24U) && (paramConfig->accelModeArgs.cfarMode.numNoiseSamplesLeft != 32U)
+						))
+					)
+			{
+				/* invalid config */
+				retCode = HWA_EINVAL_PARAMSET_CFARMODE_OSCONFIG;
+			}
+			else if  /* cfar CA */
+				((paramConfig->accelModeArgs.cfarMode.nAvgMode != HWA_NOISE_AVG_MODE_CFAR_OS) &&
+				((paramConfig->accelModeArgs.cfarMode.numNoiseSamplesLeft >= (1U << 6U)) ||
+					(paramConfig->accelModeArgs.cfarMode.numNoiseSamplesRight >= (1U << 6U)) ||
+					(paramConfig->accelModeArgs.cfarMode.numNoiseSamplesLeft == 1U) ||
+					(paramConfig->accelModeArgs.cfarMode.numNoiseSamplesRight == 1U)
+					)
+					)
+			{
+				/* invalid config */
+				retCode = HWA_EINVAL_PARAMSET_CFARMODE_CACONFIG;
+			}
 
-    }
-    if ((paramConfig->accelMode == HWA_ACCELMODE_COMPRESS) &&
-             (
-                 (paramConfig->accelModeArgs.compressMode.compressDecompress > HWA_CMP_DCMP_DECOMPRESS) ||
-                 (paramConfig->accelModeArgs.compressMode.ditherEnable >  HWA_FEATURE_BIT_ENABLE) ||
-                 ((paramConfig->accelModeArgs.compressMode.method != HWA_COMPRESS_METHOD_BFP ) &&
-                  (paramConfig->accelModeArgs.compressMode.method != HWA_COMPRESS_METHOD_EGE)) ||
-                 ((paramConfig->accelModeArgs.compressMode.passSelect != HWA_COMPRESS_PATHSELECT_BOTHPASSES) &&
-                  (paramConfig->accelModeArgs.compressMode.passSelect != HWA_COMPRESS_PATHSELECT_SECONDPASS) )||
-                 (paramConfig->accelModeArgs.compressMode.headerEnable >  HWA_FEATURE_BIT_ENABLE)   ||
-                 (paramConfig->accelModeArgs.compressMode.scaleFactorBW > ( 1 << 4U)) ||
-                 (paramConfig->accelModeArgs.compressMode.BFPMantissaBW > ( 1 << 5U) ) ||
-                 ((paramConfig->accelModeArgs.compressMode.method == HWA_COMPRESS_METHOD_EGE) &&
-                 ((paramConfig->accelModeArgs.compressMode.EGEKarrayLength > 3 ) ||(paramConfig->accelModeArgs.compressMode.EGEKarrayLength < 1)))||
-                  /* if first pass is disabled */
-                  ( (paramConfig->accelModeArgs.compressMode.passSelect == HWA_COMPRESS_PATHSELECT_SECONDPASS) &&
-                    (paramConfig->accelModeArgs.compressMode.scaleFactor >  (1 << 5U) ) &&
-                    (
-                       (paramConfig->accelModeArgs.compressMode.method == HWA_COMPRESS_METHOD_EGE) &&
-                       (paramConfig->accelModeArgs.compressMode.EGEKidx > 31U)
-                    )
-                  )
-             )
-        )
-    {
-        /* invalid config params */
-        retCode = HWA_EINVAL_PARAMSET_COMPRESSMODE;
-    }
-    if ((paramConfig->accelMode == HWA_ACCELMODE_LOCALMAX) &&
-             (
-                (paramConfig->accelModeArgs.localMaxMode.neighbourBitmask > (1<<8))||
-                (paramConfig->accelModeArgs.localMaxMode.thresholdBitMask > HWA_LOCALMAX_THRESH_BITMASK_BOTH_DIS) ||
-                (paramConfig->accelModeArgs.localMaxMode.thresholdMode > HWA_LOCALMAX_THRESH_SELECT_DIMBRAM_DIMCRAM)  ||
-                (paramConfig->accelModeArgs.localMaxMode.dimBNonCyclic > HWA_FEATURE_BIT_ENABLE) ||
-                (paramConfig->accelModeArgs.localMaxMode.dimCNonCyclic > HWA_FEATURE_BIT_ENABLE)
+		}
+		if ((paramConfig->accelMode == HWA_ACCELMODE_COMPRESS) &&
+				 (
+					 (paramConfig->accelModeArgs.compressMode.compressDecompress > HWA_CMP_DCMP_DECOMPRESS) ||
+					 (paramConfig->accelModeArgs.compressMode.ditherEnable >  HWA_FEATURE_BIT_ENABLE) ||
+					 ((paramConfig->accelModeArgs.compressMode.method != HWA_COMPRESS_METHOD_BFP ) &&
+					  (paramConfig->accelModeArgs.compressMode.method != HWA_COMPRESS_METHOD_EGE)) ||
+					 ((paramConfig->accelModeArgs.compressMode.passSelect != HWA_COMPRESS_PATHSELECT_BOTHPASSES) &&
+					  (paramConfig->accelModeArgs.compressMode.passSelect != HWA_COMPRESS_PATHSELECT_SECONDPASS) )||
+					 (paramConfig->accelModeArgs.compressMode.headerEnable >  HWA_FEATURE_BIT_ENABLE)   ||
+					 (paramConfig->accelModeArgs.compressMode.scaleFactorBW > ( 1U << 4U)) ||
+					 (paramConfig->accelModeArgs.compressMode.BFPMantissaBW > ( 1 << 5U) ) ||
+					 ((paramConfig->accelModeArgs.compressMode.method == HWA_COMPRESS_METHOD_EGE) &&
+					 ((paramConfig->accelModeArgs.compressMode.EGEKarrayLength > 3U ) ||(paramConfig->accelModeArgs.compressMode.EGEKarrayLength < 1U)))||
+					  /* if first pass is disabled */
+					  ( (paramConfig->accelModeArgs.compressMode.passSelect == HWA_COMPRESS_PATHSELECT_SECONDPASS) &&
+						(paramConfig->accelModeArgs.compressMode.scaleFactor >  (1U << 5U) ) &&
+						(
+						   (paramConfig->accelModeArgs.compressMode.method == HWA_COMPRESS_METHOD_EGE) &&
+						   (paramConfig->accelModeArgs.compressMode.EGEKidx > 31U)
+						)
+					  )
+				 )
+			)
+		{
+			/* invalid config params */
+			retCode = HWA_EINVAL_PARAMSET_COMPRESSMODE;
+		}
+		if ((paramConfig->accelMode == HWA_ACCELMODE_LOCALMAX) &&
+				 (
+					(paramConfig->accelModeArgs.localMaxMode.neighbourBitmask > (1U << 8U))||
+					(paramConfig->accelModeArgs.localMaxMode.thresholdBitMask > HWA_LOCALMAX_THRESH_BITMASK_BOTH_DIS) ||
+					(paramConfig->accelModeArgs.localMaxMode.thresholdMode > HWA_LOCALMAX_THRESH_SELECT_DIMBRAM_DIMCRAM)  ||
+					(paramConfig->accelModeArgs.localMaxMode.dimBNonCyclic > HWA_FEATURE_BIT_ENABLE) ||
+					(paramConfig->accelModeArgs.localMaxMode.dimCNonCyclic > HWA_FEATURE_BIT_ENABLE)
 
-             )
-        )
-    {
-        /* invalid config params */
-        retCode = HWA_EINVAL_PARAMSET_LOCALMAXMODE;
-    }
+				 )
+			)
+		{
+			/* invalid config params */
+			retCode = HWA_EINVAL_PARAMSET_LOCALMAXMODE;
+		}
+	}
 #endif
     return retCode;
 }
@@ -768,8 +772,8 @@ static void HWA_paramDoneIntr1ISR(uintptr_t arg)
 
         interruptParamDone0 = 0;
         interruptParamDone1 = 0;
-        interruptParamMask0 = (uint32_t)(ptrHWADriver->interrupt1ParamSetMask & 0xFFFFFFFF);
-        interruptParamMask1 = (uint32_t)((ptrHWADriver->interrupt1ParamSetMask >> 32U) & 0xFFFFFFFF);
+        interruptParamMask0 = (uint32_t)(ptrHWADriver->interrupt1ParamSetMask & 0xFFFFFFFFU);
+        interruptParamMask1 = (uint32_t)((ptrHWADriver->interrupt1ParamSetMask >> 32U) & 0xFFFFFFFFU);
 
         /* read the interrupt flag from PARAMDONESTAT register */
         paramDoneFlag0 = ctrlBaseAddr->PARAM_DONE_SET_STATUS[0];
@@ -839,8 +843,8 @@ static void HWA_paramDoneIntr2ISR(uintptr_t arg)
 
         interruptParamDone0 = 0;
         interruptParamDone1 = 0;
-        interruptParamMask0 = (uint32_t)(ptrHWADriver->interrupt2ParamSetMask & 0xFFFFFFFF);
-        interruptParamMask1 = (uint32_t)((ptrHWADriver->interrupt2ParamSetMask >> 32U) & 0xFFFFFFFF);
+        interruptParamMask0 = (uint32_t)(ptrHWADriver->interrupt2ParamSetMask & 0xFFFFFFFFU);
+        interruptParamMask1 = (uint32_t)((ptrHWADriver->interrupt2ParamSetMask >> 32U) & 0xFFFFFFFFU);
 
         /* read the interrupt flag from PARAMDONESTAT register */
         paramDoneFlag0 = ctrlBaseAddr->PARAM_DONE_SET_STATUS[0];
@@ -1001,8 +1005,8 @@ static void HWA_doClearHistgoramRAM(DSSHWACCRegs  *ctrlBaseAddr)
               1U);
 
     /* check the done register */
-    checkBits = (1 << MEM_INIT_START_HIST_ODD_RAM_START);
-    checkBits |= (1 << MEM_INIT_START_HIST_EVEN_RAM_START);
+    checkBits = (1U << MEM_INIT_START_HIST_ODD_RAM_START);
+    checkBits |= (1U << MEM_INIT_START_HIST_EVEN_RAM_START);
     clearDoneRegister = (uint32_t *)&ctrlBaseAddr->MEM_INIT_DONE;
     while (!((*clearDoneRegister) & checkBits))     //mem init is done
     {
@@ -1048,9 +1052,10 @@ HWA_Handle HWA_open(uint32_t  index, int32_t* errCode)
 {
     HWA_Handle          handle = NULL;
     OsalRegisterIntrParams_t interruptRegParams;
-    uint32_t            memReqSize = 0;
+    uint32_t            memReqSize = 0U;
     uintptr_t           key;
     int32_t             retCode = 0;
+	uint32_t            osalRetVal;
 
     if ((index >= HWA_NUM_INSTANCES) )// || (socHandle == NULL))
     {
@@ -1067,9 +1072,8 @@ HWA_Handle HWA_open(uint32_t  index, int32_t* errCode)
          */
         if (gHWADriverPtr[index] == NULL)
         {
-            /* Allocate memory for the driver and initialize it */
-            gHWADriverPtr[index] = &HwaObjects[index];
-            if (gHWADriverPtr[index] == NULL)
+            
+            if (&HwaObjects[index] == NULL)
             {
                 /* Error: Out of memory */
                 HWA_DRV_log2 ("Debug: HWA Driver (%d) Out of memory (requested size: %d)\n",index,(uint32_t)sizeof(HWA_Driver));
@@ -1077,6 +1081,8 @@ HWA_Handle HWA_open(uint32_t  index, int32_t* errCode)
             }
             else
             {
+				/* Allocate memory for the driver and initialize it */
+				gHWADriverPtr[index] = &HwaObjects[index];
                 memset ((void *)gHWADriverPtr[index], 0U, sizeof(HWA_Driver));
                 gHWADriverPtr[index]->hwAttrs = &gHWAHwCfg[index];
                 gHWADriverPtr[index]->instanceNum = index;
@@ -1128,7 +1134,11 @@ HWA_Handle HWA_open(uint32_t  index, int32_t* errCode)
             interruptRegParams.corepacConfig.corepacEventNum = (int32_t)gHWADriverPtr[index]->hwAttrs->intNum1ParamSet;
 #endif
            /* Register interrupts */
-            Osal_RegisterInterrupt(&interruptRegParams, &gHWADriverPtr[index]->hwiHandleParamSet);
+            osalRetVal = Osal_RegisterInterrupt(&interruptRegParams, &gHWADriverPtr[index]->hwiHandleParamSet);
+			if(OSAL_INT_SUCCESS != osalRetVal)
+			{
+				HWA_DRV_log0("Error Could not register ISR !!!\n");
+			}
 
 
 
@@ -1149,7 +1159,11 @@ HWA_Handle HWA_open(uint32_t  index, int32_t* errCode)
             interruptRegParams.corepacConfig.corepacEventNum = (int32_t)gHWADriverPtr[index]->hwAttrs->intNumDone;
 #endif
             /* Register interrupts */
-            Osal_RegisterInterrupt(&interruptRegParams, &gHWADriverPtr[index]->hwiHandleDone);
+            osalRetVal = Osal_RegisterInterrupt(&interruptRegParams, &gHWADriverPtr[index]->hwiHandleDone);
+			if(OSAL_INT_SUCCESS != osalRetVal)
+			{
+				HWA_DRV_log0("Error Could not register ISR !!!\n");
+			}
 
 
             /* Each Paramset done interrupt 2 */
@@ -1170,7 +1184,11 @@ HWA_Handle HWA_open(uint32_t  index, int32_t* errCode)
 #endif
 
             /* Register interrupts */
-            Osal_RegisterInterrupt(&interruptRegParams, &gHWADriverPtr[index]->hwiHandleParamSetALT);
+            osalRetVal = Osal_RegisterInterrupt(&interruptRegParams, &gHWADriverPtr[index]->hwiHandleParamSetALT);
+			if(OSAL_INT_SUCCESS != osalRetVal)
+			{
+				HWA_DRV_log0("Error Could not register ISR !!!\n");
+			}
 
 
             /* All programmed Paramsets HWA ALT done interrupt */
@@ -1191,7 +1209,11 @@ HWA_Handle HWA_open(uint32_t  index, int32_t* errCode)
 #endif
 
             /* Register interrupts */
-            Osal_RegisterInterrupt(&interruptRegParams, &gHWADriverPtr[index]->hwiHandleDoneALT);
+            osalRetVal = Osal_RegisterInterrupt(&interruptRegParams, &gHWADriverPtr[index]->hwiHandleDoneALT);
+			if(OSAL_INT_SUCCESS != osalRetVal)
+			{
+				HWA_DRV_log0("Error Could not register ISR !!!\n");
+			}
 
 
             {
@@ -1200,8 +1222,8 @@ HWA_Handle HWA_open(uint32_t  index, int32_t* errCode)
                 CSL_dss_ctrlRegs        *dssCtrlRegsPtr;
 
                 /* unlock the HWA registers */
-                ctrlBaseAddr->LOCK0_KICK0 = 0x01234567;
-                ctrlBaseAddr->LOCK0_KICK1 = 0xFEDCBA8;
+                ctrlBaseAddr->LOCK0_KICK0 = 0x01234567U;
+                ctrlBaseAddr->LOCK0_KICK1 = 0xFEDCBA8U;
 
 
                 /* set DBG_ACK_CTL1_DSS_HWA in DSS_CTRL:DBG_ACK_CTL1*/
@@ -1233,17 +1255,17 @@ HWA_Handle HWA_open(uint32_t  index, int32_t* errCode)
                 /* reset paramset */
                  memset((void *)paramBaseAddr, 0U, sizeof(DSSHWACCPARAMRegs)*gHWADriverPtr[index]->hwAttrs->numHwaParamSets);
                  /* clear the PARAM_DONE_SET_STATUS_0 and PARAM_DONE_SET_STATUS_1*/
-                 ctrlBaseAddr->PARAM_DONE_CLR[0] = 0xFFFFFFFF;
-                 ctrlBaseAddr->PARAM_DONE_CLR[1] = 0xFFFFFFFF;
+                 ctrlBaseAddr->PARAM_DONE_CLR[0] = 0xFFFFFFFFU;
+                 ctrlBaseAddr->PARAM_DONE_CLR[1] = 0xFFFFFFFFU;
                  /* clear the TRIGGER_SET_STATUS_0 and TRIGGER_SET_STATUS_1*/
-                 ctrlBaseAddr->TRIGGER_SET_IN_CLR[0] = 0xFFFFFFFF;
-                 ctrlBaseAddr->TRIGGER_SET_IN_CLR[1] = 0xFFFFFFFF;
+                 ctrlBaseAddr->TRIGGER_SET_IN_CLR[0] = 0xFFFFFFFFU;
+                 ctrlBaseAddr->TRIGGER_SET_IN_CLR[1] = 0xFFFFFFFFU;
                  /* clear the FFTCLIP register */
-                 ctrlBaseAddr->CLR_FFTCLIP = 0x1;
+                 ctrlBaseAddr->CLR_FFTCLIP = 0x1U;
                  /* clear the HISTOGRAM RAM */
                  HWA_doClearHistgoramRAM(ctrlBaseAddr);
                  /* clear other clip registers*/
-                 ctrlBaseAddr->CLR_CLIP_MISC = 0x1;
+                 ctrlBaseAddr->CLR_CLIP_MISC = 0x1U;
 
             }
         }
@@ -1324,9 +1346,9 @@ int32_t HWA_close(HWA_Handle handle)
                 ctrlBaseAddr->LOCK0_KICK1 = 0x0;
 
                 /* unlock the param mem */
-                mssToprcmRegPtr = (uint32_t *)0x02141008;  //TPR:MSS_TOPRCM:LOCK0_KICK0 physical address
+                mssToprcmRegPtr = (uint32_t *)0x02141008U;  //TPR:MSS_TOPRCM:LOCK0_KICK0 physical address
                 *mssToprcmRegPtr = 0x0;
-                mssToprcmRegPtr = (uint32_t *)0x0214100C;  //TPR:MSS_TOPRCM:LOCK1_KICK1 physical address
+                mssToprcmRegPtr = (uint32_t *)0x0214100CU;  //TPR:MSS_TOPRCM:LOCK1_KICK1 physical address
                 *mssToprcmRegPtr = 0x0;
               //  mssToprcmRegPtr = (uint32_t *)0x02140044;  //TPR:MSS_TOPRCM:SYS_CLK_DIV_VAL
               //  *mssToprcmRegPtr = 0x111;
@@ -1375,12 +1397,12 @@ int32_t HWA_reset(HWA_Handle handle)
     HWA_GET_DRIVER_STRUCT(handle); /* this fills the ptrHWADriver */
 
     /* validate driver acccess */
-    retCode = HWA_getDriverAccess(ptrHWADriver,true,false,0);
+    retCode = HWA_getDriverAccess(ptrHWADriver,(bool) true,(bool) false,0);
     if (retCode==0)
     {
         ctrlBaseAddr = (DSSHWACCRegs *)ptrHWADriver->hwAttrs->ctrlBaseAddr;
         HWA_doReset(ctrlBaseAddr);
-        HWA_releaseDriverAccess(ptrHWADriver,true,false,0);
+        HWA_releaseDriverAccess(ptrHWADriver,(bool)true,(bool)false,0);
     }
 
     /* return */
@@ -1408,12 +1430,12 @@ extern int32_t HWA_clearHistogramRAM(HWA_Handle handle)
     HWA_GET_DRIVER_STRUCT(handle); /* this fills the ptrHWADriver */
 
                                    /* validate driver acccess */
-    retCode = HWA_getDriverAccess(ptrHWADriver, true, false, 0);
+    retCode = HWA_getDriverAccess(ptrHWADriver, (bool) true, (bool) false, 0);
     if (retCode == 0)
     {
         ctrlBaseAddr = (DSSHWACCRegs *)ptrHWADriver->hwAttrs->ctrlBaseAddr;
         HWA_doClearHistgoramRAM(ctrlBaseAddr);
-        HWA_releaseDriverAccess(ptrHWADriver, true, false, 0);
+        HWA_releaseDriverAccess(ptrHWADriver, (bool) true, (bool) false, 0);
     }
 
     /* return */
@@ -1445,7 +1467,7 @@ int32_t HWA_configCommon(HWA_Handle handle, HWA_CommonConfig *commonConfig)
     HWA_GET_DRIVER_STRUCT(handle); /* this fills the ptrHWADriver */
 
     /* validate driver acccess */
-    retCode = HWA_getDriverAccess(ptrHWADriver,true,false,0);
+    retCode = HWA_getDriverAccess(ptrHWADriver,(bool) true,(bool) false,0);
     if (retCode == 0)
     {
 #ifdef HWA_PARAM_CHECK
@@ -1473,7 +1495,7 @@ int32_t HWA_configCommon(HWA_Handle handle, HWA_CommonConfig *commonConfig)
                    (commonConfig->contextswitchTriggerMode != HWA_CONTEXTSWITCH_TRIG_MODE_HARDWARE) &&
                    (commonConfig->contextswitchTriggerMode != HWA_CONTEXTSWITCH_TRIG_MODE_SOFTWARE) ) ||
                    ((commonConfig->contextswitchTriggerMode == HWA_CONTEXTSWITCH_TRIG_MODE_HARDWARE) &&
-                    (commonConfig->contextswitchTriggerSrc > 19)) || //hardware trigger, Valid programmation 0-19
+                    (commonConfig->contextswitchTriggerSrc > 19U)) || //hardware trigger, Valid programmation 0-19
                    ((commonConfig->contextswitchTriggerMode == HWA_CONTEXTSWITCH_TRIG_MODE_DMA) &&
                     (commonConfig->contextswitchTriggerSrc > (ptrHWADriver->hwAttrs->numDmaChannels - 1) ))
                 ))
@@ -1483,12 +1505,12 @@ int32_t HWA_configCommon(HWA_Handle handle, HWA_CommonConfig *commonConfig)
         }
         else if (
             ((commonConfig->configMask & HWA_COMMONCONFIG_MASK_BPMCFG) &&
-             ((commonConfig->fftConfig.bpmRate > (1 << 10U)) || (commonConfig->fftConfig.bpmRate < 1))) ||
+             ((commonConfig->fftConfig.bpmRate > (1U << 10U)) || (commonConfig->fftConfig.bpmRate < 1U))) ||
             ((commonConfig->configMask & HWA_COMMONCONFIG_MASK_TWIDDITHERENABLE) &&
             (commonConfig->fftConfig.twidDitherEnable > HWA_FEATURE_BIT_ENABLE)) ||
             ((commonConfig->configMask & HWA_COMMONCONFIG_MASK_LFSRSEED) &&
-             (commonConfig->fftConfig.lfsrSeed > (1 << 29U)) && (commonConfig->fftConfig.lfsrSeed > 0)) ||
-            ((commonConfig->configMask & HWA_COMMONCONFIG_MASK_FFTSUMDIV) && (commonConfig->fftConfig.fftSumDiv > (1 << 5U)))
+             (commonConfig->fftConfig.lfsrSeed > (1U << 29U)) ) ||
+            ((commonConfig->configMask & HWA_COMMONCONFIG_MASK_FFTSUMDIV) && (commonConfig->fftConfig.fftSumDiv > (1U << 5U)))
             )
         {
             /* invalid config */
@@ -1496,14 +1518,14 @@ int32_t HWA_configCommon(HWA_Handle handle, HWA_CommonConfig *commonConfig)
         }
         else if (
                  (commonConfig->configMask & HWA_COMMONCONFIG_MASK_DCEST_SCALESHIFT) &&
-                 ((commonConfig->dcEstimateConfig.scale > (1 << 9U)) || (commonConfig->dcEstimateConfig.shift > 14))
+                 ((commonConfig->dcEstimateConfig.scale > (1U << 9U)) || (commonConfig->dcEstimateConfig.shift > 14U))
                )
         {
             /* invalid config */
             retCode = HWA_EINVAL_COMMON_REGISTER_DCEST;
         }
         else if (
-            ((commonConfig->configMask & HWA_COMMONCONFIG_MASK_CFARTHRESHOLDSCALE) && (commonConfig->cfarConfig.thresholdScale > (1 << 18U)))
+            ((commonConfig->configMask & HWA_COMMONCONFIG_MASK_CFARTHRESHOLDSCALE) && (commonConfig->cfarConfig.thresholdScale > (1U << 18U)))
             )
         {
             /* invalid config */
@@ -1511,14 +1533,14 @@ int32_t HWA_configCommon(HWA_Handle handle, HWA_CommonConfig *commonConfig)
         }
         else if (
             ((commonConfig->configMask & HWA_COMMONCONFIG_MASK_INTERFSUM_MAG) &&
-             ((commonConfig->interfConfig.sumMagScale > (1 << 8U)) || (commonConfig->interfConfig.sumMagShift > 6U))) ||
+             ((commonConfig->interfConfig.sumMagScale > (1U << 8U)) || (commonConfig->interfConfig.sumMagShift > 6U))) ||
             ((commonConfig->configMask & HWA_COMMONCONFIG_MASK_INTERFSUM_MAGDIFF) &&
-             ((commonConfig->interfConfig.sumMagDiffScale > (1 << 8U)) || (commonConfig->interfConfig.sumMagDiffShift > 6U))) ||
-            ((commonConfig->configMask & HWA_COMMONCONFIG_MASK_INTERF_MITG_WINDOW_PARAM) && (commonConfig->interfConfig.mitigationWindowParam[0] > (1 << 5U))) ||
-            ((commonConfig->configMask & HWA_COMMONCONFIG_MASK_INTERF_MITG_WINDOW_PARAM) && (commonConfig->interfConfig.mitigationWindowParam[1] > (1 << 5U))) ||
-            ((commonConfig->configMask & HWA_COMMONCONFIG_MASK_INTERF_MITG_WINDOW_PARAM) && (commonConfig->interfConfig.mitigationWindowParam[2] > (1 << 5U))) ||
-            ((commonConfig->configMask & HWA_COMMONCONFIG_MASK_INTERF_MITG_WINDOW_PARAM) && (commonConfig->interfConfig.mitigationWindowParam[3] > (1 << 5U))) ||
-            ((commonConfig->configMask & HWA_COMMONCONFIG_MASK_INTERF_MITG_WINDOW_PARAM) && (commonConfig->interfConfig.mitigationWindowParam[4] > (1 << 5U)))
+             ((commonConfig->interfConfig.sumMagDiffScale > (1U << 8U)) || (commonConfig->interfConfig.sumMagDiffShift > 6U))) ||
+            ((commonConfig->configMask & HWA_COMMONCONFIG_MASK_INTERF_MITG_WINDOW_PARAM) && (commonConfig->interfConfig.mitigationWindowParam[0] > (1U << 5U))) ||
+            ((commonConfig->configMask & HWA_COMMONCONFIG_MASK_INTERF_MITG_WINDOW_PARAM) && (commonConfig->interfConfig.mitigationWindowParam[1] > (1U << 5U))) ||
+            ((commonConfig->configMask & HWA_COMMONCONFIG_MASK_INTERF_MITG_WINDOW_PARAM) && (commonConfig->interfConfig.mitigationWindowParam[2] > (1U << 5U))) ||
+            ((commonConfig->configMask & HWA_COMMONCONFIG_MASK_INTERF_MITG_WINDOW_PARAM) && (commonConfig->interfConfig.mitigationWindowParam[3] > (1U << 5U))) ||
+            ((commonConfig->configMask & HWA_COMMONCONFIG_MASK_INTERF_MITG_WINDOW_PARAM) && (commonConfig->interfConfig.mitigationWindowParam[4] > (1U << 5U)))
             )
         {
             /* invalid config */
@@ -1532,41 +1554,41 @@ int32_t HWA_configCommon(HWA_Handle handle, HWA_CommonConfig *commonConfig)
             /* invalid config */
             retCode = HWA_EINVAL_COMMON_REGISTER_COMPLEXMULT;
         }
-        else if (((commonConfig->configMask & HWA_COMMONCONFIG_MASK_CHANCOMB_VEC_SIZE) && (commonConfig->chanCombConfig.size > (1 << 8U))))
+        else if (((commonConfig->configMask & HWA_COMMONCONFIG_MASK_CHANCOMB_VEC_SIZE) && (commonConfig->chanCombConfig.size > (1U << 8U))))
         {
             /* invalid config */
             retCode = HWA_EINVAL_COMMON_REGISTER_CHANCOMB;
         }
-        else if (((commonConfig->configMask & HWA_COMMONCONFIG_MASK_ZEROINSERT_NUM_MASK) && (commonConfig->zeroInsertConfig.number > (1 << 8U))))
+        else if (((commonConfig->configMask & HWA_COMMONCONFIG_MASK_ZEROINSERT_NUM_MASK) && (commonConfig->zeroInsertConfig.number > (1U << 8U))))
         {
             /* invalid config */
             retCode = HWA_EINVAL_COMMON_REGISTER_ZEROINSERT;
         }
-        else if (((commonConfig->configMask & HWA_COMMONCONFIG_MASK_MAX2D_OFFSETBOTHDIM) && (commonConfig->advStatConfig.max2DoffsetDim1 > (1 << 24U))) ||
-            ((commonConfig->configMask & HWA_COMMONCONFIG_MASK_MAX2D_OFFSETBOTHDIM) && (commonConfig->advStatConfig.max2DoffsetDim2 > (1 << 24U))) ||
-            ((commonConfig->configMask & HWA_COMMONCONFIG_MASK_CDFCNT_THRESHOLD) && (commonConfig->advStatConfig.cdfCntThresh > 4095))
+        else if (((commonConfig->configMask & HWA_COMMONCONFIG_MASK_MAX2D_OFFSETBOTHDIM) && (commonConfig->advStatConfig.max2DoffsetDim1 > (1 << 24))) ||
+            ((commonConfig->configMask & HWA_COMMONCONFIG_MASK_MAX2D_OFFSETBOTHDIM) && (commonConfig->advStatConfig.max2DoffsetDim2 > (1 << 24))) ||
+            ((commonConfig->configMask & HWA_COMMONCONFIG_MASK_CDFCNT_THRESHOLD) && (commonConfig->advStatConfig.cdfCntThresh > 4095U))
             )
         {
             /* invalid config */
             retCode = HWA_EINVAL_COMMON_REGISTER_ADVSTAT;
         }
-        else if ( ((commonConfig->configMask & HWA_COMMONCONFIG_MASK_LOCALMAXDIMB_THRESHOLDSW) && (commonConfig->localMaxConfig.dimBThreshold > ( 1 << 16U))) ||
-            ((commonConfig->configMask & HWA_COMMONCONFIG_MASK_LOCALMAXDIMC_THRESHOLDSW) && (commonConfig->localMaxConfig.dimCThreshold > (1 << 16U)))||
-            ((commonConfig->configMask & HWA_COMMONCONFIG_MASK_LOCALMAXDIMBTHRESH_OFFSET) && (commonConfig->localMaxConfig.dimBBaseAddress > (1 << 12U)))||
-            ((commonConfig->configMask & HWA_COMMONCONFIG_MASK_LOCALMAXDIMCTHRESH_OFFSET) && (commonConfig->localMaxConfig.dimCBaseAddress > (1 << 12U)))
+        else if ( //((commonConfig->configMask & HWA_COMMONCONFIG_MASK_LOCALMAXDIMB_THRESHOLDSW) && (commonConfig->localMaxConfig.dimBThreshold > ( 1 << 16U))) ||
+             //((commonConfig->configMask & HWA_COMMONCONFIG_MASK_LOCALMAXDIMC_THRESHOLDSW) && (commonConfig->localMaxConfig.dimCThreshold > (1 << 16U)))||
+            ((commonConfig->configMask & HWA_COMMONCONFIG_MASK_LOCALMAXDIMBTHRESH_OFFSET) && (commonConfig->localMaxConfig.dimBBaseAddress > (1U << 12U)))||
+            ((commonConfig->configMask & HWA_COMMONCONFIG_MASK_LOCALMAXDIMCTHRESH_OFFSET) && (commonConfig->localMaxConfig.dimCBaseAddress > (1U << 12U)))
             )
         {
             retCode = HWA_EINVAL_COMMON_REGISTER_LOCALMAXIMUM;
         }
         else if (
-            ((commonConfig->configMask & HWA_COMMONCONFIG_MASK_EGECOMRESS_KPARAM) && (commonConfig->compressConfig.EGEKparam[0] >= (1 << 5U) )) ||
-            ((commonConfig->configMask & HWA_COMMONCONFIG_MASK_EGECOMRESS_KPARAM) && (commonConfig->compressConfig.EGEKparam[1] >= (1 << 5U))) ||
-            ((commonConfig->configMask & HWA_COMMONCONFIG_MASK_EGECOMRESS_KPARAM) && (commonConfig->compressConfig.EGEKparam[2] >= (1 << 5U))) ||
-            ((commonConfig->configMask & HWA_COMMONCONFIG_MASK_EGECOMRESS_KPARAM) && (commonConfig->compressConfig.EGEKparam[3] >= (1 << 5U))) ||
-            ((commonConfig->configMask & HWA_COMMONCONFIG_MASK_EGECOMRESS_KPARAM) && (commonConfig->compressConfig.EGEKparam[4] >= (1 << 5U))) ||
-            ((commonConfig->configMask & HWA_COMMONCONFIG_MASK_EGECOMRESS_KPARAM) && (commonConfig->compressConfig.EGEKparam[5] >= (1 << 5U))) ||
-            ((commonConfig->configMask & HWA_COMMONCONFIG_MASK_EGECOMRESS_KPARAM) && (commonConfig->compressConfig.EGEKparam[6] >= (1 << 5U))) ||
-            ((commonConfig->configMask & HWA_COMMONCONFIG_MASK_EGECOMRESS_KPARAM) && (commonConfig->compressConfig.EGEKparam[7] >= (1 << 5U)))
+            ((commonConfig->configMask & HWA_COMMONCONFIG_MASK_EGECOMRESS_KPARAM) && (commonConfig->compressConfig.EGEKparam[0] >= 32U)) ||
+            ((commonConfig->configMask & HWA_COMMONCONFIG_MASK_EGECOMRESS_KPARAM) && (commonConfig->compressConfig.EGEKparam[1] >= 32U)) ||
+            ((commonConfig->configMask & HWA_COMMONCONFIG_MASK_EGECOMRESS_KPARAM) && (commonConfig->compressConfig.EGEKparam[2] >= 32U)) ||
+            ((commonConfig->configMask & HWA_COMMONCONFIG_MASK_EGECOMRESS_KPARAM) && (commonConfig->compressConfig.EGEKparam[3] >= 32U)) ||
+            ((commonConfig->configMask & HWA_COMMONCONFIG_MASK_EGECOMRESS_KPARAM) && (commonConfig->compressConfig.EGEKparam[4] >= 32U)) ||
+            ((commonConfig->configMask & HWA_COMMONCONFIG_MASK_EGECOMRESS_KPARAM) && (commonConfig->compressConfig.EGEKparam[5] >= 32U)) ||
+            ((commonConfig->configMask & HWA_COMMONCONFIG_MASK_EGECOMRESS_KPARAM) && (commonConfig->compressConfig.EGEKparam[6] >= 32U)) ||
+            ((commonConfig->configMask & HWA_COMMONCONFIG_MASK_EGECOMRESS_KPARAM) && (commonConfig->compressConfig.EGEKparam[7] >= 32U))
            )
         {
             /* invalid config params */
@@ -1661,10 +1683,10 @@ int32_t HWA_configCommon(HWA_Handle handle, HWA_CommonConfig *commonConfig)
                 /* Pulse (set and reset)single register-bit REG_LFSRLOAD */
                  CSL_FINSR(ctrlBaseAddr->LFSR_LOAD,
                            LFSR_LOAD_LFSR_LOAD_END,
-                           LFSR_LOAD_LFSR_LOAD_START, 1);
+                           LFSR_LOAD_LFSR_LOAD_START, 1U);
                  CSL_FINSR(ctrlBaseAddr->LFSR_LOAD,
                            LFSR_LOAD_LFSR_LOAD_END,
-                           LFSR_LOAD_LFSR_LOAD_START, 0);
+                           LFSR_LOAD_LFSR_LOAD_START, 0U);
             }
             /* set fft sum div */
             if (commonConfig->configMask & HWA_COMMONCONFIG_MASK_FFTSUMDIV)
@@ -1960,7 +1982,7 @@ int32_t HWA_configCommon(HWA_Handle handle, HWA_CommonConfig *commonConfig)
 
             }
         }
-        HWA_releaseDriverAccess(ptrHWADriver,true,false,0);
+        HWA_releaseDriverAccess(ptrHWADriver,(bool) true,(bool) false,0);
     }
 
     /* return */
@@ -2001,7 +2023,7 @@ int32_t HWA_configParamSet(HWA_Handle handle, uint8_t paramsetIdx, HWA_ParamConf
     HWA_GET_DRIVER_STRUCT(handle); /* this fills the ptrHWADriver */
 
     /* validate driver acccess */
-    retCode = HWA_getDriverAccess(ptrHWADriver,false,true,paramsetIdx);
+    retCode = HWA_getDriverAccess(ptrHWADriver,(bool) false,(bool) true,paramsetIdx);
     if (retCode==0)
     {
         /* validate the paramConfig */
@@ -2031,8 +2053,8 @@ int32_t HWA_configParamSet(HWA_Handle handle, uint8_t paramsetIdx, HWA_ParamConf
                     dmaConfig->destAddr = (uint32_t)(&ctrlBaseAddr->DMA2HWA_TRIG);
                     dmaConfig->srcAddr = (uint32_t)(&ctrlBaseAddr->SIGDMACHDONE[paramConfig->dmaTriggerSrc]);
                     dmaConfig->aCnt = sizeof(uint32_t);
-                    dmaConfig->bCnt = 1;
-                    dmaConfig->cCnt = 1;
+                    dmaConfig->bCnt = 1U;
+                    dmaConfig->cCnt = 1U;
                 }
             }
 
@@ -2380,7 +2402,7 @@ int32_t HWA_configParamSet(HWA_Handle handle, uint8_t paramsetIdx, HWA_ParamConf
                 }
                 else
                 {
-                    paramReg.accelModeParam.CFARPATH.CFAREN |= CSL_FMKR(CFAREN_CFAR_ADV_OUT_MODE_END, CFAREN_CFAR_ADV_OUT_MODE_START, paramConfig->accelModeArgs.cfarMode.cfarAdvOutMode);
+                    paramReg.accelModeParam.CFARPATH.CFAREN |= CSL_FMKR(CFAREN_CFAR_ADV_OUT_MODE_END, CFAREN_CFAR_ADV_OUT_MODE_START, (uint32_t)paramConfig->accelModeArgs.cfarMode.cfarAdvOutMode);
                     /* set CFAR_OUT_MODE to 1*/
                     paramReg.accelModeParam.CFARPATH.CFAREN |= CSL_FMKR(CFAREN_CFAR_OUT_MODE_END, CFAREN_CFAR_OUT_MODE_START, 1U);
                  }
@@ -2429,7 +2451,7 @@ int32_t HWA_configParamSet(HWA_Handle handle, uint8_t paramsetIdx, HWA_ParamConf
             }
         }
 
-        HWA_releaseDriverAccess(ptrHWADriver,false,true,paramsetIdx);
+        HWA_releaseDriverAccess(ptrHWADriver,(bool) false,(bool) true,paramsetIdx);
     }
 
     /* return */
@@ -2466,7 +2488,7 @@ int32_t HWA_getDMAconfig(HWA_Handle handle, uint8_t dmaTriggerSrc, HWA_SrcDMACon
 
     HWA_GET_DRIVER_STRUCT(handle); /* this fills the ptrHWADriver */
 
-    retCode = HWA_getDriverAccess(ptrHWADriver,true,false,0);
+    retCode = HWA_getDriverAccess(ptrHWADriver,(bool) true,(bool) false,0);
     if (retCode==0)
     {
 #ifdef HWA_PARAM_CHECK
@@ -2483,10 +2505,10 @@ int32_t HWA_getDMAconfig(HWA_Handle handle, uint8_t dmaTriggerSrc, HWA_SrcDMACon
             /* Read signatures from local core memory instead of HWA registers */
             dmaConfig->srcAddr = (uint32_t) &ctrlBaseAddr->SIGDMACHDONE[dmaTriggerSrc];
             dmaConfig->aCnt = sizeof(uint32_t);
-            dmaConfig->bCnt = 1;
-            dmaConfig->cCnt = 1;
+            dmaConfig->bCnt = 1U;
+            dmaConfig->cCnt = 1U;
         }
-        HWA_releaseDriverAccess(ptrHWADriver,true,false,0);
+        HWA_releaseDriverAccess(ptrHWADriver,(bool) true,(bool) false,0);
     }
 
     return(retCode);
@@ -2513,7 +2535,7 @@ int32_t HWA_getHWAMemInfo(HWA_Handle handle, HWA_MemInfo *memInfo)
 
     HWA_GET_DRIVER_STRUCT(handle); /* this fills the ptrHWADriver */
 
-    retCode = HWA_getDriverAccess(ptrHWADriver,true,false,0);
+    retCode = HWA_getDriverAccess(ptrHWADriver,(bool) true,(bool) false,0);
     if (retCode==0)
     {
 #ifdef HWA_PARAM_CHECK
@@ -2529,7 +2551,7 @@ int32_t HWA_getHWAMemInfo(HWA_Handle handle, HWA_MemInfo *memInfo)
             memInfo->numBanks       = SOC_HWA_NUM_MEM_BANKS;
             memInfo->bankSize       = ptrHWADriver->hwAttrs->accelMemSize / memInfo->numBanks;
         }
-        HWA_releaseDriverAccess(ptrHWADriver,true,false,0);
+        HWA_releaseDriverAccess(ptrHWADriver,(bool) true,(bool) false,0);
     }
 
     return(retCode);
@@ -2566,7 +2588,7 @@ extern int32_t HWA_paramSetDonePolling(HWA_Handle handle, uint8_t numParamSets, 
     HWA_GET_DRIVER_STRUCT(handle); /* this fills the ptrHWADriver */
 
      /* validate driver acccess */
-    retCode = HWA_getDriverAccess(ptrHWADriver, true, false, 0);
+    retCode = HWA_getDriverAccess(ptrHWADriver, (bool) true, (bool) false, 0);
     if (retCode == 0)
     {
 #ifdef HWA_PARAM_CHECK
@@ -2583,7 +2605,7 @@ extern int32_t HWA_paramSetDonePolling(HWA_Handle handle, uint8_t numParamSets, 
         else
 #endif
         {
-            pollingFlag = 1;
+            pollingFlag = 1U;
 
             for (paramCount = 0; paramCount < numParamSets; paramCount++)
             {
@@ -2591,7 +2613,7 @@ extern int32_t HWA_paramSetDonePolling(HWA_Handle handle, uint8_t numParamSets, 
                 if ((ptrHWADriver->interrupt1ParamSetMask & (1<< paramsetsArray[paramCount])) ||
                     (ptrHWADriver->interrupt2ParamSetMask & (1 << paramsetsArray[paramCount])))
                 {
-                    pollingFlag = 0;
+                    pollingFlag = 0U;
                     break;
                 }
             }
@@ -2603,13 +2625,13 @@ extern int32_t HWA_paramSetDonePolling(HWA_Handle handle, uint8_t numParamSets, 
 
                 for (paramCount = 0; paramCount < numParamSets; paramCount++)
                 {
-                    if (paramsetsArray[paramCount] < 32)
+                    if (paramsetsArray[paramCount] < (uint8_t) 32)
                     {
-                        checkBits1 |= (1 << paramsetsArray[paramCount]);
+                        checkBits1 |= (1U << paramsetsArray[paramCount]);
                     }
                     else
                     {
-                        checkBits2 |= (1 << (paramsetsArray[paramCount] - 32));
+                        checkBits2 |= (1U << (paramsetsArray[paramCount] - 32));
                     }
                 }
                 while (((*paramDoneRegister1 & checkBits1) != checkBits1) && ((*paramDoneRegister2 & checkBits2) != checkBits2))
@@ -2625,7 +2647,7 @@ extern int32_t HWA_paramSetDonePolling(HWA_Handle handle, uint8_t numParamSets, 
                 retCode = HWA_PARAMSET_POLLINGNOTALLOWED;
             }
         }
-        HWA_releaseDriverAccess(ptrHWADriver, true, false, 0);
+        HWA_releaseDriverAccess(ptrHWADriver, (bool) true, (bool) false, 0);
     }
 
     /* return */
@@ -2657,7 +2679,7 @@ extern int32_t HWA_singleParamSetDonePolling(HWA_Handle handle, uint8_t paramset
     HWA_GET_DRIVER_STRUCT(handle); /* this fills the ptrHWADriver */
 
     /* validate driver acccess */
-    retCode = HWA_getDriverAccess(ptrHWADriver, true, false, 0);
+    retCode = HWA_getDriverAccess(ptrHWADriver, (bool) true, (bool) false, 0);
     if (retCode == 0)
     {
 #ifdef HWA_PARAM_CHECK
@@ -2670,7 +2692,7 @@ extern int32_t HWA_singleParamSetDonePolling(HWA_Handle handle, uint8_t paramset
 #endif
         {
             /* check to see if the paramset interrupt is disable */
-            if ((ptrHWADriver->interrupt1ParamSetMask & (1 << paramsetIndex)) || (ptrHWADriver->interrupt2ParamSetMask & (1 << paramsetIndex)))
+            if ((ptrHWADriver->interrupt1ParamSetMask & (1U << paramsetIndex)) || (ptrHWADriver->interrupt2ParamSetMask & (1U << paramsetIndex)))
             {
                 /* polling not allowed */
                 retCode = HWA_PARAMSET_POLLINGNOTALLOWED;
@@ -2679,15 +2701,15 @@ extern int32_t HWA_singleParamSetDonePolling(HWA_Handle handle, uint8_t paramset
             {
                 ctrlBaseAddr = (DSSHWACCRegs *)ptrHWADriver->hwAttrs->ctrlBaseAddr;
 
-                if (paramsetIndex < 32)
+                if (paramsetIndex < 32U)
                 {
                     paramDoneRegister = (uint32_t *)&ctrlBaseAddr->PARAM_DONE_SET_STATUS[0];
-                    checkBits = (1 << paramsetIndex);
+                    checkBits = (1U << paramsetIndex);
                 }
                 else
                 {
                     paramDoneRegister = (uint32_t *)&ctrlBaseAddr->PARAM_DONE_SET_STATUS[1];
-                    checkBits = (1 << (paramsetIndex - 32));
+                    checkBits = (1U << (paramsetIndex - 32));
                 }
 
                 while (!(*paramDoneRegister & checkBits))
@@ -2695,7 +2717,7 @@ extern int32_t HWA_singleParamSetDonePolling(HWA_Handle handle, uint8_t paramset
 
                 }
                 /* clear the paramdone registers*/
-                if (paramsetIndex < 32)
+                if (paramsetIndex < 32U)
                 {
                     ctrlBaseAddr->PARAM_DONE_CLR[0] = checkBits;
                 }
@@ -2705,7 +2727,7 @@ extern int32_t HWA_singleParamSetDonePolling(HWA_Handle handle, uint8_t paramset
                 }
             }
         }
-        HWA_releaseDriverAccess(ptrHWADriver, true, false, 0);
+        HWA_releaseDriverAccess(ptrHWADriver, (bool) true, (bool) false, 0);
     }
 
     /* return */
@@ -2739,7 +2761,7 @@ int32_t HWA_getDMAChanIndex(HWA_Handle handle, uint8_t edmaChanId, uint8_t *hwaD
 
     HWA_GET_DRIVER_STRUCT(handle); /* this fills the ptrHWADriver */
 
-    retCode = HWA_getDriverAccess(ptrHWADriver,true,false,0);
+    retCode = HWA_getDriverAccess(ptrHWADriver,(bool) true,(bool) false,0);
     if (retCode==0)
     {
 #ifdef HWA_PARAM_CHECK
@@ -2761,7 +2783,7 @@ int32_t HWA_getDMAChanIndex(HWA_Handle handle, uint8_t edmaChanId, uint8_t *hwaD
                 }
             }
         }
-        HWA_releaseDriverAccess(ptrHWADriver,true,false,0);
+        HWA_releaseDriverAccess(ptrHWADriver,(bool) true,(bool) false,0);
     }
 
     if(foundChan == false)
@@ -2793,7 +2815,7 @@ int32_t HWA_getEDMAChanId(HWA_Handle handle, uint8_t hwaDMAdestChan)
 
     HWA_GET_DRIVER_STRUCT(handle); /* this fills the ptrHWADriver */
 
-    retCode = HWA_getDriverAccess(ptrHWADriver,true,false,0);
+    retCode = HWA_getDriverAccess(ptrHWADriver,(bool) true,(bool) false,0);
     if (retCode==0)
     {
 #ifdef HWA_PARAM_CHECK
@@ -2807,7 +2829,7 @@ int32_t HWA_getEDMAChanId(HWA_Handle handle, uint8_t hwaDMAdestChan)
         {
             retCode = gHwaEDMAChanMapping[hwaDMAdestChan];
         }
-        HWA_releaseDriverAccess(ptrHWADriver,true,false,0);
+        HWA_releaseDriverAccess(ptrHWADriver,(bool) true,(bool) false,0);
     }
 
     return(retCode);
@@ -2844,7 +2866,7 @@ int32_t HWA_configRam(HWA_Handle handle, uint8_t ramType, uint8_t *data, uint32_
     HWA_GET_DRIVER_STRUCT(handle); /* this fills the ptrHWADriver */
 
     /* validate driver acccess */
-    retCode = HWA_getDriverAccess(ptrHWADriver,true,false,0);
+    retCode = HWA_getDriverAccess(ptrHWADriver,(bool) true,(bool) false,0);
     if (retCode==0)
     {
 #ifdef HWA_PARAM_CHECK
@@ -2874,7 +2896,7 @@ int32_t HWA_configRam(HWA_Handle handle, uint8_t ramType, uint8_t *data, uint32_
             memcpy((void *)&ramBaseAddr[startIdx],data,dataSize);
         }
 
-        HWA_releaseDriverAccess(ptrHWADriver,true,false,0);
+        HWA_releaseDriverAccess(ptrHWADriver,(bool) true,(bool) false,0);
     }
 
     /* return */
@@ -2941,7 +2963,7 @@ extern int32_t HWA_readRam(HWA_Handle handle, uint8_t ramType, uint8_t *data, ui
     HWA_GET_DRIVER_STRUCT(handle); /* this fills the ptrHWADriver */
 
                                    /* validate driver acccess */
-    retCode = HWA_getDriverAccess(ptrHWADriver, true, false, 0);
+    retCode = HWA_getDriverAccess(ptrHWADriver, (bool) true, (bool) false, 0);
     if (retCode == 0)
     {
 #ifdef HWA_PARAM_CHECK
@@ -2973,7 +2995,7 @@ extern int32_t HWA_readRam(HWA_Handle handle, uint8_t ramType, uint8_t *data, ui
             memcpy(data, (void *)&ramBaseAddr[startIdx],  dataSize);
         }
 
-        HWA_releaseDriverAccess(ptrHWADriver, true, false, 0);
+        HWA_releaseDriverAccess(ptrHWADriver, (bool) true, (bool) false, 0);
     }
 
     /* return */
@@ -3008,7 +3030,7 @@ extern int32_t HWA_readHistThresholdRam(HWA_Handle handle, HWA_CdfThreshold *cdf
     HWA_GET_DRIVER_STRUCT(handle); /* this fills the ptrHWADriver */
 
     /* validate driver acccess */
-    retCode = HWA_getDriverAccess(ptrHWADriver, true, false, 0);
+    retCode = HWA_getDriverAccess(ptrHWADriver, (bool) true, (bool) false, 0);
     if (retCode == 0)
     {
 #ifdef HWA_PARAM_CHECK
@@ -3030,7 +3052,7 @@ extern int32_t HWA_readHistThresholdRam(HWA_Handle handle, HWA_CdfThreshold *cdf
 
         }
 
-        HWA_releaseDriverAccess(ptrHWADriver, true, false, 0);
+        HWA_releaseDriverAccess(ptrHWADriver, (bool) true, (bool) false, 0);
     }
 
     /* return */
@@ -3064,7 +3086,7 @@ int32_t HWA_enableParamSetInterrupt(HWA_Handle handle, uint8_t paramsetIdx, HWA_
     HWA_GET_DRIVER_STRUCT(handle); /* this fills the ptrHWADriver */
 
     /* validate driver acccess */
-    retCode = HWA_getDriverAccess(ptrHWADriver,false,true,paramsetIdx);
+    retCode = HWA_getDriverAccess(ptrHWADriver,(bool) false,(bool) true,paramsetIdx);
     if (retCode==0)
     {
 #ifdef HWA_PARAM_CHECK
@@ -3080,7 +3102,7 @@ int32_t HWA_enableParamSetInterrupt(HWA_Handle handle, uint8_t paramsetIdx, HWA_
             retCode = HWA_EINVAL;
         }
         else if (((intrConfig->interruptTypeFlag & HWA_PARAMDONE_INTERRUPT_TYPE_CPU_INTR1) ||(intrConfig->interruptTypeFlag & HWA_PARAMDONE_INTERRUPT_TYPE_CPU_INTR2)) &&
-                 (ptrHWADriver->hwAttrs->isConcurrentAccessAllowed == false))
+                 (ptrHWADriver->hwAttrs->isConcurrentAccessAllowed == (bool) false))
         {
             /* This version of HWA IP doesn't allow concurrent read of HWACCREGx registers when HWA is active.
              * While enabling of this CPU interrupt is fine, it is the handling of this interrupt in ISR that
@@ -3109,10 +3131,10 @@ int32_t HWA_enableParamSetInterrupt(HWA_Handle handle, uint8_t paramsetIdx, HWA_
                 if (intrConfig->interruptTypeFlag & HWA_PARAMDONE_INTERRUPT_TYPE_CPU_INTR1)
                 {
 #ifdef BUILD_DSP_1
-					Osal_EnableInterrupt(ptrHWADriver->hwAttrs->intNum1ParamSet, OSAL_REGINT_INTVEC_EVENT_COMBINER);
+					Osal_EnableInterrupt((int32_t) ptrHWADriver->hwAttrs->intNum1ParamSet, OSAL_REGINT_INTVEC_EVENT_COMBINER);
 #endif
 #ifdef BUILD_MCU
-                    Osal_EnableInterrupt(ptrHWADriver->hwAttrs->intNum1ParamSet, ptrHWADriver->hwAttrs->intNum1ParamSet);
+                    Osal_EnableInterrupt( (int32_t) ptrHWADriver->hwAttrs->intNum1ParamSet, (int32_t) ptrHWADriver->hwAttrs->intNum1ParamSet);
 #endif
 
                     /* enable the Interrupt 1*/
@@ -3126,10 +3148,10 @@ int32_t HWA_enableParamSetInterrupt(HWA_Handle handle, uint8_t paramsetIdx, HWA_
                 if (intrConfig->interruptTypeFlag & HWA_PARAMDONE_INTERRUPT_TYPE_CPU_INTR2)
                 {
 #ifdef BUILD_DSP_1
-					Osal_EnableInterrupt(ptrHWADriver->hwAttrs->intNum2ParamSet, OSAL_REGINT_INTVEC_EVENT_COMBINER);
+					Osal_EnableInterrupt((int32_t) ptrHWADriver->hwAttrs->intNum2ParamSet, OSAL_REGINT_INTVEC_EVENT_COMBINER);
 #endif
 #ifdef BUILD_MCU
-                    Osal_EnableInterrupt(ptrHWADriver->hwAttrs->intNum2ParamSet, ptrHWADriver->hwAttrs->intNum2ParamSet);
+                    Osal_EnableInterrupt((int32_t) ptrHWADriver->hwAttrs->intNum2ParamSet, (int32_t) ptrHWADriver->hwAttrs->intNum2ParamSet);
 #endif
                     /* enable the interrupt 2*/
                     CSL_FINSR(paramBaseAddr->HEADER, HEADER_CPU_INTR2_EN_END, HEADER_CPU_INTR2_EN_START, 1U);
@@ -3149,7 +3171,7 @@ int32_t HWA_enableParamSetInterrupt(HWA_Handle handle, uint8_t paramsetIdx, HWA_
                 CSL_FINSR(paramBaseAddr->HEADER, HEADER_DMATRIG_EN_END, HEADER_DMATRIG_EN_START,1U);
             }
         }
-        HWA_releaseDriverAccess(ptrHWADriver,false,true,paramsetIdx);
+        HWA_releaseDriverAccess(ptrHWADriver,(bool) false,(bool) true,paramsetIdx);
     }
 
     /* return */
@@ -3201,10 +3223,10 @@ int32_t HWA_enableDoneInterrupt(HWA_Handle handle, uint8_t threadIdx, HWA_Done_I
             ptrHWADriver->interruptCtxDone.callbackFn = callbackFn;
             ptrHWADriver->interruptCtxDone.callbackArg = callbackArg;
 #ifdef BUILD_DSP_1
-			Osal_EnableInterrupt(ptrHWADriver->hwAttrs->intNumDone, OSAL_REGINT_INTVEC_EVENT_COMBINER);
+			Osal_EnableInterrupt((int32_t) ptrHWADriver->hwAttrs->intNumDone, OSAL_REGINT_INTVEC_EVENT_COMBINER);
 #endif
 #ifdef BUILD_MCU
-            Osal_EnableInterrupt(ptrHWADriver->hwAttrs->intNumDone, ptrHWADriver->hwAttrs->intNumDone);
+            Osal_EnableInterrupt((int32_t) ptrHWADriver->hwAttrs->intNumDone, (int32_t) ptrHWADriver->hwAttrs->intNumDone);
 #endif
         }
         else
@@ -3214,14 +3236,14 @@ int32_t HWA_enableDoneInterrupt(HWA_Handle handle, uint8_t threadIdx, HWA_Done_I
             ptrHWADriver->interruptCtxDoneALT.callbackFn = callbackFn;
             ptrHWADriver->interruptCtxDoneALT.callbackArg = callbackArg;
 #ifdef BUILD_DSP_1
-			Osal_EnableInterrupt(ptrHWADriver->hwAttrs->intNumDoneALT, OSAL_REGINT_INTVEC_EVENT_COMBINER);
+			Osal_EnableInterrupt((int32_t) ptrHWADriver->hwAttrs->intNumDoneALT, OSAL_REGINT_INTVEC_EVENT_COMBINER);
 #endif
 #ifdef BUILD_MCU
-            Osal_EnableInterrupt(ptrHWADriver->hwAttrs->intNumDoneALT, ptrHWADriver->hwAttrs->intNumDoneALT);
+            Osal_EnableInterrupt((int32_t) ptrHWADriver->hwAttrs->intNumDoneALT, (int32_t) ptrHWADriver->hwAttrs->intNumDoneALT);
 #endif
         }
 
-        HWA_releaseDriverAccess(ptrHWADriver,true,false,0);
+        HWA_releaseDriverAccess(ptrHWADriver,(bool) true,(bool) false,0);
     }
 
     /* Restore the interrupts: */
@@ -3256,7 +3278,7 @@ int32_t HWA_disableParamSetInterrupt(HWA_Handle handle, uint8_t paramsetIdx, uin
     HWA_GET_DRIVER_STRUCT(handle); /* this fills the ptrHWADriver */
 
     /* validate driver acccess */
-    retCode = HWA_getDriverAccess(ptrHWADriver,false,true,paramsetIdx);
+    retCode = HWA_getDriverAccess(ptrHWADriver,(bool) false,(bool) true,paramsetIdx);
     if (retCode==0)
     {
         paramBaseAddr = (DSSHWACCPARAMRegs *)(ptrHWADriver->hwAttrs->paramBaseAddr+paramsetIdx*sizeof(DSSHWACCPARAMRegs));
@@ -3290,7 +3312,7 @@ int32_t HWA_disableParamSetInterrupt(HWA_Handle handle, uint8_t paramsetIdx, uin
             /* disable the interrupt to DMA, clear DMATRIGEN bits */
             CSL_FINSR(paramBaseAddr->HEADER, HEADER_DMATRIG_EN_END, HEADER_DMATRIG_EN_START,0U);
         }
-        HWA_releaseDriverAccess(ptrHWADriver,false,true,paramsetIdx);
+        HWA_releaseDriverAccess(ptrHWADriver,(bool) false,(bool) true,paramsetIdx);
     }
 
     /* return */
@@ -3389,7 +3411,7 @@ int32_t HWA_enable(HWA_Handle handle, uint8_t flagEnDis)
     HWA_GET_DRIVER_STRUCT(handle); /* this fills the ptrHWADriver */
 
     /* validate driver acccess */
-    retCode = HWA_getDriverAccess(ptrHWADriver,true,false,0);
+    retCode = HWA_getDriverAccess(ptrHWADriver,(bool) true,(bool) false,0);
     if (retCode==0)
     {
         ctrlBaseAddr = (DSSHWACCRegs *)ptrHWADriver->hwAttrs->ctrlBaseAddr;
@@ -3406,7 +3428,7 @@ int32_t HWA_enable(HWA_Handle handle, uint8_t flagEnDis)
             CSL_FINSR(ctrlBaseAddr->HWA_ENABLE, HWA_ENABLE_HWA_EN_END, HWA_ENABLE_HWA_EN_START, 0x0U);
 
         }
-        HWA_releaseDriverAccess(ptrHWADriver,true,false,0);
+        HWA_releaseDriverAccess(ptrHWADriver,(bool) true,(bool) false,0);
     }
 
     /* return */
@@ -3436,7 +3458,7 @@ extern int32_t HWA_enableContextSwitch(HWA_Handle handle, uint8_t flagEnDis)
     HWA_GET_DRIVER_STRUCT(handle); /* this fills the ptrHWADriver */
 
     /* validate driver acccess */
-    retCode = HWA_getDriverAccess(ptrHWADriver, true, false, 0);
+    retCode = HWA_getDriverAccess(ptrHWADriver, (bool) true, (bool) false, 0);
     if (retCode == 0)
     {
         ctrlBaseAddr = (DSSHWACCRegs *)ptrHWADriver->hwAttrs->ctrlBaseAddr;
@@ -3453,7 +3475,7 @@ extern int32_t HWA_enableContextSwitch(HWA_Handle handle, uint8_t flagEnDis)
             CSL_FINSR(ctrlBaseAddr->CS_CONFIG, CS_CONFIG_CS_ENABLE_END, CS_CONFIG_CS_ENABLE_START, 0x0U);
 
         }
-        HWA_releaseDriverAccess(ptrHWADriver, true, false, 0);
+        HWA_releaseDriverAccess(ptrHWADriver, (bool) true, (bool) false, 0);
     }
 
     /* return */
@@ -3482,7 +3504,7 @@ int32_t HWA_setSoftwareTrigger(HWA_Handle handle)
     HWA_GET_DRIVER_STRUCT(handle); /* this fills the ptrHWADriver */
 
     /* validate driver acccess */
-    retCode = HWA_getDriverAccess(ptrHWADriver,true,false,0);
+    retCode = HWA_getDriverAccess(ptrHWADriver,(bool) true,(bool) false,0);
     if (retCode==0)
     {
         ctrlBaseAddr = (DSSHWACCRegs *)ptrHWADriver->hwAttrs->ctrlBaseAddr;
@@ -3492,7 +3514,7 @@ int32_t HWA_setSoftwareTrigger(HWA_Handle handle)
                   FW2HWA_TRIG_0_FW2HWA_TRIGGER_0_START,
                   1U);
 
-        HWA_releaseDriverAccess(ptrHWADriver,true,false,0);
+        HWA_releaseDriverAccess(ptrHWADriver,(bool) true,(bool) false,0);
     }
 
     /* return */
@@ -3520,7 +3542,7 @@ extern int32_t HWA_setContextswitchSoftwareTrigger(HWA_Handle handle)
     HWA_GET_DRIVER_STRUCT(handle); /* this fills the ptrHWADriver */
 
     /* validate driver acccess */
-    retCode = HWA_getDriverAccess(ptrHWADriver, true, false, 0);
+    retCode = HWA_getDriverAccess(ptrHWADriver, (bool) true, (bool) false, 0);
     if (retCode == 0)
     {
         ctrlBaseAddr = (DSSHWACCRegs *)ptrHWADriver->hwAttrs->ctrlBaseAddr;
@@ -3529,7 +3551,7 @@ extern int32_t HWA_setContextswitchSoftwareTrigger(HWA_Handle handle)
                   CS_FW2ACC_TRIG_FW2HWA_TRIGGER_CS_END,
                   CS_FW2ACC_TRIG_FW2HWA_TRIGGER_CS_START,
                   1U);
-        HWA_releaseDriverAccess(ptrHWADriver, true, false, 0);
+        HWA_releaseDriverAccess(ptrHWADriver, (bool) true, (bool) false, 0);
     }
 
     /* return */
@@ -3559,9 +3581,11 @@ extern int32_t HWA_setContextswitchDMAManualTrigger(HWA_Handle handle, uint8_t i
     HWA_GET_DRIVER_STRUCT(handle); /* this fills the ptrHWADriver */
 
     /* validate driver acccess */
-    retCode = HWA_getDriverAccess(ptrHWADriver, true, false, 0);
+    retCode = HWA_getDriverAccess(ptrHWADriver, (bool) true, (bool) false, 0);
     if (retCode == 0)
     {
+		ctrlBaseAddr = (DSSHWACCRegs *)ptrHWADriver->hwAttrs->ctrlBaseAddr;
+
 #ifdef HWA_PARAM_CHECK
         if (idx > SOC_HWA_NUM_DAM_CHANNEL)
         {
@@ -3570,12 +3594,11 @@ extern int32_t HWA_setContextswitchDMAManualTrigger(HWA_Handle handle, uint8_t i
         }
         else
 #endif
-        ctrlBaseAddr = (DSSHWACCRegs *)ptrHWADriver->hwAttrs->ctrlBaseAddr;
-
+        
         /* set the DMA2ACCTRIG bits to DMA Channel */
         CSL_FINSR(ctrlBaseAddr->DMA2HWA_TRIG, idx, idx, 1U);
 
-        HWA_releaseDriverAccess(ptrHWADriver, true, false, 0);
+        HWA_releaseDriverAccess(ptrHWADriver, (bool) true, (bool) false, 0);
     }
 
     /* return */
@@ -3604,7 +3627,7 @@ extern int32_t HWA_softwareResetAccumulators(HWA_Handle handle, uint8_t accumula
     HWA_GET_DRIVER_STRUCT(handle); /* this fills the ptrHWADriver */
 
                                    /* validate driver acccess */
-    retCode = HWA_getDriverAccess(ptrHWADriver, true, false, 0);
+    retCode = HWA_getDriverAccess(ptrHWADriver, (bool) true, (bool) false, 0);
     if (retCode == 0)
     {
         ctrlBaseAddr = (DSSHWACCRegs *)ptrHWADriver->hwAttrs->ctrlBaseAddr;
@@ -3623,7 +3646,7 @@ extern int32_t HWA_softwareResetAccumulators(HWA_Handle handle, uint8_t accumula
                       1U);
         }
 
-        HWA_releaseDriverAccess(ptrHWADriver, true, false, 0);
+        HWA_releaseDriverAccess(ptrHWADriver, (bool) true, (bool) false, 0);
     }
 
     /* return */
@@ -3650,7 +3673,7 @@ extern int32_t HWA_softwareResetRecursiveWinKvalue(HWA_Handle handle)
     HWA_GET_DRIVER_STRUCT(handle); /* this fills the ptrHWADriver */
 
                                    /* validate driver acccess */
-    retCode = HWA_getDriverAccess(ptrHWADriver, true, false, 0);
+    retCode = HWA_getDriverAccess(ptrHWADriver, (bool) true, (bool) false, 0);
     if (retCode == 0)
     {
         ctrlBaseAddr = (DSSHWACCRegs *)ptrHWADriver->hwAttrs->ctrlBaseAddr;
@@ -3658,7 +3681,7 @@ extern int32_t HWA_softwareResetRecursiveWinKvalue(HWA_Handle handle)
                   RECWIN_RESET_SW_RECWIN_RESET_SW_END,
                   RECWIN_RESET_SW_RECWIN_RESET_SW_START,
                   1U);
-        HWA_releaseDriverAccess(ptrHWADriver, true, false, 0);
+        HWA_releaseDriverAccess(ptrHWADriver, (bool) true, (bool) false, 0);
     }
 
     /* return */
@@ -3686,7 +3709,7 @@ extern int32_t HWA_softwareResetTwidIncrDeltaFrac(HWA_Handle handle)
     HWA_GET_DRIVER_STRUCT(handle); /* this fills the ptrHWADriver */
 
                                    /* validate driver acccess */
-    retCode = HWA_getDriverAccess(ptrHWADriver, true, false, 0);
+    retCode = HWA_getDriverAccess(ptrHWADriver, (bool) true, (bool) false, 0);
     if (retCode == 0)
     {
         ctrlBaseAddr = (DSSHWACCRegs *)ptrHWADriver->hwAttrs->ctrlBaseAddr;
@@ -3694,7 +3717,7 @@ extern int32_t HWA_softwareResetTwidIncrDeltaFrac(HWA_Handle handle)
                   TWID_INCR_DELTA_FRAC_RESET_SW_TWID_INCR_DELTA_FRAC_RESET_SW_END,
                   TWID_INCR_DELTA_FRAC_RESET_SW_TWID_INCR_DELTA_FRAC_RESET_SW_START,
                   1U);
-        HWA_releaseDriverAccess(ptrHWADriver, true, false, 0);
+        HWA_releaseDriverAccess(ptrHWADriver, (bool) true, (bool) false, 0);
     }
 
     /* return */
@@ -3723,9 +3746,10 @@ int32_t HWA_setDMA2ACCManualTrig(HWA_Handle handle, uint8_t idx)
     HWA_GET_DRIVER_STRUCT(handle); /* this fills the ptrHWADriver */
 
     /* validate driver acccess */
-    retCode = HWA_getDriverAccess(ptrHWADriver,true,false,0);
+    retCode = HWA_getDriverAccess(ptrHWADriver,(bool) true,(bool) false,0);
     if (retCode==0)
     {
+		ctrlBaseAddr = (DSSHWACCRegs *)ptrHWADriver->hwAttrs->ctrlBaseAddr;
 #ifdef HWA_PARAM_CHECK
         if (idx > SOC_HWA_NUM_DAM_CHANNEL)
         {
@@ -3734,11 +3758,11 @@ int32_t HWA_setDMA2ACCManualTrig(HWA_Handle handle, uint8_t idx)
         }
         else
 #endif
-        ctrlBaseAddr = (DSSHWACCRegs *)ptrHWADriver->hwAttrs->ctrlBaseAddr;
+        
         /* set the DMA2ACCTRIG bits to DMA Channel */
         CSL_FINSR(ctrlBaseAddr->DMA2HWA_TRIG, idx, idx,1U);
 
-        HWA_releaseDriverAccess(ptrHWADriver,true,false,0);
+        HWA_releaseDriverAccess(ptrHWADriver,(bool) true,(bool) false,0);
     }
 
     /* return */
@@ -3770,7 +3794,7 @@ extern int32_t HWA_setSourceAddress(HWA_Handle handle, uint16_t paramsetIdx, uin
     HWA_GET_DRIVER_STRUCT(handle); /* this fills the ptrHWADriver */
 
     /* validate driver acccess */
-    retCode = HWA_getDriverAccess(ptrHWADriver, false, true, 0);
+    retCode = HWA_getDriverAccess(ptrHWADriver, (bool) false, (bool) true, 0);
     if (retCode == 0)
     {
 #ifdef HWA_PARAM_CHECK
@@ -3786,7 +3810,7 @@ extern int32_t HWA_setSourceAddress(HWA_Handle handle, uint16_t paramsetIdx, uin
             CSL_FINSR(paramBaseAddr->SRC, SRC_SRCADDR_END, SRC_SRCADDR_START, sourceAddress);
         }
 
-        HWA_releaseDriverAccess(ptrHWADriver, false, true, 0);
+        HWA_releaseDriverAccess(ptrHWADriver, (bool) false, (bool) true, 0);
     }
     return (retCode);
 
@@ -3828,7 +3852,7 @@ extern int32_t HWA_readClipStatus(HWA_Handle handle, uint16_t *clipStatusResult,
 
     *clipStatusResult = 0;
     /* validate driver acccess */
-    retCode = HWA_getDriverAccess(ptrHWADriver,true,false,0);
+    retCode = HWA_getDriverAccess(ptrHWADriver,(bool) true,(bool) false,0);
     if (retCode==0)
     {
 #ifdef HWA_PARAM_CHECK
@@ -3920,14 +3944,18 @@ extern int32_t HWA_readClipStatus(HWA_Handle handle, uint16_t *clipStatusResult,
                                                         IP_OP_FORMATTER_CLIP_STATUS_IP_FORMATTER_CLIP_STATUS_END,
                                                         IP_OP_FORMATTER_CLIP_STATUS_IP_FORMATTER_CLIP_STATUS_START);
             }
+#ifdef HWA_PARAM_CHECK
+			else
+#else
             else if (type == HWA_CLIPREG_TYPE_OUTPUTFORMAT)
+#endif
             {
                 *clipStatusResult = (uint16_t)CSL_FEXTR(ctrlBaseAddr->IP_OP_FORMATTER_CLIP_STATUS,
                                            IP_OP_FORMATTER_CLIP_STATUS_OP_FORMATTER_CLIP_STATUS_END,
                                            IP_OP_FORMATTER_CLIP_STATUS_OP_FORMATTER_CLIP_STATUS_START);
             }
         }
-        HWA_releaseDriverAccess(ptrHWADriver,true,false,0);
+        HWA_releaseDriverAccess(ptrHWADriver,(bool) true,(bool) false,0);
     }
 
     /* return */
@@ -3956,7 +3984,7 @@ int32_t HWA_clearClipStatus(HWA_Handle handle, uint8_t type)
     HWA_GET_DRIVER_STRUCT(handle); /* this fills the ptrHWADriver */
 
     /* validate driver acccess */
-    retCode = HWA_getDriverAccess(ptrHWADriver,true,false,0);
+    retCode = HWA_getDriverAccess(ptrHWADriver,(bool) true,(bool) false,0);
     if (retCode==0)
     {
 #ifdef HWA_PARAM_CHECK
@@ -3995,7 +4023,7 @@ int32_t HWA_clearClipStatus(HWA_Handle handle, uint8_t type)
 
             }
         }
-        HWA_releaseDriverAccess(ptrHWADriver,true,false,0);
+        HWA_releaseDriverAccess(ptrHWADriver,(bool) true,(bool) false,0);
     }
 
     /* return */
@@ -4030,7 +4058,7 @@ int32_t HWA_readStatsReg(HWA_Handle handle, HWA_Stats *pStats, uint8_t numIter)
     HWA_GET_DRIVER_STRUCT(handle); /* this fills the ptrHWADriver */
 
     /* validate driver acccess */
-    retCode = HWA_getDriverAccess(ptrHWADriver,true,false,0);
+    retCode = HWA_getDriverAccess(ptrHWADriver,(bool) true,(bool) false,0);
     if (retCode==0)
     {
 #ifdef HWA_PARAM_CHECK
@@ -4055,7 +4083,7 @@ int32_t HWA_readStatsReg(HWA_Handle handle, HWA_Stats *pStats, uint8_t numIter)
                 pStats[i].qSumMSB  = (uint8_t)CSL_FEXTR(ctrlBaseAddr->Q_SUM_VALUE[i].accValMSB, Q_SUM1_MSB_Q_SUM1_MSB_END, Q_SUM1_MSB_Q_SUM1_MSB_START);
             }
         }
-        HWA_releaseDriverAccess(ptrHWADriver,true,false,0);
+        HWA_releaseDriverAccess(ptrHWADriver,(bool) true,(bool) false,0);
     }
 
     /* return */
@@ -4092,11 +4120,11 @@ extern int32_t HWA_readDCEstimateReg(HWA_Handle handle, cmplx32ImRe_t *pbuf, uin
     HWA_GET_DRIVER_STRUCT(handle); /* this fills the ptrHWADriver */
 
                                    /* validate driver acccess */
-    retCode = HWA_getDriverAccess(ptrHWADriver, true, false, 0);
+    retCode = HWA_getDriverAccess(ptrHWADriver, (bool) true, (bool) false, 0);
     if (retCode == 0)
     {
 #ifdef HWA_PARAM_CHECK
-        if ((pbuf == NULL) || ((startIdx + size) > 12) || (size == 0))
+        if ((pbuf == NULL) || ((startIdx + size) > 12U) || (size == 0U))
         {
             /* invalid config */
             retCode = HWA_EINVAL;
@@ -4104,10 +4132,10 @@ extern int32_t HWA_readDCEstimateReg(HWA_Handle handle, cmplx32ImRe_t *pbuf, uin
         else
 #endif
         {
-            uint8_t i = 0;
+            uint8_t i = 0U;
             ctrlBaseAddr = (DSSHWACCRegs *)ptrHWADriver->hwAttrs->ctrlBaseAddr;
             /* read the DC estimate I and Q values registers*/
-            for (i = 0; i<size; i++)
+            for (i = 0U; i<size; i++)
             {
                 realTempValue = (uint32_t)CSL_FEXTR(ctrlBaseAddr->DC_EST_I_VAL[startIdx + i], DC_EST_I_0_VAL_DC_EST_I_0_VAL_END, DC_EST_I_0_VAL_DC_EST_I_0_VAL_START);
                 if (realTempValue & 0x800000)
@@ -4130,7 +4158,7 @@ extern int32_t HWA_readDCEstimateReg(HWA_Handle handle, cmplx32ImRe_t *pbuf, uin
 
             }
         }
-        HWA_releaseDriverAccess(ptrHWADriver, true, false, 0);
+        HWA_releaseDriverAccess(ptrHWADriver, (bool) true, (bool) false, 0);
     }
 
     /* return */
@@ -4167,11 +4195,11 @@ extern int32_t HWA_readIntfAccReg(HWA_Handle handle, uint64_t *accBuf, uint8_t t
     HWA_GET_DRIVER_STRUCT(handle); /* this fills the ptrHWADriver */
 
     /* validate driver acccess */
-    retCode = HWA_getDriverAccess(ptrHWADriver, true, false, 0);
+    retCode = HWA_getDriverAccess(ptrHWADriver, (bool) true, (bool) false, 0);
     if (retCode == 0)
     {
 #ifdef HWA_PARAM_CHECK
-        if ((accBuf == NULL) || ((startIdx + size) > 12) || (size == 0) || (type > HWA_INTERFERENCE_THRESHOLD_TYPE_MAGDIFF))
+        if ((accBuf == NULL) || ((startIdx + size) > 12U) || (size == 0U) || (type > HWA_INTERFERENCE_THRESHOLD_TYPE_MAGDIFF))
         {
             /* invalid config */
             retCode = HWA_EINVAL;
@@ -4191,15 +4219,19 @@ extern int32_t HWA_readIntfAccReg(HWA_Handle handle, uint64_t *accBuf, uint8_t t
                     msbValue = (uint32_t)CSL_FEXTR(ctrlBaseAddr->INTF_STATS_MAG_ACC[startIdx + i].accValMSB,
                                                    INTF_STATS_MAG_ACC_0_MSB_INTF_STATS_MAG_ACC_0_MSB_END,
                                                    INTF_STATS_MAG_ACC_0_MSB_INTF_STATS_MAG_ACC_0_MSB_START);
-                    accBuf[i] |= msbValue ;
+                    accBuf[i] |= (uint64_t)msbValue ;
                     accBuf[i] = (accBuf[i] << 32);
-                    accBuf[i] |= lsbValue;
+                    accBuf[i] |= (uint64_t)lsbValue;
 
 
                 }
             }
+#ifdef HWA_PARAM_CHECK
+			else  //(type == HWA_INTERFERENCE_THRESHOLD_TYPE_MAGDIFF)
+#else
             /* read interference magnitude difference accumulator*/
             else if (type == HWA_INTERFERENCE_THRESHOLD_TYPE_MAGDIFF)
+#endif
             {
                 for (i = 0; i < size; i++)
                 {
@@ -4214,7 +4246,7 @@ extern int32_t HWA_readIntfAccReg(HWA_Handle handle, uint64_t *accBuf, uint8_t t
                 }
             }
         }
-        HWA_releaseDriverAccess(ptrHWADriver, true, false, 0);
+        HWA_releaseDriverAccess(ptrHWADriver, (bool) true, (bool) false, 0);
     }
 
     /* return */
@@ -4250,7 +4282,7 @@ extern int32_t HWA_readDCAccReg(HWA_Handle handle, cmplx64ImRe_t *accbuf, uint8_
     HWA_GET_DRIVER_STRUCT(handle); /* this fills the ptrHWADriver */
 
                                    /* validate driver acccess */
-    retCode = HWA_getDriverAccess(ptrHWADriver, true, false, 0);
+    retCode = HWA_getDriverAccess(ptrHWADriver, (bool) true, (bool) false, 0);
     if (retCode == 0)
     {
 #ifdef HWA_PARAM_CHECK
@@ -4292,7 +4324,7 @@ extern int32_t HWA_readDCAccReg(HWA_Handle handle, cmplx64ImRe_t *accbuf, uint8_
 
             }
         }
-        HWA_releaseDriverAccess(ptrHWADriver, true, false, 0);
+        HWA_releaseDriverAccess(ptrHWADriver, (bool) true, (bool) false, 0);
     }
 
     /* return */
@@ -4327,7 +4359,7 @@ int32_t HWA_readCFARPeakCountReg(HWA_Handle handle, uint8_t *pbuf, uint8_t size)
     HWA_GET_DRIVER_STRUCT(handle); /* this fills the ptrHWADriver */
 
     /* validate driver acccess */
-    retCode = HWA_getDriverAccess(ptrHWADriver,true,false,0);
+    retCode = HWA_getDriverAccess(ptrHWADriver,(bool) true,(bool) false,0);
     if (retCode==0)
     {
 #ifdef HWA_PARAM_CHECK
@@ -4344,7 +4376,7 @@ int32_t HWA_readCFARPeakCountReg(HWA_Handle handle, uint8_t *pbuf, uint8_t size)
             /* read the FFTPEAKCNT register */
             *peakCnt = (uint16_t)CSL_FEXTR(ctrlBaseAddr->CFAR_PEAKCNT, CFAR_PEAKCNT_CFAR_PEAKCNT_END, CFAR_PEAKCNT_CFAR_PEAKCNT_START);
         }
-        HWA_releaseDriverAccess(ptrHWADriver,true,false,0);
+        HWA_releaseDriverAccess(ptrHWADriver,(bool) true,(bool) false,0);
     }
 
     /* return */
@@ -4373,7 +4405,7 @@ extern int32_t HWA_readInterfChirpCountReg(HWA_Handle handle, uint16_t *numInter
     HWA_GET_DRIVER_STRUCT(handle); /* this fills the ptrHWADriver */
 
     /* validate driver acccess */
-    retCode = HWA_getDriverAccess(ptrHWADriver, true, false, 0);
+    retCode = HWA_getDriverAccess(ptrHWADriver, (bool) true, (bool) false, 0);
     if (retCode == 0)
     {
         ctrlBaseAddr = (DSSHWACCRegs *)ptrHWADriver->hwAttrs->ctrlBaseAddr;
@@ -4381,7 +4413,7 @@ extern int32_t HWA_readInterfChirpCountReg(HWA_Handle handle, uint16_t *numInter
         *numInterfSamplesChirp = (uint16_t)CSL_FEXTR(ctrlBaseAddr->INTF_LOC_COUNT_ALL_CHIRP,
                                            INTF_LOC_COUNT_ALL_CHIRP_INTF_LOC_COUNT_ALL_CHIRP_END,
                                            INTF_LOC_COUNT_ALL_CHIRP_INTF_LOC_COUNT_ALL_CHIRP_START);
-        HWA_releaseDriverAccess(ptrHWADriver, true, false, 0);
+        HWA_releaseDriverAccess(ptrHWADriver, (bool) true, (bool) false, 0);
     }
 
     /* return */
@@ -4411,7 +4443,7 @@ extern int32_t HWA_readInterfFrameCountReg(HWA_Handle handle, uint32_t *numInter
     HWA_GET_DRIVER_STRUCT(handle); /* this fills the ptrHWADriver */
 
                                    /* validate driver acccess */
-    retCode = HWA_getDriverAccess(ptrHWADriver, true, false, 0);
+    retCode = HWA_getDriverAccess(ptrHWADriver, (bool) true, (bool) false, 0);
     if (retCode == 0)
     {
         ctrlBaseAddr = (DSSHWACCRegs *)ptrHWADriver->hwAttrs->ctrlBaseAddr;
@@ -4419,7 +4451,7 @@ extern int32_t HWA_readInterfFrameCountReg(HWA_Handle handle, uint32_t *numInter
         *numInterfSamplesFrame = (uint32_t)CSL_FEXTR(ctrlBaseAddr->INTF_LOC_COUNT_ALL_FRAME,
                                              INTF_LOC_COUNT_ALL_FRAME_INTF_LOC_COUNT_ALL_FRAME_END,
                                              INTF_LOC_COUNT_ALL_FRAME_INTF_LOC_COUNT_ALL_FRAME_START);
-        HWA_releaseDriverAccess(ptrHWADriver, true, false, 0);
+        HWA_releaseDriverAccess(ptrHWADriver, (bool) true, (bool) false, 0);
     }
 
     /* return */
@@ -4450,7 +4482,7 @@ int32_t HWA_readDebugReg(HWA_Handle handle, HWA_DebugStats *pStats)
     HWA_GET_DRIVER_STRUCT(handle); /* this fills the ptrHWADriver */
 
     /* validate driver acccess */
-    retCode = HWA_getDriverAccess(ptrHWADriver,true,false,0);
+    retCode = HWA_getDriverAccess(ptrHWADriver,(bool) true,(bool) false,0);
     if (retCode==0)
     {
 #ifdef HWA_PARAM_CHECK
@@ -4478,7 +4510,7 @@ int32_t HWA_readDebugReg(HWA_Handle handle, HWA_DebugStats *pStats)
             pStats->trigStatus[0] = ctrlBaseAddr->TRIGGER_SET_STATUS[0];
             pStats->trigStatus[1] = ctrlBaseAddr->TRIGGER_SET_STATUS[1];
         }
-        HWA_releaseDriverAccess(ptrHWADriver,true,false,0);
+        HWA_releaseDriverAccess(ptrHWADriver,(bool) true,(bool) false,0);
     }
 
     /* return */
@@ -4505,7 +4537,7 @@ int32_t HWA_clearDebugReg(HWA_Handle handle)
     HWA_GET_DRIVER_STRUCT(handle); /* this fills the ptrHWADriver */
 
     /* validate driver acccess */
-    retCode = HWA_getDriverAccess(ptrHWADriver,true,false,0);
+    retCode = HWA_getDriverAccess(ptrHWADriver,(bool) true,(bool) false,0);
     if (retCode==0)
     {
          ctrlBaseAddr = (DSSHWACCRegs *)ptrHWADriver->hwAttrs->ctrlBaseAddr;
@@ -4520,7 +4552,7 @@ int32_t HWA_clearDebugReg(HWA_Handle handle)
                   TRIGGER_SET_IN_CLR_1_TRIGGER_SET_IN_CLR_1_START,
                   1U);
 
-        HWA_releaseDriverAccess(ptrHWADriver,true,false,0);
+        HWA_releaseDriverAccess(ptrHWADriver,(bool) true,(bool) false,0);
     }
 
     /* return */
@@ -4556,7 +4588,7 @@ extern int32_t HWA_readInterfThreshReg(HWA_Handle handle, uint32_t *pbuf, uint8_
     HWA_GET_DRIVER_STRUCT(handle); /* this fills the ptrHWADriver */
 
     /* validate driver acccess */
-    retCode = HWA_getDriverAccess(ptrHWADriver, true, false, 0);
+    retCode = HWA_getDriverAccess(ptrHWADriver, (bool) true, (bool) false, 0);
     if (retCode == 0)
     {
 #ifdef HWA_PARAM_CHECK
@@ -4590,7 +4622,7 @@ extern int32_t HWA_readInterfThreshReg(HWA_Handle handle, uint32_t *pbuf, uint8_
                 }
             }
         }
-        HWA_releaseDriverAccess(ptrHWADriver, true, false, 0);
+        HWA_releaseDriverAccess(ptrHWADriver, (bool) true, (bool) false, 0);
     }
 
     /* return */
@@ -4618,7 +4650,7 @@ extern int32_t  HWA_controlPeripheralSuspendMode(HWA_Handle handle, uint8_t flag
 
     HWA_GET_DRIVER_STRUCT(handle); /* this fills the ptrHWADriver */
     /* validate driver acccess */
-    retCode = HWA_getDriverAccess(ptrHWADriver, false, false, 0);
+    retCode = HWA_getDriverAccess(ptrHWADriver, (bool) false, (bool) false, 0);
     if (retCode == 0)
     {
        // dbgAckCtl1Ptr = (uint32_t *) (ptrHWADriver->hwAttrs->dssBaseAddr + 0x58C);
@@ -4634,7 +4666,7 @@ extern int32_t  HWA_controlPeripheralSuspendMode(HWA_Handle handle, uint8_t flag
             //*dbgAckCtl1Ptr &= 0x8FFFFFFF;
             CSL_FINSR(dssCtrlRegsPtr->DBG_ACK_CTL1, 30U,28U, 0U);
         }
-        HWA_releaseDriverAccess(ptrHWADriver, false, false, 0);
+        HWA_releaseDriverAccess(ptrHWADriver, (bool) false, (bool) false, 0);
     }
 
     /* return */
