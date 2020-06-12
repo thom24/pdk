@@ -45,7 +45,9 @@ MEMORY
     SYSFW_RSVD_1 (X)      : origin=0x71C00000 length=0x20000 
     SYSFW_RSVD_2 (X)      : origin=0x71E00000 length=0x20000 
 
-    DDR0    (RWIX)          : origin=0x80000000 length=0x80000000      /* 2GB */
+    RESET_VECTORS_DDR0 (X)  : origin=0x80000000 length=0x100
+    VECTORS_DDR0 (X)        : origin=0x80000100 length=0x1000
+    DDR0    (RWIX)          : origin=0x80001100 length=0x80000000 - 0x1100      /* ~2GB */
 }
 
 /* Section Configuration */
@@ -59,34 +61,34 @@ SECTIONS
     .bootCode      : {} palign(8)      > MSMC3
     .startupCode   : {} palign(8)      > MSMC3
     .startupData   : {} palign(8)      > MSMC3, type = NOINIT
-    .text          : {} palign(8)      > MSMC3
-    .const         : {} palign(8)      > MSMC3
-    .cinit         : {} palign(8)      > MSMC3
-    .pinit         : {} palign(8)      > MSMC3
-    .bss           : {} align(4)       > MSMC3
-    .far           : {} align(4)       > MSMC3
-    .data          : {} palign(128)    > MSMC3
-    .boardcfg_data : {} palign(128)    > MSMC3
-    .sysmem        : {}                > MSMC3
-    .data_buffer   : {} palign(128)    > MSMC3
+    .text          : {} palign(8)      > DDR0
+    .const         : {} palign(8)      > DDR0
+    .cinit         : {} palign(8)      > DDR0
+    .pinit         : {} palign(8)      > DDR0
+    .bss           : {} align(4)       > DDR0
+    .far           : {} align(4)       > DDR0
+    .data          : {} palign(128)    > DDR0
+    .boardcfg_data : {} palign(128)    > DDR0
+    .sysmem        : {}                > DDR0
+    .data_buffer   : {} palign(128)    > DDR0
 
     /* USB or any other LLD buffer for benchmarking */
     .benchmark_buffer (NOLOAD) {} ALIGN (8) > DDR0
 
-    .stack      : {} align(4)       > MSMC3  (HIGH)
-    .irqStack   : {. = . + __IRQ_STACK_SIZE;} align(4)      > MSMC3  (HIGH)
+    .stack      : {} align(4)       > DDR0  (HIGH)
+    .irqStack   : {. = . + __IRQ_STACK_SIZE;} align(4)      > DDR0  (HIGH)
     RUN_START(__IRQ_STACK_START)
     RUN_END(__IRQ_STACK_END)
-    .fiqStack   : {. = . + __FIQ_STACK_SIZE;} align(4)      > MSMC3  (HIGH)
+    .fiqStack   : {. = . + __FIQ_STACK_SIZE;} align(4)      > DDR0  (HIGH)
     RUN_START(__FIQ_STACK_START)
     RUN_END(__FIQ_STACK_END)
-    .abortStack : {. = . + __ABORT_STACK_SIZE;} align(4)    > MSMC3  (HIGH)
+    .abortStack : {. = . + __ABORT_STACK_SIZE;} align(4)    > DDR0  (HIGH)
     RUN_START(__ABORT_STACK_START)
     RUN_END(__ABORT_STACK_END)
-    .undStack   : {. = . + __UND_STACK_SIZE;} align(4)      > MSMC3  (HIGH)
+    .undStack   : {. = . + __UND_STACK_SIZE;} align(4)      > DDR0  (HIGH)
     RUN_START(__UND_STACK_START)
     RUN_END(__UND_STACK_END)
-    .svcStack   : {. = . + __SVC_STACK_SIZE;} align(4)      > MSMC3  (HIGH)
+    .svcStack   : {. = . + __SVC_STACK_SIZE;} align(4)      > DDR0  (HIGH)
     RUN_START(__SVC_STACK_START)
     RUN_END(__SVC_STACK_END)
 }
