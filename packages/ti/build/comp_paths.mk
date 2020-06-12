@@ -123,6 +123,8 @@ PDK_ESM_ROOT_PATH ?= $(pdk_PATH)
 export PDK_ESM_COMP_PATH = $(PDK_ESM_ROOT_PATH)/ti/drv/esm
 PDK_CAN_ROOT_PATH ?= $(pdk_PATH)
 export PDK_CAN_COMP_PATH = $(PDK_CAN_ROOT_PATH)/ti/drv/can
+PDK_WATCHDOG_ROOT_PATH ?= $(pdk_PATH)
+export PDK_WATCHDOG_COMP_PATH = $(PDK_WATCHDOG_ROOT_PATH)/ti/drv/watchdog
 
 #Below applicable only for K3 DMSC; not applicable for PRSDK
 DMSC_ROOT_PATH ?= $(pdk_PATH)

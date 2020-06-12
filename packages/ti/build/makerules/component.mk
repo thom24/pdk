@@ -868,6 +868,17 @@ endif
 ifneq ($(can_EXAMPLE_LIST),)
   pdk_EXAMPLE_LIST += $(can_EXAMPLE_LIST)
 endif
+# - used to ignore include if component not present
+-include $(PDK_WATCHDOG_COMP_PATH)/watchdog_component.mk
+ifneq ($(watchdog_LIB_LIST),)
+  pdk_LIB_LIST += $(watchdog_LIB_LIST)
+endif
+ifneq ($(watchdog_APP_LIB_LIST),)
+  pdk_APP_LIB_LIST += $(watchdog_APP_LIB_LIST)
+endif
+ifneq ($(watchdog_EXAMPLE_LIST),)
+  pdk_EXAMPLE_LIST += $(watchdog_EXAMPLE_LIST)
+endif
 
 # Components included for non-baremetal OS
 ifneq ($(BUILD_OS_TYPE), baremetal)
