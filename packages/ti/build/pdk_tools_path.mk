@@ -36,7 +36,7 @@ ifeq ($(BOARD),$(filter $(BOARD), tpr12_evm tpr12_qt))
 endif
 
 ifeq ($(BOARD),$(filter $(BOARD), am64x_evm am64x_svb))
-  BIOS_VERSION=6_83_00_01_eng
+  BIOS_VERSION=6_82_02_20_eng
   XDC_VERSION=3_61_00_16_core
   GCC_ARCH64_VERSION=7.2.1-2017.11
   GCC_ARCH64_BIN_PREFIX_STR=aarch64-elf
