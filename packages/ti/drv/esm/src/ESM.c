@@ -71,8 +71,8 @@ ESM_DriverMCB   gEsmMCB;
 /*                          Function Declarations                             */
 /* ========================================================================== */
 /* Function prototypes */
-void interrupt ESM_highpriority_FIQ(void);
-void ESM_lowpriority_IRQ(uintptr_t arg);
+void interrupt ESM_highpriority_interrupt(void);
+void ESM_lowpriority_interrupt(uintptr_t arg);
 void ESM_processInterrupt (uint32_t vec, int32_t* groupNum, int32_t* vecNum);
 
 /* ========================================================================== */
@@ -82,11 +82,11 @@ void ESM_processInterrupt (uint32_t vec, int32_t* groupNum, int32_t* vecNum);
  @{ */
 
 /* INTERNAL FUNCTIONS */
-/** \brief ESM FIQ interrupt handler: handles Group1 and Group2 high priority errors.
- *         Group 3 errors do not raise a FIQ and hence not handled here.
+/** \brief ESM high priority interrupt handler: handles Group1 and Group2 high priority errors.
+ *         Group 3 errors do not raise an interrupt and hence not handled here.
  *
  */
-void interrupt ESM_highpriority_FIQ(void)
+void interrupt ESM_highpriority_interrupt(void)
 {
     uint32_t            esmioffhr;
     uint32_t            vec;
@@ -99,11 +99,11 @@ void interrupt ESM_highpriority_FIQ(void)
 }
 
 /* INTERNAL FUNCTIONS */
-/** \brief ESM IRQ interrupt handler: handles Group1 and Group2 low priority errors.
- *         Group 3 errors are not handled here.
+/** \brief ESM low priority interrupt handler: handles Group1 low priority errors.
+ *         Group 2 and 3 errors are not handled here.
  *
  */
-void ESM_lowpriority_IRQ(uintptr_t arg)
+void ESM_lowpriority_interrupt(uintptr_t arg)
 {
     uint32_t            esmioffhr;
     uint32_t            vec;
@@ -208,21 +208,19 @@ ESM_Handle ESM_init(uint8_t bClearErrors)
     HwiP_Params     hwiParams;
 
     HwiP_Params_init(&hwiParams);
-    hwiParams.name = "ESM_FIQ";
-    //hwiParams.type = HwiP_Type_FIQ;
-    gEsmMCB.hwiHandleHi = HwiP_create(gESMHwCfgAttrs.highPrioIntNum, (HwiP_Fxn)ESM_highpriority_FIQ, &hwiParams);
+    hwiParams.name = "ESM_HIGH_PRIORITY";
+    gEsmMCB.hwiHandleHi = HwiP_create(gESMHwCfgAttrs.highPrioIntNum, (HwiP_Fxn)ESM_highpriority_interrupt, &hwiParams);
 
     /* Debug Message: */
-    DebugP_log2 ("Debug: ESM Driver Registering HWI(FIQ) ISR [%p] for Interrupt %d\n",
+    DebugP_log2 ("Debug: ESM Driver Registering HWI(High Priority) ISR [%p] for Interrupt %d\n",
                       gEsmMCB.hwiHandleHi, gESMHwCfgAttrs.highPrioIntNum);
 
     HwiP_Params_init(&hwiParams);
-    hwiParams.name = "ESM_IRQ";
-    //hwiParams.type = HwiP_Type_IRQ;
-    gEsmMCB.hwiHandleLo = HwiP_create(gESMHwCfgAttrs.lowPrioIntNum, (HwiP_Fxn)ESM_lowpriority_IRQ, &hwiParams);
+    hwiParams.name = "ESM_LOW_PRIORITY";
+    gEsmMCB.hwiHandleLo = HwiP_create(gESMHwCfgAttrs.lowPrioIntNum, (HwiP_Fxn)ESM_lowpriority_interrupt, &hwiParams);
 
     /* Debug Message: */
-    DebugP_log2 ("Debug: ESM Driver Registering HWI(IRQ) ISR [%p] for Interrupt %d\n",
+    DebugP_log2 ("Debug: ESM Driver Registering HWI(Low Priority) ISR [%p] for Interrupt %d\n",
                       gEsmMCB.hwiHandleLo, gESMHwCfgAttrs.lowPrioIntNum);
 #endif
 

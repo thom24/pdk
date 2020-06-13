@@ -44,6 +44,13 @@
 /* Maximum number of notify callbacks supported */
 #define ESM_MAX_NOTIFIERS           4
 
+/* Maximum number of ESM groups with 32 errors for each group */
+#define ESM_MAX_GROUPS              5
+
+#ifdef ESM_DEBUG
+#define ESM_MAX_ISR_COUNT           4
+#endif
+
 #define     MINUS_ONE           -((int32_t)1)
 
 /**
@@ -94,13 +101,13 @@ typedef struct ESM_DriverMCB_t
     /**
      * @brief   Used to take snapshot of the ESM status registers before clearing them.
      */
-    uint32_t                    esmInitStatus[5];
+    uint32_t                    esmInitStatus[ESM_MAX_GROUPS];
 
 #ifdef ESM_DEBUG
     /**
      * @brief   DEBUG: to keep track of various ESM interrupts received by the system.
      */
-    uint32_t                    debugEsmISRCount[4];
+    uint32_t                    debugEsmISRCount[ESM_MAX_ISR_COUNT];
 #endif
 } ESM_DriverMCB;
 

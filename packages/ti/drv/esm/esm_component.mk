@@ -90,39 +90,26 @@ esm_EXAMPLE_LIST =
 #
 
 # ESM library
-esm_COMP_LIST = esm
+export esm_COMP_LIST = esm
 esm_RELPATH = ti/drv/esm
 esm_PATH = $(PDK_ESM_COMP_PATH)
-esm_LIBNAME = ti.drv.esm
-export esm_LIBNAME
-esm_LIBPATH = $(esm_PATH)/lib
-export esm_LIBPATH
-esm_OBJPATH = $(esm_RELPATH)/esm
-export esm_OBJPATH
-esm_MAKEFILE = -f build/makefile.mk
-export esm_MAKEFILE
-esm_BOARD_DEPENDENCY = no
-esm_CORE_DEPENDENCY = yes
-esm_SOC_DEPENDENCY = yes
-export esm_COMP_LIST
-export esm_BOARD_DEPENDENCY
-export esm_CORE_DEPENDENCY
-export esm_SOC_DEPENDENCY
-esm_PKG_LIST = esm
-export esm_PKG_LIST
+export esm_LIBNAME = ti.drv.esm
+export esm_LIBPATH = $(esm_PATH)/lib
+export esm_MAKEFILE = -f build/makefile.mk
+export esm_BOARD_DEPENDENCY = no
+export esm_CORE_DEPENDENCY = yes
+export esm_SOC_DEPENDENCY = yes
+export esm_PKG_LIST = esm
 esm_INCLUDE = $(esm_PATH)
-esm_SOCLIST = $(drvesm_SOCLIST)
-export esm_SOCLIST
-esm_$(SOC)_CORELIST = $(drvesm_$(SOC)_CORELIST)
-export esm_$(SOC)_CORELIST
+export esm_SOCLIST = $(drvesm_SOCLIST)
+export esm_$(SOC)_CORELIST = $(drvesm_$(SOC)_CORELIST)
 
 export esm_LIB_LIST
 export esm_EXAMPLE_LIST
 export drvesm_LIB_LIST = $(esm_LIB_LIST)
 export drvesm_EXAMPLE_LIST = $(esm_EXAMPLE_LIST)
 
-ESM_CFLAGS =
-export ESM_CFLAGS
+export ESM_CFLAGS =
 
 esm_component_make_include := 1
 endif

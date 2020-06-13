@@ -40,6 +40,6 @@ ifeq ($(SOC),$(filter $(SOC), tpr12))
     SRCDIR = . src
     INCDIR = . src
     SRCS_COMMON += ESM.c
-    PACKAGE_SRCS_COMMON += src/ESM.c src/esm_internal.h
+    PACKAGE_SRCS_COMMON += src
     PACKAGE_SRCS_COMMON += soc/ESM_v0.h
 endif
