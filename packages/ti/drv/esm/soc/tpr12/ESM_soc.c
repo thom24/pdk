@@ -51,11 +51,11 @@
 ESM_HwAttrs gESMHwCfgAttrs =
 {
 #if defined (BUILD_MCU)
-    CSL_MSS_ESM_U_BASE,
+    (CSL_mss_esmRegs*)CSL_MSS_ESM_U_BASE,
     CSL_MSS_INTR_MSS_ESM_HI,
     CSL_MSS_INTR_MSS_ESM_LO
 #else
-    CSL_DSS_ESM_U_BASE,
+    (CSL_mss_esmRegs*)CSL_DSS_ESM_U_BASE,
     0,                                  /* Not used */
     0                                   /* Not used */
 #endif

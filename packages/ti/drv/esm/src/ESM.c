@@ -45,7 +45,6 @@
 #include <stdint.h>
 #include <string.h>
 #include <ti/drv/esm/ESM.h>
-#include <ti/csl/hw_types.h>
 #include <ti/osal/osal.h>
 
 #include "esm_internal.h"
@@ -128,6 +127,7 @@ void ESM_processInterrupt (uint32_t vec, int32_t* groupNum, int32_t* vecNum)
 {
     uint32_t            index;
     uint32_t            regVal = 0U;
+    CSL_mss_esmRegs*    ptrESMRegs;
 
     if (vec < 32U)
     {
@@ -144,7 +144,9 @@ void ESM_processInterrupt (uint32_t vec, int32_t* groupNum, int32_t* vecNum)
         /* group 2 0-31 errors */
         vec = vec - 32;
         regVal = ((uint32_t) TRUE << (vec));
-        HW_WR_REG32(gEsmMCB.esmBaseAddr + ESM_ESMSR2, regVal);
+        ptrESMRegs = gESMHwCfgAttrs.ptrESMRegs;
+        CSL_REG_WR(&ptrESMRegs->ESMSR2, regVal);
+
 #ifdef ESM_DEBUG
         gEsmMCB.debugEsmISRCount[1]++;
 #endif
@@ -199,10 +201,12 @@ void ESM_processInterrupt (uint32_t vec, int32_t* groupNum, int32_t* vecNum)
 */
 ESM_Handle ESM_init(uint8_t bClearErrors)
 {
+    CSL_mss_esmRegs*      ptrESMRegs;
     /* Initialize the allocated memory */
     memset ((void *)&gEsmMCB, 0U, sizeof(ESM_DriverMCB));
 
-    gEsmMCB.esmBaseAddr = gESMHwCfgAttrs.baseAddr;
+    ptrESMRegs          = gESMHwCfgAttrs.ptrESMRegs;
+    gEsmMCB.esmBaseAddr = (uintptr_t)ptrESMRegs;
 
 #if defined (BUILD_MCU)
     HwiP_Params     hwiParams;
@@ -230,46 +234,42 @@ ESM_Handle ESM_init(uint8_t bClearErrors)
         /* ESM Group 1: 0-31 errors */
 
         /* read */
-        gEsmMCB.esmInitStatus[0U] = HW_RD_REG32(gEsmMCB.esmBaseAddr + ESM_ESMSR1);
+        gEsmMCB.esmInitStatus[0U] = CSL_REG_RD(&ptrESMRegs->ESMSR1);
 
         /*  clear */
-        HW_WR_REG32(gEsmMCB.esmBaseAddr + ESM_ESMSR1, gEsmMCB.esmInitStatus[0U]);
-
+        CSL_REG_WR(&ptrESMRegs->ESMSR1, gEsmMCB.esmInitStatus[0U]);
 
         /* ESM Group 2: 0-31 errors */
 
         /* read */
-        gEsmMCB.esmInitStatus[1U] = HW_RD_REG32(gEsmMCB.esmBaseAddr + ESM_ESMSR2);
+        gEsmMCB.esmInitStatus[1U] = CSL_REG_RD(&ptrESMRegs->ESMSR2);
 
         /*  clear */
-        HW_WR_REG32(gEsmMCB.esmBaseAddr + ESM_ESMSR2, gEsmMCB.esmInitStatus[1U]);
-
+        CSL_REG_WR(&ptrESMRegs->ESMSR2, gEsmMCB.esmInitStatus[1U]);
 
         /* ESM Group 3: 0-31 errors */
 
         /* read */
-        gEsmMCB.esmInitStatus[2U] = HW_RD_REG32(gEsmMCB.esmBaseAddr + ESM_ESMSR3);
+        gEsmMCB.esmInitStatus[2U] = CSL_REG_RD(&ptrESMRegs->ESMSR3);
 
         /*  clear */
-        HW_WR_REG32(gEsmMCB.esmBaseAddr + ESM_ESMSR3, gEsmMCB.esmInitStatus[2U]);
-
+        CSL_REG_WR(&ptrESMRegs->ESMSR3, gEsmMCB.esmInitStatus[2U]);
 
         /* ESM Group 1: 32-63 errors */
 
         /* read */
-        gEsmMCB.esmInitStatus[3U] = HW_RD_REG32(gEsmMCB.esmBaseAddr + ESM_ESMSR4);
+        gEsmMCB.esmInitStatus[3U] = CSL_REG_RD(&ptrESMRegs->ESMSR4);
 
         /*  clear */
-        HW_WR_REG32(gEsmMCB.esmBaseAddr + ESM_ESMSR4, gEsmMCB.esmInitStatus[3U]);
-
+        CSL_REG_WR(&ptrESMRegs->ESMSR4, gEsmMCB.esmInitStatus[3U]);
 
         /* ESM Group 2 Shadow register: 0-31 errors */
 
         /* read */
-        gEsmMCB.esmInitStatus[4U] = HW_RD_REG32(gEsmMCB.esmBaseAddr + ESM_ESMSSR2);
+        gEsmMCB.esmInitStatus[4U] = CSL_REG_RD(&ptrESMRegs->ESMSSR2);
 
         /*  clear */
-        HW_WR_REG32(gEsmMCB.esmBaseAddr + ESM_ESMSSR2, gEsmMCB.esmInitStatus[4U]);
+        CSL_REG_WR(&ptrESMRegs->ESMSSR2, gEsmMCB.esmInitStatus[4U]);
     }
 
     return (ESM_Handle)&gEsmMCB;

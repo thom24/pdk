@@ -63,7 +63,7 @@ extern "C" {
  *  @ingroup DRV_ESM_SOC_MODULE
  */
 typedef struct ESM_v0_HwAttrs_t {
-    uintptr_t               baseAddr;           /*!< ESM Peripheral's base address for the control register space */
+    CSL_mss_esmRegs*        ptrESMRegs;         /*!< ESM Peripheral's base address for the control register space */
     uint32_t                highPrioIntNum;     /*!< ESM Peripheral's interrupt vector for high priority line*/
     uint32_t                lowPrioIntNum;      /*!< ESM Peripheral's interrupt vector for low priority line*/
 } ESM_v0_HwAttrs;
