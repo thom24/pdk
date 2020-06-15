@@ -175,6 +175,7 @@ uint8_t           benchmarkL1Data[8192];
 
 uint32_t          drvApiCycles[7];
 
+uint8_t            finalTestResultsPass  = 1;
 
 /**************************************************************************
  *************************** HWA Test Functions **************************
@@ -1366,7 +1367,7 @@ static void HWA_contextswitch_test(HWA_Handle handle)
     {
         //MCPI_setFeatureTestResult("HWA context switch Tests", MCPI_TestResult_FAIL);
         System_printf("Feature :  HWA context switch Tests FAIL\n");
-
+        finalTestResultsPass = 0;
     }
     else
     {
@@ -1449,6 +1450,7 @@ static void HWA_fft4k_test(HWA_Handle handle)
         System_printf("Error: HWA_configParamSet(%d) (Immediate trigged, AccelMode FFT - 4K) returned %d\n", errCode, paramsetIdx);
         //MCPI_setFeatureTestResult("API HWA_configParamSet() [Immediate trigged, AccelMode FFT - 4K]", MCPI_TestResult_FAIL);
         System_printf("Feature :  API HWA_configParamSet() [Immediate trigged, AccelMode FFT - 4K] FAIL\n");
+        finalTestResultsPass  =0;
         return;
     }
     else
@@ -1503,6 +1505,7 @@ static void HWA_fft4k_test(HWA_Handle handle)
         System_printf("Error: HWA_configParamSet(%d) (Immediate triggered, AccelMode FFT - 4K) returned %d\n", errCode, paramsetIdx);
         //PI_setFeatureTestResult("API HWA_configParamSet() [Immediate triggered, AccelMode FFT - 4K]", MCPI_TestResult_FAIL);
         System_printf("Feature : API HWA_configParamSet() [Immediate triggered, AccelMode FFT - 4K] FAIL\n");
+        finalTestResultsPass = 0;
         return;
     }
     else
@@ -1529,6 +1532,7 @@ static void HWA_fft4k_test(HWA_Handle handle)
         System_printf("Error: HWA_configCommon(%d) (Immediate triggered, AccelMode FFT - 4K) returned %d\n", errCode, paramsetIdx);
        // MCPI_setFeatureTestResult("API HWA_configParamSet() [Immediate triggered, AccelMode FFT - 4K]", MCPI_TestResult_FAIL);
         System_printf("Feature : API HWA_configParamSet() [Immediate triggered, AccelMode FFT - 4 FAIL\n");
+        finalTestResultsPass = 0;
         return;
     }
     else
@@ -1546,6 +1550,7 @@ static void HWA_fft4k_test(HWA_Handle handle)
         System_printf("Error: HWA_configRam(HWA_RAM_TYPE_WINDOW_RAM) returned %d\n", errCode);
         //MCPI_setFeatureTestResult("API HWA_configRam(HWA_RAM_TYPE_WINDOW_RAM)", MCPI_TestResult_FAIL);
         System_printf("Feature : API HWA_configRam(HWA_RAM_TYPE_WINDOW_RAM) FAIL\n");
+		finalTestResultsPass = 0;
         return;
     }
 
@@ -1570,6 +1575,7 @@ static void HWA_fft4k_test(HWA_Handle handle)
     {
         //MCPI_setFeatureTestResult("HWA 4KFFT Tests", MCPI_TestResult_FAIL);
         System_printf("Feature : HWA 4KFFT Tests FAIL\n");
+        finalTestResultsPass  = 0;
     }
     else
     {
@@ -1659,6 +1665,7 @@ static void HWA_2dfft_test(HWA_Handle handle)
         System_printf("Error: HWA_configParamSet(%d) (Immediate triggered, AccelMode FFT - 2DFFT) returned %d\n", errCode, paramsetIdx);
         //MCPI_setFeatureTestResult("API HWA_configParamSet() [Immediate triggered, AccelMode FFT - 2DFFT]", MCPI_TestResult_FAIL);
         System_printf("Feature : API HWA_configParamSet() [Immediate triggered, AccelMode FFT - 2DFFT] FAIL\n");
+        finalTestResultsPass = 0;
         return;
     }
     else
@@ -1685,6 +1692,7 @@ static void HWA_2dfft_test(HWA_Handle handle)
         System_printf("Error: HWA_configRam(HWA_RAM_TYPE_WINDOW_RAM) returned %d\n", errCode);
        // MCPI_setFeatureTestResult("API HWA_configRam(HWA_RAM_TYPE_WINDOW_RAM)", MCPI_TestResult_FAIL);
         System_printf("Feature : API HWA_configRam(HWA_RAM_TYPE_WINDOW_RAM) FAIL\n");
+        finalTestResultsPass = 0;
         return;
     }
 
@@ -1707,6 +1715,7 @@ static void HWA_2dfft_test(HWA_Handle handle)
     {
         //MCPI_setFeatureTestResult("HWA 2DFFT Tests", MCPI_TestResult_FAIL);
         System_printf("Feature : HWA 2DFFT Tests FAIL\n");
+        finalTestResultsPass = 0;
     }
     else
     {
@@ -1788,6 +1797,7 @@ static void HWA_compress_test(HWA_Handle handle)
         System_printf("Error: HWA_configParamSet(%d) (Immediate triggered, AccelMode compress) returned %d\n", errCode, paramsetIdx);
         //MCPI_setFeatureTestResult("API HWA_configParamSet() [Immediate triggered, AccelMode compress]", MCPI_TestResult_FAIL);
         System_printf("Feature : API HWA_configParamSet() [Immediate triggered, AccelMode compress] FAIL\n");
+        finalTestResultsPass = 0;
         return;
     }
     else
@@ -1838,6 +1848,7 @@ static void HWA_compress_test(HWA_Handle handle)
         System_printf("Error: HWA_configParamSet(%d) (software triggered, AccelMode decompress) returned %d\n", errCode, paramsetIdx);
         //MCPI_setFeatureTestResult("API HWA_configParamSet() [software triggered, AccelMode decompress]", MCPI_TestResult_FAIL);
         System_printf("Feature : API HWA_configParamSet() [software triggered, AccelMode decompress] FAIL\n");
+        finalTestResultsPass = 0;
         return;
     }
     else
@@ -1925,6 +1936,7 @@ static void HWA_compress_test(HWA_Handle handle)
         System_printf("Error: HWA_configParamSet(%d) (software triggered, AccelMode compress) returned %d\n", errCode, paramsetIdx);
         //MCPI_setFeatureTestResult("API HWA_configParamSet() [software triggered, AccelMode compress]", MCPI_TestResult_FAIL);
         System_printf("Feature : API HWA_configParamSet() [software triggered, AccelMode compress] FAIL\n");
+        finalTestResultsPass = 0;
         return;
     }
     else
@@ -1973,6 +1985,7 @@ static void HWA_compress_test(HWA_Handle handle)
         System_printf("Error: HWA_configParamSet(%d) (immediate triggered, AccelMode decompress) returned %d\n", errCode, paramsetIdx);
         //MCPI_setFeatureTestResult("API HWA_configParamSet() [immediate triggered, AccelMode decompress]", MCPI_TestResult_FAIL);
         System_printf("Feature : API HWA_configParamSet() [software triggered, AccelMode compress] FAIL\n");
+		finalTestResultsPass = 0;
         return;
     }
     else
@@ -2028,6 +2041,7 @@ static void HWA_compress_test(HWA_Handle handle)
     {
        // MCPI_setFeatureTestResult("HWA compression/decompression Tests", MCPI_TestResult_FAIL);
         System_printf("Feature : HWA compression/decompression Tests FAIL\n");
+        finalTestResultsPass = 0;
     }
     else
     {
@@ -2097,6 +2111,7 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
         System_printf("Error: HWA_configParamSet(%d) (DMA Trigger paramset for ping buffer, AccelMode None) returned %d\n", errCode, paramsetIdx);
        // MCPI_setFeatureTestResult("API HWA_configParamSet() [DMA Trigger paramset for ping buffer, AccelMode None]", MCPI_TestResult_FAIL);
         System_printf("Feature : API HWA_configParamSet() [DMA Trigger paramset for ping buffer, AccelMode None] FAIL\n");
+        finalTestResultsPass = 0;
         return;
     }
     else
@@ -2160,6 +2175,7 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
         System_printf("Error: HWA_configParamSet(%d) returned %d\n", errCode, paramsetIdx);
         //MCPI_setFeatureTestResult("API HWA_configParamSet() [Immediate Triggered, Ping buffer FFT processing with DC and Interference Statistics ]", MCPI_TestResult_FAIL);
         System_printf("Feature : API HWA_configParamSet() [Immediate Triggered, Ping buffer FFT processing with DC and Interference Statistics] FAIL\n");
+        finalTestResultsPass = 0;
         return;
     }
     else
@@ -2177,7 +2193,8 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
         System_printf("Error: HWA_configParamSet(%d) returned %d\n", errCode, paramsetIdx);
         //MCPI_setFeatureTestResult("API HWA_configParamSet() [DMA Trigger paramset for pong buffer, AccelMode None]", MCPI_TestResult_FAIL);
         System_printf("Feature : API HWA_configParamSet() [DMA Trigger paramset for pong buffer, AccelMode None] FAIL\n");
-        return;
+		finalTestResultsPass = 0;
+	    return;
     }
     else
     {
@@ -2214,6 +2231,7 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
         System_printf("Error: HWA_configParamSet(%d) returned %d\n", errCode, paramsetIdx);
         //MCPI_setFeatureTestResult("API HWA_configParamSet() (Immediate Triggered, Pong buffer FFT processing with interference localization/mitigation enabled (all pass) )", MCPI_TestResult_FAIL);
         System_printf("Feature : API HWA_configParamSet() (Immediate Triggered, Pong buffer FFT processing with interference localization/mitigation enabled (all pass)) FAIL\n");
+        finalTestResultsPass = 0;
         return;
     }
     else
@@ -2246,6 +2264,7 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
         System_printf("Error: HWA_configParamSet(%d) returned %d\n", errCode, paramsetIdx);
         //MCPI_setFeatureTestResult("API HWA_configParamSet() (Immediate Triggered, FFT processing with localization/interference mitigation(all zero out) )", MCPI_TestResult_FAIL);
         System_printf("Feature : API HWA_configParamSet() (Immediate Triggered, FFT processing with localization/interference mitigation(all zero out)) FAIL\n");
+        finalTestResultsPass = 0;
         return;
     }
     else
@@ -2289,6 +2308,7 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
         System_printf("Error: HWA_configParamSet(%d) returned %d\n", errCode, paramsetIdx);
         //MCPI_setFeatureTestResult("API HWA_configParamSet() (Immediate Triggered, FFT enabled with shuffle addressing(wraparound) + channel combine + zeroinsert )", MCPI_TestResult_FAIL);
         System_printf("Feature : API HWA_configParamSet() (Immediate Triggered, FFT enabled with shuffle addressing(wraparound) + channel combine + zeroinsert) FAIL\n");
+        finalTestResultsPass = 0;
         return;
     }
     else
@@ -2311,6 +2331,7 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
         System_printf("Error: HWA_configRam(HWA_RAM_TYPE_SHUFFLE_RAM) returned %d\n", errCode);
         //MCPI_setFeatureTestResult("API HWA_configRam(HWA_RAM_TYPE_SHUFFLE_RAM)", MCPI_TestResult_FAIL);
         System_printf("Feature : API HWA_configRam(HWA_RAM_TYPE_SHUFFLE_RAM) FAIL\n");
+        finalTestResultsPass = 0;
         return;
     }
 
@@ -2324,6 +2345,7 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
         System_printf("Error: HWA_configRam(HWA_RAM_TYPE_WINDOW_RAM) returned %d\n", errCode);
         //MCPI_setFeatureTestResult("API HWA_configRam(HWA_RAM_TYPE_WINDOW_RAM)", MCPI_TestResult_FAIL);
         System_printf("Feature : API HWA_configRam(HWA_RAM_TYPE_WINDOW_RAM) FAIL\n");
+        finalTestResultsPass = 0;
         return;
     }
 
@@ -2334,6 +2356,7 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
         System_printf("Error: HWA_configRam(HWA_RAM_TYPE_WINDOW_RAM with offset not 0) returned %d\n", errCode);
         //MCPI_setFeatureTestResult("API HWA_configRam(HWA_RAM_TYPE_WINDOW_RAM with offset not 0)", MCPI_TestResult_FAIL);
         System_printf("Feature : API HWA_configRam(HWA_RAM_TYPE_WINDOW_RAM with offset not 0) FAIL\n");
+        finalTestResultsPass = 0;
         return;
     }
 
@@ -2371,6 +2394,7 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
         System_printf("Error: HWA_enableDoneInterrupt returned %d\n", errCode);
         //MCPI_setFeatureTestResult("API HWA_enableDoneInterrupt()", MCPI_TestResult_FAIL);
         System_printf("Feature : API HWA_enableDoneInterrupt() FAIL\n");
+        finalTestResultsPass = 0;
         return;
     }
 
@@ -2435,6 +2459,7 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
         System_printf("Error: HWA_configCommon returned %d\n", errCode);
         //MCPI_setFeatureTestResult("API HWA_configCommon()", MCPI_TestResult_FAIL);
         System_printf("Feature : API HWA_enableDoneInterrupt() FAIL\n");
+        finalTestResultsPass = 0;
         return;
     }
 
@@ -2450,6 +2475,7 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
         System_printf("Error: HWA_enable(1) returned %d\n", errCode);
         //MCPI_setFeatureTestResult("API HWA_enable() to enable HWA", MCPI_TestResult_FAIL);
         System_printf("Feature : API HWA_enable() to enable HWA FAIL\n");
+        finalTestResultsPass = 0;
         return;
     }
 
@@ -2462,6 +2488,7 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
         System_printf("Error: HWA_reset returned %d\n", errCode);
         //MCPI_setFeatureTestResult("API HWA_reset()", MCPI_TestResult_FAIL);
         System_printf("Feature : API HWA_reset( ) FAIL\n");
+        finalTestResultsPass = 0;
         return;
     }
 
@@ -2496,7 +2523,8 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
         System_printf("Error: HWA_setDMA2ACCManualTrig(0) returned %d\n", errCode);
         //MCPI_setFeatureTestResult("API HWA_setDMA2ACCManualTrig(ch:0)", MCPI_TestResult_FAIL);
         System_printf("Feature : API HWA_setDMA2ACCManualTrig(ch:0) FAIL\n");
-        return;
+        finalTestResultsPass = 0;
+		return;
     }
 
     errCode = HWA_setDMA2ACCManualTrig(handle, HWA_TEST_SRC_TRIGGER_DMACH1);
@@ -2505,6 +2533,7 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
         System_printf("Error: HWA_setDMA2ACCManualTrig(1) returned %d\n", errCode);
         //MCPI_setFeatureTestResult("API HWA_setDMA2ACCManualTrig(ch:1)", MCPI_TestResult_FAIL);
         System_printf("Feature : API HWA_setDMA2ACCManualTrig(ch:1) FAIL\n");
+        finalTestResultsPass = 0;
         return;
     }
 
@@ -2540,6 +2569,7 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
         System_printf("Error: HWA_readDCEstimateReg returned %d\n", errCode);
         //MCPI_setFeatureTestResult("API HWA_readDCEstimateReg", MCPI_TestResult_FAIL);
         System_printf("Feature : API HWA_readDCEstimateReg() FAIL\n");
+        finalTestResultsPass = 0;
         return;
     }
 
@@ -2550,6 +2580,7 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
         System_printf("Error: HWA_readInterfThreshReg(MAG) returned %d\n", errCode);
         //MCPI_setFeatureTestResult("API HWA_readInterfThreshReg(MAG)", MCPI_TestResult_FAIL);
         System_printf("Feature : API HWA_readInterfThreshReg(MAG) FAIL\n");
+        finalTestResultsPass = 0;
         return;
     }
 
@@ -2560,6 +2591,7 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
         System_printf("Error: HWA_readInterfThreshReg(MAGDIFF) returned %d\n", errCode);
         //MCPI_setFeatureTestResult("API HWA_readInterfThreshReg(MAGDIFF)", MCPI_TestResult_FAIL);
         System_printf("Feature : API HWA_readInterfThreshReg(MAGDIFF) FAIL\n");
+        finalTestResultsPass = 0;
         return;
     }
 
@@ -2569,6 +2601,7 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
         System_printf("Error: HWA_readDCAccReg returned %d\n", errCode);
         //MCPI_setFeatureTestResult("API HWA_readDCAccReg", MCPI_TestResult_FAIL);
         System_printf("Feature : API HWA_readDCAccReg() FAIL\n");
+        finalTestResultsPass = 0;
         return;
     }
 
@@ -2578,6 +2611,7 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
         System_printf("Error: HWA_readIntfAccReg(MAG) returned %d\n", errCode);
        // MCPI_setFeatureTestResult("API HWA_readIntfAccReg(MAG)", MCPI_TestResult_FAIL);
         System_printf("Feature : API HWA_readIntfAccReg(MAG) FAIL\n");
+        finalTestResultsPass = 0;
         return;
     }
 
@@ -2587,6 +2621,7 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
         System_printf("Error: HWA_readIntfAccReg(MAGDIFF) returned %d\n", errCode);
         //MCPI_setFeatureTestResult("API HWA_readIntfAccReg(MAGDIFF)", MCPI_TestResult_FAIL);
         System_printf("Feature : API HWA_readIntfAccReg(MAGDIFF) FAIL\n");
+        finalTestResultsPass = 0;
         return;
     }
 
@@ -2739,6 +2774,7 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
         System_printf("Error: HWA_disableParamSetInterrupt returned %d\n", errCode);
        // MCPI_setFeatureTestResult("API HWA_disableParamSetInterrupt() ", MCPI_TestResult_FAIL);
         System_printf("Feature : API HWA_readIntfAccReg(MAGDIFF) FAIL\n");
+		finalTestResultsPass = 0;
     }
 
     errCode = HWA_disableDoneInterrupt(handle, 0);
@@ -2747,6 +2783,7 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
         System_printf("Error: HWA_disableDoneInterrupt returned %d\n", errCode);
         //MCPI_setFeatureTestResult("API HWA_disableDoneInterrupt() ", MCPI_TestResult_FAIL);
         System_printf("Feature :  API HWA_disableDoneInterrupt() FAIL\n");
+        finalTestResultsPass = 0;
     }
 
     /* disable HWA*/
@@ -2756,6 +2793,7 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
         System_printf("Error: HWA_enable(0) returned %d\n", errCode);
        // MCPI_setFeatureTestResult("API HWA_enable() to disable HWA", MCPI_TestResult_FAIL);
         System_printf("Feature : API HWA_enable() to disable HWA FAIL\n");
+        finalTestResultsPass = 0;
         return;
     }
 
@@ -2774,6 +2812,7 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
     {
         //MCPI_setFeatureTestResult("HWA FFT with pre-processing Tests", MCPI_TestResult_FAIL);
         System_printf("Feature : HWA FFT with pre-processing Tests FAIL\n");
+        finalTestResultsPass= 0;
     }
     else
     {
@@ -2855,6 +2894,7 @@ static void HWA_complexmultiply_test(HWA_Handle handle)
         System_printf("Error: HWA_configParamSet(%d) returned %d\n", paramsetIdx + startParamIdx, errCode);
         //MCPI_setFeatureTestResult("API HWA_configParamSet() (Immediate Triggered, FFT disabled, scale multiplication mode )", MCPI_TestResult_FAIL);
         System_printf("Feature : API HWA_configParamSet() (Immediate Triggered, AccelMode FFT, complex multiply: vector multiplication) FAIL\n");
+        finalTestResultsPass = 0;
         return;
     }
     else
@@ -2885,6 +2925,7 @@ static void HWA_complexmultiply_test(HWA_Handle handle)
         System_printf("Error: HWA_configParamSet(%d) returned %d\n", errCode, paramsetIdx + startParamIdx);
         //MCPI_setFeatureTestResult("API HWA_configParamSet() (Immediate Triggered, magnitude mode with sum statistics output )", MCPI_TestResult_FAIL);
         System_printf("Feature : API HWA_configParamSet() (Immediate Triggered, magnitude mode with sum statistics output) FAIL\n");
+        finalTestResultsPass = 0;
         return;
     }
     else
@@ -2928,6 +2969,7 @@ static void HWA_complexmultiply_test(HWA_Handle handle)
         System_printf("Error: HWA_configRam returned %d\n", errCode);
         //MCPI_setFeatureTestResult("API HWA_configRam(HWA_RAM_TYPE_VECTORMULTIPLY_RAM) ", MCPI_TestResult_FAIL);
         System_printf("Feature : API HWA_configRam(HWA_RAM_TYPE_VECTORMULTIPLY_RAM) FAIL\n");
+        finalTestResultsPass = 0;
         return;
     }
 
@@ -2966,7 +3008,8 @@ static void HWA_complexmultiply_test(HWA_Handle handle)
         System_printf("Error: HWA_paramSetDonePolling() returned %d\n", errCode);
         //MCPI_setFeatureTestResult("API HWA_paramSetDonePolling()", MCPI_TestResult_FAIL);
         System_printf("Feature : API HWA_paramSetDonePolling() FAIL\n");
-        return;
+        finalTestResultsPass = 0;
+		return;
     }
 
     System_printf("\n Debug: HWA complex multiply test result check \n");
@@ -2979,6 +3022,7 @@ static void HWA_complexmultiply_test(HWA_Handle handle)
         System_printf("Error: HWA_readStatsReg() returned %d\n", errCode);
        // MCPI_setFeatureTestResult("API HWA_readStatsReg()", MCPI_TestResult_FAIL);
         System_printf("Feature : API HWA_readStatsReg() FAIL \n");
+        finalTestResultsPass = 0;
         return;
     }
 
@@ -3039,6 +3083,7 @@ static void HWA_complexmultiply_test(HWA_Handle handle)
     {
         //MCPI_setFeatureTestResult("Immediate triggered complex multiply test ", MCPI_TestResult_FAIL);
         System_printf("Feature : Immediate triggered complex multiply tests FAIL\n");
+        finalTestResultsPass = 0;
     }
     else
     {
@@ -3138,6 +3183,7 @@ static void HWA_azimfft_test(HWA_Handle handle)
         System_printf("Error: HWA_configParamSet(%d) returned %d\n", errCode, paramsetIdx);
         //MCPI_setFeatureTestResult("API HWA_configParamSet() (Software Triggered, AccelMode FFT, with channel combine, and zero insert )", MCPI_TestResult_FAIL);
         System_printf("Feature : API HWA_configParamSet() (Software Triggered, AccelMode FFT, with channel combine, and zero insert) FAIL\n");
+        finalTestResultsPass = 0;
         return;
     }
     else
@@ -3165,6 +3211,7 @@ static void HWA_azimfft_test(HWA_Handle handle)
         System_printf("Error: HWA_configRam(HWA_RAM_TYPE_SHUFFLE_RAM) returned %d\n", errCode);
         //MCPI_setFeatureTestResult("API HWA_configRam(HWA_RAM_TYPE_SHUFFLE_RAM)", MCPI_TestResult_FAIL);
         System_printf("Feature: API HWA_configRam(HWA_RAM_TYPE_SHUFFLE_RAM) FAIL\n");
+        finalTestResultsPass = 0;
         return;
     }
 
@@ -3233,6 +3280,7 @@ static void HWA_azimfft_test(HWA_Handle handle)
         System_printf("Error: HWA_configParamSet(%d) returned %d\n", errCode, paramsetIdx);
         //MCPI_setFeatureTestResult("API HWA_configParamSet() (Immediate Triggered,AccelMode FFT with CDF calculation, and 2D maximum enabled)", MCPI_TestResult_FAIL);
         System_printf("Feature : API HWA_configParamSet() (Immediate Triggered,AccelMode FFT with CDF calculation, and 2D maximum enabled) FAIL\n");
+        finalTestResultsPass = 0;
         return;
     }
     else
@@ -3313,6 +3361,7 @@ static void HWA_azimfft_test(HWA_Handle handle)
         System_printf("Error: HWA_clearHistgoramRAM(1) returned %d\n", errCode);
         //MCPI_setFeatureTestResult("API HWA_clearHistgoramRAM() to clear Histogram RAM", MCPI_TestResult_FAIL);
         System_printf("Feature : API HWA_clearHistgoramRAM() to clear Histogram RAM FAIL\n");
+        finalTestResultsPass = 0;
         return;
     }
 
@@ -3339,6 +3388,7 @@ static void HWA_azimfft_test(HWA_Handle handle)
         System_printf("Error: HWA_setSoftwareTrigger returned %d\n", errCode);
         //MCPI_setFeatureTestResult("API HWA_setSoftwareTrigger()", MCPI_TestResult_FAIL);
         System_printf("Feature : API HWA_setSoftwareTrigger() FAIL\n");
+        finalTestResultsPass = 0;
         return;
     }
 
@@ -3352,6 +3402,7 @@ static void HWA_azimfft_test(HWA_Handle handle)
         System_printf("Error: HWA_paramSetDonePolling() returned %d\n", errCode);
         //MCPI_setFeatureTestResult("API HWA_paramSetDonePolling()", MCPI_TestResult_FAIL);
         System_printf("Feature : API HWA_paramSetDonePolling() FAIL\n");
+        finalTestResultsPass = 0;
         return;
     }
 
@@ -3395,6 +3446,7 @@ static void HWA_azimfft_test(HWA_Handle handle)
         System_printf("Error: HWA_readHistThresholdRam() returned %d\n", errCode);
         //MCPI_setFeatureTestResult("API HWA_readHistThresholdRam()", MCPI_TestResult_FAIL);
         System_printf("Feature : API HWA_readHistThresholdRam() FAIL\n");
+        finalTestResultsPass = 0;
         return;
     }
 
@@ -3411,6 +3463,8 @@ static void HWA_azimfft_test(HWA_Handle handle)
         System_printf("Error: CDF threshold bit number returned %d\n", compareCode1);
       //  MCPI_setFeatureTestResult("CDF threshold bit number", MCPI_TestResult_FAIL);
         System_printf("Feature: CDF threshold bit number FAIL\n");
+		finalTestResultsPass = 0;
+		return;
     }
     else
     {
@@ -3424,6 +3478,7 @@ static void HWA_azimfft_test(HWA_Handle handle)
         System_printf("Error: CDF threshold CDF value returned %d\n", compareCode1);
         //MCPI_setFeatureTestResult("CDF threshold CDF value ", MCPI_TestResult_FAIL);
         System_printf("Feature : CDF threshold CDF value FAIL\n");
+        finalTestResultsPass = 0;
     }
     else
     {
@@ -3437,6 +3492,8 @@ static void HWA_azimfft_test(HWA_Handle handle)
         System_printf("Error: CDF threshold PDF value returned %d\n", compareCode1);
         //MCPI_setFeatureTestResult("CDF threshold PDF value ", MCPI_TestResult_FAIL);
         System_printf("Feature : CDF threshold PDF value FAIL\n");
+		finalTestResultsPass = 0;
+		return;
     }
     else
     {
@@ -3508,6 +3565,7 @@ static void HWA_azimfft_test(HWA_Handle handle)
     {
         //MCPI_setFeatureTestResult("Software triggered azim FFT test ", MCPI_TestResult_FAIL);
         System_printf("Feature : Software triggered azim FFT test FAIL\n");
+        finalTestResultsPass = 0;
     }
     else
     {
@@ -3585,6 +3643,7 @@ void HWA_histogram_test(HWA_Handle handle)
         System_printf("Error: HWA_configParamSet(%d) returned %d\n", errCode, paramsetIdx);
         //MCPI_setFeatureTestResult("API HWA_configParamSet() (Immediate Triggered, AccelMode FFT, Histogram calculation)", MCPI_TestResult_FAIL);
         System_printf("Feature : API HWA_configParamSet() (Immediate Triggered, AccelMode FFT, Histogram calculation) FAIL\n");
+        finalTestResultsPass = 0;
         return;
     }
     else
@@ -3683,6 +3742,7 @@ void HWA_histogram_test(HWA_Handle handle)
     {
         //MCPI_setFeatureTestResult("Software triggered Histogram test ", MCPI_TestResult_FAIL);
         System_printf("Feature : Software triggered Histogram test FAIL\n");
+		finalTestResultsPass = 0; 
     }
     else
     {
@@ -4758,6 +4818,7 @@ static void Test_initTask(UArg arg0, UArg arg1)
         System_printf("Error: Unable to open the HWA Instance err:%d\n", errCode);
         //MCPI_setFeatureTestResult("API HWA_open()", MCPI_TestResult_FAIL);
         System_printf("Feature : API HWA_open() FAIL\n");
+        finalTestResultsPass = 0;
         return;
     }
     System_printf("Debug: HWA Instance %p has been opened successfully\n", handle);
@@ -4771,6 +4832,7 @@ static void Test_initTask(UArg arg0, UArg arg1)
         System_printf("Error: HWA Instance %p closed with err:%d\n", handle, errCode);
         //MCPI_setFeatureTestResult("API HWA_close()", MCPI_TestResult_FAIL);
         System_printf("Feature : API HWA_close() FAIL\n");
+		finalTestResultsPass = 0;
         return;
     }
     System_printf("Debug: HWA Instance %p closed successfully\n", handle);
@@ -4784,6 +4846,7 @@ static void Test_initTask(UArg arg0, UArg arg1)
         System_printf("Error: Unable to open the HWA Instance err:%d\n", errCode);
         //MCPI_setFeatureTestResult("HWA reopen", MCPI_TestResult_FAIL);
         System_printf("Feature : HWA reopen FAIL\n");
+        finalTestResultsPass = 0;
         return;
     }
     System_printf("Debug: HWA Instance %p has been reopened successfully\n", handle);
@@ -4844,6 +4907,14 @@ static void Test_initTask(UArg arg0, UArg arg1)
     HWA_benchmark();
 #endif
 
+    if (finalTestResultsPass == 1)
+	{
+		System_printf("ALL HWA TESTS PASS\n");
+	}
+	else
+	{
+		System_printf("HWA TESTS FAIL\n");
+	}
     System_printf("\n\n------- HWA driver test completed ----------\n\n");
 
     BIOS_exit(0);
