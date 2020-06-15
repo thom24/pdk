@@ -70,7 +70,7 @@ ESM_DriverMCB   gEsmMCB;
 /*                          Function Declarations                             */
 /* ========================================================================== */
 /* Function prototypes */
-void interrupt ESM_highpriority_interrupt(void);
+void ESM_highpriority_interrupt(uintptr_t arg);
 void ESM_lowpriority_interrupt(uintptr_t arg);
 void ESM_processInterrupt (uint32_t vec, int32_t* groupNum, int32_t* vecNum);
 
@@ -85,7 +85,7 @@ void ESM_processInterrupt (uint32_t vec, int32_t* groupNum, int32_t* vecNum);
  *         Group 3 errors do not raise an interrupt and hence not handled here.
  *
  */
-void interrupt ESM_highpriority_interrupt(void)
+void ESM_highpriority_interrupt(uintptr_t arg)
 {
     uint32_t            esmioffhr;
     uint32_t            vec;
@@ -209,19 +209,35 @@ ESM_Handle ESM_init(uint8_t bClearErrors)
     gEsmMCB.esmBaseAddr = (uintptr_t)ptrESMRegs;
 
 #if defined (BUILD_MCU)
-    HwiP_Params     hwiParams;
+    OsalRegisterIntrParams_t interruptRegParams;
 
-    HwiP_Params_init(&hwiParams);
-    hwiParams.name = "ESM_HIGH_PRIORITY";
-    gEsmMCB.hwiHandleHi = HwiP_create(gESMHwCfgAttrs.highPrioIntNum, (HwiP_Fxn)ESM_highpriority_interrupt, &hwiParams);
+    /* Initialize with defaults */
+    Osal_RegisterInterrupt_initParams(&interruptRegParams);
+
+    /* Populate the interrupt parameters */
+    interruptRegParams.corepacConfig.name       = (char *)"ESM_HIGH_PRIORITY";
+    interruptRegParams.corepacConfig.isrRoutine = ESM_highpriority_interrupt;
+    interruptRegParams.corepacConfig.priority   = 0x15U;
+    interruptRegParams.corepacConfig.intVecNum  = (int32_t)gESMHwCfgAttrs.highPrioIntNum;
+
+    /* Register interrupts */
+    (void)Osal_RegisterInterrupt(&interruptRegParams,&(gEsmMCB.hwiHandleHi));
 
     /* Debug Message: */
     DebugP_log2 ("Debug: ESM Driver Registering HWI(High Priority) ISR [%p] for Interrupt %d\n",
                       gEsmMCB.hwiHandleHi, gESMHwCfgAttrs.highPrioIntNum);
 
-    HwiP_Params_init(&hwiParams);
-    hwiParams.name = "ESM_LOW_PRIORITY";
-    gEsmMCB.hwiHandleLo = HwiP_create(gESMHwCfgAttrs.lowPrioIntNum, (HwiP_Fxn)ESM_lowpriority_interrupt, &hwiParams);
+    /* Initialize with defaults */
+    Osal_RegisterInterrupt_initParams(&interruptRegParams);
+
+    /* Populate the interrupt parameters */
+    interruptRegParams.corepacConfig.name       = (char *)"ESM_LOW_PRIORITY";
+    interruptRegParams.corepacConfig.isrRoutine = ESM_lowpriority_interrupt;
+    interruptRegParams.corepacConfig.priority   = 0x8U;
+    interruptRegParams.corepacConfig.intVecNum  = (int32_t)gESMHwCfgAttrs.lowPrioIntNum;
+
+    /* Register interrupts */
+    (void)Osal_RegisterInterrupt(&interruptRegParams,&(gEsmMCB.hwiHandleLo));
 
     /* Debug Message: */
     DebugP_log2 ("Debug: ESM Driver Registering HWI(Low Priority) ISR [%p] for Interrupt %d\n",
@@ -301,13 +317,13 @@ int32_t ESM_close(ESM_Handle handle)
         if (ptrEsmMCB->hwiHandleHi)
         {
             /* YES: Delete and unregister the interrupt handler. */
-            HwiP_delete(ptrEsmMCB->hwiHandleHi);
+            (void)Osal_DeleteInterrupt(ptrEsmMCB->hwiHandleHi, (int32_t)gESMHwCfgAttrs.highPrioIntNum);
         }
         /* Was the HWI registered?  */
         if (ptrEsmMCB->hwiHandleLo)
         {
             /* YES: Delete and unregister the interrupt handler. */
-            HwiP_delete(ptrEsmMCB->hwiHandleLo);
+            (void)Osal_DeleteInterrupt(ptrEsmMCB->hwiHandleLo, (int32_t)gESMHwCfgAttrs.lowPrioIntNum);
         }
     }
     return retVal;
