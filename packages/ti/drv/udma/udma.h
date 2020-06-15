@@ -224,7 +224,7 @@ typedef void (*Udma_ringSetCfgFxn)(Udma_DrvHandle drvHandle,
 typedef struct
 {
     uint32_t                instId;
-    /**< [IN] \ref Udma_InstanceId */
+    /**< [IN] \ref Udma_InstanceIdSoc */
 
     Udma_RmInitPrms         rmInitPrms;
     /**< RM init parameters */
@@ -310,7 +310,7 @@ int32_t Udma_deinit(Udma_DrvHandle drvHandle);
 /**
  *  \brief Udma_InitPrms structure init function.
  *
- *  \param instId       [IN] \ref Udma_InstanceId
+ *  \param instId       [IN] \ref Udma_InstanceIdSoc
  *  \param initPrms     [IN] Pointer to #Udma_InitPrms structure.
  *
  */

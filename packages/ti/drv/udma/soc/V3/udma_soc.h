@@ -54,19 +54,21 @@ extern "C" {
 /* ========================================================================== */
 
 /**
- *  \anchor Udma_InstanceId
- *  \name UDMA Instance ID
+ *  \anchor Udma_InstanceIdSoc
+ *  \name UDMA Instance ID specific to SOC
  *
  *  UDMA instance ID - BCDMA/PKTDMA
  *
  *  @{
  */
 /** \brief BCDMA instance */
-#define UDMA_INST_ID_BCDMA_0             (0U)
+#define UDMA_INST_ID_BCDMA_0             (UDMA_INST_ID_2)
 /** \brief PKTDMA instance */
-#define UDMA_INST_ID_PKTDMA_0            (1U)
+#define UDMA_INST_ID_PKTDMA_0            (UDMA_INST_ID_3)
+/** \brief Start of UDMA instance */
+#define UDMA_INST_ID_START               (UDMA_INST_ID_2)
 /** \brief Maximum number of UDMA instance */
-#define UDMA_INST_ID_MAX                 (2U)
+#define UDMA_INST_ID_MAX                 (UDMA_INST_ID_3)
 /* @} */
  
 /**

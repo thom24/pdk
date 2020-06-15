@@ -117,6 +117,22 @@ typedef struct Udma_RingMonObj *        Udma_RingMonHandle;
 #define UDMA_DEINIT_DONE                (0x00000000U)
 
 /**
+ *  \anchor Udma_InstanceId
+ *  \name UDMA Instance ID
+ *
+ *  This represents the various Instances in an SOC. The actual Instances present
+ *  in the chip is SOC dependent. Refer soc file for the actual instance
+ *  present. Kindly use \ref Udma_InstanceIdSoc macros for SOC specific name.
+ *
+ *  @{
+ */
+#define UDMA_INST_ID_0                    (0U)
+#define UDMA_INST_ID_1                    (1U)
+#define UDMA_INST_ID_2                    (2U)
+#define UDMA_INST_ID_3                    (3U)
+/* @} */
+
+/**
  *  \anchor Udma_UtcId
  *  \name UDMA UTC ID
  *

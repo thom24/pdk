@@ -54,7 +54,7 @@ extern "C" {
 /* ========================================================================== */
 
 /**
- *  \anchor Udma_InstanceId
+ *  \anchor Udma_InstanceIdSoc
  *  \name UDMA Instance ID
  *
  *  UDMA instance ID - Main/MCU NAVSS
@@ -62,11 +62,13 @@ extern "C" {
  *  @{
  */
 /** \brief Main NAVSS UDMA instance */
-#define UDMA_INST_ID_MAIN_0             (0U)
+#define UDMA_INST_ID_MAIN_0             (UDMA_INST_ID_0)
 /** \brief MCU NAVSS UDMA instance */
-#define UDMA_INST_ID_MCU_0              (1U)
+#define UDMA_INST_ID_MCU_0              (UDMA_INST_ID_1)
+/** \brief Start of UDMA instance */
+#define UDMA_INST_ID_START              (UDMA_INST_ID_0)
 /** \brief Maximum number of UDMA instance */
-#define UDMA_INST_ID_MAX                (2U)
+#define UDMA_INST_ID_MAX                (UDMA_INST_ID_1)
 /* @} */
  
 /**
