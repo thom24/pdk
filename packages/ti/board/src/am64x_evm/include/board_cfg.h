@@ -82,7 +82,11 @@ extern "C" {
 
 /* UART LLD instance number for primary UART port */
 #ifdef VLAB_SIM
+#if defined (BUILD_MCU)
+#define BOARD_UART_INSTANCE                             (BOARD_UART0_INSTANCE)
+#else
 #define BOARD_UART_INSTANCE                             (BOARD_UART1_INSTANCE)
+#endif
 #else
 #if defined (BUILD_MCU)
 /* default UART instance for R5 cores in the Main domain */ 
