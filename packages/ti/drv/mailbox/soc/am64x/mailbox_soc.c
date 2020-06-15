@@ -951,7 +951,7 @@ int32_t Mailbox_registerInterrupts(Mbox_Handle handle)
                                                                             cfg.eventId,
                                                                             cfg.priority,
                                                                             (void *)remoteEndpoint,
-                                                                            "MAILBOX_NEW_MSG");
+                                                                            (char *)"MAILBOX_NEW_MSG");
                     gMailboxMCB.hwiHandles.mailboxFull = hwiHandle;
                     if(hwiHandle == NULL)
                     {
@@ -966,7 +966,7 @@ int32_t Mailbox_registerInterrupts(Mbox_Handle handle)
                                                                             cfg.eventId,
                                                                             cfg.priority,
                                                                             (void *)mbox,
-                                                                            "MAILBOX_NEW_MSG");
+                                                                            (char *)"MAILBOX_NEW_MSG");
                     gMailboxMCB.hwiHandles.mailboxFull = hwiHandle;
                     if(hwiHandle == NULL)
                     {
