@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2016-2018, Texas Instruments Incorporated
+# Copyright (c) 2016-2020, Texas Instruments Incorporated
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -268,7 +268,7 @@ OSAL_TestApp_BOARDLIST = $(libosal_BOARDLIST)
 export OSAL_TestApp_BOARDLIST
 OSAL_TestApp_$(SOC)_CORELIST = $(osal_$(SOC)_CORELIST)
 export OSAL_TestApp_$(SOC)_CORELIST
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
 OSAL_TestApp_SBL_APPIMAGEGEN = yes
 else
 OSAL_TestApp_SBL_APPIMAGEGEN = no
@@ -341,6 +341,7 @@ OSAL_Baremetal_TestApp_$(SOC)_CORELIST = ipu1_0 c66x
 endif
 
 ifeq ($(SOC),$(filter $(SOC), am64x))
+ OSAL_TestApp_$(SOC)_CORELIST = mcu1_0 mpu1_0
  OSAL_Baremetal_TestApp_$(SOC)_CORELIST = mcu1_0 mpu1_0 m4f_0
 endif
 
@@ -370,10 +371,7 @@ export OSAL_TestApp_$(SOC)_CORELIST
 osal_EXAMPLE_LIST += OSAL_Baremetal_TestApp
 
 # do not support RTOS example for AM64x yet
-ifeq ($(SOC),$(filter $(SOC), am64x))
-else
 osal_EXAMPLE_LIST += OSAL_TestApp
-endif
 
 ifeq ($(CPLUSPLUS_BUILD), yes)
 #cpptest
