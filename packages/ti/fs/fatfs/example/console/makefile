@@ -35,7 +35,6 @@ ifeq ($(CORE),$(filter $(CORE), mcu1_0))
 # Enable XDC build for application by providing XDC CFG File per core
 XDC_CFG_FILE_$(CORE) = ./am65xx/r5/fatfsConsole_r5.cfg
 endif
-
 endif
 
 ifeq ($(SOC),$(filter $(SOC), j721e j7200))
@@ -45,12 +44,6 @@ INCDIR = ./src
 SRCS_COMMON += main_console.c FATFS_log.c fs_shell_app_utils.c
 
 XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
-
-# Enable copy of vectors
-ifeq ($(ISA),$(filter $(ISA), r5f))
-  COMP_LIST_COMMON += copyvecs
-endif
-
 endif
 
 # List all the external components/interfaces, whose interface header files
@@ -61,7 +54,11 @@ INCLUDE_EXTERNAL_INTERFACES = bios xdc pdk
 COMP_LIST_COMMON = csl osal_tirtos mmcsd gpio uart board fatfs_indp
 
 ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
-COMP_LIST_COMMON += sciclient i2c
+  COMP_LIST_COMMON += sciclient i2c
+  # Enable copy of vectors
+  ifeq ($(ISA),$(filter $(ISA), r5f))
+    COMP_LIST_COMMON += copyvecs
+  endif
 endif
 
 CFLAGS_FATFS_UT =
