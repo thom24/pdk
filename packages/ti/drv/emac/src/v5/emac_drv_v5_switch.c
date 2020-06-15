@@ -126,6 +126,7 @@ static EMAC_DRV_ERR_E  emac_open_v5_icssg_switch_port(uint32_t portNum, EMAC_OPE
             /* disable all classifiers */
             emac_classifier_disable(portNum);
             emac_config_icssg_fw(portNum, pHwAttrs);
+            emac_switch_vlan_init(portNum, pOpenConfig);
             emac_mcb.port_cb[portNum].emacState =EMAC_PORT_STATE_OPEN;
         }
     }
@@ -465,6 +466,9 @@ static EMAC_DRV_ERR_E emac_ioctl_v5_icssg_switch(uint32_t portNum, EMAC_IOCTL_CM
                     case EMAC_IOCTL_FDB_ENTRY_DELETE_ALL:
                     case EMAC_IOCTL_FDB_ENTRY_DELETE_ALL_AGEABLE:
                         retVal = emac_ioctl_fdb_del_all(portLoc,(void*)emacIoctlParams);
+                        break;
+                    case EMAC_IOCTL_FDB_ENTRY_ADD_MULTIPLE:
+                        retVal = emac_add_fdb_multiple_ctrl(portLoc,(void*)emacIoctlParams);
                         break;
                     default:
                          retVal = EMAC_DRV_RESULT_IOCTL_ERR;

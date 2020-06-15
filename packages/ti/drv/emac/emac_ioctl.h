@@ -376,13 +376,19 @@ typedef struct EMAC_IOCTL_PREEMPTION_ENTRY_S {
  *  @def  EMAC_IOCTL_FDB_ENTRY_DELETE_ALL
  *        Delete all FDB entries
  */
-#define EMAC_IOCTL_FDB_ENTRY_DELETE_ALL                   ((uint32_t)3U)
+#define EMAC_IOCTL_FDB_ENTRY_DELETE_ALL                 ((uint32_t)3U)
+
+/**
+ *  @def  EMAC_IOCTL_FDB_ENTRY_ADD_MULTIPLE
+ *        Add upto 8 FDB entries
+ */
+#define EMAC_IOCTL_FDB_ENTRY_ADD_MULTIPLE               ((uint32_t)4U)
 
 /**
  *  @def  EMAC_IOCTL_FDB_ENTRY_DELETE_ALL_AGEABLE
  *        Delete all ageable FDB entries
  */
-#define EMAC_IOCTL_FDB_ENTRY_DELETE_ALL_AGEABLE       ((uint32_t)4U)
+#define EMAC_IOCTL_FDB_ENTRY_DELETE_ALL_AGEABLE         ((uint32_t)5U)
 
 /*@}*/
 /** @} */
@@ -403,6 +409,20 @@ typedef struct EMAC_IOCTL_FDB_ENTRY_S {
     uint8_t fdbEntry[2];
     /**< FDB entry with the following bit fields starting with bit 0: fdb_host, fdb_port1, fdb_port2, fdb_ageable, fdb_block, fdb_secure, fdb_touched, fdb_valid. Two entries for two ports */
 }EMAC_IOCTL_FDB_ENTRY;
+/*!
+ *  @brief    Define maximum number of FDB entries that can be added with EMAC_IOCTL_FDB_ENTRY_ADD_MULTIPLE
+ */
+#define EMAC_IOCTL_FDB_ENTRY_MULTIPLE_MAX       ((uint32_t)8U)
+
+/**
+ * @brief FDB entry configuration structure for adding multiple entries
+ */
+typedef struct EMAC_IOCTL_FDB_ENTRY_MULTIPLE_S {
+    uint32_t numFdbEntries;
+    /**< Number of FDB entreies to be added, upto EMAC_IOCTL_FDB_ENTRY_MULTIPLE_MAX entries */
+    EMAC_IOCTL_FDB_ENTRY fdbEntry[EMAC_IOCTL_FDB_ENTRY_MULTIPLE_MAX];
+    /**< FDB entry configuration structure for single entry */
+}EMAC_IOCTL_FDB_ENTRY_MULTIPLE;
 
 /**
  *  @defgroup  EMAC_IOCTL_ACCEPTABLE_FRAME_CHECK_CTRL Acceptable frame check control IOCTL sub-commands
@@ -631,6 +651,7 @@ extern EMAC_DRV_ERR_E emac_ioctl_configure_special_frame_prio_ctrl(uint32_t port
 extern EMAC_DRV_ERR_E emac_ioctl_frame_premption_ctrl(uint32_t port_num, void* p_params);
 extern EMAC_DRV_ERR_E emac_ioctl_configure_fdb_ageing_interval(uint32_t port_num, void* p_params);
 extern EMAC_DRV_ERR_E emac_ioctl_speed_duplexity_cfg(uint32_t port_num, void* p_params);
+extern EMAC_DRV_ERR_E emac_add_fdb_multiple_ctrl(uint32_t portNum, void* p_params);
 
 /*! @endcond */
 

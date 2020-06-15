@@ -110,9 +110,9 @@ extern void emac_icssg_update_link_speed_1G(uint32_t portNum);
 extern void emac_icssg_update_rgmii_cfg_10MB(uint32_t portNum, uintptr_t icssgRgmiiCfgBaseAddr, uint32_t link_status);
 extern void emac_icssg_update_link_speed_10MB(uint32_t portNum, uint32_t link_status);
 extern void emac_icssg_link_down(uint32_t portNum);
+extern void emac_icssg_update_link_params(uint32_t portNum, EMAC_LINK_INFO_T *p_info);
 
 #ifdef __cplusplus
 }
 #endif
-extern void emac_icssg_update_link_params(uint32_t portNum, EMAC_LINK_INFO_T *p_info);
 #endif

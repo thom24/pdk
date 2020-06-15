@@ -56,6 +56,7 @@
 #include "ti/drv/emac/src/v5/emac_utils.h"
 #include <ti/drv/emac/src/v5/emac_hwq.h>
 #include <ti/drv/emac/emac_ioctl.h>
+#include <ti/drv/emac/firmware/icss_dualmac/bin_pg2/fw_mem_map.h>
 
 extern EMAC_MCB_V5_T      emac_mcb;
 extern EMAC_PORT_INFO_T emac_port_info[];
@@ -79,12 +80,7 @@ EMAC_IOCTL_CMD_T cmd2Icssg;
 
 uintptr_t emac_get_vlan_tbl_addr(uint32_t portNum)
 {
-    EMAC_ICSSG_SWITCH_FW_CFG *pSwitchFwCfg;
-    EMAC_PER_PORT_ICSSG_FW_CFG *pEmacFwCfg;
-
-    emac_mcb.port_cb[portNum].getFwCfg(portNum,&pEmacFwCfg);
-    pSwitchFwCfg = (EMAC_ICSSG_SWITCH_FW_CFG*) pEmacFwCfg->pFwPortCfg;
-    return (emac_mcb.port_cb[portNum].icssSharedRamBaseAddr + pSwitchFwCfg->defaultVlanTblOffset);
+    return (emac_mcb.port_cb[portNum].icssSharedRamBaseAddr + EMAC_ICSSG_SWITCH_DEFAULT_VLAN_TABLE_OFFSET);
 }
 
 void emac_get_vlan_id(uint32_t portNum, EMAC_IOCTL_FDB_ENTRY *pEntry)
@@ -138,12 +134,6 @@ void emac_update_cmd(uint32_t portNum, uint32_t ioctlCmd, EMAC_IOCTL_CMD_T *pCmd
                 break;
         }
     }
-}
-
-
-void emac_ioctl_get_fw_config(uint32_t portNum, EMAC_PER_PORT_ICSSG_FW_CFG **pEmacFwCfg)
-{
-    emac_mcb.port_cb[portNum].getFwCfg(portNum,pEmacFwCfg);
 }
 
 EMAC_DRV_ERR_E  emac_ioctl_send_mgmt_msg(uint32_t portNum, EMAC_IOCTL_CMD_T* pMgmtCmd, EMAC_CPPI_DESC_T* p_tx_cppi_desc);
@@ -313,8 +303,6 @@ void emac_classifier_disable(uint32_t portNum)
  */
 void emac_switch_vlan_init(uint32_t portNum,EMAC_OPEN_CONFIG_INFO_T *p_config)
 {
-    EMAC_PER_PORT_ICSSG_FW_CFG *pEmacFwCfg;
-    EMAC_ICSSG_SWITCH_FW_CFG *pSwitchFwCfg;
     EMAC_HwAttrs_V5 *hwAttrs = (EMAC_HwAttrs_V5*)p_config->hwAttrs;
     uint32_t vlanDefaultTblOffset;
     uint32_t regVal;
@@ -322,9 +310,7 @@ void emac_switch_vlan_init(uint32_t portNum,EMAC_OPEN_CONFIG_INFO_T *p_config)
     int32_t vlanEntry;
 
     UTILS_trace(UTIL_TRACE_LEVEL_INFO, emac_mcb.drv_trace_cb, "port: %d: ENTER",portNum);
-    emac_ioctl_get_fw_config(portNum, &pEmacFwCfg);
-    pSwitchFwCfg = (EMAC_ICSSG_SWITCH_FW_CFG*) pEmacFwCfg->pFwPortCfg;
-    vlanDefaultTblOffset = pSwitchFwCfg->defaultVlanTblOffset;
+    vlanDefaultTblOffset = EMAC_ICSSG_SWITCH_DEFAULT_VLAN_TABLE_OFFSET;
 
     /* Program Port VLAN in MMR */
     regAddr = hwAttrs->portCfg[portNum].icssgCfgRegBaseAddr + CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FDB_DF_VLAN;
@@ -360,8 +346,6 @@ void emac_switch_vlan_init(uint32_t portNum,EMAC_OPEN_CONFIG_INFO_T *p_config)
  */
 EMAC_DRV_ERR_E emac_ioctl_vlan_ctrl_get_entry(uint32_t portNum, void* ctrl)
 {
-    EMAC_PER_PORT_ICSSG_FW_CFG *pEmacFwCfg;
-    EMAC_ICSSG_SWITCH_FW_CFG *pSwitchFwCfg;
     uint16_t readEntry;
     EMAC_DRV_ERR_E retVal = EMAC_DRV_RESULT_OK;
     EMAC_IOCTL_VLAN_FID_ENTRY *pVlanTblEntry = (EMAC_IOCTL_VLAN_FID_ENTRY*)ctrl;
@@ -374,9 +358,7 @@ EMAC_DRV_ERR_E emac_ioctl_vlan_ctrl_get_entry(uint32_t portNum, void* ctrl)
     }
     else
     {
-        emac_ioctl_get_fw_config(portNum, &pEmacFwCfg);
-        pSwitchFwCfg = (EMAC_ICSSG_SWITCH_FW_CFG*) pEmacFwCfg->pFwPortCfg;
-        readEntry = CSL_REG16_RD((emac_mcb.port_cb[portNum].icssSharedRamBaseAddr+ pSwitchFwCfg->defaultVlanTblOffset) +pVlanTblEntry->vlanId*2);
+        readEntry = CSL_REG16_RD((emac_mcb.port_cb[portNum].icssSharedRamBaseAddr+ EMAC_ICSSG_SWITCH_DEFAULT_VLAN_TABLE_OFFSET) +pVlanTblEntry->vlanId*2);
         pVlanTblEntry->vlanFidPrams.hostMember  = readEntry& 0x1;
         pVlanTblEntry->vlanFidPrams.p1Member    = (readEntry & 0x2) >> 0x1;
         pVlanTblEntry->vlanFidPrams.p2Member    = (readEntry & 0x4) >> 0x2;
@@ -396,8 +378,6 @@ EMAC_DRV_ERR_E emac_ioctl_vlan_ctrl_get_entry(uint32_t portNum, void* ctrl)
  */
 EMAC_DRV_ERR_E emac_ioctl_vlan_ctrl_set_entry(uint32_t portNum, void* ctrl)
 {
-    EMAC_PER_PORT_ICSSG_FW_CFG *pEmacFwCfg;
-    EMAC_ICSSG_SWITCH_FW_CFG *pSwitchFwCfg;
     uint16_t  vlanEntry;
     EMAC_DRV_ERR_E retVal = EMAC_DRV_RESULT_OK; 
 
@@ -411,14 +391,12 @@ EMAC_DRV_ERR_E emac_ioctl_vlan_ctrl_set_entry(uint32_t portNum, void* ctrl)
     }
     else
     {
-        emac_ioctl_get_fw_config(portNum, &pEmacFwCfg);
-        pSwitchFwCfg = (EMAC_ICSSG_SWITCH_FW_CFG*) pEmacFwCfg->pFwPortCfg;
         vlanEntry = (pVlanTblEntry->vlanFidPrams.hostMember) | (pVlanTblEntry->vlanFidPrams.p1Member << 1) |
                  (pVlanTblEntry->vlanFidPrams.p2Member << 2)  | (pVlanTblEntry->vlanFidPrams.hostTagged << 3)|
                  (pVlanTblEntry->vlanFidPrams.p1Tagged << 4)  | (pVlanTblEntry->vlanFidPrams.p2Tagged << 5) |
                 (pVlanTblEntry->vlanFidPrams.streamVid << 6) | (pVlanTblEntry->vlanFidPrams.floodToHost << 7);
         vlanEntry  |=  (pVlanTblEntry->vlanFidPrams.fid<< 8);
-        CSL_REG16_WR(( emac_mcb.port_cb[portNum].icssSharedRamBaseAddr+ pSwitchFwCfg->defaultVlanTblOffset) + pVlanTblEntry->vlanId*2, vlanEntry);
+        CSL_REG16_WR(( emac_mcb.port_cb[portNum].icssSharedRamBaseAddr+ EMAC_ICSSG_SWITCH_DEFAULT_VLAN_TABLE_OFFSET) + pVlanTblEntry->vlanId*2, vlanEntry);
     }
     UTILS_trace(UTIL_TRACE_LEVEL_INFO, emac_mcb.drv_trace_cb, "port: %d: EXIT with status: %d",portNum, retVal);
     return retVal;
@@ -429,15 +407,11 @@ EMAC_DRV_ERR_E emac_ioctl_vlan_ctrl_set_entry(uint32_t portNum, void* ctrl)
  */
 EMAC_DRV_ERR_E emac_ioctl_vlan_ctrl_set_default_tbl(uint32_t portNum, void* ctrl)
 {
-    EMAC_PER_PORT_ICSSG_FW_CFG *pEmacFwCfg;
-    EMAC_ICSSG_SWITCH_FW_CFG *pSwitchFwCfg;
     EMAC_IOCTL_VLAN_FID_PARAMS *pVlanTblEntryParams = (EMAC_IOCTL_VLAN_FID_PARAMS*)ctrl;
     uint32_t count;
     uint16_t vlanEntry;
  
     UTILS_trace(UTIL_TRACE_LEVEL_INFO, emac_mcb.drv_trace_cb, "port: %d: ENTER",portNum);
-    emac_mcb.port_cb[portNum].getFwCfg(portNum,&pEmacFwCfg);
-    pSwitchFwCfg = (EMAC_ICSSG_SWITCH_FW_CFG*) pEmacFwCfg->pFwPortCfg;
     vlanEntry = (pVlanTblEntryParams->hostMember) | (pVlanTblEntryParams->p1Member << 1) |
                     (pVlanTblEntryParams->p2Member << 2)  | (pVlanTblEntryParams->hostTagged << 3)|
                     (pVlanTblEntryParams->p1Tagged << 4)  | (pVlanTblEntryParams->p2Tagged << 5) |
@@ -448,7 +422,7 @@ EMAC_DRV_ERR_E emac_ioctl_vlan_ctrl_set_default_tbl(uint32_t portNum, void* ctrl
     /* Initialize VLAN-FID table */
     for(count=0U; count < (EMAC_VLAN_TBL_MAX_ENTRIES-1U); count++)
     {
-        CSL_REG16_WR(( emac_mcb.port_cb[portNum].icssSharedRamBaseAddr+ pSwitchFwCfg->defaultVlanTblOffset) + count*2U, vlanEntry);
+        CSL_REG16_WR(( emac_mcb.port_cb[portNum].icssSharedRamBaseAddr+ EMAC_ICSSG_SWITCH_DEFAULT_VLAN_TABLE_OFFSET) + count*2U, vlanEntry);
     }
     UTILS_trace(UTIL_TRACE_LEVEL_INFO, emac_mcb.drv_trace_cb, "port: %d: EXIT",portNum);
     return EMAC_DRV_RESULT_OK;
@@ -465,8 +439,6 @@ EMAC_DRV_ERR_E emac_ioctl_vlan_ctrl_set_default_vlan_id_host_port(uint32_t portN
     uint8_t tempByte1 = 0;
     uint8_t tempByte2 = 0;
     EMAC_IOCTL_VLAN_DEFAULT_ENTRY *vlanDefaultEntry= (EMAC_IOCTL_VLAN_DEFAULT_ENTRY*)ctrl;
-    EMAC_PER_PORT_ICSSG_FW_CFG *pEmacFwCfg;
-    EMAC_ICSSG_SWITCH_FW_CFG *pSwitchFwCfg;
 
     UTILS_trace(UTIL_TRACE_LEVEL_INFO, emac_mcb.drv_trace_cb, "port: %d: ENTER",portNum);
     if (vlanDefaultEntry->vlanId >= (EMAC_VLAN_TBL_MAX_ENTRIES-1) || ((vlanDefaultEntry->vlanId) == 0))
@@ -476,8 +448,6 @@ EMAC_DRV_ERR_E emac_ioctl_vlan_ctrl_set_default_vlan_id_host_port(uint32_t portN
     }
     else
     {
-        emac_mcb.port_cb[portNum].getFwCfg(portNum,&pEmacFwCfg);
-        pSwitchFwCfg = (EMAC_ICSSG_SWITCH_FW_CFG*) pEmacFwCfg->pFwPortCfg;
         /* Write Host default VLAN to memory. This is used directly to update MMR for inserting VLAN tag */
         /*Populate first byte which contains 3 bits of PCP + 1 bit of DEI and 4 bits of VLAN*/
         tempByte1 = (uint8_t)(vlanDefaultEntry->pcp << 5) | (uint8_t)((uint16_t)vlanDefaultEntry->vlanId >> 8);
@@ -488,7 +458,7 @@ EMAC_DRV_ERR_E emac_ioctl_vlan_ctrl_set_default_vlan_id_host_port(uint32_t portN
         /*OR the values*/
         regVal = (uint32_t)(0x0081) | ((uint32_t)tempByte1 << 16) | ((uint32_t)tempByte2 << 24);
     
-        regAddr = emac_mcb.port_cb[portNum].icssSharedRamBaseAddr + pSwitchFwCfg->switchPort0DefaultVlanOffset;
+        regAddr = emac_mcb.port_cb[portNum].icssSharedRamBaseAddr + EMAC_ICSSG_SWITCH_PORT0_DEFAULT_VLAN_OFFSET;
         CSL_REG32_WR (regAddr, regVal);
     }
     UTILS_trace(UTIL_TRACE_LEVEL_INFO, emac_mcb.drv_trace_cb, "port: %d: EXIT with status: %d",portNum, retVal);
@@ -505,10 +475,7 @@ EMAC_DRV_ERR_E emac_ioctl_vlan_ctrl_set_default_vlan_id(uint32_t portNum, void* 
     EMAC_DRV_ERR_E retVal = EMAC_DRV_RESULT_OK;
     uint8_t tempByte1 = 0;
     uint8_t tempByte2 = 0;
-    uint32_t prioMapOffset;
     EMAC_IOCTL_VLAN_DEFAULT_ENTRY *vlanDefaultEntry= (EMAC_IOCTL_VLAN_DEFAULT_ENTRY*)ctrl;
-    EMAC_PER_PORT_ICSSG_FW_CFG *pEmacFwCfg;
-    EMAC_ICSSG_SWITCH_FW_CFG *pSwitchFwCfg;
 
     UTILS_trace(UTIL_TRACE_LEVEL_INFO, emac_mcb.drv_trace_cb, "port: %d: ENTER",portNum);
     if (vlanDefaultEntry->vlanId >= (EMAC_VLAN_TBL_MAX_ENTRIES-1) || ((vlanDefaultEntry->vlanId) == 0))
@@ -518,8 +485,6 @@ EMAC_DRV_ERR_E emac_ioctl_vlan_ctrl_set_default_vlan_id(uint32_t portNum, void* 
     }
     else
     {
-        emac_mcb.port_cb[portNum].getFwCfg(portNum,&pEmacFwCfg);
-        pSwitchFwCfg = (EMAC_ICSSG_SWITCH_FW_CFG*) pEmacFwCfg->pFwPortCfg;
         /* Program Port VLAN in HW MMR, SW1 and SW2 for both ICSSG instances*/
         regAddr = emac_mcb.port_cb[portNum].icssgCfgRegBaseAddr + CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FDB_DF_VLAN + 2*portNum;
         CSL_REG16_WR (regAddr, vlanDefaultEntry->vlanId);
@@ -536,25 +501,17 @@ EMAC_DRV_ERR_E emac_ioctl_vlan_ctrl_set_default_vlan_id(uint32_t portNum, void* 
         /* Update for host port */
         if ((portNum % 1) == 0)
         {
-            regAddr = emac_mcb.port_cb[portNum].icssSharedRamBaseAddr + pSwitchFwCfg->switchPort1DefaultVlanOffset;
+            regAddr = emac_mcb.port_cb[portNum].icssSharedRamBaseAddr + EMAC_ICSSG_SWITCH_PORT1_DEFAULT_VLAN_OFFSET;
         }
         else
         {
-            regAddr = emac_mcb.port_cb[portNum].icssSharedRamBaseAddr + pSwitchFwCfg->switchPort2DefaultVlanOffset;
+            regAddr = emac_mcb.port_cb[portNum].icssSharedRamBaseAddr + EMAC_ICSSG_SWITCH_PORT2_DEFAULT_VLAN_OFFSET;
         }
         CSL_REG32_WR (regAddr, regVal);
 
         /* Update Deafult Queue number for untagged packet*/
-        prioMapOffset = pSwitchFwCfg->prioMappingTableOffset;
-        tempByte1 = CSL_REG8_RD(emac_mcb.port_cb[portNum].icssDram0BaseAddr + prioMapOffset + vlanDefaultEntry->pcp);
-        if ((portNum % 1) == 0)
-        {
-            regAddr = emac_mcb.port_cb[portNum].icssDram0BaseAddr + pSwitchFwCfg->switchPort1UntaggedQueue;
-        }
-        else
-        {
-            regAddr = emac_mcb.port_cb[portNum].icssDram1BaseAddr + pSwitchFwCfg->switchPort2UntaggedQueue;
-        }
+        tempByte1 = CSL_REG8_RD(emac_mcb.port_cb[portNum].icssDram0BaseAddr + PORT_Q_PRIORITY_MAPPING_OFFSET + vlanDefaultEntry->pcp);
+        regAddr = emac_mcb.port_cb[portNum].icssDram0BaseAddr + QUEUE_NUM_UNTAGGED;
         CSL_REG8_WR (regAddr, tempByte1);
     }
     UTILS_trace(UTIL_TRACE_LEVEL_INFO, emac_mcb.drv_trace_cb, "port: %d: EXIT with status: %d",portNum, retVal);
@@ -600,13 +557,9 @@ EMAC_DRV_ERR_E emac_ioctl_port_prio_mapping_ctrl(uint32_t portNum, void*  ctrl)
 {
     uint8_t index;
     uintptr_t icssgBaseAddr;
-    uint32_t prioMapOffset;
     uint8_t tempVal;
-    EMAC_PER_PORT_ICSSG_FW_CFG *pEmacFwCfg;
-    EMAC_ICSSG_SWITCH_FW_CFG *pSwitchFwCfg;
     EMAC_IOCTL_PORT_PRIO_MAP *pPrioMap;
     uint8_t untaggedQueueNum;
-    uint32_t prioRegenMapOffset;
 
     uintptr_t baseAddr = emac_mcb.port_cb[portNum].icssDram0BaseAddr + CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_REGS_BASE;
     uint32_t ft3Type = 0;
@@ -627,16 +580,14 @@ EMAC_DRV_ERR_E emac_ioctl_port_prio_mapping_ctrl(uint32_t portNum, void*  ctrl)
     }
 
     UTILS_trace(UTIL_TRACE_LEVEL_INFO, emac_mcb.drv_trace_cb, "port: %d: ENTER",portNum);
-    emac_ioctl_get_fw_config(portNum, &pEmacFwCfg);
-    pSwitchFwCfg = (EMAC_ICSSG_SWITCH_FW_CFG*) pEmacFwCfg->pFwPortCfg;
-    prioMapOffset = pSwitchFwCfg->prioMappingTableOffset;
 
     pPrioMap = (EMAC_IOCTL_PORT_PRIO_MAP*)ctrl;
+    /* FIXME: Is icssgBaseAddr being calculated properly for PG2.0 FW */
     icssgBaseAddr = emac_mcb.port_cb[portNum].icssDram0BaseAddr + 0x2000*portLoc;
     for (index = 0; index < EMAC_IOCTL_PRIO_MAX;index++)
     {
         tempVal = (uint8_t)pPrioMap->portPrioMap[index];
-        CSL_REG8_WR(icssgBaseAddr + prioMapOffset + index, tempVal);
+        CSL_REG8_WR(icssgBaseAddr + PORT_Q_PRIORITY_MAPPING_OFFSET + index, tempVal);
     }
 
     /* Re configure classifier to map incoming pcp to Queue. Take into account Prio regen config also */
@@ -654,14 +605,10 @@ EMAC_DRV_ERR_E emac_ioctl_port_prio_mapping_ctrl(uint32_t portNum, void*  ctrl)
     }
 
     /*Get the Queue mapping value from DRAM0 and calculate incoming PCP to Queue mapping*/
-    emac_ioctl_get_fw_config(portNum, &pEmacFwCfg);
-    pSwitchFwCfg = (EMAC_ICSSG_SWITCH_FW_CFG*) pEmacFwCfg->pFwPortCfg;
-    prioRegenMapOffset = pSwitchFwCfg->prioRegenTableOffset;
-
     for(pcp = 0U; pcp < EMAC_IOCTL_PRIO_MAX; pcp++)
     {
         /* Get regenerated value for PCP = p*/
-        tempVal = CSL_REG8_RD(icssgBaseAddr + prioRegenMapOffset + pcp);
+        tempVal = CSL_REG8_RD(icssgBaseAddr + PORT_Q_PRIORITY_REGEN_OFFSET + pcp);
         /*Shift PCP value by 5 to get the value*/
         tempVal = tempVal >> 5;
          finalPrioQueueMap[pcp] = (uint8_t)pPrioMap->portPrioMap[tempVal];
@@ -709,24 +656,17 @@ EMAC_DRV_ERR_E emac_ioctl_port_prio_mapping_ctrl(uint32_t portNum, void*  ctrl)
     /*Read the configured PCP value*/
     if ((portNum % 1) == 0)
     {
-        baseAddr = emac_mcb.port_cb[portNum].icssSharedRamBaseAddr + pSwitchFwCfg->switchPort1DefaultVlanOffset;
+        baseAddr = emac_mcb.port_cb[portNum].icssSharedRamBaseAddr + EMAC_ICSSG_SWITCH_PORT1_DEFAULT_VLAN_OFFSET;
     }
     else
     {
-        baseAddr = emac_mcb.port_cb[portNum].icssSharedRamBaseAddr + pSwitchFwCfg->switchPort2DefaultVlanOffset;
+        baseAddr = emac_mcb.port_cb[portNum].icssSharedRamBaseAddr + EMAC_ICSSG_SWITCH_PORT2_DEFAULT_VLAN_OFFSET;
     }
     tempVal = CSL_REG8_RD(baseAddr + 2); /*Read PCP value*/
     tempVal = tempVal >> 5; /*Shif to get the value in correct format*/
     untaggedQueueNum = pPrioMap->portPrioMap[tempVal];
 
-    if ((portNum % 1) == 0)
-    {
-        baseAddr = emac_mcb.port_cb[portNum].icssSharedRamBaseAddr + pSwitchFwCfg->switchPort1UntaggedQueue;
-    }
-    else
-    {
-        baseAddr = emac_mcb.port_cb[portNum].icssSharedRamBaseAddr + pSwitchFwCfg->switchPort2UntaggedQueue;
-    }
+    baseAddr = emac_mcb.port_cb[portNum].icssDram0BaseAddr + QUEUE_NUM_UNTAGGED;
     CSL_REG8_WR (baseAddr, untaggedQueueNum);
 
     UTILS_trace(UTIL_TRACE_LEVEL_INFO, emac_mcb.drv_trace_cb, "port: %d: EXIT with status: %d",portNum, EMAC_DRV_RESULT_OK);
@@ -795,7 +735,7 @@ EMAC_DRV_ERR_E emac_ioctl_fdb_del_all(uint32_t portNum, void* p_params)
     EMAC_IOCTL_PARAMS *pParams = (EMAC_IOCTL_PARAMS*) p_params;
 
     /* make sure there is hw descriptor for boths ICSSG instances */
-    emac_update_cmd(0, EMAC_IOCTL_FDB_ENTRY_CTRL, emac_mcb.ioctl_cb.pCmd1Icssg, pParams, NULL, EMAC_FW_MGMT_FDB_CMD_TYPE, 0, 0);
+    emac_update_cmd(portNum, EMAC_IOCTL_FDB_ENTRY_CTRL, emac_mcb.ioctl_cb.pCmd1Icssg, pParams, NULL, EMAC_FW_MGMT_FDB_CMD_TYPE, 0, 0);
     retVal = emac_ioctl_send_mgmt_msg(portNum, emac_mcb.ioctl_cb.pCmd1Icssg, NULL);
     UTILS_trace(UTIL_TRACE_LEVEL_INFO, emac_mcb.drv_trace_cb, "port: %d: EXIT with status: %d",portNum, retVal);
 
@@ -820,7 +760,7 @@ EMAC_DRV_ERR_E emac_ioctl_fdb_entry_ctrl(uint32_t portNum, void* p_params)
         vlanDefaultTblAddr = emac_get_vlan_tbl_addr(portNum);
         emac_get_vlan_id(portNum, entry);
         broadSideSlot = emac_util_fdb_helper( vlanDefaultTblAddr, entry->vlanId, entry->mac, &fid);
-        emac_update_cmd(0, EMAC_IOCTL_FDB_ENTRY_CTRL, emac_mcb.ioctl_cb.pCmd1Icssg, pParams, entry, EMAC_FW_MGMT_FDB_CMD_TYPE, broadSideSlot, fid);
+        emac_update_cmd(portNum, EMAC_IOCTL_FDB_ENTRY_CTRL, emac_mcb.ioctl_cb.pCmd1Icssg, pParams, entry, EMAC_FW_MGMT_FDB_CMD_TYPE, broadSideSlot, fid);
 
         retVal = emac_ioctl_send_mgmt_msg(portNum, emac_mcb.ioctl_cb.pCmd1Icssg, NULL);
     }
@@ -829,6 +769,87 @@ EMAC_DRV_ERR_E emac_ioctl_fdb_entry_ctrl(uint32_t portNum, void* p_params)
         UTILS_trace(UTIL_TRACE_LEVEL_ERR, emac_mcb.drv_trace_cb, "port: %d, invalid vlan id parameter: %d",portNum, entry->vlanId);
     }
     UTILS_trace(UTIL_TRACE_LEVEL_INFO, emac_mcb.drv_trace_cb, "port: %d: EXIT with status: %d",portNum, retVal);
+    return retVal;
+}
+/*Buffer for 8 FDB entries to be added by 'Add Multiple FDB entries IOCTL*/
+/*
+ *  ======== emac_add_fdb_multiple_ctrl ========
+ */
+typedef struct FDB_CMD_BUFFER_S {
+    volatile uint8_t mac[6];
+    volatile uint8_t fid;
+    volatile uint8_t fid_c2;
+    volatile uint16_t   slot;
+    volatile uint16_t   flags;
+} FDB_CMD_BUFFER_T;
+
+#if defined (SOC_AM65XX)
+static FDB_CMD_BUFFER_T *fdb_cmd_buffer[EMAC_MAX_PORTS-1] = {
+    (FDB_CMD_BUFFER_T *)( CSL_PRU_ICSSG0_DRAM0_SLV_RAM_BASE + FDB_CMD_BUFFER),
+    (FDB_CMD_BUFFER_T *)( CSL_PRU_ICSSG0_DRAM1_SLV_RAM_BASE + FDB_CMD_BUFFER),
+    (FDB_CMD_BUFFER_T *)( CSL_PRU_ICSSG1_DRAM0_SLV_RAM_BASE + FDB_CMD_BUFFER),
+    (FDB_CMD_BUFFER_T *)( CSL_PRU_ICSSG1_DRAM1_SLV_RAM_BASE + FDB_CMD_BUFFER),
+    (FDB_CMD_BUFFER_T *)( CSL_PRU_ICSSG2_DRAM0_SLV_RAM_BASE + FDB_CMD_BUFFER),
+    (FDB_CMD_BUFFER_T *)( CSL_PRU_ICSSG2_DRAM1_SLV_RAM_BASE + FDB_CMD_BUFFER)
+};
+#else
+static FDB_CMD_BUFFER_T *fdb_cmd_buffer[EMAC_MAX_PORTS-1] = {
+    (FDB_CMD_BUFFER_T *)( CSL_PRU_ICSSG0_DRAM0_SLV_RAM_BASE + FDB_CMD_BUFFER),
+    (FDB_CMD_BUFFER_T *)( CSL_PRU_ICSSG0_DRAM1_SLV_RAM_BASE + FDB_CMD_BUFFER),
+    (FDB_CMD_BUFFER_T *)( CSL_PRU_ICSSG1_DRAM0_SLV_RAM_BASE + FDB_CMD_BUFFER),
+    (FDB_CMD_BUFFER_T *)( CSL_PRU_ICSSG1_DRAM1_SLV_RAM_BASE + FDB_CMD_BUFFER)
+};
+#endif
+
+EMAC_DRV_ERR_E emac_add_fdb_multiple_ctrl(uint32_t portNum, void* p_params)
+{
+    EMAC_DRV_ERR_E retVal = EMAC_DRV_RESULT_IOCTL_ERR_INVALID_VLAN_ID;
+    uint32_t j;
+    uintptr_t vlanDefaultTblAddr;
+    uint8_t fid;
+    uint16_t slot;
+    FDB_CMD_BUFFER_T *fdb_cmd_entry;
+    EMAC_IOCTL_PARAMS *pParams = (EMAC_IOCTL_PARAMS*) p_params;
+    EMAC_IOCTL_FDB_ENTRY_MULTIPLE *fdbEntryMultiple = (EMAC_IOCTL_FDB_ENTRY_MULTIPLE*)pParams->ioctlVal;
+    EMAC_IOCTL_CMD_T *pCmd = emac_mcb.ioctl_cb.pCmd1Icssg;
+
+    UTILS_trace(UTIL_TRACE_LEVEL_INFO, emac_mcb.drv_trace_cb, "port: %d: ENTER",portNum);
+
+    if (fdbEntryMultiple->numFdbEntries > EMAC_IOCTL_FDB_ENTRY_MULTIPLE_MAX)
+    {
+        retVal = EMAC_DRV_RESULT_IOCTL_ERR;
+    }
+    else
+    {
+        fdb_cmd_entry = fdb_cmd_buffer[portNum];
+
+       for (j = 0; j < fdbEntryMultiple->numFdbEntries; j++)
+        {
+            EMAC_IOCTL_FDB_ENTRY *entry = fdbEntryMultiple[j].fdbEntry;
+            if ((entry->vlanId < (int16_t)(EMAC_VLAN_TBL_MAX_ENTRIES)) || (entry->vlanId == EMAC_VLAN_UNTAGGED))
+            {
+                vlanDefaultTblAddr = emac_get_vlan_tbl_addr(portNum);
+                emac_get_vlan_id(portNum, entry);
+                slot = emac_util_fdb_helper( vlanDefaultTblAddr, entry->vlanId, entry->mac, &fid);
+                memcpy((void *)&fdb_cmd_entry->mac[0], (void *)&entry->mac[0], 6);
+                fdb_cmd_entry->fid      = fid;
+                fdb_cmd_entry->fid_c2   = entry->fdbEntry[portNum & 1];
+                fdb_cmd_entry->slot     = slot;
+                fdb_cmd_entry->flags    = 1; // entry is valid
+            }
+            else
+            {
+                fdb_cmd_entry->flags    = 0; // entry is invalid
+            }
+        }
+
+        pCmd->commandHeader = EMAC_FW_MGMT_CMD_HEADER;
+        pCmd->commandType = 0x3;  // FDB COMMAND
+        pCmd->seqNumber = pParams->seqNumber;
+        pCmd->commandParam = ((portNum & 1) << 4) | EMAC_IOCTL_FDB_ENTRY_ADD_MULTIPLE; 
+        retVal = emac_ioctl_send_mgmt_msg(portNum, emac_mcb.ioctl_cb.pCmd1Icssg, NULL);
+        UTILS_trace(UTIL_TRACE_LEVEL_INFO, emac_mcb.drv_trace_cb, "port: %d: EXIT with status: %d",portNum, retVal);
+    }
     return retVal;
 }
 
@@ -869,11 +890,7 @@ EMAC_DRV_ERR_E emac_ioctl_prio_regen_mapping_ctrl(uint32_t portNum, void*  ctrl)
 {
     uint8_t index;
     uintptr_t icssgBaseAddr;
-    uint32_t prioRegenMapOffset;
-    uint32_t prioMapOffset;
     uint32_t tempVal;
-    EMAC_PER_PORT_ICSSG_FW_CFG *pEmacFwCfg;
-    EMAC_ICSSG_SWITCH_FW_CFG *pSwitchFwCfg;
     EMAC_IOCTL_PRIO_REGEN_MAP *pPrioRegenMap = (EMAC_IOCTL_PRIO_REGEN_MAP*)ctrl;
 
     UTILS_trace(UTIL_TRACE_LEVEL_INFO, emac_mcb.drv_trace_cb, "port: %d: ENTER",portNum);
@@ -908,13 +925,10 @@ EMAC_DRV_ERR_E emac_ioctl_prio_regen_mapping_ctrl(uint32_t portNum, void*  ctrl)
         emac_icssg_filter3_config(portNum, portLoc, pcp, &ft3ConfigPcp);
     }
     /*Get the Queue mapping value from DRAM0 and calculate incoming PCP to Queue mapping*/
-    emac_ioctl_get_fw_config(portNum, &pEmacFwCfg);
-    pSwitchFwCfg = (EMAC_ICSSG_SWITCH_FW_CFG*) pEmacFwCfg->pFwPortCfg;
-    prioMapOffset = pSwitchFwCfg->prioMappingTableOffset;
     icssgBaseAddr = emac_mcb.port_cb[portNum].icssDram0BaseAddr;
     for(pcp = 0U; pcp < EMAC_IOCTL_PRIO_MAX; pcp++)
     {
-        finalPrioQueueMap[pcp] = CSL_REG8_RD(icssgBaseAddr + prioMapOffset + (pPrioRegenMap->prioRegenMap[pcp]));
+        finalPrioQueueMap[pcp] = CSL_REG8_RD(icssgBaseAddr + PORT_Q_PRIORITY_MAPPING_OFFSET + (pPrioRegenMap->prioRegenMap[pcp]));
     }
     /* Build up the or lists */
     for (pcp = 0U; pcp < EMAC_IOCTL_PRIO_MAX; pcp++)
@@ -938,7 +952,6 @@ EMAC_DRV_ERR_E emac_ioctl_prio_regen_mapping_ctrl(uint32_t portNum, void*  ctrl)
         tempReg = CSL_REG32_RD(baseAddr + CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RX_CLASS_CFG1_PRU0);
         tempReg &= ~(0x3U << (pcp * 2U));
         CSL_REG32_WR((baseAddr + CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RX_CLASS_CFG1_PRU0), tempReg);
-        /* Configure NV Enable */
         /* Configure NV Enable bits (1 bit in upper16, 1bit in lower16 */
         tempReg = CSL_REG32_RD(baseAddr + CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RX_CLASS_CFG2_PRU0);
         if (orNvEnable[pcp])
@@ -954,17 +967,13 @@ EMAC_DRV_ERR_E emac_ioctl_prio_regen_mapping_ctrl(uint32_t portNum, void*  ctrl)
         CSL_REG32_WR((baseAddr + CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RX_CLASS_GATES0_PRU0 + (4U * pcp)), gateConfig);
     }
 
-    emac_ioctl_get_fw_config(portNum, &pEmacFwCfg);
-    pSwitchFwCfg = (EMAC_ICSSG_SWITCH_FW_CFG*) pEmacFwCfg->pFwPortCfg;
-    prioRegenMapOffset = pSwitchFwCfg->prioRegenTableOffset;
-
     icssgBaseAddr = emac_mcb.port_cb[portNum].icssDram0BaseAddr + 0x2000*portLoc;
     for (index = 0; index < EMAC_IOCTL_PRIO_MAX;index++)
     {
         tempVal = (uint32_t)pPrioRegenMap->prioRegenMap[index];
         /*Shift PCP value by 5 so HW can save a cycle*/
         tempVal = tempVal << 5; 
-        HWREGB(icssgBaseAddr + prioRegenMapOffset + index) = tempVal;
+        HWREGB(icssgBaseAddr + PORT_Q_PRIORITY_REGEN_OFFSET + index) = tempVal;
     }
     return EMAC_DRV_RESULT_OK;
 }
@@ -1077,8 +1086,6 @@ EMAC_DRV_ERR_E emac_ioctl_configure_cut_through_or_prempt_select_ctrl(uint32_t p
     uintptr_t expressPremptiveQueueAddr;
     EMAC_IOCTL_PARAMS *pParams = (EMAC_IOCTL_PARAMS*) p_params;
     EMAC_IOCTL_PREMPT_OR_CUT_THROUGH_MAP *entry = (EMAC_IOCTL_PREMPT_OR_CUT_THROUGH_MAP*)pParams->ioctlVal;
-    EMAC_PER_PORT_ICSSG_FW_CFG *pEmacFwCfg;
-    EMAC_ICSSG_SWITCH_FW_CFG *pSwitchFwCfg;
     uint32_t portLoc = 0;
     if((portNum  & 1) == 1)
     {
@@ -1088,22 +1095,20 @@ EMAC_DRV_ERR_E emac_ioctl_configure_cut_through_or_prempt_select_ctrl(uint32_t p
     UTILS_trace(UTIL_TRACE_LEVEL_INFO, emac_mcb.drv_trace_cb, "port: %d: ENTER",portNum);
     
 
-    emac_mcb.port_cb[portNum].getFwCfg(portNum,&pEmacFwCfg);
-    pSwitchFwCfg = (EMAC_ICSSG_SWITCH_FW_CFG*) pEmacFwCfg->pFwPortCfg;
-    expressPremptiveQueueAddr = emac_mcb.port_cb[portNum].icssDram0BaseAddr + 0x2000*portLoc + pSwitchFwCfg->expressPremptiveQueueOffset;
+    expressPremptiveQueueAddr = emac_mcb.port_cb[portNum].icssDram0BaseAddr + 0x2000*portLoc + EXPRESS_PRE_EMPTIVE_Q_MAP;
     for (queue_num = 0U; queue_num < EMAC_IOCTL_PRIO_MAX; queue_num++)
     {
         temp_byte = (entry->pcpPreemptMap[queue_num] << 4U) | (entry->pcpCutThroughMap[queue_num] << 7U);   /*as per bit order in descriptor flags. Helps save PRU cycles*/
         CSL_REG8_WR(expressPremptiveQueueAddr+ queue_num, temp_byte);
         queue_mask = queue_mask | ((entry->pcpPreemptMap[queue_num]) << queue_num);
     }
-    expressPremptiveQueueAddr = emac_mcb.port_cb[portNum].icssDram0BaseAddr + 0x2000*portNum
-                                + pSwitchFwCfg->expressPremptiveQueueMaskOffset;
+    expressPremptiveQueueAddr = emac_mcb.port_cb[portNum].icssDram0BaseAddr + 0x2000*portNum + EXPRESS_PRE_EMPTIVE_Q_MASK;
     CSL_REG8_WR(expressPremptiveQueueAddr, ~queue_mask);
     UTILS_trace(UTIL_TRACE_LEVEL_INFO, emac_mcb.drv_trace_cb, "port: %d: EXIT with status: %d",portNum, retVal);
     return retVal;
 
 }
+
 /*
  *  ======== emac_ioctl_frame_premption_ctrl ========
  */
@@ -1112,8 +1117,6 @@ EMAC_DRV_ERR_E emac_ioctl_frame_premption_ctrl(uint32_t portNum, void* p_params)
     EMAC_DRV_ERR_E retVal = EMAC_DRV_RESULT_IOCTL_ERR;
     EMAC_IOCTL_PARAMS *pParams = (EMAC_IOCTL_PARAMS*) p_params;
     EMAC_IOCTL_PREEMPTION_ENTRY *entry = (EMAC_IOCTL_PREEMPTION_ENTRY*)pParams->ioctlVal;
-    EMAC_PER_PORT_ICSSG_FW_CFG *pEmacFwCfg;
-    EMAC_ICSSG_SWITCH_FW_CFG *pSwitchFwCfg;
     uintptr_t premptionTxEnabledStatusAddr, premptionTxActiveStatusAddr, premptionVerifyStateStatusAddr, premptionVerifyStateValueAddr, premptionMinFragSizeAddr, premptionMinFragAddAddr;
     uint32_t portLoc = 0;
     if((portNum  & 1) == 1)
@@ -1123,16 +1126,14 @@ EMAC_DRV_ERR_E emac_ioctl_frame_premption_ctrl(uint32_t portNum, void* p_params)
 
     UTILS_trace(UTIL_TRACE_LEVEL_INFO, emac_mcb.drv_trace_cb, "port: %d: ENTER",portNum);
     emac_update_cmd(portNum, EMAC_IOCTL_FRAME_PREEMPTION_CTRL, emac_mcb.ioctl_cb.pCmd1Icssg, pParams, NULL, EMAC_FW_MGMT_CMD_TYPE, 0, 0);
-    emac_mcb.port_cb[portNum].getFwCfg(portNum,&pEmacFwCfg);
-    pSwitchFwCfg = (EMAC_ICSSG_SWITCH_FW_CFG*) pEmacFwCfg->pFwPortCfg;
-
+    /* FIXME: are all the addresses being calculated properly, why do we have 0x2000 hard-coded */
     switch (pParams->subCommand)
     {
         case EMAC_IOCTL_PREEMPT_TX_ENABLE:
             retVal = emac_send_R30_cmd(EMAC_PORT_PREMPT_TX_ENABLE, portLoc, pParams->seqNumber);
             if (retVal == EMAC_DRV_RESULT_IOCTL_IN_PROGRESS)
             {
-                premptionTxEnabledStatusAddr = emac_mcb.port_cb[portNum].icssDram0BaseAddr + 0x2000*portLoc + pSwitchFwCfg->premptionTxEnabledStatusOffset;
+                premptionTxEnabledStatusAddr = emac_mcb.port_cb[portNum].icssDram0BaseAddr + 0x2000*portLoc + PRE_EMPTION_ENABLE_TX;
                 CSL_REG8_WR(premptionTxEnabledStatusAddr, 0x01);
             }
             break;
@@ -1140,42 +1141,42 @@ EMAC_DRV_ERR_E emac_ioctl_frame_premption_ctrl(uint32_t portNum, void* p_params)
             retVal = emac_send_R30_cmd(EMAC_PORT_PREMPT_TX_DISABLE, portLoc, pParams->seqNumber);
             if (retVal == EMAC_DRV_RESULT_IOCTL_IN_PROGRESS)
             {
-                premptionTxEnabledStatusAddr = emac_mcb.port_cb[portNum].icssDram0BaseAddr + 0x2000*portLoc + pSwitchFwCfg->premptionTxEnabledStatusOffset;
+                premptionTxEnabledStatusAddr = emac_mcb.port_cb[portNum].icssDram0BaseAddr + 0x2000*portLoc + PRE_EMPTION_ENABLE_TX;
                 CSL_REG8_WR(premptionTxEnabledStatusAddr, 0x00);
             }
             break;
         case EMAC_IOCTL_PREEMPT_GET_TX_ENABLE_STATUS:
-            premptionTxEnabledStatusAddr = emac_mcb.port_cb[portNum].icssDram0BaseAddr + 0x2000*portLoc + pSwitchFwCfg->premptionTxEnabledStatusOffset;
+            premptionTxEnabledStatusAddr = emac_mcb.port_cb[portNum].icssDram0BaseAddr + 0x2000*portLoc + PRE_EMPTION_ENABLE_TX;
             entry->premt_tx_enabled_status = CSL_REG8_RD(premptionTxEnabledStatusAddr);
             retVal = EMAC_DRV_RESULT_OK;
             break;
         case EMAC_IOCTL_PREEMPT_GET_TX_ACTIVE_STATUS:
-            premptionTxActiveStatusAddr = emac_mcb.port_cb[portNum].icssDram0BaseAddr + 0x2000*portLoc + pSwitchFwCfg->premptionTxActiveStatusOffset;
+            premptionTxActiveStatusAddr = emac_mcb.port_cb[portNum].icssDram0BaseAddr + 0x2000*portLoc + PRE_EMPTION_ACTIVE_TX;
             entry->premt_tx_active_status = CSL_REG8_RD(premptionTxActiveStatusAddr);
             retVal = EMAC_DRV_RESULT_OK;
             break;
         case EMAC_IOCTL_PREEMPT_VERIFY_ENABLE:
-            premptionVerifyStateStatusAddr = emac_mcb.port_cb[portNum].icssDram0BaseAddr + 0x2000*portLoc  + pSwitchFwCfg->premptionVerifyStateStatusOffset;
+            premptionVerifyStateStatusAddr = emac_mcb.port_cb[portNum].icssDram0BaseAddr + 0x2000*portLoc  + PRE_EMPTION_ENABLE_VERIFY;
             CSL_REG8_WR(premptionVerifyStateStatusAddr, 0x01);
             retVal = EMAC_DRV_RESULT_OK;
             break;
         case EMAC_IOCTL_PREEMPT_VERIFY_DISABLE:
-            premptionVerifyStateStatusAddr = emac_mcb.port_cb[portNum].icssDram0BaseAddr + 0x2000*portLoc + pSwitchFwCfg->premptionVerifyStateStatusOffset;
+            premptionVerifyStateStatusAddr = emac_mcb.port_cb[portNum].icssDram0BaseAddr + 0x2000*portLoc + PRE_EMPTION_ENABLE_VERIFY;
             CSL_REG8_WR(premptionVerifyStateStatusAddr, 0x00);
             retVal = EMAC_DRV_RESULT_OK;
             break;
         case EMAC_IOCTL_PREEMPT_GET_VERIFY_STATE:
-            premptionVerifyStateValueAddr = emac_mcb.port_cb[portNum].icssDram0BaseAddr + 0x2000*portLoc + pSwitchFwCfg->premptionVerifyStateValueOffset;
+            premptionVerifyStateValueAddr = emac_mcb.port_cb[portNum].icssDram0BaseAddr + 0x2000*portLoc + PRE_EMPTION_VERIFY_STATUS;
             entry->premt_verify_state = (Preempt_Verify_States)(CSL_REG8_RD(premptionVerifyStateValueAddr));
             retVal = EMAC_DRV_RESULT_OK;
             break;
         case EMAC_IOCTL_PREEMPT_GET_MIN_FRAG_SIZE_LOCAL:
-            premptionMinFragSizeAddr = emac_mcb.port_cb[portNum].icssDram0BaseAddr + 0x2000*portLoc + pSwitchFwCfg->premptionMinFragSizeOffset;
+            premptionMinFragSizeAddr = emac_mcb.port_cb[portNum].icssDram0BaseAddr + 0x2000*portLoc + PRE_EMPTION_ADD_FRAG_SIZE_LOCAL;
             entry->premt_min_fragment_size = CSL_REG8_RD(premptionMinFragSizeAddr);
             retVal = EMAC_DRV_RESULT_OK;
             break;
         case  EMAC_IOCTL_PREEMPT_SET_MIN_FRAG_SIZE_REMOTE:
-            premptionMinFragAddAddr = emac_mcb.port_cb[portNum].icssDram0BaseAddr + 0x2000*portLoc + pSwitchFwCfg->premptionMinFragAddOffset;
+            premptionMinFragAddAddr = emac_mcb.port_cb[portNum].icssDram0BaseAddr + 0x2000*portLoc + PRE_EMPTION_ADD_FRAG_SIZE_REMOTE;
             CSL_REG16_WR(premptionMinFragAddAddr, ((entry->add_min_fragment_size)+1)*64);
             retVal = EMAC_DRV_RESULT_OK;
             break;
@@ -1196,16 +1197,12 @@ EMAC_DRV_ERR_E emac_ioctl_configure_special_frame_prio_ctrl(uint32_t portNum, vo
     uintptr_t splPacketDefaultPrioAddr;
     EMAC_IOCTL_PARAMS *pParams = (EMAC_IOCTL_PARAMS*) p_params;
     EMAC_IOCTL_SPECIAL_FRAME_DEFAULT_PRIO *entry = (EMAC_IOCTL_SPECIAL_FRAME_DEFAULT_PRIO*)pParams->ioctlVal;
-    EMAC_PER_PORT_ICSSG_FW_CFG *pEmacFwCfg;
-    EMAC_ICSSG_SWITCH_FW_CFG *pSwitchFwCfg;
     uint32_t portLoc = 0;
     if((portNum  & 1) == 1)
     {
         portLoc = 1;
     }
-    emac_mcb.port_cb[portNum].getFwCfg(portNum,&pEmacFwCfg);
-    pSwitchFwCfg = (EMAC_ICSSG_SWITCH_FW_CFG*) pEmacFwCfg->pFwPortCfg;
-    splPacketDefaultPrioAddr = emac_mcb.port_cb[portNum].icssDram0BaseAddr + 0x2000*portLoc + pSwitchFwCfg->splPacketDefaultPrioOffset;
+    splPacketDefaultPrioAddr = emac_mcb.port_cb[portNum].icssDram0BaseAddr + 0x2000*portLoc + SPL_PKT_DEFAULT_PRIORITY;
     CSL_REG8_WR(splPacketDefaultPrioAddr, entry->specialFramePrio);
 
     UTILS_trace(UTIL_TRACE_LEVEL_INFO, emac_mcb.drv_trace_cb, "port: %d: EXIT with status: %d",portNum, EMAC_DRV_RESULT_OK);
@@ -1235,7 +1232,6 @@ EMAC_DRV_ERR_E emac_ioctl_speed_duplexity_cfg(uint32_t portNum, void* p_params)
 /*
  *  ======== emac_ioctl_send_mgmt_msg ========
  */
-
 EMAC_DRV_ERR_E  emac_ioctl_send_mgmt_msg(uint32_t portNum, EMAC_IOCTL_CMD_T* pMgmtCmd, EMAC_CPPI_DESC_T* p_tx_cppi_desc)
 {
     EMAC_DRV_ERR_E retVal = EMAC_DRV_RESULT_IOCTL_IN_PROGRESS;
@@ -1243,7 +1239,7 @@ EMAC_DRV_ERR_E  emac_ioctl_send_mgmt_msg(uint32_t portNum, EMAC_IOCTL_CMD_T* pMg
     EMAC_PORT_INFO_T * pPortInfo = &emac_port_info[portNum];
     int32_t icssgInst = pPortInfo->icssgInst;
 
-    pMgmtPkt = (EMAC_MGMT_PKT_T*)(emac_hwq_pop(icssgInst,((portNum & 1) == 0) ? EMAC_ICSSG_MGMT_FREE_HWQA_PORT0 : EMAC_ICSSG_MGMT_FREE_HWQA_PORT1));
+    pMgmtPkt = emac_hwq_pop(icssgInst,((portNum & 1) == 0) ? EMAC_ICSSG_MGMT_FREE_HWQA_PORT0 : EMAC_ICSSG_MGMT_FREE_HWQA_PORT1);
     if (pMgmtPkt == NULL)
     {
         UTILS_trace(UTIL_TRACE_LEVEL_ERR, emac_mcb.drv_trace_cb,
@@ -1260,23 +1256,22 @@ EMAC_DRV_ERR_E  emac_ioctl_send_mgmt_msg(uint32_t portNum, EMAC_IOCTL_CMD_T* pMg
     return retVal;
 } /* emac_ioctl_send_mgmt_msg */
 
+/* FIXME: FOR now hard-code nubmer of fdb bucket entries and size*/
+#define EMAC_ICSSG_NUM_FDB_BUCKET_ENTRIES 4
+#define EMAC_ICSSG_SIZE_OF_FDB 2048
 /*
  *  ======== emac_ioctl_configure_fdb_ageing_interval ========
  */
 EMAC_DRV_ERR_E emac_ioctl_configure_fdb_ageing_interval(uint32_t portNum, void* p_params)
 {
     uintptr_t fdbAgeingIntervalAddr;
-    uint32_t numFDBBuckets =0;
+    uint32_t numFDBBuckets;
     EMAC_IOCTL_PARAMS *pParams = (EMAC_IOCTL_PARAMS*) p_params;
     EMAC_IOCTL_FDB_AGEING_INTERVAL *entry = (EMAC_IOCTL_FDB_AGEING_INTERVAL*)pParams->ioctlVal;
-    EMAC_PER_PORT_ICSSG_FW_CFG *pEmacFwCfg;
-    EMAC_ICSSG_SWITCH_FW_CFG *pSwitchFwCfg;
-    emac_mcb.port_cb[portNum].getFwCfg(portNum,&pEmacFwCfg);
-    pSwitchFwCfg = (EMAC_ICSSG_SWITCH_FW_CFG*) pEmacFwCfg->pFwPortCfg;
     /*Calculate number of buckets*/
-    numFDBBuckets = pSwitchFwCfg->fdbSize / pSwitchFwCfg->numFdbBucketEntries;
+    numFDBBuckets = EMAC_ICSSG_SIZE_OF_FDB / EMAC_ICSSG_NUM_FDB_BUCKET_ENTRIES;
 
-    fdbAgeingIntervalAddr = emac_mcb.port_cb[portNum].icssDram1BaseAddr + pSwitchFwCfg->fdbAgeingTimeoutOffset; //FIXME : Review this
+    fdbAgeingIntervalAddr = emac_mcb.port_cb[portNum].icssDram1BaseAddr + FDB_AGEING_TIMEOUT_OFFSET; 
     /*The actual value written to memory is ageing timeout divided by number of buckets
     because in firmware we iterate per bucket not for entire FDB. See NRT design doc for more details*/
     CSL_REG64_WR(fdbAgeingIntervalAddr, entry->fdbAgeingInterval/(uint64_t)numFDBBuckets);
