@@ -50,14 +50,14 @@ static SDR_ESM_Instance_t SDR_ESM_instance_MAIN;
 /** ================================================================================
  *
  * \brief        Check that ESM instance type is valid for this device, and fill the
- *               ESM base address and SDR_ESM instance
+ *               ESM base address
  *
  * \param [in]   esmInstType: ESM instance type
  * \param [out]  esmBaseAddr: Base address for ESM instance's registers
  *
  * \return       true: if valid instance type; false if not valid instance type
  */
-bool SDR_ESM_interpInstType(const SDR_ESM_InstanceType esmInstType, uint32_t *esmBaseAddr)
+bool SDR_ESM_getBaseAddr(const SDR_ESM_InstanceType esmInstType, uint32_t *esmBaseAddr)
 {
     bool instValid = ((bool)false);
 

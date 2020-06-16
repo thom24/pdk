@@ -91,7 +91,7 @@ SDR_Result SDR_ESM_init (const SDR_ESM_InstanceType esmInstType,
     /* Check for valid esmInstConfig and esmInstType, and initialize appropriate
      * esmInstBaseAddr for register base and SDM_ESM_instance for SW instance structure. */
     if (( esmInitConfig == ((void *)0u)) ||
-        ( SDR_ESM_interpInstType(esmInstType, &esmInstBaseAddr) == ((bool)false)) ||
+        ( SDR_ESM_getBaseAddr(esmInstType, &esmInstBaseAddr) == ((bool)false)) ||
         ( SDR_ESM_selectEsmInst(esmInstType, &SDR_ESM_instance) == ((bool)false))) {
             result = SDR_FAIL;
     } else {
@@ -241,7 +241,7 @@ SDR_Result SDR_ESM_resetNError(const SDR_ESM_InstanceType esmInstType)
     uint32_t           esmInstBaseAddr;
     uint32_t           status;
 
-    if (SDR_ESM_interpInstType(esmInstType, &esmInstBaseAddr) == ((bool)false)) {
+    if (SDR_ESM_getBaseAddr(esmInstType, &esmInstBaseAddr) == ((bool)false)) {
             result = SDR_FAIL;
     } else {
         cslRet = ESMResetErrPin((uint32_t)esmInstBaseAddr);
@@ -282,7 +282,7 @@ SDR_Result SDR_ESM_resetNError(const SDR_ESM_InstanceType esmInstType)
 void SDR_ESM_setNError(const SDR_ESM_InstanceType esmInstType){
     uint32_t esmInstBaseAddr;
 
-    if (SDR_ESM_interpInstType(esmInstType, &esmInstBaseAddr) == ((bool)true)) {
+    if (SDR_ESM_getBaseAddr(esmInstType, &esmInstBaseAddr) == ((bool)true)) {
         /* Set Force Error output */
         (void)ESMSetMode(esmInstBaseAddr, ESM_OPERATION_MODE_ERROR_FORCE);
     }
@@ -303,7 +303,7 @@ bool SDR_ESM_getNErrorStatus(const SDR_ESM_InstanceType esmInstType)
     uint32_t esmInstBaseAddr;
     bool retValue = (bool)false;
 
-    if (SDR_ESM_interpInstType(esmInstType, &esmInstBaseAddr) == ((bool)true)) {
+    if (SDR_ESM_getBaseAddr(esmInstType, &esmInstBaseAddr) == ((bool)true)) {
         (void)ESMGetErrPinStatus(esmInstBaseAddr, &status);
 
         if (status == 1u) {
@@ -330,7 +330,7 @@ SDR_Result SDR_ESM_errorInsert (const SDR_ESM_InstanceType esmInstType,
     uint32_t   esmInstBaseAddr;
     SDR_Result result = SDR_FAIL;
 
-    if (SDR_ESM_interpInstType(esmInstType, &esmInstBaseAddr) == ((bool)true)) {
+    if (SDR_ESM_getBaseAddr(esmInstType, &esmInstBaseAddr) == ((bool)true)) {
         if (esmErrorConfig != ((void *)0u)) {
             if ((esmErrorConfig->groupNumber < SDR_ESM_MAX_EVENT_MAP_NUM_WORDS)
              && (esmErrorConfig->bitNumber < BITS_PER_WORD)) {
@@ -365,7 +365,7 @@ SDR_Result SDR_ESM_selfTest (const SDR_ESM_InstanceType esmInstType,
 
     /* Check for valid esmInstType, and initialize appropriate esmInstBaseAddr for
      * register base and SDM_ESM_instance for SW instance structure. */
-    if ((SDR_ESM_interpInstType(esmInstType, &esmInstBaseAddr) == ((bool)true)) &&
+    if ((SDR_ESM_getBaseAddr(esmInstType, &esmInstBaseAddr) == ((bool)true)) &&
         (SDR_ESM_selectEsmInst(esmInstType, &SDR_ESM_instance) == ((bool)true))) {
         /* reset error and timout flags */
         SDR_ESM_instance->selfTestFlag = (bool)false;

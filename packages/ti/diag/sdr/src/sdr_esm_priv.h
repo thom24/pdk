@@ -73,17 +73,17 @@ typedef struct SDR_ESM_Instance_s
  */
 bool SDR_ESM_handleIntSrc(const SDR_ESM_Instance_t *pInstance, uint32_t intSrc);
 
-/** ============================================================================
+/** ================================================================================
  *
- * \brief        Check that ESM instance is valid for this device
+ * \brief        Check that ESM instance type is valid for this device, and fill the
+ *               ESM base address
  *
- * \param  [in]  esmInstType: ESM instance type
- * \param  [out] esmBaseAddr: Base address for ESM instance's registers
+ * \param [in]   esmInstType: ESM instance type
+ * \param [out]  esmBaseAddr: Base address for ESM instance's registers
  *
  * \return       true: if valid instance type; false if not valid instance type
  */
-bool SDR_ESM_interpInstType(const SDR_ESM_InstanceType esmInstType,
-                            uint32_t *esmBaseAddr);
+bool SDR_ESM_getBaseAddr(const SDR_ESM_InstanceType esmInstType, uint32_t *esmBaseAddr);
 
 /** ================================================================================
  *
