@@ -225,7 +225,7 @@ ESM_Handle ESM_init(uint8_t bClearErrors)
 
     /* Debug Message: */
     DebugP_log2 ("Debug: ESM Driver Registering HWI(High Priority) ISR [%p] for Interrupt %d\n",
-                      gEsmMCB.hwiHandleHi, gESMHwCfgAttrs.highPrioIntNum);
+                 (uintptr_t)gEsmMCB.hwiHandleHi, gESMHwCfgAttrs.highPrioIntNum);
 
     /* Initialize with defaults */
     Osal_RegisterInterrupt_initParams(&interruptRegParams);
@@ -241,7 +241,7 @@ ESM_Handle ESM_init(uint8_t bClearErrors)
 
     /* Debug Message: */
     DebugP_log2 ("Debug: ESM Driver Registering HWI(Low Priority) ISR [%p] for Interrupt %d\n",
-                      gEsmMCB.hwiHandleLo, gESMHwCfgAttrs.lowPrioIntNum);
+                 (uintptr_t)gEsmMCB.hwiHandleLo, gESMHwCfgAttrs.lowPrioIntNum);
 #endif
 
 
