@@ -367,20 +367,20 @@ typedef struct APP_EMAC_MCB_tag
 
 /**
  * @brief
- *  EMAC Master Control Block for SWITCH
+ *  EMAC Master Control Block with single pool for packet descriptors shared by all ports
  *
  * @details
- *  Maintains the EMAC control information for SWITCH.
+ *  Maintains the EMAC control information for SOC_AM65XX test apps.
  */
-typedef struct APP_EMAC_MCB_Switch_tag
+typedef struct APP_EMAC_MCB_V2_T
 {
     Uint32              core_num;
     /**< core number */
     EMAC_PKT_DESC_T     pkt_desc[APP_MAX_PKTS];
     /**< Free packet descriptor queue, one queue per switch */
     APP_PKT_QUEUE_T     freeQueue;
-    /**< Free packet descriptor queue, one queue per switch */
-} APP_EMAC_MCB_SWITCH_T;
+    /**< Free packet descriptor queue */
+} APP_EMAC_MCB_V2_T;
 
 #ifdef _TMS320C6X
 extern cregister volatile unsigned int  IER;

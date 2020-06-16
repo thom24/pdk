@@ -322,7 +322,7 @@ static uint8_t gUdmapDescRamRxMgmtPsi[EMAC_MAX_PORTS][EMAC_TEST_MAX_SUB_RX_CHANS
 #ifdef EMAC_TEST_APP_WITHOUT_DDR
 EMAC_CHAN_MAC_ADDR_T chan_cfg[APP_EMAC_NUM_CHANS_PER_CORE] __attribute__ ((aligned(UDMA_CACHELINE_ALIGNMENT)));
 EMAC_HwAttrs_V5 emac_cfg __attribute__ ((aligned(UDMA_CACHELINE_ALIGNMENT)));
-APP_EMAC_MCB_T   app_mcb __attribute__ ((aligned(UDMA_CACHELINE_ALIGNMENT)));
+APP_EMAC_MCB_V2_T   app_mcb __attribute__ ((aligned(UDMA_CACHELINE_ALIGNMENT)));
 EMAC_OPEN_CONFIG_INFO_T open_cfg __attribute__ ((aligned(UDMA_CACHELINE_ALIGNMENT)));
 #else
 EMAC_CHAN_MAC_ADDR_T chan_cfg[APP_EMAC_NUM_CHANS_PER_CORE] __attribute__ ((aligned(UDMA_CACHELINE_ALIGNMENT)))
@@ -331,7 +331,7 @@ EMAC_CHAN_MAC_ADDR_T chan_cfg[APP_EMAC_NUM_CHANS_PER_CORE] __attribute__ ((align
 EMAC_HwAttrs_V5 emac_cfg __attribute__ ((aligned(UDMA_CACHELINE_ALIGNMENT)))
                                   __attribute__ ((section (".bss:emac_ddr_mem")));
 
-APP_EMAC_MCB_T   app_mcb __attribute__ ((aligned(UDMA_CACHELINE_ALIGNMENT)))
+APP_EMAC_MCB_V2_T   app_mcb __attribute__ ((aligned(UDMA_CACHELINE_ALIGNMENT)))
                                   __attribute__ ((section (".bss:emac_ddr_mem")));
 
 EMAC_OPEN_CONFIG_INFO_T open_cfg __attribute__ ((aligned(UDMA_CACHELINE_ALIGNMENT)))
@@ -364,7 +364,7 @@ int32_t app_test_send_receive(uint32_t startP, uint32_t endP, uint32_t displayRe
  **********************************************************************/
 
 
-#define APP_TEST_PKT_SEND_COUNT  16
+#define APP_TEST_PKT_SEND_COUNT 1024 
 #define APP_TEST_MIN_PKT_SEND_SIZE 60
 #define APP_TEST_MAX_PKT_SEND_SIZE 1500
 
@@ -542,7 +542,7 @@ app_alloc_pkt
     if (pkt_size <= APP_EMAC_MAX_PKT_SIZE)
     {
         /* Get a packet descriptor from the free queue */
-        p_pkt_desc              = app_queue_pop(port_num, &app_mcb.emac_pcb[port_num].freeQueue);
+        p_pkt_desc              = app_queue_pop(port_num, &app_mcb.freeQueue);
         if(p_pkt_desc)
         {
             p_pkt_desc->AppPrivate  = (uintptr_t)p_pkt_desc;
@@ -581,7 +581,7 @@ app_free_pkt
 )
 {
     /* Free a packet descriptor to the free queue */
-    app_queue_push(port_num, &app_mcb.emac_pcb[port_num].freeQueue,
+    app_queue_push(port_num, &app_mcb.freeQueue,
                    (EMAC_PKT_DESC_T *)p_pkt_desc->AppPrivate);
 }
 
@@ -605,7 +605,7 @@ app_init(void)
     UART_printf ("EMAC loopback test application initialization\n");
 
     /* Reset application control block */
-    memset(&app_mcb, 0, sizeof (APP_EMAC_MCB_T));
+    memset(&app_mcb, 0, sizeof (APP_EMAC_MCB_V2_T));
 
 #ifdef _TMS320C6X
     app_mcb.core_num = CSL_chipReadReg (CSL_CHIP_DNUM);
@@ -614,22 +614,13 @@ app_init(void)
 #endif
     pktbuf_ptr = (uint8_t *) ((uintptr_t) app_pkt_buffer);
     /* Initialize the free packet queue */
-    for (i=portNum; i <=endPort; i++)
+    for (j=0; j < APP_MAX_PKTS; j++)
     {
-        if (!port_en[i])
-            continue;
-#ifndef EMAC_BENCHMARK
-        for (j=0; j<APP_MAX_PKTS/MAX_NUM_EMAC_PORTS; j++)
-#else
-        for (j=0; j<(APP_MAX_PKTS); j++)
-#endif
-        {
-            p_pkt_desc               = &app_mcb.emac_pcb[i].pkt_desc[j];
-            p_pkt_desc->pDataBuffer  = pktbuf_ptr;
-            p_pkt_desc->BufferLen    = APP_EMAC_MAX_PKT_SIZE;
-            app_queue_push( i, &app_mcb.emac_pcb[i].freeQueue, p_pkt_desc );
-            pktbuf_ptr += APP_EMAC_MAX_PKT_SIZE;
-        }
+        p_pkt_desc               = &app_mcb.pkt_desc[j];
+        p_pkt_desc->pDataBuffer  = pktbuf_ptr;
+        p_pkt_desc->BufferLen    = APP_EMAC_MAX_PKT_SIZE;
+        app_queue_push( i, &app_mcb.freeQueue, p_pkt_desc );
+        pktbuf_ptr += APP_EMAC_MAX_PKT_SIZE;
     }
 }
 
