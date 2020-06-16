@@ -69,7 +69,6 @@ const Watchdog_Params Watchdog_defaultParams = {
     Watchdog_DEBUG_STALL_ON,        /* stall mode*/
     Watchdog_WINDOW_100_PERCENT,    /* Windowed watchdog window size. */
     0xFFF,                          /* Preload value. */
-    //NULL,                           /*!< SOC Handle. */
     NULL                            /*!< ESM Handle. */
 };
 

@@ -393,17 +393,8 @@ static Watchdog_Handle WatchdogRTI_open(Watchdog_Handle handle, Watchdog_Params*
         /* Write this back to the Watchdog Configuration */
         ptrWatchdogConfig->object = (void *)ptrWatchdogMCB;
 
-#if 0
         /* Bring watchdog out of reset */
-        retVal = SOC_enableWatchdog(ptrWatchdogMCB->params.socHandle, &errCode);
-        if (retVal < 0)
-        {
-            /* Cleanup the allocated memory */
-            MemoryP_ctrlFree (ptrWatchdogMCB, (uint32_t)sizeof(Watchdog_MCB));
-            retHandle = NULL;
-            goto endInit;
-        }
-#endif
+        RTI_socEnableWatchdog();
 
         /* Register to get a callback from the ESM module if NMI interrupt mode is configured */
         if (ptrWatchdogMCB->params.resetMode == Watchdog_RESET_OFF)
@@ -414,17 +405,8 @@ static Watchdog_Handle WatchdogRTI_open(Watchdog_Handle handle, Watchdog_Params*
             notifyParams.notify = WatchdogRTI_callback;
 
 #ifdef BUILD_DSP_1
-#if 0
             /* Unmask the Group 2 ESM errors to enable the generation of NMI. */
-            retVal = SOC_configureDSSESMMask (ptrWatchdogMCB->params.socHandle, ptrHwCfg->errorNum, 0, &errCode);
-            if (retVal < 0)
-            {
-                /* Cleanup the allocated memory */
-                MemoryP_ctrlFree (ptrWatchdogMCB, (uint32_t)sizeof(Watchdog_MCB));
-                retHandle = NULL;
-                goto endInit;
-            }
-#endif
+            //SOC_configureDSSESMMask (ptrHwCfg->errorNum);
 #endif
             retVal = ESM_registerNotifier (ptrWatchdogMCB->params.esmHandle, &notifyParams, &errCode);
             if (retVal < 0)
@@ -437,17 +419,8 @@ static Watchdog_Handle WatchdogRTI_open(Watchdog_Handle handle, Watchdog_Params*
         }
         else
         {
-#if 0
             /* Configure the SOC moule to trigger a warm reset upon watchdog reset */
-            retVal = SOC_triggerWarmReset(ptrWatchdogMCB->params.socHandle, SOC_WARMRESET_REQUEST_TYPE_ON_MSSWATCHDOG_EXPIRY, &errCode);
-            if (retVal < 0)
-            {
-                /* Cleanup the allocated memory */
-                MemoryP_ctrlFree (ptrWatchdogMCB, (uint32_t)sizeof(Watchdog_MCB));
-                retHandle = NULL;
-                goto endInit;
-            }
-#endif
+            RTI_socTriggerWatchdogWarmReset();
         }
 
         /* Clear the status flags */

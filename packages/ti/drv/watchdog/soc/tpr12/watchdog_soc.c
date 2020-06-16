@@ -45,6 +45,41 @@
 #include <ti/csl/soc.h>
 #include <ti/drv/watchdog/soc/watchdog_soc.h>
 
+#include <ti/csl/soc/tpr12/src/cslr_mss_rcm.h>
+#include <ti/csl/soc/tpr12/src/cslr_dss_rcm.h>
+#include <ti/csl/soc/tpr12/src/cslr_mss_toprcm.h>
+
+/* ========================================================================== */
+/*                         Structure Declarations                             */
+/* ========================================================================== */
+
+/**
+ * @brief
+ *  Watchdog related SOC Hardware Atrributes
+ *
+ * @details
+ *  SOC Driver Hardware Attributes which are used to reset and trigger
+ *  warm reset for Watchdog
+ *
+ */
+typedef struct SOC_HwAttrs_t
+{
+    /**
+     * @brief   Base address of the RCM address space to be used.
+     */
+#if defined(BUILD_MCU)
+    CSL_mss_rcmRegs*   ptrRCMRegs;
+#elif defined (BUILD_DSP_1)
+    CSL_dss_rcmRegs*   ptrRCMRegs;
+#endif
+
+    /**
+     * @brief   Base address of the top-level RCM address space to be used.
+     */
+    CSL_mss_toprcmRegs* ptrTopRCMRegs;
+} SOC_HwAttrs;
+
+
 /**************************************************************************
  ************************** Global Variables ******************************
  **************************************************************************/
@@ -68,7 +103,7 @@ Watchdog_HwAttrs gWatchdogHwCfg[1] =
     {
         CSL_MSS_RTIB_U_BASE,
         2,
-        ESMG2_WDT_NMI_REQ 
+        ESMG2_WDT_NMI_REQ
     }
 };
 
@@ -84,6 +119,12 @@ Watchdog_Config Watchdog_config[] =
         NULL,
         NULL
     }
+};
+
+SOC_HwAttrs gSOCHwAttr =
+{
+    (CSL_mss_rcmRegs*)CSL_MSS_RCM_U_BASE,
+    (CSL_mss_toprcmRegs*)CSL_MSS_TOPRCM_U_BASE
 };
 
 #elif defined (BUILD_DSP_1)
@@ -100,7 +141,7 @@ Watchdog_HwAttrs gWatchdogHwCfg[1] =
     {
         CSL_DSS_RTIA_U_BASE,
         2,
-        CSL_DSS_ESMG2_DSS_WDT_NMI_REQ 
+        CSL_DSS_ESMG2_DSS_WDT_NMI_REQ
     }
 };
 
@@ -117,4 +158,51 @@ Watchdog_Config Watchdog_config[] =
         NULL
     }
 };
+
+SOC_HwAttrs gSOCHwAttr =
+{
+    (CSL_dss_rcmRegs*)CSL_DSS_RCM_U_BASE,
+    (CSL_mss_toprcmRegs*)CSL_MSS_TOPRCM_U_BASE
+};
 #endif
+
+/**
+ *  @b Description
+ *  @n
+ *      This function is used to bring watchdog out of reset
+ */
+void RTI_socEnableWatchdog()
+{
+#if defined(BUILD_MCU)
+    CSL_mss_rcmRegs* ptrRCMRegs = gSOCHwAttr.ptrRCMRegs;
+    if (CSL_FEXT(ptrRCMRegs->MSS_WDT_RST_CTRL,
+                 MSS_RCM_MSS_WDT_RST_CTRL_MSS_WDT_RST_CTRL_ASSERT) != 0)
+    {
+        CSL_FINS(ptrRCMRegs->MSS_WDT_RST_CTRL,
+                 MSS_RCM_MSS_WDT_RST_CTRL_MSS_WDT_RST_CTRL_ASSERT,
+                 0x7U);
+    }
+#elif defined (BUILD_DSP_1)
+    CSL_dss_rcmRegs* ptrRCMRegs = gSOCHwAttr.ptrRCMRegs;
+    if (CSL_FEXT(ptrRCMRegs->DSS_WDT_RST_CTRL,
+                 DSS_RCM_DSS_WDT_RST_CTRL_DSS_WDT_RST_CTRL_ASSERT) != 0)
+    {
+        CSL_FINS(ptrRCMRegs->DSS_WDT_RST_CTRL,
+                 DSS_RCM_DSS_WDT_RST_CTRL_DSS_WDT_RST_CTRL_ASSERT,
+                 0x7U);
+    }
+#endif
+}
+
+/**
+ *  @b Description
+ *  @n
+ *      The function is used to trigger a warm reset.
+ */
+void RTI_socTriggerWatchdogWarmReset()
+{
+    CSL_mss_toprcmRegs* ptrTopRCMRegs = gSOCHwAttr.ptrTopRCMRegs;
+    CSL_FINS(ptrTopRCMRegs->WARM_RESET_CONFIG,
+             MSS_TOPRCM_WARM_RESET_CONFIG_WARM_RESET_CONFIG_WDOG_RST_EN,
+             0x7U);
+}

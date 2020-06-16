@@ -293,7 +293,6 @@ typedef struct Watchdog_Params_t {
     Watchdog_DebugMode      debugStallMode; /*!< Mode to stall watchdog at breakpoints. */
     Watchdog_WindowSize     windowSize;     /*!< Windowed watchdog window size. */
     uint32_t                preloadValue;   /*!< Preload value. */
-//    SOC_Handle              socHandle;      /*!< SOC Handle. */
     ESM_Handle              esmHandle;      /*!< ESM Handle. */
 } Watchdog_Params;
 
