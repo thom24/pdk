@@ -123,25 +123,14 @@ void Board_spiPinmxCfg()
 Board_STATUS Board_pinmuxConfig (void)
 {
 #ifndef BUILD_M4F
-#ifdef VLAB_SIM
-
-#if VLAB_TEST_ONLY     /* This needs to be turned on to test in VLAB */
-    /* Unlock partition lock kick */
-    /* This needs to be turned on to test in VLAB */
+    /* Board_unlockMMR */
     HW_WR_REG32(BOARD_UART_TX_LOCK_KICK_ADDR, KICK0_UNLOCK_VAL);
     HW_WR_REG32(BOARD_UART_TX_LOCK_KICK_ADDR + 4U, KICK1_UNLOCK_VAL);
-#endif
 
+#ifdef VLAB_SIM
     Board_uartPinmxCfg();
     Board_ospiPinmxCfg();
     Board_spiPinmxCfg();
-
-#if VLAB_TEST_ONLY
-   /* Lock partition lock kick */
-    HW_WR_REG32(BOARD_UART_TX_LOCK_KICK_ADDR + 4U, 0);
-    HW_WR_REG32(BOARD_UART_TX_LOCK_KICK_ADDR, 0);
-#endif
-
 #else
     pinmuxModuleCfg_t* pModuleData = NULL;
     pinmuxPerCfg_t* pInstanceData = NULL;
@@ -188,7 +177,7 @@ Board_STATUS Board_pinmuxConfig (void)
 void Board_uartTxPinmuxConfig(void)
 {
 #ifndef BUILD_M4F
-    /* Unlock partition lock kick */
+    /* Board_unlockMMR */
     HW_WR_REG32(BOARD_UART_TX_LOCK_KICK_ADDR, KICK0_UNLOCK_VAL);
     HW_WR_REG32(BOARD_UART_TX_LOCK_KICK_ADDR + 4U, KICK1_UNLOCK_VAL);
 
@@ -198,7 +187,7 @@ void Board_uartTxPinmuxConfig(void)
     /* Configure pinmux for SYSFW Tx pin */
     HW_WR_REG32(BOARD_SYSFW_UART_TX_PINMUX_ADDR, BOARD_UART_TX_PINMUX_VAL);
     
-    /* Lock partition lock kick */
+    /* Board_lockMMR */
     HW_WR_REG32(BOARD_UART_TX_LOCK_KICK_ADDR + 4U, 0);
     HW_WR_REG32(BOARD_UART_TX_LOCK_KICK_ADDR, 0);
 #endif
