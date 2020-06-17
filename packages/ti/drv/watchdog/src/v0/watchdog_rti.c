@@ -404,10 +404,6 @@ static Watchdog_Handle WatchdogRTI_open(Watchdog_Handle handle, Watchdog_Params*
             notifyParams.arg = (void *)ptrWatchdogConfig;
             notifyParams.notify = WatchdogRTI_callback;
 
-#ifdef BUILD_DSP_1
-            /* Unmask the Group 2 ESM errors to enable the generation of NMI. */
-            //SOC_configureDSSESMMask (ptrHwCfg->errorNum);
-#endif
             retVal = ESM_registerNotifier (ptrWatchdogMCB->params.esmHandle, &notifyParams, &errCode);
             if (retVal < 0)
             {
