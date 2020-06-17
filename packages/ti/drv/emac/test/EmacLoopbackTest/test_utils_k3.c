@@ -598,7 +598,7 @@ app_free_pkt
 void
 app_init(void)
 {
-    uint32_t            i, j;
+    uint32_t            j;
     EMAC_PKT_DESC_T*    p_pkt_desc;
     uint8_t*            pktbuf_ptr;
 
@@ -619,7 +619,7 @@ app_init(void)
         p_pkt_desc               = &app_mcb.pkt_desc[j];
         p_pkt_desc->pDataBuffer  = pktbuf_ptr;
         p_pkt_desc->BufferLen    = APP_EMAC_MAX_PKT_SIZE;
-        app_queue_push( i, &app_mcb.freeQueue, p_pkt_desc );
+        app_queue_push( 0, &app_mcb.freeQueue, p_pkt_desc );
         pktbuf_ptr += APP_EMAC_MAX_PKT_SIZE;
     }
 }
