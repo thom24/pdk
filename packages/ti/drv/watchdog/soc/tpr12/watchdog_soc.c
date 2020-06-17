@@ -44,6 +44,7 @@
 
 #include <ti/csl/soc.h>
 #include <ti/drv/watchdog/soc/watchdog_soc.h>
+#include <ti/drv/watchdog/src/v0/watchdog_rti.h>
 
 #include <ti/csl/soc/tpr12/src/cslr_mss_rcm.h>
 #include <ti/csl/soc/tpr12/src/cslr_dss_rcm.h>
@@ -87,6 +88,8 @@ typedef struct SOC_HwAttrs_t
  * On TPR12, Watchdog is available on both the DSS and MSS. The Watchdog
  * platform configuration is MSS and DSS specific
  **************************************************************************/
+/* Watchdog objects */
+Watchdog_MCB watchdogObject;
 
 #if defined(BUILD_MCU)
 
@@ -111,7 +114,7 @@ Watchdog_Config Watchdog_config[] =
 {
     {
         &gWatchdogFxnTable,             /* Watchdog Driver Function Table:     */
-        (void *)NULL,                   /* Watchdog Driver Object:             */
+        (void *)&watchdogObject,        /* Watchdog Driver Object:             */
         (void *)&gWatchdogHwCfg         /* Watchdog Hw configuration:          */
     },
     {
@@ -149,7 +152,7 @@ Watchdog_Config Watchdog_config[] =
 {
     {
         &gWatchdogFxnTable,             /* Watchdog Driver Function Table:     */
-        (void *)NULL,                   /* Watchdog Driver Object:             */
+        (void *)&watchdogObject,        /* Watchdog Driver Object:             */
         (void *)&gWatchdogHwCfg         /* Watchdog Hw configuration:          */
     },
     {

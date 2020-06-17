@@ -31,8 +31,8 @@
  *
  */
 
-#ifndef WATCHDOG_INTERNAL_H
-#define WATCHDOG_INTERNAL_H
+#ifndef WATCHDOG_RTI_H
+#define WATCHDOG_RTI_H
 
 #include <ti/osal/HwiP.h>
 #include <ti/drv/watchdog/watchdog.h>
@@ -130,5 +130,5 @@ typedef struct Watchdog_MCB_t
 }
 #endif
 
-#endif /* WATCHDOG_INTERNAL_H */
+#endif /* WATCHDOG_RTI_H */
 

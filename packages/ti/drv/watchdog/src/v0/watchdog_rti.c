@@ -36,7 +36,6 @@
  **************************************************************************/
 #include <stdint.h>
 #include <string.h>
-#include <ti/osal/MemoryP.h>
 #include <ti/csl/hw_types.h>
 #include <ti/osal/osal.h>
 
@@ -148,10 +147,9 @@ static void WatchdogRTI_clear(Watchdog_Handle handle)
 
         /* Get the Watchdog Driver Object */
         ptrWatchdogMCB = (Watchdog_MCB*)ptrWatchdogConfig->object;
-        if (ptrWatchdogMCB != NULL)
-        {
-            ptrWatchdogMCB->watchdogCleared++;
-        }
+
+        ptrWatchdogMCB->watchdogCleared++;
+
         /* Get the hardware configuration: */
         ptrHwCfg = (Watchdog_HwAttrs*)ptrWatchdogConfig->hwAttrs;
 
@@ -222,69 +220,62 @@ static int32_t WatchdogRTI_control(Watchdog_Handle handle, uint32_t cmd, void *a
         /* Get the Watchdog Driver Object */
         ptrWatchdogMCB = (Watchdog_MCB*)ptrWatchdogConfig->object;
 
-        if (ptrWatchdogMCB == NULL)
-        {
-            errCode = WATCHDOG_EINVAL;
-        }
-        else
-        {
-            /* Get the hardware configuration: */
-            ptrHwCfg = (Watchdog_HwAttrs*)ptrWatchdogConfig->hwAttrs;
+        /* Get the hardware configuration: */
+        ptrHwCfg = (Watchdog_HwAttrs*)ptrWatchdogConfig->hwAttrs;
 
-            /* Processing is done on the basis of the command: */
-            switch (cmd)
+        /* Processing is done on the basis of the command: */
+        switch (cmd)
+        {
+            case WATCHDOG_CMD_RESETMODE:
             {
-                case WATCHDOG_CMD_RESETMODE:
-                {
-                    int32_t*   resetMode;
+                int32_t*   resetMode;
 
-                    /* Get the reset mode from the argument */
-                    resetMode = (int32_t*)arg;
+                /* Get the reset mode from the argument */
+                resetMode = (int32_t*)arg;
 
-                    /* Only NMI mode is supported in the DSS subsystem.
-                     * Resetting the system is supported only in the MSS sysbsystem. */
+                /* Only NMI mode is supported in the DSS subsystem.
+                 * Resetting the system is supported only in the MSS sysbsystem. */
 #ifdef BUILD_DSP_1
-                    if ((Watchdog_ResetMode)*resetMode == Watchdog_RESET_ON)
-                    {
-                        errCode = WATCHDOG_ENOTIMPL;
-                    }
+                 if ((Watchdog_ResetMode)*resetMode == Watchdog_RESET_ON)
+                 {
+                     errCode = WATCHDOG_ENOTIMPL;
+                 }
 #else
-                    /* Check if we need to change the reset mode */
-                    if (*resetMode != ptrWatchdogMCB->params.resetMode)
-                    {
-                        /* Configure the reset mode */
-                        RTIDwwdSetReaction(ptrHwCfg->baseAddr, *resetMode);
+                /* Check if we need to change the reset mode */
+                if (*resetMode != ptrWatchdogMCB->params.resetMode)
+                {
+                    /* Configure the reset mode */
+                    RTIDwwdSetReaction(ptrHwCfg->baseAddr, *resetMode);
 
-                        /* Configure the reset mode */
-                        ptrWatchdogMCB->params.resetMode = (Watchdog_ResetMode)*resetMode;
-                    }
+                    /* Configure the reset mode */
+                    ptrWatchdogMCB->params.resetMode = (Watchdog_ResetMode)*resetMode;
+                }
 #endif
-                    break;
-                }
-                case WATCHDOG_CMD_WINDOWSIZE:
+                break;
+            }
+            case WATCHDOG_CMD_WINDOWSIZE:
+            {
+                int32_t*    windowSize;
+
+                /* Get the window size from the argument */
+                windowSize = (int32_t*)arg;
+
+                /* Check if we need to change the window size */
+                if (*windowSize != ptrWatchdogMCB->params.windowSize)
                 {
-                    int32_t*    windowSize;
+                    /* Configure the window size */
+                    RTIDwwdSetWindowSize(ptrHwCfg->baseAddr, *windowSize);
 
-                    /* Get the window size from the argument */
-                    windowSize = (int32_t*)arg;
-
-                    /* Check if we need to change the window size */
-                    if (*windowSize != ptrWatchdogMCB->params.windowSize)
-                    {
-                        /* Configure the window size */
-                        RTIDwwdSetWindowSize(ptrHwCfg->baseAddr, *windowSize);
-
-			/* Configure the window size */
-                        ptrWatchdogMCB->params.windowSize = (Watchdog_WindowSize)*windowSize;
-                    }
-                    break;
+                    /* Configure the window size */
+                    ptrWatchdogMCB->params.windowSize = (Watchdog_WindowSize)*windowSize;
                 }
-                default:
-                {
-                    /* Error: Unsuported/Invalid command specified */
-                    errCode = WATCHDOG_EINVAL;
-                    break;
-                }
+                break;
+            }
+            default:
+            {
+                /* Error: Unsuported/Invalid command specified */
+                errCode = WATCHDOG_EINVAL;
+                break;
             }
         }
     }
@@ -341,7 +332,7 @@ static Watchdog_Handle WatchdogRTI_open(Watchdog_Handle handle, Watchdog_Params*
     /* Parameter check */
     if (params->preloadValue > WATCHDOG_MAX_PRELOAD_VALUE)
     {
-        goto endInit;
+        return retHandle;
     }
 
     /* Only NMI mode is supported in the DSS subsystem.
@@ -349,7 +340,7 @@ static Watchdog_Handle WatchdogRTI_open(Watchdog_Handle handle, Watchdog_Params*
 #ifdef BUILD_DSP_1
     if (params->resetMode == Watchdog_RESET_ON)
     {
-        goto endInit;
+        return retHandle;
     }
 #endif
 
@@ -359,84 +350,60 @@ static Watchdog_Handle WatchdogRTI_open(Watchdog_Handle handle, Watchdog_Params*
     /* Get the hardware configuration: */
     ptrHwCfg = (Watchdog_HwAttrs*)ptrWatchdogConfig->hwAttrs;
 
-    /* Ensure that the driver is NOT being used: */
-    if (ptrWatchdogConfig->object != NULL)
+    /* Get the Watchdog Driver Object */
+    ptrWatchdogMCB = (Watchdog_MCB*)ptrWatchdogConfig->object;
+
+    /* Initialize the memory: */
+    memset ((void *)ptrWatchdogMCB, 0, sizeof(Watchdog_MCB));
+
+    /* Configure the Watchdog driver. */
+    /* Copy over the Watchdog Parameters */
+    memcpy ((void*)&ptrWatchdogMCB->params, (void *)params, sizeof(Watchdog_Params));
+
+    /* Bring watchdog out of reset */
+    RTI_socEnableWatchdog();
+
+    /* Register to get a callback from the ESM module if NMI interrupt mode is configured */
+    if (ptrWatchdogMCB->params.resetMode == Watchdog_RESET_OFF)
     {
-        /* Error: Watchdog Driver is already being used. */
-        DebugP_log1 ("Debug: Watchdog Driver(%p) has already been opened\n", ptrHwCfg->baseAddr);
+        notifyParams.groupNumber = ptrHwCfg->groupNum;
+        notifyParams.errorNumber = ptrHwCfg->errorNum;
+        notifyParams.arg = (void *)ptrWatchdogConfig;
+        notifyParams.notify = WatchdogRTI_callback;
+
+        retVal = ESM_registerNotifier (ptrWatchdogMCB->params.esmHandle, &notifyParams, &errCode);
+        if (retVal < 0)
+        {
+            retHandle = NULL;
+            return retHandle;
+        }
     }
     else
     {
-        /* Allocate memory for the driver: */
-        ptrWatchdogMCB = MemoryP_ctrlAlloc ((uint32_t)sizeof(Watchdog_MCB), 0);
-        if (ptrWatchdogMCB == NULL)
-        {
-            /* Error: Out of memory */
-            DebugP_log1 ("Debug: Watchdog Driver(%p) Out of memory\n", ptrHwCfg->baseAddr);
-        }
-        else
-        {
-            /* Initialize the memory: */
-            memset ((void *)ptrWatchdogMCB, 0, sizeof(Watchdog_MCB));
-
-            /* Setup the return handle: */
-            retHandle = handle;
-        }
+        /* Configure the SOC moule to trigger a warm reset upon watchdog reset */
+        RTI_socTriggerWatchdogWarmReset();
     }
 
-    /* Configure the Watchdog driver. */
-    if (retHandle != NULL)
-    {
-        /* Copy over the Watchdog Parameters */
-        memcpy ((void*)&ptrWatchdogMCB->params, (void *)params, sizeof(Watchdog_Params));
+    /* Clear the status flags */
+    RTIDwwdClearStatus(ptrHwCfg->baseAddr, WATCHDOG_CLEAR_STATUS);
 
-        /* Write this back to the Watchdog Configuration */
-        ptrWatchdogConfig->object = (void *)ptrWatchdogMCB;
+    RTIDwwdWindowConfig(ptrHwCfg->baseAddr,
+                        ptrWatchdogMCB->params.resetMode,    /* Configure the reset mode    */
+                        ptrWatchdogMCB->params.preloadValue, /* Configure the preload value */
+                        ptrWatchdogMCB->params.windowSize);  /* Configure the window size   */
 
-        /* Bring watchdog out of reset */
-        RTI_socEnableWatchdog();
+    /* Configure the stall mode */
+    HW_WR_FIELD32(ptrHwCfg->baseAddr+RTI_RTIGCTRL, RTI_RTIGCTRL_COS, ptrWatchdogMCB->params.debugStallMode);
 
-        /* Register to get a callback from the ESM module if NMI interrupt mode is configured */
-        if (ptrWatchdogMCB->params.resetMode == Watchdog_RESET_OFF)
-        {
-            notifyParams.groupNumber = ptrHwCfg->groupNum;
-            notifyParams.errorNumber = ptrHwCfg->errorNum;
-            notifyParams.arg = (void *)ptrWatchdogConfig;
-            notifyParams.notify = WatchdogRTI_callback;
+    /* Enable the watchdog timer */
+    RTIDwwdCounterEnable(ptrHwCfg->baseAddr);
 
-            retVal = ESM_registerNotifier (ptrWatchdogMCB->params.esmHandle, &notifyParams, &errCode);
-            if (retVal < 0)
-            {
-                /* Cleanup the allocated memory */
-                MemoryP_ctrlFree (ptrWatchdogMCB, (uint32_t)sizeof(Watchdog_MCB));
-                retHandle = NULL;
-                goto endInit;
-            }
-        }
-        else
-        {
-            /* Configure the SOC moule to trigger a warm reset upon watchdog reset */
-            RTI_socTriggerWatchdogWarmReset();
-        }
+    /* Mark the driver to be operational */
+    ptrWatchdogMCB->state = Watchdog_DriverState_OPERATIONAL;
 
-        /* Clear the status flags */
-        RTIDwwdClearStatus(ptrHwCfg->baseAddr, WATCHDOG_CLEAR_STATUS);
+    /* Setup the return handle: */
+    retHandle = handle;
 
-        RTIDwwdWindowConfig(ptrHwCfg->baseAddr,
-                            ptrWatchdogMCB->params.resetMode,    /* Configure the reset mode    */
-                            ptrWatchdogMCB->params.preloadValue, /* Configure the preload value */
-                            ptrWatchdogMCB->params.windowSize);  /* Configure the window size   */
-
-        /* Configure the stall mode */
-        HW_WR_FIELD32(ptrHwCfg->baseAddr+RTI_RTIGCTRL, RTI_RTIGCTRL_COS, ptrWatchdogMCB->params.debugStallMode);
-
-        /* Enable the watchdog timer */
-        RTIDwwdCounterEnable(ptrHwCfg->baseAddr);
-
-	/* Mark the driver to be operational */
-        ptrWatchdogMCB->state = Watchdog_DriverState_OPERATIONAL;
-    }
-endInit:
     return retHandle;
 }
 
