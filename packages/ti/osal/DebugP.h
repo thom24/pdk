@@ -107,6 +107,10 @@ extern "C" {
  *  handles the assert via its mechanisms.
  *
  *  @param  expression Expression to evaluate
+ *  @param  file       File name
+ *  @param  line       Line number where evaluation occurs
+ *
+ *  @sa DebugP_ASSERT_ENABLED
  *
  */
 #if DebugP_ASSERT_ENABLED
