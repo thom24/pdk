@@ -172,7 +172,7 @@ static int32_t SBL_RprcImageParse(void *srcAddr, uint32_t *entryPoint,
  *
  * \return   none
  */
-void SBL_BootCore(uint32_t entry, uint32_t CoreID, sblEntryPoint_t *pAppEntry);
+void SBL_BootCore(uint32_t entry, uint32_t CoreID, sblEntryPoint_t *pAppEntry, uint32_t bootFlag);
 
 uint32_t GetDeviceId(void);
 

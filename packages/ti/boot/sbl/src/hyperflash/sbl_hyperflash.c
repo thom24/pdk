@@ -216,7 +216,7 @@ int32_t SBL_HYPERFLASHBootImage(sblEntryPoint_t *pEntry)
 
     SBL_log(SBL_LOG_MAX, "Waiting for multicore app ...\n");
 
-    retVal =  SBL_MulticoreImageParse((void *)&imgOffset, HYPERFLASH_OFFSET_SI, pEntry);
+    retVal =  SBL_MulticoreImageParse((void *)&imgOffset, HYPERFLASH_OFFSET_SI, pEntry, SBL_BOOT_AFTER_COPY);
 
     SBL_hyperflashClose(&boardHandle);
 

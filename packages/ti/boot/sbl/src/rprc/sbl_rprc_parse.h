@@ -72,6 +72,9 @@ extern "C"
 
 #define SBL_TCM_ENABLED (0x01)
 
+#define SBL_SKIP_BOOT_AFTER_COPY (0U)
+#define SBL_BOOT_AFTER_COPY      (1U)
+
 /* Function Pointer used while reading data from the storage. */
 extern int32_t (*fp_readData)(void *dstAddr, void *srcAddr,
                         uint32_t length);
@@ -169,14 +172,19 @@ int32_t SBL_VerifyMulticoreImage(void **img_handle,
  *            meta header & finds the number executables Parses & load
  *            each section into CPU internal memory & external memory
  *
- * \param     srcAddr  Start address of AppImage ImageOffset - Dummy
+ * \param     srcAddr  - Start address of AppImage ImageOffset - Dummy
+ *            bootFlag - Specifies whether SBL should boot the core immediately
+ *                       after copying the image to the core. Useful when
+ *                       calling this function outside of SBL. Uses
+ *                       SBL_BOOT_AFTER_COPY and SBL_SKIP_BOOT_AFTER_COPY.
  *
  * \retval    error status.If error has occured it returns a non zero value.
  *            If no error has occured then return status will be zero.
  */
 int32_t SBL_MulticoreImageParse(void *srcAddr,
                                 uint32_t ImageOffset,
-                                sblEntryPoint_t *pAppEntry);
+                                sblEntryPoint_t *pAppEntry,
+                                uint32_t bootFlag);
 
 #ifdef __cplusplus
 }

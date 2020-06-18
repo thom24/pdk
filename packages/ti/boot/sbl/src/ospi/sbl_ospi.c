@@ -453,7 +453,7 @@ int32_t SBL_OSPIBootImage(sblEntryPoint_t *pEntry)
     SBL_OSPI_Initialize();
 
 #ifndef SECURE_BOOT
-    retVal =  SBL_MulticoreImageParse((void *) &offset, OSPI_OFFSET_SI, pEntry);
+    retVal =  SBL_MulticoreImageParse((void *) &offset, OSPI_OFFSET_SI, pEntry, SBL_BOOT_AFTER_COPY);
 #else
     retVal = SBL_loadOSPIBootData();
 
@@ -473,7 +473,7 @@ int32_t SBL_OSPIBootImage(sblEntryPoint_t *pEntry)
             /* need to skip the TOC headers */
             imgOffset = ((uint32_t*)sblInBootData.sbl_boot_buff)[0];
             srcAddr = (uint32_t)(sblInBootData.sbl_boot_buff) + imgOffset;
-            retVal = SBL_MulticoreImageParse((void *)srcAddr, 0, pEntry);
+            retVal = SBL_MulticoreImageParse((void *)srcAddr, 0, pEntry, SBL_BOOT_AFTER_COPY);
         }
     }
     else

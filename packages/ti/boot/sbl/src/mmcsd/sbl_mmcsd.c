@@ -303,7 +303,7 @@ int32_t SBL_MMCBootImage(sblEntryPoint_t *pEntry)
         fp_readData = &SBL_FileRead;
         fp_seek     = &SBL_FileSeek;
 
-        retVal = SBL_MulticoreImageParse((void *) &fp, 0, pEntry);
+        retVal = SBL_MulticoreImageParse((void *) &fp, 0, pEntry, SBL_BOOT_AFTER_COPY);
 #else
 
         fp_readData = &SBL_MemRead;
@@ -328,7 +328,7 @@ int32_t SBL_MMCBootImage(sblEntryPoint_t *pEntry)
                 /* need to skip the TOC headers */
                 imgOffset = ((uint32_t*)sblInBootData.sbl_boot_buff)[0];
                 srcAddr = (uint32_t)(sblInBootData.sbl_boot_buff) + imgOffset; 
-                retVal = SBL_MulticoreImageParse((void *)srcAddr, 0, pEntry);
+                retVal = SBL_MulticoreImageParse((void *)srcAddr, 0, pEntry, SBL_BOOT_AFTER_COPY);
             }
         }
         else

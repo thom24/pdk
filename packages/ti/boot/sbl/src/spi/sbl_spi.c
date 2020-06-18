@@ -74,7 +74,7 @@ int32_t SBL_SPIBootImage(sblEntryPoint_t *pEntry)
     /* Initialization of the driver. */
     SBL_SPI_Initialize();
 
-    retVal =  SBL_MulticoreImageParse((void *) &offset, SPI_OFFSET_SI, pEntry);
+    retVal =  SBL_MulticoreImageParse((void *) &offset, SPI_OFFSET_SI, pEntry, SBL_BOOT_AFTER_COPY);
 
     /* Close the SPI driver */
     SBL_spiClose(&boardHandle);

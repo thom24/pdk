@@ -193,7 +193,7 @@ int32_t SBL_UARTBootImage(sblEntryPoint_t *pEntry)
 
     SBL_uartXmodemRead((uint8_t *)SBL_XMODEM_BUFF_ADDR, XMODEM_TEMP_BUFF_SIZE);
 
-    retVal =  SBL_MulticoreImageParse((void *)&imgOffset, imgOffset, pEntry);
+    retVal =  SBL_MulticoreImageParse((void *)&imgOffset, imgOffset, pEntry, SBL_BOOT_AFTER_COPY);
 
     return retVal;
 }

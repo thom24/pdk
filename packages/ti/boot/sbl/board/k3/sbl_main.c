@@ -276,10 +276,6 @@ const CSL_ArmR5MpuRegionCfg gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
 #endif
 int main()
 {
-#if !defined(SBL_USE_MCU_DOMAIN_ONLY)
-    cpu_core_id_t core_id;
-#endif
-
     SBL_ADD_PROFILE_POINT;
 
     /* Any SoC specific Init. */
@@ -370,34 +366,21 @@ int main()
 
     SBL_log(SBL_LOG_MAX, "Begin parsing user application\n");
 
-    /* Image Copy */
-    SBL_ImageCopy(&k3xx_evmEntry);
+    /* Boot all non-SBL cores in multi-core app image */
+    SBL_BootImage(&k3xx_evmEntry);
 
     /* Export SBL logs */
     sblProfileLogAddr = sblProfileLog;
     sblProfileLogIndxAddr = &sblProfileLogIndx;
     sblProfileLogOvrFlwAddr = &sblProfileLogOvrFlw;
-#if defined(SBL_USE_MCU_DOMAIN_ONLY)
-    /* Boot just the MCU1 cores */
-    if (k3xx_evmEntry.CpuEntryPoint[MCU1_CPU0_ID] != SBL_INVALID_ENTRY_ADDR)
-    {
-        SBL_SlaveCoreBoot(MCU1_CPU0_ID, NULL, &k3xx_evmEntry);
-        SBL_SlaveCoreBoot(MCU1_CPU1_ID, NULL, &k3xx_evmEntry);
-    }
-#else
-    for (core_id = MPU1_CPU0_ID; core_id <= SBL_LAST_CORE_ID; core_id ++)
-    {
-        /* Try booting all cores other than the cluster running the SBL */
-        if ((k3xx_evmEntry.CpuEntryPoint[core_id] != SBL_INVALID_ENTRY_ADDR) &&
-            (core_id != MCU1_CPU1_ID))
-            SBL_SlaveCoreBoot(core_id, NULL, &k3xx_evmEntry);
-    }
 
     /* Boot the core running SBL in the end */
     if ((k3xx_evmEntry.CpuEntryPoint[MCU1_CPU1_ID] != SBL_INVALID_ENTRY_ADDR) ||
         (k3xx_evmEntry.CpuEntryPoint[MCU1_CPU0_ID] < SBL_INVALID_ENTRY_ADDR))
-        SBL_SlaveCoreBoot(MCU1_CPU1_ID, NULL, &k3xx_evmEntry);
-#endif
+    {
+        SBL_SlaveCoreBoot(MCU1_CPU0_ID, 0, &k3xx_evmEntry, SBL_REQUEST_CORE);
+        SBL_SlaveCoreBoot(MCU1_CPU1_ID, 0, &k3xx_evmEntry, SBL_REQUEST_CORE);
+    }
 
     /* Execute a WFI */
     asm volatile (" wfi");

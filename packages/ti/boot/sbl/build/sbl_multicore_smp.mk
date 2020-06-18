@@ -9,17 +9,6 @@ BUILD_OS_TYPE = baremetal
 
 SRCDIR      += $(PDK_SBL_COMP_PATH)/example/k3MulticoreApp
 
-# Must exactly match values defined in enum cpu_core_id
-# in sbl_slave_core_boot.h
-SBL_CORE_ID_mpu1_0_smp = 15
-SBL_CORE_ID_mpu2_0_smp = 16
-SBL_CORE_ID_mpu_smp = 17
-SBL_CORE_ID_mcu1_0_smp = 18
-SBL_CORE_ID_mcu2_0_smp = 19
-SBL_CORE_ID_mcu3_0_smp = 20
-SBL_CORE_ID_only_load = 21
-
-
 # Local name of SBL test app
 RPRC_PREFIX = sbl_$(BUILD_OS_TYPE)_smp_test_$(BOARD)
 
@@ -31,7 +20,7 @@ MULTICORE_IMG_PARAMS = $(foreach SOC_CORE_ID, $(sbl_smp_test_$(SOC)_CORELIST), $
 # core in the list. Then uncomment the below lines.
 # also change $(SBL_IMAGE_GEN) below to use
 # SMP_MULTICORE_IMG_PARAMS instead of MULTICORE_IMG_PARAMS
-#SMP_CORE_ID = $(lastword $(sbl_smp_test_$(SOC)_CORELIST))
+#SMP_CORE_ID = $(lastword $(sbl_smp_test_$(SOC)_CORELIST))_smp
 #SMP_MULTICORE_IMG_PARAMS = $(subst  $(SBL_CORE_ID_$(SMP_CORE_ID)) ,$(SBL_CORE_ID_mpu_smp) , $(MULTICORE_IMG_PARAMS))
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS)

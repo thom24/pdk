@@ -44,6 +44,7 @@
 /* TI-RTOS Header files */
 #include "sbl_rprc_parse.h"
 #include "sbl_rprc.h"
+#include "sbl_slave_core_boot.h"
 
 /* ========================================================================== */
 /*                             Global Variables                               */
@@ -60,6 +61,7 @@ static uint32_t sblMemOffset = 0;
 /* SBL scratch memory defined at compile time */
 static uint8_t *sbl_scratch_mem = ((uint8_t *)(SBL_SCRATCH_MEM_START));
 static uint32_t sbl_scratch_sz = SBL_SCRATCH_MEM_SIZE;
+
 /******************************************************************************
  ***                     SBL Multicore RPRC parse functions                 ***
 *******************************************************************************/
@@ -107,7 +109,8 @@ int32_t SBL_VerifyMulticoreImage(void **img_handle,
 
 int32_t SBL_MulticoreImageParse(void *srcAddr,
                                 uint32_t ImageOffset,
-                                sblEntryPoint_t *pAppEntry)
+                                sblEntryPoint_t *pAppEntry,
+                                uint32_t bootFlag)
 {
     uint32_t            i;
     uint32_t            entryPoint = 0;
@@ -173,7 +176,7 @@ int32_t SBL_MulticoreImageParse(void *srcAddr,
                     }
                     else
                     {
-                        SBL_BootCore(entryPoint, mHdrCore[i].core_id, pAppEntry);
+                        SBL_BootCore(entryPoint, mHdrCore[i].core_id, pAppEntry, bootFlag);
                     }
                 }
             }
@@ -182,7 +185,7 @@ int32_t SBL_MulticoreImageParse(void *srcAddr,
     return retVal;
 }
 
-void SBL_BootCore(uint32_t entry, uint32_t CoreID, sblEntryPoint_t *pAppEntry)
+void SBL_BootCore(uint32_t entry, uint32_t CoreID, sblEntryPoint_t *pAppEntry, uint32_t bootFlag)
 {
     switch (CoreID)
     {
@@ -192,6 +195,10 @@ void SBL_BootCore(uint32_t entry, uint32_t CoreID, sblEntryPoint_t *pAppEntry)
             SBL_log(SBL_LOG_MAX, "Only load (not execute) image @0x%x\n", entry);
             pAppEntry->CpuEntryPoint[CoreID] = SBL_INVALID_ENTRY_ADDR;
             break;
+
+        case M4F_CPU0_ID:
+            entry=0x0; /* M4F entry point is always set to 0x0 */
+#if !defined(SBL_USE_MCU_DOMAIN_ONLY)
         case MPU1_CPU0_ID:
         case MPU1_CPU1_ID:
         case MPU2_CPU0_ID:
@@ -200,22 +207,29 @@ void SBL_BootCore(uint32_t entry, uint32_t CoreID, sblEntryPoint_t *pAppEntry)
         case DSP2_C66X_ID:
         case DSP1_C7X_ID:
         case DSP2_C7X_ID:
-        case MCU1_CPU0_ID:
-        case MCU1_CPU1_ID:
         case MCU2_CPU0_ID:
         case MCU2_CPU1_ID:
         case MCU3_CPU0_ID:
         case MCU3_CPU1_ID:
-            /* All other cores*/
+            /* All other non-bootloader cores*/
             SBL_log(SBL_LOG_MAX, "Setting entry point for core %d @0x%x\n", CoreID, entry);
             pAppEntry->CpuEntryPoint[CoreID] = entry;
-            break;
 
-        case M4F_CPU0_ID:
-            /* M4F entry point is always set to 0x0 */
-            entry=0x0;
+	    /* Immediately boot these cores */
+            if (bootFlag == SBL_BOOT_AFTER_COPY)
+            {
+                SBL_SlaveCoreBoot(CoreID, 0, pAppEntry, SBL_DONT_REQUEST_CORE);
+            }
+            break;
+#endif
+        case MCU1_CPU0_ID:
+        case MCU1_CPU1_ID:
+            /* Bootloader cores */
             SBL_log(SBL_LOG_MAX, "Setting entry point for core %d @0x%x\n", CoreID, entry);
             pAppEntry->CpuEntryPoint[CoreID] = entry;
+
+            /* DO NOT immediately boot these cores, SBL is still running! */
+
             break;
       
         case MPU1_SMP_ID:
@@ -224,6 +238,14 @@ void SBL_BootCore(uint32_t entry, uint32_t CoreID, sblEntryPoint_t *pAppEntry)
             pAppEntry->CpuEntryPoint[MPU1_CPU0_ID] = entry;
             pAppEntry->CpuEntryPoint[MPU1_CPU1_ID] = entry;
             pAppEntry->CpuEntryPoint[CoreID] = SBL_INVALID_ENTRY_ADDR;
+
+            /* Immediately boot these cores */
+            if (bootFlag == SBL_BOOT_AFTER_COPY)
+            {
+                SBL_SlaveCoreBoot(MPU1_CPU0_ID, 0, pAppEntry, SBL_DONT_REQUEST_CORE);
+                SBL_SlaveCoreBoot(MPU1_CPU1_ID, 0, pAppEntry, SBL_DONT_REQUEST_CORE);
+            }
+
             break;
         case MPU2_SMP_ID:
             /* Cluster 2 SMP*/
@@ -231,6 +253,14 @@ void SBL_BootCore(uint32_t entry, uint32_t CoreID, sblEntryPoint_t *pAppEntry)
             pAppEntry->CpuEntryPoint[MPU2_CPU0_ID] = entry;
             pAppEntry->CpuEntryPoint[MPU2_CPU1_ID] = entry;
             pAppEntry->CpuEntryPoint[CoreID] = SBL_INVALID_ENTRY_ADDR;
+
+            /* Immediately boot these cores */
+            if (bootFlag == SBL_BOOT_AFTER_COPY)
+            {
+                SBL_SlaveCoreBoot(MPU2_CPU0_ID, 0, pAppEntry, SBL_DONT_REQUEST_CORE);
+                SBL_SlaveCoreBoot(MPU2_CPU1_ID, 0, pAppEntry, SBL_DONT_REQUEST_CORE);
+            }
+
             break;
         case MPU_SMP_ID:
             /* SMP on both clusters*/
@@ -240,6 +270,16 @@ void SBL_BootCore(uint32_t entry, uint32_t CoreID, sblEntryPoint_t *pAppEntry)
             pAppEntry->CpuEntryPoint[MPU2_CPU0_ID] = entry;
             pAppEntry->CpuEntryPoint[MPU2_CPU1_ID] = entry;
             pAppEntry->CpuEntryPoint[CoreID] = SBL_INVALID_ENTRY_ADDR;
+
+            /* Immediately boot these cores */
+            if (bootFlag == SBL_BOOT_AFTER_COPY)
+            {
+                SBL_SlaveCoreBoot(MPU1_CPU0_ID, 0, pAppEntry, SBL_DONT_REQUEST_CORE);
+                SBL_SlaveCoreBoot(MPU1_CPU1_ID, 0, pAppEntry, SBL_DONT_REQUEST_CORE);
+                SBL_SlaveCoreBoot(MPU2_CPU0_ID, 0, pAppEntry, SBL_DONT_REQUEST_CORE);
+                SBL_SlaveCoreBoot(MPU2_CPU1_ID, 0, pAppEntry, SBL_DONT_REQUEST_CORE);
+            }
+
             break;
         case MCU1_SMP_ID:
             /* Cluster 2 SMP*/
@@ -247,6 +287,9 @@ void SBL_BootCore(uint32_t entry, uint32_t CoreID, sblEntryPoint_t *pAppEntry)
             pAppEntry->CpuEntryPoint[MCU1_CPU0_ID] = entry;
             pAppEntry->CpuEntryPoint[MCU1_CPU1_ID] = SBL_MCU_LOCKSTEP_ADDR;
             pAppEntry->CpuEntryPoint[CoreID] = SBL_INVALID_ENTRY_ADDR;
+
+            /* DO NOT immediately boot these cores, SBL is still running! */
+
             break;
         case MCU2_SMP_ID:
             /* Cluster 2 SMP*/
@@ -254,6 +297,14 @@ void SBL_BootCore(uint32_t entry, uint32_t CoreID, sblEntryPoint_t *pAppEntry)
             pAppEntry->CpuEntryPoint[MCU2_CPU0_ID] = entry;
             pAppEntry->CpuEntryPoint[MCU2_CPU1_ID] = SBL_MCU_LOCKSTEP_ADDR;
             pAppEntry->CpuEntryPoint[CoreID] = SBL_INVALID_ENTRY_ADDR;
+
+            /* Immediately boot these cores */
+            if (bootFlag == SBL_BOOT_AFTER_COPY)
+            {
+                SBL_SlaveCoreBoot(MCU2_CPU0_ID, 0, pAppEntry, SBL_DONT_REQUEST_CORE);
+                SBL_SlaveCoreBoot(MCU2_CPU1_ID, 0, pAppEntry, SBL_DONT_REQUEST_CORE);
+            }
+
             break;
         case MCU3_SMP_ID:
             /* Cluster 3 SMP*/
@@ -261,6 +312,14 @@ void SBL_BootCore(uint32_t entry, uint32_t CoreID, sblEntryPoint_t *pAppEntry)
             pAppEntry->CpuEntryPoint[MCU3_CPU0_ID] = entry;
             pAppEntry->CpuEntryPoint[MCU3_CPU1_ID] = SBL_MCU_LOCKSTEP_ADDR;
             pAppEntry->CpuEntryPoint[CoreID] = SBL_INVALID_ENTRY_ADDR;
+
+            /* Immediately boot these cores */
+            if (bootFlag == SBL_BOOT_AFTER_COPY)
+            {
+                SBL_SlaveCoreBoot(MCU3_CPU0_ID, 0, pAppEntry, SBL_DONT_REQUEST_CORE);
+                SBL_SlaveCoreBoot(MCU3_CPU1_ID, 0, pAppEntry, SBL_DONT_REQUEST_CORE);
+            }
+
             break;
 #endif
 #if defined(OMAPL137_BUILD) || defined(C6748_BUILD)  || defined(OMAPL138_BUILD)

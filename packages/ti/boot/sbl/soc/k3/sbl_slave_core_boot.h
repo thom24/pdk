@@ -77,6 +77,10 @@ typedef uint32_t cpu_core_id_t;
 #define ONLY_LOAD_ID                    (21U)
 #define NUM_CORES                       (22U)
 
+#define SBL_DONT_REQUEST_CORE           (0U)
+#define SBL_REQUEST_CORE                (1U)
+
+
 /* Structure holding the entry address of the applications for different cores. */
 typedef struct sblEntryPoint
 {
@@ -100,9 +104,10 @@ typedef struct
 
 #define SBL_MCU_LOCKSTEP_ADDR    (SBL_INVALID_ENTRY_ADDR + 1)
 /*
- *  \brief    SBL_ImageCopy function is a wrapper to Multicore Image parser
+ *  \brief    SBL_BootImage function is a wrapper to Multicore Image parser
  *            function. Based on boot-mode jumps into specific Image copy
- *            function for the particular bootmode.
+ *            function for the particular bootmode, and boots all non-SBL
+ *            cores immediately after copying the image.
  *
  *  \param    pointer to the structure holding the entry pointers for different
  *            cores. This gets updated with the entry point of the images for
@@ -112,7 +117,7 @@ typedef struct
  *            If no error has occured then return status will be zero.
  *
  */
-int32_t SBL_ImageCopy(sblEntryPoint_t *pEntry);
+int32_t SBL_BootImage(sblEntryPoint_t *pEntry);
 
 /**
  * \brief    SBL_SlaveCoreBoot function sets the entry point, sets up clocks
@@ -121,9 +126,12 @@ int32_t SBL_ImageCopy(sblEntryPoint_t *pEntry);
  * \param    CoreID = Core ID. Differs depending on SOC, refer to cpu_core_id enum
  *           freqHz = Speed of core at boot up, 0 indicates use SBL default freqs.
  *           pAppEntry = SBL entry point struct
+ *           requestCoresFlag = Specify whether cores should be requested/released
+ *               from within SBL_SlaveCoreBoot. Accepts the values SBL_REQUEST_CORE
+ *               and SBL_DONT_REQUEST_CORE.
  *
  **/
-void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *pAppEntry);
+void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *pAppEntry, uint32_t requestCoresFlag);
 
 
 #ifdef __cplusplus
