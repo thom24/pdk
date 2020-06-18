@@ -127,7 +127,7 @@ void ESM_processInterrupt (uint32_t vec, int32_t* groupNum, int32_t* vecNum)
 {
     uint32_t            index;
     uint32_t            regVal = 0U;
-    CSL_mss_esmRegs*    ptrESMRegs;
+    CSL_esmRegs*        ptrESMRegs;
 
     if (vec < 32U)
     {
@@ -201,7 +201,7 @@ void ESM_processInterrupt (uint32_t vec, int32_t* groupNum, int32_t* vecNum)
 */
 ESM_Handle ESM_init(uint8_t bClearErrors)
 {
-    CSL_mss_esmRegs*      ptrESMRegs;
+    CSL_esmRegs*          ptrESMRegs;
     /* Initialize the allocated memory */
     memset ((void *)&gEsmMCB, 0U, sizeof(ESM_DriverMCB));
 
