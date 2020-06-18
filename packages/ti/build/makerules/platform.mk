@@ -899,7 +899,7 @@ ifeq ($(SOC),$(filter $(SOC), am65xx am64x j721e j7200))
   SBL_CORE_ID_c7x_1 = 12
   SBL_CORE_ID_c7x-hostemu = 13
   SBL_CORE_ID_m4f_0 = 14
-
+  SBL_CORE_ID_load_only = 21
 endif
 
 ifeq ($(SOC),$(filter $(SOC), tpr12))
