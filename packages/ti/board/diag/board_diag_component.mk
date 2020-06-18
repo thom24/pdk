@@ -843,7 +843,7 @@ export board_diag_temperature_CORE_DEPENDENCY
 export board_diag_temperature_MAKEFILE
 board_diag_temperature_PKG_LIST = board_diag_temperature
 board_diag_temperature_INCLUDE = $(board_diag_temperature_PATH)
-board_diag_temperature_BOARDLIST = j721e_evm am65xx_evm am65xx_idk j7200_evm
+board_diag_temperature_BOARDLIST = j721e_evm am65xx_evm am65xx_idk j7200_evm tpr12_evm
 board_diag_temperature_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
 export board_diag_temperature_$(SOC)_CORELIST
 export board_diag_temperature_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
