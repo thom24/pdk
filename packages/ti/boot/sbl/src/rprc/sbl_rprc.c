@@ -44,6 +44,7 @@
 /* TI-RTOS Header files */
 #include "sbl_rprc_parse.h"
 #include "sbl_rprc.h"
+#include "sbl_slave_core_boot.h"
 
 /* ========================================================================== */
 /*                             Global Variables                               */
@@ -192,6 +193,10 @@ void SBL_BootCore(uint32_t entry, uint32_t CoreID, sblEntryPoint_t *pAppEntry)
             SBL_log(SBL_LOG_MAX, "Only load (not execute) image @0x%x\n", entry);
             pAppEntry->CpuEntryPoint[CoreID] = SBL_INVALID_ENTRY_ADDR;
             break;
+
+        case M4F_CPU0_ID:
+            entry=0x0; /* M4F entry point is always set to 0x0 */
+#if !defined(SBL_USE_MCU_DOMAIN_ONLY)
         case MPU1_CPU0_ID:
         case MPU1_CPU1_ID:
         case MPU2_CPU0_ID:
@@ -200,20 +205,21 @@ void SBL_BootCore(uint32_t entry, uint32_t CoreID, sblEntryPoint_t *pAppEntry)
         case DSP2_C66X_ID:
         case DSP1_C7X_ID:
         case DSP2_C7X_ID:
-        case MCU1_CPU0_ID:
-        case MCU1_CPU1_ID:
         case MCU2_CPU0_ID:
         case MCU2_CPU1_ID:
         case MCU3_CPU0_ID:
         case MCU3_CPU1_ID:
-            /* All other cores*/
+            /* All other non-boot cores*/
             SBL_log(SBL_LOG_MAX, "Setting entry point for core %d @0x%x\n", CoreID, entry);
             pAppEntry->CpuEntryPoint[CoreID] = entry;
-            break;
 
-        case M4F_CPU0_ID:
-            /* M4F entry point is always set to 0x0 */
-            entry=0x0;
+	    /* Immediately boot these cores */
+	    SBL_SlaveCoreBoot(CoreID, 0, pAppEntry);
+            break;
+#endif
+        case MCU1_CPU0_ID:
+        case MCU1_CPU1_ID:
+            /* Boot cores */
             SBL_log(SBL_LOG_MAX, "Setting entry point for core %d @0x%x\n", CoreID, entry);
             pAppEntry->CpuEntryPoint[CoreID] = entry;
             break;

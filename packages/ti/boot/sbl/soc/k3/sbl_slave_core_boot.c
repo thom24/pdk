@@ -216,26 +216,46 @@ SBL_MCU3_CPU1_BTCM_BASE_ADDR_SOC
 /*                           Internal Functions                               */
 /* ========================================================================== */
 
+void SBL_RequestCoreProcId(int32_t proc_id) {
+    int32_t status = CSL_EFAIL;
+
+    SBL_log(SBL_LOG_MAX, "Calling Sciclient_procBootRequestProcessor, ProcId 0x%x... \n", proc_id);
+
+    status = Sciclient_procBootRequestProcessor(proc_id, SCICLIENT_SERVICE_WAIT_FOREVER);
+    if (status != CSL_PASS)
+    {
+	SBL_log(SBL_LOG_ERR, "Sciclient_procBootRequestProcessor, ProcId 0x%x...FAILED \n", proc_id);
+	SblErrLoop(__FILE__, __LINE__);
+    }
+}
+
+void SBL_RequestCore(cpu_core_id_t core_id)
+{
+#if !defined(SBL_SKIP_BRD_CFG_BOARD) && !defined(SBL_SKIP_SYSFW_INIT)
+    int32_t proc_id = sbl_slave_core_info[core_id].tisci_proc_id;
+
+    if(proc_id != 0xBAD00000)
+    {
+	SBL_RequestCoreProcId(proc_id);
+    }
+#endif
+
+    return;
+}
+
 void SBL_RequestAllCores(void)
 {
 #if !defined(SBL_SKIP_BRD_CFG_BOARD) && !defined(SBL_SKIP_SYSFW_INIT)
-    uint32_t i;
-    int32_t status = CSL_EFAIL;
-    uint32_t num_cpus = sizeof(sbl_slave_core_info)/ sizeof(sblSlaveCoreInfo_t);
+    cpu_core_id_t core_id;
+    uint32_t num_cores = sizeof(sbl_slave_core_info)/ sizeof(sblSlaveCoreInfo_t);
 
     SBL_ADD_PROFILE_POINT;
 
-    for (i = 0; i < num_cpus; i++)
+    for (core_id = 0; core_id < num_cores; core_id++)
     {
-        if(sbl_slave_core_info[i].tisci_proc_id != 0xBAD00000)
+        if(sbl_slave_core_info[core_id].tisci_proc_id != 0xBAD00000)
         {
-            SBL_log(SBL_LOG_MAX, "Calling Sciclient_procBootRequestProcessor, ProcId 0x%x... \n", sbl_slave_core_info[i].tisci_proc_id);
-            status = Sciclient_procBootRequestProcessor(sbl_slave_core_info[i].tisci_proc_id, SCICLIENT_SERVICE_WAIT_FOREVER);
-            if (status != CSL_PASS)
-            {
-                SBL_log(SBL_LOG_ERR, "Sciclient_procBootRequestProcessor, ProcId 0x%x...FAILED \n", sbl_slave_core_info[i].tisci_proc_id);
-                SblErrLoop(__FILE__, __LINE__);
-            }
+            SBL_RequestCore(core_id);
         }
     }
 
@@ -245,27 +265,44 @@ void SBL_RequestAllCores(void)
     return;
 }
 
+void SBL_ReleaseCoreProcId(int32_t proc_id)
+{
+    int32_t status = CSL_EFAIL;
+
+    SBL_log(SBL_LOG_MAX, "Sciclient_procBootReleaseProcessor, ProcId 0x%x...\n", proc_id);
+    status = Sciclient_procBootReleaseProcessor(proc_id, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
+    if (status != CSL_PASS)
+    {
+	SBL_log(SBL_LOG_ERR, "Sciclient_procBootReleaseProcessor, ProcId 0x%x...FAILED \n", proc_id);
+	SblErrLoop(__FILE__, __LINE__);
+    }
+}
+
+void SBL_ReleaseCore(cpu_core_id_t core_id)
+{
+#if !defined(SBL_SKIP_BRD_CFG_BOARD) && !defined(SBL_SKIP_SYSFW_INIT)
+    int32_t proc_id = sbl_slave_core_info[core_id].tisci_proc_id;
+
+    if(proc_id != 0xBAD00000)
+    {
+        SBL_ReleaseCoreProcId(proc_id);
+    }
+#endif
+
+    return;
+}
+
 void SBL_ReleaseAllCores(void)
 {
 #if !defined(SBL_SKIP_BRD_CFG_BOARD) && !defined(SBL_SKIP_SYSFW_INIT)
-    uint32_t i;
-    int32_t status = CSL_EFAIL;
-    uint32_t num_cpus = sizeof(sbl_slave_core_info)/sizeof(sblSlaveCoreInfo_t);
+    cpu_core_id_t core_id;
+    uint32_t num_cores = sizeof(sbl_slave_core_info)/sizeof(sblSlaveCoreInfo_t);
 
     SBL_ADD_PROFILE_POINT;
 
-    for (i = 0; i < num_cpus; i++)
+    for (core_id = 0; core_id < num_cores; core_id++)
     {
-        if(sbl_slave_core_info[i].tisci_proc_id != 0xBAD00000)
-        {
-            SBL_log(SBL_LOG_MAX, "Sciclient_procBootReleaseProcessor, ProcId 0x%x...\n", sbl_slave_core_info[i].tisci_proc_id);
-            status = Sciclient_procBootReleaseProcessor(sbl_slave_core_info[i].tisci_proc_id, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
-            if (status != CSL_PASS)
-            {
-                SBL_log(SBL_LOG_ERR, "Sciclient_procBootReleaseProcessor, ProcId 0x%x...FAILED \n", sbl_slave_core_info[i].tisci_proc_id);
-                SblErrLoop(__FILE__, __LINE__);
-            }
-        }
+        SBL_ReleaseCore(core_id);
     }
 
     SBL_ADD_PROFILE_POINT;
@@ -320,7 +357,7 @@ static void SBL_ConfigMcuLockStep(uint8_t enableLockStep, const sblSlaveCoreInfo
     return;
 }
 
-int32_t SBL_ImageCopy(sblEntryPoint_t *pEntry)
+int32_t SBL_BootImage(sblEntryPoint_t *pEntry)
 {
     int32_t retval = 0;
     cpu_core_id_t core_id;
@@ -594,13 +631,7 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
     }
 #endif
 
-    SBL_log(SBL_LOG_MAX, "Calling Sciclient_procBootRequestProcessor, ProcId 0x%x... \n", sblSlaveCoreInfoPtr->tisci_proc_id);
-    status = Sciclient_procBootRequestProcessor(sblSlaveCoreInfoPtr->tisci_proc_id, SCICLIENT_SERVICE_WAIT_FOREVER);
-    if (status != CSL_PASS)
-    {
-        SBL_log(SBL_LOG_ERR, "Sciclient_procBootRequestProcessor...FAILED \n");
-        SblErrLoop(__FILE__, __LINE__);
-    }
+    SBL_RequestCoreProcId(sblSlaveCoreInfoPtr->tisci_proc_id);
 
     proc_set_config_req.processor_id = sblSlaveCoreInfoPtr->tisci_proc_id;
     proc_set_config_req.bootvector_lo = pAppEntry->CpuEntryPoint[core_id];
@@ -640,6 +671,8 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
             /* Display profile logs */
             SBL_printProfileLog();
 
+	    SBL_RequestCoreProcId(sblSlaveCoreInfoPtr->tisci_proc_id);
+
             if (pAppEntry->CpuEntryPoint[core_id] <  SBL_INVALID_ENTRY_ADDR)
             {
 #ifndef DISABLE_ATCM
@@ -674,24 +707,14 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
             }
   
             /* Release the CPU and branch to app */
-            status = Sciclient_procBootReleaseProcessor(sblSlaveCoreInfoPtr->tisci_proc_id, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
-            if (status != CSL_PASS)
-            {
-                SBL_log(SBL_LOG_ERR, "Sciclient_procBootReleaseProcessor, ProcId 0x%x...FAILED \n", sblSlaveCoreInfoPtr->tisci_proc_id);
-                SblErrLoop(__FILE__, __LINE__);
-            }
+	    SBL_ReleaseCoreProcId(sblSlaveCoreInfoPtr->tisci_proc_id);
 
             SBL_log(SBL_LOG_MAX, "Starting app, branching to 0x0 \n");
             /* Branch to start of ATCM */
             ((void(*)(void))0x0)();
 #else
-            SBL_log(SBL_LOG_MAX, "Sciclient_procBootRequestProcessor, ProcId 0x%x... \n", SBL_PROC_ID_MCU1_CPU0);
-            status = Sciclient_procBootRequestProcessor(SBL_PROC_ID_MCU1_CPU0, SCICLIENT_SERVICE_WAIT_FOREVER);
-            if (status != CSL_PASS)
-            {
-            SBL_log(SBL_LOG_ERR, "Sciclient_procBootRequestProcessorProcId 0x%x...FAILED \n", SBL_PROC_ID_MCU1_CPU0);
-            SblErrLoop(__FILE__, __LINE__);
-            }
+	    /* Request DMSC CPU */
+	    SBL_RequestCoreProcId(SBL_PROC_ID_MCU1_CPU0);
 
             /* Setting up DMSC to wait for WFI */
             SBL_log(SBL_LOG_MAX, "Sciclient_procBootWaitProcessorState, ProcId 0x%x... \n", SBL_PROC_ID_MCU1_CPU0);
@@ -756,12 +779,6 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
 #endif                
             }
             SBL_log(SBL_LOG_MAX, "Sciclient_procBootReleaseProcessor, ProcId 0x%x...\n", sblSlaveCoreInfoPtr->tisci_proc_id);
-            status = Sciclient_procBootReleaseProcessor(sblSlaveCoreInfoPtr->tisci_proc_id, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
-            if (status != CSL_PASS)
-            {
-                SBL_log(SBL_LOG_ERR, "Sciclient_procBootReleaseProcessor, ProcId 0x%x...FAILED \n", sblSlaveCoreInfoPtr->tisci_proc_id);
-                SblErrLoop(__FILE__, __LINE__);
-            }
             break;
         case MCU2_CPU0_ID:
         case MCU2_CPU1_ID:
@@ -800,13 +817,6 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
                 SBL_log(SBL_LOG_MAX, "Sciclient_pmSetModuleState On, DevId 0x%x... \n", sblSlaveCoreInfoPtr->tisci_dev_id);
                 Sciclient_pmSetModuleState(sblSlaveCoreInfoPtr->tisci_dev_id, TISCI_MSG_VALUE_DEVICE_SW_STATE_ON, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
             }
-            SBL_log(SBL_LOG_MAX, "Sciclient_procBootReleaseProcessor, ProcId 0x%x...\n", sblSlaveCoreInfoPtr->tisci_proc_id);
-            status = Sciclient_procBootReleaseProcessor(sblSlaveCoreInfoPtr->tisci_proc_id, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
-            if (status != CSL_PASS)
-            {
-                SBL_log(SBL_LOG_ERR, "Sciclient_procBootReleaseProcessor, ProcId 0x%x...FAILED \n", sblSlaveCoreInfoPtr->tisci_proc_id);
-                SblErrLoop(__FILE__, __LINE__);
-            }
             SBL_ADD_PROFILE_POINT;
             break;
        case M4F_CPU0_ID:
@@ -829,13 +839,6 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
             SBL_ADD_PROFILE_POINT;
             break;
         default:
-            SBL_log(SBL_LOG_MAX, "Sciclient_procBootReleaseProcessor, ProcId 0x%x...\n", sblSlaveCoreInfoPtr->tisci_proc_id);
-            status = Sciclient_procBootReleaseProcessor(sblSlaveCoreInfoPtr->tisci_proc_id, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
-            if (status != CSL_PASS)
-            {
-                SBL_log(SBL_LOG_ERR, "Sciclient_procBootReleaseProcessor, ProcId 0x%x...FAILED \n", sblSlaveCoreInfoPtr->tisci_proc_id);
-                SblErrLoop(__FILE__, __LINE__);
-            }
             SBL_log(SBL_LOG_MAX, "Sciclient_pmSetModuleState Off, DevId 0x%x... \n", sblSlaveCoreInfoPtr->tisci_dev_id);
             Sciclient_pmSetModuleState(sblSlaveCoreInfoPtr->tisci_dev_id, TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
             SBL_log(SBL_LOG_MAX, "Sciclient_pmSetModuleState On, DevId 0x%x... \n", sblSlaveCoreInfoPtr->tisci_dev_id);
