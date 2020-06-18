@@ -80,7 +80,7 @@ extern "C" {
 /* Number of INA device Instances used */
 #if defined(SOC_AM65XX)
 #define NUM_OF_INA_DEVICES                (0x08U)
-#elif defined(SOC_K2G)
+#elif defined(SOC_K2G) || defined(SOC_TPR12)
 #define NUM_OF_INA_DEVICES                (0x04U)
 #elif defined(SOC_J721E)
 #define NUM_OF_INA_DEVICES                (31U)

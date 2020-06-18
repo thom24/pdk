@@ -44,9 +44,9 @@
  *  bus voltage, power, current readings and displaying it on to the serial
  *  console.
  *
- *  Supported SoCs: K2G, AM65XX, J721E & J7200
+ *  Supported SoCs: K2G, AM65XX, J721E, J7200 & TPR12
  *
- *  Supported Platforms: iceK2G, am65xx_evm, am65xx_idk, j721e_evm & j7200_evm.
+ *  Supported Platforms: iceK2G, am65xx_evm, am65xx_idk, j721e_evm, j7200_evm & tpr12_evm.
  *
  */
 
@@ -133,6 +133,14 @@ inaCfgObj_t inaDevice[NUM_OF_INA_DEVICES] = {
     {"VSYS_3V3_SOM",        0x4DU, {0.01, 0.0025, 1.25, 0.006104,  0.0002441, 2097}},
     {"VDDA_DLL_0V8",        0x4EU, {0.01, 0.0025, 1.25,  0.0001983,  0.0000079, 64528}},
     {"EXP_3V3",             0x4FU, {0.01, 0.0025, 1.25,  0.007629,  0.0003052, 1677}}
+};
+#elif defined(SOC_TPR12)
+/* TODO: Need to update the values for TPR12_EVM */
+inaCfgObj_t inaDevice[NUM_OF_INA_DEVICES] = {
+    {"VDD_1V2",      0x40, {0.01, 0.0025, 1.25, 305.17, 122.07}},
+    {"VIOIN_1V8", 	 0x41, {0.01, 0.0025, 1.25,  38.14,  15.25}},
+    {"VIOIN_3V3",    0x44, {0.01, 0.0025, 1.25, 167.84,  67.13}},
+    {"VDD_SRAM_1V2", 0x45, {0.01, 0.0025, 1.25,  86.21,  34.48}}
 };
 #else
 /* TODO: Need to update the values for iceK2G */
@@ -504,7 +512,7 @@ static int8_t BoardDiag_run_current_monitor_test(void)
 
     /* Initializes the I2C Parameters */
     I2C_Params_init(&i2cParams);
-#if (defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200))
+#if (defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_TPR12))
     i2cParams.bitRate = I2C_400kHz;
 #endif
     /* Configures the I2C instance with the passed parameters*/
@@ -762,7 +770,7 @@ int8_t BoardDiag_currentMonitorStressTest(void)
  *            -1 - in case of failure.
  *
  */
-#if (defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200))
+#if (defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_TPR12))
 int main(void)
 {
     Board_STATUS status;
