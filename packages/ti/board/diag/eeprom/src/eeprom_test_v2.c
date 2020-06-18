@@ -41,9 +41,9 @@
  *  Operation: This test display the board details by reading
  *			   Board id EEPROM
  *
- *  Supported SoCs: AM65XX, J721E & J7200.
+ *  Supported SoCs: AM65XX, J721E, J7200 and TPR12.
  *
- *  Supported Platforms: am65xx_evm, am65xx_idk, j721e_evm & j7200_evm.
+ *  Supported Platforms: am65xx_evm, am65xx_idk, j721e_evm, j7200_evm & tpr12_evm.
  *
  */
 
@@ -69,8 +69,12 @@ Board_I2cInitCfg_t boardI2cInitCfg[MAX_NUM_OF_BOARDS] = {
     {0,     BOARD_SOC_DOMAIN_WKUP, false},
     {0,     BOARD_SOC_DOMAIN_WKUP, false},
 };
-
+#elif defined(SOC_TPR12)
+boardProgInfo_t boardProgInfo[MAX_NUM_OF_BOARDS] = {
+    {"EVM Board\0",                  BOARD_I2C_EEPROM_INSTANCE,     true}
+};
 #else
+
 boardProgInfo_t boardProgInfo[MAX_NUM_OF_BOARDS] = {
     {"SoM Board\0",                 SOM_EEPROM_SLAVE_ADDR,          true},
     {"CP Board\0",                  CP_EEPROM_SLAVE_ADDR,           true},
@@ -219,7 +223,7 @@ int main(void)
     Board_initCfg boardCfg;
 #if defined(SOC_AM65XX)
     boardPresDetect_t isBoardDetect = APP_CARD_DETECT;
-#else
+#elif !defined(SOC_TPR12)
     uint8_t isBoardDetect = 0U;
 #endif
     uint8_t index;
@@ -247,17 +251,18 @@ int main(void)
     /* Detecting Boards */
     enableWKUPI2C();
 #endif
+#if !(defined(SOC_TPR12))
 	for(index = STARTING_BOARD_NUM; index < MAX_NUM_OF_BOARDS; index++)
     {
         boardProgInfo[index].isBoardPresent = Board_detectBoard(isBoardDetect);
 		isBoardDetect++;
     }
-
+#endif
     for(index = 0; index < MAX_NUM_OF_BOARDS; index++)
     {
         if (boardProgInfo[index].isBoardPresent)
         {
-#if !((defined(am65xx_evm) || defined(am65xx_idk)))
+#if !((defined(am65xx_evm) || defined(am65xx_idk) || defined(SOC_TPR12)))
             Board_setI2cInitConfig(&boardI2cInitCfg[index]);
 #endif
             UART_printf("\n%s:", boardProgInfo[index].boardName);

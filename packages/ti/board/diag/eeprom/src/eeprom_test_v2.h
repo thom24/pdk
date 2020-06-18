@@ -85,11 +85,13 @@ extern "C" {
 
 #define STARTING_BOARD_NUM                      (1U)
 
-#else
-#if defined (j7200_evm)
+#elif defined(j7200_evm)
 #define MAX_NUM_OF_BOARDS                       (4U)
 #define STARTING_BOARD_NUM                      (0U)
-#else
+
+#elif defined(tpr12_evm)
+#define MAX_NUM_OF_BOARDS						(BOARD_ID_MAX_BOARDS)
+#else  /* j721e_evm */
 #define MAX_NUM_OF_BOARDS                       (9U)
 #define STARTING_BOARD_NUM                      (2U)
 
@@ -99,7 +101,6 @@ extern "C" {
 #define CSI2_EXP_EEPROM_SLAVE_ADDR              (0x52U)
 #define ENET_EXP_EEPROM_SLAVE_ADDR              (0x54U)
 #define DISPLAY_ADP_EEPROM_SLAVE_ADDR           (0x00U) //J7ES_TBD: Need to update salve addr
-#endif
 #endif
 
 #define BOARD_NAME_LENGTH                       (7U)

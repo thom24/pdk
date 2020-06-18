@@ -128,6 +128,7 @@ extern "C" {
 #define BOARD_EEPROM_MAGIC_NUMBER               (0xEE3355AA)
 
 #define BOARD_BOARD_FIELD_TYPE                  (0x10)
+#define BOARD_DDR_FIELD_TYPE                    (0x11)
 #define BOARD_MACINFO_FIELD_TYPE                (0x13)
 #define BOARD_ENDLIST                           (0xFE)
 
