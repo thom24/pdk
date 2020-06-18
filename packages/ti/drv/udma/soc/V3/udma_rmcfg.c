@@ -116,180 +116,21 @@ const Udma_RmInitPrms gUdmaRmDefCfg_Bcdma[UDMA_NUM_CORE] =
         0U,                                         /* startBlkCopyHcCh */
         0U,                                         /* numBlkCopyHcCh */
         0U,                                         /* startBlkCopyCh */
-        0U,                                         /* numBlkCopyCh */
+        12U,                                        /* numBlkCopyCh */
 
         0U,                                         /* startTxUhcCh */
         0U,                                         /* numTxUhcCh */
         0U,                                         /* startTxHcCh */
         0U,                                         /* numTxHcCh */
         0U,                                         /* startTxCh */
-        0U,                                         /* numTxCh */
+        6U,                                         /* numTxCh */
 
         0U,                                         /* startRxUhcCh */
         0U,                                         /* numRxUhcCh */
         0U,                                         /* startRxHcCh */
         0U,                                         /* numRxHcCh */
         0U,                                         /* startRxCh */
-        0U,                                         /* numRxCh */
-
-        {0U, 0U, 0U, 0U},                           /* startMappedTxCh[] */
-        {0U, 0U, 0U, 0U},                           /* numMappedTxCh[] */
-
-        {0U, 0U, 0U, 0U},                           /* startMappedRxCh[] */
-        {0U, 0U, 0U, 0U},                           /* numMappedRxCh[] */
-
-        {0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U},           /* startMappedRing[] */
-        {0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U},           /* numMappedRing[] */
-
-        0U,                                         /* startFreeFlow */
-        0U,                                         /* numFreeFlow */
-        0U,                                         /* startFreeRing */
-        0U,                                         /* numFreeRing */
-
-        0U,                                         /* startGlobalEvent */
-        0U,                                         /* numGlobalEvent */
-        0U,                                         /* startVintr */
-        0U,                                         /* numVintr */
-        0U,                                         /* startIrIntr */
-        0U,                                         /* numIrIntr */
-
-        0U,                                         /* proxyThreadNum */
-        0U,                                         /* startC7xCoreIntr */
- 
-        0U,                                         /* startProxy */
-        0U,                                         /* numProxy */
-
-        0U,                                         /* startRingMon */
-        0U,                                         /* numRingMon */
-    },
-    /* MCU2_0 */
-    {
-        0U,                                         /* startBlkCopyUhcCh */
-        0U,                                         /* numBlkCopyUhcCh */
-        0U,                                         /* startBlkCopyHcCh */
-        0U,                                         /* numBlkCopyHcCh */
-        0U,                                         /* startBlkCopyCh */
-        0U,                                         /* numBlkCopyCh */
-
-        0U,                                         /* startTxUhcCh */
-        0U,                                         /* numTxUhcCh */
-        0U,                                         /* startTxHcCh */
-        0U,                                         /* numTxHcCh */
-        0U,                                         /* startTxCh */
-        0U,                                         /* numTxCh */
-
-        0U,                                         /* startRxUhcCh */
-        0U,                                         /* numRxUhcCh */
-        0U,                                         /* startRxHcCh */
-        0U,                                         /* numRxHcCh */
-        0U,                                         /* startRxCh */
-        0U,                                         /* numRxCh */
-
-        {0U, 0U, 0U, 0U},                           /* startMappedTxCh[] */
-        {0U, 0U, 0U, 0U},                           /* numMappedTxCh[] */
-
-        {0U, 0U, 0U, 0U},                           /* startMappedRxCh[] */
-        {0U, 0U, 0U, 0U},                           /* numMappedRxCh[] */
-
-        {0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U},           /* startMappedRing[] */
-        {0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U},           /* numMappedRing[] */
-
-        0U,                                         /* startFreeFlow */
-        0U,                                         /* numFreeFlow */
-        0U,                                         /* startFreeRing */
-        0U,                                         /* numFreeRing */
- 
-        0U,                                         /* startGlobalEvent */
-        0U,                                         /* numGlobalEvent */
-        0U,                                         /* startVintr */
-        0U,                                         /* numVintr */
-        0U,                                         /* startIrIntr */
-        0U,                                         /* numIrIntr */
-
-        0U,                                         /* proxyThreadNum */
-        0U,                                         /* startC7xCoreIntr */
-
-        0U,                                         /* startProxy */
-        0U,                                         /* numProxy */
-
-        0U,                                         /* startRingMon */
-        0U,                                         /* numRingMon */
-    },
-    /* MCU2_1 */
-    {
-        0U,                                         /* startBlkCopyUhcCh */
-        0U,                                         /* numBlkCopyUhcCh */
-        0U,                                         /* startBlkCopyHcCh */
-        0U,                                         /* numBlkCopyHcCh */
-        0U,                                         /* startBlkCopyCh */
-        0U,                                         /* numBlkCopyCh */
-
-        0U,                                         /* startTxUhcCh */
-        0U,                                         /* numTxUhcCh */
-        0U,                                         /* startTxHcCh */
-        0U,                                         /* numTxHcCh */
-        0U,                                         /* startTxCh */
-        0U,                                         /* numTxCh */
-
-        0U,                                         /* startRxUhcCh */
-        0U,                                         /* numRxUhcCh */
-        0U,                                         /* startRxHcCh */
-        0U,                                         /* numRxHcCh */
-        0U,                                         /* startRxCh */
-        0U,                                         /* numRxCh */
-
-        {0U, 0U, 0U, 0U},                           /* startMappedTxCh[] */
-        {0U, 0U, 0U, 0U},                           /* numMappedTxCh[] */
-
-        {0U, 0U, 0U, 0U},                           /* startMappedRxCh[] */
-        {0U, 0U, 0U, 0U},                           /* numMappedRxCh[] */
-
-        {0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U},           /* startMappedRing[] */
-        {0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U},           /* numMappedRing[] */
-
-        0U,                                         /* startFreeFlow */
-        0U,                                         /* numFreeFlow */
-        0U,                                         /* startFreeRing */
-        0U,                                         /* numFreeRing */
- 
-        0U,                                         /* startGlobalEvent */
-        0U,                                         /* numGlobalEvent */
-        0U,                                         /* startVintr */
-        0U,                                         /* numVintr */
-        0U,                                         /* startIrIntr */
-        0U,                                         /* numIrIntr */
-
-        0U,                                         /* proxyThreadNum */
-        0U,                                         /* startC7xCoreIntr */
-
-        0U,                                         /* startProxy */
-        0U,                                         /* numProxy */
-
-        0U,                                         /* startRingMon */
-        0U,                                         /* numRingMon */
-    },
-    /* MCU1_0 */
-    {
-        0U,                                         /* startBlkCopyUhcCh */
-        0U,                                         /* numBlkCopyUhcCh */
-        0U,                                         /* startBlkCopyHcCh */
-        0U,                                         /* numBlkCopyHcCh */
-        0U,                                         /* startBlkCopyCh */
-        28U,                                        /* numBlkCopyCh */
-
-        0U,                                         /* startTxUhcCh */
-        0U,                                         /* numTxUhcCh */
-        0U,                                         /* startTxHcCh */
-        0U,                                         /* numTxHcCh */
-        0U,                                         /* startTxCh */
-        20U,                                        /* numTxCh */
-
-        0U,                                         /* startRxUhcCh */
-        0U,                                         /* numRxUhcCh */
-        0U,                                         /* startRxHcCh */
-        0U,                                         /* numRxHcCh */
-        0U,                                         /* startRxCh */
-        16U,                                        /* numRxCh */
+        6U,                                         /* numRxCh */
 
         {0U, 0U, 0U, 0U},                           /* startMappedTxCh[] */
         {0U, 0U, 0U, 0U},                           /* numMappedTxCh[] */
@@ -306,11 +147,170 @@ const Udma_RmInitPrms gUdmaRmDefCfg_Bcdma[UDMA_NUM_CORE] =
         0U,                                         /* numFreeRing */
 
         15U,                                        /* startGlobalEvent */
-        100U,                                       /* numGlobalEvent */
-        44U,                                        /* startVintr */
-        14U,                                        /* numVintr */
+        256U,                                       /* numGlobalEvent */
+        4U,                                         /* startVintr */
+        18U,                                        /* numVintr */
         68U,                                        /* startIrIntr */
-        14U,                                        /* numIrIntr */
+        18U,                                        /* numIrIntr */
+
+        0U,                                         /* proxyThreadNum */
+        0U,                                         /* startC7xCoreIntr */
+ 
+        0U,                                         /* startProxy */
+        0U,                                         /* numProxy */
+
+        0U,                                         /* startRingMon */
+        0U,                                         /* numRingMon */
+    },
+    /* MCU2_0 */
+    {
+        0U,                                         /* startBlkCopyUhcCh */
+        0U,                                         /* numBlkCopyUhcCh */
+        0U,                                         /* startBlkCopyHcCh */
+        0U,                                         /* numBlkCopyHcCh */
+        20U,                                        /* startBlkCopyCh */
+        4U,                                         /* numBlkCopyCh */
+
+        0U,                                         /* startTxUhcCh */
+        0U,                                         /* numTxUhcCh */
+        0U,                                         /* startTxHcCh */
+        0U,                                         /* numTxHcCh */
+        14U,                                        /* startTxCh */
+        4U,                                         /* numTxCh */
+
+        0U,                                         /* startRxUhcCh */
+        0U,                                         /* numRxUhcCh */
+        0U,                                         /* startRxHcCh */
+        0U,                                         /* numRxHcCh */
+        14U,                                        /* startRxCh */
+        4U,                                         /* numRxCh */
+
+        {0U, 0U, 0U, 0U},                           /* startMappedTxCh[] */
+        {0U, 0U, 0U, 0U},                           /* numMappedTxCh[] */
+
+        {0U, 0U, 0U, 0U},                           /* startMappedRxCh[] */
+        {0U, 0U, 0U, 0U},                           /* numMappedRxCh[] */
+
+        {0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U},           /* startMappedRing[] */
+        {0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U},           /* numMappedRing[] */
+
+        0U,                                         /* startFreeFlow */
+        0U,                                         /* numFreeFlow */
+        0U,                                         /* startFreeRing */
+        0U,                                         /* numFreeRing */
+ 
+        975U,                                       /* startGlobalEvent */
+        128U,                                       /* numGlobalEvent */
+        120U,                                       /* startVintr */
+        8U,                                         /* numVintr */
+        8U,                                         /* startIrIntr */
+        8U,                                         /* numIrIntr */
+
+        0U,                                         /* proxyThreadNum */
+        0U,                                         /* startC7xCoreIntr */
+
+        0U,                                         /* startProxy */
+        0U,                                         /* numProxy */
+
+        0U,                                         /* startRingMon */
+        0U,                                         /* numRingMon */
+    },
+    /* MCU2_1 */
+    {
+        0U,                                         /* startBlkCopyUhcCh */
+        0U,                                         /* numBlkCopyUhcCh */
+        0U,                                         /* startBlkCopyHcCh */
+        0U,                                         /* numBlkCopyHcCh */
+        24U,                                        /* startBlkCopyCh */
+        2U,                                         /* numBlkCopyCh */
+
+        0U,                                         /* startTxUhcCh */
+        0U,                                         /* numTxUhcCh */
+        0U,                                         /* startTxHcCh */
+        0U,                                         /* numTxHcCh */
+        18U,                                        /* startTxCh */
+        2U,                                         /* numTxCh */
+
+        0U,                                         /* startRxUhcCh */
+        0U,                                         /* numRxUhcCh */
+        0U,                                         /* startRxHcCh */
+        0U,                                         /* numRxHcCh */
+        18U,                                        /* startRxCh */
+        2U,                                         /* numRxCh */
+
+        {0U, 0U, 0U, 0U},                           /* startMappedTxCh[] */
+        {0U, 0U, 0U, 0U},                           /* numMappedTxCh[] */
+
+        {0U, 0U, 0U, 0U},                           /* startMappedRxCh[] */
+        {0U, 0U, 0U, 0U},                           /* numMappedRxCh[] */
+
+        {0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U},           /* startMappedRing[] */
+        {0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U},           /* numMappedRing[] */
+
+        0U,                                         /* startFreeFlow */
+        0U,                                         /* numFreeFlow */
+        0U,                                         /* startFreeRing */
+        0U,                                         /* numFreeRing */
+ 
+        1231U,                                      /* startGlobalEvent */
+        64U,                                        /* numGlobalEvent */
+        128U,                                       /* startVintr */
+        8U,                                         /* numVintr */
+        8U,                                         /* startIrIntr */
+        8U,                                         /* numIrIntr */
+
+        0U,                                         /* proxyThreadNum */
+        0U,                                         /* startC7xCoreIntr */
+
+        0U,                                         /* startProxy */
+        0U,                                         /* numProxy */
+
+        0U,                                         /* startRingMon */
+        0U,                                         /* numRingMon */
+    },
+    /* MCU1_0 */
+    {
+        0U,                                         /* startBlkCopyUhcCh */
+        0U,                                         /* numBlkCopyUhcCh */
+        0U,                                         /* startBlkCopyHcCh */
+        0U,                                         /* numBlkCopyHcCh */
+        12U,                                        /* startBlkCopyCh */
+        6U,                                         /* numBlkCopyCh */
+
+        0U,                                         /* startTxUhcCh */
+        0U,                                         /* numTxUhcCh */
+        0U,                                         /* startTxHcCh */
+        0U,                                         /* numTxHcCh */
+        6U,                                         /* startTxCh */
+        6U,                                         /* numTxCh */
+
+        0U,                                         /* startRxUhcCh */
+        0U,                                         /* numRxUhcCh */
+        0U,                                         /* startRxHcCh */
+        0U,                                         /* numRxHcCh */
+        6U,                                         /* startRxCh */
+        6U,                                         /* numRxCh */
+
+        {0U, 0U, 0U, 0U},                           /* startMappedTxCh[] */
+        {0U, 0U, 0U, 0U},                           /* numMappedTxCh[] */
+
+        {0U, 0U, 0U, 0U},                           /* startMappedRxCh[] */
+        {0U, 0U, 0U, 0U},                           /* numMappedRxCh[] */
+
+        {0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U},           /* startMappedRing[] */
+        {0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U},           /* numMappedRing[] */
+
+        0U,                                         /* startFreeFlow */
+        0U,                                         /* numFreeFlow */
+        0U,                                         /* startFreeRing */
+        0U,                                         /* numFreeRing */
+
+        527U,                                       /* startGlobalEvent */
+        128U,                                       /* numGlobalEvent */
+        72U,                                        /* startVintr */
+        8U,                                         /* numVintr */
+        8U,                                         /* startIrIntr */
+        8U,                                         /* numIrIntr */
 
         0U,                                         /* proxyThreadNum */
         0U,                                         /* startC7xCoreIntr */
@@ -327,22 +327,22 @@ const Udma_RmInitPrms gUdmaRmDefCfg_Bcdma[UDMA_NUM_CORE] =
         0U,                                         /* numBlkCopyUhcCh */
         0U,                                         /* startBlkCopyHcCh */
         0U,                                         /* numBlkCopyHcCh */
-        0U,                                         /* startBlkCopyCh */
-        0U,                                        /* numBlkCopyCh */
+        18U,                                        /* startBlkCopyCh */
+        2U,                                         /* numBlkCopyCh */
 
         0U,                                         /* startTxUhcCh */
         0U,                                         /* numTxUhcCh */
         0U,                                         /* startTxHcCh */
         0U,                                         /* numTxHcCh */
-        0U,                                         /* startTxCh */
-        0U,                                         /* numTxCh */
+        12U,                                        /* startTxCh */
+        2U,                                         /* numTxCh */
 
         0U,                                         /* startRxUhcCh */
         0U,                                         /* numRxUhcCh */
         0U,                                         /* startRxHcCh */
         0U,                                         /* numRxHcCh */
-        0U,                                         /* startRxCh */
-        0U,                                         /* numRxCh */
+        12U,                                        /* startRxCh */
+        2U,                                         /* numRxCh */
 
         {0U, 0U, 0U, 0U},                           /* startMappedTxCh[] */
         {0U, 0U, 0U, 0U},                           /* numMappedTxCh[] */
@@ -358,12 +358,12 @@ const Udma_RmInitPrms gUdmaRmDefCfg_Bcdma[UDMA_NUM_CORE] =
         0U,                                         /* startFreeRing */
         0U,                                         /* numFreeRing */
  
-        0U,                                         /* startGlobalEvent */
-        0U,                                         /* numGlobalEvent */
-        0U,                                         /* startVintr */
-        0U,                                         /* numVintr */
-        0U,                                         /* startIrIntr */
-        0U,                                         /* numIrIntr */
+        783U,                                       /* startGlobalEvent */
+        64U,                                        /* numGlobalEvent */
+        80U,                                        /* startVintr */
+        8U,                                         /* numVintr */
+        8U,                                         /* startIrIntr */
+        8U,                                         /* numIrIntr */
 
         0U,                                         /* proxyThreadNum */
         0U,                                         /* startC7xCoreIntr */
@@ -380,8 +380,8 @@ const Udma_RmInitPrms gUdmaRmDefCfg_Bcdma[UDMA_NUM_CORE] =
         0U,                                         /* numBlkCopyUhcCh */
         0U,                                         /* startBlkCopyHcCh */
         0U,                                         /* numBlkCopyHcCh */
-        0U,                                         /* startBlkCopyCh */
-        0U,                                         /* numBlkCopyCh */
+        26U,                                        /* startBlkCopyCh */
+        1U,                                         /* numBlkCopyCh */
 
         0U,                                         /* startTxUhcCh */
         0U,                                         /* numTxUhcCh */
@@ -411,12 +411,12 @@ const Udma_RmInitPrms gUdmaRmDefCfg_Bcdma[UDMA_NUM_CORE] =
         0U,                                         /* startFreeRing */
         0U,                                         /* numFreeRing */
  
-        0U,                                         /* startGlobalEvent */
-        0U,                                         /* numGlobalEvent */
-        0U,                                         /* startVintr */
-        0U,                                         /* numVintr */
-        0U,                                         /* startIrIntr */
-        0U,                                         /* numIrIntr */
+        1423U,                                      /* startGlobalEvent */
+        32U,                                        /* numGlobalEvent */
+        168U,                                       /* startVintr */
+        8U,                                         /* numVintr */
+        32U,                                        /* startIrIntr */
+        8U,                                         /* numIrIntr */
 
         0U,                                         /* proxyThreadNum */
         0U,                                         /* startC7xCoreIntr */
@@ -446,35 +446,35 @@ const Udma_RmInitPrms gUdmaRmDefCfg_Pktdma[UDMA_NUM_CORE] =
         0U,         /* startTxHcCh */
         0U,         /* numTxHcCh */
         0U,         /* startTxCh */
-        8U,         /* numTxCh */
+        4U,         /* numTxCh */
 
         0U,         /* startRxUhcCh */
         0U,         /* numRxUhcCh */
         0U,         /* startRxHcCh */
         0U,         /* numRxHcCh */
         0U,         /* startRxCh */
-        8U,         /* numRxCh */
+        4U,         /* numRxCh */
 
-        {0U, 0U, 0U, 0U},  /* startMappedTxCh[] */
-        {0U, 0U, 0U, 0U},  /* numMappedTxCh[] */
+        {16U, 24U, 26U, 34U},  /* startMappedTxCh[] */
+        {2U,  1U,  4U,  4U},   /* numMappedTxCh[] */
 
-        {0U, 0U, 0U, 0U},  /* startMappedRxCh[] */
-        {0U, 0U, 0U, 0U},  /* numMappedRxCh[] */
+        {16U, 17U, 21U, 25U},  /* startMappedRxCh[] */
+        {1U,  2U,  2U,  2U},   /* numMappedRxCh[] */
 
-        {0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U},   /* startMappedRing[] */
-        {0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U},   /* numMappedRing[] */
+        {16U, 80U, 96U, 104U, 128U, 144U, 160U, 224U},   /* startMappedRing[] */
+        {16U, 8U,  4U,  4U,   11U,  8U,   32U,  32U},    /* numMappedRing[] */
 
         0U,         /* startFreeFlow */
         0U,         /* numFreeFlow */
         0U,         /* startFreeRing */
         0U,         /* numFreeRing */
 
-        115U,         /* startGlobalEvent */
-        50U,         /* numGlobalEvent */
-        22U,         /* startVintr */
-        18U,         /* numVintr */
-        86U,         /* startIrIntr */
-        18U,         /* numIrIntr */
+        271U,       /* startGlobalEvent */
+        256U,       /* numGlobalEvent */
+        22U,        /* startVintr */
+        18U,        /* numVintr */
+        86U,        /* startIrIntr */
+        18U,        /* numIrIntr */
 
         0U,         /* proxyThreadNum */
         0U,         /* startC7xCoreIntr */
@@ -498,36 +498,36 @@ const Udma_RmInitPrms gUdmaRmDefCfg_Pktdma[UDMA_NUM_CORE] =
         0U,         /* numTxUhcCh */
         0U,         /* startTxHcCh */
         0U,         /* numTxHcCh */
-        0U,         /* startTxCh */
-        0U,         /* numTxCh */
+        9U,         /* startTxCh */
+        4U,         /* numTxCh */
 
         0U,         /* startRxUhcCh */
         0U,         /* numRxUhcCh */
         0U,         /* startRxHcCh */
         0U,         /* numRxHcCh */
-        0U,         /* startRxCh */
-        0U,         /* numRxCh */
+        9U,         /* startRxCh */
+        4U,         /* numRxCh */
 
-        {0U, 0U, 0U, 0U},  /* startMappedTxCh[] */
-        {0U, 0U, 0U, 0U},  /* numMappedTxCh[] */
+        {21U, 0U, 0U, 0U},  /* startMappedTxCh[] */
+        {1U, 0U, 0U, 0U},   /* numMappedTxCh[] */
 
         {0U, 0U, 0U, 0U},  /* startMappedRxCh[] */
         {0U, 0U, 0U, 0U},  /* numMappedRxCh[] */
 
-        {0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U},   /* startMappedRing[] */
-        {0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U},   /* numMappedRing[] */
+        {56U, 0U, 0U, 0U, 141U, 0U, 0U, 0U},   /* startMappedRing[] */
+        {8U,  0U, 0U, 0U, 1U,   0U, 0U, 0U},   /* numMappedRing[] */
 
         0U,         /* startFreeFlow */
         0U,         /* numFreeFlow */
         0U,         /* startFreeRing */
         0U,         /* numFreeRing */
 
-        0U,         /* startGlobalEvent */
-        0U,         /* numGlobalEvent */
-        0U,         /* startVintr */
-        0U,         /* numVintr */
-        0U,         /* startIrIntr */
-        0U,         /* numIrIntr */
+        1103U,      /* startGlobalEvent */
+        128U,       /* numGlobalEvent */
+        92U,        /* startVintr */
+        14U,        /* numVintr */
+        68U,        /* startIrIntr */
+        14U,        /* numIrIntr */
 
         0U,         /* proxyThreadNum */
         0U,         /* startC7xCoreIntr */
@@ -551,36 +551,36 @@ const Udma_RmInitPrms gUdmaRmDefCfg_Pktdma[UDMA_NUM_CORE] =
         0U,         /* numTxUhcCh */
         0U,         /* startTxHcCh */
         0U,         /* numTxHcCh */
-        0U,         /* startTxCh */
-        0U,         /* numTxCh */
+        13U,        /* startTxCh */
+        2U,         /* numTxCh */
 
         0U,         /* startRxUhcCh */
         0U,         /* numRxUhcCh */
         0U,         /* startRxHcCh */
         0U,         /* numRxHcCh */
-        0U,         /* startRxCh */
-        0U,         /* numRxCh */
+        13U,        /* startRxCh */
+        2U,         /* numRxCh */
 
-        {0U, 0U, 0U, 0U},  /* startMappedTxCh[] */
-        {0U, 0U, 0U, 0U},  /* numMappedTxCh[] */
+        {22U, 0U, 0U, 0U},  /* startMappedTxCh[] */
+        {1U, 0U, 0U, 0U},   /* numMappedTxCh[] */
 
-        {0U, 0U, 0U, 0U},  /* startMappedRxCh[] */
-        {0U, 0U, 0U, 0U},  /* numMappedRxCh[] */
+        {0U, 0U, 0U, 0U},   /* startMappedRxCh[] */
+        {0U, 0U, 0U, 0U},   /* numMappedRxCh[] */
 
-        {0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U},   /* startMappedRing[] */
-        {0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U},   /* numMappedRing[] */
+        {64U, 0U, 0U, 0U, 142U, 0U, 0U, 0U},   /* startMappedRing[] */
+        {8U,  0U, 0U, 0U, 1U,   0U, 0U, 0U},   /* numMappedRing[] */
 
         0U,         /* startFreeFlow */
         0U,         /* numFreeFlow */
         0U,         /* startFreeRing */
         0U,         /* numFreeRing */
 
-        0U,         /* startGlobalEvent */
-        0U,         /* numGlobalEvent */
-        0U,         /* startVintr */
-        0U,         /* numVintr */
-        0U,         /* startIrIntr */
-        0U,         /* numIrIntr */
+        1295U,      /* startGlobalEvent */
+        128U,       /* numGlobalEvent */
+        106U,       /* startVintr */
+        14U,        /* numVintr */
+        82U,        /* startIrIntr */
+        14U,        /* numIrIntr */
 
         0U,         /* proxyThreadNum */
         0U,         /* startC7xCoreIntr */
@@ -604,36 +604,36 @@ const Udma_RmInitPrms gUdmaRmDefCfg_Pktdma[UDMA_NUM_CORE] =
         0U,         /* numTxUhcCh */
         0U,         /* startTxHcCh */
         0U,         /* numTxHcCh */
-        8U,         /* startTxCh */
-        8U,        /* numTxCh */
+        4U,         /* startTxCh */
+        3U,         /* numTxCh */
 
         0U,         /* startRxUhcCh */
         0U,         /* numRxUhcCh */
         0U,         /* startRxHcCh */
         0U,         /* numRxHcCh */
-        8U,         /* startRxCh */
-        8U,        /* numRxCh */
+        4U,         /* startRxCh */
+        3U,         /* numRxCh */
 
-        {16U, 24U, 26U, 34U},  /* startMappedTxCh[] */
-        {8U,  2U,  8U,  8U},   /* numMappedTxCh[] */
+        {18U, 25U, 30U, 38U},  /* startMappedTxCh[] */
+        {2U,  1U,  4U,  4U},   /* numMappedTxCh[] */
 
-        {16U, 17U, 21U, 25U},  /* startMappedRxCh[] */
-        {1U,  4U,  4U,  4U},   /* numMappedRxCh[] */
+        {0U, 19U, 23U, 27U},  /* startMappedRxCh[] */
+        {0U, 2U,  2U,  2U},   /* numMappedRxCh[] */
 
-        {16U, 80U, 96U, 104U, 128U, 144U, 160U, 224U},   /* startMappedRing[] */
-        {64U, 16U, 8U,  8U,   16U,  16U,  64U,  64U},    /* numMappedRing[] */
+        {32U, 88U, 100U, 108U, 139U, 152U, 192U, 256U},   /* startMappedRing[] */
+        {16U, 8U,  4U,   4U,   1U,   8U,   32U,  32U},    /* numMappedRing[] */
 
         0U,         /* startFreeFlow */
         0U,         /* numFreeFlow */
         0U,         /* startFreeRing */
         0U,         /* numFreeRing */
 
-        165U,       /* startGlobalEvent */
-        50U,       /* numGlobalEvent */
-        72U,        /* startVintr */
-        8U,        /* numVintr */
-        8U,        /* startIrIntr */
-        8U,        /* numIrIntr */
+        655U,       /* startGlobalEvent */
+        128U,       /* numGlobalEvent */
+        44U,        /* startVintr */
+        14U,        /* numVintr */
+        68U,        /* startIrIntr */
+        14U,        /* numIrIntr */
 
         0U,         /* proxyThreadNum */
         0U,         /* startC7xCoreIntr */
@@ -657,36 +657,36 @@ const Udma_RmInitPrms gUdmaRmDefCfg_Pktdma[UDMA_NUM_CORE] =
         0U,         /* numTxUhcCh */
         0U,         /* startTxHcCh */
         0U,         /* numTxHcCh */
-        0U,         /* startTxCh */
-        0U,         /* numTxCh */
+        7U,         /* startTxCh */
+        2U,         /* numTxCh */
 
         0U,         /* startRxUhcCh */
         0U,         /* numRxUhcCh */
         0U,         /* startRxHcCh */
         0U,         /* numRxHcCh */
-        0U,         /* startRxCh */
-        0U,         /* numRxCh */
+        7U,         /* startRxCh */
+        2U,         /* numRxCh */
 
-        {0U, 0U, 0U, 0U},  /* startMappedTxCh[] */
-        {0U, 0U, 0U, 0U},  /* numMappedTxCh[] */
+        {20U, 0U, 0U, 0U},  /* startMappedTxCh[] */
+        {1U, 0U, 0U, 0U},   /* numMappedTxCh[] */
 
         {0U, 0U, 0U, 0U},  /* startMappedRxCh[] */
         {0U, 0U, 0U, 0U},  /* numMappedRxCh[] */
 
-        {0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U},   /* startMappedRing[] */
-        {0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U},   /* numMappedRing[] */
+        {48U, 0U, 0U, 0U, 140U, 0U, 0U, 0U},   /* startMappedRing[] */
+        {8U,  0U, 0U, 0U, 1U,   0U, 0U, 0U},   /* numMappedRing[] */
 
         0U,         /* startFreeFlow */
         0U,         /* numFreeFlow */
         0U,         /* startFreeRing */
         0U,         /* numFreeRing */
 
-        0U,         /* startGlobalEvent */
-        0U,         /* numGlobalEvent */
-        0U,         /* startVintr */
-        0U,         /* numVintr */
-        0U,         /* startIrIntr */
-        0U,         /* numIrIntr */
+        847U,       /* startGlobalEvent */
+        128U,       /* numGlobalEvent */
+        58U,        /* startVintr */
+        14U,        /* numVintr */
+        82U,        /* startIrIntr */
+        14U,        /* numIrIntr */
 
         0U,         /* proxyThreadNum */
         0U,         /* startC7xCoreIntr */
@@ -710,36 +710,36 @@ const Udma_RmInitPrms gUdmaRmDefCfg_Pktdma[UDMA_NUM_CORE] =
         0U,         /* numTxUhcCh */
         0U,         /* startTxHcCh */
         0U,         /* numTxHcCh */
-        0U,         /* startTxCh */
-        0U,         /* numTxCh */
+        15U,        /* startTxCh */
+        1U,         /* numTxCh */
 
         0U,         /* startRxUhcCh */
         0U,         /* numRxUhcCh */
         0U,         /* startRxHcCh */
         0U,         /* numRxHcCh */
-        0U,         /* startRxCh */
-        0U,         /* numRxCh */
+        15U,        /* startRxCh */
+        1U,         /* numRxCh */
 
-        {0U, 0U, 0U, 0U},  /* startMappedTxCh[] */
-        {0U, 0U, 0U, 0U},  /* numMappedTxCh[] */
+        {23U, 0U, 0U, 0U},  /* startMappedTxCh[] */
+        {1U, 0U, 0U, 0U},   /* numMappedTxCh[] */
 
         {0U, 0U, 0U, 0U},  /* startMappedRxCh[] */
         {0U, 0U, 0U, 0U},  /* numMappedRxCh[] */
 
-        {0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U},   /* startMappedRing[] */
-        {0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U},   /* numMappedRing[] */
+        {72U, 0U, 0U, 0U, 143U, 0U, 0U, 0U},   /* startMappedRing[] */
+        {8U,  0U, 0U, 0U, 1U,   0U, 0U, 0U},   /* numMappedRing[] */
 
         0U,         /* startFreeFlow */
         0U,         /* numFreeFlow */
         0U,         /* startFreeRing */
         0U,         /* numFreeRing */
 
-        0U,         /* startGlobalEvent */
-        0U,         /* numGlobalEvent */
-        0U,         /* startVintr */
-        0U,         /* numVintr */
-        0U,         /* startIrIntr */
-        0U,         /* numIrIntr */
+        1455U,      /* startGlobalEvent */
+        64U,        /* numGlobalEvent */
+        176U,       /* startVintr */
+        8U,         /* numVintr */
+        40U,        /* startIrIntr */
+        8U,         /* numIrIntr */
 
         0U,         /* proxyThreadNum */
         0U,         /* startC7xCoreIntr */
