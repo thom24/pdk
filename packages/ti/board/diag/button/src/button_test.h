@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2018-2020 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -55,11 +55,11 @@
 
 #include <ti/drv/uart/UART_stdio.h>
 #include <ti/csl/soc.h>
-#if (!defined(SOC_AM65XX))
+#if (!(defined(SOC_AM65XX) || defined(SOC_TPR12)))
 #include <ti/starterware/include/interrupt.h>
 #endif
 
-#if defined(SOC_AM65XX)
+#if (defined(SOC_AM65XX) || defined(SOC_TPR12))
 #include "diag_common_cfg.h"
 #endif
 

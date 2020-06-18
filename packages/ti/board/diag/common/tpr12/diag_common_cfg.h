@@ -44,6 +44,11 @@
 #include "board_cfg.h"
 #include <ti/board/src/tpr12_evm/include/board_utils.h>
 
+/* I2C count */
+#if defined(SOC_TPR12)
+#define I2C_HWIP_MAX_CNT    (CSL_MSS_I2C_PER_CNT)
+#endif
+
 #define DIAG_STRESS_TEST_ITERATIONS			(100)
 
 /* Macros used by test pattern generate function */ 

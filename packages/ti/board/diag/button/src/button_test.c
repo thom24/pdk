@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2018 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2016-2020 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -44,9 +44,10 @@
  *             On a key press the diagnostic test sequentially moves to the
  *             other buttons in the keypad.
  *
- *  Supported SoCs: AM335x, AM437x & AM65xx.
+ *  Supported SoCs: AM335x, AM437x, AM65xx & TPR12.
  *
- *  Supported Platforms: skAM335x, skAM437x, evmAM437x am65xx_evm & am65xx_idk.
+ *  Supported Platforms: skAM335x, skAM437x, evmAM437x am65xx_evm, am65xx_idk.
+ *						 & tpr12_evm.
  *
  */
 
@@ -71,7 +72,7 @@ gpioInfo_t KeyScn[4];
 int main(void)
 {
     int status = S_PASS;
-#if defined(SOC_AM65XX)
+#if (defined(SOC_AM65XX) || defined(SOC_TPR12))
     Board_IDInfo_v2 info;
 #else
     Board_IDInfo boardInfo;
@@ -96,14 +97,14 @@ int main(void)
     UART_printf  ("*                 Button Test               *\n");
     UART_printf  ("*********************************************\n");
 
-#if defined(SOC_AM65XX)
+#if (defined(SOC_AM65XX) || defined(SOC_TPR12))
     Board_getIDInfo_v2(&info, BOARD_I2C_EEPROM_ADDR);
 #else
     Board_getIDInfo(&boardInfo);
 #endif
 
     /* Update the KeyPad information. */
-#if defined(SOC_AM65XX)
+#if (defined(SOC_AM65XX) || defined(SOC_TPR12))
     status = BoardDiag_GetKeyPadInfo(info.boardInfo.boardName, &boardKeyPad);
 #else
     status = BoardDiag_GetKeyPadInfo(boardInfo.boardName, &boardKeyPad);
@@ -231,7 +232,7 @@ int32_t BoardDiag_KeyPressCheck(keyPadInfo_t *pBoardKeyPad,
     UART_printf(  "Button SW %2d            ", button);
     UART_printf("WAIT      Waiting for button press");
 
-#if defined(SOC_AM65XX)
+#if (defined(SOC_AM65XX) || defined(SOC_TPR12))
 	do
     {
         level = GPIO_read(scnKey);
@@ -255,7 +256,7 @@ int32_t BoardDiag_KeyPressCheck(keyPadInfo_t *pBoardKeyPad,
 
     UART_printf("Button SW %2d            ", button);
 
-#if (!defined(SOC_AM65XX))
+#if (!(defined(SOC_AM65XX) || defined(SOC_TPR12)))
     if(level != 1)
     {
         UART_printf("FAIL                                            \n");
@@ -380,6 +381,24 @@ int32_t BoardDiag_GetKeyPadInfo(char *pBoardName, keyPadInfo_t *pBoardKeyPad)
 
         KeyScn[1].instance=0;
         KeyScn[1].pin=27;
+    }
+	/* Check if the board is EVM TPR12 by comparing the string read from
+       EEPROM. */
+    else if (strncmp("TPR_EVM", pBoardName, BOARD_NAME_LENGTH) == 0U)
+    {
+
+        pBoardKeyPad->buttonSet = 1;
+        pBoardKeyPad->scnKeyNum = 1;
+        pBoardKeyPad->pwrKeyNum = 1;
+        pBoardKeyPad->pwrKeyIdx = 0;
+        buttonStart[0]=2;
+        buttonOffset[0]=1;
+        powerOffset[0]=1;
+
+        /* Update the GPIO data for keypad inputs. */
+        KeyScn[0].instance=0;
+        KeyScn[0].pin=28;
+
     }
     else
     {
