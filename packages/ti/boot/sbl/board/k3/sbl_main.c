@@ -41,6 +41,7 @@
 
  /* TI RTOS header files */
 #include "sbl_main.h"
+#include <ti/csl/cslr_gtc.h>
 
 /**********************************************************************
  ************************** Macros ************************************
@@ -361,6 +362,11 @@ int main()
     Board_init(BOARD_INIT_DDR);
     SBL_log(SBL_LOG_MAX, "done.\n");
 #endif
+
+    /* Enable GTC */
+    SBL_log(SBL_LOG_MAX, "Initializing GTC ...");
+    volatile uint32_t *gtcRegister = (uint32_t *) CSL_GTC0_GTC_CFG1_BASE;
+    *gtcRegister = *gtcRegister | CSL_GTC_CFG1_CNTCR_EN_MASK | CSL_GTC_CFG1_CNTCR_HDBG_MASK;
 
     SBL_log(SBL_LOG_MAX, "Begin parsing user application\n");
 
