@@ -172,7 +172,7 @@ void rpmsg_neg_responderFxn(UArg arg0, UArg arg1)
 
     if(test_rpmsg_snd_hndl_null_flag || test_rpmsg_rcv_hndl_null_flag ||
             test_rpmsg_pkt_large_than_vring_buf_flag || test_rpmsg_snd_null_data_flag
-            || test_rpmsg_snd_unpair_core_flag)
+            || test_rpmsg_snd_unpair_core_flag || test_rpmsg_remote_end_timeout_flag)
     {
 
     }
@@ -191,6 +191,7 @@ void rpmsg_neg_responderFxn(UArg arg0, UArg arg1)
 
         if(test_rpmsg_rcv_hndl_null_flag)
         {
+            test_rpmsg_rcv_hndl_null_flag = 0;
             status = RPMessage_recv(NULL, (Ptr)str, &len, &remoteEndPt, &remoteProcId,
                     IPC_RPMESSAGE_TIMEOUT_FOREVER);
             if(status != IPC_SOK)
@@ -206,6 +207,7 @@ void rpmsg_neg_responderFxn(UArg arg0, UArg arg1)
         }
         else if(test_rpmsg_rcv_timeout_flag)
         {
+            test_rpmsg_rcv_timeout_flag = 0;
             status = RPMessage_recv(handle, (Ptr)str, &len, &remoteEndPt, &remoteProcId, 100);
             if(status != IPC_ETIMEOUT)
             {
@@ -304,6 +306,7 @@ void rpmsg_neg_senderFxn(UArg arg0, UArg arg1)
 
     if(test_rpmsg_create_null_endpnt_flag)
     {
+        test_rpmsg_create_null_endpnt_flag = 0;
         handle = RPMessage_create(&params, NULL);
         if(!handle)
         {
@@ -330,6 +333,7 @@ void rpmsg_neg_senderFxn(UArg arg0, UArg arg1)
 
     if(test_rpmsg_remote_end_timeout_flag)
     {
+        test_rpmsg_remote_end_timeout_flag = 0;
         status = RPMessage_getRemoteEndPt(dstProc, SERVICE, &remoteProcId,
                 &remoteEndPt, 1000);
         if(status != IPC_SOK)
@@ -369,6 +373,7 @@ void rpmsg_neg_senderFxn(UArg arg0, UArg arg1)
         if(test_rpmsg_pkt_large_than_vring_buf_flag)
         {
 
+            test_rpmsg_pkt_large_than_vring_buf_flag = 0;
             /* Send data to remote endPt: */
             memset(test_buf, 0, RP_MSG_TEST_BUF_SIZE);
 
@@ -429,6 +434,7 @@ void rpmsg_neg_senderFxn(UArg arg0, UArg arg1)
 
             if(test_rpmsg_snd_null_data_flag)
             {
+                test_rpmsg_snd_null_data_flag = 0;
                 status = RPMessage_send(handle, dstProc, ENDPT1, myEndPt, NULL, len);
                 if (status != IPC_SOK)
                 {
@@ -447,6 +453,7 @@ void rpmsg_neg_senderFxn(UArg arg0, UArg arg1)
             }
             else if(test_rpmsg_snd_unpair_core_flag)
             {
+                test_rpmsg_snd_unpair_core_flag = 0;
 #ifdef BUILD_C66X_1
                 dstProc = IPC_C66X_1;
 #endif
@@ -468,6 +475,7 @@ void rpmsg_neg_senderFxn(UArg arg0, UArg arg1)
             }
             else if(test_rpmsg_snd_hndl_null_flag)
             {
+                test_rpmsg_snd_hndl_null_flag = 0;
                 status = RPMessage_send(NULL, dstProc, ENDPT1, myEndPt, (Ptr)buf, len);
                 if (status != IPC_SOK)
                 {
@@ -937,6 +945,49 @@ int32_t Ipc_echo_neg_test(void)
     rpmsg_neg_exit_responseTask();
 
     Task_sleep(20000);
+
+    /* RPMessage_getRemoteEndPt timeout set to 1000 ticks for timeout */
+    g_neg_exitRespTsk = 0;
+    clear_all_test_flags();
+    test_rpmsg_remote_end_timeout_flag = 1;
+    ipc_neg_test();
+    rpmsg_neg_exit_responseTask();
+
+    Task_sleep(20000);
+
+    /* send RPMessage create end point as NULL */
+    g_neg_exitRespTsk = 0;
+    clear_all_test_flags();
+    test_rpmsg_create_null_endpnt_flag = 1;
+    ipc_neg_test();
+    rpmsg_neg_exit_responseTask();
+
+    Task_sleep(20000);
+
+    /* send NULL handle as part of RPMessag send */
+    g_neg_exitRespTsk = 0;
+    clear_all_test_flags();
+    test_rpmsg_snd_hndl_null_flag = 1;
+    ipc_neg_test();
+    rpmsg_neg_exit_responseTask();
+
+    Task_sleep(20000);
+
+    /* send NULL data as part of RPMessag send */
+    g_neg_exitRespTsk = 0;
+    clear_all_test_flags();
+    test_rpmsg_snd_null_data_flag = 1;
+    ipc_neg_test();
+    rpmsg_neg_exit_responseTask();
+
+    Task_sleep(20000);
+
+    /* send NULL data as part of RPMessag send */
+    g_neg_exitRespTsk = 0;
+    clear_all_test_flags();
+    test_rpmsg_snd_unpair_core_flag = 1;
+    ipc_neg_test();
+    rpmsg_neg_exit_responseTask();
 
     return 0;
 }
