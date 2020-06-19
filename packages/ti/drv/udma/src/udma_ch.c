@@ -1309,11 +1309,11 @@ int32_t Udma_chSetSwTrigger(Udma_ChHandle chHandle, uint32_t trigger)
                     CSL_REG32_WR(
                         &chHandle->pBcdmaBcRtRegs->SWTRIG, ((uint32_t)1U << (trigger - 1U)));
                 }
-                else
+                else if((chHandle->chType & UDMA_CH_FLAG_TX) == UDMA_CH_FLAG_TX)
                 {
-                    retVal = UDMA_EFAIL;
-                    Udma_printf(drvHandle,
-                                "[Error] SW trigger not supported for BCDMA TX channels!!!\n");
+                    Udma_assert(drvHandle, chHandle->pBcdmaTxRtRegs != NULL_PTR);
+                    CSL_REG32_WR(
+                        &chHandle->pBcdmaTxRtRegs->SWTRIG, ((uint32_t)1U << (trigger - 1U)));
                 }
             }
             else if(UDMA_INST_TYPE_LCDMA_PKTDMA == drvHandle->instType)
