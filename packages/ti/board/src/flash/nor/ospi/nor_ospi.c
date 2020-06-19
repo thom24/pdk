@@ -322,6 +322,17 @@ NOR_HANDLE Nor_ospiOpen(uint32_t norIntf, uint32_t portNum, void *params)
             OSPI_socGetInitCfg(portNum, &ospi_cfg);
             if (ospi_cfg.xferLines == OSPI_XFER_LINES_OCTAL)
             {
+#if defined (VLAB_SIM)
+                /* workaround to reset memory for Zebu */
+                ospi_cfg.xferLines = OSPI_XFER_LINES_SINGLE;
+                OSPI_socSetInitCfg(portNum, &ospi_cfg);
+                Nor_ospiSetOpcode(hwHandle);
+                Nor_ospiResetMemory(hwHandle);
+                ospi_cfg.xferLines = OSPI_XFER_LINES_OCTAL;
+                OSPI_socSetInitCfg(portNum, &ospi_cfg);
+                Nor_ospiSetOpcode(hwHandle);
+#endif
+
                 /* Enable DDR or SDR mode for Octal lines */
                 if (ospi_cfg.dtrEnable == true)
                 {

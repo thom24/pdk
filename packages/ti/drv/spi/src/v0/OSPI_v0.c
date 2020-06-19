@@ -1596,7 +1596,19 @@ static int32_t OSPI_control_v0(SPI_Handle handle, uint32_t cmd, const void *arg)
 
             case SPI_V0_CMD_SET_XFER_LINES:
             {
+                uint32_t numAddrBytes;
                 object->xferLines = *ctrlData;
+                numAddrBytes = CSL_OSPI_MEM_MAP_NUM_ADDR_BYTES_3;
+                if ((object->xferLines == OSPI_XFER_LINES_OCTAL) && (hwAttrs->dtrEnable))
+                {
+                    numAddrBytes = CSL_OSPI_MEM_MAP_NUM_ADDR_BYTES_4;
+                }
+
+                /* Set device size cofigurations */
+                CSL_ospiSetDevSize((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
+                                   numAddrBytes,
+                                   hwAttrs->pageSize,
+                                   hwAttrs->blkSize);
                 retVal = SPI_STATUS_SUCCESS;
                 break;
             }

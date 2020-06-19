@@ -124,7 +124,7 @@ typedef struct OSPI_Tests_s
 /**********************************************************************
  ************************** Macros ************************************
  **********************************************************************/
-#define OSPI_PROFILE        /* Enable profiling */
+//#define OSPI_PROFILE        /* Enable profiling */
 
 #define OSPI_WRITE          /* Enable write */
 
@@ -690,7 +690,7 @@ void OSPI_initConfig(OSPI_Tests *test)
 static bool OSPI_flash_test(void *arg)
 {
     Board_flashHandle boardHandle;
-    Board_FlashInfo  *flashInfo;
+    //Board_FlashInfo  *flashInfo;
 #ifdef OSPI_WRITE
     uint32_t          blockNum;     /* flash block number */
     uint32_t          pageNum;      /* flash page number */
@@ -729,15 +729,15 @@ static bool OSPI_flash_test(void *arg)
 
     if (!boardHandle)
     {
-        SPI_log("\n Board_flashOpen failed. \n");
+        //SPI_log("\n Board_flashOpen failed. \n");
         testPassed = false;
         goto err;
     }
     else
     {
-        flashInfo = (Board_FlashInfo *)boardHandle;
-        SPI_log("\n OSPI NOR device ID: 0x%x, manufacturer ID: 0x%x \n",
-                flashInfo->device_id, flashInfo->manufacturer_id);
+        //flashInfo = (Board_FlashInfo *)boardHandle;
+        //SPI_log("\n OSPI NOR device ID: 0x%x, manufacturer ID: 0x%x \n",
+        //        flashInfo->device_id, flashInfo->manufacturer_id);
     }
 
     /* Generate the data */
@@ -772,7 +772,11 @@ static bool OSPI_flash_test(void *arg)
             goto err;
         }
     }
-
+    if (*((uint32_t *)0x60000000) != 0xffffffff)
+        {
+            printf("\nerase failed!\n");
+            while(1);
+        }
 #ifdef OSPI_PROFILE
 #ifdef USE_BIOS
     Load_reset( );
@@ -839,7 +843,7 @@ static bool OSPI_flash_test(void *arg)
         if (Board_flashRead(boardHandle, offset, &rxBuf[i],
                             xferLen, (void *)(&ioMode)))
         {
-            SPI_log("\n Board_flashRead failed. \n");
+            //SPI_log("\n Board_flashRead failed. \n");
             testPassed = false;
             goto err;
         }
@@ -937,9 +941,9 @@ void spi_test()
             break;
         }
 
-        OSPI_configClk(test->clk, true);
+        //OSPI_configClk(test->clk, true);
 
-        OSPI_test_print_test_desc(test);
+        //OSPI_test_print_test_desc(test);
 
         if (test->testFunc((void *)test) == true)
         {
@@ -980,9 +984,9 @@ int main(void)
     Task_Handle task;
     Error_Block eb;
 #endif
-    boardCfg = BOARD_INIT_PINMUX_CONFIG |
-        BOARD_INIT_MODULE_CLOCK |
-        BOARD_INIT_UART_STDIO;
+    boardCfg = BOARD_INIT_PINMUX_CONFIG | BOARD_INIT_UART_STDIO;
+        /*BOARD_INIT_MODULE_CLOCK |
+        BOARD_INIT_UART_STDIO;*/
 
     Board_init(boardCfg);
 
