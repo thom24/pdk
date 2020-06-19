@@ -260,7 +260,7 @@ static int32_t udmaTestRingMonPushPopTestLoop(UdmaTestTaskObj *taskObj)
             }
 
             /* Check if the HW occupancy is same as what is queued */
-            if(udmaTestCompareRingHwOccDriver(ringHandle, elemCnt) != UDMA_SOK)
+            if(udmaTestCompareRingHwOccDriver(ringHandle, elemCnt, UDMA_TEST_RING_ACC_DIRECTION_FORWARD) != UDMA_SOK)
             {
                 GT_0trace(taskObj->traceMask, GT_ERR, " Ring element count mismatch!!\n");
                 retVal = UDMA_EFAIL;
@@ -304,7 +304,7 @@ static int32_t udmaTestRingMonPushPopTestLoop(UdmaTestTaskObj *taskObj)
             }
 
             /* Check if the HW occupancy is zero */
-            if(udmaTestCompareRingHwOccDriver(ringHandle, 0U) != UDMA_SOK)
+            if(udmaTestCompareRingHwOccDriver(ringHandle, 0U, UDMA_TEST_RING_ACC_DIRECTION_REVERSE) != UDMA_SOK)
             {
                 GT_0trace(taskObj->traceMask, GT_ERR, " Ring not empty!!\n");
                 retVal = UDMA_EFAIL;
@@ -465,7 +465,7 @@ static int32_t udmaTestRingMonLowThresholdTestLoop(UdmaTestTaskObj *taskObj)
             }
 
             /* Check if the HW occupancy is same as what is queued */
-            if(udmaTestCompareRingHwOccDriver(ringHandle, elemCnt) != UDMA_SOK)
+            if(udmaTestCompareRingHwOccDriver(ringHandle, elemCnt, UDMA_TEST_RING_ACC_DIRECTION_FORWARD) != UDMA_SOK)
             {
                 GT_0trace(taskObj->traceMask, GT_ERR, " Ring element count mismatch!!\n");
                 retVal = UDMA_EFAIL;
@@ -520,7 +520,7 @@ static int32_t udmaTestRingMonLowThresholdTestLoop(UdmaTestTaskObj *taskObj)
             }
 
             /* Check if the HW occupancy is zero */
-            if(udmaTestCompareRingHwOccDriver(ringHandle, 0U) != UDMA_SOK)
+            if(udmaTestCompareRingHwOccDriver(ringHandle, 0U, UDMA_TEST_RING_ACC_DIRECTION_REVERSE) != UDMA_SOK)
             {
                 GT_0trace(taskObj->traceMask, GT_ERR, " Ring not empty!!\n");
                 retVal = UDMA_EFAIL;
@@ -712,7 +712,7 @@ static int32_t udmaTestRingMonHighThresholdTestLoop(UdmaTestTaskObj *taskObj)
             }
 
             /* Check if the HW occupancy is same as what is queued */
-            if(udmaTestCompareRingHwOccDriver(ringHandle, elemCnt) != UDMA_SOK)
+            if(udmaTestCompareRingHwOccDriver(ringHandle, elemCnt, UDMA_TEST_RING_ACC_DIRECTION_FORWARD) != UDMA_SOK)
             {
                 GT_0trace(taskObj->traceMask, GT_ERR, " Ring element count mismatch!!\n");
                 retVal = UDMA_EFAIL;
@@ -742,7 +742,7 @@ static int32_t udmaTestRingMonHighThresholdTestLoop(UdmaTestTaskObj *taskObj)
             }
 
             /* Check if the HW occupancy is zero */
-            if(udmaTestCompareRingHwOccDriver(ringHandle, 0U) != UDMA_SOK)
+            if(udmaTestCompareRingHwOccDriver(ringHandle, 0U, UDMA_TEST_RING_ACC_DIRECTION_REVERSE) != UDMA_SOK)
             {
                 GT_0trace(taskObj->traceMask, GT_ERR, " Ring not empty!!\n");
                 retVal = UDMA_EFAIL;

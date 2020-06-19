@@ -61,10 +61,13 @@ XDC_CFG_UPDATE_$(CORE) = udma_ut.cfg
 PACKAGE_SRCS_COMMON = . ./src ../udma_ut_component.mk
 SRCS_COMMON += main_common.c
 SRCS_COMMON += udma_test_parser.c udma_test_blkcpy.c udma_test_common.c
-SRCS_COMMON += udma_test_ring.c udma_test_proxy.c udma_test_ring_monitor.c
+SRCS_COMMON += udma_test_ring.c
 SRCS_COMMON += udma_test_event.c udma_test_flow.c
 SRCS_COMMON += udma_test_bug.c udma_test_misc.c
 SRCS_COMMON += udma_test_soc.c
+ifneq ($(SOC),$(filter $(SOC), am64x))
+SRCS_COMMON += udma_test_proxy.c udma_test_ring_monitor.c
+endif
 ifeq ($(BUILD_OS_TYPE), baremetal)
 SRCS_COMMON += utils_prf_baremetal.c utils_mem_baremetal.c
 else

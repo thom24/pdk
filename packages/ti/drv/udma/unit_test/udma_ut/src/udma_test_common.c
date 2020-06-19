@@ -87,7 +87,7 @@ int32_t udmaTestInitDriver(UdmaTestObj *testObj)
     Udma_InitPrms   initPrms;
     Udma_DrvHandle  drvHandle;
 
-    for(instId = 0U; instId < UDMA_INST_ID_MAX; instId++)
+    for(instId = UDMA_INST_ID_START; instId < UDMA_INST_ID_MAX; instId++)
     {
         /* UDMA driver init */
         drvHandle = &testObj->drvObj[instId];
@@ -97,6 +97,7 @@ int32_t udmaTestInitDriver(UdmaTestObj *testObj)
         initPrms.printFxn           = &udmaDrvPrint;
         /* Override RM params for HC and UHC blockcpy channels as they are not
          * part of default table */
+#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
         if(UDMA_INST_ID_MAIN_0 == instId)
         {
             initPrms.rmInitPrms.startBlkCopyUhcCh = UDMA_TEST_MAIN_UHC_START;
@@ -104,13 +105,30 @@ int32_t udmaTestInitDriver(UdmaTestObj *testObj)
             initPrms.rmInitPrms.startBlkCopyHcCh  = UDMA_TEST_MAIN_HC_START;
             initPrms.rmInitPrms.numBlkCopyHcCh    = UDMA_TEST_MAX_MAIN_BC_HC_CH;
         }
-        else
+        if(UDMA_INST_ID_MCU_0 == instId)
         {
             initPrms.rmInitPrms.startBlkCopyUhcCh = UDMA_TEST_MCU_UHC_START;
             initPrms.rmInitPrms.numBlkCopyUhcCh   = UDMA_TEST_MAX_MCU_BC_UHC_CH;
             initPrms.rmInitPrms.startBlkCopyHcCh  = UDMA_TEST_MCU_HC_START;
             initPrms.rmInitPrms.numBlkCopyHcCh    = UDMA_TEST_MAX_MCU_BC_HC_CH;
         }
+#endif
+#if (UDMA_SOC_CFG_LCDMA_PRESENT == 1)
+        if(UDMA_INST_ID_BCDMA_0 == instId)
+        {
+            initPrms.rmInitPrms.startBlkCopyUhcCh = UDMA_TEST_BCDMA_UHC_START;
+            initPrms.rmInitPrms.numBlkCopyUhcCh   = UDMA_TEST_MAX_BCDMA_BC_UHC_CH;
+            initPrms.rmInitPrms.startBlkCopyHcCh  = UDMA_TEST_BCDMA_HC_START;
+            initPrms.rmInitPrms.numBlkCopyHcCh    = UDMA_TEST_MAX_BCDMA_BC_HC_CH;
+        }
+        if(UDMA_INST_ID_PKTDMA_0 == instId)
+        {
+            initPrms.rmInitPrms.startBlkCopyUhcCh = UDMA_TEST_PKTDMA_UHC_START;
+            initPrms.rmInitPrms.numBlkCopyUhcCh   = UDMA_TEST_MAX_PKTDMA_BC_UHC_CH;
+            initPrms.rmInitPrms.startBlkCopyHcCh  = UDMA_TEST_PKTDMA_HC_START;
+            initPrms.rmInitPrms.numBlkCopyHcCh    = UDMA_TEST_MAX_PKTDMA_BC_HC_CH;
+        }
+#endif
 
         retVal += Udma_init(drvHandle, &initPrms);
         if(UDMA_SOK != retVal)
@@ -386,7 +404,7 @@ void udmaTestCalcTotalPerformance(UdmaTestObj *testObj, uint32_t durationMs)
     return;
 }
 
-int32_t udmaTestCompareRingHwOccDriver(Udma_RingHandle ringHandle, uint32_t cnt)
+int32_t udmaTestCompareRingHwOccDriver(Udma_RingHandle ringHandle, uint32_t cnt, uint32_t direction)
 {
     int32_t     retVal = UDMA_EFAIL;
     uint32_t    retry = 10000U;
@@ -394,7 +412,7 @@ int32_t udmaTestCompareRingHwOccDriver(Udma_RingHandle ringHandle, uint32_t cnt)
     /* There is some delay expected between HWOCC update and ring push */
     while(retry > 0U)
     {
-        if(CSL_REG32_RD(&ringHandle->pRtRegs->HWOCC) == cnt)
+        if(udmaTestGetRingHwOccDriver(ringHandle, direction) == cnt)
         {
             retVal = UDMA_SOK;
             break;
@@ -403,4 +421,19 @@ int32_t udmaTestCompareRingHwOccDriver(Udma_RingHandle ringHandle, uint32_t cnt)
     }
 
     return (retVal);
+}
+uint32_t udmaTestGetRingHwOccDriver(Udma_RingHandle ringHandle, uint32_t direction)
+{
+    uint32_t occ = 0U;
+    Udma_DrvHandle  drvHandle = ringHandle->drvHandle;
+
+    if(UDMA_TEST_RING_ACC_DIRECTION_FORWARD == direction)
+    {
+        occ = drvHandle->ringGetForwardRingOcc(ringHandle);
+    }
+    else
+    {
+        occ = drvHandle->ringGetReverseRingOcc(ringHandle);
+    }
+    return (occ);
 }

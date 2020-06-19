@@ -63,7 +63,11 @@
 #define MB (KB * KB)
 #endif
 
+#if defined (SOC_AM64X)
+#define UTILS_MEM_HEAP_SIZE_MSMC        (128U * KB)
+#else
 #define UTILS_MEM_HEAP_SIZE_MSMC        (300U * KB)
+#endif
 #define UTILS_MEM_HEAP_SIZE_DDR         (64U * MB)
 #if defined (__TI_ARM_V7R4__)
 /* R5 OCMC (MSRAM) */

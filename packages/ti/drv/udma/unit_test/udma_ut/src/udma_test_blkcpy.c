@@ -895,7 +895,7 @@ static int32_t udmaTestBlkcpyAlloc(UdmaTestTaskObj *taskObj)
     uint32_t        chCnt, qCnt;
     UdmaTestChObj  *chObj;
     static char    *heapStr[] = {"MSMC", "DDR", "Internal"};
-    static char    *navIdStr[] = {"MAIN", "MCU"};
+    static char    *instanceIdStr[] = {"MAIN", "MCU", "BCDMA", "PKTDMA"};
     static char    *triggerStr[] = {"None", "Global0", "Global1", "Local"};
     static char    *eventModeStr[] = {"None(Ring Dequeue Polling)", "Interrupt(IA+IR)", "Polling(IA)"};
 
@@ -910,8 +910,9 @@ static int32_t udmaTestBlkcpyAlloc(UdmaTestTaskObj *taskObj)
         GT_assert(taskObj->traceMask, chObj->chPrms != NULL);
 
         GT_3trace(taskObj->traceMask, GT_INFO1,
-                  " |TEST INFO|:: Task:%d: CH:%d: NAVSS ID       : %s ::\r\n",
-                  taskObj->taskId, chObj->chIdx, navIdStr[chObj->instId]);
+                " |TEST INFO|:: Task:%d: CH:%d: Instance ID    : %s ::\r\n",
+                taskObj->taskId, chObj->chIdx, instanceIdStr[chObj->instId]);
+
         if(UDMA_CH_TYPE_UTC == chObj->chPrms->chType)
         {
             GT_2trace(taskObj->traceMask, GT_INFO1,

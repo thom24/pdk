@@ -60,9 +60,11 @@
 
 #include "utils_mem.h"
 #include "utils_prf.h"
-#if defined (SOC_AM65XX)
+#if defined (SOC_AM64X)
+#include "soc/am64x/udma_test_soc.h"
+#elif defined (SOC_AM65XX)
 #include "soc/am65xx/udma_test_soc.h"
-#else
+#else 
 #include "soc/j721e/udma_test_soc.h"
 #endif
 
@@ -122,9 +124,13 @@ extern "C" {
 #define PACING_NONE                     (0U)
 #define DEF_PACING                      (20U)
 
+#define UDMA_TEST_RING_ACC_DIRECTION_FORWARD    (0U)
+#define UDMA_TEST_RING_ACC_DIRECTION_REVERSE    (1U)
+
 #define UDMA_TEST_RF_SOC_AM65XX         ((uint64_t) 0x00000001U)
 #define UDMA_TEST_RF_SOC_J721E          ((uint64_t) 0x00000002U)
 #define UDMA_TEST_RF_SOC_J7200          ((uint64_t) 0x00000004U)
+#define UDMA_TEST_RF_SOC_AM64X          ((uint64_t) 0x00000008U)
 #define UDMA_TEST_RF_SOC_ALL            ((uint64_t) 0xFFFFFFFFU)
 
 #define UDMA_TEST_RF_CORE_MPU1_0        ((uint64_t)(((uint64_t) 0x0001U) << 32U))
@@ -137,6 +143,7 @@ extern "C" {
 #define UDMA_TEST_RF_CORE_C7X_1         ((uint64_t)(((uint64_t) 0x0080U) << 32U))
 #define UDMA_TEST_RF_CORE_C66X_1        ((uint64_t)(((uint64_t) 0x0100U) << 32U))
 #define UDMA_TEST_RF_CORE_C66X_2        ((uint64_t)(((uint64_t) 0x0200U) << 32U))
+#define UDMA_TEST_RF_CORE_M4F_0         ((uint64_t)(((uint64_t) 0x0400U) << 32U))
 #define UDMA_TEST_RF_CORE_ALL           ((uint64_t)(((uint64_t) 0xFFFFU) << 32U))
 #define UDMA_TEST_RF_CORE_MCU_ALL       (UDMA_TEST_RF_CORE_MCU1_0 | UDMA_TEST_RF_CORE_MCU1_1 | \
                                          UDMA_TEST_RF_CORE_MCU2_0 | UDMA_TEST_RF_CORE_MCU2_1 | \
@@ -409,7 +416,7 @@ struct UdmaTestParams_t
     uint32_t                numCh[UDMA_TEST_MAX_TASKS];
     /**< Number of channels per task to test. */
     uint32_t                instId[UDMA_TEST_MAX_CH];
-    /**< NAVSS instance ID. */
+    /**< NAVSS/DMSS instance ID. */
     UdmaTestChPrmId         chPrmId[UDMA_TEST_MAX_CH];
     /**< Channel config IDs for all the tasks.
      *   Task 0 channel configs will be first (0 to (numCh[0] - 1)),
@@ -656,7 +663,8 @@ void udmaTestPrintTestResult(const UdmaTestObj *testObj,
 void udmaTestResetTestResult(void);
 void udmaTestCalcPerformance(UdmaTestTaskObj *taskObj, uint32_t durationMs);
 void udmaTestCalcTotalPerformance(UdmaTestObj *testObj, uint32_t durationMs);
-int32_t udmaTestCompareRingHwOccDriver(Udma_RingHandle ringHandle, uint32_t cnt);
+int32_t udmaTestCompareRingHwOccDriver(Udma_RingHandle ringHandle, uint32_t cnt, uint32_t direction);
+uint32_t udmaTestGetRingHwOccDriver(Udma_RingHandle ringHandle, uint32_t direction);
 
 char AppUtils_getChar(void);
 int32_t AppUtils_getCharTimeout(char *ch, uint32_t msec);
