@@ -60,12 +60,28 @@ extern "C" {
 /* Note with ECC enabled, all memory is not usable: 1/8 memory used for inline ECC */
 #define BOARD_DDR_ECC_END_ADDR                          (0xF1FFFFFFU)
 
+/* MAIN I2C0 instance number */
+#define BOARD_MAIN_I2C0_INSTANCE                        (0U)
+/* MAIN I2C1 instance number */
+#define BOARD_MAIN_I2C1_INSTANCE                        (1U)
+/* MAIN I2C2 instance number */
+#define BOARD_MAIN_I2C2_INSTANCE                        (2U)
+/* MCU I2C0 instances number */
+#define BOARD_MCU_I2C0_INSTANCE                         (0U)
+/* WKUP I2C0 instance number */
+#define BOARD_WKUP_I2C0_INSTANCE                        (0U)
+
+/* MCU I3C0 instance */
+#define BOARD_MCU_I3C0_INSTANCE                         (0U)
+
 /* UART LLD instance number for primary UART port */
 #define BOARD_UART_INSTANCE                             (0U)
 /* UART LLD instance number for MAIN UART1 port */
 #define BOARD_UART1_INSTANCE                            (1U)
 /* UART LLD instance number for MAIN UART2 port */
 #define BOARD_UART2_INSTANCE                            (2U)
+/* UART LLD instance number for MAIN UART3 port */
+#define BOARD_UART3_INSTANCE                            (3U)
 /* UART LLD instance number for MAIN UART4 port */
 #define BOARD_UART4_INSTANCE                            (4U)
 /* WKUP UART LLD instance number */
@@ -109,6 +125,8 @@ extern "C" {
 #define BOARD_HPF_INSTANCE                              (0)
 
 /* I2C instance connected to IO Expander */
+/* I2C instance connected to IO Expanders */
+#define BOARD_I2C_IOEXP_SOM_DEVICE1_INSTANCE            (BOARD_MAIN_I2C0_INSTANCE)
 #define BOARD_I2C_IOEXP_DEVICE1_INSTANCE                (0U)
 #define BOARD_I2C_IOEXP_DEVICE2_INSTANCE                (0U)
 #define BOARD_I2C_IOEXP_DEVICE3_INSTANCE                (3U)
@@ -118,6 +136,7 @@ extern "C" {
 #define BOARD_I2C_VIDEO_IOEXP_DEVICE_INSTANCE           (1U)
 
 /* I2C IO Expander Slave devices */
+#define BOARD_I2C_IOEXP_SOM_DEVICE1_ADDR                (0X21U)
 #define BOARD_I2C_IOEXP_DEVICE1_ADDR                    (0x20U)
 #define BOARD_I2C_IOEXP_DEVICE2_ADDR                    (0x22U)
 #define BOARD_I2C_IOEXP_DEVICE3_ADDR                    (0x20U)

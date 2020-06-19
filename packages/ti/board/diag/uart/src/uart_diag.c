@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2018, Texas Instruments Incorporated
+ * Copyright (c) 2015-2020, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,9 +44,13 @@
 #define FIFO_SIZE     (64U)
 #define BAUD_RATE_MAX (7384615U)
 
-#if defined(SOC_AM65XX) || defined(SOC_J721E)
+#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)
 #include "board_i2c_io_exp.h"
 #include "diag_common_cfg.h"
+
+#if defined(SOC_J7200)
+#include "board_control.h"
+#endif
 
 #if defined(SOC_AM65XX)
 /* Function to enable SoC UART1 */
@@ -373,6 +377,40 @@ int8_t BoardDiag_uartLoopbackTest(void)
 }
 #endif
 
+#if defined(j7200_evm)
+/**
+ * \brief  UART Mux enable function
+ *
+ * This function is used to enable the uart mux selection
+ *
+ * \param  pinNum    -  I2C IO EXPANDER pin number
+ * \param  pinVal    -  Pin output to be set
+ *
+ */
+void BoardDiag_uartMuxEnable(i2cIoExpPinNumber_t pinNum,
+                             i2cIoExpSignalLevel_t pinVal)
+{
+    Board_IoExpCfg_t ioExpCfg;
+    Board_STATUS status = BOARD_SOK;
+
+    /* Enable the UART1 and UART3 */
+    ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_SOM_DEVICE1_INSTANCE;
+    ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
+    ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_SOM_DEVICE1_ADDR;
+    ioExpCfg.enableIntr  = false;
+    ioExpCfg.ioExpType   = ONE_PORT_IOEXP;
+    ioExpCfg.portNum     = PORTNUM_0;
+    ioExpCfg.pinNum      = pinNum;
+    ioExpCfg.signalLevel = pinVal;
+
+    status = Board_control(BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT, &ioExpCfg);
+    if(status != BOARD_SOK)
+    {
+        UART_printf("Failed to select the Uart Mux\n");
+    }
+}
+#endif
+
 int uart_test()
 {
 #if !defined(DIAG_COMPLIANCE_TEST)
@@ -527,7 +565,7 @@ int main(void)
 
     return ret;
 }
-#elif defined(SOC_J721E)
+#elif (defined(SOC_J721E) || defined(SOC_J7200))
 int main(void)
 {
     Board_STATUS status;
@@ -568,6 +606,12 @@ int main(void)
     /* Close the UART instance for SoC UART0 */
     Board_deinit(BOARD_DEINIT_UART_STDIO);
 
+#if defined(j7200_evm)
+/* Enable the mux to select UART1 and UART3 */
+    BoardDiag_uartMuxEnable(PIN_NUM_4, GPIO_SIGNAL_LEVEL_LOW);
+    BoardDiag_uartMuxEnable(PIN_NUM_3, GPIO_SIGNAL_LEVEL_HIGH);
+    BoardDiag_uartMuxEnable(PIN_NUM_2, GPIO_SIGNAL_LEVEL_HIGH);
+#endif
     initParams.uartInst = 1;
     Board_setInitParams(&initParams);
     status = Board_init(BOARD_INIT_UART_STDIO);
@@ -584,7 +628,30 @@ int main(void)
     }
 
     UART_printf("\nSoC UART1 Test Completed!\n");
+#if defined (j7200_evm)
+    UART_printf("\nStarting SoC UART3 Test...\n");
+    UART_printf("\nCheck SoC UART3 console for the test logs\n");
+    /* Close the UART instance for SoC UART1 */
+    Board_deinit(BOARD_DEINIT_UART_STDIO);
 
+    initParams.uartInst = BOARD_UART3_INSTANCE;
+    Board_setInitParams(&initParams);
+    status = Board_init(BOARD_INIT_UART_STDIO);
+    if(status != BOARD_SOK)
+    {
+        return -1;
+    }
+
+    ret = uart_test();
+    if(ret != 0)
+    {
+        UART_printf("\nSoC UART3 Test Failed!!\n");
+        return ret;
+    }
+    UART_printf("\nSoC UART3 Test Completed!\n");
+#endif
+
+#if defined (j721e_evm)
     UART_printf("\nStarting SoC UART2 Test...\n");
     UART_printf("\nCheck SoC UART2 console for the test logs\n");
     /* Close the UART instance for SoC UART1 */
@@ -628,7 +695,7 @@ int main(void)
     }
 
     UART_printf("\nSoC UART4 Test Completed!\n");
-
+#endif
 
     UART_printf("\nStarting MCU UART Test...\n");
     UART_printf("\nCheck MCU UART console for the test logs\n");
