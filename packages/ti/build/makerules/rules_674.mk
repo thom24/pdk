@@ -216,6 +216,7 @@ endif
 
 ifneq ($(XDC_CFG_FILE_$(CORE)),)
 $(EXE_NAME) : $(OBJ_PATHS_ASM) $(OBJ_PATHS) $(LIB_PATHS) $(LNKCMD_FILE) $(CFG_C_NEW_XDC)/$(CFG_COBJ_XDC)
+	$(CP) $(CONFIGURO_DIR)/package/cfg/*.rov.xs $(BINDIR)
 else
 $(EXE_NAME) : $(OBJ_PATHS_ASM) $(OBJ_PATHS) $(LIB_PATHS) $(LNKCMD_FILE)
 endif
