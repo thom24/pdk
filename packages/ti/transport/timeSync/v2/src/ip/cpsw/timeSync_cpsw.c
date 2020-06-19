@@ -1300,7 +1300,6 @@ static int32_t TimeSync_setMacPortConfig(void)
     CpswMacPort_EnableTsEventInArgs enableTsEventInArgs;
     uint8_t i = 0U;
     uint32_t maxMacPorts = 0U;
-    int8_t linkStatus = FALSE;
 
     maxMacPorts = Cpsw_getMacPortMax(gTimeSyncCpswObj.cpswType);
     TimeSync_setPortTsEventPrms(&enableTsEventInArgs.portCfg);
@@ -1309,18 +1308,13 @@ static int32_t TimeSync_setMacPortConfig(void)
     {
         if (TIMESYNC_IS_BIT_SET(gTimeSyncCpswObj.timeSyncConfig.protoCfg.portMask, i))
         {
-            linkStatus = TimeSync_isPortLinkUp(&gTimeSyncCpswObj, i);
-            if (linkStatus)
-            {
-                enableTsEventInArgs.portNum = (Cpsw_MacPort)(CPSW_NORMALIZE_MACPORT(i));
-                CPSW_IOCTL_SET_IN_ARGS(&prms, &enableTsEventInArgs);
-                status = Cpsw_ioctl(gTimeSyncCpswObj.hCpsw,
-                                    gTimeSyncCpswObj.coreId,
-                                    CPSW_MACPORT_IOCTL_ENABLE_CPTS_EVENT,
-                                    &prms);
-                CpswAppUtils_assert(status == TIMESYNC_OK);
-
-            }
+            enableTsEventInArgs.portNum = (Cpsw_MacPort)(CPSW_NORMALIZE_MACPORT(i));
+            CPSW_IOCTL_SET_IN_ARGS(&prms, &enableTsEventInArgs);
+            status = Cpsw_ioctl(gTimeSyncCpswObj.hCpsw,
+                                gTimeSyncCpswObj.coreId,
+                                CPSW_MACPORT_IOCTL_ENABLE_CPTS_EVENT,
+                                &prms);
+            CpswAppUtils_assert(status == TIMESYNC_OK);
         }
     }
 
