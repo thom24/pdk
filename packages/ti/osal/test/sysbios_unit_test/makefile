@@ -102,7 +102,8 @@ endif
 endif
 
 ifeq ($(SOC),$(filter $(SOC), tpr12))
-  XDC_CFG_FILE_$(CORE) = ../$(SOC)/sysbios_$(ISA).cfg
+  XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/tpr12/sysbios_$(ISA).cfg
+  XDC_CFG_UPDATE_$(CORE) = ../$(SOC)/osal_log_config.xs
   PACKAGE_SRCS_COMMON += ../$(SOC)
 endif
 
