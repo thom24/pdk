@@ -120,6 +120,17 @@ extern "C" {
 #define UDMA_TX_CHANS_FDEPTH 			 (CSL_NAVSS_UDMAP_TX_CHANS_FDEPTH)
 /* @} */
 
+/**
+ *  \anchor Udma_RingAccAselEndpointSoc
+ *  \name UDMA Ringacc address select (asel) endpoint
+ *
+ *  List of all valid address select (asel) endpoints in the SOC.
+ *
+ *  @{
+ */
+/* No configurable address select (asel) endpoints in J7200 */
+/* @} */
+
 /** \brief Invalid Ring Mode*/
 #define UDMA_RING_MODE_INVALID          (CSL_RINGACC_RING_MODE_INVALID)
 

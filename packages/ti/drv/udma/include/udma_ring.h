@@ -82,6 +82,11 @@ extern "C" {
  * one. Used in the API #Udma_ringMonAlloc.
  */
 #define UDMA_RING_MON_ANY               (UDMA_RING_ANY)
+/**
+ * \brief Macro used to specify that ring asel (address select) is invalid.
+ * Used in the API #Udma_ringAlloc.
+ */
+#define UDMA_RING_ASEL_INVALID          ((uint8_t) 0xFFU)
 
 /** \brief Macro used to skip the ring size check by driver */
 #define UDMA_RING_SIZE_CHECK_SKIP       (0xABDCABCDU)
@@ -153,6 +158,14 @@ typedef struct
     uint8_t                 orderId;
     /**< Ring bus order ID value to be programmed into the orderid field of
      *   the ring's RING_ORDERID register. */
+    uint8_t                 asel;
+    /**< Ring ASEL (address select) value to be set into the ASEL field of the ring's
+    *    RING_BA_HI register. 
+    *    Refer \ref Udma_RingAccAselEndpointSoc for supported values.
+    *    This field is not supported on some SoCs.  
+    *    On SoCs that do not support this field the input is quietly ignored.
+    *    Note: By default this parameter will be set to
+    *    #UDMA_RING_ASEL_INVALID by #UdmaRingPrms_init API */
     uint32_t                mappedRingGrp;
     /**< The Mapped ring group to use when channel type is 
      *   #UDMA_CH_TYPE_TX_MAPPED or #UDMA_CH_TYPE_RX_MAPPED.

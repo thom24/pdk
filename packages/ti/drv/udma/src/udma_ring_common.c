@@ -177,6 +177,11 @@ int32_t Udma_ringAlloc(Udma_DrvHandle drvHandle,
         rmRingReq.mode          = ringPrms->mode;
         rmRingReq.size          = ringPrms->elemSize;
         rmRingReq.order_id      = ringPrms->orderId;
+        if(UDMA_RING_ASEL_INVALID != ringPrms->asel)
+        {
+            rmRingReq.valid_params |= TISCI_MSG_VALUE_RM_RING_ASEL_VALID;
+            rmRingReq.asel          = ringPrms->asel;
+        }
         retVal = Sciclient_rmRingCfg(
                      &rmRingReq, &rmRingResp, UDMA_SCICLIENT_TIMEOUT);
         if(CSL_PASS != retVal)
@@ -775,6 +780,7 @@ void UdmaRingPrms_init(Udma_RingPrms *ringPrms)
         ringPrms->elemCnt       = 0U;
         ringPrms->elemSize      = UDMA_RING_ES_8BYTES;
         ringPrms->orderId       = UDMA_DEFAULT_RING_ORDER_ID;
+        ringPrms->asel          = UDMA_RING_ASEL_INVALID;
         ringPrms->mappedRingGrp = UDMA_MAPPED_GROUP_INVALID;
         ringPrms->mappedChNum   = UDMA_DMA_CH_INVALID;
     }

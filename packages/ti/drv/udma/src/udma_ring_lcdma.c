@@ -95,6 +95,7 @@ void Udma_ringSetCfgLcdma(Udma_DrvHandle drvHandle,
         lcdmaRingCfg->elCnt          = ringPrms->elemCnt;
         /* CSL expects ring size in bytes */
         lcdmaRingCfg->elSz           = ((uint32_t) 1U << (ringPrms->elemSize + 2U));
+        lcdmaRingCfg->asel           = ringPrms->asel;
     }
     else
     {

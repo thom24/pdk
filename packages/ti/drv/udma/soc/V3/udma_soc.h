@@ -120,6 +120,24 @@ extern "C" {
 #define UDMA_TX_CHANS_FDEPTH             (CSL_DMSS_UDMAP_TX_CHANS_FDEPTH)
 /* @} */
 
+/**
+ *  \anchor Udma_RingAccAselEndpointSoc
+ *  \name UDMA Ringacc address select (asel) endpoint
+ *
+ *  List of all valid address select (asel) endpoints in the SOC.
+ *
+ *  @{
+ */
+/** \brief Physical address (normal) */
+#define UDMA_RINGACC_ASEL_ENDPOINT_PHYSADDR          (CSL_LCDMA_RINGACC_ASEL_ENDPOINT_PHYSADDR)
+/** \brief PCIE0 */
+#define UDMA_RINGACC_ASEL_ENDPOINT_PCIE0             (CSL_LCDMA_RINGACC_ASEL_ENDPOINT_PCIE0)
+/** \brief ARM ACP port: write-allocate cacheable, bufferable */
+#define UDMA_RINGACC_ASEL_ENDPOINT_ACP_WR_ALLOC      (CSL_LCDMA_RINGACC_ASEL_ENDPOINT_ACP_WR_ALLOC)
+/** \brief ARM ACP port: read-allocate, cacheable, bufferable */
+#define UDMA_RINGACC_ASEL_ENDPOINT_ACP_RD_ALLOC      (CSL_LCDMA_RINGACC_ASEL_ENDPOINT_ACP_RD_ALLOC)
+/* @} */
+
 /** \brief Invalid Ring Mode*/
 #define UDMA_RING_MODE_INVALID          (CSL_LCDMA_RINGACC_RING_MODE_INVALID)
 
