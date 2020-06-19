@@ -44,6 +44,8 @@
 #ifndef WATCHDOG_SOC_H
 #define WATCHDOG_SOC_H
 
+#include <ti/csl/csl_utils.h>
+
 #if defined(SOC_TPR12)
 #include <ti/drv/watchdog/soc/watchdog_v0.h>
 #define Watchdog_HwAttrs    Watchdog_v0_HwAttrs

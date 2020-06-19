@@ -104,6 +104,23 @@ watchdog_INCLUDE = $(watchdog_PATH)
 export watchdog_SOCLIST = $(drvwatchdog_SOCLIST)
 export watchdog_$(SOC)_CORELIST = $(drvwatchdog_$(SOC)_CORELIST)
 
+#
+# Watchdog Examples
+#
+
+# watchdog test app
+export watchdog_testapp_COMP_LIST = watchdog_testapp
+watchdog_testapp_RELPATH = ti/drv/watchdog/test
+watchdog_testapp_PATH = $(PDK_WATCHDOG_COMP_PATH)/test
+export watchdog_testapp_BOARD_DEPENDENCY = yes
+export watchdog_testapp_CORE_DEPENDENCY = yes
+export watchdog_testapp_XDC_CONFIGURO = yes
+watchdog_testapp_PKG_LIST = watchdog_testapp
+watchdog_testapp_INCLUDE = $(watchdog_testapp_PATH)
+export watchdog_testapp_BOARDLIST = $(drvwatchdog_BOARDLIST)
+export watchdog_testapp_$(SOC)_CORELIST = $(drvwatchdog_$(SOC)_CORELIST)
+watchdog_EXAMPLE_LIST += watchdog_testapp
+
 export watchdog_LIB_LIST
 export watchdog_EXAMPLE_LIST
 export drvwatchdog_LIB_LIST = $(watchdog_LIB_LIST)

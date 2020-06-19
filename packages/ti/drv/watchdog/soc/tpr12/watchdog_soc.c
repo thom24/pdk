@@ -104,13 +104,13 @@ Watchdog_HwAttrs gWatchdogHwCfg[1] =
      * - ESM group number
      * - ESM error number */
     {
-        CSL_MSS_RTIB_U_BASE,
+        CSL_MSS_WDT_U_BASE,
         2,
         ESMG2_WDT_NMI_REQ
     }
 };
 
-Watchdog_Config Watchdog_config[] =
+CSL_PUBLIC_CONST Watchdog_Config Watchdog_config[] =
 {
     {
         &gWatchdogFxnTable,             /* Watchdog Driver Function Table:     */
@@ -142,13 +142,13 @@ Watchdog_HwAttrs gWatchdogHwCfg[1] =
      * - ESM group number
      * - ESM error number */
     {
-        CSL_DSS_RTIA_U_BASE,
+        CSL_DSS_WDT_U_BASE,
         2,
         CSL_DSS_ESMG2_DSS_WDT_NMI_REQ
     }
 };
 
-Watchdog_Config Watchdog_config[] =
+CSL_PUBLIC_CONST Watchdog_Config Watchdog_config[] =
 {
     {
         &gWatchdogFxnTable,             /* Watchdog Driver Function Table:     */
