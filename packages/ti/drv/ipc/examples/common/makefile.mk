@@ -13,8 +13,11 @@ ifeq ($(BUILD_OS_TYPE), baremetal)
   COMP_LIST_COMMON =  $(PDK_COMMON_BAREMETAL_COMP)
   COMP_LIST_COMMON += ipc_baremetal
   SRCS_COMMON += main_baremetal.c
-  ifeq ($(ISA),$(filter $(ISA), a53, a72))
+  ifeq ($(ISA),$(filter $(ISA), a53 a72))
     LNKFLAGS_LOCAL_$(CORE) += --entry Entry
+  endif
+  ifeq ($(ISA), r5f)
+	  SRCS_COMMON += r5f_mpu_$(SOC)_default.c
   endif
   ifeq ($(SOC),$(filter $(SOC), j721e j7200 am65xx))
 	  EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/$(SOC)/linker_$(ISA)_$(CORE).lds
@@ -61,7 +64,7 @@ PACKAGE_SRCS_COMMON = . ../common ../../common
 ifneq ($(BUILD_OS_TYPE), baremetal)
 SRCS_COMMON += ipc_utils.c ipc_testsetup.c
 else
-SRCS_COMMON += ipc_trace.c
+SRCS_COMMON += ipc_trace.c ipc_testsetup_baremetal.c
 endif
 
 CFLAGS_LOCAL_COMMON += $(PDK_CFLAGS)

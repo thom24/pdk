@@ -10,7 +10,6 @@ endif
 APP_NAME = ex04_linux_baremetal_2core_echo_test
 
 SRCS_COMMON = ex04_linux_baremetal_2core_echo_test.c
-SRCS_COMMON += r5f_mpu_default.c
 CFLAGS_LOCAL_COMMON = -DA72_LINUX_OS -DIPC_EXCLUDE_CTRL_TASKS -DBAREMETAL
 BUILD_OS_TYPE = baremetal
 

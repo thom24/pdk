@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2020
+ *  Copyright (c) Texas Instruments Incorporated 2018-2020
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -32,13 +32,11 @@
  */
 
 /**
- *  \file ex04_linux_baremetal_2core_echo_test.c
+ *  \file ex02_baremetal_multicore_echo_test.c
  *
- *  \brief 2-core (Linux-to-Baremetal) IPC echo test application performing
- *  basic echo communication using the baremetal IPC driver
- *  The application after initialization of the IPC lld, waits for messages
- *  from the Linux host core and echos each message received, back to the 
- *  source.
+ *  \brief Multi-core (nonos-to-nonos) IPC echo test application performing basic echo
+ *  communication using the IPC driver
+ *
  */
 
 /* ========================================================================== */
@@ -47,12 +45,6 @@
 
 #include <stdio.h>
 #include <stdint.h>
-#include <string.h>
-
-#include <ti/osal/HwiP.h>
-#include <ti/osal/osal.h>
-/* SCI Client */
-#include <ti/drv/sciclient/sciclient.h>
 
 #include <ti/drv/ipc/ipc.h>
 #include <ti/drv/ipc/examples/common/src/ipc_setup.h>
@@ -60,16 +52,6 @@
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
-/* Number of cores used in the test */
-#if defined (SOC_AM65XX)
-#define CORE_IN_TEST            3
-#elif defined (SOC_J721E)
-#define CORE_IN_TEST            10
-#elif defined (SOC_J7200)
-#define CORE_IN_TEST            5
-#else
-#error "Invalid SOC"
-#endif
 
 
 /* ========================================================================== */
@@ -86,21 +68,38 @@
 /* ========================================================================== */
 /*                            Global Variables                                */
 /* ========================================================================== */
+
+#if defined (SOC_AM65XX)
+#define CORE_IN_TEST            3
+#elif defined (SOC_J721E)
+#define CORE_IN_TEST            10
+#elif defined (SOC_J7200)
+#define CORE_IN_TEST            5
+#else
+#error "Invalid SOC"
+#endif
+
 uint8_t  gCntrlBuf[RPMSG_DATA_SIZE] __attribute__ ((section("ipc_data_buffer"), aligned (8)));
-uint8_t  gSysVqBuf[VQ_BUF_SIZE]  __attribute__ ((section ("ipc_data_buffer"), aligned (8)));
-uint8_t  gSendBuf[RPMSG_DATA_SIZE * CORE_IN_TEST]  __attribute__ ((section ("ipc_data_buffer"), aligned (8)));
-uint8_t  gRspBuf[RPMSG_DATA_SIZE]  __attribute__ ((section ("ipc_data_buffer"), aligned (8)));
+uint8_t  sysVqBuf[VQ_BUF_SIZE]  __attribute__ ((section ("ipc_data_buffer"), aligned (8)));
+uint8_t  g_sendBuf[RPMSG_DATA_SIZE * CORE_IN_TEST]  __attribute__ ((section ("ipc_data_buffer"), aligned (8)));
+uint8_t  g_rspBuf[RPMSG_DATA_SIZE]  __attribute__ ((section ("ipc_data_buffer"), aligned (8)));
 
 uint8_t *pCntrlBuf = gCntrlBuf;
-uint8_t *pSendTaskBuf = gSendBuf;
-uint8_t *pRecvTaskBuf = gRspBuf;
-uint8_t *pSysVqBuf = gSysVqBuf;
+uint8_t *pSendTaskBuf = g_sendBuf;
+uint8_t *pRecvTaskBuf = g_rspBuf;
+uint8_t *pSysVqBuf = sysVqBuf;
 
 #ifdef BUILD_MPU1_0
 uint32_t selfProcId = IPC_MPU1_0;
 uint32_t remoteProc[] =
 {
-    IPC_MCU1_0
+#if defined (SOC_AM65XX)
+    IPC_MCU1_0, IPC_MCU1_1
+#elif defined (SOC_J721E)
+    IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1, IPC_MCU3_0, IPC_MCU3_1, IPC_C66X_1, IPC_C66X_2, IPC_C7X_1
+#elif defined (SOC_J7200)
+    IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1
+#endif
 };
 #endif
 
@@ -108,42 +107,92 @@ uint32_t remoteProc[] =
 uint32_t selfProcId = IPC_MCU1_0;
 uint32_t remoteProc[] =
 {
-    IPC_MPU1_0
+#if defined (SOC_AM65XX)
+    IPC_MPU1_0, IPC_MCU1_1
+#elif defined (SOC_J721E)
+    IPC_MPU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1, IPC_MCU3_0, IPC_MCU3_1, IPC_C66X_1, IPC_C66X_2, IPC_C7X_1
+#elif defined (SOC_J7200)
+    IPC_MPU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1
+#endif
 };
-#elif defined(BUILD_MCU1_1)
+#endif
+
+#ifdef BUILD_MCU1_1
 uint32_t selfProcId = IPC_MCU1_1;
 uint32_t remoteProc[] =
 {
-    IPC_MPU1_0
+#if defined (SOC_AM65XX)
+    IPC_MPU1_0, IPC_MCU1_0
+#elif defined (SOC_J721E)
+    IPC_MPU1_0, IPC_MCU1_0, IPC_MCU2_0, IPC_MCU2_1, IPC_MCU3_0, IPC_MCU3_1, IPC_C66X_1, IPC_C66X_2, IPC_C7X_1
+#elif defined (SOC_J7200)
+    IPC_MPU1_0, IPC_MCU1_0, IPC_MCU2_0, IPC_MCU2_1
+#endif
 };
-#elif defined(BUILD_MCU2_0)
+#endif
+
+#ifdef BUILD_MCU2_0
 uint32_t selfProcId = IPC_MCU2_0;
 uint32_t remoteProc[] =
 {
-    IPC_MPU1_0
+#if defined (SOC_J721E)
+    IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_1, IPC_MCU3_0, IPC_MCU3_1, IPC_C66X_1, IPC_C66X_2, IPC_C7X_1
+#elif defined (SOC_J7200)
+    IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_1
+#endif
 };
-#elif defined(BUILD_MCU2_1)
+#endif
+
+#ifdef BUILD_MCU2_1
 uint32_t selfProcId = IPC_MCU2_1;
 uint32_t remoteProc[] =
 {
-    IPC_MPU1_0
+#if defined (SOC_J721E)
+    IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU3_0, IPC_MCU3_1, IPC_C66X_1, IPC_C66X_2, IPC_C7X_1
+#elif defined (SOC_J7200)
+    IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0
+#endif
 };
-#elif defined(BUILD_MCU3_0)
+#endif
+
+#ifdef BUILD_MCU3_0
 uint32_t selfProcId = IPC_MCU3_0;
 uint32_t remoteProc[] =
 {
-    IPC_MPU1_0
+    IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1, IPC_MCU3_1, IPC_C66X_1, IPC_C66X_2, IPC_C7X_1
 };
-#elif defined(BUILD_MCU3_1)
+#endif
+
+#ifdef BUILD_MCU3_1
 uint32_t selfProcId = IPC_MCU3_1;
 uint32_t remoteProc[] =
 {
-    IPC_MPU1_0
+    IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1, IPC_MCU3_0, IPC_C66X_1, IPC_C66X_2, IPC_C7X_1
 };
-#else
-/* NOTE: all other cores are not used in this test, but must be built as part of full PDK build */
-uint32_t selfProcId = 0;
-uint32_t remoteProc[] = {};
+#endif
+
+#ifdef BUILD_C66X_1
+uint32_t selfProcId = IPC_C66X_1;
+uint32_t remoteProc[] =
+{
+    IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1, IPC_MCU3_0, IPC_MCU3_1, IPC_C66X_2, IPC_C7X_1
+};
+#endif
+
+#ifdef BUILD_C66X_2
+uint32_t selfProcId = IPC_C66X_2;
+uint32_t remoteProc[] =
+{
+    IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1, IPC_MCU3_0, IPC_MCU3_1, IPC_C66X_1, IPC_C7X_1
+};
+#endif
+
+#ifdef BUILD_C7X_1
+uint32_t selfProcId = IPC_C7X_1;
+uint32_t remoteProc[] =
+{
+    IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1, IPC_MCU3_0, IPC_MCU3_1, IPC_C66X_1, IPC_C66X_2
+};
 #endif
 
 uint32_t *pRemoteProcArray = remoteProc;
@@ -153,6 +202,7 @@ RPMessage_Handle gHandleArray[CORE_IN_TEST];
 uint32_t         gEndptArray[CORE_IN_TEST];
 uint32_t         gCntPing[CORE_IN_TEST];
 uint32_t         gCntPong[CORE_IN_TEST];
+
 
 RPMessage_Handle *pHandleArray = gHandleArray;
 uint32_t *pEndptArray = gEndptArray;

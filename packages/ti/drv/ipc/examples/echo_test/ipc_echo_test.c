@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018
+ *  Copyright (c) Texas Instruments Incorporated 2018-2020
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -46,6 +46,7 @@
 #include <stdio.h>
 #include <stdint.h>
 
+#if !defined(BAREMETAL)
 /* XDCtools Header files */
 #include <xdc/std.h>
 #include <xdc/runtime/Error.h>
@@ -55,6 +56,7 @@
 /* BIOS Header files */
 #include <ti/sysbios/BIOS.h>
 #include <ti/sysbios/knl/Task.h>
+#endif
 
 #include <ti/drv/ipc/ipc.h>
 #include <ti/drv/ipc/examples/common/src/ipc_setup.h>
@@ -89,6 +91,7 @@
 #error "Invalid SOC"
 #endif
 
+#if !defined(BAREMETAL)
 /*
  * In the cfg file of R5F, C66x, default heap is 48K which is not
  * enough for 9 task_stack, so creating task_stack on global.
@@ -111,6 +114,7 @@ __attribute__ ((section(".bss:taskStackSection")))
 __attribute__ ((aligned(8192)))
     ;
 #endif
+#endif
 
 uint8_t  gCntrlBuf[RPMSG_DATA_SIZE] __attribute__ ((section("ipc_data_buffer"), aligned (8)));
 uint8_t  sysVqBuf[VQ_BUF_SIZE]  __attribute__ ((section ("ipc_data_buffer"), aligned (8)));
@@ -118,7 +122,9 @@ uint8_t  g_sendBuf[RPMSG_DATA_SIZE * CORE_IN_TEST]  __attribute__ ((section ("ip
 uint8_t  g_rspBuf[RPMSG_DATA_SIZE]  __attribute__ ((section ("ipc_data_buffer"), aligned (8)));
 
 uint8_t *pCntrlBuf = gCntrlBuf;
+#if !defined(BAREMETAL)
 uint8_t *pTaskBuf = g_taskStackBuf;
+#endif
 uint8_t *pSendTaskBuf = g_sendBuf;
 uint8_t *pRecvTaskBuf = g_rspBuf;
 uint8_t *pSysVqBuf = sysVqBuf;
@@ -236,4 +242,16 @@ uint32_t remoteProc[] =
 uint32_t *pRemoteProcArray = remoteProc;
 uint32_t  gNumRemoteProc = sizeof(remoteProc)/sizeof(uint32_t);
 
+#if defined(BAREMETAL)
+RPMessage_Handle gHandleArray[CORE_IN_TEST];
+uint32_t         gEndptArray[CORE_IN_TEST];
+uint32_t         gCntPing[CORE_IN_TEST];
+uint32_t         gCntPong[CORE_IN_TEST];
+
+
+RPMessage_Handle *pHandleArray = gHandleArray;
+uint32_t *pEndptArray = gEndptArray;
+uint32_t *pCntPing = gCntPing;
+uint32_t *pCntPong = gCntPong;
+#endif
 

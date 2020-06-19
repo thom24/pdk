@@ -45,11 +45,14 @@ drvipc_SOCLIST         = am65xx j721e j7200
 drvipc_BOARDLIST       = am65xx_evm am65xx_idk j721e_sim j721e_qt j721e_evm j7200_evm
 drvipc_am65xx_CORELIST = mpu1_0 mcu1_0 mcu1_1
 drvipc_am65xx_LASTCORE := $(word $(words $(drvipc_am65xx_CORELIST)), $(drvipc_am65xx_CORELIST))
+drvipc_am65xx_BAREMETAL_CORELIST = mcu1_0 mcu1_1
 drvipc_j721e_CORELIST  = mpu1_0 mcu1_0 mcu2_0 mcu3_0 mcu1_1 mcu2_1 mcu3_1 c66xdsp_1 c66xdsp_2 c7x_1
 drvipc_j721e_APPCORELIST = mpu1_0 mcu1_0 mcu2_0 mcu3_0 mcu1_1 mcu2_1 mcu3_1 c66xdsp_1 c66xdsp_2 c7x_1
 drvipc_j721e_LASTCORE := $(word $(words $(drvipc_j721e_APPCORELIST)), $(drvipc_j721e_APPCORELIST))
+drvipc_j721e_BAREMETAL_CORELIST = mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1
 drvipc_j7200_CORELIST  = mpu1_0 mcu1_0 mcu2_0 mcu1_1 mcu2_1
 drvipc_j7200_LASTCORE := $(word $(words $(drvipc_j7200_CORELIST)), $(drvipc_j7200_CORELIST))
+drvipc_j7200_BAREMETAL_CORELIST = mcu1_0 mcu1_1 mcu2_0 mcu2_1
 drvipc_DISABLE_PARALLEL_MAKE = yes
 
 ############################
@@ -149,6 +152,27 @@ ifneq ($(ipc_ut_EXAMPLE_LIST),)
   ipc_EXAMPLE_LIST += $(ipc_ut_EXAMPLE_LIST)
 endif
 
+# IPC echo_test baremetal
+ipc_echo_baremetal_test_COMP_LIST = ipc_echo_baremetal_test
+ipc_echo_baremetal_test_RELPATH = ti/drv/ipc/examples/echo_test/echo_test_baremetal
+ipc_echo_baremetal_test_PATH = $(PDK_IPC_COMP_PATH)/examples/echo_test/echo_test_baremetal
+ipc_echo_baremetal_test_MAKEFILE = -fmakefile.baremetal
+ipc_echo_baremetal_test_BOARD_DEPENDENCY = yes
+ipc_echo_baremetal_test_CORE_DEPENDENCY = yes
+ipc_echo_baremetal_test_XDC_CONFIGURO = no
+export ipc_echo_baremetal_test_MAKEFILE
+export ipc_echo_baremetal_test_COMP_LIST
+export ipc_echo_baremetal_test_BOARD_DEPENDENCY
+export ipc_echo_baremetal_test_CORE_DEPENDENCY
+export ipc_echo_baremetal_test_XDC_CONFIGURO
+ipc_echo_baremetal_test_PKG_LIST = ipc_echo_baremetal_test
+ipc_echo_baremetal_test_INCLUDE = $(ipc_echo_baremetal_test_PATH)
+ipc_echo_baremetal_test_BOARDLIST = $(drvipc_BOARDLIST)
+export ipc_echo_baremetal_test_BOARDLIST
+ipc_echo_baremetal_test_$(SOC)_CORELIST = $(drvipc_$(SOC)_BAREMETAL_CORELIST)
+export ipc_echo_baremetal_test_$(SOC)_CORELIST
+ipc_EXAMPLE_LIST += ipc_echo_baremetal_test
+
 # IPC echo_test - use R5F BTCM
 ipc_echo_testb_COMP_LIST = ipc_echo_testb
 ipc_echo_testb_RELPATH = ti/drv/ipc/examples/echo_test/echo_test_btcm
@@ -207,6 +231,25 @@ export ex02_bios_multicore_echo_test_BOARDLIST
 ex02_bios_multicore_echo_test_$(SOC)_CORELIST = $(drvipc_$(SOC)_CORELIST)
 export ex02_bios_multicore_echo_test_$(SOC)_CORELIST
 ipc_EXAMPLE_LIST += ex02_bios_multicore_echo_test
+
+# IPC ex02_baremetal_multicore_echo_test
+ex02_baremetal_multicore_echo_test_COMP_LIST = ex02_baremetal_multicore_echo_test
+ex02_baremetal_multicore_echo_test_RELPATH = ti/drv/ipc/examples/ex02_baremetal_multicore_echo_test
+ex02_baremetal_multicore_echo_test_PATH = $(PDK_IPC_COMP_PATH)/examples/ex02_baremetal_multicore_echo_test
+ex02_baremetal_multicore_echo_test_BOARD_DEPENDENCY = yes
+ex02_baremetal_multicore_echo_test_CORE_DEPENDENCY = yes
+ex02_baremetal_multicore_echo_test_XDC_CONFIGURO = no
+export ex02_baremetal_multicore_echo_test_COMP_LIST
+export ex02_baremetal_multicore_echo_test_BOARD_DEPENDENCY
+export ex02_baremetal_multicore_echo_test_CORE_DEPENDENCY
+export ex02_baremetal_multicore_echo_test_XDC_CONFIGURO
+ex02_baremetal_multicore_echo_test_PKG_LIST = ex02_baremetal_multicore_echo_test
+ex02_baremetal_multicore_echo_test_INCLUDE = $(ex02_baremetal_multicore_echo_test_PATH)
+ex02_baremetal_multicore_echo_test_BOARDLIST = am65xx_evm
+export ex02_baremetal_multicore_echo_test_BOARDLIST
+ex02_baremetal_multicore_echo_test_$(SOC)_CORELIST = $(drvipc_$(SOC)_BAREMETAL_CORELIST)
+export ex02_baremetal_multicore_echo_test_$(SOC)_CORELIST
+ipc_EXAMPLE_LIST += ex02_baremetal_multicore_echo_test
 
 # IPC ex05_bios_multicore_echo_negative_test
 ex05_bios_multicore_echo_negative_test_COMP_LIST = ex05_bios_multicore_echo_negative_test
@@ -328,7 +371,7 @@ ex04_linux_baremetal_2core_echo_test_PKG_LIST = ex04_linux_baremetal_2core_echo_
 ex04_linux_baremetal_2core_echo_test_INCLUDE = $(ex04_linux_baremetal_2core_echo_test_PATH)
 ex04_linux_baremetal_2core_echo_test_BOARDLIST = am65xx_evm
 export ex04_linux_baremetal_2core_echo_test_BOARDLIST
-ex04_linux_baremetal_2core_echo_test_$(SOC)_CORELIST = mcu1_0 mcu1_1
+ex04_linux_baremetal_2core_echo_test_$(SOC)_CORELIST = $(drvipc_$(SOC)_BAREMETAL_CORELIST)
 export ex04_linux_baremetal_2core_echo_test_$(SOC)_CORELIST
 ipc_EXAMPLE_LIST += ex04_linux_baremetal_2core_echo_test
 
