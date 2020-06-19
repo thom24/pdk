@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -40,9 +40,9 @@
  *
  *  Operation: Verification of hyperbus by accessing the device connected to it.
  *
- *  Supported SoCs : J721E
+ *  Supported SoCs : J721E & J7200.
  *
- *  Supported Platforms: j721e_evm
+ *  Supported Platforms: j721e_evm & j7200_evm.
  *
  */
 

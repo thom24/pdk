@@ -69,7 +69,7 @@ INCLUDE_EXTERNAL_INTERFACES = pdk
 
 # List all the components required by the application
 COMP_LIST_COMMON = board csl csl_init osal_nonos uart i2c spi
-ifeq ($(SOC), $(filter $(SOC), j721e))
+ifeq ($(SOC), $(filter $(SOC), j721e j7200))
 COMP_LIST_COMMON += sciclient gpio
 endif
 
@@ -83,7 +83,7 @@ PACKAGE_SRCS_COMMON += ../../create_sd.bat ../../create_sd.sh
 
 SRCS_COMMON += hyperbus_test.c diag_common_cfg.c
 
-ifeq ($(BOARD), $(filter $(BOARD), j721e_evm))
+ifeq ($(BOARD), $(filter $(BOARD), j721e_evm j7200_evm))
 SRCS_COMMON += hyperbus_gpio_config.c
 endif
 

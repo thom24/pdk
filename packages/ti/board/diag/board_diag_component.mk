@@ -518,7 +518,7 @@ export board_diag_hyperbus_CORE_DEPENDENCY
 export board_diag_hyperbus_MAKEFILE
 board_diag_hyperbus_PKG_LIST = board_diag_hyperbus
 board_diag_hyperbus_INCLUDE = $(board_diag_hyperbus_PATH)
-board_diag_hyperbus_BOARDLIST = j721e_evm
+board_diag_hyperbus_BOARDLIST = j721e_evm j7200_evm
 board_diag_hyperbus_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
 export board_diag_hyperbus_$(SOC)_CORELIST
 export board_diag_hyperbus_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
