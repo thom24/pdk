@@ -36,19 +36,10 @@ Users must append a fixed length array to the end :ref:`pub_boardcfg_rm` to
 represent the resource assignment data array.  The resource
 assignment array is a list of :ref:`pub_boardcfg_rm_resasg_entry` elements.  The
 current maximum number of elements allowed in the resource assignment array is
-defined in the table below per SoC.  The number of elements in the array are
-defined on an SoC basis based on expected use cases.  Resource assignment
-lists sized greater than what is expected will have the RM boardcfg message NACK'd.
-
-+---------------+--------------------------------------------+
-| **SoC**       | **Resource Assignment Array Size**         |
-+---------------+--------------------------------------------+
-| AM65x SR 1.0  |  2 x Total number of unique resource types |
-+---------------+--------------------------------------------+
-| AM65x SR 2.0  |  2 x Total number of unique resource types |
-+---------------+--------------------------------------------+
-| J721e         |  7 x Total number of unique resource types |
-+---------------+--------------------------------------------+
+defined in the SoC-specific RM resource types documentation.  The number of
+elements in the array are defined on an SoC basis based on expected use cases.
+Resource assignment lists sized greater than what is expected will have the RM
+boardcfg message NACK'd.
 
 Assigned resource ranges are retrievable at runtime by sending System Firmware
 a request via

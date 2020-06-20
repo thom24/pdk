@@ -234,6 +234,12 @@
  */
 typedef uint8_t devgrp_t;
 
+/**
+ * \brief Defines the sysfw DOMGRP type. This is meant to be used in code
+ * or data structures that require distinction of domgrps.
+ */
+typedef uint8_t domgrp_t;
+
 /* External definitions */
 
 /**
@@ -273,6 +279,7 @@ typedef uint8_t devgrp_t;
 #include <ti/drv/sciclient/soc/sysfw/include/tisci/tisci_protocol.h>
 #include <ti/drv/sciclient/soc/sysfw/include/tisci/tisci_boardcfg_macros.h>
 #include <ti/drv/sciclient/soc/sysfw/include/tisci/tisci_boardcfg.h>
+#include <ti/drv/sciclient/soc/sysfw/include/tisci/tisci_boardcfg_rm.h>
 #include <ti/drv/sciclient/soc/sysfw/include/tisci/tisci_core.h>
 #if defined (SOC_AM65XX)
 #include <ti/drv/sciclient/soc/sysfw/include/am65x/tisci_resasg_types.h>
@@ -280,10 +287,6 @@ typedef uint8_t devgrp_t;
 #include <ti/drv/sciclient/soc/sysfw/include/am65x/tisci_sec_proxy.h>
 #include <ti/drv/sciclient/soc/sysfw/include/am65x/tisci_boardcfg_constraints.h>
 #include <ti/drv/sciclient/soc/sysfw/include/am65x/tisci_clocks.h>
-#include <ti/drv/sciclient/soc/sysfw/include/am65x_sr2/tisci_resasg_types.h>
-#include <ti/drv/sciclient/soc/sysfw/include/am65x_sr2/tisci_hosts.h>
-#include <ti/drv/sciclient/soc/sysfw/include/am65x_sr2/tisci_sec_proxy.h>
-#include <ti/drv/sciclient/soc/sysfw/include/am65x_sr2/tisci_boardcfg_constraints.h>
 #include <ti/drv/sciclient/soc/sysfw/include/am65x_sr2/tisci_clocks.h>
 #endif
 #if defined (SOC_J721E) || defined (SOC_J7200)

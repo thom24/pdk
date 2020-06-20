@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                20.04.01
+                20.05.00
               </div>
             
           
@@ -108,6 +108,7 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">Chapter 5: SoC Family Specific Documentation</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../index.html#am65x-sr1">AM65x SR1</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#am65x-sr2">AM65x SR2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#am64x">AM64x</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../index.html#j721e">J721E</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="hosts.html">J721E Host Descriptions</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">J721E Devices Descriptions</a><ul>
@@ -127,6 +128,7 @@
 <li class="toctree-l3"><a class="reference internal" href="processors.html">J721E Processor Descriptions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="firewalls.html">J721E Firewall Descriptions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="soc_devgrps.html">J721E Device Group descriptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="soc_domgrps.html">J721E Domain Group descriptions</a></li>
 </ul>
 </li>
 </ul>
@@ -200,16 +202,16 @@ management of a particular SoC subsystem.</p>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>0</td>
-<td>J721E_DEV_MCU_ADC0</td>
+<td>J721E_DEV_MCU_ADC12_16FFC0</td>
 </tr>
 <tr class="row-odd"><td>1</td>
-<td>J721E_DEV_MCU_ADC1</td>
+<td>J721E_DEV_MCU_ADC12_16FFC1</td>
 </tr>
 <tr class="row-even"><td>2</td>
 <td>J721E_DEV_ATL0</td>
 </tr>
 <tr class="row-odd"><td>3</td>
-<td>J721E_DEV_COMPUTE_CLUSTER_J7ES_TB_VDC_MAIN_0</td>
+<td>J721E_DEV_COMPUTE_CLUSTER0</td>
 </tr>
 <tr class="row-even"><td>4</td>
 <td>J721E_DEV_A72SS0</td>
@@ -266,7 +268,7 @@ management of a particular SoC subsystem.</p>
 <td>J721E_DEV_CPT2_AGGR1</td>
 </tr>
 <tr class="row-even"><td>22</td>
-<td>J721E_DEV_DMSC_WKUP_0</td>
+<td>J721E_DEV_WKUP_DMSC0</td>
 </tr>
 <tr class="row-odd"><td>23</td>
 <td>J721E_DEV_CPT2_AGGR2</td>
@@ -344,7 +346,7 @@ management of a particular SoC subsystem.</p>
 <td>J721E_DEV_DDR0</td>
 </tr>
 <tr class="row-even"><td>48</td>
-<td>J721E_DEV_DMPAC_TOP_MAIN_0</td>
+<td>J721E_DEV_DMPAC0</td>
 </tr>
 <tr class="row-odd"><td>49</td>
 <td>J721E_DEV_TIMER0</td>
@@ -497,7 +499,7 @@ management of a particular SoC subsystem.</p>
 <td>J721E_DEV_WKUP_ESM0</td>
 </tr>
 <tr class="row-odd"><td>100</td>
-<td>J721E_DEV_FSS_MCU_0</td>
+<td>J721E_DEV_MCU_FSS0</td>
 </tr>
 <tr class="row-even"><td>101</td>
 <td>J721E_DEV_MCU_FSS0_FSAS_0</td>
@@ -569,7 +571,7 @@ management of a particular SoC subsystem.</p>
 <td>J721E_DEV_CMPEVENT_INTRTR0</td>
 </tr>
 <tr class="row-odd"><td>124</td>
-<td>J721E_DEV_J7_LASCAR_GPU_WRAP_MAIN_0</td>
+<td>J721E_DEV_GPU0</td>
 </tr>
 <tr class="row-even"><td>125</td>
 <td>J721E_DEV_GPU0_GPU_0</td>
@@ -614,10 +616,10 @@ management of a particular SoC subsystem.</p>
 <td>J721E_DEV_AASRC0</td>
 </tr>
 <tr class="row-even"><td>140</td>
-<td>J721E_DEV_K3_C66_COREPAC_MAIN_0</td>
+<td>J721E_DEV_C66SS0</td>
 </tr>
 <tr class="row-odd"><td>141</td>
-<td>J721E_DEV_K3_C66_COREPAC_MAIN_1</td>
+<td>J721E_DEV_C66SS1</td>
 </tr>
 <tr class="row-even"><td>142</td>
 <td>J721E_DEV_C66SS0_CORE0</td>
@@ -782,7 +784,7 @@ management of a particular SoC subsystem.</p>
 <td>J721E_DEV_WKUP_I2C0</td>
 </tr>
 <tr class="row-even"><td>199</td>
-<td>J721E_DEV_NAVSS512L_MAIN_0</td>
+<td>J721E_DEV_NAVSS0</td>
 </tr>
 <tr class="row-odd"><td>201</td>
 <td>J721E_DEV_NAVSS0_CPTS_0</td>
@@ -872,22 +874,22 @@ management of a particular SoC subsystem.</p>
 <td>J721E_DEV_NAVSS0_TIMERMGR_1</td>
 </tr>
 <tr class="row-even"><td>232</td>
-<td>J721E_DEV_NAVSS_MCU_J7_MCU_0</td>
+<td>J721E_DEV_MCU_NAVSS0</td>
 </tr>
 <tr class="row-odd"><td>233</td>
-<td>J721E_DEV_MCU_NAVSS0_INTAGGR_0</td>
+<td>J721E_DEV_MCU_NAVSS0_UDMASS_INTA_0</td>
 </tr>
 <tr class="row-even"><td>234</td>
-<td>J721E_DEV_MCU_NAVSS0_PROXY_0</td>
+<td>J721E_DEV_MCU_NAVSS0_PROXY0</td>
 </tr>
 <tr class="row-odd"><td>235</td>
-<td>J721E_DEV_MCU_NAVSS0_RINGACC_0</td>
+<td>J721E_DEV_MCU_NAVSS0_RINGACC0</td>
 </tr>
 <tr class="row-even"><td>236</td>
 <td>J721E_DEV_MCU_NAVSS0_UDMAP_0</td>
 </tr>
 <tr class="row-odd"><td>237</td>
-<td>J721E_DEV_MCU_NAVSS0_INTR_ROUTER_0</td>
+<td>J721E_DEV_MCU_NAVSS0_INTR_0</td>
 </tr>
 <tr class="row-even"><td>238</td>
 <td>J721E_DEV_MCU_NAVSS0_MCRC_0</td>
@@ -905,10 +907,10 @@ management of a particular SoC subsystem.</p>
 <td>J721E_DEV_PCIE3</td>
 </tr>
 <tr class="row-odd"><td>243</td>
-<td>J721E_DEV_PULSAR_SL_MAIN_0</td>
+<td>J721E_DEV_R5FSS0</td>
 </tr>
 <tr class="row-even"><td>244</td>
-<td>J721E_DEV_PULSAR_SL_MAIN_1</td>
+<td>J721E_DEV_R5FSS1</td>
 </tr>
 <tr class="row-odd"><td>245</td>
 <td>J721E_DEV_R5FSS0_CORE0</td>
@@ -923,7 +925,7 @@ management of a particular SoC subsystem.</p>
 <td>J721E_DEV_R5FSS1_CORE1</td>
 </tr>
 <tr class="row-odd"><td>249</td>
-<td>J721E_DEV_PULSAR_SL_MCU_0</td>
+<td>J721E_DEV_MCU_R5FSS0</td>
 </tr>
 <tr class="row-even"><td>250</td>
 <td>J721E_DEV_MCU_R5FSS0_CORE0</td>
@@ -1046,7 +1048,7 @@ management of a particular SoC subsystem.</p>
 <td>J721E_DEV_USB1</td>
 </tr>
 <tr class="row-even"><td>290</td>
-<td>J721E_DEV_VPAC_TOP_MAIN_0</td>
+<td>J721E_DEV_VPAC0</td>
 </tr>
 <tr class="row-odd"><td>291</td>
 <td>J721E_DEV_VPFE0</td>
@@ -1187,7 +1189,7 @@ management of a particular SoC subsystem.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'20.04.01',
+            VERSION:'20.05.00',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

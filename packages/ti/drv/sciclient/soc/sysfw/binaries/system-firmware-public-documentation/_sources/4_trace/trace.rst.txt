@@ -785,6 +785,9 @@ Power Management Action IDs
 | PM_DEV_INIT         | 33    | Power Management device init           | [21:12]   - Device ID                  |
 |                     |       |                                        | [11:0]    - Error value                |
 +---------------------+-------+----------------------------------------+----------------------------------------+
+| PM_SYS_RESET        | 34    | Reset of entire system or a domain     | [21:14]   - Domain                     |
+|                     |       |                                        | [13:0]    - Error value                |
++---------------------+-------+----------------------------------------+----------------------------------------+
 | FAIL (modifier)     | 0x40  | Action failed when action bit set      | N/A                                    |
 +---------------------+-------+----------------------------------------+----------------------------------------+
 | EXCLUSIVE_BUSY      | 123   | Other hosts have enabled the device    | [21:12]   - Device ID                  |

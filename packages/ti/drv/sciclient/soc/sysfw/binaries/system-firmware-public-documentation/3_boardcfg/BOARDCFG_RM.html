@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                20.04.01
+                20.05.00
               </div>
             
           
@@ -217,29 +217,10 @@ Users must append a fixed length array to the end <a class="reference internal" 
 represent the resource assignment data array.  The resource
 assignment array is a list of <a class="reference internal" href="#pub-boardcfg-rm-resasg-entry"><span class="std std-ref">boardcfg_rm_resasg_entry (resource assignment) structure</span></a> elements.  The
 current maximum number of elements allowed in the resource assignment array is
-defined in the table below per SoC.  The number of elements in the array are
-defined on an SoC basis based on expected use cases.  Resource assignment
-lists sized greater than what is expected will have the RM boardcfg message NACK’d.</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="25%" />
-<col width="75%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><strong>SoC</strong></td>
-<td><strong>Resource Assignment Array Size</strong></td>
-</tr>
-<tr class="row-even"><td>AM65x SR 1.0</td>
-<td>2 x Total number of unique resource types</td>
-</tr>
-<tr class="row-odd"><td>AM65x SR 2.0</td>
-<td>2 x Total number of unique resource types</td>
-</tr>
-<tr class="row-even"><td>J721e</td>
-<td>7 x Total number of unique resource types</td>
-</tr>
-</tbody>
-</table>
+defined in the SoC-specific RM resource types documentation.  The number of
+elements in the array are defined on an SoC basis based on expected use cases.
+Resource assignment lists sized greater than what is expected will have the RM
+boardcfg message NACK’d.</p>
 <p>Assigned resource ranges are retrievable at runtime by sending System Firmware
 a request via
 <a class="reference internal" href="#pub-boardcfg-resasg-get-tisci"><span class="std std-ref">TISCI_MSG_RM_GET_RESOURCE_RANGE</span></a>.  The
@@ -1100,7 +1081,7 @@ steps fail the API would return with a NACK.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'20.04.01',
+            VERSION:'20.05.00',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

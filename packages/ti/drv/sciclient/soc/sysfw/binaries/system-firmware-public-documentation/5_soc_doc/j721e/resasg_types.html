@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                20.04.01
+                20.05.00
               </div>
             
           
@@ -108,6 +108,7 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">Chapter 5: SoC Family Specific Documentation</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../index.html#am65x-sr1">AM65x SR1</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#am65x-sr2">AM65x SR2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#am64x">AM64x</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../index.html#j721e">J721E</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="hosts.html">J721E Host Descriptions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="devices.html">J721E Devices Descriptions</a></li>
@@ -126,6 +127,7 @@
 <li class="toctree-l3"><a class="reference internal" href="processors.html">J721E Processor Descriptions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="firewalls.html">J721E Firewall Descriptions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="soc_devgrps.html">J721E Device Group descriptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="soc_domgrps.html">J721E Domain Group descriptions</a></li>
 </ul>
 </li>
 </ul>
@@ -182,6 +184,9 @@
 <p>This chapter provides information of Board Configuration resource assignment
 type IDs that are permitted in the J721E SoC.  The resource type IDs represent
 J721E resources ranges assignable to SoC processing entities (or PEs).</p>
+<p><strong>WARNING</strong>: System Firmware RM currently supports a maximum of 420 RM board
+configuration resource assignment ranges on the J721E SoC.  Sending more entries
+than the maximum will result in the RM board configuration being NACK’d</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="21%" />
@@ -574,7 +579,7 @@ J721E resources ranges assignable to SoC processing entities (or PEs).</p>
 <td>380</td>
 <td>132</td>
 </tr>
-<tr class="row-even"><td>J721E_DEV_MCU_NAVSS0_INTAGGR_0</td>
+<tr class="row-even"><td>J721E_DEV_MCU_NAVSS0_UDMASS_INTA_0</td>
 <td>0x0E9</td>
 <td>RESASG_SUBTYPE_IA_VINT</td>
 <td>0x0A</td>
@@ -590,7 +595,7 @@ J721E resources ranges assignable to SoC processing entities (or PEs).</p>
 <td>16392</td>
 <td>1528</td>
 </tr>
-<tr class="row-even"><td>J721E_DEV_MCU_NAVSS0_PROXY_0</td>
+<tr class="row-even"><td>J721E_DEV_MCU_NAVSS0_PROXY0</td>
 <td>0x0EA</td>
 <td>RESASG_SUBTYPE_PROXY_PROXIES</td>
 <td>0x00</td>
@@ -598,7 +603,7 @@ J721E resources ranges assignable to SoC processing entities (or PEs).</p>
 <td>1</td>
 <td>63</td>
 </tr>
-<tr class="row-odd"><td>J721E_DEV_MCU_NAVSS0_RINGACC_0</td>
+<tr class="row-odd"><td>J721E_DEV_MCU_NAVSS0_RINGACC0</td>
 <td>0x0EB</td>
 <td>RESASG_SUBTYPE_RA_ERROR_OES</td>
 <td>0x00</td>
@@ -726,7 +731,7 @@ J721E resources ranges assignable to SoC processing entities (or PEs).</p>
 <td>0</td>
 <td>2</td>
 </tr>
-<tr class="row-odd"><td>J721E_DEV_MCU_NAVSS0_INTR_ROUTER_0</td>
+<tr class="row-odd"><td>J721E_DEV_MCU_NAVSS0_INTR_0</td>
 <td>0x0ED</td>
 <td>RESASG_SUBTYPE_IR_OUTPUT</td>
 <td>0x00</td>
@@ -788,7 +793,7 @@ J721E resources ranges assignable to SoC processing entities (or PEs).</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'20.04.01',
+            VERSION:'20.05.00',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

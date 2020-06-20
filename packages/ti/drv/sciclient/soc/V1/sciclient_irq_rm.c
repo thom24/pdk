@@ -103,7 +103,7 @@ struct Sciclient_rmIaInst gRmIaInstances[SCICLIENT_RM_IA_NUM_INST] =
         .n_rom_usage        = 0U,
     },
     {
-        .dev_id             = TISCI_DEV_MCU_NAVSS0_INTAGGR_0,
+        .dev_id             = TISCI_DEV_MCU_NAVSS0_UDMASS_INTA_0,
         .imap               = 0x28560000,
         .sevt_offset        = 16384u,
         .n_sevt             = 1536u,
@@ -240,7 +240,7 @@ struct Sciclient_rmIrInst gRmIrInstances[SCICLIENT_RM_IR_NUM_INST] =
         .n_rom_usage    = 0U,
     },
     {
-        .dev_id         = TISCI_DEV_MCU_NAVSS0_INTR_ROUTER_0,
+        .dev_id         = TISCI_DEV_MCU_NAVSS0_INTR_0,
         .cfg            = 0x28540000,
         .n_inp          = 261u,
         .n_outp         = 64u,
@@ -456,7 +456,7 @@ const struct Sciclient_rmIrqIf *const tisci_if_MCU_ADC0[] = {
     &MCU_ADC0_gen_level_0_0_to_R5FSS1_INTROUTER0_in_116_116,
 };
 static const struct Sciclient_rmIrqNode tisci_irq_MCU_ADC0 = {
-    .id = TISCI_DEV_MCU_ADC0,
+    .id = TISCI_DEV_MCU_ADC12_16FFC0,
     .n_if   = 4,
     .p_if   = &tisci_if_MCU_ADC0[0],
 };
@@ -493,7 +493,7 @@ const struct Sciclient_rmIrqIf *const tisci_if_MCU_ADC1[] = {
     &MCU_ADC1_gen_level_0_0_to_R5FSS1_INTROUTER0_in_117_117,
 };
 static const struct Sciclient_rmIrqNode tisci_irq_MCU_ADC1 = {
-    .id = TISCI_DEV_MCU_ADC1,
+    .id = TISCI_DEV_MCU_ADC12_16FFC1,
     .n_if   = 4,
     .p_if   = &tisci_if_MCU_ADC1[0],
 };
@@ -516,7 +516,7 @@ const struct Sciclient_rmIrqIf *const tisci_if_compute_cluster_j7es_tb_vdc_main_
     &compute_cluster_j7es_tb_vdc_main_0_gic_output_waker_gic_pwr0_wake_request_0_1_to_R5FSS1_INTROUTER0_in_332_333,
 };
 static const struct Sciclient_rmIrqNode tisci_irq_compute_cluster_j7es_tb_vdc_main_0 = {
-    .id = TISCI_DEV_COMPUTE_CLUSTER_J7ES_TB_VDC_MAIN_0,
+    .id = TISCI_DEV_COMPUTE_CLUSTER0,
     .n_if   = 2,
     .p_if   = &tisci_if_compute_cluster_j7es_tb_vdc_main_0[0],
 };
@@ -4888,7 +4888,7 @@ const struct Sciclient_rmIrqIf WKUP_GPIOMUX_INTRTR0_outp_16_31_to_R5FSS1_INTROUT
 const struct Sciclient_rmIrqIf WKUP_GPIOMUX_INTRTR0_outp_12_19_to_MCU_NAVSS0_INTAGGR_0_intaggr_levi_pend_4_11 = {
     .lbase  = 12,
     .len    = 8,
-    .rid    = TISCI_DEV_MCU_NAVSS0_INTAGGR_0,
+    .rid    = TISCI_DEV_MCU_NAVSS0_UDMASS_INTA_0,
     .rbase  = 4,
 };
 const struct Sciclient_rmIrqIf WKUP_GPIOMUX_INTRTR0_outp_16_31_to_COMPUTE_CLUSTER0_GIC500SS_spi_960_975 = {
@@ -8142,14 +8142,14 @@ static const struct Sciclient_rmIrqNode tisci_irq_NAVSS0_TCU_0 = {
 const struct Sciclient_rmIrqIf MCU_NAVSS0_INTAGGR_0_intaggr_vintr_pend_0_255_to_MCU_NAVSS0_INTR_ROUTER_0_in_intr_0_255 = {
     .lbase  = 0,
     .len    = 256,
-    .rid    = TISCI_DEV_MCU_NAVSS0_INTR_ROUTER_0,
+    .rid    = TISCI_DEV_MCU_NAVSS0_INTR_0,
     .rbase  = 0,
 };
 const struct Sciclient_rmIrqIf *const tisci_if_MCU_NAVSS0_INTAGGR_0[] = {
     &MCU_NAVSS0_INTAGGR_0_intaggr_vintr_pend_0_255_to_MCU_NAVSS0_INTR_ROUTER_0_in_intr_0_255,
 };
 static const struct Sciclient_rmIrqNode tisci_irq_MCU_NAVSS0_INTAGGR_0 = {
-    .id = TISCI_DEV_MCU_NAVSS0_INTAGGR_0,
+    .id = TISCI_DEV_MCU_NAVSS0_UDMASS_INTA_0,
     .n_if   = 1,
     .p_if   = &tisci_if_MCU_NAVSS0_INTAGGR_0[0],
 };
@@ -8172,7 +8172,7 @@ const struct Sciclient_rmIrqIf *const tisci_if_MCU_NAVSS0_INTR_ROUTER_0[] = {
     &MCU_NAVSS0_INTR_ROUTER_0_outl_intr_32_63_to_MCU_R5FSS0_CORE1_intr_64_95,
 };
 static const struct Sciclient_rmIrqNode tisci_irq_MCU_NAVSS0_INTR_ROUTER_0 = {
-    .id = TISCI_DEV_MCU_NAVSS0_INTR_ROUTER_0,
+    .id = TISCI_DEV_MCU_NAVSS0_INTR_0,
     .n_if   = 2,
     .p_if   = &tisci_if_MCU_NAVSS0_INTR_ROUTER_0[0],
 };
@@ -8181,19 +8181,19 @@ static const struct Sciclient_rmIrqNode tisci_irq_MCU_NAVSS0_INTR_ROUTER_0 = {
 const struct Sciclient_rmIrqIf MCU_NAVSS0_MCRC_0_dma_event_intr_0_3_to_MCU_NAVSS0_INTAGGR_0_intaggr_levi_pend_0_3 = {
     .lbase  = 0,
     .len    = 4,
-    .rid    = TISCI_DEV_MCU_NAVSS0_INTAGGR_0,
+    .rid    = TISCI_DEV_MCU_NAVSS0_UDMASS_INTA_0,
     .rbase  = 0,
 };
 const struct Sciclient_rmIrqIf MCU_NAVSS0_MCRC_0_dma_event_intr_0_3_to_MCU_NAVSS0_INTR_ROUTER_0_in_intr_256_259 = {
     .lbase  = 0,
     .len    = 4,
-    .rid    = TISCI_DEV_MCU_NAVSS0_INTR_ROUTER_0,
+    .rid    = TISCI_DEV_MCU_NAVSS0_INTR_0,
     .rbase  = 256,
 };
 const struct Sciclient_rmIrqIf MCU_NAVSS0_MCRC_0_intaggr_vintr_pend_4_4_to_MCU_NAVSS0_INTR_ROUTER_0_in_intr_260_260 = {
     .lbase  = 4,
     .len    = 1,
-    .rid    = TISCI_DEV_MCU_NAVSS0_INTR_ROUTER_0,
+    .rid    = TISCI_DEV_MCU_NAVSS0_INTR_0,
     .rbase  = 260,
 };
 const struct Sciclient_rmIrqIf *const tisci_if_MCU_NAVSS0_MCRC_0[] = {

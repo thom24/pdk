@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                20.04.01
+                20.05.00
               </div>
             
           
@@ -168,13 +168,12 @@
             
   <div class="section" id="tisci-pm-system-reset-api-documentation">
 <h1>TISCI PM System Reset API Documentation<a class="headerlink" href="#tisci-pm-system-reset-api-documentation" title="Permalink to this headline">¶</a></h1>
-<p>This document describes the TISCI API set for issuing a warm reset to the
-system (system reset.)</p>
+<p>This document describes the TISCI API for issuing warm reset to a domain.</p>
 <div class="section" id="tisci-msg-sys-reset">
 <span id="pm-sysreset-msg-sys-reset"></span><h2>TISCI_MSG_SYS_RESET<a class="headerlink" href="#tisci-msg-sys-reset" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="objective">
 <h3>Objective<a class="headerlink" href="#objective" title="Permalink to this headline">¶</a></h3>
-<p>Request for a system wide warm reset.</p>
+<p>Request for a software warm reset of a domain.</p>
 </div>
 <div class="section" id="usage">
 <h3>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h3>
@@ -192,24 +191,38 @@ system (system reset.)</p>
 </tr>
 </tbody>
 </table>
-<p>This is used to issue a system wide warm reset, for example when user
-wants to reboot the device for any reason, like error recovery, installation
-of new software etc. The message typically doesn’t provide any return values,
-as the system wide reset is issued immediately.</p>
+<p>User can use this API to issue software warm reset of a domain. The domain
+definition may vary from SoC to SoC. Depending on the SoC, certain domain
+reset could be defined to be equivalent to a system-wide reset. The reset
+brings the device or part of the device to a known state after events such
+as power-up, hardware request, or software request. The domain reset can
+be used for error handling and recovery.</p>
+<p>To maintain backward compatibility, when a user leaves the domain parameter
+empty, the API would process the message with the DOMGRP_COMPATIBILITY as
+the domain value.</p>
+<p>After calling the TISCI_MSG_SYS_RESET API, the chosen domain will be
+deinitialized. The user is responsible for reconfiguring the devices in the
+chosen domain by resending the board configuration for baseport, power
+management, resource management, and security management. If the chosen
+domain reset would lead to system-wide reset, then no additional board
+configuration calls are necessary.</p>
+</div>
+<div class="section" id="macros-used-in-this-document">
+<h3>Macros Used in this Document<a class="headerlink" href="#macros-used-in-this-document" title="Permalink to this headline">¶</a></h3>
 </div>
 <div class="section" id="tisci-message-id">
-<h3>TISCI Message ID<a class="headerlink" href="#tisci-message-id" title="Permalink to this headline">¶</a></h3>
+<span id="pub-sysreset-tisci"></span><h3>TISCI Message ID<a class="headerlink" href="#tisci-message-id" title="Permalink to this headline">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">TISCI_MSG_SYS_RESET</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(0x0005U)</span></code></p>
 </div>
 <div class="section" id="message-data-structures">
 <h3>Message Data Structures<a class="headerlink" href="#message-data-structures" title="Permalink to this headline">¶</a></h3>
 <p><p><strong>struct tisci_msg_sys_reset_req</strong></p>
-<p>Empty request for TISCI_MSG_SYS_RESET.</p>
+<p>Request for TISCI_MSG_SYS_RESET.</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="27%" />
-<col width="43%" />
-<col width="31%" />
+<col width="15%" />
+<col width="24%" />
+<col width="60%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Parameter</th>
@@ -220,13 +233,17 @@ as the system wide reset is issued immediately.</p>
 <tbody valign="top">
 <tr class="row-even"><td>hdr</td>
 <td>struct tisci_header</td>
-<td>TISCI header.</td>
+<td>TISCI header to provide ACK/NAK flags to the host.</td>
+</tr>
+<tr class="row-odd"><td>domain</td>
+<td>domgrp_t</td>
+<td>Domain to be reset.</td>
 </tr>
 </tbody>
 </table>
-<p>Although this message is essentially empty and contains only a header
- a full data structure is created for consistency in implementation.</p>
 </p>
+<p>To maintain backward compatibility, when a user does not pass the domain
+argument, it would perform the SoC’s default reset behavior.</p>
 <p><p><strong>struct tisci_msg_sys_reset_resp</strong></p>
 <p>Empty response for TISCI_MSG_SYS_RESET.</p>
 <table border="1" class="docutils">
@@ -296,7 +313,7 @@ as the system wide reset is issued immediately.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'20.04.01',
+            VERSION:'20.05.00',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

@@ -342,8 +342,8 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
         },
         {
             .type = TISCI_RESASG_UTYPE(TISCI_DEV_DMASS0_PKTDMA_0, TISCI_RESASG_SUBTYPE_PKTDMA_RING_SAUL_TX_0_CHAN),
-            .start_resource = 80U,
-            .num_resource = 8U,
+            .start_resource = 81U,
+            .num_resource = 7U,
             .host_id = TISCI_HOST_ID_ALL,
         },
         {
@@ -378,8 +378,8 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
         },
         {
             .type = TISCI_RESASG_UTYPE(TISCI_DEV_DMASS0_PKTDMA_0, TISCI_RESASG_SUBTYPE_PKTDMA_RING_SAUL_RX_0_CHAN),
-            .start_resource = 144U,
-            .num_resource = 8U,
+            .start_resource = 145U,
+            .num_resource = 7U,
             .host_id = TISCI_HOST_ID_ALL,
         },
         {
@@ -426,8 +426,8 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
         },
         {
             .type = TISCI_RESASG_UTYPE(TISCI_DEV_DMASS0_PKTDMA_0, TISCI_RESASG_SUBTYPE_PKTDMA_SAUL_TX_0_CHAN),
-            .start_resource = 24U,
-            .num_resource = 1U,
+            .start_resource = 25U,
+            .num_resource = 0U,
             .host_id = TISCI_HOST_ID_ALL,
         },
         {
@@ -474,8 +474,8 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
         },
         {
             .type = TISCI_RESASG_UTYPE(TISCI_DEV_DMASS0_PKTDMA_0, TISCI_RESASG_SUBTYPE_PKTDMA_SAUL_RX_0_CHAN),
-            .start_resource = 17U,
-            .num_resource = 1U,
+            .start_resource = 18U,
+            .num_resource = 0U,
             .host_id = TISCI_HOST_ID_ALL,
         },
         {
@@ -486,8 +486,8 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
         },
         {
             .type = TISCI_RESASG_UTYPE(TISCI_DEV_DMASS0_PKTDMA_0, TISCI_RESASG_SUBTYPE_PKTDMA_SAUL_RX_1_CHAN),
-            .start_resource = 18U,
-            .num_resource = 1U,
+            .start_resource = 19U,
+            .num_resource = 0U,
             .host_id = TISCI_HOST_ID_ALL,
         },
         {

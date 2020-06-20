@@ -8,6 +8,7 @@
    :maxdepth: 1
 
    ./devgrp_usage
+   ./domgrp_usage
    ./secure_boot_signing
    ./hs_boardcfg_signing
    ./extended_otp

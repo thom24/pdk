@@ -45,8 +45,8 @@
 extern Board_initParams_t gBoardInitParams;
 
 uint32_t gBoardClkModuleMcuID[] = {
-    TISCI_DEV_MCU_ADC0,
-    TISCI_DEV_MCU_ADC1,
+    TISCI_DEV_MCU_ADC12_16FFC0,
+    TISCI_DEV_MCU_ADC12_16FFC1,
     TISCI_DEV_MCU_CPSW0,
     TISCI_DEV_MCU_TIMER0,
     TISCI_DEV_MCU_FSS0_HYPERBUS1P0_0,

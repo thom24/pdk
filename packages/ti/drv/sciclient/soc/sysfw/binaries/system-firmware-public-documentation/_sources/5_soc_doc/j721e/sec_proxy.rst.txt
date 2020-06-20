@@ -17,13 +17,13 @@ PE/Host documentation for further information
 Enumeration of Secure Proxies
 =============================
 
-+-------------+------------------------+
-|   Sproxy ID | Sproxy Name            |
-+=============+========================+
-|           0 | NAVSS0_SEC_PROXY_0     |
-+-------------+------------------------+
-|           1 | MCU_NAVSS0_SEC_PROXY_0 |
-+-------------+------------------------+
++-------------+-----------------------+
+|   Sproxy ID | Sproxy Name           |
++=============+=======================+
+|           0 | NAVSS0_SEC_PROXY_0    |
++-------------+-----------------------+
+|           1 | MCU_NAVSS0_SEC_PROXY0 |
++-------------+-----------------------+
 
 .. _soc_doc_j721e_public_sproxy_desc_sproxy_per_list:
 
@@ -249,10 +249,10 @@ Secure Proxy thread allocation for NAVSS0_SEC_PROXY_0
 |                      104 | write                       |                    2 | ICSSG_0     | notify_resp     | N/A                                                                        | N/A                                                                        |
 +--------------------------+-----------------------------+----------------------+-------------+-----------------+----------------------------------------------------------------------------+----------------------------------------------------------------------------+
 
-.. _soc_doc_j721e_public_sproxy_desc_sproxy_per_list_mcu_navss0_sec_proxy_0:
+.. _soc_doc_j721e_public_sproxy_desc_sproxy_per_list_mcu_navss0_sec_proxy0:
 
-Secure Proxy thread allocation for MCU_NAVSS0_SEC_PROXY_0
----------------------------------------------------------
+Secure Proxy thread allocation for MCU_NAVSS0_SEC_PROXY0
+--------------------------------------------------------
 
 +--------------------------+-----------------------------+----------------------+------------+-----------------+--------------------------+--------------------------+
 |   Secure Proxy Thread ID | Direction (write or read)   |   Number of Messages | Host       | Host Function   | IRQ (threshold)          | IRQ (error)              |

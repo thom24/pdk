@@ -506,7 +506,7 @@
             {
                 "source_file": "security/firewall/firewall.c",
                 "source_id": "fwl_reg_write_perm",
-                "source_linenumber": 100
+                "source_linenumber": 102
             }
         ]
     }

@@ -441,7 +441,7 @@ int32_t Sciclient_rmIrqSet(const struct tisci_msg_rm_irq_set_req *req,
 
     /* Program IA/VINT */
     if((TISCI_DEV_NAVSS0_UDMASS_INTAGGR_0 == req->ia_id) ||
-       (TISCI_DEV_MCU_NAVSS0_INTAGGR_0 == req->ia_id))
+       (TISCI_DEV_MCU_NAVSS0_UDMASS_INTA_0 == req->ia_id))
     {
         if((TISCI_MSG_VALUE_RM_IA_ID_VALID & req->valid_params) &&
            (TISCI_MSG_VALUE_RM_VINT_VALID & req->valid_params) &&
@@ -449,7 +449,7 @@ int32_t Sciclient_rmIrqSet(const struct tisci_msg_rm_irq_set_req *req,
         {
             rmObj = &gSciUdmaRmObjMain;
             eventOffset = req->global_event & 0x1FFFU;      /* Max 8K events */
-            if(TISCI_DEV_MCU_NAVSS0_INTAGGR_0 == req->ia_id)
+            if(TISCI_DEV_MCU_NAVSS0_UDMASS_INTA_0 == req->ia_id)
             {
                 rmObj = &gSciUdmaRmObjMcu;
                 eventOffset = req->global_event & 0x7FFU;   /* Max 2K events */
@@ -471,7 +471,7 @@ int32_t Sciclient_rmIrqSet(const struct tisci_msg_rm_irq_set_req *req,
        (TISCI_MSG_VALUE_RM_IA_ID_VALID & req->valid_params))
     {
         rmObj = &gSciUdmaRmObjMain;
-        if(TISCI_DEV_MCU_NAVSS0_INTAGGR_0 == req->ia_id)
+        if(TISCI_DEV_MCU_NAVSS0_UDMASS_INTA_0 == req->ia_id)
         {
             rmObj = &gSciUdmaRmObjMcu;
         }
@@ -494,8 +494,8 @@ int32_t Sciclient_rmIrqSet(const struct tisci_msg_rm_irq_set_req *req,
         }
 
         /* Program C66x IR */
-        if((TISCI_DEV_K3_C66_COREPAC_MAIN_0 == req->dst_id) ||
-           (TISCI_DEV_K3_C66_COREPAC_MAIN_1 == req->dst_id))
+        if((TISCI_DEV_C66SS0 == req->dst_id) ||
+           (TISCI_DEV_C66SS1 == req->dst_id))
         {
             //TODO: Hack till proper core support in TISCI
 #if defined (BUILD_C66X_1) || defined (BUILD_C66X_2)
@@ -683,7 +683,7 @@ int32_t Sciclient_rmIrqRelease(const struct tisci_msg_rm_irq_release_req *req,
 
     /* Disable IA/VINT */
     if((TISCI_DEV_NAVSS0_UDMASS_INTAGGR_0 == req->ia_id) ||
-       (TISCI_DEV_MCU_NAVSS0_INTAGGR_0 == req->ia_id))
+       (TISCI_DEV_MCU_NAVSS0_UDMASS_INTA_0 == req->ia_id))
     {
         if((TISCI_MSG_VALUE_RM_IA_ID_VALID & req->valid_params) &&
            (TISCI_MSG_VALUE_RM_VINT_VALID & req->valid_params) &&
@@ -691,7 +691,7 @@ int32_t Sciclient_rmIrqRelease(const struct tisci_msg_rm_irq_release_req *req,
         {
             rmObj = &gSciUdmaRmObjMain;
             eventOffset = req->global_event & 0x1FFFU;      /* Max 8K events */
-            if(TISCI_DEV_MCU_NAVSS0_INTAGGR_0 == req->ia_id)
+            if(TISCI_DEV_MCU_NAVSS0_UDMASS_INTA_0 == req->ia_id)
             {
                 rmObj = &gSciUdmaRmObjMcu;
                 eventOffset = req->global_event & 0x7FFU;   /* Max 2K events */
@@ -712,7 +712,7 @@ int32_t Sciclient_rmIrqRelease(const struct tisci_msg_rm_irq_release_req *req,
        (TISCI_MSG_VALUE_RM_IA_ID_VALID & req->valid_params))
     {
         rmObj = &gSciUdmaRmObjMain;
-        if(TISCI_DEV_MCU_NAVSS0_INTAGGR_0 == req->ia_id)
+        if(TISCI_DEV_MCU_NAVSS0_UDMASS_INTA_0 == req->ia_id)
         {
             rmObj = &gSciUdmaRmObjMcu;
         }
@@ -735,8 +735,8 @@ int32_t Sciclient_rmIrqRelease(const struct tisci_msg_rm_irq_release_req *req,
         }
 
         /* Reset MCU IR */
-        if((TISCI_DEV_K3_C66_COREPAC_MAIN_0 == req->dst_id) ||
-           (TISCI_DEV_K3_C66_COREPAC_MAIN_1 == req->dst_id))
+        if((TISCI_DEV_C66SS0 == req->dst_id) ||
+           (TISCI_DEV_C66SS1 == req->dst_id))
         {
 #if defined (BUILD_C66X_1) || defined (BUILD_C66X_2)
             CSL_IntrRouterCfg       c66xIrRegs;

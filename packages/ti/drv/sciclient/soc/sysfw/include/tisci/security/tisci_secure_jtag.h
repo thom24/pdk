@@ -72,7 +72,7 @@ struct tisci_msg_open_debug_fwls_req {
  *
  */
 struct tisci_msg_open_debug_fwls_resp {
-    struct tisci_header    hdr;
+    struct tisci_header hdr;
 } __attribute__((__packed__));
 #endif
 

@@ -49,7 +49,7 @@
  *
  * Host IDs for J721E device
  *
- * Data version: 190425_000000
+ * Data version: 200529_213657
  *
  */
 #ifndef TISCI_HOSTS_H

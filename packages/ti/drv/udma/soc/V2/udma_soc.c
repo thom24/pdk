@@ -224,7 +224,7 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
     CSL_intaggrGetCfg(pIaRegs);
 
     drvHandle->iaGemOffset  = CSL_NAVSS_GEM_MCU_UDMA_INTA0_SEVI_OFFSET;
-    drvHandle->devIdIa      = TISCI_DEV_MCU_NAVSS0_INTAGGR_0;
+    drvHandle->devIdIa      = TISCI_DEV_MCU_NAVSS0_UDMASS_INTA_0;
 #if defined (BUILD_MCU1_0)
     drvHandle->devIdCore    = TISCI_DEV_MCU_R5FSS0_CORE0;
 #else
@@ -300,7 +300,7 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
         drvHandle->maxProxy             = CSL_NAVSS_MCU_PROXY_NUM_PROXIES;
         drvHandle->maxRingMon           = CSL_NAVSS_MCU_RINGACC_NUM_MONITORS;
         drvHandle->devIdRing            = TISCI_DEV_MCU_NAVSS0_RINGACC0;
-        drvHandle->devIdProxy           = TISCI_DEV_MCU_NAVSS0_PROXY_0;
+        drvHandle->devIdProxy           = TISCI_DEV_MCU_NAVSS0_PROXY0;
         drvHandle->devIdUdma            = TISCI_DEV_MCU_NAVSS0_UDMAP0;
         drvHandle->devIdPsil            = TISCI_DEV_MCU_NAVSS0;
     }

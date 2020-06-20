@@ -60,7 +60,7 @@
  * \param hdr Common TI-SCI header
  */
 struct tisci_msg_get_soc_uid_req {
-    struct tisci_header    hdr;
+    struct tisci_header hdr;
 } __attribute__((__packed__));
 
 /**
@@ -72,7 +72,7 @@ struct tisci_msg_get_soc_uid_req {
  */
 struct tisci_msg_get_soc_uid_resp {
     struct tisci_header    hdr;
-    uint32_t                     soc_uid[UID_LEN_WORDS];
+    uint32_t            soc_uid[UID_LEN_WORDS];
 } __attribute__((__packed__));
 #endif
 

@@ -50,31 +50,29 @@
  * Resource Assignment Subtype definitions
  *
  */
-
 #ifndef TISCI_RESASG_TYPES_H
 #define TISCI_RESASG_TYPES_H
 
 /**
  * Resource assignment type shift
  */
-#define TISCI_RESASG_TYPE_SHIFT       (0x0006U)
+#define TISCI_RESASG_TYPE_SHIFT (0x0006U)
 /**
  * Resource assignment type mask
  */
-#define TISCI_RESASG_TYPE_MASK        (0xFFC0U)
-
+#define TISCI_RESASG_TYPE_MASK (0xFFC0U)
 /**
  * Resource assignment subtype shift
  */
-#define TISCI_RESASG_SUBTYPE_SHIFT    (0x0000U)
+#define TISCI_RESASG_SUBTYPE_SHIFT (0x0000U)
 /**
  * Resource assignment subtype mask
  */
-#define TISCI_RESASG_SUBTYPE_MASK     (0x003FU)
-
+#define TISCI_RESASG_SUBTYPE_MASK (0x003FU)
 /**
  * Macro to create unique resource assignment types using type and subtype
  */
+
 #define TISCI_RESASG_UTYPE(type, subtype) \
     (((type << TISCI_RESASG_TYPE_SHIFT) & TISCI_RESASG_TYPE_MASK) | \
      ((subtype << TISCI_RESASG_SUBTYPE_SHIFT) & TISCI_RESASG_SUBTYPE_MASK))
@@ -133,6 +131,11 @@
  * Total number of unique resource types for SoC
  */
 #define TISCI_RESASG_UTYPE_CNT 52U
+
+/**
+ * Total number of resource entries allowed for SoC
+ */
+#define TISCI_RESASG_ENTRIES_MAX (TISCI_RESASG_UTYPE_CNT * 2U)
 
 #endif /* TISCI_RESASG_TYPES_H */
 

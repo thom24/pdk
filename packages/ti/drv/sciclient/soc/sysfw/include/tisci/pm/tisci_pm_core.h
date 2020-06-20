@@ -75,10 +75,10 @@ struct tisci_msg_wake_reason_req {
  * \param time_ms Time spent in low power mode.
  */
 struct tisci_msg_wake_reason_resp {
-    struct tisci_header hdr;
-    char    mode[32];
-    char    reason[32];
-    uint32_t    time_ms;
+    struct tisci_header    hdr;
+    char            mode[32];
+    char            reason[32];
+    uint32_t            time_ms;
 } __attribute__((__packed__));
 
 /**
@@ -154,15 +154,14 @@ struct tisci_msg_goodbye_resp {
 } __attribute__((__packed__));
 
 /**
- * \brief Empty request for TISCI_MSG_SYS_RESET.
+ * \brief Request for TISCI_MSG_SYS_RESET.
  *
- * Although this message is essentially empty and contains only a header
- * a full data structure is created for consistency in implementation.
- *
- * \param hdr TISCI header.
+ * \param hdr TISCI header to provide ACK/NAK flags to the host.
+ * \param domain Domain to be reset.
  */
 struct tisci_msg_sys_reset_req {
     struct tisci_header hdr;
+    domgrp_t domain;
 } __attribute__((__packed__));
 
 /**

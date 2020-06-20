@@ -88,11 +88,11 @@ fi
 
 if [[ $FW_SOC == *"vlab"* ]]; then
   FW_SOC=${FW_SOC%-vlab}
-  FW_SOC_TYPE=gp-vlab-rom
+  FW_SOC_TYPE=gp-vlab
 fi
 if [[ $FW_SOC == *"zebu"* ]]; then
   FW_SOC=${FW_SOC%-zebu}
-  FW_SOC_TYPE=gp-zebu-rom
+  FW_SOC_TYPE=gp-zebu
 fi
 
 export SCI_CLIENT_IN_SOC_DIR=$SCI_CLIENT_DIR/soc/sysfw/binaries

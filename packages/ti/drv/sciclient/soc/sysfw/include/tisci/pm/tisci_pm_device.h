@@ -127,10 +127,10 @@
  * The desired state of the device.
  */
 struct tisci_msg_set_device_req {
-    struct tisci_header hdr;
-    uint32_t    id;
-    uint32_t    reserved;
-    uint8_t    state;
+    struct tisci_header    hdr;
+    uint32_t            id;
+    uint32_t            reserved;
+    uint8_t            state;
 } __attribute__((__packed__));
 
 /**
@@ -154,8 +154,8 @@ struct tisci_msg_set_device_resp {
  * Indicates which device to modify
  */
 struct tisci_msg_get_device_req {
-    struct tisci_header hdr;
-    uint32_t id;
+    struct tisci_header    hdr;
+    uint32_t            id;
 } __attribute__((__packed__));
 
 /**
@@ -178,11 +178,11 @@ struct tisci_msg_get_device_req {
  * The actual state of the hardware.
  */
 struct tisci_msg_get_device_resp {
-    struct tisci_header hdr;
-    uint32_t    context_loss_count;
-    uint32_t    resets;
-    uint8_t    programmed_state;
-    uint8_t    current_state;
+    struct tisci_header    hdr;
+    uint32_t            context_loss_count;
+    uint32_t            resets;
+    uint8_t            programmed_state;
+    uint8_t            current_state;
 } __attribute__((__packed__));
 
 /**
@@ -200,9 +200,9 @@ struct tisci_msg_get_device_resp {
  * actually set to insure compliance with the SoC specific reset requirements.
  */
 struct tisci_msg_set_device_resets_req {
-    struct tisci_header hdr;
-    uint32_t    id;
-    uint32_t    resets;
+    struct tisci_header    hdr;
+    uint32_t            id;
+    uint32_t            resets;
 } __attribute__((__packed__));
 
 /**

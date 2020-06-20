@@ -433,9 +433,9 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
             .host_id = TISCI_HOST_ID_ALL,
         },
         {
-            .num_resource = 7U,
+            .num_resource = 6U,
             .type = TISCI_RESASG_UTYPE(TISCI_DEV_NAVSS0_RINGACC0, TISCI_RESASG_SUBTYPE_RA_UDMAP_RX_H),
-            .start_resource = 153U,
+            .start_resource = 154U,
             .host_id = TISCI_HOST_ID_ALL,
         },
         {

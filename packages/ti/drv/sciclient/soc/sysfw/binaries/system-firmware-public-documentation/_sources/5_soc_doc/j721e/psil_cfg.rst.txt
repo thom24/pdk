@@ -18,13 +18,13 @@ Some System Firmware TISCI message APIs require the PSI-L Proxy device ID be
 provided as part of the request. Based on :doc:`J721E Device IDs <devices>`
 these are the valid PSI-L Proxy device IDs.
 
-+------------------------------+-------------------------+
-| PSI-L Proxy Device Name      |   PSI-L Proxy Device ID |
-+==============================+=========================+
-| J721E_DEV_NAVSS512L_MAIN_0   |                     199 |
-+------------------------------+-------------------------+
-| J721E_DEV_NAVSS_MCU_J7_MCU_0 |                     232 |
-+------------------------------+-------------------------+
++---------------------------+-------------------------+
+| PSI-L Proxy Device Name   |   PSI-L Proxy Device ID |
++===========================+=========================+
+| J721E_DEV_NAVSS0          |                     199 |
++---------------------------+-------------------------+
+| J721E_DEV_MCU_NAVSS0      |                     232 |
++---------------------------+-------------------------+
 
 .. _pub_soc_j721e_psil_thread_ids:
 

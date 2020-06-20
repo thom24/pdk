@@ -54,11 +54,11 @@ MEMORY
     MCU0_R5F_TCMB0 (RWIX) : origin=0x41010000    length=0x8000
 
     /*  Reset Vectors base address(RESET_VECTORS) should be 64 bytes aligned  */
-    RESET_VECTORS (X)           : origin=0x70000100 length=0x100
+    RESET_VECTORS (X)           : origin=0x70000000 length=0x100
 
     /* MCU0 memory used for sciclientTest. Available to app for dynamic use ~160KB */
     /* RBL uses 0x41C58000 and beyond. sciclientTest, at load cannot cross this */
-    OCMRAM_sciclientTest    (RWIX)   : origin=0x70000200 length=0x3F000-0x200
+    OCMRAM_sciclientTest    (RWIX)   : origin=0x70000100 length=0x3F000-0x100
 
     /* Used by sciclientTest at runtime to load SYSFW. Available to app for dynamic use */
     OCMRAM_sciclientTest_SYSFW (RWIX)   : origin=0x7003F000 length=0x41000

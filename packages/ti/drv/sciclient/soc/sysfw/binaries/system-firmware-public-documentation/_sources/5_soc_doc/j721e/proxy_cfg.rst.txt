@@ -18,13 +18,13 @@ Some System Firmware TISCI message APIs require the Proxy device ID be provided
 as part of the request. Based on :doc:`J721E Device IDs <devices>` these are the
 valid Proxy device IDs.
 
-+------------------------------+-------------------+
-| Proxy Device Name            |   Proxy Device ID |
-+==============================+===================+
-| J721E_DEV_NAVSS0_PROXY_0     |               210 |
-+------------------------------+-------------------+
-| J721E_DEV_MCU_NAVSS0_PROXY_0 |               234 |
-+------------------------------+-------------------+
++-----------------------------+-------------------+
+| Proxy Device Name           |   Proxy Device ID |
++=============================+===================+
+| J721E_DEV_NAVSS0_PROXY_0    |               210 |
++-----------------------------+-------------------+
+| J721E_DEV_MCU_NAVSS0_PROXY0 |               234 |
++-----------------------------+-------------------+
 
 .. _pub_soc_j721e_proxy_proxies:
 
@@ -47,9 +47,9 @@ based TISCI messages.
 +===================================+===============+
 | J721E_DEV_NAVSS0_PROXY_0          | 0 to 63       |
 +-----------------------------------+---------------+
-| J721E_DEV_MCU_NAVSS0_PROXY_0      | 0 to 0        |
+| J721E_DEV_MCU_NAVSS0_PROXY0       | 0 to 0        |
 | (**RESERVED BY SYSTEM FIRMWARE**) |               |
 +-----------------------------------+---------------+
-| J721E_DEV_MCU_NAVSS0_PROXY_0      | 1 to 63       |
+| J721E_DEV_MCU_NAVSS0_PROXY0       | 1 to 63       |
 +-----------------------------------+---------------+
 

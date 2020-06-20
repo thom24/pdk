@@ -217,7 +217,7 @@ void configureAudioDCSer(void)
      * AUDIO_EXT_REFCLK0 as output */
     Sciclient_pmSetModuleClkParent(TISCI_DEV_BOARD0,
                                    TISCI_DEV_BOARD0_AUDIO_EXT_REFCLK0_IN,
-                                   TISCI_DEV_BOARD0_AUDIO_EXT_REFCLK0_IN_PARENT_MCASP_MAIN_0_MCASP_AHCLKX_POUT_0,
+                                   TISCI_DEV_BOARD0_AUDIO_EXT_REFCLK0_IN_PARENT_MCASP_MAIN_0_MCASP_AHCLKX_POUT,
                                    SCICLIENT_SERVICE_WAIT_FOREVER);
 }
 #endif /* #if defined(AUDIO_DC_ANALOG_TEST) */
@@ -237,7 +237,7 @@ void McASP_Enable(void)
          * AUDIO_EXT_REFCLK2 as output */
         Sciclient_pmSetModuleClkParent(TISCI_DEV_BOARD0,
                                        TISCI_DEV_BOARD0_AUDIO_EXT_REFCLK2_IN,
-                                       TISCI_DEV_BOARD0_AUDIO_EXT_REFCLK2_IN_PARENT_MCASP_MAIN_0_MCASP_AHCLKX_POUT_0,
+                                       TISCI_DEV_BOARD0_AUDIO_EXT_REFCLK2_IN_PARENT_MCASP_MAIN_0_MCASP_AHCLKX_POUT,
                                        SCICLIENT_SERVICE_WAIT_FOREVER);
     }
     else
@@ -259,8 +259,8 @@ void McASP_Enable(void)
                                    SCICLIENT_SERVICE_WAIT_FOREVER);
     /* McASP2 AHCLKX selects AUDIO_EXT_REFCLK1 */
     Sciclient_pmSetModuleClkParent(TISCI_DEV_MCASP2,
-                                   TISCI_DEV_MCASP2_MCASP_AHCLKX_PIN_0,
-                                   TISCI_DEV_MCASP2_MCASP_AHCLKX_PIN_0_PARENT_MCASP_AHCLKO_MUX_OUT1 ,
+                                   TISCI_DEV_MCASP2_MCASP_AHCLKX_PIN,
+                                   TISCI_DEV_MCASP2_MCASP_AHCLKX_PIN_PARENT_MCASP_AHCLKO_MUX_OUT1 ,
                                    SCICLIENT_SERVICE_WAIT_FOREVER);
 
     /* McASP6 AUXCLK selects MAIN_PLL4_HSDIV0_CLKOUT */
@@ -271,8 +271,8 @@ void McASP_Enable(void)
 
     /* Select McASP6_AHCLKR to use AUDIO_EXT_REFCLK1 */
     Sciclient_pmSetModuleClkParent(TISCI_DEV_BOARD0,
-                                   TISCI_DEV_MCASP6_MCASP_AHCLKR_PIN_0,
-                                   TISCI_DEV_MCASP6_MCASP_AHCLKR_PIN_0_PARENT_MCASP_AHCLKO_MUX_OUT1,
+                                   TISCI_DEV_MCASP6_MCASP_AHCLKR_PIN,
+                                   TISCI_DEV_MCASP6_MCASP_AHCLKR_PIN_PARENT_MCASP_AHCLKO_MUX_OUT1,
                                    SCICLIENT_SERVICE_WAIT_FOREVER);
 
     /* Enable Frame sync for McASP6 which is used as REFCLK for McASP0 by default */
@@ -288,7 +288,7 @@ void McASP_Enable(void)
      * AUDIO_EXT_REFCLK2 as output */
     Sciclient_pmSetModuleClkParent(TISCI_DEV_BOARD0,
                                    TISCI_DEV_BOARD0_AUDIO_EXT_REFCLK2_IN,
-                                   TISCI_DEV_BOARD0_AUDIO_EXT_REFCLK2_IN_PARENT_MCASP_MAIN_10_MCASP_AHCLKX_POUT_0,
+                                   TISCI_DEV_BOARD0_AUDIO_EXT_REFCLK2_IN_PARENT_MCASP_MAIN_10_MCASP_AHCLKX_POUT,
                                    SCICLIENT_SERVICE_WAIT_FOREVER);
 
     /* Send AUDIO_REFCLK2 OBSCLK0 for debug purposes */

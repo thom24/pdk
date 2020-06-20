@@ -134,13 +134,15 @@ if [ "$SKIP_CHECKOUT" != "YES" ]; then
 
     $ECHO "Modifying SR2 headers such that they don't cause any collisions with the SR1 headers"
 
+    # Remove files which are the same between AM65 and AM65 SR2
+    $RM -fr include/am65x_sr2/tisci_boardcfg_constraints.h
+    $RM -fr include/am65x_sr2/tisci_hosts.h
+    $RM -fr include/am65x_sr2/tisci_resasg_types.h
+    $RM -fr include/am65x_sr2/tisci_sec_proxy.h
+
     # Include guards need to be modified to remove collision with SR1
-    sed -i 's/SOC_AM6_CLOCKS_H/&_SR2/' include/am65x_sr2/tisci_clocks.h
     sed -i 's/SOC_TISCI_DEVICES_H/&_SR2/' include/am65x_sr2/tisci_devices.h
-    sed -i 's/TISCI_BOARDCFG_CONSTRAINTS_H/&_SR2/' include/am65x_sr2/tisci_boardcfg_constraints.h
-    sed -i 's/TISCI_HOSTS_H/&_SR2/' include/am65x_sr2/tisci_hosts.h
-    sed -i 's/AM6_TISCI_SEC_PROXY_H/&_SR2/' include/am65x_sr2/tisci_sec_proxy.h
-    sed -i 's/TISCI_RESASG_TYPES_H/&_SR2/' include/am65x_sr2/tisci_resasg_types.h
+    sed -i 's/SOC_AM6_CLOCKS_H/&_SR2/' include/am65x_sr2/tisci_clocks.h
 
     # RM cfg count needs to be modified to remove collision with SR1
     sed -i 's/TISCI_RESASG_UTYPE_CNT/&_SR2/' include/am65x_sr2/tisci_resasg_types.h
@@ -165,7 +167,14 @@ if [ "$SKIP_BUILD" != "YES" ]; then
     make -j -s sciclient_ccs_init_clean BOARD=am65xx_evm
     make -j -s sciclient_ccs_init BOARD=am65xx_evm
     $COPY $ROOTDIR/ti/binary/sciclient_ccs_init/bin/am65xx/sciclient_ccs_init_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/am65xx/
-    
+   
+    # AM64xx
+    make -j -s sciclient_boardcfg BOARD=am64x_evm
+    make -j -s sciclient_boardcfg BOARD=am64x_evm BUILD_HS=yes
+    make -j -s sciclient_ccs_init_clean BOARD=am64x_evm
+    make -j -s sciclient_ccs_init BOARD=am64x_evm
+    $COPY $ROOTDIR/ti/binary/sciclient_ccs_init/bin/am64x/sciclient_ccs_init_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/am64x/
+ 
     cd -
 fi
 
@@ -179,6 +188,9 @@ if [ "$SKIP_GEN_BIN" != "YES" ];  then
     ./firmwareHeaderGen.sh am65x_sr2
     ./firmwareHeaderGen.sh j721e
     ./firmwareHeaderGen.sh j721e-hs
+    ./firmwareHeaderGen.sh am64x-vlab
+    ./firmwareHeaderGen.sh am64x-zebu
+
 
 fi
 

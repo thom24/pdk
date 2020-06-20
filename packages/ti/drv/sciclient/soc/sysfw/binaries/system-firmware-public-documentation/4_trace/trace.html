@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                20.04.01
+                20.05.00
               </div>
             
           
@@ -1838,12 +1838,18 @@ action bit set</td>
 <td>[21:12]   - Device ID
 [11:0]    - Error value</td>
 </tr>
-<tr class="row-odd"><td>FAIL (modifier)</td>
+<tr class="row-odd"><td>PM_SYS_RESET</td>
+<td>34</td>
+<td>Reset of entire system or a domain</td>
+<td>[21:14]   - Domain
+[13:0]    - Error value</td>
+</tr>
+<tr class="row-even"><td>FAIL (modifier)</td>
 <td>0x40</td>
 <td>Action failed when action bit set</td>
 <td>N/A</td>
 </tr>
-<tr class="row-even"><td>EXCLUSIVE_BUSY</td>
+<tr class="row-odd"><td>EXCLUSIVE_BUSY</td>
 <td>123</td>
 <td>Other hosts have enabled the device
 which exclusive access has been
@@ -1852,24 +1858,24 @@ requested</td>
 [11:6]    - Requesting host ID
 [5:0]     - One of other host IDs</td>
 </tr>
-<tr class="row-odd"><td>EXCLUSIVE_DEVICE</td>
+<tr class="row-even"><td>EXCLUSIVE_DEVICE</td>
 <td>124</td>
 <td>Another host has exclusive access
 to the requested device</td>
 <td>[21:8]    - Device ID
 [7:0]     - Requesting host ID</td>
 </tr>
-<tr class="row-even"><td>INVALID_STATE</td>
+<tr class="row-odd"><td>INVALID_STATE</td>
 <td>125</td>
 <td>API attempted to set invalid state</td>
 <td>Target state</td>
 </tr>
-<tr class="row-odd"><td>BAD_DEVICE</td>
+<tr class="row-even"><td>BAD_DEVICE</td>
 <td>126</td>
 <td>API received bad device ID</td>
 <td>Device ID</td>
 </tr>
-<tr class="row-even"><td>GENERIC_DEBUG</td>
+<tr class="row-odd"><td>GENERIC_DEBUG</td>
 <td>127</td>
 <td>Generic Debug Message</td>
 <td>Any use.</td>
@@ -1922,7 +1928,7 @@ to the requested device</td>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'20.04.01',
+            VERSION:'20.05.00',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

@@ -420,8 +420,8 @@
                     {
                         "name": "RESASG_UTYPE(AM6_DEV_NAVSS0_RINGACC0, RESASG_SUBTYPE_RA_UDMAP_RX_H)",
                         "type": 11973,
-                        "start_resource": 153,
-                        "num_resource": 7
+                        "start_resource": 154,
+                        "num_resource": 6
                     },
                     {
                         "name": "RESASG_UTYPE(AM6_DEV_NAVSS0_RINGACC0, RESASG_SUBTYPE_RA_UDMAP_TX_H)",
@@ -621,6 +621,11 @@
                         "start_resource": 0,
                         "num_resource": 32
                     }
+                ],
+                "constraints": [
+                    {
+                        "max_resource_entries": 104
+                    }
                 ]
             },
             "am65x_sr2": {
@@ -742,8 +747,8 @@
                     {
                         "name": "RESASG_UTYPE(AM6_DEV_NAVSS0_RINGACC0, RESASG_SUBTYPE_RA_UDMAP_RX_H)",
                         "type": 11973,
-                        "start_resource": 153,
-                        "num_resource": 7
+                        "start_resource": 154,
+                        "num_resource": 6
                     },
                     {
                         "name": "RESASG_UTYPE(AM6_DEV_NAVSS0_RINGACC0, RESASG_SUBTYPE_RA_UDMAP_TX_H)",
@@ -942,6 +947,11 @@
                         "type": 12491,
                         "start_resource": 0,
                         "num_resource": 32
+                    }
+                ],
+                "constraints": [
+                    {
+                        "max_resource_entries": 104
                     }
                 ]
             },
@@ -1349,6 +1359,11 @@
                         "start_resource": 36,
                         "num_resource": 28
                     }
+                ],
+                "constraints": [
+                    {
+                        "max_resource_entries": 420
+                    }
                 ]
             },
             "am64x": {
@@ -1584,8 +1599,8 @@
                     {
                         "name": "RESASG_UTYPE(AM64X_DEV_DMASS0_PKTDMA_0, RESASG_SUBTYPE_PKTDMA_RING_SAUL_TX_0_CHAN)",
                         "type": 1938,
-                        "start_resource": 80,
-                        "num_resource": 8
+                        "start_resource": 81,
+                        "num_resource": 7
                     },
                     {
                         "name": "RESASG_UTYPE(AM64X_DEV_DMASS0_PKTDMA_0, RESASG_SUBTYPE_PKTDMA_RING_SAUL_TX_1_CHAN)",
@@ -1620,8 +1635,8 @@
                     {
                         "name": "RESASG_UTYPE(AM64X_DEV_DMASS0_PKTDMA_0, RESASG_SUBTYPE_PKTDMA_RING_SAUL_RX_0_CHAN)",
                         "type": 1944,
-                        "start_resource": 144,
-                        "num_resource": 8
+                        "start_resource": 145,
+                        "num_resource": 7
                     },
                     {
                         "name": "RESASG_UTYPE(AM64X_DEV_DMASS0_PKTDMA_0, RESASG_SUBTYPE_PKTDMA_RING_SAUL_RX_1_CHAN)",
@@ -1668,8 +1683,8 @@
                     {
                         "name": "RESASG_UTYPE(AM64X_DEV_DMASS0_PKTDMA_0, RESASG_SUBTYPE_PKTDMA_SAUL_TX_0_CHAN)",
                         "type": 1957,
-                        "start_resource": 24,
-                        "num_resource": 1
+                        "start_resource": 25,
+                        "num_resource": 0
                     },
                     {
                         "name": "RESASG_UTYPE(AM64X_DEV_DMASS0_PKTDMA_0, RESASG_SUBTYPE_PKTDMA_SAUL_TX_1_CHAN)",
@@ -1716,8 +1731,8 @@
                     {
                         "name": "RESASG_UTYPE(AM64X_DEV_DMASS0_PKTDMA_0, RESASG_SUBTYPE_PKTDMA_SAUL_RX_0_CHAN)",
                         "type": 1965,
-                        "start_resource": 17,
-                        "num_resource": 1
+                        "start_resource": 18,
+                        "num_resource": 0
                     },
                     {
                         "name": "RESASG_UTYPE(AM64X_DEV_DMASS0_PKTDMA_0, RESASG_SUBTYPE_PKTDMA_FLOW_SAUL_RX_0_CHAN)",
@@ -1728,8 +1743,8 @@
                     {
                         "name": "RESASG_UTYPE(AM64X_DEV_DMASS0_PKTDMA_0, RESASG_SUBTYPE_PKTDMA_SAUL_RX_1_CHAN)",
                         "type": 1967,
-                        "start_resource": 18,
-                        "num_resource": 1
+                        "start_resource": 19,
+                        "num_resource": 0
                     },
                     {
                         "name": "RESASG_UTYPE(AM64X_DEV_DMASS0_PKTDMA_0, RESASG_SUBTYPE_PKTDMA_FLOW_SAUL_RX_1_CHAN)",
@@ -1802,6 +1817,11 @@
                         "type": 2124,
                         "start_resource": 20,
                         "num_resource": 12
+                    }
+                ],
+                "constraints": [
+                    {
+                        "max_resource_entries": 144
                     }
                 ]
             }

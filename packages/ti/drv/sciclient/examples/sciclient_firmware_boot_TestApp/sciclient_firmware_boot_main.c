@@ -67,7 +67,9 @@
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
 
-/* None */
+#if defined (SOC_AM64X)
+#define PRINT_UART
+#endif
 
 /* ========================================================================== */
 /*                            Global Variables                                */
@@ -151,6 +153,7 @@ void App_printPerfStats(void);
 static int32_t App_boardCfgTest(void);
 static int32_t App_getRevisionTestPol(void);
 void _resetvectors (void);
+
 
 /* ========================================================================== */
 /*                          Function Definitions                              */
@@ -248,11 +251,11 @@ int32_t App_loadFirmwareTest(void)
     }
     else
     {
-        while (loop) {;}
 #ifdef PRINT_UART
         App_sciclientPrintf(
                           " DMSC Loading the Firmware...FAILED \n");
 #endif
+        while (loop) {;}
     }
 
     return status;
