@@ -83,7 +83,7 @@ Board_STATUS Board_init(Board_initCfg cfg)
     Board_STATUS            ret = BOARD_SOK;
     Sciclient_ConfigPrms_t  sciClientCfg;
 
-#if !defined (QT_BUILD)
+#if !defined (SIM_BUILD)
     if (cfg & BOARD_INIT_UART_STDIO)
         ret = Board_uartStdioInit();
     if (ret != BOARD_SOK)

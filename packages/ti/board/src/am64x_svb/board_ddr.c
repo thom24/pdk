@@ -49,7 +49,7 @@ static LPDDR4_PrivateData gBoardDdrPd;
 /* Local function prototypes */
 static int32_t emif_ConfigureECC(void);
 
-#ifndef VLAB_SIM
+#ifndef SIM_BUILD
 /**
  * \brief   Set DDR PLL to bypass, efectively 20MHz or 19.2MHz (on silicon).
  *
@@ -91,7 +91,7 @@ static Board_STATUS Board_DDRSetPLLClock(void)
 
     return status;
 }
-#endif /* VLAB_SIM */
+#endif /* SIM_BUILD */
 
 /**
  * \brief   Controls the DDR PLL clock change sequence during inits
@@ -100,7 +100,7 @@ static Board_STATUS Board_DDRSetPLLClock(void)
  */
 static void Board_DDRChangeFreqAck(void)
 {
-#ifndef VLAB_SIM
+#ifndef SIM_BUILD
     uint32_t reqType;
     uint32_t regVal;
     volatile uint32_t counter;
@@ -111,7 +111,7 @@ static void Board_DDRChangeFreqAck(void)
 #endif
     BOARD_DEBUG_LOG("--->>> LPDDR4 Initialization is in progress ... <<<---\n");
 
-#ifdef VLAB_SIM
+#ifdef SIM_BUILD
     printf("--->>> Waiting for frequency change request ... <<<---\n");
     //wait for first freq change request
     while(((HW_RD_REG32(BOARD_DDR_FSP_CLKCHNG_REQ_ADDR)) & 0x80) == 0x0);
@@ -426,10 +426,10 @@ static Board_STATUS emif_ConfigureECC(void)
 Board_STATUS Board_DDRInit(Bool eccEnable)
 {
     Board_STATUS status = BOARD_SOK;
-#ifndef VLAB_SIM
+#ifndef SIM_BUILD
     /* PLL should be bypassed while configuring the DDR */
     Board_DDRSetPLLExtBypass();
-#endif /* VLAB_SIM */
+#endif /* SIM_BUILD */
     /* Partition5 lockkey0 */
     HW_WR_REG32((CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK5_KICK0),
                 KICK0_UNLOCK);

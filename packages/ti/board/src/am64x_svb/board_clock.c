@@ -682,7 +682,7 @@ Board_STATUS Board_moduleClockInit(void)
     }
 
 #ifdef ENABLE_PSC_REG_ACCESS   
-#ifdef VLAB_SIM
+#ifdef SIM_BUILD
 #ifdef BUILD_MPU
     status |= Board_unlockMMR();
     status |= MAIN_PSC_Peripheral_PowerUp();

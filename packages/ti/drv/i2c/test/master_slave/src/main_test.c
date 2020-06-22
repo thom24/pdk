@@ -90,10 +90,6 @@
 /* Board Header files */
 #include <ti/board/board.h>
 
-#if defined(SOC_TPR12)
-#define QT_BUILD
-#endif
-
 /*
  * slave address for master/slave board to board test, by default,
  * all the AM boards own slave address is set to 0x70 and all the
@@ -550,7 +546,7 @@ static bool I2C_test_master_slave(void *arg)
         I2C_log("I2C initialized\n");
     }
 
-#if !defined(QT_BUILD)
+#if !defined(SIM_BUILD)
     if (cbMode == true)
     {
         testNum = I2C_NUM_XFERS;
@@ -587,7 +583,7 @@ static bool I2C_test_master_slave(void *arg)
              * master sleep for 1 second after each transfer
              * to sync with slave transfer
              */
-	    #if !defined(QT_BUILD)
+	    #if !defined(SIM_BUILD)
             Task_sleep(1000);
 	    #else
             Task_sleep(10);
@@ -685,7 +681,7 @@ Void slaveTaskFxn (UArg arg0, UArg arg1)
 
     if(testFail == true)
     {
-#if !defined(QT_BUILD)
+#if !defined(SIM_BUILD)
         UART_printStatus("\n Some tests have failed. \n");
 #else
         I2C_log("\n Some tests have failed. \n");
@@ -693,7 +689,7 @@ Void slaveTaskFxn (UArg arg0, UArg arg1)
     }
     else
     {
-#if !defined(QT_BUILD)
+#if !defined(SIM_BUILD)
         UART_printStatus("\n All tests have passed. \n");
 #else
         I2C_log("\n All tests have passed. \n");
@@ -738,7 +734,7 @@ Void masterTaskFxn (UArg arg0, UArg arg1)
 
     if(testFail == true)
     {
-#if !defined(QT_BUILD)
+#if !defined(SIM_BUILD)
         UART_printStatus("\n Some tests have failed. \n");
 #else
         I2C_log("\n Some tests have failed. \n");
@@ -746,7 +742,7 @@ Void masterTaskFxn (UArg arg0, UArg arg1)
     }
     else
     {
-#if !defined(QT_BUILD)
+#if !defined(SIM_BUILD)
         UART_printStatus("\n All tests have passed. \n");
 #else
         I2C_log("\n All tests have passed. \n");

@@ -191,10 +191,9 @@ uint32_t SOC_translateAddressTPR12(uint32_t x)
 //#define TEST_DBG_DISABLE_LINKED
 //#define TEST_DBG_DISABLE_ERROR
 
-#define QT_BUILD                    (1)
 /* Comment above line when running from the EVM. */
 
-#if defined (QT_BUILD)
+#if defined (SIM_BUILD)
 #define OSAL_DELAY_SMALL            (1U)
 #define OSAL_DELAY_BIG              (1U)
 #else

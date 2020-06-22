@@ -82,7 +82,7 @@ static uint32_t Board_getFlashIntf(uint32_t deviceId)
             break;
         }
 
-#if defined(VLAB_SIM)
+#if defined(SIM_BUILD)
         case BOARD_FLASH_ID_MT35XU512ABA1G12:
 #else
         case BOARD_FLASH_ID_MT35XU512ABA1G12:

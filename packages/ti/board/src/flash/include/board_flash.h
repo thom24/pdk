@@ -108,7 +108,7 @@ typedef int32_t Board_flash_STATUS;       /** Board Flash API return type */
 #define BOARD_FLASH_ID_S25FL256S           (0x0219U)  /**< Spansion 32MB NOR flash */
 #define BOARD_FLASH_ID_MT29W160EB          (0x2249U) /**< Micron 2MB NOR flash */
 #define BOARD_FLASH_ID_MT29F4G08ABAEAWP    (0xDC90U) /**< Micron 512MB NAND flash */
-#if defined(VLAB_SIM)
+#if defined(SIM_BUILD)
 #define BOARD_FLASH_ID_MT35XU512ABA1G12    (0x5B1AU) /**< J7 VLAB SIM flash ID */
 #define BOARD_FLASH_ID_MT35XU256ABA1G12    (0x5B1AU) /**< AM64x VLAB SIM flash ID */
 #else

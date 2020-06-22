@@ -43,7 +43,7 @@
 #include "board_pinmux.h"
 
 #ifndef BUILD_M4F
-#ifdef VLAB_SIM
+#ifdef SIM_BUILD
 /* am64xx_main_padcfg_ctrl_mmr */
 #define MAIN_PADCONFIG_CTRL_BASE    0x000F0000
 #define CTRL_MMR0_PARTITION_SIZE    0x4000
@@ -108,7 +108,7 @@ void Board_spiPinmxCfg()
     }
 }
 
-#endif  /* #ifdef VLAB_SIM */
+#endif  /* #ifdef SIM_BUILD */
 #endif  /* #ifndef BUILD_M4F */
 
 /* Default pinmux configuration of UART Tx pin used by ROM/SBL */
@@ -127,7 +127,7 @@ Board_STATUS Board_pinmuxConfig (void)
     HW_WR_REG32(BOARD_UART_TX_LOCK_KICK_ADDR, KICK0_UNLOCK_VAL);
     HW_WR_REG32(BOARD_UART_TX_LOCK_KICK_ADDR + 4U, KICK1_UNLOCK_VAL);
 
-#ifdef VLAB_SIM
+#ifdef SIM_BUILD
     Board_uartPinmxCfg();
     Board_ospiPinmxCfg();
     Board_spiPinmxCfg();
@@ -169,7 +169,7 @@ Board_STATUS Board_pinmuxConfig (void)
             }
         }
     }
-#endif /* #ifdef VLAB_SIM */
+#endif /* #ifdef SIM_BUILD */
 #endif /* #ifndef BUILD_M4F */
     return BOARD_SOK;
 }

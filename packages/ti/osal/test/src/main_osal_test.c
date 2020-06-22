@@ -73,7 +73,6 @@
  **********************************************************************/
 #define TWO_TIMER_INTERRUPT_TEST 0
 #if defined(SOC_TPR12)
-#define QT_BUILD
 #define ENABLE_DEBUG_LOG_TEST	1
 #endif
 
@@ -361,7 +360,7 @@ UT_Timer_Type_t  timer_type =             UT_Timer_TIMER64;
 #elif defined(SOC_TPR12)
     UT_Timer_Type_t  timer_type =           UT_Timer_RTITIMER;
 #define OSAL_TEST_TIMER_ID                    (TimerP_ANY)
-#if defined(QT_BUILD)
+#if defined(SIM_BUILD)
 #define OSAL_TEST_TIMER_PERIOD                (500U)
 #else
 #define OSAL_TEST_TIMER_PERIOD                (5000U)
@@ -380,7 +379,7 @@ UT_Timer_Type_t  timer_type   =           UT_Timer_DMTIMER;
   #endif
 #endif
 
-#if defined(QT_BUILD)
+#if defined(SIM_BUILD)
 #define      OSAL_GET_TIME_MAX_SAMPLES  (10U)
 #else
 #define      OSAL_GET_TIME_MAX_SAMPLES  (20U)
@@ -388,7 +387,7 @@ UT_Timer_Type_t  timer_type   =           UT_Timer_DMTIMER;
 volatile uint32_t timerIsrCount = 0;
 volatile uint32_t timerIsr2Count = 0;
 
-#if defined(QT_BUILD)
+#if defined(SIM_BUILD)
 #define OSAL_TIMER_TEST_MAX_INTERRUPTS      (10U)
 #else
 #define OSAL_TIMER_TEST_MAX_INTERRUPTS      (100U)
@@ -425,7 +424,7 @@ void timerIsr2(void *arg)
 /*
  * ========= Osal Delay Test function =========
  */
-#if defined(QT_BUILD)
+#if defined(SIM_BUILD)
 #define OSAL_DELAY_TIME         1
 #else
 #define OSAL_DELAY_TIME         10
@@ -1221,7 +1220,7 @@ bool OSAL_log_test()
 
 #ifndef BARE_METAL
 #include <ti/sysbios/knl/Clock.h>
-#ifndef QT_BUILD
+#ifndef SIM_BUILD
 #define   OSAL_TASKP_TEST_ITERATION    (10U)
 #define   OSAL_TASKP_TEST_1MS          (1000U)
 #define   OSAL_TASKP_TEST_TICKS        (1000U)

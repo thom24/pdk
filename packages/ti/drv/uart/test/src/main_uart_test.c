@@ -99,7 +99,6 @@
 
 
 #if defined(SOC_TPR12)
-#define QT_BUILD
 #define UART_RX_LOOPBACK_ONLY
 #define UART_API2_NOT_SUPPORTED
 #define UART_NO_FIFO
@@ -148,7 +147,7 @@ typedef struct UART_Tests_s
 #define UART_RDVERIFY_READ_LEN (4U)
 
 /* Timeout value of read and write */
-#ifdef QT_BUILD
+#ifdef SIM_BUILD
 #define UART_TEST_TIMEOUT      (50U)
 #else
 #define UART_TEST_TIMEOUT      (5000U)
@@ -1289,7 +1288,7 @@ bool UART_test_read_write_cancel(bool dmaMode)
         goto Err;
     }
     /* Delay for 10 seconds to allow user to enter chars */
-#if !defined(QT_BUILD)
+#if !defined(SIM_BUILD)
     Osal_delay(10000);
 #else
     Osal_delay(100);
@@ -2840,7 +2839,7 @@ bool UART_test_profile_tx(bool dmaMode)
     UART_Stats      stats;
     char            testDescription[128];
 
-#if defined(QT_BUILD)
+#if defined(SIM_BUILD)
     numDataSize = 3;
 #endif
 
@@ -3179,7 +3178,7 @@ UART_Tests Uart_tests[] =
 void UART_test_print_test_desc(UART_Tests *test)
 {
 
-#if !defined(QT_BUILD)
+#if !defined(SIM_BUILD)
     UART_Handle uart = NULL;
     UART_Params uartParams;
     char        testIdPrompt[16] = "\r\n UART UT ";
@@ -3213,7 +3212,7 @@ void UART_test_print_test_desc(UART_Tests *test)
 
 void UART_test_print_test_result(UART_Tests *test, bool pass)
 {
-#if !defined(QT_BUILD)
+#if !defined(SIM_BUILD)
     UART_Handle uart = NULL;
     UART_Params uartParams;
     char        testIdPrompt[16] = "\r\n UART UT ";
@@ -3257,7 +3256,7 @@ void UART_test_print_test_results(bool pass)
     const char  resultPass[32] = "\r\n All tests have passed. \r\n";
     const char  resultFail[32] = "\r\n Some tests have failed. \r\n";
 
-#if !defined(QT_BUILD)
+#if !defined(SIM_BUILD)
     /* UART SoC init configuration */
     UART_initConfig(false);
 

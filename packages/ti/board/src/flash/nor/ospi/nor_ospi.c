@@ -322,7 +322,7 @@ NOR_HANDLE Nor_ospiOpen(uint32_t norIntf, uint32_t portNum, void *params)
             OSPI_socGetInitCfg(portNum, &ospi_cfg);
             if (ospi_cfg.xferLines == OSPI_XFER_LINES_OCTAL)
             {
-#if defined (VLAB_SIM)
+#if defined (SIM_BUILD)
                 /* workaround to reset memory for Zebu */
                 ospi_cfg.xferLines = OSPI_XFER_LINES_SINGLE;
                 OSPI_socSetInitCfg(portNum, &ospi_cfg);

@@ -53,7 +53,7 @@ extern "C" {
 
 #define BOARD_SOC_DDR_START_ADDR                        (0x80000000U)
 
-#ifdef VLAB_SIM
+#ifdef SIM_BUILD
 /* Memory sections */
 #define BOARD_DDR_START_ADDR                            (0x90000000U)
 #define BOARD_DDR_SIZE                                  (512* 1024 * 1024UL)
@@ -69,7 +69,7 @@ extern "C" {
 
 /* Note with ECC enabled, all memory is not usable: 1/8 memory used for inline ECC */
 #define BOARD_DDR_ECC_END_ADDR                          (0xF1FFFFFFU)
-#endif /* VLAB_SIM */
+#endif /* SIM_BUILD */
 
 /* UART LLD instance number for MAIN UART0 port */
 #define BOARD_UART0_INSTANCE                            (0U)
@@ -81,7 +81,7 @@ extern "C" {
 /* default UART instance for A53 and R5 cores in the Main domain */ 
 #define BOARD_UART_INSTANCE                             (BOARD_UART0_INSTANCE)
 #else
-#ifdef VLAB_SIM
+#ifdef SIM_BUILD
 #define BOARD_UART_INSTANCE                             (BOARD_UART0_INSTANCE)
 #else
 /* default UART instance for M4 core in the MCU domain */ 
