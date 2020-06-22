@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -58,18 +58,6 @@
 #include "board_utils.h"
 #include "board_serdes_cfg.h"
 #include <ti/drv/sciclient/sciclient.h>
-
-Board_gblObj Board_obj[BOARD_I2C_PORT_CNT] = {
-    {NULL, BOARD_SOC_DOMAIN_MAIN, 0, CSL_I2C0_CFG_BASE},
-    {NULL, BOARD_SOC_DOMAIN_MAIN, 1, CSL_I2C1_CFG_BASE},
-    {NULL, BOARD_SOC_DOMAIN_MAIN, 2, CSL_I2C2_CFG_BASE},
-    {NULL, BOARD_SOC_DOMAIN_MAIN, 3, CSL_I2C3_CFG_BASE},
-    {NULL, BOARD_SOC_DOMAIN_MAIN, 4, CSL_I2C4_CFG_BASE},
-    {NULL, BOARD_SOC_DOMAIN_MAIN, 5, CSL_I2C5_CFG_BASE},
-    {NULL, BOARD_SOC_DOMAIN_MAIN, 6, CSL_I2C6_CFG_BASE},
-    {NULL, BOARD_SOC_DOMAIN_MCU,  0, CSL_MCU_I2C0_CFG_BASE},
-    {NULL, BOARD_SOC_DOMAIN_WKUP, 0, CSL_WKUP_I2C0_CFG_BASE}
-};
 
 static bool gBoardSysInitDone = 0;
 
@@ -193,8 +181,6 @@ static Board_STATUS Board_sysDeinit(void)
  *  BOARD_INIT_ENETCTRL_CPSW9G -
  *      Enabled configurations for CPSW9G Ethernet ports with the respective modes
  *
- *  BOARD_INIT_ENETCTRL_ICSS -
- *      Enabled configurations for ICSS Ethernet ports with the respective modes
  *
  * \param   cfg [IN]    Board configuration flags
  *

@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -61,16 +61,11 @@ extern "C" {
 #include "board_i2c_io_exp.h"
 
 #define BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT       (0)
-#define BOARD_CTRL_CMD_SET_HDMI_MUX             (1)
-#define BOARD_CTRL_CMD_SET_HDMI_PD_HIGH         (2U)
-#define BOARD_CTRL_CMD_SET_ICSSG_MDIO_MUX       (3U)
-#define BOARD_CTRL_CMD_SET_CPSW9G_MDIO_MUX      (4U)
-#define BOARD_CTRL_CMD_SET_PRG1_RGMII_MDIO_MUX  (5U)
-#define BOARD_CTRL_CMD_SET_RS485_UART4_EN_MUX   (6U)
-#define BOARD_CTRL_CMD_SET_RMII_DATA_MUX        (7U)
+#define BOARD_CTRL_CMD_SET_CPSW9G_MDIO_MUX      (1U)
+#define BOARD_CTRL_CMD_SET_RMII_DATA_MUX        (2U)
 
 /**
- * \brief Structure to configure the board I2C parameters
+ * \brief Structure to configure the board IO expander parameters
  */
 typedef struct Board_IoExpCfg_s
 {

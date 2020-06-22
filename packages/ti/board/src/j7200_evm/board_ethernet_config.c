@@ -303,30 +303,10 @@ Board_STATUS Board_sgmiiEthPhyConfig(void)
  */
 Board_STATUS Board_cpsw9gEthPhyConfig(void)
 {
-    Board_STATUS status;
     uint32_t baseAddr;
     uint8_t  phyAddr;
     uint32_t index;
     uint16_t regData = 0;
-    bool isAlpha = 0;
-
-    /*
-     * MDIO stability issue due to ENET card is resolved in Beta HW revision.
-     * Disabling ENET card is needed only for Alpha CP boards.
-     */
-    isAlpha = Board_isAlpha(BOARD_ID_CP);
-
-    if(isAlpha == TRUE)
-    {
-        /* CPSW9G MDIO access is unstable when ENET card is connected.
-           Keeping the ENET PHY in reset as a temporary workaround */
-        status = Board_cpsw9gEnetExpComaModeCfg(1U);
-        status = Board_cpsw9gEnetExpPhyReset(1U);
-        if (status != BOARD_SOK)
-        {
-            return status;
-        }
-    }
 
     for(index = 0; index < BOARD_CPSW9G_EMAC_PORT_MAX; index++)
     {

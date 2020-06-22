@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2018 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -75,7 +75,14 @@ Board_STATUS Board_i2cIoExpReadDirPort(uint8_t slaveAddr,
 
     if (ioExpType == ONE_PORT_IOEXP)
     {
-        subAddr = BOARD_1PORT_IOEXP_CONFIGURATION_CMD;
+        if(portNum == PORTNUM_0)
+        {
+            subAddr = BOARD_1PORT_IOEXP_CONFIGURATION_CMD;
+        }
+        else
+        {
+            return BOARD_INVALID_PARAM;
+        }
     }
     else if (ioExpType == TWO_PORT_IOEXP)
     {
@@ -182,7 +189,14 @@ Board_STATUS Board_i2cIoExpReadOutputPort(uint8_t slaveAddr,
 
     if (ioExpType == ONE_PORT_IOEXP)
     {
-        subAddr = BOARD_1PORT_IOEXP_OUTPUT_CMD;
+        if(portNum == PORTNUM_0)
+        {
+            subAddr = BOARD_1PORT_IOEXP_OUTPUT_CMD;
+        }
+        else
+        {
+            return BOARD_INVALID_PARAM;
+        }
     }
     else if (ioExpType == TWO_PORT_IOEXP)
     {
@@ -289,7 +303,14 @@ Board_STATUS Board_i2cIoExpReadInputPort(uint8_t slaveAddr,
 
     if (ioExpType == ONE_PORT_IOEXP)
     {
-        subAddr = BOARD_1PORT_IOEXP_INPUT_CMD;
+        if(portNum == PORTNUM_0)
+        {
+            subAddr = BOARD_1PORT_IOEXP_INPUT_CMD;
+        }
+        else
+        {
+            return BOARD_INVALID_PARAM;
+        }
     }
     else if (ioExpType == TWO_PORT_IOEXP)
     {
@@ -395,7 +416,14 @@ Board_STATUS Board_i2cIoExpSetPortDirection(uint8_t slaveAddr,
 
     if (ioExpType == ONE_PORT_IOEXP)
     {
-        dataBuff[0] = BOARD_1PORT_IOEXP_CONFIGURATION_CMD;
+        if(portNum == PORTNUM_0)
+        {
+            dataBuff[0] = BOARD_1PORT_IOEXP_CONFIGURATION_CMD;
+        }
+        else
+        {
+            return -1;
+        }
     }
     else if (ioExpType == TWO_PORT_IOEXP)
     {
@@ -495,7 +523,14 @@ Board_STATUS Board_i2cIoExpSetPinDirection(uint8_t slaveAddr,
 
     if (ioExpType == ONE_PORT_IOEXP)
     {
-        dataBuff[0] = BOARD_1PORT_IOEXP_CONFIGURATION_CMD;
+        if(portNum == PORTNUM_0)
+        {
+            dataBuff[0] = BOARD_1PORT_IOEXP_CONFIGURATION_CMD;
+        }
+        else
+        {
+            return BOARD_INVALID_PARAM;
+        }
     }
     else if (ioExpType == TWO_PORT_IOEXP)
     {
@@ -599,7 +634,14 @@ Board_STATUS Board_i2cIoExpWritePort(uint8_t slaveAddr,
 
     if (ioExpType == ONE_PORT_IOEXP)
     {
-        dataBuff[0] = BOARD_1PORT_IOEXP_OUTPUT_CMD;
+        if(portNum == PORTNUM_0)
+        {
+            dataBuff[0] = BOARD_1PORT_IOEXP_OUTPUT_CMD;
+        }
+        else
+        {
+            return BOARD_INVALID_PARAM;
+        }
     }
     else if (ioExpType == TWO_PORT_IOEXP)
     {

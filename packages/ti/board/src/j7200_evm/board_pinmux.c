@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -419,70 +419,16 @@ Board_STATUS Board_pinmuxUpdate (pinmuxBoardCfg_t *pinmuxData,
 Board_STATUS Board_pinmuxConfig (void)
 {
     Board_STATUS status = BOARD_SOK;
-    uint32_t i2cPinmux;
 
     Board_pinmuxUpdate(gJ7200_MainPinmuxData,
                        BOARD_SOC_DOMAIN_MAIN);
     Board_pinmuxUpdate(gJ7200_WkupPinmuxData,
                        BOARD_SOC_DOMAIN_WKUP);
 
-    if(gBoardPinmuxCfg.autoCfg)
-    {
-        /* Enable pinmux for board ID I2C */
-        i2cPinmux = PIN_MODE(0) |  
-                    ((PIN_PULL_DIRECTION | 
-                      PIN_INPUT_ENABLE) & 
-                      (~PIN_PULL_DISABLE));
-        Board_pinmuxSetReg(BOARD_SOC_DOMAIN_WKUP, PIN_WKUP_I2C0_SCL, i2cPinmux);
-        Board_pinmuxSetReg(BOARD_SOC_DOMAIN_WKUP, PIN_WKUP_I2C0_SDA, i2cPinmux);
-
-        if(Board_detectBoard(BOARD_ID_GESI) == TRUE)
-        {
-            gBoardPinmuxCfg.gesiExp = BOARD_PINMUX_GESI_ICSSG;
-        }
-        else
-        {
-            if(Board_detectBoard(BOARD_ID_INFOTAINMENT) == TRUE)
-            {
-                gBoardPinmuxCfg.gesiExp = BOARD_PINMUX_INFO_VOUT;
-            }
-        }
-    }
-
-    if((gBoardPinmuxCfg.gesiExp == BOARD_PINMUX_GESI_ICSSG) ||
-       (gBoardPinmuxCfg.gesiExp == BOARD_PINMUX_GESI_CPSW9G))
-    {
-        /* By default ICSSG RGMII is enabled */
-        Board_pinmuxUpdate(gJ7200_MainPinmuxDataGesiIcssg,
-                           BOARD_SOC_DOMAIN_MAIN);
-        Board_pinmuxUpdate(gJ7200_WkupPinmuxDataGesiIcssg,
-                           BOARD_SOC_DOMAIN_WKUP);
-
-        if(gBoardPinmuxCfg.gesiExp == BOARD_PINMUX_GESI_CPSW9G)
-        {
-            /* Overwrite the ICSSG RGMII muc configurations with CPSW9G RGMII */
-            Board_pinmuxUpdate(gJ7200_MainPinmuxDataGesiCpsw9g,
-                               BOARD_SOC_DOMAIN_MAIN);
-            Board_pinmuxUpdate(gJ7200_WkupPinmuxDataGesiCpsw9g,
-                               BOARD_SOC_DOMAIN_WKUP);
-        }
-    }
-    else if(gBoardPinmuxCfg.gesiExp == BOARD_PINMUX_INFO_VOUT)
-    {
-        Board_pinmuxUpdate(gJ7200_MainPinmuxDataInfo,
-                           BOARD_SOC_DOMAIN_MAIN);
-        Board_pinmuxUpdate(gJ7200_WkupPinmuxDataInfo,
-                           BOARD_SOC_DOMAIN_WKUP);
-    }
-    else
-    {
-        return (BOARD_INVALID_PARAM);
-    }
-
     if(gBoardPinmuxCfg.fssCfg == BOARD_PINMUX_FSS_HPB)
     {
-        Board_pinmuxUpdate(gJ7200_WkupPinmuxDataHpb,
-                           BOARD_SOC_DOMAIN_WKUP);
+//        Board_pinmuxUpdate(gJ7200_WkupPinmuxDataHpb,  //J7200_TODO: Need to enable
+//                           BOARD_SOC_DOMAIN_WKUP);
     }
 
     return status;

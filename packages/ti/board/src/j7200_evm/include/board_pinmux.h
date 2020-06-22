@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -106,19 +106,9 @@ typedef struct Board_PinmuxConfig_s
 
     /**
      * Pinmux config control for GESI/Infotainment expansion connector
-     *  BOARD_PINMUX_GESI_ICSSG(0) - GESI Board (ICSSG RGMII)
-     *  BOARD_PINMUX_GESI_CPSW9G(1) - GESI Board (CPSW9G RGMII)
-     *  BOARD_PINMUX_INFOTAINMENT(2) - Infotainment Board
+     *  BOARD_PINMUX_GESI_CPSW9G(0) - GESI Board (CPSW5G RGMII)
      */
     uint8_t gesiExp;
-
-    /**
-     * Pinmux config control for CSI expansion connector
-     *  BOARD_PINMUX_CSI_FUSION(0) - Fusion-2 board
-     *  BOARD_PINMUX_CSI_MV(1) - MV capture board
-     *  BOARD_PINMUX_CSI_LI(2) - LI capture board
-     */
-    uint8_t csiExp;
 
     /**
      * Pinmux config control for ENET expansion connector

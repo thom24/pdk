@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019-2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -120,13 +120,9 @@ typedef struct Board_DetectCfg_s
  *
  * \param   boardID  [IN]  ID of the board to be detected
  * \n                      BOARD_ID_GESI(0x0) - GESI Board
- * \n                      BOARD_ID_INFOTAINMENT(0x1) - Infotainment board
- * \n                      BOARD_ID_FUSION2(0x2) - Fusion 2 Board
- * \n                      BOARD_ID_MV(0x3) - MV expansion
- * \n                      BOARD_ID_LI(0x4) - LI expansion
- * \n                      BOARD_ID_ENET(0x5) - Quad ENET expansion
- * \n                      BOARD_ID_DISPLAY(0x6) - Display adapter board
- * \n                      BOARD_ID_SOM(0x7) - Dual PMIC SoM Board
+ * \n                      BOARD_ID_ENET(0x1) - Quad ENET expansion
+ * \n                      BOARD_ID_SOM(0x2) - Dual PMIC SoM Board
+ * \n                      BOARD_ID_CP(0x3) - CP Board
  *
  * \return   TRUE if the given board is detected else FALSE.
  *           SoM board will be always connected to the base board.
@@ -135,24 +131,6 @@ typedef struct Board_DetectCfg_s
  *
  */
 bool Board_detectBoard(uint32_t boardID);
-
-/**
- * \brief  Checks for Alpha board revision
- *
- * \param   boardID  [IN]  ID of the board to be detected
- * \n                      BOARD_ID_GESI(0x0) - GESI Board
- * \n                      BOARD_ID_INFOTAINMENT(0x1) - Infotainment board
- * \n                      BOARD_ID_FUSION2(0x2) - Fusion 2 Board
- * \n                      BOARD_ID_MV(0x3) - MV expansion
- * \n                      BOARD_ID_LI(0x4) - LI expansion
- * \n                      BOARD_ID_ENET(0x5) - Quad ENET expansion
- * \n                      BOARD_ID_DISPLAY(0x6) - Display adapter board
- * \n                      BOARD_ID_SOM(0x7) - Dual PMIC SoM Board
- * \n                      BOARD_ID_CP(0x8) - CP Board
- *
- * \return TRUE if board revision is E2, FALSE for all other cases
- */
-bool Board_isAlpha(uint32_t boardID);
 
 /**
  *  \brief    Function to detect ENET expansion application card type
@@ -191,13 +169,8 @@ int32_t Board_detectEnetCard(void);
  *
  * \param  boardID  [IN]  ID of the board to be detected
  * \n                      BOARD_ID_GESI(0x0) - GESI Board
- * \n                      BOARD_ID_INFOTAINMENT(0x1) - Infotainment board
- * \n                      BOARD_ID_FUSION2(0x2) - Fusion 2 Board
- * \n                      BOARD_ID_MV(0x3) - MV expansion
- * \n                      BOARD_ID_LI(0x4) - LI expansion
- * \n                      BOARD_ID_ENET(0x5) - Quad ENET expansion
- * \n                      BOARD_ID_DISPLAY(0x6) - Display adapter board 
- * \n                      BOARD_ID_SOM(0x7) - Dual PMIC SoM Board 
+ * \n                      BOARD_ID_ENET(0x1) - Quad ENET expansion
+ * \n                      BOARD_ID_SOM(0x2) - Dual PMIC SoM Board
  * \param  macAddrBuf[OUT] Buffer to write MAC IDs read from EEPROM
  * \param  macBufSize[IN]  Size of the macAddrBuf
  * \param  macAddrCnt[OUT] Number of valid MAC addresses programmed to the EEPROM
@@ -226,13 +199,8 @@ Board_STATUS Board_readMacAddr(uint32_t boardID,
  *
  * \param  boardID  [IN]  ID of the board to be detected
  * \n                      BOARD_ID_GESI(0x0) - GESI Board
- * \n                      BOARD_ID_INFOTAINMENT(0x1) - Infotainment board
- * \n                      BOARD_ID_FUSION2(0x2) - Fusion 2 Board
- * \n                      BOARD_ID_MV(0x3) - MV expansion
- * \n                      BOARD_ID_LI(0x4) - LI expansion
- * \n                      BOARD_ID_ENET(0x5) - Quad ENET expansion
- * \n                      BOARD_ID_DISPLAY(0x6) - Display adapter board 
- * \n                      BOARD_ID_SOM(0x7) - Dual PMIC SoM Board
+ * \n                      BOARD_ID_ENET(0x1) - Quad ENET expansion
+ * \n                      BOARD_ID_SOM(0x2) - Dual PMIC SoM Board
  * \param  macAddrCnt[OUT] Number of valid MAC addresses programmed to the EEPROM
  *
  * \return   BOARD_SOK in case of success or appropriate error code.
@@ -335,14 +303,9 @@ void BOARD_delay(uint32_t usecs);
  * \param   info     [IN]  Board info structure
  * \param   boardID  [IN]  ID of the board to be detected
  * \n                      BOARD_ID_GESI(0x0) - GESI Board
- * \n                      BOARD_ID_INFOTAINMENT(0x1) - Infotainment board
- * \n                      BOARD_ID_FUSION2(0x2) - Fusion 2 Board
- * \n                      BOARD_ID_MV(0x3) - MV expansion
- * \n                      BOARD_ID_LI(0x4) - LI expansion
- * \n                      BOARD_ID_ENET(0x5) - Quad ENET expansion
- * \n                      BOARD_ID_DISPLAY(0x6) - Display adapter board
- * \n                      BOARD_ID_SOM(0x7) - Dual PMIC SoM Board
- * \n                      BOARD_ID_CP(0x8) - CP Board
+ * \n                      BOARD_ID_ENET(0x1) - Quad ENET expansion
+ * \n                      BOARD_ID_SOM(0x2) - Dual PMIC SoM Board
+ * \n                      BOARD_ID_CP(0x3) - CP Board
  *
  * \return   BOARD_SOK in case of success or appropriate error code.
  *

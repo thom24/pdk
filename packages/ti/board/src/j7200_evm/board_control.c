@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -41,9 +41,11 @@
 #include "board_control.h"
 
 /**
- * \brief Configures HDMI PD pin to high
+ * \brief   Configures IO expander pin level
  *
- *  \return   Board_SOK in case of success or appropriate error code.
+ * \param   *cfg    structure to configure IO expander
+ *
+ * \return  Board_SOK in case of success or appropriate error code.
  *
  */
 static Board_STATUS Board_setIoExpPinOutput(Board_IoExpCfg_t *cfg)
@@ -81,103 +83,12 @@ static Board_STATUS Board_setIoExpPinOutput(Board_IoExpCfg_t *cfg)
 }
 
 /**
- * \brief Configures HDMI IO mux
- *
- *  \return   Board_SOK in case of success or appropriate error code.
- *
- */
-static Board_STATUS Board_setHDMIMux(void)
-{
-    Board_IoExpCfg_t ioExpCfg;
-    Board_STATUS status;
-
-    ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_DEVICE1_INSTANCE;
-    ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
-    ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_DEVICE1_ADDR;
-    ioExpCfg.enableIntr  = false;    
-    ioExpCfg.ioExpType   = TWO_PORT_IOEXP;
-    ioExpCfg.portNum     = PORTNUM_1;
-    ioExpCfg.pinNum      = PIN_NUM_4;
-    ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_LOW;
-
-    status = Board_setIoExpPinOutput(&ioExpCfg);
-    if(status != BOARD_SOK)
-    {
-        return status;
-    }
-
-    ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_HIGH;
-    ioExpCfg.pinNum = PIN_NUM_5;
-    status = Board_setIoExpPinOutput(&ioExpCfg);
-
-    return status;
-}
-
-/**
- * \brief Configures HDMI PD pin to high
- *
- *  \return   Board_SOK in case of success or appropriate error code.
- *
- */
-static Board_STATUS Board_setHDMIPdHigh(void)
-{
-    Board_IoExpCfg_t ioExpCfg;
-    Board_STATUS status;
-
-    ioExpCfg.i2cInst     = BOARD_HDMI_IO_EXP_INSTANCE;
-    ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
-    ioExpCfg.slaveAddr   = BOARD_HDMI_IO_SLAVE_ADDR;
-    ioExpCfg.enableIntr  = false;
-    ioExpCfg.ioExpType   = TWO_PORT_IOEXP;
-    ioExpCfg.portNum     = PORTNUM_1;
-    ioExpCfg.pinNum      = PIN_NUM_0;
-    ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_HIGH;
-
-    status = Board_setIoExpPinOutput(&ioExpCfg);
-
-    return status;
-}
-
-/**
- * \brief   Configures ICSSG MDIO mux to low
+ * \brief   Configures CPSW5G mux to high
  *
  * \return  Board_SOK in case of success or appropriate error code.
  *
  */
-static Board_STATUS Board_setIcssgMdioMux(void)
-{
-    Board_IoExpCfg_t ioExpCfg;
-    Board_STATUS status;
-
-    ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_DEVICE1_INSTANCE;
-    ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
-    ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_DEVICE1_ADDR;
-    ioExpCfg.enableIntr  = false;
-    ioExpCfg.ioExpType   = TWO_PORT_IOEXP;
-    ioExpCfg.portNum     = PORTNUM_1;
-    ioExpCfg.pinNum      = PIN_NUM_5;
-    ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_LOW;
-
-    status = Board_setIoExpPinOutput(&ioExpCfg);
-    if(status != BOARD_SOK)
-    {
-        return status;
-    }
-
-    ioExpCfg.pinNum = PIN_NUM_6;
-    ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_LOW;
-    status = Board_setIoExpPinOutput(&ioExpCfg);
-
-    return status;
-}
-
-/**
- * \brief   Configures CPSW9G mux to high
- *
- * \return  Board_SOK in case of success or appropriate error code.
- *
- */
-static Board_STATUS Board_setCpsw9GMdioMux(void)
+static Board_STATUS Board_setCpsw5GMdioMux(void)
 {
     Board_IoExpCfg_t ioExpCfg;
     Board_STATUS status;
@@ -199,31 +110,6 @@ static Board_STATUS Board_setCpsw9GMdioMux(void)
 
     ioExpCfg.pinNum = PIN_NUM_6;
     ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_HIGH;
-    status = Board_setIoExpPinOutput(&ioExpCfg);
-
-    return status;
-}
-
-/**
- * \brief Configures PRG1 RGMII mux
- *
- *  \return   Board_SOK in case of success or appropriate error code.
- *
- */
-static Board_STATUS Board_setPRG1RGMIIMux(void)
-{
-    Board_IoExpCfg_t ioExpCfg;
-    Board_STATUS status;
-
-    ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_DEVICE1_INSTANCE;
-    ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
-    ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_DEVICE1_ADDR;
-    ioExpCfg.enableIntr  = false;
-    ioExpCfg.ioExpType   = TWO_PORT_IOEXP;
-    ioExpCfg.portNum     = PORTNUM_1;
-    ioExpCfg.pinNum      = PIN_NUM_4;
-    ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_LOW;
-
     status = Board_setIoExpPinOutput(&ioExpCfg);
 
     return status;
@@ -284,27 +170,11 @@ Board_STATUS Board_control(uint32_t cmd, void *arg)
         case BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT:
             status = Board_setIoExpPinOutput((Board_IoExpCfg_t *)arg);
             break;
-        case BOARD_CTRL_CMD_SET_HDMI_MUX:
-            status = Board_setHDMIMux();
-            break;
-
-        case BOARD_CTRL_CMD_SET_HDMI_PD_HIGH:
-            status = Board_setHDMIPdHigh();
-            break;
-
-        case BOARD_CTRL_CMD_SET_ICSSG_MDIO_MUX:
-            status = Board_setIcssgMdioMux();
-            break;
 
         case BOARD_CTRL_CMD_SET_CPSW9G_MDIO_MUX:
-            status = Board_setCpsw9GMdioMux();
+            status = Board_setCpsw5GMdioMux();
             break;
 
-        case BOARD_CTRL_CMD_SET_PRG1_RGMII_MDIO_MUX:
-            status = Board_setPRG1RGMIIMux();
-            break;
-
-        case BOARD_CTRL_CMD_SET_RS485_UART4_EN_MUX:
         case BOARD_CTRL_CMD_SET_RMII_DATA_MUX:
             status = Board_setGpmcDataMux();
             break;

@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -43,10 +43,8 @@
 #include "board_cfg.h"
 #include "board_control.h"
 
-I2C_Handle gBoardI2CHandle = NULL;
 extern Board_I2cInitCfg_t gBoardI2cInitCfg;
 extern Board_initParams_t gBoardInitParams;
-static uint32_t gI2CBaseAddr = 0;
 static uint32_t gUARTBaseAddr = 0;
 static uint32_t gUARTClkFreq = 0;
 
@@ -55,6 +53,16 @@ uint32_t gBoardI2cBaseAddr[BOARD_SOC_DOMAIN_MAX][I2C_HWIP_MAX_CNT] =
       CSL_I2C4_CFG_BASE, CSL_I2C5_CFG_BASE, CSL_I2C6_CFG_BASE},
      {CSL_WKUP_I2C0_CFG_BASE, 0, 0, 0, 0, 0, 0},
      {CSL_MCU_I2C0_CFG_BASE, CSL_MCU_I2C1_CFG_BASE, 0, 0, 0, 0, 0}};
+
+Board_I2cObj_t gBoardI2cObj[BOARD_I2C_PORT_CNT] = {
+    {NULL, BOARD_SOC_DOMAIN_MAIN, 0, 0},
+    {NULL, BOARD_SOC_DOMAIN_MAIN, 1, 0},
+    {NULL, BOARD_SOC_DOMAIN_MAIN, 2, 0},
+    {NULL, BOARD_SOC_DOMAIN_MAIN, 3, 0},
+    {NULL, BOARD_SOC_DOMAIN_MAIN, 4, 0},
+    {NULL, BOARD_SOC_DOMAIN_MAIN, 5, 0},
+    {NULL, BOARD_SOC_DOMAIN_MAIN, 6, 0}
+};
 
 uint32_t gBoardUartBaseAddr[BOARD_SOC_DOMAIN_MAX][CSL_UART_MAIN_CNT] =
     {{CSL_UART0_BASE, CSL_UART1_BASE, CSL_UART2_BASE, CSL_UART3_BASE, CSL_UART4_BASE,
@@ -168,29 +176,21 @@ Board_STATUS Board_uartStdioInit(void)
     uart_cfg.enableInterrupt = false;
     UART_socSetInitCfg(uartInst, &uart_cfg);
 
-    /* MAIN UART4 instance is connected through mux which is controlled by
-       IO expander. Need to configure the mux to use UART4 instance */
-    if(uartInst == 4)
+    /* MAIN UART1 and MAIN UART3 instances are connected through mux which is controlled by
+       IO expander. Need to configure the mux to use UART1 & UART3 instance */
+    if((uartInst == 1) || (uartInst == 3))
     {
-        ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_DEVICE2_ADDR;
-        ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_DEVICE2_INSTANCE;
-        ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
-        ioExpCfg.enableIntr  = false;
-        ioExpCfg.ioExpType   = THREE_PORT_IOEXP;
-        ioExpCfg.portNum     = PORTNUM_1;
-        ioExpCfg.pinNum      = PIN_NUM_1;
-        ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_LOW;
+        /* Enable the UART1 and UART3 */
+		ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_SOM_DEVICE1_INSTANCE;
+		ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
+		ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_SOM_DEVICE1_ADDR;
+		ioExpCfg.enableIntr  = false;
+		ioExpCfg.ioExpType   = ONE_PORT_IOEXP;
+		ioExpCfg.portNum     = PORTNUM_0;
+		ioExpCfg.pinNum      = PIN_NUM_4;
+		ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_LOW;
 
-        status = Board_control(BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT, (void *)&ioExpCfg);
-        if(status != BOARD_SOK)
-        {
-            return status;
-        }
-
-        ioExpCfg.pinNum      = PIN_NUM_2;
-        ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_HIGH;
-
-        status = Board_control(BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT, (void *)&ioExpCfg);
+		status = Board_control(BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT, &ioExpCfg);
         if(status != BOARD_SOK)
         {
             return status;
@@ -213,14 +213,13 @@ Board_STATUS Board_uartStdioInit(void)
  *
  *  \param   i2cInst    [IN]        I2C instance
  *
- *  \return  Board_STATUS in case of success or appropriate error code.
+ *  \return  Valid I2C handle in case of success or NULL in case of failure.
  *
  */
 I2C_Handle Board_getI2CHandle(uint8_t domainType,
                               uint32_t i2cInst)
 {
     Board_STATUS status;
-
     Board_I2cInitCfg_t i2cCfg;
     
     i2cCfg.i2cInst    = i2cInst;
@@ -234,7 +233,54 @@ I2C_Handle Board_getI2CHandle(uint8_t domainType,
         return NULL;
     }
 
-    return gBoardI2CHandle;
+    return (gBoardI2cObj[i2cInst].i2cHandle);
+}
+
+/**
+ *  \brief   This function is to release the i2c handle acquired using
+ *           Board_getI2CHandle function
+ *
+ *  \param   hI2c [IN] I2C handle
+ *
+ *  \return  Board_STATUS in case of success or appropriate error code.
+ *
+ */
+Board_STATUS Board_releaseI2CHandle(I2C_Handle hI2c)
+{
+    Board_STATUS status = BOARD_FAIL;
+    I2C_HwAttrs i2c_cfg;
+    uint32_t coreDomain;
+    uint32_t i2cInst;
+
+    if(hI2c != NULL)
+    {
+        for (i2cInst = 0; i2cInst < BOARD_I2C_PORT_CNT; i2cInst++)
+        {
+            if((hI2c == gBoardI2cObj[i2cInst].i2cHandle))
+            {
+                break;
+            }
+        }
+
+        if(i2cInst != BOARD_I2C_PORT_CNT)
+        {
+            I2C_close(gBoardI2cObj[i2cInst].i2cHandle);
+            gBoardI2cObj[i2cInst].i2cHandle = NULL;
+
+            coreDomain = Board_getSocDomain();
+
+            if(gBoardI2cObj[i2cInst].i2cDomain != coreDomain)
+            {
+                I2C_socGetInitCfg(i2cInst, &i2c_cfg);
+                i2c_cfg.baseAddr = gBoardI2cObj[i2cInst].i2cBaseAddr;
+                I2C_socSetInitCfg(i2cInst, &i2c_cfg);
+            }
+
+            status = BOARD_SOK;
+        }
+    }
+
+    return status;
 }
 
 /**
@@ -250,40 +296,53 @@ Board_STATUS Board_i2cInit(void)
     I2C_HwAttrs i2c_cfg;
     uint32_t i2cInst;
     uint32_t i2cBaseAddr;
-    uint32_t socDomainI2c;
-    uint32_t socDomainCore;
+    uint32_t i2cDomain;
+    uint32_t coreDomain;
 
-    i2cInst      = gBoardI2cInitCfg.i2cInst;
-    socDomainI2c = gBoardI2cInitCfg.socDomain;
+    i2cInst   = gBoardI2cInitCfg.i2cInst;
+    i2cDomain = gBoardI2cInitCfg.socDomain;
 
-    socDomainCore = Board_getSocDomain();
-
-    I2C_init();
-    I2C_socGetInitCfg(i2cInst, &i2c_cfg);
-
-    if(socDomainI2c != socDomainCore)
+    if(gBoardI2cObj[i2cInst].i2cHandle == NULL)
     {
-        i2cBaseAddr = Board_getI2cBaseAddr(i2cInst, socDomainI2c);
-        if(i2cBaseAddr != 0)
+        coreDomain = Board_getSocDomain();
+
+        I2C_init();
+        I2C_socGetInitCfg(i2cInst, &i2c_cfg);
+
+        if(i2cDomain != coreDomain)
         {
-            gI2CBaseAddr = i2c_cfg.baseAddr;
-            i2c_cfg.baseAddr = i2cBaseAddr;
+            i2cBaseAddr = Board_getI2cBaseAddr(i2cInst, i2cDomain);
+            if(i2cBaseAddr != 0)
+            {
+                gBoardI2cObj[i2cInst].i2cBaseAddr = i2c_cfg.baseAddr;
+                i2c_cfg.baseAddr                  = i2cBaseAddr;
+            }
+            else
+            {
+                return BOARD_INVALID_PARAM;
+            }
         }
-        else
+
+        i2c_cfg.enableIntr = gBoardI2cInitCfg.enableIntr;
+
+        I2C_socSetInitCfg(i2cInst, &i2c_cfg);
+        I2C_Params_init(&i2cParams);
+
+        gBoardI2cObj[i2cInst].i2cHandle = I2C_open(i2cInst, &i2cParams);
+        if (gBoardI2cObj[i2cInst].i2cHandle == NULL)
         {
-            return BOARD_INVALID_PARAM;
+            return BOARD_I2C_OPEN_FAIL;
         }
+
+        gBoardI2cObj[i2cInst].i2cDomain = i2cDomain;
+        gBoardI2cObj[i2cInst].instNum   = i2cInst;
     }
-
-    i2c_cfg.enableIntr = gBoardI2cInitCfg.enableIntr;
-
-    I2C_socSetInitCfg(i2cInst, &i2c_cfg);
-    I2C_Params_init(&i2cParams);
-
-    gBoardI2CHandle = I2C_open(i2cInst, &i2cParams);
-    if (gBoardI2CHandle == NULL)
+    else
     {
-        return BOARD_I2C_OPEN_FAIL;
+        if(gBoardI2cObj[i2cInst].i2cDomain != i2cDomain)
+        {
+            return BOARD_I2C_OPEN_FAIL;
+        }
     }
 
     return BOARD_SOK;
@@ -294,19 +353,25 @@ Board_STATUS Board_i2cInit(void)
  */
 Board_STATUS Board_i2cDeInit(void)
 {
-    uint32_t socDomainCore;
+    uint32_t coreDomain;
     I2C_HwAttrs i2c_cfg;
+    uint32_t i2cInst;
 
-    I2C_close(gBoardI2CHandle);
-    gBoardI2CHandle = NULL;
+    i2cInst = gBoardI2cInitCfg.i2cInst;
 
-    socDomainCore = Board_getSocDomain();
-
-    if(gBoardI2cInitCfg.socDomain != socDomainCore)
+    if(gBoardI2cObj[i2cInst].i2cHandle != NULL)
     {
-        I2C_socGetInitCfg(gBoardI2cInitCfg.i2cInst, &i2c_cfg);
-        i2c_cfg.baseAddr = gI2CBaseAddr;
-        I2C_socSetInitCfg(gBoardI2cInitCfg.i2cInst, &i2c_cfg);
+        I2C_close(gBoardI2cObj[i2cInst].i2cHandle);
+        gBoardI2cObj[i2cInst].i2cHandle = NULL;
+
+        coreDomain = Board_getSocDomain();
+
+        if(gBoardI2cObj[i2cInst].i2cDomain != coreDomain)
+        {
+            I2C_socGetInitCfg(i2cInst, &i2c_cfg);
+            i2c_cfg.baseAddr = gBoardI2cObj[i2cInst].i2cBaseAddr;
+            I2C_socSetInitCfg(i2cInst, &i2c_cfg);
+        }
     }
 
     return BOARD_SOK;

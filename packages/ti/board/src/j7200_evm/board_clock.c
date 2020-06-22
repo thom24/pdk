@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -46,12 +46,10 @@ extern Board_initParams_t gBoardInitParams;
 
 uint32_t gBoardClkModuleMcuID[] = {
     TISCI_DEV_MCU_ADC0,
-    TISCI_DEV_MCU_ADC1,
     TISCI_DEV_MCU_CPSW0,
     TISCI_DEV_MCU_TIMER0,
     TISCI_DEV_MCU_FSS0_HYPERBUS1P0_0,
     TISCI_DEV_MCU_FSS0_OSPI_0,
-    TISCI_DEV_MCU_FSS0_OSPI_1,
     TISCI_DEV_WKUP_GPIO0,
     TISCI_DEV_WKUP_GPIO1,
     TISCI_DEV_WKUP_GPIOMUX_INTRTR0,
@@ -74,17 +72,10 @@ uint32_t gBoardClkModuleMainID[] = {
     TISCI_DEV_EMIF_DATA_0_VD,
     TISCI_DEV_MMCSD0,
     TISCI_DEV_MMCSD1,
-    TISCI_DEV_MMCSD2,
     TISCI_DEV_GPIO0,
-    TISCI_DEV_GPIO1,
     TISCI_DEV_GPIO2,
-    TISCI_DEV_GPIO3,
     TISCI_DEV_GPIO4,
-    TISCI_DEV_GPIO5,
     TISCI_DEV_GPIO6,
-    TISCI_DEV_GPIO7,
-    TISCI_DEV_PRU_ICSSG0,
-    TISCI_DEV_PRU_ICSSG1,
     TISCI_DEV_UART0,
     TISCI_DEV_MCAN0,
     TISCI_DEV_MCAN1,
@@ -103,15 +94,6 @@ uint32_t gBoardClkModuleMainID[] = {
     TISCI_DEV_MCASP0,
     TISCI_DEV_MCASP1,
     TISCI_DEV_MCASP2,
-    TISCI_DEV_MCASP3,
-    TISCI_DEV_MCASP4,
-    TISCI_DEV_MCASP5,
-    TISCI_DEV_MCASP6,
-    TISCI_DEV_MCASP7,
-    TISCI_DEV_MCASP8,
-    TISCI_DEV_MCASP9,
-    TISCI_DEV_MCASP10,
-    TISCI_DEV_MCASP11,
     TISCI_DEV_I2C0,
     TISCI_DEV_I2C1,
     TISCI_DEV_I2C2,
@@ -119,11 +101,7 @@ uint32_t gBoardClkModuleMainID[] = {
     TISCI_DEV_I2C4,
     TISCI_DEV_I2C5,
     TISCI_DEV_I2C6,
-    TISCI_DEV_PCIE0,
     TISCI_DEV_PCIE1,
-    TISCI_DEV_PCIE2,
-    TISCI_DEV_PCIE3,
-    TISCI_DEV_UFS0,
     TISCI_DEV_UART1,
     TISCI_DEV_UART2,
     TISCI_DEV_UART3,
@@ -134,13 +112,7 @@ uint32_t gBoardClkModuleMainID[] = {
     TISCI_DEV_UART8,
     TISCI_DEV_UART9,
     TISCI_DEV_USB0,
-    TISCI_DEV_USB1,
-    TISCI_DEV_VPFE0,
     TISCI_DEV_SERDES_16G0,
-    TISCI_DEV_SERDES_16G1,
-    TISCI_DEV_SERDES_16G2,
-    TISCI_DEV_SERDES_16G3,
-    TISCI_DEV_SERDES_10G0,
     TISCI_DEV_SA2_UL0,
 };
 

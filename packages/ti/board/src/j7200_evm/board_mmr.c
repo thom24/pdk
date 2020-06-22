@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -40,7 +40,6 @@
  */
 
 #include "board_internal.h"
-//#include <ti/csl/soc/j7200/src/cslr_wkup_ctrl_mmr.h>
 #include <ti/csl/soc/cslr_soc_ctrl_mmr.h>
 
 /**

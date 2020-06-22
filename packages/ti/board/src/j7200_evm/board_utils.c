@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019-2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -48,13 +48,8 @@
 
 Board_DetectCfg_t  gBoardDetCfg[BOARD_ID_MAX_BOARDS] =
  {{BOARD_COMMON_EEPROM_I2C_INST, BOARD_GESI_EEPROM_SLAVE_ADDR, BOARD_SOC_DOMAIN_WKUP, "J7X-GESI-EXP"},
-  {BOARD_COMMON_EEPROM_I2C_INST, BOARD_GESI_EEPROM_SLAVE_ADDR, BOARD_SOC_DOMAIN_WKUP, "J7X-INFOTAN-EXP"},
-  {BOARD_CSI2_EEPROM_I2C_INST, BOARD_CSI2_EEPROM_SLAVE_ADDR, BOARD_SOC_DOMAIN_MAIN, "J7X-FUSION2-CSI"},
-  {BOARD_CSI2_EEPROM_I2C_INST, BOARD_CSI2_EEPROM_SLAVE_ADDR, BOARD_SOC_DOMAIN_MAIN, "J7X-LIIPEX-CSI"},
-  {BOARD_CSI2_EEPROM_I2C_INST, BOARD_CSI2_EEPROM_SLAVE_ADDR, BOARD_SOC_DOMAIN_MAIN, "J7X-LIMIPI-CSI"},
   {BOARD_COMMON_EEPROM_I2C_INST, BOARD_ENET_EEPROM_SLAVE_ADDR, BOARD_SOC_DOMAIN_WKUP, "J7X-VSC8514-ETH"},
-  {BOARD_COMMON_EEPROM_I2C_INST, BOARD_DISPLAY_EEPROM_SLAVE_ADDR, BOARD_SOC_DOMAIN_WKUP, "TBD"},
-  {BOARD_COMMON_EEPROM_I2C_INST, BOARD_SOM_EEPROM_SLAVE_ADDR, BOARD_SOC_DOMAIN_WKUP, "J721EX-PM2-SOM"},
+  {BOARD_COMMON_EEPROM_I2C_INST, BOARD_SOM_EEPROM_SLAVE_ADDR, BOARD_SOC_DOMAIN_WKUP, "J7200X-PM1-SOM"},
   {BOARD_COMMON_EEPROM_I2C_INST, BOARD_CP_EEPROM_SLAVE_ADDR, BOARD_SOC_DOMAIN_WKUP, "J7X-BASE-CPB"}};
 
 Board_I2cInitCfg_t gBoardI2cInitCfg = {0, BOARD_SOC_DOMAIN_MAIN, 0};
@@ -66,14 +61,9 @@ Board_initParams_t gBoardInitParams = {BOARD_UART_INSTANCE, BOARD_UART_SOC_DOMAI
  * \param   info     [IN]  Board info structure
  * \param   boardID  [IN]  ID of the board to be detected
  * \n                      BOARD_ID_GESI(0x0) - GESI Board
- * \n                      BOARD_ID_INFOTAINMENT(0x1) - Infotainment board
- * \n                      BOARD_ID_FUSION2(0x2) - Fusion 2 Board
- * \n                      BOARD_ID_MV(0x3) - MV expansion
- * \n                      BOARD_ID_LI(0x4) - LI expansion
- * \n                      BOARD_ID_ENET(0x5) - Quad ENET expansion
- * \n                      BOARD_ID_DISPLAY(0x6) - Display adapter board
- * \n                      BOARD_ID_SOM(0x7) - Dual PMIC SoM Board
- * \n                      BOARD_ID_CP(0x8) - CP Board
+ * \n                      BOARD_ID_ENET(0x1) - Quad ENET expansion
+ * \n                      BOARD_ID_SOM(0x2) - Dual PMIC SoM Board
+ * \n                      BOARD_ID_CP(0x3) - CP Board
  *
  * \return   BOARD_SOK in case of success or appropriate error code.
  *
@@ -104,13 +94,9 @@ Board_STATUS Board_getBoardData(Board_IDInfo_v2 *info, uint32_t boardID)
  *
  * \param   boardID  [IN]  ID of the board to be detected
  * \n                      BOARD_ID_GESI(0x0) - GESI Board
- * \n                      BOARD_ID_INFOTAINMENT(0x1) - Infotainment board
- * \n                      BOARD_ID_FUSION2(0x2) - Fusion 2 Board
- * \n                      BOARD_ID_MV(0x3) - MV expansion
- * \n                      BOARD_ID_LI(0x4) - LI expansion
- * \n                      BOARD_ID_ENET(0x5) - Quad ENET expansion
- * \n                      BOARD_ID_DISPLAY(0x6) - Display adapter board
- * \n                      BOARD_ID_SOM(0x7) - Dual PMIC SoM Board
+ * \n                      BOARD_ID_ENET(0x1) - Quad ENET expansion
+ * \n                      BOARD_ID_SOM(0x2) - Dual PMIC SoM Board
+ * \n                      BOARD_ID_CP(0x3) - CP Board
  *
  * \return   TRUE if the given board is detected else FALSE.
  *           SoM board will be always connected to the base board.
@@ -139,42 +125,6 @@ bool Board_detectBoard(uint32_t boardID)
     }
 
     return bDet;
-}
-
-/**
- * \brief  Checks for Alpha board revision
- *
- * \param   boardID  [IN]  ID of the board to be detected
- * \n                      BOARD_ID_GESI(0x0) - GESI Board
- * \n                      BOARD_ID_INFOTAINMENT(0x1) - Infotainment board
- * \n                      BOARD_ID_FUSION2(0x2) - Fusion 2 Board
- * \n                      BOARD_ID_MV(0x3) - MV expansion
- * \n                      BOARD_ID_LI(0x4) - LI expansion
- * \n                      BOARD_ID_ENET(0x5) - Quad ENET expansion
- * \n                      BOARD_ID_DISPLAY(0x6) - Display adapter board
- * \n                      BOARD_ID_SOM(0x7) - Dual PMIC SoM Board
- * \n                      BOARD_ID_CP(0x8) - CP Board
- *
- * \return TRUE if board revision is E2, FALSE for all other cases
- */
-bool Board_isAlpha(uint32_t boardID)
-{
-    Board_IDInfo_v2 info;
-    Board_STATUS status;
-    bool alphaBoard = FALSE;
-
-    status = Board_getBoardData(&info, boardID);
-    if(status == 0)
-    {
-        if(!(strncmp(info.boardInfo.designRev,
-                     "E2",
-                     BOARD_DESIGN_REV_LEN)))
-        {
-            alphaBoard = TRUE;
-        }
-    }
-
-    return alphaBoard;
 }
 
 /**
@@ -242,13 +192,9 @@ int32_t Board_detectEnetCard(void)
  *
  * \param  boardID  [IN]  ID of the board to be detected
  * \n                      BOARD_ID_GESI(0x0) - GESI Board
- * \n                      BOARD_ID_INFOTAINMENT(0x1) - Infotainment board
- * \n                      BOARD_ID_FUSION2(0x2) - Fusion 2 Board
- * \n                      BOARD_ID_MV(0x3) - MV expansion
- * \n                      BOARD_ID_LI(0x4) - LI expansion
- * \n                      BOARD_ID_ENET(0x5) - Quad ENET expansion
- * \n                      BOARD_ID_DISPLAY(0x6) - Display adapter board
- * \n                      BOARD_ID_SOM(0x7) - Dual PMIC SoM Board
+ * \n                      BOARD_ID_ENET(0x1) - Quad ENET expansion
+ * \n                      BOARD_ID_SOM(0x2) - Dual PMIC SoM Board
+ * \n                      BOARD_ID_CP(0x3) - CP Board
  * \param  macAddrBuf[OUT] Buffer to write MAC IDs read from EEPROM
  * \param  macBufSize[IN]  Size of the macAddrBuf
  * \param  macAddrCnt[OUT] Number of valid MAC addresses programmed to the EEPROM
@@ -310,13 +256,9 @@ Board_STATUS Board_readMacAddr(uint32_t boardID,
  *
  * \param  boardID  [IN]  ID of the board to be detected
  * \n                      BOARD_ID_GESI(0x0) - GESI Board
- * \n                      BOARD_ID_INFOTAINMENT(0x1) - Infotainment board
- * \n                      BOARD_ID_FUSION2(0x2) - Fusion 2 Board
- * \n                      BOARD_ID_MV(0x3) - MV expansion
- * \n                      BOARD_ID_LI(0x4) - LI expansion
- * \n                      BOARD_ID_ENET(0x5) - Quad ENET expansion
- * \n                      BOARD_ID_DISPLAY(0x6) - Display adapter board
- * \n                      BOARD_ID_SOM(0x7) - Dual PMIC SoM Board
+ * \n                      BOARD_ID_ENET(0x1) - Quad ENET expansion
+ * \n                      BOARD_ID_SOM(0x2) - Dual PMIC SoM Board
+ * \n                      BOARD_ID_CP(0x3) - CP Board
  * \param  macAddrCnt[OUT] Number of valid MAC addresses programmed to the EEPROM
  *
  * \return   BOARD_SOK in case of success or appropriate error code.
@@ -408,45 +350,6 @@ MMCSD_Error Board_mmc_voltageSwitchFxn(uint32_t instance,
 	}
 
 	return(mmcRetVal);
-}
-
-/**
- * \brief Configures drive strength for LVCMOS IOs
- *
- * This is temporary function added as workaround for
- * eFuse drive strength configuration issue. Need to be
- * removed after this issue is fixed in the silicon.
- *
- */
-void Board_lvcmosDrvStrengthCfg(void)
-{
-    /* Unlock MMR */
-    Board_unlockMMR();
-
-    /* Configure Horizontal_Drive_Strength 3 to 0 */
-    /* Configure only if the IO strength is not as expected */
-    if((HW_RD_REG32(CSL_WKUP_CTRL_MMR0_CFG0_BASE + 0x40C0)) < 0xD)
-    {
-        HW_WR_REG32((CSL_WKUP_CTRL_MMR0_CFG0_BASE + 0x40C0), 0xD);
-        /* Configure Horizontal_Drive_Strength 7 to 4 */
-        HW_WR_REG32((CSL_WKUP_CTRL_MMR0_CFG0_BASE + 0x40C4), 0xD);
-        /* Configure Horizontal_Drive_Strength 11 to 8 */
-        HW_WR_REG32((CSL_WKUP_CTRL_MMR0_CFG0_BASE + 0x40C8), 0xD);
-        /* Configure Horizontal_Drive_Strength 15 to 12 */
-        HW_WR_REG32((CSL_WKUP_CTRL_MMR0_CFG0_BASE + 0x40CC), 0xD);
-    }
-
-    if((HW_RD_REG32(CSL_WKUP_CTRL_MMR0_CFG0_BASE + 0x40D0)) < 0xD)
-    {
-        /* Configure Vertical_Drive_Strength 3 to 0 */
-        HW_WR_REG32((CSL_WKUP_CTRL_MMR0_CFG0_BASE + 0x40D0), 0xD);
-        /* Configure Vertical_Drive_Strength 7 to 4 */
-        HW_WR_REG32((CSL_WKUP_CTRL_MMR0_CFG0_BASE + 0x40D4), 0xD);
-        /* Configure Vertical_Drive_Strength 11 to 8 */
-        HW_WR_REG32((CSL_WKUP_CTRL_MMR0_CFG0_BASE + 0x40D8), 0xD);
-        /* Configure Vertical_Drive_Strength 15 to 12 */
-        HW_WR_REG32((CSL_WKUP_CTRL_MMR0_CFG0_BASE + 0x40DC), 0xD);
-    }
 }
 
 /**
