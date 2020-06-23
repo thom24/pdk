@@ -135,8 +135,9 @@ int32_t udmaTestBugTcPDK_4654(UdmaTestTaskObj *taskObj)
     int32_t                 retVal = UDMA_SOK;
     uint32_t                instId;
     Udma_DrvHandle          drvHandle;
-    struct Udma_ProxyObj    proxyObj;
-    Udma_ProxyHandle        proxyHandle = &proxyObj;
+    struct Udma_EventObj    eventObj;
+    Udma_EventHandle        eventHandle = &eventObj;
+    Udma_EventPrms          eventPrms;
 
     GT_1trace(taskObj->traceMask, GT_INFO1,
               " |TEST INFO|:: Task:%d: PDK-4654 Bug Testcase: Deinit RM check ::\r\n", taskObj->taskId);
@@ -159,15 +160,19 @@ int32_t udmaTestBugTcPDK_4654(UdmaTestTaskObj *taskObj)
 
         if(UDMA_SOK == retVal)
         {
-            for(instId = 0U; instId < UDMA_INST_ID_MAX; instId++)
+            for(instId = UDMA_INST_ID_START; instId <= UDMA_INST_ID_MAX; instId++)
             {
                 drvHandle = &taskObj->testObj->drvObj[instId];
 
-                /* Alloc a proxy */
-                retVal = Udma_proxyAlloc(drvHandle, proxyHandle, UDMA_PROXY_ANY);
+                /* Alloc VINTR - By registering Master event in Shared mode */
+                UdmaEventPrms_init(&eventPrms);
+                eventPrms.eventType         = UDMA_EVENT_TYPE_MASTER;
+                eventPrms.eventMode         = UDMA_EVENT_MODE_SHARED;
+                eventPrms.masterEventHandle = NULL;
+                retVal = Udma_eventRegister(drvHandle, eventHandle, &eventPrms);
                 if(UDMA_SOK != retVal)
                 {
-                    GT_0trace(taskObj->traceMask, GT_ERR, " Proxy alloc failed!!\n");
+                    GT_0trace(taskObj->traceMask, GT_ERR, " Event register/alloc failed!!\n");
                 }
 
                 if(UDMA_SOK == retVal)
@@ -181,11 +186,11 @@ int32_t udmaTestBugTcPDK_4654(UdmaTestTaskObj *taskObj)
                     }
                     else
                     {
-                        retVal = Udma_proxyFree(proxyHandle);
+                        retVal = Udma_eventUnRegister(eventHandle);
                         if(UDMA_SOK != retVal)
                         {
                             GT_0trace(taskObj->traceMask, GT_ERR,
-                                " Proxy free failed!!\n");
+                                " Event unregister/free failed!!\n");
                         }
                     }
                 }

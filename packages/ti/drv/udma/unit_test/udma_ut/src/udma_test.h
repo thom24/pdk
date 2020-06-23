@@ -566,7 +566,8 @@ struct UdmaTestObj_t
     uint64_t            runFlag;
     /**< Current run flag for a SOC, CORE and other configurations. */
 
-    struct Udma_DrvObj  drvObj[UDMA_INST_ID_MAX];
+    struct Udma_DrvObj  drvObj[UDMA_INST_ID_MAX + 1U];
+    /**< Driver Object for all applicable instances. (max+1 since instance index starts from 0) */
 
     SemaphoreP_Handle   taskCompleteSem;
     SemaphoreP_Handle   lockSem;
