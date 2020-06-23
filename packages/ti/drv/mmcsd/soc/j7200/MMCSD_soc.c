@@ -233,6 +233,15 @@ MMCSD_Error MMCSD_socInit(void)
        {
           MMCSDInitCfg[0].intNum = CSLR_R5FSS0_CORE1_INTR_MMCSD0_EMMCSS_INTR_0;
        }
+       /* ********* MMCSD-1 . intNum = R5FSS'n'_INTRTR0 **************** */
+       if(r5CpuInfo.cpuID == 0U)
+       {
+          MMCSDInitCfg[1].intNum = CSLR_R5FSS0_CORE0_INTR_MMCSD1_EMMCSDSS_INTR_0;
+       }
+       else
+       {
+          MMCSDInitCfg[1].intNum = CSLR_R5FSS0_CORE1_INTR_MMCSD1_EMMCSDSS_INTR_0;
+       }
     } 
      else 
      {
