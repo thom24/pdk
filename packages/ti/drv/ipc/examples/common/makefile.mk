@@ -19,8 +19,11 @@ ifeq ($(BUILD_OS_TYPE), baremetal)
   ifeq ($(ISA), r5f)
 	  SRCS_COMMON += r5f_mpu_$(SOC)_default.c
   endif
-  ifeq ($(SOC),$(filter $(SOC), j721e j7200 am65xx))
+  ifeq ($(SOC),$(filter $(SOC), j721e am65xx))
 	  EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/$(SOC)/linker_$(ISA)_$(CORE).lds
+  endif
+  ifeq ($(SOC),j7200)
+	  EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/j721e/linker_$(ISA)_$(CORE).lds
   endif
 else
   INCLUDE_EXTERNAL_INTERFACES += xdc bios

@@ -245,7 +245,7 @@ export ex02_baremetal_multicore_echo_test_CORE_DEPENDENCY
 export ex02_baremetal_multicore_echo_test_XDC_CONFIGURO
 ex02_baremetal_multicore_echo_test_PKG_LIST = ex02_baremetal_multicore_echo_test
 ex02_baremetal_multicore_echo_test_INCLUDE = $(ex02_baremetal_multicore_echo_test_PATH)
-ex02_baremetal_multicore_echo_test_BOARDLIST = am65xx_evm
+ex02_baremetal_multicore_echo_test_BOARDLIST = $(drvipc_BOARDLIST)
 export ex02_baremetal_multicore_echo_test_BOARDLIST
 ex02_baremetal_multicore_echo_test_$(SOC)_CORELIST = $(drvipc_$(SOC)_BAREMETAL_CORELIST)
 export ex02_baremetal_multicore_echo_test_$(SOC)_CORELIST
@@ -369,7 +369,7 @@ export ex04_linux_baremetal_2core_echo_test_CORE_DEPENDENCY
 export ex04_linux_baremetal_2core_echo_test_XDC_CONFIGURO
 ex04_linux_baremetal_2core_echo_test_PKG_LIST = ex04_linux_baremetal_2core_echo_test
 ex04_linux_baremetal_2core_echo_test_INCLUDE = $(ex04_linux_baremetal_2core_echo_test_PATH)
-ex04_linux_baremetal_2core_echo_test_BOARDLIST = am65xx_evm
+ex04_linux_baremetal_2core_echo_test_BOARDLIST = $(drvipc_BOARDLIST)
 export ex04_linux_baremetal_2core_echo_test_BOARDLIST
 ex04_linux_baremetal_2core_echo_test_$(SOC)_CORELIST = $(drvipc_$(SOC)_BAREMETAL_CORELIST)
 export ex04_linux_baremetal_2core_echo_test_$(SOC)_CORELIST

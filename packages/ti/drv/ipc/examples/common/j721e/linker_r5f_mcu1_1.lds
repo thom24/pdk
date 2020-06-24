@@ -112,40 +112,40 @@ SECTIONS
     .bootCode      : {} palign(8)      > MCU0_R5F_TCMA
     .startupCode   : {} palign(8)      > MCU0_R5F_TCMA
     .startupData   : {} palign(8)      > MCU0_R5F_TCMA, type = NOINIT
-    .text          : {} palign(8)      > MCU1_0_DDR_SPACE
-    .const         : {} palign(8)      > MCU1_0_DDR_SPACE
-    .cinit         : {} palign(8)      > MCU1_0_DDR_SPACE
-    .pinit         : {} palign(8)      > MCU1_0_DDR_SPACE
-    .bss           : {} align(4)       > MCU1_0_DDR_SPACE
-    .far           : {} align(4)       > MCU1_0_DDR_SPACE
-    .data          : {} palign(128)    > MCU1_0_DDR_SPACE
-    .boardcfg_data : {} palign(128)    > MCU1_0_DDR_SPACE
-    .sysmem        : {}                > MCU1_0_DDR_SPACE
-    .data_buffer   : {} palign(128)    > MCU1_0_DDR_SPACE
+    .text          : {} palign(8)      > MCU1_1_DDR_SPACE
+    .const         : {} palign(8)      > MCU1_1_DDR_SPACE
+    .cinit         : {} palign(8)      > MCU1_1_DDR_SPACE
+    .pinit         : {} palign(8)      > MCU1_1_DDR_SPACE
+    .bss           : {} align(4)       > MCU1_1_DDR_SPACE
+    .far           : {} align(4)       > MCU1_1_DDR_SPACE
+    .data          : {} palign(128)    > MCU1_1_DDR_SPACE
+    .boardcfg_data : {} palign(128)    > MCU1_1_DDR_SPACE
+    .sysmem        : {}                > MCU1_1_DDR_SPACE
+    .data_buffer   : {} palign(128)    > MCU1_1_DDR_SPACE
 
     /* USB or any other LLD buffer for benchmarking */
-    .benchmark_buffer (NOLOAD) {} ALIGN (8) > MCU1_0_DDR_SPACE
-    ipc_data_buffer (NOINIT) : {} palign(128)	> MCU1_0_DDR_SPACE
+    .benchmark_buffer (NOLOAD) {} ALIGN (8) > MCU1_1_DDR_SPACE
+    ipc_data_buffer (NOINIT) : {} palign(128)	> MCU1_1_DDR_SPACE
     .resource_table : {
         __RESOURCE_TABLE = .;
-    } > MCU1_0_EXT_DATA_BASE
+    } > MCU1_1_EXT_DATA_BASE
 
-    .tracebuf   : {}	align(1024) > MCU1_0_EXT_DATA
+    .tracebuf   : {}	align(1024) > MCU1_1_EXT_DATA
 
-    .stack      : {} align(4)       > MCU1_0_DDR_SPACE  (HIGH)
-    .irqStack   : {. = . + __IRQ_STACK_SIZE;} align(4)      > MCU1_0_DDR_SPACE  (HIGH)
+    .stack      : {} align(4)       > MCU1_1_DDR_SPACE  (HIGH)
+    .irqStack   : {. = . + __IRQ_STACK_SIZE;} align(4)      > MCU1_1_DDR_SPACE  (HIGH)
     RUN_START(__IRQ_STACK_START)
     RUN_END(__IRQ_STACK_END)
-    .fiqStack   : {. = . + __FIQ_STACK_SIZE;} align(4)      > MCU1_0_DDR_SPACE  (HIGH)
+    .fiqStack   : {. = . + __FIQ_STACK_SIZE;} align(4)      > MCU1_1_DDR_SPACE  (HIGH)
     RUN_START(__FIQ_STACK_START)
     RUN_END(__FIQ_STACK_END)
-    .abortStack : {. = . + __ABORT_STACK_SIZE;} align(4)    > MCU1_0_DDR_SPACE  (HIGH)
+    .abortStack : {. = . + __ABORT_STACK_SIZE;} align(4)    > MCU1_1_DDR_SPACE  (HIGH)
     RUN_START(__ABORT_STACK_START)
     RUN_END(__ABORT_STACK_END)
-    .undStack   : {. = . + __UND_STACK_SIZE;} align(4)      > MCU1_0_DDR_SPACE  (HIGH)
+    .undStack   : {. = . + __UND_STACK_SIZE;} align(4)      > MCU1_1_DDR_SPACE  (HIGH)
     RUN_START(__UND_STACK_START)
     RUN_END(__UND_STACK_END)
-    .svcStack   : {. = . + __SVC_STACK_SIZE;} align(4)      > MCU1_0_DDR_SPACE  (HIGH)
+    .svcStack   : {. = . + __SVC_STACK_SIZE;} align(4)      > MCU1_1_DDR_SPACE  (HIGH)
     RUN_START(__SVC_STACK_START)
     RUN_END(__SVC_STACK_END)
 }

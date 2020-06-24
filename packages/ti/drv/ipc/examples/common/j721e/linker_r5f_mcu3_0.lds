@@ -50,6 +50,18 @@ __SVC_STACK_SIZE = 0x1000;
 #define MCU2_1_R5F_MEM_DATA_BASE (MCU2_1_ALLOCATED_START + 0x00300000)
 #define MCU2_1_DDR_SPACE_BASE    (MCU2_1_ALLOCATED_START + 0x00400000)
 
+#define MCU3_0_ALLOCATED_START   DDR0_ALLOCATED_START + 0x04000000
+#define MCU3_0_EXT_DATA_BASE     (MCU3_0_ALLOCATED_START + 0x00100000)
+#define MCU3_0_R5F_MEM_TEXT_BASE (MCU3_0_ALLOCATED_START + 0x00200000)
+#define MCU3_0_R5F_MEM_DATA_BASE (MCU3_0_ALLOCATED_START + 0x00300000)
+#define MCU3_0_DDR_SPACE_BASE    (MCU3_0_ALLOCATED_START + 0x00400000)
+
+#define MCU3_1_ALLOCATED_START   DDR0_ALLOCATED_START + 0x05000000
+#define MCU3_1_EXT_DATA_BASE     (MCU3_1_ALLOCATED_START + 0x00100000)
+#define MCU3_1_R5F_MEM_TEXT_BASE (MCU3_1_ALLOCATED_START + 0x00200000)
+#define MCU3_1_R5F_MEM_DATA_BASE (MCU3_1_ALLOCATED_START + 0x00300000)
+#define MCU3_1_DDR_SPACE_BASE    (MCU3_1_ALLOCATED_START + 0x00400000)
+
 #define ATCM_START 0x00000000
 #define OCMRAM_MCU1_0_START 0x41cfe000
 #define OCMRAM_MCU1_1_START 0x41cff000
@@ -99,6 +111,16 @@ MEMORY
     MCU2_1_R5F_MEM_TEXT (RWIX)	: origin=MCU2_1_R5F_MEM_TEXT_BASE length=0x00100000	/*   1MB */
     MCU2_1_R5F_MEM_DATA (RWIX)	: origin=MCU2_1_R5F_MEM_DATA_BASE length=0x00100000	/*   1MB */
     MCU2_1_DDR_SPACE (RWIX)	: origin=MCU2_1_DDR_SPACE_BASE    length=0x00C00000	/*  12MB */
+    MCU3_0_IPC_DATA (RWIX)	: origin=MCU3_0_ALLOCATED_START   length=0x00100000	/*   1MB */
+    MCU3_0_EXT_DATA  (RWIX)	: origin=MCU3_0_EXT_DATA_BASE     length=0x00100000	/*   1MB */
+    MCU3_0_R5F_MEM_TEXT (RWIX)	: origin=MCU3_0_R5F_MEM_TEXT_BASE length=0x00100000	/*   1MB */
+    MCU3_0_R5F_MEM_DATA (RWIX)	: origin=MCU3_0_R5F_MEM_DATA_BASE length=0x00100000	/*   1MB */
+    MCU3_0_DDR_SPACE (RWIX)	: origin=MCU3_0_DDR_SPACE_BASE    length=0x00C00000	/*  12MB */
+    MCU3_1_IPC_DATA (RWIX)	: origin=MCU3_1_ALLOCATED_START   length=0x00100000	/*   1MB */
+    MCU3_1_EXT_DATA  (RWIX)	: origin=MCU3_1_EXT_DATA_BASE     length=0x00100000	/*   1MB */
+    MCU3_1_R5F_MEM_TEXT (RWIX)	: origin=MCU3_1_R5F_MEM_TEXT_BASE length=0x00100000	/*   1MB */
+    MCU3_1_R5F_MEM_DATA (RWIX)	: origin=MCU3_1_R5F_MEM_DATA_BASE length=0x00100000	/*   1MB */
+    MCU3_1_DDR_SPACE (RWIX)	: origin=MCU3_1_DDR_SPACE_BASE    length=0x00C00000	/*  12MB */
 }
 
 /* Section Configuration */
@@ -112,40 +134,40 @@ SECTIONS
     .bootCode      : {} palign(8)      > MCU0_R5F_TCMA
     .startupCode   : {} palign(8)      > MCU0_R5F_TCMA
     .startupData   : {} palign(8)      > MCU0_R5F_TCMA, type = NOINIT
-    .text          : {} palign(8)      > MCU1_0_DDR_SPACE
-    .const         : {} palign(8)      > MCU1_0_DDR_SPACE
-    .cinit         : {} palign(8)      > MCU1_0_DDR_SPACE
-    .pinit         : {} palign(8)      > MCU1_0_DDR_SPACE
-    .bss           : {} align(4)       > MCU1_0_DDR_SPACE
-    .far           : {} align(4)       > MCU1_0_DDR_SPACE
-    .data          : {} palign(128)    > MCU1_0_DDR_SPACE
-    .boardcfg_data : {} palign(128)    > MCU1_0_DDR_SPACE
-    .sysmem        : {}                > MCU1_0_DDR_SPACE
-    .data_buffer   : {} palign(128)    > MCU1_0_DDR_SPACE
+    .text          : {} palign(8)      > MCU3_0_DDR_SPACE
+    .const         : {} palign(8)      > MCU3_0_DDR_SPACE
+    .cinit         : {} palign(8)      > MCU3_0_DDR_SPACE
+    .pinit         : {} palign(8)      > MCU3_0_DDR_SPACE
+    .bss           : {} align(4)       > MCU3_0_DDR_SPACE
+    .far           : {} align(4)       > MCU3_0_DDR_SPACE
+    .data          : {} palign(128)    > MCU3_0_DDR_SPACE
+    .boardcfg_data : {} palign(128)    > MCU3_0_DDR_SPACE
+    .sysmem        : {}                > MCU3_0_DDR_SPACE
+    .data_buffer   : {} palign(128)    > MCU3_0_DDR_SPACE
 
     /* USB or any other LLD buffer for benchmarking */
-    .benchmark_buffer (NOLOAD) {} ALIGN (8) > MCU1_0_DDR_SPACE
-    ipc_data_buffer (NOINIT) : {} palign(128)	> MCU1_0_DDR_SPACE
+    .benchmark_buffer (NOLOAD) {} ALIGN (8) > MCU3_0_DDR_SPACE
+    ipc_data_buffer (NOINIT) : {} palign(128)	> MCU3_0_DDR_SPACE
     .resource_table : {
         __RESOURCE_TABLE = .;
-    } > MCU1_0_EXT_DATA_BASE
+    } > MCU3_0_EXT_DATA_BASE
 
-    .tracebuf   : {}	align(1024) > MCU1_0_EXT_DATA
+    .tracebuf   : {}	align(1024) > MCU3_0_EXT_DATA
 
-    .stack      : {} align(4)       > MCU1_0_DDR_SPACE  (HIGH)
-    .irqStack   : {. = . + __IRQ_STACK_SIZE;} align(4)      > MCU1_0_DDR_SPACE  (HIGH)
+    .stack      : {} align(4)       > MCU3_0_DDR_SPACE  (HIGH)
+    .irqStack   : {. = . + __IRQ_STACK_SIZE;} align(4)      > MCU3_0_DDR_SPACE  (HIGH)
     RUN_START(__IRQ_STACK_START)
     RUN_END(__IRQ_STACK_END)
-    .fiqStack   : {. = . + __FIQ_STACK_SIZE;} align(4)      > MCU1_0_DDR_SPACE  (HIGH)
+    .fiqStack   : {. = . + __FIQ_STACK_SIZE;} align(4)      > MCU3_0_DDR_SPACE  (HIGH)
     RUN_START(__FIQ_STACK_START)
     RUN_END(__FIQ_STACK_END)
-    .abortStack : {. = . + __ABORT_STACK_SIZE;} align(4)    > MCU1_0_DDR_SPACE  (HIGH)
+    .abortStack : {. = . + __ABORT_STACK_SIZE;} align(4)    > MCU3_0_DDR_SPACE  (HIGH)
     RUN_START(__ABORT_STACK_START)
     RUN_END(__ABORT_STACK_END)
-    .undStack   : {. = . + __UND_STACK_SIZE;} align(4)      > MCU1_0_DDR_SPACE  (HIGH)
+    .undStack   : {. = . + __UND_STACK_SIZE;} align(4)      > MCU3_0_DDR_SPACE  (HIGH)
     RUN_START(__UND_STACK_START)
     RUN_END(__UND_STACK_END)
-    .svcStack   : {. = . + __SVC_STACK_SIZE;} align(4)      > MCU1_0_DDR_SPACE  (HIGH)
+    .svcStack   : {. = . + __SVC_STACK_SIZE;} align(4)      > MCU3_0_DDR_SPACE  (HIGH)
     RUN_START(__SVC_STACK_START)
     RUN_END(__SVC_STACK_END)
 }
