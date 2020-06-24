@@ -58,7 +58,7 @@
 #if defined (SOC_J7200)
 #include <ti/drv/sciclient/soc/sysfw/include/j7200/tisci_resasg_types.h>
 #include <ti/drv/sciclient/soc/V2/sciclient_fmwMsgParams.h>
-#include <ti/drv/sciclient/soc/V2/sciclient_firmware_V1.h>
+#include <ti/drv/sciclient/soc/V2/sciclient_firmware_V2.h>
 #endif
 
 #if defined (SOC_AM64X)

@@ -67,7 +67,7 @@
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
 
-#if defined (SOC_AM64X)
+#if defined (SOC_AM64X) || defined (SOC_J7200)
 #define PRINT_UART
 #endif
 
@@ -162,6 +162,9 @@ void _resetvectors (void);
  *  main
  *  Application main function.
  */
+#if defined (SOC_J7200)
+#define CSL_MCU_ARMSS_ATCM_BASE (0x0U)
+#endif
 int32_t main(void)
 {
 #if defined (SOC_J721E) || defined (SOC_J7200)

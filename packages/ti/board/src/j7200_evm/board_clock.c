@@ -112,8 +112,7 @@ uint32_t gBoardClkModuleMainID[] = {
     TISCI_DEV_UART8,
     TISCI_DEV_UART9,
     TISCI_DEV_USB0,
-    TISCI_DEV_SERDES_16G0,
-    TISCI_DEV_SA2_UL0,
+    TISCI_DEV_SERDES_10G1,
 };
 
 /**
