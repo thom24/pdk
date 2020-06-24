@@ -71,22 +71,6 @@ const UFP_fxnTable UFP_hpfFxnTable = {
     &UFP_hpfClose
 };
 
-static uint32_t pinMuxHyperbus[PADCONFIG_MAX_COUNT] =
-{
-    PIN_MCU_OSPI0_CLK,
-    PIN_MCU_OSPI0_CSN0,
-    PIN_MCU_OSPI0_D0,
-    PIN_MCU_OSPI0_D1,
-    PIN_MCU_OSPI0_D2,
-    PIN_MCU_OSPI0_D3,
-    PIN_MCU_OSPI0_D4,
-    PIN_MCU_OSPI0_D5,
-    PIN_MCU_OSPI0_D6,
-    PIN_MCU_OSPI0_D7,
-    PIN_MCU_OSPI0_DQS,
-    PIN_MCU_OSPI0_LBCLKO
-};
-
 /* ========================================================================== */
 /*                          Function Definitions                              */
 /* ========================================================================== */
@@ -264,12 +248,19 @@ static int8_t UFP_hpfFlashErase(uint32_t offset, uint32_t length)
  */
 static int8_t UFP_hpfInit(void)
 {
-    uint8_t index;
+    Board_STATUS status;
+    Board_PinmuxConfig_t pixmuxCfg;
 
-    for(index = 0; index < PADCONFIG_MAX_COUNT; index++)
+    /* Configure the pinmux for hyperbus as the default
+       pinmux configuration is set for OSPI */
+    Board_pinmuxGetCfg(&pixmuxCfg);
+    pixmuxCfg.fssCfg = BOARD_PINMUX_FSS_HPB;
+    Board_pinmuxSetCfg(&pixmuxCfg);
+
+    status = Board_init(BOARD_INIT_PINMUX_CONFIG);
+    if(status != BOARD_SOK)
     {
-        Board_pinMuxSetModeWkup(pinMuxHyperbus[index],
-                                HYPERBUS_MUX_MODE);
+        return -1;
     }
 
     /* Open the Board hyperflash device with 

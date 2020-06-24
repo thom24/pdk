@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2019, Texas Instruments Incorporated
+ * Copyright (c) 2016-2020, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -117,6 +117,7 @@ typedef int32_t Board_flash_STATUS;       /** Board Flash API return type */
 #endif
 #define BOARD_FLASH_ID_MT25QU512ABB        (0xBB20) /**< 64MB NOR Flash */
 #define BOARD_FLASH_ID_S71KS512S           (0x007EU)  /**< 512 Mb cypress Hyperflash device Id  */
+#define BOARD_FLASH_ID_S28HS512T           (0x5B34U)  /**< 512 Mb Cypress OSPI NOR flash */
 
 
 /**

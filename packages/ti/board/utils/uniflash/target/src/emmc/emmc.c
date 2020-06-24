@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2018-2020 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -86,7 +86,7 @@ const UFP_fxnTable UFP_emmcFxnTable = {
  */
 static void UFP_emmcReset(void)
 {
-#if !defined(SOC_J721E)
+#if !(defined(SOC_J721E) || defined(SOC_J7200))
 #if defined(SOC_AM65XX) && !defined (__aarch64__)
     I2C_HwAttrs i2cCfg;
 

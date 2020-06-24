@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2019-2020 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -59,7 +59,7 @@ extern "C" {
 #include <ti/drv/uart/UART_stdio.h>
 #include <ti/drv/uart/soc/UART_soc.h>
 
-#if defined(SOC_J721E)
+#if defined(SOC_J721E) || defined(SOC_J7200)
 #include <ti/csl/soc/j721e/src/cslr_wkup_ctrl_mmr.h>
 #include <ti/csl/soc/j721e/src/cslr_mcu_pll_mmr.h>
 
@@ -71,7 +71,9 @@ extern "C" {
 #define UFP_UART_PLL_KICK0_UNLOCK_VAL       (0x68EF3490)
 #define UFP_UART_PLL_KICK1_UNLOCK_VAL       (0xD172BC5A)
 #define UFP_UART_PLL_KICK_LOCK_VAL          (0x0)
+#if !(defined(j7200_evm)) //J7200_TODO: Need to check the need for this during testing. May need to align with ATCM vector copy function
 #define UFP_MCU_ARMSS_ATCM_BASE             (CSL_MCU_ARMSS_ATCM_BASE)
+#endif
 #elif defined(SOC_AM65XX)
 #define UFP_MCU_ARMSS_ATCM_BASE             (CSL_MCU_ATCM_BASE)
 #endif
@@ -87,8 +89,8 @@ extern "C" {
 #define UFP_MAIN_DEVSTAT_ADDR      (CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_MAIN_DEVSTAT)
 #define UFP_WKUP_DEVSTAT_ADDR      (CSL_WKUP_CTRL_MMR0_CFG0_BASE + CSL_WKUP_CTRL_MMR_CFG0_WKUP_DEVSTAT)
 
-#if defined(SOC_J721E)
-#define UFP_MAIN_DEVSTAT_NOBOOT_CFG     (0x1U)
+#if defined(SOC_J721E) || defined(SOC_J7200)
+#define UFP_MAIN_DEVSTAT_NOBOOT_CFG     (0x1U) //J7200_TODO: May need update for J7200
 #define UFP_WKUP_DEVSTAT_NOBOOT_CFG     (0x38U)
 #define UFP_MAIN_DEVSTAT_NOBOOT_MASK    (0xEFU)
 #define UFP_WKUP_DEVSTAT_NOBOOT_MASK    (0xF8U)

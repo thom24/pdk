@@ -79,17 +79,18 @@ static void UFP_asmAtcmEn(void)
 static void UFP_enableATCM(void)
 {
     UFP_asmAtcmEn();
-
+#if !defined(j7200_evm) //J7200_TODO: Need to check the need for this during testing. May need to align with ATCM vector copy function
     /* Initialize the ATCM */
     memset((void *)UFP_MCU_ARMSS_ATCM_BASE, 0xFF, 0x8000);
 
     /* Relocate CSL Vectors to ATCM*/
     memcpy((void *)UFP_MCU_ARMSS_ATCM_BASE, (void *)_resetvectors, 0x100);
+#endif
 }
 
 static void UFP_initUARTPwrClk(void)
 {
-#if defined(SOC_J721E)
+#if defined(SOC_J721E) || defined(SOC_J7200)
     HW_WR_REG32(UFP_UART_PLL_BASE + UFP_UART_PLL_KICK0_OFFSET, UFP_UART_PLL_KICK0_UNLOCK_VAL);
     HW_WR_REG32(UFP_UART_PLL_BASE + UFP_UART_PLL_KICK1_OFFSET, UFP_UART_PLL_KICK1_UNLOCK_VAL);
 
