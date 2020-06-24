@@ -11,8 +11,11 @@ endif
 ifeq ($(SOC),$(filter $(SOC), am65xx))
   SCICLIENT_SOCVER = V0
 endif
-ifeq ($(SOC),$(filter $(SOC), j721e j7200))
+ifeq ($(SOC),$(filter $(SOC), j721e))
   SCICLIENT_SOCVER = V1
+endif
+ifeq ($(SOC),$(filter $(SOC), j7200))
+  SCICLIENT_SOCVER = V2
 endif
 ifeq ($(SOC),$(filter $(SOC), am64x))
   SCICLIENT_SOCVER = V3
@@ -73,8 +76,11 @@ HEX_EXT := _hex.h
 endif
 
 # Parser SOC derivation
-ifeq ($(SOC),$(filter $(SOC), j721e j7200))
+ifeq ($(SOC),$(filter $(SOC), j721e))
 PARSER_SOC := j721e
+endif
+ifeq ($(SOC),$(filter $(SOC), j7200))
+PARSER_SOC := j7200
 endif
 ifeq ($(SOC),$(filter $(SOC), am65xx))
 PARSER_SOC := am6
@@ -139,6 +145,7 @@ ifeq ($(CORE), mcu1_0)
 	@if [ "$(findstring sr2, $(OBJDIR)/$(BRD_CFG)$(1).bin.unsigned)" == "sr2" ]; then \
 		python3 $(VALIDATOR_SCRIPT) -b $(OBJDIR)/$(1).bin.unsigned -s $(PARSER_SOC2) -l $(OBJDIR)/output_$(BRD_CFG).log -i -o $(OBJDIR)/$(1)_temp.bin.unsigned -r $(VALIDATOR_JSON);\
 	else \
+		echo "python3 $(VALIDATOR_SCRIPT) -b $(OBJDIR)/$(1).bin.unsigned -s $(PARSER_SOC) -l $(OBJDIR)/output_$(BRD_CFG).log -i -o $(OBJDIR)/$(1)_temp.bin.unsigned -r $(VALIDATOR_JSON)" ;\
 		python3 $(VALIDATOR_SCRIPT) -b $(OBJDIR)/$(1).bin.unsigned -s $(PARSER_SOC) -l $(OBJDIR)/output_$(BRD_CFG).log -i -o $(OBJDIR)/$(1)_temp.bin.unsigned -r $(VALIDATOR_JSON) ;\
 	fi
 	$(MV) $(OBJDIR)/$(1)_temp.bin.unsigned $(OBJDIR)/$(1).bin.unsigned

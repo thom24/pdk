@@ -164,7 +164,7 @@ void _resetvectors (void);
  */
 int32_t main(void)
 {
-#if defined (SOC_J721E)
+#if defined (SOC_J721E) || defined (SOC_J7200)
     /* Relocate CSL Vectors to ATCM*/
     memcpy((void *)CSL_MCU_ARMSS_ATCM_BASE, (void *)_resetvectors, 0x100);
 #elif defined (SOC_AM65XX)

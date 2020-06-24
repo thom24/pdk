@@ -58,8 +58,12 @@
 #include <ti/drv/sciclient/soc/V0/sciclient_defaultBoardcfg.h>
 #endif
 
-#if defined (SOC_J721E) || defined (SOC_J7200)
+#if defined (SOC_J721E)
 #include <ti/drv/sciclient/soc/V1/sciclient_defaultBoardcfg.h>
+#endif
+
+#if defined (SOC_J7200)
+#include <ti/drv/sciclient/soc/V2/sciclient_defaultBoardcfg.h>
 #endif
 
 #if defined (SOC_AM64X)

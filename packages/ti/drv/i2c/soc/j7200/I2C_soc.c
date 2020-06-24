@@ -430,6 +430,7 @@ static int32_t I2C_configSocIntrPath(const void *pHwAttrs, bool setIntrPath)
         }
         else if (r5CpuInfo.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_2)
         {
+#if 0 /* Needs to be fixed properly for J7200 */
             if(r5CpuInfo.cpuID == 0U)
             {
                 dst_id = TISCI_DEV_R5FSS1_CORE0;
@@ -438,6 +439,7 @@ static int32_t I2C_configSocIntrPath(const void *pHwAttrs, bool setIntrPath)
             {
                 dst_id = TISCI_DEV_R5FSS1_CORE1;
             }
+#endif
         }
         else
         {

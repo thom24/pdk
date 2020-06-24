@@ -22,8 +22,11 @@ PACKAGE_SRCS_COMMON =
 ifeq ($(SOC),$(filter $(SOC), am65xx))
   SCICLIENT_SOCVER = V0
 endif
-ifeq ($(SOC),$(filter $(SOC), j721e j7200))
+ifeq ($(SOC),$(filter $(SOC), j721e))
   SCICLIENT_SOCVER = V1
+endif
+ifeq ($(SOC),$(filter $(SOC), j7200))
+  SCICLIENT_SOCVER = V2
 endif
 ifeq ($(SOC),$(filter $(SOC), am64x))
   SCICLIENT_SOCVER = V3
@@ -93,6 +96,11 @@ ifeq ($(BUILD_HS),yes)
 CFLAGS_LOCAL_COMMON += -DBUILD_HS
 endif
 
+endif
+
+ifeq ($(SOC),$(filter $(SOC), j7200))
+PACKAGE_SRCS_COMMON += soc/sysfw/binaries/ti-sci-firmware-j7200-gp-vlab.bin
+PACKAGE_SRCS_COMMON += soc/sysfw/binaries/ti-sci-firmware-j7200-gp-zebu.bin
 endif
 
 ifeq ($(SOC),$(filter $(SOC), am64x))

@@ -123,7 +123,7 @@ export sciclient_firmware_boot_TestApp_BOARD_DEPENDENCY
 export sciclient_firmware_boot_TestApp_CORE_DEPENDENCY
 sciclient_firmware_boot_TestApp_PKG_LIST = sciclient_firmware_boot_TestApp
 sciclient_firmware_boot_TestApp_INCLUDE = $(sciclient_firmware_boot_TestApp_PATH)
-sciclient_firmware_boot_TestApp_BOARDLIST = am65xx_evm am64x_evm
+sciclient_firmware_boot_TestApp_BOARDLIST = am65xx_evm am64x_evm j7200_evm
 export sciclient_firmware_boot_TestApp_BOARDLIST
 sciclient_firmware_boot_TestApp_$(SOC)_CORELIST = mcu1_0
 export sciclient_firmware_boot_TestApp_$(SOC)_CORELIST
@@ -149,7 +149,7 @@ export sciclient_ccs_init_BOARD_DEPENDENCY
 export sciclient_ccs_init_CORE_DEPENDENCY
 sciclient_ccs_init_PKG_LIST = sciclient_ccs_init
 sciclient_ccs_init_INCLUDE = $(sciclient_ccs_init_PATH)
-sciclient_ccs_init_BOARDLIST = am65xx_evm j721e_sim j721e_evm am64x_evm
+sciclient_ccs_init_BOARDLIST = am65xx_evm j721e_sim j721e_evm am64x_evm j7200_evm
 export sciclient_ccs_init_BOARDLIST
 # This application is only for mcu1_0
 sciclient_ccs_init_$(SOC)_CORELIST = mcu1_0
@@ -173,7 +173,7 @@ export sciclient_rtos_app_CORE_DEPENDENCY
 export sciclient_rtos_app_XDC_CONFIGURO
 sciclient_rtos_app_PKG_LIST = sciclient_rtos_app
 sciclient_rtos_app_INCLUDE = $(sciclient_rtos_app_PATH)
-sciclient_rtos_app_BOARDLIST = am65xx_evm j721e_sim j721e_evm
+sciclient_rtos_app_BOARDLIST = am65xx_evm j721e_sim j721e_evm am64x_evm j7200_evm
 export sciclient_rtos_app_BOARDLIST
 sciclient_rtos_app_$(SOC)_CORELIST = $(drvsciclient_$(SOC)_CORELIST)
 export sciclient_rtos_app_$(SOC)_CORELIST
@@ -198,7 +198,7 @@ export sciclient_unit_testapp_CORE_DEPENDENCY
 export sciclient_unit_testapp_XDC_CONFIGURO
 sciclient_unit_testapp_PKG_LIST = sciclient_unit_testapp
 sciclient_unit_testapp_INCLUDE = $(sciclient_unit_testapp_PATH)
-sciclient_unit_testapp_BOARDLIST = am65xx_evm j721e_sim j721e_evm am64x_evm
+sciclient_unit_testapp_BOARDLIST = am65xx_evm j721e_sim j721e_evm am64x_evm j7200_evm
 export sciclient_unit_testapp_BOARDLIST
 sciclient_unit_testapp_$(SOC)_CORELIST = $(drvsciclient_$(SOC)_CORELIST)
 ifeq ($(BOARD),$(filter $(BOARD), am64x_evm))
@@ -226,7 +226,7 @@ export sciclient_fw_testapp_BOARD_DEPENDENCY = no
 export sciclient_fw_testapp_CORE_DEPENDENCY = yes
 export sciclient_fw_testapp_XDC_CONFIGURO = yes
 sciclient_fw_testapp_PKG_LIST = sciclient_fw_testapp
-export sciclient_fw_testapp_BOARDLIST = am65xx_evm j721e_evm
+export sciclient_fw_testapp_BOARDLIST = am65xx_evm j721e_evm j7200_evm
 export sciclient_fw_testapp_$(SOC)_CORELIST = mcu1_0
 export sciclient_fw_testapp_SBL_APPIMAGEGEN = yes
 export sciclient_fw_testapp_SBL_IMAGEGEN = no

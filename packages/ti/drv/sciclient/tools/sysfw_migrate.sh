@@ -124,7 +124,12 @@ if [ "$SKIP_CHECKOUT" != "YES" ]; then
     $RM -fr binaries/am6
     $RM -fr binaries/am65x_sr2
     $RM -fr binaries/j721e
+    $RM -fr binaries/am64
+    $RM -fr binaries/j7200
     $RM -fr binaries/memory
+    $RM -fr docs/BUILD.md
+    $RM -fr reports
+    $MV System_Controller_Firmware_MISRAC_Report.xlsx docs/
     $RM -fr scripts
     $RM .gitignore
     $RM .gitmodules
@@ -175,6 +180,13 @@ if [ "$SKIP_BUILD" != "YES" ]; then
     make -j -s sciclient_ccs_init BOARD=am64x_evm
     $COPY $ROOTDIR/ti/binary/sciclient_ccs_init/bin/am64x/sciclient_ccs_init_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/am64x/
  
+    # J7200
+    make -j -s sciclient_boardcfg BOARD=j7200_evm
+    make -j -s sciclient_boardcfg BOARD=j7200_evm BUILD_HS=yes
+    make -j -s sciclient_ccs_init_clean BOARD=j7200_evm
+    make -j -s sciclient_ccs_init BOARD=j7200_evm
+    $COPY $ROOTDIR/ti/binary/sciclient_ccs_init/bin/am64x/sciclient_ccs_init_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j7200/
+
     cd -
 fi
 
@@ -190,7 +202,8 @@ if [ "$SKIP_GEN_BIN" != "YES" ];  then
     ./firmwareHeaderGen.sh j721e-hs
     ./firmwareHeaderGen.sh am64x-vlab
     ./firmwareHeaderGen.sh am64x-zebu
-
+    ./firmwareHeaderGen.sh j7200-vlab
+    ./firmwareHeaderGen.sh j7200-zebu
 
 fi
 

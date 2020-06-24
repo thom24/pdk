@@ -265,10 +265,8 @@ MMCSD_Error MMCSD_configSocIntrPath(const void *hwAttrs_ptr, bool setIntrPath)
 
     if(hwAttrs->instNum==1) {
        src_id = TISCI_DEV_MMCSD0;
-    } else if(hwAttrs->instNum==2) {
+    } else {
        src_id = TISCI_DEV_MMCSD1;
-    }  else {
-       src_id = TISCI_DEV_MMCSD2;
     }
     if (r5CpuInfo.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_0) /* MCU R5 */
     {
@@ -292,18 +290,6 @@ MMCSD_Error MMCSD_configSocIntrPath(const void *hwAttrs_ptr, bool setIntrPath)
             
         }
     }
-    else if (r5CpuInfo.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_2) /* MAIN R5 SS1 */
-    {
-        if(r5CpuInfo.cpuID == 0U)
-        {
-            dst_id = TISCI_DEV_R5FSS1_CORE0;/* Main R5 -SS1 - CPU0*/ 
-        }
-        else
-        {
-            dst_id = TISCI_DEV_R5FSS1_CORE1; /* Main R5 -SS1 - CPU1*/ 
-        }
-    } 
-    
        
     src_index = hwAttrs->eventId;  /* Index coming from the peripheral */
     dst_host_irq = hwAttrs->intNum;  /* By default it is set for MCU R5 */

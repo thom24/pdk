@@ -289,11 +289,17 @@ typedef uint8_t domgrp_t;
 #include <ti/drv/sciclient/soc/sysfw/include/am65x/tisci_clocks.h>
 #include <ti/drv/sciclient/soc/sysfw/include/am65x_sr2/tisci_clocks.h>
 #endif
-#if defined (SOC_J721E) || defined (SOC_J7200)
+#if defined (SOC_J721E)
 #include <ti/drv/sciclient/soc/sysfw/include/j721e/tisci_resasg_types.h>
 #include <ti/drv/sciclient/soc/sysfw/include/j721e/tisci_hosts.h>
 #include <ti/drv/sciclient/soc/sysfw/include/j721e/tisci_sec_proxy.h>
 #include <ti/drv/sciclient/soc/sysfw/include/j721e/tisci_boardcfg_constraints.h>
+#endif
+#if defined (SOC_J7200)
+#include <ti/drv/sciclient/soc/sysfw/include/j7200/tisci_resasg_types.h>
+#include <ti/drv/sciclient/soc/sysfw/include/j7200/tisci_hosts.h>
+#include <ti/drv/sciclient/soc/sysfw/include/j7200/tisci_sec_proxy.h>
+#include <ti/drv/sciclient/soc/sysfw/include/j7200/tisci_boardcfg_constraints.h>
 #endif
 #if defined (SOC_AM64X)
 #include <ti/drv/sciclient/soc/sysfw/include/am64x/tisci_resasg_types.h>

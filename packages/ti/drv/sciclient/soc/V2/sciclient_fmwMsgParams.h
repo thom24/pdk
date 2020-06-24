@@ -66,12 +66,12 @@ extern "C" {
  */
 /* ABI Major revision - Major revision changes
 *       indicate backward compatibility breakage */
-#define SCICLIENT_FIRMWARE_ABI_MAJOR                     (2U)
+#define SCICLIENT_FIRMWARE_ABI_MAJOR                     (3U)
 /* ABI Minor revision - Minor revision changes
 *       indicate backward compatibility is maintained,
 *       however, new messages OR extensions to existing
 *       messages might have been adde */
-#define SCICLIENT_FIRMWARE_ABI_MINOR                     (4U)
+#define SCICLIENT_FIRMWARE_ABI_MINOR                     (1U)
 /* @} */
 
 /**
@@ -98,45 +98,18 @@ extern "C" {
 #define SCICLIENT_CONTEXT_A72_NONSEC_1 (7U)
 /** A72_4(Non Secure): Cortex A72 context 4 on Main island */
 #define SCICLIENT_CONTEXT_A72_NONSEC_2 (8U)
-/** C7X_0(Secure): C7x Context 0 on Main island */
-#define SCICLIENT_CONTEXT_C7X_SEC_0 (9U)
-/** C7X_1(Non Secure): C7x context 1 on Main island */
-#define SCICLIENT_CONTEXT_C7X_NONSEC_0 (10U)
-/** C6X_0_0(Secure): C6x_0 Context 0 on Main island */
-#define SCICLIENT_CONTEXT_C6X_0_SEC_0 (11U)
-/** C6X_0_1(Non Secure): C6x_0 context 1 on Main island */
-#define SCICLIENT_CONTEXT_C6X_0_NONSEC_0 (12U)
-/** C6X_1_0(Secure): C6x_1 Context 0 on Main island */
-#define SCICLIENT_CONTEXT_C6X_1_SEC_0 (13U)
-/** C6X_1_1(Non Secure): C6x_1 context 1 on Main island */
-#define SCICLIENT_CONTEXT_C6X_1_NONSEC_0 (14U)
-/** GPU_0(Non Secure): RGX context 0 on Main island */
-#define SCICLIENT_CONTEXT_GPU_NONSEC_0 (15U)
 /** MAIN_0_R5_0(Non Secure): Cortex R5_0 context 0 on Main island */
-#define SCICLIENT_CONTEXT_MAIN_0_R5_NONSEC_0 (16U)
+#define SCICLIENT_CONTEXT_MAIN_0_R5_NONSEC_0 (9U)
 /** MAIN_0_R5_1(Secure): Cortex R5_0 context 1 on Main island */
-#define SCICLIENT_CONTEXT_MAIN_0_R5_SEC_0 (17U)
+#define SCICLIENT_CONTEXT_MAIN_0_R5_SEC_0 (10U)
 /** MAIN_0_R5_2(Non Secure): Cortex R5_0 context 2 on Main island */
-#define SCICLIENT_CONTEXT_MAIN_0_R5_NONSEC_1 (18U)
+#define SCICLIENT_CONTEXT_MAIN_0_R5_NONSEC_1 (11U)
 /** MAIN_0_R5_3(Secure): Cortex R5_0 context 3 on MCU island */
-#define SCICLIENT_CONTEXT_MAIN_0_R5_SEC_1 (19U)
+#define SCICLIENT_CONTEXT_MAIN_0_R5_SEC_1 (12U)
 /** MAIN_1_R5_0(Non Secure): Cortex R5_1 context 0 on Main island */
 
-#ifdef SOC_J721E
-#define SCICLIENT_CONTEXT_MAIN_1_R5_NONSEC_0 (20U)
-/** MAIN_1_R5_1(Secure): Cortex R5_1 context 1 on Main island */
-#define SCICLIENT_CONTEXT_MAIN_1_R5_SEC_0 (21U)
-/** MAIN_1_R5_2(Non Secure): Cortex R5_1 context 2 on Main island */
-#define SCICLIENT_CONTEXT_MAIN_1_R5_NONSEC_1 (22U)
-/** MAIN_1_R5_3(Secure): Cortex R5_1 context 3 on MCU island */
-#define SCICLIENT_CONTEXT_MAIN_1_R5_SEC_1 (23U)
-/** ICSSG_0(Non Secure): ICSSG context 0 on Main island */
-#define SCICLIENT_CONTEXT_ICSSG_NONSEC_0 (24U)
 /** Total number of possible contexts for application. */
-#define SCICLIENT_CONTEXT_MAX_NUM                        (25U)
-#else
-#define SCICLIENT_CONTEXT_MAX_NUM                        (20U)
-#endif
+#define SCICLIENT_CONTEXT_MAX_NUM                        (13U)
 /* @} */
 
 /**
@@ -156,21 +129,6 @@ extern "C" {
 #define SCICLIENT_PROC_ID_A72SS0_CORE1 (0x21U)
 
 /**
- * COMPUTE_CLUSTER_J7ES_TB_VDC_MAIN_0: (Cluster 4 Processor 0)
- */
-#define SCICLIENT_PROC_ID_C71SS0 (0x30U)
-
-/**
- * J7_MAIN_SEC_MMR_MAIN_0: (Cluster 2 Processor 0)
- */
-#define SCICLIENT_PROC_ID_C66SS0_CORE0 (0x03U)
-
-/**
- * J7_MAIN_SEC_MMR_MAIN_0: (Cluster 3 Processor 0)
- */
-#define SCICLIENT_PROC_ID_C66SS1_CORE0 (0x04U)
-
-/**
  * J7_MAIN_SEC_MMR_MAIN_0: (Cluster 0 Processor 0)
  */
 #define SCICLIENT_PROC_ID_R5FSS0_CORE0 (0x06U)
@@ -179,16 +137,6 @@ extern "C" {
  * J7_MAIN_SEC_MMR_MAIN_0: (Cluster 0 Processor 1)
  */
 #define SCICLIENT_PROC_ID_R5FSS0_CORE1 (0x07U)
-
-/**
- * J7_MAIN_SEC_MMR_MAIN_0: (Cluster 1 Processor 0)
- */
-#define SCICLIENT_PROC_ID_R5FSS1_CORE0 (0x08U)
-
-/**
- * J7_MAIN_SEC_MMR_MAIN_0: (Cluster 1 Processor 1)
- */
-#define SCICLIENT_PROC_ID_R5FSS1_CORE1 (0x09U)
 
 /**
  * J7_MCU_SEC_MMR_MCU_0: (Cluster 0 Processor 0)
@@ -203,7 +151,7 @@ extern "C" {
 /**
  * Total Number of processors in J721E
  */
-#define SCICLIENT_SOC_NUM_PROCESSORS (0x0BU)
+#define SCICLIENT_SOC_NUM_PROCESSORS (0x0666666U)
 /* @} */
 
 /** -------------------- Resource Management Parameters ---------------------*/
@@ -269,7 +217,7 @@ extern "C" {
  *  @{
  *  Power Management Module Device IDs
  */
-#include <ti/drv/sciclient/soc/sysfw/include/j721e/tisci_devices.h>
+#include <ti/drv/sciclient/soc/sysfw/include/j7200/tisci_devices.h>
 /* @} */
 
 /**
@@ -278,7 +226,7 @@ extern "C" {
  *  @{
  *  Power Management Module Clock IDs for individual modules.
  */
-#include <ti/drv/sciclient/soc/sysfw/include/j721e/tisci_clocks.h>
+#include <ti/drv/sciclient/soc/sysfw/include/j7200/tisci_clocks.h>
 /* @} */
 
 /**
@@ -301,9 +249,6 @@ extern "C" {
 #define TISCI_UDMAP0_RX_EOES_IRQ_SRC_IDX_START      (1280U)
 #define TISCI_UDMAP0_RX_FLOW_EOES_IRQ_SRC_IDX_START (1536U)
 /* @} */
-
-#define SCICLIENT_C7X_NON_SECURE_INTERRUPT_NUM (9U)
-#define SCICLIENT_C7X_SECURE_INTERRUPT_NUM     (10U)
 
 /* ========================================================================== */
 /*                         Structure Declarations                             */

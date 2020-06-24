@@ -94,6 +94,13 @@
 #define DRAM_FWL_ID (1280)
 #endif
 
+#if defined (SOC_J7200)
+#define MCU_1_0_PRIVID (96)
+#define MCU_SRAM_FWL_ID (1050)
+#define MSMC_SRAM_FWL_ID (4760)
+#define DRAM_FWL_ID (1280)
+#endif
+
 #if defined (SOC_AM65XX)
 #define MCU_1_0_PRIVID (96)
 #define MCU_SRAM_FWL_ID (1050)

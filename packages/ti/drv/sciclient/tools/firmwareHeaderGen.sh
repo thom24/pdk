@@ -37,6 +37,8 @@
 #         For J721E-HS  : ./firmwareHeaderGen.sh j721e-hs
 #         For AM64x     : ./firmwareHeaderGen.sh am64x-vlab
 #         For AM64x     : ./firmwareHeaderGen.sh am64x-zebu
+#         For J7200     : ./firmwareHeaderGen.sh j7200-vlab
+#         For J7200     : ./firmwareHeaderGen.sh j7200-zebu
 export RM=rm
 export MV=mv
 export MAKE=gcc
@@ -89,10 +91,12 @@ fi
 if [[ $FW_SOC == *"vlab"* ]]; then
   FW_SOC=${FW_SOC%-vlab}
   FW_SOC_TYPE=gp-vlab
+  BIN_EXT=-vlab
 fi
 if [[ $FW_SOC == *"zebu"* ]]; then
   FW_SOC=${FW_SOC%-zebu}
   FW_SOC_TYPE=gp-zebu
+  BIN_EXT=-zebu
 fi
 
 export SCI_CLIENT_IN_SOC_DIR=$SCI_CLIENT_DIR/soc/sysfw/binaries
@@ -114,6 +118,13 @@ fi
 if [ "$FW_SOC" = "j721e" ]; then
 export SCI_CLIENT_OUT_SOC_DIR=$SCI_CLIENT_DIR/soc/V1
 export SCICLIENT_FIRMWARE_HEADER=sciclient_firmware_V1$BIN_EXT.h
+SYSFW_SE_SIGNED=$SCI_CLIENT_OUT_SOC_DIR/sysfw$BIN_EXT.bin
+export SYSFW_LOAD_ADDR=0x40000
+fi
+
+if [ "$FW_SOC" = "j7200" ]; then
+export SCI_CLIENT_OUT_SOC_DIR=$SCI_CLIENT_DIR/soc/V2
+export SCICLIENT_FIRMWARE_HEADER=sciclient_firmware_V2$BIN_EXT.h
 SYSFW_SE_SIGNED=$SCI_CLIENT_OUT_SOC_DIR/sysfw$BIN_EXT.bin
 export SYSFW_LOAD_ADDR=0x40000
 fi

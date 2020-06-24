@@ -243,7 +243,7 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
     CSL_intaggrGetCfg(pIaRegs);
 
     drvHandle->iaGemOffset  = CSL_NAVSS_GEM_MAIN_UDMA_INTA0_SEVI_OFFSET;
-    drvHandle->devIdIa      = TISCI_DEV_NAVSS0_UDMASS_INTAGGR_0;
+    drvHandle->devIdIa      = TISCI_DEV_NAVSS0_UDMASS_INTA_0;
     drvHandle->clecRtMap    = CSL_CLEC_RTMAP_DISABLE;
     drvHandle->clecOffset   = 0U;
 #if defined (BUILD_MPU1_0)
