@@ -55,10 +55,10 @@ extern "C" {
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
 
-#if defined (BUILD_MCU)
+#if defined (__TI_ARM_V7R4__)
 #define EDMA_NUM_CC        EDMA_MSS_NUM_CC
 #define EDMA_MAX_NUM_TC    EDMA_MSS_MAX_NUM_TC
-#elif defined (BUILD_DSP_1)
+#elif defined (_TMS320C6X)
 #define EDMA_NUM_CC        EDMA_DSS_NUM_CC
 #define EDMA_MAX_NUM_TC    EDMA_DSS_MAX_NUM_TC
 #else

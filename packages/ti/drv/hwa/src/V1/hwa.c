@@ -1124,11 +1124,11 @@ HWA_Handle HWA_open(uint32_t  index, int32_t* errCode)
             interruptRegParams.corepacConfig.arg=(uintptr_t)gHWADriverPtr[index];
             interruptRegParams.corepacConfig.name=(char *)("HWA-Param-Intr1");
             interruptRegParams.corepacConfig.isrRoutine=HWA_paramDoneIntr1ISR;
-#ifdef BUILD_DSP_1
+#if defined (_TMS320C6X)
             interruptRegParams.corepacConfig.intVecNum= OSAL_REGINT_INTVEC_EVENT_COMBINER;  /* Host Interrupt vector */
             interruptRegParams.corepacConfig.corepacEventNum = (int32_t)gHWADriverPtr[index]->hwAttrs->intNum1ParamSet;
 #endif
-#ifdef BUILD_MCU
+#if defined (__TI_ARM_V7R4__)
             interruptRegParams.corepacConfig.priority = 0x1U;
             interruptRegParams.corepacConfig.intVecNum=(int32_t)gHWADriverPtr[index]->hwAttrs->intNum1ParamSet;  /* Host Interrupt vector */
             interruptRegParams.corepacConfig.corepacEventNum = (int32_t)gHWADriverPtr[index]->hwAttrs->intNum1ParamSet;
@@ -1149,11 +1149,11 @@ HWA_Handle HWA_open(uint32_t  index, int32_t* errCode)
             interruptRegParams.corepacConfig.arg=(uintptr_t)gHWADriverPtr[index];
             interruptRegParams.corepacConfig.name=(char *)("HWA-Done");
             interruptRegParams.corepacConfig.isrRoutine=HWA_allParamDoneISR;
-#ifdef BUILD_DSP_1
+#if defined (_TMS320C6X)
             interruptRegParams.corepacConfig.intVecNum = OSAL_REGINT_INTVEC_EVENT_COMBINER;  /* Host Interrupt vector */
             interruptRegParams.corepacConfig.corepacEventNum = (int32_t)gHWADriverPtr[index]->hwAttrs->intNumDone;
 #endif
-#ifdef BUILD_MCU
+#if defined (__TI_ARM_V7R4__)
             interruptRegParams.corepacConfig.priority = 0x1U;
             interruptRegParams.corepacConfig.intVecNum=(int32_t)gHWADriverPtr[index]->hwAttrs->intNumDone;  /* Host Interrupt vector */
             interruptRegParams.corepacConfig.corepacEventNum = (int32_t)gHWADriverPtr[index]->hwAttrs->intNumDone;
@@ -1173,11 +1173,11 @@ HWA_Handle HWA_open(uint32_t  index, int32_t* errCode)
             interruptRegParams.corepacConfig.arg=(uintptr_t)gHWADriverPtr[index];
             interruptRegParams.corepacConfig.name=(char *)("HWA-Param-Intr2");
             interruptRegParams.corepacConfig.isrRoutine=HWA_paramDoneIntr2ISR;
-#ifdef BUILD_DSP_1
+#if defined (_TMS320C6X)
             interruptRegParams.corepacConfig.intVecNum = OSAL_REGINT_INTVEC_EVENT_COMBINER;  /* Host Interrupt vector */
             interruptRegParams.corepacConfig.corepacEventNum = (int32_t)gHWADriverPtr[index]->hwAttrs->intNum2ParamSet;
 #endif
-#ifdef BUILD_MCU
+#if defined (__TI_ARM_V7R4__)
             interruptRegParams.corepacConfig.priority = 0x1U;
             interruptRegParams.corepacConfig.intVecNum=(int32_t)gHWADriverPtr[index]->hwAttrs->intNum2ParamSet;  /* Host Interrupt vector */
             interruptRegParams.corepacConfig.corepacEventNum = (int32_t)gHWADriverPtr[index]->hwAttrs->intNum2ParamSet;
@@ -1198,11 +1198,11 @@ HWA_Handle HWA_open(uint32_t  index, int32_t* errCode)
             interruptRegParams.corepacConfig.arg=(uintptr_t)gHWADriverPtr[index];
             interruptRegParams.corepacConfig.name=(char *)("HWA-ALT-Done");
             interruptRegParams.corepacConfig.isrRoutine=HWA_allALTParamDoneISR;
-#ifdef BUILD_DSP_1
+#if defined (_TMS320C6X)
             interruptRegParams.corepacConfig.intVecNum = OSAL_REGINT_INTVEC_EVENT_COMBINER;  /* Host Interrupt vector */
             interruptRegParams.corepacConfig.corepacEventNum = (int32_t)gHWADriverPtr[index]->hwAttrs->intNumDoneALT;
 #endif
-#ifdef BUILD_MCU
+#if defined (__TI_ARM_V7R4__)
             interruptRegParams.corepacConfig.priority = 0x1U;
             interruptRegParams.corepacConfig.intVecNum=(int32_t)gHWADriverPtr[index]->hwAttrs->intNumDoneALT;  /* Host Interrupt vector */
             interruptRegParams.corepacConfig.corepacEventNum = (int32_t)gHWADriverPtr[index]->hwAttrs->intNumDoneALT;
@@ -3130,10 +3130,10 @@ int32_t HWA_enableParamSetInterrupt(HWA_Handle handle, uint8_t paramsetIdx, HWA_
                 /* enable the interrupt to CPU in H/W, set the CR5INTERN */
                 if (intrConfig->interruptTypeFlag & HWA_PARAMDONE_INTERRUPT_TYPE_CPU_INTR1)
                 {
-#ifdef BUILD_DSP_1
+#if defined (_TMS320C6X)
 					Osal_EnableInterrupt((int32_t) ptrHWADriver->hwAttrs->intNum1ParamSet, OSAL_REGINT_INTVEC_EVENT_COMBINER);
 #endif
-#ifdef BUILD_MCU
+#if defined (__TI_ARM_V7R4__)
                     Osal_EnableInterrupt( (int32_t) ptrHWADriver->hwAttrs->intNum1ParamSet, (int32_t) ptrHWADriver->hwAttrs->intNum1ParamSet);
 #endif
 
@@ -3147,10 +3147,10 @@ int32_t HWA_enableParamSetInterrupt(HWA_Handle handle, uint8_t paramsetIdx, HWA_
                 }
                 if (intrConfig->interruptTypeFlag & HWA_PARAMDONE_INTERRUPT_TYPE_CPU_INTR2)
                 {
-#ifdef BUILD_DSP_1
+#if defined (_TMS320C6X)
 					Osal_EnableInterrupt((int32_t) ptrHWADriver->hwAttrs->intNum2ParamSet, OSAL_REGINT_INTVEC_EVENT_COMBINER);
 #endif
-#ifdef BUILD_MCU
+#if defined (__TI_ARM_V7R4__)
                     Osal_EnableInterrupt((int32_t) ptrHWADriver->hwAttrs->intNum2ParamSet, (int32_t) ptrHWADriver->hwAttrs->intNum2ParamSet);
 #endif
                     /* enable the interrupt 2*/
@@ -3222,10 +3222,10 @@ int32_t HWA_enableDoneInterrupt(HWA_Handle handle, uint8_t threadIdx, HWA_Done_I
             ptrHWADriver->interruptCtxDone.bIsEnabled = true;
             ptrHWADriver->interruptCtxDone.callbackFn = callbackFn;
             ptrHWADriver->interruptCtxDone.callbackArg = callbackArg;
-#ifdef BUILD_DSP_1
+#if defined (_TMS320C6X)
 			Osal_EnableInterrupt((int32_t) ptrHWADriver->hwAttrs->intNumDone, OSAL_REGINT_INTVEC_EVENT_COMBINER);
 #endif
-#ifdef BUILD_MCU
+#if defined (__TI_ARM_V7R4__)
             Osal_EnableInterrupt((int32_t) ptrHWADriver->hwAttrs->intNumDone, (int32_t) ptrHWADriver->hwAttrs->intNumDone);
 #endif
         }
@@ -3235,10 +3235,10 @@ int32_t HWA_enableDoneInterrupt(HWA_Handle handle, uint8_t threadIdx, HWA_Done_I
             ptrHWADriver->interruptCtxDoneALT.bIsEnabled = true;
             ptrHWADriver->interruptCtxDoneALT.callbackFn = callbackFn;
             ptrHWADriver->interruptCtxDoneALT.callbackArg = callbackArg;
-#ifdef BUILD_DSP_1
+#if defined (_TMS320C6X)
 			Osal_EnableInterrupt((int32_t) ptrHWADriver->hwAttrs->intNumDoneALT, OSAL_REGINT_INTVEC_EVENT_COMBINER);
 #endif
-#ifdef BUILD_MCU
+#if defined (__TI_ARM_V7R4__)
             Osal_EnableInterrupt((int32_t) ptrHWADriver->hwAttrs->intNumDoneALT, (int32_t) ptrHWADriver->hwAttrs->intNumDoneALT);
 #endif
         }
@@ -3358,10 +3358,10 @@ int32_t HWA_disableDoneInterrupt(HWA_Handle handle, uint8_t threadIdx)
             ptrHWADriver->interruptCtxDone.callbackArg = NULL;
 
             /* enable the interrupt to CPU in H/W */
-#ifdef BUILD_DSP_1
+#if defined (_TMS320C6X)
 			Osal_DisableInterrupt(ptrHWADriver->hwAttrs->intNumDone, OSAL_REGINT_INTVEC_EVENT_COMBINER);
 #endif
-#ifdef BUILD_MCU
+#if defined (__TI_ARM_V7R4__)
             Osal_DisableInterrupt(ptrHWADriver->hwAttrs->intNumDone, ptrHWADriver->hwAttrs->intNumDone);
 #endif
         }
@@ -3371,10 +3371,10 @@ int32_t HWA_disableDoneInterrupt(HWA_Handle handle, uint8_t threadIdx)
             ptrHWADriver->interruptCtxDoneALT.bIsEnabled = false;
             ptrHWADriver->interruptCtxDoneALT.callbackFn = NULL;
             ptrHWADriver->interruptCtxDoneALT.callbackArg = NULL;
-#ifdef BUILD_DSP_1
+#if defined (_TMS320C6X)
 			Osal_DisableInterrupt(ptrHWADriver->hwAttrs->intNumDoneALT, OSAL_REGINT_INTVEC_EVENT_COMBINER);
 #endif
-#ifdef BUILD_MCU
+#if defined (__TI_ARM_V7R4__)
             /* enable the interrupt to CPU in H/W */
             Osal_DisableInterrupt(ptrHWADriver->hwAttrs->intNumDoneALT, ptrHWADriver->hwAttrs->intNumDoneALT);
 #endif

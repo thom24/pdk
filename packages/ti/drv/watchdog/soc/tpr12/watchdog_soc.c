@@ -68,9 +68,9 @@ typedef struct SOC_HwAttrs_t
     /**
      * @brief   Base address of the RCM address space to be used.
      */
-#if defined(BUILD_MCU)
+#if defined (__TI_ARM_V7R4__)
     CSL_mss_rcmRegs*   ptrRCMRegs;
-#elif defined (BUILD_DSP_1)
+#elif defined (_TMS320C6X)
     CSL_dss_rcmRegs*   ptrRCMRegs;
 #endif
 
@@ -91,7 +91,7 @@ typedef struct SOC_HwAttrs_t
 /* Watchdog objects */
 Watchdog_MCB watchdogObject;
 
-#if defined(BUILD_MCU)
+#if defined (__TI_ARM_V7R4__)
 
 /**
  * @brief   There is only 1 Watchdog instance
@@ -130,7 +130,7 @@ SOC_HwAttrs gSOCHwAttr =
     (CSL_mss_toprcmRegs*)CSL_MSS_TOPRCM_U_BASE
 };
 
-#elif defined (BUILD_DSP_1)
+#elif defined (_TMS320C6X)
 /**
  * @brief   There is only 1 Watchdog instance
  * available. This should *NOT* be modified by the customer.
@@ -176,7 +176,7 @@ SOC_HwAttrs gSOCHwAttr =
  */
 void RTI_socEnableWatchdog()
 {
-#if defined(BUILD_MCU)
+#if defined (__TI_ARM_V7R4__)
     CSL_mss_rcmRegs* ptrRCMRegs = gSOCHwAttr.ptrRCMRegs;
     if (CSL_FEXT(ptrRCMRegs->MSS_WDT_RST_CTRL,
                  MSS_RCM_MSS_WDT_RST_CTRL_MSS_WDT_RST_CTRL_ASSERT) != 0)
@@ -185,7 +185,7 @@ void RTI_socEnableWatchdog()
                  MSS_RCM_MSS_WDT_RST_CTRL_MSS_WDT_RST_CTRL_ASSERT,
                  0x7U);
     }
-#elif defined (BUILD_DSP_1)
+#elif defined (_TMS320C6X)
     CSL_dss_rcmRegs* ptrRCMRegs = gSOCHwAttr.ptrRCMRegs;
     if (CSL_FEXT(ptrRCMRegs->DSS_WDT_RST_CTRL,
                  DSS_RCM_DSS_WDT_RST_CTRL_DSS_WDT_RST_CTRL_ASSERT) != 0)

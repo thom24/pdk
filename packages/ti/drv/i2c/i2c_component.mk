@@ -211,7 +211,7 @@ export i2c_indp_SOC_DEPENDENCY
 i2c_indp_PKG_LIST = i2c_indp
 export i2c_indp_PKG_LIST
 i2c_indp_INCLUDE = $(i2c_indp_PATH)
-i2c_indp_SOCLIST = $(drvi2c_SOCLISTLIM)
+i2c_indp_SOCLIST = am574x am572x am571x tda2xx tda2px tda2ex tda3xx dra78x dra72x dra75x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138
 export i2c_indp_SOCLIST
 i2c_indp_$(SOC)_CORELIST = $(drvi2c_$(SOC)_CORELIST)
 export i2c_indp_$(SOC)_CORELIST
@@ -238,7 +238,7 @@ export i2c_profile_SOC_DEPENDENCY
 i2c_profile_PKG_LIST = i2c_profile
 export i2c_profile_PKG_LIST
 i2c_profile_INCLUDE = $(i2c_profile_PATH)
-i2c_profile_SOCLIST = $(drvi2c_SOCLISTLIM) tpr12
+i2c_profile_SOCLIST = am574x am572x am571x tda2xx tda2px tda2ex tda3xx dra78x dra72x dra75x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138
 export i2c_profile_SOCLIST
 i2c_profile_$(SOC)_CORELIST = $(drvi2c_$(SOC)_CORELIST)
 export i2c_profile_$(SOC)_CORELIST
@@ -265,7 +265,7 @@ export i2c_profile_indp_SOC_DEPENDENCY
 i2c_profile_indp_PKG_LIST = i2c_profile_indp
 export i2c_profile_indp_PKG_LIST
 i2c_profile_indp_INCLUDE = $(i2c_profile_indp_PATH)
-i2c_profile_indp_SOCLIST = $(drvi2c_SOCLISTLIM)
+i2c_profile_indp_SOCLIST = am574x am572x am571x tda2xx tda2px tda2ex tda3xx dra78x dra72x dra75x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138
 export i2c_profile_indp_SOCLIST
 i2c_profile_indp_$(SOC)_CORELIST = $(drvi2c_$(SOC)_CORELIST)
 export i2c_profile_indp_$(SOC)_CORELIST

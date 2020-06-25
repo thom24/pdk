@@ -48,7 +48,7 @@
 
 #define I2C_MODULE_FREQ_200M    (200000000U)
 
-#ifdef BUILD_MCU
+#if defined (__TI_ARM_V7R4__)
 #define CSL_I2C_CNT    CSL_MSS_I2C_PER_CNT
 
 /**
@@ -131,7 +131,7 @@ I2C_config_list I2C_config = {
     {NULL, NULL, NULL}
 };
 
-#elif defined (BUILD_DSP_1)
+#elif defined (_TMS320C6X)
 
 #define CSL_I2C_CNT    CSL_DSS_I2C_PER_CNT
 

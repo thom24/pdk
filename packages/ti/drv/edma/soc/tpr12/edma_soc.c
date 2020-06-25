@@ -50,7 +50,7 @@
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
-#ifdef BUILD_DSP_1
+#if defined (_TMS320C6X)
 /* DSS EDMA Interrupts */
 #define EDMA_DSS_CC0_INTAGG_MASK_REG_ADDRESS    (CSL_DSS_CTRL_U_BASE + CSL_DSS_CTRL_DSS_TPCC_A_INTAGG_MASK)
 #define EDMA_DSS_CC0_INTAGG_STATUS_REG_ADDRESS  (CSL_DSS_CTRL_U_BASE + CSL_DSS_CTRL_DSS_TPCC_A_INTAGG_STATUS)
@@ -73,7 +73,7 @@
 #define EDMA_DSS_CC3_ERRAGG_STATUS_REG_ADDRESS  (CSL_RCSS_CTRL_U_BASE + CSL_RCSS_CTRL_RCSS_TPCC_A_ERRAGG_STATUS)
 #endif
 
-#ifdef BUILD_MCU
+#if defined (__TI_ARM_V7R4__)
 /* MSS EDMA Interrupts */
 #define EDMA_MSS_CC0_INTAGG_MASK_REG_ADDRESS    (CSL_MSS_CTRL_U_BASE + CSL_MSS_CTRL_MSS_TPCC_A_INTAGG_MASK)
 #define EDMA_MSS_CC0_INTAGG_STATUS_REG_ADDRESS  (CSL_MSS_CTRL_U_BASE + CSL_MSS_CTRL_MSS_TPCC_A_INTAGG_STATUS)
@@ -116,7 +116,7 @@
 /*                            Global Variables                                */
 /* ========================================================================== */
 
-#ifdef BUILD_DSP_1
+#if defined (_TMS320C6X)
 /*! @brief EDMA hardware attributes global. */
 const EDMA_hwAttrs_t gEdmaHwAttrs[EDMA_NUM_CC] = {
     {
@@ -186,7 +186,7 @@ const EDMA_hwAttrs_t gEdmaHwAttrs[EDMA_NUM_CC] = {
 };
 #endif
 
-#ifdef BUILD_MCU
+#if defined (__TI_ARM_V7R4__)
 /*! @brief EDMA hardware attributes global. */
 const EDMA_hwAttrs_t gEdmaHwAttrs[EDMA_NUM_CC] = {
     {
@@ -292,7 +292,7 @@ const EDMA_hwAttrs_t gEdmaHwAttrs[EDMA_NUM_CC] = {
 /* ========================================================================== */
 /*                          Function Definitions                              */
 /* ========================================================================== */
-#ifdef BUILD_DSP_1
+#if defined (_TMS320C6X)
 const EDMA_hwAttrs_t* EDMA_getHwAttrs(uint32_t instanceId)
 {
     const EDMA_hwAttrs_t *hwAttrs = NULL;
@@ -317,7 +317,7 @@ const EDMA_hwAttrs_t* EDMA_getHwAttrs(uint32_t instanceId)
 }
 #endif
 
-#ifdef BUILD_MCU
+#if defined (__TI_ARM_V7R4__)
 const EDMA_hwAttrs_t* EDMA_getHwAttrs(uint32_t instanceId)
 {
     const EDMA_hwAttrs_t *hwAttrs = NULL;

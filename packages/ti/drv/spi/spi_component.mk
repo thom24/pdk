@@ -68,8 +68,8 @@ ifeq ($(spi_component_make_include), )
 
 drvspi_BOARDLIST       = am65xx_evm am65xx_idk j721e_sim j721e_evm j7200_evm am64x_evm
 drvspi_SOCLIST         = tda2xx tda2px tda2ex tda3xx dra72x dra75x dra78x am574x am572x am571x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j7200 am64x tpr12
-drvspi_SOCLISTLIM      = tda2xx tda2px tda2ex tda3xx dra72x dra75x dra78x am574x am572x am571x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx am64x
-drvspi_dma_SOCLIST     = tda2xx tda2px tda2ex tda3xx dra72x dra75x dra78x am574x am572x am571x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j7200 tpr12 am64x
+drvspi_SOCLISTLIM      = tda2xx tda2px tda2ex tda3xx dra72x dra75x dra78x am574x am572x am571x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138
+drvspi_dma_SOCLIST     = tda2xx tda2px tda2ex tda3xx dra72x dra75x dra78x am574x am572x am571x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j7200 am64x	tpr12
 drvspi_am574x_CORELIST = c66x a15_0 ipu1_0
 drvspi_am572x_CORELIST = c66x a15_0 ipu1_0
 drvspi_am571x_CORELIST = c66x a15_0 ipu1_0
@@ -180,7 +180,7 @@ export spi_indp_CORE_DEPENDENCY
 export spi_indp_SOC_DEPENDENCY
 spi_indp_PKG_LIST = spi_indp
 spi_indp_INCLUDE = $(spi_indp_PATH)
-spi_indp_SOCLIST = $(drvspi_SOCLIST)
+spi_indp_SOCLIST = $(drvspi_SOCLISTLIM)
 export spi_indp_SOCLIST
 spi_indp_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELIST)
 export spi_indp_$(SOC)_CORELIST

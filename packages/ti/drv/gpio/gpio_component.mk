@@ -163,7 +163,7 @@ export gpio_indp_SOC_DEPENDENCY
 gpio_indp_PKG_LIST = gpio_indp
 export gpio_indp_PKG_LIST
 gpio_indp_INCLUDE = $(gpio_indp_PATH)
-gpio_indp_SOCLIST = $(drvgpio_SOCLIST)
+gpio_indp_SOCLIST = am574x am572x am571x dra72x dra75x dra78x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138
 export gpio_indp_SOCLIST
 gpio_indp_$(SOC)_CORELIST = $(drvgpio_$(SOC)_CORELIST)
 export gpio_indp_$(SOC)_CORELIST

@@ -69,7 +69,7 @@ export hwa_MAKEFILE
 export hwa_LIBNAME
 export hwa_LIBPATH
 hwa_BOARD_DEPENDENCY = no
-hwa_CORE_DEPENDENCY = yes
+hwa_CORE_DEPENDENCY = no
 export hwa_COMP_LIST
 export hwa_BOARD_DEPENDENCY
 export hwa_CORE_DEPENDENCY

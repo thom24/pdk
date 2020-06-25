@@ -68,7 +68,7 @@ export edma_MAKEFILE
 export edma_LIBNAME
 export edma_LIBPATH
 edma_BOARD_DEPENDENCY = no
-edma_CORE_DEPENDENCY = yes
+edma_CORE_DEPENDENCY = no
 export edma_COMP_LIST
 export edma_BOARD_DEPENDENCY
 export edma_CORE_DEPENDENCY

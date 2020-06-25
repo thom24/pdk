@@ -74,13 +74,13 @@ HWA_HWAttrs gHWAHwCfg[HWA_NUM_INSTANCES] =
         CSL_DSS_HWA_WINDOW_RAM_U_BASE,            /* HWA base address for window ram */
         CSL_DSS_CTRL_U_BASE,                                       /* DSS_CTRL base address */
         NUM_HWA_PARAMSETS_PER_INSTANCE,       /* number of HWA paramsets */
-#ifdef BUILD_DSP_1
+#if defined (_TMS320C6X)
         CSL_DSS_INTR_DSS_HWA_PARAM_DONE_INTR1,    /* intNumParamSet HWA Peripheral's interrupt vector 1 for individual paramset completion */
         CSL_DSS_INTR_DSS_HWA_PARAM_DONE_INTR2,    /* intNumParamSet HWA Peripheral's interrupt vector 2 for individual paramset completion */
         CSL_DSS_INTR_DSS_HWA_LOOP_INTR1,                  /* intNumDone HWA Peripheral's interrupt vector for completion of all programmed paramset */
         CSL_DSS_INTR_DSS_HWA_LOOP_INTR2,                  /* intNumDone HWA Peripheral's interrupt vector for completion of all programmed paramset in ALT thread */
 #endif
-#ifdef BUILD_MCU
+#if defined (__TI_ARM_V7R4__)
         CSL_MSS_INTR_DSS_HWA_PARAM_DONE_INTR1,    /* intNumParamSet HWA Peripheral's interrupt vector 1 for individual paramset completion */
         CSL_MSS_INTR_DSS_HWA_PARAM_DONE_INTR2,    /* intNumParamSet HWA Peripheral's interrupt vector 2 for individual paramset completion */
         CSL_MSS_INTR_DSS_HWA_LOOP_INTR1,           /* intNumDone HWA Peripheral's interrupt vector for completion of all programmed paramset */

@@ -62,7 +62,7 @@ extern UART_FxnTable gUartSciFxnTable;
 #define UART_MODULE_FREQ_200M    (200000000U)
  
 
-#ifdef BUILD_MCU
+#if defined (__TI_ARM_V7R4__)
 #define CSL_UART_PER_CNT    CSL_MSS_UART_PER_CNT
 
 /**
@@ -161,7 +161,7 @@ UART_Config UART_config[] =
     }
 };
 
-#elif defined (BUILD_DSP_1)
+#elif defined (_TMS320C6X)
 
 /**
  * @brief   This is the TPR12 DSS specific UART configuration. There is only 1 available

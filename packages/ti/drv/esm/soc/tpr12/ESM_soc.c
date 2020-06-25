@@ -50,13 +50,15 @@
  */
 ESM_HwAttrs gESMHwCfgAttrs =
 {
-#if defined (BUILD_MCU)
+#if defined (__TI_ARM_V7R4__)
     (CSL_esmRegs*)CSL_MSS_ESM_U_BASE,
     CSL_MSS_INTR_MSS_ESM_HI,
     CSL_MSS_INTR_MSS_ESM_LO
-#else
+#elif defined (_TMS320C6X)
     (CSL_esmRegs*)CSL_DSS_ESM_U_BASE,
     0,                                  /* Not used */
     0                                   /* Not used */
+#else
+#error "TPR12 ESM: unsupported core!~
 #endif
 };

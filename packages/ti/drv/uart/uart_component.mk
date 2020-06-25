@@ -180,7 +180,7 @@ export uart_indp_CORE_DEPENDENCY
 export uart_indp_SOC_DEPENDENCY
 uart_indp_PKG_LIST = uart_indp
 uart_indp_INCLUDE = $(uart_indp_PATH)
-uart_indp_SOCLIST = tda2xx tda2px tda2ex tda3xx dra78x am574x am572x am571x dra72x dra75x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx am64x
+uart_indp_SOCLIST = tda2xx tda2px tda2ex tda3xx dra78x am574x am572x am571x dra72x dra75x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138
 export uart_indp_SOCLIST
 uart_indp_$(SOC)_CORELIST = $(drvuart_$(SOC)_CORELIST)
 export uart_indp_$(SOC)_CORELIST
@@ -232,7 +232,7 @@ export uart_profile_CORE_DEPENDENCY
 export uart_profile_SOC_DEPENDENCY
 uart_profile_PKG_LIST = uart_profile
 uart_profile_INCLUDE = $(uart_profile_PATH)
-uart_profile_SOCLIST = am574x am572x am571x dra72x dra75x dra78x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx am64x tpr12
+uart_profile_SOCLIST = am574x am572x am571x dra72x dra75x dra78x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138
 export uart_profile_SOCLIST
 uart_profile_$(SOC)_CORELIST = $(drvuart_$(SOC)_CORELIST)
 export uart_profile_$(SOC)_CORELIST
@@ -258,7 +258,7 @@ export uart_profile_indp_CORE_DEPENDENCY
 export uart_profile_indp_SOC_DEPENDENCY
 uart_profile_indp_PKG_LIST = uart_profile_indp
 uart_profile_indp_INCLUDE = $(uart_profile_indp_PATH)
-uart_profile_indp_SOCLIST = am574x am572x am571x dra72x dra75x dra78x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx am64x
+uart_profile_indp_SOCLIST = am574x am572x am571x dra72x dra75x dra78x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138
 export uart_profile_indp_SOCLIST
 uart_profile_indp_$(SOC)_CORELIST = $(drvuart_$(SOC)_CORELIST)
 export uart_profile_indp_$(SOC)_CORELIST
@@ -284,7 +284,7 @@ export uart_dma_profile_CORE_DEPENDENCY
 export uart_dma_profile_SOC_DEPENDENCY
 uart_dma_profile_PKG_LIST = uart_dma_profile
 uart_dma_profile_INCLUDE = $(uart_dma_profile_PATH)
-uart_dma_profile_SOCLIST = am574x am572x am571x dra72x dra75x dra78x k2h k2k k2l k2e k2g c6678 c6657 am437x am65xx am335x am64x tpr12
+uart_dma_profile_SOCLIST = am574x am572x am571x dra72x dra75x dra78x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x
 export uart_dma_profile_SOCLIST
 uart_dma_profile_$(SOC)_CORELIST = $(drvuart_$(SOC)_CORELIST)
 export uart_dma_profile_$(SOC)_CORELIST
