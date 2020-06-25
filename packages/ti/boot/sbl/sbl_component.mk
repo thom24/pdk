@@ -66,9 +66,9 @@
 #
 ifeq ($(sbl_component_make_include), )
 
-sbl_BOARDLIST = am65xx_evm am65xx_idk j721e_evm am64x_evm
+sbl_BOARDLIST = am65xx_evm am65xx_idk j721e_evm j7200_evm am64x_evm
 
-sbl_SOCLIST = am65xx j721e am64x
+sbl_SOCLIST = am65xx j721e j7200 am64x
 
 am65xx_smp_CORELIST := mcu1_0 mpu1_0 mpu2_0
 sbl_am65xx_CORELIST := mcu1_0 mcu1_1 mpu1_0 mpu1_1 mpu2_0 mpu2_1
@@ -77,6 +77,10 @@ am65xx_LASTCORE := $(word $(words $(sbl_am65xx_CORELIST)), $(sbl_am65xx_CORELIST
 j721e_smp_CORELIST := mcu1_0 mcu2_0 mcu3_0 mpu1_0
 sbl_j721e_CORELIST := mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mpu1_0 mpu1_1
 j721e_LASTCORE := $(word $(words $(sbl_j721e_CORELIST)), $(sbl_j721e_CORELIST))
+
+j7200_smp_CORELIST := mcu1_0 mcu2_0 mpu1_0
+sbl_j7200_CORELIST := mcu1_0 mcu1_1 mcu2_0 mcu2_1 mpu1_0 mpu1_1
+j7200_LASTCORE := $(word $(words $(sbl_j7200_CORELIST)), $(sbl_j7200_CORELIST))
 
 am64x_smp_CORELIST := mcu1_0 mcu2_0 mpu1_0
 sbl_am64x_CORELIST := mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 mpu1_0 mpu1_1
@@ -92,8 +96,12 @@ sbl_DISABLE_PARALLEL_MAKE = yes
 ifeq ($(SOC), am64x)
 sbl_LIB_LIST = sbl_lib_ospi_nondma
 else
-sbl_LIB_LIST = sbl_lib_mmcsd sbl_lib_ospi sbl_lib_uart sbl_lib_hyperflash sbl_lib_cust
-sbl_LIB_LIST += sbl_lib_ospi_nondma
+  ifeq ($(SOC), j7200)
+    sbl_LIB_LIST = sbl_lib_mmcsd sbl_lib_ospi_nondma sbl_lib_uart sbl_lib_hyperflash sbl_lib_cust
+  else
+    sbl_LIB_LIST = sbl_lib_mmcsd sbl_lib_ospi sbl_lib_uart sbl_lib_hyperflash sbl_lib_cust
+    sbl_LIB_LIST += sbl_lib_ospi_nondma
+  endif
 endif
 
 ############################
@@ -289,7 +297,11 @@ sbl_ospi_img_COMP_LIST = sbl_ospi_img
 sbl_ospi_img_RELPATH = ti/boot/sbl/board/k3
 sbl_ospi_img_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)/ospi/bin
 sbl_ospi_img_PATH = $(PDK_SBL_COMP_PATH)/board/k3
-sbl_ospi_img_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=ospi SBL_USE_DMA=yes BUILD_HS=no
+ifeq ($(SOC),$(filter $(SOC), am64x j7200))
+  sbl_ospi_img_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=ospi SBL_USE_DMA=no BUILD_HS=no
+else
+  sbl_ospi_img_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=ospi SBL_USE_DMA=yes BUILD_HS=no
+endif
 export sbl_ospi_img_MAKEFILE
 export sbl_ospi_img_SBL_CERT_KEY=$(SBL_CERT_KEY)
 sbl_ospi_img_BOARD_DEPENDENCY = yes
@@ -594,18 +606,25 @@ ifeq ($(SOC), am64x)
 SBL_CFLAGS += -DSBL_BYPASS_OSPI_DRIVER -DDISABLE_ATCM
 endif
 
+ifeq ($(SOC), j7200)
+#SBL_CFLAGS += -DSBL_BYPASS_OSPI_DRIVER -DVLAB_SIM
+SBL_CFLAGS += -DSBL_SKIP_PINMUX_ENABLE -DSBL_BYPASS_OSPI_DRIVER -DVLAB_SIM
+endif
+
 ###### Use boot_perf_benchmark example#######
 ###### to fine tune the perf knobs  #########
 
 ###########START BOOT PERF KNOBS#############
 # SBL log level
 # no logs = 0, only errors =1, normal logs = 2, all logs = 3
-SBL_CFLAGS += -DSBL_LOG_LEVEL=2
+SBL_CFLAGS += -DSBL_LOG_LEVEL=3
 
 SBL_CFLAGS += -DSBL_ENABLE_PLL
 SBL_CFLAGS += -DSBL_ENABLE_CLOCKS
 
+ifneq ($(SOC), j7200)
 SBL_CFLAGS += -DSBL_ENABLE_DDR
+endif
 ############################################
 # DISABLING the options above this caption
 # improves boot time at the cost of moving
@@ -690,21 +709,25 @@ SBL_CFLAGS += -DSBL_ENABLE_DDR
 # Example - Building Custom SBL Images
 # Build and SBl with custom flags to change
 # different build configurations
-CUST_SBL_TEST_SOCS = am65xx j721e am64x_evm
-CUST_SBL_TEST_BOARDS = am65xx_evm j721e_evm am64x_evm
+CUST_SBL_TEST_SOCS = am65xx j721e j7200 am64x_evm
+CUST_SBL_TEST_BOARDS = am65xx_evm j721e_evm j7200_evm am64x_evm
 #CUST_SBL_TEST_FLAGS =" -DSBL_USE_DMA=1 -DSBL_LOG_LEVEL=0 -DSBL_SCRATCH_MEM_START=0x70100000 -DSBL_SCRATCH_MEM_SIZE=0xF0000 -DSBL_SKIP_MCU_RESET  -DBOOT_OSPI "
 #CUST_SBL_TEST_FLAGS =" -DSBL_USE_DMA=1 -DSBL_LOG_LEVEL=0 -DSBL_SCRATCH_MEM_START=0x70100000 -DSBL_SKIP_MCU_RESET -DSBL_SKIP_BRD_CFG_PM -DBOOT_OSPI "
 #CUST_SBL_TEST_FLAGS =" -DSBL_USE_DMA=0 -DSBL_LOG_LEVEL=0 -DSBL_SCRATCH_MEM_START=0x70100000 -DSBL_SCRATCH_MEM_SIZE=0xF0000 -DSBL_SKIP_SYSFW_INIT -DSBL_SKIP_MCU_RESET -DBOOT_OSPI"
 #CUST_SBL_TEST_FLAGS =" -DSBL_USE_DMA=1 -DSBL_LOG_LEVEL=1 -DSBL_SCRATCH_MEM_START=0xB8000000 -DSBL_SCRATCH_MEM_SIZE=0x4000000 -DSBL_ENABLE_PLL -DSBL_ENABLE_CLOCKS -DSBL_ENABLE_DDR -DSBL_SKIP_MCU_RESET -DBOOT_OSPI"
-ifeq ($(findstring j7,$(SOC)),j7)
+ifeq ($(SOC), j7200)
+CUST_SBL_TEST_FLAGS =" -DSBL_USE_DMA=0 -DSBL_LOG_LEVEL=3 -DSBL_SCRATCH_MEM_START=0x41cc0000 -DSBL_SCRATCH_MEM_SIZE=0x40000 -DSBL_ENABLE_PLL -DSBL_ENABLE_CLOCKS -DSBL_SKIP_MCU_RESET -DBOOT_OSPI -DSBL_SKIP_PINMUX_ENABLE -DSBL_BYPASS_OSPI_DRIVER -DVLAB_SIM"
+else
+  ifeq ($(findstring j7,$(SOC)),j7)
 CUST_SBL_TEST_FLAGS =" -DSBL_USE_DMA=0 -DSBL_LOG_LEVEL=1 -DSBL_SCRATCH_MEM_START=0x41cc0000 -DSBL_SCRATCH_MEM_SIZE=0x40000 -DSBL_ENABLE_PLL -DSBL_ENABLE_CLOCKS -DSBL_SKIP_MCU_RESET -DBOOT_OSPI -DSBL_ENABLE_DEV_GRP_MCU -DSBL_HLOS_OWNS_FLASH"
 # Custom example: Early CAN response (NOTE: before using the line below, comment out the line above)
 #CUST_SBL_TEST_FLAGS =" -DSBL_USE_DMA=0 -DSBL_LOG_LEVEL=1 -DSBL_SCRATCH_MEM_START=0x41cc0000 -DSBL_SCRATCH_MEM_SIZE=0x40000 -DSBL_ENABLE_PLL -DSBL_ENABLE_CLOCKS -DSBL_SKIP_MCU_RESET -DBOOT_OSPI -DSBL_ENABLE_DEV_GRP_MCU -DSBL_HLOS_OWNS_FLASH -DSBL_SKIP_PINMUX_ENABLE -DSBL_SKIP_LATE_INIT -DSBL_USE_MCU_DOMAIN_ONLY"
-else
+  else
 CUST_SBL_TEST_FLAGS =" -DSBL_USE_DMA=0 -DSBL_LOG_LEVEL=1 -DSBL_SCRATCH_MEM_START=0x70100000 -DSBL_SCRATCH_MEM_SIZE=0xF0000 -DSBL_ENABLE_PLL -DSBL_ENABLE_CLOCKS -DSBL_SKIP_MCU_RESET -DBOOT_OSPI -DSBL_ENABLE_DEV_GRP_MCU -DSBL_HLOS_OWNS_FLASH"
-endif
+  endif
 #Custom configuration for AM64x OSPI Boot
 #CUST_SBL_TEST_FLAGS =" -DSBL_USE_DMA=0 -DSBL_LOG_LEVEL=3 -DSBL_SCRATCH_MEM_START=0x70100000 -DSBL_SCRATCH_MEM_SIZE=0xF0000 -DSBL_ENABLE_PLL -DSBL_ENABLE_CLOCKS -DBOOT_OSPI -DSBL_ENABLE_DDR -DDISABLE_ATCM -DSBL_BYPASS_OSPI_DRIVER"
+endif
 
 # SBL Custom LIB
 sbl_lib_cust_COMP_LIST = sbl_lib_cust

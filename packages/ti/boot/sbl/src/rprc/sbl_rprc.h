@@ -50,7 +50,7 @@
 #include <soc/sbl_soc.h>
 #include <stdio.h>
 
-#if defined(SOC_AM65XX) || defined (SOC_J721E) || defined(SOC_AM64X)
+#if defined(SOC_AM65XX) || defined (SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
 #include "sbl_log.h"
 #include "sbl_soc_cfg.h"
 #include <ti/board/board.h>

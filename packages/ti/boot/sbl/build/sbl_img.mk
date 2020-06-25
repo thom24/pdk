@@ -12,8 +12,8 @@ DMA_SUFFIX=
 ifeq ($(SBL_USE_DMA),no)
 DMA_SUFFIX=_nondma
 endif
-# DMA not yet enabled for AM64x
-ifeq ($(SOC),$(filter $(SOC), am64x))
+# DMA not yet enabled for AM64x or J7200
+ifeq ($(SOC),$(filter $(SOC), am64x j7200))
 DMA_SUFFIX=_nondma
 endif
 
@@ -44,10 +44,10 @@ ifeq ($(BOOTMODE), cust)
   COMP_LIST_COMMON += sbl_lib_$(BOOTMODE)
 else
   ifeq ($(SBL_USE_DMA),yes)
-    ifneq ($(SOC),$(filter $(SOC), am64x))
+    ifneq ($(SOC),$(filter $(SOC), am64x j7200))
       SBL_CFLAGS += -DSBL_USE_DMA=1
     else
-      # DMA not yet enabled for AM64x
+      # DMA not yet enabled for AM64x or J7200
       SBL_CFLAGS += -DSBL_USE_DMA=0
     endif
   else

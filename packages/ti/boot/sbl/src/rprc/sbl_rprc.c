@@ -186,7 +186,7 @@ void SBL_BootCore(uint32_t entry, uint32_t CoreID, sblEntryPoint_t *pAppEntry)
 {
     switch (CoreID)
     {
-#if defined(SOC_AM65XX) || defined (SOC_J721E) || defined(SOC_AM64X)
+#if defined(SOC_AM65XX) || defined (SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
         case ONLY_LOAD_ID:
             /* Only loading, ignore entry point*/
             SBL_log(SBL_LOG_MAX, "Only load (not execute) image @0x%x\n", entry);
@@ -672,7 +672,7 @@ static int32_t SBL_RprcImageParse(void *srcAddr,
 }
 #endif
 
-#if defined(SOC_AM65XX) || defined (SOC_J721E) || defined(SOC_AM64X)
+#if defined(SOC_AM65XX) || defined (SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
 /* */
 
 __attribute__((weak)) void SBL_SetupCoreMem(uint32_t CoreID);

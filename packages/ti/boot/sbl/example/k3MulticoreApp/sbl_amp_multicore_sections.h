@@ -36,6 +36,9 @@
 #if defined (SOC_AM64X)
 #define SBL_AMP_TEST_NUM_BOOT_CORES (6)
 #endif
+#if defined (SOC_J7200)
+#define SBL_AMP_TEST_NUM_BOOT_CORES (6)
+#endif
 
 #if defined (SOC_J721E)
 #define SBL_AMP_TEST_NUM_BOOT_CORES (8)

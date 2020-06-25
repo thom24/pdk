@@ -718,7 +718,7 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
             status = Sciclient_procBootReleaseProcessor(SBL_PROC_ID_MCU1_CPU1, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
 
             /* Power up cores as needed */
-#if defined(SOC_AM64X)
+#if defined(SOC_AM64X) || defined(SOC_J7200)
             /* AM64X has different Power on sequence than other K3 SOCs.
              * On AM64x, CORE0 has to be powered on first, followed by CORE 1*/
             if (pAppEntry->CpuEntryPoint[core_id] <  SBL_INVALID_ENTRY_ADDR)

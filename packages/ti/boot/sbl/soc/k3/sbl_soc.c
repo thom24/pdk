@@ -749,6 +749,16 @@ void SBL_SocEarlyInit(void)
 
 #endif
 
+#if defined(SOC_J7200)
+#include <ti/board/src/j7200_evm/include/board_internal.h>
+void SBL_SocEarlyInit(void)
+{
+}
+
+void SBL_SocLateInit(void)
+{
+}
+#endif
 
 #if defined(SOC_AM64X)
 #include <ti/board/src/am64x_evm/include/board_internal.h>
