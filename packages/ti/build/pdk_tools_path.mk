@@ -53,8 +53,8 @@ endif
   NS_VERSION=2_60_01_06
 
 ifeq ($(BOARD),$(filter $(BOARD), am65xx_evm am65xx_idk j721e_evm j7200_evm))
-  NDK_VERSION=3_75_01_01
-  NS_VERSION=2_75_00_17
+  NDK_VERSION=3_76_00_05
+  NS_VERSION=2_76_00_03
 endif
 
   UIA_VERSION=2_30_01_02
