@@ -48,5 +48,6 @@
 #endif
 
 void DIAG_uartStdioInit(void);
+void DIAG_uartStdioMainInit(void);
 
 #endif /*  INCLUDE_DIAG_UTILS_H_ */

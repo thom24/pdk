@@ -44,7 +44,7 @@
 
 /**
  * \brief   This function initializes the UART instance for use for
- *          console operations.
+ *          console operations on MCU.
  *
  * \return  None
  *
@@ -59,6 +59,30 @@ void DIAG_uartStdioInit(void)
     (void)UART_socSetInitCfg(UART_INSTANCE, &uart_cfg);
 
     UART_stdioInit(UART_INSTANCE);
+
     return;
 }
 
+/**
+ * \brief   This function initializes the UART instance for use for
+ *          console operations on Main.
+ *
+ * \return  None
+ *
+ */
+void DIAG_uartStdioMainInit(void)
+{
+    UART_HwAttrs uartCfg;
+
+    UART_socGetInitCfg(MAIN_UART_INSTANCE, &uartCfg);
+
+    uartCfg.baseAddr = MAIN_UART_BASE;
+    uartCfg.enableInterrupt = FALSE;
+    uartCfg.frequency = MAIN_UART_FREQ;
+
+    UART_socSetInitCfg(MAIN_UART_INSTANCE, &uartCfg);
+
+    UART_stdioInit(MAIN_UART_INSTANCE);
+
+    return;
+}
