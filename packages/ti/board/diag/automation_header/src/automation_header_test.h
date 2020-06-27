@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2018-2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -50,14 +50,13 @@
 #include <ti/drv/uart/UART_stdio.h>
 
 #include <ti/csl/soc.h>
-#include <soc.h>
 
 #include "board.h"
 #include "board_cfg.h"
 
 #include "diag_common_cfg.h"
 
-#if (defined(am65xx_som) || defined(j7es_som) || defined(SOC_J721E))
+#if (defined(SOC_J721E) || defined(SOC_J7200))
 #include "board_internal.h"
 #include "board_i2c_io_exp.h"
 #include <ti/csl/csl_gpio.h>
@@ -79,16 +78,19 @@ extern "C" {
 #define CMD_OUTPUT_PORT1_REG_ACCESS                (0x5)
 #define CMD_OUTPUT_PORT2_REG_ACCESS                (0x6)
 
-#define CMD_CFG_PORT0_REG_ACCESS                (0xC)
-#define CMD_CFG_PORT1_REG_ACCESS                (0xD)
-#define CMD_CFG_PORT2_REG_ACCESS                (0xE)
+#define CMD_CFG_PORT0_REG_ACCESS                   (0xC)
+#define CMD_CFG_PORT1_REG_ACCESS                   (0xD)
+#define CMD_CFG_PORT2_REG_ACCESS                   (0xE)
 
 #define NUM_OF_SW2_CONFIGURABLE_POSITIONS          (9U)
 #define NUM_OF_SW3_CONFIGURABLE_POSITIONS          (9U)
 
-#if (defined(am65xx_som) || defined(j7es_som) || defined(SOC_J721E))
-#define BOOTMODE_CFG_SET1_PIN_POS                  (0x00U) //J7ES_TBD: Need to update sd boot mode
+#if defined(SOC_J721E)
+#define BOOTMODE_CFG_SET1_PIN_POS                  (0x00U)
 #define BOOTMODE_CFG_SET2_PIN_POS                  (0x07U)
+#elif defined(SOC_J7200)
+#define BOOTMODE_CFG_SET1_PIN_POS                  (0x00U) //J7200_TODO: Need to update boot mode
+#define BOOTMODE_CFG_SET2_PIN_POS                  (0x00U) //J7200_TODO: Need to update boot mode
 #else
 #define BOOTMODE_CFG_SET1_PIN_POS                  (0x06U) /* SW3 */
 #define BOOTMODE_CFG_SET2_PIN_POS                  (0x10U) /* SW2 */
