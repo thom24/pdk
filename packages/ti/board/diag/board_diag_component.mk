@@ -823,7 +823,7 @@ export board_diag_rs485Uart_CORE_DEPENDENCY
 export board_diag_rs485Uart_MAKEFILE
 board_diag_rs485Uart_PKG_LIST = board_diag_rs485Uart
 board_diag_rs485Uart_INCLUDE = $(board_diag_rs485Uart_PATH)
-board_diag_rs485Uart_BOARDLIST = am65xx_idk
+board_diag_rs485Uart_BOARDLIST = am65xx_idk j7200_evm
 board_diag_rs485Uart_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
 export board_diag_rs485Uart_$(SOC)_CORELIST
 export board_diag_rs485Uart_SBL_APPIMAGEGEN = yes

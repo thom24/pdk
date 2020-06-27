@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Texas Instruments Incorporated
+ * Copyright (c) 2019-2020, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,15 +41,15 @@
  *  Operation: PRU UART is verified by transmitting and receiving the few characters
  *             characters.
  *
- *  Supported SoCs: AM65XX & J721E.
+ *  Supported SoCs: AM65XX, J721E & J7200.
  *
- *  Supported Platforms: am65xx_idk & j721e_evm.
+ *  Supported Platforms: am65xx_idk, j721e_evm & j7200_evm.
  *
  */
 
 #include <stdlib.h>
 #include <stdint.h>
-#if !defined(SOC_J721E)
+#if !(defined(SOC_J721E) || defined(SOC_J7200))
 #include <tistdtypes.h>
 #endif
 #include <ti/drv/gpio/GPIO.h>
@@ -67,6 +67,10 @@
 #if defined(am65xx_idk)
 #include <ti/board/src/am65xx_idk/am65xx_idk_pinmux.h>
 #include <ti/drv/pruss/soc/am65xx/pruicss_soc.c>
+#elif defined(j7200_evm)
+#include <ti/board/src/j7200_evm/include/board_pinmux.h>
+#include <ti/board/src/j7200_evm/include/board_control.h>
+#include "board_i2c_io_exp.h"
 #else
 #include <ti/board/src/j721e_evm/include/board_pinmux.h>
 #include <ti/drv/pruss/soc/j721e/pruicss_soc.c>
@@ -79,6 +83,8 @@
 /* pin mux mode */
 #define GPIO_PADCONFIG_MUX_MODE			(7U)
 #define MAX_UART_PORTS_RS485            (1U)
+#elif defined(j7200_evm)
+#define MAX_UART_PORTS_RS485            (1U)
 #else /* SOC_J721E */
 #define MAX_UART_PORTS_RS485            (2U)
 #endif
@@ -90,7 +96,9 @@
 #define BAUD_RATE 						(115200U)
 #endif
 
+#if !defined(j7200_evm)
 #define PRU_UART_PWREMU_MGMT                   (CSL_PRU_ICSSG1_PR1_ICSS_UART_UART_SLV_BASE + 0x30)
+#endif
 
 #if defined(DIAG_STRESS_TEST)
 #define FIFO_SIZE                       (256)
@@ -100,9 +108,9 @@ uint8_t txBuf[TEST_DATA_LEN] __attribute__ ((section ("uartbuffer")));
 uint8_t rxBuf[TEST_DATA_LEN] __attribute__ ((section ("uartbuffer")));
 #else
 char echoPrompt[] =
-	"\n*********************************************\n"
-	  "*             PRU-ICSS UART Test            *\n"
-	  "*********************************************\n"
+	"\n******************************************\n"
+	  "*             RS485 UART Test            *\n"
+	  "******************************************\n"
 
 	"\nTesting UART print to console at 115.2k baud rate\n"
 	"Press 'y' to verify pass: ";
@@ -123,12 +131,16 @@ typedef struct rs485PortInfo
 #if defined(am65xx_idk)
 rs485PortInfo  grs485TestPortInfo[MAX_UART_PORTS_RS485] = { {CSL_PRU_ICSSG1_PR1_ICSS_UART_UART_SLV_BASE, 192000000, 2},
                                                           };
+#elif defined(j7200_evm)
+rs485PortInfo  grs485TestPortInfo[MAX_UART_PORTS_RS485] = { {CSL_UART3_BASE, 48000000, 3},
+                                                          };
 #else
 rs485PortInfo  grs485TestPortInfo[MAX_UART_PORTS_RS485] = { {CSL_PRU_ICSSG1_PR1_ICSS_UART_UART_SLV_BASE, 192000000, 2},
                                                             {CSL_UART4_BASE, 48000000,  2},
                                                           };
 #endif
 
+#if !defined(j7200_evm)
 void BoardDiag_enablePru(void)
 {
 	uint32_t volatile *addr;
@@ -136,6 +148,7 @@ void BoardDiag_enablePru(void)
 	addr = (volatile uint32_t *)PRU_UART_PWREMU_MGMT;
 	*addr = 0x6001;
 }
+#endif
 
 #if defined(DIAG_STRESS_TEST)
 
@@ -166,6 +179,55 @@ static void GeneratePattern(uint8_t *txBuf, uint32_t length)
 }
 #endif
 
+#if defined(j7200_evm)
+/**
+ * \brief   This function Initializes the GPIO module
+ *
+ * \param    gpioBaseAddrs [IN]  GPIO base address to configure
+ * \param    port          [IN]  GPIO Port number
+ *
+ */
+static void BoardDiag_rs485GpioConfig(uint32_t gpioBaseAddrs, uint8_t port)
+{
+    GPIO_v0_HwAttrs gpioCfg;
+    GPIO_socGetInitCfg(port, &gpioCfg);
+    gpioCfg.baseAddr = gpioBaseAddrs;
+    GPIO_socSetInitCfg(port, &gpioCfg);
+    /* GPIO initialization */
+    GPIO_init();
+}
+
+/**
+ * \brief  This function enables uart Mux selection
+ *
+ * \param  pinNum          [IN]  I2C IO EXPANDER pin number
+ * \param  signalLevel     [IN]  I2C IO EXPANDER pin signal level
+ *
+ */
+void BoardDiag_rs485UartMuxEnable(i2cIoExpPinNumber_t pinNum,
+                                  i2cIoExpSignalLevel_t signalLevel)
+{
+    Board_IoExpCfg_t ioExpCfg;
+    Board_STATUS status = BOARD_SOK;
+
+    /* Enable the PROFI UART mux */
+    ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_SOM_DEVICE1_INSTANCE;
+    ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
+    ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_SOM_DEVICE1_ADDR;
+    ioExpCfg.enableIntr  = false;
+    ioExpCfg.ioExpType   = ONE_PORT_IOEXP;
+    ioExpCfg.portNum     = PORTNUM_0;
+    ioExpCfg.pinNum      = pinNum;
+    ioExpCfg.signalLevel = signalLevel;
+
+    status = Board_control(BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT, &ioExpCfg);
+    if(status != BOARD_SOK)
+    {
+        UART_printf("Failed to select the PROFI UART Mux\n");
+    }
+}
+#endif
+
 #if defined(SOC_J721E)
 /**
  * \brief  UART mux selection function
@@ -179,10 +241,23 @@ static void GeneratePattern(uint8_t *txBuf, uint32_t length)
  */
 static void boardDiag_pruUartMux(uint8_t portNum)
 {
+#if defined(j7200_evm)
+    /* Enable the PROFI UART Select */
+    BoardDiag_rs485GpioConfig(CSL_WKUP_GPIO0_BASE,0);
+
+    /* Enable the PROFI UART mux selection */
+    BoardDiag_rs485UartMuxEnable(PIN_NUM_1, GPIO_SIGNAL_LEVEL_HIGH);
+
+    BoardDiag_rs485UartMuxEnable(PIN_NUM_3, GPIO_SIGNAL_LEVEL_LOW);
+
+    BoardDiag_rs485UartMuxEnable(PIN_NUM_2, GPIO_SIGNAL_LEVEL_HIGH);
+
+#else
     GPIO_init();
     Board_pinmuxSetReg(BOARD_SOC_DOMAIN_MAIN,
                            PIN_PRG0_PRU0_GPO5,
                            BOARD_GPIO_PIN_MUX_CFG);
+#endif
     if(portNum == 0)
     {
         GPIO_write(2, GPIO_SIGNAL_LEVEL_LOW);
@@ -220,12 +295,14 @@ int BoardDiag_pruIcssUartTest(uint8_t portNum)
 
     if(portNum == 0)
     {
+#if !defined(SOC_J7200)
         /* Enabling the uart TX and RX lines */
         BoardDiag_enablePru();
+#endif
 #if !defined(DIAG_STRESS_TEST)
-        UART_printf("\n*********************************************\n");
-        UART_printf  ("*           PRU-ICSS UART Test              *\n");
-        UART_printf  ("*********************************************\n");
+        UART_printf("\n******************************************\n");
+        UART_printf  ("*           RS485 UART Test              *\n");
+        UART_printf  ("******************************************\n");
 #endif
     }
     else
@@ -268,6 +345,8 @@ int BoardDiag_pruIcssUartTest(uint8_t portNum)
 	Board_pinMuxSetMode(SOC_PAD_COFG_66, (GPIO_PADCONFIG_MUX_MODE| PIN_INPUT_ENABLE));
 	GPIO_init();
 #else
+
+#if defined(j721e_evm)
     if(portNum == 0)
     {
         Board_pinmuxSetReg(BOARD_SOC_DOMAIN_MAIN,
@@ -280,7 +359,13 @@ int BoardDiag_pruIcssUartTest(uint8_t portNum)
                            PIN_RGMII6_RD2,
                            BOARD_GPIO_PIN_MUX_CFG);
     }
-#endif
+#else
+    /* Configure PROFI UART RTS line as GPIO*/
+    BoardDiag_rs485GpioConfig(CSL_GPIO0_BASE, 0);
+#endif  /* #if defined(j721e_evm)s */
+#endif  /* #if defined(am65xx_idk) */
+
+
 #if defined(DIAG_STRESS_TEST)
     /* Generate the data */
     GeneratePattern(txBuf, TEST_DATA_LEN);
@@ -379,15 +464,15 @@ int main(void)
 #if !defined(DIAG_STRESS_TEST)
     if(ret != 0)
     {
-        UART_printf("\nPRU-ICSS UART Test Failed!!\n");
+        UART_printf("\nRS485 UART Test Failed!!\n");
         return ret;
     }
     else
     {
-        UART_printf("\nPRU-ICSS UART Test Passed!!\n");
+        UART_printf("\nRS485 UART Test Passed!!\n");
     }
 
-    UART_printf("\nPRU-ICSS UART Test Completed!\n");
+    UART_printf("\nRS485 UART Test Completed!\n");
 #endif
     return ret;
 }
