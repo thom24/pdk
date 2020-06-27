@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2018-2019 Texas Instruments Incorporated - http://www.ti.com/
+ *  Copyright (C) 2018-2020 Texas Instruments Incorporated - http://www.ti.com/
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -41,9 +41,9 @@
  *  Operation: This test verifies the boot switch mode by reading the 
  *              boot values and compared with expected values.
  *
- *  Supported SoCs: AM65XX, J721E.
+ *  Supported SoCs: AM65XX, J721E & J7200.
  *
- *  Supported Platforms: am65xx_idk, am65xx_evm & j721e_evm.
+ *  Supported Platforms: am65xx_idk, am65xx_evm, j721e_evm & j7200_evm.
  *
  */
 
@@ -106,6 +106,32 @@ switchDetails_t swDetails[NUM_OF_SW] = {
     { "SW8",  8, 0 },
     { "SW9",  8, 8 }
 };
+#elif defined(SOC_J7200)
+static uint32_t pinMuxgpio[PADCONFIG_MAX_COUNT] =
+{
+    /*      SW8         */
+    PIN_MCU_OSPI0_D0,
+    PIN_MCU_OSPI0_D1,
+    PIN_MCU_OSPI0_D4,
+    PIN_MCU_OSPI0_D5,
+    PIN_WKUP_GPIO0_77,
+    PIN_WKUP_GPIO0_78,
+    PIN_WKUP_GPIO0_80,
+    PIN_WKUP_GPIO0_81,
+    /*      SW9         */
+    PIN_MCU_SPI0_D1,
+    PIN_WKUP_GPIO0_0,
+    PIN_WKUP_GPIO0_1,
+    PIN_WKUP_GPIO0_2,
+    PIN_WKUP_GPIO0_14,
+    PIN_WKUP_GPIO0_15,
+    PIN_WKUP_GPIO0_12,
+    PIN_WKUP_GPIO0_13
+};
+switchDetails_t swDetails[NUM_OF_SW] = {
+    { "SW8",  8, 0 },
+    { "SW9",  8, 8 }
+};
 #endif
 
 #if !defined(DIAG_COMPLIANCE_TEST)
@@ -140,7 +166,7 @@ static void BoardDiag_wakeupPinMuxSetMode(uint32_t offset, uint32_t mode)
  *               rdSwPos - read value.
  *
  */
-static uint32_t readSwPositions(uint8_t numOfSwPos, uint8_t pinOffset)
+static uint32_t readSwPositions(uint8_t numOfSwPos, int8_t pinOffset)
 {
     uint32_t rdSwPos = 0x0000;
     uint8_t swPosIndex = 0;
@@ -240,7 +266,7 @@ static int8_t BoardDiag_bootSwTest(void)
 	char userInput;
 #endif
     uint16_t swPos;
-    uint8_t index;
+    int8_t index;
     uint8_t i,j;
 #if (!(defined(am65xx_evm) || defined(am65xx_idk)))
     Board_STATUS status = BOARD_SOK;
@@ -356,7 +382,7 @@ static int8_t BoardDiag_bootSwTest(void)
     return 0;
 }
 
-#if defined(j721e_evm) && !defined (__aarch64__)
+#if (defined(j721e_evm) || defined(j7200_evm)) && !defined (__aarch64__)
 /* Function to enable MAIN UART0 */
 void Board_enableMAINUART0(void)
 {
@@ -383,7 +409,7 @@ int main(void)
     Board_STATUS status;
     Board_initCfg boardCfg;
     uint8_t ret;
-#if defined(j721e_evm) && !defined (__aarch64__)
+#if (defined(j721e_evm) || defined(j7200_evm)) && !defined (__aarch64__)
     Board_initParams_t initParams;
 
     Board_getInitParams(&initParams);

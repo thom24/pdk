@@ -34,7 +34,7 @@
 #
 
 #
-# This file is the makefile for building CSL uart app.
+# This file is the makefile for building Boot Switch Diagnostic.
 #
 include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 
@@ -56,8 +56,11 @@ XDC_CFG_FILE_mcu1_0 =
 
 SRCDIR = ../src ../../common/$(SOC)
 INCDIR = ../../../../board ../src ../../../src/$(BOARD)/include ../../../src/$(BOARD) ../../common/$(SOC)
+
+ifeq ($(BOARD), $(filter $(BOARD), j721e_evm j7200_evm))
 SRCDIR += ./$(BOARD)
 INCDIR += ./$(BOARD)
+endif
 
 # List all the external components/interfaces, whose interface header files
 # need to be included for this component
@@ -65,20 +68,24 @@ INCLUDE_EXTERNAL_INTERFACES = pdk csl
 
 # List all the components required by the application
 COMP_LIST_COMMON = board csl csl_init osal_nonos uart i2c gpio
-ifeq ($(SOC), $(filter $(SOC), j721e am65xx))
+ifeq ($(SOC), $(filter $(SOC), j721e am65xx j7200))
 COMP_LIST_COMMON += sciclient
 endif
 
 
 # Common source files and CFLAGS across all platforms and cores
-PACKAGE_SRCS_COMMON = ../src $(BOARD) makefile
+PACKAGE_SRCS_COMMON = ../src makefile
 PACKAGE_SRCS_COMMON += ../../common/$(SOC)
 PACKAGE_SRCS_COMMON += ../../board_diag_component.mk
 PACKAGE_SRCS_COMMON += ../../create_sd.bat ../../create_sd.sh
 
+ifeq ($(BOARD), $(filter $(BOARD), j721e_evm j7200_evm))
+PACKAGE_SRCS_COMMON += $(BOARD)
+endif
+
 SRCS_COMMON += boot_switch_test.c diag_common_cfg.c
 
-ifeq ($(BOARD), $(filter $(BOARD), j721e_evm am65xx_evm am65xx_idk))
+ifeq ($(BOARD), $(filter $(BOARD), j721e_evm am65xx_evm am65xx_idk j7200_evm))
 SRCS_COMMON += boot_switch_config.c
 endif
 
