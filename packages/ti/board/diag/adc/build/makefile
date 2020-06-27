@@ -1,4 +1,4 @@
-# Copyright (C) 2019 Texas Instruments Incorporated - http://www.ti.com/
+# Copyright (C) 2019-2020 Texas Instruments Incorporated - http://www.ti.com/
 #
 #
 #  Redistribution and use in source and binary forms, with or without
@@ -34,7 +34,7 @@
 #
 
 #
-# This file is the makefile for building CSL uart app.
+# This file is the makefile for building ADC diag test.
 #
 include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 
@@ -69,13 +69,13 @@ INCLUDE_EXTERNAL_INTERFACES = pdk
 
 # List all the components required by the application
 COMP_LIST_COMMON = board csl csl_init osal_nonos uart i2c
-ifeq ($(SOC), $(filter $(SOC), j721e))
+ifeq ($(SOC), $(filter $(SOC), j721e j7200))
 COMP_LIST_COMMON += sciclient
 endif
 
 
 # Common source files and CFLAGS across all platforms and cores
-PACKAGE_SRCS_COMMON = ../src $(BOARD) makefile
+PACKAGE_SRCS_COMMON = ../src makefile
 PACKAGE_SRCS_COMMON += ../../common/$(SOC)
 PACKAGE_SRCS_COMMON += ../../board_diag_component.mk
 PACKAGE_SRCS_COMMON += ../../create_sd.bat ../../create_sd.sh

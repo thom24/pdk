@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -59,7 +59,7 @@
 #include "src/am65xx_evm/am65xx_evm_pinmux.h"
 #elif defined(am65xx_idk)
 #include "src/am65xx_idk/am65xx_idk_pinmux.h"
-#elif defined(j721e_evm)
+#elif defined(j721e_evm) || defined(j7200_evm)
 #include "board_pinmux.h"
 #endif
 
@@ -67,12 +67,17 @@
 extern "C" {
 #endif
 
-#define NUM_OF_ADC            (2U)
-#define ADC0_CHANNEL_NO        (8U)
-#if defined(SOC_J721E)
-#define ADC1_CHANNEL_NO        		(8U)
+#if defined(SOC_J7200)
+#define NUM_OF_ADC			(1U)
 #else
-#define ADC1_CHANNEL_NO        (1U)
+#define NUM_OF_ADC			(2U)
+#endif
+
+#define ADC0_CHANNEL_NO		(8U)
+#if defined(SOC_J721E)
+#define ADC1_CHANNEL_NO		(8U)
+#else
+#define ADC1_CHANNEL_NO		(1U)
 #endif
 
 #define ADC_MAX_RANGE       (0xFFF)

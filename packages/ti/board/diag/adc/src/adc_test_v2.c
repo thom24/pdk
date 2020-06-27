@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -41,17 +41,23 @@
  *  Operation: This test verifies by reading the Analogue input
 			   given to the connector.
  *
- *  Supported SoCs: AM65xx & J721E.
+ *  Supported SoCs: AM65xx, J721E & J7200.
  *
- *  Supported Platforms: am65xx_evm, am65xx_idk, & j721e_evm.
+ *  Supported Platforms: am65xx_evm, am65xx_idk, j721e_evm & j7200_evm.
  */
 
 #include "adc_test_v2.h"
 
+#if defined(j7200_evm)
+adcDetails_t adc[NUM_OF_ADC] = {
+	{ CSL_MCU_ADC0_BASE, ADC0_CHANNEL_NO }
+};
+#else
 adcDetails_t adc[NUM_OF_ADC] = {
 	{ CSL_MCU_ADC0_BASE, ADC0_CHANNEL_NO },
 	{ CSL_MCU_ADC1_BASE, ADC1_CHANNEL_NO } 
 };
+#endif
 
 /**
  *  \brief    This function stops the analogue to digital conversion.
@@ -325,7 +331,7 @@ int main()
     Board_initCfg boardCfg;
     int8_t ret;
 
-#if defined(SOC_J721E)
+#if defined(j721e_evm)
     Board_PinmuxConfig_t gesiIcssgPinmux;
 
     Board_pinmuxGetCfg(&gesiIcssgPinmux);
