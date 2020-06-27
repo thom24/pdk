@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2018-2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -60,8 +60,8 @@
 #include "board.h"
 #include "diag_common_cfg.h"
 
-#if defined(SOC_J721E)
-#include <ti/board/src/j721e_evm/include/board_pinmux.h>
+#if defined(SOC_J721E) || defined(SOC_J7200)
+#include "board_pinmux.h"
 #include "board_control.h"
 #endif
 #if !defined(am65xx_idk)
@@ -107,10 +107,10 @@ extern "C" {
 #endif
 #endif
 
-#if defined(SOC_J721E)
+#if defined(j721e_evm) || defined(j7200_evm)
 #define MCAN_MAX_PORTS_EXP    (10U)
 #define MCAN_MAX_PORTS_CP     (4U)
-#define BOARD_NAME_LENGTH (12U)
+#define BOARD_NAME_LENGTH     (12U)
 
 /* Interrupt configurations */
 #define MCU_MCAN0_TX_INT_NUM    (CSLR_MCU_R5FSS0_CORE0_INTR_MCU_MCAN0_MCANSS_MCAN_LVL_INT_0)
@@ -125,9 +125,17 @@ extern "C" {
 #define MAIN_MCAN0_RX_INT_NUM   (CSLR_R5FSS0_CORE0_INTR_MCAN0_MCANSS_MCAN_LVL_INT_1)
 #define MAIN_MCAN0_TS_INT_NUM   (CSLR_R5FSS0_CORE0_INTR_MCAN0_MCANSS_EXT_TS_ROLLOVER_LVL_INT_0)
 
+#if defined(j721e_evm)
 #define MAIN_MCAN2_TX_INT_NUM   (CSLR_R5FSS0_CORE0_INTR_MCAN2_MCANSS_MCAN_LVL_INT_0)
 #define MAIN_MCAN2_RX_INT_NUM   (CSLR_R5FSS0_CORE0_INTR_MCAN2_MCANSS_MCAN_LVL_INT_1)
 #define MAIN_MCAN2_TS_INT_NUM   (CSLR_R5FSS0_CORE0_INTR_MCAN2_MCANSS_EXT_TS_ROLLOVER_LVL_INT_0)
+#endif
+
+#if defined(j7200_evm)
+#define MAIN_MCAN3_TX_INT_NUM   (CSLR_R5FSS0_CORE0_INTR_MCAN3_MCANSS_MCAN_LVL_INT_0)
+#define MAIN_MCAN3_RX_INT_NUM   (CSLR_R5FSS0_CORE0_INTR_MCAN3_MCANSS_MCAN_LVL_INT_1)
+#define MAIN_MCAN3_TS_INT_NUM   (CSLR_R5FSS0_CORE0_INTR_MCAN3_MCANSS_EXT_TS_ROLLOVER_LVL_INT_0)
+#endif
 
 #define MAIN_MCAN4_TX_INT_NUM   (CSLR_R5FSS0_CORE0_INTR_MCAN4_MCANSS_MCAN_LVL_INT_0)
 #define MAIN_MCAN4_RX_INT_NUM   (CSLR_R5FSS0_CORE0_INTR_MCAN4_MCANSS_MCAN_LVL_INT_1)
@@ -145,174 +153,64 @@ extern "C" {
 #define MAIN_MCAN7_RX_INT_NUM   (CSLR_R5FSS0_CORE0_INTR_MCAN7_MCANSS_MCAN_LVL_INT_1)
 #define MAIN_MCAN7_TS_INT_NUM   (CSLR_R5FSS0_CORE0_INTR_MCAN7_MCANSS_EXT_TS_ROLLOVER_LVL_INT_0)
 
+#if defined(j7200_evm)
+#define MAIN_MCAN8_TX_INT_NUM   (CSLR_R5FSS0_CORE0_INTR_MCAN8_MCANSS_MCAN_LVL_INT_0)
+#define MAIN_MCAN8_RX_INT_NUM   (CSLR_R5FSS0_CORE0_INTR_MCAN8_MCANSS_MCAN_LVL_INT_1)
+#define MAIN_MCAN8_TS_INT_NUM   (CSLR_R5FSS0_CORE0_INTR_MCAN8_MCANSS_EXT_TS_ROLLOVER_LVL_INT_0)
+#endif
+
+#if defined(j721e_evm)
 #define MAIN_MCAN9_TX_INT_NUM   (CSLR_R5FSS0_CORE0_INTR_MCAN9_MCANSS_MCAN_LVL_INT_0)
 #define MAIN_MCAN9_RX_INT_NUM   (CSLR_R5FSS0_CORE0_INTR_MCAN9_MCANSS_MCAN_LVL_INT_1)
 #define MAIN_MCAN9_TS_INT_NUM   (CSLR_R5FSS0_CORE0_INTR_MCAN9_MCANSS_EXT_TS_ROLLOVER_LVL_INT_0)
+#endif
 
+#if defined(j7200_evm)
+#define MAIN_MCAN10_TX_INT_NUM  (CSLR_R5FSS0_CORE0_INTR_MCAN10_MCANSS_MCAN_LVL_INT_0)
+#define MAIN_MCAN10_RX_INT_NUM  (CSLR_R5FSS0_CORE0_INTR_MCAN10_MCANSS_MCAN_LVL_INT_1)
+#define MAIN_MCAN10_TS_INT_NUM  (CSLR_R5FSS0_CORE0_INTR_MCAN10_MCANSS_EXT_TS_ROLLOVER_LVL_INT_0)
+#endif
+
+#if defined(j721e_evm)
 #define MAIN_MCAN11_TX_INT_NUM  (CSLR_R5FSS0_CORE0_INTR_MCAN11_MCANSS_MCAN_LVL_INT_0)
 #define MAIN_MCAN11_RX_INT_NUM  (CSLR_R5FSS0_CORE0_INTR_MCAN11_MCANSS_MCAN_LVL_INT_1)
 #define MAIN_MCAN11_TS_INT_NUM  (CSLR_R5FSS0_CORE0_INTR_MCAN11_MCANSS_EXT_TS_ROLLOVER_LVL_INT_0)
+#endif
+
 #else
 #define MCAN_MAX_PORTS    (2U)
-#endif
-typedef struct mcanPortInfo
+#endif /* #if defined(j721e_evm) || defined(j7200_evm) */
+
+/**
+ * \brief Structure to hold the MCAN port mapping information
+ */
+typedef struct BoardDiag_McanPortInfo_s
 {
-    uint32_t mcanBaseAddrs;
+    /** Base address of MCAN port */
+    uint32_t mcanBaseAddr;
+    /** Instance number of MCAN port */
 	uint8_t  mcanInstance;
+    /** MCAN interrupt number for Tx channel */
     uint32_t mcanTxIntNum;
+    /** MCAN interrupt number for Rx channel */
     uint32_t mcanRxIntNum;
+    /** MCAN interrupt number for Timestamp */
     uint32_t mcanTsIntNum;
-} mcanDiagportInfo;
+} BoardDiag_McanPortInfo_t;
 
 /* ========================================================================== */
 /*                 Internal Function Declarations                             */
 /* ========================================================================== */
 
-#if defined(MCAN_DIAG_INTR_ENABLE)
-
-/**
- * \brief   This function will configure MCAN Tx interrupts
- *
- * \param   index  [IN]  - MCAN index number
- *
- */
-static void BoardDiag_mcanTxIntrConfig(uint32_t index);
-
-/**
- * \brief   This function will configure MCAN Rx interrupts
- *
- * \param   index  [IN]  - MCAN index number
- *
- */
-static void BoardDiag_mcanRxIntrConfig(uint32_t index);
-
-/**
- * \brief   This is Interrupt Service Routine for MCAN Tx interrupt.
- *
- */
-static void BoardDiag_mcanTxIntrISR(void *handle);
-
-/**
- * \brief   This is Interrupt Service Routine for MCAN Rx interrupt.
- *
- * \param   handle [IN/OUT] mcasp info structure
- *
- */
-static void BoardDiag_mcanRxIntrISR(void *handle);
-
-/**
- * \brief   This API will enables the TX interrupts
- *
- * \param   baseAddr  [IN]  MCAN base address
- *
- */
-static int32_t BoardDiag_mcanTxIntEnable(uint32_t baseAddr);
-
-/**
- * \brief   This API will enables the RX interrupts
- *
- * \param   baseAddr  [IN]  MCAN base address
- *
- */
-static void BoardDiag_mcanRxIntEnable(uint32_t baseAddr);
-
-/**
- * \brief   This API will disable the RX interrupts
- *
- * \param   baseAddr  [IN]  MCAN base address
- *
- */
-static void BoardDiag_mcanRxIntDisable(uint32_t baseAddr);
-
-/**
- * \brief   This API will disable the TX and RX interrupts
- *
- * \param   baseAddr  [IN]  MCAN base address
- *
- */
-static void BoardDiag_mcanTxIntDisable(uint32_t baseAddr);
-
-
-#endif
-
-/**
- * \brief   This function will configure MCAN module
- *
- * \param   instance  [IN]  - MCAN instance number
- *
- * \return  int8_t
- *             0   - in case of success
- *            -1   - in case of failure
- *
- */
-static int8_t BoardDiag_mcanConfig(uint8_t instance);
-
-#if defined(BOARD_DEBUG_MCAN)
-/**
- * \brief   This API will print MCAN Rx Msg.
- *
- */
-static void BoardDiag_mcanPrintRxMsg(void);
-
-/**
- * \brief   This API will print MCAN Tx Msg.
- *
- */
-static void BoardDiag_mcanPrintTxMsg(void);
-#endif
-
-/**
- * \brief   This API will load the data to the message ram and checking
- *          the error status
- *
- * \param   instance  [IN]  - MCAN instance number
- *
- * \return  int8_t
- *             0   - in case of success
- *            -1   - in case of failure
- *
- */
-static int8_t BoardDiag_mcanTxTest(uint8_t instance);
-
-/**
- * \brief   This API will receive the data and compares with the transmit data
- *
- * \param   instance  [IN]  - MCAN instance number
- *
- * \return  int8_t
- *             0   - in case of success
- *            -1   - in case of failure
- *
- */
-static int8_t BoardDiag_mcanRxTest(uint8_t instance);
-
 /**
  * \brief   This function executes MCAN diagnostic test
  *
- * \return  int8_t
+ * \return  int32_t
  *             0   - in case of success
  *            -1   - in case of failure
  *
  */
-int8_t BoardDiag_McanTest(void);
-
-/**
- * \brief   This API Initializes the GPIO module
- *
- * \param    gpioBaseAddrs [IN]  GPIO base address to configure
- * \param    port          [IN]  GPIO Port number
- *
- */
-static void BoardDiag_mcanGpioConfig(uint32_t gpioBaseAddrs,uint32_t port);
-
-#if defined(SOC_J721E)
-/**
- * \brief   This function enables the Main CAN module and transceiver by setting
- *          the Enable and STB Pins
- *
- */
-static void BoardDiag_mcanMainconfigs(void);
-#endif
+int32_t BoardDiag_mcanTest(void);
 
 #ifdef __cplusplus
 }

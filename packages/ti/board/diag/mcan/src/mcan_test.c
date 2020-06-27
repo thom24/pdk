@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2018-2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -42,9 +42,9 @@
  *  Operation: MCAN operational mode is set to CAN-FD. This test will need
  *  two MCAN ports.
  *
- *  Supported SoCs: AM65XX & J721E.
+ *  Supported SoCs: AM65XX, J721E & J7200.
  *
- *  Supported Platforms: am65xx_idk & j721e_evm.
+ *  Supported Platforms: am65xx_idk, j721e_evm & j7200_evm.
  *
  */
 
@@ -58,23 +58,39 @@ volatile uint32_t gMcanIsrIntr1Flag = 1U;
 
 uint32_t expBoardDetect = 0;
 uint32_t mcanMaxPorts   = 0;
+uint32_t startPort      = 0;
 
 #if defined(am65xx_idk)
-mcanDiagportInfo  gmcanDiagportInfo[MCAN_MAX_PORTS] = {{CSL_MCU_MCAN0_MSGMEM_RAM_BASE, 0, CSL_GIC0_INTR_MCU_MCAN0_BUS_MCANSS_MCAN_LVL_INT_0, CSL_GIC0_INTR_MCU_MCAN0_BUS_MCANSS_MCAN_LVL_INT_1, CSL_GIC0_INTR_MCU_MCAN0_BUS_MCANSS_EXT_TS_ROLLOVER_LVL_INT}, 
-                                                       {CSL_MCU_MCAN1_MSGMEM_RAM_BASE, 1, CSL_GIC0_INTR_MCU_MCAN1_BUS_MCANSS_MCAN_LVL_INT_0, CSL_GIC0_INTR_MCU_MCAN1_BUS_MCANSS_MCAN_LVL_INT_1, CSL_GIC0_INTR_MCU_MCAN1_BUS_MCANSS_EXT_TS_ROLLOVER_LVL_INT},
-                                                      };
+BoardDiag_McanPortInfo_t gMcanDiagPortInfo[MCAN_MAX_PORTS] = 
+{{CSL_MCU_MCAN0_MSGMEM_RAM_BASE, 0, CSL_GIC0_INTR_MCU_MCAN0_BUS_MCANSS_MCAN_LVL_INT_0, CSL_GIC0_INTR_MCU_MCAN0_BUS_MCANSS_MCAN_LVL_INT_1, CSL_GIC0_INTR_MCU_MCAN0_BUS_MCANSS_EXT_TS_ROLLOVER_LVL_INT}, 
+ {CSL_MCU_MCAN1_MSGMEM_RAM_BASE, 1, CSL_GIC0_INTR_MCU_MCAN1_BUS_MCANSS_MCAN_LVL_INT_0, CSL_GIC0_INTR_MCU_MCAN1_BUS_MCANSS_MCAN_LVL_INT_1, CSL_GIC0_INTR_MCU_MCAN1_BUS_MCANSS_EXT_TS_ROLLOVER_LVL_INT}
+};
+#elif defined(j7200_evm)
+BoardDiag_McanPortInfo_t gMcanDiagPortInfo[MCAN_MAX_PORTS_EXP] =
+{{CSL_MCU_MCAN0_MSGMEM_RAM_BASE, 0, MCU_MCAN0_TX_INT_NUM,  MCU_MCAN0_RX_INT_NUM,  MCU_MCAN0_TS_INT_NUM},
+ {CSL_MCU_MCAN1_MSGMEM_RAM_BASE, 1, MCU_MCAN1_TX_INT_NUM,  MCU_MCAN1_RX_INT_NUM,  MCU_MCAN1_TS_INT_NUM},
+ {CSL_MCAN0_MSGMEM_RAM_BASE,     0, MAIN_MCAN0_TX_INT_NUM, MAIN_MCAN0_RX_INT_NUM, MAIN_MCAN0_TS_INT_NUM},
+ {CSL_MCAN3_MSGMEM_RAM_BASE,     3, MAIN_MCAN3_TX_INT_NUM, MAIN_MCAN3_RX_INT_NUM, MAIN_MCAN3_TS_INT_NUM},
+ {CSL_MCAN4_MSGMEM_RAM_BASE,     4, MAIN_MCAN4_TX_INT_NUM, MAIN_MCAN4_RX_INT_NUM, MAIN_MCAN4_TS_INT_NUM},
+ {CSL_MCAN5_MSGMEM_RAM_BASE,     5, MAIN_MCAN5_TX_INT_NUM, MAIN_MCAN5_RX_INT_NUM, MAIN_MCAN5_TS_INT_NUM},
+ {CSL_MCAN6_MSGMEM_RAM_BASE,     6, MAIN_MCAN6_TX_INT_NUM, MAIN_MCAN6_RX_INT_NUM, MAIN_MCAN6_TS_INT_NUM},
+ {CSL_MCAN7_MSGMEM_RAM_BASE,     7, MAIN_MCAN7_TX_INT_NUM, MAIN_MCAN7_RX_INT_NUM, MAIN_MCAN7_TS_INT_NUM},
+ {CSL_MCAN8_MSGMEM_RAM_BASE,     8, MAIN_MCAN8_TX_INT_NUM, MAIN_MCAN8_RX_INT_NUM, MAIN_MCAN8_TS_INT_NUM},
+ {CSL_MCAN10_MSGMEM_RAM_BASE,   10, MAIN_MCAN10_TX_INT_NUM, MAIN_MCAN10_RX_INT_NUM, MAIN_MCAN10_TS_INT_NUM}
+};
 #else
-mcanDiagportInfo  gmcanDiagportInfo[MCAN_MAX_PORTS_EXP] = {{CSL_MCU_MCAN0_MSGMEM_RAM_BASE, 0, MCU_MCAN0_TX_INT_NUM,  MCU_MCAN0_RX_INT_NUM,  MCU_MCAN0_TS_INT_NUM},
-                                                       {CSL_MCU_MCAN1_MSGMEM_RAM_BASE, 1, MCU_MCAN1_TX_INT_NUM,  MCU_MCAN1_RX_INT_NUM,  MCU_MCAN1_TS_INT_NUM},
-                                                       {CSL_MCAN0_MSGMEM_RAM_BASE,     0, MAIN_MCAN0_TX_INT_NUM, MAIN_MCAN0_RX_INT_NUM, MAIN_MCAN0_TS_INT_NUM},
-                                                       {CSL_MCAN2_MSGMEM_RAM_BASE,     2, MAIN_MCAN2_TX_INT_NUM, MAIN_MCAN2_RX_INT_NUM, MAIN_MCAN2_TS_INT_NUM},
-                                                       {CSL_MCAN4_MSGMEM_RAM_BASE,     4, MAIN_MCAN4_TX_INT_NUM, MAIN_MCAN4_RX_INT_NUM, MAIN_MCAN4_TS_INT_NUM},
-                                                       {CSL_MCAN5_MSGMEM_RAM_BASE,     5, MAIN_MCAN5_TX_INT_NUM, MAIN_MCAN5_RX_INT_NUM, MAIN_MCAN5_TS_INT_NUM},
-                                                       {CSL_MCAN6_MSGMEM_RAM_BASE,     6, MAIN_MCAN6_TX_INT_NUM, MAIN_MCAN6_RX_INT_NUM, MAIN_MCAN6_TS_INT_NUM},
-                                                       {CSL_MCAN7_MSGMEM_RAM_BASE,     7, MAIN_MCAN7_TX_INT_NUM, MAIN_MCAN7_RX_INT_NUM, MAIN_MCAN7_TS_INT_NUM},
-                                                       {CSL_MCAN9_MSGMEM_RAM_BASE,     9, MAIN_MCAN9_TX_INT_NUM, MAIN_MCAN9_RX_INT_NUM, MAIN_MCAN9_TS_INT_NUM},
-                                                       {CSL_MCAN11_MSGMEM_RAM_BASE,   11, MAIN_MCAN11_TX_INT_NUM, MAIN_MCAN11_RX_INT_NUM, MAIN_MCAN11_TS_INT_NUM},
-                                                      };
+BoardDiag_McanPortInfo_t gMcanDiagPortInfo[MCAN_MAX_PORTS_EXP] =
+{{CSL_MCU_MCAN0_MSGMEM_RAM_BASE, 0, MCU_MCAN0_TX_INT_NUM,  MCU_MCAN0_RX_INT_NUM,  MCU_MCAN0_TS_INT_NUM},
+ {CSL_MCU_MCAN1_MSGMEM_RAM_BASE, 1, MCU_MCAN1_TX_INT_NUM,  MCU_MCAN1_RX_INT_NUM,  MCU_MCAN1_TS_INT_NUM},
+ {CSL_MCAN0_MSGMEM_RAM_BASE,     0, MAIN_MCAN0_TX_INT_NUM, MAIN_MCAN0_RX_INT_NUM, MAIN_MCAN0_TS_INT_NUM},
+ {CSL_MCAN2_MSGMEM_RAM_BASE,     2, MAIN_MCAN2_TX_INT_NUM, MAIN_MCAN2_RX_INT_NUM, MAIN_MCAN2_TS_INT_NUM},
+ {CSL_MCAN4_MSGMEM_RAM_BASE,     4, MAIN_MCAN4_TX_INT_NUM, MAIN_MCAN4_RX_INT_NUM, MAIN_MCAN4_TS_INT_NUM},
+ {CSL_MCAN5_MSGMEM_RAM_BASE,     5, MAIN_MCAN5_TX_INT_NUM, MAIN_MCAN5_RX_INT_NUM, MAIN_MCAN5_TS_INT_NUM},
+ {CSL_MCAN6_MSGMEM_RAM_BASE,     6, MAIN_MCAN6_TX_INT_NUM, MAIN_MCAN6_RX_INT_NUM, MAIN_MCAN6_TS_INT_NUM},
+ {CSL_MCAN7_MSGMEM_RAM_BASE,     7, MAIN_MCAN7_TX_INT_NUM, MAIN_MCAN7_RX_INT_NUM, MAIN_MCAN7_TS_INT_NUM},
+ {CSL_MCAN9_MSGMEM_RAM_BASE,     9, MAIN_MCAN9_TX_INT_NUM, MAIN_MCAN9_RX_INT_NUM, MAIN_MCAN9_TS_INT_NUM},
+ {CSL_MCAN11_MSGMEM_RAM_BASE,   11, MAIN_MCAN11_TX_INT_NUM, MAIN_MCAN11_RX_INT_NUM, MAIN_MCAN11_TS_INT_NUM}
+};
 #endif
 
 /**
@@ -99,7 +115,7 @@ static int8_t BoardDiag_mcanConfig(uint8_t index)
     MCAN_BitTimingParams       bitTimes;
     
     /* Set base address */
-    baseAddr = gmcanDiagportInfo[index].mcanBaseAddrs;
+    baseAddr = gMcanDiagPortInfo[index].mcanBaseAddr;
 
     /* Initialize MCAN Init params */
     initParams.fdMode          = 0x1U;
@@ -340,10 +356,10 @@ static void BoardDiag_mcanTxIntrISR(void *handle)
 {
     uint32_t intrStatus;
     uint32_t baseAddrs;
-    mcanDiagportInfo *intrInfo;
+    BoardDiag_McanPortInfo_t *intrInfo;
 
-    intrInfo = (mcanDiagportInfo *)handle;
-    baseAddrs = intrInfo -> mcanBaseAddrs;
+    intrInfo = (BoardDiag_McanPortInfo_t *)handle;
+    baseAddrs = intrInfo -> mcanBaseAddr;
 
     intrStatus = MCAN_getIntrStatus(baseAddrs);
     MCAN_clearIntrStatus(baseAddrs, intrStatus);
@@ -355,7 +371,6 @@ static void BoardDiag_mcanTxIntrISR(void *handle)
 
 }
 
-
 /**
  * \brief   This is Interrupt Service Routine for MCAN Rx interrupt.
  *
@@ -366,10 +381,10 @@ static void BoardDiag_mcanRxIntrISR(void *handle)
 {
     uint32_t intrStatus;
     uint32_t baseAddrs;
-    mcanDiagportInfo *intrInfo;
+    BoardDiag_McanPortInfo_t *intrInfo;
 
-    intrInfo = (mcanDiagportInfo *)handle;
-    baseAddrs = intrInfo -> mcanBaseAddrs;
+    intrInfo = (BoardDiag_McanPortInfo_t *)handle;
+    baseAddrs = intrInfo -> mcanBaseAddr;
 
     intrStatus = MCAN_getIntrStatus(baseAddrs);
     MCAN_clearIntrStatus(baseAddrs, intrStatus);
@@ -392,10 +407,10 @@ static void BoardDiag_mcanTxIntrConfig(uint32_t index)
     Intc_Init(0);
 
     /* Enable CPU Interrupts and register ISR - MCAN Intr0 */
-    Intc_IntRegister(gmcanDiagportInfo[index].mcanTxIntNum,
-                    (IntrFuncPtr) BoardDiag_mcanTxIntrISR, (void*)(&gmcanDiagportInfo[index]));
-    Intc_IntPrioritySet(gmcanDiagportInfo[index].mcanTxIntNum, 1U, 0U);
-    Intc_SystemEnable(gmcanDiagportInfo[index].mcanTxIntNum);
+    Intc_IntRegister(gMcanDiagPortInfo[index].mcanTxIntNum,
+                    (IntrFuncPtr) BoardDiag_mcanTxIntrISR, (void*)(&gMcanDiagPortInfo[index]));
+    Intc_IntPrioritySet(gMcanDiagPortInfo[index].mcanTxIntNum, 1U, 0U);
+    Intc_SystemEnable(gMcanDiagPortInfo[index].mcanTxIntNum);
     UART_printf("Tx Interrupt Configuration done.\n");
 #endif
 }
@@ -412,15 +427,15 @@ static void BoardDiag_mcanRxIntrConfig(uint32_t index)
     Intc_Init(0);
 
     /* Enable CPU Interrupts and register ISR - MCAN Intr0 */
-    Intc_IntRegister(gmcanDiagportInfo[index].mcanRxIntNum,
-                    (IntrFuncPtr) BoardDiag_mcanRxIntrISR, (void*)(&gmcanDiagportInfo[index]));
-    Intc_IntPrioritySet(gmcanDiagportInfo[index].mcanRxIntNum, 1U, 0U);
-    Intc_SystemEnable(gmcanDiagportInfo[index].mcanRxIntNum);
+    Intc_IntRegister(gMcanDiagPortInfo[index].mcanRxIntNum,
+                    (IntrFuncPtr) BoardDiag_mcanRxIntrISR, (void*)(&gMcanDiagPortInfo[index]));
+    Intc_IntPrioritySet(gMcanDiagPortInfo[index].mcanRxIntNum, 1U, 0U);
+    Intc_SystemEnable(gMcanDiagPortInfo[index].mcanRxIntNum);
     UART_printf("Rx Interrupt Configuration done.\n");
 #endif
 }
 
-#if defined(TS_INT_ENABLE)
+#if defined(MCAN_DIAG_TS_INT_ENABLE)
 /**
  * \brief   This is Interrupt Service Routine for MCAN TimeStamp interrupt.
  *
@@ -430,10 +445,10 @@ static void BoardDiag_mcanRxIntrConfig(uint32_t index)
 static void BoardDiag_mcanTsIntrISR(void *handle)
 {
     uint32_t baseAddrs;
-    mcanDiagportInfo *intrInfo;
+    BoardDiag_McanPortInfo_t *intrInfo;
 
-    intrInfo = (mcanDiagportInfo *)handle;
-    baseAddrs = intrInfo -> mcanBaseAddrs;
+    intrInfo = (BoardDiag_McanPortInfo_t *)handle;
+    baseAddrs = intrInfo -> mcanBaseAddr;
     if(MCAN_extTSIsIntrEnable(baseAddrs) == (uint32_t)TRUE)
     {
         UART_printf("MCAN Time Stamp overflow happened.\n");
@@ -455,17 +470,17 @@ static void BoardDiag_mcanTsIntrConfig(uint32_t index)
     Intc_Init(0);
 
     /* Enable CPU Interrupts and register ISR - MCAN Intr0 */
-    Intc_IntRegister(gmcanDiagportInfo[index].mcanTsIntNum,
-                    (IntrFuncPtr) BoardDiag_mcanTsIntrISR, (void*)(&gmcanDiagportInfo[index]));
-    Intc_IntPrioritySet(gmcanDiagportInfo[index].mcanTsIntNum, 1U, 0U);
-    Intc_SystemEnable(gmcanDiagportInfo[index].mcanTsIntNum);
+    Intc_IntRegister(gMcanDiagPortInfo[index].mcanTsIntNum,
+                    (IntrFuncPtr) BoardDiag_mcanTsIntrISR, (void*)(&gMcanDiagPortInfo[index]));
+    Intc_IntPrioritySet(gMcanDiagPortInfo[index].mcanTsIntNum, 1U, 0U);
+    Intc_SystemEnable(gMcanDiagPortInfo[index].mcanTsIntNum);
     UART_printf("Tx Interrupt Configuration done.\n");
 #endif
 }
-#endif
+#endif  /* #if defined(MCAN_DIAG_TS_INT_ENABLE) */
 #endif  /* #if defined(MCAN_DIAG_INTR_ENABLE) */
 
-#if defined(BOARD_DEBUG_MCAN)
+#if defined(BOARD_DIAG_MCAN_DEBUG)
 /**
  * \brief   This API will print MCAN Tx Msg.
  *
@@ -535,7 +550,7 @@ static void BoardDiag_mcanPrintRxMsg(void)
         UART_printf("\nMessage DataByte%d:0x%x\n",loopCnt,rxMsg.data[loopCnt]);
     }
 }
-#endif
+#endif  /* #if defined(BOARD_DIAG_MCAN_DEBUG) */
 
 /**
  * \brief   This API will load the data to the message ram and checking
@@ -555,7 +570,7 @@ static int8_t BoardDiag_mcanTxTest(uint8_t instance)
     MCAN_ProtocolStatus protStatus;
     
     /* Set base address */
-    baseAddr = gmcanDiagportInfo[instance].mcanBaseAddrs;
+    baseAddr = gMcanDiagPortInfo[instance].mcanBaseAddr;
   
 #if defined(MCAN_DIAG_INTR_ENABLE)
     BoardDiag_mcanTxIntrConfig(instance);
@@ -626,7 +641,7 @@ static int8_t BoardDiag_mcanRxTest(uint8_t index)
     MCAN_ErrCntStatus    errCounter;
 
     /* Set base address */
-    baseAddr = gmcanDiagportInfo[index].mcanBaseAddrs;
+    baseAddr = gMcanDiagPortInfo[index].mcanBaseAddr;
 
 #if defined(MCAN_DIAG_INTR_ENABLE)
     BoardDiag_mcanRxIntrConfig(index);
@@ -644,6 +659,7 @@ static int8_t BoardDiag_mcanRxTest(uint8_t index)
         MCAN_INTR_SRC_DEDICATED_RX_BUFF_MSG));
     
 #endif
+
     /* Checking for Errors */
     MCAN_getErrCounters(baseAddr, &errCounter);
     if ((0U == errCounter.recErrCnt) &&
@@ -683,13 +699,15 @@ static int8_t BoardDiag_mcanRxTest(uint8_t index)
         UART_printf("\nError in reception with payload Bytes:0x%x\n", txMsg.dlc);
         testStatus = -1;
     }
-#if defined(BOARD_DEBUG_MCAN)
+
+#if defined(BOARD_DIAG_MCAN_DEBUG)
     BoardDiag_mcanPrintRxMsg();
 #endif
+
     return testStatus;
 }
 
-#if defined(SOC_J721E)
+#if defined(SOC_J721E) || defined(SOC_J7200)
 /**
  * \brief   This function enables the Main CAN module and transceiver by setting
  *          the Enable and STB Pins
@@ -730,6 +748,7 @@ static void BoardDiag_mcanMainconfigs(void)
         UART_printf("Failed to set the mcan0 stb pin to normal mode\n");
     }
 
+#if defined(j721e_evm)
     ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_DEVICE2_INSTANCE;
     ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
     ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_DEVICE2_ADDR;
@@ -744,8 +763,9 @@ static void BoardDiag_mcanMainconfigs(void)
     {
         UART_printf("Failed to enable the MCAN mux selection\n");
     }
-}
 #endif
+}
+#endif  /* #if defined(SOC_J721E) || defined(SOC_J7200) */
 
 /**
  * \brief   This API Initializes the GPIO module
@@ -764,6 +784,40 @@ static void BoardDiag_mcanGpioConfig(uint32_t gpioBaseAddrs,uint32_t port)
     GPIO_init();
 }
 
+#if defined(j7200_evm)
+/**
+ * \brief  UART Mux enable function
+ *
+ * This function is used to enable the uart mux selection
+ *
+ * \param  pinNum    -  I2C IO EXPANDER pin number
+ * \param  pinVal    -  I2C IO EXPANDER pin value
+ *
+ */
+void BoardDiag_McanMuxEnable(i2cIoExpPinNumber_t pinNum,
+                             i2cIoExpSignalLevel_t pinVal)
+{
+    Board_IoExpCfg_t ioExpCfg;
+    Board_STATUS status = BOARD_SOK;
+
+    /* Enable the UART1 and UART3 */
+    ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_SOM_DEVICE1_INSTANCE;
+    ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
+    ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_SOM_DEVICE1_ADDR;
+    ioExpCfg.enableIntr  = false;
+    ioExpCfg.ioExpType   = ONE_PORT_IOEXP;
+    ioExpCfg.portNum     = PORTNUM_0;
+    ioExpCfg.pinNum      = pinNum;
+    ioExpCfg.signalLevel = pinVal;
+
+    status = Board_control(BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT, &ioExpCfg);
+    if(status != BOARD_SOK)
+    {
+        UART_printf("Failed to select the MCAN Mux\n");
+    }
+}
+#endif
+
 /**
  * \brief   This API enables the CAN transceivers by setting the STB pins
  *
@@ -771,7 +825,7 @@ static void BoardDiag_mcanGpioConfig(uint32_t gpioBaseAddrs,uint32_t port)
 static void BoardDiag_mcanEnable(void)
 {
 
-#if defined(SOC_J721E)
+#if defined(SOC_J721E) || defined(SOC_J7200)
     Board_IoExpCfg_t ioExpCfg;
     Board_STATUS status = BOARD_SOK;
 #endif
@@ -783,17 +837,19 @@ static void BoardDiag_mcanEnable(void)
 #else
     BoardDiag_mcanGpioConfig(CSL_WKUP_GPIO0_BASE,0);
     /* Enable MCU CAN transceivers by setting the STB pins */
-    GPIO_write(0, 1); /* MCU_CAN0_STB -> WKUP_GPIO0_54 */
-    GPIO_write(1, 0); /* MCU_CAN1_STB -> WKUP_GPIO0_2  */
+    GPIO_write(0, 1); /* MCU_CAN0_STB */
+    GPIO_write(1, 0); /* MCU_CAN1_STB */
     /* MCU_MCAN0_EN */
     GPIO_write(2, 1); /* WKUP_GPIO0_0 */
 
     /* Enable CP board MAIN CAN transceivers by setting the STB pins */
     BoardDiag_mcanMainconfigs();
 
+#if defined(j721e_evm)
     /* MAIN CAN2 STB */
     BoardDiag_mcanGpioConfig(CSL_GPIO0_BASE, 0);
     GPIO_write(3, 0); /* GPIO0_127 */
+#endif
 
     if(expBoardDetect)
     {
@@ -812,9 +868,18 @@ static void BoardDiag_mcanEnable(void)
         {
             UART_printf("Failed to set the GESI board mcan stb pin to normal mode \n");
         }
+
+#if defined(j7200_evm)
+        /* Enable GESI CAN STB pin to normal mode  */
+        BoardDiag_McanMuxEnable(PIN_NUM_7, GPIO_SIGNAL_LEVEL_LOW);
+        BoardDiag_McanMuxEnable(PIN_NUM_1, GPIO_SIGNAL_LEVEL_HIGH);
+        BoardDiag_McanMuxEnable(PIN_NUM_2, GPIO_SIGNAL_LEVEL_HIGH);
+        BoardDiag_McanMuxEnable(PIN_NUM_3, GPIO_SIGNAL_LEVEL_HIGH);
+#else
         /* GPIO0_60 */
         BoardDiag_mcanGpioConfig(CSL_GPIO0_BASE, 0);
         GPIO_write(4, 0);
+#endif
     }
 #endif
 }
@@ -827,17 +892,17 @@ static void BoardDiag_mcanEnable(void)
  *          -1  - in case of failure
  *
  */
-int8_t BoardDiag_McanTest(void)
+int32_t BoardDiag_mcanTest(void)
 {
     int8_t    ret     = 0;
     uint32_t  index;
     uint32_t  portNum;
 
-#if defined(DIAG_STRESS_TEST) && (defined(am65xx_idk) || defined(SOC_J721E))
+#if defined(DIAG_STRESS_TEST) && (defined(am65xx_idk) || defined(SOC_J721E) || defined(SOC_J7200))
     char rdBuf = 'y';
 #endif
 
-#if defined(DIAG_STRESS_TEST) && ((defined(am65xx_idk)) || defined(SOC_J721E))
+#if defined(DIAG_STRESS_TEST) && ((defined(am65xx_idk)) || defined(SOC_J721E) || defined(SOC_J7200))
     UART_printf  ("***********************************************\n");
     UART_printf  ("*                MCAN Stress Test             *\n");
     UART_printf  ("***********************************************\n");
@@ -872,7 +937,7 @@ int8_t BoardDiag_McanTest(void)
     txMsg.efc = 1U;
     txMsg.mm  = 0xAAU;
 
-    for(portNum=0; portNum<mcanMaxPorts;)
+    for(portNum = 0; portNum < mcanMaxPorts; portNum += 2)
     {
         /* Configure MCAN */
         ret = BoardDiag_mcanConfig(portNum);
@@ -915,7 +980,7 @@ int8_t BoardDiag_McanTest(void)
             }
 
             UART_printf("\nReceived Packet - %d\n\n", (index + 1));
-#if defined(DIAG_STRESS_TEST) && ((defined(am65xx_idk)) || defined(SOC_J721E))
+#if defined(DIAG_STRESS_TEST) && ((defined(am65xx_idk)) || defined(SOC_J721E) || defined(SOC_J7200))
             /* Check if there a input from console to break the test */
             rdBuf = (char)BoardDiag_getUserInput(BOARD_UART_INSTANCE);
             if((rdBuf == 'b') || (rdBuf == 'B'))
@@ -929,8 +994,8 @@ int8_t BoardDiag_McanTest(void)
 #endif
 #if defined(MCAN_DIAG_INTR_ENABLE)
             /* Disable the TX and RX interrupts */
-            BoardDiag_mcanTxIntDisable(gmcanDiagportInfo[portNum].mcanBaseAddrs);
-            BoardDiag_mcanRxIntDisable(gmcanDiagportInfo[portNum+1].mcanBaseAddrs);
+            BoardDiag_mcanTxIntDisable(gMcanDiagPortInfo[portNum].mcanBaseAddr);
+            BoardDiag_mcanRxIntDisable(gMcanDiagPortInfo[portNum+1].mcanBaseAddr);
 #endif
         }
 
@@ -963,7 +1028,7 @@ int8_t BoardDiag_McanTest(void)
             }
 
             UART_printf("\nReceived Packet - %d\n\n", (index + 1));
-#if defined(DIAG_STRESS_TEST) && ((defined(am65xx_idk)) || defined(SOC_J721E))
+#if defined(DIAG_STRESS_TEST) && ((defined(am65xx_idk)) || defined(SOC_J721E) || defined(SOC_J7200))
             /* Check if there a input from console to break the test */
             rdBuf = (char)BoardDiag_getUserInput(BOARD_UART_INSTANCE);
             if((rdBuf == 'b') || (rdBuf == 'B'))
@@ -977,12 +1042,10 @@ int8_t BoardDiag_McanTest(void)
 #endif
 #if defined(MCAN_DIAG_INTR_ENABLE)
             /* Disable the TX and RX interrupts */
-            BoardDiag_mcanTxIntDisable(gmcanDiagportInfo[portNum+1].mcanBaseAddrs);
-            BoardDiag_mcanRxIntDisable(gmcanDiagportInfo[portNum].mcanBaseAddrs);
+            BoardDiag_mcanTxIntDisable(gMcanDiagPortInfo[portNum+1].mcanBaseAddr);
+            BoardDiag_mcanRxIntDisable(gMcanDiagPortInfo[portNum].mcanBaseAddr);
 #endif
         }
-
-        portNum +=2;
     }
     UART_printf("\n MCAN diagnostic test completed.\n");
 
@@ -1002,17 +1065,25 @@ int8_t BoardDiag_McanTest(void)
  */
 int main(void)
 {
+    int32_t retVal;
     Board_STATUS status;
     Board_initCfg boardCfg;
-#if defined(SOC_J721E)
-    Board_PinmuxConfig_t gesiIcssgPinmux;
+
+#if defined(j721e_evm) || defined(j7200_evm)
     if(Board_detectBoard(BOARD_ID_GESI) == TRUE)
+    {
+        expBoardDetect = 1;
+    }
+#endif
+
+#if defined(j721e_evm)
+    Board_PinmuxConfig_t gesiIcssgPinmux;
+    if(expBoardDetect)
     {
         Board_pinmuxGetCfg(&gesiIcssgPinmux);
         gesiIcssgPinmux.autoCfg = BOARD_PINMUX_CUSTOM;
         gesiIcssgPinmux.gesiExp = BOARD_PINMUX_GESI_ICSSG;
         Board_pinmuxSetCfg(&gesiIcssgPinmux);
-        expBoardDetect = 1;
     }
 #endif
 
@@ -1030,6 +1101,7 @@ int main(void)
         return -1;
     }
 
-    return BoardDiag_McanTest();
-}
+    retVal = BoardDiag_mcanTest();
 
+    return retVal;
+}

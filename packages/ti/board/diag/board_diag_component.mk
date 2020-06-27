@@ -658,7 +658,7 @@ export board_diag_mcan_CORE_DEPENDENCY
 export board_diag_mcan_MAKEFILE
 board_diag_mcan_PKG_LIST = board_diag_mcan
 board_diag_mcan_INCLUDE = $(board_diag_mcan_PATH)
-board_diag_mcan_BOARDLIST = j721e_evm am65xx_idk
+board_diag_mcan_BOARDLIST = j721e_evm am65xx_idk j7200_evm
 board_diag_mcan_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
 export board_diag_mcan_$(SOC)_CORELIST
 export board_diag_mcan_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
