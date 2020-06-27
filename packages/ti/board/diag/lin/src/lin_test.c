@@ -656,7 +656,7 @@ int main(void)
 #if defined(j721e_evm)
     ret = BoardDiag_linBoard2BoardTest();
 #else
-    ret = BoardDiag_linBoard2BoardTest();
+    ret = BoardDiag_linPort2PortTest();
 #endif
 
     if(ret == 0)

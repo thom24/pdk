@@ -63,7 +63,7 @@ INCLUDE_EXTERNAL_INTERFACES = pdk csl
 
 # List all the components required by the application
 COMP_LIST_COMMON = csl csl_init osal_nonos uart gpio i2c fatfs_indp mmcsd board
-ifeq ($(SOC), $(filter $(SOC), j721e am65xx))
+ifeq ($(SOC), $(filter $(SOC), j721e am65xx j7200))
 COMP_LIST_COMMON += sciclient udma
 endif
 

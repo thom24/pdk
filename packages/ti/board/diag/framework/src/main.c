@@ -52,7 +52,7 @@
 #include "framework.h"
 #include "board.h"
 
-#if defined(SOC_K2G) || defined(SOC_AM65XX) || defined(SOC_J721E)
+#if defined(SOC_K2G) || defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)
 #include "diag_common_cfg.h"
 #endif
 
@@ -75,7 +75,7 @@ int main()
     DIAG_IntrInit();
 #endif
 
-#if (defined(SOC_AM65XX) || defined(SOC_J721E)) && !defined(__aarch64__)
+#if (defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)) && !defined(__aarch64__)
     BoardDiag_timerIntrDisable();
 #endif
 

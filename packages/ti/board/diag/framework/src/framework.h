@@ -42,7 +42,7 @@ void DIAG_printStatus();
 int32_t DIAG_fread(void *buff, void *fileptr, uint32_t size);
 void DIAG_fseek(void *fileptr, uint32_t location);
 
-#if ((defined(SOC_AM65XX) || defined(SOC_J721E)) && !defined(__aarch64__))
+#if ((defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)) && !defined(__aarch64__))
     typedef void (*diagMainFxn)(int, int*);
 #else
     typedef void (*diagMainFxn)(int);
