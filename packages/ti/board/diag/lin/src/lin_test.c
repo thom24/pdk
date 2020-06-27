@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -58,6 +58,21 @@
 
 #include "lin_test.h"
 
+#if defined(j721e_evm)
+BoardDiagLinUartInfo_t  gBoardDiagLinInfo[BOARD_DIAG_LIN_MAX_PORTS] = {
+        {BOARD_LIN_UART_INSTANCE, BOARD_LIN_UART_BASE, BOARD_DIAG_LIN_SLAVE_ID},
+    };
+#else
+BoardDiagLinUartInfo_t  gBoardDiagLinInfo[BOARD_DIAG_LIN_MAX_PORTS] = {
+        {BOARD_LIN1_UART_INSTANCE, BOARD_LIN1_UART_BASE, BOARD_DIAG_LIN1_SLAVE_ID},
+        {BOARD_LIN2_UART_INSTANCE, BOARD_LIN2_UART_BASE, BOARD_DIAG_LIN2_SLAVE_ID},
+        {BOARD_LIN3_UART_INSTANCE, BOARD_LIN3_UART_BASE, BOARD_DIAG_LIN3_SLAVE_ID},
+        {BOARD_LIN4_UART_INSTANCE, BOARD_LIN4_UART_BASE, BOARD_DIAG_LIN4_SLAVE_ID},
+        {BOARD_LIN5_UART_INSTANCE, BOARD_LIN5_UART_BASE, BOARD_DIAG_LIN5_SLAVE_ID},
+        {BOARD_LIN6_UART_INSTANCE, BOARD_LIN6_UART_BASE, BOARD_DIAG_LIN6_SLAVE_ID},
+    };
+#endif
+
 /**
  * \brief  LIN send function
  *
@@ -114,6 +129,38 @@ static int8_t BoardDiag_linReceive(UART_Handle handle, uint8_t *readBuf,
     return 0;
 }
 
+#if defined(j7200_evm)
+/**
+ * \brief  LIN Mux enable function
+ *
+ * This function is used to enable the uart mux selection
+ *
+ * \param  pinNum    -  I2C IO EXPANDER pin number
+ *
+ */
+void BoardDiag_linMuxEnable(i2cIoExpPinNumber_t pinNum)
+{
+    Board_IoExpCfg_t ioExpCfg;
+    Board_STATUS status = BOARD_SOK;
+
+    /* Enable the LIN transceiver */
+    ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_SOM_DEVICE1_INSTANCE;
+    ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
+    ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_SOM_DEVICE1_ADDR;
+    ioExpCfg.enableIntr  = false;
+    ioExpCfg.ioExpType   = ONE_PORT_IOEXP;
+    ioExpCfg.portNum     = PORTNUM_0;
+    ioExpCfg.pinNum      = pinNum;
+    ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_HIGH;
+
+    status = Board_control(BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT, &ioExpCfg);
+    if(status != BOARD_SOK)
+    {
+        UART_printf("Failed to select the LIN Mux\n");
+    }
+}
+#endif
+
 /**
  * \brief  LIN Enable function
  *
@@ -122,8 +169,26 @@ static int8_t BoardDiag_linReceive(UART_Handle handle, uint8_t *readBuf,
  */
 static void BoardDiag_linEnable(void)
 {
+#if defined(j721e_evm)
     GPIO_init();
     GPIO_write(0, 1);
+#else
+    /* Enable the mux to select UART9 and UART6 */
+    BoardDiag_linMuxEnable(PIN_NUM_1);
+
+    /* Enable the mux to select UART5 and UART6 */
+    BoardDiag_linMuxEnable(PIN_NUM_2);
+    BoardDiag_linMuxEnable(PIN_NUM_3);
+
+    /* Enable the mux to select UART1 and UART3 */
+    BoardDiag_linMuxEnable(PIN_NUM_4);
+
+    /* Enable the mux to select UART7 and UART9 */
+    BoardDiag_linMuxEnable(PIN_NUM_5);
+
+    /* Enable the LIN transceiver */
+    BoardDiag_linMuxEnable(PIN_NUM_6);
+#endif
 }
 
 /**
@@ -163,13 +228,13 @@ static UART_Handle BoardDiag_linConfig(uint32_t instance, uint32_t baseAddress)
 /**
  * \brief  LIN test function
  *
- * This function executes the LIN diagnostic test
+ * This function executes the LIN board to board diagnostic test
  *
  * \return  int
  *              0  - in case of success
  *             -1  - in case of failure
  */
-int8_t BoardDiag_linTest(void)
+int8_t BoardDiag_linBoard2BoardTest(void)
 {
     linData_t      linMasterData;
     linData_t      linSlaveData;
@@ -177,6 +242,7 @@ int8_t BoardDiag_linTest(void)
     uint32_t       timeout       = 0;
     uint32_t       index         = 0;
     uint32_t       failIndex     = 0;
+    uint32_t       instance      = 0;
     uint8_t        txBuf[BOARD_DIAG_LIN_DATA_BYTES] = {0x00};
     uint8_t        modeResponse  = 0;
     uint8_t        linMode       = 0;
@@ -187,48 +253,246 @@ int8_t BoardDiag_linTest(void)
     UART_printf  ("*                LIN Test                     *\n");
     UART_printf  ("***********************************************\n");
 
-    BoardDiag_genPattern((uint8_t *)(&linMasterData),
-                         sizeof(linData_t),
-                         BOARD_DIAG_TEST_PATTERN_FF);
-
-    BoardDiag_genPattern((uint8_t *)(&linSlaveData),
-                         sizeof(linData_t),
-                         BOARD_DIAG_TEST_PATTERN_FF);
-    
-    UART_printf  ("Enter: M for Master mode or S for Slave mode\n");
-    UART_scanFmt  ("%c", &modeResponse);
-    if ((modeResponse == 'M') || (modeResponse == 'm'))
-    {
-        linMode = BOARD_DIAG_LIN_MASTER_MODE;
-        UART_printf ("\n* Master mode *\n");
-    }
-    else if ((modeResponse == 'S') || (modeResponse == 's'))
-    {
-        linMode = BOARD_DIAG_LIN_SLAVE_MODE;
-        UART_printf ("\n* Slave mode *\n");
-    }
-    else
-    {
-        UART_printf ("\nWrong Mode Entered!!. Please Enter M or S \n");
-        return -1;
-    }
-    
     /* Enable the LIN transceiver */
     BoardDiag_linEnable();
 
-    handle = BoardDiag_linConfig(BOARD_LIN_UART_INSTANCE, BOARD_LIN_UART_BASE);
-    if(handle == NULL)
+    for(instance = 0; instance < BOARD_DIAG_LIN_MAX_PORTS; instance++)
     {
-        UART_printf("\nFailed to get the UART handle\n");
-        return -1;
+        BoardDiag_genPattern((uint8_t *)(&linMasterData),
+                             sizeof(linData_t),
+                             BOARD_DIAG_TEST_PATTERN_FF);
+
+        BoardDiag_genPattern((uint8_t *)(&linSlaveData),
+                             sizeof(linData_t),
+                             BOARD_DIAG_TEST_PATTERN_FF);
+
+        UART_printf  ("Enter: M for Master mode or S for Slave mode\n");
+        UART_scanFmt  ("%c", &modeResponse);
+        if ((modeResponse == 'M') || (modeResponse == 'm'))
+        {
+            linMode = BOARD_DIAG_LIN_MASTER_MODE;
+            UART_printf ("\n* Master mode *\n");
+        }
+        else if ((modeResponse == 'S') || (modeResponse == 's'))
+        {
+            linMode = BOARD_DIAG_LIN_SLAVE_MODE;
+            UART_printf ("\n* Slave mode *\n");
+        }
+        else
+        {
+            UART_printf ("\nWrong Mode Entered!!. Please Enter M or S \n");
+            return -1;
+        }
+
+        handle = BoardDiag_linConfig(gBoardDiagLinInfo[instance].instance,
+                                     gBoardDiagLinInfo[instance].baseAddress);
+        if(handle == NULL)
+        {
+            UART_printf("\nFailed to get the UART handle\n");
+            return -1;
+        }
+
+        if(linMode == BOARD_DIAG_LIN_MASTER_MODE)
+        {
+            linMasterData.breakfield1   = BOARD_DIAG_LIN_BREAKFIELD1;
+            linMasterData.breakfield2   = BOARD_DIAG_LIN_BREAKFIELD2;
+            linMasterData.sync          = BOARD_DIAG_LIN_SYNCFIELD;
+            linMasterData.pid           = gBoardDiagLinInfo[instance].slaveID;
+            linMasterData.slaveResponse = 0x00;
+
+            BoardDiag_genPattern((uint8_t *)(&linMasterData.data),
+                                 BOARD_DIAG_LIN_DATA_BYTES,
+                                 BOARD_DIAG_TEST_PATTERN_INC);
+
+            for(index = 0; index < BOARD_DIAG_LIN_DATA_BYTES; index++)
+            {
+                txBuf[index] = linMasterData.data[index];
+            }
+
+            UART_printf("\nTransmitting Data to Slave \n");
+
+            status = BoardDiag_linSend(handle, (uint8_t *)(&linMasterData),
+                                       sizeof(linMasterData));
+            if(status != 0)
+            {
+                UART_printf("\nFailed to Send the LIN Packet\n");
+                UART_close(handle);
+                return -1;
+            }
+
+            UART_printf("\nWaiting for Response from the Slave \n");
+
+            while((linMasterData.slaveResponse) != BOARD_DIAG_LIN_SLAVE_RSP)
+            {
+                status = BoardDiag_linReceive(handle, (uint8_t *) (&linMasterData),
+                                              sizeof(linMasterData));
+                if(status != 0)
+                {
+                    UART_printf("\nFailed to Read the Slave Response\n");
+                }
+
+                BOARD_delay(1000);
+
+                timeout++;
+                if(timeout >= BOARD_DIAG_LIN_TEST_TIMEOUT)
+                {
+                    UART_printf("\nSlave Response Timeout!\n");
+                    status = -1;
+                    break;
+                }
+            }
+
+            if(((linMasterData.slaveResponse) == BOARD_DIAG_LIN_SLAVE_RSP) &&
+               (status == 0))
+            {
+                UART_printf("\nReceived Response from the Slave\n");
+
+                for(index = 0; index < BOARD_DIAG_LIN_DATA_BYTES; index++)
+                {
+                    txBuf[index] = ~(txBuf[index]);
+                }
+
+                /* Data Comparison */
+                compareStatus = BoardDiag_memCompare(&txBuf[0],
+                                                     (uint8_t *)(&linMasterData.data),
+                                                     BOARD_DIAG_LIN_DATA_BYTES,
+                                                     &failIndex);
+                if(!(compareStatus))
+                {
+                    UART_printf("\nData Mismatch at offset %d \n",failIndex);
+                    return -1;
+                }
+                else
+                {
+                    UART_printf("\nData Comparison Successful\n");
+                    UART_printf("\nLIN Test Completed\n");
+                    return 0;
+                }
+            }
+        }
+        else
+        {
+            /* waiting to receive the data from master */
+            UART_printf("\nWaiting to receive the data from Master \n");
+
+            while((linSlaveData.pid) != gBoardDiagLinInfo[instance].slaveID)
+            {
+                status = BoardDiag_linReceive(handle, (uint8_t *)(&linSlaveData),
+                                              sizeof(linSlaveData));
+                if(status != 0)
+                {
+                    UART_printf("\nFailed to receive the LIN data\n");
+                }
+
+                BOARD_delay(1000);
+
+                timeout++;
+                if(timeout >= BOARD_DIAG_LIN_TEST_TIMEOUT)
+                {
+                    UART_printf("\nReceive Timeout!\n");
+                    status = -1;
+                    break;
+                }
+            }
+
+            if(((linSlaveData.pid) == gBoardDiagLinInfo[instance].slaveID) &&
+                                                                ( status == 0))
+            {
+                UART_printf("\nData Received from the Master\n");
+
+                /* Complementing the data and sending it back to master */
+                for(index = 0; index < BOARD_DIAG_LIN_DATA_BYTES; index++)
+                {
+                    linSlaveData.data[index] = ~(linSlaveData.data[index]);
+                }
+
+                UART_printf("\nSending Data to Master \n");
+
+                linSlaveData.slaveResponse = BOARD_DIAG_LIN_SLAVE_RSP;
+                status = BoardDiag_linSend(handle, (uint8_t *) (&linSlaveData),
+                                           sizeof(linSlaveData));
+                if(status != 0)
+                {
+                    UART_printf("\nFailed to Send the LIN Packet\n");
+                    UART_close(handle);
+                    return -1;
+                }
+            }
+            else
+            {
+                UART_printf("\nSlave ID is not Matching\n");
+                status = -1;
+            }
+        }
     }
 
-    if(linMode == BOARD_DIAG_LIN_MASTER_MODE)
+    UART_close(handle);
+
+    return status;
+}
+
+#if defined(j7200_evm)
+/**
+ * \brief  LIN test function
+ *
+ * This function executes the LIN port to port diagnostic test
+ *
+ * \return  int
+ *              0  - in case of success
+ *             -1  - in case of failure
+ */
+int8_t BoardDiag_linPort2PortTest(void)
+{
+    linData_t      linMasterData;
+    linData_t      linSlaveData;
+    UART_Handle    mHandle        = NULL;
+    UART_Handle    sHandle        = NULL;
+    uint32_t       timeout       = 0;
+    uint32_t       index         = 0;
+    uint32_t       failIndex     = 0;
+    uint32_t       instance      = 0;
+    uint8_t        txBuf[BOARD_DIAG_LIN_DATA_BYTES] = {0x00};
+    int8_t         status        = 0;
+    bool           compareStatus = 1;
+    
+
+    UART_printf  ("***********************************************\n");
+    UART_printf  ("*                LIN Test                     *\n");
+    UART_printf  ("***********************************************\n");
+
+    /* Enable the LIN transceiver */
+    BoardDiag_linEnable();
+
+    for(instance = 0; instance < BOARD_DIAG_LIN_MAX_PORTS; instance+=2)
     {
+        BoardDiag_genPattern((uint8_t *)(&linMasterData),
+                             sizeof(linData_t),
+                             BOARD_DIAG_TEST_PATTERN_FF);
+
+        BoardDiag_genPattern((uint8_t *)(&linSlaveData),
+                             sizeof(linData_t),
+                             BOARD_DIAG_TEST_PATTERN_FF);
+
+        mHandle = BoardDiag_linConfig(gBoardDiagLinInfo[instance].instance,
+                                     gBoardDiagLinInfo[instance].baseAddress);
+        if(mHandle == NULL)
+        {
+            UART_printf("\nFailed to get the UART handle\n");
+            return -1;
+        }
+
+        sHandle = BoardDiag_linConfig(gBoardDiagLinInfo[instance+1].instance,
+                                      gBoardDiagLinInfo[instance+1].baseAddress);
+        if(sHandle == NULL)
+        {
+            UART_printf("\nFailed to get the UART handle\n");
+            return -1;
+        }
+
         linMasterData.breakfield1   = BOARD_DIAG_LIN_BREAKFIELD1;
         linMasterData.breakfield2   = BOARD_DIAG_LIN_BREAKFIELD2;
         linMasterData.sync          = BOARD_DIAG_LIN_SYNCFIELD;
-        linMasterData.pid           = BOARD_DIAG_LIN_SLAVE_ID;
+        linMasterData.pid           = gBoardDiagLinInfo[instance+1].slaveID;
         linMasterData.slaveResponse = 0x00;
 
         BoardDiag_genPattern((uint8_t *)(&linMasterData.data),
@@ -242,20 +506,73 @@ int8_t BoardDiag_linTest(void)
 
         UART_printf("\nTransmitting Data to Slave \n");
 
-        status = BoardDiag_linSend(handle, (uint8_t *)(&linMasterData),
+        status = BoardDiag_linSend(mHandle, (uint8_t *)(&linMasterData),
                                    sizeof(linMasterData));
         if(status != 0)
         {
             UART_printf("\nFailed to Send the LIN Packet\n");
-            UART_close(handle);
+            UART_close(mHandle);
             return -1;
+        }
+
+        UART_printf("\nWaiting to receive the data from Master \n");
+
+        while((linSlaveData.pid) != gBoardDiagLinInfo[instance+1].slaveID)
+        {
+            status = BoardDiag_linReceive(sHandle, (uint8_t *)(&linSlaveData),
+                                          sizeof(linSlaveData));
+            if(status != 0)
+            {
+                UART_printf("\nFailed to receive the LIN data\n");
+            }
+
+            BOARD_delay(1000);
+
+            timeout++;
+            if(timeout >= BOARD_DIAG_LIN_TEST_TIMEOUT)
+            {
+                UART_printf("\nReceive Timeout!\n");
+                status = -1;
+                break;
+            }
+        }
+
+        if(((linSlaveData.pid) == gBoardDiagLinInfo[instance+1].slaveID) &&
+                                                            ( status == 0))
+        {
+            UART_printf("\nData Received from the Master\n");
+
+            /* Complementing the data and sending it back to master */
+            for(index = 0; index < BOARD_DIAG_LIN_DATA_BYTES; index++)
+            {
+                linSlaveData.data[index] = ~(linSlaveData.data[index]);
+            }
+
+            UART_printf("\nSending Data to Master \n");
+
+            linSlaveData.pid = gBoardDiagLinInfo[instance].slaveID;
+            linSlaveData.slaveResponse = BOARD_DIAG_LIN_SLAVE_RSP;
+            status = BoardDiag_linSend(sHandle, (uint8_t *) (&linSlaveData),
+                                       sizeof(linSlaveData));
+            if(status != 0)
+            {
+                UART_printf("\nFailed to Send the LIN Packet\n");
+                UART_close(mHandle);
+                return -1;
+            }
+        }
+        else
+        {
+            UART_printf("\nSlave ID is not Matching\n");
+            status = -1;
         }
 
         UART_printf("\nWaiting for Response from the Slave \n");
 
-        while((linMasterData.slaveResponse) != BOARD_DIAG_LIN_SLAVE_RSP)
+        while(((linMasterData.slaveResponse) != BOARD_DIAG_LIN_SLAVE_RSP) &&
+              ((linSlaveData.pid) != gBoardDiagLinInfo[instance].slaveID))
         {
-            status = BoardDiag_linReceive(handle, (uint8_t *) (&linMasterData),
+            status = BoardDiag_linReceive(mHandle, (uint8_t *) (&linMasterData),
                                           sizeof(linMasterData));
             if(status != 0)
             {
@@ -274,7 +591,8 @@ int8_t BoardDiag_linTest(void)
         }
 
         if(((linMasterData.slaveResponse) == BOARD_DIAG_LIN_SLAVE_RSP) &&
-           (status == 0))
+            ((linSlaveData.pid) != gBoardDiagLinInfo[instance].slaveID) &&
+            (status == 0))
         {
             UART_printf("\nReceived Response from the Slave\n");
 
@@ -291,75 +609,23 @@ int8_t BoardDiag_linTest(void)
             if(!(compareStatus))
             {
                 UART_printf("\nData Mismatch at offset %d \n",failIndex);
+                UART_close(mHandle);
+                UART_close(sHandle);
                 return -1;
             }
             else
             {
                 UART_printf("\nData Comparison Successful\n");
                 UART_printf("\nLIN Test Completed\n");
-                return 0;
+                status = 0;
             }
         }
+        UART_close(mHandle);
+        UART_close(sHandle);
     }
-    else
-    {
-        /* waiting to receive the data from master */
-        UART_printf("\nWaiting to receive the data from Master \n");
-
-        while((linSlaveData.pid) != BOARD_DIAG_LIN_SLAVE_ID)
-        {
-            status = BoardDiag_linReceive(handle, (uint8_t *)(&linSlaveData),
-                                          sizeof(linSlaveData));
-            if(status != 0)
-            {
-                UART_printf("\nFailed to receive the LIN data\n");
-            }
-
-            BOARD_delay(1000);
-
-            timeout++;
-            if(timeout >= BOARD_DIAG_LIN_TEST_TIMEOUT)
-            {
-                UART_printf("\nReceive Timeout!\n");
-                status = -1;
-                break;
-            }
-        }
-
-        if(((linSlaveData.pid) == BOARD_DIAG_LIN_SLAVE_ID) && ( status == 0))
-        {
-            UART_printf("\nData Received from the Master\n");
-
-            /* Complementing the data and sending it back to master */
-            for(index = 0; index < BOARD_DIAG_LIN_DATA_BYTES; index++)
-            {
-                linSlaveData.data[index] = ~(linSlaveData.data[index]);
-            }
-
-            UART_printf("\nSending Data to Master \n");
-
-            linSlaveData.slaveResponse = BOARD_DIAG_LIN_SLAVE_RSP;
-            status = BoardDiag_linSend(handle, (uint8_t *) (&linSlaveData),
-                                       sizeof(linSlaveData));
-            if(status != 0)
-            {
-                UART_printf("\nFailed to Send the LIN Packet\n");
-                UART_close(handle);
-                return -1;
-            }
-        }
-        else
-        {
-            UART_printf("\nSlave ID is not Matching\n");
-            status = -1;
-        }
-    }
-
-    UART_close(handle);
-
     return status;
 }
-
+#endif
 
 /**
  * \brief  main function
@@ -374,10 +640,9 @@ int8_t BoardDiag_linTest(void)
 int main(void)
 {
     int8_t ret = 0;
-
     Board_initCfg boardCfg;
     Board_PinmuxConfig_t pinmuxCfg;
-   
+
     boardCfg = BOARD_INIT_UART_STDIO |
                BOARD_INIT_PINMUX_CONFIG;
 
@@ -388,7 +653,12 @@ int main(void)
 
     Board_init(boardCfg);
 
-    ret = BoardDiag_linTest();
+#if defined(j721e_evm)
+    ret = BoardDiag_linBoard2BoardTest();
+#else
+    ret = BoardDiag_linBoard2BoardTest();
+#endif
+
     if(ret == 0)
     {
         UART_printf("\nLIN Test Passed!\n");

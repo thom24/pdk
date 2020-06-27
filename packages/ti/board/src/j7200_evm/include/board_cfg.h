@@ -409,17 +409,20 @@ extern "C" {
 #define BOARD_MCSPI_SLAVE_INSTANCE                      (1)
 
 /* LIN uart instance */
-#define BOARD_LIN1_UART_INSTANCE                         (8U)
-#define BOARD_LIN1_UART_BASE                             (CSL_UART8_BASE)
+#define BOARD_LIN1_UART_INSTANCE                         (5U)
+#define BOARD_LIN1_UART_BASE                             (CSL_UART5_BASE)
 
-#define BOARD_LIN3_UART_INSTANCE                         (4U)
-#define BOARD_LIN3_UART_BASE                             (CSL_UART4_BASE)
+#define BOARD_LIN2_UART_INSTANCE                         (6U)
+#define BOARD_LIN2_UART_BASE                             (CSL_UART6_BASE)
 
-#define BOARD_LIN4_UART_INSTANCE                         (5U)
-#define BOARD_LIN4_UART_BASE                             (CSL_UART5_BASE)
+#define BOARD_LIN3_UART_INSTANCE                         (9U)
+#define BOARD_LIN3_UART_BASE                             (CSL_UART9_BASE)
 
-#define BOARD_LIN5_UART_INSTANCE                         (2U)
-#define BOARD_LIN5_UART_BASE                             (CSL_UART2_BASE)
+#define BOARD_LIN4_UART_INSTANCE                         (3U)
+#define BOARD_LIN4_UART_BASE                             (CSL_UART3_BASE)
+
+#define BOARD_LIN5_UART_INSTANCE                         (7U)
+#define BOARD_LIN5_UART_BASE                             (CSL_UART7_BASE)
 
 #define BOARD_LIN6_UART_INSTANCE                         (1U)
 #define BOARD_LIN6_UART_BASE                             (CSL_UART1_BASE)

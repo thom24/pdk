@@ -69,18 +69,23 @@ INCLUDE_EXTERNAL_INTERFACES = pdk
 
 # List all the components required by the application
 COMP_LIST_COMMON = board csl csl_init osal_nonos uart gpio i2c
-ifeq ($(SOC), $(filter $(SOC), j721e))
+ifeq ($(SOC), $(filter $(SOC), j721e j7200))
 COMP_LIST_COMMON += sciclient
 endif
 
 
 # Common source files and CFLAGS across all platforms and cores
-PACKAGE_SRCS_COMMON = ../src $(BOARD) makefile
+PACKAGE_SRCS_COMMON = ../src makefile
 PACKAGE_SRCS_COMMON += ../../common/$(SOC)
 PACKAGE_SRCS_COMMON += ../../board_diag_component.mk
 PACKAGE_SRCS_COMMON += ../../create_sd.bat ../../create_sd.sh
 
-SRCS_COMMON += lin_test.c diag_common_cfg.c lin_gpio_config.c
+SRCS_COMMON += lin_test.c diag_common_cfg.c
+
+ifeq ($(SOC), $(filter $(SOC), j721e))
+PACKAGE_SRCS_COMMON += $(BOARD)
+SRCS_COMMON += lin_gpio_config.c
+endif
 
 ifeq ($(CORE),$(filter $(CORE), mcu1_0))
 SRCS_ASM_COMMON += diag_entry_r5.asm
