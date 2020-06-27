@@ -63,7 +63,7 @@ endif
 SRCDIR = ../src ../../common/$(SOC)
 INCDIR = ../../../../board ../../../../csl ../src ../../../src/$(BOARD)/include ../../../src/$(BOARD) ../../common/$(SOC)
 
-ifeq ($(BOARD), $(filter $(BOARD), j721e_evm))
+ifeq ($(BOARD), $(filter $(BOARD), j721e_evm j7200_evm))
 SRCDIR += ./$(BOARD)
 INCDIR += ./$(BOARD)
 endif
@@ -74,7 +74,7 @@ INCLUDE_EXTERNAL_INTERFACES = pdk
 
 # List all the components required by the application
 COMP_LIST_COMMON = board csl csl_init osal_nonos uart gpio i2c
-ifeq ($(SOC), $(filter $(SOC), j721e))
+ifeq ($(SOC), $(filter $(SOC), j721e j7200))
 COMP_LIST_COMMON += sciclient
 endif
 
@@ -87,7 +87,7 @@ PACKAGE_SRCS_COMMON += ../../create_sd.bat ../../create_sd.sh
 
 SRCS_COMMON += gpio_test_header.c diag_common_cfg.c
 
-ifeq ($(BOARD), $(filter $(BOARD), j721e_evm))
+ifeq ($(BOARD), $(filter $(BOARD), j721e_evm j7200_evm))
 SRCS_COMMON += gpio_test_header_config.c
 endif
 

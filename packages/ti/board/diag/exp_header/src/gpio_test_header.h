@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2018-2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -60,14 +60,15 @@
 #include "src/am65xx_evm/am65xx_evm_pinmux.h"
 #elif defined(am65xx_idk)
 #include "src/am65xx_idk/am65xx_idk_pinmux.h"
-#elif defined(SOC_J721E)
+#elif defined(SOC_J721E) || defined(SOC_J7200)
 #include "board_pinmux.h"
 #endif
 
 #include "diag_common_cfg.h"
 
-#if (defined(SOC_J721E))
+#if (defined(SOC_J721E) || defined(SOC_J7200))
 #include <ti/csl/csl_gpio.h>
+#include "board_i2c_io_exp.h"
 #include "board_internal.h"
 #endif
 
@@ -87,7 +88,7 @@ extern "C" {
 #define MAIN_PADCONFIG_MAX_COUNT    (5U)
 /* number of gpio pin sets for loopback test*/
 #define NUM_PIN_SETS                (2U)
-#else /* defined SOC_J721E */
+#elif defined (SOC_J721E)
 /* Maximum number of pad config registers supported for J7 evm */
 #define PADCONFIG_MAX_COUNT_ALPHA         (30U)
 #define MAIN_PADCONFIG_MAX_COUNT_ALPHA    (28U)
@@ -99,13 +100,19 @@ extern "C" {
 #define NUM_OF_MLB_HEADER_PINS      (3U)
 /* number of gpio pin sets for loopback test*/
 #define NUM_PIN_SETS                (3U)
+#else /*j7200_evm*/
+
+#define PADCONFIG_MAX_COUNT         (2U)
+#define MAIN_PADCONFIG_MAX_COUNT    (0U)
+
+/* number of gpio pin sets for loopback test*/
+#define NUM_PIN_SETS                (1U)
 #endif
 
 /* Quaternary pin mux mode */
 #define GPIO_PADCONFIG_MUX_MODE     (7U)
 
-#if (defined(SOC_J721E))
-#include "board_i2c_io_exp.h"
+#if defined(SOC_J721E)
 #define I2C_INSTANCE                (0)
 #endif
 

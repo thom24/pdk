@@ -43,9 +43,9 @@
  *             on one pin and verifying the same on the other pin
  *             with both the pins connected externally.
  *
- *  Supported SoCs: AM65xx & J721E.
+ *  Supported SoCs: AM65xx, J721E & J7200.
  *
- *  Supported Platforms: am65xx_evm, am65xx_idk & j721e_evm.
+ *  Supported Platforms: am65xx_evm, am65xx_idk, j721e_evm & j7200_evm.
  */
 
 #include "gpio_test_header.h"
@@ -149,6 +149,18 @@ static uint32_t pinMuxgpioBeta[PADCONFIG_MAX_COUNT_BETA] =
 };
 
 static uint32_t mlbHeader_pinMuxgpio[NUM_OF_MLB_HEADER_PINS]={PIN_UART1_CTSN, PIN_UART0_CTSN, PIN_UART1_RTSN};
+#else /*j7200_evm*/
+testHeaderPinDetails_t testHeaderPin[NUM_PIN_SETS] = {
+    {"I3C PINS\0", 0U, 2U, CSL_WKUP_GPIO0_BASE},
+};
+
+/* Pad Config register offset address details */
+static uint32_t pinMuxgpio[PADCONFIG_MAX_COUNT] = 
+{
+    /* I3C HEADER PINS  */
+    PIN_WKUP_GPIO0_8,
+    PIN_WKUP_GPIO0_9
+};
 #endif
 
 /**
@@ -257,6 +269,9 @@ int8_t BoardDiag_runExpHeaderTest(void)
 #endif
     Board_STATUS status = BOARD_SOK;
 #endif
+#if defined(SOC_J7200)
+    Board_STATUS status = BOARD_SOK;
+#endif
 
     /* set board pin mux mode to MAIN domain */
 #if defined(SOC_AM65XX)
@@ -265,7 +280,7 @@ int8_t BoardDiag_runExpHeaderTest(void)
         Board_pinMuxSetMode(pinMuxgpio[index],
                             (GPIO_PADCONFIG_MUX_MODE | PIN_INPUT_ENABLE));
     }
-#else
+#elif defined(SOC_J721E)
     for(index = 0; index < gMainPadConfigMaxCount; index++)
     {
         status = Board_pinmuxSetReg(BOARD_SOC_DOMAIN_MAIN,
@@ -279,6 +294,18 @@ int8_t BoardDiag_runExpHeaderTest(void)
 
     /* set board pin mux mode to WAKEUP domain */
     for(index = gMainPadConfigMaxCount; index < gPadConfigMaxCount; index++)
+    {
+        status = Board_pinmuxSetReg(BOARD_SOC_DOMAIN_WKUP,
+                                    pinMuxgpio[index],
+                                    BOARD_GPIO_PIN_MUX_CFG);
+        if (status != BOARD_SOK)
+        {
+            return status;
+        }
+    }
+#else/*j7200_evm*/
+	/* set board pin mux mode to WAKEUP domain */
+    for(index = 0; index < PADCONFIG_MAX_COUNT; index++)
     {
         status = Board_pinmuxSetReg(BOARD_SOC_DOMAIN_WKUP,
                                     pinMuxgpio[index],
