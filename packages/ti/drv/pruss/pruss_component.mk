@@ -285,8 +285,6 @@ pruss_app_sorte_slave_PKG_LIST = pruss_app_sorte_slave
 pruss_app_sorte_slave_INCLUDE = $(pruss_app_sorte_slave_PATH)
 pruss_app_sorte_slave_BOARDLIST = icev2AM335x idkAM437x idkAM571x idkAM572x iceK2G idkAM574x
 export pruss_app_sorte_slave_BOARDLIST
-pruss_app_sorte_slave_SOCLIST = $(SOC)
-export pruss_app_sorte_slave_SOCLIST
 ifeq ($(BOARD),$(filter $(BOARD), icev2AM335x))
 pruss_app_sorte_slave_$(SOC)_CORELIST = a8host 
 endif
@@ -325,8 +323,6 @@ pruss_app_sorte_master_PKG_LIST = pruss_app_sorte_master
 pruss_app_sorte_master_INCLUDE = $(pruss_app_sorte_master_PATH)
 pruss_app_sorte_master_BOARDLIST = icev2AM335x idkAM437x idkAM571x idkAM572x iceK2G idkaM574x
 export pruss_app_sorte_master_BOARDLIST
-pruss_app_sorte_master_SOCLIST = $(SOC)
-export pruss_app_sorte_master_SOCLIST
 
 ifeq ($(BOARD),$(filter $(BOARD), icev2AM335x))
 pruss_app_sorte_master_$(SOC)_CORELIST = a8host 
