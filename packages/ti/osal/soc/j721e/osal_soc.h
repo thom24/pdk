@@ -86,6 +86,9 @@ extern "C" {
 #define TIMER_INITIAL_COUNT             (0xFFF00000U)
 #define TIMER_RLD_COUNT                 (0xFFF00000U)
 
+/* GTC count clock for A53 */
+#define  OSAL_SOC_MPU_GTC_CLK               ((int32_t) 200000)
+
 /* Max number of semaphores for NonOs */
 #define OSAL_NONOS_MAX_SEMAPHOREP_PER_SOC   ((uint32_t) 80U)
 #define OSAL_NONOS_MAX_HWIP_PER_SOC         ((uint32_t) 40U)

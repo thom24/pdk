@@ -322,7 +322,7 @@ void    osalArch_TimestampInit(void)
 int32_t  osalArch_TimeStampGetFreqKHz(void)
 {
    /* A53 timeStamp provider is GTC, which is at 200MHz */
-   return ((int32_t)200000);
+   return ((int32_t)OSAL_SOC_MPU_GTC_CLK);
 }
 
 /* Osal time stamp provider implementations */

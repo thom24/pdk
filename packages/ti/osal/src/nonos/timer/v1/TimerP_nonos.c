@@ -903,7 +903,7 @@ uint64_t TimerP_getTimeInUsecs(void)
 {
     TimeStamp_Struct timestamp64;
     uint64_t         cur_ts, freq;
-    uint32_t             tsFreqKHz;
+    uint32_t         tsFreqKHz;
 
     /* Get the timestamp */
     osalArch_TimestampGet64(&timestamp64);
