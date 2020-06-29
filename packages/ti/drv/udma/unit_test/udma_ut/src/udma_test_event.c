@@ -114,14 +114,14 @@ static int32_t udmaTestEventOutOfRangeFlowLoop(UdmaTestTaskObj *taskObj,
     struct Udma_EventObj        eventObj;
     Udma_EventHandle            eventHandle = NULL;
     Udma_EventRxFlowIdFwStatus  status;
-    char                       *navssString[] = {"MAIN", "MCU"};
+    char                       *instanceIdStr[] = {"MAIN", "MCU", "BCDMA", "PKTDMA"};
 
-    for(instId = 0U; instId < UDMA_INST_ID_MAX; instId++)
+    for(instId = UDMA_INST_ID_START; instId <= UDMA_INST_ID_MAX; instId++)
     {
         if(0U == loopCnt)
         {
             GT_1trace(taskObj->traceMask, GT_INFO1,
-                      " Testing for NAVSS Inst: %s ...\r\n", navssString[instId]);
+                      " Testing for NAVSS Inst: %s ...\r\n", instanceIdStr[instId]);
         }
 
         drvHandle = &taskObj->testObj->drvObj[instId];
@@ -175,7 +175,7 @@ static int32_t udmaTestEventOutOfRangeFlowLoop(UdmaTestTaskObj *taskObj,
         if(0U == loopCnt)
         {
             GT_1trace(taskObj->traceMask, GT_INFO1,
-                      " Testing for NAVSS Inst: %s passed!!\r\n", navssString[instId]);
+                      " Testing for NAVSS Inst: %s passed!!\r\n", instanceIdStr[instId]);
         }
     }
 

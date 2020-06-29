@@ -2450,6 +2450,7 @@ static UdmaTestParams gUdmaTestCases[] =
         .runFlag    = (UDMA_TEST_RF_SOC_ALL | UDMA_TEST_RF_CORE_ALL | UDMA_TEST_RF_CFG_DEF),
         .ringPrmId  = UDMA_TEST_RING_PRMID_INVALID,
     },
+#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
     {
         .enableTest = TEST_ENABLE,
         .tcId       = 3707U,
@@ -2488,6 +2489,7 @@ static UdmaTestParams gUdmaTestCases[] =
         .runFlag    = (UDMA_TEST_RF_SOC_ALL | UDMA_TEST_RF_CORE_ALL | UDMA_TEST_RF_CFG_DEF | UDMA_TEST_RF_CFG_DYN),
         .ringPrmId  = UDMA_TEST_RING_PRMID_EVENT_NONE,
     },
+#endif
 #if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
     {
         .enableTest = TEST_ENABLE,
