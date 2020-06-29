@@ -66,7 +66,7 @@ void taskFxn(void *a0, void *a1);
 /*                            Global Variables                                */
 /* ========================================================================== */
 
-/* None */
+extern SemaphoreP_Handle gUdmaUtPrintSem;
 
 /* ========================================================================== */
 /*                          Function Definitions                              */
@@ -76,7 +76,8 @@ void taskFxn(void *a0, void *a1)
 {
     int32_t                 testPassed;
     Board_initCfg           boardCfg;
-    Fvid2_InitPrms          fvid2InitPrms;
+    uint32_t                initValue;
+    SemaphoreP_Params       semParams;
 
     boardCfg = BOARD_INIT_PINMUX_CONFIG |
                BOARD_INIT_UART_STDIO;
@@ -84,9 +85,14 @@ void taskFxn(void *a0, void *a1)
 
     Udma_appC66xIntrConfig();
 
-    Fvid2InitPrms_init(&fvid2InitPrms);
-    fvid2InitPrms.printFxn = &udmaTestPrint;
-    Fvid2_init(&fvid2InitPrms);
+    SemaphoreP_Params_init(&semParams);
+    semParams.mode  = SemaphoreP_Mode_BINARY;
+    initValue       = 1U;
+    gUdmaUtPrintSem = SemaphoreP_create(initValue, &semParams);
+    if (NULL == gUdmaUtPrintSem)
+    {
+        GT_0trace(UdmaUtTrace, GT_INFO1, "Print buffer semaphore create failed!!\r\n");
+    }
 
     testPassed = udmaTestParser();
     if (UDMA_SOK != testPassed)
@@ -94,7 +100,11 @@ void taskFxn(void *a0, void *a1)
         GT_0trace(UdmaUtTrace, GT_INFO1, " UDMA Unit Test Failed!!!\n");
     }
 
-    Fvid2_deInit(NULL);
+    if (NULL != gUdmaUtPrintSem)
+    {
+        (void) SemaphoreP_delete(gUdmaUtPrintSem);
+        gUdmaUtPrintSem = NULL;
+    }
 
     return;
 }

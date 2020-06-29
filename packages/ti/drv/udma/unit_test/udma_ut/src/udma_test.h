@@ -55,11 +55,11 @@
 #include <ti/osal/TaskP.h>
 #include <ti/drv/uart/UART.h>
 #include <ti/drv/uart/UART_stdio.h>
-#include <ti/drv/fvid2/fvid2.h>
 #include <ti/drv/udma/examples/udma_apputils/udma_apputils.h>
 
 #include "utils_mem.h"
 #include "utils_prf.h"
+#include "utils_trace.h"
 #if defined (SOC_AM64X)
 #include "soc/am64x/udma_test_soc.h"
 #elif defined (SOC_AM65XX)

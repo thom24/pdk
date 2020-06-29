@@ -27,7 +27,7 @@ INCDIR = . ./src ./src/soc/$(SOC) ./rtos ./baremetal
 INCLUDE_EXTERNAL_INTERFACES = pdk
 
 # List all the components required by the application
-COMP_LIST_COMMON = csl udma sciclient fvid2 udma_apputils
+COMP_LIST_COMMON = csl udma sciclient udma_apputils
 COMP_LIST_COMMON += board uart i2c
 ifeq ($(BUILD_OS_TYPE), baremetal)
   COMP_LIST_COMMON += osal_nonos
@@ -68,13 +68,14 @@ SRCS_COMMON += udma_test_soc.c
 ifneq ($(SOC),$(filter $(SOC), am64x))
 SRCS_COMMON += udma_test_proxy.c udma_test_ring_monitor.c
 endif
+SRCS_COMMON += utils_trace.c
 ifeq ($(BUILD_OS_TYPE), baremetal)
 SRCS_COMMON += utils_prf_baremetal.c utils_mem_baremetal.c
 else
 SRCS_COMMON += utils_prf.c utils_mem.c
 endif
 
-CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(UDMA_CFLAGS) $(FVID2_CFLAGS)
+CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(UDMA_CFLAGS) $(UDMAUT_CFLAGS) 
 ifeq ($(UDMA_UT_MANUAL_ENTRY), yes)
   CFLAGS_LOCAL_COMMON += -DUDMA_UT_ENABLE_MANUAL_ENTRY
 endif

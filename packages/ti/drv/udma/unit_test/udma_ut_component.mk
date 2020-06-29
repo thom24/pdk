@@ -115,5 +115,13 @@ udma_ut_EXAMPLE_LIST += udma_dynamic_unit_testapp
 export udma_ut_LIB_LIST
 export udma_ut_EXAMPLE_LIST
 
+UDMAUT_CFLAGS =
+
+# Enable asserts and prints
+UDMAUT_CFLAGS += -DUDMAUT_CFG_ASSERT_ENABLE
+UDMAUT_CFLAGS += -DUDMAUT_CFG_TRACE_ENABLE
+
+export UDMAUT_CFLAGS
+
 udma_ut_component_make_include := 1
 endif
