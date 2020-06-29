@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018
+ *  Copyright (c) Texas Instruments Incorporated 2020
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -32,83 +32,64 @@
  */
 
 /**
- *  \file ipc_soc.h
+ *  \file ipc_mailbox_lld.h
  *
- *  \brief IPC Low Level Driver SOC specific file.
+ *  \brief Declaration for Mailbox LLD wrapper implementation.
  */
 
-#ifndef IPC_SOC_TOP_H_
-#define IPC_SOC_TOP_H_
+#ifndef IPC_MAILBOX_LLD_H_
+#define IPC_MAILBOX_LLD_H_
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#define    IPC_INVALID_PROCID (0XFFU)   /**< Invalid Proc ID */
-
 /* ========================================================================== */
 /*                             Include Files                                  */
 /* ========================================================================== */
+#include <ti/drv/ipc/include/ipc_types.h>
+#include <ti/osal/osal.h>
 
+/* ========================================================================== */
+/*                           Macros & Typedefs                                */
+/* ========================================================================== */
 
-/*
- * These functions and structure is for internal use use and
- * are not expected to be called from app
- */
 
 /* ========================================================================== */
 /*                         Structure Declarations                             */
 /* ========================================================================== */
 
+typedef void (*Mailbox_hwiCallback)(uint32_t* arg1, uint32_t arg2);
+
 /* ========================================================================== */
 /*                          Function Declarations                             */
 /* ========================================================================== */
-int32_t Ipc_getMailboxInfoTx(uint32_t selfId, uint32_t remoteId, 
-                 uint32_t *clusterId, uint32_t *userId, uint32_t *queueId);
-int32_t Ipc_getMailboxInfoRx(uint32_t selfId, uint32_t remoteId, 
-                 uint32_t *clusterId, uint32_t *userId, uint32_t *queueId);
-int32_t Ipc_getMailboxIntrRouterCfg(uint32_t selfId, uint32_t clusterId,
-                 uint32_t userId, Ipc_MbConfig* cfg, uint32_t cnt);
-uint32_t Ipc_getMailboxBaseAddr(uint32_t clusterId);
 
-/**
- * \brief Returns the core name for get core id
- *
- * \param procId [IN] Id of desired core.
- *
- * \return name of the given core id
- * */
-const char* Ipc_getCoreName(uint32_t procId);
+/** \brief Initializes mailbox module */
+int32_t Ipc_mailboxModuleStartup (void);
 
-/**
- * \brief Returns Core ID based on core build flag
- *
- * \return Code ID of the current core
- **/
-uint32_t Ipc_getCoreId(void);
+int32_t Ipc_mailboxSend(uint32_t selfId, uint32_t remoteProcId, uint32_t val,
+                           uint32_t timeoutCnt);
+int32_t Ipc_mailboxRegister(uint16_t selfId, uint16_t remoteProcId,
+            Mailbox_hwiCallback func, uint32_t arg);
 
-/**
- *  \brief Returns TRUE if the memory is cache coherent
+/** \brief Handles Interrupts from remote cores.
+ *          Expected to be invoked on occurrence of new message in mailbox FIFO
  *
- *  \return TRUE/FALSE
+ *  \param  uint32_t    Valid Remote Processors identifier
+ *
+ *  \return None
  */
-uint32_t Ipc_isCacheCoherent(void);
+void Ipc_mailboxIsr(uint32_t remoteProcId);
 
-/* For Maxwell Device */
-#if defined (SOC_AM65XX)
-#include <ti/drv/ipc/soc/V0/ipc_soc.h>
-#endif
+/* ========================================================================== */
+/*                       Static Function Definitions                          */
+/* ========================================================================== */
 
-/* For J7ES device */
-#if defined (SOC_J721E) || defined (SOC_J7200)
-#include <ti/drv/ipc/soc/V1/ipc_soc.h>
-#endif
+/* None */
 
-#if defined (SOC_AM64X)
-#include <ti/drv/ipc/soc/V2/ipc_soc.h>
-#endif
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* #ifndef IPC_SOC_TOP_H_ */
+#endif /* #ifndef IPC_MAILBOX_LLD_H_ */

@@ -10,8 +10,9 @@ MY_PROFILE=release
 declare -a cores_j721e=("mpu1_0" "mcu1_0" "mcu1_1" "mcu2_0" "mcu2_1" "mcu3_0" "mcu3_1" "c66xdsp_1" "c66xdsp_2" "c7x_1")
 declare -a cores_j7200=("mpu1_0" "mcu1_0" "mcu1_1" "mcu2_0" "mcu2_1")
 declare -a cores_am65xx=("mpu1_0" "mcu1_0" "mcu1_1")
+declare -a cores_am64x=("mpu1_0" "mcu1_0" "mcu1_1" "mcu2_0" "mcu2_1" "m4f_0")
 
-USAGE="$0 [-a <app name : ipc_echo_test> -b <board : j721e_evm, j7200_evm, am65xx_evm> -c <core> -p <build profile>]"
+USAGE="$0 [-a <app name : ipc_echo_test> -b <board : j721e_evm, j7200_evm, am65xx_evm, am64x_evm> -c <core> -p <build profile>]"
 
 while getopts 'a:b:c:p:s:d:' opt
 do
@@ -59,6 +60,15 @@ then
         done
     fi
 
+    # Iterate all cores of am64x
+    if [ "${MY_BOARD}" = "am64x_evm" ]
+    then
+        for i in "${cores_am64x[@]}"
+        do
+            echo make ${MY_BLD} CORE="$i"
+            make ${MY_BLD} CORE="$i"
+        done
+    fi
 else
     make ${MY_BLD} CORE=${MY_CORE}
 fi

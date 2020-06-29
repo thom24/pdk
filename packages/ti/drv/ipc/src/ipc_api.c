@@ -1541,8 +1541,6 @@ int32_t Ipc_init(Ipc_InitPrms *cfg)
     {
         IpcInitPrms_init(0U, &gIpcObject.initPrms);
 
-        Ipc_mailboxModuleStartup();
-
         retVal = IPC_SOK;
     }
     else
@@ -1564,6 +1562,7 @@ int32_t Ipc_init(Ipc_InitPrms *cfg)
     if (IPC_SOK == retVal)
     {
         IpcUtils_Init(&gIpcObject.initPrms.osalPrms);
+        Ipc_mailboxModuleStartup();
     }
     gIpcObject.instId = 0U;
 

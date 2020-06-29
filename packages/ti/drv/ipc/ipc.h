@@ -67,7 +67,7 @@ extern "C" {
 /*                             Include Files                                  */
 /* ========================================================================== */
 #include <ti/csl/soc.h>
-#include <ti/csl/csl_navss_main.h>
+#include <ti/csl/csl_types.h>
 
 #include <ti/drv/ipc/include/ipc_types.h>
 #include <ti/drv/ipc/include/ipc_rsctypes.h>

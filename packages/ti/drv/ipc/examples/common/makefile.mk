@@ -11,6 +11,9 @@ INCLUDE_EXTERNAL_INTERFACES = pdk
 # List all the components required by the application
 ifeq ($(BUILD_OS_TYPE), baremetal)
   COMP_LIST_COMMON =  $(PDK_COMMON_BAREMETAL_COMP)
+ifeq ($(SOC), am64x)
+  COMP_LIST_COMMON += mailbox
+endif
   COMP_LIST_COMMON += ipc_baremetal
   SRCS_COMMON += main_baremetal.c
   ifeq ($(ISA),$(filter $(ISA), a53 a72))
@@ -19,7 +22,7 @@ ifeq ($(BUILD_OS_TYPE), baremetal)
   ifeq ($(ISA), r5f)
 	  SRCS_COMMON += r5f_mpu_$(SOC)_default.c
   endif
-  ifeq ($(SOC),$(filter $(SOC), j721e am65xx))
+  ifeq ($(SOC),$(filter $(SOC), j721e am65xx am64x))
 	  EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/$(SOC)/linker_$(ISA)_$(CORE).lds
   endif
   ifeq ($(SOC),j7200)
@@ -29,6 +32,9 @@ else
   INCLUDE_EXTERNAL_INTERFACES += xdc bios
   COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP)
   COMP_LIST_COMMON += ipc 
+ifeq ($(SOC), am64x)
+  COMP_LIST_COMMON += mailbox
+endif
   SRCS_COMMON += main_tirtos.c
   # Enable XDC build for application by providing XDC CFG File per core
   XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
@@ -53,12 +59,12 @@ ifeq ($(SOC),$(filter $(SOC), j721e j7200))
 	EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/j721e/linker_$(ISA)_$(CORE)_sysbios.lds
   endif
 endif
-ifeq ($(SOC),$(filter $(SOC), am65xx))
-  XDC_CFG_UPDATE_$(CORE) = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/am65xx/ipc_override.cfg
+ifeq ($(SOC),$(filter $(SOC), am65xx am64x))
+  XDC_CFG_UPDATE_$(CORE) = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/$(SOC)/ipc_override.cfg
   ifeq ($(ISA), r5f)
-    XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/am65xx/sysbios_$(ISA).cfg
+    XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/$(SOC)/sysbios_$(ISA).cfg
   endif
-  EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/am65xx/linker_$(ISA)_$(CORE)_sysbios.lds
+  EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/$(SOC)/linker_$(ISA)_$(CORE)_sysbios.lds
 endif
 endif
 

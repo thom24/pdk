@@ -85,6 +85,10 @@
 #define CORE_IN_TEST            9
 #elif defined (SOC_J7200)
 #define CORE_IN_TEST            4
+#elif defined (SOC_AM64X)
+#define CORE_IN_TEST            5
+#else
+#error "Invalid SOC"
 #endif
 
 /*
@@ -131,6 +135,8 @@ uint32_t remoteProc[] =
     IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1, IPC_MCU3_0, IPC_MCU3_1, IPC_C66X_1, IPC_C66X_2, IPC_C7X_1
 #elif defined (SOC_J7200)
     IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1
+#elif defined (SOC_AM64X)
+    IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1, IPC_M4F_0
 #endif
 };
 #endif
@@ -145,6 +151,8 @@ uint32_t remoteProc[] =
     IPC_MPU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1, IPC_MCU3_0, IPC_MCU3_1, IPC_C66X_1, IPC_C66X_2, IPC_C7X_1
 #elif defined (SOC_J7200)
     IPC_MPU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1
+#elif defined (SOC_AM64X)
+    IPC_MPU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1, IPC_M4F_0
 #endif
 };
 #endif
@@ -159,6 +167,8 @@ uint32_t remoteProc[] =
     IPC_MPU1_0, IPC_MCU1_0, IPC_MCU2_0, IPC_MCU2_1, IPC_MCU3_0, IPC_MCU3_1, IPC_C66X_1, IPC_C66X_2, IPC_C7X_1
 #elif defined (SOC_J7200)
     IPC_MPU1_0, IPC_MCU1_0, IPC_MCU2_0, IPC_MCU2_1
+#elif defined (SOC_AM64X)
+    IPC_MPU1_0, IPC_MCU1_0, IPC_MCU2_0, IPC_MCU2_1, IPC_M4F_0
 #endif
 };
 #endif
@@ -171,6 +181,8 @@ uint32_t remoteProc[] =
     IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_1, IPC_MCU3_0, IPC_MCU3_1, IPC_C66X_1, IPC_C66X_2, IPC_C7X_1
 #elif defined (SOC_J7200)
     IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_1
+#elif defined (SOC_AM64X)
+    IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_1, IPC_M4F_0
 #endif
 };
 #endif
@@ -183,6 +195,8 @@ uint32_t remoteProc[] =
     IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU3_0, IPC_MCU3_1, IPC_C66X_1, IPC_C66X_2, IPC_C7X_1
 #elif defined (SOC_J7200)
     IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0
+#elif defined (SOC_AM64X)
+    IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_M4F_0
 #endif
 };
 #endif
@@ -224,6 +238,14 @@ uint32_t selfProcId = IPC_C7X_1;
 uint32_t remoteProc[] =
 {
     IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1, IPC_MCU3_0, IPC_MCU3_1, IPC_C66X_1, IPC_C66X_2
+};
+#endif
+
+#ifdef BUILD_M4F_0
+uint32_t selfProcId = IPC_M4F_0;
+uint32_t remoteProc[] =
+{
+    IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1
 };
 #endif
 

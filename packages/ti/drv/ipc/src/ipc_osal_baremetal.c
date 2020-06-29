@@ -48,6 +48,28 @@
 #include <ti/drv/ipc/include/ipc_types.h>
 
 
+#if defined(BUILD_M4F)
+static uint32_t Ipc_HwiDisableCount = 0;
+static uintptr_t Ipc_HwiDisableKey = 0;
+
+static uintptr_t Ipc_osalHwiDisable(void)
+{
+    if (Ipc_HwiDisableCount++ == 0)
+    {
+        Ipc_HwiDisableKey = HwiP_disable();
+    }
+    return Ipc_HwiDisableCount;
+}
+
+static void Ipc_osalHwiRestore(uintptr_t key)
+{
+    if (--Ipc_HwiDisableCount == 0)
+    {
+        HwiP_restore(Ipc_HwiDisableKey);
+    }
+}
+#endif
+
 /* GateSwi related */
 static void *Ipc_osalHIsrGateCreate(void)
 {
@@ -63,12 +85,20 @@ static void Ipc_osalHIsrGateDelete(Ipc_OsalHIsrGateHandle *handle)
 
 static int32_t Ipc_osalHIsrGateEnter(Ipc_OsalHIsrGateHandle handle)
 {
+#if defined(BUILD_M4F)
+    return (int32_t)Ipc_osalHwiDisable();
+#else
     return (int32_t)HwiP_disable();
+#endif
 }
 
 static void Ipc_osalHIsrGateExit(Ipc_OsalHIsrGateHandle handle, int32_t key)
 {
+#if defined(BUILD_M4F)
+    Ipc_osalHwiRestore((uintptr_t)key);
+#else
     HwiP_restore((uintptr_t)key);
+#endif
     return;
 }
 
@@ -230,8 +260,13 @@ void IpcOsalPrms_init (Ipc_OsalPrms *initPrms)
 {
     if (NULL != initPrms)
     {
+#if defined(BUILD_M4F)
+        initPrms->disableAllIntr = &Ipc_osalHwiDisable;
+        initPrms->restoreAllIntr = &Ipc_osalHwiRestore;
+#else
         initPrms->disableAllIntr = &HwiP_disable;
         initPrms->restoreAllIntr = &HwiP_restore;
+#endif
 
         initPrms->createHIsr    = &Ipc_osalHIsrCreate;
         initPrms->deleteHIsr    = &Ipc_osalHIsrDelete;

@@ -60,6 +60,7 @@
 #include <ti/drv/ipc/ipcver.h>
 #include <ti/drv/ipc/examples/common/src/ipc_setup.h>
 #include <ti/drv/ipc/examples/ex05_bios_multicore_echo_negative_test/ipc_neg_setup.h>
+#include <ti/osal/osal.h>
 
 #define MSGSIZE  256U
 #define SERVICE  "ti.ipc4.ping-pong"

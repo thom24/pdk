@@ -59,6 +59,7 @@
 #include <ti/drv/ipc/ipc.h>
 #include <ti/drv/ipc/ipcver.h>
 #include <ti/drv/ipc/examples/common/src/ipc_setup.h>
+#include <ti/osal/osal.h>
 
 #ifndef BUILD_MPU1_0
 #if defined(SOC_AM65XX)
@@ -71,7 +72,11 @@
 #define MSGSIZE  256U
 #define SERVICE  "ti.ipc4.ping-pong"
 #define ENDPT1   13U
+#if defined(SIM_BUILD)
+#define NUMMSGS  1000
+#else
 #define NUMMSGS  10000 /* number of message sent per task */
+#endif
 //#define NUMMSGS  1000000   /* number of message sent per task */
 
 extern uint8_t  *pCntrlBuf;

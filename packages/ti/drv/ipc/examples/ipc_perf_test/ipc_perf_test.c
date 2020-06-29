@@ -149,6 +149,30 @@ static uint32_t remoteProc[] = {
     IPC_MCU2_1, IPC_MCU3_0, IPC_MCU3_1, IPC_C66X_1,
     IPC_C66X_2
 #endif
+#elif defined(SOC_J7200)
+#if defined(BUILD_MPU1_0)
+    IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1
+#elif defined(BUILD_MCU1_0)
+    IPC_MPU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1
+#elif defined(BUILD_MCU1_1)
+    IPC_MPU1_0, IPC_MCU1_0, IPC_MCU2_0, IPC_MCU2_1
+#elif defined(BUILD_MCU2_0)
+    IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_1
+#elif defined(BUILD_MCU2_1)
+    IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0
+#endif
+#elif defined(SOC_AM64X)
+#if defined(BUILD_MPU1_0)
+    IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1
+#elif defined(BUILD_MCU1_0)
+    IPC_MPU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1
+#elif defined(BUILD_MCU1_1)
+    IPC_MPU1_0, IPC_MCU1_0, IPC_MCU2_0, IPC_MCU2_1
+#elif defined(BUILD_MCU2_0)
+    IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_1
+#elif defined(BUILD_MCU2_1)
+    IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0
+#endif
 #endif
 };
 

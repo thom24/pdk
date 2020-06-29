@@ -46,6 +46,7 @@
 #include <ti/drv/ipc/src/ipc_priv.h>
 #include <ti/drv/ipc/src/ipc_mailbox.h>
 
+#include <ti/csl/csl_navss_main.h>
 #include <ti/csl/csl_intr_router.h>
 #include <ti/csl/csl_clec.h>
 #include <ti/drv/sciclient/sciclient.h>

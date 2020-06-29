@@ -48,6 +48,9 @@
 
 #include <ti/osal/HwiP.h>
 #include <ti/osal/osal.h>
+#if defined(SOC_AM64X) && defined(BUILD_M4F_0)
+#include <ti/csl/csl_rat.h>
+#endif
 /* SCI Client */
 #include <ti/drv/sciclient/sciclient.h>
 
@@ -69,8 +72,11 @@
 #define SERVICE  "ti.ipc4.ping-pong"
 /* End point number to be used for IPC communication */
 #define ENDPT1   13U
+#if defined(SIM_BUILD)
+#define NUMMSGS  1000
+#else
 #define NUMMSGS  10000 /* number of message sent by the sender function */
-                       /* Note: The sender function is not active in this example */
+#endif
 
 extern uint8_t  *pCntrlBuf;
 //extern uint8_t  *pTaskBuf;
@@ -116,6 +122,68 @@ static uint32_t   RecvEndPt = 0;
 #endif
 
 //#define DEBUG_PRINT
+
+#if defined(SOC_AM64X) && defined(BUILD_M4F_0)
+/*
+  Custom RAT configuration for M4F to make Mailbox Registers accessible
+*/
+CSL_RatTranslationCfgInfo gCslM4RatCfg[8+1] __attribute__ ((section(".rat_cfg_buffer"), aligned (8))) =
+{
+    /* Add an entry for accessing MCU addresses including  MCU IPs */
+    {
+        .sizeInBytes        = (uint64_t) (0x01000000UL), /* Size in Bytes for the map */
+        .baseAddress        = (uint32_t) (0x64000000U),  /* Translated base address */
+        .translatedAddress  = (uint64_t) (0x04000000UL)  /* Physical addresses */
+    },
+    /* Add an entry for accessing MSRAM addresses */
+    {
+        .sizeInBytes        = (uint64_t) (0x00200000UL), /* Size in Bytes for the map */
+        .baseAddress        = (uint32_t) (0x70000000U),  /* Translated base address */
+        .translatedAddress  = (uint64_t) (0x70000000UL)  /* Physical addresses */
+    },
+    /* Add an entry for MAIN I2C/McSPI addresses */
+    {
+        .sizeInBytes        = (uint64_t) (0x00150000UL),  /* Size in Bytes for the map */
+        .baseAddress        = (uint32_t) (0x60000000U),   /* Translated base address */
+        .translatedAddress  = (uint64_t) (0x20000000UL)   /* Physical addresses */
+    },
+    /* Add an entry for MAIN GTC addresses */
+    {
+        .sizeInBytes        = (uint64_t) (0x00080000UL), /* Size in Bytes for the map */
+        .baseAddress        = (uint32_t) (0x60A80000U),   /* Translated base address */
+        .translatedAddress  = (uint64_t) (0x00A80000UL)   /* Physical addresses */
+    },
+    /* Add an entry for MAIN Timer addresses */
+    {
+        .sizeInBytes        = (uint64_t) (0x00080000UL),  /* Size in Bytes for the map */
+        .baseAddress        = (uint32_t) (0x62400000U),   /* Translated base address */
+        .translatedAddress  = (uint64_t) (0x02400000UL)   /* Physical addresses */
+    },
+    /* Add an entry for Main UART addresses */
+    {
+        .sizeInBytes        = (uint64_t) (0x00080000UL),  /* Size in Bytes for the map */
+        .baseAddress        = (uint32_t) (0x62800000U),   /* Translated base address */
+        .translatedAddress  = (uint64_t) (0x02800000UL)   /* Physical addresses */
+    },
+    /* Add an entry for accessing DDR addresses */
+    {
+        .sizeInBytes        = (uint64_t) (0x10000000UL), /* Size in Bytes for the map */
+        .baseAddress        = (uint32_t) (0xA0000000U),  /* Translated base address */
+        .translatedAddress  = (uint64_t) (0xA0000000UL)  /* Physical addresses */
+    },
+    {
+        .sizeInBytes        = (uint64_t) (0x01000000UL),
+        .baseAddress        = (uint32_t) (0x69000000U),
+        .translatedAddress  = (uint64_t) (0x29000000U),
+    },
+    /* Last entry to quit RAT cfg */
+    {
+        .sizeInBytes        = (uint64_t) (0xDEADFACEUL), /* Size in Bytes for the map = END of MAP */
+        .baseAddress        = (uint32_t) (0xDEADFACEU),  /* Translated base address   = END of MAP */
+        .translatedAddress  = (uint64_t) (0xDEADFACEUL)  /* Physical addresses        = END of MAP */
+    }
+};
+#endif
 
 /*
  * This "Task" waits for Linux vdev ready, and late create the vrings
@@ -488,6 +556,23 @@ static void IpcTestBaremetalNewMsgCb(uint32_t srcEndPt, uint32_t procId)
     return;
 }
 
+uint32_t Ipc_exampleVirtToPhyFxn(const void *virtAddr)
+{
+    return ((uint32_t) virtAddr);
+}
+
+void *Ipc_examplePhyToVirtFxn(uint32_t phyAddr)
+{
+    uint32_t temp = phyAddr;
+
+#if defined (BUILD_M4F_0)
+    /* For M4, need the translation for the mailbox access */
+    temp = phyAddr + 0x40000000;
+#endif
+
+    return ((void *) temp);
+}
+
 /*
  * This is the main test function which initializes and runs the Sender and
  * responder functions.
@@ -514,6 +599,8 @@ int32_t Ipc_echo_test(void)
         IpcInitPrms_init(0U, &initPrms);
 
         initPrms.newMsgFxn = &IpcTestBaremetalNewMsgCb;
+        initPrms.virtToPhyFxn = &Ipc_exampleVirtToPhyFxn;
+        initPrms.phyToVirtFxn = &Ipc_examplePhyToVirtFxn;
 
         if (IPC_SOK != Ipc_init(&initPrms))
         {

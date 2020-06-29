@@ -41,18 +41,25 @@ ifeq ($(ipc_component_make_include), )
 ############################
 ipc_LIB_LIST = ipc
 
-drvipc_SOCLIST         = am65xx j721e j7200
-drvipc_BOARDLIST       = am65xx_evm am65xx_idk j721e_sim j721e_qt j721e_evm j7200_evm
+drvipc_SOCLIST         = am65xx j721e j7200 am64x
+drvipc_BOARDLIST       = am65xx_evm am65xx_idk j721e_sim j721e_qt j721e_evm j7200_evm am64x_evm
 drvipc_am65xx_CORELIST = mpu1_0 mcu1_0 mcu1_1
 drvipc_am65xx_LASTCORE := $(word $(words $(drvipc_am65xx_CORELIST)), $(drvipc_am65xx_CORELIST))
 drvipc_am65xx_BAREMETAL_CORELIST = mcu1_0 mcu1_1
+drvipc_am65xx_TIRTOS_CORELIST = $(drvipc_am65xx_CORELIST)
 drvipc_j721e_CORELIST  = mpu1_0 mcu1_0 mcu2_0 mcu3_0 mcu1_1 mcu2_1 mcu3_1 c66xdsp_1 c66xdsp_2 c7x_1
 drvipc_j721e_APPCORELIST = mpu1_0 mcu1_0 mcu2_0 mcu3_0 mcu1_1 mcu2_1 mcu3_1 c66xdsp_1 c66xdsp_2 c7x_1
 drvipc_j721e_LASTCORE := $(word $(words $(drvipc_j721e_APPCORELIST)), $(drvipc_j721e_APPCORELIST))
 drvipc_j721e_BAREMETAL_CORELIST = mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1
+drvipc_j721e_TIRTOS_CORELIST = $(drvipc_j721e_CORELIST)
 drvipc_j7200_CORELIST  = mpu1_0 mcu1_0 mcu2_0 mcu1_1 mcu2_1
 drvipc_j7200_LASTCORE := $(word $(words $(drvipc_j7200_CORELIST)), $(drvipc_j7200_CORELIST))
 drvipc_j7200_BAREMETAL_CORELIST = mcu1_0 mcu1_1 mcu2_0 mcu2_1
+drvipc_j7200_TIRTOS_CORELIST = $(drvipc_j7200_CORELIST)
+drvipc_am64x_CORELIST = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 m4f_0
+drvipc_am64x_BAREMETAL_CORELIST = mcu1_0 mcu1_1 mcu2_0 mcu2_1 m4f_0
+drvipc_am64x_TIRTOS_CORELIST = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
+drvipc_am64x_LASTOCRE := $(word $(words $(drvipc_am64x_TIRTOS_CORELIST)), $(drvipc_am64x_CORELIST))
 drvipc_DISABLE_PARALLEL_MAKE = yes
 
 ############################
@@ -140,7 +147,7 @@ ipc_echo_test_PKG_LIST = ipc_echo_test
 ipc_echo_test_INCLUDE = $(ipc_echo_test_PATH)
 ipc_echo_test_BOARDLIST = $(drvipc_BOARDLIST)
 export ipc_echo_test_BOARDLIST
-ipc_echo_test_$(SOC)_CORELIST = $(drvipc_$(SOC)_CORELIST)
+ipc_echo_test_$(SOC)_CORELIST = $(drvipc_$(SOC)_TIRTOS_CORELIST)
 export ipc_echo_test_$(SOC)_CORELIST
 ipc_EXAMPLE_LIST += ipc_echo_test
 
@@ -190,7 +197,7 @@ ipc_echo_testb_PKG_LIST = ipc_echo_testb
 ipc_echo_testb_INCLUDE = $(ipc_echo_testb_PATH)
 ipc_echo_testb_BOARDLIST = $(drvipc_BOARDLIST)
 export ipc_echo_testb_BOARDLIST
-ipc_echo_testb_$(SOC)_CORELIST = $(drvipc_$(SOC)_CORELIST)
+ipc_echo_testb_$(SOC)_CORELIST = $(drvipc_$(SOC)_TIRTOS_CORELIST)
 export ipc_echo_testb_$(SOC)_CORELIST
 ipc_EXAMPLE_LIST += ipc_echo_testb
 
@@ -209,7 +216,7 @@ ex01_bios_2core_echo_test_PKG_LIST = ex01_bios_2core_echo_test
 ex01_bios_2core_echo_test_INCLUDE = $(ex01_bios_2core_echo_test_PATH)
 ex01_bios_2core_echo_test_BOARDLIST = $(drvipc_BOARDLIST)
 export ex01_bios_2core_echo_test_BOARDLIST
-ex01_bios_2core_echo_test_$(SOC)_CORELIST = $(drvipc_$(SOC)_CORELIST)
+ex01_bios_2core_echo_test_$(SOC)_CORELIST = $(drvipc_$(SOC)_TIRTOS_CORELIST)
 export ex01_bios_2core_echo_test_$(SOC)_CORELIST
 ipc_EXAMPLE_LIST += ex01_bios_2core_echo_test
 
@@ -228,7 +235,7 @@ ex02_bios_multicore_echo_test_PKG_LIST = ex02_bios_multicore_echo_test
 ex02_bios_multicore_echo_test_INCLUDE = $(ex02_bios_multicore_echo_test_PATH)
 ex02_bios_multicore_echo_test_BOARDLIST = $(drvipc_BOARDLIST)
 export ex02_bios_multicore_echo_test_BOARDLIST
-ex02_bios_multicore_echo_test_$(SOC)_CORELIST = $(drvipc_$(SOC)_CORELIST)
+ex02_bios_multicore_echo_test_$(SOC)_CORELIST = $(drvipc_$(SOC)_TIRTOS_CORELIST)
 export ex02_bios_multicore_echo_test_$(SOC)_CORELIST
 ipc_EXAMPLE_LIST += ex02_bios_multicore_echo_test
 
@@ -266,7 +273,7 @@ ex05_bios_multicore_echo_negative_test_PKG_LIST = ex05_bios_multicore_echo_negat
 ex05_bios_multicore_echo_negative_test_INCLUDE = $(ex05_bios_multicore_echo_negative_test_PATH)
 ex05_bios_multicore_echo_negative_test_BOARDLIST = $(drvipc_BOARDLIST)
 export ex05_bios_multicore_echo_negative_test_BOARDLIST
-ex05_bios_multicore_echo_negative_test_$(SOC)_CORELIST = $(drvipc_$(SOC)_CORELIST)
+ex05_bios_multicore_echo_negative_test_$(SOC)_CORELIST = $(drvipc_$(SOC)_TIRTOS_CORELIST)
 export ex05_bios_multicore_echo_negative_test_$(SOC)_CORELIST
 ipc_EXAMPLE_LIST += ex05_bios_multicore_echo_negative_test
 
@@ -286,7 +293,7 @@ ex02_bios_multicore_echo_testb_PKG_LIST = ex02_bios_multicore_echo_testb
 ex02_bios_multicore_echo_testb_INCLUDE = $(ex02_bios_multicore_echo_testb_PATH)
 ex02_bios_multicore_echo_testb_BOARDLIST = $(drvipc_BOARDLIST)
 export ex02_bios_multicore_echo_testb_BOARDLIST
-ex02_bios_multicore_echo_testb_$(SOC)_CORELIST = $(drvipc_$(SOC)_CORELIST)
+ex02_bios_multicore_echo_testb_$(SOC)_CORELIST = $(drvipc_$(SOC)_TIRTOS_CORELIST)
 export ex02_bios_multicore_echo_testb_$(SOC)_CORELIST
 ipc_EXAMPLE_LIST += ex02_bios_multicore_echo_testb
 
@@ -305,7 +312,7 @@ ex03_linux_bios_2core_echo_test_PKG_LIST = ex03_linux_bios_2core_echo_test
 ex03_linux_bios_2core_echo_test_INCLUDE = $(ex03_linux_bios_2core_echo_test_PATH)
 ex03_linux_bios_2core_echo_test_BOARDLIST = $(drvipc_BOARDLIST)
 export ex03_linux_bios_2core_echo_test_BOARDLIST
-ex03_linux_bios_2core_echo_test_$(SOC)_CORELIST = $(drvipc_$(SOC)_CORELIST)
+ex03_linux_bios_2core_echo_test_$(SOC)_CORELIST = $(drvipc_$(SOC)_TIRTOS_CORELIST)
 export ex03_linux_bios_2core_echo_test_$(SOC)_CORELIST
 ipc_EXAMPLE_LIST += ex03_linux_bios_2core_echo_test
 
@@ -322,9 +329,9 @@ export ipc_perf_test_CORE_DEPENDENCY
 export ipc_perf_test_XDC_CONFIGURO
 ipc_perf_test_PKG_LIST = ipc_perf_test
 ipc_perf_test_INCLUDE = $(ipc_perf_test_PATH)
-ipc_perf_test_BOARDLIST = $(drvipc_BOARDLIST)
+ipc_perf_test_BOARDLIST = j721e_evm am65x_evm
 export ipc_perf_test_BOARDLIST
-ipc_perf_test_$(SOC)_CORELIST = $(drvipc_$(SOC)_CORELIST)
+ipc_perf_test_$(SOC)_CORELIST = $(drvipc_$(SOC)_TIRTOS_CORELIST)
 export ipc_perf_test_$(SOC)_CORELIST
 ipc_EXAMPLE_LIST += ipc_perf_test
 export ipc_perf_test_SBL_APPIMAGEGEN = yes
@@ -348,7 +355,7 @@ export ipc_multicore_perf_test_CORE_DEPENDENCY
 export ipc_multicore_perf_test_XDC_CONFIGURO
 ipc_multicore_perf_test_PKG_LIST = ipc_multicore_perf_test
 ipc_multicore_perf_test_INCLUDE = $(ipc_multicore_perf_test_PATH)
-ipc_multicore_perf_test_BOARDLIST = $(drvipc_BOARDLIST)
+ipc_multicore_perf_test_BOARDLIST = j721e_evm am65xx_evm
 export ipc_multicore_perf_test_BOARDLIST
 ipc_multicore_perf_test_$(SOC)_CORELIST := $(drvipc_$(SOC)_LASTCORE)
 export ipc_multicore_perf_test_$(SOC)_CORELIST
@@ -369,7 +376,7 @@ export ex04_linux_baremetal_2core_echo_test_CORE_DEPENDENCY
 export ex04_linux_baremetal_2core_echo_test_XDC_CONFIGURO
 ex04_linux_baremetal_2core_echo_test_PKG_LIST = ex04_linux_baremetal_2core_echo_test
 ex04_linux_baremetal_2core_echo_test_INCLUDE = $(ex04_linux_baremetal_2core_echo_test_PATH)
-ex04_linux_baremetal_2core_echo_test_BOARDLIST = $(drvipc_BOARDLIST)
+ex04_linux_baremetal_2core_echo_test_BOARDLIST = j721e_evm am65xx_evm
 export ex04_linux_baremetal_2core_echo_test_BOARDLIST
 ex04_linux_baremetal_2core_echo_test_$(SOC)_CORELIST = $(drvipc_$(SOC)_BAREMETAL_CORELIST)
 export ex04_linux_baremetal_2core_echo_test_$(SOC)_CORELIST

@@ -47,6 +47,7 @@
 #include <ti/drv/ipc/src/ipc_priv.h>
 #include <ti/drv/ipc/src/ipc_mailbox.h>
 
+#include <ti/csl/csl_navss_main.h>
 #include <ti/drv/sciclient/sciclient.h>
 
 #define NAVSS_INTRTR_INPUT_MAILBOX0_USER0   (436U)

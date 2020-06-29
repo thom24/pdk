@@ -16,6 +16,9 @@ endif
 ifeq ($(SOC),$(filter $(SOC), j721e j7200))
   SRCDIR += soc/V1
 endif
+ifeq ($(SOC),$(filter $(SOC), am64x))
+  SRCDIR += soc/V2
+endif
 INCDIR =
 
 #$(ECHO) $(ISA)
@@ -26,7 +29,12 @@ INCLUDE_EXTERNAL_INTERFACES = pdk bios xdc
 
 # Common source files and CFLAGS across all platforms and cores
 SRCS_COMMON += ipc_api.c ipc_mp.c ipc_soc.c ipc_virtio.c
-SRCS_COMMON += ipc_mailbox.c ipc_osal.c ipc_utils.c
+SRCS_COMMON += ipc_osal.c ipc_utils.c
+ifeq ($(SOC),$(filter $(SOC), am64x))
+SRCS_COMMON += ipc_mailbox_lld.c
+else
+SRCS_COMMON += ipc_mailbox.c
+endif
 
 PACKAGE_SRCS_COMMON = ipc.h ipc_component.mk makefile .gitignore include $(SRCDIR)
 PACKAGE_SRCS_COMMON += soc/ipc_soc.h

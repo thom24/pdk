@@ -12,6 +12,9 @@ INCLUDE_EXTERNAL_INTERFACES = pdk
 COMP_LIST_COMMON = ipc
 ifeq ($(BUILD_OS_TYPE), baremetal)
   COMP_LIST_COMMON += $(PDK_COMMON_BAREMETAL_COMP)
+ifeq ($(SOC), am64x)
+  COMP_LIST_COMMON += mailbox
+endif
   SRCS_COMMON = main_baremetal.c
   ifeq ($(ISA),$(filter $(ISA), a53, a72))
     LNKFLAGS_LOCAL_$(CORE) += --entry Entry
@@ -19,6 +22,9 @@ ifeq ($(BUILD_OS_TYPE), baremetal)
 else
   INCLUDE_EXTERNAL_INTERFACES += xdc bios
   COMP_LIST_COMMON += $(PDK_COMMON_TIRTOS_COMP)
+ifeq ($(SOC), am64x)
+  COMP_LIST_COMMON += mailbox
+endif
   SRCS_COMMON += main_tirtos.c
   # Enable XDC build for application by providing XDC CFG File per core
   XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
@@ -33,12 +39,12 @@ ifeq ($(SOC),$(filter $(SOC), j721e j7200))
     EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/j721e/linker_$(ISA)_$(CORE)_sysbios.lds
   endif
 endif
-ifeq ($(SOC),$(filter $(SOC), am65xx))
-  XDC_CFG_UPDATE_$(CORE) = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/ipc_perf_test/ipc_override_am65xx.cfg
+ifeq ($(SOC),$(filter $(SOC), am65xx am64x))
+  XDC_CFG_UPDATE_$(CORE) = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/ipc_perf_test/ipc_override_$(SOC).cfg
   ifeq ($(ISA), r5f)
-    XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/ipc_perf_test/am65xx/sysbios_$(ISA).cfg
+    XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/ipc_perf_test/$(SOC)/sysbios_$(ISA).cfg
   endif
-  EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/am65xx/linker_$(ISA)_$(CORE)_sysbios.lds
+  EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/$(SOC)/linker_$(ISA)_$(CORE)_sysbios.lds
 endif
 endif
 

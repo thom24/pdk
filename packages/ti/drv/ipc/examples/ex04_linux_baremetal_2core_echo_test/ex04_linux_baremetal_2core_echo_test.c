@@ -67,6 +67,8 @@
 #define CORE_IN_TEST            10
 #elif defined (SOC_J7200)
 #define CORE_IN_TEST            5
+#elif defined (SOC_AM64X)
+#define CORE_IN_TEST            6
 #else
 #error "Invalid SOC"
 #endif
@@ -136,6 +138,12 @@ uint32_t remoteProc[] =
 };
 #elif defined(BUILD_MCU3_1)
 uint32_t selfProcId = IPC_MCU3_1;
+uint32_t remoteProc[] =
+{
+    IPC_MPU1_0
+};
+#elif defined(BUILD_M4F_0)
+uint32_t selfProcId = IPC_M4F_0;
 uint32_t remoteProc[] =
 {
     IPC_MPU1_0
