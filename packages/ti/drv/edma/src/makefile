@@ -19,6 +19,8 @@ SRCS_COMMON += edma.c edma_soc.c
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(EDMA_CFLAGS)
 PACKAGE_SRCS_COMMON = edma.h edma_component.mk makefile .gitignore src soc/edma_soc_priv.h soc/edma_soc.h soc/$(SOC)
+PACKAGE_SRCS_COMMON += config_mk.bld package.bld package.xdc package.xs
+PACKAGE_SRCS_COMMON += Settings.xdc
 
 # Core/SoC/platform specific source files and CFLAGS
 # Example:

@@ -34,6 +34,8 @@ SOC_DEP_LIB_SOCS=tpr12
 PACKAGE_SRCS_COMMON = makefile watchdog.h watchdog_component.mk .gitignore \
                       src/src_files_common.mk \
                       build/makefile.mk
+PACKAGE_SRCS_COMMON += config_mk.bld package.bld package.xdc package.xs
+PACKAGE_SRCS_COMMON += Settings.xdc
 
 ifeq ($(SOC),$(filter $(SOC), tpr12))
     # TPR12 targets

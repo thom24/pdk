@@ -29,52 +29,18 @@
 # OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 # EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-SOC_DEP_LIB_SOCS=tpr12
 
-PACKAGE_SRCS_COMMON = makefile MIBSPI.h mibspi_component.mk .gitignore \
-                      src/MIBSPI_osal.h src/src_files_common.mk \
-                      build/makefile.mk  \
-                      build/makefile_dma.mk
-PACKAGE_SRCS_COMMON += config_mk.bld package.bld package.xdc package.xs
-PACKAGE_SRCS_COMMON += Settings.xdc
-
-ifeq ($(SOC),$(filter $(SOC),$(SOC_DEP_LIB_SOCS) ))
-  ifeq ($(SOC),$(filter $(SOC), tpr12))
-    # TPR12 targets include SPI_V3
-    SRCDIR = . src
-    INCDIR = . src
-    SRCS_COMMON += mibspi_priv.c MIBSPI_api.c mibspi_trace.c mibspi_utils.c
-    PACKAGE_SRCS_COMMON += src/mibspi_priv.c soc/MIBSPI_v0.h
-    PACKAGE_SRCS_COMMON += src/mibspi_trace.c src/mibspi_priv.h
-    PACKAGE_SRCS_COMMON += src/mibspi_trace.h src/mibspi_trace_config.h
-    PACKAGE_SRCS_COMMON += src/mibspi_trace_priv.h src/mibspi_utils.c
-    PACKAGE_SRCS_COMMON += src/mibspi_utils.h src/MIBSPI_api.c
-    PACKAGE_SRCS_COMMON += test
-  endif
+ifeq ($(RULES_MAKE), )
+include $(PDK_INSTALL_PATH)/ti/build/Rules.make
+else
+include $(RULES_MAKE)
 endif
 
+COMP = drvmailbox
 
-ifeq ($(SOC),$(filter $(SOC), tpr12))
-  MIBSPI_CFLAGS =
+lib_$(COMP)_BUILD_DEPENDENCY = soc
 
-  # Enable asserts and prints
-  MIBSPI_CFLAGS += -DMIBSPI_CFG_ASSERT_ENABLE
-  #MIBSPI_CFLAGS += -DMIBSPI_CFG_USE_STD_ASSERT
-  MIBSPI_CFLAGS += -DMIBSPI_CFG_PRINT_ENABLE
-  #MIBSPI_CFLAGS += -DUART_ENABLED
+$(COMP)_DOXYGEN_SUPPORT = yes
 
-  # Trace level per build profile:
-  # 0 - None
-  # 1 - Error
-  # 2 - Warning
-  # 3 - Info
-  # 4 - Debug
-  # 5 - Verbose
-  ifeq ($(BUILD_PROFILE),debug)
-    MIBSPI_CFLAGS += -DMIBSPI_TRACE_CFG_TRACE_LEVEL=4
-    MIBSPI_CFLAGS += -DMIBSPI_CFG_DEV_ERROR
-  else
-    MIBSPI_CFLAGS += -DMIBSPI_TRACE_CFG_TRACE_LEVEL=3
-  endif
-endif
+include $(PDK_INSTALL_PATH)/ti/build/comp_top.mk
 

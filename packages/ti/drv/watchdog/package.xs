@@ -16,10 +16,10 @@ function getLibs(prog)
     var suffix  = prog.build.target.suffix;
     var socType = this.Settings.socType;
     var socTypes = [
-                     'am65xx',
+                     'tpr12',
                    ];
     var libNames = [
-                     'cal'
+                     'watchdog'
                    ];
 
     /*
@@ -50,14 +50,10 @@ function getLibs(prog)
     }
 
     /* Get target folder, if applicable */
-    if (java.lang.String(suffix).contains('mcu1_0'))
-        lib = lib + "/mcu1_0";
-    else if (java.lang.String(suffix).contains('mpu1_1'))
-        lib = lib + "/mpu1_1";
-    else if (java.lang.String(suffix).contains('mpu1_0'))
-        lib = lib + "/mpu1_0";
-    else if (java.lang.String(suffix).contains('mpu1_1'))
-        lib = lib + "/mpu1_1";
+    if (java.lang.String(suffix).contains('66'))
+        lib = lib + "/c66";
+    else if (java.lang.String(suffix).contains('r5f'))
+        lib = lib + "/r5f";
     else
         throw new Error("\tUnknown target for: " + this.packageBase + lib);
 
@@ -97,6 +93,9 @@ function getLibs(prog)
     return lib;
 }
 
+/*
+ *  ======== package.init ========
+ */
 function init() {
 xdc.loadPackage("ti.osal");
 xdc.loadPackage("ti.csl");

@@ -22,6 +22,11 @@ function getLibs(prog)
                      'fvid2'
                    ];
 
+    /*
+     * The same suffix "r5f" is used for both R5f arm and thumb library
+     */
+    suffix = java.lang.String(suffix).replace('r5ft','r5f');
+
     /* Read LIBDIR variable */
     var lib = java.lang.System.getenv("LIBDIR");
 

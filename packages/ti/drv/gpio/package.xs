@@ -18,6 +18,11 @@ function getLibs(prog)
     var socType = this.Settings.socType;
     var profilingTag = "";
 
+    /*
+     * The same suffix "r5f" is used for both R5f arm and thumb library
+     */
+    suffix = java.lang.String(suffix).replace('r5ft','r5f');
+
     socType = socType.toLowerCase();
     /* Replace the last charecter in SoC am#### to am###x */
     if (socType.substring(0, 2) == "am")
@@ -66,6 +71,7 @@ function getLibs(prog)
                      'j721e',
                      'j7200',
                      'am64x',
+		     'tpr12'
                    ];
 
     /* Get the SOC */

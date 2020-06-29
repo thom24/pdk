@@ -22,7 +22,9 @@ ifeq ($(SOC),$(filter $(SOC), am64x))
 CFLAGS_LOCAL_COMMON += -DVIM_DIRECT_REGISTRATION
 endif
 
-PACKAGE_SRCS_COMMON = mailbox.h mailbox_component.mk .gitignore src soc/mailbox_soc.h soc/$(SOC) include
+PACKAGE_SRCS_COMMON = mailbox.h makefile mailbox_component.mk .gitignore src soc/mailbox_soc.h soc/$(SOC) include
+PACKAGE_SRCS_COMMON += config_mk.bld package.bld package.xdc package.xs
+PACKAGE_SRCS_COMMON += Settings.xdc
 
 # Core/SoC/platform specific source files and CFLAGS
 # Example:

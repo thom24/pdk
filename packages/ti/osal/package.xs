@@ -13,7 +13,10 @@
 
 function getLibs(prog)
 {
-    var suffix = prog.build.target.suffix;
+    /*
+     * The same suffix "r5f" is used for both arm and thumb mode library
+     */
+    var suffix = java.lang.String(prog.build.target.suffix).replace('r5ft','r5f');
 
     var name = this.$name + ".a" + suffix;
 

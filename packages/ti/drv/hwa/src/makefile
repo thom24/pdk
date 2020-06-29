@@ -19,6 +19,8 @@ SRCS_COMMON += hwa.c hwa_tpr12.c
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(HWA_CFLAGS)
 PACKAGE_SRCS_COMMON = hwa.h hwa_component.mk makefile .gitignore src soc
+PACKAGE_SRCS_COMMON += config_mk.bld package.bld package.xdc package.xs
+PACKAGE_SRCS_COMMON += Settings.xdc
 
 # Core/SoC/platform specific source files and CFLAGS
 # Example:

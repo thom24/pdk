@@ -19,6 +19,8 @@ SRCS_COMMON += crc.c crc_soc.c
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CRC_CFLAGS)
 PACKAGE_SRCS_COMMON = crc.h crc_component.mk makefile .gitignore src soc/$(SOC)
+PACKAGE_SRCS_COMMON += config_mk.bld package.bld package.xdc package.xs
+PACKAGE_SRCS_COMMON += Settings.xdc
 
 # Core/SoC/platform specific source files and CFLAGS
 # Example:
