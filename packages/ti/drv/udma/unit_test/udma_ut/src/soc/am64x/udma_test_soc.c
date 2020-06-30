@@ -328,3 +328,53 @@ GT_1trace(taskObj->traceMask, GT_INFO1,
 
     return (retVal);
 }
+
+void UdmaTestRmInitPrmsMapped_init(Udma_InitPrms *initPrms)
+{
+    /* Assign start of Mapped TX Channels */
+    initPrms->rmInitPrms.startMappedTxCh[UDMA_MAPPED_TX_GROUP_CPSW]    = CSL_DMSS_PKTDMA_TX_CHANS_CPSW_START;
+    initPrms->rmInitPrms.startMappedTxCh[UDMA_MAPPED_TX_GROUP_SAUL]    = CSL_DMSS_PKTDMA_TX_CHANS_SAUL0_START;
+    initPrms->rmInitPrms.startMappedTxCh[UDMA_MAPPED_TX_GROUP_ICSSG_0] = CSL_DMSS_PKTDMA_TX_CHANS_ICSSG0_START;
+    initPrms->rmInitPrms.startMappedTxCh[UDMA_MAPPED_TX_GROUP_ICSSG_1] = CSL_DMSS_PKTDMA_TX_CHANS_ICSSG1_START;
+
+    /* Assign num of Mapped TX Channels */
+    initPrms->rmInitPrms.numMappedTxCh[UDMA_MAPPED_TX_GROUP_CPSW]    = CSL_DMSS_PKTDMA_TX_CHANS_CPSW_CNT;
+    initPrms->rmInitPrms.numMappedTxCh[UDMA_MAPPED_TX_GROUP_SAUL]    = CSL_DMSS_PKTDMA_TX_CHANS_SAUL0_CNT + 
+                                                                          CSL_DMSS_PKTDMA_TX_CHANS_SAUL1_CNT;
+    initPrms->rmInitPrms.numMappedTxCh[UDMA_MAPPED_TX_GROUP_ICSSG_0] = CSL_DMSS_PKTDMA_TX_CHANS_ICSSG0_CNT;
+    initPrms->rmInitPrms.numMappedTxCh[UDMA_MAPPED_TX_GROUP_ICSSG_1] = CSL_DMSS_PKTDMA_TX_CHANS_ICSSG1_CNT;
+    
+    /* Assign start of Mapped RX Channels */
+    initPrms->rmInitPrms.startMappedRxCh[UDMA_MAPPED_RX_GROUP_CPSW- UDMA_NUM_MAPPED_TX_GROUP]    = CSL_DMSS_PKTDMA_RX_CHANS_CPSW_START;
+    initPrms->rmInitPrms.startMappedRxCh[UDMA_MAPPED_RX_GROUP_SAUL- UDMA_NUM_MAPPED_TX_GROUP]    = CSL_DMSS_PKTDMA_RX_CHANS_SAUL0_START;
+    initPrms->rmInitPrms.startMappedRxCh[UDMA_MAPPED_RX_GROUP_ICSSG_0- UDMA_NUM_MAPPED_TX_GROUP] = CSL_DMSS_PKTDMA_RX_CHANS_ICSSG0_START;
+    initPrms->rmInitPrms.startMappedRxCh[UDMA_MAPPED_RX_GROUP_ICSSG_1- UDMA_NUM_MAPPED_TX_GROUP] = CSL_DMSS_PKTDMA_RX_CHANS_ICSSG1_START;
+
+    /* Assign num of Mapped RX Channels */
+    initPrms->rmInitPrms.numMappedRxCh[UDMA_MAPPED_RX_GROUP_CPSW- UDMA_NUM_MAPPED_TX_GROUP]    = CSL_DMSS_PKTDMA_RX_CHANS_CPSW_CNT;
+    initPrms->rmInitPrms.numMappedRxCh[UDMA_MAPPED_RX_GROUP_SAUL- UDMA_NUM_MAPPED_TX_GROUP]    = CSL_DMSS_PKTDMA_RX_CHANS_SAUL0_CNT + CSL_DMSS_PKTDMA_RX_CHANS_SAUL1_CNT +
+                                                                                                  CSL_DMSS_PKTDMA_RX_CHANS_SAUL2_CNT + CSL_DMSS_PKTDMA_RX_CHANS_SAUL3_CNT;
+    initPrms->rmInitPrms.numMappedRxCh[UDMA_MAPPED_RX_GROUP_ICSSG_0- UDMA_NUM_MAPPED_TX_GROUP] = CSL_DMSS_PKTDMA_RX_CHANS_ICSSG0_CNT;
+    initPrms->rmInitPrms.numMappedRxCh[UDMA_MAPPED_RX_GROUP_ICSSG_1- UDMA_NUM_MAPPED_TX_GROUP] = CSL_DMSS_PKTDMA_RX_CHANS_ICSSG1_CNT;
+
+    /* Assign start of Mapped Rings */
+    initPrms->rmInitPrms.startMappedRing[UDMA_MAPPED_TX_GROUP_CPSW]    = CSL_DMSS_PKTDMA_TX_FLOWS_CPSW_START;
+    initPrms->rmInitPrms.startMappedRing[UDMA_MAPPED_TX_GROUP_SAUL]    = CSL_DMSS_PKTDMA_TX_FLOWS_SAUL0_START;
+    initPrms->rmInitPrms.startMappedRing[UDMA_MAPPED_TX_GROUP_ICSSG_0] = CSL_DMSS_PKTDMA_TX_FLOWS_ICSSG0_START;
+    initPrms->rmInitPrms.startMappedRing[UDMA_MAPPED_TX_GROUP_ICSSG_1] = CSL_DMSS_PKTDMA_TX_FLOWS_ICSSG1_START;
+    initPrms->rmInitPrms.startMappedRing[UDMA_MAPPED_RX_GROUP_CPSW]    = CSL_DMSS_PKTDMA_RX_FLOWS_CPSW_START;
+    initPrms->rmInitPrms.startMappedRing[UDMA_MAPPED_RX_GROUP_SAUL]    = CSL_DMSS_PKTDMA_RX_FLOWS_SAUL0_START; 
+    initPrms->rmInitPrms.startMappedRing[UDMA_MAPPED_RX_GROUP_ICSSG_0] = CSL_DMSS_PKTDMA_RX_FLOWS_ICSSG0_START;
+    initPrms->rmInitPrms.startMappedRing[UDMA_MAPPED_RX_GROUP_ICSSG_1] = CSL_DMSS_PKTDMA_RX_FLOWS_ICSSG1_START;
+
+    /* Assign num of Mapped Rings */
+    initPrms->rmInitPrms.numMappedRing[UDMA_MAPPED_TX_GROUP_CPSW]    = CSL_DMSS_PKTDMA_TX_FLOWS_CPSW_CNT;
+    initPrms->rmInitPrms.numMappedRing[UDMA_MAPPED_TX_GROUP_SAUL]    = CSL_DMSS_PKTDMA_TX_FLOWS_SAUL0_CNT + CSL_DMSS_PKTDMA_TX_FLOWS_SAUL1_CNT;
+    initPrms->rmInitPrms.numMappedRing[UDMA_MAPPED_TX_GROUP_ICSSG_0] = CSL_DMSS_PKTDMA_TX_FLOWS_ICSSG0_CNT;
+    initPrms->rmInitPrms.numMappedRing[UDMA_MAPPED_TX_GROUP_ICSSG_1] = CSL_DMSS_PKTDMA_TX_FLOWS_ICSSG1_CNT;
+    initPrms->rmInitPrms.numMappedRing[UDMA_MAPPED_RX_GROUP_CPSW]    = CSL_DMSS_PKTDMA_RX_FLOWS_CPSW_CNT;
+    initPrms->rmInitPrms.numMappedRing[UDMA_MAPPED_RX_GROUP_SAUL]    = CSL_DMSS_PKTDMA_RX_FLOWS_SAUL0_CNT + CSL_DMSS_PKTDMA_RX_FLOWS_SAUL2_CNT; /* SAUL1 RX flows are shared with SAUL0; And SAUL3 RX flows are shared with SAUL2 */
+    initPrms->rmInitPrms.numMappedRing[UDMA_MAPPED_RX_GROUP_ICSSG_0] = CSL_DMSS_PKTDMA_RX_FLOWS_ICSSG0_CNT;
+    initPrms->rmInitPrms.numMappedRing[UDMA_MAPPED_RX_GROUP_ICSSG_1] = CSL_DMSS_PKTDMA_RX_FLOWS_ICSSG1_CNT;
+}
+

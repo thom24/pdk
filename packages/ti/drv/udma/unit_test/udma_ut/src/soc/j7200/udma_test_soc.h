@@ -62,6 +62,8 @@ extern "C" {
 #define UDMA_TEST_INST_ID_MAIN_BC       (UDMA_INST_ID_MAIN_0)
 #define UDMA_TEST_INST_ID_MCU_BC        (UDMA_INST_ID_MCU_0)
 
+#define UDMA_TEST_INST_ID_FLOW          (UDMA_TEST_DEFAULT_UDMA_INST)
+
 #define UDMA_TEST_RF_MAIN_BC_HC         (UDMA_TEST_RF_SOC | \
                                          UDMA_TEST_RF_CORE_MPU1_0 | \
                                          UDMA_TEST_RF_CORE_MCU2_0 | \

@@ -132,7 +132,8 @@ int32_t udmaTestFlowAllocTc(UdmaTestTaskObj *taskObj)
 static int32_t udmaTestFlowAttachTestLoop(UdmaTestTaskObj *taskObj)
 {
     int32_t             retVal = UDMA_SOK;
-    uint32_t            instId, flowIdx;
+    uint32_t            instId, flowIdx, mappedFlowGrp;
+    uint32_t            numFlowGrp, numMappedFlowGrp;
     uint32_t            elemCnt = 100U, ringMemSize;
     uint32_t            flowCnt = 3U, flowStart, flowCntTest;
     uint32_t            ringAllocated = FALSE, flowAllocated = FALSE;
@@ -145,6 +146,10 @@ static int32_t udmaTestFlowAttachTestLoop(UdmaTestTaskObj *taskObj)
     struct Udma_FlowObj flowObj, attachFlowObj;
     Udma_FlowHandle     flowHandle = &flowObj, attachFlowHandle = &attachFlowObj;
     Udma_FlowPrms       flowPrms;
+    Udma_FlowAllocMappedPrms    flowAllocMappedPrms;
+#if ((UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP) > 0)
+    Udma_RmInitPrms             *rmInitPrms;
+#endif
     void               *ringMem = NULL;
 
     ringMemSize = elemCnt * sizeof (uint64_t);
@@ -157,118 +162,170 @@ static int32_t udmaTestFlowAttachTestLoop(UdmaTestTaskObj *taskObj)
 
     if(UDMA_SOK == retVal)
     {
-        instId = UDMA_TEST_DEFAULT_UDMA_INST;
+        instId = UDMA_TEST_INST_ID_FLOW;
         drvHandle = &taskObj->testObj->drvObj[instId];
 
-        UdmaRingPrms_init(&ringPrms);
-        ringPrms.ringMem = ringMem;
-        ringPrms.ringMemSize = ringMemSize;
-        ringPrms.mode = TISCI_MSG_VALUE_RM_RING_MODE_MESSAGE;
-        ringPrms.elemCnt = elemCnt;
+        numMappedFlowGrp = UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP;
+        
+        if(0U == numMappedFlowGrp)
+        {
+            numFlowGrp = 1U;
 
-        /* Allocate a free ring */
-        retVal = Udma_ringAlloc(drvHandle, ringHandle, UDMA_RING_ANY, &ringPrms);
-        if(UDMA_SOK != retVal)
-        {
-            GT_0trace(taskObj->traceMask, GT_ERR, " Ring alloc failed!!\n");
-        }
-        else
-        {
-            ringAllocated = TRUE;
-        }
+            UdmaRingPrms_init(&ringPrms);
+            ringPrms.ringMem = ringMem;
+            ringPrms.ringMemSize = ringMemSize;
+            ringPrms.mode = TISCI_MSG_VALUE_RM_RING_MODE_MESSAGE;
+            ringPrms.elemCnt = elemCnt;
 
-        if(UDMA_SOK == retVal)
-        {
-            /* Allocate free flows */
-            retVal = Udma_flowAlloc(drvHandle, flowHandle, flowCnt);
+            /* Allocate a free ring */
+            retVal = Udma_ringAlloc(drvHandle, ringHandle, UDMA_RING_ANY, &ringPrms);
             if(UDMA_SOK != retVal)
             {
-                GT_0trace(taskObj->traceMask, GT_ERR, " Flow alloc failed!!\n");
+                GT_0trace(taskObj->traceMask, GT_ERR, " Ring alloc failed!!\n");
             }
             else
             {
-                flowAllocated = TRUE;
+                ringAllocated = TRUE;
             }
-        }
 
-        if(UDMA_SOK == retVal)
-        {
-            flowStart = Udma_flowGetNum(flowHandle);
-            if(UDMA_FLOW_INVALID == flowStart)
-            {
-                GT_0trace(taskObj->traceMask, GT_ERR, " Invalid flow ID!!\n");
-                retVal = UDMA_EFAIL;
-            }
         }
-
-        if(UDMA_SOK == retVal)
+        else
         {
-            flowCntTest = Udma_flowGetCount(flowHandle);
-            if(flowCntTest != flowCnt)
-            {
-                GT_0trace(taskObj->traceMask, GT_ERR, " Flow count doesn't match!!\n");
-            }
+            flowCnt = 1U;
+            numFlowGrp = numMappedFlowGrp;
         }
-
-        if(UDMA_SOK == retVal)
+        for(mappedFlowGrp = UDMA_NUM_MAPPED_TX_GROUP; mappedFlowGrp < numFlowGrp; mappedFlowGrp++)
         {
-            /* Attach and configure the flows */
-            retVal = Udma_flowAttach(drvHandle, attachFlowHandle, flowStart, flowCnt);
-            if(UDMA_SOK != retVal)
+            if(UDMA_SOK == retVal)
             {
-                GT_0trace(taskObj->traceMask, GT_ERR, " Flow attach failed!!\n");
-            }
-        }
-
-        if(UDMA_SOK == retVal)
-        {
-            /* Do flow config with the allocated ring - we can't do any
-             * other functional test in standalone testing */
-            ringNum = Udma_ringGetNum(ringHandle);
-            UdmaFlowPrms_init(&flowPrms, UDMA_CH_TYPE_RX);
-            flowPrms.defaultRxCQ = ringNum;
-            flowPrms.fdq0Sz0Qnum = ringNum;
-            flowPrms.fdq1Qnum    = ringNum;
-            flowPrms.fdq2Qnum    = ringNum;
-            flowPrms.fdq3Qnum    = ringNum;
-            flowPrms.fdq0Sz1Qnum = ringNum;
-            flowPrms.fdq0Sz2Qnum = ringNum;
-            flowPrms.fdq0Sz3Qnum = ringNum;
-            for(flowIdx = 0U; flowIdx < flowCnt; flowIdx++)
-            {
-                retVal = Udma_flowConfig(attachFlowHandle, flowIdx, &flowPrms);
+                if(0U == numMappedFlowGrp)
+                {
+                    /* Allocate free flows */
+                    retVal = Udma_flowAlloc(drvHandle, flowHandle, flowCnt);
+                }
+                else
+                {
+#if ((UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP) > 0)
+                    /* Allocate mapped free flows */
+                    rmInitPrms = &drvHandle->initPrms.rmInitPrms;
+                    flowAllocMappedPrms.mappedFlowGrp = mappedFlowGrp;
+                    flowAllocMappedPrms.mappedChNum = rmInitPrms->startMappedRxCh[mappedFlowGrp - UDMA_NUM_MAPPED_TX_GROUP];
+                    retVal = Udma_flowAllocMapped(drvHandle, flowHandle, &flowAllocMappedPrms);
+#endif
+                }
                 if(UDMA_SOK != retVal)
                 {
-                    GT_0trace(taskObj->traceMask, GT_ERR, " Flow config failed!!\n");
+                    GT_0trace(taskObj->traceMask, GT_ERR, " Flow alloc failed!!\n");
+                }
+                else
+                {
+                    flowAllocated = TRUE;
+                }
+            }
+
+            if(UDMA_SOK == retVal)
+            {
+                flowStart = Udma_flowGetNum(flowHandle);
+                if(UDMA_FLOW_INVALID == flowStart)
+                {
+                    GT_0trace(taskObj->traceMask, GT_ERR, " Invalid flow ID!!\n");
+                    retVal = UDMA_EFAIL;
+                }
+            }
+
+            if(UDMA_SOK == retVal)
+            {
+                flowCntTest = Udma_flowGetCount(flowHandle);
+                if(flowCntTest != flowCnt)
+                {
+                    GT_0trace(taskObj->traceMask, GT_ERR, " Flow count doesn't match!!\n");
+                }
+            }
+
+            if(UDMA_SOK == retVal)
+            {
+                if(0U == numMappedFlowGrp)
+                {
+                    /* Attach flows */
+                    retVal = Udma_flowAttach(drvHandle, attachFlowHandle, flowStart, flowCnt);
+                }
+                else
+                {
+                    /* Attach mapped flows */
+                    retVal = Udma_flowAttachMapped(drvHandle, attachFlowHandle, flowStart, &flowAllocMappedPrms);
+                }
+                if(UDMA_SOK != retVal)
+                {
+                    GT_0trace(taskObj->traceMask, GT_ERR, " Flow attach failed!!\n");
+                }
+            }
+
+            if(UDMA_SOK == retVal)
+            {
+                /* Do flow config with the allocated ring - we can't do any
+                * other functional test in standalone testing */
+                if(0U == numMappedFlowGrp)
+                {
+                    ringNum = Udma_ringGetNum(ringHandle);
+                }
+                else
+                {
+                    ringNum = Udma_flowGetNum(flowHandle);
+                }
+                UdmaFlowPrms_init(&flowPrms, UDMA_CH_TYPE_RX);
+                flowPrms.defaultRxCQ = ringNum;
+                flowPrms.fdq0Sz0Qnum = ringNum;
+                flowPrms.fdq1Qnum    = ringNum;
+                flowPrms.fdq2Qnum    = ringNum;
+                flowPrms.fdq3Qnum    = ringNum;
+                flowPrms.fdq0Sz1Qnum = ringNum;
+                flowPrms.fdq0Sz2Qnum = ringNum;
+                flowPrms.fdq0Sz3Qnum = ringNum;
+                for(flowIdx = 0U; flowIdx < flowCnt; flowIdx++)
+                {
+                    retVal = Udma_flowConfig(attachFlowHandle, flowIdx, &flowPrms);
+                    if(UDMA_SOK != retVal)
+                    {
+                        GT_0trace(taskObj->traceMask, GT_ERR, " Flow config failed!!\n");
+                    }
+                }
+            }
+
+            if(UDMA_SOK == retVal)
+            {
+                retVal = Udma_flowDetach(attachFlowHandle);
+                if(UDMA_SOK != retVal)
+                {
+                    GT_0trace(taskObj->traceMask, GT_ERR, " Flow detach failed!!\n");
+                }
+            }
+
+            /* Free allocated flows */
+            if(TRUE == flowAllocated)
+            {
+                retVal += Udma_flowFree(flowHandle);
+                if(UDMA_SOK != retVal)
+                {
+                    GT_0trace(taskObj->traceMask, GT_ERR, " Flow free failed!!\n");
+                }
+                else
+                {
+                    flowAllocated = FALSE;
                 }
             }
         }
 
-        if(UDMA_SOK == retVal)
-        {
-            retVal = Udma_flowDetach(attachFlowHandle);
-            if(UDMA_SOK != retVal)
-            {
-                GT_0trace(taskObj->traceMask, GT_ERR, " Flow detach failed!!\n");
-            }
-        }
-
-        /* Free allocated flows and rings */
-        if(TRUE == flowAllocated)
-        {
-            retVal += Udma_flowFree(flowHandle);
-            if(UDMA_SOK != retVal)
-            {
-                GT_0trace(taskObj->traceMask, GT_ERR, " Flow free failed!!\n");
-            }
-        }
-
+        /* Free allocated rings */
         if(TRUE == ringAllocated)
         {
             retVal += Udma_ringFree(ringHandle);
             if(UDMA_SOK != retVal)
             {
                 GT_0trace(taskObj->traceMask, GT_ERR, " Ring free failed!!\n");
+            }
+            else
+            {
+                ringAllocated = FALSE;
             }
         }
     }
@@ -294,23 +351,28 @@ static int32_t udmaTestFlowAllocTestLoop(UdmaTestTaskObj *taskObj)
     struct Udma_FlowObj flowObj;
     Udma_FlowHandle     flowHandle = &flowObj;
 
-    for(instId = 0U; instId < UDMA_INST_ID_MAX; instId++)
+    for(instId = UDMA_INST_ID_START; instId <= UDMA_INST_ID_MAX; instId++)
     {
         drvHandle = &taskObj->testObj->drvObj[instId];
 
-        /* Allocate free flows - one more than available - this should fail */
-        retVal = Udma_flowAlloc(drvHandle, flowHandle, flowCnt);
-        if(UDMA_SOK == retVal)
+        /* This tests the failure for allocating flows more than actual count.
+         * So this is not applicable in case of mapped flows, which allocates only one at a time. */
+        if(0U == (UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP))
         {
-            GT_0trace(taskObj->traceMask, GT_ERR,
-                " Flow alloc passed when it should have failed!!\n");
-            retVal = UDMA_EFAIL;
-            break;
-        }
-        else
-        {
-            /* Test passed as it returned error */
-            retVal = UDMA_SOK;
+            /* Allocate free flows - one more than available - this should fail */
+            retVal = Udma_flowAlloc(drvHandle, flowHandle, flowCnt);
+            if(UDMA_SOK == retVal)
+            {
+                GT_0trace(taskObj->traceMask, GT_ERR,
+                    " Flow alloc passed when it should have failed!!\n");
+                retVal = UDMA_EFAIL;
+                break;
+            }
+            else
+            {
+                /* Test passed as it returned error */
+                retVal = UDMA_SOK;
+            }
         }
     }
 
