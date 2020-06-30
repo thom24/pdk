@@ -247,14 +247,7 @@ retr_2:	TM_DISABLE
 	TM_ENABLE
 	.endm
 
-; Code starts {{{1
- .retain     ; Required forbuilding	.out with assembly file
- .retainrefs ; Required forbuilding	.out with assembly file
- .sect    ".text:Start"
- .global  Start
-
-Start:
-	TM_DISABLE
+pru_bg_init .macro
 	ldi32	r0, 0x80000000	;TODO: driver has to enable PA_STAT
 	ldi32	r1, 0x3c000
 	sbbo	&r0, r1, 8, 4
@@ -309,9 +302,20 @@ RX:
 	ldi	GRegs.snf.b.wr_cur, MINPS
 	ldi	GRegs.snf.b.rd_cur, MINPS
 	ldi	r30, 1522  ;todo - make a parameter
-	ldi32	r10, FW_CONFIG
+    .endm
+
+; Code starts {{{1
+ .retain     ; Required forbuilding	.out with assembly file
+ .retainrefs ; Required forbuilding	.out with assembly file
+ .sect    ".text:Start"
+ .global  Start
+
+Start:
+	TM_DISABLE
+    pru_bg_init
 
 ; set pru ready status
+	ldi32	r10, FW_CONFIG
 	ldi32	r0, PRU_READY
 	sbbo	&r0, r10, CFG_STATUS, 4
 ; wait rtu ready
