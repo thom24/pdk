@@ -225,13 +225,9 @@ TX_S_W_PEOF	.set	4
 TX_S_LOOP	.set	7
 
 ; TX flags
-;f_tx_spare0	.set	0
-f_tx_stash 	.set	1 ;if set then there is a preempted packet present in stash
-f_tx_hold 	.set	2 ;set if hold active
-f_tx_efq  	.set	3 ;express frame is queued! (from portq)
-f_tx_efqd 	.set	4 ;express frame is queued!  (from DC queue)
 f_next_dma	.set	5 ;dma to check next (non PSA=ping/pong case)
-
+f_cnt_zero_wait .set    6 ; set if we wait 1.7 msec to set cnt_zero
+f_cnt_zero  .set    7 ; try to mirror internal cnt_zero signal
 
 ;==========================================================================
 Struct_PktCtx	.struct
