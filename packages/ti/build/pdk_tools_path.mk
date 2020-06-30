@@ -24,10 +24,6 @@ endif
   CGT_ARP32_VERSION=1.0.8
   CG_XML_VERSION=2.61.00
 
-ifeq ($(BOARD),$(filter $(BOARD), am65xx_evm am65xx_idk j721e_evm j7200_evm am64x_evm am64x_svb))
-  GCC_ARCH64_BIN_PREFIX_STR=aarch64-none-elf
-endif
-
 ifeq ($(BOARD),$(filter $(BOARD), tpr12_evm tpr12_qt))
   BIOS_VERSION=6_82_00_16
   XDC_VERSION=3_61_00_16_core
@@ -38,9 +34,6 @@ endif
 ifeq ($(BOARD),$(filter $(BOARD), am64x_evm am64x_svb))
   BIOS_VERSION=6_82_02_20_eng
   XDC_VERSION=3_61_00_16_core
-  GCC_ARCH64_VERSION=7.2.1-2017.11
-  GCC_ARCH64_BIN_PREFIX_STR=aarch64-elf
-  CGT_ARM_VERSION=18.12.5.LTS
 endif
 
   EDMA_VERSION=2_12_05_30E
@@ -91,23 +84,14 @@ GCC_VERSION_ARM_A15=$(GCC_CROSS_TOOL_PREFIX)$(GCC_CROSS_TOOL_TAG)
   export TOOLCHAIN_PATH_Arm9       ?= $(TOOLS_INSTALL_PATH)/ti-cgt-arm_$(CGT_ARM_VERSION)
   export TOOLCHAIN_PATH_A15        ?= $(TOOLS_INSTALL_PATH)/gcc-$(GCC_VERSION_ARM_A15)
 
-ifeq ($(BOARD),$(filter $(BOARD), am64x_evm))
-  ifeq ($(OS),Windows_NT)
-    #Paths for windows machine
-    export TOOLCHAIN_PATH_GCC_ARCH64 ?= $(TOOLS_INSTALL_PATH)/gcc-linaro-$(GCC_ARCH64_VERSION)-mingw-w64-i686_aarch64-elf
-  else
-    #Paths for linux machine
-    export TOOLCHAIN_PATH_GCC_ARCH64 ?= $(TOOLS_INSTALL_PATH)/gcc-linaro-$(GCC_ARCH64_VERSION)-x86_64_aarch64-elf
-  endif
+ifeq ($(OS),Windows_NT)
+  #Paths for windows machine
+  export TOOLCHAIN_PATH_GCC_ARCH64 ?= $(TOOLS_INSTALL_PATH)/gcc-arm-$(GCC_ARCH64_VERSION)-mingw-w64-i686-aarch64-none-elf
 else
-  ifeq ($(OS),Windows_NT)
-    #Paths for windows machine
-    export TOOLCHAIN_PATH_GCC_ARCH64 ?= $(TOOLS_INSTALL_PATH)/gcc-arm-$(GCC_ARCH64_VERSION)-mingw-w64-i686-aarch64-none-elf
-  else
-    #Paths for linux machine
-    export TOOLCHAIN_PATH_GCC_ARCH64 ?= $(TOOLS_INSTALL_PATH)/gcc-arm-$(GCC_ARCH64_VERSION)-x86_64-aarch64-none-elf
-  endif
+  #Paths for linux machine
+  export TOOLCHAIN_PATH_GCC_ARCH64 ?= $(TOOLS_INSTALL_PATH)/gcc-arm-$(GCC_ARCH64_VERSION)-x86_64-aarch64-none-elf
 endif
+
   export GCC_ARCH64_BIN_PREFIX     ?= $(GCC_ARCH64_BIN_PREFIX_STR)
 
   export TOOLCHAIN_PATH_QNX_A72    ?= $(QNX_HOST)/usr/bin
