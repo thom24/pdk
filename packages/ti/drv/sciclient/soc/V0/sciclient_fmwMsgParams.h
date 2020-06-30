@@ -59,7 +59,7 @@ extern "C" {
 #define TISCI_PARAM_UNDEF                                        (0xFFFFFFFFU)
 
 /**
- *  \anchor Sciclient_FirmwareABI_V0
+ *  \anchor Sciclient_FirmwareABI
  *  \name Sciclient Firmware ABI revisions
  *  @{
  *  ABI revisions for compatibility check.
@@ -75,7 +75,7 @@ extern "C" {
 /* @} */
 
 /**
- *  \anchor Sciclient_ContextIds_V0
+ *  \anchor Sciclient_ContextIds
  *  \name Sciclient Context Ids
  *  @{
  *  Context IDs for Sciclient_ConfigPrms_t .
@@ -119,7 +119,7 @@ extern "C" {
 /* @} */
 
 /**
- *  \anchor Sciclient_ProcessorIds_V0
+ *  \anchor Sciclient_ProcessorIds
  *  \name Sciclient Processor Ids
  *  @{
  *  Processor IDs for the Processor Boot Configuration APIs.
@@ -156,7 +156,7 @@ extern "C" {
 
 /** ------------ Power Management Messages Parameters -----------------------*/
 /**
- *  \anchor Sciclient_PmDeviceIds_V0
+ *  \anchor Sciclient_PmDeviceIds
  *  \name Power Management Device IDs
  *  @{
  *  Power Management Module Device IDs
@@ -166,7 +166,7 @@ extern "C" {
 /* @} */
 
 /**
- *  \anchor Sciclient_PmModuleClockIds_V0
+ *  \anchor Sciclient_PmModuleClockIds
  *  \name Power Management Clock IDs Module Wise
  *  @{
  *  Power Management Module Clock IDs for individual modules.
@@ -181,7 +181,7 @@ extern "C" {
 #define TISCI_ISC_CC_ID                (160U)
 
 /**
- *  \anchor Sciclient_IrqSrcIdxStart_V0
+ *  \anchor Sciclient_IrqSrcIdxStart
  *  \name IRQ source index start
  *  @{
  *  Start offset of IRQ source index.

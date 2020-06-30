@@ -30,10 +30,10 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- *  \file V0/sciclient_defaultBoardcfg.c
+ *  \file V3/sciclient_defaultBoardcfg_pm.c
  *
  *  \brief File containing the boardcfg default data structure to
- *      send TISCI_MSG_BOARD_CONFIG message.
+ *      send TISCI_MSG_BOARD_CONFIG_PM message.
  *
  */
 /* ========================================================================== */
