@@ -88,11 +88,7 @@ int32_t Mailbox_init(Mailbox_initParams *initParam)
 
     if ((initParam == NULL) ||
         (initParam->osalPrms.disableAllIntr == NULL) ||
-        (initParam->osalPrms.restoreAllIntr == NULL) ||
-        (initParam->osalPrms.createMutex == NULL) ||
-        (initParam->osalPrms.lockMutex == NULL) ||
-        (initParam->osalPrms.unlockMutex == NULL) ||
-        (initParam->osalPrms.deleteMutex == NULL))
+        (initParam->osalPrms.restoreAllIntr == NULL))
     {
         retVal = MAILBOX_EINVAL;
     }
@@ -134,6 +130,30 @@ int32_t Mailbox_init(Mailbox_initParams *initParam)
     return retVal;
 }
 
+int32_t Mailbox_deinit(void)
+{
+    int32_t retVal = MAILBOX_SOK;
+    int32_t key;
+
+    if ((gMailboxMCB.initParam.osalPrms.disableAllIntr == NULL) ||
+        (gMailboxMCB.initParam.osalPrms.restoreAllIntr == NULL))
+    {
+        retVal = MAILBOX_EINVAL;
+    }
+
+    if (retVal == MAILBOX_SOK)
+    {
+        key = gMailboxMCB.initParam.osalPrms.disableAllIntr();
+        if (gMailboxMCB.initFlag == 1)
+        {
+            gMailboxMCB.initFlag = 0;
+        }
+        gMailboxMCB.initParam.osalPrms.restoreAllIntr(key);
+    }
+
+    return retVal;
+}
+
 /*
  *  ======== Mailbox_open ========
  */
@@ -151,15 +171,7 @@ extern Mbox_Handle Mailbox_open(Mailbox_openParams *openParam,  int32_t* errCode
     *errCode = 0;
 
     if ((gMailboxMCB.initParam.osalPrms.disableAllIntr == NULL) ||
-        (gMailboxMCB.initParam.osalPrms.restoreAllIntr == NULL) ||
-        (gMailboxMCB.initParam.osalPrms.createMutex == NULL) ||
-        (gMailboxMCB.initParam.osalPrms.deleteMutex == NULL) ||
-        (gMailboxMCB.initParam.osalPrms.lockMutex == NULL) ||
-        (gMailboxMCB.initParam.osalPrms.unlockMutex == NULL) ||
-        (gMailboxMCB.initParam.osalPrms.registerIntr == NULL) ||
-        (gMailboxMCB.initParam.osalPrms.unRegisterIntr == NULL) ||
-        (gMailboxMCB.initParam.osalPrms.enableIntr == NULL) ||
-        (gMailboxMCB.initParam.osalPrms.disableIntr == NULL))
+        (gMailboxMCB.initParam.osalPrms.restoreAllIntr == NULL))
     {
         *errCode = MAILBOX_EINVAL;
         invalidOsal = TRUE;
@@ -303,6 +315,19 @@ extern Mbox_Handle Mailbox_open(Mailbox_openParams *openParam,  int32_t* errCode
         goto exit;
     }
 
+    if (openParam->cfg.writeMode == MAILBOX_MODE_BLOCKING ||
+        openParam->cfg.readMode == MAILBOX_MODE_BLOCKING)
+    {
+        if ((gMailboxMCB.initParam.osalPrms.createMutex == NULL) ||
+            (gMailboxMCB.initParam.osalPrms.deleteMutex == NULL) ||
+            (gMailboxMCB.initParam.osalPrms.lockMutex == NULL) ||
+            (gMailboxMCB.initParam.osalPrms.unlockMutex == NULL))
+        {
+            *errCode = MAILBOX_EINVALCFG;
+            goto exit;
+        }
+    }
+
     mailboxHwCfg = Mailbox_getHwCfg (openParam->remoteEndpoint);
     if (mailboxHwCfg == NULL)
     {
@@ -340,7 +365,11 @@ extern Mbox_Handle Mailbox_open(Mailbox_openParams *openParam,  int32_t* errCode
     /* Setup the return handle: */
     retHandle = (Mbox_Handle)mailboxDriver;
 
-    Mailbox_registerInterrupts(retHandle);
+    *errCode = Mailbox_registerInterrupts(retHandle);
+    if (*errCode != MAILBOX_SOK)
+    {
+        goto exit;
+    }
 
     /* Is the write mode blocking? */
     if(mailboxDriver->cfg.writeMode == MAILBOX_MODE_BLOCKING)

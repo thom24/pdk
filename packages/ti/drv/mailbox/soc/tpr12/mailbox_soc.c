@@ -418,7 +418,15 @@ int32_t Mailbox_registerInterrupts(Mbox_Handle handle)
 
     driver = (Mailbox_Driver *)handle;
 
-    if (gMailboxMCB.totalInstCnt == 0U)
+    if ((gMailboxMCB.initParam.osalPrms.enableIntr == NULL) ||
+        (gMailboxMCB.initParam.osalPrms.disableIntr == NULL) ||
+        (gMailboxMCB.initParam.osalPrms.registerIntr == NULL) ||
+        (gMailboxMCB.initParam.osalPrms.unRegisterIntr == NULL))
+    {
+        retVal = MAILBOX_EINVAL;
+    }
+
+    if ((retVal == MAILBOX_SOK) && (gMailboxMCB.totalInstCnt == 0U))
     {
         /* Initialize the mailbox */
         Mailbox_initHw(handle);

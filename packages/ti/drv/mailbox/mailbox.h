@@ -620,6 +620,15 @@ static inline int32_t Mailbox_openParams_init (Mailbox_openParams *openParam);
 extern int32_t Mailbox_init(Mailbox_initParams *initParam);
 
 /*!
+ *  \brief  Function to deinitialize the Mailbox module.\n
+ *
+ *  @pre    Mailbox_init() has been called
+ *
+ *  \ingroup MAILBOX_DRIVER_EXTERNAL_FUNCTION
+ */
+extern int32_t Mailbox_deinit(void);
+
+/*!
  *  \brief  Function to initialize an instance of the mailbox driver.
  *
  *  @pre    Mailbox_init() has been called

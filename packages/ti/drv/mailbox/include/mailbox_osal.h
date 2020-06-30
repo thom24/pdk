@@ -134,6 +134,7 @@ typedef void (*Mbox_OsalIsrFxn)(uintptr_t arg);
  *  \param coreIntrNum  [IN] Core interrupt number to register
  *  \param intrPriority [IN] Priority
  *  \param arg          [IN] Arg that will be passed back in the ISR
+ *  \param name         [IN] Name for the ISR
  *
  *  \return Created HWI handle
  */

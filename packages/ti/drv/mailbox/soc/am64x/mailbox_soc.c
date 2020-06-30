@@ -328,7 +328,8 @@ int32_t Mailbox_validateDataTransferMode(Mailbox_DataTransferMode dataTransferMo
 int32_t Mailbox_validateReadWriteMode(Mailbox_Mode readMode, Mailbox_Mode writeMode)
 {
     int32_t retVal = MAILBOX_SOK;
-    if (writeMode == MAILBOX_MODE_CALLBACK)
+    if ((writeMode == MAILBOX_MODE_CALLBACK) || (writeMode == MAILBOX_MODE_BLOCKING) ||
+        (readMode == MAILBOX_MODE_BLOCKING))
     {
         retVal = MAILBOX_EINVAL;
     }
@@ -876,7 +877,6 @@ int32_t Mailbox_registerInterrupts(Mbox_Handle handle)
     Mailbox_MbConfig      cfg;
     Mailbox_Instance      localEndpoint;
     void                  *hwiHandle;
-    int32_t               key;
     uint32_t              i = 0;
     Mailbox_Instance remoteEndpoint;
 
@@ -892,88 +892,92 @@ int32_t Mailbox_registerInterrupts(Mbox_Handle handle)
 
     if ((driver->cfg.readMode != MAILBOX_MODE_POLLING) && (driver->cfg.readCallback != NULL))
     {
-        /*
-         * check if this cluster and user ID is already registered, and if so,
-         * skip interrupt registration and just store callback/arg data for this
-         * fifo to be handled in the callback
-         */
-        for (n = 0; n < g_mBoxCnt; n++)
+        if (gMailboxMCB.initParam.osalPrms.registerIntr == NULL)
         {
-            if ((driver->baseAddrRx == g_mBoxData[n].baseAddr) &&
-                (hwCfg->rx.user == g_mBoxData[n].userId))
-                    break;
+            retVal = MAILBOX_EINVAL;
         }
 
-        /* Get the MailBox Data */
-        mbox = &g_mBoxData[n];
-
-        if (n == g_mBoxCnt)
+        if (retVal == MAILBOX_SOK)
         {
-            /* Could not find one, this is new entry */
-            mbox->baseAddr = driver->baseAddrRx;
-            mbox->fifoCnt  = 0;
-            mbox->userId   = hwCfg->rx.user;
-
-            key = gMailboxMCB.initParam.osalPrms.disableAllIntr();
-
-            Mailbox_mailboxClear(driver->baseAddrRx, hwCfg->rx.fifo);
-
-            gMailboxMCB.initParam.osalPrms.restoreAllIntr(key);
-
-            /* clear new msg status */
-            MailboxClrNewMsgStatus(driver->baseAddrRx, hwCfg->rx.user, hwCfg->rx.fifo);
-
-            /* Get the interrupt configuration */
-            retVal = Mailbox_getMailboxIntrRouterCfg(localEndpoint, hwCfg->rx.cluster, hwCfg->rx.user, &cfg, g_mBoxCnt);
-            if (retVal == MAILBOX_SOK)
+            /*
+             * check if this cluster and user ID is already registered, and if so,
+             * skip interrupt registration and just store callback/arg data for this
+             * fifo to be handled in the callback
+             */
+            for (n = 0; n < g_mBoxCnt; n++)
             {
-                hwCfg->eventId = cfg.eventId;
+                if ((driver->baseAddrRx == g_mBoxData[n].baseAddr) &&
+                    (hwCfg->rx.user == g_mBoxData[n].userId))
+                        break;
+            }
 
-                /* Register interrupts */
-                if ((hwCfg->exclusive == TRUE) && ((driver->cfg.readMode == MAILBOX_MODE_FAST)))
+            /* Get the MailBox Data */
+            mbox = &g_mBoxData[n];
+
+            if (n == g_mBoxCnt)
+            {
+                /* Could not find one, this is new entry */
+                mbox->baseAddr = driver->baseAddrRx;
+                mbox->fifoCnt  = 0;
+                mbox->userId   = hwCfg->rx.user;
+
+                Mailbox_mailboxClear(driver->baseAddrRx, hwCfg->rx.fifo);
+
+                /* clear new msg status */
+                MailboxClrNewMsgStatus(driver->baseAddrRx, hwCfg->rx.user, hwCfg->rx.fifo);
+
+                /* Get the interrupt configuration */
+                retVal = Mailbox_getMailboxIntrRouterCfg(localEndpoint, hwCfg->rx.cluster, hwCfg->rx.user, &cfg, g_mBoxCnt);
+                if (retVal == MAILBOX_SOK)
                 {
-#if defined(BUILD_MCU) && defined(VIM_DIRECT_REGISTRATION)
-                    g_VimCallback[remoteEndpoint] = driver->cfg.readCallback;
-                    g_VimCallbackArg[remoteEndpoint] = driver;
+                    hwCfg->eventId = cfg.eventId;
 
-                    CSL_vimCfgIntr((CSL_vimRegs *)(uintptr_t)TEST_VIM_BASE_ADDR, cfg.eventId,
-                                   0xFU,
-                                   (CSL_VimIntrMap)0u,
-                                   CSL_VIM_INTR_TYPE_LEVEL,
-                                   (uint32_t)mailboxIsrArray[remoteEndpoint] );
-                    CSL_vimSetIntrEnable((CSL_vimRegs *)(uintptr_t)TEST_VIM_BASE_ADDR,
-                                         cfg.eventId, true );   /* Enable interrupt in vim */
-                    Intc_SystemEnable();
-#else
-                    g_FastCallback[remoteEndpoint] = driver->cfg.readCallback;
-                    g_FastCallbackArg[remoteEndpoint] = driver;
-                    hwiHandle = gMailboxMCB.initParam.osalPrms.registerIntr(Mailbox_InternalCallbackFast,
-                                                                            cfg.eventId,
-                                                                            cfg.priority,
-                                                                            (void *)remoteEndpoint,
-                                                                            (char *)"MAILBOX_NEW_MSG");
-                    gMailboxMCB.hwiHandles.mailboxFull = hwiHandle;
-                    if(hwiHandle == NULL)
+                    /* Register interrupts */
+                    if ((hwCfg->exclusive == TRUE) && ((driver->cfg.readMode == MAILBOX_MODE_FAST)))
                     {
-                        //SystemP_printf("Mailbox_plugInterrupt : Failed to register ISR...\n");
-                    }
+#if defined(BUILD_MCU) && defined(VIM_DIRECT_REGISTRATION)
+                        g_VimCallback[remoteEndpoint] = driver->cfg.readCallback;
+                        g_VimCallbackArg[remoteEndpoint] = driver;
+
+                        CSL_vimCfgIntr((CSL_vimRegs *)(uintptr_t)TEST_VIM_BASE_ADDR, cfg.eventId,
+                                       0xFU,
+                                       (CSL_VimIntrMap)0u,
+                                       CSL_VIM_INTR_TYPE_LEVEL,
+                                       (uint32_t)mailboxIsrArray[remoteEndpoint] );
+                        CSL_vimSetIntrEnable((CSL_vimRegs *)(uintptr_t)TEST_VIM_BASE_ADDR,
+                                             cfg.eventId, true );   /* Enable interrupt in vim */
+                        Intc_SystemEnable();
+#else
+                        g_FastCallback[remoteEndpoint] = driver->cfg.readCallback;
+                        g_FastCallbackArg[remoteEndpoint] = driver;
+                        hwiHandle = gMailboxMCB.initParam.osalPrms.registerIntr(Mailbox_InternalCallbackFast,
+                                                                                cfg.eventId,
+                                                                                cfg.priority,
+                                                                                (void *)remoteEndpoint,
+                                                                                (char *)"MAILBOX_NEW_MSG");
+                        gMailboxMCB.hwiHandles.mailboxFull = hwiHandle;
+                        if(hwiHandle == NULL)
+                        {
+                            //SystemP_printf("Mailbox_plugInterrupt : Failed to register ISR...\n");
+                        }
 
 #endif
-                }
-                else
-                {
-                    hwiHandle = gMailboxMCB.initParam.osalPrms.registerIntr(Mailbox_InternalCallback,
-                                                                            cfg.eventId,
-                                                                            cfg.priority,
-                                                                            (void *)mbox,
-                                                                            (char *)"MAILBOX_NEW_MSG");
-                    gMailboxMCB.hwiHandles.mailboxFull = hwiHandle;
-                    if(hwiHandle == NULL)
-                    {
-                        //SystemP_printf("Mailbox_plugInterrupt : Failed to register ISR...\n");
                     }
+                    else
+                    {
+                        hwiHandle = gMailboxMCB.initParam.osalPrms.registerIntr(Mailbox_InternalCallback,
+                                                                                cfg.eventId,
+                                                                                cfg.priority,
+                                                                                (void *)mbox,
+                                                                                (char *)"MAILBOX_NEW_MSG");
+                        gMailboxMCB.hwiHandles.mailboxFull = hwiHandle;
+                        if(hwiHandle == NULL)
+                        {
+                            //SystemP_printf("Mailbox_plugInterrupt : Failed to register ISR...\n");
+                        }
+                    }
+                    g_mBoxCnt++;
                 }
-                g_mBoxCnt++;
             }
         }
 
@@ -988,8 +992,6 @@ int32_t Mailbox_registerInterrupts(Mbox_Handle handle)
                 }
             }
 
-            key = gMailboxMCB.initParam.osalPrms.disableAllIntr();
-
             /* Add the fifo data for the remoteProcId. */
             mbox->fifoTable[i].cfgNdx  = n;
             mbox->fifoTable[i].func    = driver->cfg.readCallback;
@@ -1002,8 +1004,6 @@ int32_t Mailbox_registerInterrupts(Mbox_Handle handle)
             {
                 mbox->fifoCnt++;
             }
-
-            gMailboxMCB.initParam.osalPrms.restoreAllIntr(key);
 
             /* enable the mailbox interrupt */
             MailboxEnableNewMsgInt(driver->baseAddrRx, hwCfg->rx.user, hwCfg->rx.fifo);
@@ -1020,7 +1020,6 @@ int32_t Mailbox_unregisterInterrupts(Mbox_Handle handle)
     Mailbox_HwCfg      *hwCfg = NULL;
     Mailbox_Data       *mbox = NULL;
     uint8_t            i = 0;
-    int32_t            key;
 
     driver = (Mailbox_Driver *)handle;
     hwCfg = (Mailbox_HwCfg *)driver->hwCfg;
@@ -1031,8 +1030,6 @@ int32_t Mailbox_unregisterInterrupts(Mbox_Handle handle)
 
         /* Disable the mailbox interrupt */
         MailboxDisableNewMsgInt(driver->baseAddrRx, hwCfg->rx.user, hwCfg->rx.fifo);
-
-        key = gMailboxMCB.initParam.osalPrms.disableAllIntr();
 
         /* Remove the callback info from the fifo table */
         gInstToMBoxDataMap[driver->remoteEndpoint] = (uintptr_t)NULL;
@@ -1049,8 +1046,6 @@ int32_t Mailbox_unregisterInterrupts(Mbox_Handle handle)
                 mbox->fifoTable[i].handle  = NULL;
             }
         }
-
-        gMailboxMCB.initParam.osalPrms.restoreAllIntr(key);
     }
 
     return retVal;
