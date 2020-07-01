@@ -28,7 +28,7 @@ ifeq ($(BOARD),$(filter $(BOARD), tpr12_evm tpr12_qt))
   BIOS_VERSION=6_82_00_16
   XDC_VERSION=3_61_00_16_core
   CGT_VERSION=8.3.3
-  CGT_ARM_VERSION=18.12.5.LTS
+  CGT_ARM_VERSION=18.12.6.LTS
 endif
 
 ifeq ($(BOARD),$(filter $(BOARD), am64x_evm am64x_svb))
