@@ -360,6 +360,15 @@ Board_STATUS Board_mcuEthConfig(void)
     return BOARD_SOK;
 }
 
+#ifdef SOC_AM65XX
+void EthBoard_delay(uint32_t delay)
+{
+    volatile uint32_t delay1 = delay * 2;
+
+    while(delay1--) ;
+}
+#endif
+
 /**
  * \brief  Board specific configurations for ICSS EMAC Ethernet PHYs
  *
@@ -377,12 +386,39 @@ Board_STATUS Board_icssEthConfig(void)
 
     Board_unlockMMR();
 
+#ifdef SOC_AM65XX
+    /* Reset the ICSSG PHYs */
+    /* ICSSG0 PHY reset pin GPIO1_58 */
+    /* ICSSG1 PHY reset pin GPIO1_38 */
+    /* Configure the GPIO output mode for GPIO1_38 and GPIO1_58 */
+    HWREG(0x00601040) = (1 << 26) | (1 << 6); /*set GPIO to HIGH first before enabling as PHY reset is active low*/
+    HWREG(0x00601038) = ~((1 << 26) | (1 << 6));
+    
+    /*Toggle the reset pin to reset the PHYs */
+    HWREG(0x00601044) = (1 << 26) | (1 << 6); /*clear the GPIO output */
+    /*wait for 10000 cycles */
+    EthBoard_delay(10000);
+    HWREG(0x00601040) = (1 << 26) | (1 << 6); /*set the GPIO output */
+#endif    
+    
     for(index = 0; index < BOARD_ICSS_EMAC_PORT_MAX; index++)
     {
         baseAddr = gPruicssMdioInfo[index].mdioBaseAddrs;
         phyAddr  = gPruicssMdioInfo[index].phyAddrs;
      
         Board_mdioInit(baseAddr);
+        /*
+        PHY team suggested workaround for RX_ERRs seen with short cables
+        Offset  Value   Description
+        0x001F  0x8000  Hard Reset   
+        0x0053  0x2054  Threshold for consecutive amount of Idle symbols for Viterbi Idle detector to assert Idle Mode set to 5                        
+        0x012C  0x0E81  FFE Fix    
+        0x001F  0x4000  Soft Reset   
+        */
+        Board_ethPhyExtendedRegWrite(baseAddr, phyAddr, 0x001F, 0x8000);
+        Board_ethPhyExtendedRegWrite(baseAddr, phyAddr, 0x0053, 0x2054);
+        Board_ethPhyExtendedRegWrite(baseAddr, phyAddr, 0x012C, 0x0E81);
+        Board_ethPhyExtendedRegWrite(baseAddr, phyAddr, 0x001F, 0x4000);
 
         /* Enable PHY speed LED functionality */
         Board_ethPhyExtendedRegRead(baseAddr, phyAddr,
@@ -429,6 +465,9 @@ Board_STATUS Board_icssEthConfig(void)
         /* Disable Tx delay and enable Rx delay */
         regData &= ~(BOARD_ETHPHY_RGMIICTL_CLKDELAY_MASK);
         regData |= BOARD_ETHPHY_RGMIICTL_RXDELAY_EN;
+        /* Set TX and RX FIFO half full threshold to 3
+           This workaround is required for AM65x IDKs (<= Rev E4) without PLL noise fix */
+        regData |= (0xf << 3);
         Board_ethPhyExtendedRegWrite(baseAddr, phyAddr,
                                      BOARD_ETHPHY_RGMIICTL_REG_ADDR, regData);
 
@@ -436,9 +475,6 @@ Board_STATUS Board_icssEthConfig(void)
         Board_ethPhyExtendedRegWrite(baseAddr, phyAddr,
                                      BOARD_ETHPHY_RGMIIDCTL_REG_ADDR, 0x07);
 
-        Board_ethPhyExtendedRegRead(baseAddr, phyAddr, 0x32, &regData);
-        regData |= 0x18; //Set Bits 4:3 to 3
-        Board_ethPhyExtendedRegWrite(baseAddr, phyAddr, 0x32, regData);
     }
 
 

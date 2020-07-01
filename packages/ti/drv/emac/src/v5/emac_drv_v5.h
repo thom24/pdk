@@ -54,8 +54,8 @@ extern "C" {
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
 
-#define EMAC_MAX_NUM_TX_BUFF_POOL_SIZE ((uint32_t)16U)
-#define EMAC_MAC_PORTS_PER_ICSS     ((uint32_t)2U)
+#define EMAC_MAX_NUM_TX_BUFF_POOL_SIZE  ((uint32_t)16U)
+#define EMAC_MAC_PORTS_PER_ICSS         ((uint32_t)2U)
 #if defined (SOC_AM65XX)
 #define EMAC_MAX_ICSS                   ((uint32_t)3U)
 #else

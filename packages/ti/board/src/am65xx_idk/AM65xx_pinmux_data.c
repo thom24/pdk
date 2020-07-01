@@ -191,7 +191,7 @@ static pinmuxPerCfg_t gGpio1PinCfg[] =
     /* GPIO1 -> GPIO1_38 -> V26 */
     {
         PIN_PRG0_PRU0_GPO9, PIN_MODE(7) | \
-        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+        ((PIN_PULL_DIRECTION) & (~PIN_PULL_DISABLE & ~PIN_INPUT_ENABLE))
     },
     /* GPIO1 -> GPIO1_39 -> U25 */
     {
@@ -221,7 +221,7 @@ static pinmuxPerCfg_t gGpio1PinCfg[] =
     /* GPIO1 -> GPIO1_58 -> Y28 */
     {
         PIN_PRG0_PRU1_GPO9, PIN_MODE(7) | \
-        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+        ((PIN_PULL_DIRECTION) & (~PIN_PULL_DISABLE & ~PIN_INPUT_ENABLE))
     },
     /* GPIO1 -> GPIO1_59 -> AA28 */
     {

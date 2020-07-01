@@ -109,16 +109,36 @@ static uint8_t  gAppTestSequenceNumber  = 1;
 
 #ifdef EMAC_TEST_APP_WITHOUT_DDR
 /* DDR less test, can only test with 2 ports due to msmc memory constraints */
-uint8_t icss_tx_port_queue[EMAC_MAC_PORTS_PER_ICSS][EMAC_ICSSG_DUAL_MAC_FW_BUFER_POOL_SIZE_PG2] __attribute__ ((aligned (UDMA_CACHELINE_ALIGNMENT))) __attribute__ ((section (".bss:emac_msmc_mem")));
+uint8_t icss_tx_port_queue[EMAC_MAC_PORTS_PER_ICSS][EMAC_ICSSG_DUAL_MAC_FW_BUFER_POOL_SIZE_PG2] __attribute__ ((aligned (UDMA_CACHELINE_ALIGNMENT)))
+#ifdef SOC_AM65XX
+__attribute__ ((section (".bss:emac_msmc_mem")));
+#else
+__attribute__ ((section (".bss:emac_ocmc_mem")));
+#endif
 #else
 #ifdef EMAC_BENCHMARK
-uint8_t icss_tx_port_queue[1][EMAC_ICSSG_DUAL_MAC_FW_BUFER_POOL_SIZE_PG2] __attribute__ ((aligned (UDMA_CACHELINE_ALIGNMENT))) __attribute__ ((section (".bss:emac_msmc_mem")));
+uint8_t icss_tx_port_queue[1][EMAC_ICSSG_DUAL_MAC_FW_BUFER_POOL_SIZE_PG2] __attribute__ ((aligned (UDMA_CACHELINE_ALIGNMENT)))
+#ifdef SOC_AM65XX
+__attribute__ ((section (".bss:emac_msmc_mem")));
+#else
+__attribute__ ((section (".bss:emac_ocmc_mem")));
+#endif
 #else /* test all port for DUAL MAC */
-uint8_t icss_tx_port_queue[EMAC_MAX_ICSS *EMAC_MAC_PORTS_PER_ICSS][EMAC_ICSSG_DUAL_MAC_FW_BUFER_POOL_SIZE_PG2] __attribute__ ((aligned (UDMA_CACHELINE_ALIGNMENT))) __attribute__ ((section (".bss:emac_msmc_mem")));
+uint8_t icss_tx_port_queue[EMAC_MAX_ICSS *EMAC_MAC_PORTS_PER_ICSS][EMAC_ICSSG_DUAL_MAC_FW_BUFER_POOL_SIZE_PG2] __attribute__ ((aligned (UDMA_CACHELINE_ALIGNMENT)))
+#ifdef SOC_AM65XX
+__attribute__ ((section (".bss:emac_msmc_mem")));
+#else
+__attribute__ ((section (".bss:emac_ocmc_mem")));
+#endif
 #endif
 #endif
 
+#if defined (SOC_AM65XX)
 PRUICSS_Handle prussHandle[EMAC_MAX_ICSS] = {NULL, NULL, NULL};
+#else
+PRUICSS_Handle prussHandle[EMAC_MAX_ICSS] = {NULL, NULL};
+#endif
+
 #endif
 
 /* PG1.0 macro check */

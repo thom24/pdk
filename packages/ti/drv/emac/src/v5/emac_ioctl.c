@@ -293,7 +293,6 @@ void emac_classifier_disable(uint32_t portNum)
         /*set rate & phase masks */
           temp |= (0x50U);
         CSL_REG32_WR(addr+EMAC_CLASS_GATE_OFF+classi*4, temp);
-
     }
     UTILS_trace(UTIL_TRACE_LEVEL_INFO, emac_mcb.drv_trace_cb, "port: %d: EXIT",portNum);
 }
@@ -358,7 +357,7 @@ EMAC_DRV_ERR_E emac_ioctl_vlan_ctrl_get_entry(uint32_t portNum, void* ctrl)
     }
     else
     {
-        readEntry = CSL_REG16_RD((emac_mcb.port_cb[portNum].icssSharedRamBaseAddr+ EMAC_ICSSG_SWITCH_DEFAULT_VLAN_TABLE_OFFSET) +pVlanTblEntry->vlanId*2);
+        readEntry = CSL_REG16_RD((emac_mcb.port_cb[portNum].icssSharedRamBaseAddr+ EMAC_ICSSG_SWITCH_DEFAULT_VLAN_TABLE_OFFSET) + pVlanTblEntry->vlanId*2);
         pVlanTblEntry->vlanFidPrams.hostMember  = readEntry& 0x1;
         pVlanTblEntry->vlanFidPrams.p1Member    = (readEntry & 0x2) >> 0x1;
         pVlanTblEntry->vlanFidPrams.p2Member    = (readEntry & 0x4) >> 0x2;
@@ -510,8 +509,16 @@ EMAC_DRV_ERR_E emac_ioctl_vlan_ctrl_set_default_vlan_id(uint32_t portNum, void* 
         CSL_REG32_WR (regAddr, regVal);
 
         /* Update Deafult Queue number for untagged packet*/
-        tempByte1 = CSL_REG8_RD(emac_mcb.port_cb[portNum].icssDram0BaseAddr + PORT_Q_PRIORITY_MAPPING_OFFSET + vlanDefaultEntry->pcp);
-        regAddr = emac_mcb.port_cb[portNum].icssDram0BaseAddr + QUEUE_NUM_UNTAGGED;
+        if ((portNum % 1) == 0)
+        {
+            tempByte1 = CSL_REG8_RD(emac_mcb.port_cb[portNum].icssDram0BaseAddr + PORT_Q_PRIORITY_MAPPING_OFFSET + vlanDefaultEntry->pcp);
+            regAddr = emac_mcb.port_cb[portNum].icssDram0BaseAddr + QUEUE_NUM_UNTAGGED;
+        }
+        else
+        {
+            tempByte1 = CSL_REG8_RD(emac_mcb.port_cb[portNum].icssDram1BaseAddr + PORT_Q_PRIORITY_MAPPING_OFFSET + vlanDefaultEntry->pcp);
+            regAddr = emac_mcb.port_cb[portNum].icssDram1BaseAddr + QUEUE_NUM_UNTAGGED;
+        }
         CSL_REG8_WR (regAddr, tempByte1);
     }
     UTILS_trace(UTIL_TRACE_LEVEL_INFO, emac_mcb.drv_trace_cb, "port: %d: EXIT with status: %d",portNum, retVal);
@@ -666,7 +673,14 @@ EMAC_DRV_ERR_E emac_ioctl_port_prio_mapping_ctrl(uint32_t portNum, void*  ctrl)
     tempVal = tempVal >> 5; /*Shif to get the value in correct format*/
     untaggedQueueNum = pPrioMap->portPrioMap[tempVal];
 
-    baseAddr = emac_mcb.port_cb[portNum].icssDram0BaseAddr + QUEUE_NUM_UNTAGGED;
+    if ((portNum % 1) == 0)
+    {
+        baseAddr = emac_mcb.port_cb[portNum].icssDram0BaseAddr + QUEUE_NUM_UNTAGGED;
+    }
+    else
+    {
+        baseAddr =  emac_mcb.port_cb[portNum].icssDram1BaseAddr + QUEUE_NUM_UNTAGGED;
+    }
     CSL_REG8_WR (baseAddr, untaggedQueueNum);
 
     UTILS_trace(UTIL_TRACE_LEVEL_INFO, emac_mcb.drv_trace_cb, "port: %d: EXIT with status: %d",portNum, EMAC_DRV_RESULT_OK);
@@ -862,23 +876,21 @@ EMAC_DRV_ERR_E emac_ioctl_accept_frame_check_ctrl(uint32_t portNum, void* p_para
     EMAC_IOCTL_PARAMS *pParams = (EMAC_IOCTL_PARAMS*) p_params;
     UTILS_trace(UTIL_TRACE_LEVEL_INFO, emac_mcb.drv_trace_cb, "port: %d: ENTER",portNum);
 
-    if (retVal == EMAC_DRV_RESULT_IOCTL_IN_PROGRESS)
+    switch (pParams->subCommand)
     {
-        switch (pParams->subCommand)
-        {
-            case EMAC_IOCTL_ACCEPTABLE_FRAME_CHECK_ONLY_VLAN_TAGGED:
-                retVal = emac_send_R30_cmd(EMAC_PORT_ACCEPT_TAGGED, portNum, pParams->seqNumber);
-                break;
-            case EMAC_IOCTL_ACCEPTABLE_FRAME_CHECK_ONLY_UN_TAGGED_PRIO_TAGGED:
-                retVal = emac_send_R30_cmd(EMAC_PORT_ACCEPT_UNTAGGED_N_PRIO, portNum, pParams->seqNumber);
-                break;
-            case EMAC_IOCTL_ACCEPTABLE_FRAME_CHECK_ALL_FRAMES:
-                retVal = emac_send_R30_cmd(EMAC_PORT_ACCEPT_ALL, portNum, pParams->seqNumber);
-                break;
-            default:
-                break;
-        }
+        case EMAC_IOCTL_ACCEPTABLE_FRAME_CHECK_ONLY_VLAN_TAGGED:
+            retVal = emac_send_R30_cmd(EMAC_PORT_ACCEPT_TAGGED, portNum, pParams->seqNumber);
+            break;
+        case EMAC_IOCTL_ACCEPTABLE_FRAME_CHECK_ONLY_UN_TAGGED_PRIO_TAGGED:
+            retVal = emac_send_R30_cmd(EMAC_PORT_ACCEPT_UNTAGGED_N_PRIO, portNum, pParams->seqNumber);
+            break;
+        case EMAC_IOCTL_ACCEPTABLE_FRAME_CHECK_ALL_FRAMES:
+            retVal = emac_send_R30_cmd(EMAC_PORT_ACCEPT_ALL, portNum, pParams->seqNumber);
+            break;
+        default:
+            break;
     }
+
     UTILS_trace(UTIL_TRACE_LEVEL_INFO, emac_mcb.drv_trace_cb, "port: %d: EXIT with status: %d",portNum, retVal);
     return retVal;
 }
@@ -977,7 +989,6 @@ EMAC_DRV_ERR_E emac_ioctl_prio_regen_mapping_ctrl(uint32_t portNum, void*  ctrl)
     }
     return EMAC_DRV_RESULT_OK;
 }
-
 
 /*
  *  ======== emac_ioctl_uc_flooding_ctrl ========
@@ -1093,7 +1104,6 @@ EMAC_DRV_ERR_E emac_ioctl_configure_cut_through_or_prempt_select_ctrl(uint32_t p
     }
 
     UTILS_trace(UTIL_TRACE_LEVEL_INFO, emac_mcb.drv_trace_cb, "port: %d: ENTER",portNum);
-    
 
     expressPremptiveQueueAddr = emac_mcb.port_cb[portNum].icssDram0BaseAddr + 0x2000*portLoc + EXPRESS_PRE_EMPTIVE_Q_MAP;
     for (queue_num = 0U; queue_num < EMAC_IOCTL_PRIO_MAX; queue_num++)
@@ -1125,8 +1135,7 @@ EMAC_DRV_ERR_E emac_ioctl_frame_premption_ctrl(uint32_t portNum, void* p_params)
     }
 
     UTILS_trace(UTIL_TRACE_LEVEL_INFO, emac_mcb.drv_trace_cb, "port: %d: ENTER",portNum);
-    emac_update_cmd(portNum, EMAC_IOCTL_FRAME_PREEMPTION_CTRL, emac_mcb.ioctl_cb.pCmd1Icssg, pParams, NULL, EMAC_FW_MGMT_CMD_TYPE, 0, 0);
-    /* FIXME: are all the addresses being calculated properly, why do we have 0x2000 hard-coded */
+
     switch (pParams->subCommand)
     {
         case EMAC_IOCTL_PREEMPT_TX_ENABLE:

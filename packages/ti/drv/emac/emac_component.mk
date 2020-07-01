@@ -220,7 +220,7 @@ Emac_Icssg_TestApp_PATH = $(PDK_EMAC_COMP_PATH)/test/EmacLoopbackTest
 Emac_Icssg_TestApp_BOARD_DEPENDENCY = yes
 Emac_Icssg_TestApp_CORE_DEPENDENCY = no
 Emac_Icssg_TestApp_XDC_CONFIGURO = yes
-Emac_Icssg_TestApp_MAKEFILE = -f am65xx/icssg/makefile_dualmac
+Emac_Icssg_TestApp_MAKEFILE = -f $(SOC)/icssg/makefile_dualmac
 export Emac_Icssg_TestApp_MAKEFILE
 export Emac_Icssg_TestApp_board_dependency
 export Emac_Icssg_TestApp_core_dependency

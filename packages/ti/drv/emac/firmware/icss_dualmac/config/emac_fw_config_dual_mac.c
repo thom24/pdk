@@ -193,7 +193,7 @@ void emac_icssg_dual_mac_fw_config_fxn(uint32_t portNum, EMAC_ICSSG_FW_CFG_PG2 *
         HW_WR_REG32(icssgBaseAddr + CSL_ICSS_G_PR1_RTU0_PR1_RTU0_IRAM_REGS_BASE + CSL_ICSS_G_PR1_PDSP0_IRAM_CONSTANT_TABLE_PROG_PTR_0, 0x100U);
         HW_WR_REG32(icssgBaseAddr + CSL_ICSS_G_PR1_PDSP_TX0_IRAM_REGS_BASE + CSL_ICSS_G_PR1_PDSP0_IRAM_CONSTANT_TABLE_PROG_PTR_0, 0x100U);
 
-	for (hwQueueNum = 0; hwQueueNum < EMAC_ICSSG_MAX_HWQ; hwQueueNum++)
+        for (hwQueueNum = 0; hwQueueNum < EMAC_ICSSG_MAX_HWQ; hwQueueNum++)
         {
             hwqa_reset(icssgBaseAddr, hwQueueNum);
         }
@@ -245,7 +245,7 @@ void emac_icssg_dual_mac_fw_config_fxn(uint32_t portNum, EMAC_ICSSG_FW_CFG_PG2 *
         HW_WR_REG32(icssgBaseAddr + CSL_ICSS_G_PR1_RTU1_PR1_RTU1_IRAM_REGS_BASE + CSL_ICSS_G_PR1_PDSP1_IRAM_CONSTANT_TABLE_PROG_PTR_0, 0x100U);
         HW_WR_REG32(icssgBaseAddr + CSL_ICSS_G_PR1_PDSP_TX1_IRAM_REGS_BASE + CSL_ICSS_G_PR1_PDSP1_IRAM_CONSTANT_TABLE_PROG_PTR_0, 0x100U);
 
-	for (hwQueueNum = EMAC_ICSSG_MAX_HWQ; hwQueueNum < EMAC_ICSSG_MAX_HWQ*2; hwQueueNum++)
+        for (hwQueueNum = EMAC_ICSSG_MAX_HWQ; hwQueueNum < EMAC_ICSSG_MAX_HWQ*2; hwQueueNum++)
         {
             hwqa_reset(icssgBaseAddr, hwQueueNum);
         }
@@ -330,6 +330,7 @@ EMAC_PER_PORT_ICSSG_FW_CFG emacFwCfgMmap[EMAC_MAX_ICSS*2] = {
         (struct EMAC_FW_PORT_CFG*)&emac_dualmac_cfg_pg1,
         emac_icssg_dual_mac_fw_config_fxn,
     },
+#ifdef SOC_AM65XX
     {
         {0,0,0},
         (struct EMAC_FW_PORT_CFG*)&emac_dualmac_cfg_pg1,
@@ -340,6 +341,7 @@ EMAC_PER_PORT_ICSSG_FW_CFG emacFwCfgMmap[EMAC_MAX_ICSS*2] = {
         (struct EMAC_FW_PORT_CFG*)&emac_dualmac_cfg_pg1,
         emac_icssg_dual_mac_fw_config_fxn
     }
+#endif
 };
 
 /**

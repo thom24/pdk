@@ -1240,10 +1240,10 @@ void emac_poll_tx_ts_resp(uint32_t portNum, uint32_t ringNum)
                 {
                     emac_mcb.port_cb[portLoc].tx_ts_cb(portLoc, pMgmtPkt[2], tx_timestamp, 1);
                 }
-                emac_hwq_push(icssgInst, ((portLoc & 1) == 0) ? EMAC_ICSSG_TXTS_FREE_HWQA_PORT0 : EMAC_ICSSG_TXTS_FREE_HWQA_PORT1, pMgmtPkt);
+                emac_hwq_push(icssgInst, ((pMgmtPkt[0] & (1 << 23)) == 0)  ? EMAC_ICSSG_TXTS_FREE_HWQA_PORT0 : EMAC_ICSSG_TXTS_FREE_HWQA_PORT1, pMgmtPkt);
                 hwQLevel = emac_hwq_level(icssgInst, ((portLoc & 1) == 0) ? EMAC_ICSSG_TXTS_RX_HWQA_PORT0 : EMAC_ICSSG_TXTS_RX_HWQA_PORT1);
-            }
-        }
+           }
+       }
     }
 }
 
@@ -1859,9 +1859,6 @@ static void emac_config_icssg_dual_mac_fw_pg2(uint32_t portNum, EMAC_HwAttrs_V5 
  */
 void emac_config_icssg_fw(uint32_t portNum, EMAC_HwAttrs_V5 *hwAttrs)
 {
-    EMAC_PER_PORT_ICSSG_FW_CFG *pEmacFwCfg;
-    hwAttrs->portCfg[portNum].getFwCfg(portNum,&pEmacFwCfg);
-
     if (emac_mcb.port_cb[portNum].pgVersion == EMAC_AM65XX_PG1_0_VERSION)
     {
         emac_config_icssg_dual_mac_fw_pg1(portNum, hwAttrs);
@@ -1869,7 +1866,6 @@ void emac_config_icssg_fw(uint32_t portNum, EMAC_HwAttrs_V5 *hwAttrs)
     else
     {
         emac_config_icssg_dual_mac_fw_pg2(portNum, hwAttrs);
-
     }
 }
 

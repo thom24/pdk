@@ -127,6 +127,7 @@ static EMAC_DRV_ERR_E  emac_open_v5_icssg_switch_port(uint32_t portNum, EMAC_OPE
             emac_classifier_disable(portNum);
             emac_config_icssg_fw(portNum, pHwAttrs);
             emac_switch_vlan_init(portNum, pOpenConfig);
+            emac_switch_config_ft3_priority_tag(portNum);
             emac_mcb.port_cb[portNum].emacState =EMAC_PORT_STATE_OPEN;
         }
     }
@@ -273,7 +274,7 @@ static EMAC_DRV_ERR_E emac_send_v5_icssg_switch(uint32_t portNum, EMAC_PKT_DESC_
     }
     else
     {
-        emacTxChPortNum = emac_port_info[portNum].portNum1;;
+        emacTxChPortNum = emac_port_info[portNum].portNum1;
         /* if the PktChannel is greater than EMAC_TX_MAX_CHANNELS_PER_PORT, then use slice 1 udma resources */
         if (pDesc->PktChannel >= EMAC_TX_MAX_CHANNELS_PER_PORT)
         {
