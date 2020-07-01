@@ -54,13 +54,8 @@ EXTERNAL_INTERFACES =
 XDC_CFG_FILE_mpu1_0 =
 XDC_CFG_FILE_mcu1_0 =
 
-SRCDIR = ../src ../../common/$(SOC)
-INCDIR = ../../../../board ../src ../../../src/$(BOARD)/include ../../../src/$(BOARD) ../../common/$(SOC)
-
-ifeq ($(BOARD), $(filter $(BOARD), j721e_evm j7200_evm))
-SRCDIR += ./$(BOARD)
-INCDIR += ./$(BOARD)
-endif
+SRCDIR = ../src ../../common/$(SOC) ./$(BOARD)
+INCDIR = ../../../../board ../src ../../../src/$(BOARD)/include ../../../src/$(BOARD) ../../common/$(SOC) ./$(BOARD)
 
 # List all the external components/interfaces, whose interface header files
 # need to be included for this component
@@ -74,14 +69,10 @@ endif
 
 
 # Common source files and CFLAGS across all platforms and cores
-PACKAGE_SRCS_COMMON = ../src makefile
+PACKAGE_SRCS_COMMON = ../src $(BOARD) makefile
 PACKAGE_SRCS_COMMON += ../../common/$(SOC)
 PACKAGE_SRCS_COMMON += ../../board_diag_component.mk
 PACKAGE_SRCS_COMMON += ../../create_sd.bat ../../create_sd.sh
-
-ifeq ($(BOARD), $(filter $(BOARD), j721e_evm j7200_evm))
-PACKAGE_SRCS_COMMON += $(BOARD)
-endif
 
 SRCS_COMMON += boot_switch_test.c diag_common_cfg.c
 
