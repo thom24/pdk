@@ -6,7 +6,7 @@
  */
 
 /*
- * Copyright (C) 2016 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2016 - 2020 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -50,6 +50,8 @@ extern "C" {
 #include <ti/board/src/icev2AM335x/include/board_cfg.h>
 #elif defined (EVM_AM437X)
 #include <ti/board/src/evmAM437x/include/board_cfg.h>
+#elif defined (am64x_evm)
+#include <ti/board/src/am64x_evm/include/board_cfg.h>
 #else
 #endif
 
@@ -70,6 +72,12 @@ extern "C" {
 #define TEST_ADDR_OFFSET       (0x40000U)  /* Block 1 start address */
 /* Test read/write data length in bytes */
 #define TEST_DATA_LEN          (4096U)
+
+#elif defined (am64x_evm)
+/* Test read/write data length in bytes */
+#define TEST_DATA_LEN          (4096U)
+
+#define GPMC_MODULE_CLK_80MHZ  (80000000U)
 
 #else
 #endif

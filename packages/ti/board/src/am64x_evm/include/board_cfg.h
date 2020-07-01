@@ -277,6 +277,9 @@ extern "C" {
 #define BOARD_MMCSD_SD_INSTANCE                         (1U)
 #define BOARD_MMCSD_EMMC_INSTANCE                       (0)
 
+/* GPMC instance connected to the flash */
+#define BOARD_GPMC_INSTANCE                             (0U)
+
 /* Enable NOR flash driver */
 #define BOARD_NOR_FLASH_IN //J7ES_TODO: need to update
 

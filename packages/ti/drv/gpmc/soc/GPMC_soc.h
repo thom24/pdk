@@ -4,7 +4,7 @@
  * @brief  GPMC SoC level driver
  */
 /*
- * Copyright (c) 2016, Texas Instruments Incorporated
+ * Copyright (c) 2016 - 2020, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,12 +36,12 @@
  */
 
 #include <ti/drv/gpmc/GPMC.h>
-#if defined(SOC_AM437x) || defined(SOC_AM335x) || defined(SOC_K2G)
+#if defined(SOC_AM437x) || defined(SOC_AM335x) || defined(SOC_K2G) || defined(SOC_AM64X)
 #include <ti/drv/gpmc/src/V1/GPMC_v1.h>
 #endif
 
 /* GPMC SoC level API */
-#if defined(SOC_AM437x) || defined(SOC_AM335x) || defined(SOC_K2G)
+#if defined(SOC_AM437x) || defined(SOC_AM335x) || defined(SOC_K2G) || defined(SOC_AM64X)
 extern int32_t GPMC_socGetInitCfg(uint32_t index, GPMC_v1_HwAttrs *cfg);
 extern int32_t GPMC_socSetInitCfg(uint32_t index, const GPMC_v1_HwAttrs *cfg);
 #endif

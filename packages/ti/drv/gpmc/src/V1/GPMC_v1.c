@@ -7,7 +7,7 @@
  */
 
 /*
- * Copyright (C) 2014-2016 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2014-2020 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -47,12 +47,15 @@
 #include <ti/drv/gpmc/src/GPMC_osal.h>
 
 
-/* GPMC AM57x functions */
+/* GPMC functions */
 static void GPMC_init_v1(GPMC_Handle handle);
 static GPMC_Handle GPMC_open_v1(GPMC_Handle handle, const GPMC_Params *params);
 static void GPMC_close_v1(GPMC_Handle handle);
 static bool GPMC_transfer_v1(GPMC_Handle handle, GPMC_Transaction *transaction);
 static int32_t GPMC_control_v1(GPMC_Handle handle, uint32_t cmd, void *arg);
+
+static int32_t GPMC_sram_read_v1(GPMC_Handle handle, const GPMC_Transaction *transaction);
+static int32_t GPMC_sram_write_v1(GPMC_Handle handle, const GPMC_Transaction *transaction);
 
 /* GPMC function table for GPMC AM57x implementation */
 const GPMC_FxnTable GPMC_FxnTable_v1 = {
@@ -165,6 +168,7 @@ static GPMC_Handle GPMC_open_v1(GPMC_Handle handle, const GPMC_Params *params)
     MuxIntcP_outParams     muxOutParams;
     int32_t                retFlag = 0U;
     uint32_t               timeConfig;
+    uint32_t               devType;
 
     /* Input parameter validation */
     if (handle != NULL)
@@ -320,7 +324,13 @@ static GPMC_Handle GPMC_open_v1(GPMC_Handle handle, const GPMC_Params *params)
                                               hwAttrs->chipSel,
                                               hwAttrs->timeLatency);
 
-                GPMCDevTypeSelect(hwAttrs->gpmcBaseAddr, hwAttrs->chipSel, hwAttrs->devType);
+                devType = hwAttrs->devType;
+                if (devType == GPMC_DEVICETYPE_SRAMLIKE)
+                {
+                    /* GPMC SRAM and NOR device use the same configuration */
+                    devType = GPMC_DEVICETYPE_NORLIKE;
+                }
+                GPMCDevTypeSelect(hwAttrs->gpmcBaseAddr, hwAttrs->chipSel, devType);
 
                 GPMCDevSizeSelect(hwAttrs->gpmcBaseAddr, hwAttrs->chipSel, hwAttrs->devSize);
 
@@ -331,10 +341,10 @@ static GPMC_Handle GPMC_open_v1(GPMC_Handle handle, const GPMC_Params *params)
                 /* by default, read/write async single access */
                 GPMCReadTypeSelect(hwAttrs->gpmcBaseAddr,
                                    hwAttrs->chipSel,
-                                   GPMC_READTYPE_ASYNC);
+                                   hwAttrs->readType);
                 GPMCWriteTypeSelect(hwAttrs->gpmcBaseAddr,
                                    hwAttrs->chipSel,
-                                   GPMC_WRITETYPE_ASYNC);
+                                   hwAttrs->writeType);
 
                 GPMCAccessTypeSelect(hwAttrs->gpmcBaseAddr,
                                    hwAttrs->chipSel,
@@ -356,7 +366,7 @@ static GPMC_Handle GPMC_open_v1(GPMC_Handle handle, const GPMC_Params *params)
                 /* CONFIG2 reister timing config, no extra delay */
                 timeConfig = GPMC_CS_TIMING_CONFIG(hwAttrs->timingParams.csWrOffTime,
                                                    hwAttrs->timingParams.csRdOffTime,
-                                                   GPMC_CS_EXTRA_NODELAY,
+                                                   hwAttrs->csExDelay,
                                                    hwAttrs->timingParams.csOnTime);
                 GPMCCSTimingConfig(hwAttrs->gpmcBaseAddr,
                                    hwAttrs->chipSel,
@@ -466,7 +476,7 @@ static void GPMC_ctrlNandReadData(GPMC_v1_HwAttrs const *hwAttrs,
 
     while(size > 0U)
     {
-        if(hwAttrs->devSize == GPMC_DEVICESIZE_16BITS)
+        if(hwAttrs->devSize == GPMC_DEVICESIZE_32BITS)
         {
             *pData16 = HW_RD_REG16(hwAttrs->gpmcBaseAddr + GPMC_NAND_DATA_N(hwAttrs->chipSel));
             pData16++;
@@ -711,7 +721,7 @@ static int32_t GPMC_primeTransfer_v1(GPMC_Handle handle,
             }
             else
             {
-                retVal = GPMC_STATUS_ERROR;
+                retVal = GPMC_sram_read_v1(handle, transaction);
             }
         }
         else if(transaction->txBuf)
@@ -726,7 +736,7 @@ static int32_t GPMC_primeTransfer_v1(GPMC_Handle handle,
             }
             else
             {
-                retVal = GPMC_STATUS_ERROR;
+                retVal = GPMC_sram_write_v1(handle, transaction);
             }
         }
         else
@@ -977,4 +987,138 @@ static int32_t GPMC_control_v1(GPMC_Handle handle, uint32_t cmd, void *arg)
     }
 
     return retVal;
+}
+
+static int32_t GPMC_sram_read_v1(GPMC_Handle handle,
+                                 const GPMC_Transaction *transaction)
+{
+    GPMC_v1_HwAttrs const *hwAttrs = NULL;
+    int32_t                retVal = GPMC_STATUS_ERROR;
+    uint32_t               size =  transaction->count;
+
+    /* Input parameter validation */
+    if ((handle != NULL) && (transaction != NULL))
+    {
+        hwAttrs = handle->hwAttrs;
+
+        if(hwAttrs->devSize == GPMC_DEVICESIZE_32BITS)
+        {
+            uint32_t *pSrc = (uint32_t *)(hwAttrs->dataBaseAddr + transaction->offset);
+            uint32_t *pDst = (uint32_t *)(transaction->rxBuf);
+            uint32_t  remain = size & 0x3;
+
+            if (remain != 0U)
+            {
+                size = size - remain + 4U;
+            }
+            while (size != 0U)
+            {
+                *pDst = *pSrc;
+                pSrc++;
+                pDst++;
+                size -= 4U;
+            }
+        }
+        else if(hwAttrs->devSize == GPMC_DEVICESIZE_16BITS)
+        {
+            uint16_t *pSrc = (uint16_t *)(hwAttrs->dataBaseAddr + transaction->offset);
+            uint16_t *pDst = (uint16_t *)(transaction->rxBuf);
+            uint32_t  remain = size & 0x1;
+
+            if (remain != 0U)
+            {
+                size = size - remain + 2U;
+            }
+            while (size != 0U)
+            {
+                *pDst = *pSrc;
+                pSrc++;
+                pDst++;
+                size -= 2U;
+            }
+        }
+        else
+        {
+            uint8_t *pSrc = (uint8_t *)(hwAttrs->dataBaseAddr + transaction->offset);
+            uint8_t *pDst = (uint8_t *)(transaction->rxBuf);
+
+            while (size != 0U)
+            {
+                *pDst = *pSrc;
+                pSrc++;
+                pDst++;
+                size--;
+            }
+        }
+
+        retVal = GPMC_STATUS_SUCCESS;
+    }
+    return(retVal);
+}
+
+static int32_t GPMC_sram_write_v1(GPMC_Handle handle,
+                                  const GPMC_Transaction *transaction)
+{
+    GPMC_v1_HwAttrs const *hwAttrs = NULL;
+    int32_t                retVal = GPMC_STATUS_ERROR;
+    uint32_t               size =  transaction->count;
+
+    /* Input parameter validation */
+    if ((handle != NULL) && (transaction != NULL))
+    {
+        hwAttrs = handle->hwAttrs;
+
+        if(hwAttrs->devSize == GPMC_DEVICESIZE_32BITS)
+        {
+            uint32_t *pSrc = (uint32_t *)(transaction->txBuf);
+            uint32_t *pDst = (uint32_t *)(hwAttrs->dataBaseAddr + transaction->offset);
+            uint32_t  remain = size & 0x3;
+
+            if (remain != 0U)
+            {
+                size = size - remain + 4U;
+            }
+            while (size != 0U)
+            {
+                *pDst = *pSrc;
+                pSrc++;
+                pDst++;
+                size -= 4U;
+            }
+        }
+        else if(hwAttrs->devSize == GPMC_DEVICESIZE_16BITS)
+        {
+            uint16_t *pSrc = (uint16_t *)(transaction->txBuf);
+            uint16_t *pDst = (uint16_t *)(hwAttrs->dataBaseAddr + transaction->offset);
+            uint32_t  remain = size & 0x1;
+
+            if (remain != 0U)
+            {
+                size = size - remain + 2U;
+            }
+            while (size != 0U)
+            {
+                *pDst = *pSrc;
+                pSrc++;
+                pDst++;
+                size -= 2U;
+            }
+        }
+        else
+        {
+            uint8_t *pSrc = (uint8_t *)(transaction->txBuf);
+            uint8_t *pDst = (uint8_t *)(hwAttrs->dataBaseAddr + transaction->offset);
+
+            while (size != 0U)
+            {
+                *pDst = *pSrc;
+                pSrc++;
+                pDst++;
+                size--;
+            }
+        }
+
+        retVal = GPMC_STATUS_SUCCESS;
+    }
+    return(retVal);
 }

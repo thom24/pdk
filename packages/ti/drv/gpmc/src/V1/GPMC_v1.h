@@ -9,7 +9,7 @@
 
 
 /*
- * Copyright (c) 2016, Texas Instruments Incorporated
+ * Copyright (c) 2016 - 2020, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -200,6 +200,11 @@
 #define INVALID_INTC_MUX_NUM     (0xffffU)
 
 /*!
+ *  \brief  Macro which defines the GPMC SRAM device type
+ */
+#define GPMC_DEVICETYPE_SRAMLIKE (0x3U)
+
+/*!
  *  \brief  GPMC operation modes
  */
 typedef enum gpmcOperMode_s {
@@ -366,6 +371,16 @@ typedef struct GPMC_v1_HwAttrs_s {
     uint32_t                elmBaseAddr;
     /**< ECC algorithm supported by the controller. */
     GPMC_v1_nandEccAlgo     eccAlgo;
+    /*! Enable GPMC DMA mode. */
+    uint32_t                dmaEnable;
+    /*! GPMC IP V1 data base address. */
+    uint32_t                dataBaseAddr;
+    /*! Read operation mode */
+    uint32_t                readType;
+    /*! Write operation mode */
+    uint32_t                writeType;
+    /**< Chip Select Extra Delay flag. */
+    uint32_t                csExDelay;
 
 } GPMC_v1_HwAttrs;
 

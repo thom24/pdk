@@ -1,12 +1,12 @@
 /**
  *  \file   GPMC_soc.c
  *
- *  \brief  AM437x device specific hardware attributes.
+ *  \brief  AM64x device specific hardware attributes.
  *
  */
 
 /*
- * Copyright (C) 2016 - 2020 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2020 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -44,23 +44,20 @@
 
 #define CSL_GPMC_CNT        (1U)
 
-#define CSL_GPMC_REG        (0x50000000U)
-#define CSL_ELM_REG         (0x48080000U)
-
 /* GPMC configuration structure */
 GPMC_v1_HwAttrs GPMCInitCfg[CSL_GPMC_CNT + 1] =
 {
     {
-        CSL_GPMC_REG,                 /* gpmcBaseAddr */
-        GPMC_DEVICETYPE_NANDLIKE,     /* devType */
-        GPMC_DEVICESIZE_8BITS,        /* devSize */
+        CSL_GPMC0_CFG_BASE,           /* gpmcBaseAddr */
+        GPMC_DEVICETYPE_SRAMLIKE,     /* devType */
+        GPMC_DEVICESIZE_16BITS,       /* devSize */
         GPMC_MUXADDDATA_NOMUX,        /* addrDataMux */
-        GPMC_TIMEPARAGRANULARITY_X2,  /* timeLatency */
-        0,                            /* chipSel */
+        GPMC_TIMEPARAGRANULARITY_X1,  /* timeLatency */
+        0U,                           /* chipSel */
         0x10000000U,                  /* chipSelBaseAddr */
-        GPMC_CS_SIZE_256MB,           /* chipSelAddrSize */
-        132 + 32,                     /* intrNum */
-        0,                            /* eventId */
+        GPMC_CS_SIZE_16MB,            /* chipSelAddrSize */
+        0U,                           /* intrNum */
+        0U,                           /* eventId */
         INVALID_INTC_MUX_NUM,         /* intcMuxNum */
         -1,                           /* intcMuxInEvent */
         -1,                           /* intcMuxOutEvent */
@@ -71,36 +68,36 @@ GPMC_v1_HwAttrs GPMCInitCfg[CSL_GPMC_CNT + 1] =
             0U,                       /* csOnTime */
             7U,                       /* csRdOffTime */
             7U,                       /* csWrOffTime */
-            0U,                       /* advOnTime */
-            0U,                       /* advRdOffTime */
-            7U,                       /* advWrOffTime */
-            0U,                       /* advAadMuxOnTime */
-            0U,                       /* advAadMuxRdOffTime */
-            0U,                       /* advAadMuxWrOffTime */
-            0U,                       /* weOnTime */
-            5U,                       /* weOffTime */
-            0U,                       /* oeOnTime */
-            5U,                       /* oeOffTime */
-            5U,                       /* oeAadMuxOnTime */
-            0U,                       /* oeAadMuxOffTime */
-            0U,                       /* pageBurstAccessTime */
+            1U,                       /* advOnTime */
+            3U,                       /* advRdOffTime */
+            3U,                       /* advWrOffTime */
+            3U,                       /* advAadMuxOnTime */
+            2U,                       /* advAadMuxRdOffTime */
+            2U,                       /* advAadMuxWrOffTime */
+            5U,                       /* weOnTime */
+            7U,                       /* weOffTime */
+            5U,                       /* oeOnTime */
+            7U,                       /* oeOffTime */
+            1U,                       /* oeAadMuxOnTime */
+            3U,                       /* oeAadMuxOffTime */
+            1U,                       /* pageBurstAccessTime */
             6U,                       /* rdAccessTime */
             6U,                       /* wrAccessTime */
-            7U,                       /* rdCycleTime */
-            7U,                       /* wrCycleTime */
-            7U,                       /* wrDataOnMuxBusTime */
+            8U,                       /* rdCycleTime */
+            8U,                       /* wrCycleTime */
+            5U,                       /* wrDataOnMuxBusTime */
             0U,                       /* cycle2CycleDelay */
             GPMC_CYCLE2CYCLESAMECSEN_NOC2CDELAY, /* cycleDelaySameChipSel */
             GPMC_CYCLE2CYCLEDIFFCSEN_NOC2CDELAY, /* cycleDelayDiffChipSel */
             0U                        /* busTurnAroundTime */
         },
-        CSL_ELM_REG,                  /* elmBaseAddr */
-        GPMC_NAND_ECC_ALGO_BCH_8BIT,  /* eccAlgo */
+        CSL_ELM0_BASE,                /* elmBaseAddr */
+        GPMC_NAND_ECC_ALGO_NONE,      /* eccAlgo */
         FALSE,                        /* dmaMode */
-        0U,                           /* dataBaseAddr */
+        CSL_GPMC0_DATA_BASE,          /* dataBaseAddr */
         GPMC_READTYPE_SYNC,           /* readType */
         GPMC_WRITETYPE_SYNC,          /* writeType */
-        GPMC_CS_EXTRA_NODELAY,        /* csExDelay */
+        GPMC_CS_EXTRA_DELAY,          /* csExDelay */
     },
 };
 

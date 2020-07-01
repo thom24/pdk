@@ -1,6 +1,6 @@
 #*******************************************************************************
 #                                                                              *
-# Copyright (c) 2016 Texas Instruments Incorporated - http://www.ti.com/       *
+# Copyright (c) 2016 - 2020 Texas Instruments Incorporated - http://www.ti.com *
 #                        ALL RIGHTS RESERVED                                   *
 #                                                                              *
 #*******************************************************************************
@@ -42,10 +42,11 @@
 ifeq ($(gpmc_component_make_include), )
 
 # under other list
-drvgpmc_BOARDLIST       = icev2AM335x evmAM437x
-drvgpmc_SOCLIST         = am437x am335x
+drvgpmc_BOARDLIST       = icev2AM335x evmAM437x am64x_evm
+drvgpmc_SOCLIST         = am437x am335x am64x
 drvgpmc_am437x_CORELIST = a9host
 drvgpmc_am335x_CORELIST = a8host
+drvgpmc_am64x_CORELIST  = $(DEFAULT_am64x_CORELIST)
 
 ############################
 # gpmc package
@@ -61,7 +62,7 @@ drvgpmc_LIB_LIST = $(gpmc_LIB_LIST)
 # All the tests mentioned in list are built when test target is called
 # List below all examples for allowed values
 ############################
-gpmc_EXAMPLE_LIST = 
+gpmc_EXAMPLE_LIST = GPMC_Baremetal_TestApp GPMC_TestApp
 drvgpmc_EXAMPLE_LIST = $(gpmc_EXAMPLE_LIST)
 
 #
@@ -171,6 +172,57 @@ gpmc_profile_indp_SOCLIST = am572x am571x k2h k2k k2l k2e k2g c6678 c6657 am437x
 export gpmc_profile_indp_SOCLIST
 gpmc_profile_indp_$(SOC)_CORELIST = $(drvgpmc_$(SOC)_CORELIST)
 export gpmc_profile_indp_$(SOC)_CORELIST
+
+#
+# GPMC Examples
+#
+
+# GPMC unit test baremetal app
+GPMC_Baremetal_TestApp_COMP_LIST = GPMC_Baremetal_TestApp
+GPMC_Baremetal_TestApp_RELPATH = ti/drv/gpmc/test
+GPMC_Baremetal_TestApp_PATH = $(PDK_GPMC_COMP_PATH)/test
+GPMC_Baremetal_TestApp_BOARD_DEPENDENCY = yes
+GPMC_Baremetal_TestApp_CORE_DEPENDENCY = no
+GPMC_Baremetal_TestApp_MAKEFILE = -f makefile IS_BAREMETAL=yes
+export GPMC_Baremetal_TestApp_COMP_LIST
+export GPMC_Baremetal_TestApp_BOARD_DEPENDENCY
+export GPMC_Baremetal_TestApp_CORE_DEPENDENCY
+export GPMC_Baremetal_TestApp_MAKEFILE
+GPMC_Baremetal_TestApp_PKG_LIST = GPMC_Baremetal_TestApp
+GPMC_Baremetal_TestApp_INCLUDE = $(GPMC_Baremetal_TestApp_PATH)
+GPMC_Baremetal_TestApp_BOARDLIST = $(drvgpmc_BOARDLIST)
+export GPMC_Baremetal_TestApp_BOARDLIST
+ifeq ($(SOC),$(filter $(SOC), am64x))
+GPMC_Baremetal_TestApp_$(SOC)_CORELIST = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
+endif
+
+export GPMC_TestApp_$(SOC)_CORELIST
+GPMC_TestApp_SBL_APPIMAGEGEN = yes
+export GPMC_TestApp_SBL_APPIMAGEGEN
+
+# GPMC unit test rtos app
+GPMC_TestApp_COMP_LIST = GPMC_TestApp
+GPMC_TestApp_RELPATH = ti/drv/gpmc/test
+GPMC_TestApp_PATH = $(PDK_GPMC_COMP_PATH)/test
+GPMC_TestApp_BOARD_DEPENDENCY = yes
+GPMC_TestApp_CORE_DEPENDENCY = no
+GPMC_TestApp_MAKEFILE = -f makefile
+GPMC_TestApp_XDC_CONFIGURO = yes
+export GPMC_TestApp_COMP_LIST
+export GPMC_TestApp_BOARD_DEPENDENCY
+export GPMC_TestApp_CORE_DEPENDENCY
+export GPMC_TestApp_MAKEFILE
+export GPMC_TestApp_XDC_CONFIGURO
+GPMC_TestApp_PKG_LIST = GPMC_TestApp
+GPMC_TestApp_INCLUDE = $(GPMC_TestApp_PATH)
+GPMC_TestApp_BOARDLIST = $(drvgpmc_BOARDLIST)
+export GPMC_TestApp_BOARDLIST
+ifeq ($(SOC),$(filter $(SOC), am64x))
+GPMC_TestApp_$(SOC)_CORELIST = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
+endif
+export GPMC_TestApp_$(SOC)_CORELIST
+GPMC_TestApp_SBL_APPIMAGEGEN = yes
+export GPMC_TestApp_SBL_APPIMAGEGEN
 
 export drvgpmc_LIB_LIST
 export gpmc_LIB_LIST

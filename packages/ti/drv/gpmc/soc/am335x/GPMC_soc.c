@@ -6,7 +6,7 @@
  */
 
 /*
- * Copyright (C) 2016 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2016 - 2020 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -95,7 +95,12 @@ GPMC_v1_HwAttrs GPMCInitCfg[CSL_GPMC_CNT + 1] =
             0U                        /* busTurnAroundTime */
         },
         CSL_ELM_REG,                  /* elmBaseAddr */
-        GPMC_NAND_ECC_ALGO_BCH_8BIT   /* eccAlgo */
+        GPMC_NAND_ECC_ALGO_BCH_8BIT,  /* eccAlgo */
+        FALSE,                        /* dmaMode */
+        0U,                           /* dataBaseAddr */
+        GPMC_READTYPE_SYNC,           /* readType */
+        GPMC_WRITETYPE_SYNC,          /* writeType */
+        GPMC_CS_EXTRA_NODELAY,        /* csExDelay */
     },
 };
 

@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019 - 2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -60,6 +60,8 @@
 
 #define MAIN_SPI0_CS0   0x0208U
 
+#define MAIN_GPMC0_AD0  0x003cU
+
 void Board_uartPinmxCfg()
 {
     volatile uint32_t *addr = (volatile uint32_t *)(MAIN_CTRL_PINCFG_BASE + MAIN_UART0_RXD);
@@ -108,6 +110,38 @@ void Board_spiPinmxCfg()
     }
 }
 
+void Board_gpmcPinmxCfg()
+{
+    volatile uint32_t *addr = (volatile uint32_t *)(MAIN_CTRL_PINCFG_BASE + MAIN_GPMC0_AD0);
+    uint32_t gpmcData[69] =
+    {
+        0x50000, 0x50000, 0x50000, 0x50000,
+        0x40000, 0x40000, 0x50000, 0x50000,
+        0x50000, 0x50000, 0x50000, 0x50000,
+        0x50000, 0x50000, 0x50000, 0x50000,
+        0x50004, 0x50000, 0x40000, 0x40000,
+        0x40000, 0x40000, 0x40000, 0x60000,
+        0x60000, 0x40000, 0x50000, 0x40000,
+        0x40000, 0x40000, 0x40000, 0x50008,
+        0x50008, 0x50008, 0x50008, 0x50008,
+        0x50008, 0x50008, 0x50008, 0x50008,
+        0x50008, 0x50008, 0x50008, 0x50008,
+        0x50008, 0x50008, 0x50008, 0x40008,
+        0x50008, 0x50008, 0x40008, 0x60008,
+        0x40008, 0x40008, 0x40008, 0x40008,
+        0x40008, 0x40008, 0x40008, 0x40008,
+        0x40008, 0x40008, 0x40008, 0x40008,
+        0x40008, 0x40008, 0x40008, 0x40008,
+        0x40008
+    };
+    uint32_t i;
+
+    for (i = 0; i < 69; i++)
+    {
+        *addr++ = gpmcData[i];
+    }
+}
+
 #endif  /* #ifdef SIM_BUILD */
 #endif  /* #ifndef BUILD_M4F */
 
@@ -131,6 +165,7 @@ Board_STATUS Board_pinmuxConfig (void)
     Board_uartPinmxCfg();
     Board_ospiPinmxCfg();
     Board_spiPinmxCfg();
+    Board_gpmcPinmxCfg();
 #else
     pinmuxModuleCfg_t* pModuleData = NULL;
     pinmuxPerCfg_t* pInstanceData = NULL;
