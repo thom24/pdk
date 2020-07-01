@@ -62,24 +62,25 @@
 IEP_SYNC_MODE	.set	1
 
  .if $isdefed("SLICE0")
-IEP_BASEx	.set	0x2e000
+IEP_BASEx	    .set	0x2e000
  .else
-IEP_BASEx	.set	0x2f000
+IEP_BASEx	    .set	0x2f000
  .endif
 
-IEP_BASE0	.set	0x2e000
-IEP_BASE1	.set	0x2f000
+IEP_BASE0	    .set	0x2e000
+IEP_BASE1	    .set	0x2f000
 IEP_CFG1_BASEx	.set	 (0x26000+0x30)
 
-IEP_GCFG	.set	0x00
-IEP_C64_HI	.set	0x14
-IEP_C64_LO	.set	0x10
+IEP_GCFG	    .set	0x00
+IEP_C64_HI	    .set	0x14
+IEP_C64_LO	    .set	0x10
 IEP_CAP_RX_S0	.set	0x20
 IEP_CAP_RX_S1	.set	0x30
 IEP_CAP_TX_S0	.set	0x40
 IEP_CAP_TX_S1	.set	0x48
-IEP_CMP_CFG	.set	0x70
-IEP_CMP_REG_BASE0_7	.set	0x78
+IEP_CMP_CFG 	.set	0x70
+IEP_CMP_STATUS	.set	0x74
+IEP_CMP_REG_BASE0_7	    .set	0x78
 IEP_CMP_REG_BASE8_15	.set	0xc0
 
 ;-----------------STRUCTURES-----------------------------

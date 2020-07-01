@@ -285,6 +285,8 @@ pru_bg_init .macro
 ;VA we should start here
 	ldi	GRegs.pkt_cnt.x, 0
 
+    set     GRegs.tx.b.flags, GRegs.tx.b.flags, f_cnt_zero
+    clr     GRegs.tx.b.flags, GRegs.tx.b.flags, f_cnt_zero_wait
 ;START RX/TX of 1 packet burst ; {{{1
 RX:
 	RX_TASK_INIT
@@ -303,6 +305,59 @@ RX:
 	ldi	GRegs.snf.b.rd_cur, MINPS
 	ldi	r30, 1522  ;todo - make a parameter
     .endm
+
+;=============================================================================================
+ .if $defined("SLICE0")
+link_status         .set    0
+ .else
+link_status         .set    4
+ .endif
+
+link_cmp_reg_num    .set    1
+
+m_link_monitor  .macro
+    lbco    &r0, c9, 0x4, 4    ; RGMII_CFG
+    qbbc    $1, GRegs.tx.b.flags, f_cnt_zero
+    qbbs    $3, r0, link_status   ; link is up and status is set then do nothing
+    clr     GRegs.tx.b.flags, GRegs.tx.b.flags, f_cnt_zero ;
+    qba     $3
+
+$1: qbbs    $4, r0, link_status
+    ; link is down and status isn't set then reset f_cnt_zero_wait
+    clr     GRegs.tx.b.flags, GRegs.tx.b.flags, f_cnt_zero_wait
+    qba     $3
+
+$4: ldi32   r4, IEP_BASEx
+    qbbs    $2, GRegs.tx.b.flags, f_cnt_zero_wait
+    ; start timer
+    ldi     r0.w0, (1 << link_cmp_reg_num)
+    sbbo    &r0.w0, r4, IEP_CMP_STATUS , 2 ; CSL_ICSS_G_PR1_IEP1_SLV_CMP_STATUS_REG
+    lbbo    &r2, r4, IEP_C64_LO, 8  ; read current time value
+    ldi32   r1, 0x1a0000    ; ~1.7 msec with 1 ns resolution
+    add     r2, r2, r1      ;
+    adc     r3, r3, 0       ;
+    sbbo    &r2, r4, (IEP_CMP_REG_BASE0_7 + 8 * link_cmp_reg_num), 8
+    ; enable compare register
+    lbbo    &R0, r4, IEP_CMP_CFG, 4
+    set      R0, R0, (link_cmp_reg_num + 1)
+    sbbo    &R0, r4, IEP_CMP_CFG, 4
+
+    set     GRegs.tx.b.flags, GRegs.tx.b.flags, f_cnt_zero_wait
+    qba     $3
+
+$2: ; wait timer
+    lbbo    &r2, r4, IEP_C64_LO, 8  ; read current time value
+    lbbo    &r0.w0, r4, IEP_CMP_STATUS, 2
+    qbbc    $3, r0, link_cmp_reg_num
+
+    set     r31, r31, 30 ; reset TX FIFO
+
+    set     GRegs.tx.b.flags, GRegs.tx.b.flags, f_cnt_zero
+    clr     GRegs.tx.b.flags, GRegs.tx.b.flags, f_cnt_zero_wait
+$3:
+    .endm
+;=================================================================================================
+
 
 ; Code starts {{{1
  .retain     ; Required forbuilding	.out with assembly file
@@ -335,6 +390,8 @@ wait_rtu_ready:
 ; BG LOOP:  until cmd cancel seen
 ;================================
 bg_loop:
+    m_link_monitor
+
 	add	BgRegs.bg_cnt, BgRegs.bg_cnt, 1 ;loop count
 ; if RTU started shutdown process - disable TM and loop forever
 	ldi32	r0, FW_CONFIG
