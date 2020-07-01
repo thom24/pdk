@@ -30,7 +30,7 @@ else
   SRCS_COMMON = main_tirtos.c
   XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
 
-  ifeq ($(SOC),$(filter $(SOC), am65xx j721e))
+  ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
     ifeq ($(ISA),$(filter $(ISA), r5f))
       COMP_LIST_COMMON += copyvecs
     endif
