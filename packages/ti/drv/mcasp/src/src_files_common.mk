@@ -7,7 +7,7 @@ ifeq ($(SOC),$(filter $(SOC),am574x am572x am571x k2g am437x am335x dra72x dra75
   SRCDIR += src/dma/V0
 endif
 
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e))
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
   # NavSS
   SRCDIR += src/dma/V1
 endif

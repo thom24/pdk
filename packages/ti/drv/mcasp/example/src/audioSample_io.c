@@ -64,7 +64,7 @@
 #include <mcasp_drv.h>
 #include <ti/csl/csl_chip.h>
 
-#if defined(SOC_AM65XX) || defined (SOC_J721E)
+#if defined(SOC_AM65XX) || defined (SOC_J721E) || defined (SOC_J7200)
  #define MCASP_UDMA_ENABLED
 #else
  #define MCASP_EDMA_ENABLED
@@ -769,7 +769,7 @@ Udma_DrvHandle McaspApp_udmaInit(Mcasp_HwInfo *cfg)
     if (gDrvHandle == NULL)
     {
         /* UDMA driver init */
-#if defined (SOC_J721E) && defined (BUILD_MCU1_0)
+#if (defined (SOC_J721E) || defined (SOC_J7200)) && defined (BUILD_MCU1_0)
         instId = UDMA_INST_ID_MCU_0;
 #else
         instId = UDMA_INST_ID_MAIN_0;
@@ -1253,7 +1253,7 @@ Void Audio_echo_Task()
    mcaspDebugLog_PrintAll();
 #endif
 
-#if defined(SOC_AM65XX) || defined(SOC_J721E)
+#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)
     McaspApp_udma_deinit();
     Sciclient_deinit();
 #endif

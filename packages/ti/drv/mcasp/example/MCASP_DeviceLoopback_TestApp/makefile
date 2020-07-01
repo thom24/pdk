@@ -61,6 +61,18 @@ ifeq ($(SOC), $(filter $(SOC), j721e))
   PACKAGE_SRCS_COMMON += ../$(SOC)
 endif
 
+ifeq ($(SOC), $(filter $(SOC), j7200))
+  SRCDIR += ../j7200/src
+  INCDIR += ../j7200/include
+
+  COMP_LIST_COMMON += udma sciclient i2c
+
+  # Enable XDC build for application by providing XDC CFG File per core
+  XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
+  XDC_CFG_UPDATE_$(CORE) = ../j7200/mcasp_extra_config.xs
+  PACKAGE_SRCS_COMMON += ../$(SOC)
+endif
+
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_MCASP_UT)
 
 # Enable copy of vectors

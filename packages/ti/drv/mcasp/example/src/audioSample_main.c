@@ -66,7 +66,7 @@
 #include <ti/drv/uart/UART.h>
 #include <ti/drv/uart/UART_stdio.h>
 
-#if !defined(SOC_AM65XX) && !defined(SOC_J721E)
+#if !defined(SOC_AM65XX) && !defined(SOC_J721E) && !defined(SOC_J7200)
 #include <ti/sdo/edma3/drv/edma3_drv.h>
 #include <ti/csl/csl_edma3.h>
 #endif
@@ -82,7 +82,7 @@ Void InitMmu()
 
 #endif
 
-#if !defined(SOC_AM65XX) && !defined(SOC_J721E)
+#if !defined(SOC_AM65XX) && !defined(SOC_J721E) && !defined(SOC_J7200)
 /* Handle to the EDMA driver instance                                         */
 EDMA3_DRV_Handle hEdma;
 #endif

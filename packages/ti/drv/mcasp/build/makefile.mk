@@ -35,7 +35,7 @@ include $(PDK_MCASP_COMP_PATH)/src/src_files_common.mk
 
 MODULE_NAME = mcasp
 
-ifeq ($(SOC),$(filter $(SOC), am571x am572x am574x dra72x dra75x dra78x k2g am437x omapl137 omapl138 am65xx j721e))
+ifeq ($(SOC),$(filter $(SOC), am571x am572x am574x dra72x dra75x dra78x k2g am437x omapl137 omapl138 am65xx j721e j7200))
 SRCDIR += soc/$(SOC)
 INCDIR += soc
 # Common source files across all platforms and cores
@@ -46,11 +46,11 @@ endif
 #  need to be included for this component
 INCLUDE_EXTERNAL_INTERFACES = pdk
                       
-ifeq ($(SOC),$(filter $(SOC), am571x am572x am574x dra72x dra75x dra78x k2g am437x omapl137 omapl138 am65xx j721e))
+ifeq ($(SOC),$(filter $(SOC), am571x am572x am574x dra72x dra75x dra78x k2g am437x omapl137 omapl138 am65xx j721e j7200))
 
 endif
 
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e))
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
 CFLAGS_LOCAL_COMMON += -DMCASP_UDMA_ENABLED
 endif
 
