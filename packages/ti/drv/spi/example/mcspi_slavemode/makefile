@@ -43,7 +43,7 @@ SRCS_COMMON += main_mcspi_slave_mode.c SPI_log.c
 # need to be included for this component
 INCLUDE_EXTERNAL_INTERFACES = pdk $(EXTERNAL_INTERFACES)
 
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e))
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
 ifeq ($(CORE), mpu1_0)
 # Slave running on mpu1_0 core 
 CFLAGS_SPI_MS     = -DMCSPI_SLAVE_TASK
@@ -78,8 +78,7 @@ APP_MASTER_SLAVE  = Master
 endif
 
 ifeq ($(SOC),$(filter $(SOC), j7200))
-CFLAGS_SPI_MS    += -DMCSPI_MASTER_TASK -Dj7200_evm=j7200_evm
-APP_MASTER_SLAVE  = Master
+CFLAGS_SPI_MS    += -Dj7200_evm=j7200_evm
 endif
 
 ifeq ($(SOC),$(filter $(SOC), j721e))

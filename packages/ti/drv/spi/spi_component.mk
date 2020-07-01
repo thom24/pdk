@@ -463,7 +463,7 @@ MCSPI_Slave_TestApp_PKG_LIST = MCSPI_Slave_TestApp
 MCSPI_Slave_TestApp_INCLUDE = $(MCSPI_Slave_TestApp_PATH)
 MCSPI_Slave_TestApp_BOARDLIST = am65xx_evm am65xx_idk j721e_sim j721e_evm j7200_evm
 export MCSPI_Slave_TestApp_BOARDLIST
-ifeq ($(SOC),$(filter $(SOC), j721e))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200))
 MCSPI_Slave_TestApp_$(SOC)_CORELIST = mpu1_0
 else
 MCSPI_Slave_TestApp_$(SOC)_CORELIST = mpu1_0
