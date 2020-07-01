@@ -221,9 +221,10 @@ stop_tx_due_colission .macro
 	flush_dma	XFR2VBUS_XID_READ0
 	qba	$2 ;
 $1:	flush_dma	XFR2VBUS_XID_READ1
-$2:	set	r31, r31, 29		;tx.eof
-	set	GRegs.speed_f, GRegs.speed_f, f_stopped_due_col
-	ldi	GRegs.tx.b.state, TX_S_W_EOF
+$2:	set	GRegs.speed_f, GRegs.speed_f, f_stopped_due_col
+	qbbc    $3, GRegs.tx.b.flags, f_cnt_zero ;don't trigger tx_eof if link is down
+	set r31.t29     ; tx_eof
+$3:	ldi	GRegs.tx.b.state, TX_S_W_EOF
 	.endm
 
 restart_transmission .macro

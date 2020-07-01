@@ -204,6 +204,7 @@ $5:	LAST_DMA_TO_TXL2 (runit + 1)
 	qbbc	$6, GRegs.speed_f, f_half_d ; don't tell RTU yet 
 	SPIN_TOG_LOCK_LOC PRU_RTU_EOD_E_FLAG
 $6:	;close out tx
+	qbbc    $8, GRegs.tx.b.flags, f_cnt_zero ; don't trigger tx_eof if link is down
 	qbbs	$7, TxRegs.ds_flags, 0	;f_desc_do_crc
 	set	r31, r31, 29		;tx.eof
 	jmp	$8
