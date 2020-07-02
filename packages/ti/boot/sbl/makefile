@@ -205,7 +205,7 @@ else ifeq ($(SBL_PLATFORM), omapl138)
 	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/boot/sbl clean BOARD=lcdkC6748
 	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/boot/sbl mmcsd_flashwriter_clean BOARD=lcdkOMAPL138
 	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/boot/sbl mmcsd_flashwriter_clean BOARD=lcdkC6748
-else ifeq ($(SBL_PLATFORM),$(filter $(SBL_PLATFORM), am65xx j721e))
+else ifeq ($(SBL_PLATFORM),$(filter $(SBL_PLATFORM), am65xx j721e j7200))
 	# All keystone3
 	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/boot/sbl/build clean
 	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/boot/sbl/build clean

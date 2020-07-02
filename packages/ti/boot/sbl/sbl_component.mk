@@ -97,7 +97,7 @@ ifeq ($(SOC), am64x)
 sbl_LIB_LIST = sbl_lib_ospi_nondma
 else
   ifeq ($(SOC), j7200)
-    sbl_LIB_LIST = sbl_lib_mmcsd sbl_lib_ospi_nondma sbl_lib_uart sbl_lib_hyperflash sbl_lib_cust
+    sbl_LIB_LIST = sbl_lib_ospi_nondma sbl_lib_cust
   else
     sbl_LIB_LIST = sbl_lib_mmcsd sbl_lib_ospi sbl_lib_uart sbl_lib_hyperflash sbl_lib_cust
     sbl_LIB_LIST += sbl_lib_ospi_nondma
@@ -110,7 +110,7 @@ endif
 # All the tests mentioned in list are built when test target is called
 # List below all examples for allowed values
 ############################
-ifeq ($(SOC), am64x)
+ifeq ($(SOC),$(filter $(SOC), am64x j7200))
 sbl_EXAMPLE_LIST = sbl_ospi_img
 else
 sbl_EXAMPLE_LIST = sbl_mmcsd_img sbl_ospi_img sbl_hyperflash_img sbl_uart_img
@@ -505,7 +505,7 @@ sbl_smp_test_BOARDLIST = $(sbl_BOARDLIST)
 export sbl_smp_test_BOARDLIST
 sbl_smp_test_$(SOC)_CORELIST = $($(SOC)_smp_CORELIST)
 export sbl_smp_test_$(SOC)_CORELIST
-ifneq ($(SOC), am64x)
+ifneq ($(SOC),$(filter $(SOC), am64x j7200))
 sbl_EXAMPLE_LIST += sbl_smp_test
 endif
 sbl_smp_test_SBL_APPIMAGEGEN = yes
@@ -534,7 +534,7 @@ sbl_multicore_smp_BOARDLIST = $(sbl_BOARDLIST)
 export sbl_multicore_smp_BOARDLIST
 sbl_multicore_smp_$(SOC)_CORELIST := $($(SOC)_LASTCORE)
 export sbl_multicore_smp_$(SOC)_CORELIST
-ifneq ($(SOC), am64x)
+ifneq ($(SOC),$(filter $(SOC), am64x j7200))
 sbl_EXAMPLE_LIST += sbl_multicore_smp
 endif
 sbl_multicore_smp_SBL_APPIMAGEGEN = no
@@ -560,7 +560,7 @@ sbl_boot_xip_test_BOARDLIST = $(sbl_BOARDLIST)
 export sbl_boot_xip_test_BOARDLIST
 sbl_boot_xip_test_$(SOC)_CORELIST = mcu1_0
 export sbl_boot_xip_test_$(SOC)_CORELIST
-ifneq ($(SOC), am64x)
+ifneq ($(SOC),$(filter $(SOC), am64x j7200))
 sbl_EXAMPLE_LIST += sbl_boot_xip_test
 endif
 sbl_boot_xip_test_SBL_APPIMAGEGEN = yes
@@ -590,7 +590,7 @@ sbl_boot_xip_entry_BOARDLIST = $(sbl_BOARDLIST)
 export sbl_boot_xip_entry_BOARDLIST
 sbl_boot_xip_entry_$(SOC)_CORELIST = mcu1_0
 export sbl_boot_xip_entry_$(SOC)_CORELIST
-ifneq ($(SOC), am64x)
+ifneq ($(SOC),$(filter $(SOC), am64x j7200))
 sbl_EXAMPLE_LIST += sbl_boot_xip_entry
 endif
 sbl_boot_xip_entry_SBL_APPIMAGEGEN = yes
@@ -617,7 +617,7 @@ endif
 ###########START BOOT PERF KNOBS#############
 # SBL log level
 # no logs = 0, only errors =1, normal logs = 2, all logs = 3
-SBL_CFLAGS += -DSBL_LOG_LEVEL=3
+SBL_CFLAGS += -DSBL_LOG_LEVEL=2
 
 SBL_CFLAGS += -DSBL_ENABLE_PLL
 SBL_CFLAGS += -DSBL_ENABLE_CLOCKS
@@ -716,7 +716,7 @@ CUST_SBL_TEST_BOARDS = am65xx_evm j721e_evm j7200_evm am64x_evm
 #CUST_SBL_TEST_FLAGS =" -DSBL_USE_DMA=0 -DSBL_LOG_LEVEL=0 -DSBL_SCRATCH_MEM_START=0x70100000 -DSBL_SCRATCH_MEM_SIZE=0xF0000 -DSBL_SKIP_SYSFW_INIT -DSBL_SKIP_MCU_RESET -DBOOT_OSPI"
 #CUST_SBL_TEST_FLAGS =" -DSBL_USE_DMA=1 -DSBL_LOG_LEVEL=1 -DSBL_SCRATCH_MEM_START=0xB8000000 -DSBL_SCRATCH_MEM_SIZE=0x4000000 -DSBL_ENABLE_PLL -DSBL_ENABLE_CLOCKS -DSBL_ENABLE_DDR -DSBL_SKIP_MCU_RESET -DBOOT_OSPI"
 ifeq ($(SOC), j7200)
-CUST_SBL_TEST_FLAGS =" -DSBL_USE_DMA=0 -DSBL_LOG_LEVEL=3 -DSBL_SCRATCH_MEM_START=0x41cc0000 -DSBL_SCRATCH_MEM_SIZE=0x40000 -DSBL_ENABLE_PLL -DSBL_ENABLE_CLOCKS -DSBL_SKIP_MCU_RESET -DBOOT_OSPI -DSBL_SKIP_PINMUX_ENABLE -DSBL_BYPASS_OSPI_DRIVER -DVLAB_SIM"
+CUST_SBL_TEST_FLAGS =" -DSBL_USE_DMA=0 -DSBL_LOG_LEVEL=2 -DSBL_SCRATCH_MEM_START=0x41cc0000 -DSBL_SCRATCH_MEM_SIZE=0x40000 -DSBL_ENABLE_PLL -DSBL_ENABLE_CLOCKS -DSBL_SKIP_MCU_RESET -DBOOT_OSPI -DSBL_SKIP_PINMUX_ENABLE -DSBL_BYPASS_OSPI_DRIVER -DVLAB_SIM"
 else
   ifeq ($(findstring j7,$(SOC)),j7)
 CUST_SBL_TEST_FLAGS =" -DSBL_USE_DMA=0 -DSBL_LOG_LEVEL=1 -DSBL_SCRATCH_MEM_START=0x41cc0000 -DSBL_SCRATCH_MEM_SIZE=0x40000 -DSBL_ENABLE_PLL -DSBL_ENABLE_CLOCKS -DSBL_SKIP_MCU_RESET -DBOOT_OSPI -DSBL_ENABLE_DEV_GRP_MCU -DSBL_HLOS_OWNS_FLASH"
@@ -807,7 +807,7 @@ export sbl_cust_img_hs_SOCLIST = $(CUST_SBL_TEST_SOCS)
 export sbl_cust_img_hs_BOARDLIST = $(CUST_SBL_TEST_BOARDS)
 export sbl_cust_img_hs_$(SOC)_CORELIST = mcu1_0
 export sbl_cust_img_hs_SBL_IMAGEGEN = yes
-ifneq ($(SOC), am64x)
+ifneq ($(SOC),$(filter $(SOC), am64x j7200))
 sbl_EXAMPLE_LIST += sbl_cust_img_hs
 endif
 

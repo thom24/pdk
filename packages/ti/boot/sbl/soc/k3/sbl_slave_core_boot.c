@@ -298,12 +298,12 @@ static void SBL_ConfigMcuLockStep(uint8_t enableLockStep, const sblSlaveCoreInfo
 
     if (enableLockStep)
     {
-        SBL_log(SBL_LOG_MAX, "Sciclient_procBootSetProcessorCfg, ProcId 0x%x, enabling Lockstep mode...\n");
+        SBL_log(SBL_LOG_MAX, "Sciclient_procBootSetProcessorCfg, ProcId 0x%x, enabling Lockstep mode...\n", cpuStatus.processor_id);
         proc_set_config_req.config_flags_1_set |= TISCI_MSG_VAL_PROC_BOOT_CFG_FLAG_R5_LOCKSTEP;
     }
     else
     {
-        SBL_log(SBL_LOG_MAX, "Sciclient_procBootSetProcessorCfg, ProcId 0x%x, enabling split mode...\n");
+        SBL_log(SBL_LOG_MAX, "Sciclient_procBootSetProcessorCfg, ProcId 0x%x, enabling split mode...\n", cpuStatus.processor_id);
         proc_set_config_req.config_flags_1_clear |= TISCI_MSG_VAL_PROC_BOOT_CFG_FLAG_R5_LOCKSTEP;
     }
 
@@ -719,8 +719,8 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
 
             /* Power up cores as needed */
 #if defined(SOC_AM64X) || defined(SOC_J7200)
-            /* AM64X has different Power on sequence than other K3 SOCs.
-             * On AM64x, CORE0 has to be powered on first, followed by CORE 1*/
+            /* AM64X & J7200 have a different Power on sequence than other K3 SOCs.
+             * We must ensure that CPU1 is powered off, first, before turning on CPU0 (and then CPU1) */
             if (pAppEntry->CpuEntryPoint[core_id] <  SBL_INVALID_ENTRY_ADDR)
             {
                 /* Multicore image has valid images for both core 0 and core 1 */ 
