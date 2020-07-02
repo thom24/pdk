@@ -92,6 +92,8 @@ typedef struct Board_initParams_s
         BOARD_PSC_DEVICE_MODE_EXCLUSIVE - Exclusive access to the core requesting access
         BOARD_PSC_DEVICE_MODE_NONEXCLUSIVE - Non-exclusive which allows other cores to get access */
     uint8_t pscMode;
+    /** CPSW mode configuration. 0 - RGMII mode (default), 1 - QSGMII mode */
+    uint32_t cpswModeCfg;
 } Board_initParams_t;
 
 /**

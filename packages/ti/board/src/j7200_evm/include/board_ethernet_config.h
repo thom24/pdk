@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -51,8 +51,9 @@ extern "C" {
 
 #define CPSW2G_PORTNUM                  (5U)
 
-#define CPSW9G_RMII_PORTNUM             (7U)
-#define CPSW9G_SGMII_PORTNUM            (1U)
+#define CPSW9G_SGMII_PORTNUM            (0U)
+#define CPSW9G_QGMII_PORTNUM            (0U)
+#define CPSW9G_RGMII_PORTNUM            (1U)
 
 #define RGMII_ID_DISABLE_MASK           (0x10)
 

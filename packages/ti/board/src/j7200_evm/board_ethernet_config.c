@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -44,14 +44,15 @@
 #include <ti/csl/soc.h>
 #include <ti/csl/cslr_mdio.h>
 
-
-
 Board_pruicssMdioInfo  Board_cpswMdioInfo[BOARD_CPSW9G_EMAC_PORT_MAX] =
                        {{(CSL_CPSW0_NUSS_BASE + BOARD_CPSW_MDIO_REG_OFFSET), BOARD_ICSS0_EMAC_PHY0_ADDR},
                         {(CSL_CPSW0_NUSS_BASE + BOARD_CPSW_MDIO_REG_OFFSET), BOARD_ICSS0_EMAC_PHY1_ADDR},
                         {(CSL_CPSW0_NUSS_BASE + BOARD_CPSW_MDIO_REG_OFFSET), BOARD_ICSS1_EMAC_PHY0_ADDR},
                         {(CSL_CPSW0_NUSS_BASE + BOARD_CPSW_MDIO_REG_OFFSET), BOARD_ICSS1_EMAC_PHY1_ADDR},
                        };
+
+extern Board_initParams_t gBoardInitParams;
+
 /**
  * \brief  Function to initialize MDIO
  *
@@ -294,9 +295,9 @@ Board_STATUS Board_sgmiiEthPhyConfig(void)
 }
 
 /**
- * \brief  Board specific configurations for CPSW9G Ethernet PHYs
+ * \brief  Board specific configurations for CPSW5G Ethernet PHYs
  *
- * This function takes care of configuring the internal delays for CPSW9G
+ * This function takes care of configuring the internal delays for CPSW5G
  * Ethernet PHYs
  *
  * \return  BOARD_SOK in case of success or appropriate error code
@@ -455,15 +456,17 @@ Board_STATUS Board_cpsw2gEthPhyConfig(void)
 }
 
 /**
- * \brief  Configures the CPSW9G Subsytem for RGMII and RMII mode
+ * \brief  Configures the CPSW5G Subsytem for RGMII and RMII mode
  *
  * \param  portNum [IN]    EMAC port number
  * \param  mode    [IN]    Mode selection for the specified port number
- *                         000 - GMII
- *                         001 - RMII
- *                         010 - RGMII
- *                         011 - SGMII
- *                         100 - QSGMII
+ *                         0x0 - GMII/MII
+ *                         0x1 - RMII
+ *                         0x2 - RGMII
+ *                         0x3 - SGMII
+ *                         0x4 - QSGMII
+ *                         0x5 - XFI
+ *                         0x6 - QSGMII_SUB
  *
  * \return  BOARD_SOK in case of success or appropriate error code
  */
@@ -497,10 +500,10 @@ Board_STATUS Board_cpsw9gEthConfig(uint32_t portNum, uint8_t mode)
  *
  * \param  portNum [IN]    EMAC port number
  * \param  mode    [IN]    Mode selection for the specified port number
- *                         00 - GMII
- *                         01 - RMII
- *                         10 - RGMII
- *                         11 - SGMII
+ *                         0x0 - GMII/MII
+ *                         0x1 - RMII
+ *                         0x2 - RGMII
+ *                         0x3 - SGMII
  *
  * \return  BOARD_SOK in case of success or appropriate error code
  */
@@ -552,9 +555,9 @@ Board_STATUS Board_ethConfigCpsw2g(void)
 }
 
 /**
- * \brief  Board specific configurations for CPSW9G Ethernet ports
+ * \brief  Board specific configurations for CPSW5G Ethernet ports
  *
- * This function used to configures CPSW9G Ethernet controllers with the respective modes
+ * This function used to configures CPSW5G Ethernet controllers with the respective modes
  *
  * \return  BOARD_SOK in case of success or appropriate error code
  */
@@ -563,22 +566,17 @@ Board_STATUS Board_ethConfigCpsw9g(void)
     Board_STATUS status = BOARD_SOK;
     uint8_t portNum;
 
-    /* On J721E EVM to use all 8 ports simultaneously, we use below configuration
-       RGMII Ports - 1,3,4,8. QSGMII ports - 2 (main),5,6,7 (sub)*/
-
-    /* Configures the CPSW9G RGMII ports */
-    for(portNum=0; portNum < BOARD_CPSW9G_PORT_MAX; portNum++)
+    /* Configures the CPSW5G RGMII ports */
+    if(gBoardInitParams.cpswModeCfg == 0)
     {
-        if ( 0U == portNum ||
-             2U == portNum ||
-             3U == portNum ||
-             7U == portNum )
+        /* CPSW mode is set to RGMII. Only one port is supported for RGMII */
+        status = Board_cpsw9gEthConfig(CPSW9G_RGMII_PORTNUM, RGMII);
+    }
+    else
+    {
+        for(portNum = 0; portNum < BOARD_CPSW9G_PORT_MAX; portNum++)
         {
-            status = Board_cpsw9gEthConfig(portNum, RGMII);
-        }
-        else
-        {
-            if (1U == portNum)
+            if (CPSW9G_QGMII_PORTNUM == portNum)
             {
                 status = Board_cpsw9gEthConfig(portNum, QSGMII);
             }
@@ -586,14 +584,14 @@ Board_STATUS Board_ethConfigCpsw9g(void)
             {
                 status = Board_cpsw9gEthConfig(portNum, QSGMII_SUB);
             }
-        }
-
-        if(status != BOARD_SOK)
-        {
-            return BOARD_FAIL;
+            
+            if(status != BOARD_SOK)
+            {
+                return BOARD_FAIL;
+            }
         }
     }
 
-    return BOARD_SOK;
+    return status;
 }
 
