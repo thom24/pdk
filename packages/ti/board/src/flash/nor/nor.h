@@ -294,6 +294,7 @@ extern const NOR_FxnTable Nor_qspiFxnTable;
 extern const NOR_FxnTable Nor_gpmcFxnTable;
 extern const NOR_FxnTable Nor_ospiFxnTable;
 extern const NOR_FxnTable Nor_hpfFxnTable;
+extern const NOR_FxnTable Nor_xspiFxnTable;
 
 #ifdef __cplusplus
 }

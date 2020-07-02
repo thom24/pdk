@@ -93,7 +93,7 @@ NOR_Config Nor_config[BOARD_FLASH_NOR_INTF_MAX] =
         NULL
     }
 };
-#elif defined (j721e_sim) || defined (j721e_evm) || defined(j7200_evm)
+#elif defined (j721e_sim) || defined (j721e_evm)
 NOR_Config Nor_config[BOARD_FLASH_NOR_INTF_MAX] =
 {
     {
@@ -107,6 +107,25 @@ NOR_Config Nor_config[BOARD_FLASH_NOR_INTF_MAX] =
     },
     {
         &Nor_ospiFxnTable
+    },
+    {
+        &Nor_hpfFxnTable
+    }
+};
+#elif defined(j7200_evm)
+NOR_Config Nor_config[BOARD_FLASH_NOR_INTF_MAX] =
+{
+    {
+        NULL
+    },
+    {
+        NULL
+    },
+    {
+        NULL
+    },
+    {
+        &Nor_xspiFxnTable
     },
     {
         &Nor_hpfFxnTable
