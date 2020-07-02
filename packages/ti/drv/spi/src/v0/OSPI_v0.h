@@ -126,6 +126,18 @@ extern "C" {
  */
 #define SPI_V0_CMD_ENABLE_SDR          (SPI_CMD_RESERVED + 9U)
 
+/*
+ *
+ *  \brief  Set extended opcodes when in indirect transfer mode.
+ */
+#define SPI_V0_CMD_XFER_OPCODE_EXT     (SPI_CMD_RESERVED + 10U)
+
+/*
+ *
+ *  \brief  Set extended opcode command read dummy cycles.
+ */
+#define SPI_V0_CMD_EXT_RD_DUMMY_CLKS   (SPI_CMD_RESERVED + 11U)
+
 /* SPI function table pointer */
 extern const SPI_FxnTable OSPI_FxnTable_v0;
 
@@ -245,6 +257,7 @@ typedef struct OSPI_v0_Object_s {
     uint32_t          ospiMode;         /* Config or Memory map mode */
     uint32_t          xferLines;        /* Number of transfer Lines */
     uint32_t          rdDummyClks;      /* Number of dummy clock cycles for read op */
+    uint32_t          extRdDummyClks;   /* Number of dummy clock cycles for extended opcode command read op */
     uint32_t          intrPollMode;     /* Interrupt or polling mode */
 
     SPI_TransferMode  transferMode;     /* Transfer mode */

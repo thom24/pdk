@@ -72,6 +72,12 @@ static int32_t    OSPI_cmdRead(const CSL_ospi_flash_cfgRegs *pRegs,
                                uint32_t                      cmd,
                                uint8_t                      *rxBuf,
                                uint32_t                      rxLen);
+static int32_t OSPI_cmdExtRead(const CSL_ospi_flash_cfgRegs *pRegs,
+                               uint8_t                      *cmd,
+                               uint32_t                      cmdLen,
+                               uint8_t                      *rxBuf,
+                               uint32_t                      rxLen,
+                               uint32_t                      dummyCycles);
 static int32_t    OSPI_write_v0(SPI_Handle handle, SPI_Transaction *transaction);
 static int32_t    OSPI_cmdWrite(const CSL_ospi_flash_cfgRegs *pRegs,
                                 const uint8_t                *cmdBuf,
@@ -1003,20 +1009,69 @@ static int32_t OSPI_cmdRead(const CSL_ospi_flash_cfgRegs *pRegs,
     return (retVal);
 }
 
+static int32_t OSPI_cmdExtRead(const CSL_ospi_flash_cfgRegs *pRegs,
+                               uint8_t                      *cmd,
+                               uint32_t                     cmdLen,
+                               uint8_t                      *rxBuf,
+                               uint32_t                     rxLen,
+                               uint32_t                     dummyCycles)
+{
+    uint32_t regVal;
+    uint32_t rdLen;
+    int32_t  retVal;
+    uint8_t *pBuf = rxBuf;
+
+    (void)CSL_ospiCmdExtRead(pRegs, cmd, cmdLen, rxLen, dummyCycles);
+    retVal = OSPI_flashExecCmd(pRegs);
+    if (retVal == 0)
+    {
+        regVal = CSL_REG32_RD(&pRegs->FLASH_RD_DATA_LOWER_REG);
+
+        /* Put the read value into rxBuf */
+        rdLen = (rxLen > 4U) ? 4U : rxLen;
+        (void)memcpy((void *)pBuf, (void *)(&regVal), rdLen);
+        pBuf += rdLen;
+
+        if (rxLen > 4U) {
+            regVal = CSL_REG32_RD(&pRegs->FLASH_RD_DATA_UPPER_REG);
+            rdLen = rxLen - rdLen;
+            (void)memcpy((void *)pBuf, (void *)(&regVal), rdLen);
+        }
+    }
+    return (retVal);
+}
+
 static int32_t OSPI_cmd_mode_read_v0(SPI_Handle handle,
                                      SPI_Transaction *transaction)
 {
     OSPI_v0_HwAttrs const *hwAttrs;    /* OSPI hardware attributes */
+    OSPI_v0_Object        *object;  /* OSPI object */
     uint8_t               *cmd;
+    int32_t               retVal;
 
     cmd = (uint8_t *)transaction->txBuf;
     /* Get the pointer to the hwAttrs */
     hwAttrs = (OSPI_v0_HwAttrs const *)handle->hwAttrs;
+    object  = (OSPI_v0_Object *)handle->object;
 
-    return (OSPI_cmdRead((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
-                            (uint32_t)cmd[0],
-                            (uint8_t *)transaction->rxBuf,
-                            (uint32_t)transaction->count - CSL_OSPI_CMD_LEN_DEFAULT));
+    if(CSL_ospiGetDualByteOpcodeMode((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr)))
+    {
+        retVal = OSPI_cmdExtRead((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
+                                 (uint8_t *)cmd,
+                                 (uint32_t)CSL_OSPI_CMD_LEN_EXTENDED,
+                                 (uint8_t *)transaction->rxBuf,
+                                 (uint32_t)transaction->count - CSL_OSPI_CMD_LEN_EXTENDED,
+                                 (uint32_t)object->extRdDummyClks);
+    }
+    else
+    {
+        retVal = OSPI_cmdRead((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
+                              (uint32_t)cmd[0],
+                              (uint8_t *)transaction->rxBuf,
+                              (uint32_t)transaction->count - CSL_OSPI_CMD_LEN_DEFAULT);
+    }
+
+    return (retVal);
 }
 
 
@@ -1539,6 +1594,8 @@ static int32_t OSPI_control_v0(SPI_Handle handle, uint32_t cmd, const void *arg)
     uint32_t               nvcrCmd;
     uint32_t               addr;
     uint32_t               data;
+    uint32_t               extOpcodeLo;
+    uint32_t               extOpcodeUp;
 
     if (handle != NULL)
     {
@@ -1562,6 +1619,25 @@ static int32_t OSPI_control_v0(SPI_Handle handle, uint32_t cmd, const void *arg)
                                    object->transferCmd,
                                    object->xferLines);
                 object->rdStatusCmd = *ctrlData;
+                retVal = SPI_STATUS_SUCCESS;
+                break;
+            }
+
+            case SPI_V0_CMD_XFER_OPCODE_EXT:
+            {
+                extOpcodeLo  = *ctrlData++; /* EXT_STIG_OPCODE_FLD */
+                extOpcodeLo |= (*ctrlData++ << 8); /* EXT_POLL_OPCODE_FLD */
+                extOpcodeLo |= (*ctrlData++ << 16); /* EXT_WRITE_OPCODE_FLD */
+                extOpcodeLo |= (*ctrlData++ << 24); /* EXT_READ_OPCODE_FLD */
+
+                extOpcodeUp  = (*ctrlData++ << 16); /* EXT_WEL_OPCODE_FLD */
+                extOpcodeUp |= (*ctrlData << 24); /* WEL_OPCODE_FLD */
+
+                CSL_ospiExtOpcodeSet((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
+                                     extOpcodeLo,
+                                     extOpcodeUp);
+                CSL_ospiSetDualByteOpcodeMode((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
+                                              TRUE);
                 retVal = SPI_STATUS_SUCCESS;
                 break;
             }
@@ -1616,6 +1692,13 @@ static int32_t OSPI_control_v0(SPI_Handle handle, uint32_t cmd, const void *arg)
             case SPI_V0_CMD_RD_DUMMY_CLKS:
             {
                 object->rdDummyClks = *ctrlData;
+                retVal = SPI_STATUS_SUCCESS;
+                break;
+            }
+
+            case SPI_V0_CMD_EXT_RD_DUMMY_CLKS:
+            {
+                object->extRdDummyClks = *ctrlData;
                 retVal = SPI_STATUS_SUCCESS;
                 break;
             }
