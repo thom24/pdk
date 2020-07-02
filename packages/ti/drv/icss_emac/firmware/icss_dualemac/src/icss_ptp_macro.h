@@ -320,4 +320,16 @@ CONTINUE_PRE_PROC:
 EXIT_PTP_TX_PRE_PROC:
     .endm 
     
-    
+;---------------------------------------------------------------------------------------------------------
+; Macro Name: M_GPTP_LOAD_TS_OFFSET
+; Description: Load Rx TS offset to R20
+; Input Parameters: 
+; Output Parameters: none
+;---------------------------------------------------------------------------------------------------------
+M_GPTP_LOAD_TS_OFFSET    .macro
+    .if $defined (PRU0)
+        LDI     RCV_TEMP_REG_1.w0, RX_TIMESTAMP_OFFSET_P1
+    .else
+        LDI     RCV_TEMP_REG_1.w0, RX_TIMESTAMP_OFFSET_P2
+    .endif
+    .endm      

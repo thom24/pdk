@@ -1532,6 +1532,8 @@ LB_XIN_STORE_LESS_THAN_32_FROM_UPPER_BANK:
 LB_XIN_STORE_LESS_THAN_32_FROM_LOWER_BANK:
     AND R0.b1 , R18 , R18
 LB_STORE_FROM_UPPER_BUFFER:
+
+    QBBS    RCV_LB_APPEND_TS, R22, 14    ;check PTP flag
     ; Check if 0 bytes are there to store
     QBEQ	LB_PROCESS_CHECK_FWD_FLAG, R0.b1, 0	
     
@@ -1549,6 +1551,77 @@ LB_STORE_FROM_UPPER_BUFFER:
 RCV_LB_NO_QUEUE_WRAP_2:
     ADD		MII_RCV.wrkng_wr_ptr,  MII_RCV.wrkng_wr_ptr,  4
 RCV_LB_QUEUE_WRAPPED_2:
+QBA     RCV_LB_CHECK_OVERFLOW
+RCV_LB_APPEND_TS:
+    ;Logic to append 10 bytes timestamp to the end of packet
+    CLR     R22, R22, 14    ;clear PTP flag
+
+    .if $defined("ICSS_SWITCH_BUILD")
+        QBBC    LB_PROCESS_CHECK_FWD_FLAG, MII_RCV.rx_flags, host_rcv_flag_shift    ;MII_RCV.rx_flags.host_rcv_flag
+    .endif
+
+    ;check if entire timestamp goes into new block
+    QBEQ    LB_TS_IN_NEW_32B, R0.b1, 0
+    ;check if we adding TS results in more than 32B
+    ADD     R1.b0, R0.b1, 8         ;Get the register offset
+    ADD     R0.b1, R0.b1, 10
+    ;Data fits
+
+    .if $defined(PTP)
+        M_GPTP_LOAD_TS_OFFSET
+    .endif
+    LBCO    &R10, ICSS_SHARED_CONST, RCV_TEMP_REG_1.w0, 10      ;TS in R19-R21.w0
+
+    ;Copy timestamp to correct offset in R2-R9 bank. 
+    ;This copy might overwrite R10-R11 but we don't care, as it saves cycles!
+    MVID    *R1.b0++, R10
+    MVID    *R1.b0++, R11
+    MVIW    *R1.b0, R12.w0
+    SBCO	&Ethernet, L3_OCMC_RAM_CONST, MII_RCV.buffer_index, 32  ;Store data + timestamp
+
+    QBLT    LB_TS_DOES_NOT_FIT, R0.b1, 32    
+    ADD	    MII_RCV.byte_cntr, MII_RCV.byte_cntr, R0.b1     ; increment the count by R1 bytes
+    QBA     RCV_LB_CHECK_WRAPAROUND
+
+LB_TS_DOES_NOT_FIT:    
+    ; Compare current wrk pointer to top_most queue desc pointer ..check for wrap around
+    QBNE	LB_TS_DOES_NOT_FIT_NO_WRAP, MII_RCV.wrkng_wr_ptr, MII_RCV.top_most_buffer_desc_offset
+    AND     MII_RCV.wrkng_wr_ptr , MII_RCV.base_buffer_desc_offset , MII_RCV.base_buffer_desc_offset
+    AND     MII_RCV.buffer_index , MII_RCV.base_buffer_index , MII_RCV.base_buffer_index
+    QBA		LB_TS_DOES_NOT_FIT_STORE_REST
+LB_TS_DOES_NOT_FIT_NO_WRAP:
+    ADD		MII_RCV.buffer_index, MII_RCV.buffer_index,  32
+    ADD		MII_RCV.wrkng_wr_ptr,  MII_RCV.wrkng_wr_ptr,  4
+LB_TS_DOES_NOT_FIT_STORE_REST:   ;store rest of the bytes
+
+    ;Need to store remaining bytes
+    RSB     R0.b2, R0.b1, 42                                         ;How many bytes of timestamp already appended in previous block ?
+    ADD     RCV_TEMP_REG_1.w0, RCV_TEMP_REG_1.w0, R0.b2              ;timestamp offset is already in RCV_TEMP_REG_1.w0
+    LBCO    &Ethernet, ICSS_SHARED_CONST, RCV_TEMP_REG_1.w0, 10
+    SBCO	&Ethernet, L3_OCMC_RAM_CONST, MII_RCV.buffer_index, 10
+
+    ADD	    MII_RCV.byte_cntr, MII_RCV.byte_cntr, 10
+    SUB     MII_RCV.byte_cntr, MII_RCV.byte_cntr, R0.b2              ;Increment the byte counter with number of bytes actually saved in this 32B block            
+    QBA     RCV_LB_CHECK_WRAPAROUND
+
+LB_TS_IN_NEW_32B: ;Timestamp goes into new 32B block
+    .if $defined(PTP)
+        M_GPTP_LOAD_TS_OFFSET
+    .endif
+
+    LBCO    &Ethernet, ICSS_SHARED_CONST, RCV_TEMP_REG_1.w0, 10
+    SBCO	&Ethernet, L3_OCMC_RAM_CONST, MII_RCV.buffer_index, 10
+    ADD	    MII_RCV.byte_cntr, MII_RCV.byte_cntr, 10
+
+RCV_LB_CHECK_WRAPAROUND:
+    ;check wraparound
+    QBNE	RCV_LB_NO_QUEUE_WRAP_3, MII_RCV.wrkng_wr_ptr, MII_RCV.top_most_buffer_desc_offset
+    AND     MII_RCV.wrkng_wr_ptr , MII_RCV.base_buffer_desc_offset , MII_RCV.base_buffer_desc_offset
+    QBA		RCV_LB_CHECK_OVERFLOW
+RCV_LB_NO_QUEUE_WRAP_3:
+    ADD		MII_RCV.wrkng_wr_ptr,  MII_RCV.wrkng_wr_ptr,  4
+
+RCV_LB_CHECK_OVERFLOW:
     .if $defined("ICSS_DUAL_EMAC_BUILD")
     ; Check if the queue got completely filled with the last few bytes.
     ;If yes, the wr_ptr and rd_prt might become equal and there could be

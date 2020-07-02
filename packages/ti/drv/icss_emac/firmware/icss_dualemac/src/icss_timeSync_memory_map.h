@@ -66,9 +66,11 @@
 #define GPTP_BASE_ADDR_OFFSET                            0x8
 
 #define RX_SYNC_TIMESTAMP_OFFSET_P1                      ( GPTP_BASE_ADDR_OFFSET + 0 )                  /* 12 bytes */
+#define RX_TIMESTAMP_OFFSET_P1                           ( GPTP_BASE_ADDR_OFFSET + 0 )                  /* 12 bytes*/
 #define RX_PDELAY_REQ_TIMESTAMP_OFFSET_P1                ( RX_SYNC_TIMESTAMP_OFFSET_P1 + 12 )           /* 12 bytes */
 #define RX_PDELAY_RESP_TIMESTAMP_OFFSET_P1               ( RX_PDELAY_REQ_TIMESTAMP_OFFSET_P1 + 12 )     /* 12 bytes */
 #define RX_SYNC_TIMESTAMP_OFFSET_P2                      ( RX_PDELAY_RESP_TIMESTAMP_OFFSET_P1 + 12 )    /* 12 bytes */
+#define RX_TIMESTAMP_OFFSET_P2                           ( RX_PDELAY_RESP_TIMESTAMP_OFFSET_P1 + 12 )    /* 12 bytes */
 #define RX_PDELAY_REQ_TIMESTAMP_OFFSET_P2                ( RX_SYNC_TIMESTAMP_OFFSET_P2 + 12 )           /* 12 bytes */
 #define RX_PDELAY_RESP_TIMESTAMP_OFFSET_P2               ( RX_PDELAY_REQ_TIMESTAMP_OFFSET_P2 + 12 )     /* 12 bytes */
 #define TIMESYNC_DOMAIN_NUMBER_LIST                      ( RX_PDELAY_RESP_TIMESTAMP_OFFSET_P2 + 12 )    /* 2 domains(2 bytes) supported in firmware */
