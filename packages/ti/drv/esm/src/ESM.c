@@ -151,7 +151,7 @@ void ESM_processInterrupt (uint32_t vec, int32_t* groupNum, int32_t* vecNum)
         gEsmMCB.debugEsmISRCount[1]++;
 #endif
         *groupNum = 2;
-        *vecNum = vec - 32;
+        *vecNum = vec;
     }
     else if (vec < 96U)
     {
@@ -206,7 +206,7 @@ ESM_Handle ESM_init(uint8_t bClearErrors)
     memset ((void *)&gEsmMCB, 0U, sizeof(ESM_DriverMCB));
 
     ptrESMRegs          = gESMHwCfgAttrs.ptrESMRegs;
-    gEsmMCB.esmBaseAddr = (uintptr_t)ptrESMRegs;
+    gEsmMCB.esmBaseAddr = (uint32_t)ptrESMRegs;
 
 #if defined (BUILD_MCU)
     OsalRegisterIntrParams_t interruptRegParams;
@@ -217,8 +217,9 @@ ESM_Handle ESM_init(uint8_t bClearErrors)
     /* Populate the interrupt parameters */
     interruptRegParams.corepacConfig.name       = (char *)"ESM_HIGH_PRIORITY";
     interruptRegParams.corepacConfig.isrRoutine = ESM_highpriority_interrupt;
-    interruptRegParams.corepacConfig.priority   = 0x15U;
+    interruptRegParams.corepacConfig.priority   = 0xFU;
     interruptRegParams.corepacConfig.intVecNum  = (int32_t)gESMHwCfgAttrs.highPrioIntNum;
+    interruptRegParams.corepacConfig.corepacEventNum = (int32_t)gESMHwCfgAttrs.highPrioIntNum;
 
     /* Register interrupts */
     (void)Osal_RegisterInterrupt(&interruptRegParams,&(gEsmMCB.hwiHandleHi));
@@ -235,6 +236,7 @@ ESM_Handle ESM_init(uint8_t bClearErrors)
     interruptRegParams.corepacConfig.isrRoutine = ESM_lowpriority_interrupt;
     interruptRegParams.corepacConfig.priority   = 0x8U;
     interruptRegParams.corepacConfig.intVecNum  = (int32_t)gESMHwCfgAttrs.lowPrioIntNum;
+    interruptRegParams.corepacConfig.corepacEventNum = (int32_t)gESMHwCfgAttrs.lowPrioIntNum;
 
     /* Register interrupts */
     (void)Osal_RegisterInterrupt(&interruptRegParams,&(gEsmMCB.hwiHandleLo));
@@ -386,6 +388,12 @@ int32_t ESM_registerNotifier(ESM_Handle handle, ESM_NotifyParams* params, int32_
             {
                 ESMEnableIntr(gEsmMCB.esmBaseAddr, params->errorNumber);
             }
+            /* Unmask Group 2 ESM errors to enable the generation of NMI. */
+            if (params->groupNumber == 2)
+            {
+                ESM_socConfigErrorGating(params->groupNumber, params->errorNumber, 0);
+            }
+
             memcpy ((void *)&ptrEsmMCB->notifyParams[notifyIndex], (void *)params, sizeof (ESM_NotifyParams));
             retVal = notifyIndex;
         }
@@ -433,13 +441,20 @@ int32_t ESM_deregisterNotifier(ESM_Handle handle, int32_t notifyIndex, int32_t* 
         errorNumber = gEsmMCB.notifyParams[notifyIndex].errorNumber;
 
         /* Check if the notifier is to handle group 1 or group 2 errors.
-         * Group 2 errors are enabled by default. Group 1 errors have to be explicitly enabled.
+         * Group 2 errors are enabled by default. Group 1 errors was explicitly enabled
+         * and now needs to be disabled.
          */
         if (groupNumber == 1)
         {
             ESMDisableIntr(gEsmMCB.esmBaseAddr, errorNumber);
-            memset ((void *)&ptrEsmMCB->notifyParams[notifyIndex], 0, sizeof (ESM_NotifyParams));
         }
+        /* Gating Group 2 ESM errors to disable the generation of NMI. */
+        if (groupNumber == 2)
+        {
+            ESM_socConfigErrorGating(groupNumber, errorNumber, 1);
+        }
+        memset ((void *)&ptrEsmMCB->notifyParams[notifyIndex], 0, sizeof (ESM_NotifyParams));
+
         /* Release the critical section: */
         HwiP_restore(key);
     }

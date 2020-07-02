@@ -47,6 +47,7 @@
 #if defined(SOC_TPR12)
 #include <ti/drv/esm/soc/ESM_v0.h>
 #define ESM_HwAttrs    ESM_v0_HwAttrs
+extern int32_t ESM_socConfigErrorGating(uint8_t groupNumber, uint8_t errorNumber, uint8_t gating);
 #endif
 
 #ifdef __cplusplus

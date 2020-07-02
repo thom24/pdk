@@ -81,7 +81,7 @@ typedef struct ESM_DriverMCB_t
     /**
      * @brief   Base address of the ESM address space to be used.
      */
-    uintptr_t                   esmBaseAddr;
+    uint32_t                    esmBaseAddr;
 
     /**
      * @brief   Registered high priority Interrupt Handler.

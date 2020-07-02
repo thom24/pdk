@@ -38,8 +38,15 @@
  *
  */
 
+/**************************************************************************
+ *************************** Include Files ********************************
+ **************************************************************************/
+
 #include <ti/csl/soc.h>
 #include <ti/drv/esm/soc/ESM_soc.h>
+
+#include <ti/csl/soc/tpr12/src/cslr_mss_ctrl.h>
+#include <ti/csl/soc/tpr12/src/cslr_dss_ctrl.h>
 
 /**************************************************************************
  ************************** Global Variables ******************************
@@ -62,3 +69,94 @@ ESM_HwAttrs gESMHwCfgAttrs =
 #error "TPR12 ESM: unsupported core!~
 #endif
 };
+
+/**************************************************************************
+ ************************* Functions **************************************
+ **************************************************************************/
+/**
+ *  @b Description
+ *  @n
+ *      This function is used to gate/ungate an ESM error
+ *
+ *  @param[in]  groupNumber
+ *      Group number for the ESM error
+ *  @param[in]  errorNumber
+ *      ESM error number
+ *  @param[in]  gating
+ *      Gating of the ESM error: 0 - ungating; 1 - gating
+  *
+ *  @retval
+ *      Success -   0
+ *  @retval
+ *      Error   -   <0
+ */
+#define MASK  (0xFU)
+#define SHIFT (0x4U)
+#define COUNT (0x8U)
+int32_t ESM_socConfigErrorGating(uint8_t groupNumber, uint8_t errorNumber, uint8_t gating)
+{
+    uint32_t regVal;
+    uint32_t regIndex;
+
+    if (groupNumber != 2)
+    {
+        return -1;
+    }
+
+#if defined (__TI_ARM_V7R4__)
+    CSL_mss_ctrlRegs* ptrCtrlRegs = (CSL_mss_ctrlRegs*)CSL_MSS_CTRL_U_BASE;
+#elif defined (_TMS320C6X)
+    CSL_mss_ctrlRegs* ptrCtrlRegs = (CSL_mss_ctrlRegs*)CSL_DSS_CTRL_U_BASE;
+#else
+#error "TPR12 ESM: unsupported core!~
+#endif
+
+    regIndex = errorNumber / COUNT;
+    switch (regIndex)
+    {
+        case 0:
+            regVal = CSL_REG_RD(&ptrCtrlRegs->ESM_GATING0);
+            regVal &= ~(MASK << (SHIFT*(errorNumber % COUNT)));
+            if (gating)
+            {
+                regVal |= (MASK << (SHIFT*(errorNumber % COUNT)));
+            }
+            CSL_REG_WR(&ptrCtrlRegs->ESM_GATING0, regVal);
+            break;
+        case 1:
+            errorNumber -= COUNT*regIndex;
+            regVal = CSL_REG_RD(&ptrCtrlRegs->ESM_GATING1);
+            regVal &= ~(MASK << (SHIFT*(errorNumber % COUNT)));
+            if (gating)
+            {
+                regVal |= (MASK << (SHIFT*(errorNumber % COUNT)));
+            }
+            CSL_REG_WR(&ptrCtrlRegs->ESM_GATING1, regVal);
+            break;
+         case 2:
+            errorNumber -= COUNT*regIndex;
+            regVal = CSL_REG_RD(&ptrCtrlRegs->ESM_GATING2);
+            regVal &= ~(MASK << (SHIFT*(errorNumber % COUNT)));
+            if (gating)
+            {
+                regVal |= (MASK << (SHIFT*(errorNumber % COUNT)));
+            }
+            CSL_REG_WR(&ptrCtrlRegs->ESM_GATING2, regVal);
+            break;
+          case 3:
+            errorNumber -= COUNT*regIndex;
+            regVal = CSL_REG_RD(&ptrCtrlRegs->ESM_GATING3);
+            regVal &= ~(MASK << (SHIFT*(errorNumber % COUNT)));
+            if (gating)
+            {
+                regVal |= (MASK << (SHIFT*(errorNumber % COUNT)));
+            }
+            CSL_REG_WR(&ptrCtrlRegs->ESM_GATING3, regVal);
+            break;
+          default:
+            return -1;
+    }
+
+    return 0;
+}
+
