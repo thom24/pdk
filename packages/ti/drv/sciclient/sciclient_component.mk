@@ -175,7 +175,12 @@ sciclient_rtos_app_PKG_LIST = sciclient_rtos_app
 sciclient_rtos_app_INCLUDE = $(sciclient_rtos_app_PATH)
 sciclient_rtos_app_BOARDLIST = am65xx_evm j721e_sim j721e_evm am64x_evm j7200_evm
 export sciclient_rtos_app_BOARDLIST
+ifeq ($(SOC), am64x)
+# No M4F for the RTOS App
+sciclient_rtos_app_$(SOC)_CORELIST = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
+else
 sciclient_rtos_app_$(SOC)_CORELIST = $(drvsciclient_$(SOC)_CORELIST)
+endif
 export sciclient_rtos_app_$(SOC)_CORELIST
 sciclient_rtos_app_SBL_APPIMAGEGEN = no
 export sciclient_rtos_app_SBL_APPIMAGEGEN
@@ -200,7 +205,12 @@ sciclient_unit_testapp_PKG_LIST = sciclient_unit_testapp
 sciclient_unit_testapp_INCLUDE = $(sciclient_unit_testapp_PATH)
 sciclient_unit_testapp_BOARDLIST = am65xx_evm j721e_sim j721e_evm am64x_evm j7200_evm
 export sciclient_unit_testapp_BOARDLIST
+ifeq ($(SOC),am64x)
+# No M4F for the RTOS App
+sciclient_unit_testapp_$(SOC)_CORELIST = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
+else
 sciclient_unit_testapp_$(SOC)_CORELIST = $(drvsciclient_$(SOC)_CORELIST)
+endif
 ifeq ($(BOARD),$(filter $(BOARD), am64x_evm))
 sciclient_unit_testapp_$(SOC)_CORELIST = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
 endif
