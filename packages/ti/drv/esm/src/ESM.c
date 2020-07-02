@@ -143,7 +143,7 @@ void ESM_processInterrupt (uint32_t vec, int32_t* groupNum, int32_t* vecNum)
     {
         /* group 2 0-31 errors */
         vec = vec - 32;
-        regVal = ((uint32_t) TRUE << (vec));
+        regVal = ((uint32_t) 1U << (vec));
         ptrESMRegs = gESMHwCfgAttrs.ptrESMRegs;
         CSL_REG_WR(&ptrESMRegs->ESMSR2, regVal);
 

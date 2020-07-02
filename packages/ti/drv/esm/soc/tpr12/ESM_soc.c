@@ -66,7 +66,7 @@ ESM_HwAttrs gESMHwCfgAttrs =
     0,                                  /* Not used */
     0                                   /* Not used */
 #else
-#error "TPR12 ESM: unsupported core!~
+#error "TPR12 ESM: unsupported core"
 #endif
 };
 
@@ -90,72 +90,53 @@ ESM_HwAttrs gESMHwCfgAttrs =
  *  @retval
  *      Error   -   <0
  */
-#define MASK  (0xFU)
-#define SHIFT (0x4U)
-#define COUNT (0x8U)
+/* Definitions for operating on one ESM_GATING register */
+#define MASK   (0xFU) /* Four bits are used for each ESM error, creating a mask of 0xF      */
+#define SHIFT  (0x4U) /* 4-bit Shift from one ESM error to the next one                     */
+#define COUNT  (0x8U) /* Each ESM_GATING register handles 8 ESM errors                      */
+
+/* 4 byte address offset from one ESM_GATING register to the next one */
+#define OFFSET (0x4U)
+
+/* 4 ESM_GATING registers for group 2, followed by the registers fo group 3 */
+#define GROUP  (0x4U)
+
 int32_t ESM_socConfigErrorGating(uint8_t groupNumber, uint8_t errorNumber, uint8_t gating)
 {
     uint32_t regVal;
     uint32_t regIndex;
-
-    if (groupNumber != 2)
-    {
-        return -1;
-    }
+    uint32_t regAddr;
 
 #if defined (__TI_ARM_V7R4__)
     CSL_mss_ctrlRegs* ptrCtrlRegs = (CSL_mss_ctrlRegs*)CSL_MSS_CTRL_U_BASE;
 #elif defined (_TMS320C6X)
     CSL_mss_ctrlRegs* ptrCtrlRegs = (CSL_mss_ctrlRegs*)CSL_DSS_CTRL_U_BASE;
 #else
-#error "TPR12 ESM: unsupported core!~
+#error "TPR12 ESM: unsupported core"
 #endif
 
-    regIndex = errorNumber / COUNT;
-    switch (regIndex)
+    /* Error gating is for Group 2  and Group 3 errors only */
+    if ((groupNumber < 2) || (groupNumber > 3))
     {
-        case 0:
-            regVal = CSL_REG_RD(&ptrCtrlRegs->ESM_GATING0);
-            regVal &= ~(MASK << (SHIFT*(errorNumber % COUNT)));
-            if (gating)
-            {
-                regVal |= (MASK << (SHIFT*(errorNumber % COUNT)));
-            }
-            CSL_REG_WR(&ptrCtrlRegs->ESM_GATING0, regVal);
-            break;
-        case 1:
-            errorNumber -= COUNT*regIndex;
-            regVal = CSL_REG_RD(&ptrCtrlRegs->ESM_GATING1);
-            regVal &= ~(MASK << (SHIFT*(errorNumber % COUNT)));
-            if (gating)
-            {
-                regVal |= (MASK << (SHIFT*(errorNumber % COUNT)));
-            }
-            CSL_REG_WR(&ptrCtrlRegs->ESM_GATING1, regVal);
-            break;
-         case 2:
-            errorNumber -= COUNT*regIndex;
-            regVal = CSL_REG_RD(&ptrCtrlRegs->ESM_GATING2);
-            regVal &= ~(MASK << (SHIFT*(errorNumber % COUNT)));
-            if (gating)
-            {
-                regVal |= (MASK << (SHIFT*(errorNumber % COUNT)));
-            }
-            CSL_REG_WR(&ptrCtrlRegs->ESM_GATING2, regVal);
-            break;
-          case 3:
-            errorNumber -= COUNT*regIndex;
-            regVal = CSL_REG_RD(&ptrCtrlRegs->ESM_GATING3);
-            regVal &= ~(MASK << (SHIFT*(errorNumber % COUNT)));
-            if (gating)
-            {
-                regVal |= (MASK << (SHIFT*(errorNumber % COUNT)));
-            }
-            CSL_REG_WR(&ptrCtrlRegs->ESM_GATING3, regVal);
-            break;
-          default:
-            return -1;
+        return -1;
     }
+
+    /* For Group 2 and Group 3, there are up to 32 errors for each*/
+    if (errorNumber > 32)
+    {
+        return -1;
+    }
+
+    regIndex = errorNumber / COUNT + (groupNumber-2) * GROUP;
+    regAddr  = (uint32_t)&ptrCtrlRegs->ESM_GATING0 + regIndex * OFFSET;
+
+    regVal = CSL_REG_RD((volatile uint32_t *)regAddr);
+    regVal &= ~(MASK << (SHIFT*(errorNumber % COUNT)));
+    if (gating)
+    {
+        regVal |= (MASK << (SHIFT*(errorNumber % COUNT)));
+    }
+    CSL_REG_WR((volatile uint32_t *)regAddr, regVal);
 
     return 0;
 }
