@@ -993,7 +993,10 @@ uint32_t Sciclient_getCurrentContext(uint16_t messageType)
        (TISCI_MSG_BOARD_CONFIG == messageType) ||
        (TISCI_MSG_BOARD_CONFIG_RM == messageType) ||
        (TISCI_MSG_BOARD_CONFIG_SECURITY == messageType) ||
-       (TISCI_MSG_BOARD_CONFIG_PM == messageType))
+       (TISCI_MSG_BOARD_CONFIG_PM == messageType) ||
+       (TISCI_MSG_SA2UL_SET_DKEK == messageType) ||
+       (TISCI_MSG_SA2UL_RELEASE_DKEK == messageType) ||
+       (TISCI_MSG_SA2UL_GET_DKEK == messageType))
     {
         retVal = SCICLIENT_CONTEXT_SEC;
     }
