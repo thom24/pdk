@@ -49,11 +49,11 @@
 Board_DetectCfg_t  gBoardDetCfg[BOARD_ID_MAX_BOARDS] =
  {{BOARD_COMMON_EEPROM_I2C_INST, BOARD_GESI_EEPROM_SLAVE_ADDR, BOARD_SOC_DOMAIN_WKUP, "J7X-GESI-EXP"},
   {BOARD_COMMON_EEPROM_I2C_INST, BOARD_ENET_EEPROM_SLAVE_ADDR, BOARD_SOC_DOMAIN_WKUP, "J7X-VSC8514-ETH"},
-  {BOARD_COMMON_EEPROM_I2C_INST, BOARD_SOM_EEPROM_SLAVE_ADDR, BOARD_SOC_DOMAIN_WKUP, "J7200X-PM1-SOM"},
+  {BOARD_COMMON_EEPROM_I2C_INST, BOARD_SOM_EEPROM_SLAVE_ADDR, BOARD_SOC_DOMAIN_WKUP, "J7200X-PM2-SOM"},
   {BOARD_COMMON_EEPROM_I2C_INST, BOARD_CP_EEPROM_SLAVE_ADDR, BOARD_SOC_DOMAIN_WKUP, "J7X-BASE-CPB"}};
 
 Board_I2cInitCfg_t gBoardI2cInitCfg = {0, BOARD_SOC_DOMAIN_MAIN, 0};
-Board_initParams_t gBoardInitParams = {BOARD_UART_INSTANCE, BOARD_UART_SOC_DOMAIN, BOARD_PSC_DEVICE_MODE_NONEXCLUSIVE, 0};
+Board_initParams_t gBoardInitParams = {BOARD_UART_INSTANCE, BOARD_UART_SOC_DOMAIN, BOARD_PSC_DEVICE_MODE_NONEXCLUSIVE};
 
 /**
  * \brief Board ID read function
@@ -125,6 +125,38 @@ bool Board_detectBoard(uint32_t boardID)
     }
 
     return bDet;
+}
+
+/**
+ * \brief  Checks for Alpha board revision
+ *
+ * \param   boardID  [IN]  ID of the board to be detected
+ * \n                      ID of the board to be detected
+ * \n					   BOARD_ID_SOM(0x0) - Dual PMIC SoM Board
+ * \n                      BOARD_ID_CP(0x1) - CP Board
+ * \n                      BOARD_ID_GESI(0x2) - GESI Board
+ * \n                      BOARD_ID_ENET(0x3) - Quad ENET expansion
+ *
+ * \return TRUE if board revision is E2, FALSE for all other cases
+ */
+bool Board_isAlpha(uint32_t boardID)
+{
+    Board_IDInfo_v2 info;
+    Board_STATUS status;
+    bool alphaBoard = FALSE;
+
+    status = Board_getBoardData(&info, boardID);
+    if(status == 0)
+    {
+        if(!(strncmp(info.boardInfo.designRev,
+                     "E2",
+                     BOARD_DESIGN_REV_LEN)))
+        {
+            alphaBoard = TRUE;
+        }
+    }
+
+    return alphaBoard;
 }
 
 /**

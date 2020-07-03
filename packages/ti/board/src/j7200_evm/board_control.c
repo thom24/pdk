@@ -171,7 +171,7 @@ Board_STATUS Board_control(uint32_t cmd, void *arg)
             status = Board_setIoExpPinOutput((Board_IoExpCfg_t *)arg);
             break;
 
-        case BOARD_CTRL_CMD_SET_CPSW9G_MDIO_MUX:
+        case BOARD_CTRL_CMD_SET_CPSW5G_MDIO_MUX:
             status = Board_setCpsw5GMdioMux();
             break;
 

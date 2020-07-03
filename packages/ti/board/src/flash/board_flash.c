@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2019, Texas Instruments Incorporated
+ * Copyright (c) 2016-2020, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -87,6 +87,7 @@ static uint32_t Board_getFlashIntf(uint32_t deviceId)
 #else
         case BOARD_FLASH_ID_MT35XU512ABA1G12:
         case BOARD_FLASH_ID_MT35XU256ABA1G12:
+        case BOARD_FLASH_ID_S28HS512T:
 #endif
         {
             flashIntf = BOARD_FLASH_NOR_OSPI;
@@ -144,7 +145,8 @@ Board_flashHandle Board_flashOpen(uint32_t deviceId, uint32_t portNum, void *par
         (deviceId == BOARD_FLASH_ID_MT25QU512ABB)        || \
         (deviceId == BOARD_FLASH_ID_MT35XU512ABA1G12)	 || \
         (deviceId == BOARD_FLASH_ID_MT35XU256ABA1G12)    || \
-        (deviceId == BOARD_FLASH_ID_S71KS512S)
+        (deviceId == BOARD_FLASH_ID_S71KS512S)           || \
+        (deviceId == BOARD_FLASH_ID_S28HS512T)
        )
     {
         /* Open the NOR flash */
@@ -241,7 +243,8 @@ Board_flash_STATUS Board_flashClose(Board_flashHandle handle)
         (flashInfo->device_id == BOARD_FLASH_ID_MT25QU512ABB)        || \
         (flashInfo->device_id == BOARD_FLASH_ID_MT35XU512ABA1G12)	 || \
         (flashInfo->device_id == BOARD_FLASH_ID_MT35XU256ABA1G12)    || \
-        (flashInfo->device_id == BOARD_FLASH_ID_S71KS512S)
+        (flashInfo->device_id == BOARD_FLASH_ID_S71KS512S)           || \
+        (flashInfo->device_id == BOARD_FLASH_ID_S28HS512T)
        )
     {
         NOR_close(flashInfo->flashHandle);
@@ -298,7 +301,8 @@ Board_flash_STATUS Board_flashRead(Board_flashHandle  handle,
         (flashInfo->device_id == BOARD_FLASH_ID_MT25QU512ABB)        || \
         (flashInfo->device_id == BOARD_FLASH_ID_MT35XU512ABA1G12)	 || \
         (flashInfo->device_id == BOARD_FLASH_ID_MT35XU256ABA1G12)    || \
-        (flashInfo->device_id == BOARD_FLASH_ID_S71KS512S)
+        (flashInfo->device_id == BOARD_FLASH_ID_S71KS512S)           || \
+        (flashInfo->device_id == BOARD_FLASH_ID_S28HS512T)
        )
     {
         if (params)
@@ -377,7 +381,8 @@ Board_flash_STATUS Board_flashOffsetToSectorPage(Board_flashHandle  handle,
         (flashInfo->device_id == BOARD_FLASH_ID_NORN25Q128A13ESF40F) || \
         (flashInfo->device_id == BOARD_FLASH_ID_MT29F4G08ABAEAWP)    || \
         (flashInfo->device_id == BOARD_FLASH_ID_MT35XU512ABA1G12)    || \
-        (flashInfo->device_id == BOARD_FLASH_ID_MT35XU256ABA1G12)
+        (flashInfo->device_id == BOARD_FLASH_ID_MT35XU256ABA1G12)    || \
+        (flashInfo->device_id == BOARD_FLASH_ID_S28HS512T)
        )
     {
         block_count = flashInfo->block_count;
@@ -457,7 +462,8 @@ Board_flash_STATUS Board_flashOffsetToBlkPage(Board_flashHandle  handle,
         (flashInfo->device_id == BOARD_FLASH_ID_MT25QU512ABB)        || \
         (flashInfo->device_id == BOARD_FLASH_ID_MT35XU512ABA1G12)	 || \
         (flashInfo->device_id == BOARD_FLASH_ID_MT35XU256ABA1G12)    || \
-        (flashInfo->device_id == BOARD_FLASH_ID_S71KS512S)
+        (flashInfo->device_id == BOARD_FLASH_ID_S71KS512S)    || \
+        (flashInfo->device_id == BOARD_FLASH_ID_S28HS512T)
        )
     {
         block_count = flashInfo->block_count;
@@ -525,7 +531,8 @@ Board_flash_STATUS Board_flashBlkPageToOffset(Board_flashHandle  handle,
         (flashInfo->device_id == BOARD_FLASH_ID_MT25QU512ABB)        || \
         (flashInfo->device_id == BOARD_FLASH_ID_MT35XU512ABA1G12)	 || \
         (flashInfo->device_id == BOARD_FLASH_ID_MT35XU256ABA1G12)    || \
-        (flashInfo->device_id == BOARD_FLASH_ID_S71KS512S)
+        (flashInfo->device_id == BOARD_FLASH_ID_S71KS512S)    || \
+        (flashInfo->device_id == BOARD_FLASH_ID_S28HS512T)
        )
     {
         block_count = flashInfo->block_count;
@@ -587,7 +594,8 @@ Board_flash_STATUS Board_flashWrite(Board_flashHandle  handle,
         (flashInfo->device_id == BOARD_FLASH_ID_MT25QU512ABB)        || \
         (flashInfo->device_id == BOARD_FLASH_ID_MT35XU512ABA1G12)	 || \
         (flashInfo->device_id == BOARD_FLASH_ID_MT35XU256ABA1G12)    || \
-        (flashInfo->device_id == BOARD_FLASH_ID_S71KS512S)
+        (flashInfo->device_id == BOARD_FLASH_ID_S71KS512S)    || \
+        (flashInfo->device_id == BOARD_FLASH_ID_S28HS512T)
        )
     {
         if (params)
@@ -668,7 +676,8 @@ Board_flash_STATUS Board_flashEraseBlk(Board_flashHandle handle,
         (flashInfo->device_id == BOARD_FLASH_ID_MT25QU512ABB)        || \
         (flashInfo->device_id == BOARD_FLASH_ID_MT35XU512ABA1G12)	 || \
         (flashInfo->device_id == BOARD_FLASH_ID_MT35XU256ABA1G12)    || \
-        (flashInfo->device_id == BOARD_FLASH_ID_S71KS512S)
+        (flashInfo->device_id == BOARD_FLASH_ID_S71KS512S)    || \
+        (flashInfo->device_id == BOARD_FLASH_ID_S28HS512T)
        )
     {
         if (NOR_erase (flashInfo->flashHandle, blk_num, flashInfo->blkErase_flag) != NOR_PASS)

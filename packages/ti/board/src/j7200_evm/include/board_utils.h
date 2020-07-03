@@ -92,8 +92,6 @@ typedef struct Board_initParams_s
         BOARD_PSC_DEVICE_MODE_EXCLUSIVE - Exclusive access to the core requesting access
         BOARD_PSC_DEVICE_MODE_NONEXCLUSIVE - Non-exclusive which allows other cores to get access */
     uint8_t pscMode;
-    /** CPSW mode configuration. 0 - RGMII mode (default), 1 - QSGMII mode */
-    uint32_t cpswModeCfg;
 } Board_initParams_t;
 
 /**
@@ -133,6 +131,20 @@ typedef struct Board_DetectCfg_s
  *
  */
 bool Board_detectBoard(uint32_t boardID);
+
+/**
+ * \brief  Checks for Alpha board revision
+ *
+ * \param   boardID  [IN]  ID of the board to be detected
+ * \n                      ID of the board to be detected
+ * \n					   BOARD_ID_SOM(0x0) - Dual PMIC SoM Board
+ * \n                      BOARD_ID_CP(0x1) - CP Board
+ * \n                      BOARD_ID_GESI(0x2) - GESI Board
+ * \n                      BOARD_ID_ENET(0x3) - Quad ENET expansion
+ *
+ * \return TRUE if board revision is E2, FALSE for all other cases
+ */
+bool Board_isAlpha(uint32_t boardID);
 
 /**
  *  \brief    Function to detect ENET expansion application card type

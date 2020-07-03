@@ -256,11 +256,11 @@ extern "C" {
 /* Enable NOR flash driver */
 #define BOARD_NOR_FLASH_IN
 
-#define BOARD_CPSW9G_PORT_MAX                           (5)
+#define BOARD_CPSW5G_PORT_MAX                           (4)
 
 /*------<J7200_TODO>- Need to clean-up some of the macros later ------*/
-#define BOARD_ICSS_EMAC_PORT_MAX                        (4)//1
-#define BOARD_CPSW9G_EMAC_PORT_MAX                      (4)//1
+#define BOARD_ICSS_EMAC_PORT_MAX                        (4)
+#define BOARD_CPSW5G_EMAC_PORT_MAX                      (4)
 /* ICSS0 EMAC PHY register address */
 #define BOARD_ICSS0_EMAC_PHY0_ADDR                      (0x0)
 #define BOARD_ICSS0_EMAC_PHY1_ADDR                      (0x3u)

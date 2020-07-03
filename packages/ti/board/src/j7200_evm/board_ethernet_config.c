@@ -44,7 +44,7 @@
 #include <ti/csl/soc.h>
 #include <ti/csl/cslr_mdio.h>
 
-Board_pruicssMdioInfo  Board_cpswMdioInfo[BOARD_CPSW9G_EMAC_PORT_MAX] =
+Board_pruicssMdioInfo  Board_cpswMdioInfo[BOARD_CPSW5G_EMAC_PORT_MAX] =
                        {{(CSL_CPSW0_NUSS_BASE + BOARD_CPSW_MDIO_REG_OFFSET), BOARD_ICSS0_EMAC_PHY0_ADDR},
                         {(CSL_CPSW0_NUSS_BASE + BOARD_CPSW_MDIO_REG_OFFSET), BOARD_ICSS0_EMAC_PHY1_ADDR},
                         {(CSL_CPSW0_NUSS_BASE + BOARD_CPSW_MDIO_REG_OFFSET), BOARD_ICSS1_EMAC_PHY0_ADDR},
@@ -215,7 +215,7 @@ static void Board_ethPhyExtendedRegWrite(uint32_t baseAddr,
  *
  * \return  BOARD_SOK in case of success or appropriate error code
  */
-Board_STATUS Board_cpsw9gEnetExpPhyReset(bool enableFlag)
+Board_STATUS Board_cpsw5gEnetExpPhyReset(bool enableFlag)
 {
     Board_IoExpCfg_t ioExpCfg;
     Board_STATUS status = BOARD_SOK;
@@ -249,7 +249,7 @@ Board_STATUS Board_cpsw9gEnetExpPhyReset(bool enableFlag)
  *
  * \return  BOARD_SOK in case of success or appropriate error code
  */
-Board_STATUS Board_cpsw9gEnetExpComaModeCfg(bool enableFlag)
+Board_STATUS Board_cpsw5gEnetExpComaModeCfg(bool enableFlag)
 {
     Board_IoExpCfg_t ioExpCfg;
     Board_STATUS status = BOARD_SOK;
@@ -302,14 +302,34 @@ Board_STATUS Board_sgmiiEthPhyConfig(void)
  *
  * \return  BOARD_SOK in case of success or appropriate error code
  */
-Board_STATUS Board_cpsw9gEthPhyConfig(void)
+Board_STATUS Board_cpsw5gEthPhyConfig(void)
 {
+    Board_STATUS status;
     uint32_t baseAddr;
     uint8_t  phyAddr;
     uint32_t index;
     uint16_t regData = 0;
+    bool isAlpha = 0;
 
-    for(index = 0; index < BOARD_CPSW9G_EMAC_PORT_MAX; index++)
+    /*
+     * MDIO stability issue due to ENET card is resolved in Beta HW revision.
+     * Disabling ENET card is needed only for Alpha CP boards.
+     */
+    isAlpha = Board_isAlpha(BOARD_ID_CP);
+
+    if(isAlpha == TRUE)
+    {
+        /* CPSW5G MDIO access is unstable when ENET card is connected.
+           Keeping the ENET PHY in reset as a temporary workaround */
+        status = Board_cpsw5gEnetExpComaModeCfg(1U);
+        status = Board_cpsw5gEnetExpPhyReset(1U);
+        if (status != BOARD_SOK)
+        {
+            return status;
+        }
+    }
+
+    for(index = 0; index < BOARD_CPSW5G_EMAC_PORT_MAX; index++)
     {
         baseAddr = Board_cpswMdioInfo[index].mdioBaseAddrs;
         phyAddr  = Board_cpswMdioInfo[index].phyAddrs;
@@ -372,7 +392,7 @@ Board_STATUS Board_cpsw9gEthPhyConfig(void)
         /* Setting delay */
         Board_ethPhyExtendedRegWrite(baseAddr, phyAddr,
                                      BOARD_ETHPHY_RGMIIDCTL_REG_ADDR,
-                                     BOARD_ETHPHY_CPSW9G_DELAY);
+                                     BOARD_ETHPHY_CPSW5G_DELAY);
     }
 
     return BOARD_SOK;
@@ -470,7 +490,7 @@ Board_STATUS Board_cpsw2gEthPhyConfig(void)
  *
  * \return  BOARD_SOK in case of success or appropriate error code
  */
-Board_STATUS Board_cpsw9gEthConfig(uint32_t portNum, uint8_t mode)
+Board_STATUS Board_cpsw5gEthConfig(uint32_t portNum, uint8_t mode)
 {
     uint32_t status;
     uintptr_t modeSel;
@@ -561,34 +581,33 @@ Board_STATUS Board_ethConfigCpsw2g(void)
  *
  * \return  BOARD_SOK in case of success or appropriate error code
  */
-Board_STATUS Board_ethConfigCpsw9g(void)
+Board_STATUS Board_ethConfigCpsw5g(void)
 {
     Board_STATUS status = BOARD_SOK;
     uint8_t portNum;
 
-    /* Configures the CPSW5G RGMII ports */
-    if(gBoardInitParams.cpswModeCfg == 0)
+    /* Configure the CPSW5G RGMII ports. One port used as RGMII and three ports for SGMII */
+    for(portNum = 0; portNum < BOARD_CPSW5G_PORT_MAX; portNum++)
     {
-        /* CPSW mode is set to RGMII. Only one port is supported for RGMII */
-        status = Board_cpsw9gEthConfig(CPSW9G_RGMII_PORTNUM, RGMII);
-    }
-    else
-    {
-        for(portNum = 0; portNum < BOARD_CPSW9G_PORT_MAX; portNum++)
+        if (CPSW5G_RGMII_PORTNUM == portNum)
         {
-            if (CPSW9G_QGMII_PORTNUM == portNum)
+            status = Board_cpsw5gEthConfig(portNum, RGMII);
+        }
+        else
+        {
+            if (CPSW5G_QGMII_PORTNUM == portNum)
             {
-                status = Board_cpsw9gEthConfig(portNum, QSGMII);
+                status = Board_cpsw5gEthConfig(portNum, QSGMII);
             }
             else
             {
-                status = Board_cpsw9gEthConfig(portNum, QSGMII_SUB);
+                status = Board_cpsw5gEthConfig(portNum, QSGMII_SUB);
             }
-            
-            if(status != BOARD_SOK)
-            {
-                return BOARD_FAIL;
-            }
+        }
+
+        if(status != BOARD_SOK)
+        {
+            return BOARD_FAIL;
         }
     }
 

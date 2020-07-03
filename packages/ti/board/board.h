@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2018, Texas Instruments Incorporated
+ * Copyright (c) 2010-2020, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -363,6 +363,8 @@ typedef uint32_t Board_initCfg;
 #define BOARD_INIT_ENETCTRL_CPSW9G      (1 << 28U)
 #define BOARD_INIT_ENETCTRL_ICSS        (1 << 29U)
 #define BOARD_INIT_DEFAULT              BOARD_INIT_ALL
+#define BOARD_INIT_CPSW5G_ETH_PHY       (BOARD_INIT_CPSW9G_ETH_PHY)
+#define BOARD_INIT_ENETCTRL_CPSW5G      (BOARD_INIT_ENETCTRL_CPSW9G)
 
 #define BOARD_DEINIT_ALL                (0xFFFFFFFFU)
 #define BOARD_DEINIT_LOCK_MMR           (1 << 1U)

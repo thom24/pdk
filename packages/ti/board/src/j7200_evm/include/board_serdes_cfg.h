@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -48,6 +48,11 @@
 #include <ti/csl/soc.h>
 #include <ti/csl/hw_types.h>
 #include <ti/csl/cslr.h>
+#include <ti/csl/csl_serdes.h>
+#include <ti/csl/cslr_device.h>
+#include <ti/csl/csl_serdes_pcie.h>
+#include <ti/csl/cslr_pcie.h>
+#include <ti/csl/csl_serdes_ethernet.h>
 
 #include "board.h"
 #include "board_internal.h"
@@ -55,6 +60,16 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#define BOARD_SERDES_INSTANCE                    (CSL_TORRENT_SERDES0)
+
+#define BOARD_SERDES_PCIE_LANE0_NUM              (0U)
+#define BOARD_SERDES_PCIE_LANE1_NUM              (1U)
+#define BOARD_SERDES_SGMII_LANE_NUM              (2U)
+#define BOARD_SERDES_USB_LANE_NUM                (3U)
+
+/* Select SERDES lane functionality. 0 value means CPSW SGMII/QSGMII. */
+#define SERDES_LANE_SELECT_CPSW     (0U)
 
 /**
  *  \brief serdes configurations

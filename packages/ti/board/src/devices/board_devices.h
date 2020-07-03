@@ -129,6 +129,12 @@
 #include <ti/board/src/devices/pmic/tps65941.h>
 #endif
 
+#if defined(j7200_evm)
+#include <ti/board/src/devices/common/common.h>
+
+#include <ti/board/src/devices/audio/pcm3168A.h>
+#endif
+
 #if defined(am65xx_evm) || defined(am65xx_idk)
 #include <ti/board/src/devices/pmic/tps62363.h>
 #endif

@@ -61,7 +61,7 @@ extern "C" {
 #include "board_i2c_io_exp.h"
 
 #define BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT       (0)
-#define BOARD_CTRL_CMD_SET_CPSW9G_MDIO_MUX      (1U)
+#define BOARD_CTRL_CMD_SET_CPSW5G_MDIO_MUX      (1U)
 #define BOARD_CTRL_CMD_SET_RMII_DATA_MUX        (2U)
 
 /**

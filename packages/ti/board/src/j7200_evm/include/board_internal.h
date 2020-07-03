@@ -359,7 +359,7 @@ typedef struct Board_I2cObj_s
 #define BOARD_ETHPHY_LEDCR1_REG_CFG             (0x8000U)
 
 #define BOARD_ETHPHY_ICSSG_DELAY                (0xA9U)
-#define BOARD_ETHPHY_CPSW9G_DELAY               (0xA9U)
+#define BOARD_ETHPHY_CPSW5G_DELAY               (0xA9U)
 #define BOARD_ETHPHY_CPSW2G_DELAY               (0x77U)
 #define BOARD_ETHPHY_DELAY_CTRL                 (0xD3U)
 #define BOARD_ETHPHY_IO_IMPEDANCE               (0x0C1FU)

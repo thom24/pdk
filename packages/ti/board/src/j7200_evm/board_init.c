@@ -178,8 +178,8 @@ static Board_STATUS Board_sysDeinit(void)
  *  BOARD_INIT_ENETCTRL_CPSW2G -
  *      Enabled configurations for CPSW2G Ethernet ports with the respective modes
  *
- *  BOARD_INIT_ENETCTRL_CPSW9G -
- *      Enabled configurations for CPSW9G Ethernet ports with the respective modes
+ *  BOARD_INIT_ENETCTRL_CPSW5G -
+ *      Enabled configurations for CPSW5G Ethernet ports with the respective modes
  *
  *
  * \param   cfg [IN]    Board configuration flags
@@ -205,8 +205,8 @@ Board_STATUS Board_init(Board_initCfg cfg)
     if (ret != BOARD_SOK)
         return ret;
 
-    if (cfg & BOARD_INIT_ENETCTRL_CPSW9G)
-        ret = Board_ethConfigCpsw9g();
+    if (cfg & BOARD_INIT_ENETCTRL_CPSW5G)
+        ret = Board_ethConfigCpsw5g();
     if (ret != BOARD_SOK)
         return ret;
 
@@ -275,8 +275,8 @@ Board_STATUS Board_init(Board_initCfg cfg)
     if (ret != BOARD_SOK)
         return ret;
 
-    if (cfg & BOARD_INIT_CPSW9G_ETH_PHY)
-        ret = Board_cpsw9gEthPhyConfig();
+    if (cfg & BOARD_INIT_CPSW5G_ETH_PHY)
+        ret = Board_cpsw5gEthPhyConfig();
     if (ret != BOARD_SOK)
         return ret;
 

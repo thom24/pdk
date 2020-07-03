@@ -51,9 +51,9 @@ extern "C" {
 
 #define CPSW2G_PORTNUM                  (5U)
 
-#define CPSW9G_SGMII_PORTNUM            (0U)
-#define CPSW9G_QGMII_PORTNUM            (0U)
-#define CPSW9G_RGMII_PORTNUM            (1U)
+#define CPSW5G_SGMII_PORTNUM            (0U)
+#define CPSW5G_QGMII_PORTNUM            (0U)
+#define CPSW5G_RGMII_PORTNUM            (1U)
 
 #define RGMII_ID_DISABLE_MASK           (0x10)
 
@@ -90,14 +90,14 @@ typedef enum
 Board_STATUS Board_sgmiiEthPhyConfig(void);
 
 /**
- * \brief  Board specific configurations for CPSW9G Ethernet PHYs
+ * \brief  Board specific configurations for CPSW5G Ethernet PHYs
  *
- * This function takes care of configuring the internal delays for CPSW9G
+ * This function takes care of configuring the internal delays for CPSW5G
  * Ethernet PHYs
  *
  * \return  BOARD_SOK in case of success or appropriate error code
  */
-Board_STATUS Board_cpsw9gEthPhyConfig(void);
+Board_STATUS Board_cpsw5gEthPhyConfig(void);
 
 /**
  * \brief  Board specific configurations for CPSW2G Ethernet PHY
@@ -119,58 +119,81 @@ Board_STATUS Board_cpsw2gEthPhyConfig(void);
  */
 Board_STATUS Board_icssEthPhyConfig(void);
 
-#if BOARD_INCLUDE
-/* TBD: Need to enable once Board_ethConfig called from the board init  */
-
 /**
- * \brief  Configures the CPSW9G Subsytem for RGMII and RMII mode
- *
- * \param  portNum [IN]    EMAC port number
- * \param  mode    [IN]    Mode selection for the specified port number
- *                         000 - GMII
- *                         001 - RMII
- *                         010 - RGMII
- *                         011 - SGMII
- *                         100 - QSGMII
+ * \brief  Power down the ENET PHYs
+ * \brief  Enable/Disable PHY reset for ENET EXP boards PHY
  *
  * \return  BOARD_SOK in case of success or appropriate error code
  */
-static Board_STATUS Board_cpsw9gEthConfig(uint32_t portNum, uint8_t mode);
+Board_STATUS Board_cpsw5gEnetExpPhyReset(bool enableFlag);
+
+/**
+ * \brief  Enable/Disable COMA_MODE for ENET EXP boards PHY
+ *
+ * \return  BOARD_SOK in case of success or appropriate error code
+ */
+Board_STATUS Board_cpsw5gEnetExpComaModeCfg(bool enableFlag);
+
+/**
+ * \brief  Board specific configurations for SGMII Ethernet PHYs
+ *
+ * This function takes care of configuring the internal delays for SGMII
+ * Ethernet PHYs
+ *
+ * \return  BOARD_SOK in case of success or appropriate error code
+ */
+Board_STATUS Board_sgmiiEthPhyConfig(void);
+
+/**
+ * \brief  Board specific configurations for CPSW5G Ethernet PHYs
+ *
+ * This function takes care of configuring the internal delays for CPSW5G
+ * Ethernet PHYs
+ *
+ * \return  BOARD_SOK in case of success or appropriate error code
+ */
+Board_STATUS Board_cpsw5gEthPhyConfig(void);
+
+/**
+ * \brief  Board specific configurations for CPSW2G Ethernet PHY
+ *
+ * This function takes care of configuring the internal delays for MCU gigabit
+ * Ethernet PHY
+ *
+ * \return  BOARD_SOK in case of success or appropriate error code
+ */
+Board_STATUS Board_cpsw2gEthPhyConfig(void);
+
+/**
+ * \brief  Configures the CPSW5G Subsytem for RGMII and RMII mode
+ *
+ * \param  portNum [IN]    EMAC port number
+ * \param  mode    [IN]    Mode selection for the specified port number
+ *                         0x0 - GMII/MII
+ *                         0x1 - RMII
+ *                         0x2 - RGMII
+ *                         0x3 - SGMII
+ *                         0x4 - QSGMII
+ *                         0x5 - XFI
+ *                         0x6 - QSGMII_SUB
+ *
+ * \return  BOARD_SOK in case of success or appropriate error code
+ */
+Board_STATUS Board_cpsw5gEthConfig(uint32_t portNum, uint8_t mode);
 
 /**
  * \brief  Configures the CPSW2G Subsytem for RGMII mode
  *
  * \param  portNum [IN]    EMAC port number
  * \param  mode    [IN]    Mode selection for the specified port number
- *                         00 - GMII
- *                         01 - RMII
- *                         10 - RGMII
- *                         11 - SGMII
+ *                         0x0 - GMII/MII
+ *                         0x1 - RMII
+ *                         0x2 - RGMII
+ *                         0x3 - SGMII
  *
  * \return  BOARD_SOK in case of success or appropriate error code
  */
-static Board_STATUS Board_cpsw2gEthConfig(uint32_t portNum, uint8_t mode);
-
-/**
- * \brief  Board specific configurations for ICSSG RGMII Ethernet
- *
- * This function takes care of configuring the internal delays for
- * ICSSG RGMII Ethernet PHY
- *
- * \return  BOARD_SOK in case of success or appropriate error code
- */
-static Board_STATUS Board_icssgEthConfig(uint32_t portNum, uint8_t mode);
-
-/**
- * \brief  Board specific configurations for SGMII Ethernet
- *
- * This function takes care of configuring the internal delays for
- * SGMII Ethernet PHY
- *
- * \return  BOARD_SOK in case of success or appropriate error code
- */
-static Board_STATUS Board_sgmiiEthConfig(uint32_t portNum, uint8_t mode);
-#endif
+Board_STATUS Board_cpsw2gMacModeConfig(uint32_t portNum, uint8_t mode);
 
 /**
  * \brief  Board specific configurations for CPSW2G Ethernet ports
@@ -182,65 +205,13 @@ static Board_STATUS Board_sgmiiEthConfig(uint32_t portNum, uint8_t mode);
 Board_STATUS Board_ethConfigCpsw2g(void);
 
 /**
- * \brief  Board specific configurations for CPSW9G Ethernet ports
+ * \brief  Board specific configurations for CPSW5G Ethernet ports
  *
- * This function used to configures CPSW9G Ethernet controllers with the respective modes
- *
- * \return  BOARD_SOK in case of success or appropriate error code
- */
-Board_STATUS Board_ethConfigCpsw9g(void);
-
-/**
- * \brief  Board specific configurations for ICSS Ethernet ports
- *
- * This function used to configures ICSS Ethernet controllers with the respective modes
+ * This function used to configures CPSW5G Ethernet controllers with the respective modes
  *
  * \return  BOARD_SOK in case of success or appropriate error code
  */
-Board_STATUS Board_ethConfigIcss(void);
-
-/**
- * \brief  Configures the CPSW2G Subsytem for RGMII mode
- *
- * \param  portNum [IN]    EMAC port number
- * \param  mode    [IN]    Mode selection for the specified port number
- *                         00 - GMII
- *                         01 - RMII
- *                         10 - RGMII
- *                         11 - SGMII
- *
- * \return  BOARD_SOK in case of success or appropriate error code
- */
-Board_STATUS Board_cpsw2gMacModeConfig(uint32_t portNum, uint8_t mode);
-
-/**
- * \brief  Enable/Disable COMA_MODE for ENET EXP boards PHY
- *
- * \return  BOARD_SOK in case of success or appropriate error code
- */
-Board_STATUS Board_cpsw9gEnetExpComaModeCfg(bool enable);
-
-/**
- * \brief  Enable/Disable PHY reset for ENET EXP boards PHY
- *
- * \return  BOARD_SOK in case of success or appropriate error code
- */
-Board_STATUS Board_cpsw9gEnetExpPhyReset(bool enableFlag);
-
-/**
- * \brief  Configures the CPSW9G Subsytem for RGMII and RMII mode
- *
- * \param  portNum [IN]    EMAC port number
- * \param  mode    [IN]    Mode selection for the specified port number
- *                         000 - GMII
- *                         001 - RMII
- *                         010 - RGMII
- *                         011 - SGMII
- *                         100 - QSGMII
- *
- * \return  BOARD_SOK in case of success or appropriate error code
- */
-Board_STATUS Board_cpsw9gEthConfig(uint32_t portNum, uint8_t mode);
+Board_STATUS Board_ethConfigCpsw5g(void);
 
 #ifdef __cplusplus
 }
