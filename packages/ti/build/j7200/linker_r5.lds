@@ -46,9 +46,9 @@ MEMORY
     /* j7200 MCMS3 locations */
     /* j7200 Reserved Memory for ARM Trusted Firmware */
     MSMC3_ARM_FW   (RWIX)   : origin=0x70000000 length=0x40000         /* 256KB */
-    MSMC3   (RWIX)          : origin=0x70040000 length=0x7B0000        /* 8MB - 320KB */
+    MSMC3   (RWIX)          : origin=0x70040000 length=0xB0000         /* 1MB - 320KB */
     /* j7200 Reserved Memory for DMSC Firmware */
-    MSMC3_DMSC_FW  (RWIX)   : origin=0x707F0000 length=0x10000         /* 64KB */
+    MSMC3_DMSC_FW  (RWIX)   : origin=0x700F0000 length=0x10000         /* 64KB */
 
     DDR0    (RWIX)          : origin=0x80000000 length=0x80000000      /* 2GB */
 }
