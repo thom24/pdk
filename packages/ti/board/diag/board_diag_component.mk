@@ -788,7 +788,7 @@ export board_diag_pmic_CORE_DEPENDENCY
 export board_diag_pmic_MAKEFILE
 board_diag_pmic_PKG_LIST = board_diag_pmic
 board_diag_pmic_INCLUDE = $(board_diag_pmic_PATH)
-board_diag_pmic_BOARDLIST = j721e_evm
+board_diag_pmic_BOARDLIST = j721e_evm j7200_evm
 board_diag_pmic_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
 export board_diag_pmic_$(SOC)_CORELIST
 export board_diag_pmic_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)

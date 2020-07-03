@@ -1,16 +1,5 @@
-/**
- *  \file   main.c
- *
- *  \brief  Example application main file. This application will toggle the led.
- *          The led toggling will be done inside an callback function, which
- *          will be called by Interrupt Service Routine. Interrupts are
- *          triggered manually and no external source is used to trigger
- *          interrupts.
- *
- */
-
 /*
- * Copyright (C) 2014-2019 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2014-2020 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -42,6 +31,14 @@
  *
  */
 
+/**
+ *  \file   pmic_test.c
+ *
+ *  \brief  PMIC diagnostic test file
+ *
+ *  Implements the test for validating the PMIC access and voltage control
+ *
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -53,13 +50,11 @@
 
 #include "board.h"
 #include "board_cfg.h"
-#if defined(SOC_J721E)
-#include "board_utils.h"
-#endif
 
-#if defined(SOC_J721E)
-#include "diag_common_cfg.h"
+#if defined(SOC_J721E) || defined(SOC_J7200)
 #include <ti/csl/soc.h>
+#include "board_utils.h"
+#include "diag_common_cfg.h"
 #endif
 
 typedef struct pmic_data
@@ -74,10 +69,11 @@ typedef struct pmic_data
     uint8_t   pmicDevCtrl;
 }pmic_data_t;
 
-#if defined(SOC_J721E)
+#if defined(SOC_J721E) || defined(SOC_J7200)
 Board_I2cInitCfg_t boardI2cInitCfg = {0, BOARD_SOC_DOMAIN_WKUP, false};
 #endif
-int32_t numPmic = 0;
+int32_t numPmic = 1;
+pmic_data_t *gDualPmicData;
 
 /*********************************  *************************************
  ************************** Internal functions ************************
@@ -89,7 +85,7 @@ extern I2C_config_list I2C_config;
 
 /* Board specific definitions */
 #define I2C_INSTANCE                       (0U)
-#if defined(SOC_J721E)
+#if defined(SOC_J721E) || defined(SOC_J7200)
 #define BOARD_NAME_LENGTH                  (16)
 #else
 #define BOARD_NAME_LENGTH                  (8)
@@ -138,6 +134,12 @@ extern I2C_config_list I2C_config;
 #define TPS65941_PMICID_REG                (0x01U)
 #define TPS65941_PMIC_REG                  (0x0EU)
 #define TPS65941_PMIC_VOLTAGE_VAL          (0x41U)
+
+/* LP8764 Register value */
+#define LP8764_PMICB_I2C_SLAVE_ADDR        (0x4CU)
+#define LP8764_PMICID_REG                  (0x01U)
+#define LP8764_PMIC_REG                    (0x0EU)
+#define LP8764_PMIC_VOLTAGE_VAL            (0x41U)
 
 /**********************************************************************
  ************************** Global Variables **************************
@@ -205,6 +207,17 @@ pmic_data_t tps65941_pmicB = {
     0U,
     TPS65941_PMIC_REG,
     TPS65941_PMIC_VOLTAGE_VAL,
+    0U,
+    0U
+};
+
+pmic_data_t lp8764 = {
+    LP8764_PMICB_I2C_SLAVE_ADDR,
+    I2C_INSTANCE,
+    LP8764_PMICID_REG,
+    0U,
+    LP8764_PMIC_REG,
+    LP8764_PMIC_VOLTAGE_VAL,
     0U,
     0U
 };
@@ -326,7 +339,7 @@ uint32_t getPmicId(I2C_Handle h, pmic_data_t *pPmicData)
 }
 #endif
 
-#if defined(SOC_J721E)
+#if defined(SOC_J721E) || defined(SOC_J7200)
 uint32_t getPmicId(I2C_Handle h, pmic_data_t *pPmicData)
 {
     uint32_t val = 0;
@@ -376,7 +389,7 @@ int pmic_test()
     uint8_t voltage, val;
     I2C_Params i2cParams;
     I2C_Handle handle = NULL;
-#if defined(SOC_J721E)
+#if defined(SOC_J721E) || defined(SOC_J7200)
     Board_IDInfo_v2 info = {0};
 #else
     Board_IDInfo boardInfo;
@@ -384,7 +397,7 @@ int pmic_test()
     pmic_data_t *pPmicData;
     int32_t stat = BOARD_SOK;
 
-#if defined(SOC_J721E)
+#if defined(SOC_J721E) || defined(SOC_J7200)
     Board_setI2cInitConfig(&boardI2cInitCfg);
     stat = Board_getIDInfo_v2(&info, BOARD_I2C_EEPROM_ADDR);
 #else
@@ -393,13 +406,13 @@ int pmic_test()
 
     if(stat == BOARD_SOK)
     {
-#if defined(SOC_J721E)
+#if defined(SOC_J721E) || defined(SOC_J7200)
         pPmicData = Get_PmicData(info.boardInfo.boardName);
 #else
         pPmicData = Get_PmicData(boardInfo.boardName);
 #endif
 
-#if defined(SOC_J721E)
+#if defined(SOC_J721E) || defined(SOC_J7200)
         enableI2C(CSL_WKUP_I2C0_CFG_BASE);
 #endif
         for (i=0; I2C_config[i].fxnTablePtr != NULL; i++)
@@ -416,10 +429,9 @@ int pmic_test()
         UART_printf("\n*********************************************\n"); 
         UART_printf  ("*                PMIC Test                  *\n");
         UART_printf  ("*********************************************\n");
-#if defined(SOC_J721E)
+
         while(numPmic)
         {
-#endif
             val = pPmicData->pmicVoltVal;
             UART_printf("Testing PMIC module... \n");
             UART_printf("PMIC ID = 0x%08x\n", getPmicId(handle, pPmicData));
@@ -432,11 +444,14 @@ int pmic_test()
             UART_printf("Setting PMIC voltage to original value\n");
             setPmicVoltage(handle, pPmicData, voltage);
             UART_printf("Final voltage value = 0x%x\n", readPmicVoltage(handle, pPmicData->slaveAddr, pPmicData->pmicReg));
-#if defined(SOC_J721E)
-            pPmicData = &tps65941_pmicB;
             numPmic--;
+
+            if(numPmic)
+            {
+                pPmicData = gDualPmicData;
+            }
         }
-#endif
+
         UART_printf("Test PASSED!\n");
         I2C_close(handle);
     }
@@ -510,9 +525,18 @@ pmic_data_t* Get_PmicData(char *pBoardName)
         numPmic = 1;
     }
     /* Check if the board is J721E SoM with Dual PMIC by comparing the string read from EEPROM. */
-    else if (strncmp("J721EX-PM2-SOM", pBoardName, BOARD_NAME_LENGTH) == 0U)
+    else if ((strncmp("J721EX-PM2-SOM", pBoardName, BOARD_NAME_LENGTH) == 0U) ||
+             (strncmp("J7200X-PM1-SOM", pBoardName, BOARD_NAME_LENGTH) == 0U))
     {
-        pPmicData = &tps65941_pmicA;
+        pPmicData     = &tps65941_pmicA;
+        gDualPmicData = &tps65941_pmicB;
+        numPmic = 2;
+    }
+	/* Check if the board is J7200 SoM with Dual PMIC by comparing the string read from EEPROM. */
+    else if (strncmp("J7200X-PM2-SOM", pBoardName, BOARD_NAME_LENGTH) == 0U)
+    {
+        pPmicData     = &tps65941_pmicA;
+        gDualPmicData = &lp8764;
         numPmic = 2;
     }
     else
