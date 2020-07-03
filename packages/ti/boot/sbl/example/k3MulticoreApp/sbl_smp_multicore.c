@@ -45,6 +45,10 @@
 #define SBL_SMP_TEST_NUM_CORES 4
 #endif
 
+#if defined (SOC_J7200)
+#define SBL_SMP_TEST_NUM_CORES 3
+#endif
+
 #if defined (SOC_J721E)
 #define SBL_SMP_TEST_NUM_CORES 4
 #endif
