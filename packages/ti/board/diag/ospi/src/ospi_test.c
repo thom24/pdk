@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2018-2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -42,9 +42,9 @@
  *  writing a test pattern to a memory page and reading the same page for
  *  data verification.
  *
- *  Supported SoCs : AM65XX & J721E
+ *  Supported SoCs : AM65XX, J721E & J7200
  *
- *  Supported Platforms: am65xx-evm,am65xx-idk & j721e_evm.
+ *  Supported Platforms: am65xx-evm, am65xx-idk, j721e_evm & j7200_evm.
  *
  */
 
@@ -254,13 +254,8 @@ static int8_t BoardDiag_ospiFlashStressTest(void)
 
     /* Open the Board OSPI NOR device with SPI port 0
        and use default OSPI configurations */
-#if defined(am64x_evm) || defined(am64x_svb)
-    boardHandle = Board_flashOpen(BOARD_FLASH_ID_MT35XU256ABA1G12,
+    boardHandle = Board_flashOpen(BOARD_DIAG_OSPI_FLASH_ID,
                                   BOARD_OSPI_INSTANCE, NULL);
-#else
-    boardHandle = Board_flashOpen(BOARD_FLASH_ID_MT35XU512ABA1G12,
-                                  BOARD_OSPI_INSTANCE, NULL);
-#endif
     if (!boardHandle)
     {
         UART_printf("\n Board_flashOpen Failed. \n");
@@ -280,7 +275,7 @@ static int8_t BoardDiag_ospiFlashStressTest(void)
     UART_printf("\nVerifying the OSPI Flash ...\n");
     /* This loop verifies the read/write access of whole memory */
 
-    for(offset=BOARD_OSPI_FIRST_PAGE; offset<=BOARD_OSPI_LAST_PAGE; offset+=NOR_PAGE_SIZE)
+    for(offset = BOARD_OSPI_FIRST_PAGE; offset <= BOARD_OSPI_LAST_PAGE; offset += TEST_DATA_LEN)
     {
         testStatus = BoardDiag_ospiReadWriteTest(boardHandle,offset);
         if(testStatus != 0)
@@ -300,7 +295,7 @@ static int8_t BoardDiag_ospiFlashStressTest(void)
         if((rdBuf == 'b') || (rdBuf == 'B'))
         {
             UART_printf("Received Test Termination... Exiting the Test\n");
-            offset+=NOR_PAGE_SIZE;
+            offset+=TEST_DATA_LEN;
             UART_printf("OSPI NOR Flash Stress Test Status\n");
             UART_printf("============================================\n");
             UART_printf("\nOSPI NOR Flash Verified up-to Page - 0x%X\n", offset);
@@ -351,7 +346,7 @@ static int8_t BoardDiag_ospiFlashTest(void)
 #else
     ospi_cfg.dmaEnable  = false;
 #endif
-#if defined(j721e_evm)
+#if defined(j721e_evm) || defined(j7200_evm)
     ospi_cfg.phyEnable  = false;
 #endif
 
@@ -361,13 +356,8 @@ static int8_t BoardDiag_ospiFlashTest(void)
     /* Open the Board OSPI NOR device with OSPI port 0
        and use default OSPI configurations */
 
-#if defined(am64x_evm)
-    boardHandle = Board_flashOpen(BOARD_FLASH_ID_MT35XU256ABA1G12,
+    boardHandle = Board_flashOpen(BOARD_DIAG_OSPI_FLASH_ID,
                                   BOARD_OSPI_INSTANCE, NULL);
-#else
-    boardHandle = Board_flashOpen(BOARD_FLASH_ID_MT35XU512ABA1G12,
-                                  BOARD_OSPI_INSTANCE, NULL);
-#endif
     if (!boardHandle)
     {
         UART_printf("\n Board_flashOpen Failed. \n");
@@ -432,17 +422,16 @@ static int8_t BoardDiag_ospiFlashTest(void)
  * for selecting OSPI/HYPER flash interfaces by muxer.
  *
  */
-#if defined(SOC_J721E)
+#if defined(SOC_J721E) || defined(SOC_J7200)
 static void BoardDiag_ospiHyperFlashMux(void)
 {
-#if defined(SOC_J721E)
     GPIO_v0_HwAttrs gpioCfg;
     GPIO_socGetInitCfg(0, &gpioCfg);
     gpioCfg.baseAddr = CSL_WKUP_GPIO0_BASE;
     GPIO_socSetInitCfg(0, &gpioCfg);
-#endif
+
     GPIO_init();
-    GPIO_write(OSPI_HYPER_BUS_SEL_PIN, GPIO_PIN_LOW);
+    GPIO_write(BOARD_DIAG_OSPI_HYPER_BUS_SEL_PIN, GPIO_PIN_LOW);
 }
 #endif
 
@@ -459,7 +448,7 @@ int8_t BoardDiag_OspiTest(void)
 {
     int8_t ret;
 
-#if defined(SOC_J721E)
+#if defined(SOC_J721E) || defined(SOC_J7200)
     BoardDiag_ospiHyperFlashMux();
 #endif
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2018-2020 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -41,19 +41,26 @@
 #ifndef _OSPI_TEST_H_
 #define _OSPI_TEST_H_
 
-#include <ti/drv/uart/UART_stdio.h>
 #include <stdlib.h>
+
+#if defined(SOC_J721E) || defined(SOC_J7200)
+#include <ti/csl/csl_gpio.h>
+#include <ti/drv/gpio/GPIO.h>
+#include <ti/drv/gpio/soc/GPIO_soc.h>
+#endif
+
+#include <ti/drv/uart/UART_stdio.h>
 #include <ti/drv/spi/SPI.h>
-#include <ti/board/src/flash/include/board_flash.h>
 #include <ti/drv/spi/soc/SPI_soc.h>
+
+#include <ti/board/src/flash/include/board_flash.h>
+#include <ti/board/src/flash/nor/ospi/nor_ospi.h>
 #include "board.h"
 #include "board_cfg.h"
 #include "diag_common_cfg.h"
 
-#if defined(SOC_J721E)
-#include <ti/drv/gpio/GPIO.h>
-#include <ti/drv/gpio/soc/GPIO_soc.h>
-#include <ti/csl/csl_gpio.h>
+#ifdef __cplusplus
+extern "C" {
 #endif
 
 //#define UDMA_ENABLE
@@ -81,40 +88,34 @@
 #define UDMA_TEST_APP_TRPD_SIZE         ((sizeof(CSL_UdmapTR15) * 2U) + 4U)
 #endif
 
-#ifdef __cplusplus
-extern "C" {
+#if defined(SOC_J721E) || defined(SOC_J7200)
+#define BOARD_DIAG_OSPI_HYPER_BUS_SEL_PIN     (0U)
 #endif
 
-#if defined(SOC_J721E)
-#define OSPI_HYPER_BUS_SEL_PIN				  (0U)
+#if defined(j7200_evm)
+#define BOARD_DIAG_OSPI_FLASH_ID              (BOARD_FLASH_ID_S28HS512T)
+#elif defined(am64x_evm) || defined(am64x_svb)
+#define BOARD_DIAG_OSPI_FLASH_ID              (BOARD_FLASH_ID_MT35XU256ABA1G12)
+#else
+#define BOARD_DIAG_OSPI_FLASH_ID              (BOARD_FLASH_ID_MT35XU512ABA1G12)
 #endif
 
 #ifdef DIAG_STRESS_TEST
 #define ONE_KB_SIZE                           (1024U) /* 1024 Bytes */
 
-#define NOR_PAGE_SIZE                         (128U * ONE_KB_SIZE)
-#define TEST_DATA_LEN                         (NOR_PAGE_SIZE)
-#define BUFF_SIZE                             (TEST_DATA_LEN)
-#define MAX_BUFF_SIZE                         (129U * ONE_KB_SIZE)
-#define BOARD_OSPI_LAST_PAGE                  (0x03FE0000)
+#define TEST_DATA_LEN                         (NOR_BLOCK_SIZE)
+#define MAX_BUFF_SIZE                         (TEST_DATA_LEN + ONE_KB_SIZE)
 
-#else
-#define NOR_PAGE_SIZE                         (256U)
-#define TEST_DATA_LEN                         (NOR_PAGE_SIZE)
-#define BUFF_SIZE                             (TEST_DATA_LEN)
-#define MAX_BUFF_SIZE                         (260U)
-#define BOARD_OSPI_LAST_PAGE         		  (0x03FFFF00)
-#endif
 
-#define DATA_PATTERN_FF     (1)
-#define DATA_PATTERN_INC    (2)
-#define DATA_PATTERN_AA     (3)
-#define DATA_PATTERN_55     (4)
-#define DATA_PATTERN_RANDOM (5)
+#else /* #ifdef DIAG_STRESS_TEST */
+
+#define TEST_DATA_LEN                         (NOR_PAGE_SIZE)
+#define MAX_BUFF_SIZE                         (TEST_DATA_LEN + 4)
+
+#endif /* #ifdef DIAG_STRESS_TEST */
 
 #define BOARD_OSPI_FIRST_PAGE        (0x0000)
-
-#define MAX_CLOCK  133000000 /* 133MHz */
+#define BOARD_OSPI_LAST_PAGE         (NOR_SIZE - TEST_DATA_LEN)
 
 /**
  * \brief  ospi test function
