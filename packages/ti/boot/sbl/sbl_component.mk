@@ -97,7 +97,7 @@ ifeq ($(SOC), am64x)
 sbl_LIB_LIST = sbl_lib_ospi_nondma
 else
   ifeq ($(SOC), j7200)
-    sbl_LIB_LIST = sbl_lib_ospi_nondma sbl_lib_cust
+    sbl_LIB_LIST = sbl_lib_mmcsd sbl_lib_ospi_nondma sbl_lib_uart sbl_lib_cust
   else
     sbl_LIB_LIST = sbl_lib_mmcsd sbl_lib_ospi sbl_lib_uart sbl_lib_hyperflash sbl_lib_cust
     sbl_LIB_LIST += sbl_lib_ospi_nondma
@@ -110,11 +110,15 @@ endif
 # All the tests mentioned in list are built when test target is called
 # List below all examples for allowed values
 ############################
-ifeq ($(SOC),$(filter $(SOC), am64x j7200))
+ifeq ($(SOC),$(filter $(SOC), am64x))
 sbl_EXAMPLE_LIST = sbl_ospi_img
 else
-sbl_EXAMPLE_LIST = sbl_mmcsd_img sbl_ospi_img sbl_hyperflash_img sbl_uart_img
-sbl_EXAMPLE_LIST += sbl_mmcsd_img_hs sbl_ospi_img_hs sbl_hyperflash_img_hs sbl_uart_img_hs
+  ifeq ($(SOC), j7200)
+    sbl_EXAMPLE_LIST = sbl_mmcsd_img sbl_ospi_img sbl_uart_img
+  else
+    sbl_EXAMPLE_LIST = sbl_mmcsd_img sbl_ospi_img sbl_hyperflash_img sbl_uart_img
+    sbl_EXAMPLE_LIST += sbl_mmcsd_img_hs sbl_ospi_img_hs sbl_hyperflash_img_hs sbl_uart_img_hs
+  endif
 endif
 
 #
@@ -505,7 +509,7 @@ sbl_smp_test_BOARDLIST = $(sbl_BOARDLIST)
 export sbl_smp_test_BOARDLIST
 sbl_smp_test_$(SOC)_CORELIST = $($(SOC)_smp_CORELIST)
 export sbl_smp_test_$(SOC)_CORELIST
-ifneq ($(SOC),$(filter $(SOC), am64x j7200))
+ifneq ($(SOC),$(filter $(SOC), am64x))
 sbl_EXAMPLE_LIST += sbl_smp_test
 endif
 sbl_smp_test_SBL_APPIMAGEGEN = yes
@@ -534,7 +538,7 @@ sbl_multicore_smp_BOARDLIST = $(sbl_BOARDLIST)
 export sbl_multicore_smp_BOARDLIST
 sbl_multicore_smp_$(SOC)_CORELIST := $($(SOC)_LASTCORE)
 export sbl_multicore_smp_$(SOC)_CORELIST
-ifneq ($(SOC),$(filter $(SOC), am64x j7200))
+ifneq ($(SOC),$(filter $(SOC), am64x))
 sbl_EXAMPLE_LIST += sbl_multicore_smp
 endif
 sbl_multicore_smp_SBL_APPIMAGEGEN = no
@@ -560,7 +564,7 @@ sbl_boot_xip_test_BOARDLIST = $(sbl_BOARDLIST)
 export sbl_boot_xip_test_BOARDLIST
 sbl_boot_xip_test_$(SOC)_CORELIST = mcu1_0
 export sbl_boot_xip_test_$(SOC)_CORELIST
-ifneq ($(SOC),$(filter $(SOC), am64x j7200))
+ifneq ($(SOC),$(filter $(SOC), am64x))
 sbl_EXAMPLE_LIST += sbl_boot_xip_test
 endif
 sbl_boot_xip_test_SBL_APPIMAGEGEN = yes
@@ -590,7 +594,7 @@ sbl_boot_xip_entry_BOARDLIST = $(sbl_BOARDLIST)
 export sbl_boot_xip_entry_BOARDLIST
 sbl_boot_xip_entry_$(SOC)_CORELIST = mcu1_0
 export sbl_boot_xip_entry_$(SOC)_CORELIST
-ifneq ($(SOC),$(filter $(SOC), am64x j7200))
+ifneq ($(SOC),$(filter $(SOC), am64x))
 sbl_EXAMPLE_LIST += sbl_boot_xip_entry
 endif
 sbl_boot_xip_entry_SBL_APPIMAGEGEN = yes

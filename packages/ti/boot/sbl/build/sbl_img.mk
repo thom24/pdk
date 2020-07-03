@@ -9,12 +9,14 @@ ifeq ($(BUILD_HS),yes)
 HS_SUFFIX=_hs
 endif
 DMA_SUFFIX=
-ifeq ($(SBL_USE_DMA),no)
-DMA_SUFFIX=_nondma
-endif
+ifeq ($(BOOTMODE), ospi)
+  ifeq ($(SBL_USE_DMA),no)
+    DMA_SUFFIX=_nondma
+  endif
 # DMA not yet enabled for AM64x or J7200
-ifeq ($(SOC),$(filter $(SOC), am64x j7200))
-DMA_SUFFIX=_nondma
+  ifeq ($(SOC),$(filter $(SOC), am64x j7200))
+    DMA_SUFFIX=_nondma
+  endif
 endif
 
 APP_NAME = sbl_$(BOOTMODE)_img$(HS_SUFFIX)
