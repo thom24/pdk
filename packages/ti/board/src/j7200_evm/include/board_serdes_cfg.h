@@ -72,15 +72,24 @@ extern "C" {
 #define SERDES_LANE_SELECT_CPSW     (0U)
 
 /**
- *  \brief serdes configurations
+ *  \brief serdes configurations for Sierra 1 in SGMII mode
  *
- *  The function configures the serdes1 module for one lane pcie interface
+ *  The function configures the serdes module for SGMII instance
  *
  * \return   BOARD_SOK in case of success or appropriate error code
  *
  */
-Board_STATUS Board_serdesCfg(void);
+Board_STATUS Board_serdesCfgSgmii(void);
 
+/**
+ *  \brief serdes configurations for Sierra 1 in QSGMII mode
+ *
+ *  The function configures the serdes module for QSGMII instances
+ *
+ * \return   BOARD_SOK in case of success or appropriate error code
+ *
+ */
+Board_STATUS Board_serdesCfgQsgmii(void);
 
 #ifdef __cplusplus
 }

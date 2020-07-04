@@ -215,7 +215,7 @@ static void Board_ethPhyExtendedRegWrite(uint32_t baseAddr,
  *
  * \return  BOARD_SOK in case of success or appropriate error code
  */
-Board_STATUS Board_cpsw5gEnetExpPhyReset(bool enableFlag)
+Board_STATUS Board_cpswEnetExpPhyReset(bool enableFlag)
 {
     Board_IoExpCfg_t ioExpCfg;
     Board_STATUS status = BOARD_SOK;
@@ -249,7 +249,7 @@ Board_STATUS Board_cpsw5gEnetExpPhyReset(bool enableFlag)
  *
  * \return  BOARD_SOK in case of success or appropriate error code
  */
-Board_STATUS Board_cpsw5gEnetExpComaModeCfg(bool enableFlag)
+Board_STATUS Board_cpswEnetExpComaModeCfg(bool enableFlag)
 {
     Board_IoExpCfg_t ioExpCfg;
     Board_STATUS status = BOARD_SOK;
@@ -321,8 +321,8 @@ Board_STATUS Board_cpsw5gEthPhyConfig(void)
     {
         /* CPSW5G MDIO access is unstable when ENET card is connected.
            Keeping the ENET PHY in reset as a temporary workaround */
-        status = Board_cpsw5gEnetExpComaModeCfg(1U);
-        status = Board_cpsw5gEnetExpPhyReset(1U);
+        status = Board_cpswEnetExpComaModeCfg(1U);
+        status = Board_cpswEnetExpPhyReset(1U);
         if (status != BOARD_SOK)
         {
             return status;

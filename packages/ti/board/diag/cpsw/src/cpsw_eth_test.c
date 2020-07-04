@@ -1300,7 +1300,7 @@ int main(void)
 
     Board_pinmuxGetCfg(&gesiIcssgPinmux);
     gesiIcssgPinmux.autoCfg = BOARD_PINMUX_CUSTOM;
-    gesiIcssgPinmux.gesiExp = BOARD_PINMUX_GESI_CPSW9G;
+    gesiIcssgPinmux.gesiExp = BOARD_PINMUX_GESI_CPSW;
     Board_pinmuxSetCfg(&gesiIcssgPinmux);
 
 #ifdef PDK_RAW_BOOT
@@ -1322,7 +1322,7 @@ int main(void)
     }
 
     /* Enable CPSW9G MDIO mux */
-    status = Board_control(BOARD_CTRL_CMD_SET_CPSW9G_MDIO_MUX,
+    status = Board_control(BOARD_CTRL_CMD_SET_GESI_CPSW_MDIO_MUX,
                            NULL);
     if(status != BOARD_SOK)
     {

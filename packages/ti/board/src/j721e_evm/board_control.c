@@ -296,7 +296,7 @@ Board_STATUS Board_control(uint32_t cmd, void *arg)
             status = Board_setIcssgMdioMux();
             break;
 
-        case BOARD_CTRL_CMD_SET_CPSW9G_MDIO_MUX:
+        case BOARD_CTRL_CMD_SET_GESI_CPSW_MDIO_MUX:
             status = Board_setCpsw9GMdioMux();
             break;
 

@@ -217,14 +217,14 @@ Board_STATUS Board_cpsw2gMacModeConfig(uint32_t portNum, uint8_t mode);
  *
  * \return  BOARD_SOK in case of success or appropriate error code
  */
-Board_STATUS Board_cpsw9gEnetExpComaModeCfg(bool enable);
+Board_STATUS Board_cpswEnetExpComaModeCfg(bool enable);
 
 /**
  * \brief  Enable/Disable PHY reset for ENET EXP boards PHY
  *
  * \return  BOARD_SOK in case of success or appropriate error code
  */
-Board_STATUS Board_cpsw9gEnetExpPhyReset(bool enableFlag);
+Board_STATUS Board_cpswEnetExpPhyReset(bool enableFlag);
 
 /**
  * \brief  Configures the CPSW9G Subsytem for RGMII and RMII mode

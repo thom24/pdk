@@ -84,7 +84,7 @@ extern "C" {
 #define BOARD_PINMUX_INFO_VOUT          (0)  // Default
 #define BOARD_PINMUX_INFO_VPFE          (1U)
 #define BOARD_PINMUX_GESI_ICSSG         (2U)
-#define BOARD_PINMUX_GESI_CPSW5G        (3U)
+#define BOARD_PINMUX_GESI_CPSW          (3U)
 #define BOARD_PINMUX_CSI_COMMON         (0)  // Default
 #define BOARD_PINMUX_ENET_QSGMII        (0)  // Default
 #define BOARD_PINMUX_FSS_OSPI           (0)  // Default

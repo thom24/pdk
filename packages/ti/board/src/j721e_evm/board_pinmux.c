@@ -397,7 +397,7 @@ Board_STATUS Board_pinmuxConfig (void)
         /* Auto detect the application boards connected and configure the pinmux */
         if(Board_detectBoard(BOARD_ID_GESI) == TRUE)
         {
-            gBoardPinmuxCfg.gesiExp = BOARD_PINMUX_GESI_CPSW9G;
+            gBoardPinmuxCfg.gesiExp = BOARD_PINMUX_GESI_CPSW;
         }
         else
         {
@@ -409,7 +409,7 @@ Board_STATUS Board_pinmuxConfig (void)
     }
 
     if((gBoardPinmuxCfg.gesiExp == BOARD_PINMUX_GESI_ICSSG) ||
-       (gBoardPinmuxCfg.gesiExp == BOARD_PINMUX_GESI_CPSW9G))
+       (gBoardPinmuxCfg.gesiExp == BOARD_PINMUX_GESI_CPSW))
     {
         /* By default ICSSG RGMII is enabled */
         Board_pinmuxUpdate(gJ721E_MainPinmuxDataGesiIcssg,
@@ -417,7 +417,7 @@ Board_STATUS Board_pinmuxConfig (void)
         Board_pinmuxUpdate(gJ721E_WkupPinmuxDataGesiIcssg,
                            BOARD_SOC_DOMAIN_WKUP);
 
-        if(gBoardPinmuxCfg.gesiExp == BOARD_PINMUX_GESI_CPSW9G)
+        if(gBoardPinmuxCfg.gesiExp == BOARD_PINMUX_GESI_CPSW)
         {
             /* Overwrite the ICSSG RGMII muc configurations with CPSW9G RGMII */
             Board_pinmuxUpdate(gJ721E_MainPinmuxDataGesiCpsw9g,
@@ -473,7 +473,7 @@ Board_STATUS Board_pinmuxConfigMain (void)
         /* Auto detect the application boards connected and configure the pinmux */
         if(Board_detectBoard(BOARD_ID_GESI) == TRUE)
         {
-            gBoardPinmuxCfg.gesiExp = BOARD_PINMUX_GESI_CPSW9G;
+            gBoardPinmuxCfg.gesiExp = BOARD_PINMUX_GESI_CPSW;
         }
         else
         {
@@ -485,13 +485,13 @@ Board_STATUS Board_pinmuxConfigMain (void)
     }
 
     if((gBoardPinmuxCfg.gesiExp == BOARD_PINMUX_GESI_ICSSG) ||
-       (gBoardPinmuxCfg.gesiExp == BOARD_PINMUX_GESI_CPSW9G))
+       (gBoardPinmuxCfg.gesiExp == BOARD_PINMUX_GESI_CPSW))
     {
         /* By default ICSSG RGMII is enabled */
         Board_pinmuxUpdate(gJ721E_MainPinmuxDataGesiIcssg,
                            BOARD_SOC_DOMAIN_MAIN);
 
-        if(gBoardPinmuxCfg.gesiExp == BOARD_PINMUX_GESI_CPSW9G)
+        if(gBoardPinmuxCfg.gesiExp == BOARD_PINMUX_GESI_CPSW)
         {
             /* Overwrite the ICSSG RGMII muc configurations with CPSW9G RGMII */
             Board_pinmuxUpdate(gJ721E_MainPinmuxDataGesiCpsw9g,
@@ -536,7 +536,7 @@ Board_STATUS Board_pinmuxConfigWkup (void)
         /* Auto detect the application boards connected and configure the pinmux */
         if(Board_detectBoard(BOARD_ID_GESI) == TRUE)
         {
-            gBoardPinmuxCfg.gesiExp = BOARD_PINMUX_GESI_CPSW9G;
+            gBoardPinmuxCfg.gesiExp = BOARD_PINMUX_GESI_CPSW;
         }
         else
         {
@@ -548,12 +548,12 @@ Board_STATUS Board_pinmuxConfigWkup (void)
     }
 
     if((gBoardPinmuxCfg.gesiExp == BOARD_PINMUX_GESI_ICSSG) ||
-       (gBoardPinmuxCfg.gesiExp == BOARD_PINMUX_GESI_CPSW9G))
+       (gBoardPinmuxCfg.gesiExp == BOARD_PINMUX_GESI_CPSW))
     {
         Board_pinmuxUpdate(gJ721E_WkupPinmuxDataGesiIcssg,
                            BOARD_SOC_DOMAIN_WKUP);
 
-        if(gBoardPinmuxCfg.gesiExp == BOARD_PINMUX_GESI_CPSW9G)
+        if(gBoardPinmuxCfg.gesiExp == BOARD_PINMUX_GESI_CPSW)
         {
             Board_pinmuxUpdate(gJ721E_WkupPinmuxDataGesiCpsw9g,
                                BOARD_SOC_DOMAIN_WKUP);

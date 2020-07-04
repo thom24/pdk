@@ -125,14 +125,14 @@ Board_STATUS Board_icssEthPhyConfig(void);
  *
  * \return  BOARD_SOK in case of success or appropriate error code
  */
-Board_STATUS Board_cpsw5gEnetExpPhyReset(bool enableFlag);
+Board_STATUS Board_cpswEnetExpPhyReset(bool enableFlag);
 
 /**
  * \brief  Enable/Disable COMA_MODE for ENET EXP boards PHY
  *
  * \return  BOARD_SOK in case of success or appropriate error code
  */
-Board_STATUS Board_cpsw5gEnetExpComaModeCfg(bool enableFlag);
+Board_STATUS Board_cpswEnetExpComaModeCfg(bool enableFlag);
 
 /**
  * \brief  Board specific configurations for SGMII Ethernet PHYs

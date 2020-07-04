@@ -232,7 +232,7 @@ static void Board_disableIcssEmacDelay(void)
  *
  * \return  BOARD_SOK in case of success or appropriate error code
  */
-Board_STATUS Board_cpsw9gEnetExpPhyReset(bool enableFlag)
+Board_STATUS Board_cpswEnetExpPhyReset(bool enableFlag)
 {
     Board_IoExpCfg_t ioExpCfg;
     Board_STATUS status = BOARD_SOK;
@@ -266,7 +266,7 @@ Board_STATUS Board_cpsw9gEnetExpPhyReset(bool enableFlag)
  *
  * \return  BOARD_SOK in case of success or appropriate error code
  */
-Board_STATUS Board_cpsw9gEnetExpComaModeCfg(bool enableFlag)
+Board_STATUS Board_cpswEnetExpComaModeCfg(bool enableFlag)
 {
     Board_IoExpCfg_t ioExpCfg;
     Board_STATUS status = BOARD_SOK;
@@ -338,8 +338,8 @@ Board_STATUS Board_cpsw9gEthPhyConfig(void)
     {
         /* CPSW9G MDIO access is unstable when ENET card is connected.
            Keeping the ENET PHY in reset as a temporary workaround */
-        status = Board_cpsw9gEnetExpComaModeCfg(1U);
-        status = Board_cpsw9gEnetExpPhyReset(1U);
+        status = Board_cpswEnetExpComaModeCfg(1U);
+        status = Board_cpswEnetExpPhyReset(1U);
         if (status != BOARD_SOK)
         {
             return status;
