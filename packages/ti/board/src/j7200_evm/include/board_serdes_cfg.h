@@ -54,8 +54,8 @@
 #include <ti/csl/cslr_pcie.h>
 #include <ti/csl/csl_serdes_ethernet.h>
 
-#include "board.h"
-#include "board_internal.h"
+#include <ti/board/board.h>
+#include <ti/board/src/j7200_evm/include/board_internal.h>
 
 #ifdef __cplusplus
 extern "C" {
