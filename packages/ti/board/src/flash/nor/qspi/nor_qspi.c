@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 - 2019, Texas Instruments Incorporated
+ * Copyright (c) 2016 - 2020, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,8 +35,6 @@
 #include <ti/board/src/flash/nor/qspi/nor_qspi.h>
 #include <ti/csl/soc.h>
 
-#define SPI_CONFIG_OFFSET     CSL_SPI_CNT
-
 static NOR_HANDLE Nor_qspiOpen(uint32_t norIntf, uint32_t portNum, void *params);
 static void Nor_qspiClose(NOR_HANDLE handle);
 static NOR_STATUS Nor_qspiRead(NOR_HANDLE handle, uint32_t addr,
@@ -44,6 +42,8 @@ static NOR_STATUS Nor_qspiRead(NOR_HANDLE handle, uint32_t addr,
 static NOR_STATUS Nor_qspiWrite(NOR_HANDLE handle, uint32_t addr,
                                 uint32_t len, uint8_t *buf, uint32_t mode);
 static NOR_STATUS Nor_qspiErase(NOR_HANDLE handle, int32_t erLoc, bool blkErase);
+static NOR_STATUS Nor_qspiQuadModeCtrl(SPI_Handle handle,
+                                       uint8_t enable);
 
 /* NOR function table for NOR QSPI interface implementation */
 const NOR_FxnTable Nor_qspiFxnTable =
@@ -76,8 +76,8 @@ static NOR_STATUS NOR_qspiCmdRead(SPI_Handle handle, uint8_t *cmdBuf,
     bool             ret;
 
     /* Update the mode and transfer type with the required values */
-    SPI_control(handle, SPI_V0_CMD_SETCONFIGMODE, NULL);
-    SPI_control(handle, SPI_V0_CMD_TRANSFERMODE_RW, (void *)&transferType);
+    SPI_control(handle, SPI_CMD_SETCONFIGMODE, NULL);
+    SPI_control(handle, SPI_CMD_TRANSFERMODE_RW, (void *)&transferType);
 
     transaction.txBuf = (void *)cmdBuf;
     transaction.rxBuf = (void *)rxBuf;
@@ -88,7 +88,7 @@ static NOR_STATUS NOR_qspiCmdRead(SPI_Handle handle, uint8_t *cmdBuf,
     {
         return NOR_PASS;
     }
-	else
+    else
     {
         return NOR_FAIL;
     }
@@ -125,18 +125,20 @@ NOR_HANDLE Nor_qspiOpen(uint32_t norIntf, uint32_t portNum, void *params)
     SPI_Params      spiParams;  /* SPI params structure */
     SPI_Handle      hwHandle;  /* SPI handle */
     NOR_HANDLE      norHandle = 0;
+    uint8_t         status;
+    uint8_t         cmd = NOR_CMD_RDSR;
 
     /* Init SPI driver */
     SPI_init();
 
     if (params)
     {
-		memcpy(&spiParams, params, sizeof(SPI_Params));
+        memcpy(&spiParams, params, sizeof(SPI_Params));
     }
     else
     {
         /* Use default SPI config params if no params provided */
-		SPI_Params_init(&spiParams);
+        SPI_Params_init(&spiParams);
     }
     hwHandle = (SPI_Handle)SPI_open(portNum + SPI_CONFIG_OFFSET, &spiParams);
 
@@ -144,10 +146,25 @@ NOR_HANDLE Nor_qspiOpen(uint32_t norIntf, uint32_t portNum, void *params)
     {
         if (Nor_qspiReadId(hwHandle) == NOR_PASS)
         {
+#if defined(tpr12_evm)
+            /* Quad enable bit is set by default for TPR12 as needed for RoM boot */
+            if (NOR_qspiCmdRead(hwHandle, &cmd, 1, &status, 1))
+            {
+                return NOR_FAIL;
+            }
+
+            if ((status & NOR_SR_QE) == 0)
+            {
+                if (Nor_qspiQuadModeCtrl(hwHandle, 1))
+                {
+                    return NOR_FAIL;
+                }
+            }
+#endif
             Nor_qspiInfo.hwHandle = (uint32_t)hwHandle;
             norHandle = (NOR_HANDLE)(&Nor_qspiInfo);
         }
-	}
+    }
 
     return (norHandle);
 }
@@ -177,8 +194,8 @@ static NOR_STATUS Nor_qspiCmdWrite(SPI_Handle handle, uint8_t *cmdBuf,
     bool             ret;
 
     /* Update the mode and transfer type with the required values */
-    SPI_control(handle, SPI_V0_CMD_SETCONFIGMODE, NULL);
-    SPI_control(handle, SPI_V0_CMD_TRANSFERMODE_RW, (void *)&transferType);
+    SPI_control(handle, SPI_CMD_SETCONFIGMODE, NULL);
+    SPI_control(handle, SPI_CMD_TRANSFERMODE_RW, (void *)&transferType);
 
     transaction.txBuf = (void *)cmdBuf; /* Buffer includes command and write data */
     transaction.count = cmdLen + dataLen;
@@ -190,7 +207,7 @@ static NOR_STATUS Nor_qspiCmdWrite(SPI_Handle handle, uint8_t *cmdBuf,
     {
         return NOR_PASS;
     }
-	else
+    else
     {
         return NOR_FAIL;
     }
@@ -227,6 +244,72 @@ static NOR_STATUS Nor_qspiWaitReady(SPI_Handle handle, uint32_t timeOut)
     /* Timed out */
     return NOR_FAIL;
 }
+
+#if defined (tpr12_evm)
+static NOR_STATUS Nor_qspiQuadModeCtrl(SPI_Handle handle,
+                                       uint8_t enable)
+{
+    uint8_t status;
+    uint8_t cmd[3];
+
+    /* Write enable command */
+    cmd[0] = NOR_CMD_WREN;
+    if (Nor_qspiCmdWrite(handle, cmd, 1, 0))
+    {
+        goto err;
+    }
+
+    /* Read status register */
+    cmd[0] = NOR_CMD_RDSR;
+    status = 0;
+    if (NOR_qspiCmdRead(handle, cmd, 1, &status, 1))
+    {
+        goto err;
+    }
+
+    cmd[0] = NOR_CMD_WRR;
+    if (enable)
+    {
+        /* quad enabled */
+        cmd[1] = status | NOR_SR_QE;
+    }
+    else
+    {
+        /* quad disabled */
+        cmd[1] = status & (~(NOR_SR_QE));
+    }
+    /* Configuration Register */
+    cmd[2] = 0x0;
+
+    if (Nor_qspiCmdWrite(handle, cmd, 1, 2)) /* 1 byte command and 2 bytes write data */
+    {
+        goto err;
+    }
+
+    if (Nor_qspiWaitReady(handle, NOR_WRR_WRITE_TIMEOUT))
+    {
+        goto err;
+    }
+
+    cmd[0] = NOR_CMD_RDSR;
+    status = 0;
+    if (NOR_qspiCmdRead(handle, cmd, 1, &status, 1))
+    {
+        goto err;
+    }
+
+    if (status != cmd[1])
+    {
+        goto err;
+    }
+
+    return NOR_PASS;
+
+err :
+    return NOR_FAIL;
+}
+
+#else
 
 static NOR_STATUS Nor_qspiQuadModeCtrl(SPI_Handle handle,
                                        uint8_t enable)
@@ -292,6 +375,7 @@ static NOR_STATUS Nor_qspiQuadModeCtrl(SPI_Handle handle,
 err :
     return NOR_FAIL;
 }
+#endif
 
 static SPI_Transaction transaction;
 NOR_STATUS Nor_qspiRead(NOR_HANDLE handle, uint32_t addr,
@@ -300,10 +384,14 @@ NOR_STATUS Nor_qspiRead(NOR_HANDLE handle, uint32_t addr,
     NOR_Info        *norQspiInfo;
     uint32_t         command;
     uint32_t         dummyCycles;
-    uint32_t         rx_lines;
     SPI_Handle       spiHandle;
     bool             ret;
-
+#if defined (tpr12_evm)
+    unsigned int transferType;
+    unsigned char dummyWrite[4];    /* dummy data to be written */
+#else
+    uint32_t         rx_lines;
+#endif
     if (!handle)
     {
         return NOR_FAIL;
@@ -322,6 +410,7 @@ NOR_STATUS Nor_qspiRead(NOR_HANDLE handle, uint32_t addr,
         return NOR_FAIL;
     }
 
+#if !defined(tpr12_evm)
     /* To set or unset the QUAD bit in CR1 register */
     if (mode != QSPI_FLASH_SINGLE_READ)
     {
@@ -337,37 +426,56 @@ NOR_STATUS Nor_qspiRead(NOR_HANDLE handle, uint32_t addr,
             return NOR_FAIL;
         }
     }
-
+#endif
     switch(mode)
     {
         case QSPI_FLASH_SINGLE_READ :
             command     = NOR_CMD_READ;
             dummyCycles = NOR_SINGLE_READ_DUMMY_CYCLE;
-            rx_lines    = QSPI_XFER_LINES_SINGLE;
+#if !defined(tpr12_evm)
+            rx_lines    = QSPI_IO_LINES_SINGLE;
+#endif
             break;
         case QSPI_FLASH_DUAL_READ :
             command     = NOR_CMD_DUAL_READ;
             dummyCycles = NOR_DUAL_READ_DUMMY_CYCLE;
-            rx_lines    = QSPI_XFER_LINES_DUAL;
+#if !defined(tpr12_evm)
+            rx_lines    = QSPI_IO_LINES_DUAL;
+#endif
             break;
         case QSPI_FLASH_QUAD_READ :
             command     = NOR_CMD_QUAD_READ;
             dummyCycles = NOR_QUAD_READ_DUMMY_CYCLE;
-            rx_lines    = QSPI_XFER_LINES_QUAD;
+#if !defined(tpr12_evm)
+            rx_lines    = QSPI_IO_LINES_QUAD;
+#endif
             break;
         default :
             command     = NOR_CMD_READ;
             dummyCycles = NOR_SINGLE_READ_DUMMY_CYCLE;
-            rx_lines    = QSPI_XFER_LINES_SINGLE;
+#if !defined(tpr12_evm)
+            rx_lines    = QSPI_IO_LINES_SINGLE;
+#endif
             break;
     }
 
     /* Update the indirect read command, rx lines and read dummy cycles */
-    SPI_control(spiHandle, SPI_V0_CMD_SETINDXFERMODE, NULL);
-    SPI_control(spiHandle, SPI_V0_CMD_IND_TRANSFER_CMD, (void *)&command);
-    SPI_control(spiHandle, SPI_V0_CMD_SETXFERLINES, (void *)&rx_lines);
+    SPI_control(spiHandle, SPI_CMD_SETQSPIMODE, NULL);
+    SPI_control(spiHandle, SPI_CMD_TRANSFER_CMD, (void *)&command);
+#if !defined(tpr12_evm)
+    SPI_control(spiHandle, SPI_CMD_SETXFERLINES, (void *)&rx_lines);
     SPI_control(spiHandle, SPI_V0_CMD_RD_DUMMY_CLKS, (void *)&dummyCycles);
+#else
+    /* Dummy Byte Write */
+    dummyWrite[0] = 0U;
+    transaction.txBuf = (unsigned char *)&dummyWrite[0];
+    transaction.rxBuf = NULL;
+    transaction.count = (dummyCycles >> 3);      /* In bytes */
 
+    transferType = SPI_TRANSACTION_TYPE_WRITE;
+    SPI_control(spiHandle, SPI_CMD_TRANSFERMODE_RW, (void *)&transferType);
+    ret = SPI_transfer(spiHandle, &transaction);
+#endif
     transaction.arg   = (void *)addr;
     transaction.txBuf = NULL;
     transaction.rxBuf = (void *)buf;
@@ -378,7 +486,7 @@ NOR_STATUS Nor_qspiRead(NOR_HANDLE handle, uint32_t addr,
     {
         return NOR_PASS;
     }
-	else
+    else
     {
         return NOR_FAIL;
     }
@@ -389,14 +497,16 @@ NOR_STATUS Nor_qspiWrite(NOR_HANDLE handle, uint32_t addr, uint32_t len,
 {
     NOR_Info        *norQspiInfo;
     SPI_Handle       spiHandle;
-    uint32_t         command;
-    uint32_t         tx_lines;
     bool             ret;
+    uint8_t          cmdWren = NOR_CMD_WREN;
+    uint32_t         command;
+#if !defined (tpr12_evm)
+    uint32_t         tx_lines;
+#endif
     uint32_t         byteAddr;
     uint32_t         pageSize;
     uint32_t         chunkLen;
     uint32_t         actual;
-    uint8_t          cmdWren = NOR_CMD_WREN;
 
     if (!handle)
     {
@@ -416,6 +526,7 @@ NOR_STATUS Nor_qspiWrite(NOR_HANDLE handle, uint32_t addr, uint32_t len,
         return NOR_FAIL;
     }
 
+#if !defined (tpr12_evm)
     if (mode == QSPI_FLASH_QUAD_PAGE_PROG)
     {
         if (Nor_qspiQuadModeCtrl(spiHandle, 1))
@@ -430,20 +541,26 @@ NOR_STATUS Nor_qspiWrite(NOR_HANDLE handle, uint32_t addr, uint32_t len,
             return NOR_FAIL;
         }
     }
-
+#endif
     switch(mode)
     {
         case QSPI_FLASH_SINGLE_PAGE_PROG :
             command = NOR_CMD_PAGE_PROG;
-            tx_lines = QSPI_XFER_LINES_SINGLE;
+#if !defined (tpr12_evm)
+            tx_lines = QSPI_IO_LINES_SINGLE;
+#endif
             break;
         case QSPI_FLASH_QUAD_PAGE_PROG:
             command = NOR_CMD_QUAD_PAGE_PROG;
-            tx_lines = QSPI_XFER_LINES_QUAD;
+#if !defined (tpr12_evm)
+            tx_lines = QSPI_IO_LINES_QUAD;
+#endif
             break;
         default :
             command = NOR_CMD_PAGE_PROG;
-            tx_lines = QSPI_XFER_LINES_SINGLE;
+#if !defined (tpr12_evm)
+            tx_lines = QSPI_IO_LINES_SINGLE;
+#endif
             break;
     }
 
@@ -464,9 +581,11 @@ NOR_STATUS Nor_qspiWrite(NOR_HANDLE handle, uint32_t addr, uint32_t len,
         }
 
         /* Update the indirect write command and tx lines */
-        SPI_control(spiHandle, SPI_V0_CMD_SETINDXFERMODE, NULL);
-        SPI_control(spiHandle, SPI_V0_CMD_IND_TRANSFER_CMD, (void *)&command);
-        SPI_control(spiHandle, SPI_V0_CMD_SETXFERLINES, (void *)&tx_lines);
+        SPI_control(spiHandle, SPI_CMD_SETQSPIMODE, NULL);
+        SPI_control(spiHandle, SPI_CMD_TRANSFER_CMD, (void *)&command);
+#if !defined (tpr12_evm)
+        SPI_control(spiHandle, SPI_CMD_SETXFERLINES, (void *)&tx_lines);
+#endif
 
         /* Send Page Program command */
         chunkLen = ((len - actual) < (pageSize - byteAddr) ?
@@ -577,7 +696,7 @@ NOR_STATUS Nor_qspiErase(NOR_HANDLE handle, int32_t erLoc, bool blkErase)
     else
     {
         if (blkErase == true)
-		{
+        {
             if (erLoc >= NOR_NUM_BLOCKS)
             {
 #if defined (iceK2G)
@@ -606,22 +725,22 @@ NOR_STATUS Nor_qspiErase(NOR_HANDLE handle, int32_t erLoc, bool blkErase)
 
     if (Nor_qspiCmdWrite(spiHandle, &cmdWren, 1, 0))
     {
-    	return NOR_FAIL;
+        return NOR_FAIL;
     }
 
     if (Nor_qspiWaitReady(spiHandle, NOR_WRR_WRITE_TIMEOUT))
     {
-    	return NOR_FAIL;
+        return NOR_FAIL;
     }
 
     if (Nor_qspiCmdWrite(spiHandle, cmd, cmdLen, 0))
     {
-    	return NOR_FAIL;
+        return NOR_FAIL;
     }
 
     if (Nor_qspiWaitReady(spiHandle, NOR_BULK_ERASE_TIMEOUT))
     {
-    	return NOR_FAIL;
+        return NOR_FAIL;
     }
 
     return NOR_PASS;

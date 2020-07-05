@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2017, Texas Instruments Incorporated
+ * Copyright (c) 2016-2020, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -56,6 +56,8 @@ extern "C" {
 #include <ti/board/src/flash/nor/device/s25fl512s.h>
 #elif defined (iceK2G)
 #include <ti/board/src/flash/nor/device/s25fl256s.h>
+#elif defined (tpr12_evm)
+#include <ti/board/src/flash/nor/device/mx25v1635f.h>
 #endif
 
 /**************************************************************************
@@ -63,6 +65,36 @@ extern "C" {
  **************************************************************************/
 #ifdef __cplusplus
 }
+#endif
+
+#if defined (tpr12_evm)
+
+#define SPI_CONFIG_OFFSET       (0)
+
+#define SPI_CMD_TRANSFER_CMD    (SPI_V1_CMD_MMAP_TRANSFER_CMD)
+#define SPI_CMD_TRANSFERMODE_RW (SPI_V1_CMD_TRANSFERMODE_RW)
+#define SPI_CMD_SETCONFIGMODE   (SPI_V1_CMD_SETCONFIGMODE)
+#define SPI_CMD_SETQSPIMODE     (SPI_V1_CMD_SETMEMMORYMAPMODE)
+#define SPI_CMD_SETXFERLINES    (SPI_V1_CMD_SETRXLINES)
+
+#define QSPI_IO_LINES_SINGLE    (QSPI_RX_LINES_SINGLE)
+#define QSPI_IO_LINES_DUAL      (QSPI_RX_LINES_DUAL)
+#define QSPI_IO_LINES_QUAD      (QSPI_RX_LINES_QUAD)
+
+#else
+
+#define SPI_CONFIG_OFFSET       (CSL_SPI_CNT)
+
+#define SPI_CMD_TRANSFER_CMD    (SPI_V0_CMD_IND_TRANSFER_CMD)
+#define SPI_CMD_TRANSFERMODE_RW (SPI_V0_CMD_TRANSFERMODE_RW)
+#define SPI_CMD_SETCONFIGMODE   (SPI_V0_CMD_SETCONFIGMODE)
+#define SPI_CMD_SETQSPIMODE     (SPI_V0_CMD_SETINDXFERMODE)
+#define SPI_CMD_SETXFERLINES    (SPI_V0_CMD_SETXFERLINES)
+
+#define QSPI_IO_LINES_SINGLE    (QSPI_XFER_LINES_SINGLE)
+#define QSPI_IO_LINES_DUAL      (QSPI_XFER_LINES_DUAL)
+#define QSPI_IO_LINES_QUAD      (QSPI_XFER_LINES_QUAD)
+
 #endif
 
 #endif /* NOR_QSPI_H_ */

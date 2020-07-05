@@ -733,7 +733,7 @@ export board_diag_norflash_CORE_DEPENDENCY
 export board_diag_norflash_MAKEFILE
 board_diag_norflash_PKG_LIST = board_diag_norflash
 board_diag_norflash_INCLUDE = $(board_diag_norflash_PATH)
-board_diag_norflash_BOARDLIST = j721e_evm am65xx_evm am65xx_idk j7200_evm
+board_diag_norflash_BOARDLIST = j721e_evm am65xx_evm am65xx_idk j7200_evm tpr12_evm
 board_diag_norflash_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
 export board_diag_norflash_$(SOC)_CORELIST
 export board_diag_norflash_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)

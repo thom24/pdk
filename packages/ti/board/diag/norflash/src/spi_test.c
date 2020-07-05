@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2018 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -41,9 +41,9 @@
  *  a test pattern to a memory page and reading the same page for
  *  data verification.
  *
- *  Supported SoCs : AM65XX
+ *  Supported SoCs : AM65XX and TPR12
  *
- *  Supported Platforms: am65xx-evm,am65xx_idk
+ *  Supported Platforms: am65xx-evm,am65xx_idk and tpr12_evm.
  *
  */
 
@@ -313,6 +313,25 @@ int BoardDiag_SpiFlashTest(void)
     Board_flashHandle boardHandle;
     Board_FlashInfo *flashInfo;
     bool testStatus = true;          /* return value */
+#if defined(SOC_TPR12)
+    QSPI_HwAttrs qspiCfg;
+
+    /* Get the default SPI init configurations */
+    QSPI_socGetInitCfg(BOARD_QSPI_NOR_INSTANCE, &qspiCfg);
+
+    /* Modify the default SPI configurations if necessary */
+    /* Turning off interrupts for baremetal mode. May be re-enabled by app */
+    qspiCfg.intrEnable = false;
+
+    /* Set the default SPI init configurations */
+    QSPI_socSetInitCfg(BOARD_QSPI_NOR_INSTANCE, &qspiCfg);
+
+    /* Open the Board SPI NOR device with QSPI port 0
+       and use default SPI configurations */
+
+    boardHandle = Board_flashOpen(BOARD_FLASH_ID_MX25V1635F,
+                                  BOARD_QSPI_NOR_INSTANCE, NULL);
+#else
     SPI_v1_HWAttrs spi_cfg;
 
     /* Get the default SPI init configurations */
@@ -330,6 +349,7 @@ int BoardDiag_SpiFlashTest(void)
 
     boardHandle = Board_flashOpen(BOARD_FLASH_ID_NORN25Q128A13ESF40F,
                                   BOARD_SPI_NOR_INSTANCE, NULL);
+#endif
     if (!boardHandle)
     {
         UART_printf("\n Board_flashOpen Failed. \n");
@@ -394,7 +414,11 @@ int BoardDiag_SpiFlashStressTest(void)
     Board_flashHandle boardHandle;
     Board_FlashInfo *flashInfo;
     bool testStatus = 0;          /* return value */
+#if defined(SOC_TPR12)
+    QSPI_HwAttrs qspiCfg;
+#else
     SPI_v1_HWAttrs spi_cfg;
+#endif
     uint32_t offset;
     SPI_Params      spiParams;
     void *params;
@@ -402,7 +426,24 @@ int BoardDiag_SpiFlashStressTest(void)
     SPI_Params_init(&spiParams);
     spiParams.bitRate = MAX_CLOCK;
     params = &spiParams;
-    
+
+#if defined(SOC_TPR12)
+    /* Get the default SPI init configurations */
+    QSPI_socGetInitCfg(BOARD_QSPI_NOR_INSTANCE, &qspiCfg);
+
+    /* Modify the default SPI configurations if necessary */
+    /* Turning off interrupts for baremetal mode. May be re-enabled by app */
+    qspiCfg.intrEnable = false;
+
+    /* Set the default SPI init configurations */
+    QSPI_socSetInitCfg(BOARD_QSPI_NOR_INSTANCE, &qspiCfg);
+
+    /* Open the Board SPI NOR device with QSPI port 0
+       and use default SPI configurations */
+
+    boardHandle = Board_flashOpen(BOARD_FLASH_ID_MX25V1635F,
+                                  BOARD_QSPI_NOR_INSTANCE, params);
+#else
     /* Get the default SPI init configurations */
     SPI_socGetInitCfg(BOARD_SPI_NOR_INSTANCE, &spi_cfg);
 
@@ -418,6 +459,7 @@ int BoardDiag_SpiFlashStressTest(void)
 
     boardHandle = Board_flashOpen(BOARD_FLASH_ID_NORN25Q128A13ESF40F,
                                   BOARD_SPI_NOR_INSTANCE, params);
+#endif
     if (!boardHandle)
     {
         UART_printf("\n Board_flashOpen Failed. \n");
