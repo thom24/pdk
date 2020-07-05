@@ -34,7 +34,7 @@
 /**
  *  \file board_pinmux.c
  *
- *  \brief This file Enables pinmux for the TPR12 evm board
+ *  \brief This file enables pinmux for the TPR12 EVM 
  *
  */
 
@@ -43,9 +43,27 @@
 #include "board_pinmux.h"
 
 /**
+ *  \brief    This function used to set the specified pinMux
+ *            mode for a specified pinMux offset address register.
+ *
+ *  \param    offset     [IN]       Pad config offset address
+ *            mode       [IN]       Pad config mux mode.
+ *
+ *
+ */
+void Board_pinMuxSetMode(uint32_t offset, uint32_t mode)
+{
+    volatile uint32_t *addr;
+    addr = (uint32_t *)(PMUX_CTRL + offset);
+
+    *addr &= ~(MODE_PIN_MASK);
+    *addr |= mode;
+}
+
+/**
  * \brief  Board pinmuxing enable function
  *
- * Enables pinmux for the TPR12 evm board interfaces. Pin mux is done based
+ * Enables pinmux for the TPR12 EVM interfaces. Pinmux is done based
  * on the default/primary functionality of the board. Any pins shared by
  * multiple interfaces need to be reconfigured to access the secondary
  * functionality.
@@ -57,5 +75,29 @@
  */
 Board_STATUS Board_pinmuxConfig (void)
 {
+    pinmuxModuleCfg_t* pModuleData = NULL;
+    pinmuxPerCfg_t* pInstanceData = NULL;
+    int32_t i, j, k;
+    uint32_t rdRegVal;
+
+    for(i = 0; PINMUX_END != gTPR12PinmuxData[i].moduleId; i++)
+    {
+        pModuleData = gTPR12PinmuxData[i].modulePinCfg;
+        for(j = 0; (PINMUX_END != pModuleData[j].modInstNum); j++)
+        {
+            if(pModuleData[j].doPinConfig == TRUE)
+            {
+                pInstanceData = pModuleData[j].instPins;
+                for(k = 0; (PINMUX_END != pInstanceData[k].pinOffset); k++)
+                {
+                    rdRegVal = HW_RD_REG32((PMUX_CTRL + pInstanceData[k].pinOffset));
+                    rdRegVal = (rdRegVal & PINMUX_BIT_MASK);
+                    HW_WR_REG32((PMUX_CTRL + pInstanceData[k].pinOffset),
+                                (pInstanceData[k].pinSettings));
+                }
+            }
+        }
+    }
+
     return BOARD_SOK;
 }

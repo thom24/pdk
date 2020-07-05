@@ -31,60 +31,98 @@
  *
  *****************************************************************************/
 
+/**
+ * \brief  board_internal.h
+ *
+ * This file contains the unlock register, ethernet related macros definitions
+ * and basic init function prototypes.
+ *
+ */
+
 #ifndef BOARD_INTERNAL_H_
 #define BOARD_INTERNAL_H_
 
-/*****************************************************************************
- * Include Files                                                             *
- *****************************************************************************/
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/* Include files */
 #include <ti/csl/csl_types.h>
 #include <ti/csl/cslr_device.h>
 #include <ti/csl/soc.h>
 
-#if !defined(SOC_TPR12)
 #include <ti/drv/i2c/I2C.h>
 #include <ti/drv/i2c/soc/I2C_soc.h>
-#else
-typedef void      *I2C_Handle;
-#endif
 
-#ifdef UART_DRV_INSTALLED
 #include <ti/drv/uart/UART.h>
 #include <ti/drv/uart/UART_stdio.h>
 #include <ti/drv/uart/soc/UART_soc.h>
-#endif
+#include <ti/drv/uart/src/v3/uartsci.h>
 
 #include <ti/board/board.h>
 #include <ti/csl/tistdtypes.h>
 #include <stdio.h>
 #include <stdbool.h>
 
-/*****************************************************************************
- * Internal Objects                                                          *
- *****************************************************************************/
-#if !defined(SOC_TPR12)
-extern const I2C_Config I2C_config[];
-#endif
+/* Internal objects */
+extern I2C_config_list I2C_config;
 
-typedef struct
+typedef struct Board_I2cObj_s
 {
-    I2C_Handle i2cHandle;
-} Board_gblObj;
+    I2C_Handle    i2cHandle;
+    uint8_t       i2cDomain;
+    uint32_t      instNum;
+    uint32_t      i2cBaseAddr;
+} Board_I2cObj_t;
 
-extern Board_gblObj Board_obj;
+/*TODO: Need to update unlock kick register values for tpr12_evm */
+#define BOARD_KICK0_UNLOCK_VAL                 (0x01234567U)
+#define BOARD_KICK1_UNLOCK_VAL                 (0x0FEDCBA8U)
 
-/****************************************************************************/
-#define KICK0_UNLOCK_VAL                 (0x01234567U)
-#define KICK1_UNLOCK_VAL                 (0x0FEDCBA8U)
+/* Domain specific base adress */
+#define BOARD_MSS_TOPRCM_U_BASE 			(CSL_MSS_TOPRCM_U_BASE)
+#define BOARD_MSS_RCM_U_BASE 				(CSL_MSS_RCM_U_BASE)
+#define BOARD_MSS_CTRL_U_BASE 				(CSL_MSS_CTRL_U_BASE)
+#define BOARD_DSS_RCM_U_BASE 				(CSL_DSS_RCM_U_BASE)
+#define BOARD_DSS_CTRL_U_BASE 				(CSL_DSS_CTRL_U_BASE)
+#define BOARD_RCSS_RCM_U_BASE 				(CSL_RCSS_RCM_U_BASE)
+#define BOARD_RCSS_CTRL_U_BASE 				(CSL_RCSS_CTRL_U_BASE)
 
-/****************************************************************************/
+/* Unlock kick registers base addresses */
+#define BOARD_MSS_TOPRCM_LOCK0_KICK0		(CSL_MSS_TOPRCM_LOCK0_KICK0)
+#define BOARD_MSS_TOPRCM_LOCK0_KICK1		(CSL_MSS_TOPRCM_LOCK0_KICK1)
+
+#define BOARD_MSS_RCM_LOCK0_KICK0			(CSL_MSS_RCM_LOCK0_KICK0)
+#define BOARD_MSS_RCM_LOCK0_KICK1			(CSL_MSS_RCM_LOCK0_KICK1)
+#define BOARD_MSS_CTRL_LOCK0_KICK0			(CSL_MSS_CTRL_LOCK0_KICK0)
+#define BOARD_MSS_CTRL_LOCK0_KICK1			(CSL_MSS_CTRL_LOCK0_KICK1)
+
+#define BOARD_DSS_RCM_LOCK0_KICK0			(CSL_DSS_RCM_LOCK0_KICK0)
+#define BOARD_DSS_RCM_LOCK0_KICK1			(CSL_DSS_RCM_LOCK0_KICK1)
+#define BOARD_DSS_CTRL_LOCK0_KICK0			(CSL_DSS_CTRL_LOCK0_KICK0)
+#define BOARD_DSS_CTRL_LOCK0_KICK1			(CSL_DSS_CTRL_LOCK0_KICK1)
+
+#define BOARD_RCSS_RCM_LOCK0_KICK0			(CSL_RCSS_RCM_LOCK0_KICK0)
+#define BOARD_RCSS_RCM_LOCK0_KICK1			(CSL_RCSS_RCM_LOCK0_KICK1)
+#define BOARD_RCSS_CTRL_LOCK0_KICK0			(CSL_RCSS_CTRL_LOCK0_KICK0)
+#define BOARD_RCSS_CTRL_LOCK0_KICK1			(CSL_RCSS_CTRL_LOCK0_KICK1)
+
+/* TPR12_EVM MCU and DSS domain clock frequencies */
+#define BOARD_MCU_PLL_CLK_FREQ                 (400000000U)
+#define BOARD_DSS_PLL_CLK_FREQ                 (450000000U)
+
+#define BOARD_I2C_PORT_CNT                   (CSL_MSS_I2C_PER_CNT)
+
+/* Etherent control registers */
+/* TODO: Need to get the value from csl*/
+#define BOARD_ENET_CTRL_REG_ADDR	        (0x40F04040U)
+/*TODO: Need to get the value from csl*/
+#define BOARD_ETH_BASE_ADDR			        (0x46000000U)
+
 #define BOARD_ETH_PHY_SPEED_MASK             (0x2040U)
 #define BOARD_ETH_PHY_AUTONEG_MASK           (0x1000U)
 #define BOARD_ETH_PHY_SPEED_1000MPBS         (0x0040U)
 #define BOARD_ETH_PHY_SPEED_100MPBS          (0x2000U)
-
-#define CSL_MCU_PLL_CLK_FREQ                 (400000000U)
-#define CSL_DSS_PLL_CLK_FREQ                 (450000000U)
 
 #define BOARD_ETHPHY_REGCR_REG_ADDR             (0xDU)
 #define BOARD_ETHPHY_REGCR_ADDR_EN              (0x1FU)
@@ -115,9 +153,10 @@ extern Board_gblObj Board_obj;
  *
  * \brief  Board pinmuxing enable function
  *
- * Enables pinmux for the Maxwell idk board interfaces. Pin mux is done based on the
- * default/primary functionality of the board. Any pins shared by multiple
- * interfaces need to be reconfigured to access the secondary functionality.
+ * Enables pinmux for the Maxwell idk board interfaces. Pin mux is done based
+ * on the default/primary functionality of the board. Any pins shared by
+ * multiple interfaces need to be reconfigured to access the secondary
+ * functionality.
  *
  * \return  BOARD_SOK in case of success or appropriate error code
  *
@@ -150,15 +189,18 @@ Board_STATUS Board_PLLInit(uint32_t modId, uint32_t clkId, uint64_t clkRate);
 Board_STATUS Board_moduleClockInit(void);
 
 /**
- * \brief  Board specific configurations for Gigabit Ethernet PHYs
- *
- * This function takes care of configuring the internal delays for gigabit
- * Ethernet PHY. 2.25ns delay is configured for Rx, and .25ns delay is
- * configured for Tx
+ * \brief  Sets the Ethernet subsytem board specific configurations
  *
  * \return  none
  */
-Board_STATUS Board_mcuEthConfig(void);
+Board_STATUS Board_ethConfig(void);
+
+/**
+ * \brief  Board specific configurations for Ethernet PHY
+ *
+ * \return  none
+ */
+Board_STATUS Board_ethPhyConfig(void);
 
 /**
  * \brief   This function initializes the default UART instance for use for
@@ -168,18 +210,6 @@ Board_STATUS Board_mcuEthConfig(void);
  *
  */
 Board_STATUS Board_uartStdioInit(void);
-
-/**
- * \brief   This function initializes the i2c instance connected to the
- *          board Id EEPROM.
- *
- * This function disables the interrupt mode as the Board i2c instance
- * doesn't require interrupt mode and restores back original at the end.
- *
- * \return  Board_STATUS in case of success or appropriate error code.
- *
- */
-Board_STATUS Board_internalInitI2C(void);
 
 /**
  *  \brief   This function is to get the i2c handle of the requested
@@ -215,5 +245,19 @@ Board_STATUS Board_unlockMMR(void);
  *
  */
 Board_STATUS Board_PLLInitAll(void);
+
+/**
+ *  \brief   This function is used to de-initialize board UART handles.
+ */
+Board_STATUS Board_uartDeInit(void);
+
+/**
+ *  \brief   This function is used to close the initialized board I2C handle.
+ */
+Board_STATUS Board_i2cDeInit(void);
+
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
 
 #endif /* BOARD_INTERNAL_H_ */

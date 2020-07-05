@@ -53,10 +53,7 @@ extern "C" {
 #define BOARD_MSS_UART_INSTANCE                 (0U)
 
 /* UART LLD instance number for DSS UART port */
-#define BOARD_DSS_UART_INSTANCE                 (2U)
-
-/* UART LLD instance number for RCSS UART port */
-#define BOARD_RCSS_UART_INSTANCE                (3U)
+#define BOARD_DSS_UART_INSTANCE                 (0U)
 
 /* I2C instance as master for master/slave test example */
 #define BOARD_I2C_MASTER_INSTANCE              (0U)
@@ -64,7 +61,11 @@ extern "C" {
 #define BOARD_I2C_SLAVE_INSTANCE               (0U)
 
 /* UART LLD instance number for primary UART port */
+#if defined (__TI_ARM_V7R4__)
 #define BOARD_UART_INSTANCE                     (BOARD_MSS_UART_INSTANCE)
+#else
+#define BOARD_UART_INSTANCE                     (BOARD_DSS_UART_INSTANCE)
+#endif
 
 /* SPI instance connected to PMIC - MSS SPIB */
 #define BOARD_SPI_PMIC_INSTANCE                 (1U)
@@ -88,8 +89,8 @@ extern "C" {
 #define BOARD_EMAC_PORT_MAX                     (0x1U)
 #define BOARD_ETH_PORT                          (0x0U)
 
-/* MSS EMAC PHY MDIO address */
-#define BOARD_EMAC_PHY_ADDR                     (0U)
+/* MCU EMAC PHY MDIO address */
+#define BOARD_MCU_EMAC_PHY_ADDR                 (0U)
 
 /* MSS EMAC MAX REG DUMP */
 #define BOARD_EMAC_REG_DUMP_MAX                 (16U)
@@ -120,6 +121,14 @@ extern "C" {
 
 /* Number of TPR12 boards supported */
 #define BOARD_ID_MAX_BOARDS                     (0x1U)
+
+/* Different SoC domains */
+#define BOARD_SOC_DOMAIN_MSS                    (0U)
+#define BOARD_SOC_DOMAIN_RCSS                   (1U)
+#define BOARD_SOC_DOMAIN_DSS                    (2U)
+
+/* Maximum possible buffer length */
+#define BOARD_EEPROM_MAX_BUFF_LENGTH                    (197U)
 
 /* EEPROM board ID information */
 #define BOARD_EEPROM_HEADER_FIELD_SIZE          (7U)

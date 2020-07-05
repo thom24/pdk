@@ -35,7 +35,7 @@
  *
  *  \brief  MMR configuration file
  *
- *  This file contains the function to unlock the MMR registers
+ *  This file contains the function to unlock the TPR12 MMR registers.
  *
  */
 
@@ -46,8 +46,8 @@ Board_STATUS MMR_unlock(uint32_t *kick0, uint32_t *kick1)
     /* Initialize the status variable */
     Board_STATUS status = BOARD_SOK;
 
-    *kick0 = KICK0_UNLOCK_VAL;
-    *kick1 = KICK1_UNLOCK_VAL;
+    *kick0 = BOARD_KICK0_UNLOCK_VAL;
+    *kick1 = BOARD_KICK1_UNLOCK_VAL;
 
     return status;
 }
@@ -63,34 +63,35 @@ Board_STATUS Board_unlockMMR(void)
     uint32_t *lock1;
 
     /* Unlock MAIN MMR registers */
-    lock0 = (uint32_t *)(CSL_MSS_TOPRCM_U_BASE + CSL_MSS_TOPRCM_LOCK0_KICK0);
-    lock1 = (uint32_t *)(CSL_MSS_TOPRCM_U_BASE + CSL_MSS_TOPRCM_LOCK0_KICK1);
+    lock0 = (uint32_t *)(BOARD_MSS_TOPRCM_U_BASE +
+	BOARD_MSS_TOPRCM_LOCK0_KICK0);
+    lock1 = (uint32_t *)(BOARD_MSS_TOPRCM_U_BASE +
+	BOARD_MSS_TOPRCM_LOCK0_KICK1);
     MMR_unlock(lock0, lock1);
 
-    lock0 = (uint32_t *)(CSL_MSS_RCM_U_BASE + CSL_MSS_RCM_LOCK0_KICK0);
-    lock1 = (uint32_t *)(CSL_MSS_RCM_U_BASE + CSL_MSS_RCM_LOCK0_KICK1);
+    lock0 = (uint32_t *)(BOARD_MSS_RCM_U_BASE + BOARD_MSS_RCM_LOCK0_KICK0);
+    lock1 = (uint32_t *)(BOARD_MSS_RCM_U_BASE + BOARD_MSS_RCM_LOCK0_KICK1);
     MMR_unlock(lock0, lock1);
 
-    lock0 = (uint32_t *)(CSL_MSS_CTRL_U_BASE + CSL_MSS_CTRL_LOCK0_KICK0);
-    lock1 = (uint32_t *)(CSL_MSS_CTRL_U_BASE + CSL_MSS_CTRL_LOCK0_KICK1);
+    lock0 = (uint32_t *)(BOARD_MSS_CTRL_U_BASE + BOARD_MSS_CTRL_LOCK0_KICK0);
+    lock1 = (uint32_t *)(BOARD_MSS_CTRL_U_BASE + BOARD_MSS_CTRL_LOCK0_KICK1);
     MMR_unlock(lock0, lock1);
 
-    lock0 = (uint32_t *)(CSL_DSS_RCM_U_BASE + CSL_DSS_RCM_LOCK0_KICK0);
-    lock1 = (uint32_t *)(CSL_DSS_RCM_U_BASE + CSL_DSS_RCM_LOCK0_KICK1);
+    lock0 = (uint32_t *)(BOARD_DSS_RCM_U_BASE + BOARD_DSS_RCM_LOCK0_KICK0);
+    lock1 = (uint32_t *)(BOARD_DSS_RCM_U_BASE + BOARD_DSS_RCM_LOCK0_KICK1);
     MMR_unlock(lock0, lock1);
 
-    lock0 = (uint32_t *)(CSL_DSS_CTRL_U_BASE + CSL_DSS_CTRL_LOCK0_KICK0);
-    lock1 = (uint32_t *)(CSL_DSS_CTRL_U_BASE + CSL_DSS_CTRL_LOCK0_KICK1);
+    lock0 = (uint32_t *)(BOARD_DSS_CTRL_U_BASE + BOARD_DSS_CTRL_LOCK0_KICK0);
+    lock1 = (uint32_t *)(BOARD_DSS_CTRL_U_BASE + BOARD_DSS_CTRL_LOCK0_KICK1);
     MMR_unlock(lock0, lock1);
 
-    lock0 = (uint32_t *)(CSL_RCSS_RCM_U_BASE + CSL_RCSS_RCM_LOCK0_KICK0);
-    lock1 = (uint32_t *)(CSL_RCSS_RCM_U_BASE + CSL_RCSS_RCM_LOCK0_KICK1);
+    lock0 = (uint32_t *)(BOARD_RCSS_RCM_U_BASE + BOARD_RCSS_RCM_LOCK0_KICK0);
+    lock1 = (uint32_t *)(BOARD_RCSS_RCM_U_BASE + BOARD_RCSS_RCM_LOCK0_KICK1);
     MMR_unlock(lock0, lock1);
 
-    lock0 = (uint32_t *)(CSL_RCSS_CTRL_U_BASE + CSL_RCSS_CTRL_LOCK0_KICK0);
-    lock1 = (uint32_t *)(CSL_RCSS_CTRL_U_BASE + CSL_RCSS_CTRL_LOCK0_KICK1);
+    lock0 = (uint32_t *)(BOARD_RCSS_CTRL_U_BASE + BOARD_RCSS_CTRL_LOCK0_KICK0);
+    lock1 = (uint32_t *)(BOARD_RCSS_CTRL_U_BASE + BOARD_RCSS_CTRL_LOCK0_KICK1);
     MMR_unlock(lock0, lock1);
 
     return BOARD_SOK;
 }
-

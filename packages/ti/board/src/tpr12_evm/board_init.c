@@ -55,8 +55,6 @@
 
 #include "board_internal.h"
 
-Board_gblObj Board_obj = {NULL};
-
 /**
  * \brief  Board library initialization function
  *
@@ -70,11 +68,6 @@ Board_gblObj Board_obj = {NULL};
  *      Configures different PLL controller modules. This enables all the PLL
  *      controllers on the SoC with default configurations. Any custom values
  *      required for PLL output needs to be done separately
- *
- *  BOARD_INIT_DDR -
- *      Initializes the DDR timing parameters. Sets the DDR timing parameters
- *      based in the DDR PLL controller configuration done by the board library.
- *      Any changes to DDR PLL requires change to DDR timing.
  *
  *  BOARD_INIT_PINMUX_CONFIG -
  *      Enables pinmux for the board interfaces. Pin mux is done based on the
@@ -118,6 +111,11 @@ Board_STATUS Board_init(Board_initCfg cfg)
     if (ret != BOARD_SOK)
         return ret;
 
+    if (cfg & BOARD_INIT_ETH_PHY)
+        ret = Board_ethPhyConfig();
+    if (ret != BOARD_SOK)
+        return ret;
+
     return ret;
 }
 
@@ -135,6 +133,10 @@ Board_STATUS Board_deinit(Board_initCfg cfg)
 {
     Board_STATUS ret = BOARD_SOK;
 
+    if (cfg & BOARD_DEINIT_UART_STDIO)
+        ret = Board_uartDeInit();
+    if (ret != BOARD_SOK)
+        return ret;
+
     return ret;
 }
-

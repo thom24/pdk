@@ -56,6 +56,41 @@ extern "C" {
 #include <stdio.h>
 #include <stdbool.h>
 
+/**
+ * \brief Structure to configure the board I2C parameters
+ */
+typedef struct Board_I2cInitCfg_s
+{
+    /** I2C controller instance */
+    uint32_t i2cInst;
+    /** SoC domain of the I2C controller */
+    uint32_t socDomain;
+    /** I2C controller interrupt enable/disable flag */
+    bool enableIntr;
+} Board_I2cInitCfg_t;
+
+/**
+ * \brief Function to get I2C configurations used by board
+ *
+ *  \return   BOARD_SOK in case of success or appropriate error code.
+ *
+ */
+Board_STATUS Board_getI2cInitConfig(Board_I2cInitCfg_t *i2cCfg);
+
+/**
+ * \brief Function to configure I2C configurations used by board
+ *
+ * This function is used to set the I2C controller instance and
+ * SoC domain used by the board module for board ID info read.
+ *
+ * Usage:
+ * Call Board_setI2cInitConfig to set the I2C configurations
+ * Call Board ID info read/write
+ *
+ *  \return   BOARD_SOK in case of success or appropriate error code.
+ *
+ */
+Board_STATUS Board_setI2cInitConfig(Board_I2cInitCfg_t *i2cCfg);
 
 /**
  *  \brief    Function to generate delay in micro seconds

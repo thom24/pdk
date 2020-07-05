@@ -45,8 +45,9 @@
 /*                             Include Files                                  */
 /* ========================================================================== */
 
-#include "pinmux.h"
-#include "csl_types.h"
+#include <ti/board/src/tpr12_evm/include/pinmux.h>
+#include <ti/board/src/tpr12_evm/TPR12_pinmux.h>
+#include <ti/csl/csl_types.h>
 #include <ti/csl/soc/tpr12/src/cslr_mss_iomux.h>
 #include <ti/csl/soc.h>
 
@@ -58,7 +59,7 @@ extern "C" {
 #define PINMUX_BIT_MASK                 (0xFFF8FFF0U)
 
 /* MAIN CTRL base address + offset to beginning of PAD CONFIG  section */
-#define MAIN_PMUX_CTRL	(CSL_MSS_IOMUX_U_BASE)
+#define PMUX_CTRL	(CSL_MSS_IOMUX_U_BASE)
 
 #ifdef __cplusplus
 }
