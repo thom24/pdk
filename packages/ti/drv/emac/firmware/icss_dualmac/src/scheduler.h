@@ -79,6 +79,11 @@ CLEANUP_TX	.macro 	 slot ; {{{1
 ; preserve r20 in r0 temp
 STATE_00_EP	.macro
 	.newblock
+
+	ldi32	r10, FW_CONFIG
+	lbbo	&r2.b0, r10, CFG_RES, 1 ; read pru's tx.b.flags
+	qbbc	done?, r2.b0, 7		; postpone scheduler if cnt_zero isn't set yet
+
 	SCHED_CHECK_DMA	;see if we can complete previous dma(s)
 ;(1) preemption not allowed, so we can ping pong dmas
 ;see if ok to start DMA
