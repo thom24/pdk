@@ -96,6 +96,9 @@ extern "C" {
 
 #define BOARD_I2C_CURRENT_MONITOR_INSTANCE          (0U)
 
+/* Enable NOR flash driver */
+#define BOARD_NOR_FLASH_IN
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
