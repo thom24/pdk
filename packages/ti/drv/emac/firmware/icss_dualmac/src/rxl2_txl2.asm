@@ -356,6 +356,8 @@ $2: ; wait timer
     set     GRegs.tx.b.flags, GRegs.tx.b.flags, f_cnt_zero
     clr     GRegs.tx.b.flags, GRegs.tx.b.flags, f_cnt_zero_wait
 $3:
+    ldi32   r2, FW_CONFIG
+    sbbo    &GRegs.tx.b.flags, r2, CFG_RES, 1   ; store flags in SMEM to be read by RTU
     .endm
 ;=================================================================================================
 
