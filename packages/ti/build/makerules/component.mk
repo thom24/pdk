@@ -1142,12 +1142,17 @@ export PDK_CFLAGS
 export PDK_LNKFLAGS
 
 PDK_COMMON_COMP = csl board uart i2c 
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
+
+ifeq ($(SOC),$(filter $(SOC), j721e j7200 am64x))
   PDK_COMMON_COMP += sciclient udma
-else
-  ifeq ($(SOC),$(filter $(SOC), tpr12))
-    PDK_COMMON_COMP += edma
+endif
+ifeq ($(SOC),$(filter $(SOC), am65xx))
+  ifeq ($(CORE),$(filter $(CORE), mpu1_0 mcu1_0 mcu1_1))
+    PDK_COMMON_COMP += sciclient udma
   endif
+endif  
+ifeq ($(SOC),$(filter $(SOC), tpr12))
+  PDK_COMMON_COMP += edma
 endif
 
 ifneq ($(SOC),$(filter $(SOC), am64x tda2xx tda2px tda2ex tda3xx))
