@@ -29,7 +29,7 @@ PACKAGE_SRCS_COMMON = .
 INCLUDE_EXTERNAL_INTERFACES = pdk
 
 # List all the components required by the application
-COMP_LIST_COMMON = csl_init csl board uart osal_nonos sciclient i2c sbl_lib_$(BOOTMODE)
+COMP_LIST_COMMON = $(PDK_COMMON_BAREMETAL_COMP) sbl_lib_$(BOOTMODE)
 
 ifeq ($(filter $(SBL_CFLAGS), -DBOOT_MMCSD), -DBOOT_MMCSD)
   COMP_LIST_COMMON += mmcsd fatfs_indp

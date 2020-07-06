@@ -21,11 +21,7 @@ endif
 INCLUDE_EXTERNAL_INTERFACES = bios xdc pdk
 
 # List all the components required by the application
-COMP_LIST_COMMON = uart osal_tirtos csl
-
-ifeq ($(SOC),$(filter $(SOC), am65xx))
-COMP_LIST_COMMON += sciclient
-endif
+COMP_LIST_COMMON  = $(PDK_COMMON_TIRTOS_COMP) 
 
 # Enable XDC build for application by providing XDC CFG File per core
 XDC_CFG_FILE_$(CORE) = uartSample.cfg

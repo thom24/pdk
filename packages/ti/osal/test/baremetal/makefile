@@ -21,30 +21,7 @@ INCDIR = ../src
 INCLUDE_EXTERNAL_INTERFACES = pdk csl_arch
 
 # List all the components required by the application
-ifeq ($(SOC),$(filter $(SOC), tpr12))
-  COMP_LIST_COMMON += board osal_nonos
-else
-  COMP_LIST_COMMON += board uart osal_nonos i2c
-endif
-COMP_LIST_c66x = csl_intc
-COMP_LIST_c66xdsp_1 = csl_intc
-COMP_LIST_c66xdsp_2 = csl_intc
-COMP_LIST_c674x = csl_intc
-COMP_LIST_COMMON += csl
-COMP_LIST_a15_0   = csl_init
-COMP_LIST_arm9_0 = csl_init
-COMP_LIST_mpu1_0  = csl_init
-COMP_LIST_mcu1_0  = csl_init
-COMP_LIST_mcu1_1  = csl_init
-COMP_LIST_mcu2_0  = csl_init
-COMP_LIST_mcu2_1  = csl_init
-COMP_LIST_mcu3_0  = csl_init
-COMP_LIST_mcu3_1  = csl_init
-COMP_LIST_m4f_0   = csl_init
-
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
-  COMP_LIST_COMMON += sciclient
-endif
+COMP_LIST_COMMON = $(PDK_COMMON_BAREMETAL_COMP)
 
 # Common source files and CFLAGS across all platforms and cores
 PACKAGE_SRCS_COMMON = . ../src

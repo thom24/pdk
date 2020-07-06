@@ -20,17 +20,10 @@ INCDIR =
 INCLUDE_EXTERNAL_INTERFACES = pdk
 
 # List all the components required by the application
-COMP_LIST_COMMON = csl mailbox board
+COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP)
+COMP_LIST_COMMON += mailbox 
 INCLUDE_EXTERNAL_INTERFACES += xdc bios pdk
-COMP_LIST_COMMON += osal_tirtos
 XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
-
-ifneq ($(SOC),$(filter $(SOC), tpr12))
-# Enable copy of vectors
-ifeq ($(ISA),$(filter $(ISA), r5f))
-  COMP_LIST_COMMON += copyvecs
-endif
-endif
 
 # Common source files and CFLAGS across all platforms and cores
 PACKAGE_SRCS_COMMON = .

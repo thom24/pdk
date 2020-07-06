@@ -8,7 +8,8 @@ LNKFLAGS_LOCAL_mpu1_0  += --entry Entry
 #LNKFLAGS_LOCAL_mcu1_0  += --entry Entry
 
 # List all the components required by the application
-COMP_LIST_COMMON = osal_nonos csl csl_init board uart usb sciclient i2c
+COMP_LIST_COMMON = $(PDK_COMMON_BAREMETAL_COMP)
+COMP_LIST_COMMON += usb  
 
 # List all the external components/interfaces, whose interface header files
 #  need to be included for this component
@@ -28,7 +29,8 @@ BUILD_OS_TYPE=tirtos
 OS_FLAGS=-DTIRTOS
 
 # List all the components required by the application
-COMP_LIST_COMMON = osal_tirtos csl board uart usb sciclient i2c
+COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP)
+COMP_LIST_COMMON += usb  
 
 # List all the external components/interfaces, whose interface header files
 #  need to be included for this component

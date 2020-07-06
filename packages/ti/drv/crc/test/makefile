@@ -20,9 +20,10 @@ INCDIR = .
 INCLUDE_EXTERNAL_INTERFACES = pdk
 
 # List all the components required by the application
-COMP_LIST_COMMON = csl board crc
+COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP) 
+COMP_LIST_COMMON += crc
+
 INCLUDE_EXTERNAL_INTERFACES += xdc bios pdk
-COMP_LIST_COMMON += osal_tirtos
 XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
 
 # Common source files and CFLAGS across all platforms and cores
@@ -30,13 +31,6 @@ PACKAGE_SRCS_COMMON = .
 SRCS_COMMON += main.c crc_test.c crcmodel.c
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS)
-
-ifneq ($(SOC),$(filter $(SOC), tpr12))
-# Enable copy of vectors
-ifeq ($(ISA),$(filter $(ISA), r5f))
-  COMP_LIST_COMMON += copyvecs
-endif
-endif
 
 # Core/SoC/platform specific source files and CFLAGS
 # Example:

@@ -14,9 +14,7 @@ INCDIR = ../../ src \
 INCLUDE_EXTERNAL_INTERFACES = pdk
 
 # List all the components required by the application
-COMP_LIST_COMMON = csl sciclient
-COMP_LIST_COMMON += board i2c uart
-COMP_LIST_COMMON += csl_init osal_nonos
+COMP_LIST_COMMON = $(PDK_COMMON_BAREMETAL_COMP)
 COMP_LIST_COMMON += sdr
 
 SRCS_COMMON = sdtf_main.c sdtf_test.c sdtf_init.c sdtf_profile.c sdtf_injecterr.c \

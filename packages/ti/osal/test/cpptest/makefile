@@ -52,17 +52,9 @@ INCLUDE_EXTERNAL_INTERFACES += starterware
 endif
 
 # List all the components required by the application
-
-COMP_LIST_COMMON += board osal_nonos i2c emac gpio gpmc icss_emac mcasp mmcsd pm pruss spi uart profiling fatfs 
+COMP_LIST_COMMON = $(PDK_COMMON_BAREMETAL_COMP)
+COMP_LIST_COMMON += emac gpmc icss_emac mcasp mmcsd pm pruss spi profiling fatfs 
 COMP_LIST_COMMON += dal soc device utils mmcsd_lib ff9b_lib xmodem_lib qspi_lib nand_lib example_utils 
-COMP_LIST_COMMON += csl
-COMP_LIST_a15_0   = csl_init
-COMP_LIST_c66x = csl_intc
-COMP_LIST_mpu1_0  = csl_init
-COMP_LIST_mcu1_0  = csl_init
-ifeq ($(SOC),$(filter $(SOC), am65xx))
-COMP_LIST_COMMON += udma sciclient
-endif
 
 BOARD_PATH = $(PDK_INSTALL_PATH)/ti/board
 CSL_PATH = $(PDK_INSTALL_PATH)/ti/csl

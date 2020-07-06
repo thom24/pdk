@@ -20,13 +20,13 @@ INCDIR =
 INCLUDE_EXTERNAL_INTERFACES = pdk
 
 # List all the components required by the application
-COMP_LIST_COMMON = csl edma board
+COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP) 
+COMP_LIST_COMMON += edma
 INCLUDE_EXTERNAL_INTERFACES += xdc bios pdk
-COMP_LIST_COMMON += osal_tirtos
 XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
 
 ifeq ($(SOC),$(filter $(SOC), tpr12))
-# Append local auxilia·ry linker command file
+# Append local auxiliaï¿½ry linker command file
 APPEND_LNKCMD_FILE = ./$(SOC)/linker_$(ISA).cmd
 endif
 

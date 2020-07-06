@@ -20,17 +20,21 @@ INCDIR += $(SOC)/. ../common
 INCLUDE_EXTERNAL_INTERFACES = pdk sdr
 
 # List all the components required by the application
+COMP_LIST_COMMON = csl_utils_common csl_uart_console
+COMP_LIST_COMMON += sdr
+
+ifeq ($(SOC),$(filter $(SOC), j721e am64x))
+  COMP_LIST_COMMON += $(PDK_COMMON_BAREMETAL_COMP)
+endif
+
 ifeq ($(CSL_BUILD),$(filter $(CSL_BUILD), CSL))
-  COMP_LIST_COMMON = csl
+  ifneq ($(SOC),$(filter $(SOC), j721e am64x))
+    COMP_LIST_COMMON = csl
+  endif
 else
   COMP_LIST_COMMON = csl2 csl_trim
 endif
 
-COMP_LIST_COMMON += csl_utils_common csl_uart_console
-ifeq ($(SOC),$(filter $(SOC), j721e am64x))
-  COMP_LIST_COMMON += csl_init osal_nonos board uart sciclient i2c
-endif
-COMP_LIST_COMMON += sdr
 # Common source files and CFLAGS across all platforms and cores
 PACKAGE_SRCS_COMMON = .
 

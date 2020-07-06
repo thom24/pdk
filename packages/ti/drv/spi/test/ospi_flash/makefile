@@ -5,7 +5,7 @@ ifeq ($(IS_BAREMETAL),yes)
 BUILD_OS_TYPE = baremetal
 CFLAGS_OS_DEFINES =
 LNKFLAGS_LOCAL_mpu1_0  += --entry Entry
-COMP_LIST_COMMON =  csl_init osal_nonos
+COMP_LIST_COMMON  = $(PDK_COMMON_BAREMETAL_COMP) 
 EXTERNAL_INTERFACES =
 XDC_CFG_FILE_mpu1_0 =
 XDC_CFG_FILE_mcu1_0 =
@@ -13,7 +13,7 @@ else
 BUILD_OS_TYPE = tirtos
 CFLAGS_OS_DEFINES = -DUSE_BIOS
 EXTERNAL_INTERFACES = bios xdc
-COMP_LIST_COMMON    = osal_tirtos
+COMP_LIST_COMMON  = $(PDK_COMMON_TIRTOS_COMP) 
 
 SRCDIR = . src
 INCDIR = . src
@@ -25,11 +25,6 @@ XDC_CFG_FILE_mcu1_0 = ./$(SOC)/ospiFlashTest_r5.cfg
 else
 ifeq ($(SOC),$(filter $(SOC), j721e j7200 am64x))
 XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
-
-# Enable copy of vectors
-ifeq ($(ISA),$(filter $(ISA), r5f))
-  COMP_LIST_COMMON += copyvecs
-endif
 
 endif
 endif
@@ -72,8 +67,8 @@ ifeq ($(DMA), enable)
         endif
     endif
 
-COMP_LIST_COMMON += spi_dma udma sciclient i2c
-#COMP_LIST_COMMON += spi_dma_profile udma
+COMP_LIST_COMMON += spi_dma
+#COMP_LIST_COMMON += spi_dma_profile
 CFLAGS_SPI_DMA    = -DSPI_DMA_ENABLE 
 else
     ifeq ($(SMP), enable)
@@ -86,13 +81,10 @@ else
         LOCAL_APP_NAME =  OSPI$(OSPI_OS_TESTPREFIX)_Flash_$(BOARD)_$(CORE)TestApp
     endif
 
-COMP_LIST_COMMON += spi sciclient i2c
+COMP_LIST_COMMON += spi 
 #COMP_LIST_COMMON += spi_profile
 CFLAGS_SPI_DMA    =
 endif
-
-# List all the components required by the application
-COMP_LIST_COMMON  += csl board uart
 
 PACKAGE_SRCS_COMMON = .
 PACKAGE_SRCS_COMMON += ../src/SPI_log.h ../src/SPI_log.c

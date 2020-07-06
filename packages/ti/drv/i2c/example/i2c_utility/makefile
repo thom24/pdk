@@ -16,8 +16,8 @@ INCDIR =
 INCLUDE_EXTERNAL_INTERFACES = pdk csl_arch
 
 # List all the components required by the application
-COMP_LIST_COMMON = csl csl_utils_common csl_uart_console csl_arch
-COMP_LIST_COMMON += csl_init osal_nonos sciclient i2c board uart
+COMP_LIST_COMMON = $(PDK_COMMON_BAREMETAL_COMP) 
+COMP_LIST_COMMON += csl_utils_common csl_uart_console csl_arch     
 
 # Common source files and CFLAGS across all platforms and cores
 PACKAGE_SRCS_COMMON = .

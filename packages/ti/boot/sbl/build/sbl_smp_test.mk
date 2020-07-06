@@ -24,13 +24,9 @@ PACKAGE_SRCS_COMMON = .
 INCLUDE_EXTERNAL_INTERFACES = pdk
 
 # List all the components required by the application
-COMP_LIST_COMMON = csl_init csl uart osal_nonos
+COMP_LIST_COMMON = $(PDK_COMMON_BAREMETAL_COMP)
 
 SRCS_COMMON += sbl_smp_multicore.c
-
-ifeq ($(CORE), mcu1_0)
-  COMP_LIST_COMMON += board sciclient i2c
-endif
 
 # asm files and linker scripts change due to different tool chains for R5 and A53
 ifeq ($(CORE),$(filter $(CORE), mcu1_0 mcu2_0 mcu3_0))

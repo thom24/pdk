@@ -15,10 +15,8 @@ endif
 INCLUDE_EXTERNAL_INTERFACES = bios xdc pdk
 
 # List all the components required by the application
-COMP_LIST_COMMON = spi osal_tirtos csl csl_utils_common csl_utils_i2c uart
-ifeq ($(SOC),$(filter $(SOC), dra72x dra75x dra78x))
-  COMP_LIST_COMMON += board i2c
-endif
+COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP)  
+COMP_LIST_COMMON += spi csl_utils_common csl_utils_i2c 
 
 # Enable XDC build for application by providing XDC CFG File per core
 XDC_CFG_FILE_ipu1_0 = mcspi.cfg

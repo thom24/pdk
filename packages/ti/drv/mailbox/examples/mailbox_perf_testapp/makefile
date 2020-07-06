@@ -18,10 +18,12 @@ PACKAGE_SRCS_COMMON = .
 INCLUDE_EXTERNAL_INTERFACES = xdc pdk bios
 
 # List all the components required by the application
-COMP_LIST_COMMON += csl csl_utils_common csl_uart_console mailbox
 ifeq ($(BOARD),$(filter $(BOARD), am64x_evm))
-  COMP_LIST_COMMON += osal_tirtos board uart sciclient i2c
+  COMP_LIST_COMMON += $(PDK_COMMON_TIRTOS_COMP)
+else
+  COMP_LIST_COMMON += csl 
 endif
+COMP_LIST_COMMON += csl_utils_common csl_uart_console mailbox
 ifeq ($(BOARD),$(filter $(BOARD), am64x_evm))
   ifeq ($(ISA),$(filter $(ISA), r5f))
     XDC_CFG_FILE_$(CORE) = $(SOC)/sysbios_$(ISA).cfg

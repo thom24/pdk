@@ -35,7 +35,8 @@ endif
 INCLUDE_EXTERNAL_INTERFACES = bios xdc pdk
 
 # List all the components required by the application
-COMP_LIST_COMMON = pcie uart osal_tirtos csl board udma sciclient i2c 
+COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP)
+COMP_LIST_COMMON += pcie
 
 ifeq ($(SOC),$(filter $(SOC), am65xx))
 ifeq ($(CORE),$(filter $(CORE), mpu1_0))
@@ -52,12 +53,6 @@ CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_PCIE_SMP)
 endif
 ifeq ($(SOC),$(filter $(SOC), j721e))
 XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
-
-# Enable copy of vectors
-ifeq ($(ISA),$(filter $(ISA), r5f))
-  COMP_LIST_COMMON += copyvecs
-endif
-
 
 PACKAGE_SRCS_COMMON = .
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS)

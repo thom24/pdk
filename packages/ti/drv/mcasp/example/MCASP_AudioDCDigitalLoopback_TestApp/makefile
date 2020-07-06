@@ -14,15 +14,14 @@ SRCS_COMMON = audioSample_io.c audioSample_main.c audio_evmInit.c mcasp_cfg.c mc
 # need to be included for this component
 INCLUDE_EXTERNAL_INTERFACES = bios xdc pdk
 
-COMP_LIST_COMMON = csl mcasp osal_tirtos uart board
+COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP)
+COMP_LIST_COMMON += mcasp
 
 CFLAGS_MCASP_UT = -DMCASP_MASTER -DAUDIO_DC_DIGITAL_TEST
 
 ifeq ($(SOC), $(filter $(SOC), j721e))
   SRCDIR += ../j721e/src
   INCDIR += ../j721e/include
-
-  COMP_LIST_COMMON += udma sciclient i2c
 
   # Enable XDC build for application by providing XDC CFG File per core
   XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
@@ -33,7 +32,7 @@ ifeq ($(SOC), $(filter $(SOC), j7200))
   SRCDIR += ../j7200/src
   INCDIR += ../j7200/include
 
-  COMP_LIST_COMMON += udma sciclient i2c
+  COMP_LIST_COMMON += udma
 
   # Enable XDC build for application by providing XDC CFG File per core
   XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
@@ -42,11 +41,6 @@ endif
 
 PACKAGE_SRCS_COMMON = .
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_MCASP_UT)
-
-# Enable copy of vectors
-ifeq ($(ISA),$(filter $(ISA), r5f))
-  COMP_LIST_COMMON += copyvecs
-endif
 
 # Core/SoC/platform specific source files and CFLAGS
 # Example:

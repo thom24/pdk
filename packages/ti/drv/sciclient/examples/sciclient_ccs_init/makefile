@@ -17,7 +17,7 @@ INCDIR = .
 INCLUDE_EXTERNAL_INTERFACES = pdk sciclient osal_nonos 
 
 # List all the components required by the application
-COMP_LIST_COMMON  = sciclient csl osal_nonos csl_init board uart i2c
+COMP_LIST_COMMON  = $(PDK_COMMON_BAREMETAL_COMP)
 
 # Common source files and CFLAGS across all platforms and cores
 SRCS_COMMON = sciclient_ccs_init_main.c

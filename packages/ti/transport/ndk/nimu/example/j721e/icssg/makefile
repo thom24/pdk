@@ -16,7 +16,8 @@ SRCS_COMMON += main_j721e.c nimu_osal.c
 INCLUDE_EXTERNAL_INTERFACES = bios xdc ndk pdk
 
 # List all the components required by the application
-COMP_LIST_COMMON = emac uart uart_console osal_tirtos csl pruss board nimu_icssg udma sciclient
+COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP)
+COMP_LIST_COMMON += emac uart_console pruss nimu_icssg
 
 
 

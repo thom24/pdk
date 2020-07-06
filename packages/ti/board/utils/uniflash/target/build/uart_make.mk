@@ -82,11 +82,13 @@ endif
 INCLUDE_EXTERNAL_INTERFACES = pdk
 
 # List all the components required by the application
-COMP_LIST_COMMON = board csl csl_init osal_nonos uart i2c
+COMP_LIST_COMMON = $(PDK_COMMON_BAREMETAL_COMP)
 ifeq ($(BOARD), $(filter $(BOARD), j721e_evm am65xx_evm am65xx_idk j7200_evm))
-COMP_LIST_COMMON += spi_dma udma gpio mmcsd
+COMP_LIST_COMMON += spi_dma mmcsd
 endif
-COMP_LIST_COMMON += sciclient$(HS_SUFFIX)
+ifneq ($(strip $(HS_SUFFIX)),) #if $(HS_SUFFIX) is non-empty
+  COMP_LIST_COMMON += sciclient$(HS_SUFFIX)
+endif
 
 # Common source files and CFLAGS across all platforms and cores
 ifeq ($(BUILD_HS),yes)

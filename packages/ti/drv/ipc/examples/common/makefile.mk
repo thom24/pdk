@@ -9,10 +9,8 @@ INCDIR =
 INCLUDE_EXTERNAL_INTERFACES = pdk
 
 # List all the components required by the application
-COMP_LIST_COMMON = csl sciclient
-COMP_LIST_COMMON += board i2c uart
 ifeq ($(BUILD_OS_TYPE), baremetal)
-  COMP_LIST_COMMON += csl_init osal_nonos
+  COMP_LIST_COMMON =  $(PDK_COMMON_BAREMETAL_COMP)
   COMP_LIST_COMMON += ipc_baremetal
   SRCS_COMMON += main_baremetal.c
   ifeq ($(ISA),$(filter $(ISA), a53, a72))
@@ -23,7 +21,8 @@ ifeq ($(BUILD_OS_TYPE), baremetal)
   endif
 else
   INCLUDE_EXTERNAL_INTERFACES += xdc bios
-  COMP_LIST_COMMON += ipc osal_tirtos
+  COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP)
+  COMP_LIST_COMMON += ipc 
   SRCS_COMMON += main_tirtos.c
   # Enable XDC build for application by providing XDC CFG File per core
   XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg

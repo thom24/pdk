@@ -58,11 +58,8 @@ endif
 INCLUDE_EXTERNAL_INTERFACES = bios xdc pdk
 
 # List all the components required by the application
-COMP_LIST_COMMON = csl osal_tirtos uart i2c board mmcsd
-
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e))
-COMP_LIST_COMMON += sciclient
-endif
+COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP)
+COMP_LIST_COMMON += mmcsd
 
 # CFLAGS_MCASP_UT = -DMCASP_MASTER -DDEVICE_LOOPBACK -DDSP_MODE
 # CFLAGS_MMCSD_UT += -DIO_CONSOLE
@@ -78,11 +75,6 @@ endif
 
 PACKAGE_SRCS_COMMON = ../
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_MMCSD_UT)
-
-# Enable copy of vectors
-ifeq ($(ISA),$(filter $(ISA), r5f))
-  COMP_LIST_COMMON += copyvecs
-endif
 
 # Core/SoC/platform specific source files and CFLAGS
 # Example:

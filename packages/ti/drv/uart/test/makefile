@@ -6,12 +6,7 @@ ifeq ($(IS_BAREMETAL),yes)
 BUILD_OS_TYPE = baremetal
 CFLAGS_OS_DEFINES =
 LNKFLAGS_LOCAL_mpu1_0  += --entry Entry
-COMP_LIST_COMMON =  osal_nonos
-ifeq ($(ARCH),c66x)
-  COMP_LIST_COMMON += csl_intc
-else
-  COMP_LIST_COMMON += csl_init
-endif
+COMP_LIST_COMMON  = $(PDK_COMMON_BAREMETAL_COMP) 
 EXTERNAL_INTERFACES =
 XDC_CFG_FILE_mpu1_0 =
 XDC_CFG_FILE_mcu1_0 =
@@ -19,7 +14,7 @@ else
 BUILD_OS_TYPE = tirtos
 CFLAGS_OS_DEFINES = -DUSE_BIOS
 EXTERNAL_INTERFACES = bios xdc
-COMP_LIST_COMMON    = osal_tirtos
+COMP_LIST_COMMON  = $(PDK_COMMON_TIRTOS_COMP) 
 
 ifeq ($(SOC),$(filter $(SOC), j721e j7200 am65xx am64x tpr12))
   XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
@@ -65,12 +60,8 @@ ifeq ($(DMA), enable)
         # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
         LOCAL_APP_NAME =  UART$(UART_OS_TYPE)_DMA_$(BOARD)_$(CORE)TestApp
     endif
-    ifeq ($(SOC),$(filter $(SOC), tpr12))
-        COMP_LIST_COMMON   += uart_dma edma
-    else
-        COMP_LIST_COMMON   += uart_dma udma sciclient i2c
-    endif
-    #COMP_LIST_COMMON   += uart_dma_profile udma
+    COMP_LIST_COMMON   += uart_dma 
+    #COMP_LIST_COMMON   += uart_dma_profile 
     CFLAGS_UART_DMA    = -DUART_DMA_ENABLE
 else
     ifeq ($(SMP), enable)
@@ -84,22 +75,12 @@ else
         # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
         LOCAL_APP_NAME =  UART$(UART_OS_TYPE)_$(BOARD)_$(CORE)TestApp
     endif
-    COMP_LIST_COMMON   += uart
-
-    ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
-    COMP_LIST_COMMON += sciclient i2c
-    endif
-
-    ifeq ($(SOC),$(filter $(SOC), tpr12))
-    COMP_LIST_COMMON   += edma
-    endif
 
     #COMP_LIST_COMMON   += uart_profile
     CFLAGS_UART_DMA    =
 endif
-# List all the components required by the application
-COMP_LIST_COMMON  += csl board
-#COMP_LIST_COMMON  += osal_tirtos csl board profiling
+# List all the specific components required by the application
+#COMP_LIST_COMMON  += profiling
 
 PACKAGE_SRCS_COMMON = .
 
@@ -111,13 +92,6 @@ endif
 endif
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_UART_DMA) $(CFLAGS_OS_DEFINES)
-
-ifneq ($(SOC),$(filter $(SOC), tpr12))
-# Enable copy of vectors
-ifeq ($(ISA),$(filter $(ISA), r5f))
-  COMP_LIST_COMMON += copyvecs
-endif
-endif
 
 # Include common make files
 ifeq ($(MAKERULEDIR), )

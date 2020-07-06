@@ -18,7 +18,7 @@ INCDIR = . ../common
 INCLUDE_EXTERNAL_INTERFACES = pdk sciclient osal_tirtos board uart bios xdc
 
 # List all the components required by the application
-COMP_LIST_COMMON  = sciclient csl osal_tirtos board uart bios xdc i2c
+COMP_LIST_COMMON  = $(PDK_COMMON_TIRTOS_COMP) bios xdc
 ifeq ($(ARCH),c66x)
   COMP_LIST_COMMON += csl_intc
 else
@@ -36,11 +36,6 @@ PACKAGE_SRCS_COMMON = . ../common
 
 # Enable XDC build for application by providing XDC CFG File per core
 XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
-
-# Enable copy of vectors
-ifeq ($(ISA),$(filter $(ISA), r5f))
-  COMP_LIST_COMMON += copyvecs
-endif
 
 # CONFIG_BLD_LNK_r5f = $(PDK_INSTALL_PATH)/ti/drv/sciclient/examples/$(APP_NAME)/linker_r5.lds
 

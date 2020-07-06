@@ -13,19 +13,13 @@ INCDIR += $(PDK_EMAC_COMP_PATH)/firmware/icss_dualmac/config
 INCDIR += $(bios_PATH)/packages/ti/posix/ccs
 SRCS_COMMON += main_am65xx.c nimu_osal.c emac_fw_config_dual_mac.c
 
-# Enable copy of vectors
-ifeq ($(ISA),$(filter $(ISA), r5f))
-  COMP_LIST_COMMON = copyvecs
-endif
-
 # List all the external components/interfaces, whose interface header files
 #  need to be included for this component
 INCLUDE_EXTERNAL_INTERFACES = bios xdc ndk pdk
 
 # List all the components required by the application
-COMP_LIST_COMMON += emac uart uart_console osal_tirtos csl pruss board nimu_icssg udma sciclient
-
-
+COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP)
+COMP_LIST_COMMON += emac uart_console pruss nimu_icssg
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) -DNDK_NOUSERAPIS -DNIMU_APP_ICSSG
 

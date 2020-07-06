@@ -46,33 +46,12 @@ endif
 INCLUDE_EXTERNAL_INTERFACES = pdk csl_arch
 
 # List all the components required by the application
-COMP_LIST_COMMON += uart osal_nonos i2c fatfs_indp mmcsd board
-COMP_LIST_c66x = csl_intc
-COMP_LIST_COMMON += csl
-COMP_LIST_a15_0   = csl_init
-COMP_LIST_mpu1_0  = csl_init
-COMP_LIST_mpu1_1  = csl_init
+COMP_LIST_COMMON += $(PDK_COMMON_BAREMETAL_COMP)
+COMP_LIST_COMMON += fatfs_indp mmcsd
 LNKFLAGS_LOCAL_a15_0  += --entry Entry
 LNKFLAGS_LOCAL_a8host += --entry Entry
 LNKFLAGS_LOCAL_a9host += --entry Entry
 LNKFLAGS_LOCAL_mpu1_0 += --entry Entry
-
-
-COMP_LIST_mcu1_0  = csl_init
-COMP_LIST_mcu1_1  = csl_init
-
-ifeq ($(SOC),$(filter $(SOC), j721e j7200))
-COMP_LIST_mcu2_0  = csl_init
-COMP_LIST_mcu2_1  = csl_init
-ifeq ($(SOC),$(filter $(SOC), j721e))
-COMP_LIST_mcu3_0  = csl_init
-COMP_LIST_mcu3_1  = csl_init
-endif
-endif
-
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
-COMP_LIST_COMMON += sciclient
-endif
 
 # CFLAGS_MMCSD_UT += -DIO_CONSOLE 
 # am65xx build

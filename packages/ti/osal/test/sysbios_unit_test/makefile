@@ -21,15 +21,7 @@ endif
 INCLUDE_EXTERNAL_INTERFACES = bios xdc pdk
 
 # List all the components required by the application
-ifeq ($(SOC),$(filter $(SOC), tpr12))
-  COMP_LIST_COMMON = csl osal_tirtos board
-else
-  COMP_LIST_COMMON = csl osal_tirtos uart board i2c
-endif
-
-ifeq ($(SOC),$(filter $(SOC), am64x am65xx j721e j7200))
-  COMP_LIST_COMMON += sciclient
-endif
+COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP)
 
 ifeq ($(SOC),$(filter $(SOC), am64x am65xx))
 ifeq ($(CORE),$(filter $(CORE), mpu1_0))
@@ -105,13 +97,6 @@ ifeq ($(SOC),$(filter $(SOC), tpr12))
   XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/tpr12/sysbios_$(ISA).cfg
   XDC_CFG_UPDATE_$(CORE) = ../$(SOC)/osal_log_config.xs
   PACKAGE_SRCS_COMMON += ../$(SOC)
-endif
-
-ifneq ($(SOC),$(filter $(SOC), tpr12))
-# Enable copy of vectors
-ifeq ($(ISA),$(filter $(ISA), r5f))
-  COMP_LIST_COMMON += copyvecs
-endif
 endif
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_OSAL_UT)

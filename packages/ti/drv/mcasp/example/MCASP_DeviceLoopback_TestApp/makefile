@@ -19,7 +19,8 @@ SRCS_COMMON = audioSample_io.c audioSample_main.c deviceloopback.c audio_evmInit
 # need to be included for this component
 INCLUDE_EXTERNAL_INTERFACES = bios xdc pdk
 
-COMP_LIST_COMMON = csl mcasp osal_tirtos uart board
+COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP)
+COMP_LIST_COMMON += mcasp
 
 CFLAGS_MCASP_UT = -DMCASP_MASTER -DDEVICE_LOOPBACK
 
@@ -34,8 +35,6 @@ ifeq ($(SOC),$(filter $(SOC), am65xx))
 
   SRCDIR += ../evmAM65xx/src
   INCDIR += ../evmAM65xx/include
-
-  COMP_LIST_COMMON += udma sciclient
 
   ifeq ($(CORE),$(filter $(CORE), mpu1_0))
     # Enable XDC build for application by providing XDC CFG File per core
@@ -53,8 +52,6 @@ ifeq ($(SOC), $(filter $(SOC), j721e))
   SRCDIR += ../j721e/src
   INCDIR += ../j721e/include
 
-  COMP_LIST_COMMON += udma sciclient i2c
-
   # Enable XDC build for application by providing XDC CFG File per core
   XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
   XDC_CFG_UPDATE_$(CORE) = ../j721e/mcasp_extra_config.xs
@@ -65,8 +62,6 @@ ifeq ($(SOC), $(filter $(SOC), j7200))
   SRCDIR += ../j7200/src
   INCDIR += ../j7200/include
 
-  COMP_LIST_COMMON += udma sciclient i2c
-
   # Enable XDC build for application by providing XDC CFG File per core
   XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
   XDC_CFG_UPDATE_$(CORE) = ../j7200/mcasp_extra_config.xs
@@ -74,11 +69,6 @@ ifeq ($(SOC), $(filter $(SOC), j7200))
 endif
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_MCASP_UT)
-
-# Enable copy of vectors
-ifeq ($(ISA),$(filter $(ISA), r5f))
-  COMP_LIST_COMMON += copyvecs
-endif
 
 # Core/SoC/platform specific source files and CFLAGS
 # Example:

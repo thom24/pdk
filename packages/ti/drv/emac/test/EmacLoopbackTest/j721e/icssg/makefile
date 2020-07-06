@@ -17,7 +17,7 @@ endif
 INCLUDE_EXTERNAL_INTERFACES = bios xdc pdk
 
 # List all the components required by the application
-COMP_LIST_COMMON = emac uart uart_console osal_tirtos csl pruss board udma sciclient i2c
+COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP) emac uart_console pruss
 
 ifeq ($(CORE),$(filter $(CORE), mpu1_0))
 # Enable XDC build for application by providing XDC CFG File per core

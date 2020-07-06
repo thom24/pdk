@@ -26,34 +26,20 @@ INCDIR = . ./src ./src/soc/$(SOC) ./rtos ./baremetal
 #  need to be included for this component
 INCLUDE_EXTERNAL_INTERFACES = pdk
 
-# List all the components required by the application
-COMP_LIST_COMMON = csl udma sciclient udma_apputils
-COMP_LIST_COMMON += board uart i2c
 ifeq ($(BUILD_OS_TYPE), baremetal)
-  COMP_LIST_COMMON += osal_nonos
-  ifeq ($(ARCH),c66x)
-    COMP_LIST_COMMON += csl_intc
-  else
-    ifneq ($(ARCH),c71)
-      COMP_LIST_COMMON += csl_init
-    endif
-  endif
+  COMP_LIST_COMMON = $(PDK_COMMON_BAREMETAL_COMP)
   SRCS_COMMON = main_baremetal.c
   ifeq ($(ISA),$(filter $(ISA), a53 a72))
     LNKFLAGS_LOCAL_$(CORE) += --entry Entry
   endif
 else
   INCLUDE_EXTERNAL_INTERFACES += xdc bios
-  COMP_LIST_COMMON += osal_tirtos
+  COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP)
   SRCS_COMMON = main_tirtos.c
   XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
-
-# Enable copy of vectors
-  ifeq ($(ISA),$(filter $(ISA), r5f))
-    COMP_LIST_COMMON += copyvecs
-  endif
-
 endif
+# List all the specific components required by the application
+COMP_LIST_COMMON += udma_apputils
 
 XDC_CFG_UPDATE_$(CORE) = udma_ut.cfg
 

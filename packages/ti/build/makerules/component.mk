@@ -1141,5 +1141,43 @@ endif
 export PDK_CFLAGS
 export PDK_LNKFLAGS
 
+PDK_COMMON_COMP = csl board uart i2c 
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
+  PDK_COMMON_COMP += sciclient udma
+else
+  ifeq ($(SOC),$(filter $(SOC), tpr12))
+    PDK_COMMON_COMP += edma
+  endif
+endif
+
+ifneq ($(SOC),$(filter $(SOC), am64x tda2xx tda2px tda2ex tda3xx))
+  PDK_COMMON_COMP += gpio
+endif
+
+# Uncomment the following when pmic library is ready
+#ifeq ($(SOC),$(filter $(SOC), j721e j7200))
+#  PDK_COMMON_COMP += pmic 
+#endif  
+
+PDK_COMMON_TIRTOS_COMP = $(PDK_COMMON_COMP) osal_tirtos
+ifneq ($(SOC),$(filter $(SOC), tpr12))
+# Enable copy of vectors
+  ifeq ($(ISA),$(filter $(ISA), r5f))
+    PDK_COMMON_TIRTOS_COMP += copyvecs
+  endif
+endif
+
+PDK_COMMON_BAREMETAL_COMP = $(PDK_COMMON_COMP) osal_nonos 
+ifeq ($(ARCH),c66x)
+  PDK_COMMON_BAREMETAL_COMP += csl_intc
+else
+  ifneq ($(ARCH),c71)
+    PDK_COMMON_BAREMETAL_COMP += csl_init
+  endif
+endif
+
+export PDK_COMMON_TIRTOS_COMP
+export PDK_COMMON_BAREMETAL_COMP
+
 pdk_component_make_include := 1
 endif

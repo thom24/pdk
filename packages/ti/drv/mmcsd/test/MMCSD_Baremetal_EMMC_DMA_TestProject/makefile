@@ -26,16 +26,8 @@ endif
 INCLUDE_EXTERNAL_INTERFACES = pdk csl_arch
 
 # List all the components required by the application
-COMP_LIST_COMMON += uart osal_nonos mmcsd i2c board
-COMP_LIST_c66x = csl_intc
-COMP_LIST_COMMON += csl
-COMP_LIST_a15_0   = csl_init
-COMP_LIST_mpu1_0  = csl_init
-COMP_LIST_mcu1_0  = csl_init
-
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e))
-COMP_LIST_COMMON += sciclient
-endif
+COMP_LIST_COMMON += $(PDK_COMMON_BAREMETAL_COMP)
+COMP_LIST_COMMON += mmcsd
 
 # Common source files and CFLAGS across all platforms and cores
 PACKAGE_SRCS_COMMON = .

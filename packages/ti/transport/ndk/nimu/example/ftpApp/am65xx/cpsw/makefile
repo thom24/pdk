@@ -13,17 +13,13 @@ INCDIR += $(bios_PATH)/packages/ti/posix/ccs
 # Common source files across all platforms and cores
 SRCS_COMMON += main_am65xx.c nimu_osal.c ftp_commands.c ftp_filerout.c ftpserver.c
 
-# Enable copy of vectors
-ifeq ($(ISA),$(filter $(ISA), r5f))
-  COMP_LIST_COMMON = copyvecs
-endif
-
 # List all the external components/interfaces, whose interface header files
 #  need to be included for this component
 INCLUDE_EXTERNAL_INTERFACES = bios xdc ndk pdk
 
 # List all the components required by the application
-COMP_LIST_COMMON += emac uart uart_console osal_tirtos csl board nimu udma sciclient
+COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP)
+COMP_LIST_COMMON += emac uart_console nimu
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS)
 CFLAGS_LOCAL_COMMON += -DNIMU_FTP_APP -DNIMU_APP_CPSW

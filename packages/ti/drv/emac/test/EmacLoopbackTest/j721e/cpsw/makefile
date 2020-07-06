@@ -25,17 +25,12 @@ SRCS_COMMON += main_j721e.c test_utils_k3.c unity_config.c unity.c
 INCLUDE_EXTERNAL_INTERFACES = bios xdc pdk
 
 # List all the components required by the application
-COMP_LIST_COMMON = emac uart uart_console osal_tirtos csl board udma sciclient i2c
+COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP) emac uart_console
 
 XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
 
 PACKAGE_SRCS_COMMON = .
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) -DEMAC_TEST_APP_CPSW -DUNITY_INCLUDE_CONFIG_H
-
-# Enable copy of vectors
-ifeq ($(ISA),$(filter $(ISA), r5f))
-  COMP_LIST_COMMON += copyvecs
-endif
 
 # Include common make files
 ifeq ($(MAKERULEDIR), )

@@ -68,10 +68,8 @@ INCDIR = ../../../../board ../src ../../../src/$(BOARD)/include ../../../src/$(B
 INCLUDE_EXTERNAL_INTERFACES = pdk
 
 # List all the components required by the application
-COMP_LIST_COMMON = emac uart osal_nonos csl csl_init board gpio i2c
-ifeq ($(SOC), $(filter $(SOC), j721e am65xx))
-COMP_LIST_COMMON += sciclient udma
-endif
+COMP_LIST_COMMON = $(PDK_COMMON_BAREMETAL_COMP)
+COMP_LIST_COMMON += emac
 
 
 # Common source files and CFLAGS across all platforms and cores

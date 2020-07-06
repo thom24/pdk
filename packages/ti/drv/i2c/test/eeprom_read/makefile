@@ -5,7 +5,7 @@ ifeq ($(IS_BAREMETAL),yes)
 BUILD_OS_TYPE = baremetal
 CFLAGS_OS_DEFINES =
 LNKFLAGS_LOCAL_mpu1_0  += --entry Entry
-COMP_LIST_COMMON =  csl_init osal_nonos
+COMP_LIST_COMMON =  $(PDK_COMMON_BAREMETAL_COMP)
 EXTERNAL_INTERFACES =
 XDC_CFG_FILE_mpu1_0 =
 XDC_CFG_FILE_mcu1_0 =
@@ -13,7 +13,7 @@ else
 BUILD_OS_TYPE = tirtos
 CFLAGS_OS_DEFINES = -DUSE_BIOS
 EXTERNAL_INTERFACES = bios xdc
-COMP_LIST_COMMON    = osal_tirtos
+COMP_LIST_COMMON    = $(PDK_COMMON_TIRTOS_COMP)
 ifeq ($(SOC),$(filter $(SOC), j721e j7200 am65xx am64x))
 XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
 endif
@@ -55,13 +55,8 @@ endif
 # need to be included for this component
 INCLUDE_EXTERNAL_INTERFACES = pdk $(EXTERNAL_INTERFACES)
 
-# List all the components required by the application
-#COMP_LIST_COMMON  = i2c_profile uart board csl profiling
-COMP_LIST_COMMON  += i2c uart board csl
-
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
-COMP_LIST_COMMON += sciclient
-endif
+# List all the specific components required by the application
+#COMP_LIST_COMMON  = i2c_profile profiling
 
 CFLAGS_I2C_UT =
 
@@ -78,13 +73,6 @@ endif
 # Example:
 #   SRCS_<core/SoC/platform-name> =
 #   CFLAGS_LOCAL_<core/SoC/platform-name> =
-
-ifneq ($(SOC),$(filter $(SOC), tpr12))
-# Enable copy of vectors
-ifeq ($(ISA),$(filter $(ISA), r5f))
-  COMP_LIST_COMMON += copyvecs
-endif
-endif
 
 # Include common make files
 ifeq ($(MAKERULEDIR), )

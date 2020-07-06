@@ -20,17 +20,12 @@ INCDIR += $(PDK_INSTALL_PATH)/ti/build/unit-test/Unity/src $(PDK_INSTALL_PATH)/t
 
 SRCS_COMMON += main_am65xx.c test_utils_k3.c unity_config.c unity.c
 
-# Enable copy of vectors
-ifeq ($(ISA),$(filter $(ISA), r5f))
-  COMP_LIST_COMMON = copyvecs
-endif
-
 # List all the external components/interfaces, whose interface header files
 #  need to be included for this component
 INCLUDE_EXTERNAL_INTERFACES = bios xdc pdk
 
 # List all the components required by the application
-COMP_LIST_COMMON += emac uart uart_console osal_tirtos csl board udma sciclient
+COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP) emac uart_console
 
 
 ifeq ($(CORE),$(filter $(CORE), mpu1_0))

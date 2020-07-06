@@ -6,19 +6,14 @@ ifeq ($(IS_BAREMETAL),yes)
 BUILD_OS_TYPE = baremetal
 CFLAGS_OS_DEFINES =
 LNKFLAGS_LOCAL_mpu1_0  += --entry Entry
-COMP_LIST_COMMON =  osal_nonos
-ifeq ($(ARCH),c66x)
-  COMP_LIST_COMMON += csl_intc
-else
-  COMP_LIST_COMMON += csl_init
-endif
+COMP_LIST_COMMON =  $(PDK_COMMON_BAREMETAL_COMP)
 EXTERNAL_INTERFACES =
 XDC_CFG_FILE_a9host =
 else
 BUILD_OS_TYPE = tirtos
 CFLAGS_OS_DEFINES = -DUSE_BIOS
 EXTERNAL_INTERFACES = bios xdc
-COMP_LIST_COMMON    = osal_tirtos
+COMP_LIST_COMMON    = $(PDK_COMMON_TIRTOS_COMP)
 XDC_CFG_FILE_a9host = ./$(SOC)/armv7/bios/iolink_arm_idkam437x.cfg
 endif
 
@@ -46,10 +41,8 @@ APP_NAME = IOLINK$(IOLINK_OS_TYPE)_Stack_TestApp
 # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
 LOCAL_APP_NAME =  IOLINK$(IOLINK_OS_TYPE)_Stack_$(BOARD)_$(CORE)TestApp
 
-COMP_LIST_COMMON   += iolink pruss uart gpio spi
-
-# List all the components required by the application
-COMP_LIST_COMMON  += csl board 
+# List all the specific components required by the application
+COMP_LIST_COMMON   += iolink pruss spi
 
 PACKAGE_SRCS_COMMON = .
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_IOLINK_DMA) $(CFLAGS_OS_DEFINES)

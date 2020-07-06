@@ -36,7 +36,10 @@ PACKAGE_SRCS_COMMON = .
 INCLUDE_EXTERNAL_INTERFACES = pdk
 
 # List all the components required by the application
-COMP_LIST_COMMON += board uart osal_nonos csl csl_init i2c sciclient$(HS_SUFFIX)
+COMP_LIST_COMMON += $(PDK_COMMON_BAREMETAL_COMP)
+ifneq ($(strip $(HS_SUFFIX)),) #if $(HS_SUFFIX) is non-empty
+  COMP_LIST_COMMON += sciclient$(HS_SUFFIX)
+endif
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(SBL_CFLAGS)
 
@@ -76,10 +79,6 @@ ifeq ($(BOOTMODE), uart)
 endif # ifeq ($(BOOTMODE), uart)
 
 # Select libraries based on flags
-ifeq ($(filter $(SBL_CFLAGS), -DSBL_USE_DMA=1), -DSBL_USE_DMA=1)
-  COMP_LIST_COMMON += udma
-endif # ifeq ($(filter $(SBL_CFLAGS), -DSBL_USE_DMA=1), -DSBL_USE_DMA=1)
-
 ifeq ($(filter $(SBL_CFLAGS), -DBOOT_MMCSD), -DBOOT_MMCSD)
   COMP_LIST_COMMON += mmcsd fatfs_indp
 endif # ifeq ($(filter $(SBL_CFLAGS), -DBOOT_MMCSD), -DBOOT_MMCSD)

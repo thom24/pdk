@@ -30,16 +30,13 @@ endif
 INCLUDE_EXTERNAL_INTERFACES = bios xdc pdk
 
 # List all the components required by the application
-COMP_LIST_COMMON = csl mcasp osal_tirtos uart board
+COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP)
+COMP_LIST_COMMON += mcasp
 
 CFLAGS_MCASP_UT = -DMCASP_MASTER -DDEVICE_LOOPBACK
 
 # Enable below to log various events
 # CFLAGS_MCASP_UT += -DMCASP_ENABLE_DEBUG_LOG
-
-ifeq ($(SOC),$(filter $(SOC), am65xx))
-COMP_LIST_COMMON += udma sciclient
-endif
 
 PACKAGE_SRCS_COMMON = .
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_MCASP_UT)

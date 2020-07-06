@@ -10,12 +10,9 @@ INCDIR = .
 #  need to be included for this component
 INCLUDE_EXTERNAL_INTERFACES = pdk
 
-# List all the components required by the application
-COMP_LIST_COMMON = csl fvid2 dss
-COMP_LIST_COMMON += board uart sciclient pm_lib i2c
-
 ifeq ($(BUILD_OS_TYPE), baremetal)
-  COMP_LIST_COMMON += osal_nonos csl_init dss_app_utils
+  COMP_LIST_COMMON = $(PDK_COMMON_BAREMETAL_COMP) 
+  COMP_LIST_COMMON += dss_app_utils
   SRCS_COMMON = main_baremetal.c
   CFLAGS_LOCAL_COMMON += -DDSS_TESTAPP_BAREMETAL
   ifeq ($(ISA),$(filter $(ISA), a53))
@@ -23,17 +20,17 @@ ifeq ($(BUILD_OS_TYPE), baremetal)
   endif
 else
   INCLUDE_EXTERNAL_INTERFACES += xdc bios
-  COMP_LIST_COMMON += osal_tirtos dss_app_utils_sysbios
+  COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP) 
+  COMP_LIST_COMMON += dss_app_utils_sysbios
   SRCS_COMMON = main_tirtos.c
   # Enable XDC build for application by providing XDC CFG File per core
   XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
   XDC_CFG_UPDATE_$(CORE) = dss_display_test_prf.cfg
-
-  ifeq ($(ISA),$(filter $(ISA), r5f))
-    COMP_LIST_COMMON += copyvecs
-  endif
-
 endif
+
+# List all the specific components required by the application
+COMP_LIST_COMMON += fvid2 dss
+COMP_LIST_COMMON += pm_lib
 
 # Common source files and CFLAGS across all platforms and cores
 PACKAGE_SRCS_COMMON = .

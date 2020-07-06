@@ -51,15 +51,8 @@ endif
 INCLUDE_EXTERNAL_INTERFACES = bios xdc pdk
 
 # List all the components required by the application
-COMP_LIST_COMMON = csl osal_tirtos mmcsd gpio uart board fatfs_indp
-
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
-  COMP_LIST_COMMON += sciclient i2c
-  # Enable copy of vectors
-  ifeq ($(ISA),$(filter $(ISA), r5f))
-    COMP_LIST_COMMON += copyvecs
-  endif
-endif
+COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP)
+COMP_LIST_COMMON += mmcsd fatfs_indp
 
 CFLAGS_FATFS_UT =
 

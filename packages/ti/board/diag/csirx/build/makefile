@@ -68,11 +68,8 @@ INCDIR = ../../../../board ../src ../../../src/$(BOARD)/include ../../../src/dev
 INCLUDE_EXTERNAL_INTERFACES = pdk
 
 # List all the components required by the application
-COMP_LIST_COMMON = board csl csl_init osal_nonos uart i2c fvid2 udma csirx dss
-ifeq ($(SOC), $(filter $(SOC), j721e))
-COMP_LIST_COMMON += sciclient
-endif
-
+COMP_LIST_COMMON = $(PDK_COMMON_BAREMETAL_COMP)
+COMP_LIST_COMMON += fvid2 csirx dss
 
 # Common source files and CFLAGS across all platforms and cores
 PACKAGE_SRCS_COMMON = ../src makefile

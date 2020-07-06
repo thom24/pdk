@@ -17,7 +17,8 @@ INCDIR =
 INCLUDE_EXTERNAL_INTERFACES = pdk
 
 # List all the components required by the application
-COMP_LIST_COMMON = csl udma board uart i2c sciclient udma_apputils osal_tirtos
+COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP) 
+COMP_LIST_COMMON += udma_apputils
 INCLUDE_EXTERNAL_INTERFACES += xdc bios
 XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
 
@@ -25,11 +26,6 @@ XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
 PACKAGE_SRCS_COMMON = .
 SRCS_COMMON = main_tirtos.c udma_adc_test.c
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS)
-
-# Enable copy of vectors
-ifeq ($(ISA),$(filter $(ISA), r5f))
-  COMP_LIST_COMMON += copyvecs
-endif
 
 # Core/SoC/platform specific source files and CFLAGS
 # Example:

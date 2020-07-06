@@ -3,7 +3,7 @@ include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 
 BUILD_OS_TYPE = tirtos
 EXTERNAL_INTERFACES = bios xdc
-COMP_LIST_COMMON    = osal_tirtos
+COMP_LIST_COMMON    = $(PDK_COMMON_TIRTOS_COMP)
 
 ifeq ($(SOC),$(filter $(SOC), tpr12))
 # Enable XDC build for application by providing XDC CFG File per core
@@ -23,10 +23,8 @@ INCLUDE_EXTERNAL_INTERFACES = pdk $(EXTERNAL_INTERFACES)
 
 APP_NAME = watchdog_testapp
 
+# List all the specific components required by the application
 COMP_LIST_COMMON += watchdog esm
-
-# List all the components required by the application
-COMP_LIST_COMMON  += csl board
 
 PACKAGE_SRCS_COMMON = .
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS)

@@ -11,12 +11,8 @@ LNKFLAGS_LOCAL_mpu1_0  += --entry Entry
 INCLUDE_EXTERNAL_INTERFACES = pdk
 
 # List all the components required by the application
-COMP_LIST_COMMON = osal_nonos csl csl_init board uart fatfs_indp usb sciclient i2c
-
-ifeq ($(SOC),j721e)
-#J7 EVM example requires GPIO for USB-C handling
-COMP_LIST_COMMON += gpio
-endif
+COMP_LIST_COMMON = $(PDK_COMMON_BAREMETAL_COMP)
+COMP_LIST_COMMON += fatfs_indp usb
 
 # Enable XDC build for application by providing XDC CFG File per core
 XDC_CFG_FILE_$(CORE) = 
@@ -39,11 +35,8 @@ OS_FLAGS=-DTIRTOS
 INCLUDE_EXTERNAL_INTERFACES = bios xdc pdk
 
 # List all the components required by the application
-COMP_LIST_COMMON = osal_tirtos csl board uart fatfs_indp usb sciclient i2c
-
-ifeq ($(SOC),j721e)
-COMP_LIST_COMMON += gpio
-endif
+COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP)
+COMP_LIST_COMMON += fatfs_indp usb
 
 # Enable XDC build for application by providing XDC CFG File per core
 XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/drv/usb/example/bios/$(SOC)/usb_$(SOC)_evm.cfg

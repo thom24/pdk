@@ -5,14 +5,14 @@ ifeq ($(IS_BAREMETAL),yes)
 BUILD_OS_TYPE = baremetal
 CFLAGS_OS_DEFINES =
 LNKFLAGS_LOCAL_mpu1_0  += --entry Entry
-COMP_LIST_COMMON =  csl_init osal_nonos
+COMP_LIST_COMMON = $(PDK_COMMON_BAREMETAL_COMP)
 EXTERNAL_INTERFACES =
 XDC_CFG_FILE_$(CORE) =
 else
 BUILD_OS_TYPE = tirtos
 CFLAGS_OS_DEFINES = -DUSE_BIOS
 EXTERNAL_INTERFACES = bios xdc
-COMP_LIST_COMMON    = osal_tirtos
+COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP)
 
 ifeq ($(SOC),$(filter $(SOC), tpr12))
 ifeq ($(CORE),$(filter $(CORE), mcu1_0))
@@ -91,9 +91,6 @@ endif
 endif
 endif
 
-
-# List all the components required by the application
-COMP_LIST_COMMON  += csl board
 # tpr12 build
 ifeq ($(BOARD),$(filter $(BOARD), tpr12_evm))
 #CFLAGS_SPI_UT    = -DMIBSPI_MULT_CHANNEL

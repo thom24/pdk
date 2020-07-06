@@ -5,7 +5,7 @@ ifeq ($(IS_BAREMETAL),yes)
 BUILD_OS_TYPE = baremetal
 CFLAGS_OS_DEFINES =
 LNKFLAGS_LOCAL_mpu1_0  += --entry Entry
-COMP_LIST_COMMON =  csl_init osal_nonos
+COMP_LIST_COMMON  = $(PDK_COMMON_BAREMETAL_COMP) 
 EXTERNAL_INTERFACES =
 XDC_CFG_FILE_mpu1_0 =
 XDC_CFG_FILE_mcu1_0 =
@@ -13,7 +13,7 @@ else
 BUILD_OS_TYPE = tirtos
 CFLAGS_OS_DEFINES = -DUSE_BIOS
 EXTERNAL_INTERFACES = bios xdc
-COMP_LIST_COMMON    = osal_tirtos
+COMP_LIST_COMMON  = $(PDK_COMMON_TIRTOS_COMP) 
 
 ifeq ($(SOC),$(filter $(SOC), am65xx))
 XDC_CFG_FILE_mpu1_0 = ./am65xx/mcspiMasterSlaveTest_a53.cfg
@@ -62,10 +62,6 @@ ifeq ($(IS_BAREMETAL),yes)
 EXTERNAL_LNKCMD_FILE_LOCAL =  $(PDK_INSTALL_PATH)/ti/drv/spi/example/mcspi_slavemode/j721e/linker_mcu.lds
 else
 EXTERNAL_LNKCMD_FILE_LOCAL =  $(PDK_INSTALL_PATH)/ti/drv/spi/example/mcspi_slavemode/j721e/linker_mcu_sysbios.lds
-# Enable copy of vectors
-ifeq ($(ISA),$(filter $(ISA), r5f))
-  COMP_LIST_COMMON += copyvecs
-endif
 
 endif
 endif
@@ -93,7 +89,7 @@ APP_NAME = MCSPI$(MCSPI_OS_TESTPREFIX)_$(APP_MASTER_SLAVE)_Dma_TestApp
 # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
 LOCAL_APP_NAME =  MCSPI$(MCSPI_OS_TESTPREFIX)_$(APP_MASTER_SLAVE)_Dma_$(BOARD)_$(CORE)TestApp
 
-COMP_LIST_COMMON += spi_dma udma sciclient i2c
+COMP_LIST_COMMON += spi_dma 
 CFLAGS_SPI_DMA    = -DSPI_DMA_ENABLE
 else
 
@@ -104,13 +100,11 @@ APP_NAME = MCSPI$(MCSPI_OS_TESTPREFIX)_$(APP_MASTER_SLAVE)_TestApp
 LOCAL_APP_NAME =  MCSPI$(MCSPI_OS_TESTPREFIX)_$(APP_MASTER_SLAVE)_$(BOARD)_$(CORE)TestApp
 
 
-COMP_LIST_COMMON += spi sciclient i2c
+COMP_LIST_COMMON += spi
 CFLAGS_SPI_DMA    =
 
 endif
 
-# List all the components required by the application
-COMP_LIST_COMMON  += csl board uart
 ifeq ($(BOARD),$(filter $(BOARD), am65xx_evm am65xx_idk j721e_sim j721e_evm j7200_evm am64x_evm))
 CFLAGS_SPI_UT    = -DMCSPI_MULT_CHANNEL
 endif

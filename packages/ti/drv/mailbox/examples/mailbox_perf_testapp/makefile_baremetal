@@ -19,10 +19,12 @@ PACKAGE_SRCS_COMMON = .
 INCLUDE_EXTERNAL_INTERFACES = pdk
 
 # List all the components required by the application
-COMP_LIST_COMMON += csl csl_utils_common csl_uart_console mailbox_baremetal
 ifeq ($(BOARD),$(filter $(BOARD), am64x_evm))
-  COMP_LIST_COMMON += csl_init osal_nonos board uart sciclient i2c
+  COMP_LIST_COMMON += $(PDK_COMMON_BAREMETAL_COMP) 
+else
+  COMP_LIST_COMMON += csl
 endif
+COMP_LIST_COMMON += csl_utils_common csl_uart_console mailbox_baremetal
 
 ifeq ($(SOC),$(filter $(SOC), am64x))
 SRCS_COMMON = mailbox_perf_main_baremetal.c mailbox_perf_app.c

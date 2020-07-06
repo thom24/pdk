@@ -9,17 +9,11 @@ INCDIR = . src
 INCLUDE_EXTERNAL_INTERFACES = pdk
 INCLUDE_INTERNAL_INTERFACES =
 
-# List all the components required by the application
-COMP_LIST_COMMON = csl fvid2 cal board uart i2c
-
-ifeq ($(SOC),$(filter $(SOC), am65xx))
-COMP_LIST_COMMON += sciclient
-endif
-
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CAL_CFLAGS)
 
 ifeq ($(BUILD_OS_TYPE), baremetal)
-  COMP_LIST_COMMON += csl_init osal_nonos cal_app_utils_baremetal
+  COMP_LIST_COMMON = $(PDK_COMMON_BAREMETAL_COMP) 
+  COMP_LIST_COMMON += cal_app_utils_baremetal
   SRCS_COMMON = main_baremetal.c
   ifeq ($(ISA),$(filter $(ISA), a53))
     LNKFLAGS_LOCAL_$(CORE) += --entry Entry
@@ -27,17 +21,15 @@ ifeq ($(BUILD_OS_TYPE), baremetal)
   CFLAGS_LOCAL_COMMON += -DBARE_METAL
 else
   INCLUDE_EXTERNAL_INTERFACES += xdc bios
-  COMP_LIST_COMMON += osal_tirtos cal_app_utils
+  COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP) 
+  COMP_LIST_COMMON += cal_app_utils
   SRCS_COMMON = main_tirtos.c
   # Enable XDC build for application by providing XDC CFG File per core
   XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
-
-# Enable copy of vectors
-  ifeq ($(ISA),$(filter $(ISA), r5f))
-    COMP_LIST_COMMON += copyvecs
-  endif
-
 endif
+
+# List all the specific components required by the application
+COMP_LIST_COMMON += fvid2 cal
 
 ifeq ($(CORE),$(filter $(CORE), mpu1_0 mpu1_1))
 EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_CAL_COMP_PATH)/examples/utils/src/V0/linker_cal_a53.lds

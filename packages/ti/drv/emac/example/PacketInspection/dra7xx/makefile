@@ -15,7 +15,7 @@ endif
 INCLUDE_EXTERNAL_INTERFACES = bios xdc pdk
 
 # List all the components required by the application
-COMP_LIST_COMMON = emac i2c uart osal_tirtos board drv_emac_test_utils csl
+COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP) emac drv_emac_test_utils
 
 # Enable XDC build for application by providing XDC CFG File per core
 XDC_CFG_FILE_ipu1_0 = emac_test_m4.cfg

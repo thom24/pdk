@@ -59,7 +59,9 @@ endif
 INCLUDE_EXTERNAL_INTERFACES = bios xdc pdk
 
 # List all the components required by the application
-COMP_LIST_COMMON = board osal_tirtos pruss icss_emac uart i2c gpio csl
+# List all the components required by the application
+COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP)
+COMP_LIST_COMMON += pruss icss_emac
 
 PACKAGE_SRCS_COMMON = .
 

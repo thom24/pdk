@@ -17,11 +17,11 @@ INCDIR = .
 INCLUDE_EXTERNAL_INTERFACES = pdk
 
 # List all the components required by the application
-COMP_LIST_COMMON = csl fvid2 dss dss_app_utils
-COMP_LIST_COMMON += board uart sciclient pm_lib i2c
+COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP) 
+COMP_LIST_COMMON += fvid2 dss dss_app_utils
+COMP_LIST_COMMON += pm_lib
 
 INCLUDE_EXTERNAL_INTERFACES += xdc bios
-COMP_LIST_COMMON += osal_tirtos
 SRCS_COMMON = main_tirtos.c
 # Enable XDC build for application by providing XDC CFG File per core
 XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
@@ -30,10 +30,6 @@ XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
 PACKAGE_SRCS_COMMON = .
 SRCS_COMMON += dss_colorbar_test.c
 CFLAGS_LOCAL_COMMON += $(PDK_CFLAGS) $(DSS_CFLAGS)
-
-ifeq ($(ISA),$(filter $(ISA), r5f))
-  COMP_LIST_COMMON += copyvecs
-endif
 
 # Core/SoC/platform specific source files and CFLAGS
 # Example:
