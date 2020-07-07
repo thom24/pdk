@@ -214,6 +214,8 @@ enum pinWkupOffsets
            Pinmux tool. */
 extern pinmuxBoardCfg_t gJ7200_MainPinmuxData[];
 extern pinmuxBoardCfg_t gJ7200_WkupPinmuxData[];
+extern pinmuxBoardCfg_t gJ7200_MainPinmuxDataCpsw[];
+extern pinmuxBoardCfg_t gJ7200_WkupPinmuxDataCpsw[];
 
 #ifdef __cplusplus
 }
