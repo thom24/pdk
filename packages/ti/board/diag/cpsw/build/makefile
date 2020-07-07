@@ -63,7 +63,7 @@ INCLUDE_EXTERNAL_INTERFACES = pdk
 
 # List all the components required by the application
 COMP_LIST_COMMON = $(PDK_COMMON_BAREMETAL_COMP)
-COMP_LIST_COMMON += pm_lib cpsw cpswsoc cpsw_apputils
+COMP_LIST_COMMON += cpsw cpswsoc cpsw_apputils
 
 # Common source files and CFLAGS across all platforms and cores
 PACKAGE_SRCS_COMMON = ../src makefile

@@ -1159,10 +1159,16 @@ ifneq ($(SOC),$(filter $(SOC), am64x tda2xx tda2px tda2ex tda3xx))
   PDK_COMMON_COMP += gpio
 endif
 
-# Uncomment the following when pmic library is ready
-#ifeq ($(SOC),$(filter $(SOC), j721e j7200))
-#  PDK_COMMON_COMP += pmic 
-#endif  
+ifeq ($(SOC),$(filter $(SOC), j721e j7200))
+ PDK_COMMON_COMP += pmic 
+endif  
+
+ifeq ($(SOC),$(filter $(SOC), tda2xx tda2px tda2ex tda3xx am574x am572x dra72x dra75x am571x dra78x am65xx j721e j7200))
+ PDK_COMMON_COMP += pm_lib
+ ifneq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
+  PDK_COMMON_COMP += pm_hal
+ endif
+endif
 
 PDK_COMMON_TIRTOS_COMP = $(PDK_COMMON_COMP) osal_tirtos
 ifneq ($(SOC),$(filter $(SOC), tpr12))

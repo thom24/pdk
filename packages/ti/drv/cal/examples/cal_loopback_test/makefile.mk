@@ -30,7 +30,6 @@ endif
 
 # List all the specific components required by the application
 COMP_LIST_COMMON += fvid2 cal dss 
-COMP_LIST_COMMON += pm_lib
 COMP_LIST_COMMON += dss_app_utils
 
 ifeq ($(CORE),$(filter $(CORE), mpu1_0 mpu1_1))

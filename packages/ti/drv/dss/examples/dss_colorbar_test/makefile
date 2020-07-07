@@ -19,7 +19,6 @@ INCLUDE_EXTERNAL_INTERFACES = pdk
 # List all the components required by the application
 COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP) 
 COMP_LIST_COMMON += fvid2 dss dss_app_utils
-COMP_LIST_COMMON += pm_lib
 
 INCLUDE_EXTERNAL_INTERFACES += xdc bios
 SRCS_COMMON = main_tirtos.c

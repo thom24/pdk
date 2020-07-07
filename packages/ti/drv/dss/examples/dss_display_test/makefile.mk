@@ -30,7 +30,6 @@ endif
 
 # List all the specific components required by the application
 COMP_LIST_COMMON += fvid2 dss
-COMP_LIST_COMMON += pm_lib
 
 # Common source files and CFLAGS across all platforms and cores
 PACKAGE_SRCS_COMMON = .
