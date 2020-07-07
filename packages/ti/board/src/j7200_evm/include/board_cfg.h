@@ -66,6 +66,8 @@ extern "C" {
 #define BOARD_MAIN_I2C1_INSTANCE                        (1U)
 /* MAIN I2C2 instance number */
 #define BOARD_MAIN_I2C2_INSTANCE                        (2U)
+/* MAIN I2C3 instance number */
+#define BOARD_MAIN_I2C3_INSTANCE                        (3U)
 /* MCU I2C0 instances number */
 #define BOARD_MCU_I2C0_INSTANCE                         (0U)
 /* WKUP I2C0 instance number */
@@ -110,9 +112,9 @@ extern "C" {
 #define BOARD_I2C_IOEXP_DEVICE1_INSTANCE                (BOARD_MAIN_I2C0_INSTANCE)
 #define BOARD_I2C_IOEXP_DEVICE2_INSTANCE                (BOARD_MAIN_I2C0_INSTANCE)
 #define BOARD_I2C_IOEXP_DEVICE3_INSTANCE                (BOARD_MAIN_I2C1_INSTANCE)
-#define BOARD_I2C_AUDIO_IOEXP_DEVICE_INSTANCE           (BOARD_MAIN_I2C1_INSTANCE)
+
 /* I2C instance connected to User LED */
-#define BOARD_I2C_USER_LED_INSTANCE                     (BOARD_MAIN_I2C0_INSTANCE)
+#define BOARD_I2C_USER_LED_INSTANCE                     (BOARD_I2C_IOEXP_DEVICE2_INSTANCE)
 /* I2C instance connected to Automation header */
 #define BOARD_TEST_HEADER_I2C_INSTANCE                  (BOARD_MAIN_I2C2_INSTANCE)
 /* I2C instance connected to Current monitor*/
@@ -120,12 +122,12 @@ extern "C" {
 
 /* SOM Board ID EEPROM slave address */
 #define BOARD_SOM_EEPROM_SLAVE_ADDR                     (0x50U)
+/* CPB Board ID EEPROM slave address */
+#define BOARD_CP_EEPROM_SLAVE_ADDR                      (0x51U)
 /* GESI Board ID EEPROM slave address */
 #define BOARD_GESI_EEPROM_SLAVE_ADDR                    (0x52U)
 /* QSGMII Board ID EEPROM slave address */
 #define BOARD_ENET_EEPROM_SLAVE_ADDR                    (0x54U)
-/* CPB Board ID EEPROM slave address */
-#define BOARD_CP_EEPROM_SLAVE_ADDR                      (0x51U)
 
 /* I2C slave address for Boot EEPROM */
 #define BOARD_I2C_BOOT_EEPROM_ADDR                      (0x50U)
@@ -140,11 +142,10 @@ extern "C" {
 #define BOARD_I2C_PERI_CLOCK_GENERATOR                  (0x6D)
 
 /* I2C IO Expander Slave devices */
-#define BOARD_I2C_IOEXP_SOM_DEVICE1_ADDR                (0X21U)
+#define BOARD_I2C_IOEXP_SOM_DEVICE1_ADDR                (0x21U)
 #define BOARD_I2C_IOEXP_DEVICE1_ADDR                    (0x20U)
 #define BOARD_I2C_IOEXP_DEVICE2_ADDR                    (0x22U)
 #define BOARD_I2C_IOEXP_DEVICE3_ADDR                    (0x20U)
-#define BOARD_I2C_AUDIO_IOEXP_DEVICE_ADDR               (0x21U)
 
 /* I2C address for External RTC */
 #define BOARD_I2C_EXT_RTC_ADDR                          (0x6FU)
@@ -173,7 +174,7 @@ extern "C" {
 #define BOARD_MCU_EMAC_PHY_ADDR                         (0U)
 
 /* MCU EMAC MAX REG DUMP */
-#define BOARD_MCU_EMAC_REG_DUMP_MAX                     ((16U))
+#define BOARD_MCU_EMAC_REG_DUMP_MAX                     (16U)
 
 /* MCU EMAC PHY register address definitions for reading strap values */
 #define BOARD_MCU_EMAC_STRAP_STS1_ADDR                  (0x6EU)
@@ -182,36 +183,36 @@ extern "C" {
 #define BOARD_SGMII_PORT_MAX                            (4U)
 
 /* Maximum number of SoC domains */
-#define BOARD_SOC_DOMAIN_MAX     (3U)
+#define BOARD_SOC_DOMAIN_MAX                            (3U)
 /* Value for indicating SoC main domain */
-#define BOARD_SOC_DOMAIN_MAIN    (0)
+#define BOARD_SOC_DOMAIN_MAIN                           (0)
 /* Value for indicating SoC wake-up domain */
-#define BOARD_SOC_DOMAIN_WKUP    (1U)
+#define BOARD_SOC_DOMAIN_WKUP                           (1U)
 /* Value for indicating SoC MCU domain */
-#define BOARD_SOC_DOMAIN_MCU     (2U)
+#define BOARD_SOC_DOMAIN_MCU                            (2U)
 /* Maximum I2C instance number common across the domain */
-#define BOARD_I2C_DOMAIN_INSTANCE_MAX     (2U)
+#define BOARD_I2C_DOMAIN_INSTANCE_MAX                   (2U)
 
 /* SoC domain used by UART module */
 #if defined (__TI_ARM_V7R5__)
-#define BOARD_UART_SOC_DOMAIN    (BOARD_SOC_DOMAIN_MCU)
+#define BOARD_UART_SOC_DOMAIN                           (BOARD_SOC_DOMAIN_MCU)
 #else
-#define BOARD_UART_SOC_DOMAIN    (BOARD_SOC_DOMAIN_MAIN)
+#define BOARD_UART_SOC_DOMAIN                           (BOARD_SOC_DOMAIN_MAIN)
 #endif
 
 /* Clock frequency for UART module */
-#define BOARD_UART_CLK_MAIN      (48000000U)
-#define BOARD_UART_CLK_WKUP      (96000000U)
+#define BOARD_UART_CLK_MAIN                             (48000000U)
+#define BOARD_UART_CLK_WKUP                             (96000000U)
 
 
-/* Board detect ID for dual PMIC SoM */
-#define BOARD_ID_SOM             (0x0U)
-/* Board detect ID for CP Board */
-#define BOARD_ID_CP              (0x1U)
 /* Board detect ID for GESI */
-#define BOARD_ID_GESI            (0x2)
+#define BOARD_ID_GESI                                   (0x0U)
 /* Board detect ID for Ethernet expansion board */
-#define BOARD_ID_ENET            (0x3U)
+#define BOARD_ID_ENET                                   (0x1U)
+/* Board detect ID for dual PMIC SoM */
+#define BOARD_ID_SOM                                    (0x2U)
+/* Board detect ID for CP Board */
+#define BOARD_ID_CP                                     (0x3U)
 
 /* Maximum possible buffer length */
 #define BOARD_EEPROM_MAX_BUFF_LENGTH                    (197U)
@@ -240,9 +241,6 @@ extern "C" {
 #define BOARD_EEPROM_SERIAL_NO_ADDR                     (BOARD_EEPROM_VERSION_ADDR + BOARD_EEPROM_VERSION_LENGTH)
 #define BOARD_EEPROM_CONFIG_ADDR                        (BOARD_EEPROM_SERIAL_NO_ADDR + BOARD_EEPROM_SERIAL_NO_LENGTH)
 
-/* PinMux data to be programmed to configure a pin to be a GPIO */
-#define PINMUX_GPIO_CFG                                 (0x00050007U)
-
 #define BOARD_MMC_VOLTAGESWITCH_FN                      Board_mmc_voltageSwitchFxn
 
 /* QSPI instance number */
@@ -256,138 +254,34 @@ extern "C" {
 /* Enable NOR flash driver */
 #define BOARD_NOR_FLASH_IN
 
-#define BOARD_CPSW5G_PORT_MAX                           (4)
+/* CPSW ports on GESI board */
+#define BOARD_GESI_CPSW_PORT_MAX                        (1U)
+/* CPSW max ports supported */
+#define BOARD_CPSW_PORT_MAX                             (4U)
 
-/*------<J7200_TODO>- Need to clean-up some of the macros later ------*/
-#define BOARD_ICSS_EMAC_PORT_MAX                        (4)
-#define BOARD_CPSW5G_EMAC_PORT_MAX                      (4)
-/* ICSS0 EMAC PHY register address */
-#define BOARD_ICSS0_EMAC_PHY0_ADDR                      (0x0)
-#define BOARD_ICSS0_EMAC_PHY1_ADDR                      (0x3u)
+#define BOARD_GESI_CPSW_PHY_ADDR                        (0x0)
 
-/* ICSS1 EMAC PHY register address */
-#define BOARD_ICSS1_EMAC_PHY0_ADDR                      (0xCu)
-#define BOARD_ICSS1_EMAC_PHY1_ADDR                      (0xFu)
+#define BOARD_CPSW5G_EMAC_PORT_MAX                      (4U)
 
-
-/* PRG0_RGMII_RESETn */
-#define BOARD_GPIO_IOEXP_ICSS0_EMAC_RST_PORT_NUM        (0U) /* GPIO0_61 */
-#define BOARD_GPIO_IOEXP_ICSS0_EMAC_RST_PIN_NUM         (0x3DU)
-
-/* PRG0_RGMII_INTn */
-#define BOARD_GPIO_ICSS0_EMAC_INT_PORT_NUM              (1U) /* GPIO1_23 */
-#define BOARD_GPIO_ICSS0_EMAC_INT_PIN_NUM               (0x17U)
-
-/* PRG1_RGMII_RESETn */
-#define BOARD_GPIO_IOEXP_ICSS1_EMAC_RST_PORT_NUM        (0U) /* GPIO0_62 */
-#define BOARD_GPIO_IOEXP_ICSS1_EMAC_RST_PIN_NUM         (0x3EU)
-
-/* PRG1_RGMII_INTn */
-#define BOARD_GPIO_ICSS1_EMAC_INT_PORT_NUM              (1U) /* GPIO1_24 */
-#define BOARD_GPIO_ICSS1_EMAC_INT_PIN_NUM               (0x18U)
-
-/* ICSS EMAC PHY register address definitions for reading strap values */
-#define BOARD_ICSS_EMAC_STRAP_STS1_ADDR                (0x6EU)
-#define BOARD_ICSS_EMAC_STRAP_STS2_ADDR                (0x6FU)
+/* I2C address for Board Id EEPROM */
+#define BOARD_I2C_EEPROM_ADDR                           (0x50U)
 
 /* MCU_ETH1_RESETn */
 #define BOARD_GPIO_IOEXP_MCU_EMAC_RST_PORT_NUM          (0U) /* WKUP_GPIO0_3 */
 #define BOARD_GPIO_IOEXP_MCU_EMAC_RST_PIN_NUM           (0x03U)
 
 /* MCU_ETH1_INTn */
-#define BOARD_GPIO_MCU_EMAC_INT_PORT_NUM                (0U) /* WKUP_GPIO0_55 */
-#define BOARD_GPIO_MCU_EMAC_INT_PIN_NUM                 (0X37U)
-
-/* ICSSG UART instance number */
-#define BOARD_ICSSG_UART_INSTANCE                       (4U)
-
-/* INFO and GESI board ID EEPROM address */
-#define BOARD_EXP_CON_BOARDID_EEPROM_ADDRS              (0x52U)
-
-/* I2C address for Board Id EEPROM */
-#define BOARD_I2C_EEPROM_ADDR                           (0x50U)
-
-#define BOARD_I2C_IOEXP_DEVICE4_INSTANCE                (1U)
-#define BOARD_I2C_IOEXP_DEVICE5_INSTANCE                (6U)
-#define BOARD_I2C_VIDEO_IOEXP_DEVICE_INSTANCE           (1U)
-
-#define BOARD_I2C_IOEXP_DEVICE4_ADDR                    (0x20U)
-#define BOARD_I2C_IOEXP_DEVICE5_ADDR                    (0x20U)
-#define BOARD_I2C_VIDEO_IOEXP_DEVICE_ADDR               (0x21U)
+#define BOARD_GPIO_MCU_EMAC_INT_PORT_NUM                (0U) /* WKUP_GPIO0_59 */
+#define BOARD_GPIO_MCU_EMAC_INT_PIN_NUM                 (0x3BU)
 
 #define BOARD_USER_LED1                                 (6U)
 #define BOARD_USER_LED2                                 (7U)
 #define BOARD_USER_LED_IOEXP_PORT                       (2U)
 
-/* HDMI IO Exp instances */
-#define BOARD_HDMI_IO_EXP_INSTANCE                      (1U)
-#define BOARD_HDMI_IO_SLAVE_ADDR                        (0x21U)
-
-#define BOARD_COMMON_EEPROM_I2C_INST                  (0)
+#define BOARD_COMMON_EEPROM_I2C_INST                    (0)
 
 /* Maximum number of supporting board ID */
-#define BOARD_ID_MAX_BOARDS      (4)
-/* --------------------<J7200_TODO ends>-------------------- */
-
-/* Below macros are retained for compatibility with other K3 platforms.
-   Need to review and remove them */
-/* PRG0_ETH1_LED_LINK */
-#define BOARD_GPIO_ICSS0_EMAC_PHY0_LED_LINK_PORT_NUM    (0)
-#define BOARD_GPIO_ICSS0_EMAC_PHY0_LED_LINK_PIN_NUM     (0)
-
-/* PRG0_ETH2_LED_LINK */
-#define BOARD_GPIO_ICSS0_EMAC_PHY1_LED_LINK_PORT_NUM    (0)
-#define BOARD_GPIO_ICSS0_EMAC_PHY1_LED_LINK_PIN_NUM     (0)
-
-/* GPIO to drive PRG0 LED0 */
-#define BOARD_GPIO_ICSS0_EMAC_LED0_PORT_NUM             (0)
-#define BOARD_GPIO_ICSS0_EMAC_LED0_PIN_NUM              (0)
-
-/* GPIO to drive PRG0 LED1 */
-#define BOARD_GPIO_ICSS0_EMAC_LED1_PORT_NUM             (0)
-#define BOARD_GPIO_ICSS0_EMAC_LED1_PIN_NUM              (0)
-
-/* GPIO to drive PRG0 LED2 */
-#define BOARD_GPIO_ICSS0_EMAC_LED2_PORT_NUM             (0)
-#define BOARD_GPIO_ICSS0_EMAC_LED2_PIN_NUM              (0)
-
-/* GPIO to drive PRG0 LED3 */
-#define BOARD_GPIO_ICSS0_EMAC_LED3_PORT_NUM             (0)
-#define BOARD_GPIO_ICSS0_EMAC_LED3_PIN_NUM              (0)
-
-#define BOARD_GPIO_IOEXP_SPI_RST_PORT_NUM               (0)
-#define BOARD_GPIO_IOEXP_SPI_RST_PIN_NUM                (0)
-
-/* TEST_GPIO1 */
-#define BOARD_GPIO_IOEXP_TEST_PORT_NUM                  (0)
-#define BOARD_GPIO_IOEXP_TEST_PIN_NUM                   (0)
-
-/* PRG1_ETH1_LED_LINK */
-#define BOARD_GPIO_ICSS1_EMAC_PHY0_LED_LINK_PORT_NUM    (0)
-#define BOARD_GPIO_ICSS1_EMAC_PHY0_LED_LINK_PIN_NUM     (0)
-
-/* PRG1_ETH2_LED_LINK */
-#define BOARD_GPIO_ICSS1_EMAC_PHY1_LED_LINK_PORT_NUM    (0)
-#define BOARD_GPIO_ICSS1_EMAC_PHY1_LED_LINK_PIN_NUM     (0)
-
-/* GPIO to drive PRG1 LED0 */
-#define BOARD_GPIO_ICSS1_EMAC_LED0_PORT_NUM             (0)
-#define BOARD_GPIO_ICSS1_EMAC_LED0_PIN_NUM              (0)
-
-/* GPIO to drive PRG1 LED1 */
-#define BOARD_GPIO_ICSS1_EMAC_LED1_PORT_NUM             (0)
-#define BOARD_GPIO_ICSS1_EMAC_LED1_PIN_NUM              (0)
-
-/* GPIO to drive PRG1 LED2 */
-#define BOARD_GPIO_ICSS1_EMAC_LED2_PORT_NUM             (0)
-#define BOARD_GPIO_ICSS1_EMAC_LED2_PIN_NUM              (0)
-
-/* GPIO to drive PRG1 LED3 */
-#define BOARD_GPIO_ICSS1_EMAC_LED3_PORT_NUM             (0)
-#define BOARD_GPIO_ICSS1_EMAC_LED3_PIN_NUM              (0)
-
-#define BOARD_GPIO_IOEXP_OSPI_RST_PORT_NUM              (0)
-#define BOARD_GPIO_IOEXP_OSPI_RST_PIN_NUM               (0)
+#define BOARD_ID_MAX_BOARDS                             (4U)
 
 /* GPIO port & pin numbers for  MMC reset */
 #define GPIO_MMC_SDCD_PORT_NUM                          (0)
@@ -395,14 +289,6 @@ extern "C" {
 
 #define BOARD_GPIO_IOEXP_EMMC_RST_PORT_NUM              (0x00)
 #define BOARD_GPIO_IOEXP_EMMC_RST_PIN_NUM               (0x00)
-
-#define BOARD_I2C_TOUCH_INSTANCE                        (0)
-#define BOARD_I2C_TOUCH_SLAVE_ADDR                      (0)
-
-/* I2C instance Board Presence Circuit */
-#define BOARD_PRES_WKUP_I2C_INSTANCE                    (0U)
-/* I2C address Board Presence Circuit */
-#define BOARD_PRES_DETECT_SLAVE_ADDR                    (0)
 
 /* McSPI instance for master and slave test */
 #define BOARD_MCSPI_MASTER_INSTANCE                     (1)

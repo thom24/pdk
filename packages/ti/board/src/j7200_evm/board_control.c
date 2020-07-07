@@ -116,49 +116,13 @@ static Board_STATUS Board_setCpsw5GMdioMux(void)
 }
 
 /**
- * \brief   Configures data path for GPMC pins
- *
- * \return  Board_SOK in case of success or appropriate error code.
- *
- */
-static Board_STATUS Board_setGpmcDataMux(void)
-{
-    Board_IoExpCfg_t ioExpCfg;
-    Board_STATUS status;
-
-    ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_DEVICE2_INSTANCE;
-    ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
-    ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_DEVICE2_ADDR;
-    ioExpCfg.enableIntr  = false;
-    ioExpCfg.ioExpType   = THREE_PORT_IOEXP;
-    ioExpCfg.portNum     = PORTNUM_1;
-    ioExpCfg.pinNum      = PIN_NUM_1;
-    ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_HIGH;
-
-    status = Board_setIoExpPinOutput(&ioExpCfg);
-    if(status != BOARD_SOK)
-    {
-        return status;
-    }
-
-    ioExpCfg.pinNum = PIN_NUM_2;
-    ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_LOW;
-    status = Board_setIoExpPinOutput(&ioExpCfg);
-
-    return status;
-}
-
-/**
  * \brief Board control function
  *
  * \param   cmd  [IN]  Board control command
  * \param   arg  [IN]  Control command argument. 
  *                     Changes based on the command
  *
- * \return   TRUE if the given board is detected else 0.
- *           SoM board will be always connected to the base board.
- *           For SoM boardID return value TRUE indicates dual PMIC
- *           SoM and FALSE indicates alternate PMIC SoM
+ * \return   Board_SOK in case of success or appropriate error code.
  *
  */
 Board_STATUS Board_control(uint32_t cmd, void *arg)
@@ -175,10 +139,6 @@ Board_STATUS Board_control(uint32_t cmd, void *arg)
             status = Board_setCpsw5GMdioMux();
             break;
 
-        case BOARD_CTRL_CMD_SET_RMII_DATA_MUX:
-            status = Board_setGpmcDataMux();
-            break;
-
         default:
             status = BOARD_INVALID_PARAM;
             break;
@@ -186,4 +146,3 @@ Board_STATUS Board_control(uint32_t cmd, void *arg)
 
     return status;
 }
-

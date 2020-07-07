@@ -44,7 +44,7 @@
 extern "C" {
 #endif
 
-#include "board_internal.h"
+#include <ti/board/src/j7200_evm/include/board_internal.h>
 
 #ifdef __cplusplus
 }

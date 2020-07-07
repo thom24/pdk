@@ -44,8 +44,8 @@
 #ifndef _BOARD_I2C_IO_EXP_H_
 #define _BOARD_I2C_IO_EXP_H_
 
-#include "board_internal.h"
-#include "board_utils.h"
+#include <ti/board/src/j7200_evm/include/board_internal.h>
+#include <ti/board/src/j7200_evm/include/board_utils.h>
 
 #ifdef __cplusplus
 extern "C" {

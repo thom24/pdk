@@ -43,9 +43,9 @@
 #include "board_pinmux.h"
 
 static Board_PinmuxConfig_t gBoardPinmuxCfg = {BOARD_PINMUX_CUSTOM,
-                                               BOARD_PINMUX_INFO_VOUT,
-                                               BOARD_PINMUX_CSI_COMMON,
-                                               BOARD_PINMUX_ENET_QSGMII};
+                                               BOARD_PINMUX_GESI_CPSW,
+                                               BOARD_PINMUX_ENET_QSGMII,
+                                               BOARD_PINMUX_FSS_OSPI};
 
 /**
  *  \brief  Gets base address of padconfig registers

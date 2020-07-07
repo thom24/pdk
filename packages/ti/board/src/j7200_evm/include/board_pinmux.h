@@ -81,11 +81,7 @@ extern "C" {
 
 #define BOARD_PINMUX_CUSTOM             (0)  // Default
 #define BOARD_PINMUX_AUTO               (1U)
-#define BOARD_PINMUX_INFO_VOUT          (0)  // Default
-#define BOARD_PINMUX_INFO_VPFE          (1U)
-#define BOARD_PINMUX_GESI_ICSSG         (2U)
-#define BOARD_PINMUX_GESI_CPSW          (3U)
-#define BOARD_PINMUX_CSI_COMMON         (0)  // Default
+#define BOARD_PINMUX_GESI_CPSW          (0U)
 #define BOARD_PINMUX_ENET_QSGMII        (0)  // Default
 #define BOARD_PINMUX_FSS_OSPI           (0)  // Default
 #define BOARD_PINMUX_FSS_HPB            (1)
@@ -106,7 +102,7 @@ typedef struct Board_PinmuxConfig_s
 
     /**
      * Pinmux config control for GESI/Infotainment expansion connector
-     *  BOARD_PINMUX_GESI_CPSW5G(0) - GESI Board (CPSW5G RGMII)
+     *  BOARD_PINMUX_GESI_CPSW(0) - GESI Board (CPSW5G RGMII)
      */
     uint8_t gesiExp;
 
@@ -267,6 +263,7 @@ Board_STATUS Board_pinmuxConfig (void);
  *
  */
 void Board_uartTxPinmuxConfig(void);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

@@ -214,7 +214,6 @@ Board_STATUS Board_readMacAddr(uint32_t boardID,
  * \param  boardID  [IN]  ID of the board to be detected
  * \n                      BOARD_ID_GESI(0x0) - GESI Board
  * \n                      BOARD_ID_ENET(0x1) - Quad ENET expansion
- * \n                      BOARD_ID_SOM(0x2) - Dual PMIC SoM Board
  * \param  macAddrCnt[OUT] Number of valid MAC addresses programmed to the EEPROM
  *
  * \return   BOARD_SOK in case of success or appropriate error code.
@@ -238,16 +237,6 @@ Board_STATUS Board_readMacAddrCount(uint32_t boardID,
  *
  */
 Board_STATUS Board_setI2cInitConfig(Board_I2cInitCfg_t *i2cCfg);
-
-/**
- * \brief Configures drive strength for LVCMOS IOs
- *
- * This is temporary function added as workaround for
- * eFuse drive strength configuration issue. Need to be
- * removed after this issue is fixed in the silicon.
- *
- */
-void Board_lvcmosDrvStrengthCfg(void);
 
 /**
  * \brief Function to get board init params

@@ -56,13 +56,12 @@ extern "C" {
 #include <stdio.h>
 #include <stdbool.h>
 
-#include "board_internal.h"
-#include "board_utils.h"
-#include "board_i2c_io_exp.h"
+#include <ti/board/src/j7200_evm/include/board_internal.h>
+#include <ti/board/src/j7200_evm/include/board_utils.h>
+#include <ti/board/src/j7200_evm/include/board_i2c_io_exp.h>
 
 #define BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT       (0)
 #define BOARD_CTRL_CMD_SET_GESI_CPSW_MDIO_MUX   (1U)
-#define BOARD_CTRL_CMD_SET_RMII_DATA_MUX        (2U)
 
 /**
  * \brief Structure to configure the board IO expander parameters
@@ -94,10 +93,7 @@ typedef struct Board_IoExpCfg_s
  * \param   arg  [IN]  Control command argument. 
  *                     Changes based on the command
  *
- * \return   TRUE if the given board is detected else 0.
- *           SoM board will be always connected to the base board.
- *           For SoM boardID return value TRUE indicates dual PMIC
- *           SoM and FALSE indicates alternate PMIC SoM
+ * \return   Board_SOK in case of success or appropriate error code.
  *
  */
 Board_STATUS Board_control(uint32_t cmd, void *arg);

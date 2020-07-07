@@ -44,11 +44,8 @@
 #include <ti/csl/soc.h>
 #include <ti/csl/cslr_mdio.h>
 
-Board_pruicssMdioInfo  Board_cpswMdioInfo[BOARD_CPSW5G_EMAC_PORT_MAX] =
-                       {{(CSL_CPSW0_NUSS_BASE + BOARD_CPSW_MDIO_REG_OFFSET), BOARD_ICSS0_EMAC_PHY0_ADDR},
-                        {(CSL_CPSW0_NUSS_BASE + BOARD_CPSW_MDIO_REG_OFFSET), BOARD_ICSS0_EMAC_PHY1_ADDR},
-                        {(CSL_CPSW0_NUSS_BASE + BOARD_CPSW_MDIO_REG_OFFSET), BOARD_ICSS1_EMAC_PHY0_ADDR},
-                        {(CSL_CPSW0_NUSS_BASE + BOARD_CPSW_MDIO_REG_OFFSET), BOARD_ICSS1_EMAC_PHY1_ADDR},
+Board_pruicssMdioInfo  Board_cpswMdioInfo[BOARD_GESI_CPSW_PORT_MAX] =
+                       {{(CSL_CPSW0_NUSS_BASE + BOARD_CPSW_MDIO_REG_OFFSET), BOARD_GESI_CPSW_PHY_ADDR}
                        };
 
 extern Board_initParams_t gBoardInitParams;
@@ -587,7 +584,7 @@ Board_STATUS Board_ethConfigCpsw5g(void)
     uint8_t portNum;
 
     /* Configure the CPSW5G RGMII ports. One port used as RGMII and three ports for SGMII */
-    for(portNum = 0; portNum < BOARD_CPSW5G_PORT_MAX; portNum++)
+    for(portNum = 0; portNum < BOARD_CPSW_PORT_MAX; portNum++)
     {
         if (CPSW5G_RGMII_PORTNUM == portNum)
         {
