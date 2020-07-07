@@ -1551,10 +1551,10 @@ LB_STORE_FROM_UPPER_BUFFER:
 RCV_LB_NO_QUEUE_WRAP_2:
     ADD		MII_RCV.wrkng_wr_ptr,  MII_RCV.wrkng_wr_ptr,  4
 RCV_LB_QUEUE_WRAPPED_2:
-QBA     RCV_LB_CHECK_OVERFLOW
+    QBA     RCV_LB_CHECK_OVERFLOW
 RCV_LB_APPEND_TS:
     ;Logic to append 10 bytes timestamp to the end of packet
-    CLR     R22, R22, 14    ;clear PTP flag
+    
 
     .if $defined("ICSS_SWITCH_BUILD")
         QBBC    LB_PROCESS_CHECK_FWD_FLAG, MII_RCV.rx_flags, host_rcv_flag_shift    ;MII_RCV.rx_flags.host_rcv_flag
@@ -1807,9 +1807,12 @@ LB_UPDATE_FOR_HOST_RECEIVE:
     LBCO	&RCV_TEMP_REG_1, ICSS_SHARED_CONST, RCV_CONTEXT.rcv_queue_pointer, 4	
     .endif ;TWO_PORT_CFG
     ; clear length field (18..28) and update length with current received frame
-    LDI	RCV_TEMP_REG_2.w0, 0	
-    
-        SUB	RCV_TEMP_REG_2.w2, RCV_CONTEXT.byte_cntr, 4	;4 byte of FCS
+    LDI	RCV_TEMP_REG_2.w0, 0
+    MOV    RCV_TEMP_REG_2.w2, RCV_CONTEXT.byte_cntr          ;assign packet length
+    .if $defined(PTP)	
+        QBBS   LB_SKIP_CRC_SUBTRACT, R22, RX_IS_PTP_BIT     ;skip CRC subtraction for PTP frames (so driver can see the Rx timestamp)
+    .endif ;PTP
+    SUB	   RCV_TEMP_REG_2.w2, RCV_TEMP_REG_2.w2, 4	    ;4 byte of FCS
 LB_SKIP_CRC_SUBTRACT:    
     LSL	RCV_TEMP_REG_2.w2, RCV_TEMP_REG_2.w2, 2	
     
@@ -1819,6 +1822,14 @@ LB_SKIP_CRC_SUBTRACT:
     .else
     SET	RCV_TEMP_REG_2 , RCV_TEMP_REG_2 , 17 ;Port 2	
     .endif
+    
+    CLR     RCV_TEMP_REG_2, RCV_TEMP_REG_2, 15       ;Clear PTP descriptor bit
+    .if $defined(PTP)
+        QBBC   LB_SKIP_PTP_DESC_BIT_SET, R22, RX_IS_PTP_BIT
+        CLR    R22, R22, RX_IS_PTP_BIT
+        SET	   RCV_TEMP_REG_2 , RCV_TEMP_REG_2 , 15  ;Indicate to the driver that this is a PTP frame
+LB_SKIP_PTP_DESC_BIT_SET:
+    .endif ;PTP
 
     .if $defined("ICSS_STP_SWITCH")
     ; Set FDB Lookup Success bit if the FDB lookup was successful
