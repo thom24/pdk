@@ -54,7 +54,11 @@
 #include <ti/drv/spi/soc/SPI_soc.h>
 
 #include <ti/board/src/flash/include/board_flash.h>
+#if defined(SOC_J7200)
+#include <ti/board/src/flash/nor/ospi/nor_xspi.h>
+#else
 #include <ti/board/src/flash/nor/ospi/nor_ospi.h>
+#endif
 #include "board.h"
 #include "board_cfg.h"
 #include "diag_common_cfg.h"

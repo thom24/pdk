@@ -641,15 +641,17 @@ int main(void)
 {
     int8_t ret = 0;
     Board_initCfg boardCfg;
+#if defined(j721e_evm)
     Board_PinmuxConfig_t pinmuxCfg;
-
-    boardCfg = BOARD_INIT_UART_STDIO |
-               BOARD_INIT_PINMUX_CONFIG;
 
     /* Enable the pinmux for GESI board */
     Board_pinmuxGetCfg(&pinmuxCfg);
     pinmuxCfg.gesiExp = BOARD_PINMUX_GESI_ICSSG;
     Board_pinmuxSetCfg(&pinmuxCfg);
+#endif
+
+    boardCfg = BOARD_INIT_UART_STDIO |
+               BOARD_INIT_PINMUX_CONFIG;
 
     Board_init(boardCfg);
 

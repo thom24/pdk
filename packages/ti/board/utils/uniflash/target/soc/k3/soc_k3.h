@@ -59,10 +59,11 @@ extern "C" {
 #include <ti/drv/uart/UART_stdio.h>
 #include <ti/drv/uart/soc/UART_soc.h>
 
-#if defined(SOC_J721E) || defined(SOC_J7200)
-#include <ti/csl/soc/j721e/src/cslr_wkup_ctrl_mmr.h>
+#if defined(SOC_J721E)
 #include <ti/csl/soc/j721e/src/cslr_mcu_pll_mmr.h>
+#endif
 
+#if defined(SOC_J721E) || defined(SOC_J7200)
 #define UFP_UART_PLL_BASE                   (CSL_MCU_PLL0_CFG_BASE)
 #define UFP_UART_PLL_KICK0_OFFSET           (CSL_MCU_PLL_MMR_CFG_PLL1_LOCKKEY0)
 #define UFP_UART_PLL_KICK1_OFFSET           (CSL_MCU_PLL_MMR_CFG_PLL1_LOCKKEY1)

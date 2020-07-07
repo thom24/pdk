@@ -44,9 +44,8 @@
 #include <ti/csl/soc.h>
 #include <ti/csl/cslr_mdio.h>
 
-Board_pruicssMdioInfo  Board_cpswMdioInfo[BOARD_GESI_CPSW_PORT_MAX] =
-                       {{(CSL_CPSW0_NUSS_BASE + BOARD_CPSW_MDIO_REG_OFFSET), BOARD_GESI_CPSW_PHY_ADDR}
-                       };
+Board_pruicssMdioInfo  Board_cpswMdioInfo =
+    {(CSL_CPSW0_NUSS_BASE + BOARD_CPSW_MDIO_REG_OFFSET), BOARD_GESI_CPSW_PHY_ADDR};
 
 extern Board_initParams_t gBoardInitParams;
 
@@ -304,7 +303,6 @@ Board_STATUS Board_cpsw5gEthPhyConfig(void)
     Board_STATUS status;
     uint32_t baseAddr;
     uint8_t  phyAddr;
-    uint32_t index;
     uint16_t regData = 0;
     bool isAlpha = 0;
 
@@ -326,71 +324,68 @@ Board_STATUS Board_cpsw5gEthPhyConfig(void)
         }
     }
 
-    for(index = 0; index < BOARD_CPSW5G_EMAC_PORT_MAX; index++)
+    baseAddr = Board_cpswMdioInfo.mdioBaseAddrs;
+    phyAddr  = Board_cpswMdioInfo.phyAddrs;
+
+    Board_mdioInit(baseAddr);
+
+    /* Enable PHY speed LED functionality */
+    Board_ethPhyExtendedRegRead(baseAddr, phyAddr,
+                                BOARD_ETHPHY_GPIO_MUX_CTRL2_REG_ADDR,
+                                &regData);
+    regData  = (regData & ~(BOARD_ETHPHY_GPIO_MUX_CTRL2_REG_MASK)) |
+                BOARD_ETHPHY_GPIO_MUX_CTRL2_REG_CFG;
+    Board_ethPhyExtendedRegWrite(baseAddr, phyAddr,
+                                 BOARD_ETHPHY_GPIO_MUX_CTRL2_REG_ADDR,
+                                 regData);
+
+    regData = 0;
+    BoardDiag_ethPhyRegRead(baseAddr, phyAddr,
+                            BOARD_ETHPHY_LEDCR1_REG_ADDR, &regData);
+    regData  = (regData & ~(BOARD_ETHPHY_LEDCR1_REG_MASK)) |
+                BOARD_ETHPHY_LEDCR1_REG_CFG;
+    Board_ethPhyRegWrite(baseAddr, phyAddr,
+                         BOARD_ETHPHY_LEDCR1_REG_ADDR, regData);
+
+   /* When the Phy is strapped to enable Fast Link Drop (FLD) feature,
+    * the detect threshold value becomes 0x2 in bit 2:0 instead of 0x1
+    * in the  FLD_THRESH (0x2e) register  as in non strapped case.
+    * This causes the phy link to be unstable.
+    * As a workaround, write a value of 0x1 in this bit field if
+    * bit 10 of STRAP_STS2 (0x6f) register is set (enable FLD).
+    */
+    regData = 0;
+    Board_ethPhyExtendedRegRead(baseAddr, phyAddr,
+                                BOARD_ETHPHY_STRAP_STS2_REG_ADDR,
+                                &regData);
+    if (regData & BOARD_ETHPHY_STRAP_FLD_MASK)
     {
-        baseAddr = Board_cpswMdioInfo[index].mdioBaseAddrs;
-        phyAddr  = Board_cpswMdioInfo[index].phyAddrs;
-
-        Board_mdioInit(baseAddr);
-
-        /* Enable PHY speed LED functionality */
-        Board_ethPhyExtendedRegRead(baseAddr, phyAddr,
-                                    BOARD_ETHPHY_GPIO_MUX_CTRL2_REG_ADDR,
-                                    &regData);
-        regData  = (regData & ~(BOARD_ETHPHY_GPIO_MUX_CTRL2_REG_MASK)) |
-                    BOARD_ETHPHY_GPIO_MUX_CTRL2_REG_CFG;
-        Board_ethPhyExtendedRegWrite(baseAddr, phyAddr,
-                                     BOARD_ETHPHY_GPIO_MUX_CTRL2_REG_ADDR,
-                                     regData);
-
-        regData = 0;
-        BoardDiag_ethPhyRegRead(baseAddr, phyAddr,
-                                BOARD_ETHPHY_LEDCR1_REG_ADDR, &regData);
-        regData  = (regData & ~(BOARD_ETHPHY_LEDCR1_REG_MASK)) |
-                    BOARD_ETHPHY_LEDCR1_REG_CFG;
-        Board_ethPhyRegWrite(baseAddr, phyAddr,
-                             BOARD_ETHPHY_LEDCR1_REG_ADDR, regData);
-
-       /* When the Phy is strapped to enable Fast Link Drop (FLD) feature,
-        * the detect threshold value becomes 0x2 in bit 2:0 instead of 0x1
-        * in the  FLD_THRESH (0x2e) register  as in non strapped case.
-        * This causes the phy link to be unstable.
-        * As a workaround, write a value of 0x1 in this bit field if
-        * bit 10 of STRAP_STS2 (0x6f) register is set (enable FLD).
-        */
         regData = 0;
         Board_ethPhyExtendedRegRead(baseAddr, phyAddr,
-                                    BOARD_ETHPHY_STRAP_STS2_REG_ADDR,
+                                    BOARD_ETHPHY_FLD_THRESH_REG_ADDR,
                                     &regData);
-        if (regData & BOARD_ETHPHY_STRAP_FLD_MASK)
+        if (regData == BOARD_ETHPHY_STRAP_FLD_THS_CHECK_FLAG)
         {
-            regData = 0;
-            Board_ethPhyExtendedRegRead(baseAddr, phyAddr,
-                                        BOARD_ETHPHY_FLD_THRESH_REG_ADDR,
-                                        &regData);
-            if (regData == BOARD_ETHPHY_STRAP_FLD_THS_CHECK_FLAG)
-            {
-                regData &= ~0x7;
-                Board_ethPhyExtendedRegWrite(baseAddr, phyAddr,
-                                             BOARD_ETHPHY_FLD_THRESH_REG_ADDR,
-                                             (regData | 0x1));
-            }
+            regData &= ~0x7;
+            Board_ethPhyExtendedRegWrite(baseAddr, phyAddr,
+                                         BOARD_ETHPHY_FLD_THRESH_REG_ADDR,
+                                         (regData | 0x1));
         }
-
-        /*Setting IO impedance to 35ohms  */
-        Board_ethPhyExtendedRegWrite(baseAddr, phyAddr,
-                                     BOARD_ETHPHY_GPIO_MUX_CFG_REG_ADDR,
-                                     BOARD_ETHPHY_IO_IMPEDANCE);
-
-        /* Enable the PHY delay configurations */
-        Board_ethPhyExtendedRegWrite(baseAddr, phyAddr, BOARD_ETHPHY_RGMIICTL_REG_ADDR,
-                                     BOARD_ETHPHY_DELAY_CTRL);
-
-        /* Setting delay */
-        Board_ethPhyExtendedRegWrite(baseAddr, phyAddr,
-                                     BOARD_ETHPHY_RGMIIDCTL_REG_ADDR,
-                                     BOARD_ETHPHY_CPSW5G_DELAY);
     }
+
+    /*Setting IO impedance to 35ohms  */
+    Board_ethPhyExtendedRegWrite(baseAddr, phyAddr,
+                                 BOARD_ETHPHY_GPIO_MUX_CFG_REG_ADDR,
+                                 BOARD_ETHPHY_IO_IMPEDANCE);
+
+    /* Enable the PHY delay configurations */
+    Board_ethPhyExtendedRegWrite(baseAddr, phyAddr, BOARD_ETHPHY_RGMIICTL_REG_ADDR,
+                                 BOARD_ETHPHY_DELAY_CTRL);
+
+    /* Setting delay */
+    Board_ethPhyExtendedRegWrite(baseAddr, phyAddr,
+                                 BOARD_ETHPHY_RGMIIDCTL_REG_ADDR,
+                                 BOARD_ETHPHY_CPSW5G_DELAY);
 
     return BOARD_SOK;
 }

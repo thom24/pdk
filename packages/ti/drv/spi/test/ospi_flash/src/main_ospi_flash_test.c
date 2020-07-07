@@ -81,6 +81,8 @@
 #endif
 #if defined(SOC_AM64X)
 #include <ti/board/src/flash/nor/device/m35xu256.h>
+#elif defined(SOC_J7200)
+#include <ti/board/src/flash/nor/device/s28hs512t.h>
 #else
 #include <ti/board/src/flash/nor/device/m35xu512.h>
 #endif
