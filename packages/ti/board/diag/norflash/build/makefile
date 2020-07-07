@@ -85,6 +85,8 @@ PACKAGE_SRCS_COMMON += ../../create_sd.bat ../../create_sd.sh
 
 ifeq ($(BOARD), $(filter $(BOARD), am65xx_evm am65xx_idk))
 SRCS_COMMON += am65xx_spi_test.c
+else ifeq ($(BOARD), $(filter $(BOARD), j7200_evm))
+SRCS_COMMON += spi_norflash_test.c
 else
 SRCS_COMMON += ospi_quad_test.c
 endif
