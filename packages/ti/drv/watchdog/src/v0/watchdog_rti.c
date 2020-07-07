@@ -235,7 +235,7 @@ static int32_t WatchdogRTI_control(Watchdog_Handle handle, uint32_t cmd, void *a
 
                 /* Only NMI mode is supported in the DSS subsystem.
                  * Resetting the system is supported only in the MSS sysbsystem. */
-#ifdef BUILD_DSP_1
+#if defined (_TMS320C6X)
                  if ((Watchdog_ResetMode)*resetMode == Watchdog_RESET_ON)
                  {
                      errCode = WATCHDOG_ENOTIMPL;
@@ -337,7 +337,7 @@ static Watchdog_Handle WatchdogRTI_open(Watchdog_Handle handle, Watchdog_Params*
 
     /* Only NMI mode is supported in the DSS subsystem.
      * Resetting the system is supported only in the MSS sysbsystem. */
-#ifdef BUILD_DSP_1
+#if defined (_TMS320C6X)
     if (params->resetMode == Watchdog_RESET_ON)
     {
         return retHandle;

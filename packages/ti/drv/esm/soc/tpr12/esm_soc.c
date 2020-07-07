@@ -63,8 +63,8 @@ ESM_HwAttrs gESMHwCfgAttrs =
     CSL_MSS_INTR_MSS_ESM_LO
 #elif defined (_TMS320C6X)
     (CSL_esmRegs*)CSL_DSS_ESM_U_BASE,
-    0,                                  /* Not used */
-    0                                   /* Not used */
+    CSL_DSS_INTR_DSS_ESM_HI,
+    CSL_DSS_INTR_DSS_ESM_LO
 #else
 #error "TPR12 ESM: unsupported core"
 #endif

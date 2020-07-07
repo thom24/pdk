@@ -63,6 +63,7 @@
 #include <ti/drv/watchdog/watchdog.h>
 #include <ti/drv/esm/esm.h>
 #include <ti/csl/soc/tpr12/src/cslr_intr_esm_mss.h>
+#include <ti/board/board.h>
 
 /**************************************************************************
  *************************** Global Definitions ***************************
@@ -323,11 +324,11 @@ static void Test_initTask(UArg arg0, UArg arg1)
 
     if (retVal < 0)
     {
-        printf("Debug: Watchdog testing failed\n");
+        printf("All Tests did NOT Pass\n");
     }
     else
     {
-        printf("Debug: Watchdog testing passed\n");
+        printf("All Tests PASSED\n");
     }
 
     /* Exit BIOS */
@@ -349,6 +350,8 @@ static void Test_initTask(UArg arg0, UArg arg1)
 int32_t main (void)
 {
     Task_Params     taskParams;
+    /* Call board init functions */
+    Board_initCfg boardCfg;
 
     /* Initialize the ESM: Dont clear errors as TI RTOS does it */
 
@@ -363,6 +366,13 @@ int32_t main (void)
     Task_Params_init(&taskParams);
     taskParams.stackSize = 6*1024;
     Task_create(Test_initTask, &taskParams, NULL);
+
+    boardCfg = BOARD_INIT_PINMUX_CONFIG |
+        BOARD_INIT_MODULE_CLOCK |
+        BOARD_INIT_UART_STDIO |
+        BOARD_INIT_UNLOCK_MMR;
+
+    Board_init(boardCfg);
 
     /* Start BIOS */
     BIOS_start();

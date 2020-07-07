@@ -67,6 +67,7 @@
 #include <ti/drv/esm/esm.h>
 #include <ti/osal/HwiP.h>
 #include <ti/osal/DebugP.h>
+#include <ti/board/board.h>
 
 /**************************************************************************
  *************************** Global Definitions ***************************
@@ -84,33 +85,6 @@ ESM_Handle              esmHandle;
 /* ========================================================================== */
 /*                          Function Definitions                              */
 /* ========================================================================== */
-
-/**
- *  @b Description
- *  @n
- *      The function is used to setup the event combiner.
- *
- *  @retval
- *      Not Applicable.
- */
-static void Test_setupEventCombiner (void)
-{
-    Hwi_Params  params;
-    uint32_t    i;
-
-    Hwi_Params_init(&params);
-    params.enableInt = TRUE;
-    for (i = 0; i < 4; i++)
-    {
-        params.arg      = i;
-        params.eventId  = i;
-        if (Hwi_create(4 + i, &EventCombiner_dispatch, &params, NULL) == NULL)
-        {
-            printf("failed to create Hwi interrupt %d\n",4 + i);
-        }
-    }
-    return;
-}
 
 /**
  *  @b Description
@@ -277,9 +251,6 @@ static void Test_initTask(UArg arg0, UArg arg1)
 {
     int32_t         retVal = 0;
 
-    /* Initialize & setup the Event combiner: */
-    Test_setupEventCombiner();
-
     while (1)
     {
         printf ("********************************************************\n");
@@ -289,6 +260,8 @@ static void Test_initTask(UArg arg0, UArg arg1)
         printf ("2. Watchdog interrupt CPU test              \n");
         printf ("*******************************************************\n");
         printf ("> Enter your selection: ");
+
+        scanf("%d", &testSelection);
 
         while (testSelection == 0);
 
@@ -309,11 +282,11 @@ static void Test_initTask(UArg arg0, UArg arg1)
 
     if (retVal < 0)
     {
-        printf("Debug: Watchdog testing failed\n");
+        printf("All Tests did NOT Pass\n");
     }
     else
     {
-        printf("Debug: Watchdog testing passed\n");
+        printf("All Tests PASSED\n");
     }
 
     /* Exit BIOS */
@@ -335,6 +308,8 @@ static void Test_initTask(UArg arg0, UArg arg1)
 int32_t main (void)
 {
     Task_Params     taskParams;
+    /* Call board init functions */
+    Board_initCfg boardCfg;
 
     /* Initialize the ESM: Dont clear errors as TI RTOS does it */
     esmHandle = ESM_init(0U);
@@ -348,6 +323,13 @@ int32_t main (void)
     Task_Params_init(&taskParams);
     taskParams.stackSize = 6*1024;
     Task_create(Test_initTask, &taskParams, NULL);
+
+    boardCfg = BOARD_INIT_PINMUX_CONFIG |
+        BOARD_INIT_MODULE_CLOCK |
+        BOARD_INIT_UART_STDIO |
+        BOARD_INIT_UNLOCK_MMR;
+
+    Board_init(boardCfg);
 
     /* Debug Message: */
     printf ("Debug: Launching BIOS\n");
