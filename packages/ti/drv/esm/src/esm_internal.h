@@ -35,8 +35,8 @@
 #define ESM_INTERNAL_H
 
 #include <ti/osal/HwiP.h>
-#include <ti/drv/esm/ESM.h>
-#include <ti/drv/esm/soc/ESM_soc.h>
+#include <ti/drv/esm/esm.h>
+#include <ti/drv/esm/soc/esm_soc.h>
 
 /* Flag to enable/disable ESM debug functionality */
 #define ESM_DEBUG                   1

@@ -61,7 +61,7 @@
 
 /* PDK Include Files: */
 #include <ti/drv/watchdog/watchdog.h>
-#include <ti/drv/esm/ESM.h>
+#include <ti/drv/esm/esm.h>
 #include <ti/csl/soc/tpr12/src/cslr_intr_esm_mss.h>
 
 /**************************************************************************

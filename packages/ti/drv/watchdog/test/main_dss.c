@@ -64,7 +64,7 @@
 
 /* PDK Include Files: */
 #include <ti/drv/watchdog/watchdog.h>
-#include <ti/drv/esm/ESM.h>
+#include <ti/drv/esm/esm.h>
 #include <ti/osal/HwiP.h>
 #include <ti/osal/DebugP.h>
 

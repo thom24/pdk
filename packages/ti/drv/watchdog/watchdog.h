@@ -143,7 +143,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#include <ti/drv/esm/ESM.h>
+#include <ti/drv/esm/esm.h>
 
 #ifdef __cplusplus
     extern "C" {

@@ -32,7 +32,7 @@
  */
 
 /**
- *  \file   ESM_soc.c
+ *  \file   esm_soc.c
  *
  *  \brief  TPR12 device specific hardware attributes.
  *
@@ -43,7 +43,7 @@
  **************************************************************************/
 
 #include <ti/csl/soc.h>
-#include <ti/drv/esm/soc/ESM_soc.h>
+#include <ti/drv/esm/soc/esm_soc.h>
 
 #include <ti/csl/soc/tpr12/src/cslr_mss_ctrl.h>
 #include <ti/csl/soc/tpr12/src/cslr_dss_ctrl.h>

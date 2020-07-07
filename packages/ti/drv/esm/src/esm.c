@@ -44,7 +44,7 @@
 
 #include <stdint.h>
 #include <string.h>
-#include <ti/drv/esm/ESM.h>
+#include <ti/drv/esm/esm.h>
 #include <ti/osal/osal.h>
 
 #include "esm_internal.h"

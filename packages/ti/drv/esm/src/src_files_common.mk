@@ -31,7 +31,7 @@
 #
 SOC_DEP_LIB_SOCS=tpr12
 
-PACKAGE_SRCS_COMMON = makefile ESM.h esm_component.mk .gitignore \
+PACKAGE_SRCS_COMMON = makefile esm.h esm_component.mk .gitignore \
                       src/src_files_common.mk \
                       build/makefile.mk
 
@@ -39,7 +39,7 @@ ifeq ($(SOC),$(filter $(SOC), tpr12))
     # TPR12 targets
     SRCDIR = . src
     INCDIR = . src
-    SRCS_COMMON += ESM.c
+    SRCS_COMMON += esm.c
     PACKAGE_SRCS_COMMON += src
-    PACKAGE_SRCS_COMMON += soc/ESM_v0.h
+    PACKAGE_SRCS_COMMON += soc/esm_v0.h
 endif

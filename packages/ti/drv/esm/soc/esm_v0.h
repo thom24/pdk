@@ -31,33 +31,45 @@
  *
  */
 
-/**
- *  @defgroup DRV_ESM_SOC_MODULE ESM SOC specific interface
- *  @ingroup DRV_ESM_MODULE
+/** ============================================================================
+ *  @file       esm_v0.h
  *
- *  @brief
- *  The section has SoC specific interface definitions for the ESM driver
-
- *  @{
+ *  @brief      ESM driver SoC specific interface.
+ *
+ *  ============================================================================
  */
 
-#ifndef ESM_SOC_H
-#define ESM_SOC_H
-
-#if defined(SOC_TPR12)
-#include <ti/drv/esm/soc/ESM_v0.h>
-#define ESM_HwAttrs    ESM_v0_HwAttrs
-extern int32_t ESM_socConfigErrorGating(uint8_t groupNumber, uint8_t errorNumber, uint8_t gating);
-#endif
+#ifndef ESM_V0_H
+#define ESM_V0_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+#include <stdint.h>
+#include <ti/csl/src/ip/esm/V0/esm.h>
+
+/**
+ *
+ * @brief
+ *  ESM Hardware Atrributes
+ *
+ * @details
+ *  The structure is used to store the hardware specific configuration which is
+ *  passed to the driver instance
+
+ *  ESM parameters are used with the ESM_init() call.
+ *
+ *  @ingroup DRV_ESM_SOC_MODULE
+ */
+typedef struct ESM_v0_HwAttrs_t {
+    CSL_esmRegs*            ptrESMRegs;         /*!< ESM Peripheral's base address for the control register space */
+    uint32_t                highPrioIntNum;     /*!< ESM Peripheral's interrupt vector for high priority line*/
+    uint32_t                lowPrioIntNum;      /*!< ESM Peripheral's interrupt vector for low priority line*/
+} ESM_v0_HwAttrs;
+
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* ESM_SOC_H */
-/* @} */
-
+#endif /* _ESM_V0_H */

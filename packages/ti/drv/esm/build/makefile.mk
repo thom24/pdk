@@ -39,7 +39,7 @@ ifeq ($(SOC),$(filter $(SOC), tpr12))
 SRCDIR += soc/$(SOC)
 INCDIR += soc
 # Common source files across all platforms and cores
-SRCS_COMMON += ESM_soc.c
+SRCS_COMMON += esm_soc.c
 endif
 
 # List all the external components/interfaces, whose interface header files
@@ -47,7 +47,7 @@ endif
 INCLUDE_EXTERNAL_INTERFACES = pdk
 
 ifeq ($(SOC),$(filter $(SOC), tpr12))
-PACKAGE_SRCS_COMMON += soc/$(SOC) soc/ESM_soc.h
+PACKAGE_SRCS_COMMON += soc/$(SOC) soc/esm_soc.h
 endif
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(ESM_CFLAGS)

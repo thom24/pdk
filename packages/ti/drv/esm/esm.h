@@ -37,7 +37,7 @@
 *
 *  The ESM header file should be included in an application as follows:
 *  @code
-*  #include <ti/drv/esm/ESM.h>
+*  #include <ti/drv/esm/esm.h>
 *  @endcode
 *
 *  ## Initializing the driver #
@@ -116,7 +116,7 @@
 *   module
 */
 
-/** \file       drv/esm/ESM.h
+/** \file       drv/esm/esm.h
 *
 *  \brief      ESM driver interface
 *
