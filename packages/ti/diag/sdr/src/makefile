@@ -68,12 +68,12 @@ SRCS_ASM_COMMON += sdr_utils.asm
 # Set specific source directories
 SRCDIR += src
 ifeq ($(SOC),$(filter $(SOC), am65xx j721e))
-SRCDIR += src/$(SOC)
+SRCDIR += src/r5
 endif
 
-ifeq ($(CORE),$(filter $(CORE), mcu1_0))
-SRCDIR += src/am65xx/r5
-endif
+#ifeq ($(CORE),$(filter $(CORE), mcu1_0))
+#SRCDIR += src/am65xx/r5
+#endif
 
 PACKAGE_SRCS_COMMON = .
 
