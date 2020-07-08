@@ -54,9 +54,6 @@ ifeq ($(DMA), enable)
     endif
 
 COMP_LIST_COMMON += spi_dma
-ifeq ($(SOC),$(filter $(SOC), tpr12))
-COMP_LIST_COMMON += edma
-endif
 CFLAGS_SPI_DMA    = -DSPI_DMA_ENABLE
 else
     ifeq ($(SMP), enable)

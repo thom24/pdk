@@ -59,7 +59,7 @@ APP_NAME = MIBSPI$(MIBSPI_OS_TESTPREFIX)_Loopback_Dma_TestApp
 # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
 LOCAL_APP_NAME =  MIBSPI$(MIBSPI_OS_TESTPREFIX)_Loopback_Dma_$(BOARD)_$(CORE)TestApp
 
-COMP_LIST_COMMON += mibspi_dma edma
+COMP_LIST_COMMON += mibspi_dma
 CFLAGS_SPI_DMA    = -DMIBSPI_DMA_ENABLE
 else
 

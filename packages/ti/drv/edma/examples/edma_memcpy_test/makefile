@@ -21,7 +21,6 @@ INCLUDE_EXTERNAL_INTERFACES = pdk
 
 # List all the components required by the application
 COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP) 
-COMP_LIST_COMMON += edma
 INCLUDE_EXTERNAL_INTERFACES += xdc bios pdk
 XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
 
