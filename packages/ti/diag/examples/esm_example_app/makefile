@@ -7,7 +7,6 @@ include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 
 APP_NAME = diag_ex_esm_example_app
 
-$(info DSJ - GOT HERE)
 BUILD_OS_TYPE=baremetal
 
 SRCDIR = . ../common
