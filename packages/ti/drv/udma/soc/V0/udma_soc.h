@@ -128,7 +128,8 @@ extern "C" {
  *
  *  @{
  */
-/* No configurable address select (asel) endpoints in AM65XX */
+/** \brief Physical address (normal) */
+#define UDMA_RINGACC_ASEL_ENDPOINT_PHYSADDR          (0U)
 /* @} */
 
 
