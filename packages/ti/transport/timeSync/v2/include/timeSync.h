@@ -345,6 +345,9 @@ typedef enum
     /** J721E SoC */
     TIMESYNC_SOC_J721E   = 7U,
 
+    /** J7200 SoC */
+    TIMESYNC_SOC_J7200   = 8U,
+
     /** Unknown SoC */
     TIMESYNC_SOC_UNKNOWN = 0xFFFE
 } TimeSync_SocType;
@@ -365,6 +368,9 @@ typedef enum
 
     /** CPSW 9G */
     TIMESYNC_IP_VER_CPSW_9G = 3U,
+
+    /** CPSW 5G */
+    TIMESYNC_IP_VER_CPSW_5G = 4U,
 
     /** Unknown IP */
     TIMESYNC_IP_VER_UNKNOWN = 0xFFFE

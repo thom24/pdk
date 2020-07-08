@@ -10,7 +10,7 @@ SRCDIR = src
 ifeq ($(SOC),$(filter $(SOC), am574x am572x am571x am335x am437x k2g))
   SRCDIR += src/ip/icss  
 endif
-ifeq ($(SOC),$(filter $(SOC), j721e))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200))
   SRCDIR += src/ip/cpsw  
 endif
 
@@ -24,7 +24,7 @@ INCLUDE_INTERNAL_INTERFACES = cpsw
 # Common source files and CFLAGS across all platforms and cores
 SRCS_COMMON  = timeSync_tools.c
 
-ifeq ($(SOC),$(filter $(SOC), j721e))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200))
 SRCS_COMMON += timeSync_cpsw.c
 else
 SRCS_COMMON += timeSync_icss.c

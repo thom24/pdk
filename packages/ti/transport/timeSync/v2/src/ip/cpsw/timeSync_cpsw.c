@@ -323,6 +323,10 @@ TimeSync_Handle TimeSync_open(TimeSync_Config *timeSyncConfig)
         {
             gTimeSyncCpswObj.cpswType = CPSW_9G;
         }
+        else if (timeSyncConfig->socConfig.ipVersion == TIMESYNC_IP_VER_CPSW_5G)
+        {
+            gTimeSyncCpswObj.cpswType = CPSW_5G;
+        }
         else
         {
             status = TIMESYNC_PARAM_INVALID;

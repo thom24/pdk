@@ -67,14 +67,15 @@
 ifeq ($(timeSync_component_make_include), )
 
 # under other list
-drvtimeSync_BOARDLIST       	= idkAM572x idkAM571x idkAM437x icev2AM335x j721e_evm
-drvtimeSync_SOCLIST         	= am572x am571x am574x am335x am437x j721e
+drvtimeSync_BOARDLIST       	= idkAM572x idkAM571x idkAM437x icev2AM335x j721e_evm j7200_evm
+drvtimeSync_SOCLIST         	= am572x am571x am574x am335x am437x j721e j7200
 drvtimeSync_am572x_CORELIST     = c66x a15_0 ipu1_0
 drvtimeSync_am574x_CORELIST     = c66x a15_0 ipu1_0
 drvtimeSync_am571x_CORELIST     = c66x a15_0 ipu1_0
 drvtimeSync_am335x_CORELIST     = a8host
 drvtimeSync_am437x_CORELIST     = a9host
 drvtimeSync_j721e_CORELIST  	= mcu2_0
+drvtimeSync_j7200_CORELIST  	= mcu2_0
 
 
 ############################
