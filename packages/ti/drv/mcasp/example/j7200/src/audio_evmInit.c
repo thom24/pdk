@@ -67,6 +67,7 @@
 #include <ti/board/board.h>
 #include <ti/board/src/j7200_evm/include/board_control.h>
 #include <ti/board/src/j7200_evm/include/board_utils.h>
+#include <ti/board/src/j7200_evm/include/board_pinmux.h>
 
 /* I2C Driver Header Files */
 #include <ti/drv/i2c/I2C.h>
@@ -86,22 +87,6 @@
 /* ========================================================================== */
 
 uint32_t vaOffset = 0;
-
-#if defined(AUDIO_DC_ANALOG_TEST)
-uint32_t gAudioDCAnlogRxSerIndx[RX_NUM_SERIALIZER] = {Mcasp_SerializerNum_4,
-                                                      Mcasp_SerializerNum_5,
-                                                      Mcasp_SerializerNum_6,
-                                                      Mcasp_SerializerNum_11,
-                                                      Mcasp_SerializerNum_12,
-                                                      Mcasp_SerializerNum_13};
-uint32_t gAudioDCAnlogTxSerIndx[TX_NUM_SERIALIZER] = {Mcasp_SerializerNum_0,
-                                                      Mcasp_SerializerNum_1,
-                                                      Mcasp_SerializerNum_2,
-                                                      Mcasp_SerializerNum_7,
-                                                      Mcasp_SerializerNum_8,
-                                                      Mcasp_SerializerNum_9};
-extern Mcasp_ChanParams mcasp_chanparam[2];
-#endif /* #if defined(AUDIO_DC_ANALOG_TEST) */
 
 #if !defined (DEVICE_LOOPBACK)
 void IoExpanderConfig(void);
@@ -128,6 +113,13 @@ void configureAudio(void)
 	Board_initCfg arg = BOARD_INIT_PINMUX_CONFIG | BOARD_INIT_UART_STDIO;
     Sciclient_ConfigPrms_t sciClientCfg;
 
+#if defined(j7200_evm)
+    Board_PinmuxConfig_t pinmuxCfg;
+    Board_pinmuxGetCfg(&pinmuxCfg);
+    pinmuxCfg.somMux = BOARD_PINMUX_SOM_AUDIO;
+    Board_pinmuxSetCfg(&pinmuxCfg);
+#endif
+
         stat = Board_init(arg);
         if(stat != BOARD_SOK)
     {
@@ -146,110 +138,27 @@ void configureAudio(void)
 	MCASP_log("\n Pinmux Config complete");
 }
 
-#if defined(AUDIO_DC_ANALOG_TEST)
-/* Configures the serializers for McASP audio daughter card Beta and above */
-void configureAudioDCSer(void)
-{
-    uint32_t index;
-
-    /* Configure the Rx serializers */
-    for (index = 0; index < RX_NUM_SERIALIZER; index++)
-    {
-        mcasp_chanparam[0].indexOfSersRequested[index] = gAudioDCAnlogRxSerIndx[index];
-    }
-
-    /* Configure the Tx serializers */
-    for (index = 0; index < TX_NUM_SERIALIZER; index++)
-    {
-        mcasp_chanparam[1].indexOfSersRequested[index] = gAudioDCAnlogTxSerIndx[index];
-    }
-
-    /* Select AUDIO_EXT_REFCLK0 input to use McASP0_AHCLKX signal, and set
-     * AUDIO_EXT_REFCLK0 as output */
-    Sciclient_pmSetModuleClkParent(TISCI_DEV_BOARD0,
-                                   TISCI_DEV_BOARD0_AUDIO_EXT_REFCLK0_IN,
-                                   TISCI_DEV_BOARD0_AUDIO_EXT_REFCLK0_IN_PARENT_MCASP_MAIN_0_MCASP_AHCLKX_POUT,
-                                   SCICLIENT_SERVICE_WAIT_FOREVER);
-}
-#endif /* #if defined(AUDIO_DC_ANALOG_TEST) */
-
 void McASP_Enable(void)
 {
-#if defined(AUDIO_DC_ANALOG_TEST)
     /* McASP0 AUXCLK selects MAIN_PLL4_HSDIV0_CLKOUT */
     Sciclient_pmSetModuleClkParent(TISCI_DEV_MCASP0,
                                    TISCI_DEV_MCASP0_AUX_CLK,
-                                   TISCI_DEV_MCASP0_AUX_CLK_PARENT_HSDIV3_16FFT_MAIN_4_HSDIVOUT0_CLK,
+                                   TISCI_DEV_MCASP0_AUX_CLK_PARENT_HSDIV2_16FFT_MAIN_4_HSDIVOUT0_CLK,
                                    SCICLIENT_SERVICE_WAIT_FOREVER);
 
-    if(Board_isAlpha(BOARD_ID_INFOTAINMENT))
-    {
-        /* Select AUDIO_EXT_REFCLK2 input to use McASP0_AHCLKX signal, and set
-         * AUDIO_EXT_REFCLK2 as output */
-        Sciclient_pmSetModuleClkParent(TISCI_DEV_BOARD0,
-                                       TISCI_DEV_BOARD0_AUDIO_EXT_REFCLK2_IN,
-                                       TISCI_DEV_BOARD0_AUDIO_EXT_REFCLK2_IN_PARENT_MCASP_MAIN_0_MCASP_AHCLKX_POUT,
-                                       SCICLIENT_SERVICE_WAIT_FOREVER);
-    }
-    else
-    {
-        /* Do the additional configurations for Beta board */
-        configureAudioDCSer();
-    }
+#if 0  /* J7200_TODO: Need to enable after sciclient macros are available */
+    /* Select AUDIO_EXT_REFCLK1 input to use McASP0_AHCLKX signal, and set
+     * AUDIO_EXT_REFCLK1 as output */
+    Sciclient_pmSetModuleClkParent(TISCI_DEV_BOARD0,
+                                   TISCI_DEV_BOARD0_AUDIO_EXT_REFCLK1_IN,
+                                   TISCI_DEV_BOARD0_AUDIO_EXT_REFCLK1_IN_PARENT_MCASP_MAIN_0_MCASP_AHCLKX_POUT,
+                                   SCICLIENT_SERVICE_WAIT_FOREVER);
 
-    /* Send AUDIO_REFCLK2 OBSCLK0 for debug purposes */
+    /* Send AUDIO_REFCLK1 OBSCLK0 for debug purposes */
     Sciclient_pmSetModuleClkParent(TISCI_DEV_BOARD0,
                                    TISCI_DEV_BOARD0_OBSCLK0_IN,
                                    TISCI_DEV_BOARD0_OBSCLK0_IN_PARENT_HSDIV3_16FFT_MAIN_4_HSDIVOUT0_CLK,
                                    SCICLIENT_SERVICE_WAIT_FOREVER);
-#elif defined(AUDIO_DC_DIGITAL_TEST)
-    /* McASP2 AUXCLK selects MAIN_PLL4_HSDIV0_CLKOUT */
-    Sciclient_pmSetModuleClkParent(TISCI_DEV_MCASP2,
-                                   TISCI_DEV_MCASP2_AUX_CLK,
-                                   TISCI_DEV_MCASP2_AUX_CLK_PARENT_HSDIV3_16FFT_MAIN_4_HSDIVOUT0_CLK,
-                                   SCICLIENT_SERVICE_WAIT_FOREVER);
-    /* McASP2 AHCLKX selects AUDIO_EXT_REFCLK1 */
-    Sciclient_pmSetModuleClkParent(TISCI_DEV_MCASP2,
-                                   TISCI_DEV_MCASP2_MCASP_AHCLKX_PIN,
-                                   TISCI_DEV_MCASP2_MCASP_AHCLKX_PIN_PARENT_MCASP_AHCLKO_MUX_OUT1 ,
-                                   SCICLIENT_SERVICE_WAIT_FOREVER);
-
-    /* McASP1 AUXCLK selects MAIN_PLL4_HSDIV0_CLKOUT */
-    Sciclient_pmSetModuleClkParent(TISCI_DEV_MCASP1,
-                                   TISCI_DEV_MCASP1_AUX_CLK,
-                                   TISCI_DEV_MCASP1_AUX_CLK_PARENT_HSDIV3_16FFT_MAIN_4_HSDIVOUT0_CLK,
-                                   SCICLIENT_SERVICE_WAIT_FOREVER);
-
-    /* Select McASP6_AHCLKR to use AUDIO_EXT_REFCLK1 */
-    Sciclient_pmSetModuleClkParent(TISCI_DEV_BOARD0,
-                                   TISCI_DEV_MCASP1_MCASP_AHCLKR_PIN,
-                                   TISCI_DEV_MCASP1_MCASP_AHCLKR_PIN_PARENT_MCASP_AHCLKO_MUX_OUT1,
-                                   SCICLIENT_SERVICE_WAIT_FOREVER);
-
-    /* Enable Frame sync for McASP6 which is used as REFCLK for McASP0 by default */
-    Board_pinmuxSetReg(BOARD_SOC_DOMAIN_MAIN, PIN_PRG1_PRU0_GPO6, 0x5000D);
-#else
-    /* McASP1 AUXCLK selects MAIN_PLL4_HSDIV0_CLKOUT */
-    Sciclient_pmSetModuleClkParent(TISCI_DEV_MCASP1,
-                                   TISCI_DEV_MCASP1_AUX_CLK,
-                                   TISCI_DEV_MCASP1_AUX_CLK_PARENT_HSDIV2_16FFT_MAIN_4_HSDIVOUT0_CLK,
-                                   SCICLIENT_SERVICE_WAIT_FOREVER);
-
-/* TODO: Need to check J7VCL board configuration */
-#if 0
-    /* Select AUDIO_EXT_REFCLK2 input to use McASP10_AHCLKX signal, and set
-     * AUDIO_EXT_REFCLK2 as output */
-    Sciclient_pmSetModuleClkParent(TISCI_DEV_BOARD0,
-                                   TISCI_DEV_BOARD0_AUDIO_EXT_REFCLK2_IN,
-                                   TISCI_DEV_BOARD0_AUDIO_EXT_REFCLK2_IN_PARENT_MCASP_MAIN_1_MCASP_AHCLKX_POUT,
-                                   SCICLIENT_SERVICE_WAIT_FOREVER);
-
-    /* Send AUDIO_REFCLK2 OBSCLK0 for debug purposes */
-    Sciclient_pmSetModuleClkParent(TISCI_DEV_BOARD0,
-                                   TISCI_DEV_BOARD0_OBSCLK0_IN,
-                                   TISCI_DEV_BOARD0_OBSCLK0_IN_PARENT_HSDIV3_16FFT_MAIN_4_HSDIVOUT0_CLK,
-                                   SCICLIENT_SERVICE_WAIT_FOREVER);
-#endif
 #endif
 }
 
@@ -276,36 +185,28 @@ void IoExpanderConfig(void)
     ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_LOW;
     Board_control(BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT, (void *)&ioExpCfg);
 
-#if defined(AUDIO_DC_ANALOG_TEST)
-    /* Bring the codec out of reset */
-    ioExpCfg.slaveAddr   = BOARD_I2C_AUDIO_IOEXP_DEVICE_ADDR;
-    ioExpCfg.i2cInst     = BOARD_I2C_AUDIO_IOEXP_DEVICE_INSTANCE;
+    /* Configure SoM IO mux */
+    ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_SOM_DEVICE1_ADDR;
+    ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_SOM_DEVICE1_INSTANCE;
     ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
     ioExpCfg.enableIntr  = false;
-    ioExpCfg.ioExpType   = TWO_PORT_IOEXP;
+    ioExpCfg.ioExpType   = ONE_PORT_IOEXP;
     ioExpCfg.portNum     = PORTNUM_0;
-    ioExpCfg.pinNum      = PIN_NUM_0;
-    ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_HIGH;
-
-    Board_control(BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT, (void *)&ioExpCfg);
-#elif defined(AUDIO_DC_DIGITAL_TEST)
-    /* Bring the DIR out of reset */
-    ioExpCfg.slaveAddr   = BOARD_I2C_AUDIO_IOEXP_DEVICE_ADDR;
-    ioExpCfg.i2cInst     = BOARD_I2C_AUDIO_IOEXP_DEVICE_INSTANCE;
-    ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
-    ioExpCfg.enableIntr  = false;
-    ioExpCfg.ioExpType   = TWO_PORT_IOEXP;
-    ioExpCfg.portNum     = PORTNUM_1;
-    ioExpCfg.pinNum      = PIN_NUM_0;
-    ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_HIGH;
-
-    Board_control(BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT, (void *)&ioExpCfg);
-
-    ioExpCfg.pinNum      = PIN_NUM_7;
+    ioExpCfg.pinNum      = PIN_NUM_1;
     ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_LOW;
 
     Board_control(BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT, (void *)&ioExpCfg);
-#else
+
+    ioExpCfg.pinNum      = PIN_NUM_3;
+    ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_HIGH;
+
+    Board_control(BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT, (void *)&ioExpCfg);
+
+    ioExpCfg.pinNum      = PIN_NUM_5;
+    ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_HIGH;
+
+    Board_control(BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT, (void *)&ioExpCfg);
+
     /* Bring the codec out of reset */
     ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_DEVICE3_ADDR;
     ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_DEVICE3_INSTANCE;
@@ -317,7 +218,6 @@ void IoExpanderConfig(void)
     ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_HIGH;
 
     Board_control(BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT, (void *)&ioExpCfg);
-#endif
 }
 
 /*

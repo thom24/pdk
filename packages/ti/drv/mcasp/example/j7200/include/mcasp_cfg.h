@@ -67,20 +67,9 @@ extern "C"
 {
 #endif
 
-#if defined(AUDIO_DC_ANALOG_TEST)
-#define MCASP_NUM 0
-#define SOC_I2C_1_REGS CSL_DSP_I2C1_REGS
-#define I2C_MCASP_INSTANCE 3
-#elif defined(AUDIO_DC_DIGITAL_TEST)
-#define MCASP_NUM 1
-#define MCASP_DIT_NUM 2
-#define SOC_I2C_1_REGS CSL_DSP_I2C1_REGS
-#define I2C_MCASP_INSTANCE 3
-#else
-#define MCASP_NUM 1
-#define SOC_I2C_1_REGS CSL_DSP_I2C1_REGS
-#define I2C_MCASP_INSTANCE 0
-#endif
+#define MCASP_NUM           (0U)
+#define SOC_I2C_1_REGS      (CSL_DSP_I2C1_REGS)
+#define I2C_MCASP_INSTANCE  (1U)
 
 
 extern void GblErr(int arg);
@@ -91,16 +80,8 @@ extern ICodec_ChannelConfig AIC31_config;
 
 /** Number of serializers configured for record */
 
-#if defined(AUDIO_DC_ANALOG_TEST)
-#define RX_NUM_SERIALIZER       (6u)
-#define TX_NUM_SERIALIZER       (6u)
-#elif defined(AUDIO_DC_DIGITAL_TEST)
-#define RX_NUM_SERIALIZER       (1u)
-#define TX_NUM_SERIALIZER       (1u)
-#else
 #define RX_NUM_SERIALIZER       (3u)
 #define TX_NUM_SERIALIZER       (3u)
-#endif
 
 #ifdef __cplusplus
 }

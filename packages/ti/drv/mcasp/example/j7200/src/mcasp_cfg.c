@@ -83,69 +83,6 @@ extern HeapMem_Handle myHeap;
 /*                          McASP Init config                                 */
 /* ========================================================================== */
 
-#if defined(AUDIO_DC_DIGITAL_TEST)
-Mcasp_HwSetupData mcasp0RcvSetup = {
-    /* .rmask    = */
-    0xFFFFFFFF,                   /* All the data bits are to be used     */
-    /* .rfmt     = */ 0x000180F2, /* 0/1 bit delay from framsync
-                                   * MSB first
-                                   * No extra bit padding
-                                   * Padding bit (ignore)
-                                   * slot Size is 32
-                                   * Reads from DMA port
-                                   * NO rotation
-                                   */
-
-
-    /* .afsrctl  = */ 0x00000111, /* I2S mode,
-                                   * Frame sync is one word
-                                   * Internally generated frame sync
-                                   * Falling edge is start of frame
-                                   */
-
-
-
-
-    /* .rtdm     = */ 0x00000003, /* 2 slots are active (I2S)           */
-    /* .rintctl  = */ 0x00000003, /* sync error and overrun error       */
-    /* .rstat    = */ 0x000001FF, /* reset any existing status bits     */
-    /* .revtctl  = */ 0x00000000, /* DMA request is enabled or disabled */
-    {
-        /* .aclkrctl  = */ 0x00000080, /* Div (8), Internal Source, rising edge */
-        /* .ahclkrctl = */ 0x00000400, /* Div (20), Internal AUX_CLK Source     */
-        /* .rclkchk   = */ 0x00000000
-    }
-};
-
-Mcasp_HwSetupData mcasp0XmtSetup = {
-    /* .xmask    = */
-    0xFFFFFFFF,                   /* All the data bits are to be used     */
-    /* .xfmt     = */ 0x000100F0, /* 0/1 bit delay from framsync
-                                   * MSB first
-                                   * No extra bit padding
-                                   * Padding bit (ignore)
-                                   * slot Size is 32
-                                   * Reads from DMA port
-                                   * 0-bit rotation
-                                   */
-
-    /* .afsxctl  = */ 0x0000C002, /* I2S mode,
-                                   * Frame sync is one word
-                                   * internally generated frame sync
-                                   * Falling edge is start of frame
-                                   */
-
-    /* .xtdm     = */ 0xFFFFFFFF, /* 2 slots are active (I2S) */
-    /* .xintctl  = */ 0x00000003, /* sync error,overrun error,clK error   */
-    /* .xstat    = */ 0x000001FF, /* reset any existing status bits       */
-    /* .xevtctl  = */ 0x00000000, /* DMA request is enabled or disabled   */
-    {
-        /* .aclkxctl  = */ 0x000000E3, /* Div (8), Internal Source, SYNC, Falling edge */
-        /* .ahclkxctl = */ 0x00004000, /* Div (20), Internal AUX_CLK Source */
-        /* .xclkchk   = */ 0x00000000
-    },
-};
-#else
 Mcasp_HwSetupData mcasp0RcvSetup = {
     /* .rmask    = */
     0xFFFFFFFF,                   /* All the data bits are to be used     */
@@ -207,7 +144,6 @@ Mcasp_HwSetupData mcasp0XmtSetup = {
         /* .xclkchk   = */ 0x00000000
     },
 };
-#endif
 
 /* McAsp channel parameters                                  */
 Mcasp_ChanParams mcasp_chanparam[2] = {
@@ -215,10 +151,6 @@ Mcasp_ChanParams mcasp_chanparam[2] = {
         RX_NUM_SERIALIZER,                    /* number of serialisers      */
 #if defined (DEVICE_LOOPBACK)
         {Mcasp_SerializerNum_1, Mcasp_SerializerNum_3, Mcasp_SerializerNum_5}, /* serialiser index */
-#elif defined(AUDIO_DC_ANALOG_TEST)
-        {Mcasp_SerializerNum_0, Mcasp_SerializerNum_1, Mcasp_SerializerNum_2, Mcasp_SerializerNum_7, Mcasp_SerializerNum_8, Mcasp_SerializerNum_9}, /* serialiser index           */
-#elif defined(AUDIO_DC_DIGITAL_TEST)
-        {Mcasp_SerializerNum_0}, /* serialiser index           */
 #else
         {Mcasp_SerializerNum_4, Mcasp_SerializerNum_5, Mcasp_SerializerNum_6}, /* serialiser index */
 #endif
@@ -230,13 +162,8 @@ Mcasp_ChanParams mcasp_chanparam[2] = {
         0,
         NULL,
         (Mcasp_GblCallback)&GblErrRcv,
-#if defined(AUDIO_DC_DIGITAL_TEST)
-        1, /* number of TDM channels      */
-        Mcasp_BufferFormat_1SER_MULTISLOT_INTERLEAVED,
-#else
         2, /* number of TDM channels      */
         Mcasp_BufferFormat_MULTISER_MULTISLOT_SEMI_INTERLEAVED_1,
-#endif
         TRUE,
         RX_FIFO_EVENT_DMA_RATIO,
         TRUE,
@@ -246,10 +173,6 @@ Mcasp_ChanParams mcasp_chanparam[2] = {
         TX_NUM_SERIALIZER,                   /* number of serialisers       */
 #if defined (DEVICE_LOOPBACK)
         {Mcasp_SerializerNum_0, Mcasp_SerializerNum_2, Mcasp_SerializerNum_4}, /* serialiser index */
-#elif defined(AUDIO_DC_ANALOG_TEST)
-	    {Mcasp_SerializerNum_3, Mcasp_SerializerNum_4, Mcasp_SerializerNum_5, Mcasp_SerializerNum_10, Mcasp_SerializerNum_11, Mcasp_SerializerNum_12},
-#elif defined(AUDIO_DC_DIGITAL_TEST)
-        {Mcasp_SerializerNum_0}, /* serialiser index           */
 #else
         {Mcasp_SerializerNum_0, Mcasp_SerializerNum_1, Mcasp_SerializerNum_2}, /* serialiser index */
 #endif
@@ -261,13 +184,8 @@ Mcasp_ChanParams mcasp_chanparam[2] = {
         0,
         NULL,
         (Mcasp_GblCallback)&GblErrXmt,
-#if defined(AUDIO_DC_DIGITAL_TEST)
-        1, /* number of TDM channels      */
-        Mcasp_BufferFormat_1SER_MULTISLOT_INTERLEAVED,
-#else
         2, /* number of TDM channels      */
         Mcasp_BufferFormat_MULTISER_MULTISLOT_SEMI_INTERLEAVED_1,
-#endif
         TRUE,
         TX_FIFO_EVENT_DMA_RATIO,
         TRUE,
