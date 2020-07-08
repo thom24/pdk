@@ -43,6 +43,7 @@
 #include "board_pinmux.h"
 
 static Board_PinmuxConfig_t gBoardPinmuxCfg = {BOARD_PINMUX_CUSTOM,
+                                               BOARD_PINMUX_SOM_CAN,
                                                BOARD_PINMUX_GESI_CPSW,
                                                BOARD_PINMUX_ENET_QSGMII,
                                                BOARD_PINMUX_FSS_OSPI};
@@ -425,10 +426,29 @@ Board_STATUS Board_pinmuxConfig (void)
     Board_pinmuxUpdate(gJ7200_WkupPinmuxData,
                        BOARD_SOC_DOMAIN_WKUP);
 
+    if(gBoardPinmuxCfg.somMux == BOARD_PINMUX_SOM_AUDIO)
+    {
+        Board_pinmuxUpdate(gJ7200_MainPinmuxDataAudio,
+                           BOARD_SOC_DOMAIN_MAIN);
+        Board_pinmuxUpdate(gJ7200_WkupPinmuxDataAudio,
+                           BOARD_SOC_DOMAIN_WKUP);
+    }
+    else if(gBoardPinmuxCfg.somMux == BOARD_PINMUX_SOM_PROFIBUS)
+    {
+        Board_pinmuxUpdate(gJ7200_MainPinmuxDataProfibus,
+                           BOARD_SOC_DOMAIN_MAIN);
+        Board_pinmuxUpdate(gJ7200_WkupPinmuxDataProfibus,
+                           BOARD_SOC_DOMAIN_WKUP);
+    }
+    else
+    {
+        /* Pinmux for 'BOARD_PINMUX_SOM_CAN' is active by default */
+    }
+
     if(gBoardPinmuxCfg.fssCfg == BOARD_PINMUX_FSS_HPB)
     {
-//        Board_pinmuxUpdate(gJ7200_WkupPinmuxDataHpb,  //J7200_TODO: Need to enable
-//                           BOARD_SOC_DOMAIN_WKUP);
+        Board_pinmuxUpdate(gJ7200_WkupPinmuxDataHpb,
+                           BOARD_SOC_DOMAIN_WKUP);
     }
 
     return status;

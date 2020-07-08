@@ -872,9 +872,7 @@ static void BoardDiag_mcanEnable(void)
 #if defined(j7200_evm)
         /* Enable GESI CAN STB pin to normal mode  */
         BoardDiag_McanMuxEnable(PIN_NUM_7, GPIO_SIGNAL_LEVEL_LOW);
-        BoardDiag_McanMuxEnable(PIN_NUM_1, GPIO_SIGNAL_LEVEL_HIGH);
-        BoardDiag_McanMuxEnable(PIN_NUM_2, GPIO_SIGNAL_LEVEL_HIGH);
-        BoardDiag_McanMuxEnable(PIN_NUM_3, GPIO_SIGNAL_LEVEL_HIGH);
+        Board_control(BOARD_CTRL_CMD_SET_SOM_CAN_MUX, NULL);
 #else
         /* GPIO0_60 */
         BoardDiag_mcanGpioConfig(CSL_GPIO0_BASE, 0);

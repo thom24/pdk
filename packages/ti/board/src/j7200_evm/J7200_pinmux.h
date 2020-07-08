@@ -141,6 +141,7 @@ enum pinWkupOffsets
 	PIN_MCU_ADC0_AIN6		 = 0x14C,
 	PIN_MCU_ADC0_AIN7		 = 0x150,
 	PIN_MCU_OSPI0_CLK		 = 0x0,
+    PIN_MCU_OSPI0_LBCLKO	 = 0x4,
 	PIN_MCU_OSPI0_CSN0		 = 0x2C,
 	PIN_MCU_OSPI0_D0		 = 0xC,
 	PIN_MCU_OSPI0_D1		 = 0x10,
@@ -216,6 +217,11 @@ extern pinmuxBoardCfg_t gJ7200_MainPinmuxData[];
 extern pinmuxBoardCfg_t gJ7200_WkupPinmuxData[];
 extern pinmuxBoardCfg_t gJ7200_MainPinmuxDataCpsw[];
 extern pinmuxBoardCfg_t gJ7200_WkupPinmuxDataCpsw[];
+extern pinmuxBoardCfg_t gJ7200_WkupPinmuxDataHpb[];
+extern pinmuxBoardCfg_t gJ7200_MainPinmuxDataAudio[];
+extern pinmuxBoardCfg_t gJ7200_WkupPinmuxDataAudio[];
+extern pinmuxBoardCfg_t gJ7200_MainPinmuxDataProfibus[];
+extern pinmuxBoardCfg_t gJ7200_WkupPinmuxDataProfibus[];
 
 #ifdef __cplusplus
 }

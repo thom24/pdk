@@ -116,6 +116,137 @@ static Board_STATUS Board_setCpsw5GMdioMux(void)
 }
 
 /**
+ * \brief   Configures IO mux on SoM board
+ *
+ * \return  Board_SOK in case of success or appropriate error code.
+ *
+ */
+static Board_STATUS Board_setSomMux(uint8_t mask,
+                                    uint8_t value)
+{
+    Board_I2cInitCfg_t i2cCfg;
+    Board_STATUS status;
+    uint8_t ioExpData;
+
+    i2cCfg.i2cInst    = BOARD_I2C_IOEXP_SOM_DEVICE1_INSTANCE;
+    i2cCfg.socDomain  = BOARD_SOC_DOMAIN_MAIN;
+    i2cCfg.enableIntr = false;
+    Board_setI2cInitConfig(&i2cCfg);
+
+    status = Board_i2cIoExpInit();
+    if(status == BOARD_SOK)
+    {
+        /* Setting the port direction as output */
+        status = Board_i2cIoExpSetPortDirection(BOARD_I2C_IOEXP_SOM_DEVICE1_ADDR,
+                                                ONE_PORT_IOEXP,
+                                                PORTNUM_0,
+                                                0);
+        BOARD_delay(1000);
+
+        /* Reading the IO expander current port settings */
+        status |= Board_i2cIoExpReadOutputPort(BOARD_I2C_IOEXP_SOM_DEVICE1_ADDR,
+                                               ONE_PORT_IOEXP,
+                                               PORTNUM_0,
+                                               &ioExpData);
+        BOARD_delay(1000);
+
+        ioExpData = (ioExpData & ~(mask)) | value;
+
+        /* Modify the IO expander port settings to enable audio Mux */
+        status |= Board_i2cIoExpWritePort(BOARD_I2C_IOEXP_SOM_DEVICE1_ADDR,
+                                          ONE_PORT_IOEXP,
+                                          PORTNUM_0,
+                                          ioExpData);
+
+        BOARD_delay(1000);        
+
+        Board_i2cIoExpDeInit();
+    }
+
+    return status;
+}
+
+/**
+ * \brief   Enables Audio mux on SoM board
+ *
+ * \return  Board_SOK in case of success or appropriate error code.
+ *
+ */
+static Board_STATUS Board_setSomAudioMux(void)
+{
+    Board_STATUS status;
+
+    status = Board_setSomMux(BOARD_CTRL_CMD_SOM_AUDIO_MUX_MASK,
+                             BOARD_CTRL_CMD_SOM_AUDIO_MUX_ENABLE);
+
+    return status;
+}
+
+/**
+ * \brief   Enables CAN and UART mux on SoM board
+ *
+ * \return  Board_SOK in case of success or appropriate error code.
+ *
+ */
+static Board_STATUS Board_setSomCanMux(void)
+{
+    Board_STATUS status;
+
+    status = Board_setSomMux(BOARD_CTRL_CMD_SOM_CAN_MUX_MASK,
+                             BOARD_CTRL_CMD_SOM_CAN_MUX_ENABLE);
+
+    return status;
+}
+
+/**
+ * \brief   Enables Profibus and SPI mux on SoM board
+ *
+ * \return  Board_SOK in case of success or appropriate error code.
+ *
+ */
+static Board_STATUS Board_setSomProfibusMux(void)
+{
+    Board_STATUS status;
+
+    status = Board_setSomMux(BOARD_CTRL_CMD_SOM_PROFIBUS_MUX_MASK,
+                             BOARD_CTRL_CMD_SOM_PROFIBUS_MUX_ENABLE);
+
+    return status;
+}
+
+/**
+ * \brief   Enables LIN mux on SoM board
+ *
+ * \return  Board_SOK in case of success or appropriate error code.
+ *
+ */
+static Board_STATUS Board_setSomLinMux(void)
+{
+    Board_STATUS status;
+
+    status = Board_setSomMux(BOARD_CTRL_CMD_SOM_LIN_MUX_MASK,
+                             BOARD_CTRL_CMD_SOM_LIN_MUX_ENABLE);
+
+    return status;
+}
+
+/**
+ * \brief   Enables UART mux on SoM board
+ *
+ * \return  Board_SOK in case of success or appropriate error code.
+ *
+ */
+static Board_STATUS Board_setSomUartMux(void)
+{
+    Board_STATUS status;
+
+    status = Board_setSomMux(BOARD_CTRL_CMD_SOM_UART_MUX_MASK,
+                             BOARD_CTRL_CMD_SOM_UART_MUX_ENABLE);
+
+    return status;
+}
+
+/**
  * \brief Board control function
  *
  * \param   cmd  [IN]  Board control command
@@ -137,6 +268,26 @@ Board_STATUS Board_control(uint32_t cmd, void *arg)
 
         case BOARD_CTRL_CMD_SET_GESI_CPSW_MDIO_MUX:
             status = Board_setCpsw5GMdioMux();
+            break;
+
+        case BOARD_CTRL_CMD_SET_SOM_CAN_MUX:
+            status = Board_setSomCanMux();
+            break;
+
+        case BOARD_CTRL_CMD_SET_SOM_AUDIO_MUX:
+            status = Board_setSomAudioMux();
+            break;
+
+        case BOARD_CTRL_CMD_SET_SOM_PROFIBUS_MUX:
+            status = Board_setSomProfibusMux();
+            break;
+
+        case BOARD_CTRL_CMD_SET_SOM_LIN_MUX:
+            status = Board_setSomLinMux();
+            break;
+
+        case BOARD_CTRL_CMD_SET_SOM_UART_MUX:
+            status = Board_setSomUartMux();
             break;
 
         default:

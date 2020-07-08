@@ -79,11 +79,14 @@ extern "C" {
 #define BOARD_WKUP_MMR_P7_CLAIM_OFFSET  (0x1C000U)
 #define BOARD_MMR_CLAIM_ADDR_PER_REG    (128U)
 
-#define BOARD_PINMUX_CUSTOM             (0)  // Default
+#define BOARD_PINMUX_CUSTOM             (0)  /* Default */
 #define BOARD_PINMUX_AUTO               (1U)
+#define BOARD_PINMUX_SOM_CAN            (0U)  /* Default */
+#define BOARD_PINMUX_SOM_AUDIO          (1U)  /* Default */
+#define BOARD_PINMUX_SOM_PROFIBUS       (2U)  /* Default */
 #define BOARD_PINMUX_GESI_CPSW          (0U)
-#define BOARD_PINMUX_ENET_QSGMII        (0)  // Default
-#define BOARD_PINMUX_FSS_OSPI           (0)  // Default
+#define BOARD_PINMUX_ENET_QSGMII        (0)  /* Default */
+#define BOARD_PINMUX_FSS_OSPI           (0)  /* Default */
 #define BOARD_PINMUX_FSS_HPB            (1)
 
 /* Structure to set the board pinmux configuration */
@@ -99,6 +102,14 @@ typedef struct Board_PinmuxConfig_s
      *  pinmux config will be ignored.
      */
     uint8_t autoCfg;
+
+    /**
+     * Pinmux config control for Audio/MCAN/Profibus mux on SoM board
+     *  BOARD_PINMUX_SOM_CAN(0) - Enables MCAN, LIN and RGMII GPIO IOs
+     *  BOARD_PINMUX_SOM_AUDIO(1) - Enables Audio IOs
+     *  BOARD_PINMUX_SOM_PROFIBUS(2) - Enables Profibus IOs
+     */
+    uint8_t somMux;
 
     /**
      * Pinmux config control for GESI/Infotainment expansion connector

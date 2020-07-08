@@ -44,7 +44,7 @@
 #include <ti/drv/gpio/GPIO.h>
 #include <ti/drv/gpio/soc/GPIO_soc.h>
 
-#define PIN1                (0x0036U) /* MCU_CAN0_STB_PIN WKUP_GPIO0_58 */
+#define PIN1                (0x003AU) /* MCU_CAN0_STB_PIN WKUP_GPIO0_58 */
 #define PIN2                (0x0002U) /* MCU_CAN1_STB_PIN WKUP_GPIO0_2  */
 #define PIN3                (0x0000U) /* MCU_CAN0_EN_PIN WKUP_GPIO0_0  */
 

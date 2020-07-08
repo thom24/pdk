@@ -228,7 +228,6 @@ void BoardDiag_rs485UartMuxEnable(i2cIoExpPinNumber_t pinNum,
 }
 #endif
 
-#if defined(SOC_J721E)
 /**
  * \brief  UART mux selection function
  *
@@ -252,12 +251,11 @@ static void boardDiag_pruUartMux(uint8_t portNum)
 
     BoardDiag_rs485UartMuxEnable(PIN_NUM_2, GPIO_SIGNAL_LEVEL_HIGH);
 
-#else
+#elif defined(j721e_evm)
     GPIO_init();
     Board_pinmuxSetReg(BOARD_SOC_DOMAIN_MAIN,
                            PIN_PRG0_PRU0_GPO5,
                            BOARD_GPIO_PIN_MUX_CFG);
-#endif
     if(portNum == 0)
     {
         GPIO_write(2, GPIO_SIGNAL_LEVEL_LOW);
@@ -268,8 +266,8 @@ static void boardDiag_pruUartMux(uint8_t portNum)
         /* MAIN_UART4 path enable from the GESI board */
         Board_control(BOARD_CTRL_CMD_SET_RS485_UART4_EN_MUX, NULL);
     }
-}
 #endif
+}
 
 /**
  * \brief  main function
@@ -362,7 +360,10 @@ int BoardDiag_pruIcssUartTest(uint8_t portNum)
 #else
     /* Configure PROFI UART RTS line as GPIO*/
     BoardDiag_rs485GpioConfig(CSL_GPIO0_BASE, 0);
-#endif  /* #if defined(j721e_evm)s */
+    Board_pinmuxSetReg(BOARD_SOC_DOMAIN_MAIN,
+                       PIN_MCAN8_RX,
+                       BOARD_GPIO_PIN_MUX_CFG);
+#endif  /* #if defined(j721e_evm) */
 #endif  /* #if defined(am65xx_idk) */
 
 
@@ -456,7 +457,7 @@ int main(void)
     }
     for(portNum = 0; portNum < MAX_UART_PORTS_RS485 ; portNum++)
     {
-#if defined(SOC_J721E)
+#if defined(SOC_J721E) || defined(SOC_J7200)
     boardDiag_pruUartMux(portNum);
 #endif
     ret = BoardDiag_pruIcssUartTest(portNum);

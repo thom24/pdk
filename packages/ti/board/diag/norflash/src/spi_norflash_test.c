@@ -478,12 +478,19 @@ int main(void)
     Board_initCfg boardCfg;
     int8_t ret = 0;
 
+#if defined(j7200_evm)
+    Board_PinmuxConfig_t pinmuxCfg;
+    Board_pinmuxGetCfg(&pinmuxCfg);
+    pinmuxCfg.somMux = BOARD_PINMUX_SOM_PROFIBUS; /* Enables SPI pinmux */
+    Board_pinmuxSetCfg(&pinmuxCfg);
+#endif
+
 #ifdef PDK_RAW_BOOT
     boardCfg = BOARD_INIT_MODULE_CLOCK |
                BOARD_INIT_PINMUX_CONFIG |
                BOARD_INIT_UART_STDIO;
 #else
-    boardCfg = BOARD_INIT_UART_STDIO;
+    boardCfg = BOARD_INIT_UART_STDIO | BOARD_INIT_PINMUX_CONFIG;
 #endif
 
     status = Board_init(boardCfg);
@@ -491,7 +498,7 @@ int main(void)
     {
         return -1;
     }
-    //J7200_TODO: Pinmux for spi5 need to add, after board pinmux fix to add like hpb
+
     ret = BoardDiag_SpiNorflashTest();
     if(ret != 0)
     {
