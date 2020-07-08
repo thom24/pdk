@@ -485,6 +485,10 @@ void SBL_SetupCoreMem(uint32_t core_id)
             SBL_log(SBL_LOG_MAX, "Enabling MCU TCMs after reset for core %d\n", core_id);
             proc_set_config_req.config_flags_1_set |= (TISCI_MSG_VAL_PROC_BOOT_CFG_FLAG_R5_BTCM_EN |
                                                        TISCI_MSG_VAL_PROC_BOOT_CFG_FLAG_R5_TCM_RSTBASE);
+#if defined(SOC_J7200)
+            SBL_log(SBL_LOG_MAX, "Disabling HW-based memory init of MCU TCMs for core %d\n", core_id);
+            proc_set_config_req.config_flags_1_set |= TISCI_MSG_VAL_PROC_BOOT_CFG_FLAG_R5_MEM_INIT_DIS;
+#endif
 
             SBL_log(SBL_LOG_MAX, "Sciclient_procBootSetProcessorCfg enabling TCMs...\n");
             status =  Sciclient_procBootSetProcessorCfg(&proc_set_config_req,  SCICLIENT_SERVICE_WAIT_FOREVER);
@@ -532,7 +536,7 @@ void SBL_SetupCoreMem(uint32_t core_id)
                 /* Initialize the TCMs - TCMs of MCU running SBL are already initialized by ROM & SBL */
                 SBL_log(SBL_LOG_MAX, "Clearing core_id %d  ATCM @ 0x%x ", core_id, SblAtcmAddr[core_id - MCU1_CPU0_ID]);
                 memset(((void *)(SblAtcmAddr[core_id - MCU1_CPU0_ID])), 0xFF, 0x8000);
-#endif                
+#endif
 
 #ifndef VLAB_SIM
                 SBL_log(SBL_LOG_MAX, "& BTCM @0x%x\n", SblBtcmAddr[core_id - MCU1_CPU0_ID]);
