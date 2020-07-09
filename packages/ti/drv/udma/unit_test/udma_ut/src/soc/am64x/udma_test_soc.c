@@ -42,6 +42,7 @@
 /* ========================================================================== */
 
 #include <udma_test.h>
+#include <ti/drv/udma/src/udma_priv.h>
 
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
@@ -328,3 +329,28 @@ GT_1trace(taskObj->traceMask, GT_INFO1,
 
     return (retVal);
 }
+
+uint32_t udmaTestGetMappedFlowChNum(Udma_DrvHandle drvHandle, uint32_t mappedFlowGrp, uint32_t mappedFlowNum)
+{
+    int32_t     retVal = UDMA_SOK;
+    Udma_MappedChRingAttributes  chAttr;
+    uint32_t    mappedChNum = 0U;
+
+    for(mappedChNum = CSL_DMSS_PKTDMA_RX_CHANS_CPSW_START; mappedChNum < CSL_DMSS_PKTDMA_NUM_RX_CHANS; mappedChNum++)
+    {
+        retVal = Udma_getMappedChRingAttributes(drvHandle, mappedFlowGrp, mappedChNum, &chAttr);
+        
+        if(UDMA_SOK == retVal)
+        {
+            if((chAttr.defaultRing == mappedFlowNum) ||
+               ((mappedFlowNum >= chAttr.startFreeRing) &&
+                (mappedFlowNum < chAttr.startFreeRing + chAttr.numFreeRing)))
+            {
+                break;
+            }
+        }
+    }
+
+    return mappedChNum;
+}
+

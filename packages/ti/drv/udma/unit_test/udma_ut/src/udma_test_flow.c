@@ -60,6 +60,7 @@
 /* ========================================================================== */
 
 static int32_t udmaTestFlowAttachTestLoop(UdmaTestTaskObj *taskObj);
+static int32_t udmaTestFlowAttachMappedTestLoop(UdmaTestTaskObj *taskObj);
 static int32_t udmaTestFlowAllocTestLoop(UdmaTestTaskObj *taskObj);
 
 /* ========================================================================== */
@@ -88,6 +89,34 @@ int32_t udmaTestFlowAttachTc(UdmaTestTaskObj *taskObj)
     {
         /* Perform flow attach test */
         retVal = udmaTestFlowAttachTestLoop(taskObj);
+        if(UDMA_SOK != retVal)
+        {
+            break;
+        }
+
+        loopCnt++;
+    }
+
+    retVal += gUdmaTestFlowResult;
+
+    return (retVal);
+}
+
+int32_t udmaTestFlowAttachMappedTc(UdmaTestTaskObj *taskObj)
+{
+    int32_t     retVal = UDMA_SOK;
+    uint32_t    loopCnt = 0U;
+
+    GT_1trace(taskObj->traceMask, GT_INFO1,
+              " |TEST INFO|:: Task:%d: Mapped Flow Attach/Detach Testcase ::\r\n", taskObj->taskId);
+    GT_2trace(taskObj->traceMask, GT_INFO1,
+              " |TEST INFO|:: Task:%d: Loop count           : %d ::\r\n", taskObj->taskId, taskObj->loopCnt);
+
+    gUdmaTestFlowResult = UDMA_SOK;
+    while(loopCnt < taskObj->loopCnt)
+    {
+        /* Perform mapped flow attach test */
+        retVal = udmaTestFlowAttachMappedTestLoop(taskObj);
         if(UDMA_SOK != retVal)
         {
             break;
@@ -282,6 +311,129 @@ static int32_t udmaTestFlowAttachTestLoop(UdmaTestTaskObj *taskObj)
         }
     }
 
+    return (retVal);
+}
+
+static int32_t udmaTestFlowAttachMappedTestLoop(UdmaTestTaskObj *taskObj)
+{
+    int32_t             retVal = UDMA_SOK;
+#if ((UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP) > 0)
+    uint32_t            instId, mappedFlowGrp;;
+    uint32_t            flowCnt = 1U, mappepdFlowNum, flowCntTest;
+    uint32_t            numMappedFlowGrp;
+    uint32_t            mappedFlowAllocated = FALSE;
+    Udma_DrvHandle      drvHandle;
+    struct Udma_FlowObj flowObj, attachFlowObj;
+    Udma_FlowHandle     flowHandle = &flowObj, attachFlowHandle = &attachFlowObj;
+    Udma_FlowPrms       flowPrms;
+    Udma_FlowAllocMappedPrms    flowAllocMappedPrms;
+    Udma_RmInitPrms             *rmInitPrms;
+
+    if(UDMA_SOK == retVal)
+    {
+        instId = UDMA_TEST_INST_ID_FLOW;
+        drvHandle = &taskObj->testObj->drvObj[instId];
+
+        numMappedFlowGrp = UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP;
+
+        for(mappedFlowGrp = UDMA_NUM_MAPPED_TX_GROUP; mappedFlowGrp < numMappedFlowGrp; mappedFlowGrp++)
+        {
+            rmInitPrms = &drvHandle->initPrms.rmInitPrms;
+            
+            if(0U == rmInitPrms->numMappedRing[mappedFlowGrp])
+            {
+                /* Skip the test since, no rings are reserved for the core */
+                continue;
+            }
+            
+            /* Allocate mapped free flows */
+            flowAllocMappedPrms.mappedFlowGrp = mappedFlowGrp;
+            flowAllocMappedPrms.mappedChNum = udmaTestGetMappedFlowChNum(drvHandle, mappedFlowGrp, rmInitPrms->startMappedRing[mappedFlowGrp]);
+            retVal = Udma_flowAllocMapped(drvHandle, flowHandle, &flowAllocMappedPrms);
+            if(UDMA_SOK != retVal)
+            {
+                GT_0trace(taskObj->traceMask, GT_ERR, " Mapped Flow alloc failed!!\n");
+            }
+            else
+            {
+                mappedFlowAllocated = TRUE;
+            }
+        
+            if(UDMA_SOK == retVal)
+            {
+                mappepdFlowNum = Udma_flowGetNum(flowHandle);
+                if(UDMA_FLOW_INVALID == mappepdFlowNum)
+                {
+                    GT_0trace(taskObj->traceMask, GT_ERR, " Invalid flow ID!!\n");
+                    retVal = UDMA_EFAIL;
+                }
+            }
+
+            if(UDMA_SOK == retVal)
+            {
+                flowCntTest = Udma_flowGetCount(flowHandle);
+                if(flowCntTest != flowCnt)
+                {
+                    GT_0trace(taskObj->traceMask, GT_ERR, " Flow count doesn't match!!\n");
+                }
+            }
+
+            if(UDMA_SOK == retVal)
+            {
+                /* Attach and configure the mapped flows */
+                retVal = Udma_flowAttachMapped(drvHandle, attachFlowHandle, mappepdFlowNum, &flowAllocMappedPrms);
+                if(UDMA_SOK != retVal)
+                {
+                    GT_0trace(taskObj->traceMask, GT_ERR, " Mapped Flow attach failed!!\n");
+                }
+            }
+
+            if(UDMA_SOK == retVal)
+            {
+                /* Do flow config with the allocated ring - we can't do any
+                * other functional test in standalone testing */
+                UdmaFlowPrms_init(&flowPrms, UDMA_CH_TYPE_RX);
+                flowPrms.defaultRxCQ = mappepdFlowNum;
+                flowPrms.fdq0Sz0Qnum = mappepdFlowNum;
+                flowPrms.fdq1Qnum    = mappepdFlowNum;
+                flowPrms.fdq2Qnum    = mappepdFlowNum;
+                flowPrms.fdq3Qnum    = mappepdFlowNum;
+                flowPrms.fdq0Sz1Qnum = mappepdFlowNum;
+                flowPrms.fdq0Sz2Qnum = mappepdFlowNum;
+                flowPrms.fdq0Sz3Qnum = mappepdFlowNum;
+                
+                retVal = Udma_flowConfig(attachFlowHandle, 0U, &flowPrms);
+                if(UDMA_SOK != retVal)
+                {
+                    GT_0trace(taskObj->traceMask, GT_ERR, " Flow config failed!!\n");
+                }
+            }
+
+            if(UDMA_SOK == retVal)
+            {
+                retVal = Udma_flowDetach(attachFlowHandle);
+                if(UDMA_SOK != retVal)
+                {
+                    GT_0trace(taskObj->traceMask, GT_ERR, " Flow detach failed!!\n");
+                }
+            }
+
+            /* Free allocated flows */
+            if(TRUE == mappedFlowAllocated)
+            {
+                retVal += Udma_flowFree(flowHandle);
+                if(UDMA_SOK != retVal)
+                {
+                    GT_0trace(taskObj->traceMask, GT_ERR, " Flow free failed!!\n");
+                }
+                else
+                {
+                    mappedFlowAllocated = FALSE;
+                }
+            }
+        }
+    }
+#endif
     return (retVal);
 }
 

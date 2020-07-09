@@ -619,6 +619,7 @@ int32_t udmaTestProxyPerformanceTc(UdmaTestTaskObj *taskObj);
  * UDMA flow test functions
  */
 int32_t udmaTestFlowAttachTc(UdmaTestTaskObj *taskObj);
+int32_t udmaTestFlowAttachMappedTc(UdmaTestTaskObj *taskObj);
 int32_t udmaTestFlowAllocTc(UdmaTestTaskObj *taskObj);
 /*
  * UDMA event test functions
