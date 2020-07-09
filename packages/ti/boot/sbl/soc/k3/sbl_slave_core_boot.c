@@ -698,8 +698,6 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
             /* Display profile logs */
             SBL_printProfileLog();
 
-           SBL_RequestCoreProcId(sblSlaveCoreInfoPtr->tisci_proc_id);
-
             if (pAppEntry->CpuEntryPoint[core_id] <  SBL_INVALID_ENTRY_ADDR)
             {
 #if defined(SOC_J7200)
