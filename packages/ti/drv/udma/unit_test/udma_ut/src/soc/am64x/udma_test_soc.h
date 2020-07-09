@@ -59,8 +59,6 @@ extern "C" {
 #define UDMA_TEST_DEFAULT_UDMA_INST     (UDMA_INST_ID_PKTDMA_0)
 */
 
-#define UDMA_TEST_INST_ID_FLOW          (UDMA_INST_ID_PKTDMA_0)
-
 #define UDMA_TEST_RF_SOC                (UDMA_TEST_RF_SOC_AM64X)
 
 #define UDMA_TEST_INST_ID_BCDMA_BC      (UDMA_INST_ID_BCDMA_0)
@@ -162,7 +160,7 @@ extern "C" {
 /*                          Function Declarations                             */
 /* ========================================================================== */
 
-void UdmaTestRmInitPrmsMapped_init(Udma_InitPrms *initPrms);
+/* None */
 
 #ifdef __cplusplus
 }

@@ -2239,7 +2239,7 @@ static UdmaTestParams gUdmaTestCases[] =
         /* All other below parameters not used in this testcase except ring params */
         .pacingTime = {PACING_NONE},
         .numCh      = {1U},
-        .instId     = {UDMA_TEST_INST_ID_FLOW},
+        .instId     = {UDMA_TEST_DEFAULT_UDMA_INST},
         .chPrmId    = {UDMA_TEST_CH_PRMID_DEF},
         .qdepth     = {USE_DEF_QDEPTH},
         .icnt       = {
@@ -2265,9 +2265,6 @@ static UdmaTestParams gUdmaTestCases[] =
         .enableTest = TEST_ENABLE,
         .tcId       = 4154U,
         .tcName     = "Flow alloc and free testcase",
-        /* This tests the failure for allocating flows more than actual count.
-         * So this is not applicable in case of mapped flows, which allocates only one at a time.
-         * Hence the testcase is bypassed for mapped flows. */
         .disableInfo= NULL,
         .printEnable= PRINT_ENABLE,
         .prfEnable  = PRF_DISABLE,
@@ -2280,7 +2277,7 @@ static UdmaTestParams gUdmaTestCases[] =
         /* All other below parameters not used in this testcase except ring params */
         .pacingTime = {PACING_NONE},
         .numCh      = {1U},
-        .instId     = {UDMA_TEST_INST_ID_FLOW},
+        .instId     = {UDMA_TEST_DEFAULT_UDMA_INST},
         .chPrmId    = {UDMA_TEST_CH_PRMID_DEF},
         .qdepth     = {USE_DEF_QDEPTH},
         .icnt       = {
