@@ -305,6 +305,28 @@ extern "C" {
 #define SCICLIENT_C7X_NON_SECURE_INTERRUPT_NUM (9U)
 #define SCICLIENT_C7X_SECURE_INTERRUPT_NUM     (10U)
 
+/**
+ *  \anchor Sciclient_McuR5fIds
+ *  \name MCU Pulsar IDs
+ *  @{
+ *  MCU Device CPU IDs.
+ */
+#define SCICLIENT_DEV_MCU_R5FSS0_CORE0  (TISCI_DEV_MCU_R5FSS0_CORE0)
+#define SCICLIENT_DEV_MCU_R5FSS0_CORE1  (TISCI_DEV_MCU_R5FSS0_CORE1)
+/* @} */
+
+/**
+ *  \anchor Sciclient_McuR5fProcIds
+ *  \name MCU Pulsar Processor IDs
+ *  @{
+ *  MCU Device Processor IDs.
+ */
+#define SCICLIENT_DEV_MCU_R5FSS0_CORE0_PROCID  \
+    (SCICLIENT_PROC_ID_MCU_R5FSS0_CORE0)
+#define SCICLIENT_DEV_MCU_R5FSS0_CORE1_PROCID  \
+    (SCICLIENT_PROC_ID_MCU_R5FSS0_CORE1)
+/* @} */
+
 /* ========================================================================== */
 /*                         Structure Declarations                             */
 /* ========================================================================== */

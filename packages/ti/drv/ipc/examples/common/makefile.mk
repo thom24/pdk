@@ -36,6 +36,11 @@ else
   INCLUDE_EXTERNAL_INTERFACES += xdc bios
   COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP)
   COMP_LIST_COMMON += ipc 
+  ifeq ($(SOC),$(filter $(SOC), j721e j7200))
+    ifeq ($(CORE),mcu1_0)
+      COMP_LIST_COMMON += sciserver_tirtos
+    endif
+  endif
 ifeq ($(SOC), am64x)
   COMP_LIST_COMMON += mailbox
 endif

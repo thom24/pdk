@@ -203,6 +203,28 @@ extern "C" {
 
 /* @} */
 
+/**
+ *  \anchor Sciclient_McuR5fIds
+ *  \name MCU Pulsar IDs
+ *  @{
+ *  MCU Device CPU IDs.
+ */
+#define SCICLIENT_DEV_MCU_R5FSS0_CORE0  (TISCI_DEV_R5FSS0_CORE0)
+#define SCICLIENT_DEV_MCU_R5FSS0_CORE1  (TISCI_DEV_R5FSS0_CORE1)
+/* @} */
+
+/**
+ *  \anchor Sciclient_McuR5fProcIds
+ *  \name MCU Pulsar Processor IDs
+ *  @{
+ *  MCU Device Processor IDs.
+ */
+#define SCICLIENT_DEV_MCU_R5FSS0_CORE0_PROCID  \
+    (SCICLIENT_PROCID_R5_CL0_C0)
+#define SCICLIENT_DEV_MCU_R5FSS0_CORE1_PROCID  \
+    (SCICLIENT_PROCID_R5_CL0_C1)
+/* @} */
+
 /* ========================================================================== */
 /*                         Structure Declarations                             */
 /* ========================================================================== */

@@ -45,10 +45,10 @@ __SVC_STACK_SIZE = 0x1000;
 /* Memory Map                                                                 */
 MEMORY
 {
-	VECTORS (X)  			: origin=0x7004F000 length=0x1000
+	VECTORS (X)  			: origin=0x7006F000 length=0x1000
     /*  Reset Vectors base address(RESET_VECTORS) should be 64 bytes aligned  */
 	RESET_VECTORS (X)  			: origin=0x70030000 length=0x100
-	MSMC3_MCU1_CPU0	: origin=0x70030100 length=0x20000 - 0x1100	/* 128KB */
+	MSMC3_MCU1_CPU0	: origin=0x70030100 length=0x40000 - 0x1100	/* 256KB */
 
 /* Additional memory settings	*/
 
@@ -72,6 +72,8 @@ SECTIONS
     .cinit   	: {} palign(8) 		> MSMC3_MCU1_CPU0
     .pinit   	: {} palign(8) 		> MSMC3_MCU1_CPU0
     .bss     	: {} align(4)  		> MSMC3_MCU1_CPU0
+    .bss.devgroup.*   : {} align(4)      > MSMC3_MCU1_CPU0
+    .const.devgroup.* : {} align(4)      > MSMC3_MCU1_CPU0
     .data    	: {} palign(128) 	> MSMC3_MCU1_CPU0
     .boardcfg_data        : {} palign(128)           > MSMC3_MCU1_CPU0
 	.sysmem  	: {} 				> MSMC3_MCU1_CPU0

@@ -131,6 +131,17 @@ SECTIONS
     .sysmem  	: {} 			> MCU1_0_DDR_SPACE
     .stack	: {} align(4)		> MCU1_0_DDR_SPACE
     ipc_data_buffer (NOINIT) : {} palign(128)	> MCU1_0_DDR_SPACE
+
+    .const.devgroup.MCU_WAKEUP    : {} align(4)      > MCU1_0_DDR_SPACE
+    .const.devgroup.MAIN          : {} align(4)      > MCU1_0_DDR_SPACE
+    .const.devgroup.DMSC_INTERNAL : {} align(4)      > MCU1_0_DDR_SPACE
+    .bss.devgroup.MAIN            : {} align(4)      > MCU1_0_DDR_SPACE
+    .bss.devgroup.MCU_WAKEUP      : {} align(4)      > MCU1_0_DDR_SPACE
+    .bss.devgroup.DMSC_INTERNAL   : {} align(4)      > MCU1_0_DDR_SPACE
+    .boardcfg_data                : {} align(4)      > MCU1_0_DDR_SPACE
+    .bss.devgroup*                : {} align(4)      > MCU1_0_DDR_SPACE
+    .const.devgroup*              : {} align(4)      > MCU1_0_DDR_SPACE
+
     .resource_table : {
         __RESOURCE_TABLE = .;
     } > MCU1_0_EXT_DATA_BASE

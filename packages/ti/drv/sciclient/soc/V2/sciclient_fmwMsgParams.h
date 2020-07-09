@@ -248,7 +248,28 @@ extern "C" {
 #define TISCI_UDMAP0_RX_OES_IRQ_SRC_IDX_START       (128U)
 #define TISCI_UDMAP0_RX_EOES_IRQ_SRC_IDX_START      (192U)
 #define TISCI_UDMAP0_RX_FLOW_EOES_IRQ_SRC_IDX_START (256U)
+/* @} */
 
+/**
+ *  \anchor Sciclient_McuR5fIds
+ *  \name MCU Pulsar IDs
+ *  @{
+ *  MCU Device CPU IDs.
+ */
+#define SCICLIENT_DEV_MCU_R5FSS0_CORE0  (TISCI_DEV_MCU_R5FSS0_CORE0)
+#define SCICLIENT_DEV_MCU_R5FSS0_CORE1  (TISCI_DEV_MCU_R5FSS0_CORE1)
+/* @} */
+
+/**
+ *  \anchor Sciclient_McuR5fProcIds
+ *  \name MCU Pulsar Processor IDs
+ *  @{
+ *  MCU Device Processor IDs.
+ */
+#define SCICLIENT_DEV_MCU_R5FSS0_CORE0_PROCID  \
+    (SCICLIENT_PROC_ID_MCU_R5FSS0_CORE0)
+#define SCICLIENT_DEV_MCU_R5FSS0_CORE1_PROCID  \
+    (SCICLIENT_PROC_ID_MCU_R5FSS0_CORE1)
 /* @} */
 
 /* ========================================================================== */

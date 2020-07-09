@@ -25,6 +25,12 @@ else
 ifeq ($(SOC), am64x)
   COMP_LIST_COMMON += mailbox
 endif
+ifeq ($(SOC),$(filter $(SOC), j721e j7200))
+  ifeq ($(CORE),mcu1_0)
+    COMP_LIST_COMMON += sciserver_tirtos
+  endif
+endif
+
   SRCS_COMMON += main_tirtos.c
   # Enable XDC build for application by providing XDC CFG File per core
   XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg

@@ -1998,14 +1998,14 @@
                     {
                         "name": "RESASG_UTYPE(J7200_DEV_MCU_NAVSS0_UDMASS_INTA_0, RESASG_SUBTYPE_IA_VINT)",
                         "type": 14922,
-                        "start_resource": 8,
-                        "num_resource": 248
+                        "start_resource": 15,
+                        "num_resource": 241
                     },
                     {
                         "name": "RESASG_UTYPE(J7200_DEV_MCU_NAVSS0_UDMASS_INTA_0, RESASG_SUBTYPE_GLOBAL_EVENT_SEVT)",
                         "type": 14925,
-                        "start_resource": 16392,
-                        "num_resource": 1528
+                        "start_resource": 16399,
+                        "num_resource": 1521
                     },
                     {
                         "name": "RESASG_UTYPE(J7200_DEV_MCU_NAVSS0_PROXY0, RESASG_SUBTYPE_PROXY_PROXIES)",
@@ -2112,8 +2112,8 @@
                     {
                         "name": "RESASG_UTYPE(J7200_DEV_MCU_NAVSS0_INTR_0, RESASG_SUBTYPE_IR_OUTPUT)",
                         "type": 15168,
-                        "start_resource": 4,
-                        "num_resource": 28
+                        "start_resource": 11,
+                        "num_resource": 21
                     },
                     {
                         "name": "RESASG_UTYPE(J7200_DEV_MCU_NAVSS0_INTR_0, RESASG_SUBTYPE_IR_OUTPUT)",

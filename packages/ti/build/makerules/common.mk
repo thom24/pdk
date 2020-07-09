@@ -486,10 +486,25 @@ SBL_APP_BINIMAGE_PATH=$(EXE_NAME).bin
 SBL_APPIMAGE_PATH_SIGNED=$(BINDIR)/$(SBL_IMAGE_NAME).appimage.signed
 SBL_APPIMAGE_PATH_SIGNED_BE=$(BINDIR)/$(SBL_IMAGE_NAME)_BE.appimage.signed
 
+# When building apps for cores other than MCU 10, MCU 10 should host sciclient
+# server.
+# Not required when running apps on MCU 10.
+# Please refer the user guide for more details on sciclient server
+
+ifeq ($(SOC),$(filter $(SOC), j721e j7200))
+  MULTI_CORE_APP_PARAMS = $(SBL_CORE_ID_mcu1_0) $(PDK_INSTALL_PATH)/ti/drv/sciclient/tools/ccsLoadDmsc/$(SOC)/sciserver_testapp_mcu1_0_release.rprc
+else
+  MULTI_CORE_APP_PARAMS =
+endif
+
+ifeq ($(CORE),$(filter $(CORE), mcu1_0))
+  MULTI_CORE_APP_PARAMS =
+endif
+
+
 #MCUx_1 cores requires a dummy application to run from MCUx_0 core
 #as MCUx_1 cores cannot be at a higher power state than MCUx_0 core
-MULTI_CORE_APP_PARAMS=
-ifeq ($(SOC),$(filter $(SOC), j721e j7200 am64x))
+ifeq ($(SOC),$(filter $(SOC), am64x))
   ifeq ($(CORE),$(filter $(CORE), mcu1_1))
   MULTI_CORE_APP_PARAMS += $(SBL_CORE_ID_mcu1_0) $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sbl_mcux_0_dummy_app.rprc
   endif
@@ -500,6 +515,17 @@ ifeq ($(SOC),$(filter $(SOC), j721e j7200 am64x))
   MULTI_CORE_APP_PARAMS += $(SBL_CORE_ID_mcu3_0) $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sbl_mcux_0_dummy_app.rprc
   endif
 endif
+
+#In case of j721e, j7200 mcu 10 would always host the server. So removing dummy app for mcu 10
+ifeq ($(SOC),$(filter $(SOC), j721e j7200))
+  ifeq ($(CORE),$(filter $(CORE), mcu2_1))
+  MULTI_CORE_APP_PARAMS += $(SBL_CORE_ID_mcu2_0) $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sbl_mcux_0_dummy_app.rprc
+  endif
+  ifeq ($(CORE),$(filter $(CORE), mcu3_1))
+  MULTI_CORE_APP_PARAMS += $(SBL_CORE_ID_mcu3_0) $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sbl_mcux_0_dummy_app.rprc
+  endif
+endif
+
 MULTI_CORE_APP_PARAMS += $(SBL_CORE_ID_$(CORE)) $(SBL_RPRC_PATH)
 
 ifeq ($(OS),Windows_NT)

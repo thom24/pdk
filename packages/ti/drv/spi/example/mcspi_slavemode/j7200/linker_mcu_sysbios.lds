@@ -36,4 +36,7 @@ SECTIONS
     .data       : {} palign(128) > MSMC3
     .sysmem     : {} align(8)    > MSMC3
     .stack      : {} align(4)    > MSMC3
+    .bss.devgroup*  : {} align(4) > DDR0
+    .const.devgroup*: {} align(4) > DDR0
+    .boardcfg_data  : {} align(4) > DDR0
 }

@@ -116,6 +116,6 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
         .allow_wildcard_unlock = 0x0,
         .min_cert_rev = 0x0, 
         .jtag_unlock_hosts = {0, 0, 0, 0},
-    },   
+    },
 };
 #endif

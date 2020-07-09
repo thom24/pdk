@@ -94,6 +94,8 @@ uint32_t rpmsgDataSize = RPMSG_DATA_SIZE;
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
+#define IPC_SETUP_TASK_PRI                  (3)
+/**< Priority for sender and receiver tasks */
 
 
 /* ========================================================================== */
@@ -105,7 +107,6 @@ uint32_t rpmsgDataSize = RPMSG_DATA_SIZE;
 /* ========================================================================== */
 /*                          Function Declarations                             */
 /* ========================================================================== */
-
 
 /* ========================================================================== */
 /*                            Global Variables                                */
@@ -321,6 +322,7 @@ void rpmsg_senderFxn(UArg arg0, UArg arg1)
         {
             buf[len] = '\0';
         }
+
 #ifdef DEBUG_PRINT
         System_printf("SendTask%d: Received \"%s\" len %d from %s endPt %d \n",
                 dstProc, buf, len, Ipc_mpGetName(remoteProcId),
@@ -446,7 +448,7 @@ int32_t Ipc_echo_test(void)
 
     /* Respond to messages coming in to endPt ENDPT1 */
     Task_Params_init(&params);
-    params.priority   = 3;
+    params.priority   = IPC_SETUP_TASK_PRI;
     params.stack      = &pTaskBuf[index++ * IPC_TASK_STACKSIZE];
     params.stackSize  = IPC_TASK_STACKSIZE;
     params.arg0       = 0;
@@ -461,7 +463,7 @@ int32_t Ipc_echo_test(void)
 #endif
         /* send messages to peer(s) on ENDPT1 */
         Task_Params_init(&params);
-        params.priority  = 3;
+        params.priority  = IPC_SETUP_TASK_PRI;
         params.stack     = &pTaskBuf[index * IPC_TASK_STACKSIZE];
         params.stackSize = IPC_TASK_STACKSIZE;
         params.arg0      = pRemoteProcArray[t];
@@ -473,7 +475,7 @@ int32_t Ipc_echo_test(void)
 #if !defined(BUILD_MPU1_0) && defined(A72_LINUX_OS) && defined(A72_LINUX_OS_IPC_ATTACH)
     /* Respond to messages coming in to endPt ENDPT1 */
     Task_Params_init(&params);
-    params.priority = 3;
+    params.priority = IPC_SETUP_TASK_PRI;
     params.stackSize = 0x1000;
     params.arg0 = 0;
     Task_create(rpmsg_vdevMonitorFxn, &params, NULL);

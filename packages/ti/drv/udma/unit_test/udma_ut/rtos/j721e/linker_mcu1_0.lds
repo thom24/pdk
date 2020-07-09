@@ -42,4 +42,7 @@ SECTIONS
     .udma_buffer_ospi                       : {} palign(128) > DDR0
     .udma_buffer_msmc                       : {} palign(128) > MSMC3
     .udma_buffer_internal                   : {} palign(128) > OCMRAM
+    .bss.devgroup*                          : {} align(4)    > DDR0
+    .const.devgroup*                        : {} align(4)    > DDR0
+    .boardcfg_data                          : {} align(4)    > DDR0
 }

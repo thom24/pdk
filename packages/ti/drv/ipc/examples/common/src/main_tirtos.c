@@ -65,6 +65,10 @@
 #include <ti/drv/sciclient/sciclient.h>
 #include <ti/board/board.h>
 
+#if (defined (BUILD_MCU1_0) && (defined (SOC_J721E) || defined (SOC_J7200)))
+#include <ti/drv/sciclient/sciserver_tirtos.h>
+#endif
+
 /* This needs to be enabled only for negative test cases */
 #ifdef IPC_NEGATIVE_TEST
 #include <ti/drv/ipc/examples/ex05_bios_multicore_echo_negative_test/ipc_neg_setup.h>
@@ -73,8 +77,12 @@
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
 
-/* Test application stack size */
 #define APP_TSK_STACK_MAIN              (32U * 1024U)
+/**< Test application stack size */
+#define IPC_SETUP_SCISERVER_TASK_PRI_HIGH   (3 + 1)
+/**< High Priority for SCI Server */
+#define IPC_SETUP_SCISERVER_TASK_PRI_LOW    (1)
+/**< High Priority for SCI Server */
 
 /* ========================================================================== */
 /*                         Structure Declarations                             */
@@ -88,6 +96,8 @@
 
 static Void taskFxn(UArg a0, UArg a1);
 extern int32_t Ipc_echo_test(void);
+void Ipc_setupSciServer(void);
+/**< Initialize SCI Server, to process RM/PM Requests by other cores */
 
 /* ========================================================================== */
 /*                            Global Variables                                */
@@ -193,6 +203,9 @@ int main(void)
     Task_Handle task;
     Error_Block eb;
     Task_Params taskParams;
+
+    /* Initialize SCI Client Server */
+    Ipc_setupSciServer();
 
     /* It must be called before board init */
     ipc_initSciclient();
@@ -315,4 +328,36 @@ void InitMmu(void)
     Osal_initMmuDefault();
 }
 #endif
+
+void Ipc_setupSciServer(void)
+{
+
+#if (defined (BUILD_MCU1_0) && (defined (SOC_J721E) || defined (SOC_J7200)))
+    Sciserver_TirtosCfgPrms_t appPrms;
+    int32_t ret = CSL_PASS;
+
+    ret = Sciserver_tirtosInitPrms_Init(&appPrms);
+
+    appPrms.taskPriority[SCISERVER_TASK_USER_LO] =
+                                            IPC_SETUP_SCISERVER_TASK_PRI_LOW;
+    appPrms.taskPriority[SCISERVER_TASK_USER_HI] =
+                                            IPC_SETUP_SCISERVER_TASK_PRI_HIGH;
+
+    if (ret == CSL_PASS)
+    {
+        ret = Sciserver_tirtosInit(&appPrms);
+    }
+
+    if (ret == CSL_PASS)
+    {
+        System_printf("Starting Sciserver..... PASSED\n");
+    }
+    else
+    {
+        System_printf("Starting Sciserver..... FAILED\n");
+    }
+
+#endif
+    return;
+}
 

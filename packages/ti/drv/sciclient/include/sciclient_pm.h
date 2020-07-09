@@ -169,7 +169,7 @@ int32_t Sciclient_pmSetModuleRst(uint32_t moduleId,
  *                          1 - Assert the reset
  *                          0 - Deassert the reset
  *                          Note this convention is opposite of PSC MDCTL
- *  \param  reqFlag         Can be TISCI_MSG_FLAG_AOR/TISCI_MSG_FLAG_AOP ORRed  
+ *  \param  reqFlag         Can be TISCI_MSG_FLAG_AOR/TISCI_MSG_FLAG_AOP ORRed 
  *                          with additional flag that can be set to alter the
  *                          device state.
  *  \param  timeout         Gives a sense of how long to wait for the operation.

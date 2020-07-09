@@ -72,6 +72,8 @@ SECTIONS
     .boardcfg_data : {} palign(128)    > OCMRAM
     .sysmem        : {}                > OCMRAM
     .data_buffer   : {} palign(128)    > OCMRAM
+    .bss.devgroup* : {} align(4)       > DDR0
+    .const.devgroup*: {} align(4)      > DDR0
 
     /* USB or any other LLD buffer for benchmarking */
     .benchmark_buffer (NOLOAD) {} ALIGN (8) > OCMRAM

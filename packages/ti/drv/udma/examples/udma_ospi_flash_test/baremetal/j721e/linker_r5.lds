@@ -80,6 +80,11 @@ SECTIONS
     .boardcfg_data : {} palign(128)    > MSMC3
     .sysmem        : {}                > OCMRAM
     .data_buffer   : {} palign(128)    > OCMRAM
+    .bss.devgroup* : {} align(4)       > MSMC3
+    .const.devgroup*: {} align(4)      > MSMC3
+    .rm_pm_hal : {
+        *rm_pm_hal.aer5f(.*)
+    }                   palign(8)      > MSMC3
 
     /* USB or any other LLD buffer for benchmarking */
     .benchmark_buffer (NOLOAD) {} ALIGN (8) > OCMRAM

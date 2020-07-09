@@ -36,6 +36,10 @@ SECTIONS
     .stack      : {} align(4)    > DDR0
     .data_buffer: {} palign(128) > DDR0
 
+    .bss.devgroup*  : {} align(4) > DDR0
+    .const.devgroup*: {} align(4) > DDR0
+    .boardcfg_data  : {} align(4) > DDR0
+
     .bss:extMemCache:ramdisk  : {} palign(32) > DDR0
 
     /* USB or any other LLD buffer for benchmarking */

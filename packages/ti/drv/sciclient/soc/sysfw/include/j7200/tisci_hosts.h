@@ -55,8 +55,10 @@
 #ifndef TISCI_HOSTS_H
 #define TISCI_HOSTS_H
 
-/** DMSC(Secure): Device Management and Security Control */
+/** DMSC(Secure): Security Controller */
 #define TISCI_HOST_ID_DMSC (0U)
+/** DM(Non Secure): Device Management */
+#define TISCI_HOST_ID_DM (254U)
 /** MCU_0_R5_0(Non Secure): Cortex R5 context 0 on MCU island */
 #define TISCI_HOST_ID_R5_0 (3U)
 /** MCU_0_R5_1(Secure): Cortex R5 context 1 on MCU island(Boot) */
@@ -83,6 +85,10 @@
 #define TISCI_HOST_ID_MAIN_0_R5_2 (37U)
 /** MAIN_0_R5_3(Secure): Cortex R5_0 context 3 on MCU island */
 #define TISCI_HOST_ID_MAIN_0_R5_3 (38U)
+/** DM2DMSC(Secure): DM to DMSC communication */
+#define TISCI_HOST_ID_DM2DMSC (250U)
+/** DMSC2DM(Non Secure): DMSC to DM communication */
+#define TISCI_HOST_ID_DMSC2DM (251U)
 
 /**
  * Host catch all. Used in board configuration resource assignments to define
@@ -91,7 +97,7 @@
 #define TISCI_HOST_ID_ALL (128U)
 
 /** Number of unique hosts on the SoC */
-#define TISCI_HOST_ID_CNT (14U)
+#define TISCI_HOST_ID_CNT (17U)
 
 #endif /* TISCI_HOSTS_H */
 

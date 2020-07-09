@@ -57,10 +57,10 @@ MEMORY
 
     /* MCU0 memory used for sciclientTest. Available to app for dynamic use ~160KB */
     /* RBL uses 0x41C58000 and beyond. sciclientTest, at load cannot cross this */
-    OCMRAM_sciclientTest    (RWIX)   : origin=0x41C00200 length=0x30000-0x200
+    OCMRAM_sciclientTest    (RWIX)   : origin=0x41C00200 length=0x50000-0x200
 
     /* Used by sciclientTest at runtime to load SYSFW. Available to app for dynamic use */
-    OCMRAM_sciclientTest_SYSFW (RWIX)   : origin=0x41C30000 length=0x50000
+    OCMRAM_sciclientTest_SYSFW (RWIX)   : origin=0x41C50000 length=0x30000
 
 }  /* end of MEMORY */
 
@@ -71,20 +71,26 @@ SECTIONS
 {
 /* 'intvecs' and 'intc_text' sections shall be placed within                  */
 /* a range of +\- 16 MB                                                       */
-    .rstvectors           : {} palign(8)                            > RESET_VECTORS
-    .boardcfg_data        : {} palign(8)                            > OCMRAM_sciclientTest
-    .bootCode             : {} palign(8)                            > OCMRAM_sciclientTest
-    .startupCode          : {} palign(8)                            > OCMRAM_sciclientTest
-    .startupData          : {} palign(8)                            > OCMRAM_sciclientTest, type = NOINIT
-    .text                 : {} palign(8)                            > OCMRAM_sciclientTest
-    .const                : {} palign(8)                            > OCMRAM_sciclientTest
-    .cinit                : {} palign(8)                            > OCMRAM_sciclientTest
-    .pinit                : {} palign(8)                            > OCMRAM_sciclientTest
-    .data                 : {} palign(128)                          > OCMRAM_sciclientTest
-    .bss                  : {} align(4)                             > OCMRAM_sciclientTest
-    .sysmem               : {}                                      > OCMRAM_sciclientTest
-    .stack                : {} align(4)                             > OCMRAM_sciclientTest  (HIGH)
-    .irqStack             : {. = . + __IRQ_STACK_SIZE;} align(4)    > OCMRAM_sciclientTest  (HIGH)
+    .rstvectors                   : {} palign(8)     > RESET_VECTORS
+    .boardcfg_data                : {} palign(8)     > OCMRAM_sciclientTest
+    .bootCode                     : {} palign(8)     > OCMRAM_sciclientTest
+    .startupCode                  : {} palign(8)     > OCMRAM_sciclientTest
+    .startupData                  : {} palign(8)     > OCMRAM_sciclientTest, type = NOINIT
+    .text                         : {} palign(8)     > OCMRAM_sciclientTest
+    .const                        : {} palign(8)     > OCMRAM_sciclientTest
+    .const.devgroup.MCU_WAKEUP    : {} align(4)      > OCMRAM_sciclientTest
+    .const.devgroup.MAIN          : {} align(4)      > OCMRAM_sciclientTest
+    .const.devgroup.DMSC_INTERNAL : {} align(4)      > OCMRAM_sciclientTest
+    .cinit                        : {} palign(8)     > OCMRAM_sciclientTest
+    .pinit                        : {} palign(8)     > OCMRAM_sciclientTest
+    .data                         : {} palign(128)   > OCMRAM_sciclientTest
+    .bss                          : {} align(4)      > OCMRAM_sciclientTest
+    .bss.devgroup.MAIN            : {} align(4)      > OCMRAM_sciclientTest
+    .bss.devgroup.MCU_WAKEUP      : {} align(4)      > OCMRAM_sciclientTest
+    .bss.devgroup.DMSC_INTERNAL   : {} align(4)      > OCMRAM_sciclientTest
+    .sysmem                       : {}               > OCMRAM_sciclientTest
+    .stack                        : {} align(4)      > OCMRAM_sciclientTest  (HIGH)
+    .irqStack                     : {. = . + __IRQ_STACK_SIZE;} align(4)    > OCMRAM_sciclientTest  (HIGH)
                             RUN_START(__IRQ_STACK_START)
                             RUN_END(__IRQ_STACK_END)
     .fiqStack             : {. = . + __FIQ_STACK_SIZE;} align(4)    > OCMRAM_sciclientTest  (HIGH)

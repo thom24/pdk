@@ -122,6 +122,8 @@ SECTIONS
     .boardcfg_data : {} palign(128)    > MCU1_0_DDR_SPACE
     .sysmem        : {}                > MCU1_0_DDR_SPACE
     .data_buffer   : {} palign(128)    > MCU1_0_DDR_SPACE
+    .bss.devgroup* : {} align(4)       > MCU1_0_DDR_SPACE
+    .const.devgroup*: {} align(4)      > MCU1_0_DDR_SPACE
 
     /* USB or any other LLD buffer for benchmarking */
     .benchmark_buffer (NOLOAD) {} ALIGN (8) > MCU1_0_DDR_SPACE

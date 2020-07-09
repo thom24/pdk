@@ -42,7 +42,7 @@
 
 #include <stdint.h>
 #include <ti/drv/sciclient/sciclient.h>
-#include <ti/drv/sciclient/src/sciclient_priv.h>
+#include <ti/drv/sciclient/src/sciclient/sciclient_priv.h>
 
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */

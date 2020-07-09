@@ -58,6 +58,7 @@
 #include "board_utils.h"
 #include "board_serdes_cfg.h"
 #include <ti/drv/sciclient/sciclient.h>
+#include <ti/drv/sciclient/sciserver.h>
 
 static bool gBoardSysInitDone = 0;
 
@@ -78,7 +79,6 @@ static Board_STATUS Board_sysInit(void)
         Sciclient_configPrmsInit(&config);
 
         ret = Sciclient_init(&config);
-
         if(ret != 0)
         {
             status = BOARD_FAIL;

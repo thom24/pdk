@@ -44,6 +44,13 @@ ifeq ($(SOC),$(filter $(SOC), am65xx j721e))
 sciclient_LIB_LIST += sciclient_hs
 endif
 
+ifeq ($(SOC),$(filter $(SOC), j721e j7200))
+sciclient_LIB_LIST += rm_pm_hal 
+sciclient_LIB_LIST += sciserver_tirtos
+sciclient_LIB_LIST += sciserver_baremetal
+sciclient_LIB_LIST += sciclient_direct
+endif
+
 drvsciclient_BOARDLIST = am65xx_evm am65xx_idk j721e_sim j721e_evm j7200_evm am64x_evm
 drvsciclient_SOCLIST = am65xx j721e j7200 am64x
 drvsciclient_am65xx_CORELIST = mcu1_0 mcu1_1 mpu1_0
@@ -58,7 +65,7 @@ export sciclient_OBJPATH = ti/drv/sciclient
 export sciclient_LIBNAME = sciclient
 sciclient_PATH = $(PDK_SCICLIENT_COMP_PATH)
 export sciclient_LIBPATH = $(PDK_SCICLIENT_COMP_PATH)/lib
-export sciclient_MAKEFILE = -fsrc/makefile BUILD_HS=no
+export sciclient_MAKEFILE = -fsrc/sciclient_indirect_makefile BUILD_HS=no
 # Simulator versus Silicon has a different Firmware Image.
 sciclient_BOARD_DEPENDENCY = no
 ifeq ($(BOARD),$(filter $(BOARD), j721e_ccqt j721e_loki j721e_hostemu))
@@ -78,7 +85,7 @@ export sciclient_hs_OBJPATH = ti/drv/sciclient_hs
 sciclient_hs_PATH = $(PDK_SCICLIENT_COMP_PATH)
 export sciclient_hs_LIBNAME = sciclient_hs
 export sciclient_hs_LIBPATH = $(PDK_SCICLIENT_COMP_PATH)/lib
-export sciclient_hs_MAKEFILE = -fsrc/makefile BUILD_HS=yes
+export sciclient_hs_MAKEFILE = -fsrc/sciclient_indirect_makefile BUILD_HS=yes
 # Simulator versus Silicon has a different Firmware Image.
 sciclient_hs_BOARD_DEPENDENCY = no
 ifeq ($(BOARD),$(filter $(BOARD), j721e_ccqt j721e_loki j721e_hostemu))
@@ -92,6 +99,67 @@ export sciclient_hs_SOCLIST = $(drvsciclient_SOCLIST)
 export sciclient_hs_BOARDLIST = $(drvsciclient_BOARDLIST)
 export sciclient_hs_$(SOC)_CORELIST = $(drvsciclient_$(SOC)_CORELIST)
 
+export sciclient_direct_COMP_LIST = sciclient_direct
+export sciclient_direct_RELPATH = ti/drv/sciclient_direct
+export sciclient_direct_OBJPATH = ti/drv/sciclient_direct
+export sciclient_direct_LIBNAME = sciclient_direct
+export sciclient_direct_PATH = $(PDK_SCICLIENT_COMP_PATH)
+export sciclient_direct_LIBPATH = $(PDK_SCICLIENT_COMP_PATH)/lib
+export sciclient_direct_MAKEFILE = -fsrc/sciclient_direct_makefile BUILD_HS=no
+export sciclient_direct_BOARD_DEPENDENCY = no
+export sciclient_direct_CORE_DEPENDENCY = yes
+export sciclient_direct_PKG_LIST = sciclient_direct
+export sciclient_direct_INCLUDE = $(sciclient_direct_PATH)
+export sciclient_direct_SOCLIST = j721e j7200
+export sciclient_direct_BOARDLIST = j721e_evm j7200_evm
+export sciclient_direct_$(SOC)_CORELIST = mcu1_0
+
+export sciclient_direct_hs_COMP_LIST = sciclient_direct_hs
+export sciclient_direct_hs_RELPATH = ti/drv/sciclient_direct
+export sciclient_direct_hs_OBJPATH = ti/drv/sciclient_direct
+export sciclient_direct_hs_LIBNAME = sciclient_hs_direct
+export sciclient_direct_hs_PATH = $(PDK_SCICLIENT_COMP_PATH)
+export sciclient_direct_hs_LIBPATH = $(PDK_SCICLIENT_COMP_PATH)/lib
+export sciclient_direct_hs_MAKEFILE = -fsrc/sciclient_direct_makefile BUILD_HS=yes
+export sciclient_direct_hs_BOARD_DEPENDENCY = no
+export sciclient_direct_hs_CORE_DEPENDENCY = yes
+export sciclient_direct_hs_PKG_LIST = sciclient_direct
+export sciclient_direct_hs_INCLUDE = $(sciclient_hs_direct_PATH)
+export sciclient_direct_hs_SOCLIST = j721e j7200
+export sciclient_direct_hs_BOARDLIST = j721e_evm j7200_evm
+export sciclient_direct_hs_$(SOC)_CORELIST = mcu1_0
+
+export sciserver_tirtos_COMP_LIST = sciserver_tirtos
+export sciserver_tirtos_RELPATH = ti/drv/sciserver_tirtos
+export sciserver_tirtos_OBJPATH = ti/drv/sciserver_tirtos
+export sciserver_tirtos_LIBNAME = sciserver_tirtos
+export sciserver_tirtos_PATH = $(PDK_SCICLIENT_COMP_PATH)
+export sciserver_tirtos_LIBPATH = $(PDK_SCICLIENT_COMP_PATH)/lib
+export sciserver_tirtos_MAKEFILE = -fsrc/sciserver_makefile BUILD_OS_TYPE=tirtos
+export sciserver_tirtos_BOARD_DEPENDENCY = no
+export sciserver_tirtos_CORE_DEPENDENCY = yes
+export sciserver_tirtos_PKG_LIST = sciserver_tirtos
+export sciserver_tirtos_INCLUDE = $(sciserver_PATH)
+export sciserver_tirtos_SOCLIST = j721e j7200
+export sciserver_tirtos_BOARDLIST = j721e_evm j7200_evm
+export sciserver_tirtos_$(SOC)_CORELIST = mcu1_0
+
+export sciserver_baremetal_COMP_LIST = sciserver_baremetal
+export sciserver_baremetal_RELPATH = ti/drv/sciserver_baremetal
+export sciserver_baremetal_OBJPATH = ti/drv/sciserver_baremetal
+export sciserver_baremetal_LIBNAME = sciserver_baremetal
+export sciserver_baremetal_PATH = $(PDK_SCICLIENT_COMP_PATH)
+export sciserver_baremetal_LIBPATH = $(PDK_SCICLIENT_COMP_PATH)/lib
+export sciserver_baremetal_MAKEFILE = -fsrc/sciserver_makefile BUILD_OS_TYPE=baremetal
+export sciserver_baremetal_BOARD_DEPENDENCY = no
+export sciserver_baremetal_CORE_DEPENDENCY = yes
+export sciserver_baremetal_PKG_LIST = sciserver_baremetal
+export sciserver_baremetal_INCLUDE = $(sciserver_PATH)
+export sciserver_baremetal_SOCLIST = j721e j7200
+export sciserver_baremetal_BOARDLIST = j721e_evm j7200_evm
+export sciserver_baremetal_$(SOC)_CORELIST = mcu1_0
+
+
 export sciclient_UTILS_LIST = sciclient_boardcfg
 export sciclient_boardcfg_COMP_LIST = sciclient_boardcfg
 export sciclient_boardcfg_RELPATH = ti/drv/sciclient
@@ -102,6 +170,23 @@ export sciclient_boardcfg_CORE_DEPENDENCY = yes
 export sciclient_boardcfg_BOARDLIST = $(sciclient_BOARDLIST)
 export sciclient_boardcfg_$(SOC)_CORELIST = mcu1_0
 export sciclient_boardcfg_LIBNAME = sciclient_boardcfg
+
+export rm_pm_hal_COMP_LIST = rm_pm_hal
+rm_pm_hal_RELPATH = ti/drv/sciclient/src/rm_pm_hal
+export rm_pm_hal_OBJPATH = ti/drv/sciclient/src/rm_pm_hal
+rm_pm_hal_PATH = $(PDK_SCICLIENT_COMP_PATH)
+export rm_pm_hal_LIBNAME = rm_pm_hal
+export rm_pm_hal_LIBPATH = $(PDK_SCICLIENT_COMP_PATH)/lib
+export rm_pm_hal_MAKEFILE = -fsrc/rm_pm_hal_makefile BUILD_HS=no
+# Simulator versus Silicon has a different Firmware Image.
+rm_pm_hal_BOARD_DEPENDENCY = no
+export rm_pm_hal_BOARD_DEPENDENCY
+export rm_pm_hal_CORE_DEPENDENCY = yes
+rm_pm_hal_PKG_LIST = rm_pm_hal
+rm_pm_hal_INCLUDE = $(rm_pm_hal_PATH)
+export rm_pm_hal_SOCLIST = j721e j7200
+export rm_pm_hal_BOARDLIST = j721e_evm j7200_evm
+export rm_pm_hal_$(SOC)_CORELIST = mcu1_0
 
 ############################
 # sciclient examples
@@ -227,6 +312,24 @@ export sciclient_unit_testapp_SBL_IMAGEGEN
 ifeq ($(BUILD_OS_TYPE),tirtos)
 sciclient_EXAMPLE_LIST += sciclient_unit_testapp
 endif
+
+# SCISERVER
+export sciserver_testapp_COMP_LIST = sciserver_testapp
+export sciserver_testapp_RELPATH = ti/drv/sciclient/examples/sciserver_testapp
+export sciserver_testapp_PATH = $(PDK_SCICLIENT_COMP_PATH)/examples/sciserver_testapp
+export sciserver_testapp_BOARD_DEPENDENCY = no
+export sciserver_testapp_CORE_DEPENDENCY = yes
+export sciserver_testapp_XDC_CONFIGURO = yes
+export sciserver_testapp_PKG_LIST = sciserver_testapp
+sciserver_testapp_INCLUDE = $(sciserver_testapp_PATH)
+export sciserver_testapp_BOARDLIST = j721e_evm j7200_evm
+export sciserver_testapp_$(SOC)_CORELIST = mcu1_0
+export sciserver_testapp_SBL_APPIMAGEGEN = yes
+export sciserver_testapp_SBL_IMAGEGEN = no
+ifeq ($(BUILD_OS_TYPE),tirtos)
+sciclient_EXAMPLE_LIST += sciserver_testapp
+endif
+
 
 # SCICLIENT Firewall Unit test
 export sciclient_fw_testapp_COMP_LIST = sciclient_fw_testapp

@@ -2222,15 +2222,15 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
             .host_id = TISCI_HOST_ID_R5_1,
         },
         {
-            .num_resource = 28,
+            .num_resource = 20,
             .type = TISCI_RESASG_UTYPE (TISCI_DEV_MCU_NAVSS0_INTR_0, TISCI_RESASG_SUBTYPE_IR_OUTPUT),
-            .start_resource = 4,
+            .start_resource = 12,
             .host_id = TISCI_HOST_ID_R5_0,
         },
         {
-            .num_resource = 28,
+            .num_resource = 20,
             .type = TISCI_RESASG_UTYPE (TISCI_DEV_MCU_NAVSS0_INTR_0, TISCI_RESASG_SUBTYPE_IR_OUTPUT),
-            .start_resource = 4,
+            .start_resource = 12,
             .host_id = TISCI_HOST_ID_R5_1,
         },
         {

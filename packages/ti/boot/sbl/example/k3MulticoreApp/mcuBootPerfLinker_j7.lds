@@ -99,7 +99,9 @@ SECTIONS
     .pinit   	: {} palign(8) 		> MSMC3_H
     .bss     	: {} align(4)  		> MSMC3_H
     .data    	: {} palign(128) 	> MSMC3_H
-    .boardcfg_data  : {} palign(128)    > MSMC3_H
+    .boardcfg_data   : {} palign(128)    > MSMC3_H
+    .bss.devgroup*   : {} align(4)       > MSMC3_H
+    .const.devgroup* : {} align(4)       > MSMC3_H
 
     .sysmem  	: {} 			> MSMC3_H
     .stack  	: {} align(8)		> MSMC3_H  (HIGH)

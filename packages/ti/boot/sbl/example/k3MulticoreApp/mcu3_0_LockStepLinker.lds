@@ -72,6 +72,8 @@ SECTIONS
     .cinit   	: {} palign(8) 		> MSMC3_MCU1_CPU0
     .pinit   	: {} palign(8) 		> MSMC3_MCU1_CPU0
     .bss     	: {} align(4)  		> MSMC3_MCU1_CPU0
+    .bss.devgroup.*   : {} align(4)      > MSMC3_MCU1_CPU0
+    .const.devgroup.* : {} align(4)      > MSMC3_MCU1_CPU0
     .data    	: {} palign(128) 	> MSMC3_MCU1_CPU0
     .boardcfg_data        : {} palign(128)           > MSMC3_MCU1_CPU0
 	.sysmem  	: {} 				> MSMC3_MCU1_CPU0

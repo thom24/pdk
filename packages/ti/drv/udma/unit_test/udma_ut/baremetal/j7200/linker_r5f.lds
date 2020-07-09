@@ -80,6 +80,9 @@ SECTIONS
     .udma_buffer_msmc                       : {} palign(128) > MSMC3
     .udma_buffer_internal                   : {} palign(128) > OCMRAM
 
+    .bss.devgroup*  : {} align(4)      > DDR0
+    .const.devgroup*: {} align(4)      > DDR0
+
     /* USB or any other LLD buffer for benchmarking */
     .benchmark_buffer (NOLOAD) {} ALIGN (8) > DDR0
 

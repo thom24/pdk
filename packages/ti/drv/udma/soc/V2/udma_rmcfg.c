@@ -546,7 +546,7 @@ const Udma_RmInitPrms gUdmaRmDefCfg_McuNavss[UDMA_NUM_CORE] =
         200U,       /* numGlobalEvent */
         56U,        /* startVintr */
         60U,        /* numVintr */
-        8U,        /* startIrIntr */
+        11U,        /* startIrIntr */
         6U,         /* numIrIntr */
 
         13U,         /* proxyThreadNum */

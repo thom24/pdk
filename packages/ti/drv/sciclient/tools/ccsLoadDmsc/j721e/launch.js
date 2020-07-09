@@ -59,19 +59,21 @@ if (disableGelLoad == 0)
 pdkPath = "/ti/j7presi/workarea/pdk";
 
 //path to board config elf
-ccs_init_elf_file = pdkPath+"/packages/ti/drv/sciclient/tools/ccsLoadDmsc/j721e/sciclient_ccs_init_mcu1_0_release.xer5f";
+pathSciclient = pdkPath+"/packages/ti/drv/sciclient/tools/ccsLoadDmsc/j721e/"
+ccs_init_elf_file = pathSciclient+"sciclient_ccs_init_mcu1_0_release.xer5f";
+loadSciserverFlag = 1;
+sciserver_elf_file = pathSciclient+"sciserver_testapp_mcu1_0_release.xer5f";
 
 //path to sysfw bin
-sysfw_bin = pdkPath+"/packages/ti/drv/sciclient/soc/sysfw/binaries/ti-sci-firmware-j721e-gp.bin"
+sysfw_bin = pdkPath+"/packages/ti/drv/sciclient/soc/sysfw/binaries/ti-sci-firmware-j721e-gp-no-pm-rm.bin"
 
 //<!!!!!! EDIT THIS !!!!!>
 
 // Import the DSS packages into our namespace to save on typing
 importPackage(Packages.com.ti.debug.engine.scripting)
 importPackage(Packages.com.ti.ccstudio.scripting.environment)
-importPackage(Packages.java.lang)
-importPackage(java.io);
-importPackage(java.lang);
+importPackage(Packages.java.lang);
+importPackage(Packages.java.io);
 
 function updateScriptVars()
 {
@@ -196,7 +198,17 @@ function sampleDDRCheck ()
     {
         print ("0x81000000: DDR memory sample check failed !!");
     }
+}
 
+function loadSciserver()
+{
+    updateScriptVars();
+    print("######################################################################################");
+    print("Loading Sciserver Application on MCU1_0. This will service RM/PM messages");
+    print("If you do not want this to be loaded update the launch script to make loadSciserverFlag = 0");
+    print("If you want to load and run other cores, please run the MCU1_0 core after Sciserver is loaded. ");
+    print("######################################################################################");
+    dsMCU1_0.expression.evaluate('GEL_Load("'+ sciserver_elf_file +'")');
 }
 
 function doEverything()
@@ -205,6 +217,10 @@ function doEverything()
     connectTargets();
     disconnectTargets();
     sampleDDRCheck ();
+    if (loadSciserverFlag == 1)
+    {
+        loadSciserver();
+    }
     print("Happy Debugging!!");
 }
 

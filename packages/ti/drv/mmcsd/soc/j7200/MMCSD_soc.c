@@ -217,7 +217,7 @@ MMCSD_Error MMCSD_socInit(void)
              else
              {
                 /* Configure the interrupts for MCU R5 */
-                MMCSDInitCfg[i].intNum = CSLR_MCU_R5FSS0_CORE1_INTR_MAIN2MCU_LVL_INTRTR0_OUTL_32 + i;
+                MMCSDInitCfg[i].intNum = CSLR_MCU_R5FSS0_CORE1_INTR_MAIN2MCU_LVL_INTRTR0_OUTL_32 + i + 1;
                 /* Interrupts are mapped to 192 to 223 on mcu 11 */
              }
           }

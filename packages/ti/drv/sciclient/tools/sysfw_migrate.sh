@@ -127,6 +127,7 @@ if [ "$SKIP_CHECKOUT" != "YES" ]; then
     $RM -fr binaries/am64
     $RM -fr binaries/j7200
     $RM -fr binaries/memory
+    $RM -fr binaries/ti-sci-firmware-j721e-gp.bin
     $RM -fr docs/BUILD.md
     $RM -fr reports
     $MV System_Controller_Firmware_MISRAC_Report.xlsx docs/
@@ -164,7 +165,10 @@ if [ "$SKIP_BUILD" != "YES" ]; then
     make -j -s sciclient_boardcfg BOARD=j721e_evm BUILD_HS=yes
     make -j -s sciclient_ccs_init_clean BOARD=j721e_evm
     make -j -s sciclient_ccs_init BOARD=j721e_evm
+    make -j -s sciserver_testapp_clean BOARD=j721e_evm
+    make -j -s sciserver_testapp BOARD=j721e_evm
     $COPY $ROOTDIR/ti/binary/sciclient_ccs_init/bin/j721e/sciclient_ccs_init_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j721e/
+    $COPY $ROOTDIR/ti/binary/sciserver_testapp/bin/j721e/sciserver_testapp_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j721e/
 
     # AM65xx
     make -j -s sciclient_boardcfg BOARD=am65xx_evm
@@ -185,7 +189,10 @@ if [ "$SKIP_BUILD" != "YES" ]; then
     make -j -s sciclient_boardcfg BOARD=j7200_evm BUILD_HS=yes
     make -j -s sciclient_ccs_init_clean BOARD=j7200_evm
     make -j -s sciclient_ccs_init BOARD=j7200_evm
+    make -j -s sciserver_testapp_clean BOARD=j7200_evm
+    make -j -s sciserver_testapp BOARD=j7200_evm
     $COPY $ROOTDIR/ti/binary/sciclient_ccs_init/bin/j7200/sciclient_ccs_init_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j7200/
+    $COPY $ROOTDIR/ti/binary/sciserver_testapp/bin/j7200/sciserver_testapp_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j7200/
 
     cd -
 fi
@@ -199,7 +206,7 @@ if [ "$SKIP_GEN_BIN" != "YES" ];  then
     ./firmwareHeaderGen.sh am65x-hs
     ./firmwareHeaderGen.sh am65x_sr2
     ./firmwareHeaderGen.sh am65x_sr2-hs
-    ./firmwareHeaderGen.sh j721e
+    ./firmwareHeaderGen.sh j721e-no-pm-rm
     ./firmwareHeaderGen.sh j721e-hs
     ./firmwareHeaderGen.sh am64x-vlab
     ./firmwareHeaderGen.sh am64x-zebu

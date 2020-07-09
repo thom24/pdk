@@ -143,8 +143,8 @@
  * |Type | Byte Index| Data Type| Header
  * |:----|:---------:|:--------:|:------
  * |TISCI Header| [0:1]| U16| Message_type
- * || [2]| U8| Host
- * || [3]| U8| Sequence_id
+ * || [2]| uint8_t| Host
+ * || [3]| uint8_t| Sequence_id
  * || [4:7]| U32| Flags
  * |Payload | Depends on type of message||Payload Fields|
  */
@@ -229,16 +229,17 @@
 #define TISCI_BIT(n)  (1UL << (n))
 
 /**
- * \brief Defines the sysfw DEVGRP type. This is meant to be used in code
- * or data structures that require distinction of devgrps.
- */
-typedef uint8_t devgrp_t;
-
-/**
  * \brief Defines the sysfw DOMGRP type. This is meant to be used in code
  * or data structures that require distinction of domgrps.
  */
 typedef uint8_t domgrp_t;
+
+#ifndef SYSFW_DEVGRPS_H
+/**
+ * \brief Defines the sysfw DEVGRP type. This is meant to be used in code
+ * or data structures that require distinction of devgrps.
+ */
+typedef uint8_t devgrp_t;
 
 /* External definitions */
 
@@ -269,6 +270,8 @@ typedef uint8_t domgrp_t;
 #define DEVGRP_DMSC             ((0x01U) << 7U)
 /** Match everything - STRICTLY INTERNAL USAGE ONLY */
 #define DEVGRP_DMSC_ALL         (0xFFU)
+
+#endif
 
 /**
  * Maximum number of devgrps that are supported by SYSFW.
@@ -393,6 +396,13 @@ typedef struct
      */
     uint32_t              c66xRatRegion;
     /**< C66x Rat region to use for mapping the IR */
+    uint8_t skipLocalBoardCfgProcess;
+    /**< Skip processing of local RM/PM board configurations during
+     *   initialization */
+    Sciclient_BoardCfgPrms_t inPmPrms;
+    /**< Power Management Board Config Input Parameters */
+    Sciclient_BoardCfgPrms_t inRmPrms;
+    /**< Resource Management Board Config Input Parameters */
 } Sciclient_ConfigPrms_t;
 
 /**
@@ -413,6 +423,10 @@ typedef struct
     uint32_t       timeout;
     /**< [IN] Timeout(number of iterations) for receiving response
      *        (Refer \ref Sciclient_ServiceOperationTimeout) */
+    uint8_t        forwardStatus;
+    /**< [IN] Indicates whether the request is being forwarded to another
+     *        service provider. Only to be set internally by sciserver, if
+     *        integrated into this build. Unused otherwise. */
 } Sciclient_ReqPrm_t;
 
 /**
@@ -566,22 +580,29 @@ int32_t Sciclient_getDefaultBoardCfgInfo(Sciclient_DefaultBoardCfgInfo_t *pBoard
  *  \param pCfgPrms     [IN] Pointer to #Sciclient_ConfigPrms_t structure.
  *
  */
-static inline void Sciclient_configPrmsInit(Sciclient_ConfigPrms_t *pCfgPrms);
+int32_t Sciclient_configPrmsInit(Sciclient_ConfigPrms_t *pCfgPrms);
+
+/**
+ *  \brief Send the Response in Ack. Used only with Sciserver or
+ *         Sciclient Direct
+ *
+ *  \param hdr     [IN] Pointer to #tisci_header structure.
+ *
+ */
+void Sciclient_TisciMsgSetAckResp(struct tisci_header *hdr);
+
+/**
+ *  \brief Send the Response in NAK. Used only with Sciserver or
+ *         Sciclient Direct
+ *
+ *  \param hdr     [IN] Pointer to #tisci_header structure.
+ *
+ */
+void Sciclient_TisciMsgSetNakResp(struct tisci_header *hdr);
 
 /* ========================================================================== */
 /*                       Static Function Definitions                          */
 /* ========================================================================== */
-
-static inline void Sciclient_configPrmsInit(Sciclient_ConfigPrms_t *pCfgPrms)
-{
-    if(NULL != pCfgPrms)
-    {
-        pCfgPrms->opModeFlag     = SCICLIENT_SERVICE_OPERATION_MODE_POLLED;
-        pCfgPrms->pBoardCfgPrms  = NULL;
-        pCfgPrms->isSecureMode   = 0U;
-        pCfgPrms->c66xRatRegion  = 15U;
-    }
-}
 
 #ifdef __cplusplus
 }

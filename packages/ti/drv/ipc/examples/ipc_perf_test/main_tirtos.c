@@ -58,12 +58,22 @@
 
 #include "ipc_apputils.h"
 
+#if (defined (BUILD_MCU1_0) && (defined (SOC_J721E) || defined (SOC_J7200)))
+#include <ti/drv/sciclient/sciserver_tirtos.h>
+#endif
+
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
 
 /* Test application stack size */
 #define APP_TSK_STACK_MAIN              (16U * 1024U)
+/* Priority for IPC task */
+#define IPC_SETUP_TASK_PRI                  (3)
+/* High Priority for SCI Server */
+#define IPC_SETUP_SCISERVER_TASK_PRI_HIGH   (IPC_SETUP_TASK_PRI + 1)
+/* Low Priority for SCI Server */
+#define IPC_SETUP_SCISERVER_TASK_PRI_LOW    (1)
 
 /* ========================================================================== */
 /*                         Structure Declarations                             */
@@ -77,6 +87,8 @@
 
 static Void taskFxn(UArg a0, UArg a1);
 extern int32_t Ipc_perf_test(void);
+/* Initialize SCI Server, to process RM/PM Requests by other cores */
+void Ipc_setupSciServer(void);
 
 /* ========================================================================== */
 /*                            Global Variables                                */
@@ -109,6 +121,9 @@ int main(void)
     Task_Params       taskParams;
     Board_initCfg     boardCfg;
 
+    /* Initialize SCI Client Server */
+    Ipc_setupSciServer();
+
     /* It must be called before BoardInit() */
     ipc_initSciclient();
 
@@ -122,7 +137,7 @@ int main(void)
     Task_Params_init(&taskParams);
     
     /* Set the task priority higher than the default priority (1) */
-    taskParams.priority     = 2;
+    taskParams.priority     = IPC_SETUP_TASK_PRI;
     taskParams.stack        = gAppTskStackMain;
     taskParams.stackSize    = sizeof (gAppTskStackMain);
 
@@ -149,3 +164,35 @@ void InitMmu(void)
     Osal_initMmuDefault();
 }
 #endif
+
+void Ipc_setupSciServer(void)
+{
+
+#if (defined (BUILD_MCU1_0) && (defined (SOC_J721E) || defined (SOC_J7200)))
+    Sciserver_TirtosCfgPrms_t appPrms;
+    int32_t ret = CSL_PASS;
+
+    ret = Sciserver_tirtosInitPrms_Init(&appPrms);
+
+    appPrms.taskPriority[SCISERVER_TASK_USER_LO] =
+                                            IPC_SETUP_SCISERVER_TASK_PRI_LOW;
+    appPrms.taskPriority[SCISERVER_TASK_USER_HI] =
+                                            IPC_SETUP_SCISERVER_TASK_PRI_HIGH;
+
+    if (ret == CSL_PASS)
+    {
+        ret = Sciserver_tirtosInit(&appPrms);
+    }
+
+    if (ret == CSL_PASS)
+    {
+        System_printf("Starting Sciserver..... PASSED\n");
+    }
+    else
+    {
+        System_printf("Starting Sciserver..... FAILED\n");
+    }
+
+#endif
+    return;
+}

@@ -71,9 +71,11 @@ SECTIONS
     .bss           : {} align(4)       > DDR0
     .far           : {} align(4)       > DDR0
     .data          : {} palign(128)    > DDR0
-    .boardcfg_data : {} palign(128)    > MSMC3
     .sysmem        : {}                > DDR0
     .data_buffer   : {} palign(128)    > DDR0
+    .bss.devgroup* : {} align(4)       > DDR0
+    .const.devgroup*: {} align(4)      > DDR0
+    .boardcfg_data : {} align(4)       > DDR0
 
     /* USB or any other LLD buffer for benchmarking */
     .benchmark_buffer (NOLOAD) {} ALIGN (8) > DDR0

@@ -211,8 +211,9 @@ endif
 # The second $(CC) compiles the source to generate object
 $(OBJ_PATHS): $(OBJDIR)/%.$(OBJEXT): %.c $(GEN_FILE) | $(OBJDIR) $(DEPDIR)
 	$(ECHO) \# Compiling $(PRINT_MESSAGE): $<
-	$(CC) -ppd=$(DEPFILE).P $(_CFLAGS) $(INCLUDES) $(CFLAGS_DIROPTS) $(COMPILEMODE) $<
-	$(CC) $(_CFLAGS) $(INCLUDES) $(CFLAGS_DIROPTS) $(COMPILEMODE) $<
+	$(MKDIR) -p $(dir $@)
+	$(CC) -ppd=$(DEPFILE).P $(_CFLAGS) $(INCLUDES) -fr=$(dir $@) -fs=$(dir $@) $(COMPILEMODE) $<
+	$(CC) $(_CFLAGS) $(INCLUDES) -fr=$(dir $@) -fs=$(dir $@) $(COMPILEMODE) $<
 
 #TODO: Check ASMFLAGS if really required
 ASMFLAGS = -me -g --code_state=16 --diag_warning=225

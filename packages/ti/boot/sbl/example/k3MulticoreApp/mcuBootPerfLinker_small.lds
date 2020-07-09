@@ -56,6 +56,7 @@ MEMORY
         /* Used for SYSFW initlization */
 	OCMRAM_SBL_SYSFW (RWIX) : origin=0x41C3E000 length=0x4000
 	OCMRAM_SBL_UNUSED (X)   : origin=0x41C7E000 length=0x2000
+    OCMRAM_SBL_RM_PM_HAL (X): origin=0x41C80000 length=0x6000
 
         /* App code resides here  */
 	RESET_VECTORS (X)       : origin=0x41C43F00 length=0x100
@@ -87,7 +88,9 @@ SECTIONS
     .pinit   	: {} palign(8) 		> OCMRAM_BOOT_PERF
     .bss     	: {} align(4)  		> OCMRAM_BOOT_PERF
     .data    	: {} palign(128) 	> OCMRAM_BOOT_PERF
-    .boardcfg_data  : {} palign(128)    > OCMRAM_BOOT_PERF
+    .boardcfg_data   : {} palign(128)    > OCMRAM_BOOT_PERF
+    .bss.devgroup*   : {} align(4)       > OCMRAM_SBL_RM_PM_HAL
+    .const.devgroup* : {} align(4)       > OCMRAM_SBL_RM_PM_HAL
 
     .sysmem  	: {} 			> OCMRAM_BOOT_PERF
     .stack  	: {} align(8)		> OCMRAM_BOOT_PERF  (HIGH)

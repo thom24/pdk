@@ -138,6 +138,13 @@
  * @ref tisci_msg_rm_udmap_rx_ch_cfg_req::rx_atype parameters.
  */
 #define TISCI_MSG_VALUE_RM_UDMAP_CH_ATYPE_VIRTUAL              (2u)
+/**
+ * Used for all non-coherent traffic like accelerator and real-time IP
+ * traffic.  Configuration for
+ * @ref tisci_msg_rm_udmap_tx_ch_cfg_req::tx_atype and
+ * @ref tisci_msg_rm_udmap_rx_ch_cfg_req::rx_atype parameters.
+ */
+#define TISCI_MSG_VALUE_RM_UDMAP_CH_ATYPE_NON_COHERENT         (3U)
 
 /**
  * Channel performs packet oriented transfers using pass by reference
@@ -845,6 +852,7 @@ struct tisci_msg_rm_udmap_gcfg_cfg_resp {
  * @ref TISCI_MSG_VALUE_RM_UDMAP_CH_ATYPE_PHYS
  * @ref TISCI_MSG_VALUE_RM_UDMAP_CH_ATYPE_INTERMEDIATE
  * @ref TISCI_MSG_VALUE_RM_UDMAP_CH_ATYPE_VIRTUAL
+ * @ref TISCI_MSG_VALUE_RM_UDMAP_CH_ATYPE_NON_COHERENT
  *
  * This field is only valid if
  * @ref TISCI_MSG_VALUE_RM_UDMAP_CH_ATYPE_VALID is set in
@@ -1160,6 +1168,7 @@ struct tisci_msg_rm_udmap_tx_ch_cfg_resp {
  * @ref TISCI_MSG_VALUE_RM_UDMAP_CH_ATYPE_PHYS
  * @ref TISCI_MSG_VALUE_RM_UDMAP_CH_ATYPE_INTERMEDIATE
  * @ref TISCI_MSG_VALUE_RM_UDMAP_CH_ATYPE_VIRTUAL
+ * @ref TISCI_MSG_VALUE_RM_UDMAP_CH_ATYPE_NON_COHERENT
  *
  * This field is only valid if
  * @ref TISCI_MSG_VALUE_RM_UDMAP_CH_ATYPE_VALID is set in

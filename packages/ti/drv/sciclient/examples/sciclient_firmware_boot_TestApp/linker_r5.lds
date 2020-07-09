@@ -72,20 +72,26 @@ SECTIONS
 {
 /* 'intvecs' and 'intc_text' sections shall be placed within                  */
 /* a range of +\- 16 MB                                                       */
-    .rstvectors           : {} palign(8)                            > RESET_VECTORS
-    .bootCode    	: {} palign(8) 		> OCMRAM_sciclientTest
-    .startupCode 	: {} palign(8) 		> OCMRAM_sciclientTest
-    .startupData 	: {} palign(8) 		> OCMRAM_sciclientTest, type = NOINIT
-    .text                 : {} palign(8)                            > OCMRAM_sciclientTest
-    .const                : {} palign(8)                            > OCMRAM_sciclientTest
-    .cinit                : {} palign(8)                            > OCMRAM_sciclientTest
-    .pinit                : {} palign(8)                            > OCMRAM_sciclientTest
-    .data                 : {} palign(128)                          > OCMRAM_sciclientTest
-    .boardcfg_data        : {} palign(128)                          > OCMRAM_sciclientTest
-    .bss                  : {} align(4)                             > MCU0_R5F_TCMB0
-    .sysmem               : {}                                      > MCU0_R5F_TCMB0
-    .stack                : {} align(4)                             > MCU0_R5F_TCMB0  (HIGH)
-    .irqStack             : {. = . + __IRQ_STACK_SIZE;} align(4)    > MCU0_R5F_TCMB0  (HIGH)
+    .rstvectors                   : {} palign(8)     > RESET_VECTORS
+    .bootCode    	          : {} palign(8)     > OCMRAM_sciclientTest
+    .startupCode 	          : {} palign(8)     > OCMRAM_sciclientTest
+    .startupData 	          : {} palign(8)     > OCMRAM_sciclientTest, type = NOINIT
+    .text                         : {} palign(8)     > OCMRAM_sciclientTest
+    .const                        : {} palign(8)     > OCMRAM_sciclientTest
+    .const.devgroup.MCU_WAKEUP    : {} align(4)      > OCMRAM_sciclientTest
+    .const.devgroup.MAIN          : {} align(4)      > OCMRAM_sciclientTest
+    .const.devgroup.DMSC_INTERNAL : {} align(4)      > OCMRAM_sciclientTest
+    .cinit                        : {} palign(8)     > OCMRAM_sciclientTest
+    .pinit                        : {} palign(8)     > OCMRAM_sciclientTest
+    .data                         : {} palign(128)   > OCMRAM_sciclientTest
+    .boardcfg_data                : {} palign(128)   > OCMRAM_sciclientTest
+    .bss                          : {} align(4)      > MCU0_R5F_TCMB0
+    .bss.devgroup.MAIN            : {} align(4)      > OCMRAM_sciclientTest
+    .bss.devgroup.MCU_WAKEUP      : {} align(4)      > OCMRAM_sciclientTest
+    .bss.devgroup.DMSC_INTERNAL   : {} align(4)      > OCMRAM_sciclientTest
+    .sysmem                       : {}               > MCU0_R5F_TCMB0
+    .stack                        : {} align(4)      > MCU0_R5F_TCMB0  (HIGH)
+    .irqStack                     : {. = . + __IRQ_STACK_SIZE;} align(4)    > MCU0_R5F_TCMB0  (HIGH)
                             RUN_START(__IRQ_STACK_START)
                             RUN_END(__IRQ_STACK_END)
     .fiqStack             : {. = . + __FIQ_STACK_SIZE;} align(4)    > MCU0_R5F_TCMB0  (HIGH)

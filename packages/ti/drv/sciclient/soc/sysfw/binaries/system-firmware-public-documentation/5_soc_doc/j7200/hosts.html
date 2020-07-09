@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                20.00.00
+                20.00.01
               </div>
             
           
@@ -210,72 +210,87 @@ entity to indicate the same thing.</p>
 <tr class="row-even"><td>0</td>
 <td>DMSC</td>
 <td>Secure</td>
-<td>Device Management and Security Control</td>
+<td>Security Controller</td>
 </tr>
-<tr class="row-odd"><td>3</td>
+<tr class="row-odd"><td>254</td>
+<td>DM</td>
+<td>Non Secure</td>
+<td>Device Management</td>
+</tr>
+<tr class="row-even"><td>3</td>
 <td>MCU_0_R5_0</td>
 <td>Non Secure</td>
 <td>Cortex R5 context 0 on MCU island</td>
 </tr>
-<tr class="row-even"><td>4</td>
+<tr class="row-odd"><td>4</td>
 <td>MCU_0_R5_1</td>
 <td>Secure</td>
 <td>Cortex R5 context 1 on MCU island(Boot)</td>
 </tr>
-<tr class="row-odd"><td>5</td>
+<tr class="row-even"><td>5</td>
 <td>MCU_0_R5_2</td>
 <td>Non Secure</td>
 <td>Cortex R5 context 2 on MCU island</td>
 </tr>
-<tr class="row-even"><td>6</td>
+<tr class="row-odd"><td>6</td>
 <td>MCU_0_R5_3</td>
 <td>Secure</td>
 <td>Cortex R5 context 3 on MCU island</td>
 </tr>
-<tr class="row-odd"><td>10</td>
+<tr class="row-even"><td>10</td>
 <td>A72_0</td>
 <td>Secure</td>
 <td>Cortex A72 context 0 on Main island</td>
 </tr>
-<tr class="row-even"><td>11</td>
+<tr class="row-odd"><td>11</td>
 <td>A72_1</td>
 <td>Secure</td>
 <td>Cortex A72 context 1 on Main island</td>
 </tr>
-<tr class="row-odd"><td>12</td>
+<tr class="row-even"><td>12</td>
 <td>A72_2</td>
 <td>Non Secure</td>
 <td>Cortex A72 context 2 on Main island</td>
 </tr>
-<tr class="row-even"><td>13</td>
+<tr class="row-odd"><td>13</td>
 <td>A72_3</td>
 <td>Non Secure</td>
 <td>Cortex A72 context 3 on Main island</td>
 </tr>
-<tr class="row-odd"><td>14</td>
+<tr class="row-even"><td>14</td>
 <td>A72_4</td>
 <td>Non Secure</td>
 <td>Cortex A72 context 4 on Main island</td>
 </tr>
-<tr class="row-even"><td>35</td>
+<tr class="row-odd"><td>35</td>
 <td>MAIN_0_R5_0</td>
 <td>Non Secure</td>
 <td>Cortex R5_0 context 0 on Main island</td>
 </tr>
-<tr class="row-odd"><td>36</td>
+<tr class="row-even"><td>36</td>
 <td>MAIN_0_R5_1</td>
 <td>Secure</td>
 <td>Cortex R5_0 context 1 on Main island</td>
 </tr>
-<tr class="row-even"><td>37</td>
+<tr class="row-odd"><td>37</td>
 <td>MAIN_0_R5_2</td>
 <td>Non Secure</td>
 <td>Cortex R5_0 context 2 on Main island</td>
 </tr>
-<tr class="row-odd"><td>38</td>
+<tr class="row-even"><td>38</td>
 <td>MAIN_0_R5_3</td>
 <td>Secure</td>
 <td>Cortex R5_0 context 3 on MCU island</td>
+</tr>
+<tr class="row-odd"><td>250</td>
+<td>DM2DMSC</td>
+<td>Secure</td>
+<td>DM to DMSC communication</td>
+</tr>
+<tr class="row-even"><td>251</td>
+<td>DMSC2DM</td>
+<td>Non Secure</td>
+<td>DMSC to DM communication</td>
 </tr>
 </tbody>
 </table>
@@ -335,7 +350,7 @@ Host context</li>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'20.00.00',
+            VERSION:'20.00.01',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

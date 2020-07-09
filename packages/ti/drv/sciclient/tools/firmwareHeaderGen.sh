@@ -34,13 +34,11 @@
 #         For AM65XX    : ./firmwareHeaderGen.sh am65x_sr2
 #         For AM65XX-HS : ./firmwareHeaderGen.sh am65x-hs
 #         For AM65XX-HS : ./firmwareHeaderGen.sh am65x_sr2-hs
-#         For J721E     : ./firmwareHeaderGen.sh j721e
+#         For J721E     : ./firmwareHeaderGen.sh j721e-no-pm-rm
 #         For J721E-HS  : ./firmwareHeaderGen.sh j721e-hs
 #         For AM64x     : ./firmwareHeaderGen.sh am64x-vlab
 #         For AM64x     : ./firmwareHeaderGen.sh am64x-zebu
 #         For J7200     : ./firmwareHeaderGen.sh j7200
-#         For J7200     : ./firmwareHeaderGen.sh j7200-vlab
-#         For J7200     : ./firmwareHeaderGen.sh j7200-zebu
 export RM=rm
 export MV=mv
 export MAKE=gcc
@@ -51,7 +49,7 @@ export CAT=cat
 #Default SOC is am65x .This can be changed by using first parameter
 # as ,for example, "j721e". Assumes device type is GP by default.
 export FW_SOC=am65x
-export FW_SOC_TYPE=gp
+export FW_SOC_TYPE=-gp
 export BIN_EXT=
 
 if [[ $OS == 'Windows_NT' ]]; then
@@ -85,19 +83,19 @@ fi
 
 # Pickup correct sysfw binary
 if [[ $FW_SOC == *"hs"* ]]; then
-  FW_SOC_TYPE=hs-enc
+  FW_SOC_TYPE=-hs-enc
   FW_SOC=${FW_SOC%-hs}
   BIN_EXT=-hs-enc
 fi
 
 if [[ $FW_SOC == *"vlab"* ]]; then
   FW_SOC=${FW_SOC%-vlab}
-  FW_SOC_TYPE=gp-vlab
+  FW_SOC_TYPE=-gp-vlab
   BIN_EXT=-vlab
 fi
 if [[ $FW_SOC == *"zebu"* ]]; then
   FW_SOC=${FW_SOC%-zebu}
-  FW_SOC_TYPE=gp-zebu
+  FW_SOC_TYPE=-gp-zebu
   BIN_EXT=-zebu
 fi
 
@@ -124,6 +122,15 @@ SYSFW_SE_SIGNED=$SCI_CLIENT_OUT_SOC_DIR/sysfw$BIN_EXT.bin
 export SYSFW_LOAD_ADDR=0x40000
 fi
 
+if [ "$FW_SOC" = "j721e-no-pm-rm" ]; then
+FW_SOC="j721e-gp-no-pm-rm"
+FW_SOC_TYPE=""
+export SCI_CLIENT_OUT_SOC_DIR=$SCI_CLIENT_DIR/soc/V1
+export SCICLIENT_FIRMWARE_HEADER=sciclient_firmware_no_pm_rm_V1$BIN_EXT.h
+SYSFW_SE_SIGNED=$SCI_CLIENT_OUT_SOC_DIR/sysfw_no_pm_rm$BIN_EXT.bin
+export SYSFW_LOAD_ADDR=0x40000
+fi
+
 if [ "$FW_SOC" = "j7200" ]; then
 export SCI_CLIENT_OUT_SOC_DIR=$SCI_CLIENT_DIR/soc/V2
 export SCICLIENT_FIRMWARE_HEADER=sciclient_firmware_V2$BIN_EXT.h
@@ -138,7 +145,7 @@ export SCICLIENT_FIRMWARE_HEADER=sciclient_firmware_V3$BIN_EXT.h
 export SYSFW_LOAD_ADDR=0x44000
 fi
 
-export FIRMWARE_SILICON=$SCI_CLIENT_IN_SOC_DIR/ti-sci-firmware-$FW_SOC-$FW_SOC_TYPE.bin
+export FIRMWARE_SILICON=$SCI_CLIENT_IN_SOC_DIR/ti-sci-firmware-$FW_SOC$FW_SOC_TYPE.bin
 export SYSFW_SE_INNER_CERT=$SCI_CLIENT_IN_SOC_DIR/ti-sci-firmware-$FW_SOC-hs-cert.bin
 export SYSFW_SE_CUST_CERT=$SCI_CLIENT_OUT_SOC_DIR/sysfw_cert.bin
 
@@ -161,7 +168,7 @@ cd -
 $CHMOD a+x $SBL_CERT_GEN
 $CHMOD a+x $BIN2C_GEN
 
-if [[ $FW_SOC_TYPE == *"gp"* ]]; then
+if [[ $FW_SOC == *"gp"* || $FW_SOC_TYPE == *"gp"* ]]; then
 $ECHO "Generating the Header file for " $FIRMWARE_SILICON
 export SBL_CERT_KEY=$ROOTDIR/ti/build/makerules/rom_degenerateKey.pem
 $SBL_CERT_GEN -b $FIRMWARE_SILICON -o $SYSFW_SE_SIGNED -c DMSC_I -l $SYSFW_LOAD_ADDR -k $SBL_CERT_KEY

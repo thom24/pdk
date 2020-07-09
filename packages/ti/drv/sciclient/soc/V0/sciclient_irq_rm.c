@@ -40,7 +40,7 @@
 /*                             Include Files                                  */
 /* ========================================================================== */
 
-#include <ti/drv/sciclient/src/sciclient_rm_priv.h>
+#include <ti/drv/sciclient/src/sciclient/sciclient_rm_priv.h>
 #include <ti/drv/sciclient/soc/V0/sciclient_irq_rm.h>
 
 /* ========================================================================== */
