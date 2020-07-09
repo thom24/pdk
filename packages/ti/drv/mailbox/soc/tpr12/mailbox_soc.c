@@ -709,7 +709,8 @@ int32_t Mailbox_write(Mbox_Handle handle, const uint8_t *buffer, uint32_t size)
     if((size == 0) || (size > MAILBOX_DATA_BUFFER_SIZE) || (buffer == NULL) || (handle == NULL) || (driver->hwCfg == NULL))
     {
         /* Error: Invalid Arguments */
-        DebugP_log4 ("MAILBOX: Mailbox_write Error! Invalid param. Size=%d Buffer=(%p) handle=(%p) hwCfgPtr=(%p)\n", size, (uintptr_t)buffer, (uintptr_t)handle, (uintptr_t)driver->hwCfg);
+        DebugP_log4 ("MAILBOX: Mailbox_write Error! Invalid param. Size=%d Buffer=(%p) handle=(%p) hwCfgPtr=(%p)\n",
+                     size, (uintptr_t)buffer, (uintptr_t)handle, ((handle) ? (uintptr_t)driver->hwCfg : NULL));
         retVal = MAILBOX_EINVAL;
         goto exit;
     }
