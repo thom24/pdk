@@ -63,7 +63,9 @@ ESM_HwAttrs gESMHwCfgAttrs =
     CSL_MSS_INTR_MSS_ESM_LO
 #elif defined (_TMS320C6X)
     (CSL_esmRegs*)CSL_DSS_ESM_U_BASE,
-    CSL_DSS_INTR_DSS_ESM_HI,
+    /* Not used: the DSS ESM high priority interrrupt is an NMI and
+     * first captured by the RTOS NMI exception handler  */
+    0,
     CSL_DSS_INTR_DSS_ESM_LO
 #else
 #error "TPR12 ESM: unsupported core"

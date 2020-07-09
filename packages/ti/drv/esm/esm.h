@@ -58,24 +58,19 @@
   *  @endcode
 *
 *  ## Handling Interrupts on MSS#
-*  The ESM drivers when run on R4F, registers for high priority FIQ to handle the MSS ESM errors.
-*  When ESM errors occurs on DSS, the MSS is notified via a Group2 error signal. The ESM driver
+*  The ESM drivers when run on R5F, registers for high priority interrupt to handle the MSS ESM errors.
+*  When ESM errors occurs on DSS, the MSS is notified via a Group1 error signal. The ESM driver
 *  registers for low priority IRQ to handle these errors.
 *
 
 *  ## Handling Interrupts on DSS#
-*  The DSS ESM errors have to be unmasked for them to generate an NMI.
-*  The API SOC_configureDSSESMMask is provided. Drivers/Applications will have to unmask the bits for the error
-*  signals it is interested in. e.g., Watchdog driver internally unmasks the watchdog expiry NMI
-*  error bits to generate the NMI.
-*
 *  The DSS ESM errors generate a NMI that is first captured by the RTOS NMI exception handler.
 *  Hence applications have to populate the NMI exception handler to use the ESM driver's high
-*  priority FIQ processing API in the .cfg file.
+*  priority interrupt processing API in the .cfg file.
  *
  *  @code
  *
-     Exception.nmiHook           = "&ESM_highpriority_FIQ";
+     Exception.nmiHook           = "&ESM_highpriority_interrupt";
 
  *  @endcode
 
@@ -90,7 +85,7 @@
 *  Uses DebugP_log functions for debug messages
 *
 *  ## Hardware Register Map #
-*  The hardware register map used by this driver can be found at include/reg_esm.h
+*  The hardware register map used by this driver can be found at csl/src/ip/esm/V0/V0_1/cslr_esm.h
 *
 *  ============================================================================
 */

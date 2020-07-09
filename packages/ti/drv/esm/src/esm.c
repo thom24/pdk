@@ -210,27 +210,29 @@ ESM_Handle ESM_init(uint8_t bClearErrors)
 
     OsalRegisterIntrParams_t interruptRegParams;
 
+    /* Register ESM_highpriority_interrupt for MSS only. For DSS,
+     * the ESM high priority interrupt is an NMI and application
+     * needs to populate the NMI exception handler to hook up
+     * ESM_highpriority_interrupt in the .cfg file, e.g.,
+     * Exception.nmiHook = "&ESM_highpriority_interrupt"; */
+
+#if defined (__TI_ARM_V7R4__)
     /* Initialize with defaults */
     Osal_RegisterInterrupt_initParams(&interruptRegParams);
 
     /* Populate the interrupt parameters */
     interruptRegParams.corepacConfig.name       = (char *)"ESM_HIGH_PRIORITY";
     interruptRegParams.corepacConfig.isrRoutine = ESM_highpriority_interrupt;
-#if defined (__TI_ARM_V7R4__)
     interruptRegParams.corepacConfig.priority   = 0xFU;
     interruptRegParams.corepacConfig.intVecNum  = (int32_t)gESMHwCfgAttrs.highPrioIntNum;
     interruptRegParams.corepacConfig.corepacEventNum = (int32_t)gESMHwCfgAttrs.highPrioIntNum;
-#elif defined (_TMS320C6X)
-    interruptRegParams.corepacConfig.priority   = 0x20U;
-    interruptRegParams.corepacConfig.intVecNum  = (int32_t)(OSAL_REGINT_INTVEC_EVENT_COMBINER); /* Host Interrupt vector */
-    interruptRegParams.corepacConfig.corepacEventNum = (int32_t)gESMHwCfgAttrs.highPrioIntNum;  /* Event going to INTC   */
-#endif
     /* Register interrupts */
     (void)Osal_RegisterInterrupt(&interruptRegParams,&(gEsmMCB.hwiHandleHi));
 
     /* Debug Message: */
     DebugP_log2 ("Debug: ESM Driver Registering HWI(High Priority) ISR [%p] for Interrupt %d\n",
                  (uintptr_t)gEsmMCB.hwiHandleHi, gESMHwCfgAttrs.highPrioIntNum);
+#endif
 
     /* Initialize with defaults */
     Osal_RegisterInterrupt_initParams(&interruptRegParams);

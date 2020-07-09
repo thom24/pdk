@@ -8,6 +8,11 @@ COMP_LIST_COMMON    = $(PDK_COMMON_TIRTOS_COMP)
 ifeq ($(SOC),$(filter $(SOC), tpr12))
 # Enable XDC build for application by providing XDC CFG File per core
 XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
+# Append the NMI exception handler for DSS
+ifeq ($(CORE),$(filter $(CORE), c66xdsp_1))
+  XDC_CFG_FILE_UPDATE_$(CORE) = ./$(SOC)/dss_nmi_exception.xs
+  PACKAGE_SRCS_COMMON += ./$(SOC)
+endif
 endif
 
 SRCDIR = .
