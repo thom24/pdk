@@ -186,6 +186,10 @@ struct tisci_msg_proc_handover_resp {
 #define TISCI_MSG_VAL_PROC_BOOT_CFG_FLAG_R5_BTCM_EN           (0x00001000U)
 /** R5 Enable Core ATCM RAM at reset */
 #define TISCI_MSG_VAL_PROC_BOOT_CFG_FLAG_R5_ATCM_EN           (0x00002000U)
+/** R5 Disables SRAM initialization (TCM, etc) at reset */
+#define TISCI_MSG_VAL_PROC_BOOT_CFG_FLAG_R5_MEM_INIT_DIS      (0x00004000U)
+/** R5 Single / Dual CPU Mode 0 = Both CPUs are enabled, 1 = CPU1 Core is disabled */
+#define TISCI_MSG_VAL_PROC_BOOT_CFG_FLAG_R5_SINGLE_CORE       (0x00008000U)
 
 /* C7x Config Flags */
 
