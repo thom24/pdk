@@ -128,7 +128,7 @@ int32_t udmaTestInitDriver(UdmaTestObj *testObj)
             initPrms.rmInitPrms.startBlkCopyHcCh  = UDMA_TEST_PKTDMA_HC_START;
             initPrms.rmInitPrms.numBlkCopyHcCh    = UDMA_TEST_MAX_PKTDMA_BC_HC_CH;
 
-            if((UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP) > 0U)
+            if((UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP) > 0U);
             {
                 UdmaTestRmInitPrmsMapped_init(&initPrms);
             }
