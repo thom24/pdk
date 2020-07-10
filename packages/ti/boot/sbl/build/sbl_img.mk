@@ -23,11 +23,19 @@ APP_NAME = sbl_$(BOOTMODE)_img$(HS_SUFFIX)
 LOCAL_APP_NAME=sbl_$(BOOTMODE)_img_$(CORE)
 BUILD_OS_TYPE = baremetal
 
-SRCDIR      += $(PDK_SBL_COMP_PATH)/board/k3
+ifeq ($(SOC), tpr12)
+SRCDIR += $(PDK_SBL_COMP_PATH)/board/evmTPR12
+else
+SRCDIR += $(PDK_SBL_COMP_PATH)/board/k3
+endif
 
 INCDIR      += $(PDK_SBL_COMP_PATH)
 INCDIR      += $(PDK_SBL_COMP_PATH)/soc
+ifeq ($(SOC), tpr12)
+INCDIR      += $(PDK_SBL_COMP_PATH)/soc/tpr12
+else
 INCDIR      += $(PDK_SBL_COMP_PATH)/soc/k3
+endif
 
 PACKAGE_SRCS_COMMON = .
 
@@ -78,7 +86,6 @@ ifeq ($(BOOTMODE), uart)
   SBL_CFLAGS += -DBOOT_UART
 endif # ifeq ($(BOOTMODE), uart)
 
-# Select libraries based on flags
 ifeq ($(filter $(SBL_CFLAGS), -DBOOT_MMCSD), -DBOOT_MMCSD)
   COMP_LIST_COMMON += mmcsd fatfs_indp
 endif # ifeq ($(filter $(SBL_CFLAGS), -DBOOT_MMCSD), -DBOOT_MMCSD)
@@ -97,7 +104,16 @@ endif # ifeq ($(filter $(SBL_CFLAGS), -DBOOT_OSPI), -DBOOT_OSPI)
 
 SRCS_COMMON += sbl_main.c
 
+ifeq ($(SOC), tpr12)
+  SRCS_COMMON += sbl_pinmux.c
+endif
+
+
+ifeq ($(SOC), tpr12)
+EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_SBL_COMP_PATH)/soc/tpr12/linker.cmd
+else
 EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_SBL_COMP_PATH)/soc/k3/$(SOC)/linker.cmd
+endif
 
 # Core/SoC/platform specific source files and CFLAGS
 # Example:
@@ -114,6 +130,10 @@ endif
 # Select the SBL_OBJ_COPY to use.
 #
 SBL_OBJ_COPY := $(TOOLCHAIN_PATH_GCC_ARCH64)/bin/$(GCC_ARCH64_BIN_PREFIX)-objcopy
+#SoCs like TPR12 do not have GCC tool. So use TI ARM CGT objcopy instead
+ifeq ("$(wildcard ${TOOLCHAIN_PATH_GCC_ARCH64})","")
+SBL_OBJ_COPY := ${TOOLCHAIN_PATH_R5}/bin/arm-none-eabi-objcopy$(EXE_EXT)
+endif
 export SBL_OBJ_COPY
 
 # EFUSE_DEFAULT - R5 ROM will run the SBL in lockstep mode in lockstep

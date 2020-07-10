@@ -262,11 +262,6 @@ void SBL_BootCore(uint32_t entry, uint32_t CoreID, sblEntryPoint_t *pAppEntry)
             pAppEntry->CpuEntryPoint[MCU3_CPU1_ID] = SBL_MCU_LOCKSTEP_ADDR;
             pAppEntry->CpuEntryPoint[CoreID] = SBL_INVALID_ENTRY_ADDR;
             break;
-#else
-        case MPU_CPU0_ID:
-            /* CSL_MPU CPU0*/
-            pAppEntry->entryPoint_MPU_CPU0 = entry;
-            break;
 #endif
 #if defined(OMAPL137_BUILD) || defined(C6748_BUILD)  || defined(OMAPL138_BUILD)
         case DSP0_ID:
@@ -377,7 +372,28 @@ void SBL_BootCore(uint32_t entry, uint32_t CoreID, sblEntryPoint_t *pAppEntry)
             pAppEntry->entryPoint_DSP7 = entry;
             break;
 #endif
+#if defined(SOC_TPR12)
+        case ONLY_LOAD_ID:
+            /* Only loading, ignore entry point*/
+            SBL_log(SBL_LOG_MAX, "Only load (not execute) image @0x%x\n", entry);
+            pAppEntry->CpuEntryPoint[CoreID] = SBL_INVALID_ENTRY_ADDR;
+            break;
+        case DSP1_C66X_ID:
+        case MCU1_CPU0_ID:
+        case MCU1_CPU1_ID:
+            /* All other cores*/
+            SBL_log(SBL_LOG_MAX, "Setting entry point for core %d @0x%x\n", CoreID, entry);
+            pAppEntry->CpuEntryPoint[CoreID] = entry;
+            break;
 
+        case MCU1_SMP_ID:
+            /* Cluster 2 SMP*/
+            SBL_log(SBL_LOG_MAX, "Setting Lockstep entry point for MCU1 @0x%x\n", entry);
+            pAppEntry->CpuEntryPoint[MCU1_CPU0_ID] = entry;
+            pAppEntry->CpuEntryPoint[MCU1_CPU1_ID] = SBL_MCU_LOCKSTEP_ADDR;
+            pAppEntry->CpuEntryPoint[CoreID] = SBL_INVALID_ENTRY_ADDR;
+            break;
+#endif
             default:
             /* Wrong CPU ID */
             break;
@@ -891,6 +907,64 @@ static int32_t SBL_RprcImageParse(void *srcAddr,
             {
                 SBL_log(SBL_LOG_MAX, "Copying 0x%x bytes to 0x%x\n", section.size, section.addr);
                 fp_readData((void *)(uintptr_t)(section.addr), srcAddr, section.size);
+            }
+        }
+    }
+    return retVal;
+}
+#endif
+
+#if defined(SOC_TPR12)
+#include <ti/osal/osal.h>
+#include "sbl_utils_addrxlate.h"
+
+static int32_t SBL_RprcImageParse(void *srcAddr,
+                                  uint32_t *entryPoint,
+                                  int32_t CoreId)
+{
+    rprcFileHeader_t    header;
+    rprcSectionHeader_t section;
+    uint32_t sbl_rsvd_mem_start = Utils_xlate2LocalAddr((uint32_t)(SBL_SCRATCH_MEM_START), SBL_getLocalCoreId());
+    uint32_t sbl_rsvd_mem_end = Utils_xlate2LocalAddr((uint32_t)(((uint32_t)(SBL_SCRATCH_MEM_START)) + ((uint32_t)(SBL_SCRATCH_MEM_SIZE))) , SBL_getLocalCoreId());
+    uint32_t i;
+    int32_t retVal = E_PASS;
+
+    /*read application image header*/
+    fp_readData(&header, srcAddr, sizeof (rprcFileHeader_t));
+
+    /*check magic number*/
+    if (header.magic != RPRC_MAGIC_NUMBER)
+    {
+        SBL_log(SBL_LOG_ERR, "Invalid magic number in boot image. Expected: %x, received: %x\n", RPRC_MAGIC_NUMBER, header.magic);
+        retVal = E_FAIL;
+    }
+    else
+    {
+        /* Set the Entry Point */
+        *entryPoint = header.entry;
+
+        /* Setup CPUs internal memory before using it */
+        SBL_SetupCoreMem(CoreId);
+
+        /*read entrypoint and copy sections to memory*/
+        for (i = (0U); i < header.SectionCount; i++)
+        {
+            fp_readData(&section, srcAddr, sizeof (rprcSectionHeader_t));
+
+            section.addr = Utils_xlate2LocalAddr(section.addr, CoreId);
+
+            if ((fp_readData == SBL_ReadMem) &&
+               (((section.addr > sbl_rsvd_mem_start) && (section.addr < sbl_rsvd_mem_end)) ||
+                (((section.addr + section.size) > sbl_rsvd_mem_start) && ((section.addr + section.size) < sbl_rsvd_mem_end))))
+            {
+                SBL_log(SBL_LOG_ERR, "Warning!! Section overwrites SBL reserved memory\n");
+                retVal = E_FAIL;
+            }
+            else
+            {
+                SBL_log(SBL_LOG_MAX, "Copying 0x%x bytes to 0x%x\n", section.size, section.addr);
+                fp_readData((void *)(uintptr_t)(section.addr), srcAddr, section.size);
+                CacheP_wbInv((void *)(uintptr_t)(section.addr), section.size);
             }
         }
     }

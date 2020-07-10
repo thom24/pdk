@@ -51,11 +51,20 @@
 
 #define MAXRETRANS          (100U)
 #define SBL_XMODEM_DELAY    (0x3FFFFF)
+#ifdef SOC_TPR12
+#include <ti/csl/soc.h>
 
-#ifdef SOC_K2G
-#define READBYTE_WITH_TIMEOUT(xmodemUartAddr, delayMs, pData)    UART_charGetTimeout2_v0((xmodemUartAddr), (delayMs), pData)
+uint32_t READBYTE_WITH_TIMEOUT(uint32_t xmodemUartAddr, uint32_t delayMs, uint8_t *pData)
+{
+    *pData = UART_getc();
+    return TRUE;
+}
 #else
-#define READBYTE_WITH_TIMEOUT(xmodemUartAddr, delayMs, pData)    ((int32_t)(UARTCharGetTimeout2((xmodemUartAddr), (delayMs), pData)))
+ #ifdef SOC_K2G
+ #define READBYTE_WITH_TIMEOUT(xmodemUartAddr, delayMs, pData)    UART_charGetTimeout2_v0((xmodemUartAddr), (delayMs), pData)
+ #else
+ #define READBYTE_WITH_TIMEOUT(xmodemUartAddr, delayMs, pData)    ((int32_t)(UARTCharGetTimeout2((xmodemUartAddr), (delayMs), pData)))
+ #endif
 #endif
 
 static const unsigned short crc16tab[256]= {
@@ -166,11 +175,18 @@ int32_t SBL_uartXmodemRead(uint8_t *dest, uint32_t destsz)
     uint8_t *p;
     uint8_t trychar = 'C';
     uint8_t packetno = 1;
+#ifdef SOC_TPR12
+#if (BOARD_UART_INSTANCE != 0)
+#error "UART base address is set assuming UART instance 0 (MSS SCIA)"
+#endif
+    uint32_t sbl_uart_baseAddr = CSL_MSS_SCIA_U_BASE;
+#else
     UART_HwAttrs uart_cfg;
     uint32_t sbl_uart_baseAddr;
 
     UART_socGetInitCfg(BOARD_UART_INSTANCE, &uart_cfg);
     sbl_uart_baseAddr = uart_cfg.baseAddr;
+#endif
 
     for(;;)
     {

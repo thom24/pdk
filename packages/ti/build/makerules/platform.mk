@@ -193,7 +193,7 @@ endif
 # TPR12
 ifeq ($(BOARD),$(filter $(BOARD), tpr12_evm tpr12_qt))
  SOC = tpr12
- SBL_RUN_ADDRESS=0x41C00100
+ SBL_RUN_ADDRESS=0x10200000
  SBL_DEV_ID=55
 endif
 
@@ -903,7 +903,9 @@ ifeq ($(SOC),$(filter $(SOC), am65xx am64x j721e j7200))
 endif
 
 ifeq ($(SOC),$(filter $(SOC), tpr12))
-  SBL_CORE_ID_mcu1_0 = 0
+#  SBL_CORE_ID_mcu1_0 = 0
+# Presently MCU1 supports only lock step so configure MCU_1_0 core id as MCU_1_SMP_CORE_ID so that SBL configure MCU1 in lock step
+  SBL_CORE_ID_mcu1_0 = 3
   SBL_CORE_ID_mcu1_1 = 1
   SBL_CORE_ID_c66xdsp_1 = 2
 endif

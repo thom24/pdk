@@ -564,8 +564,18 @@ else
   SBL_BIN_FILE=sbl_img_bin
 endif
 
+#For SoCs like TPR12 which do not have GCC toolchain installed, arm-none-eabi-objcopy is used instead of gcc aarch64-none-elf-objcopy
+#arm-none-eabi-objcopy does not support --gap-fill=0xff option so set objcopy option based on objcopy tool used
+
+ifneq ($(findstring "%arm-none-eabi-objcopy",$(SBL_OBJ_COPY)), "")
+  export LC_ALL=C
+  SBL_OBJ_COPY_OPTS := 
+else
+  SBL_OBJ_COPY_OPTS := --gap-fill=0xff
+endif
+
 sbl_img_bin: $(EXE_NAME)
-	$(SBL_OBJ_COPY) --gap-fill=0xff -O binary $< $(SBL_BIN_PATH)
+	$(SBL_OBJ_COPY) $(SBL_OBJ_COPY_OPTS) -O binary $< $(SBL_BIN_PATH)
 
 otp_app_bin: sbl_img_bin
   ifeq (4.2.0,$(firstword $(sort $(MAKE_VERSION) 4.2.0)))
@@ -603,11 +613,18 @@ ifeq ($(BOOTMODE),$(filter $(BOOTMODE), sd qspi qspi_sd))
 	$(MV) $(SBL_TIIMAGE_PATH) $(SBL_MLO_PATH)
   endif
 endif
-else ifeq ($(SOC),$(filter $(SOC), am65xx am64x j721e j7200 tpr12))
+else ifeq ($(SOC),$(filter $(SOC), am65xx am64x j721e j7200))
 ifneq ($(OS),Windows_NT)
 	$(CHMOD) a+x $(SBL_CERT_GEN)
 endif
 	$(SBL_CERT_GEN) -b $(SBL_BIN_PATH) -o $(SBL_TIIMAGE_PATH) -c R5 -l $(SBL_RUN_ADDRESS) -k $($(APP_NAME)_SBL_CERT_KEY) -d DEBUG -j DBG_FULL_ENABLE -m $(SBL_MCU_STARTUP_MODE)
+else ifeq ($(SOC),$(filter $(SOC), tpr12))
+ifneq ("$(wildcard ${TPR12_ROM_SCRIPT_PATH}/gpkey.pem)","")
+	source $(PDK_INSTALL_PATH)/ti/build/makerules/tpr12rom_sign_non_secure.sh -b $(SBL_BIN_PATH) -c R5 -k ${TPR12_ROM_SCRIPT_PATH}/gpkey.pem -i
+	cat R5-cert.bin $(SBL_BIN_PATH) > $(SBL_TIIMAGE_PATH)
+else
+	echo "Bypassing SBL signing as TPR12 ROM private key unavailable"
+endif
 endif
 	$(ECHO) \# SBL image $@ created.
 	$(ECHO) \#
@@ -615,7 +632,7 @@ endif
 ifeq ($(BUILD_HS),yes)
 $(SBL_IMAGE_PATH_SIGNED): $(SBL_IMAGE_PATH)
   # K3 build does not support the "secure_sign_sbl" target
-  ifneq ($(SOC), $(filter $(SOC), am65xx am64x j721e j7200 tpr12))
+  ifneq ($(SOC), $(filter $(SOC), am65xx am64x j721e j7200))
 	$(MAKE) secure_sign_sbl
   endif
 endif
@@ -682,11 +699,15 @@ ifeq ($(SOC),$(filter $(SOC), tda3xx))
 	$(SBL_CRC_IMAGE_GEN) $@ $(SBL_APPIMAGE_PATH_BE) >> $(SBL_STDOUT_FILE)
   endif
 else
- ifeq ($(SOC),$(filter $(SOC), am65xx am64x j721e j7200 tpr12))
+ ifeq ($(SOC),$(filter $(SOC), am65xx am64x j721e j7200))
    ifneq ($(OS),Windows_NT)
 	$(CHMOD) a+x $(SBL_CERT_GEN)
    endif
 	$(SBL_CERT_GEN) -b $@ -o $(SBL_APPIMAGE_PATH_SIGNED)    -c R5 -l $(SBL_RUN_ADDRESS) -k $(SBL_CERT_KEY_HS)
+ else
+   ifeq ($(SOC),$(filter $(SOC), tpr12))
+		@echo "No certificate for SBL for appimage presently supported"
+   endif
  endif
 endif
 	$(RM) -f $(SBL_STDOUT_FILE)

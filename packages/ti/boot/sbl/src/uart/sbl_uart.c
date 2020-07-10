@@ -48,13 +48,19 @@
 #include "sbl_soc.h"
 #include "sbl_soc_cfg.h"
 #include "sbl_rprc_parse.h"
+
 #include "sbl_err_trap.h"
+
+#if defined(SOC_TPR12)
+#include "sbl_rcm.h"
+#else /* TPR12 does not have SCI CLIENT, SYSFW, UDMA modules */
 #include "sbl_sci_client.h"
+#include <ti/drv/udma/udma.h>
+#include <ti/drv/sciclient/sciclient.h>
+#endif
 
 /* TI-RTOS Header files */
-#include <ti/drv/udma/udma.h>
 #include <ti/drv/uart/UART_stdio.h>
-#include <ti/drv/sciclient/sciclient.h>
 #include <ti/csl/cslr_device.h>
 #include <ti/csl/arch/csl_arch.h>
 #include <ti/board/board_cfg.h>
@@ -63,8 +69,17 @@
 /**********************************************************************
  ************************** Internal functions ************************
  **********************************************************************/
+#ifdef SOC_TPR12
+/* TPR12 SBL presently does not support certificate parsing so use the entire
+ * SBL scratch for UART receive
+ */
+#define XMODEM_TEMP_BUFF_SIZE    (SBL_SCRATCH_MEM_SIZE)
+#define SBL_XMODEM_BUFF_ADDR     (SBL_SCRATCH_MEM_START)
+#else
 #define XMODEM_TEMP_BUFF_SIZE    ((SBL_SCRATCH_MEM_SIZE) / 2)
 #define SBL_XMODEM_BUFF_ADDR     ((SBL_SCRATCH_MEM_START) + (XMODEM_TEMP_BUFF_SIZE))
+#endif
+
 
 static int32_t SBL_UART_ReadXmodemBuffer(void *dstAddr,
                              void *srcOffsetAddr,
@@ -90,6 +105,7 @@ static void SBL_UART_seek(void *srcAddr, uint32_t location)
     *xModemPktBuffIndx = location;
 }
 
+#ifndef SOC_TPR12 /* SysFw not present for TPR12 */
 int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
 {
     SBL_ADD_PROFILE_POINT;
@@ -104,6 +120,7 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
 
     return CSL_PASS;
 }
+#endif
 
 int32_t SBL_uartInit(uint32_t inClkFreqHz)
 {
@@ -113,12 +130,27 @@ int32_t SBL_uartInit(uint32_t inClkFreqHz)
     SBL_ADD_PROFILE_POINT;
 
     UART_socGetInitCfg(BOARD_UART_INSTANCE, &uart_cfg);
+#ifdef SOC_TPR12
+    uart_cfg.clockFrequency = inClkFreqHz;
+    uart_cfg.dmaMode = 0;
+#else
     uart_cfg.frequency = inClkFreqHz;
+#endif
     /* Disable the UART interrupt */
     uart_cfg.enableInterrupt = FALSE;
     UART_socSetInitCfg(BOARD_UART_INSTANCE, &uart_cfg);
 
+#ifdef SOC_TPR12
+    {
+        UART_Params uartPrms;
+
+        UART_Params_init(&uartPrms);
+        uartPrms.readDataMode = UART_DATA_BINARY;
+        UART_stdioInit2(BOARD_UART_INSTANCE, &uartPrms);
+    }
+#else
     UART_stdioInit(BOARD_UART_INSTANCE);
+#endif
 
     SBL_ADD_PROFILE_POINT;
 
@@ -144,12 +176,15 @@ int32_t SBL_UARTBootImage(sblEntryPoint_t *pEntry)
     /* Re-initialize the uart to a different freq */
     /* depending on whether SysFwConfigPm has run */
     /* or not                                     */
-#if defined(DSBL_SKIP_BRD_CFG_PM) || defined(SBL_SKIP_SYSFW_INIT)
-    SBL_uartInit(SBL_ROM_UART_MODULE_INPUT_CLK);
+#if defined(SOC_TPR12)
+      SBL_uartInit(SBL_RcmGetPeripheralClockFrequency(Rcm_PeripheralClockSource_SYS_CLK));
 #else
-    SBL_uartInit(SBL_SYSFW_UART_MODULE_INPUT_CLK);
+ #if defined(DSBL_SKIP_BRD_CFG_PM) || defined(SBL_SKIP_SYSFW_INIT)
+      SBL_uartInit(SBL_ROM_UART_MODULE_INPUT_CLK);
+ #else
+      SBL_uartInit(SBL_SYSFW_UART_MODULE_INPUT_CLK);
+ #endif
 #endif
-
     /* Initialize the function pointers to parse through the RPRC format. */
     fp_readData = &SBL_UART_ReadXmodemBuffer;
     fp_seek     = &SBL_UART_seek;

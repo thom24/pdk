@@ -107,6 +107,8 @@ else ifeq ($(SBL_PLATFORM), omapl138)
 	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/boot/sbl all BOARD=lcdkC6748 SOC=C6748 BOOTMODE=mmcsd
 	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/boot/sbl mmcsd_flashwriter BOARD=lcdkOMAPL138 SOC=OMAPL138
 	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/boot/sbl mmcsd_flashwriter BOARD=lcdkC6748 SOC=C6748
+else ifeq ($(SBL_PLATFORM), tpr12)
+	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/boot/sbl/build all
 endif
 endif
 
@@ -208,5 +210,7 @@ else ifeq ($(SBL_PLATFORM), omapl138)
 else ifeq ($(SBL_PLATFORM),$(filter $(SBL_PLATFORM), am65xx j721e j7200))
 	# All keystone3
 	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/boot/sbl/build clean
+	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/boot/sbl/build clean
+else ifeq ($(SBL_PLATFORM),$(filter $(SBL_PLATFORM), tpr12))
 	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/boot/sbl/build clean
 endif

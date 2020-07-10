@@ -24,7 +24,11 @@ INCDIR	+= $(PDK_SBL_COMP_PATH)/src/ospi
 INCDIR	+= $(PDK_SBL_COMP_PATH)/src/hyperflash
 INCDIR	+= $(PDK_SBL_COMP_PATH)/src/mmcsd
 INCDIR	+= $(PDK_SBL_COMP_PATH)/src/uart
+ifeq ($(SOC),$(filter $(SOC), tpr12))
+INCDIR	+= $(PDK_SBL_COMP_PATH)/soc/$(SOC)
+else
 INCDIR	+= $(PDK_SBL_COMP_PATH)/soc/k3
+endif
 
 SRCDIR	+= $(PDK_SBL_COMP_PATH)/board/src
 SRCDIR	+= $(PDK_SBL_COMP_PATH)/src/rprc
@@ -32,7 +36,12 @@ SRCDIR	+=$(PDK_SBL_COMP_PATH)/src/ospi
 SRCDIR	+=$(PDK_SBL_COMP_PATH)/src/hyperflash
 SRCDIR	+=$(PDK_SBL_COMP_PATH)/src/mmcsd
 SRCDIR	+=$(PDK_SBL_COMP_PATH)/src/uart
+
+ifeq ($(SOC),$(filter $(SOC), tpr12))
+SRCDIR	+= $(PDK_SBL_COMP_PATH)/soc/$(SOC)
+else
 SRCDIR	+= $(PDK_SBL_COMP_PATH)/soc/k3
+endif
 SRCDIR	+= $(PDK_INSTALL_PATH)/ti/drv/uart/soc/$(SOC)
 
 # List all the external components/interfaces, whose interface header files
@@ -48,7 +57,13 @@ CFLAGS_LOCAL_COMMON += -DSBL_USE_DMA=1
 endif
 
 PACKAGE_SRCS_COMMON  = ./build ./src ./tools
-PACKAGE_SRCS_COMMON += ./soc/sbl_soc.h ./soc/k3
+PACKAGE_SRCS_COMMON += ./soc/sbl_soc.h
+ifeq ($(SOC),$(filter $(SOC), tpr12))
+PACKAGE_SRCS_COMMON += ./soc/$(SOC)
+else
+PACKAGE_SRCS_COMMON += ./soc/k3
+endif
+
 PACKAGE_SRCS_COMMON += ./.gitignore ./sbl_component.mk ./makefile ./sbl_ver.h
 
 # Common source files and CFLAGS across all platforms and cores
@@ -57,8 +72,15 @@ SRCS_COMMON += sbl_rprc.c
 SRCS_COMMON += sbl_slave_core_boot.c
 SRCS_COMMON += UART_soc.c
 
+ifeq ($(SOC),$(filter $(SOC), tpr12))
+SRCS_COMMON += sbl_utils_addrxlate.c
+SRCS_COMMON += sbl_csl.c
+SRCS_COMMON += sbl_rcm.c
+else
 SRCS_COMMON += sbl_sci_client.c
 SRCS_COMMON += sbl_vid_map.c
+endif
+
 SRCS_ASM_COMMON += sbl_misc.asm
 SRCS_ASM_COMMON += sbl_init.asm
 
@@ -72,8 +94,13 @@ else
     SBL_CFLAGS += -DSBL_SCRATCH_MEM_START=0x70010000
     SBL_CFLAGS += -DSBL_SCRATCH_MEM_SIZE=0xF0000
   else
-    SBL_CFLAGS += -DSBL_SCRATCH_MEM_START=0xB8000000
-    SBL_CFLAGS += -DSBL_SCRATCH_MEM_SIZE=0x4000000
+    ifeq ($(SOC),$(filter $(SOC), tpr12))
+      SBL_CFLAGS += -DSBL_SCRATCH_MEM_START=0x10220000
+      SBL_CFLAGS += -DSBL_SCRATCH_MEM_SIZE=0x00040000
+    else
+      SBL_CFLAGS += -DSBL_SCRATCH_MEM_START=0xB8000000
+      SBL_CFLAGS += -DSBL_SCRATCH_MEM_SIZE=0x4000000
+    endif # ifeq ($(SOC), tpr12)
   endif
 endif # ifeq ($(SOC), am64x)
 
@@ -114,6 +141,7 @@ endif # ifeq ($(filter $(SBL_CFLAGS), -DBOOT_HYPERFLASH), -DBOOT_HYPERFLASH)
 ifeq ($(filter $(SBL_CFLAGS), -DBOOT_UART), -DBOOT_UART)
   SRCS_COMMON += sbl_uart.c sbl_xmodem.c
 endif # ifeq ($(filter $(SBL_CFLAGS), -DBOOT_UART), -DBOOT_UART)
+
 
 # Core/SoC/platform specific source files and CFLAGS
 # Example:
