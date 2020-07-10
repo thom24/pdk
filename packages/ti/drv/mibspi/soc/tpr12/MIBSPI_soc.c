@@ -388,7 +388,9 @@ int32_t MIBSPI_socGetInitCfg(enum MibSpi_InstanceId id, MibSpi_HwCfg *cfg)
     ret = MIBSPI_socGetInstIndex(id, &index);
     if (ret == MIBSPI_STATUS_SUCCESS)
     {
-        Mibspi_assert(MIBSPI_socValidateCfg(&gMibspiHwCfg[index]) == MIBSPI_STATUS_SUCCESS);
+        /* Although only ret val check is enough. Also add index check for KW issue fix */
+		Mibspi_assert(index < MIBSPI_UTILS_ARRAYSIZE(gMibspiHwCfg));
+		Mibspi_assert(MIBSPI_socValidateCfg(&gMibspiHwCfg[index]) == MIBSPI_STATUS_SUCCESS);
         *cfg = gMibspiHwCfg[index];
     }
     else
@@ -416,7 +418,8 @@ int32_t MIBSPI_socSetInitCfg(enum MibSpi_InstanceId id, const MibSpi_HwCfg *cfg)
     if (ret == MIBSPI_STATUS_SUCCESS)
     {
         Mibspi_assert(MIBSPI_socValidateCfg(cfg) == MIBSPI_STATUS_SUCCESS);
-        gMibspiHwCfg[index] = *cfg;
+        Mibspi_assert(index < MIBSPI_UTILS_ARRAYSIZE(gMibspiHwCfg)); /*Done to prevent KW issue reporting  */
+		gMibspiHwCfg[index] = *cfg;
     }
     else
     {

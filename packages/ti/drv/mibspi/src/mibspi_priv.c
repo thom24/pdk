@@ -361,20 +361,20 @@ static void MIBSPI_enablePinSettings(CSL_mss_spiRegs  *ptrMibSpiReg, MIBSPI_PinM
 
     /*  SPIPC7 Register: Set Port Pullup/Pulldown control: 0 to enable, 1 to disable  */
     regVal = ptrMibSpiReg->SPIPC7;
-    CSL_FINS(regVal, SPI_SPIPC7_SOMIPDIS0, 1);
-    CSL_FINS(regVal, SPI_SPIPC7_SIMOPDIS0, 1);
-    CSL_FINS(regVal, SPI_SPIPC7_CLKPDIS, 1);
-    CSL_FINS(regVal, SPI_SPIPC7_ENAPDIS, 1);
-    CSL_FINS(regVal, SPI_SPIPC7_SCSPDIS, 1);
+    CSL_FINS(regVal, SPI_SPIPC7_SOMIPDIS0, 0);
+    CSL_FINS(regVal, SPI_SPIPC7_SIMOPDIS0, 0);
+    CSL_FINS(regVal, SPI_SPIPC7_CLKPDIS, 0);
+    CSL_FINS(regVal, SPI_SPIPC7_ENAPDIS, 0);
+    CSL_FINS(regVal, SPI_SPIPC7_SCSPDIS, 0);
     ptrMibSpiReg->SPIPC7 = regVal;
 
     /*  SPIPC8 Register: Set Port Pullup/Pulldown value: 0 to pulldown, 1 to pullup  */
     regVal = ptrMibSpiReg->SPIPC8;
-    CSL_FINS(regVal, SPI_SPIPC8_SCSPSEL, 0x0U);
-    CSL_FINS(regVal, SPI_SPIPC8_ENAPSEL, 0U);
-    CSL_FINS(regVal, SPI_SPIPC8_CLKPSEL, 0U);
-    CSL_FINS(regVal, SPI_SPIPC8_SIMOPSEL0, 0U);
-    CSL_FINS(regVal, SPI_SPIPC8_SOMIPSEL0, 0U);
+    CSL_FINS(regVal, SPI_SPIPC8_SCSPSEL, 0x1U);
+    CSL_FINS(regVal, SPI_SPIPC8_ENAPSEL, 1U);
+    CSL_FINS(regVal, SPI_SPIPC8_CLKPSEL, 1U);
+    CSL_FINS(regVal, SPI_SPIPC8_SIMOPSEL0, 1U);
+    CSL_FINS(regVal, SPI_SPIPC8_SOMIPSEL0, 1U);
     ptrMibSpiReg->SPIPC8 = regVal;
 
     return;
