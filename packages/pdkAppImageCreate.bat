@@ -40,6 +40,9 @@ set PROCESSOR=%6
 @if %SOC% == am65xx (
     goto SOC_K3
 ) 
+@if %SOC% == am64x (
+    goto SOC_K3
+)
 @if %SOC% == j721e (
     goto SOC_K3
 ) 
