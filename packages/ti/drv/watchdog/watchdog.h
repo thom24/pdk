@@ -61,8 +61,6 @@
  *  Watchdog_Params_init(&params);
  *  params.resetMode = Watchdog_RESET_OFF;
  *  watchdogParams.callbackFxn = watchdogCallback;
- *  watchdogParams.socHandle = socHandle;
- *  watchdogParams.esmHandle = esmHandle;
  *  handle = Watchdog_open(Watchdog_configIndex, &params);
  *  if (!handle) {
  *      System_printf("Watchdog did not open");
@@ -107,10 +105,10 @@
  *   *  @code
  *
     notifyParams.groupNumber = 1;
-    notifyParams.errorNumber = SOC_XWR16XX_MSS_DSS_GP2_ERR_ESM;
+    notifyParams.errorNumber = ESMG1_DSS_ESM_HI_INT;
     notifyParams.arg = NULL;
     notifyParams.notify = DSPNotifyMSSCallback;
-    retVal = ESM_registerNotifier (esmHandle, &notifyParams, &errCode);
+    retVal = ESM_registerNotifier (cfg->esmHandle, &notifyParams, &errCode);
 
  *  @endcode
  *
@@ -293,7 +291,6 @@ typedef struct Watchdog_Params_t {
     Watchdog_DebugMode      debugStallMode; /*!< Mode to stall watchdog at breakpoints. */
     Watchdog_WindowSize     windowSize;     /*!< Windowed watchdog window size. */
     uint32_t                preloadValue;   /*!< Preload value. */
-    ESM_Handle              esmHandle;      /*!< ESM Handle. */
 } Watchdog_Params;
 
 /** @}*/

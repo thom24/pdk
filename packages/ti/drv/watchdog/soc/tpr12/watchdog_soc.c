@@ -91,22 +91,27 @@ typedef struct SOC_HwAttrs_t
 /* Watchdog objects */
 Watchdog_MCB watchdogObject;
 
+#define CSL_WDT_PER_CNT    1U
+
 #if defined (__TI_ARM_V7R4__)
 
 /**
  * @brief   There is only 1 Watchdog instance
  * available. This should *NOT* be modified by the customer.
  */
-Watchdog_HwAttrs gWatchdogHwCfg[1] =
+Watchdog_HwAttrs gWatchdogHwCfg[CSL_WDT_PER_CNT] =
 {
     /* Watchdog Hardware configuration:
      * - Base address of memory mapped registers
      * - ESM group number
-     * - ESM error number */
+     * - ESM error number
+     * - ESM handle
+     */
     {
         CSL_MSS_WDT_U_BASE,
         2,
-        ESMG2_WDT_NMI_REQ
+        ESMG2_WDT_NMI_REQ,
+        NULL
     }
 };
 
@@ -135,16 +140,19 @@ SOC_HwAttrs gSOCHwAttr =
  * @brief   There is only 1 Watchdog instance
  * available. This should *NOT* be modified by the customer.
  */
-Watchdog_HwAttrs gWatchdogHwCfg[1] =
+Watchdog_HwAttrs gWatchdogHwCfg[CSL_WDT_PER_CNT] =
 {
     /* Watchdog Hardware configuration:
      * - Base address of memory mapped registers
      * - ESM group number
-     * - ESM error number */
+     * - ESM error number
+     * - ESM handle
+     */
     {
         CSL_DSS_WDT_U_BASE,
         2,
-        CSL_DSS_ESMG2_DSS_WDT_NMI_REQ
+        CSL_DSS_ESMG2_DSS_WDT_NMI_REQ,
+        NULL
     }
 };
 
@@ -209,3 +217,54 @@ void RTI_socTriggerWatchdogWarmReset()
              MSS_TOPRCM_WARM_RESET_CONFIG_WARM_RESET_CONFIG_WDOG_RST_EN,
              0x7U);
 }
+
+/**
+ * \brief  This API gets the SoC level of Watchdog intial configuration
+ *
+ * \param  index     Watchdog instance index.
+ * \param  cfg       Pointer to Watchdog SOC initial config.
+ *
+ * \return 0 success: -1: error
+ *
+ */
+int32_t Watchdog_socGetInitCfg(uint32_t index, Watchdog_HwAttrs *cfg)
+{
+    int32_t ret = 0;
+
+    if (index < CSL_WDT_PER_CNT)
+    {
+        *cfg = gWatchdogHwCfg[index];
+    }
+    else
+    {
+        ret = (-((int32_t)1));
+    }
+
+    return ret;
+}
+
+/**
+ * \brief  This API sets the SoC level of Watchdog intial configuration
+ *
+ * \param  index     Watchdog instance index.
+ * \param  cfg       Pointer to Watchdog SOC initial config.
+ *
+ * \return           0 success: -1: error
+ *
+ */
+int32_t Watchdog_socSetInitCfg(uint32_t index, const Watchdog_HwAttrs *cfg)
+{
+    int32_t ret = 0;
+
+    if (index < CSL_WDT_PER_CNT)
+    {
+        gWatchdogHwCfg[index] = *cfg;
+    }
+    else
+    {
+        ret = (-((int32_t)1));
+    }
+
+    return ret;
+}
+

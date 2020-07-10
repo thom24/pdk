@@ -51,6 +51,8 @@
 #define Watchdog_HwAttrs    Watchdog_v0_HwAttrs
 extern void RTI_socEnableWatchdog();
 extern void RTI_socTriggerWatchdogWarmReset();
+extern int32_t Watchdog_socGetInitCfg(uint32_t idx, Watchdog_HwAttrs *cfg);
+extern int32_t Watchdog_socSetInitCfg(uint32_t idx, const Watchdog_HwAttrs *cfg);
 #endif
 
 #ifdef __cplusplus

@@ -371,7 +371,7 @@ static Watchdog_Handle WatchdogRTI_open(Watchdog_Handle handle, Watchdog_Params*
         notifyParams.arg = (void *)ptrWatchdogConfig;
         notifyParams.notify = WatchdogRTI_callback;
 
-        retVal = ESM_registerNotifier (ptrWatchdogMCB->params.esmHandle, &notifyParams, &errCode);
+        retVal = ESM_registerNotifier (ptrHwCfg->esmHandle, &notifyParams, &errCode);
         if (retVal < 0)
         {
             retHandle = NULL;

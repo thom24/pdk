@@ -64,6 +64,7 @@
 
 /* PDK Include Files: */
 #include <ti/drv/watchdog/watchdog.h>
+#include <ti/drv/watchdog/soc/watchdog_soc.h>
 #include <ti/drv/esm/esm.h>
 #include <ti/osal/HwiP.h>
 #include <ti/osal/DebugP.h>
@@ -80,7 +81,6 @@
 volatile uint32_t       testSelection = 0;
 volatile uint32_t       gWatchdogInt = 0;
 Watchdog_Handle         watchdogHandle;
-ESM_Handle              esmHandle;
 
 /* ========================================================================== */
 /*                          Function Definitions                              */
@@ -143,8 +143,6 @@ static int32_t watchdogTest()
     watchdogParams.debugStallMode = Watchdog_DEBUG_STALL_ON;
     watchdogParams.windowSize = Watchdog_WINDOW_100_PERCENT;
     watchdogParams.preloadValue = 20;
-    watchdogParams.esmHandle = esmHandle;
-
 
     /* Open the Watchdog driver */
     watchdogHandle = Watchdog_open(0, &watchdogParams);
@@ -238,6 +236,40 @@ static int32_t watchdogTest()
     return 0;
 }
 
+/*
+ *  ======== Watchdog init config ========
+ */
+static int32_t Watchdog_initConfig(void)
+{
+    Watchdog_HwAttrs watchdog_cfg;
+    uint32_t instance = 0;
+    int32_t  ret;
+
+    /* Get the default Watchdog init configurations */
+    ret = Watchdog_socGetInitCfg(instance, &watchdog_cfg);
+    if (ret < 0)
+    {
+        return -1;
+    }
+
+    /* Initialize the ESM: Dont clear errors as TI RTOS does it */
+    watchdog_cfg.esmHandle = ESM_init(0U);
+    if (watchdog_cfg.esmHandle == NULL)
+    {
+        printf ("Error: ESM Module Initialization failed\n");
+        return -1;
+    }
+
+    /* Set the Watchdog init configurations with ESM handle populated */
+    ret = Watchdog_socSetInitCfg(instance, &watchdog_cfg);
+    if (ret < 0)
+    {
+        return -1;
+    }
+
+    return 0;
+}
+
 /**
  *  @b Description
  *  @n
@@ -309,13 +341,12 @@ int32_t main (void)
 {
     Task_Params     taskParams;
     /* Call board init functions */
-    Board_initCfg boardCfg;
+    Board_initCfg   boardCfg;
+    int32_t         ret;
 
-    /* Initialize the ESM: Dont clear errors as TI RTOS does it */
-    esmHandle = ESM_init(0U);
-    if (esmHandle == NULL)
+    ret = Watchdog_initConfig();
+    if (ret < 0)
     {
-        printf ("Error: ESM Module Initialization failed\n");
         return -1;
     }
 

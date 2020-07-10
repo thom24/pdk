@@ -83,6 +83,11 @@ typedef struct Watchdog_v0_HwAttrs_t
      * @brief   ESM error Number
      */
     uint32_t            errorNum;
+
+    /**
+     * @brief   ESM handle
+     */
+    void               *esmHandle;
 } Watchdog_v0_HwAttrs;
 
 #ifdef __cplusplus
