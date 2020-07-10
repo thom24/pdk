@@ -752,6 +752,13 @@ SBL_CFLAGS += -DSBL_ENABLE_DDR
 # usecase demands it.
 #SBL_CFLAGS += -DSBL_ENABLE_DEV_GRP_MCU
 
+# If enabled, SBL will use alternate
+# config steps to directly boot an HLOS,
+# including an alternate set of Sciclient
+# RM board cfg settings.
+# NOTE: Currently supported only for J721E
+#SBL_CFLAGS += -DSBL_ENABLE_HLOS_BOOT
+
 # If enabled, SBL will not leave the OSPI
 # flash in XIP mode, so that the MAIN
 # domain Cortex-A code (HLOS) can reset
