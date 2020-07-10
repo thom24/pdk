@@ -35,7 +35,7 @@ else
 endif
 
 # Common source files and CFLAGS across all platforms and cores
-PACKAGE_SRCS_COMMON = .
+PACKAGE_SRCS_COMMON = . ../common ../diag_ex_component.mk
 
 ifeq ($(SOC),$(filter $(SOC), j721e am64x))
   SRCS_COMMON = main.c esm.c event_trig.c diag_utils.c

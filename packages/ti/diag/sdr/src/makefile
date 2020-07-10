@@ -71,10 +71,6 @@ ifeq ($(SOC),$(filter $(SOC), am65xx j721e))
 SRCDIR += src/r5
 endif
 
-#ifeq ($(CORE),$(filter $(CORE), mcu1_0))
-#SRCDIR += src/am65xx/r5
-#endif
-
 PACKAGE_SRCS_COMMON = .
 
 # Set specific include directories
