@@ -62,7 +62,7 @@ static pinmuxPerCfg_t gDebugss0PinCfg[] =
 
 static pinmuxModuleCfg_t gDebugssPinCfg[] =
 {
-    {0, TRUE, gDebugss0PinCfg},
+    {0, FALSE, gDebugss0PinCfg},
     {PINMUX_END}
 };
 
@@ -232,7 +232,7 @@ static pinmuxPerCfg_t gSystem0PinCfg[] =
 
 static pinmuxModuleCfg_t gSystemPinCfg[] =
 {
-    {0, TRUE, gSystem0PinCfg},
+    {0, FALSE, gSystem0PinCfg},
     {PINMUX_END}
 };
 
