@@ -145,12 +145,16 @@ function connectTargets()
     dsMCU1_0.target.halt();
     // Run Synchronously for the executable to finish
     dsMCU1_0.target.run();
+    dsMCU1_0.target.halt();
+    dsMCU1_0.target.reset();
 
+
+    dsMCU1_0.target.restart();
     /* Run the DDR Configuration */
-    print("J7200 TODO: Running the DDR configuration... Wait till it completes!");
-    //dsDMSC_0.target.halt();
-    //dsDMSC_0.expression.evaluate("J7ES_LPDDR4_Config_Late()");
-    //dsDMSC_0.target.runAsynch();
+    print("J7200 Running the DDR configuration... Wait till it completes!");
+    dsDMSC_0.target.halt();
+    dsDMSC_0.expression.evaluate("J7ES_LPDDR4_Config_Late()");
+    dsDMSC_0.target.runAsynch();
 }
 
 function disconnectTargets()
