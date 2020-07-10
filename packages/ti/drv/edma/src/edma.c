@@ -684,7 +684,7 @@ static void EDMA_transferComplete_isr (uintptr_t arg)
                 else
                 {
                     /* interrupt indicated but no call back function */
-                    // DebugP_assert(0);
+                    DebugP_assert(0);
                 }
             }
         }
@@ -708,7 +708,7 @@ static void EDMA_transferComplete_isr (uintptr_t arg)
                 else
                 {
                     /* interrupt indicated but no call back function */
-                    // DebugP_assert(0);
+                    DebugP_assert(0);
                 }
             }
         }
