@@ -87,7 +87,7 @@ extern "C" {
 
 #elif defined(j7200_evm)
 #define MAX_NUM_OF_BOARDS                       (4U)
-#define STARTING_BOARD_NUM                      (0U)
+#define STARTING_BOARD_NUM                      (2U)
 
 #elif defined(tpr12_evm)
 #define MAX_NUM_OF_BOARDS						(BOARD_ID_MAX_BOARDS)
