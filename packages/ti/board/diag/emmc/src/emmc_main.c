@@ -561,6 +561,8 @@ int main(void)
 
         MMCSD_close(handle);
     }
+
+    UART_printf("\neMMC Read/Write Test Completed!!\n");
 #endif
 
     return retVal;

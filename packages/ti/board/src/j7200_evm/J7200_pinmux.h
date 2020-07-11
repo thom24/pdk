@@ -85,6 +85,7 @@ enum pinMainOffsets
 	PIN_UART8_RXD		 = 0xA4,
 	PIN_MMC1_CMD		 = 0x104,
 	PIN_MMC1_CLK		 = 0x100,
+	PIN_MMC1_CLKLB		 = 0xFC,
 	PIN_MMC1_DAT0		 = 0xF8,
 	PIN_MMC1_DAT1		 = 0xF4,
 	PIN_MMC1_DAT2		 = 0xF0,

@@ -290,6 +290,8 @@ int32_t HSMMCSDReadWriteTest(MMCSD_Handle handle)
 #else
   MMCSD_log ("\nPASS: Read/Write Success for this pattern\r\n");
 #endif
+
+  UART_printf("MMCSD Test Completed!!\n\n");
   MMCSD_close(handle);
   return 0;
 }
