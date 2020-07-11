@@ -102,6 +102,13 @@ static void testDmaAutoIncPrintf(const char *str)
 #endif
 }
 
+uint64_t testDmaAutoIncVirtToPhyFxn(const void *virtAddr,
+                                      uint32_t chNum,
+                                      void *appData)
+{
+  return (uint64_t)virtAddr;
+}
+
 #define TEST_DMAUTILS_ALIGN_CEIL(VAL, ALIGN) ((((VAL) + (ALIGN) - 1)/(ALIGN)) * (ALIGN) )
 
 static int32_t testDmaAutoIncNumTrRequired(  int16_t   width,
@@ -470,6 +477,7 @@ int32_t blockCopy(
     instId = UDMA_INST_ID_MAIN_0;
     UdmaInitPrms_init(instId, &initPrms);
     initPrms.printFxn = &testDmaAutoIncPrintf;
+    initPrms.virtToPhyFxn = &testDmaAutoIncVirtToPhyFxn;
     retVal = Udma_init(drvHandle, &initPrms);
     if(UDMA_SOK != retVal)
     {
@@ -546,7 +554,7 @@ int32_t blockCopy(
     trPrepParamIn.trMem     = inTrMem;
     trPrepParamIn.trMemSize = inTrSize;
 
-    retVal = DmaUtilsAutoInc3d_prepareTr(&trPrepParamIn, &transferPropIn[0]);
+    retVal = DmaUtilsAutoInc3d_prepareTrWithPhysicalAddress(dmautilsContext, &trPrepParamIn, &transferPropIn[0]);
 
     if ( retVal != UDMA_SOK )
     {
@@ -559,7 +567,7 @@ int32_t blockCopy(
     trPrepParamOut.trMem     = outTrMem;
     trPrepParamOut.trMemSize = outTrSize;
 
-    retVal = DmaUtilsAutoInc3d_prepareTr(&trPrepParamOut, &transferPropOut[0]);
+    retVal = DmaUtilsAutoInc3d_prepareTrWithPhysicalAddress(dmautilsContext, &trPrepParamOut, &transferPropOut[0]);
 
     if ( retVal != UDMA_SOK )
     {

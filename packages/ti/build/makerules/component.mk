@@ -1141,7 +1141,11 @@ endif
 export PDK_CFLAGS
 export PDK_LNKFLAGS
 
-PDK_COMMON_COMP = csl board uart i2c 
+PDK_COMMON_COMP = csl uart i2c
+ifneq ($(CORE),$(filter $(CORE), c7x-hostemu))
+  PDK_COMMON_COMP += board
+endif
+
 
 ifeq ($(SOC),$(filter $(SOC), j721e j7200 am64x))
   PDK_COMMON_COMP += sciclient udma

@@ -148,6 +148,22 @@ typedef enum{
   DMAUTILSAUTOINC3D_DRUOWNER_UDMA= 1/*!<  Dru channel is used via ring based mechanism*/
 }DmaUtilsAutoInc3d_druOwner;
 
+/**
+ *  @enum    DmaUtilsAutoInc3d_addrConvertMask
+ *
+ *  @brief   Describes the addresses that needs to be converted while using
+ *           DmaUtilsAutoInc3d_convertToPhysicalAddr update API.User can create a mask
+ *           with more than one fields of this enumby "OR"ing these fields
+ *           to update more than one parameters.
+ *           e.g. if user wants to convert both src and destination addresses
+ *           then they can create this mask as follows :
+ *           mask = DMAUTILSAUTOINC3D_ADDRCONVERTMASK_SRCADDR | DMAUTILSAUTOINC3D_ADDRCONVERTMASK_DSTADDR
+ *
+ */
+typedef enum{
+  DMAUTILSAUTOINC3D_ADDRCONVERTMASK_SRCADDR = (uint32_t)1U << 0,/*!< Convert Source Address Pointer */
+  DMAUTILSAUTOINC3D_ADDRCONVERTMASK_DSTADDR = (uint32_t)1U << 1,/*!< Convert Destination Address Pointer */
+}DmaUtilsAutoInc3d_addrConvertMask;
 
 /* ========================================================================== */
 /*                         Structure Declarations                             */
@@ -365,18 +381,70 @@ int32_t DmaUtilsAutoInc3d_getContextSize(int32_t numChannels);
 /**
  *
  *  \brief     This function will prepare a TR/ TR descriptor depending on the number of Tr's to be submitted
- *                on a particular channel
- *
+ *             on a particular channel.
+ *             Note this function will use the addresses as given by the user without any conversion.
+ *             If user wants to convert addresses from virtual to physical address they should use
+ *             DmaUtilsAutoInc3d_convertTrVirtToPhyAddr API.
+ *             Other way to do the same  is to call DmaUtilsAutoInc3d_convertToPhysicalAddr to
+ *             explicitly convert the address in TR to physical address
  *
  *  \param trPrepParam [IN] Parameters required for preparing TR
  *
- * \param transferProp [IN] Transfer properties of all the TR'sr which needs to be submitted to a single channel
+ *  \param transferProp [IN] Transfer properties of all the TR'sr which needs to be submitted to a single channel
  *
  *  \return \ref Udma_ErrorCodes
  *
  */
- int32_t DmaUtilsAutoInc3d_prepareTr(DmaUtilsAutoInc3d_TrPrepareParam* trPrepParam ,  DmaUtilsAutoInc3d_TransferProp transferProp[]);
+ int32_t DmaUtilsAutoInc3d_prepareTr(DmaUtilsAutoInc3d_TrPrepareParam * trPrepParam ,
+                                            DmaUtilsAutoInc3d_TransferProp transferProp[]);
 
+/**
+ *
+ *  \brief     This function will prepare a TR/ TR descriptor depending on the number of Tr's to be submitted
+ *             on a particular channel. The only difference between this function and DmaUtilsAutoInc3d_prepareTr
+ *             function is that this function will call UDMA driver's Udma_VirtToPhyFxn function if its not NULL
+ *             to convert virtual address to physical address.
+ *             Note that this function will convert the virtual addresses given to physical addresses if
+ *             UDMA driver Udma_VirtToPhyFxn function is not NULL using the same function.
+ *             If user is preparing TR without using this API then it is user's responsibity to provide
+ *             the physical addresses or call DmaUtilsAutoInc3d_convertToPhysicalAddr API to covert the
+ *             addresses given in TR to physical addresses.
+ *
+ *  \param autoIncrementContext [IN] Context allocated for dmautils usecase
+ *
+ *  \param trPrepParam [IN] Parameters required for preparing TR
+ *
+ *  \param transferProp [IN] Transfer properties of all the TR'sr which needs to be submitted to a single channel
+ *
+ *  \return \ref Udma_ErrorCodes
+ *
+ */
+ int32_t DmaUtilsAutoInc3d_prepareTrWithPhysicalAddress(void * autoIncrementContext,
+                                            DmaUtilsAutoInc3d_TrPrepareParam * trPrepParam ,
+                                            DmaUtilsAutoInc3d_TransferProp transferProp[]);
+
+
+/**
+ *
+ *  \brief     This function should be called whenever provides TR with virtual addresses of
+ *             src and dst pointer. This function will convert the virtual addresses given to
+ *             physical addresses using UDMA driver initialized function  Udma_VirtToPhyFxn.
+ *             If UDMA driver Udma_VirtToPhyFxn function is NULL then this API results into
+ *             no change
+ *
+ *  \param autoIncrementContext [IN] Context allocated for dmautils usecase
+ *
+ *  \param trPrepParam [IN] Parameters required for preparing TR
+ *
+ *  \param convertMask   [IN] Mask to inform which fields address to be converted. Refer DmaUtilsAutoInc3d_addrConvertMask
+ *                           for its usage.
+ *
+ *  \return \ref Udma_ErrorCodes
+ *
+ */
+int32_t DmaUtilsAutoInc3d_convertTrVirtToPhyAddr(void * autoIncrementContext,
+                                            DmaUtilsAutoInc3d_TrPrepareParam * trPrepParam ,
+                                            uint32_t convertMask);
 
 
 /**
@@ -389,9 +457,12 @@ int32_t DmaUtilsAutoInc3d_getContextSize(int32_t numChannels);
  *                      that this id is a virtual id for channel and is not related to the actual channel
  *                      used internally to do the transfer
  *
- *  \param trMem [IN] Populated TrMem after calling DmaUtilsAutoInc3d_prepareTr function
+ *  \param trMem [IN] Populated TrMem after calling DmaUtilsAutoInc3d_prepareTr function. This API expects
+ *                    all addresses to be physical memory addresses. This is automatically taken care if
+ *                    user prepares TR using DmaUtilsAutoInc3d_prepareTr or user can call
+ *                    DmaUtilsAutoInc3d_convertToPhysicalAddr to convert addresses to physical addresses.
  *
-  * \param numTr [IN] Number of Transfer Records (TR's) that will be submitted to a particular channel
+ *  \param numTr [IN] Number of Transfer Records (TR's) that will be submitted to a particular channel
  *
  *  \return \ref Udma_ErrorCodes
  *

@@ -521,20 +521,34 @@ static int32_t DmaUtilsAutoInc3d_getTotalBlockCount(uint8_t * trMem, uint32_t nu
 
 }
 
+static uintptr_t DmaUtilsAutoInc3d_getPhysicalAddress(DmaUtilsAutoInc3d_Context * dmautilsContext,
+                                                                 const uintptr_t virtualAddr,
+                                                                 int32_t chNum);
 
-
-static void DmaUtilsAutoInc3d_setupTr(CSL_UdmapTR * tr,
-                                                                        DmaUtilsAutoInc3d_TransferProp * transferProp);
-
-static void DmaUtilsAutoInc3d_setupTr(CSL_UdmapTR * tr,
-                                                                        DmaUtilsAutoInc3d_TransferProp * transferProp)
+static uintptr_t DmaUtilsAutoInc3d_getPhysicalAddress(DmaUtilsAutoInc3d_Context * dmautilsContext,
+                                                                 const uintptr_t virtualAddr,
+                                                                 int32_t chNum)
 {
+  uintptr_t phyAddr = virtualAddr;
 
+  /* If virtual to physical address conversion function is available then use it for
+  conversion else directly program the address as it is */
+  if ( dmautilsContext->initParams.udmaDrvHandle->initPrms.virtToPhyFxn != NULL )
+  {
+      phyAddr = (uintptr_t) dmautilsContext->initParams.udmaDrvHandle->initPrms.virtToPhyFxn(
+                                                          (void *)virtualAddr,
+                                                          chNum,
+                                                          NULL);
+  }
+  return phyAddr;
+}
+
+static uint32_t DmaUtilsAutoInc3d_getTrFlags(int32_t syncType)
+{
+    uint32_t flags;
     uint32_t triggerBoundary;
     uint32_t waitBoundary;
-    uint32_t fmtflags = 0;
-
-    switch (transferProp->syncType)
+    switch (syncType)
     {
         case DMAUTILSAUTOINC3D_SYNC_1D :
         {
@@ -568,17 +582,35 @@ static void DmaUtilsAutoInc3d_setupTr(CSL_UdmapTR * tr,
         }
     }
 
-    /* Configure circularity parameters if required */
-    if ( ( transferProp->circProp.circSize1 != 0 ) ||
-            ( transferProp->circProp.circSize2 != 0 ) )
+    flags =  CSL_FMK(UDMAP_TR_FLAGS_TYPE, CSL_UDMAP_TR_FLAGS_TYPE_4D_BLOCK_MOVE_REPACKING)             |
+             CSL_FMK(UDMAP_TR_FLAGS_STATIC, FALSE)                                           |
+             CSL_FMK(UDMAP_TR_FLAGS_EOL, FALSE)                                              |   /* NA */
+             CSL_FMK(UDMAP_TR_FLAGS_EVENT_SIZE, waitBoundary)    |
+             CSL_FMK(UDMAP_TR_FLAGS_TRIGGER0, CSL_UDMAP_TR_FLAGS_TRIGGER_GLOBAL0)          |/*Set the trigger to local trigger*/
+             CSL_FMK(UDMAP_TR_FLAGS_TRIGGER0_TYPE, triggerBoundary)      |/* This is to transfer a 2D block for each trigger*/
+             CSL_FMK(UDMAP_TR_FLAGS_TRIGGER1, CSL_UDMAP_TR_FLAGS_TRIGGER_NONE)               |
+             CSL_FMK(UDMAP_TR_FLAGS_TRIGGER1_TYPE, CSL_UDMAP_TR_FLAGS_TRIGGER_TYPE_ALL)      |
+             CSL_FMK(UDMAP_TR_FLAGS_CMD_ID, 0)                                           |   /* This will come back in TR response */
+             CSL_FMK(UDMAP_TR_FLAGS_SA_INDIRECT, 0U)                                         |
+             CSL_FMK(UDMAP_TR_FLAGS_DA_INDIRECT, 0U)                                         |
+             CSL_FMK(UDMAP_TR_FLAGS_EOP, 1U);
+
+    return flags;
+}
+
+static uint32_t DmaUtilsAutoInc3d_getTrFmtFlags(DmaUtilsAutoInc3d_TransferCirc * circProp)
+{
+    uint32_t fmtflags = 0;
+    if ( ( circProp->circSize1 != 0 ) ||
+                ( circProp->circSize2 != 0 ) )
     {
         int32_t CBK0;
         int32_t CBK1;
-        uint32_t circSize1 = transferProp->circProp.circSize1;
-        uint32_t circSize2 = transferProp->circProp.circSize2;
+        uint32_t circSize1 = circProp->circSize1;
+        uint32_t circSize2 = circProp->circSize2;
         uint32_t circDir;
 
-        if ( transferProp->circProp.circDir == DMAUTILSAUTOINC3D_CIRCDIR_SRC )
+        if ( circProp->circDir == DMAUTILSAUTOINC3D_CIRCDIR_SRC )
         {
           circDir = CSL_UDMAP_TR_FMTFLAGS_DIR_SRC_USES_AMODE;
         }
@@ -596,33 +628,31 @@ static void DmaUtilsAutoInc3d_setupTr(CSL_UdmapTR * tr,
         }
 
         fmtflags = CSL_FMK(UDMAP_TR_FMTFLAGS_AMODE, CSL_UDMAP_TR_FMTFLAGS_AMODE_CIRCULAR) |
-                               CSL_FMK(UDMAP_TR_FMTFLAGS_DIR, circDir) |
-                               CSL_FMK(UDMAP_TR_FMTFLAGS_ELYPE, CSL_UDMAP_TR_FMTFLAGS_ELYPE_1) |
-                               CSL_FMK(UDMAP_TR_FMTFLAGS_DFMT, CSL_UDMAP_TR_FMTFLAGS_DFMT_NO_CHANGE ) |
-                               CSL_FMK(UDMAP_TR_FMTFLAGS_SECTR, CSL_UDMAP_TR_FMTFLAGS_SECTR_NONE ) |
-                               CSL_FMK(UDMAP_TR_FMTFLAGS_AMODE_SPECIFIC_CBK0, CBK0 ) |
-                               CSL_FMK(UDMAP_TR_FMTFLAGS_AMODE_SPECIFIC_CBK1, CBK1 ) |
-                               CSL_FMK(UDMAP_TR_FMTFLAGS_AMODE_SPECIFIC_AM0, transferProp->circProp.addrModeIcnt0) |
-                               CSL_FMK(UDMAP_TR_FMTFLAGS_AMODE_SPECIFIC_AM1, transferProp->circProp.addrModeIcnt1) |
-                               CSL_FMK(UDMAP_TR_FMTFLAGS_AMODE_SPECIFIC_AM2, transferProp->circProp.addrModeIcnt2) |
-                               CSL_FMK(UDMAP_TR_FMTFLAGS_AMODE_SPECIFIC_AM3, transferProp->circProp.addrModeIcnt3);
-
+                   CSL_FMK(UDMAP_TR_FMTFLAGS_DIR, circDir) |
+                   CSL_FMK(UDMAP_TR_FMTFLAGS_ELYPE, CSL_UDMAP_TR_FMTFLAGS_ELYPE_1) |
+                   CSL_FMK(UDMAP_TR_FMTFLAGS_DFMT, CSL_UDMAP_TR_FMTFLAGS_DFMT_NO_CHANGE ) |
+                   CSL_FMK(UDMAP_TR_FMTFLAGS_SECTR, CSL_UDMAP_TR_FMTFLAGS_SECTR_NONE ) |
+                   CSL_FMK(UDMAP_TR_FMTFLAGS_AMODE_SPECIFIC_CBK0, CBK0 ) |
+                   CSL_FMK(UDMAP_TR_FMTFLAGS_AMODE_SPECIFIC_CBK1, CBK1 ) |
+                   CSL_FMK(UDMAP_TR_FMTFLAGS_AMODE_SPECIFIC_AM0, circProp->addrModeIcnt0) |
+                   CSL_FMK(UDMAP_TR_FMTFLAGS_AMODE_SPECIFIC_AM1, circProp->addrModeIcnt1) |
+                   CSL_FMK(UDMAP_TR_FMTFLAGS_AMODE_SPECIFIC_AM2, circProp->addrModeIcnt2) |
+                   CSL_FMK(UDMAP_TR_FMTFLAGS_AMODE_SPECIFIC_AM3, circProp->addrModeIcnt3);
     }
-     /* Setup TR */
-    tr->flags     = CSL_FMK(UDMAP_TR_FLAGS_TYPE, CSL_UDMAP_TR_FLAGS_TYPE_4D_BLOCK_MOVE_REPACKING)             |
-               CSL_FMK(UDMAP_TR_FLAGS_STATIC, FALSE)                                           |
-               CSL_FMK(UDMAP_TR_FLAGS_EOL, FALSE)                                              |   /* NA */
-               CSL_FMK(UDMAP_TR_FLAGS_EVENT_SIZE, waitBoundary)    |
-               CSL_FMK(UDMAP_TR_FLAGS_TRIGGER0, CSL_UDMAP_TR_FLAGS_TRIGGER_GLOBAL0)          |/*Set the trigger to local trigger*/
-               CSL_FMK(UDMAP_TR_FLAGS_TRIGGER0_TYPE, triggerBoundary)      |/* This is to transfer a 2D block for each trigger*/
-               CSL_FMK(UDMAP_TR_FLAGS_TRIGGER1, CSL_UDMAP_TR_FLAGS_TRIGGER_NONE)               |
-               CSL_FMK(UDMAP_TR_FLAGS_TRIGGER1_TYPE, CSL_UDMAP_TR_FLAGS_TRIGGER_TYPE_ALL)      |
-               CSL_FMK(UDMAP_TR_FLAGS_CMD_ID, 0)                                           |   /* This will come back in TR response */
-               CSL_FMK(UDMAP_TR_FLAGS_SA_INDIRECT, 0U)                                         |
-               CSL_FMK(UDMAP_TR_FLAGS_DA_INDIRECT, 0U)                                         |
-               CSL_FMK(UDMAP_TR_FLAGS_EOP, 1U);
 
-    tr->addr        = (uintptr_t)transferProp->ioPointers.srcPtr;
+    return fmtflags;
+}
+
+static void DmaUtilsAutoInc3d_setupTr(CSL_UdmapTR * tr,
+                                              DmaUtilsAutoInc3d_TransferProp * transferProp);
+
+static void DmaUtilsAutoInc3d_setupTr(CSL_UdmapTR * tr,
+                                              DmaUtilsAutoInc3d_TransferProp * transferProp)
+{
+     /* Setup flags in TR*/
+    tr->flags     = DmaUtilsAutoInc3d_getTrFlags(transferProp->syncType);
+    /* Configure circularity parameters if required */
+    tr->fmtflags    = DmaUtilsAutoInc3d_getTrFmtFlags(&transferProp->circProp);
     tr->icnt0        = transferProp->transferDim.sicnt0;
     tr->icnt1        = transferProp->transferDim.sicnt1;
     tr->icnt2        = transferProp->transferDim.sicnt2;
@@ -630,8 +660,6 @@ static void DmaUtilsAutoInc3d_setupTr(CSL_UdmapTR * tr,
     tr->dim1        = transferProp->transferDim.sdim1;
     tr->dim2        = transferProp->transferDim.sdim2;
     tr->dim3        = transferProp->transferDim.sdim3;
-    tr->fmtflags    = fmtflags;
-    tr->daddr       = (uintptr_t) transferProp->ioPointers.dstPtr;
     tr->dicnt0       = transferProp->transferDim.dicnt0;
     tr->dicnt1       = transferProp->transferDim.dicnt1;
     tr->dicnt2       = transferProp->transferDim.dicnt2;
@@ -639,6 +667,9 @@ static void DmaUtilsAutoInc3d_setupTr(CSL_UdmapTR * tr,
     tr->ddim1      =  transferProp->transferDim.ddim1;
     tr->ddim2      =  transferProp->transferDim.ddim2;
     tr->ddim3      =  transferProp->transferDim.ddim3;
+
+    tr->addr  = (uintptr_t)transferProp->ioPointers.srcPtr;
+    tr->daddr = (uintptr_t)transferProp->ioPointers.dstPtr;
 }
 
 static void DmaUtilsAutoInc3d_printf(void * autoIncrementContext, int traceLevel, const char *format, ...);
@@ -860,7 +891,8 @@ int32_t DmaUtilsAutoInc3d_getTrMemReq(int32_t numTRs)
 }
 
 
-int32_t DmaUtilsAutoInc3d_prepareTr(DmaUtilsAutoInc3d_TrPrepareParam * trPrepParam ,  DmaUtilsAutoInc3d_TransferProp transferProp[])
+int32_t DmaUtilsAutoInc3d_prepareTr(DmaUtilsAutoInc3d_TrPrepareParam * trPrepParam ,
+                                            DmaUtilsAutoInc3d_TransferProp transferProp[])
 {
     int32_t size;
     int32_t     retVal = UDMA_SOK;
@@ -911,7 +943,7 @@ int32_t DmaUtilsAutoInc3d_prepareTr(DmaUtilsAutoInc3d_TrPrepareParam * trPrepPar
 
     for ( i = 0; i < trPrepParam->numTRs ; i++)
     {
-          DmaUtilsAutoInc3d_setupTr(&pTrArray[i], &transferProp[i]);
+        DmaUtilsAutoInc3d_setupTr(&pTrArray[i], &transferProp[i]);
     }
 
 
@@ -921,6 +953,100 @@ Exit:
 
 }
 
+
+int32_t DmaUtilsAutoInc3d_prepareTrWithPhysicalAddress(void * autoIncrementContext,
+                                           DmaUtilsAutoInc3d_TrPrepareParam * trPrepParam ,
+                                           DmaUtilsAutoInc3d_TransferProp transferProp[])
+{
+    int32_t     retVal = UDMA_SOK;
+    uint32_t convertMask = ( DMAUTILSAUTOINC3D_ADDRCONVERTMASK_SRCADDR | DMAUTILSAUTOINC3D_ADDRCONVERTMASK_DSTADDR);
+    retVal = DmaUtilsAutoInc3d_prepareTr(trPrepParam, transferProp);
+
+    if ( retVal == UDMA_SOK )
+    {
+        retVal = DmaUtilsAutoInc3d_convertTrVirtToPhyAddr(autoIncrementContext,
+                                                        trPrepParam,
+                                                        convertMask);
+    }
+    return retVal;
+}
+
+
+int32_t DmaUtilsAutoInc3d_convertTrVirtToPhyAddr(void * autoIncrementContext,
+                                            DmaUtilsAutoInc3d_TrPrepareParam * trPrepParam ,
+                                            uint32_t convertMask)
+{
+    int32_t     retVal = UDMA_SOK;
+    int32_t isRingBasedFlowReq = 0;
+    CSL_UdmapTR * pTrArray;
+    int32_t i;
+    DmaUtilsAutoInc3d_Context        * dmautilsContext;
+    DmaUtilsAutoInc3d_ChannelContext * channelContext;
+    int32_t druChannelNum;
+
+    if ( autoIncrementContext == NULL )
+    {
+      retVal = UDMA_EBADARGS;
+      DmaUtilsAutoInc3d_printf(autoIncrementContext, 0, "DmaUtilsAutoInc3d_srcDstPtrUpdate : Failed :autoIncrementContext == NULL \n");
+      goto Exit;
+    }
+
+    if ( trPrepParam == NULL )
+    {
+      retVal = UDMA_EBADARGS;
+      DmaUtilsAutoInc3d_printf(autoIncrementContext, 0, "DmaUtilsAutoInc3d_srcDstPtrUpdate : Failed :trPrepParam == NULL \n");
+      goto Exit;
+    }
+
+    if ( trPrepParam->trMem == NULL )
+    {
+      retVal = UDMA_EBADARGS;
+      goto Exit;
+    }
+
+    dmautilsContext = (DmaUtilsAutoInc3d_Context *)autoIncrementContext;
+
+    channelContext = dmautilsContext->channelContext[trPrepParam->channelId];
+
+    druChannelNum = Udma_chGetNum(&channelContext->chHandle);
+
+    if ( trPrepParam->numTRs > DMAUTILS_MAX_NUM_TR_DIRECT_TR_MODE)
+    {
+        isRingBasedFlowReq = 1;
+    }
+
+    pTrArray = (CSL_UdmapTR *)trPrepParam->trMem;
+
+    if ( isRingBasedFlowReq == 1 )
+    {
+      CSL_UdmapCppi5TRPD * pTrpd = (CSL_UdmapCppi5TRPD *)trPrepParam->trMem;
+      CSL_UdmapTR           *pTr = (CSL_UdmapTR *)(trPrepParam->trMem + sizeof(CSL_UdmapTR));
+      pTrArray = pTr;
+    }
+
+    for ( i = 0; i < trPrepParam->numTRs ; i++)
+    {
+        if (( convertMask & DMAUTILSAUTOINC3D_ADDRCONVERTMASK_SRCADDR) ==
+          DMAUTILSAUTOINC3D_ADDRCONVERTMASK_SRCADDR)
+        {
+            pTrArray[i].addr = DmaUtilsAutoInc3d_getPhysicalAddress(dmautilsContext,
+                                                                    pTrArray[i].addr,
+                                                                    druChannelNum);
+        }
+        if (( convertMask & DMAUTILSAUTOINC3D_ADDRCONVERTMASK_DSTADDR) ==
+          DMAUTILSAUTOINC3D_ADDRCONVERTMASK_DSTADDR)
+        {
+            pTrArray[i].daddr = DmaUtilsAutoInc3d_getPhysicalAddress(dmautilsContext,
+                                                                    pTrArray[i].daddr,
+                                                                    druChannelNum);
+        }
+
+    }
+
+Exit:
+      return retVal;
+
+}
 
 int32_t DmaUtilsAutoInc3d_configure(void * autoIncrementContext, int32_t channelId, uint8_t * trMem, int32_t numTr)
 {
