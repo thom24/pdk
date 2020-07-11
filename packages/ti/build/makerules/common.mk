@@ -256,7 +256,10 @@ PACKAGE_PATHS = $(patsubst %, $(PACKAGEDIR)/%, $(PACKAGE_SRCS))
 # Assemble include paths here
 INCLUDE_EXTERNAL = $(foreach INCL,$(INCLUDE_EXTERNAL_INTERFACES),$($(INCL)_INCLUDE))
 INCLUDE_INTERNAL = $(foreach INCL,$(INCLUDE_INTERNAL_INTERFACES),$($(INCL)_INCLUDE))
-INCLUDE_ALL = $(CODEGEN_INCLUDE) $(INCDIR) $(INCLUDE_EXTERNAL) $(INCLUDE_INTERNAL)
+
+# Include the CODEGEN_INCLUDE last in include order. This is to give preference to component includes when
+# same include file is provided by both component (say ti-posix) and the toolchain (say TI ARM CGT).
+INCLUDE_ALL = $(INCDIR) $(INCLUDE_EXTERNAL) $(INCLUDE_INTERNAL) $(CODEGEN_INCLUDE)
 
 # Add prefix "-I" to each of the include paths in INCLUDE_ALL
 INCLUDES = $(addprefix -I,$(INCLUDE_ALL))
