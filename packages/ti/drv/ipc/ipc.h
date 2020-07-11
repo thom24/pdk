@@ -167,7 +167,7 @@ typedef struct RPMessage_Params_s
 /**
  *  \brief      Initialize IPC init params
  *
- *              Can be called to initialize the #Ipc_initPrms to the default
+ *              Can be called to initialize the #Ipc_InitPrms to the default
  *              values.
  *
  *  \param instId [IN] Ipc_InstanceId. Only 1 instance is supported in this
