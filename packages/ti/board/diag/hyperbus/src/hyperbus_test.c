@@ -198,6 +198,17 @@ int8_t BoardDiag_HyperBusTest(void)
     return ret;
 }
 
+static void BoardDiag_ospiHyperFlashMux(void)
+{
+    GPIO_v0_HwAttrs gpioCfg;
+    GPIO_socGetInitCfg(0, &gpioCfg);
+    gpioCfg.baseAddr = CSL_WKUP_GPIO0_BASE;
+    GPIO_socSetInitCfg(0, &gpioCfg);
+
+    GPIO_init();
+    GPIO_write(0, 1);
+}
+
 /**
  *  \brief   Hyperbus Diagnostic test main function
  *
@@ -239,6 +250,7 @@ int main(void)
     UART_printf  ("*              HYPERBUS Test                *\n");
     UART_printf  ("*********************************************\n");
 
+#if defined (j721e_evm)
     UART_printf("\nConfiguring PLLs...");
     status = Board_init(BOARD_INIT_PLL);
     if(status != BOARD_SOK)
@@ -253,6 +265,9 @@ int main(void)
     {
         UART_printf("Done\n");
     }
+#endif
+
+    BoardDiag_ospiHyperFlashMux();
 
     ret = BoardDiag_HyperBusTest();
 
