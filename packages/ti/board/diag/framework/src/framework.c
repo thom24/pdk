@@ -108,6 +108,19 @@ void DIAG_printMenu()
     UART_printf("\tstatus - prints the test status\n");
 }
 
+#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)
+/* Added this function for getting code re-used from sbl to built with diag framework.
+   This function is invoked by rprc parse function to support interleaved boot.
+   Using this function from sbl code requires mutliple files which are not
+   compatible with mpu core.
+   Empty function is added to fix the build. Functionality should not get effected
+   since interleaved boot support is not needed for diag framework */
+void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *pAppEntry)
+{
+
+}
+#endif
+
 void DIAG_printStatus()
 {
     int i, j;
