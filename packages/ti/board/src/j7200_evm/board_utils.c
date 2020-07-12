@@ -148,11 +148,23 @@ bool Board_isAlpha(uint32_t boardID)
     status = Board_getBoardData(&info, boardID);
     if(status == 0)
     {
-        if(!(strncmp(info.boardInfo.designRev,
-                     "E2",
-                     BOARD_DESIGN_REV_LEN)))
+        if(boardID == BOARD_ID_SOM)
         {
-            alphaBoard = TRUE;
+            /* Check for PM1 and PM2 SoM versions */
+            if(!(strncmp(info.boardInfo.designRev, "E2", BOARD_DESIGN_REV_LEN)) ||
+               !(strncmp(info.boardInfo.designRev, "E5", BOARD_DESIGN_REV_LEN)))
+            {
+                alphaBoard = TRUE;
+            }
+        }
+        else
+        {
+            if(!(strncmp(info.boardInfo.designRev,
+                         "E2",
+                         BOARD_DESIGN_REV_LEN)))
+            {
+                alphaBoard = TRUE;
+            }
         }
     }
 

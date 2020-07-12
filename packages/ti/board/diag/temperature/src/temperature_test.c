@@ -175,6 +175,13 @@ int8_t BoardDiag_run_temperature_test(void)
     I2C_Params i2cParams;
     I2C_HwAttrs i2cConfig;
     I2C_Handle handle = NULL;
+#if ((defined(SOC_AM65XX)) || (defined(SOC_J721E)) || (defined(SOC_J7200)))
+    bool isBoardAlpha = FALSE;
+#endif
+
+#if defined(SOC_J7200)
+    isBoardAlpha = Board_isAlpha(BOARD_ID_SOM);
+#endif
 
 #if (((defined(SOC_J721E)) || (defined(SOC_J7200))) && (defined (__aarch64__)))
     /* Enabling MCU I2C */
@@ -223,22 +230,28 @@ int8_t BoardDiag_run_temperature_test(void)
     }
 
 #if ((defined(SOC_AM65XX)) || (defined(SOC_J721E)) || (defined(SOC_J7200)))
-    ret = BoardDiag_read_temp(handle,
-	                          TEMP_SLAVE_DEVICE2_ADDR,
-                              &temp);
-    if(ret == -1)
-    {
-        UART_printf("Temperature sensor test Failed!\n");
-        return ret;
-    }
-    else
-    {
-        UART_printf("\nTemperature read from the temperature sensor\n "
-                    "slave address - 0x%x is %d degree centigrade\n",
-                     TEMP_SLAVE_DEVICE2_ADDR,
-                     BoardDiag_convert_temp(temp));
 
-     }
+    /* Second temperature sensor will not be aailable on initial
+       versions of the boards with socket */
+    if(isBoardAlpha != TRUE)
+    {
+        ret = BoardDiag_read_temp(handle,
+                                  TEMP_SLAVE_DEVICE2_ADDR,
+                                  &temp);
+        if(ret == -1)
+        {
+            UART_printf("Temperature sensor test Failed!\n");
+            return ret;
+        }
+        else
+        {
+            UART_printf("\nTemperature read from the temperature sensor\n "
+                        "slave address - 0x%x is %d degree centigrade\n",
+                         TEMP_SLAVE_DEVICE2_ADDR,
+                         BoardDiag_convert_temp(temp));
+
+         }
+    }
 #endif
 
 	/* Closing the temperature sensor i2c instance */

@@ -58,6 +58,10 @@
 #include "diag_common_cfg.h"
 #endif
 
+#if defined(SOC_J7200)
+#include "board_utils.h"
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
