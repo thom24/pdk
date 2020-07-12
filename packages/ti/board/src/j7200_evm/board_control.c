@@ -43,7 +43,7 @@
 /**
  * \brief   Configures IO expander pin level
  *
- * \param   *cfg    structure to configure IO expander
+ * \param   cfg [IN] Structure to configure IO expander
  *
  * \return  Board_SOK in case of success or appropriate error code.
  *
@@ -117,6 +117,9 @@ static Board_STATUS Board_setCpsw5GMdioMux(void)
 
 /**
  * \brief   Configures IO mux on SoM board
+ *
+ * \param   mask  [IN] Mask value for the IO expander pins to be configured
+ * \param   value [IN] Value to be written to IO expander pins
  *
  * \return  Board_SOK in case of success or appropriate error code.
  *
@@ -247,6 +250,33 @@ static Board_STATUS Board_setSomUartMux(void)
 }
 
 /**
+ * \brief   Enables/Disables LIN transcievers
+ *
+ * \param   pinLevel  [IN] IO expnader pin level
+ *
+ * \return  Board_SOK in case of success or appropriate error code.
+ *
+ */
+static Board_STATUS Board_linConfig(i2cIoExpSignalLevel_t pinLevel)
+{
+    Board_IoExpCfg_t ioExpCfg;
+    Board_STATUS status;
+
+    ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_SOM_DEVICE1_INSTANCE;
+    ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
+    ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_SOM_DEVICE1_ADDR;
+    ioExpCfg.enableIntr  = false;
+    ioExpCfg.ioExpType   = ONE_PORT_IOEXP;
+    ioExpCfg.portNum     = PORTNUM_0;
+    ioExpCfg.pinNum      = PIN_NUM_6;
+    ioExpCfg.signalLevel = pinLevel;
+
+    status = Board_setIoExpPinOutput(&ioExpCfg);
+
+    return status;
+}
+
+/**
  * \brief Board control function
  *
  * \param   cmd  [IN]  Board control command
@@ -288,6 +318,14 @@ Board_STATUS Board_control(uint32_t cmd, void *arg)
 
         case BOARD_CTRL_CMD_SET_SOM_UART_MUX:
             status = Board_setSomUartMux();
+            break;
+            
+      case BOARD_CTRL_CMD_LIN_ENABLE:
+            status = Board_linConfig(GPIO_SIGNAL_LEVEL_HIGH);
+            break;
+
+      case BOARD_CTRL_CMD_LIN_DISABLE:
+            status = Board_linConfig(GPIO_SIGNAL_LEVEL_LOW);
             break;
 
         default:

@@ -67,6 +67,8 @@ extern "C" {
 #define BOARD_CTRL_CMD_SET_SOM_PROFIBUS_MUX      (4U)
 #define BOARD_CTRL_CMD_SET_SOM_LIN_MUX           (5U)
 #define BOARD_CTRL_CMD_SET_SOM_UART_MUX          (6U)
+#define BOARD_CTRL_CMD_LIN_ENABLE                (7U)
+#define BOARD_CTRL_CMD_LIN_DISABLE               (8U)
 
 #define BOARD_CTRL_CMD_SOM_CAN_MUX_MASK           (0x2EU)
 #define BOARD_CTRL_CMD_SOM_CAN_MUX_ENABLE         (0xEU)

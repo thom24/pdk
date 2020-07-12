@@ -71,7 +71,7 @@ typedef struct BoardDiagLinUartInfo_s
 {
     uint32_t instance;
     uint32_t baseAddress;
-    uint16_t  slaveID;
+    uint16_t nodeID;
 } BoardDiagLinUartInfo_t;
 
 #if defined(DIAG_STRESS_TEST)
@@ -94,15 +94,15 @@ typedef struct BoardDiagLinUartInfo_s
 
 #if defined(j721e_evm)
 #define BOARD_DIAG_LIN_MAX_PORTS                  (0x01U)
-#define BOARD_DIAG_LIN_SLAVE_ID                   (0x81U)
+#define BOARD_DIAG_LIN_NODE_ID                    (0x81U)
 #else
 #define BOARD_DIAG_LIN_MAX_PORTS                  (0x06U)
-#define BOARD_DIAG_LIN1_SLAVE_ID                  (0x81U)
-#define BOARD_DIAG_LIN2_SLAVE_ID                  (0x82U)
-#define BOARD_DIAG_LIN3_SLAVE_ID                  (0x83U)
-#define BOARD_DIAG_LIN4_SLAVE_ID                  (0x84U)
-#define BOARD_DIAG_LIN5_SLAVE_ID                  (0x85U)
-#define BOARD_DIAG_LIN6_SLAVE_ID                  (0x86U)
+#define BOARD_DIAG_LIN1_NODE_ID                   (0x81U)
+#define BOARD_DIAG_LIN2_NODE_ID                   (0x82U)
+#define BOARD_DIAG_LIN3_NODE_ID                   (0x83U)
+#define BOARD_DIAG_LIN4_NODE_ID                   (0x84U)
+#define BOARD_DIAG_LIN5_NODE_ID                   (0x85U)
+#define BOARD_DIAG_LIN6_NODE_ID                   (0x86U)
 #endif
 
 #ifdef __cplusplus
