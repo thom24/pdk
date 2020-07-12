@@ -346,8 +346,9 @@ static int8_t BoardDiag_ospiFlashTest(void)
 #else
     ospi_cfg.dmaEnable  = false;
 #endif
-#if defined(j721e_evm) || defined(j7200_evm)
+#if defined(j7200_evm)
     ospi_cfg.phyEnable  = false;
+    ospi_cfg.dtrEnable  = false;
 #endif
 
     /* Set the default OSPI init configurations */

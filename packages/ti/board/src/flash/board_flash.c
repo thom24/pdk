@@ -52,56 +52,40 @@ static uint32_t Board_getFlashIntf(uint32_t deviceId)
 {
     uint32_t flashIntf = 0;
 
-    switch(deviceId)
+    if((deviceId == BOARD_FLASH_ID_NORN25Q128) || \
+       (deviceId == BOARD_FLASH_ID_NORN25Q128A13ESF40F) || \
+       (deviceId == BOARD_FLASH_ID_W25X32VSFIG))
     {
-        case BOARD_FLASH_ID_NORN25Q128:
-        case BOARD_FLASH_ID_NORN25Q128A13ESF40F:
-        case BOARD_FLASH_ID_W25X32VSFIG:
-        {
-            flashIntf = BOARD_FLASH_NOR_SPI;
-            break;
-        }
-
-        case BOARD_FLASH_ID_MT25QU512ABB:
-        case BOARD_FLASH_ID_S25FL512S:
-        case BOARD_FLASH_ID_S25FL256S:
-        {
-            flashIntf = BOARD_FLASH_NOR_QSPI;
-            break;
-        }
-
-        case BOARD_FLASH_ID_MT29W160EB:
-        {
-            flashIntf = BOARD_FLASH_NOR_GPMC;
-            break;
-        }
-
-        case BOARD_FLASH_ID_MT29F4G08ABAEAWP:
-        {
-            flashIntf = BOARD_FLASH_NAND_GPMC;
-            break;
-        }
-
-#if defined(SIM_BUILD)
-        case BOARD_FLASH_ID_MT35XU512ABA1G12:
-#else
-        case BOARD_FLASH_ID_MT35XU512ABA1G12:
-        case BOARD_FLASH_ID_MT35XU256ABA1G12:
-        case BOARD_FLASH_ID_S28HS512T:
-#endif
-        {
-            flashIntf = BOARD_FLASH_NOR_OSPI;
-            break;
-        }
-
-        case BOARD_FLASH_ID_S71KS512S:
-        {
-            flashIntf = BOARD_FLASH_NOR_HPF;
-            break;
-        }
-
-        default:
-        break;
+        flashIntf = BOARD_FLASH_NOR_SPI;
+    }
+    else if((deviceId == BOARD_FLASH_ID_MT25QU512ABB) || \
+            (deviceId == BOARD_FLASH_ID_S25FL512S) || \
+            (deviceId == BOARD_FLASH_ID_S25FL256S))
+    {
+        flashIntf = BOARD_FLASH_NOR_QSPI;
+    }
+    else if(deviceId == BOARD_FLASH_ID_MT29W160EB)
+    {
+        flashIntf = BOARD_FLASH_NOR_GPMC;
+    }
+    else if(deviceId == BOARD_FLASH_ID_MT29F4G08ABAEAWP)
+    {
+        flashIntf = BOARD_FLASH_NAND_GPMC;
+    }
+    else if((deviceId == BOARD_FLASH_ID_MT35XU512ABA1G12) || \
+            (deviceId == BOARD_FLASH_ID_MT35XU256ABA1G12) || \
+            (deviceId == BOARD_FLASH_ID_S28HS512T))
+    {
+        flashIntf = BOARD_FLASH_NOR_OSPI;
+    }
+    else if(BOARD_FLASH_ID_S71KS512S)
+    {
+        flashIntf = BOARD_FLASH_NOR_HPF;
+    }
+    else
+    {
+        /* Unknown flash type */
+        flashIntf = BOARD_FLASH_NOR_INTF_MAX;
     }
 
     return (flashIntf);
