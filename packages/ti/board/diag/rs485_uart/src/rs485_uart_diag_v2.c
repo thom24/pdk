@@ -228,6 +228,7 @@ void BoardDiag_rs485UartMuxEnable(i2cIoExpPinNumber_t pinNum,
 }
 #endif
 
+#if defined(j721e_evm) || defined(j7200_evm)
 /**
  * \brief  UART mux selection function
  *
@@ -268,6 +269,7 @@ static void boardDiag_pruUartMux(uint8_t portNum)
     }
 #endif
 }
+#endif
 
 /**
  * \brief  main function
