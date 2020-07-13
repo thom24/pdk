@@ -200,6 +200,9 @@ endif
 ifneq ($(PDK_CPSW_ROOT_PATH), $(pdk_PATH))
   pdk_INCLUDE += $(PDK_CPSW_ROOT_PATH)
 endif
+ifneq ($(PDK_ENET_ROOT_PATH), $(pdk_PATH))
+  pdk_INCLUDE += $(PDK_ENET_ROOT_PATH)
+endif
 ifneq ($(PDK_CSIRX_ROOT_PATH), $(pdk_PATH))
   pdk_INCLUDE += $(PDK_CSIRX_ROOT_PATH)
 endif
