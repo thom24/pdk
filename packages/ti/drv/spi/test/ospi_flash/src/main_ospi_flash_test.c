@@ -719,10 +719,15 @@ static bool OSPI_flash_test(void *arg)
 
     OSPI_initConfig(test);
 
+    /* Default Device, SoC's specifics overrides shall follow */
+    deviceId = BOARD_FLASH_ID_MT35XU512ABA1G12;
+
 #if defined(SOC_AM64X)
     deviceId = BOARD_FLASH_ID_MT35XU256ABA1G12;
-#else
-    deviceId = BOARD_FLASH_ID_MT35XU512ABA1G12;
+#endif
+
+#if defined(SOC_J7200)
+    deviceId = BOARD_FLASH_ID_S28HS512T;
 #endif
 
     /* Open the Board OSPI NOR device with OSPI port 0

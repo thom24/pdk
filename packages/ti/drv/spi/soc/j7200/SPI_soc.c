@@ -539,7 +539,7 @@ OSPI_v0_HwAttrs ospiInitCfg[SPI_OSPI_PER_CNT + 1U] =
             OSPI_DEV_DELAY_CSDA            /* default Chip Select De-Assert Delay */
         },
         256,                               /* device page size is 256 bytes  */
-        17,                                /* device block size is 2 ^ 17 = 128K bytes */
+        18,                                /* device block size is 2 ^ 18 = 256K bytes */
         OSPI_XFER_LINES_OCTAL,             /* xferLines */
         (bool)false,                       /* Interrupt mode */
         (bool)true,                        /* Direct Access Controller mode */
@@ -547,7 +547,7 @@ OSPI_v0_HwAttrs ospiInitCfg[SPI_OSPI_PER_CNT + 1U] =
         NULL,                              /* dmaInfo */
         (bool)true,                        /* enable PHY */
         0,                                 /* rdDataCapDelay */
-        (bool)true,                        /* enable DDR */
+        (bool)false,                       /* enable DDR - dtrEnable*/
         (bool)false,                       /* enable XIP */
         10U                                /* Chip Select Start Of Transfer delay */
     },
