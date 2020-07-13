@@ -74,7 +74,7 @@ static EMAC_DRV_ERR_E emac_ioctl_v5_icssg_dual_mac(uint32_t portNum, EMAC_IOCTL_
 static EMAC_DRV_ERR_E emac_poll_ctrl_v5_icssg_dual_mac(uint32_t portNum, uint32_t rxPktRings, uint32_t rxMgmtRings, uint32_t txRings);
 
 /* EMAC function table for EMAC_v5 implementation */
-const EMAC_FxnTable EMAC_FxnTable_ICSSG_DM_v5 =
+EMAC_FxnTable EMAC_FxnTable_ICSSG_DM_v5 =
 {
     emac_open_v5_icssg_dual_mac,
     emac_config_v5_icssg_dual_mac,

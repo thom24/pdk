@@ -87,9 +87,9 @@ const EMAC_FxnTable EMAC_FxnTable_v5 =
     EMAC_poll_ctrl_v5
 };
 
-extern const EMAC_FxnTable EMAC_FxnTable_ICSSG_DM_v5;
-extern const EMAC_FxnTable EMAC_FxnTable_ICSSG_SWITCH_v5;
-extern const EMAC_FxnTable EMAC_FxnTable_CPSW_v5;
+extern EMAC_FxnTable EMAC_FxnTable_ICSSG_DM_v5;
+extern EMAC_FxnTable EMAC_FxnTable_ICSSG_SWITCH_v5;
+extern EMAC_FxnTable EMAC_FxnTable_CPSW_v5;
 
 EMAC_PORT_INFO_T emac_port_info[] = {
      {EMAC_ICSSG0_INSTANCE, -1, 0, -1, 0, 0, 0, &EMAC_FxnTable_ICSSG_DM_v5},

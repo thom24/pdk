@@ -85,7 +85,7 @@ static EMAC_DRV_ERR_E emac_poll_ctrl_v5_cpsw(uint32_t portNum, uint32_t rxPktRin
 
 
 /* EMAC function table for EMAC_v5 implementation */
-const EMAC_FxnTable EMAC_FxnTable_CPSW_v5 =
+EMAC_FxnTable EMAC_FxnTable_CPSW_v5 =
 {
     emac_open_v5_cpsw,
     emac_config_v5_cpsw,
