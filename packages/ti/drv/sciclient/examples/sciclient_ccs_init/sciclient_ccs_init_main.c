@@ -234,7 +234,7 @@ static int32_t App_getRevisionTest(void)
 
     status = Sciclient_init(&config);
     dmtimer0_enable();
-#if !defined (SOC_AM64X)
+#if defined (SOC_J721E) || defined (SOC_AM65XX) || defined (SOC_J7200)
     if (CSL_PASS == status)
     {
         Sciclient_BoardCfgPrms_t boardCfgPrms =
@@ -242,7 +242,9 @@ static int32_t App_getRevisionTest(void)
             .boardConfigLow = (uint32_t) &gBoardConfigLow_debug,
             .boardConfigHigh = 0,
             .boardConfigSize = sizeof(gBoardConfigLow_debug),
+			#if defined (SOC_J721E) || defined (SOC_AM65XX)
             .devGrp = DEVGRP_00
+			#endif
         };
         printf(" \nDMSC Board Configuration with Debug enable \n");
         dmtimer0_read();
@@ -261,7 +263,9 @@ static int32_t App_getRevisionTest(void)
             .boardConfigLow = (uint32_t)boardCfgLow,
             .boardConfigHigh = 0,
             .boardConfigSize = 0,
+            #if defined (SOC_J721E) || defined (SOC_AM65XX)
             .devGrp = DEVGRP_00
+			#endif
         };
         printf("\nSciclient Board Configuration has passed \n");
         dmtimer0_read();
@@ -276,7 +280,9 @@ static int32_t App_getRevisionTest(void)
                 .boardConfigLow = (uint32_t) boardCfgLow,
                 .boardConfigHigh = 0,
                 .boardConfigSize = SCICLIENT_BOARDCFG_RM_SIZE_IN_BYTES,
-                .devGrp = DEVGRP_00
+                #if defined (SOC_J721E) || defined (SOC_AM65XX)
+				.devGrp = DEVGRP_00
+				#endif
             };
 
             dmtimer0_read();
@@ -295,7 +301,9 @@ static int32_t App_getRevisionTest(void)
                 .boardConfigLow = (uint32_t) boardCfgLow,
                 .boardConfigHigh = 0,
                 .boardConfigSize = SCICLIENT_BOARDCFG_SECURITY_SIZE_IN_BYTES,
-                .devGrp = DEVGRP_00
+                #if defined (SOC_J721E) || defined (SOC_AM65XX)
+				.devGrp = DEVGRP_00
+				#endif
             };
             printf("\nSciclient PM Board Configuration has Passed \n");
             dmtimer0_read();
@@ -331,6 +339,7 @@ static int32_t App_getRevisionTest(void)
         }
 #endif
     }
+#if defined(SOC_J721E) || defined (SOC_AM65XX)
     if (CSL_PASS == status)
     {
         printf ("\nSciclient Dev Group 01 initilization started");
@@ -393,6 +402,7 @@ static int32_t App_getRevisionTest(void)
     {
         printf("\nSciclient Devgrp_01 Board Configuration has failed \n");
     }
+#endif
 #else
     if (CSL_PASS == status)
     {
