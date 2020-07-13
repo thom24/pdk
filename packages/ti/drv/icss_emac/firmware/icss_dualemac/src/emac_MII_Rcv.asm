@@ -1543,82 +1543,54 @@ LB_STORE_FROM_UPPER_BUFFER:
     .endif
     SBCO	&Ethernet, L3_OCMC_RAM_CONST, MII_RCV.buffer_index, b1	
     
-    ADD	MII_RCV.byte_cntr, MII_RCV.byte_cntr, R0.b1     ; increment the count by R1 bytes	
-    QBGE	LB_PROCESS_CHECK_FWD_FLAG, R0.b1, 4	
+    ADD	    MII_RCV.byte_cntr, MII_RCV.byte_cntr, R0.b1     ; increment the count by R1 bytes	
+    QBGE	LB_PROCESS_CHECK_FWD_FLAG, R0.b1, 4	            ;If only CRC is left to store then skip
     QBNE	RCV_LB_NO_QUEUE_WRAP_2, MII_RCV.wrkng_wr_ptr, MII_RCV.top_most_buffer_desc_offset
-    AND MII_RCV.wrkng_wr_ptr , MII_RCV.base_buffer_desc_offset , MII_RCV.base_buffer_desc_offset
+    AND     MII_RCV.wrkng_wr_ptr , MII_RCV.base_buffer_desc_offset , MII_RCV.base_buffer_desc_offset
     QBA		RCV_LB_QUEUE_WRAPPED_2
 RCV_LB_NO_QUEUE_WRAP_2:
     ADD		MII_RCV.wrkng_wr_ptr,  MII_RCV.wrkng_wr_ptr,  4
 RCV_LB_QUEUE_WRAPPED_2:
     QBA     RCV_LB_CHECK_OVERFLOW
 RCV_LB_APPEND_TS:
-    ;Logic to append 10 bytes timestamp to the end of packet
-    
-
+    ;--------------Logic to append 10 bytes timestamp to the end of packet----------
     .if $defined("ICSS_SWITCH_BUILD")
         QBBC    LB_PROCESS_CHECK_FWD_FLAG, MII_RCV.rx_flags, host_rcv_flag_shift    ;MII_RCV.rx_flags.host_rcv_flag
     .endif
 
-    ;check if entire timestamp goes into new block
-    QBEQ    LB_TS_IN_NEW_32B, R0.b1, 0
-    ;check if we adding TS results in more than 32B
-    ADD     R1.b0, R0.b1, 8         ;Get the register offset
-    ADD     R0.b1, R0.b1, 10
-    ;Data fits
+    ;If there are 0 bytes to store then append timestamp in new block
+    QBEQ    LB_TS_STORE_TS, R0.b1, 0
+    ADD	    MII_RCV.byte_cntr, MII_RCV.byte_cntr, R0.b1     ; increment the count by b1 bytes
+    QBGE	LB_TS_STORE_TS, R0.b1, 4	                    ;If only CRC is left to store then skip and append TS
 
-    .if $defined(PTP)
-        M_GPTP_LOAD_TS_OFFSET
-    .endif
-    LBCO    &R10, ICSS_SHARED_CONST, RCV_TEMP_REG_1.w0, 10      ;TS in R19-R21.w0
+    SBCO	&Ethernet, L3_OCMC_RAM_CONST, MII_RCV.buffer_index, b1  ;Store the data   
 
-    ;Copy timestamp to correct offset in R2-R9 bank. 
-    ;This copy might overwrite R10-R11 but we don't care, as it saves cycles!
-    MVID    *R1.b0++, R10
-    MVID    *R1.b0++, R11
-    MVIW    *R1.b0, R12.w0
-    SBCO	&Ethernet, L3_OCMC_RAM_CONST, MII_RCV.buffer_index, 32  ;Store data + timestamp
-
-    QBLT    LB_TS_DOES_NOT_FIT, R0.b1, 32    
-    ADD	    MII_RCV.byte_cntr, MII_RCV.byte_cntr, R0.b1     ; increment the count by R1 bytes
-    QBA     RCV_LB_CHECK_WRAPAROUND
-
-LB_TS_DOES_NOT_FIT:    
-    ; Compare current wrk pointer to top_most queue desc pointer ..check for wrap around
-    QBNE	LB_TS_DOES_NOT_FIT_NO_WRAP, MII_RCV.wrkng_wr_ptr, MII_RCV.top_most_buffer_desc_offset
+    ;Compare current wrk pointer to top_most queue desc pointer ..check for wrap around
+    QBNE	LB_TS_NO_WRAP_1, MII_RCV.wrkng_wr_ptr, MII_RCV.top_most_buffer_desc_offset
     AND     MII_RCV.wrkng_wr_ptr , MII_RCV.base_buffer_desc_offset , MII_RCV.base_buffer_desc_offset
     AND     MII_RCV.buffer_index , MII_RCV.base_buffer_index , MII_RCV.base_buffer_index
-    QBA		LB_TS_DOES_NOT_FIT_STORE_REST
-LB_TS_DOES_NOT_FIT_NO_WRAP:
+    QBA		LB_TS_STORE_TS
+LB_TS_NO_WRAP_1:
     ADD		MII_RCV.buffer_index, MII_RCV.buffer_index,  32
     ADD		MII_RCV.wrkng_wr_ptr,  MII_RCV.wrkng_wr_ptr,  4
-LB_TS_DOES_NOT_FIT_STORE_REST:   ;store rest of the bytes
 
-    ;Need to store remaining bytes
-    RSB     R0.b2, R0.b1, 42                                         ;How many bytes of timestamp already appended in previous block ?
-    ADD     RCV_TEMP_REG_1.w0, RCV_TEMP_REG_1.w0, R0.b2              ;timestamp offset is already in RCV_TEMP_REG_1.w0
-    LBCO    &Ethernet, ICSS_SHARED_CONST, RCV_TEMP_REG_1.w0, 10
-    SBCO	&Ethernet, L3_OCMC_RAM_CONST, MII_RCV.buffer_index, 10
+LB_TS_STORE_TS:   ;store timestamp in new 32B block
 
-    ADD	    MII_RCV.byte_cntr, MII_RCV.byte_cntr, 10
-    SUB     MII_RCV.byte_cntr, MII_RCV.byte_cntr, R0.b2              ;Increment the byte counter with number of bytes actually saved in this 32B block            
-    QBA     RCV_LB_CHECK_WRAPAROUND
-
-LB_TS_IN_NEW_32B: ;Timestamp goes into new 32B block
+    ;Load offset
     .if $defined(PTP)
         M_GPTP_LOAD_TS_OFFSET
     .endif
 
+    ;Load the TS from Shared RAM
     LBCO    &Ethernet, ICSS_SHARED_CONST, RCV_TEMP_REG_1.w0, 10
+    ;Store into L3 OCMC
     SBCO	&Ethernet, L3_OCMC_RAM_CONST, MII_RCV.buffer_index, 10
-    ADD	    MII_RCV.byte_cntr, MII_RCV.byte_cntr, 10
-
-RCV_LB_CHECK_WRAPAROUND:
+    
     ;check wraparound
-    QBNE	RCV_LB_NO_QUEUE_WRAP_3, MII_RCV.wrkng_wr_ptr, MII_RCV.top_most_buffer_desc_offset
+    QBNE	LB_TS_NO_WRAP_2, MII_RCV.wrkng_wr_ptr, MII_RCV.top_most_buffer_desc_offset
     AND     MII_RCV.wrkng_wr_ptr , MII_RCV.base_buffer_desc_offset , MII_RCV.base_buffer_desc_offset
     QBA		RCV_LB_CHECK_OVERFLOW
-RCV_LB_NO_QUEUE_WRAP_3:
+LB_TS_NO_WRAP_2:
     ADD		MII_RCV.wrkng_wr_ptr,  MII_RCV.wrkng_wr_ptr,  4
 
 RCV_LB_CHECK_OVERFLOW:
@@ -1808,12 +1780,7 @@ LB_UPDATE_FOR_HOST_RECEIVE:
     .endif ;TWO_PORT_CFG
     ; clear length field (18..28) and update length with current received frame
     LDI	RCV_TEMP_REG_2.w0, 0
-    MOV    RCV_TEMP_REG_2.w2, RCV_CONTEXT.byte_cntr          ;assign packet length
-    .if $defined(PTP)	
-        QBBS   LB_SKIP_CRC_SUBTRACT, R22, RX_IS_PTP_BIT     ;skip CRC subtraction for PTP frames (so driver can see the Rx timestamp)
-    .endif ;PTP
-    SUB	   RCV_TEMP_REG_2.w2, RCV_TEMP_REG_2.w2, 4	    ;4 byte of FCS
-LB_SKIP_CRC_SUBTRACT:    
+    SUB	   RCV_TEMP_REG_2.w2, RCV_CONTEXT.byte_cntr, 4	    ;4 byte of FCS   
     LSL	RCV_TEMP_REG_2.w2, RCV_TEMP_REG_2.w2, 2	
     
         ;Set the Port number on which packet was received
@@ -1824,7 +1791,8 @@ LB_SKIP_CRC_SUBTRACT:
     .endif
     
     CLR     RCV_TEMP_REG_2, RCV_TEMP_REG_2, 15       ;Clear PTP descriptor bit
-    .if $defined(PTP)
+
+    .if $defined(PTP)  ;check if bit 15 needs to be set
         QBBC   LB_SKIP_PTP_DESC_BIT_SET, R22, RX_IS_PTP_BIT
         CLR    R22, R22, RX_IS_PTP_BIT
         SET	   RCV_TEMP_REG_2 , RCV_TEMP_REG_2 , 15  ;Indicate to the driver that this is a PTP frame

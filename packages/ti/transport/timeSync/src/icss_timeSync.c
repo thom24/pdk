@@ -1252,6 +1252,7 @@ void TimeSync_processPTPFrame(TimeSync_ParamsHandle_t timeSyncHandle,
     uint8_t *bytePtr = 0;
     uint32_t nanoseconds = 0;
     uint64_t seconds = 0;
+    uint64_t Nanoseconds64 = 0;
 
     offset = timeSyncHandle->timeSyncConfig.frame_offset;
 
@@ -1285,8 +1286,20 @@ void TimeSync_processPTPFrame(TimeSync_ParamsHandle_t timeSyncHandle,
     /*If timestamp is appended to packet, copy them here*/
     if(!timeSyncHandle->timeSyncConfig.timestamp_from_shared_ram)
     {
-        seconds = timeSyncHandle->rxTimestamp_gPTP->seconds;
-        nanoseconds = timeSyncHandle->rxTimestamp_gPTP->nanoseconds;
+        if(V2 == timeSyncHandle->timeSyncConfig.icssVersion)
+        {
+            memcpy(&Nanoseconds64, pktBuffer + size, 8);
+            nanoseconds = (uint32_t)(Nanoseconds64 % (uint64_t)SEC_TO_NS);
+            seconds = Nanoseconds64 / (uint64_t)SEC_TO_NS;
+        }
+        else
+        {
+            memcpy(&nanoseconds, pktBuffer + size, 4);
+            memcpy(&seconds, pktBuffer + size + 4, 6);
+        }
+
+        timeSyncHandle->rxTimestamp_gPTP->seconds = seconds;
+        timeSyncHandle->rxTimestamp_gPTP->nanoseconds = nanoseconds;
     }
 
     /*PTPd stack handles announce and management messages*/
@@ -1491,7 +1504,6 @@ void TimeSync_processSyncFrame(TimeSync_ParamsHandle_t timeSyncHandle,
     uint8_t offset = 0;
     uint8_t oppPortlinkStatus = 0;
     uint16_t halfWord = 0;
-    uint32_t sharedDataRamBaseAddr = 0;
     uint64_t doubleWord = 0;
     uint64_t followUpCorrectionField = 0;
     uint64_t timeElapsed = 0;
@@ -1510,8 +1522,6 @@ void TimeSync_processSyncFrame(TimeSync_ParamsHandle_t timeSyncHandle,
         quePri = ICSS_EMAC_QUEUE3;
     }
 
-    sharedDataRamBaseAddr = (((ICSSEMAC_HwAttrs *)
-                              timeSyncHandle->emacHandle->hwAttrs)->emacBaseAddrCfg)->sharedDataRamBaseAddr;
     /*packet offset*/
     offset = timeSyncHandle->timeSyncConfig.frame_offset;
 
@@ -1529,8 +1539,8 @@ void TimeSync_processSyncFrame(TimeSync_ParamsHandle_t timeSyncHandle,
         offset -= HSR_CORRECTION;
     }
 
-    bytePtr = (uint8_t *)(sharedDataRamBaseAddr + MASTER_PORT_NUM_OFFSET);
-    masterPortNum = *bytePtr;
+    /*Fixme : This needs to come from BMCA*/
+    masterPortNum = portNum;
 
 
     /*Take timestamps and calculate BD since this is common to sync

@@ -1599,6 +1599,11 @@ int32_t ICSS_EmacRxPktGet(ICSS_EmacRxArgument *rxArg, void* userArg)
 
     uint8_t ret_flag = 0U;
     int32_t ret_val = 0;
+    /*Set to 1 if it's a PTP frame*/
+    uint8_t ptp_pkt = 0;
+    /*Used to copy timestamp*/
+    uint16_t aligned_length = 0;
+    uint16_t true_rd_ptr = 0;
 
     ICSS_EmacHandle icssEmacHandle = rxArg->icssEmacHandle;
     uint32_t  destAddress = rxArg->destAddress;
@@ -1689,10 +1694,26 @@ int32_t ICSS_EmacRxPktGet(ICSS_EmacRxArgument *rxArg, void* userArg)
     {
         update_rd_ptr += 4U;
     }
+
+    true_rd_ptr = update_rd_ptr;
+
+    /*If timestamp bit is set then we need to account
+     * for additional 32B used for Rx timestamp*/
+    if(rd_buf_desc & 0x8000)
+    {
+        ptp_pkt = 1;
+        update_rd_ptr += 4U;
+    }
+
     /*Check for wrap around */
     if(update_rd_ptr >= rxQueue->queue_size)
     {
         update_rd_ptr = update_rd_ptr - (rxQueue->queue_size - rxQueue->buffer_desc_offset);
+
+    }
+    if(true_rd_ptr >= rxQueue->queue_size)
+    {
+        true_rd_ptr = true_rd_ptr - (rxQueue->queue_size - rxQueue->buffer_desc_offset);
     }
     if(rd_packet_length <= ICSS_EMAC_MAXMTU)        /* make sure we do not have too big packets */
     {
@@ -1706,20 +1727,20 @@ int32_t ICSS_EmacRxPktGet(ICSS_EmacRxArgument *rxArg, void* userArg)
 
         }
         /* Switch FW Mode */
-	else if(ICSS_EMAC_FW_LEARNING_EN
-		== (((ICSS_EmacObject*)icssEmacHandle->object)->emacInitcfg)->learningEn) {
-	    /* Read source lookup success result from fw */
-	    temp_addr = ((0x00000040U & rd_buf_desc) >> 6U);
-	    fdbLookupSuccess = (uint32_t)(temp_addr);
+        else if(ICSS_EMAC_FW_LEARNING_EN
+            == (((ICSS_EmacObject*)icssEmacHandle->object)->emacInitcfg)->learningEn) {
+            /* Read source lookup success result from fw */
+            temp_addr = ((0x00000040U & rd_buf_desc) >> 6U);
+            fdbLookupSuccess = (uint32_t)(temp_addr);
 
-	    /* Insert SRC addr to FDB when the firmware FDB lookup was unsuccessful */
-	    if(0 == fdbLookupSuccess) {
-	      fdbInsert(((ICSS_EmacObject*)icssEmacHandle->object)->fdb, *(MAC*)srcMacId, rxArg->port, false);
-	    }	    
-	}
+            /* Insert SRC addr to FDB when the firmware FDB lookup was unsuccessful */
+            if(0 == fdbLookupSuccess) {
+            fdbInsert(((ICSS_EmacObject*)icssEmacHandle->object)->fdb, *(MAC*)srcMacId, rxArg->port, false);
+            }	    
+        }
 
         /* Copy the data from switch buffers to DDR */
-        if( (update_rd_ptr < queue_rd_ptr) && (update_rd_ptr != rxQueue->buffer_desc_offset))
+        if( (true_rd_ptr < queue_rd_ptr) && (true_rd_ptr != rxQueue->buffer_desc_offset))
         {
             typeProt = (uint16_t*)rd_buffer_l3_addr + 6;
             typeProt1 = ((uint16_t)((*typeProt) << 8U));
@@ -1743,10 +1764,23 @@ int32_t ICSS_EmacRxPktGet(ICSS_EmacRxArgument *rxArg, void* userArg)
                   rd_buffer_l3_addr = ((((ICSS_EmacHwAttrs const *)icssEmacHandle->hwAttrs)->emacBaseAddrCfg)->l3OcmcBaseAddr + rxQueue->buffer_offset);
               }
               memcpy_local((int32_t*)destAddress, (int32_t*)rd_buffer_l3_addr, (size_t)new_size);
+              /*Copy and append the timestamp to packet if it's a PTP frame*/
+             if(ptp_pkt)
+             {
+                 aligned_length = (new_size & 0xFFE0) + 32;
+                 memcpy_local((int32_t*)(destAddress + new_size), (int32_t*)(rd_buffer_l3_addr + rd_packet_length), (size_t)10);
+             }
+
         }
         else
         {
             memcpy_local((int32_t*)destAddress, (int32_t*)rd_buffer_l3_addr, (size_t)rd_packet_length);
+            /*Copy and append the timestamp to packet if it's a PTP frame*/
+            if(ptp_pkt)
+            {
+                aligned_length = (rd_packet_length & 0xFFE0) + 32; 
+                memcpy_local((int32_t*)(destAddress + rd_packet_length), (int32_t*)(rd_buffer_l3_addr + aligned_length), (size_t)10);
+            }
             typeProt = (uint16_t*)destAddress + 6;
             typeProt1 = ((uint16_t)((*typeProt) << 8U));
             typeProt2 = ((uint16_t)((*typeProt) >> 8U));
