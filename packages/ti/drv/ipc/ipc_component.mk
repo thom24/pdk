@@ -59,7 +59,7 @@ drvipc_j7200_TIRTOS_CORELIST = $(drvipc_j7200_CORELIST)
 drvipc_am64x_CORELIST = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 m4f_0
 drvipc_am64x_BAREMETAL_CORELIST = mcu1_0 mcu1_1 mcu2_0 mcu2_1 m4f_0
 drvipc_am64x_TIRTOS_CORELIST = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
-drvipc_am64x_LASTOCRE := $(word $(words $(drvipc_am64x_TIRTOS_CORELIST)), $(drvipc_am64x_CORELIST))
+drvipc_am64x_LASTCORE := $(word $(words $(drvipc_am64x_TIRTOS_CORELIST)), $(drvipc_am64x_TIRTOS_CORELIST))
 drvipc_DISABLE_PARALLEL_MAKE = yes
 
 ############################
@@ -329,7 +329,7 @@ export ipc_perf_test_CORE_DEPENDENCY
 export ipc_perf_test_XDC_CONFIGURO
 ipc_perf_test_PKG_LIST = ipc_perf_test
 ipc_perf_test_INCLUDE = $(ipc_perf_test_PATH)
-ipc_perf_test_BOARDLIST = j721e_evm am65x_evm
+ipc_perf_test_BOARDLIST = $(drvipc_BOARDLIST)
 export ipc_perf_test_BOARDLIST
 ipc_perf_test_$(SOC)_CORELIST = $(drvipc_$(SOC)_TIRTOS_CORELIST)
 export ipc_perf_test_$(SOC)_CORELIST
@@ -355,7 +355,7 @@ export ipc_multicore_perf_test_CORE_DEPENDENCY
 export ipc_multicore_perf_test_XDC_CONFIGURO
 ipc_multicore_perf_test_PKG_LIST = ipc_multicore_perf_test
 ipc_multicore_perf_test_INCLUDE = $(ipc_multicore_perf_test_PATH)
-ipc_multicore_perf_test_BOARDLIST = j721e_evm am65xx_evm
+ipc_multicore_perf_test_BOARDLIST = $(drvipc_BOARDLIST)
 export ipc_multicore_perf_test_BOARDLIST
 ipc_multicore_perf_test_$(SOC)_CORELIST := $(drvipc_$(SOC)_LASTCORE)
 export ipc_multicore_perf_test_$(SOC)_CORELIST
