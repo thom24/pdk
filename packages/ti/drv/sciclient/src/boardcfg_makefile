@@ -46,9 +46,11 @@ export SCICLIENT_OBJCOPY
 ifeq ($(OS),Windows_NT)
   SCICLIENT_CERT_GEN=powershell -executionpolicy unrestricted -command $(ROOTDIR)/ti/build/makerules/x509CertificateGen.ps1
   BIN2C_EXE=bin2c.exe
+  PYTHON=python
 else
   SCICLIENT_CERT_GEN=$(ROOTDIR)/ti/build/makerules/x509CertificateGen.sh
   BIN2C_EXE=bin2c.out
+  PYTHON=python3
 endif
 
 # Bin to C header file tools
@@ -143,10 +145,9 @@ ifeq ($(CORE), mcu1_0)
 	$(SCICLIENT_OBJCOPY) -S -O binary $(OBJDIR)/$(notdir $(2)).$(OBJEXT) $(OBJDIR)/$(1).bin.unsigned
 	# If the file name has sr2 in the name, then we need to use a different soc in the validator.
 	@if [ "$(findstring sr2, $(OBJDIR)/$(BRD_CFG)$(1).bin.unsigned)" == "sr2" ]; then \
-		python3 $(VALIDATOR_SCRIPT) -b $(OBJDIR)/$(1).bin.unsigned -s $(PARSER_SOC2) -l $(OBJDIR)/output_$(BRD_CFG).log -i -o $(OBJDIR)/$(1)_temp.bin.unsigned -r $(VALIDATOR_JSON);\
+		$(PYTHON) $(VALIDATOR_SCRIPT) -b $(OBJDIR)/$(1).bin.unsigned -s $(PARSER_SOC2) -l $(OBJDIR)/output_$(BRD_CFG).log -i -o $(OBJDIR)/$(1)_temp.bin.unsigned -r $(VALIDATOR_JSON);\
 	else \
-		echo "python3 $(VALIDATOR_SCRIPT) -b $(OBJDIR)/$(1).bin.unsigned -s $(PARSER_SOC) -l $(OBJDIR)/output_$(BRD_CFG).log -i -o $(OBJDIR)/$(1)_temp.bin.unsigned -r $(VALIDATOR_JSON)" ;\
-		python3 $(VALIDATOR_SCRIPT) -b $(OBJDIR)/$(1).bin.unsigned -s $(PARSER_SOC) -l $(OBJDIR)/output_$(BRD_CFG).log -i -o $(OBJDIR)/$(1)_temp.bin.unsigned -r $(VALIDATOR_JSON) ;\
+		$(PYTHON) $(VALIDATOR_SCRIPT) -b $(OBJDIR)/$(1).bin.unsigned -s $(PARSER_SOC) -l $(OBJDIR)/output_$(BRD_CFG).log -i -o $(OBJDIR)/$(1)_temp.bin.unsigned -r $(VALIDATOR_JSON) ;\
 	fi
 	$(MV) $(OBJDIR)/$(1)_temp.bin.unsigned $(OBJDIR)/$(1).bin.unsigned
 endif

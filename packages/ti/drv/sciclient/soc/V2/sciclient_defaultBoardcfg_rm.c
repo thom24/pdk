@@ -300,7 +300,7 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
                 .magic = TISCI_BOARDCFG_RM_RESASG_MAGIC_NUM,
                 .size = (uint16_t) sizeof(struct tisci_boardcfg_rm_resasg),
             },
-            .resasg_entries_size = 56U * sizeof(struct tisci_boardcfg_rm_resasg_entry),
+            .resasg_entries_size = 59U * sizeof(struct tisci_boardcfg_rm_resasg_entry),
         },
     },
     .resasg_entries = {
@@ -347,15 +347,33 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
             .host_id = TISCI_HOST_ID_ALL,
         },
         {
+            .num_resource = 64,
+            .type = TISCI_RESASG_UTYPE(TISCI_DEV_NAVSS0_MODSS_INTA_0, TISCI_RESASG_SUBTYPE_IA_VINT),
+            .start_resource = 0,
+            .host_id = TISCI_HOST_ID_ALL,
+        },
+        {
             .num_resource = 1024,
             .type = TISCI_RESASG_UTYPE(TISCI_DEV_NAVSS0_MODSS_INTA_1, TISCI_RESASG_SUBTYPE_GLOBAL_EVENT_SEVT),
             .start_resource = 22528,
             .host_id = TISCI_HOST_ID_ALL,
         },
         {
+            .num_resource = 64,
+            .type = TISCI_RESASG_UTYPE(TISCI_DEV_NAVSS0_MODSS_INTA_1, TISCI_RESASG_SUBTYPE_IA_VINT),
+            .start_resource = 0,
+            .host_id = TISCI_HOST_ID_ALL,
+        },
+        {
             .num_resource = 4570,
             .type = TISCI_RESASG_UTYPE(TISCI_DEV_NAVSS0_UDMASS_INTA_0, TISCI_RESASG_SUBTYPE_GLOBAL_EVENT_SEVT),
             .start_resource = 38,
+            .host_id = TISCI_HOST_ID_ALL,
+        },
+        {
+            .num_resource = 238,
+            .type = TISCI_RESASG_UTYPE(TISCI_DEV_NAVSS0_UDMASS_INTA_0, TISCI_RESASG_SUBTYPE_IA_VINT),
+            .start_resource = 18,
             .host_id = TISCI_HOST_ID_ALL,
         },
         {
@@ -371,9 +389,9 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
             .host_id = TISCI_HOST_ID_ALL,
         },
         {
-            .num_resource = 534U,
+            .num_resource = 854U,
             .type = TISCI_RESASG_UTYPE(TISCI_DEV_NAVSS0_RINGACC0, TISCI_RESASG_SUBTYPE_RA_GP),
-            .start_resource = 440U,
+            .start_resource = 120U,
             .host_id = TISCI_HOST_ID_ALL,
         },
         {
