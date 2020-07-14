@@ -59,9 +59,9 @@ APP_MASTER_SLAVE  = Master
 ifeq ($(SOC),$(filter $(SOC), j721e j7200))
 # Slave uses local linker command file to avoid code/data memory conflict with master application
 ifeq ($(IS_BAREMETAL),yes)
-EXTERNAL_LNKCMD_FILE_LOCAL =  $(PDK_INSTALL_PATH)/ti/drv/spi/example/mcspi_slavemode/j721e/linker_mcu.lds
+EXTERNAL_LNKCMD_FILE_LOCAL =  $(PDK_INSTALL_PATH)/ti/drv/spi/example/mcspi_slavemode/$(SOC)/linker_mcu.lds
 else
-EXTERNAL_LNKCMD_FILE_LOCAL =  $(PDK_INSTALL_PATH)/ti/drv/spi/example/mcspi_slavemode/j721e/linker_mcu_sysbios.lds
+EXTERNAL_LNKCMD_FILE_LOCAL =  $(PDK_INSTALL_PATH)/ti/drv/spi/example/mcspi_slavemode/$(SOC)/linker_mcu_sysbios.lds
 
 endif
 endif
