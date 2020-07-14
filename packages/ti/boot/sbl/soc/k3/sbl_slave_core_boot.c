@@ -203,6 +203,7 @@ SBL_MCU3_CPU1_ATCM_BASE_ADDR_SOC
 };
 #endif
 
+#if !defined(SOC_J7200)
 static const uint32_t SblBtcmAddr[] =
 {
 SBL_MCU_BTCM_BASE,
@@ -212,6 +213,7 @@ SBL_MCU2_CPU1_BTCM_BASE_ADDR_SOC,
 SBL_MCU3_CPU0_BTCM_BASE_ADDR_SOC,
 SBL_MCU3_CPU1_BTCM_BASE_ADDR_SOC
 };
+#endif
 /* ========================================================================== */
 /*                           Internal Functions                               */
 /* ========================================================================== */
@@ -500,6 +502,7 @@ void SBL_SetupCoreMem(uint32_t core_id)
                 Sciclient_pmSetModuleState(sblSlaveCoreInfoPtr->tisci_dev_id, TISCI_MSG_VALUE_DEVICE_SW_STATE_ON, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
 
 #if !defined(SOC_J7200)
+/* HW clears the R5 memories, currently, so no need for further mem init here */
 #ifndef DISABLE_ATCM
                 /* Initialize the TCMs - TCMs of MCU running SBL are already initialized by ROM & SBL */
                 SBL_log(SBL_LOG_MAX, "Clearing core_id %d  ATCM @ 0x%x\n", core_id, SblAtcmAddr[core_id - MCU1_CPU0_ID]);
@@ -666,23 +669,6 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
 
             if (pAppEntry->CpuEntryPoint[core_id] <  SBL_INVALID_ENTRY_ADDR)
             {
-#if defined(SOC_J7200)
-                Osal_delay(300U);
-#ifndef DISABLE_ATCM
-                /* Initialize the TCMs - TCMs of MCU running SBL are already initialized by ROM & SBL */
-                SBL_log(SBL_LOG_MAX, "Clearing core_id %d  ATCM @ 0x%x\n", core_id, SblAtcmAddr[core_id - MCU1_CPU0_ID]);
-                memset(((void *)(SblAtcmAddr[core_id - MCU1_CPU0_ID])), 0xFF, 0x8000);
-#endif
-
-#ifndef VLAB_SIM
-                SBL_log(SBL_LOG_MAX, "Clearing core_id %d  BTCM @ 0x%x\n", core_id, SblBtcmAddr[core_id - MCU1_CPU0_ID]);
-                memset(((void *)(SblBtcmAddr[core_id - MCU1_CPU0_ID])), 0xFF, 0x8000);
-#else
-/* BTCM is not recognized in VLAB : ASTC TICKET # TBD */
-                SBL_log(SBL_LOG_MAX, "***Not Clearing*** BTCM @0x%x\n", SblBtcmAddr[core_id - MCU1_CPU0_ID]);
-#endif
-#endif /* if defined(SOC_J7200) */
-
                 /* Skip copy if R5 app entry point is already 0 */
                 if (pAppEntry->CpuEntryPoint[core_id])
                 {
@@ -797,23 +783,6 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
         case MCU3_CPU1_ID:
             if (pAppEntry->CpuEntryPoint[core_id] <  SBL_INVALID_ENTRY_ADDR)
             {
-#if defined(SOC_J7200)
-                Osal_delay(300U);
-#ifndef DISABLE_ATCM
-                /* Initialize the TCMs - TCMs of MCU running SBL are already initialized by ROM & SBL */
-                SBL_log(SBL_LOG_MAX, "Clearing core_id %d  ATCM @ 0x%x\n", core_id, SblAtcmAddr[core_id - MCU1_CPU0_ID]);
-                memset(((void *)(SblAtcmAddr[core_id - MCU1_CPU0_ID])), 0xFF, 0x8000);
-#endif
-
-#ifndef VLAB_SIM
-                SBL_log(SBL_LOG_MAX, "Clearing core_id %d  BTCM @ 0x%x\n", core_id, SblBtcmAddr[core_id - MCU1_CPU0_ID]);
-                memset(((void *)(SblBtcmAddr[core_id - MCU1_CPU0_ID])), 0xFF, 0x8000);
-#else
-/* BTCM is not recognized in VLAB : ASTC TICKET # TBD */
-                SBL_log(SBL_LOG_MAX, "***Not Clearing*** BTCM @0x%x\n", SblBtcmAddr[core_id - MCU1_CPU0_ID]);
-#endif
-#endif /* if defined(SOC_J7200) */
-
                 /* Skip copy if R5 app entry point is already 0 */
                 if (pAppEntry->CpuEntryPoint[core_id])
                 {
