@@ -88,6 +88,8 @@ typedef struct GPMC_Tests_s
 #define GPMC_TEST_ID_RW          0   /* GPMC CPU read write test */
 #define GPMC_TEST_ID_RW_DMA      1   /* GPMC DMA read write test */
 
+#define GPMC_PROFILE        /* Enable profiling */
+
 /**********************************************************************
  ************************** Internal functions ************************
  **********************************************************************/
@@ -303,6 +305,16 @@ uint32_t gpmc_sram_test(GPMC_Tests *pTest)
     uint32_t    testPassed = TRUE;
     GPMC_Params params;
     GPMC_Handle handle;
+#ifdef GPMC_PROFILE
+    uint32_t    testLen = TEST_DATA_LEN;
+    uint64_t    startTime; /* start time stamp in usec */
+    uint64_t    elapsedTime; /* elapsed time in usec */
+    float       xferRate;
+    uint32_t    xferRateInt;
+#ifdef USE_BIOS
+    uint32_t    cpuLoad;
+#endif
+#endif
 
     GPMC_Params_init(&params);
     handle = GPMC_open(BOARD_GPMC_INSTANCE, &params);
@@ -323,6 +335,13 @@ uint32_t gpmc_sram_test(GPMC_Tests *pTest)
     }
 #endif
 
+#ifdef GPMC_PROFILE
+#ifdef USE_BIOS
+    Load_reset( );
+#endif
+    /* Get start time stamp for the write performance measurement */
+    startTime = TimerP_getTimeInUsecs();
+#endif
     /* Write data */
     transaction.transType = GPMC_TRANSACTION_TYPE_WRITE;
     transaction.offset    = 0U;
@@ -337,6 +356,26 @@ uint32_t gpmc_sram_test(GPMC_Tests *pTest)
         goto Err;
     }
 
+#ifdef GPMC_PROFILE
+    elapsedTime = TimerP_getTimeInUsecs() - startTime;
+#ifdef USE_BIOS
+    Load_update( );
+    cpuLoad = Load_getCPULoad();
+#endif
+    /* calculate the write transfer rate in MBps */
+    xferRate = (float) (((float)testLen) / elapsedTime);
+    xferRateInt = (uint32_t)xferRate;
+    GPMC_log("\n GPMC write %d bytes at transfer rate %d MBps \n", testLen, xferRateInt);
+#ifdef USE_BIOS
+    GPMC_log("\n GPMC write CPU load %d%% \n", cpuLoad);
+#endif
+
+#ifdef USE_BIOS
+    Load_reset( );
+#endif
+    /* Get start time stamp for the read performance measurement */
+    startTime = TimerP_getTimeInUsecs();
+#endif
     /* Read data */
     transaction.transType = GPMC_TRANSACTION_TYPE_READ;
     transaction.txBuf     = NULL;
@@ -347,6 +386,21 @@ uint32_t gpmc_sram_test(GPMC_Tests *pTest)
         testPassed = FALSE;
         goto Err;
     }
+
+#ifdef GPMC_PROFILE
+    elapsedTime = TimerP_getTimeInUsecs() - startTime;
+#ifdef USE_BIOS
+    Load_update( );
+    cpuLoad = Load_getCPULoad();
+#endif
+    /* calculate the read transfer rate in MBps */
+    xferRate = (float) (((float)testLen) / elapsedTime);
+    xferRateInt = (uint32_t)xferRate;
+    GPMC_log("\n GPMC read %d bytes at transfer rate %d MBps \n", testLen, xferRateInt);
+#ifdef USE_BIOS
+    GPMC_log("\n GPMC read CPU load %d%% \n", cpuLoad);
+#endif
+#endif
 
     /* Verify Data */
     if (VerifyData(txBuf, rxBuf, TEST_DATA_LEN) == false)
