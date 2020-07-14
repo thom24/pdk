@@ -128,7 +128,7 @@ int32_t udmaTestOsalPrmsTc(UdmaTestTaskObj *taskObj)
                   " Udma_osalSetCachePrms API failed!!\n");
     }
 
-    for(instId = 0U; instId < UDMA_INST_ID_MAX; instId++)
+    for(instId = UDMA_INST_ID_START; instId <= UDMA_INST_ID_MAX; instId++)
     {
         /* UDMA driver init */
         drvHandle = &testObj->drvObj[instId];

@@ -2223,44 +2223,6 @@ static UdmaTestParams gUdmaTestCases[] =
         .ringPrmId  = UDMA_TEST_RING_PRMID_EVENT_NONE,
     },
 #endif
-    {
-        .enableTest = TEST_ENABLE,
-        .tcId       = 3729U,
-        .tcName     = "Flow attach and detach testcase",
-        .disableInfo= NULL,
-        .printEnable= PRINT_ENABLE,
-        .prfEnable  = PRF_DISABLE,
-        .tcType     = (UDMA_TCT_SANITY | UDMA_TCT_FUNCTIONAL),
-        .dcEnable   = DATA_CHECK_ENABLE,
-        .loopCnt    = 5U,
-        .numTasks   = 1U,
-        .testType   = {UDMA_TT_MISC},
-        .testFxnPtr = {&udmaTestFlowAttachTc},
-        /* All other below parameters not used in this testcase except ring params */
-        .pacingTime = {PACING_NONE},
-        .numCh      = {1U},
-        .instId     = {UDMA_TEST_DEFAULT_UDMA_INST},
-        .chPrmId    = {UDMA_TEST_CH_PRMID_DEF},
-        .qdepth     = {USE_DEF_QDEPTH},
-        .icnt       = {
-                        {UDMA_TEST_DEF_ICNT0, 1U, 1U, 1U}
-                      },
-        .dicnt      = {
-                        {UDMA_TEST_DEF_DICNT0, 1U, 1U, 1U}
-                      },
-        .dim        = {
-                        {0U, 0U, 0U}
-                      },
-        .ddim       = {
-                        {0U, 0U, 0U}
-                      },
-        .heapIdSrc  = {DEF_HEAP_ID},
-        .heapIdDest = {DEF_HEAP_ID},
-        .srcBufSize = {UDMA_TEST_DEF_ICNT0},
-        .destBufSize= {UDMA_TEST_DEF_DICNT0},
-        .runFlag    = (UDMA_TEST_RF_FLOW | UDMA_TEST_RF_CFG_DYN),
-        .ringPrmId  = UDMA_TEST_RING_PRMID_EVENT_NONE,
-    },
 #if ((UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP) > 0)
     {
         .enableTest = TEST_ENABLE,
@@ -2301,6 +2263,44 @@ static UdmaTestParams gUdmaTestCases[] =
         .ringPrmId  = UDMA_TEST_RING_PRMID_EVENT_NONE,
     },
 #else
+    {
+        .enableTest = TEST_ENABLE,
+        .tcId       = 3729U,
+        .tcName     = "Flow attach and detach testcase",
+        .disableInfo= NULL,
+        .printEnable= PRINT_ENABLE,
+        .prfEnable  = PRF_DISABLE,
+        .tcType     = (UDMA_TCT_SANITY | UDMA_TCT_FUNCTIONAL),
+        .dcEnable   = DATA_CHECK_ENABLE,
+        .loopCnt    = 5U,
+        .numTasks   = 1U,
+        .testType   = {UDMA_TT_MISC},
+        .testFxnPtr = {&udmaTestFlowAttachTc},
+        /* All other below parameters not used in this testcase except ring params */
+        .pacingTime = {PACING_NONE},
+        .numCh      = {1U},
+        .instId     = {UDMA_TEST_DEFAULT_UDMA_INST},
+        .chPrmId    = {UDMA_TEST_CH_PRMID_DEF},
+        .qdepth     = {USE_DEF_QDEPTH},
+        .icnt       = {
+                        {UDMA_TEST_DEF_ICNT0, 1U, 1U, 1U}
+                      },
+        .dicnt      = {
+                        {UDMA_TEST_DEF_DICNT0, 1U, 1U, 1U}
+                      },
+        .dim        = {
+                        {0U, 0U, 0U}
+                      },
+        .ddim       = {
+                        {0U, 0U, 0U}
+                      },
+        .heapIdSrc  = {DEF_HEAP_ID},
+        .heapIdDest = {DEF_HEAP_ID},
+        .srcBufSize = {UDMA_TEST_DEF_ICNT0},
+        .destBufSize= {UDMA_TEST_DEF_DICNT0},
+        .runFlag    = (UDMA_TEST_RF_FLOW | UDMA_TEST_RF_CFG_DYN),
+        .ringPrmId  = UDMA_TEST_RING_PRMID_EVENT_NONE,
+    },
     {
         /* This tests the failure for allocating flows more than actual count.
          * So this is not applicable in case of mapped flows, which allocates only one at a time.

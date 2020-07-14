@@ -364,7 +364,16 @@ static int32_t udmaTestBlkcpyTest(UdmaTestTaskObj *taskObj, uint32_t pauseTest, 
         {
             /* Sleep for sometime and check if the transfer has completed;
              * if so then it is an error */
-        #if defined (UDMA_UT_BAREMETAL)
+        #if defined (UDMA_TEST_SOC_PRESILICON)
+            /* For test in presilicon(Zebu/QT), add breakpoint here,
+               stay in while loop for some time and then modify the variable pauseVar,
+               to continue the test */
+            volatile int pauseVar = 1U;
+            while(pauseVar)
+            {
+                GT_0trace(taskObj->traceMask, GT_INFO1, " Waiting!!\n");
+            }
+        #elif defined (UDMA_UT_BAREMETAL)
             Osal_delay(1);
         #else
             TaskP_sleep(1000); /* 1 sec sleep */
