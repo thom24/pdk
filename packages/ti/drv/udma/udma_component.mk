@@ -45,7 +45,7 @@ drvudma_am64x_CORELIST  = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 m4f_0
 ifneq ($(SOC),$(filter $(SOC), am64x))
 drvudma_$(SOC)_example_CORELIST = $(drvudma_$(SOC)_CORELIST)
 else
-drvudma_am64x_example_CORELIST  = mcu1_0 mcu1_1 mcu2_0 mcu2_1 #temporarily disabling build for a53 and m4f due to sysbios issue
+drvudma_am64x_example_CORELIST  = mcu1_0 mcu1_1 mcu2_0 mcu2_1 mpu1_0 #m4f for baremetal examples only
 endif
 
 ############################
@@ -209,7 +209,11 @@ export udma_baremetal_memcpy_testapp_BOARDLIST = $(drvudma_BOARDLIST)
 ifeq ($(SOC),$(filter $(SOC), j721e))
 export udma_baremetal_memcpy_testapp_$(SOC)_CORELIST = mpu1_0 mcu1_0 mcu2_0
 else
-export udma_baremetal_memcpy_testapp_$(SOC)_CORELIST = $(drvudma_$(SOC)_example_CORELIST)
+udma_baremetal_memcpy_testapp_$(SOC)_CORELIST = $(drvudma_$(SOC)_example_CORELIST)
+ifeq ($(SOC),$(filter $(SOC), am64x))
+udma_baremetal_memcpy_testapp_$(SOC)_CORELIST +=  m4f_0
+endif
+export udma_baremetal_memcpy_testapp_$(SOC)_CORELIST
 endif
 export udma_baremetal_memcpy_testapp_SBL_APPIMAGEGEN = yes
 udma_EXAMPLE_LIST += udma_baremetal_memcpy_testapp
