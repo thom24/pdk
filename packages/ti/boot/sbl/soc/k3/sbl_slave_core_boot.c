@@ -201,7 +201,8 @@ SBL_MCU2_CPU1_ATCM_BASE_ADDR_SOC,
 SBL_MCU3_CPU0_ATCM_BASE_ADDR_SOC,
 SBL_MCU3_CPU1_ATCM_BASE_ADDR_SOC
 };
-#else
+#endif
+
 static const uint32_t SblBtcmAddr[] =
 {
 SBL_MCU_BTCM_BASE,
@@ -211,7 +212,6 @@ SBL_MCU2_CPU1_BTCM_BASE_ADDR_SOC,
 SBL_MCU3_CPU0_BTCM_BASE_ADDR_SOC,
 SBL_MCU3_CPU1_BTCM_BASE_ADDR_SOC
 };
-#endif
 /* ========================================================================== */
 /*                           Internal Functions                               */
 /* ========================================================================== */
@@ -477,21 +477,21 @@ void SBL_SetupCoreMem(uint32_t core_id)
             proc_set_config_req.bootvector_hi = cpuStatus.bootvector_hi;
             proc_set_config_req.config_flags_1_set = 0;
             proc_set_config_req.config_flags_1_clear = 0;
-            SBL_log(SBL_LOG_MAX, "Enabling MCU TCMs after reset for core %d\n", core_id);
 #ifdef DISABLE_ATCM            
             proc_set_config_req.config_flags_1_clear |= TISCI_MSG_VAL_PROC_BOOT_CFG_FLAG_R5_ATCM_EN;
+#else
+            proc_set_config_req.config_flags_1_set |= TISCI_MSG_VAL_PROC_BOOT_CFG_FLAG_R5_ATCM_EN;
+#endif
+            SBL_log(SBL_LOG_MAX, "Enabling MCU TCMs after reset for core %d\n", core_id);
             proc_set_config_req.config_flags_1_set |= (TISCI_MSG_VAL_PROC_BOOT_CFG_FLAG_R5_BTCM_EN |
                                                        TISCI_MSG_VAL_PROC_BOOT_CFG_FLAG_R5_TCM_RSTBASE);
-#else
-            /* When ATCM is enabled, then BTCM_EN & RSTBASE flags should be cleared (BTCM disabled and BTCM is at 0x0) */
-            proc_set_config_req.config_flags_1_set |= TISCI_MSG_VAL_PROC_BOOT_CFG_FLAG_R5_ATCM_EN;
-            proc_set_config_req.config_flags_1_clear |= (TISCI_MSG_VAL_PROC_BOOT_CFG_FLAG_R5_BTCM_EN |
-                                                         TISCI_MSG_VAL_PROC_BOOT_CFG_FLAG_R5_TCM_RSTBASE);
-#endif
 
 #if defined(SOC_J7200)
-            //SBL_log(SBL_LOG_MAX, "Disabling HW-based memory init of MCU TCMs for core %d\n", core_id);
-            //proc_set_config_req.config_flags_1_set |= TISCI_MSG_VAL_PROC_BOOT_CFG_FLAG_R5_MEM_INIT_DIS;
+            if ((core_id == MCU2_CPU0_ID) || (core_id == MCU2_CPU1_ID))
+            {
+                //SBL_log(SBL_LOG_MAX, "Disabling HW-based memory init of MCU TCMs for core %d\n", core_id);
+                //proc_set_config_req.config_flags_1_set |= TISCI_MSG_VAL_PROC_BOOT_CFG_FLAG_R5_MEM_INIT_DIS;
+            }
 #endif
 
             SBL_log(SBL_LOG_MAX, "Sciclient_procBootSetProcessorCfg enabling TCMs...\n");
@@ -537,13 +537,11 @@ void SBL_SetupCoreMem(uint32_t core_id)
                 Sciclient_pmSetModuleState(sblSlaveCoreInfoPtr->tisci_dev_id, TISCI_MSG_VALUE_DEVICE_SW_STATE_ON, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
 
 #if !defined(SOC_J7200)
-/* Currently using HW-based TCM mem init for J7200 */
-
 #ifndef DISABLE_ATCM
                 /* Initialize the TCMs - TCMs of MCU running SBL are already initialized by ROM & SBL */
                 SBL_log(SBL_LOG_MAX, "Clearing core_id %d  ATCM @ 0x%x\n", core_id, SblAtcmAddr[core_id - MCU1_CPU0_ID]);
                 memset(((void *)(SblAtcmAddr[core_id - MCU1_CPU0_ID])), 0xFF, 0x8000);
-#else
+#endif
 
 #ifndef VLAB_SIM
                 SBL_log(SBL_LOG_MAX, "Clearing core_id %d  BTCM @ 0x%x\n", core_id, SblBtcmAddr[core_id - MCU1_CPU0_ID]);
@@ -552,7 +550,6 @@ void SBL_SetupCoreMem(uint32_t core_id)
 /* BTCM is not recognized in VLAB : ASTC TICKET # TBD */
                 SBL_log(SBL_LOG_MAX, "***Not Clearing*** BTCM @0x%x\n", SblBtcmAddr[core_id - MCU1_CPU0_ID]);
 #endif
-#endif /* ifndef DISABLE_ATCM */
 #endif /* if !defined(SOC_J7200) */
             }
             break;
@@ -706,7 +703,7 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
                 /* Initialize the TCMs - TCMs of MCU running SBL are already initialized by ROM & SBL */
                 SBL_log(SBL_LOG_MAX, "Clearing core_id %d  ATCM @ 0x%x\n", core_id, SblAtcmAddr[core_id - MCU1_CPU0_ID]);
                 memset(((void *)(SblAtcmAddr[core_id - MCU1_CPU0_ID])), 0xFF, 0x8000);
-#else
+#endif
 
 #ifndef VLAB_SIM
                 SBL_log(SBL_LOG_MAX, "Clearing core_id %d  BTCM @ 0x%x\n", core_id, SblBtcmAddr[core_id - MCU1_CPU0_ID]);
@@ -715,7 +712,6 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
 /* BTCM is not recognized in VLAB : ASTC TICKET # TBD */
                 SBL_log(SBL_LOG_MAX, "***Not Clearing*** BTCM @0x%x\n", SblBtcmAddr[core_id - MCU1_CPU0_ID]);
 #endif
-#endif /* ifndef DISABLE_ATCM */ 
 #endif /* if defined(SOC_J7200) */
 
                 /* Skip copy if R5 app entry point is already 0 */
@@ -822,7 +818,7 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
                 /* Initialize the TCMs - TCMs of MCU running SBL are already initialized by ROM & SBL */
                 SBL_log(SBL_LOG_MAX, "Clearing core_id %d  ATCM @ 0x%x\n", core_id, SblAtcmAddr[core_id - MCU1_CPU0_ID]);
                 memset(((void *)(SblAtcmAddr[core_id - MCU1_CPU0_ID])), 0xFF, 0x8000);
-#else
+#endif
 
 #ifndef VLAB_SIM
                 SBL_log(SBL_LOG_MAX, "Clearing core_id %d  BTCM @ 0x%x\n", core_id, SblBtcmAddr[core_id - MCU1_CPU0_ID]);
@@ -831,7 +827,6 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
 /* BTCM is not recognized in VLAB : ASTC TICKET # TBD */
                 SBL_log(SBL_LOG_MAX, "***Not Clearing*** BTCM @0x%x\n", SblBtcmAddr[core_id - MCU1_CPU0_ID]);
 #endif
-#endif /* ifndef DISABLE_ATCM */
 #endif /* if defined(SOC_J7200) */
 
                 /* Skip copy if R5 app entry point is already 0 */
