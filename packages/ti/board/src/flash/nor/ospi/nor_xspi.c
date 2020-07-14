@@ -579,6 +579,12 @@ NOR_STATUS Nor_xspiWrite(NOR_HANDLE handle, uint32_t addr, uint32_t len,
         byteAddr = 0;
     }
 
+    /* Wait till the write operation completes */
+    if (Nor_xspiWaitReady(spiHandle, NOR_PAGE_PROG_TIMEOUT))
+    {
+        return NOR_FAIL;
+    }
+
     return NOR_PASS;
 }
 
@@ -621,8 +627,19 @@ NOR_STATUS Nor_xspiErase(NOR_HANDLE handle, int32_t erLoc, bool blkErase)
             {
                 return NOR_FAIL;
             }
+
 			address   = erLoc * NOR_BLOCK_SIZE;
-            cmd[0] = NOR_CMD_BLOCK_ERASE;
+
+            /* xSPI flash supports hybrid sectors of size 4k and 256k.
+               Need to send the erase command based on the sector size.  */
+            if(address > NOR_4K_SECT_BOT_END_OFFSET)
+            {
+                cmd[0] = NOR_CMD_BLOCK_ERASE;
+            }
+            else
+            {
+                cmd[0] = NOR_CMD_SECTOR_ERASE;
+            }
         }
         else
         {

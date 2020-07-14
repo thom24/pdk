@@ -66,6 +66,8 @@ extern "C" {
 #define NOR_NUM_PAGES_PER_SECTOR     (NOR_SECTOR_SIZE / NOR_PAGE_SIZE)
 #define NOR_NUM_PAGES_PER_BLOCK      (NOR_BLOCK_SIZE / NOR_PAGE_SIZE)
 
+#define NOR_4K_SECT_BOT_END_OFFSET   (0x1FFFF)
+
 /** Flash device commands */ 
 #define NOR_BE_SECTOR_NUM            (-1U)
 
@@ -110,7 +112,7 @@ extern "C" {
 /** Dummy cycles for Read operation */
 #define NOR_SINGLE_READ_DUMMY_CYCLE      (0U)
 #define NOR_CMD_READ_DUMMY_CYCLE         (3U)
-#define NOR_OCTAL_READ_DUMMY_CYCLE       (22U)
+#define NOR_OCTAL_READ_DUMMY_CYCLE       (20U)
 
 /** In Micro seconds */
 #define NOR_PAGE_PROG_TIMEOUT		(400U)

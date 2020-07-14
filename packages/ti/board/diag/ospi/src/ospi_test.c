@@ -349,6 +349,7 @@ static int8_t BoardDiag_ospiFlashTest(void)
 #if defined(j7200_evm)
     ospi_cfg.phyEnable  = false;
     ospi_cfg.dtrEnable  = false;
+    ospi_cfg.dacEnable  = false;
 #endif
 
     /* Set the default OSPI init configurations */
@@ -378,7 +379,9 @@ static int8_t BoardDiag_ospiFlashTest(void)
 #else
     /* Generate the data */
     BoardDiag_genPattern((uint8_t *)&txBuf[0], TEST_DATA_LEN,
-                         BOARD_DIAG_TEST_PATTERN_RANDOM);
+                         //BOARD_DIAG_TEST_PATTERN_RANDOM);
+                         BOARD_DIAG_TEST_PATTERN_INC);
+                         //BOARD_DIAG_TEST_PATTERN_AA_55);
 #endif
 
     UART_printf("\n Verifying the OSPI Flash first page...\n");
@@ -497,7 +500,7 @@ int main(void)
                BOARD_INIT_PINMUX_CONFIG |
                BOARD_INIT_UART_STDIO;
 #else
-    boardCfg = BOARD_INIT_UART_STDIO;
+    boardCfg = BOARD_INIT_UART_STDIO | BOARD_INIT_PINMUX_CONFIG;
 #endif
 
     status = Board_init(boardCfg);
