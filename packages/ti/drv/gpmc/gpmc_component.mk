@@ -62,7 +62,8 @@ drvgpmc_LIB_LIST = $(gpmc_LIB_LIST)
 # All the tests mentioned in list are built when test target is called
 # List below all examples for allowed values
 ############################
-gpmc_EXAMPLE_LIST = GPMC_Baremetal_TestApp GPMC_TestApp
+gpmc_EXAMPLE_LIST  = GPMC_Baremetal_TestApp GPMC_TestApp
+gpmc_EXAMPLE_LIST += GPMC_Baremetal_Dma_TestApp GPMC_Dma_TestApp
 drvgpmc_EXAMPLE_LIST = $(gpmc_EXAMPLE_LIST)
 
 #
@@ -173,6 +174,33 @@ export gpmc_profile_indp_SOCLIST
 gpmc_profile_indp_$(SOC)_CORELIST = $(drvgpmc_$(SOC)_CORELIST)
 export gpmc_profile_indp_$(SOC)_CORELIST
 
+# GPMC DMA LIB
+gpmc_dma_COMP_LIST = gpmc_dma
+gpmc_dma_RELPATH = ti/drv/gpmc
+gpmc_dma_PATH = $(PDK_GPMC_COMP_PATH)
+gpmc_dma_LIBNAME = ti.drv.gpmc.dma
+export gpmc_dma_LIBNAME
+gpmc_dma_LIBPATH = $(gpmc_dma_PATH)/lib
+export gpmc_dma_LIBPATH
+gpmc_dma_OBJPATH = $(gpmc_dma_RELPATH)/gpmc_dma
+export gpmc_dma_OBJPATH
+gpmc_dma_MAKEFILE = -f build/makefile_dma.mk
+export gpmc_dma_MAKEFILE
+gpmc_dma_BOARD_DEPENDENCY = no
+gpmc_dma_CORE_DEPENDENCY = no
+gpmc_dma_SOC_DEPENDENCY = yes
+export gpmc_dma_COMP_LIST
+export gpmc_dma_BOARD_DEPENDENCY
+export gpmc_dma_CORE_DEPENDENCY
+export gpmc_dma_SOC_DEPENDENCY
+gpmc_dma_PKG_LIST = gpmc_dma
+export gpmc_dma_PKG_LIST
+gpmc_dma_INCLUDE = $(gpmc_dma_PATH)
+gpmc_dma_SOCLIST = am64x
+export gpmc_dma_SOCLIST
+gpmc_dma_$(SOC)_CORELIST = $(drvgpmc_$(SOC)_CORELIST)
+export gpmc_dma_$(SOC)_CORELIST
+
 #
 # GPMC Examples
 #
@@ -195,10 +223,33 @@ export GPMC_Baremetal_TestApp_BOARDLIST
 ifeq ($(SOC),$(filter $(SOC), am64x))
 GPMC_Baremetal_TestApp_$(SOC)_CORELIST = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
 endif
+export GPMC_Baremetal_TestApp_$(SOC)_CORELIST
 
-export GPMC_TestApp_$(SOC)_CORELIST
-GPMC_TestApp_SBL_APPIMAGEGEN = yes
-export GPMC_TestApp_SBL_APPIMAGEGEN
+GPMC_Baremetal_TestApp_SBL_APPIMAGEGEN = yes
+export GPMC_Baremetal_TestApp_SBL_APPIMAGEGEN
+
+# GPMC baremetal dma Flash Test app
+GPMC_Baremetal_Dma_TestApp_COMP_LIST = GPMC_Baremetal_Dma_TestApp
+GPMC_Baremetal_Dma_TestApp_RELPATH = ti/drv/gpmc/test
+GPMC_Baremetal_Dma_TestApp_PATH = $(PDK_GPMC_COMP_PATH)/test
+GPMC_Baremetal_Dma_TestApp_BOARD_DEPENDENCY = yes
+GPMC_Baremetal_Dma_TestApp_CORE_DEPENDENCY = no
+GPMC_Baremetal_Dma_TestApp_MAKEFILE = -f makefile IS_BAREMETAL=yes DMA=enable
+export GPMC_Baremetal_Dma_TestApp_COMP_LIST
+export GPMC_Baremetal_Dma_TestApp_BOARD_DEPENDENCY
+export GPMC_Baremetal_Dma_TestApp_CORE_DEPENDENCY
+export GPMC_Baremetal_Dma_TestApp_MAKEFILE
+GPMC_Baremetal_Dma_TestApp_PKG_LIST = GPMC_Baremetal_Dma_TestApp
+GPMC_Baremetal_Dma_TestApp_INCLUDE = $(GPMC_Baremetal_Dma_TestApp_PATH)
+GPMC_Baremetal_Dma_TestApp_BOARDLIST = am64x_evm
+export GPMC_Baremetal_Dma_TestApp_BOARDLIST
+ifeq ($(SOC),$(filter $(SOC), am64x))
+GPMC_Baremetal_Dma_TestApp_$(SOC)_CORELIST = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
+endif
+export GPMC_Baremetal_Dma_TestApp_$(SOC)_CORELIST
+
+GPMC_Baremetal_Dma_TestApp_SBL_APPIMAGEGEN = yes
+export GPMC_Baremetal_Dma_TestApp_SBL_APPIMAGEGEN
 
 # GPMC unit test rtos app
 GPMC_TestApp_COMP_LIST = GPMC_TestApp
@@ -223,6 +274,32 @@ endif
 export GPMC_TestApp_$(SOC)_CORELIST
 GPMC_TestApp_SBL_APPIMAGEGEN = yes
 export GPMC_TestApp_SBL_APPIMAGEGEN
+
+# GPMC rtos DMA Flash Test app
+GPMC_Dma_TestApp_COMP_LIST = GPMC_Dma_TestApp
+GPMC_Dma_TestApp_RELPATH = ti/drv/gpmc/test
+GPMC_Dma_TestApp_PATH = $(PDK_GPMC_COMP_PATH)/test
+GPMC_Dma_TestApp_BOARD_DEPENDENCY = yes
+GPMC_Dma_TestApp_CORE_DEPENDENCY = no
+GPMC_Dma_TestApp_XDC_CONFIGURO = yes
+GPMC_Dma_TestApp_MAKEFILE = -f makefile DMA=enable
+export GPMC_Dma_TestApp_COMP_LIST
+export GPMC_Dma_TestApp_BOARD_DEPENDENCY
+export GPMC_Dma_TestApp_CORE_DEPENDENCY
+export GPMC_Dma_TestApp_XDC_CONFIGURO
+export GPMC_Dma_TestApp_MAKEFILE
+GPMC_Dma_TestApp_PKG_LIST = GPMC_Dma_TestApp
+GPMC_Dma_TestApp_INCLUDE = $(GPMC_Dma_TestApp_PATH)
+GPMC_Dma_TestApp_BOARDLIST = am64x_evm
+export GPMC_Dma_TestApp_BOARDLIST
+ifeq ($(SOC),$(filter $(SOC), am64x))
+GPMC_Dma_TestApp_$(SOC)_CORELIST = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
+endif
+export GPMC_Dma_TestApp_$(SOC)_CORELIST
+
+GPMC_Dma_TestApp_SBL_APPIMAGEGEN = yes
+export GPMC_Dma_TestApp_SBL_APPIMAGEGEN
+
 
 export drvgpmc_LIB_LIST
 export gpmc_LIB_LIST

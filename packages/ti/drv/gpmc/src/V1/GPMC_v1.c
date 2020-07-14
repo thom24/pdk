@@ -190,6 +190,7 @@ static GPMC_Handle GPMC_open_v1(GPMC_Handle handle, const GPMC_Params *params)
         {
             /* Mark the handle as being used */
             object->isOpen = (bool)true;
+
             GPMC_osalHardwareIntRestore(key);
 
             /* Store the GPMC parameters */
@@ -211,6 +212,12 @@ static GPMC_Handle GPMC_open_v1(GPMC_Handle handle, const GPMC_Params *params)
                 {
                     object->intrPollMode = GPMC_OPER_MODE_BLOCKING;
                 }
+#ifdef GPMC_DMA_ENABLE
+                else if (hwAttrs->dmaEnable == TRUE)
+                {
+                    object->intrPollMode = GPMC_OPER_MODE_BLOCKING;
+                }
+#endif
                 else
                 {
                     object->intrPollMode = GPMC_OPER_MODE_POLLING;
@@ -291,16 +298,31 @@ static GPMC_Handle GPMC_open_v1(GPMC_Handle handle, const GPMC_Params *params)
                 if(object->intrPollMode == GPMC_OPER_MODE_CALLBACK)
                 {
                     /* Check to see if a callback function was defined for async mode */
-                    OSAL_Assert(object->gpmcParams.transferCallbackFxn == NULL);
+                    if (object->gpmcParams.transferCallbackFxn == NULL)
+                    {
+                        GPMC_close_v1(handle);
+                        handle = NULL;
+                        retFlag = 1U;
+                    }
                 }
+            }
+
+#ifdef GPMC_DMA_ENABLE
+            if ((retFlag == 0U) && (hwAttrs->dmaEnable == TRUE))
+            {
+                retFlag = GPMC_dmaConfig(handle);
+            }
+#endif
+
+            if(retFlag == 0U)
+            {
+                /* Reset the transaction pointer */
+                object->transaction = NULL;
 
                 /* Reset GPMC */
                 GPMCModuleSoftReset(hwAttrs->gpmcBaseAddr);
                 while(!GPMCModuleResetStatusGet(hwAttrs->gpmcBaseAddr));
-            }
 
-            if(retFlag == 0U)
-            {
                 /* Set SYSCONFIG register to no idle mode */
                 GPMCIdleModeSelect(hwAttrs->gpmcBaseAddr, GPMC_IDLEMODE_NOIDLE);
 
@@ -349,11 +371,11 @@ static GPMC_Handle GPMC_open_v1(GPMC_Handle handle, const GPMC_Params *params)
                 GPMCAccessTypeSelect(hwAttrs->gpmcBaseAddr,
                                    hwAttrs->chipSel,
                                    GPMC_MODE_READ,
-                                   GPMC_ACCESSTYPE_SINGLE);
+                                   hwAttrs->accessType);
                 GPMCAccessTypeSelect(hwAttrs->gpmcBaseAddr,
                                    hwAttrs->chipSel,
                                    GPMC_MODE_WRITE,
-                                   GPMC_ACCESSTYPE_SINGLE);
+                                   hwAttrs->accessType);
 
                 /* Set chip select address */
                 GPMCBaseAddrSet(hwAttrs->gpmcBaseAddr,
@@ -460,6 +482,12 @@ static void GPMC_close_v1(GPMC_Handle handle)
             GPMC_osalDeleteBlockingLock(object->transferComplete);
         }
 
+#ifdef GPMC_DMA_ENABLE
+        if (hwAttrs->dmaEnable == TRUE)
+        {
+            GPMC_dmaFreeChannel(handle);
+        }
+#endif
         /* Open flag is set false */
         object->isOpen = (bool)false;
     }
@@ -753,17 +781,30 @@ static bool GPMC_transfer_v1(GPMC_Handle handle, GPMC_Transaction *transaction)
     GPMC_v1_Object        *object;      /* GPMC object */
     GPMC_v1_HwAttrs const *hwAttrs;     /* GPMC hardware attributes */
     bool                   ret = (bool)false; /* return value */
+    uintptr_t              key;
+    int32_t                status;
 
     /* Input parameter validation */
-    if ((handle != NULL) && (transaction != NULL))
+    if ((handle != NULL) && (transaction != NULL) && (0U != (uint32_t)transaction->count))
     {
         /* Get the pointer to the object and hwAttrs */
         object = handle->object;
         hwAttrs = handle->hwAttrs;
 
-        /* Check if anything needs to be written or read */
-        if (0 != transaction->count)
+        /* Check if a transfer is in progress */
+        key = GPMC_osalHardwareIntDisable();
+        if (object->transaction != NULL)
         {
+            GPMC_osalHardwareIntRestore(key);
+            /* Transfer is in progress */
+            transaction->status = GPMC_TRANSFER_CANCELED;
+        }
+        else
+        {
+            /* Save the pointer to the transaction */
+            object->transaction = transaction;
+            GPMC_osalHardwareIntRestore(key);
+
             /* Acquire the lock for this particular GPMC handle */
             GPMC_osalPendLock(object->mutex, SemaphoreP_WAIT_FOREVER);
 
@@ -782,26 +823,42 @@ static bool GPMC_transfer_v1(GPMC_Handle handle, GPMC_Transaction *transaction)
                 GPMC_osalHardwareIntrEnable(hwAttrs->intrNum);
             }
 
-            if (GPMC_primeTransfer_v1(handle, transaction) == 0)
+            status = GPMC_primeTransfer_v1(handle, transaction);
+            if (status == 0)
             {
                 if (object->intrPollMode == GPMC_OPER_MODE_BLOCKING)
                 {
+                    /* Blocking transfer is completed and semaphore is posted. */
                     GPMC_osalPendLock(object->transferComplete, SemaphoreP_WAIT_FOREVER);
-
-                    /* transfer is completed and semaphore is posted. */
-                }
-                else
-                {
-                    /* Always return true if in Asynchronous mode */
                 }
 
+                /* Set status to completed for all the modes */
+                transaction->status = GPMC_TRANSFER_COMPLETED;
                 ret = (bool)true;
 
                 /* Release the lock for this particular GPMC handle */
                 GPMC_osalPostLock(object->mutex);
             }
+            else
+            {
+                transaction->status = GPMC_TRANSFER_FAILED;
+            }
+
+            if (object->intrPollMode != (uint32_t)GPMC_OPER_MODE_CALLBACK)
+            {
+                /* Reset the transaction pointer in block mode */
+                object->transaction = NULL;
+            }
         }
     }
+    else
+    {
+        if (transaction != NULL)
+        {
+            transaction->status = GPMC_TRANSFER_CANCELED;
+        }
+    }
+
     /* Return the number of bytes transferred by the I2C */
     return (ret);
 }
@@ -992,15 +1049,18 @@ static int32_t GPMC_control_v1(GPMC_Handle handle, uint32_t cmd, void *arg)
 static int32_t GPMC_sram_read_v1(GPMC_Handle handle,
                                  const GPMC_Transaction *transaction)
 {
-    GPMC_v1_HwAttrs const *hwAttrs = NULL;
+    GPMC_v1_HwAttrs const *hwAttrs = handle->hwAttrs;
     int32_t                retVal = GPMC_STATUS_ERROR;
     uint32_t               size =  transaction->count;
 
-    /* Input parameter validation */
-    if ((handle != NULL) && (transaction != NULL))
+#ifdef GPMC_DMA_ENABLE
+    if (hwAttrs->dmaEnable == TRUE)
     {
-        hwAttrs = handle->hwAttrs;
-
+        retVal = GPMC_dmaTransfer(handle, transaction);
+    }
+    else
+#endif
+    {
         if(hwAttrs->devSize == GPMC_DEVICESIZE_32BITS)
         {
             uint32_t *pSrc = (uint32_t *)(hwAttrs->dataBaseAddr + transaction->offset);
@@ -1059,15 +1119,18 @@ static int32_t GPMC_sram_read_v1(GPMC_Handle handle,
 static int32_t GPMC_sram_write_v1(GPMC_Handle handle,
                                   const GPMC_Transaction *transaction)
 {
-    GPMC_v1_HwAttrs const *hwAttrs = NULL;
+    GPMC_v1_HwAttrs const *hwAttrs = handle->hwAttrs;
     int32_t                retVal = GPMC_STATUS_ERROR;
     uint32_t               size =  transaction->count;
 
-    /* Input parameter validation */
-    if ((handle != NULL) && (transaction != NULL))
+#ifdef GPMC_DMA_ENABLE
+    if (hwAttrs->dmaEnable == TRUE)
     {
-        hwAttrs = handle->hwAttrs;
-
+        retVal = GPMC_dmaTransfer(handle, transaction);
+    }
+    else
+#endif
+    {
         if(hwAttrs->devSize == GPMC_DEVICESIZE_32BITS)
         {
             uint32_t *pSrc = (uint32_t *)(transaction->txBuf);

@@ -1,13 +1,13 @@
 /**
- *  \file   SPI_dma.c
+ *  \file   GPMC_dma.c
  *
- *  \brief  NAVSS UDMAP based OSPI driver for IP verion 0.
+ *  \brief  NAVSS UDMAP based GPMC driver for IP verion 1.
  *
- *   This file contains the DMA driver APIs for OSPI.
+ *   This file contains the DMA driver APIs for GPMC.
  */
 
 /*
- * Copyright (c) 2017 - 2018, Texas Instruments Incorporated
+ * Copyright (c) 2020, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,24 +38,23 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <ti/drv/spi/soc/SPI_soc.h>
-#include <ti/drv/spi/src/SPI_osal.h>
+#include <ti/drv/gpmc/soc/GPMC_soc.h>
+#include <ti/drv/gpmc/src/GPMC_osal.h>
 #include <ti/drv/udma/udma.h>
 
 /* DMA functions */
-static void OSPI_dmaIsrHandler(Udma_EventHandle eventHandle,
+static void GPMC_dmaIsrHandler(Udma_EventHandle eventHandle,
                                uint32_t         eventType,
                                void            *appData);
-int32_t OSPI_dmaConfig(SPI_Handle handle);
-void OSPI_dmaTransfer(SPI_Handle handle, const SPI_Transaction *transaction);
-void OSPI_dmaFreeChannel(SPI_Handle handle);
+int32_t GPMC_dmaConfig(GPMC_Handle handle);
+int32_t GPMC_dmaTransfer(GPMC_Handle handle, const GPMC_Transaction *transaction);
+int32_t GPMC_dmaFreeChannel(GPMC_Handle handle);
 
-int32_t OSPI_dmaConfig(SPI_Handle handle)
+int32_t GPMC_dmaConfig(GPMC_Handle handle)
 {
-    int32_t                retVal;
     int32_t                status;
-    OSPI_v0_HwAttrs const *hwAttrs;
-    OSPI_dmaInfo          *pDmaInfo;
+    GPMC_v1_HwAttrs const *hwAttrs;
+    GPMC_dmaInfo          *pDmaInfo;
     uint32_t               chType;
     Udma_ChPrms            chPrms;
     Udma_ChTxPrms          txPrms;
@@ -66,7 +65,7 @@ int32_t OSPI_dmaConfig(SPI_Handle handle)
     Udma_ChHandle          chHandle;
 
     /* Get the pointer to the object and hwAttrs */
-    hwAttrs  = (OSPI_v0_HwAttrs const *)handle->hwAttrs;
+    hwAttrs  = (GPMC_v1_HwAttrs const *)handle->hwAttrs;
     pDmaInfo = hwAttrs->dmaInfo;
     drvHandle = (Udma_DrvHandle)(pDmaInfo->drvHandle);
     chHandle = (Udma_ChHandle)(pDmaInfo->chHandle);
@@ -76,6 +75,7 @@ int32_t OSPI_dmaConfig(SPI_Handle handle)
     chType = UDMA_CH_TYPE_TR_BLK_COPY;
     UdmaChPrms_init(&chPrms, chType);
     chPrms.fqRingPrms.ringMem   = pDmaInfo->ringMem;
+    //chPrms.fqRingPrms.ringMemSize = (sizeof(uint64_t));
     chPrms.cqRingPrms.ringMem   = pDmaInfo->cqRingMem;
     chPrms.tdCqRingPrms.ringMem = pDmaInfo->tdCqRingMem;
     chPrms.fqRingPrms.elemCnt   = 1;
@@ -83,26 +83,26 @@ int32_t OSPI_dmaConfig(SPI_Handle handle)
     chPrms.tdCqRingPrms.elemCnt = 1;
 
     /* Open channel for block copy */
-    retVal = Udma_chOpen(drvHandle,
+    status = Udma_chOpen(drvHandle,
                          chHandle,
                          chType,
                          &chPrms);
-    if(UDMA_SOK == retVal)
+    if(UDMA_SOK == status)
     {
         /* Config TX channel */
         UdmaChTxPrms_init(&txPrms, chType);
-        retVal = Udma_chConfigTx(chHandle, &txPrms);
+        status = Udma_chConfigTx(chHandle, &txPrms);
     }
 
-    if(UDMA_SOK == retVal)
+    if(UDMA_SOK == status)
     {
         /* Config RX channel - which is implicitly paired to TX channel in
          * block copy mode */
         UdmaChRxPrms_init(&rxPrms, chType);
-        retVal = Udma_chConfigRx(chHandle, &rxPrms);
+        status = Udma_chConfigRx(chHandle, &rxPrms);
     }
 
-    if(UDMA_SOK == retVal)
+    if(UDMA_SOK == status)
     {
         /* Register ring completion callback */
         eventHandle = (Udma_EventHandle) pDmaInfo->eventHandle;
@@ -111,30 +111,30 @@ int32_t OSPI_dmaConfig(SPI_Handle handle)
         eventPrms.eventMode         = UDMA_EVENT_MODE_SHARED;
         eventPrms.chHandle          = chHandle;
         eventPrms.masterEventHandle = NULL;
-        eventPrms.eventCb           = &OSPI_dmaIsrHandler;
+        eventPrms.eventCb           = &GPMC_dmaIsrHandler;
         eventPrms.appData           = (void *)handle;
-        retVal = Udma_eventRegister(drvHandle, eventHandle, &eventPrms);
+        status = Udma_eventRegister(drvHandle, eventHandle, &eventPrms);
     }
 
-    if(UDMA_SOK == retVal)
+    if(UDMA_SOK == status)
     {
         /* Enable channel */
-        retVal = Udma_chEnable(chHandle);
+        status = Udma_chEnable(chHandle);
     }
 
-    if (UDMA_SOK == retVal)
+    if (UDMA_SOK == status)
     {
-        status = SPI_STATUS_SUCCESS;
+        status = GPMC_STATUS_SUCCESS;
     }
     else
     {
-        status = SPI_STATUS_ERROR;
+        status = GPMC_STATUS_ERROR;
     }
 
     return(status);
 }
 
-static inline uint32_t OSPI_dmaIsCacheCoherent(void)
+static inline uint32_t GPMC_dmaIsCacheCoherent(void)
 {
     uint32_t isCacheCoherent;
 
@@ -147,7 +147,7 @@ static inline uint32_t OSPI_dmaIsCacheCoherent(void)
     return (isCacheCoherent);
 }
 
-static void OSPI_udmaTrpdInit(Udma_ChHandle   chHandle,
+static void GPMC_udmaTrpdInit(Udma_ChHandle   chHandle,
                               uint8_t        *pTrpdMem,
                               const void     *destBuf,
                               const void     *srcBuf,
@@ -211,134 +211,157 @@ static void OSPI_udmaTrpdInit(Udma_ChHandle   chHandle,
     /* Clear TR response memory */
     *pTrResp = 0xFFFFFFFFU;
 
-    if(OSPI_dmaIsCacheCoherent() != TRUE)
+    if(GPMC_dmaIsCacheCoherent() != TRUE)
     {
         CacheP_wbInv((const void *)pTrpd, (int32_t)((sizeof(CSL_UdmapTR15) * 2U) + 4U));
     }
 
-
     return;
 }
 
-#define OSPI_DMA_XFER_SIZE           (0x00008000U)
-#define OSPI_DMA_MAX_L0_XFER_SIZE    (0x00010000U)
-static int32_t OSPI_udmaMemcpy(SPI_Handle     handle,
+#define GPMC_DMA_MAX_ICNT           (0x00010000U)
+#define GPMC_DMA_HALF_ICNT          (0x00008000U)
+#define GPMC_DMA_ICNT0              (0x00000020U)
+static int32_t GPMC_udmaMemcpy(GPMC_Handle    handle,
                                const void    *destBuf,
                                const void    *srcBuf,
                                uint32_t       length)
 {
-    int32_t                retVal = UDMA_SOK;
-    OSPI_v0_HwAttrs const *hwAttrs;
-    OSPI_dmaInfo          *pDmaInfo;
+    int32_t                status = UDMA_SOK;
+    GPMC_v1_HwAttrs const *hwAttrs;
+    GPMC_dmaInfo          *pDmaInfo;
     Udma_ChHandle          chHandle;
     uint32_t               quotient;
     uint16_t               iCnt[4];
 
     /* Get the pointer to hwAttrs */
-    hwAttrs  = (OSPI_v0_HwAttrs const *)handle->hwAttrs;
+    hwAttrs  = (GPMC_v1_HwAttrs const *)handle->hwAttrs;
     pDmaInfo = hwAttrs->dmaInfo;
     chHandle = (Udma_ChHandle)(pDmaInfo->chHandle);
 
-    if (length < OSPI_DMA_MAX_L0_XFER_SIZE)
+    if (length <= GPMC_DMA_ICNT0)
     {
         iCnt[0] = (uint16_t)length;
         iCnt[1] = (uint16_t)1U;
         iCnt[2] = (uint16_t)1U;
-        iCnt[3] = (uint16_t)1U;
     }
     else
     {
-        iCnt[0] = (uint16_t)OSPI_DMA_XFER_SIZE;
-        quotient = length / OSPI_DMA_XFER_SIZE;
-        iCnt[1] = (uint16_t)(quotient);
-        if (quotient < OSPI_DMA_MAX_L0_XFER_SIZE)
+        iCnt[0] = (uint16_t)GPMC_DMA_ICNT0;
+        quotient = length / GPMC_DMA_ICNT0;
+        if (quotient < GPMC_DMA_MAX_ICNT)
         {
+            iCnt[1] = (uint16_t)(quotient);
             iCnt[2] = (uint16_t)1U;
         }
         else
         {
-            iCnt[2] = (uint16_t)(quotient / OSPI_DMA_MAX_L0_XFER_SIZE);
+            iCnt[1] = GPMC_DMA_HALF_ICNT;
+            iCnt[2] = (uint16_t)(quotient / GPMC_DMA_HALF_ICNT);
         }
-        iCnt[3] = (uint16_t)1U;
     }
+    iCnt[3] = (uint16_t)1U;
+
     /* Update TR packet descriptor */
-    OSPI_udmaTrpdInit(chHandle, (uint8_t *)pDmaInfo->tprdMem, destBuf, srcBuf, iCnt);
+    GPMC_udmaTrpdInit(chHandle, (uint8_t *)pDmaInfo->tprdMem, destBuf, srcBuf, iCnt);
 
     /* Submit TRPD to channel */
-    retVal = Udma_ringQueueRaw(Udma_chGetFqRingHandle(chHandle), (uint64_t)(pDmaInfo->tprdMem));
+    status = Udma_ringQueueRaw(Udma_chGetFqRingHandle(chHandle), (uint64_t)(pDmaInfo->tprdMem));
 
-    return (retVal);
+    return(status);
 }
 
-void OSPI_dmaTransfer(SPI_Handle             handle,
-                      const SPI_Transaction *transaction)
+int32_t GPMC_dmaTransfer(GPMC_Handle             handle,
+                         const GPMC_Transaction *transaction)
 {
-    OSPI_v0_Object        *object;
-    OSPI_v0_HwAttrs const *hwAttrs;
+    GPMC_v1_Object        *object;
+    GPMC_v1_HwAttrs const *hwAttrs;
     uintptr_t              dataPtr;
-    uint32_t               offset;
+    int32_t                status;
 
     /* Get the pointer to the object and hwAttrs */
-    hwAttrs = (OSPI_v0_HwAttrs const *)handle->hwAttrs;
-    object  = (OSPI_v0_Object *)handle->object;
+    hwAttrs = (GPMC_v1_HwAttrs const *)handle->hwAttrs;
+    object  = (GPMC_v1_Object *)handle->object;
 
-    offset = (uint32_t)((uintptr_t)transaction->arg); /* OSPI Flash offset address to write */
-    dataPtr = (uintptr_t)(hwAttrs->dataAddr + offset);
+    dataPtr = (uintptr_t)(hwAttrs->dataBaseAddr + transaction->offset);
 
-    if((uint32_t)SPI_TRANSACTION_TYPE_READ == object->transactionType)
+    if((uint32_t)GPMC_TRANSACTION_TYPE_READ == object->transaction->transType)
     {
         /* RX Mode */
-        (void)OSPI_udmaMemcpy(handle,
-                              (void *)transaction->rxBuf,
-                              (void *)dataPtr,
-                              (uint32_t)transaction->count);
+        status = GPMC_udmaMemcpy(handle,
+                                (void *)transaction->rxBuf,
+                                (void *)dataPtr,
+                                (uint32_t)transaction->count);
     }
     else
     {
         /* TX Mode */
-        (void)OSPI_udmaMemcpy(handle,
-                              (void *)dataPtr,
-                              (void *)transaction->txBuf,
-                              (uint32_t)transaction->count);
+        status = GPMC_udmaMemcpy(handle,
+                                (void *)dataPtr,
+                                (void *)transaction->txBuf,
+                                (uint32_t)transaction->count);
     }
+
+    if (UDMA_SOK == status)
+    {
+        status = GPMC_STATUS_SUCCESS;
+    }
+    else
+    {
+        status = GPMC_STATUS_ERROR;
+    }
+
+    return(status);
 }
 
-void OSPI_dmaFreeChannel(SPI_Handle handle)
+int32_t GPMC_dmaFreeChannel(GPMC_Handle handle)
 {
-    OSPI_v0_HwAttrs const *hwAttrs;
-    OSPI_dmaInfo          *pDmaInfo;
+    GPMC_v1_HwAttrs const *hwAttrs;
+    GPMC_dmaInfo          *pDmaInfo;
     Udma_ChHandle          chHandle;
-    int32_t                retVal = UDMA_SOK;
+    int32_t                status;
 
     /* Get the pointer to the object and hwAttrs */
-    hwAttrs  = (OSPI_v0_HwAttrs const *)handle->hwAttrs;
+    hwAttrs  = (GPMC_v1_HwAttrs const *)handle->hwAttrs;
     pDmaInfo = hwAttrs->dmaInfo;
     chHandle = (Udma_ChHandle)(pDmaInfo->chHandle);
-    retVal = Udma_chDisable(chHandle, UDMA_DEFAULT_CH_DISABLE_TIMEOUT);
+    status = Udma_chDisable(chHandle, UDMA_DEFAULT_CH_DISABLE_TIMEOUT);
 
     /* Unregister master event at the end */
-    if(UDMA_SOK == retVal)
+    if(UDMA_SOK == status)
     {
-        retVal = Udma_eventUnRegister((Udma_EventHandle) pDmaInfo->eventHandle);
+        status = Udma_eventUnRegister((Udma_EventHandle) pDmaInfo->eventHandle);
     }
-    if(UDMA_SOK == retVal)
+    if(UDMA_SOK == status)
     {
-        retVal = Udma_chClose(chHandle);
+        status = Udma_chClose(chHandle);
     }
+
+    if (UDMA_SOK == status)
+    {
+        status = GPMC_STATUS_SUCCESS;
+    }
+    else
+    {
+        status = GPMC_STATUS_ERROR;
+    }
+
+    return(status);
 }
 
-static void OSPI_dmaIsrHandler(Udma_EventHandle eventHandle,
+static void GPMC_dmaIsrHandler(Udma_EventHandle eventHandle,
                                uint32_t         eventType,
                                void            *appData)
 {
     int32_t                status = UDMA_SOK;
-    SPI_Handle             handle;
-    OSPI_v0_Object        *object;
-    OSPI_v0_HwAttrs const *hwAttrs;
-    OSPI_dmaInfo          *pDmaInfo;
+    GPMC_Handle             handle;
+    GPMC_v1_Object        *object;
+    GPMC_v1_HwAttrs const *hwAttrs;
+    GPMC_dmaInfo          *pDmaInfo;
     uint64_t               pDesc = 0;
     Udma_ChHandle          chHandle;
     uint32_t               remainder = 0;
+    uint32_t               quotient;
     uint16_t               iCnt[4];
     uint32_t               xferedCnt;
     uint8_t               *srcBuf;
@@ -350,9 +373,9 @@ static void OSPI_dmaIsrHandler(Udma_EventHandle eventHandle,
     if(appData != NULL)
     {
         /* Get the pointer to the object and hwAttrs */
-        handle   = (SPI_Handle)appData;
-        hwAttrs  = (OSPI_v0_HwAttrs const *)handle->hwAttrs;
-        object   = (OSPI_v0_Object *)handle->object;
+        handle   = (GPMC_Handle)appData;
+        hwAttrs  = (GPMC_v1_HwAttrs const *)handle->hwAttrs;
+        object   = (GPMC_v1_Object *)handle->object;
         pDmaInfo = hwAttrs->dmaInfo;
         chHandle = (Udma_ChHandle)(pDmaInfo->chHandle);
 
@@ -367,41 +390,72 @@ static void OSPI_dmaIsrHandler(Udma_EventHandle eventHandle,
             if(UDMA_SOK != status)
             {
                 /* transfer completed, but dequeue error */
-                object->transaction->status = SPI_TRANSFER_FAILED;
+                object->transaction->status = GPMC_TRANSFER_FAILED;
                 object->transaction->count = 0;
                 callBack = (bool)true;
             }
             else
             {
-                object->transaction->status = SPI_TRANSFER_COMPLETED;
-                if((uint32_t)SPI_TRANSACTION_TYPE_READ == object->transactionType)
+                object->transaction->status = GPMC_TRANSFER_COMPLETED;
+                if((uint32_t)GPMC_TRANSACTION_TYPE_READ == object->transaction->transType)
                 {
-                    if (object->readCountIdx > OSPI_DMA_MAX_L0_XFER_SIZE)
+                    iCnt[0] = (uint16_t)GPMC_DMA_ICNT0;
+                    quotient = object->readCountIdx / GPMC_DMA_ICNT0;
+                    if (quotient < GPMC_DMA_MAX_ICNT)
                     {
-                        /* 1st RX transfer completed with size > 64KB */
-                        remainder = object->readCountIdx % OSPI_DMA_XFER_SIZE;
+                        iCnt[1] = (uint16_t)(quotient);
+                        iCnt[2] = (uint16_t)1U;
+                    }
+                    else
+                    {
+                        iCnt[1] = GPMC_DMA_HALF_ICNT;
+                        iCnt[2] = (uint16_t)(quotient / GPMC_DMA_HALF_ICNT);
+                    }
+
+                    if (object->readCountIdx > GPMC_DMA_ICNT0)
+                    {
+                        quotient = object->readCountIdx / GPMC_DMA_ICNT0;
+                        if (quotient < GPMC_DMA_MAX_ICNT)
+                        {
+                            /* Previous RX transfer completed with 32 < size < 32 * 0x10000 */
+                            remainder = object->readCountIdx % GPMC_DMA_ICNT0;
+                        }
+                        else
+                        {
+                            /* Previous RX transfer completed with size >= 32 * 0x10000 */
+                            remainder = object->readCountIdx % (GPMC_DMA_HALF_ICNT * GPMC_DMA_ICNT0);
+                        }
                         xferedCnt = object->readCountIdx - remainder;
                         object->readBufIdx += xferedCnt;
                         object->readCountIdx -= xferedCnt;
 
-                        offset = (uint32_t)(uintptr_t)(object->transaction->arg) + xferedCnt; /* OSPI Flash offset address to write */
-                        dataPtr = (uintptr_t)(hwAttrs->dataAddr + offset);
+                        offset = (uint32_t)(uintptr_t)(object->transaction->offset) + xferedCnt; /* GPMC Flash offset address to write */
+                        dataPtr = (uintptr_t)(hwAttrs->dataBaseAddr + offset);
                         srcBuf = (uint8_t *)dataPtr;
                         destBuf = object->readBufIdx;
                     }
                 }
                 else
                 {
-                    if (object->writeCountIdx > OSPI_DMA_MAX_L0_XFER_SIZE)
+                    if (object->writeCountIdx > GPMC_DMA_ICNT0)
                     {
-                        /* 1st RX transfer completed with size > 64KB */
-                        remainder = object->writeCountIdx % OSPI_DMA_XFER_SIZE;
+                        quotient = object->writeCountIdx / GPMC_DMA_ICNT0;
+                        if (quotient < GPMC_DMA_MAX_ICNT)
+                        {
+                            /* Previous TX transfer completed with 32 < size < 32 * 0x10000 */
+                            remainder = object->writeCountIdx % GPMC_DMA_ICNT0;
+                        }
+                        else
+                        {
+                            /* Previous TX transfer completed with size >= 32 * 0x10000 */
+                            remainder = object->writeCountIdx % (GPMC_DMA_HALF_ICNT * GPMC_DMA_ICNT0);
+                        }
                         xferedCnt = object->writeCountIdx - remainder;
                         object->writeBufIdx += xferedCnt;
                         object->writeCountIdx -= xferedCnt;
 
-                        offset = (uint32_t)(uintptr_t)(object->transaction->arg) + xferedCnt; /* OSPI Flash offset address to write */
-                        dataPtr = (uintptr_t)(hwAttrs->dataAddr + offset);
+                        offset = (uint32_t)(uintptr_t)(object->transaction->offset) + xferedCnt; /* GPMC Flash offset address to write */
+                        dataPtr = (uintptr_t)(hwAttrs->dataBaseAddr + offset);
                         destBuf = (uint8_t *)dataPtr;
                         srcBuf = object->writeBufIdx;
                     }
@@ -409,14 +463,22 @@ static void OSPI_dmaIsrHandler(Udma_EventHandle eventHandle,
 
                 if (remainder != 0U)
                 {
-                    /* kick off 2nd transfer with remaining bytes */
-                    iCnt[0] = (uint16_t)remainder;
-                    iCnt[1] = (uint16_t)1U;
+                    /* kick off the following transfer with remaining bytes */
+                    if (remainder < GPMC_DMA_ICNT0)
+                    {
+                        iCnt[0] = (uint16_t)remainder;
+                        iCnt[1] = (uint16_t)1U;
+                    }
+                    else
+                    {
+                        iCnt[0] = (uint16_t)GPMC_DMA_ICNT0;
+                        iCnt[1] = (uint16_t)(remainder / GPMC_DMA_ICNT0);
+                    }
                     iCnt[2] = (uint16_t)1U;
                     iCnt[3] = (uint16_t)1U;
 
                     /* Update TR packet descriptor */
-                    OSPI_udmaTrpdInit(chHandle,
+                    GPMC_udmaTrpdInit(chHandle,
                                       (uint8_t *)pDmaInfo->tprdMem,
                                       (const void *)destBuf,
                                       (const void *)srcBuf,
@@ -433,7 +495,7 @@ static void OSPI_dmaIsrHandler(Udma_EventHandle eventHandle,
         }
         else
         {
-            object->transaction->status = SPI_TRANSFER_FAILED;
+            object->transaction->status = GPMC_TRANSFER_FAILED;
             object->transaction->count = 0;
             callBack = (bool)true;
         }
@@ -441,7 +503,7 @@ static void OSPI_dmaIsrHandler(Udma_EventHandle eventHandle,
 
     if (callBack)
     {
-        object->ospiParams.transferCallbackFxn(handle, object->transaction);
+        object->gpmcParams.transferCallbackFxn(handle, object->transaction);
     }
     (void)eventHandle;
 }

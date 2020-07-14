@@ -64,7 +64,12 @@
 /* Board Header files */
 #include <ti/board/board.h>
 #include <ti/board/src/flash/include/board_flash.h>
+
 #include <ti/drv/sciclient/sciclient.h>
+#ifdef GPMC_DMA_ENABLE
+#include <ti/osal/CacheP.h>
+#include <ti/drv/udma/udma.h>
+#endif
 
 /**********************************************************************
  ************************** Macros ************************************
@@ -98,18 +103,111 @@ bool VerifyData(uint8_t *expData,
 /**********************************************************************
  ************************** Global Variables **************************
  **********************************************************************/
+#ifdef GPMC_DMA_ENABLE
+uint8_t txBuf[TEST_DATA_LEN]  __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT))) __attribute__((section(".benchmark_buffer")));
+uint8_t rxBuf[TEST_DATA_LEN]  __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT))) __attribute__((section(".benchmark_buffer")));
+#else
+uint8_t txBuf[TEST_DATA_LEN]  __attribute__((aligned(4))) __attribute__((section(".benchmark_buffer")));
+uint8_t rxBuf[TEST_DATA_LEN]  __attribute__((aligned(4))) __attribute__((section(".benchmark_buffer")));
+#endif
 
-/* Buffer containing the known data that needs to be written to flash */
-uint8_t txBuf[TEST_DATA_LEN];
+#ifdef GPMC_DMA_ENABLE
+/*
+ * Ring parameters
+ */
+/** \brief Number of ring entries - we can prime this much memcpy operations */
+#define UDMA_TEST_APP_RING_ENTRIES      (1U)
+/** \brief Size (in bytes) of each ring entry (Size of pointer - 64-bit) */
+#define UDMA_TEST_APP_RING_ENTRY_SIZE   (sizeof(uint64_t))
+/** \brief Total ring memory */
+#define UDMA_TEST_APP_RING_MEM_SIZE     (UDMA_TEST_APP_RING_ENTRIES * \
+                                         UDMA_TEST_APP_RING_ENTRY_SIZE)
+/**
+ *  \brief UDMA TR packet descriptor memory.
+ *  This contains the CSL_UdmapCppi5TRPD + Padding to sizeof(CSL_UdmapTR15) +
+ *  one Type_15 TR (CSL_UdmapTR15) + one TR response of 4 bytes.
+ *  Since CSL_UdmapCppi5TRPD is less than CSL_UdmapTR15, size is just two times
+ *  CSL_UdmapTR15 for alignment.
+ */
+#define UDMA_TEST_APP_TRPD_SIZE         ((sizeof(CSL_UdmapTR15) * 2U) + 4U)
 
-/* Buffer containing the received data */
-uint8_t rxBuf[TEST_DATA_LEN];
+/** \brief This ensures every channel memory is aligned */
+#define UDMA_TEST_APP_TRPD_SIZE_ALIGN   ((UDMA_TEST_APP_TRPD_SIZE + UDMA_CACHELINE_ALIGNMENT) & ~(UDMA_CACHELINE_ALIGNMENT - 1U))
+
+/*
+ * UDMA driver objects
+ */
+struct Udma_DrvObj      gUdmaDrvObj;
+struct Udma_ChObj       gUdmaChObj;
+struct Udma_EventObj    gUdmaCqEventObj;
+
+Udma_DrvHandle          gDrvHandle = NULL;
+/*
+ * UDMA Memories
+ */
+static uint8_t gTxRingMem[UDMA_TEST_APP_RING_MEM_SIZE] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
+static uint8_t gTxCompRingMem[UDMA_TEST_APP_RING_MEM_SIZE] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
+static uint8_t gTxTdCompRingMem[UDMA_TEST_APP_RING_MEM_SIZE] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
+static uint8_t gUdmaTprdMem[UDMA_TEST_APP_TRPD_SIZE_ALIGN] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
+static GPMC_dmaInfo gUdmaInfo;
+
+int32_t GPMC_udma_init(GPMC_v1_HwAttrs *cfg)
+{
+    int32_t         retVal = UDMA_SOK;
+    Udma_InitPrms   initPrms;
+    uint32_t        instId;
+
+    if (gDrvHandle == NULL)
+    {
+        /* UDMA driver init */
+
+        /* Use Block Copy DMA instance for AM64x */
+        instId = UDMA_INST_ID_BCDMA_0;
+        UdmaInitPrms_init(instId, &initPrms);
+        retVal = Udma_init(&gUdmaDrvObj, &initPrms);
+        if(UDMA_SOK == retVal)
+        {
+            gDrvHandle = &gUdmaDrvObj;
+        }
+    }
+
+    if(gDrvHandle != NULL)
+    {
+        gUdmaInfo.drvHandle      = (void *)gDrvHandle;
+        gUdmaInfo.chHandle       = (void *)&gUdmaChObj;
+        gUdmaInfo.ringMem        = (void *)&gTxRingMem[0];
+        gUdmaInfo.cqRingMem      = (void *)&gTxCompRingMem[0];
+        gUdmaInfo.tdCqRingMem    = (void *)&gTxTdCompRingMem[0];
+        gUdmaInfo.tprdMem        = (void *)&gUdmaTprdMem[0];
+        gUdmaInfo.eventHandle    = (void *)&gUdmaCqEventObj;
+        cfg->dmaInfo             = &gUdmaInfo;
+    }
+
+    return (retVal);
+}
+
+int32_t GPMC_udma_deinit(void)
+{
+    int32_t         retVal = UDMA_SOK;
+
+    if (gDrvHandle != NULL)
+    {
+        retVal = Udma_deinit(gDrvHandle);
+        if(UDMA_SOK == retVal)
+        {
+            gDrvHandle = NULL;
+        }
+    }
+
+    return (retVal);
+}
+#endif
 
 /*
  *  ======== test function ========
  */
 #if defined(SOC_AM335X) || defined(SOC_AM437X)
-uint32_t gpmc_flash_test(void)
+uint32_t gpmc_flash_test(GPMC_Tests *pTest)
 {
     Board_flashHandle boardHandle;
     Board_FlashInfo *flashInfo;
@@ -200,7 +298,7 @@ err:
 
 #else
 GPMC_Transaction transaction;
-uint32_t gpmc_sram_test(void)
+uint32_t gpmc_sram_test(GPMC_Tests *pTest)
 {
     uint32_t    testPassed = TRUE;
     GPMC_Params params;
@@ -217,6 +315,13 @@ uint32_t gpmc_sram_test(void)
 
     /* Generate the data */
     GeneratePattern(txBuf, rxBuf, TEST_DATA_LEN);
+#ifdef GPMC_DMA_ENABLE
+    if (pTest->dmaMode)
+    {
+        CacheP_wbInv((void *)txBuf, (int32_t)TEST_DATA_LEN);
+        CacheP_wbInv((void *)rxBuf, (int32_t)TEST_DATA_LEN);
+    }
+#endif
 
     /* Write data */
     transaction.transType = GPMC_TRANSACTION_TYPE_WRITE;
@@ -255,6 +360,11 @@ Err:
     {
         GPMC_close(handle);
     }
+
+#if GPMC_DMA_ENABLE
+    GPMC_udma_deinit();
+#endif
+
     return (testPassed);
 }
 #endif
@@ -268,7 +378,19 @@ void GPMC_initConfig(uint32_t dmaMode)
 
     /* Modify the default GPMC configurations */
     gpmc_cfg.dmaEnable = dmaMode;
-
+#ifdef GPMC_DMA_ENABLE
+    if (gpmc_cfg.dmaEnable)
+    {
+        GPMC_udma_init(&gpmc_cfg);
+#ifdef SIM_BUILD
+        /* workaround burst read/write issue of the test bench */
+        gpmc_cfg.accessType = GPMC_ACCESSTYPE_SINGLE;
+#else
+        /* enable burst read/write in DMA mode */
+        gpmc_cfg.accessType = GPMC_ACCESSTYPE_MULTIPLE;
+#endif
+    }
+#endif
     /* Set the default GPMC init configurations */
     GPMC_socSetInitCfg(BOARD_GPMC_INSTANCE, &gpmc_cfg);
 }
@@ -280,9 +402,9 @@ uint32_t gpmc_read_write_test(void *pTest)
 
     GPMC_initConfig(pTst->dmaMode);
 #if defined(SOC_AM335X) || defined(SOC_AM437X)
-    testPassed = gpmc_flash_test();
+    testPassed = gpmc_flash_test(pTst);
 #else
-    testPassed = gpmc_sram_test();
+    testPassed = gpmc_sram_test(pTst);
 #endif
 
     return (testPassed);
@@ -427,8 +549,11 @@ void GPMC_test_print_test_results(uint32_t pass, const char *pDesc)
 
 GPMC_Tests Gpmc_tests[] =
 {
-    /* testFunc            testID             dmaMode     testDesc */
-    {gpmc_read_write_test, GPMC_TEST_ID_RW,   TRUE,       "\r\n GPMC CPU read write test"},
+    /* testFunc            testID                 dmaMode      testDesc */
+    {gpmc_read_write_test, GPMC_TEST_ID_RW,       FALSE,       "\r\n GPMC CPU read write test"},
+#ifdef GPMC_DMA_ENABLE
+    {gpmc_read_write_test, GPMC_TEST_ID_RW_DMA,   TRUE,        "\r\n GPMC DMA read write test"},
+#endif
     {NULL, }
 };
 

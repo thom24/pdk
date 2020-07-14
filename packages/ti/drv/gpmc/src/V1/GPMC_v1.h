@@ -46,6 +46,10 @@
 #ifndef _GPMC_V1_H_
 #define _GPMC_V1_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <ti/csl/src/ip/gpmc/V1/gpmc.h>
 #include <ti/csl/src/ip/elm/V0/elm.h>
 #include <ti/drv/gpmc/GPMC.h>
@@ -226,6 +230,36 @@ typedef enum GPMC_v1_nandEccAlgo_s
 
 } GPMC_v1_nandEccAlgo;
 
+/******************************************************************************
+*          Structures to be passed to GPMC_soc
+******************************************************************************/
+
+/* GPMC function table pointer */
+extern const GPMC_FxnTable GPMC_FxnTable_v1;
+
+
+/*!
+ *  @brief  GPMC_v1 Object
+ *
+ *  The application must not access any member variables of this structure!
+ */
+typedef struct GPMC_v1_Object_s {
+    /* GPMC OS specific objects */
+    void                *mutex;              /* instance lock */
+    void                *transferComplete;   /*! Transfer complete lock */
+    void                *hwi;                /*! Hwi object */
+    uint32_t             waitTimeout;        /* Wait time out count */
+    GPMC_Params          gpmcParams;         /* input parameters */
+    GPMC_TransactionType transType;          /* Read or Write Transaction */
+    uint32_t             intrPollMode;       /* Interrupt or polling mode */
+    uint8_t             *writeBufIdx;        /* Internal inc. writeBuf index */
+    uint32_t             writeCountIdx;      /* Internal dec. writeCounter */
+    uint8_t             *readBufIdx;         /* Internal inc. readBuf index */
+    uint32_t             readCountIdx;       /* Internal dec. readCounter */
+    bool                 isOpen;             /* flag to indicate module is open */
+    GPMC_Transaction    *transaction;        /* Transaction structure */
+
+} GPMC_v1_Object;
 
 /*!
  *  \brief  Structure holding the timing parameters
@@ -289,36 +323,26 @@ typedef struct GPMC_v1_timingParams
          in GPMC_FCLK cycles. */
 } GPMC_v1_timingParams_t;
 
-
-/******************************************************************************
-*          Structures to be passed to GPMC_soc
-******************************************************************************/
-
-/* GPMC function table pointer */
-extern const GPMC_FxnTable GPMC_FxnTable_v1;
-
-
 /*!
- *  @brief  GPMC_v1 Object
- *
- *  The application must not access any member variables of this structure!
+ *  @brief  GPMC UDMA info structure
  */
-typedef struct GPMC_v1_Object_s {
-    /* GPMC OS specific objects */
-    void                *mutex;              /* instance lock */
-    void                *transferComplete;   /*! Transfer complete lock */
-    void                *hwi;                /*! Hwi object */
-    uint32_t             waitTimeout;        /* Wait time out count */
-    GPMC_Params          gpmcParams;         /* input parameters */
-    GPMC_TransactionType transType;          /* Read or Write Transaction */
-    uint32_t             intrPollMode;       /* Interrupt or polling mode */
-    uint8_t             *writeBufIdx;        /* Internal inc. writeBuf index */
-    uint32_t             writeCountIdx;      /* Internal dec. writeCounter */
-    uint8_t             *readBufIdx;         /* Internal inc. readBuf index */
-    uint32_t             readCountIdx;       /* Internal dec. readCounter */
-    bool                 isOpen;             /* flag to indicate module is open */
+typedef struct GPMC_dmaInfo_s {
+    /*! UDMA driver handle */
+    void            *drvHandle;
+    /*! UDMA channel handle */
+    void            *chHandle;
+    /*! UDMA ring memory pointers */
+    void            *ringMem;
+    /*! UDMA complete queue ring memory pointers */
+    void            *cqRingMem;
+    /*! UDMA tear down complete queue ring memory pointers */
+    void            *tdCqRingMem;
+    /*! UDMA TR PD memory pointers */
+    void            *tprdMem;
+    /*! UDMA event handles */
+    void            *eventHandle;
 
-} GPMC_v1_Object;
+} GPMC_dmaInfo;
 
 /*!
  *  @brief  GPMC Hardware attributes
@@ -381,7 +405,21 @@ typedef struct GPMC_v1_HwAttrs_s {
     uint32_t                writeType;
     /**< Chip Select Extra Delay flag. */
     uint32_t                csExDelay;
+    /*! UDMA configuration info */
+    GPMC_dmaInfo           *dmaInfo;
+    /*! Memory access type */
+    uint32_t                accessType;
 
 } GPMC_v1_HwAttrs;
 
-#endif  // _GPMC_V1_H_
+#ifdef GPMC_DMA_ENABLE
+extern int32_t GPMC_dmaConfig(GPMC_Handle handle);
+extern int32_t GPMC_dmaTransfer(GPMC_Handle handle, const GPMC_Transaction *transaction);
+extern int32_t GPMC_dmaFreeChannel(GPMC_Handle handle);
+#endif
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif  /* _GPMC_V1_H_ */

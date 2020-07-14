@@ -101,6 +101,7 @@ GPMC_v1_HwAttrs GPMCInitCfg[CSL_GPMC_CNT + 1] =
         GPMC_READTYPE_SYNC,           /* readType */
         GPMC_WRITETYPE_SYNC,          /* writeType */
         GPMC_CS_EXTRA_NODELAY,        /* csExDelay */
+        GPMC_ACCESSTYPE_SINGLE,       /* accessType */
     },
 };
 

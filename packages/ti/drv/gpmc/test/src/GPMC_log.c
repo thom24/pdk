@@ -1,5 +1,5 @@
 /**
- *  \file   SPI_log.c
+ *  \file   GPMC_log.c
  *
  *  \brief  This file contains the uart console print specific functions and
  *          macros.
@@ -7,7 +7,7 @@
  */
 
 /*
- * Copyright (C) 2014 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2014 - 2020 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
