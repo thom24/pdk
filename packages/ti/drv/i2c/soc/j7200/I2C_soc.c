@@ -8,7 +8,7 @@
  */
 
 /*
- * Copyright (C) 2019 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2020 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -50,18 +50,6 @@
 
 #define I2C_INPUT_CLK        (96000000U)
 
-/* DMSC SYSFW invalid I2C device ID */
-#define I2C_TISCI_INVALID_DEV_ID       ((uint16_t)0xFFFFU)
-
-/* CLEC input event # offset for GIC SPI */
-#define I2C_CLEC_GIC_SPI_IN_EVT_OFFSET (1024U - 32U)
-
-/* DMSC SYSFW C66x destination host int # for I2C0 */
-#define I2C_TISCI_C66X_DST_HOST_IRQ0   (60U)
-
-/* C7x INTC int # for I2C0 */
-#define I2C_C7X_IRQ0                   (30U)
-
 static int32_t I2C_configSocIntrPath(const void *pHwAttrs, bool setIntrPath);
 
 /* I2C configuration structure */
@@ -85,12 +73,6 @@ I2C_HwAttrs i2cInitCfg[I2C_HWIP_MAX_CNT] =
         CSLR_MCU_R5FSS0_CORE0_INTR_MCU_I2C0_POINTRPEND_0,
         0,                                  /* eventId */
 #endif
-#if defined (BUILD_C7X_1)
-        /* default configuration for I2C instance and DSP core on Main domain*/
-        (uint32_t)CSL_I2C0_CFG_BASE,       /* baseAddr */
-        I2C_C7X_IRQ0,                      /* intNum */
-        CSLR_COMPUTE_CLUSTER0_MSMC_1MB_GIC_SPI_I2C0_POINTRPEND_0 + I2C_CLEC_GIC_SPI_IN_EVT_OFFSET, /* eventId, input event # to CLEC */
-#endif
         I2C_INPUT_CLK,
         (bool)true,
         {
@@ -110,12 +92,6 @@ I2C_HwAttrs i2cInitCfg[I2C_HWIP_MAX_CNT] =
         CSLR_MCU_R5FSS0_CORE0_INTR_MCU_I2C1_POINTRPEND_0,
         0,
 #endif
-#if defined (BUILD_C7X_1)
-        /* default configuration for I2C instance and DSP core on Main domain*/
-        (uint32_t)CSL_I2C1_CFG_BASE,        /* baseAddr */
-        I2C_C7X_IRQ0 + 1,                   /* intNum */
-        CSLR_COMPUTE_CLUSTER0_MSMC_1MB_GIC_SPI_I2C1_POINTRPEND_0 + I2C_CLEC_GIC_SPI_IN_EVT_OFFSET, /* eventId, input event # to CLEC */
-#endif
         I2C_INPUT_CLK,
         (bool)true,
         {
@@ -133,12 +109,6 @@ I2C_HwAttrs i2cInitCfg[I2C_HWIP_MAX_CNT] =
         0,
         0,
         0,
-#endif
-#if defined (BUILD_C7X_1)
-        /* default configuration for I2C instance and DSP core on Main domain*/
-        (uint32_t)CSL_I2C2_CFG_BASE,        /* baseAddr */
-        I2C_C7X_IRQ0 + 2,                   /* intNum */
-        CSLR_COMPUTE_CLUSTER0_MSMC_1MB_GIC_SPI_I2C2_POINTRPEND_0 + I2C_CLEC_GIC_SPI_IN_EVT_OFFSET, /* eventId, input event # to CLEC */
 #endif
         I2C_INPUT_CLK,
         (bool)true,
@@ -158,12 +128,6 @@ I2C_HwAttrs i2cInitCfg[I2C_HWIP_MAX_CNT] =
         0,
         0,
 #endif
-#if defined (BUILD_C7X_1)
-        /* default configuration for I2C instance and DSP core on Main domain*/
-        (uint32_t)CSL_I2C3_CFG_BASE,        /* baseAddr */
-        I2C_C7X_IRQ0 + 3,                   /* intNum */
-        CSLR_COMPUTE_CLUSTER0_MSMC_1MB_GIC_SPI_I2C3_POINTRPEND_0 + I2C_CLEC_GIC_SPI_IN_EVT_OFFSET, /* eventId, input event # to CLEC */
-#endif
         I2C_INPUT_CLK,
         (bool)true,
         {
@@ -181,12 +145,6 @@ I2C_HwAttrs i2cInitCfg[I2C_HWIP_MAX_CNT] =
         0,
         0,
         0,
-#endif
-#if defined (BUILD_C7X_1)
-        /* default configuration for I2C instance and DSP core on Main domain*/
-        (uint32_t)CSL_I2C4_CFG_BASE,        /* baseAddr */
-        I2C_C7X_IRQ0 + 4,                   /* intNum */
-        CSLR_COMPUTE_CLUSTER0_MSMC_1MB_GIC_SPI_I2C4_POINTRPEND_0 + I2C_CLEC_GIC_SPI_IN_EVT_OFFSET, /* eventId, input event # to CLEC */
 #endif
         I2C_INPUT_CLK,
         (bool)true,
@@ -206,12 +164,6 @@ I2C_HwAttrs i2cInitCfg[I2C_HWIP_MAX_CNT] =
         0,
         0,
 #endif
-#if defined (BUILD_C7X_1)
-        /* default configuration for I2C instance and DSP core on Main domain*/
-        (uint32_t)CSL_I2C5_CFG_BASE,        /* baseAddr */
-        I2C_C7X_IRQ0 + 5,                   /* intNum */
-        CSLR_COMPUTE_CLUSTER0_MSMC_1MB_GIC_SPI_I2C5_POINTRPEND_0 + I2C_CLEC_GIC_SPI_IN_EVT_OFFSET, /* eventId, input event # to CLEC */
-#endif
         I2C_INPUT_CLK,
         (bool)true,
         {
@@ -229,12 +181,6 @@ I2C_HwAttrs i2cInitCfg[I2C_HWIP_MAX_CNT] =
         0,
         0,
         0,
-#endif
-#if defined (BUILD_C7X_1)
-        /* default configuration for I2C instance and DSP core on Main domain*/
-        (uint32_t)CSL_I2C6_CFG_BASE,        /* baseAddr */
-        I2C_C7X_IRQ0 + 6,                   /* intNum */
-        CSLR_COMPUTE_CLUSTER0_MSMC_1MB_GIC_SPI_I2C6_POINTRPEND_0 + I2C_CLEC_GIC_SPI_IN_EVT_OFFSET, /* eventId, input event # to CLEC */
 #endif
         I2C_INPUT_CLK,
         (bool)true,
@@ -498,23 +444,6 @@ static int32_t I2C_configSocIntrPath(const void *pHwAttrs, bool setIntrPath)
                ret = I2C_STATUS_ERROR;
             }
         }
-    }
-#elif defined (BUILD_C7X_1)
-    int32_t               retVal;
-    I2C_HwAttrs const    *hwAttrs = (I2C_HwAttrs const *)(pHwAttrs);
-    CSL_ClecEventConfig   cfgClec;
-    CSL_CLEC_EVTRegs     *clecBaseAddr = (CSL_CLEC_EVTRegs *)CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
-
-    /* Configure CLEC for I2C0 */
-    cfgClec.secureClaimEnable = FALSE;
-    cfgClec.evtSendEnable     = TRUE;
-    cfgClec.rtMap             = CSL_CLEC_RTMAP_CPU_ALL;
-    cfgClec.extEvtNum         = 0;
-    cfgClec.c7xEvtNum         = hwAttrs->intNum;
-    retVal = CSL_clecConfigEvent(clecBaseAddr, hwAttrs->eventId, &cfgClec);
-    if (retVal != CSL_PASS)
-    {
-        ret = I2C_STATUS_ERROR;
     }
 #else
     pHwAttrs = pHwAttrs;
