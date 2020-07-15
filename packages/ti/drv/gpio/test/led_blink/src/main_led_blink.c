@@ -549,7 +549,7 @@ void AppGpioCallbackFxn(void)
 #else
 void AppGpioCallbackFxn(void)
 {
-#if !defined(SOC_J721E) || defined(SOC_J7200)
+#if !defined(SOC_J721E) || !defined(SOC_J7200)
     /* Toggle LED1 */
     GPIO_toggle(USER_LED1);
     AppLoopDelay(DELAY_VALUE);
