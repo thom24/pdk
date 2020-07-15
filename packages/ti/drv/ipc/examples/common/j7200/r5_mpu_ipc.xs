@@ -35,25 +35,27 @@
  */
 
 /*
- *  --------------------------------------------------------------------------------------------------------------------
- * | Id | Base Address | Size | En | Cacheable                                        | XN | AccPerm             | Mask |
- * |--------------------------------------------------------------------------------------------------------------------|
- * | 0  | 0x00000000   | 4GB  | T  | uncacheable, Shareable                           | F  | RW at PL 1          | 0x0  |
- * |----|--------------|------|----|--------------------------------------------------|----|---------------------|------|
- * | 1  | 0 (local TCM)| 32K  | T  | Non-cacheable, Non-Shareable                     | F  | RW at PL 1          | 0x0  |
- * |----|--------------|------|----|--------------------------------------------------|----|---------------------|------|
- * | 2  | 0x41000000   | 32K  | T  | Non-cacheable, Non-Shareable                     | F  | RW at PL 1          | 0x0  |
- * |----|--------------|------|----|--------------------------------------------------|----|---------------------|------|
- * | 3  | 0x41010000   | 32K  | T  | Non-cacheable, Non-Shareable                     | F  | RW at PL 1          | 0x0  |
- * |----|--------------|------|----|--------------------------------------------------|----|---------------------|------|
- * | 4  | 0x41C00000   | 1MB  | T  | Write-Back, Write-Allocate, Non-Shareable        | F  | RW at PL 1          | 0x0  |
- * |----|--------------|------|----|--------------------------------------------------|----|---------------------|------|
- * | 5  | 0x70000000   | 8MB  | T  | MSMC - Write-Back, Write-Allocate, Non-Shareable | F  | RW at PL 1          | 0x0  |
- * |----|--------------|------|----|--------------------------------------------------|----|---------------------|------|
- * | 6  | 0x80000000   | 2GB  | T  | DDR -  Write-Back, Write-Allocate, Non-Shareable | F  | RW at PL 1 & PL 2   | 0x0  |
- * |----|--------------|------|----|--------------------------------------------------|----|---------------------|------|
- * | 7  | 0xA4000000   | 8MB  | T  | DDR (VRing Buffer) - Uncacheable, Shareable      | F  | RW at PL 1 & PL 2   | 0x0  |
- *  --------------------------------------------------------------------------------------------------------------------
+ *  -------------------------------------------------------------------------------------------------------------
+ * | Id | Base Address | Size | En | Cacheable                                 | XN | AccPerm             | Mask |
+ * |----|--------------|------|----|-------------------------------------------|----|---------------------|------|
+ * | 0  | 0x00000000   | 4GB  | T  | uncacheable, Shareable                    | F  | RW at PL 1 & PL 2   | 0x0  |
+ * |----|--------------|------|----|-------------------------------------------|----|---------------------|------|
+ * | 1  | 0 (local TCM)| 32K  | T  | Write-Back, Write-Allocate, Non-Shareable | F  | RW at PL 1          | 0x0  |
+ * |----|--------------|------|----|-------------------------------------------|----|---------------------|------|
+ * | 2  | 0x41000000   | 32K  | T  | Write-Back, Write-Allocate, Non-Shareable | F  | RW at PL 1          | 0x0  |
+ * |----|--------------|------|----|-------------------------------------------|----|---------------------|------|
+ * | 3  | 0x41010000   | 32K  | T  | Write-Back, Write-Allocate, Non-Shareable | F  | RW at PL 1          | 0x0  |
+ * |----|--------------|------|----|-------------------------------------------|----|---------------------|------|
+ * | 4  | 0x41C00000   | 1MB  | T  | Write-Back, Write-Allocate, Non-Shareable | F  | RW at PL 1          | 0x0  |
+ *  -------------------------------------------------------------------------------------------------------------
+ * | 5  | 0x70000000   | 8MB  | T  | MSMC Ram - Cachable                       | F  | RW at PL 1          | 0x0  |
+ *  -------------------------------------------------------------------------------------------------------------
+ * | 6  | 0x80000000   | 2GB  | T  | DDR - Strongly Ordered, Shareable         | F  | RW at PL 1 & PL 3   | 0x0  |
+ *  -------------------------------------------------------------------------------------------------------------
+ * | 7  | 0xA4000000   | 8MB  | T  | DDR (VRing Buffer) - Uncacheble           | F  | RW at PL 1 & PL 3   | 0x0  |
+ *  -------------------------------------------------------------------------------------------------------------
+ * | 8  | 0xA0000000   | 2MB  | T  | Linux VRing Buffer - Uncacheble           | F  | RW at PL 1 & PL 3   | 0x0  |
+ * |-------------------------------------------------------------------------------------------------------------|
  */
 
 /*
@@ -65,6 +67,8 @@
 var MPU = xdc.useModule('ti.sysbios.family.arm.MPU');
 MPU.enableMPU = true;
 MPU.enableBackgroundRegion = true;
+
+var coreId = java.lang.System.getenv("CORE");
 
 var attrs = new MPU.RegionAttrs();
 MPU.initRegionAttrsMeta(attrs);
@@ -83,9 +87,9 @@ MPU.setRegionMeta(0, 0x00000000, MPU.RegionSize_4G, attrs);
 
 /* This entry covers the ATCM mapped to 0 */
 attrs.enable = true;
-attrs.bufferable = false;
-attrs.cacheable = false;
-attrs.shareable = false;
+attrs.bufferable = true;
+attrs.cacheable = true;
+attrs.shareable = true;
 attrs.noExecute = false;
 attrs.accPerm = 1;          /* RW at PL1 */
 attrs.tex = 1;
@@ -94,8 +98,8 @@ MPU.setRegionMeta(1, 0x00000000, MPU.RegionSize_32K, attrs);
 
 /* This entry covers ATCM if mapped to 0x41000000 */
 attrs.enable = true;
-attrs.bufferable = false;
-attrs.cacheable = false;
+attrs.bufferable = true;
+attrs.cacheable = true;
 attrs.shareable = false;
 attrs.noExecute = false;
 attrs.accPerm = 1;          /* RW at PL1 */
@@ -105,8 +109,8 @@ MPU.setRegionMeta(2, 0x41000000, MPU.RegionSize_32K, attrs);
 
 /* This entry covers BTCM if mapped to 0x41010000 */
 attrs.enable = true;
-attrs.bufferable = false;
-attrs.cacheable = false;
+attrs.bufferable = true;
+attrs.cacheable = true;
 attrs.shareable = false;
 attrs.noExecute = false;
 attrs.accPerm = 1;          /* RW at PL1 */
@@ -134,18 +138,45 @@ attrs.noExecute = false;
 attrs.accPerm = 1;          /* RW at PL1 */
 attrs.tex = 1;
 attrs.subregionDisableMask = 0;
-MPU.setRegionMeta(5, 0x70000000, MPU.RegionSize_1M, attrs);
+MPU.setRegionMeta(5, 0x70000000, MPU.RegionSize_8M, attrs);
 
 /* This entry covers DDR memory */
 attrs.enable = true;
 attrs.bufferable = true;
 attrs.cacheable = true;
-attrs.shareable = false;
+attrs.shareable = true;
 attrs.noExecute = false;
 attrs.accPerm = 0x3;          /* RW at PL1 & PL2 */
 attrs.tex = 1;
 attrs.subregionDisableMask = 0;
 MPU.setRegionMeta(6, 0x80000000, MPU.RegionSize_2G, attrs);
+
+/* Linux Ring Buffer uncached.... */
+attrs.enable = true;
+attrs.bufferable = false;
+attrs.cacheable = false;
+attrs.shareable = true;
+attrs.noExecute = true;
+attrs.accPerm = 3;          /* RW at PL1 */
+attrs.tex = 0;
+attrs.subregionDisableMask = 0;
+
+if ( coreId == "mcu1_0")
+{
+    MPU.setRegionMeta(7, 0xA0000000, MPU.RegionSize_1M, attrs);
+}
+else if ( coreId == "mcu1_1")
+{
+    MPU.setRegionMeta(7, 0xA1000000, MPU.RegionSize_1M, attrs);
+}
+else if ( coreId == "mcu2_0")
+{
+    MPU.setRegionMeta(7, 0xA2000000, MPU.RegionSize_1M, attrs);
+}
+else if ( coreId == "mcu2_1")
+{
+    MPU.setRegionMeta(7, 0xA3000000, MPU.RegionSize_1M, attrs);
+}
 
 /* Ring Buffer uncached.... */
 attrs.enable = true;
@@ -153,7 +184,7 @@ attrs.bufferable = false;
 attrs.cacheable = false;
 attrs.shareable = true;
 attrs.noExecute = true;
-attrs.accPerm = 3;          /* RW at PL1 & PL2 */
+attrs.accPerm = 3;          /* RW at PL1 */
 attrs.tex = 0;
 attrs.subregionDisableMask = 0;
-MPU.setRegionMeta(7, 0xA4000000, MPU.RegionSize_8M, attrs);
+MPU.setRegionMeta(8, 0xA4000000, MPU.RegionSize_8M, attrs);

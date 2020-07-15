@@ -57,7 +57,11 @@ extern "C" {
  * \brief VRing Buffer Size required for all core
  * combinations.
  */
+#if defined (SOC_J7200)
+#define IPC_VRING_BUFFER_SIZE   (0x800000U)
+#else
 #define IPC_VRING_BUFFER_SIZE   (0x1C00000U)
+#endif
 
 /*
  * For VLAB toolbox 0.14.5.snapshot2 onward,

@@ -166,10 +166,6 @@ const CSL_ArmR5MpuRegionCfg  gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         .baseAddr         = 0xA2000000,
 #elif defined(BUILD_MCU2_1)
         .baseAddr         = 0xA3000000,
-#elif defined(BUILD_MCU3_0)
-        .baseAddr         = 0xA4000000,
-#elif defined(BUILD_MCU3_1)
-        .baseAddr         = 0xA5000000,
 #endif
         .size             = CSL_ARM_R5_MPU_REGION_SIZE_2MB,
         .subRegionEnable  = CSL_ARM_R5_MPU_SUB_REGION_ENABLE_ALL,
@@ -184,8 +180,8 @@ const CSL_ArmR5MpuRegionCfg  gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         /* Region 8 configuration: Ring buffer */
         .regionId         = 8U,
         .enable           = 1U,
-        .baseAddr         = 0xAA000000,
-        .size             = CSL_ARM_R5_MPU_REGION_SIZE_32MB,
+        .baseAddr         = 0xA4000000,
+        .size             = CSL_ARM_R5_MPU_REGION_SIZE_8MB,
         .subRegionEnable  = CSL_ARM_R5_MPU_SUB_REGION_ENABLE_ALL,
         .exeNeverControl  = 1U,
         .accessPermission = CSL_ARM_R5_ACC_PERM_PRIV_USR_RD_WR,
