@@ -337,7 +337,31 @@ int main()
 
 #if !defined(SBL_SKIP_PINMUX_ENABLE)
     /* Board pinmux. */
+#if defined(SOC_AM64X)
+    /* AM64x should not re-configure Pinmux on reset */
+    uint32_t mmrResetRegister = (*((volatile uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE+CSL_MAIN_CTRL_MMR_CFG0_RST_SRC_PROXY)));
+
+    uint32_t mmrResetMask = CSL_MAIN_CTRL_MMR_CFG0_RST_SRC_PROXY_RST_SRC_MAIN_RESET_REQ_PROXY_MASK
+        | CSL_MAIN_CTRL_MMR_CFG0_RST_SRC_PROXY_RST_SRC_WARM_OUT_RST_PROXY_MASK
+        | CSL_MAIN_CTRL_MMR_CFG0_RST_SRC_PROXY_RST_SRC_SW_MCU_WARMRST_PROXY_MASK
+        | CSL_MAIN_CTRL_MMR_CFG0_RST_SRC_PROXY_RST_SRC_SW_MAIN_WARMRST_FROM_MCU_PROXY_MASK
+        | CSL_MAIN_CTRL_MMR_CFG0_RST_SRC_PROXY_RST_SRC_SW_MAIN_WARMRST_FROM_MAIN_PROXY_MASK
+        | CSL_MAIN_CTRL_MMR_CFG0_RST_SRC_PROXY_RST_SRC_MAIN_ESM_ERROR_PROXY_MASK;
+
+    if (mmrResetRegister & mmrResetMask)
+    {
+        /* Do not do PinMux */
+        SBL_log(SBL_LOG_MAX, "SKIPPING PINMUX ENABLE\n");
+    }
+    else
+    {
+        SBL_log(SBL_LOG_MAX, "ENABLING PINMUX\n");
+        Board_init(BOARD_INIT_PINMUX_CONFIG);
+    }
+#else
     Board_init(BOARD_INIT_PINMUX_CONFIG);
+#endif
+
 #endif
 
 #if !defined(SBL_SKIP_LATE_INIT)
