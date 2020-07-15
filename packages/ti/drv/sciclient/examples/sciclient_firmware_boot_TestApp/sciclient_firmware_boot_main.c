@@ -134,7 +134,7 @@ const FATFS_Config FATFS_config[_VOLUMES + 1] = {
     {NULL, NULL, NULL}
 };
 #else
-uint32_t gSciclient_firmware[SCICLIENT_FIRMWARE_SIZE_IN_BYTES/4] = SCICLIENT_FIRMWARE;
+uint32_t gSciclient_firmware[(SCICLIENT_FIRMWARE_SIZE_IN_BYTES + 3)/4] = SCICLIENT_FIRMWARE;
 #endif
 /* ========================================================================== */
 /*                         Structure Declarations                             */
