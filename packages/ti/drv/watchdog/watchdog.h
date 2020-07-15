@@ -33,6 +33,9 @@
 
 /** \defgroup DRV_WATCHDOG_MODULE Watchdog Driver
  *
+ *  The Watchdog driver provides APIs to configure Watchdog hardware module,
+ *  and specify a callback function to repspond to Watchdog timeout.
+ *
  *  The Watchdog header file should be included in an application as follows:
  *  @code
  *  #include <ti/drv/watchdog/watchdog.h>
@@ -51,8 +54,8 @@
  *  Watchdog_clear() can be called at any time.
  *
  *  ## Opening the driver #
- *  The watchdog driver uses the ESM and SOC drivers. Make sure these modules are initialized before
- *  #Watchdog_open() is called.
+ *  The watchdog driver uses the ESM driver. Make sure the ESM module is initialized before
+ *  Watchdog_open() is called.
  *
  *  @code
  *  Watchdog_Handle     handle;
@@ -66,7 +69,7 @@
  *      System_printf("Watchdog did not open");
  *  }
  *
- *  Handle may now be used to interact with the Watchdog just created
+ *  // Handle may now be used to interact with the Watchdog just created
  *  @endcode
  *
  *  # Implementation #
@@ -86,7 +89,7 @@
  *  - (void *) hardware attributes that are associated to the Watchdog_FxnTable
  *
  *  ## Using the driver on MSS #
- *  The watchdog reset mode can be configured to reset the system or generate a NMI on watchdog expiry.
+ *  The watchdog reset mode can be configured to reset the system or generate an NMI on watchdog expiry.
  *  When the reset mode is reset OFF(i.e., generate NMI), application can register a callback function for
  *  additional handling on watchdog expiry.
  *
@@ -102,24 +105,15 @@
  *  on the MSS. The application can register a callback on MSS using the ESM notifier functionality to handle these
  *  errors.
  *
- *   *  @code
+ *    @code
  *
-    notifyParams.groupNumber = 1;
-    notifyParams.errorNumber = ESMG1_DSS_ESM_HI_INT;
-    notifyParams.arg = NULL;
-    notifyParams.notify = DSPNotifyMSSCallback;
-    retVal = ESM_registerNotifier (cfg->esmHandle, &notifyParams, &errCode);
-
+ *  notifyParams.groupNumber = 1;
+ *  notifyParams.errorNumber = ESMG1_DSS_ESM_HI_INT;
+ *  notifyParams.arg = NULL;
+ *  notifyParams.notify = DSPNotifyMSSCallback;
+ *  retVal = ESM_registerNotifier (cfg->esmHandle, &notifyParams, &errCode);
+ *
  *  @endcode
- *
- *  # Instrumentation #
- *
- *  The Watchdog driver interface produces log statements if
- *  instrumentation is enabled.
- *
- *  Diagnostics Mask | Log details |
- *  ---------------- | ----------- |
- *  Diags_USER1      | basic Watchdog operations to be performed |
  *
  *  ===========================================================================
 */
@@ -155,78 +149,76 @@
 #define WATCHDOG_ERRNO_BASE               (-3000)
 
 /**
-@defgroup WATCHDOG_DRIVER_ERROR_CODE            Watchdog Driver Error code
-@ingroup WATCHDOG_DRIVER
-@brief
+\defgroup WATCHDOG_DRIVER_ERROR_CODE            Watchdog Driver Error Code
+\ingroup DRV_WATCHDOG_MODULE
+\brief
 *   The section has a list of all the error codes which are returned to the application.
- @{ */
+@{ */
 
 /**
- * @brief   Error Code: Invalid argument
+ * \brief   Error Code: Invalid argument
  */
 #define WATCHDOG_EINVAL                 (WATCHDOG_ERRNO_BASE-1)
 
 /**
- * @brief   Error Code: Operation cannot be implemented because a previous
+ * \brief   Error Code: Operation cannot be implemented because a previous
  * operation is still not complete.
  */
 #define WATCHDOG_EINUSE                 (WATCHDOG_ERRNO_BASE-2)
 
 /**
- * @brief   Error Code: Operation is not implemented.
+ * \brief   Error Code: Operation is not implemented.
  */
 #define WATCHDOG_ENOTIMPL               (WATCHDOG_ERRNO_BASE-3)
 
 /** @}*/
 /**
- *  @defgroup WATCHDOG_CONTROL WATCHDOG Control command and status codes
- *  These Watchdog macros are reservations for Watchdog.h
+\defgroup WATCHDOG_CMD Watchdog Control Command Codes
+\ingroup DRV_WATCHDOG_MODULE
+\brief
+ *  The section has a list of all the command codes supported by the driver.
  *  @{
  */
 
-/** @}*/
-
 /**
- *  @defgroup WATCHDOG_CMD Command Codes
  *  WATCHDOG_CMD_* macros are general command codes for Watchdog_control(). Not all Watchdog
  *  driver implementations support these command codes.
- *  @{
- *  @ingroup WATCHDOG_CONTROL
- *  @brief
- *   The section has a list of all the command codes supported by the driver.
  */
 
 /*!
- * @brief   Command code used by Watchdog_control() to place configure the reset mode
+ * \brief   Command code used by Watchdog_control() to place configure the reset mode
  *
  * This command is available to configure the Watchdog Driver to either cause a system reset ot an interrupt upon expiry.
- * With this command code, @b arg is a pointer. Valid values: Refer to (Watchdog_ResetMode)
+ * With this command code, @b arg is a pointer.<br> Valid values: Refer to Watchdog_ResetMode.
 
  */
 #define WATCHDOG_CMD_RESETMODE              0
 
 /*!
- * @brief   Command code used by Watchdog_control() to place configure the window mode
+ * \brief   Command code used by Watchdog_control() to configure the window size
  *
  * This command is available to configure the Watchdog Driver window size.
- * With this command code, @b arg is a pointer. Valid values: Refer to (Watchdog_WindowSize)
+ * With this command code, @b arg is a pointer.<br>Valid values: Refer to Watchdog_WindowSize.
 
  */
 #define WATCHDOG_CMD_WINDOWSIZE             1
-/** @}*/
 
 /** @}*/
 
-/** @addtogroup WATCHDOG_DRIVER_EXTERNAL_DATA_STRUCTURE
- @{ */
+/**
+\defgroup WATCHDOG_DRIVER_EXTERNAL_DATA_STRUCTURE Watchdog Driver External Data Structures
+\ingroup DRV_WATCHDOG_MODULE
+\brief
+*   The section has a list of all the data structures which are exposed to the application.
+@{ */
 
 /*!
-*  @brief      Watchdog Handle
+*  \brief      Watchdog Handle
 */
 typedef struct Watchdog_Config_t *Watchdog_Handle;
 
 /*!
- *  @brief      Watchdog debug stall settings
+ *  \brief      Watchdog debug stall settings
  *
  *  This enumeration defines the debug stall modes for the Watchdog. On some
  *  targets, the Watchdog timer will continue to count down while a debugging
@@ -239,7 +231,7 @@ typedef enum Watchdog_DebugMode_t {
 } Watchdog_DebugMode;
 
 /*!
- *  @brief      Watchdog reset mode settings
+ *  \brief      Watchdog reset mode settings
  *
  *  This enumeration defines the reset modes for the Watchdog. The Watchdog can
  *  be configured to either generate a reset upon timeout or simply produce a
@@ -251,7 +243,7 @@ typedef enum Watchdog_ResetMode_t {
 } Watchdog_ResetMode;
 
 /*!
- *  @brief      Watchdog Window Size settings
+ *  \brief      Watchdog Window Size settings
  *
  *  This enumeration defines the size of the digital watchdog window size.
  */
@@ -265,7 +257,7 @@ typedef enum Watchdog_WindowSize_t {
 } Watchdog_WindowSize;
 
 /*!
- *  @brief      Watchdog callback pointer
+ *  \brief      Watchdog callback pointer
  *
  *  This is the typedef for the function pointer that will allow a callback
  *  function to be specified in the Watchdog_Params structure. The function
@@ -278,12 +270,12 @@ typedef void (*Watchdog_Callback)(Watchdog_Handle);
 /* ========================================================================== */
 
 /*!
- *  @brief      Watchdog Parameters
+ *  \brief      Watchdog Parameters
  *
- *  Watchdog parameters are used to with the Watchdog_open() call. Default
+ *  Watchdog parameters are used with the Watchdog_open() call. Default
  *  values for these parameters are set using Watchdog_Params_init().
  *
- *  @sa         Watchdog_Params_init()
+ *  \sa         Watchdog_Params_init()
  */
 typedef struct Watchdog_Params_t {
     Watchdog_Callback       callbackFxn;    /*!< Pointer to callback. Valid when resetMode = Watchdog_RESET_OFF. */
@@ -295,20 +287,27 @@ typedef struct Watchdog_Params_t {
 
 /** @}*/
 
+/**
+\defgroup WATCHDOG_DRIVER_INTERNAL_DATA_STRUCTURE Watchdog Driver Internal Data Structures
+\ingroup DRV_WATCHDOG_MODULE
+\brief
+*   The section has a list of internal data structures used by the driver.
+@{ */
+
 /*!
- *  @brief      A function pointer to a driver specific implementation of
+ *  \brief      A function pointer to a driver specific implementation of
  *              Watchdog_clear().
  */
 typedef void (*Watchdog_ClearFxn)       (Watchdog_Handle handle);
 
 /*!
- *  @brief      A function pointer to a driver specific implementation of
+ *  \brief      A function pointer to a driver specific implementation of
  *              Watchdog_close().
  */
 typedef void (*Watchdog_CloseFxn)       (Watchdog_Handle handle);
 
 /*!
- *  @brief      A function pointer to a driver specific implementation of
+ *  \brief      A function pointer to a driver specific implementation of
  *              Watchdog_control().
  */
 typedef int  (*Watchdog_ControlFxn)     (Watchdog_Handle handle,
@@ -316,20 +315,20 @@ typedef int  (*Watchdog_ControlFxn)     (Watchdog_Handle handle,
                                          void *arg);
 
 /*!
- *  @brief      A function pointer to a driver specific implementation of
+ *  \brief      A function pointer to a driver specific implementation of
  *              Watchdog_init().
  */
 typedef void (*Watchdog_InitFxn)        (Watchdog_Handle handle);
 
 /*!
- *  @brief      A function pointer to a driver specific implementation of
+ *  \brief      A function pointer to a driver specific implementation of
  *              Watchdog_open().
  */
 typedef Watchdog_Handle (*Watchdog_OpenFxn)  (Watchdog_Handle handle,
                                               Watchdog_Params *params);
 
 /*!
- *  @brief      The definition of a Watchdog function table that contains the
+ *  \brief      The definition of a Watchdog function table that contains the
  *              required set of functions to control a specific Watchdog driver
  *              implementation.
  */
@@ -342,7 +341,7 @@ typedef struct Watchdog_FxnTable_t {
 } Watchdog_FxnTable;
 
 /*!
- *  @brief      Watchdog Global configuration
+ *  \brief      Watchdog Global configuration
  *
  *  The Watchdog_Config structure contains a set of pointers used to
  *  characterize the Watchdog driver implementation.
@@ -350,7 +349,7 @@ typedef struct Watchdog_FxnTable_t {
  *  This structure needs to be defined before calling Watchdog_init() and
  *  it must not be changed thereafter.
  *
- *  @sa     Watchdog_init()
+ *  \sa     Watchdog_init()
  */
 typedef struct Watchdog_Config_t {
     /*!
@@ -365,70 +364,75 @@ typedef struct Watchdog_Config_t {
     void              const *hwAttrs;
 } Watchdog_Config;
 
+/** @}*/
+
 /* ========================================================================== */
 /*                          Function Declarations                             */
 /* ========================================================================== */
-/*!
- *  @brief      Clears the Watchdog
+/** \defgroup WATCHDOG_DRIVER_EXTERNAL_FUNCTION   Watchdog Driver External Functions
+\ingroup DRV_WATCHDOG_MODULE
+\brief
+ *   The section has a list of all the exported API which the applications need to
+ *   invoke in order to use the driver.
  *
- *  Clears the Watchdog to  prevent a reset signal from being generated if the
- *  module is in Watchdog_RESET_ON reset mode.
+ @{ */
+
+/**
+ *  @b Description
+ *  @n
+ *      The function clears the Watchdog to prevent a reset signal
+ *      from being generated if the module is in Watchdog_RESET_ON reset mode.
  *
- *  @param  handle      Watchdog Handle
+ *  \param  handle      Watchdog Handle
  *
  *  \ingroup WATCHDOG_DRIVER_EXTERNAL_FUNCTION
  */
 extern void Watchdog_clear(Watchdog_Handle handle);
 
-/*!
- *  @brief  Function to close a Watchdog peripheral specified by the Watchdog
- *          handle.It stops (holds) the Watchdog counting on applicable
+/**
+ *  @b Description
+ *  @n
+ *          The function closes a Watchdog peripheral specified by the Watchdog
+ *          handle. It stops (holds) the Watchdog counting on applicable
  *          platforms.
  *
- *  @pre    Watchdog_open() has to be called first.
+ *  \pre    Watchdog_open() has to be called first.
  *
- *  @param  handle      A Watchdog_Handle returned from Watchdog_open
+ *  \param  handle      A Watchdog_Handle returned from Watchdog_open()
  *
- *  @sa     Watchdog_open()
+ *  \sa     Watchdog_open()
  *
  *  \ingroup WATCHDOG_DRIVER_EXTERNAL_FUNCTION
  */
 extern void Watchdog_close(Watchdog_Handle handle);
 
-/*!
- *  @brief  Function performs implementation specific features on a given
+/**
+ *  @b Description
+ *  @n
+ *          The function performs implementation specific features on a given
  *          Watchdog_Handle.
  *
- *  Commands for Watchdog_control can originate from Watchdog.h or from implementation
- *  specific Watchdog*.h (_WatchdogCC26XX.h_, _WatchdogTiva.h_, etc.. ) files.
- *  While commands from Watchdog.h are API portable across driver implementations,
- *  not all implementations may support all these commands.
- *  Conversely, commands from driver implementation specific Watchdog*.h files add
- *  unique driver capabilities but are not API portable across all Watchdog driver
- *  implementations.
- *
- *  Commands supported by Watchdog.h follow a Watchdog_CMD_\<cmd\> naming
- *  convention.<br>
- *  Commands supported by Watchdog*.h follow a Watchdog*_CMD_\<cmd\> naming
- *  convention.<br>
+ *  Commands for Watchdog_control originate from watchdog.h.
+ *  They follow a Watchdog_CMD_\<cmd\> naming covnention, and
+ *  they are API portable across driver implementations.
  *  Each control command defines @b arg differently. The types of @b arg are
  *  documented with each command.
  *
- *  See @ref WATCHDOG_CMD "Watchdog_control command codes" for command codes.
+ *  See @ref WATCHDOG_CMD "Watchdog Control Command Codes" for command codes.
  *
- *  @pre    Watchdog_open() has to be called first.
+ *  \pre    Watchdog_open() has to be called first.
  *
- *  @param  handle      A Watchdog handle returned from Watchdog_open()
+ *  \param  handle      A Watchdog handle returned from Watchdog_open()
  *
- *  @param  cmd         Watchdog.h or Watchdog*.h commands.
+ *  \param  cmd         watchdog.h commands.
  *
- *  @param  arg         An optional R/W (read/write) command argument
+ *  \param  arg         An optional R/W (read/write) command argument
  *                      accompanied with cmd
  *
- *  @return Implementation specific return codes. Negative values indicate
+ *  \return Implementation specific return codes. Negative values indicate
  *          unsuccessful operations.
  *
- *  @sa     Watchdog_open()
+ *  \sa     Watchdog_open()
  *
  *  \ingroup WATCHDOG_DRIVER_EXTERNAL_FUNCTION
  */
@@ -436,56 +440,63 @@ extern int Watchdog_control(Watchdog_Handle handle,
                             uint32_t cmd,
                             void *arg);
 
-/*!
- *  @brief      Initializes the Watchdog module
+/**
+ *  @b Description
+ *  @n
+ *     The functions initializes the Watchdog module.
  *
- *  The application-provided Watchdog_config must be present before the
- *  Watchdog_init function is called. The Watchdog_config must be persistent
- *  and not changed after Watchdog_init is called. This function must be called
+ *  The application-provided Watchdog_Config must be present before the
+ *  Watchdog_init() function is called. The Watchdog_Config must be persistent
+ *  and not changed after Watchdog_init() is called. This function must be called
  *  before any of the other Watchdog driver APIs.
  *
  *  \ingroup WATCHDOG_DRIVER_EXTERNAL_FUNCTION
  */
 extern void Watchdog_init(void);
 
-/*!
- *  @brief      Opens a Watchdog
+/**
+ *  @b Description
+ *  @n
+ *     The functions opens a Watchdog
  *
  *  Opens a Watchdog object with the index and parameters specified, and
  *  returns a Watchdog_Handle.
  *
- *  @param  index         Logical peripheral number for the Watchdog indexed
- *                        into the Watchdog_config table
+ *  \param  index         Logical peripheral number for the Watchdog indexed
+ *                        into the Watchdog_Config table
  *
- *  @param  params        Pointer to an parameter block, if NULL it will use
+ *  \param  params        Pointer to an parameter block, if NULL it will use
  *                        default values. All the fields in this structure are
  *                        RO (read-only).
  *
- *  @return A Watchdog_Handle on success or a NULL on an error or if it has been
+ *  \return A Watchdog_Handle on success or a NULL on an error or if it has been
  *          opened already.
  *
- *  @sa     Watchdog_init()
- *  @sa     Watchdog_close()
+ *  \sa     Watchdog_init()
+ *  \sa     Watchdog_close()
  *
  *  \ingroup WATCHDOG_DRIVER_EXTERNAL_FUNCTION
  */
 extern Watchdog_Handle Watchdog_open(uint32_t index, Watchdog_Params *params);
 
-/*!
- *  @brief  Function to initialize the Watchdog_Params structure to its defaults
+/**
+ *  @b Description
+ *  @n
+ *     The function initializes the Watchdog_Params structure to its defaults
  *
- *  @param  params      An pointer to Watchdog_Params structure for
+ *  Default parameters: <br>
+ *      callbackFxn = NULL <br>
+ *      resetMode = Watchdog_RESET_ON <br>
+ *      debugStallMode = Watchdog_DEBUG_STALL_ON <br>
+ *
+ *  \param  params      An pointer to Watchdog_Params structure for
  *                      initialization
- *
- *  Default parameters:
- *      callbackFxn = NULL
- *      resetMode = Watchdog_RESET_ON
- *      debugStallMode = Watchdog_DEBUG_STALL_ON
- *
+ **
  *  \ingroup WATCHDOG_DRIVER_EXTERNAL_FUNCTION
  */
 extern void Watchdog_Params_init(Watchdog_Params *params);
 
+/** @}*/
 #ifdef __cplusplus
 }
 #endif
