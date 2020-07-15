@@ -60,13 +60,8 @@
 #include "utils_mem.h"
 #include "utils_prf.h"
 #include "utils_trace.h"
-#if defined (SOC_AM64X)
-#include "soc/am64x/udma_test_soc.h"
-#elif defined (SOC_AM65XX)
-#include "soc/am65xx/udma_test_soc.h"
-#else 
-#include "soc/j721e/udma_test_soc.h"
-#endif
+
+#include "udma_test_soc.h"
 
 #ifdef __cplusplus
 extern "C" {

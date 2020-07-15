@@ -51,6 +51,29 @@ extern "C" {
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
 
+/** \brief Utility define for Kilobyte, i.e 1024 bytes */
+#ifndef KB
+#define KB ((uint32_t) 1024U)
+#endif
+
+/** \brief Utility define for Megabyte, i.e 1024*1024 bytes */
+#ifndef MB
+#define MB (KB * KB)
+#endif
+
+#define UTILS_MEM_HEAP_SIZE_MSMC        (300U * KB)
+#define UTILS_MEM_HEAP_SIZE_DDR         (64U * MB)
+#define UTILS_MEM_HEAP_SIZE_OSPI        (16U * MB)
+
+#if defined (__TI_ARM_V7R4__)
+/* R5 OCMC (MSRAM) */
+#define UTILS_MEM_HEAP_SIZE_INTERNAL    (32U * KB)
+#else
+#define UTILS_MEM_HEAP_SIZE_INTERNAL    (100U * KB)
+#endif
+
+#define UDMA_TEST_SOC_OCMC_MEM_PRESENT  (1U) 
+
 #if defined (BUILD_MCU1_0) || defined (BUILD_MCU1_1)
 #define UDMA_TEST_DEFAULT_UDMA_INST     (UDMA_INST_ID_MCU_0)
 #else

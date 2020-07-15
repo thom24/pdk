@@ -226,7 +226,7 @@ static UdmaTestParams gUdmaTestCases[] =
         .runFlag    = (UDMA_TEST_RF_MCU_BC | UDMA_TEST_RF_CFG_DYN),
         .ringPrmId  = UDMA_TEST_RING_PRMID_INVALID,
     },
-#endif
+#endif /* #if (UDMA_SOC_CFG_UDMAP_PRESENT == 1) */
     {
         .enableTest = TEST_ENABLE,
         .tcId       = 3476U,
@@ -376,7 +376,7 @@ static UdmaTestParams gUdmaTestCases[] =
         .runFlag    = (UDMA_TEST_RF_MCU_BC),
         .ringPrmId  = UDMA_TEST_RING_PRMID_INVALID,
     },
-#endif
+#endif /* #if (UDMA_SOC_CFG_UDMAP_PRESENT == 1) */
     {
         .enableTest = TEST_ENABLE,
         .tcId       = 3480U,
@@ -563,7 +563,8 @@ static UdmaTestParams gUdmaTestCases[] =
         .runFlag    = (UDMA_TEST_RF_MCU_BC),
         .ringPrmId  = UDMA_TEST_RING_PRMID_INVALID,
     },
-#endif
+#endif /* #if (UDMA_SOC_CFG_UDMAP_PRESENT == 1) */
+#if (UDMA_TEST_SOC_OCMC_MEM_PRESENT == 1) 
     {
         .enableTest = TEST_ENABLE,
         .tcId       = 3484U,
@@ -601,6 +602,7 @@ static UdmaTestParams gUdmaTestCases[] =
         .runFlag    = (UDMA_TEST_RF_MCU_BC_INTERNAL_MEM),
         .ringPrmId  = UDMA_TEST_RING_PRMID_INVALID,
     },
+#endif /*#if (UDMA_TEST_SOC_OCMC_MEM_PRESENT == 1)  */
 #ifndef UDMA_TEST_SOC_PRESILICON
     {
         .enableTest = TEST_ENABLE,
@@ -750,6 +752,7 @@ static UdmaTestParams gUdmaTestCases[] =
         .runFlag    = (UDMA_TEST_RF_MAIN_BC),
         .ringPrmId  = UDMA_TEST_RING_PRMID_INVALID,
     },
+#if (UDMA_TEST_SOC_OCMC_MEM_PRESENT == 1) 
     {
         .enableTest = TEST_ENABLE,
         .tcId       = 3489U,
@@ -787,7 +790,7 @@ static UdmaTestParams gUdmaTestCases[] =
         .runFlag    = (UDMA_TEST_RF_MCU_BC_INTERNAL_MEM),
         .ringPrmId  = UDMA_TEST_RING_PRMID_INVALID,
     },
-#endif
+#endif /* #if (UDMA_TEST_SOC_OCMC_MEM_PRESENT == 1)  */
 #if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
     {
         .enableTest = TEST_ENABLE,
@@ -937,7 +940,7 @@ static UdmaTestParams gUdmaTestCases[] =
         .runFlag    = (UDMA_TEST_RF_MCU_BC),
         .ringPrmId  = UDMA_TEST_RING_PRMID_INVALID,
     },
-#endif
+#endif /* #if (UDMA_SOC_CFG_UDMAP_PRESENT == 1) */
     {
         .enableTest = TEST_ENABLE,
         .tcId       = 3494U,
@@ -1037,7 +1040,7 @@ static UdmaTestParams gUdmaTestCases[] =
         .runFlag    = (UDMA_TEST_RF_MCU_BC_MT),
         .ringPrmId  = UDMA_TEST_RING_PRMID_INVALID,
     },
-#endif
+#endif /* #if (UDMA_SOC_CFG_UDMAP_PRESENT == 1) */
     {
         .enableTest = TEST_ENABLE,
         .tcId       = 3496U,
@@ -1137,7 +1140,7 @@ static UdmaTestParams gUdmaTestCases[] =
         .runFlag    = (UDMA_TEST_RF_MCU_BC_MT),
         .ringPrmId  = UDMA_TEST_RING_PRMID_INVALID,
     },
-#endif
+#endif /* #if (UDMA_SOC_CFG_UDMAP_PRESENT == 1) */
     {
         .enableTest = TEST_ENABLE,
         .tcId       = 3498U,
@@ -1175,7 +1178,8 @@ static UdmaTestParams gUdmaTestCases[] =
         .runFlag    = (UDMA_TEST_RF_MAIN_BC_PACING),
         .ringPrmId  = UDMA_TEST_RING_PRMID_INVALID,
     },
-#if defined (UDMA_UTC_ID_MSMC_DRU0)
+#endif /* #ifndef UDMA_TEST_SOC_PRESILICON */
+#ifdef UDMA_UTC_ID_MSMC_DRU0
     {
         .enableTest = TEST_ENABLE,
         .tcId       = 3499U,
@@ -1250,6 +1254,7 @@ static UdmaTestParams gUdmaTestCases[] =
         .runFlag    = (UDMA_TEST_RF_DRU | UDMA_TEST_RF_CFG_DYN),
         .ringPrmId  = UDMA_TEST_RING_PRMID_INVALID,
     },
+#ifndef UDMA_TEST_SOC_PRESILICON    
     {
         .enableTest = TEST_ENABLE,
         .tcId       = 3501U,
@@ -1496,6 +1501,7 @@ static UdmaTestParams gUdmaTestCases[] =
         .runFlag    = (UDMA_TEST_RF_DRU_MT),
         .ringPrmId  = UDMA_TEST_RING_PRMID_INVALID,
     },
+#endif /* #ifndef UDMA_TEST_SOC_PRESILICON */
 //Enable after adding testcase in Qmetry
 #if 0
     {
@@ -1683,7 +1689,7 @@ static UdmaTestParams gUdmaTestCases[] =
         .runFlag    = (UDMA_TEST_RF_DRU),
         .ringPrmId  = UDMA_TEST_RING_PRMID_INVALID,
     },
-#endif
+#endif /* #if 0 */
 #endif  /* #if defined (UDMA_UTC_ID_MSMC_DRU0) */
 #if (UDMA_SOC_CFG_PROXY_PRESENT == 1)
     {
@@ -1724,7 +1730,7 @@ static UdmaTestParams gUdmaTestCases[] =
         .runFlag    = (UDMA_TEST_RF_SOC_ALL | UDMA_TEST_RF_CORE_ALL | UDMA_TEST_RF_CFG_DEF | UDMA_TEST_RF_CFG_DYN),
         .ringPrmId  = UDMA_TEST_RING_PRMID_EVENT_NONE,
     },
-#endif
+#endif /* #if (UDMA_SOC_CFG_PROXY_PRESENT == 1) */
     {
         .enableTest = TEST_ENABLE,
         .tcId       = 3508U,
@@ -1763,6 +1769,7 @@ static UdmaTestParams gUdmaTestCases[] =
         .runFlag    = (UDMA_TEST_RF_SOC_ALL | UDMA_TEST_RF_CORE_ALL | UDMA_TEST_RF_CFG_DEF | UDMA_TEST_RF_CFG_DYN),
         .ringPrmId  = UDMA_TEST_RING_PRMID_EVENT_NONE,
     },
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)    
     {
         .enableTest = TEST_ENABLE,
         .tcId       = 3509U,
@@ -1839,6 +1846,7 @@ static UdmaTestParams gUdmaTestCases[] =
         .runFlag    = (UDMA_TEST_RF_SOC_ALL | UDMA_TEST_RF_CORE_ALL | UDMA_TEST_RF_CFG_DEF | UDMA_TEST_RF_CFG_DYN),
         .ringPrmId  = UDMA_TEST_RING_PRMID_EVENT_POLLED,
     },
+#endif /* #if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1) */
     {
         .enableTest = TEST_ENABLE,
         .tcId       = 3511U,
@@ -2182,7 +2190,7 @@ static UdmaTestParams gUdmaTestCases[] =
         .runFlag    = (UDMA_TEST_RF_SOC_J721E | UDMA_TEST_RF_CORE_ALL | UDMA_TEST_RF_CFG_DEF | UDMA_TEST_RF_CFG_DYN),
         .ringPrmId  = UDMA_TEST_RING_PRMID_EVENT_NONE,
     },
-#endif
+#endif /* #if (UDMA_SOC_CFG_RING_MON_PRESENT == 1) */
 #if (UDMA_SOC_CFG_PROXY_PRESENT == 1)
     {
         .enableTest = TEST_ENABLE,
@@ -2222,7 +2230,7 @@ static UdmaTestParams gUdmaTestCases[] =
         .runFlag    = (UDMA_TEST_RF_SOC_ALL | UDMA_TEST_RF_CORE_ALL | UDMA_TEST_RF_CFG_DEF | UDMA_TEST_RF_CFG_DYN),
         .ringPrmId  = UDMA_TEST_RING_PRMID_EVENT_NONE,
     },
-#endif
+#endif /* #if (UDMA_SOC_CFG_PROXY_PRESENT == 1) */
 #if ((UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP) > 0)
     {
         .enableTest = TEST_ENABLE,
@@ -2262,7 +2270,7 @@ static UdmaTestParams gUdmaTestCases[] =
         .runFlag    = (UDMA_TEST_RF_FLOW | UDMA_TEST_RF_CFG_DYN),
         .ringPrmId  = UDMA_TEST_RING_PRMID_EVENT_NONE,
     },
-#else
+#else /* #if ((UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP) > 0) */
     {
         .enableTest = TEST_ENABLE,
         .tcId       = 3729U,
@@ -2342,7 +2350,7 @@ static UdmaTestParams gUdmaTestCases[] =
         .runFlag    = (UDMA_TEST_RF_FLOW | UDMA_TEST_RF_CFG_DYN),
         .ringPrmId  = UDMA_TEST_RING_PRMID_EVENT_NONE,
     },
-#endif
+#endif /* #if ((UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP) > 0) */
     {
         .enableTest = TEST_ENABLE,
         .tcId       = 3513U,
@@ -2494,7 +2502,7 @@ static UdmaTestParams gUdmaTestCases[] =
         .runFlag    = (UDMA_TEST_RF_SOC_ALL | UDMA_TEST_RF_CORE_ALL | UDMA_TEST_RF_CFG_DEF),
         .ringPrmId  = UDMA_TEST_RING_PRMID_INVALID,
     },
-#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
     {
         .enableTest = TEST_ENABLE,
         .tcId       = 3707U,
@@ -2533,8 +2541,6 @@ static UdmaTestParams gUdmaTestCases[] =
         .runFlag    = (UDMA_TEST_RF_SOC_ALL | UDMA_TEST_RF_CORE_ALL | UDMA_TEST_RF_CFG_DEF | UDMA_TEST_RF_CFG_DYN),
         .ringPrmId  = UDMA_TEST_RING_PRMID_EVENT_NONE,
     },
-#endif
-#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
     {
         .enableTest = TEST_ENABLE,
         .tcId       = 3905,
@@ -2572,7 +2578,7 @@ static UdmaTestParams gUdmaTestCases[] =
         .runFlag    = (UDMA_TEST_RF_SOC_ALL | UDMA_TEST_RF_CORE_ALL | UDMA_TEST_RF_CFG_DEF | UDMA_TEST_RF_CFG_DYN),
         .ringPrmId  = UDMA_TEST_RING_PRMID_INVALID,
     },
-#endif
+#endif /* #if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1) */
     {
         .enableTest = TEST_ENABLE,
         .tcId       = 3965,
@@ -2611,6 +2617,7 @@ static UdmaTestParams gUdmaTestCases[] =
         .ringPrmId  = UDMA_TEST_RING_PRMID_INVALID,
     },
 #if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
+#ifndef UDMA_TEST_SOC_PRESILICON  
     {
         .enableTest = TEST_ENABLE,
         .tcId       = 4100U,
@@ -3087,7 +3094,8 @@ static UdmaTestParams gUdmaTestCases[] =
         .runFlag    = (UDMA_TEST_RF_MCU_BC_HC_MT),
         .ringPrmId  = UDMA_TEST_RING_PRMID_INVALID,
     },
-#endif
+#endif /* #ifndef UDMA_TEST_SOC_PRESILICON   */
+#endif /* #if (UDMA_SOC_CFG_UDMAP_PRESENT == 1) */
     {
         .enableTest = TEST_ENABLE,
         .tcId       = 4656U,

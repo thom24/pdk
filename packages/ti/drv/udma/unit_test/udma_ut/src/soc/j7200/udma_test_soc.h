@@ -51,6 +51,29 @@ extern "C" {
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
 
+/** \brief Utility define for Kilobyte, i.e 1024 bytes */
+#ifndef KB
+#define KB ((uint32_t) 1024U)
+#endif
+
+/** \brief Utility define for Megabyte, i.e 1024*1024 bytes */
+#ifndef MB
+#define MB (KB * KB)
+#endif
+
+#define UTILS_MEM_HEAP_SIZE_MSMC        (300U * KB)
+#define UTILS_MEM_HEAP_SIZE_DDR         (64U * MB)
+#define UTILS_MEM_HEAP_SIZE_OSPI        (16U * MB)
+
+#if defined (__TI_ARM_V7R4__)
+/* R5 OCMC (MSRAM) */
+#define UTILS_MEM_HEAP_SIZE_INTERNAL    (32U * KB)
+#else
+#define UTILS_MEM_HEAP_SIZE_INTERNAL    (100U * KB)
+#endif
+
+#define UDMA_TEST_SOC_OCMC_MEM_PRESENT  (1U) 
+
 #if defined (BUILD_MCU1_0) || defined (BUILD_MCU1_1)
 #define UDMA_TEST_DEFAULT_UDMA_INST     (UDMA_INST_ID_MCU_0)
 #else
@@ -66,17 +89,17 @@ extern "C" {
                                          UDMA_TEST_RF_CORE_MPU1_0 | \
                                          UDMA_TEST_RF_CORE_MCU2_0 | \
                                          UDMA_TEST_RF_CORE_MCU2_1 | \
-                                         UDMA_TEST_RF_CFG_ALL)
-#define UDMA_TEST_RF_MAIN_BC            (UDMA_TEST_RF_SOC | UDMA_TEST_RF_CORE_ALL | UDMA_TEST_RF_CFG_ALL)
+                                         UDMA_TEST_RF_CFG_DEF)
+#define UDMA_TEST_RF_MAIN_BC            (UDMA_TEST_RF_SOC | UDMA_TEST_RF_CORE_ALL | UDMA_TEST_RF_CFG_DEF)
 #define UDMA_TEST_RF_MCU_BC_HC          (UDMA_TEST_RF_SOC | \
                                          UDMA_TEST_RF_CORE_MCU1_0 | \
-                                         UDMA_TEST_RF_CFG_ALL)
+                                         UDMA_TEST_RF_CFG_DEF)
 #define UDMA_TEST_RF_MCU_BC             (UDMA_TEST_RF_SOC | \
                                          UDMA_TEST_RF_CORE_MPU1_0 | \
                                          UDMA_TEST_RF_CORE_MCU2_0 | \
                                          UDMA_TEST_RF_CORE_MCU2_1 | \
                                          UDMA_TEST_RF_CORE_MCU1_0 | \
-                                         UDMA_TEST_RF_CFG_ALL)
+                                         UDMA_TEST_RF_CFG_DEF)
 #define UDMA_TEST_RF_MCU_BC_INTERNAL_MEM (UDMA_TEST_RF_MCU_BC)
 #define UDMA_TEST_RF_DRU                (0U)
 /* Need at least two channels - so enable only for those cores */
@@ -93,7 +116,7 @@ extern "C" {
                                          UDMA_TEST_RF_CORE_MPU1_0 | \
                                          UDMA_TEST_RF_CORE_MCU2_0 | \
                                          UDMA_TEST_RF_CORE_MCU2_1 | \
-                                         UDMA_TEST_RF_CFG_ALL)
+                                         UDMA_TEST_RF_CFG_DEF)
 
 #define UDMA_TEST_RF_MAIN_BC_PACING     (UDMA_TEST_RF_MAIN_BC)
 #define UDMA_TEST_RF_MAIN_BC_PAUSE      (UDMA_TEST_RF_MAIN_BC)
