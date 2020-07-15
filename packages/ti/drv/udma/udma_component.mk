@@ -209,11 +209,7 @@ export udma_baremetal_memcpy_testapp_BOARDLIST = $(drvudma_BOARDLIST)
 ifeq ($(SOC),$(filter $(SOC), j721e))
 export udma_baremetal_memcpy_testapp_$(SOC)_CORELIST = mpu1_0 mcu1_0 mcu2_0
 else
-udma_baremetal_memcpy_testapp_$(SOC)_CORELIST = $(drvudma_$(SOC)_example_CORELIST)
-ifeq ($(SOC),$(filter $(SOC), am64x))
-udma_baremetal_memcpy_testapp_$(SOC)_CORELIST +=  m4f_0
-endif
-export udma_baremetal_memcpy_testapp_$(SOC)_CORELIST
+export udma_baremetal_memcpy_testapp_$(SOC)_CORELIST = $(drvudma_$(SOC)_example_CORELIST)
 endif
 export udma_baremetal_memcpy_testapp_SBL_APPIMAGEGEN = yes
 udma_EXAMPLE_LIST += udma_baremetal_memcpy_testapp
