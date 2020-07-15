@@ -254,7 +254,7 @@ SA2UL DKEK registers using the <a class="reference internal" href="../2_tisci_ms
 <div class="figure">
 <img alt="../_images/dkek_approach1_set_dkek.svg" src="../_images/dkek_approach1_set_dkek.svg" /></div>
 <p>DKEK is not directly made available to the host. The host can use DKEK for
-encryption/decryption by setting the <code class="docutils literal notranslate"><span class="pre">USE_DKEK</span></code> flag in the SA2UL security
+encryption/decryption by setting the <code class="docutils literal"><span class="pre">USE_DKEK</span></code> flag in the SA2UL security
 context.</p>
 <div class="figure">
 <img alt="../_images/dkek_approach1_use_dkek.svg" src="../_images/dkek_approach1_use_dkek.svg" /></div>
@@ -265,7 +265,7 @@ API.</p>
 <img alt="../_images/dkek_approach1_release_dkek.svg" src="../_images/dkek_approach1_release_dkek.svg" /></div>
 <div class="section" id="caveat-on-approach-1">
 <h4>Caveat on Approach 1<a class="headerlink" href="#caveat-on-approach-1" title="Permalink to this headline">¶</a></h4>
-<p>When the <code class="docutils literal notranslate"><span class="pre">USE_DKEK</span></code> flag is used in SA2UL security context, SA2UL checks if the
+<p>When the <code class="docutils literal"><span class="pre">USE_DKEK</span></code> flag is used in SA2UL security context, SA2UL checks if the
 privid of the initiator is present in the SA2UL DKEK privid register.
 SA2UL <strong>only</strong> checks the privid of the initiator against the SA2UL DKEK privid register
 and ignores any attributes such as user/priviliged and secure/non-secure in the transaction.</p>
@@ -312,7 +312,7 @@ required in this approach.</p>
 <tr class="row-odd"><td>No separate firewalling is required for DKEK.</td>
 <td>Host must firewall memory where it is storing DKEK.</td>
 </tr>
-<tr class="row-even"><td>DKEK can only be used through SA2UL. Host must set the <code class="docutils literal notranslate"><span class="pre">USE_DKEK</span></code>
+<tr class="row-even"><td>DKEK can only be used through SA2UL. Host must set the <code class="docutils literal"><span class="pre">USE_DKEK</span></code>
 flag to true in the SA2UL security context. Key must not be populated
 in the SA2UL security context.</td>
 <td><p class="first">DKEK can be used in two ways</p>
@@ -400,7 +400,7 @@ in this approach.</td>
       <script type="text/javascript" src="../_static/jquery.js"></script>
       <script type="text/javascript" src="../_static/underscore.js"></script>
       <script type="text/javascript" src="../_static/doctools.js"></script>
-      <script type="text/javascript" src="../_static/language_data.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
     <script src="http://www.ti.com/assets/js/headerfooter/analytics.js" type="text/javascript" charset="utf-8"></script>
 

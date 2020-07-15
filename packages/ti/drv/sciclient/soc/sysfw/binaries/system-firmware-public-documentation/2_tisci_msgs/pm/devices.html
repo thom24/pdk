@@ -206,41 +206,41 @@ devices within the system.</p>
 </div>
 <div class="section" id="macros-used-in-this-document">
 <h3>Macros Used in this Document<a class="headerlink" href="#macros-used-in-this-document" title="Permalink to this headline">¶</a></h3>
-<p><p><code class="docutils literal notranslate"><span class="pre">TISCI_MSG_FLAG_DEVICE_WAKE_ENABLED</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">BIT(8)</span></code></p>
+<p><p><code class="docutils literal"><span class="pre">TISCI_MSG_FLAG_DEVICE_WAKE_ENABLED</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">BIT(8)</span></code></p>
 <p>Configure the device to be a wake source. The meaning of this flag will
  vary slightly from device to device and from SoC to SoC but it
  generally allows the device to wake the SoC out of low power states.</p>
 </p>
-<p><p><code class="docutils literal notranslate"><span class="pre">TISCI_MSG_FLAG_DEVICE_RESET_ISO</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">BIT(9)</span></code></p>
+<p><p><code class="docutils literal"><span class="pre">TISCI_MSG_FLAG_DEVICE_RESET_ISO</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">BIT(9)</span></code></p>
 <p>Enable reset isolation for this device.</p>
 </p>
-<p><p><code class="docutils literal notranslate"><span class="pre">TISCI_MSG_FLAG_DEVICE_EXCLUSIVE</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">BIT(10)</span></code></p>
+<p><p><code class="docutils literal"><span class="pre">TISCI_MSG_FLAG_DEVICE_EXCLUSIVE</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">BIT(10)</span></code></p>
 <p>Claim a device exclusively. When passed with STATE_RETENTION or STATE_ON,
  it will claim the device exclusively. If another host already has this
  device set to STATE_RETENTION or STATE_ON, the message will fail. Once
  successful, other hosts attempting to set STATE_RETENTION or STATE_ON
  will fail.</p>
 </p>
-<p><p><code class="docutils literal notranslate"><span class="pre">TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">0</span></code></p>
+<p><p><code class="docutils literal"><span class="pre">TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">0</span></code></p>
 <p>Used by TISCI_MSG_SET_DEVICE to turn device off when possible. This
  must be used in conjunction with SoC dependencies to identify the
  overall power domain state being achieved.</p>
 </p>
-<p><p><code class="docutils literal notranslate"><span class="pre">TISCI_MSG_VALUE_DEVICE_SW_STATE_RETENTION</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">1</span></code></p>
+<p><p><code class="docutils literal"><span class="pre">TISCI_MSG_VALUE_DEVICE_SW_STATE_RETENTION</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">1</span></code></p>
 <p>Used by TISCI_MSG_SET_DEVICE to disable device but keep in retention.</p>
 </p>
-<p><p><code class="docutils literal notranslate"><span class="pre">TISCI_MSG_VALUE_DEVICE_SW_STATE_ON</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">2</span></code></p>
+<p><p><code class="docutils literal"><span class="pre">TISCI_MSG_VALUE_DEVICE_SW_STATE_ON</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">2</span></code></p>
 <p>Used by TISCI_MSG_SET_DEVICE to turn device on for usage.</p>
 </p>
-<p><p><code class="docutils literal notranslate"><span class="pre">TISCI_MSG_VALUE_DEVICE_HW_STATE_OFF</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">0</span></code></p>
+<p><p><code class="docutils literal"><span class="pre">TISCI_MSG_VALUE_DEVICE_HW_STATE_OFF</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">0</span></code></p>
 <p>TISCI_MSG_GET_DEVICE sets this as current state to indicate device
  is off.</p>
 </p>
-<p><p><code class="docutils literal notranslate"><span class="pre">TISCI_MSG_VALUE_DEVICE_HW_STATE_ON</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">1</span></code></p>
+<p><p><code class="docutils literal"><span class="pre">TISCI_MSG_VALUE_DEVICE_HW_STATE_ON</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">1</span></code></p>
 <p>TISCI_MSG_GET_DEVICE sets this as current state to indicate device
  is on.</p>
 </p>
-<p><p><code class="docutils literal notranslate"><span class="pre">TISCI_MSG_VALUE_DEVICE_HW_STATE_TRANS</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">2</span></code></p>
+<p><p><code class="docutils literal"><span class="pre">TISCI_MSG_VALUE_DEVICE_HW_STATE_TRANS</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">2</span></code></p>
 <p>TISCI_MSG_GET_DEVICE sets this as current state to indicate device is
  transitioning between states. When a device stays in this state it is
  typically due to the fact that some resource that the device is
@@ -281,7 +281,7 @@ must be carefully used keeping the full system view in mind.</p>
 </div>
 <div class="section" id="tisci-message-id">
 <h3>TISCI Message ID<a class="headerlink" href="#tisci-message-id" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">TISCI_MSG_SET_DEVICE</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(0x0200U)</span></code></p>
+<p><code class="docutils literal"><span class="pre">TISCI_MSG_SET_DEVICE</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(0x0200U)</span></code></p>
 </div>
 <div class="section" id="message-data-structures">
 <h3>Message Data Structures<a class="headerlink" href="#message-data-structures" title="Permalink to this headline">¶</a></h3>
@@ -376,7 +376,7 @@ device lost context.</p>
 </div>
 <div class="section" id="id3">
 <h3>TISCI Message ID<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">TISCI_MSG_GET_DEVICE</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(0x0201U)</span></code></p>
+<p><code class="docutils literal"><span class="pre">TISCI_MSG_GET_DEVICE</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(0x0201U)</span></code></p>
 </div>
 <div class="section" id="id4">
 <h3>Message Data Structures<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
@@ -477,7 +477,7 @@ for operation of the device.</p>
 </div>
 <div class="section" id="id7">
 <h3>TISCI Message ID<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">TISCI_MSG_SET_DEVICE_RESETS</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(0x0202U)</span></code></p>
+<p><code class="docutils literal"><span class="pre">TISCI_MSG_SET_DEVICE_RESETS</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(0x0202U)</span></code></p>
 </div>
 <div class="section" id="id8">
 <h3>Message Data Structures<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
@@ -589,7 +589,7 @@ for operation of the device.</p>
       <script type="text/javascript" src="../../_static/jquery.js"></script>
       <script type="text/javascript" src="../../_static/underscore.js"></script>
       <script type="text/javascript" src="../../_static/doctools.js"></script>
-      <script type="text/javascript" src="../../_static/language_data.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
     <script src="http://www.ti.com/assets/js/headerfooter/analytics.js" type="text/javascript" charset="utf-8"></script>
 

@@ -266,7 +266,7 @@ must not be accessible to any host, the host ID must be set to 0.</p>
 <h2>Extended OTP Write API<a class="headerlink" href="#extended-otp-write-api" title="Permalink to this headline">¶</a></h2>
 <p>System Firmware allows for only one host in the system to have write access to the
 extended OTP region. This host is specified in the security board configuration
-<a class="reference internal" href="../3_boardcfg/BOARDCFG_SEC.html#pub-boardcfg-ext-otp-config"><span class="std std-ref">Extended OTP array configuration</span></a> using the <code class="docutils literal notranslate"><span class="pre">write_host</span></code> field.</p>
+<a class="reference internal" href="../3_boardcfg/BOARDCFG_SEC.html#pub-boardcfg-ext-otp-config"><span class="std std-ref">Extended OTP array configuration</span></a> using the <code class="docutils literal"><span class="pre">write_host</span></code> field.</p>
 <p>The write host can write to any row that has not been locked using the
 <a class="reference internal" href="../2_tisci_msgs/security/extended_otp.html#write-otp-row"><span class="std std-ref">TISCI_MSG_WRITE_OTP_ROW</span></a> message. The API takes a bit mask
 in addition to the value to be written. This allows single bits to modified if
@@ -333,7 +333,7 @@ to the row even after a device cold/warm reset.</p>
       <script type="text/javascript" src="../_static/jquery.js"></script>
       <script type="text/javascript" src="../_static/underscore.js"></script>
       <script type="text/javascript" src="../_static/doctools.js"></script>
-      <script type="text/javascript" src="../_static/language_data.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
     <script src="http://www.ti.com/assets/js/headerfooter/analytics.js" type="text/javascript" charset="utf-8"></script>
 

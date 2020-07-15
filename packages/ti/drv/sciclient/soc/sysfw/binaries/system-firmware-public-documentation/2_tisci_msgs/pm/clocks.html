@@ -232,38 +232,38 @@ your SoC.</p>
 </div>
 <div class="section" id="macros-used-in-this-document">
 <h3>Macros Used in this Document<a class="headerlink" href="#macros-used-in-this-document" title="Permalink to this headline">¶</a></h3>
-<p><p><code class="docutils literal notranslate"><span class="pre">TISCI_MSG_VALUE_CLOCK_SW_STATE_UNREQ</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">0</span></code></p>
+<p><p><code class="docutils literal"><span class="pre">TISCI_MSG_VALUE_CLOCK_SW_STATE_UNREQ</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">0</span></code></p>
 <p>The IP does not require this clock, it can be disabled, regardless of the
  state of the device</p>
 </p>
-<p><p><code class="docutils literal notranslate"><span class="pre">TISCI_MSG_VALUE_CLOCK_SW_STATE_AUTO</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">1</span></code></p>
+<p><p><code class="docutils literal"><span class="pre">TISCI_MSG_VALUE_CLOCK_SW_STATE_AUTO</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">1</span></code></p>
 <p>Allow the system controller to automatically manage the state of this clock.
  If the device is enabled, then the clock is enabled. If the device is set to
  off or retention, then the clock is internally set as not being required
  by the device. This is the default state.</p>
 </p>
-<p><p><code class="docutils literal notranslate"><span class="pre">TISCI_MSG_VALUE_CLOCK_SW_STATE_REQ</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">2</span></code></p>
+<p><p><code class="docutils literal"><span class="pre">TISCI_MSG_VALUE_CLOCK_SW_STATE_REQ</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">2</span></code></p>
 <p>Configure the clock to be enabled, regardless of the state of the device.</p>
 </p>
-<p><p><code class="docutils literal notranslate"><span class="pre">TISCI_MSG_VALUE_CLOCK_HW_STATE_NOT_READY</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">0</span></code></p>
+<p><p><code class="docutils literal"><span class="pre">TISCI_MSG_VALUE_CLOCK_HW_STATE_NOT_READY</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">0</span></code></p>
 <p>Indicate hardware state of the clock is that it is not running.</p>
 </p>
-<p><p><code class="docutils literal notranslate"><span class="pre">TISCI_MSG_VALUE_CLOCK_HW_STATE_READY</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">1</span></code></p>
+<p><p><code class="docutils literal"><span class="pre">TISCI_MSG_VALUE_CLOCK_HW_STATE_READY</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">1</span></code></p>
 <p>Indicate hardware state of the clock is that it is running.</p>
 </p>
-<p><p><code class="docutils literal notranslate"><span class="pre">TISCI_MSG_FLAG_CLOCK_ALLOW_SSC</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">BIT(8)</span></code></p>
+<p><p><code class="docutils literal"><span class="pre">TISCI_MSG_FLAG_CLOCK_ALLOW_SSC</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">BIT(8)</span></code></p>
 <p>Allow this clock to be modified via spread spectrum clocking.
  note: The SSC feature is currently not supported in System Firmware.</p>
 </p>
-<p><p><code class="docutils literal notranslate"><span class="pre">TISCI_MSG_FLAG_CLOCK_ALLOW_FREQ_CHANGE</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">BIT(9)</span></code></p>
+<p><p><code class="docutils literal"><span class="pre">TISCI_MSG_FLAG_CLOCK_ALLOW_FREQ_CHANGE</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">BIT(9)</span></code></p>
 <p>Allow this clock’s frequency to be changed while it is running
  so long as it is within the min/max limits.</p>
 </p>
-<p><p><code class="docutils literal notranslate"><span class="pre">TISCI_MSG_FLAG_CLOCK_INPUT_TERM</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">BIT(10)</span></code></p>
+<p><p><code class="docutils literal"><span class="pre">TISCI_MSG_FLAG_CLOCK_INPUT_TERM</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">BIT(10)</span></code></p>
 <p>Enable input termination, this is only applicable to clock inputs
  on the SoC pseudo-device, BOARD0.</p>
 </p>
-<p><p><code class="docutils literal notranslate"><span class="pre">TISCI_MSG_FLAG_CLOCK_SSC_ACTIVE</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">BIT(11)</span></code></p>
+<p><p><code class="docutils literal"><span class="pre">TISCI_MSG_FLAG_CLOCK_SSC_ACTIVE</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">BIT(11)</span></code></p>
 <p>Indicate that SSC is active for this clock.
  note: The SSC feature is currently not supported in System Firmware.</p>
 </p>
@@ -328,7 +328,7 @@ input clocks. NOTE: each of the clock IDs are relative to the hardware block.</p
 </div>
 <div class="section" id="tisci-message-id">
 <h3>TISCI Message ID<a class="headerlink" href="#tisci-message-id" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">TISCI_MSG_SET_CLOCK</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(0x0100U)</span></code></p>
+<p><code class="docutils literal"><span class="pre">TISCI_MSG_SET_CLOCK</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(0x0100U)</span></code></p>
 </div>
 <div class="section" id="message-data-structures">
 <h3>Message Data Structures<a class="headerlink" href="#message-data-structures" title="Permalink to this headline">¶</a></h3>
@@ -432,7 +432,7 @@ state of the clock.</p>
 </div>
 <div class="section" id="id3">
 <h3>TISCI Message ID<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">TISCI_MSG_GET_CLOCK</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(0x0101U)</span></code></p>
+<p><code class="docutils literal"><span class="pre">TISCI_MSG_GET_CLOCK</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(0x0101U)</span></code></p>
 </div>
 <div class="section" id="id4">
 <h3>Message Data Structures<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
@@ -534,7 +534,7 @@ attempted.</p>
 </div>
 <div class="section" id="message-id">
 <h3>Message ID<a class="headerlink" href="#message-id" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">TISCI_MSG_SET_CLOCK_PARENT</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(0x0102U)</span></code></p>
+<p><code class="docutils literal"><span class="pre">TISCI_MSG_SET_CLOCK_PARENT</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(0x0102U)</span></code></p>
 </div>
 <div class="section" id="id7">
 <h3>Message Data Structures<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
@@ -652,7 +652,7 @@ succeed.</p>
 </div>
 <div class="section" id="id10">
 <h3>Message ID<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">TISCI_MSG_GET_CLOCK_PARENT</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(0x0103U)</span></code></p>
+<p><code class="docutils literal"><span class="pre">TISCI_MSG_GET_CLOCK_PARENT</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(0x0103U)</span></code></p>
 </div>
 <div class="section" id="id11">
 <h3>Message Data Structures<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
@@ -760,7 +760,7 @@ for a specific hardware block’s clock.</p>
 </div>
 <div class="section" id="id14">
 <h3>Message ID<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">TISCI_MSG_GET_NUM_CLOCK_PARENTS</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(0x0104U)</span></code></p>
+<p><code class="docutils literal"><span class="pre">TISCI_MSG_GET_NUM_CLOCK_PARENTS</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(0x0104U)</span></code></p>
 </div>
 <div class="section" id="id15">
 <h3>Message Data Structures<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
@@ -876,7 +876,7 @@ similarly to setting the clock frequency on a device.</p>
 </div>
 <div class="section" id="id18">
 <h3>Message ID<a class="headerlink" href="#id18" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">TISCI_MSG_SET_FREQ</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(0x010cU)</span></code></p>
+<p><code class="docutils literal"><span class="pre">TISCI_MSG_SET_FREQ</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(0x010cU)</span></code></p>
 </div>
 <div class="section" id="id19">
 <h3>Message Data Structures<a class="headerlink" href="#id19" title="Permalink to this headline">¶</a></h3>
@@ -998,7 +998,7 @@ guarantee the frequency is configured.</p>
 </div>
 <div class="section" id="id22">
 <h3>Message ID<a class="headerlink" href="#id22" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">TISCI_MSG_QUERY_FREQ</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(0x010dU)</span></code></p>
+<p><code class="docutils literal"><span class="pre">TISCI_MSG_QUERY_FREQ</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(0x010dU)</span></code></p>
 </div>
 <div class="section" id="id23">
 <h3>Message Data Structures<a class="headerlink" href="#id23" title="Permalink to this headline">¶</a></h3>
@@ -1110,7 +1110,7 @@ configuring internal dividers / multipliers as required.</p>
 </div>
 <div class="section" id="id26">
 <h3>Message ID<a class="headerlink" href="#id26" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">TISCI_MSG_GET_FREQ</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(0x010eU)</span></code></p>
+<p><code class="docutils literal"><span class="pre">TISCI_MSG_GET_FREQ</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(0x010eU)</span></code></p>
 </div>
 <div class="section" id="id27">
 <h3>Message Data Structures<a class="headerlink" href="#id27" title="Permalink to this headline">¶</a></h3>
@@ -1188,15 +1188,15 @@ configuring internal dividers / multipliers as required.</p>
 <p>An example sequence for setting the clock frequency for a given module is as given below.
 The input to this code snippet is as below:</p>
 <ul class="simple">
-<li><code class="docutils literal notranslate"><span class="pre">device_id</span></code>: Refer to the <a class="reference internal" href="../../5_soc_doc/am6x/devices.html"><span class="doc">AM6 Devices Descriptions</span></a></li>
-<li><code class="docutils literal notranslate"><span class="pre">clk_id</span></code>: Refer to the <a class="reference internal" href="../../5_soc_doc/am6x/clocks.html"><span class="doc">AM6 Clock Identifiers</span></a>. Choose the Ids which are marked “Input Clock”.</li>
-<li><code class="docutils literal notranslate"><span class="pre">min_hz</span></code>: Minimum Frequency which should be set for this clock.</li>
-<li><code class="docutils literal notranslate"><span class="pre">freq_hz</span></code>: Target Frequency which should be set for this clock.</li>
-<li><code class="docutils literal notranslate"><span class="pre">max_hz</span></code>: Maximum Frequency which should be set for this clock.</li>
+<li><code class="docutils literal"><span class="pre">device_id</span></code>: Refer to the <a class="reference internal" href="../../5_soc_doc/am6x/devices.html"><span class="doc">AM6 Devices Descriptions</span></a></li>
+<li><code class="docutils literal"><span class="pre">clk_id</span></code>: Refer to the <a class="reference internal" href="../../5_soc_doc/am6x/clocks.html"><span class="doc">AM6 Clock Identifiers</span></a>. Choose the Ids which are marked “Input Clock”.</li>
+<li><code class="docutils literal"><span class="pre">min_hz</span></code>: Minimum Frequency which should be set for this clock.</li>
+<li><code class="docutils literal"><span class="pre">freq_hz</span></code>: Target Frequency which should be set for this clock.</li>
+<li><code class="docutils literal"><span class="pre">max_hz</span></code>: Maximum Frequency which should be set for this clock.</li>
 </ul>
 <p>The simplified sequence of operations is as below:</p>
 <img alt="../../_images/Clocks_sequence_diagram.jpg" src="../../_images/Clocks_sequence_diagram.jpg" />
-<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cm">/* Allocate space for the messages */</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cm">/* Allocate space for the messages */</span>
 <span class="n">u32</span> <span class="n">tisci_msg_data</span><span class="p">[</span><span class="mi">13</span><span class="p">];</span>
 <span class="cm">/* Pointer to the header */</span>
 <span class="k">struct</span> <span class="n">tisci_header</span> <span class="o">*</span><span class="n">hdr</span> <span class="o">=</span> <span class="p">(</span><span class="k">struct</span> <span class="n">tisci_header</span> <span class="o">*</span><span class="p">)</span> <span class="n">tisci_msg_data</span><span class="p">;</span>
@@ -1389,14 +1389,14 @@ The input to this code snippet is as below:</p>
 <p>An example pseudo sequence for setting the clock frequency while searching for the
 right multiplexer parent is as below:</p>
 <ul class="simple">
-<li><code class="docutils literal notranslate"><span class="pre">device_id</span></code>: Refer to the <a class="reference internal" href="../../5_soc_doc/am6x/devices.html"><span class="doc">AM6 Devices Descriptions</span></a></li>
-<li><code class="docutils literal notranslate"><span class="pre">clk_id</span></code>: Refer to the <a class="reference internal" href="../../5_soc_doc/am6x/clocks.html"><span class="doc">AM6 Clock Identifiers</span></a>. Choose the Ids which are marked “Input Clock”.</li>
-<li><code class="docutils literal notranslate"><span class="pre">min_hz</span></code>: Minimum Frequency which should be set for this clock.</li>
-<li><code class="docutils literal notranslate"><span class="pre">freq_hz</span></code>: Target Frequency which should be set for this clock.</li>
-<li><code class="docutils literal notranslate"><span class="pre">max_hz</span></code>: Maximum Frequency which should be set for this clock.</li>
+<li><code class="docutils literal"><span class="pre">device_id</span></code>: Refer to the <a class="reference internal" href="../../5_soc_doc/am6x/devices.html"><span class="doc">AM6 Devices Descriptions</span></a></li>
+<li><code class="docutils literal"><span class="pre">clk_id</span></code>: Refer to the <a class="reference internal" href="../../5_soc_doc/am6x/clocks.html"><span class="doc">AM6 Clock Identifiers</span></a>. Choose the Ids which are marked “Input Clock”.</li>
+<li><code class="docutils literal"><span class="pre">min_hz</span></code>: Minimum Frequency which should be set for this clock.</li>
+<li><code class="docutils literal"><span class="pre">freq_hz</span></code>: Target Frequency which should be set for this clock.</li>
+<li><code class="docutils literal"><span class="pre">max_hz</span></code>: Maximum Frequency which should be set for this clock.</li>
 </ul>
 <p>The flow chart for the same is as below:</p>
-<img alt="../../_images/pm_clocks_example.svg" src="../../_images/pm_clocks_example.svg" /><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cm">/* Check if the clock is enabled or not */</span>
+<img alt="../../_images/pm_clocks_example.svg" src="../../_images/pm_clocks_example.svg" /><div class="highlight-c"><div class="highlight"><pre><span></span><span class="cm">/* Check if the clock is enabled or not */</span>
 <span class="n">status</span> <span class="o">=</span> <span class="n">TISCI_MSG_GET_CLOCK</span><span class="p">(</span><span class="n">device_id</span><span class="p">,</span>
                              <span class="n">clk_id</span><span class="p">,</span>
                              <span class="o">&amp;</span><span class="n">clockStatus</span><span class="p">);</span>
@@ -1549,7 +1549,7 @@ right multiplexer parent is as below:</p>
       <script type="text/javascript" src="../../_static/jquery.js"></script>
       <script type="text/javascript" src="../../_static/underscore.js"></script>
       <script type="text/javascript" src="../../_static/doctools.js"></script>
-      <script type="text/javascript" src="../../_static/language_data.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
     <script src="http://www.ti.com/assets/js/headerfooter/analytics.js" type="text/javascript" charset="utf-8"></script>
 

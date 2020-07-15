@@ -202,7 +202,7 @@ system-firmware that is loaded and running.</p>
 </div>
 <div class="section" id="tisci-message-id">
 <h3>TISCI Message ID<a class="headerlink" href="#tisci-message-id" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">TISCI_MSG_VERSION</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(0x0002U)</span></code></p>
+<p><code class="docutils literal"><span class="pre">TISCI_MSG_VERSION</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(0x0002U)</span></code></p>
 </div>
 <div class="section" id="message-data-structures">
 <h3>Message Data Structures<a class="headerlink" href="#message-data-structures" title="Permalink to this headline">¶</a></h3>
@@ -308,7 +308,7 @@ is possible with system firmware.</p>
 </div>
 <div class="section" id="id3">
 <h3>TISCI Message ID<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">TISCI_MSG_BOOT_NOTIFICATION</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(0x000AU)</span></code></p>
+<p><code class="docutils literal"><span class="pre">TISCI_MSG_BOOT_NOTIFICATION</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(0x000AU)</span></code></p>
 </div>
 <div class="section" id="id4">
 <h3>Message Data Structures<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
@@ -408,7 +408,7 @@ of allocation for cache backing RAM and MSMC shared usage by System
 Firmware.</p>
 <p>This API is linked with the parameter provided in
 <a class="reference internal" href="../../3_boardcfg/BOARDCFG.html#pub-boardcfg-msmc"><span class="std std-ref">Design for boardcfg_msmc</span></a>. The parameter <strong>msmc_cache_size</strong> is a value
-ranging from <code class="docutils literal notranslate"><span class="pre">0x00</span></code> to <code class="docutils literal notranslate"><span class="pre">0x20</span></code> independent of SoC and configured
+ranging from <code class="docutils literal"><span class="pre">0x00</span></code> to <code class="docutils literal"><span class="pre">0x20</span></code> independent of SoC and configured
 at system startup. This API is used by software components that start
 functionality later in the boot sequence and intends to manage or use
 the remaining SRAM contents.</p>
@@ -418,24 +418,24 @@ physical MSMC SRAM available to allocate as 2MB:</p>
 <div class="figure">
 <img alt="../../_images/msmc_alloc_strategy.png" src="../../_images/msmc_alloc_strategy.png" />
 </div>
-<p>In the above example, when the <strong>msmc_cache_size</strong> parameter is <code class="docutils literal notranslate"><span class="pre">0x10</span></code>,
+<p>In the above example, when the <strong>msmc_cache_size</strong> parameter is <code class="docutils literal"><span class="pre">0x10</span></code>,
 1MB is reserved for backing ram by the SoC. Memory needed for
 communication infrastructure is automatically relocated to the center
 of MSMC SRAM.</p>
 <p>The available MSMC SRAM for use by software queried via
-TISCI_MSG_QUERY_MSMC will respond with: start = <code class="docutils literal notranslate"><span class="pre">0x0000000070000000</span></code>
-and end = <code class="docutils literal notranslate"><span class="pre">0x00000000700EFFFF</span></code> (1MB-64K)</p>
+TISCI_MSG_QUERY_MSMC will respond with: start = <code class="docutils literal"><span class="pre">0x0000000070000000</span></code>
+and end = <code class="docutils literal"><span class="pre">0x00000000700EFFFF</span></code> (1MB-64K)</p>
 <p><em>case B) Allocation of 0bytes SRAM for L3 backing RAM</em></p>
 <div class="figure">
 <img alt="../../_images/msmc_alloc_strategy_0cache.png" src="../../_images/msmc_alloc_strategy_0cache.png" />
 </div>
-<p>In the above example, when the <strong>msmc_cache_size</strong> parameter is <code class="docutils literal notranslate"><span class="pre">0x00</span></code>,
+<p>In the above example, when the <strong>msmc_cache_size</strong> parameter is <code class="docutils literal"><span class="pre">0x00</span></code>,
 no memory is reserved for backing ram by the SoC. Memory needed for
 communication infrastructure is automatically relocated to the far end
 of MSMC SRAM.</p>
 <p>The available MSMC SRAM for use by software queried via
-TISCI_MSG_QUERY_MSMC will respond with: start = <code class="docutils literal notranslate"><span class="pre">0x0000000070000000</span></code>
-and end = <code class="docutils literal notranslate"><span class="pre">0x00000000701EFFFF</span></code> (2MB-64K)</p>
+TISCI_MSG_QUERY_MSMC will respond with: start = <code class="docutils literal"><span class="pre">0x0000000070000000</span></code>
+and end = <code class="docutils literal"><span class="pre">0x00000000701EFFFF</span></code> (2MB-64K)</p>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
 <p>It is important to keep the following in mind. Software
@@ -453,7 +453,7 @@ exception.</p>
 </div>
 <div class="section" id="tisci-query-msmc">
 <h3>TISCI query MSMC<a class="headerlink" href="#tisci-query-msmc" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">TISCI_MSG_QUERY_MSMC</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(0x0020U)</span></code></p>
+<p><code class="docutils literal"><span class="pre">TISCI_MSG_QUERY_MSMC</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(0x0020U)</span></code></p>
 </div>
 <div class="section" id="id7">
 <h3>Message Data Structures<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
@@ -573,7 +573,7 @@ exception.</p>
       <script type="text/javascript" src="../../_static/jquery.js"></script>
       <script type="text/javascript" src="../../_static/underscore.js"></script>
       <script type="text/javascript" src="../../_static/doctools.js"></script>
-      <script type="text/javascript" src="../../_static/language_data.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
     <script src="http://www.ti.com/assets/js/headerfooter/analytics.js" type="text/javascript" charset="utf-8"></script>
 

@@ -223,7 +223,7 @@ Key(DKEK) management. The available API are listed below.</p>
 </div>
 <div class="section" id="tisci-message-id">
 <h3>TISCI Message ID<a class="headerlink" href="#tisci-message-id" title="Permalink to this headline">¶</a></h3>
-<p><p><code class="docutils literal notranslate"><span class="pre">TISCI_MSG_SA2UL_SET_DKEK</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(0x9003U)</span></code></p>
+<p><p><code class="docutils literal"><span class="pre">TISCI_MSG_SA2UL_SET_DKEK</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(0x9003U)</span></code></p>
 <p>Message to derive a KEK and set SA2UL DKEK register</p>
 </p>
 <p><p><strong>struct tisci_msg_sa2ul_set_dkek_req</strong></p>
@@ -286,7 +286,7 @@ Key(DKEK) management. The available API are listed below.</p>
 </tbody>
 </table>
 </p>
-<p><code class="docutils literal notranslate"><span class="pre">KDF_LABEL_AND_CONTEXT_LEN_MAX</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">41</span></code></p>
+<p><code class="docutils literal"><span class="pre">KDF_LABEL_AND_CONTEXT_LEN_MAX</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">41</span></code></p>
 <p>See <a class="reference internal" href="#pub-tisci-dkek-notes"><span class="std std-ref">API Notes</span></a> below.</p>
 </div>
 <div class="section" id="tisci-msg-sa2ul-release-dkek-release-dkek">
@@ -309,7 +309,7 @@ Key(DKEK) management. The available API are listed below.</p>
 </div>
 <div class="section" id="id1">
 <h3>TISCI Message ID<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
-<p><p><code class="docutils literal notranslate"><span class="pre">TISCI_MSG_SA2UL_RELEASE_DKEK</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(0x9004U)</span></code></p>
+<p><p><code class="docutils literal"><span class="pre">TISCI_MSG_SA2UL_RELEASE_DKEK</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(0x9004U)</span></code></p>
 <p>Message to erase the DKEK register</p>
 </p>
 <p><p><strong>struct tisci_msg_sa2ul_release_dkek_req</strong></p>
@@ -382,10 +382,10 @@ Key(DKEK) management. The available API are listed below.</p>
 </div>
 <div class="section" id="id2">
 <h3>TISCI Message ID<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
-<p><p><code class="docutils literal notranslate"><span class="pre">TISCI_MSG_SA2UL_GET_DKEK</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(0x9029U)</span></code></p>
+<p><p><code class="docutils literal"><span class="pre">TISCI_MSG_SA2UL_GET_DKEK</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(0x9029U)</span></code></p>
 <p>Message to derive a KEK and return it via TISCI</p>
 </p>
-<p><code class="docutils literal notranslate"><span class="pre">SA2UL_DKEK_KEY_LEN</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(32U)</span></code></p>
+<p><code class="docutils literal"><span class="pre">SA2UL_DKEK_KEY_LEN</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(32U)</span></code></p>
 <p><p><strong>struct tisci_msg_sa2ul_get_dkek_req</strong></p>
 <p>TISCI Request for getting DKEK via TISCI</p>
 <table border="1" class="docutils">
@@ -457,7 +457,7 @@ Key(DKEK) management. The available API are listed below.</p>
 <ul class="simple">
 <li>The total length of the Label and Context fields below is limited by the size
 of the TISCI messages(see <a class="reference internal" href="../general/TISCI_header.html#pub-secure-msg-header"><span class="std std-ref">Secure Messaging Header</span></a>) to 41 bytes.</li>
-<li>System Firmware only support <code class="docutils literal notranslate"><span class="pre">sa2ul_instance</span></code> value of 0 in the API below.</li>
+<li>System Firmware only support <code class="docutils literal"><span class="pre">sa2ul_instance</span></code> value of 0 in the API below.</li>
 </ul>
 </div>
 </div>
@@ -513,7 +513,7 @@ of the TISCI messages(see <a class="reference internal" href="../general/TISCI_h
       <script type="text/javascript" src="../../_static/jquery.js"></script>
       <script type="text/javascript" src="../../_static/underscore.js"></script>
       <script type="text/javascript" src="../../_static/doctools.js"></script>
-      <script type="text/javascript" src="../../_static/language_data.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
     <script src="http://www.ti.com/assets/js/headerfooter/analytics.js" type="text/javascript" charset="utf-8"></script>
 

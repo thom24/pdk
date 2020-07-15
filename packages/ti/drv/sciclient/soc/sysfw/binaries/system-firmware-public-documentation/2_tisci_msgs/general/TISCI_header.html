@@ -315,22 +315,22 @@ transmit or receive messages. The format is as follows:</p>
 </tbody>
 </table>
 </p>
-<p>The <code class="docutils literal notranslate"><span class="pre">host</span></code> field must contain a value from the
+<p>The <code class="docutils literal"><span class="pre">host</span></code> field must contain a value from the
 <a class="reference internal" href="../../5_soc_doc/am6x/hosts.html"><span class="doc">Valid SoC Host ID List</span></a>
 that corresponds to the host actually sending the message as identified.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">seq</span></code> field is a sequence number that will be returned back to the user
+<p>The <code class="docutils literal"><span class="pre">seq</span></code> field is a sequence number that will be returned back to the user
 for the response corresponding to the message. It is up to the user to define
-<code class="docutils literal notranslate"><span class="pre">seq</span></code> in whatever way they choose. The primary intent of this field is to
+<code class="docutils literal"><span class="pre">seq</span></code> in whatever way they choose. The primary intent of this field is to
 allow for the queueing of multiple messages on different priority queues while
 still being able to identify the response to the specific message that was
 transmitted.</p>
-<p>The following generic flags are available for the <code class="docutils literal notranslate"><span class="pre">flags</span></code> field:</p>
+<p>The following generic flags are available for the <code class="docutils literal"><span class="pre">flags</span></code> field:</p>
 <div class="section" id="request-flags">
 <h3>Request flags<a class="headerlink" href="#request-flags" title="Permalink to this headline">¶</a></h3>
-<p><p><code class="docutils literal notranslate"><span class="pre">TISCI_MSG_FLAG_RESERVED0</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">BIT(0)</span></code></p>
+<p><p><code class="docutils literal"><span class="pre">TISCI_MSG_FLAG_RESERVED0</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">BIT(0)</span></code></p>
 <p>This flag is reserved and not to be used.</p>
 </p>
-<p><p><code class="docutils literal notranslate"><span class="pre">TISCI_MSG_FLAG_AOP</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">BIT(1)</span></code></p>
+<p><p><code class="docutils literal"><span class="pre">TISCI_MSG_FLAG_AOP</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">BIT(1)</span></code></p>
 <p>ACK on Processed: Send a response to a message after it has been processed
  with TISCI_MSG_FLAG_ACK set if the processing succeeded, or a NAK otherwise.
  This response contains the complete response to the message with the result
@@ -347,7 +347,7 @@ can be disregarded.</p>
 </div>
 <div class="section" id="response-flags">
 <h3>Response flags<a class="headerlink" href="#response-flags" title="Permalink to this headline">¶</a></h3>
-<p><p><code class="docutils literal notranslate"><span class="pre">TISCI_MSG_FLAG_ACK</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">BIT(1)</span></code></p>
+<p><p><code class="docutils literal"><span class="pre">TISCI_MSG_FLAG_ACK</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">BIT(1)</span></code></p>
 <p>Response flag for a message that indicates success. If this flag is NOT
  set then that is to be interpreted as a NAK.</p>
 </p>
@@ -430,7 +430,7 @@ followed by the payload.</li>
 <ol class="arabic" start="4">
 <li><p class="first">The calculated value of the integrity check is inserted MSB first into the
 secure header extension.</p>
-<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">integ_check</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">MSB</span><span class="p">(</span><span class="n">calc_val</span><span class="p">)</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">integ_check</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">MSB</span><span class="p">(</span><span class="n">calc_val</span><span class="p">)</span>
 <span class="n">integ_check</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">LSB</span><span class="p">(</span><span class="n">calc_val</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -535,7 +535,7 @@ message is limited to being sent over secure queues only.</p>
       <script type="text/javascript" src="../../_static/jquery.js"></script>
       <script type="text/javascript" src="../../_static/underscore.js"></script>
       <script type="text/javascript" src="../../_static/doctools.js"></script>
-      <script type="text/javascript" src="../../_static/language_data.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
     <script src="http://www.ti.com/assets/js/headerfooter/analytics.js" type="text/javascript" charset="utf-8"></script>
 

@@ -242,7 +242,7 @@ frameworks
 <p>This extension adds support for booting various cores on a K3 SOC. It is
 identified by the OID <strong>1.3.6.1.4.1.294.1.33</strong>. The structure of the field is
 shown below in ASN.1 notation.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">SYSFW</span><span class="o">-</span><span class="nl">Boot</span> <span class="p">:</span><span class="o">=</span> <span class="n">SEQUENCE</span>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">SYSFW</span><span class="o">-</span><span class="nl">Boot</span> <span class="p">:</span><span class="o">=</span> <span class="n">SEQUENCE</span>
 <span class="p">{</span>
     <span class="n">bootCore</span> <span class="n">INTEGER</span><span class="p">,</span> <span class="o">--</span> <span class="n">indicates</span> <span class="n">the</span> <span class="n">core</span> <span class="n">in</span> <span class="n">the</span> <span class="n">device</span> <span class="n">that</span> <span class="n">needs</span> <span class="n">to</span> <span class="n">be</span> <span class="n">booted</span>
                       <span class="o">--</span> <span class="n">with</span> <span class="n">the</span> <span class="n">image</span> <span class="n">accompanying</span> <span class="k">this</span> <span class="n">certificate</span><span class="p">.</span>
@@ -261,7 +261,7 @@ shown below in ASN.1 notation.</p>
 </pre></div>
 </div>
 <p>The boot extension is decoded into the below structure.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">sec_boot_ctrl</span> <span class="p">{</span>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">sec_boot_ctrl</span> <span class="p">{</span>
     <span class="n">u32</span> <span class="n">bootCore</span><span class="p">;</span>
     <span class="n">u32</span> <span class="n">configFlags_set</span><span class="p">;</span>
     <span class="n">u32</span> <span class="n">configFlags_clr</span><span class="p">;</span>
@@ -272,17 +272,17 @@ shown below in ASN.1 notation.</p>
 <p>The reserved fields are for future use and are not decoded currently.</p>
 <div class="section" id="populating-the-certificate-fields">
 <h4>Populating the certificate fields<a class="headerlink" href="#populating-the-certificate-fields" title="Permalink to this headline">¶</a></h4>
-<p>For an example, please refer to the section <code class="docutils literal notranslate"><span class="pre">[</span> <span class="pre">sysfw_boot_seq</span> <span class="pre">]</span></code> in <a class="reference internal" href="#sysfw-x509-template-example"><span class="std std-ref">Sample x509 template</span></a>.</p>
+<p>For an example, please refer to the section <code class="docutils literal"><span class="pre">[</span> <span class="pre">sysfw_boot_seq</span> <span class="pre">]</span></code> in <a class="reference internal" href="#sysfw-x509-template-example"><span class="std std-ref">Sample x509 template</span></a>.</p>
 <ol class="arabic">
-<li><p class="first"><code class="docutils literal notranslate"><span class="pre">bootCore</span></code> should be initialized to the Core ID of the targeted core.
+<li><p class="first"><code class="docutils literal"><span class="pre">bootCore</span></code> should be initialized to the Core ID of the targeted core.
 Core ID should be obtained from the SOC data. e.g. For booting a
-core with ID <code class="docutils literal notranslate"><span class="pre">0x20</span></code>, the relevant line in the X509 template is</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="p">[</span> <span class="n">boot_seq</span> <span class="p">]</span>
+core with ID <code class="docutils literal"><span class="pre">0x20</span></code>, the relevant line in the X509 template is</p>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="p">[</span> <span class="n">boot_seq</span> <span class="p">]</span>
 <span class="n">bootCore</span> <span class="o">=</span> <span class="nl">INTEGER</span><span class="p">:</span><span class="mh">0x20</span>
 </pre></div>
 </div>
 </li>
-<li><p class="first"><code class="docutils literal notranslate"><span class="pre">configFlags_set</span></code></p>
+<li><p class="first"><code class="docutils literal"><span class="pre">configFlags_set</span></code></p>
 </li>
 </ol>
 <blockquote>
@@ -292,7 +292,7 @@ to be set before booting the core. The representation is big endian.</li>
 </ul>
 </div></blockquote>
 <ol class="arabic simple" start="3">
-<li><code class="docutils literal notranslate"><span class="pre">configFlags_clr</span></code></li>
+<li><code class="docutils literal"><span class="pre">configFlags_clr</span></code></li>
 </ol>
 <blockquote>
 <div><ul class="simple">
@@ -307,7 +307,7 @@ is. Please ensure that the flags set or cleared are valid according to the
 API.</div></blockquote>
 </div></blockquote>
 <ol class="arabic simple" start="4">
-<li><code class="docutils literal notranslate"><span class="pre">resetVec</span></code></li>
+<li><code class="docutils literal"><span class="pre">resetVec</span></code></li>
 </ol>
 <blockquote>
 <div><ul class="simple">
@@ -322,7 +322,7 @@ that needs to be programmed. The representation is big endian.</li>
 <p>This extension adds support for specifying a hash and size of the accompanying
 payload. It is identified by the OID <strong>1.3.6.1.4.1.294.1.34</strong>. The structure of
 the field is shown below in ASN.1 notation.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">SYSFW</span><span class="o">-</span><span class="nl">INTEGRITY</span> <span class="p">:</span><span class="o">=</span> <span class="n">SEQUENCE</span>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">SYSFW</span><span class="o">-</span><span class="nl">INTEGRITY</span> <span class="p">:</span><span class="o">=</span> <span class="n">SEQUENCE</span>
 <span class="p">{</span>
    <span class="n">shaType</span> <span class="n">OID</span><span class="p">,</span> <span class="o">--</span> <span class="n">indicates</span> <span class="n">OID</span> <span class="n">of</span> <span class="n">the</span> <span class="n">hash</span> <span class="n">used</span><span class="p">.</span> <span class="n">Must</span> <span class="n">always</span> <span class="n">be</span> <span class="n">set</span> <span class="n">to</span> <span class="n">SHA2</span><span class="o">-</span><span class="mi">512</span>
                 <span class="o">--</span> <span class="nl">OID</span><span class="p">:</span><span class="mf">2.16.840.1.101.3.4.2.3</span>
@@ -339,7 +339,7 @@ the field is shown below in ASN.1 notation.</p>
 <p>System Firmware reuses the Software Revision extension/OID as defined by ROM as no
 additional information is required. This is identified by OID
 <strong>1.3.6.1.4.1.294.1.3</strong>.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">SYSFW</span><span class="o">-</span><span class="nl">SWREV</span><span class="p">:</span><span class="o">=</span> <span class="n">SEQUENCE</span>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">SYSFW</span><span class="o">-</span><span class="nl">SWREV</span><span class="p">:</span><span class="o">=</span> <span class="n">SEQUENCE</span>
 <span class="p">{</span>
    <span class="n">swrev</span> <span class="n">INTEGER</span> <span class="o">--</span> <span class="mi">32</span> <span class="n">bit</span> <span class="n">value</span> <span class="n">indicating</span> <span class="n">the</span> <span class="n">revision</span> <span class="n">of</span> <span class="n">the</span> <span class="n">binary</span>
 <span class="p">}</span>
@@ -350,7 +350,7 @@ additional information is required. This is identified by OID
 <span id="sysfw-load-ext"></span><h3>System Firmware Load Extension<a class="headerlink" href="#sysfw-load-extension" title="Permalink to this headline">¶</a></h3>
 <p>System Firmware uses the Load extension to determine where the image is loaded
 as part of authentication. The load extension is identified by OID <strong>1.3.6.1.4.1.294.1.35</strong>. This is a new extension defined by System Firmware.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">SYSFW</span><span class="o">-</span><span class="nl">LOAD</span> <span class="p">:</span><span class="o">=</span> <span class="n">SEQUENCE</span>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">SYSFW</span><span class="o">-</span><span class="nl">LOAD</span> <span class="p">:</span><span class="o">=</span> <span class="n">SEQUENCE</span>
 <span class="p">{</span>
      <span class="n">destAddr</span> <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span> <span class="o">--</span> <span class="n">Address</span> <span class="n">to</span> <span class="n">which</span> <span class="n">the</span> <span class="n">image</span> <span class="n">accompanying</span> <span class="k">this</span> <span class="n">certificate</span>
                             <span class="o">--</span> <span class="n">needs</span> <span class="n">to</span> <span class="n">be</span> <span class="n">copied</span><span class="p">.</span>
@@ -360,7 +360,7 @@ as part of authentication. The load extension is identified by OID <strong>1.3.6
 </pre></div>
 </div>
 <p>The load extension is decoded into the below structure.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">ti_load_info</span> <span class="p">{</span>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">ti_load_info</span> <span class="p">{</span>
  <span class="n">u64</span> <span class="n">destAddr</span><span class="p">;</span>
  <span class="n">u8</span>  <span class="n">auth_in_place</span><span class="p">;</span>
 <span class="p">};</span>
@@ -369,13 +369,13 @@ as part of authentication. The load extension is identified by OID <strong>1.3.6
 <div class="section" id="id1">
 <h4>Populating the certificate fields<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h4>
 <ol class="arabic">
-<li><p class="first"><code class="docutils literal notranslate"><span class="pre">destAddr</span></code></p>
+<li><p class="first"><code class="docutils literal"><span class="pre">destAddr</span></code></p>
 <ul class="simple">
 <li>This is a 64 bit field indicating the address to which the data
 needs to be copied. The representation is big endian.</li>
 </ul>
 </li>
-<li><p class="first"><code class="docutils literal notranslate"><span class="pre">auth_in_place</span></code></p>
+<li><p class="first"><code class="docutils literal"><span class="pre">auth_in_place</span></code></p>
 <ul>
 <li><p class="first">This is an integer field used to indicate whether the binary should be copied
 to the specified load address during authentication. The valid values for this
@@ -420,7 +420,7 @@ value</td>
 <p>System Firmware reuses the Encryption extension/OID as defined by ROM as no
 additional information is required. This is identified by OID
 <strong>1.3.6.1.4.1.294.1.4</strong>.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">SYSFW</span><span class="o">-</span><span class="nl">ENCRYPT</span> <span class="p">:</span><span class="o">=</span> <span class="n">SEQUENCE</span>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">SYSFW</span><span class="o">-</span><span class="nl">ENCRYPT</span> <span class="p">:</span><span class="o">=</span> <span class="n">SEQUENCE</span>
 <span class="p">{</span>
    <span class="n">initalVector</span> <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>
    <span class="n">randomString</span> <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>
@@ -430,7 +430,7 @@ additional information is required. This is identified by OID
 </pre></div>
 </div>
 <p>The encryption extension is decoded into the following data structure.</p>
-<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">ti_enc_info</span> <span class="p">{</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">ti_enc_info</span> <span class="p">{</span>
  <span class="n">u8</span> <span class="n">initialVector</span><span class="p">[</span><span class="mi">16</span><span class="p">];</span>
  <span class="n">u8</span> <span class="n">randomString</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span>
  <span class="n">u8</span> <span class="n">iterationCnt</span><span class="p">;</span>
@@ -441,23 +441,23 @@ additional information is required. This is identified by OID
 <div class="section" id="id2">
 <h4>Populating the certificate fields<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
 <ol class="arabic simple">
-<li><code class="docutils literal notranslate"><span class="pre">initialVector</span></code><ul>
+<li><code class="docutils literal"><span class="pre">initialVector</span></code><ul>
 <li>This is the 16 byte initialization vector to be used in AES-CBC
 decryption.</li>
 </ul>
 </li>
-<li><code class="docutils literal notranslate"><span class="pre">randomString</span></code><ul>
+<li><code class="docutils literal"><span class="pre">randomString</span></code><ul>
 <li>This field indicates the random 32 byte string that was appended to the
 binary before encrypting the combined binary. System Firmware will compare the last
-32 bytes of the decryption output against the <code class="docutils literal notranslate"><span class="pre">randomString</span></code> field from
+32 bytes of the decryption output against the <code class="docutils literal"><span class="pre">randomString</span></code> field from
 the X509 certificate to verify the success of decryption operation.</li>
 </ul>
 </li>
-<li><code class="docutils literal notranslate"><span class="pre">iterationCnt</span></code><ul>
+<li><code class="docutils literal"><span class="pre">iterationCnt</span></code><ul>
 <li>This field is reserved and must be initialized to zero.</li>
 </ul>
 </li>
-<li><code class="docutils literal notranslate"><span class="pre">salt</span></code><ul>
+<li><code class="docutils literal"><span class="pre">salt</span></code><ul>
 <li>This field is 32 bytes long. It is reserved and must be initialized to zero.</li>
 </ul>
 </li>
@@ -478,7 +478,7 @@ before performing in-place decryption at the loaded location.</p>
 <p>The custom extension field used for debug control is identified by the OID
 <strong>1.3.6.1.4.1.294.1.8</strong>. The structure of the field is shown below in
 ASN.1 notation.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">UID</span><span class="o">-</span><span class="n">Debug</span> <span class="o">::=</span> <span class="n">SEQUENCE</span>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">UID</span><span class="o">-</span><span class="n">Debug</span> <span class="o">::=</span> <span class="n">SEQUENCE</span>
 <span class="p">{</span>
     <span class="n">uid</span> <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span> <span class="o">--</span> <span class="n">unique</span> <span class="n">ID</span> <span class="n">of</span> <span class="n">the</span> <span class="n">device</span> <span class="k">for</span> <span class="n">which</span> <span class="k">this</span> <span class="n">certificate</span> <span class="n">applies</span>
     <span class="n">debugCtrl</span> <span class="n">INTEGER</span><span class="p">,</span> <span class="o">--</span> <span class="n">debug</span> <span class="n">control</span> <span class="n">information</span>
@@ -488,7 +488,7 @@ ASN.1 notation.</p>
 </pre></div>
 </div>
 <p>The debug control data is decoded as a structure below:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">sdbg_debug_ctrl</span> <span class="p">{</span>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">sdbg_debug_ctrl</span> <span class="p">{</span>
     <span class="n">u16</span> <span class="n">debug_priv_level</span><span class="p">;</span>
     <span class="n">u16</span> <span class="n">hw_key_hide_flags</span><span class="p">;</span>
     <span class="n">u8</span> <span class="n">debug_core_sel</span><span class="p">[</span><span class="n">MAX_CPU_CORES</span><span class="p">];</span>
@@ -595,7 +595,7 @@ BMPK) must be hidden</td>
 </tr>
 </tbody>
 </table>
-<p>For an example, please refer to the section <code class="docutils literal notranslate"><span class="pre">[</span> <span class="pre">debug</span> <span class="pre">]</span></code> in <a class="reference internal" href="#sysfw-x509-template-example"><span class="std std-ref">Sample x509 template</span></a>.</p>
+<p>For an example, please refer to the section <code class="docutils literal"><span class="pre">[</span> <span class="pre">debug</span> <span class="pre">]</span></code> in <a class="reference internal" href="#sysfw-x509-template-example"><span class="std std-ref">Sample x509 template</span></a>.</p>
 </div>
 <div class="section" id="sysfw-hs-board-configuration-extension">
 <span id="sysfw-hs-bcfg-ext"></span><h3>System Firmware HS Board Configuration Extension<a class="headerlink" href="#sysfw-hs-board-configuration-extension" title="Permalink to this headline">¶</a></h3>
@@ -611,7 +611,7 @@ board configuration blobs</p>
 <p>and the encryption parameters of the security board configuration are encoded in
 the board configuration extension of the System Firmware outer certificate . This
 extension is identified by OID <strong>1.3.6.1.4.1.294.1.36</strong>.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">SYSFW</span><span class="o">-</span><span class="n">HS</span><span class="o">-</span><span class="nl">BCFG</span><span class="p">:</span><span class="o">=</span> <span class="n">SEQUENCE</span>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">SYSFW</span><span class="o">-</span><span class="n">HS</span><span class="o">-</span><span class="nl">BCFG</span><span class="p">:</span><span class="o">=</span> <span class="n">SEQUENCE</span>
 <span class="p">{</span>
    <span class="n">initalVector</span> <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>
    <span class="n">randomString</span> <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>
@@ -626,7 +626,7 @@ extension is identified by OID <strong>1.3.6.1.4.1.294.1.36</strong>.</p>
 </pre></div>
 </div>
 <p>The extension is decoded into the following data structure.</p>
-<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">ti_bcfg_info</span> <span class="p">{</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">ti_bcfg_info</span> <span class="p">{</span>
  <span class="n">u8</span> <span class="n">initialVector</span><span class="p">[</span><span class="mi">16</span><span class="p">];</span>
  <span class="n">u8</span> <span class="n">randomString</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span>
  <span class="n">u8</span> <span class="n">iterationCnt</span><span class="p">;</span>
@@ -642,48 +642,48 @@ extension is identified by OID <strong>1.3.6.1.4.1.294.1.36</strong>.</p>
 <div class="section" id="id3">
 <h4>Populating the certificate fields<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
 <ol class="arabic simple">
-<li><code class="docutils literal notranslate"><span class="pre">initialVector</span></code><ul>
+<li><code class="docutils literal"><span class="pre">initialVector</span></code><ul>
 <li>This is the 16 byte initialization vector to be used in AES-CBC
 decryption.</li>
 </ul>
 </li>
-<li><code class="docutils literal notranslate"><span class="pre">randomString</span></code><ul>
+<li><code class="docutils literal"><span class="pre">randomString</span></code><ul>
 <li>This field indicates the random 32 byte string that was appended to the
 board configuration binary before encrypting the combined binary. System Firmware
 will compare the last 32 bytes of the decryption output against the
-<code class="docutils literal notranslate"><span class="pre">randomString</span></code> field from the X509 certificate to verify the success of
+<code class="docutils literal"><span class="pre">randomString</span></code> field from the X509 certificate to verify the success of
 decryption operation.</li>
 </ul>
 </li>
-<li><code class="docutils literal notranslate"><span class="pre">iterationCnt</span></code><ul>
+<li><code class="docutils literal"><span class="pre">iterationCnt</span></code><ul>
 <li>This field is reserved and must be initialized to zero.</li>
 </ul>
 </li>
-<li><code class="docutils literal notranslate"><span class="pre">salt</span></code><ul>
+<li><code class="docutils literal"><span class="pre">salt</span></code><ul>
 <li>This field is 32 bytes long. It is reserved and must be initialized to
 zero.</li>
 </ul>
 </li>
-<li><code class="docutils literal notranslate"><span class="pre">secBoardCfgHash</span></code><ul>
+<li><code class="docutils literal"><span class="pre">secBoardCfgHash</span></code><ul>
 <li>This is a 64 byte field containing the SHA2-512 hash of the encrypted security board configuration.</li>
 </ul>
 </li>
-<li><code class="docutils literal notranslate"><span class="pre">secBoardCfgVer</span></code><ul>
+<li><code class="docutils literal"><span class="pre">secBoardCfgVer</span></code><ul>
 <li>This field indicates the version of security board configuration and must be initialized
 to zero.</li>
 </ul>
 </li>
-<li><code class="docutils literal notranslate"><span class="pre">pmBoardCfgHash</span></code><ul>
+<li><code class="docutils literal"><span class="pre">pmBoardCfgHash</span></code><ul>
 <li>This is a 64 byte field containing the SHA2-512 hash of the PM board configuration.</li>
 </ul>
 </li>
-<li><code class="docutils literal notranslate"><span class="pre">rmBoardCfgHash</span></code><ul>
+<li><code class="docutils literal"><span class="pre">rmBoardCfgHash</span></code><ul>
 <li>This is a 64 byte field containing the SHA2-512 hash of the RM board configuration.</li>
 </ul>
 </li>
 </ol>
 <ol class="arabic simple" start="8">
-<li><code class="docutils literal notranslate"><span class="pre">boardCfgHash</span></code><ul>
+<li><code class="docutils literal"><span class="pre">boardCfgHash</span></code><ul>
 <li>This is a 64 byte field containing the SHA2-512 hash of the main board configuration
 structure.</li>
 </ul>
@@ -699,13 +699,13 @@ structure.</li>
 ASN1 parser. Depending on the usecase, the certificate may contain only a few
 of these extensions.</p>
 <ul class="last simple">
-<li>For performing JTAG unlock, only Software revision (<code class="docutils literal notranslate"><span class="pre">swrv</span></code>) and
-Debug(<code class="docutils literal notranslate"><span class="pre">debug</span></code>) extensions are required.</li>
-<li>For authenticating a binary, only the Load (<code class="docutils literal notranslate"><span class="pre">sysfw_image_load</span></code>) and
-Image integrity (<code class="docutils literal notranslate"><span class="pre">sysfw_image_integrity</span></code>) extensions are required.</li>
+<li>For performing JTAG unlock, only Software revision (<code class="docutils literal"><span class="pre">swrv</span></code>) and
+Debug(<code class="docutils literal"><span class="pre">debug</span></code>) extensions are required.</li>
+<li>For authenticating a binary, only the Load (<code class="docutils literal"><span class="pre">sysfw_image_load</span></code>) and
+Image integrity (<code class="docutils literal"><span class="pre">sysfw_image_integrity</span></code>) extensions are required.</li>
 </ul>
 </div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">[</span> req <span class="o">]</span>
+<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="o">[</span> req <span class="o">]</span>
 <span class="nv">distinguished_name</span> <span class="o">=</span> req_distinguished_name
 <span class="nv">x509_extensions</span> <span class="o">=</span> v3_ca
 <span class="nv">prompt</span> <span class="o">=</span> no
@@ -835,7 +835,7 @@ Image integrity (<code class="docutils literal notranslate"><span class="pre">sy
       <script type="text/javascript" src="../../_static/jquery.js"></script>
       <script type="text/javascript" src="../../_static/underscore.js"></script>
       <script type="text/javascript" src="../../_static/doctools.js"></script>
-      <script type="text/javascript" src="../../_static/language_data.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
     <script src="http://www.ti.com/assets/js/headerfooter/analytics.js" type="text/javascript" charset="utf-8"></script>
 

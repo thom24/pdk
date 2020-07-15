@@ -220,7 +220,7 @@ standard board configuration message.</p>
 </div>
 <div class="section" id="tisci-message-id">
 <h4>TISCI Message ID<a class="headerlink" href="#tisci-message-id" title="Permalink to this headline">¶</a></h4>
-<p><code class="docutils literal notranslate"><span class="pre">TISCI_MSG_BOARD_CONFIG_SECURITY</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(0x000DU)</span></code></p>
+<p><code class="docutils literal"><span class="pre">TISCI_MSG_BOARD_CONFIG_SECURITY</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(0x000DU)</span></code></p>
 </div>
 <div class="section" id="message-data-structures">
 <h4>Message Data Structures<a class="headerlink" href="#message-data-structures" title="Permalink to this headline">¶</a></h4>
@@ -265,7 +265,7 @@ standard board configuration message.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p>Even though the security board configuration structure contains the
-<code class="docutils literal notranslate"><span class="pre">boardcfg_security_devgrp</span></code> member, it is ignored. Initialization of
+<code class="docutils literal"><span class="pre">boardcfg_security_devgrp</span></code> member, it is ignored. Initialization of
 firewalls is performed for a devgrp when it is enabled via the core board
 configuration message. This is necessary to ensure isolation. See
 <a class="reference internal" href="BOARDCFG.html"><span class="doc">Board Configuration</span></a>.</p>
@@ -381,7 +381,7 @@ boardcfg structure does..</p>
 </tr>
 </tbody>
 </table>
-<p>The magic number to be populated in the <code class="docutils literal notranslate"><span class="pre">subhdr</span></code> is <code class="docutils literal notranslate"><span class="pre">0xF1EA</span></code>.</p>
+<p>The magic number to be populated in the <code class="docutils literal"><span class="pre">subhdr</span></code> is <code class="docutils literal"><span class="pre">0xF1EA</span></code>.</p>
 </div>
 <div class="section" id="processor-access-list-entry">
 <span id="pub-processor-access-list"></span><h4>Processor access list entry<a class="headerlink" href="#processor-access-list-entry" title="Permalink to this headline">¶</a></h4>
@@ -443,7 +443,7 @@ defines the supervisory tree for all processing entities in the SoC.</p>
 </tr>
 </tbody>
 </table>
-<p>The magic number to be populated in the <code class="docutils literal notranslate"><span class="pre">subhdr</span></code> is <code class="docutils literal notranslate"><span class="pre">0x8D27</span></code>.</p>
+<p>The magic number to be populated in the <code class="docutils literal"><span class="pre">subhdr</span></code> is <code class="docutils literal"><span class="pre">0x8D27</span></code>.</p>
 </div>
 <div class="section" id="host-hierarchy-entry">
 <span id="pub-host-hierarchy"></span><h4>Host hierarchy entry<a class="headerlink" href="#host-hierarchy-entry" title="Permalink to this headline">¶</a></h4>
@@ -509,10 +509,10 @@ writes to OTP rows</td>
 </tr>
 </tbody>
 </table>
-<p>The magic number to be populated in the <code class="docutils literal notranslate"><span class="pre">subhdr</span></code> is <code class="docutils literal notranslate"><span class="pre">0x4081</span></code>.</p>
+<p>The magic number to be populated in the <code class="docutils literal"><span class="pre">subhdr</span></code> is <code class="docutils literal"><span class="pre">0x4081</span></code>.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Wildcard host ID (128U/0x80) cannot be used in the <code class="docutils literal notranslate"><span class="pre">write_host</span></code> field. The host ID used here must map to
+<p class="last">Wildcard host ID (128U/0x80) cannot be used in the <code class="docutils literal"><span class="pre">write_host</span></code> field. The host ID used here must map to
 a secure proxy thread.</p>
 </div>
 <div class="admonition warning">
@@ -601,7 +601,7 @@ hosts.</p>
 </tr>
 </tbody>
 </table>
-<p>The magic number to be populated in the <code class="docutils literal notranslate"><span class="pre">subhdr</span></code> is <code class="docutils literal notranslate"><span class="pre">0x5170</span></code>.</p>
+<p>The magic number to be populated in the <code class="docutils literal"><span class="pre">subhdr</span></code> is <code class="docutils literal"><span class="pre">0x5170</span></code>.</p>
 </div>
 <div class="section" id="reserved-entry">
 <span id="pub-boardcfg-reserved-entry"></span><h3>Reserved Entry<a class="headerlink" href="#reserved-entry" title="Permalink to this headline">¶</a></h3>
@@ -629,7 +629,7 @@ hosts.</p>
 </tr>
 </tbody>
 </table>
-<p>The magic number to be populated in the <code class="docutils literal notranslate"><span class="pre">subhdr</span></code> is <code class="docutils literal notranslate"><span class="pre">0x23BE</span></code>.</p>
+<p>The magic number to be populated in the <code class="docutils literal"><span class="pre">subhdr</span></code> is <code class="docutils literal"><span class="pre">0x23BE</span></code>.</p>
 </div>
 </div>
 </div>
@@ -684,7 +684,7 @@ hosts.</p>
       <script type="text/javascript" src="../_static/jquery.js"></script>
       <script type="text/javascript" src="../_static/underscore.js"></script>
       <script type="text/javascript" src="../_static/doctools.js"></script>
-      <script type="text/javascript" src="../_static/language_data.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
     <script src="http://www.ti.com/assets/js/headerfooter/analytics.js" type="text/javascript" charset="utf-8"></script>
 

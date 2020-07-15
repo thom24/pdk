@@ -252,11 +252,11 @@ If a timeout occurs, System Firmware will discard the active SEC AP command.</p>
 <span id="sec-ap-cmd-if-get-uid"></span><h3>Get UID<a class="headerlink" href="#get-uid" title="Permalink to this headline">¶</a></h3>
 <p>This command is used to get the unique ID for the SOC to be used in the
 debug certificate. See the below command.</p>
-<p>The command ID is <code class="docutils literal notranslate"><span class="pre">0x80B5AE71</span></code>. There is no payload associated with
+<p>The command ID is <code class="docutils literal"><span class="pre">0x80B5AE71</span></code>. There is no payload associated with
 this command.</p>
 <p>The response returns a 32 byte value i.e.&nbsp;8 Words. The MSB of Word[0]
 contains the MSB of UID.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="o">|</span>      <span class="n">Word</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>        <span class="o">|</span>   <span class="n">Word</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>    <span class="o">|</span>     <span class="o">|</span>  <span class="n">Word</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span> <span class="o">|</span>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="o">|</span>      <span class="n">Word</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>        <span class="o">|</span>   <span class="n">Word</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>    <span class="o">|</span>     <span class="o">|</span>  <span class="n">Word</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span> <span class="o">|</span>
 <span class="o">|</span> <span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="n">B</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="n">B</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="n">B</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">|</span> <span class="n">B</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="p">..</span> <span class="n">B</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span> <span class="o">|</span> <span class="p">....</span><span class="o">|</span>   <span class="n">B</span><span class="p">[</span><span class="mi">31</span><span class="p">]</span>  <span class="o">|</span>
 </pre></div>
 </div>
@@ -264,7 +264,7 @@ contains the MSB of UID.</p>
 <div class="section" id="open-jtag">
 <span id="sec-ap-cmd-if-open-jtag"></span><h3>Open JTAG<a class="headerlink" href="#open-jtag" title="Permalink to this headline">¶</a></h3>
 <p>This command is used to unlock the JTAG on a secure i.e.&nbsp;HS-SE device.
-The command ID is <code class="docutils literal notranslate"><span class="pre">0x4968B2E9</span></code>. This payload for this command is a
+The command ID is <code class="docutils literal"><span class="pre">0x4968B2E9</span></code>. This payload for this command is a
 X.509 certificate with the debug extension and signed by one of the keys
 trusted in the customer board configuration.</p>
 <p>The certificate can be a maximum of 4 KB in size.</p>
@@ -275,8 +275,8 @@ The other X509 extensions are not processed by System Firmware while performing 
 unlock.</p>
 <p>This command has two responses.</p>
 <ol class="arabic simple">
-<li>If JTAG unlock is successful, it returns <code class="docutils literal notranslate"><span class="pre">0xDEAD3A17</span></code>.</li>
-<li>If JTAG unlock is unsuccessful, it returns <code class="docutils literal notranslate"><span class="pre">0xDEADFA17</span></code>.</li>
+<li>If JTAG unlock is successful, it returns <code class="docutils literal"><span class="pre">0xDEAD3A17</span></code>.</li>
+<li>If JTAG unlock is unsuccessful, it returns <code class="docutils literal"><span class="pre">0xDEADFA17</span></code>.</li>
 </ol>
 <p>If the command has failed, please review the settings in the certificate
 before resending.</p>
@@ -351,7 +351,7 @@ register cannot be modified.</p>
       <script type="text/javascript" src="../../_static/jquery.js"></script>
       <script type="text/javascript" src="../../_static/underscore.js"></script>
       <script type="text/javascript" src="../../_static/doctools.js"></script>
-      <script type="text/javascript" src="../../_static/language_data.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
     <script src="http://www.ti.com/assets/js/headerfooter/analytics.js" type="text/javascript" charset="utf-8"></script>
 
