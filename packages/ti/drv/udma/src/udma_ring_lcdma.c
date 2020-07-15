@@ -141,28 +141,11 @@ int32_t Udma_ringQueueRawLcdma(Udma_DrvHandle  drvHandle, Udma_RingHandle ringHa
 {
     int32_t         retVal = UDMA_SOK;
 
-    if(TISCI_MSG_VALUE_RM_RING_MODE_RING == ringHandle->lcdmaCfg.mode)
-    {
-        /* Use direct memory access for RING mode */
-        retVal = CSL_lcdma_ringaccPush64(
-            &ringHandle->drvHandle->lcdmaRaRegs,
-            &ringHandle->lcdmaCfg,
-            (uint64_t) phyDescMem,
-            &Udma_lcdmaRingaccMemOps);
-    }
-    else
-    {
-#if (UDMA_SOC_CFG_PROXY_PRESENT == 1)
-        /* Use proxy for other modes, if available */
-        retVal = Udma_ringProxyQueueRaw(ringHandle, drvHandle, phyDescMem);
-#else
-        retVal = CSL_lcdma_ringaccPush64x32(
-            &ringHandle->drvHandle->lcdmaRaRegs,
-            &ringHandle->lcdmaCfg,
-            (uint64_t) phyDescMem,
-            &Udma_lcdmaRingaccMemOps);
-#endif
-    }
+    retVal = CSL_lcdma_ringaccPush64(
+        &ringHandle->drvHandle->lcdmaRaRegs,
+        &ringHandle->lcdmaCfg,
+        (uint64_t) phyDescMem,
+        &Udma_lcdmaRingaccMemOps);
 
     return (retVal);
 }
@@ -171,35 +154,14 @@ int32_t Udma_ringDequeueRawLcdma(Udma_DrvHandle  drvHandle, Udma_RingHandle ring
 {
     int32_t         retVal = UDMA_SOK, cslRetVal;
 
-    if(TISCI_MSG_VALUE_RM_RING_MODE_RING == ringHandle->lcdmaCfg.mode)
+    cslRetVal = CSL_lcdma_ringaccPop64(
+            &ringHandle->drvHandle->lcdmaRaRegs,
+            &ringHandle->lcdmaCfg,
+            phyDescMem,
+            &Udma_lcdmaRingaccMemOps);
+    if(0 != cslRetVal)
     {
-        /* Use direct memory access for RING mode */
-        cslRetVal = CSL_lcdma_ringaccPop64(
-                &ringHandle->drvHandle->lcdmaRaRegs,
-                &ringHandle->lcdmaCfg,
-                phyDescMem,
-                &Udma_lcdmaRingaccMemOps);
-        if(0 != cslRetVal)
-        {
-            retVal = UDMA_ETIMEOUT;
-        }
-    }
-    else
-    {
-#if (UDMA_SOC_CFG_PROXY_PRESENT == 1)
-        /* Use proxy for other modes, if available */
-        retVal = Udma_ringProxyDequeueRaw(ringHandle, drvHandle, phyDescMem);
-#else
-        cslRetVal = CSL_lcdma_ringaccPop64x32(
-                &ringHandle->drvHandle->lcdmaRaRegs,
-                &ringHandle->lcdmaCfg,
-                phyDescMem,
-                &Udma_lcdmaRingaccMemOps);
-        if(0 != cslRetVal)
-        {
-            retVal = UDMA_ETIMEOUT;
-        }
-#endif
+        retVal = UDMA_ETIMEOUT;
     }
 
     return (retVal);
@@ -209,13 +171,13 @@ int32_t Udma_ringFlushRawLcdma(Udma_DrvHandle drvHandle, Udma_RingHandle ringHan
 {
     int32_t         retVal = UDMA_SOK, cslRetVal;
 
-    cslRetVal = CSL_lcdma_ringaccPop64x32(
+    cslRetVal = CSL_lcdma_ringaccDequeue(
             &ringHandle->drvHandle->lcdmaRaRegs,
             &ringHandle->lcdmaCfg,
-            phyDescMem,
-            &Udma_lcdmaRingaccMemOps);
+            phyDescMem);
     if(0 != cslRetVal)
     {
+        CSL_lcdma_ringaccResetRing( &ringHandle->drvHandle->lcdmaRaRegs, &ringHandle->lcdmaCfg);
         retVal = UDMA_ETIMEOUT;
     }
     return (retVal);
