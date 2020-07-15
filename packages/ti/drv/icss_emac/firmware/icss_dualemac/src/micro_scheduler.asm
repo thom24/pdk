@@ -127,10 +127,6 @@
     .endif
         .sect ".data"
         .retain
-    .word    ICSS_FIRMWARE_RELEASE_1
-    .word    ICSS_FIRMWARE_RELEASE_2
-    .word    ICSS_FIRMWARE_FEATURE_SET
-    .word    ICSS_FIRMWARE_RESERVED_FEATURE_SET
     .include ".version"
         .sect    ".text:micro_scheduler"
         .global  micro_scheduler
@@ -140,7 +136,11 @@ micro_scheduler:
     
 fw_main:
     ;Firmware Version: To store in shared memory. Can be used by application.
-    
+    LDI32   R0, ICSS_FIRMWARE_RELEASE_1
+    LDI32   R1, ICSS_FIRMWARE_RELEASE_2
+    LDI32   R2, ICSS_FIRMWARE_FEATURE_SET
+    SBCO    &R0, PRU_DMEM_ADDR, ICSS_FIRMWARE_RELEASE_1_OFFSET, 12
+	
     ZERO	&R0, 124		;Zero all registers
     LDI	R31 , 0
         

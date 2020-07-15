@@ -67,6 +67,7 @@ __firmware_version_h	.set	1
 ; ICSS_FIRMWARE_RELEASE_1: 
 ; bit 31..16 reserved
 ; bit15..8	device number
+ICSS_FIRMWARE_RELEASE_1_OFFSET     .set    0x0000
 FIRMWARE_DEVICE_ICSS_REV1	.set	0	
 FIRMWARE_DEVICE_ICSS_REV2	.set	1	
 
