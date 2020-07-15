@@ -203,7 +203,6 @@ SBL_MCU3_CPU1_ATCM_BASE_ADDR_SOC
 };
 #endif
 
-#if !defined(SOC_J7200)
 static const uint32_t SblBtcmAddr[] =
 {
 SBL_MCU_BTCM_BASE,
@@ -213,7 +212,6 @@ SBL_MCU2_CPU1_BTCM_BASE_ADDR_SOC,
 SBL_MCU3_CPU0_BTCM_BASE_ADDR_SOC,
 SBL_MCU3_CPU1_BTCM_BASE_ADDR_SOC
 };
-#endif
 /* ========================================================================== */
 /*                           Internal Functions                               */
 /* ========================================================================== */
@@ -374,6 +372,7 @@ void SBL_SetupCoreMem(uint32_t core_id)
 {
     int32_t status = CSL_EFAIL;
     uint8_t runLockStep = 0;
+    uint8_t mcuModeConfigured = 0;
     struct tisci_msg_proc_get_status_resp cpuStatus;
     struct tisci_msg_proc_set_config_req  proc_set_config_req;
     const sblSlaveCoreInfo_t *sblSlaveCoreInfoPtr;
@@ -403,8 +402,9 @@ void SBL_SetupCoreMem(uint32_t core_id)
 
     if(runLockStep)
     {
-        SBL_log(SBL_LOG_MAX, "Detected locktep for core_id %d, proc_id 0x%x... \n", core_id, sblSlaveCoreInfoPtr->tisci_proc_id);
+        SBL_log(SBL_LOG_MAX, "Detected lockstep for core_id %d, proc_id 0x%x... \n", core_id, sblSlaveCoreInfoPtr->tisci_proc_id);
         SBL_ConfigMcuLockStep(SBL_ENABLE_MCU_LOCKSTEP, sblSlaveCoreInfoPtr);
+        mcuModeConfigured = 1;
     }
 
     switch (core_id)
@@ -425,10 +425,48 @@ void SBL_SetupCoreMem(uint32_t core_id)
             SBL_log(SBL_LOG_MAX, "Switching core id %d, proc_id 0x%x to split mode... \n", core_id-1, sbl_slave_core_info[core_id-1].tisci_proc_id);
             /* Image for second MCU core present, disable lock step for the cluster */
             SBL_ConfigMcuLockStep(SBL_DISABLE_MCU_LOCKSTEP, &(sbl_slave_core_info[core_id-1]));
+            mcuModeConfigured = 1;
             /* DOnt break, fall through for enabling TCMs */
         case MCU1_CPU0_ID:
         case MCU2_CPU0_ID:
         case MCU3_CPU0_ID:
+            /* Ensure Power is OFF for each core before configuring */
+            /* SBL running on MCU0, don't fool around with its power */
+            if (core_id != MCU1_CPU0_ID)
+            {
+                SBL_log(SBL_LOG_MAX, "Sciclient_pmSetModuleState Off, DevId 0x%x... \n", sblSlaveCoreInfoPtr->tisci_dev_id);
+                Sciclient_pmSetModuleState(sblSlaveCoreInfoPtr->tisci_dev_id, TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
+
+#ifdef VLAB_SIM
+            /* HALT issue on VLAB causes the core to a immediate halt. ASTC Ticket #*/
+              SBL_log(SBL_LOG_MAX, "Setting HALT for ProcId 0x%x...\n", sblSlaveCoreInfoPtr->tisci_proc_id);
+              status =  Sciclient_procBootSetSequenceCtrl(sblSlaveCoreInfoPtr->tisci_proc_id, TISCI_MSG_VAL_PROC_BOOT_CTRL_FLAG_R5_CORE_HALT, 0, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
+              if (status != CSL_PASS)
+              {
+                SBL_log(SBL_LOG_ERR, "Sciclient_procBootSetSequenceCtrl...FAILED \n");
+                SblErrLoop(__FILE__, __LINE__);
+              }
+#endif
+            }
+
+#ifndef VLAB_SIM
+            /* In case of VLAB_SIM, the below step is done only for all but mcu1_0 shown above */
+            SBL_log(SBL_LOG_MAX, "Setting HALT for ProcId 0x%x...\n", sblSlaveCoreInfoPtr->tisci_proc_id);
+            status =  Sciclient_procBootSetSequenceCtrl(sblSlaveCoreInfoPtr->tisci_proc_id, TISCI_MSG_VAL_PROC_BOOT_CTRL_FLAG_R5_CORE_HALT, 0, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
+            if (status != CSL_PASS)
+            {
+              SBL_log(SBL_LOG_ERR, "Sciclient_procBootSetSequenceCtrl...FAILED \n");
+              SblErrLoop(__FILE__, __LINE__);
+            }
+#endif
+
+            if (!mcuModeConfigured)
+            {
+                SBL_log(SBL_LOG_MAX, "Switching core id %d, proc_id 0x%x to split mode... \n", core_id, sbl_slave_core_info[core_id].tisci_proc_id);
+                /* Non-SMP image used, disable lock step for the cluster */
+                SBL_ConfigMcuLockStep(SBL_DISABLE_MCU_LOCKSTEP, &(sbl_slave_core_info[core_id]));
+            }
+
             SBL_log(SBL_LOG_MAX, "Calling Sciclient_procBootGetProcessorState, ProcId 0x%x... \n", sblSlaveCoreInfoPtr->tisci_proc_id);
             status = Sciclient_procBootGetProcessorState(sblSlaveCoreInfoPtr->tisci_proc_id, &cpuStatus, SCICLIENT_SERVICE_WAIT_FOREVER);
             if (status != CSL_PASS)
@@ -452,10 +490,11 @@ void SBL_SetupCoreMem(uint32_t core_id)
                                                        TISCI_MSG_VAL_PROC_BOOT_CFG_FLAG_R5_TCM_RSTBASE);
 
 #if defined(SOC_J7200)
-            if ((core_id == MCU2_CPU0_ID) || (core_id == MCU2_CPU1_ID))
+            /* Only need to set mem_init disable bit for MCU1_0 or MCU2_0 (for each cluster) */
+            if ((core_id == MCU1_CPU0_ID) || (core_id == MCU2_CPU0_ID))
             {
-                //SBL_log(SBL_LOG_MAX, "Disabling HW-based memory init of MCU TCMs for core %d\n", core_id);
-                //proc_set_config_req.config_flags_1_set |= TISCI_MSG_VAL_PROC_BOOT_CFG_FLAG_R5_MEM_INIT_DIS;
+                SBL_log(SBL_LOG_MAX, "Disabling HW-based memory init of MCU TCMs for core %d\n", core_id);
+                proc_set_config_req.config_flags_1_set |= TISCI_MSG_VAL_PROC_BOOT_CFG_FLAG_R5_MEM_INIT_DIS;
             }
 #endif
 
@@ -466,34 +505,6 @@ void SBL_SetupCoreMem(uint32_t core_id)
                 SBL_log(SBL_LOG_ERR, "Sciclient_procBootSetProcessorCfg...FAILED \n");
                 SblErrLoop(__FILE__, __LINE__);
             }
-            /* SBL running on MCU0, don't fool around with its power */
-            if (core_id != MCU1_CPU0_ID)
-            {
-                SBL_log(SBL_LOG_MAX, "Sciclient_pmSetModuleState Off, DevId 0x%x... \n", sblSlaveCoreInfoPtr->tisci_dev_id);
-                Sciclient_pmSetModuleState(sblSlaveCoreInfoPtr->tisci_dev_id, TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
-
-#ifdef VLAB_SIM
-            /* HALT issue on VLAB causes the core to a immediate halt. ASTC Ticket #*/      
-              SBL_log(SBL_LOG_MAX, "Setting HALT for ProcId 0x%x...\n", sblSlaveCoreInfoPtr->tisci_proc_id);
-              status =  Sciclient_procBootSetSequenceCtrl(sblSlaveCoreInfoPtr->tisci_proc_id, TISCI_MSG_VAL_PROC_BOOT_CTRL_FLAG_R5_CORE_HALT, 0, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
-              if (status != CSL_PASS)
-              {
-                SBL_log(SBL_LOG_ERR, "Sciclient_procBootSetSequenceCtrl...FAILED \n");
-                SblErrLoop(__FILE__, __LINE__);
-              }
-#endif
-            }
-
-#ifndef VLAB_SIM
-            /* In case of VLAB_SIM, the below step is done only for all but mcu1_0 shown above */
-            SBL_log(SBL_LOG_MAX, "Setting HALT for ProcId 0x%x...\n", sblSlaveCoreInfoPtr->tisci_proc_id);
-            status =  Sciclient_procBootSetSequenceCtrl(sblSlaveCoreInfoPtr->tisci_proc_id, TISCI_MSG_VAL_PROC_BOOT_CTRL_FLAG_R5_CORE_HALT, 0, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
-            if (status != CSL_PASS)
-            {
-              SBL_log(SBL_LOG_ERR, "Sciclient_procBootSetSequenceCtrl...FAILED \n");
-              SblErrLoop(__FILE__, __LINE__);
-            }
-#endif
 
             /* SBL running on MCU0, don't fool around with its power & TCMs */
             if (core_id != MCU1_CPU0_ID)
@@ -501,22 +512,43 @@ void SBL_SetupCoreMem(uint32_t core_id)
                 SBL_log(SBL_LOG_MAX, "Sciclient_pmSetModuleState On, DevId 0x%x... \n", sblSlaveCoreInfoPtr->tisci_dev_id);
                 Sciclient_pmSetModuleState(sblSlaveCoreInfoPtr->tisci_dev_id, TISCI_MSG_VALUE_DEVICE_SW_STATE_ON, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
 
-#if !defined(SOC_J7200)
-/* HW clears the R5 memories, currently, so no need for further mem init here */
-#ifndef DISABLE_ATCM
                 /* Initialize the TCMs - TCMs of MCU running SBL are already initialized by ROM & SBL */
-                SBL_log(SBL_LOG_MAX, "Clearing core_id %d  ATCM @ 0x%x\n", core_id, SblAtcmAddr[core_id - MCU1_CPU0_ID]);
-                memset(((void *)(SblAtcmAddr[core_id - MCU1_CPU0_ID])), 0xFF, 0x8000);
+#ifndef DISABLE_ATCM
+#if defined(SOC_J7200)
+                /* J7200: ATCM in lock-step is the combined size of both the split-mode ATCMs */
+                if (runLockStep)
+                {
+                    SBL_log(SBL_LOG_MAX, "Clearing core_id %d (lock-step) ATCM @ 0x%x\n", core_id, SblAtcmAddr[core_id - MCU1_CPU0_ID]);
+                    memset(((void *)(SblAtcmAddr[core_id - MCU1_CPU0_ID])), 0xFF, 0x10000);
+                }
+                else
+                /* Clear the normal size of ATCM for non-lockstep cores */
+#endif
+                {
+                    SBL_log(SBL_LOG_MAX, "Clearing core_id %d  ATCM @ 0x%x\n", core_id, SblAtcmAddr[core_id - MCU1_CPU0_ID]);
+                    memset(((void *)(SblAtcmAddr[core_id - MCU1_CPU0_ID])), 0xFF, 0x8000);
+                }
 #endif
 
 #ifndef VLAB_SIM
-                SBL_log(SBL_LOG_MAX, "Clearing core_id %d  BTCM @ 0x%x\n", core_id, SblBtcmAddr[core_id - MCU1_CPU0_ID]);
-                memset(((void *)(SblBtcmAddr[core_id - MCU1_CPU0_ID])), 0xFF, 0x8000);
+#if defined(SOC_J7200)
+                /* J7200: BTCM in lock-step is the combined size of both the split-mode BTCMs */
+                if (runLockStep)
+                {
+                    SBL_log(SBL_LOG_MAX, "Clearing core_id %d (lock-step) BTCM @ 0x%x\n", core_id, SblBtcmAddr[core_id - MCU1_CPU0_ID]);
+                    memset(((void *)(SblBtcmAddr[core_id - MCU1_CPU0_ID])), 0xFF, 0x10000);
+                }
+                else
+                /* Clear the normal size of BTCM for non-lockstep cores */
+#endif
+                {
+                    SBL_log(SBL_LOG_MAX, "Clearing core_id %d  BTCM @ 0x%x\n", core_id, SblBtcmAddr[core_id - MCU1_CPU0_ID]);
+                    memset(((void *)(SblBtcmAddr[core_id - MCU1_CPU0_ID])), 0xFF, 0x8000);
+                }
 #else
 /* BTCM is not recognized in VLAB : ASTC TICKET # TBD */
                 SBL_log(SBL_LOG_MAX, "***Not Clearing*** BTCM @0x%x\n", SblBtcmAddr[core_id - MCU1_CPU0_ID]);
 #endif
-#endif /* if !defined(SOC_J7200) */
             }
             break;
         case MPU1_SMP_ID:
@@ -634,7 +666,6 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
     proc_set_config_req.bootvector_hi = 0x0;
     proc_set_config_req.config_flags_1_set = 0;
     proc_set_config_req.config_flags_1_clear = 0;
-
 
     if (pAppEntry->CpuEntryPoint[core_id] <  SBL_INVALID_ENTRY_ADDR) /* Set entry point only is valid */
     {
@@ -767,7 +798,7 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
 #ifndef DISABLE_ATCM
                 SBL_log(SBL_LOG_MAX, "Copying first 128 byptes from app to MCU ATCM @ 0x%x for core %d\n", SblAtcmAddr[core_id - MCU1_CPU0_ID], core_id);
                 memcpy(((void *)(SblAtcmAddr[core_id - MCU1_CPU0_ID])), (void *)(proc_set_config_req.bootvector_lo), 128);
-#endif                
+#endif
             }
             SBL_log(SBL_LOG_MAX, "Sciclient_procBootReleaseProcessor, ProcId 0x%x...\n", sblSlaveCoreInfoPtr->tisci_proc_id);
             status = Sciclient_procBootReleaseProcessor(sblSlaveCoreInfoPtr->tisci_proc_id, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
@@ -789,7 +820,7 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
 #ifndef DISABLE_ATCM
                     SBL_log(SBL_LOG_MAX, "Copying first 128 byptes from app to MCU ATCM @ 0x%x for core %d\n", SblAtcmAddr[core_id - MCU1_CPU0_ID], core_id);
                     memcpy(((void *)(SblAtcmAddr[core_id - MCU1_CPU0_ID])), (void *)(proc_set_config_req.bootvector_lo), 128);
-#endif                    
+#endif
                 }
                 SBL_log(SBL_LOG_MAX, "Clearing HALT for ProcId 0x%x...\n", sblSlaveCoreInfoPtr->tisci_proc_id);
                 status =  Sciclient_procBootSetSequenceCtrl(sblSlaveCoreInfoPtr->tisci_proc_id, 0, TISCI_MSG_VAL_PROC_BOOT_CTRL_FLAG_R5_CORE_HALT, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
