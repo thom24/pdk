@@ -189,6 +189,11 @@ extern "C" {
 
 #define UDMA_TEST_LOOP_CNT_MT_SOC       (UDMA_TEST_PERF_LOOP_CNT)
 
+#define UDMA_TEST_RING_MODE_MIN                 (TISCI_MSG_VALUE_RM_RING_MODE_RING)
+#define UDMA_TEST_RING_MODE_MAX                 (TISCI_MSG_VALUE_RM_RING_MODE_QM)
+#define UDMA_TEST_RING_MODE_DEFAULT_START       (TISCI_MSG_VALUE_RM_RING_MODE_RING)
+#define UDMA_TEST_RING_MODE_DEFAULT_STOP        (TISCI_MSG_VALUE_RM_RING_MODE_MESSAGE)
+
 /* ========================================================================== */
 /*                         Structure Declarations                             */
 /* ========================================================================== */

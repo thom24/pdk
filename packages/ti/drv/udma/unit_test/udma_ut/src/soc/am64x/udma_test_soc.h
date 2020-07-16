@@ -166,6 +166,11 @@ extern "C" {
 #define UDMA_TEST_LOOP_CNT_MT_SOC           (UDMA_TEST_PERF_LOOP_CNT)
 #endif
 
+#define UDMA_TEST_RING_MODE_MIN                 (TISCI_MSG_VALUE_RM_RING_MODE_RING)
+#define UDMA_TEST_RING_MODE_MAX                 (TISCI_MSG_VALUE_RM_RING_MODE_RING)
+#define UDMA_TEST_RING_MODE_DEFAULT_START       (TISCI_MSG_VALUE_RM_RING_MODE_RING)
+#define UDMA_TEST_RING_MODE_DEFAULT_STOP        (TISCI_MSG_VALUE_RM_RING_MODE_RING)
+
 /* Redirect for backward compaitibilitly */
 #define UDMA_TEST_RF_MAIN_BC                (UDMA_TEST_RF_BCDMA_BC)
 #define UDMA_TEST_RF_MCU_BC                 (UDMA_TEST_RF_BCDMA_BC)

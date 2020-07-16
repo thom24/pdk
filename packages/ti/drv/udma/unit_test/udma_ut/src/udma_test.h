@@ -50,6 +50,7 @@
 #include <string.h>
 
 #include <ti/drv/udma/udma.h>
+#include <ti/drv/udma/src/udma_priv.h>
 
 #include <ti/osal/SemaphoreP.h>
 #include <ti/osal/TaskP.h>
@@ -121,6 +122,11 @@ extern "C" {
 
 #define UDMA_TEST_RING_ACC_DIRECTION_FORWARD    (0U)
 #define UDMA_TEST_RING_ACC_DIRECTION_REVERSE    (1U)
+
+#define UDMA_TEST_INST_ID_MAIN_0        (UDMA_INST_ID_0)
+#define UDMA_TEST_INST_ID_MCU_0         (UDMA_INST_ID_1)
+#define UDMA_TEST_INST_ID_BCDMA_0       (UDMA_INST_ID_2)
+#define UDMA_TEST_INST_ID_PKTDMA_0      (UDMA_INST_ID_3)
 
 #define UDMA_TEST_RF_SOC_AM65XX         ((uint64_t) 0x00000001U)
 #define UDMA_TEST_RF_SOC_J721E          ((uint64_t) 0x00000002U)

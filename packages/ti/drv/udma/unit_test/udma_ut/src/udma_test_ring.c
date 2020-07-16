@@ -204,8 +204,8 @@ int32_t udmaTestRingUtilsMemSizeTc(UdmaTestTaskObj *taskObj)
     GT_1trace(taskObj->traceMask, GT_INFO1,
               " |TEST INFO|:: Task:%d: Ring Utils Mem Size Testcase ::\r\n", taskObj->taskId);
 
-    for(ringMode = TISCI_MSG_VALUE_RM_RING_MODE_RING;
-        ringMode <= TISCI_MSG_VALUE_RM_RING_MODE_QM;
+    for(ringMode = UDMA_TEST_RING_MODE_MIN;
+        ringMode <= UDMA_TEST_RING_MODE_MAX;
         ringMode++)
     {
         for(ringSize = UDMA_RING_ES_4BYTES;
@@ -236,6 +236,7 @@ int32_t udmaTestRingUtilsMemSizeTc(UdmaTestTaskObj *taskObj)
 int32_t udmaTestRingMemPtrTc(UdmaTestTaskObj *taskObj)
 {
     int32_t             retVal = UDMA_SOK;
+    uint16_t            ringNum = UDMA_RING_ANY;
     uint32_t            instId, ringMode;
     uint32_t            elemCnt = 100U, ringMemSize;
     uint32_t            heapId = UTILS_MEM_HEAP_ID_MSMC;
@@ -244,7 +245,8 @@ int32_t udmaTestRingMemPtrTc(UdmaTestTaskObj *taskObj)
     struct Udma_RingObj ringObj;
     Udma_RingHandle     ringHandle = &ringObj;
     void               *ringMem = NULL;
-    char *navssString[] = {"MAIN", "MCU"};
+    Udma_RmInitPrms    *rmInitPrms;
+    char *instanceIdStr[] = {"MAIN", "MCU", "BCDMA", "PKTDMA"};
     char *ringModeString[] = {"RING", "MESSAGE"};
 
     GT_1trace(taskObj->traceMask, GT_INFO1,
@@ -260,15 +262,15 @@ int32_t udmaTestRingMemPtrTc(UdmaTestTaskObj *taskObj)
 
     if(UDMA_SOK == retVal)
     {
-        for(instId = 0U; instId < UDMA_INST_ID_MAX; instId++)
+        for(instId = UDMA_INST_ID_START; instId <= UDMA_INST_ID_MAX; instId++)
         {
-            for(ringMode = TISCI_MSG_VALUE_RM_RING_MODE_RING;
-                ringMode <= TISCI_MSG_VALUE_RM_RING_MODE_MESSAGE;
+            for(ringMode = UDMA_TEST_RING_MODE_DEFAULT_START;
+                ringMode <= UDMA_TEST_RING_MODE_DEFAULT_STOP;
                 ringMode++)
             {
                 GT_2trace(taskObj->traceMask, GT_INFO1,
-                          " Testing for NAVSS Inst: %s, Ring Mode: %s...\r\n",
-                          navssString[instId], ringModeString[ringMode]);
+                          " Testing for Inst: %s, Ring Mode: %s...\r\n",
+                          instanceIdStr[instId], ringModeString[ringMode]);
                 drvHandle = &taskObj->testObj->drvObj[instId];
 
                 UdmaRingPrms_init(&ringPrms);
@@ -277,15 +279,27 @@ int32_t udmaTestRingMemPtrTc(UdmaTestTaskObj *taskObj)
                 ringPrms.mode = ringMode;
                 ringPrms.elemCnt = elemCnt;
 
-                /* Allocate a free ring */
-                retVal = Udma_ringAlloc(drvHandle, ringHandle, UDMA_RING_ANY, &ringPrms);
+                if(UDMA_INST_TYPE_NORMAL != drvHandle->instType)
+                {
+                    /* Since no free/extra rings are available in BCDMA/PKTDMA(Unmapped Channels)
+                       #Udma_ringAlloc with #UDMA_RING_ANY will fail.
+                       So get the default ringNum for a channel */  
+                    rmInitPrms = &drvHandle->initPrms.rmInitPrms;
+                    ringNum =  (uint16_t) (rmInitPrms->startTxCh + drvHandle->txChOffset);
+                }
+                else
+                {
+                    ringNum = UDMA_RING_ANY;
+                }
+                /* Allocate ring */
+                retVal = Udma_ringAlloc(drvHandle, ringHandle, ringNum, &ringPrms);
                 if(UDMA_SOK != retVal)
                 {
                     GT_0trace(taskObj->traceMask, GT_ERR, " Ring alloc failed!!\n");
                     break;
                 }
 
-                /* Check if the HW occupancy is zero */
+                /* Check Ring Mem Pointer */
                 if(Udma_ringGetMemPtr(ringHandle) != ringMem)
                 {
                     GT_0trace(taskObj->traceMask, GT_ERR,
@@ -302,8 +316,8 @@ int32_t udmaTestRingMemPtrTc(UdmaTestTaskObj *taskObj)
                 }
 
                 GT_2trace(taskObj->traceMask, GT_INFO1,
-                          " Testing for NAVSS Inst: %s, Ring Mode: %s passed!!\r\n",
-                          navssString[instId], ringModeString[ringMode]);
+                          " Testing for Inst: %s, Ring Mode: %s passed!!\r\n",
+                          instanceIdStr[instId], ringModeString[ringMode]);
             }
 
             if(UDMA_SOK != retVal)
@@ -421,7 +435,7 @@ static int32_t udmaTestRingProxyTestLoop(UdmaTestTaskObj *taskObj)
     Udma_RingHandle     ringHandle = &ringObj;
     void               *ringMem = NULL;
     uint64_t            ringData;
-    char *navssString[] = {"MAIN", "MCU"};
+    char *instanceIdStr[] = {"MAIN", "MCU", "BCDMA", "PKTDMA"};
     char *ringModeString[] = {"RING", "MESSAGE"};
 
     ringMemSize = elemCnt * sizeof (uint64_t);
@@ -434,15 +448,15 @@ static int32_t udmaTestRingProxyTestLoop(UdmaTestTaskObj *taskObj)
 
     if(UDMA_SOK == retVal)
     {
-        for(instId = 0U; instId < UDMA_INST_ID_MAX; instId++)
+        for(instId = UDMA_INST_ID_START; instId <= UDMA_INST_ID_MAX; instId++)
         {
-            for(ringMode = TISCI_MSG_VALUE_RM_RING_MODE_RING;
-                ringMode <= TISCI_MSG_VALUE_RM_RING_MODE_MESSAGE;
+            for(ringMode = UDMA_TEST_RING_MODE_DEFAULT_START;
+                ringMode <= UDMA_TEST_RING_MODE_DEFAULT_STOP;
                 ringMode++)
             {
                 GT_2trace(taskObj->traceMask, GT_INFO1,
-                          " Testing for NAVSS Inst: %s, Ring Mode: %s...\r\n",
-                          navssString[instId], ringModeString[ringMode]);
+                          " Testing for Inst: %s, Ring Mode: %s...\r\n",
+                          instanceIdStr[instId], ringModeString[ringMode]);
                 drvHandle = &taskObj->testObj->drvObj[instId];
 
                 UdmaRingPrms_init(&ringPrms);
@@ -506,7 +520,7 @@ static int32_t udmaTestRingProxyTestLoop(UdmaTestTaskObj *taskObj)
                 }
 
                 /* Check if the HW occupancy is zero */
-                if(udmaTestCompareRingHwOccDriver(ringHandle, 0U, UDMA_TEST_RING_ACC_DIRECTION_REVERSE) != UDMA_SOK)
+                if(udmaTestCompareRingHwOccDriver(ringHandle, 0U, UDMA_TEST_RING_ACC_DIRECTION_FORWARD) != UDMA_SOK)
                 {
                     GT_0trace(taskObj->traceMask, GT_ERR, " Ring not empty!!\n");
                     retVal = UDMA_EFAIL;
@@ -521,8 +535,8 @@ static int32_t udmaTestRingProxyTestLoop(UdmaTestTaskObj *taskObj)
                 }
 
                 GT_2trace(taskObj->traceMask, GT_INFO1,
-                          " Testing for NAVSS Inst: %s, Ring Mode: %s passed!!\r\n",
-                          navssString[instId], ringModeString[ringMode]);
+                          " Testing for Inst: %s, Ring Mode: %s passed!!\r\n",
+                          instanceIdStr[instId], ringModeString[ringMode]);
             }
 
             if(UDMA_SOK != retVal)
@@ -547,7 +561,8 @@ static int32_t udmaTestRingProxyTestLoop(UdmaTestTaskObj *taskObj)
 static int32_t udmaTestRingFlushTestLoop(UdmaTestTaskObj *taskObj)
 {
     int32_t             retVal = UDMA_SOK;
-    uint32_t            instId, qCnt, ringMode;
+    uint16_t            ringNum = UDMA_RING_ANY;
+    uint32_t            instId, qCnt, ringMode, testLoopCnt, testLoopMax;
     uint32_t            elemCnt = 50U, ringMemSize;
     uint32_t            heapId = UTILS_MEM_HEAP_ID_MSMC;
     Udma_DrvHandle      drvHandle;
@@ -556,7 +571,8 @@ static int32_t udmaTestRingFlushTestLoop(UdmaTestTaskObj *taskObj)
     Udma_RingHandle     ringHandle = &ringObj;
     void               *ringMem = NULL;
     uint64_t            ringData;
-    char *navssString[] = {"MAIN", "MCU"};
+    Udma_RmInitPrms    *rmInitPrms;
+    char *instanceIdStr[] = {"MAIN", "MCU", "BCDMA", "PKTDMA"};
     char *ringModeString[] = {"RING", "MESSAGE"};
 
     ringMemSize = elemCnt * sizeof (uint64_t);
@@ -569,15 +585,15 @@ static int32_t udmaTestRingFlushTestLoop(UdmaTestTaskObj *taskObj)
 
     if(UDMA_SOK == retVal)
     {
-        for(instId = 0U; instId < UDMA_INST_ID_MAX; instId++)
+        for(instId = UDMA_INST_ID_START; instId <= UDMA_INST_ID_MAX; instId++)
         {
-            for(ringMode = TISCI_MSG_VALUE_RM_RING_MODE_RING;
-                ringMode <= TISCI_MSG_VALUE_RM_RING_MODE_MESSAGE;
+            for(ringMode = UDMA_TEST_RING_MODE_DEFAULT_START;
+                ringMode <= UDMA_TEST_RING_MODE_DEFAULT_STOP;
                 ringMode++)
             {
                 GT_2trace(taskObj->traceMask, GT_INFO1,
-                          " Testing for NAVSS Inst: %s, Ring Mode: %s...\r\n",
-                          navssString[instId], ringModeString[ringMode]);
+                          " Testing for Inst: %s, Ring Mode: %s...\r\n",
+                          instanceIdStr[instId], ringModeString[ringMode]);
                 drvHandle = &taskObj->testObj->drvObj[instId];
 
                 UdmaRingPrms_init(&ringPrms);
@@ -586,68 +602,94 @@ static int32_t udmaTestRingFlushTestLoop(UdmaTestTaskObj *taskObj)
                 ringPrms.mode = ringMode;
                 ringPrms.elemCnt = elemCnt;
 
-                /* Allocate a free ring */
-                retVal = Udma_ringAlloc(drvHandle, ringHandle, UDMA_RING_ANY, &ringPrms);
+                if(UDMA_INST_TYPE_NORMAL != drvHandle->instType)
+                {
+                    /* Since no free/extra rings are available in BCDMA/PKTDMA(Unmapped Channels)
+                       #Udma_ringAlloc with #UDMA_RING_ANY will fail.
+                       So get the default ringNum for a channel */  
+                    rmInitPrms = &drvHandle->initPrms.rmInitPrms;
+                    ringNum =  (uint16_t) (rmInitPrms->startTxCh + drvHandle->txChOffset);
+                    testLoopMax = 3U; /* After flush, Test ring operation, Also test after ring reset */
+                }
+                else
+                {
+                    ringNum = UDMA_RING_ANY;
+                    testLoopMax = 2U; /* After flush, Test ring operation */
+                }
+                /* Allocate ring */
+                retVal = Udma_ringAlloc(drvHandle, ringHandle, ringNum, &ringPrms);
                 if(UDMA_SOK != retVal)
                 {
                     GT_0trace(taskObj->traceMask, GT_ERR, " Ring alloc failed!!\n");
                     break;
                 }
 
-                /* Ring queue */
-                for(qCnt = 0U; qCnt < elemCnt; qCnt++)
+                for(testLoopCnt = 0U; testLoopCnt < testLoopMax; testLoopCnt++)
                 {
-                    ringData = ((uint64_t) qCnt | (uint64_t) 0xDEADBEEF00000000UL);
-                    retVal = Udma_ringQueueRaw(ringHandle, ringData);
+                    /* Ring queue */
+                    for(qCnt = 0U; qCnt < elemCnt; qCnt++)
+                    {
+                        ringData = ((uint64_t) qCnt | (uint64_t) 0xDEADBEEF00000000UL);
+                        retVal = Udma_ringQueueRaw(ringHandle, ringData);
+                        if(UDMA_SOK != retVal)
+                        {
+                            GT_0trace(taskObj->traceMask, GT_ERR, " Ring queue failed!!\n");
+                            break;
+                        }
+                    }
                     if(UDMA_SOK != retVal)
                     {
-                        GT_0trace(taskObj->traceMask, GT_ERR, " Ring queue failed!!\n");
                         break;
                     }
-                }
-                if(UDMA_SOK != retVal)
-                {
-                    break;
-                }
-
-                /* Check if the HW occupancy is same as what is queued */
-                if(udmaTestCompareRingHwOccDriver(ringHandle, elemCnt, UDMA_TEST_RING_ACC_DIRECTION_FORWARD) != UDMA_SOK)
-                {
-                    GT_0trace(taskObj->traceMask, GT_ERR, " Ring element count mismatch!!\n");
-                    retVal = UDMA_EFAIL;
-                    break;
-                }
-
-                /* Dequeue using Flush API */
-                for(qCnt = 0U; qCnt < elemCnt; qCnt++)
-                {
-                    ringData = 0UL;
-                    retVal = Udma_ringFlushRaw(ringHandle, &ringData);
+    
+                    /* Check if the HW occupancy is same as what is queued */
+                    if(udmaTestCompareRingHwOccDriver(ringHandle, elemCnt, UDMA_TEST_RING_ACC_DIRECTION_FORWARD) != UDMA_SOK)
+                    {
+                        GT_0trace(taskObj->traceMask, GT_ERR, " Ring element count mismatch!!\n");
+                        retVal = UDMA_EFAIL;
+                        break;
+                    }
+    
+                    /* Dequeue using Flush API */
+                    for(qCnt = 0U; qCnt < elemCnt; qCnt++)
+                    {
+                        ringData = 0UL;
+                        retVal = Udma_ringFlushRaw(ringHandle, &ringData);
+                        if(UDMA_SOK != retVal)
+                        {
+                            GT_0trace(taskObj->traceMask, GT_ERR, " Ring flush failed!!\n");
+                            break;
+                        }
+    
+                        if(ringData != ((uint64_t) qCnt | (uint64_t) 0xDEADBEEF00000000UL))
+                        {
+                            GT_0trace(taskObj->traceMask, GT_ERR, " Ring data mismatch!!\n");
+                            break;
+                        }
+                    }
                     if(UDMA_SOK != retVal)
                     {
-                        GT_0trace(taskObj->traceMask, GT_ERR, " Ring flush failed!!\n");
                         break;
                     }
-
-                    if(ringData != ((uint64_t) qCnt | (uint64_t) 0xDEADBEEF00000000UL))
+    
+                    /* Check if the HW occupancy is zero */
+                    if(udmaTestCompareRingHwOccDriver(ringHandle, 0U, UDMA_TEST_RING_ACC_DIRECTION_FORWARD) != UDMA_SOK)
                     {
-                        GT_0trace(taskObj->traceMask, GT_ERR, " Ring data mismatch!!\n");
+                        GT_0trace(taskObj->traceMask, GT_ERR, " Ring not empty!!\n");
+                        retVal = UDMA_EFAIL;
                         break;
                     }
+                
+                    /* First, test Ring operation without reset after ring flush. 
+                     * Second, try reset */
+                    if((1U == testLoopCnt) &&
+                       (UDMA_INST_TYPE_NORMAL != drvHandle->instType))
+                    {       
+                        /* For LCDMA Rings, Reset the Ring - By calling the #Udma_ringFlushRaw 
+                         * when there are no more unprocessed descriptors */
+                        Udma_ringFlushRaw(ringHandle, &ringData);
+                    }
                 }
-                if(UDMA_SOK != retVal)
-                {
-                    break;
-                }
-
-                /* Check if the HW occupancy is zero */
-                if(udmaTestCompareRingHwOccDriver(ringHandle, 0U, UDMA_TEST_RING_ACC_DIRECTION_REVERSE) != UDMA_SOK)
-                {
-                    GT_0trace(taskObj->traceMask, GT_ERR, " Ring not empty!!\n");
-                    retVal = UDMA_EFAIL;
-                    break;
-                }
-
                 retVal = Udma_ringFree(ringHandle);
                 if(UDMA_SOK != retVal)
                 {
@@ -656,8 +698,8 @@ static int32_t udmaTestRingFlushTestLoop(UdmaTestTaskObj *taskObj)
                 }
 
                 GT_2trace(taskObj->traceMask, GT_INFO1,
-                          " Testing for NAVSS Inst: %s, Ring Mode: %s passed!!\r\n",
-                          navssString[instId], ringModeString[ringMode]);
+                          " Testing for Inst: %s, Ring Mode: %s passed!!\r\n",
+                          instanceIdStr[instId], ringModeString[ringMode]);
             }
 
             if(UDMA_SOK != retVal)
@@ -691,7 +733,7 @@ static int32_t udmaTestRingEventTestLoop(UdmaTestTaskObj *taskObj)
     Udma_RingHandle     ringHandle = &ringObj;
     void               *ringMem = NULL;
     uint64_t            ringData;
-    char *navssString[] = {"MAIN", "MCU"};
+    char *instanceIdStr[] = {"MAIN", "MCU", "BCDMA", "PKTDMA"};
     char *ringModeString[] = {"RING", "MESSAGE"};
     Udma_EventPrms      eventPrms;
     SemaphoreP_Params   semPrms;
@@ -721,15 +763,15 @@ static int32_t udmaTestRingEventTestLoop(UdmaTestTaskObj *taskObj)
 
     if(UDMA_SOK == retVal)
     {
-        for(instId = 0U; instId < UDMA_INST_ID_MAX; instId++)
+        for(instId = UDMA_INST_ID_START; instId <= UDMA_INST_ID_MAX; instId++)
         {
-            for(ringMode = TISCI_MSG_VALUE_RM_RING_MODE_RING;
-                ringMode <= TISCI_MSG_VALUE_RM_RING_MODE_MESSAGE;
+            for(ringMode = UDMA_TEST_RING_MODE_DEFAULT_START;
+                ringMode <= UDMA_TEST_RING_MODE_DEFAULT_STOP;
                 ringMode++)
             {
                 GT_2trace(taskObj->traceMask, GT_INFO1,
-                          " Testing Ring Event for NAVSS Inst: %s, Ring Mode: %s...\r\n",
-                          navssString[instId], ringModeString[ringMode]);
+                          " Testing Ring Event for Inst: %s, Ring Mode: %s...\r\n",
+                          instanceIdStr[instId], ringModeString[ringMode]);
                 drvHandle = &taskObj->testObj->drvObj[instId];
 
                 UdmaRingPrms_init(&ringPrms);
@@ -839,7 +881,7 @@ static int32_t udmaTestRingEventTestLoop(UdmaTestTaskObj *taskObj)
                 }
 
                 /* Check if the HW occupancy is zero */
-                if(udmaTestCompareRingHwOccDriver(ringHandle, 0U, UDMA_TEST_RING_ACC_DIRECTION_REVERSE) != UDMA_SOK)
+                if(udmaTestCompareRingHwOccDriver(ringHandle, 0U, UDMA_TEST_RING_ACC_DIRECTION_FORWARD) != UDMA_SOK)
                 {
                     GT_0trace(taskObj->traceMask, GT_ERR, " Ring not empty!!\n");
                     retVal = UDMA_EFAIL;
@@ -864,8 +906,8 @@ static int32_t udmaTestRingEventTestLoop(UdmaTestTaskObj *taskObj)
                 }
 
                 GT_2trace(taskObj->traceMask, GT_INFO1,
-                          " Testing Ring Event for NAVSS Inst: %s, Ring Mode: %s passed!!\r\n",
-                          navssString[instId], ringModeString[ringMode]);
+                          " Testing Ring Event for Inst: %s, Ring Mode: %s passed!!\r\n",
+                          instanceIdStr[instId], ringModeString[ringMode]);
             }
 
             if(UDMA_SOK != retVal)
@@ -895,7 +937,8 @@ static int32_t udmaTestRingEventTestLoop(UdmaTestTaskObj *taskObj)
 static int32_t udmaTestRingParamCheckTestLoop(UdmaTestTaskObj *taskObj)
 {
     int32_t             retVal = UDMA_SOK;
-    uint32_t            instId, ringMode;
+    uint16_t            ringNum = UDMA_RING_ANY;
+    uint32_t            instId, ringMode, checkRingMode;
     uint32_t            elemCnt = 50U, ringMemSize;
     uint32_t            heapId = UTILS_MEM_HEAP_ID_MSMC;
     Udma_DrvHandle      drvHandle;
@@ -903,7 +946,8 @@ static int32_t udmaTestRingParamCheckTestLoop(UdmaTestTaskObj *taskObj)
     struct Udma_RingObj ringObj;
     Udma_RingHandle     ringHandle = &ringObj;
     void               *ringMem = NULL;
-    char *navssString[] = {"MAIN", "MCU"};
+    Udma_RmInitPrms    *rmInitPrms;
+    char *instanceIdStr[] = {"MAIN", "MCU", "BCDMA", "PKTDMA"};
     char *ringModeString[] = {"RING", "MESSAGE"};
 
     ringMemSize = elemCnt * sizeof (uint64_t);
@@ -916,15 +960,15 @@ static int32_t udmaTestRingParamCheckTestLoop(UdmaTestTaskObj *taskObj)
 
     if(UDMA_SOK == retVal)
     {
-        for(instId = 0U; instId < UDMA_INST_ID_MAX; instId++)
+        for(instId = UDMA_INST_ID_START; instId <= UDMA_INST_ID_MAX; instId++)
         {
-            for(ringMode = TISCI_MSG_VALUE_RM_RING_MODE_RING;
-                ringMode <= TISCI_MSG_VALUE_RM_RING_MODE_MESSAGE;
+            for(ringMode = UDMA_TEST_RING_MODE_DEFAULT_START;
+                ringMode <= UDMA_TEST_RING_MODE_DEFAULT_STOP;
                 ringMode++)
             {
                 GT_2trace(taskObj->traceMask, GT_INFO1,
-                          " Testing ring params check for NAVSS Inst: %s, Ring Mode: %s...\r\n",
-                          navssString[instId], ringModeString[ringMode]);
+                          " Testing ring params check for Inst: %s, Ring Mode: %s...\r\n",
+                          instanceIdStr[instId], ringModeString[ringMode]);
                 drvHandle = &taskObj->testObj->drvObj[instId];
 
                 /* Ring memory NULL check */
@@ -933,7 +977,16 @@ static int32_t udmaTestRingParamCheckTestLoop(UdmaTestTaskObj *taskObj)
                 ringPrms.ringMemSize = ringMemSize;
                 ringPrms.mode = ringMode;
                 ringPrms.elemCnt = elemCnt;
-                retVal = Udma_ringAlloc(drvHandle, ringHandle, UDMA_RING_ANY, &ringPrms);
+                if(UDMA_INST_TYPE_NORMAL != drvHandle->instType)
+                {
+                    rmInitPrms = &drvHandle->initPrms.rmInitPrms;
+                    ringNum =  (uint16_t) (rmInitPrms->startTxCh + drvHandle->txChOffset);
+                }
+                else
+                {
+                    ringNum = UDMA_RING_ANY;
+                }
+                retVal = Udma_ringAlloc(drvHandle, ringHandle, ringNum, &ringPrms);
                 if(UDMA_SOK == retVal)
                 {
                     GT_0trace(taskObj->traceMask, GT_ERR,
@@ -947,7 +1000,16 @@ static int32_t udmaTestRingParamCheckTestLoop(UdmaTestTaskObj *taskObj)
                 ringPrms.ringMemSize = ringMemSize;
                 ringPrms.mode = ringMode;
                 ringPrms.elemCnt = elemCnt;
-                retVal = Udma_ringAlloc(drvHandle, ringHandle, UDMA_RING_ANY, &ringPrms);
+                if(UDMA_INST_TYPE_NORMAL != drvHandle->instType)
+                {
+                    rmInitPrms = &drvHandle->initPrms.rmInitPrms;
+                    ringNum =  (uint16_t) (rmInitPrms->startTxCh + drvHandle->txChOffset);
+                }
+                else
+                {
+                    ringNum = UDMA_RING_ANY;
+                }
+                retVal = Udma_ringAlloc(drvHandle, ringHandle, ringNum, &ringPrms);
                 if(UDMA_SOK == retVal)
                 {
                     GT_0trace(taskObj->traceMask, GT_ERR,
@@ -961,12 +1023,46 @@ static int32_t udmaTestRingParamCheckTestLoop(UdmaTestTaskObj *taskObj)
                 ringPrms.ringMemSize = ringMemSize;
                 ringPrms.mode = ringMode;
                 ringPrms.elemCnt = 0U;
-                retVal = Udma_ringAlloc(drvHandle, ringHandle, UDMA_RING_ANY, &ringPrms);
+                if(UDMA_INST_TYPE_NORMAL != drvHandle->instType)
+                {
+                    rmInitPrms = &drvHandle->initPrms.rmInitPrms;
+                    ringNum =  (uint16_t) (rmInitPrms->startTxCh + drvHandle->txChOffset);
+                }
+                else
+                {
+                    ringNum = UDMA_RING_ANY;
+                }
+                retVal = Udma_ringAlloc(drvHandle, ringHandle, ringNum, &ringPrms);
                 if(UDMA_SOK == retVal)
                 {
                     GT_0trace(taskObj->traceMask, GT_ERR,
                         " Ring alloc didnot fail for zero element count check!!\n");
                     break;
+                }
+
+                /* Invalid Ring Mode check */
+                if(UDMA_INST_TYPE_NORMAL != drvHandle->instType)
+                {
+                    for(checkRingMode = TISCI_MSG_VALUE_RM_RING_MODE_MESSAGE;
+                        checkRingMode <= TISCI_MSG_VALUE_RM_RING_MODE_QM;
+                        checkRingMode++)
+                    {
+                        UdmaRingPrms_init(&ringPrms);
+                        ringPrms.ringMem = ringMem;
+                        ringPrms.ringMemSize = ringMemSize;
+                        ringPrms.mode = checkRingMode;
+                        ringPrms.elemCnt = elemCnt;
+                        rmInitPrms = &drvHandle->initPrms.rmInitPrms;
+                        ringNum =  (uint16_t) (rmInitPrms->startTxCh + drvHandle->txChOffset);
+
+                        retVal = Udma_ringAlloc(drvHandle, ringHandle, ringNum, &ringPrms);
+                        if(UDMA_SOK == retVal)
+                        {
+                            GT_0trace(taskObj->traceMask, GT_ERR,
+                                " Ring alloc didnot fail for invalid Ring Mode!!\n");
+                            break;
+                        }
+                    }
                 }
 
                 /* Ring mem size check */
@@ -975,7 +1071,16 @@ static int32_t udmaTestRingParamCheckTestLoop(UdmaTestTaskObj *taskObj)
                 ringPrms.ringMemSize = ringMemSize;
                 ringPrms.mode = ringMode;
                 ringPrms.elemCnt = elemCnt + 1U;
-                retVal = Udma_ringAlloc(drvHandle, ringHandle, UDMA_RING_ANY, &ringPrms);
+                if(UDMA_INST_TYPE_NORMAL != drvHandle->instType)
+                {
+                    rmInitPrms = &drvHandle->initPrms.rmInitPrms;
+                    ringNum =  (uint16_t) (rmInitPrms->startTxCh + drvHandle->txChOffset);
+                }
+                else
+                {
+                    ringNum = UDMA_RING_ANY;
+                }
+                retVal = Udma_ringAlloc(drvHandle, ringHandle, ringNum, &ringPrms);
                 if(UDMA_SOK == retVal)
                 {
                     GT_0trace(taskObj->traceMask, GT_ERR,
@@ -983,12 +1088,39 @@ static int32_t udmaTestRingParamCheckTestLoop(UdmaTestTaskObj *taskObj)
                     break;
                 }
 
+#if((UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP) > 0)
+                /* Ring incorrect mappedRingGrp check */
+                UdmaRingPrms_init(&ringPrms);
+                ringPrms.ringMem = ringMem;
+                ringPrms.mode = ringMode;
+                ringPrms.elemCnt = elemCnt;
+                ringPrms.mappedRingGrp = UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP;
+                rmInitPrms = &drvHandle->initPrms.rmInitPrms;
+                ringPrms.mappedChNum = rmInitPrms->startMappedTxCh[0U];
+                retVal = Udma_ringAlloc(drvHandle, ringHandle, ringNum, &ringPrms);
+                if(UDMA_SOK == retVal)
+                {
+                    GT_0trace(taskObj->traceMask, GT_ERR,
+                        " Ring alloc did not fail for incorrect mappedRingGrp check!!\n");
+                    break;
+                }
+#endif
+
                 /* Ring mem size check skip with more memory - should not return error */
                 UdmaRingPrms_init(&ringPrms);
                 ringPrms.ringMem = ringMem;
                 ringPrms.mode = ringMode;
                 ringPrms.elemCnt = elemCnt + 1U;
-                retVal = Udma_ringAlloc(drvHandle, ringHandle, UDMA_RING_ANY, &ringPrms);
+                if(UDMA_INST_TYPE_NORMAL != drvHandle->instType)
+                {
+                    rmInitPrms = &drvHandle->initPrms.rmInitPrms;
+                    ringNum =  (uint16_t) (rmInitPrms->startTxCh + drvHandle->txChOffset);
+                }
+                else
+                {
+                    ringNum = UDMA_RING_ANY;
+                }
+                retVal = Udma_ringAlloc(drvHandle, ringHandle, ringNum, &ringPrms);
                 if(UDMA_SOK != retVal)
                 {
                     GT_0trace(taskObj->traceMask, GT_ERR,
@@ -1029,17 +1161,18 @@ static int32_t udmaTestRingParamCheckTestLoop(UdmaTestTaskObj *taskObj)
 static int32_t udmaTestRingAttachTestLoop(UdmaTestTaskObj *taskObj)
 {
     int32_t             retVal = UDMA_SOK;
+    uint16_t            ringNum = UDMA_RING_ANY;
     uint32_t            instId, qCnt, ringMode;
     uint32_t            elemCnt = 100U, ringMemSize;
     uint32_t            heapId = UTILS_MEM_HEAP_ID_MSMC;
-    uint16_t            ringNum;
     Udma_DrvHandle      drvHandle;
     Udma_RingPrms       ringPrms;
     struct Udma_RingObj ringObj, attachRingObj;
     Udma_RingHandle     ringHandle = &ringObj, attachRingHandle = &attachRingObj;
     void               *ringMem = NULL;
     uint64_t            ringData;
-    char *navssString[] = {"MAIN", "MCU"};
+    Udma_RmInitPrms    *rmInitPrms;
+    char *instanceIdStr[] = {"MAIN", "MCU", "BCDMA", "PKTDMA"};
     char *ringModeString[] = {"RING", "MESSAGE"};
 
     ringMemSize = elemCnt * sizeof (uint64_t);
@@ -1052,25 +1185,36 @@ static int32_t udmaTestRingAttachTestLoop(UdmaTestTaskObj *taskObj)
 
     if(UDMA_SOK == retVal)
     {
-        for(instId = 0U; instId < UDMA_INST_ID_MAX; instId++)
+        for(instId = UDMA_INST_ID_START; instId <= UDMA_INST_ID_MAX; instId++)
         {
-            for(ringMode = TISCI_MSG_VALUE_RM_RING_MODE_RING;
-                ringMode <= TISCI_MSG_VALUE_RM_RING_MODE_MESSAGE;
+            for(ringMode = UDMA_TEST_RING_MODE_DEFAULT_START;
+                ringMode <= UDMA_TEST_RING_MODE_DEFAULT_STOP;
                 ringMode++)
             {
                 GT_2trace(taskObj->traceMask, GT_INFO1,
-                          " Testing for NAVSS Inst: %s, Ring Mode: %s...\r\n",
-                          navssString[instId], ringModeString[ringMode]);
+                          " Testing for Inst: %s, Ring Mode: %s...\r\n",
+                          instanceIdStr[instId], ringModeString[ringMode]);
                 drvHandle = &taskObj->testObj->drvObj[instId];
-
+                
                 UdmaRingPrms_init(&ringPrms);
                 ringPrms.ringMem = ringMem;
                 ringPrms.ringMemSize = ringMemSize;
                 ringPrms.mode = ringMode;
                 ringPrms.elemCnt = elemCnt;
-
-                /* Allocate a free ring */
-                retVal = Udma_ringAlloc(drvHandle, ringHandle, UDMA_RING_ANY, &ringPrms);
+                if(UDMA_INST_TYPE_NORMAL != drvHandle->instType)
+                {
+                    /* Since no free/extra rings are available in BCDMA/PKTDMA(Unmapped Channels)
+                       #Udma_ringAlloc with #UDMA_RING_ANY will fail.
+                       So get the default ringNum for a channel */  
+                    rmInitPrms = &drvHandle->initPrms.rmInitPrms;
+                    ringNum =  (uint16_t) (rmInitPrms->startTxCh + drvHandle->txChOffset);                    
+                }
+                else
+                {
+                    ringNum = UDMA_RING_ANY;
+                }
+                /* Allocate ring */
+                retVal = Udma_ringAlloc(drvHandle, ringHandle, ringNum, &ringPrms);
                 if(UDMA_SOK != retVal)
                 {
                     GT_0trace(taskObj->traceMask, GT_ERR, " Ring alloc failed!!\n");
@@ -1114,7 +1258,17 @@ static int32_t udmaTestRingAttachTestLoop(UdmaTestTaskObj *taskObj)
                 for(qCnt = 0U; qCnt < elemCnt; qCnt++)
                 {
                     ringData = 0UL;
-                    retVal = Udma_ringDequeueRaw(attachRingHandle, &ringData);
+                    if(UDMA_INST_TYPE_NORMAL == drvHandle->instType)
+                    {
+                        retVal = Udma_ringDequeueRaw(attachRingHandle, &ringData);
+                    }
+                    else
+                    {
+                        /* In case of LCDMA, #Udma_ringDequeueRaw will dequeue from the
+                         * reverse direction in Dual ring. So it can't be used to dequeue the 
+                         * descriptors in the forward direction. In this casse use #Udma_ringFlushRaw */
+                        retVal = Udma_ringFlushRaw(attachRingHandle, &ringData);
+                    }
                     if(UDMA_SOK != retVal)
                     {
                         GT_0trace(taskObj->traceMask, GT_ERR, " Ring dequeue failed!!\n");
@@ -1133,7 +1287,7 @@ static int32_t udmaTestRingAttachTestLoop(UdmaTestTaskObj *taskObj)
                 }
 
                 /* Check if the HW occupancy is zero */
-                if(udmaTestCompareRingHwOccDriver(attachRingHandle, 0U, UDMA_TEST_RING_ACC_DIRECTION_REVERSE) != UDMA_SOK)
+                if(udmaTestCompareRingHwOccDriver(attachRingHandle, 0U, UDMA_TEST_RING_ACC_DIRECTION_FORWARD) != UDMA_SOK)
                 {
                     GT_0trace(taskObj->traceMask, GT_ERR, " Ring not empty!!\n");
                     retVal = UDMA_EFAIL;
@@ -1155,8 +1309,8 @@ static int32_t udmaTestRingAttachTestLoop(UdmaTestTaskObj *taskObj)
                 }
 
                 GT_2trace(taskObj->traceMask, GT_INFO1,
-                          " Testing for NAVSS Inst: %s, Ring Mode: %s passed!!\r\n",
-                          navssString[instId], ringModeString[ringMode]);
+                          " Testing for Inst: %s, Ring Mode: %s passed!!\r\n",
+                          instanceIdStr[instId], ringModeString[ringMode]);
             }
 
             if(UDMA_SOK != retVal)
@@ -1181,7 +1335,8 @@ static int32_t udmaTestRingAttachTestLoop(UdmaTestTaskObj *taskObj)
 static int32_t udmaTestRingResetTestLoop(UdmaTestTaskObj *taskObj)
 {
     int32_t             retVal = UDMA_SOK;
-    uint32_t            instId, qCnt, ringMode, ringToAlloc;
+    uint16_t            ringNum = UDMA_RING_ANY;
+    uint32_t            instId, qCnt, ringMode;
     uint32_t            elemCnt = 500U, ringMemSize;
     uint32_t            heapId = UTILS_MEM_HEAP_ID_MSMC;
     Udma_DrvHandle      drvHandle;
@@ -1190,7 +1345,8 @@ static int32_t udmaTestRingResetTestLoop(UdmaTestTaskObj *taskObj)
     Udma_RingHandle     ringHandle = &ringObj;
     void               *ringMem = NULL;
     uint64_t            ringData;
-    char *navssString[] = {"MAIN", "MCU"};
+    Udma_RmInitPrms    *rmInitPrms;
+    char *instanceIdStr[] = {"MAIN", "MCU", "BCDMA", "PKTDMA"};
     char *ringModeString[] = {"RING", "MESSAGE"};
 
     ringMemSize = elemCnt * sizeof (uint64_t);
@@ -1203,15 +1359,15 @@ static int32_t udmaTestRingResetTestLoop(UdmaTestTaskObj *taskObj)
 
     if(UDMA_SOK == retVal)
     {
-        for(instId = 0U; instId < UDMA_INST_ID_MAX; instId++)
+        for(instId = UDMA_INST_ID_START; instId <= UDMA_INST_ID_MAX; instId++)
         {
-            for(ringMode = TISCI_MSG_VALUE_RM_RING_MODE_RING;
-                ringMode <= TISCI_MSG_VALUE_RM_RING_MODE_MESSAGE;
+            for(ringMode = UDMA_TEST_RING_MODE_DEFAULT_START;
+                ringMode <= UDMA_TEST_RING_MODE_DEFAULT_STOP;
                 ringMode++)
             {
                 GT_2trace(taskObj->traceMask, GT_INFO1,
-                          " Testing for NAVSS Inst: %s, Ring Mode: %s...\r\n",
-                          navssString[instId], ringModeString[ringMode]);
+                          " Testing for Inst: %s, Ring Mode: %s...\r\n",
+                          instanceIdStr[instId], ringModeString[ringMode]);
                 drvHandle = &taskObj->testObj->drvObj[instId];
 
                 UdmaRingPrms_init(&ringPrms);
@@ -1219,11 +1375,10 @@ static int32_t udmaTestRingResetTestLoop(UdmaTestTaskObj *taskObj)
                 ringPrms.ringMemSize = ringMemSize;
                 ringPrms.mode = ringMode;
                 ringPrms.elemCnt = elemCnt;
-                /* Allocate a FQ ring - same as first UDMA memcpy channel for the core */
-                ringToAlloc = drvHandle->initPrms.rmInitPrms.startBlkCopyCh;
-
-                /* Allocate a free ring */
-                retVal = Udma_ringAlloc(drvHandle, ringHandle, ringToAlloc, &ringPrms);
+                /* Allocate a FQ ring */
+                rmInitPrms = &drvHandle->initPrms.rmInitPrms;
+                ringNum =  (uint16_t) (rmInitPrms->startTxCh + drvHandle->txChOffset);
+                retVal = Udma_ringAlloc(drvHandle, ringHandle, ringNum, &ringPrms);
                 if(UDMA_SOK != retVal)
                 {
                     GT_0trace(taskObj->traceMask, GT_ERR, " Ring alloc failed!!\n");
@@ -1261,7 +1416,7 @@ static int32_t udmaTestRingResetTestLoop(UdmaTestTaskObj *taskObj)
                     GT_0trace(taskObj->traceMask, GT_ERR, " Ring free failed!!\n");
                     break;
                 }
-                retVal = Udma_ringAlloc(drvHandle, ringHandle, ringToAlloc, &ringPrms);
+                retVal = Udma_ringAlloc(drvHandle, ringHandle, ringNum, &ringPrms);
                 if(UDMA_SOK != retVal)
                 {
                     GT_0trace(taskObj->traceMask, GT_ERR, " Ring alloc failed!!\n");
@@ -1276,7 +1431,7 @@ static int32_t udmaTestRingResetTestLoop(UdmaTestTaskObj *taskObj)
                     break;
                 }
 
-                /* Queue through proxy */
+                /* Queue the descriptors */
                 for(qCnt = 0U; qCnt < elemCnt; qCnt++)
                 {
                     ringData = ((uint64_t) qCnt | (uint64_t) 0xDEADBEEF00000000UL);
@@ -1300,11 +1455,21 @@ static int32_t udmaTestRingResetTestLoop(UdmaTestTaskObj *taskObj)
                     break;
                 }
 
-                /* Dequeue through proxy */
+                /* Dequeue the descriptors */
                 for(qCnt = 0U; qCnt < elemCnt; qCnt++)
                 {
                     ringData = 0UL;
-                    retVal = Udma_ringDequeueRaw(ringHandle, &ringData);
+                    if(UDMA_INST_TYPE_NORMAL == drvHandle->instType)
+                    {
+                        retVal = Udma_ringDequeueRaw(ringHandle, &ringData);
+                    }
+                    else
+                    {
+                        /* In case of LCDMA, #Udma_ringDequeueRaw will dequeue from the
+                         * reverse direction in Dual ring. So it can't be used to dequeue the 
+                         * descriptors in the forward direction. In this casse use #Udma_ringFlushRaw */
+                        retVal = Udma_ringFlushRaw(ringHandle, &ringData);
+                    }
                     if(UDMA_SOK != retVal)
                     {
                         GT_0trace(taskObj->traceMask, GT_ERR, " Proxy Ring dequeue failed!!\n");
@@ -1323,7 +1488,7 @@ static int32_t udmaTestRingResetTestLoop(UdmaTestTaskObj *taskObj)
                 }
 
                 /* Check if the HW occupancy is zero */
-                if(udmaTestCompareRingHwOccDriver(ringHandle, 0U, UDMA_TEST_RING_ACC_DIRECTION_REVERSE) != UDMA_SOK)
+                if(udmaTestCompareRingHwOccDriver(ringHandle, 0U, UDMA_TEST_RING_ACC_DIRECTION_FORWARD) != UDMA_SOK)
                 {
                     GT_0trace(taskObj->traceMask, GT_ERR, " Ring not empty!!\n");
                     retVal = UDMA_EFAIL;
@@ -1338,8 +1503,8 @@ static int32_t udmaTestRingResetTestLoop(UdmaTestTaskObj *taskObj)
                 }
 
                 GT_2trace(taskObj->traceMask, GT_INFO1,
-                          " Testing for NAVSS Inst: %s, Ring Mode: %s passed!!\r\n",
-                          navssString[instId], ringModeString[ringMode]);
+                          " Testing for Inst: %s, Ring Mode: %s passed!!\r\n",
+                          instanceIdStr[instId], ringModeString[ringMode]);
             }
 
             if(UDMA_SOK != retVal)
@@ -1373,7 +1538,7 @@ static int32_t udmaTestRingPrimeTestLoop(UdmaTestTaskObj *taskObj)
     Udma_RingHandle     ringHandle = &ringObj;
     void               *ringMem = NULL;
     uint64_t            ringData;
-    char *navssString[] = {"MAIN", "MCU"};
+    char *instanceIdStr[] = {"MAIN", "MCU", "BCDMA", "PKTDMA"};
     char *ringModeString[] = {"RING", "MESSAGE"};
 
     ringMemSize = elemCnt * sizeof (uint64_t);
@@ -1386,12 +1551,12 @@ static int32_t udmaTestRingPrimeTestLoop(UdmaTestTaskObj *taskObj)
 
     if(UDMA_SOK == retVal)
     {
-        for(instId = 0U; instId < UDMA_INST_ID_MAX; instId++)
+        for(instId = UDMA_INST_ID_START; instId <= UDMA_INST_ID_MAX; instId++)
         {
             ringMode = TISCI_MSG_VALUE_RM_RING_MODE_RING;
             GT_2trace(taskObj->traceMask, GT_INFO1,
-                      " Testing for NAVSS Inst: %s, Ring Mode: %s...\r\n",
-                      navssString[instId], ringModeString[ringMode]);
+                      " Testing for Inst: %s, Ring Mode: %s...\r\n",
+                      instanceIdStr[instId], ringModeString[ringMode]);
             drvHandle = &taskObj->testObj->drvObj[instId];
 
             UdmaRingPrms_init(&ringPrms);
@@ -1491,7 +1656,7 @@ static int32_t udmaTestRingPrimeTestLoop(UdmaTestTaskObj *taskObj)
             }
 
             /* Check if the HW occupancy is same as elemCnt as the queue is not committed */
-            if(udmaTestCompareRingHwOccDriver(ringHandle, elemCnt, UDMA_TEST_RING_ACC_DIRECTION_REVERSE) != UDMA_SOK)
+            if(udmaTestCompareRingHwOccDriver(ringHandle, elemCnt, UDMA_TEST_RING_ACC_DIRECTION_FORWARD) != UDMA_SOK)
             {
                 GT_0trace(taskObj->traceMask, GT_ERR, " Ring element count mismatch!!\n");
                 retVal = UDMA_EFAIL;
@@ -1502,7 +1667,7 @@ static int32_t udmaTestRingPrimeTestLoop(UdmaTestTaskObj *taskObj)
             Udma_ringSetDoorBell(ringHandle, (-1 * (int32_t)elemCnt));
 
             /* Check if the HW occupancy is zero */
-            if(udmaTestCompareRingHwOccDriver(ringHandle, 0U, UDMA_TEST_RING_ACC_DIRECTION_REVERSE) != UDMA_SOK)
+            if(udmaTestCompareRingHwOccDriver(ringHandle, 0U, UDMA_TEST_RING_ACC_DIRECTION_FORWARD) != UDMA_SOK)
             {
                 GT_0trace(taskObj->traceMask, GT_ERR, " Ring not empty!!\n");
                 retVal = UDMA_EFAIL;
@@ -1517,8 +1682,8 @@ static int32_t udmaTestRingPrimeTestLoop(UdmaTestTaskObj *taskObj)
             }
 
             GT_2trace(taskObj->traceMask, GT_INFO1,
-                      " Testing for NAVSS Inst: %s, Ring Mode: %s passed!!\r\n",
-                      navssString[instId], ringModeString[ringMode]);
+                      " Testing for Inst: %s, Ring Mode: %s passed!!\r\n",
+                      instanceIdStr[instId], ringModeString[ringMode]);
         }
     }
 
