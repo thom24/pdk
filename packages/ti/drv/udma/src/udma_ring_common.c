@@ -916,6 +916,15 @@ int32_t Udma_ringCheckParams(Udma_DrvHandle drvHandle,
             "[Error] Ring element count should not be zero!!!\n");
     }
 
+    if(UDMA_INST_TYPE_NORMAL != drvHandle->instType)
+    {
+        if(TISCI_MSG_VALUE_RM_RING_MODE_RING != ringPrms->mode)
+        {
+            retVal = UDMA_EINVALID_PARAMS;
+            Udma_printf(drvHandle, "[Error] Invalid Ring Mode for LCDMA!!!\n");
+        }
+    }
+
     if(UDMA_RING_SIZE_CHECK_SKIP != ringPrms->ringMemSize)
     {
         /* Get ring memory size */

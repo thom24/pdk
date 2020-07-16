@@ -1946,14 +1946,6 @@ static int32_t Udma_chCheckParams(Udma_DrvHandle drvHandle,
         }
 #endif
     }
-    if(UDMA_INST_TYPE_NORMAL != drvHandle->instType)
-    {
-        if(TISCI_MSG_VALUE_RM_RING_MODE_RING != chPrms->fqRingPrms.mode)
-        {
-            retVal = UDMA_EINVALID_PARAMS;
-            Udma_printf(drvHandle, "[Error] Invalid Ring Mode for LCDMA!!!\n");
-        }
-    }
 
     return (retVal);
 }

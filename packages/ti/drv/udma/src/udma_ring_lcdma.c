@@ -177,6 +177,10 @@ int32_t Udma_ringFlushRawLcdma(Udma_DrvHandle drvHandle, Udma_RingHandle ringHan
             phyDescMem);
     if(0 != cslRetVal)
     {
+        /* In case of LCDMA Rings, #CSL_lcdma_ringaccDequeue returns -1 
+         * when ring is empty (there are no more unprocessed descriptors in the ring to dequeue).
+         * At this stage, calling #CSL_lcdma_ringaccResetRing is strongly suggested as part of the procedure 
+         * for returning a ring to a known state. Refer \ref CSL_lcdma_ringaccResetRing for details. */
         CSL_lcdma_ringaccResetRing( &ringHandle->drvHandle->lcdmaRaRegs, &ringHandle->lcdmaCfg);
         retVal = UDMA_ETIMEOUT;
     }
