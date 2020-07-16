@@ -111,7 +111,8 @@ extern "C" {
 
 /** Dummy cycles for Read operation */
 #define NOR_SINGLE_READ_DUMMY_CYCLE      (0U)
-#define NOR_CMD_READ_DUMMY_CYCLE         (3U)
+#define NOR_OCTAL_SDR_CMD_READ_DUMMY_CYCLE    (3U)
+#define NOR_OCTAL_DDR_CMD_READ_DUMMY_CYCLE    (4U)
 #define NOR_OCTAL_READ_DUMMY_CYCLE       (20U)
 
 /** In Micro seconds */

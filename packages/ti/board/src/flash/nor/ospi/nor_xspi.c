@@ -185,11 +185,11 @@ static NOR_STATUS Nor_xspiEnableDDR(SPI_Handle handle)
                   (2 << 16)                         | /* 3 address bytes */
                   (1 << 15);                          /* write data enable */
         data[1] = 0x00800006;     /* Non-volatile config register address */
-        data[2] = 0x3; /* set to Octal DDR in Nonvolatile Config Reg 0x0 */
+        data[2] = 0x43; /* set to Octal DDR in Nonvolatile Config Reg 0x0 */
         SPI_control(handle, SPI_V0_CMD_ENABLE_DDR, (void *)data);
 
         /* Set opcodes */
-        dummyCycles = NOR_OCTAL_READ_DUMMY_CYCLE;
+        dummyCycles = NOR_OCTAL_READ_DUMMY_CYCLE + 1;
         rx_lines    = hwAttrs->xferLines;
         data[0]     = NOR_CMD_OCTAL_DDR_READ;
         data[1]     = NOR_CMD_OCTAL_PROG;
@@ -208,6 +208,9 @@ static NOR_STATUS Nor_xspiEnableDDR(SPI_Handle handle)
         data[4]     = 0xF9;
         data[5]     = 0x6;
         SPI_control(handle, SPI_V0_CMD_XFER_OPCODE_EXT, (void *)data);
+
+        dummyCycles = NOR_OCTAL_DDR_CMD_READ_DUMMY_CYCLE;
+        SPI_control(handle, SPI_V0_CMD_EXT_RD_DUMMY_CLKS, (void *)&dummyCycles);
     }
 
     return retVal;
@@ -262,7 +265,7 @@ static NOR_STATUS Nor_xspiEnableSDR(SPI_Handle handle)
         data[5]     = 0x6;
         SPI_control(handle, SPI_V0_CMD_XFER_OPCODE_EXT, (void *)data);
         
-        dummyCycles = NOR_CMD_READ_DUMMY_CYCLE;
+        dummyCycles = NOR_OCTAL_SDR_CMD_READ_DUMMY_CYCLE;
         SPI_control(handle, SPI_V0_CMD_EXT_RD_DUMMY_CLKS, (void *)&dummyCycles);
 
         /* Flash device requires 4-bit access for command as well in quad mode */
