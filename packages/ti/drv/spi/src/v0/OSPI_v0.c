@@ -582,18 +582,29 @@ static SPI_Handle OSPI_open_v0(SPI_Handle handle, const SPI_Params *params)
             CSL_ospiSetDevDelay((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
                                 hwAttrs->devDelays);
 
-            /* Set default baud rate divider value */
-            if (hwAttrs->phyEnable)
+            if (hwAttrs->baudRateDiv)
             {
                 CSL_ospiSetPreScaler((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
-                                     CSL_OSPI_BAUD_RATE_DIVISOR(2U));
+                                     CSL_OSPI_BAUD_RATE_DIVISOR(hwAttrs->baudRateDiv));
             }
             else
             {
-                /* Disable high speed mode when PHY is disabled */
-                CSL_ospiSetPreScaler((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
-                                     CSL_OSPI_BAUD_RATE_DIVISOR_DEFAULT);
+                /* Set default baud rate divider value */
+                if (hwAttrs->phyEnable)
+                {
+                    CSL_ospiSetPreScaler((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
+                                         CSL_OSPI_BAUD_RATE_DIVISOR(2U));
+                }
+                else
+                {
+                    /* Disable high speed mode when PHY is disabled */
+                    CSL_ospiSetPreScaler((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
+                                         CSL_OSPI_BAUD_RATE_DIVISOR_DEFAULT);
+                }
+            }
 
+            if (!hwAttrs->phyEnable)
+            {
                 /* Disable PHY mode */
                 CSL_ospiPhyEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), FALSE);
 

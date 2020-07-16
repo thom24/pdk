@@ -380,7 +380,9 @@ OSPI_v0_HwAttrs ospiInitCfg[SPI_OSPI_PER_CNT + 1U] =
         0,                                 /* rdDataCapDelay */
         (bool)true,                        /* enable DDR */
         (bool)false,                       /* enable XIP */
-        10U                                /* Chip Select Start Of Transfer delay */
+        10U,                               /* Chip Select Start Of Transfer delay */
+        0                                  /* Baudrate divider. Set to a non-zero value (2 to 32)
+                                              to override default divider settings */
     },
     {
         (uintptr_t)CSL_MCU_FSS0_OSPI1_CTRL_BASE,
@@ -416,7 +418,8 @@ OSPI_v0_HwAttrs ospiInitCfg[SPI_OSPI_PER_CNT + 1U] =
         0,
         (bool)true,
         (bool)false,
-        10U
+        10U,
+        0
     },
     {
         (uintptr_t)(0U),

@@ -236,6 +236,8 @@ typedef struct OSPI_v0_HwAttrs_s {
     bool            xipEnable;
     /*! Chip Select Start of Transfer delay in # of ref_clk cycles */
     uint32_t        csSotDelay;
+    /*! Master mode baud rate divisor value  */
+    uint32_t        baudRateDiv;
 
 } OSPI_v0_HwAttrs;
 

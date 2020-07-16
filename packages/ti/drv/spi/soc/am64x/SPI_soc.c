@@ -487,7 +487,9 @@ OSPI_v0_HwAttrs ospiInitCfg =
     0,                                 /* rdDataCapDelay */
     (bool)true,                        /* enable DDR */
     (bool)false,                       /* enable XIP */
-    10U                                /* Chip Select Start Of Transfer delay */
+    10U,                               /* Chip Select Start Of Transfer delay */
+    0                                  /* Baudrate divider. Set to a non-zero value (2 to 32)
+                                          to override default divider settings */
 };
 
 /* OSPI objects */
