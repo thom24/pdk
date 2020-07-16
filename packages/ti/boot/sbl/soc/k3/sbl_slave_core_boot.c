@@ -430,10 +430,22 @@ void SBL_SetupCoreMem(uint32_t core_id)
         case MCU1_CPU0_ID:
         case MCU2_CPU0_ID:
         case MCU3_CPU0_ID:
-            /* Ensure Power is OFF for each core before configuring */
+            if (!mcuModeConfigured)
+            {
+                SBL_log(SBL_LOG_MAX, "Switching core id %d, proc_id 0x%x to split mode... \n", core_id, sbl_slave_core_info[core_id].tisci_proc_id);
+                /* Non-SMP image used, disable lock step for the cluster */
+                SBL_ConfigMcuLockStep(SBL_DISABLE_MCU_LOCKSTEP, &(sbl_slave_core_info[core_id]));
+            }
+
+            /* Ensure Power is OFF for each core before configuring TCMs */
             /* SBL running on MCU0, don't fool around with its power */
             if (core_id != MCU1_CPU0_ID)
             {
+                if (runLockStep)
+                {
+                    SBL_log(SBL_LOG_MAX, "Sciclient_pmSetModuleState Off, DevId 0x%x... \n", sblSlaveCoreInfoPtr->tisci_dev_id + 1);
+                    Sciclient_pmSetModuleState(sblSlaveCoreInfoPtr->tisci_dev_id + 1, TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
+                }
                 SBL_log(SBL_LOG_MAX, "Sciclient_pmSetModuleState Off, DevId 0x%x... \n", sblSlaveCoreInfoPtr->tisci_dev_id);
                 Sciclient_pmSetModuleState(sblSlaveCoreInfoPtr->tisci_dev_id, TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
 
@@ -459,13 +471,6 @@ void SBL_SetupCoreMem(uint32_t core_id)
               SblErrLoop(__FILE__, __LINE__);
             }
 #endif
-
-            if (!mcuModeConfigured)
-            {
-                SBL_log(SBL_LOG_MAX, "Switching core id %d, proc_id 0x%x to split mode... \n", core_id, sbl_slave_core_info[core_id].tisci_proc_id);
-                /* Non-SMP image used, disable lock step for the cluster */
-                SBL_ConfigMcuLockStep(SBL_DISABLE_MCU_LOCKSTEP, &(sbl_slave_core_info[core_id]));
-            }
 
             SBL_log(SBL_LOG_MAX, "Calling Sciclient_procBootGetProcessorState, ProcId 0x%x... \n", sblSlaveCoreInfoPtr->tisci_proc_id);
             status = Sciclient_procBootGetProcessorState(sblSlaveCoreInfoPtr->tisci_proc_id, &cpuStatus, SCICLIENT_SERVICE_WAIT_FOREVER);
@@ -509,6 +514,12 @@ void SBL_SetupCoreMem(uint32_t core_id)
             /* SBL running on MCU0, don't fool around with its power & TCMs */
             if (core_id != MCU1_CPU0_ID)
             {
+                if (runLockStep)
+                {
+                    /* If in lock-step mode, need to bring Core 1 out of reset, before Core 0, in order to init TCMs */
+                    SBL_log(SBL_LOG_MAX, "Sciclient_pmSetModuleState On, DevId 0x%x... \n", sblSlaveCoreInfoPtr->tisci_dev_id + 1);
+                    Sciclient_pmSetModuleState(sblSlaveCoreInfoPtr->tisci_dev_id + 1, TISCI_MSG_VALUE_DEVICE_SW_STATE_ON, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
+                }
                 SBL_log(SBL_LOG_MAX, "Sciclient_pmSetModuleState On, DevId 0x%x... \n", sblSlaveCoreInfoPtr->tisci_dev_id);
                 Sciclient_pmSetModuleState(sblSlaveCoreInfoPtr->tisci_dev_id, TISCI_MSG_VALUE_DEVICE_SW_STATE_ON, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
 
