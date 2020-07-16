@@ -2899,9 +2899,13 @@ bool Test_instance(uint8_t instanceId)
     uint32_t testIteration = 1;
     bool isAnyTransferControllerErrorInterruptConnected;
     uint32_t tc;
+    EDMA3CCInitParams initParam;
+
+    EDMA3CCInitParams_init(&initParam);
+    initParam.initParamSet = TRUE;
 
     /* Initialize the edma instance to be tested */
-    EDMA_init(instanceId);
+    EDMA_init(instanceId, &initParam);
 
     /* Open the first edma Instance */
     handle = EDMA_open(instanceId, &errorCode, &instanceInfo);

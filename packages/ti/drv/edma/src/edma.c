@@ -128,6 +128,7 @@ typedef struct EDMA_Object_t_
 
     /*! Transfer controller error Isr argument storage for each tc. */
     EDMA_transferControllerErrorIsrArgInfo_t transferControllerErrorIsrArgInfo[EDMA_MAX_NUM_TC];
+
 } EDMA_Object_t;
 
 /*! @brief Config structure containing object and hardware attributes. This
@@ -139,6 +140,9 @@ typedef struct EDMA_Config_t_
 
     /*! @brief Pointer to EDMA Hardware attributes structure. */
     EDMA_hwAttrs_t const *hwAttrs;
+
+    /*! Init params for the edma instance. */
+    EDMA3CCInitParams   initParams;
 } EDMA_Config_t;
 
 #ifdef EDMA_DBG
@@ -183,7 +187,7 @@ static inline int32_t EDMA_validate_param_config(EDMA_Handle handle,
 static void EDMA_paramSetConfig_assist (uint32_t ccBaseAddr, uint16_t paramId,
                                 EDMA_paramSetConfig_t const *pSetCfg);
 
-static void EDMA_paramConfig_assist(uint32_t ccBaseAddr, uint16_t paramId,
+static void EDMA_paramConfig_assist(uint32_t ccBaseAddr, uint32_t regionId, uint16_t paramId,
     EDMA_paramSetConfig_t const *pSetCfg,
     EDMA_transferCompletionCallbackFxn_t transferCompletionCallbackFxn,
     uintptr_t transferCompletionCallbackFxnArg, EDMA_Object_t *edmaObj);
@@ -219,7 +223,7 @@ static bool EDMA_isError(uint32_t ccBaseAddr);
 static void EDMA_getErrorStatusInfo(EDMA_hwAttrs_t const *hwAttrs, uint32_t ccBaseAddr,
                                     EDMA_errorInfo_t *errorInfo);
 
-static void EDMA_clearErrors(EDMA_hwAttrs_t const *hwAttrs, uint32_t ccBaseAddr,
+static void EDMA_clearErrors(EDMA_hwAttrs_t const *hwAttrs, uint32_t ccBaseAddr, uint32_t regionId,
                              EDMA_errorInfo_t const *errorInfo);
 
 static bool EDMA_isTransferControllerError(uint32_t tcBaseAddr);
@@ -662,8 +666,10 @@ static void EDMA_transferComplete_isr (uintptr_t arg)
     full = EDMA_NUM_DMA_CHANNELS;
 
     /* scan only whose interrupts are enabled */
-    lowIntrStatus = EDMA3GetIntrStatus(ccBaseAddr) & HW_RD_REG32(ccBaseAddr + EDMA_TPCC_IER);
-    highIntrStatus = EDMA3IntrStatusHighGet(ccBaseAddr) & HW_RD_REG32(ccBaseAddr + EDMA_TPCC_IERH);
+    lowIntrStatus = EDMA3GetIntrStatusRegion(ccBaseAddr, edmaConfig->initParams.regionId) &
+                    EDMA3GetEnabledIntrRegion(ccBaseAddr, edmaConfig->initParams.regionId);
+    highIntrStatus = EDMA3IntrStatusHighGetRegion(ccBaseAddr, edmaConfig->initParams.regionId) &
+                     EDMA3GetEnabledIntrHighRegion(ccBaseAddr, edmaConfig->initParams.regionId);
     if ((lowIntrStatus != 0U) || (highIntrStatus != 0U))
     {
         /* scan low status */
@@ -672,7 +678,7 @@ static void EDMA_transferComplete_isr (uintptr_t arg)
             if ((lowIntrStatus & ((uint32_t)1 << transCompCode)) == ((uint32_t)1 << transCompCode))
             {
                 /* clear interrupt */
-                EDMA3ClrIntr(ccBaseAddr, (uint32_t)transCompCode);
+                EDMA3ClrIntrRegion(ccBaseAddr, edmaConfig->initParams.regionId, (uint32_t)transCompCode);
 
                 /* call registered call back function for the transferCompletionCode */
                 if (edmaObj->transferCompleteCallbackFxn[transCompCode] != NULL)
@@ -696,7 +702,7 @@ static void EDMA_transferComplete_isr (uintptr_t arg)
                 ((uint32_t)1 << (transCompCode - half)))
             {
                 /* clear interrupt */
-                EDMA3ClrIntr(ccBaseAddr, (uint32_t)transCompCode);
+                EDMA3ClrIntrRegion(ccBaseAddr, edmaConfig->initParams.regionId, (uint32_t)transCompCode);
 
                 /* call registered call back function for the transferCompletionCode */
                 if (edmaObj->transferCompleteCallbackFxn[transCompCode] != NULL)
@@ -725,8 +731,10 @@ static void EDMA_transferComplete_isr (uintptr_t arg)
        in this time given the pocessing of call-back functions also, so the IEVAL
        approach is preferred. For more details,
        see EDMA User Guide section "EDMA3 Interrupt Servicing" */
-    lowIntrStatus = EDMA3GetIntrStatus(ccBaseAddr) & HW_RD_REG32(ccBaseAddr + EDMA_TPCC_IER);
-    highIntrStatus = EDMA3IntrStatusHighGet(ccBaseAddr) & HW_RD_REG32(ccBaseAddr + EDMA_TPCC_IERH);
+    lowIntrStatus = EDMA3GetIntrStatusRegion(ccBaseAddr, edmaConfig->initParams.regionId) &
+                    EDMA3GetEnabledIntrRegion(ccBaseAddr, edmaConfig->initParams.regionId);
+    highIntrStatus = EDMA3IntrStatusHighGetRegion(ccBaseAddr, edmaConfig->initParams.regionId) &
+                     EDMA3GetEnabledIntrHighRegion(ccBaseAddr, edmaConfig->initParams.regionId);
     if ((lowIntrStatus != 0) || (highIntrStatus != 0))
     {
 #ifdef EDMA_DBG
@@ -884,7 +892,7 @@ static void EDMA_getErrorStatusInfo(EDMA_hwAttrs_t const *hwAttrs, uint32_t ccBa
  *  @retval
  *      None.
  */
-static void EDMA_clearErrors(EDMA_hwAttrs_t const *hwAttrs, uint32_t ccBaseAddr,
+static void EDMA_clearErrors(EDMA_hwAttrs_t const *hwAttrs, uint32_t ccBaseAddr, uint32_t regionId,
                              EDMA_errorInfo_t const *errorInfo)
 {
     uint8_t queueId;
@@ -900,7 +908,7 @@ static void EDMA_clearErrors(EDMA_hwAttrs_t const *hwAttrs, uint32_t ccBaseAddr,
     {
         if (errorInfo->isDmaChannelEventMiss[channelId] == true)
         {
-            EDMA3ClrMissEvt(ccBaseAddr, (uint32_t)channelId);
+            EDMA3ClrMissEvtRegion(ccBaseAddr, regionId, (uint32_t)channelId);
         }
     }
     /* qdma */
@@ -908,7 +916,7 @@ static void EDMA_clearErrors(EDMA_hwAttrs_t const *hwAttrs, uint32_t ccBaseAddr,
     {
         if (errorInfo->isQdmaChannelEventMiss[channelId] == true)
         {
-            EDMA3QdmaClrMissEvt(ccBaseAddr, (uint32_t)channelId);
+            EDMA3QdmaClrMissEvtRegion(ccBaseAddr, regionId, (uint32_t)channelId);
         }
     }
     /* queues */
@@ -949,7 +957,7 @@ int32_t EDMA_getErrorStatus(EDMA_Handle handle, bool *isAnyError, EDMA_errorInfo
         if (*isAnyError = EDMA_isError(ccBaseAddr))
         {
             EDMA_getErrorStatusInfo(hwAttrs, ccBaseAddr, errorInfo);
-            EDMA_clearErrors(hwAttrs, ccBaseAddr, errorInfo);
+            EDMA_clearErrors(hwAttrs, ccBaseAddr, edmaConfig->initParams.regionId, errorInfo);
         }
     }
 
@@ -996,7 +1004,7 @@ static void EDMA_error_isr (uintptr_t arg)
         (*edmaObj->errorCallbackFxn)(handle, &errorInfo);
     }
 
-    EDMA_clearErrors(hwAttrs, ccBaseAddr, &errorInfo);
+    EDMA_clearErrors(hwAttrs, ccBaseAddr, edmaConfig->initParams.regionId, &errorInfo);
 
     /* Check conditions again and set EEVAL if any detected, this procedure is
        similar to the transfer completion isr's (EEVAL similar to IEVAL) */
@@ -1377,7 +1385,7 @@ static inline int32_t EDMA_startTransfer_assist(EDMA_Handle handle, uint8_t chan
         {
             errorCode = EDMA_E_UNEXPECTED__QDMA_EVENT_MISS_DETECTED;
             /* clear previous missed events : QSECR and QEMCR */
-            EDMA3QdmaClrMissEvt(ccBaseAddr, (uint32_t)channelId);
+            EDMA3QdmaClrMissEvtRegion(ccBaseAddr, edmaConfig->initParams.regionId, (uint32_t)channelId);
         }
 
         if (errorCode == EDMA_NO_ERROR)
@@ -1406,7 +1414,7 @@ static inline int32_t EDMA_startTransfer_assist(EDMA_Handle handle, uint8_t chan
         }
     }
     if ((errorCode == EDMA_NO_ERROR) &&
-        (channelType == (uint8_t)EDMA3_CHANNEL_TYPE_QDMA))
+        (channelType == (uint8_t)EDMA3_CHANNEL_TYPE_DMA))
     {
 #ifdef EDMA_PARAM_CHECK
         /* error checking */
@@ -1435,14 +1443,14 @@ static inline int32_t EDMA_startTransfer_assist(EDMA_Handle handle, uint8_t chan
             if (errorCode != EDMA_NO_ERROR)
             {
                 /* clear missed events */
-                EDMA3ClrMissEvt(ccBaseAddr, (uint32_t)channelId);
+                EDMA3ClrMissEvtRegion(ccBaseAddr, edmaConfig->initParams.regionId, (uint32_t)channelId);
             }
         }
 
         if (errorCode == EDMA_NO_ERROR)
         {
             /* trigger the event */
-            EDMA3SetEvt(ccBaseAddr, (uint32_t)channelId);
+            EDMA3SetEvtRegion(ccBaseAddr, edmaConfig->initParams.regionId, (uint32_t)channelId);
         }
     }
 
@@ -1474,7 +1482,7 @@ int32_t EDMA_configChannel(EDMA_Handle handle, EDMA_channelConfig_t const *confi
     {
         pSetCfg = &config->paramSetConfig;
 
-        EDMA3EnableChInShadowReg(ccBaseAddr, (uint32_t)config->channelType, (uint32_t)channelId);
+        EDMA3EnableChInShadowRegRegion(ccBaseAddr, edmaConfig->initParams.regionId, (uint32_t)config->channelType, (uint32_t)channelId);
         EDMA3MapChToEvtQ(ccBaseAddr, (uint32_t)config->channelType, (uint32_t)channelId,
             (uint32_t)config->eventQueueId);
 
@@ -1506,9 +1514,9 @@ int32_t EDMA_configChannel(EDMA_Handle handle, EDMA_channelConfig_t const *confi
             }
         }
 
-        EDMA3ClrIntr(ccBaseAddr, (uint32_t)pSetCfg->transferCompletionCode);
+        EDMA3ClrIntrRegion(ccBaseAddr, edmaConfig->initParams.regionId, (uint32_t)pSetCfg->transferCompletionCode);
 
-        EDMA_paramConfig_assist(ccBaseAddr, paramId, pSetCfg, config->transferCompletionCallbackFxn,
+        EDMA_paramConfig_assist(ccBaseAddr, edmaConfig->initParams.regionId, paramId, pSetCfg, config->transferCompletionCallbackFxn,
             config->transferCompletionCallbackFxnArg, edmaObj);
 
         /* store trigger word param value for Qdma channel */
@@ -1556,10 +1564,10 @@ int32_t EDMA_enableChannel(EDMA_Handle handle, uint8_t channelId, uint8_t channe
         if (channelType == (uint8_t)EDMA3_CHANNEL_TYPE_QDMA)
         {
             /* clears QSECR and QEMCR */
-            EDMA3QdmaClrMissEvt(ccBaseAddr, (uint32_t)channelId);
+            EDMA3QdmaClrMissEvtRegion(ccBaseAddr, edmaConfig->initParams.regionId, (uint32_t)channelId);
 
             /* enable the Qdma event */
-            EDMA3EnableQdmaEvt(ccBaseAddr, (uint32_t)channelId);
+            EDMA3EnableQdmaEvtRegion(ccBaseAddr, edmaConfig->initParams.regionId, (uint32_t)channelId);
 
             /* From this point onwards, QDMA channel is armed and ready to be
             triggered by either through @ref EDMA_startTransfer API or
@@ -1568,10 +1576,10 @@ int32_t EDMA_enableChannel(EDMA_Handle handle, uint8_t channelId, uint8_t channe
         else /* config->channelType is EDMA3_CHANNEL_TYPE_DMA */
         {
             /* clear SECR & EMCR to clean any previous NULL request */
-            EDMA3ClrMissEvt(ccBaseAddr, (uint32_t)channelId);
+            EDMA3ClrMissEvtRegion(ccBaseAddr, edmaConfig->initParams.regionId, (uint32_t)channelId);
 
             /* Set EESR to enable event */
-            EDMA3EnableDmaEvt(ccBaseAddr, (uint32_t)channelId);
+            EDMA3EnableDmaEvtRegion(ccBaseAddr, edmaConfig->initParams.regionId, (uint32_t)channelId);
 
             /* From this point onwards, DMA channel is armed and ready to be
             triggered by the event happening in the SoC using
@@ -1615,10 +1623,10 @@ int32_t EDMA_disableChannel(EDMA_Handle handle, uint8_t channelId, uint8_t chann
         if (channelType == (uint8_t)EDMA3_CHANNEL_TYPE_QDMA)
         {
             /* disable the Qdma event */
-            EDMA3DisableQdmaEvt(ccBaseAddr, (uint32_t)channelId);
+            EDMA3DisableQdmaEvtRegion(ccBaseAddr, edmaConfig->initParams.regionId, (uint32_t)channelId);
 
             /* clears QSECR and QEMCR */
-            EDMA3QdmaClrMissEvt(ccBaseAddr, (uint32_t)channelId);
+            EDMA3QdmaClrMissEvtRegion(ccBaseAddr, edmaConfig->initParams.regionId, (uint32_t)channelId);
 
             /* From this point onwards, QDMA channel is armed and ready to be
             triggered by either through @ref EDMA_startTransfer API or
@@ -1627,10 +1635,10 @@ int32_t EDMA_disableChannel(EDMA_Handle handle, uint8_t channelId, uint8_t chann
         else /* config->channelType is EDMA3_CHANNEL_TYPE_DMA */
         {
             /* disable DMA event */
-            EDMA3DisableDmaEvt(ccBaseAddr, (uint32_t)channelId);
+            EDMA3DisableDmaEvtRegion(ccBaseAddr, edmaConfig->initParams.regionId, (uint32_t)channelId);
 
             /* clear SECR & EMCR to clean any previous NULL request */
-            EDMA3ClrMissEvt(ccBaseAddr, (uint32_t)channelId);
+            EDMA3ClrMissEvtRegion(ccBaseAddr, edmaConfig->initParams.regionId, (uint32_t)channelId);
 
         }
     }
@@ -1665,7 +1673,7 @@ int32_t EDMA_configParamSet(EDMA_Handle handle, uint16_t paramId,
 
     if (errorCode == EDMA_NO_ERROR)
     {
-        EDMA_paramConfig_assist(ccBaseAddr, paramId, &config->paramSetConfig,
+        EDMA_paramConfig_assist(ccBaseAddr, edmaConfig->initParams.regionId, paramId, &config->paramSetConfig,
             config->transferCompletionCallbackFxn, config->transferCompletionCallbackFxnArg,
             edmaObj);
     }
@@ -1673,7 +1681,7 @@ int32_t EDMA_configParamSet(EDMA_Handle handle, uint16_t paramId,
     return(errorCode);
 }
 
-static void EDMA_paramConfig_assist(uint32_t ccBaseAddr, uint16_t paramId,
+static void EDMA_paramConfig_assist(uint32_t ccBaseAddr, uint32_t regionId, uint16_t paramId,
     EDMA_paramSetConfig_t const *pSetCfg,
     EDMA_transferCompletionCallbackFxn_t transferCompletionCallbackFxn,
     uintptr_t transferCompletionCallbackFxnArg, EDMA_Object_t *edmaObj
@@ -1691,14 +1699,14 @@ static void EDMA_paramConfig_assist(uint32_t ccBaseAddr, uint16_t paramId,
             transferCompletionCallbackFxnArg;
 
         /* enable interrupt */
-        EDMA3EnableEvtIntr(ccBaseAddr, (uint32_t)pSetCfg->transferCompletionCode);
+        EDMA3EnableEvtIntrRegion(ccBaseAddr, regionId, (uint32_t)pSetCfg->transferCompletionCode);
     }
     else
     {
         /* disable interrupt, this is important for polled mode transfers we don't
            want interrupt to trigger (there is an assert in the interrupt to capture
            this situation) */
-        EDMA3DisableEvtIntr(ccBaseAddr, (uint32_t)pSetCfg->transferCompletionCode);
+        EDMA3DisableEvtIntrRegion(ccBaseAddr, regionId, (uint32_t)pSetCfg->transferCompletionCode);
 
         edmaObj->transferCompleteCallbackFxn[pSetCfg->transferCompletionCode] =
             NULL;
@@ -1856,19 +1864,19 @@ int32_t EDMA_isTransferComplete(EDMA_Handle handle, uint8_t transferCompletionCo
 
         if (transferCompletionCode < 32U)
         {
-            *isTransferComplete = (bool)((EDMA3GetIntrStatus(ccBaseAddr) &
+            *isTransferComplete = (bool)((EDMA3GetIntrStatusRegion(ccBaseAddr, edmaConfig->initParams.regionId) &
                                     ((uint32_t)1 << transferCompletionCode)) != 0U);
         }
         else
         {
-            *isTransferComplete = (bool)((EDMA3IntrStatusHighGet(ccBaseAddr) &
+            *isTransferComplete = (bool)((EDMA3IntrStatusHighGetRegion(ccBaseAddr, edmaConfig->initParams.regionId) &
                                     ((uint32_t)1 << (transferCompletionCode-32U))) != 0U);
         }
 
         /* if transfer is complete, clear IPR(H) bit to allow new transfer */
         if (*isTransferComplete == true)
         {
-            EDMA3ClrIntr(ccBaseAddr, (uint32_t)transferCompletionCode);
+            EDMA3ClrIntrRegion(ccBaseAddr, edmaConfig->initParams.regionId, (uint32_t)transferCompletionCode);
         }
     }
 
@@ -2049,13 +2057,10 @@ uint8_t EDMA_getNumInstances(void)
     return((uint8_t)EDMA_NUM_CC);
 }
 
-int32_t EDMA_init(uint8_t instanceId)
+int32_t EDMA_init(uint8_t instanceId, const EDMA3CCInitParams *initParam)
 {
     uint32_t ccBaseAddr, tcBaseAddr, errClrRegAddr;
-    uint8_t transCompCode, tc;
-    uint16_t paramId;
-    uint8_t channelId;
-    EDMA3CCPaRAMEntry paramSet;
+    uint8_t tc;
     int32_t errorCode = EDMA_NO_ERROR;
     const EDMA_hwAttrs_t *hwAttrs = NULL;
 
@@ -2081,38 +2086,12 @@ int32_t EDMA_init(uint8_t instanceId)
 
     if (errorCode == EDMA_NO_ERROR)
     {
-        /* h/w reset values of param set */
-        memset(&paramSet, 0, sizeof(paramSet));
-
     #ifdef EDMA_DBG
         memset(&edmaDbg, 0, sizeof(edmaDbg));
     #endif
 
-        /* All AR devices have no-region, although internally regionId variable
-        is initialized to 0, intentionally indicate this through API */
-        EDMAsetRegion(0);
-
         ccBaseAddr = hwAttrs->CCbaseAddress;
-        EDMA3Init(ccBaseAddr, (uint32_t)0);
-        /* do things now that EDMA3Init is (unfortunately not doing) */
-        /* disable DMA events */
-        for (channelId = 0; channelId < EDMA_NUM_DMA_CHANNELS; channelId++)
-        {
-            EDMA3DisableDmaEvt(ccBaseAddr, (uint32_t)channelId);
-            EDMA3ClrEvt(ccBaseAddr, (uint32_t)channelId);
-            EDMA3ClrMissEvt(ccBaseAddr, (uint32_t)channelId);
-        }
-        /* disable and clear event interrupts */
-        for (transCompCode = 0; transCompCode < EDMA_NUM_TCC; transCompCode++)
-        {
-            EDMA3DisableEvtIntr(ccBaseAddr, (uint32_t)transCompCode);
-            EDMA3ClrIntr(ccBaseAddr, (uint32_t)transCompCode);
-        }
-        for (channelId = 0; channelId < EDMA_NUM_QDMA_CHANNELS; channelId++)
-        {
-            EDMA3DisableQdmaEvt(ccBaseAddr, (uint32_t)channelId);
-            EDMA3QdmaClrMissEvt(ccBaseAddr, (uint32_t)channelId);
-        }
+        errorCode = EDMA3Initialize(ccBaseAddr, initParam);
         /* clear tansfer controller errors */
         for (tc = 0; tc < hwAttrs->numEventQueues; tc++)
         {
@@ -2122,12 +2101,11 @@ int32_t EDMA_init(uint8_t instanceId)
             HW_WR_FIELD32(errClrRegAddr, EDMA_TC_ERRCLR_MMRAERR, 1);
             HW_WR_FIELD32(errClrRegAddr, EDMA_TC_ERRCLR_BUSERR, 1);
         }
-        /* cleanup Params, note h/w reset state is all 0s, must be done after
-        disabling/clearning channel events (in particular QDMA) */
-        for (paramId = 0; paramId < hwAttrs->numParamSets; paramId++)
-        {
-            EDMA3SetPaRAM(ccBaseAddr, (uint32_t)paramId, &paramSet);
-        }
+    }
+    if (errorCode == EDMA_NO_ERROR)
+    {
+        /* Copy the init params in driver object. */
+        memcpy(&(EDMA_config[instanceId].initParams), initParam, sizeof(EDMA3CCInitParams));
     }
 
     return(errorCode);

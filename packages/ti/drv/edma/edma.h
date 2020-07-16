@@ -1426,12 +1426,21 @@ extern uint8_t EDMA_getNumInstances(void);
 *
 *  @param[in]  instanceId
 *      Id of the instance to be initialized.
+*  @param[in]  initParam
+*      initialization parameter.
+*      for default initialization use EDMA3CCInitParams_init.
+*      Note: default parameter initialization makes all resources as owned.
+*      1. For devices like TPR12 where EDMA instance is not shared between cores,
+*      Application is expected to pass the default parameter itself.
+*      2. Currently no error checking is done in other APIs for owned resources.
+*      Error checking will be introduced in later releases.
+*
 *  @retval
 *      Success     - @ref EDMA_NO_ERROR
 *  @retval
 *      Error       - one of @ref EDMA_ERROR_CODES
 */
-extern int32_t EDMA_init(uint8_t instanceId);
+extern int32_t EDMA_init(uint8_t instanceId, const EDMA3CCInitParams *initParam);
 
 /**
 *  @b Description
