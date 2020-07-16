@@ -345,11 +345,8 @@ void    osalArch_TimestampInit(void)
 void osalArch_TimestampGet64(TimeStamp_Struct *tStamp)
 {
     uint32_t    lo, ovsrStatus;
-    uintptr_t   key;
-
     if (tStamp !=  NULL_PTR)
     {
-        key        = HwiP_disable();
         /* Make sure init is done, if not done already */
         osalArch_TimestampInit();
         lo = CSL_armR5PmuReadCntr(CSL_ARM_R5_PMU_CYCLE_COUNTER_NUM);
@@ -365,8 +362,6 @@ void osalArch_TimestampGet64(TimeStamp_Struct *tStamp)
         gTimeStamp.lo      = lo;
         tStamp->lo         = lo;
         tStamp->hi         = gTimeStamp.hi;
-        /* restore */
-        HwiP_restore(key);
     }
     /* return time in micro seconds */
     return;
@@ -376,10 +371,6 @@ void osalArch_TimestampGet64(TimeStamp_Struct *tStamp)
 static void osalArch_TimestampCcntAutoRefresh(uintptr_t arg)
 {
     uint32_t    ovsrStatus;
-    uintptr_t   key;
-
-    key        = HwiP_disable();
-
     ovsrStatus = osal_TimestampProvider_getOverflowCCNT();
 
     if (ovsrStatus != OSAL_ARCH_UTIL_ZERO)
@@ -387,10 +378,6 @@ static void osalArch_TimestampCcntAutoRefresh(uintptr_t arg)
         gTimeStamp.lo = CSL_armR5PmuReadCntr(CSL_ARM_R5_PMU_CYCLE_COUNTER_NUM);
         gTimeStamp.hi++;
     }
-
-    /* restore */
-    HwiP_restore(key);
-
     /* return time in micro seconds */
     return;
 }
