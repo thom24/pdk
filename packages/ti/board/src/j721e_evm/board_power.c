@@ -131,7 +131,7 @@ Board_STATUS Board_pmVDDCoreVoltageCfg(void)
 /**
  *  \brief    Function to configure SD card voltage.
  *
- *  \param vsel [IN] SD voltage selection. 0 for 3.3v, 1 for 1.8v
+ *  \param vsel [IN] SD voltage selection. 0 for 1.8v, 1 for 3.3v
  *
  *  \return   BOARD_SOK in case of success or appropriate error code
  *
@@ -148,14 +148,7 @@ Board_STATUS Board_pmSdVoltageCtrl(uint8_t vsel)
     if(Board_detectBoard(BOARD_ID_SOM) == TRUE)
     {
         leoPMIC = 1;
-        if(vsel == 0)
-        {
-            Board_sdVoltageCtrlGpioCfg(1);
-        }
-        else
-        {
-            Board_sdVoltageCtrlGpioCfg(0);
-        }
+        Board_sdVoltageCtrlGpioCfg(vsel);
     }
     else
     {
@@ -167,7 +160,7 @@ Board_STATUS Board_pmSdVoltageCtrl(uint8_t vsel)
             goto voltage_switch_exit;
         }
 
-        if(vsel == 0)
+        if(vsel == 1)
         {
             voltage = BOARD_PMIC_LDO1_VSEL_3V3;
         }

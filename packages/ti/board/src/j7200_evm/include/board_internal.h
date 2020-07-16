@@ -388,7 +388,7 @@ Board_STATUS Board_pmVDDCoreVoltageCfg(void);
 /**
  *  \brief    Function to configure SD card voltage.
  *
- *  \param vsel [IN] SD voltage selection. 0 for 3.3v, 1 for 1.8v
+ *  \param vsel [IN] SD voltage selection. 0 for 1.8v, 1 for 3.3v
  *
  *  \return   BOARD_SOK in case of success or appropriate error code
  *

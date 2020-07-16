@@ -86,89 +86,14 @@ static void Board_sdVoltageCtrlGpioCfg(uint8_t gpioValue)
 /**
  *  \brief    Function to configure SD card voltage.
  *
- *  \param vsel [IN] SD voltage selection. 0 for 3.3v, 1 for 1.8v
+ *  \param vsel [IN] SD voltage selection. 0 for 1.8v, 1 for 3.3v
  *
  *  \return   BOARD_SOK in case of success or appropriate error code
  *
  */
 Board_STATUS Board_pmSdVoltageCtrl(uint8_t vsel)
 {
-    I2C_Handle handle = NULL;
-	Board_STATUS retVal = -1;
-    uint8_t voltage;
-    uint8_t regData;
-    uint8_t pmicI2C = 0;
+    Board_sdVoltageCtrlGpioCfg(vsel);
 
-    /* Detecting SoM board */
-    if(Board_detectBoard(BOARD_ID_SOM) == TRUE)
-    {
-        if(vsel == 0)
-        {
-            Board_sdVoltageCtrlGpioCfg(1);
-        }
-        else
-        {
-            Board_sdVoltageCtrlGpioCfg(0);
-        }
-    }
-    else
-    {
-        pmicI2C = 1;
-        handle = Board_getI2CHandle(BOARD_SOC_DOMAIN_WKUP,
-                                    BOARD_PMIC_I2C_INSTANCE);
-        if(handle == NULL)
-        {
-            retVal = BOARD_I2C_OPEN_FAIL;
-            goto voltage_switch_exit;
-        }
-
-        if(vsel == 0)
-        {
-            voltage = BOARD_PMIC_LDO1_VSEL_3V3;
-        }
-        else
-        {
-            voltage = BOARD_PMIC_LDO1_VSEL_1V8;
-        }
-
-        /* Write voltage */
-        retVal = Board_i2c8BitRegWr(handle,
-                                    BOARD_PMIC_I2C_SLAVE_ADDR,
-                                    BOARD_PMIC_LDO1_VOLTAGE_REG,
-                                    &voltage,
-                                    1U,
-                                    I2C_WAIT_FOREVER);
-        if(retVal != 0)
-        {
-            retVal = BOARD_I2C_TRANSFER_FAIL;
-            goto voltage_switch_exit;
-        }
-
-        BOARD_delay(10000);
-
-        /* Enable LDO */
-        regData = 0x1;
-        retVal = Board_i2c8BitRegWr(handle,
-                                    BOARD_PMIC_I2C_SLAVE_ADDR,
-                                    BOARD_PMIC_LDO1_CTRL_REG,
-                                    &regData,
-                                    1U,
-                                    I2C_WAIT_FOREVER);
-        if(retVal != 0)
-        {
-        retVal = BOARD_I2C_TRANSFER_FAIL;
-        goto voltage_switch_exit;
-        }
-    }
-    /* Wait for some time to ensure voltage ramp is complete */
-    BOARD_delay(100000);
-    retVal = BOARD_SOK; /* Success */
-
-voltage_switch_exit:
-    if(pmicI2C == 0)
-    {
-        Board_i2cDeInit();
-    }
-
-    return retVal;
+    return BOARD_SOK;
 }

@@ -402,11 +402,11 @@ MMCSD_Error Board_mmc_voltageSwitchFxn(uint32_t instance,
 
     if(switchVoltage == MMCSD_BUS_VOLTAGE_1_8V)
     {
-       ret = Board_pmSdVoltageCtrl(1);
+       ret = Board_pmSdVoltageCtrl(0);
     }
     else if(switchVoltage == MMCSD_BUS_VOLTAGE_3_3V)
     {
-       ret = Board_pmSdVoltageCtrl(0);
+       ret = Board_pmSdVoltageCtrl(1);
 	}
 
     if(ret == BOARD_SOK)

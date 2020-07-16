@@ -56,13 +56,6 @@ extern "C" {
 #include <stdio.h>
 #include <stdbool.h>
 
-#define BOARD_PMIC_I2C_SLAVE_ADDR          (0x4CU)
-#define BOARD_PMIC_I2C_INSTANCE            (0)
-#define BOARD_PMIC_LDO1_CTRL_REG           (0x23U)
-#define BOARD_PMIC_LDO1_VOLTAGE_REG        (0x1DU)
-#define BOARD_PMIC_LDO1_VSEL_3V3           (0x3A << 1)
-#define BOARD_PMIC_LDO1_VSEL_1V8           (0x1C << 1)
-
 /* GPIO port and pin numbers for SDIO 1V8 enable */
 #define BOARD_SDIO_1V8_EN_PIN_NUM          (55U) //GPIO0_55 - SEL_SDIO_3V3_1V8n
 
