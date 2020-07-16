@@ -10,7 +10,7 @@ ifeq ($(SOC),$(filter $(SOC), tpr12))
 XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
 # Append the NMI exception handler for DSS
 ifeq ($(CORE),$(filter $(CORE), c66xdsp_1))
-  XDC_CFG_FILE_UPDATE_$(CORE) = ./$(SOC)/dss_nmi_exception.xs
+  XDC_CFG_UPDATE_$(CORE) = ./$(SOC)/dss_nmi_exception.xs
   PACKAGE_SRCS_COMMON += ./$(SOC)
 endif
 endif
