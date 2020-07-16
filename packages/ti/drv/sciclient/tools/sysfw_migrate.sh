@@ -185,7 +185,7 @@ if [ "$SKIP_BUILD" != "YES" ]; then
     make -j -s sciclient_boardcfg BOARD=j7200_evm BUILD_HS=yes
     make -j -s sciclient_ccs_init_clean BOARD=j7200_evm
     make -j -s sciclient_ccs_init BOARD=j7200_evm
-    $COPY $ROOTDIR/ti/binary/sciclient_ccs_init/bin/am64x/sciclient_ccs_init_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j7200/
+    $COPY $ROOTDIR/ti/binary/sciclient_ccs_init/bin/j7200/sciclient_ccs_init_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j7200/
 
     cd -
 fi
