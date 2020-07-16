@@ -49,8 +49,6 @@
 extern "C" {
 #endif
 
-#define CPSW2G_PORTNUM                  (5U)
-
 #define CPSW9G_RMII_PORTNUM             (7U)
 #define CPSW9G_SGMII_PORTNUM            (1U)
 
@@ -210,7 +208,7 @@ Board_STATUS Board_ethConfigIcss(void);
  *
  * \return  BOARD_SOK in case of success or appropriate error code
  */
-Board_STATUS Board_cpsw2gMacModeConfig(uint32_t portNum, uint8_t mode);
+Board_STATUS Board_cpsw2gMacModeConfig(uint8_t mode);
 
 /**
  * \brief  Enable/Disable COMA_MODE for ENET EXP boards PHY

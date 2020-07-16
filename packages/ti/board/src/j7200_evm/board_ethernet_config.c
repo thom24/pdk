@@ -519,7 +519,7 @@ Board_STATUS Board_cpsw5gEthConfig(uint32_t portNum, uint8_t mode)
  *
  * \return  BOARD_SOK in case of success or appropriate error code
  */
-Board_STATUS Board_cpsw2gMacModeConfig(uint32_t portNum, uint8_t mode)
+Board_STATUS Board_cpsw2gMacModeConfig(uint8_t mode)
 {
     uint32_t status;
     uintptr_t ethModeCtrl;
@@ -557,7 +557,7 @@ Board_STATUS Board_ethConfigCpsw2g(void)
     Board_unlockMMR();
 
     /* Configures the MCU Ethernet */
-    status = Board_cpsw2gMacModeConfig(CPSW2G_PORTNUM, RGMII);
+    status = Board_cpsw2gMacModeConfig(RGMII);
     if(status != BOARD_SOK)
     {
         return BOARD_FAIL;
@@ -581,20 +581,13 @@ Board_STATUS Board_ethConfigCpsw5g(void)
     /* Configure the CPSW5G RGMII ports. One port used as RGMII and three ports for SGMII */
     for(portNum = 0; portNum < BOARD_CPSW_PORT_MAX; portNum++)
     {
-        if (CPSW5G_RGMII_PORTNUM == portNum)
+        if (CPSW5G_QGMII_PORTNUM == portNum)
         {
-            status = Board_cpsw5gEthConfig(portNum, RGMII);
+            status = Board_cpsw5gEthConfig(portNum, QSGMII);
         }
         else
         {
-            if (CPSW5G_QGMII_PORTNUM == portNum)
-            {
-                status = Board_cpsw5gEthConfig(portNum, QSGMII);
-            }
-            else
-            {
-                status = Board_cpsw5gEthConfig(portNum, QSGMII_SUB);
-            }
+            status = Board_cpsw5gEthConfig(portNum, QSGMII_SUB);
         }
 
         if(status != BOARD_SOK)

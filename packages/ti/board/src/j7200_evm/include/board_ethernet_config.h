@@ -49,8 +49,6 @@
 extern "C" {
 #endif
 
-#define CPSW2G_PORTNUM                  (5U)
-
 #define CPSW5G_SGMII_PORTNUM            (0U)
 #define CPSW5G_QGMII_PORTNUM            (0U)
 #define CPSW5G_RGMII_PORTNUM            (1U)
@@ -184,7 +182,6 @@ Board_STATUS Board_cpsw5gEthConfig(uint32_t portNum, uint8_t mode);
 /**
  * \brief  Configures the CPSW2G Subsytem for RGMII mode
  *
- * \param  portNum [IN]    EMAC port number
  * \param  mode    [IN]    Mode selection for the specified port number
  *                         0x0 - GMII/MII
  *                         0x1 - RMII
@@ -193,7 +190,7 @@ Board_STATUS Board_cpsw5gEthConfig(uint32_t portNum, uint8_t mode);
  *
  * \return  BOARD_SOK in case of success or appropriate error code
  */
-Board_STATUS Board_cpsw2gMacModeConfig(uint32_t portNum, uint8_t mode);
+Board_STATUS Board_cpsw2gMacModeConfig(uint8_t mode);
 
 /**
  * \brief  Board specific configurations for CPSW2G Ethernet ports

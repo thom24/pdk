@@ -636,7 +636,6 @@ static Board_STATUS Board_icssEthConfig(uint32_t portNum, uint8_t mode)
 /**
  * \brief  Configures the CPSW2G Subsytem for RGMII mode
  *
- * \param  portNum [IN]    EMAC port number
  * \param  mode    [IN]    Mode selection for the specified port number
  *                         00 - GMII
  *                         01 - RMII
@@ -645,7 +644,7 @@ static Board_STATUS Board_icssEthConfig(uint32_t portNum, uint8_t mode)
  *
  * \return  BOARD_SOK in case of success or appropriate error code
  */
-Board_STATUS Board_cpsw2gMacModeConfig(uint32_t portNum, uint8_t mode)
+Board_STATUS Board_cpsw2gMacModeConfig(uint8_t mode)
 {
     uint32_t status;
     uintptr_t ethModeCtrl;
@@ -683,7 +682,7 @@ Board_STATUS Board_ethConfigCpsw2g(void)
     Board_unlockMMR();
 
     /* Configures the MCU Ethernet */
-    status = Board_cpsw2gMacModeConfig(CPSW2G_PORTNUM, RGMII);
+    status = Board_cpsw2gMacModeConfig(RGMII);
     if(status != BOARD_SOK)
     {
         return BOARD_FAIL;
