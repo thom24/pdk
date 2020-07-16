@@ -204,6 +204,19 @@ OsalInterruptRetCode_e Osal_RegisterInterrupt(OsalRegisterIntrParams_t *interrup
   return ret ;
 }
 /*
+ * Purpose:     Registers the interrupt for the event with the params provided
+ * Description: Registers the event with the event combiner/Interrupt Vector.
+ *
+ * Returns:     The Hwi Handle and the return codes defined in OsalInterruptRetCode_e
+ */
+OsalInterruptRetCode_e Osal_RegisterInterruptDirect(OsalRegisterIntrParams_t *interruptRegParams,
+                                                    HwiP_DirectFxn isrFxn, HwiP_Handle *hwiPHandlePtr)
+{
+    OsalInterruptRetCode_e     ret=OSAL_INT_UNSUPPORTED;
+    *hwiPHandlePtr=NULL_PTR;
+    return ret;
+}
+/*
  * Purpose:     Deletes/Unregisters an interrupt
  * Description: Deletes/Unregisters an interrupt associated with an event number(0-127).
  *

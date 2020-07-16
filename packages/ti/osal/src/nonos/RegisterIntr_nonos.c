@@ -190,6 +190,69 @@ OsalInterruptRetCode_e Osal_RegisterInterrupt(OsalRegisterIntrParams_t *interrup
 }
 
 /*
+ * Purpose:     Registers the interrupt for the event with the params provided
+ * Description: Registers the event with the event combiner/Interrupt Vector.
+ *
+ * Returns:     The Hwi Handle and the return codes defined in OsalInterruptRetCode_e
+ */
+OsalInterruptRetCode_e Osal_RegisterInterruptDirect(OsalRegisterIntrParams_t *interruptRegParams,
+                                                    HwiP_DirectFxn isrFxn, HwiP_Handle *hwiPHandlePtr)
+{
+
+    OsalInterruptRetCode_e     ret=OSAL_INT_SUCCESS;
+    HwiP_Handle                hwiPHandle=NULL_PTR;
+    HwiP_Params                 hwiInputParams;
+
+    /* Program the corepac interrupt */
+    if( (isrFxn == (void (*)(void)) NULL_PTR) ||
+        (interruptRegParams->corepacConfig.corepacEventNum<0)) {
+        ret=OSAL_INT_ERR_INVALID_PARAMS;
+    }
+
+    HwiP_Params_init(&hwiInputParams);
+
+    hwiInputParams.name = interruptRegParams->corepacConfig.name;
+    hwiInputParams.arg  = (uintptr_t)interruptRegParams->corepacConfig.arg;
+    hwiInputParams.priority = interruptRegParams->corepacConfig.priority;
+    hwiInputParams.evtId = (uint32_t)interruptRegParams->corepacConfig.corepacEventNum;
+#if defined (__ARM_ARCH_7A__) || defined (__aarch64__) || defined (__TI_ARM_V7R4__)
+    hwiInputParams.triggerSensitivity = interruptRegParams->corepacConfig.triggerSensitivity;
+#endif
+
+#ifdef _TMS320C6X
+    ret = OSAL_INT_UNSUPPORTED;
+#else
+
+#if (defined (__ARM_ARCH_7A__) || defined (__aarch64__)) && !defined (SOC_AM437x) &&  !defined(SOC_AM335x)
+    /* Initialize GIC if not done already */
+    Osal_HwAttrs hwAttrs;
+    (void)Osal_getHwAttrs(&hwAttrs);
+    if(hwAttrs.hwAccessType==OSAL_HWACCESS_UNRESTRICTED)
+    {
+        /* Do GIC init only in the case of unrestricted hw access */
+        OsalArch_gicInit();
+    }
+#if defined(SOC_K2G) || defined (SOC_K2L) || defined (SOC_K2H) || defined (SOC_K2K) || defined (SOC_K2E)
+    /* Keystone parts don't need subtract by 32 for ARM GIC ID */
+#else
+    /* Subtract 32 as the IRQ handler for A15 subtracts 32, Keystone handler does not do it */
+#if !defined(__aarch64__)
+    interruptRegParams->corepacConfig.intVecNum -= 32;
+#endif
+#endif
+#endif
+
+    hwiPHandle =  HwiP_createDirect(interruptRegParams->corepacConfig.intVecNum, isrFxn, &hwiInputParams);
+    if(hwiPHandle ==NULL_PTR) {
+        ret=OSAL_INT_ERR_HWICREATE;
+    }
+#endif
+
+    *hwiPHandlePtr=hwiPHandle;
+    return ret ;
+}
+
+/*
  * Purpose:     Deletes/Unregisters an interrupt
  * Description: Deletes/Unregisters an interrupt associated with an event number(0-127).
  *

@@ -123,6 +123,12 @@ typedef enum
 typedef void (*HwiP_Fxn)(uintptr_t arg);
 
 /*!
+ *  @brief  Prototype for the entry function for a hardware interrupt
+ *          registered using HwiP_createDirect
+ */
+typedef void (*HwiP_DirectFxn)(void);
+
+/*!
  *  @brief    Basic HwiP Parameters
  *
  *  Structure that contains the parameters passed into ::HwiP_create
@@ -171,6 +177,20 @@ extern void HwiP_clearInterrupt(int32_t interruptNum);
  */
 extern HwiP_Handle HwiP_create(int32_t interruptNum, HwiP_Fxn hwiFxn,
                                const HwiP_Params *hwipParams);
+
+/*!
+ *  @brief  Function to create an interrupt using VIM direct registration.
+ *
+ *  @param  interruptNum Interrupt Vector Id
+ *
+ *  @param  hwiFxn entry function of the hardware interrupt
+ *
+ *  @param  hwipParams    Pointer to the instance configuration parameters. NULL
+ *                    denotes to use the default parameters. The HwiP default
+ *                    parameters are noted in ::HwiP_Params_init.
+ */
+extern HwiP_Handle HwiP_createDirect(int32_t interruptNum, HwiP_DirectFxn hwiFxn,
+                                     const HwiP_Params *hwipParams);
 
 /*!
  *  @brief  Function to delete an interrupt on CortexM devices

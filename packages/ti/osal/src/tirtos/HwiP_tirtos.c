@@ -270,6 +270,19 @@ HwiP_Handle HwiP_create(int32_t interruptNum, HwiP_Fxn hwiFxn,
 }
 
 /*
+ *  ======== HwiP_createDirect ========
+ */
+HwiP_Handle HwiP_createDirect(int32_t interruptNum, HwiP_DirectFxn hwiFxn,
+                              const HwiP_Params *params)
+{
+    HwiP_Handle handle;
+    handle = NULL_PTR;
+
+    /* Not supported */
+    return (handle);
+}
+
+/*
  *  ======== HwiP_delete ========
  */
 HwiP_Status HwiP_delete(HwiP_Handle handle)

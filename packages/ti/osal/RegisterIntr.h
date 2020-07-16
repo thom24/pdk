@@ -115,6 +115,8 @@ typedef int32_t OsalInterruptRetCode_e;
 /* Error while registering the event combiner to the defaults */
 #define  OSAL_INT_ERR_DELETE                    ((int32_t) -4)
 /* Failed to delete a Interrupt handle. */
+#define  OSAL_INT_UNSUPPORTED                   ((int32_t) -5)
+/* Unsupported function */
 /* @} */
 
 void Osal_RegisterInterrupt_initParams(OsalRegisterIntrParams_t *interruptRegParams);
@@ -123,6 +125,12 @@ void Osal_RegisterInterrupt_initParams(OsalRegisterIntrParams_t *interruptRegPar
  *
  */
 OsalInterruptRetCode_e Osal_RegisterInterrupt(OsalRegisterIntrParams_t *interruptRegParams,HwiP_Handle *hwiPHandlePtr);
+/*!
+ *  @brief  Function to register direct interrupt with parameters provided
+ *
+ */
+OsalInterruptRetCode_e Osal_RegisterInterruptDirect(OsalRegisterIntrParams_t *interruptRegParams,
+                                                    HwiP_DirectFxn isrFxn, HwiP_Handle *hwiPHandlePtr);
 /*!
  *  @brief  Function to register interrupt with parameters provided
  *

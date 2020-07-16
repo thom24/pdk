@@ -244,6 +244,15 @@ void OsalArch_oneTimeInit(void);
 HwiP_Handle OsalArch_HwiPCreate(int32_t interruptNum, HwiP_Fxn hwiFxn,
                           const HwiP_Params *params);
 
+#if defined (BUILD_MCU)
+/*
+ * Below function registers the direct interrupt for a given ISR. Note
+ * that this is supported only for R5F cores on select SoCs.
+ */
+HwiP_Handle OsalArch_HwiPCreateDirect(int32_t interruptNum, HwiP_DirectFxn hwiFxn,
+                                      const HwiP_Params *params);
+#endif
+
 /* Below function deletes/frees up the HwiP handle created */
 HwiP_Status OsalArch_HwiPDelete(HwiP_Handle handle);
 

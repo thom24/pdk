@@ -71,6 +71,31 @@ HwiP_Handle HwiP_create(int32_t interruptNum, HwiP_Fxn hwiFxn,
 }
 
 /*
+ *  ======== HwiP_createDirect ========
+ */
+HwiP_Handle HwiP_createDirect(int32_t interruptNum, HwiP_DirectFxn hwiFxn,
+                              const HwiP_Params *params)
+{
+    HwiP_Handle handle;
+#if defined (BUILD_MCU)
+    handle = OsalArch_HwiPCreateDirect(interruptNum, hwiFxn, params);
+#else
+    handle = NULL_PTR;
+#endif
+
+    /* Update statistics for successful allocation */
+    if (handle != NULL_PTR)
+    {
+        gOsalHwiAllocCnt++;
+        if (gOsalHwiAllocCnt > gOsalHwiPeak)
+        {
+            gOsalHwiPeak = gOsalHwiAllocCnt;
+        }
+    }
+    return (handle);
+}
+
+/*
  *  ======== HwiP_delete ========
  */
 HwiP_Status HwiP_delete(HwiP_Handle handle)
