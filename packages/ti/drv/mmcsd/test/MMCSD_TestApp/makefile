@@ -13,7 +13,7 @@ ifeq ($(SMP), enable)
 APP_NAME = MMCSD_SMP_TestApp
 # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
 LOCAL_APP_NAME = MMCSD_$(BOARD)_$(CORE)_SMP_TestApp
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
     LOCAL_APP_NAME =  MMCSD_SMP_TestApp_$(CORE)
 endif
 else
@@ -21,7 +21,7 @@ else
 APP_NAME = MMCSD_TestApp
 # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
 LOCAL_APP_NAME = MMCSD_$(BOARD)_$(CORE)TestApp
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
     LOCAL_APP_NAME =  MMCSD_TestApp_$(CORE)
 endif
 endif

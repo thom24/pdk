@@ -62,7 +62,7 @@ extern "C" {
 #include <ti/drv/mmcsd/soc/MMCSD_v1.h>
 #elif defined (SOC_OMAPL137) || defined(SOC_OMAPL138)
 #include <ti/drv/mmcsd/soc/MMCSD_v0.h>
-#elif defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)
+#elif defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
 #include <ti/drv/mmcsd/soc/MMCSD_v2.h>
 #endif
 
@@ -84,6 +84,8 @@ extern "C" {
 #elif defined(SOC_J721E)
 	#define MMCSD_CNT 3
 #elif defined(SOC_J7200)
+	#define MMCSD_CNT 2
+#elif defined(SOC_AM64X)
 	#define MMCSD_CNT 2
 #endif
 #ifdef __cplusplus

@@ -87,7 +87,7 @@ FATFS_DrvFxnTable FATFS_drvFxnTable = {
 /* FATFS configuration structure */
 FATFS_HwAttrs FATFS_initCfg[_VOLUMES] =
 {
-#if defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)
+#if defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
     {  /* MMC1 is SD card  for AM65xx GP EVM */
         1U
     },
@@ -150,7 +150,7 @@ const FATFSConfigList FATFS_config = {
 #define MMCSD_DMA_ENABLED 1
 #endif
 
-#if !defined(SOC_AM65XX) && !defined(SOC_J721E) && !defined(SOC_J7200)
+#if !defined(SOC_AM65XX) && !defined(SOC_J721E) && !defined(SOC_J7200)  && !defined(SOC_AM64X)
 #define GPIO_ENABLED
 #endif
 
@@ -171,7 +171,7 @@ const FATFSConfigList FATFS_config = {
 #endif
 #include "profiling.h"
 
-#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)
+#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)  || defined(SOC_AM64X)
 #include <ti/csl/src/ip/intr_router/V0/csl_intr_router.h>
 #endif
 /**********************************************************************
@@ -186,7 +186,7 @@ const FATFSConfigList FATFS_config = {
  * Setting the start sector to 8MB offset on OMAPL137 to support small size MMC cards. */
 #define MMCSTARTSECTOR  0x4000  //@8MB
 #else
-#ifdef SIMULATOR
+#ifdef SIM_BUILD
 #define MMCSTARTSECTOR  0x4000 //@8MB for VLAB only
 #else
 #define MMCSTARTSECTOR  0x300000 //@1.5GB //100
@@ -225,7 +225,7 @@ uint32_t mmcsd_test_sizes[MMCSD_TEST_NUM_SIZES]={(1024*32)};
 #define GPIO_PIN_MMC_SDCD_ACTIVE_STATE 0
 #endif
 
-#if  defined(iceK2G) || defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)
+#if  defined(iceK2G) || defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
 #define MMCSD_INSTANCE_SDCARD  1
 #else
   #define MMCSD_INSTANCE_SDCARD  0
@@ -295,7 +295,7 @@ GPIO_v1_Config GPIO_v1_config = {
 /*                         Structures and Enums                               */
 /* ========================================================================== */
 
-#if !defined(SOC_AM65XX) && !defined(SOC_J721E) && !defined(SOC_J7200)
+#if !defined(SOC_AM65XX) && !defined(SOC_J721E) && !defined(SOC_J7200) && !defined(SOC_AM64X)
 typedef CSL_control_core_pad_ioRegs *CSL_padRegsOvly;
 #endif
 
@@ -874,7 +874,7 @@ mmcsdTestSDProfile_t * mmcsdTestProfiles[] = {
 	&SDProfiles_1p8V_SDR50,
 	&SDProfiles_1p8V_DDR50,
 
-#if !defined(SOC_J721E) && !defined(SOC_J7200)
+#if !defined(SOC_J721E) && !defined(SOC_J7200) && !defined(SOC_AM64X)
 	&SDProfiles_1p8V_SDR104,
 #endif
 #endif
@@ -961,7 +961,7 @@ EDMA3_RM_Handle gEdmaHandle = NULL;
 
 #if defined (SOC_OMAPL137) || defined (SOC_OMAPL138)
 MMCSD_v0_HwAttrs           hwAttrsConfigDefault;
-#elif defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)
+#elif defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)  || defined(SOC_AM64X)
 MMCSD_v2_HwAttrs           hwAttrsConfigDefault;
 #else
 MMCSD_v1_HwAttrs hwAttrsConfigDefault;
@@ -984,7 +984,7 @@ void mmcsd_test(UArg arg0, UArg arg1)
 
 #if defined (SOC_OMAPL137) || defined (SOC_OMAPL138)
     MMCSD_v0_HwAttrs           hwAttrsConfig;
-#elif defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)
+#elif defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
     MMCSD_v2_HwAttrs           hwAttrsConfig;
 #else
     MMCSD_v1_HwAttrs           hwAttrsConfig;
@@ -1082,7 +1082,7 @@ void mmcsd_test(UArg arg0, UArg arg1)
 
       hwAttrsConfig.enableInterrupt = testProfilePtr->intr;
       hwAttrsConfig.supportedBusVoltages = testProfilePtr->busVoltage;
-#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)
+#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
       hwAttrsConfig.supportedModes = testProfilePtr->mode;
       hwAttrsConfig.supportedBusWidth = testProfilePtr->busWidth;
 #endif
@@ -1111,12 +1111,9 @@ void mmcsd_test(UArg arg0, UArg arg1)
 
 #ifdef MMCSD_ADMA_ENABLED
      /* Enable Interrupts for ADMA2 completion */
-#ifdef SIMULATOR
-     hwAttrsConfig.enableInterrupt=0;
-#else
      hwAttrsConfig.enableInterrupt=1;
 #endif
-#endif
+
 #endif
 
      if(hwAttrsConfig.enableDma==1) {

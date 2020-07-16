@@ -14,7 +14,7 @@ LOCAL_APP_NAME = MMCSD_Baremetal_EMMC_DMA_$(BOARD)_$(CORE)TestProject
 
 BUILD_OS_TYPE = baremetal
 
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e))
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
 SRCDIR = ../src ../../
 INCDIR = ../src ../include ../../
 # Common source files across all platforms and cores

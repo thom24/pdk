@@ -68,9 +68,9 @@ ifeq ($(mmcsd_component_make_include), )
 
 # note SOC="devind"is not supported for DMA as it is covered
 # under other list
-drvmmcsd_BOARDLIST       = am65xx_evm am65xx_idk j721e_sim j721e_evm j7200_evm
-drvmmcsd_dma_SOCLIST     = am574x am572x am571x k2g am437x am335x dra72x dra75x dra78x omapl137 omapl138 am65xx j721e j7200
-drvmmcsd_SOCLIST         = am574x am572x am571x k2g am437x am335x dra72x dra75x dra78x omapl137 omapl138 am65xx j721e j7200
+drvmmcsd_BOARDLIST       = am65xx_evm am65xx_idk j721e_sim j721e_evm j7200_evm am64x_evm
+drvmmcsd_dma_SOCLIST     = am574x am572x am571x k2g am437x am335x dra72x dra75x dra78x omapl137 omapl138 am65xx j721e j7200 am64x
+drvmmcsd_SOCLIST         = am574x am572x am571x k2g am437x am335x dra72x dra75x dra78x omapl137 omapl138 am65xx j721e j7200 am64x
 drvmmcsd_dra72x_CORELIST = c66x a15_0 ipu1_0
 drvmmcsd_dra75x_CORELIST = c66x a15_0 ipu1_0
 drvmmcsd_dra78x_CORELIST = c66x ipu1_0
@@ -85,6 +85,7 @@ drvmmcsd_omapl138_CORELIST = arm9_0 c674x
 drvmmcsd_am65xx_CORELIST     = mpu1_0 mcu1_0
 drvmmcsd_j721e_CORELIST     = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1
 drvmmcsd_j7200_CORELIST     = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
+drvmmcsd_am64x_CORELIST     = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 m4f_0
 ############################
 # mmcsd package
 # List of components included under mmcsd lib
@@ -273,11 +274,11 @@ export MMCSD_TestApp_CORE_DEPENDENCY
 export MMCSD_TestApp_XDC_CONFIGURO
 MMCSD_TestApp_PKG_LIST = MMCSD_TestApp
 MMCSD_TestApp_INCLUDE = $(MMCSD_TestApp_PATH)
-MMCSD_TestApp_BOARDLIST = am65xx_idk am65xx_evm j721e_sim j721e_evm j7200_evm
+MMCSD_TestApp_BOARDLIST = am65xx_idk am65xx_evm j721e_sim j721e_evm j7200_evm am64x_evm
 export MMCSD_TestApp_BOARDLIST
 MMCSD_TestApp_$(SOC)_CORELIST = $(drvmmcsd_$(SOC)_CORELIST)
 export MMCSD_TestApp_$(SOC)_CORELIST
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
 MMCSD_TestApp_SBL_APPIMAGEGEN = yes
 export MMCSD_TestApp_SBL_APPIMAGEGEN
 endif
@@ -300,7 +301,7 @@ MMCSD_SMP_TestApp_BOARDLIST = am65xx_idk
 export MMCSD_SMP_TestApp_BOARDLIST
 MMCSD_SMP_TestApp_$(SOC)_CORELIST = mpu1_0
 export MMCSD_SMP_TestApp_$(SOC)_CORELIST
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e))
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
 MMCSD_SMP_TestApp_SBL_APPIMAGEGEN = yes
 export MMCSD_SMP_TestApp_SBL_APPIMAGEGEN
 endif
@@ -318,11 +319,11 @@ export MMCSD_EMMC_TestApp_CORE_DEPENDENCY
 export MMCSD_EMMC_TestApp_XDC_CONFIGURO
 MMCSD_EMMC_TestApp_PKG_LIST = MMCSD_EMMC_TestApp_COMP_LIST
 MMCSD_EMMC_TestApp_INCLUDE = $(MMCSD_EMMC_TestApp_PATH)
-MMCSD_EMMC_TestApp_BOARDLIST = am65xx_idk am65xx_evm j721e_sim j721e_evm j7200_evm
+MMCSD_EMMC_TestApp_BOARDLIST = am65xx_idk am65xx_evm j721e_sim j721e_evm j7200_evm am64x_evm
 export MMCSD_EMMC_TestApp_BOARDLIST
 MMCSD_EMMC_TestApp_$(SOC)_CORELIST = $(drvmmcsd_$(SOC)_CORELIST)
 export MMCSD_EMMC_TestApp_$(SOC)_CORELIST
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e))
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
 MMCSD_EMMC_TestApp_SBL_APPIMAGEGEN = yes
 export MMCSD_EMMC_TestApp_SBL_APPIMAGEGEN
 endif
@@ -340,7 +341,7 @@ export MMCSD_EMMC_DMA_TestApp_CORE_DEPENDENCY
 export MMCSD_EMMC_DMA_TestApp_XDC_CONFIGURO
 MMCSD_EMMC_DMA_TestApp_PKG_LIST = MMCSD_EMMC_DMA_TestApp
 MMCSD_EMMC_DMA_TestApp_INCLUDE = $(MMCSD_EMMC_DMA_TestApp_PATH)
-MMCSD_EMMC_DMA_TestApp_BOARDLIST = am65xx_idk am65xx_evm j721e_sim j721e_evm j7200_evm
+MMCSD_EMMC_DMA_TestApp_BOARDLIST = am65xx_idk am65xx_evm j721e_sim j721e_evm j7200_evm am64x_evm
 export MMCSD_EMMC_DMA_TestApp_BOARDLIST
 MMCSD_EMMC_DMA_TestApp_$(SOC)_CORELIST = $(drvmmcsd_$(SOC)_CORELIST)
 export MMCSD_EMMC_DMA_TestApp_$(SOC)_CORELIST
@@ -362,7 +363,7 @@ export MMCSD_Baremetal_TestApp_CORE_DEPENDENCY
 export MMCSD_Baremetal_TestApp_XDC_CONFIGURO
 MMCSD_Baremetal_TestApp_PKG_LIST = MMCSD_Baremetal_TestApp
 MMCSD_Baremetal_TestApp_INCLUDE = $(MMCSD_Baremetal_TestApp_PATH)
-MMCSD_Baremetal_TestApp_BOARDLIST = am65xx_idk am65xx_evm j721e_sim j721e_evm j7200_evm
+MMCSD_Baremetal_TestApp_BOARDLIST = am65xx_idk am65xx_evm j721e_sim j721e_evm j7200_evm am64x_evm
 export MMCSD_Baremetal_TestApp_BOARDLIST
 MMCSD_Baremetal_TestApp_$(SOC)_CORELIST = $(drvmmcsd_$(SOC)_CORELIST)
 export MMCSD_Baremetal_TestApp_$(SOC)_CORELIST
@@ -388,7 +389,7 @@ MMCSD_Baremetal_DMA_TestApp_BOARDLIST = am65xx_idk am65xx_evm j721e_sim j721e_ev
 export MMCSD_Baremetal_DMA_TestApp_BOARDLIST
 MMCSD_Baremetal_DMA_TestApp_$(SOC)_CORELIST = $(drvmmcsd_$(SOC)_CORELIST)
 export MMCSD_Baremetal_DMA_TestApp_$(SOC)_CORELIST
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e))
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
 MMCSD_Baremetal_DMA_TestApp_SBL_APPIMAGEGEN = yes
 export MMCSD_Baremetal_DMA_TestApp_SBL_APPIMAGEGEN
 endif
@@ -406,11 +407,11 @@ export MMCSD_DMA_TestApp_CORE_DEPENDENCY
 export MMCSD_DMA_TestApp_XDC_CONFIGURO
 MMCSD_DMA_TestApp_PKG_LIST = MMCSD_DMA_TestApp
 MMCSD_DMA_TestApp_INCLUDE = $(MMCSD_DMA_TestApp_PATH)
-MMCSD_DMA_TestApp_BOARDLIST = am65xx_idk am65xx_evm j721e_sim j721e_evm j7200_evm
+MMCSD_DMA_TestApp_BOARDLIST = am65xx_idk am65xx_evm j721e_sim j721e_evm j7200_evm am64x_evm
 export MMCSD_DMA_TestApp_BOARDLIST
 MMCSD_DMA_TestApp_$(SOC)_CORELIST = $(drvmmcsd_$(SOC)_CORELIST)
 export MMCSD_DMA_TestApp_$(SOC)_CORELIST
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e))
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
 MMCSD_DMA_TestApp_SBL_APPIMAGEGEN = yes
 export MMCSD_DMA_TestApp_SBL_APPIMAGEGEN
 endif
@@ -433,7 +434,7 @@ MMCSD_DMA_SMP_TestApp_BOARDLIST = am65xx_idk
 export MMCSD_DMA_SMP_TestApp_BOARDLIST
 MMCSD_DMA_SMP_TestApp_$(SOC)_CORELIST = mpu1_0
 export MMCSD_DMA_SMP_TestApp_$(SOC)_CORELIS
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e))
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
 MMCSD_DMA_SMP_TestApp_SBL_APPIMAGEGEN = yes
 export MMCSD_DMA_SMP_TestApp_SBL_APPIMAGEGEN
 endif
@@ -451,11 +452,11 @@ export MMCSD_Baremetal_EMMC_TestApp_CORE_DEPENDENCY
 export MMCSD_Baremetal_EMMC_TestApp_XDC_CONFIGURO
 MMCSD_Baremetal_EMMC_TestApp_PKG_LIST = MMCSD_Baremetal_EMMC_TestApp
 MMCSD_Baremetal_EMMC_TestApp_INCLUDE = $(MMCSD_Baremetal_EMMC_TestApp_PATH)
-MMCSD_Baremetal_EMMC_TestApp_BOARDLIST = am65xx_idk am65xx_evm j721e_sim j721e_evm j7200_evm
+MMCSD_Baremetal_EMMC_TestApp_BOARDLIST = am65xx_idk am65xx_evm j721e_sim j721e_evm j7200_evm am64x_evm
 export MMCSD_Baremetal_EMMC_TestApp_BOARDLIST
 MMCSD_Baremetal_EMMC_TestApp_$(SOC)_CORELIST = $(drvmmcsd_$(SOC)_CORELIST)
 export MMCSD_Baremetal_EMMC_TestApp_$(SOC)_CORELIST
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e))
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
 MMCSD_Baremetal_EMMC_TestApp_SBL_APPIMAGEGEN = yes
 export MMCSD_Baremetal_EMMC_TestApp_SBL_APPIMAGEGEN
 endif
@@ -473,11 +474,11 @@ export MMCSD_Baremetal_EMMC_DMA_TestApp_CORE_DEPENDENCY
 export MMCSD_Baremetal_EMMC_DMA_TestApp_XDC_CONFIGURO
 MMCSD_Baremetal_EMMC_DMA_TestApp_PKG_LIST = MMCSD_Baremetal_EMMC_DMA_TestApp
 MMCSD_Baremetal_EMMC_DMA_TestApp_INCLUDE = $(MMCSD_Baremetal_EMMC_DMA_TestApp_PATH)
-MMCSD_Baremetal_EMMC_DMA_TestApp_BOARDLIST = am65xx_idk am65xx_evm j721e_sim j721e_evm j7200_evm
+MMCSD_Baremetal_EMMC_DMA_TestApp_BOARDLIST = am65xx_idk am65xx_evm j721e_sim j721e_evm j7200_evm am64x_evm
 export MMCSD_Baremetal_EMMC_DMA_TestApp_BOARDLIST
 MMCSD_Baremetal_EMMC_DMA_TestApp_$(SOC)_CORELIST = $(drvmmcsd_$(SOC)_CORELIST)
 export MMCSD_Baremetal_EMMC_DMA_TestApp_$(SOC)_CORELIST
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e))
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
 MMCSD_Baremetal_EMMC_DMA_TestApp_SBL_APPIMAGEGEN = yes
 export MMCSD_Baremetal_EMMC_DMA_TestApp_SBL_APPIMAGEGEN
 endif
@@ -495,11 +496,11 @@ export MMCSD_Regression_TestApp_CORE_DEPENDENCY
 export MMCSD_Regression_TestApp_XDC_CONFIGURO
 MMCSD_Regression_TestApp_PKG_LIST = MMCSD_Regression_TestApp
 MMCSD_Regression_TestApp_INCLUDE = $(MMCSD_Regression_TestApp_PATH)
-MMCSD_Regression_TestApp_BOARDLIST = am65xx_idk am65xx_evm j721e_evm j7200_evm
+MMCSD_Regression_TestApp_BOARDLIST = am65xx_idk am65xx_evm j721e_evm j7200_evm am64x_evm
 export MMCSD_Regression_TestApp_BOARDLIST
 MMCSD_Regression_TestApp_$(SOC)_CORELIST = $(drvmmcsd_$(SOC)_CORELIST)
 export MMCSD_Regression_TestApp_$(SOC)_CORELIST
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e))
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
 MMCSD_Regression_TestApp_SBL_APPIMAGEGEN = yes
 export MMCSD_Regression_TestApp_SBL_APPIMAGEGEN
 endif
@@ -517,11 +518,11 @@ export MMCSD_Baremetal_Regression_TestApp_CORE_DEPENDENCY
 export MMCSD_Baremetal_Regression_TestApp_XDC_CONFIGURO
 MMCSD_Baremetal_Regression_TestApp_PKG_LIST = MMCSD_Baremetal_Regression_TestApp
 MMCSD_Baremetal_Regression_TestApp_INCLUDE = $(MMCSD_Baremetal_Regression_TestApp_PATH)
-MMCSD_Baremetal_Regression_TestApp_BOARDLIST = am65xx_idk am65xx_evm j721e_evm j7200_evm
+MMCSD_Baremetal_Regression_TestApp_BOARDLIST = am65xx_idk am65xx_evm j721e_evm j7200_evm am64x_evm
 export MMCSD_Baremetal_Regression_TestApp_BOARDLIST
 MMCSD_Baremetal_Regression_TestApp_$(SOC)_CORELIST = $(drvmmcsd_$(SOC)_CORELIST)
 export MMCSD_Baremetal_Regression_TestApp_$(SOC)_CORELIST
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e))
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
 MMCSD_Baremetal_Regression_TestApp_SBL_APPIMAGEGEN = yes
 export MMCSD_Baremetal_Regression_TestApp_SBL_APPIMAGEGEN
 endif
@@ -539,13 +540,36 @@ export MMCSD_EMMC_Regression_TestApp_CORE_DEPENDENCY
 export MMCSD_EMMC_Regression_TestApp_XDC_CONFIGURO
 MMCSD_EMMC_Regression_TestApp_PKG_LIST = MMCSD_EMMC_Regression_TestApp
 MMCSD_EMMC_Regression_TestApp_INCLUDE = $(MMCSD_EMMC_Regression_TestApp_PATH)
-MMCSD_EMMC_Regression_TestApp_BOARDLIST = am65xx_idk am65xx_evm j721e_evm j7200_evm
+MMCSD_EMMC_Regression_TestApp_BOARDLIST = am65xx_idk am65xx_evm j721e_evm j7200_evm am64x_evm
 export MMCSD_EMMC_Regression_TestApp_BOARDLIST
 MMCSD_EMMC_Regression_TestApp_$(SOC)_CORELIST = $(drvmmcsd_$(SOC)_CORELIST)
 export MMCSD_EMMC_Regression_TestApp_$(SOC)_CORELIST
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e))
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
 MMCSD_EMMC_Regression_TestApp_SBL_APPIMAGEGEN = yes
 export MMCSD_EMMC_Regression_TestApp_SBL_APPIMAGEGEN
+endif
+
+
+# SD Regression Test App
+MMCSD_EMMC_Baremetal_Regression_TestApp_COMP_LIST = MMCSD_EMMC_Baremetal_Regression_TestApp
+MMCSD_EMMC_Baremetal_Regression_TestApp_RELPATH = ti/drv/mmcsd/test/MMCSD_EMMC_Baremetal_Regression_TestApp
+MMCSD_EMMC_Baremetal_Regression_TestApp_PATH = $(PDK_MMCSD_COMP_PATH)/test/MMCSD_EMMC_Baremetal_Regression_TestApp
+MMCSD_EMMC_Baremetal_Regression_TestApp_BOARD_DEPENDENCY = yes
+MMCSD_EMMC_Baremetal_Regression_TestApp_CORE_DEPENDENCY = no
+MMCSD_EMMC_Baremetal_Regression_TestApp_XDC_CONFIGURO = yes
+export MMCSD_EMMC_Baremetal_Regression_TestApp_COMP_LIST
+export MMCSD_EMMC_Baremetal_Regression_TestApp_BOARD_DEPENDENCY
+export MMCSD_EMMC_Baremetal_Regression_TestApp_CORE_DEPENDENCY
+export MMCSD_EMMC_Baremetal_Regression_TestApp_XDC_CONFIGURO
+MMCSD_EMMC_Baremetal_Regression_TestApp_PKG_LIST = MMCSD_EMMC_Baremetal_Regression_TestApp
+MMCSD_EMMC_Baremetal_Regression_TestApp_INCLUDE = $(MMCSD_EMMC_Baremetal_Regression_TestApp_PATH)
+MMCSD_EMMC_Baremetal_Regression_TestApp_BOARDLIST = am65xx_idk am65xx_evm j721e_evm j7200_evm am64x_evm
+export MMCSD_EMMC_Baremetal_Regression_TestApp_BOARDLIST
+MMCSD_EMMC_Baremetal_Regression_TestApp_$(SOC)_CORELIST = $(drvmmcsd_$(SOC)_CORELIST)
+export MMCSD_EMMC_Baremetal_Regression_TestApp_$(SOC)_CORELIST
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
+MMCSD_EMMC_Baremetal_Regression_TestApp_SBL_APPIMAGEGEN = yes
+export MMCSD_EMMC_Baremetal_Regression_TestApp_SBL_APPIMAGEGEN
 endif
 
 export drvmmcsd_LIB_LIST
@@ -563,7 +587,7 @@ mmcsd_EXAMPLE_LIST += MMCSD_Baremetal_EMMC_DMA_TestApp
 mmcsd_EXAMPLE_LIST += MMCSD_Regression_TestApp
 mmcsd_EXAMPLE_LIST += MMCSD_EMMC_Regression_TestApp
 mmcsd_EXAMPLE_LIST += MMCSD_Baremetal_Regression_TestApp
-
+mmcsd_EXAMPLE_LIST += MMCSD_EMMC_Baremetal_Regression_TestApp
 
 export mmcsd_EXAMPLE_LIST
 

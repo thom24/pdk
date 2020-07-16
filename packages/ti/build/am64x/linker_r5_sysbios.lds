@@ -7,14 +7,23 @@
 
 MEMORY
 {
-    /*R5F_TCMA_SBL_RSVD(X): ORIGIN = 0x00000000 , LENGTH = 0x100*/
-    RESET_VECTORS(X)    : ORIGIN = 0x00000000 , LENGTH = 0x00008000
-    R5F_TCMB0(RWIX)     : ORIGIN = 0x41010000 , LENGTH = 0x00008000
+    /* Reserved for SBL code/data */
+    SBL_RSVD (X)            : origin=0x70000000 length=0x80000
+    
+    /*  Reset Vectors base address(RESET_VECTORS) should be 64 bytes aligned  */
+    RESET_VECTORS (X)       : origin=0x70080000 length=0x100
     /* am64x MCMS3 locations */
-    MSMC3 (RWIX)        : ORIGIN = 0x70000000 , LENGTH = 0x170000 /* ~1.5MB */
+    MSMC3   (RWIX)          : origin=0x70080100 length=0x40000 - 0x1100
+
+    VECTORS (X)             : origin=0x700BF000 length=0x1000
     /* Reserved for SYSFW Secure Proxy */
-    MSMC3_H (RWIX)      : ORIGIN = 0x70170000 , LENGTH = 0x90000 /* ~0.5MB */
-    DDR0 (RWIX)         : ORIGIN = 0x80000000 , LENGTH = 0x80000000
+    MSMC3_H (RWIX)          : origin=0x700C0000 length=0x100000   
+
+    /* Reserved by ROM for SYSFW */
+    SYSFW_RSVD_1 (X)      : origin=0x71C00000 length=0x20000 
+    SYSFW_RSVD_2 (X)      : origin=0x71E00000 length=0x20000 
+
+    DDR0    (RWIX)          : origin=0x80000000 length=0x80000000  /* 2GB */
 }
 
 SECTIONS
@@ -24,10 +33,10 @@ SECTIONS
     } palign(8) > RESET_VECTORS
     .text_boot {
         *boot.aer5f*<*boot.o*>(.text)
-     }  palign(8)   > R5F_TCMB0
-    .text:xdc_runtime_Startup_reset__I     : {} palign(8) > R5F_TCMB0
-    .text:ti_sysbios_family_arm_v7r_Cache* : {} palign(8) > R5F_TCMB0
-    .text:ti_sysbios_family_arm_MPU*       : {} palign(8) > R5F_TCMB0
+     }  palign(8)   > MSMC3
+    .text:xdc_runtime_Startup_reset__I     : {} palign(8) > MSMC3
+    .text:ti_sysbios_family_arm_v7r_Cache* : {} palign(8) > MSMC3
+    .text:ti_sysbios_family_arm_MPU*       : {} palign(8) > MSMC3
 
     .text       : {} palign(8)   > DDR0
     .cinit      : {} palign(8)   > DDR0

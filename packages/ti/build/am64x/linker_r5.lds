@@ -73,20 +73,20 @@ SECTIONS
     /* USB or any other LLD buffer for benchmarking */
     .benchmark_buffer (NOLOAD) {} ALIGN (8) > DDR0
 
-    .stack      : {} align(4)       > DDR0  (HIGH)
-    .irqStack   : {. = . + __IRQ_STACK_SIZE;} align(4)      > DDR0  (HIGH)
+    .stack      : {} align(4)       > DDR0
+    .irqStack   : {. = . + __IRQ_STACK_SIZE;} align(4)      > DDR0
     RUN_START(__IRQ_STACK_START)
     RUN_END(__IRQ_STACK_END)
-    .fiqStack   : {. = . + __FIQ_STACK_SIZE;} align(4)      > DDR0  (HIGH)
+    .fiqStack   : {. = . + __FIQ_STACK_SIZE;} align(4)      > DDR0
     RUN_START(__FIQ_STACK_START)
     RUN_END(__FIQ_STACK_END)
-    .abortStack : {. = . + __ABORT_STACK_SIZE;} align(4)    > DDR0  (HIGH)
+    .abortStack : {. = . + __ABORT_STACK_SIZE;} align(4)    > DDR0
     RUN_START(__ABORT_STACK_START)
     RUN_END(__ABORT_STACK_END)
-    .undStack   : {. = . + __UND_STACK_SIZE;} align(4)      > DDR0  (HIGH)
+    .undStack   : {. = . + __UND_STACK_SIZE;} align(4)      > DDR0
     RUN_START(__UND_STACK_START)
     RUN_END(__UND_STACK_END)
-    .svcStack   : {. = . + __SVC_STACK_SIZE;} align(4)      > DDR0  (HIGH)
+    .svcStack   : {. = . + __SVC_STACK_SIZE;} align(4)      > DDR0
     RUN_START(__SVC_STACK_START)
     RUN_END(__SVC_STACK_END)
 }
