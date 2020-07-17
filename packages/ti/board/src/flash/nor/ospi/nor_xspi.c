@@ -528,20 +528,6 @@ NOR_STATUS Nor_xspiWrite(NOR_HANDLE handle, uint32_t addr, uint32_t len,
     hwAttrs = (OSPI_v0_HwAttrs *)spiHandle->hwAttrs;
 
     cmdWren[0]  = NOR_CMD_WREN;
-    
-    if (Nor_xspiCmdWrite(spiHandle, cmdWren, 1, 0))
-    {
-    	return NOR_FAIL;
-    }
-
-    if (Nor_xspiWaitReady(spiHandle, NOR_WRR_WRITE_TIMEOUT))
-    {
-    	return NOR_FAIL;
-    }
-
-    /* Set the transfer mode, write op code and tx lines */
-    SPI_control(spiHandle, SPI_V0_CMD_SET_XFER_MODE, NULL);
-    SPI_control(spiHandle, SPI_V0_CMD_XFER_MODE_RW, (void *)&transferType);
 
     if (hwAttrs->dacEnable )
     {
@@ -554,15 +540,26 @@ NOR_STATUS Nor_xspiWrite(NOR_HANDLE handle, uint32_t addr, uint32_t len,
     else
     {
         /* indirect access transfer mode */
-        if (hwAttrs->intrEnable)
-        {
-            wrSize = 256U;
-        }
+        wrSize = NOR_PAGE_SIZE;
     }
     byteAddr = addr & (wrSize - 1);
 
     for (actual = 0; actual < len; actual += chunkLen)
     {
+        if (Nor_xspiCmdWrite(spiHandle, cmdWren, 1, 0))
+        {
+            return NOR_FAIL;
+        }
+
+        if (Nor_xspiWaitReady(spiHandle, NOR_WRR_WRITE_TIMEOUT))
+        {
+            return NOR_FAIL;
+        }
+
+        /* Set the transfer mode, write op code and tx lines */
+        SPI_control(spiHandle, SPI_V0_CMD_SET_XFER_MODE, NULL);
+        SPI_control(spiHandle, SPI_V0_CMD_XFER_MODE_RW, (void *)&transferType);
+
         /* Send Page Program command */
         chunkLen = ((len - actual) < (wrSize - byteAddr) ?
                     (len - actual) : (wrSize - byteAddr));
