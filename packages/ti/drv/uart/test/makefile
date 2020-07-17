@@ -60,6 +60,7 @@ ifeq ($(DMA), enable)
         # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
         LOCAL_APP_NAME =  UART$(UART_OS_TYPE)_DMA_$(BOARD)_$(CORE)TestApp
     endif
+    COMP_LIST_COMMON := $(filter-out uart,$(COMP_LIST_COMMON))
     COMP_LIST_COMMON   += uart_dma 
     #COMP_LIST_COMMON   += uart_dma_profile 
     CFLAGS_UART_DMA    = -DUART_DMA_ENABLE
