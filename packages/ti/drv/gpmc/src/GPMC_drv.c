@@ -46,7 +46,7 @@
 
 
 /* Externs */
-extern const GPMC_config_list GPMC_config;
+extern GPMC_Config GPMC_config[];
 
 /* Used to check status and initialization */
 static int32_t GPMC_count = -1;

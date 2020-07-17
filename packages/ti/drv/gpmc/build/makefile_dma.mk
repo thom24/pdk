@@ -47,6 +47,8 @@ INCDIR += soc
 # Common source files across all platforms and cores
 SRCS_COMMON += GPMC_soc.c GPMC_dma.c
 
+PACKAGE_SRCS_COMMON += soc/$(SOC)
+
 # List all the external components/interfaces, whose interface header files
 #  need to be included for this component
 INCLUDE_EXTERNAL_INTERFACES = pdk

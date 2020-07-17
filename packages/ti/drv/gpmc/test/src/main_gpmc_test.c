@@ -66,6 +66,7 @@
 #include <ti/board/src/flash/include/board_flash.h>
 
 #include <ti/drv/sciclient/sciclient.h>
+#include <ti/osal/TimerP.h>
 #ifdef GPMC_DMA_ENABLE
 #include <ti/osal/CacheP.h>
 #include <ti/drv/udma/udma.h>

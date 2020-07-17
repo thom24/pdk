@@ -108,7 +108,7 @@ GPMC_v1_Object GPMCObjects[CSL_GPMC_CNT + 1];
 
 
 /* GPMC configuration structure */
-const GPMC_config_list GPMC_config = {
+GPMC_Config GPMC_config[CSL_GPMC_CNT + 1] = {
     {
         &GPMC_FxnTable_v1,
         &GPMCObjects[0],

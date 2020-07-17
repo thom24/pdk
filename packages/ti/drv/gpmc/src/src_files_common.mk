@@ -12,7 +12,6 @@ INCDIR = . src src/V1
 PACKAGE_SRCS_COMMON = GPMC.h makefile gpmc_component.mk \
                       docs/ReleaseNotes_GPMC_LLD.pdf \
                       docs/GPMC_LLD_SoftwareManifest.html \
-                      src/GPMC_osal.h src/V1/GPMC_v1.h src/src_files_common.mk \
-                      build
-
-
+                      src/GPMC_drv.c src/GPMC_osal.h src/src_files_common.mk \
+                      src/V1/ soc/GPMC_soc.h build/ \
+                      config_mk.bld package.bld package.xdc package.xs Settings.xdc.xdt GPMCver.h.xdt

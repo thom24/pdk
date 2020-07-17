@@ -44,6 +44,7 @@ ifeq ($(gpmc_component_make_include), )
 # under other list
 drvgpmc_BOARDLIST       = icev2AM335x evmAM437x am64x_evm
 drvgpmc_SOCLIST         = am437x am335x am64x
+drvuart_dma_SOCLIST     = am64x
 drvgpmc_am437x_CORELIST = a9host
 drvgpmc_am335x_CORELIST = a8host
 drvgpmc_am64x_CORELIST  = $(DEFAULT_am64x_CORELIST)
@@ -91,7 +92,7 @@ export gpmc_CORE_DEPENDENCY
 export gpmc_SOC_DEPENDENCY
 gpmc_PKG_LIST = gpmc
 gpmc_INCLUDE = $(gpmc_PATH)
-gpmc_SOCLIST = am437x am335x
+gpmc_SOCLIST = am437x am335x am64x
 export gpmc_SOCLIST
 gpmc_$(SOC)_CORELIST = $(drvgpmc_$(SOC)_CORELIST)
 export gpmc_$(SOC)_CORELIST

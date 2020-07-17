@@ -91,7 +91,7 @@ static void GPMC_transferCallback_v1(GPMC_Handle handle, GPMC_Transaction *msg)
     if (handle != NULL)
     {
         /* Get the pointer to the object */
-        object = handle->object;
+        object = (GPMC_v1_Object *)handle->object;
 
         /* Indicate transfer complete */
         GPMC_osalPostLock(object->transferComplete);
@@ -107,12 +107,13 @@ static void GPMC_transferCallback_v1(GPMC_Handle handle, GPMC_Transaction *msg)
 static void GPMC_hwiFxn_v1(uintptr_t arg)
 {
     GPMC_v1_HwAttrs const *hwAttrs = NULL;
+    GPMC_Handle            handle = (GPMC_Handle)arg;
 
     /* Input parameter validation */
-    if (NULL != (void *)arg)
+    if (NULL != handle)
     {
         /* Get the pointer to the object and hwAttrs */
-        hwAttrs = ((GPMC_Handle)arg)->hwAttrs;
+        hwAttrs = (GPMC_v1_HwAttrs const *)handle->hwAttrs;
 
         if (hwAttrs->intcMuxNum != INVALID_INTC_MUX_NUM)
         {
@@ -174,8 +175,8 @@ static GPMC_Handle GPMC_open_v1(GPMC_Handle handle, const GPMC_Params *params)
     if (handle != NULL)
     {
         /* Get the pointer to the object and hwAttrs */
-        object = handle->object;
-        hwAttrs = handle->hwAttrs;
+        object = (GPMC_v1_Object *)handle->object;
+        hwAttrs = (GPMC_v1_HwAttrs const *)handle->hwAttrs;
 
         GPMC_osalHwiParamsInit(&hwiInputParams);
 
@@ -461,8 +462,8 @@ static void GPMC_close_v1(GPMC_Handle handle)
     if (handle != NULL)
     {
         /* Get the pointer to the object and hwAttrs */
-        object = handle->object;
-        hwAttrs = handle->hwAttrs;
+        object = (GPMC_v1_Object *)handle->object;
+        hwAttrs = (GPMC_v1_HwAttrs const *)handle->hwAttrs;
 
         /* Mask I2C interrupts */
         GPMCIntDisableAll(hwAttrs->gpmcBaseAddr);
@@ -536,8 +537,8 @@ static int32_t GPMC_nand_read_v1(GPMC_Handle handle,
     /* Input parameter validation */
     if ((handle != NULL) && (transaction != NULL))
     {
-        object = handle->object;
-        hwAttrs = handle->hwAttrs;
+        object = (GPMC_v1_Object *)handle->object;
+        hwAttrs = (GPMC_v1_HwAttrs const *)handle->hwAttrs;
 
         if(GPMC_OPER_MODE_POLLING == object->intrPollMode)
         {
@@ -565,8 +566,8 @@ static int32_t GPMC_nor_read_v1(GPMC_Handle handle,
     /* Input parameter validation */
     if ((handle != NULL) && (transaction != NULL))
     {
-        object = handle->object;
-        hwAttrs = handle->hwAttrs;
+        object = (GPMC_v1_Object *)handle->object;
+        hwAttrs = (GPMC_v1_HwAttrs const *)handle->hwAttrs;
 
         size = object->readCountIdx;
         pData8 = (uint8_t *)(object->readBufIdx);
@@ -643,8 +644,8 @@ static int32_t GPMC_nand_write_v1(GPMC_Handle handle,
     /* Input parameter validation */
     if ((handle != NULL) && (transaction != NULL))
     {
-        object = handle->object;
-        hwAttrs = handle->hwAttrs;
+        object = (GPMC_v1_Object *)handle->object;
+        hwAttrs = (GPMC_v1_HwAttrs const *)handle->hwAttrs;
 
         if(GPMC_OPER_MODE_POLLING == object->intrPollMode)
         {
@@ -672,8 +673,8 @@ static int32_t GPMC_nor_write_v1(GPMC_Handle handle,
     /* Input parameter validation */
     if ((handle != NULL) && (transaction != NULL))
     {
-        object = handle->object;
-        hwAttrs = handle->hwAttrs;
+        object = (GPMC_v1_Object *)handle->object;
+        hwAttrs = (GPMC_v1_HwAttrs const *)handle->hwAttrs;
 
         size = object->writeCountIdx;
         pData8 = (uint8_t *)(object->writeBufIdx);
@@ -723,8 +724,8 @@ static int32_t GPMC_primeTransfer_v1(GPMC_Handle handle,
         retVal = GPMC_STATUS_SUCCESS;
 
         /* Get the pointer to the object and hwAttrs */
-        object = handle->object;
-        hwAttrs = handle->hwAttrs;
+        object = (GPMC_v1_Object *)handle->object;
+        hwAttrs = (GPMC_v1_HwAttrs const *)handle->hwAttrs;
 
         /* Disable and clear the interrupts */
         GPMCIntDisableAll(hwAttrs->gpmcBaseAddr);
@@ -788,8 +789,8 @@ static bool GPMC_transfer_v1(GPMC_Handle handle, GPMC_Transaction *transaction)
     if ((handle != NULL) && (transaction != NULL) && (0U != (uint32_t)transaction->count))
     {
         /* Get the pointer to the object and hwAttrs */
-        object = handle->object;
-        hwAttrs = handle->hwAttrs;
+        object = (GPMC_v1_Object *)handle->object;
+        hwAttrs = (GPMC_v1_HwAttrs const *)handle->hwAttrs;
 
         /* Check if a transfer is in progress */
         key = GPMC_osalHardwareIntDisable();
@@ -884,7 +885,7 @@ static int32_t GPMC_control_v1(GPMC_Handle handle, uint32_t cmd, void *arg)
         retVal = GPMC_STATUS_SUCCESS;
 
         /* Get the pointer to the hwAttrs */
-        hwAttrs = handle->hwAttrs;
+        hwAttrs = (GPMC_v1_HwAttrs const *)handle->hwAttrs;
 
         switch (cmd)
         {
@@ -1049,7 +1050,7 @@ static int32_t GPMC_control_v1(GPMC_Handle handle, uint32_t cmd, void *arg)
 static int32_t GPMC_sram_read_v1(GPMC_Handle handle,
                                  const GPMC_Transaction *transaction)
 {
-    GPMC_v1_HwAttrs const *hwAttrs = handle->hwAttrs;
+    GPMC_v1_HwAttrs const *hwAttrs = (GPMC_v1_HwAttrs const *)handle->hwAttrs;
     int32_t                retVal = GPMC_STATUS_ERROR;
     uint32_t               size =  transaction->count;
 
@@ -1119,7 +1120,7 @@ static int32_t GPMC_sram_read_v1(GPMC_Handle handle,
 static int32_t GPMC_sram_write_v1(GPMC_Handle handle,
                                   const GPMC_Transaction *transaction)
 {
-    GPMC_v1_HwAttrs const *hwAttrs = handle->hwAttrs;
+    GPMC_v1_HwAttrs const *hwAttrs = (GPMC_v1_HwAttrs const *)handle->hwAttrs;
     int32_t                retVal = GPMC_STATUS_ERROR;
     uint32_t               size =  transaction->count;
 
