@@ -93,6 +93,9 @@ extern "C" {
 /*! \brief Number of entries in each queue in any EDMA IP */
 #define EDMA_NUM_QUEUE_ENTRIES ((uint8_t)16)
 
+/*! \brief Extended B Indx is applicable for TPR12 */
+#define EDMA_EXTENDED_B_INDICES ((uint8_t)1U)
+
 /* ========================================================================== */
 /*                         Structure Declarations                             */
 /* ========================================================================== */

@@ -58,6 +58,11 @@
 #define EDMA_READ_RATE_RANGE_CHECK_MAX          (EDMA_TC_RDRATE_RDRATE_READEVERY32CYCLES)
 #define EDMA_QUEUE_PRIORITIY_RANGE_CHECK_MAX    ((uint8_t)EDMA_TPCC_QUEPRI_PRIQ0_PRIORITY7)
 
+#ifdef EDMA_EXTENDED_B_INDICES
+#define EDMA_EXTENDED_B_INDEX_MAX (((int32_t)1 << 23U) - 1)
+#define EDMA_EXTENDED_B_INDEX_MIN (-((int32_t)1 << 23U))
+#endif
+
 /* ========================================================================== */
 /*                         Structure Declarations                             */
 /* ========================================================================== */
@@ -268,24 +273,25 @@ static int32_t EDMA_validate_channelIdchannelType(uint8_t channelId, uint8_t cha
         (channelType != (uint8_t)EDMA3_CHANNEL_TYPE_QDMA))
     {
         errorCode = EDMA_E_INVALID__DMA_CHANNEL_TYPE;
+        goto exit;
     }
 
-    if ((errorCode == EDMA_NO_ERROR) &&
-        ((channelType == (uint8_t)EDMA3_CHANNEL_TYPE_DMA) &&
-         (channelId >= (uint8_t)EDMA_NUM_DMA_CHANNELS)))
+    if ((channelType == (uint8_t)EDMA3_CHANNEL_TYPE_DMA) &&
+        (channelId >= (uint8_t)EDMA_NUM_DMA_CHANNELS))
     {
         errorCode = EDMA_E_INVALID__DMA_CHANNEL_ID;
+        goto exit;
     }
 
-    if ((errorCode == EDMA_NO_ERROR) &&
-        ((channelType == (uint8_t)EDMA3_CHANNEL_TYPE_QDMA) &&
-         (channelId >= EDMA_NUM_QDMA_CHANNELS)))
+    if ((channelType == (uint8_t)EDMA3_CHANNEL_TYPE_QDMA) &&
+        (channelId >= EDMA_NUM_QDMA_CHANNELS))
     {
         errorCode = EDMA_E_INVALID__QDMA_CHANNEL_ID;
+        goto exit;
     }
+exit:
     return(errorCode);
 }
-
 /**
  *  @b Description
  *  @n
@@ -310,54 +316,52 @@ static int32_t EDMA_validate_channel_config(
     if (handle == NULL)
     {
         errorCode = EDMA_E_INVALID__HANDLE_NULL;
+        goto exit;
     }
 
-    if ((errorCode == EDMA_NO_ERROR) &&
-        (config == NULL))
+    if (config == NULL)
     {
         errorCode = EDMA_E_INVALID__CONFIG_POINTER_NULL;
+        goto exit;
     }
 
-    if (errorCode == EDMA_NO_ERROR)
+    errorCode = EDMA_validate_channelIdchannelType(config->channelId,
+        config->channelType);
+    if (errorCode != EDMA_NO_ERROR)
     {
-        errorCode = EDMA_validate_channelIdchannelType(config->channelId,
-            config->channelType);
+        goto exit;
     }
 
-    if ((errorCode == EDMA_NO_ERROR) &&
-        (config->channelType == (uint8_t)EDMA3_CHANNEL_TYPE_QDMA))
+    if (config->channelType == (uint8_t)EDMA3_CHANNEL_TYPE_QDMA)
     {
-        if (config->qdmaParamTriggerWordOffset > 7)
-        {
+        if (config->qdmaParamTriggerWordOffset > 7) {
             errorCode = EDMA_E_INVALID__QDMA_TRIGGER_WORD;
+            goto exit;
         }
     }
 
     /* if channel mappping is not supported, paramId must be same as channelId
        for DMA channel */
-    if ((errorCode == EDMA_NO_ERROR) &&
-        (hwAttrs->isChannelMapExist == false) &&
+    if ((hwAttrs->isChannelMapExist == false) &&
         (config->channelType == (uint8_t)EDMA3_CHANNEL_TYPE_DMA) &&
         (config->paramId != (uint16_t)config->channelId))
     {
         errorCode = EDMA_E_INVALID__PARAM_ID_NOT_SAME_AS_CHANNEL_ID;
+        goto exit;
     }
 
-    if ((errorCode == EDMA_NO_ERROR) &&
-        (config->eventQueueId >= hwAttrs->numEventQueues))
+    if (config->eventQueueId >= hwAttrs->numEventQueues)
     {
         errorCode = EDMA_E_INVALID__EVENT_QUEUE_ID;
+        goto exit;
     }
 
-    if (errorCode == EDMA_NO_ERROR)
-    {
-        errorCode = EDMA_validate_param_config(handle, hwAttrs, config->paramId, &config->paramSetConfig,
-            config->transferCompletionCallbackFxn);
-    }
+    errorCode = EDMA_validate_param_config(handle, hwAttrs, config->paramId, &config->paramSetConfig,
+        config->transferCompletionCallbackFxn);
 
+exit:
     return(errorCode);
 }
-
 /**
  *  @b Description
  *  @n
@@ -387,90 +391,73 @@ static inline int32_t EDMA_validate_param_config(
     if (handle == NULL)
     {
         errorCode = EDMA_E_INVALID__HANDLE_NULL;
+        goto exit;
     }
 
-    if ((errorCode == EDMA_NO_ERROR) &&
-        (paramId >= hwAttrs->numParamSets))
+    if (paramId >= hwAttrs->numParamSets)
     {
         errorCode = EDMA_E_INVALID__PARAM_ID;
+        goto exit;
     }
 
-    if ((errorCode == EDMA_NO_ERROR) &&
-        (config->transferCompletionCode >= EDMA_NUM_TCC))
+    if (config->transferCompletionCode >= EDMA_NUM_TCC)
     {
         errorCode = EDMA_E_INVALID__TRANSFER_COMPLETION_CODE;
+        goto exit;
     }
 
     /* if all of interrupt completion flags are false, then transfer completion
        call back function must be NULL */
-    if ((errorCode == EDMA_NO_ERROR) &&
-        ((transferCompletionCallbackFxn != NULL) &&
+    if  ((transferCompletionCallbackFxn != NULL) &&
          ((config->isFinalTransferInterruptEnabled == false) &&
-          (config->isIntermediateTransferInterruptEnabled == false))))
+          (config->isIntermediateTransferInterruptEnabled == false)))
     {
         errorCode = EDMA_E_INVALID__TRNSFR_COMPLETION_PARAMS;
+        goto exit;
     }
 
     /* if completion interrupt not connected and transfer completion call back
      * is not NULL, then generate error
      */
-    if ((errorCode == EDMA_NO_ERROR) &&
-        ((hwAttrs->transferCompletionInterruptNum == EDMA_INTERRUPT_NOT_CONNECTED_ID) &&
-         (transferCompletionCallbackFxn != NULL)))
+    if  ((hwAttrs->transferCompletionInterruptNum == EDMA_INTERRUPT_NOT_CONNECTED_ID) &&
+          (transferCompletionCallbackFxn != NULL))
     {
         errorCode = EDMA_E_INVALID__TRNSFR_COMPLETION_PARAMS;
+        goto exit;
     }
 
-    if ((errorCode == EDMA_NO_ERROR) &&
-        ((config->transferType != (uint8_t)EDMA3_SYNC_A) &&
-         (config->transferType != (uint8_t)EDMA3_SYNC_AB)))
+    if ((config->transferType != (uint8_t)EDMA3_SYNC_A) &&
+        (config->transferType != (uint8_t)EDMA3_SYNC_AB))
     {
         errorCode = EDMA_E_INVALID__TRANSFER_TYPE;
+        goto exit;
     }
 
 #ifdef EDMA_EXTENDED_B_INDICES
-    if ((errorCode == EDMA_NO_ERROR) &&
-        ((config->sourceBindex > EDMA_EXTENDED_B_INDEX_MAX) ||
-         (config->sourceBindex < EDMA_EXTENDED_B_INDEX_MIN)))
+    if ((config->sourceBindex > EDMA_EXTENDED_B_INDEX_MAX) ||
+        (config->sourceBindex < EDMA_EXTENDED_B_INDEX_MIN))
     {
         errorCode = EDMA_E_INVALID__SOURCE_B_INDEX;
+        goto exit;
     }
 
-    if ((errorCode == EDMA_NO_ERROR) &&
-        ((config->destinationBindex > EDMA_EXTENDED_B_INDEX_MAX) ||
-         (config->destinationBindex < EDMA_EXTENDED_B_INDEX_MIN)))
+    if ((config->destinationBindex > EDMA_EXTENDED_B_INDEX_MAX) ||
+        (config->destinationBindex < EDMA_EXTENDED_B_INDEX_MIN))
     {
         errorCode = EDMA_E_INVALID__DESTINATION_B_INDEX;
+        goto exit;
     }
 #endif
 
+exit:
     return(errorCode);
 }
 #endif
 
-/**
- *  @b Description
- *  @n
- *      Utility function for configuring a PaRAM Set.
- *      Note: HW_WR_FIELD32 APIs are avoided for (assumed) efficiency when writing
- *      param fields (avoid unnecessary masking because fields are defined to be right
- *      sized (e.g aCount is uint16_t, matching Param ACNT size).
- *
- *  @param[in]  ccBaseAddr  CC base address.
- *  @param[in]  paramId PaRAM Set Id.
- *  @param[in]  pSetCfg Pointer to PaRAM Set configuration.
- *
- *  \ingroup EDMA_INTERNAL_FUNCTION
- *
- *  @retval
- *      None.
- */
-#if 1
-#ifdef EDMA_EXTENDED_B_INDICES
-/*! Returns the 8-bit extension beyond 16-bits of the 32-bit b-index */
-#define EDMA_B_INDX_EXTENSION(x) (((x) >> 16U) & 0x000000FFU)
-#endif
-
+/* Not using EDMA3SetPaRAM because of JIRA : PRSDK-1055.
+   Also risky because depends on compiler realization of EDMA3CCPaRAMEntry structure
+   to match PaRAM layout */
+#if 0
 static void EDMA_paramSetConfig_assist (uint32_t ccBaseAddr, uint16_t paramId,
                                 EDMA_paramSetConfig_t const *pSetCfg)
 {
@@ -482,16 +469,12 @@ static void EDMA_paramSetConfig_assist (uint32_t ccBaseAddr, uint16_t paramId,
     paramSet.aCnt     = pSetCfg->aCount;
     paramSet.bCnt     = pSetCfg->bCount;
     paramSet.cCnt     = pSetCfg->cCount;
-    paramSet.srcBIdx  = (uint16_t) pSetCfg->sourceBindex;
-    paramSet.destBIdx = (uint16_t) pSetCfg->destinationBindex;
+    paramSet.srcBIdx  = pSetCfg->sourceBindex;
+    paramSet.destBIdx = pSetCfg->destinationBindex;
     paramSet.srcCIdx  = pSetCfg->sourceCindex;
     paramSet.destCIdx = pSetCfg->destinationCindex;
     paramSet.linkAddr = pSetCfg->linkAddress;
     paramSet.bCntReload = pSetCfg->bCountReload;
-#ifdef EDMA_EXTENDED_B_INDICES
-    paramSet.bidxExtn = EDMA_B_INDX_EXTENSION(pSetCfg->sourceBindex) |
-                        EDMA_B_INDX_EXTENSION(pSetCfg->sourceCindex) << (EDMA_TPCC_CCNT_DSTEBIDX_SHIFT - EDMA_TPCC_CCNT_SRCEBIDX_SHIFT);
-#endif
 
     /* Parameters not programmed are : PRIV = 0; PRIVID = 0; */
     paramSet.opt = 0;
@@ -938,21 +921,21 @@ int32_t EDMA_getErrorStatus(EDMA_Handle handle, bool *isAnyError, EDMA_errorInfo
     if (handle == NULL)
     {
         errorCode = EDMA_E_INVALID__HANDLE_NULL;
+        goto exit;
     }
 #endif
-    if (errorCode == EDMA_NO_ERROR)
-    {
-        edmaConfig = (EDMA_Config_t *) handle;
-        hwAttrs = edmaConfig->hwAttrs;
-        ccBaseAddr = hwAttrs->CCbaseAddress;
 
-        if (*isAnyError = EDMA_isError(ccBaseAddr))
-        {
-            EDMA_getErrorStatusInfo(hwAttrs, ccBaseAddr, errorInfo);
-            EDMA_clearErrors(hwAttrs, ccBaseAddr, errorInfo);
-        }
+    edmaConfig = (EDMA_Config_t *) handle;
+    hwAttrs = edmaConfig->hwAttrs;
+    ccBaseAddr = hwAttrs->CCbaseAddress;
+
+    if (*isAnyError = EDMA_isError(ccBaseAddr))
+    {
+        EDMA_getErrorStatusInfo(hwAttrs, ccBaseAddr, errorInfo);
+        EDMA_clearErrors(hwAttrs, ccBaseAddr, errorInfo);
     }
 
+exit:
     return(errorCode);
 }
 
@@ -1073,23 +1056,22 @@ int32_t EDMA_getTransferControllerErrorStatus(EDMA_Handle handle, uint8_t transf
     if (handle == NULL)
     {
         errorCode = EDMA_E_INVALID__HANDLE_NULL;
+        goto exit;
     }
 #endif
 
-    if (errorCode == EDMA_NO_ERROR)
-    {
-        edmaConfig = (EDMA_Config_t *) handle;
-        hwAttrs = edmaConfig->hwAttrs;
-        tcBaseAddr = hwAttrs->TCbaseAddress[transferControllerId];
+    edmaConfig = (EDMA_Config_t *) handle;
+    hwAttrs = edmaConfig->hwAttrs;
+    tcBaseAddr = hwAttrs->TCbaseAddress[transferControllerId];
 
-        if (*isAnyError = EDMA_isTransferControllerError(tcBaseAddr))
-        {
-            EDMA_getTransferControllerErrorStatusInfo(tcBaseAddr, errorInfo);
-            EDMA_clearTransferControllerErrors(tcBaseAddr, errorInfo);
-            errorInfo->transferControllerId = transferControllerId;
-        }
+    if (*isAnyError = EDMA_isTransferControllerError(tcBaseAddr))
+    {
+        EDMA_getTransferControllerErrorStatusInfo(tcBaseAddr, errorInfo);
+        EDMA_clearTransferControllerErrors(tcBaseAddr, errorInfo);
+        errorInfo->transferControllerId = transferControllerId;
     }
 
+exit:
     return(errorCode);
 }
 
@@ -1346,30 +1328,29 @@ static inline int32_t EDMA_startTransfer_assist(EDMA_Handle handle, uint8_t chan
     if (handle == NULL)
     {
         errorCode = EDMA_E_INVALID__HANDLE_NULL;
+        goto exit;
     }
     if ((channelType != (uint8_t)EDMA3_CHANNEL_TYPE_DMA) &&
         (channelType != (uint8_t)EDMA3_CHANNEL_TYPE_QDMA))
     {
         errorCode = EDMA_E_INVALID__DMA_CHANNEL_TYPE;
+        goto exit;
     }
 #endif
 
-    if (errorCode == EDMA_NO_ERROR)
-    {
-        edmaConfig = (EDMA_Config_t *) handle;
-        edmaObj = edmaConfig->object;
-        hwAttrs = edmaConfig->hwAttrs;
-        ccBaseAddr = hwAttrs->CCbaseAddress;
-    }
+    edmaConfig = (EDMA_Config_t *) handle;
+    edmaObj = edmaConfig->object;
+    hwAttrs = edmaConfig->hwAttrs;
+    ccBaseAddr = hwAttrs->CCbaseAddress;
 
-    if ((errorCode == EDMA_NO_ERROR) &&
-        (channelType == (uint8_t)EDMA3_CHANNEL_TYPE_QDMA))
+    if (channelType == (uint8_t)EDMA3_CHANNEL_TYPE_QDMA)
     {
 #ifdef EDMA_PARAM_CHECK
         /* error checking */
         if (channelId >= EDMA_NUM_QDMA_CHANNELS)
         {
             errorCode = EDMA_E_INVALID__QDMA_CHANNEL_ID;
+            goto exit;
         }
 #endif
 
@@ -1378,74 +1359,68 @@ static inline int32_t EDMA_startTransfer_assist(EDMA_Handle handle, uint8_t chan
             errorCode = EDMA_E_UNEXPECTED__QDMA_EVENT_MISS_DETECTED;
             /* clear previous missed events : QSECR and QEMCR */
             EDMA3QdmaClrMissEvt(ccBaseAddr, (uint32_t)channelId);
+            goto exit;
         }
 
-        if (errorCode == EDMA_NO_ERROR)
+        if (isStaticSet == true)
         {
-            if (isStaticSet == true)
+            if (HW_RD_FIELD32(ccBaseAddr + EDMA_TPCC_QCHMAPN((uint32_t)channelId),
+                    EDMA_TPCC_QCHMAPN_TRWORD)  == EDMA_QDMA_TRIG_WORD_OFFSET_OPT)
             {
-                if (HW_RD_FIELD32(ccBaseAddr + EDMA_TPCC_QCHMAPN((uint32_t)channelId),
-                        EDMA_TPCC_QCHMAPN_TRWORD)  == EDMA_QDMA_TRIG_WORD_OFFSET_OPT)
-                {
-                    /* modify triggerWordValue before triggering */
-                    HW_WR_FIELD32(&edmaObj->qdmaObj[channelId].triggerWordValue,
-                        EDMA_TPCC_OPT_STATIC, 1);
-                }
-                else
-                {
-                    /* update OPT field */
-                    paramId = HW_RD_FIELD32(ccBaseAddr + EDMA_TPCC_QCHMAPN((uint32_t)channelId),
-                        EDMA_TPCC_QCHMAPN_PAENTRY);
-                    HW_WR_FIELD32(ccBaseAddr + EDMA_TPCC_OPT((uint32_t)paramId), EDMA_TPCC_OPT_STATIC, 1);
-
-                }
+                /* modify triggerWordValue before triggering */
+                HW_WR_FIELD32(&edmaObj->qdmaObj[channelId].triggerWordValue,
+                    EDMA_TPCC_OPT_STATIC, 1);
             }
-            /* start transfer of specified Qdma channel, trigger word was programmed in config API */
-            HW_WR_REG32(edmaObj->qdmaObj[channelId].triggerWordAddress,
-                                            edmaObj->qdmaObj[channelId].triggerWordValue);
+            else
+            {
+                /* update OPT field */
+                paramId = HW_RD_FIELD32(ccBaseAddr + EDMA_TPCC_QCHMAPN((uint32_t)channelId),
+                    EDMA_TPCC_QCHMAPN_PAENTRY);
+                HW_WR_FIELD32(ccBaseAddr + EDMA_TPCC_OPT((uint32_t)paramId), EDMA_TPCC_OPT_STATIC, 1);
+
+            }
         }
+        /* start transfer of specified Qdma channel, trigger word was programmed in config API */
+        HW_WR_REG32(edmaObj->qdmaObj[channelId].triggerWordAddress,
+                                           edmaObj->qdmaObj[channelId].triggerWordValue);
     }
-    if ((errorCode == EDMA_NO_ERROR) &&
-        (channelType == (uint8_t)EDMA3_CHANNEL_TYPE_QDMA))
+    else /* channelType is EDMA3_CHANNEL_TYPE_DMA */
     {
 #ifdef EDMA_PARAM_CHECK
         /* error checking */
         if (channelId >= EDMA_NUM_DMA_CHANNELS)
         {
             errorCode = EDMA_E_INVALID__DMA_CHANNEL_ID;
+            goto exit;
         }
 #endif
 
-        if (errorCode == EDMA_NO_ERROR)
+        if (channelId < 32U) {
+            if (EDMA3GetErrIntrStatus(ccBaseAddr) & ((uint32_t)1 << channelId))
+            {
+                errorCode = EDMA_E_UNEXPECTED__DMA_EVENT_MISS_DETECTED;
+            }
+        }
+        else
         {
-            if (channelId < 32U) {
-                if (EDMA3GetErrIntrStatus(ccBaseAddr) & ((uint32_t)1 << channelId))
-                {
-                    errorCode = EDMA_E_UNEXPECTED__DMA_EVENT_MISS_DETECTED;
-                }
-            }
-            else
+            if (EDMA3ErrIntrHighStatusGet(ccBaseAddr) & ((uint32_t)1 << ((uint32_t)channelId-32U)))
             {
-                if (EDMA3ErrIntrHighStatusGet(ccBaseAddr) & ((uint32_t)1 << ((uint32_t)channelId-32U)))
-                {
-                    errorCode = EDMA_E_UNEXPECTED__DMA_EVENT_MISS_DETECTED;
-                }
-            }
-
-            if (errorCode != EDMA_NO_ERROR)
-            {
-                /* clear missed events */
-                EDMA3ClrMissEvt(ccBaseAddr, (uint32_t)channelId);
+                errorCode = EDMA_E_UNEXPECTED__DMA_EVENT_MISS_DETECTED;
             }
         }
 
-        if (errorCode == EDMA_NO_ERROR)
+        if (errorCode != EDMA_NO_ERROR)
         {
-            /* trigger the event */
-            EDMA3SetEvt(ccBaseAddr, (uint32_t)channelId);
+            /* clear missed events */
+            EDMA3ClrMissEvt(ccBaseAddr, (uint32_t)channelId);
+            goto exit;
         }
+
+        /* trigger the event */
+        EDMA3SetEvt(ccBaseAddr, (uint32_t)channelId);
     }
 
+exit:
     return(errorCode);
 }
 
@@ -1468,64 +1443,68 @@ int32_t EDMA_configChannel(EDMA_Handle handle, EDMA_channelConfig_t const *confi
 #ifdef EDMA_PARAM_CHECK
     /* validate configuration */
     errorCode = EDMA_validate_channel_config(handle, hwAttrs, config);
+    if (errorCode != EDMA_NO_ERROR)
+    {
+        goto exit;
+    }
 #endif
 
-    if (errorCode == EDMA_NO_ERROR)
+    pSetCfg = &config->paramSetConfig;
+
+    EDMA3EnableChInShadowReg(ccBaseAddr, (uint32_t)config->channelType, (uint32_t)channelId);
+    EDMA3MapChToEvtQ(ccBaseAddr, (uint32_t)config->channelType, (uint32_t)channelId,
+        (uint32_t)config->eventQueueId);
+
+    /* disable channel (event) first */
+    errorCode = EDMA_disableChannel(handle, channelId, config->channelType);
+    if (errorCode != EDMA_NO_ERROR)
     {
-        pSetCfg = &config->paramSetConfig;
-
-        EDMA3EnableChInShadowReg(ccBaseAddr, (uint32_t)config->channelType, (uint32_t)channelId);
-        EDMA3MapChToEvtQ(ccBaseAddr, (uint32_t)config->channelType, (uint32_t)channelId,
-            (uint32_t)config->eventQueueId);
-
-        /* disable channel (event) first */
-        errorCode = EDMA_disableChannel(handle, channelId, config->channelType);
+        goto exit;
     }
-    if (errorCode == EDMA_NO_ERROR)
+
+    if (config->channelType == (uint8_t)EDMA3_CHANNEL_TYPE_QDMA)
     {
-        if (config->channelType == (uint8_t)EDMA3_CHANNEL_TYPE_QDMA)
+        /* map channel to param set */
+        {
+            uint32_t temp = (uint32_t) paramId;
+            EDMA3MapQdmaChToPaRAM(ccBaseAddr, (uint32_t)channelId, &temp);
+        }
+
+        /* set trigger word */
+        EDMA3SetQdmaTrigWord(ccBaseAddr, (uint32_t)channelId, config->qdmaParamTriggerWordOffset);
+
+        edmaObj->qdmaObj[channelId].triggerWordAddress = ccBaseAddr +
+              EDMA_TPCC_OPT((uint32_t)paramId) + config->qdmaParamTriggerWordOffset * sizeof(uint32_t);
+    }
+    else
+    {   /* config->channelType is EDMA3_CHANNEL_TYPE_DMA */
+        if (hwAttrs->isChannelMapExist == true)
         {
             /* map channel to param set */
-            {
-                uint32_t temp = (uint32_t) paramId;
-                EDMA3MapQdmaChToPaRAM(ccBaseAddr, (uint32_t)channelId, &temp);
-            }
-
-            /* set trigger word */
-            EDMA3SetQdmaTrigWord(ccBaseAddr, (uint32_t)channelId, config->qdmaParamTriggerWordOffset);
-
-            edmaObj->qdmaObj[channelId].triggerWordAddress = ccBaseAddr +
-                EDMA_TPCC_OPT((uint32_t)paramId) + config->qdmaParamTriggerWordOffset * sizeof(uint32_t);
-        }
-        else
-        {   /* config->channelType is EDMA3_CHANNEL_TYPE_DMA */
-            if (hwAttrs->isChannelMapExist == true)
-            {
-                /* map channel to param set */
-                EDMA3ChannelToParamMap(ccBaseAddr, (uint32_t)channelId, (uint32_t)paramId);
-            }
-        }
-
-        EDMA3ClrIntr(ccBaseAddr, (uint32_t)pSetCfg->transferCompletionCode);
-
-        EDMA_paramConfig_assist(ccBaseAddr, paramId, pSetCfg, config->transferCompletionCallbackFxn,
-            config->transferCompletionCallbackFxnArg, edmaObj);
-
-        /* store trigger word param value for Qdma channel */
-        if (config->channelType == (uint8_t)EDMA3_CHANNEL_TYPE_QDMA)
-        {
-            uint32_t *pArray; /* param Set as array of uint32_t */
-
-            pArray = (uint32_t *)(ccBaseAddr + EDMA_TPCC_OPT((uint32_t)paramId));
-            edmaObj->qdmaObj[channelId].triggerWordValue = pArray[config->qdmaParamTriggerWordOffset];
-        }
-
-        if (isEnableChannel == true)
-        {
-            errorCode = EDMA_enableChannel(handle, channelId, config->channelType);
+            EDMA3ChannelToParamMap(ccBaseAddr, (uint32_t)channelId, (uint32_t)paramId);
         }
     }
 
+    EDMA3ClrIntr(ccBaseAddr, (uint32_t)pSetCfg->transferCompletionCode);
+
+    EDMA_paramConfig_assist(ccBaseAddr, paramId, pSetCfg, config->transferCompletionCallbackFxn,
+        config->transferCompletionCallbackFxnArg, edmaObj);
+
+    /* store trigger word param value for Qdma channel */
+    if (config->channelType == (uint8_t)EDMA3_CHANNEL_TYPE_QDMA)
+    {
+        uint32_t *pArray; /* param Set as array of uint32_t */
+
+        pArray = (uint32_t *)(ccBaseAddr + EDMA_TPCC_OPT((uint32_t)paramId));
+        edmaObj->qdmaObj[channelId].triggerWordValue = pArray[config->qdmaParamTriggerWordOffset];
+    }
+
+    if (isEnableChannel == true)
+    {
+        errorCode = EDMA_enableChannel(handle, channelId, config->channelType);
+    }
+
+exit:
     return(errorCode);
 }
 
@@ -1543,48 +1522,48 @@ int32_t EDMA_enableChannel(EDMA_Handle handle, uint8_t channelId, uint8_t channe
     if (handle == NULL)
     {
         errorCode = EDMA_E_INVALID__HANDLE_NULL;
+        goto exit;
     }
-    if (errorCode == EDMA_NO_ERROR)
+    errorCode = EDMA_validate_channelIdchannelType(channelId, channelType);
+    if (errorCode != EDMA_NO_ERROR)
     {
-        errorCode = EDMA_validate_channelIdchannelType(channelId, channelType);
+        goto exit;
     }
 #endif
 
-    if (errorCode == EDMA_NO_ERROR)
+    /* enable events, clear if applicable */
+    if (channelType == (uint8_t)EDMA3_CHANNEL_TYPE_QDMA)
     {
-        /* enable events, clear if applicable */
-        if (channelType == (uint8_t)EDMA3_CHANNEL_TYPE_QDMA)
-        {
-            /* clears QSECR and QEMCR */
-            EDMA3QdmaClrMissEvt(ccBaseAddr, (uint32_t)channelId);
+        /* clears QSECR and QEMCR */
+        EDMA3QdmaClrMissEvt(ccBaseAddr, (uint32_t)channelId);
 
-            /* enable the Qdma event */
-            EDMA3EnableQdmaEvt(ccBaseAddr, (uint32_t)channelId);
+        /* enable the Qdma event */
+        EDMA3EnableQdmaEvt(ccBaseAddr, (uint32_t)channelId);
 
-            /* From this point onwards, QDMA channel is armed and ready to be
-            triggered by either through @ref EDMA_startTransfer API or
-            through @ref EDMA_startTransferQdmaTrigWordWrite API */
-        }
-        else /* config->channelType is EDMA3_CHANNEL_TYPE_DMA */
-        {
-            /* clear SECR & EMCR to clean any previous NULL request */
-            EDMA3ClrMissEvt(ccBaseAddr, (uint32_t)channelId);
-
-            /* Set EESR to enable event */
-            EDMA3EnableDmaEvt(ccBaseAddr, (uint32_t)channelId);
-
-            /* From this point onwards, DMA channel is armed and ready to be
-            triggered by the event happening in the SoC using
-            the @ref edmaStartTransfer API */
-
-            /* Note: For manual trigger we don't need to clear/enable DMA event as it is
-            ignored when triggering channel manual (through a write to ESR) but not
-            doing these additional operations above would require a config parameter
-            to distinguish manual or event triggered (or both) just to serve the purpose
-            of not executing code that is harmless/don't care for the manual trigger */
-
-        }
+        /* From this point onwards, QDMA channel is armed and ready to be
+           triggered by either through @ref EDMA_startTransfer API or
+           through @ref EDMA_startTransferQdmaTrigWordWrite API */
     }
+    else /* config->channelType is EDMA3_CHANNEL_TYPE_DMA */
+    {
+        /* clear SECR & EMCR to clean any previous NULL request */
+        EDMA3ClrMissEvt(ccBaseAddr, (uint32_t)channelId);
+
+        /* Set EESR to enable event */
+        EDMA3EnableDmaEvt(ccBaseAddr, (uint32_t)channelId);
+
+        /* From this point onwards, DMA channel is armed and ready to be
+           triggered by the event happening in the SoC using
+           the @ref edmaStartTransfer API */
+
+        /* Note: For manual trigger we don't need to clear/enable DMA event as it is
+           ignored when triggering channel manual (through a write to ESR) but not
+           doing these additional operations above would require a config parameter
+           to distinguish manual or event triggered (or both) just to serve the purpose
+           of not executing code that is harmless/don't care for the manual trigger */
+
+    }
+exit:
     return(errorCode);
 }
 
@@ -1602,38 +1581,38 @@ int32_t EDMA_disableChannel(EDMA_Handle handle, uint8_t channelId, uint8_t chann
     if (handle == NULL)
     {
         errorCode = EDMA_E_INVALID__HANDLE_NULL;
+        goto exit;
     }
-    if (errorCode == EDMA_NO_ERROR)
+    errorCode = EDMA_validate_channelIdchannelType(channelId, channelType);
+    if (errorCode != EDMA_NO_ERROR)
     {
-        errorCode = EDMA_validate_channelIdchannelType(channelId, channelType);
+        goto exit;
     }
 #endif
 
-    if (errorCode == EDMA_NO_ERROR)
+    /* enable events, clear if applicable */
+    if (channelType == (uint8_t)EDMA3_CHANNEL_TYPE_QDMA)
     {
-        /* enable events, clear if applicable */
-        if (channelType == (uint8_t)EDMA3_CHANNEL_TYPE_QDMA)
-        {
-            /* disable the Qdma event */
-            EDMA3DisableQdmaEvt(ccBaseAddr, (uint32_t)channelId);
+        /* disable the Qdma event */
+        EDMA3DisableQdmaEvt(ccBaseAddr, (uint32_t)channelId);
 
-            /* clears QSECR and QEMCR */
-            EDMA3QdmaClrMissEvt(ccBaseAddr, (uint32_t)channelId);
+        /* clears QSECR and QEMCR */
+        EDMA3QdmaClrMissEvt(ccBaseAddr, (uint32_t)channelId);
 
-            /* From this point onwards, QDMA channel is armed and ready to be
-            triggered by either through @ref EDMA_startTransfer API or
-            through @ref EDMA_startTransferQdmaTrigWordWrite API */
-        }
-        else /* config->channelType is EDMA3_CHANNEL_TYPE_DMA */
-        {
-            /* disable DMA event */
-            EDMA3DisableDmaEvt(ccBaseAddr, (uint32_t)channelId);
-
-            /* clear SECR & EMCR to clean any previous NULL request */
-            EDMA3ClrMissEvt(ccBaseAddr, (uint32_t)channelId);
-
-        }
+        /* From this point onwards, QDMA channel is armed and ready to be
+           triggered by either through @ref EDMA_startTransfer API or
+           through @ref EDMA_startTransferQdmaTrigWordWrite API */
     }
+    else /* config->channelType is EDMA3_CHANNEL_TYPE_DMA */
+    {
+        /* disable DMA event */
+        EDMA3DisableDmaEvt(ccBaseAddr, (uint32_t)channelId);
+
+        /* clear SECR & EMCR to clean any previous NULL request */
+        EDMA3ClrMissEvt(ccBaseAddr, (uint32_t)channelId);
+
+    }
+exit:
     return(errorCode);
 }
 
@@ -1654,22 +1633,23 @@ int32_t EDMA_configParamSet(EDMA_Handle handle, uint16_t paramId,
     if (config == NULL)
     {
         errorCode = EDMA_E_INVALID__CONFIG_POINTER_NULL;
+        goto exit;
     }
-    if (errorCode == EDMA_NO_ERROR)
+    /* validate configuration */
+    errorCode = EDMA_validate_param_config(handle, hwAttrs, paramId, &config->paramSetConfig,
+        config->transferCompletionCallbackFxn);
+
+    if (errorCode != EDMA_NO_ERROR)
     {
-        /* validate configuration */
-        errorCode = EDMA_validate_param_config(handle, hwAttrs, paramId, &config->paramSetConfig,
-            config->transferCompletionCallbackFxn);
+        goto exit;
     }
 #endif
 
-    if (errorCode == EDMA_NO_ERROR)
-    {
-        EDMA_paramConfig_assist(ccBaseAddr, paramId, &config->paramSetConfig,
-            config->transferCompletionCallbackFxn, config->transferCompletionCallbackFxnArg,
-            edmaObj);
-    }
+    EDMA_paramConfig_assist(ccBaseAddr, paramId, &config->paramSetConfig,
+        config->transferCompletionCallbackFxn, config->transferCompletionCallbackFxnArg,
+        edmaObj);
 
+exit:
     return(errorCode);
 }
 
@@ -1716,35 +1696,32 @@ int32_t EDMA_linkParamSets(EDMA_Handle handle, uint16_t fromParamId, uint16_t to
     if (handle == NULL)
     {
         errorCode = EDMA_E_INVALID__HANDLE_NULL;
+        goto exit;
     }
 #endif
 
-    if (errorCode == EDMA_NO_ERROR)
-    {
-        edmaConfig = (EDMA_Config_t *) handle;
-        hwAttrs =  edmaConfig->hwAttrs;
-        ccBaseAddr = hwAttrs->CCbaseAddress;
+    edmaConfig = (EDMA_Config_t *) handle;
+    hwAttrs =  edmaConfig->hwAttrs;
+    ccBaseAddr = hwAttrs->CCbaseAddress;
 
-    #ifdef EDMA_PARAM_CHECK
-        if ((fromParamId >= hwAttrs->numParamSets) ||
-            (toParamId >= hwAttrs->numParamSets))
-        {
-            errorCode = EDMA_E_INVALID__PARAM_ID;
-        }
-    #endif
-    }
-    if (errorCode == EDMA_NO_ERROR)
+#ifdef EDMA_PARAM_CHECK
+    if ((fromParamId >= hwAttrs->numParamSets) ||
+        (toParamId >= hwAttrs->numParamSets))
     {
-    /* Do not use LinkChannel API, it changes toParamId's TCC to that of
-    fromParamId and also has issue JIRA: PRSDK-1055 */
-    #if 0
-        EDMA3LinkChannel(ccBaseAddr, (uint32_t)fromParamId, (uint32_t)toParamId);
-    #else
-        HW_WR_FIELD32(ccBaseAddr + EDMA_TPCC_LNK((uint32_t)fromParamId), EDMA_TPCC_LNK_LINK,
-            ccBaseAddr + EDMA_TPCC_OPT((uint32_t)toParamId));
-    #endif
+        errorCode = EDMA_E_INVALID__PARAM_ID;
+        goto exit;
     }
+#endif
+/* Do not use LinkChannel API, it changes toParamId's TCC to that of
+   fromParamId and also has issue JIRA: PRSDK-1055 */
+#if 0
+    EDMA3LinkChannel(ccBaseAddr, (uint32_t)fromParamId, (uint32_t)toParamId);
+#else
+    HW_WR_FIELD32(ccBaseAddr + EDMA_TPCC_LNK((uint32_t)fromParamId), EDMA_TPCC_LNK_LINK,
+        ccBaseAddr + EDMA_TPCC_OPT((uint32_t)toParamId));
+#endif
 
+exit:
     return(errorCode);
 }
 
@@ -1759,33 +1736,31 @@ int32_t EDMA_chainChannels(EDMA_Handle handle, uint16_t fromParamId, uint8_t toC
     if (handle == NULL)
     {
         errorCode = EDMA_E_INVALID__HANDLE_NULL;
+        goto exit;
     }
-    if ((errorCode == EDMA_NO_ERROR) && (toChannelId >= EDMA_NUM_DMA_CHANNELS))
+    if (toChannelId >= EDMA_NUM_DMA_CHANNELS)
     {
         errorCode = EDMA_E_INVALID__DMA_CHANNEL_ID;
+        goto exit;
     }
 #endif
 
-    if (errorCode == EDMA_NO_ERROR)
-    {
-        edmaConfig = (EDMA_Config_t *) handle;
-        hwAttrs =  edmaConfig->hwAttrs;
-        ccBaseAddr = hwAttrs->CCbaseAddress;
-    }
+    edmaConfig = (EDMA_Config_t *) handle;
+    hwAttrs =  edmaConfig->hwAttrs;
+    ccBaseAddr = hwAttrs->CCbaseAddress;
 
 #ifdef EDMA_PARAM_CHECK
-    if ((errorCode == EDMA_NO_ERROR) && (fromParamId >= hwAttrs->numParamSets))
+    if (fromParamId >= hwAttrs->numParamSets)
     {
         errorCode = EDMA_E_INVALID__PARAM_ID;
+        goto exit;
     }
 #endif
 
-    if (errorCode == EDMA_NO_ERROR)
-    {
-        HW_WR_FIELD32(ccBaseAddr + EDMA_TPCC_OPT((uint32_t)fromParamId), EDMA_TPCC_OPT_TCC,
-            toChannelId);
-    }
+    HW_WR_FIELD32(ccBaseAddr + EDMA_TPCC_OPT((uint32_t)fromParamId), EDMA_TPCC_OPT_TCC,
+        toChannelId);
 
+exit:
     return(errorCode);
 }
 
@@ -1825,53 +1800,51 @@ int32_t EDMA_isTransferComplete(EDMA_Handle handle, uint8_t transferCompletionCo
     if (handle == NULL)
     {
         errorCode = EDMA_E_INVALID__HANDLE_NULL;
+        goto exit;
     }
-    if ((errorCode == EDMA_NO_ERROR) && (transferCompletionCode >= EDMA_NUM_TCC))
+    if (transferCompletionCode >= EDMA_NUM_TCC)
     {
         errorCode = EDMA_E_INVALID__TRANSFER_COMPLETION_CODE;
+        goto exit;
     }
 #endif
 
-    if (errorCode == EDMA_NO_ERROR)
+    edmaConfig = (EDMA_Config_t *) handle;
+    edmaObj = edmaConfig->object;
+
+    /* Transfer completion call back function must not be registered for the
+       transfer completion code */
+    if (edmaObj->transferCompleteCallbackFxn[transferCompletionCode] != NULL)
     {
-        edmaConfig = (EDMA_Config_t *) handle;
-        edmaObj = edmaConfig->object;
+        errorCode = EDMA_E_UNEXPECTED__ATTEMPT_TO_TEST_COMPLETION;
 
-        /* Transfer completion call back function must not be registered for the
-        transfer completion code */
-        if (edmaObj->transferCompleteCallbackFxn[transferCompletionCode] != NULL)
-        {
-            errorCode = EDMA_E_UNEXPECTED__ATTEMPT_TO_TEST_COMPLETION;
-
-            /* Additional protection in case user does not check for error code,
-            make the transfer never succeed. */
-            *isTransferComplete = false;
-        }
+        /* Additional protection in case user does not check for error code,
+           make the transfer never succeed. */
+        *isTransferComplete = false;
+        goto exit;
     }
 
-    if (errorCode == EDMA_NO_ERROR)
+    hwAttrs =  edmaConfig->hwAttrs;
+    ccBaseAddr = hwAttrs->CCbaseAddress;
+
+    if (transferCompletionCode < 32U)
     {
-        hwAttrs =  edmaConfig->hwAttrs;
-        ccBaseAddr = hwAttrs->CCbaseAddress;
-
-        if (transferCompletionCode < 32U)
-        {
-            *isTransferComplete = (bool)((EDMA3GetIntrStatus(ccBaseAddr) &
-                                    ((uint32_t)1 << transferCompletionCode)) != 0U);
-        }
-        else
-        {
-            *isTransferComplete = (bool)((EDMA3IntrStatusHighGet(ccBaseAddr) &
-                                    ((uint32_t)1 << (transferCompletionCode-32U))) != 0U);
-        }
-
-        /* if transfer is complete, clear IPR(H) bit to allow new transfer */
-        if (*isTransferComplete == true)
-        {
-            EDMA3ClrIntr(ccBaseAddr, (uint32_t)transferCompletionCode);
-        }
+        *isTransferComplete = (bool)((EDMA3GetIntrStatus(ccBaseAddr) &
+                                   ((uint32_t)1 << transferCompletionCode)) != 0U);
+    }
+    else
+    {
+        *isTransferComplete = (bool)((EDMA3IntrStatusHighGet(ccBaseAddr) &
+                                   ((uint32_t)1 << (transferCompletionCode-32U))) != 0U);
     }
 
+    /* if transfer is complete, clear IPR(H) bit to allow new transfer */
+    if (*isTransferComplete == true)
+    {
+        EDMA3ClrIntr(ccBaseAddr, (uint32_t)transferCompletionCode);
+    }
+
+exit:
     return(errorCode);
 }
 
@@ -1888,25 +1861,23 @@ int32_t EDMA_setDestinationAddress(EDMA_Handle handle,
     if (handle == NULL)
     {
         errorCode = EDMA_E_INVALID__HANDLE_NULL;
+        goto exit;
     }
 #endif
-    if (errorCode == EDMA_NO_ERROR)
-    {
-        edmaConfig = (EDMA_Config_t *) handle;
-        hwAttrs =  edmaConfig->hwAttrs;
-        ccBaseAddr = hwAttrs->CCbaseAddress;
-    }
+
+    edmaConfig = (EDMA_Config_t *) handle;
+    hwAttrs =  edmaConfig->hwAttrs;
+    ccBaseAddr = hwAttrs->CCbaseAddress;
 
 #ifdef EDMA_PARAM_CHECK
-    if ((errorCode == EDMA_NO_ERROR) && (paramId >= hwAttrs->numParamSets))
+    if (paramId >= hwAttrs->numParamSets)
     {
         errorCode = EDMA_E_INVALID__PARAM_ID;
+        goto exit;
     }
 #endif
-    if (errorCode == EDMA_NO_ERROR)
-    {
-        HW_WR_REG32(ccBaseAddr + EDMA_TPCC_DST((uint32_t)paramId), destinationAddress);
-    }
+    HW_WR_REG32(ccBaseAddr + EDMA_TPCC_DST((uint32_t)paramId), destinationAddress);
+exit:
     return(errorCode);
 }
 
@@ -1923,37 +1894,43 @@ int32_t EDMA_setSourceAddress(EDMA_Handle handle,
     if (handle == NULL)
     {
         errorCode = EDMA_E_INVALID__HANDLE_NULL;
+        goto exit;
     }
 #endif
 
-    if (errorCode == EDMA_NO_ERROR)
-    {
-        edmaConfig = (EDMA_Config_t *) handle;
-        hwAttrs =  edmaConfig->hwAttrs;
-        ccBaseAddr = hwAttrs->CCbaseAddress;
-    }
+    edmaConfig = (EDMA_Config_t *) handle;
+    hwAttrs =  edmaConfig->hwAttrs;
+    ccBaseAddr = hwAttrs->CCbaseAddress;
 
 #ifdef EDMA_PARAM_CHECK
-    if ((errorCode == EDMA_NO_ERROR) && (paramId >= hwAttrs->numParamSets))
+    if (paramId >= hwAttrs->numParamSets)
     {
         errorCode = EDMA_E_INVALID__PARAM_ID;
+        goto exit;
     }
 #endif
-    if (errorCode == EDMA_NO_ERROR)
-    {
-        HW_WR_REG32(ccBaseAddr + EDMA_TPCC_SRC((uint32_t)paramId), sourceAddress);
-    }
+    HW_WR_REG32(ccBaseAddr + EDMA_TPCC_SRC((uint32_t)paramId), sourceAddress);
+exit:
     return(errorCode);
 }
 
-static void EDMA_unregisterInterrupts(EDMA_Handle handle)
+int32_t EDMA_close(EDMA_Handle handle)
 {
     EDMA_Config_t *edmaConfig;
     EDMA_Object_t *edmaObj;
     EDMA_hwAttrs_t const *hwAttrs;
+    int32_t errorCode = EDMA_NO_ERROR;
     uint8_t tc;
     bool isUnifiedErrorInterrupts;
     int32_t interruptNum, corepacEvent;
+
+#ifdef EDMA_PARAM_CHECK
+    if (handle == NULL)
+    {
+        errorCode = EDMA_E_INVALID__HANDLE_NULL;
+        goto exit;
+    }
+#endif
 
     edmaConfig = (EDMA_Config_t *) handle;
     edmaObj = edmaConfig->object;
@@ -1978,7 +1955,7 @@ static void EDMA_unregisterInterrupts(EDMA_Handle handle)
     }
 
     isUnifiedErrorInterrupts = (hwAttrs->errorInterruptNum != EDMA_INTERRUPT_NOT_CONNECTED_ID) &&
-                            (hwAttrs->errorInterruptNum == hwAttrs->transferControllerErrorInterruptNum[0]);
+                               (hwAttrs->errorInterruptNum == hwAttrs->transferControllerErrorInterruptNum[0]);
     #if defined(_TMS320C6X)
         corepacEvent = (int32_t)hwAttrs->errorInterruptNum; /* Event going in to CPU */
         interruptNum = OSAL_REGINT_INTVEC_EVENT_COMBINER; /* Host Interrupt vector */
@@ -2018,29 +1995,9 @@ static void EDMA_unregisterInterrupts(EDMA_Handle handle)
         }
     }
 
-}
+    edmaObj->isUsed = false;
 
-int32_t EDMA_close(EDMA_Handle handle)
-{
-    EDMA_Config_t *edmaConfig;
-    EDMA_Object_t *edmaObj;
-    int32_t errorCode = EDMA_NO_ERROR;
-
-#ifdef EDMA_PARAM_CHECK
-    if (handle == NULL)
-    {
-        errorCode = EDMA_E_INVALID__HANDLE_NULL;
-    }
-#endif
-
-    if (errorCode == EDMA_NO_ERROR)
-    {
-        EDMA_unregisterInterrupts(handle);
-        edmaConfig = (EDMA_Config_t *) handle;
-        edmaObj = edmaConfig->object;
-        edmaObj->isUsed = false;
-    }
-
+exit:
     return(errorCode);
 }
 
@@ -2067,69 +2024,66 @@ int32_t EDMA_init(uint8_t instanceId)
     if (instanceId > EDMA_DRV_INST_MAX)
     {
         errorCode = EDMA_E_INVALID__INSTANCE_ID;
+        goto exit;
     }
 #endif
 
-    if (errorCode == EDMA_NO_ERROR)
+    hwAttrs = EDMA_getHwAttrs(instanceId);
+    if (hwAttrs == NULL)
     {
-        hwAttrs = EDMA_getHwAttrs(instanceId);
-        if (hwAttrs == NULL)
-        {
-            errorCode = EDMA_E_INVALID__INSTANCE_ID;
-        }
+        errorCode = EDMA_E_INVALID__INSTANCE_ID;
+        goto exit;
     }
 
-    if (errorCode == EDMA_NO_ERROR)
+    /* h/w reset values of param set */
+    memset(&paramSet, 0, sizeof(paramSet));
+
+#ifdef EDMA_DBG
+    memset(&edmaDbg, 0, sizeof(edmaDbg));
+#endif
+
+    /* All AR devices have no-region, although internally regionId variable
+       is initialized to 0, intentionally indicate this through API */
+    EDMAsetRegion(0);
+
+    ccBaseAddr = hwAttrs->CCbaseAddress;
+    EDMA3Init(ccBaseAddr, (uint32_t)0);
+    /* do things now that EDMA3Init is (unfortunately not doing) */
+    /* disable DMA events */
+    for (channelId = 0; channelId < EDMA_NUM_DMA_CHANNELS; channelId++)
     {
-        /* h/w reset values of param set */
-        memset(&paramSet, 0, sizeof(paramSet));
-
-    #ifdef EDMA_DBG
-        memset(&edmaDbg, 0, sizeof(edmaDbg));
-    #endif
-
-        /* All AR devices have no-region, although internally regionId variable
-        is initialized to 0, intentionally indicate this through API */
-        EDMAsetRegion(0);
-
-        ccBaseAddr = hwAttrs->CCbaseAddress;
-        EDMA3Init(ccBaseAddr, (uint32_t)0);
-        /* do things now that EDMA3Init is (unfortunately not doing) */
-        /* disable DMA events */
-        for (channelId = 0; channelId < EDMA_NUM_DMA_CHANNELS; channelId++)
-        {
-            EDMA3DisableDmaEvt(ccBaseAddr, (uint32_t)channelId);
-            EDMA3ClrEvt(ccBaseAddr, (uint32_t)channelId);
-            EDMA3ClrMissEvt(ccBaseAddr, (uint32_t)channelId);
-        }
-        /* disable and clear event interrupts */
-        for (transCompCode = 0; transCompCode < EDMA_NUM_TCC; transCompCode++)
-        {
-            EDMA3DisableEvtIntr(ccBaseAddr, (uint32_t)transCompCode);
-            EDMA3ClrIntr(ccBaseAddr, (uint32_t)transCompCode);
-        }
-        for (channelId = 0; channelId < EDMA_NUM_QDMA_CHANNELS; channelId++)
-        {
-            EDMA3DisableQdmaEvt(ccBaseAddr, (uint32_t)channelId);
-            EDMA3QdmaClrMissEvt(ccBaseAddr, (uint32_t)channelId);
-        }
-        /* clear tansfer controller errors */
-        for (tc = 0; tc < hwAttrs->numEventQueues; tc++)
-        {
-            tcBaseAddr = hwAttrs->TCbaseAddress[tc];
-            errClrRegAddr = tcBaseAddr + EDMA_TC_ERRCLR;
-            HW_WR_FIELD32(errClrRegAddr, EDMA_TC_ERRCLR_TRERR, 1);
-            HW_WR_FIELD32(errClrRegAddr, EDMA_TC_ERRCLR_MMRAERR, 1);
-            HW_WR_FIELD32(errClrRegAddr, EDMA_TC_ERRCLR_BUSERR, 1);
-        }
-        /* cleanup Params, note h/w reset state is all 0s, must be done after
-        disabling/clearning channel events (in particular QDMA) */
-        for (paramId = 0; paramId < hwAttrs->numParamSets; paramId++)
-        {
-            EDMA3SetPaRAM(ccBaseAddr, (uint32_t)paramId, &paramSet);
-        }
+        EDMA3DisableDmaEvt(ccBaseAddr, (uint32_t)channelId);
+        EDMA3ClrEvt(ccBaseAddr, (uint32_t)channelId);
+        EDMA3ClrMissEvt(ccBaseAddr, (uint32_t)channelId);
     }
-
+    /* disable and clear event interrupts */
+    for (transCompCode = 0; transCompCode < EDMA_NUM_TCC; transCompCode++)
+    {
+        EDMA3DisableEvtIntr(ccBaseAddr, (uint32_t)transCompCode);
+        EDMA3ClrIntr(ccBaseAddr, (uint32_t)transCompCode);
+    }
+    for (channelId = 0; channelId < EDMA_NUM_QDMA_CHANNELS; channelId++)
+    {
+        EDMA3DisableQdmaEvt(ccBaseAddr, (uint32_t)channelId);
+        EDMA3QdmaClrMissEvt(ccBaseAddr, (uint32_t)channelId);
+    }
+    /* clear tansfer controller errors */
+    for (tc = 0; tc < hwAttrs->numEventQueues; tc++)
+    {
+        tcBaseAddr = hwAttrs->TCbaseAddress[tc];
+        errClrRegAddr = tcBaseAddr + EDMA_TC_ERRCLR;
+        HW_WR_FIELD32(errClrRegAddr, EDMA_TC_ERRCLR_TRERR, 1);
+        HW_WR_FIELD32(errClrRegAddr, EDMA_TC_ERRCLR_MMRAERR, 1);
+        HW_WR_FIELD32(errClrRegAddr, EDMA_TC_ERRCLR_BUSERR, 1);
+    }
+    /* cleanup Params, note h/w reset state is all 0s, must be done after
+       disabling/clearning channel events (in particular QDMA) */
+    for (paramId = 0; paramId < hwAttrs->numParamSets; paramId++)
+    {
+        EDMA3SetPaRAM(ccBaseAddr, (uint32_t)paramId, &paramSet);
+    }
+    
+exit:
     return(errorCode);
 }
 
@@ -2148,71 +2102,71 @@ int32_t EDMA_getStatusInfo(EDMA_Handle handle, EDMA_statusInfo_t *status)
     if (handle == NULL)
     {
         errorCode = EDMA_E_INVALID__HANDLE_NULL;
+        goto exit;
     }
-    if ((errorCode == EDMA_NO_ERROR) && (status == NULL))
+    if (status == NULL)
     {
         errorCode = EDMA_E_INVALID__STATUS_POINTER_NULL;
+        goto exit;
     }
 #endif
 
-    if (errorCode == EDMA_NO_ERROR)
+    edmaConfig = (EDMA_Config_t *) handle;
+    hwAttrs =  edmaConfig->hwAttrs;
+    ccBaseAddr = hwAttrs->CCbaseAddress;
+
+    /* queue status processing */
+    for (queueId = 0; queueId < hwAttrs->numEventQueues; queueId++)
     {
-        edmaConfig = (EDMA_Config_t *) handle;
-        hwAttrs =  edmaConfig->hwAttrs;
-        ccBaseAddr = hwAttrs->CCbaseAddress;
+        qStatRegAddr = ccBaseAddr + EDMA_TPCC_QSTATN((uint32_t)queueId);
+        qStatus = &status->queue[queueId];
 
-        /* queue status processing */
-        for (queueId = 0; queueId < hwAttrs->numEventQueues; queueId++)
-        {
-            qStatRegAddr = ccBaseAddr + EDMA_TPCC_QSTATN((uint32_t)queueId);
-            qStatus = &status->queue[queueId];
+        qStatus->isThresholdExceeded =
+            (bool) HW_RD_FIELD32(qStatRegAddr, EDMA_TPCC_QSTATN_THRXCD);
 
-            qStatus->isThresholdExceeded =
-                (bool) HW_RD_FIELD32(qStatRegAddr, EDMA_TPCC_QSTATN_THRXCD);
+        qStatus->maxQueueEntries =
+            (uint8_t) HW_RD_FIELD32(qStatRegAddr, EDMA_TPCC_QSTATN_WM);
 
-            qStatus->maxQueueEntries =
-                (uint8_t) HW_RD_FIELD32(qStatRegAddr, EDMA_TPCC_QSTATN_WM);
+        numOutstandingEntries =
+            (uint8_t) HW_RD_FIELD32(qStatRegAddr, EDMA_TPCC_QSTATN_NUMVAL);
+        qStatus->numOutstandingEntries = numOutstandingEntries;
 
-            numOutstandingEntries =
-                (uint8_t) HW_RD_FIELD32(qStatRegAddr, EDMA_TPCC_QSTATN_NUMVAL);
-            qStatus->numOutstandingEntries = numOutstandingEntries;
-
-            /* process outstanding queue entries first,
-            starting from position indicated by the h/w, note queue circularity */
-            qEntryIndx = (uint8_t) HW_RD_FIELD32(qStatRegAddr, EDMA_TPCC_QSTATN_STRTPTR);
-            qEntry0Addr = ccBaseAddr + EDMA_TPCC_QNE0((uint8_t)queueId);
-            qEntryAddrJump = EDMA_TPCC_QNE1(0U) - EDMA_TPCC_QNE0(0U);
-            EDMA_update_queue_entries(qEntry0Addr, qEntryAddrJump,
-                                    numOutstandingEntries,
-                                    &qEntryIndx, qStatus->outstandingEntries);
-            /* process non-outstanding entries */
-            EDMA_update_queue_entries(qEntry0Addr, qEntryAddrJump,
-                                    EDMA_NUM_QUEUE_ENTRIES - numOutstandingEntries,
-                                    &qEntryIndx, qStatus->dequeuedEntries);
-        }
-
-        /* CCSTAT processing */
-        ccStatRegAddr = ccBaseAddr + EDMA_TPCC_CCSTAT;
-
-        status->numOutstandingCompletionRequests =
-            HW_RD_FIELD32(ccStatRegAddr, EDMA_TPCC_CCSTAT_COMPACTV);
-
-        status->isAnyDmaChannelActive =
-            HW_RD_FIELD32(ccStatRegAddr, EDMA_TPCC_CCSTAT_EVTACTV);
-
-        status->isAnyQdmaChannelActive =
-            HW_RD_FIELD32(ccStatRegAddr, EDMA_TPCC_CCSTAT_QEVTACTV);
-
-        status->isWriteStatusActive =
-            HW_RD_FIELD32(ccStatRegAddr, EDMA_TPCC_CCSTAT_WSTATACTV);
-
-        status->isAnyTransferActive =
-            HW_RD_FIELD32(ccStatRegAddr, EDMA_TPCC_CCSTAT_TRACTV);
-
-        status->isAnythingActive =
-            HW_RD_FIELD32(ccStatRegAddr, EDMA_TPCC_CCSTAT_ACTV);
+        /* process outstanding queue entries first,
+           starting from position indicated by the h/w, note queue circularity */
+        qEntryIndx = (uint8_t) HW_RD_FIELD32(qStatRegAddr, EDMA_TPCC_QSTATN_STRTPTR);
+        qEntry0Addr = ccBaseAddr + EDMA_TPCC_QNE0((uint8_t)queueId);
+        qEntryAddrJump = EDMA_TPCC_QNE1(0U) - EDMA_TPCC_QNE0(0U);
+        EDMA_update_queue_entries(qEntry0Addr, qEntryAddrJump,
+                                  numOutstandingEntries,
+                                  &qEntryIndx, qStatus->outstandingEntries);
+        /* process non-outstanding entries */
+        EDMA_update_queue_entries(qEntry0Addr, qEntryAddrJump,
+                                 EDMA_NUM_QUEUE_ENTRIES - numOutstandingEntries,
+                                 &qEntryIndx, qStatus->dequeuedEntries);
     }
 
+    /* CCSTAT processing */
+    ccStatRegAddr = ccBaseAddr + EDMA_TPCC_CCSTAT;
+
+    status->numOutstandingCompletionRequests =
+        HW_RD_FIELD32(ccStatRegAddr, EDMA_TPCC_CCSTAT_COMPACTV);
+
+    status->isAnyDmaChannelActive =
+        HW_RD_FIELD32(ccStatRegAddr, EDMA_TPCC_CCSTAT_EVTACTV);
+
+    status->isAnyQdmaChannelActive =
+        HW_RD_FIELD32(ccStatRegAddr, EDMA_TPCC_CCSTAT_QEVTACTV);
+
+    status->isWriteStatusActive =
+        HW_RD_FIELD32(ccStatRegAddr, EDMA_TPCC_CCSTAT_WSTATACTV);
+
+    status->isAnyTransferActive =
+        HW_RD_FIELD32(ccStatRegAddr, EDMA_TPCC_CCSTAT_TRACTV);
+
+    status->isAnythingActive =
+        HW_RD_FIELD32(ccStatRegAddr, EDMA_TPCC_CCSTAT_ACTV);
+
+exit:
     return(errorCode);
 }
 
@@ -2234,287 +2188,256 @@ EDMA_Handle EDMA_open(uint8_t instanceId, int32_t *errorCode,
     EDMA_instanceInfo_t *instanceInfo)
 {
     EDMA_Handle handle = NULL;
-    EDMA_Config_t *edmaConfig = NULL;
-    EDMA_Object_t *edmaObj = NULL;
+    EDMA_Config_t *edmaConfig;
+    EDMA_Object_t *edmaObj;
     const EDMA_hwAttrs_t *hwAttrs;
     OsalRegisterIntrParams_t interruptRegParams;
     uint8_t tc;
     bool isUnifiedErrorInterrupts;
     uint32_t key;
-    int32_t retVal = EDMA_NO_ERROR;
 
 #ifdef EDMA_PARAM_CHECK
     /* error checking */
     if (errorCode == NULL)
     {
         handle = NULL;
-        retVal = EDMA_E_INVALID__CONFIG_POINTER_NULL;
+        goto exit;
     }
-    if ((retVal == EDMA_NO_ERROR) && (instanceId > EDMA_DRV_INST_MAX))
+    if (instanceId > EDMA_DRV_INST_MAX)
     {
-        retVal = EDMA_E_INVALID__INSTANCE_ID;
+        *errorCode = EDMA_E_INVALID__INSTANCE_ID;
         handle = NULL;
+        goto exit;
     }
-    if ((retVal == EDMA_NO_ERROR) && (instanceInfo == NULL))
+    if (instanceInfo == NULL)
     {
-        retVal = EDMA_E_INVALID__INSTANCEINFO_POINTER_NULL;
+        *errorCode = EDMA_E_INVALID__INSTANCEINFO_POINTER_NULL;
         handle = NULL;
+        goto exit;
     }
 #endif
 
-    if ((retVal == EDMA_NO_ERROR) &&
-        ((EDMA_config[instanceId].hwAttrs != NULL) ||
-         (EDMA_config[instanceId].object != NULL)))
+    if((EDMA_config[instanceId].hwAttrs != NULL) ||
+       (EDMA_config[instanceId].object != NULL))
     {
         /* Instance is already opened. */
-        retVal = EDMA_E_UNEXPECTED__EDMA_INSTANCE_REOPEN;
+        *errorCode = EDMA_E_UNEXPECTED__EDMA_INSTANCE_REOPEN;
+        goto exit;
     }
-    if (retVal == EDMA_NO_ERROR)
+    hwAttrs = EDMA_getHwAttrs(instanceId);
+    if (hwAttrs == NULL)
     {
-        hwAttrs = EDMA_getHwAttrs(instanceId);
-        if (hwAttrs == NULL)
+        *errorCode = EDMA_E_INVALID__INSTANCE_ID;
+        handle = NULL;
+        goto exit;
+    }
+
+    key = HwiP_disable();
+    edmaObj = EDMA_getFreeEdmaObj();
+    if (edmaObj == NULL)
+    {
+        *errorCode = EDMA_E_INVALID__INSTANCE_ID;
+        handle = NULL;
+        goto exit;
+    }
+    else
+    {
+        edmaObj->isUsed = true;
+    }
+    HwiP_restore(key);
+
+    EDMA_config[instanceId].hwAttrs = hwAttrs;
+    EDMA_config[instanceId].object  = edmaObj;
+    /* Get handle for this driver instance */
+    handle = (EDMA_Handle)&(EDMA_config[instanceId]);
+
+    edmaConfig = (EDMA_Config_t *) handle;
+    edmaObj = edmaConfig->object;
+
+#ifdef EDMA_DBG
+    edmaDbg.edmaObj = edmaObj;
+#endif
+
+    hwAttrs =  edmaConfig->hwAttrs;
+    instanceInfo->numEventQueues = hwAttrs->numEventQueues;
+    instanceInfo->numParamSets = hwAttrs->numParamSets;
+    instanceInfo->isChannelMapExist = hwAttrs->isChannelMapExist;
+    instanceInfo->isTransferCompletionInterruptConnected =
+        (hwAttrs->transferCompletionInterruptNum != EDMA_INTERRUPT_NOT_CONNECTED_ID);
+    instanceInfo->isErrorInterruptConnected = (hwAttrs->errorInterruptNum != EDMA_INTERRUPT_NOT_CONNECTED_ID);
+    for (tc = 0; tc < hwAttrs->numEventQueues; tc++)
+    {
+        instanceInfo->isTransferControllerErrorInterruptConnected[tc] =
+            (hwAttrs->transferControllerErrorInterruptNum[tc] != EDMA_INTERRUPT_NOT_CONNECTED_ID);
+    }
+
+    /* register transfer complete interrupt handler */
+    if (hwAttrs->transferCompletionInterruptNum != EDMA_INTERRUPT_NOT_CONNECTED_ID)
+    {
+#ifdef SOC_TPR12
+        uint32_t mask = ~0U;
+
+        //printf("status reg = %x\n", HW_RD_REG32(hwAttrs->CCcompletionInterruptsAggregatorMaskRegAddress));
+
+        /* Clear all status */
+        HW_WR_REG32(hwAttrs->CCcompletionInterruptsAggregatorStatusRegAddress, ~0U);
+
+        /* Mask all interrupts except global interrupt in the aggregator */
+        mask &= (~(1U << EDMA_TPCC_INTAGG_TPCC_INTG__POS));
+
+        //printf("mask = %x\n", mask);
+
+        HW_WR_REG32(hwAttrs->CCcompletionInterruptsAggregatorMaskRegAddress, mask);
+#endif
+
+        /* Initialize with defaults */
+        Osal_RegisterInterrupt_initParams(&interruptRegParams);
+        /* Populate the interrupt parameters */
+        interruptRegParams.corepacConfig.arg=(uintptr_t)handle;
+        interruptRegParams.corepacConfig.name=(char *)("EDMA_transferComplete_isr");
+        interruptRegParams.corepacConfig.isrRoutine=EDMA_transferComplete_isr;
+    #if defined(_TMS320C6X)
+        interruptRegParams.corepacConfig.corepacEventNum=(int32_t)hwAttrs->transferCompletionInterruptNum; /* Event going in to CPU */
+        interruptRegParams.corepacConfig.intVecNum      = OSAL_REGINT_INTVEC_EVENT_COMBINER; /* Host Interrupt vector */
+    #else
+        interruptRegParams.corepacConfig.priority = 0x1U;
+        interruptRegParams.corepacConfig.intVecNum=(int32_t)hwAttrs->transferCompletionInterruptNum; /* Host Interrupt vector */
+        interruptRegParams.corepacConfig.corepacEventNum = (int32_t)hwAttrs->transferCompletionInterruptNum;
+    #endif
+        /* Register interrupts */
+        Osal_RegisterInterrupt(&interruptRegParams, &edmaObj->hwiTransferCompleteHandle);
+
+        Osal_EnableInterrupt(interruptRegParams.corepacConfig.corepacEventNum, interruptRegParams.corepacConfig.intVecNum);
+
+        if (edmaObj->hwiTransferCompleteHandle == NULL)
         {
-            retVal = EDMA_E_INVALID__INSTANCE_ID;
-            handle = NULL;
+            *errorCode = EDMA_E_OSAL__HWIP_CREATE_TRANSFER_COMPLETION_ISR_RETURNED_NULL;
+            goto exit;
         }
     }
 
-    if (retVal == EDMA_NO_ERROR)
+    isUnifiedErrorInterrupts = (hwAttrs->errorInterruptNum != EDMA_INTERRUPT_NOT_CONNECTED_ID) &&
+                               (hwAttrs->errorInterruptNum == hwAttrs->transferControllerErrorInterruptNum[0]);
+
+    if (isUnifiedErrorInterrupts == true)
     {
-        key = HwiP_disable();
-        edmaObj = EDMA_getFreeEdmaObj();
-        if (edmaObj == NULL)
+        for(tc = 1; tc < hwAttrs->numEventQueues; tc++)
         {
-            retVal = EDMA_E_INVALID__INSTANCE_ID;
-            handle = NULL;
+            if (hwAttrs->errorInterruptNum != hwAttrs->transferControllerErrorInterruptNum[tc])
+            {
+                *errorCode = EDMA_E_INVALID__PARTIAL_UNIFICATION_OF_ERROR_INTERRUPTS;
+                goto exit;
+            }
         }
-        else
-        {
-            edmaObj->isUsed = true;
-        }
-        HwiP_restore(key);
     }
 
-    if (retVal == EDMA_NO_ERROR)
+    /* register error interrupt handler */
+    if (hwAttrs->errorInterruptNum != EDMA_INTERRUPT_NOT_CONNECTED_ID)
     {
-        EDMA_config[instanceId].hwAttrs = hwAttrs;
-        EDMA_config[instanceId].object  = edmaObj;
-        /* Get handle for this driver instance */
-        handle = (EDMA_Handle)&(EDMA_config[instanceId]);
-
-        edmaConfig = (EDMA_Config_t *) handle;
-        edmaObj = edmaConfig->object;
-
-    #ifdef EDMA_DBG
-        edmaDbg.edmaObj = edmaObj;
+        /* Initialize with defaults */
+        Osal_RegisterInterrupt_initParams(&interruptRegParams);
+        /* Populate the interrupt parameters */
+        interruptRegParams.corepacConfig.arg=(uintptr_t)handle;
+    #if defined(_TMS320C6X)
+        interruptRegParams.corepacConfig.corepacEventNum=(int32_t)hwAttrs->errorInterruptNum; /* Event going in to CPU */
+        interruptRegParams.corepacConfig.intVecNum      = OSAL_REGINT_INTVEC_EVENT_COMBINER; /* Host Interrupt vector */
+    #else
+        interruptRegParams.corepacConfig.priority = 0x1U;
+        interruptRegParams.corepacConfig.intVecNum=(int32_t)hwAttrs->errorInterruptNum; /* Host Interrupt vector */
+        interruptRegParams.corepacConfig.corepacEventNum = (int32_t)hwAttrs->errorInterruptNum;
     #endif
 
-        hwAttrs =  edmaConfig->hwAttrs;
-        instanceInfo->numEventQueues = hwAttrs->numEventQueues;
-        instanceInfo->numParamSets = hwAttrs->numParamSets;
-        instanceInfo->isChannelMapExist = hwAttrs->isChannelMapExist;
-        instanceInfo->isTransferCompletionInterruptConnected =
-            (hwAttrs->transferCompletionInterruptNum != EDMA_INTERRUPT_NOT_CONNECTED_ID);
-        instanceInfo->isErrorInterruptConnected = (hwAttrs->errorInterruptNum != EDMA_INTERRUPT_NOT_CONNECTED_ID);
-        for (tc = 0; tc < hwAttrs->numEventQueues; tc++)
-        {
-            instanceInfo->isTransferControllerErrorInterruptConnected[tc] =
-                (hwAttrs->transferControllerErrorInterruptNum[tc] != EDMA_INTERRUPT_NOT_CONNECTED_ID);
-        }
 
-        /* register transfer complete interrupt handler */
-        if (hwAttrs->transferCompletionInterruptNum != EDMA_INTERRUPT_NOT_CONNECTED_ID)
+#ifdef SOC_TPR12 //TODO_TPR12 Currently using #ifdef due to *ERR__POS defines, should they be in platform file or overkill?
+        if (isUnifiedErrorInterrupts == true)
         {
-    #ifdef SOC_TPR12
             uint32_t mask = ~0U;
 
-            //printf("status reg = %x\n", HW_RD_REG32(hwAttrs->CCcompletionInterruptsAggregatorMaskRegAddress));
+            //printf("status reg = %x\n", HW_RD_REG32(hwAttrs->CCerrorInterruptsAggregatorMaskRegAddress));
 
             /* Clear all status */
-            HW_WR_REG32(hwAttrs->CCcompletionInterruptsAggregatorStatusRegAddress, ~0U);
+            HW_WR_REG32(hwAttrs->CCerrorInterruptsAggregatorMaskRegAddress, ~0U);
 
-            /* Mask all interrupts except global interrupt in the aggregator */
-            mask &= (~(1U << EDMA_TPCC_INTAGG_TPCC_INTG__POS));
+            /* Mask all interrupts except errors in the aggregator */
+            mask &= (~(1U << EDMA_TPCC_ERRAGG_TPCC_EERINT__POS));
+
+            for(tc = 0; tc < hwAttrs->numEventQueues; tc++)
+            {
+                mask &= (~(1U << (EDMA_TPCC_ERRAGG_TPTC_MIN_ERR__POS + tc)));
+            }
 
             //printf("mask = %x\n", mask);
 
-            HW_WR_REG32(hwAttrs->CCcompletionInterruptsAggregatorMaskRegAddress, mask);
-    #endif
+            HW_WR_REG32(hwAttrs->CCerrorInterruptsAggregatorMaskRegAddress, mask);
 
-            /* Initialize with defaults */
-            Osal_RegisterInterrupt_initParams(&interruptRegParams);
-            /* Populate the interrupt parameters */
-            interruptRegParams.corepacConfig.arg=(uintptr_t)handle;
-            interruptRegParams.corepacConfig.name=(char *)("EDMA_transferComplete_isr");
-            interruptRegParams.corepacConfig.isrRoutine=EDMA_transferComplete_isr;
-        #if defined(_TMS320C6X)
-            interruptRegParams.corepacConfig.corepacEventNum=(int32_t)hwAttrs->transferCompletionInterruptNum; /* Event going in to CPU */
-            interruptRegParams.corepacConfig.intVecNum      = OSAL_REGINT_INTVEC_EVENT_COMBINER; /* Host Interrupt vector */
-        #else
-            interruptRegParams.corepacConfig.priority = 0x1U;
-            interruptRegParams.corepacConfig.intVecNum=(int32_t)hwAttrs->transferCompletionInterruptNum; /* Host Interrupt vector */
-            interruptRegParams.corepacConfig.corepacEventNum = (int32_t)hwAttrs->transferCompletionInterruptNum;
-        #endif
-            /* Register interrupts */
-            Osal_RegisterInterrupt(&interruptRegParams, &edmaObj->hwiTransferCompleteHandle);
+            //printf("mask written, read back = %x\n", HW_RD_REG32(hwAttrs->CCintAggMaskRegAddress));
+            //exit(0);
+            interruptRegParams.corepacConfig.name=(char *)("EDMA_aggregated_error_transferController_error_isr");
+            interruptRegParams.corepacConfig.isrRoutine=EDMA_aggregated_error_transferController_error_isr;
 
-            Osal_EnableInterrupt(interruptRegParams.corepacConfig.corepacEventNum, interruptRegParams.corepacConfig.intVecNum);
+        }
+        else
+#endif
+        {
+            interruptRegParams.corepacConfig.name=(char *)("EDMA_error_isr");
+            interruptRegParams.corepacConfig.isrRoutine=EDMA_error_isr;
+        }
+        /* Register interrupts */
+        Osal_RegisterInterrupt(&interruptRegParams, &edmaObj->hwiErrorHandle);
 
-            if (edmaObj->hwiTransferCompleteHandle == NULL)
-            {
-                retVal = EDMA_E_OSAL__HWIP_CREATE_TRANSFER_COMPLETION_ISR_RETURNED_NULL;
-            }
+        Osal_EnableInterrupt(interruptRegParams.corepacConfig.corepacEventNum, interruptRegParams.corepacConfig.intVecNum);
+
+
+        if (edmaObj->hwiErrorHandle == NULL)
+        {
+            *errorCode = EDMA_E_OSAL__HWIP_CREATE_ERROR_ISR_RETURNED_NULL;
+            goto exit;
         }
     }
 
-    if (retVal == EDMA_NO_ERROR)
+    /* register transfer controller error handler */
+    if (isUnifiedErrorInterrupts == false)
     {
-        isUnifiedErrorInterrupts = (hwAttrs->errorInterruptNum != EDMA_INTERRUPT_NOT_CONNECTED_ID) &&
-                                (hwAttrs->errorInterruptNum == hwAttrs->transferControllerErrorInterruptNum[0]);
+        /* Initialize with defaults */
+        Osal_RegisterInterrupt_initParams(&interruptRegParams);
+        /* Populate the interrupt parameters */
+        interruptRegParams.corepacConfig.arg=(uintptr_t)handle;
+        interruptRegParams.corepacConfig.name=(char *)("EDMA_transferController_error_isr");
+        interruptRegParams.corepacConfig.isrRoutine=EDMA_transferController_error_isr;
 
-        if (isUnifiedErrorInterrupts == true)
+        for (tc = 0; tc < hwAttrs->numEventQueues; tc++)
         {
-            for(tc = 1; tc < hwAttrs->numEventQueues; tc++)
+            if (hwAttrs->transferControllerErrorInterruptNum[tc] != EDMA_INTERRUPT_NOT_CONNECTED_ID)
             {
-                if (hwAttrs->errorInterruptNum != hwAttrs->transferControllerErrorInterruptNum[tc])
+                edmaObj->transferControllerErrorIsrArgInfo[tc].handle = handle;
+                edmaObj->transferControllerErrorIsrArgInfo[tc].transferControllerId = tc;
+                interruptRegParams.corepacConfig.arg=(uintptr_t)&edmaObj->transferControllerErrorIsrArgInfo[tc];;
+            #if defined(_TMS320C6X)
+                interruptRegParams.corepacConfig.corepacEventNum=(int32_t)hwAttrs->transferControllerErrorInterruptNum[tc]; /* Event going in to CPU */
+                interruptRegParams.corepacConfig.intVecNum      = OSAL_REGINT_INTVEC_EVENT_COMBINER; /* Host Interrupt vector */
+            #else
+                interruptRegParams.corepacConfig.priority = 0x1U;
+                interruptRegParams.corepacConfig.intVecNum=(int32_t)hwAttrs->transferControllerErrorInterruptNum[tc]; /* Host Interrupt vector */
+                interruptRegParams.corepacConfig.corepacEventNum = (int32_t)hwAttrs->transferControllerErrorInterruptNum[tc];
+            #endif
+                /* Register interrupts */
+                Osal_RegisterInterrupt(&interruptRegParams, &edmaObj->hwiTransferControllerErrorHandle[tc]);
+
+                Osal_EnableInterrupt(interruptRegParams.corepacConfig.corepacEventNum, interruptRegParams.corepacConfig.intVecNum);
+
+
+                if (edmaObj->hwiTransferControllerErrorHandle[tc] == NULL)
                 {
-                    retVal = EDMA_E_INVALID__PARTIAL_UNIFICATION_OF_ERROR_INTERRUPTS;
+                    *errorCode = EDMA_E_OSAL__HWIP_CREATE_TRANSFER_CONTROLLER_ERROR_ISRS_RETURNED_NULL;
+                    goto exit;
                 }
             }
         }
     }
 
-    if (retVal == EDMA_NO_ERROR)
-    {
-        /* register error interrupt handler */
-        if (hwAttrs->errorInterruptNum != EDMA_INTERRUPT_NOT_CONNECTED_ID)
-        {
-            /* Initialize with defaults */
-            Osal_RegisterInterrupt_initParams(&interruptRegParams);
-            /* Populate the interrupt parameters */
-            interruptRegParams.corepacConfig.arg=(uintptr_t)handle;
-        #if defined(_TMS320C6X)
-            interruptRegParams.corepacConfig.corepacEventNum=(int32_t)hwAttrs->errorInterruptNum; /* Event going in to CPU */
-            interruptRegParams.corepacConfig.intVecNum      = OSAL_REGINT_INTVEC_EVENT_COMBINER; /* Host Interrupt vector */
-        #else
-            interruptRegParams.corepacConfig.priority = 0x1U;
-            interruptRegParams.corepacConfig.intVecNum=(int32_t)hwAttrs->errorInterruptNum; /* Host Interrupt vector */
-            interruptRegParams.corepacConfig.corepacEventNum = (int32_t)hwAttrs->errorInterruptNum;
-        #endif
+    *errorCode = EDMA_NO_ERROR;
 
-
-    #ifdef SOC_TPR12 //TODO_TPR12 Currently using #ifdef due to *ERR__POS defines, should they be in platform file or overkill?
-            if (isUnifiedErrorInterrupts == true)
-            {
-                uint32_t mask = ~0U;
-
-                //printf("status reg = %x\n", HW_RD_REG32(hwAttrs->CCerrorInterruptsAggregatorMaskRegAddress));
-
-                /* Clear all status */
-                HW_WR_REG32(hwAttrs->CCerrorInterruptsAggregatorMaskRegAddress, ~0U);
-
-                /* Mask all interrupts except errors in the aggregator */
-                mask &= (~(1U << EDMA_TPCC_ERRAGG_TPCC_EERINT__POS));
-
-                for(tc = 0; tc < hwAttrs->numEventQueues; tc++)
-                {
-                    mask &= (~(1U << (EDMA_TPCC_ERRAGG_TPTC_MIN_ERR__POS + tc)));
-                }
-
-                //printf("mask = %x\n", mask);
-
-                HW_WR_REG32(hwAttrs->CCerrorInterruptsAggregatorMaskRegAddress, mask);
-
-                //printf("mask written, read back = %x\n", HW_RD_REG32(hwAttrs->CCintAggMaskRegAddress));
-                //exit(0);
-                interruptRegParams.corepacConfig.name=(char *)("EDMA_aggregated_error_transferController_error_isr");
-                interruptRegParams.corepacConfig.isrRoutine=EDMA_aggregated_error_transferController_error_isr;
-
-            }
-            else
-    #endif
-            {
-                interruptRegParams.corepacConfig.name=(char *)("EDMA_error_isr");
-                interruptRegParams.corepacConfig.isrRoutine=EDMA_error_isr;
-            }
-            /* Register interrupts */
-            Osal_RegisterInterrupt(&interruptRegParams, &edmaObj->hwiErrorHandle);
-
-            Osal_EnableInterrupt(interruptRegParams.corepacConfig.corepacEventNum, interruptRegParams.corepacConfig.intVecNum);
-
-
-            if (edmaObj->hwiErrorHandle == NULL)
-            {
-                retVal = EDMA_E_OSAL__HWIP_CREATE_ERROR_ISR_RETURNED_NULL;
-            }
-        }
-    }
-
-    if (retVal == EDMA_NO_ERROR)
-    {
-        /* register transfer controller error handler */
-        if (isUnifiedErrorInterrupts == false)
-        {
-            /* Initialize with defaults */
-            Osal_RegisterInterrupt_initParams(&interruptRegParams);
-            /* Populate the interrupt parameters */
-            interruptRegParams.corepacConfig.arg=(uintptr_t)handle;
-            interruptRegParams.corepacConfig.name=(char *)("EDMA_transferController_error_isr");
-            interruptRegParams.corepacConfig.isrRoutine=EDMA_transferController_error_isr;
-
-            for (tc = 0; tc < hwAttrs->numEventQueues; tc++)
-            {
-                if (hwAttrs->transferControllerErrorInterruptNum[tc] != EDMA_INTERRUPT_NOT_CONNECTED_ID)
-                {
-                    edmaObj->transferControllerErrorIsrArgInfo[tc].handle = handle;
-                    edmaObj->transferControllerErrorIsrArgInfo[tc].transferControllerId = tc;
-                    interruptRegParams.corepacConfig.arg=(uintptr_t)&edmaObj->transferControllerErrorIsrArgInfo[tc];;
-                #if defined(_TMS320C6X)
-                    interruptRegParams.corepacConfig.corepacEventNum=(int32_t)hwAttrs->transferControllerErrorInterruptNum[tc]; /* Event going in to CPU */
-                    interruptRegParams.corepacConfig.intVecNum      = OSAL_REGINT_INTVEC_EVENT_COMBINER; /* Host Interrupt vector */
-                #else
-                    interruptRegParams.corepacConfig.priority = 0x1U;
-                    interruptRegParams.corepacConfig.intVecNum=(int32_t)hwAttrs->transferControllerErrorInterruptNum[tc]; /* Host Interrupt vector */
-                    interruptRegParams.corepacConfig.corepacEventNum = (int32_t)hwAttrs->transferControllerErrorInterruptNum[tc];
-                #endif
-                    /* Register interrupts */
-                    Osal_RegisterInterrupt(&interruptRegParams, &edmaObj->hwiTransferControllerErrorHandle[tc]);
-
-                    Osal_EnableInterrupt(interruptRegParams.corepacConfig.corepacEventNum, interruptRegParams.corepacConfig.intVecNum);
-
-
-                    if (edmaObj->hwiTransferControllerErrorHandle[tc] == NULL)
-                    {
-                        retVal = EDMA_E_OSAL__HWIP_CREATE_TRANSFER_CONTROLLER_ERROR_ISRS_RETURNED_NULL;
-                    }
-                }
-            }
-        }
-    }
-
-    if (retVal != EDMA_NO_ERROR)
-    {
-        /* Some error occured, If the interrupts are registered then unregister it. */
-        if (handle != NULL)
-        {
-            EDMA_unregisterInterrupts(handle);
-            handle = NULL;
-        }
-        if (edmaObj != NULL)
-        {
-            key = HwiP_disable();
-            edmaObj->isUsed = false;
-            HwiP_restore(key);
-            EDMA_config[instanceId].hwAttrs = NULL;
-            EDMA_config[instanceId].object = NULL;
-        }
-    }
-
-    if (errorCode != NULL)
-    {
-        *errorCode = retVal;
-    }
-
+exit:
     return(handle);
 }
 
@@ -2537,11 +2460,13 @@ int32_t EDMA_configErrorMonitoring(EDMA_Handle handle, EDMA_errorConfig_t const 
     if (handle == NULL)
     {
         errorCode = EDMA_E_INVALID__HANDLE_NULL;
+        goto exit;
     }
 
-    if ((errorCode == EDMA_NO_ERROR) && (config == NULL))
+    if (config == NULL)
     {
         errorCode = EDMA_E_INVALID__CONFIG_POINTER_NULL;
+        goto exit;
     }
 #endif
 
@@ -2552,11 +2477,9 @@ int32_t EDMA_configErrorMonitoring(EDMA_Handle handle, EDMA_errorConfig_t const 
         if (config->eventQueueThreshold > EDMA_EVENT_QUEUE_THRESHOLD_MAX)
         {
             errorCode = EDMA_E_INVALID__EVENT_QUEUE_THRESHOLD;
+            goto exit;
         }
-        else
-        {
-            threshold = config->eventQueueThreshold;
-        }
+        threshold = config->eventQueueThreshold;
 #endif
     }
     else
@@ -2564,89 +2487,75 @@ int32_t EDMA_configErrorMonitoring(EDMA_Handle handle, EDMA_errorConfig_t const 
         threshold = EDMA_EVENT_QUEUE_THRESHOLDING_DISABLED;
     }
 
-    if (errorCode == EDMA_NO_ERROR)
+    if (config->isConfigAllEventQueues == true)
     {
-        if (config->isConfigAllEventQueues == true)
+        for (queueId = 0; queueId < hwAttrs->numEventQueues; queueId++)
         {
-            for (queueId = 0; queueId < hwAttrs->numEventQueues; queueId++)
-            {
-                EDMA_configQueueThreshold(ccBaseAddr, queueId, threshold);
-            }
-        }
-        else
-        {
-    #ifdef EDMA_PARAM_CHECK
-            if (config->eventQueueId >= hwAttrs->numEventQueues)
-            {
-                errorCode = EDMA_E_INVALID__EVENT_QUEUE_ID;
-            }
-    #endif
-            if (errorCode == EDMA_NO_ERROR)
-            {
-                EDMA_configQueueThreshold(ccBaseAddr, config->eventQueueId, threshold);
-            }
+            EDMA_configQueueThreshold(ccBaseAddr, queueId, threshold);
         }
     }
-
-    if (errorCode == EDMA_NO_ERROR)
+    else
     {
-        /* transfer controller error configuration */
-        if (config->isConfigAllTransferControllers == true)
-        {
-            for (tc = 0; tc < hwAttrs->numEventQueues; tc++)
-            {
-                EDMA_configTransferControllerError(hwAttrs->TCbaseAddress[tc],
-                    config->isEnableAllTransferControllerErrors,
-                    &config->transferControllerErrorConfig);
-            }
+#ifdef EDMA_PARAM_CHECK
+        if (config->eventQueueId >= hwAttrs->numEventQueues) {
+            errorCode = EDMA_E_INVALID__EVENT_QUEUE_ID;
+            goto exit;
         }
-        else
-        {
-    #ifdef EDMA_PARAM_CHECK
-            if (config->transferControllerId >= hwAttrs->numEventQueues)
-            {
-                errorCode = EDMA_E_INVALID__TRANSFER_CONTROLLER_ID;
-            }
-    #endif
-            if (errorCode == EDMA_NO_ERROR)
-            {
-                EDMA_configTransferControllerError(hwAttrs->TCbaseAddress[config->transferControllerId],
-                    config->isEnableAllTransferControllerErrors,
-                    &config->transferControllerErrorConfig);
-            }
-        }
+#endif
+        EDMA_configQueueThreshold(ccBaseAddr, config->eventQueueId, threshold);
     }
 
-    if (errorCode == EDMA_NO_ERROR)
+    /* transfer controller error configuration */
+    if (config->isConfigAllTransferControllers == true)
     {
-        /* if error interrupt is not hooked, declare error if call back is populated */
-        if (hwAttrs->errorInterruptNum == EDMA_INTERRUPT_NOT_CONNECTED_ID)
-        {
-            if (config->callbackFxn != NULL)
-            {
-                errorCode = EDMA_E_INVALID__ERROR_CALL_BACK_FN_NON_NULL;
-            }
-        }
-        edmaObj->errorCallbackFxn = config->callbackFxn;
-    }
-
-    if (errorCode == EDMA_NO_ERROR)
-    {
-        /* if any of the tc error interrupts are not hooked, declare error if call back is populated */
         for (tc = 0; tc < hwAttrs->numEventQueues; tc++)
         {
-            if (hwAttrs->transferControllerErrorInterruptNum[tc] == EDMA_INTERRUPT_NOT_CONNECTED_ID)
-            {
-                if (config->transferControllerCallbackFxn)
-                {
-                    errorCode = EDMA_E_INVALID__TC_ERROR_CALL_BACK_FN_NON_NULL;
-                }
-            }
+            EDMA_configTransferControllerError(hwAttrs->TCbaseAddress[tc],
+                config->isEnableAllTransferControllerErrors,
+                &config->transferControllerErrorConfig);
         }
-
-        edmaObj->transferControllerErrorCallbackFxn = config->transferControllerCallbackFxn;
+    }
+    else
+    {
+#ifdef EDMA_PARAM_CHECK
+        if (config->transferControllerId >= hwAttrs->numEventQueues) {
+            errorCode = EDMA_E_INVALID__TRANSFER_CONTROLLER_ID;
+            goto exit;
+        }
+#endif
+        EDMA_configTransferControllerError(hwAttrs->TCbaseAddress[config->transferControllerId],
+            config->isEnableAllTransferControllerErrors,
+            &config->transferControllerErrorConfig);
     }
 
+    /* if error interrupt is not hooked, declare error if call back is populated */
+    if (hwAttrs->errorInterruptNum == EDMA_INTERRUPT_NOT_CONNECTED_ID)
+    {
+        if (config->callbackFxn)
+        {
+            errorCode = EDMA_E_INVALID__ERROR_CALL_BACK_FN_NON_NULL;
+            goto exit;
+        }
+    }
+
+    edmaObj->errorCallbackFxn = config->callbackFxn;
+
+    /* if any of the tc error interrupts are not hooked, declare error if call back is populated */
+    for (tc = 0; tc < hwAttrs->numEventQueues; tc++)
+    {
+        if (hwAttrs->transferControllerErrorInterruptNum[tc] == EDMA_INTERRUPT_NOT_CONNECTED_ID)
+        {
+            if (config->transferControllerCallbackFxn)
+            {
+                errorCode = EDMA_E_INVALID__TC_ERROR_CALL_BACK_FN_NON_NULL;
+                goto exit;
+            }
+        }
+    }
+
+    edmaObj->transferControllerErrorCallbackFxn = config->transferControllerCallbackFxn;
+
+exit:
     return(errorCode);
 }
 
@@ -2664,66 +2573,63 @@ int32_t EDMA_configPerformance(EDMA_Handle handle,
     if (handle == NULL)
     {
         errorCode = EDMA_E_INVALID__HANDLE_NULL;
+        goto exit;
     }
 
-    if ((errorCode == EDMA_NO_ERROR) && (config == NULL))
+    if (config == NULL)
     {
         errorCode = EDMA_E_INVALID__CONFIG_POINTER_NULL;
+        goto exit;
     }
 #endif
 
-    if (errorCode == EDMA_NO_ERROR)
+    edmaConfig = (EDMA_Config_t *) handle;
+    hwAttrs =  edmaConfig->hwAttrs;
+    ccBaseAddr = hwAttrs->CCbaseAddress;
+
+#ifdef EDMA_PARAM_CHECK
+    if (config->transferControllerReadRate > EDMA_READ_RATE_RANGE_CHECK_MAX)
     {
-        edmaConfig = (EDMA_Config_t *) handle;
-        hwAttrs =  edmaConfig->hwAttrs;
-        ccBaseAddr = hwAttrs->CCbaseAddress;
-
-    #ifdef EDMA_PARAM_CHECK
-        if (config->transferControllerReadRate > EDMA_READ_RATE_RANGE_CHECK_MAX)
-        {
-            errorCode = EDMA_E_INVALID__TRANSFER_CONTROLLER_READ_RATE;
-        }
-
-        if (config->queuePriority > EDMA_QUEUE_PRIORITIY_RANGE_CHECK_MAX)
-        {
-            errorCode = EDMA_E_INVALID__QUEUE_PRIORITY;
-        }
-    #endif
+        errorCode = EDMA_E_INVALID__TRANSFER_CONTROLLER_READ_RATE;
+        goto exit;
     }
 
-    if (errorCode == EDMA_NO_ERROR)
+    if (config->queuePriority > EDMA_QUEUE_PRIORITIY_RANGE_CHECK_MAX)
     {
-        if (config->isConfigAllTransferControllers == true)
-        {
-            for (tc = 0; tc < hwAttrs->numEventQueues; tc++)
-            {
-                tcBaseAddr = hwAttrs->TCbaseAddress[tc];
-                HW_WR_FIELD32(tcBaseAddr + EDMA_TC_RDRATE, EDMA_TC_RDRATE_RDRATE,
-                            config->transferControllerReadRate);
+        errorCode = EDMA_E_INVALID__QUEUE_PRIORITY;
+        goto exit;
+    }
+#endif
 
-                EDMA_configQueuePriority(ccBaseAddr, tc, config->queuePriority);
-            }
-        }
-        else
+    if (config->isConfigAllTransferControllers == true)
+    {
+        for (tc = 0; tc < hwAttrs->numEventQueues; tc++)
         {
-    #ifdef EDMA_PARAM_CHECK
-            if (config->transferControllerId >= hwAttrs->numEventQueues)
-            {
-                errorCode = EDMA_E_INVALID__TRANSFER_CONTROLLER_ID;
-            }
-    #endif
-            if (errorCode == EDMA_NO_ERROR)
-            {
-                tcBaseAddr = hwAttrs->TCbaseAddress[config->transferControllerId];
-                HW_WR_FIELD32(tcBaseAddr + EDMA_TC_RDRATE, EDMA_TC_RDRATE_RDRATE,
-                            config->transferControllerReadRate);
+            tcBaseAddr = hwAttrs->TCbaseAddress[tc];
+            HW_WR_FIELD32(tcBaseAddr + EDMA_TC_RDRATE, EDMA_TC_RDRATE_RDRATE,
+                          config->transferControllerReadRate);
 
-                EDMA_configQueuePriority(ccBaseAddr, config->transferControllerId,
-                                        config->queuePriority);
-            }
+            EDMA_configQueuePriority(ccBaseAddr, tc, config->queuePriority);
         }
     }
+    else
+    {
+#ifdef EDMA_PARAM_CHECK
+        if (config->transferControllerId >= hwAttrs->numEventQueues) {
+            errorCode = EDMA_E_INVALID__TRANSFER_CONTROLLER_ID;
+            goto exit;
+        }
+#endif
 
+        tcBaseAddr = hwAttrs->TCbaseAddress[config->transferControllerId];
+        HW_WR_FIELD32(tcBaseAddr + EDMA_TC_RDRATE, EDMA_TC_RDRATE_RDRATE,
+                      config->transferControllerReadRate);
+
+        EDMA_configQueuePriority(ccBaseAddr, config->transferControllerId,
+                                config->queuePriority);
+    }
+
+exit:
     return(errorCode);
 }
 
