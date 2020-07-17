@@ -214,8 +214,8 @@ static void Test_initTask(UArg arg0, UArg arg1)
     MIBSPI_init(&utilsPrms);
 
     /* MibSPIA slave mode analog loopback test */
-    Test_loopbackSlave_oneInstance(1);
-    MIBSPI_log("Debug: Finished API Test for SPIA!\n");
+    //Test_loopbackSlave_oneInstance(1);
+    //MIBSPI_log("Debug: Finished API Test for SPIA!\n");
 
     /**************************************************************************
      * Test: One instace API test - SPIA
