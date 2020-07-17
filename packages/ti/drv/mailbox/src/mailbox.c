@@ -477,7 +477,7 @@ int32_t Mailbox_close(Mbox_Handle handle)
         }
 
         /* Cleanup the memory: */
-        Mailbox_freeDriver(&handle);
+        Mailbox_freeDriver(handle);
     }
 
     return retVal;
