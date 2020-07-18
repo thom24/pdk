@@ -102,6 +102,12 @@ static void watchdogCallback(Watchdog_Handle handle)
     if (gWatchdogInt < 10)
     {
         printf ("Debug: Application - Watchdog Driver callback for NMI received\n");
+        /* DSP Watchdog timeout triggers an ESM high priority error, which is an NMI
+         * first captured by the NMI exception handler. Since there is no returning
+         * from NMI/Exceptions, print the message of "All Tests PASSED" here to
+         * facilitate the test automation.
+         */
+        printf ("All Tests PASSED\n");
         DebugP_assert(0);
     }
     return;
