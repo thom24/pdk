@@ -51,6 +51,8 @@
 #include "board.h"
 #include "board_cfg.h"
 
+#include "board_control.h"
+
 #include "diag_common_cfg.h"
 
 #define BOARD_DIAG_NOR_PAGE_SIZE                           (256U)
@@ -86,7 +88,7 @@
 
 #define BOARD_DIAG_SPI_FLASH_DEVID_BYTE0                   (0x20)
 #define BOARD_DIAG_SPI_FLASH_DEVID_BYTE1                   (0xBB)
-#define BOARD_DIAG_SPI_FLASH_DEVID_BYTE2                   (0x19)
+#define BOARD_DIAG_SPI_FLASH_DEVID_BYTE2                   (0x20)
 
 /**
  *  \brief    This function runs spi norflash test.

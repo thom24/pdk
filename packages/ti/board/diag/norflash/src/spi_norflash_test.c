@@ -499,6 +499,8 @@ int main(void)
         return -1;
     }
 
+    Board_control(BOARD_CTRL_CMD_SET_SOM_PROFIBUS_MUX, NULL);
+
     ret = BoardDiag_SpiNorflashTest();
     if(ret != 0)
     {
