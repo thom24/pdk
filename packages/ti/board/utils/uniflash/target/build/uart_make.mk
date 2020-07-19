@@ -127,8 +127,10 @@ ifeq ($(BOARD), $(filter $(BOARD), am65xx_evm am65xx_idk))
 CFLAGS_LOCAL_COMMON += -DSOC_AM65XX
 endif
 
+ifeq ($(BOARD), $(filter $(BOARD), j721e_evm am65xx_evm am65xx_idk))
 ifeq ($(BUILD_HS),no)
 CFLAGS_LOCAL_COMMON += -DSPI_DMA_ENABLE
+endif
 endif
 
 SBL_OBJ_COPY := $(TOOLCHAIN_PATH_GCC_ARCH64)/bin/$(GCC_ARCH64_BIN_PREFIX)-objcopy
