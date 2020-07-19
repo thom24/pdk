@@ -547,7 +547,7 @@ OSPI_v0_HwAttrs ospiInitCfg[SPI_OSPI_PER_CNT + 1U] =
         NULL,                              /* dmaInfo */
         (bool)true,                        /* enable PHY */
         0,                                 /* rdDataCapDelay */
-        (bool)false,                       /* enable DDR - dtrEnable*/
+        (bool)true,                       /* enable DDR - dtrEnable*/
         (bool)false,                       /* enable XIP */
         10U,                               /* Chip Select Start Of Transfer delay */
         0                                  /* Baudrate divider. Set to a non-zero value (2 to 32)
