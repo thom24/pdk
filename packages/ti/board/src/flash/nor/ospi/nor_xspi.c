@@ -130,6 +130,100 @@ static NOR_STATUS Nor_xspiCmdWrite(SPI_Handle handle, uint8_t *cmdBuf,
     }
 }
 
+static NOR_STATUS Nor_xspiRegRead(SPI_Handle handle,
+                                  uint32_t   regAddr,
+                                  uint8_t    *data)
+{
+    NOR_STATUS retVal;
+    uint8_t    cmd[6];
+
+    cmd[0] = NOR_CMD_RDREG;
+    cmd[1] = (regAddr >> 24) & 0xF;
+    cmd[2] = (regAddr >> 16) & 0xF;
+    cmd[3] = (regAddr >> 8) & 0xF;
+    cmd[4] = (regAddr) & 0xF;
+
+    retVal = Nor_xspiCmdRead(handle, cmd, 5, data, 1);
+    if(retVal != NOR_PASS)
+    {
+        return NOR_FAIL;
+    }
+
+    return retVal;
+}
+
+static NOR_STATUS Nor_xspiRegWrite(SPI_Handle handle,
+                                   uint32_t   regAddr,
+                                   uint8_t    data)
+{
+    NOR_STATUS retVal;
+    uint8_t    cmd[6];
+
+    /* Enable flash write */
+    cmd[0] = NOR_CMD_WREN;
+    retVal = Nor_xspiCmdWrite(handle, cmd, 1, 0);
+    if(retVal != NOR_PASS)
+    {
+        return NOR_FAIL;
+    }
+
+    retVal = Nor_xspiWaitReady(handle, NOR_WRR_WRITE_TIMEOUT);
+    if(retVal != NOR_PASS)
+    {
+        return NOR_FAIL;
+    }
+
+    cmd[0] = NOR_CMD_WRREG;
+    cmd[1] = (regAddr >> 24) & 0xF;
+    cmd[2] = (regAddr >> 16) & 0xF;
+    cmd[3] = (regAddr >> 8) & 0xF;
+    cmd[4] = (regAddr) & 0xF;
+    cmd[5] = data;
+
+    retVal = Nor_xspiCmdWrite(handle, cmd, 5, 1);
+    if(retVal != NOR_PASS)
+    {
+        return NOR_FAIL;
+    }
+
+    return retVal;
+}
+
+static NOR_STATUS Nor_xspiHybridSectCfg(SPI_Handle handle,
+                                        uint8_t    enable,
+                                        uint32_t   cfgFlag)
+{
+    NOR_STATUS  retVal;
+    uint8_t     regData;
+
+    /* Read configuration register3 */
+    retVal = Nor_xspiRegRead(handle, NOR_CFG3_VREG_ADDR, &regData);
+    if(retVal != NOR_PASS)
+    {
+        return NOR_FAIL;
+    }
+
+    if(enable == 1)
+    {
+        /* Enable hybrid sector configuration */
+        regData &= ~0x8;
+    }
+    else
+    {
+        /* Disable hybrid sector configuration */
+        regData |= 0x8;
+    }
+
+    /* Write configuration register3 */
+    retVal = Nor_xspiRegWrite(handle, NOR_CFG3_VREG_ADDR, regData);
+    if(retVal != NOR_PASS)
+    {
+        return NOR_FAIL;
+    }
+
+    return retVal;
+}
+
 static NOR_STATUS Nor_xspiReadId(SPI_Handle handle)
 {
     NOR_STATUS  retVal;
@@ -292,6 +386,13 @@ NOR_HANDLE Nor_xspiOpen(uint32_t norIntf, uint32_t portNum, void *params)
     OSPI_v0_HwAttrs ospi_cfg;
     NOR_STATUS      retVal;
 
+    /* Update the default driver config for xSPI operation */
+    OSPI_socGetInitCfg(portNum, &ospi_cfg);
+    ospi_cfg.phyEnable   = false;
+    ospi_cfg.dacEnable   = false;
+    ospi_cfg.baudRateDiv = BOARD_XSPI_BAUDRATE_DIV;
+    OSPI_socSetInitCfg(portNum, &ospi_cfg);
+
     if (params)
     {
 		memcpy(&spiParams, params, sizeof(SPI_Params));
@@ -387,6 +488,12 @@ NOR_HANDLE Nor_xspiOpen(uint32_t norIntf, uint32_t portNum, void *params)
         {
             SPI_close(hwHandle);
         }
+    }
+
+    if(hwHandle != NULL)
+    {
+        /* Disable hybrid sector configuration */
+        Nor_xspiHybridSectCfg(hwHandle, 0, 0);
     }
 
     return (norHandle);
@@ -577,12 +684,12 @@ NOR_STATUS Nor_xspiWrite(NOR_HANDLE handle, uint32_t addr, uint32_t len,
 
         addr += chunkLen;
         byteAddr = 0;
-    }
 
-    /* Wait till the write operation completes */
-    if (Nor_xspiWaitReady(spiHandle, NOR_PAGE_PROG_TIMEOUT))
-    {
-        return NOR_FAIL;
+        /* Wait till the write operation completes */
+        if (Nor_xspiWaitReady(spiHandle, NOR_PAGE_PROG_TIMEOUT))
+        {
+            return NOR_FAIL;
+        }
     }
 
     return NOR_PASS;
@@ -621,35 +728,13 @@ NOR_STATUS Nor_xspiErase(NOR_HANDLE handle, int32_t erLoc, bool blkErase)
     }
     else
     {
-        if (blkErase == true)
-		{
-            if (erLoc >= NOR_NUM_BLOCKS)
-            {
-                return NOR_FAIL;
-            }
-
-			address   = erLoc * NOR_BLOCK_SIZE;
-
-            /* xSPI flash supports hybrid sectors of size 4k and 256k.
-               Need to send the erase command based on the sector size.  */
-            if(address > NOR_4K_SECT_BOT_END_OFFSET)
-            {
-                cmd[0] = NOR_CMD_BLOCK_ERASE;
-            }
-            else
-            {
-                cmd[0] = NOR_CMD_SECTOR_ERASE;
-            }
-        }
-        else
+        if (erLoc >= NOR_NUM_BLOCKS)
         {
-            if (erLoc >= NOR_NUM_SECTORS)
-            {
-                return NOR_FAIL;
-            }
-            address   = erLoc * NOR_SECTOR_SIZE;
-            cmd[0] = NOR_CMD_SECTOR_ERASE;
+            return NOR_FAIL;
         }
+
+        address = erLoc * NOR_BLOCK_SIZE;
+        cmd[0]  = NOR_CMD_BLOCK_ERASE;
 
         cmd[1] = (address >> 24) & 0xff; /* 4 address bytes */
         cmd[2] = (address >> 16) & 0xff;

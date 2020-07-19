@@ -95,6 +95,14 @@ extern "C" {
 #define NOR_VREG_OFFSET              (0x80U)
 #define NOR_NVREG_OFFSET             (0x0U)
 
+#define NOR_STS1_VREG_ADDR           (0x800000U)
+#define NOR_STS2_VREG_ADDR           (0x800001U)
+#define NOR_CFG1_VREG_ADDR           (0x800002U)
+#define NOR_CFG2_VREG_ADDR           (0x800003U)
+#define NOR_CFG3_VREG_ADDR           (0x800004U)
+#define NOR_CFG4_VREG_ADDR           (0x800005U)
+#define NOR_CFG5_VREG_ADDR           (0x800006U)
+
 /** Read ID command definitions */
 #define NOR_RDID_NUM_BYTES           (0x3U)
 #define NOR_MANF_ID                  (0x34U)   /* Manufacturer ID */

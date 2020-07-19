@@ -55,6 +55,7 @@
  **                       Macro Definitions
  **************************************************************************/
 
+#define BOARD_XSPI_BAUDRATE_DIV    (6U)
 
 #endif /* NOR_XSPI_H_ */
 
