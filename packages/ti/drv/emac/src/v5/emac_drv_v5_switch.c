@@ -236,7 +236,7 @@ static EMAC_DRV_ERR_E emac_get_stats_icssg_v5_icssg_switch(uint32_t portNum, EMA
                 {
                     emac_read_icssg_hw_stats_switch(emac_mcb.port_cb[pPortInfo->portNum1].icssgCfgRegBaseAddr +  CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RX_STAT_GOOD_PRU0, statPtr, 0U, clear);
                     statPtr = (uint32_t*)pStats + EMAC_ICSSG_TX_STATS_OFFSET;
-                    emac_read_icssg_hw_stats_switch(emac_mcb.port_cb[pPortInfo->portNum2].icssgCfgRegBaseAddr +  CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RX_STAT_GOOD_PRU1, (uint32_t*)pStats + EMAC_ICSSG_TX_STATS_OFFSET, EMAC_ICSSG_TX_STATS_OFFSET, clear);
+                    emac_read_icssg_hw_stats_switch(emac_mcb.port_cb[pPortInfo->portNum2].icssgCfgRegBaseAddr +  CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RX_STAT_GOOD_PRU0, (uint32_t*)pStats + EMAC_ICSSG_TX_STATS_OFFSET, EMAC_ICSSG_TX_STATS_OFFSET, clear);
                     retVal = EMAC_DRV_RESULT_OK;
                 }
                 break;
@@ -244,7 +244,7 @@ static EMAC_DRV_ERR_E emac_get_stats_icssg_v5_icssg_switch(uint32_t portNum, EMA
             case EMAC_ICSSG1_SWITCH_PORT2:
             case EMAC_ICSSG2_SWITCH_PORT2:
                 {
-                    emac_read_icssg_hw_stats_switch(emac_mcb.port_cb[pPortInfo->portNum2].icssgCfgRegBaseAddr +  CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RX_STAT_GOOD_PRU0, statPtr, 0U, clear);
+                    emac_read_icssg_hw_stats_switch(emac_mcb.port_cb[pPortInfo->portNum2].icssgCfgRegBaseAddr +  CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RX_STAT_GOOD_PRU1, statPtr, 0U, clear);
                     statPtr = (uint32_t*)pStats + EMAC_ICSSG_TX_STATS_OFFSET;
                     emac_read_icssg_hw_stats_switch(emac_mcb.port_cb[pPortInfo->portNum1].icssgCfgRegBaseAddr +  CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RX_STAT_GOOD_PRU1, (uint32_t*)pStats + EMAC_ICSSG_TX_STATS_OFFSET , EMAC_ICSSG_TX_STATS_OFFSET, clear);
                     retVal = EMAC_DRV_RESULT_OK;
