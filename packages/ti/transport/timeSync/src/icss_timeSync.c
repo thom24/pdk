@@ -1252,7 +1252,7 @@ void TimeSync_processPTPFrame(TimeSync_ParamsHandle_t timeSyncHandle,
     uint8_t *bytePtr = 0;
     uint32_t nanoseconds = 0;
     uint64_t seconds = 0;
-    uint64_t Nanoseconds64 = 0;
+    uint64_t nanoseconds64 = 0;
 
     offset = timeSyncHandle->timeSyncConfig.frame_offset;
 
@@ -1288,9 +1288,9 @@ void TimeSync_processPTPFrame(TimeSync_ParamsHandle_t timeSyncHandle,
     {
         if(V2 == timeSyncHandle->timeSyncConfig.icssVersion)
         {
-            memcpy(&Nanoseconds64, pktBuffer + size, 8);
-            nanoseconds = (uint32_t)(Nanoseconds64 % (uint64_t)SEC_TO_NS);
-            seconds = Nanoseconds64 / (uint64_t)SEC_TO_NS;
+            memcpy(&nanoseconds64, pktBuffer + size, 8);
+            nanoseconds = (uint32_t)(nanoseconds64 % (uint64_t)SEC_TO_NS);
+            seconds = nanoseconds64 / (uint64_t)SEC_TO_NS;
         }
         else
         {
