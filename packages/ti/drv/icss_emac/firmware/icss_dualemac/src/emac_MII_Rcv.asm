@@ -1582,9 +1582,9 @@ LB_TS_STORE_TS:   ;store timestamp in new 32B block
     .endif
 
     ;Load the TS from Shared RAM
-    LBCO    &Ethernet, ICSS_SHARED_CONST, RCV_TEMP_REG_1.w0, 10
+    LBCO    &R10, ICSS_SHARED_CONST, RCV_TEMP_REG_1.w0, 10
     ;Store into L3 OCMC
-    SBCO	&Ethernet, L3_OCMC_RAM_CONST, MII_RCV.buffer_index, 10
+    SBCO	&R10, L3_OCMC_RAM_CONST, MII_RCV.buffer_index, 10
     
     ;check wraparound
     QBNE	LB_TS_NO_WRAP_2, MII_RCV.wrkng_wr_ptr, MII_RCV.top_most_buffer_desc_offset
