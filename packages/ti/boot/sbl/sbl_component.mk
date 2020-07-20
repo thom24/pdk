@@ -687,7 +687,7 @@ export sbl_boot_xip_entry_SBL_APPIMAGEGEN
 #SBL_CFLAGS += -DSBL_DISPLAY_PROFILE_INFO
 
 ifeq ($(SOC), am64x)
-SBL_CFLAGS += -DSBL_BYPASS_OSPI_DRIVER -DDISABLE_ATCM
+SBL_CFLAGS += -DDISABLE_ATCM -DSBL_BYPASS_OSPI_DRIVER_FOR_SYSFW_DOWNLOAD
 endif
 
 ###### Use boot_perf_benchmark example#######
@@ -782,6 +782,11 @@ SBL_CFLAGS += -DSBL_ENABLE_DDR
 # OSPI driver completely and let ROM copy the sysftw/application
 # from flash.
 #SBL_CFLAGS += -DSBL_BYPASS_OSPI_DRIVER
+
+# If enabled for OSPI boot the SBL will bypass the
+# OSPI driver for system firmware download and use the OSPI driver for 
+# downloading application from the flash
+#SBL_CFLAGS += -DSBL_BYPASS_OSPI_DRIVER_FOR_SYSFW_DOWNLOAD
 
 # If enabled the SBL image is built for running on VLAB simulation.
 #SBL_CFLAGS += -DVLAB_SIM

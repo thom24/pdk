@@ -209,7 +209,7 @@ static int32_t Ospi_udma_deinit(void)
 
 int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
 {
-#if !defined(SBL_BYPASS_OSPI_DRIVER)
+#if !defined(SBL_BYPASS_OSPI_DRIVER) && !defined(SBL_BYPASS_OSPI_DRIVER_FOR_SYSFW_DOWNLOAD)
     Board_flashHandle h;
 
     SBL_ADD_PROFILE_POINT;
@@ -228,6 +228,9 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
     /*        work with ROM, as ROM needs byte accesses       */
     ospi_cfg.dtrEnable = true;
 
+#ifdef SIM_BUILD
+    ospi_cfg.phyEnable = false;
+#endif
     /* Set the default SPI init configurations */
     OSPI_socSetInitCfg(BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
 
@@ -238,9 +241,13 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
     {
         SBL_ADD_PROFILE_POINT;
 
+#ifdef SIM_BUILD
+        /* Disable PHY pipeline mode */
+        CSL_ospiPipelinePhyEnable((const CSL_ospi_flash_cfgRegs *)(ospi_cfg.baseAddr), FALSE);
+#else
         /* Enable PHY pipeline mode  even though DMA is not used */
         CSL_ospiPipelinePhyEnable((const CSL_ospi_flash_cfgRegs *)(ospi_cfg.baseAddr), TRUE);
-
+#endif
         /* Optimized CPU copy loop - can be removed once ROM load is working */
         SBL_SysFwLoad((void *)(*pBuffer), (void *)(ospi_cfg.dataAddr + OSPI_OFFSET_SYSFW), num_bytes);
 
@@ -329,7 +336,9 @@ int32_t SBL_ospiInit(void *handle)
      * We set xipEnable = true only at the last open() */
     ospi_cfg.xipEnable = true;
 #endif
-
+#ifdef SIM_BUILD
+    ospi_cfg.phyEnable = false;
+#endif
     /* Set the default SPI init configurations */
     OSPI_socSetInitCfg(BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
 
