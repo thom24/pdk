@@ -373,11 +373,7 @@ else
 I2C_Baremetal_Eeprom_TestApp_$(SOC)_CORELIST = $(drvi2c_$(SOC)_CORELIST)
 endif
 export I2C_Baremetal_Eeprom_TestApp_$(SOC)_CORELIST
-
-ifeq ($(SOC),$(filter $(SOC), j721e am65xx j7200))
-  I2C_Baremetal_Eeprom_TestApp_SBL_APPIMAGEGEN = yes
-  export I2C_Baremetal_Eeprom_TestApp_testapp_SBL_APPIMAGEGEN
-endif
+export I2C_Baremetal_Eeprom_TestApp_SBL_APPIMAGEGEN = yes
 
 # I2C rtos EEPROM test
 I2C_Eeprom_TestApp_COMP_LIST = I2C_Eeprom_TestApp
@@ -398,6 +394,7 @@ I2C_Eeprom_TestApp_BOARDLIST = $(drvi2c_BOARDLIST)
 export I2C_Eeprom_TestApp_BOARDLIST
 I2C_Eeprom_TestApp_$(SOC)_CORELIST = $(i2c_$(SOC)_CORELIST)
 export I2C_Eeprom_TestApp_$(SOC)_CORELIST
+export I2C_Eeprom_TestApp_SBL_APPIMAGEGEN = yes
 
 # I2C rtos EEPROM test with SMP enabled
 I2C_Eeprom_SMP_TestApp_COMP_LIST = I2C_Eeprom_SMP_TestApp
@@ -418,6 +415,7 @@ I2C_Eeprom_SMP_TestApp_BOARDLIST = am65xx_evm am65xx_idk j721e_evm
 export I2C_Eeprom_SMP_TestApp_BOARDLIST
 I2C_Eeprom_SMP_TestApp_$(SOC)_CORELIST = mpu1_0
 export I2C_Eeprom_SMP_TestApp_$(SOC)_CORELIST
+export I2C_Eeprom_SMP_TestApp_SBL_APPIMAGEGEN = yes
 
 # I2C Utility
 drv_i2c_utility_COMP_LIST = drv_i2c_utility
@@ -466,6 +464,7 @@ I2C_Master_TestApp_BOARDLIST = tpr12_evm tpr12_qt
 export I2C_Master_TestApp_BOARDLIST
 I2C_Master_TestApp_$(SOC)_CORELIST = $(i2c_$(SOC)_CORELIST)
 export I2C_Master_TestApp_$(SOC)_CORELIST
+export I2C_Master_TestApp_SBL_APPIMAGEGEN = yes
 
 # I2C rtos Slave test
 I2C_Slave_TestApp_COMP_LIST = I2C_Slave_TestApp
@@ -486,6 +485,7 @@ I2C_Slave_TestApp_BOARDLIST = tpr12_evm tpr12_qt
 export I2C_Slave_TestApp_BOARDLIST
 I2C_Slave_TestApp_$(SOC)_CORELIST = $(i2c_$(SOC)_CORELIST)
 export I2C_Slave_TestApp_$(SOC)_CORELIST
+export I2C_Slave_TestApp_SBL_APPIMAGEGEN = yes
 
 export drvi2c_LIB_LIST
 export drvi2c_EXAMPLE_LIST
