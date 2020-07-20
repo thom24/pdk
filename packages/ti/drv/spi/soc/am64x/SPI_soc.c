@@ -50,8 +50,13 @@
 SPI_v1_HWAttrs spiInitCfg[MCSPI_PER_CNT] =
 {
     {
+#if defined (BUILD_M4F)
+        /* McSPI0 on the MCU channel */
+        CSL_MCU_MCSPI0_CFG_BASE,            /* baseAddr */
+#else
         /* McSPI0 on the Main domain */
         CSL_MCSPI0_CFG_BASE,                /* baseAddr */
+#endif
 #if defined (BUILD_MPU)
         /* A53 cores on the Main domain */
         CSLR_GICSS0_SPI_MCSPI0_INTR_SPI_0,  /* intNum */
@@ -60,7 +65,7 @@ SPI_v1_HWAttrs spiInitCfg[MCSPI_PER_CNT] =
         CSLR_R5FSS0_CORE0_INTR_MCSPI0_INTR_SPI_0,
 #else
         /* M4 core on the MCU Channel */
-        0U,  /* TBD, no MCSPI0 interrupt routed to M4 core */
+        CSLR_MCU_M4FSS0_CORE0_NVIC_MCU_MCSPI0_INTR_SPI_0,
 #endif
         0,                                  /* eventId */
         SPI_PINMODE_4_PIN,                  /* pinMode */
@@ -108,14 +113,19 @@ SPI_v1_HWAttrs spiInitCfg[MCSPI_PER_CNT] =
         NULL                                /* dmaInfo */
     },
     {
+#if defined (BUILD_M4F)
+        /* McSPI1 on the MCU channel */
+        CSL_MCU_MCSPI1_CFG_BASE,
+#else
         /* McSPI1 on the Main domain */
         CSL_MCSPI1_CFG_BASE,
+#endif
 #if defined (BUILD_MPU)
         CSLR_GICSS0_SPI_MCSPI1_INTR_SPI_0,
 #elif defined (BUILD_MCU)
         CSLR_R5FSS0_CORE0_INTR_MCSPI1_INTR_SPI_0,
 #else
-        0U,
+        CSLR_MCU_M4FSS0_CORE0_NVIC_MCU_MCSPI1_INTR_SPI_0,
 #endif
         0,
         SPI_PINMODE_4_PIN,
