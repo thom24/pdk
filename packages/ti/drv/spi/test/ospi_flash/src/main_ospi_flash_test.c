@@ -516,7 +516,7 @@ void OSPI_configClk(uint32_t freq, bool usePHY)
     }
     MCU_CTRL_MMR_lock_all();
 
-    SPI_log("\n OSPI RCLK running at %d Hz. \n", freq);
+    SPI_log("\n OSPI RCLK running at %d MHz. \n", freq);
     return;
 
 }
@@ -623,7 +623,7 @@ void OSPI_configClk(uint32_t freq, bool usePHY)
 	    goto clk_cfg_exit;
     }
 
-    SPI_log("\n OSPI RCLK running at %d Hz. \n", freq);
+    SPI_log("\n OSPI RCLK running at %d MHz. \n", ospi_rclk_freq);
 
 clk_cfg_exit:
       return;
@@ -904,8 +904,11 @@ void OSPI_test_print_test_desc(OSPI_Tests *test)
 
 OSPI_Tests Ospi_tests[] =
 {
+#if !defined(SOC_J7200) /* Shall be enabled for J7200 when PDK-7115 is addressed */
     /* testFunc       testID                     dacMode dmaMode clk                   testDesc */
     {OSPI_flash_test, OSPI_TEST_ID_DAC_133M,     true,   false,  OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave in DAC mode at 133MHz RCLK"},
+#endif
+
     {OSPI_flash_test, OSPI_TEST_ID_INDAC_133M,   false,  false,  OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave in INDAC mode at 133MHz RCLK"},
 #ifdef SPI_DMA_ENABLE
     {OSPI_flash_test, OSPI_TEST_ID_DAC_DMA_133M, true,   true,   OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave in DAC DMA mode at 133MHz RCLK"},
@@ -915,8 +918,10 @@ OSPI_Tests Ospi_tests[] =
 #ifdef SPI_DMA_ENABLE
     {OSPI_flash_test, OSPI_TEST_ID_DAC_DMA_166M, true,   true,   OSPI_MODULE_CLK_166M, "\r\n OSPI flash test slave in DAC DMA mode at 166MHz RCLK"},
 #endif
-    {OSPI_flash_test, OSPI_TEST_ID_DAC_133M_SPI, true,   false,  OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave in DAC Legacy SPI mode at 133MHz RCLK"},
 
+#if !defined(SOC_J7200) /* Shall be enabled for J7200 when PDK-7115 is addressed */
+    {OSPI_flash_test, OSPI_TEST_ID_DAC_133M_SPI, true,   false,  OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave in DAC Legacy SPI mode at 133MHz RCLK"},
+#endif
     {NULL, }
 };
 
@@ -944,7 +949,9 @@ void spi_test()
             break;
         }
 
+#if !defined(SOC_J7200) /* Shall be enabled for J7200 when PDK-7115 is addressed */
         OSPI_configClk(test->clk, true);
+#endif
 
         OSPI_test_print_test_desc(test);
 
