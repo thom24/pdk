@@ -168,6 +168,40 @@ static void *Mbox_osalRegisterIntr(Mbox_OsalIsrFxn isrFxn,
     return (hwiHandle);
 }
 
+static void *Mbox_osalRegisterDirectIntr(Mbox_OsalDirectIsrFxn isrFxn,
+                                         uint32_t coreIntrNum,
+                                         uint32_t intrPriority)
+{
+#if defined(SOC_AM64X) && defined(BUILD_MCU)
+    OsalRegisterIntrParams_t    intrPrms;
+    OsalInterruptRetCode_e      osalRetVal;
+    HwiP_Handle                 hwiHandle = NULL;
+
+    Osal_RegisterInterrupt_initParams(&intrPrms);
+
+    /* Populate the interrupt parameters */
+    intrPrms.corepacConfig.isrRoutine       = NULL;
+    if (intrPriority != MAILBOX_OSAL_DEFAULT_PRIORITY)
+    {
+        intrPrms.corepacConfig.priority = intrPriority;
+    }
+
+    intrPrms.corepacConfig.corepacEventNum = (int32_t)0;
+    intrPrms.corepacConfig.intVecNum       = (int32_t)coreIntrNum;
+
+    /* Register interrupt */
+    osalRetVal = Osal_RegisterInterruptDirect(&intrPrms, isrFxn, &hwiHandle);
+    if (OSAL_INT_SUCCESS != osalRetVal)
+    {
+        hwiHandle = NULL;
+    }
+
+    return (hwiHandle);
+#else
+    return NULL;
+#endif
+}
+
 static void Mbox_osalUnRegisterIntr(void *hwiHandle, uint32_t coreIntrNum)
 {
     int32_t     corepacEventNum = (int32_t)0;
@@ -223,7 +257,8 @@ void MboxOsalPrms_init(Mbox_OsalPrms *osalPrms)
         osalPrms->unlockMutex   = &Mbox_osalMutexUnlock;
 
         osalPrms->registerIntr   = &Mbox_osalRegisterIntr;
-	osalPrms->unRegisterIntr = &Mbox_osalUnRegisterIntr;
+        osalPrms->registerDirectIntr = &Mbox_osalRegisterDirectIntr;
+        osalPrms->unRegisterIntr = &Mbox_osalUnRegisterIntr;
     }
     return;
 }

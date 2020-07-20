@@ -18,6 +18,9 @@ ifeq ($(SOC),$(filter $(SOC), tpr12))
   SRCS_COMMON += csl_mbox.c
 endif
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(MAILBOX_CFLAGS)
+ifeq ($(SOC),$(filter $(SOC), am64x))
+CFLAGS_LOCAL_COMMON += -DVIM_DIRECT_REGISTRATION
+endif
 
 PACKAGE_SRCS_COMMON = mailbox.h mailbox_component.mk .gitignore src soc/mailbox_soc.h soc/$(SOC) include
 

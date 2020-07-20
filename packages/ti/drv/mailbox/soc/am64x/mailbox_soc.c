@@ -49,7 +49,8 @@
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
-#define  MAILBOX_SCICLIENT_TIMEOUT              (SCICLIENT_SERVICE_WAIT_FOREVER)
+
+/* None */
 
 /* ========================================================================== */
 /*                         Structure Declarations                             */
@@ -697,24 +698,20 @@ int32_t Mailbox_getMailboxIntrRouterCfg(uint32_t selfId, uint32_t clusterId, uin
     return retVal;
 }
 
+#if defined(BUILD_MCU) && defined(VIM_DIRECT_REGISTRATION)
 static inline void Mailbox_directClrNewMsgStatus(Mbox_Handle handle)
 {
     MailboxClrNewMsgStatus(((Mailbox_Driver *)handle)->baseAddrRx,
                            ((Mailbox_HwCfg *)((Mailbox_Driver *)handle)->hwCfg)->rx.user,
                            ((Mailbox_HwCfg *)((Mailbox_Driver *)handle)->hwCfg)->rx.fifo);
 
-#if defined(BUILD_MCU)
-#if defined(VIM_DIRECT_REGISTRATION)
     CSL_vimClrIntrPending((CSL_vimRegs *)(uintptr_t)TEST_VIM_BASE_ADDR,
                           ((Mailbox_HwCfg *)((Mailbox_Driver *)handle)->hwCfg)->eventId);
     /* Acknowledge interrupt servicing */
     CSL_vimAckIntr((CSL_vimRegs *)(uintptr_t)TEST_VIM_BASE_ADDR, \
                     (CSL_VimIntrMap)0u );
-#endif
-#endif
 }
 
-#if defined(BUILD_MCU) && defined(VIM_DIRECT_REGISTRATION)
 __attribute__((interrupt("IRQ")))     void mailboxIsr_0(void);
 __attribute__((interrupt("IRQ")))     void mailboxIsr_1(void);
 __attribute__((interrupt("IRQ")))     void mailboxIsr_2(void);
@@ -799,16 +796,19 @@ uintptr_t mailboxIsrArray[6] =
     (uintptr_t)&mailboxIsr_4,
     (uintptr_t)&mailboxIsr_5
 };
-#else
+#endif
 
 void Mailbox_InternalCallbackFast(uintptr_t arg)
 {
     uint32_t idx = (uint32_t)arg;
+    Mbox_Handle handle = g_FastCallbackArg[idx];
 
     (g_FastCallback[idx])(g_FastCallbackArg[idx], idx);
-    Mailbox_directClrNewMsgStatus(g_FastCallbackArg[idx]);
+
+    MailboxClrNewMsgStatus(((Mailbox_Driver *)handle)->baseAddrRx,
+                           ((Mailbox_HwCfg *)((Mailbox_Driver *)handle)->hwCfg)->rx.user,
+                           ((Mailbox_HwCfg *)((Mailbox_Driver *)handle)->hwCfg)->rx.fifo);
 }
-#endif
 
 void Mailbox_InternalCallback(uintptr_t arg)
 {
@@ -830,7 +830,7 @@ void Mailbox_InternalCallback(uintptr_t arg)
                 (mbox->fifoTable[0].func)(fifo->handle, fifo->arg);
             }
             /* Clear new message status of Mailbox */
-            Mailbox_directClrNewMsgStatus(fifo->handle);
+            MailboxClrNewMsgStatus(mbox->baseAddr, mbox->userId, fifo->queueId);
         }
         else
         {
@@ -876,7 +876,7 @@ int32_t Mailbox_registerInterrupts(Mbox_Handle handle)
     Mailbox_Data          *mbox = NULL;
     Mailbox_MbConfig      cfg;
     Mailbox_Instance      localEndpoint;
-    void                  *hwiHandle;
+    void                  *hwiHandle = NULL;
     uint32_t              i = 0;
     Mailbox_Instance remoteEndpoint;
 
@@ -936,32 +936,32 @@ int32_t Mailbox_registerInterrupts(Mbox_Handle handle)
                     if ((hwCfg->exclusive == TRUE) && ((driver->cfg.readMode == MAILBOX_MODE_FAST)))
                     {
 #if defined(BUILD_MCU) && defined(VIM_DIRECT_REGISTRATION)
-                        g_VimCallback[remoteEndpoint] = driver->cfg.readCallback;
-                        g_VimCallbackArg[remoteEndpoint] = driver;
-
-                        CSL_vimCfgIntr((CSL_vimRegs *)(uintptr_t)TEST_VIM_BASE_ADDR, cfg.eventId,
-                                       0xFU,
-                                       (CSL_VimIntrMap)0u,
-                                       CSL_VIM_INTR_TYPE_LEVEL,
-                                       (uint32_t)mailboxIsrArray[remoteEndpoint] );
-                        CSL_vimSetIntrEnable((CSL_vimRegs *)(uintptr_t)TEST_VIM_BASE_ADDR,
-                                             cfg.eventId, true );   /* Enable interrupt in vim */
-                        Intc_SystemEnable();
-#else
-                        g_FastCallback[remoteEndpoint] = driver->cfg.readCallback;
-                        g_FastCallbackArg[remoteEndpoint] = driver;
-                        hwiHandle = gMailboxMCB.initParam.osalPrms.registerIntr(Mailbox_InternalCallbackFast,
-                                                                                cfg.eventId,
-                                                                                cfg.priority,
-                                                                                (void *)remoteEndpoint,
-                                                                                (char *)"MAILBOX_NEW_MSG");
-                        gMailboxMCB.hwiHandles.mailboxFull = hwiHandle;
-                        if(hwiHandle == NULL)
+                        if (driver->cfg.enableVIMDirectInterrupt == true)
                         {
-                            //SystemP_printf("Mailbox_plugInterrupt : Failed to register ISR...\n");
-                        }
+                            g_VimCallback[remoteEndpoint] = driver->cfg.readCallback;
+                            g_VimCallbackArg[remoteEndpoint] = driver;
 
+                            hwiHandle = gMailboxMCB.initParam.osalPrms.registerDirectIntr((Mbox_OsalDirectIsrFxn)mailboxIsrArray[remoteEndpoint],
+                                                                                      cfg.eventId,
+                                                                                      cfg.priority);
+                        }
 #endif
+                        if (hwiHandle == NULL)
+                        {
+                            /* Direct interrupt registration failed or isn't enabled, try regular registration */
+                            g_FastCallback[remoteEndpoint] = driver->cfg.readCallback;
+                            g_FastCallbackArg[remoteEndpoint] = driver;
+                            hwiHandle = gMailboxMCB.initParam.osalPrms.registerIntr(Mailbox_InternalCallbackFast,
+                                                                                    cfg.eventId,
+                                                                                    cfg.priority,
+                                                                                    (void *)remoteEndpoint,
+                                                                                    (char *)"MAILBOX_NEW_MSG");
+                            gMailboxMCB.hwiHandles.mailboxFull = hwiHandle;
+                            if(hwiHandle == NULL)
+                            {
+                                //SystemP_printf("Mailbox_plugInterrupt : Failed to register ISR...\n");
+                            }
+                        }
                     }
                     else
                     {

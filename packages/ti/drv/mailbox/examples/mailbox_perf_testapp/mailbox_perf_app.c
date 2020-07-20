@@ -176,12 +176,14 @@ int32_t perfTestInit(void)
         openParam.cfg.writeMode = MAILBOX_MODE_FAST;
         openParam.cfg.readMode = MAILBOX_MODE_FAST;
         openParam.cfg.readCallback = mailboxIsr;
+        openParam.cfg.enableVIMDirectInterrupt = true;
     }
     else
     {
         openParam.cfg.writeMode = MAILBOX_MODE_FAST;
         openParam.cfg.readMode = MAILBOX_MODE_FAST;
 	openParam.cfg.readCallback = NULL;
+        openParam.cfg.enableVIMDirectInterrupt = true;
     }
 
     /* Send sync message to all cores */

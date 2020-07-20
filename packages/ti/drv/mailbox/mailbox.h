@@ -462,6 +462,16 @@ typedef struct Mailbox_Config_t
      *
      */
     Mailbox_ChID             chId;
+    /**
+     * \brief  For R5F cores and select SoCs, the driver provides
+     *         the ability to do direct VIM interrupt registration as
+     *         a performance enhancement. Note that this is currently
+     *         only supported for baremetal applications and not RTOS.
+     *         This option is set to false by default. Please see the
+     *         Mailbox_read documentation for further information on
+     *         support for this feature.
+     */
+    bool                     enableVIMDirectInterrupt;
 } Mailbox_Config;
 
 /**
@@ -742,6 +752,12 @@ extern int32_t Mailbox_write(Mbox_Handle handle, const uint8_t *buffer, uint32_t
  * For performance reasons, no protection and limited error checking is provided in this mode. The application takes the
  * responsibility of making sure that access to the API is properly protected.
  * Please see the soc-specific documentation for support for this mode as this mode is not supported in all cases.
+ * In addition, when running in this mode, the application can choose to enable VIM direct interrupt registration in the
+ * driver by setting the open-time config enableVIMDirectInterrupt. When this option is enabled, the driver will
+ * register the driver's interrupt handler directly with the VIM, providing a software performance savings. However, there
+ * are limitations when choosing this mode. Currently, this option should only be used by baremetal applications and not
+ * RTOS applications as there is no support for this feature with RTOS currently. If this option is enabled for RTOS, it
+ * will be ignored and fall back to the regular interrupt registration path.
  *
  * In any of the modes described above, Mailbox_readFlush() needs to be issued after the message is fully read by the application.
  *
@@ -891,6 +907,7 @@ static inline int32_t Mailbox_openParams_init (Mailbox_openParams *openParam)
         openParam->cfg.dataTransferMode = MAILBOX_DATA_TRANSFER_MEMCPY;
         openParam->cfg.chType           = MAILBOX_CHTYPE_SINGLE;
         openParam->cfg.chId             = MAILBOX_CH_ID_0;
+        openParam->cfg.enableVIMDirectInterrupt = false;
         retVal = MAILBOX_SOK;
     }
     return retVal;

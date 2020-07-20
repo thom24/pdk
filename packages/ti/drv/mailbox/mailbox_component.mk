@@ -75,22 +75,6 @@ mailbox_INCLUDE = $(mailbox_PATH)
 export mailbox_SOCLIST = $(drvmailbox_SOCLIST)
 export mailbox_$(SOC)_CORELIST = $(drvmailbox_$(SOC)_CORELIST)
 
-# Mailbox baremetal Library
-export mailbox_baremetal_COMP_LIST = mailbox_baremetal
-mailbox_baremetal_RELPATH = ti/drv/mailbox
-mailbox_baremetal_PATH = $(PDK_MAILBOX_COMP_PATH)
-export mailbox_baremetal_LIBNAME = mailbox_baremetal
-export mailbox_baremetal_LIBPATH = $(PDK_MAILBOX_COMP_PATH)/lib
-export mailbox_baremetal_OBJPATH = $(mailbox_baremetal_RELPATH)/mailbox_baremetal
-export mailbox_baremetal_MAKEFILE = -fsrc/makefile_baremetal
-export mailbox_baremetal_BOARD_DEPENDENCY = no
-export mailbox_baremetal_CORE_DEPENDENCY = yes
-mailbox_baremetal_PKG_LIST = mailbox_baremetal
-mailbox_baremetal_INCLUDE = $(mailbox_baremetal_PATH)
-export mailbox_baremetal_SOCLIST = $(drvmailbox_SOCLIST)
-export mailbox_baremetal_$(SOC)_CORELIST = $(drvmailbox_$(SOC)_CORELIST)
-mailbox_LIB_LIST += mailbox_baremetal
-
 #
 # Mailbox Examples
 #

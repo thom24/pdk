@@ -128,6 +128,11 @@ typedef void (*Mbox_OsalMutexUnlockFxn)(void *mutexHandle, bool isISRContext);
 typedef void (*Mbox_OsalIsrFxn)(uintptr_t arg);
 
 /**
+ *  \brief Mailbox OSAL Direct ISR callback function prototype.
+ */
+typedef void (*Mbox_OsalDirectIsrFxn)(void);
+
+/**
  *  \brief Mailbox OSAL ISR register function prototype.
  *
  *  \param isrFxn       [IN] ISR callback fxn pointer
@@ -143,6 +148,21 @@ typedef void *(*Mbox_OsalRegisterIntrFxn)(Mbox_OsalIsrFxn isrFxn,
                                           uint32_t intrPriority,
                                           void *arg,
                                           char *name);
+
+/**
+ *  \brief Mailbox OASL Direct ISR register function prototype for R5F
+ *         direct VIM registration.
+ *
+ *  \param isrFxn       [IN] ISR callback fxn pointer
+ *  \param coreIntrNum  [IN] Core interrupt number to register
+ *  \param intrPriority [IN] Priority
+ *
+ *  \return Created HWI handle
+ */
+typedef void *(*Mbox_OsalRegisterDirectIntrFxn)(Mbox_OsalDirectIsrFxn isrFxn,
+                                                uint32_t coreIntrNum,
+                                                uint32_t intrPriority);
+
 /**
  *  \brief Mailbox OSAL ISR unregister function prototype.
  *
@@ -181,6 +201,8 @@ typedef struct Mbox_OsalPrms_s
 
     Mbox_OsalRegisterIntrFxn     registerIntr;
     /**< Register interrupt function pointer */
+    Mbox_OsalRegisterDirectIntrFxn registerDirectIntr;
+    /**< Register direct interrupt function pointer - used only for R5F for certain SoCs */
     Mbox_OsalUnRegisterIntrFxn   unRegisterIntr;
     /**< Unregister interrupt function pointer */
 } Mbox_OsalPrms;

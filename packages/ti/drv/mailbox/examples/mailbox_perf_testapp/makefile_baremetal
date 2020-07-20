@@ -24,7 +24,7 @@ ifeq ($(BOARD),$(filter $(BOARD), am64x_evm))
 else
   COMP_LIST_COMMON += csl
 endif
-COMP_LIST_COMMON += csl_utils_common csl_uart_console mailbox_baremetal
+COMP_LIST_COMMON += csl_utils_common csl_uart_console mailbox
 
 ifeq ($(SOC),$(filter $(SOC), am64x))
 SRCS_COMMON = mailbox_perf_main_baremetal.c mailbox_perf_app.c
