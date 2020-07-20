@@ -87,6 +87,7 @@ ifeq ($(BOARD), $(filter $(BOARD), j721e_evm am65xx_evm am65xx_idk j7200_evm))
 COMP_LIST_COMMON += spi_dma mmcsd
 endif
 ifneq ($(strip $(HS_SUFFIX)),) #if $(HS_SUFFIX) is non-empty
+  COMP_LIST_COMMON := $(filter-out sciclient,$(COMP_LIST_COMMON))
   COMP_LIST_COMMON += sciclient$(HS_SUFFIX)
 endif
 

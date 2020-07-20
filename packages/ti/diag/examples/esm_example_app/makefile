@@ -31,6 +31,7 @@ ifeq ($(CSL_BUILD),$(filter $(CSL_BUILD), CSL))
     COMP_LIST_COMMON = csl
   endif
 else
+  COMP_LIST_COMMON := $(filter-out csl,$(COMP_LIST_COMMON))
   COMP_LIST_COMMON = csl2 csl_trim
 endif
 
