@@ -70,6 +70,8 @@
 #include <ti/osal/DebugP.h>
 #include <ti/board/board.h>
 
+#include "watchdog_log.h"
+
 /**************************************************************************
  *************************** Global Definitions ***************************
  **************************************************************************/
@@ -101,13 +103,13 @@ static void watchdogCallback(Watchdog_Handle handle)
     gWatchdogInt++;
     if (gWatchdogInt < 10)
     {
-        printf ("Debug: Application - Watchdog Driver callback for NMI received\n");
+        WATCHDOG_log("Debug: Application - Watchdog Driver callback for NMI received\n");
         /* DSP Watchdog timeout triggers an ESM high priority error, which is an NMI
          * first captured by the NMI exception handler. Since there is no returning
          * from NMI/Exceptions, print the message of "All Tests PASSED" here to
          * facilitate the test automation.
          */
-        printf ("All Tests PASSED\n");
+        WATCHDOG_log("All Tests PASSED\n");
         DebugP_assert(0);
     }
     return;
@@ -154,13 +156,13 @@ static int32_t watchdogTest()
     watchdogHandle = Watchdog_open(0, &watchdogParams);
     if (watchdogHandle == NULL)
     {
-        printf ("Error: Watchdog Driver Open failed\n");
+        WATCHDOG_log("Error: Watchdog Driver Open failed\n");
         return -1;
     }
 
     if (testSelection == WATCHDOG_APP_TEST_RESET)
     {
-        printf ("Debug: Watchdog Driver Reset Mode not supported detected\n");
+        WATCHDOG_log("Debug: Watchdog Driver Reset Mode not supported detected\n");
         return 0;
     }
     if (testSelection == WATCHDOG_APP_TEST_INTERRUPT)
@@ -173,11 +175,11 @@ static int32_t watchdogTest()
     errCode = Watchdog_control (watchdogHandle, WATCHDOG_CMD_RESETMODE, (void* )&resetMode);
     if (errCode < 0)
     {
-        printf ("Debug: Watchdog control Set Reset Mode not supported detected \n");
+        WATCHDOG_log("Debug: Watchdog control Set Reset Mode not supported detected \n");
     }
     else
     {
-        printf ("Error: Watchdog control Set Reset Mode check failed [Error code %d]\n", errCode);
+        WATCHDOG_log("Error: Watchdog control Set Reset Mode check failed [Error code %d]\n", errCode);
         return -1;
     }
 
@@ -186,11 +188,11 @@ static int32_t watchdogTest()
     errCode = Watchdog_control (watchdogHandle, WATCHDOG_CMD_RESETMODE, (void* )&resetMode);
     if (errCode < 0)
     {
-        printf ("Debug: Watchdog control Set Reset Mode OFF not supported detected\n");
+        WATCHDOG_log("Debug: Watchdog control Set Reset Mode OFF not supported detected\n");
     }
     else
     {
-        printf ("Error: Watchdog control Set Reset Mode OFF check failed [Error code %d]\n", errCode);
+        WATCHDOG_log("Error: Watchdog control Set Reset Mode OFF check failed [Error code %d]\n", errCode);
         return -1;
     }
 
@@ -199,7 +201,7 @@ static int32_t watchdogTest()
     errCode = Watchdog_control (watchdogHandle, WATCHDOG_CMD_WINDOWSIZE, (void* )&windowSize);
     if (errCode < 0)
     {
-        printf ("Error: Watchdog control Set Window size failed [Error code %d]\n", errCode);
+        WATCHDOG_log("Error: Watchdog control Set Window size failed [Error code %d]\n", errCode);
         return -1;
     }
 
@@ -208,7 +210,7 @@ static int32_t watchdogTest()
     errCode = Watchdog_control (watchdogHandle, WATCHDOG_CMD_WINDOWSIZE, (void* )&windowSize);
     if (errCode < 0)
     {
-        printf ("Error: Watchdog control Set Window size failed [Error code %d]\n", errCode);
+        WATCHDOG_log("Error: Watchdog control Set Window size failed [Error code %d]\n", errCode);
         return -1;
     }
 
@@ -217,7 +219,7 @@ static int32_t watchdogTest()
     errCode = Watchdog_control (watchdogHandle, WATCHDOG_CMD_WINDOWSIZE, (void* )&windowSize);
     if (errCode < 0)
     {
-        printf ("Error: Watchdog control Set Window size failed [Error code %d]\n", errCode);
+        WATCHDOG_log("Error: Watchdog control Set Window size failed [Error code %d]\n", errCode);
         return -1;
     }
 
@@ -226,7 +228,7 @@ static int32_t watchdogTest()
     errCode = Watchdog_control (watchdogHandle, WATCHDOG_CMD_WINDOWSIZE, (void* )&windowSize);
     if (errCode < 0)
     {
-        printf ("Error: Watchdog control Set Window size failed [Error code %d]\n", errCode);
+        WATCHDOG_log("Error: Watchdog control Set Window size failed [Error code %d]\n", errCode);
         return -1;
     }
 
@@ -235,7 +237,7 @@ static int32_t watchdogTest()
     errCode = Watchdog_control (watchdogHandle, WATCHDOG_CMD_WINDOWSIZE, (void* )&windowSize);
     if (errCode < 0)
     {
-        printf ("Error: Watchdog control Set Window size failed [Error code %d]\n", errCode);
+        WATCHDOG_log("Error: Watchdog control Set Window size failed [Error code %d]\n", errCode);
         return -1;
     }
 
@@ -262,7 +264,7 @@ static int32_t Watchdog_initConfig(void)
     watchdog_cfg.esmHandle = ESM_init(0U);
     if (watchdog_cfg.esmHandle == NULL)
     {
-        printf ("Error: ESM Module Initialization failed\n");
+        WATCHDOG_log("Error: ESM Module Initialization failed\n");
         return -1;
     }
 
@@ -291,13 +293,13 @@ static void Test_initTask(UArg arg0, UArg arg1)
 
     while (1)
     {
-        printf ("********************************************************\n");
-        printf ("Watchdog Unit Test                                      \n");
-        printf ("Please select the type of test to execute:  \n");
-        printf ("1. Watchdog reset test                      \n");
-        printf ("2. Watchdog interrupt CPU test              \n");
-        printf ("*******************************************************\n");
-        printf ("> Enter your selection: ");
+        WATCHDOG_log("********************************************************\n");
+        WATCHDOG_log("Watchdog Unit Test                                      \n");
+        WATCHDOG_log("Please select the type of test to execute:  \n");
+        WATCHDOG_log("1. Watchdog reset test                      \n");
+        WATCHDOG_log("2. Watchdog interrupt CPU test              \n");
+        WATCHDOG_log("*******************************************************\n");
+        WATCHDOG_log("> Enter your selection: ");
 
         scanf("%d", &testSelection);
 
@@ -309,22 +311,22 @@ static void Test_initTask(UArg arg0, UArg arg1)
     }
     if (testSelection == WATCHDOG_APP_TEST_RESET)
     {
-        printf("Debug: Testing watchdog reset mode\n");
+        WATCHDOG_log("Debug: Testing watchdog reset mode\n");
     }
     if (testSelection == WATCHDOG_APP_TEST_INTERRUPT)
     {
-        printf("Debug: Testing watchdog interrupt mode\n");
+        WATCHDOG_log("Debug: Testing watchdog interrupt mode\n");
     }
 
     retVal = watchdogTest();
 
     if (retVal < 0)
     {
-        printf("All Tests did NOT Pass\n");
+        WATCHDOG_log("All Tests did NOT Pass\n");
     }
     else
     {
-        printf("All Tests PASSED\n");
+        WATCHDOG_log("All Tests PASSED\n");
     }
 
     /* Exit BIOS */
@@ -369,7 +371,7 @@ int32_t main (void)
     Board_init(boardCfg);
 
     /* Debug Message: */
-    printf ("Debug: Launching BIOS\n");
+    WATCHDOG_log("Debug: Launching BIOS\n");
 
     /* Start BIOS */
     BIOS_start();
