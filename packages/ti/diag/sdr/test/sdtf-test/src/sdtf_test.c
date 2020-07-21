@@ -585,7 +585,7 @@ void test_sdr_test(void)
 
     if (retVal == 0)
     {
-        UART_printStatus("\n ALL TESTS PASSED \n");
+        UART_printStatus("\n All tests have passed. \n");
     }
     else
     {
