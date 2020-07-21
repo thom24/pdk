@@ -135,7 +135,7 @@
 /**
  * Total number of resource entries allowed for SoC
  */
-#define TISCI_RESASG_ENTRIES_MAX (TISCI_RESASG_UTYPE_CNT * 2U)
+#define TISCI_RESASG_ENTRIES_MAX (TISCI_RESASG_UTYPE_CNT * 5U)
 
 #endif /* TISCI_RESASG_TYPES_H */
 

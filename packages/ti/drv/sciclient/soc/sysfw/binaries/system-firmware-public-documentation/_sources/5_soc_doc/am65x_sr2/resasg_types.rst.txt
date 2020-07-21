@@ -11,7 +11,7 @@ represent AM65X_SR2 resources ranges assignable to SoC processing entities (or
 PEs).
 
 
-**WARNING**: System Firmware RM currently supports a maximum of 104 RM board
+**WARNING**: System Firmware RM currently supports a maximum of 260 RM board
 configuration resource assignment ranges on the AM65X_SR2 SoC.  Sending more
 entries than the maximum will result in the RM board configuration being NACK'd
 

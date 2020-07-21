@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                20.05.00
+                20.06.00
               </div>
             
           
@@ -474,6 +474,76 @@ specific resets being released. Typical example is when starting up a processing
 entity like ICSS/DSP, the device must be requested with resets asserted,
 required firmware loaded and the required resets released in appropriate order
 for operation of the device.</p>
+<p>The reset state is passed as a 32-bit wide bitfield with any set bit
+indicating an asserted reset, and any cleared bit indicated a de-asserted reset.
+The individual bits can have device specific meanings. Some bits are
+standardized across all devices:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="33%" />
+<col width="67%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Bit Position</th>
+<th class="head">Meaning</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>0</td>
+<td>PSC local reset (LRST)</td>
+</tr>
+<tr class="row-odd"><td>1</td>
+<td>PSC module reset (MRST)</td>
+</tr>
+</tbody>
+</table>
+<p>Note that not all devices implement the above reset types. PSC local reset
+will always assert the local reset regardless of module state. PSC module
+reset will assert the module reset. Depending on the state of the module
+the state chosen will follow the below table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="20%" />
+<col width="23%" />
+<col width="18%" />
+<col width="39%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head" rowspan="2">Device Enabled</th>
+<th class="head" rowspan="2">Device Retention</th>
+<th class="head" rowspan="2">Module Reset</th>
+<th class="head" rowspan="2">Module State</th>
+</tr>
+<tr class="row-even"></tr>
+</thead>
+<tbody valign="top">
+<tr class="row-odd"><td>No</td>
+<td>No</td>
+<td>Don’t Care</td>
+<td>SwRstDisabled (may power off)</td>
+</tr>
+<tr class="row-even"><td>No</td>
+<td>Yes</td>
+<td>No</td>
+<td>Disabled</td>
+</tr>
+<tr class="row-odd"><td>No</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>SwRstDisabled (powered-on)</td>
+</tr>
+<tr class="row-even"><td>Yes</td>
+<td>Don’t Care</td>
+<td>No</td>
+<td>Enabled</td>
+</tr>
+<tr class="row-odd"><td>Yes</td>
+<td>Don’t Care</td>
+<td>Yes</td>
+<td>SyncReset</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="section" id="id7">
 <h3>TISCI Message ID<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
@@ -580,7 +650,7 @@ for operation of the device.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'20.05.00',
+            VERSION:'20.06.00',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

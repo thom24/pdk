@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                20.05.00
+                20.06.00
               </div>
             
           
@@ -1379,12 +1379,16 @@ On Read - Core Status - (1: Core in lockstep mode, 0 - Core in split mode)</td>
 <tr class="row-even"><td>MEM_INIT_DIS</td>
 <td>14</td>
 <td>Disables SRAM initialization (TCM, etc) at reset.
-(Not available on all devices. Please read TRM before trying to set this field.)</td>
+(Not available on all devices. Please read TRM before trying to set this field.)
+(TRM Section to be referred to is: Chapter 5 (“Device Configuration”) -&gt;
+Section 5.1 (“5.1 Control Module (CTRL_MMR)”) -&gt; CTRLMMR_SEC_CLSTRx_CFG Register)</td>
 </tr>
 <tr class="row-odd"><td>SINGLE_CORE</td>
 <td>15</td>
 <td>Single / Dual CPU Mode CLSTR_CFG Value 0 = Both CPUs are enabled, 1 = CPU1 Core is disabled
-(Not available on all devices. Please read TRM before trying to set this field.)</td>
+(Not available on all devices. Please read TRM before trying to set this field.)
+(TRM Section to be referred to is: Chapter 5 (“Device Configuration”) -&gt;
+Section 5.1 (“5.1 Control Module (CTRL_MMR)”) -&gt; CTRLMMR_SEC_CLSTRx_CFG Register)</td>
 </tr>
 </tbody>
 </table>
@@ -1415,9 +1419,9 @@ On Read - Core Status - (1: Core in lockstep mode, 0 - Core in split mode)</td>
 </ul>
 <table border="1" class="docutils">
 <colgroup>
-<col width="23%" />
-<col width="14%" />
-<col width="63%" />
+<col width="22%" />
+<col width="13%" />
+<col width="65%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Flag Name</th>
@@ -1441,6 +1445,10 @@ On Read - Core Status - (1: Core in lockstep mode, 0 - Core in split mode)</td>
 <tr class="row-odd"><td>LOCKSTEP_PERMITTED</td>
 <td>8</td>
 <td>Is Lockstep configuration permitted - 1: yes, 0 - no</td>
+</tr>
+<tr class="row-even"><td>SINGLECORE_ONLY</td>
+<td>9</td>
+<td>Is Single Core only configuration enabled - 1: yes, 0 - no</td>
 </tr>
 </tbody>
 </table>
@@ -1632,7 +1640,7 @@ the reset to allow the processor to execute.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'20.05.00',
+            VERSION:'20.06.00',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

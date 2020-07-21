@@ -553,9 +553,13 @@ ARM R5
 +--------------+------------+-------------------------------------------------------------------------------------------------------------+
 | MEM_INIT_DIS | 14         | Disables SRAM initialization (TCM, etc) at reset.                                                           |
 |              |            | (Not available on all devices. Please read TRM before trying to set this field.)                            |
+|              |            | (TRM Section to be referred to is: Chapter 5 ("Device Configuration") ->                                    |
+|              |            | Section 5.1 ("5.1 Control Module (CTRL_MMR)") -> CTRLMMR_SEC_CLSTRx_CFG Register)                           |
 +--------------+------------+-------------------------------------------------------------------------------------------------------------+
 | SINGLE_CORE  | 15         | Single / Dual CPU Mode CLSTR_CFG Value 0 = Both CPUs are enabled, 1 = CPU1 Core is disabled                 |
 |              |            | (Not available on all devices. Please read TRM before trying to set this field.)                            |
+|              |            | (TRM Section to be referred to is: Chapter 5 ("Device Configuration") ->                                    |
+|              |            | Section 5.1 ("5.1 Control Module (CTRL_MMR)") -> CTRLMMR_SEC_CLSTRx_CFG Register)                           |
 +--------------+------------+-------------------------------------------------------------------------------------------------------------+
 
 -  control_flags_1 Fields
@@ -568,17 +572,19 @@ ARM R5
 
 -  status_flags_1 Fields
 
-+--------------------+------------+------------------------------------------------------+
-|     Flag Name      | Bit Offset |                     Description                      |
-+====================+============+======================================================+
-| WFE                | 0          | Set if the core is in WFE state                      |
-+--------------------+------------+------------------------------------------------------+
-| WFI                | 1          | Set if the core is in WFI state                      |
-+--------------------+------------+------------------------------------------------------+
-| CLK_GATED          | 2          | Core Clock Stopped due to WFI or WFE state           |
-+--------------------+------------+------------------------------------------------------+
-| LOCKSTEP_PERMITTED | 8          | Is Lockstep configuration permitted - 1: yes, 0 - no |
-+--------------------+------------+------------------------------------------------------+
++--------------------+------------+------------------------------------------------------------+
+|     Flag Name      | Bit Offset |                     Description                            |
++====================+============+============================================================+
+| WFE                | 0          | Set if the core is in WFE state                            |
++--------------------+------------+------------------------------------------------------------+
+| WFI                | 1          | Set if the core is in WFI state                            |
++--------------------+------------+------------------------------------------------------------+
+| CLK_GATED          | 2          | Core Clock Stopped due to WFI or WFE state                 |
++--------------------+------------+------------------------------------------------------------+
+| LOCKSTEP_PERMITTED | 8          | Is Lockstep configuration permitted - 1: yes, 0 - no       |
++--------------------+------------+------------------------------------------------------------+
+| SINGLECORE_ONLY    | 9          | Is Single Core only configuration enabled - 1: yes, 0 - no |
++--------------------+------------+------------------------------------------------------------+
 
 C7x DSP
 ^^^^^^^

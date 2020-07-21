@@ -10,7 +10,7 @@ type IDs that are permitted in the AM6 SoC.  The resource type IDs represent AM6
 resources ranges assignable to SoC processing entities (or PEs).
 
 
-**WARNING**: System Firmware RM currently supports a maximum of 104 RM board
+**WARNING**: System Firmware RM currently supports a maximum of 260 RM board
 configuration resource assignment ranges on the AM6 SoC.  Sending more
 entries than the maximum will result in the RM board configuration being NACK'd
 

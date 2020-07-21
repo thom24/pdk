@@ -399,6 +399,8 @@ struct tisci_msg_proc_get_status_req {
 #define TISCI_MSG_VAL_PROC_BOOT_STATUS_FLAG_R5_CLK_GATED      (0x00000004U)
 /** R5 Is Lockstep configuration permitted */
 #define TISCI_MSG_VAL_PROC_BOOT_STATUS_FLAG_R5_LOCKSTEP_PERMITTED     (0x00000100U)
+/** R5 Single Core configuration Only Efuse setting */
+#define TISCI_MSG_VAL_PROC_BOOT_STATUS_FLAG_R5_SINGLECORE_ONLY        (0x00000200U)
 
 /* M4F Status Flags */
 

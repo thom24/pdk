@@ -69,9 +69,6 @@
 #define TISCI_BOARDCFG_DEBUG_TRACE_DST_ENABLES_MASK                   (0x0FU)
 #define TISCI_BOARDCFG_DEBUG_TRACE_SRC_ENABLES_MASK                   (0x3FU)
 
-#define TISCI_BOARDCFG_RM_HOST_CFG_MAGIC_NUM                          (0x4C41U)
-#define TISCI_BOARDCFG_RM_RESASG_MAGIC_NUM                            (0x7B25U)
-
 #define TISCI_BOARDCFG_CONTROL_MAGIC_NUM                              (0xC1D3U)
 #define TISCI_BOARDCFG_SECPROXY_MAGIC_NUM                             (0x1207U)
 #define TISCI_BOARDCFG_MSMC_MAGIC_NUM                                 (0xA5C3U)

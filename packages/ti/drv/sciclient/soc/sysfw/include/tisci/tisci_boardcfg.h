@@ -59,9 +59,6 @@
 #define TISCI_BOARDCFG_ABI_MAJ_VALUE                  0x00
 #define TISCI_BOARDCFG_ABI_MIN_VALUE                  0x01
 
-#define TISCI_BOARDCFG_RM_ABI_MAJ_VALUE               0x00
-#define TISCI_BOARDCFG_RM_ABI_MIN_VALUE               0x01
-
 #define TISCI_BOARDCFG_SEC_ABI_MAJ_VALUE               0x00
 #define TISCI_BOARDCFG_SEC_ABI_MIN_VALUE               0x01
 

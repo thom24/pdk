@@ -4396,6 +4396,30 @@
                         }
                     ]
                 },
+                "0x17": {
+                    "action_long": "Set Module Reset",
+                    "action_short": "SET_MODULE_RESET",
+                    "msg_data": [
+                        {
+                            "fmt": "%d",
+                            "higher_bit": 21,
+                            "lower_bit": 20,
+                            "name": "PSC ID"
+                        },
+                        {
+                            "fmt": "%d",
+                            "higher_bit": 19,
+                            "lower_bit": 14,
+                            "name": "Power domain ID"
+                        },
+                        {
+                            "fmt": "%d",
+                            "higher_bit": 0,
+                            "lower_bit": 0,
+                            "name": "Enable(1)/Disable(0)"
+                        }
+                    ]
+                },
                 "0x20": {
                     "action_long": "Power Management Initialization",
                     "action_short": "PM_INIT",

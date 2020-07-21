@@ -624,7 +624,7 @@
                 ],
                 "constraints": [
                     {
-                        "max_resource_entries": 104
+                        "max_resource_entries": 260
                     }
                 ]
             },
@@ -951,7 +951,7 @@
                 ],
                 "constraints": [
                     {
-                        "max_resource_entries": 104
+                        "max_resource_entries": 260
                     }
                 ]
             },

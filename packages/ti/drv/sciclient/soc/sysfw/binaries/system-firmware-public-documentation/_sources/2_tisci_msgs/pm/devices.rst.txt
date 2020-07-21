@@ -136,6 +136,38 @@ entity like ICSS/DSP, the device must be requested with resets asserted,
 required firmware loaded and the required resets released in appropriate order
 for operation of the device.
 
+The reset state is passed as a 32-bit wide bitfield with any set bit
+indicating an asserted reset, and any cleared bit indicated a de-asserted reset.
+The individual bits can have device specific meanings. Some bits are
+standardized across all devices:
+
++--------------+----------------------------+
+| Bit Position | Meaning                    |
++==============+============================+
+|            0 | PSC local reset (LRST)     |
++--------------+----------------------------+
+|            1 | PSC module reset (MRST)    |
++--------------+----------------------------+
+
+Note that not all devices implement the above reset types. PSC local reset
+will always assert the local reset regardless of module state. PSC module
+reset will assert the module reset. Depending on the state of the module
+the state chosen will follow the below table:
+
++----------------+------------------+--------------+-------------------------------+
++ Device Enabled | Device Retention | Module Reset | Module State                  |
++================+==================+==============+===============================+
+| No             | No               | Don't Care   | SwRstDisabled (may power off) |
++----------------+------------------+--------------+-------------------------------+
+| No             | Yes              | No           | Disabled                      |
++----------------+------------------+--------------+-------------------------------+
+| No             | Yes              | Yes          | SwRstDisabled (powered-on)    |
++----------------+------------------+--------------+-------------------------------+
+| Yes            | Don't Care       | No           | Enabled                       |
++----------------+------------------+--------------+-------------------------------+
+| Yes            | Don't Care       | Yes          | SyncReset                     |
++----------------+------------------+--------------+-------------------------------+
+
 TISCI Message ID
 ----------------
 
