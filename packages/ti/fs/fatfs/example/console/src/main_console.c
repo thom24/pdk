@@ -60,10 +60,6 @@
 #include <ti/fs/fatfs/example/console/src/fs_shell_app_utils.h>
 
 #include <ti/board/board.h>
-#ifndef SIMULATOR
-#include <ti/drv/gpio/GPIO.h>
-#include <ti/drv/gpio/soc/GPIO_soc.h>
-#endif
 
 /* GPIO is used to check the pin (SDCD) whether the SD Card is inserted
  * or not. However in case of AM65XX there is no GPIO pin to check the
@@ -72,6 +68,12 @@
  * assumes that the SD card is inserted */
 #if !(defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SIMULATOR) || defined(SOC_J7200) || defined(SOC_AM64X))
 #define FATFS_GPIO_ENABLED 1
+
+#ifndef SIMULATOR
+#include <ti/drv/gpio/GPIO.h>
+#include <ti/drv/gpio/soc/GPIO_soc.h>
+#endif
+
 #endif
 
 #ifndef FATFS_GPIO_ENABLED
