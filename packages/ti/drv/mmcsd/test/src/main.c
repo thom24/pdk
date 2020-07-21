@@ -157,7 +157,6 @@ const FATFSConfigList FATFS_config = {
 
 /* TI-RTOS Header files */
 #include <ti/csl/cslr_device.h>
-#include <ti/csl/csl_chip.h>
 #include "MMCSD_log.h"
 #include <ti/drv/mmcsd/MMCSD.h>
 #include <ti/drv/mmcsd/src/MMCSD_osal.h>

@@ -43,6 +43,7 @@
 #include <stdint.h>
 #include <ti/drv/mmcsd/MMCSD.h>
 #include <ti/csl/soc.h>
+#include <ti/csl/csl_chip.h>
 #include <ti/csl/soc/omapl137/src/cslr_soc.h>
 #include <ti/csl/soc/omapl137/src/cslr_interrupt.h>
 

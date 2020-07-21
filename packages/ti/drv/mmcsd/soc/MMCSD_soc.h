@@ -55,7 +55,6 @@ extern "C" {
 #include <stdlib.h>
 #include <string.h>
 #include <ti/csl/soc.h>
-#include <ti/csl/csl_chip.h>
 #include <ti/osal/osal.h>
 
 #if defined (SOC_AM574x) || defined (SOC_AM572x) || defined (SOC_AM571x) || defined (SOC_DRA72x) || defined (SOC_DRA75x) || defined (SOC_DRA78x) || defined (SOC_AM335x) || defined (SOC_AM437x) || defined(SOC_K2G)

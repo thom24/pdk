@@ -42,6 +42,7 @@
 #include <stdint.h>
 #include <ti/drv/mmcsd/MMCSD.h>
 #include <ti/csl/soc.h>
+#include <ti/csl/csl_chip.h>
 #include <ti/csl/hw_types.h>
 #include <ti/drv/mmcsd/soc/MMCSD_soc.h>
 

@@ -52,7 +52,6 @@
 #include <ti/sysbios/BIOS.h>
 /* TI-RTOS Header files */
 #include <ti/csl/cslr_device.h>
-#include <ti/csl/csl_chip.h>
 #include "MMCSD_log.h"
 #include "profiling.h"
 #include <ti/csl/arch/csl_arch.h>

@@ -44,7 +44,6 @@
 #include <ti/csl/csl_utils.h>
 #include <ti/csl/hw_types.h>
 #include <ti/csl/csl_error.h>
-#include <ti/csl/csl_chip.h>
 #include <ti/csl/csl_mmcsd.h>
 #include <ti/drv/mmcsd/src/MMCSD_drv_log.h>
 #include <ti/drv/mmcsd/MMCSD.h>
