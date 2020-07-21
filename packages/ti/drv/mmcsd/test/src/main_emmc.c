@@ -252,7 +252,7 @@ uint8_t rx[MMCSD_TEST_MAX_BUFSIZE] __attribute__((aligned(DATA_BUF_ALIGN))) __at
 #endif
 #ifndef BARE_METAL
 
-#if (defined(SOC_J721E) || defined(SOC_J7200)) && (defined(BUILD_MPU) || defined (__C7100__))
+#if (defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)) && (defined(BUILD_MPU) || defined (__C7100__))
 extern void Osal_initMmuDefault(void);
 void InitMmu(void)
 {
