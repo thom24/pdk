@@ -498,7 +498,7 @@ EMAC_DRV_ERR_E emac_ioctl_vlan_ctrl_set_default_vlan_id(uint32_t portNum, void* 
         regVal = (uint32_t)(0x0081) | ((uint32_t)tempByte1 << 16) | ((uint32_t)tempByte2 << 24);
         
         /* Update for host port */
-        if ((portNum % 1) == 0)
+        if ((portNum & 1) == 0)
         {
             regAddr = emac_mcb.port_cb[portNum].icssSharedRamBaseAddr + EMAC_ICSSG_SWITCH_PORT1_DEFAULT_VLAN_OFFSET;
         }
@@ -509,7 +509,7 @@ EMAC_DRV_ERR_E emac_ioctl_vlan_ctrl_set_default_vlan_id(uint32_t portNum, void* 
         CSL_REG32_WR (regAddr, regVal);
 
         /* Update Deafult Queue number for untagged packet*/
-        if ((portNum % 1) == 0)
+        if ((portNum & 1) == 0)
         {
             tempByte1 = CSL_REG8_RD(emac_mcb.port_cb[portNum].icssDram0BaseAddr + PORT_Q_PRIORITY_MAPPING_OFFSET + vlanDefaultEntry->pcp);
             regAddr = emac_mcb.port_cb[portNum].icssDram0BaseAddr + QUEUE_NUM_UNTAGGED;
@@ -661,7 +661,7 @@ EMAC_DRV_ERR_E emac_ioctl_port_prio_mapping_ctrl(uint32_t portNum, void*  ctrl)
 
     /* Update Deafult Queue number for untagged packet*/
     /*Read the configured PCP value*/
-    if ((portNum % 1) == 0)
+    if ((portNum & 1) == 0)
     {
         baseAddr = emac_mcb.port_cb[portNum].icssSharedRamBaseAddr + EMAC_ICSSG_SWITCH_PORT1_DEFAULT_VLAN_OFFSET;
     }
@@ -673,7 +673,7 @@ EMAC_DRV_ERR_E emac_ioctl_port_prio_mapping_ctrl(uint32_t portNum, void*  ctrl)
     tempVal = tempVal >> 5; /*Shif to get the value in correct format*/
     untaggedQueueNum = pPrioMap->portPrioMap[tempVal];
 
-    if ((portNum % 1) == 0)
+    if ((portNum & 1) == 0)
     {
         baseAddr = emac_mcb.port_cb[portNum].icssDram0BaseAddr + QUEUE_NUM_UNTAGGED;
     }
