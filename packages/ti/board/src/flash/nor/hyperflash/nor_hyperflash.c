@@ -267,6 +267,7 @@ NOR_STATUS Nor_hpfRead(NOR_HANDLE handle, uint32_t addr,
     HPF_Object *hpfObject;
     NOR_STATUS  retVal;
     uint32_t rdCnt;
+    uint16_t tempVar;
 
     norInfoHandle = (NOR_Info *)handle;
     hpfObject = (HPF_Object *)norInfoHandle->hwHandle;
@@ -274,8 +275,9 @@ NOR_STATUS Nor_hpfRead(NOR_HANDLE handle, uint32_t addr,
     /* Reading data from hyperflash */
     for(rdCnt = 0; rdCnt < len; rdCnt+=2)
     {
-        buf[rdCnt] = HW_RD_REG16(hpfObject->baseAddr + addr + rdCnt);
-        buf[rdCnt+1] = (HW_RD_REG16(hpfObject->baseAddr + addr + rdCnt) >> 8);
+        tempVar = HW_RD_REG16(hpfObject->baseAddr + addr + rdCnt);
+        buf[rdCnt] = (uint8_t) tempVar;
+        buf[rdCnt+1] = (uint8_t) (tempVar >> 8);
     }
 
     retVal = Nor_hpfWaitDevReady(handle, NOR_WRR_READ_TIMEOUT);
@@ -327,7 +329,7 @@ NOR_STATUS Nor_hpfWrite(NOR_HANDLE handle, uint32_t addr, uint32_t len,
         for (wrCnt = 0; wrCnt < wrLength; wrCnt += 2)
         {
             HW_WR_REG16(hpfObject->baseAddr + addr + wrCnt,
-                        ((uint16_t)buf[bufLen + wrCnt + 1] << 8) | buf[bufLen + wrCnt]);
+                        (((uint16_t)buf[bufLen + wrCnt + 1] << 8) | buf[bufLen + wrCnt]));
         }
 
         /* Confirm buffer write commence */
