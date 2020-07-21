@@ -46,7 +46,7 @@ endif
 
 endif
 
-ifeq ($(SOC),$(filter $(SOC), j721e j7200))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200 am64x))
 SRCDIR = ../src ../../
 INCDIR = ../src ../include ../../
 # Common source files across all platforms and cores
