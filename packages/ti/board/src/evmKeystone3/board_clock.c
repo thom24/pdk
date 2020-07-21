@@ -365,6 +365,9 @@ Board_STATUS Board_moduleClockInit(void)
     uint32_t index;
     uint32_t loopCount;
 
+    /* Restoring MCU DMtimer0 FCLK to HFOSC0 (changed by ROM) */
+    HW_WR_REG32((CSL_MCU_CTRL_MMR0_CFG0_BASE + CSL_MCU_CTRL_MMR_CFG0_MCU_TIMER0_CLKSEL), 0);
+
     loopCount = Board_getNumClkConfigs();
 
     for(index = 0; index < loopCount; index++)
