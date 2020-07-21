@@ -42,12 +42,14 @@
 #include "board_internal.h"
 #include "board_pinmux.h"
 
-#ifndef BUILD_M4F
-#ifdef SIM_BUILD
+
 /* am64xx_main_padcfg_ctrl_mmr */
 #define MAIN_PADCONFIG_CTRL_BASE    0x000F0000
 #define CTRL_MMR0_PARTITION_SIZE    0x4000
 #define MAIN_CTRL_PINCFG_BASE       (MAIN_PADCONFIG_CTRL_BASE + (1 * CTRL_MMR0_PARTITION_SIZE))
+
+#ifndef BUILD_M4F
+#ifdef SIM_BUILD
 
 #define MAIN_UART0_RXD  0x0230
 #define MAIN_UART0_TXD  0x0234
@@ -57,6 +59,10 @@
 #define MAIN_UART1_TXD  0x0244
 #define MAIN_UART1_CTSn 0x0248
 #define MAIN_UART1_RTSn 0x024c
+
+#define MAIN_SPI0_CS0   0x0208U
+
+#define MAIN_GPMC0_AD0  0x003cU
 
 void Board_uartPinmxCfg()
 {
@@ -87,6 +93,57 @@ void Board_ospiPinmxCfg()
     }
 }
 
+void Board_spiPinmxCfg()
+{
+    volatile uint32_t *addr = (volatile uint32_t *)(MAIN_CTRL_PINCFG_BASE + MAIN_SPI0_CS0);
+    uint32_t spiData[5] =
+    {
+        PIN_MODE(0) | ((~PIN_PULL_DISABLE) & (PIN_PULL_DIRECTION & ~PIN_INPUT_ENABLE)), /* SPI0_CS0 */
+        PIN_MODE(0) | ((~PIN_PULL_DISABLE) & (PIN_PULL_DIRECTION & ~PIN_INPUT_ENABLE)), /* SPI0_CS1 */
+        PIN_MODE(0) | ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION)),  /* SPI0_CLK */
+        PIN_MODE(0) | ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION)),  /* SPI0_D0 */
+        PIN_MODE(0) | ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))   /* SPI0_D1 */
+     };
+    uint32_t i;
+
+    for (i = 0; i < 5; i++)
+    {
+        *addr++ = spiData[i];
+    }
+}
+
+void Board_gpmcPinmxCfg()
+{
+    volatile uint32_t *addr = (volatile uint32_t *)(MAIN_CTRL_PINCFG_BASE + MAIN_GPMC0_AD0);
+    uint32_t gpmcData[69] =
+    {
+        0x50000, 0x50000, 0x50000, 0x50000,
+        0x40000, 0x40000, 0x50000, 0x50000,
+        0x50000, 0x50000, 0x50000, 0x50000,
+        0x50000, 0x50000, 0x50000, 0x50000,
+        0x50004, 0x50000, 0x40000, 0x40000,
+        0x40000, 0x40000, 0x40000, 0x60000,
+        0x60000, 0x40000, 0x50000, 0x40000,
+        0x40000, 0x40000, 0x40000, 0x50008,
+        0x50008, 0x50008, 0x50008, 0x50008,
+        0x50008, 0x50008, 0x50008, 0x50008,
+        0x50008, 0x50008, 0x50008, 0x50008,
+        0x50008, 0x50008, 0x50008, 0x40008,
+        0x50008, 0x50008, 0x40008, 0x60008,
+        0x40008, 0x40008, 0x40008, 0x40008,
+        0x40008, 0x40008, 0x40008, 0x40008,
+        0x40008, 0x40008, 0x40008, 0x40008,
+        0x40008, 0x40008, 0x40008, 0x40008,
+        0x40008
+    };
+    uint32_t i;
+
+    for (i = 0; i < 69; i++)
+    {
+        *addr++ = gpmcData[i];
+    }
+}
+
 #endif  /* #ifdef SIM_BUILD */
 #endif  /* #ifndef BUILD_M4F */
 
@@ -109,6 +166,8 @@ Board_STATUS Board_pinmuxConfig (void)
 #ifdef SIM_BUILD
     Board_uartPinmxCfg();
     Board_ospiPinmxCfg();
+    Board_spiPinmxCfg();
+    Board_gpmcPinmxCfg();
 #else
     pinmuxModuleCfg_t* pModuleData = NULL;
     pinmuxPerCfg_t* pInstanceData = NULL;

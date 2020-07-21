@@ -73,18 +73,33 @@ extern "C" {
 
 /* UART LLD instance number for MAIN UART0 port */
 #define BOARD_UART0_INSTANCE                            (0U)
+/* UART LLD instance number for MAIN UART1 port */
+#define BOARD_UART1_INSTANCE                            (1U)
+/* UART LLD instance number for MAIN UART2 port */
+#define BOARD_UART2_INSTANCE                            (2U)
 /* UART LLD instance number for MCU UART0 port */
 #define BOARD_MCU_UART0_INSTANCE                        (7U)
 
 /* UART LLD instance number for primary UART port */
-#if defined (BUILD_MPU) || defined (BUILD_MCU)
-/* default UART instance for A53 and R5 cores in the Main domain */ 
-#define BOARD_UART_INSTANCE                             (BOARD_UART0_INSTANCE)
-#else
 #ifdef SIM_BUILD
+#if defined (BUILD_MCU)
 #define BOARD_UART_INSTANCE                             (BOARD_UART0_INSTANCE)
 #else
-/* default UART instance for M4 core in the MCU domain */ 
+#define BOARD_UART_INSTANCE                             (BOARD_UART1_INSTANCE)
+#endif
+#else
+#if defined (BUILD_MCU)
+/* default UART instance for R5 cores in the Main domain */
+#define BOARD_UART_INSTANCE                             (BOARD_UART0_INSTANCE)
+#endif
+
+#if defined (BUILD_MPU)
+/* default UART instance for A53 cores in the Main domain */
+#define BOARD_UART_INSTANCE                             (BOARD_UART2_INSTANCE)
+#endif
+
+#if defined (BUILD_M4F)
+/* default UART instance for M4 core in the MCU domain */
 #define BOARD_UART_INSTANCE                             (BOARD_MCU_UART0_INSTANCE)
 #endif
 #endif
