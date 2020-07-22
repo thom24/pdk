@@ -160,7 +160,11 @@ static NOR_STATUS Nor_hpfReadId(NOR_Info *Nor_hpfInfo)
         count++;
     }
 
+#ifdef NOT_YET
     HW_WR_REG16((hpfObject->baseAddr), NOR_CMD_RESET);
+    We require to ensure device is up/functional before next command.
+    will have to update to add this check
+#endif
 
     return(retVal);
 }
@@ -272,8 +276,10 @@ NOR_STATUS Nor_hpfRead(NOR_HANDLE handle, uint32_t addr,
     norInfoHandle = (NOR_Info *)handle;
     hpfObject = (HPF_Object *)norInfoHandle->hwHandle;
 
+    retVal = Nor_hpfWaitDevReady(handle, NOR_WRR_READ_TIMEOUT);
+
     /* Reading data from hyperflash */
-    for(rdCnt = 0; rdCnt < len; rdCnt+=2)
+    for(rdCnt = 0; ((rdCnt < len) && (NOR_PASS == retVal)); rdCnt+=2)
     {
         tempVar = HW_RD_REG16(hpfObject->baseAddr + addr + rdCnt);
         buf[rdCnt] = (uint8_t) tempVar;
@@ -312,6 +318,12 @@ NOR_STATUS Nor_hpfWrite(NOR_HANDLE handle, uint32_t addr, uint32_t len,
 
     do
     {
+        retVal = Nor_hpfWaitDevReady(handle, NOR_WRR_WRITE_TIMEOUT);
+        if (retVal != NOR_PASS)
+        {
+            break;
+        }
+
         if (len > NOR_MAX_WRITE_LEN)
         {
             wrLength = NOR_MAX_WRITE_LEN;
@@ -373,6 +385,8 @@ NOR_STATUS Nor_hpfErase(NOR_HANDLE handle, int32_t sector, bool erase)
 
     norInfoHandle = (NOR_Info *)handle;
     hpfObject = (HPF_Object *)norInfoHandle->hwHandle;
+
+    retVal = Nor_hpfWaitDevReady(handle, NOR_BULK_ERASE_TIMEOUT);
 
     HW_WR_REG16((hpfObject->baseAddr + NOR_HPF_CMD_ADDR1), NOR_CMD_WRITE_UNLOCK1);
     HW_WR_REG16((hpfObject->baseAddr + NOR_HPF_CMD_ADDR2), NOR_CMD_WRITE_UNLOCK2);
