@@ -58,11 +58,6 @@ PACKAGE_SRCS_COMMON = makefile src/
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_GPMC_DMA) $(CFLAGS_OS_DEFINES)
 
-# Enable copy of vectors
-ifeq ($(ISA),$(filter $(ISA), r5f))
-  COMP_LIST_COMMON += copyvecs
-endif
-
 # Include common make files
 ifeq ($(MAKERULEDIR), )
 #Makerule path not defined, define this and assume relative path from ROOTDIR
