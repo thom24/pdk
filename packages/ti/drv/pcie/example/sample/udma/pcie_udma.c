@@ -192,8 +192,8 @@ static SemaphoreP_Handle gUdmaAppDoneSem = NULL;
 /* Global test pass/fail flag */
 static volatile int32_t gUdmaAppResult = UDMA_SOK;
 
-static struct QosSetup txQosSetup = {5, 2, 7, 3};
-static struct QosSetup rxQosSetup = {6, 7, 9, 3};
+static struct QosSetup txQosSetup = {5, 2, 4, 3};
+static struct QosSetup rxQosSetup = {6, 7, 4, 3};
 
 #ifdef __aarch64__
 #define CPU_FREQ (800000000u)

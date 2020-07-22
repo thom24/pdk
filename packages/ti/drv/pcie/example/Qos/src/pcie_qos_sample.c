@@ -902,30 +902,52 @@ void pcieSetupVC(uint32_t csl_pcie_dat_base) {
     PCIE_logPrintf("PCIE VC setup passed\n");
 }
 
+void pcieConfigSlavePortOrderId(void) {
+
+    /* If runs on A53, A53s are hard-coded to zero for SoC accesses outside of MSMC RAM and DDR, nothing can be done for setting orderID */
+#if defined (__TI_ARM_V7R4__)
+	/* If runs on R5F, configIdx 0, 1, 4, 5 for Read master 0, Write master 0, Read master 1, Write master 1, respectively. 
+	   Program QOS[a]_MAP[b] register bit field 7:4 for orderId = 0 (default value) */
+	uint32_t cba_qos_base = CSL_MCU_CBASS0_QOS_BASE;
+
+    *((uint32_t *)(uintptr_t) (cba_qos_base + 0*0x400 + 0x0100 + 0x00))   = 0x00007000; 
+    *((uint32_t *)(uintptr_t) (cba_qos_base + 1*0x400 + 0x0100 + 0x00))   = 0x00007000; 
+    *((uint32_t *)(uintptr_t) (cba_qos_base + 4*0x400 + 0x0100 + 0x00))   = 0x00007000; 
+    *((uint32_t *)(uintptr_t) (cba_qos_base + 5*0x400 + 0x0100 + 0x00))   = 0x00007000; 	
+#endif	
+}
+
 void pcieConfigMasterPortOrderId(void){
 
+    /* If runs on R5F, PCIe doesn’t have an Idx in the MCU CBASS. The orderID is not applied */
+#if defined __aarch64__
+	/* If runs on A53, configIdx 96, 97, 100, 101 for PCIE 0 HP Read master, Write master, PCIE 1 HP Read master, Write master, respectively. 
+	   Program QOS[a]_MAP[b] register bit field 7:4 for orderId = 8 */
+
     uint32_t cba_qos_base = CSL_CBASS0_QOS_BASE;
-    // configure hp master reads on pcie0 to use orderid 8 for TC3
-    *((uint32_t *)(uintptr_t) (cba_qos_base + 0x18000 + 0x00) )   = 0x00007000; 
-    *((uint32_t *)(uintptr_t) (cba_qos_base + 0x18000 + 0x0c) )   = 0x00007080;
-    // configure hp master writes on pcie0 to use orderid 8 for TC3
-    *((uint32_t *)(uintptr_t) (cba_qos_base + 0x18400 + 0x00) )   = 0x00007000; 
-    *((uint32_t *)(uintptr_t) (cba_qos_base + 0x18400 + 0x0c) )   = 0x00007080;
-    
-    // configure hp master reads on pcie1 to use orderid 8
-    *((uint32_t *)(uintptr_t) (cba_qos_base + 0x19000 + 0x0C) )   = 0x00007080;
-    *((uint32_t *)(uintptr_t) (cba_qos_base + 0x19000 + 0x14) )   = 0x00000008;
-    // configure hp master writes on pcie1 to use orderid 8
-    *((uint32_t *)(uintptr_t) (cba_qos_base + 0x19400 + 0x0C) )   = 0x00007080;
-    *((uint32_t *)(uintptr_t) (cba_qos_base + 0x19400 + 0x14) )   = 0x00000008;
+ 
+    *((uint32_t *)(uintptr_t) (cba_qos_base + 96 *0x400 + 0x0100 + 0x00))   = 0x00007080; 
+    *((uint32_t *)(uintptr_t) (cba_qos_base + 97 *0x400 + 0x0100 + 0x00))   = 0x00007080; 
+    *((uint32_t *)(uintptr_t) (cba_qos_base + 100*0x400 + 0x0100 + 0x00))   = 0x00007080; 
+    *((uint32_t *)(uintptr_t) (cba_qos_base + 101*0x400 + 0x0100 + 0x00))   = 0x00007080; 
+
+	/* If runs on A53, configIdx 98, 99, 102, 103 for PCIE 0 LP Read master, Write master, PCIE 1 LP Read master, Write master, respectively. 
+	   Program QOS[a]_MAP[b] register bit field 7:4 for orderId = 0 (default) */	
+
+    *((uint32_t *)(uintptr_t) (cba_qos_base + 98 *0x400 + 0x0100 + 0x00))   = 0x00007000; 
+    *((uint32_t *)(uintptr_t) (cba_qos_base + 99 *0x400 + 0x0100 + 0x00))   = 0x00007000; 
+    *((uint32_t *)(uintptr_t) (cba_qos_base + 102*0x400 + 0x0100 + 0x00))   = 0x00007000; 
+    *((uint32_t *)(uintptr_t) (cba_qos_base + 103*0x400 + 0x0100 + 0x00))   = 0x00007000; 
+ 
+#endif
 }
 
 void configureNBThreadmap(void) {
-    
-    /* Maxwell has 2 ports into the NB that are based on orderIDs (0-7 and 8-15), so in effect the bits are for specific orderIDs. NAVSS_THREADMAP register has 2 MMR bits, where bit 0 is for orderIDs 0-7, and bit 1 is for orderIDs 8-15. And the value of each bit determines which thread in MSMC to map, 0 = thread 0 (NRT), 1 = thread 2 (RT).*/
-    /* NB0 for MSMC, NB1 for DDR */
-    *((uint32_t *)(uintptr_t) (0x03802010)) = 0x00000003;
-    *((uint32_t *)(uintptr_t) (0x03803010)) = 0x00000000;
+	
+	/* Maxwell has 2 ports into the NB that are based on orderIDs (0-7 and 8-15), so in effect the bits are for specific orderIDs. NAVSS_THREADMAP register has 2 MMR bits, where bit 0 is for orderIDs 0-7, and bit 1 is for orderIDs 8-15. And the value of each bit determines which thread in MSMC to map, 0 = thread 0 (NRT), 1 = thread 2 (RT).*/
+	/* NB0 for MSMC, NB1 for DDR */
+	*((uint32_t *)(uintptr_t) (0x03802010)) = 0x00000002;   //NAVSS0_NBSS_NB0_CFG_MMRS
+    *((uint32_t *)(uintptr_t) (0x03803010)) = 0x00000000;   //NAVSS0_NBSS_NB1_CFG_MMRS
 }
 
 void configureNB1DdrAttr(void) {
@@ -1152,7 +1174,13 @@ void pcie (void)
 
   pcieSetupVC(PCIE_REG_BASE);
 
-  pcieConfigMasterPortOrderId();
+  if(PcieModeGbl == pcie_RC_MODE) {
+	  pcieConfigSlavePortOrderId();
+  } 
+  
+  if(PcieModeGbl == pcie_EP_MODE) {
+	  pcieConfigMasterPortOrderId();
+  } 
   
   configureNBThreadmap();
   
@@ -1177,16 +1205,16 @@ void pcie (void)
     for (i=0; i<PCIE_BUFSIZE_APP; i++)
     {
       pciedstBufBase->buf[i] = srcBuf[i] << 3;
-      *(unsigned int*)(uintptr_t)(PCIE_WINDOW_MEM_BASE_VC0 + 4*i) = srcBuf[i] << 0;
-        *(unsigned int*)(uintptr_t)(PCIE_WINDOW_MEM_BASE_VC1 + 4*i) = srcBuf[i] << 1;
-       *(unsigned int*)(uintptr_t)(PCIE_WINDOW_MEM_BASE_VC2 + 4*i) = srcBuf[i] << 2;
+	  *(unsigned int*)(uintptr_t)(PCIE_WINDOW_MEM_BASE_VC0 + 4*i) = srcBuf[i] << 0;
+  	  *(unsigned int*)(uintptr_t)(PCIE_WINDOW_MEM_BASE_VC1 + 4*i) = srcBuf[i] << 1;
+ 	  *(unsigned int*)(uintptr_t)(PCIE_WINDOW_MEM_BASE_VC2 + 4*i) = srcBuf[i] << 2;
     }
     
     /* Mark that the buffer is full, so EP can process it */
     pciedstBufBase->buf[PCIE_BUFSIZE_APP] = PCIE_EXAMPLE_BUF_FULL;
     *(unsigned int*)(uintptr_t)(PCIE_WINDOW_MEM_BASE_VC0 + 4*PCIE_BUFSIZE_APP) = PCIE_EXAMPLE_BUF_FULL;
-      *(unsigned int*)(uintptr_t)(PCIE_WINDOW_MEM_BASE_VC1 + 4*PCIE_BUFSIZE_APP) = PCIE_EXAMPLE_BUF_FULL;
-     *(unsigned int*)(uintptr_t)(PCIE_WINDOW_MEM_BASE_VC2 + 4*PCIE_BUFSIZE_APP) = PCIE_EXAMPLE_BUF_FULL;
+  	*(unsigned int*)(uintptr_t)(PCIE_WINDOW_MEM_BASE_VC1 + 4*PCIE_BUFSIZE_APP) = PCIE_EXAMPLE_BUF_FULL;
+ 	*(unsigned int*)(uintptr_t)(PCIE_WINDOW_MEM_BASE_VC2 + 4*PCIE_BUFSIZE_APP) = PCIE_EXAMPLE_BUF_FULL;
 
     /* Note on cache coherence: Write back is not necessary because pcieBase is in
        peripheral address space instead of physical memory*/
@@ -1195,22 +1223,22 @@ void pcie (void)
        RC waits for the loopback to be completed and
        receive data back from EP */
 
-    do {
+	do {
       cache_invalidate ((void *)lowPriAddr[0], PCIE_EXAMPLE_DSTBUF_BYTES);
     } while(*(uint32_t volatile *)(uintptr_t)(lowPriAddr[0] + PCIE_BUFSIZE_APP * 4) != PCIE_EXAMPLE_BUF_FULL);
-    PCIE_logPrintf ("Root Complex received VC0 data.\n");
+	PCIE_logPrintf ("Root Complex received VC0 data.\n");
 
-    do {
+	do {
       cache_invalidate ((void *)lowPriAddr[1], PCIE_EXAMPLE_DSTBUF_BYTES);
     } while(*(uint32_t volatile *)(uintptr_t)(lowPriAddr[1] + PCIE_BUFSIZE_APP * 4) != PCIE_EXAMPLE_BUF_FULL);
-    PCIE_logPrintf ("Root Complex received VC1 data.\n");
+	PCIE_logPrintf ("Root Complex received VC1 data.\n");
 
-    do {
+	do {
       cache_invalidate ((void *)lowPriAddr[2], PCIE_EXAMPLE_DSTBUF_BYTES);
     } while(*(uint32_t volatile *)(uintptr_t)(lowPriAddr[2] + PCIE_BUFSIZE_APP * 4) != PCIE_EXAMPLE_BUF_FULL);
-    PCIE_logPrintf ("Root Complex received VC2 data.\n");
-    
-    do {
+	PCIE_logPrintf ("Root Complex received VC2 data.\n");
+	
+	do {
       cache_invalidate ((void *)dstBuf.buf, PCIE_EXAMPLE_DSTBUF_BYTES);
     } while(dstBuf.buf[PCIE_BUFSIZE_APP] != PCIE_EXAMPLE_BUF_FULL);
     PCIE_logPrintf ("Root Complex received VC3 data.\n");
@@ -1224,24 +1252,24 @@ void pcie (void)
                         (unsigned)dstBuf.buf[i], (unsigned)srcBuf[i], (unsigned)i);
         exit(1);
       }
-      if(*(uint32_t volatile *)(uintptr_t)(lowPriAddr[0] + i*4) != (srcBuf[i] << 0))
+	  if(*(uint32_t volatile *)(uintptr_t)(lowPriAddr[0] + i*4) != (srcBuf[i] << 0))
       {
         PCIE_logPrintf ("Received data = %u\nTransmited data = %u\nIndex = %u.\n\nTest failed.\n",
                         *(uint32_t volatile *)(lowPriAddr[0] + i*4), (unsigned)srcBuf[i]<<0, (unsigned)i);
         exit(1);
       }
-      if(*(uint32_t volatile *)(uintptr_t)(lowPriAddr[1] + i*4) != (srcBuf[i] << 1))
+	  if(*(uint32_t volatile *)(uintptr_t)(lowPriAddr[1] + i*4) != (srcBuf[i] << 1))
       {
         PCIE_logPrintf ("Received data = %u\nTransmited data = %u\nIndex = %u.\n\nTest failed.\n",
                         *(uint32_t volatile *)(lowPriAddr[1] + i*4), (unsigned)srcBuf[i]<<1, (unsigned)i);
         exit(1);
-      }     
-      if(*(uint32_t volatile *)(uintptr_t)(lowPriAddr[2] + i*4) != (srcBuf[i] << 2))
+      }	 
+	  if(*(uint32_t volatile *)(uintptr_t)(lowPriAddr[2] + i*4) != (srcBuf[i] << 2))
       {
         PCIE_logPrintf ("Received data = %u\nTransmited data = %u\nIndex = %u.\n\nTest failed.\n",
                         *(uint32_t volatile *)(lowPriAddr[2] + i*4), (unsigned)srcBuf[i]<<2, (unsigned)i);
         exit(1);
-      }      
+      }	  
     }
     
     PCIE_logPrintf ("Root Complex received all correct data.\n");
