@@ -234,8 +234,13 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
     /* Set the default SPI init configurations */
     OSPI_socSetInitCfg(BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
 
+#if defined(SOC_J7200)
+    h = Board_flashOpen(BOARD_FLASH_ID_S28HS512T,
+                        BOARD_OSPI_NOR_INSTANCE, NULL);
+#else
     h = Board_flashOpen(BOARD_FLASH_ID_MT35XU512ABA1G12,
-                            BOARD_OSPI_NOR_INSTANCE, NULL);
+                        BOARD_OSPI_NOR_INSTANCE, NULL);
+#endif
 
     if (h)
     {
