@@ -153,14 +153,15 @@ void ESM_processInterrupt (uint32_t vec, int32_t* groupNum, int32_t* vecNum)
         *groupNum = 2;
         *vecNum = vec;
     }
-    else if (vec < 96U)
+    else if (vec < gESMHwCfgAttrs.numGroup1Err)
     {
-        /* group 1 32-63 errors */
+        /* group 1 error 32 and above */
+#ifdef ESM_DEBUG
+        gEsmMCB.debugEsmISRCount[vec/32]++;
+#endif
         vec = vec - 32;
         ESMClearIntrStatus(gEsmMCB.esmBaseAddr, vec);
-#ifdef ESM_DEBUG
-        gEsmMCB.debugEsmISRCount[2]++;
-#endif
+
         *groupNum = 1;
         *vecNum = vec;
     }
@@ -202,11 +203,16 @@ void ESM_processInterrupt (uint32_t vec, int32_t* groupNum, int32_t* vecNum)
 ESM_Handle ESM_init(uint8_t bClearErrors)
 {
     CSL_esmRegs*          ptrESMRegs;
+    uint32_t              esmInitStatus;
+    uint32_t              i;
+
     /* Initialize the allocated memory */
     memset ((void *)&gEsmMCB, 0U, sizeof(ESM_DriverMCB));
 
     ptrESMRegs          = gESMHwCfgAttrs.ptrESMRegs;
     gEsmMCB.esmBaseAddr = (uint32_t)ptrESMRegs;
+
+    gEsmMCB.numGroup1Err = gESMHwCfgAttrs.numGroup1Err;
 
     OsalRegisterIntrParams_t interruptRegParams;
 
@@ -259,45 +265,26 @@ ESM_Handle ESM_init(uint8_t bClearErrors)
 
     if (bClearErrors == 1U)
     {
-        /* ESM Group 1: 0-31 errors */
+        /* Clear ESM Group 1 errors */
+        for (i=0; i<gEsmMCB.numGroup1Err; i++)
+        {
+            if(ESMGetIntrStatus(gEsmMCB.esmBaseAddr, i))
+            {
+                ESMClearIntrStatus(gEsmMCB.esmBaseAddr, i);
+            }
+        }
 
+	/* Clear ESM Group 2: 0-31 errors */
         /* read */
-        gEsmMCB.esmInitStatus[0U] = CSL_REG_RD(&ptrESMRegs->ESMSR1);
-
+        esmInitStatus = CSL_REG_RD(&ptrESMRegs->ESMSR2);
         /*  clear */
-        CSL_REG_WR(&ptrESMRegs->ESMSR1, gEsmMCB.esmInitStatus[0U]);
+        CSL_REG_WR(&ptrESMRegs->ESMSR2, esmInitStatus);
 
-        /* ESM Group 2: 0-31 errors */
-
+        /* Clear ESM Group 3: 0-31 errors */
         /* read */
-        gEsmMCB.esmInitStatus[1U] = CSL_REG_RD(&ptrESMRegs->ESMSR2);
-
+        esmInitStatus = CSL_REG_RD(&ptrESMRegs->ESMSR3);
         /*  clear */
-        CSL_REG_WR(&ptrESMRegs->ESMSR2, gEsmMCB.esmInitStatus[1U]);
-
-        /* ESM Group 3: 0-31 errors */
-
-        /* read */
-        gEsmMCB.esmInitStatus[2U] = CSL_REG_RD(&ptrESMRegs->ESMSR3);
-
-        /*  clear */
-        CSL_REG_WR(&ptrESMRegs->ESMSR3, gEsmMCB.esmInitStatus[2U]);
-
-        /* ESM Group 1: 32-63 errors */
-
-        /* read */
-        gEsmMCB.esmInitStatus[3U] = CSL_REG_RD(&ptrESMRegs->ESMSR4);
-
-        /*  clear */
-        CSL_REG_WR(&ptrESMRegs->ESMSR4, gEsmMCB.esmInitStatus[3U]);
-
-        /* ESM Group 2 Shadow register: 0-31 errors */
-
-        /* read */
-        gEsmMCB.esmInitStatus[4U] = CSL_REG_RD(&ptrESMRegs->ESMSSR2);
-
-        /*  clear */
-        CSL_REG_WR(&ptrESMRegs->ESMSSR2, gEsmMCB.esmInitStatus[4U]);
+        CSL_REG_WR(&ptrESMRegs->ESMSR3, esmInitStatus);
     }
 
     return (ESM_Handle)&gEsmMCB;

@@ -99,9 +99,9 @@ typedef struct ESM_DriverMCB_t
     ESM_NotifyParams            notifyParams[ESM_MAX_NOTIFIERS];
 
     /**
-     * @brief   Used to take snapshot of the ESM status registers before clearing them.
+     * @brief   The number of Group1 errors supported.
      */
-    uint32_t                    esmInitStatus[ESM_MAX_GROUPS];
+    uint32_t                    numGroup1Err;
 
 #ifdef ESM_DEBUG
     /**

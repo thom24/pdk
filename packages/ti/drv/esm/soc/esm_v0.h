@@ -64,6 +64,7 @@ extern "C" {
  */
 typedef struct ESM_v0_HwAttrs_t {
     CSL_esmRegs*            ptrESMRegs;         /*!< ESM Peripheral's base address for the control register space */
+    uint32_t                numGroup1Err;       /*!< ESM Peripheral's supported number of group1 errors */
     uint32_t                highPrioIntNum;     /*!< ESM Peripheral's interrupt vector for high priority line*/
     uint32_t                lowPrioIntNum;      /*!< ESM Peripheral's interrupt vector for low priority line*/
 } ESM_v0_HwAttrs;
