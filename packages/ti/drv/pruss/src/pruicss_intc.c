@@ -7,7 +7,7 @@
  */
 
 /*
-* Copyright (C) 2015-2018 Texas Instruments Incorporated - http://www.ti.com/
+* Copyright (C) 2015-2020 Texas Instruments Incorporated - http://www.ti.com/
 *
 *
 *  Redistribution and use in source and binary forms, with or without
@@ -261,7 +261,7 @@ int32_t PRUICSS_registerIrqHandler(PRUICSS_Handle handle,
       
     HwiP_Handle hwiHandle=NULL;
     void*    semHandle = NULL;
-   object = (PRUICSS_V1_Object*)handle->object;
+    object = (PRUICSS_V1_Object*)handle->object;
 
     int32_t ret_val = PRUICSS_RETURN_SUCCESS;
 
@@ -286,6 +286,10 @@ int32_t PRUICSS_registerIrqHandler(PRUICSS_Handle handle,
                 
         if(ret_val == PRUICSS_RETURN_SUCCESS)
         {
+            object->pruEvntOutFnMapArray[pruEvtoutNum].semHandle = semHandle;
+            object->pruEvntOutFnMapArray[pruEvtoutNum].irqHandler = irqHandler;
+            object->pruEvntOutFnMapArray[pruEvtoutNum].handle = handle;
+            
             PRUICSS_osalHwiParamsInit(&hwiParams);
             hwiParams.arg = (uintptr_t)(&object->pruEvntOutFnMapArray[pruEvtoutNum]);
             hwiParams.evtId = eventNum;
@@ -302,13 +306,6 @@ int32_t PRUICSS_registerIrqHandler(PRUICSS_Handle handle,
             ret_val = PRUICSS_RETURN_FAILURE;
         }
 
-        if(ret_val == PRUICSS_RETURN_SUCCESS)
-        {
-            object->pruEvntOutFnMapArray[pruEvtoutNum].semHandle = semHandle;
-            object->pruEvntOutFnMapArray[pruEvtoutNum].irqHandler = irqHandler;
-            object->pruEvntOutFnMapArray[pruEvtoutNum].handle = handle;
-            ret_val = PRUICSS_RETURN_SUCCESS;
-        }
     }
     return(ret_val);
 }
