@@ -176,7 +176,11 @@ static EDMA_Handle QSPIApp_edmaInit(void)
     gEdmaHandle = EDMA_getHandle(edma3Id, &instanceInfo);
     if(gEdmaHandle == NULL)
     {
-        if (EDMA_init(edma3Id) != EDMA_NO_ERROR)
+        EDMA3CCInitParams 	initParam;
+
+        EDMA3CCInitParams_init(&initParam);
+        initParam.initParamSet = TRUE;
+        if (EDMA_init(edma3Id, &initParam) != EDMA_NO_ERROR)
         {
             printf("EDMA_init failed \n");
             return(gEdmaHandle);

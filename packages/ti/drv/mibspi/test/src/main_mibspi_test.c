@@ -189,7 +189,11 @@ static void Test_initTask(UArg arg0, UArg arg1)
         gDmaHandle[i] = EDMA_getHandle(cfg.edmaCCId, &instanceInfo);
         if(gDmaHandle[i] == NULL)
         {
-            if (EDMA_init(cfg.edmaCCId) != EDMA_NO_ERROR)
+            EDMA3CCInitParams 	initParam;
+
+            EDMA3CCInitParams_init(&initParam);
+            initParam.initParamSet = TRUE;
+            if (EDMA_init(cfg.edmaCCId, &initParam) != EDMA_NO_ERROR)
             {
                 printf("EDMA_init failed \n");
                 return;

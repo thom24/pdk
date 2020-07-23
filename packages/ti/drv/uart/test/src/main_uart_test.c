@@ -3466,6 +3466,7 @@ static EDMA_Handle UartApp_edmaInit(void)
 {
     EDMA_errorConfig_t  errorConfig;
     EDMA_instanceInfo_t instanceInfo;
+    EDMA3CCInitParams 	initParam;
     int32_t             errCode;
 
     if (gEdmaHandle != NULL)
@@ -3474,7 +3475,9 @@ static EDMA_Handle UartApp_edmaInit(void)
     }
 
     /* Initialize the UART edma instance */
-    errCode = EDMA_init(UART_EDMA_INSTANCE_ID);
+    EDMA3CCInitParams_init(&initParam);
+    initParam.initParamSet = TRUE;
+    errCode = EDMA_init(UART_EDMA_INSTANCE_ID, &initParam);
     if (errCode != EDMA_NO_ERROR)
     {
         printf("Error: Unable to initialize EDMA, errorCode = %d\n", errCode);
