@@ -207,6 +207,12 @@ static Board_PllClkCfg_t gBoardPllClkCfgMain[] =
    TISCI_DEV_R5FSS0_CORE0_INTERFACE_CLK,
    250000000
  },
+
+  /* GTC Clockout */
+ { TISCI_DEV_GTC0,
+   TISCI_DEV_GTC0_GTC_CLK,
+   200000000
+ }
 };
 
 /**
