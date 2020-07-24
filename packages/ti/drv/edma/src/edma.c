@@ -1869,7 +1869,8 @@ static void EDMA_unregisterInterrupts(EDMA_Handle handle)
         generate error
     }*/
 
-    if (hwAttrs->transferCompletionInterruptNum != EDMA_INTERRUPT_NOT_CONNECTED_ID)
+    if ((hwAttrs->transferCompletionInterruptNum != EDMA_INTERRUPT_NOT_CONNECTED_ID) &&
+        (edmaObj->hwiTransferCompleteHandle != NULL))
     {
     #if defined(_TMS320C6X)
         corepacEvent = (int32_t)hwAttrs->transferCompletionInterruptNum; /* Event going in to CPU */
@@ -1881,6 +1882,7 @@ static void EDMA_unregisterInterrupts(EDMA_Handle handle)
 
         Osal_DisableInterrupt(corepacEvent, interruptNum);
         Osal_DeleteInterrupt(edmaObj->hwiTransferCompleteHandle, corepacEvent);
+        edmaObj->hwiTransferCompleteHandle = NULL;
     }
 
     isUnifiedErrorInterrupts = (hwAttrs->errorInterruptNum != EDMA_INTERRUPT_NOT_CONNECTED_ID) &&
@@ -1895,20 +1897,27 @@ static void EDMA_unregisterInterrupts(EDMA_Handle handle)
 
     if (isUnifiedErrorInterrupts == true)
     {
-        Osal_DisableInterrupt(corepacEvent, interruptNum);
-        Osal_DeleteInterrupt(edmaObj->hwiErrorHandle, corepacEvent);
-    }
-    else
-    {
-        if (hwAttrs->errorInterruptNum != EDMA_INTERRUPT_NOT_CONNECTED_ID)
+        if (edmaObj->hwiErrorHandle != NULL)
         {
             Osal_DisableInterrupt(corepacEvent, interruptNum);
             Osal_DeleteInterrupt(edmaObj->hwiErrorHandle, corepacEvent);
+            edmaObj->hwiErrorHandle = NULL;
+        }
+    }
+    else
+    {
+        if ((hwAttrs->errorInterruptNum != EDMA_INTERRUPT_NOT_CONNECTED_ID) &&
+            (edmaObj->hwiErrorHandle != NULL))
+        {
+            Osal_DisableInterrupt(corepacEvent, interruptNum);
+            Osal_DeleteInterrupt(edmaObj->hwiErrorHandle, corepacEvent);
+            edmaObj->hwiErrorHandle = NULL;
         }
 
         for (tc = 0; tc < hwAttrs->numEventQueues; tc++)
         {
-            if (hwAttrs->transferControllerErrorInterruptNum[tc] != EDMA_INTERRUPT_NOT_CONNECTED_ID)
+            if ((hwAttrs->transferControllerErrorInterruptNum[tc] != EDMA_INTERRUPT_NOT_CONNECTED_ID) &&
+                (edmaObj->hwiTransferControllerErrorHandle[tc] != NULL))
             {
             #if defined(_TMS320C6X)
                 corepacEvent = (int32_t)hwAttrs->transferControllerErrorInterruptNum[tc]; /* Event going in to CPU */
@@ -1920,10 +1929,10 @@ static void EDMA_unregisterInterrupts(EDMA_Handle handle)
 
                 Osal_DisableInterrupt(corepacEvent, interruptNum);
                 Osal_DeleteInterrupt(edmaObj->hwiTransferControllerErrorHandle[tc], corepacEvent);
+                edmaObj->hwiTransferControllerErrorHandle[tc] = NULL;
             }
         }
     }
-
 }
 
 int32_t EDMA_close(EDMA_Handle handle)
@@ -2234,11 +2243,13 @@ EDMA_Handle EDMA_open(uint8_t instanceId, int32_t *errorCode,
             /* Register interrupts */
             Osal_RegisterInterrupt(&interruptRegParams, &edmaObj->hwiTransferCompleteHandle);
 
-            Osal_EnableInterrupt(interruptRegParams.corepacConfig.corepacEventNum, interruptRegParams.corepacConfig.intVecNum);
-
             if (edmaObj->hwiTransferCompleteHandle == NULL)
             {
                 retVal = EDMA_E_OSAL__HWIP_CREATE_TRANSFER_COMPLETION_ISR_RETURNED_NULL;
+            }
+            else
+            {
+                Osal_EnableInterrupt(interruptRegParams.corepacConfig.corepacEventNum, interruptRegParams.corepacConfig.intVecNum);
             }
         }
     }
@@ -2316,12 +2327,13 @@ EDMA_Handle EDMA_open(uint8_t instanceId, int32_t *errorCode,
             /* Register interrupts */
             Osal_RegisterInterrupt(&interruptRegParams, &edmaObj->hwiErrorHandle);
 
-            Osal_EnableInterrupt(interruptRegParams.corepacConfig.corepacEventNum, interruptRegParams.corepacConfig.intVecNum);
-
-
             if (edmaObj->hwiErrorHandle == NULL)
             {
                 retVal = EDMA_E_OSAL__HWIP_CREATE_ERROR_ISR_RETURNED_NULL;
+            }
+            else
+            {
+                Osal_EnableInterrupt(interruptRegParams.corepacConfig.corepacEventNum, interruptRegParams.corepacConfig.intVecNum);
             }
         }
     }
@@ -2356,12 +2368,14 @@ EDMA_Handle EDMA_open(uint8_t instanceId, int32_t *errorCode,
                     /* Register interrupts */
                     Osal_RegisterInterrupt(&interruptRegParams, &edmaObj->hwiTransferControllerErrorHandle[tc]);
 
-                    Osal_EnableInterrupt(interruptRegParams.corepacConfig.corepacEventNum, interruptRegParams.corepacConfig.intVecNum);
-
-
                     if (edmaObj->hwiTransferControllerErrorHandle[tc] == NULL)
                     {
                         retVal = EDMA_E_OSAL__HWIP_CREATE_TRANSFER_CONTROLLER_ERROR_ISRS_RETURNED_NULL;
+                        break;
+                    }
+                    else
+                    {
+                        Osal_EnableInterrupt(interruptRegParams.corepacConfig.corepacEventNum, interruptRegParams.corepacConfig.intVecNum);
                     }
                 }
             }
