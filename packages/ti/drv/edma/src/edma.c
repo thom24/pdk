@@ -469,7 +469,6 @@ static inline int32_t EDMA_validate_param_config(
  *  @retval
  *      None.
  */
-#if 1
 #ifdef EDMA_EXTENDED_B_INDICES
 /*! Returns the 8-bit extension beyond 16-bits of the 32-bit b-index */
 #define EDMA_B_INDX_EXTENSION(x) (((x) >> 16U) & 0x000000FFU)
@@ -516,107 +515,6 @@ static void EDMA_paramSetConfig_assist (uint32_t ccBaseAddr, uint16_t paramId,
     );
     EDMA3SetPaRAM(ccBaseAddr, paramId, &paramSet);
 }
-#else
-/**
- *  @b Description
- *  @n
- *      Utility function for configuring a PaRAM Set.
- *      Note: HW_WR_FIELD32 APIs are avoided for (assumed) efficiency when writing
- *      param fields (avoid unnecessary masking because fields are defined to be right
- *      sized (e.g aCount is uint16_t, matching Param ACNT size).
- *
- *  @param[in]  ccBaseAddr  CC base address.
- *  @param[in]  paramId PaRAM Set Id.
- *  @param[in]  pSetCfg Pointer to PaRAM Set configuration.
- *
- *  \ingroup EDMA_INTERNAL_FUNCTION
- *
- *  @retval
- *      None.
- */
-#ifdef EDMA_EXTENDED_B_INDICES
-/*! Returns the 8-bit extension beyond 16-bits of the 32-bit b-index */
-#define EDMA_B_INDX_EXTENSION(x) (((x) >> 16U) & 0x000000FFU)
-#endif
-
-static void EDMA_paramSetConfig_assist (uint32_t ccBaseAddr, uint16_t paramId,
-                                EDMA_paramSetConfig_t const *pSetCfg)
-{
-    uint32_t opt;
-    uint32_t paramStartAddr = ccBaseAddr + EDMA_TPCC_OPT((uint32_t)paramId);
-    uint32_t paramFieldAddr;
-
-    paramFieldAddr = paramStartAddr;
-
-    /* opt parameters not programmed are : PRIV = 0; PRIVID = 0; */
-    opt = (
-    ((uint32_t)(pSetCfg->transferType == (uint8_t)EDMA3_SYNC_AB) << EDMA_TPCC_OPT_SYNCDIM_SHIFT) |
-    ((uint32_t)(pSetCfg->sourceAddressingMode == (uint8_t)EDMA3_ADDRESSING_MODE_FIFO_WRAP) <<
-        EDMA_TPCC_OPT_SAM_SHIFT) |
-    ((uint32_t)(pSetCfg->destinationAddressingMode == (uint8_t)EDMA3_ADDRESSING_MODE_FIFO_WRAP) <<
-        EDMA_TPCC_OPT_DAM_SHIFT) |
-    ((uint32_t)pSetCfg->fifoWidth << EDMA_TPCC_OPT_FWID_SHIFT) |
-    ((uint32_t)pSetCfg->transferCompletionCode << EDMA_TPCC_OPT_TCC_SHIFT) |
-    ((uint32_t)pSetCfg->isStaticSet << EDMA_TPCC_OPT_STATIC_SHIFT) |
-    ((uint32_t)pSetCfg->isEarlyCompletion << EDMA_TPCC_OPT_TCCMODE_SHIFT) |
-    ((uint32_t)pSetCfg->isFinalTransferInterruptEnabled << EDMA_TPCC_OPT_TCINTEN_SHIFT) |
-    ((uint32_t)pSetCfg->isIntermediateTransferInterruptEnabled << EDMA_TPCC_OPT_ITCINTEN_SHIFT) |
-    ((uint32_t)pSetCfg->isFinalChainingEnabled << EDMA_TPCC_OPT_TCCHEN_SHIFT) |
-    ((uint32_t)pSetCfg->isIntermediateChainingEnabled << EDMA_TPCC_OPT_ITCCHEN_SHIFT)
-    );
-    HW_WR_REG32(paramFieldAddr, opt);
-    paramFieldAddr += sizeof(uint32_t);
-
-    /* SRC */
-    HW_WR_REG32(paramFieldAddr, pSetCfg->sourceAddress);
-    paramFieldAddr += sizeof(uint32_t);
-
-    /* BCNT_ACNT */
-    HW_WR_REG32(paramFieldAddr, ((uint32_t)pSetCfg->bCount << EDMA_TPCC_ABCNT_BCNT_SHIFT) |
-        ((uint32_t)pSetCfg->aCount << EDMA_TPCC_ABCNT_ACNT_SHIFT));
-    paramFieldAddr += sizeof(uint32_t);
-
-    /* DST */
-    HW_WR_REG32(paramFieldAddr, pSetCfg->destinationAddress);
-    paramFieldAddr += sizeof(uint32_t);
-
-    /* DSTBIDX_SRCBIDX */
-    /* Note: the cast to uint16_t must be done for source index because it is signed 16
-       and simply casting to unsigned 32-bit does not make it signed, it simply extends
-       the sign to 32-bit. For extended B indices feature, the indices are 32-bit signed
-       but this code will work as expected i.e it will read the 16 LSbits of the indices */
-    HW_WR_REG32(paramFieldAddr,
-        ((uint32_t)((uint16_t)pSetCfg->destinationBindex) << EDMA_TPCC_BIDX_DBIDX_SHIFT) |
-        ((uint32_t)((uint16_t)pSetCfg->sourceBindex) << EDMA_TPCC_BIDX_SBIDX_SHIFT));
-    paramFieldAddr += sizeof(uint32_t);
-
-    /* BCNTRLD_LINK */
-    HW_WR_REG32(paramFieldAddr, ((uint32_t)pSetCfg->bCountReload << EDMA_TPCC_LNK_BCNTRLD_SHIFT) |
-        ((uint32_t)pSetCfg->linkAddress << EDMA_TPCC_LNK_LINK_SHIFT));
-    paramFieldAddr += sizeof(uint32_t);
-
-    /* DSTCIDX_SRCCIDX */
-    /* Note: the cast to uint16_t must be done for source index because it is signed 16
-       and simply casting to unsigned 32-bit does not make it signed, it simply extends
-       the sign to 32-bit */
-    HW_WR_REG32(paramFieldAddr,
-        ((uint32_t)((uint16_t)pSetCfg->destinationCindex) << EDMA_TPCC_CIDX_DCIDX_SHIFT) |
-        ((uint32_t)((uint16_t)pSetCfg->sourceCindex) << EDMA_TPCC_CIDX_SCIDX_SHIFT));
-    paramFieldAddr += sizeof(uint32_t);
-
-#ifdef EDMA_EXTENDED_B_INDICES
-    /* CCNT, SRCEBIDX, DSTEBIDX */
-    HW_WR_REG32(paramFieldAddr,
-                ((uint32_t)pSetCfg->cCount << EDMA_TPCC_CCNT_CCNT_SHIFT) |
-                (EDMA_B_INDX_EXTENSION(pSetCfg->sourceBindex) << EDMA_TPCC_CCNT_SRCEBIDX_SHIFT) |
-                (EDMA_B_INDX_EXTENSION(pSetCfg->destinationBindex) << EDMA_TPCC_CCNT_DSTEBIDX_SHIFT)
-                );
-#else
-    /* CCNT */
-    HW_WR_REG32(paramFieldAddr, (uint32_t)pSetCfg->cCount << EDMA_TPCC_CCNT_CCNT_SHIFT);
-#endif
-}
-#endif
 
 /**
  *  @b Description
