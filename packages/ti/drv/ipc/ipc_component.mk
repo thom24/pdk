@@ -201,6 +201,27 @@ ipc_echo_testb_$(SOC)_CORELIST = $(drvipc_$(SOC)_TIRTOS_CORELIST)
 export ipc_echo_testb_$(SOC)_CORELIST
 ipc_EXAMPLE_LIST += ipc_echo_testb
 
+# IPC echo_test baremetal - use R5F BTCM
+ipc_echo_baremetal_testb_COMP_LIST = ipc_echo_baremetal_testb
+ipc_echo_baremetal_testb_RELPATH = ti/drv/ipc/examples/echo_test/echo_test_baremetal_btcm
+ipc_echo_baremetal_testb_PATH = $(PDK_IPC_COMP_PATH)/examples/echo_test/echo_test_baremetal_btcm
+ipc_echo_baremetal_testb_MAKEFILE = -fmakefile.baremetal_btcm
+ipc_echo_baremetal_testb_BOARD_DEPENDENCY = yes
+ipc_echo_baremetal_testb_CORE_DEPENDENCY = yes
+ipc_echo_baremetal_testb_XDC_CONFIGURO = no
+export ipc_echo_baremetal_testb_MAKEFILE
+export ipc_echo_baremetal_testb_COMP_LIST
+export ipc_echo_baremetal_testb_BOARD_DEPENDENCY
+export ipc_echo_baremetal_testb_CORE_DEPENDENCY
+export ipc_echo_baremetal_testb_XDC_CONFIGURO
+ipc_echo_baremetal_testb_PKG_LIST = ipc_echo_baremetal_testb
+ipc_echo_baremetal_testb_INCLUDE = $(ipc_echo_baremetal_testb_PATH)
+ipc_echo_baremetal_testb_BOARDLIST = $(drvipc_BOARDLIST)
+export ipc_echo_baremetal_testb_BOARDLIST
+ipc_echo_baremetal_testb_$(SOC)_CORELIST = mcu1_0
+export ipc_echo_baremetal_testb_$(SOC)_CORELIST
+ipc_EXAMPLE_LIST += ipc_echo_baremetal_testb
+
 # IPC ex01_bios_2core_echo_test
 ex01_bios_2core_echo_test_COMP_LIST = ex01_bios_2core_echo_test
 ex01_bios_2core_echo_test_RELPATH = ti/drv/ipc/examples/ex01_bios_2core_echo_test

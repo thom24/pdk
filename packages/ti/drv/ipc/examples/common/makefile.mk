@@ -23,7 +23,14 @@ endif
 	  SRCS_COMMON += r5f_mpu_$(SOC)_default.c
   endif
   ifeq ($(SOC),$(filter $(SOC), j721e j7200 am65xx am64x))
-	  EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/$(SOC)/linker_$(ISA)_$(CORE).lds
+    EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/$(SOC)/linker_$(ISA)_$(CORE).lds
+    ifeq ($(ECHO_TEST_BTCM), 1)
+      ifeq ($(ISA), r5f)
+        ifeq ($(CORE),mcu1_0)
+	    EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/$(SOC)/linker_$(ISA)_$(CORE)_btcm.lds
+        endif
+      endif
+    endif
   endif
 else
   INCLUDE_EXTERNAL_INTERFACES += xdc bios
