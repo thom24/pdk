@@ -47,7 +47,9 @@
 #include "board_internal.h"
 #include "board_cfg.h"
 #include <ti/csl/soc.h>
+#ifdef ENABLE_TPR12_BOARD_MDIO
 #include <ti/csl/cslr_mdio.h>
+#endif
 
 /**
  * \brief  Function to initialize MDIO
