@@ -197,9 +197,6 @@ endif
 ifneq ($(PDK_UDMA_ROOT_PATH), $(pdk_PATH))
   pdk_INCLUDE += $(PDK_UDMA_ROOT_PATH)
 endif
-ifneq ($(PDK_CPSW_ROOT_PATH), $(pdk_PATH))
-  pdk_INCLUDE += $(PDK_CPSW_ROOT_PATH)
-endif
 ifneq ($(PDK_ENET_ROOT_PATH), $(pdk_PATH))
   pdk_INCLUDE += $(PDK_ENET_ROOT_PATH)
 endif

@@ -50,13 +50,20 @@
 /* BIOS Header files */
 #include <ti/sysbios/BIOS.h>
 
-#include <ti/drv/cpsw/cpsw.h>
-#include <ti/drv/cpsw/examples/cpsw_apputils/inc/cpsw_appmemutils_cfg.h>
-#include <ti/drv/cpsw/examples/cpsw_apputils/inc/cpsw_appmemutils.h>
-#include <ti/drv/cpsw/examples/cpsw_apputils/inc/cpsw_apputils.h>
-#include <ti/drv/cpsw/examples/cpsw_apputils/inc/cpsw_appsoc.h>
-#include <ti/drv/cpsw/examples/cpsw_apputils/inc/cpswapp_ethutils.h>
-#include <ti/drv/cpsw/examples/cpsw_apputils/inc/cpsw_mcm.h>
+#include <ti/drv/enet/enet.h>
+#include <ti/drv/enet/include/dma/udma/enet_udma.h>
+/* Include enet_dma.h after enet_udma.h as enet_udma.h contains type definations
+ * for type contained in the enet_dma.h */
+#include <ti/drv/enet/include/core/enet_dma.h>
+
+#include <ti/drv/enet/examples/utils/include/cpsw_appmemutils_cfg.h>
+#include <ti/drv/enet/examples/utils/include/cpsw_appmemutils.h>
+#include <ti/drv/enet/examples/utils/include/cpsw_apputils.h>
+#include <ti/drv/enet/examples/utils/include/cpsw_appsoc.h>
+#include <ti/drv/enet/examples/utils/include/cpswapp_ethutils.h>
+#include <ti/drv/enet/examples/utils/include/cpsw_mcm.h>
+
+#include <ti/drv/enet/include/core/enet_mod_timesync.h>
 
 #include <ti/transport/timeSync/v2/include/timeSync.h>
 #include <ti/transport/timeSync/v2/include/timeSync_tools.h>
@@ -113,7 +120,7 @@
  * @def TIMESYNC_PPS_HW_PUSH_NUM
  *      CPTS hardware push instance used for PPS
  */
-#define TIMESYNC_PPS_HW_PUSH_NUM            (CPSW_CPTS_HW_PUSH_1)
+#define TIMESYNC_PPS_HW_PUSH_NUM            (CPSW_CPTS_HWPUSH_1)
 
 /**
  * @def TIMESYNC_MILLION_PARTS
@@ -147,19 +154,21 @@ typedef struct TimeSync_Obj_s
 {
     TimeSync_Config timeSyncConfig;
 
-    Cpsw_Type cpswType;
+    Enet_Type enetType;
 
-    Cpsw_Handle hCpsw;
+    uint32_t instId;
+
+    Enet_Handle hEnet;
 
     Udma_DrvHandle hUdmaDrv;
 
-    CpswDma_RxFlowHandle hRxFlow;
+    EnetDma_RxChHandle hRxFlow;
 
     uint32_t rxFlowStartIdx;
 
     uint32_t rxFlowIdx;
 
-    CpswDma_TxChHandle hTxCh;
+    EnetDma_TxChHandle hTxCh;
 
     uint32_t txChNum;
 
@@ -167,13 +176,13 @@ typedef struct TimeSync_Obj_s
 
     uint32_t coreKey;
 
-    CpswMcm_CmdIf hMcmCmdIf;
+    EnetMcm_CmdIf hMcmCmdIf;
 
-    CpswDma_PktInfoQ rxFreeQ;
+    EnetDma_PktInfoQ rxFreeQ;
 
-    CpswDma_PktInfoQ rxReadyQ;
+    EnetDma_PktInfoQ rxReadyQ;
 
-    CpswDma_PktInfoQ txFreePktInfoQ;
+    EnetDma_PktInfoQ txFreePktInfoQ;
 
     TimeSync_TxPktInfo txTsPktInfo;
 } TimeSync_Obj;
@@ -194,7 +203,7 @@ static int32_t TimeSync_setCpswAleClassifier(void);
 
 static int32_t TimeSync_setMacPortConfig(void);
 
-static void TimeSync_setPortTsEventPrms(CpswMacPort_TsEventConfig *tsPortEventCfg);
+static void TimeSync_setPortTsEventPrms(CpswMacPort_TsEventCfg *tsPortEventCfg);
 
 static uint32_t TimeSync_retrieveTxDonePkts(void);
 
@@ -263,7 +272,7 @@ void TimeSync_txNotifyFxn(void *appData)
         frameNotifyCfg = &timeSyncHandle->timeSyncConfig.frameNotifyCfg;
 
         pktCount = TimeSync_retrieveTxDonePkts();
-        CpswAppUtils_assert(pktCount != 0U);
+        EnetAppUtils_assert(pktCount != 0U);
 
         pTxTsPktInfo = &timeSyncHandle->txTsPktInfo;
         pTxTsPktInfoEle = &pTxTsPktInfo->txTsPktInfoArr[pTxTsPktInfo->rdIdx++];
@@ -305,8 +314,8 @@ void TimeSync_ppsHwPushNotifyFxn(void *cbArg,
 TimeSync_Handle TimeSync_open(TimeSync_Config *timeSyncConfig)
 {
     int32_t status = TIMESYNC_OK;
-    CpswMcm_HandleInfo handleInfo;
-    Cpsw_AttachCoreOutArgs attachInfo;
+    EnetMcm_HandleInfo handleInfo;
+    EnetPer_AttachCoreOutArgs attachInfo;
 
     if (timeSyncConfig != NULL)
     {
@@ -317,49 +326,52 @@ TimeSync_Handle TimeSync_open(TimeSync_Config *timeSyncConfig)
 
         if (timeSyncConfig->socConfig.ipVersion == TIMESYNC_IP_VER_CPSW_2G)
         {
-            gTimeSyncCpswObj.cpswType = CPSW_2G;
+            gTimeSyncCpswObj.enetType = ENET_CPSW_2G;
+            gTimeSyncCpswObj.instId   = 0U;
         }
         else if (timeSyncConfig->socConfig.ipVersion == TIMESYNC_IP_VER_CPSW_9G)
         {
-            gTimeSyncCpswObj.cpswType = CPSW_9G;
+            gTimeSyncCpswObj.enetType = ENET_CPSW_9G;
+            gTimeSyncCpswObj.instId   = 0U;
         }
         else if (timeSyncConfig->socConfig.ipVersion == TIMESYNC_IP_VER_CPSW_5G)
         {
-            gTimeSyncCpswObj.cpswType = CPSW_5G;
+            gTimeSyncCpswObj.enetType = ENET_CPSW_5G;
+            gTimeSyncCpswObj.instId   = 0U;
         }
         else
         {
             status = TIMESYNC_PARAM_INVALID;
         }
 
-        CpswAppUtils_assert(status == TIMESYNC_OK);
+        EnetAppUtils_assert(status == TIMESYNC_OK);
 
         gTimeSyncCpswObj.coreId = CpswAppSoc_getCoreId();
 
-        CpswMcm_getCmdIf(gTimeSyncCpswObj.cpswType, &gTimeSyncCpswObj.hMcmCmdIf);
-        CpswAppUtils_assert(gTimeSyncCpswObj.hMcmCmdIf.hMboxCmd != NULL);
-        CpswAppUtils_assert(gTimeSyncCpswObj.hMcmCmdIf.hMboxResponse != NULL);
+        EnetMcm_getCmdIf(gTimeSyncCpswObj.enetType, &gTimeSyncCpswObj.hMcmCmdIf);
+        EnetAppUtils_assert(gTimeSyncCpswObj.hMcmCmdIf.hMboxCmd != NULL);
+        EnetAppUtils_assert(gTimeSyncCpswObj.hMcmCmdIf.hMboxResponse != NULL);
 
-        CpswMcm_acquireHandleInfo(&gTimeSyncCpswObj.hMcmCmdIf,
+        EnetMcm_acquireHandleInfo(&gTimeSyncCpswObj.hMcmCmdIf,
                                   &handleInfo);
-        CpswMcm_coreAttach(&gTimeSyncCpswObj.hMcmCmdIf,
+        EnetMcm_coreAttach(&gTimeSyncCpswObj.hMcmCmdIf,
                            gTimeSyncCpswObj.coreId,
                            &attachInfo);
 
-        gTimeSyncCpswObj.hCpsw = handleInfo.hCpsw;
+        gTimeSyncCpswObj.hEnet = handleInfo.hEnet;
         gTimeSyncCpswObj.hUdmaDrv = handleInfo.hUdmaDrv;
         gTimeSyncCpswObj.coreKey  = attachInfo.coreKey;
 
-        if (gTimeSyncCpswObj.hCpsw == NULL)
+        if (gTimeSyncCpswObj.hEnet == NULL)
         {
-            CpswAppUtils_print("Failed to open CPSW\n");
-            CpswAppUtils_assert(gTimeSyncCpswObj.hCpsw == NULL);
+            EnetAppUtils_print("Failed to open CPSW\n");
+            EnetAppUtils_assert(gTimeSyncCpswObj.hEnet == NULL);
         }
 
         if (gTimeSyncCpswObj.hUdmaDrv == NULL)
         {
-            CpswAppUtils_print("Failed to Get UDMA Handle\n");
-            CpswAppUtils_assert(gTimeSyncCpswObj.hUdmaDrv == NULL);
+            EnetAppUtils_print("Failed to Get UDMA Handle\n");
+            EnetAppUtils_assert(gTimeSyncCpswObj.hUdmaDrv == NULL);
         }
 
         if (status == TIMESYNC_OK)
@@ -369,7 +381,7 @@ TimeSync_Handle TimeSync_open(TimeSync_Config *timeSyncConfig)
 
             if (status != TIMESYNC_OK)
             {
-                CpswAppUtils_print("Failed to configure MAC for timestampping: %d\n", status);
+                EnetAppUtils_print("Failed to configure MAC for timestampping: %d\n", status);
             }
         }
 
@@ -378,7 +390,7 @@ TimeSync_Handle TimeSync_open(TimeSync_Config *timeSyncConfig)
             status = TimeSync_openDma();
             if (status != TIMESYNC_OK)
             {
-                CpswAppUtils_print("Failed to open CPSW DMA: %d\n", status);
+                EnetAppUtils_print("Failed to open CPSW DMA: %d\n", status);
             }
         }
 
@@ -388,7 +400,7 @@ TimeSync_Handle TimeSync_open(TimeSync_Config *timeSyncConfig)
             status = TimeSync_setCpswAleClassifier();
             if (status != TIMESYNC_OK)
             {
-                CpswAppUtils_print("Failed to set Classifier: %d\n", status);
+                EnetAppUtils_print("Failed to set Classifier: %d\n", status);
             }
         }
 
@@ -397,7 +409,7 @@ TimeSync_Handle TimeSync_open(TimeSync_Config *timeSyncConfig)
             status = TimeSync_configPps();
             if (status != TIMESYNC_OK)
             {
-                CpswAppUtils_print("Failed to configure PPS generation: %d\n", status);
+                EnetAppUtils_print("Failed to configure PPS generation: %d\n", status);
             }
         }
 
@@ -423,28 +435,28 @@ int32_t TimeSync_getRxTimestamp(TimeSync_Handle timeSyncHandle,
                                 uint64_t *seconds)
 {
     int32_t status = TIMESYNC_OK;
-    Cpsw_IoctlPrms prms;
-    CpswCpts_LookUpEventInArgs lookupEventInArgs;
+    Enet_IoctlPrms prms;
+    CpswCpts_Event lookupEventInArgs;
     CpswCpts_Event lookupEventOutArgs;
 
 
     if (timeSyncHandle != NULL)
     {
         lookupEventInArgs.eventType = CPSW_CPTS_EVENTTYPE_ETH_RECEIVE;
-        lookupEventInArgs.hwPushNum = CPSW_CPTS_HW_PUSH_INVALID;
+        lookupEventInArgs.hwPushNum = CPSW_CPTS_HWPUSH_INVALID;
         lookupEventInArgs.portNum = rxPort;
         lookupEventInArgs.seqId = seqId;
-        lookupEventInArgs.msgType = (CpswCpts_MsgType)rxFrameType;
+        lookupEventInArgs.msgType = (EnetTimeSync_MsgType)rxFrameType;
         lookupEventInArgs.domain  = 0U;
 
         if (status == TIMESYNC_OK)
         {
-            CPSW_IOCTL_SET_INOUT_ARGS(&prms, &lookupEventInArgs, &lookupEventOutArgs);
-            status = Cpsw_ioctl(timeSyncHandle->hCpsw,
+            ENET_IOCTL_SET_INOUT_ARGS(&prms, &lookupEventInArgs, &lookupEventOutArgs);
+            status = Enet_ioctl(timeSyncHandle->hEnet,
                                 timeSyncHandle->coreId,
                                 CPSW_CPTS_IOCTL_LOOKUP_EVENT,
                                 &prms);
-            if (status == CPSW_ENOTFOUND)
+            if (status == ENET_ENOTFOUND)
             {
                 lookupEventOutArgs.tsVal = 0U;
             }
@@ -468,27 +480,27 @@ int32_t TimeSync_getTxTimestamp(TimeSync_Handle timeSyncHandle,
                                 uint64_t *seconds)
 {
     int32_t status = TIMESYNC_OK;
-    Cpsw_IoctlPrms prms;
-    CpswCpts_LookUpEventInArgs lookupEventInArgs;
+    Enet_IoctlPrms prms;
+    CpswCpts_Event lookupEventInArgs;
     CpswCpts_Event lookupEventOutArgs;
 
     if (timeSyncHandle != NULL)
     {
         lookupEventInArgs.eventType = CPSW_CPTS_EVENTTYPE_ETH_TRANSMIT;
-        lookupEventInArgs.hwPushNum = CPSW_CPTS_HW_PUSH_INVALID;
+        lookupEventInArgs.hwPushNum = CPSW_CPTS_HWPUSH_INVALID;
         lookupEventInArgs.portNum = txPort;
         lookupEventInArgs.seqId = seqId;
-        lookupEventInArgs.msgType = (CpswCpts_MsgType)txFrameType;
+        lookupEventInArgs.msgType = (EnetTimeSync_MsgType)txFrameType;
         lookupEventInArgs.domain  = 0U;
 
         if (status == TIMESYNC_OK)
         {
-            CPSW_IOCTL_SET_INOUT_ARGS(&prms, &lookupEventInArgs, &lookupEventOutArgs);
-            status = Cpsw_ioctl(timeSyncHandle->hCpsw,
+            ENET_IOCTL_SET_INOUT_ARGS(&prms, &lookupEventInArgs, &lookupEventOutArgs);
+            status = Enet_ioctl(timeSyncHandle->hEnet,
                                 timeSyncHandle->coreId,
                                 CPSW_CPTS_IOCTL_LOOKUP_EVENT,
                                 &prms);
-            if (status == CPSW_ENOTFOUND)
+            if (status == ENET_ENOTFOUND)
             {
                 lookupEventOutArgs.tsVal = 0U;
             }
@@ -509,32 +521,32 @@ int32_t TimeSync_adjTimeSlowComp(TimeSync_Handle timeSyncHandle,
                                  uint32_t interval)
 {
     int32_t status = TIMESYNC_OK;
-    Cpsw_IoctlPrms prms;
-    CpswCpts_SetTsPpmInArgs setTsPpmInArgs;
+    Enet_IoctlPrms prms;
+    EnetTimeSync_TimestampAdj setTsPpmInArgs;
     int32_t ppmVal = 0;
 
     ppmVal = ((double)(adjOffset) / (double)(interval)) * TIMESYNC_PPM_VALUE;
 
     if (timeSyncHandle != NULL)
     {
-        setTsPpmInArgs.tsPpmMode = CPSW_CPTS_PPM_PARTS_PER_MILLION;
+        setTsPpmInArgs.mode = ENET_TIMESYNC_ADJMODE_PPM;
         if (ppmVal < 0)
         {
-            setTsPpmInArgs.tsPpmDir = CPSW_CPTS_PPM_DIR_DECREASE;
-            setTsPpmInArgs.tsPpmVal = (-1 * ppmVal);
+            setTsPpmInArgs.dir = ENET_TIMESYNC_ADJDIR_DECREASE;
+            setTsPpmInArgs.adjVal = (-1 * ppmVal);
         }
         else
         {
-            setTsPpmInArgs.tsPpmDir = CPSW_CPTS_PPM_DIR_INCREASE;
-            setTsPpmInArgs.tsPpmVal = ppmVal;
+            setTsPpmInArgs.dir = ENET_TIMESYNC_ADJDIR_INCREASE;
+            setTsPpmInArgs.adjVal = ppmVal;
         }
 
-        CPSW_IOCTL_SET_IN_ARGS(&prms, &setTsPpmInArgs);
-        status = Cpsw_ioctl(timeSyncHandle->hCpsw,
+        ENET_IOCTL_SET_IN_ARGS(&prms, &setTsPpmInArgs);
+        status = Enet_ioctl(timeSyncHandle->hEnet,
                             timeSyncHandle->coreId,
-                            CPSW_CPTS_IOCTL_SET_TS_PPM,
+                            ENET_TIMESYNC_IOCTL_ADJUST_TIMESTAMP,
                             &prms);
-        CpswAppUtils_assert(status == TIMESYNC_OK);
+        EnetAppUtils_assert(status == TIMESYNC_OK);
     }
     else
     {
@@ -549,18 +561,18 @@ int32_t TimeSync_setClockTime(TimeSync_Handle timeSyncHandle,
                               uint64_t seconds)
 {
     int32_t status = TIMESYNC_OK;
-    Cpsw_IoctlPrms prms;
+    Enet_IoctlPrms prms;
     uint64_t tsVal = 0U;
 
     if (timeSyncHandle != NULL)
     {
         tsVal = (uint64_t)(((uint64_t)seconds * (uint64_t)TIMESYNC_SEC_TO_NS) + nanoseconds);
-        CPSW_IOCTL_SET_IN_ARGS(&prms, &tsVal);
-        status = Cpsw_ioctl(timeSyncHandle->hCpsw,
+        ENET_IOCTL_SET_IN_ARGS(&prms, &tsVal);
+        status = Enet_ioctl(timeSyncHandle->hEnet,
                             timeSyncHandle->coreId,
-                            CPSW_CPTS_IOCTL_LOAD_TIMESTAMP,
+                            ENET_TIMESYNC_IOCTL_SET_TIMESTAMP,
                             &prms);
-        CpswAppUtils_assert(status == TIMESYNC_OK);
+        EnetAppUtils_assert(status == TIMESYNC_OK);
     }
     else
     {
@@ -575,18 +587,18 @@ void TimeSync_getCurrentTime(TimeSync_Handle timeSyncHandle,
                              uint64_t *seconds)
 {
     int32_t status = TIMESYNC_OK;
-    Cpsw_IoctlPrms prms;
+    Enet_IoctlPrms prms;
     uint64_t tsVal = 0U;
 
     if (timeSyncHandle != NULL)
     {
         /* Software Time stamp Push event */
-        CPSW_IOCTL_SET_OUT_ARGS(&prms, &tsVal);
-        status = Cpsw_ioctl(timeSyncHandle->hCpsw,
+        ENET_IOCTL_SET_OUT_ARGS(&prms, &tsVal);
+        status = Enet_ioctl(timeSyncHandle->hEnet,
                             timeSyncHandle->coreId,
-                            CPSW_CPTS_IOCTL_PUSH_TIMESTAMP_EVENT,
+                            ENET_TIMESYNC_IOCTL_GET_CURRENT_TIMESTAMP,
                             &prms);
-        CpswAppUtils_assert(status == TIMESYNC_OK);
+        EnetAppUtils_assert(status == TIMESYNC_OK);
 
         *nanoseconds = (uint32_t)(tsVal % (uint64_t)TIMESYNC_SEC_TO_NS);
         *seconds = tsVal / (uint64_t)TIMESYNC_SEC_TO_NS;
@@ -605,21 +617,21 @@ int32_t TimeSync_getPtpFrame(TimeSync_Handle timeSyncHandle,
                              uint8_t *rxPort)
 {
     int32_t status = TIMESYNC_OK;
-    CpswDma_PktInfo *pktInfo;
+    EnetDma_PktInfo *pktInfo;
     EthFrame *rxFrame;
     uint32_t rxReadyCnt;
 
     if (timeSyncHandle != NULL)
     {
-        rxReadyCnt = CpswUtils_getQCount(&gTimeSyncCpswObj.rxReadyQ);
+        rxReadyCnt = EnetQueue_getQCount(&gTimeSyncCpswObj.rxReadyQ);
         if (rxReadyCnt > 0U)
         {
             /* Consume the received packets and release them */
-            pktInfo = (CpswDma_PktInfo *)CpswUtils_deQ(&gTimeSyncCpswObj.rxReadyQ);
-            CpswUtils_checkPktState(&pktInfo->pktState,
-                                    CPSW_PKTSTATE_MODULE_APP,
-                                    CPSW_PKTSTATE_APP_WITH_READYQ,
-                                    CPSW_PKTSTATE_APP_WITH_FREEQ);
+            pktInfo = (EnetDma_PktInfo *)EnetQueue_deq(&gTimeSyncCpswObj.rxReadyQ);
+            EnetDma_checkPktState(&pktInfo->pktState,
+                                    ENET_PKTSTATE_MODULE_APP,
+                                    ENET_PKTSTATE_APP_WITH_READYQ,
+                                    ENET_PKTSTATE_APP_WITH_FREEQ);
 
             rxFrame = (EthFrame *)pktInfo->bufPtr;
             *size = pktInfo->userBufLen;
@@ -627,13 +639,13 @@ int32_t TimeSync_getPtpFrame(TimeSync_Handle timeSyncHandle,
             *rxPort = (uint8_t)pktInfo->rxPortNum;
 
             /* Release the received packet */
-            CpswUtils_enQ(&gTimeSyncCpswObj.rxFreeQ, &pktInfo->node);
+            EnetQueue_enq(&gTimeSyncCpswObj.rxFreeQ, &pktInfo->node);
 
-            CpswAppUtils_validatePacketState(&gTimeSyncCpswObj.rxFreeQ,
-                                             CPSW_PKTSTATE_APP_WITH_FREEQ,
-                                             CPSW_PKTSTATE_APP_WITH_DRIVER);
+            EnetAppUtils_validatePacketState(&gTimeSyncCpswObj.rxFreeQ,
+                                             ENET_PKTSTATE_APP_WITH_FREEQ,
+                                             ENET_PKTSTATE_APP_WITH_DRIVER);
 
-            CpswAppUtils_submitRxPackets(gTimeSyncCpswObj.hRxFlow,
+            EnetDma_submitRxPktQ(gTimeSyncCpswObj.hRxFlow,
                                          &gTimeSyncCpswObj.rxFreeQ);
         }
         else
@@ -656,23 +668,23 @@ int32_t TimeSync_sendPtpFrame(TimeSync_Handle timeSyncHandle,
                               uint8_t txPort)
 {
     int32_t status = TIMESYNC_OK;
-    CpswDma_PktInfoQ txSubmitQ;
-    CpswDma_PktInfo *pktInfo;
+    EnetDma_PktInfoQ txSubmitQ;
+    EnetDma_PktInfo *pktInfo;
     uint8_t *txFrame;
     TimeSync_TxPktInfo *pTxTsPktInfo = NULL;
     TimeSync_TxPktInfoEle *pTxTsPktInfoEle = NULL;
 
     if (timeSyncHandle != NULL)
     {
-        CpswUtils_initQ(&txSubmitQ);
-        pktInfo = (CpswDma_PktInfo *)CpswUtils_deQ(&gTimeSyncCpswObj.txFreePktInfoQ);
+        EnetQueue_initQ(&txSubmitQ);
+        pktInfo = (EnetDma_PktInfo *)EnetQueue_deq(&gTimeSyncCpswObj.txFreePktInfoQ);
         if (NULL != pktInfo)
         {
             txFrame = (uint8_t *)pktInfo->bufPtr;
             memcpy(txFrame, frame, size);
             pktInfo->userBufLen = size;
             pktInfo->appPriv = (void *)timeSyncHandle;
-            pktInfo->txPortNum = (Cpsw_MacPort)CPSW_NORMALIZE_MACPORT(txPort);
+            pktInfo->txPortNum = (Enet_MacPort)ENET_NORM_MACPORT(txPort);
 
             /* Save tx pkt info to re-use during notify callback */
             pTxTsPktInfo = &timeSyncHandle->txTsPktInfo;
@@ -682,15 +694,15 @@ int32_t TimeSync_sendPtpFrame(TimeSync_Handle timeSyncHandle,
             TimeSync_getSeqId(&pTxTsPktInfoEle->seqId, frame);
             pTxTsPktInfo->wrIdx %= TIMESYNC_TX_PKTINFO_COUNT;
 
-            CpswUtils_checkPktState(&pktInfo->pktState,
-                                    CPSW_PKTSTATE_MODULE_APP,
-                                    CPSW_PKTSTATE_APP_WITH_FREEQ,
-                                    CPSW_PKTSTATE_APP_WITH_DRIVER);
-            CpswUtils_enQ(&txSubmitQ, &pktInfo->node);
+            EnetDma_checkPktState(&pktInfo->pktState,
+                                    ENET_PKTSTATE_MODULE_APP,
+                                    ENET_PKTSTATE_APP_WITH_FREEQ,
+                                    ENET_PKTSTATE_APP_WITH_DRIVER);
+            EnetQueue_enq(&txSubmitQ, &pktInfo->node);
 
-            if (0U != CpswUtils_getQCount(&txSubmitQ))
+            if (0U != EnetQueue_getQCount(&txSubmitQ))
             {
-                status = CpswAppUtils_submitTxPackets(gTimeSyncCpswObj.hTxCh,
+                status = EnetDma_submitTxReadyPktQ(gTimeSyncCpswObj.hTxCh,
                                                       &txSubmitQ);
             }
         }
@@ -708,8 +720,8 @@ int32_t TimeSync_getPpsTs(TimeSync_Handle timeSyncHandle,
                           uint64_t *seconds)
 {
     int32_t status = TIMESYNC_OK;
-    Cpsw_IoctlPrms prms;
-    CpswCpts_LookUpEventInArgs lookupEventInArgs;
+    Enet_IoctlPrms prms;
+    CpswCpts_Event lookupEventInArgs;
     CpswCpts_Event lookupEventOutArgs;
 
     if (timeSyncHandle != NULL)
@@ -720,12 +732,12 @@ int32_t TimeSync_getPpsTs(TimeSync_Handle timeSyncHandle,
         lookupEventInArgs.seqId = 0U;
         lookupEventInArgs.domain  = 0U;
 
-        CPSW_IOCTL_SET_INOUT_ARGS(&prms, &lookupEventInArgs, &lookupEventOutArgs);
-        status = Cpsw_ioctl(timeSyncHandle->hCpsw,
+        ENET_IOCTL_SET_INOUT_ARGS(&prms, &lookupEventInArgs, &lookupEventOutArgs);
+        status = Enet_ioctl(timeSyncHandle->hEnet,
                             timeSyncHandle->coreId,
                             CPSW_CPTS_IOCTL_LOOKUP_EVENT,
                             &prms);
-        if (status == CPSW_ENOTFOUND)
+        if (status == ENET_ENOTFOUND)
         {
             lookupEventOutArgs.tsVal = 0U;
         }
@@ -743,7 +755,7 @@ int32_t TimeSync_getPpsTs(TimeSync_Handle timeSyncHandle,
 void TimeSync_recalibratePps(TimeSync_Handle timeSyncHandle)
 {
     int32_t status = TIMESYNC_OK;
-    Cpsw_IoctlPrms prms;
+    Enet_IoctlPrms prms;
     CpswCpts_SetFxnGenInArgs setGenFInArgs;
     uint64_t currentTime = 0U;
     uint64_t remainder = 0U;
@@ -753,28 +765,28 @@ void TimeSync_recalibratePps(TimeSync_Handle timeSyncHandle)
         /*Disable GENF0 used for PPS */
         setGenFInArgs.index  = 0U;
         setGenFInArgs.length = 0U;
-        CPSW_IOCTL_SET_IN_ARGS(&prms, &setGenFInArgs);
-        status = Cpsw_ioctl(timeSyncHandle->hCpsw,
+        ENET_IOCTL_SET_IN_ARGS(&prms, &setGenFInArgs);
+        status = Enet_ioctl(timeSyncHandle->hEnet,
                             timeSyncHandle->coreId,
                             CPSW_CPTS_IOCTL_SET_GENF,
                             &prms);
 
         /* Not supported is not an error, so set the status
          * to TIMESYNC_OK */
-        if (status == CPSW_ENOTSUPPORTED)
+        if (status == ENET_ENOTSUPPORTED)
         {
             status = TIMESYNC_OK;
         }
 
-        CpswAppUtils_assert(status == TIMESYNC_OK);
+        EnetAppUtils_assert(status == TIMESYNC_OK);
 
         /* Get current time */
-        CPSW_IOCTL_SET_OUT_ARGS(&prms, &currentTime);
-        status = Cpsw_ioctl(timeSyncHandle->hCpsw,
+        ENET_IOCTL_SET_OUT_ARGS(&prms, &currentTime);
+        status = Enet_ioctl(timeSyncHandle->hEnet,
                             timeSyncHandle->coreId,
-                            CPSW_CPTS_IOCTL_PUSH_TIMESTAMP_EVENT,
+                            ENET_TIMESYNC_IOCTL_GET_CURRENT_TIMESTAMP,
                             &prms);
-        CpswAppUtils_assert(status == TIMESYNC_OK);
+        EnetAppUtils_assert(status == TIMESYNC_OK);
 
         /*We need to make sure that PPS aligns with the start of second boundary
          * This is done by finding the distance to second boundary and setting GENF compare
@@ -788,23 +800,23 @@ void TimeSync_recalibratePps(TimeSync_Handle timeSyncHandle)
         setGenFInArgs.compare = currentTime;
         setGenFInArgs.polarityInv = true;
         setGenFInArgs.ppmVal  = 0U;
-        setGenFInArgs.ppmDir  = CPSW_CPTS_PPM_DIR_INCREASE;
-        setGenFInArgs.ppmMode = CPSW_CPTS_PPM_DISABLE;
+        setGenFInArgs.ppmDir  = ENET_TIMESYNC_ADJDIR_INCREASE;
+        setGenFInArgs.ppmMode = ENET_TIMESYNC_ADJMODE_DISABLE;
 
-        CPSW_IOCTL_SET_IN_ARGS(&prms, &setGenFInArgs);
-        status = Cpsw_ioctl(gTimeSyncCpswObj.hCpsw,
+        ENET_IOCTL_SET_IN_ARGS(&prms, &setGenFInArgs);
+        status = Enet_ioctl(gTimeSyncCpswObj.hEnet,
                             gTimeSyncCpswObj.coreId,
                             CPSW_CPTS_IOCTL_SET_GENF,
                             &prms);
 
         /* Not supported is not an error, so set the status
          * to TIMESYNC_OK */
-        if (status == CPSW_ENOTSUPPORTED)
+        if (status == ENET_ENOTSUPPORTED)
         {
             status = TIMESYNC_OK;
         }
 
-        CpswAppUtils_assert(status == TIMESYNC_OK);
+        EnetAppUtils_assert(status == TIMESYNC_OK);
     }
 
 }
@@ -817,9 +829,9 @@ int8_t TimeSync_isPortLinkUp(TimeSync_Handle timeSyncHandle,
 
     if (timeSyncHandle != NULL)
     {
-        isLinkUpFlag = CpswAppUtils_isPortLinkUp(timeSyncHandle->hCpsw,
+        isLinkUpFlag = EnetAppUtils_isPortLinkUp(timeSyncHandle->hEnet,
                                                  timeSyncHandle->coreId,
-                                                 (Cpsw_MacPort)(CPSW_NORMALIZE_MACPORT(portNum)));
+                                                 (Enet_MacPort)(ENET_NORM_MACPORT(portNum)));
     }
 
     if (isLinkUpFlag == true)
@@ -838,58 +850,58 @@ int32_t TimeSync_isSingleStepSupported(TimeSync_Handle timeSyncHandle)
 void TimeSync_reset(TimeSync_Handle timeSyncHandle)
 {
     int32_t status = TIMESYNC_OK;
-    CpswDma_PktInfo *pktInfo;
-    Cpsw_IoctlPrms prms;
+    EnetDma_PktInfo *pktInfo;
+    Enet_IoctlPrms prms;
 
     if (timeSyncHandle != NULL)
     {
         /* Disable Rx & Tx Events */
-        status = CpswDma_disableRxEvent(timeSyncHandle->hRxFlow);
+        status = EnetDma_disableRxEvent(timeSyncHandle->hRxFlow);
         if (status != TIMESYNC_OK)
         {
-            CpswAppUtils_print("CpswDma_disableRxEvent() failed: %d\n", status);
+            EnetAppUtils_print("EnetDma_disableRxEvent() failed: %d\n", status);
         }
 
-        status = CpswDma_disableTxEvent(timeSyncHandle->hTxCh);
+        status = EnetDma_disableTxEvent(timeSyncHandle->hTxCh);
         if (status != TIMESYNC_OK)
         {
-            CpswAppUtils_print("CpswDma_disableTxEvent() failed: %d\n", status);
+            EnetAppUtils_print("EnetDma_disableTxEvent() failed: %d\n", status);
         }
 
         /* Clean the SW queues */
         if (status == TIMESYNC_OK)
         {
-            pktInfo = (CpswDma_PktInfo *)CpswUtils_deQ(&gTimeSyncCpswObj.rxReadyQ);
+            pktInfo = (EnetDma_PktInfo *)EnetQueue_deq(&gTimeSyncCpswObj.rxReadyQ);
             while (pktInfo != NULL)
             {
                 /* Consume the received packets and release them */
-                CpswUtils_checkPktState(&pktInfo->pktState,
-                                        CPSW_PKTSTATE_MODULE_APP,
-                                        CPSW_PKTSTATE_APP_WITH_READYQ,
-                                        CPSW_PKTSTATE_APP_WITH_FREEQ);
+                EnetDma_checkPktState(&pktInfo->pktState,
+                                        ENET_PKTSTATE_MODULE_APP,
+                                        ENET_PKTSTATE_APP_WITH_READYQ,
+                                        ENET_PKTSTATE_APP_WITH_FREEQ);
 
-                CpswUtils_enQ(&gTimeSyncCpswObj.rxFreeQ, &pktInfo->node);
+                EnetQueue_enq(&gTimeSyncCpswObj.rxFreeQ, &pktInfo->node);
 
-                CpswAppUtils_validatePacketState(&gTimeSyncCpswObj.rxFreeQ,
-                                                 CPSW_PKTSTATE_APP_WITH_FREEQ,
-                                                 CPSW_PKTSTATE_APP_WITH_DRIVER);
+                EnetAppUtils_validatePacketState(&gTimeSyncCpswObj.rxFreeQ,
+                                                 ENET_PKTSTATE_APP_WITH_FREEQ,
+                                                 ENET_PKTSTATE_APP_WITH_DRIVER);
 
-                pktInfo = (CpswDma_PktInfo *)CpswUtils_deQ(&gTimeSyncCpswObj.rxReadyQ);
+                pktInfo = (EnetDma_PktInfo *)EnetQueue_deq(&gTimeSyncCpswObj.rxReadyQ);
             }
-            CpswAppUtils_submitRxPackets(gTimeSyncCpswObj.hRxFlow,
+            EnetDma_submitRxPktQ(gTimeSyncCpswObj.hRxFlow,
                                          &gTimeSyncCpswObj.rxFreeQ);
 
             TimeSync_retrieveTxDonePkts();
 
             /* Clear Timestamp pools */
-            CPSW_IOCTL_SET_NO_ARGS(&prms);
-            status = Cpsw_ioctl(timeSyncHandle->hCpsw,
+            ENET_IOCTL_SET_NO_ARGS(&prms);
+            status = Enet_ioctl(timeSyncHandle->hEnet,
                                 timeSyncHandle->coreId,
-                                CPSW_CPTS_IOCTL_CLEAR_ALL_EVENTS,
+                                ENET_TIMESYNC_IOCTL_RESET,
                                 &prms);
             if (status != TIMESYNC_OK)
             {
-                CpswAppUtils_print("CPSW_CPTS_IOCTL_CLEAR_ALL_EVENTS IOCTL failed: %d\n", status);
+                EnetAppUtils_print("ENET_TIMESYNC_IOCTL_RESET IOCTL failed: %d\n", status);
             }
         }
 
@@ -902,16 +914,16 @@ void TimeSync_reset(TimeSync_Handle timeSyncHandle)
         /* Enable Rx & Tx Events */
         if (status == TIMESYNC_OK)
         {
-            status = CpswDma_enableRxEvent(timeSyncHandle->hRxFlow);
+            status = EnetDma_enableRxEvent(timeSyncHandle->hRxFlow);
             if (status != TIMESYNC_OK)
             {
-                CpswAppUtils_print("CpswDma_enableRxEvent() failed: %d\n", status);
+                EnetAppUtils_print("EnetDma_enableRxEvent() failed: %d\n", status);
             }
 
-            status = CpswDma_enableTxEvent(timeSyncHandle->hTxCh);
+            status = EnetDma_enableTxEvent(timeSyncHandle->hTxCh);
             if (status != TIMESYNC_OK)
             {
-                CpswAppUtils_print("CpswDma_enableTxEvent() failed: %d\n", status);
+                EnetAppUtils_print("EnetDma_enableTxEvent() failed: %d\n", status);
             }
         }
     }
@@ -926,11 +938,11 @@ void TimeSync_close(TimeSync_Handle timeSyncHandle)
         TimeSync_closeDma();
 
         /* Detach core from MCM */
-        CpswMcm_coreDetach(&timeSyncHandle->hMcmCmdIf,
+        EnetMcm_coreDetach(&timeSyncHandle->hMcmCmdIf,
                            timeSyncHandle->coreId,
                            timeSyncHandle->coreKey);
         /* Release handle info */
-        CpswMcm_releaseHandleInfo(&timeSyncHandle->hMcmCmdIf);
+        EnetMcm_releaseHandleInfo(&timeSyncHandle->hMcmCmdIf);
 
     }
 }
@@ -971,21 +983,21 @@ void TimeSync_writeTsSingleStepSync(TimeSync_Handle timeSyncHandle,
 static int32_t TimeSync_openDma(void)
 {
     int32_t status = TIMESYNC_OK;
-    CpswDma_OpenRxFlowPrms cpswRxFlowCfg;
-    CpswDma_OpenTxChPrms cpswTxChCfg;
+    EnetUdma_OpenRxFlowPrms cpswRxFlowCfg;
+    EnetUdma_OpenTxChPrms cpswTxChCfg;
 
     /* Open the CPSW TX channel  */
     if (status == TIMESYNC_OK)
     {
-        CpswDma_initTxChParams(&cpswTxChCfg);
+        EnetDma_initTxChParams(&cpswTxChCfg);
 
         cpswTxChCfg.hUdmaDrv = gTimeSyncCpswObj.hUdmaDrv;
-        cpswTxChCfg.hCbArg = &gTimeSyncCpswObj;
+        cpswTxChCfg.cbArg = &gTimeSyncCpswObj;
         cpswTxChCfg.notifyCb = TimeSync_txNotifyFxn;
 
-        CpswAppUtils_setCommonTxChPrms(&cpswTxChCfg);
+        EnetAppUtils_setCommonTxChPrms(&cpswTxChCfg);
 
-        CpswAppUtils_openTxCh(gTimeSyncCpswObj.hCpsw,
+        EnetAppUtils_openTxCh(gTimeSyncCpswObj.hEnet,
                               gTimeSyncCpswObj.coreKey,
                               gTimeSyncCpswObj.coreId,
                               &gTimeSyncCpswObj.txChNum,
@@ -996,42 +1008,42 @@ static int32_t TimeSync_openDma(void)
 
         if (NULL != gTimeSyncCpswObj.hTxCh)
         {
-            status = CpswDma_enableTxEvent(gTimeSyncCpswObj.hTxCh);
+            status = EnetDma_enableTxEvent(gTimeSyncCpswObj.hTxCh);
             if (TIMESYNC_OK != status)
             {
                 /* Free the Ch Num if enable event failed */
-                CpswAppUtils_freeTxCh(gTimeSyncCpswObj.hCpsw,
+                EnetAppUtils_freeTxCh(gTimeSyncCpswObj.hEnet,
                                       gTimeSyncCpswObj.coreKey,
                                       gTimeSyncCpswObj.coreId,
                                       gTimeSyncCpswObj.txChNum);
-                CpswAppUtils_print("CpswDma_enableTxEvent() failed: %d\n", status);
-                status = CPSW_EFAIL;
+                EnetAppUtils_print("EnetDma_enableTxEvent() failed: %d\n", status);
+                status = ENET_EFAIL;
             }
         }
         else
         {
             /* Free the Ch Num if open Tx Ch failed */
-            CpswAppUtils_freeTxCh(gTimeSyncCpswObj.hCpsw,
+            EnetAppUtils_freeTxCh(gTimeSyncCpswObj.hEnet,
                                   gTimeSyncCpswObj.coreKey,
                                   gTimeSyncCpswObj.coreId,
                                   gTimeSyncCpswObj.txChNum);
-            CpswAppUtils_print("CpswAppUtils_openTxCh() failed to open: %d\n",
+            EnetAppUtils_print("EnetAppUtils_openTxCh() failed to open: %d\n",
                                status);
-            status = CPSW_EFAIL;
+            status = ENET_EFAIL;
         }
     }
 
     /* Open the CPSW RX flow  */
     if (status == TIMESYNC_OK)
     {
-        CpswDma_initRxFlowParams(&cpswRxFlowCfg);
+        EnetDma_initRxChParams(&cpswRxFlowCfg);
         cpswRxFlowCfg.notifyCb = TimeSync_rxNotifyFxn;
         cpswRxFlowCfg.hUdmaDrv = gTimeSyncCpswObj.hUdmaDrv;
-        cpswRxFlowCfg.hCbArg = &gTimeSyncCpswObj;
+        cpswRxFlowCfg.cbArg = &gTimeSyncCpswObj;
 
-        CpswAppUtils_setCommonRxFlowPrms(&cpswRxFlowCfg);
+        EnetAppUtils_setCommonRxFlowPrms(&cpswRxFlowCfg);
 
-        status = CpswAppUtils_allocRxFlow(gTimeSyncCpswObj.hCpsw,
+        status = EnetAppUtils_allocRxFlow(gTimeSyncCpswObj.hEnet,
                                           gTimeSyncCpswObj.coreKey,
                                           gTimeSyncCpswObj.coreId,
                                           &gTimeSyncCpswObj.rxFlowStartIdx,
@@ -1041,14 +1053,14 @@ static int32_t TimeSync_openDma(void)
             cpswRxFlowCfg.startIdx = gTimeSyncCpswObj.rxFlowStartIdx;
             cpswRxFlowCfg.flowIdx  = gTimeSyncCpswObj.rxFlowIdx;
 
-            gTimeSyncCpswObj.hRxFlow = CpswDma_openRxFlow(&cpswRxFlowCfg);
+            gTimeSyncCpswObj.hRxFlow = EnetDma_openRxCh(&cpswRxFlowCfg);
             if (NULL == gTimeSyncCpswObj.hRxFlow)
             {
-                CpswAppUtils_freeRxFlow(gTimeSyncCpswObj.hCpsw,
+                EnetAppUtils_freeRxFlow(gTimeSyncCpswObj.hEnet,
                                         gTimeSyncCpswObj.coreKey,
                                         gTimeSyncCpswObj.coreId,
                                         gTimeSyncCpswObj.rxFlowIdx);
-                CpswAppUtils_print("CpswDma_openRxFlow() failed to open: %d\n",
+                EnetAppUtils_print("EnetDma_openRxCh() failed to open: %d\n",
                                    status);
             }
             else
@@ -1059,15 +1071,15 @@ static int32_t TimeSync_openDma(void)
         }
         else
         {
-            CpswAppUtils_print("CpswAppUtils_allocRxFlow() failed to open: %d\n",
+            EnetAppUtils_print("EnetAppUtils_allocRxFlow() failed to open: %d\n",
                                status);
         }
 
         /* Close Tx channel if Rx flow open failed */
         if (status != TIMESYNC_OK)
         {
-            status = CpswDma_disableTxEvent(gTimeSyncCpswObj.hTxCh);
-            CpswAppUtils_freeTxCh(gTimeSyncCpswObj.hCpsw,
+            status = EnetDma_disableTxEvent(gTimeSyncCpswObj.hTxCh);
+            EnetAppUtils_freeTxCh(gTimeSyncCpswObj.hEnet,
                                   gTimeSyncCpswObj.coreKey,
                                   gTimeSyncCpswObj.coreId,
                                   gTimeSyncCpswObj.txChNum);
@@ -1080,30 +1092,30 @@ static int32_t TimeSync_openDma(void)
 static void TimeSync_closeDma(void)
 {
     int32_t status = TIMESYNC_OK;
-    CpswDma_PktInfoQ fqPktInfoQ;
-    CpswDma_PktInfoQ cqPktInfoQ;
+    EnetDma_PktInfoQ fqPktInfoQ;
+    EnetDma_PktInfoQ cqPktInfoQ;
 
-    CpswUtils_initQ(&fqPktInfoQ);
-    CpswUtils_initQ(&cqPktInfoQ);
+    EnetQueue_initQ(&fqPktInfoQ);
+    EnetQueue_initQ(&cqPktInfoQ);
 
     /* Close RX Flow */
     if (gTimeSyncCpswObj.hRxFlow != NULL)
     {
-        status = CpswDma_closeRxFlow(gTimeSyncCpswObj.hRxFlow,
+        status = EnetDma_closeRxCh(gTimeSyncCpswObj.hRxFlow,
                                      &fqPktInfoQ,
                                      &cqPktInfoQ);
         if (status == TIMESYNC_OK)
         {
-            CpswAppUtils_freeRxFlow(gTimeSyncCpswObj.hCpsw,
+            EnetAppUtils_freeRxFlow(gTimeSyncCpswObj.hEnet,
                                     gTimeSyncCpswObj.coreKey,
                                     gTimeSyncCpswObj.coreId,
                                     gTimeSyncCpswObj.rxFlowIdx);
-            CpswAppUtils_freePktInfoQ(&fqPktInfoQ);
-            CpswAppUtils_freePktInfoQ(&cqPktInfoQ);
+            EnetAppUtils_freePktInfoQ(&fqPktInfoQ);
+            EnetAppUtils_freePktInfoQ(&cqPktInfoQ);
         }
         else
         {
-            CpswAppUtils_print("CpswDma_closeRxFlow() failed to open: %d\n",
+            EnetAppUtils_print("EnetDma_closeRxCh() failed to open: %d\n",
                                status);
         }
 
@@ -1114,21 +1126,21 @@ static void TimeSync_closeDma(void)
     {
         if (status == TIMESYNC_OK)
         {
-            CpswUtils_initQ(&fqPktInfoQ);
-            CpswUtils_initQ(&cqPktInfoQ);
+            EnetQueue_initQ(&fqPktInfoQ);
+            EnetQueue_initQ(&cqPktInfoQ);
 
-            CpswAppUtils_closeTxCh(gTimeSyncCpswObj.hCpsw,
+            EnetAppUtils_closeTxCh(gTimeSyncCpswObj.hEnet,
                                    gTimeSyncCpswObj.coreKey,
                                    gTimeSyncCpswObj.coreId,
                                    &fqPktInfoQ,
                                    &cqPktInfoQ,
                                    gTimeSyncCpswObj.hTxCh,
                                    gTimeSyncCpswObj.txChNum);
-            CpswAppUtils_freePktInfoQ(&fqPktInfoQ);
-            CpswAppUtils_freePktInfoQ(&cqPktInfoQ);
+            EnetAppUtils_freePktInfoQ(&fqPktInfoQ);
+            EnetAppUtils_freePktInfoQ(&cqPktInfoQ);
 
-            CpswAppUtils_freePktInfoQ(&gTimeSyncCpswObj.rxFreeQ);
-            CpswAppUtils_freePktInfoQ(&gTimeSyncCpswObj.txFreePktInfoQ);
+            EnetAppUtils_freePktInfoQ(&gTimeSyncCpswObj.rxFreeQ);
+            EnetAppUtils_freePktInfoQ(&gTimeSyncCpswObj.txFreePktInfoQ);
         }
     }
 
@@ -1136,11 +1148,11 @@ static void TimeSync_closeDma(void)
 
 static void TimeSync_initTxFreePktQ(void)
 {
-    CpswDma_PktInfo *pPktInfo;
+    EnetDma_PktInfo *pPktInfo;
     uint32_t i;
 
     /* Initialize all queues */
-    CpswUtils_initQ(&gTimeSyncCpswObj.txFreePktInfoQ);
+    EnetQueue_initQ(&gTimeSyncCpswObj.txFreePktInfoQ);
 
     /* Initialize TX EthPkts and queue them to txFreePktInfoQ */
     for (i = 0U; i < CPSW_APPMEMUTILS_NUM_TX_PKTS; i++)
@@ -1148,144 +1160,144 @@ static void TimeSync_initTxFreePktQ(void)
         pPktInfo = CpswAppMemUtils_allocEthPktFxn(&gTimeSyncCpswObj,
                                                   CPSW_APPMEMUTILS_LARGE_POOL_PKT_SIZE,
                                                   UDMA_CACHELINE_ALIGNMENT);
-        CpswAppUtils_assert(pPktInfo != NULL);
-        CPSW_UTILS_SET_PKT_APP_STATE(&pPktInfo->pktState, CPSW_PKTSTATE_APP_WITH_FREEQ);
+        EnetAppUtils_assert(pPktInfo != NULL);
+        ENET_UTILS_SET_PKT_APP_STATE(&pPktInfo->pktState, ENET_PKTSTATE_APP_WITH_FREEQ);
 
-        CpswUtils_enQ(&gTimeSyncCpswObj.txFreePktInfoQ, &pPktInfo->node);
+        EnetQueue_enq(&gTimeSyncCpswObj.txFreePktInfoQ, &pPktInfo->node);
     }
 }
 
 static void TimeSync_initRxReadyPktQ(void)
 {
-    CpswDma_PktInfoQ rxReadyQ;
-    CpswDma_PktInfo *pPktInfo;
+    EnetDma_PktInfoQ rxReadyQ;
+    EnetDma_PktInfo *pPktInfo;
     int32_t status;
     uint32_t i;
 
-    CpswUtils_initQ(&gTimeSyncCpswObj.rxFreeQ);
-    CpswUtils_initQ(&gTimeSyncCpswObj.rxReadyQ);
-    CpswUtils_initQ(&rxReadyQ);
+    EnetQueue_initQ(&gTimeSyncCpswObj.rxFreeQ);
+    EnetQueue_initQ(&gTimeSyncCpswObj.rxReadyQ);
+    EnetQueue_initQ(&rxReadyQ);
 
     for (i = 0U; i < CPSW_APPMEMUTILS_NUM_RX_PKTS; i++)
     {
         pPktInfo = CpswAppMemUtils_allocEthPktFxn(&gTimeSyncCpswObj,
                                                   CPSW_APPMEMUTILS_LARGE_POOL_PKT_SIZE,
                                                   UDMA_CACHELINE_ALIGNMENT);
-        CpswAppUtils_assert(pPktInfo != NULL);
-        CPSW_UTILS_SET_PKT_APP_STATE(&pPktInfo->pktState, CPSW_PKTSTATE_APP_WITH_FREEQ);
-        CpswUtils_enQ(&gTimeSyncCpswObj.rxFreeQ, &pPktInfo->node);
+        EnetAppUtils_assert(pPktInfo != NULL);
+        ENET_UTILS_SET_PKT_APP_STATE(&pPktInfo->pktState, ENET_PKTSTATE_APP_WITH_FREEQ);
+        EnetQueue_enq(&gTimeSyncCpswObj.rxFreeQ, &pPktInfo->node);
     }
 
     /* Retrieve any CPSW packets which are ready */
-    status = CpswDma_retrieveRxPackets(gTimeSyncCpswObj.hRxFlow, &rxReadyQ);
-    CpswAppUtils_assert(status == TIMESYNC_OK);
+    status = EnetDma_retrieveRxPktQ(gTimeSyncCpswObj.hRxFlow, &rxReadyQ);
+    EnetAppUtils_assert(status == TIMESYNC_OK);
     /* There should not be any packet with DMA during init */
-    CpswAppUtils_assert(CpswUtils_getQCount(&rxReadyQ) == 0U);
+    EnetAppUtils_assert(EnetQueue_getQCount(&rxReadyQ) == 0U);
 
-    CpswAppUtils_validatePacketState(&gTimeSyncCpswObj.rxFreeQ,
-                                     CPSW_PKTSTATE_APP_WITH_FREEQ,
-                                     CPSW_PKTSTATE_APP_WITH_DRIVER);
+    EnetAppUtils_validatePacketState(&gTimeSyncCpswObj.rxFreeQ,
+                                     ENET_PKTSTATE_APP_WITH_FREEQ,
+                                     ENET_PKTSTATE_APP_WITH_DRIVER);
 
-    CpswAppUtils_submitRxPackets(gTimeSyncCpswObj.hRxFlow,
+    EnetDma_submitRxPktQ(gTimeSyncCpswObj.hRxFlow,
                                  &gTimeSyncCpswObj.rxFreeQ);
 
     /* Assert here as during init no. of DMA descriptors should be equal to
      * no. of free Ethernet buffers available with app */
-    CpswAppUtils_assert(0U == CpswUtils_getQCount(&gTimeSyncCpswObj.rxFreeQ));
+    EnetAppUtils_assert(0U == EnetQueue_getQCount(&gTimeSyncCpswObj.rxFreeQ));
 }
 
 static int32_t TimeSync_setCpswAleClassifier(void)
 {
     int32_t status = TIMESYNC_OK;
-    Cpsw_IoctlPrms prms;
+    Enet_IoctlPrms prms;
     CpswAle_SetPolicerEntryOutArgs setPolicerEntryOutArgs;
     CpswAle_SetPolicerEntryInArgs setPolicerEntryInArgs;
 
     if (gTimeSyncCpswObj.timeSyncConfig.protoCfg.protocol == TIMESYNC_PROT_IEEE_802_3)
     {
-        setPolicerEntryInArgs.policerMatch.policerMatchEnableMask = CPSW_ALE_POLICER_MATCH_MACDST;
-        setPolicerEntryInArgs.policerMatch.dstMacAddr.egressPortNum = 0U;
-        setPolicerEntryInArgs.policerMatch.dstMacAddr.addr.vlanId = 0U;
-        memcpy(&setPolicerEntryInArgs.policerMatch.dstMacAddr.addr.addr[0U],
+        setPolicerEntryInArgs.policerMatch.policerMatchEnMask = CPSW_ALE_POLICER_MATCH_MACDST;
+        setPolicerEntryInArgs.policerMatch.dstMacAddrInfo.portNum = 0U;
+        setPolicerEntryInArgs.policerMatch.dstMacAddrInfo.addr.vlanId = 0U;
+        memcpy(&setPolicerEntryInArgs.policerMatch.dstMacAddrInfo.addr.addr[0U],
                &peerDlyMsgMAC[0U],
-               CPSW_MAC_ADDR_LEN);
+               ENET_MAC_ADDR_LEN);
 
         setPolicerEntryInArgs.threadIdEnable = true;
         setPolicerEntryInArgs.threadId = gTimeSyncCpswObj.rxFlowIdx;
 
-        CPSW_IOCTL_SET_INOUT_ARGS(&prms, &setPolicerEntryInArgs, &setPolicerEntryOutArgs);
-        status = Cpsw_ioctl(gTimeSyncCpswObj.hCpsw,
+        ENET_IOCTL_SET_INOUT_ARGS(&prms, &setPolicerEntryInArgs, &setPolicerEntryOutArgs);
+        status = Enet_ioctl(gTimeSyncCpswObj.hEnet,
                             gTimeSyncCpswObj.coreId,
                             CPSW_ALE_IOCTL_SET_POLICER,
                             &prms);
         if (status != TIMESYNC_OK)
         {
-            CpswAppUtils_print("TimeSync_setCpswAleClassifier() failed CPSW_ALE_IOCTL_SET_POLICER: %d\n",
+            EnetAppUtils_print("TimeSync_setCpswAleClassifier() failed CPSW_ALE_IOCTL_SET_POLICER: %d\n",
                                status);
         }
 
-        setPolicerEntryInArgs.policerMatch.policerMatchEnableMask = CPSW_ALE_POLICER_MATCH_MACDST;
-        setPolicerEntryInArgs.policerMatch.dstMacAddr.egressPortNum = 0U;
-        setPolicerEntryInArgs.policerMatch.dstMacAddr.addr.vlanId = 0U;
-        memcpy(&setPolicerEntryInArgs.policerMatch.dstMacAddr.addr.addr[0U],
+        setPolicerEntryInArgs.policerMatch.policerMatchEnMask = CPSW_ALE_POLICER_MATCH_MACDST;
+        setPolicerEntryInArgs.policerMatch.dstMacAddrInfo.portNum = 0U;
+        setPolicerEntryInArgs.policerMatch.dstMacAddrInfo.addr.vlanId = 0U;
+        memcpy(&setPolicerEntryInArgs.policerMatch.dstMacAddrInfo.addr.addr[0U],
                &nonPeerDlyMsgMAC[0U],
-               CPSW_MAC_ADDR_LEN);
+               ENET_MAC_ADDR_LEN);
 
         setPolicerEntryInArgs.threadIdEnable = true;
         setPolicerEntryInArgs.threadId = gTimeSyncCpswObj.rxFlowIdx;
 
-        CPSW_IOCTL_SET_INOUT_ARGS(&prms, &setPolicerEntryInArgs, &setPolicerEntryOutArgs);
-        status = Cpsw_ioctl(gTimeSyncCpswObj.hCpsw,
+        ENET_IOCTL_SET_INOUT_ARGS(&prms, &setPolicerEntryInArgs, &setPolicerEntryOutArgs);
+        status = Enet_ioctl(gTimeSyncCpswObj.hEnet,
                             gTimeSyncCpswObj.coreId,
                             CPSW_ALE_IOCTL_SET_POLICER,
                             &prms);
         if (status != TIMESYNC_OK)
         {
-            CpswAppUtils_print("TimeSync_setCpswAleClassifier() failed CPSW_ALE_IOCTL_SET_POLICER: %d\n",
+            EnetAppUtils_print("TimeSync_setCpswAleClassifier() failed CPSW_ALE_IOCTL_SET_POLICER: %d\n",
                                status);
         }
     }
     else if (gTimeSyncCpswObj.timeSyncConfig.protoCfg.protocol == TIMESYNC_PROT_UDP_IPV4)
     {
-        setPolicerEntryInArgs.policerMatch.policerMatchEnableMask = CPSW_ALE_POLICER_MATCH_IPDST;
-        setPolicerEntryInArgs.policerMatch.dstIp.ipAddrtype = CPSW_ALE_IPADDR_CLASSIFIER_IPV4;
-        memcpy(&setPolicerEntryInArgs.policerMatch.dstIp.ipv4.ipv4Addr[0U],
+        setPolicerEntryInArgs.policerMatch.policerMatchEnMask = CPSW_ALE_POLICER_MATCH_IPDST;
+        setPolicerEntryInArgs.policerMatch.dstIpInfo.ipAddrType = CPSW_ALE_IPADDR_CLASSIFIER_IPV4;
+        memcpy(&setPolicerEntryInArgs.policerMatch.dstIpInfo.ipv4Info.ipv4Addr[0U],
                &peerDlyMsgIpv4[0U],
-               CPSW_ALE_IPV4ADDR_NUM_OCTETS);
-        setPolicerEntryInArgs.policerMatch.dstIp.ipv4.numLSBIgnoreBits = 0U;
+               ENET_IPv4_ADDR_LEN);
+        setPolicerEntryInArgs.policerMatch.dstIpInfo.ipv4Info.numLSBIgnoreBits = 0U;
 
         setPolicerEntryInArgs.threadIdEnable = true;
         setPolicerEntryInArgs.threadId = gTimeSyncCpswObj.rxFlowIdx;
 
-        CPSW_IOCTL_SET_INOUT_ARGS(&prms, &setPolicerEntryInArgs, &setPolicerEntryOutArgs);
-        status = Cpsw_ioctl(gTimeSyncCpswObj.hCpsw,
+        ENET_IOCTL_SET_INOUT_ARGS(&prms, &setPolicerEntryInArgs, &setPolicerEntryOutArgs);
+        status = Enet_ioctl(gTimeSyncCpswObj.hEnet,
                             gTimeSyncCpswObj.coreId,
                             CPSW_ALE_IOCTL_SET_POLICER,
                             &prms);
         if (status != TIMESYNC_OK)
         {
-            CpswAppUtils_print(
+            EnetAppUtils_print(
                                "TimeSync_setCpswAleClassifier() failed CPSW_ALE_IOCTL_SET_POLICER: %d\n", status);
         }
 
-        setPolicerEntryInArgs.policerMatch.policerMatchEnableMask = CPSW_ALE_POLICER_MATCH_IPDST;
-        setPolicerEntryInArgs.policerMatch.dstIp.ipAddrtype = CPSW_ALE_IPADDR_CLASSIFIER_IPV4;
-        memcpy(&setPolicerEntryInArgs.policerMatch.dstIp.ipv4.ipv4Addr[0U],
+        setPolicerEntryInArgs.policerMatch.policerMatchEnMask = CPSW_ALE_POLICER_MATCH_IPDST;
+        setPolicerEntryInArgs.policerMatch.dstIpInfo.ipAddrType = CPSW_ALE_IPADDR_CLASSIFIER_IPV4;
+        memcpy(&setPolicerEntryInArgs.policerMatch.dstIpInfo.ipv4Info.ipv4Addr[0U],
                &nonPeerDlyMsgIpv4[0U],
-               CPSW_ALE_IPV4ADDR_NUM_OCTETS);
-        setPolicerEntryInArgs.policerMatch.dstIp.ipv4.numLSBIgnoreBits = 0U;
+               ENET_IPv4_ADDR_LEN);
+        setPolicerEntryInArgs.policerMatch.dstIpInfo.ipv4Info.numLSBIgnoreBits = 0U;
 
         setPolicerEntryInArgs.threadIdEnable = true;
         setPolicerEntryInArgs.threadId = gTimeSyncCpswObj.rxFlowIdx;
 
-        CPSW_IOCTL_SET_INOUT_ARGS(&prms, &setPolicerEntryInArgs, &setPolicerEntryOutArgs);
-        status = Cpsw_ioctl(gTimeSyncCpswObj.hCpsw,
+        ENET_IOCTL_SET_INOUT_ARGS(&prms, &setPolicerEntryInArgs, &setPolicerEntryOutArgs);
+        status = Enet_ioctl(gTimeSyncCpswObj.hEnet,
                             gTimeSyncCpswObj.coreId,
                             CPSW_ALE_IOCTL_SET_POLICER,
                             &prms);
         if (status != TIMESYNC_OK)
         {
-            CpswAppUtils_print(
+            EnetAppUtils_print(
                                "TimeSync_setCpswAleClassifier() failed CPSW_ALE_IOCTL_SET_POLICER: %d\n", status);
         }
     }
@@ -1300,71 +1312,71 @@ static int32_t TimeSync_setCpswAleClassifier(void)
 static int32_t TimeSync_setMacPortConfig(void)
 {
     int32_t status = TIMESYNC_OK;
-    Cpsw_IoctlPrms prms;
+    Enet_IoctlPrms prms;
     CpswMacPort_EnableTsEventInArgs enableTsEventInArgs;
     uint8_t i = 0U;
     uint32_t maxMacPorts = 0U;
 
-    maxMacPorts = Cpsw_getMacPortMax(gTimeSyncCpswObj.cpswType);
-    TimeSync_setPortTsEventPrms(&enableTsEventInArgs.portCfg);
+    maxMacPorts = Enet_getMacPortMax(gTimeSyncCpswObj.enetType, gTimeSyncCpswObj.instId);
+    TimeSync_setPortTsEventPrms(&enableTsEventInArgs.tsEventCfg);
 
     for (i = 0U; i < maxMacPorts; i++)
     {
         if (TIMESYNC_IS_BIT_SET(gTimeSyncCpswObj.timeSyncConfig.protoCfg.portMask, i))
         {
-            enableTsEventInArgs.portNum = (Cpsw_MacPort)(CPSW_NORMALIZE_MACPORT(i));
-            CPSW_IOCTL_SET_IN_ARGS(&prms, &enableTsEventInArgs);
-            status = Cpsw_ioctl(gTimeSyncCpswObj.hCpsw,
+            enableTsEventInArgs.macPort = (Enet_MacPort)(ENET_NORM_MACPORT(i));
+            ENET_IOCTL_SET_IN_ARGS(&prms, &enableTsEventInArgs);
+            status = Enet_ioctl(gTimeSyncCpswObj.hEnet,
                                 gTimeSyncCpswObj.coreId,
                                 CPSW_MACPORT_IOCTL_ENABLE_CPTS_EVENT,
                                 &prms);
-            CpswAppUtils_assert(status == TIMESYNC_OK);
+            EnetAppUtils_assert(status == TIMESYNC_OK);
         }
     }
 
     return status;
 }
 
-static void TimeSync_setPortTsEventPrms(CpswMacPort_TsEventConfig *tsPortEventCfg)
+static void TimeSync_setPortTsEventPrms(CpswMacPort_TsEventCfg *tsPortEventCfg)
 {
-    tsPortEventCfg->commonPortIpConfig.enableTTLNonzero = true;
-    tsPortEventCfg->commonPortIpConfig.enableTsIp107 = false;
-    tsPortEventCfg->commonPortIpConfig.enableTsIp129 = false;
-    tsPortEventCfg->commonPortIpConfig.enableTsIp130 = false;
-    tsPortEventCfg->commonPortIpConfig.enableTsIp131 = false;
-    tsPortEventCfg->commonPortIpConfig.enableTsIp132 = false;
-    tsPortEventCfg->commonPortIpConfig.enableTsPort319 = true;
-    tsPortEventCfg->commonPortIpConfig.enableTsPort320 = true;
-    tsPortEventCfg->commonPortIpConfig.enableUnicast = false;
+    tsPortEventCfg->commonPortIpCfg.ttlNonzeroEn = true;
+    tsPortEventCfg->commonPortIpCfg.tsIp107En = false;
+    tsPortEventCfg->commonPortIpCfg.tsIp129En = false;
+    tsPortEventCfg->commonPortIpCfg.tsIp130En = false;
+    tsPortEventCfg->commonPortIpCfg.tsIp131En = false;
+    tsPortEventCfg->commonPortIpCfg.tsIp132En = false;
+    tsPortEventCfg->commonPortIpCfg.tsPort319En = true;
+    tsPortEventCfg->commonPortIpCfg.tsPort320En = true;
+    tsPortEventCfg->commonPortIpCfg.unicastEn = false;
     tsPortEventCfg->domainOffset = 4U;
-    tsPortEventCfg->enableLType2 = false;
-    tsPortEventCfg->enableRxAnnexD = true;
-    tsPortEventCfg->enableRxAnnexE = true;
-    tsPortEventCfg->enableRxAnnexF = true;
-    tsPortEventCfg->enableTxAnnexD = true;
-    tsPortEventCfg->enableTxAnnexE = true;
-    tsPortEventCfg->enableTxAnnexF = true;
-    tsPortEventCfg->enableTxHostTs = true;
+    tsPortEventCfg->ltype2En = false;
+    tsPortEventCfg->rxAnnexDEn = true;
+    tsPortEventCfg->rxAnnexEEn = true;
+    tsPortEventCfg->rxAnnexFEn = true;
+    tsPortEventCfg->txAnnexDEn = true;
+    tsPortEventCfg->txAnnexEEn = true;
+    tsPortEventCfg->txAnnexFEn = true;
+    tsPortEventCfg->txHostTsEn = true;
     tsPortEventCfg->mcastType = 0U;
     tsPortEventCfg->messageType = 0xFFFFU;
     tsPortEventCfg->seqIdOffset = 30U;
-    tsPortEventCfg->rxVlanType  = CPSW_MACPORT_VLAN_TYPE_NONE;
-    tsPortEventCfg->txVlanType  = CPSW_MACPORT_VLAN_TYPE_NONE;
+    tsPortEventCfg->rxVlanType  = ENET_MACPORT_VLAN_TYPE_NONE;
+    tsPortEventCfg->txVlanType  = ENET_MACPORT_VLAN_TYPE_NONE;
     tsPortEventCfg->vlanLType1  = 0U;
     tsPortEventCfg->vlanLType2  = 0U;
 
     if (gTimeSyncCpswObj.timeSyncConfig.protoCfg.vlanCfg.vlanType == TIMESYNC_VLAN_TYPE_SINGLE_TAG)
     {
-        tsPortEventCfg->rxVlanType = CPSW_MACPORT_VLAN_TYPE_SINGLE_TAG;
-        tsPortEventCfg->txVlanType = CPSW_MACPORT_VLAN_TYPE_SINGLE_TAG;
+        tsPortEventCfg->rxVlanType = ENET_MACPORT_VLAN_TYPE_SINGLE_TAG;
+        tsPortEventCfg->txVlanType = ENET_MACPORT_VLAN_TYPE_SINGLE_TAG;
         tsPortEventCfg->vlanLType1 = gTimeSyncCpswObj.timeSyncConfig.protoCfg.vlanCfg.iVlanTag;
         tsPortEventCfg->vlanLType2 = 0U;
     }
 
     if (gTimeSyncCpswObj.timeSyncConfig.protoCfg.vlanCfg.vlanType == TIMESYNC_VLAN_TYPE_DOUBLE_TAG)
     {
-        tsPortEventCfg->rxVlanType = CPSW_MACPORT_VLAN_TYPE_STACKED_TAGS;
-        tsPortEventCfg->txVlanType = CPSW_MACPORT_VLAN_TYPE_STACKED_TAGS;
+        tsPortEventCfg->rxVlanType = ENET_MACPORT_VLAN_TYPE_STACKED_TAGS;
+        tsPortEventCfg->txVlanType = ENET_MACPORT_VLAN_TYPE_STACKED_TAGS;
         tsPortEventCfg->vlanLType1 = gTimeSyncCpswObj.timeSyncConfig.protoCfg.vlanCfg.iVlanTag;
         tsPortEventCfg->vlanLType2 = gTimeSyncCpswObj.timeSyncConfig.protoCfg.vlanCfg.oVlanTag;
     }
@@ -1372,34 +1384,34 @@ static void TimeSync_setPortTsEventPrms(CpswMacPort_TsEventConfig *tsPortEventCf
 
 static uint32_t TimeSync_retrieveTxDonePkts(void)
 {
-    CpswDma_PktInfoQ txFreeQ;
-    CpswDma_PktInfo *pktInfo;
+    EnetDma_PktInfoQ txFreeQ;
+    EnetDma_PktInfo *pktInfo;
     int32_t status;
     uint32_t txFreeQCnt = 0U;
 
-    CpswUtils_initQ(&txFreeQ);
+    EnetQueue_initQ(&txFreeQ);
 
     /* Retrieve any CPSW packets that may be free now */
-    status = CpswDma_retrieveTxDonePackets(gTimeSyncCpswObj.hTxCh, &txFreeQ);
+    status = EnetDma_retrieveTxDonePktQ(gTimeSyncCpswObj.hTxCh, &txFreeQ);
     if (status == TIMESYNC_OK)
     {
-        txFreeQCnt = CpswUtils_getQCount(&txFreeQ);
+        txFreeQCnt = EnetQueue_getQCount(&txFreeQ);
 
-        pktInfo = (CpswDma_PktInfo *)CpswUtils_deQ(&txFreeQ);
+        pktInfo = (EnetDma_PktInfo *)EnetQueue_deq(&txFreeQ);
         while (NULL != pktInfo)
         {
-            CpswUtils_checkPktState(&pktInfo->pktState,
-                                    CPSW_PKTSTATE_MODULE_APP,
-                                    CPSW_PKTSTATE_APP_WITH_DRIVER,
-                                    CPSW_PKTSTATE_APP_WITH_FREEQ);
+            EnetDma_checkPktState(&pktInfo->pktState,
+                                    ENET_PKTSTATE_MODULE_APP,
+                                    ENET_PKTSTATE_APP_WITH_DRIVER,
+                                    ENET_PKTSTATE_APP_WITH_FREEQ);
 
-            CpswUtils_enQ(&gTimeSyncCpswObj.txFreePktInfoQ, &pktInfo->node);
-            pktInfo = (CpswDma_PktInfo *)CpswUtils_deQ(&txFreeQ);
+            EnetQueue_enq(&gTimeSyncCpswObj.txFreePktInfoQ, &pktInfo->node);
+            pktInfo = (EnetDma_PktInfo *)EnetQueue_deq(&txFreeQ);
         }
     }
     else
     {
-        CpswAppUtils_print("CpswDma_retrieveTxDonePackets() failed to retrieve pkts: %d\n",
+        EnetAppUtils_print("EnetDma_retrieveTxDonePktQ() failed to retrieve pkts: %d\n",
                            status);
     }
 
@@ -1408,34 +1420,34 @@ static uint32_t TimeSync_retrieveTxDonePkts(void)
 
 static uint32_t TimeSync_receiveRxReadyPkts(void)
 {
-    CpswDma_PktInfoQ rxReadyQ;
-    CpswDma_PktInfo *pktInfo;
+    EnetDma_PktInfoQ rxReadyQ;
+    EnetDma_PktInfo *pktInfo;
     int32_t status;
     uint32_t rxReadyCnt = 0U;
 
-    CpswUtils_initQ(&rxReadyQ);
+    EnetQueue_initQ(&rxReadyQ);
 
     /* Retrieve any CPSW packets which are ready */
-    status = CpswDma_retrieveRxPackets(gTimeSyncCpswObj.hRxFlow, &rxReadyQ);
-    rxReadyCnt = CpswUtils_getQCount(&rxReadyQ);
+    status = EnetDma_retrieveRxPktQ(gTimeSyncCpswObj.hRxFlow, &rxReadyQ);
+    rxReadyCnt = EnetQueue_getQCount(&rxReadyQ);
     if (status == TIMESYNC_OK)
     {
         /* Queue the received packet to rxReadyQ and pass new ones from rxFreeQ */
-        pktInfo = (CpswDma_PktInfo *)CpswUtils_deQ(&rxReadyQ);
+        pktInfo = (EnetDma_PktInfo *)EnetQueue_deq(&rxReadyQ);
         while (pktInfo != NULL)
         {
-            CpswUtils_checkPktState(&pktInfo->pktState,
-                                    CPSW_PKTSTATE_MODULE_APP,
-                                    CPSW_PKTSTATE_APP_WITH_DRIVER,
-                                    CPSW_PKTSTATE_APP_WITH_READYQ);
+            EnetDma_checkPktState(&pktInfo->pktState,
+                                    ENET_PKTSTATE_MODULE_APP,
+                                    ENET_PKTSTATE_APP_WITH_DRIVER,
+                                    ENET_PKTSTATE_APP_WITH_READYQ);
 
-            CpswUtils_enQ(&gTimeSyncCpswObj.rxReadyQ, &pktInfo->node);
-            pktInfo = (CpswDma_PktInfo *)CpswUtils_deQ(&rxReadyQ);
+            EnetQueue_enq(&gTimeSyncCpswObj.rxReadyQ, &pktInfo->node);
+            pktInfo = (EnetDma_PktInfo *)EnetQueue_deq(&rxReadyQ);
         }
     }
     else
     {
-        CpswAppUtils_print("TimeSync_receiveRxReadyPkts() failed to retrieve pkts: %d\n",
+        EnetAppUtils_print("TimeSync_receiveRxReadyPkts() failed to retrieve pkts: %d\n",
                            status);
     }
 
@@ -1503,36 +1515,36 @@ static void TimeSync_getSeqId(uint16_t *seqId,
 static int32_t TimeSync_configPps(void)
 {
     int32_t status = TIMESYNC_OK;
-    Cpsw_IoctlPrms prms;
+    Enet_IoctlPrms prms;
     CpswCpts_RegisterHwPushCbInArgs hwPushCbInArgs;
     CpswCpts_SetFxnGenInArgs setGenFInArgs;
     uint64_t tsVal = 0U;
 
     /* Configure Time Sync Router to route GENF0 signal to hardware push 1 */
-    status = CpswAppUtils_setTimeSyncRouter(gTimeSyncCpswObj.cpswType,
+    status = EnetAppUtils_setTimeSyncRouter(gTimeSyncCpswObj.enetType,
                                             CSLR_TIMESYNC_INTRTR0_IN_CPSW0_CPTS_GENF0_0,
                                             CSLR_TIMESYNC_INTRTR0_OUTL_CPSW0_CPTS_HW1_PUSH_0);
-    CpswAppUtils_assert(status == TIMESYNC_OK);
+    EnetAppUtils_assert(status == TIMESYNC_OK);
 
     /* Register hardware push 1 callback */
     hwPushCbInArgs.hwPushNum = TIMESYNC_PPS_HW_PUSH_NUM;
-    hwPushCbInArgs.pHwPushNotifyCb = TimeSync_ppsHwPushNotifyFxn;
-    hwPushCbInArgs.pHwPushNotifyCbArg = (void *)&gTimeSyncCpswObj;
-    CPSW_IOCTL_SET_IN_ARGS(&prms, &hwPushCbInArgs);
-    status = Cpsw_ioctl(gTimeSyncCpswObj.hCpsw,
+    hwPushCbInArgs.hwPushNotifyCb = TimeSync_ppsHwPushNotifyFxn;
+    hwPushCbInArgs.hwPushNotifyCbArg = (void *)&gTimeSyncCpswObj;
+    ENET_IOCTL_SET_IN_ARGS(&prms, &hwPushCbInArgs);
+    status = Enet_ioctl(gTimeSyncCpswObj.hEnet,
                         gTimeSyncCpswObj.coreId,
-                        CPSW_CPTS_IOCTL_REGISTER_HW_PUSH_CALLBACK,
+                        CPSW_CPTS_IOCTL_REGISTER_HWPUSH_CALLBACK,
                         &prms);
-    CpswAppUtils_assert(status == TIMESYNC_OK);
+    EnetAppUtils_assert(status == TIMESYNC_OK);
 
     /* Reset CPTS timer to zero, to ensure GENF compare value hits on first run */
     tsVal = 0U;
-    CPSW_IOCTL_SET_IN_ARGS(&prms, &tsVal);
-    status = Cpsw_ioctl(gTimeSyncCpswObj.hCpsw,
+    ENET_IOCTL_SET_IN_ARGS(&prms, &tsVal);
+    status = Enet_ioctl(gTimeSyncCpswObj.hEnet,
                         gTimeSyncCpswObj.coreId,
-                        CPSW_CPTS_IOCTL_LOAD_TIMESTAMP,
+                        ENET_TIMESYNC_IOCTL_SET_TIMESTAMP,
                         &prms);
-    CpswAppUtils_assert(status == TIMESYNC_OK);
+    EnetAppUtils_assert(status == TIMESYNC_OK);
 
     /* Configure GENF0 to generate pulse signal */
     setGenFInArgs.index  = 0U;
@@ -1544,15 +1556,15 @@ static int32_t TimeSync_configPps(void)
                             TIMESYNC_SEC_TO_NS;
     setGenFInArgs.polarityInv = true;
     setGenFInArgs.ppmVal  = 0U;
-    setGenFInArgs.ppmDir  = CPSW_CPTS_PPM_DIR_INCREASE;
-    setGenFInArgs.ppmMode = CPSW_CPTS_PPM_DISABLE;
+    setGenFInArgs.ppmDir  = ENET_TIMESYNC_ADJDIR_INCREASE;
+    setGenFInArgs.ppmMode = ENET_TIMESYNC_ADJMODE_DISABLE;
 
-    CPSW_IOCTL_SET_IN_ARGS(&prms, &setGenFInArgs);
-    status = Cpsw_ioctl(gTimeSyncCpswObj.hCpsw,
+    ENET_IOCTL_SET_IN_ARGS(&prms, &setGenFInArgs);
+    status = Enet_ioctl(gTimeSyncCpswObj.hEnet,
                         gTimeSyncCpswObj.coreId,
                         CPSW_CPTS_IOCTL_SET_GENF,
                         &prms);
-    CpswAppUtils_assert(status == TIMESYNC_OK);
+    EnetAppUtils_assert(status == TIMESYNC_OK);
 
     return status;
 }

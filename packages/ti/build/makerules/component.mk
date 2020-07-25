@@ -274,18 +274,6 @@ ifneq ($(udma_EXAMPLE_LIST),)
 endif
 
 # - used to ignore include if component not present
--include $(PDK_CPSW_COMP_PATH)/cpsw_component.mk
-ifneq ($(cpsw_LIB_LIST),)
-  pdk_LIB_LIST += $(cpsw_LIB_LIST)
-endif
-ifneq ($(cpsw_APP_LIB_LIST),)
-  pdk_APP_LIB_LIST += $(cpsw_APP_LIB_LIST)
-endif
-ifneq ($(cpsw_EXAMPLE_LIST),)
-  pdk_EXAMPLE_LIST += $(cpsw_EXAMPLE_LIST)
-endif
-
-# - used to ignore include if component not present
 -include $(PDK_ENET_COMP_PATH)/enet_component.mk
 ifneq ($(enet_LIB_LIST),)
   pdk_LIB_LIST += $(enet_LIB_LIST)
@@ -1171,7 +1159,7 @@ ifeq ($(SOC),$(filter $(SOC), am65xx am64x))
   ifeq ($(CORE),$(filter $(CORE), mpu1_0 mcu1_0 mcu1_1))
     PDK_COMMON_COMP += sciclient udma
   endif
-endif  
+endif
 ifeq ($(SOC),$(filter $(SOC), tpr12))
   PDK_COMMON_COMP += edma
 endif
@@ -1181,8 +1169,8 @@ ifneq ($(SOC),$(filter $(SOC), tda2xx tda2px tda2ex tda3xx))
 endif
 
 ifeq ($(SOC),$(filter $(SOC), j721e j7200))
- PDK_COMMON_COMP += pmic 
-endif  
+ PDK_COMMON_COMP += pmic
+endif
 
 ifeq ($(SOC),$(filter $(SOC), tda2xx tda2px tda2ex tda3xx am574x am572x dra72x dra75x am571x dra78x am65xx j721e j7200))
  PDK_COMMON_COMP += pm_lib
@@ -1199,7 +1187,7 @@ ifneq ($(SOC),$(filter $(SOC), tpr12))
   endif
 endif
 
-PDK_COMMON_BAREMETAL_COMP = $(PDK_COMMON_COMP) osal_nonos 
+PDK_COMMON_BAREMETAL_COMP = $(PDK_COMMON_COMP) osal_nonos
 ifeq ($(ARCH),c66x)
   PDK_COMMON_BAREMETAL_COMP += csl_intc
 else
