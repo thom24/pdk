@@ -441,6 +441,62 @@ int32_t SBL_ospiClose(const void *handle)
     return 0;
 }
 
+#if defined(SBL_HLOS_OWNS_FLASH) && !defined(SBL_USE_MCU_DOMAIN_ONLY) && !defined(SBL_ENABLE_DEV_GRP_MCU)
+/* Only put OSPI flash back into SPI mode if we're going to directly boot ATF/U-boot/Linux from SBL */
+int32_t SBL_ospiLeaveConfigSPI()
+{
+    int32_t retVal = E_PASS;
+    Board_flashHandle h;
+    Board_FlashInfo *flashInfo;
+
+    SBL_ADD_PROFILE_POINT;
+
+    /* Get default OSPI cfg */
+    OSPI_socGetInitCfg(BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
+
+    ospi_cfg.funcClk = OSPI_MODULE_CLK_133M;
+    /* Configure the flash for SPI mode */
+    ospi_cfg.xferLines = OSPI_XFER_LINES_SINGLE;
+    /* Put controller in DAC mode so flash ID can be read directly */
+    ospi_cfg.dacEnable = true;
+    /* Disable PHY in legacy SPI mode (1-1-1) */
+    ospi_cfg.phyEnable = false;
+    ospi_cfg.dtrEnable = false;
+    ospi_cfg.xipEnable = false;
+
+    /* Set the default SPI init configurations */
+    OSPI_socSetInitCfg(BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
+
+    SBL_ADD_PROFILE_POINT;
+
+#if defined(SOC_J7200)
+    h = Board_flashOpen(BOARD_FLASH_ID_S28HS512T,
+                        BOARD_OSPI_NOR_INSTANCE, NULL);
+#else
+    h = Board_flashOpen(BOARD_FLASH_ID_MT35XU512ABA1G12,
+                        BOARD_OSPI_NOR_INSTANCE, NULL);
+#endif
+
+    if (h)
+    {
+        SBL_log(SBL_LOG_MAX, "OSPI flash left configured in Legacy SPI mode.\n");
+        flashInfo = (Board_FlashInfo *)h;
+        SBL_log(SBL_LOG_MAX, "\n OSPI NOR device ID: 0x%x, manufacturer ID: 0x%x \n",
+                flashInfo->device_id, flashInfo->manufacturer_id);
+        Board_flashClose(h);
+    }
+    else
+    {
+        SBL_log(SBL_LOG_ERR, "Board_flashOpen failed in SPI mode!!\n");
+        retVal = E_FAIL;
+    }
+
+    SBL_ADD_PROFILE_POINT;
+
+    return(retVal);
+}
+#endif
+
 int32_t SBL_OSPIBootImage(sblEntryPoint_t *pEntry)
 {
     int32_t retVal;
@@ -489,6 +545,11 @@ int32_t SBL_OSPIBootImage(sblEntryPoint_t *pEntry)
 #endif
 
     SBL_ospiClose(&boardHandle);
+
+#if defined(SBL_HLOS_OWNS_FLASH) && !defined(SBL_USE_MCU_DOMAIN_ONLY) && !defined(SBL_ENABLE_DEV_GRP_MCU)
+/* Only put OSPI flash back into SPI mode if we're going to directly boot ATF/U-boot/Linux from SBL */
+    SBL_ospiLeaveConfigSPI();
+#endif
 
     return retVal;
 }
