@@ -146,7 +146,7 @@ NOR_HANDLE Nor_qspiOpen(uint32_t norIntf, uint32_t portNum, void *params)
     {
         if (Nor_qspiReadId(hwHandle) == NOR_PASS)
         {
-#if defined(tpr12_evm)
+#if defined(tpr12_evm) || defined(tpr12_qt)
             /* Quad enable bit is set by default for TPR12 as needed for RoM boot */
             if (NOR_qspiCmdRead(hwHandle, &cmd, 1, &status, 1))
             {
@@ -245,7 +245,7 @@ static NOR_STATUS Nor_qspiWaitReady(SPI_Handle handle, uint32_t timeOut)
     return NOR_FAIL;
 }
 
-#if defined (tpr12_evm)
+#if defined (tpr12_evm) || defined(tpr12_qt)
 static NOR_STATUS Nor_qspiQuadModeCtrl(SPI_Handle handle,
                                        uint8_t enable)
 {
@@ -386,7 +386,7 @@ NOR_STATUS Nor_qspiRead(NOR_HANDLE handle, uint32_t addr,
     uint32_t         dummyCycles;
     SPI_Handle       spiHandle;
     bool             ret;
-#if defined (tpr12_evm)
+#if defined (tpr12_evm) || defined(tpr12_qt)
     unsigned int transferType;
     unsigned char dummyWrite[4];    /* dummy data to be written */
 #else
@@ -410,7 +410,7 @@ NOR_STATUS Nor_qspiRead(NOR_HANDLE handle, uint32_t addr,
         return NOR_FAIL;
     }
 
-#if !defined(tpr12_evm)
+#if !defined(tpr12_evm) && !defined(tpr12_qt)
     /* To set or unset the QUAD bit in CR1 register */
     if (mode != QSPI_FLASH_SINGLE_READ)
     {
@@ -432,28 +432,28 @@ NOR_STATUS Nor_qspiRead(NOR_HANDLE handle, uint32_t addr,
         case QSPI_FLASH_SINGLE_READ :
             command     = NOR_CMD_READ;
             dummyCycles = NOR_SINGLE_READ_DUMMY_CYCLE;
-#if !defined(tpr12_evm)
+#if !defined(tpr12_evm) && !defined(tpr12_qt)
             rx_lines    = QSPI_IO_LINES_SINGLE;
 #endif
             break;
         case QSPI_FLASH_DUAL_READ :
             command     = NOR_CMD_DUAL_READ;
             dummyCycles = NOR_DUAL_READ_DUMMY_CYCLE;
-#if !defined(tpr12_evm)
+#if !defined(tpr12_evm) && !defined(tpr12_qt)
             rx_lines    = QSPI_IO_LINES_DUAL;
 #endif
             break;
         case QSPI_FLASH_QUAD_READ :
             command     = NOR_CMD_QUAD_READ;
             dummyCycles = NOR_QUAD_READ_DUMMY_CYCLE;
-#if !defined(tpr12_evm)
+#if !defined(tpr12_evm) && !defined(tpr12_qt)
             rx_lines    = QSPI_IO_LINES_QUAD;
 #endif
             break;
         default :
             command     = NOR_CMD_READ;
             dummyCycles = NOR_SINGLE_READ_DUMMY_CYCLE;
-#if !defined(tpr12_evm)
+#if !defined(tpr12_evm) && !defined(tpr12_qt)
             rx_lines    = QSPI_IO_LINES_SINGLE;
 #endif
             break;
@@ -462,7 +462,7 @@ NOR_STATUS Nor_qspiRead(NOR_HANDLE handle, uint32_t addr,
     /* Update the indirect read command, rx lines and read dummy cycles */
     SPI_control(spiHandle, SPI_CMD_SETQSPIMODE, NULL);
     SPI_control(spiHandle, SPI_CMD_TRANSFER_CMD, (void *)&command);
-#if !defined(tpr12_evm)
+#if !defined(tpr12_evm) && !defined(tpr12_qt)
     SPI_control(spiHandle, SPI_CMD_SETXFERLINES, (void *)&rx_lines);
     SPI_control(spiHandle, SPI_V0_CMD_RD_DUMMY_CLKS, (void *)&dummyCycles);
 #else
@@ -500,7 +500,7 @@ NOR_STATUS Nor_qspiWrite(NOR_HANDLE handle, uint32_t addr, uint32_t len,
     bool             ret;
     uint8_t          cmdWren = NOR_CMD_WREN;
     uint32_t         command;
-#if !defined (tpr12_evm)
+#if !defined (tpr12_evm) && !defined(tpr12_qt)
     uint32_t         tx_lines;
 #endif
     uint32_t         byteAddr;
@@ -526,7 +526,7 @@ NOR_STATUS Nor_qspiWrite(NOR_HANDLE handle, uint32_t addr, uint32_t len,
         return NOR_FAIL;
     }
 
-#if !defined (tpr12_evm)
+#if !defined (tpr12_evm) && !defined(tpr12_qt)
     if (mode == QSPI_FLASH_QUAD_PAGE_PROG)
     {
         if (Nor_qspiQuadModeCtrl(spiHandle, 1))
@@ -546,19 +546,19 @@ NOR_STATUS Nor_qspiWrite(NOR_HANDLE handle, uint32_t addr, uint32_t len,
     {
         case QSPI_FLASH_SINGLE_PAGE_PROG :
             command = NOR_CMD_PAGE_PROG;
-#if !defined (tpr12_evm)
+#if !defined (tpr12_evm) && !defined(tpr12_qt)
             tx_lines = QSPI_IO_LINES_SINGLE;
 #endif
             break;
         case QSPI_FLASH_QUAD_PAGE_PROG:
             command = NOR_CMD_QUAD_PAGE_PROG;
-#if !defined (tpr12_evm)
+#if !defined (tpr12_evm) && !defined(tpr12_qt)
             tx_lines = QSPI_IO_LINES_QUAD;
 #endif
             break;
         default :
             command = NOR_CMD_PAGE_PROG;
-#if !defined (tpr12_evm)
+#if !defined (tpr12_evm) && !defined(tpr12_qt)
             tx_lines = QSPI_IO_LINES_SINGLE;
 #endif
             break;
@@ -583,7 +583,7 @@ NOR_STATUS Nor_qspiWrite(NOR_HANDLE handle, uint32_t addr, uint32_t len,
         /* Update the indirect write command and tx lines */
         SPI_control(spiHandle, SPI_CMD_SETQSPIMODE, NULL);
         SPI_control(spiHandle, SPI_CMD_TRANSFER_CMD, (void *)&command);
-#if !defined (tpr12_evm)
+#if !defined (tpr12_evm) && !defined(tpr12_qt)
         SPI_control(spiHandle, SPI_CMD_SETXFERLINES, (void *)&tx_lines);
 #endif
 

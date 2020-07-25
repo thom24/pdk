@@ -252,6 +252,15 @@ Board_STATUS Board_PLLInitAll(void);
 Board_STATUS Board_uartDeInit(void);
 
 /**
+  *  \brief   This function initializes the i2c instance set using
+  *           Board_setI2cInitConfig API.
+  *
+  *  \return  Board_STATUS in case of success or appropriate error code.
+  *
+  */
+Board_STATUS Board_i2cInit(void);
+
+/**
  *  \brief   This function is used to close the initialized board I2C handle.
  */
 Board_STATUS Board_i2cDeInit(void);

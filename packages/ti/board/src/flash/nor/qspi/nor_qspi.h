@@ -56,7 +56,7 @@ extern "C" {
 #include <ti/board/src/flash/nor/device/s25fl512s.h>
 #elif defined (iceK2G)
 #include <ti/board/src/flash/nor/device/s25fl256s.h>
-#elif defined (tpr12_evm)
+#elif defined (tpr12_evm) || defined (tpr12_qt)
 #include <ti/board/src/flash/nor/device/mx25v1635f.h>
 #endif
 
@@ -67,7 +67,7 @@ extern "C" {
 }
 #endif
 
-#if defined (tpr12_evm)
+#if defined (tpr12_evm) || defined (tpr12_qt)
 
 #define SPI_CONFIG_OFFSET       (0)
 

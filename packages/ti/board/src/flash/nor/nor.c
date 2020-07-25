@@ -131,7 +131,7 @@ NOR_Config Nor_config[BOARD_FLASH_NOR_INTF_MAX] =
         &Nor_hpfFxnTable
     }
 };
-#elif defined (tpr12_evm)
+#elif defined (tpr12_evm) || defined (tpr12_qt)
 NOR_Config Nor_config[BOARD_FLASH_NOR_INTF_MAX] =
 {
     {

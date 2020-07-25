@@ -40,11 +40,14 @@
 
 #include "board_internal.h"
 #include "board_cfg.h"
+#include "board_utils.h"
+
+extern Board_I2cInitCfg_t gBoardI2cInitCfg;
 
 Board_I2cObj_t gBoardI2cObj[BOARD_I2C_PORT_CNT] = {
-    {NULL, BOARD_SOC_DOMAIN_MAIN, 0, 0},
-    {NULL, BOARD_SOC_DOMAIN_MAIN, 1, 0},
-    {NULL, BOARD_SOC_DOMAIN_MAIN, 2, 0}
+    {NULL, BOARD_SOC_DOMAIN_MSS,  0, 0},
+    {NULL, BOARD_SOC_DOMAIN_RCSS, 1, 0},
+    {NULL, BOARD_SOC_DOMAIN_RCSS, 2, 0}
 };
 
 /**
@@ -105,8 +108,6 @@ I2C_Handle Board_getI2CHandle(uint8_t  domainType,
 Board_STATUS Board_releaseI2CHandle(I2C_Handle hI2c)
 {
     Board_STATUS status = BOARD_FAIL;
-    I2C_HwAttrs i2c_cfg;
-    uint32_t coreDomain;
     uint32_t i2cInst;
 
     if(hI2c != NULL)
@@ -143,7 +144,6 @@ Board_STATUS Board_i2cInit(void)
     I2C_Params i2cParams;
     I2C_HwAttrs i2c_cfg;
     uint32_t i2cInst;
-    uint32_t i2cBaseAddr;
     uint32_t i2cDomain;
 
     i2cInst   = gBoardI2cInitCfg.i2cInst;
@@ -177,8 +177,6 @@ Board_STATUS Board_i2cInit(void)
  */
 Board_STATUS Board_i2cDeInit(void)
 {
-    uint32_t coreDomain;
-    I2C_HwAttrs i2c_cfg;
     uint32_t i2cInst;
 
     i2cInst = gBoardI2cInitCfg.i2cInst;
