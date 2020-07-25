@@ -246,7 +246,7 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
     {
         SBL_ADD_PROFILE_POINT;
 
-#ifdef SIM_BUILD
+#if defined(SIM_BUILD) || defined(SOC_J7200)
         /* Disable PHY pipeline mode */
         CSL_ospiPipelinePhyEnable((const CSL_ospi_flash_cfgRegs *)(ospi_cfg.baseAddr), FALSE);
 #else
@@ -301,7 +301,7 @@ int32_t SBL_ospiInit(void *handle)
 
     }
 
-#if !defined(SBL_SKIP_BRD_CFG_PM) && !defined(SBL_SKIP_SYSFW_INIT)
+#if !defined(SBL_SKIP_BRD_CFG_PM) && !defined(SBL_SKIP_SYSFW_INIT) && !defined(SOC_J7200)
     {
         struct ospiClkParams
         {
@@ -341,15 +341,19 @@ int32_t SBL_ospiInit(void *handle)
      * We set xipEnable = true only at the last open() */
     ospi_cfg.xipEnable = true;
 #endif
-#ifdef SIM_BUILD
+#if defined(SIM_BUILD) || defined (SOC_J7200)
     ospi_cfg.phyEnable = false;
 #endif
     /* Set the default SPI init configurations */
     OSPI_socSetInitCfg(BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
 
+#if defined(SOC_J7200)
+    h = Board_flashOpen(BOARD_FLASH_ID_S28HS512T,
+                        BOARD_OSPI_NOR_INSTANCE, NULL);
+#else
     h = Board_flashOpen(BOARD_FLASH_ID_MT35XU512ABA1G12,
                             BOARD_OSPI_NOR_INSTANCE, NULL);
-
+#endif
     if (h)
     {
         *(Board_flashHandle *) handle = h;

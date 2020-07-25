@@ -138,10 +138,10 @@ static NOR_STATUS Nor_xspiRegRead(SPI_Handle handle,
     uint8_t    cmd[6];
 
     cmd[0] = NOR_CMD_RDREG;
-    cmd[1] = (regAddr >> 24) & 0xF;
-    cmd[2] = (regAddr >> 16) & 0xF;
-    cmd[3] = (regAddr >> 8) & 0xF;
-    cmd[4] = (regAddr) & 0xF;
+    cmd[1] = (regAddr >> 24) & 0xFF;
+    cmd[2] = (regAddr >> 16) & 0xFF;
+    cmd[3] = (regAddr >> 8) & 0xFF;
+    cmd[4] = (regAddr) & 0xFF;
 
     retVal = Nor_xspiCmdRead(handle, cmd, 5, data, 1);
     if(retVal != NOR_PASS)
@@ -174,13 +174,19 @@ static NOR_STATUS Nor_xspiRegWrite(SPI_Handle handle,
     }
 
     cmd[0] = NOR_CMD_WRREG;
-    cmd[1] = (regAddr >> 24) & 0xF;
-    cmd[2] = (regAddr >> 16) & 0xF;
-    cmd[3] = (regAddr >> 8) & 0xF;
-    cmd[4] = (regAddr) & 0xF;
+    cmd[1] = (regAddr >> 24) & 0xFF;
+    cmd[2] = (regAddr >> 16) & 0xFF;
+    cmd[3] = (regAddr >> 8) & 0xFF;
+    cmd[4] = (regAddr) & 0xFF;
     cmd[5] = data;
 
     retVal = Nor_xspiCmdWrite(handle, cmd, 5, 1);
+    if(retVal != NOR_PASS)
+    {
+        return NOR_FAIL;
+    }
+
+    retVal = Nor_xspiWaitReady(handle, NOR_WRR_WRITE_TIMEOUT);
     if(retVal != NOR_PASS)
     {
         return NOR_FAIL;
@@ -389,7 +395,6 @@ NOR_HANDLE Nor_xspiOpen(uint32_t norIntf, uint32_t portNum, void *params)
     /* Update the default driver config for xSPI operation */
     OSPI_socGetInitCfg(portNum, &ospi_cfg);
     ospi_cfg.phyEnable   = false;
-    ospi_cfg.dacEnable   = false;
     ospi_cfg.baudRateDiv = BOARD_XSPI_BAUDRATE_DIV;
     OSPI_socSetInitCfg(portNum, &ospi_cfg);
 
