@@ -200,7 +200,7 @@ int32_t DIAG_testExecute(uint32_t n)
     else
     {
         UART_printf("Parsing %s\n", COMP_appTbl[n-1].appName);
-        retVal = SBL_MulticoreImageParse((void *) &fp, 0, &pEntry);
+        retVal = SBL_MulticoreImageParse((void *) &fp, 0, &pEntry, SBL_SKIP_BOOT_AFTER_COPY);
 
         f_close(&fp);
         if (retVal != E_PASS)

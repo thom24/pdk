@@ -115,7 +115,7 @@ void DIAG_printMenu()
    compatible with mpu core.
    Empty function is added to fix the build. Functionality should not get effected
    since interleaved boot support is not needed for diag framework */
-void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *pAppEntry)
+void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *pAppEntry, uint32_t requestCoresFlag)
 {
 
 }
@@ -370,7 +370,7 @@ void DIAG_runTest()
         else
         {
             UART_printf("Parsing %s\n", DIAG_appTbl[n-1].appName);
-            retVal = SBL_MulticoreImageParse((void *) &fp, 0, &pEntry);
+            retVal = SBL_MulticoreImageParse((void *) &fp, 0, &pEntry, SBL_SKIP_BOOT_AFTER_COPY);
 
             f_close(&fp);
             if (retVal != E_PASS)
