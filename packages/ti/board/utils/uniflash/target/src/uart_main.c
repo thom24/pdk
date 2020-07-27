@@ -131,7 +131,7 @@ UFP_flashConfig UPF_flashFxnPtr[FLASH_DEVICE_MAX] = {
 
 };
 
-#if defined(am65xx_evm) || defined(am65xx_idk) || defined(j721e_evm) || defined(J7200_evm)
+#if defined(am65xx_evm) || defined(am65xx_idk) || defined(j721e_evm) || defined(j7200_evm)
 #pragma DATA_SECTION(gSysFirmware, ".firmware")
 uint32_t gSysFirmware[1];
 #endif
@@ -341,7 +341,7 @@ int main(void)
            No need to flash onto boot device */
         if (imgType == UFP_IMAGE_SYSFW)
         {
-#if defined(am65xx_evm) || defined(am65xx_idk) || defined(j721e_evm) || defined(J7200_evm)
+#if defined(am65xx_evm) || defined(am65xx_idk) || defined(j721e_evm) || defined(j7200_evm)
             offset = UFP_xModemFirmwareReceive((unsigned char *)gSysFirmware,
                                                UFP_SYSFW_SIZE);
             if(offset != 0)

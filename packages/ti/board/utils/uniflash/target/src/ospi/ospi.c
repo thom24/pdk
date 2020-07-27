@@ -375,6 +375,11 @@ static int8_t UFP_ospiInit(void)
     ospi_cfg.dmaEnable  = true;
     ospiUdmaInit(&ospi_cfg);
 #endif
+
+#if defined(SOC_J7200)
+    ospi_cfg.dacEnable  = false;
+#endif
+
     /* Set the default ospi init configurations */
     OSPI_socSetInitCfg(BOARD_OSPI_INSTANCE, &ospi_cfg);
 

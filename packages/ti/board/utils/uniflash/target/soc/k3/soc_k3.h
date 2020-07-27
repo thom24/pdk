@@ -72,8 +72,10 @@ extern "C" {
 #define UFP_UART_PLL_KICK0_UNLOCK_VAL       (0x68EF3490)
 #define UFP_UART_PLL_KICK1_UNLOCK_VAL       (0xD172BC5A)
 #define UFP_UART_PLL_KICK_LOCK_VAL          (0x0)
-#if !(defined(j7200_evm)) //J7200_TODO: Need to check the need for this during testing. May need to align with ATCM vector copy function
+#if defined(SOC_J721E)
 #define UFP_MCU_ARMSS_ATCM_BASE             (CSL_MCU_ARMSS_ATCM_BASE)
+#else
+#define UFP_MCU_ARMSS_ATCM_BASE             (CSL_MCU_R5FSS0_ATCM_BASE)
 #endif
 #elif defined(SOC_AM65XX)
 #define UFP_MCU_ARMSS_ATCM_BASE             (CSL_MCU_ATCM_BASE)
