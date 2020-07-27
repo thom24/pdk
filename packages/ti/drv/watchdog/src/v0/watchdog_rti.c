@@ -371,6 +371,8 @@ static Watchdog_Handle WatchdogRTI_open(Watchdog_Handle handle, Watchdog_Params*
     {
         notifyParams.groupNumber = ptrHwCfg->groupNum;
         notifyParams.errorNumber = ptrHwCfg->errorNum;
+        notifyParams.setIntrPriorityLvlHigh = 0;
+        notifyParams.enableInfluenceOnErrPin = 0;
         notifyParams.arg = (void *)ptrWatchdogConfig;
         notifyParams.notify = WatchdogRTI_callback;
 

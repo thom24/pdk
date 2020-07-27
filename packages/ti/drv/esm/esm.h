@@ -206,6 +206,12 @@ typedef struct ESM_NotifyParams_t
     /*! Error number for which the notify function is registered. */
     uint32_t            errorNumber;
 
+    /*! Set the interrupt priority level to high. Applicable to Group 1 errors only. */
+    uint32_t            setIntrPriorityLvlHigh;
+
+    /*! Enable failure influence on ERROR pin. Applicable to Group 1 errors only. */
+    uint32_t            enableInfluenceOnErrPin;
+
     /*! Argument passed back when the Notify function is invoked. */
     void*               arg;
 

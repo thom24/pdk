@@ -380,10 +380,16 @@ int32_t ESM_registerNotifier(ESM_Handle handle, ESM_NotifyParams* params, int32_
         {
             /* Check if the notifier handles group 1 or group 2 errors.
                Group 2 errors are enabled by default. Group 1 errors have to be explicitly enabled.
+               Also, user can configure the interrupt priority level and influence on ERROR pin for group 1 errors.
+               For group 2 errors, the interrupt priority level is always high, and the influence on ERROR pin is on always.
              */
             if (params->groupNumber == 1)
             {
                 ESMEnableIntr(gEsmMCB.esmBaseAddr, params->errorNumber);
+                /* Configure the interrupt priority level */
+                ESMSetIntrPriorityLvl(gEsmMCB.esmBaseAddr, params->errorNumber, params->setIntrPriorityLvlHigh);
+                /* Configure the failure influence on ERROR pin */
+                ESMSetInfluenceOnErrPin(gEsmMCB.esmBaseAddr, params->errorNumber, params->enableInfluenceOnErrPin);
             }
             /* Unmask Group 2 ESM errors to enable the generation of NMI. */
             if (params->groupNumber == 2)
@@ -439,11 +445,14 @@ int32_t ESM_deregisterNotifier(ESM_Handle handle, int32_t notifyIndex, int32_t* 
 
         /* Check if the notifier is to handle group 1 or group 2 errors.
          * Group 2 errors are enabled by default. Group 1 errors was explicitly enabled
-         * and now needs to be disabled.
+         * and now needs to be disabled. Also reset the interrupt priority level to low
+         * and disable the influence on ERROR pin.
          */
         if (groupNumber == 1)
         {
             ESMDisableIntr(gEsmMCB.esmBaseAddr, errorNumber);
+            ESMSetIntrPriorityLvl(gEsmMCB.esmBaseAddr, errorNumber, 0);
+            ESMSetInfluenceOnErrPin(gEsmMCB.esmBaseAddr, errorNumber, 0);
         }
         /* Gating Group 2 ESM errors to disable the generation of NMI. */
         if (groupNumber == 2)

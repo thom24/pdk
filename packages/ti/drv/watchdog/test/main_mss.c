@@ -137,6 +137,8 @@ static int32_t watchdogNotifyTest()
 
     notifyParams.groupNumber = 1;
     notifyParams.errorNumber = ESMG1_DSS_ESM_HI_INT;
+    notifyParams.setIntrPriorityLvlHigh = 1;
+    notifyParams.enableInfluenceOnErrPin = 1;
     notifyParams.arg = NULL;
     notifyParams.notify = DSPNotifyMSSCallback;
     retVal = ESM_registerNotifier (cfg.esmHandle, &notifyParams, &errCode);
