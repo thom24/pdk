@@ -89,8 +89,8 @@ extern "C" {
 #define BOOTMODE_CFG_SET1_PIN_POS                  (0x00U)
 #define BOOTMODE_CFG_SET2_PIN_POS                  (0x07U)
 #elif defined(SOC_J7200)
-#define BOOTMODE_CFG_SET1_PIN_POS                  (0x00U) //J7200_TODO: Need to update boot mode
-#define BOOTMODE_CFG_SET2_PIN_POS                  (0x00U) //J7200_TODO: Need to update boot mode
+#define BOOTMODE_CFG_SET1_PIN_POS                  (0x00U)
+#define BOOTMODE_CFG_SET2_PIN_POS                  (0x07U)
 #else
 #define BOOTMODE_CFG_SET1_PIN_POS                  (0x06U) /* SW3 */
 #define BOOTMODE_CFG_SET2_PIN_POS                  (0x10U) /* SW2 */
