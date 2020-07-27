@@ -55,10 +55,6 @@ static Board_PllClkCfg_t gBoardPllClkCfgMcu[] =
    TISCI_DEV_MCU_SA2_UL0_PKA_IN_CLK,
    400000000
  }, //MCU_PLL1_HSDIV0_CLKOUT
- { TISCI_DEV_MCU_ADC0,
-   TISCI_DEV_MCU_ADC0_ADC_CLK_PARENT_HSDIV1_16FFT_MCU_0_HSDIVOUT1_CLK,
-   60000000
- }, //MCU_PLL1_HSDIV1_CLKOUT
  { TISCI_DEV_MCU_MCAN0,
    TISCI_DEV_MCU_MCAN0_MCANSS_CCLK_CLK_PARENT_HSDIV4_16FFT_MCU_1_HSDIVOUT2_CLK,
    80000000
@@ -121,17 +117,11 @@ static Board_PllClkCfg_t gBoardPllClkCfgMain[] =
    TISCI_DEV_MCSPI0_CLKSPIREF_CLK,
    50000000
  }, //MAIN_PLL0_HSDIV5_CLKOUT    
-#if 0 /* TODO: Port properly for J7200 */
- { TISCI_DEV_PCIE0,
-   TISCI_DEV_PCIE0_PCIE_CPTS_RCLK_CLK_PARENT_POSTDIV3_16FFT_MAIN_0_HSDIVOUT6_CLK,
-   250000000
- }, //MAIN_PLL0_HSDIV6_CLKOUT    
   /* MAIN PLL1(PER0_PLL) Clockout */            
- { TISCI_DEV_PRU_ICSSG0,
-   TISCI_DEV_PRU_ICSSG0_UCLK_CLK, 
+ { TISCI_DEV_UART0,
+   TISCI_DEV_UART0_FCLK_CLK, 
    192000000
  }, //MAIN_PLL1_HSDIV0_CLKOUT
-#endif
  { TISCI_DEV_MMCSD1,
    TISCI_DEV_MMCSD1_EMMCSDSS_XIN_CLK_PARENT_HSDIV4_16FFT_MAIN_1_HSDIVOUT2_CLK,
    192000000
@@ -159,12 +149,10 @@ static Board_PllClkCfg_t gBoardPllClkCfgMain[] =
    TISCI_DEV_TIMER0_TIMER_TCLK_CLK_PARENT_POSTDIV2_16FFT_MAIN_2_HSDIVOUT6_CLK,
    225000000
  }, //MAIN_PLL2_HSDIV6_CLKOUT
-#if 0 /* TODO: Port properly for J7200 */
- { TISCI_DEV_PCIE0,
-   TISCI_DEV_PCIE0_PCIE_CPTS_RCLK_CLK_PARENT_HSDIV4_16FFT_MAIN_3_HSDIVOUT1_CLK,
+ { TISCI_DEV_PCIE1,
+   TISCI_DEV_PCIE1_PCIE_CPTS_RCLK_CLK_PARENT_HSDIV4_16FFT_MAIN_3_HSDIVOUT1_CLK,
    250000000
  }, //MAIN_PLL3_HSDIV1_CLKOUT
-#endif
  { TISCI_DEV_MMCSD0,
    TISCI_DEV_MMCSD0_EMMCSS_XIN_CLK_PARENT_HSDIV4_16FFT_MAIN_3_HSDIVOUT2_CLK,
    200000000
@@ -173,12 +161,10 @@ static Board_PllClkCfg_t gBoardPllClkCfgMain[] =
    TISCI_DEV_TIMER0_TIMER_TCLK_CLK_PARENT_HSDIV4_16FFT_MAIN_3_HSDIVOUT3_CLK,
    250000000
  }, //MAIN_PLL3_HSDIV3_CLKOUT
-#if 0 /* TODO: Port properly for J7200 */
- { TISCI_DEV_SERDES_16G0,
-   TISCI_DEV_SERDES_16G0_CORE_REF1_CLK,
+ { TISCI_DEV_SERDES_10G1,
+   TISCI_DEV_SERDES_10G1_CORE_REF_CLK,
    156250000
  }, //MAIN_PLL3_HSDIV4_CLKOUT
-#endif
    /* MAIN PLL4((AUDIO0_PLL) Clockout */            
  { TISCI_DEV_MCASP0,
    TISCI_DEV_MCASP0_AUX_CLK_PARENT_HSDIV2_16FFT_MAIN_4_HSDIVOUT0_CLK,
@@ -190,29 +176,11 @@ static Board_PllClkCfg_t gBoardPllClkCfgMain[] =
    196608000
  },//MAIN_PLL4_HSDIV2_CLKOUT
 #endif
-  /* MAIN PLL7(C7x /MSMC PLL) Clockout */
- { TISCI_DEV_A72SS0_CORE0,
-   TISCI_DEV_A72SS0_MSMC_CLK,
-   1000000000
- },//MAIN_PLL7_HSDIV0_CLKOUT
-
-   /* MAIN PLL8(ARM0 PLL) Clockout */            
- { TISCI_DEV_A72SS0_CORE0,
-   TISCI_DEV_A72SS0_CORE0_ARM_CLK_CLK,
-   200000000
- },//MAIN_PLL8_HSDIV0_CLKOUT
-
-   /* MAIN PLL14(PULSAR PLL) Clockout */            
- { TISCI_DEV_R5FSS0,
-   TISCI_DEV_R5FSS0_CORE0_INTERFACE_CLK,
-   250000000
- },
-
   /* GTC Clockout */
  { TISCI_DEV_GTC0,
-   TISCI_DEV_GTC0_GTC_CLK,
+   TISCI_DEV_GTC0_GTC_CLK_PARENT_POSTDIV2_16FFT_MAIN_0_HSDIVOUT6_CLK,
    200000000
- }
+ } //MAIN_PLL0_HSDIV6_CLKOUT
 };
 
 /**
@@ -307,6 +275,20 @@ static int32_t Board_PLLSetModuleClkFreq(uint32_t modId,
             }
         }
     }
+
+    if ((status == CSL_PASS) && (numParents == 0U))
+    {
+        status = Sciclient_pmQueryModuleClkFreq(modId,
+                                                clkId,
+                                                clkRate,
+                                                &respClkRate,
+                                                SCICLIENT_SERVICE_WAIT_FOREVER);
+        if ((status == CSL_PASS) && (respClkRate == clkRate))
+        {
+            foundParent = 1U;
+        }
+    }
+
     if (foundParent == 1U)
     {
         /* Set the clock at the desirable frequency*/
