@@ -131,7 +131,7 @@ volatile uint8_t intr2ParamDoneCount = 0;
  */
 #define HWA_TEST_COLLECTBENCHMARK
 
-
+/* hwa memory cache is disabeld by default in the test */
 #define SOC_HWA_MEM0  CSL_DSS_HWA_DMA0_U_BASE
 #define SOC_HWA_MEM1  (CSL_DSS_HWA_DMA0_U_BASE + 0x4000)
 
@@ -3778,9 +3778,26 @@ void HWA_benchmark()
     uint8_t                 paramsetIdx = 0;
     uint32_t                dataSizeInByte;
     uint32_t               *srcWordAddr = (uint32_t*)SOC_HWA_MEM0;
+#ifdef BUILD_MCU
+    HWA_OpenConfig          hwaCfg;
+    hwaCfg.hwaInterruptPriority.doneInterruptPriority = 1U;
+    hwaCfg.hwaInterruptPriority.doneALTInterruptPriority = 1U;
+    hwaCfg.hwaInterruptPriority.paramsetInterrupt1Priority = 1U;
+    hwaCfg.hwaInterruptPriority.paramsetInterrupt2Priority = 1U;
+
+#endif
 
     startTime = CycleprofilerP_getTimeStamp();
-    handle = HWA_open(0, &errCode);
+#ifdef BUILD_MCU
+    handle = HWA_open(0,
+    		&hwaCfg,
+    		&errCode);
+#endif
+#ifdef BUILD_DSP_1
+    handle = HWA_open(0,
+        		NULL,
+        		&errCode);
+#endif
     endTime = CycleprofilerP_getTimeStamp();
     drvApiCycles[DRV_API_OPEN] = endTime - startTime;
 
@@ -4799,6 +4816,7 @@ static void Test_initTask(UArg arg0, UArg arg1)
     volatile uint32_t       startTime;
     volatile uint32_t       endTime;
 
+
     /**************************************************************************
     * Initialize the HWA
     **************************************************************************/
@@ -4812,7 +4830,9 @@ static void Test_initTask(UArg arg0, UArg arg1)
     /**************************************************************************
     * Open the HWA Instance
     **************************************************************************/
-    handle = HWA_open(0, &errCode);
+    handle = HWA_open(0,
+    		NULL,  // use default interrupt priority for ARM, and NULL for DSP always
+    		&errCode);
     if (handle == NULL)
     {
         System_printf("Error: Unable to open the HWA Instance err:%d\n", errCode);
@@ -4840,7 +4860,9 @@ static void Test_initTask(UArg arg0, UArg arg1)
     /**************************************************************************
     * Test: Reopen the driver
     **************************************************************************/
-    handle = HWA_open(0, &errCode);
+    handle = HWA_open(0,
+    		NULL,   // use default interrupt priority for ARM, and NULL for DSP always
+    		&errCode);
     if (handle == NULL)
     {
         System_printf("Error: Unable to open the HWA Instance err:%d\n", errCode);

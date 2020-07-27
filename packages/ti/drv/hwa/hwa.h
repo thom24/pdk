@@ -118,6 +118,7 @@ extern "C" {
 
 #include <stdint.h>
 #include <stddef.h>
+#include <stdbool.h>
 #include <ti/drv/hwa/soc/hwa_soc.h>
 #include <ti/csl/csl_complex_math_types.h>
 
@@ -257,6 +258,37 @@ extern "C" {
  * @brief   Lists all the macros used in HWA driver
  * @{
  */
+
+
+/**
+ * @defgroup HWA_INTERRUPT_PRIORITY      HWA_INTERRUPT_PRIORITY
+ * @brief   HWA interrupt default priority, applied only to the processors, which support hardware priority, e.g R5F
+ * @{
+ */
+
+/**
+ * @brief  Default HWA background thread done interrupt priority
+ */
+#define HWA_DONE_INTERRUPT_PRIORITY         (1U)
+
+/**
+* @brief  Default HWA background thread done interrupt priority
+*/
+#define HWA_ALTDONE_INTERRUPT_PRIORITY      (1U)
+
+/**
+ * @brief  Default HWA paramset done interrupt 1 priority
+ */
+#define HWA_PARAMSETDONE_INTERRUPT1_PRIORITY        (1U)
+
+/**
+ * @brief  Default HWA paramset done interrupt 2 priority
+ */
+#define HWA_PARAMSETDONE_INTERRUPT2_PRIORITY        (1U)
+
+
+/** @}*/ /*HWA_INTERRUPT_PRIORITY*/
+
 
 /**
  * @defgroup HWA_FEATURE_BIT        HWA_FEATURE_BIT
@@ -1886,6 +1918,42 @@ typedef struct HWA_CdfThreshold_t {
 } HWA_CdfThreshold;
 
 
+/*!
+ *  @brief    HWA interrupt priority for HWA background thread done, ALT thread done,  paramset done interrupt 1 and paramset done 2 interrupt
+ *
+ */
+typedef struct HWA_InterruptPriority_t {
+
+	uint32_t    doneInterruptPriority;         /*!<  @brief HWA interrupt priority for the background thread done */
+	uint32_t    doneALTInterruptPriority;      /*!<  @brief HWA interrupt priority for the ALT thread done */
+	uint32_t    paramsetInterrupt1Priority;    /*!<  @brief HWA interrupt priority for paramset done interrupt 1 */
+	uint32_t    paramsetInterrupt2Priority;    /*!<  @brief HWA interrupt priority for paramset done interrupt 2 */
+
+} HWA_InterruptPriority;
+
+/*!
+ *  @brief    HWA configuration structure, which describes the configuration information, needed for hwa handle open
+ *
+ */
+typedef struct HWA_OpenConfig_t {
+
+	HWA_InterruptPriority hwaInterruptPriority ;  /*!<  @brief structure holds the interrupt priorities for HWA background thread done,
+	                                                    HWA ALT thread done, paramset done interrupt 1 and paramset done interrupt 2.
+	                                                    This structure is applicable for processors that support a hardware priority, e.g R5F.
+	                                                    In HWA, even though the four interrupts can not be generated at the same time,
+	                                                    during the ISR execution of a HWA interrupt say L, if another HWA interrupt event H happens
+	                                                    of a higher priority because of HWA progressing in its execution flow during this time,
+	                                                    then the L’s ISR will be preempted by H’s ISR and the corresponding user provided call
+	                                                    back function of L can therefore also get preempted by H’s ISR or H’s callback.
+	                                                    User needs to keep this in mind in the design and implementation of the call back
+	                                                    functions that were intended to benefit from such prioritization.
+	                                                    In most use cases, it is not expected that such prioritization will be beneficial
+	                                                    and so it is recommended to leave these settings to the default state of same
+	                                                    priority level for all HWA interrupts. */
+
+} HWA_OpenConfig;
+
+
 /** @}*/   /* end of HWA_DRIVER_EXTERNAL_DATA_STRUCTURE*/
 
 /** @addtogroup HWA_DRIVER_EXTERNAL_FUNCTION
@@ -1907,7 +1975,9 @@ extern void HWA_init(void);
  *  @pre    HWA_init() has been called
  *
  *  @param  index         HWA instance number 
- *
+ *  @param  hwaCfg        pointer to HWA configuration, it is only applied to the processors, which support the hardware interrupt priority, e.g R5F.
+ *                        for other processors, set it to NULL. For the processors, which support the hardware interrupt priority, setting to NULL
+ *                        uses the default interrupt priorities, otherwise, the interrupt priorities are provided through hwaCfg.
  *  @param  errCode       [out] valid errorCode if NULL handle returned.
  *
  *  @return A HWA_Handle upon success. NULL if an error occurs.
@@ -1915,7 +1985,8 @@ extern void HWA_init(void);
  *  @sa     HWA_init()
  *  @sa     HWA_close()
  */
-extern HWA_Handle HWA_open(uint32_t  index, int32_t* errCode);
+extern HWA_Handle HWA_open(uint32_t index, HWA_OpenConfig * hwaCfg, int32_t* errCode);
+
 
 /*!
  *  @brief  Function to close a HWA peripheral specified by the HWA handle

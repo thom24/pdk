@@ -1,8 +1,7 @@
 /**
  *  \file   hwa_drv_log.h
  *
- *  \brief  This file contains the prototypes for the log print functions. By
-            default the prints will be directed to serial console using UART.
+ *  \brief  This file contains the prototypes for the log print functions.
  *
  */
 

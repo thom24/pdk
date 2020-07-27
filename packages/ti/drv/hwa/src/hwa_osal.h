@@ -3,32 +3,20 @@
  *
  *   @brief
  *      This is the sample OS Adaptation layer which is used by the HWA
- *      driver. The OSAL layer can be ported in either of the following
- *      manners to a native OS:
+ *      driver. The OSAL layer can be ported using the following
+ *      manner to a native OS:
  *
  *      <b> Approach 1: </b>
  *      @n  Use Prebuilt Libraries
  *           - Ensure that the provide an implementation of all
  *             Osal_XXX API for their native OS.
  *           - Link the prebuilt libraries with their application.
- *           - Refer to the "example" directory for an example of this
+ *           - Refer to the "test" directory for an example of this
  *       @n <b> Pros: </b>
  *           - Customers can reuse prebuilt TI provided libraries
  *       @n <b> Cons: </b>
  *           - Level of indirection in the API to get to the actual OS call
  *
- *      <b> Approach 2: </b>
- *      @n  Rebuilt Library
- *           - Create a copy of this file and modify it to directly
- *             inline the native OS calls
- *           - Rebuild the UART Driver library; ensure that the Include
- *             path points to the directory where the copy of this file
- *             has been provided.
- *           - Please refer to the "test" directory for an example of this
- *       @n <b> Pros: </b>
- *           - Optimizations can be done to remove the level of indirection
- *       @n <b> Cons: </b>
- *           - UART Libraries need to be rebuilt by the customer.
  *
  *  \par
  *  NOTE:
