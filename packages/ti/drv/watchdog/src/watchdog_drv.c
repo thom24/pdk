@@ -68,7 +68,7 @@ const Watchdog_Params Watchdog_defaultParams = {
     Watchdog_RESET_ON,              /* resetMode */
     Watchdog_DEBUG_STALL_ON,        /* stall mode*/
     Watchdog_WINDOW_100_PERCENT,    /* Windowed watchdog window size. */
-    0xFFF,                          /* Preload value. */
+    1000,                           /* Expiration time of 1000 ms (1 second) */
 };
 
 /* ========================================================================== */

@@ -109,6 +109,7 @@ Watchdog_HwAttrs gWatchdogHwCfg[CSL_WDT_PER_CNT] =
      */
     {
         CSL_MSS_WDT_U_BASE,
+        RTI_CLK_200M,
         2,
         ESMG2_WDT_NMI_REQ,
         NULL
@@ -150,6 +151,7 @@ Watchdog_HwAttrs gWatchdogHwCfg[CSL_WDT_PER_CNT] =
      */
     {
         CSL_DSS_WDT_U_BASE,
+        RTI_CLK_200M,
         2,
         CSL_DSS_ESMG2_DSS_WDT_NMI_REQ,
         NULL

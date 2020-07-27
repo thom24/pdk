@@ -75,6 +75,11 @@ typedef struct Watchdog_v0_HwAttrs_t
     uintptr_t           baseAddr; 
 
     /**
+     * @brief   RTI clock.
+     */
+    uint32_t            rtiClk;
+
+    /**
      * @brief   Group Number to which the ESM error belongs
      */
     uint32_t            groupNum;

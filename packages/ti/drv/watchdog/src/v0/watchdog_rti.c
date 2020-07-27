@@ -328,12 +328,7 @@ static Watchdog_Handle WatchdogRTI_open(Watchdog_Handle handle, Watchdog_Params*
     Watchdog_Handle         retHandle = NULL;
     ESM_NotifyParams        notifyParams;
     int32_t                 errCode, retVal;
-
-    /* Parameter check */
-    if (params->preloadValue > WATCHDOG_MAX_PRELOAD_VALUE)
-    {
-        return retHandle;
-    }
+    uint32_t                preloadValue;
 
     /* Only NMI mode is supported in the DSS subsystem.
      * Resetting the system is supported only in the MSS sysbsystem. */
@@ -356,6 +351,14 @@ static Watchdog_Handle WatchdogRTI_open(Watchdog_Handle handle, Watchdog_Params*
     /* Initialize the memory: */
     memset ((void *)ptrWatchdogMCB, 0, sizeof(Watchdog_MCB));
 
+    /* Calculate preload value from the expiration time */
+    /* Expiration time (in millisecond)/1000 = (preload value + 1)*(2^13)/RTICLK */
+    preloadValue = (((ptrHwCfg->rtiClk) * (params->expirationTime) / 1000) >> 13) - 1;
+
+    if (preloadValue > WATCHDOG_MAX_PRELOAD_VALUE)
+    {
+        return retHandle;
+    }
     /* Configure the Watchdog driver. */
     /* Copy over the Watchdog Parameters */
     memcpy ((void*)&ptrWatchdogMCB->params, (void *)params, sizeof(Watchdog_Params));
@@ -389,7 +392,7 @@ static Watchdog_Handle WatchdogRTI_open(Watchdog_Handle handle, Watchdog_Params*
 
     RTIDwwdWindowConfig(ptrHwCfg->baseAddr,
                         ptrWatchdogMCB->params.resetMode,    /* Configure the reset mode    */
-                        ptrWatchdogMCB->params.preloadValue, /* Configure the preload value */
+                        preloadValue,                        /* Configure the preload value */
                         ptrWatchdogMCB->params.windowSize);  /* Configure the window size   */
 
     /* Configure the stall mode */

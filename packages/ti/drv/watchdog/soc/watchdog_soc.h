@@ -53,6 +53,7 @@ extern void RTI_socEnableWatchdog();
 extern void RTI_socTriggerWatchdogWarmReset();
 extern int32_t Watchdog_socGetInitCfg(uint32_t idx, Watchdog_HwAttrs *cfg);
 extern int32_t Watchdog_socSetInitCfg(uint32_t idx, const Watchdog_HwAttrs *cfg);
+#define RTI_CLK_200M  (200000000U)
 #endif
 
 #ifdef __cplusplus

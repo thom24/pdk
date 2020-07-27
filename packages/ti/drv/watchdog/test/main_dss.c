@@ -150,7 +150,8 @@ static int32_t watchdogTest()
 
     watchdogParams.debugStallMode = Watchdog_DEBUG_STALL_ON;
     watchdogParams.windowSize = Watchdog_WINDOW_100_PERCENT;
-    watchdogParams.preloadValue = 20;
+    /* Watchdog expiration time of 1 ms */
+    watchdogParams.expirationTime = 1;
 
     /* Open the Watchdog driver */
     watchdogHandle = Watchdog_open(0, &watchdogParams);

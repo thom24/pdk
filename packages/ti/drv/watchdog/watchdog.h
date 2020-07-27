@@ -282,7 +282,7 @@ typedef struct Watchdog_Params_t {
     Watchdog_ResetMode      resetMode;      /*!< Mode to enable resets. */
     Watchdog_DebugMode      debugStallMode; /*!< Mode to stall watchdog at breakpoints. */
     Watchdog_WindowSize     windowSize;     /*!< Windowed watchdog window size. */
-    uint32_t                preloadValue;   /*!< Preload value. */
+    uint32_t                expirationTime; /*!< Expiration time in millisecond (ms). */
 } Watchdog_Params;
 
 /** @}*/
