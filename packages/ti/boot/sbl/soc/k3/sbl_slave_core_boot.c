@@ -220,6 +220,16 @@ static void SBL_RequestCore(cpu_core_id_t core_id)
     int32_t proc_id = sbl_slave_core_info[core_id].tisci_proc_id;
     int32_t status = CSL_EFAIL;
 
+#if defined(SOC_AM64X)
+    /* Do not touch the M4 if reset isolation is enabled */
+    uint32_t mmrMagicRegister;
+    mmrMagicRegister = (*((volatile uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE+CSL_MAIN_CTRL_MMR_CFG0_RST_MAGIC_WORD)));
+    if (core_id == M4F_CPU0_ID && mmrMagicRegister != 0)
+    {
+        return;
+    }
+#endif
+
     if (proc_id != 0xBAD00000)
     {
         SBL_log(SBL_LOG_MAX, "Calling Sciclient_procBootRequestProcessor, ProcId 0x%x... \n", proc_id);
@@ -260,6 +270,16 @@ static void SBL_ReleaseCore(cpu_core_id_t core_id)
 #if !defined(SBL_SKIP_BRD_CFG_BOARD) && !defined(SBL_SKIP_SYSFW_INIT)
     int32_t proc_id = sbl_slave_core_info[core_id].tisci_proc_id;
     int32_t status = CSL_EFAIL;
+
+#if defined(SOC_AM64X)
+    /* Do not touch the M4 if reset isolation is enabled */
+    uint32_t mmrMagicRegister;
+    mmrMagicRegister = (*((volatile uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE+CSL_MAIN_CTRL_MMR_CFG0_RST_MAGIC_WORD)));
+    if (core_id == M4F_CPU0_ID && mmrMagicRegister != 0)
+    {
+        return;
+    }
+#endif
 
     if(proc_id != 0xBAD00000)
     {
@@ -417,6 +437,16 @@ void SBL_SetupCoreMem(uint32_t core_id)
     const sblSlaveCoreInfo_t *sblSlaveCoreInfoPtr;
 
     SBL_ADD_PROFILE_POINT;
+
+#if defined(SOC_AM64X)
+    /* Do not touch the M4 if reset isolation is enabled */
+    uint32_t mmrMagicRegister;
+    mmrMagicRegister = (*((volatile uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE+CSL_MAIN_CTRL_MMR_CFG0_RST_MAGIC_WORD)));
+    if (core_id == M4F_CPU0_ID && mmrMagicRegister != 0)
+    {
+        return;
+    }
+#endif
 
     /* Remap virtual core-ids if needed */
     switch (core_id)
@@ -674,6 +704,16 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
     const sblSlaveCoreInfo_t *sblSlaveCoreInfoPtr = &(sbl_slave_core_info[core_id]);
 
     SBL_ADD_PROFILE_POINT;
+
+#if defined(SOC_AM64X)
+    /* Do not touch the M4 if reset isolation is enabled */
+    uint32_t mmrMagicRegister;
+    mmrMagicRegister = (*((volatile uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE+CSL_MAIN_CTRL_MMR_CFG0_RST_MAGIC_WORD)));
+    if (core_id == M4F_CPU0_ID && mmrMagicRegister != 0)
+    {
+        return;
+    }
+#endif
 
 #if defined(SBL_SKIP_MCU_RESET) && (defined(SBL_SKIP_BRD_CFG_BOARD) || defined(SBL_SKIP_BRD_CFG_PM) || defined(SBL_SKIP_SYSFW_INIT))
     /* Skip copy if R5 app entry point is already 0 */
