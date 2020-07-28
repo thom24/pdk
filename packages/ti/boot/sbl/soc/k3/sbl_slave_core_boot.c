@@ -374,6 +374,21 @@ int32_t SBL_BootImage(sblEntryPoint_t *pEntry)
 
     SBL_ADD_PROFILE_POINT;
 
+#if defined(SBL_ENABLE_HLOS_BOOT)
+    /* Ensure all the key MMCSD & Flash memory interfaces are handed off properly, for HLOS control */
+    SBL_log(SBL_LOG_MAX, "Sciclient_pmSetModuleState Off, DevId: %d \n", TISCI_DEV_MMCSD0);
+    Sciclient_pmSetModuleState(TISCI_DEV_MMCSD0, TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
+    SBL_log(SBL_LOG_MAX, "Sciclient_pmSetModuleState Off, DevId: %d \n", TISCI_DEV_MMCSD1);
+    Sciclient_pmSetModuleState(TISCI_DEV_MMCSD1, TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
+    SBL_log(SBL_LOG_MAX, "Sciclient_pmSetModuleState Off, DevId: %d \n", TISCI_DEV_MCU_FSS0_OSPI_0);
+
+    Sciclient_pmSetModuleState(TISCI_DEV_MCU_FSS0_OSPI_0, TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
+    SBL_log(SBL_LOG_MAX, "Sciclient_pmSetModuleState Off, DevId: %d \n", TISCI_DEV_MCU_FSS0_OSPI_1);
+    Sciclient_pmSetModuleState(TISCI_DEV_MCU_FSS0_OSPI_1, TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
+    SBL_log(SBL_LOG_MAX, "Sciclient_pmSetModuleState Off, DevId: %d \n", TISCI_DEV_MCU_FSS0_HYPERBUS1P0_0);
+    Sciclient_pmSetModuleState(TISCI_DEV_MCU_FSS0_HYPERBUS1P0_0, TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
+#endif
+
     /* Release control of all cores */
     SBL_ReleaseAllCores();
 
