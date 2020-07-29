@@ -242,9 +242,9 @@ static int32_t App_getRevisionTest(void)
             .boardConfigLow = (uint32_t) &gBoardConfigLow_debug,
             .boardConfigHigh = 0,
             .boardConfigSize = sizeof(gBoardConfigLow_debug),
-			#if defined (SOC_J721E) || defined (SOC_AM65XX)
+            #if defined (SOC_J721E) || defined (SOC_AM65XX) || defined (SOC_J7200)
             .devGrp = DEVGRP_00
-			#endif
+            #endif
         };
         printf(" \nDMSC Board Configuration with Debug enable \n");
         dmtimer0_read();
@@ -263,9 +263,9 @@ static int32_t App_getRevisionTest(void)
             .boardConfigLow = (uint32_t)boardCfgLow,
             .boardConfigHigh = 0,
             .boardConfigSize = 0,
-            #if defined (SOC_J721E) || defined (SOC_AM65XX)
+            #if defined (SOC_J721E) || defined (SOC_AM65XX) || defined (SOC_J7200)
             .devGrp = DEVGRP_00
-			#endif
+            #endif
         };
         printf("\nSciclient Board Configuration has passed \n");
         dmtimer0_read();
@@ -280,9 +280,9 @@ static int32_t App_getRevisionTest(void)
                 .boardConfigLow = (uint32_t) boardCfgLow,
                 .boardConfigHigh = 0,
                 .boardConfigSize = SCICLIENT_BOARDCFG_RM_SIZE_IN_BYTES,
-                #if defined (SOC_J721E) || defined (SOC_AM65XX)
-				.devGrp = DEVGRP_00
-				#endif
+                #if defined (SOC_J721E) || defined (SOC_AM65XX) || defined (SOC_J7200)
+                .devGrp = DEVGRP_00
+                #endif
             };
 
             dmtimer0_read();
@@ -301,9 +301,9 @@ static int32_t App_getRevisionTest(void)
                 .boardConfigLow = (uint32_t) boardCfgLow,
                 .boardConfigHigh = 0,
                 .boardConfigSize = SCICLIENT_BOARDCFG_SECURITY_SIZE_IN_BYTES,
-                #if defined (SOC_J721E) || defined (SOC_AM65XX)
-				.devGrp = DEVGRP_00
-				#endif
+                #if defined (SOC_J721E) || defined (SOC_AM65XX) || defined (SOC_J7200)
+                .devGrp = DEVGRP_00
+                #endif
             };
             printf("\nSciclient PM Board Configuration has Passed \n");
             dmtimer0_read();
@@ -323,7 +323,7 @@ static int32_t App_getRevisionTest(void)
     if (CSL_PASS == status)
     {
         printf ("\nSciclient Dev Group 00 initilization done");
-#if defined(SOC_J721E) || defined (SOC_J7200)
+#if defined(SOC_J721E) || defined (SOC_J7200) || defined (SOC_J7200)
         /* This is specifically required if you are booting in MCU_ONLY boot mode. */
         status = Sciclient_pmSetModuleState(TISCI_DEV_WKUPMCU2MAIN_VD,
                                             TISCI_MSG_VALUE_DEVICE_SW_STATE_ON,
@@ -339,7 +339,7 @@ static int32_t App_getRevisionTest(void)
         }
 #endif
     }
-#if defined(SOC_J721E) || defined (SOC_AM65XX)
+#if defined(SOC_J721E) || defined (SOC_AM65XX) || defined (SOC_J7200)
     if (CSL_PASS == status)
     {
         printf ("\nSciclient Dev Group 01 initilization started");
