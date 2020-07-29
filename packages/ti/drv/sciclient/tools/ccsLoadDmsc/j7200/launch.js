@@ -119,8 +119,8 @@ function connectTargets()
     dsMCU1_0.target.connect();
     // This is done to support other boot modes. OSPI is the most stable.
     // MMC is not always stable.
-    bootMode = dsMCU1_0.memory.readWord(0, 0x43000030) & 0xF8;
-    if (bootMode != 0x38)
+    bootMode = dsMCU1_0.memory.readWord(0, 0x43000030) & 0xFF8;
+    if (bootMode != 0x338)
     {
         print("Disable MCU Timer for ROM clean up");
         dsMCU1_0.memory.writeWord(0, 0x40400010, 0x1); /* Write reset to MCU Timer 0. Left running by ROM */
