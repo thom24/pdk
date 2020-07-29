@@ -1924,10 +1924,10 @@ typedef struct HWA_CdfThreshold_t {
  */
 typedef struct HWA_InterruptPriority_t {
 
-	uint32_t    doneInterruptPriority;         /*!<  @brief HWA interrupt priority for the background thread done */
-	uint32_t    doneALTInterruptPriority;      /*!<  @brief HWA interrupt priority for the ALT thread done */
-	uint32_t    paramsetInterrupt1Priority;    /*!<  @brief HWA interrupt priority for paramset done interrupt 1 */
-	uint32_t    paramsetInterrupt2Priority;    /*!<  @brief HWA interrupt priority for paramset done interrupt 2 */
+	uint32_t    backgroundDone;                /*!<  @brief HWA interrupt priority for the background thread done */
+	uint32_t    ALTDone;                       /*!<  @brief HWA interrupt priority for the ALT thread done */
+	uint32_t    paramsetDone1;                 /*!<  @brief HWA interrupt priority for paramset done interrupt 1 */
+	uint32_t    paramsetDone2;                 /*!<  @brief HWA interrupt priority for paramset done interrupt 2 */
 
 } HWA_InterruptPriority;
 
@@ -1937,14 +1937,13 @@ typedef struct HWA_InterruptPriority_t {
  */
 typedef struct HWA_OpenConfig_t {
 
-	HWA_InterruptPriority hwaInterruptPriority ;  /*!<  @brief structure holds the interrupt priorities for HWA background thread done,
-	                                                    HWA ALT thread done, paramset done interrupt 1 and paramset done interrupt 2.
-	                                                    This structure is applicable for processors that support a hardware priority, e.g R5F.
+	HWA_InterruptPriority    interruptPriority ;  /*!<  @brief structure holds the HWA interrupt priorities. This structure is applicable
+	                                                    for processors that support a hardware priority, e.g R5F.
 	                                                    In HWA, even though the four interrupts can not be generated at the same time,
 	                                                    during the ISR execution of a HWA interrupt say L, if another HWA interrupt event H happens
 	                                                    of a higher priority because of HWA progressing in its execution flow during this time,
-	                                                    then the L’s ISR will be preempted by H’s ISR and the corresponding user provided call
-	                                                    back function of L can therefore also get preempted by H’s ISR or H’s callback.
+	                                                    then the L's ISR will be preempted by H's ISR and the corresponding user provided call
+	                                                    back function of L can therefore also get preempted by H's ISR or H's callback.
 	                                                    User needs to keep this in mind in the design and implementation of the call back
 	                                                    functions that were intended to benefit from such prioritization.
 	                                                    In most use cases, it is not expected that such prioritization will be beneficial

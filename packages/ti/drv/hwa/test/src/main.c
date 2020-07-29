@@ -3780,10 +3780,10 @@ void HWA_benchmark()
     uint32_t               *srcWordAddr = (uint32_t*)SOC_HWA_MEM0;
 #ifdef BUILD_MCU
     HWA_OpenConfig          hwaCfg;
-    hwaCfg.hwaInterruptPriority.doneInterruptPriority = 1U;
-    hwaCfg.hwaInterruptPriority.doneALTInterruptPriority = 1U;
-    hwaCfg.hwaInterruptPriority.paramsetInterrupt1Priority = 1U;
-    hwaCfg.hwaInterruptPriority.paramsetInterrupt2Priority = 1U;
+    hwaCfg.interruptPriority.backgroundDone = 1U;
+    hwaCfg.interruptPriority.ALTDone = 1U;
+    hwaCfg.interruptPriority.paramsetDone1 = 1U;
+    hwaCfg.interruptPriority.paramsetDone2 = 1U;
 
 #endif
 

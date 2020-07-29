@@ -1040,9 +1040,7 @@ void HWA_init(void)
  *  @pre    HWA_init() has been called
  *
  *  @param  index         HWA instance number
- *  @param  hwaCfg        pointer to HWA configuration, it is only applied to the processors, which support the hardware interrupt priority, e.g R5F.
- *                        for other processors, set it to NULL. For the processors, which support the hardware interrupt priority, setting to NULL
- *                        uses the default interrupt priorities, otherwise, the interrupt priorities are provided through hwaCfg.
+ *  @param  hwaCfg        pointer to HWA configuration, if set to NULL, default values will be used.
  *  @param  errCode       [out] valid errorCode if NULL handle returned.
  *
  *  @return A HWA_Handle upon success. NULL if an error occurs.
@@ -1138,7 +1136,7 @@ extern HWA_Handle HWA_open(uint32_t index, HWA_OpenConfig * hwaCfg, int32_t* err
             }
             else
             {
-            	interruptRegParams.corepacConfig.priority = hwaCfg->hwaInterruptPriority.paramsetInterrupt1Priority;
+            	interruptRegParams.corepacConfig.priority = hwaCfg->interruptPriority.paramsetDone1;
             }
             interruptRegParams.corepacConfig.intVecNum=(int32_t)gHWADriverPtr[index]->hwAttrs->intNum1ParamSet;  /* Host Interrupt vector */
             interruptRegParams.corepacConfig.corepacEventNum = (int32_t)gHWADriverPtr[index]->hwAttrs->intNum1ParamSet;
@@ -1170,7 +1168,7 @@ extern HWA_Handle HWA_open(uint32_t index, HWA_OpenConfig * hwaCfg, int32_t* err
             }
             else
             {
-            	interruptRegParams.corepacConfig.priority = hwaCfg->hwaInterruptPriority.doneInterruptPriority;
+            	interruptRegParams.corepacConfig.priority = hwaCfg->interruptPriority.backgroundDone;
             }
             interruptRegParams.corepacConfig.intVecNum=(int32_t)gHWADriverPtr[index]->hwAttrs->intNumDone;  /* Host Interrupt vector */
             interruptRegParams.corepacConfig.corepacEventNum = (int32_t)gHWADriverPtr[index]->hwAttrs->intNumDone;
@@ -1202,7 +1200,7 @@ extern HWA_Handle HWA_open(uint32_t index, HWA_OpenConfig * hwaCfg, int32_t* err
             }
             else
             {
-            	interruptRegParams.corepacConfig.priority = hwaCfg->hwaInterruptPriority.paramsetInterrupt2Priority;
+            	interruptRegParams.corepacConfig.priority = hwaCfg->interruptPriority.paramsetDone2;
             }
             interruptRegParams.corepacConfig.intVecNum=(int32_t)gHWADriverPtr[index]->hwAttrs->intNum2ParamSet;  /* Host Interrupt vector */
             interruptRegParams.corepacConfig.corepacEventNum = (int32_t)gHWADriverPtr[index]->hwAttrs->intNum2ParamSet;
@@ -1234,7 +1232,7 @@ extern HWA_Handle HWA_open(uint32_t index, HWA_OpenConfig * hwaCfg, int32_t* err
             }
             else
             {
-            	interruptRegParams.corepacConfig.priority = hwaCfg->hwaInterruptPriority.doneALTInterruptPriority;
+            	interruptRegParams.corepacConfig.priority = hwaCfg->interruptPriority.ALTDone;
             }
             interruptRegParams.corepacConfig.intVecNum=(int32_t)gHWADriverPtr[index]->hwAttrs->intNumDoneALT;  /* Host Interrupt vector */
             interruptRegParams.corepacConfig.corepacEventNum = (int32_t)gHWADriverPtr[index]->hwAttrs->intNumDoneALT;
