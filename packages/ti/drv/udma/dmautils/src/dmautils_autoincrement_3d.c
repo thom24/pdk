@@ -466,7 +466,7 @@ static void hostEmulation_triggerDMA(struct Udma_DrvObj * udmaDrvHandle)
 #endif
 
 
-static int32_t DmaUtilsAutoInc3d_getTotalBlockCount(uint8_t * trMem, uint32_t numTr)
+int32_t DmaUtilsAutoInc3d_getTotalBlockCount(uint8_t * trMem, uint32_t numTr)
 {
     uint32_t i;
     CSL_UdmapTR * pTr;
@@ -521,11 +521,11 @@ static int32_t DmaUtilsAutoInc3d_getTotalBlockCount(uint8_t * trMem, uint32_t nu
 
 }
 
-static uintptr_t DmaUtilsAutoInc3d_getPhysicalAddress(DmaUtilsAutoInc3d_Context * dmautilsContext,
+static inline uintptr_t DmaUtilsAutoInc3d_getPhysicalAddress(DmaUtilsAutoInc3d_Context * dmautilsContext,
                                                                  const uintptr_t virtualAddr,
                                                                  int32_t chNum);
 
-static uintptr_t DmaUtilsAutoInc3d_getPhysicalAddress(DmaUtilsAutoInc3d_Context * dmautilsContext,
+static inline uintptr_t DmaUtilsAutoInc3d_getPhysicalAddress(DmaUtilsAutoInc3d_Context * dmautilsContext,
                                                                  const uintptr_t virtualAddr,
                                                                  int32_t chNum)
 {
@@ -852,7 +852,10 @@ int32_t DmaUtilsAutoInc3d_init(void * autoIncrementContext , DmaUtilsAutoInc3d_I
           goto Exit;
       }
 
-      eventId = Udma_chGetNum(channelHandle);
+      channelContext->druChannelId = Udma_chGetNum(channelHandle);
+
+      //:TODO: Currently its assumed that dru channel id is where the dru event will be generated
+      eventId = channelContext->druChannelId;
 
       channelContext->swTriggerPointer = Udma_druGetTriggerRegAddr(channelHandle);
       //:TODO: Currently it is assumed that DRU local events are routed to 32 event of c7x. This needs to be done cleanly
@@ -987,61 +990,62 @@ int32_t DmaUtilsAutoInc3d_convertTrVirtToPhyAddr(void * autoIncrementContext,
     if ( autoIncrementContext == NULL )
     {
       retVal = UDMA_EBADARGS;
-      DmaUtilsAutoInc3d_printf(autoIncrementContext, 0, "DmaUtilsAutoInc3d_srcDstPtrUpdate : Failed :autoIncrementContext == NULL \n");
+      DmaUtilsAutoInc3d_printf(autoIncrementContext, 0, "DmaUtilsAutoInc3d_convertTrVirtToPhyAddr : Failed :autoIncrementContext == NULL \n");
       goto Exit;
     }
-
-    if ( trPrepParam == NULL )
-    {
-      retVal = UDMA_EBADARGS;
-      DmaUtilsAutoInc3d_printf(autoIncrementContext, 0, "DmaUtilsAutoInc3d_srcDstPtrUpdate : Failed :trPrepParam == NULL \n");
-      goto Exit;
-    }
-
-    if ( trPrepParam->trMem == NULL )
-    {
-      retVal = UDMA_EBADARGS;
-      goto Exit;
-    }
-
     dmautilsContext = (DmaUtilsAutoInc3d_Context *)autoIncrementContext;
 
-    channelContext = dmautilsContext->channelContext[trPrepParam->channelId];
-
-    druChannelNum = Udma_chGetNum(&channelContext->chHandle);
-
-    if ( trPrepParam->numTRs > DMAUTILS_MAX_NUM_TR_DIRECT_TR_MODE)
+    /* Do not call the translation function if the pointer is already NULL */
+    if ( dmautilsContext->initParams.udmaDrvHandle->initPrms.virtToPhyFxn != NULL )
     {
-        isRingBasedFlowReq = 1;
-    }
-
-    pTrArray = (CSL_UdmapTR *)trPrepParam->trMem;
-
-    if ( isRingBasedFlowReq == 1 )
-    {
-      CSL_UdmapTR           *pTr = (CSL_UdmapTR *)(trPrepParam->trMem + sizeof(CSL_UdmapTR));
-      pTrArray = pTr;
-    }
-
-    for ( i = 0; i < trPrepParam->numTRs ; i++)
-    {
-        if (( convertMask & DMAUTILSAUTOINC3D_ADDRCONVERTMASK_SRCADDR) ==
-          DMAUTILSAUTOINC3D_ADDRCONVERTMASK_SRCADDR)
+        if ( trPrepParam == NULL )
         {
-            pTrArray[i].addr = DmaUtilsAutoInc3d_getPhysicalAddress(dmautilsContext,
-                                                                    pTrArray[i].addr,
-                                                                    druChannelNum);
-        }
-        if (( convertMask & DMAUTILSAUTOINC3D_ADDRCONVERTMASK_DSTADDR) ==
-          DMAUTILSAUTOINC3D_ADDRCONVERTMASK_DSTADDR)
-        {
-            pTrArray[i].daddr = DmaUtilsAutoInc3d_getPhysicalAddress(dmautilsContext,
-                                                                    pTrArray[i].daddr,
-                                                                    druChannelNum);
+          retVal = UDMA_EBADARGS;
+          DmaUtilsAutoInc3d_printf(autoIncrementContext, 0, "DmaUtilsAutoInc3d_convertTrVirtToPhyAddr : Failed :trPrepParam == NULL \n");
+          goto Exit;
         }
 
-    }
+        if ( trPrepParam->trMem == NULL )
+        {
+          retVal = UDMA_EBADARGS;
+          goto Exit;
+        }
 
+        channelContext = dmautilsContext->channelContext[trPrepParam->channelId];
+
+        druChannelNum = channelContext->druChannelId;
+
+        if ( trPrepParam->numTRs > DMAUTILS_MAX_NUM_TR_DIRECT_TR_MODE)
+        {
+            isRingBasedFlowReq = 1;
+        }
+
+        pTrArray = (CSL_UdmapTR *)trPrepParam->trMem;
+
+        if ( isRingBasedFlowReq == 1 )
+        {
+          CSL_UdmapTR           *pTr = (CSL_UdmapTR *)(trPrepParam->trMem + sizeof(CSL_UdmapTR));
+          pTrArray = pTr;
+        }
+
+        for ( i = 0; i < trPrepParam->numTRs ; i++)
+        {
+            if (( convertMask & DMAUTILSAUTOINC3D_ADDRCONVERTMASK_SRCADDR) ==
+              DMAUTILSAUTOINC3D_ADDRCONVERTMASK_SRCADDR)
+            {
+                pTrArray[i].addr = DmaUtilsAutoInc3d_getPhysicalAddress(dmautilsContext,
+                                                                        pTrArray[i].addr,
+                                                                        druChannelNum);
+            }
+            if (( convertMask & DMAUTILSAUTOINC3D_ADDRCONVERTMASK_DSTADDR) ==
+              DMAUTILSAUTOINC3D_ADDRCONVERTMASK_DSTADDR)
+            {
+                pTrArray[i].daddr = DmaUtilsAutoInc3d_getPhysicalAddress(dmautilsContext,
+                                                                        pTrArray[i].daddr,
+                                                                        druChannelNum);
+            }
+        }
+    }
 Exit:
       return retVal;
 

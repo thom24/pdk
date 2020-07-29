@@ -52,14 +52,15 @@ extern "C" {
 
 typedef struct
 {
-  uint64_t                                 ringMem;
-  uint64_t                                 reserved[15];
-  uint64_t                                 responseRingMem;
-  uint64_t                                 tdRingMem;
-  volatile uint64_t                    *swTriggerPointer;
-  uint64_t                                 waitWord;
-  struct Udma_ChObj               chHandle;
-  struct Udma_EventObj           eventHandle;
+  uint64_t              ringMem;
+  uint64_t              reserved[15];
+  uint64_t              responseRingMem;
+  uint64_t              tdRingMem;
+  volatile uint64_t     *swTriggerPointer;
+  uint64_t              waitWord;
+  uint32_t              druChannelId;
+  struct Udma_ChObj     chHandle;
+  struct Udma_EventObj  eventHandle;
 } DmaUtilsAutoInc3d_ChannelContext;
 
 
