@@ -63,7 +63,7 @@ endif
 SRCDIR = ../src ../../common/$(SOC)
 INCDIR = ../../../../board ../../../../csl ../src ../../../src/$(BOARD)/include ../../../src/$(BOARD) ../../common/$(SOC)
 
-ifeq ($(BOARD), $(filter $(BOARD), j721e_evm j7200_evm))
+ifeq ($(BOARD), $(filter $(BOARD), j721e_evm j7200_evm tpr12_evm))
 SRCDIR += ./$(BOARD)
 INCDIR += ./$(BOARD)
 endif
@@ -81,9 +81,15 @@ PACKAGE_SRCS_COMMON += ../../common/$(SOC)
 PACKAGE_SRCS_COMMON += ../../board_diag_component.mk
 PACKAGE_SRCS_COMMON += ../../create_sd.bat ../../create_sd.sh
 
+ifeq ($(BOARD), $(filter $(BOARD), tpr12_evm))
+SRCS_COMMON += exp_header_tpr12.c diag_common_cfg.c
+COMP_LIST_COMMON += mibspi
+else
 SRCS_COMMON += gpio_test_header.c diag_common_cfg.c
+endif
 
-ifeq ($(BOARD), $(filter $(BOARD), j721e_evm j7200_evm))
+
+ifeq ($(BOARD), $(filter $(BOARD), j721e_evm j7200_evm tpr12_evm))
 SRCS_COMMON += gpio_test_header_config.c
 endif
 

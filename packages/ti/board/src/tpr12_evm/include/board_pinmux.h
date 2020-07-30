@@ -61,6 +61,17 @@ extern "C" {
 /* MAIN CTRL base address + offset to beginning of PAD CONFIG  section */
 #define PMUX_CTRL	(CSL_MSS_IOMUX_U_BASE)
 
+/**
+ *  \brief    This function used to set the specified pinMux
+ *            mode for a specified pinMux offset address register.
+ *
+ *  \param    offset     [IN]       Pad config offset address
+ *            mode       [IN]       Pad config mux mode.
+ *
+ *
+ */
+void Board_pinMuxSetMode(uint32_t offset, uint32_t mode);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
