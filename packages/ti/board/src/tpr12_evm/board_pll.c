@@ -45,104 +45,217 @@
 #include "board_pll.h"
 
 /**
+ *
+ * \brief  PLL base address
+ *
+ * This array gives the  PLL base addressess i.e clock control register
+ * for different PLLs.
+ *
+ */
+uint32_t PllRegs[BOARD_PLL_COUNT] = {
+    BOARD_MSS_TOPRCM_U_BASE + BOARD_PLL_CORE_CLKCTRL,
+    BOARD_MSS_TOPRCM_U_BASE + BOARD_PLL_DSP_CLKCTRL,
+    BOARD_MSS_TOPRCM_U_BASE + BOARD_PLL_PER_CLKCTRL
+};
+/**
+ *
+ * \brief  PLL configurations
+ *
+ * This structure gives the different PLL controller configurations
+ *
+ */
+const Board_Pll_config_t pllConfig[BOARD_PLL_COUNT] = {
+    /* Board_Pll_type pll, Board_Pll_clkout_type clkOut,
+       mIntMult, nDiv, m2Div, n2Div, hsDiv3, hsDiv2,
+       hsDiv1, hsDiv0 */
+    {BOARD_CORE_PLL,  BOARD_PLL_CLKDCOLDO,   2000,   39,  1,
+    1, 9, 4, 3, 1},  /*2000MHz */
+    {BOARD_DSS_PLL,   BOARD_PLL_CLKDCOLDO,   1800,   39,  1,
+    1, 9, 4, 3, 0},  /*1800MHz */
+    {BOARD_PER_PLL,   BOARD_PLL_CLKDCOLDO,   1728,   39,  1,
+    1, 9, 17, 8, 0}  /*1728MHz */
+};
+
+/**
+ * \brief  PLL programming function
+ *
+ * This function configures the multiplier/divider values to PLL registers
+ * based on PLL type and programs the PLL registers
+ *  
+ * \param  pllConfig *data [IN] PLL config structure pointer
+ *
+ * \return None
+ */
+static void Board_PLLProgram (const Board_Pll_config_t *data)
+{
+    uint32_t pll_base_addr;
+
+    /**
+     *  Initalize variables
+     *  All clock values in MHz
+     *  Assume some dividers are implemented in reality as +1
+     *  (prevents dividing by zero)
+     *
+     */
+
+    pll_base_addr = PllRegs[data->pll];
+
+    /* write multiplier/divider values to registers independent of PLL type */
+
+    /* bits 11:0 (M_FRAC_MULT) of MSS_TOPRCM_PLL_CORE_MN2DIV */
+    CSL_FINS((*(volatile uint32_t *)(pll_base_addr + BOARD_PLL_MN2DIV_OFFSET)),
+            MSS_TOPRCM_PLL_CORE_MN2DIV_PLL_CORE_MN2DIV_M, data->mIntMult);
+
+    /* bits 19:16 (N2_div) of MSS_TOPRCM_PLL_CORE_MN2DIV */
+    CSL_FINS((*(volatile uint32_t *)(pll_base_addr + BOARD_PLL_MN2DIV_OFFSET)),
+            MSS_TOPRCM_PLL_CORE_MN2DIV_PLL_CORE_MN2DIV_N2, data->n2Div);
+
+    /* bits 22:16 (M2_DIV) of MSS_TOPRCM_PLL_CORE_M2NDIV */
+    CSL_FINS((*(volatile uint32_t *)(pll_base_addr + BOARD_PLL_M2NDIV_OFFSET)),
+            MSS_TOPRCM_PLL_CORE_M2NDIV_PLL_CORE_M2NDIV_M2, data->m2Div);
+
+    /* bits 7:0 (N_div) of MSS_TOPRCM_PLL_CORE_M2NDIV */
+    CSL_FINS((*(volatile uint32_t *)(pll_base_addr + BOARD_PLL_M2NDIV_OFFSET)),
+            MSS_TOPRCM_PLL_CORE_M2NDIV_PLL_CORE_M2NDIV_N, data->nDiv);
+
+    /* NWELLTRIM[28:24] = 9 IDLE[23] = 0 CLKDCOLDOPWDNZ[17] = 1
+    SELFREQDCO[12:10] = 4 */
+    HW_WR_REG32(pll_base_addr + BOARD_PLL_CLKCTRL_OFFSET, 0x9021000);
+    
+    if(data->clkOut == BOARD_PLL_CLKDCOLDO)
+    {
+        /* bit 29 CLKDCOLDOEN[29] of MSS_TOPRCM_PLL_CORE_CLCKCTRL */
+        CSL_FINS((*(volatile uint32_t *)(pll_base_addr +
+        BOARD_PLL_CLKCTRL_OFFSET)),
+        MSS_TOPRCM_PLL_CORE_CLKCTRL_PLL_CORE_CLKCTRL_CLKDCOLDOEN, 1);
+    }
+
+    if(data->clkOut == BOARD_PLL_CLKOUT)
+    {
+        /* bit 20 CLKOUTEN[20] of MSS_TOPRCM_PLL_CORE_CLCKCTRL */
+        CSL_FINS((*(volatile uint32_t *)(pll_base_addr +
+        BOARD_PLL_CLKCTRL_OFFSET)),
+        MSS_TOPRCM_PLL_CORE_CLKCTRL_PLL_CORE_CLKCTRL_CLKOUTEN, 1);
+    }
+
+    /* TODO: CLKOUTLDOEN bit is read only */
+    /*if(data->clkOut == PLL_CLKOUTLDO)
+    {
+        bit 19 CLKOUTEN[19] of MSS_TOPRCM_PLL_CORE_CLCKCTRL
+        CSL_FINS((*(volatile uint32_t *)(pll_base_addr +
+        PLL_CLKCTRL_OFFSET)),
+        MSS_TOPRCM_PLL_CORE_CLKCTRL_PLL_CORE_CLKCTRL_CLKOUTLDO, 1);
+    }*/
+
+    CSL_FINS((*(volatile uint32_t *)(pll_base_addr +
+    BOARD_PLL_CLKCTRL_OFFSET)),
+    MSS_TOPRCM_PLL_CORE_TENABLE_PLL_CORE_TENABLE_TENABLE, 1);
+
+    /* TINTZ[0] of MSS_TOPRCM_PLL_CORE_CLCKCTRL */
+    CSL_FINS((*(volatile uint32_t *)(pll_base_addr +
+    BOARD_PLL_CLKCTRL_OFFSET)),
+    MSS_TOPRCM_PLL_CORE_CLKCTRL_PLL_CORE_CLKCTRL_TINTZ, 1);
+
+    CSL_FINS((*(volatile uint32_t *)(pll_base_addr +
+    BOARD_PLL_CLKCTRL_OFFSET)),
+    MSS_TOPRCM_PLL_CORE_TENABLE_PLL_CORE_TENABLE_TENABLE, 0);
+
+    CSL_FINS((*(volatile uint32_t *)(pll_base_addr +
+    BOARD_PLL_CLKCTRL_OFFSET)),
+    MSS_TOPRCM_PLL_CORE_TENABLEDIV_PLL_CORE_TENABLEDIV_TENABLEDIV, 1);
+
+    CSL_FINS((*(volatile uint32_t *)(pll_base_addr +
+    BOARD_PLL_CLKCTRL_OFFSET)),
+    MSS_TOPRCM_PLL_CORE_TENABLEDIV_PLL_CORE_TENABLEDIV_TENABLEDIV, 0);
+
+    /*  APPLJ-1  :  loop check to PLLLOCK DONE */
+    /* poll bit 10 (PHASELOCK) of PLL_STAT for 1 */
+    while(!CSL_FEXT((*(volatile uint32_t *)(pll_base_addr +
+    BOARD_PLL_STATUS_OFFSET)),
+    MSS_TOPRCM_PLL_CORE_STATUS_PLL_CORE_STATUS_PHASELOCK));
+
+    CSL_FINS((*(volatile uint32_t *)(pll_base_addr +
+    BOARD_PLL_HSDIVIDER_CLKOUT0_OFFSET)),
+    MSS_TOPRCM_PLL_CORE_HSDIVIDER_CLKOUT0_PLL_CORE_HSDIVIDER_CLKOUT0_DIV,
+    data->hsDiv0);
+
+    CSL_FINS((*(volatile uint32_t *)(pll_base_addr +
+    BOARD_PLL_HSDIVIDER_CLKOUT1_OFFSET)),
+    MSS_TOPRCM_PLL_CORE_HSDIVIDER_CLKOUT1_PLL_CORE_HSDIVIDER_CLKOUT1_DIV,
+    data->hsDiv1);
+
+    CSL_FINS((*(volatile uint32_t *)(pll_base_addr +
+    BOARD_PLL_HSDIVIDER_CLKOUT2_OFFSET)),
+    MSS_TOPRCM_PLL_CORE_HSDIVIDER_CLKOUT2_PLL_CORE_HSDIVIDER_CLKOUT2_DIV,
+    data->hsDiv2);
+
+    /*TODO: HSDIVIDER_CLKOUT3 is mentioned as unused, need to check with TI */
+    /* CSL_FINS((*(volatile uint32_t *)(pll_base_addr +
+    PLL_HSDIVIDER_CLKOUT3_OFFSET)),
+    MSS_TOPRCM_PLL_CORE_HSDIVIDER_CLKOUT0_PLL_CORE_HSDIVIDER_CLKOUT3_DIV,
+    data->hsDiv3);
+    */
+
+    CSL_FINS((*(volatile uint32_t *)(pll_base_addr +
+    BOARD_PLL_HSDIVIDER_OFFSET)),
+    MSS_TOPRCM_PLL_CORE_HSDIVIDER_PLL_CORE_HSDIVIDER_TENABLEDIV, 1);
+
+    CSL_FINS((*(volatile uint32_t *)(pll_base_addr +
+    BOARD_PLL_HSDIVIDER_OFFSET)),
+    MSS_TOPRCM_PLL_CORE_HSDIVIDER_PLL_CORE_HSDIVIDER_TENABLEDIV, 0);
+
+    CSL_FINS((*(volatile uint32_t *)(pll_base_addr +
+    BOARD_PLL_HSDIVIDER_CLKOUT0_OFFSET)),
+    MSS_TOPRCM_PLL_CORE_HSDIVIDER_CLKOUT0_PLL_CORE_HSDIVIDER_CLKOUT0_GATE_CTRL,
+    1);
+
+    CSL_FINS((*(volatile uint32_t *)(pll_base_addr +
+    BOARD_PLL_HSDIVIDER_CLKOUT1_OFFSET)),
+    MSS_TOPRCM_PLL_CORE_HSDIVIDER_CLKOUT1_PLL_CORE_HSDIVIDER_CLKOUT1_GATE_CTRL,
+    1);
+
+    CSL_FINS((*(volatile uint32_t *)(pll_base_addr +
+    BOARD_PLL_HSDIVIDER_CLKOUT2_OFFSET)),
+    MSS_TOPRCM_PLL_CORE_HSDIVIDER_CLKOUT2_PLL_CORE_HSDIVIDER_CLKOUT2_GATE_CTRL,
+    1);
+
+    /*TODO: HSDIVIDER_CLKOUT3 is mentioned as unused, need to check with TI */
+    /* CSL_FINS((*(volatile uint32_t *)(pll_base_addr +
+    BOARD_PLL_HSDIVIDER_CLKOUT3_OFFSET)),
+    MSS_TOPRCM_PLL_CORE_HSDIVIDER_CLKOUT0_PLL_CORE_HSDIVIDER_CLKOUT3_GATE, 1);
+    */
+
+}
+
+/**
+ * \brief  PLL initialization function
+ *
+ * Configures different PLL controller modules.
+ * After reset,PLL initialization procedures must be done properly
+ * to set up the PLLs and PLL Controllers
+ *
+ * \param  data [IN] PLL config structure pointer
+ *
+ * \return None
+ */
+static void Board_PLLConfig(const Board_Pll_config_t *data)
+{
+    /* program multiplier/divider values into PLL/HSDIV */
+    Board_PLLProgram(data);
+}
+
+/**
  * \brief  Function to initialize all the PLL clocks with default values
  *
  * \return Board_STATUS
  */
 Board_STATUS Board_PLLInitAll(void)
 {
-    uint32_t lock_status;
-    Board_STATUS  status = CSL_PASS;
+    Board_STATUS status = BOARD_SOK;
 
-    // APPLJ-1 Setting
-    // CLOCKOUT = M/(N+1) * CLKINP * (1/M2)  =  0x7d0/(39+1) * 40 * (1/1) = 2G
-    HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE+PLL_CORE_M2NDIV     , 0x10027);      //M2NDIV_M2[22:16] = 1 , M2NDIV_N[7:0] = 0x27
-    HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE+PLL_CORE_MN2DIV     , 0x107d0);      //MN2DIV_N2[19:16] = 1 , MN2DIV_M[11:0] = 0x7d0
-    HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE+PLL_CORE_CLKCTRL    , 0x29021000);   //CLKDCOLDOEN[29] = 1,NWELLTRIM[28:24] = 9 IDLE[23] = 0 CLKDCOLDOPWDNZ[17] = 1 SELFREQDCO[12:10] = 4
-
-    HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE+PLL_CORE_TENABLE    , 0x1);          // TENABLE    = 1
-    HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE+PLL_CORE_CLKCTRL    , 0x29021001);   //+TINTZ[0]   = 1
-    HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE+PLL_CORE_TENABLE    , 0x0);          // TENABLE    = 0
-    HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE+PLL_CORE_TENABLEDIV , 0x1);          // TENABLEDIV = 1
-    HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE+PLL_CORE_TENABLEDIV , 0x0);          // TENABLEDIV = 0
-
-    // APPLJ-2 Setting
-    // CLOCKOUT = M/(N+1) * CLKINP * (1/M2)  =  0x708/(39+1) * 40 * (1/1) = 1.8G
-    HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE+PLL_DSP_M2NDIV     , 0x10027);      //M2NDIV_M2[22:16] = 1 , M2NDIV_N[7:0] = 0x27
-    HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE+PLL_DSP_MN2DIV     , 0x10708);      //MN2DIV_N2[19:16] = 1 , MN2DIV_M[11:0] = 0x708
-    HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE+PLL_DSP_CLKCTRL    , 0x29021000);   //CLKDCOLDOEN[29] = 1,NWELLTRIM[28:24] = 9 IDLE[23] = 0 CLKDCOLDOPWDNZ[17] = 1 SELFREQDCO[12:10] = 4
-
-    HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE+PLL_DSP_TENABLE    , 0x1);          // TENABLE    = 1
-    HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE+PLL_DSP_CLKCTRL    , 0x29021001);   //+TINTZ[0]   = 1
-    HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE+PLL_DSP_TENABLE    , 0x0);          // TENABLE    = 0
-    HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE+PLL_DSP_TENABLEDIV , 0x1);          // TENABLEDIV = 1
-    HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE+PLL_DSP_TENABLEDIV , 0x0);          // TENABLEDIV = 0
-
-    // APPLJ-3 Setting
-    // CLOCKOUT = M/(N+1) * CLKINP * (1/M2)  =  0x6C0/(39+1) * 40 * (1/1) = 1.728G
-    HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE+PLL_PER_M2NDIV     , 0x10027);      //M2NDIV_M2[22:16] = 1 , M2NDIV_N[7:0] = 0x27
-    HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE+PLL_PER_MN2DIV     , 0x106C0);      //MN2DIV_N2[19:16] = 1 , MN2DIV_M[11:0] = 0x6C0
-    HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE+PLL_PER_CLKCTRL    , 0x29021000);   //CLKDCOLDOEN[29] = 1,NWELLTRIM[28:24] = 9 IDLE[23] = 0 CLKDCOLDOPWDNZ[17] = 1 SELFREQDCO[12:10] = 4
-
-    HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE+PLL_PER_TENABLE    , 0x1);          // TENABLE    = 1
-    HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE+PLL_PER_CLKCTRL    , 0x29021001);   //+TINTZ[0]   = 1
-    HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE+PLL_PER_TENABLE    , 0x0);          // TENABLE    = 0
-    HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE+PLL_PER_TENABLEDIV , 0x1);          // TENABLEDIV = 1
-    HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE+PLL_PER_TENABLEDIV , 0x0);          // TENABLEDIV = 0
-
-    // APPLJ-1  :  loop check to PLLLOCK DONE
-    lock_status = HW_RD_REG32(CSL_MSS_TOPRCM_U_BASE+PLL_CORE_STATUS); //PHASELOCK[10]
-    while(0x400 != (lock_status & 0x400)) {
-       lock_status = HW_RD_REG32(CSL_MSS_TOPRCM_U_BASE+PLL_CORE_STATUS); //PHASELOCK[10]
-    }
-
-    // HSDIV-1 Settings
-    HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE+PLL_CORE_HSDIVIDER_CLKOUT0, 0x1);    // CLKOUT0_DIV[4:0] = 1  -- 2G/(1+1) = 1GHz
-    HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE+PLL_CORE_HSDIVIDER_CLKOUT1, 0x3);    // CLKOUT1_DIV[4:0] = 3  -- 2G/(3+1) = 500MHz
-    HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE+PLL_CORE_HSDIVIDER_CLKOUT2, 0x4);    // CLKOUT2_DIV[4:0] = 4  -- 2G/(4+1) = 400MHz
-    //Unsed  HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE+PLL_CORE_HSDIVIDER_CLKOUT3, 0x9);    // CLKOUT3_DIV[4:0] = 9  -- 2G/(9+1) = 200MHz -- Unused
-    HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE+PLL_CORE_HSDIVIDER        , 0x4);    // HSDIVIDER[2]     = 1
-    HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE+PLL_CORE_HSDIVIDER        , 0x0);    // HSDIVIDER[2]     = 0
-    HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE+PLL_CORE_HSDIVIDER_CLKOUT0, 0x101);  //+CLKOUT0_GATE[8]  = 1
-    HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE+PLL_CORE_HSDIVIDER_CLKOUT1, 0x103);  //+CLKOUT1_GATE[8]  = 1
-    HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE+PLL_CORE_HSDIVIDER_CLKOUT2, 0x104);  //+CLKOUT2_GATE[8]  = 1
-    //Unsed  HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE+PLL_CORE_HSDIVIDER_CLKOUT3, 0x109);  //+CLKOUT3_GATE[8]  = 1
-
-    // APPLJ-2 : loop check to PLLLOCK DONE
-    lock_status = HW_RD_REG32(CSL_MSS_TOPRCM_U_BASE+PLL_DSP_STATUS); //PHASELOCK[10]
-    while(0x400 != (lock_status & 0x400)) {
-       lock_status = HW_RD_REG32(CSL_MSS_TOPRCM_U_BASE+PLL_DSP_STATUS); //PHASELOCK[10]
-    }
-
-    // HSDIV-2 Settings
-    HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE+PLL_DSP_HSDIVIDER_CLKOUT0, 0x0);    // CLKOUT0_DIV[4:0] = 0  -- 1.8G/(0+1) = 1.8GHz
-    HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE+PLL_DSP_HSDIVIDER_CLKOUT1, 0x3);    // CLKOUT1_DIV[4:0] = 3  -- 1.8G/(3+1) = 450MHz
-    HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE+PLL_DSP_HSDIVIDER_CLKOUT2, 0x4);    // CLKOUT2_DIV[4:0] = 4  -- 1.8G/(4+1) = 360MHz
-    //Unsed HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE+PLL_DSP_HSDIVIDER_CLKOUT3, 0x9);    // CLKOUT3_DIV[4:0] = 9  -- 1.8G/(9+1) = 200MHz unused
-    HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE+PLL_DSP_HSDIVIDER        , 0x4);    // HSDIVIDER[2]     = 1
-    HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE+PLL_DSP_HSDIVIDER        , 0x0);    // HSDIVIDER[2]     = 0
-    HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE+PLL_DSP_HSDIVIDER_CLKOUT0, 0x100);  //+CLKOUT0_GATE[8]  = 1
-    HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE+PLL_DSP_HSDIVIDER_CLKOUT1, 0x103);  //+CLKOUT1_GATE[8]  = 1
-    HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE+PLL_DSP_HSDIVIDER_CLKOUT2, 0x104);  //+CLKOUT2_GATE[8]  = 1
-    //UnsedHW_WR_REG32(CSL_MSS_TOPRCM_U_BASE+PLL_DSP_HSDIVIDER_CLKOUT3, 0x109);  //+CLKOUT3_GATE[8]  = 1
-
-    // APPLJ-3 : loop check to PLLLOCK DONE
-    lock_status = HW_RD_REG32(CSL_MSS_TOPRCM_U_BASE+PLL_PER_STATUS); //PHASELOCK[10]
-    while(0x400 != (lock_status & 0x400)) {
-       lock_status = HW_RD_REG32(CSL_MSS_TOPRCM_U_BASE+PLL_PER_STATUS); //PHASELOCK[10]
-    }
-
-    // HSDIV-2 Settings
-    HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE+PLL_PER_HSDIVIDER_CLKOUT0, 0x0);    // CLKOUT0_DIV[4:0] = 0  -- 1.728G/(0+1) = 1.728GHz
-    HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE+PLL_PER_HSDIVIDER_CLKOUT1, 0x8);    // CLKOUT1_DIV[4:0] = 8  -- 1.728G/(8+1) = 192 MHz
-    HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE+PLL_PER_HSDIVIDER_CLKOUT2, 0x11);    // CLKOUT2_DIV[4:0] = 11  -- 1.8G/(17+1) = 96 MHz
-    //Unsed HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE+PLL_DSP_HSDIVIDER_CLKOUT3, 0x9);    //  unused
-    HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE+PLL_PER_HSDIVIDER        , 0x4);    // HSDIVIDER[2]     = 1
-    HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE+PLL_PER_HSDIVIDER        , 0x0);    // HSDIVIDER[2]     = 0
-    HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE+PLL_PER_HSDIVIDER_CLKOUT0, 0x100);  //+CLKOUT0_GATE[8]  = 1
-    HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE+PLL_PER_HSDIVIDER_CLKOUT1, 0x108);  //+CLKOUT1_GATE[8]  = 1
-    HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE+PLL_PER_HSDIVIDER_CLKOUT2, 0x111);  //+CLKOUT2_GATE[8]  = 1
-    //UnusedHW_WR_REG32(CSL_MSS_TOPRCM_U_BASE+PLL_DSP_HSDIVIDER_CLKOUT3, 0x109);  //+CLKOUT3_GATE[8]  = 1
+    Board_PLLConfig(&pllConfig[BOARD_CORE_PLL]);
+    Board_PLLConfig(&pllConfig[BOARD_DSS_PLL]);
+    Board_PLLConfig(&pllConfig[BOARD_PER_PLL]);
 
     return status;
 }
