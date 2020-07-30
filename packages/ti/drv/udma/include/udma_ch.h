@@ -161,14 +161,14 @@ extern "C" {
 #define UDMA_CH_TYPE_PDMA_RX_UHC        (UDMA_CH_FLAG_RX | UDMA_CH_FLAG_PDMA | UDMA_CH_FLAG_UHC)
 
 /**
- *  \brief Mapped TX channel. 
- *  This could be different type of mapped TX channels. 
+ *  \brief Mapped TX channel.
+ *  This could be different type of mapped TX channels.
  *  See \ref Udma_MappedTxGrpSoc for differnt types of SOC specific mapped TX channels.
  */
 #define UDMA_CH_TYPE_TX_MAPPED          (UDMA_CH_FLAG_TX | UDMA_CH_FLAG_PSIL | UDMA_CH_FLAG_MAPPED)
 /**
- *  \brief Mapped RX channel. 
- *  This could be different type of mapped RX channels. 
+ *  \brief Mapped RX channel.
+ *  This could be different type of mapped RX channels.
  *  See \ref Udma_MappedRxGrpSoc for differnt types of SOC specific mapped RX channels.
  */
 #define UDMA_CH_TYPE_RX_MAPPED          (UDMA_CH_FLAG_RX | UDMA_CH_FLAG_PSIL | UDMA_CH_FLAG_MAPPED)
@@ -246,7 +246,7 @@ typedef struct
      *   For other channel type set to #UDMA_UTC_ID_INVALID
      */
     uint32_t                mappedChGrp;
-    /**< [IN] The Mapped channel group to use when channel type is 
+    /**< [IN] The Mapped channel group to use when channel type is
      *   #UDMA_CH_TYPE_TX_MAPPED or #UDMA_CH_TYPE_RX_MAPPED.
      *   Refer \ref Udma_MappedTxGrpSoc macro for details about mapped TX channel groups
      *   or \ref Udma_MappedRxGrpSoc macro for details about mapped RX channel groups.
@@ -261,15 +261,15 @@ typedef struct
     Udma_RingPrms           fqRingPrms;
     /**< [IN] Free queue ring params where descriptors are queued */
     Udma_RingPrms           cqRingPrms;
-    /**< [IN] Completion queue ring params where descriptors are dequeued 
-     *   This is not used for AM64x kind of devices, but even if the application 
+    /**< [IN] Completion queue ring params where descriptors are dequeued
+     *   This is not used for AM64x kind of devices, but even if the application
      *   sets this it will be ignored. But its not required to be set.
      */
     Udma_RingPrms           tdCqRingPrms;
     /**< [IN] Teardown completion queue ring params where teardown
      *   response and TR response incase of direct TR mode are received from
-     *   UDMA 
-     *   This is not used for AM64x kind of devices, but even if the application 
+     *   UDMA
+     *   This is not used for AM64x kind of devices, but even if the application
      *   sets this it will be ignored. But its not required to be set.
      */
 } Udma_ChPrms;
@@ -378,13 +378,13 @@ typedef struct
     /**< [IN] Number of valid flow ID's starting from flowIdFwRangeStart
      *   for firewall check */
     uint8_t                flowEInfoPresent;
-    /**< [IN] default flow config parameter for EPIB 
+    /**< [IN] default flow config parameter for EPIB
      *   Refer \ref tisci_msg_rm_udmap_flow_cfg_req::rx_einfo_present */
     uint8_t                flowPsInfoPresent;
     /**< [IN] default flow config parameter for psInfo
      *   Refer \ref tisci_msg_rm_udmap_flow_cfg_req::rx_psinfo_present */
     uint8_t                flowErrorHandling;
-    /**< [IN] default flow config parameter for Error Handling 
+    /**< [IN] default flow config parameter for Error Handling
      *   Refer \ref tisci_msg_rm_udmap_flow_cfg_req::rx_error_handling */
     uint8_t                flowSopOffset;
     /**< [IN] default flow config parameter for SOP offset
@@ -844,7 +844,7 @@ Udma_FlowHandle Udma_chGetDefaultFlowHandle(Udma_ChHandle chHandle);
  *  when the queue is empty.
  *  Note: When executing a teardown sequence, the teardown ring should be
  *  popped using this API to avoid ring overflow.
- *  Note: In case of devices like AM64x where there is no teardown function, 
+ *  Note: In case of devices like AM64x where there is no teardown function,
  *  this API is not supported and will return error.
  *
  *  Requirement: DOX_REQ_TAG(PDK-2589)
@@ -857,6 +857,27 @@ Udma_FlowHandle Udma_chGetDefaultFlowHandle(Udma_ChHandle chHandle);
  */
 int32_t Udma_chDequeueTdResponse(Udma_ChHandle chHandle,
                                  CSL_UdmapTdResponse *tdResponse);
+
+/**
+ *  \brief Returns the software trigger register address for the channel
+ *
+ *  This function will return the appropriate SW trigger register.
+ *  Incase of UDMAP channels, it returns the 32-bit TX SWTRIG register address.
+ *  Incase of DRU channels, it returns the 64-bit DRU CHRT_SWTRIG register address.
+ *
+ *  Notes: SW trigger is not supported for RX channels.
+ *         Incase of TX channels, only global trigger 0 is supported.
+ *         Incase of DRU channels, global trigger 0/1 and local events are
+ *         supported.
+ *
+ *  Requirement: DOX_REQ_TAG(PDK-2594)
+ *
+ *  \param chHandle     [IN] UDMA channel handle.
+ *                           This parameter can't be NULL.
+ *
+ *  \return SW trigger register address
+ */
+void *Udma_chGetSwTriggerRegister(Udma_ChHandle chHandle);
 
 /**
  *  \brief Sets the software trigger register based on the trigger mode
@@ -1069,7 +1090,7 @@ struct Udma_ChObj
     Udma_RingHandle         fqRing;
     /**< Free queue ring handle */
     Udma_RingHandle         cqRing;
-    /**< Completion queue ring handle 
+    /**< Completion queue ring handle
     *    For AM64x kind of devices, where there is no seperate Completion queue,
     *    this points to fqRing itself.
     */
@@ -1079,11 +1100,11 @@ struct Udma_ChObj
     struct Udma_RingObj     fqRingObj;
     /**< Free queue ring object */
     struct Udma_RingObj     cqRingObj;
-    /**< Completion queue ring object 
-    *    Not used for AM64x kind of devices, where there is no seperate Completion queue.       
+    /**< Completion queue ring object
+    *    Not used for AM64x kind of devices, where there is no seperate Completion queue.
     */
     struct Udma_RingObj     tdCqRingObj;
-    /**< Teardown completion queue ring object 
+    /**< Teardown completion queue ring object
     *    Not used for AM64x kind of devices, where teardown function is not present.
     */
 
@@ -1150,7 +1171,7 @@ struct Udma_ChObj
     volatile CSL_pktdma_txcrtRegs_chan   *pPktdmaExtRtRegs;
     /**< Pointer to PKTDMA External RT config register overlay */
 #endif
-    
+
 #if (UDMA_NUM_UTC_INSTANCE > 0)
     volatile CSL_DRU_CHNRTRegs_CHNRT    *pDruNrtRegs;
     /**< Pointer to DRU Non RT config register overlay */

@@ -232,6 +232,20 @@ endif
 export udma_chaining_testapp_SBL_APPIMAGEGEN = yes
 udma_EXAMPLE_LIST += udma_chaining_testapp
 
+# UDMA SW trigger test app
+export udma_sw_trigger_testapp_COMP_LIST = udma_sw_trigger_testapp
+udma_sw_trigger_testapp_RELPATH = ti/drv/udma/examples/udma_sw_trigger_test
+udma_sw_trigger_testapp_PATH = $(PDK_UDMA_COMP_PATH)/examples/udma_sw_trigger_test
+export udma_sw_trigger_testapp_BOARD_DEPENDENCY = yes
+export udma_sw_trigger_testapp_CORE_DEPENDENCY = yes
+export udma_sw_trigger_testapp_XDC_CONFIGURO = yes
+udma_sw_trigger_testapp_PKG_LIST = udma_sw_trigger_testapp
+udma_sw_trigger_testapp_INCLUDE = $(udma_sw_trigger_testapp_PATH)
+export udma_sw_trigger_testapp_BOARDLIST = $(drvudma_BOARDLIST)
+export udma_sw_trigger_testapp_$(SOC)_CORELIST = mcu1_0
+export udma_sw_trigger_testapp_SBL_APPIMAGEGEN = yes
+udma_EXAMPLE_LIST += udma_sw_trigger_testapp
+
 # UDMA DRU test app
 export udma_dru_testapp_COMP_LIST = udma_dru_testapp
 udma_dru_testapp_RELPATH = ti/drv/udma/examples/udma_dru_test
