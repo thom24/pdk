@@ -44,6 +44,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+#if defined(SOC_TPR12)
+#include <ti/drv/mibspi/MIBSPI.h>
+#include <ti/drv/mibspi/soc/MIBSPI_soc.h>
+#endif
+
 #include <ti/drv/i2c/I2C.h>
 #include <ti/drv/i2c/soc/I2C_soc.h>
 #include <ti/drv/uart/UART_stdio.h>
@@ -51,7 +56,7 @@
 #include "board.h"
 #include "board_cfg.h"
 
-#if defined(SOC_J721E) || defined(SOC_J7200)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_TPR12)
 #include <ti/csl/soc.h>
 #include "board_utils.h"
 #include "diag_common_cfg.h"
@@ -59,8 +64,8 @@
 
 typedef struct pmic_data
 {
-    uint8_t   slaveAddr;
-    uint8_t   i2cInstance;
+    uint8_t   slaveSelect;
+    uint8_t   devInstance;
     uint8_t   pmicIdReg;
     uint8_t   pmicIdPage;
     uint8_t   pmicReg;
@@ -85,6 +90,10 @@ extern I2C_config_list I2C_config;
 
 /* Board specific definitions */
 #define I2C_INSTANCE                       (0U)
+
+#define SPI_INSTANCE                       (1U)  /* MIBSPI_INST_ID_MSS_SPIB */
+#define PMIC_RD_CMD                        (0x02U)
+
 #if defined(SOC_J721E) || defined(SOC_J7200)
 #define BOARD_NAME_LENGTH                  (16)
 #else
@@ -140,6 +149,12 @@ extern I2C_config_list I2C_config;
 #define LP8764_PMICID_REG                  (0x01U)
 #define LP8764_PMIC_REG                    (0x0EU)
 #define LP8764_PMIC_VOLTAGE_VAL            (0x41U)
+
+/* TPS65313 Register value */
+#define TPS65313_PMIC_SPI_CS               (0x00U)
+#define TPS65313_PMICID_REG                (0x02U)
+#define TPS65313_PMIC_REG                  (0x0EU) //TODO: Need to update regitser value for tpr12_evm
+#define TPS65313_PMIC_VOLTAGE_VAL          (0x41U) //TODO: Need to update regitser voltage value for tpr12_evm
 
 /**********************************************************************
  ************************** Global Variables **************************
@@ -222,48 +237,103 @@ pmic_data_t lp8764 = {
     0U
 };
 
-void setPmicVoltage(I2C_Handle h, pmic_data_t *pPmicData, uint8_t val)
+pmic_data_t tps65313 = {
+    TPS65313_PMIC_SPI_CS,
+    SPI_INSTANCE,
+    TPS65313_PMICID_REG,
+    0U,
+    TPS65313_PMIC_REG,
+    TPS65313_PMIC_VOLTAGE_VAL,
+    0U,
+    0U
+};
+
+
+void setPmicVoltage(void *h, pmic_data_t *pPmicData, uint8_t val)
 {
     uint8_t tx[2];
+#if defined(SOC_TPR12)
+    /*TODO: Need to add write command */
+    MIBSPI_Handle handle;
+    handle = (MIBSPI_Handle )h;
+    MIBSPI_Transaction transaction;
+
+    memset(&transaction, 0, sizeof(transaction));
+
+    /* Configure Data Transfer */
+    transaction.count = 2;
+    transaction.txBuf = tx;
+    transaction.rxBuf = NULL;
+    transaction.slaveIndex = 0;
+    tx[0] = pPmicData->pmicReg;
+    tx[1] = val;
+    /* Start Data Transfer */
+    MIBSPI_transfer(handle, &transaction);
+
+#else
+    I2C_Handle handle;
+    handle = (I2C_Handle)h;
+
     I2C_Transaction t;
 
     memset(&t, 0, sizeof(t));
-    t.slaveAddress = pPmicData->slaveAddr;
+    t.slaveAddress = pPmicData->slaveSelect;
     t.writeBuf = tx;
     #if defined (SOC_AM437x)
         /* Unlock the password protected register. */
         tx[0] = pPmicData->pwdProtReg;
         tx[1] = (pPmicData->pmicReg ^ TPS65218_PROT_PWD);
         t.writeCount = 2;
-        I2C_transfer(h, &t);
+        I2C_transfer(handle, &t);
         /* Write the actual value. */
         tx[0] = pPmicData->pmicReg;
         tx[1] = val;
-        I2C_transfer(h, &t);
+        I2C_transfer(handle, &t);
     #else
     t.writeCount = 2;
     t.readCount = 0;
     tx[0] = pPmicData->pmicReg;
     tx[1] = val;
-    I2C_transfer(h, &t);
+    I2C_transfer(handle, &t);
     #endif
+#endif
 }
 
-uint8_t readPmicVoltage(I2C_Handle h, uint8_t slaveAddr, uint8_t regOffset)
+uint8_t readPmicVoltage(void *h, uint8_t slaveSelect, uint8_t regOffset)
 {
     uint8_t tx[1];
     uint8_t rx[1];
+#if defined(SOC_TPR12)
+    /*TODO: Need to add read ID command */
+    MIBSPI_Handle handle;
+    handle = (MIBSPI_Handle)h;
+    MIBSPI_Transaction transaction;
+
+    memset(&transaction, 0, sizeof(transaction));
+
+    /* Configure Data Transfer */
+    transaction.count = 1;
+    transaction.txBuf = tx;
+    transaction.rxBuf = rx;
+    transaction.slaveIndex = 0;
+    tx[0] = regOffset;
+    /* Start Data Transfer */
+    MIBSPI_transfer(handle, &transaction);
+#else
+    I2C_Handle handle;
+    handle = (I2C_Handle)h;
     I2C_Transaction t;
 
     memset(&t, 0, sizeof(t));
 
-    t.slaveAddress = slaveAddr;
+    t.slaveAddress = slaveSelect;
     t.writeBuf = tx;
     t.writeCount = 1;
     t.readBuf = rx;
     t.readCount = 1;
     tx[0] = regOffset;
-    I2C_transfer(h, &t);
+    I2C_transfer(handle, &t);
+#endif
     return rx[0];
 }
 
@@ -278,7 +348,7 @@ uint32_t getPmicId(I2C_Handle h, pmic_data_t *pPmicData)
 
     memset(&t, 0, sizeof(t));
 
-    t.slaveAddress = pPmicData->slaveAddr;
+    t.slaveAddress = pPmicData->slaveSelect;
     t.writeBuf = tx;
     t.writeCount = 2;
     t.readBuf = rx;
@@ -303,16 +373,60 @@ uint32_t getPmicId(I2C_Handle h, pmic_data_t *pPmicData)
 }
 #endif
 
-#if (defined (SOC_AM437x)) || (defined (SOC_AM335x))
-uint32_t getPmicId(I2C_Handle h, pmic_data_t *pPmicData)
+#if (defined (SOC_AM437x)) || (defined (SOC_AM335x)) || (defined (SOC_TPR12))
+uint32_t getPmicId(void *h, pmic_data_t *pPmicData)
 {
+#if defined(SOC_TPR12)
     uint8_t tx[2] = {0, 0};
-    uint8_t rx;
+    uint8_t rx[2];
+    uint8_t status = 0;
+
+    MIBSPI_Handle handle;
+    handle = (MIBSPI_Handle)h;
+    MIBSPI_Transaction transaction;
+
+    memset(&transaction, 0, sizeof(transaction));
+
+    tx[0] = PMIC_RD_CMD;
+    tx[1] = pPmicData->pmicIdReg;
+
+    /* Transfer Deivce ID read Command */
+    transaction.txBuf = tx;
+    transaction.rxBuf = NULL;
+    transaction.count = 2;
+    transaction.slaveIndex = 0;
+    MIBSPI_transfer(handle, &transaction);
+
+    /* Read Device ID in rx buffer */
+    transaction.txBuf = NULL;
+    transaction.rxBuf = rx;
+    transaction.count = 2;
+    transaction.slaveIndex = 0;
+    MIBSPI_transfer(handle, &transaction);
+
+    /*check the status register for command SAFE and Invalid bit*/
+    status = rx[0];
+    if((!(status & 0x1) && (status & 0x10)))
+    {
+        UART_printf("Command transferred successfully\n");
+    }
+    else
+    {
+        UART_printf("Read ID command transfer failed\n");
+    }
+    /* return read ID command*/
+    return rx[1];
+
+#else
+    uint8_t tx[2] = {0, 0};
+    uint8_t rx = 0;
+    I2C_Handle handle;
+    handle = (I2C_Handle)h;
     I2C_Transaction t;
 
     memset(&t, 0, sizeof(t));
 
-    t.slaveAddress = pPmicData->slaveAddr;
+    t.slaveAddress = pPmicData->slaveSelect;
     t.writeBuf = tx;
     t.readBuf = &rx;
     t.writeCount = 1;
@@ -321,21 +435,22 @@ uint32_t getPmicId(I2C_Handle h, pmic_data_t *pPmicData)
     /* Enable I2C access to the functional registers. */
     #if defined (SOC_AM335x)
     tx[0] = pPmicData->pmicDevCtrl;
-    rx = readPmicVoltage(h, pPmicData->slaveAddr, pPmicData->pmicDevCtrl);
+    rx = readPmicVoltage(handle, pPmicData->slaveSelect, pPmicData->pmicDevCtrl);
     rx |= (PMIC_DEVCTRL_REG_SR_CTL_I2C_SEL_CTL_I2C << PMIC_DEVCTRL_REG_SR_CTL_I2C_SEL_SHIFT);
     tx[1] = rx;
     t.writeCount = 2;
     rx = 0;
-    I2C_transfer(h, &t);
+    I2C_transfer(handle, &t);
     #endif
 
     /* Read the PMIC ID register. */
     tx[0] = pPmicData->pmicIdReg;
     t.writeCount = 1;
     t.readCount = 1;
-    I2C_transfer(h, &t);
-
+    I2C_transfer(handle, &t);
     return rx;
+#endif
+
 }
 #endif
 
@@ -350,13 +465,13 @@ uint32_t getPmicId(I2C_Handle h, pmic_data_t *pPmicData)
 
     memset(&t, 0, sizeof(t));
 
-    if(pPmicData->slaveAddr == TPS65917_I2C_SLAVE_ADDR)
+    if(pPmicData->slaveSelect == TPS65917_I2C_SLAVE_ADDR)
     {
-        t.slaveAddress = (pPmicData->slaveAddr + 1);
+        t.slaveAddress = (pPmicData->slaveSelect + 1);
     }
     else /* TPS65941 */
     {
-        t.slaveAddress = pPmicData->slaveAddr;
+        t.slaveAddress = pPmicData->slaveSelect;
     }
     t.writeBuf = tx;
     t.writeCount = 1;
@@ -366,7 +481,7 @@ uint32_t getPmicId(I2C_Handle h, pmic_data_t *pPmicData)
     I2C_transfer(h, &t);
     val |= (rx[0] << 24);
 
-    if(pPmicData->slaveAddr == TPS65917_I2C_SLAVE_ADDR)
+    if(pPmicData->slaveSelect == TPS65917_I2C_SLAVE_ADDR)
     {
         tx[0] = (reg + 1);
         I2C_transfer(h, &t);
@@ -382,13 +497,71 @@ uint32_t getPmicId(I2C_Handle h, pmic_data_t *pPmicData)
 }
 #endif
 
+void *Board_PmicInit(uint8_t devInstance)
+{
+
+#if defined(SOC_TPR12)
+    MIBSPI_Params     params;
+    MIBSPI_Handle     handle;
+    MIBSPI_UtilsPrms utilsPrms;
+
+    /* Initialize the SPI */
+    memset(&utilsPrms, 0, sizeof(utilsPrms));
+
+    MIBSPI_init(&utilsPrms);
+
+    /* Setup the default SPI Parameters */
+    MIBSPI_Params_init(&params);
+
+    /* Disble DMA */
+    params.dmaEnable = 0;
+    params.dmaHandle = NULL;
+
+    /* Set SPI in master mode */
+    params.mode = MIBSPI_MASTER;
+
+    /* Open the SPI Instance for MibSpi */
+    handle = MIBSPI_open((enum MibSpi_InstanceId)devInstance, &params);
+#else
+    int i;
+    I2C_Params i2cParams;
+    I2C_Handle handle = NULL;
+#if defined(SOC_J721E) || defined(SOC_J7200)
+    enableI2C(CSL_WKUP_I2C0_CFG_BASE);
+#endif
+    for (i=0; I2C_config[i].fxnTablePtr != NULL; i++)
+    {
+        ((I2C_HwAttrs *)I2C_config[i].hwAttrs)->enableIntr = false;
+    }
+
+    I2C_init();
+
+    I2C_Params_init(&i2cParams);
+
+    handle = I2C_open(devInstance, &i2cParams);
+
+#endif
+    return (void *)handle;
+}
+
+void Board_PmicDeinit(void* h)
+{
+#if defined(SOC_TPR12)
+    MIBSPI_Handle handle;
+    handle = (MIBSPI_Handle)h;
+    MIBSPI_close(handle);
+#else
+    I2C_Handle handle;
+    handle = (I2C_Handle)h;
+    I2C_close(handle);
+#endif
+}
+
 int pmic_test()
 {
     int ret = 0;
-    int i;
     uint8_t voltage, val;
-    I2C_Params i2cParams;
-    I2C_Handle handle = NULL;
+    void* handle = NULL;
 #if defined(SOC_J721E) || defined(SOC_J7200)
     Board_IDInfo_v2 info = {0};
 #else
@@ -411,20 +584,7 @@ int pmic_test()
 #else
         pPmicData = Get_PmicData(boardInfo.boardName);
 #endif
-
-#if defined(SOC_J721E) || defined(SOC_J7200)
-        enableI2C(CSL_WKUP_I2C0_CFG_BASE);
-#endif
-        for (i=0; I2C_config[i].fxnTablePtr != NULL; i++)
-        {
-            ((I2C_HwAttrs *)I2C_config[i].hwAttrs)->enableIntr = false;
-        }
-
-        I2C_init();
-
-        I2C_Params_init(&i2cParams);
-
-        handle = I2C_open(pPmicData->i2cInstance, &i2cParams);
+        handle = (void *)Board_PmicInit(pPmicData->devInstance);
 
         UART_printf("\n*********************************************\n"); 
         UART_printf  ("*                PMIC Test                  *\n");
@@ -435,15 +595,15 @@ int pmic_test()
             val = pPmicData->pmicVoltVal;
             UART_printf("Testing PMIC module... \n");
             UART_printf("PMIC ID = 0x%08x\n", getPmicId(handle, pPmicData));
-            voltage = readPmicVoltage(handle, pPmicData->slaveAddr, pPmicData->pmicReg);
+            voltage = readPmicVoltage(handle, pPmicData->slaveSelect, pPmicData->pmicReg);
             UART_printf("Initial PMIC voltage = 0x%x\n", voltage);
             UART_printf("Setting PMIC voltage to 0x%x\n", val);
             setPmicVoltage(handle, pPmicData, val);
             UART_printf("done!\n");
-            UART_printf("PMIC voltage after = 0x%x\n", readPmicVoltage(handle, pPmicData->slaveAddr, pPmicData->pmicReg));
+            UART_printf("PMIC voltage after = 0x%x\n", readPmicVoltage(handle, pPmicData->slaveSelect, pPmicData->pmicReg));
             UART_printf("Setting PMIC voltage to original value\n");
             setPmicVoltage(handle, pPmicData, voltage);
-            UART_printf("Final voltage value = 0x%x\n", readPmicVoltage(handle, pPmicData->slaveAddr, pPmicData->pmicReg));
+            UART_printf("Final voltage value = 0x%x\n", readPmicVoltage(handle, pPmicData->slaveSelect, pPmicData->pmicReg));
             numPmic--;
 
             if(numPmic)
@@ -453,7 +613,8 @@ int pmic_test()
         }
 
         UART_printf("Test PASSED!\n");
-        I2C_close(handle);
+
+        Board_PmicDeinit(handle);
     }
     return ret;
 }
@@ -532,12 +693,17 @@ pmic_data_t* Get_PmicData(char *pBoardName)
         gDualPmicData = &tps65941_pmicB;
         numPmic = 2;
     }
-	/* Check if the board is J7200 SoM with Dual PMIC by comparing the string read from EEPROM. */
+    /* Check if the board is J7200 SoM with Dual PMIC by comparing the string read from EEPROM. */
     else if (strncmp("J7200X-PM2-SOM", pBoardName, BOARD_NAME_LENGTH) == 0U)
     {
         pPmicData     = &tps65941_pmicA;
         gDualPmicData = &lp8764;
         numPmic = 2;
+    }
+    /* Check if the board is TPR12_EVM by comparing the string read from EEPROM. */
+    else if (strncmp("TPR_EVM", pBoardName, BOARD_NAME_LENGTH) == 0U)
+    {
+        pPmicData = &tps65313;
     }
     else
     {
@@ -561,15 +727,15 @@ int main(void)
 #endif
     Board_init(boardCfg);
     
-	return pmic_test();
+    return pmic_test();
 }
 
 void AppDelay(uint32_t delayVal)
 {
-	uint32_t cnt = 0;
+    uint32_t cnt = 0;
     while(cnt < delayVal)
     {
-		asm("");
+        asm("");
         cnt++;
     }
 }
