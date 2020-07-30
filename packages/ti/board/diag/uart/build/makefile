@@ -70,7 +70,11 @@ PACKAGE_SRCS_COMMON += ../../common/$(SOC)
 PACKAGE_SRCS_COMMON += ../../board_diag_component.mk
 PACKAGE_SRCS_COMMON += ../../create_sd.bat ../../create_sd.sh
 
+ifeq ($(TESTMODE), STRESS_TEST)
+SRCS_COMMON += uart_stress_test.c diag_common_cfg.c
+else
 SRCS_COMMON += uart_diag.c diag_common_cfg.c
+endif
 
 ifeq ($(CORE),$(filter $(CORE), mcu1_0))
 SRCS_ASM_COMMON += diag_entry_r5.asm

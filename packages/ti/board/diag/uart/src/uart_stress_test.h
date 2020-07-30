@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2018-2020 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -52,10 +52,18 @@
 #include "board_cfg.h"
 #include "diag_common_cfg.h"
 
+#if defined(SOC_AM65XX)
 #include "board_i2c_io_exp.h"
+#endif
 
 #define BAUDRATE_MAX     (115200)
+
+#if defined(SOC_TPR12)
+#define TEST_DATA_LEN    (1*1024*1024)	  /* 1MB of transmit data */
+#else
 #define TEST_DATA_LEN    (10*1024*1024)   /* 10MB of transmit data */
+#endif
+
 #define FIFO_SIZE        (256)
 
 

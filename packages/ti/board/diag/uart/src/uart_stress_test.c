@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2018 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -40,9 +40,9 @@
  *  UART TX and RX at maximum possible baud rate by receiving test string
  *  from host pc
  *
- *  Supported SoCs : AM65XX
+ *  Supported SoCs : AM65XX & TPR12.
  *
- *  Supported Platforms: am65xx_evm, am65xx_idk
+ *  Supported Platforms: am65xx_evm, am65xx_idk & tpr12_evm.
  *
  */
 
@@ -105,7 +105,7 @@ static int8_t BoardDiag_UartStressTest(uint32_t uartInstance, uint8_t setPort)
     uint8_t testPassMsg[] = "UART Stress Test Passed\n";
     uint8_t testFailMsg[] = "UART Stress Test Failed\n";
     uint8_t input = '\n';
-
+#if defined(SOC_AM65XX)
     if(setPort == 1)
     {
         /* Enable MCU UART port */
@@ -124,12 +124,17 @@ static int8_t BoardDiag_UartStressTest(uint32_t uartInstance, uint8_t setPort)
         uart_hwAttrs.frequency = 96000000;
         UART_socSetInitCfg(uartInstance, &uart_hwAttrs);
     }
-    else
+	else
     {
         UART_socGetInitCfg(uartInstance, &uart_hwAttrs);
         uart_hwAttrs.enableInterrupt = 0;
         UART_socSetInitCfg(uartInstance, &uart_hwAttrs);
     }
+#elif defined(SOC_TPR12)
+	UART_socGetInitCfg(uartInstance, &uart_hwAttrs);
+    uart_hwAttrs.enableInterrupt = 0;
+    UART_socSetInitCfg(uartInstance, &uart_hwAttrs);
+#endif
 
     UART_Params_init(&uartParams);
 
@@ -195,7 +200,7 @@ static void BoardDiag_enableUART1Sel(void)
                               PIN_NUM_5,
                               GPIO_SIGNAL_LEVEL_LOW);
 }
-#endif
+#elif defined(am65xx_idk)
 
 /* Function to enable MCU UART selection */
 static void BoardDiag_enableMCUUARTSel(void)
@@ -228,7 +233,7 @@ static void BoardDiag_enableWkUPUARTSel(void)
                               PIN_NUM_4,
                               GPIO_SIGNAL_LEVEL_HIGH);
 }
-
+#endif
 
 /**
  * \brief  main function
@@ -249,14 +254,15 @@ int main(void)
                BOARD_INIT_PINMUX_CONFIG;
 
     Board_init(boardCfg);
-
+#if defined(SOC_AM65XX)
     Board_i2cIoExpInit();
+#endif
 #if defined(am65xx_evm)
     BoardDiag_enableUART1Sel();
-#endif
+#elif defined(am65xx_idk)
     BoardDiag_enableMCUUARTSel();
     BoardDiag_enableWkUPUARTSel();
-
+#endif
     ret = BoardDiag_UartStressTest(BOARD_UART_INSTANCE, 0);
     if(ret != 0)
     {
@@ -268,7 +274,7 @@ int main(void)
     {
         ret = -1;
     }
-#endif
+#elif defined(am65xx_idk)
     ret = BoardDiag_UartStressTest(BOARD_UART_INSTANCE, 1);
     if (ret != 0)
     {
@@ -280,7 +286,7 @@ int main(void)
     {
         ret = -1;
     }
-
+#endif
     return ret;
 }
 #endif /* #ifndef SPI_BOOT_FRAMEWORK */
