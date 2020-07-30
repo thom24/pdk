@@ -132,9 +132,9 @@ const Udma_RmInitPrms gUdmaRmDefCfg_MainNavss[UDMA_NUM_CORE] =
         {0U, 0U, 0U, 0U},                           /* numUtcCh[] */
 #endif
 
-        60U,                                        /* startFreeFlow */
+        0U,                                         /* startFreeFlow */
         8U,                                         /* numFreeFlow */
-        120U,                                       /* startFreeRing */
+        0U,                                         /* startFreeRing */
         200U,                                       /* numFreeRing */
 
         18U,                                        /* startGlobalEvent */
@@ -181,9 +181,9 @@ const Udma_RmInitPrms gUdmaRmDefCfg_MainNavss[UDMA_NUM_CORE] =
         {0U, 0U, 0U, 0U},                           /* numUtcCh[] */
 #endif
 
-        84U,                                        /* startFreeFlow */
+        24U,                                        /* startFreeFlow */
         64U,                                        /* numFreeFlow */
-        424U,                                       /* startFreeRing */
+        304U,                                       /* startFreeRing */
         256U,                                       /* numFreeRing */
 
         1810U,                                      /* startGlobalEvent */
@@ -230,9 +230,9 @@ const Udma_RmInitPrms gUdmaRmDefCfg_MainNavss[UDMA_NUM_CORE] =
         {0U, 0U, 0U, 0U},                           /* numUtcCh[] */
 #endif
 
-        76U,                                        /* startFreeFlow */
+        16U,                                        /* startFreeFlow */
         8U,                                         /* numFreeFlow */
-        680U,                                       /* startFreeRing */
+        560U,                                       /* startFreeRing */
         256U,                                       /* numFreeRing */
 
         2066U,                                      /* startGlobalEvent */
@@ -281,7 +281,7 @@ const Udma_RmInitPrms gUdmaRmDefCfg_MainNavss[UDMA_NUM_CORE] =
 
         0U,                                         /* startFreeFlow */
         0U,                                         /* numFreeFlow */
-        360U,                                       /* startFreeRing */
+        240U,                                       /* startFreeRing */
         32U,                                        /* numFreeRing */
 
         464U,                                       /* startGlobalEvent */
@@ -330,7 +330,7 @@ const Udma_RmInitPrms gUdmaRmDefCfg_MainNavss[UDMA_NUM_CORE] =
 
         0U,                                         /* startFreeFlow */
         0U,                                         /* numFreeFlow */
-        392U,                                       /* startFreeRing */
+        272U,                                       /* startFreeRing */
         32U,                                         /* numFreeRing */
 
         616U,                                       /* startGlobalEvent */
@@ -382,9 +382,9 @@ const Udma_RmInitPrms gUdmaRmDefCfg_McuNavss[UDMA_NUM_CORE] =
         {0U, 0U, 0U, 0U},       /* numUtcCh[] */
 #endif
 
-        48U,        /* startFreeFlow */
+        0U,         /* startFreeFlow */
         8U,         /* numFreeFlow */
-        96U,         /* startFreeRing */
+        0U,         /* startFreeRing */
         32U,        /* numFreeRing */
 
         992U,      /* startGlobalEvent */
@@ -431,9 +431,9 @@ const Udma_RmInitPrms gUdmaRmDefCfg_McuNavss[UDMA_NUM_CORE] =
         {0U, 0U, 0U, 0U},       /* numUtcCh[] */
 #endif
 
-        72U,        /* startFreeFlow */
+        24U,        /* startFreeFlow */
         8U,         /* numFreeFlow */
-        208U,       /* startFreeRing */
+        112U,       /* startFreeRing */
         16U,        /* numFreeRing */
 
         2016U,      /* startGlobalEvent */
@@ -480,9 +480,9 @@ const Udma_RmInitPrms gUdmaRmDefCfg_McuNavss[UDMA_NUM_CORE] =
         {0U, 0U, 0U, 0U},       /* numUtcCh[] */
 #endif
 
-        80U,        /* startFreeFlow */
+        32U,        /* startFreeFlow */
         4U,         /* numFreeFlow */
-        224U,       /* startFreeRing */
+        128U,       /* startFreeRing */
         16U,         /* numFreeRing */
 
         2528U,      /* startGlobalEvent */
@@ -529,9 +529,9 @@ const Udma_RmInitPrms gUdmaRmDefCfg_McuNavss[UDMA_NUM_CORE] =
         {0U, 0U, 0U, 0U},       /* numUtcCh[] */
 #endif
 
-        60U,        /* startFreeFlow */
+        12U,        /* startFreeFlow */
         8U,         /* numFreeFlow */
-        144U,       /* startFreeRing */
+        48U,       /* startFreeRing */
         32U,        /* numFreeRing */
 
         264U,       /* startGlobalEvent */
@@ -578,9 +578,9 @@ const Udma_RmInitPrms gUdmaRmDefCfg_McuNavss[UDMA_NUM_CORE] =
         {0U, 0U, 0U, 0U},       /* numUtcCh[] */
 #endif
 
-        68U,        /* startFreeFlow */
+        20U,        /* startFreeFlow */
         4U,         /* numFreeFlow */
-        176U,       /* startFreeRing */
+        80U,        /* startFreeRing */
         32U,        /* numFreeRing */
 
         520U,       /* startGlobalEvent */
