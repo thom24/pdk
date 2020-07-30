@@ -78,7 +78,7 @@ extern uint8_t uart_inst;
 
 static uint32_t gMaxBaudRate = UFP_BAUDRATE_115200;
 static UART_Params gUartParams;
-static UART_Handle gUartHanlde = NULL;
+UART_Handle gUfpUartHandle = NULL;
 uint32_t gUfpBaudRateList[UFP_BAUDRATE_LIST_COUNT] = 
                                 { UFP_BAUDRATE_115200,
                                   UFP_BAUDRATE_230400,
@@ -256,7 +256,7 @@ int8_t UFP_uartConfig(uint32_t baudrate)
      * when there is baudrate change needed
      */
     if((gUartParams.baudRate != baudrate) ||
-       (gUartHanlde == NULL))
+       (gUfpUartHandle == NULL))
     {
         /* Close UART in case reconfiguring baudrate */
         UFP_uartClose();
@@ -266,8 +266,8 @@ int8_t UFP_uartConfig(uint32_t baudrate)
         UART_socSetInitCfg(uart_inst, &uartCfg);
 
         gUartParams.baudRate = baudrate;
-        gUartHanlde = UART_open(uart_inst, &gUartParams);
-        if(gUartHanlde == NULL)
+        gUfpUartHandle = UART_open(uart_inst, &gUartParams);
+        if(gUfpUartHandle == NULL)
         {
             return -1;
         }
@@ -282,10 +282,10 @@ int8_t UFP_uartConfig(uint32_t baudrate)
  */
 void UFP_uartClose(void)
 {
-    if(gUartHanlde != NULL)
+    if(gUfpUartHandle != NULL)
     {
-        UART_close(gUartHanlde);
-        gUartHanlde = NULL;
+        UART_close(gUfpUartHandle);
+        gUfpUartHandle = NULL;
     }
 }
 

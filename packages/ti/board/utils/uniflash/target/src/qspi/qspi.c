@@ -61,7 +61,7 @@ static int8_t UFP_qspiClose(void);
 /*                            Global Variables                                */
 /* ========================================================================== */
 
-#if (defined(SOC_K2G) || defined(j721e_evm))
+#if (defined(SOC_K2G) || defined(j721e_evm) || defined(tpr12_evm))
     Board_flashHandle gQspiHandle;
 #else
     S25FL_Handle gQspiHandle;
@@ -88,7 +88,7 @@ const UFP_fxnTable UFP_qspiFxnTable = {
  */
 static int8_t UFP_qspiClose(void)
 {
-#if (defined(SOC_K2G) || defined(j721e_evm))
+#if (defined(SOC_K2G) || defined(j721e_evm) || defined(tpr12_evm))
     Board_flashClose(gQspiHandle);
 #else
     S25FLFlash_QuadModeEnable(gQspiHandle);
@@ -111,14 +111,10 @@ static int8_t UFP_qspiClose(void)
  */
 static int8_t UFP_qspiFlashRead(uint8_t *dst, uint32_t offset, uint32_t length)
 {
-#if (defined(SOC_K2G) || defined(j721e_evm))
+#if (defined(SOC_K2G) || defined(j721e_evm) || defined(tpr12_evm))
     uint32_t ioMode;
 
-#if defined(j721e_evm)
-    ioMode = QSPI_FLASH_QUAD_READ;
-#else
     ioMode = BOARD_FLASH_QSPI_IO_MODE_QUAD;
-#endif
 
     if (Board_flashRead(gQspiHandle, offset, dst, length, (void *)(&ioMode)))
     {
@@ -160,15 +156,11 @@ static int8_t UFP_qspiFlashRead(uint8_t *dst, uint32_t offset, uint32_t length)
  */
 static int8_t UFP_qspiFlashWrite(uint8_t *src, uint32_t offset, uint32_t length)
 {
-#if (defined(SOC_K2G) || defined(j721e_evm))
+#if (defined(SOC_K2G) || defined(j721e_evm) || defined(tpr12_evm))
     uint32_t startBlockNum, endBlockNum, pageNum;
     uint32_t ioMode, i;
 
-#if defined(j721e_evm)
-    ioMode = QSPI_FLASH_QUAD_PAGE_PROG;
-#else
     ioMode = BOARD_FLASH_QSPI_IO_MODE_QUAD;
-#endif
 
 #if defined(j721e_evm)
     if (!(offset % QSPI_NOR_BLOCK_SIZE))
@@ -278,7 +270,7 @@ static int8_t UFP_qspiFlashImage(uint8_t *flashAddr, uint8_t *checkAddr,
  */
 static int8_t UFP_qspiFlashErase(uint32_t offset, uint32_t length)
 {
-#if (defined(SOC_K2G) || defined(j721e_evm))
+#if (defined(SOC_K2G) || defined(j721e_evm) || defined(tpr12_evm))
     uint32_t startBlockNum, endBlockNum, pageNum, i;
 
     /* Get starting block number */
@@ -329,8 +321,13 @@ static int8_t UFP_qspiFlashErase(uint32_t offset, uint32_t length)
  */
 static int8_t UFP_qspiInit(void)
 {
-#if (defined(SOC_K2G))
+#if (defined(SOC_K2G) || defined(tpr12_evm))
+
+#if defined(SOC_K2G)
     QSPI_v0_HwAttrs qspi_cfg;
+#else /* tpr12_evm */
+    QSPI_HwAttrs qspi_cfg;
+#endif
 
     /* Get the default QSPI init configurations */
     QSPI_socGetInitCfg(BOARD_QSPI_NOR_INSTANCE, &qspi_cfg);

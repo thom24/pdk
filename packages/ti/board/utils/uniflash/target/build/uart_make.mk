@@ -77,6 +77,11 @@ ifeq ($(BOARD), $(filter $(BOARD), j721e_evm am65xx_evm am65xx_idk j7200_evm))
   endif
 endif
 
+ifeq ($(BOARD), $(filter $(BOARD), tpr12_evm))
+  SRCDIR += $(UNIFLASH_BASE_DIR)/soc/$(SOC) $(UNIFLASH_BASE_DIR)/src/qspi
+  INCDIR += $(UNIFLASH_BASE_DIR)/src/qspi
+endif
+
 # List all the external components/interfaces, whose interface header files
 # need to be included for this component
 INCLUDE_EXTERNAL_INTERFACES = pdk
@@ -86,6 +91,11 @@ COMP_LIST_COMMON = $(PDK_COMMON_BAREMETAL_COMP)
 ifeq ($(BOARD), $(filter $(BOARD), j721e_evm am65xx_evm am65xx_idk j7200_evm))
 COMP_LIST_COMMON += spi_dma mmcsd
 endif
+
+ifeq ($(BOARD), $(filter $(BOARD), tpr12_evm))
+COMP_LIST_COMMON += spi_dma
+endif
+
 ifneq ($(strip $(HS_SUFFIX)),) #if $(HS_SUFFIX) is non-empty
   COMP_LIST_COMMON := $(filter-out sciclient,$(COMP_LIST_COMMON))
   COMP_LIST_COMMON += sciclient$(HS_SUFFIX)
@@ -102,6 +112,9 @@ else
   ifeq ($(BOARD), $(filter $(BOARD), j721e_evm am65xx_evm am65xx_idk j7200_evm))
   PACKAGE_SRCS_COMMON += ../../soc/k3
   endif
+  ifeq ($(BOARD), $(filter $(BOARD), tpr12_evm))
+  PACKAGE_SRCS_COMMON += ../../soc/$(SOC)
+  endif
   PACKAGE_SRCS_COMMON = ../../target ../../host ../../../board_utils_component.mk
 endif
 
@@ -117,6 +130,11 @@ endif
 ifeq ($(BOARD), $(filter $(BOARD), am65xx_evm am65xx_idk))
 SRCS_COMMON += ospi.c emmc.c
 EXTERNAL_LNKCMD_FILE_LOCAL = $(UNIFLASH_BASE_DIR)/soc/k3/linker.cmd
+endif
+
+ifeq ($(BOARD), $(filter $(BOARD), tpr12_evm))
+SRCS_COMMON += qspi.c
+EXTERNAL_LNKCMD_FILE_LOCAL = $(UNIFLASH_BASE_DIR)/soc/$(SOC)/linker.cmd
 endif
 
 ifeq ($(NOJTAG), yes)

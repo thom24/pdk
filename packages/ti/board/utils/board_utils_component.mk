@@ -84,6 +84,8 @@ board_utils_j721e_BOARDLIST = j721e_evm
 board_utils_j721e_CORELIST = mcu1_0
 board_utils_j7200_BOARDLIST = j7200_evm
 board_utils_j7200_CORELIST = mcu1_0
+board_utils_tpr12_BOARDLIST = tpr12_evm
+board_utils_tpr12_CORELIST = mcu1_0
 
 ############################
 # Board utils example
@@ -121,7 +123,9 @@ export board_utils_uart_flash_programmer_BOARDLIST
 board_utils_uart_flash_programmer_$(SOC)_CORELIST = $(board_utils_$(SOC)_CORELIST)
 export board_utils_uart_flash_programmer_$(SOC)_CORELIST
 board_utils_EXAMPLE_LIST += board_utils_uart_flash_programmer
+ifneq ($(SOC), $(filter $(SOC), tpr12))
 board_utils_uart_flash_programmer_SBL_IMAGEGEN = yes
+endif
 export board_utils_uart_flash_programmer_SBL_IMAGEGEN
 
 board_utils_uart_flash_programmer_hs_COMP_LIST = board_utils_uart_flash_programmer_hs
@@ -149,7 +153,7 @@ board_utils_uart_flash_programmer_hs_BOARDLIST = $(board_utils_$(SOC)_BOARDLIST)
 export board_utils_uart_flash_programmer_hs_BOARDLIST
 board_utils_uart_flash_programmer_hs_$(SOC)_CORELIST = $(board_utils_$(SOC)_CORELIST)
 export board_utils_uart_flash_programmer_hs_$(SOC)_CORELIST
-ifneq ($(SOC), j7200)
+ifneq ($(SOC), $(filter $(SOC), j7200 tpr12))
 board_utils_EXAMPLE_LIST += board_utils_uart_flash_programmer_hs
 endif
 board_utils_uart_flash_programmer_hs_SBL_IMAGEGEN = yes

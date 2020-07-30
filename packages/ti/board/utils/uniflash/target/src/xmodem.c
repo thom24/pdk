@@ -47,6 +47,7 @@
 uint32_t DELAY = 0x3FFFFF;
 extern uint32_t uart_baseAddr;
 extern UFP_flashConfig UPF_flashFxnPtr[FLASH_DEVICE_MAX];
+extern UART_Handle gUfpUartHandle;
 uint8_t gDataRxBuff[DATA_BUFF_LEN], gDataCheckBuff[DATA_BUFF_LEN];
 
 static const unsigned short crc16tab[256]= {
@@ -191,8 +192,18 @@ void delay(uint16_t delay_val)
  */
 int32_t inbyte(uint32_t msec)
 {
-#ifdef SOC_K2G
+#if defined(SOC_K2G)
     return(UART_charGetTimeout_v0(uart_baseAddr, msec));
+#elif defined(SOC_TPR12)
+    int32_t data;
+    if(UART_read(gUfpUartHandle, (void*)&data, 1) == 0)
+    {
+        return data;
+    }
+    else
+    {
+        return -1;
+    }
 #else
     return(UARTCharGetTimeout(uart_baseAddr, msec));
 #endif
@@ -206,8 +217,10 @@ int32_t inbyte(uint32_t msec)
  */
 void outbyte(uint8_t c)
 {
-#ifdef SOC_K2G
+#if defined(SOC_K2G)
     UART_charPut_v0(uart_baseAddr, c);
+#elif defined(SOC_TPR12)
+    UART_write(gUfpUartHandle, (const void*)&c, 1);
 #else
     UARTCharPut(uart_baseAddr, c);
 #endif

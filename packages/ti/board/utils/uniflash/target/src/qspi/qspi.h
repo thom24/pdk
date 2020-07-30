@@ -62,6 +62,10 @@ extern "C" {
 
 #elif defined(j721e_evm)
 #include <ti/board/src/flash/include/board_flash.h>
+
+#elif defined(SOC_TPR12)
+#include <ti/board/src/flash/include/board_flash.h>
+#include <ti/board/src/flash/nor/qspi/nor_qspi.h>
 #endif
 
 #ifdef iceK2G
@@ -71,6 +75,8 @@ extern "C" {
 #elif defined(j721e_evm)
 #define QSPI_FLASH_ID           BOARD_FLASH_ID_MT25QU512ABB
 #define QSPI_NOR_BLOCK_SIZE     (64U * 1024U)
+#elif defined(tpr12_evm)
+#define QSPI_FLASH_ID           BOARD_FLASH_ID_MX25V1635F
 #endif
 
 #if !(defined(SOC_K2G) || defined(j721e_evm))

@@ -35,7 +35,9 @@ extern "C" {
 #ifdef SOC_K2G
 #include <ti/csl/src/ip/uart/V0/uart.h>
 #else
+#if !defined(SOC_TPR12)
 #include <ti/csl/src/ip/uart/V1/uart.h>
+#endif
 #endif
 
 #include <ti/drv/uart/UART.h>

@@ -93,6 +93,11 @@ extern "C" {
 #define EMMC_FLASH
 #endif
 
+#if defined(tpr12_evm)
+#define QSPI_FLASH
+#define MAX_BAUDRATE_SUPPORTED			(0x0U)
+#endif
+
 #define FLASH_DEVICE_MAX          (6U)
 
 #define UFP_FLASH_DEV_NAND        (0x0U)
