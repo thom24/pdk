@@ -120,15 +120,19 @@ void configureAudio(void)
     Board_pinmuxSetCfg(&pinmuxCfg);
 #endif
 
-        stat = Board_init(arg);
-        if(stat != BOARD_SOK)
+    stat = Board_init(arg);
+    if(stat != BOARD_SOK)
     {
             MCASP_log("Board init failed!!");
-        }
+    }
 
 #if !defined (DEVICE_LOOPBACK)
     IoExpanderConfig();
 #endif
+
+    /* Configure AUDIO_REFCLK1 as output */
+    /* TODO: Workaround till clockout config is done by sciclient */
+    HW_WR_REG32(0x01082E4, 0x8000);
 
     Sciclient_configPrmsInit(&sciClientCfg);
     Sciclient_init(&sciClientCfg);
@@ -146,7 +150,6 @@ void McASP_Enable(void)
                                    TISCI_DEV_MCASP0_AUX_CLK_PARENT_HSDIV2_16FFT_MAIN_4_HSDIVOUT0_CLK,
                                    SCICLIENT_SERVICE_WAIT_FOREVER);
 
-#if 0  /* J7200_TODO: Need to enable after sciclient macros are available */
     /* Select AUDIO_EXT_REFCLK1 input to use McASP0_AHCLKX signal, and set
      * AUDIO_EXT_REFCLK1 as output */
     Sciclient_pmSetModuleClkParent(TISCI_DEV_BOARD0,
@@ -157,9 +160,8 @@ void McASP_Enable(void)
     /* Send AUDIO_REFCLK1 OBSCLK0 for debug purposes */
     Sciclient_pmSetModuleClkParent(TISCI_DEV_BOARD0,
                                    TISCI_DEV_BOARD0_OBSCLK0_IN,
-                                   TISCI_DEV_BOARD0_OBSCLK0_IN_PARENT_HSDIV3_16FFT_MAIN_4_HSDIVOUT0_CLK,
+                                   TISCI_DEV_BOARD0_OBSCLK0_IN_PARENT_HSDIV2_16FFT_MAIN_4_HSDIVOUT0_CLK,
                                    SCICLIENT_SERVICE_WAIT_FOREVER);
-#endif
 }
 
 extern I2C_Handle gIoExpI2cHandle;
@@ -186,26 +188,7 @@ void IoExpanderConfig(void)
     Board_control(BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT, (void *)&ioExpCfg);
 
     /* Configure SoM IO mux */
-    ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_SOM_DEVICE1_ADDR;
-    ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_SOM_DEVICE1_INSTANCE;
-    ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
-    ioExpCfg.enableIntr  = false;
-    ioExpCfg.ioExpType   = ONE_PORT_IOEXP;
-    ioExpCfg.portNum     = PORTNUM_0;
-    ioExpCfg.pinNum      = PIN_NUM_1;
-    ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_LOW;
-
-    Board_control(BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT, (void *)&ioExpCfg);
-
-    ioExpCfg.pinNum      = PIN_NUM_3;
-    ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_HIGH;
-
-    Board_control(BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT, (void *)&ioExpCfg);
-
-    ioExpCfg.pinNum      = PIN_NUM_5;
-    ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_HIGH;
-
-    Board_control(BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT, (void *)&ioExpCfg);
+    Board_control(BOARD_CTRL_CMD_SET_SOM_AUDIO_MUX, NULL);
 
     /* Bring the codec out of reset */
     ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_DEVICE3_ADDR;
