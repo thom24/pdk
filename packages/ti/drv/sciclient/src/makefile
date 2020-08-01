@@ -66,46 +66,29 @@ ifeq ($(BOARD),$(filter $(BOARD), j721e_hostemu j721e_loki))
 endif
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(SCICLIENT_CFLAGS)
-PACKAGE_SRCS_COMMON += sciclient.h sciclient_component.mk makefile .gitignore
-PACKAGE_SRCS_COMMON += include docs tools $(SRCDIR) soc/sciclient_soc_priv.h
-PACKAGE_SRCS_COMMON += config_mk.bld package.bld package.xdc package.xs
-PACKAGE_SRCS_COMMON += Settings.xdc.xdt sciclientver.h sciclientver.h.xdt
 
-# Selectively package sysfw components
-PACKAGE_SRCS_COMMON += soc/sysfw/binaries/system-firmware-public-documentation
-PACKAGE_SRCS_COMMON += soc/sysfw/include
-
-ifeq ($(SOC),$(filter $(SOC), am65xx))
-PACKAGE_SRCS_COMMON += soc/sysfw/binaries/ti-sci-firmware-am65x-gp.bin
-PACKAGE_SRCS_COMMON += soc/sysfw/binaries/ti-sci-firmware-am65x_sr2-gp.bin
-PACKAGE_SRCS_COMMON += soc/sysfw/binaries/ti-sci-firmware-am65x-hs-cert.bin
-PACKAGE_SRCS_COMMON += soc/sysfw/binaries/ti-sci-firmware-am65x-hs-enc.bin
-
-ifeq ($(BUILD_HS),yes)
-CFLAGS_LOCAL_COMMON += -DBUILD_HS
-endif
-
-endif
-
-ifeq ($(SOC),$(filter $(SOC), j721e))
-PACKAGE_SRCS_COMMON += soc/sysfw/binaries/ti-sci-firmware-j721e-gp.bin
-PACKAGE_SRCS_COMMON += soc/sysfw/binaries/ti-sci-firmware-j721e-hs-cert.bin
-PACKAGE_SRCS_COMMON += soc/sysfw/binaries/ti-sci-firmware-j721e-hs-enc.bin
+PACKAGE_SRCS_COMMON += config_mk.bld
+PACKAGE_SRCS_COMMON += COPYING.txt
+PACKAGE_SRCS_COMMON += docs
+PACKAGE_SRCS_COMMON += examples
+PACKAGE_SRCS_COMMON += include
+PACKAGE_SRCS_COMMON += makefile
+PACKAGE_SRCS_COMMON += package.bld
+PACKAGE_SRCS_COMMON += package.xdc
+PACKAGE_SRCS_COMMON += package.xs
+PACKAGE_SRCS_COMMON += sciclient_component.mk
+PACKAGE_SRCS_COMMON += sciclient.h
+PACKAGE_SRCS_COMMON += sciclientver.h
+PACKAGE_SRCS_COMMON += sciclientver.h.xdt
+PACKAGE_SRCS_COMMON += Settings.xdc.xdt
+PACKAGE_SRCS_COMMON += soc/sciclient_soc_priv.h
+PACKAGE_SRCS_COMMON += soc/$(SCICLIENT_SOCVER)
+PACKAGE_SRCS_COMMON += soc/sysfw
+PACKAGE_SRCS_COMMON += src
+PACKAGE_SRCS_COMMON += tools
 
 ifeq ($(BUILD_HS),yes)
 CFLAGS_LOCAL_COMMON += -DBUILD_HS
-endif
-
-endif
-
-ifeq ($(SOC),$(filter $(SOC), j7200))
-PACKAGE_SRCS_COMMON += soc/sysfw/binaries/ti-sci-firmware-j7200-gp-vlab.bin
-PACKAGE_SRCS_COMMON += soc/sysfw/binaries/ti-sci-firmware-j7200-gp-zebu.bin
-endif
-
-ifeq ($(SOC),$(filter $(SOC), am64x))
-PACKAGE_SRCS_COMMON += soc/sysfw/binaries/ti-sci-firmware-am64x-gp-vlab.bin
-PACKAGE_SRCS_COMMON += soc/sysfw/binaries/ti-sci-firmware-am64x-gp-zebu.bin
 endif
 
 # Core/SoC/platform specific source files and CFLAGS
