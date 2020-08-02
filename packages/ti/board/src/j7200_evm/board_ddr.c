@@ -129,9 +129,6 @@ static void Board_DDRChangeFreqAck(void)
             BOARD_DEBUG_LOG("Invalid Request Type\n");
         }
 
-     /* TBD: For slower DDR speeds (e.g., 1600), extra delay in the PLL programming sequence seems to be necessary */
-        Osal_delay(20);
-
         counter2 = 0;
         while(counter2 < 200)
         {
