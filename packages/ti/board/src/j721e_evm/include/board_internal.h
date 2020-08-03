@@ -502,9 +502,9 @@ Board_STATUS Board_DDRInit(Bool eccEnable);
 Board_STATUS Board_moduleClockInitMcu(void);
 
 /**
- * \brief clock Initialization function for MAIN domain
+ * \brief clock Initialization function for MAIN domain, Group1
  *
- * Enables different power domains and peripheral clocks of the SoC.
+ * Enables 1st group of power domains and peripheral clocks of the SoC.
  * Some of the power domains and peripherals will be OFF by default.
  * Enabling the power domains is mandatory before accessing using
  * board interfaces connected to those peripherals.
@@ -513,7 +513,22 @@ Board_STATUS Board_moduleClockInitMcu(void);
  *          BOARD_INIT_CLOCK_FAIL  - Clock initialization failed.
  *
  */
-Board_STATUS Board_moduleClockInitMain(void);
+Board_STATUS Board_moduleClockInitMainGrp1(void);
+
+/**
+ * \brief clock Initialization function for MAIN domain, Group2
+ *
+ * Enables 2nd group of power domains and peripheral clocks of the SoC.
+ * Some of the power domains and peripherals will be OFF by default.
+ * Enabling the power domains is mandatory before accessing using
+ * board interfaces connected to those peripherals.
+ *
+ * \return  BOARD_SOK              - Clock initialization successful.
+ *          BOARD_INIT_CLOCK_FAIL  - Clock initialization failed.
+ *
+ */
+Board_STATUS Board_moduleClockInitMainGrp2(void);
+
 
 /**
  * \brief clock de-initialization function for MCU domain
@@ -527,15 +542,26 @@ Board_STATUS Board_moduleClockInitMain(void);
 Board_STATUS Board_moduleClockDeinitMcu(void);
 
 /**
- * \brief clock de-initialization function for MAIN domain
+ * \brief clock de-initialization function for MAIN domain, Group1
  *
- * Disables different power domains and peripheral clocks of the SoC.
+ * Disables 1st group of power domains and peripheral clocks of the SoC.
  *
  * \return  BOARD_SOK              - Clock de-initialization successful.
  *          BOARD_INIT_CLOCK_FAIL  - Clock de-initialization failed.
  *
  */
-Board_STATUS Board_moduleClockDeinitMain(void);
+Board_STATUS Board_moduleClockDeinitMainGrp1(void);
+
+/**
+ * \brief clock de-initialization function for MAIN domain, Group2
+ *
+ * Disables 2nd group of power domains and peripheral clocks of the SoC.
+ *
+ * \return  BOARD_SOK              - Clock de-initialization successful.
+ *          BOARD_INIT_CLOCK_FAIL  - Clock de-initialization failed.
+ *
+ */
+Board_STATUS Board_moduleClockDeinitMainGrp2(void);
 
 /**
  * \brief  Board specific configurations for CPSW2G Ethernet PHY

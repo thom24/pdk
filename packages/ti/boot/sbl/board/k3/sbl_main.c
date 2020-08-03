@@ -348,7 +348,12 @@ int main()
 #if defined(SBL_ENABLE_CLOCKS) && !defined(SBL_SKIP_SYSFW_INIT)
     SBL_log(SBL_LOG_MAX, "InitlialzingClocks ...");
     SBL_ADD_PROFILE_POINT;
+#if !defined(SBL_ENABLE_HLOS_BOOT)
     Board_init(SBL_CLOCK_INIT);
+#else
+    Board_init(BOARD_INIT_MODULE_CLOCK_MCU);
+    Board_init(BOARD_INIT_MODULE_CLOCK_MAIN);
+#endif
     SBL_log(SBL_LOG_MAX, "done.\n");
 #endif
 
