@@ -61,19 +61,13 @@
 #include <ti/drv/pruss/pruicss.h>
 #include <ti/drv/pruss/soc/pruicss_v1.h>
 
-/* ICSSG EMAC firmware header files PG1.0 */
-#include <ti/drv/emac/firmware/icss_dualmac/bin/rxl2_txl2_rgmii0_bin.h>      /* PDSPcode */
-#include <ti/drv/emac/firmware/icss_dualmac/bin/rtu_test0_bin.h>             /* PDSP2code */
-#include <ti/drv/emac/firmware/icss_dualmac/bin/rxl2_txl2_rgmii1_bin.h>      /*PDSP3code */
-#include <ti/drv/emac/firmware/icss_dualmac/bin/rtu_test1_bin.h>             /* PDSP4code */
-
 /* ICSSG EMAC firmware header files PG2.0 */
-#include <ti/drv/emac/firmware/icss_dualmac/bin_pg2/rxl2_rgmii0_bin.h>      /* PDSPcode */
-#include <ti/drv/emac/firmware/icss_dualmac/bin_pg2/rtu_test0_bin.h>        /* PDSP2code */
-#include <ti/drv/emac/firmware/icss_dualmac/bin_pg2/rxl2_rgmii1_bin.h>      /* PDSP3code */
-#include <ti/drv/emac/firmware/icss_dualmac/bin_pg2/rtu_test1_bin.h>        /* PDSP4code */
-#include <ti/drv/emac/firmware/icss_dualmac/bin_pg2/txl2_rgmii0_bin.h>      /* PDSP5code */
-#include <ti/drv/emac/firmware/icss_dualmac/bin_pg2/txl2_rgmii1_bin.h>      /* PDSP6code */
+#include <ti/drv/emac/firmware/icss_dualmac/bin_pg2/RX_PRU_SLICE0_bin.h>      /* PDSPcode */
+#include <ti/drv/emac/firmware/icss_dualmac/bin_pg2/RTU0_SLICE0_bin.h>        /* PDSP2code */
+#include <ti/drv/emac/firmware/icss_dualmac/bin_pg2/RX_PRU_SLICE1_bin.h>      /* PDSP3code */
+#include <ti/drv/emac/firmware/icss_dualmac/bin_pg2/RTU0_SLICE1_bin.h>        /* PDSP4code */
+#include <ti/drv/emac/firmware/icss_dualmac/bin_pg2/TX_PRU_SLICE0_bin.h>      /* PDSP5code */
+#include <ti/drv/emac/firmware/icss_dualmac/bin_pg2/TX_PRU_SLICE1_bin.h>      /* PDSP6code */
 
 /* EMAC firmware config header files */
 #include <ti/drv/emac/firmware/icss_dualmac/config/emac_fw_config_dual_mac.h>
@@ -84,6 +78,8 @@ extern "C" {
 
 extern void BOARD_delay(uint32_t usecs);
 
+#define EMAC_TEST_APP_WITHOUT_DDR  (TRUE)
+
 /**********************************************************************
  ************************** LOCAL Definitions *************************
  **********************************************************************/
@@ -91,7 +87,7 @@ extern void BOARD_delay(uint32_t usecs);
 #define BOARD_DIAG_ICSS_EMAC_MAX_INTANCES               ((uint32_t)3U)
 #define BOARD_DIAG_ICSS_EMAC_MAX_PORTS                  ((BOARD_DIAG_ICSS_EMAC_MAX_INTANCES)*(BOARD_DIAG_ICSS_EMAC_MAX_PORTS_PER_INSTANCE))
 
-#define BOARD_DIAG_ICSS_EMAC_LINK_TIMEOUT_COUNT               (100U)
+#define BOARD_DIAG_ICSS_EMAC_LINK_TIMEOUT_COUNT               (1000U)
 
 /* Ring definitions */
 #define BOARD_DIAG_ICSS_EMAC_RING_TRCNT                      (128U)   /* Number of ring entries */
@@ -99,6 +95,8 @@ extern void BOARD_delay(uint32_t usecs);
 #define BOARD_DIAG_ICSS_EMAC_RING_TRSIZE                     (8U)
 #define BOARD_DIAG_ICSS_EMAC_UDMAP_DESC_SIZE                 (128U)
 #define BOARD_DIAG_ICSS_EMAC_CACHE_LINESZ                    (128U)
+
+#define BOARD_DIAG_ICSS_EMAC_MAX_CHANS_PER_PORT              (1)
 
 #ifdef DIAG_STRESS_TEST
 #define BOARD_DIAG_ICSS_EMAC_PKT_SEND_COUNT         (10240U)
@@ -123,13 +121,13 @@ extern void BOARD_delay(uint32_t usecs);
 /**
  * @brief  Max EMAC packet size in bytes initialized for the driver
  */
-#define BOARD_DIAG_ICSS_EMAC_INIT_PKT_SIZE          (128U)
+#define BOARD_DIAG_ICSS_EMAC_INIT_PKT_SIZE          (64U)
 
 /**
  * @brief  Max packet size in bytes used in the application,
  *         align to 128 byte cache line size
  */
-#define BOARD_DIAG_ICSS_EMAC_MAX_PKT_SIZE           (128U)
+#define BOARD_DIAG_ICSS_EMAC_MAX_PKT_SIZE           (64U)
 
 /**
  * @brief  Total packet buffer size in bytes per core
@@ -142,7 +140,7 @@ extern void BOARD_delay(uint32_t usecs);
  * @brief  Max number of packets in the application free packet queue
  *
  */
-#define BOARD_DIAG_ICSSG_EMAC_MAX_PKTS              (64U)
+#define BOARD_DIAG_ICSSG_EMAC_MAX_PKTS              ((BOARD_DIAG_ICSS_EMAC_MAX_PORTS*64))
 
 /**
  * @brief  Max number of packet descriptors per port initialized
@@ -157,10 +155,10 @@ extern void BOARD_delay(uint32_t usecs);
 #define BOARD_DIAG_ICSS_EMAC_INIT_TX_PKTS           (BOARD_DIAG_ICSSG_EMAC_MAX_PKTS-BOARD_DIAG_ICSS_EMAC_INIT_RX_PKTS)
 
 /* Number of TX packet descriptor */
-#define BOARD_DIAG_ICSS_EMAC_TX_PKT_DESC_COUNT          (16U)
+#define BOARD_DIAG_ICSS_EMAC_TX_PKT_DESC_COUNT          (8U)
 
 /* Number of RX packet descriptor */
-#define BOARD_DIAG_ICSS_EMAC_RX_PKT_DESC_COUNT          (16U)
+#define BOARD_DIAG_ICSS_EMAC_RX_PKT_DESC_COUNT          (8U)
 
 #define BOARD_DIAG_ICSS_EMAC_REG_DUMP_MAX    (16U)
 
@@ -171,6 +169,33 @@ extern void BOARD_delay(uint32_t usecs);
 
 #define BOARD_ICSS_EMAC_APP_BOARDID_ADDR   (0x52U)
 #define BOARD_ICSS_MAX_PORTS_IDK           (4U)
+
+
+
+#ifndef EMAC_TEST_APP_WITHOUT_DDR
+#define EMAC_TEST_MAX_CHANS_PER_PORT 4
+#define EMAC_TEST_MAX_SUB_RX_CHANS_PER_PORT 9
+#else
+#define EMAC_TEST_MAX_CHANS_PER_PORT 1
+#define EMAC_TEST_MAX_SUB_RX_CHANS_PER_PORT 3
+#endif
+
+#ifdef EMAC_TEST_APP_WITHOUT_DDR
+#define EMAC_TEST_APP_RING_ENTRIES      (32)
+#else
+#define EMAC_TEST_APP_RING_ENTRIES      (128)
+#endif
+/* Size (in bytes) of each ring entry (Size of pointer - 64-bit) */
+
+#define EMAC_TEST_APP_RING_ENTRY_SIZE   (sizeof(uint64_t))
+/* Total ring memory */
+
+#define EMAC_TEST_APP_RING_MEM_SIZE     (EMAC_TEST_APP_RING_ENTRIES * EMAC_TEST_APP_RING_ENTRY_SIZE)
+
+#define EMAC_ICSSG_DUAL_MAC_FW_BUFER_POOL_SIZE_PG2 0X14000 // 8 BUFFER POOLS EACH 0X2000 BYTES PLUS 0X4000 BYTES FOR RX Q CONTEXT info
+#define EMAC_ICSSG_BUFFER_POOL_SIZE_PG2 0x2000u
+#define EMAC_ICSSG_MAX_NUM_BUFFER_POOLS_PG2 8u
+
 
 typedef struct BOARD_DIAG_MDIO_INFO_tag
 {

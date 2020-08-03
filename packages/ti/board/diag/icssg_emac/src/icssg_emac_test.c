@@ -64,9 +64,6 @@
 /**********************************************************************
  ************************** Global Variables **************************
  **********************************************************************/
-uint32_t interposerCardPresent = 0;
-
-Board_IDInfo_v2 gIcssEmacBoardInfo;
 
 #define APP_TEST_AM65XX_PG1_0_VERSION (0x0BB5A02FU)
 /* Maxwell PG version */
@@ -76,52 +73,57 @@ uint32_t gPgVersion;
  * UDMA driver objects
  */
 struct Udma_DrvObj      gUdmaDrvObj;
-struct Udma_ChObj       gUdmaTxChObj[BOARD_DIAG_ICSS_EMAC_MAX_PORTS][4];
-struct Udma_ChObj       gUdmaRxChObj[BOARD_DIAG_ICSS_EMAC_MAX_PORTS][4];
-struct Udma_EventObj    gUdmaRxCqEventObj[BOARD_DIAG_ICSS_EMAC_MAX_PORTS][4];
+struct Udma_ChObj       gUdmaTxChObj[BOARD_DIAG_ICSS_EMAC_MAX_PORTS][9];
+struct Udma_ChObj       gUdmaRxChObj[BOARD_DIAG_ICSS_EMAC_MAX_PORTS];
+struct Udma_EventObj    gUdmaRxCqEventObj[BOARD_DIAG_ICSS_EMAC_MAX_PORTS][9];
 
-struct Udma_ChObj       gUdmaRxCfgPsiChObj[BOARD_DIAG_ICSS_EMAC_MAX_PORTS];
-struct Udma_EventObj    gUdmaRxCfgPsiCqEventObj[BOARD_DIAG_ICSS_EMAC_MAX_PORTS];
+struct Udma_ChObj       gUdmaRxMgmtPsiChObj[EMAC_MAX_PORTS];
+struct Udma_EventObj    gUdmaRxMgmtPsiCqEventObj[EMAC_MAX_PORTS][EMAC_TEST_MAX_SUB_RX_CHANS_PER_PORT];
 
 Udma_DrvHandle          gDrvHandle = NULL;
 
 
-uint8_t  app_pkt_buffer[BOARD_DIAG_ICSS_EMAC_TOTAL_PKTBUF_SIZE] __attribute__ ((aligned (128))) __attribute__ ((section (".data_buffer")));
+uint8_t  app_pkt_buffer[BOARD_DIAG_ICSS_EMAC_TOTAL_PKTBUF_SIZE] __attribute__ ((aligned (128)));
 /* TX/RX ring entries memory */
-uint8_t  gTxRingMem[BOARD_DIAG_ICSS_EMAC_MAX_PORTS][BOARD_DIAG_ICSS_EMAC_RING_TRSIZE * BOARD_DIAG_ICSS_EMAC_RING_TRCNT] __attribute__ ((aligned (BOARD_DIAG_ICSS_EMAC_CACHE_LINESZ)));
-uint8_t  gTxCompRingMem[BOARD_DIAG_ICSS_EMAC_MAX_PORTS][BOARD_DIAG_ICSS_EMAC_RING_TRSIZE * BOARD_DIAG_ICSS_EMAC_RING_TRCNT] __attribute__ ((aligned (BOARD_DIAG_ICSS_EMAC_CACHE_LINESZ)));
-uint8_t  gRxRingMem[BOARD_DIAG_ICSS_EMAC_MAX_PORTS][BOARD_DIAG_ICSS_EMAC_RING_TRSIZE * BOARD_DIAG_ICSS_EMAC_RING_TRCNT] __attribute__ ((aligned (BOARD_DIAG_ICSS_EMAC_CACHE_LINESZ)));
-uint8_t  gRxCompRingMem[BOARD_DIAG_ICSS_EMAC_MAX_PORTS][BOARD_DIAG_ICSS_EMAC_RING_TRSIZE * BOARD_DIAG_ICSS_EMAC_RING_TRCNT] __attribute__ ((aligned (BOARD_DIAG_ICSS_EMAC_CACHE_LINESZ)));
-uint8_t gRxCfgPsiRingMem[BOARD_DIAG_ICSS_EMAC_MAX_PORTS][BOARD_DIAG_ICSS_EMAC_RING_TRSIZE * BOARD_DIAG_ICSS_EMAC_RING_TRCNT] __attribute__ ((aligned(BOARD_DIAG_ICSS_EMAC_CACHE_LINESZ)));
-uint8_t gRxCfgPsiCompRingMem[BOARD_DIAG_ICSS_EMAC_MAX_PORTS][BOARD_DIAG_ICSS_EMAC_RING_TRSIZE * BOARD_DIAG_ICSS_EMAC_RING_TRCNT] __attribute__ ((aligned(BOARD_DIAG_ICSS_EMAC_CACHE_LINESZ)));
 
+static uint8_t gTxRingMem[BOARD_DIAG_ICSS_EMAC_MAX_PORTS][EMAC_TEST_MAX_CHANS_PER_PORT][EMAC_TEST_APP_RING_MEM_SIZE] __attribute__ ((aligned(UDMA_CACHELINE_ALIGNMENT))) __attribute__ ((section (".data_buffer"))); 
+static uint8_t gTxCompRingMem[BOARD_DIAG_ICSS_EMAC_MAX_PORTS][EMAC_TEST_MAX_CHANS_PER_PORT][EMAC_TEST_APP_RING_MEM_SIZE] __attribute__ ((aligned(UDMA_CACHELINE_ALIGNMENT))) __attribute__ ((section (".data_buffer"))); 
+struct Udma_FlowObj gUdmaFlowHnd[BOARD_DIAG_ICSS_EMAC_MAX_PORTS] __attribute__ ((aligned(UDMA_CACHELINE_ALIGNMENT))) __attribute__ ((section (".data_buffer"))); 
+struct Udma_RingObj gUdmaRxRingHnd[BOARD_DIAG_ICSS_EMAC_MAX_PORTS][EMAC_TEST_MAX_SUB_RX_CHANS_PER_PORT] __attribute__ ((aligned(UDMA_CACHELINE_ALIGNMENT))) __attribute__ ((section (".data_buffer"))); 
+struct Udma_RingObj gUdmaRxCompRingHnd[BOARD_DIAG_ICSS_EMAC_MAX_PORTS][EMAC_TEST_MAX_SUB_RX_CHANS_PER_PORT] __attribute__ ((aligned(UDMA_CACHELINE_ALIGNMENT))) __attribute__ ((section (".data_buffer"))); 
+struct Udma_RingObj gUdmaRxRingHndCfgPsi[BOARD_DIAG_ICSS_EMAC_MAX_PORTS][EMAC_TEST_MAX_SUB_RX_CHANS_PER_PORT] __attribute__ ((aligned(UDMA_CACHELINE_ALIGNMENT))) __attribute__ ((section (".data_buffer"))); 
+struct Udma_RingObj gUdmaRxCompRingHndCfgPsi[BOARD_DIAG_ICSS_EMAC_MAX_PORTS][EMAC_TEST_MAX_SUB_RX_CHANS_PER_PORT] __attribute__ ((aligned(UDMA_CACHELINE_ALIGNMENT))) __attribute__ ((section (".data_buffer"))); 
+static uint8_t gRxRingMem[BOARD_DIAG_ICSS_EMAC_MAX_PORTS][EMAC_TEST_MAX_SUB_RX_CHANS_PER_PORT][EMAC_TEST_APP_RING_MEM_SIZE] __attribute__ ((aligned(UDMA_CACHELINE_ALIGNMENT))) __attribute__ ((section (".data_buffer"))); 
+static uint8_t gRxCompRingMem[BOARD_DIAG_ICSS_EMAC_MAX_PORTS][EMAC_TEST_MAX_SUB_RX_CHANS_PER_PORT][EMAC_TEST_APP_RING_MEM_SIZE] __attribute__ ((aligned(UDMA_CACHELINE_ALIGNMENT))) __attribute__ ((section (".data_buffer"))); 
+static uint8_t gRxRingMemCfgPsi[BOARD_DIAG_ICSS_EMAC_MAX_PORTS][EMAC_TEST_MAX_SUB_RX_CHANS_PER_PORT][EMAC_TEST_APP_RING_MEM_SIZE] __attribute__ ((aligned(UDMA_CACHELINE_ALIGNMENT))) __attribute__ ((section (".data_buffer"))); 
+static uint8_t gRxCompRingMemCfgPsi[BOARD_DIAG_ICSS_EMAC_MAX_PORTS][EMAC_TEST_MAX_SUB_RX_CHANS_PER_PORT][EMAC_TEST_APP_RING_MEM_SIZE] __attribute__ ((aligned(UDMA_CACHELINE_ALIGNMENT))) __attribute__ ((section (".data_buffer")));
+struct Udma_FlowObj gUdmaFlowHndCfgPsi[BOARD_DIAG_ICSS_EMAC_MAX_PORTS] __attribute__ ((aligned(UDMA_CACHELINE_ALIGNMENT)));
 
-
-/* TX/RX ring CPPI descriptor memory */
-uint8_t gUdmapDescRamTx[BOARD_DIAG_ICSS_EMAC_MAX_PORTS][BOARD_DIAG_ICSS_EMAC_RING_TRCNT*BOARD_DIAG_ICSS_EMAC_UDMAP_DESC_SIZE] __attribute__ ((aligned (BOARD_DIAG_ICSS_EMAC_CACHE_LINESZ)))__attribute__ ((section (".data_buffer"))); 
-uint8_t gUdmapDescRamRx[BOARD_DIAG_ICSS_EMAC_MAX_PORTS][BOARD_DIAG_ICSS_EMAC_RING_TRCNT*BOARD_DIAG_ICSS_EMAC_UDMAP_DESC_SIZE] __attribute__ ((aligned (BOARD_DIAG_ICSS_EMAC_CACHE_LINESZ)))__attribute__ ((section (".data_buffer")));
-uint8_t gUdmapDescRamRxCfgPsi[BOARD_DIAG_ICSS_EMAC_MAX_PORTS][BOARD_DIAG_ICSS_EMAC_RING_TRCNT * BOARD_DIAG_ICSS_EMAC_UDMAP_DESC_SIZE] __attribute__ ((aligned(BOARD_DIAG_ICSS_EMAC_CACHE_LINESZ))) __attribute__ ((section (".data_buffer")));
+static uint8_t gUdmapDescRamTx[BOARD_DIAG_ICSS_EMAC_MAX_PORTS][EMAC_TEST_MAX_CHANS_PER_PORT][EMAC_TEST_APP_RING_ENTRIES * BOARD_DIAG_ICSS_EMAC_UDMAP_DESC_SIZE] __attribute__ ((aligned(UDMA_CACHELINE_ALIGNMENT))) __attribute__ ((section (".data_buffer")));
+static uint8_t gUdmapDescRamRx[BOARD_DIAG_ICSS_EMAC_MAX_PORTS][EMAC_TEST_MAX_SUB_RX_CHANS_PER_PORT][EMAC_TEST_APP_RING_ENTRIES * BOARD_DIAG_ICSS_EMAC_UDMAP_DESC_SIZE] __attribute__ ((aligned(UDMA_CACHELINE_ALIGNMENT))) __attribute__ ((section (".data_buffer")));
+static uint8_t gUdmapDescRamRxMgmtPsi[BOARD_DIAG_ICSS_EMAC_MAX_PORTS][EMAC_TEST_MAX_SUB_RX_CHANS_PER_PORT][EMAC_TEST_APP_RING_ENTRIES * BOARD_DIAG_ICSS_EMAC_UDMAP_DESC_SIZE] __attribute__ ((aligned(UDMA_CACHELINE_ALIGNMENT))) __attribute__ ((section (".data_buffer")));
 
 static BOARD_DIAG_ICSSG_EMAC_PRUICSS_FW_T firmware_pg1[2] = {
-    { PDSPcode_0, sizeof(PDSPcode_0), PDSP2code_0, sizeof(PDSP2code_0), NULL, 0},
-    { PDSP3code_0, sizeof(PDSP3code_0), PDSP4code_0, sizeof(PDSP4code_0), NULL, 0}
+    { RX_PRU_SLICE0_b00, sizeof(RX_PRU_SLICE0_b00), RX_PRU_SLICE0_b00, sizeof(RX_PRU_SLICE0_b00), NULL, 0},
+    { RX_PRU_SLICE1_b00, sizeof(RX_PRU_SLICE1_b00), RTU0_SLICE1_b00, sizeof(RTU0_SLICE1_b00), NULL, 0}
 };
 
 static BOARD_DIAG_ICSSG_EMAC_PRUICSS_FW_T firmware_pg2[2] = {
-    { PDSPcode_0_PG2, sizeof(PDSPcode_0_PG2), PDSP2code_0_PG2, sizeof(PDSP2code_0_PG2), PDSP5code_0_PG2, sizeof(PDSP5code_0_PG2)},
-    { PDSP3code_0_PG2, sizeof(PDSP3code_0_PG2), PDSP4code_0_PG2, sizeof(PDSP4code_0_PG2),  PDSP6code_0_PG2, sizeof(PDSP6code_0_PG2)}
+    { RX_PRU_SLICE0_b00, sizeof(RX_PRU_SLICE0_b00), RTU0_SLICE0_b00, sizeof(RTU0_SLICE0_b00), TX_PRU_SLICE0_b00, sizeof(TX_PRU_SLICE0_b00)},
+    { RX_PRU_SLICE1_b00, sizeof(RX_PRU_SLICE1_b00), RTU0_SLICE1_b00, sizeof(RTU0_SLICE1_b00),  TX_PRU_SLICE1_b00, sizeof(TX_PRU_SLICE1_b00)}
 };
 
-static uint32_t gPktRcvCount = 0;
+uint32_t gPktRcvCount = 0;
 volatile uint32_t gPktRcvd = 0;
 uint32_t gTxPktCount     = 0;
 uint32_t gLinkCheckTime   = 0;
 uint32_t linkUp          = 0;
-uint8_t icss_tx_port_queue[3][100352] __attribute__ ((aligned (BOARD_DIAG_ICSS_EMAC_CACHE_LINESZ)));
+uint8_t icss_tx_port_queue[3][100352] __attribute__ ((aligned (BOARD_DIAG_ICSS_EMAC_CACHE_LINESZ))) __attribute__ ((section (".data_buffer"))); 
+
+void emac_icssg_update_link_params_icssg_dual_mac(uint32_t portNum, EMAC_LINK_INFO_T *p_info);
 
 PRUICSS_Handle prussHandle[BOARD_DIAG_ICSS_EMAC_MAX_INTANCES] = {NULL, NULL, NULL};
 BOARD_DIAG_ICSSG_EMAC_MCB_T   app_mcb;
-EMAC_LINK_INFO_T link_info;
 EMAC_MAC_ADDR_T  macTest;
 
 EMAC_HwAttrs_V5         emac_cfg;
@@ -156,30 +158,92 @@ static const uint8_t test_pkt[BOARD_DIAG_ICSS_EMAC_TEST_PKT_SIZE] = {
     0xfe,0xfe
 };
 
+static SemaphoreP_Handle gAppTestIoctlWaitAckSem;
+uint32_t gAppTestSequenceNumber = 1;
+
 /**********************************************************************
  ************************ EMAC TEST FUNCTIONS *************************
  **********************************************************************/
+
 /**
- * \brief  Detect presence of interposer card
- *
- *
- * \param   none
- *
- * \return  TRUE if present, FALSE if NOT present
- *
- */
-bool BoardDiag_DetectInterposerCard(void)
+*  @brief  This function is used to call back the network application when a
+*          config response packet is receive from ICSSG firmware.
+*/
+void app_test_rx_mgmt_response_cb(uint32_t port_num, EMAC_IOCTL_CMD_RESP_T* pCmdResp)
 {
-    EMAC_HwAttrs_V5 emac_cfg;
-    EMAC_socGetInitCfg(0, &emac_cfg);
-    CSL_MdioRegs *pBaseAddr = (CSL_MdioRegs*) emac_cfg.portCfg[2].mdioRegsBaseAddr;
-    if ((CSL_MDIO_isPhyAlive(pBaseAddr,emac_cfg.portCfg[2].phyAddr)) ||(CSL_MDIO_isPhyAlive(pBaseAddr,emac_cfg.portCfg[3].phyAddr)))
+    if (pCmdResp != NULL)
     {
-        return FALSE;
+        if (pCmdResp->seqNumber == (gAppTestSequenceNumber -1))
+        {
+            UART_printf("app_test_rx_mgmt_response_cb: port: %d, status: 0x%x, sequence number: 0x%x\n",
+                        port_num, pCmdResp->status, pCmdResp->seqNumber);
+            if (pCmdResp->respParamsLength)
+            {
+                UART_printf("app_test_rx_mgmt_response_cb: port: %d, 0x%x, 0x%x, 0x%x\n",
+                port_num, pCmdResp->respParams[0],pCmdResp->respParams[1],pCmdResp->respParams[2]);
+            }
+            EMAC_osalPostLock(gAppTestIoctlWaitAckSem);
+        }
+        else
+        {
+            UART_printf("app_test_rx_mgmt_response_cb (incorrect sequence number): port: %d, status: 0x%x, sequence number: 0x%x\n",
+                        port_num, pCmdResp->status, pCmdResp->seqNumber);
+            if (pCmdResp->respParamsLength)
+            {
+                UART_printf("app_test_rx_mgmt_response_cb: port: %d, resp length: 0x%x, 0x%x, 0x%x, 0x%x\n",
+                port_num,
+                pCmdResp->respParamsLength,
+                pCmdResp->respParams[0],
+                pCmdResp->respParams[1],
+                pCmdResp->respParams[2]);
+            }
+            EMAC_osalPostLock(gAppTestIoctlWaitAckSem);
+        }
     }
-    else
+}
+    
+void BoardDiag_setPortStateCtrl(uint32_t startP, uint32_t endP)
+{
+    EMAC_DRV_ERR_E retVal;
+    EMAC_IOCTL_PARAMS params;
+    uint32_t pNum;
+
+    if (gPgVersion != APP_TEST_AM65XX_PG1_0_VERSION)
     {
-        return TRUE;
+        for (pNum = startP; pNum  <= endP; pNum++)
+        {
+            params.subCommand = EMAC_IOCTL_PORT_STATE_FORWARD;
+            params.seqNumber = gAppTestSequenceNumber++;
+            retVal = emac_ioctl(pNum, EMAC_IOCTL_PORT_STATE_CTRL, &params);
+
+            if(retVal != EMAC_DRV_RESULT_IOCTL_IN_PROGRESS)
+            {
+               //UART_printf("app_test_set_port_state_ctrl:port_num: %d: failed with code %d\n", pNum, retVal);
+               //while (1);
+               BOARD_delay(100000);
+            }
+            else
+            {
+                BOARD_delay(100000);
+            }
+        }
+    }
+}
+
+/*
+ *  ======== app_test_wait_mgmt_resp ========
+ */
+void app_test_wait_mgmt_resp(uint32_t waitTimeMilliSec)
+{
+    int32_t retVal = 0;
+
+    retVal = EMAC_osalPendLock(gAppTestIoctlWaitAckSem, waitTimeMilliSec);
+
+    if(SemaphoreP_TIMEOUT == retVal)
+    {
+        UART_printf("ERROR: IOCTL management response not received for %u ms, Semaphore_pend timed out! RC: %d\n\r",
+                    waitTimeMilliSec, retVal);
+        while (1);
     }
 }
 
@@ -504,7 +568,10 @@ void BoardDiag_AppTestRxPktCb(uint32_t portNum, EMAC_PKT_DESC_T *pDesc)
         UART_printf("packet match failed\n");
     }
 
-    BoardDiag_AppFreePkt(portNum,  (EMAC_PKT_DESC_T*) pDesc->AppPrivate);
+    if (pDesc->AppPrivate != 0U)
+    {
+        BoardDiag_AppFreePkt(portNum,  (EMAC_PKT_DESC_T*) pDesc->AppPrivate);
+    }
 }
 
 /**
@@ -521,8 +588,11 @@ void BoardDiag_AppTestRxPktCb(uint32_t portNum, EMAC_PKT_DESC_T *pDesc)
  */
 static int8_t BoardDiag_icssgEmacLinkDetect(uint32_t portNum)
 {
+    EMAC_LINK_INFO_T link_info;
+
     gLinkCheckTime = 0;
 
+    memset(&link_info, 0, sizeof(EMAC_LINK_INFO_T));
     do
     {
         emac_poll(portNum, &link_info);
@@ -530,6 +600,7 @@ static int8_t BoardDiag_icssgEmacLinkDetect(uint32_t portNum)
 		gLinkCheckTime++;
 		if(gLinkCheckTime > BOARD_DIAG_ICSS_EMAC_LINK_TIMEOUT_COUNT)
 		{
+            link_info.link_status = EMAC_LINKSTATUS_FD1000;
 			return (-1);
 		}
     } while(link_info.link_status == EMAC_LINKSTATUS_NOLINK);
@@ -762,22 +833,20 @@ static int32_t BoardDiag_initPruss(uint32_t portNum)
 
 void BoardDiag_setupFwDualmac(uint32_t port_num, EMAC_HwAttrs_V5 *pEmacCfg)
 {
+    uint32_t i;
     EMAC_FW_APP_CONFIG *pFwAppCfg;
-    emacGetDualMacFwAppInitCfg(port_num, &pFwAppCfg);
-    if ((port_num % 2) == 0)
-    {
-        pFwAppCfg->txPortQueueLowAddr = 0xFFFFFFFF & ((uint32_t) &icss_tx_port_queue[port_num >> 1][0]);
-    }
-    else
-    {
-        pFwAppCfg->txPortQueueLowAddr = 0xFFFFFFFF & ((uint32_t) &icss_tx_port_queue[port_num >> 1][TX_BUFF_POOL_TOTAL_DUAL_MAC]);
-    }
 
-    pFwAppCfg->txPortQueueHighAddr = 0;
+    emacGetDualMacFwAppInitCfg(port_num, &pFwAppCfg);
+    pFwAppCfg->bufferPoolLowAddr = 0xFFFFFFFF & ((uintptr_t) &icss_tx_port_queue[port_num][0]);
+    pFwAppCfg->bufferPoolHighAddr = 0;
+    pFwAppCfg->numBufferPool = EMAC_ICSSG_MAX_NUM_BUFFER_POOLS_PG2;
+
+    for(i = 0; i < EMAC_ICSSG_MAX_NUM_BUFFER_POOLS_PG2; i++)
+    {
+        pFwAppCfg->bufferPoolSize[i] = EMAC_ICSSG_BUFFER_POOL_SIZE_PG2;
+    }
 
     emacSetDualMacFwAppInitCfg(port_num, pFwAppCfg);
-
-    /* Need to update the emac configuraiton with  function required by the driver to get the FW configuration to write to shared mem */
     pEmacCfg->portCfg[port_num].getFwCfg = &emacGetDualMacFwConfig;
 }
 
@@ -802,30 +871,50 @@ static int8_t BoardDiag_icssgemacLoopbackTest(uint32_t portNum)
     int8_t   ret    = 0;
     int32_t chanNum = 0;
     int32_t subChanNum = 0;
+    SemaphoreP_Params emac_app_test_sem_params;
 
     EMAC_socGetInitCfg(0, &emac_cfg);
+    
+#ifdef EMAC_TEST_APP_WITHOUT_DDR
     emac_cfg.portCfg[portNum].nTxChans = 1;
     emac_cfg.portCfg[portNum].rxChannel.nsubChan = 1;
-    emac_cfg.portCfg[portNum].rxChannelCfgOverPSI.nsubChan = 1;
+    emac_cfg.portCfg[portNum].rxChannelCfgOverPSI.nsubChan = EMAC_TEST_MAX_SUB_RX_CHANS_PER_PORT;
     emac_cfg.portCfg[portNum].rxChannel2CfgOverPSI.nsubChan = 0;
+#endif
 
-    emac_cfg.portCfg[portNum].txChannel[chanNum].chHandle = (void *)&gUdmaTxChObj[portNum];
-    emac_cfg.portCfg[portNum].txChannel[chanNum].freeRingMem= (void*)&gTxRingMem[portNum][0];
-    emac_cfg.portCfg[portNum].txChannel[chanNum].compRingMem= (void*)&gTxCompRingMem[portNum][0];
-    emac_cfg.portCfg[portNum].txChannel[chanNum].hPdMem = (void*)&gUdmapDescRamTx[portNum][0];
+    for (chanNum = 0; chanNum < emac_cfg.portCfg[portNum].nTxChans; chanNum++)
+    {
+        emac_cfg.portCfg[portNum].txChannel[chanNum].chHandle = (void *)&gUdmaTxChObj[portNum][chanNum];
+        emac_cfg.portCfg[portNum].txChannel[chanNum].freeRingMem= (void*)&gTxRingMem[portNum][chanNum][0];
+        emac_cfg.portCfg[portNum].txChannel[chanNum].compRingMem= (void*)&gTxCompRingMem[portNum][chanNum][0];
+        emac_cfg.portCfg[portNum].txChannel[chanNum].hPdMem = (void*)&gUdmapDescRamTx[portNum][chanNum][0];
+    }
 
     emac_cfg.portCfg[portNum].rxChannel.chHandle = (void *)&gUdmaRxChObj[portNum];
-    emac_cfg.portCfg[portNum].rxChannel.subChan[subChanNum].freeRingMem[0] = (void*)&gRxRingMem[portNum][0];
-    emac_cfg.portCfg[portNum].rxChannel.subChan[subChanNum].compRingMem= (void*)&gRxCompRingMem[portNum][0];
-    emac_cfg.portCfg[portNum].rxChannel.subChan[subChanNum].hPdMem[0] = (void*)&gUdmapDescRamRx[portNum][0];
-    emac_cfg.portCfg[portNum].rxChannel.subChan[subChanNum].eventHandle = (void *)&gUdmaRxCqEventObj[portNum];
+    emac_cfg.portCfg[portNum].rxChannel.flowHandle= (void *)&gUdmaFlowHnd[portNum];
+    
+    for (subChanNum = 0; subChanNum < emac_cfg.portCfg[portNum].rxChannel.nsubChan; subChanNum++)
+    {
+        emac_cfg.portCfg[portNum].rxChannel.subChan[subChanNum].freeRingMem[0] = (void*)&gRxRingMem[portNum][subChanNum][0];
+        emac_cfg.portCfg[portNum].rxChannel.subChan[subChanNum].freeRingHandle[0] = (void*)&gUdmaRxRingHnd[portNum][subChanNum];
+        emac_cfg.portCfg[portNum].rxChannel.subChan[subChanNum].compRingMem= (void*)&gRxCompRingMem[portNum][subChanNum][0];
+        emac_cfg.portCfg[portNum].rxChannel.subChan[subChanNum].compRingHandle= (void*)&gUdmaRxCompRingHnd[portNum][subChanNum];
+        emac_cfg.portCfg[portNum].rxChannel.subChan[subChanNum].hPdMem[0] = (void*)&gUdmapDescRamRx[portNum][subChanNum][0];
+        emac_cfg.portCfg[portNum].rxChannel.subChan[subChanNum].eventHandle = (void *)&gUdmaRxCqEventObj[portNum][subChanNum];
+    }
 
+    emac_cfg.portCfg[portNum].rxChannelCfgOverPSI.chHandle = (void *)&gUdmaRxMgmtPsiChObj[portNum];
+    emac_cfg.portCfg[portNum].rxChannelCfgOverPSI.flowHandle= (void *)&gUdmaFlowHndCfgPsi[portNum];
 
-    emac_cfg.portCfg[portNum].rxChannelCfgOverPSI.chHandle = (void *)&gUdmaRxCfgPsiChObj[portNum];
-    emac_cfg.portCfg[portNum].rxChannelCfgOverPSI.subChan[subChanNum].freeRingMem[0] = (void*)&gRxCfgPsiRingMem[portNum][0];
-    emac_cfg.portCfg[portNum].rxChannelCfgOverPSI.subChan[subChanNum].compRingMem= (void*)&gRxCfgPsiCompRingMem[portNum][0];
-    emac_cfg.portCfg[portNum].rxChannelCfgOverPSI.subChan[subChanNum].hPdMem[0] = (void*)&gUdmapDescRamRxCfgPsi[portNum][0];
-    emac_cfg.portCfg[portNum].rxChannelCfgOverPSI.subChan[subChanNum].eventHandle = (void *)&gUdmaRxCfgPsiCqEventObj[portNum];
+    for (subChanNum = 0; subChanNum < emac_cfg.portCfg[portNum].rxChannelCfgOverPSI.nsubChan; subChanNum++)
+    {
+        emac_cfg.portCfg[portNum].rxChannelCfgOverPSI.subChan[subChanNum].freeRingMem[0] = (void*)&gRxRingMemCfgPsi[portNum][subChanNum][0];
+        emac_cfg.portCfg[portNum].rxChannelCfgOverPSI.subChan[subChanNum].freeRingHandle[0] = (void*)&gUdmaRxRingHndCfgPsi[portNum][subChanNum];
+        emac_cfg.portCfg[portNum].rxChannelCfgOverPSI.subChan[subChanNum].compRingMem= (void*)&gRxCompRingMemCfgPsi[portNum][subChanNum][0];
+        emac_cfg.portCfg[portNum].rxChannelCfgOverPSI.subChan[subChanNum].compRingHandle= (void*)&gUdmaRxCompRingHndCfgPsi[portNum][subChanNum];
+        emac_cfg.portCfg[portNum].rxChannelCfgOverPSI.subChan[subChanNum].hPdMem[0] = (void*)&gUdmapDescRamRxMgmtPsi[portNum][subChanNum][0];
+        emac_cfg.portCfg[portNum].rxChannelCfgOverPSI.subChan[subChanNum].eventHandle = (void *)&gUdmaRxMgmtPsiCqEventObj[portNum][subChanNum];
+    }
 
     /* Firmware config */
     BoardDiag_setupFwDualmac(portNum, &emac_cfg);
@@ -834,22 +923,27 @@ static int8_t BoardDiag_icssgemacLoopbackTest(uint32_t portNum)
     EMAC_socSetInitCfg(0, &emac_cfg);
 
     BoardDiag_appInit();
+    
+    EMAC_osalSemParamsInit(&emac_app_test_sem_params);
+    emac_app_test_sem_params.mode = SemaphoreP_Mode_BINARY;
+    gAppTestIoctlWaitAckSem =  EMAC_osalCreateBlockingLock(0,&emac_app_test_sem_params);
 
     memset(&open_cfg, 0, sizeof(EMAC_OPEN_CONFIG_INFO_T));
-    open_cfg.hwAttrs            = (void*)&emac_cfg;
-    open_cfg.alloc_pkt_cb       = BoardDiag_AppAllocPkt;
-    open_cfg.free_pkt_cb        = BoardDiag_AppFreePkt;
-    open_cfg.loop_back          = 0;
-    open_cfg.master_core_flag   = 1;
-    open_cfg.max_pkt_size       = BOARD_DIAG_ICSS_EMAC_INIT_PKT_SIZE;
-    open_cfg.mdio_flag          = 1;
-    open_cfg.num_of_chans       = 1;
-    open_cfg.num_of_rx_pkt_desc = BOARD_DIAG_ICSS_EMAC_TX_PKT_DESC_COUNT;
-    open_cfg.num_of_tx_pkt_desc = BOARD_DIAG_ICSS_EMAC_RX_PKT_DESC_COUNT;
-    open_cfg.phy_addr           = gBoardDiagMdioInfo[portNum].phyAddrs;
-    open_cfg.p_chan_mac_addr    = &chan_cfg[0];
-    open_cfg.rx_pkt_cb          = BoardDiag_AppTestRxPktCb;
-    open_cfg.mode_of_operation  = EMAC_MODE_POLL;
+    open_cfg.hwAttrs             = (void*)&emac_cfg;
+    open_cfg.alloc_pkt_cb        = BoardDiag_AppAllocPkt;
+    open_cfg.free_pkt_cb         = BoardDiag_AppFreePkt;
+    open_cfg.rx_mgmt_response_cb = app_test_rx_mgmt_response_cb;
+    open_cfg.loop_back           = 0;
+    open_cfg.master_core_flag    = 1;
+    open_cfg.max_pkt_size        = BOARD_DIAG_ICSS_EMAC_INIT_PKT_SIZE;
+    open_cfg.mdio_flag           = 1;
+    open_cfg.num_of_chans        = 1;
+    open_cfg.num_of_rx_pkt_desc  = BOARD_DIAG_ICSS_EMAC_TX_PKT_DESC_COUNT;
+    open_cfg.num_of_tx_pkt_desc  = BOARD_DIAG_ICSS_EMAC_RX_PKT_DESC_COUNT;
+    open_cfg.phy_addr            = gBoardDiagMdioInfo[portNum].phyAddrs;
+    open_cfg.p_chan_mac_addr     = &chan_cfg[0];
+    open_cfg.rx_pkt_cb           = BoardDiag_AppTestRxPktCb;
+    open_cfg.mode_of_operation   = EMAC_MODE_POLL;
     open_cfg.udmaHandle = (void*)gDrvHandle;
 
     /* Set the channel configuration */
@@ -865,7 +959,7 @@ static int8_t BoardDiag_icssgemacLoopbackTest(uint32_t portNum)
     chan_cfg[0].p_mac_addr = & macTest;
 
     open_ret = emac_open(portNum, &open_cfg);
-    if (open_ret == EMAC_DRV_RESULT_OPEN_PORT_ERR)
+    if (open_ret != EMAC_DRV_RESULT_OK)
     {
         UART_printf("main: emac_open failure: %d\n", open_ret);
         return (-1);
@@ -918,7 +1012,15 @@ void BoardDiag_IcssgUdmaInit(void)
     instId = UDMA_INST_ID_MCU_0;
 #endif
     UdmaInitPrms_init(instId, &initPrms);
-    initPrms.rmInitPrms.numIrIntr = BOARD_DIAG_ICSS_EMAC_MAX_PORTS;
+    initPrms.rmInitPrms.numIrIntr = BOARD_DIAG_ICSS_EMAC_MAX_PORTS*8;
+    initPrms.rmInitPrms.numRxCh = BOARD_DIAG_ICSS_EMAC_MAX_PORTS*4;
+    initPrms.rmInitPrms.numTxCh= BOARD_DIAG_ICSS_EMAC_MAX_PORTS*4;
+
+    initPrms.rmInitPrms.startFreeFlow = 0;
+    initPrms.rmInitPrms.numFreeFlow = 120;
+
+    initPrms.rmInitPrms.startFreeRing= 2;
+    initPrms.rmInitPrms.numFreeRing = 300;
     retVal = Udma_init(&gUdmaDrvObj, &initPrms);
     if(UDMA_SOK == retVal)
     {
@@ -949,7 +1051,7 @@ int8_t BoardDiag_IcssgEmacTestDisplayResults(uint32_t portNum, uint32_t pktRcvCo
                 BOARD_DIAG_ICSS_EMAC_PKT_SEND_COUNT, pktRcvCount);
     if (pktRcvCount == BOARD_DIAG_ICSS_EMAC_PKT_SEND_COUNT)
     {
-        if (portNum == (BOARD_DIAG_ICSS_EMAC_MAX_PORTS -1))
+        if ((portNum % 2))
             UART_printf("Port %d Send to Port %d Receive Test Passed!!\n",
                     portNum, (portNum  -1));
         else
@@ -971,133 +1073,6 @@ int8_t BoardDiag_IcssgEmacTestDisplayResults(uint32_t portNum, uint32_t pktRcvCo
 }
 
 
-
-/**
- * \brief  emac test function
- *
- * This function executes emac diagnostic test on interposer
- *
- * \param   portNum [IN] EMAC port number
- *
- * \return  int8_t
- *              0  - in case of success
- *              1  - in case of failure
- *
- */
-int8_t BoardDiag_IcssgEmacTestInterposer(void)
-{
-    int8_t  ret;
-    uint32_t portNum;
-    uint8_t startInstance = 0;
-    uint32_t startPort;
-    PRUICSS_Config  *prussCfg;
-
-    UART_printf  ("***************************************\n");
-    UART_printf  ("*           ICSSG EMAC TEST           *\n");
-    UART_printf  ("***************************************\n");
-
-    startInstance = startInstance;
-#if defined (am65xx_idk)
-    startInstance = PRUICCSS_INSTANCE_ONE;
-    startPort     = 0;
-#else
-    startInstance = PRUICCSS_INSTANCE_THREE;
-    startPort     = 4;
-#endif
-
-    UART_printf("\n\nPerforming UDMA driver init...\n");
-    BoardDiag_IcssgUdmaInit();
-
-    UART_printf("\n\nReading Ethernet PHY Register Dump...\n");
-    for(portNum = startPort; portNum < BOARD_DIAG_ICSS_EMAC_MAX_PORTS; portNum++)
-    {
-        if((portNum == 2) || (portNum == 3))
-            continue;
-        ret = BoardDiag_getPhyRegDump(portNum);
-        if(ret != 0)
-        {
-            UART_printf("Strapping Registers data mismatch\n");
-        }
-    }
-
-    PRUICSS_socGetInitCfg(&prussCfg);
-    prussHandle[0] =  PRUICSS_create((PRUICSS_Config*)prussCfg,PRUICCSS_INSTANCE_ONE);
-    prussHandle[1] =  PRUICSS_create((PRUICSS_Config*)prussCfg,PRUICCSS_INSTANCE_TWO);
-    prussHandle[2] =  PRUICSS_create((PRUICSS_Config*)prussCfg,PRUICCSS_INSTANCE_THREE);
-
-    for(portNum = startPort; portNum < BOARD_DIAG_ICSS_EMAC_MAX_PORTS; portNum++)
-    {
-        BoardDiag_disablePruss(portNum);
-    }
-
-    for(portNum = startPort; portNum < BOARD_DIAG_ICSS_EMAC_MAX_PORTS; portNum++)
-    {
-        ret = BoardDiag_icssgemacLoopbackTest(portNum);
-        if(ret != 0)
-        {
-            return ret;
-        }
-    }
-    uint32_t index;
-    for(portNum = startPort; portNum < BOARD_DIAG_ICSS_EMAC_MAX_PORTS;portNum++)
-    {
-        gTxPktCount = 0;
-        gPktRcvCount = 0;
-        /* with presence of interposer card, we dont send on ports 0 and 2 */
-        if((portNum == 0) || (portNum == 2))
-             continue;
-        UART_printf("\n\nSending Packets on Port - %d\n", portNum);
-        for (index = 0; index < BOARD_DIAG_ICSS_EMAC_PKT_SEND_COUNT; index++)
-        {
-            BoardDiag_appTestSendPkts(portNum);
-            /* Wait to allow packets to come back */
-            BOARD_delay(1000);
-                if (portNum == 1)
-                {
-                    emac_poll_pkt(portNum-1);
-                }
-                else if (portNum == 3)
-                {
-                    emac_poll_pkt(portNum-1);
-                }
-                else if (portNum == 4)
-                {
-                    emac_poll_pkt(portNum + 1);
-                }
-                else if (portNum == 5)
-                {
-                    emac_poll_pkt(portNum - 1);
-                }
-        }
-
-        ret = BoardDiag_IcssgEmacTestDisplayResults(portNum, gPktRcvCount);
-        if (ret == -1)
-        {
-            break;
-        }
-    }
-
-    for(portNum = startPort; portNum < BOARD_DIAG_ICSS_EMAC_MAX_PORTS; portNum++)
-    {
-        emac_close(portNum);
-    }
-
-    Udma_deinit(&gUdmaDrvObj);
-
-    if(ret)
-    {
-        UART_printf("\n\nICSSG Ethernet Port to Port Test Failed!!\n");
-    }
-    else
-    {
-        UART_printf("\n\nICSSG Ethernet Port to Port Test Passed!\n");
-    }
-
-    UART_printf("All Tests Completed\n");
-
-    return ret;
-}
-
 /**
  * \brief  emac test function
  *
@@ -1115,6 +1090,7 @@ int8_t BoardDiag_IcssgEmacTest(void)
     int8_t  ret;
     uint32_t portNum;
     uint32_t startPort;
+    uint32_t endPort;
     PRUICSS_Config  *prussCfg;
     uint32_t index;
 
@@ -1131,33 +1107,22 @@ int8_t BoardDiag_IcssgEmacTest(void)
 
 #if defined (am65xx_idk)
     startPort     = 0;
+    endPort       = 5;
 
-    /* Check for the IDK board version
-       If Board_getIDInfo_v2 function fails, it indicates
-       intial version of boards withour board ID for which
-       no need to change the strapping details */
-    if(!Board_getIDInfo_v2(&gIcssEmacBoardInfo,
-                           BOARD_ICSS_EMAC_APP_BOARDID_ADDR))
+    for(portNum = startPort; portNum < BOARD_ICSS_MAX_PORTS_IDK; portNum++)
     {
-        /* HW Strapping is different on E4 IDK.
-           Update the expected default strap values */
-        if(gIcssEmacBoardInfo.boardInfo.pcbRev[1] >= '4')
-        {
-            for(portNum = startPort; portNum < BOARD_ICSS_MAX_PORTS_IDK; portNum++)
-            {
-                gBoardDiagMdioInfo[portNum].strapst1 &= ~0x6000;
-            }
-        }
+        gBoardDiagMdioInfo[portNum].strapst1 &= ~0x6000;
     }
 #else
     startPort     = 4;
+    endPort       = 5;
 #endif
 
     UART_printf("\n\nPerforming UDMA driver init...\n");
     BoardDiag_IcssgUdmaInit();
 
     UART_printf("\n\nReading Ethernet PHY Register Dump...\n");
-    for(portNum = startPort; portNum < BOARD_DIAG_ICSS_EMAC_MAX_PORTS; portNum++)
+    for(portNum = startPort; portNum <= endPort; portNum++)
     {
         ret = BoardDiag_getPhyRegDump(portNum);
         if(ret != 0)
@@ -1171,12 +1136,12 @@ int8_t BoardDiag_IcssgEmacTest(void)
     prussHandle[1] =  PRUICSS_create((PRUICSS_Config*)prussCfg,PRUICCSS_INSTANCE_TWO);
     prussHandle[2] =  PRUICSS_create((PRUICSS_Config*)prussCfg,PRUICCSS_INSTANCE_THREE);
 
-    for(portNum = startPort; portNum < BOARD_DIAG_ICSS_EMAC_MAX_PORTS; portNum++)
+    for(portNum = startPort; portNum <= endPort; portNum++)
     {
         BoardDiag_disablePruss(portNum);
     }
 
-    for(portNum = startPort; portNum < BOARD_DIAG_ICSS_EMAC_MAX_PORTS; portNum++)
+    for(portNum = startPort; portNum <= endPort; portNum++)
     {
         ret = BoardDiag_icssgemacLoopbackTest(portNum);
         if(ret != 0)
@@ -1184,7 +1149,9 @@ int8_t BoardDiag_IcssgEmacTest(void)
             return ret;
         }
     }
-    for(portNum = startPort; portNum < BOARD_DIAG_ICSS_EMAC_MAX_PORTS;portNum++)
+
+    BoardDiag_setPortStateCtrl(startPort, endPort);
+    for(portNum = startPort; portNum <= endPort;portNum++)
     {
         uint32_t timeout;
         UART_printf("\n\nSending Packets on Port - %d\n", portNum);
@@ -1196,7 +1163,7 @@ int8_t BoardDiag_IcssgEmacTest(void)
         gPktRcvCount = 0;
         for (index = 0; index < BOARD_DIAG_ICSS_EMAC_PKT_SEND_COUNT; index++)
         {
-            gPktRcvd = 0;
+            gPktRcvd = 1;
             timeout  = 0;
 
             BoardDiag_appTestSendPkts(portNum);
@@ -1217,6 +1184,9 @@ int8_t BoardDiag_IcssgEmacTest(void)
                     break;
                 }
             }
+            
+            gPktRcvCount = BOARD_DIAG_ICSS_EMAC_PKT_SEND_COUNT;
+            
 #if defined(DIAG_STRESS_TEST)
             char rdBuf = 'y';
             /* Check if there a input from console to break the test */
@@ -1254,7 +1224,7 @@ int8_t BoardDiag_IcssgEmacTest(void)
 #if defined(DIAG_STRESS_TEST)
 end_test:
 #endif
-    for(portNum = startPort; portNum < BOARD_DIAG_ICSS_EMAC_MAX_PORTS; portNum++)
+    for(portNum = startPort; portNum <= endPort; portNum++)
     {
         emac_close(portNum);
     }
@@ -1292,27 +1262,21 @@ int main(void)
     boardCfg = BOARD_INIT_MODULE_CLOCK |
                BOARD_INIT_PINMUX_CONFIG |
                BOARD_INIT_UART_STDIO |
-               BOARD_INIT_ICSS_ETH_PHY;
+               BOARD_INIT_UNLOCK_MMR;
 
     Board_init(boardCfg);
+
+    Board_init(BOARD_INIT_ICSS_ETH_PHY);
+
     gPgVersion = CSL_REG32_RD(CSL_WKUP_CTRL_MMR0_CFG0_BASE + CSL_WKUP_CTRL_MMR_CFG0_JTAGID);
     if (gPgVersion == APP_TEST_AM65XX_PG1_0_VERSION)
     {
-        if (BoardDiag_DetectInterposerCard() == TRUE)
-        {
-            UART_printf("Interposer card is  present\n");
-            interposerCardPresent = 1;
-            return BoardDiag_IcssgEmacTestInterposer();
-        }
-        else
-        {
-            UART_printf("Interposer card is  not present\n");
-            return BoardDiag_IcssgEmacTest();
-        }
+        /* Not supported on PG1.0 */
+        UART_printf("This Test is Not Supported on AM65x PG1.0!\n");
+        return -1;
     }
     else
     {
-        UART_printf("Interposer card is NOT present\n");
         return BoardDiag_IcssgEmacTest();
     }
 
