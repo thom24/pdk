@@ -33,31 +33,28 @@
 
 /**
  *
- * \file  nor_xspi.h
+ * \file  nor_spi_phy_tune.h
  *
- * \brief This file contains structure, typedefs, functions and
- *        prototypes used for OSPI interface for xSPI flash.
+ * \brief This file contains OSPI/xSPI PHY tuning structure, macro definitions
  *
  *****************************************************************************/
-#ifndef NOR_XSPI_H_
-#define NOR_XSPI_H_
+#ifndef NOR_SPI_PHY_TUNE_H_
+#define NOR_SPI_PHY_TUNE_H_
 
-#include <string.h>
+/*!
+ *  @brief  PHY configuration data
+ *
+ *  PHY setting for Read Delay, txDLL, and rxDLL values to describe a "point" in the PHY shmoo
+ */
+typedef struct NOR_PhyConfig_s
+{
+    int32_t txDLL;
+    int32_t rxDLL;
+    int32_t rdDelay;
+} NOR_PhyConfig;
 
-#include <ti/board/src/flash/nor/nor.h>
-#include <ti/drv/spi/SPI.h>
-#include <ti/drv/spi/soc/SPI_soc.h>
-#if defined(j7200_evm)
-#include <ti/board/src/flash/nor/device/s28hs512t.h>
-#endif
-#include <ti/board/src/flash/nor/ospi/nor_spi_phy_tune.h>
+#define NOR_SPI_PHY_INIT_RD_DELAY   (1U)
+#define NOR_SPI_PHY_VTM_TARGET      (700U)
 
-/**************************************************************************
- **                       Macro Definitions
- **************************************************************************/
-
-#define BOARD_XSPI_BAUDRATE_DIV    (6U)
-
-#endif /* NOR_XSPI_H_ */
-
-/* Nothing past this point */
+extern NOR_STATUS Nor_spiPhyTune(SPI_Handle handle, uint32_t offset);
+#endif /* NOR_SPI_PHY_TUNE_H_ */

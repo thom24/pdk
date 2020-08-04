@@ -294,24 +294,11 @@ NOR_HANDLE Nor_ospiOpen(uint32_t norIntf, uint32_t portNum, void *params)
     SPI_Params      spiParams;  /* SPI params structure */
     SPI_Handle      hwHandle;  /* SPI handle */
     NOR_HANDLE      norHandle = 0;
-    uint32_t        i = 0;
-    uint32_t        delay;
-    uint32_t        readCnt = 0;
-    uint32_t        readStart = 0;
-    uint32_t        readCntPrv = 0;
-    uint32_t        readStartPrv = 0;
     OSPI_v0_HwAttrs ospi_cfg;
     NOR_STATUS      retVal;
 
-    if (params)
-    {
-		memcpy(&spiParams, params, sizeof(SPI_Params));
-    }
-    else
-    {
-        /* Use default SPI config params if no params provided */
-		SPI_Params_init(&spiParams);
-    }
+    /* Use default SPI config params if no params provided */
+    SPI_Params_init(&spiParams);
     hwHandle = (SPI_Handle)SPI_open(portNum + SPI_CONFIG_OFFSET, &spiParams);
 
     if (hwHandle)
@@ -354,53 +341,18 @@ NOR_HANDLE Nor_ospiOpen(uint32_t norIntf, uint32_t portNum, void *params)
 
             if (ospi_cfg.phyEnable == true)
             {
-                /* set initial PHY DLL delay */
-                delay = 0U;
-                SPI_control(hwHandle, SPI_V0_CMD_CFG_PHY, (void *)(&delay));
+                uint32_t offset = *(uint32_t *)params;
 
-                /* calibrate PHY */
-                for (i = 0; i < 128U; i++)
+                retVal = Nor_spiPhyTune(hwHandle, offset);
+                if (retVal == NOR_PASS)
                 {
-                    if (Nor_ospiReadId(hwHandle) == NOR_PASS)
-                    {
-                        /* Iterate flash reads, find the start index and successful read ID count */
-                        if (readCnt == 0)
-                            readStart = i;
-                        readCnt++;
-                    }
-                    else
-                    {
-                        if ((readCnt != 0) && (readCnt > readCntPrv))
-                        {
-                            /* save the start index and most successful read ID count */
-                            readCntPrv = readCnt;
-                            readStartPrv = readStart;
-                            readCnt = 0;
-                            readStart = 0;
-                        }
-                    }
-
-                    /* Increment DLL delay */
-                    SPI_control(hwHandle, SPI_V0_CMD_CFG_PHY, NULL);
+                    retVal = Nor_ospiReadId(hwHandle);
                 }
 
-                if (readCnt > readCntPrv)
+                if (retVal == NOR_PASS)
                 {
-                    readCntPrv = readCnt;
-                    readStartPrv = readStart;
-                }
-
-                if (readCntPrv != 0U)
-                {
-                    /* Find the delay in the middle working position */
-                    delay = readStartPrv + (readCntPrv / 2);
-                    SPI_control(hwHandle, SPI_V0_CMD_CFG_PHY, (void *)(&delay));
                     Nor_ospiInfo.hwHandle = (uintptr_t)hwHandle;
                     norHandle = (NOR_HANDLE)(&Nor_ospiInfo);
-                }
-                else
-                {
-                    SPI_close(hwHandle);
                 }
             }
             else /* ospi_cfg->phyEnable == false */
@@ -410,10 +362,6 @@ NOR_HANDLE Nor_ospiOpen(uint32_t norIntf, uint32_t portNum, void *params)
                     Nor_ospiInfo.hwHandle = (uintptr_t)hwHandle;
                     norHandle = (NOR_HANDLE)(&Nor_ospiInfo);
                 }
-                else
-                {
-                    SPI_close(hwHandle);
-                }
             }
 
             if (ospi_cfg.xipEnable == true)
@@ -421,7 +369,8 @@ NOR_HANDLE Nor_ospiOpen(uint32_t norIntf, uint32_t portNum, void *params)
                 Nor_ospiXipEnable(hwHandle);
             }
         }
-        else /* Nor_ospiEnableDDR(hwHandle) != NOR_PASS */
+
+        if (norHandle == 0)
         {
             SPI_close(hwHandle);
         }

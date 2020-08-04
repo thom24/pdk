@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 - 2018 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2017 - 2020 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -137,6 +137,12 @@ extern "C" {
  *  \brief  Set extended opcode command read dummy cycles.
  */
 #define SPI_V0_CMD_EXT_RD_DUMMY_CLKS   (SPI_CMD_RESERVED + 11U)
+
+/*
+ *
+ *  \brief  Set read capture delay.
+ */
+#define SPI_V0_CMD_CFG_RD_DELAY        (SPI_CMD_RESERVED + 12U)
 
 /* SPI function table pointer */
 extern const SPI_FxnTable OSPI_FxnTable_v0;

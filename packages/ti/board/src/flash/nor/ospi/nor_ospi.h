@@ -52,6 +52,7 @@
 #else
 #include <ti/board/src/flash/nor/device/m35xu512.h>
 #endif
+#include <ti/board/src/flash/nor/ospi/nor_spi_phy_tune.h>
 
 /**************************************************************************
  **                       Macro Definitions
