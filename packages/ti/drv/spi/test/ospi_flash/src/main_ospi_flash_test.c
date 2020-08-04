@@ -66,6 +66,8 @@
 #include <ti/board/board.h>
 #include <ti/board/board_cfg.h>
 #include <ti/board/src/flash/include/board_flash.h>
+#include <ti/board/src/flash/nor/ospi/nor_spi_patterns.h>
+#include <ti/board/src/flash/nor/ospi/nor_ospi.h>
 
 #ifdef SPI_DMA_ENABLE
 #include <ti/osal/CacheP.h>
@@ -128,6 +130,7 @@ typedef struct OSPI_Tests_s
  **********************************************************************/
 #define OSPI_PROFILE        /* Enable profiling */
 #define OSPI_WRITE          /* Enable write */
+#define OSPI_WRITE_TUNING   /* Enable write tuning data pattern to the falsh */
 
 /* OSPI test ID definitions */
 #define OSPI_TEST_ID_DAC_133M     0   /* OSPI flash test in Direct Acess Controller mode at 133MHz RCLK */
@@ -137,6 +140,7 @@ typedef struct OSPI_Tests_s
 #define OSPI_TEST_ID_INDAC_166M   4   /* OSPI flash test in Indirect Acess Controller mode at 166MHz RCLK */
 #define OSPI_TEST_ID_DAC_DMA_166M 5   /* OSPI flash test in Direct Acess Controller DMA mode at 166MHz RCLK */
 #define OSPI_TEST_ID_DAC_133M_SPI 6   /* OSPI flash test in Direct Acess Controller legacy SPI mode at 133MHz RCLK */
+#define OSPI_TEST_ID_WR_TUNING    7   /* OSPI flash test in Direct Acess Controller legacy SPI mode to write tuning data */
 
 /* OSPI NOR flash offset address for read/write test */
 #define TEST_ADDR_OFFSET   (0U)
@@ -153,6 +157,10 @@ typedef struct OSPI_Tests_s
 
 /* Read/write sengment length in bytes */
 #define TEST_XFER_SEG_LEN  (TEST_BUF_LEN)
+
+/* Flash offset where the PHY tuning data pattern stored */
+#define TEST_TUNE_PATTERN_OFFSET  (NOR_TUNING_DATA_OFFSET)
+
 /**********************************************************************
  ************************** Internal functions ************************
  **********************************************************************/
@@ -669,8 +677,15 @@ void OSPI_initConfig(OSPI_Tests *test)
     }
     else
     {
+        ospi_cfg.dtrEnable = true;
         ospi_cfg.xferLines = OSPI_XFER_LINES_OCTAL;
     }
+
+    if (test->testId == OSPI_TEST_ID_WR_TUNING)
+    {
+        ospi_cfg.phyEnable = false;
+    }
+
     ospi_cfg.funcClk = test->clk;
 #if defined(SIM_BUILD)
     ospi_cfg.phyEnable = false;
@@ -683,6 +698,7 @@ void OSPI_initConfig(OSPI_Tests *test)
     {
         ospi_cfg.devDelays[3] = OSPI_DEV_DELAY_CSDA_3;
     }
+
     /* Set the default OSPI init configurations */
     OSPI_socSetInitCfg(BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
 }
@@ -716,6 +732,20 @@ static bool OSPI_flash_test(void *arg)
     uint32_t          cpuLoad;
 #endif
 #endif
+    uint32_t          startOffset;
+    uint8_t          *pBuf;
+    uint32_t          tuneEnable = TRUE;
+
+    if (test->testId == OSPI_TEST_ID_WR_TUNING)
+    {
+        testLen = NOR_ATTACK_VECTOR_SIZE;
+        startOffset = TEST_TUNE_PATTERN_OFFSET;
+    }
+    else
+    {
+        testLen = TEST_DATA_LEN;
+        startOffset = TEST_ADDR_OFFSET;
+    }
 
     OSPI_initConfig(test);
 
@@ -730,11 +760,20 @@ static bool OSPI_flash_test(void *arg)
     deviceId = BOARD_FLASH_ID_S28HS512T;
 #endif
 
+#ifdef OSPI_PROFILE
+    /* Get start time stamp for the Board_flashOpen measurement */
+    startTime = TimerP_getTimeInUsecs();
+#endif
     /* Open the Board OSPI NOR device with OSPI port 0
        and use default OSPI configurations */
     boardHandle = Board_flashOpen(deviceId,
-                                  BOARD_OSPI_NOR_INSTANCE, NULL);
+                                  BOARD_OSPI_NOR_INSTANCE, (void *)(&tuneEnable));
 
+#ifdef OSPI_PROFILE
+    /* Get elapsed time for the Board_flashOpen measurement */
+    elapsedTime = TimerP_getTimeInUsecs() - startTime;
+    SPI_log("\n Board_flashOpen elpased time %d us \n", elapsedTime);
+#endif
     if (!boardHandle)
     {
         SPI_log("\n Board_flashOpen failed. \n");
@@ -750,11 +789,19 @@ static bool OSPI_flash_test(void *arg)
 
     /* Generate the data */
     GeneratePattern(txBuf, rxBuf, testLen);
+    if (test->testId == OSPI_TEST_ID_WR_TUNING)
+    {
+        pBuf = nor_attack_vector;
+    }
+    else
+    {
+        pBuf = txBuf;
+    }
 #ifdef SPI_DMA_ENABLE
 #if !defined (__aarch64__)
     if (test->dmaMode)
     {
-        CacheP_wbInv((void *)txBuf, (int32_t)testLen);
+        CacheP_wbInv((void *)pBuf, (int32_t)testLen);
         CacheP_wbInv((void *)rxBuf, (int32_t)testLen);
     }
 #endif
@@ -763,7 +810,7 @@ static bool OSPI_flash_test(void *arg)
 #ifdef OSPI_WRITE
     for (i = 0; i < testLen; i += NOR_BLOCK_SIZE)
     {
-        offset = TEST_ADDR_OFFSET + i;
+        offset = startOffset + i;
         if (Board_flashOffsetToBlkPage(boardHandle, offset,
                                        &blockNum, &pageNum))
         {
@@ -789,7 +836,7 @@ static bool OSPI_flash_test(void *arg)
 #endif
     for (i = 0; i < testLen; i += testSegLen)
     {
-        offset = TEST_ADDR_OFFSET + i;
+        offset = startOffset + i;
         if ((testLen - i) < testSegLen)
         {
             xferLen = testLen - i;
@@ -799,7 +846,7 @@ static bool OSPI_flash_test(void *arg)
             xferLen = testSegLen;
         }
         /* Write buffer to flash */
-        if (Board_flashWrite(boardHandle, offset, &txBuf[i],
+        if (Board_flashWrite(boardHandle, offset, &pBuf[i],
                              xferLen, (void *)(&ioMode)))
         {
             SPI_log("\n Board_flashWrite failed. \n");
@@ -834,7 +881,7 @@ static bool OSPI_flash_test(void *arg)
 
     for (i = 0; i < testLen; i += testSegLen)
     {
-        offset = TEST_ADDR_OFFSET + i;
+        offset = startOffset + i;
         if ((testLen - i) < testSegLen)
         {
             xferLen = testLen - i;
@@ -869,7 +916,7 @@ static bool OSPI_flash_test(void *arg)
 
 #ifdef OSPI_WRITE
     /* Verify Data */
-    if (VerifyData(txBuf, rxBuf, testLen) == false)
+    if (VerifyData(pBuf, rxBuf, testLen) == false)
     {
         SPI_log("\n Data mismatch. \n");
         testPassed = false;
@@ -904,6 +951,9 @@ void OSPI_test_print_test_desc(OSPI_Tests *test)
 
 OSPI_Tests Ospi_tests[] =
 {
+#ifdef OSPI_WRITE_TUNING
+    {OSPI_flash_test, OSPI_TEST_ID_WR_TUNING,    true,   false,  OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave to write tuning data to flash"},
+#endif
 #if !defined(SOC_J7200) /* Shall be enabled for J7200 when PDK-7115 is addressed */
     /* testFunc       testID                     dacMode dmaMode clk                   testDesc */
     {OSPI_flash_test, OSPI_TEST_ID_DAC_133M,     true,   false,  OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave in DAC mode at 133MHz RCLK"},

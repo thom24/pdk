@@ -79,6 +79,9 @@ NOR_Info Nor_ospiInfo =
     NOR_SECTOR_SIZE            /* sectorSize */
 };
 
+static bool phyEnable;
+static bool dtrEnable;
+
 static NOR_STATUS NOR_ospiCmdRead(SPI_Handle handle, uint8_t *cmdBuf,
                             uint32_t cmdLen, uint8_t *rxBuf, uint32_t rxLen)
 {
@@ -261,7 +264,7 @@ static void Nor_ospiSetOpcode(SPI_Handle handle)
     if (rx_lines == OSPI_XFER_LINES_OCTAL)
     {
         dummyCycles = NOR_OCTAL_READ_DUMMY_CYCLE;
-        if (hwAttrs->dtrEnable == true)
+        if (dtrEnable == true)
         {
             data[0]     = NOR_CMD_OCTAL_DDR_O_FAST_RD;
             data[1]     = NOR_CMD_OCTAL_FAST_PROG;
@@ -289,52 +292,100 @@ static void Nor_ospiSetOpcode(SPI_Handle handle)
     return;
 }
 
+static NOR_STATUS Nor_ospiSetDummyCycle(SPI_Handle handle, uint32_t dummyCycle)
+{
+    NOR_STATUS             retVal;
+    uint8_t                cmdWren = NOR_CMD_WREN;
+    uint32_t               data[3];
+    uint32_t               addrBytes;
+
+    if (dtrEnable == true)
+    {
+        addrBytes = 3U;
+    }
+    else
+    {
+        addrBytes = 2U;
+    }
+
+    /* Send Write Enable command */
+    retVal = Nor_ospiCmdWrite(handle, &cmdWren, 1, 0);
+
+    /* Enable single transfer rate mode */
+    if (retVal == NOR_PASS)
+    {
+        /* send write VCR command to reg addr 0x0 to set to SDR mode */
+        data[0] = (NOR_CMD_WRITE_VCR << 24)         | /* write volatile config reg cmd */
+                  (0 << 23)                         | /* read data disable */
+                  (7 << 20)                         | /* read 8 data bytes */
+                  (1 << 19)                         | /* enable cmd adddr */
+                  (addrBytes << 16)                 | /* address bytes */
+                  (1 << 15);                          /* write data enable */
+        data[1] = 1;                                  /* Dummy cycle config register address */
+        data[2] = dummyCycle;                         /* Dummy cycle # */
+        SPI_control(handle, SPI_V0_CMD_CFG_DUMMY_CYCLE, (void *)data);
+    }
+
+    return retVal;
+}
+
+
 NOR_HANDLE Nor_ospiOpen(uint32_t norIntf, uint32_t portNum, void *params)
 {
     SPI_Params      spiParams;  /* SPI params structure */
     SPI_Handle      hwHandle;  /* SPI handle */
     NOR_HANDLE      norHandle = 0;
-    uint32_t        i = 0;
-    uint32_t        delay;
-    uint32_t        readCnt = 0;
-    uint32_t        readStart = 0;
-    uint32_t        readCntPrv = 0;
-    uint32_t        readStartPrv = 0;
-    OSPI_v0_HwAttrs ospi_cfg;
+    OSPI_v0_HwAttrs ospiCfg;
     NOR_STATUS      retVal;
+    uint32_t        data;
 
-    if (params)
+    /* Get the OSPI SoC configurations */
+    OSPI_socGetInitCfg(portNum, &ospiCfg);
+
+    /* Save the DTR enable flag */
+    dtrEnable = ospiCfg.dtrEnable;
+
+    /* Reset the PHY tunning configuration data when enabled */
+    data = *(uint32_t *)params;
+    if (data != 0)
     {
-		memcpy(&spiParams, params, sizeof(SPI_Params));
+        Nor_spiPhyTuneReset(dtrEnable);
     }
-    else
+
+    /* Save the PHY enable flag */
+    phyEnable = ospiCfg.phyEnable;
+    if (phyEnable == (bool)true)
     {
-        /* Use default SPI config params if no params provided */
-		SPI_Params_init(&spiParams);
+        /*
+         * phyEnable is turned on only for DAC read,
+         * it turned off for open/erase/write operation
+         */
+        ospiCfg.phyEnable = false;
+        OSPI_socSetInitCfg(portNum, &ospiCfg);
     }
+
+    /* Use default SPI config params if no params provided */
+    SPI_Params_init(&spiParams);
     hwHandle = (SPI_Handle)SPI_open(portNum + SPI_CONFIG_OFFSET, &spiParams);
-
     if (hwHandle)
     {
         retVal = NOR_PASS;
         if (retVal == NOR_PASS)
         {
-            OSPI_socGetInitCfg(portNum, &ospi_cfg);
-            if (ospi_cfg.xferLines == OSPI_XFER_LINES_OCTAL)
+            if (ospiCfg.xferLines == OSPI_XFER_LINES_OCTAL)
             {
 #if defined (SIM_BUILD)
                 /* workaround to reset memory for Zebu */
-                ospi_cfg.xferLines = OSPI_XFER_LINES_SINGLE;
-                OSPI_socSetInitCfg(portNum, &ospi_cfg);
+                ospiCfg.xferLines = OSPI_XFER_LINES_SINGLE;
+                OSPI_socSetInitCfg(portNum, &ospiCfg);
                 Nor_ospiSetOpcode(hwHandle);
                 Nor_ospiResetMemory(hwHandle);
-                ospi_cfg.xferLines = OSPI_XFER_LINES_OCTAL;
-                OSPI_socSetInitCfg(portNum, &ospi_cfg);
+                ospiCfg.xferLines = OSPI_XFER_LINES_OCTAL;
+                OSPI_socSetInitCfg(portNum, &ospiCfg);
                 Nor_ospiSetOpcode(hwHandle);
 #endif
-
                 /* Enable DDR or SDR mode for Octal lines */
-                if (ospi_cfg.dtrEnable == true)
+                if (dtrEnable == (bool)true)
                 {
                     Nor_ospiEnableDDR(hwHandle);
                 }
@@ -352,76 +403,19 @@ NOR_HANDLE Nor_ospiOpen(uint32_t norIntf, uint32_t portNum, void *params)
             /* Set read/write opcode and read dummy cycles */
             Nor_ospiSetOpcode(hwHandle);
 
-            if (ospi_cfg.phyEnable == true)
+            if (Nor_ospiReadId(hwHandle) == NOR_PASS)
             {
-                /* set initial PHY DLL delay */
-                delay = 0U;
-                SPI_control(hwHandle, SPI_V0_CMD_CFG_PHY, (void *)(&delay));
-
-                /* calibrate PHY */
-                for (i = 0; i < 128U; i++)
-                {
-                    if (Nor_ospiReadId(hwHandle) == NOR_PASS)
-                    {
-                        /* Iterate flash reads, find the start index and successful read ID count */
-                        if (readCnt == 0)
-                            readStart = i;
-                        readCnt++;
-                    }
-                    else
-                    {
-                        if ((readCnt != 0) && (readCnt > readCntPrv))
-                        {
-                            /* save the start index and most successful read ID count */
-                            readCntPrv = readCnt;
-                            readStartPrv = readStart;
-                            readCnt = 0;
-                            readStart = 0;
-                        }
-                    }
-
-                    /* Increment DLL delay */
-                    SPI_control(hwHandle, SPI_V0_CMD_CFG_PHY, NULL);
-                }
-
-                if (readCnt > readCntPrv)
-                {
-                    readCntPrv = readCnt;
-                    readStartPrv = readStart;
-                }
-
-                if (readCntPrv != 0U)
-                {
-                    /* Find the delay in the middle working position */
-                    delay = readStartPrv + (readCntPrv / 2);
-                    SPI_control(hwHandle, SPI_V0_CMD_CFG_PHY, (void *)(&delay));
-                    Nor_ospiInfo.hwHandle = (uintptr_t)hwHandle;
-                    norHandle = (NOR_HANDLE)(&Nor_ospiInfo);
-                }
-                else
-                {
-                    SPI_close(hwHandle);
-                }
-            }
-            else /* ospi_cfg->phyEnable == false */
-            {
-                if (Nor_ospiReadId(hwHandle) == NOR_PASS)
-                {
-                    Nor_ospiInfo.hwHandle = (uintptr_t)hwHandle;
-                    norHandle = (NOR_HANDLE)(&Nor_ospiInfo);
-                }
-                else
-                {
-                    SPI_close(hwHandle);
-                }
+                Nor_ospiInfo.hwHandle = (uintptr_t)hwHandle;
+                norHandle = (NOR_HANDLE)(&Nor_ospiInfo);
             }
 
-            if (ospi_cfg.xipEnable == true)
+            if (ospiCfg.xipEnable == true)
             {
                 Nor_ospiXipEnable(hwHandle);
             }
         }
-        else /* Nor_ospiEnableDDR(hwHandle) != NOR_PASS */
+
+        if (norHandle == 0)
         {
             SPI_close(hwHandle);
         }
@@ -527,6 +521,12 @@ NOR_STATUS Nor_ospiRead(NOR_HANDLE handle, uint32_t addr,
     }
     spiHandle = (SPI_Handle)norOspiInfo->hwHandle;
 
+    if (phyEnable == (bool)true)
+    {
+        Nor_ospiSetDummyCycle(spiHandle, NOR_OCTAL_READ_DUMMY_CYCLE);
+        if (Nor_spiPhyTune(spiHandle, NOR_TUNING_DATA_OFFSET) == NOR_FAIL)
+           return NOR_FAIL;
+    }
     /* Validate address input */
     if ((addr + len) > NOR_SIZE)
     {
@@ -639,7 +639,6 @@ NOR_STATUS Nor_ospiErase(NOR_HANDLE handle, int32_t erLoc, bool blkErase)
     uint8_t         cmdWren  = NOR_CMD_WREN;
     NOR_Info       *norOspiInfo;
     SPI_Handle      spiHandle;
-    OSPI_v0_HwAttrs const *hwAttrs;
 
     if (!handle)
     {
@@ -652,7 +651,6 @@ NOR_STATUS Nor_ospiErase(NOR_HANDLE handle, int32_t erLoc, bool blkErase)
         return NOR_FAIL;
     }
     spiHandle = (SPI_Handle)norOspiInfo->hwHandle;
-    hwAttrs = (OSPI_v0_HwAttrs const *)spiHandle->hwAttrs;
 
     if (erLoc == NOR_BE_SECTOR_NUM)
     {
@@ -680,7 +678,7 @@ NOR_STATUS Nor_ospiErase(NOR_HANDLE handle, int32_t erLoc, bool blkErase)
             cmd[0] = NOR_CMD_SECTOR_ERASE;
         }
 
-        if (hwAttrs->dtrEnable == (bool)true)
+        if (dtrEnable == (bool)true)
         {
             cmd[1] = (address >> 24) & 0xff; /* 4 address bytes */
             cmd[2] = (address >> 16) & 0xff;

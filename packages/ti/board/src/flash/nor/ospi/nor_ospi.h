@@ -52,11 +52,13 @@
 #else
 #include <ti/board/src/flash/nor/device/m35xu512.h>
 #endif
+#include <ti/board/src/flash/nor/ospi/nor_spi_phy_tune.h>
 
 /**************************************************************************
  **                       Macro Definitions
  **************************************************************************/
-
+/* Offset address (last block start address) of the 128 bytes tuning pattern data stored on the flash */
+#define NOR_TUNING_DATA_OFFSET    (NOR_SIZE - NOR_BLOCK_SIZE)
 
 #endif /* NOR_OSPI_H_ */
 

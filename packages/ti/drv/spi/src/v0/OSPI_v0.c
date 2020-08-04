@@ -7,7 +7,7 @@
  */
 
 /*
- * Copyright (C) 2017 - 2018 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2017 - 2020 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -370,27 +370,6 @@ static int32_t OSPI_waitIdle(SPI_Handle handle, uint32_t timeOut)
 }
 
 /*
- *  ======== OSPI_configPhy ========
- */
-#define OSPI_PHY_DLL_ELEM_DELAY_PERIOD   (80U)  /* worst delay element periord in ps */
-static void OSPI_configPhy(SPI_Handle handle, const void *pDelay);
-static void OSPI_configPhy(SPI_Handle handle, const void *pDelay)
-{
-#if !defined(j721e_sim)
-    OSPI_v0_HwAttrs const   *hwAttrs = NULL;
-    uint32_t                 numDelayElems;
-
-    /* Get the pointer to the hwAttrs */
-    hwAttrs = (OSPI_v0_HwAttrs const *)handle->hwAttrs;
-    numDelayElems = (1000000U / (hwAttrs->funcClk / 1000000U)) / OSPI_PHY_DLL_ELEM_DELAY_PERIOD;
-    CSL_ospiConfigPhy((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
-                      numDelayElems,
-                      (const uint32_t *)pDelay);
-#endif
-    OSPI_delay(OSPI_CALIBRATE_DELAY);
-}
-
-/*
  *  ======== OSPI_open_v0 ========
  */
 static SPI_Handle OSPI_open_v0(SPI_Handle handle, const SPI_Params *params)
@@ -603,14 +582,18 @@ static SPI_Handle OSPI_open_v0(SPI_Handle handle, const SPI_Params *params)
                 }
             }
 
-            if (!hwAttrs->phyEnable)
+            if (hwAttrs->phyEnable)
+            {
+                /* Enable PHY mode */
+                CSL_ospiPhyEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), TRUE);
+            }
+            else
             {
                 /* Disable PHY mode */
                 CSL_ospiPhyEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), FALSE);
-
-                /* Disable PHY pipeline mode */
-                CSL_ospiPipelinePhyEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), FALSE);
             }
+            /* Disable PHY pipeline mode */
+            CSL_ospiPipelinePhyEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), FALSE);
 
             if (hwAttrs->dtrEnable)
             {
@@ -1593,12 +1576,25 @@ static int32_t OSPI_enableXip (SPI_Handle handle, uint32_t cmd, uint32_t addr, u
     return (retVal);
 }
 
+static int32_t OSPI_configDummyCycle(SPI_Handle handle, uint32_t cmd, uint32_t addr, uint32_t data);
+static int32_t OSPI_configDummyCycle(SPI_Handle handle, uint32_t cmd, uint32_t addr, uint32_t data)
+{
+    OSPI_v0_HwAttrs const *hwAttrs; /* OSPI hardware attributes */
+    int32_t                retVal;
+
+    hwAttrs = (OSPI_v0_HwAttrs const *)handle->hwAttrs;
+    CSL_ospiFlashStig((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), cmd, addr, data);
+    retVal = OSPI_flashExecCmd((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr));
+
+    return (retVal);
+}
+
 /*
  *  ======== OSPI_control_v0 ========
  */
 static int32_t OSPI_control_v0(SPI_Handle handle, uint32_t cmd, const void *arg)
 {
-    OSPI_v0_HwAttrs const *hwAttrs; /* OSPI hardware attributes */
+    OSPI_v0_HwAttrs       *hwAttrs; /* OSPI hardware attributes */
     OSPI_v0_Object        *object;  /* OSPI object */
     int32_t                retVal = SPI_STATUS_ERROR;
     const uint32_t        *ctrlData = (const uint32_t *)arg;
@@ -1612,7 +1608,7 @@ static int32_t OSPI_control_v0(SPI_Handle handle, uint32_t cmd, const void *arg)
     {
         /* Get the pointer to the object */
         object = (OSPI_v0_Object *)handle->object;
-        hwAttrs = (OSPI_v0_HwAttrs const *)handle->hwAttrs;
+        hwAttrs = (OSPI_v0_HwAttrs *)handle->hwAttrs;
 
         switch (cmd)
         {
@@ -1716,17 +1712,34 @@ static int32_t OSPI_control_v0(SPI_Handle handle, uint32_t cmd, const void *arg)
 
             case SPI_V0_CMD_CFG_PHY:
             {
-                if (hwAttrs->phyEnable == (bool)true)
+                uint32_t phyEnable = *ctrlData++;
+                if (phyEnable == TRUE)
                 {
-#if !defined(j721e_sim)
-                    OSPI_configPhy(handle, arg);
-#endif
-                    retVal = SPI_STATUS_SUCCESS;
+                    if (hwAttrs->phyEnable == (bool)false)
+                    {
+                        CSL_ospiSetPreScaler((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
+                                             CSL_OSPI_BAUD_RATE_DIVISOR(2U));
+                        /* Enable PHY mode */
+                        CSL_ospiPhyEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), TRUE);
+                        hwAttrs->phyEnable = (bool)true;
+                    }
+                    uint32_t txDelay = *ctrlData++;
+                    uint32_t rxDelay = *ctrlData;
+                    CSL_ospiConfigPhyDLL((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
+                                         txDelay, rxDelay);
                 }
                 else
                 {
-                    retVal = SPI_STATUS_ERROR;
+                    if (hwAttrs->phyEnable == (bool)true)
+                    {
+                        /* Disable high speed mode when PHY is disabled */
+                        CSL_ospiSetPreScaler((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
+                                             CSL_OSPI_BAUD_RATE_DIVISOR_DEFAULT);
+                        CSL_ospiPhyEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), FALSE);
+                        hwAttrs->phyEnable = (bool)false;
+                    }
                 }
+                retVal = SPI_STATUS_SUCCESS;
                 break;
             }
 
@@ -1755,6 +1768,26 @@ static int32_t OSPI_control_v0(SPI_Handle handle, uint32_t cmd, const void *arg)
                 }
                 /* Enable PHY pipeline mode for read */
                 CSL_ospiPipelinePhyEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), TRUE);
+                break;
+            }
+
+            case SPI_V0_CMD_CFG_RD_DELAY:
+            {
+                uint32_t rdDelay = *ctrlData;
+                CSL_ospiSetDataReadCapDelay((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
+                                            rdDelay);
+                retVal = SPI_STATUS_SUCCESS;
+                break;
+            }
+
+            case SPI_V0_CMD_CFG_DUMMY_CYCLE:
+            {
+                nvcrCmd = *ctrlData;
+                ctrlData++;
+                addr   = *ctrlData;
+                ctrlData++;
+                data   = *ctrlData;
+                retVal = OSPI_configDummyCycle(handle, nvcrCmd, addr, data);
                 break;
             }
 

@@ -33,31 +33,17 @@
 
 /**
  *
- * \file  nor_xspi.h
+ * \file  nor_spi_patterns.h
  *
- * \brief This file contains structure, typedefs, functions and
- *        prototypes used for OSPI interface for xSPI flash.
+ * \brief This file contains OSPI/xSPI NOR flash attack patterns.
  *
  *****************************************************************************/
-#ifndef NOR_XSPI_H_
-#define NOR_XSPI_H_
+#ifndef NOR_SPI_PATTERNS_H_
+#define NOR_SPI_PATTERNS_H_
 
-#include <string.h>
+#include <ti/csl/soc.h>
 
-#include <ti/board/src/flash/nor/nor.h>
-#include <ti/drv/spi/SPI.h>
-#include <ti/drv/spi/soc/SPI_soc.h>
-#if defined(j7200_evm)
-#include <ti/board/src/flash/nor/device/s28hs512t.h>
-#endif
-#include <ti/board/src/flash/nor/ospi/nor_spi_phy_tune.h>
+#define NOR_ATTACK_VECTOR_SIZE    (128U)
 
-/**************************************************************************
- **                       Macro Definitions
- **************************************************************************/
-
-#define BOARD_XSPI_BAUDRATE_DIV    (6U)
-
-#endif /* NOR_XSPI_H_ */
-
-/* Nothing past this point */
+extern uint8_t nor_attack_vector[];
+#endif /* NOR_SPI_PATTERNS_H_ */

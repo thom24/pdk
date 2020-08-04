@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 - 2019, Texas Instruments Incorporated
+ * Copyright (c) 2018 - 2020, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -114,7 +114,7 @@
 /** Dummy cycles for Read operation */
 /** Dummy cycles for Read operation */
 #define NOR_SINGLE_READ_DUMMY_CYCLE  (0U)
-#define NOR_OCTAL_READ_DUMMY_CYCLE   (16U)
+#define NOR_OCTAL_READ_DUMMY_CYCLE   (30U)
 
 
 /** In Micro seconds */
