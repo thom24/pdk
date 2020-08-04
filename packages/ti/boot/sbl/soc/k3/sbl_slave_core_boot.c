@@ -191,7 +191,6 @@ static const sblSlaveCoreInfo_t sbl_slave_core_info[] =
     }
 };
 
-#ifndef DISABLE_ATCM
 static const uint32_t SblAtcmAddr[] =
 {
 SBL_MCU_ATCM_BASE,
@@ -201,7 +200,6 @@ SBL_MCU2_CPU1_ATCM_BASE_ADDR_SOC,
 SBL_MCU3_CPU0_ATCM_BASE_ADDR_SOC,
 SBL_MCU3_CPU1_ATCM_BASE_ADDR_SOC
 };
-#endif
 
 static const uint32_t SblBtcmAddr[] =
 {
@@ -509,16 +507,13 @@ void SBL_SetupCoreMem(uint32_t core_id)
             proc_set_config_req.bootvector_hi = cpuStatus.bootvector_hi;
             proc_set_config_req.config_flags_1_set = 0;
             proc_set_config_req.config_flags_1_clear = 0;
-#ifdef DISABLE_ATCM            
-            proc_set_config_req.config_flags_1_clear |= TISCI_MSG_VAL_PROC_BOOT_CFG_FLAG_R5_ATCM_EN;
-#else
             proc_set_config_req.config_flags_1_set |= TISCI_MSG_VAL_PROC_BOOT_CFG_FLAG_R5_ATCM_EN;
-#endif
+
             SBL_log(SBL_LOG_MAX, "Enabling MCU TCMs after reset for core %d\n", core_id);
             proc_set_config_req.config_flags_1_set |= (TISCI_MSG_VAL_PROC_BOOT_CFG_FLAG_R5_BTCM_EN |
                                                        TISCI_MSG_VAL_PROC_BOOT_CFG_FLAG_R5_TCM_RSTBASE);
 
-#if defined(SOC_J7200)
+#if defined(SOC_J7200) || defined(SOC_AM64X)
             /* Only need to set mem_init disable bit for MCU1_0 or MCU2_0 (for each cluster) */
             if ((core_id == MCU1_CPU0_ID) || (core_id == MCU2_CPU0_ID))
             {
@@ -548,7 +543,6 @@ void SBL_SetupCoreMem(uint32_t core_id)
                 Sciclient_pmSetModuleState(sblSlaveCoreInfoPtr->tisci_dev_id, TISCI_MSG_VALUE_DEVICE_SW_STATE_ON, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
 
                 /* Initialize the TCMs - TCMs of MCU running SBL are already initialized by ROM & SBL */
-#ifndef DISABLE_ATCM
 #if defined(SOC_J7200)
                 /* J7200: ATCM in lock-step is the combined size of both the split-mode ATCMs */
                 if (runLockStep)
@@ -563,7 +557,6 @@ void SBL_SetupCoreMem(uint32_t core_id)
                     SBL_log(SBL_LOG_MAX, "Clearing core_id %d  ATCM @ 0x%x\n", core_id, SblAtcmAddr[core_id - MCU1_CPU0_ID]);
                     memset(((void *)(SblAtcmAddr[core_id - MCU1_CPU0_ID])), 0xFF, 0x8000);
                 }
-#endif
 
 #ifndef VLAB_SIM
 #if defined(SOC_J7200)
@@ -671,10 +664,8 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
        (pAppEntry->CpuEntryPoint[core_id]) &&
        (pAppEntry->CpuEntryPoint[core_id] <  SBL_INVALID_ENTRY_ADDR))
     {
-#ifndef DISABLE_ATCM
         SBL_log(SBL_LOG_MAX, "Copying first 128 bytes from app to MCU ATCM @ 0x%x for core %d\n", SblAtcmAddr[core_id - MCU1_CPU0_ID], core_id);
         memcpy(((void *)(SblAtcmAddr[core_id - MCU1_CPU0_ID])), (void *)(pAppEntry->CpuEntryPoint[core_id]), 128);
-#endif        
         return;
     }
 
@@ -740,10 +731,8 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
                 /* Skip copy if R5 app entry point is already 0 */
                 if (pAppEntry->CpuEntryPoint[core_id])
                 {
-#ifndef DISABLE_ATCM
                     SBL_log(SBL_LOG_MAX, "Copying first 128 bytes from app to MCU ATCM @ 0x%x for core %d\n", SblAtcmAddr[core_id - MCU1_CPU0_ID], core_id);
                     memcpy(((void *)(SblAtcmAddr[core_id - MCU1_CPU0_ID])), (void *)(pAppEntry->CpuEntryPoint[core_id]), 128);
-#endif
                 }
             }
 
@@ -831,10 +820,8 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
             /* Skip copy if R5 app entry point is already 0 */
             if (pAppEntry->CpuEntryPoint[core_id])
             {
-#ifndef DISABLE_ATCM
                 SBL_log(SBL_LOG_MAX, "Copying first 128 bytes from app to MCU ATCM @ 0x%x for core %d\n", SblAtcmAddr[core_id - MCU1_CPU0_ID], core_id);
                 memcpy(((void *)(SblAtcmAddr[core_id - MCU1_CPU0_ID])), (void *)(proc_set_config_req.bootvector_lo), 128);
-#endif
             }
             break;
         case MCU2_CPU0_ID:
@@ -846,10 +833,8 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
                 /* Skip copy if R5 app entry point is already 0 */
                 if (pAppEntry->CpuEntryPoint[core_id])
                 {
-#ifndef DISABLE_ATCM
                     SBL_log(SBL_LOG_MAX, "Copying first 128 bytes from app to MCU ATCM @ 0x%x for core %d\n", SblAtcmAddr[core_id - MCU1_CPU0_ID], core_id);
                     memcpy(((void *)(SblAtcmAddr[core_id - MCU1_CPU0_ID])), (void *)(proc_set_config_req.bootvector_lo), 128);
-#endif
                 }
                 SBL_log(SBL_LOG_MAX, "Clearing HALT for ProcId 0x%x...\n", sblSlaveCoreInfoPtr->tisci_proc_id);
                 status =  Sciclient_procBootSetSequenceCtrl(sblSlaveCoreInfoPtr->tisci_proc_id, 0, TISCI_MSG_VAL_PROC_BOOT_CTRL_FLAG_R5_CORE_HALT, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
