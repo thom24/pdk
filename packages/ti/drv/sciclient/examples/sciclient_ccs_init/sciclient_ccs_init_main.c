@@ -445,6 +445,16 @@ static int32_t App_getRevisionTest(void)
     {
         printf("\nSciclient RM Board Configuration has failed \n");
     }
+    if (status == CSL_PASS)
+    {
+        dmtimer0_read();
+        status = Sciclient_boardCfgSec(NULL) ;
+        dmtimer0_read();
+    }
+    if (status != CSL_PASS) 
+    {
+        printf("\nSciclient Security Board Configuration has failed \n");
+    }
 #endif
     if (status == CSL_PASS)
     {
