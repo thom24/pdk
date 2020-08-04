@@ -318,6 +318,19 @@ endif
 export udma_adc_testapp_SBL_APPIMAGEGEN = yes
 udma_EXAMPLE_LIST += udma_adc_testapp
 
+# UDMA Baremetal OSPI Flash test app
+export udma_baremetal_ospi_flash_testapp_COMP_LIST = udma_baremetal_ospi_flash_testapp
+udma_baremetal_ospi_flash_testapp_RELPATH = ti/drv/udma/examples/udma_ospi_flash_test
+udma_baremetal_ospi_flash_testapp_PATH = $(PDK_UDMA_COMP_PATH)/examples/udma_ospi_flash_test
+export udma_baremetal_ospi_flash_testapp_BOARD_DEPENDENCY = yes
+export udma_baremetal_ospi_flash_testapp_CORE_DEPENDENCY = yes
+udma_baremetal_ospi_flash_testapp_PKG_LIST = udma_baremetal_ospi_flash_testapp
+udma_baremetal_ospi_flash_testapp_INCLUDE = $(udma_baremetal_ospi_flash_testapp_PATH)
+export udma_baremetal_ospi_flash_testapp_BOARDLIST = $(drvudma_BOARDLIST)
+export udma_baremetal_ospi_flash_testapp_$(SOC)_CORELIST = mcu1_0
+export udma_baremetal_ospi_flash_testapp_SBL_APPIMAGEGEN = yes
+udma_EXAMPLE_LIST += udma_baremetal_ospi_flash_testapp
+
 -include $(PDK_UDMA_COMP_PATH)/unit_test/udma_ut_component.mk
 ifneq ($(udma_ut_LIB_LIST),)
   udma_LIB_LIST += $(udma_ut_LIB_LIST)

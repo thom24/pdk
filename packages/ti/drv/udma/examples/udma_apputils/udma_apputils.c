@@ -134,6 +134,40 @@ uint64_t Udma_appVirtToPhyFxn(const void *virtAddr, uint32_t chNum, void *appDat
     }
 #endif
 
+#if defined (BUILD_MCU1_0) || defined (BUILD_MCU1_1)
+    /* Convert local MCU domain R5 TCMA address to global space */
+    /* check for start address avoided since CSL_MCU_ARMSS_ATCM_BASE is 0U */
+    if(phyAddr < CSL_MCU_ARMSS_ATCM_SIZE) 
+    {
+#if defined (BUILD_MCU1_0)
+        phyAddr += CSL_MCU_R5FSS0_CORE0_ATCM_BASE;
+#endif
+#if defined (BUILD_MCU1_1)
+        phyAddr += CSL_MCU_R5FSS0_CORE1_ATCM_BASE;
+#endif
+    }
+#endif
+#if defined (BUILD_MCU2_0) || defined (BUILD_MCU2_1) || defined (BUILD_MCU3_0) || defined (BUILD_MCU3_1)
+    /* Convert local Main domain R5 TCMB address to global space */
+    /* check for start address avoided since CSL_R5FSS0_ATCM_BASE is 0U */
+    if(phyAddr < CSL_R5FSS0_ATCM_SIZE)
+    {
+#if defined (BUILD_MCU2_0)
+        phyAddr += CSL_R5FSS0_CORE0_ATCM_BASE;
+#endif
+#if defined (BUILD_MCU2_1)
+        phyAddr += CSL_R5FSS0_CORE1_ATCM_BASE;
+#endif
+#if defined (BUILD_MCU3_0)
+        phyAddr += CSL_R5FSS1_CORE0_ATCM_BASE;
+#endif
+#if defined (BUILD_MCU3_1)
+        phyAddr += CSL_R5FSS1_CORE1_ATCM_BASE;
+#endif
+    }
+#endif
+
+
     return (phyAddr);
 }
 
@@ -161,6 +195,56 @@ void *Udma_appPhyToVirtFxn(uint64_t phyAddr, uint32_t chNum, void *appData)
     {
         phyAddr -= CSL_C66SS1_C66_SDMA_L2SRAM_0_BASE;
         phyAddr += CSL_C66_COREPAC_L2_BASE;
+    }
+#endif
+
+/* Convert global TCMA address to local space */
+#if defined (BUILD_MCU1_0) 
+    if((phyAddr >= CSL_MCU_R5FSS0_CORE0_ATCM_BASE) &&
+       (phyAddr < (CSL_MCU_R5FSS0_CORE0_ATCM_BASE + CSL_MCU_R5FSS0_CORE0_ATCM_SIZE)))
+    {
+        phyAddr -= CSL_MCU_R5FSS0_CORE0_ATCM_BASE;
+        phyAddr += CSL_MCU_ARMSS_ATCM_BASE;
+    }
+#endif
+#if defined (BUILD_MCU1_1)
+    if((phyAddr >= CSL_MCU_R5FSS0_CORE1_ATCM_BASE) &&
+       (phyAddr < (CSL_MCU_R5FSS0_CORE1_ATCM_BASE + CSL_MCU_R5FSS0_CORE1_ATCM_SIZE)))
+    {
+        phyAddr -= CSL_MCU_R5FSS0_CORE1_ATCM_BASE;
+        phyAddr += CSL_MCU_ARMSS_ATCM_BASE;
+    }
+#endif
+#if defined (BUILD_MCU2_0) 
+    if((phyAddr >= CSL_R5FSS0_CORE0_ATCM_BASE) &&
+       (phyAddr < (CSL_R5FSS0_CORE0_ATCM_BASE + CSL_R5FSS0_CORE0_ATCM_SIZE)))
+    {
+        phyAddr -= CSL_R5FSS0_CORE0_ATCM_BASE;
+        phyAddr += CSL_R5FSS0_ATCM_BASE;
+    }
+#endif
+#if defined (BUILD_MCU2_1)
+    if((phyAddr >= CSL_R5FSS0_CORE1_ATCM_BASE) &&
+       (phyAddr < (CSL_R5FSS0_CORE1_ATCM_BASE + CSL_R5FSS0_CORE1_ATCM_SIZE)))
+    {
+        phyAddr -= CSL_R5FSS0_CORE1_ATCM_BASE;
+        phyAddr += CSL_R5FSS0_ATCM_BASE;
+    }
+#endif
+#if defined (BUILD_MCU3_0) 
+    if((phyAddr >= CSL_R5FSS1_CORE0_ATCM_BASE) &&
+       (phyAddr < (CSL_R5FSS1_CORE0_ATCM_BASE + CSL_R5FSS1_CORE0_ATCM_SIZE)))
+    {
+        phyAddr -= CSL_R5FSS1_CORE0_ATCM_BASE;
+        phyAddr += CSL_R5FSS0_ATCM_BASE;
+    }
+#endif
+#if defined (BUILD_MCU3_1)
+    if((phyAddr >= CSL_R5FSS1_CORE1_ATCM_BASE) &&
+       (phyAddr < (CSL_R5FSS1_CORE1_ATCM_BASE + CSL_R5FSS1_CORE1_ATCM_SIZE)))
+    {
+        phyAddr -= CSL_R5FSS1_CORE1_ATCM_BASE;
+        phyAddr += CSL_R5FSS0_ATCM_BASE;
     }
 #endif
 
