@@ -107,6 +107,12 @@ function connectTargets()
     dsDMSC_0.memory.writeWord(0, 0x78000004, 0x38);       /* Address 0x38 */
     dsDMSC_0.memory.writeWord(0, 0x78000038, 0xEAFFFFFE) /* b          #0x38 */
 
+    /* RAT Config for OCSRAM SYSFW load */
+    dsDMSC_0.memory.writeWord(0, 0x44200024, 0x00060000);
+    dsDMSC_0.memory.writeWord(0, 0x44200028, 0x44060000);
+    dsDMSC_0.memory.writeWord(0, 0x4420002C, 0x00000000);
+    dsDMSC_0.memory.writeWord(0, 0x44200020, 0x80000011);
+
     print("Loading DMSC Firmware ... " + sysfw_bin);
     // Load the DMSC firmware
     dsDMSC_0.memory.loadRaw(0, 0x44000, sysfw_bin, 32, false);
@@ -129,6 +135,9 @@ function connectTargets()
     java.lang.Thread.sleep(2000);
     // Halt the R5F and re-run.
     dsMCU1_0.target.halt();
+    
+    // Reset the R5F and run.
+    dsMCU1_0.target.reset();
 
     print("Running the board configuration initialization from R5!");
     // Load the board configuration init file.

@@ -67,7 +67,7 @@
 #define TISCI_HOST_ID_MAIN_0_R5_3 (38U)
 /** A53_0(Secure): Cortex a53 context 0 on Main islana - ATF */
 #define TISCI_HOST_ID_A53_0 (10U)
-/** A53_1(Non Secure): Cortex A72 context 1 on Main island - EL2/Hyp */
+/** A53_1(Non Secure): Cortex A53 context 1 on Main island - EL2/Hyp */
 #define TISCI_HOST_ID_A53_1 (11U)
 /** A53_2(Non Secure): Cortex A53 context 2 on Main island - VM/OS1 */
 #define TISCI_HOST_ID_A53_2 (12U)

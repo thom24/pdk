@@ -105,9 +105,10 @@ function connectTargets()
     dsDMSC_0.memory.writeWord(0, 0x78000038, 0xEAFFFFFE) /* b          #0x38 */
 
     print("Reconfiguring the RAT mapping to emulate ROM Mapping")
+    /* RAT Config for OCSRAM SYSFW load */
     dsDMSC_0.memory.writeWord(0,0x44200000 + 0x24, 0x00060000);
     dsDMSC_0.memory.writeWord(0,0x44200000 + 0x2C, 0x00000000); 
-    dsDMSC_0.memory.writeWord(0,0x44200000 + 0x28, 0x701E0000);
+    dsDMSC_0.memory.writeWord(0,0x44200000 + 0x28, 0x44060000);
     dsDMSC_0.memory.writeWord(0,0x44200000 + 0x20, 0x80000011);
     
     dsDMSC_0.memory.writeWord(0,0x44200000 + 0x34, 0x80000000);

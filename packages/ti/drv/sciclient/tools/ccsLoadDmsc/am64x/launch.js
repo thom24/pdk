@@ -62,7 +62,7 @@ pdkPath = "/ti/j7presi/workarea/pdk";
 ccs_init_elf_file = pdkPath+"/packages/ti/drv/sciclient/tools/ccsLoadDmsc/am64x/sciclient_ccs_init_mcu1_0_release.xer5f";
 
 //path to sysfw bin
-sysfw_bin = pdkPath+"/packages/ti/drv/sciclient/soc/sysfw/binaries/ti-sci-firmware-am64x-gp-vlab.bin"
+sysfw_bin = pdkPath+"/packages/ti/drv/sciclient/soc/sysfw/binaries/ti-sci-firmware-am64x-gp-vlab-no-fwl.bin"
 
 //<!!!!!! EDIT THIS !!!!!>
 
@@ -129,6 +129,13 @@ function connectTargets()
     //dsDMSC_0.memory.writeWord(0, 0x61000000, 0xE59FF004); /* ldr        pc, [pc, #4] */
     //dsDMSC_0.memory.writeWord(0, 0x61000004, 0x38);       /* Address 0x38 */
     //dsDMSC_0.memory.writeWord(0, 0x61000038, 0xEAFFFFFE) /* b          #0x38 */
+    /* Map RAT Address for loading DMSC code */
+    // region 0
+    dsDMSC_0.memory.writeWord(0, 0x44200024, 0x00060000);
+    dsDMSC_0.memory.writeWord(0, 0x44200028, 0x44060000);
+    dsDMSC_0.memory.writeWord(0, 0x4420002C, 0x00000000);
+    dsDMSC_0.memory.writeWord(0, 0x44200020, 0x80000011);
+    
     print("Loading DMSC Firmware ... " + sysfw_bin);
     // Load the DMSC firmware
     dsDMSC_0.memory.loadRaw(0, 0x44000, sysfw_bin, 32, false);
