@@ -59,7 +59,7 @@ ifneq ($(LIMIT_BOARDS),)
 BOARD ?= $(firstword $(LIMIT_BOARDS))
 SOC ?= $(firstword $(LIMIT_SOCS))
 CORE ?= $(firstword $(LIMIT_CORES))
-else	
+else
 #if LIMIT_BOARDS is not defined, default BOARD and SOC to the below
 export BOARD ?= j721e_evm
 export SOC ?= j721e
@@ -112,7 +112,14 @@ export BUILD_PROFILE_$(CORE) ?= $(BUILD_PROFILE)
 export PACKAGE_SELECT ?= all
 
 # Disable recursive building of example dependencies
-export DISABLE_RECURSE_DEPS ?= no
+ifeq ($(BUILD_PROFILE),release)
+  #Below is converted to yes in release script
+  DISABLE_RECURSE_DEPS ?= no
+else
+  #We don't generate debug lib. So force recursive build for debug build.
+  DISABLE_RECURSE_DEPS ?= no
+endif
+export DISABLE_RECURSE_DEPS
 
 # Default C++ build flag, yes or no
 export CPLUSPLUS_BUILD ?= no
