@@ -59,6 +59,15 @@ extern "C" {
 #define BOARD_PSC_DEVICE_MODE_EXCLUSIVE       (0)
 #define BOARD_PSC_DEVICE_MODE_NONEXCLUSIVE    (1U)
 
+#define BOARD_MAIN_CLOCK_GROUP_ALL            (0U)
+#define BOARD_MAIN_CLOCK_GROUP1               (1U)
+#define BOARD_MAIN_CLOCK_GROUP2               (2U)
+
+#define BOARD_MCU_CLOCK_GROUP_ALL             (0U)
+#define BOARD_MCU_CLOCK_GROUP1                (1U)
+#define BOARD_MCU_CLOCK_GROUP2                (2U)
+
+
 #define BOARD_MAC_ADDR_BYTES                  (6U)
 
 #define BOARD_ENET_NONE                       (0)
@@ -92,6 +101,17 @@ typedef struct Board_initParams_s
         BOARD_PSC_DEVICE_MODE_EXCLUSIVE - Exclusive access to the core requesting access
         BOARD_PSC_DEVICE_MODE_NONEXCLUSIVE - Non-exclusive which allows other cores to get access */
     uint8_t pscMode;
+    /** Group selection for MAIN domain clock enable
+        BOARD_MAIN_CLOCK_GROUP_ALL - Enable clock for all groups in main domain
+        BOARD_MAIN_CLOCK_GROUP1 - Enable clock for all group1 in main domain
+        BOARD_MAIN_CLOCK_GROUP2 - Enable clock for all group2 in main domain */
+    uint8_t mainClkGrp;
+    /** Group selection for MCU domain clock enable
+        BOARD_MCU_CLOCK_GROUP_ALL - Enable clock for all groups in mcu domain
+        BOARD_MCU_CLOCK_GROUP1 - Enable clock for all group1 in mcu domain
+        BOARD_MCU_CLOCK_GROUP2 - Enable clock for all group2 in mcu domain */
+    /** Note: This parameter is currently not in use. Place holder for future use */
+    uint8_t mcuClkGrp;
 } Board_initParams_t;
 
 /**

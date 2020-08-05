@@ -52,6 +52,12 @@
 #include "sbl_log.h"
 #include "sbl_profile.h"
 
+#if defined(SBL_ENABLE_HLOS_BOOT)
+#if defined(SOC_J721E)
+#include <ti/board/src/j721e_evm/include/board_utils.h>
+#endif
+#endif
+
 /* ========================================================================== */
 /*                          Function Declarations                             */
 /* ========================================================================== */

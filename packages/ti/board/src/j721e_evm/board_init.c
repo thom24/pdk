@@ -171,13 +171,7 @@ static Board_STATUS Board_sysDeinit(void)
  *      board interfaces connected to those peripherals.
  *
  *  BOARD_INIT_MODULE_CLOCK_MAIN -
- *      Enables minimum group of power domains and peripheral clocks in the MAIN domain.
- *      Some of the power domains and peripherals will be off by default.
- *      Enabling the power domains is mandatory before accessing using
- *      board interfaces connected to those peripherals.
- *
- *  BOARD_INIT_MODULE_CLOCK_MAIN_GRP2 -
- *      Enables 2nd group of power domains and peripheral clocks in the MAIN domain.
+ *      Enables different power domains and peripheral clocks in the MAIN domain.
  *      Some of the power domains and peripherals will be off by default.
  *      Enabling the power domains is mandatory before accessing using
  *      board interfaces connected to those peripherals.
@@ -229,10 +223,7 @@ Board_STATUS Board_init(Board_initCfg cfg)
         ret = Board_moduleClockInitMcu();
         if (ret != BOARD_SOK)
             return ret;
-        ret = Board_moduleClockInitMainGrp1();
-        if (ret != BOARD_SOK)
-            return ret;
-        ret = Board_moduleClockInitMainGrp2();
+        ret = Board_moduleClockInitMain();
         if (ret != BOARD_SOK)
             return ret;
     }
@@ -243,12 +234,7 @@ Board_STATUS Board_init(Board_initCfg cfg)
         return ret;
 
     if (cfg & BOARD_INIT_MODULE_CLOCK_MAIN)
-        ret = Board_moduleClockInitMainGrp1();
-    if (ret != BOARD_SOK)
-        return ret;
-
-    if (cfg & BOARD_INIT_MODULE_CLOCK_MAIN_GRP2)
-        ret = Board_moduleClockInitMainGrp2();
+        ret = Board_moduleClockInitMain();
     if (ret != BOARD_SOK)
         return ret;
 
@@ -362,10 +348,7 @@ Board_STATUS Board_deinit(Board_initCfg cfg)
      ret = Board_moduleClockDeinitMcu();
         if (ret != BOARD_SOK)
             return ret;
-     ret = Board_moduleClockDeinitMainGrp1();
-        if (ret != BOARD_SOK)
-            return ret;
-     ret = Board_moduleClockDeinitMainGrp2();
+     ret = Board_moduleClockDeinitMain();
         if (ret != BOARD_SOK)
             return ret;
     }

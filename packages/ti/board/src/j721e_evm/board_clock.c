@@ -263,6 +263,57 @@ Board_STATUS Board_moduleClockEnable(uint32_t moduleId)
 }
 
 /**
+ * \brief clock Initialization function
+ *
+ * \return  BOARD_SOK              - Clock initialization successful.
+ *          BOARD_INIT_CLOCK_FAIL  - Clock initialization failed.
+ *
+ */
+static Board_STATUS Board_moduleClockInit(uint32_t *clkData, uint32_t size)
+{
+	Board_STATUS  status = BOARD_SOK;
+    uint32_t index;
+
+    for(index = 0; index < size; index++)
+    {
+        status = Board_moduleClockEnable(clkData[index]);
+        if(status != BOARD_SOK)
+        {
+            status = BOARD_INIT_CLOCK_FAIL;
+            break;
+        }
+    }
+
+    return status;
+}
+
+/**
+ * \brief Clock de-initialization function
+ *
+ *
+ * \return  BOARD_SOK              - Clock de-initialization successful.
+ *          BOARD_INIT_CLOCK_FAIL  - Clock de-initialization failed.
+ *
+ */
+static Board_STATUS Board_moduleClockDeinit(uint32_t *clkData, uint32_t size)
+{
+    Board_STATUS  status = BOARD_SOK;
+    uint32_t index;
+
+    for(index = 0; index < size; index++)
+    {
+        status = Board_moduleClockDisable(clkData[index]);
+        if(status != BOARD_SOK)
+        {
+            status = BOARD_INIT_CLOCK_FAIL;
+            break;
+        }
+    }
+
+    return status;
+}
+
+/**
  * \brief clock Initialization function for MCU domain
  *
  * Enables different power domains and peripheral clocks of the MCU.
@@ -276,24 +327,14 @@ Board_STATUS Board_moduleClockEnable(uint32_t moduleId)
  */
 Board_STATUS Board_moduleClockInitMcu(void)
 {
-	Board_STATUS  status = BOARD_SOK;
-    uint32_t index;
-    uint32_t loopCount;
+    Board_STATUS  status = BOARD_SOK;
+    uint32_t size;
 
     /* Restoring MCU DMtimer0 FCLK to HFOSC0 (changed by ROM) */
     HW_WR_REG32((CSL_MCU_CTRL_MMR0_CFG0_BASE + CSL_MCU_CTRL_MMR_CFG0_MCU_TIMER0_CLKSEL), 0);
 
-    loopCount = sizeof(gBoardClkModuleMcuID) / sizeof(uint32_t);
-
-    for(index = 0; index < loopCount; index++)
-    {
-        status = Board_moduleClockEnable(gBoardClkModuleMcuID[index]);
-        if(status != BOARD_SOK)
-        {
-            status = BOARD_INIT_CLOCK_FAIL;
-            break;
-        }
-    }
+    size = sizeof(gBoardClkModuleMcuID) / sizeof(uint32_t);
+    status = Board_moduleClockInit(gBoardClkModuleMcuID, size);
 
 #if defined(BUILD_MCU)
     if(status == BOARD_SOK)
@@ -333,9 +374,9 @@ Board_STATUS Board_moduleClockInitMcu(void)
 }
 
 /**
- * \brief clock Initialization function for MAIN domain, Group1 clocks
+ * \brief clock Initialization function for MAIN domain
  *
- * Enables 1st group of power domains and peripheral clocks of the SoC.
+ * Enables different power domains and peripheral clocks of the SoC.
  * Some of the power domains and peripherals will be OFF by default.
  * Enabling the power domains is mandatory before accessing using
  * board interfaces connected to those peripherals.
@@ -344,53 +385,27 @@ Board_STATUS Board_moduleClockInitMcu(void)
  *          BOARD_INIT_CLOCK_FAIL  - Clock initialization failed.
  *
  */
-Board_STATUS Board_moduleClockInitMainGrp1(void)
+Board_STATUS Board_moduleClockInitMain(void)
 {
 	Board_STATUS  status = BOARD_SOK;
-    uint32_t index;
-    uint32_t loopCount;
+    uint32_t size;
 
-    loopCount = sizeof(gBoardClkModuleMainIDGroup1) / sizeof(uint32_t);
-
-    for(index = 0; index < loopCount; index++)
+    if((gBoardInitParams.mainClkGrp == BOARD_MAIN_CLOCK_GROUP_ALL) ||
+       (gBoardInitParams.mainClkGrp == BOARD_MAIN_CLOCK_GROUP1))
     {
-        status = Board_moduleClockEnable(gBoardClkModuleMainIDGroup1[index]);
+        size = sizeof(gBoardClkModuleMainIDGroup1) / sizeof(uint32_t);
+        status = Board_moduleClockInit(gBoardClkModuleMainIDGroup1, size);
         if(status != BOARD_SOK)
         {
-            return BOARD_INIT_CLOCK_FAIL;
+            return status;
         }
     }
 
-    return status;
-}
-
-/**
- * \brief clock Initialization function for MAIN domain, Group2 clocks
- *
- * Enables 2nd group of power domains and peripheral clocks of the SoC.
- * Some of the power domains and peripherals will be OFF by default.
- * Enabling the power domains is mandatory before accessing using
- * board interfaces connected to those peripherals.
- *
- * \return  BOARD_SOK              - Clock initialization successful.
- *          BOARD_INIT_CLOCK_FAIL  - Clock initialization failed.
- *
- */
-Board_STATUS Board_moduleClockInitMainGrp2(void)
-{
-	Board_STATUS  status = BOARD_SOK;
-    uint32_t index;
-    uint32_t loopCount;
-
-    loopCount = sizeof(gBoardClkModuleMainIDGroup2) / sizeof(uint32_t);
-
-    for(index = 0; index < loopCount; index++)
+    if((gBoardInitParams.mainClkGrp == BOARD_MAIN_CLOCK_GROUP_ALL) ||
+       (gBoardInitParams.mainClkGrp == BOARD_MAIN_CLOCK_GROUP2))
     {
-        status = Board_moduleClockEnable(gBoardClkModuleMainIDGroup2[index]);
-        if(status != BOARD_SOK)
-        {
-            return BOARD_INIT_CLOCK_FAIL;
-        }
+        size = sizeof(gBoardClkModuleMainIDGroup2) / sizeof(uint32_t);
+        status = Board_moduleClockInit(gBoardClkModuleMainIDGroup2, size);
     }
 
     return status;
@@ -408,26 +423,17 @@ Board_STATUS Board_moduleClockInitMainGrp2(void)
 Board_STATUS Board_moduleClockDeinitMcu(void)
 {
 	Board_STATUS  status = BOARD_SOK;
-    uint32_t index;
-    uint32_t loopCount;
+    uint32_t size;
 
-    loopCount = sizeof(gBoardClkModuleMcuID) / sizeof(uint32_t);
-
-    /* (loopCount - 1) to avoid wakeup UART disable which is used by DMSC */
-    for(index = 0; index < (loopCount - 1); index++)
-    {
-        status = Board_moduleClockDisable(gBoardClkModuleMcuID[index]);
-        if(status != BOARD_SOK)
-        {
-            return BOARD_INIT_CLOCK_FAIL;
-        }
-    }
+    size = sizeof(gBoardClkModuleMcuID) / sizeof(uint32_t);
+    /* (size - 1) to avoid wakeup UART disable which is used by DMSC */
+    Board_moduleClockDeinit(gBoardClkModuleMcuID, (size - 1));
 
     return status;
 }
 
 /**
- * \brief clock de-initialization function for MAIN domain, Group1 clocks
+ * \brief clock de-initialization function for MAIN domain
  *
  * Disables different power domains and peripheral clocks of the SoC.
  *
@@ -435,50 +441,27 @@ Board_STATUS Board_moduleClockDeinitMcu(void)
  *          BOARD_INIT_CLOCK_FAIL  - Clock de-initialization failed.
  *
  */
-Board_STATUS Board_moduleClockDeinitMainGrp1(void)
+Board_STATUS Board_moduleClockDeinitMain(void)
 {
     Board_STATUS  status = BOARD_SOK;
-    uint32_t index;
-    uint32_t loopCount;
-
-    loopCount = sizeof(gBoardClkModuleMainIDGroup1) / sizeof(uint32_t);
-
-    for(index = 0; index < loopCount; index++)
+    uint32_t size;
+ 
+    if((gBoardInitParams.mainClkGrp == BOARD_MAIN_CLOCK_GROUP_ALL) ||
+       (gBoardInitParams.mainClkGrp == BOARD_MAIN_CLOCK_GROUP1))
     {
-        status = Board_moduleClockDisable(gBoardClkModuleMainIDGroup1[index]);
+        size = sizeof(gBoardClkModuleMainIDGroup1) / sizeof(uint32_t);
+        status = Board_moduleClockDeinit(gBoardClkModuleMainIDGroup1, size);
         if(status != BOARD_SOK)
         {
-            return BOARD_INIT_CLOCK_FAIL;
+            return status;
         }
     }
 
-    return status;
-}
-
-/**
- * \brief clock de-initialization function for MAIN domain, Group2 clocks
- *
- * Disables different power domains and peripheral clocks of the SoC.
- *
- * \return  BOARD_SOK              - Clock de-initialization successful.
- *          BOARD_INIT_CLOCK_FAIL  - Clock de-initialization failed.
- *
- */
-Board_STATUS Board_moduleClockDeinitMainGrp2(void)
-{
-    Board_STATUS  status = BOARD_SOK;
-    uint32_t index;
-    uint32_t loopCount;
-
-    loopCount = sizeof(gBoardClkModuleMainIDGroup2) / sizeof(uint32_t);
-
-    for(index = 0; index < loopCount; index++)
+    if((gBoardInitParams.mainClkGrp == BOARD_MAIN_CLOCK_GROUP_ALL) ||
+       (gBoardInitParams.mainClkGrp == BOARD_MAIN_CLOCK_GROUP2))
     {
-        status = Board_moduleClockDisable(gBoardClkModuleMainIDGroup2[index]);
-        if(status != BOARD_SOK)
-        {
-            return BOARD_INIT_CLOCK_FAIL;
-        }
+        size = sizeof(gBoardClkModuleMainIDGroup2) / sizeof(uint32_t);
+        status = Board_moduleClockDeinit(gBoardClkModuleMainIDGroup2, size);
     }
 
     return status;
