@@ -83,10 +83,25 @@ export edma_$(SOC)_CORELIST
 # EDMA Examples
 #
 
+# EDMA baremetal memcpy test app
+export edma_baremetal_memcpy_testapp_COMP_LIST = edma_baremetal_memcpy_testapp
+edma_baremetal_memcpy_testapp_RELPATH = ti/drv/edma/examples/edma_memcpy_test
+edma_baremetal_memcpy_testapp_PATH = $(PDK_EDMA_COMP_PATH)/examples/edma_memcpy_test
+export edma_baremetal_memcpy_testapp_MAKEFILE = -fmakefile BAREMETAL=yes
+export edma_baremetal_memcpy_testapp_BOARD_DEPENDENCY = yes
+export edma_baremetal_memcpy_testapp_CORE_DEPENDENCY = yes
+export edma_baremetal_memcpy_testapp_XDC_CONFIGURO = yes
+edma_baremetal_memcpy_testapp_PKG_LIST = edma_baremetal_memcpy_testapp
+edma_baremetal_memcpy_testapp_INCLUDE = $(edma_baremetal_memcpy_testapp_PATH)
+export edma_baremetal_memcpy_testapp_BOARDLIST = $(drvedma_BOARDLIST)
+export edma_baremetal_memcpy_testapp_$(SOC)_CORELIST = $(drvedma_$(SOC)_CORELIST)
+edma_EXAMPLE_LIST += edma_baremetal_memcpy_testapp
+
 # EDMA memcpy test app
 export edma_memcpy_testapp_COMP_LIST = edma_memcpy_testapp
 edma_memcpy_testapp_RELPATH = ti/drv/edma/examples/edma_memcpy_test
 edma_memcpy_testapp_PATH = $(PDK_EDMA_COMP_PATH)/examples/edma_memcpy_test
+export edma_memcpy_testapp_MAKEFILE = -fmakefile
 export edma_memcpy_testapp_BOARD_DEPENDENCY = yes
 export edma_memcpy_testapp_CORE_DEPENDENCY = yes
 export edma_memcpy_testapp_XDC_CONFIGURO = yes
