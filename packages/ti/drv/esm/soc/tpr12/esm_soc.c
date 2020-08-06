@@ -52,6 +52,7 @@
  ************************** Global Variables ******************************
  **************************************************************************/
 
+#define ESM_NUM_EVENTS_GROUP1 ESM_NUM_INTR_PER_GROUP
 /**
  * @brief   This is TPR12 ESM platform configuration for MSS/DSS Subsystem.
  */
@@ -59,12 +60,12 @@ ESM_HwAttrs gESMHwCfgAttrs =
 {
 #if defined (__TI_ARM_V7R4__)
     (CSL_esmRegs*)CSL_MSS_ESM_U_BASE,
-    ESM_NUM_INTR_PER_GROUP,
+    ESM_NUM_EVENTS_GROUP1,
     CSL_MSS_INTR_MSS_ESM_HI,
     CSL_MSS_INTR_MSS_ESM_LO
 #elif defined (_TMS320C6X)
     (CSL_esmRegs*)CSL_DSS_ESM_U_BASE,
-    ESM_NUM_INTR_PER_GROUP,
+    ESM_NUM_EVENTS_GROUP1,
     /* Not used: the DSS ESM high priority interrrupt is an NMI and
      * first captured by the RTOS NMI exception handler  */
     0,

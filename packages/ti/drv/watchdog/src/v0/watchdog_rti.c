@@ -327,7 +327,7 @@ static Watchdog_Handle WatchdogRTI_open(Watchdog_Handle handle, Watchdog_Params*
     Watchdog_HwAttrs*       ptrHwCfg;
     Watchdog_Handle         retHandle = NULL;
     ESM_NotifyParams        notifyParams;
-    int32_t                 errCode, retVal;
+    int32_t                 errCode, retVal = 0;
     uint32_t                preloadValue;
 
     /* Only NMI mode is supported in the DSS subsystem.
@@ -335,7 +335,7 @@ static Watchdog_Handle WatchdogRTI_open(Watchdog_Handle handle, Watchdog_Params*
 #if defined (_TMS320C6X)
     if (params->resetMode == Watchdog_RESET_ON)
     {
-        return retHandle;
+        retVal = -1;
     }
 #endif
 
@@ -353,61 +353,63 @@ static Watchdog_Handle WatchdogRTI_open(Watchdog_Handle handle, Watchdog_Params*
 
     /* Calculate preload value from the expiration time */
     /* Expiration time (in millisecond)/1000 = (preload value + 1)*(2^13)/RTICLK */
-    preloadValue = (((ptrHwCfg->rtiClk) * (params->expirationTime) / 1000) >> 13) - 1;
+    preloadValue = (((ptrHwCfg->rtiClkFrequency) * (params->expirationTime) / 1000) >> 13) - 1;
 
     if (preloadValue > WATCHDOG_MAX_PRELOAD_VALUE)
     {
-        return retHandle;
+        retVal = -1;
     }
-    /* Configure the Watchdog driver. */
-    /* Copy over the Watchdog Parameters */
-    memcpy ((void*)&ptrWatchdogMCB->params, (void *)params, sizeof(Watchdog_Params));
 
-    /* Bring watchdog out of reset */
-    RTI_socEnableWatchdog();
-
-    /* Register to get a callback from the ESM module if NMI interrupt mode is configured */
-    if (ptrWatchdogMCB->params.resetMode == Watchdog_RESET_OFF)
+    if (retVal >= 0)
     {
-        notifyParams.groupNumber = ptrHwCfg->groupNum;
-        notifyParams.errorNumber = ptrHwCfg->errorNum;
-        notifyParams.setIntrPriorityLvlHigh = 0;
-        notifyParams.enableInfluenceOnErrPin = 0;
-        notifyParams.arg = (void *)ptrWatchdogConfig;
-        notifyParams.notify = WatchdogRTI_callback;
+        /* Configure the Watchdog driver. */
+        /* Copy over the Watchdog Parameters */
+        memcpy ((void*)&ptrWatchdogMCB->params, (void *)params, sizeof(Watchdog_Params));
 
-        retVal = ESM_registerNotifier (ptrHwCfg->esmHandle, &notifyParams, &errCode);
-        if (retVal < 0)
+        /* Bring watchdog out of reset */
+        RTI_socEnableWatchdog();
+
+        /* Register to get a callback from the ESM module if NMI interrupt mode is configured */
+        if (ptrWatchdogMCB->params.resetMode == Watchdog_RESET_OFF)
         {
-            retHandle = NULL;
-            return retHandle;
+            notifyParams.groupNumber = ptrHwCfg->groupNum;
+            notifyParams.errorNumber = ptrHwCfg->errorNum;
+            notifyParams.setIntrPriorityLvlHigh = 0;
+            notifyParams.enableInfluenceOnErrPin = 0;
+            notifyParams.arg = (void *)ptrWatchdogConfig;
+            notifyParams.notify = WatchdogRTI_callback;
+
+            retVal = ESM_registerNotifier (ptrHwCfg->esmHandle, &notifyParams, &errCode);
+        }
+        else
+        {
+            /* Configure the SOC moule to trigger a warm reset upon watchdog reset */
+            RTI_socTriggerWatchdogWarmReset();
         }
     }
-    else
+
+    if (retVal >= 0 )
     {
-        /* Configure the SOC moule to trigger a warm reset upon watchdog reset */
-        RTI_socTriggerWatchdogWarmReset();
+        /* Clear the status flags */
+        RTIDwwdClearStatus(ptrHwCfg->baseAddr, WATCHDOG_CLEAR_STATUS);
+
+        RTIDwwdWindowConfig(ptrHwCfg->baseAddr,
+                            ptrWatchdogMCB->params.resetMode,    /* Configure the reset mode    */
+                            preloadValue,                        /* Configure the preload value */
+                            ptrWatchdogMCB->params.windowSize);  /* Configure the window size   */
+
+        /* Configure the stall mode */
+        HW_WR_FIELD32(ptrHwCfg->baseAddr+RTI_RTIGCTRL, RTI_RTIGCTRL_COS, ptrWatchdogMCB->params.debugStallMode);
+
+        /* Enable the watchdog timer */
+        RTIDwwdCounterEnable(ptrHwCfg->baseAddr);
+
+        /* Mark the driver to be operational */
+        ptrWatchdogMCB->state = Watchdog_DriverState_OPERATIONAL;
+
+        /* Setup the return handle: */
+        retHandle = handle;
     }
-
-    /* Clear the status flags */
-    RTIDwwdClearStatus(ptrHwCfg->baseAddr, WATCHDOG_CLEAR_STATUS);
-
-    RTIDwwdWindowConfig(ptrHwCfg->baseAddr,
-                        ptrWatchdogMCB->params.resetMode,    /* Configure the reset mode    */
-                        preloadValue,                        /* Configure the preload value */
-                        ptrWatchdogMCB->params.windowSize);  /* Configure the window size   */
-
-    /* Configure the stall mode */
-    HW_WR_FIELD32(ptrHwCfg->baseAddr+RTI_RTIGCTRL, RTI_RTIGCTRL_COS, ptrWatchdogMCB->params.debugStallMode);
-
-    /* Enable the watchdog timer */
-    RTIDwwdCounterEnable(ptrHwCfg->baseAddr);
-
-    /* Mark the driver to be operational */
-    ptrWatchdogMCB->state = Watchdog_DriverState_OPERATIONAL;
-
-    /* Setup the return handle: */
-    retHandle = handle;
 
     return retHandle;
 }
