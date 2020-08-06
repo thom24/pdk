@@ -2897,6 +2897,7 @@ bool Test_instance(uint8_t instanceId)
     EDMA_errorConfig_t errorConfig;
     bool isTestPass = false;
     uint32_t testIteration = 1;
+    int32_t openCloseTestCount = 10;
     bool isAnyTransferControllerErrorInterruptConnected;
     uint32_t tc;
     EDMA3CCInitParams initParam;
@@ -2997,6 +2998,30 @@ bool Test_instance(uint8_t instanceId)
         printf("Debug: edma Instance %p closing error, errorCode = %d\n", handle, errorCode);
     }
 
+    /* Test driver re open and close back to back. */
+    printf("\n==================================================\n");
+    printf("Testing Driver re open/close\n");
+    printf("==================================================\n");
+    while (openCloseTestCount-- > 0)
+    {
+        handle = EDMA_open(instanceId, &errorCode, &instanceInfo);
+        if (handle == NULL)
+        {
+            printf("Error: Unable to open the edma Instance, erorCode = %d\n", errorCode);
+            isTestPass = false;
+            break;
+        }
+        else
+        {
+            if ((errorCode = EDMA_close(handle)) != EDMA_NO_ERROR)
+            {
+                printf("Debug: edma Instance %p closing error, errorCode = %d\n", handle, errorCode);
+                isTestPass = false;
+                break;
+            }
+        }
+    }
+
     if (isTestPass == true)
     {
         printf("All Tests of Instance %d PASSED\n", instanceId);
@@ -3093,7 +3118,7 @@ void Test_task(UArg arg0, UArg arg1)
     printf("edma test finished\n");
     if (isTestPass == true)
     {
-        printf("All Tests PASSED\n");
+        printf("All tests have passed.\n");
     }
     else
     {
@@ -3122,56 +3147,6 @@ void Test_task(UArg arg0, UArg arg1)
 void main (void)
 {
     Task_Params taskParams;
-
-#if (defined(SOC_XWR14XX) || (defined(SOC_XWR16XX) && defined(BUILD_MCU)) || \
-    (defined(SOC_XWR18XX) && defined(BUILD_MCU)) || \
-    (defined(SOC_XWR68XX) && defined(BUILD_MCU)))
- /* TODO_TPR12:  || \
-    (defined(SOC_TPR12) && defined(BUILD_MCU)) ) */
-    SOC_Handle  socHandle;
-    int32_t     errCode;
-    SOC_Cfg     socCfg;
-
-    /* Initialize the ESM: Dont clear errors as TI RTOS does it */
-    ESM_init(0U);
-
-    /* Initialize the SOC confiugration: */
-    memset ((void *)&socCfg, 0, sizeof(SOC_Cfg));
-
-    /* Populate the SOC configuration: */
-    socCfg.clockCfg = SOC_SysClock_INIT;
-
-    /* Initialize the SOC Module: This is done as soon as the application is started
-     * to ensure that the MPU is correctly configured. */
-    socHandle = SOC_init (&socCfg, &errCode);
-    if (socHandle == NULL)
-    {
-        System_printf ("Error: SOC Module Initialization failed [Error code %d]\n", errCode);
-        return;
-    }
-
-#endif
-
-#ifdef BUILD_DSP_1
-
-/* map event combiners to vectors 4-7 */
-{
-    Hwi_Params params;
-    uint32_t i;
-
-    Hwi_Params_init(&params);
-    params.enableInt = TRUE;
-    for (i = 0; i < 4; i++)
-    {
-        params.arg = i;
-        params.eventId = i;
-        if (Hwi_create(4 + i, &EventCombiner_dispatch, &params, NULL) == NULL)
-        {
-            System_printf("failed to create Hwi interrupt %d\n",4 + i);
-        }
-    }
-}
-#endif
 
     CycleprofilerP_init();
 

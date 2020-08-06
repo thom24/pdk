@@ -1954,6 +1954,8 @@ int32_t EDMA_close(EDMA_Handle handle)
         edmaConfig = (EDMA_Config_t *) handle;
         edmaObj = edmaConfig->object;
         edmaObj->isUsed = false;
+        edmaConfig->hwAttrs = NULL;
+        edmaConfig->object  = NULL;
     }
 
     return(errorCode);
@@ -2213,15 +2215,11 @@ EDMA_Handle EDMA_open(uint8_t instanceId, int32_t *errorCode,
     #ifdef SOC_TPR12
             uint32_t mask = ~0U;
 
-            //printf("status reg = %x\n", HW_RD_REG32(hwAttrs->CCcompletionInterruptsAggregatorMaskRegAddress));
-
             /* Clear all status */
             HW_WR_REG32(hwAttrs->CCcompletionInterruptsAggregatorStatusRegAddress, ~0U);
 
             /* Mask all interrupts except global interrupt in the aggregator */
             mask &= (~(1U << EDMA_TPCC_INTAGG_TPCC_INTG__POS));
-
-            //printf("mask = %x\n", mask);
 
             HW_WR_REG32(hwAttrs->CCcompletionInterruptsAggregatorMaskRegAddress, mask);
     #endif
@@ -2295,10 +2293,8 @@ EDMA_Handle EDMA_open(uint8_t instanceId, int32_t *errorCode,
             {
                 uint32_t mask = ~0U;
 
-                //printf("status reg = %x\n", HW_RD_REG32(hwAttrs->CCerrorInterruptsAggregatorMaskRegAddress));
-
                 /* Clear all status */
-                HW_WR_REG32(hwAttrs->CCerrorInterruptsAggregatorMaskRegAddress, ~0U);
+                HW_WR_REG32(hwAttrs->CCerrorInterruptsAggregatorStatusRegAddress, ~0U);
 
                 /* Mask all interrupts except errors in the aggregator */
                 mask &= (~(1U << EDMA_TPCC_ERRAGG_TPCC_EERINT__POS));
@@ -2308,12 +2304,8 @@ EDMA_Handle EDMA_open(uint8_t instanceId, int32_t *errorCode,
                     mask &= (~(1U << (EDMA_TPCC_ERRAGG_TPTC_MIN_ERR__POS + tc)));
                 }
 
-                //printf("mask = %x\n", mask);
-
                 HW_WR_REG32(hwAttrs->CCerrorInterruptsAggregatorMaskRegAddress, mask);
 
-                //printf("mask written, read back = %x\n", HW_RD_REG32(hwAttrs->CCintAggMaskRegAddress));
-                //exit(0);
                 interruptRegParams.corepacConfig.name=(char *)("EDMA_aggregated_error_transferController_error_isr");
                 interruptRegParams.corepacConfig.isrRoutine=EDMA_aggregated_error_transferController_error_isr;
 

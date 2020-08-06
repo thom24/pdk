@@ -7,7 +7,7 @@ else
 include $(RULES_MAKE)
 endif
 
-APP_NAME = edma_memcpy_testapp
+APP_NAME = edma_unit_testapp
 
 #
 # This file is common makefile for building UDMA memcpy test app for both TI-RTOS/baremetal

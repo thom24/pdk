@@ -96,6 +96,20 @@ export edma_memcpy_testapp_BOARDLIST = $(drvedma_BOARDLIST)
 export edma_memcpy_testapp_$(SOC)_CORELIST = $(drvedma_$(SOC)_CORELIST)
 edma_EXAMPLE_LIST += edma_memcpy_testapp
 
+# EDMA unit test app
+export edma_unit_testapp_COMP_LIST = edma_unit_testapp
+edma_unit_testapp_RELPATH = ti/drv/edma/unit_test/edma_ut
+edma_unit_testapp_PATH = $(PDK_EDMA_COMP_PATH)/unit_test/edma_ut
+export edma_unit_testapp_BOARD_DEPENDENCY = yes
+export edma_unit_testapp_CORE_DEPENDENCY = yes
+export edma_unit_testapp_XDC_CONFIGURO = yes
+edma_unit_testapp_PKG_LIST = edma_unit_testapp
+edma_unit_testapp_INCLUDE = $(edma_unit_testapp_PATH)
+export edma_unit_testapp_BOARDLIST = $(drvedma_BOARDLIST)
+export edma_unit_testapp_$(SOC)_CORELIST = $(drvedma_$(SOC)_CORELIST)
+edma_EXAMPLE_LIST += edma_unit_testapp
+
+
 export edma_LIB_LIST
 export edma_EXAMPLE_LIST
 export drvedma_LIB_LIST = $(edma_LIB_LIST)
