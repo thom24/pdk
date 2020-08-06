@@ -22,7 +22,6 @@ INCLUDE_EXTERNAL_INTERFACES = pdk
 # List all the components required by the application
 COMP_LIST_COMMON = $(PDK_COMMON_BAREMETAL_COMP)
 COMP_LIST_COMMON += udma_apputils
-APPEND_LNKCMD_FILE = linker_append.cmd
 
 # Common source files and CFLAGS across all platforms and cores 
 PACKAGE_SRCS_COMMON = . ../../../../csl/example/ospi/ospi_flash/common/ ../../../../csl/example/ospi/ospi_flash/common/soc/$(SOC)
@@ -35,6 +34,8 @@ CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS)
 # Example:
 #   SRCS_<core/SoC/platform-name> =
 #   CFLAGS_LOCAL_<core/SoC/platform-name> =
+
+EXTERNAL_LNKCMD_FILE_LOCAL = baremetal/$(SOC)/linker_r5.lds
 
 # Include common make files
 ifeq ($(MAKERULEDIR), )
