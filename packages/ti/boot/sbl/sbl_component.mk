@@ -756,7 +756,7 @@ SBL_CFLAGS += -DSBL_ENABLE_DDR
 # config steps to directly boot an HLOS,
 # including an alternate set of Sciclient
 # RM board cfg settings.
-# NOTE: Currently supported only for J721E
+# NOTE: Currently supported only for J721E, J7200
 #SBL_CFLAGS += -DSBL_ENABLE_HLOS_BOOT
 
 # If enabled, SBL will not leave the OSPI
