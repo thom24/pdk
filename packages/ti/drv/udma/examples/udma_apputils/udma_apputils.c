@@ -165,19 +165,35 @@ uint64_t Udma_appVirtToPhyFxn(const void *virtAddr, uint32_t chNum, void *appDat
     atcmBaseGlobal = CSL_MCU_R5FSS0_CORE1_ATCM_BASE;
 #endif
 #if defined (BUILD_MCU2_0)
-    atcmSizeLocal = CSL_R5FSS0_ATCM_SIZE;
+#if defined (SOC_J721E)
+    atcmSizeLocal = CSL_ARMSS_ATCM_BASE;
+#else
+    atcmSizeLocal = CSL_R5FSS0_ATCM_SIZE; 
+#endif
     atcmBaseGlobal = CSL_R5FSS0_CORE0_ATCM_BASE;
 #endif
 #if defined (BUILD_MCU2_1)
-    atcmSizeLocal = CSL_R5FSS0_ATCM_SIZE;
+#if defined (SOC_J721E)
+    atcmSizeLocal = CSL_ARMSS_ATCM_BASE;
+#else
+    atcmSizeLocal = CSL_R5FSS0_ATCM_SIZE; 
+#endif
     atcmBaseGlobal = CSL_R5FSS0_CORE1_ATCM_BASE;
 #endif
 #if defined (BUILD_MCU3_0)
-    atcmSizeLocal = CSL_R5FSS0_ATCM_SIZE;
+#if defined (SOC_J721E)
+    atcmSizeLocal = CSL_ARMSS_ATCM_BASE;
+#else
+    atcmSizeLocal = CSL_R5FSS0_ATCM_SIZE; 
+#endif
     atcmBaseGlobal = CSL_R5FSS1_CORE0_ATCM_BASE;
 #endif
 #if defined (BUILD_MCU3_1)
-    atcmSizeLocal = CSL_R5FSS0_ATCM_SIZE;
+#if defined (SOC_J721E)
+    atcmSizeLocal = CSL_ARMSS_ATCM_BASE;
+#else
+    atcmSizeLocal = CSL_R5FSS0_ATCM_SIZE; 
+#endif
     atcmBaseGlobal = CSL_R5FSS1_CORE1_ATCM_BASE;
 #endif
 #endif
@@ -194,13 +210,13 @@ uint64_t Udma_appVirtToPhyFxn(const void *virtAddr, uint32_t chNum, void *appDat
 void *Udma_appPhyToVirtFxn(uint64_t phyAddr, uint32_t chNum, void *appData)
 {
     void       *virtAddr;
-    uint64_t    atcmBaseGlobal = 0U;
-    uint64_t    atcmSizeGlobal = 0U;
 
 #if defined (__aarch64__) || defined (__C7100__)
     virtAddr = (void *) phyAddr;
 #else
     uint32_t temp;
+    uint64_t    atcmBaseGlobal = 0U;
+    uint64_t    atcmSizeGlobal = 0U;
 
     /* Convert global L2RAM address to local space */
 #if defined (BUILD_C66X_1)
