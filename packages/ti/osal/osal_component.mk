@@ -170,7 +170,7 @@ export osal_nonos_indp_SOC_DEPENDENCY
 osal_nonos_indp_PKG_LIST = osal_nonos_indp
 export osal_nonos_indp_PKG_LIST
 osal_nonos_indp_INCLUDE = $(osal_nonos_indp_PATH)
-osal_nonos_indp_SOCLIST = $(libosal_SOCLIST)
+osal_nonos_indp_SOCLIST = 
 export osal_nonos_indp_SOCLIST
 osal_nonos_indp_$(SOC)_CORELIST = $(libosal_$(SOC)_CORELIST)
 export osal_nonos_indp_$(SOC)_CORELIST
@@ -224,7 +224,7 @@ export osal_tirtos_indp_SOC_DEPENDENCY
 osal_tirtos_indp_PKG_LIST = osal_tirtos_indp
 export osal_tirtos_indp_PKG_LIST
 osal_tirtos_indp_INCLUDE = $(osal_tirtos_indp_PATH)
-osal_tirtos_indp_SOCLIST = $(libosal_SOCLIST)
+osal_tirtos_indp_SOCLIST = 
 export osal_tirtos_indp_SOCLIST
 osal_tirtos_indp_$(SOC)_CORELIST = $(libosal_$(SOC)_CORELIST)
 export osal_tirtos_indp_$(SOC)_CORELIST
