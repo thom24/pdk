@@ -388,9 +388,12 @@ NOR_HANDLE Nor_xspiOpen(uint32_t norIntf, uint32_t portNum, void *params)
 
     /* Update the default driver config for xSPI operation */
     OSPI_socGetInitCfg(portNum, &ospi_cfg);
-    ospi_cfg.phyEnable   = false;
-    ospi_cfg.baudRateDiv = BOARD_XSPI_BAUDRATE_DIV;
-    OSPI_socSetInitCfg(portNum, &ospi_cfg);
+    if(ospi_cfg.dacEnable == false)
+    {
+        ospi_cfg.phyEnable   = false;
+        ospi_cfg.baudRateDiv = BOARD_XSPI_BAUDRATE_DIV;
+        OSPI_socSetInitCfg(portNum, &ospi_cfg);
+    }
 
     /* Use default SPI config params if no params provided */
     SPI_Params_init(&spiParams);
@@ -415,7 +418,7 @@ NOR_HANDLE Nor_xspiOpen(uint32_t norIntf, uint32_t portNum, void *params)
 
             if (ospi_cfg.phyEnable == true)
             {
-                uint32_t offset = *(uint32_t *)params;
+                uint32_t offset = NOR_TUNING_DATA_OFFSET;
 
                 retVal = Nor_spiPhyTune(hwHandle, offset);
                 if (retVal == NOR_PASS)
