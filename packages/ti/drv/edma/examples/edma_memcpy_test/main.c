@@ -297,7 +297,7 @@ void main (void)
     }
 
 #if defined (USE_BIOS)
-    BIOS_exit();
+    BIOS_exit(0);
 #endif
 }
 
