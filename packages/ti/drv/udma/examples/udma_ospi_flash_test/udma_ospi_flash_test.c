@@ -83,7 +83,6 @@
 #include <ti/csl/arch/csl_arch.h>
 #include <ti/csl/hw_types.h>
 #include <ti/drv/udma/udma.h>
-#include <ti/drv/pm/pmlib.h>
 #include <ti/drv/uart/UART.h>
 #include <ti/drv/uart/UART_stdio.h>
 #include <ti/drv/udma/examples/udma_apputils/udma_apputils.h>
@@ -1264,14 +1263,15 @@ int32_t App_setGTCClk(uint32_t moduleId,
     int32_t retVal;
     uint64_t currClkFreqHz;
 
-#if !defined (SOC_AM64X) /* TO DO : Remove when pmlib supports am64x, or find alternative */
-    retVal = PMLIBClkRateGet(moduleId, clkId, &currClkFreqHz);
+    retVal = Sciclient_pmGetModuleClkFreq(moduleId,
+                                          clkId,
+                                          &currClkFreqHz,
+                                          SCICLIENT_SERVICE_WAIT_FOREVER);
     if ((retVal == CSL_PASS) &&
         (currClkFreqHz != clkRateHz))
     {
-        retVal = PMLIBClkRateSet(moduleId, clkId, clkRateHz);
+        retVal = OspiFlash_ClkRateSet(moduleId, clkId, clkRateHz);
     }
-#endif
 
     /* Enable GTC */
     HW_WR_REG32(CSL_GTC0_GTC_CFG1_BASE + 0x0U, 0x1);
