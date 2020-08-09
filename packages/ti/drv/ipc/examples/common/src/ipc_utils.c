@@ -114,3 +114,11 @@ Void traceBuf_cacheWb()
         }
     }
 }
+
+Void traceBuf_cacheWb_Exception()
+{
+    uint8_t *traceBufAddr = 0;
+
+    traceBufAddr = Ipc_getResourceTraceBufPtr();
+    CacheP_wb((const void *)traceBufAddr, 0x80000);
+}
