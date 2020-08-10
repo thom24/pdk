@@ -53,18 +53,8 @@
 /*                            Global Variables                                */
 /* ========================================================================== */
 
-extern ESM_HwAttrs gESMHwCfgAttrs;
-
-/* ========================================================================== */
-/*                         Structure Declarations                             */
-/* ========================================================================== */
-
-/** @addtogroup ESM_DRIVER_INTERNAL_DATA_STRUCTURE
- @{ */
-
-/* Master control block for ESM driver */
-ESM_DriverMCB   gEsmMCB;
-/** @}*/
+/* Externs */
+extern const ESM_Config ESM_config[];
 
 /* ========================================================================== */
 /*                          Function Declarations                             */
@@ -72,7 +62,7 @@ ESM_DriverMCB   gEsmMCB;
 /* Function prototypes */
 void ESM_highpriority_interrupt(uintptr_t arg);
 void ESM_lowpriority_interrupt(uintptr_t arg);
-void ESM_processInterrupt (uint32_t vec, int32_t* groupNum, int32_t* vecNum);
+void ESM_processInterrupt (uintptr_t arg, uint32_t vec, int32_t* groupNum, int32_t* vecNum);
 
 /* ========================================================================== */
 /*                          Function Definitions                              */
@@ -90,11 +80,17 @@ void ESM_highpriority_interrupt(uintptr_t arg)
     uint32_t            esmioffhr;
     uint32_t            vec;
     int32_t             groupNum = MINUS_ONE, vecNum = MINUS_ONE;
+    ESM_Config         *ptrESMConfig;
+    ESM_DriverMCB      *object;
 
-    esmioffhr = ESMGetHighPriorityLvlIntrStatus(gEsmMCB.esmBaseAddr);
+    /* Get the ESM Configuration: */
+    ptrESMConfig = (ESM_Config*)arg;
+    object  = (ESM_DriverMCB*)ptrESMConfig->object;
+
+    esmioffhr = ESMGetHighPriorityLvlIntrStatus(object->esmBaseAddr);
     vec = esmioffhr - 1U;
 
-    ESM_processInterrupt(vec, &groupNum, &vecNum);
+    ESM_processInterrupt(arg, vec, &groupNum, &vecNum);
 }
 
 /* INTERNAL FUNCTIONS */
@@ -107,11 +103,17 @@ void ESM_lowpriority_interrupt(uintptr_t arg)
     uint32_t            esmioffhr;
     uint32_t            vec;
     int32_t             groupNum = MINUS_ONE, vecNum = MINUS_ONE;
+    ESM_Config         *ptrESMConfig;
+    ESM_DriverMCB      *object;
 
-    esmioffhr = ESMGetLowPriorityLvlIntrStatus(gEsmMCB.esmBaseAddr);
+    /* Get the ESM Configuration: */
+    ptrESMConfig = (ESM_Config*)arg;
+    object  = (ESM_DriverMCB*)ptrESMConfig->object;
+
+    esmioffhr = ESMGetLowPriorityLvlIntrStatus(object->esmBaseAddr);
     vec = esmioffhr - 1U;
 
-    ESM_processInterrupt(vec, &groupNum, &vecNum);
+    ESM_processInterrupt(arg, vec, &groupNum, &vecNum);
 }
 
 /** \brief Process the ESM interrupts.
@@ -123,18 +125,26 @@ void ESM_lowpriority_interrupt(uintptr_t arg)
 *    @param[out] vecNum: Vector number in the corresponding group number above.
 *
 */
-void ESM_processInterrupt (uint32_t vec, int32_t* groupNum, int32_t* vecNum)
+void ESM_processInterrupt (uintptr_t arg, uint32_t vec, int32_t* groupNum, int32_t* vecNum)
 {
     uint32_t            index;
     uint32_t            regVal = 0U;
     CSL_esmRegs*        ptrESMRegs;
+    ESM_Config         *ptrESMConfig;
+    ESM_DriverMCB      *object;
+    ESM_HwAttrs const  *hwAttrs;
+
+    /* Get the ESM Configuration: */
+    ptrESMConfig = (ESM_Config*)arg;
+    object  = (ESM_DriverMCB*)ptrESMConfig->object;
+    hwAttrs = (const ESM_HwAttrs *)ptrESMConfig->hwAttrs;
 
     if (vec < 32U)
     {
         /* group 1 0-31 errors */
-        ESMClearIntrStatus(gEsmMCB.esmBaseAddr, vec);
+        ESMClearIntrStatus(object->esmBaseAddr, vec);
 #ifdef ESM_DEBUG
-        gEsmMCB.debugEsmISRCount[0]++;
+        object->debugEsmISRCount[0]++;
 #endif
         *groupNum = 1;
         *vecNum = vec;
@@ -144,23 +154,23 @@ void ESM_processInterrupt (uint32_t vec, int32_t* groupNum, int32_t* vecNum)
         /* group 2 0-31 errors */
         vec = vec - 32;
         regVal = ((uint32_t) 1U << (vec));
-        ptrESMRegs = gESMHwCfgAttrs.ptrESMRegs;
+        ptrESMRegs = hwAttrs->ptrESMRegs;
         CSL_REG_WR(&ptrESMRegs->ESMSR2, regVal);
 
 #ifdef ESM_DEBUG
-        gEsmMCB.debugEsmISRCount[1]++;
+        object->debugEsmISRCount[1]++;
 #endif
         *groupNum = 2;
         *vecNum = vec;
     }
-    else if (vec < gESMHwCfgAttrs.numGroup1Err)
+    else if (vec < hwAttrs->numGroup1Err)
     {
         /* group 1 error 32 and above */
 #ifdef ESM_DEBUG
-        gEsmMCB.debugEsmISRCount[vec/32]++;
+        object->debugEsmISRCount[vec/32]++;
 #endif
         vec = vec - 32;
-        ESMClearIntrStatus(gEsmMCB.esmBaseAddr, vec);
+        ESMClearIntrStatus(object->esmBaseAddr, vec);
 
         *groupNum = 1;
         *vecNum = vec;
@@ -174,10 +184,10 @@ void ESM_processInterrupt (uint32_t vec, int32_t* groupNum, int32_t* vecNum)
         /* Check if notify function was registered? */
         for (index = 0; index < ESM_MAX_NOTIFIERS; index++)
         {
-            if ((*vecNum == gEsmMCB.notifyParams[index].errorNumber) &&
-                    (*groupNum == gEsmMCB.notifyParams[index].groupNumber))
+            if ((*vecNum == object->notifyParams[index].errorNumber) &&
+                    (*groupNum == object->notifyParams[index].groupNumber))
             {
-                gEsmMCB.notifyParams[index].notify(gEsmMCB.notifyParams[index].arg);
+                object->notifyParams[index].notify(object->notifyParams[index].arg);
                 break;
             }
         }
@@ -200,94 +210,111 @@ void ESM_processInterrupt (uint32_t vec, int32_t* groupNum, int32_t* vecNum)
 *    @return    Handle to the ESM Driver
 *
 */
-ESM_Handle ESM_init(uint8_t bClearErrors)
+ESM_Handle ESM_init(uint32_t index, uint8_t bClearErrors)
 {
     CSL_esmRegs*          ptrESMRegs;
     uint32_t              esmInitStatus;
     uint32_t              i;
+    ESM_Handle            handle = NULL;
+    ESM_Config           *ptrESMConfig;
+    ESM_DriverMCB        *object;
+    ESM_HwAttrs const    *hwAttrs;
 
-    /* Initialize the allocated memory */
-    memset ((void *)&gEsmMCB, 0U, sizeof(ESM_DriverMCB));
-
-    ptrESMRegs          = gESMHwCfgAttrs.ptrESMRegs;
-    gEsmMCB.esmBaseAddr = (uint32_t)ptrESMRegs;
-
-    gEsmMCB.numGroup1Err = gESMHwCfgAttrs.numGroup1Err;
-
-    OsalRegisterIntrParams_t interruptRegParams;
-
-    /* Register ESM_highpriority_interrupt for MSS only. For DSS,
-     * the ESM high priority interrupt is an NMI and application
-     * needs to populate the NMI exception handler to hook up
-     * ESM_highpriority_interrupt in the .cfg file, e.g.,
-     * Exception.nmiHook = "&ESM_highpriority_interrupt"; */
-
-#if defined (__TI_ARM_V7R4__)
-    /* Initialize with defaults */
-    Osal_RegisterInterrupt_initParams(&interruptRegParams);
-
-    /* Populate the interrupt parameters */
-    interruptRegParams.corepacConfig.name       = (char *)"ESM_HIGH_PRIORITY";
-    interruptRegParams.corepacConfig.isrRoutine = ESM_highpriority_interrupt;
-    interruptRegParams.corepacConfig.priority   = 0xFU;
-    interruptRegParams.corepacConfig.intVecNum  = (int32_t)gESMHwCfgAttrs.highPrioIntNum;
-    interruptRegParams.corepacConfig.corepacEventNum = (int32_t)gESMHwCfgAttrs.highPrioIntNum;
-    /* Register interrupts */
-    (void)Osal_RegisterInterrupt(&interruptRegParams,&(gEsmMCB.hwiHandleHi));
-
-    /* Debug Message: */
-    DebugP_log2 ("Debug: ESM Driver Registering HWI(High Priority) ISR [%p] for Interrupt %d\n",
-                 (uintptr_t)gEsmMCB.hwiHandleHi, gESMHwCfgAttrs.highPrioIntNum);
-#endif
-
-    /* Initialize with defaults */
-    Osal_RegisterInterrupt_initParams(&interruptRegParams);
-
-    /* Populate the interrupt parameters */
-    interruptRegParams.corepacConfig.name       = (char *)"ESM_LOW_PRIORITY";
-    interruptRegParams.corepacConfig.isrRoutine = ESM_lowpriority_interrupt;
-#if defined (__TI_ARM_V7R4__)
-    interruptRegParams.corepacConfig.priority   = 0x8U;
-    interruptRegParams.corepacConfig.intVecNum  = (int32_t)gESMHwCfgAttrs.lowPrioIntNum;
-    interruptRegParams.corepacConfig.corepacEventNum = (int32_t)gESMHwCfgAttrs.lowPrioIntNum;
-#elif defined (_TMS320C6X)
-    interruptRegParams.corepacConfig.priority   = 0x1U;
-    interruptRegParams.corepacConfig.intVecNum  = (int32_t)(OSAL_REGINT_INTVEC_EVENT_COMBINER); /* Host Interrupt vector */
-    interruptRegParams.corepacConfig.corepacEventNum = (int32_t)gESMHwCfgAttrs.lowPrioIntNum;   /* Event going to INTC   */
-#endif
-    /* Register interrupts */
-    (void)Osal_RegisterInterrupt(&interruptRegParams,&(gEsmMCB.hwiHandleLo));
-
-    /* Debug Message: */
-    DebugP_log2 ("Debug: ESM Driver Registering HWI(Low Priority) ISR [%p] for Interrupt %d\n",
-                 (uintptr_t)gEsmMCB.hwiHandleLo, gESMHwCfgAttrs.lowPrioIntNum);
-
-
-    if (bClearErrors == 1U)
+    if ((ESM_Handle)&(ESM_config[index]) != NULL)
     {
-        /* Clear ESM Group 1 errors */
-        for (i=0; i<gEsmMCB.numGroup1Err; i++)
-        {
-            if(ESMGetIntrStatus(gEsmMCB.esmBaseAddr, i))
-            {
-                ESMClearIntrStatus(gEsmMCB.esmBaseAddr, i);
-            }
-        }
-
-	/* Clear ESM Group 2: 0-31 errors */
-        /* read */
-        esmInitStatus = CSL_REG_RD(&ptrESMRegs->ESMSR2);
-        /*  clear */
-        CSL_REG_WR(&ptrESMRegs->ESMSR2, esmInitStatus);
-
-        /* Clear ESM Group 3: 0-31 errors */
-        /* read */
-        esmInitStatus = CSL_REG_RD(&ptrESMRegs->ESMSR3);
-        /*  clear */
-        CSL_REG_WR(&ptrESMRegs->ESMSR3, esmInitStatus);
+        /* Get handle for this driver instance */
+        handle = (ESM_Handle)&(ESM_config[index]);
     }
 
-    return (ESM_Handle)&gEsmMCB;
+    if (handle != NULL)
+    {
+        /* Get the pointer to the object and hwAttrs */
+        ptrESMConfig = (ESM_Config*)handle;
+        object  = (ESM_DriverMCB*)ptrESMConfig->object;
+        hwAttrs = (const ESM_HwAttrs *)ptrESMConfig->hwAttrs;
+
+        ptrESMRegs          = hwAttrs->ptrESMRegs;
+        object->esmBaseAddr = (uint32_t)ptrESMRegs;
+
+        object->numGroup1Err = hwAttrs->numGroup1Err;
+
+        OsalRegisterIntrParams_t interruptRegParams;
+
+        /* Register ESM_highpriority_interrupt for MSS only. For DSS,
+         * the ESM high priority interrupt is an NMI and application
+         * needs to populate the NMI exception handler to hook up
+         * ESM_highpriority_interrupt in the .cfg file, e.g.,
+         * Exception.nmiHook = "&ESM_highpriority_interrupt"; */
+
+#if defined (__TI_ARM_V7R4__)
+        /* Initialize with defaults */
+        Osal_RegisterInterrupt_initParams(&interruptRegParams);
+
+        /* Populate the interrupt parameters */
+        interruptRegParams.corepacConfig.name       = (char *)"ESM_HIGH_PRIORITY";
+        interruptRegParams.corepacConfig.isrRoutine = ESM_highpriority_interrupt;
+        interruptRegParams.corepacConfig.arg        = (uintptr_t)handle;
+        interruptRegParams.corepacConfig.priority   = 0xFU;
+        interruptRegParams.corepacConfig.intVecNum  = (int32_t)hwAttrs->highPrioIntNum;
+        interruptRegParams.corepacConfig.corepacEventNum = (int32_t)hwAttrs->highPrioIntNum;
+        /* Register interrupts */
+        (void)Osal_RegisterInterrupt(&interruptRegParams,&(object->hwiHandleHi));
+
+        /* Debug Message: */
+        DebugP_log2 ("Debug: ESM Driver Registering HWI(High Priority) ISR [%p] for Interrupt %d\n",
+                     (uintptr_t)object->hwiHandleHi, hwAttrs->highPrioIntNum);
+#endif
+
+        /* Initialize with defaults */
+        Osal_RegisterInterrupt_initParams(&interruptRegParams);
+
+        /* Populate the interrupt parameters */
+        interruptRegParams.corepacConfig.name       = (char *)"ESM_LOW_PRIORITY";
+        interruptRegParams.corepacConfig.isrRoutine = ESM_lowpriority_interrupt;
+        interruptRegParams.corepacConfig.arg        = (uintptr_t)handle;
+ #if defined (__TI_ARM_V7R4__)
+        interruptRegParams.corepacConfig.priority   = 0x8U;
+        interruptRegParams.corepacConfig.intVecNum  = (int32_t)hwAttrs->lowPrioIntNum;
+        interruptRegParams.corepacConfig.corepacEventNum = (int32_t)hwAttrs->lowPrioIntNum;
+#elif defined (_TMS320C6X)
+        interruptRegParams.corepacConfig.priority   = 0x1U;
+        interruptRegParams.corepacConfig.intVecNum  = (int32_t)(OSAL_REGINT_INTVEC_EVENT_COMBINER); /* Host Interrupt vector */
+        interruptRegParams.corepacConfig.corepacEventNum = (int32_t)hwAttrs->lowPrioIntNum;   /* Event going to INTC   */
+#endif
+        /* Register interrupts */
+        (void)Osal_RegisterInterrupt(&interruptRegParams,&(object->hwiHandleLo));
+
+        /* Debug Message: */
+        DebugP_log2 ("Debug: ESM Driver Registering HWI(Low Priority) ISR [%p] for Interrupt %d\n",
+                     (uintptr_t)object->hwiHandleLo, hwAttrs->lowPrioIntNum);
+
+
+        if (bClearErrors == 1U)
+        {
+            /* Clear ESM Group 1 errors */
+            for (i=0; i<object->numGroup1Err; i++)
+            {
+                if(ESMGetIntrStatus(object->esmBaseAddr, i))
+                {
+                    ESMClearIntrStatus(object->esmBaseAddr, i);
+                }
+            }
+
+            /* Clear ESM Group 2: 0-31 errors */
+            /* read */
+            esmInitStatus = CSL_REG_RD(&ptrESMRegs->ESMSR2);
+            /*  clear */
+            CSL_REG_WR(&ptrESMRegs->ESMSR2, esmInitStatus);
+
+            /* Clear ESM Group 3: 0-31 errors */
+            /* read */
+            esmInitStatus = CSL_REG_RD(&ptrESMRegs->ESMSR3);
+            /*  clear */
+            CSL_REG_WR(&ptrESMRegs->ESMSR3, esmInitStatus);
+        }
+    }
+
+    return handle;
 }
 
 /** @fn int32_t ESM_close(void)
@@ -301,28 +328,33 @@ ESM_Handle ESM_init(uint8_t bClearErrors)
 */
 int32_t ESM_close(ESM_Handle handle)
 {
-    ESM_DriverMCB*      ptrEsmMCB = NULL;
     int32_t             retVal = 0;
+    ESM_Config         *ptrESMConfig;
+    ESM_DriverMCB      *object;
+    ESM_HwAttrs const  *hwAttrs;
 
-    /* Get the pointer to the ESM Driver Block */
-    ptrEsmMCB = (ESM_DriverMCB*)handle;
-    if (ptrEsmMCB == NULL)
+    if (handle == NULL)
     {
         retVal = MINUS_ONE;
     }
     else
     {
+        /* Get the pointer to the object and hwAttrs */
+        ptrESMConfig = (ESM_Config*)handle;
+        object  = (ESM_DriverMCB*)ptrESMConfig->object;
+        hwAttrs = (const ESM_HwAttrs *)ptrESMConfig->hwAttrs;
+
         /* Was the HWI registered?  */
-        if (ptrEsmMCB->hwiHandleHi)
+        if (object->hwiHandleHi)
         {
             /* YES: Delete and unregister the interrupt handler. */
-            (void)Osal_DeleteInterrupt(ptrEsmMCB->hwiHandleHi, (int32_t)gESMHwCfgAttrs.highPrioIntNum);
+            (void)Osal_DeleteInterrupt(object->hwiHandleHi, (int32_t)hwAttrs->highPrioIntNum);
         }
         /* Was the HWI registered?  */
-        if (ptrEsmMCB->hwiHandleLo)
+        if (object->hwiHandleLo)
         {
             /* YES: Delete and unregister the interrupt handler. */
-            (void)Osal_DeleteInterrupt(ptrEsmMCB->hwiHandleLo, (int32_t)gESMHwCfgAttrs.lowPrioIntNum);
+            (void)Osal_DeleteInterrupt(object->hwiHandleLo, (int32_t)hwAttrs->lowPrioIntNum);
         }
     }
     return retVal;
@@ -343,20 +375,23 @@ int32_t ESM_close(ESM_Handle handle)
 */
 int32_t ESM_registerNotifier(ESM_Handle handle, ESM_NotifyParams* params, int32_t* errCode)
 {
-    ESM_DriverMCB*      ptrEsmMCB = NULL;
+    ESM_Config         *ptrESMConfig;
+    ESM_DriverMCB      *object;
     int32_t             retVal = 0;
     uintptr_t           key;
     int32_t             notifyIndex;
 
-    /* Get the pointer to the ESM Driver Block */
-    ptrEsmMCB = (ESM_DriverMCB*)handle;
-    if ((ptrEsmMCB == NULL) || (params == NULL))
+    if ((handle == NULL) || (params == NULL))
     {
         *errCode = ESM_EINVAL;
         retVal = MINUS_ONE;
     }
     else
     {
+        /* Get the pointer to the object */
+        ptrESMConfig = (ESM_Config*)handle;
+        object  = (ESM_DriverMCB*)ptrESMConfig->object;
+
         /* Critical Section Protection: Notify registration needs to be
          * protected against multiple threads */
         key = HwiP_disable();
@@ -364,7 +399,7 @@ int32_t ESM_registerNotifier(ESM_Handle handle, ESM_NotifyParams* params, int32_
         /* Find a free notifier index */
         for (notifyIndex = 0; notifyIndex < ESM_MAX_NOTIFIERS; notifyIndex++)
         {
-            if (gEsmMCB.notifyParams[notifyIndex].groupNumber == 0)
+            if (object->notifyParams[notifyIndex].groupNumber == 0)
             {
                 break;
             }
@@ -385,11 +420,11 @@ int32_t ESM_registerNotifier(ESM_Handle handle, ESM_NotifyParams* params, int32_
              */
             if (params->groupNumber == 1)
             {
-                ESMEnableIntr(gEsmMCB.esmBaseAddr, params->errorNumber);
+                ESMEnableIntr(object->esmBaseAddr, params->errorNumber);
                 /* Configure the interrupt priority level */
-                ESMSetIntrPriorityLvl(gEsmMCB.esmBaseAddr, params->errorNumber, params->setIntrPriorityLvlHigh);
+                ESMSetIntrPriorityLvl(object->esmBaseAddr, params->errorNumber, params->setIntrPriorityLvlHigh);
                 /* Configure the failure influence on ERROR pin */
-                ESMSetInfluenceOnErrPin(gEsmMCB.esmBaseAddr, params->errorNumber, params->enableInfluenceOnErrPin);
+                ESMSetInfluenceOnErrPin(object->esmBaseAddr, params->errorNumber, params->enableInfluenceOnErrPin);
             }
             /* Unmask Group 2 ESM errors to enable the generation of NMI. */
             if (params->groupNumber == 2)
@@ -397,7 +432,7 @@ int32_t ESM_registerNotifier(ESM_Handle handle, ESM_NotifyParams* params, int32_
                 ESM_socConfigErrorGating(params->groupNumber, params->errorNumber, 0);
             }
 
-            memcpy ((void *)&ptrEsmMCB->notifyParams[notifyIndex], (void *)params, sizeof (ESM_NotifyParams));
+            memcpy ((void *)&object->notifyParams[notifyIndex], (void *)params, sizeof (ESM_NotifyParams));
             retVal = notifyIndex;
         }
         /* Release the critical section: */
@@ -421,27 +456,30 @@ int32_t ESM_registerNotifier(ESM_Handle handle, ESM_NotifyParams* params, int32_
 */
 int32_t ESM_deregisterNotifier(ESM_Handle handle, int32_t notifyIndex, int32_t* errCode)
 {
-    ESM_DriverMCB*      ptrEsmMCB = NULL;
+    ESM_Config         *ptrESMConfig;
+    ESM_DriverMCB      *object;
     int32_t             retVal = 0;
     uintptr_t           key;
     uint32_t            groupNumber;
     uint32_t            errorNumber;
 
-    /* Get the pointer to the ESM Driver Block */
-    ptrEsmMCB = (ESM_DriverMCB*)handle;
-    if ((ptrEsmMCB == NULL) || (notifyIndex >= ESM_MAX_NOTIFIERS))
+    if ((handle == NULL) || (notifyIndex >= ESM_MAX_NOTIFIERS))
     {
         *errCode = ESM_EINVAL;
         retVal = MINUS_ONE;
     }
     else
     {
+        /* Get the pointer to the object */
+        ptrESMConfig = (ESM_Config*)handle;
+        object  = (ESM_DriverMCB*)ptrESMConfig->object;
+
         /* Critical Section Protection: Notify registration needs to be
          * protected against multiple threads */
         key = HwiP_disable();
 
-        groupNumber = gEsmMCB.notifyParams[notifyIndex].groupNumber;
-        errorNumber = gEsmMCB.notifyParams[notifyIndex].errorNumber;
+        groupNumber = object->notifyParams[notifyIndex].groupNumber;
+        errorNumber = object->notifyParams[notifyIndex].errorNumber;
 
         /* Check if the notifier is to handle group 1 or group 2 errors.
          * Group 2 errors are enabled by default. Group 1 errors was explicitly enabled
@@ -450,16 +488,16 @@ int32_t ESM_deregisterNotifier(ESM_Handle handle, int32_t notifyIndex, int32_t* 
          */
         if (groupNumber == 1)
         {
-            ESMDisableIntr(gEsmMCB.esmBaseAddr, errorNumber);
-            ESMSetIntrPriorityLvl(gEsmMCB.esmBaseAddr, errorNumber, 0);
-            ESMSetInfluenceOnErrPin(gEsmMCB.esmBaseAddr, errorNumber, 0);
+            ESMDisableIntr(object->esmBaseAddr, errorNumber);
+            ESMSetIntrPriorityLvl(object->esmBaseAddr, errorNumber, 0);
+            ESMSetInfluenceOnErrPin(object->esmBaseAddr, errorNumber, 0);
         }
         /* Gating Group 2 ESM errors to disable the generation of NMI. */
         if (groupNumber == 2)
         {
             ESM_socConfigErrorGating(groupNumber, errorNumber, 1);
         }
-        memset ((void *)&ptrEsmMCB->notifyParams[notifyIndex], 0, sizeof (ESM_NotifyParams));
+        memset ((void *)&object->notifyParams[notifyIndex], 0, sizeof (ESM_NotifyParams));
 
         /* Release the critical section: */
         HwiP_restore(key);

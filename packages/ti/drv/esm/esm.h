@@ -53,7 +53,7 @@
 *
 *  @code
 *
-  ESM_init(0); //ClearErrors is set to 0 i.e. false
+  ESM_init(0, 0); //Initialize ESM instance 0; ClearErrors is set to 0 i.e. false
 
   *  @endcode
 *
@@ -219,6 +219,24 @@ typedef struct ESM_NotifyParams_t
     ESM_CallBack        notify;
 } ESM_NotifyParams;
 
+/*!
+ *  \brief      ESM Global configuration
+ *
+ *  The ESM_Config structure contains a set of pointers used to
+ *  characterize the ESM driver implementation.
+ *
+ *  This structure needs to be defined before calling ESM_init() and
+ *  it must not be changed thereafter.
+ *
+ *  \sa     ESM_init()
+ */
+typedef struct ESM_Config_t {
+    /*! Pointer to a driver specific data object */
+    void                    *object;
+
+    /*! Pointer to a driver specific hardware attributes structure */
+    void              const *hwAttrs;
+} ESM_Config;
 /** @}*/
 
 /* ========================================================================== */
@@ -242,13 +260,15 @@ typedef struct ESM_NotifyParams_t
 *                                   entering main and this flag can be set to 0. <br> For any other RTOS, check the
 *                                   the RTOS implementation or set this flag to 1
 *
+*    \param[in] index: instance index
+*
 *    \retval
 *        Success -   Handle to the ESM Driver
 *    \retval
 *        Error   -   NULL
 *
 */
-extern ESM_Handle ESM_init(uint8_t bClearErrors);
+extern ESM_Handle ESM_init(uint32_t index, uint8_t bClearErrors);
 
 /**
 *  @b Description

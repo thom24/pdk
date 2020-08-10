@@ -44,10 +44,14 @@
 #ifndef ESM_SOC_H
 #define ESM_SOC_H
 
+#include <ti/csl/csl_utils.h>
+
 #if defined(SOC_TPR12)
 #include <ti/drv/esm/soc/esm_v0.h>
 #define ESM_HwAttrs    ESM_v0_HwAttrs
 extern int32_t ESM_socConfigErrorGating(uint8_t groupNumber, uint8_t errorNumber, uint8_t gating);
+extern int32_t ESM_socGetInitCfg(uint32_t index, ESM_HwAttrs *cfg);
+extern int32_t ESM_socSetInitCfg(uint32_t index, const ESM_HwAttrs *cfg);
 #endif
 
 #ifdef __cplusplus

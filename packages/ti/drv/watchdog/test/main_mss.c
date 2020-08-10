@@ -288,7 +288,7 @@ static int32_t watchdogTest()
 static int32_t Watchdog_initConfig(void)
 {
     Watchdog_HwAttrs watchdog_cfg;
-    uint32_t instance = 0;
+    uint32_t instance = 0, instance_esm = 0;
     int32_t  ret;
 
     /* Get the default Watchdog init configurations */
@@ -299,7 +299,7 @@ static int32_t Watchdog_initConfig(void)
     }
 
     /* Initialize the ESM: Dont clear errors as TI RTOS does it */
-    watchdog_cfg.esmHandle = ESM_init(0U);
+    watchdog_cfg.esmHandle = ESM_init(instance_esm, 0U);
     if (watchdog_cfg.esmHandle == NULL)
     {
         WATCHDOG_log("Error: ESM Module Initialization failed\n");
