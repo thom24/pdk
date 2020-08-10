@@ -209,39 +209,41 @@ extern "C" {
 #endif
 
 #if defined (tpr12_evm) || defined(tpr12_qt)
+/* In case of TPR12 the pin configuration is maintiained inside the driver.
+   Driver defines the macros for each of the GPIO pins of the SoC.
+   The application needs to pass these macros for each of the GPIO APIs as the
+   index value. */
 #if defined (__TI_ARM_V7R4__)
 /* tpr12: Use MSS GIO port 0 pin 1 and pin 2 for testing on QT.
           MSS GIO port 0 pin1 and pin2 are connected to PADAC and PADAZ.
           These are internally connected to TB_GIO port 0 pin 0 and 1.
           TODO: To test on EVM update below based on schematics. */
-#define GPIO_INST                GPIO_INST_MCU /* MSS GIO Inst */
-#define GPIO_LED0_PIN_NUM        2 /* Pin 1 */
-#define GPIO_LED0_PORT_NUM       0 /* Port 1 */
-#define GPIO_LED1_PIN_NUM        1 /* Pin 2 */
-#define GPIO_LED1_PORT_NUM       0 /* Port 1 */
+#define USER_LED0           SOC_TPR12_GPIO_2
+#define USER_LED1           SOC_TPR12_GPIO_1
 #endif
 #if defined (_TMS320C6X)
 /* tpr12: Use RCSS GIO port 0 pin 1 and pin 2 for testing on QT.
           RCSS GIO port 0 pin1 and pin2 are connected to PADBH and PADBI.
           These are internally connected to TB_GIO port 0 pin 5 and 6.
           TODO: To test on EVM update below based on schematics. */
-#define GPIO_INST                GPIO_INST_RCSS /* MSS GIO Inst */
-#define GPIO_LED0_PIN_NUM        2 /* Pin 1 */
-#define GPIO_LED0_PORT_NUM       0 /* Port 1 */
-#define GPIO_LED1_PIN_NUM        1 /* Pin 2 */
-#define GPIO_LED1_PORT_NUM       0 /* Port 1 */
-#endif
+#define USER_LED0           SOC_TPR12_GPIO_34
+#define USER_LED1           SOC_TPR12_GPIO_33
 #endif
 
+#else
 /* ON Board LED pins which are connected to GPIO pins. */
 typedef enum GPIO_LED {
     USER_LED0 = 0,
     USER_LED1
 }GPIO_LED;
+#endif
 
 #define GPIO_PIN_VAL_LOW     (0U)
 #define GPIO_PIN_VAL_HIGH    (1U)
 
+#if defined (tpr12_evm) || defined(tpr12_qt)
+void GPIO_board_init_pinconfig(void);
+#endif
 
 #ifdef __cplusplus
 }

@@ -43,30 +43,20 @@
 #include <ti/drv/gpio/soc/GPIO_soc.h>
 #include <ti/drv/gpio/test/led_blink/src/GPIO_board.h>
 
-/* GPIO Driver board specific pin configuration structure */
-GPIO_PinConfig gpioPinConfigs[] =
+GPIO_v2_PinConfig gpioPinConfigs[] =
 {
-    /* Input pin with interrupt enabled */
-    GPIO_DEVICE_CONFIG(GPIO_INST, GPIO_LED0_PORT_NUM, GPIO_LED0_PIN_NUM) |
-    GPIO_CFG_IN_INT_BOTH_EDGES | GPIO_CFG_INPUT,
-
-    /* Output pin */
-    GPIO_DEVICE_CONFIG(GPIO_INST, GPIO_LED1_PORT_NUM, GPIO_LED1_PIN_NUM) |
-    GPIO_CFG_OUTPUT
-};
-
-/* GPIO Driver call back functions */
-GPIO_CallbackFxn gpioCallbackFunctions[] =
-{
-    NULL,
-    NULL
+    {USER_LED0, GPIO_CFG_IN_INT_BOTH_EDGES | GPIO_CFG_INPUT, NULL},
+    {USER_LED1, GPIO_CFG_OUTPUT, NULL}
 };
 
 /* GPIO Driver configuration structure */
 GPIO_v2_Config GPIO_v2_config =
 {
     gpioPinConfigs,
-    gpioCallbackFunctions,
-    sizeof(gpioPinConfigs) / sizeof(GPIO_PinConfig),
-    sizeof(gpioCallbackFunctions) / sizeof(GPIO_CallbackFxn),
+    sizeof(gpioPinConfigs) / sizeof(GPIO_v2_PinConfig)
 };
+
+void GPIO_board_init_pinconfig(void)
+{
+    GPIO_v2_updateConfig(&GPIO_v2_config);
+}

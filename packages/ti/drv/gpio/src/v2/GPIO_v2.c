@@ -49,6 +49,8 @@
 #include <ti/drv/gpio/soc/GPIO_soc.h>
 #include <ti/drv/gpio/src/GPIO_osal.h>
 
+#include <ti/drv/gpio/src/v2/GPIO_v2_priv.h>
+
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
@@ -95,19 +97,12 @@ typedef struct GPIO_MCB_t
      * \brief   Number of low priority interrupts detected
      */
     uint32_t            numLowPriorityInterrupts[GPIO_INST_MAX + 1U];
-
-    /**
-     * \brief   index in the GPIO_v2_config object corresponding to each pin.
-     */
-    uint8_t             pinIndex[GPIO_INST_MAX + 1U][GPIO_MAX_PORT][GPIO_MAX_PINS_PER_PORT];
 }GPIO_MCB;
 
 
 /* ========================================================================== */
 /*                          Function Declarations                             */
 /* ========================================================================== */
-static int32_t GPIO_parseIndex(uint32_t index, uint32_t* baseAddr, uint32_t* inst, uint32_t* port, uint32_t* pin);
-
 /* GPIO ISR: */
 static void GPIO_HighPriorityISR (uintptr_t arg);
 static void GPIO_LowPriorityISR (uintptr_t arg);
@@ -127,14 +122,11 @@ static void GPIO_write_v2(uint32_t index, uint32_t value);
 /* ========================================================================== */
 /*                            Global Variables                                */
 /* ========================================================================== */
-/* GPIO driver config data structure */
-extern GPIO_v2_Config GPIO_v2_config;
-
 /**
  * \brief
  *  Global GPIO MCB which tracks the GPIO driver related information.
  */
-GPIO_MCB    gGPIOMCB;
+GPIO_MCB    gGPIOMCB = {0};
 
 /* GPIO function table for GPIO_v2 implementation */
 const GPIO_FxnTable GPIO_FxnTable_v2 = {
@@ -163,6 +155,9 @@ const GPIO_FxnTable GPIO_FxnTable_v2 = {
 static void GPIO_processInterrupt (uint32_t inst, uint32_t pendingInterrupt)
 {
     uint32_t    index, port, pin;
+    GPIO_PinConfig pinCfg;
+    GPIO_CallbackFxn callbackFxn;
+    int32_t retVal;
 
     /* Decode the pendingInterrupt:
      *  The Table mapping as per the documentation is as follows:-
@@ -174,13 +169,17 @@ static void GPIO_processInterrupt (uint32_t inst, uint32_t pendingInterrupt)
     pendingInterrupt = pendingInterrupt - 1U;
     port = pendingInterrupt / 8U;
     pin  = pendingInterrupt % 8U;
-    index = gGPIOMCB.pinIndex[inst][port][pin];
+    index = GPIO_CREATE_INDEX(inst, port, pin);
     /* Invoke the callback function if one was registered */
-    if ((index != PIN_INDEX_NOT_CONFIGURED) &&
-        (index < GPIO_v2_config.numberOfCallbacks) &&
-        (GPIO_v2_config.callbacks[index] != NULL))
+    retVal = GPIO_v2_getConfig(index, &pinCfg);
+    retVal += GPIO_v2_getCallback(index, &callbackFxn);
+    if (retVal == 0)
     {
-        GPIO_v2_config.callbacks[index]();
+        if (((pinCfg & GPIO_DO_NOT_CONFIG) != GPIO_DO_NOT_CONFIG) &&
+            (callbackFxn != NULL))
+        {
+            callbackFxn();
+        }
     }
     return;
 }
@@ -279,51 +278,6 @@ static void GPIO_LowPriorityISR (uintptr_t arg)
     }
 }
 
-/**
- * \brief The function is used to parse the index passed.
- *
- * \param  index    GPIO index passed
- * \param  baseAddr GPIO module Base Address
- * \param  inst     GPIO instance Id
- * \param  port     GPIO Port Number
- * \param  pin      GPIO Pin Number
- *
- * \return          Status
- *                      0        - Successful
- *                      Non Zero - Index passed is invalid
- */
-
-static int32_t GPIO_parseIndex(uint32_t index, uint32_t* baseAddr, uint32_t* inst, uint32_t* port, uint32_t* pin)
-{
-    int32_t     retVal = 0;
-    GPIO_v2_HwAttrs  *gpioHwAttr = NULL;
-    uint32_t    pinCfg;
-
-    if ((gGPIOMCB.isInitialized == true) &&
-        (index < GPIO_v2_config.numberOfPinConfigs))
-    {
-        pinCfg = GPIO_v2_config.pinConfigs[index];
-        *inst  = (pinCfg & 0xFF00U) >> 8U;
-        *port = ((pinCfg & 0xFFU) / 8U);
-        *pin  = ((pinCfg & 0xFFU) % 8U);
-        if ((*inst > GPIO_INST_MAX) || (*port > GPIO_MAX_PORT) || (*pin > GPIO_MAX_PINS_PER_PORT))
-        {
-            retVal = -1;
-        }
-    }
-
-    if (retVal == 0)
-    {
-        retVal = GPIO_getHwAttr(&gpioHwAttr, *inst);
-    }
-
-    if ((retVal == 0) && (gpioHwAttr != NULL))
-    {
-        *baseAddr = gpioHwAttr->gpioBaseAddr;
-    }
-    return retVal;
-}
-
 /*
  *  ======== GPIO_init ========
  */
@@ -333,22 +287,10 @@ static void GPIO_init_v2(void)
     GPIO_v2_HwAttrs             *gpioHwAttr;
     int32_t                     retVal;
     OsalRegisterIntrParams_t    interruptRegParams;
-    uint32_t                    i,j,k;
+    uint32_t                    i;
 
     /* Initialize the GPIO Driver: */
     memset ((void *)&gGPIOMCB, 0, sizeof(GPIO_MCB));
-
-    /* Initialize all entries with 'not configured' key */
-    for (i = 0; i <= GPIO_INST_MAX; i++)
-    {
-	    for (j = 0; j < GPIO_MAX_PORT; j++)
-        {
-            for (k = 0; k < GPIO_MAX_PORT; k++)
-            {
-                gGPIOMCB.pinIndex[i][j][k] = PIN_INDEX_NOT_CONFIGURED;
-            }
-	    }
-	}
 
     for (instIndex = GPIO_INST_MIN; instIndex <= GPIO_INST_MAX; instIndex++)
     {
@@ -408,17 +350,60 @@ static void GPIO_init_v2(void)
     /* Driver has been initialized */
     gGPIOMCB.isInitialized = true;
 
-    /* Now call set_config for all the pins. */
-    for (i = 0; i < GPIO_v2_config.numberOfPinConfigs; i++)
+    /* Now call set_config for all applicable pins. */
+    for (i = 0; i < GPIO_ALL_INST_MAX_PINS; i++)
     {
-        if ((GPIO_v2_config.pinConfigs[i] & GPIO_DO_NOT_CONFIG) !=
-            GPIO_DO_NOT_CONFIG)
+        GPIO_PinConfig pinCfg;
+        GPIO_v2_getConfig(i, &pinCfg);
+        if ((pinCfg & GPIO_DO_NOT_CONFIG) != GPIO_DO_NOT_CONFIG)
         {
-            GPIO_setConfig_v2(i, GPIO_v2_config.pinConfigs[i]);
+            GPIO_setConfig_v2(i, pinCfg);
         }
     }
 
     return;
+}
+
+int32_t GPIO_v2_updateConfig(GPIO_v2_Config *gpioV2Config)
+{
+    int32_t retVal = 0;
+    uint32_t    i;
+    uint32_t key;
+
+    if (gpioV2Config == NULL)
+    {
+        retVal = -1;
+    }
+    if (retVal == 0)
+    {
+        /* Disable preemption while configuring the GPIO */
+        key = GPIO_osalHardwareIntDisable();
+
+        for (i=0; i< gpioV2Config->numPinConfig; i++)
+        {
+            uint32_t    baseAddr, inst, port, pin;
+            uint32_t    index = gpioV2Config->pinConfigs[i].pinIndex;
+            /* validate the pin index value passed. */
+            if (GPIO_parseIndex(index, &baseAddr, &inst, &port, &pin) == 0)
+            {
+                /* Update driver object with the new pin config values. */
+                GPIO_v2_setConfig(index, gpioV2Config->pinConfigs[i].pinConfig);
+                GPIO_v2_setCallback(index, gpioV2Config->pinConfigs[i].callback);
+
+                /* If the driver is already initialized call set_config.
+                 * otherwiase only update the driver object. It will be used for
+                 *  default config during init function.
+                 */
+                if (gGPIOMCB.isInitialized == true)
+                {
+                    GPIO_setConfig_v2(index, gpioV2Config->pinConfigs[i].pinConfig);
+                }
+            }
+        }
+        /* Restore the interrupts */
+        GPIO_osalHardwareIntRestore(key);
+    }
+    return retVal;
 }
 
 /*
@@ -491,6 +476,17 @@ static void GPIO_enableInt_v2(uint32_t index)
         }
     }
 
+    /* Check if the pin is configured. */
+    if (retVal == 0)
+    {
+        GPIO_PinConfig pinCfg;
+        GPIO_v2_getConfig(index, &pinCfg);
+        if ((pinCfg & GPIO_DO_NOT_CONFIG) == GPIO_DO_NOT_CONFIG)
+        {
+            retVal = -1;
+        }
+    }
+
     if (retVal == 0)
     {
         /* Enable the interrupt: */
@@ -510,6 +506,17 @@ static uint32_t GPIO_read_v2(uint32_t index)
 
     retVal = GPIO_parseIndex(index, &baseAddr, &inst, &port, &pin);
 
+    /* Check if the pin is configured. */
+    if (retVal == 0)
+    {
+        GPIO_PinConfig pinCfg;
+        GPIO_v2_getConfig(index, &pinCfg);
+        if ((pinCfg & GPIO_DO_NOT_CONFIG) == GPIO_DO_NOT_CONFIG)
+        {
+            retVal = -1;
+        }
+    }
+
     if (retVal == 0)
     {
         pinVal = GPIO_getData(baseAddr, port, pin);
@@ -523,15 +530,18 @@ static uint32_t GPIO_read_v2(uint32_t index)
 static void GPIO_setCallback_v2(uint32_t index, GPIO_CallbackFxn callback)
 {
     uint32_t key;
-    if (index < GPIO_v2_config.numberOfCallbacks)
+    uint32_t    baseAddr, inst, port, pin;
+    int32_t retVal;
+
+    retVal = GPIO_parseIndex(index, &baseAddr, &inst, &port, &pin);
+
+    /* Check if the pin is configured. */
+    if (retVal == 0)
     {
         /* Disable preemption while configuring the GPIO */
         key = GPIO_osalHardwareIntDisable();
 
-        if (GPIO_v2_config.callbacks[index] != callback)
-        {
-            GPIO_v2_config.callbacks[index] = callback;
-        }
+        GPIO_v2_setCallback(index, callback);
 
         /* Restore the interrupts */
         GPIO_osalHardwareIntRestore(key);
@@ -577,10 +587,10 @@ static void GPIO_setConfig_v2(uint32_t index, GPIO_PinConfig pinConfig)
         }
 
         /* Update pinConfig with the latest GPIO configuration */
-        gpioPinConfig = GPIO_v2_config.pinConfigs[index];
+        GPIO_v2_getConfig(index, &gpioPinConfig);
         gpioPinConfig &= ~GPIO_CFG_IO_MASK;
         gpioPinConfig |= (pinConfig & GPIO_CFG_IO_MASK);
-        GPIO_v2_config.pinConfigs[index] = gpioPinConfig;
+        GPIO_v2_setConfig(index, gpioPinConfig);
 
         /* Do we need to enable interrupts for this? */
         /* Only the first 4 ports are capable of handling interrupts. */
@@ -623,14 +633,11 @@ static void GPIO_setConfig_v2(uint32_t index, GPIO_PinConfig pinConfig)
             }
 
             /* Update pinConfig with the latest interrupt configuration */
-            gpioPinConfig = GPIO_v2_config.pinConfigs[index];
+            GPIO_v2_getConfig(index, &gpioPinConfig);
             gpioPinConfig &= ~(GPIO_CFG_INT_MASK);
             gpioPinConfig |= (pinConfig & GPIO_CFG_INT_MASK);
-            GPIO_v2_config.pinConfigs[index] = gpioPinConfig;
+            GPIO_v2_setConfig(index, gpioPinConfig);
         }
-
-        /* Store the index */
-        gGPIOMCB.pinIndex[inst][port][pin] = index;
 
         /* Restore the interrupts */
         GPIO_osalHardwareIntRestore(key);
@@ -646,24 +653,29 @@ static void GPIO_toggle_v2(uint32_t index)
     int32_t     retVal = 0;
     uint32_t    baseAddr, inst, port, pin;
     uint32_t    key;
+    GPIO_PinConfig gpioPinConfig;
 
     retVal = GPIO_parseIndex(index, &baseAddr, &inst, &port, &pin);
 
+    /* Check if the pin is configured. */
     if (retVal == 0)
     {
         /* Disable preemption while configuring the GPIO */
         key = GPIO_osalHardwareIntDisable();
 
-        /* Is the value on the pin currently 1 */
-        if ((GPIO_v2_config.pinConfigs [index] & GPIO_CFG_OUT_HIGH) == GPIO_CFG_OUT_HIGH)
+        GPIO_v2_getConfig(index, &gpioPinConfig);
+        if ((gpioPinConfig & GPIO_DO_NOT_CONFIG) != GPIO_DO_NOT_CONFIG)
         {
-            /* YES: Write a 0 */
-            GPIO_write_v2 (index, 0U);
-        }
-        else
-        {
-            /* NO: Write a 1 */
-            GPIO_write_v2 (index, 1U);
+            if ((gpioPinConfig & GPIO_CFG_OUT_HIGH) == GPIO_CFG_OUT_HIGH)
+            {
+                /* YES: Write a 0 */
+                GPIO_write_v2 (index, 0U);
+            }
+            else
+            {
+                /* NO: Write a 1 */
+                GPIO_write_v2 (index, 1U);
+            }
         }
 
         /* Restore the interrupts */
@@ -680,22 +692,28 @@ static void GPIO_write_v2(uint32_t index, uint32_t value)
     int32_t     retVal = 0;
     uint32_t    baseAddr, inst, port, pin;
     uint32_t    key;
+    GPIO_PinConfig gpioPinConfig;
 
     retVal = GPIO_parseIndex(index, &baseAddr, &inst, &port, &pin);
 
+    /* Check if the pin is configured. */
     if (retVal == 0)
     {
         /* Disable preemption while configuring the GPIO */
         key = GPIO_osalHardwareIntDisable();
 
-        /* Setup the pin configuration to track the last value written */
-        if (value == 1U)
+        GPIO_v2_getConfig(index, &gpioPinConfig);
+        if ((gpioPinConfig & GPIO_DO_NOT_CONFIG) != GPIO_DO_NOT_CONFIG)
         {
-            GPIO_v2_config.pinConfigs [index] = GPIO_v2_config.pinConfigs [index] | GPIO_CFG_OUT_HIGH;
-        }
-        else
-        {
-            GPIO_v2_config.pinConfigs [index] = GPIO_v2_config.pinConfigs [index] & (~GPIO_CFG_OUT_HIGH);
+            /* Setup the pin configuration to track the last value written */
+            if (value == 1U)
+            {
+                GPIO_v2_setConfig(index, gpioPinConfig | GPIO_CFG_OUT_HIGH);
+            }
+            else
+            {
+                GPIO_v2_setConfig(index, gpioPinConfig & (~GPIO_CFG_OUT_HIGH));
+            }
         }
 
         /* Restore the interrupts */

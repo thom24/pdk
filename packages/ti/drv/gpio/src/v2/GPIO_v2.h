@@ -48,6 +48,7 @@ extern "C" {
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
+
 /**
  * \brief
  *  Only Ports A, B, C and D are capable of interrupts.
@@ -73,79 +74,53 @@ extern "C" {
  */
 #define GPIO_MAX_INTERRUPT              (GPIO_MAX_INTERRUPT_PORT * GPIO_MAX_PINS_PER_PORT)
 
-/**
- * \brief Macro to formulated device specific inst, port, pin configuration
- */
-#define GPIO_DEVICE_CONFIG(INST, PORT, PIN)     (((INST)<<8U) | ((PORT)*8U) + (PIN))
-
-
 /* ========================================================================== */
 /*                         Structure Declarations                             */
 /* ========================================================================== */
+/**
+ * \brief Pin configuration for each of the GPIO pins.
+ */
+typedef struct GPIO_v2_PinConfig_s {
+    /* GPIO pin index number. as defined in soc specific header file. */
+    uint32_t            pinIndex;
+    /* GPIO pin configuration settings. */
+    GPIO_PinConfig      pinConfig;
+    /* Callback function pointer for the GPIO pin. */
+    GPIO_CallbackFxn    callback;
+}GPIO_v2_PinConfig;
+
 
 /**
- *  @brief  GPIO device specific driver configuration structure
+ * \brief configuration structure to initialize the GPIO pins.
+ *         This is used for updating the configuration for multiple GPIO pins by
+ *         calling the GPIO_v2_updateConfig API.
  */
 typedef struct GPIO_v2_Config_s {
-    /*! Pointer to the board's PinConfig array */
-    GPIO_PinConfig *pinConfigs;
+    /* Pointer to pin configuration array. */
+    GPIO_v2_PinConfig  *pinConfigs;
+    /* Number of elements in the pin config array. */
+    uint32_t            numPinConfig;
+}GPIO_v2_Config;
 
-    /*! Pointer to the board's callback array */
-    GPIO_CallbackFxn *callbacks;
-
-    /*! Number of pin configs defined */
-    uint32_t numberOfPinConfigs;
-
-    /*! Number of callbacks defined */
-    uint32_t numberOfCallbacks;
-
-} GPIO_v2_Config;
-
-/**
- * \brief       GPIO Hardware Attributes
- *
- * \details     The structure contains the hardware atrributes which are used
- *              to specify the platform specific configurations.
- */
-typedef struct GPIO_v2_HwAttrs_t
-{
-    /**
-     * \brief   GPIO registers base address
-     */
-    uint32_t    gpioBaseAddr;
-
-    /**
-     * \brief   Interrupt number associated with the high interrupts
-     */
-    uint8_t     highInterruptNum;
-
-    /**
-     * \brief   Interrupt number associated with the low interrupts
-     */
-    uint8_t     lowInterruptNum;
-}GPIO_v2_HwAttrs;
-
-/**
- * \brief       GPIO driver function pointer table
- */
-extern const GPIO_FxnTable GPIO_FxnTable_v2;
 /* ========================================================================== */
 /*                          Function Declarations                             */
 /* ========================================================================== */
+
 /**
- * \brief   API to get the pointer to the GPIO Hardware Attributes for
- *          given the GPIO Instance. Implemented in SoC specific file.
+ * \brief   API to update the pin configuration. Updates configuration for
+ *          multiple pins at once. Can be used to initialize default pin values
+ *          for all pins used in the board.
+ *          Alternatively GPIO_setConfigFxn and GPIO_setCallbackFxn APIs can be
+ *          called for individual pins.
  *
- * \param   gpioHwAttr      Pointer to hold the GPIO Hardware Attributes data.
- * \param   gpioInst        GPIO Instance
+ * \param   gpioV2Config    GPIO configuration structure to update.
  *
  * \return  status value
  *              0        - Successful
  *              Non Zero - failure
  *
  */
-int32_t GPIO_getHwAttr(GPIO_v2_HwAttrs** gpioHwAttr, uint32_t gpioInst);
-
+int32_t GPIO_v2_updateConfig(GPIO_v2_Config *gpioV2Config);
 
 #ifdef __cplusplus
 }

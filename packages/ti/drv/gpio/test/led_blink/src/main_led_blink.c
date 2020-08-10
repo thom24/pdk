@@ -377,6 +377,7 @@ static void Board_initGPIO(void)
     /* PAD config for USER_LED1, PADBI to mode 1 for RCSS GPIO port 0 pin 2. */
     *((volatile uint32_t *)(0x020C0088)) = 0x201;
   #endif
+  GPIO_board_init_pinconfig();
 #endif
 }
 
