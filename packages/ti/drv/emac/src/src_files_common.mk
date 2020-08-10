@@ -22,7 +22,7 @@ endif
 ifeq ($(SOC),$(filter $(SOC), am65xx j721e))
 SRCDIR = . src src/v5
 INCDIR = . src src/v5
- SRCS_COMMON += emac_drv.c emac_drv_v5.c emac_mdio.c emac_ioctl.c emac_utils.c emac_hwq.c emac_drv_v5_dual_mac.c emac_drv_v5_switch.c emac_drv_v5_cpsw.c
+ SRCS_COMMON += emac_drv.c emac_drv_v5.c emac_mdio.c emac_ioctl.c emac_utils.c emac_hwq.c emac_drv_v5_dual_mac.c emac_drv_v5_switch.c emac_drv_v5_cpsw.c emac_classi.c
 PACKAGE_SRCS_COMMON += src/v5 soc/emac_soc_v5.h
 endif
 
