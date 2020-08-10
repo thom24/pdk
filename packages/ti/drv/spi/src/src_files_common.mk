@@ -33,7 +33,7 @@ SOC_INDP_LIB_SOCS=k2h k2k k2l k2e k2g c6657 c6678 omapl137 omapl138 am571x am572
 SOC_DEP_LIB_SOCS=tda2xx tda3xx tda2px dra75x tda2ex dra72x dra78x j721e am77x j7200 am65xx am64x tpr12
 
 PACKAGE_SRCS_COMMON = makefile SPI.h MCSPI.h spi_component.mk .gitignore \
-                      docs/ReleaseNotes_SPI_LLD.pdf \
+                      docs/ReleaseNotes_SPI_LLD.pdf docs/ESPI_FW_DESIGN_GUIDE.docx \
                       src/SPI_drv.c src/SPI_osal.h src/src_files_common.mk src/Module.xs \
                       build config_mk.bld package.bld package.xdc package.xs Settings.xdc.xdt SPIver.h SPIver.h.xdt
 

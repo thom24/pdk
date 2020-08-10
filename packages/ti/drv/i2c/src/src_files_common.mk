@@ -33,7 +33,7 @@
 
 PACKAGE_SRCS_COMMON = makefile I2C.h i2c_component.mk \
                       docs/I2C_LLD_SDS.pdf docs/I2C_LLD_SoftwareManifest.html \
-                      docs/ReleaseNotes_I2C_LLD.pdf \
+                      docs/ReleaseNotes_I2C_LLD.pdf firmware/icss_i2c/docs/I2C_FW_DESIGN_GUIDE.pdf \
                       src/I2C_drv.c src/I2C_drv_log.h src/I2C_osal.h \
                       build src/src_files_common.mk src/Module.xs \
                       config_mk.bld I2Cver.h I2Cver.h.xdt package.bld package.xdc package.xs Settings.xdc.xdt
