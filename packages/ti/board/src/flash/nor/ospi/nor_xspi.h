@@ -50,7 +50,6 @@
 #if defined(j7200_evm)
 #include <ti/board/src/flash/nor/device/s28hs512t.h>
 #endif
-#include <ti/board/src/flash/nor/ospi/nor_spi_phy_tune.h>
 
 /**************************************************************************
  **                       Macro Definitions

@@ -78,11 +78,9 @@ endif
 ifeq ($(BOARD),$(filter $(BOARD), am65xx_idk am65xx_evm j721e_sim j721e_evm am64x_evm am64x_svb))
 SRCDIR += src/flash/nor src/flash/nor/device src/flash/nor/ospi
 INCDIR += src/flash/nor src/flash/nor/device src/flash/nor/ospi
-SRCS_COMMON += nor_ospi.c nor.c nor_spi_patterns.c nor_spi_phy_tune.c
+SRCS_COMMON += nor_ospi.c nor.c
 PACKAGE_SRCS_COMMON += src/flash/nor/nor.c src/flash/nor/nor.h
 PACKAGE_SRCS_COMMON += src/flash/nor/ospi/nor_ospi.c src/flash/nor/ospi/nor_ospi.h
-PACKAGE_SRCS_COMMON += src/flash/nor/ospi/nor_spi_patterns.c src/flash/nor/ospi/nor_spi_patterns.h
-PACKAGE_SRCS_COMMON += src/flash/nor/ospi/nor_spi_phy_tune.c src/flash/nor/ospi/nor_spi_phy_tune.h
 ifeq ($(BOARD),$(filter $(BOARD), am64x_evm am64x_svb))
 PACKAGE_SRCS_COMMON += src/flash/nor/device/m35xu256.h
 else
@@ -93,12 +91,10 @@ endif
 ifeq ($(BOARD),$(filter $(BOARD), j7200_evm))
 SRCDIR += src/flash/nor src/flash/nor/device src/flash/nor/ospi
 INCDIR += src/flash/nor src/flash/nor/device src/flash/nor/ospi
-SRCS_COMMON += nor_xspi.c nor.c nor_spi_patterns.c nor_spi_phy_tune.c
+SRCS_COMMON += nor_xspi.c nor.c
 PACKAGE_SRCS_COMMON += src/flash/nor/nor.c src/flash/nor/nor.h
 PACKAGE_SRCS_COMMON += src/flash/nor/ospi/nor_xspi.c src/flash/nor/ospi/nor_xspi.h
 PACKAGE_SRCS_COMMON += src/flash/nor/device/s28hs512t.h
-PACKAGE_SRCS_COMMON += src/flash/nor/ospi/nor_spi_patterns.c src/flash/nor/ospi/nor_spi_patterns.h
-PACKAGE_SRCS_COMMON += src/flash/nor/ospi/nor_spi_phy_tune.c src/flash/nor/ospi/nor_spi_phy_tune.h
 endif
 
 ifeq ($(BOARD),$(filter $(BOARD), j721e_sim j721e_evm j7200_evm))
