@@ -129,8 +129,6 @@ extern "C" {
 #define NOR_WRR_WRITE_TIMEOUT		(600U * 1000U)
 #define NOR_BULK_ERASE_TIMEOUT	    (110U * 1000U * 1000U)
 
-#define NOR_TUNING_DATA_OFFSET      (NOR_SIZE - NOR_BLOCK_SIZE)
-
 #ifdef __cplusplus
 }
 #endif
