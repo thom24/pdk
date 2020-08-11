@@ -246,7 +246,7 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
     {
         SBL_ADD_PROFILE_POINT;
 
-#if defined(SIM_BUILD)
+#if defined(SIM_BUILD) || defined(SOC_J7200)
         /* Disable PHY pipeline mode */
         CSL_ospiPipelinePhyEnable((const CSL_ospi_flash_cfgRegs *)(ospi_cfg.baseAddr), FALSE);
 #else
@@ -301,7 +301,7 @@ int32_t SBL_ospiInit(void *handle)
 
     }
 
-#if !defined(SBL_SKIP_BRD_CFG_PM) && !defined(SBL_SKIP_SYSFW_INIT)
+#if !defined(SBL_SKIP_BRD_CFG_PM) && !defined(SBL_SKIP_SYSFW_INIT) && !defined(SOC_J7200)
     {
         struct ospiClkParams
         {
@@ -341,7 +341,7 @@ int32_t SBL_ospiInit(void *handle)
      * We set xipEnable = true only at the last open() */
     ospi_cfg.xipEnable = true;
 #endif
-#if defined(SIM_BUILD)
+#if defined(SIM_BUILD) || defined (SOC_J7200)
     ospi_cfg.phyEnable = false;
 #endif
     /* Set the default SPI init configurations */
