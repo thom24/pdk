@@ -118,6 +118,28 @@ static void watchdogCallback(Watchdog_Handle handle)
 /**
  *  @b Description
  *  @n
+ *      NMI exception handler for watchdog ESM error which generates an NMI for DSP
+ *
+ *   @param[in] handle
+ *      Not Applicable
+ *  @retval
+ *      Not Applicable.
+ */
+void watchdogEsmHook()
+{
+    Watchdog_HwAttrs        cfg;
+    uint32_t                instance = 0;
+
+    /* Get the Watchdog init configurations */
+    Watchdog_socGetInitCfg(instance, &cfg);
+
+    /* Process the ESM error */
+    ESM_highpriority_interrupt((uintptr_t)cfg.esmHandle);
+}
+
+/**
+ *  @b Description
+ *  @n
  *      Configuration and functional watchdog driver test.
  *
  *  @retval

@@ -55,7 +55,7 @@
 *
   ESM_init(0, 0); //Initialize ESM instance 0; ClearErrors is set to 0 i.e. false
 
-  *  @endcode
+*  @endcode
 *
 *  ## Handling Interrupts on MSS#
 *  The ESM driver when running on R5F, registers for high priority interrupt to handle the MSS ESM errors.
@@ -65,15 +65,16 @@
 
 *  ## Handling Interrupts on DSS#
 *  The DSS Group2 ESM errors generate an NMI that is first captured by the RTOS NMI exception handler.
-*  Hence applications have to populate the NMI exception handler to use the ESM driver's high
-*  priority interrupt processing API in the .cfg file.
- *
- *  @code
- *
-     Exception.nmiHook           = "&ESM_highpriority_interrupt";
+*  Hence applications have to populate the NMI exception handler in the .cfg file. The NMI exception handler
+*  calls the ESM driver's high priority interrupt processing API of ESM_highpriority_interrupt().
+*  Refer to the Watchdog DSP test application for more details.
+*
+*  @code
+*
+     Exception.nmiHook           = "&watchdogEsmHook";
 
- *  @endcode
-
+*  @endcode
+*
 *  ## Registering the notifiers #
 *  The application can register callback functions for the ESM errors that need additional handling. One
 *  such example is the watchdog timeout on the DSS.
@@ -325,6 +326,19 @@ extern int32_t ESM_registerNotifier(ESM_Handle handle, ESM_NotifyParams* params,
 *
 */
 extern int32_t ESM_deregisterNotifier(ESM_Handle handle, int32_t notifyIndex, int32_t* errCode);
+
+/**
+*  @b Description
+*  @n
+*    The function handles ESM high priority interrupt.
+*
+*   \param[in] handle: Handle to the ESM Driver.
+*
+*    \retval
+*        None
+*
+*/
+extern void ESM_highpriority_interrupt(uintptr_t handle);
 /** @}*/
 
 

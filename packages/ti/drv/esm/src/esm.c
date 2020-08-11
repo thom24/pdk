@@ -60,7 +60,6 @@ extern const ESM_Config ESM_config[];
 /*                          Function Declarations                             */
 /* ========================================================================== */
 /* Function prototypes */
-void ESM_highpriority_interrupt(uintptr_t arg);
 void ESM_lowpriority_interrupt(uintptr_t arg);
 void ESM_processInterrupt (uintptr_t arg, uint32_t vec, int32_t* groupNum, int32_t* vecNum);
 
@@ -69,29 +68,6 @@ void ESM_processInterrupt (uintptr_t arg, uint32_t vec, int32_t* groupNum, int32
 /* ========================================================================== */
 /** @addtogroup ESM_DRIVER_INTERNAL_FUNCTION
  @{ */
-
-/* INTERNAL FUNCTIONS */
-/** \brief ESM high priority interrupt handler: handles Group1 and Group2 high priority errors.
- *         Group 3 errors do not raise an interrupt and hence not handled here.
- *
- */
-void ESM_highpriority_interrupt(uintptr_t arg)
-{
-    uint32_t            esmioffhr;
-    uint32_t            vec;
-    int32_t             groupNum = MINUS_ONE, vecNum = MINUS_ONE;
-    ESM_Config         *ptrESMConfig;
-    ESM_DriverMCB      *object;
-
-    /* Get the ESM Configuration: */
-    ptrESMConfig = (ESM_Config*)arg;
-    object  = (ESM_DriverMCB*)ptrESMConfig->object;
-
-    esmioffhr = ESMGetHighPriorityLvlIntrStatus(object->esmBaseAddr);
-    vec = esmioffhr - 1U;
-
-    ESM_processInterrupt(arg, vec, &groupNum, &vecNum);
-}
 
 /* INTERNAL FUNCTIONS */
 /** \brief ESM low priority interrupt handler: handles Group1 low priority errors.
@@ -504,3 +480,30 @@ int32_t ESM_deregisterNotifier(ESM_Handle handle, int32_t notifyIndex, int32_t* 
     }
     return retVal;
 }
+
+/** @fn void ESM_highpriority_interrupt(uintptr_t arg)
+*   \brief ESM high priority interrupt handler: handles Group1 and Group2 high priority errors.
+*
+*    @param[in] handle: Handle to the ESM Driver
+*
+*    @return    Not Applicable.
+*
+*/
+void ESM_highpriority_interrupt(uintptr_t handle)
+{
+    uint32_t            esmioffhr;
+    uint32_t            vec;
+    int32_t             groupNum = MINUS_ONE, vecNum = MINUS_ONE;
+    ESM_Config         *ptrESMConfig;
+    ESM_DriverMCB      *object;
+
+    /* Get the ESM Configuration: */
+    ptrESMConfig = (ESM_Config*)handle;
+    object  = (ESM_DriverMCB*)ptrESMConfig->object;
+
+    esmioffhr = ESMGetHighPriorityLvlIntrStatus(object->esmBaseAddr);
+    vec = esmioffhr - 1U;
+
+    ESM_processInterrupt(handle, vec, &groupNum, &vecNum);
+}
+
