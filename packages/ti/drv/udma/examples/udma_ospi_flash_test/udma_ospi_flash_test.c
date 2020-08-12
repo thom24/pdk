@@ -959,6 +959,9 @@ static int32_t App_create(App_UdmaObj *appObj)
         appTrObj->trEventPrms.eventType         = UDMA_EVENT_TYPE_TR;
         appTrObj->trEventPrms.eventMode         = UDMA_EVENT_MODE_SHARED;
         appTrObj->trEventPrms.chHandle          = chHandle;
+       /* For polling mode we can't use the existing master event as that is meant only for interrupt event - 
+        *  we can't mix interrupt and poll mode in same master handle. Set the parameter to NULL 
+        *  so that the driver creates a new master event. */
         appTrObj->trEventPrms.masterEventHandle = NULL;
         appTrObj->trEventPrms.eventCb           = NULL;
         appTrObj->trEventPrms.appData           = appChObj;
