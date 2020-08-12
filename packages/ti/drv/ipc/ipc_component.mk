@@ -62,6 +62,10 @@ drvipc_am64x_TIRTOS_CORELIST = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
 drvipc_am64x_LASTCORE := $(word $(words $(drvipc_am64x_TIRTOS_CORELIST)), $(drvipc_am64x_TIRTOS_CORELIST))
 drvipc_DISABLE_PARALLEL_MAKE = yes
 
+ifeq ($(BUILD_OS_TYPE), qnx)
+drvipc_j721e_CORELIST += qnx_mpu1_0
+endif
+
 ############################
 # ipc examples
 # List of examples under ipc (+= is used at each example definition)

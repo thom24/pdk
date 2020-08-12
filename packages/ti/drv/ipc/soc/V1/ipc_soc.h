@@ -95,7 +95,11 @@ extern "C" {
 #define    MAIN_NAVSS_MAILBOX_OUTPUTINTR_MAX   (512U)
 
 /* Refer to J7ES interrupt mapping table */
+#ifndef QNX_OS
 #define    NAVSS512_MPU1_0_INPUT_MAILBOX_OFFSET             (182U)
+#else
+#define    NAVSS512_MPU1_0_INPUT_MAILBOX_OFFSET             (112U)
+#endif
 #define    NAVSS512_MCU1R5F0_INPUT_MAILBOX_OFFSET           (400U)
 #define    NAVSS512_MCU1R5F1_INPUT_MAILBOX_OFFSET           (404U)
 #define    NAVSS512_MCU2R5F0_INPUT_MAILBOX_OFFSET           (216U)

@@ -111,7 +111,7 @@ void Ipc_mailboxInternalCallback(uintptr_t mboxNdx);
 /* ========================================================================== */
 
 #ifndef IPC_EXCLUDE_POLLED_RX
-#define IPC_POLL_TIMER  10
+#define IPC_POLL_TIMER  100
 
 uint32_t     g_pollTaskExit = FALSE;
 TaskP_Handle g_pollTask     = NULL;
@@ -150,7 +150,11 @@ void Mailbox_Poll_Task(void* argNotUsed)
              }
         }
         /* Temporarily we use Task_yield() */
+#ifdef QNX_OS
+        TaskP_sleep(IPC_POLL_TIMER);
+#else
         TaskP_yield();
+#endif
     }
 }
 

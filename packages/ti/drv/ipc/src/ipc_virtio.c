@@ -49,6 +49,8 @@
 #include "ipc_vring.h"
 #include "ipc_mailbox.h"
 #include "ipc_osal.h"
+#include "ipc_utils.h"
+#include "ipc_priv.h"
 
 /* 512k for each vring */
 #define IPC_VRING_ALIGNMENT    (0x1000)
@@ -66,6 +68,29 @@ typedef struct Ipc_VirtioInfo_s
     uint32_t  txNotifyId; /* Notify Id for TX */
     uint32_t  rxNotifyId; /* Notify Id for RX */
 } Ipc_VirtioInfo;
+
+
+/* TranslationEntry */
+typedef struct Ipc_TranslationEntry
+{
+    uint32_t pa;  /* physical address */
+    uint32_t va;  /* virtual address  */
+    uint32_t len; /* Length of buffer */
+}Ipc_TranslationEntry;
+
+#define   IPC_TABLE_MAX_CNT   64
+
+/* IPC PhyAddr to VirtAddr translation table */
+typedef struct Ipc_TranslationTable
+{
+    uint32_t              count;
+    /**< Number of entryies in the translation table */
+
+    Ipc_TranslationEntry  entry[IPC_TABLE_MAX_CNT];
+    /**< Entries in the table, there should be 3-entries for
+     * each remote cores */
+
+}Ipc_TranslationTable;
 
 typedef struct Ipc_NotifyIdEntry_s
 {
@@ -163,6 +188,8 @@ static void*    vqBaseAddr = NULL;
 static uint32_t vqSizeLeft = 0U;
 static void*    rscTable   = NULL;
 
+static Ipc_TranslationTable  vrTranslationTable;
+
 void* Ipc_allocVirtio()
 {
     void  *ptr = NULL;
@@ -175,6 +202,93 @@ void* Ipc_allocVirtio()
 
     return ptr;
 }
+
+/**
+ * \brief    Add entry to the translation able
+ **/
+void Ipc_addTranslationEntry(uint32_t phyAddr, uint32_t len)
+{
+    if(vrTranslationTable.count < IPC_TABLE_MAX_CNT-1)
+    {
+       uint32_t va = IpcUtils_getMemoryAddress(phyAddr, len);
+       vrTranslationTable.entry[vrTranslationTable.count].pa  = phyAddr;
+       vrTranslationTable.entry[vrTranslationTable.count].va  = va;
+       vrTranslationTable.entry[vrTranslationTable.count].len = len;
+
+#ifdef DEBUG_PRINT
+        SystemP_printf("Ipc_addTranslationEntry : phy 0x%x, virt 0x%x, len %d\n",
+                phyAddr, va, len);
+#endif
+       vrTranslationTable.count++;
+    }
+    else
+    {
+#ifdef DEBUG_PRINT
+        SystemP_printf("Ipc_addTranslationEntry : failed, reached maximum\n");
+#endif
+    }
+}
+
+/**
+ * \brief Get virual address for given physical address
+ **/
+int32_t Ipc_physToVirt(uint32_t pa, uint32_t *va)
+{
+    uint32_t                n;
+    uint32_t                offset;
+    Ipc_TranslationEntry   *e;
+
+    *va = 0U;
+
+    if(vrTranslationTable.count == 0)
+    {
+        *va = pa;
+    }
+
+    for (n = 0; n < vrTranslationTable.count; n++)
+    {
+        e = &vrTranslationTable.entry[n];
+        if (pa >= e->pa && pa < (e->pa + e->len))
+        {
+            offset = pa - e->pa;
+            *va = e->va + offset;
+            return (IPC_SOK);
+        }
+    }
+
+    return (IPC_EFAIL);
+}
+
+/**
+ * \brief Get physical address from given virual address
+ **/
+int32_t Ipc_virtToPhys(uint32_t va, uint32_t *pa)
+{
+    uint32_t              n;
+    uint32_t              offset;
+    Ipc_TranslationEntry *e;
+
+    *pa = 0U;
+
+    if(vrTranslationTable.count == 0)
+    {
+        *pa = va;
+    }
+
+    for (n = 0; n < vrTranslationTable.count; n++)
+    {
+        e = &vrTranslationTable.entry[n];
+        if (va >= e->va && va < (e->va + e->len))
+        {
+            offset = va - e->va;
+            *pa = e->pa + offset;
+            return (IPC_SOK);
+        }
+    }
+
+    return (IPC_EFAIL);
+}
+
 
 uint32_t Ipc_getVqObjMemoryRequired()
 {
@@ -312,12 +426,11 @@ void * Ipc_getResourceTraceBufPtr()
  */
 static inline void * mapPAtoVA(uint32_t pa)
 {
-    uintptr_t va;
+    uint32_t va;
 
-    /* TBD : fixit */
-    va = (uintptr_t)pa;
+    Ipc_physToVirt(pa, &va);
 
-    return (void*)va;
+    return (void*)(uintptr_t)va;
 }
 
 /**
@@ -327,8 +440,7 @@ static inline uint32_t mapVAtoPA(void * va)
 {
     uint32_t pa;
 
-    /* TBD : fixit */
-    pa = (uint32_t)((uintptr_t)va);
+    Ipc_virtToPhys((uint32_t)(uintptr_t)va, &pa);
 
     return pa;
 }
@@ -653,7 +765,7 @@ int32_t VirtioIPC_createVirtioCorePair(Ipc_VirtioInfo* vqInfo, uint32_t timeoutC
 
     /* TX VQ */
     params.num   = vqInfo->num;
-    params.addr  = vqInfo->daTx;
+    params.addr  = (uint32_t)(uintptr_t)mapPAtoVA(vqInfo->daTx);
     params.align = vqInfo->align;
     tx_vq = Virtio_create(vqInfo->txNotifyId, vqInfo->remoteId, NULL,
                   &params, VIRTIO_TX, status, timeoutCnt);
@@ -665,11 +777,12 @@ int32_t VirtioIPC_createVirtioCorePair(Ipc_VirtioInfo* vqInfo, uint32_t timeoutC
     if(retVal == IPC_SOK)
     {
         /* Prime the transmit buffer */
-        Virtio_prime(tx_vq, vqInfo->primeBuf, vqInfo->num);
+        uint32_t  primeBuf = (uint32_t)(uintptr_t)mapPAtoVA(vqInfo->primeBuf);
+        Virtio_prime(tx_vq, primeBuf, vqInfo->num);
 
         /* RX VQ */
         params.num   = vqInfo->num;
-        params.addr  = vqInfo->daRx;
+        params.addr  = (uint32_t)(uintptr_t)mapPAtoVA(vqInfo->daRx);
         params.align = vqInfo->align;
         rx_vq = Virtio_create(vqInfo->rxNotifyId, vqInfo->remoteId, NULL,
                   &params, VIRTIO_RX, status, timeoutCnt);
@@ -714,6 +827,9 @@ void Ipc_updateVirtioInfo(uint32_t numProc, void *baseAddr, uint32_t vrBufSize,
                       Ipc_VirtioInfo* info)
 {
     uint32_t cnt = 0, a , b, i;
+#ifdef QNX_OS
+    uint32_t revPrimeBuf;
+#endif
 
     if(info->remoteId > info->selfId)
     {
@@ -738,6 +854,9 @@ void Ipc_updateVirtioInfo(uint32_t numProc, void *baseAddr, uint32_t vrBufSize,
         info->daTx       = (uint32_t)((uintptr_t)baseAddr + cnt * vrBufSize);
         info->daRx       = (uint32_t)((uintptr_t)baseAddr + (cnt+2) * vrBufSize);
         info->primeBuf   = (uint32_t)((uintptr_t)baseAddr + (cnt+1) * vrBufSize);
+#ifdef QNX_OS
+        revPrimeBuf      = (uint32_t)((uintptr_t)baseAddr + (cnt+3) * vrBufSize);
+#endif
         info->txNotifyId = 1;
         info->rxNotifyId = 0;
     }
@@ -746,6 +865,9 @@ void Ipc_updateVirtioInfo(uint32_t numProc, void *baseAddr, uint32_t vrBufSize,
         info->daTx       = (uint32_t)((uintptr_t)baseAddr + (cnt+2) * vrBufSize);
         info->daRx       = (uint32_t)((uintptr_t)baseAddr + cnt * vrBufSize);
         info->primeBuf   = (uint32_t)((uintptr_t)baseAddr + (cnt+3) * vrBufSize);
+#ifdef QNX_OS
+        revPrimeBuf      = (uint32_t)((uintptr_t)baseAddr + (cnt+1) * vrBufSize);
+#endif
         info->txNotifyId = 0;
         info->rxNotifyId = 1;
     }
@@ -761,6 +883,13 @@ void Ipc_updateVirtioInfo(uint32_t numProc, void *baseAddr, uint32_t vrBufSize,
         info->primeBuf  = info->daTx + (2*vrBufSize);
     }
 
+#ifdef QNX_OS
+    /* For QNX, mmap to local process space */
+    Ipc_addTranslationEntry(info->daTx, vrBufSize);
+    Ipc_addTranslationEntry(info->daRx, vrBufSize);
+    Ipc_addTranslationEntry(info->primeBuf, vrBufSize);
+    Ipc_addTranslationEntry(revPrimeBuf, vrBufSize);
+#endif
 #if DEBUG_PRINT
     SystemP_printf("Virtio: remote %d, daTx 0x%x, daRx 0x%x, prime 0x%x\n",
         info->remoteId, info->daTx, info->daRx, info->primeBuf);

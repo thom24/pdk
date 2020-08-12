@@ -270,6 +270,13 @@ void *IpcUtils_HeapAlloc(IpcUtils_HeapHandle *pHndl, uint32_t size,
  */
 void IpcUtils_HeapFree(IpcUtils_HeapHandle *pHndl, void* block, uint32_t size);
 
+/**
+ *  \brief   Get the address for given base address.
+ *  Bios - returns same address
+ *  Qnx - return memmap64() address
+ */
+uint32_t IpcUtils_getMemoryAddress(uint32_t daAddr, uint32_t size);
+
 /* ========================================================================== */
 /*                       Static Function Definitions                          */
 /* ========================================================================== */

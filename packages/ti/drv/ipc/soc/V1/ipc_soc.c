@@ -45,6 +45,7 @@
 #include <ti/drv/ipc/soc/ipc_soc.h>
 #include <ti/drv/ipc/src/ipc_priv.h>
 #include <ti/drv/ipc/src/ipc_mailbox.h>
+#include <ti/drv/ipc/src/ipc_utils.h>
 
 #include <ti/csl/csl_navss_main.h>
 #include <ti/csl/csl_intr_router.h>
@@ -64,6 +65,8 @@
 #define NAVSS_INTRTR_INPUT_MAILBOX9_USER0   (400U)
 #define NAVSS_INTRTR_INPUT_MAILBOX10_USER0  (396U)
 #define NAVSS_INTRTR_INPUT_MAILBOX11_USER0  (392U)
+
+#define MAILBOX_REG_SIZE                    (0x200)
 
 /**
  * \brief Main NavSS512 - Mailbox input line
@@ -105,7 +108,7 @@ static Ipc_ProcInfo g_Ipc_mp_procInfo[IPC_MAX_PROCS] =
 };
 
 /* Mailbox Cluster Base Address */
-static uint32_t  g_IPC_Mailbox_BaseAddr[IPC_MAILBOX_CLUSTER_CNT] =
+static uint32_t  g_IPC_Mailbox_BasePhyAddr[IPC_MAILBOX_CLUSTER_CNT] =
 {
     CSL_NAVSS_MAIN_MAILBOX_REGS_0_BASE,     /* Mailbox - cluster0   */
     CSL_NAVSS_MAIN_MAILBOX_REGS_1_BASE,     /* Mailbox - cluster1   */
@@ -120,6 +123,14 @@ static uint32_t  g_IPC_Mailbox_BaseAddr[IPC_MAILBOX_CLUSTER_CNT] =
     CSL_NAVSS_MAIN_MAILBOX_REGS_10_BASE,    /* Mailbox - cluster10  */
     CSL_NAVSS_MAIN_MAILBOX_REGS_11_BASE,    /* Mailbox - cluster11  */
 };
+
+#if defined(BUILD_MPU1_0) && defined(QNX_OS)
+/* Mailbox Cluster Base Address  - virtual address for HLOS */
+static uint32_t  g_IPC_Mailbox_BaseVirtAddr[IPC_MAILBOX_CLUSTER_CNT] =
+{
+    0
+};
+#endif
 
 static Ipc_MailboxInfo   g_IPC_MailboxInfo[IPC_MAX_PROCS][IPC_MAX_PROCS] =
 {
@@ -344,7 +355,16 @@ uint32_t Ipc_getMailboxBaseAddr(uint32_t clusterId)
 
     if( clusterId < IPC_MAILBOX_CLUSTER_CNT)
     {
-        baseAddr = g_IPC_Mailbox_BaseAddr[clusterId];
+        baseAddr = g_IPC_Mailbox_BasePhyAddr[clusterId];
+
+#if defined(BUILD_MPU1_0) && defined(QNX_OS)
+        if (g_IPC_Mailbox_BaseVirtAddr[clusterId] == 0)
+        {
+            g_IPC_Mailbox_BaseVirtAddr[clusterId] =
+                IpcUtils_getMemoryAddress(baseAddr, MAILBOX_REG_SIZE);
+        }
+        baseAddr = g_IPC_Mailbox_BaseVirtAddr[clusterId];
+#endif
     }
 
     return baseAddr;

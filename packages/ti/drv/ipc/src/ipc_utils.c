@@ -304,6 +304,21 @@ void IpcUtils_HeapFree(IpcUtils_HeapHandle *pHndl, void* block, uint32_t size)
     return;
 }
 
+uint32_t IpcUtils_getMemoryAddress(uint32_t daAddr, uint32_t size)
+{
+#if defined(BUILD_MPU1_0) && defined(QNX_OS)
+#include <sys/mman.h>
+    void* p = mmap_device_memory(NULL, size, PROT_READ|PROT_WRITE|PROT_NOCACHE,
+            0, daAddr);
+    if( p == MAP_FAILED)
+    {
+        //SystemP_printf("IpcUtils_getMemoryAddress : failed to map..\n");
+    }
+    return (uint32_t)(uintptr_t)p;
+#else
+    return daAddr;
+#endif
+}
 /* ========================================================================== */
 /*                          Local Functions                                   */
 /* ========================================================================== */

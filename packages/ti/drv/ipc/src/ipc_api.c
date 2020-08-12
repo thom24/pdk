@@ -796,9 +796,17 @@ static void RPMessage_checkForMessages(RPMessage_EndptPool *pool)
  *         received.
  *         This function runs in its own task.
  */
+#ifdef QNX_OS
+static void RPMessage_ctrlMsgTask(void* arg0, void* arg1)
+#else
 static void RPMessage_ctrlMsgTask(uint32_t* arg0, uint32_t* arg1)
+#endif
 {
+#ifdef QNX_OS
+    RPMessage_Object *obj = (RPMessage_Object *)(uintptr_t)(((uint64_t *)arg0));
+#else
     RPMessage_Object *obj = (RPMessage_Object *)arg0;
+#endif
     uint32_t      remoteEndpoint;
     uint32_t      remoteProcId;
     int32_t       status;
