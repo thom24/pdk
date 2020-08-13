@@ -106,6 +106,17 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
         .auth_resource_owner = 0,
         .rsvd = {0, 0, 0},
     },
+    /* Secure JTAG Unlock Configuration */
+    .sec_dbg_config = {
+        .subhdr = {
+            .magic = TISCI_BOARDCFG_SEC_DBG_CTRL_MAGIC_NUM,
+            .size = sizeof(struct tisci_boardcfg_secure_debug_config),
+        },
+        .allow_jtag_unlock = 0U, 
+        .allow_wildcard_unlock = 0x0,
+        .min_cert_rev = 0x0, 
+        .jtag_unlock_hosts = {0, 0, 0, 0},
+    },   
 };
 #endif
 

@@ -81,7 +81,7 @@ Following is a mapping of Clocks IDs to function:
 +------------+------------------------------+-------------+
 |   Clock ID | Name                         | Function    |
 +============+==============================+=============+
-|          0 | DEV_A72SS0_CORE0_ARM_CLK_CLK | Input clock |
+|          2 | DEV_A72SS0_CORE0_ARM_CLK_CLK | Input clock |
 +------------+------------------------------+-------------+
 
 .. _soc_doc_j721e_public_clks_a72ss0_core1:

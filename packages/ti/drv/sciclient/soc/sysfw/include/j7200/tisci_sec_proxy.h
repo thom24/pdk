@@ -49,7 +49,7 @@
  *
  * Secure Proxy indices for J7200 device
  *
- * Data version: 200717_093321
+ * Data version: 200730_091422
  *
  */
 #ifndef J7200_TISCI_SEC_PROXY_H

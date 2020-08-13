@@ -780,6 +780,64 @@
 /** Num messages macro for ICSSG_0 notify_resp */
 #define TISCI_SEC_PROXY_ICSSG_0_WRITE_NOTIFY_RESP_NUM_MESSAGES (2U)
 
+/*
+ * Secure Proxy configurations for DM2DMSC host
+ */
+
+/** Thread ID macro for DM2DMSC notify */
+#define TISCI_SEC_PROXY_DM2DMSC_READ_NOTIFY_THREAD_ID (20U)
+/** Num messages macro for DM2DMSC notify */
+#define TISCI_SEC_PROXY_DM2DMSC_READ_NOTIFY_NUM_MESSAGES (2U)
+
+/** Thread ID macro for DM2DMSC response */
+#define TISCI_SEC_PROXY_DM2DMSC_READ_RESPONSE_THREAD_ID (21U)
+/** Num messages macro for DM2DMSC response */
+#define TISCI_SEC_PROXY_DM2DMSC_READ_RESPONSE_NUM_MESSAGES (4U)
+
+/** Thread ID macro for DM2DMSC high_priority */
+#define TISCI_SEC_PROXY_DM2DMSC_WRITE_HIGH_PRIORITY_THREAD_ID (22U)
+/** Num messages macro for DM2DMSC high_priority */
+#define TISCI_SEC_PROXY_DM2DMSC_WRITE_HIGH_PRIORITY_NUM_MESSAGES (2U)
+
+/** Thread ID macro for DM2DMSC low_priority */
+#define TISCI_SEC_PROXY_DM2DMSC_WRITE_LOW_PRIORITY_THREAD_ID (23U)
+/** Num messages macro for DM2DMSC low_priority */
+#define TISCI_SEC_PROXY_DM2DMSC_WRITE_LOW_PRIORITY_NUM_MESSAGES (2U)
+
+/** Thread ID macro for DM2DMSC notify_resp */
+#define TISCI_SEC_PROXY_DM2DMSC_WRITE_NOTIFY_RESP_THREAD_ID (24U)
+/** Num messages macro for DM2DMSC notify_resp */
+#define TISCI_SEC_PROXY_DM2DMSC_WRITE_NOTIFY_RESP_NUM_MESSAGES (2U)
+
+/*
+ * Secure Proxy configurations for DMSC2DM host
+ */
+
+/** Thread ID macro for DMSC2DM notify */
+#define TISCI_SEC_PROXY_DMSC2DM_READ_NOTIFY_THREAD_ID (25U)
+/** Num messages macro for DMSC2DM notify */
+#define TISCI_SEC_PROXY_DMSC2DM_READ_NOTIFY_NUM_MESSAGES (2U)
+
+/** Thread ID macro for DMSC2DM response */
+#define TISCI_SEC_PROXY_DMSC2DM_READ_RESPONSE_THREAD_ID (26U)
+/** Num messages macro for DMSC2DM response */
+#define TISCI_SEC_PROXY_DMSC2DM_READ_RESPONSE_NUM_MESSAGES (4U)
+
+/** Thread ID macro for DMSC2DM high_priority */
+#define TISCI_SEC_PROXY_DMSC2DM_WRITE_HIGH_PRIORITY_THREAD_ID (27U)
+/** Num messages macro for DMSC2DM high_priority */
+#define TISCI_SEC_PROXY_DMSC2DM_WRITE_HIGH_PRIORITY_NUM_MESSAGES (2U)
+
+/** Thread ID macro for DMSC2DM low_priority */
+#define TISCI_SEC_PROXY_DMSC2DM_WRITE_LOW_PRIORITY_THREAD_ID (28U)
+/** Num messages macro for DMSC2DM low_priority */
+#define TISCI_SEC_PROXY_DMSC2DM_WRITE_LOW_PRIORITY_NUM_MESSAGES (2U)
+
+/** Thread ID macro for DMSC2DM notify_resp */
+#define TISCI_SEC_PROXY_DMSC2DM_WRITE_NOTIFY_RESP_THREAD_ID (29U)
+/** Num messages macro for DMSC2DM notify_resp */
+#define TISCI_SEC_PROXY_DMSC2DM_WRITE_NOTIFY_RESP_NUM_MESSAGES (2U)
+
 
 #endif /* J721E_TISCI_SEC_PROXY_H */
 

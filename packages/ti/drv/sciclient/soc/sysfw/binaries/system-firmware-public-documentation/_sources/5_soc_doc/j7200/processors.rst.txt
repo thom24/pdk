@@ -23,9 +23,9 @@ Enumeration of Processor IDs
 +----------------+------------------+----------------------------------------------------------------------+
 | Processor ID   | Processor Name   | Location in SoC                                                      |
 +================+==================+======================================================================+
-| 0x20           | A72SS0_CORE0     | COMPUTE_CLUSTER_J7VCL_TB_VDC_MAIN_0_MSMC_EN: (Cluster 0 Processor 0) |
+| 0x20           | A72SS0_CORE0_0   | COMPUTE_CLUSTER_J7VCL_TB_VDC_MAIN_0_MSMC_EN: (Cluster 0 Processor 0) |
 +----------------+------------------+----------------------------------------------------------------------+
-| 0x21           | A72SS0_CORE1     | COMPUTE_CLUSTER_J7VCL_TB_VDC_MAIN_0_MSMC_EN: (Cluster 0 Processor 1) |
+| 0x21           | A72SS0_CORE0_1   | COMPUTE_CLUSTER_J7VCL_TB_VDC_MAIN_0_MSMC_EN: (Cluster 0 Processor 1) |
 +----------------+------------------+----------------------------------------------------------------------+
 | 0x01           | MCU_R5FSS0_CORE0 | J7VCL_MCU_SEC_MMR_MCU_0: (Cluster 0 Processor 0)                     |
 +----------------+------------------+----------------------------------------------------------------------+

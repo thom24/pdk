@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                20.06.00
+                20.07.01
               </div>
             
           
@@ -115,6 +115,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#extended-otp-array-configuration">Extended OTP array configuration</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#derived-kek-management">Derived KEK Management</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#reserved-entry">Reserved Entry</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#secure-debug-unlock">Secure Debug Unlock</a></li>
 </ul>
 </li>
 </ul>
@@ -315,9 +316,9 @@ configuration. The boardcfg_sec data structure makes use of the same
 boardcfg structure does..</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="17%" />
-<col width="31%" />
-<col width="51%" />
+<col width="16%" />
+<col width="37%" />
+<col width="47%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Element</th>
@@ -349,6 +350,10 @@ boardcfg structure does..</p>
 <tr class="row-odd"><td>reserved_cfg_entry</td>
 <td><a class="reference internal" href="#pub-boardcfg-reserved-entry"><span class="std std-ref">Reserved Entry</span></a></td>
 <td>Reserved configuration entry</td>
+</tr>
+<tr class="row-even"><td>reserved_cfg_entry</td>
+<td><a class="reference internal" href="#pub-boardcfg-secure-debug-unlock"><span class="std std-ref">Secure Debug Unlock</span></a></td>
+<td>Secure debug unlock configuration</td>
 </tr>
 </tbody>
 </table>
@@ -631,6 +636,74 @@ hosts.</p>
 </table>
 <p>The magic number to be populated in the <code class="docutils literal"><span class="pre">subhdr</span></code> is <code class="docutils literal"><span class="pre">0x23BE</span></code>.</p>
 </div>
+<div class="section" id="secure-debug-unlock">
+<span id="pub-boardcfg-secure-debug-unlock"></span><h3>Secure Debug Unlock<a class="headerlink" href="#secure-debug-unlock" title="Permalink to this headline">¶</a></h3>
+<table border="1" class="docutils">
+<colgroup>
+<col width="25%" />
+<col width="23%" />
+<col width="52%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Element</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>subhdr</td>
+<td><a class="reference internal" href="BOARDCFG.html#pub-boardcfg-subhdr"><span class="std std-ref">boardcfg substructure header</span></a></td>
+<td>Magic and size for integrity check</td>
+</tr>
+<tr class="row-odd"><td>allow_jtag_unlock</td>
+<td>u8</td>
+<td><p class="first">Set to 0x5A if runtime jtag unlock is allowed.</p>
+<p class="last">Set to 0 otherwise.</p>
+</td>
+</tr>
+<tr class="row-even"><td>allow_wildcard_unlock</td>
+<td>u8</td>
+<td><p class="first">If this field is set to 0x5A, the same debug unlock
+certificate will work across all devices where it passes the
+remaining checks.</p>
+<p>Set to 0 otherwise to enforce UID match before jtag unlock
+The X509 certificate must contain the UID of the device
+being unlocked in the designated field</p>
+<p class="last">NOTE: This field is dependent on the <code class="docutils literal"><span class="pre">allow_jtag_unlock</span></code>
+field above. If <code class="docutils literal"><span class="pre">allow_jtag_unlock</span></code> is set to 0, this field
+is not used.</p>
+</td>
+</tr>
+<tr class="row-odd"><td>allow_debug_level_rsvd</td>
+<td>u8</td>
+<td><p class="first">Reserved field. Currently unused. Set to 0.</p>
+<p class="last">This field can be used in the future to control the level of
+debug allowed with a certificate.</p>
+</td>
+</tr>
+<tr class="row-even"><td>rsvd</td>
+<td>u8</td>
+<td>Reserved field. Currently unused. Set to 0.</td>
+</tr>
+<tr class="row-odd"><td>min_cert_rev</td>
+<td>u32</td>
+<td>Minimum revision value that must be contained in the debug
+unlock certificate for it to be accepted.
+Use this field to enforce rollback protection for debug
+unlock certificates.
+Set to 0 if you do not wish to use this field.</td>
+</tr>
+<tr class="row-even"><td>jtag_unlock_hosts</td>
+<td>u8[4]</td>
+<td><p class="first">Hosts allowed send jtag unlock message via TISCI</p>
+<p class="last">Set one of the entries to 128 if jtag unlock must be allowed
+for all hosts.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>The magic number to be populated in the <code class="docutils literal"><span class="pre">subhdr</span></code> is <code class="docutils literal"><span class="pre">0x42AF</span></code>.</p>
+</div>
 </div>
 </div>
 
@@ -675,7 +748,7 @@ hosts.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'20.06.00',
+            VERSION:'20.07.01',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

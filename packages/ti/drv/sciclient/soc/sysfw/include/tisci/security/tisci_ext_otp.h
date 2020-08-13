@@ -101,7 +101,7 @@ struct tisci_msg_soft_lock_otp_write_global_resp {
  * \param hdr Common TI-SCI header
  * \param row_idx Index of the otp row to be written. Index starts from zero.
  * \param hw_write_lock    indicates if write lock has to be applied in HW on the current row. Set to 0x5A for write lock.
- * \param hw_read_lock     indicates if read lock has to be applied in HW on the current row. (ignored for now)
+ * \param hw_read_lock     indicates if read lock has to be applied in HW on the current row. Set to 0x5A for read lock.
  * \param row_soft_lock    indicates if soft lock has to be enabled on current row preventing writes. (ignored for now)
  *
  * In all cases 0x5A indicates true and 0xA5 indicates false. All other values are invalid.

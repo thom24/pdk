@@ -334,10 +334,11 @@ The table below shows the way **UID-Debug** fields are decoded into **struct sdb
 |                        |bit value is picked up                                    |
 +------------------------+----------------------------------------------------------+
 | debug_core_sel         |coreDbgEn field is decoded as an array of u8 values of    |
-|                        |host-IDs for which non-secure debug should be enabled     |
+|                        |processor IDs for which non-secure debug should be        |
+|                        |enabled                                                   |
 +------------------------+----------------------------------------------------------+
 | sec_debug_core_sel     |coreDbgSecEn field is decoded as an array of u8 values of |
-|                        |host-IDs for which secure debug should be enabled         |
+|                        |processor IDs for which secure debug should be enabled    |
 +------------------------+----------------------------------------------------------+
 
 The following table shows the enumeration of values for **debug_priv_level**:

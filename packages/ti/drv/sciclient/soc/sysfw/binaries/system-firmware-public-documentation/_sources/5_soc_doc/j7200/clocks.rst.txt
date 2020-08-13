@@ -48,57 +48,57 @@ These do have chapters in this document associated with them, however, these wou
 
 The chapters corresponding to the devices are organized alphabetically per device name for ease of readability.
 
-.. _soc_doc_j7200_public_clks_a72ss0:
-
-
-Clocks for A72SS0 Device
-------------------------
-
-Device: :ref:`J7200_DEV_A72SS0 <soc_doc_j7200_public_devices_desc_device_list>` (ID = 4)
-
-Following is a mapping of Clocks IDs to function:
-
-+------------+-------------------------+-------------+
-|   Clock ID | Name                    | Function    |
-+============+=========================+=============+
-|          0 | DEV_A72SS0_ARM_CLK_CLK  | Input clock |
-+------------+-------------------------+-------------+
-|          1 | DEV_A72SS0_MSMC_CLK     | Input clock |
-+------------+-------------------------+-------------+
-|          2 | DEV_A72SS0_PLL_CTRL_CLK | Input clock |
-+------------+-------------------------+-------------+
-
 .. _soc_doc_j7200_public_clks_a72ss0_core0:
 
 
 Clocks for A72SS0_CORE0 Device
 ------------------------------
 
-Device: :ref:`J7200_DEV_A72SS0_CORE0 <soc_doc_j7200_public_devices_desc_device_list>` (ID = 202)
+Device: :ref:`J7200_DEV_A72SS0_CORE0 <soc_doc_j7200_public_devices_desc_device_list>` (ID = 4)
 
 Following is a mapping of Clocks IDs to function:
 
-+------------+------------------------------+-------------+
-|   Clock ID | Name                         | Function    |
-+============+==============================+=============+
-|          2 | DEV_A72SS0_CORE0_ARM_CLK_CLK | Input clock |
-+------------+------------------------------+-------------+
++------------+-------------------------------+-------------+
+|   Clock ID | Name                          | Function    |
++============+===============================+=============+
+|          0 | DEV_A72SS0_CORE0_ARM_CLK_CLK  | Input clock |
++------------+-------------------------------+-------------+
+|          1 | DEV_A72SS0_CORE0_MSMC_CLK     | Input clock |
++------------+-------------------------------+-------------+
+|          2 | DEV_A72SS0_CORE0_PLL_CTRL_CLK | Input clock |
++------------+-------------------------------+-------------+
 
-.. _soc_doc_j7200_public_clks_a72ss0_core1:
+.. _soc_doc_j7200_public_clks_a72ss0_core0_0:
 
 
-Clocks for A72SS0_CORE1 Device
-------------------------------
+Clocks for A72SS0_CORE0_0 Device
+--------------------------------
 
-Device: :ref:`J7200_DEV_A72SS0_CORE1 <soc_doc_j7200_public_devices_desc_device_list>` (ID = 203)
+Device: :ref:`J7200_DEV_A72SS0_CORE0_0 <soc_doc_j7200_public_devices_desc_device_list>` (ID = 202)
 
 Following is a mapping of Clocks IDs to function:
 
-+------------+------------------------------+-------------+
-|   Clock ID | Name                         | Function    |
-+============+==============================+=============+
-|          0 | DEV_A72SS0_CORE1_ARM_CLK_CLK | Input clock |
-+------------+------------------------------+-------------+
++------------+--------------------------------+-------------+
+|   Clock ID | Name                           | Function    |
++============+================================+=============+
+|          2 | DEV_A72SS0_CORE0_0_ARM_CLK_CLK | Input clock |
++------------+--------------------------------+-------------+
+
+.. _soc_doc_j7200_public_clks_a72ss0_core0_1:
+
+
+Clocks for A72SS0_CORE0_1 Device
+--------------------------------
+
+Device: :ref:`J7200_DEV_A72SS0_CORE0_1 <soc_doc_j7200_public_devices_desc_device_list>` (ID = 203)
+
+Following is a mapping of Clocks IDs to function:
+
++------------+--------------------------------+-------------+
+|   Clock ID | Name                           | Function    |
++============+================================+=============+
+|          0 | DEV_A72SS0_CORE0_1_ARM_CLK_CLK | Input clock |
++------------+--------------------------------+-------------+
 
 .. _soc_doc_j7200_public_clks_atl0:
 
@@ -895,6 +895,8 @@ Following is a mapping of Clocks IDs to function:
 +------------+--------------------------+-------------+
 |          1 | DEV_DCC3_DCC_INPUT01_CLK | Input clock |
 +------------+--------------------------+-------------+
+|          2 | DEV_DCC3_DCC_CLKSRC2_CLK | Input clock |
++------------+--------------------------+-------------+
 |          3 | DEV_DCC3_DCC_CLKSRC7_CLK | Input clock |
 +------------+--------------------------+-------------+
 |          4 | DEV_DCC3_DCC_CLKSRC0_CLK | Input clock |
@@ -1486,15 +1488,17 @@ Device: :ref:`J7200_DEV_I2C0 <soc_doc_j7200_public_devices_desc_device_list>` (I
 
 Following is a mapping of Clocks IDs to function:
 
-+------------+--------------------+-------------+
-|   Clock ID | Name               | Function    |
-+============+====================+=============+
-|          0 | DEV_I2C0_PISCL     | Input clock |
-+------------+--------------------+-------------+
-|          1 | DEV_I2C0_PISYS_CLK | Input clock |
-+------------+--------------------+-------------+
-|          2 | DEV_I2C0_CLK       | Input clock |
-+------------+--------------------+-------------+
++------------+--------------------+--------------+
+|   Clock ID | Name               | Function     |
++============+====================+==============+
+|          0 | DEV_I2C0_PISCL     | Input clock  |
++------------+--------------------+--------------+
+|          1 | DEV_I2C0_PISYS_CLK | Input clock  |
++------------+--------------------+--------------+
+|          2 | DEV_I2C0_CLK       | Input clock  |
++------------+--------------------+--------------+
+|          3 | DEV_I2C0_PORSCL    | Output clock |
++------------+--------------------+--------------+
 
 .. _soc_doc_j7200_public_clks_i2c1:
 
@@ -1506,15 +1510,17 @@ Device: :ref:`J7200_DEV_I2C1 <soc_doc_j7200_public_devices_desc_device_list>` (I
 
 Following is a mapping of Clocks IDs to function:
 
-+------------+--------------------+-------------+
-|   Clock ID | Name               | Function    |
-+============+====================+=============+
-|          0 | DEV_I2C1_PISCL     | Input clock |
-+------------+--------------------+-------------+
-|          1 | DEV_I2C1_PISYS_CLK | Input clock |
-+------------+--------------------+-------------+
-|          2 | DEV_I2C1_CLK       | Input clock |
-+------------+--------------------+-------------+
++------------+--------------------+--------------+
+|   Clock ID | Name               | Function     |
++============+====================+==============+
+|          0 | DEV_I2C1_PISCL     | Input clock  |
++------------+--------------------+--------------+
+|          1 | DEV_I2C1_PISYS_CLK | Input clock  |
++------------+--------------------+--------------+
+|          2 | DEV_I2C1_CLK       | Input clock  |
++------------+--------------------+--------------+
+|          3 | DEV_I2C1_PORSCL    | Output clock |
++------------+--------------------+--------------+
 
 .. _soc_doc_j7200_public_clks_i2c2:
 
@@ -1526,15 +1532,17 @@ Device: :ref:`J7200_DEV_I2C2 <soc_doc_j7200_public_devices_desc_device_list>` (I
 
 Following is a mapping of Clocks IDs to function:
 
-+------------+--------------------+-------------+
-|   Clock ID | Name               | Function    |
-+============+====================+=============+
-|          0 | DEV_I2C2_PISCL     | Input clock |
-+------------+--------------------+-------------+
-|          1 | DEV_I2C2_PISYS_CLK | Input clock |
-+------------+--------------------+-------------+
-|          2 | DEV_I2C2_CLK       | Input clock |
-+------------+--------------------+-------------+
++------------+--------------------+--------------+
+|   Clock ID | Name               | Function     |
++============+====================+==============+
+|          0 | DEV_I2C2_PISCL     | Input clock  |
++------------+--------------------+--------------+
+|          1 | DEV_I2C2_PISYS_CLK | Input clock  |
++------------+--------------------+--------------+
+|          2 | DEV_I2C2_CLK       | Input clock  |
++------------+--------------------+--------------+
+|          3 | DEV_I2C2_PORSCL    | Output clock |
++------------+--------------------+--------------+
 
 .. _soc_doc_j7200_public_clks_i2c3:
 
@@ -1546,15 +1554,17 @@ Device: :ref:`J7200_DEV_I2C3 <soc_doc_j7200_public_devices_desc_device_list>` (I
 
 Following is a mapping of Clocks IDs to function:
 
-+------------+--------------------+-------------+
-|   Clock ID | Name               | Function    |
-+============+====================+=============+
-|          0 | DEV_I2C3_PISCL     | Input clock |
-+------------+--------------------+-------------+
-|          1 | DEV_I2C3_PISYS_CLK | Input clock |
-+------------+--------------------+-------------+
-|          2 | DEV_I2C3_CLK       | Input clock |
-+------------+--------------------+-------------+
++------------+--------------------+--------------+
+|   Clock ID | Name               | Function     |
++============+====================+==============+
+|          0 | DEV_I2C3_PISCL     | Input clock  |
++------------+--------------------+--------------+
+|          1 | DEV_I2C3_PISYS_CLK | Input clock  |
++------------+--------------------+--------------+
+|          2 | DEV_I2C3_CLK       | Input clock  |
++------------+--------------------+--------------+
+|          3 | DEV_I2C3_PORSCL    | Output clock |
++------------+--------------------+--------------+
 
 .. _soc_doc_j7200_public_clks_i2c4:
 
@@ -1566,15 +1576,17 @@ Device: :ref:`J7200_DEV_I2C4 <soc_doc_j7200_public_devices_desc_device_list>` (I
 
 Following is a mapping of Clocks IDs to function:
 
-+------------+--------------------+-------------+
-|   Clock ID | Name               | Function    |
-+============+====================+=============+
-|          0 | DEV_I2C4_PISCL     | Input clock |
-+------------+--------------------+-------------+
-|          1 | DEV_I2C4_PISYS_CLK | Input clock |
-+------------+--------------------+-------------+
-|          2 | DEV_I2C4_CLK       | Input clock |
-+------------+--------------------+-------------+
++------------+--------------------+--------------+
+|   Clock ID | Name               | Function     |
++============+====================+==============+
+|          0 | DEV_I2C4_PISCL     | Input clock  |
++------------+--------------------+--------------+
+|          1 | DEV_I2C4_PISYS_CLK | Input clock  |
++------------+--------------------+--------------+
+|          2 | DEV_I2C4_CLK       | Input clock  |
++------------+--------------------+--------------+
+|          3 | DEV_I2C4_PORSCL    | Output clock |
++------------+--------------------+--------------+
 
 .. _soc_doc_j7200_public_clks_i2c5:
 
@@ -1586,15 +1598,17 @@ Device: :ref:`J7200_DEV_I2C5 <soc_doc_j7200_public_devices_desc_device_list>` (I
 
 Following is a mapping of Clocks IDs to function:
 
-+------------+--------------------+-------------+
-|   Clock ID | Name               | Function    |
-+============+====================+=============+
-|          0 | DEV_I2C5_PISCL     | Input clock |
-+------------+--------------------+-------------+
-|          1 | DEV_I2C5_PISYS_CLK | Input clock |
-+------------+--------------------+-------------+
-|          2 | DEV_I2C5_CLK       | Input clock |
-+------------+--------------------+-------------+
++------------+--------------------+--------------+
+|   Clock ID | Name               | Function     |
++============+====================+==============+
+|          0 | DEV_I2C5_PISCL     | Input clock  |
++------------+--------------------+--------------+
+|          1 | DEV_I2C5_PISYS_CLK | Input clock  |
++------------+--------------------+--------------+
+|          2 | DEV_I2C5_CLK       | Input clock  |
++------------+--------------------+--------------+
+|          3 | DEV_I2C5_PORSCL    | Output clock |
++------------+--------------------+--------------+
 
 .. _soc_doc_j7200_public_clks_i2c6:
 
@@ -1606,15 +1620,17 @@ Device: :ref:`J7200_DEV_I2C6 <soc_doc_j7200_public_devices_desc_device_list>` (I
 
 Following is a mapping of Clocks IDs to function:
 
-+------------+--------------------+-------------+
-|   Clock ID | Name               | Function    |
-+============+====================+=============+
-|          0 | DEV_I2C6_PISCL     | Input clock |
-+------------+--------------------+-------------+
-|          1 | DEV_I2C6_PISYS_CLK | Input clock |
-+------------+--------------------+-------------+
-|          2 | DEV_I2C6_CLK       | Input clock |
-+------------+--------------------+-------------+
++------------+--------------------+--------------+
+|   Clock ID | Name               | Function     |
++============+====================+==============+
+|          0 | DEV_I2C6_PISCL     | Input clock  |
++------------+--------------------+--------------+
+|          1 | DEV_I2C6_PISYS_CLK | Input clock  |
++------------+--------------------+--------------+
+|          2 | DEV_I2C6_CLK       | Input clock  |
++------------+--------------------+--------------+
+|          3 | DEV_I2C6_PORSCL    | Output clock |
++------------+--------------------+--------------+
 
 .. _soc_doc_j7200_public_clks_i3c0:
 
@@ -2884,29 +2900,29 @@ Device: :ref:`J7200_DEV_MCU_FSS0_OSPI_0 <soc_doc_j7200_public_devices_desc_devic
 
 Following is a mapping of Clocks IDs to function:
 
-+------------+----------------------------------------------------------------------------+----------------------------------------------------------------+
-|   Clock ID | Name                                                                       | Function                                                       |
-+============+============================================================================+================================================================+
-|          0 | DEV_MCU_FSS0_OSPI_0_OSPI_RCLK_CLK                                          | Input muxed clock                                              |
-+------------+----------------------------------------------------------------------------+----------------------------------------------------------------+
-|          1 | DEV_MCU_FSS0_OSPI_0_OSPI_RCLK_CLK_PARENT_HSDIV4_16FFT_MCU_1_HSDIVOUT4_CLK  | Parent input clock option to DEV_MCU_FSS0_OSPI_0_OSPI_RCLK_CLK |
-+------------+----------------------------------------------------------------------------+----------------------------------------------------------------+
-|          2 | DEV_MCU_FSS0_OSPI_0_OSPI_RCLK_CLK_PARENT_HSDIV4_16FFT_MAIN_3_HSDIVOUT4_CLK | Parent input clock option to DEV_MCU_FSS0_OSPI_0_OSPI_RCLK_CLK |
-+------------+----------------------------------------------------------------------------+----------------------------------------------------------------+
-|          3 | DEV_MCU_FSS0_OSPI_0_OSPI_HCLK_CLK                                          | Input clock                                                    |
-+------------+----------------------------------------------------------------------------+----------------------------------------------------------------+
-|          4 | DEV_MCU_FSS0_OSPI_0_OSPI_DQS_CLK                                           | Input clock                                                    |
-+------------+----------------------------------------------------------------------------+----------------------------------------------------------------+
-|          5 | DEV_MCU_FSS0_OSPI_0_OSPI_ICLK_CLK                                          | Input muxed clock                                              |
-+------------+----------------------------------------------------------------------------+----------------------------------------------------------------+
-|          6 | DEV_MCU_FSS0_OSPI_0_OSPI_ICLK_CLK_PARENT_BOARD_0_MCU_OSPI0_DQS_OUT         | Parent input clock option to DEV_MCU_FSS0_OSPI_0_OSPI_ICLK_CLK |
-+------------+----------------------------------------------------------------------------+----------------------------------------------------------------+
-|          7 | DEV_MCU_FSS0_OSPI_0_OSPI_ICLK_CLK_PARENT_FSS_MCU_0_OSPI_0_OSPI_OCLK_CLK    | Parent input clock option to DEV_MCU_FSS0_OSPI_0_OSPI_ICLK_CLK |
-+------------+----------------------------------------------------------------------------+----------------------------------------------------------------+
-|          8 | DEV_MCU_FSS0_OSPI_0_OSPI_PCLK_CLK                                          | Input clock                                                    |
-+------------+----------------------------------------------------------------------------+----------------------------------------------------------------+
-|          9 | DEV_MCU_FSS0_OSPI_0_OSPI_OCLK_CLK                                          | Output clock                                                   |
-+------------+----------------------------------------------------------------------------+----------------------------------------------------------------+
++------------+---------------------------------------------------------------------------+----------------------------------------------------------------+
+|   Clock ID | Name                                                                      | Function                                                       |
++============+===========================================================================+================================================================+
+|          0 | DEV_MCU_FSS0_OSPI_0_OSPI_RCLK_CLK                                         | Input muxed clock                                              |
++------------+---------------------------------------------------------------------------+----------------------------------------------------------------+
+|          1 | DEV_MCU_FSS0_OSPI_0_OSPI_RCLK_CLK_PARENT_HSDIV4_16FFT_MCU_1_HSDIVOUT4_CLK | Parent input clock option to DEV_MCU_FSS0_OSPI_0_OSPI_RCLK_CLK |
++------------+---------------------------------------------------------------------------+----------------------------------------------------------------+
+|          2 | DEV_MCU_FSS0_OSPI_0_OSPI_RCLK_CLK_PARENT_HSDIV4_16FFT_MCU_2_HSDIVOUT4_CLK | Parent input clock option to DEV_MCU_FSS0_OSPI_0_OSPI_RCLK_CLK |
++------------+---------------------------------------------------------------------------+----------------------------------------------------------------+
+|          3 | DEV_MCU_FSS0_OSPI_0_OSPI_HCLK_CLK                                         | Input clock                                                    |
++------------+---------------------------------------------------------------------------+----------------------------------------------------------------+
+|          4 | DEV_MCU_FSS0_OSPI_0_OSPI_DQS_CLK                                          | Input clock                                                    |
++------------+---------------------------------------------------------------------------+----------------------------------------------------------------+
+|          5 | DEV_MCU_FSS0_OSPI_0_OSPI_ICLK_CLK                                         | Input muxed clock                                              |
++------------+---------------------------------------------------------------------------+----------------------------------------------------------------+
+|          6 | DEV_MCU_FSS0_OSPI_0_OSPI_ICLK_CLK_PARENT_BOARD_0_MCU_OSPI0_DQS_OUT        | Parent input clock option to DEV_MCU_FSS0_OSPI_0_OSPI_ICLK_CLK |
++------------+---------------------------------------------------------------------------+----------------------------------------------------------------+
+|          7 | DEV_MCU_FSS0_OSPI_0_OSPI_ICLK_CLK_PARENT_FSS_MCU_0_OSPI_0_OSPI_OCLK_CLK   | Parent input clock option to DEV_MCU_FSS0_OSPI_0_OSPI_ICLK_CLK |
++------------+---------------------------------------------------------------------------+----------------------------------------------------------------+
+|          8 | DEV_MCU_FSS0_OSPI_0_OSPI_PCLK_CLK                                         | Input clock                                                    |
++------------+---------------------------------------------------------------------------+----------------------------------------------------------------+
+|          9 | DEV_MCU_FSS0_OSPI_0_OSPI_OCLK_CLK                                         | Output clock                                                   |
++------------+---------------------------------------------------------------------------+----------------------------------------------------------------+
 
 .. _soc_doc_j7200_public_clks_mcu_fss0_ospi_1:
 
@@ -2958,15 +2974,17 @@ Device: :ref:`J7200_DEV_MCU_I2C1 <soc_doc_j7200_public_devices_desc_device_list>
 
 Following is a mapping of Clocks IDs to function:
 
-+------------+------------------------+-------------+
-|   Clock ID | Name                   | Function    |
-+============+========================+=============+
-|          0 | DEV_MCU_I2C1_PISCL     | Input clock |
-+------------+------------------------+-------------+
-|          1 | DEV_MCU_I2C1_PISYS_CLK | Input clock |
-+------------+------------------------+-------------+
-|          2 | DEV_MCU_I2C1_CLK       | Input clock |
-+------------+------------------------+-------------+
++------------+------------------------+--------------+
+|   Clock ID | Name                   | Function     |
++============+========================+==============+
+|          0 | DEV_MCU_I2C1_PISCL     | Input clock  |
++------------+------------------------+--------------+
+|          1 | DEV_MCU_I2C1_PISYS_CLK | Input clock  |
++------------+------------------------+--------------+
+|          2 | DEV_MCU_I2C1_CLK       | Input clock  |
++------------+------------------------+--------------+
+|          3 | DEV_MCU_I2C1_PORSCL    | Output clock |
++------------+------------------------+--------------+
 
 .. _soc_doc_j7200_public_clks_mcu_i3c0:
 
@@ -4955,6 +4973,8 @@ Following is a mapping of Clocks IDs to function:
 +------------+-------------------------------------------------------------------------------+--------------------------------------------------------+
 |         12 | DEV_TIMER0_TIMER_TCLK_CLK_PARENT_POSTDIV2_16FFT_MAIN_2_HSDIVOUT6_CLK          | Parent input clock option to DEV_TIMER0_TIMER_TCLK_CLK |
 +------------+-------------------------------------------------------------------------------+--------------------------------------------------------+
+|         13 | DEV_TIMER0_TIMER_TCLK_CLK_PARENT_HSDIV2_16FFT_MAIN_4_HSDIVOUT2_CLK            | Parent input clock option to DEV_TIMER0_TIMER_TCLK_CLK |
++------------+-------------------------------------------------------------------------------+--------------------------------------------------------+
 |         14 | DEV_TIMER0_TIMER_TCLK_CLK_PARENT_NAVSS256VCL_MAIN_0_CPTS0_GENF2               | Parent input clock option to DEV_TIMER0_TIMER_TCLK_CLK |
 +------------+-------------------------------------------------------------------------------+--------------------------------------------------------+
 |         15 | DEV_TIMER0_TIMER_TCLK_CLK_PARENT_NAVSS256VCL_MAIN_0_CPTS0_GENF3               | Parent input clock option to DEV_TIMER0_TIMER_TCLK_CLK |
@@ -5026,6 +5046,8 @@ Following is a mapping of Clocks IDs to function:
 |         11 | DEV_TIMER10_TIMER_TCLK_CLK_PARENT_HSDIV4_16FFT_MAIN_1_HSDIVOUT3_CLK            | Parent input clock option to DEV_TIMER10_TIMER_TCLK_CLK |
 +------------+--------------------------------------------------------------------------------+---------------------------------------------------------+
 |         12 | DEV_TIMER10_TIMER_TCLK_CLK_PARENT_POSTDIV2_16FFT_MAIN_2_HSDIVOUT6_CLK          | Parent input clock option to DEV_TIMER10_TIMER_TCLK_CLK |
++------------+--------------------------------------------------------------------------------+---------------------------------------------------------+
+|         13 | DEV_TIMER10_TIMER_TCLK_CLK_PARENT_HSDIV2_16FFT_MAIN_4_HSDIVOUT2_CLK            | Parent input clock option to DEV_TIMER10_TIMER_TCLK_CLK |
 +------------+--------------------------------------------------------------------------------+---------------------------------------------------------+
 |         14 | DEV_TIMER10_TIMER_TCLK_CLK_PARENT_NAVSS256VCL_MAIN_0_CPTS0_GENF2               | Parent input clock option to DEV_TIMER10_TIMER_TCLK_CLK |
 +------------+--------------------------------------------------------------------------------+---------------------------------------------------------+
@@ -5099,6 +5121,8 @@ Following is a mapping of Clocks IDs to function:
 +------------+--------------------------------------------------------------------------------+---------------------------------------------------------+
 |         12 | DEV_TIMER12_TIMER_TCLK_CLK_PARENT_POSTDIV2_16FFT_MAIN_2_HSDIVOUT6_CLK          | Parent input clock option to DEV_TIMER12_TIMER_TCLK_CLK |
 +------------+--------------------------------------------------------------------------------+---------------------------------------------------------+
+|         13 | DEV_TIMER12_TIMER_TCLK_CLK_PARENT_HSDIV2_16FFT_MAIN_4_HSDIVOUT2_CLK            | Parent input clock option to DEV_TIMER12_TIMER_TCLK_CLK |
++------------+--------------------------------------------------------------------------------+---------------------------------------------------------+
 |         14 | DEV_TIMER12_TIMER_TCLK_CLK_PARENT_NAVSS256VCL_MAIN_0_CPTS0_GENF2               | Parent input clock option to DEV_TIMER12_TIMER_TCLK_CLK |
 +------------+--------------------------------------------------------------------------------+---------------------------------------------------------+
 |         15 | DEV_TIMER12_TIMER_TCLK_CLK_PARENT_NAVSS256VCL_MAIN_0_CPTS0_GENF3               | Parent input clock option to DEV_TIMER12_TIMER_TCLK_CLK |
@@ -5170,6 +5194,8 @@ Following is a mapping of Clocks IDs to function:
 |         11 | DEV_TIMER14_TIMER_TCLK_CLK_PARENT_HSDIV4_16FFT_MAIN_1_HSDIVOUT3_CLK            | Parent input clock option to DEV_TIMER14_TIMER_TCLK_CLK |
 +------------+--------------------------------------------------------------------------------+---------------------------------------------------------+
 |         12 | DEV_TIMER14_TIMER_TCLK_CLK_PARENT_POSTDIV2_16FFT_MAIN_2_HSDIVOUT6_CLK          | Parent input clock option to DEV_TIMER14_TIMER_TCLK_CLK |
++------------+--------------------------------------------------------------------------------+---------------------------------------------------------+
+|         13 | DEV_TIMER14_TIMER_TCLK_CLK_PARENT_HSDIV2_16FFT_MAIN_4_HSDIVOUT2_CLK            | Parent input clock option to DEV_TIMER14_TIMER_TCLK_CLK |
 +------------+--------------------------------------------------------------------------------+---------------------------------------------------------+
 |         14 | DEV_TIMER14_TIMER_TCLK_CLK_PARENT_NAVSS256VCL_MAIN_0_CPTS0_GENF2               | Parent input clock option to DEV_TIMER14_TIMER_TCLK_CLK |
 +------------+--------------------------------------------------------------------------------+---------------------------------------------------------+
@@ -5243,6 +5269,8 @@ Following is a mapping of Clocks IDs to function:
 +------------+--------------------------------------------------------------------------------+---------------------------------------------------------+
 |         12 | DEV_TIMER16_TIMER_TCLK_CLK_PARENT_POSTDIV2_16FFT_MAIN_2_HSDIVOUT6_CLK          | Parent input clock option to DEV_TIMER16_TIMER_TCLK_CLK |
 +------------+--------------------------------------------------------------------------------+---------------------------------------------------------+
+|         13 | DEV_TIMER16_TIMER_TCLK_CLK_PARENT_HSDIV2_16FFT_MAIN_4_HSDIVOUT2_CLK            | Parent input clock option to DEV_TIMER16_TIMER_TCLK_CLK |
++------------+--------------------------------------------------------------------------------+---------------------------------------------------------+
 |         14 | DEV_TIMER16_TIMER_TCLK_CLK_PARENT_NAVSS256VCL_MAIN_0_CPTS0_GENF2               | Parent input clock option to DEV_TIMER16_TIMER_TCLK_CLK |
 +------------+--------------------------------------------------------------------------------+---------------------------------------------------------+
 |         15 | DEV_TIMER16_TIMER_TCLK_CLK_PARENT_NAVSS256VCL_MAIN_0_CPTS0_GENF3               | Parent input clock option to DEV_TIMER16_TIMER_TCLK_CLK |
@@ -5314,6 +5342,8 @@ Following is a mapping of Clocks IDs to function:
 |         11 | DEV_TIMER18_TIMER_TCLK_CLK_PARENT_HSDIV4_16FFT_MAIN_1_HSDIVOUT3_CLK            | Parent input clock option to DEV_TIMER18_TIMER_TCLK_CLK |
 +------------+--------------------------------------------------------------------------------+---------------------------------------------------------+
 |         12 | DEV_TIMER18_TIMER_TCLK_CLK_PARENT_POSTDIV2_16FFT_MAIN_2_HSDIVOUT6_CLK          | Parent input clock option to DEV_TIMER18_TIMER_TCLK_CLK |
++------------+--------------------------------------------------------------------------------+---------------------------------------------------------+
+|         13 | DEV_TIMER18_TIMER_TCLK_CLK_PARENT_HSDIV2_16FFT_MAIN_4_HSDIVOUT2_CLK            | Parent input clock option to DEV_TIMER18_TIMER_TCLK_CLK |
 +------------+--------------------------------------------------------------------------------+---------------------------------------------------------+
 |         14 | DEV_TIMER18_TIMER_TCLK_CLK_PARENT_NAVSS256VCL_MAIN_0_CPTS0_GENF2               | Parent input clock option to DEV_TIMER18_TIMER_TCLK_CLK |
 +------------+--------------------------------------------------------------------------------+---------------------------------------------------------+
@@ -5387,6 +5417,8 @@ Following is a mapping of Clocks IDs to function:
 +------------+-------------------------------------------------------------------------------+--------------------------------------------------------+
 |         12 | DEV_TIMER2_TIMER_TCLK_CLK_PARENT_POSTDIV2_16FFT_MAIN_2_HSDIVOUT6_CLK          | Parent input clock option to DEV_TIMER2_TIMER_TCLK_CLK |
 +------------+-------------------------------------------------------------------------------+--------------------------------------------------------+
+|         13 | DEV_TIMER2_TIMER_TCLK_CLK_PARENT_HSDIV2_16FFT_MAIN_4_HSDIVOUT2_CLK            | Parent input clock option to DEV_TIMER2_TIMER_TCLK_CLK |
++------------+-------------------------------------------------------------------------------+--------------------------------------------------------+
 |         14 | DEV_TIMER2_TIMER_TCLK_CLK_PARENT_NAVSS256VCL_MAIN_0_CPTS0_GENF2               | Parent input clock option to DEV_TIMER2_TIMER_TCLK_CLK |
 +------------+-------------------------------------------------------------------------------+--------------------------------------------------------+
 |         15 | DEV_TIMER2_TIMER_TCLK_CLK_PARENT_NAVSS256VCL_MAIN_0_CPTS0_GENF3               | Parent input clock option to DEV_TIMER2_TIMER_TCLK_CLK |
@@ -5458,6 +5490,8 @@ Following is a mapping of Clocks IDs to function:
 |         11 | DEV_TIMER4_TIMER_TCLK_CLK_PARENT_HSDIV4_16FFT_MAIN_1_HSDIVOUT3_CLK            | Parent input clock option to DEV_TIMER4_TIMER_TCLK_CLK |
 +------------+-------------------------------------------------------------------------------+--------------------------------------------------------+
 |         12 | DEV_TIMER4_TIMER_TCLK_CLK_PARENT_POSTDIV2_16FFT_MAIN_2_HSDIVOUT6_CLK          | Parent input clock option to DEV_TIMER4_TIMER_TCLK_CLK |
++------------+-------------------------------------------------------------------------------+--------------------------------------------------------+
+|         13 | DEV_TIMER4_TIMER_TCLK_CLK_PARENT_HSDIV2_16FFT_MAIN_4_HSDIVOUT2_CLK            | Parent input clock option to DEV_TIMER4_TIMER_TCLK_CLK |
 +------------+-------------------------------------------------------------------------------+--------------------------------------------------------+
 |         14 | DEV_TIMER4_TIMER_TCLK_CLK_PARENT_NAVSS256VCL_MAIN_0_CPTS0_GENF2               | Parent input clock option to DEV_TIMER4_TIMER_TCLK_CLK |
 +------------+-------------------------------------------------------------------------------+--------------------------------------------------------+
@@ -5531,6 +5565,8 @@ Following is a mapping of Clocks IDs to function:
 +------------+-------------------------------------------------------------------------------+--------------------------------------------------------+
 |         12 | DEV_TIMER6_TIMER_TCLK_CLK_PARENT_POSTDIV2_16FFT_MAIN_2_HSDIVOUT6_CLK          | Parent input clock option to DEV_TIMER6_TIMER_TCLK_CLK |
 +------------+-------------------------------------------------------------------------------+--------------------------------------------------------+
+|         13 | DEV_TIMER6_TIMER_TCLK_CLK_PARENT_HSDIV2_16FFT_MAIN_4_HSDIVOUT2_CLK            | Parent input clock option to DEV_TIMER6_TIMER_TCLK_CLK |
++------------+-------------------------------------------------------------------------------+--------------------------------------------------------+
 |         14 | DEV_TIMER6_TIMER_TCLK_CLK_PARENT_NAVSS256VCL_MAIN_0_CPTS0_GENF2               | Parent input clock option to DEV_TIMER6_TIMER_TCLK_CLK |
 +------------+-------------------------------------------------------------------------------+--------------------------------------------------------+
 |         15 | DEV_TIMER6_TIMER_TCLK_CLK_PARENT_NAVSS256VCL_MAIN_0_CPTS0_GENF3               | Parent input clock option to DEV_TIMER6_TIMER_TCLK_CLK |
@@ -5602,6 +5638,8 @@ Following is a mapping of Clocks IDs to function:
 |         11 | DEV_TIMER8_TIMER_TCLK_CLK_PARENT_HSDIV4_16FFT_MAIN_1_HSDIVOUT3_CLK            | Parent input clock option to DEV_TIMER8_TIMER_TCLK_CLK |
 +------------+-------------------------------------------------------------------------------+--------------------------------------------------------+
 |         12 | DEV_TIMER8_TIMER_TCLK_CLK_PARENT_POSTDIV2_16FFT_MAIN_2_HSDIVOUT6_CLK          | Parent input clock option to DEV_TIMER8_TIMER_TCLK_CLK |
++------------+-------------------------------------------------------------------------------+--------------------------------------------------------+
+|         13 | DEV_TIMER8_TIMER_TCLK_CLK_PARENT_HSDIV2_16FFT_MAIN_4_HSDIVOUT2_CLK            | Parent input clock option to DEV_TIMER8_TIMER_TCLK_CLK |
 +------------+-------------------------------------------------------------------------------+--------------------------------------------------------+
 |         14 | DEV_TIMER8_TIMER_TCLK_CLK_PARENT_NAVSS256VCL_MAIN_0_CPTS0_GENF2               | Parent input clock option to DEV_TIMER8_TIMER_TCLK_CLK |
 +------------+-------------------------------------------------------------------------------+--------------------------------------------------------+
@@ -6068,6 +6106,8 @@ Following is a mapping of Clocks IDs to function:
 |          0 | DEV_WKUP_VTM0_FIX_REF2_CLK | Input clock |
 +------------+----------------------------+-------------+
 |          1 | DEV_WKUP_VTM0_VBUSP_CLK    | Input clock |
++------------+----------------------------+-------------+
+|          2 | DEV_WKUP_VTM0_FIX_REF_CLK  | Input clock |
 +------------+----------------------------+-------------+
 
 .. _soc_doc_j7200_public_clks_wkup_wakeup0:

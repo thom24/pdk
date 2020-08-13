@@ -73,3 +73,48 @@ J721E
    j721e/firewalls
    j721e/soc_devgrps
    j721e/soc_domgrps
+
+============
+J721E Legacy
+============
+
+.. toctree::
+   :maxdepth: 1
+
+   j721e_legacy/hosts
+   j721e_legacy/devices
+   j721e_legacy/clocks
+   j721e_legacy/pll_data
+   j721e_legacy/resasg_types
+   j721e_legacy/interrupt_cfg
+   j721e_legacy/ra_cfg
+   j721e_legacy/dma_cfg
+   j721e_legacy/psil_cfg
+   j721e_legacy/proxy_cfg
+   j721e_legacy/sec_proxy
+   j721e_legacy/processors
+   j721e_legacy/firewalls
+   j721e_legacy/soc_devgrps
+   j721e_legacy/soc_domgrps
+
+=====
+J7200
+=====
+
+.. toctree::
+   :maxdepth: 1
+
+   j7200/hosts
+   j7200/devices
+   j7200/clocks
+   j7200/pll_data
+   j7200/resasg_types
+   j7200/interrupt_cfg
+   j7200/ra_cfg
+   j7200/dma_cfg
+   j7200/psil_cfg
+   j7200/proxy_cfg
+   j7200/sec_proxy
+   j7200/processors
+   j7200/firewalls
+   j7200/soc_devgrps

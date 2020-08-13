@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                20.06.00
+                20.07.01
               </div>
             
           
@@ -131,6 +131,7 @@
 <li class="toctree-l3"><a class="reference internal" href="soc_domgrps.html">J721E Domain Group descriptions</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#j721e-legacy">J721E Legacy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#j7200">J7200</a></li>
 </ul>
 </li>
@@ -216,13 +217,13 @@ PE/Host documentation for further information</p>
 <span id="soc-doc-j721e-public-sproxy-desc-sproxy-per-list-navss0-sec-proxy-0"></span><h3>Secure Proxy thread allocation for NAVSS0_SEC_PROXY_0<a class="headerlink" href="#secure-proxy-thread-allocation-for-navss0-sec-proxy-0" title="Permalink to this headline">¶</a></h3>
 <table border="1" class="docutils">
 <colgroup>
-<col width="10%" />
+<col width="9%" />
 <col width="11%" />
 <col width="8%" />
 <col width="5%" />
-<col width="7%" />
-<col width="29%" />
-<col width="29%" />
+<col width="12%" />
+<col width="28%" />
+<col width="28%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Secure Proxy Thread ID</th>
@@ -235,7 +236,223 @@ PE/Host documentation for further information</p>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>0</td>
+<tr class="row-even"><td>138</td>
+<td>read</td>
+<td>22</td>
+<td>DM</td>
+<td>nonsec_high_priority_rx</td>
+<td>MCU_R5FSS0_CORE0/INTR_70, MCU_R5FSS0_CORE0/INTR_71</td>
+<td>MCU_R5FSS0_CORE0/INTR_70, MCU_R5FSS0_CORE0/INTR_71</td>
+</tr>
+<tr class="row-odd"><td>137</td>
+<td>read</td>
+<td>67</td>
+<td>DM</td>
+<td>nonsec_low_priority_rx</td>
+<td>MCU_R5FSS0_CORE0/INTR_72, MCU_R5FSS0_CORE0/INTR_73</td>
+<td>MCU_R5FSS0_CORE0/INTR_72, MCU_R5FSS0_CORE0/INTR_73</td>
+</tr>
+<tr class="row-even"><td>136</td>
+<td>read</td>
+<td>22</td>
+<td>DM</td>
+<td>nonsec_notify_resp_rx</td>
+<td>MCU_R5FSS0_CORE0/INTR_74, MCU_R5FSS0_CORE0/INTR_75</td>
+<td>MCU_R5FSS0_CORE0/INTR_74, MCU_R5FSS0_CORE0/INTR_75</td>
+</tr>
+<tr class="row-odd"><td>135</td>
+<td>write</td>
+<td>2</td>
+<td>DM</td>
+<td>nonsec_A72_2_notify_tx</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr class="row-even"><td>134</td>
+<td>write</td>
+<td>22</td>
+<td>DM</td>
+<td>nonsec_A72_2_response_tx</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr class="row-odd"><td>133</td>
+<td>write</td>
+<td>2</td>
+<td>DM</td>
+<td>nonsec_A72_3_notify_tx</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr class="row-even"><td>132</td>
+<td>write</td>
+<td>7</td>
+<td>DM</td>
+<td>nonsec_A72_3_response_tx</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr class="row-odd"><td>131</td>
+<td>write</td>
+<td>2</td>
+<td>DM</td>
+<td>nonsec_A72_4_notify_tx</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr class="row-even"><td>130</td>
+<td>write</td>
+<td>7</td>
+<td>DM</td>
+<td>nonsec_A72_4_response_tx</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr class="row-odd"><td>129</td>
+<td>write</td>
+<td>2</td>
+<td>DM</td>
+<td>nonsec_C7X_1_notify_tx</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr class="row-even"><td>128</td>
+<td>write</td>
+<td>7</td>
+<td>DM</td>
+<td>nonsec_C7X_1_response_tx</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr class="row-odd"><td>127</td>
+<td>write</td>
+<td>2</td>
+<td>DM</td>
+<td>nonsec_C6X_0_1_notify_tx</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr class="row-even"><td>126</td>
+<td>write</td>
+<td>7</td>
+<td>DM</td>
+<td>nonsec_C6X_0_1_response_tx</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr class="row-odd"><td>125</td>
+<td>write</td>
+<td>2</td>
+<td>DM</td>
+<td>nonsec_C6X_1_1_notify_tx</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr class="row-even"><td>124</td>
+<td>write</td>
+<td>7</td>
+<td>DM</td>
+<td>nonsec_C6X_1_1_response_tx</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr class="row-odd"><td>123</td>
+<td>write</td>
+<td>2</td>
+<td>DM</td>
+<td>nonsec_GPU_0_notify_tx</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr class="row-even"><td>122</td>
+<td>write</td>
+<td>7</td>
+<td>DM</td>
+<td>nonsec_GPU_0_response_tx</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr class="row-odd"><td>121</td>
+<td>write</td>
+<td>2</td>
+<td>DM</td>
+<td>nonsec_MAIN_0_R5_0_notify_tx</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr class="row-even"><td>120</td>
+<td>write</td>
+<td>7</td>
+<td>DM</td>
+<td>nonsec_MAIN_0_R5_0_response_tx</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr class="row-odd"><td>119</td>
+<td>write</td>
+<td>1</td>
+<td>DM</td>
+<td>nonsec_MAIN_0_R5_2_notify_tx</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr class="row-even"><td>118</td>
+<td>write</td>
+<td>2</td>
+<td>DM</td>
+<td>nonsec_MAIN_0_R5_2_response_tx</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr class="row-odd"><td>117</td>
+<td>write</td>
+<td>2</td>
+<td>DM</td>
+<td>nonsec_MAIN_1_R5_0_notify_tx</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr class="row-even"><td>116</td>
+<td>write</td>
+<td>7</td>
+<td>DM</td>
+<td>nonsec_MAIN_1_R5_0_response_tx</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr class="row-odd"><td>115</td>
+<td>write</td>
+<td>1</td>
+<td>DM</td>
+<td>nonsec_MAIN_1_R5_2_notify_tx</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr class="row-even"><td>114</td>
+<td>write</td>
+<td>2</td>
+<td>DM</td>
+<td>nonsec_MAIN_1_R5_2_response_tx</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr class="row-odd"><td>113</td>
+<td>write</td>
+<td>2</td>
+<td>DM</td>
+<td>nonsec_ICSSG_0_notify_tx</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr class="row-even"><td>112</td>
+<td>write</td>
+<td>7</td>
+<td>DM</td>
+<td>nonsec_ICSSG_0_response_tx</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr class="row-odd"><td>0</td>
 <td>read</td>
 <td>2</td>
 <td>A72_0</td>
@@ -243,7 +460,7 @@ PE/Host documentation for further information</p>
 <td>COMPUTE_CLUSTER0_CLEC/SOC_EVENTS_IN_64, COMPUTE_CLUSTER0_GIC500SS/SPI_64</td>
 <td>COMPUTE_CLUSTER0_CLEC/SOC_EVENTS_IN_64, COMPUTE_CLUSTER0_GIC500SS/SPI_64</td>
 </tr>
-<tr class="row-odd"><td>1</td>
+<tr class="row-even"><td>1</td>
 <td>read</td>
 <td>30</td>
 <td>A72_0</td>
@@ -251,7 +468,7 @@ PE/Host documentation for further information</p>
 <td>COMPUTE_CLUSTER0_CLEC/SOC_EVENTS_IN_65, COMPUTE_CLUSTER0_GIC500SS/SPI_65</td>
 <td>COMPUTE_CLUSTER0_CLEC/SOC_EVENTS_IN_65, COMPUTE_CLUSTER0_GIC500SS/SPI_65</td>
 </tr>
-<tr class="row-even"><td>2</td>
+<tr class="row-odd"><td>2</td>
 <td>write</td>
 <td>10</td>
 <td>A72_0</td>
@@ -259,7 +476,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-odd"><td>3</td>
+<tr class="row-even"><td>3</td>
 <td>write</td>
 <td>20</td>
 <td>A72_0</td>
@@ -267,7 +484,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-even"><td>4</td>
+<tr class="row-odd"><td>4</td>
 <td>write</td>
 <td>2</td>
 <td>A72_0</td>
@@ -275,7 +492,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-odd"><td>5</td>
+<tr class="row-even"><td>5</td>
 <td>read</td>
 <td>2</td>
 <td>A72_1</td>
@@ -283,7 +500,7 @@ PE/Host documentation for further information</p>
 <td>COMPUTE_CLUSTER0_CLEC/SOC_EVENTS_IN_66, COMPUTE_CLUSTER0_GIC500SS/SPI_66</td>
 <td>COMPUTE_CLUSTER0_CLEC/SOC_EVENTS_IN_66, COMPUTE_CLUSTER0_GIC500SS/SPI_66</td>
 </tr>
-<tr class="row-even"><td>6</td>
+<tr class="row-odd"><td>6</td>
 <td>read</td>
 <td>30</td>
 <td>A72_1</td>
@@ -291,7 +508,7 @@ PE/Host documentation for further information</p>
 <td>COMPUTE_CLUSTER0_CLEC/SOC_EVENTS_IN_67, COMPUTE_CLUSTER0_GIC500SS/SPI_67</td>
 <td>COMPUTE_CLUSTER0_CLEC/SOC_EVENTS_IN_67, COMPUTE_CLUSTER0_GIC500SS/SPI_67</td>
 </tr>
-<tr class="row-odd"><td>7</td>
+<tr class="row-even"><td>7</td>
 <td>write</td>
 <td>10</td>
 <td>A72_1</td>
@@ -299,7 +516,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-even"><td>8</td>
+<tr class="row-odd"><td>8</td>
 <td>write</td>
 <td>20</td>
 <td>A72_1</td>
@@ -307,7 +524,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-odd"><td>9</td>
+<tr class="row-even"><td>9</td>
 <td>write</td>
 <td>2</td>
 <td>A72_1</td>
@@ -315,7 +532,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-even"><td>10</td>
+<tr class="row-odd"><td>10</td>
 <td>read</td>
 <td>2</td>
 <td>A72_2</td>
@@ -323,7 +540,7 @@ PE/Host documentation for further information</p>
 <td>COMPUTE_CLUSTER0_CLEC/SOC_EVENTS_IN_68, COMPUTE_CLUSTER0_GIC500SS/SPI_68</td>
 <td>COMPUTE_CLUSTER0_CLEC/SOC_EVENTS_IN_68, COMPUTE_CLUSTER0_GIC500SS/SPI_68</td>
 </tr>
-<tr class="row-odd"><td>11</td>
+<tr class="row-even"><td>11</td>
 <td>read</td>
 <td>22</td>
 <td>A72_2</td>
@@ -331,7 +548,7 @@ PE/Host documentation for further information</p>
 <td>COMPUTE_CLUSTER0_CLEC/SOC_EVENTS_IN_69, COMPUTE_CLUSTER0_GIC500SS/SPI_69</td>
 <td>COMPUTE_CLUSTER0_CLEC/SOC_EVENTS_IN_69, COMPUTE_CLUSTER0_GIC500SS/SPI_69</td>
 </tr>
-<tr class="row-even"><td>12</td>
+<tr class="row-odd"><td>12</td>
 <td>write</td>
 <td>2</td>
 <td>A72_2</td>
@@ -339,7 +556,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-odd"><td>13</td>
+<tr class="row-even"><td>13</td>
 <td>write</td>
 <td>20</td>
 <td>A72_2</td>
@@ -347,7 +564,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-even"><td>14</td>
+<tr class="row-odd"><td>14</td>
 <td>write</td>
 <td>2</td>
 <td>A72_2</td>
@@ -355,7 +572,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-odd"><td>15</td>
+<tr class="row-even"><td>15</td>
 <td>read</td>
 <td>2</td>
 <td>A72_3</td>
@@ -363,7 +580,7 @@ PE/Host documentation for further information</p>
 <td>COMPUTE_CLUSTER0_CLEC/SOC_EVENTS_IN_70, COMPUTE_CLUSTER0_GIC500SS/SPI_70</td>
 <td>COMPUTE_CLUSTER0_CLEC/SOC_EVENTS_IN_70, COMPUTE_CLUSTER0_GIC500SS/SPI_70</td>
 </tr>
-<tr class="row-even"><td>16</td>
+<tr class="row-odd"><td>16</td>
 <td>read</td>
 <td>7</td>
 <td>A72_3</td>
@@ -371,7 +588,7 @@ PE/Host documentation for further information</p>
 <td>COMPUTE_CLUSTER0_CLEC/SOC_EVENTS_IN_71, COMPUTE_CLUSTER0_GIC500SS/SPI_71</td>
 <td>COMPUTE_CLUSTER0_CLEC/SOC_EVENTS_IN_71, COMPUTE_CLUSTER0_GIC500SS/SPI_71</td>
 </tr>
-<tr class="row-odd"><td>17</td>
+<tr class="row-even"><td>17</td>
 <td>write</td>
 <td>2</td>
 <td>A72_3</td>
@@ -379,7 +596,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-even"><td>18</td>
+<tr class="row-odd"><td>18</td>
 <td>write</td>
 <td>5</td>
 <td>A72_3</td>
@@ -387,7 +604,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-odd"><td>19</td>
+<tr class="row-even"><td>19</td>
 <td>write</td>
 <td>2</td>
 <td>A72_3</td>
@@ -395,7 +612,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-even"><td>20</td>
+<tr class="row-odd"><td>20</td>
 <td>read</td>
 <td>2</td>
 <td>A72_4</td>
@@ -403,7 +620,7 @@ PE/Host documentation for further information</p>
 <td>COMPUTE_CLUSTER0_CLEC/SOC_EVENTS_IN_72, COMPUTE_CLUSTER0_GIC500SS/SPI_72</td>
 <td>COMPUTE_CLUSTER0_CLEC/SOC_EVENTS_IN_72, COMPUTE_CLUSTER0_GIC500SS/SPI_72</td>
 </tr>
-<tr class="row-odd"><td>21</td>
+<tr class="row-even"><td>21</td>
 <td>read</td>
 <td>7</td>
 <td>A72_4</td>
@@ -411,7 +628,7 @@ PE/Host documentation for further information</p>
 <td>COMPUTE_CLUSTER0_CLEC/SOC_EVENTS_IN_73, COMPUTE_CLUSTER0_GIC500SS/SPI_73</td>
 <td>COMPUTE_CLUSTER0_CLEC/SOC_EVENTS_IN_73, COMPUTE_CLUSTER0_GIC500SS/SPI_73</td>
 </tr>
-<tr class="row-even"><td>22</td>
+<tr class="row-odd"><td>22</td>
 <td>write</td>
 <td>2</td>
 <td>A72_4</td>
@@ -419,7 +636,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-odd"><td>23</td>
+<tr class="row-even"><td>23</td>
 <td>write</td>
 <td>5</td>
 <td>A72_4</td>
@@ -427,7 +644,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-even"><td>24</td>
+<tr class="row-odd"><td>24</td>
 <td>write</td>
 <td>2</td>
 <td>A72_4</td>
@@ -435,7 +652,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-odd"><td>25</td>
+<tr class="row-even"><td>25</td>
 <td>read</td>
 <td>2</td>
 <td>C7X_0</td>
@@ -443,7 +660,7 @@ PE/Host documentation for further information</p>
 <td>COMPUTE_CLUSTER0_CLEC/SOC_EVENTS_IN_734, COMPUTE_CLUSTER0_GIC500SS/SPI_734</td>
 <td>COMPUTE_CLUSTER0_CLEC/SOC_EVENTS_IN_734, COMPUTE_CLUSTER0_GIC500SS/SPI_734</td>
 </tr>
-<tr class="row-even"><td>26</td>
+<tr class="row-odd"><td>26</td>
 <td>read</td>
 <td>7</td>
 <td>C7X_0</td>
@@ -451,7 +668,7 @@ PE/Host documentation for further information</p>
 <td>COMPUTE_CLUSTER0_CLEC/SOC_EVENTS_IN_735, COMPUTE_CLUSTER0_GIC500SS/SPI_735</td>
 <td>COMPUTE_CLUSTER0_CLEC/SOC_EVENTS_IN_735, COMPUTE_CLUSTER0_GIC500SS/SPI_735</td>
 </tr>
-<tr class="row-odd"><td>27</td>
+<tr class="row-even"><td>27</td>
 <td>write</td>
 <td>2</td>
 <td>C7X_0</td>
@@ -459,7 +676,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-even"><td>28</td>
+<tr class="row-odd"><td>28</td>
 <td>write</td>
 <td>5</td>
 <td>C7X_0</td>
@@ -467,7 +684,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-odd"><td>29</td>
+<tr class="row-even"><td>29</td>
 <td>write</td>
 <td>2</td>
 <td>C7X_0</td>
@@ -475,7 +692,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-even"><td>30</td>
+<tr class="row-odd"><td>30</td>
 <td>read</td>
 <td>2</td>
 <td>C7X_1</td>
@@ -483,7 +700,7 @@ PE/Host documentation for further information</p>
 <td>COMPUTE_CLUSTER0_CLEC/SOC_EVENTS_IN_732, COMPUTE_CLUSTER0_GIC500SS/SPI_732</td>
 <td>COMPUTE_CLUSTER0_CLEC/SOC_EVENTS_IN_732, COMPUTE_CLUSTER0_GIC500SS/SPI_732</td>
 </tr>
-<tr class="row-odd"><td>31</td>
+<tr class="row-even"><td>31</td>
 <td>read</td>
 <td>7</td>
 <td>C7X_1</td>
@@ -491,7 +708,7 @@ PE/Host documentation for further information</p>
 <td>COMPUTE_CLUSTER0_CLEC/SOC_EVENTS_IN_733, COMPUTE_CLUSTER0_GIC500SS/SPI_733</td>
 <td>COMPUTE_CLUSTER0_CLEC/SOC_EVENTS_IN_733, COMPUTE_CLUSTER0_GIC500SS/SPI_733</td>
 </tr>
-<tr class="row-even"><td>32</td>
+<tr class="row-odd"><td>32</td>
 <td>write</td>
 <td>2</td>
 <td>C7X_1</td>
@@ -499,7 +716,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-odd"><td>33</td>
+<tr class="row-even"><td>33</td>
 <td>write</td>
 <td>5</td>
 <td>C7X_1</td>
@@ -507,7 +724,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-even"><td>34</td>
+<tr class="row-odd"><td>34</td>
 <td>write</td>
 <td>2</td>
 <td>C7X_1</td>
@@ -515,7 +732,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-odd"><td>35</td>
+<tr class="row-even"><td>35</td>
 <td>read</td>
 <td>2</td>
 <td>C6X_0_0</td>
@@ -523,7 +740,7 @@ PE/Host documentation for further information</p>
 <td>C66SS0_CORE0/C66_EVENT_IN_SYNC_4</td>
 <td>C66SS0_CORE0/C66_EVENT_IN_SYNC_4</td>
 </tr>
-<tr class="row-even"><td>36</td>
+<tr class="row-odd"><td>36</td>
 <td>read</td>
 <td>7</td>
 <td>C6X_0_0</td>
@@ -531,7 +748,7 @@ PE/Host documentation for further information</p>
 <td>C66SS0_CORE0/C66_EVENT_IN_SYNC_5</td>
 <td>C66SS0_CORE0/C66_EVENT_IN_SYNC_5</td>
 </tr>
-<tr class="row-odd"><td>37</td>
+<tr class="row-even"><td>37</td>
 <td>write</td>
 <td>2</td>
 <td>C6X_0_0</td>
@@ -539,7 +756,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-even"><td>38</td>
+<tr class="row-odd"><td>38</td>
 <td>write</td>
 <td>5</td>
 <td>C6X_0_0</td>
@@ -547,7 +764,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-odd"><td>39</td>
+<tr class="row-even"><td>39</td>
 <td>write</td>
 <td>2</td>
 <td>C6X_0_0</td>
@@ -555,7 +772,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-even"><td>40</td>
+<tr class="row-odd"><td>40</td>
 <td>read</td>
 <td>2</td>
 <td>C6X_0_1</td>
@@ -563,7 +780,7 @@ PE/Host documentation for further information</p>
 <td>C66SS0_CORE0/C66_EVENT_IN_SYNC_6</td>
 <td>C66SS0_CORE0/C66_EVENT_IN_SYNC_6</td>
 </tr>
-<tr class="row-odd"><td>41</td>
+<tr class="row-even"><td>41</td>
 <td>read</td>
 <td>7</td>
 <td>C6X_0_1</td>
@@ -571,7 +788,7 @@ PE/Host documentation for further information</p>
 <td>C66SS0_CORE0/C66_EVENT_IN_SYNC_7</td>
 <td>C66SS0_CORE0/C66_EVENT_IN_SYNC_7</td>
 </tr>
-<tr class="row-even"><td>42</td>
+<tr class="row-odd"><td>42</td>
 <td>write</td>
 <td>2</td>
 <td>C6X_0_1</td>
@@ -579,7 +796,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-odd"><td>43</td>
+<tr class="row-even"><td>43</td>
 <td>write</td>
 <td>5</td>
 <td>C6X_0_1</td>
@@ -587,7 +804,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-even"><td>44</td>
+<tr class="row-odd"><td>44</td>
 <td>write</td>
 <td>2</td>
 <td>C6X_0_1</td>
@@ -595,7 +812,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-odd"><td>45</td>
+<tr class="row-even"><td>45</td>
 <td>read</td>
 <td>2</td>
 <td>C6X_1_0</td>
@@ -603,7 +820,7 @@ PE/Host documentation for further information</p>
 <td>C66SS1_CORE0/C66_EVENT_IN_SYNC_4</td>
 <td>C66SS1_CORE0/C66_EVENT_IN_SYNC_4</td>
 </tr>
-<tr class="row-even"><td>46</td>
+<tr class="row-odd"><td>46</td>
 <td>read</td>
 <td>7</td>
 <td>C6X_1_0</td>
@@ -611,7 +828,7 @@ PE/Host documentation for further information</p>
 <td>C66SS1_CORE0/C66_EVENT_IN_SYNC_5</td>
 <td>C66SS1_CORE0/C66_EVENT_IN_SYNC_5</td>
 </tr>
-<tr class="row-odd"><td>47</td>
+<tr class="row-even"><td>47</td>
 <td>write</td>
 <td>2</td>
 <td>C6X_1_0</td>
@@ -619,7 +836,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-even"><td>48</td>
+<tr class="row-odd"><td>48</td>
 <td>write</td>
 <td>5</td>
 <td>C6X_1_0</td>
@@ -627,7 +844,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-odd"><td>49</td>
+<tr class="row-even"><td>49</td>
 <td>write</td>
 <td>2</td>
 <td>C6X_1_0</td>
@@ -635,7 +852,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-even"><td>50</td>
+<tr class="row-odd"><td>50</td>
 <td>read</td>
 <td>2</td>
 <td>C6X_1_1</td>
@@ -643,7 +860,7 @@ PE/Host documentation for further information</p>
 <td>C66SS1_CORE0/C66_EVENT_IN_SYNC_6</td>
 <td>C66SS1_CORE0/C66_EVENT_IN_SYNC_6</td>
 </tr>
-<tr class="row-odd"><td>51</td>
+<tr class="row-even"><td>51</td>
 <td>read</td>
 <td>7</td>
 <td>C6X_1_1</td>
@@ -651,7 +868,7 @@ PE/Host documentation for further information</p>
 <td>C66SS1_CORE0/C66_EVENT_IN_SYNC_7</td>
 <td>C66SS1_CORE0/C66_EVENT_IN_SYNC_7</td>
 </tr>
-<tr class="row-even"><td>52</td>
+<tr class="row-odd"><td>52</td>
 <td>write</td>
 <td>2</td>
 <td>C6X_1_1</td>
@@ -659,7 +876,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-odd"><td>53</td>
+<tr class="row-even"><td>53</td>
 <td>write</td>
 <td>5</td>
 <td>C6X_1_1</td>
@@ -667,7 +884,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-even"><td>54</td>
+<tr class="row-odd"><td>54</td>
 <td>write</td>
 <td>2</td>
 <td>C6X_1_1</td>
@@ -675,7 +892,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-odd"><td>55</td>
+<tr class="row-even"><td>55</td>
 <td>read</td>
 <td>2</td>
 <td>GPU_0</td>
@@ -683,7 +900,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-even"><td>56</td>
+<tr class="row-odd"><td>56</td>
 <td>read</td>
 <td>7</td>
 <td>GPU_0</td>
@@ -691,7 +908,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-odd"><td>57</td>
+<tr class="row-even"><td>57</td>
 <td>write</td>
 <td>2</td>
 <td>GPU_0</td>
@@ -699,7 +916,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-even"><td>58</td>
+<tr class="row-odd"><td>58</td>
 <td>write</td>
 <td>5</td>
 <td>GPU_0</td>
@@ -707,7 +924,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-odd"><td>59</td>
+<tr class="row-even"><td>59</td>
 <td>write</td>
 <td>2</td>
 <td>GPU_0</td>
@@ -715,7 +932,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-even"><td>60</td>
+<tr class="row-odd"><td>60</td>
 <td>read</td>
 <td>2</td>
 <td>MAIN_0_R5_0</td>
@@ -723,7 +940,7 @@ PE/Host documentation for further information</p>
 <td>R5FSS0_CORE0/INTR_224</td>
 <td>R5FSS0_CORE0/INTR_224</td>
 </tr>
-<tr class="row-odd"><td>61</td>
+<tr class="row-even"><td>61</td>
 <td>read</td>
 <td>7</td>
 <td>MAIN_0_R5_0</td>
@@ -731,7 +948,7 @@ PE/Host documentation for further information</p>
 <td>R5FSS0_CORE0/INTR_225</td>
 <td>R5FSS0_CORE0/INTR_225</td>
 </tr>
-<tr class="row-even"><td>62</td>
+<tr class="row-odd"><td>62</td>
 <td>write</td>
 <td>2</td>
 <td>MAIN_0_R5_0</td>
@@ -739,7 +956,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-odd"><td>63</td>
+<tr class="row-even"><td>63</td>
 <td>write</td>
 <td>5</td>
 <td>MAIN_0_R5_0</td>
@@ -747,7 +964,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-even"><td>64</td>
+<tr class="row-odd"><td>64</td>
 <td>write</td>
 <td>2</td>
 <td>MAIN_0_R5_0</td>
@@ -755,7 +972,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-odd"><td>65</td>
+<tr class="row-even"><td>65</td>
 <td>read</td>
 <td>2</td>
 <td>MAIN_0_R5_1</td>
@@ -763,7 +980,7 @@ PE/Host documentation for further information</p>
 <td>R5FSS0_CORE0/INTR_226</td>
 <td>R5FSS0_CORE0/INTR_226</td>
 </tr>
-<tr class="row-even"><td>66</td>
+<tr class="row-odd"><td>66</td>
 <td>read</td>
 <td>7</td>
 <td>MAIN_0_R5_1</td>
@@ -771,7 +988,7 @@ PE/Host documentation for further information</p>
 <td>R5FSS0_CORE0/INTR_227</td>
 <td>R5FSS0_CORE0/INTR_227</td>
 </tr>
-<tr class="row-odd"><td>67</td>
+<tr class="row-even"><td>67</td>
 <td>write</td>
 <td>2</td>
 <td>MAIN_0_R5_1</td>
@@ -779,7 +996,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-even"><td>68</td>
+<tr class="row-odd"><td>68</td>
 <td>write</td>
 <td>5</td>
 <td>MAIN_0_R5_1</td>
@@ -787,7 +1004,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-odd"><td>69</td>
+<tr class="row-even"><td>69</td>
 <td>write</td>
 <td>2</td>
 <td>MAIN_0_R5_1</td>
@@ -795,7 +1012,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-even"><td>70</td>
+<tr class="row-odd"><td>70</td>
 <td>read</td>
 <td>1</td>
 <td>MAIN_0_R5_2</td>
@@ -803,7 +1020,7 @@ PE/Host documentation for further information</p>
 <td>R5FSS0_CORE1/INTR_224</td>
 <td>R5FSS0_CORE1/INTR_224</td>
 </tr>
-<tr class="row-odd"><td>71</td>
+<tr class="row-even"><td>71</td>
 <td>read</td>
 <td>2</td>
 <td>MAIN_0_R5_2</td>
@@ -811,7 +1028,7 @@ PE/Host documentation for further information</p>
 <td>R5FSS0_CORE1/INTR_225</td>
 <td>R5FSS0_CORE1/INTR_225</td>
 </tr>
-<tr class="row-even"><td>72</td>
+<tr class="row-odd"><td>72</td>
 <td>write</td>
 <td>1</td>
 <td>MAIN_0_R5_2</td>
@@ -819,7 +1036,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-odd"><td>73</td>
+<tr class="row-even"><td>73</td>
 <td>write</td>
 <td>1</td>
 <td>MAIN_0_R5_2</td>
@@ -827,7 +1044,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-even"><td>74</td>
+<tr class="row-odd"><td>74</td>
 <td>write</td>
 <td>1</td>
 <td>MAIN_0_R5_2</td>
@@ -835,7 +1052,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-odd"><td>75</td>
+<tr class="row-even"><td>75</td>
 <td>read</td>
 <td>1</td>
 <td>MAIN_0_R5_3</td>
@@ -843,7 +1060,7 @@ PE/Host documentation for further information</p>
 <td>R5FSS0_CORE1/INTR_226</td>
 <td>R5FSS0_CORE1/INTR_226</td>
 </tr>
-<tr class="row-even"><td>76</td>
+<tr class="row-odd"><td>76</td>
 <td>read</td>
 <td>2</td>
 <td>MAIN_0_R5_3</td>
@@ -851,7 +1068,7 @@ PE/Host documentation for further information</p>
 <td>R5FSS0_CORE1/INTR_227</td>
 <td>R5FSS0_CORE1/INTR_227</td>
 </tr>
-<tr class="row-odd"><td>77</td>
+<tr class="row-even"><td>77</td>
 <td>write</td>
 <td>1</td>
 <td>MAIN_0_R5_3</td>
@@ -859,7 +1076,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-even"><td>78</td>
+<tr class="row-odd"><td>78</td>
 <td>write</td>
 <td>1</td>
 <td>MAIN_0_R5_3</td>
@@ -867,7 +1084,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-odd"><td>79</td>
+<tr class="row-even"><td>79</td>
 <td>write</td>
 <td>1</td>
 <td>MAIN_0_R5_3</td>
@@ -875,7 +1092,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-even"><td>80</td>
+<tr class="row-odd"><td>80</td>
 <td>read</td>
 <td>2</td>
 <td>MAIN_1_R5_0</td>
@@ -883,7 +1100,7 @@ PE/Host documentation for further information</p>
 <td>R5FSS1_CORE0/INTR_224</td>
 <td>R5FSS1_CORE0/INTR_224</td>
 </tr>
-<tr class="row-odd"><td>81</td>
+<tr class="row-even"><td>81</td>
 <td>read</td>
 <td>7</td>
 <td>MAIN_1_R5_0</td>
@@ -891,7 +1108,7 @@ PE/Host documentation for further information</p>
 <td>R5FSS1_CORE0/INTR_225</td>
 <td>R5FSS1_CORE0/INTR_225</td>
 </tr>
-<tr class="row-even"><td>82</td>
+<tr class="row-odd"><td>82</td>
 <td>write</td>
 <td>2</td>
 <td>MAIN_1_R5_0</td>
@@ -899,7 +1116,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-odd"><td>83</td>
+<tr class="row-even"><td>83</td>
 <td>write</td>
 <td>5</td>
 <td>MAIN_1_R5_0</td>
@@ -907,7 +1124,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-even"><td>84</td>
+<tr class="row-odd"><td>84</td>
 <td>write</td>
 <td>2</td>
 <td>MAIN_1_R5_0</td>
@@ -915,7 +1132,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-odd"><td>85</td>
+<tr class="row-even"><td>85</td>
 <td>read</td>
 <td>2</td>
 <td>MAIN_1_R5_1</td>
@@ -923,7 +1140,7 @@ PE/Host documentation for further information</p>
 <td>R5FSS1_CORE0/INTR_226</td>
 <td>R5FSS1_CORE0/INTR_226</td>
 </tr>
-<tr class="row-even"><td>86</td>
+<tr class="row-odd"><td>86</td>
 <td>read</td>
 <td>7</td>
 <td>MAIN_1_R5_1</td>
@@ -931,7 +1148,7 @@ PE/Host documentation for further information</p>
 <td>R5FSS1_CORE0/INTR_227</td>
 <td>R5FSS1_CORE0/INTR_227</td>
 </tr>
-<tr class="row-odd"><td>87</td>
+<tr class="row-even"><td>87</td>
 <td>write</td>
 <td>2</td>
 <td>MAIN_1_R5_1</td>
@@ -939,7 +1156,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-even"><td>88</td>
+<tr class="row-odd"><td>88</td>
 <td>write</td>
 <td>5</td>
 <td>MAIN_1_R5_1</td>
@@ -947,7 +1164,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-odd"><td>89</td>
+<tr class="row-even"><td>89</td>
 <td>write</td>
 <td>2</td>
 <td>MAIN_1_R5_1</td>
@@ -955,7 +1172,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-even"><td>90</td>
+<tr class="row-odd"><td>90</td>
 <td>read</td>
 <td>1</td>
 <td>MAIN_1_R5_2</td>
@@ -963,7 +1180,7 @@ PE/Host documentation for further information</p>
 <td>R5FSS1_CORE1/INTR_224</td>
 <td>R5FSS1_CORE1/INTR_224</td>
 </tr>
-<tr class="row-odd"><td>91</td>
+<tr class="row-even"><td>91</td>
 <td>read</td>
 <td>2</td>
 <td>MAIN_1_R5_2</td>
@@ -971,7 +1188,7 @@ PE/Host documentation for further information</p>
 <td>R5FSS1_CORE1/INTR_225</td>
 <td>R5FSS1_CORE1/INTR_225</td>
 </tr>
-<tr class="row-even"><td>92</td>
+<tr class="row-odd"><td>92</td>
 <td>write</td>
 <td>1</td>
 <td>MAIN_1_R5_2</td>
@@ -979,7 +1196,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-odd"><td>93</td>
+<tr class="row-even"><td>93</td>
 <td>write</td>
 <td>1</td>
 <td>MAIN_1_R5_2</td>
@@ -987,7 +1204,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-even"><td>94</td>
+<tr class="row-odd"><td>94</td>
 <td>write</td>
 <td>1</td>
 <td>MAIN_1_R5_2</td>
@@ -995,7 +1212,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-odd"><td>95</td>
+<tr class="row-even"><td>95</td>
 <td>read</td>
 <td>1</td>
 <td>MAIN_1_R5_3</td>
@@ -1003,7 +1220,7 @@ PE/Host documentation for further information</p>
 <td>R5FSS1_CORE1/INTR_226</td>
 <td>R5FSS1_CORE1/INTR_226</td>
 </tr>
-<tr class="row-even"><td>96</td>
+<tr class="row-odd"><td>96</td>
 <td>read</td>
 <td>2</td>
 <td>MAIN_1_R5_3</td>
@@ -1011,7 +1228,7 @@ PE/Host documentation for further information</p>
 <td>R5FSS1_CORE1/INTR_227</td>
 <td>R5FSS1_CORE1/INTR_227</td>
 </tr>
-<tr class="row-odd"><td>97</td>
+<tr class="row-even"><td>97</td>
 <td>write</td>
 <td>1</td>
 <td>MAIN_1_R5_3</td>
@@ -1019,7 +1236,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-even"><td>98</td>
+<tr class="row-odd"><td>98</td>
 <td>write</td>
 <td>1</td>
 <td>MAIN_1_R5_3</td>
@@ -1027,7 +1244,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-odd"><td>99</td>
+<tr class="row-even"><td>99</td>
 <td>write</td>
 <td>1</td>
 <td>MAIN_1_R5_3</td>
@@ -1035,7 +1252,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-even"><td>100</td>
+<tr class="row-odd"><td>100</td>
 <td>read</td>
 <td>2</td>
 <td>ICSSG_0</td>
@@ -1043,7 +1260,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-odd"><td>101</td>
+<tr class="row-even"><td>101</td>
 <td>read</td>
 <td>7</td>
 <td>ICSSG_0</td>
@@ -1051,7 +1268,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-even"><td>102</td>
+<tr class="row-odd"><td>102</td>
 <td>write</td>
 <td>2</td>
 <td>ICSSG_0</td>
@@ -1059,7 +1276,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-odd"><td>103</td>
+<tr class="row-even"><td>103</td>
 <td>write</td>
 <td>5</td>
 <td>ICSSG_0</td>
@@ -1067,7 +1284,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-even"><td>104</td>
+<tr class="row-odd"><td>104</td>
 <td>write</td>
 <td>2</td>
 <td>ICSSG_0</td>
@@ -1082,13 +1299,13 @@ PE/Host documentation for further information</p>
 <span id="soc-doc-j721e-public-sproxy-desc-sproxy-per-list-mcu-navss0-sec-proxy0"></span><h3>Secure Proxy thread allocation for MCU_NAVSS0_SEC_PROXY0<a class="headerlink" href="#secure-proxy-thread-allocation-for-mcu-navss0-sec-proxy0" title="Permalink to this headline">¶</a></h3>
 <table border="1" class="docutils">
 <colgroup>
-<col width="16%" />
-<col width="18%" />
+<col width="12%" />
+<col width="13%" />
+<col width="10%" />
+<col width="5%" />
 <col width="14%" />
-<col width="8%" />
-<col width="11%" />
-<col width="16%" />
-<col width="16%" />
+<col width="23%" />
+<col width="23%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Secure Proxy Thread ID</th>
@@ -1101,7 +1318,79 @@ PE/Host documentation for further information</p>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>0</td>
+<tr class="row-even"><td>80</td>
+<td>read</td>
+<td>5</td>
+<td>DM</td>
+<td>nonsec_high_priority_rx</td>
+<td>MCU_R5FSS0_CORE0/INTR_70, MCU_R5FSS0_CORE0/INTR_71</td>
+<td>MCU_R5FSS0_CORE0/INTR_70, MCU_R5FSS0_CORE0/INTR_71</td>
+</tr>
+<tr class="row-odd"><td>79</td>
+<td>read</td>
+<td>8</td>
+<td>DM</td>
+<td>nonsec_low_priority_rx</td>
+<td>MCU_R5FSS0_CORE0/INTR_72, MCU_R5FSS0_CORE0/INTR_73</td>
+<td>MCU_R5FSS0_CORE0/INTR_72, MCU_R5FSS0_CORE0/INTR_73</td>
+</tr>
+<tr class="row-even"><td>78</td>
+<td>read</td>
+<td>5</td>
+<td>DM</td>
+<td>nonsec_notify_resp_rx</td>
+<td>MCU_R5FSS0_CORE0/INTR_74, MCU_R5FSS0_CORE0/INTR_75</td>
+<td>MCU_R5FSS0_CORE0/INTR_74, MCU_R5FSS0_CORE0/INTR_75</td>
+</tr>
+<tr class="row-odd"><td>77</td>
+<td>write</td>
+<td>2</td>
+<td>DM</td>
+<td>nonsec_MCU_0_R5_0_notify_tx</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr class="row-even"><td>76</td>
+<td>write</td>
+<td>7</td>
+<td>DM</td>
+<td>nonsec_MCU_0_R5_0_response_tx</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr class="row-odd"><td>75</td>
+<td>write</td>
+<td>1</td>
+<td>DM</td>
+<td>nonsec_MCU_0_R5_2_notify_tx</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr class="row-even"><td>74</td>
+<td>write</td>
+<td>2</td>
+<td>DM</td>
+<td>nonsec_MCU_0_R5_2_response_tx</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr class="row-odd"><td>73</td>
+<td>write</td>
+<td>2</td>
+<td>DM</td>
+<td>nonsec_DMSC2DM_notify_tx</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr class="row-even"><td>72</td>
+<td>write</td>
+<td>4</td>
+<td>DM</td>
+<td>nonsec_DMSC2DM_response_tx</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr class="row-odd"><td>0</td>
 <td>read</td>
 <td>2</td>
 <td>MCU_0_R5_0</td>
@@ -1109,7 +1398,7 @@ PE/Host documentation for further information</p>
 <td>MCU_R5FSS0_CORE0/INTR_64</td>
 <td>MCU_R5FSS0_CORE0/INTR_64</td>
 </tr>
-<tr class="row-odd"><td>1</td>
+<tr class="row-even"><td>1</td>
 <td>read</td>
 <td>7</td>
 <td>MCU_0_R5_0</td>
@@ -1117,7 +1406,7 @@ PE/Host documentation for further information</p>
 <td>MCU_R5FSS0_CORE0/INTR_65</td>
 <td>MCU_R5FSS0_CORE0/INTR_65</td>
 </tr>
-<tr class="row-even"><td>2</td>
+<tr class="row-odd"><td>2</td>
 <td>write</td>
 <td>2</td>
 <td>MCU_0_R5_0</td>
@@ -1125,7 +1414,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-odd"><td>3</td>
+<tr class="row-even"><td>3</td>
 <td>write</td>
 <td>5</td>
 <td>MCU_0_R5_0</td>
@@ -1133,7 +1422,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-even"><td>4</td>
+<tr class="row-odd"><td>4</td>
 <td>write</td>
 <td>2</td>
 <td>MCU_0_R5_0</td>
@@ -1141,7 +1430,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-odd"><td>5</td>
+<tr class="row-even"><td>5</td>
 <td>read</td>
 <td>2</td>
 <td>MCU_0_R5_1</td>
@@ -1149,7 +1438,7 @@ PE/Host documentation for further information</p>
 <td>MCU_R5FSS0_CORE0/INTR_66</td>
 <td>MCU_R5FSS0_CORE0/INTR_66</td>
 </tr>
-<tr class="row-even"><td>6</td>
+<tr class="row-odd"><td>6</td>
 <td>read</td>
 <td>7</td>
 <td>MCU_0_R5_1</td>
@@ -1157,7 +1446,7 @@ PE/Host documentation for further information</p>
 <td>MCU_R5FSS0_CORE0/INTR_67</td>
 <td>MCU_R5FSS0_CORE0/INTR_67</td>
 </tr>
-<tr class="row-odd"><td>7</td>
+<tr class="row-even"><td>7</td>
 <td>write</td>
 <td>2</td>
 <td>MCU_0_R5_1</td>
@@ -1165,7 +1454,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-even"><td>8</td>
+<tr class="row-odd"><td>8</td>
 <td>write</td>
 <td>5</td>
 <td>MCU_0_R5_1</td>
@@ -1173,7 +1462,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-odd"><td>9</td>
+<tr class="row-even"><td>9</td>
 <td>write</td>
 <td>2</td>
 <td>MCU_0_R5_1</td>
@@ -1181,7 +1470,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-even"><td>10</td>
+<tr class="row-odd"><td>10</td>
 <td>read</td>
 <td>1</td>
 <td>MCU_0_R5_2</td>
@@ -1189,7 +1478,7 @@ PE/Host documentation for further information</p>
 <td>MCU_R5FSS0_CORE1/INTR_64</td>
 <td>MCU_R5FSS0_CORE1/INTR_64</td>
 </tr>
-<tr class="row-odd"><td>11</td>
+<tr class="row-even"><td>11</td>
 <td>read</td>
 <td>2</td>
 <td>MCU_0_R5_2</td>
@@ -1197,7 +1486,7 @@ PE/Host documentation for further information</p>
 <td>MCU_R5FSS0_CORE1/INTR_65</td>
 <td>MCU_R5FSS0_CORE1/INTR_65</td>
 </tr>
-<tr class="row-even"><td>12</td>
+<tr class="row-odd"><td>12</td>
 <td>write</td>
 <td>1</td>
 <td>MCU_0_R5_2</td>
@@ -1205,7 +1494,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-odd"><td>13</td>
+<tr class="row-even"><td>13</td>
 <td>write</td>
 <td>1</td>
 <td>MCU_0_R5_2</td>
@@ -1213,7 +1502,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-even"><td>14</td>
+<tr class="row-odd"><td>14</td>
 <td>write</td>
 <td>1</td>
 <td>MCU_0_R5_2</td>
@@ -1221,7 +1510,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-odd"><td>15</td>
+<tr class="row-even"><td>15</td>
 <td>read</td>
 <td>1</td>
 <td>MCU_0_R5_3</td>
@@ -1229,7 +1518,7 @@ PE/Host documentation for further information</p>
 <td>MCU_R5FSS0_CORE1/INTR_66</td>
 <td>MCU_R5FSS0_CORE1/INTR_66</td>
 </tr>
-<tr class="row-even"><td>16</td>
+<tr class="row-odd"><td>16</td>
 <td>read</td>
 <td>2</td>
 <td>MCU_0_R5_3</td>
@@ -1237,7 +1526,7 @@ PE/Host documentation for further information</p>
 <td>MCU_R5FSS0_CORE1/INTR_67</td>
 <td>MCU_R5FSS0_CORE1/INTR_67</td>
 </tr>
-<tr class="row-odd"><td>17</td>
+<tr class="row-even"><td>17</td>
 <td>write</td>
 <td>1</td>
 <td>MCU_0_R5_3</td>
@@ -1245,7 +1534,7 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-even"><td>18</td>
+<tr class="row-odd"><td>18</td>
 <td>write</td>
 <td>1</td>
 <td>MCU_0_R5_3</td>
@@ -1253,10 +1542,90 @@ PE/Host documentation for further information</p>
 <td>N/A</td>
 <td>N/A</td>
 </tr>
-<tr class="row-odd"><td>19</td>
+<tr class="row-even"><td>19</td>
 <td>write</td>
 <td>1</td>
 <td>MCU_0_R5_3</td>
+<td>notify_resp</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr class="row-odd"><td>20</td>
+<td>read</td>
+<td>2</td>
+<td>DM2DMSC</td>
+<td>notify</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr class="row-even"><td>21</td>
+<td>read</td>
+<td>4</td>
+<td>DM2DMSC</td>
+<td>response</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr class="row-odd"><td>22</td>
+<td>write</td>
+<td>2</td>
+<td>DM2DMSC</td>
+<td>high_priority</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr class="row-even"><td>23</td>
+<td>write</td>
+<td>2</td>
+<td>DM2DMSC</td>
+<td>low_priority</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr class="row-odd"><td>24</td>
+<td>write</td>
+<td>2</td>
+<td>DM2DMSC</td>
+<td>notify_resp</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr class="row-even"><td>25</td>
+<td>read</td>
+<td>2</td>
+<td>DMSC2DM</td>
+<td>notify</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr class="row-odd"><td>26</td>
+<td>read</td>
+<td>4</td>
+<td>DMSC2DM</td>
+<td>response</td>
+<td>MCU_R5FSS0_CORE0/INTR_68</td>
+<td>MCU_R5FSS0_CORE0/INTR_68</td>
+</tr>
+<tr class="row-even"><td>27</td>
+<td>write</td>
+<td>2</td>
+<td>DMSC2DM</td>
+<td>high_priority</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr class="row-odd"><td>28</td>
+<td>write</td>
+<td>2</td>
+<td>DMSC2DM</td>
+<td>low_priority</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr class="row-even"><td>29</td>
+<td>write</td>
+<td>2</td>
+<td>DMSC2DM</td>
 <td>notify_resp</td>
 <td>N/A</td>
 <td>N/A</td>
@@ -1308,7 +1677,7 @@ PE/Host documentation for further information</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'20.06.00',
+            VERSION:'20.07.01',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

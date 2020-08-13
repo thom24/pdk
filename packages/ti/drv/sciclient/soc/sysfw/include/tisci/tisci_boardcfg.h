@@ -261,6 +261,41 @@ struct tisci_boardcfg_sa2ul_cfg {
     uint8_t                    rsvd[3];
 };
 
+
+/**
+ * \brief Secure debug control
+ *
+ * \param subhdr Magic and size for integrity check
+ *
+ * \param allow_jtag_unlock Flag controlling runtime jtag unlock feature. Set to
+ *                          0x5A to enable jtag unlock with a signed certificate.
+ *
+ * \param allow_wildcard_unlock Flag controlling whether a device unique
+ *                              certificate is required for jtag unlock. Set to 0x5A to remove the device
+ *                              uniqueness restriction on the certificate.
+ *
+ * \param allowed_debug_level_rsvd Reserved field to control the allowed debug level in
+ *                                 future. Set to 0 currently.
+ *
+ *  \param rsvd reserved for future use.
+ *
+ * \param min_cert_rev Minimum SWREV value that must be present in the jtag
+ *                     unlock certificate. Set to 0 to skip check
+ *
+ * \param jtag_unlock_hosts array of host ids that are allowed to unlock jtag
+ *                          with a signed certificate at runtime. Set host id to 0 if unused. Set host id
+ *                          to 128 if any host can unlock JTAG via the API.
+ */
+struct tisci_boardcfg_secure_debug_config {
+    struct tisci_boardcfg_substructure_header    subhdr;
+    uint8_t                    allow_jtag_unlock;
+    uint8_t                    allow_wildcard_unlock;
+    uint8_t                    allowed_debug_level_rsvd;
+    uint8_t                    rsvd;
+    uint32_t                    min_cert_rev;
+    uint8_t                    jtag_unlock_hosts[TISCI_BOARDCFG_SEC_MAX_NUM_JTAG_UNLOCK_HOSTS];
+} __attribute__((__packed__));
+
 /**
  * \brief Format of the complete board configuration.
  *
@@ -269,15 +304,17 @@ struct tisci_boardcfg_sa2ul_cfg {
  * \param tisci_boardcfg_host_hierarchy Host hierarchy list
  * \param otp_config  OTP Configuration
  * \param dkek_config  DKEK Configuration
+ * \param sec_dbg_config  Secure JTAG Unlock Configuration
  * \param tisci_boardcfg_sa2ul_cfg SA2UL resource configuration
  */
 struct tisci_boardcfg_sec {
-    struct tisci_boardcfg_abi_rev        rev;
-    struct tisci_boardcfg_proc_acl    processor_acl_list;
-    struct tisci_boardcfg_host_hierarchy    host_hierarchy;
-    struct tisci_boardcfg_extended_otp    otp_config;
-    struct tisci_boardcfg_dkek        dkek_config;
-    struct tisci_boardcfg_sa2ul_cfg    sa2ul_auth_cfg;
+    struct tisci_boardcfg_abi_rev            rev;
+    struct tisci_boardcfg_proc_acl        processor_acl_list;
+    struct tisci_boardcfg_host_hierarchy        host_hierarchy;
+    struct tisci_boardcfg_extended_otp        otp_config;
+    struct tisci_boardcfg_dkek            dkek_config;
+    struct tisci_boardcfg_sa2ul_cfg        sa2ul_auth_cfg;
+    struct tisci_boardcfg_secure_debug_config    sec_dbg_config;
 } __attribute__((__packed__));
 
 /**

@@ -93,21 +93,23 @@ configuration. The boardcfg_sec data structure makes use of the same
 :ref:`pub_boardcfg_subhdr` for each member structure as the top level
 boardcfg structure does..
 
-+--------------------+------------------------------------+-----------------------------------------------------------+
-|      Element       |             Type                   |                        Description                        |
-+====================+====================================+===========================================================+
-| boardcfg_abi_rev   | :ref:`pub_boardcfg_abi_rev`        | Board Config ABI version (separate from DMSC ABI version) |
-+--------------------+------------------------------------+-----------------------------------------------------------+
-| processor_acl_list | :ref:`pub_boardcfg_proc_acl`       | Processor access control list configuration               |
-+--------------------+------------------------------------+-----------------------------------------------------------+
-| host_hierarchy     | :ref:`pub_boardcfg_host_hierarchy` | Host hierarchy configuration                              |
-+--------------------+------------------------------------+-----------------------------------------------------------+
-| otp_config         | :ref:`pub_boardcfg_ext_otp_config` | Extended OTP access configuration                         |
-+--------------------+------------------------------------+-----------------------------------------------------------+
-| dkek_config        | :ref:`pub_boardcfg_dkek_config`    | DKEK access configuration                                 |
-+--------------------+------------------------------------+-----------------------------------------------------------+
-| reserved_cfg_entry | :ref:`pub_boardcfg_reserved_entry` | Reserved configuration entry                              |
-+--------------------+------------------------------------+-----------------------------------------------------------+
++--------------------+----------------------------------------------+-----------------------------------------------------------+
+|      Element       |             Type                             |                        Description                        |
++====================+==============================================+===========================================================+
+| boardcfg_abi_rev   | :ref:`pub_boardcfg_abi_rev`                  | Board Config ABI version (separate from DMSC ABI version) |
++--------------------+----------------------------------------------+-----------------------------------------------------------+
+| processor_acl_list | :ref:`pub_boardcfg_proc_acl`                 | Processor access control list configuration               |
++--------------------+----------------------------------------------+-----------------------------------------------------------+
+| host_hierarchy     | :ref:`pub_boardcfg_host_hierarchy`           | Host hierarchy configuration                              |
++--------------------+----------------------------------------------+-----------------------------------------------------------+
+| otp_config         | :ref:`pub_boardcfg_ext_otp_config`           | Extended OTP access configuration                         |
++--------------------+----------------------------------------------+-----------------------------------------------------------+
+| dkek_config        | :ref:`pub_boardcfg_dkek_config`              | DKEK access configuration                                 |
++--------------------+----------------------------------------------+-----------------------------------------------------------+
+| reserved_cfg_entry | :ref:`pub_boardcfg_reserved_entry`           | Reserved configuration entry                              |
++--------------------+----------------------------------------------+-----------------------------------------------------------+
+| reserved_cfg_entry | :ref:`pub_boardcfg_secure_debug_unlock`      | Secure debug unlock configuration                         |
++--------------------+----------------------------------------------+-----------------------------------------------------------+
 
 .. _pub_boardcfg_proc_acl:
 
@@ -281,3 +283,49 @@ The below entry is reserved for future use.
 
 The magic number to be populated in the ``subhdr`` is ``0x23BE``.
 
+.. _pub_boardcfg_secure_debug_unlock:
+
+Secure Debug Unlock
+-------------------
+
++------------------------------+----------------------------+---------------------------------------------------------------+
+|     Element                  |                 Type       |            Description                                        |
++==============================+============================+===============================================================+
+| subhdr                       | :ref:`pub_boardcfg_subhdr` | Magic and size for integrity check                            |
++------------------------------+----------------------------+---------------------------------------------------------------+
+| allow_jtag_unlock            | u8                         | Set to 0x5A if runtime jtag unlock is allowed.                |
+|                              |                            |                                                               |
+|                              |                            | Set to 0 otherwise.                                           |
++------------------------------+----------------------------+---------------------------------------------------------------+
+| allow_wildcard_unlock        | u8                         | If this field is set to 0x5A, the same debug unlock           |
+|                              |                            | certificate will work across all devices where it passes the  |
+|                              |                            | remaining checks.                                             |
+|                              |                            |                                                               |
+|                              |                            | Set to 0 otherwise to enforce UID match before jtag unlock    |
+|                              |                            | The X509 certificate must contain the UID of the device       |
+|                              |                            | being unlocked in the designated field                        |
+|                              |                            |                                                               |
+|                              |                            | NOTE: This field is dependent on the ``allow_jtag_unlock``    |
+|                              |                            | field above. If ``allow_jtag_unlock`` is set to 0, this field |
+|                              |                            | is not used.                                                  |
++------------------------------+----------------------------+---------------------------------------------------------------+
+| allow_debug_level_rsvd       | u8                         | Reserved field. Currently unused. Set to 0.                   |
+|                              |                            |                                                               |
+|                              |                            | This field can be used in the future to control the level of  |
+|                              |                            | debug allowed with a certificate.                             |
++------------------------------+----------------------------+---------------------------------------------------------------+
+| rsvd                         | u8                         | Reserved field. Currently unused. Set to 0.                   |
++------------------------------+----------------------------+---------------------------------------------------------------+
+| min_cert_rev                 | u32                        | Minimum revision value that must be contained in the debug    |
+|                              |                            | unlock certificate for it to be accepted.                     |
+|                              |                            | Use this field to enforce rollback protection for debug       |
+|                              |                            | unlock certificates.                                          |
+|                              |                            | Set to 0 if you do not wish to use this field.                |
++------------------------------+----------------------------+---------------------------------------------------------------+
+| jtag_unlock_hosts            | u8[4]                      | Hosts allowed send jtag unlock message via TISCI              |
+|                              |                            |                                                               |
+|                              |                            | Set one of the entries to 128 if jtag unlock must be allowed  |
+|                              |                            | for all hosts.                                                |
++------------------------------+----------------------------+---------------------------------------------------------------+
+
+The magic number to be populated in the ``subhdr`` is ``0x42AF``.

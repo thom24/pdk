@@ -62,6 +62,9 @@
 /** Length of the string used for security tisci_boardcfg validation after decryption in bytes */
 #define TISCI_BOARDCFG_SEC_RS_LEN (32U)
 
+/** Length of the tisci_boardcfg array for hosts that can be allowed to unlock the JTAG via TISCI API */
+#define TISCI_BOARDCFG_SEC_MAX_NUM_JTAG_UNLOCK_HOSTS (4U)
+
 #define TISCI_BOARDCFG_SECPROXY_SCALING_FACTOR_MASK                   (0x01U)
 #define TISCI_BOARDCFG_SECPROXY_SCALING_PROFILE_MASK                  (0x01U)
 #define TISCI_BOARDCFG_SECPROXY_DISABLE_MAIN_NAV_SECURE_PROXY_MASK    (0x01U)
@@ -80,6 +83,7 @@
 #define TISCI_BOARDCFG_DKEK_CFG_MAGIC_NUM                             (0x5170U)
 #define TISCI_BOARDCFG_SA2UL_CFG_MAGIC_NUM                            (0xB4FDU)
 #define TISCI_BOARDCFG_SA2UL_CFG_MAGIC_NUM_RSVD                       (0x23BEU)
+#define TISCI_BOARDCFG_SEC_DBG_CTRL_MAGIC_NUM                         (0x42AFU)
 
 #endif
 
