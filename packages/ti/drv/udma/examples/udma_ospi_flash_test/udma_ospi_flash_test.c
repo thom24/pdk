@@ -228,6 +228,7 @@ typedef struct
     uint8_t                 *txRingMem;
 #if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
     uint8_t                 *txCompRingMem;
+    uint8_t                 *txTdCompRingMem;
 #endif
     uint8_t                 *trpdMem;
 
@@ -324,6 +325,7 @@ App_UdmaObj gUdmaAppObj;
 static uint8_t gTxRingMem[UDMA_TEST_APP_RING_MEM_SIZE_ALIGN] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT), section(".udma_buffer_r5_tcm")));
 #if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
 static uint8_t gTxCompRingMem[UDMA_TEST_APP_RING_MEM_SIZE_ALIGN] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT), section(".udma_buffer_r5_tcm")));
+static uint8_t gTxTdCompRingMem[UDMA_TEST_APP_RING_MEM_SIZE_ALIGN] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT), section(".udma_buffer_r5_tcm")));
 #endif
 static uint8_t gUdmaTrpdMem[UDMA_TEST_APP_TRPD_SIZE_ALIGN] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
 
@@ -853,6 +855,7 @@ static int32_t App_init(App_UdmaObj *appObj)
     appChObj->txRingMem         = &gTxRingMem[0U];
 #if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
     appChObj->txCompRingMem     = &gTxCompRingMem[0U];
+    appChObj->txTdCompRingMem   = &gTxTdCompRingMem[0U];
 #endif
     appChObj->trpdMem           = &gUdmaTrpdMem[0U];
     
@@ -918,6 +921,9 @@ static int32_t App_create(App_UdmaObj *appObj)
         chPrms.cqRingPrms.ringMem       = appChObj->txCompRingMem;
         chPrms.cqRingPrms.ringMemSize   = UDMA_TEST_APP_RING_MEM_SIZE;
         chPrms.cqRingPrms.elemCnt       = UDMA_TEST_APP_RING_ENTRIES;
+        chPrms.tdCqRingPrms.ringMem     = appChObj->txTdCompRingMem;
+        chPrms.tdCqRingPrms.ringMemSize = UDMA_TEST_APP_RING_MEM_SIZE;
+        chPrms.tdCqRingPrms.elemCnt     = UDMA_TEST_APP_RING_ENTRIES;
 #endif
 
         /* Open channel for block copy */
