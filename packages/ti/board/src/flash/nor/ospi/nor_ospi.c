@@ -253,45 +253,6 @@ static NOR_STATUS Nor_ospiXipEnable(SPI_Handle handle)
     return retVal;
 }
 
-static void Nor_ospiSetOpcode(SPI_Handle handle)
-{
-    uint32_t               data[3];
-    uint32_t               dummyCycles;
-    uint32_t               rx_lines;
-    OSPI_v0_HwAttrs const *hwAttrs= (OSPI_v0_HwAttrs const *)handle->hwAttrs;
-
-    rx_lines = hwAttrs->xferLines;
-    if (rx_lines == OSPI_XFER_LINES_OCTAL)
-    {
-        dummyCycles = NOR_OCTAL_READ_DUMMY_CYCLE;
-        if (dtrEnable == true)
-        {
-            data[0]     = NOR_CMD_OCTAL_DDR_O_FAST_RD;
-            data[1]     = NOR_CMD_OCTAL_FAST_PROG;
-        }
-        else
-        {
-            data[0]     = NOR_CMD_OCTAL_IO_FAST_RD;
-            data[1]     = NOR_CMD_EXT_OCTAL_FAST_PROG;
-        }
-    }
-    else
-    {
-        /* Set to legacy SPI mode 1-1-1 if not Octal mode */
-        dummyCycles = 0;
-        data[0]     = NOR_CMD_READ;
-        data[1]     = NOR_CMD_PAGE_PROG;
-    }
-    data[2]     = NOR_CMD_RDSR;
-
-    /* Update the read opCode, rx lines and read dummy cycles */
-    SPI_control(handle, SPI_V0_CMD_RD_DUMMY_CLKS, (void *)&dummyCycles);
-    SPI_control(handle, SPI_V0_CMD_SET_XFER_LINES, (void *)&rx_lines);
-    SPI_control(handle, SPI_V0_CMD_XFER_OPCODE, (void *)data);
-
-    return;
-}
-
 static NOR_STATUS Nor_ospiSetDummyCycle(SPI_Handle handle, uint32_t dummyCycle)
 {
     NOR_STATUS             retVal;
@@ -329,6 +290,55 @@ static NOR_STATUS Nor_ospiSetDummyCycle(SPI_Handle handle, uint32_t dummyCycle)
     return retVal;
 }
 
+static void Nor_ospiSetOpcode(SPI_Handle handle)
+{
+    uint32_t               data[3];
+    uint32_t               dummyCycles;
+    uint32_t               rx_lines;
+    OSPI_v0_HwAttrs const *hwAttrs= (OSPI_v0_HwAttrs const *)handle->hwAttrs;
+
+    rx_lines = hwAttrs->xferLines;
+    if (rx_lines == OSPI_XFER_LINES_OCTAL)
+    {
+        if (hwAttrs->dacEnable)
+        {
+            dummyCycles = NOR_OCTAL_READ_DUMMY_CYCLE;
+        }
+        else
+        {
+            dummyCycles = 16U;
+        }
+
+        if (dtrEnable == true)
+        {
+            data[0]     = NOR_CMD_OCTAL_DDR_O_FAST_RD;
+            data[1]     = NOR_CMD_OCTAL_FAST_PROG;
+        }
+        else
+        {
+            data[0]     = NOR_CMD_OCTAL_IO_FAST_RD;
+            data[1]     = NOR_CMD_EXT_OCTAL_FAST_PROG;
+        }
+    }
+    else
+    {
+        /* Set to legacy SPI mode 1-1-1 if not Octal mode */
+        dummyCycles = 0;
+        data[0]     = NOR_CMD_READ;
+        data[1]     = NOR_CMD_PAGE_PROG;
+    }
+    data[2]     = NOR_CMD_RDSR;
+
+    /* Update the read opCode, rx lines and read dummy cycles */
+    SPI_control(handle, SPI_V0_CMD_RD_DUMMY_CLKS, (void *)&dummyCycles);
+    SPI_control(handle, SPI_V0_CMD_SET_XFER_LINES, (void *)&rx_lines);
+    SPI_control(handle, SPI_V0_CMD_XFER_OPCODE, (void *)data);
+
+    /* Set read dummy cycles to the flash device */
+    Nor_ospiSetDummyCycle(handle, dummyCycles);
+
+    return;
+}
 
 NOR_HANDLE Nor_ospiOpen(uint32_t norIntf, uint32_t portNum, void *params)
 {
@@ -523,7 +533,6 @@ NOR_STATUS Nor_ospiRead(NOR_HANDLE handle, uint32_t addr,
 
     if (phyEnable == (bool)true)
     {
-        Nor_ospiSetDummyCycle(spiHandle, NOR_OCTAL_READ_DUMMY_CYCLE);
         if (Nor_spiPhyTune(spiHandle, NOR_TUNING_DATA_OFFSET) == NOR_FAIL)
            return NOR_FAIL;
     }

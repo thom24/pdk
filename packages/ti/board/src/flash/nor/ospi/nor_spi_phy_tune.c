@@ -40,7 +40,7 @@
 #include <ti/board/src/flash/nor/ospi/nor_spi_patterns.h>
 #include <ti/board/src/flash/nor/ospi/nor_spi_phy_tune.h>
 
-#define NOR_SPI_TUNE_DEBUG
+#undef NOR_SPI_TUNE_DEBUG
 
 #ifdef NOR_SPI_TUNE_DEBUG
 #define NOR_log printf
