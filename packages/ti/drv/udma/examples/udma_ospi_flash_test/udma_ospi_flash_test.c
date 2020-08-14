@@ -222,6 +222,12 @@ typedef struct
     struct Udma_ChObj       chObj;
     App_UdmaTrObj           appTrObj;   
 
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
+    struct Udma_EventObj    tdCqEventObj;
+    Udma_EventHandle        tdCqEventHandle;
+    Udma_EventPrms          tdCqEventPrms;
+#endif 
+
     Udma_ChHandle           chHandle;
     Udma_DrvHandle          drvHandle;
 
@@ -287,6 +293,12 @@ static int32_t App_udmaOspiFlash(App_UdmaObj *appObj);
 static int32_t App_udmaOspiFlashWrite(App_UdmaObj *appObj) __attribute__((section(".udma_critical_fxns")));
 static int32_t App_udmaOspiFlashRead(App_UdmaObj *appObj) __attribute__((section(".udma_critical_fxns")));
 
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
+static void App_udmaEventTdCb(Udma_EventHandle eventHandle,
+                              uint32_t eventType,
+                              void *appData);
+#endif
+
 static int32_t App_init(App_UdmaObj *appObj);
 static int32_t App_deinit(App_UdmaObj *appObj);
 
@@ -337,6 +349,8 @@ static uint8_t gUdmaTestRxBuf[UDMA_TEST_APP_BUF_SIZE_ALIGN] __attribute__((align
 static uint8_t * gUdmaTestOspiFlashDataAddr = (uint8_t *)(OSPI_FLASH_DATA_BASE_ADDR);
 
 /* Global test pass/fail flag */
+static volatile int32_t gUdmaTestResult = UDMA_SOK;
+/* Global App pass/fail flag */
 static volatile int32_t gUdmaAppResult = UDMA_SOK;
 
 /* No.of ticks taken to do a GTC Reg Read operation */
@@ -388,7 +402,7 @@ int32_t Udma_ospiFlashTest(void)
         appObj->appTestObj = *test;
         appObj->totalNumBytes = test->numBytes * UDMA_TEST_XFER_CNT;
         retVal = test->testFunc();
-        if(UDMA_SOK == retVal)
+        if((UDMA_SOK == retVal) && (UDMA_SOK == gUdmaTestResult))
         {
             App_print(test->testDesc);
             App_print(" have passed\r\n");
@@ -397,11 +411,12 @@ int32_t Udma_ospiFlashTest(void)
         {
             App_print(test->testDesc);
             App_print(" have failed\r\n");
-            break;
+            gUdmaTestResult = UDMA_SOK;
+            gUdmaAppResult = UDMA_EFAIL;
         }
     }
 
-    if(UDMA_SOK != retVal)
+    if(UDMA_SOK != gUdmaAppResult)
     {
         App_print("\n Some tests have failed. \n");
     }
@@ -461,7 +476,7 @@ static int32_t Udma_ospiFlashTestRun(void)
         App_print("\n [Error] UDMA App deinit failed!!\n");
     }
 
-    return (0);
+    return (retVal);
 }
 
 static int32_t App_ospiFlashTest(App_UdmaObj *appObj)
@@ -816,6 +831,41 @@ static int32_t App_udmaOspiFlashRead(App_UdmaObj *appObj)
     return (retVal);
 }
 
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
+static void App_udmaEventTdCb(Udma_EventHandle eventHandle,
+                              uint32_t eventType,
+                              void *appData)
+{
+    int32_t             retVal;
+    CSL_UdmapTdResponse tdResp;
+    App_UdmaChObj      *appChObj = (App_UdmaChObj *) appData;
+
+    if(appChObj != NULL)
+    {
+        if(UDMA_EVENT_TYPE_TEARDOWN_PACKET == eventType)
+        {
+            /* Response received in Teardown completion queue */
+            retVal = Udma_chDequeueTdResponse(appChObj->chHandle, &tdResp);
+            if(UDMA_SOK != retVal)
+            {
+                /* [Error] No TD response after callback!! */
+                gUdmaTestResult = UDMA_EFAIL;
+            }
+        }
+        else
+        {
+            gUdmaTestResult = UDMA_EFAIL;
+        }
+    }
+    else
+    {
+        gUdmaTestResult = UDMA_EFAIL;
+    }
+
+    return;
+}
+#endif
+
 static int32_t App_init(App_UdmaObj *appObj)
 {
     int32_t              retVal;
@@ -854,6 +904,7 @@ static int32_t App_init(App_UdmaObj *appObj)
     appChObj->drvHandle         = drvHandle;
     appChObj->txRingMem         = &gTxRingMem[0U];
 #if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
+    appChObj->tdCqEventHandle   = NULL;
     appChObj->txCompRingMem     = &gTxCompRingMem[0U];
     appChObj->txTdCompRingMem   = &gTxTdCompRingMem[0U];
 #endif
@@ -982,6 +1033,30 @@ static int32_t App_create(App_UdmaObj *appObj)
         }
     }
 
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
+    if(UDMA_SOK == retVal)
+    {
+        /* Register teardown ring completion callback */
+        eventHandle = &appChObj->tdCqEventObj;
+        UdmaEventPrms_init(&appChObj->tdCqEventPrms);
+        appChObj->tdCqEventPrms.eventType         = UDMA_EVENT_TYPE_TEARDOWN_PACKET;
+        appChObj->tdCqEventPrms.eventMode         = UDMA_EVENT_MODE_SHARED;
+        appChObj->tdCqEventPrms.chHandle          = chHandle;
+        appChObj->tdCqEventPrms.masterEventHandle = Udma_eventGetGlobalHandle(drvHandle);
+        appChObj->tdCqEventPrms.eventCb           = &App_udmaEventTdCb;
+        appChObj->tdCqEventPrms.appData           = appChObj;
+        retVal = Udma_eventRegister(drvHandle, eventHandle, &appChObj->tdCqEventPrms);
+        if(UDMA_SOK != retVal)
+        {
+            App_print("[Error] UDMA Teardown CQ event register failed!!\n");
+        }
+        else
+        {
+            appChObj->tdCqEventHandle = eventHandle;
+        }
+    }
+#endif 
+
     if(UDMA_SOK == retVal)
     {
         /* Channel enable */
@@ -1032,6 +1107,17 @@ static int32_t App_delete(App_UdmaObj *appObj)
         }
         appTrObj->trEventHandle = NULL;
     }
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
+    if(NULL != appChObj->tdCqEventHandle)
+    {
+        retVal += Udma_eventUnRegister(appChObj->tdCqEventHandle);
+        if(UDMA_SOK != retVal)
+        {
+            App_print("[Error] UDMA event unregister failed!!\n");
+        }
+        appChObj->tdCqEventHandle = NULL;
+    }
+#endif
 
     retVal += Udma_chClose(chHandle);
     if(UDMA_SOK != retVal)
