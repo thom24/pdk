@@ -366,10 +366,12 @@ int main()
     SBL_log(SBL_LOG_MAX, "done.\n");
 #endif
 
+#if !defined(SBL_USE_MCU_DOMAIN_ONLY) && !defined(SBL_ENABLE_DEV_GRP_MCU)
     /* Enable GTC */
     SBL_log(SBL_LOG_MAX, "Initializing GTC ...");
     volatile uint32_t *gtcRegister = (uint32_t *) CSL_GTC0_GTC_CFG1_BASE;
     *gtcRegister = *gtcRegister | CSL_GTC_CFG1_CNTCR_EN_MASK | CSL_GTC_CFG1_CNTCR_HDBG_MASK;
+#endif
 
     SBL_log(SBL_LOG_MAX, "Begin parsing user application\n");
 
