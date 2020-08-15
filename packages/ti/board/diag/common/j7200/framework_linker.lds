@@ -9,14 +9,14 @@ MEMORY
     DDR_MPU1   (RWX)  	: ORIGIN = 0x80000000, LENGTH = 0x08000000
     DDR_IPC     (RWX)  	: ORIGIN = 0x90000000, LENGTH = 0x02000000
 
-    /* j721e MCMS3 locations                                                  */
-    /* j721e Reserved Memory for ARM Trusted Firmware                        */
+    /* j7200 MCMS3 locations                                                  */
+    /* j7200 Reserved Memory for ARM Trusted Firmware                        */
     MSMC3_ARM_FW   (RWIX)   : ORIGIN = 0x000070000000, LENGTH = 0x40000         /* 256KB */
     BOOTVECTOR              : ORIGIN = 0x000070040000, LENGTH = 0x1000          /* 4KB */
     BOOTVECTOR_EL3          : ORIGIN = 0x000070041000, LENGTH = 0x1000          /* 4KB */
-    MSMC_MPU1	(RWX)	    : ORIGIN = 0x000070042000, LENGTH = 0x100000        /* 1024KB */
-    /* j721e Reserved Memory for DMSC Firmware                                */
-    MSMC3_DMSC_FW  (RWIX)   : ORIGIN = 0x0000707F0000, LENGTH = 0x10000         /* 64KB */
+    MSMC_MPU1	(RWX)	    : ORIGIN = 0x000070042000, LENGTH = 0x50000         /* 320KB */
+    /* j7200 Reserved Memory for DMSC Firmware                                */
+    MSMC3_DMSC_FW  (RWIX)   : ORIGIN = 0x0000700F0000, LENGTH = 0x10000         /* 64KB */
 }
 REGION_ALIAS("REGION_TEXT_EL3", MSMC_MPU1);
 REGION_ALIAS("REGION_TEXT", MSMC_MPU1);
@@ -130,6 +130,7 @@ SECTIONS {
         *(.bss.*)
         . = ALIGN (8);
         __bss_end__ = .;
+        . = ALIGN (8);
         . = ALIGN (8);
         __bss_common_start__ = .;
         *(COMMON)
