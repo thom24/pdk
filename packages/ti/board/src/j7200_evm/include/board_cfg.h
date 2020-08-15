@@ -112,6 +112,7 @@ extern "C" {
 #define BOARD_I2C_IOEXP_DEVICE1_INSTANCE                (BOARD_MAIN_I2C0_INSTANCE)
 #define BOARD_I2C_IOEXP_DEVICE2_INSTANCE                (BOARD_MAIN_I2C0_INSTANCE)
 #define BOARD_I2C_IOEXP_DEVICE3_INSTANCE                (BOARD_MAIN_I2C1_INSTANCE)
+#define BOARD_I2C_AUDIO_IOEXP_DEVICE_INSTANCE           (BOARD_MAIN_I2C1_INSTANCE)
 
 /* I2C instance connected to User LED */
 #define BOARD_I2C_USER_LED_INSTANCE                     (BOARD_I2C_IOEXP_DEVICE2_INSTANCE)
@@ -146,6 +147,10 @@ extern "C" {
 #define BOARD_I2C_IOEXP_DEVICE1_ADDR                    (0x20U)
 #define BOARD_I2C_IOEXP_DEVICE2_ADDR                    (0x22U)
 #define BOARD_I2C_IOEXP_DEVICE3_ADDR                    (0x20U)
+#define BOARD_I2C_AUDIO_IOEXP_DEVICE_ADDR               (0x21U)
+
+#define BOARD_I2C_FPD_UB926_INSTANCE                    (1U)
+#define BOARD_I2C_FPD_UB926_ADDR                        (0x2CU)
 
 /* I2C address for External RTC */
 #define BOARD_I2C_EXT_RTC_ADDR                          (0x6FU)

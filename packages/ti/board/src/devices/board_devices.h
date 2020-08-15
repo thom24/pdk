@@ -133,6 +133,9 @@
 #include <ti/board/src/devices/common/common.h>
 
 #include <ti/board/src/devices/audio/pcm3168A.h>
+#include <ti/board/src/devices/fpd/ds90ub925.h>
+#include <ti/board/src/devices/fpd/ds90ub926.h>
+#include <ti/board/src/devices/combos/ds90ub92x_afe8310.h>
 #endif
 
 #if defined(am65xx_evm) || defined(am65xx_idk)

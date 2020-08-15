@@ -43,9 +43,9 @@
  *  fpd library API's by setting and clearing the most possible bits
  *  of all register configurations supported by library API's.
  *
- *  Supported SoCs: J721E.
+ *  Supported SoCs: J721E & J7200.
  *
- *  Supported Platforms: j721e_evm.
+ *  Supported Platforms: j721e_evm & j7200_evm.
  *
  */
  
@@ -62,7 +62,9 @@ int main(void)
 {
     Board_STATUS status;
     Board_initCfg boardCfg;
+#if defined(j721e_evm)
     uint8_t userInput = 0;
+#endif
     uint8_t ret = 0;
 
 #ifdef PDK_RAW_BOOT
@@ -82,7 +84,7 @@ int main(void)
 	UART_printf("\n*********************************************\n");
 	UART_printf("*               FPD LIB TEST                *\n");
 	UART_printf("*********************************************\n");
-
+#if defined(j721e_evm)
     while ((userInput != 1) || (userInput != 2))
     {
         UART_printf("\n1.FPD DSI (ds90ub941 & ds90ub924)\n");
@@ -129,6 +131,17 @@ int main(void)
             }
         }
     }
+#else
+	ret = BoardDiag_fpdTuner_run_test();
+	if(ret == 0)
+	{
+		UART_printf("\nFPD LIB test Passed\n");
+	}
+	else
+	{
+		UART_printf("\nFPD LIB test Failed\n");
+	}
 
+#endif
 	return 0;
 }

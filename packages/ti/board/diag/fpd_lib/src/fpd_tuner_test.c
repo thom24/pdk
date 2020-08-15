@@ -866,8 +866,7 @@ int32_t BoardDiag_fpdTuner_run_test()
 
     Board_fpdUb926GetI2CAddr(&domain,
                              &i2cInst,
-                             &slaveAddr);
-    
+                             &slaveAddr);    
     if(domain == BOARD_SOC_DOMAIN_MAIN)
     {
 #if !defined (__aarch64__)

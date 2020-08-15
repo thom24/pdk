@@ -70,7 +70,13 @@ PACKAGE_SRCS_COMMON += ../../common/$(SOC)
 PACKAGE_SRCS_COMMON += ../../board_diag_component.mk
 PACKAGE_SRCS_COMMON += ../../create_sd.bat ../../create_sd.sh
 
+ifeq ($(BOARD), $(filter $(BOARD), j721e_evm))
 SRCS_COMMON += fpd_main.c fpd_dsi_test.c fpd_tuner_test.c fpd_csi_test.c diag_common_cfg.c
+endif
+
+ifeq ($(BOARD), $(filter $(BOARD), j7200_evm))
+SRCS_COMMON += fpd_main.c fpd_tuner_test.c diag_common_cfg.c
+endif
 
 ifeq ($(CORE),$(filter $(CORE), mcu1_0))
 SRCS_ASM_COMMON += diag_entry_r5.asm

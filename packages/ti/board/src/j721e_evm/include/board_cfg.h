@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -387,6 +387,9 @@ extern "C" {
 
 #define BOARD_I2C_TOUCH_INSTANCE                        (0)
 #define BOARD_I2C_TOUCH_SLAVE_ADDR                      (0)
+
+#define BOARD_I2C_FPD_UB926_INSTANCE                    (3U)
+#define BOARD_I2C_FPD_UB926_ADDR                        (0x2CU)
 
 /* I2C instance Board Presence Circuit */
 #define BOARD_PRES_WKUP_I2C_INSTANCE                    (0U)

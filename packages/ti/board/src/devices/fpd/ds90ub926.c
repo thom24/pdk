@@ -906,7 +906,7 @@ void Board_fpdUb926GetI2CAddr(uint8_t *domain,
                               uint8_t *i2cAddr)
 {
     *domain = BOARD_SOC_DOMAIN_MAIN;
-    *chNum = 3U;
-    *i2cAddr = 0x2C;
+    *chNum = BOARD_I2C_FPD_UB926_INSTANCE;
+    *i2cAddr = BOARD_I2C_FPD_UB926_ADDR;
 }
 
