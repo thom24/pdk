@@ -55,27 +55,16 @@
 
 
 /* GPIO Driver board specific pin configuration structure */
-GPIO_PinConfig gpioPinConfigs[] = {
+GPIO_v2_PinConfig gpioPinConfigs[] = {
 	/* Output pins */
-	((GPIO_INST_RCSS)<<8U) | BOARD_DIAG_SYNC_IN_FE1 | GPIO_CFG_OUTPUT,
-
-    ((GPIO_INST_RCSS)<<8U) | BOARD_DIAG_MIBSPIA_HOST_INTR | GPIO_CFG_OUTPUT,
-
-	/* Output pins */
-	((GPIO_INST_RCSS)<<8U) | BOARD_DIAG_SYNC_IN_FE2 | GPIO_CFG_OUTPUT,
-
-    ((GPIO_INST_RCSS)<<8U) | BOARD_DIAG_MIBSPIB_HOST_INTR | GPIO_CFG_OUTPUT
-};
-
-/* GPIO Driver call back functions */
-GPIO_CallbackFxn gpioCallbackFunctions[] = {
-    NULL
+	{BOARD_DIAG_SYNC_IN_FE1, GPIO_CFG_OUTPUT, NULL},
+    {BOARD_DIAG_MIBSPIA_HOST_INTR, GPIO_CFG_OUTPUT, NULL},
+    {BOARD_DIAG_SYNC_IN_FE2, GPIO_CFG_OUTPUT, NULL},
+    {BOARD_DIAG_MIBSPIB_HOST_INTR, GPIO_CFG_OUTPUT, NULL}
 };
 
 /* GPIO Driver configuration structure */
 GPIO_v2_Config GPIO_v2_config = {
     gpioPinConfigs,
     gpioCallbackFunctions,
-    sizeof(gpioPinConfigs) / sizeof(GPIO_PinConfig),
-    sizeof(gpioCallbackFunctions) / sizeof(GPIO_CallbackFxn)
 };

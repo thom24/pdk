@@ -46,22 +46,15 @@
 
 /* Port and pin number mask for indication LED.
    Bits 7-0: Pin number  and Bits 15-8: Port number */
-#define BOARD_DIAG_GPIO_LED    ((BOARD_GPIO_LED_PORT_NUM << 8) | BOARD_GPIO_LED_PIN_NUM)
+#define BOARD_DIAG_GPIO_LED    (BOARD_GPIO_LED_PIN_NUM)
 
 /* GPIO Driver board specific pin configuration structure */
-GPIO_PinConfig gpioPinConfigs[] = {
-    BOARD_DIAG_GPIO_LED | GPIO_CFG_OUTPUT
-};
-
-/* GPIO Driver call back functions */
-GPIO_CallbackFxn gpioCallbackFunctions[] = {
-    NULL
+GPIO_v2_PinConfig gpioPinConfigs[] = {
+    {BOARD_DIAG_GPIO_LED, GPIO_CFG_OUTPUT, NULL}
 };
 
 /* GPIO Driver configuration structure */
 GPIO_v2_Config GPIO_v2_config = {
     gpioPinConfigs,
-    gpioCallbackFunctions,
     sizeof(gpioPinConfigs) / sizeof(GPIO_PinConfig),
-    sizeof(gpioCallbackFunctions) / sizeof(GPIO_CallbackFxn)
 };
