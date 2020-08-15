@@ -151,7 +151,7 @@ void SBL_DCacheClean(void *addr, uint32_t size)
     else
     {
         /* Invalidating full cache by set and way is more efficient */
-	for (set = 0; set < 128; set ++)
+    for (set = 0; set < 128; set ++)
         {
             for (way = 0; way < 4; way++)
             {
@@ -401,6 +401,8 @@ int32_t SBL_VerifyMulticoreImage(void **img_handle,
 
             SBL_ADD_PROFILE_POINT;
 
+            SBL_SeekMem(NULL, 0);
+
             /* Image is loaded. RPRC parsing no longer */
             /* neeeds to access the boot media. Update */
             /* caller with image load address          */
@@ -488,11 +490,11 @@ void SBL_SetupPmicCfg(sblCfgPmic_t *pmicVoltCfg, uint32_t opp)
 
     for (vd = 0; vd < SBL_MAX_VTM_VDS; vd++)
     {
-	    vtmDevInfo = CSL_REG32_RD(SBL_VTM_CFG_BASE + CSL_VTM_CFG1_VD_DEVINFO(vd));
-	    vtmOppVid = CSL_REG32_RD(SBL_VTM_CFG_BASE + CSL_VTM_CFG1_VD_OPPVID(vd));
-	    pmicCfg = pmicVoltCfg + vd;
-	    if (vtmDevInfo & CSL_VTM_CFG1_DEVINFO_AVS0_SUP_MASK)
-	    {
+        vtmDevInfo = CSL_REG32_RD(SBL_VTM_CFG_BASE + CSL_VTM_CFG1_VD_DEVINFO(vd));
+        vtmOppVid = CSL_REG32_RD(SBL_VTM_CFG_BASE + CSL_VTM_CFG1_VD_OPPVID(vd));
+        pmicCfg = pmicVoltCfg + vd;
+        if (vtmDevInfo & CSL_VTM_CFG1_DEVINFO_AVS0_SUP_MASK)
+        {
             vtmOppVid = (vtmOppVid & vtmOppVidMask) >> opp;
             pmicCfg->millivolts = sblMapOtpVidToMilliVolts[vtmOppVid];
             SBL_log(SBL_LOG_MAX, "Efuse xlated: VD %d to %d mV (OppVid: 0x%x, Slave:0x%x, Res:0x%x)\r\n", vd, pmicCfg->millivolts, vtmOppVid, pmicCfg->slaveAddr, pmicCfg->powerResource);
@@ -707,7 +709,7 @@ void SBL_SocLateInit(void)
 
     SBL_ADD_PROFILE_POINT;
 
-	J721E_SetupLeoPmicAvs(SBL_OPP_NOM);
+    J721E_SetupLeoPmicAvs(SBL_OPP_NOM);
 
     SBL_ADD_PROFILE_POINT;
 }
