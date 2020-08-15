@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2018-2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -330,6 +330,15 @@ static int8_t BoardDiag_EepromStressTest(void)
         return ret;
     }
 
+#if (defined(SOC_J721E) || defined(SOC_J7200))
+    GPIO_v0_HwAttrs gpioCfg;
+    GPIO_socGetInitCfg(0, &gpioCfg);
+    gpioCfg.baseAddr = CSL_WKUP_GPIO0_BASE;
+    GPIO_socSetInitCfg(0, &gpioCfg);
+    GPIO_init();
+    /* Making Write protect line low to enable write access */
+    GPIO_write(0, 0);
+#endif
     UART_printf("\nVerifying the Boot EEPROM interface under stress "
                 "conditions...\n");
     /* Verifies all boot EEPROM pages */
@@ -397,7 +406,7 @@ int main(void)
     UART_printf("*           Boot EEPROM Stress Test         *\n");
     UART_printf("*********************************************\n");
 
-#if ((defined(SOC_J721E)) && (defined (__aarch64__)))
+#if ((defined(SOC_J721E) || defined(SOC_J7200)) && (defined (__aarch64__)))
     /* Enabling MCU I2C */
     enableI2C(CSL_MCU_I2C0_CFG_BASE);
 #endif

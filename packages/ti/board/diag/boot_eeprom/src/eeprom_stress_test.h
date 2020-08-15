@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2018-2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -52,7 +52,9 @@
 #include <ti/drv/uart/UART_stdio.h>
 #include <ti/drv/uart/UART.h>
 #include <ti/drv/uart/UART_stdio.h>
-#if defined(SOC_J721E)
+#if (defined(SOC_J721E) || defined(SOC_J7200))
+#include <ti/drv/gpio/GPIO.h>
+#include <ti/drv/gpio/soc/GPIO_soc.h>
 #include <ti/csl/soc.h>
 #endif
 #include "board.h"
@@ -64,20 +66,28 @@
 extern "C" {
 #endif
 
-#define ONE_KB_SIZE                             (1024U) /* 1024 Bytes */
+#define ONE_KB_SIZE                             (1024U)
 
+#if (defined(j721e_evm) || defined(j7200_evm))
+/* Size of Boot EEPROM is 128 KB */
+#define BOOT_EEPROM_SIZE                        (128 * ONE_KB_SIZE)
+
+/* Size of Boot EEPROM page is 256 Bytes */
+#define BOOT_EEPROM_PAGE_SIZE                   (256U)
+#else
 /* Size of Boot EEPROM is 64 KB */
 #define BOOT_EEPROM_SIZE                        (64 * ONE_KB_SIZE)
 
 /* Size of Boot EEPROM page is 128 Bytes */
 #define BOOT_EEPROM_PAGE_SIZE                   (128U)
+#endif
 
-/* Total Boot EEPROM Pages - 512 */
+/* Total Boot EEPROM Pages */
 #define TOTAL_BOOT_EEPROM_PAGES                 (BOOT_EEPROM_SIZE/BOOT_EEPROM_PAGE_SIZE)
 
 #define BOARD_EEPROM_FIRST_PAGE                 (0U)
 
-#define BOARD_EEPROM_LAST_PAGE                  (511U)/* 511th Page */
+#define BOARD_EEPROM_LAST_PAGE                  (TOTAL_BOOT_EEPROM_PAGES - 1U)
 
 #ifdef __cplusplus
 }

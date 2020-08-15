@@ -174,7 +174,8 @@ int32_t board_walking0s_test (uint64_t start_address,
 
 		if (!(index & MSG_FREQ))
 		{
-            UART_printf("\tWrite up to 0x%x08%x done\n", BOARD_DIAG_MEM_LWORD_SPLIT(index));
+            UART_printf("\tWrite up to 0x%x%08x done\n",
+                        BOARD_DIAG_MEM_LWORD_SPLIT(index));
 		}
 
 		/* Check if there is a input from console to break the test */
