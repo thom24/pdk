@@ -66,5 +66,5 @@ GPIO_v2_PinConfig gpioPinConfigs[] = {
 /* GPIO Driver configuration structure */
 GPIO_v2_Config GPIO_v2_config = {
     gpioPinConfigs,
-    gpioCallbackFunctions,
+    sizeof(gpioPinConfigs) / sizeof(GPIO_PinConfig),
 };
