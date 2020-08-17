@@ -80,6 +80,8 @@ extern "C" {
 #define NOR_CMD_RDREG                (0x65U)
 #define NOR_CMD_RDCR                 (0x35U)
 #define NOR_CMD_RDID                 (0x9FU)
+#define NOR_CMD_SRSTE                (0x66U)
+#define NOR_CMD_SFRST                (0x99U)
 
 #define NOR_CMD_BLOCK_ERASE          (0xDCU)
 #define NOR_CMD_SECTOR_ERASE         (0x21U)
@@ -94,6 +96,14 @@ extern "C" {
 
 #define NOR_VREG_OFFSET              (0x80U)
 #define NOR_NVREG_OFFSET             (0x0U)
+
+#define NOR_STS1_NVREG_ADDR          (0x0U)
+#define NOR_STS2_NVREG_ADDR          (0x1U)
+#define NOR_CFG1_NVREG_ADDR          (0x2U)
+#define NOR_CFG2_NVREG_ADDR          (0x3U)
+#define NOR_CFG3_NVREG_ADDR          (0x4U)
+#define NOR_CFG4_NVREG_ADDR          (0x5U)
+#define NOR_CFG5_NVREG_ADDR          (0x6U)
 
 #define NOR_STS1_VREG_ADDR           (0x800000U)
 #define NOR_STS2_VREG_ADDR           (0x800001U)
@@ -118,10 +128,13 @@ extern "C" {
 #define NOR_CR_TBPARM                (1U << 2U)
 
 /** Dummy cycles for Read operation */
-#define NOR_SINGLE_READ_DUMMY_CYCLE      (0U)
+#define NOR_SINGLE_READ_DUMMY_CYCLE           (0U)
 #define NOR_OCTAL_SDR_CMD_READ_DUMMY_CYCLE    (3U)
 #define NOR_OCTAL_DDR_CMD_READ_DUMMY_CYCLE    (4U)
-#define NOR_OCTAL_READ_DUMMY_CYCLE       (20U)
+#define NOR_OCTAL_READ_DUMMY_CYCLE            (24U)
+#define NOR_OCTAL_READ_DUMMY_CYCLE_LC         (0xBU)
+#define NOR_OCTAL_READ_DUMMY_CYCLE_INDAC      (20U)
+#define NOR_OCTAL_READ_DUMMY_CYCLE_LC_INDAC   (0x8U)
 
 /** In Micro seconds */
 #define NOR_PAGE_PROG_TIMEOUT		(400U)

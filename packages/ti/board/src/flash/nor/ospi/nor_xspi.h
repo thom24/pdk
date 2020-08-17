@@ -56,7 +56,11 @@
  **                       Macro Definitions
  **************************************************************************/
 
-#define BOARD_XSPI_BAUDRATE_DIV    (6U)
+#define BOARD_XSPI_BAUDRATE_DIV_133M    (4U)
+#define BOARD_XSPI_BAUDRATE_DIV_200M    (6U)
+
+/* Offset address (last block start address) of the 128 bytes tuning pattern data stored on the flash */
+#define NOR_TUNING_DATA_OFFSET    (NOR_SIZE - NOR_BLOCK_SIZE)
 
 #endif /* NOR_XSPI_H_ */
 

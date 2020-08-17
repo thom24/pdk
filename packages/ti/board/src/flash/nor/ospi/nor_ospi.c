@@ -79,8 +79,8 @@ NOR_Info Nor_ospiInfo =
     NOR_SECTOR_SIZE            /* sectorSize */
 };
 
-static bool phyEnable;
-static bool dtrEnable;
+static bool gPhyEnable;
+static bool gDtrEnable;
 
 static NOR_STATUS NOR_ospiCmdRead(SPI_Handle handle, uint8_t *cmdBuf,
                             uint32_t cmdLen, uint8_t *rxBuf, uint32_t rxLen)
@@ -260,7 +260,7 @@ static NOR_STATUS Nor_ospiSetDummyCycle(SPI_Handle handle, uint32_t dummyCycle)
     uint32_t               data[3];
     uint32_t               addrBytes;
 
-    if (dtrEnable == true)
+    if (gDtrEnable == true)
     {
         addrBytes = 3U;
     }
@@ -309,7 +309,7 @@ static void Nor_ospiSetOpcode(SPI_Handle handle)
             dummyCycles = 16U;
         }
 
-        if (dtrEnable == true)
+        if (gDtrEnable == true)
         {
             data[0]     = NOR_CMD_OCTAL_DDR_O_FAST_RD;
             data[1]     = NOR_CMD_OCTAL_FAST_PROG;
@@ -353,18 +353,18 @@ NOR_HANDLE Nor_ospiOpen(uint32_t norIntf, uint32_t portNum, void *params)
     OSPI_socGetInitCfg(portNum, &ospiCfg);
 
     /* Save the DTR enable flag */
-    dtrEnable = ospiCfg.dtrEnable;
+    gDtrEnable = ospiCfg.dtrEnable;
 
     /* Reset the PHY tunning configuration data when enabled */
     data = *(uint32_t *)params;
     if (data != 0)
     {
-        Nor_spiPhyTuneReset(dtrEnable);
+        Nor_spiPhyTuneReset(gDtrEnable);
     }
 
     /* Save the PHY enable flag */
-    phyEnable = ospiCfg.phyEnable;
-    if (phyEnable == (bool)true)
+    gPhyEnable = ospiCfg.phyEnable;
+    if (gPhyEnable == (bool)true)
     {
         /*
          * phyEnable is turned on only for DAC read,
@@ -395,7 +395,7 @@ NOR_HANDLE Nor_ospiOpen(uint32_t norIntf, uint32_t portNum, void *params)
                 Nor_ospiSetOpcode(hwHandle);
 #endif
                 /* Enable DDR or SDR mode for Octal lines */
-                if (dtrEnable == (bool)true)
+                if (gDtrEnable == (bool)true)
                 {
                     Nor_ospiEnableDDR(hwHandle);
                 }
@@ -531,7 +531,7 @@ NOR_STATUS Nor_ospiRead(NOR_HANDLE handle, uint32_t addr,
     }
     spiHandle = (SPI_Handle)norOspiInfo->hwHandle;
 
-    if (phyEnable == (bool)true)
+    if (gPhyEnable == (bool)true)
     {
         if (Nor_spiPhyTune(spiHandle, NOR_TUNING_DATA_OFFSET) == NOR_FAIL)
            return NOR_FAIL;
@@ -687,7 +687,7 @@ NOR_STATUS Nor_ospiErase(NOR_HANDLE handle, int32_t erLoc, bool blkErase)
             cmd[0] = NOR_CMD_SECTOR_ERASE;
         }
 
-        if (dtrEnable == (bool)true)
+        if (gDtrEnable == (bool)true)
         {
             cmd[1] = (address >> 24) & 0xff; /* 4 address bytes */
             cmd[2] = (address >> 16) & 0xff;

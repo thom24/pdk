@@ -348,7 +348,7 @@ static int8_t BoardDiag_ospiFlashTest(void)
 #endif
 #if defined(j7200_evm)
     ospi_cfg.phyEnable  = false;
-    ospi_cfg.dtrEnable  = false;
+    ospi_cfg.dtrEnable  = true;
     ospi_cfg.dacEnable  = false;
 #endif
 
@@ -501,6 +501,10 @@ int main(void)
                BOARD_INIT_UART_STDIO;
 #else
     boardCfg = BOARD_INIT_UART_STDIO | BOARD_INIT_PINMUX_CONFIG;
+#if defined (SOC_J7200)
+    /* Need to do PLL config through board init for proper clock input on J7200 */
+    boardCfg |= BOARD_INIT_PLL;
+#endif
 #endif
 
     status = Board_init(boardCfg);

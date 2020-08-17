@@ -67,7 +67,11 @@
 #include <ti/board/board_cfg.h>
 #include <ti/board/src/flash/include/board_flash.h>
 #include <ti/board/src/flash/nor/ospi/nor_spi_patterns.h>
+#if defined(SOC_J7200)
+#include <ti/board/src/flash/nor/ospi/nor_xspi.h>
+#else
 #include <ti/board/src/flash/nor/ospi/nor_ospi.h>
+#endif
 
 #ifdef SPI_DMA_ENABLE
 #include <ti/osal/CacheP.h>
@@ -952,7 +956,11 @@ void OSPI_test_print_test_desc(OSPI_Tests *test)
 OSPI_Tests Ospi_tests[] =
 {
 #ifdef OSPI_WRITE_TUNING
+#if defined(SOC_J7200)
+    {OSPI_flash_test, OSPI_TEST_ID_WR_TUNING,    false,   false,  OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave to write tuning data to flash"},
+#else
     {OSPI_flash_test, OSPI_TEST_ID_WR_TUNING,    true,   false,  OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave to write tuning data to flash"},
+#endif
 #endif
 #if !defined(SOC_J7200) /* Shall be enabled for J7200 when PDK-7115 is addressed */
     /* testFunc       testID                     dacMode dmaMode clk                   testDesc */
@@ -999,9 +1007,7 @@ void spi_test()
             break;
         }
 
-#if !defined(SOC_J7200) /* Shall be enabled for J7200 when PDK-7115 is addressed */
         OSPI_configClk(test->clk, true);
-#endif
 
         OSPI_test_print_test_desc(test);
 

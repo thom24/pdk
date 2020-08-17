@@ -36,7 +36,11 @@
 #include <ti/drv/spi/SPI.h>
 #include <ti/drv/spi/soc/SPI_soc.h>
 #include <ti/board/src/flash/nor/nor.h>
+#if defined (j7200_evm)
+#include <ti/board/src/flash/nor/ospi/nor_xspi.h>
+#else
 #include <ti/board/src/flash/nor/ospi/nor_ospi.h>
+#endif
 #include <ti/board/src/flash/nor/ospi/nor_spi_patterns.h>
 #include <ti/board/src/flash/nor/ospi/nor_spi_phy_tune.h>
 

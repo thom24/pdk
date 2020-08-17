@@ -77,8 +77,12 @@ NOR_Info Nor_xspiInfo =
     NOR_SECTOR_SIZE            /* sectorSize */
 };
 
+static bool gPhyEnable;
+static bool gDtrEnable;
+
 static NOR_STATUS Nor_xspiCmdRead(SPI_Handle handle, uint8_t *cmdBuf,
-                            uint32_t cmdLen, uint8_t *rxBuf, uint32_t rxLen)
+                                  uint32_t cmdLen, uint8_t *rxBuf,
+                                  uint32_t rxLen)
 {
     SPI_Transaction  transaction;
     uint32_t         transferType = SPI_TRANSACTION_TYPE_READ;
@@ -221,7 +225,7 @@ static NOR_STATUS Nor_xspiHybridSectCfg(SPI_Handle handle,
     }
 
     /* Write configuration register3 */
-    retVal = Nor_xspiRegWrite(handle, NOR_CFG3_VREG_ADDR, regData);
+    retVal = Nor_xspiRegWrite(handle, NOR_CFG3_NVREG_ADDR, regData);
     if(retVal != NOR_PASS)
     {
         return NOR_FAIL;
@@ -267,9 +271,6 @@ static NOR_STATUS Nor_xspiEnableDDR(SPI_Handle handle)
     NOR_STATUS             retVal;
     uint8_t                cmdWren = NOR_CMD_WREN;
     uint32_t               data[6];
-    uint32_t               dummyCycles;
-    uint32_t               rx_lines;
-    OSPI_v0_HwAttrs const *hwAttrs= (OSPI_v0_HwAttrs const *)handle->hwAttrs;
 
     /* Send Write Enable command */
     retVal = Nor_xspiCmdWrite(handle, &cmdWren, 1, 0);
@@ -287,30 +288,6 @@ static NOR_STATUS Nor_xspiEnableDDR(SPI_Handle handle)
         data[1] = 0x00800006;     /* Non-volatile config register address */
         data[2] = 0x43; /* set to Octal DDR in Nonvolatile Config Reg 0x0 */
         SPI_control(handle, SPI_V0_CMD_ENABLE_DDR, (void *)data);
-
-        /* Set opcodes */
-        dummyCycles = NOR_OCTAL_READ_DUMMY_CYCLE + 1;
-        rx_lines    = hwAttrs->xferLines;
-        data[0]     = NOR_CMD_OCTAL_DDR_READ;
-        data[1]     = NOR_CMD_OCTAL_PROG;
-        data[2]     = NOR_CMD_RDSR;
-
-        /* Update the read opCode, rx lines and read dummy cycles */
-        SPI_control(handle, SPI_V0_CMD_RD_DUMMY_CLKS, (void *)&dummyCycles);
-        SPI_control(handle, SPI_V0_CMD_SET_XFER_LINES, (void *)&rx_lines);
-        SPI_control(handle, SPI_V0_CMD_XFER_OPCODE, (void *)data);
-
-        /* Set the opcodes for dual opcode mode */
-        data[0]     = 0;
-        data[1]     = 0xFA;
-        data[2]     = NOR_CMD_OCTAL_PROG;
-        data[3]     = NOR_CMD_OCTAL_DDR_READ;
-        data[4]     = 0xF9;
-        data[5]     = 0x6;
-        SPI_control(handle, SPI_V0_CMD_XFER_OPCODE_EXT, (void *)data);
-
-        dummyCycles = NOR_OCTAL_DDR_CMD_READ_DUMMY_CYCLE;
-        SPI_control(handle, SPI_V0_CMD_EXT_RD_DUMMY_CLKS, (void *)&dummyCycles);
     }
 
     return retVal;
@@ -321,8 +298,6 @@ static NOR_STATUS Nor_xspiEnableSDR(SPI_Handle handle)
     NOR_STATUS             retVal;
     uint8_t                cmdWren = NOR_CMD_WREN;
     uint32_t               data[6];
-    uint32_t               dummyCycles;
-    uint32_t               rx_lines;
     OSPI_v0_HwAttrs const *hwAttrs= (OSPI_v0_HwAttrs const *)handle->hwAttrs;
     CSL_ospi_flash_cfgRegs *regAddr;
     uint32_t               regVal;
@@ -344,30 +319,6 @@ static NOR_STATUS Nor_xspiEnableSDR(SPI_Handle handle)
         data[2] = 0x41U; /* set to Extended SPI mode in Nonvolatile Config Reg 0x0 */
         SPI_control(handle, SPI_V0_CMD_ENABLE_SDR, (void *)data);
 
-        /* Set opcodes */
-        dummyCycles = NOR_OCTAL_READ_DUMMY_CYCLE;
-        rx_lines    = hwAttrs->xferLines;
-        data[0]     = NOR_CMD_OCTAL_READ;
-        data[1]     = NOR_CMD_OCTAL_PROG;
-        data[2]     = NOR_CMD_RDSR;
-
-        /* Update the read opCode, rx lines and read dummy cycles */
-        SPI_control(handle, SPI_V0_CMD_RD_DUMMY_CLKS, (void *)&dummyCycles);
-        SPI_control(handle, SPI_V0_CMD_SET_XFER_LINES, (void *)&rx_lines);
-        SPI_control(handle, SPI_V0_CMD_XFER_OPCODE, (void *)data);
-
-        /* Set the opcodes for dual opcode mode */
-        data[0]     = 0;
-        data[1]     = 0xFA;
-        data[2]     = NOR_CMD_OCTAL_PROG;
-        data[3]     = NOR_CMD_OCTAL_READ;
-        data[4]     = 0xF9;
-        data[5]     = 0x6;
-        SPI_control(handle, SPI_V0_CMD_XFER_OPCODE_EXT, (void *)data);
-        
-        dummyCycles = NOR_OCTAL_SDR_CMD_READ_DUMMY_CYCLE;
-        SPI_control(handle, SPI_V0_CMD_EXT_RD_DUMMY_CLKS, (void *)&dummyCycles);
-
         /* Flash device requires 4-bit access for command as well in quad mode */
         regAddr = (CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr);
         regVal = CSL_REG32_RD(&regAddr->DEV_INSTR_RD_CONFIG_REG);
@@ -378,19 +329,168 @@ static NOR_STATUS Nor_xspiEnableSDR(SPI_Handle handle)
     return NOR_PASS;
 }
 
+static NOR_STATUS Nor_xspiSetDummyCycle(SPI_Handle handle, uint32_t dummyCycle)
+{
+    NOR_STATUS  retVal;
+    uint8_t     regData;
+
+    /* Read configuration register2 */
+    retVal = Nor_xspiRegRead(handle, NOR_CFG2_VREG_ADDR, &regData);
+    if(retVal != NOR_PASS)
+    {
+        return NOR_FAIL;
+    }
+
+    /* Set the dummy cycles */
+    regData = (regData & ~0xF) | dummyCycle;
+
+    /* Write configuration register2 */
+    retVal = Nor_xspiRegWrite(handle, NOR_CFG2_VREG_ADDR, regData);
+    if(retVal != NOR_PASS)
+    {
+        return NOR_FAIL;
+    }
+
+    return retVal;
+}
+
+static NOR_STATUS Nor_xspiResetMemory(SPI_Handle handle)
+{
+    uint8_t     cmd;
+
+    cmd = NOR_CMD_SRSTE;
+    if (Nor_xspiCmdWrite(handle, &cmd, 1, 0))
+    {
+        return NOR_FAIL;
+    }
+
+    cmd = NOR_CMD_SFRST;
+    if (Nor_xspiCmdWrite(handle, &cmd, 1, 0))
+    {
+        return NOR_FAIL;
+    }
+
+    return NOR_PASS;
+}
+
+static void Nor_ospiSetOpcode(SPI_Handle handle)
+{
+    uint32_t               data[6];
+    uint32_t               rdDummyCycles = 0;
+    uint32_t               cmdDummyCycles = 0;
+    uint32_t               readCmd;
+    uint32_t               progCmd;
+    uint32_t               latencyCode;
+    uint32_t               rx_lines;
+    OSPI_v0_HwAttrs const *hwAttrs= (OSPI_v0_HwAttrs const *)handle->hwAttrs;
+
+    rx_lines = hwAttrs->xferLines;
+    if (rx_lines == OSPI_XFER_LINES_OCTAL)
+    {
+        if (hwAttrs->dacEnable)
+        {
+            rdDummyCycles = NOR_OCTAL_READ_DUMMY_CYCLE;
+            latencyCode   = NOR_OCTAL_READ_DUMMY_CYCLE_LC;
+        }
+        else
+        {
+            rdDummyCycles = NOR_OCTAL_READ_DUMMY_CYCLE_INDAC;
+            latencyCode   = NOR_OCTAL_READ_DUMMY_CYCLE_LC_INDAC;
+        }
+
+        if (gDtrEnable == true)
+        {
+            cmdDummyCycles = NOR_OCTAL_DDR_CMD_READ_DUMMY_CYCLE;
+            readCmd = NOR_CMD_OCTAL_DDR_READ;
+            if (gPhyEnable == (bool)false)
+            {
+                rdDummyCycles += 1;
+            }
+        }
+        else
+        {
+            cmdDummyCycles = NOR_OCTAL_SDR_CMD_READ_DUMMY_CYCLE;
+            readCmd = NOR_CMD_OCTAL_READ;
+        }
+
+        progCmd = NOR_CMD_OCTAL_PROG;
+    }
+    else
+    {
+        /* Set to legacy SPI mode 1-1-1 if not Octal mode */
+        data[0]       = NOR_CMD_READ;
+        data[1]       = NOR_CMD_PAGE_PROG;
+    }
+
+    data[0] = readCmd;
+    data[1] = progCmd;
+    data[2] = NOR_CMD_RDSR;
+
+    /* Update the read opCode, rx lines and read dummy cycles */
+    SPI_control(handle, SPI_V0_CMD_RD_DUMMY_CLKS, (void *)&rdDummyCycles);
+    SPI_control(handle, SPI_V0_CMD_SET_XFER_LINES, (void *)&rx_lines);
+    SPI_control(handle, SPI_V0_CMD_XFER_OPCODE, (void *)data);
+
+    /* Set the opcodes for dual opcode mode */
+    data[0] = 0;
+    data[1] = 0xFA;
+    data[2] = readCmd;
+    data[3] = progCmd;
+    data[4] = 0xF9;
+    data[5] = 0x6;
+    SPI_control(handle, SPI_V0_CMD_XFER_OPCODE_EXT, (void *)data);
+
+    SPI_control(handle, SPI_V0_CMD_EXT_RD_DUMMY_CLKS, (void *)&cmdDummyCycles);
+
+    /* Set read dummy cycles to the flash device */
+    Nor_xspiSetDummyCycle(handle, latencyCode);
+
+    return;
+}
+
 NOR_HANDLE Nor_xspiOpen(uint32_t norIntf, uint32_t portNum, void *params)
 {
     SPI_Params      spiParams;  /* SPI params structure */
     SPI_Handle      hwHandle;  /* SPI handle */
     NOR_HANDLE      norHandle = 0;
-    OSPI_v0_HwAttrs ospi_cfg;
+    OSPI_v0_HwAttrs ospiCfg;
     NOR_STATUS      retVal;
+    uint32_t        data;
 
-    /* Update the default driver config for xSPI operation */
-    OSPI_socGetInitCfg(portNum, &ospi_cfg);
-    ospi_cfg.phyEnable   = false;
-    ospi_cfg.baudRateDiv = BOARD_XSPI_BAUDRATE_DIV;
-    OSPI_socSetInitCfg(portNum, &ospi_cfg);
+    /* Get the OSPI SoC configurations */
+    OSPI_socGetInitCfg(portNum, &ospiCfg);
+
+    /* Save the DTR enable flag */
+    gDtrEnable = ospiCfg.dtrEnable;
+
+    /* Reset the PHY tunning configuration data when enabled */
+    data = *(uint32_t *)params;
+    if (data != 0)
+    {
+        Nor_spiPhyTuneReset(gDtrEnable);
+    }
+
+    /* Save the PHY enable flag */
+    gPhyEnable = ospiCfg.phyEnable;
+    if (gPhyEnable == (bool)true)
+    {
+        /*
+         * phyEnable is turned on only for DAC read,
+         * it turned off for open/erase/write operation
+         */
+        ospiCfg.phyEnable = false;
+    }
+
+    if(ospiCfg.funcClk == OSPI_MODULE_CLK_200M)
+    {
+        ospiCfg.baudRateDiv = BOARD_XSPI_BAUDRATE_DIV_200M;
+    }
+    else
+    {
+        ospiCfg.baudRateDiv = BOARD_XSPI_BAUDRATE_DIV_133M;
+    }
+
+    OSPI_socSetInitCfg(portNum, &ospiCfg);
 
     /* Use default SPI config params if no params provided */
     SPI_Params_init(&spiParams);
@@ -402,9 +502,14 @@ NOR_HANDLE Nor_xspiOpen(uint32_t norIntf, uint32_t portNum, void *params)
         retVal = NOR_PASS;
         if (retVal == NOR_PASS)
         {
-            OSPI_socGetInitCfg(portNum, &ospi_cfg);
+            OSPI_socGetInitCfg(portNum, &ospiCfg);
 
-            if (ospi_cfg.dtrEnable == true)
+            if (gPhyEnable == (bool)true)
+            {
+                Nor_xspiResetMemory(hwHandle);
+            }
+
+            if (ospiCfg.dtrEnable == true)
             {
                 Nor_xspiEnableDDR(hwHandle);
             }
@@ -413,29 +518,12 @@ NOR_HANDLE Nor_xspiOpen(uint32_t norIntf, uint32_t portNum, void *params)
                 Nor_xspiEnableSDR(hwHandle);
             }
 
-            if (ospi_cfg.phyEnable == true)
+            Nor_ospiSetOpcode(hwHandle);
+
+            if (Nor_xspiReadId(hwHandle) == NOR_PASS)
             {
-                uint32_t offset = *(uint32_t *)params;
-
-                retVal = Nor_spiPhyTune(hwHandle, offset);
-                if (retVal == NOR_PASS)
-                {
-                    retVal = Nor_xspiReadId(hwHandle);
-                }
-
-                if (retVal == NOR_PASS)
-                {
-                    Nor_xspiInfo.hwHandle = (uintptr_t)hwHandle;
-                    norHandle = (NOR_HANDLE)(&Nor_xspiInfo);
-                }
-            }
-            else /* ospi_cfg->phyEnable == false */
-            {                
-                if (Nor_xspiReadId(hwHandle) == NOR_PASS)
-                {
-                    Nor_xspiInfo.hwHandle = (uintptr_t)hwHandle;
-                    norHandle = (NOR_HANDLE)(&Nor_xspiInfo);
-                }
+                Nor_xspiInfo.hwHandle = (uintptr_t)hwHandle;
+                norHandle = (NOR_HANDLE)(&Nor_xspiInfo);
             }
         }
 
@@ -535,6 +623,15 @@ NOR_STATUS Nor_xspiRead(NOR_HANDLE handle, uint32_t addr,
     {
         return NOR_FAIL;
     }
+
+    if (gPhyEnable == (bool)true)
+    {
+        if (Nor_spiPhyTune(spiHandle, NOR_TUNING_DATA_OFFSET) == NOR_FAIL)
+        {
+           return NOR_FAIL;
+        }
+    }
+
     /* Set transfer mode and read type */
     SPI_control(spiHandle, SPI_V0_CMD_SET_XFER_MODE, NULL);
     SPI_control(spiHandle, SPI_V0_CMD_XFER_MODE_RW, (void *)&transferType);
@@ -653,14 +750,11 @@ NOR_STATUS Nor_xspiWrite(NOR_HANDLE handle, uint32_t addr, uint32_t len,
 NOR_STATUS Nor_xspiErase(NOR_HANDLE handle, int32_t erLoc, bool blkErase)
 {
     uint8_t         cmd[10];
-    uint8_t         wrenStatus = 0;
     uint32_t        cmdLen;
     uint32_t        address = 0;
     uint8_t         cmdWren[2];
-    NOR_Info       *norOspiInfo;
+    NOR_Info        *norOspiInfo;
     SPI_Handle      spiHandle;
-    
-    wrenStatus = wrenStatus;
 
     if (!handle)
     {

@@ -220,7 +220,11 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
     /* Get default OSPI cfg */
     OSPI_socGetInitCfg(BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
 
+#if defined(SOC_J7200)
+    ospi_cfg.funcClk = OSPI_MODULE_CLK_200M;
+#else
     ospi_cfg.funcClk = OSPI_MODULE_CLK_133M;
+#endif
 
     /* false: unstable, cpu read @ 120Mbytes per sec          */
     /*        can work with direct ROM load once it is stable */
@@ -228,9 +232,14 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
     /*        work with ROM, as ROM needs byte accesses       */
     ospi_cfg.dtrEnable = true;
 
-#ifdef SIM_BUILD
+    /* OSPI clock is set to 200MHz by RBL on J7200 platform.
+     * PHY mode cannot be used until sysfw is loaded and OSPI clock is
+     * configured to 133MHz.
+     */
+#if defined(SIM_BUILD) || defined(SOC_J7200)
     ospi_cfg.phyEnable = false;
 #endif
+
     /* Set the default SPI init configurations */
     OSPI_socSetInitCfg(BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
 
@@ -301,7 +310,7 @@ int32_t SBL_ospiInit(void *handle)
 
     }
 
-#if !defined(SBL_SKIP_BRD_CFG_PM) && !defined(SBL_SKIP_SYSFW_INIT) && !defined(SOC_J7200)
+#if !defined(SBL_SKIP_BRD_CFG_PM) && !defined(SBL_SKIP_SYSFW_INIT)
     {
         struct ospiClkParams
         {
@@ -329,9 +338,15 @@ int32_t SBL_ospiInit(void *handle)
 
     ospi_cfg.dtrEnable = true;
 
+#if defined(SOC_J7200)
+    ospi_cfg.funcClk = OSPI_MODULE_CLK_133M;
+#endif
+
+#if !defined(SOC_J7200)
 #if SBL_USE_DMA
     ospi_cfg.dmaEnable = SBL_USE_DMA;
     Ospi_udma_init(&ospi_cfg);
+#endif
 #endif
 
 #ifndef SBL_HLOS_OWNS_FLASH
@@ -341,8 +356,13 @@ int32_t SBL_ospiInit(void *handle)
      * We set xipEnable = true only at the last open() */
     ospi_cfg.xipEnable = true;
 #endif
-#if defined(SIM_BUILD) || defined (SOC_J7200)
+#if defined(SIM_BUILD)
     ospi_cfg.phyEnable = false;
+#else
+#if defined(SOC_J7200)
+    /* Enable the PHY mode which is disabled in SBL_ReadSysfwImage function. */
+    ospi_cfg.phyEnable = true;
+#endif
 #endif
     /* Set the default SPI init configurations */
     OSPI_socSetInitCfg(BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
@@ -408,7 +428,17 @@ int32_t SBL_ospiFlashRead(const void *handle, uint8_t *dst, uint32_t length,
     }
     else
     {
+#if defined(SOC_J7200)
+        Board_flashHandle h = *(const Board_flashHandle *) handle;
+        uint32_t ioMode  = OSPI_FLASH_OCTAL_READ;
+        if (Board_flashRead(h, offset, dst, length, (void *)(&ioMode)))
+        {
+            SBL_log(SBL_LOG_ERR, "Board_flashRead failed!\n");
+            SblErrLoop(__FILE__, __LINE__);
+        }
+#else
         memcpy((void *)dst, (void *)(ospi_cfg.dataAddr + offset), length);
+#endif
     }
 #else
     memcpy((void *)dst, (void *)(ospi_cfg.dataAddr + offset), length);

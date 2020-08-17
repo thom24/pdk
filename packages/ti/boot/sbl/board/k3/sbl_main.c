@@ -253,8 +253,16 @@ const CSL_ArmR5MpuRegionCfg gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         .exeNeverControl  = 0U,
         .accessPermission = CSL_ARM_R5_ACC_PERM_PRIV_USR_RD_WR,
         .shareable        = 0U,
+#if defined (SOC_J7200)
+        /* OSPI PHY tuning algorithm which runs in DAC mode needs
+         * cache to be disabled for FSS data region.
+         */
+        .cacheable        = (uint32_t)FALSE,
+        .cachePolicy      = 0U,
+#else
         .cacheable        = (uint32_t)TRUE,
         .cachePolicy      = CSL_ARM_R5_MEM_ATTR_CACHED_WT_NO_WA,
+#endif
         .memAttr          = 0U,
     },
     {
