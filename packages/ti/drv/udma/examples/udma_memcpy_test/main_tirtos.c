@@ -57,8 +57,11 @@
 /* ========================================================================== */
 
 /* Test application stack size */
+#if defined (__C7100__)
+#define APP_TSK_STACK_MAIN              (32U * 1024U)
+#else
 #define APP_TSK_STACK_MAIN              (16U * 1024U)
-
+#endif
 
 /* ========================================================================== */
 /*                         Structure Declarations                             */
