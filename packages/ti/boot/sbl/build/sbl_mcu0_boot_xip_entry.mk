@@ -28,7 +28,7 @@ COMP_LIST_COMMON =
 SRCS_COMMON += xip_stub.c
 
 SRCS_ASM_COMMON = xip_entry.asm
-EXTERNAL_LNKCMD_FILE_LOCAL =  $(PDK_SBL_COMP_PATH)/example/k3MulticoreApp/xip_entry.lds
+EXTERNAL_LNKCMD_FILE_LOCAL =  $(PDK_SBL_COMP_PATH)/example/k3MulticoreApp/$(SOC)/xip_entry.lds
 
 # Core/SoC/platform specific source files and CFLAGS
 # Example:

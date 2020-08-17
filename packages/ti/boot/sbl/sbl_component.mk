@@ -644,7 +644,7 @@ sbl_boot_xip_test_BOARDLIST = $(sbl_BOARDLIST)
 export sbl_boot_xip_test_BOARDLIST
 sbl_boot_xip_test_$(SOC)_CORELIST = mcu1_0
 export sbl_boot_xip_test_$(SOC)_CORELIST
-ifneq ($(SOC),$(filter $(SOC), am64x tpr12))
+ifneq ($(SOC),$(filter $(SOC), tpr12))
 sbl_EXAMPLE_LIST += sbl_boot_xip_test
 endif
 sbl_boot_xip_test_SBL_APPIMAGEGEN = yes
@@ -674,7 +674,7 @@ sbl_boot_xip_entry_BOARDLIST = $(sbl_BOARDLIST)
 export sbl_boot_xip_entry_BOARDLIST
 sbl_boot_xip_entry_$(SOC)_CORELIST = mcu1_0
 export sbl_boot_xip_entry_$(SOC)_CORELIST
-ifneq ($(SOC),$(filter $(SOC), am64x tpr12))
+ifneq ($(SOC),$(filter $(SOC), tpr12))
 sbl_EXAMPLE_LIST += sbl_boot_xip_entry
 endif
 sbl_boot_xip_entry_SBL_APPIMAGEGEN = yes

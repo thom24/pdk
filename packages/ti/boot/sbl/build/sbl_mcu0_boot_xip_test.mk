@@ -28,7 +28,7 @@ COMP_LIST_COMMON =
 SRCS_COMMON += sbl_amp_multicore.c sbl_printf.c
 
 SRCS_ASM_COMMON = sbl_multicore_r5_xip.asm
-EXTERNAL_LNKCMD_FILE_LOCAL =  $(PDK_SBL_COMP_PATH)/example/k3MulticoreApp/mcuXiplinker.lds
+EXTERNAL_LNKCMD_FILE_LOCAL =  $(PDK_SBL_COMP_PATH)/example/k3MulticoreApp/$(SOC)/mcuXiplinker.lds
 
 # Core/SoC/platform specific source files and CFLAGS
 # Example:
