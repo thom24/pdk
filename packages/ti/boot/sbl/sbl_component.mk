@@ -98,7 +98,7 @@ sbl_DISABLE_PARALLEL_MAKE = yes
 ############################
 
 ifeq ($(SOC), am64x)
-sbl_LIB_LIST = sbl_lib_ospi_nondma sbl_lib_cust
+sbl_LIB_LIST = sbl_lib_ospi_nondma sbl_lib_cust sbl_lib_mmcsd
 else
   ifeq ($(SOC), j7200)
     sbl_LIB_LIST = sbl_lib_mmcsd sbl_lib_ospi_nondma sbl_lib_uart sbl_lib_cust
@@ -119,7 +119,7 @@ endif
 # List below all examples for allowed values
 ############################
 ifeq ($(SOC),$(filter $(SOC), am64x))
-sbl_EXAMPLE_LIST = sbl_ospi_img
+sbl_EXAMPLE_LIST = sbl_ospi_img sbl_mmcsd_img
 else
   ifeq ($(SOC), j7200)
     sbl_EXAMPLE_LIST = sbl_mmcsd_img sbl_ospi_img sbl_uart_img
