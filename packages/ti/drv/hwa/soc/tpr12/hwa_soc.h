@@ -84,6 +84,8 @@ extern "C" {
 #define SOC_HWA_NUM_DAM_CHANNEL         (32U)
 /*! \brief number of HWA memory size in bytes */
 #define SOC_HWA_MEM_SIZE                (131072U)
+/*! \brief number of csirx IRQs*/
+#define SOC_HWA_NUM_CSIRX_IRQS          (20U)
 
 
  /** @addtogroup HWA_RAM_Size

@@ -2103,7 +2103,7 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
      * Step 1 - config the paramset
      **************************************************************************/
     gHWATestParamConfig[paramsetIdx].triggerMode = HWA_TRIG_MODE_DMA; //Software triggered  - in demo this will be HWA_TRIG_MODE_DMA
-    gHWATestParamConfig[paramsetIdx].dmaTriggerSrc = HWA_TEST_SRC_TRIGGER_DMACH0; //in demo this will be first EDMA Src channel id
+    gHWATestParamConfig[paramsetIdx].triggerSrc = HWA_TEST_SRC_TRIGGER_DMACH0; //in demo this will be first EDMA Src channel id
     gHWATestParamConfig[paramsetIdx].accelMode = HWA_ACCELMODE_NONE; //dummy
     errCode = HWA_configParamSet(handle, paramsetIdx, &gHWATestParamConfig[paramsetIdx], NULL);
     if (errCode != 0)
@@ -2185,7 +2185,7 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
     }
     paramsetIdx++;
     gHWATestParamConfig[paramsetIdx].triggerMode = HWA_TRIG_MODE_DMA; //Immediate triggered  - in demo this will be HWA_TRIG_MODE_DMA
-    gHWATestParamConfig[paramsetIdx].dmaTriggerSrc = HWA_TEST_SRC_TRIGGER_DMACH1; //in demo this will be second EDMA Src channel id
+    gHWATestParamConfig[paramsetIdx].triggerSrc = HWA_TEST_SRC_TRIGGER_DMACH1; //in demo this will be second EDMA Src channel id
     gHWATestParamConfig[paramsetIdx].accelMode = HWA_ACCELMODE_NONE; //dummy
     errCode = HWA_configParamSet(handle, paramsetIdx, &gHWATestParamConfig[paramsetIdx], NULL);
     if (errCode != 0)

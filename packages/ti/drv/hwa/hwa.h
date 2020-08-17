@@ -1795,11 +1795,12 @@ typedef struct HWA_AccelModeCompress_t {
  *
  */
 typedef struct HWA_ParamConfig_t {
-    uint8_t             triggerMode;                /*!<  4 bit value: See \ref HWA_TRIG_MODE macros for correct values.
+     uint8_t            triggerMode;                /*!<  4 bit value: See \ref HWA_TRIG_MODE macros for correct values.
                                                          Sets the TRIGMODE bits of HEADER in paramset */
-     uint8_t            dmaTriggerSrc;              /*!<  5 bit value:  DMA channel number to be monitored for dma based trigger mode.
-                                                          this field is used only when \ref HWA_ParamConfig::triggerMode
-                                                         is set to \ref HWA_TRIG_MODE_DMA
+     uint8_t            triggerSrc;                 /*!<  5 bit value:  If \ref HWA_ParamConfig::triggerMode is set HWA_TRIG_MODE_DMA,
+                                                          this field specifies DMA channel number to be monitored. If \ref HWA_ParamConfig::triggerMode
+                                                          is set HWA_TRIG_MODE_HARDWARE, this field specifies one of the 20 possible csirx IRQs.
+                                                          this field only applied to the HWA_TRIG_MODE_DMA and HWA_TRIG_MODE_HARDWARE.
                                                          Sets the DMA2ACC_TRIGSRC bits of HEADER in paramset */
      uint8_t            accelMode;                  /*!<  2 bit value: See \ref HWA_ACCELMODE macros for correct values.
                                                           Configures the mode of operation of the accelerator for

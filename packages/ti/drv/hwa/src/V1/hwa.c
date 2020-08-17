@@ -428,7 +428,8 @@ static int32_t HWA_validateParamSetConfig(HWA_Driver *ptrHWADriver, HWA_ParamCon
 		/*general configuratio */
 		if (
         (paramConfig->triggerMode > HWA_TRIG_MODE_M4CONTROL) ||
-        (paramConfig->dmaTriggerSrc > (ptrHWADriver->hwAttrs->numDmaChannels - 1)) ||
+        ( (paramConfig->triggerSrc > (ptrHWADriver->hwAttrs->numDmaChannels - 1)) &&(paramConfig->triggerMode == HWA_TRIG_MODE_DMA)) ||
+        ((paramConfig->triggerSrc > (SOC_HWA_NUM_CSIRX_IRQS - 1)) &&(paramConfig->triggerMode == HWA_TRIG_MODE_HARDWARE))||
         (paramConfig->accelMode > HWA_ACCELMODE_NONE) ||
         ((paramConfig->contextswitchCfg != HWA_PARAMSET_CONTEXTSWITCH_FORCE_ENABLE) &&(paramConfig->contextswitchCfg != HWA_PARAMSET_CONTEXTSWITCH_DISABLE ) &&(paramConfig->contextswitchCfg != HWA_PARAMSET_CONTEXTSWITCH_NONFORCE_ENABLE))
         )
@@ -2073,20 +2074,25 @@ int32_t HWA_configParamSet(HWA_Handle handle, uint8_t paramsetIdx, HWA_ParamConf
             paramReg.HEADER |= CSL_FMKR(HEADER_TRIGMODE_END, HEADER_TRIGMODE_START,paramConfig->triggerMode);
             if (paramConfig->triggerMode == HWA_TRIG_MODE_DMA)
             {
-                paramReg.HEADER |= CSL_FMKR(HEADER_HWA_TRIGSRC_END, HEADER_HWA_TRIGSRC_START,paramConfig->dmaTriggerSrc);
+                paramReg.HEADER |= CSL_FMKR(HEADER_HWA_TRIGSRC_END, HEADER_HWA_TRIGSRC_START,paramConfig->triggerSrc);
                 /* provide the user with the DMA programming config to facilitate the DMA triggering of HWA */
-                /* copy the triger signature to  DMA2HWA_TRIG register to triger HWA*/
+                /* copy the triger signature to  DMA2HWA_TRIG register to trigger HWA*/
                 if (dmaConfig != NULL)
                 {
                     ctrlBaseAddr = (DSSHWACCRegs *)ptrHWADriver->hwAttrs->ctrlBaseAddr;
 
                     dmaConfig->destAddr = (uint32_t)(&ctrlBaseAddr->DMA2HWA_TRIG);
-                    dmaConfig->srcAddr = (uint32_t)(&ctrlBaseAddr->SIGDMACHDONE[paramConfig->dmaTriggerSrc]);
+                    dmaConfig->srcAddr = (uint32_t)(&ctrlBaseAddr->SIGDMACHDONE[paramConfig->triggerSrc]);
                     dmaConfig->aCnt = sizeof(uint32_t);
                     dmaConfig->bCnt = 1U;
                     dmaConfig->cCnt = 1U;
                 }
             }
+            if (paramConfig->triggerMode == HWA_TRIG_MODE_HARDWARE)
+            {
+                paramReg.HEADER |= CSL_FMKR(HEADER_HWA_TRIGSRC_END, HEADER_HWA_TRIGSRC_START,paramConfig->triggerSrc);
+            }
+
 
             paramReg.HEADER      |= CSL_FMKR(HEADER_ACCEL_MODE_END, HEADER_ACCEL_MODE_START,paramConfig->accelMode);
             if (paramConfig->contextswitchCfg == HWA_PARAMSET_CONTEXTSWITCH_DISABLE)
