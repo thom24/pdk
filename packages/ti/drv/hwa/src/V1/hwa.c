@@ -428,8 +428,8 @@ static int32_t HWA_validateParamSetConfig(HWA_Driver *ptrHWADriver, HWA_ParamCon
 		/*general configuratio */
 		if (
         (paramConfig->triggerMode > HWA_TRIG_MODE_M4CONTROL) ||
-        ( (paramConfig->triggerSrc > (ptrHWADriver->hwAttrs->numDmaChannels - 1)) &&(paramConfig->triggerMode == HWA_TRIG_MODE_DMA)) ||
-        ((paramConfig->triggerSrc > (SOC_HWA_NUM_CSIRX_IRQS - 1)) &&(paramConfig->triggerMode == HWA_TRIG_MODE_HARDWARE))||
+        ( (paramConfig->triggerSrc > (ptrHWADriver->hwAttrs->numDmaChannels - 1)) && (paramConfig->triggerMode == HWA_TRIG_MODE_DMA)) ||
+        ((paramConfig->triggerSrc > (SOC_HWA_NUM_CSIRX_IRQS - 1)) && (paramConfig->triggerMode == HWA_TRIG_MODE_HARDWARE)) ||
         (paramConfig->accelMode > HWA_ACCELMODE_NONE) ||
         ((paramConfig->contextswitchCfg != HWA_PARAMSET_CONTEXTSWITCH_FORCE_ENABLE) &&(paramConfig->contextswitchCfg != HWA_PARAMSET_CONTEXTSWITCH_DISABLE ) &&(paramConfig->contextswitchCfg != HWA_PARAMSET_CONTEXTSWITCH_NONFORCE_ENABLE))
         )

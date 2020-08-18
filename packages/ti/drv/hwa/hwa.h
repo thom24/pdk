@@ -1797,10 +1797,11 @@ typedef struct HWA_AccelModeCompress_t {
 typedef struct HWA_ParamConfig_t {
      uint8_t            triggerMode;                /*!<  4 bit value: See \ref HWA_TRIG_MODE macros for correct values.
                                                          Sets the TRIGMODE bits of HEADER in paramset */
-     uint8_t            triggerSrc;                 /*!<  5 bit value:  If \ref HWA_ParamConfig::triggerMode is set HWA_TRIG_MODE_DMA,
+     uint8_t            triggerSrc;                 /*!<  5 bit value:  If \ref HWA_ParamConfig::triggerMode is set \ref HWA_TRIG_MODE::HWA_TRIG_MODE_DMA,
                                                           this field specifies DMA channel number to be monitored. If \ref HWA_ParamConfig::triggerMode
-                                                          is set HWA_TRIG_MODE_HARDWARE, this field specifies one of the 20 possible csirx IRQs.
-                                                          this field only applied to the HWA_TRIG_MODE_DMA and HWA_TRIG_MODE_HARDWARE.
+                                                          is set \ref HWA_TRIG_MODE::HWA_TRIG_MODE_HARDWARE, this field specifies one of the possible csirx IRQs.
+                                                          this field only applied to the \ref HWA_TRIG_MODE::HWA_TRIG_MODE_DMA and
+                                                          \ref HWA_TRIG_MODE::HWA_TRIG_MODE_HARDWARE.
                                                          Sets the DMA2ACC_TRIGSRC bits of HEADER in paramset */
      uint8_t            accelMode;                  /*!<  2 bit value: See \ref HWA_ACCELMODE macros for correct values.
                                                           Configures the mode of operation of the accelerator for
@@ -2072,14 +2073,14 @@ extern int32_t HWA_configParamSet(HWA_Handle handle, uint8_t paramsetIdx, HWA_Pa
 *  @brief  Function to get the config to program the DMA for a given DMA Trigger channel.
 *          Application should use the returned config to program the DMA so that it can then 
 *          in turn trigger the paramset. Application should make sure that the channel provided
-*          here in dmaTriggerSrc should match the \ref HWA_ParamConfig::dmaTriggerSrc passed
+*          here in dmaTriggerSrc should match the \ref HWA_ParamConfig::triggerSrc passed
 *          to HWA_configParamSet()
 *
 *  @pre    HWA_open() has been called.
 *
 *  @param  handle          A HWA_Handle returned from HWA_open()
 *
-*  @param  dmaTriggerSrc   Same as \ref HWA_ParamConfig::dmaTriggerSrc of the paramset for 
+*  @param  dmaTriggerSrc   Same as \ref HWA_ParamConfig::triggerSrc of the paramset for
 *                          whom this DMA is getting configured
 *
 *  @param  dmaConfig       [out]This parameter is set by the driver with values that user
