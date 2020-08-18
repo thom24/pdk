@@ -44,9 +44,9 @@
  *  bus voltage, power, current readings and displaying it on to the serial
  *  console.
  *
- *  Supported SoCs: K2G, AM65XX, J721E, J7200 & TPR12
+ *  Supported SoCs: K2G, AM65XX, J721E, J7200, TPR12 & AM64x
  *
- *  Supported Platforms: iceK2G, am65xx_evm, am65xx_idk, j721e_evm, j7200_evm & tpr12_evm.
+ *  Supported Platforms: iceK2G, am65xx_evm, am65xx_idk, j721e_evm, j7200_evm, tpr12_evm & am64x_evm.
  *
  */
 
@@ -141,6 +141,15 @@ inaCfgObj_t inaDevice[NUM_OF_INA_DEVICES] = {
     {"VIOIN_1V8", 	 0x41, {0.01, 0.0025, 1.25,  38.14,  15.25}},
     {"VIOIN_3V3",    0x44, {0.01, 0.0025, 1.25, 167.84,  67.13}},
     {"VDD_SRAM_1V2", 0x45, {0.01, 0.0025, 1.25,  86.21,  34.48}}
+};
+#elif defined(SOC_AM64X)  //AM64X_TODO: Need to update Values
+inaCfgObj_t inaDevice[NUM_OF_INA_DEVICES] = {
+    {"VDD_CORE",      0x40, {0.002, 0.0025, 1.25, 305.17, 0.000152, 16777}},
+    {"VDDR_CORE",     0x41, {0.01, 0.0025, 1.25,  38.14,  0.0000305, 16777}},
+    {"VDDS_DDR",      0x46, {0.01, 0.0025, 1.25,  86.21,  0.0000610, 8388}},
+    {"SoC_DVDD1V8",   0x4B, {0.01, 0.0025, 1.25, 152.58,  0.0000915, 5592}},
+    {"SoC_DVDD3V3",   0x4C, {0.002, 0.0025, 1.25, 95.36,  0.0000915, 27962}},
+    {"SoC_AVDD1V8",   0x4E, {0.01, 0.0025, 1.25,  38.14,  0.0000122, 41943}}
 };
 #else
 /* TODO: Need to update the values for iceK2G */
@@ -770,7 +779,7 @@ int8_t BoardDiag_currentMonitorStressTest(void)
  *            -1 - in case of failure.
  *
  */
-#if (defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_TPR12))
+#if (defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_TPR12) || defined(SOC_AM64X))
 int main(void)
 {
     Board_STATUS status;
@@ -798,7 +807,7 @@ int main(void)
 	enableMAINI2C(2, CSL_I2C2_CFG_BASE);
 #endif
 
-#if (defined(SOC_J721E) || defined(SOC_J7200)) && !defined (__aarch64__)
+#if (defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)) && !defined (__aarch64__)
     /* MCU I2C instance will be active by default for R5 core.
      * Need update HW attrs to enable MAIN I2C instance.
      */
