@@ -140,7 +140,7 @@ export board_diag_automationHeader_CORE_DEPENDENCY
 export board_diag_automationHeader_MAKEFILE
 board_diag_automationHeader_PKG_LIST = board_diag_automationHeader
 board_diag_automationHeader_INCLUDE = $(board_diag_automationHeader_PATH)
-board_diag_automationHeader_BOARDLIST = j721e_evm j7200_evm
+board_diag_automationHeader_BOARDLIST = j721e_evm j7200_evm am64x_evm
 board_diag_automationHeader_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
 export board_diag_automationHeader_$(SOC)_CORELIST
 export board_diag_automationHeader_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)

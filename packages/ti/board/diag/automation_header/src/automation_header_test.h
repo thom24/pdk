@@ -91,11 +91,21 @@ extern "C" {
 #elif defined(SOC_J7200)
 #define BOOTMODE_CFG_SET1_PIN_POS                  (0x00U)
 #define BOOTMODE_CFG_SET2_PIN_POS                  (0x07U)
+#elif defined(SOC_AM64X)
+#define BOOTMODE_CFG_SET1_PIN_POS                  (0x06U) /* SW3 */ //AM64X_TODO: Need to update the value
+#define BOOTMODE_CFG_SET2_PIN_POS                  (0x10U) /* SW2  */ //AM64X_TODO: Need to update the value
 #else
 #define BOOTMODE_CFG_SET1_PIN_POS                  (0x06U) /* SW3 */
 #define BOOTMODE_CFG_SET2_PIN_POS                  (0x10U) /* SW2 */
 #endif
 
+#if defined(SOC_AM64X)
+#define BOARD_DIAG_AUTO_HDR_I2C_INSTANCE           (1U)
+#define BOARD_DIAG_AUTO_HDR_I2C_BASEADDR           (CSL_I2C1_CFG_BASE)
+#else
+#define BOARD_DIAG_AUTO_HDR_I2C_INSTANCE           (2U)
+#define BOARD_DIAG_AUTO_HDR_I2C_BASEADDR           (CSL_I2C2_CFG_BASE)
+#endif
 /**
  *  \brief    The function performs the Automation header test.
  *
