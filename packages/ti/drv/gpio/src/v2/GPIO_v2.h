@@ -29,6 +29,38 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+/**
+ *  \ingroup DRV_GPIO_API_MODULE
+ *  @{
+ */
+
+/** ============================================================================
+ *  \file       GPIO_v2.h
+ *
+ *  \brief      GPIO driver v2 version
+ *
+ *  Following are the changes in this V2 version of the GPIO driver compared to
+ *  the previous V0 and V1 versions.
+ *
+ *  1. The GPIO driver configuration object is maintained inside the driver.
+ *     In earlier version driver would declare an extern variable for the gpio
+ *     configuration like GPIO_vx_config and expect the app to define this.
+ *     But in this version the application shall call the API GPIO_v2_updateConfig
+ *     with the default pin configuration.
+ *
+ *  2. The interpretation of the index value passed to all GPIO APIs has changed.
+ *     In earlier version index value passed is an array index inside the
+ *     configuration object defined by application.
+ *     this is changed as Index value is the SoC specific pin number defined in
+ *     soc specific header file Ex: ti\drv\gpio\soc\tpr12\GPIO_soc.h
+ *
+ *  3. GPIO pin configuration needs to be updated for every pin Index before
+ *     it is used by any GPIO API. Pin configuration can be updated either
+ *     by calling the API GPIO_v2_updateConfig for configuring multiple pins at
+ *     a time or by calling the API GPIO_setConfig and GPIO_setCallback for
+ *     each pin Index.
+ *
+ */
 
 #ifndef DRV_GPIO_V2_H
 #define DRV_GPIO_V2_H
@@ -127,3 +159,5 @@ int32_t GPIO_v2_updateConfig(GPIO_v2_Config *gpioV2Config);
 #endif
 
 #endif /* ti_drivers_GPIO__include */
+
+/* @} */
