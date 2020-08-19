@@ -182,7 +182,7 @@ else
 sciclient_rtos_app_$(SOC)_CORELIST = $(drvsciclient_$(SOC)_CORELIST)
 endif
 export sciclient_rtos_app_$(SOC)_CORELIST
-sciclient_rtos_app_SBL_APPIMAGEGEN = no
+sciclient_rtos_app_SBL_APPIMAGEGEN = yes
 export sciclient_rtos_app_SBL_APPIMAGEGEN
 sciclient_rtos_app_SBL_IMAGEGEN = no
 export sciclient_rtos_app_SBL_IMAGEGEN
