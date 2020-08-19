@@ -77,8 +77,10 @@ extern "C" {
 #define BOARD_UART1_INSTANCE                            (1U)
 /* UART LLD instance number for MAIN UART2 port */
 #define BOARD_UART2_INSTANCE                            (2U)
+/* UART LLD instance number for MAIN UART3 port */
+#define BOARD_UART3_INSTANCE                            (3U)
 /* UART LLD instance number for MCU UART0 port */
-#define BOARD_MCU_UART0_INSTANCE                        (7U)
+#define BOARD_MCU_UART0_INSTANCE                        (0U)
 
 /* UART LLD instance number for primary UART port */
 #ifdef SIM_BUILD
@@ -298,6 +300,14 @@ extern "C" {
 #define BOARD_SOC_DOMAIN_MCU                            (1U)
 /* Maximum I2C instance number common across the domain */
 #define BOARD_I2C_DOMAIN_INSTANCE_MAX                   (2U)
+
+/* SoC domain used by UART module */
+#if defined (__TI_ARM_V7R5__)
+#define BOARD_UART_SOC_DOMAIN    (BOARD_SOC_DOMAIN_MCU)
+#else
+#define BOARD_UART_SOC_DOMAIN    (BOARD_SOC_DOMAIN_MAIN)
+#endif
+
 
 /* EEPROM board ID information */
 #define BOARD_EEPROM_HEADER_FIELD_SIZE                  (0) //J7ES_TODO: need to update

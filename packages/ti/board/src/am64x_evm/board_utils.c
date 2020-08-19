@@ -46,6 +46,62 @@
 #include <ti/osal/osal.h>
 
 Board_I2cInitCfg_t gBoardI2cInitCfg = {0, BOARD_SOC_DOMAIN_MAIN, 0};
+Board_initParams_t gBoardInitParams = {BOARD_UART_INSTANCE, BOARD_UART_SOC_DOMAIN, BOARD_PSC_DEVICE_MODE_NONEXCLUSIVE};
+
+/**
+ * \brief Function to get board init params
+ *
+ *  This function shall be used to know the current board init
+ *  parameters and update them if needed using the function Board_setInitParams.
+ *
+ * \param   initParams  [IN]  Board init params structure
+ *
+ * \return   BOARD_SOK in case of success or appropriate error code.
+ *
+ */
+Board_STATUS Board_getInitParams(Board_initParams_t *initParams)
+{
+    if(initParams == NULL)
+    {
+        return BOARD_INVALID_PARAM;
+    }
+
+    *initParams = gBoardInitParams;
+
+    return BOARD_SOK;
+}
+
+/**
+ * \brief Function to configure board init parameters
+ *
+ *  Board init params includes the parameters used by Board_init
+ *  function for different operations. Default init parameters
+ *  used by Board_init can be updated using this function.
+ *  All the default params can be overwritten by calling this function
+ *  or some of can be changed by reading the existing init parameters
+ *  using Board_getInitParams function.
+ *
+ * Usage:
+ * Call Board_getInitParams to get the default board init parameters
+ * Update the parameters as needed
+ * Call Board_setInitParams to update the default board init parameters
+ *
+ * \param   initCfg  [IN]  Board Init config structure
+ *
+ * \return   BOARD_SOK in case of success or appropriate error code.
+ *
+ */
+Board_STATUS Board_setInitParams(Board_initParams_t *initParams)
+{
+    if(initParams == NULL)
+    {
+        return BOARD_INVALID_PARAM;
+    }
+
+    gBoardInitParams = *initParams;
+
+    return BOARD_SOK;
+}
 
 /**
  * \brief Function to configure I2C configurations used by board

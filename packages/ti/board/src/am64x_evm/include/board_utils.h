@@ -56,6 +56,9 @@ extern "C" {
 #include <stdio.h>
 #include <stdbool.h>
 
+#define BOARD_PSC_DEVICE_MODE_EXCLUSIVE       (0)
+#define BOARD_PSC_DEVICE_MODE_NONEXCLUSIVE    (1U)
+
 /**
  * \brief Structure to configure the board I2C parameters
  */
@@ -68,6 +71,56 @@ typedef struct Board_I2cInitCfg_s
     /** I2C controller interrupt enable/disable flag */
     bool enableIntr;
 } Board_I2cInitCfg_t;
+
+/**
+ * \brief Structure to configure the board init parameters
+ */
+typedef struct Board_initParams_s
+{
+    /** UART controller instance */
+    uint32_t uartInst;
+    /** SoC domain of the UART controller */
+    uint32_t uartSocDomain;
+    /** Mode for PSC clock enable
+        BOARD_PSC_DEVICE_MODE_EXCLUSIVE - Exclusive access to the core requesting access
+        BOARD_PSC_DEVICE_MODE_NONEXCLUSIVE - Non-exclusive which allows other cores to get access */
+    uint8_t pscMode;
+} Board_initParams_t;
+
+/**
+ * \brief Function to get board init params
+ *
+ *  This function shall be used to know the current board init
+ *  parameters and update them if needed using the function Board_setInitParams.
+ *
+ * \param   initParams  [IN]  Board init params structure
+ *
+ * \return   BOARD_SOK in case of success or appropriate error code.
+ *
+ */
+Board_STATUS Board_getInitParams(Board_initParams_t *initParams);
+
+/**
+ * \brief Function to configure board init parameters
+ *
+ *  Board init params includes the parameters used by Board_init
+ *  function for different operations. Default init parameters
+ *  used by Board_init can be updated using this function.
+ *  All the default params can be overwritten by calling this function
+ *  or some of can be changed by reading the existing init parameters
+ *  using Board_getInitParams function.
+ *
+ * Usage:
+ * Call Board_getInitParams to get the default board init parameters
+ * Update the parameters as needed
+ * Call Board_setInitParams to update the default board init parameters
+ *
+ * \param   initCfg  [IN]  Board Init config structure
+ *
+ * \return   BOARD_SOK in case of success or appropriate error code.
+ *
+ */
+Board_STATUS Board_setInitParams(Board_initParams_t *initParams);
 
 /**
  * \brief Board detect function

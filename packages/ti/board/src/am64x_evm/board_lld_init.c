@@ -71,3 +71,11 @@ Board_STATUS Board_internalInitI2C(uint8_t i2cInst)
 {
     return BOARD_SOK;
 }
+
+/**
+ *  \brief   This function is used to de-initialize board UART handles.
+ */
+Board_STATUS Board_uartDeInit(void)
+{
+    return BOARD_SOK;
+}

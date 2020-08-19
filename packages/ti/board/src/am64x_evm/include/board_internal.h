@@ -192,6 +192,11 @@ Board_STATUS Board_icssEthConfig(void);
 Board_STATUS Board_uartStdioInit(void);
 
 /**
+ *  \brief   This function is used to de-initialize board UART handles.
+ */
+Board_STATUS Board_uartDeInit(void);
+
+/**
  * \brief   This function initializes the i2c instance connected to the
  *          board Id EEPROM.
  * This function disables the interrupt mode as the Board i2c instance
