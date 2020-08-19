@@ -399,7 +399,7 @@ static Watchdog_Handle WatchdogRTI_open(Watchdog_Handle handle, Watchdog_Params*
                             ptrWatchdogMCB->params.windowSize);  /* Configure the window size   */
 
         /* Configure the stall mode */
-        HW_WR_FIELD32(ptrHwCfg->baseAddr+RTI_RTIGCTRL, RTI_RTIGCTRL_COS, ptrWatchdogMCB->params.debugStallMode);
+        RTIGcSetStallMode(ptrHwCfg->baseAddr, ptrWatchdogMCB->params.debugStallMode);
 
         /* Enable the watchdog timer */
         RTIDwwdCounterEnable(ptrHwCfg->baseAddr);
