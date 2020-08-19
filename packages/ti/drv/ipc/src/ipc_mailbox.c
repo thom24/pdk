@@ -309,7 +309,6 @@ int32_t Ipc_mailboxRegister(uint16_t selfId, uint16_t remoteProcId,
     uint32_t              baseAddr;
     uint32_t              n;
     Ipc_MailboxData      *mbox = NULL;
-    uintptr_t             key   = 0U;
     Ipc_Object           *pObj  = NULL;
     Ipc_OsalPrms         *pOsal = NULL;
 
@@ -349,20 +348,7 @@ int32_t Ipc_mailboxRegister(uint16_t selfId, uint16_t remoteProcId,
 
             if (NULL != pOsal->registerIntr)
             {
-                /* Disable global interrupts */
-                if  (NULL != pOsal->disableAllIntr)
-                {
-                    key = pOsal->disableAllIntr();
-                }
-
-                /* Clear Mailbox cluster queue */
-                Ipc_mailboxClear(baseAddr, queueId);
-
-                /* Restore global interrupts */
-                if (NULL != pOsal->restoreAllIntr)
-                {
-                    pOsal->restoreAllIntr(key);
-                }
+                /* Do not clear the mailbox, other cores could have already sent messages */
 
 #ifdef MAILBOX_INTERRUPT_MODE
                 {
@@ -436,12 +422,6 @@ int32_t Ipc_mailboxRegister(uint16_t selfId, uint16_t remoteProcId,
                 mbox->fifoCnt, selfId, remoteProcId, clusterId, userId, queueId, arg,
                 g_ipc_mBoxCnt);
 #endif
-
-        if (NULL != pOsal->registerIntr)
-        {
-            /* enable the mailbox interrupt */
-            Ipc_mailboxEnable(baseAddr, userId, queueId);
-        }
     }
 
     return retVal;

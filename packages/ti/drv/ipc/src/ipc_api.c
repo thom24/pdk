@@ -1026,6 +1026,11 @@ int32_t RPMessage_lateInit(uint32_t proc)
 
         /* setup the sending path */
         module.tx_VQs[proc] = Virtio_getHandle(proc, VIRTIO_TX);
+
+        if (NULL != pOsalPrms->registerIntr)
+        {
+            Ipc_mailboxEnableNewMsgInt(Ipc_mpGetSelfId(), proc);
+        }
     }
     else
     {
@@ -1131,6 +1136,11 @@ int32_t RPMessage_init(RPMessage_Params *params)
 
                 /* setup the sending path */
                 module.tx_VQs[p] = Virtio_getHandle(p, VIRTIO_TX);
+
+                if (NULL != pOsalPrms->registerIntr)
+                {
+                    Ipc_mailboxEnableNewMsgInt(Ipc_mpGetSelfId(), p);
+                }
             }
             else
             {
