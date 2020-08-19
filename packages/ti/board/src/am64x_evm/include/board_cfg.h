@@ -290,6 +290,15 @@ extern "C" {
 /* Maximum possible buffer length */
 #define BOARD_EEPROM_MAX_BUFF_LENGTH                    (0) //J7ES_TODO: need to update
 
+/* Maximum number of SoC domains */
+#define BOARD_SOC_DOMAIN_MAX                            (2U)
+/* Value for indicating SoC main domain */
+#define BOARD_SOC_DOMAIN_MAIN                           (0)
+/* Value for indicating SoC MCU domain */
+#define BOARD_SOC_DOMAIN_MCU                            (1U)
+/* Maximum I2C instance number common across the domain */
+#define BOARD_I2C_DOMAIN_INSTANCE_MAX                   (2U)
+
 /* EEPROM board ID information */
 #define BOARD_EEPROM_HEADER_FIELD_SIZE                  (0) //J7ES_TODO: need to update
 #define BOARD_EEPROM_TYPE_SIZE                          (0) //J7ES_TODO: need to update

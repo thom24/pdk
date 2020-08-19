@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -204,21 +204,6 @@ Board_STATUS Board_uartStdioInit(void);
  *
  */
 Board_STATUS Board_internalInitI2C(uint8_t i2cInst);
-
-/**
- * \brief board detect test
- *
- * This function used to check whether the specified board exists.
- *
- * \param   detectBoard  [IN]  enum used to send the name of the
- *                             board going to be detected.
- *
- * \return   bool
- *                    true   - In case of specified board detected
- *                    false  - In case of specified board not detected.
- *
- */
-bool Board_detectBoard(boardPresDetect_t detectBoard);
 
 /**
  * \brief  Unlocks MMR registers

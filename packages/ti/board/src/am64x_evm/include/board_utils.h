@@ -70,6 +70,22 @@ typedef struct Board_I2cInitCfg_s
 } Board_I2cInitCfg_t;
 
 /**
+ * \brief Board detect function
+ *
+ *  Checks if the board with given 'boardID' is connected to the
+ *  base board.
+ *
+ *  \n Note: Board ID EEPROM should be programmed for this function
+ *           to work properly.
+ *
+ * \param   boardID  [IN]  ID of the board to be detected
+ *
+ * \return   TRUE if the given board is detected else FALSE.
+ *
+ */
+bool Board_detectBoard(uint32_t boardID);
+
+/**
  * \brief Function to get I2C configurations used by board
  *
  *  \return   BOARD_SOK in case of success or appropriate error code.

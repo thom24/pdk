@@ -45,6 +45,71 @@
 #include "board_cfg.h"
 #include <ti/osal/osal.h>
 
+Board_I2cInitCfg_t gBoardI2cInitCfg = {0, BOARD_SOC_DOMAIN_MAIN, 0};
+
+/**
+ * \brief Function to configure I2C configurations used by board
+ *
+ * This function is used to set the I2C controller instance and
+ * SoC domain used by the board module for IO expander and board
+ * ID info read.
+ *
+ * Usage:
+ * Call Board_setI2cInitConfig to set the I2C configurations
+ * Call IO expander Init or Board ID info read/write
+ *
+ *  \return   BOARD_SOK in case of success or appropriate error code.
+ *
+ */
+Board_STATUS Board_setI2cInitConfig(Board_I2cInitCfg_t *i2cCfg)
+{
+    if(i2cCfg == NULL)
+    {
+        return BOARD_INVALID_PARAM;
+    }
+
+    gBoardI2cInitCfg = *i2cCfg;
+
+    return BOARD_SOK;
+}
+
+/**
+ * \brief Function to get I2C configurations used by board
+ *
+ *  \return   BOARD_SOK in case of success or appropriate error code.
+ *
+ */
+Board_STATUS Board_getI2cInitConfig(Board_I2cInitCfg_t *i2cCfg)
+{
+    if(i2cCfg == NULL)
+    {
+        return BOARD_INVALID_PARAM;
+    }
+
+    *i2cCfg = gBoardI2cInitCfg;
+
+    return BOARD_SOK;
+}
+
+/**
+ * \brief Board detect function
+ *
+ *  Checks if the board with given 'boardID' is connected to the
+ *  base board.
+ *
+ *  \n Note: Board ID EEPROM should be programmed for this function
+ *           to work properly.
+ *
+ * \param   boardID  [IN]  ID of the board to be detected
+ *
+ * \return   TRUE if the given board is detected else FALSE.
+ *
+ */
+bool Board_detectBoard(uint32_t boardID)
+{
+    return 0;
+}
+
 /**
  *  \brief    Function to generate delay in micro seconds
  *

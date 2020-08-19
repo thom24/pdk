@@ -91,6 +91,13 @@ extern "C" {
 
 #elif defined(tpr12_evm)
 #define MAX_NUM_OF_BOARDS						(BOARD_ID_MAX_BOARDS)
+#elif defined(SOC_AM64X)
+#define I2C_INSTANCE                            (0U)
+#define MAX_NUM_OF_BOARDS                       (2U)
+
+#define CP_EEPROM_SLAVE_ADDR                    (0x50U)
+#define IOLINK_EEPROM_SLAVE_ADDR              (0x52U)
+#define STARTING_BOARD_NUM                      (1U)
 #else  /* j721e_evm */
 #define MAX_NUM_OF_BOARDS                       (9U)
 #define STARTING_BOARD_NUM                      (2U)
