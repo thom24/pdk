@@ -373,7 +373,7 @@ int32_t FSShellAppUtilsProcess(void)
                 /* On completion jump to next state. */
                 if(FR_OK == f_opendir(&gFsShellAppUtilsDirObj, gFsShellAppUtilsCwd))
                 {
-                    FATFS_log("TEST PASS.\n");
+                    FATFS_log("All tests have passed.\n");
                     FATFS_log("%s>", gFsShellAppUtilsCwd);
                     gFsShellAppUtilsCurState = FS_SHELL_APP_UTILS_STATE_READ_COMMAND;
                     spinProcess = TRUE;
