@@ -47,7 +47,7 @@
 
 #include "board.h"
 #include "board_cfg.h"
-#if (defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200))
+#if (defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X))
 #include "diag_common_cfg.h"
 #endif
 
@@ -55,7 +55,7 @@
 #define ONE									(0x00000001)
 #define MSG_FREQ							(0xFFFFFFc)
 
-#if !defined(SOC_AM65XX) && !defined(SOC_J721E) && !defined(SOC_J7200)
+#if !defined(SOC_AM65XX) && !defined(SOC_J721E) && !defined(SOC_J7200) && !defined(SOC_AM64X)
 #define BOARD_DDR_START_ADDR				(BOARD_DDR3_START_ADDR)
 #define BOARD_DDR_END_ADDR					(BOARD_DDR3_END_ADDR)
 #define BOARD_DDR_SIZE						(BOARD_DDR3_SIZE)
