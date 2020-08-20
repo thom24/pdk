@@ -54,7 +54,7 @@
 #include <ti/drv/spi/soc/SPI_soc.h>
 
 #include <ti/board/src/flash/include/board_flash.h>
-#if defined(SOC_J7200)
+#if defined(j7200_evm) || defined (am64x_evm)
 #include <ti/board/src/flash/nor/ospi/nor_xspi.h>
 #else
 #include <ti/board/src/flash/nor/ospi/nor_ospi.h>
@@ -96,7 +96,7 @@ extern "C" {
 #define BOARD_DIAG_OSPI_HYPER_BUS_SEL_PIN     (0U)
 #endif
 
-#if defined(j7200_evm)
+#if defined(j7200_evm) || defined (am64x_evm)
 #define BOARD_DIAG_OSPI_FLASH_ID              (BOARD_FLASH_ID_S28HS512T)
 #elif defined(am64x_evm) || defined(am64x_svb)
 #define BOARD_DIAG_OSPI_FLASH_ID              (BOARD_FLASH_ID_MT35XU256ABA1G12)
@@ -112,6 +112,13 @@ extern "C" {
 
 
 #else /* #ifdef DIAG_STRESS_TEST */
+
+//AM64X_TODO: Need to remove this after enabling ospi board flash library
+#if defined (am64x_evm)
+#define NOR_SIZE                     (64U * 1024U * 1024U)
+#define NOR_PAGE_SIZE                (256U)
+#endif
+
 
 #define TEST_DATA_LEN                         (NOR_PAGE_SIZE)
 #define MAX_BUFF_SIZE                         (TEST_DATA_LEN + 4)

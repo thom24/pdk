@@ -42,9 +42,9 @@
  *  writing a test pattern to a memory page and reading the same page for
  *  data verification.
  *
- *  Supported SoCs : AM65XX, J721E & J7200
+ *  Supported SoCs : AM65XX, J721E, J7200, AM64X
  *
- *  Supported Platforms: am65xx-evm, am65xx-idk, j721e_evm & j7200_evm.
+ *  Supported Platforms: am65xx_evm, am65xx_idk, j721e_evm, j7200_evm, am64x_evm.
  *
  */
 
