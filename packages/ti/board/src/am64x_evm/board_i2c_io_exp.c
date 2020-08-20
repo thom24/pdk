@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -32,139 +32,13 @@
  *****************************************************************************/
 
 /**
- * \file   board_i2c_io_exp.h
+ *   \file    board_i2c_io_exp.c
  *
- * \brief  I2C IO Expander configurations header file
- *
- * This file includes the structures, enums and register offsets
- * for configuring the slave devices connected to I2C IO expander.
+ *   \brief   This file contains the API's for accessing the i2c IO Expander.
  *
  */
 
-#ifndef _BOARD_I2C_IO_EXP_H_
-#define _BOARD_I2C_IO_EXP_H_
-
-#include "board_internal.h"
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-#include <stdio.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <string.h>
-
-/* Input command for single port IO expander */
-#define BOARD_1PORT_IOEXP_INPUT_CMD                             (0x00U)
-
-/* Output command for single port IO expander */
-#define BOARD_1PORT_IOEXP_OUTPUT_CMD                            (0x01U)
-
-/* Polarity inversion command for single port IO expander */
-#define BOARD_1PORT_IOEXP_POLARITY_CMD                          (0x02U)
-
-/* Configuration command for single port IO expander */
-#define BOARD_1PORT_IOEXP_CONFIGURATION_CMD                     (0x03U)
-
-/* Input commands for two port IO expander */
-#define BOARD_2PORT_IOEXP_PORT0_INPUT_CMD                       (0x00U)
-#define BOARD_2PORT_IOEXP_PORT1_INPUT_CMD                       (0x01U)
-
-/* Output commands for two port IO expander */
-#define BOARD_2PORT_IOEXP_PORT0_OUTPUT_CMD                      (0x02U)
-#define BOARD_2PORT_IOEXP_PORT1_OUTPUT_CMD                      (0x03U)
-
-/* Polarity inversion commands for two port IO expander */
-#define BOARD_2PORT_IOEXP_PORT0_POLARITY_CMD                    (0x04U)
-#define BOARD_2PORT_IOEXP_PORT1_POLARITY_CMD                    (0x05U)
-
-/* Configuration commands for two port IO expander */
-#define BOARD_2PORT_IOEXP_PORT0_CONFIGURATION_CMD               (0x06U)
-#define BOARD_2PORT_IOEXP_PORT1_CONFIGURATION_CMD               (0x07U)
-
-/* Input commands for three port IO expander */
-#define BOARD_3PORT_IOEXP_PORT0_INPUT_CMD                       (0x00U)
-#define BOARD_3PORT_IOEXP_PORT1_INPUT_CMD                       (0x01U)
-#define BOARD_3PORT_IOEXP_PORT2_INPUT_CMD                       (0x02U)
-
-/* Output commands for three port IO expander */
-#define BOARD_3PORT_IOEXP_PORT0_OUTPUT_CMD                      (0x04U)
-#define BOARD_3PORT_IOEXP_PORT1_OUTPUT_CMD                      (0x05U)
-#define BOARD_3PORT_IOEXP_PORT2_OUTPUT_CMD                      (0x06U)
-
-/* Polarity inversion commands for three port IO expander */
-#define BOARD_3PORT_IOEXP_PORT0_POLARITY_CMD                    (0x08U)
-#define BOARD_3PORT_IOEXP_PORT1_POLARITY_CMD                    (0x09U)
-#define BOARD_3PORT_IOEXP_PORT2_POLARITY_CMD                    (0x0AU)
-
-/* Configuration commands for two port IO expander */
-#define BOARD_3PORT_IOEXP_PORT0_CONFIGURATION_CMD               (0x0CU)
-#define BOARD_3PORT_IOEXP_PORT1_CONFIGURATION_CMD               (0x0DU)
-#define BOARD_3PORT_IOEXP_PORT2_CONFIGURATION_CMD               (0x0EU)
-
-/**
- *  \enum    i2cIoExpType_t
- *
- *  \brief   specifies the available types of IO expander.
- */
-typedef enum
-{
-    ONE_PORT_IOEXP = 0,
-    TWO_PORT_IOEXP,
-    THREE_PORT_IOEXP
-}i2cIoExpType_t;
-
-/**
- *  \enum     i2cIoExpPortNumber_t
- *
- *  \brief    specifies the available port types.
- */
-typedef enum
-{
-    PORTNUM_0 = 0,
-    PORTNUM_1,
-    PORTNUM_2
-}i2cIoExpPortNumber_t;
-
-/**
- *  \enum     i2cIoExpPinNumber_t
- *
- *  \brief    specifies the available pin numbers.
- */
-typedef enum
-{
-    PIN_NUM_0 = 0,
-    PIN_NUM_1,
-    PIN_NUM_2,
-    PIN_NUM_3,
-    PIN_NUM_4,
-    PIN_NUM_5,
-    PIN_NUM_6,
-    PIN_NUM_7
-}i2cIoExpPinNumber_t;
-
-/**
- *  \enum     i2cIoExpPinDirection_t
- *
- *  \brief    specifies the available direction types.
- */
-typedef enum
-{
-    PIN_DIRECTION_OUTPUT = 0,
-    PIN_DIRECTION_INPUT
-}i2cIoExpPinDirection_t;
-
-/**
- *  \enum     i2cIoExpPinDirection_t
- *
- *  \brief    specifies the available signal levels.
- */
-typedef enum
-{
-    GPIO_SIGNAL_LEVEL_LOW = 0,
-    GPIO_SIGNAL_LEVEL_HIGH
-}i2cIoExpSignalLevel_t;
+#include "board_i2c_io_exp.h"
 
 /**
  *  \brief    Reads the current configuration of direction port.
@@ -185,7 +59,10 @@ typedef enum
 Board_STATUS Board_i2cIoExpReadDirPort(uint8_t slaveAddr,
                                        i2cIoExpType_t ioExpType,
                                        i2cIoExpPortNumber_t portNum,
-                                       uint8_t *data);
+                                       uint8_t *data)
+{
+    return BOARD_SOK;
+}
 
 /**
  *  \brief    Reads the current configuration of output port.
@@ -206,7 +83,10 @@ Board_STATUS Board_i2cIoExpReadDirPort(uint8_t slaveAddr,
 Board_STATUS Board_i2cIoExpReadOutputPort(uint8_t slaveAddr,
                                           i2cIoExpType_t ioExpType,
                                           i2cIoExpPortNumber_t portNum,
-                                          uint8_t *data);
+                                          uint8_t *data)
+{
+    return BOARD_SOK;
+}
 
 /**
  *  \brief    Reads the signal level of all the pins of the specified port.
@@ -227,7 +107,10 @@ Board_STATUS Board_i2cIoExpReadOutputPort(uint8_t slaveAddr,
 Board_STATUS Board_i2cIoExpReadInputPort(uint8_t slaveAddr,
                                          i2cIoExpType_t ioExpType,
                                          i2cIoExpPortNumber_t portNum,
-                                         uint8_t *data);
+                                         uint8_t *data)
+{
+    return BOARD_SOK;
+}
 
 /**
  *  \brief    Sets the direction of all the pins of the specified Port.
@@ -247,7 +130,10 @@ Board_STATUS Board_i2cIoExpReadInputPort(uint8_t slaveAddr,
 Board_STATUS Board_i2cIoExpSetPortDirection(uint8_t slaveAddr,
                                             i2cIoExpType_t ioExpType,
                                             i2cIoExpPortNumber_t portNum,
-                                            uint8_t data);
+                                            uint8_t data)
+{
+    return BOARD_SOK;
+}
 
 /**
  *  \brief    Sets the direction of the specified pin of the specified port.
@@ -271,7 +157,10 @@ Board_STATUS Board_i2cIoExpSetPinDirection(uint8_t slaveAddr,
                                            i2cIoExpType_t ioExpType,
                                            i2cIoExpPortNumber_t portNum,
                                            i2cIoExpPinNumber_t pinNum,
-                                           i2cIoExpPinDirection_t direction);
+                                           i2cIoExpPinDirection_t direction)
+{
+    return BOARD_SOK;
+}
 
 /**
  *  \brief    Sets the signal level of all the pins of the specified port.
@@ -292,7 +181,10 @@ Board_STATUS Board_i2cIoExpSetPinDirection(uint8_t slaveAddr,
 Board_STATUS Board_i2cIoExpWritePort(uint8_t slaveAddr,
                                      i2cIoExpType_t ioExpType,
                                      i2cIoExpPortNumber_t portNum,
-                                     uint8_t data);
+                                     uint8_t data)
+{
+    return BOARD_SOK;
+}
 
 /**
  *  \brief    Sets the signal level of the specified pin of the specified port.
@@ -317,8 +209,10 @@ Board_STATUS Board_i2cIoExpPinLevelSet(uint8_t slaveAddr,
                                        i2cIoExpType_t ioExpType,
                                        i2cIoExpPortNumber_t portNum,
                                        i2cIoExpPinNumber_t pinNum,
-                                       i2cIoExpSignalLevel_t signalLevel);
-
+                                       i2cIoExpSignalLevel_t signalLevel)
+{
+    return BOARD_SOK;
+}
 
 /**
  *  \brief    Reads the signal level of specified pin of the specified port.
@@ -342,24 +236,29 @@ Board_STATUS Board_i2cIoExpPinLevelGet(uint8_t slaveAddr,
                                        i2cIoExpType_t ioExpType,
                                        i2cIoExpPortNumber_t portNum,
                                        i2cIoExpPinNumber_t pinNum,
-                                       uint8_t *signalLevel);
+                                       uint8_t *signalLevel)
+{
+    return BOARD_SOK;
+}
 
 /**
  *  \brief    Initializes the i2c instance connected to the i2c IO Expander.
  *
- *  \return   Board_STATUS in case of success or appropriate error code.
+ *  \return   BOARD_SOK in case of success or appropriate error code.
  *
  */
-Board_STATUS Board_i2cIoExpInit(void);
-                                          
+Board_STATUS Board_i2cIoExpInit(void)
+{
+    Board_STATUS ret = BOARD_SOK;
+
+    return ret;
+}
+
 /**
  *  \brief    de-initializes the i2c instance connected to the i2c IO Expander.
  *
  */
-void Board_i2cIoExpDeInit(void);
+void Board_i2cIoExpDeInit(void)
+{
 
-#ifdef __cplusplus
 }
-#endif /* __cplusplus */
-
-#endif /* _BOARD_I2C_IO_EXP_H_ */
