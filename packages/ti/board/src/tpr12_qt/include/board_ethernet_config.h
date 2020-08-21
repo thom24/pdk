@@ -41,12 +41,22 @@
 #ifndef _BOARD_ETHERNET_CONFIG_H_
 #define _BOARD_ETHERNET_CONFIG_H_
 
-#include "board.h"
+#include <ti/board/board.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+/**
+ * \enum emac_mode
+ *
+ * \brief specifies the available emac mode types.
+ */
+typedef enum
+{
+    RMII = 1,
+    RGMII = 2,
+}emac_mode;
 
 /**
  * \brief  Board specific configurations for MCU Ethernet PHY
