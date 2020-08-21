@@ -5,6 +5,16 @@
  *
  *   This file contains the hardware attributes of I2C peripheral like
  *   base address, interrupt number etc.
+ *
+ *      Following instances are supported
+ *      Main Domain I2C instance 0 to 6 on MPU A72 & MCU 20, MCU 21
+ *      MCU Domain I2C instance 0 to 1 on MCU 10, MCU 11
+ *
+ *      To add support for additional I2C instances in main/mcu domain
+ *          please update "i2cInitCfg"
+ *      If the main domain instances are to be supported in mcu domain,
+ *          implement function I2C_socCfgIntrPathFxn and use sciclient apis to
+ *          route interrupts
  */
 
 /*
@@ -50,19 +60,199 @@
 
 #define I2C_INPUT_CLK        (96000000U)
 
-static int32_t I2C_configSocIntrPath(const void *pHwAttrs, bool setIntrPath);
+/******************************************************************************
+ *  MAIN Domain A72
+ ******************************************************************************/
+#if defined (BUILD_MPU)
 
 /* I2C configuration structure */
 I2C_HwAttrs i2cInitCfg[I2C_HWIP_MAX_CNT] =
 {
     {
-#if defined (BUILD_MPU)
         /* default configuration for I2C instance and MPU core on Main domain*/
         (uint32_t)CSL_I2C0_CFG_BASE,        /* baseAddr */
         CSLR_COMPUTE_CLUSTER0_MSMC_1MB_GIC_SPI_I2C0_POINTRPEND_0,  /* intNum */
         0,                                  /* eventId */
-#endif
+        I2C_INPUT_CLK,
+        (bool)true,
+        {
+            /* default own slave addresses */
+            0x70, 0x0, 0x0, 0x0
+        },
+        (I2C_socCfgIntrPathFxn)NULL         /* No routing of ints required */
+    },
+    {
+        (uint32_t)CSL_I2C1_CFG_BASE,
+        CSLR_COMPUTE_CLUSTER0_MSMC_1MB_GIC_SPI_I2C1_POINTRPEND_0,
+        0,
+        I2C_INPUT_CLK,
+        (bool)true,
+        {
+            0x71, 0x0, 0x0, 0x0
+        },
+        (I2C_socCfgIntrPathFxn)NULL         /* No routing of ints required */
+    },
+    {
+        (uint32_t)CSL_I2C2_CFG_BASE,
+        CSLR_COMPUTE_CLUSTER0_MSMC_1MB_GIC_SPI_I2C2_POINTRPEND_0,
+        0,
+        I2C_INPUT_CLK,
+        (bool)true,
+        {
+            0x72, 0x0, 0x0, 0x0
+        },
+        (I2C_socCfgIntrPathFxn)NULL         /* No routing of ints required */
+    },
+    {
+        (uint32_t)CSL_I2C3_CFG_BASE,
+        CSLR_COMPUTE_CLUSTER0_MSMC_1MB_GIC_SPI_I2C3_POINTRPEND_0,
+        0,
+        I2C_INPUT_CLK,
+        (bool)true,
+        {
+            0x73, 0x0, 0x0, 0x0
+        },
+        (I2C_socCfgIntrPathFxn)NULL         /* No routing of ints required */
+    },
+    {
+        (uint32_t)CSL_I2C4_CFG_BASE,
+        CSLR_COMPUTE_CLUSTER0_MSMC_1MB_GIC_SPI_I2C4_POINTRPEND_0,
+        0,
+        I2C_INPUT_CLK,
+        (bool)true,
+        {
+            0x74, 0x0, 0x0, 0x0
+        },
+        (I2C_socCfgIntrPathFxn)NULL         /* No routing of ints required */
+    },
+    {
+        (uint32_t)CSL_I2C5_CFG_BASE,
+        CSLR_COMPUTE_CLUSTER0_MSMC_1MB_GIC_SPI_I2C5_POINTRPEND_0,
+        0,
+        I2C_INPUT_CLK,
+        (bool)true,
+        {
+            0x75, 0x0, 0x0, 0x0
+        },
+        (I2C_socCfgIntrPathFxn)NULL         /* No routing of ints required */
+    },
+    {
+        (uint32_t)CSL_I2C6_CFG_BASE,
+        CSLR_COMPUTE_CLUSTER0_MSMC_1MB_GIC_SPI_I2C6_POINTRPEND_0,
+        0,
+        I2C_INPUT_CLK,
+        (bool)true,
+        {
+            0x76, 0x0, 0x0, 0x0
+        },
+        (I2C_socCfgIntrPathFxn)NULL         /* No routing of ints required */
+    },
+};
+#endif /* MPU Build */
+
+
+/******************************************************************************
+ *  MAIN Domain R5F
+ ******************************************************************************/
 #if defined (BUILD_MCU)
+#if (defined (BUILD_MCU2_0) || defined (BUILD_MCU2_1))
+/* I2C configuration structure */
+I2C_HwAttrs i2cInitCfg[I2C_HWIP_MAX_CNT] =
+{
+    {
+        /* default configuration for I2C instance and MPU core on Main domain*/
+        (uint32_t)CSL_I2C0_CFG_BASE,        /* baseAddr */
+        CSLR_R5FSS0_CORE0_INTR_I2C0_POINTRPEND_0,  /* intNum */
+        0,                                  /* eventId */
+        I2C_INPUT_CLK,
+        (bool)true,
+        {
+            /* default own slave addresses */
+            0x70, 0x0, 0x0, 0x0
+        },
+        (I2C_socCfgIntrPathFxn)NULL         /* No routing of ints required */
+    },
+    {
+        (uint32_t)CSL_I2C1_CFG_BASE,
+        CSLR_R5FSS0_CORE0_INTR_I2C1_POINTRPEND_0,
+        0,
+        I2C_INPUT_CLK,
+        (bool)true,
+        {
+            0x71, 0x0, 0x0, 0x0
+        },
+        (I2C_socCfgIntrPathFxn)NULL         /* No routing of ints required */
+    },
+    {
+        (uint32_t)CSL_I2C2_CFG_BASE,
+        CSLR_R5FSS0_CORE0_INTR_I2C2_POINTRPEND_0,
+        0,
+        I2C_INPUT_CLK,
+        (bool)true,
+        {
+            0x72, 0x0, 0x0, 0x0
+        },
+        (I2C_socCfgIntrPathFxn)NULL         /* No routing of ints required */
+    },
+    {
+        (uint32_t)CSL_I2C3_CFG_BASE,
+        CSLR_R5FSS0_CORE0_INTR_I2C3_POINTRPEND_0,
+        0,
+        I2C_INPUT_CLK,
+        (bool)true,
+        {
+            0x73, 0x0, 0x0, 0x0
+        },
+        (I2C_socCfgIntrPathFxn)NULL         /* No routing of ints required */
+    },
+    {
+        (uint32_t)CSL_I2C4_CFG_BASE,
+        CSLR_R5FSS0_CORE0_INTR_I2C4_POINTRPEND_0,
+        0,
+        I2C_INPUT_CLK,
+        (bool)true,
+        {
+            0x74, 0x0, 0x0, 0x0
+        },
+        (I2C_socCfgIntrPathFxn)NULL         /* No routing of ints required */
+    },
+    {
+        (uint32_t)CSL_I2C5_CFG_BASE,
+        CSLR_R5FSS0_CORE0_INTR_I2C5_POINTRPEND_0,
+        0,
+        I2C_INPUT_CLK,
+        (bool)true,
+        {
+            0x75, 0x0, 0x0, 0x0
+        },
+        (I2C_socCfgIntrPathFxn)NULL         /* No routing of ints required */
+    },
+    {
+        (uint32_t)CSL_I2C6_CFG_BASE,
+        CSLR_R5FSS0_CORE0_INTR_I2C6_POINTRPEND_0,
+        0,
+        I2C_INPUT_CLK,
+        (bool)true,
+        {
+            0x76, 0x0, 0x0, 0x0
+        },
+        (I2C_socCfgIntrPathFxn)NULL         /* No routing of ints required */
+    },
+};
+#endif /* Main Domain R5F */
+#endif /* Main Domain MCU Build */
+
+/******************************************************************************
+ *  MCU Domain R5F
+ ******************************************************************************/
+#if defined (BUILD_MCU)
+
+#if (defined (BUILD_MCU1_0) || defined (BUILD_MCU1_1))
+
+/* I2C configuration structure */
+I2C_HwAttrs i2cInitCfg[I2C_HWIP_MAX_CNT] =
+{
+    {
         /*
          * default configuration for I2C instances and R5 cores on MCU domain
          * I2C_socInit() is called during initialization to change the default
@@ -72,124 +262,84 @@ I2C_HwAttrs i2cInitCfg[I2C_HWIP_MAX_CNT] =
         (uint32_t)CSL_MCU_I2C0_CFG_BASE,    /* baseAddr */
         CSLR_MCU_R5FSS0_CORE0_INTR_MCU_I2C0_POINTRPEND_0,
         0,                                  /* eventId */
-#endif
         I2C_INPUT_CLK,
         (bool)true,
         {
             /* default own slave addresses */
             0x70, 0x0, 0x0, 0x0
         },
-        I2C_configSocIntrPath
+        (I2C_socCfgIntrPathFxn)NULL         /* No routing of ints required */
     },
     {
-#if defined (BUILD_MPU)
-        (uint32_t)CSL_I2C1_CFG_BASE,
-        CSLR_COMPUTE_CLUSTER0_MSMC_1MB_GIC_SPI_I2C1_POINTRPEND_0,
-        0,
-#endif
-#if defined (BUILD_MCU)
         (uint32_t)CSL_MCU_I2C1_CFG_BASE,
         CSLR_MCU_R5FSS0_CORE0_INTR_MCU_I2C1_POINTRPEND_0,
         0,
-#endif
         I2C_INPUT_CLK,
         (bool)true,
         {
             0x71, 0x0, 0x0, 0x0
         },
-        I2C_configSocIntrPath
+        (I2C_socCfgIntrPathFxn)NULL         /* No routing of ints required */
     },
     {
-#if defined (BUILD_MPU)
-        (uint32_t)CSL_I2C2_CFG_BASE,
-        CSLR_COMPUTE_CLUSTER0_MSMC_1MB_GIC_SPI_I2C2_POINTRPEND_0,
-        0,
-#endif
-#if defined (BUILD_MCU)
         0,
         0,
         0,
-#endif
         I2C_INPUT_CLK,
         (bool)true,
         {
             0x72, 0x0, 0x0, 0x0
         },
-        I2C_configSocIntrPath
+        (I2C_socCfgIntrPathFxn)NULL         /* No routing of ints required */
     },
     {
-#if defined (BUILD_MPU)
-        (uint32_t)CSL_I2C3_CFG_BASE,
-        CSLR_COMPUTE_CLUSTER0_MSMC_1MB_GIC_SPI_I2C3_POINTRPEND_0,
-        0,
-#endif
-#if defined (BUILD_MCU)
         0,
         0,
         0,
-#endif
         I2C_INPUT_CLK,
         (bool)true,
         {
             0x73, 0x0, 0x0, 0x0
         },
-        I2C_configSocIntrPath
+        (I2C_socCfgIntrPathFxn)NULL         /* No routing of ints required */
     },
     {
-#if defined (BUILD_MPU)
-        (uint32_t)CSL_I2C4_CFG_BASE,
-        CSLR_COMPUTE_CLUSTER0_MSMC_1MB_GIC_SPI_I2C4_POINTRPEND_0,
-        0,
-#endif
-#if defined (BUILD_MCU)
         0,
         0,
         0,
-#endif
         I2C_INPUT_CLK,
         (bool)true,
         {
             0x74, 0x0, 0x0, 0x0
         },
-        I2C_configSocIntrPath
+        (I2C_socCfgIntrPathFxn)NULL         /* No routing of ints required */
     },
     {
-#if defined (BUILD_MPU)
-        (uint32_t)CSL_I2C5_CFG_BASE,
-        CSLR_COMPUTE_CLUSTER0_MSMC_1MB_GIC_SPI_I2C5_POINTRPEND_0,
-        0,
-#endif
-#if defined (BUILD_MCU)
         0,
         0,
         0,
-#endif
         I2C_INPUT_CLK,
         (bool)true,
         {
             0x75, 0x0, 0x0, 0x0
         },
-        I2C_configSocIntrPath
+        (I2C_socCfgIntrPathFxn)NULL         /* No routing of ints required */
     },
     {
-#if defined (BUILD_MPU)
-        (uint32_t)CSL_I2C6_CFG_BASE,
-        CSLR_COMPUTE_CLUSTER0_MSMC_1MB_GIC_SPI_I2C6_POINTRPEND_0,
-        0,
-#endif
-#if defined (BUILD_MCU)
         0,
         0,
         0,
-#endif
         I2C_INPUT_CLK,
         (bool)true,
         {
             0x76, 0x0, 0x0, 0x0
         },
-        I2C_configSocIntrPath
+        (I2C_socCfgIntrPathFxn)NULL         /* No routing of ints required */
     },
 };
+#endif /* MCU Domain R5F */
+#endif /* MCU Build */
+
 
 
 /* I2C objects */
@@ -316,28 +466,11 @@ int32_t I2C_socSetInitCfg(uint32_t index, const I2C_HwAttrs *cfg)
 void I2C_socInit(void);
 void I2C_socInit(void)
 {
-    uint32_t         i;
-    CSL_ArmR5CPUInfo info;
-
-    CSL_armR5GetCpuID(&info);
-    if (info.grpId != (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_0)
-    {
-        /* Pulsar R5 core is on the Main domain */
-        for (i = 0; i < I2C_HWIP_MAX_CNT; i++)
-        {
-            /* Configure the Main SS UART instances for Main SS Pulsar R5 */
-            i2cInitCfg[i].baseAddr = (uint32_t)CSL_I2C0_CFG_BASE + (0x10000U * i);
-
-            if (i < 2U)
-            {
-                /* Main domain's I2C0-1 are directly connected to the MAIN Pulsar VIMs */
-                i2cInitCfg[i].intNum = CSLR_R5FSS0_CORE0_INTR_I2C0_POINTRPEND_0 + i;
-            }
-        }
-    }
+    return;
 }
 #endif
 
+#if NOT_REQUIRED_YET
 static int32_t I2C_configSocIntrPath(const void *pHwAttrs, bool setIntrPath)
 {
    int32_t ret = I2C_STATUS_SUCCESS;
@@ -376,7 +509,6 @@ static int32_t I2C_configSocIntrPath(const void *pHwAttrs, bool setIntrPath)
         }
         else if (r5CpuInfo.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_2)
         {
-#if 0 /* Needs to be fixed properly for J7200 */
             if(r5CpuInfo.cpuID == 0U)
             {
                 dst_id = TISCI_DEV_R5FSS1_CORE0;
@@ -385,7 +517,6 @@ static int32_t I2C_configSocIntrPath(const void *pHwAttrs, bool setIntrPath)
             {
                 dst_id = TISCI_DEV_R5FSS1_CORE1;
             }
-#endif
         }
         else
         {
@@ -452,4 +583,4 @@ static int32_t I2C_configSocIntrPath(const void *pHwAttrs, bool setIntrPath)
 
     return(ret);
 }
-
+#endif /* NOT_REQUIRED_YET */

@@ -4,6 +4,13 @@
  *  \brief  Example application main file. This application will read the data
  *          from eeprom and compares it with the known data.
  *
+ *          On J7200 - The EEPROM is connected to the i2c which is in wakeup
+ *                      domain. The I2C driver, by default supports all
+ *                      all instances in MCU and Main Domain only.
+ *
+ *                      This test demonstrates steps required to add support for
+ *                      an instance that's not natively supported by the driver.
+ *
  */
 
 /*
@@ -117,7 +124,15 @@ extern char eepromData[I2C_EEPROM_RX_LENGTH];
 
 #define I2C_TRANSACTION_TIMEOUT         (10000U)
 
+#if defined (SOC_J721E)
+/* By default for, first available output from IR */
+#define I2C_INST_WKUP_I2C0_INT_NUM_MAIN (CSLR_R5FSS0_CORE0_INTR_R5FSS0_INTROUTER0_OUTL_0)
+#endif
 
+#if defined (SOC_J7200)
+/* Applicable for MCU 20/21 only */
+#define I2C_INST_WKUP_I2C0_INT_NUM_MAIN (CSLR_R5FSS0_CORE0_INTR_WKUP_I2C0_POINTRPEND_0)
+#endif /* J7200 Specific */
 /**********************************************************************
  ************************** Internal functions ************************
  **********************************************************************/
@@ -208,7 +223,7 @@ bool Board_initI2C(void)
          * Pulsar R5 core is on the Main domain, use the Main Pulsar
          * interrupt router
          */
-        i2c_cfg.intNum = 256U; /* value 256 - 511 reserved for IR output */
+        i2c_cfg.intNum = I2C_INST_WKUP_I2C0_INT_NUM_MAIN;
     }
     else
     {
@@ -318,6 +333,8 @@ bool Board_initI2C(void)
     }
 #endif
 
+
+    I2C_log("\n I2C Test: Using Instance %d", I2C_EEPROM_INSTANCE);
     return (true);
 }
 
