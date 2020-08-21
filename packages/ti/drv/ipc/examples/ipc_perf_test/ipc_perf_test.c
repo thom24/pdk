@@ -699,6 +699,7 @@ void Ipc_printTestReport()
     {
         Ipc_printPerfTestReport();
         UART_printf("\n\nPerformance Test : Completed\n");
+        UART_printf("\n\nAll tests have passed. \n");
     }    
 }
 
