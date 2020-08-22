@@ -13,6 +13,8 @@ else
 PDK_INSTALL_PATH ?= $(mkfile_dir)../../../../..
 endif
 
+include $(PDK_INSTALL_PATH)/ti/build/Rules.make
+
 #################################################################################
 # General Configuration
 #################################################################################
@@ -21,7 +23,7 @@ endif
 #     OUT_DIR defines the output directory for the combined appimage.
 #     OUT_IMG defines the name of the combined appimage
 #
-OUT_DIR ?= $(mkfile_dir)bin
+OUT_DIR ?= $(mkfile_dir)bin/$(BOARD)
 OUT_IMG ?= combined.appimage
 
 # Raw Binary Extensions
@@ -43,16 +45,6 @@ RAW_EXTENSIONS ?= .bin .dtb
 #
 EXTENSIONLESS_TYPE ?= raw
 
-# SOC/Board Configuration
-#
-#     This is ONLY important for expanding macros in <ti/build/makerules/platform.mk>
-#
-#     NOTE: all K3 devices have the same definitions here, so the default should
-#           be safe.
-#
-SOC ?= am65xx
-BOARD ?= am65xx_evm
-
 #################################################################################
 # HLOS Configuration
 #################################################################################
@@ -71,7 +63,10 @@ BOARD ?= am65xx_evm
 HLOS_BOOT ?= optimized
 
 # Path which contains all HLOS binaries
-HLOS_BIN_PATH ?= ~/ti-processor-sdk-linux/board-support/prebuilt-images
+HLOS_BIN_PATH ?= $(SDK_INSTALL_PATH)/ti-processor-sdk-linux/board-support/prebuilt-images/$(BOARD)
+
+# GCC PATH
+GCC_LINUX_ARM_PATH ?= $(SDK_INSTALL_PATH)/gcc-arm-$(GCC_ARCH64_VERSION)-x86_64-aarch64-none-linux-gnu
 
 # HLOS Images
 #
@@ -86,17 +81,17 @@ HLOS_BIN_PATH ?= ~/ti-processor-sdk-linux/board-support/prebuilt-images
 #     NOTE: Device ID's are defined in <ti/build/makerules/platform.mk>
 #
 ATF_IMG    ?= mpu1_0,$(HLOS_BIN_PATH)/bl31.bin,0x70000000,0x70000000
-OPTEE_IMG  ?= load_only,$(HLOS_BIN_PATH)/bl32.bin,0x9e800000
-KERNEL_IMG ?= load_only,$(HLOS_BIN_PATH)/Image,0x80080000
-DTB_IMG    ?= load_only,$(HLOS_BIN_PATH)/base-board.dtb,0x82000000
-SPL_IMG    ?= 
+OPTEE_IMG  ?= load_only,$(HLOS_BIN_PATH)/bl32.bin,0x9e800000,0x9e800000
+KERNEL_IMG ?= load_only,$(HLOS_BIN_PATH)/Image,0x80080000,0x80080000
+DTB_IMG    ?= load_only,$(HLOS_BIN_PATH)/base-board.dtb,0x82000000,0x82000000
+SPL_IMG    ?= load_only,$(HLOS_BIN_PATH)/u-boot-spl.bin,0x80080000,0x80080000
 
 #################################################################################
 # RTOS/Baremetal Configuration
 #################################################################################
 
 # Path which contains all RTOS binaries
-RTOS_BIN_PATH ?= ~/ti/pdk/packages/ti/boot/sbl/example/k3MulticoreApp/binary/am65xx
+RTOS_BIN_PATH ?= $(PDK_INSTALL_PATH)/ti/boot/sbl/example/k3MulticoreApp/binary/$(SOC)
 
 # RTOS/Baremetal Images
 #
@@ -109,7 +104,7 @@ RTOS_BIN_PATH ?= ~/ti/pdk/packages/ti/boot/sbl/example/k3MulticoreApp/binary/am6
 #     $IMG_LIST below.
 #
 #     Each image configuration here should be formatted as follows:
-# 
+#
 #         <Device ID>,<RTOS/Baremetal Binary>
 #
 #     NOTE: Device ID's are defined in <ti/build/makerules/platform.mk>
@@ -119,16 +114,16 @@ RTOS_BIN_PATH ?= ~/ti/pdk/packages/ti/boot/sbl/example/k3MulticoreApp/binary/am6
 #           configured to run on MCU1 will be started when SBL is finished.
 #
 # Example:
-# IMG1 ?= mcu1_0,$(RTOS_BIN_PATH)/sbl_baremetal_boot_test_am65xx_idk_mcu1_0TestApp_release.xer5f
+# IMG1 ?= mcu1_0,$(RTOS_BIN_PATH)/sbl_baremetal_boot_test_$(SOC)_idk_mcu1_0TestApp_release.xer5f
 #
-IMG1 ?= 
-IMG2 ?= 
-IMG3 ?= 
-IMG4 ?= 
-IMG5 ?= 
-IMG6 ?= 
-IMG7 ?= 
-IMG8 ?= 
+IMG1 ?=
+IMG2 ?=
+IMG3 ?=
+IMG4 ?=
+IMG5 ?=
+IMG6 ?=
+IMG7 ?=
+IMG8 ?=
 
 #################################################################################
 # Final Image Configuration

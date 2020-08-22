@@ -17,7 +17,12 @@ include $(PDK_INSTALL_PATH)/ti/build/makerules/platform.mk
 #################################################################################
 SBL_REPO_PATH := $(PDK_INSTALL_PATH)/ti/boot/sbl
 MULTICORE_APPIMAGE_GEN_TOOL_PATH := $(SBL_REPO_PATH)/tools/multicoreImageGen/bin
-SBL_OUT2RPRC_GEN_TOOL_PATH := $(SBL_REPO_PATH)/tools/out2rprc/bin
+
+ifeq ($(OS),Windows_NT)
+  SBL_OUT2RPRC_GEN_TOOL_PATH := $(SBL_REPO_PATH)/tools/out2rprc/bin/out2rprc.exe
+else
+  SBL_OUT2RPRC_GEN_TOOL_PATH := mono --runtime=v4.0 $(SBL_REPO_PATH)/tools/out2rprc/bin/out2rprc.exe
+endif
 
 #################################################################################
 # Helper Functions
@@ -43,7 +48,7 @@ column = $(foreach row, $1, $(or $(call index,$(row),$2),-))
 expand_path = $(patsubst ~/%,$(HOME)/%,$1)
 
 # Returns an element of a space-separated list that contains a specified
-# element of a comma-separated list. 
+# element of a comma-separated list.
 getrow = $(foreach row, $1, $(if $(filter $2,$(call split,$(row))),$(row),))
 
 # Same as "getrow" but resolves paths, because we will be searching the config
@@ -122,7 +127,7 @@ APP_IMAGE = $(OUT_DIR)/$(OUT_IMG)
 # Template rule for creating ELF files
 define ELF_RULE
 %.elf: $1
-	aarch64-none-linux-gnu-ld -b binary -A aarch64 --oformat elf64-littleaarch64 \
+	$(GCC_LINUX_ARM_PATH)/bin/aarch64-none-linux-gnu-ld -b binary -A aarch64 --oformat elf64-littleaarch64 \
 		$$(call fmt_load_addr,$$(IMG_LIST),$$^) \
 		$$(call fmt_entry_point,$$(IMG_LIST),$$^) \
 		$$^ -o $$@
@@ -131,7 +136,7 @@ endef
 # Template rule for creating RPRC files
 define RPRC_RULE
 %.rprc: $1
-	$$(SBL_OUT2RPRC_GEN_TOOL_PATH)/out2rprc.exe $$^ $$@
+	$$(SBL_OUT2RPRC_GEN_TOOL_PATH) $$^ $$@
 endef
 
 #################################################################################
