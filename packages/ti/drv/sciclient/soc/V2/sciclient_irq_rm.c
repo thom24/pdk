@@ -30,7 +30,7 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- *  \file V1/sciclient_irq_rm.c
+ *  \file V2/sciclient_irq_rm.c
  *
  *  \brief File containing the J7 Family specific interrupt management data for
  *         RM.

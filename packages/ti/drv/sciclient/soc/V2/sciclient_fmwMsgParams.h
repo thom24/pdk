@@ -32,7 +32,7 @@
  */
 
 /**
- *  \file   V1/sciclient_fmwMsgParams.h
+ *  \file   V2/sciclient_fmwMsgParams.h
  *
  *  \brief  This file contains the definition of all the parameter IDs for
  *          PM, RM, Security.

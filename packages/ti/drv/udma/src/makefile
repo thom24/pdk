@@ -28,6 +28,21 @@ INCDIR =
 # need to be included for this component
 INCLUDE_EXTERNAL_INTERFACES = pdk
 
+PACKAGE_SRCS_COMMON = udma.h udma_component.mk makefile .gitignore docs $(SRCDIR)
+PACKAGE_SRCS_COMMON += include/udma_cfg.h
+PACKAGE_SRCS_COMMON += include/udma_ch.h
+PACKAGE_SRCS_COMMON += include/udma_event.h
+PACKAGE_SRCS_COMMON += include/udma_flow.h
+PACKAGE_SRCS_COMMON += include/udma_osal.h
+PACKAGE_SRCS_COMMON += include/udma_proxy.h
+PACKAGE_SRCS_COMMON += include/udma_ring.h
+PACKAGE_SRCS_COMMON += include/udma_rm.h
+PACKAGE_SRCS_COMMON += include/udma_types.h
+PACKAGE_SRCS_COMMON += include/udma_utils.h
+PACKAGE_SRCS_COMMON += soc/udma_soc.h
+PACKAGE_SRCS_COMMON += config_mk.bld package.bld package.xdc package.xs
+PACKAGE_SRCS_COMMON += Settings.xdc.xdt udmaver.h udmaver.h.xdt
+
 # Common source files and CFLAGS across all platforms and cores
 SRCS_COMMON += udma.c
 SRCS_COMMON += udma_rm.c udma_rmcfg.c
@@ -38,6 +53,7 @@ SRCS_COMMON += udma_soc.c
 #DRU is not present in all SOC
 ifeq ($(SOC),$(filter $(SOC), am65xx j721e))
 SRCS_COMMON += udma_dru.c
+PACKAGE_SRCS_COMMON += include/udma_dru.h
 endif
 #Normal RA is not present in all SOC
 ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
@@ -48,10 +64,6 @@ ifeq ($(SOC),$(filter $(SOC), am64x))
 SRCS_COMMON += udma_ring_lcdma.c
 endif
 
-PACKAGE_SRCS_COMMON = udma.h udma_component.mk makefile .gitignore include docs $(SRCDIR)
-PACKAGE_SRCS_COMMON += soc/udma_soc.h
-PACKAGE_SRCS_COMMON += config_mk.bld package.bld package.xdc package.xs
-PACKAGE_SRCS_COMMON += Settings.xdc.xdt udmaver.h udmaver.h.xdt
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(UDMA_CFLAGS)
 
 # Core/SoC/platform specific source files and CFLAGS

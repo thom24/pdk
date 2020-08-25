@@ -31,7 +31,7 @@
  *
  */
 /**
- *  \file V1/sciclient_irq_rm.h
+ *  \file V2/sciclient_irq_rm.h
  *
  *  \brief Private J7 Family specific RM interrupt data
  */

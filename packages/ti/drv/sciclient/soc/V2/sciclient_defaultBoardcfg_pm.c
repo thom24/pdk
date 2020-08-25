@@ -30,7 +30,7 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- *  \file V1/sciclient_defaultBoardcfg.c
+ *  \file V2/sciclient_defaultBoardcfg.c
  *
  *  \brief File containing the boardcfg default data structure to
  *      send TISCI_MSG_BOARD_CONFIG message.
@@ -55,7 +55,7 @@ struct tisci_boardcfg_pm {
 
 const struct tisci_boardcfg_pm gBoardConfigLow_pm = {
     /* boardcfg_abi_rev */
-    .rev = 
+    .rev =
     {
         .tisci_boardcfg_abi_maj          = TISCI_BOARDCFG_RM_ABI_MAJ_VALUE,
         .tisci_boardcfg_abi_min          = TISCI_BOARDCFG_RM_ABI_MIN_VALUE

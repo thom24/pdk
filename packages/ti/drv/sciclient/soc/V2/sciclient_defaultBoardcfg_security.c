@@ -30,7 +30,7 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- *  \file V1/sciclient_defaultBoardcfg.c
+ *  \file V2/sciclient_defaultBoardcfg.c
  *
  *  \brief File containing the boardcfg default data structure to
  *      send TISCI_MSG_BOARD_CONFIG message.
@@ -86,7 +86,7 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
         .write_host_id = 0,
         /* This is an array with 32 entries */
         .otp_entry = {0},
-    }, 
+    },
     /* DKEK configuration */
     .dkek_config = {
         .subhdr = {
@@ -112,11 +112,11 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
             .magic = TISCI_BOARDCFG_SEC_DBG_CTRL_MAGIC_NUM,
             .size = sizeof(struct tisci_boardcfg_secure_debug_config),
         },
-        .allow_jtag_unlock = 0U, 
+        .allow_jtag_unlock = 0U,
         .allow_wildcard_unlock = 0x0,
-        .min_cert_rev = 0x0, 
+        .min_cert_rev = 0x0,
         .jtag_unlock_hosts = {0, 0, 0, 0},
-    },   
+    },
 };
 #endif
 

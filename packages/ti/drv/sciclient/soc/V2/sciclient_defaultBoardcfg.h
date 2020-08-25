@@ -30,7 +30,7 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- *  \file V1/sciclient_defaultBoardcfg.h
+ *  \file V2/sciclient_defaultBoardcfg.h
  *
  *  \brief File defining tisci_local_rm_boardcfg for boardCfg RM .
  *
