@@ -380,7 +380,7 @@ static void Nor_ospiSetOpcode(SPI_Handle handle)
     uint32_t               cmdDummyCycles = 0;
     uint32_t               readCmd;
     uint32_t               progCmd;
-    uint32_t               latencyCode;
+    uint32_t               latencyCode = 0;
     uint32_t               rx_lines;
     OSPI_v0_HwAttrs const *hwAttrs= (OSPI_v0_HwAttrs const *)handle->hwAttrs;
 
@@ -418,8 +418,8 @@ static void Nor_ospiSetOpcode(SPI_Handle handle)
     else
     {
         /* Set to legacy SPI mode 1-1-1 if not Octal mode */
-        data[0]       = NOR_CMD_READ;
-        data[1]       = NOR_CMD_PAGE_PROG;
+        readCmd = NOR_CMD_READ;
+        progCmd = NOR_CMD_PAGE_PROG;
     }
 
     data[0] = readCmd;
