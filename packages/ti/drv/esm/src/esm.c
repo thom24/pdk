@@ -104,8 +104,6 @@ void ESM_lowpriority_interrupt(uintptr_t arg)
 void ESM_processInterrupt (uintptr_t arg, uint32_t vec, int32_t* groupNum, int32_t* vecNum)
 {
     uint32_t            index;
-    uint32_t            regVal = 0U;
-    CSL_esmRegs*        ptrESMRegs;
     ESM_Config         *ptrESMConfig;
     ESM_DriverMCB      *object;
     ESM_HwAttrs const  *hwAttrs;
@@ -118,7 +116,6 @@ void ESM_processInterrupt (uintptr_t arg, uint32_t vec, int32_t* groupNum, int32
     if (vec < 32U)
     {
         /* group 1 0-31 errors */
-        ESMClearIntrStatus(object->esmBaseAddr, vec);
 #ifdef ESM_DEBUG
         object->debugEsmISRCount[0]++;
 #endif
@@ -128,14 +125,10 @@ void ESM_processInterrupt (uintptr_t arg, uint32_t vec, int32_t* groupNum, int32
     else if (vec < 64U)
     {
         /* group 2 0-31 errors */
-        vec = vec - 32;
-        regVal = ((uint32_t) 1U << (vec));
-        ptrESMRegs = hwAttrs->ptrESMRegs;
-        CSL_REG_WR(&ptrESMRegs->ESMSR2, regVal);
-
 #ifdef ESM_DEBUG
         object->debugEsmISRCount[1]++;
 #endif
+        vec = vec - 32;
         *groupNum = 2;
         *vecNum = vec;
     }
@@ -146,8 +139,6 @@ void ESM_processInterrupt (uintptr_t arg, uint32_t vec, int32_t* groupNum, int32
         object->debugEsmISRCount[vec/32]++;
 #endif
         vec = vec - 32;
-        ESMClearIntrStatus(object->esmBaseAddr, vec);
-
         *groupNum = 1;
         *vecNum = vec;
     }
@@ -157,6 +148,8 @@ void ESM_processInterrupt (uintptr_t arg, uint32_t vec, int32_t* groupNum, int32
     }
     if (*groupNum != MINUS_ONE)
     {
+        /* Clear the error status flag */
+        ESMClearIntrStatus(object->esmBaseAddr, *groupNum, *vecNum);
         /* Check if notify function was registered? */
         for (index = 0; index < ESM_MAX_NOTIFIERS; index++)
         {
@@ -189,7 +182,6 @@ void ESM_processInterrupt (uintptr_t arg, uint32_t vec, int32_t* groupNum, int32
 ESM_Handle ESM_init(uint32_t index, uint8_t bClearErrors)
 {
     CSL_esmRegs*          ptrESMRegs;
-    uint32_t              esmInitStatus;
     uint32_t              i;
     ESM_Handle            handle = NULL;
     ESM_Config           *ptrESMConfig;
@@ -267,26 +259,11 @@ ESM_Handle ESM_init(uint32_t index, uint8_t bClearErrors)
 
         if (bClearErrors == 1U)
         {
-            /* Clear ESM Group 1 errors */
-            for (i=0; i<object->numGroup1Err; i++)
+            /* Clear ESM Group 1, 2, 3 errors */
+            for (i=0; i<ESM_NUM_GROUP_MAX; i++)
             {
-                if(ESMGetIntrStatus(object->esmBaseAddr, i))
-                {
-                    ESMClearIntrStatus(object->esmBaseAddr, i);
-                }
+                ESMClearGroupIntrStatus(object->esmBaseAddr, i+1);
             }
-
-            /* Clear ESM Group 2: 0-31 errors */
-            /* read */
-            esmInitStatus = CSL_REG_RD(&ptrESMRegs->ESMSR2);
-            /*  clear */
-            CSL_REG_WR(&ptrESMRegs->ESMSR2, esmInitStatus);
-
-            /* Clear ESM Group 3: 0-31 errors */
-            /* read */
-            esmInitStatus = CSL_REG_RD(&ptrESMRegs->ESMSR3);
-            /*  clear */
-            CSL_REG_WR(&ptrESMRegs->ESMSR3, esmInitStatus);
         }
     }
 
