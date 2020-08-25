@@ -273,7 +273,8 @@ typedef struct
      *                TI-RTOS application.
      */
     uint32_t                preferredCoreIntrNum;
-    /**< [IN] Preferred core interrupt number which goes to a core.
+    /**< [IN] Preferred core interrupt number which goes to a core. 
+     * 
      *   If set to #UDMA_CORE_INTR_ANY, will allocate from free pool.
      *   Else will try to allocate the mentioned interrupt itself. */
     Udma_RingMonHandle      monHandle;
@@ -294,7 +295,25 @@ typedef struct
     /**< [OUT] Interrupt mask to check and clear */
     uint32_t                coreIntrNum;
     /**< [OUT] Core interrupt number allocated.
-     *   This number can be used to register with the OSAL */
+     *   This number can be used to register with the OSAL 
+     *   
+     *   Note: Incase of C7x, this represents the GIC SPI events to the CLEC.
+     *   For routing this event, the driver further uses the #Udma_RmInitPrms - 'startC7xCoreIntr'
+     *   parameter as the start C7x interrupt and assumes that numIrIntr
+     *   C7x interrupt are used by UDMA driver for one to one mapping.
+     *   The UDMA driver directly programs the CLEC for this routing
+     *
+     *   Example: startIrIntr = 700, numIrIntr = 3, startC7xCoreIntr = 32
+     *
+     *   First Event registration:
+     *   CLEC input         : 700+1024-32
+     *   CLEC output        : 32
+     *   OSAL registration  : 32
+     *
+     *   Second Event registration:
+     *   CLEC input         : 701+1024-32
+     *   CLEC output        : 33
+     *   OSAL registration  : 33 */
 } Udma_EventPrms;
 
 /**
@@ -487,6 +506,10 @@ struct Udma_EventObj
     /**< Allocated IA VINT register. */
     uint32_t                vintrBitNum;
     /**< Allocated IA VINT bit number - 0 to 63. */
+    uint32_t                irIntrNum;
+    /**< Allocated interrupt router number. 
+     * In case of devices like AM64x, where there are no Interrupt Routers,
+     * irIntrNum refers to coreIntrNum number itself. */
     uint32_t                coreIntrNum;
     /**< Allocated core interrupt number. */
 

@@ -88,7 +88,7 @@ extern "C" {
 #define UDMA_RM_MAX_FREE_FLOW               (256U)
 #define UDMA_RM_MAX_GLOBAL_EVENT            (1024U)
 #define UDMA_RM_MAX_VINTR                   (512U)
-#define UDMA_RM_MAX_CORE_INTR               (128U)
+#define UDMA_RM_MAX_IR_INTR                 (128U)
 #define UDMA_RM_MAX_PROXY                   (32U)
 #define UDMA_RM_MAX_RING_MON                (32U)
 
@@ -110,7 +110,7 @@ extern "C" {
 #define UDMA_RM_FREE_FLOW_ARR_SIZE          (UDMA_RM_MAX_FREE_FLOW >> 5U)
 #define UDMA_RM_GLOBAL_EVENT_ARR_SIZE       (UDMA_RM_MAX_GLOBAL_EVENT >> 5U)
 #define UDMA_RM_VINTR_ARR_SIZE              (UDMA_RM_MAX_VINTR >> 5U)
-#define UDMA_RM_CORE_INTR_ARR_SIZE          (UDMA_RM_MAX_CORE_INTR >> 5U)
+#define UDMA_RM_IR_INTR_ARR_SIZE            (UDMA_RM_MAX_IR_INTR >> 5U)
 #define UDMA_RM_PROXY_ARR_SIZE              (UDMA_RM_MAX_PROXY >> 5U)
 #define UDMA_RM_RING_MON_ARR_SIZE           (UDMA_RM_MAX_RING_MON >> 5U)
 /* @} */

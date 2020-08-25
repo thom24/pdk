@@ -255,10 +255,10 @@ int32_t Udma_rmInit(Udma_DrvHandle drvHandle)
         for(i = 0U; i < rmInitPrms->numIrIntr; i++)
         {
             offset = i >> 5U;
-            Udma_assert(drvHandle, offset < UDMA_RM_CORE_INTR_ARR_SIZE);
+            Udma_assert(drvHandle, offset < UDMA_RM_IR_INTR_ARR_SIZE);
             bitPos = i - (offset << 5U);
             bitMask = (uint32_t) 1U << bitPos;
-            drvHandle->coreIntrFlag[offset] |= bitMask;
+            drvHandle->irIntrFlag[offset] |= bitMask;
         }
         for(i = 0U; i < rmInitPrms->numProxy; i++)
         {
@@ -399,9 +399,9 @@ int32_t Udma_rmDeinit(Udma_DrvHandle drvHandle)
                   UDMA_RM_VINTR_ARR_SIZE);
     retVal += Udma_rmCheckResLeak(
                   drvHandle,
-                  &drvHandle->coreIntrFlag[0U],
+                  &drvHandle->irIntrFlag[0U],
                   rmInitPrms->numIrIntr,
-                  UDMA_RM_CORE_INTR_ARR_SIZE);
+                  UDMA_RM_IR_INTR_ARR_SIZE);
     retVal += Udma_rmCheckResLeak(
                   drvHandle,
                   &drvHandle->proxyFlag[0U],
@@ -1808,49 +1808,49 @@ void Udma_rmFreeVintrBit(uint32_t vintrBitNum,
     return;
 }
 
-uint32_t Udma_rmAllocCoreIntr(uint32_t preferredCoreIntrNum,
+uint32_t Udma_rmAllocIrIntr(uint32_t preferredIrIntrNum,
                               Udma_DrvHandle drvHandle)
 {
     uint32_t            i, offset, bitPos, bitMask;
-    uint32_t            coreIntrNum = UDMA_INTR_INVALID;
+    uint32_t            irIntrNum = UDMA_INTR_INVALID;
     Udma_RmInitPrms    *rmInitPrms = &drvHandle->initPrms.rmInitPrms;
 
     Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.lockMutex != (Udma_OsalMutexLockFxn) NULL_PTR);
     drvHandle->initPrms.osalPrms.lockMutex(drvHandle->rmLock);
 
-    if(UDMA_CORE_INTR_ANY == preferredCoreIntrNum)
+    if(UDMA_CORE_INTR_ANY == preferredIrIntrNum)
     {
         /* Search and allocate from pool */
         for(i = 0U; i < rmInitPrms->numIrIntr; i++)
         {
             offset = i >> 5U;
-            Udma_assert(drvHandle, offset < UDMA_RM_CORE_INTR_ARR_SIZE);
+            Udma_assert(drvHandle, offset < UDMA_RM_IR_INTR_ARR_SIZE);
             bitPos = i - (offset << 5U);
             bitMask = (uint32_t) 1U << bitPos;
-            if((drvHandle->coreIntrFlag[offset] & bitMask) == bitMask)
+            if((drvHandle->irIntrFlag[offset] & bitMask) == bitMask)
             {
-                drvHandle->coreIntrFlag[offset] &= ~bitMask;
-                coreIntrNum = i + rmInitPrms->startIrIntr;    /* Add start offset */
+                drvHandle->irIntrFlag[offset] &= ~bitMask;
+                irIntrNum = i + rmInitPrms->startIrIntr;    /* Add start offset */
                 break;
             }
         }
     }
     else
     {
-        /* Allocate specific core interrupt number if free */
+        /* Allocate specific IR interrupt number if free */
         /* Array bound check */
-        if((preferredCoreIntrNum >= rmInitPrms->startIrIntr) &&
-           (preferredCoreIntrNum < (rmInitPrms->startIrIntr + rmInitPrms->numIrIntr)))
+        if((preferredIrIntrNum >= rmInitPrms->startIrIntr) &&
+           (preferredIrIntrNum < (rmInitPrms->startIrIntr + rmInitPrms->numIrIntr)))
         {
-            i = preferredCoreIntrNum - rmInitPrms->startIrIntr;
+            i = preferredIrIntrNum - rmInitPrms->startIrIntr;
             offset = i >> 5U;
-            Udma_assert(drvHandle, offset < UDMA_RM_CORE_INTR_ARR_SIZE);
+            Udma_assert(drvHandle, offset < UDMA_RM_IR_INTR_ARR_SIZE);
             bitPos = i - (offset << 5U);
             bitMask = (uint32_t) 1U << bitPos;
-            if((drvHandle->coreIntrFlag[offset] & bitMask) == bitMask)
+            if((drvHandle->irIntrFlag[offset] & bitMask) == bitMask)
             {
-                drvHandle->coreIntrFlag[offset] &= ~bitMask;
-                coreIntrNum = preferredCoreIntrNum;
+                drvHandle->irIntrFlag[offset] &= ~bitMask;
+                irIntrNum = preferredIrIntrNum;
             }
         }
     }
@@ -1858,28 +1858,28 @@ uint32_t Udma_rmAllocCoreIntr(uint32_t preferredCoreIntrNum,
     Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.unlockMutex != (Udma_OsalMutexUnlockFxn) NULL_PTR);
     drvHandle->initPrms.osalPrms.unlockMutex(drvHandle->rmLock);
 
-    return (coreIntrNum);
+    return (irIntrNum);
 }
 
-void Udma_rmFreeCoreIntr(uint32_t coreIntrNum, Udma_DrvHandle drvHandle)
+void Udma_rmFreeIrIntr(uint32_t irIntrNum, Udma_DrvHandle drvHandle)
 {
     uint32_t            i, offset, bitPos, bitMask;
     Udma_RmInitPrms    *rmInitPrms = &drvHandle->initPrms.rmInitPrms;
 
     Udma_assert(drvHandle,
-        coreIntrNum < (rmInitPrms->startIrIntr + rmInitPrms->numIrIntr));
-    Udma_assert(drvHandle, coreIntrNum >= rmInitPrms->startIrIntr);
+        irIntrNum < (rmInitPrms->startIrIntr + rmInitPrms->numIrIntr));
+    Udma_assert(drvHandle, irIntrNum >= rmInitPrms->startIrIntr);
 
     Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.lockMutex != (Udma_OsalMutexLockFxn) NULL_PTR);
     drvHandle->initPrms.osalPrms.lockMutex(drvHandle->rmLock);
 
-    i = coreIntrNum - rmInitPrms->startIrIntr;
+    i = irIntrNum - rmInitPrms->startIrIntr;
     offset = i >> 5U;
-    Udma_assert(drvHandle, offset < UDMA_RM_CORE_INTR_ARR_SIZE);
+    Udma_assert(drvHandle, offset < UDMA_RM_IR_INTR_ARR_SIZE);
     bitPos = i - (offset << 5U);
     bitMask = (uint32_t) 1U << bitPos;
-    Udma_assert(drvHandle, (drvHandle->coreIntrFlag[offset] & bitMask) == 0U);
-    drvHandle->coreIntrFlag[offset] |= bitMask;
+    Udma_assert(drvHandle, (drvHandle->irIntrFlag[offset] & bitMask) == 0U);
+    drvHandle->irIntrFlag[offset] |= bitMask;
 
     Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.unlockMutex != (Udma_OsalMutexUnlockFxn) NULL_PTR);
     drvHandle->initPrms.osalPrms.unlockMutex(drvHandle->rmLock);
@@ -1944,6 +1944,83 @@ void Udma_rmFreeRingMon(uint16_t ringMonNum, Udma_DrvHandle drvHandle)
     return;
 }
 
+uint32_t Udma_rmTranslateIrOutput(Udma_DrvHandle drvHandle, uint32_t irIntrNum)
+{
+    uint32_t    coreIntrNum = UDMA_INTR_INVALID;
+
+    if(drvHandle->instType != UDMA_INST_TYPE_NORMAL)
+    {
+        /* In case of devices like AM64x, where there are no Interrupt Routers,
+         * irIntrNum refers to coreIntrNum number itself. */
+        coreIntrNum = irIntrNum;
+    }
+    else
+    {
+#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
+#if defined (BUILD_C66X_1) || defined (BUILD_C66X_2)
+        /* For C66x Sciclient translates NAVSS IR Idx to corresponding C66 IR Idx,
+         * Not the Core Interrupt Idx. */
+        Udma_RmInitPrms    *rmInitPrms = &drvHandle->initPrms.rmInitPrms;
+        
+        coreIntrNum = irIntrNum - rmInitPrms->startIrIntr;
+        coreIntrNum += rmInitPrms->startC66xCoreIntr;
+#else
+        int32_t  retVal = UDMA_SOK;
+        uint16_t dstId = 0U;
+
+        retVal = Sciclient_rmIrqTranslateIrOutput(drvHandle->devIdIr,
+                                                irIntrNum,
+                                                drvHandle->devIdCore,
+                                                &dstId); 
+        if(UDMA_SOK == retVal)
+        {
+            coreIntrNum = dstId;
+        }
+#endif
+#endif
+    }
+
+    return (coreIntrNum);
+}
+
+uint32_t Udma_rmTranslateCoreIntrInput(Udma_DrvHandle drvHandle, uint32_t coreIntrNum)
+{
+    uint32_t    irIntrNum = UDMA_INTR_INVALID;
+
+    if(drvHandle->instType != UDMA_INST_TYPE_NORMAL)
+    {
+        /* In case of devices like AM64x, where there are no Interrupt Routers,
+         * coreIntrNum refers to irIntrNum number itself. */
+        irIntrNum = coreIntrNum;
+    }
+    else
+    {
+#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
+#if defined (BUILD_C66X_1) || defined (BUILD_C66X_2)
+        /* For C66x Sciclient expects C66 IR Idx to translate to NAVSS IR Idx.
+         * Not the Core Interrupt Idx. */
+        Udma_RmInitPrms    *rmInitPrms = &drvHandle->initPrms.rmInitPrms;
+
+        irIntrNum = coreIntrNum - rmInitPrms->startC66xCoreIntr;
+        irIntrNum += rmInitPrms->startIrIntr;
+#else
+        int32_t  retVal = UDMA_SOK;
+        uint16_t irId = 0U;
+        
+        retVal = Sciclient_rmIrqTranslateIrqInput(drvHandle->devIdCore,
+                                                  coreIntrNum,
+                                                  drvHandle->devIdIr,
+                                                  &irId); 
+        if(UDMA_SOK == retVal)
+        {
+            irIntrNum = irId;
+        } 
+#endif
+#endif
+    }
+
+    return (irIntrNum);
+} 
 static int32_t Udma_rmCheckResLeak(Udma_DrvHandle drvHandle,
                                    const uint32_t *allocFlag,
                                    uint32_t numRes,

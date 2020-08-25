@@ -476,6 +476,8 @@ struct Udma_DrvObj
     /**< PSIL RM ID */
     uint16_t                devIdIa;
     /**< IA RM ID */
+    uint16_t                devIdIr;
+    /**< IR RM ID */
 #if (UDMA_SOC_CFG_PROXY_PRESENT == 1)
     uint16_t                devIdProxy;
     /**< Proxy RM ID */
@@ -613,8 +615,8 @@ struct Udma_DrvObj
     /**< IA global event allocation flag */
     uint32_t                vintrFlag[UDMA_RM_VINTR_ARR_SIZE];
     /**< IA VINTR allocation flag */
-    uint32_t                coreIntrFlag[UDMA_RM_CORE_INTR_ARR_SIZE];
-    /**< Core interrupt allocation flag */
+    uint32_t                irIntrFlag[UDMA_RM_IR_INTR_ARR_SIZE];
+    /**< IR interrupt allocation flag */
     uint32_t                proxyFlag[UDMA_RM_PROXY_ARR_SIZE];
     /**< UDMA proxy allocation flag */
     uint32_t                ringMonFlag[UDMA_RM_RING_MON_ARR_SIZE];

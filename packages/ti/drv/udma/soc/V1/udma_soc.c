@@ -358,6 +358,7 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
 
     drvHandle->iaGemOffset  = CSL_NAVSS_GEM_MCU_UDMA_INTA0_SEVI_OFFSET;
     drvHandle->devIdIa      = TISCI_DEV_MCU_NAVSS0_UDMASS_INTA_0;
+    drvHandle->devIdIr      = TISCI_DEV_MCU_NAVSS0_INTR_0;
 #if defined (BUILD_MCU1_0)
     drvHandle->devIdCore    = TISCI_DEV_MCU_R5FSS0_CORE0;
     drvHandle->druCoreId    = UDMA_DRU_CORE_ID_MCU1_0;
@@ -382,6 +383,7 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
 
     drvHandle->iaGemOffset  = CSL_NAVSS_GEM_MAIN_UDMA_INTA0_SEVI_OFFSET;
     drvHandle->devIdIa      = TISCI_DEV_NAVSS0_UDMASS_INTAGGR_0;
+    drvHandle->devIdIr      = TISCI_DEV_NAVSS0_INTR_ROUTER_0;
     drvHandle->clecRtMap    = CSL_CLEC_RTMAP_DISABLE;
     drvHandle->clecOffset   = 0U;
 #if defined (BUILD_MPU1_0)

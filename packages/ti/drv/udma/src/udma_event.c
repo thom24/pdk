@@ -119,6 +119,7 @@ int32_t Udma_eventRegister(Udma_DrvHandle drvHandle,
         eventHandle->globalEvent    = UDMA_EVENT_INVALID;
         eventHandle->vintrNum       = UDMA_EVENT_INVALID;
         eventHandle->vintrBitNum    = UDMA_EVENT_INVALID;
+        eventHandle->irIntrNum      = UDMA_INTR_INVALID;
         eventHandle->coreIntrNum    = UDMA_INTR_INVALID;
         eventHandle->nextEvent      = (Udma_EventHandle) NULL_PTR;
         eventHandle->prevEvent      = (Udma_EventHandle) NULL_PTR;
@@ -628,6 +629,7 @@ static int32_t Udma_eventAllocResource(Udma_DrvHandle drvHandle,
 {
     int32_t                 retVal = UDMA_SOK;
     uint32_t                vintrNum;
+    uint32_t                preferredIrIntrNum;
     const Udma_EventPrms   *eventPrms;
     Udma_EventHandle        lastEvent;
     uintptr_t               cookie;
@@ -691,8 +693,24 @@ static int32_t Udma_eventAllocResource(Udma_DrvHandle drvHandle,
                 (NULL_PTR == eventPrms->masterEventHandle)) ||
             (UDMA_EVENT_TYPE_MASTER == eventPrms->eventType))
         {
-            eventHandle->coreIntrNum =
-                Udma_rmAllocCoreIntr(eventPrms->preferredCoreIntrNum, drvHandle);
+            if(UDMA_CORE_INTR_ANY != eventPrms->preferredCoreIntrNum)
+            {
+                preferredIrIntrNum = Udma_rmTranslateCoreIntrInput(drvHandle, eventPrms->preferredCoreIntrNum);
+            }
+            else
+            {
+                preferredIrIntrNum = eventPrms->preferredCoreIntrNum;
+            }
+            if(UDMA_INTR_INVALID != preferredIrIntrNum)
+            {
+                eventHandle->irIntrNum =
+                    Udma_rmAllocIrIntr(preferredIrIntrNum, drvHandle);
+                if(UDMA_INTR_INVALID != eventHandle->irIntrNum)
+                {
+                    eventHandle->coreIntrNum = Udma_rmTranslateIrOutput(drvHandle, eventHandle->irIntrNum);
+                    
+                }
+            }
             if(UDMA_INTR_INVALID == eventHandle->coreIntrNum)
             {
                 retVal = UDMA_EALLOC;
@@ -799,9 +817,10 @@ static void Udma_eventFreeResource(Udma_DrvHandle drvHandle,
         drvHandle->initPrms.osalPrms.unRegisterIntr(eventHandle->hwiHandle);
         eventHandle->hwiHandle = NULL_PTR;
     }
-    if(UDMA_INTR_INVALID != eventHandle->coreIntrNum)
+    if(UDMA_INTR_INVALID != eventHandle->irIntrNum)
     {
-        Udma_rmFreeCoreIntr(eventHandle->coreIntrNum, drvHandle);
+        Udma_rmFreeIrIntr(eventHandle->irIntrNum, drvHandle);
+        eventHandle->irIntrNum = UDMA_INTR_INVALID;
         eventHandle->coreIntrNum = UDMA_INTR_INVALID;
     }
 
@@ -1069,7 +1088,7 @@ static int32_t Udma_eventConfig(Udma_DrvHandle drvHandle,
             Udma_RmInitPrms    *rmInitPrms = &drvHandle->initPrms.rmInitPrms;
 
             /* CLEC programming required for C7x */
-            coreIntrNum = eventHandle->coreIntrNum - rmInitPrms->startIrIntr;
+            coreIntrNum = eventHandle->irIntrNum - rmInitPrms->startIrIntr;
             coreIntrNum += rmInitPrms->startC7xCoreIntr;
             evtCfg.secureClaimEnable = FALSE;
             evtCfg.evtSendEnable     = TRUE;

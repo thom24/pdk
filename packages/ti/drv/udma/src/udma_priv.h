@@ -296,10 +296,11 @@ uint32_t Udma_rmAllocVintrBit(Udma_EventHandle eventHandle);
 void Udma_rmFreeVintrBit(uint32_t vintrBitNum,
                          Udma_DrvHandle drvHandle,
                          Udma_EventHandle eventHandle);
-uint32_t Udma_rmAllocCoreIntr(uint32_t preferredCoreIntrNum,
+uint32_t Udma_rmAllocIrIntr(uint32_t preferredIrIntrNum,
                               Udma_DrvHandle drvHandle);
-void Udma_rmFreeCoreIntr(uint32_t coreIntrNum, Udma_DrvHandle drvHandle);
-
+void Udma_rmFreeIrIntr(uint32_t irIntrNum, Udma_DrvHandle drvHandle);
+uint32_t Udma_rmTranslateIrOutput(Udma_DrvHandle drvHandle, uint32_t irIntrNum);
+uint32_t Udma_rmTranslateCoreIntrInput(Udma_DrvHandle drvHandle, uint32_t coreIntrNum);
 /* Utils APIs */
 uint64_t Udma_virtToPhyFxn(const void *virtAddr,
                            Udma_DrvHandle drvHandle,

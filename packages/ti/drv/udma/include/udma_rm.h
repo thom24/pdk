@@ -193,29 +193,10 @@ typedef struct
     /**< Number of VINT to be managed.
      *   Note: This cannot exceed #UDMA_RM_MAX_VINTR */
     uint32_t                startIrIntr;
-    /**< Start core interrupt from which this UDMA driver instance manages.
-     *
-     *   Note: Incase of C7x, this represents the GIC SPI events to the CLEC.
-     *   For routing this event, the driver further uses the startC7xCoreIntr
-     *   parameter as the start C7x interrupt and assumes that numIrIntr
-     *   C7x interrupt are used by UDMA driver for one to one mapping.
-     *   The UDMA driver directly programs the CLEC for this routing
-     *
-     *   Example: startIrIntr = 700, numIrIntr = 3, startC7xCoreIntr = 32
-     *
-     *   First Event registration:
-     *   CLEC input         : 700+1024-32
-     *   CLEC output        : 32
-     *   OSAL registration  : 32
-     *
-     *   Second Event registration:
-     *   CLEC input         : 701+1024-32
-     *   CLEC output        : 33
-     *   OSAL registration  : 33
-     */
+    /**< Start IR interrupt from which this UDMA driver instance manages. */
     uint32_t                numIrIntr;
-    /**< Number of core interrupts to be managed.
-     *   Note: This cannot exceed #UDMA_RM_MAX_CORE_INTR */
+    /**< Number of IR interrupts to be managed.
+     *   Note: This cannot exceed #UDMA_RM_MAX_IR_INTR */
 
     uint32_t                proxyThreadNum;
     /**< Proxy thread to push/pop to ring in proxy mode.
@@ -243,6 +224,12 @@ typedef struct
      */
     uint32_t                startC7xCoreIntr;
     /**< Start C7x core interrupt from which this UDMA driver instance manages.
+     *   This assumes numIrIntr contiguous interrupts from this offset is
+     *   reserved for the UDMA driver.
+     *   This is NA for other cores and could be set to 0.
+     */
+    uint32_t                startC66xCoreIntr;
+    /**< Start C66x core interrupt from which this UDMA driver instance manages.
      *   This assumes numIrIntr contiguous interrupts from this offset is
      *   reserved for the UDMA driver.
      *   This is NA for other cores and could be set to 0.

@@ -155,6 +155,7 @@ const Udma_RmInitPrms gUdmaRmDefCfg_Bcdma[UDMA_NUM_CORE] =
 
         0U,                                         /* proxyThreadNum */
         0U,                                         /* startC7xCoreIntr */
+        0U,                                         /* startC66xCoreIntr */
  
         0U,                                         /* startProxy */
         0U,                                         /* numProxy */
@@ -208,6 +209,7 @@ const Udma_RmInitPrms gUdmaRmDefCfg_Bcdma[UDMA_NUM_CORE] =
 
         0U,                                         /* proxyThreadNum */
         0U,                                         /* startC7xCoreIntr */
+        0U,                                         /* startC66xCoreIntr */
 
         0U,                                         /* startProxy */
         0U,                                         /* numProxy */
@@ -261,6 +263,7 @@ const Udma_RmInitPrms gUdmaRmDefCfg_Bcdma[UDMA_NUM_CORE] =
 
         0U,                                         /* proxyThreadNum */
         0U,                                         /* startC7xCoreIntr */
+        0U,                                         /* startC66xCoreIntr */
 
         0U,                                         /* startProxy */
         0U,                                         /* numProxy */
@@ -314,6 +317,7 @@ const Udma_RmInitPrms gUdmaRmDefCfg_Bcdma[UDMA_NUM_CORE] =
 
         0U,                                         /* proxyThreadNum */
         0U,                                         /* startC7xCoreIntr */
+        0U,                                         /* startC66xCoreIntr */
 
         0U,                                         /* startProxy */
         0U,                                         /* numProxy */
@@ -367,6 +371,7 @@ const Udma_RmInitPrms gUdmaRmDefCfg_Bcdma[UDMA_NUM_CORE] =
 
         0U,                                         /* proxyThreadNum */
         0U,                                         /* startC7xCoreIntr */
+        0U,                                         /* startC66xCoreIntr */
 
         0U,                                         /* startProxy */
         0U,                                         /* numProxy */
@@ -420,6 +425,7 @@ const Udma_RmInitPrms gUdmaRmDefCfg_Bcdma[UDMA_NUM_CORE] =
 
         0U,                                         /* proxyThreadNum */
         0U,                                         /* startC7xCoreIntr */
+        0U,                                         /* startC66xCoreIntr */
 
         0U,                                         /* startProxy */
         0U,                                         /* numProxy */
@@ -478,6 +484,7 @@ const Udma_RmInitPrms gUdmaRmDefCfg_Pktdma[UDMA_NUM_CORE] =
 
         0U,         /* proxyThreadNum */
         0U,         /* startC7xCoreIntr */
+        0U,         /* startC66xCoreIntr */
 
         0U,         /* startProxy */
         0U,         /* numProxy */
@@ -531,6 +538,7 @@ const Udma_RmInitPrms gUdmaRmDefCfg_Pktdma[UDMA_NUM_CORE] =
 
         0U,         /* proxyThreadNum */
         0U,         /* startC7xCoreIntr */
+        0U,         /* startC66xCoreIntr */
 
         0U,         /* startProxy */
         0U,         /* numProxy */
@@ -584,6 +592,7 @@ const Udma_RmInitPrms gUdmaRmDefCfg_Pktdma[UDMA_NUM_CORE] =
 
         0U,         /* proxyThreadNum */
         0U,         /* startC7xCoreIntr */
+        0U,         /* startC66xCoreIntr */
 
         0U,         /* startProxy */
         0U,         /* numProxy */
@@ -637,6 +646,7 @@ const Udma_RmInitPrms gUdmaRmDefCfg_Pktdma[UDMA_NUM_CORE] =
 
         0U,         /* proxyThreadNum */
         0U,         /* startC7xCoreIntr */
+        0U,         /* startC66xCoreIntr */
 
         0U,         /* startProxy */
         0U,         /* numProxy */
@@ -690,6 +700,7 @@ const Udma_RmInitPrms gUdmaRmDefCfg_Pktdma[UDMA_NUM_CORE] =
 
         0U,         /* proxyThreadNum */
         0U,         /* startC7xCoreIntr */
+        0U,         /* startC66xCoreIntr */
 
         0U,         /* startProxy */
         0U,         /* numProxy */
@@ -743,6 +754,7 @@ const Udma_RmInitPrms gUdmaRmDefCfg_Pktdma[UDMA_NUM_CORE] =
 
         0U,         /* proxyThreadNum */
         0U,         /* startC7xCoreIntr */
+        0U,         /* startC66xCoreIntr */
 
         0U,         /* startProxy */
         0U,         /* numProxy */
