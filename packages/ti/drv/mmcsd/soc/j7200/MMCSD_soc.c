@@ -259,8 +259,8 @@ MMCSD_Error MMCSD_socInit(void)
 MMCSD_Error MMCSD_configSocIntrPath(const void *hwAttrs_ptr, bool setIntrPath)
 {
    MMCSD_Error ret=MMCSD_OK;
-   /* The interrupt path is established using the DMSC firmware */
-#if defined(BUILD_MCU)
+   /* Only mcu R5f requires routing of interrupts */
+#if defined(BUILD_MCU1_0) || defined (BUILD_MCU1_1)
     CSL_ArmR5CPUInfo r5CpuInfo;
     int32_t retVal;
     MMCSD_v2_HwAttrs const *hwAttrs = (MMCSD_v2_HwAttrs const *)(hwAttrs_ptr);
@@ -303,9 +303,8 @@ MMCSD_Error MMCSD_configSocIntrPath(const void *hwAttrs_ptr, bool setIntrPath)
     src_index = hwAttrs->eventId;  /* Index coming from the peripheral */
     dst_host_irq = hwAttrs->intNum;  /* By default it is set for MCU R5 */
    
-   if( (src_id == TISCI_DEV_MMCSD0) &&
-       ((r5CpuInfo.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_1) ||
-       (r5CpuInfo.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_2) ))
+   if( (r5CpuInfo.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_1) ||
+       (r5CpuInfo.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_2))
    {
      /* Nothing to be configured as the MMCSD0 -> MAIN R5 does not need any configuration.
       * It is direct to the core, bypassing INTR and MAIN2MCU RTR. Hence there is no
