@@ -101,13 +101,14 @@ ifeq ($(SOC), am64x)
 sbl_LIB_LIST = sbl_lib_ospi_nondma sbl_lib_cust sbl_lib_mmcsd sbl_lib_uart
 else
   ifeq ($(SOC), j7200)
-    sbl_LIB_LIST = sbl_lib_mmcsd sbl_lib_ospi_nondma sbl_lib_uart sbl_lib_cust
+    sbl_LIB_LIST = sbl_lib_mmcsd sbl_lib_mmcsd_hlos sbl_lib_ospi_nondma sbl_lib_ospi_nondma_hlos sbl_lib_uart sbl_lib_cust
   else
 	ifeq ($(SOC), tpr12)
       sbl_LIB_LIST = sbl_lib_uart
 	else
       sbl_LIB_LIST = sbl_lib_mmcsd sbl_lib_ospi sbl_lib_uart sbl_lib_hyperflash sbl_lib_cust
-      sbl_LIB_LIST += sbl_lib_ospi_nondma
+      sbl_LIB_LIST += sbl_lib_mmcsd_hlos sbl_lib_ospi_hlos sbl_lib_hyperflash_hlos
+      sbl_LIB_LIST += sbl_lib_ospi_nondma sbl_lib_ospi_nondma_hlos
     endif
   endif
 endif
@@ -122,13 +123,15 @@ ifeq ($(SOC),$(filter $(SOC), am64x))
 sbl_EXAMPLE_LIST = sbl_ospi_img sbl_mmcsd_img sbl_uart_img
 else
   ifeq ($(SOC), j7200)
-    sbl_EXAMPLE_LIST = sbl_mmcsd_img sbl_ospi_img sbl_uart_img
+    sbl_EXAMPLE_LIST = sbl_mmcsd_img sbl_mmcsd_img_hlos sbl_ospi_img sbl_ospi_img_hlos sbl_uart_img
   else
     ifeq ($(SOC), tpr12)
       sbl_EXAMPLE_LIST = sbl_uart_img
     else
       sbl_EXAMPLE_LIST = sbl_mmcsd_img sbl_ospi_img sbl_hyperflash_img sbl_uart_img
+      sbl_EXAMPLE_LIST += sbl_mmcsd_img sbl_mmcsd_img_hlos sbl_ospi_img sbl_ospi_img_hlos sbl_hyperflash_img sbl_hyperflash_img_hlos
       sbl_EXAMPLE_LIST += sbl_mmcsd_img_hs sbl_ospi_img_hs sbl_hyperflash_img_hs sbl_uart_img_hs
+      sbl_EXAMPLE_LIST += sbl_mmcsd_img_hlos_hs sbl_ospi_img_hlos_hs sbl_hyperflash_img_hlos_hs
     endif
   endif
 endif
@@ -164,6 +167,32 @@ export sbl_lib_mmcsd_BOARDLIST
 sbl_lib_mmcsd_$(SOC)_CORELIST = mcu1_0
 export sbl_lib_mmcsd_$(SOC)_CORELIST
 
+# SBL MMCSD HLOS LIB
+sbl_lib_mmcsd_hlos_COMP_LIST = sbl_lib_mmcsd_hlos
+sbl_lib_mmcsd_hlos_RELPATH = ti/boot/sbl
+export sbl_lib_mmcsd_hlos_OBJPATH = ti/boot/sbl/mmcsd_hlos
+sbl_lib_mmcsd_hlos_LIBNAME = sbl_lib_mmcsd_hlos
+sbl_lib_mmcsd_hlos_PATH = $(PDK_SBL_COMP_PATH)
+sbl_lib_mmcsd_hlos_LIBPATH = $(PDK_SBL_COMP_PATH)/lib/mmcsd_hlos
+sbl_lib_mmcsd_hlos_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_lib.mk BOOTMODE=mmcsd HLOS_BOOT=yes SBL_USE_DMA=yes
+export sbl_lib_mmcsd_hlos_MAKEFILE
+export sbl_lib_mmcsd_hlos_LIBNAME
+export sbl_lib_mmcsd_hlos_LIBPATH
+sbl_lib_mmcsd_hlos_BOARD_DEPENDENCY = yes
+sbl_lib_mmcsd_hlos_SOC_DEPENDENCY = yes
+sbl_lib_mmcsd_hlos_CORE_DEPENDENCY = no
+export sbl_lib_mmcsd_hlos_COMP_LIST
+export sbl_lib_mmcsd_hlos_BOARD_DEPENDENCY
+export sbl_lib_mmcsd_hlos_CORE_DEPENDENCY
+sbl_lib_mmcsd_hlos_PKG_LIST = sbl_lib_mmcsd_hlos
+sbl_lib_mmcsd_hlos_INCLUDE = $(sbl_lib_mmcsd_hlos_PATH)
+sbl_lib_mmcsd_hlos_SOCLIST = $(sbl_SOCLIST)
+sbl_lib_mmcsd_hlos_BOARDLIST = $(sbl_BOARDLIST)
+export sbl_lib_mmcsd_hlos_SOCLIST
+export sbl_lib_mmcsd_hlos_BOARDLIST
+sbl_lib_mmcsd_hlos_$(SOC)_CORELIST = mcu1_0
+export sbl_lib_mmcsd_hlos_$(SOC)_CORELIST
+
 # SBL OSPI LIB
 sbl_lib_ospi_COMP_LIST = sbl_lib_ospi
 sbl_lib_ospi_RELPATH = ti/boot/sbl
@@ -190,7 +219,33 @@ export sbl_lib_ospi_BOARDLIST
 sbl_lib_ospi_$(SOC)_CORELIST = mcu1_0
 export sbl_lib_ospi_$(SOC)_CORELIST
 
-# SBL OSPI LIB with NON-DMA - Needed for HS SBL
+# SBL OSPI HLOS LIB
+sbl_lib_ospi_hlos_COMP_LIST = sbl_lib_ospi_hlos
+sbl_lib_ospi_hlos_RELPATH = ti/boot/sbl
+export sbl_lib_ospi_hlos_OBJPATH = ti/boot/sbl/ospi_hlos
+sbl_lib_ospi_hlos_LIBNAME = sbl_lib_ospi_hlos
+sbl_lib_ospi_hlos_PATH = $(PDK_SBL_COMP_PATH)
+sbl_lib_ospi_hlos_LIBPATH = $(PDK_SBL_COMP_PATH)/lib/ospi_hlos
+sbl_lib_ospi_hlos_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_lib.mk BOOTMODE=ospi HLOS_BOOT=yes SBL_USE_DMA=yes
+export sbl_lib_ospi_hlos_MAKEFILE
+export sbl_lib_ospi_hlos_LIBNAME
+export sbl_lib_ospi_hlos_LIBPATH
+sbl_lib_ospi_hlos_BOARD_DEPENDENCY = yes
+sbl_lib_ospi_hlos_SOC_DEPENDENCY = yes
+sbl_lib_ospi_hlos_CORE_DEPENDENCY = no
+export sbl_lib_ospi_hlos_COMP_LIST
+export sbl_lib_ospi_hlos_BOARD_DEPENDENCY
+export sbl_lib_ospi_hlos_CORE_DEPENDENCY
+sbl_lib_ospi_hlos_PKG_LIST = sbl_lib_ospi_hlos
+sbl_lib_ospi_hlos_INCLUDE = $(sbl_lib_ospi_hlos_PATH)
+sbl_lib_ospi_hlos_SOCLIST = $(sbl_SOCLIST)
+sbl_lib_ospi_hlos_BOARDLIST = $(sbl_BOARDLIST)
+export sbl_lib_ospi_hlos_SOCLIST
+export sbl_lib_ospi_hlos_BOARDLIST
+sbl_lib_ospi_hlos_$(SOC)_CORELIST = mcu1_0
+export sbl_lib_ospi_hlos_$(SOC)_CORELIST
+
+# SBL OSPI LIB with NON-DMA - Needed for HS SBL, etc.
 export sbl_lib_ospi_nondma_COMP_LIST = sbl_lib_ospi_nondma
 sbl_lib_ospi_nondma_RELPATH = ti/boot/sbl
 export sbl_lib_ospi_nondma_OBJPATH = ti/boot/sbl/ospi_nondma
@@ -206,6 +261,23 @@ sbl_lib_ospi_nondma_INCLUDE = $(sbl_lib_ospi_nondma_PATH)
 export sbl_lib_ospi_nondma_SOCLIST = $(sbl_SOCLIST)
 export sbl_lib_ospi_nondma_BOARDLIST = $(sbl_BOARDLIST)
 export sbl_lib_ospi_nondma_$(SOC)_CORELIST = mcu1_0
+
+# SBL OSPI HLOS LIB with NON-DMA - Needed for HS SBL, etc.
+export sbl_lib_ospi_nondma_hlos_COMP_LIST = sbl_lib_ospi_nondma_hlos
+sbl_lib_ospi_nondma_hlos_RELPATH = ti/boot/sbl
+export sbl_lib_ospi_nondma_hlos_OBJPATH = ti/boot/sbl/ospi_nondma_hlos
+sbl_lib_ospi_nondma_hlos_PATH = $(PDK_SBL_COMP_PATH)
+export sbl_lib_ospi_nondma_hlos_LIBNAME = sbl_lib_ospi_nondma_hlos
+export sbl_lib_ospi_nondma_hlos_LIBPATH = $(PDK_SBL_COMP_PATH)/lib/ospi_hlos
+export sbl_lib_ospi_nondma_hlos_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_lib.mk BOOTMODE=ospi HLOS_BOOT=yes SBL_USE_DMA=no
+export sbl_lib_ospi_nondma_hlos_BOARD_DEPENDENCY = yes
+export sbl_lib_ospi_nondma_hlos_SOC_DEPENDENCY = yes
+export sbl_lib_ospi_nondma_hlos_CORE_DEPENDENCY = no
+sbl_lib_ospi_nondma_hlos_PKG_LIST = sbl_lib_ospi_nondma_hlos
+sbl_lib_ospi_nondma_hlos_INCLUDE = $(sbl_lib_ospi_nondma_hlos_PATH)
+export sbl_lib_ospi_nondma_hlos_SOCLIST = $(sbl_SOCLIST)
+export sbl_lib_ospi_nondma_hlos_BOARDLIST = $(sbl_BOARDLIST)
+export sbl_lib_ospi_nondma_hlos_$(SOC)_CORELIST = mcu1_0
 
 # SBL HYPERFLASH LIB
 sbl_lib_hyperflash_COMP_LIST = sbl_lib_hyperflash
@@ -232,6 +304,32 @@ export sbl_lib_hyperflash_SOCLIST
 export sbl_lib_hyperflash_BOARDLIST
 sbl_lib_hyperflash_$(SOC)_CORELIST = mcu1_0
 export sbl_lib_hyperflash_$(SOC)_CORELIST
+
+# SBL HYPERFLASH HLOS LIB
+sbl_lib_hyperflash_hlos_COMP_LIST = sbl_lib_hyperflash_hlos
+sbl_lib_hyperflash_hlos_RELPATH = ti/boot/sbl
+export sbl_lib_hyperflash_hlos_OBJPATH = ti/boot/sbl/hyperflash_hlos
+sbl_lib_hyperflash_hlos_LIBNAME = sbl_lib_hyperflash_hlos
+sbl_lib_hyperflash_hlos_PATH = $(PDK_SBL_COMP_PATH)
+sbl_lib_hyperflash_hlos_LIBPATH = $(PDK_SBL_COMP_PATH)/lib/hyperflash_hlos
+sbl_lib_hyperflash_hlos_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_lib.mk BOOTMODE=hyperflash HLOS_BOOT=yes SBL_USE_DMA=yes
+export sbl_lib_hyperflash_hlos_MAKEFILE
+export sbl_lib_hyperflash_hlos_LIBNAME
+export sbl_lib_hyperflash_hlos_LIBPATH
+sbl_lib_hyperflash_hlos_BOARD_DEPENDENCY = yes
+sbl_lib_hyperflash_hlos_SOC_DEPENDENCY = yes
+sbl_lib_hyperflash_hlos_CORE_DEPENDENCY = no
+export sbl_lib_hyperflash_hlos_COMP_LIST
+export sbl_lib_hyperflash_hlos_BOARD_DEPENDENCY
+export sbl_lib_hyperflash_hlos_CORE_DEPENDENCY
+sbl_lib_hyperflash_hlos_PKG_LIST = sbl_lib_hyperflash_hlos
+sbl_lib_hyperflash_hlos_INCLUDE = $(sbl_lib_hyperflash_hlos_PATH)
+sbl_lib_hyperflash_hlos_SOCLIST = j721e
+sbl_lib_hyperflash_hlos_BOARDLIST = j721e_evm
+export sbl_lib_hyperflash_hlos_SOCLIST
+export sbl_lib_hyperflash_hlos_BOARDLIST
+sbl_lib_hyperflash_hlos_$(SOC)_CORELIST = mcu1_0
+export sbl_lib_hyperflash_hlos_$(SOC)_CORELIST
 
 # SBL UART LIB
 sbl_lib_uart_COMP_LIST = sbl_lib_uart
@@ -287,6 +385,30 @@ export sbl_mmcsd_img_$(SOC)_CORELIST
 sbl_mmcsd_img_SBL_IMAGEGEN = yes
 export sbl_mmcsd_img_SBL_IMAGEGEN
 
+# SBL MMCSD "HLOS Boot" Image
+sbl_mmcsd_img_hlos_COMP_LIST = sbl_mmcsd_img_hlos
+sbl_mmcsd_img_hlos_RELPATH = ti/boot/sbl/board/k3
+sbl_mmcsd_img_hlos_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)/mmcsd/bin
+sbl_mmcsd_img_hlos_PATH = $(PDK_SBL_COMP_PATH)/board/k3
+sbl_mmcsd_img_hlos_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=mmcsd HLOS_BOOT=yes SBL_USE_DMA=yes BUILD_HS=no
+export sbl_mmcsd_img_hlos_MAKEFILE
+export sbl_mmcsd_img_hlos_SBL_CERT_KEY=$(SBL_CERT_KEY)
+sbl_mmcsd_img_hlos_BOARD_DEPENDENCY = yes
+sbl_mmcsd_img_hlos_SOC_DEPENDENCY = yes
+sbl_mmcsd_img_hlos_CORE_DEPENDENCY = no
+export sbl_mmcsd_img_hlos_COMP_LIST
+export sbl_mmcsd_img_hlos_BOARD_DEPENDENCY
+export sbl_mmcsd_img_hlos_SOC_DEPENDENCY
+export sbl_mmcsd_img_hlos_CORE_DEPENDENCY
+sbl_mmcsd_img_hlos_PKG_LIST = sbl
+sbl_mmcsd_img_hlos_INCLUDE = $(sbl_mmcsd_img_hlos_PATH)
+sbl_mmcsd_img_hlos_BOARDLIST = $(sbl_BOARDLIST)
+export sbl_mmcsd_img_hlos_BOARDLIST
+sbl_mmcsd_img_hlos_$(SOC)_CORELIST = mcu1_0
+export sbl_mmcsd_img_hlos_$(SOC)_CORELIST
+sbl_mmcsd_img_hlos_SBL_IMAGEGEN = yes
+export sbl_mmcsd_img_hlos_SBL_IMAGEGEN
+
 # SBL MMCSD Image - For HS build
 export sbl_mmcsd_img_hs_COMP_LIST = sbl_mmcsd_img_hs
 sbl_mmcsd_img_hs_RELPATH = ti/boot/sbl/board/k3
@@ -308,6 +430,29 @@ sbl_mmcsd_img_hs_INCLUDE = $(sbl_mmcsd_img_hs_PATH)
 export sbl_mmcsd_img_hs_BOARDLIST = $(sbl_BOARDLIST)
 export sbl_mmcsd_img_hs_$(SOC)_CORELIST = mcu1_0
 export sbl_mmcsd_img_hs_SBL_IMAGEGEN = yes
+
+# SBL MMCSD "HLOS Boot" Image - For HS build
+export sbl_mmcsd_img_hlos_hs_COMP_LIST = sbl_mmcsd_img_hlos_hs
+sbl_mmcsd_img_hlos_hs_RELPATH = ti/boot/sbl/board/k3
+sbl_mmcsd_img_hlos_hs_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)_hs/mmcsd/bin
+#Note: The below variable is purposefully set to build folder - different than
+#non-hs app.
+#The APPNAME or app -C directory (_PATH variable) should be unique as the complier
+#creates lto_$APPNAME optimization file in the directory in which -C is called
+#Because of this multiple lto_ files with same name can be created if app name
+#and app path are same
+sbl_mmcsd_img_hlos_hs_PATH = $(PDK_SBL_COMP_PATH)/build
+export sbl_mmcsd_img_hlos_hs_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=mmcsd HLOS_BOOT=yes SBL_USE_DMA=yes BUILD_HS=yes
+export sbl_mmcsd_img_hlos_hs_SBL_CERT_KEY=$(SBL_CERT_KEY_HS)
+export sbl_mmcsd_img_hlos_hs_BOARD_DEPENDENCY = yes
+export sbl_mmcsd_img_hlos_hs_SOC_DEPENDENCY = yes
+export sbl_mmcsd_img_hlos_hs_CORE_DEPENDENCY = no
+sbl_mmcsd_img_hlos_hs_PKG_LIST = sbl
+sbl_mmcsd_img_hlos_hs_INCLUDE = $(sbl_mmcsd_img_hlos_hs_PATH)
+export sbl_mmcsd_img_hlos_hs_BOARDLIST = $(sbl_BOARDLIST)
+export sbl_mmcsd_img_hlos_hs_$(SOC)_CORELIST = mcu1_0
+export sbl_mmcsd_img_hlos_hs_SBL_IMAGEGEN = yes
+
 
 # SBL OSPI Image
 sbl_ospi_img_COMP_LIST = sbl_ospi_img
@@ -337,6 +482,34 @@ export sbl_ospi_img_$(SOC)_CORELIST
 sbl_ospi_img_SBL_IMAGEGEN = yes
 export sbl_ospi_img_SBL_IMAGEGEN
 
+# SBL OSPI "HLOS Boot" Image
+sbl_ospi_img_hlos_COMP_LIST = sbl_ospi_img_hlos
+sbl_ospi_img_hlos_RELPATH = ti/boot/sbl/board/k3
+sbl_ospi_img_hlos_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)/ospi/bin
+sbl_ospi_img_hlos_PATH = $(PDK_SBL_COMP_PATH)/board/k3
+ifeq ($(SOC),$(filter $(SOC), am64x j7200))
+  sbl_ospi_img_hlos_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=ospi HLOS_BOOT=yes SBL_USE_DMA=no BUILD_HS=no
+else
+  sbl_ospi_img_hlos_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=ospi HLOS_BOOT=yes SBL_USE_DMA=yes BUILD_HS=no
+endif
+export sbl_ospi_img_hlos_MAKEFILE
+export sbl_ospi_img_hlos_SBL_CERT_KEY=$(SBL_CERT_KEY)
+sbl_ospi_img_hlos_BOARD_DEPENDENCY = yes
+sbl_ospi_img_hlos_SOC_DEPENDENCY = yes
+sbl_ospi_img_hlos_CORE_DEPENDENCY = no
+export sbl_ospi_img_hlos_COMP_LIST
+export sbl_ospi_img_hlos_BOARD_DEPENDENCY
+export sbl_ospi_img_hlos_SOC_DEPENDENCY
+export sbl_ospi_img_hlos_CORE_DEPENDENCY
+sbl_ospi_img_hlos_PKG_LIST = sbl
+sbl_ospi_img_hlos_INCLUDE = $(sbl_ospi_img_hlos_PATH)
+sbl_ospi_img_hlos_BOARDLIST = $(sbl_BOARDLIST)
+export sbl_ospi_img_hlos_BOARDLIST
+sbl_ospi_img_hlos_$(SOC)_CORELIST = mcu1_0
+export sbl_ospi_img_hlos_$(SOC)_CORELIST
+sbl_ospi_img_hlos_SBL_IMAGEGEN = yes
+export sbl_ospi_img_hlos_SBL_IMAGEGEN
+
 # SBL OSPI Image - For HS build
 export sbl_ospi_img_hs_COMP_LIST = sbl_ospi_img_hs
 sbl_ospi_img_hs_RELPATH = ti/boot/sbl/board/k3
@@ -358,6 +531,28 @@ sbl_ospi_img_hs_INCLUDE = $(sbl_ospi_img_hs_PATH)
 export sbl_ospi_img_hs_BOARDLIST = $(sbl_BOARDLIST)
 export sbl_ospi_img_hs_$(SOC)_CORELIST = mcu1_0
 export sbl_ospi_img_hs_SBL_IMAGEGEN = yes
+
+# SBL OSPI "HLOS Boot" Image - For HS build
+export sbl_ospi_img_hlos_hs_COMP_LIST = sbl_ospi_img_hlos_hs
+sbl_ospi_img_hlos_hs_RELPATH = ti/boot/sbl/board/k3
+sbl_ospi_img_hlos_hs_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)_hs/ospi/bin
+#Note: The below variable is purposefully set to build folder - different than
+#non-hs app.
+#The APPNAME or app -C directory (_PATH variable) should be unique as the complier
+#creates lto_$APPNAME optimization file in the directory in which -C is called
+#Because of this multiple lto_ files with same name can be created if app name
+#and app path are same
+sbl_ospi_img_hlos_hs_PATH = $(PDK_SBL_COMP_PATH)/build
+export sbl_ospi_img_hlos_hs_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=ospi HLOS_BOOT=yes SBL_USE_DMA=no BUILD_HS=yes
+export sbl_ospi_img_hlos_hs_SBL_CERT_KEY=$(SBL_CERT_KEY_HS)
+export sbl_ospi_img_hlos_hs_BOARD_DEPENDENCY = yes
+export sbl_ospi_img_hlos_hs_SOC_DEPENDENCY = yes
+export sbl_ospi_img_hlos_hs_CORE_DEPENDENCY = no
+sbl_ospi_img_hlos_hs_PKG_LIST = sbl
+sbl_ospi_img_hlos_hs_INCLUDE = $(sbl_ospi_img_hlos_hs_PATH)
+export sbl_ospi_img_hlos_hs_BOARDLIST = $(sbl_BOARDLIST)
+export sbl_ospi_img_hlos_hs_$(SOC)_CORELIST = mcu1_0
+export sbl_ospi_img_hlos_hs_SBL_IMAGEGEN = yes
 
 # SBL HYPERFLASH Image
 sbl_hyperflash_img_COMP_LIST = sbl_hyperflash_img
@@ -383,6 +578,30 @@ export sbl_hyperflash_img_$(SOC)_CORELIST
 sbl_hyperflash_img_SBL_IMAGEGEN = yes
 export sbl_hyperflash_img_SBL_IMAGEGEN
 
+# SBL HYPERFLASH "HLOS Boot" Image
+sbl_hyperflash_img_hlos_COMP_LIST = sbl_hyperflash_img_hlos
+sbl_hyperflash_img_hlos_RELPATH = ti/boot/sbl/board/k3
+sbl_hyperflash_img_hlos_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)/hyperflash/bin
+sbl_hyperflash_img_hlos_PATH = $(PDK_SBL_COMP_PATH)/board/k3
+sbl_hyperflash_img_hlos_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=hyperflash HLOS_BOOT=yes SBL_USE_DMA=yes BUILD_HS=no
+export sbl_hyperflash_img_hlos_SBL_CERT_KEY=$(SBL_CERT_KEY)
+export sbl_hyperflash_img_hlos_MAKEFILE
+sbl_hyperflash_img_hlos_BOARD_DEPENDENCY = yes
+sbl_hyperflash_img_hlos_SOC_DEPENDENCY = yes
+sbl_hyperflash_img_hlos_CORE_DEPENDENCY = no
+export sbl_hyperflash_img_hlos_COMP_LIST
+export sbl_hyperflash_img_hlos_BOARD_DEPENDENCY
+export sbl_hyperflash_img_hlos_SOC_DEPENDENCY
+export sbl_hyperflash_img_hlos_CORE_DEPENDENCY
+sbl_hyperflash_img_hlos_PKG_LIST = sbl
+sbl_hyperflash_img_hlos_INCLUDE = $(sbl_hyperflash_img_hlos_PATH)
+sbl_hyperflash_img_hlos_BOARDLIST = j721e_evm
+export sbl_hyperflash_img_hlos_BOARDLIST
+sbl_hyperflash_img_hlos_$(SOC)_CORELIST = mcu1_0
+export sbl_hyperflash_img_hlos_$(SOC)_CORELIST
+sbl_hyperflash_img_hlos_SBL_IMAGEGEN = yes
+export sbl_hyperflash_img_hlos_SBL_IMAGEGEN
+
 # SBL HYPERFLASH Image - For HS build
 export sbl_hyperflash_img_hs_COMP_LIST = sbl_hyperflash_img_hs
 sbl_hyperflash_img_hs_RELPATH = ti/boot/sbl/board/k3
@@ -404,6 +623,28 @@ sbl_hyperflash_img_hs_INCLUDE = $(sbl_hyperflash_img_hs_PATH)
 export sbl_hyperflash_img_hs_BOARDLIST = j721e_evm
 export sbl_hyperflash_img_hs_$(SOC)_CORELIST = mcu1_0
 export sbl_hyperflash_img_hs_SBL_IMAGEGEN = yes
+
+# SBL HYPERFLASH "HLOS Boot" Image - For HS build
+export sbl_hyperflash_img_hlos_hs_COMP_LIST = sbl_hyperflash_img_hlos_hs
+sbl_hyperflash_img_hlos_hs_RELPATH = ti/boot/sbl/board/k3
+sbl_hyperflash_img_hlos_hs_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)_hs/hyperflash/bin
+#Note: The below variable is purposefully set to build folder - different than
+#non-hs app.
+#The APPNAME or app -C directory (_PATH variable) should be unique as the complier
+#creates lto_$APPNAME optimization file in the directory in which -C is called
+#Because of this multiple lto_ files with same name can be created if app name
+#and app path are same
+sbl_hyperflash_img_hlos_hs_PATH = $(PDK_SBL_COMP_PATH)/build
+export sbl_hyperflash_img_hlos_hs_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=hyperflash HLOS_BOOT=yes SBL_USE_DMA=yes BUILD_HS=yes
+export sbl_hyperflash_img_hlos_hs_SBL_CERT_KEY=$(SBL_CERT_KEY_HS)
+export sbl_hyperflash_img_hlos_hs_BOARD_DEPENDENCY = yes
+export sbl_hyperflash_img_hlos_SOC_DEPENDENCY = yes
+export sbl_hyperflash_img_hlos_hs_CORE_DEPENDENCY = no
+sbl_hyperflash_img_hlos_hs_PKG_LIST = sbl
+sbl_hyperflash_img_hlos_hs_INCLUDE = $(sbl_hyperflash_img_hlos_hs_PATH)
+export sbl_hyperflash_img_hlos_hs_BOARDLIST = j721e_evm
+export sbl_hyperflash_img_hlos_hs_$(SOC)_CORELIST = mcu1_0
+export sbl_hyperflash_img_hlos_hs_SBL_IMAGEGEN = yes
 
 # SBL UART Image
 sbl_uart_img_COMP_LIST = sbl_uart_img
@@ -807,7 +1048,7 @@ CUST_SBL_TEST_BOARDS = am65xx_evm j721e_evm j7200_evm am64x_evm
 #CUST_SBL_TEST_FLAGS =" -DSBL_USE_DMA=0 -DSBL_LOG_LEVEL=0 -DSBL_SCRATCH_MEM_START=0x70100000 -DSBL_SCRATCH_MEM_SIZE=0xF0000 -DSBL_SKIP_SYSFW_INIT -DSBL_SKIP_MCU_RESET -DBOOT_OSPI"
 #CUST_SBL_TEST_FLAGS =" -DSBL_USE_DMA=1 -DSBL_LOG_LEVEL=1 -DSBL_SCRATCH_MEM_START=0xB8000000 -DSBL_SCRATCH_MEM_SIZE=0x4000000 -DSBL_ENABLE_PLL -DSBL_ENABLE_CLOCKS -DSBL_ENABLE_DDR -DSBL_SKIP_MCU_RESET -DBOOT_OSPI"
 ifeq ($(SOC), j7200)
-CUST_SBL_TEST_FLAGS =" -DSBL_USE_DMA=0 -DSBL_LOG_LEVEL=2 -DSBL_SCRATCH_MEM_START=0x41cc0000 -DSBL_SCRATCH_MEM_SIZE=0x40000 -DSBL_ENABLE_PLL -DSBL_ENABLE_CLOCKS -DSBL_SKIP_MCU_RESET -DBOOT_OSPI -DSBL_HLOS_OWNS_FLASH"
+CUST_SBL_TEST_FLAGS =" -DSBL_USE_DMA=0 -DSBL_LOG_LEVEL=2 -DSBL_SCRATCH_MEM_START=0x41cc0000 -DSBL_SCRATCH_MEM_SIZE=0x40000 -DSBL_ENABLE_PLL -DSBL_ENABLE_CLOCKS -DSBL_SKIP_MCU_RESET -DBOOT_OSPI -DSBL_ENABLE_DEV_GRP_MCU -DSBL_HLOS_OWNS_FLASH"
 else
   ifeq ($(findstring j7,$(SOC)),j7)
 CUST_SBL_TEST_FLAGS =" -DSBL_USE_DMA=0 -DSBL_LOG_LEVEL=1 -DSBL_SCRATCH_MEM_START=0x41cc0000 -DSBL_SCRATCH_MEM_SIZE=0x40000 -DSBL_ENABLE_PLL -DSBL_ENABLE_CLOCKS -DSBL_SKIP_MCU_RESET -DBOOT_OSPI -DSBL_ENABLE_DEV_GRP_MCU -DSBL_HLOS_OWNS_FLASH"

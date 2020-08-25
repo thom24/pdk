@@ -5,12 +5,20 @@ include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 
 ifeq ($(SBL_USE_DMA),no)
   ifneq ($(BOOTMODE), cust)
-    MODULE_NAME = sbl_lib_$(BOOTMODE)_nondma
+    ifeq ($(HLOS_BOOT),yes)
+      MODULE_NAME = sbl_lib_$(BOOTMODE)_nondma_hlos
+    else
+      MODULE_NAME = sbl_lib_$(BOOTMODE)_nondma
+    endif
   else
     MODULE_NAME = sbl_lib_$(BOOTMODE)
   endif
 else
-MODULE_NAME = sbl_lib_$(BOOTMODE)
+  ifeq ($(HLOS_BOOT),yes)
+    MODULE_NAME = sbl_lib_$(BOOTMODE)_hlos
+  else
+    MODULE_NAME = sbl_lib_$(BOOTMODE)
+  endif
 endif
 
 INCDIR	+= $(PDK_INSTALL_PATH)
@@ -104,9 +112,14 @@ ifeq ($(BOOTMODE), cust)
   SBL_CFLAGS = $(CUST_SBL_FLAGS)
 endif # ifeq ($(BOOTMODE), cust)
 
+# HLOS Boot flags
+ifeq ($(HLOS_BOOT),yes)
+  SBL_CFLAGS += -DSBL_ENABLE_HLOS_BOOT -DSBL_HLOS_OWNS_FLASH
+endif
+
 # BOOTMODE specific CFLAGS
 ifeq ($(BOOTMODE), mmcsd)
-  SBL_CFLAGS+= -DBOOT_MMCSD
+  SBL_CFLAGS += -DBOOT_MMCSD
 endif # ifeq ($(BOOTMODE), mmcsd)
 
 ifeq ($(BOOTMODE), ospi)

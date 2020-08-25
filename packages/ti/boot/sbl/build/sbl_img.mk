@@ -4,6 +4,10 @@
 #
 include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 
+HLOS_SUFFIX=
+ifeq ($(HLOS_BOOT),yes)
+HLOS_SUFFIX=_hlos
+endif
 HS_SUFFIX=
 ifeq ($(BUILD_HS),yes)
 HS_SUFFIX=_hs
@@ -19,8 +23,8 @@ ifeq ($(BOOTMODE), ospi)
   endif
 endif
 
-APP_NAME = sbl_$(BOOTMODE)_img$(HS_SUFFIX)
-LOCAL_APP_NAME=sbl_$(BOOTMODE)_img_$(CORE)
+APP_NAME = sbl_$(BOOTMODE)_img$(HLOS_SUFFIX)$(HS_SUFFIX)
+LOCAL_APP_NAME=sbl_$(BOOTMODE)_img$(HLOS_SUFFIX)_$(CORE)
 BUILD_OS_TYPE = baremetal
 
 ifeq ($(SOC), tpr12)
@@ -67,12 +71,17 @@ else
   else
     SBL_CFLAGS += -DSBL_USE_DMA=0
   endif
-  COMP_LIST_COMMON += sbl_lib_$(BOOTMODE)$(DMA_SUFFIX)
+  COMP_LIST_COMMON += sbl_lib_$(BOOTMODE)$(DMA_SUFFIX)$(HLOS_SUFFIX)
 endif # ifeq ($(BOOTMODE), cust)
+
+# HLOS Boot flags
+ifeq ($(HLOS_BOOT),yes)
+  SBL_CFLAGS += -DSBL_ENABLE_HLOS_BOOT -DSBL_HLOS_OWNS_FLASH
+endif
 
 # BOOTMODE specific CFLAGS
 ifeq ($(BOOTMODE), mmcsd)
-  SBL_CFLAGS+= -DBOOT_MMCSD
+  SBL_CFLAGS += -DBOOT_MMCSD
 endif # ifeq ($(BOOTMODE), mmcsd)
 
 ifeq ($(BOOTMODE), ospi)
