@@ -372,7 +372,7 @@ uint32_t TimerP_mapId(uint32_t id)
          * This translation matches to sysbios implementation, where id=0 is
          * for dmTimer12, id =1 is for dmTimer13 etc.
          */
-        translate_id = id + 12U;
+        translate_id = id + 6U;
     }
     return (translate_id);
 }
