@@ -378,6 +378,7 @@ static int8_t UFP_ospiInit(void)
 
 #if defined(SOC_J7200)
     ospi_cfg.dacEnable  = false;
+    ospi_cfg.phyEnable  = false;
 #endif
 
     /* Set the default ospi init configurations */
