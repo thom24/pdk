@@ -148,13 +148,19 @@ void ESM_processInterrupt (uintptr_t arg, uint32_t vec, int32_t* groupNum, int32
     }
     if (*groupNum != MINUS_ONE)
     {
-        /* Clear the error status flag */
-        ESMClearIntrStatus(object->esmBaseAddr, *groupNum, *vecNum);
+        /* Clear the error status flag for group 1 errors. There is no need to clear group 2 errors,
+         * since the error status in ESMSR2 has been cleared when reading the appropriate vector
+         * in the ESMIOFFHR offset register (via ESMGetHighPriorityLvlIntrStatus()).
+         */
+        if (*groupNum == 1)
+        {
+            ESMClearIntrStatus(object->esmBaseAddr, *vecNum);
+        }
         /* Check if notify function was registered? */
         for (index = 0; index < ESM_MAX_NOTIFIERS; index++)
         {
             if ((*vecNum == object->notifyParams[index].errorNumber) &&
-                    (*groupNum == object->notifyParams[index].groupNumber))
+                (*groupNum == object->notifyParams[index].groupNumber))
             {
                 object->notifyParams[index].notify(object->notifyParams[index].arg);
                 break;
