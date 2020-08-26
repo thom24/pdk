@@ -128,7 +128,7 @@ else
     ifeq ($(SOC), tpr12)
       sbl_EXAMPLE_LIST = sbl_uart_img
     else
-      sbl_EXAMPLE_LIST = sbl_mmcsd_img sbl_ospi_img sbl_hyperflash_img sbl_uart_img
+      sbl_EXAMPLE_LIST = sbl_uart_img
       sbl_EXAMPLE_LIST += sbl_mmcsd_img sbl_mmcsd_img_hlos sbl_ospi_img sbl_ospi_img_hlos sbl_hyperflash_img sbl_hyperflash_img_hlos
       sbl_EXAMPLE_LIST += sbl_mmcsd_img_hs sbl_ospi_img_hs sbl_hyperflash_img_hs sbl_uart_img_hs
       sbl_EXAMPLE_LIST += sbl_mmcsd_img_hlos_hs sbl_ospi_img_hlos_hs sbl_hyperflash_img_hlos_hs
@@ -1029,7 +1029,7 @@ SBL_CFLAGS += -DSBL_ENABLE_DDR
 #SBL_CFLAGS += -DSBL_BYPASS_OSPI_DRIVER
 
 # If enabled for OSPI boot the SBL will bypass the
-# OSPI driver for system firmware download and use the OSPI driver for 
+# OSPI driver for system firmware download and use the OSPI driver for
 # downloading application from the flash
 #SBL_CFLAGS += -DSBL_BYPASS_OSPI_DRIVER_FOR_SYSFW_DOWNLOAD
 
