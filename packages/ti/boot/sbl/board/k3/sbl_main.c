@@ -357,10 +357,12 @@ int main()
     SBL_log(SBL_LOG_MAX, "InitlialzingClocks ...");
     SBL_ADD_PROFILE_POINT;
 #if defined(SBL_ENABLE_HLOS_BOOT)
+#if defined(SOC_J721E) || defined(SOC_J7200)
     Board_initParams_t initParams;
     Board_getInitParams(&initParams);
     initParams.mainClkGrp = BOARD_MAIN_CLOCK_GROUP1;
     Board_setInitParams(&initParams);
+#endif
 #endif
     Board_init(SBL_CLOCK_INIT);
 
