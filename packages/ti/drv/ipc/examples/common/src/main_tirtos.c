@@ -58,6 +58,8 @@
 #include <ti/sysbios/family/c7x/Mmu.h>
 #include <ti/csl/soc.h>
 #include <ti/csl/csl_clec.h>
+#include <ti/csl/arch/csl_arch.h>
+#include <ti/sysbios/family/c7x/Mmu.h>
 #endif
 
 #include <ti/drv/sciclient/sciclient.h>
@@ -235,25 +237,85 @@ static Void taskFxn(UArg a0, UArg a1)
 #endif
 }
 
-#if defined(BUILD_MPU) || defined (__C7100__)
+#if defined(__C7100__)
+/* The C7x CLEC should be programmed to allow config/re config either in secure
+ * OR non secure mode. This function configures all inputs to given level
+ *
+ * Instance is hard-coded for J721e only
+ *
+ */
+void IpcCfgClecAccessCtrl (Bool onlyInSecure)
+{
+    CSL_ClecEventConfig cfgClec;
+    CSL_CLEC_EVTRegs   *clecBaseAddr = (CSL_CLEC_EVTRegs*) CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
+    uint32_t            i, maxInputs = 2048U;
+
+    cfgClec.secureClaimEnable = onlyInSecure;
+    cfgClec.evtSendEnable     = FALSE;
+    cfgClec.rtMap             = CSL_CLEC_RTMAP_DISABLE;
+    cfgClec.extEvtNum         = 0U;
+    cfgClec.c7xEvtNum         = 0U;
+    for(i = 0U; i < maxInputs; i++)
+    {
+        CSL_clecConfigEvent(clecBaseAddr, i, &cfgClec);
+    }
+}
+
+static void IpcInitMmu(Bool isSecure)
+{
+    Mmu_MapAttrs    attrs;
+
+    Mmu_initMapAttrs(&attrs);
+    attrs.attrIndx = Mmu_AttrIndx_MAIR0;
+
+    if(TRUE == isSecure)
+    {
+        attrs.ns = 0;
+    }
+    else
+    {
+        attrs.ns = 1;
+    }
+
+    /* Register region */
+    (void)Mmu_map(0x00000000U, 0x00000000U, 0x20000000U, &attrs, isSecure);
+    (void)Mmu_map(0x20000000U, 0x20000000U, 0x20000000U, &attrs, isSecure);
+    (void)Mmu_map(0x40000000U, 0x40000000U, 0x20000000U, &attrs, isSecure);
+    (void)Mmu_map(0x60000000U, 0x60000000U, 0x10000000U, &attrs, isSecure);
+    (void)Mmu_map(0x78000000U, 0x78000000U, 0x08000000U, &attrs, isSecure); /* CLEC */
+
+    attrs.attrIndx = Mmu_AttrIndx_MAIR7;
+    (void)Mmu_map(0x80000000U, 0x80000000U, 0x20000000U, &attrs, isSecure); /* DDR */
+    (void)Mmu_map(0xA0000000U, 0xA0000000U, 0x20000000U, &attrs, isSecure); /* DDR */
+    (void)Mmu_map(0x70000000U, 0x70000000U, 0x00800000U, &attrs, isSecure); /* MSMC - 8MB */
+    (void)Mmu_map(0x41C00000U, 0x41C00000U, 0x00080000U, &attrs, isSecure); /* OCMC - 512KB */
+
+    /*
+     * DDR range 0xA0000000 - 0xAA000000 : Used as RAM by multiple
+     * remote cores, no need to mmp_map this range.
+     * IPC VRing Buffer - uncached
+     */
+    attrs.attrIndx =  Mmu_AttrIndx_MAIR4;
+    (void)Mmu_map(0xAA000000U, 0xAA000000U, 0x02000000U, &attrs, isSecure);
+    (void)Mmu_map(0xA8000000U, 0xA8000000U, 0x00100000U, &attrs, isSecure);
+
+    return;
+}
+
+void InitMmu(void)
+{
+    IpcInitMmu(FALSE);
+    IpcInitMmu(TRUE);
+
+    /* Setup CLEC access/configure in non-secure mode */
+    IpcCfgClecAccessCtrl(FALSE);
+}
+#endif
+
+#if defined(BUILD_MPU)
 extern void Osal_initMmuDefault(void);
 void InitMmu(void)
 {
-#if defined (__C7100__)
-    Mmu_MapAttrs attrs;
-
-    Mmu_initMapAttrs(&attrs);
-
-    /*
-     * Linux IPC VRing Buffer - uncached
-     */
-    attrs.attrIndx =  Mmu_AttrIndx_MAIR4;
-    attrs.ns = 1;
-    (void)Mmu_map(0xA8000000U, 0xA8000000U, 0x00100000U, &attrs, FALSE);
-    attrs.ns = 0;
-    (void)Mmu_map(0xA8000000U, 0xA8000000U, 0x00100000U, &attrs, TRUE);
-#endif
-
     Osal_initMmuDefault();
 }
 #endif
