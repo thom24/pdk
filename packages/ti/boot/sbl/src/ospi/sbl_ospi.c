@@ -401,7 +401,8 @@ int32_t SBL_ospiFlashRead(const void *handle, uint8_t *dst, uint32_t length,
     uint32_t start_time = SBL_ADD_PROFILE_POINT;
     uint32_t end_time = 0;
 
-#if defined(SBL_USE_DMA) && !defined(SBL_BYPASS_OSPI_DRIVER)
+#if !defined(SBL_BYPASS_OSPI_DRIVER)
+#if SBL_USE_DMA
     if (length > 4 * 1024)
     {
         Board_flashHandle h = *(const Board_flashHandle *) handle;
@@ -428,21 +429,64 @@ int32_t SBL_ospiFlashRead(const void *handle, uint8_t *dst, uint32_t length,
     }
     else
     {
-#if defined(SOC_J7200)
-        Board_flashHandle h = *(const Board_flashHandle *) handle;
-        uint32_t ioMode  = OSPI_FLASH_OCTAL_READ;
+        memcpy((void *)dst, (void *)(ospi_cfg.dataAddr + offset), length);
+    }
+#elif defined(SOC_J7200)
+    /* For J7200 w/ xSPI PHY enabled */
+    Board_flashHandle h = *(const Board_flashHandle *) handle;
+    uint32_t ioMode  = OSPI_FLASH_OCTAL_READ;
+    static uint32_t tryPhyEnabled = 1;
+
+    if (tryPhyEnabled)
+    {
         if (Board_flashRead(h, offset, dst, length, (void *)(&ioMode)))
         {
-            SBL_log(SBL_LOG_ERR, "Board_flashRead failed!\n");
-            SblErrLoop(__FILE__, __LINE__);
+             SBL_log(SBL_LOG_ERR, "\nWARNING: xSPI PHY tuning failed\n");
+
+             /* Re-open Flash and try COPY again with PHY disabled */
+             Board_flashClose(h);
+
+             ospi_cfg.funcClk = OSPI_MODULE_CLK_133M;
+             ospi_cfg.dacEnable = true;
+             ospi_cfg.dtrEnable = true;
+             ospi_cfg.dmaEnable = false;
+             ospi_cfg.phyEnable = false;
+             /* Set OSPI cfg */
+             OSPI_socSetInitCfg(BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
+
+             h = Board_flashOpen(BOARD_FLASH_ID_S28HS512T,
+                                 BOARD_OSPI_NOR_INSTANCE, NULL);
+             if (h)
+             {
+                 /* Disable PHY pipeline mode */
+                 CSL_ospiPipelinePhyEnable((const CSL_ospi_flash_cfgRegs *)(ospi_cfg.baseAddr), FALSE);
+
+                 *(Board_flashHandle *) handle = h;
+             }
+             else
+             {
+                 SBL_log(SBL_LOG_ERR, "Board_flashOpen failed!\n");
+                 SblErrLoop(__FILE__, __LINE__);
+             }
+
+             /* Set flag that the PHY is no longer enabled, for future reads */
+             tryPhyEnabled = 0;
+
+             /* Finally, do the expected COPY operation */
+             memcpy((void *)dst, (void *)(ospi_cfg.dataAddr + offset), length);
         }
-#else
+    }
+    else
+    {
         memcpy((void *)dst, (void *)(ospi_cfg.dataAddr + offset), length);
-#endif
     }
 #else
     memcpy((void *)dst, (void *)(ospi_cfg.dataAddr + offset), length);
-#endif
+#endif /* #if SBL_USE_DMA */
+
+#else
+    memcpy((void *)dst, (void *)(ospi_cfg.dataAddr + offset), length);
+#endif /* #if !defined(SBL_BYPASS_OSPI_DRIVER) */
 
     end_time = SBL_ADD_PROFILE_POINT;
 
