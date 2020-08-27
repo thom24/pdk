@@ -54,7 +54,10 @@
 
 #include "ipc_utils.h"
 #if defined (__C7100__)
+#include <ti/sysbios/family/c7x/Hwi.h>
 #include <ti/sysbios/family/c7x/Mmu.h>
+#include <ti/csl/soc.h>
+#include <ti/csl/csl_clec.h>
 #endif
 
 #include <ti/drv/sciclient/sciclient.h>
@@ -120,6 +123,71 @@ void ipc_boardInit()
 }
 #endif
 
+#ifdef IPC_NEGATIVE_TEST
+#if defined (__C7100__)
+/* To set C71 timer interrupts */
+void ipc_timerInterruptInit(void)
+{
+    CSL_ClecEventConfig   cfgClec;
+    CSL_CLEC_EVTRegs     *clecBaseAddr = (CSL_CLEC_EVTRegs*)CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
+
+    uint32_t input         = 1248; /* Used for Timer Interrupt */
+    uint32_t corepackEvent = 14;
+
+    /* Configure CLEC */
+    cfgClec.secureClaimEnable = FALSE;
+    cfgClec.evtSendEnable     = TRUE;
+    cfgClec.rtMap             = CSL_CLEC_RTMAP_CPU_ALL;
+    cfgClec.extEvtNum         = 0;
+    cfgClec.c7xEvtNum         = corepackEvent;
+    CSL_clecConfigEvent(clecBaseAddr, input, &cfgClec);
+    CSL_clecConfigEventLevel(clecBaseAddr, input, 0); /* configure interrupt as pulse */
+    Hwi_setPriority(corepackEvent, 1);
+}
+#endif
+
+#if defined (_TMS320C6X)
+/* To set C66 timer interrupts */
+void ipc_timerInterruptInit(void)
+{
+    int32_t status = 0;
+
+    struct tisci_msg_rm_irq_set_req     rmIrqReq;
+    struct tisci_msg_rm_irq_set_resp    rmIrqResp;
+
+    /* On C66x builds we define OS timer tick in the configuration file to
+     * trigger event #21 for C66x_1 and #20 for C66x_2. Map
+     * DMTimer 0 interrupt to these events through DMSC RM API.
+     */
+    rmIrqReq.valid_params           = TISCI_MSG_VALUE_RM_DST_ID_VALID |
+                                      TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID;
+    rmIrqReq.src_id                 = TISCI_DEV_TIMER0;
+    rmIrqReq.src_index              = 0U;
+#if defined(BUILD_C66X_1)
+    rmIrqReq.dst_id                 = TISCI_DEV_C66SS0_CORE0;
+    rmIrqReq.dst_host_irq           = 21U;
+#elif defined(BUILD_C66X_2)
+    rmIrqReq.dst_id                 = TISCI_DEV_C66SS1_CORE0;
+    rmIrqReq.dst_host_irq           = 20U;
+#endif
+    /* Unused params */
+    rmIrqReq.global_event           = 0U;
+    rmIrqReq.ia_id                  = 0U;
+    rmIrqReq.vint                   = 0U;
+    rmIrqReq.vint_status_bit_index  = 0U;
+    rmIrqReq.secondary_host         = TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
+
+    status = Sciclient_rmIrqSet(&rmIrqReq, &rmIrqResp, SCICLIENT_SERVICE_WAIT_FOREVER);
+    if(status != 0)
+    {
+        System_printf(" ERROR: failed to setup timer interrupt !!!\n" );
+    }
+
+    return;
+}
+#endif
+#endif
+
 int main(void)
 {
     Task_Handle task;
@@ -131,6 +199,12 @@ int main(void)
 
 #if !defined(A72_LINUX_OS)
     ipc_boardInit();
+#endif
+
+#ifdef IPC_NEGATIVE_TEST
+#if defined (__C7100__) ||  defined (_TMS320C6X)
+    ipc_timerInterruptInit();
+#endif
 #endif
 
     Error_init(&eb);

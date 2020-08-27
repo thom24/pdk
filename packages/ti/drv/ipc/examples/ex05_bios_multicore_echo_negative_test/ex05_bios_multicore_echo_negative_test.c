@@ -116,11 +116,13 @@ uint8_t  gCntrlBuf[RPMSG_DATA_SIZE] __attribute__ ((section("ipc_data_buffer"), 
 uint8_t  sysVqBuf[VQ_BUF_SIZE]  __attribute__ ((section ("ipc_data_buffer"), aligned (8)));
 uint8_t  g_sendBuf[RPMSG_DATA_SIZE * CORE_IN_TEST]  __attribute__ ((section ("ipc_data_buffer"), aligned (8)));
 uint8_t  g_rspBuf[RPMSG_DATA_SIZE]  __attribute__ ((section ("ipc_data_buffer"), aligned (8)));
+uint8_t  g_timeoutBuf[RPMSG_DATA_SIZE] __attribute__ ((section ("ipc_data_buffer"), aligned (8)));
 
 uint8_t *pCntrlBuf = gCntrlBuf;
 uint8_t *pTaskBuf = g_taskStackBuf;
 uint8_t *pSendTaskBuf = g_sendBuf;
 uint8_t *pRecvTaskBuf = g_rspBuf;
+uint8_t *pTimeoutBuf = g_timeoutBuf;
 uint8_t *pSysVqBuf = sysVqBuf;
 
 #ifdef BUILD_MPU1_0

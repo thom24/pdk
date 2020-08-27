@@ -65,6 +65,7 @@
 #define MSGSIZE  256U
 #define SERVICE  "ti.ipc4.ping-pong"
 #define ENDPT1   13U
+#define ENDPT2   14U
 #define NUMMSGS  10000 /* number of message sent per task */
 //#define NUMMSGS  1000000   /* number of message sent per task */
 
@@ -72,6 +73,7 @@ extern uint8_t  *pCntrlBuf;
 extern uint8_t  *pTaskBuf;
 extern uint8_t  *pSendTaskBuf;
 extern uint8_t  *pRecvTaskBuf;
+extern uint8_t  *pTimeoutBuf;
 extern uint8_t  *pSysVqBuf;
 
 extern uint32_t  selfProcId;
@@ -136,14 +138,17 @@ void rpmsg_neg_exit_responseTask()
 void rpmsg_neg_responderFxn(UArg arg0, UArg arg1)
 {
     RPMessage_Handle    handle;
+    RPMessage_Handle    handleTimeout;
     RPMessage_Params    params;
     uint32_t        myEndPt = 0;
+    uint32_t        myTimeoutEndPt = 0;
     uint32_t        remoteEndPt;
     uint32_t        remoteProcId;
     uint16_t        len;
-    int32_t        n;
-    int32_t        status = 0;
-    void        *buf;
+    int32_t         n;
+    int32_t         status = 0;
+    void            *buf;
+    void            *buf2;
 
     uint32_t            bufSize = rpmsgNegDataSize;
     char                str[MSGSIZE];
@@ -164,6 +169,16 @@ void rpmsg_neg_responderFxn(UArg arg0, UArg arg1)
     if(!handle)
     {
         System_printf("RecvTask: Failed to create endpoint\n");
+        return;
+    }
+    buf2 = pTimeoutBuf;
+    params.requestedEndpt = ENDPT2;
+    params.buf = buf2;
+    params.bufSize = bufSize;
+    handleTimeout = RPMessage_create(&params, &myTimeoutEndPt);
+    if (!handleTimeout)
+    {
+        System_printf("RecvTask: Failed to create timeout endpoint\n");
         return;
     }
 
@@ -209,15 +224,16 @@ void rpmsg_neg_responderFxn(UArg arg0, UArg arg1)
         else if(test_rpmsg_rcv_timeout_flag)
         {
             test_rpmsg_rcv_timeout_flag = 0;
-            status = RPMessage_recv(handle, (Ptr)str, &len, &remoteEndPt, &remoteProcId, 100);
+            System_printf("[%s] calling RPMessage_recv with timeout 100...\n", Ipc_mpGetSelfName());
+            status = RPMessage_recv(handleTimeout, (Ptr)str, &len, &remoteEndPt, &remoteProcId, 100);
             if(status != IPC_ETIMEOUT)
             {
-                System_printf("[%s] [test_rpmsg_rcv_timeout_flag] : [TEST_PASS]\n", Ipc_mpGetSelfName());
+                System_printf("[%s] [test_rpmsg_rcv_timeout_flag] : [TEST_FAIL]\n", Ipc_mpGetSelfName());
                 return;
             }
             else
             {
-                System_printf("[%s] [test_rpmsg_rcv_timeout_flag] : [TEST_FAIL]\n", Ipc_mpGetSelfName());
+                System_printf("[%s] [test_rpmsg_rcv_timeout_flag] : [TEST_PASS]\n", Ipc_mpGetSelfName());
                 return;
             }
         }
@@ -704,7 +720,12 @@ int32_t ipc_neg_test(void)
     }
     else
     {
-        Ipc_initVirtIO(&vqParam);
+        status = Ipc_initVirtIO(&vqParam);
+        if (status != IPC_SOK)
+        {
+            System_printf("[%s] Ipc_initVirtIO failed\n");
+            return IPC_EFAIL;
+        }
     }
     /* Step 3: Initialize RPMessage */
     RPMessage_Params cntrlParam;
@@ -803,7 +824,12 @@ int32_t ipc_neg_test(void)
 #endif /* IPC_EXCLUDE_CTRL_TASKS */
     else
     {
-        RPMessage_init(&cntrlParam);
+        status = RPMessage_init(&cntrlParam);
+        if (status != IPC_SOK)
+        {
+            System_printf("[%s] RPMessage_init failed\n", Ipc_mpGetSelfName());
+            return IPC_EFAIL;
+        }
     }
 
     /* Respond to messages coming in to endPt ENDPT1 */
