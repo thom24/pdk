@@ -1,32 +1,32 @@
 /*  ============================================================================
  *   Copyright (c) Texas Instruments Incorporated 2010-2019
- * 
- *  Redistribution and use in source and binary forms, with or without 
- *  modification, are permitted provided that the following conditions 
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
  *  are met:
  *
- *    Redistributions of source code must retain the above copyright 
+ *    Redistributions of source code must retain the above copyright
  *    notice, this list of conditions and the following disclaimer.
  *
  *    Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the 
- *    documentation and/or other materials provided with the   
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the
  *    distribution.
  *
  *    Neither the name of Texas Instruments Incorporated nor the names of
  *    its contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
- *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
- *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
- *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT 
+ *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
  *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
  *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
- *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
+ *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
 */
@@ -35,13 +35,13 @@
 /**
  *   @file  pcie_sample.c
  *
- *   @brief   
- *      This is the PCIe example code.   
+ *   @brief
+ *      This is the PCIe example code.
  *
  */
 
-/** 
- * In the PCIe sample example two EVMs are used to test the PCIe driver. 
+/**
+ * In the PCIe sample example two EVMs are used to test the PCIe driver.
  * As described in the following figure, EVM RC is configured as a Root Complex
  * and EVM EP is configured as End Point.
  *
@@ -52,7 +52,7 @@
  *   |   Complex      | <-------------------------->|                 |
  *   |                |                             |                 |
  *   ------------------                             -------------------
- *  
+ *
  * Once the PCIe link is established, the following sequence of actions will happen:
  *  - EVM RC sends data to EVM EP
  *  - EVM EP waits to receive all the data
@@ -81,7 +81,9 @@
 #include <ti/csl/cslr_gic500.h>
 #define PCIE_REV2_HW
 
+#ifdef _TMS320C6X
 #include <ti/csl/csl_chip.h>
+#endif
 #include <ti/csl/arch/csl_arch.h>
 
 #ifdef UDMA
@@ -119,33 +121,33 @@ dstBuf_t dstBuf; // for dstBuf
 uint32_t srcBuf[PCIE_BUFSIZE_APP];
 
 /* Address used for low priority traffic buffer starting address, currently placed in DDR, make sure it is not used */
-const uint32_t lowPriAddr[3] = {0x80000000, 0x81000000, 0x82000000}; 
+const uint32_t lowPriAddr[3] = {0x80000000, 0x81000000, 0x82000000};
 
-/* PCIE RC IATU table */ 
+/* PCIE RC IATU table */
 const uint32_t obRCcfg[] = {
     PCIE_WINDOW_MEM_BASE_VC0, PCIE_WINDOW_MEM_MASK_VC0, PCIE_OB_LO_ADDR_RC_VC0, PCIE_OB_HI_ADDR_RC_VC0,
     PCIE_WINDOW_MEM_BASE_VC1, PCIE_WINDOW_MEM_MASK_VC1, PCIE_OB_LO_ADDR_RC_VC1, PCIE_OB_HI_ADDR_RC_VC1,
-    PCIE_WINDOW_MEM_BASE_VC2, PCIE_WINDOW_MEM_MASK_VC2, PCIE_OB_LO_ADDR_RC_VC2, PCIE_OB_HI_ADDR_RC_VC2, 
+    PCIE_WINDOW_MEM_BASE_VC2, PCIE_WINDOW_MEM_MASK_VC2, PCIE_OB_LO_ADDR_RC_VC2, PCIE_OB_HI_ADDR_RC_VC2,
     PCIE_WINDOW_MEM_BASE_VC3, PCIE_WINDOW_MEM_MASK_VC3, PCIE_OB_LO_ADDR_RC_VC3, PCIE_OB_HI_ADDR_RC_VC3
 };
 
 const uint32_t ibRCcfg[] = {
     PCIE_IB_LO_ADDR_RC_VC0, PCIE_IB_HI_ADDR_RC_VC0, PCIE_WINDOW_MEM_MASK_VC0,
-    PCIE_IB_LO_ADDR_RC_VC1, PCIE_IB_HI_ADDR_RC_VC1, PCIE_WINDOW_MEM_MASK_VC1, 
-    PCIE_IB_LO_ADDR_RC_VC2, PCIE_IB_HI_ADDR_RC_VC2, PCIE_WINDOW_MEM_MASK_VC2, 
+    PCIE_IB_LO_ADDR_RC_VC1, PCIE_IB_HI_ADDR_RC_VC1, PCIE_WINDOW_MEM_MASK_VC1,
+    PCIE_IB_LO_ADDR_RC_VC2, PCIE_IB_HI_ADDR_RC_VC2, PCIE_WINDOW_MEM_MASK_VC2,
     PCIE_IB_LO_ADDR_RC_VC3, PCIE_IB_HI_ADDR_RC_VC3, PCIE_WINDOW_MEM_MASK_VC3
 };
 
-/* PCIE EP IATU table */ 
+/* PCIE EP IATU table */
 const uint32_t obEPcfg[] = {
     PCIE_WINDOW_MEM_BASE_VC0, PCIE_WINDOW_MEM_MASK_VC0, PCIE_OB_LO_ADDR_EP_VC0, PCIE_OB_HI_ADDR_EP_VC0,
     PCIE_WINDOW_MEM_BASE_VC1, PCIE_WINDOW_MEM_MASK_VC1, PCIE_OB_LO_ADDR_EP_VC1, PCIE_OB_HI_ADDR_EP_VC1,
-    PCIE_WINDOW_MEM_BASE_VC2, PCIE_WINDOW_MEM_MASK_VC2, PCIE_OB_LO_ADDR_EP_VC2, PCIE_OB_HI_ADDR_EP_VC2, 
+    PCIE_WINDOW_MEM_BASE_VC2, PCIE_WINDOW_MEM_MASK_VC2, PCIE_OB_LO_ADDR_EP_VC2, PCIE_OB_HI_ADDR_EP_VC2,
     PCIE_WINDOW_MEM_BASE_VC3, PCIE_WINDOW_MEM_MASK_VC3, PCIE_OB_LO_ADDR_EP_VC3, PCIE_OB_HI_ADDR_EP_VC3
 };
 
 const uint32_t ibEPcfg[] = {
-    PCIE_IB_LO_ADDR_EP_VC0, PCIE_IB_HI_ADDR_EP_VC0, PCIE_WINDOW_MEM_MASK_VC0, 
+    PCIE_IB_LO_ADDR_EP_VC0, PCIE_IB_HI_ADDR_EP_VC0, PCIE_WINDOW_MEM_MASK_VC0,
     PCIE_IB_LO_ADDR_EP_VC1, PCIE_IB_HI_ADDR_EP_VC1, PCIE_WINDOW_MEM_MASK_VC1,
     PCIE_IB_LO_ADDR_EP_VC2, PCIE_IB_HI_ADDR_EP_VC2, PCIE_WINDOW_MEM_MASK_VC2,
     PCIE_IB_LO_ADDR_EP_VC3, PCIE_IB_HI_ADDR_EP_VC3, PCIE_WINDOW_MEM_MASK_VC3
@@ -154,7 +156,7 @@ const uint32_t ibEPcfg[] = {
 /* Global config variable that controls
    the PCIe mode. It is global so it can be poked
    from CCS. It should be set either to EP or RC. */
-pcieMode_e PcieModeGbl = pcie_EP_MODE;      
+pcieMode_e PcieModeGbl = pcie_EP_MODE;
 
 void cache_invalidate (void *ptr, int size)
 {
@@ -195,14 +197,14 @@ pcieRet_e pcieCfgDbi(Pcie_Handle handle, uint8_t enable)
   memset (&regs, 0, sizeof(regs));
 
   regs.cmdStatus = &cmdStatus;
-  if ((retVal = Pcie_readRegs (handle, pcie_LOCATION_LOCAL, &regs)) != pcie_RET_OK) 
+  if ((retVal = Pcie_readRegs (handle, pcie_LOCATION_LOCAL, &regs)) != pcie_RET_OK)
   {
     PCIE_logPrintf ("Read CMD STATUS register failed!\n");
     return retVal;
   }
   cmdStatus.dbi = enable;
-  
-  if ((retVal = Pcie_writeRegs (handle, pcie_LOCATION_LOCAL, &regs)) != pcie_RET_OK) 
+
+  if ((retVal = Pcie_writeRegs (handle, pcie_LOCATION_LOCAL, &regs)) != pcie_RET_OK)
   {
     PCIE_logPrintf ("SET CMD STATUS register failed!\n");
     return retVal;
@@ -232,7 +234,7 @@ static uint32_t readTime32(void)
 }
 
 /*****************************************************************************
- * Function: Utility function to introduce delay 
+ * Function: Utility function to introduce delay
  ****************************************************************************/
 void cycleDelay (uint32_t count)
 {
@@ -242,7 +244,7 @@ void cycleDelay (uint32_t count)
 }
 
 /*****************************************************************************
- * Function: Serdes configuration 
+ * Function: Serdes configuration
  ****************************************************************************/
 pcieRet_e pcieSerdesCfg(void)
 {
@@ -252,7 +254,7 @@ pcieRet_e pcieSerdesCfg(void)
 #else
   PlatformPCIESSSerdesConfig(1, 1);
 #endif
- 
+
   return pcie_RET_OK;
 }
 
@@ -381,7 +383,7 @@ pcieRet_e pcieCfgRC(Pcie_Handle handle)
   pcieStatusCmdReg_t     statusCmd;
   pcieDevStatCtrlReg_t   devStatCtrl;
   pcieAccrReg_t          accr;
-                 
+
   pcieRegisters_t        setRegs;
   pcieRegisters_t        getRegs;
 
@@ -390,29 +392,29 @@ pcieRet_e pcieCfgRC(Pcie_Handle handle)
   memset (&accr,             0, sizeof(accr));
 
   /*Disable link training*/
-  if ((retVal = pcieLtssmCtrl(handle, FALSE)) != pcie_RET_OK) 
+  if ((retVal = pcieLtssmCtrl(handle, FALSE)) != pcie_RET_OK)
   {
     PCIE_logPrintf ("Failed to disable Link Training!\n");
     return retVal;
   }
-  
-  /* Configure the size of the translation regions */   
+
+  /* Configure the size of the translation regions */
   memset (&setRegs, 0, sizeof(setRegs));
   memset (&getRegs, 0, sizeof(getRegs));
-  
+
   /* Set gen2/link cap */
   if ((retVal = pcieSetGen2(handle)) != pcie_RET_OK)
   {
     PCIE_logPrintf ("pcieSetGen2 failed!\n");
     return retVal;
   }
-  
+
   /* Enable memory access and mastership of the bus */
   memset (&setRegs, 0, sizeof(setRegs));
   memset (&getRegs, 0, sizeof(getRegs));
 
   getRegs.statusCmd = &statusCmd;
-  if ((retVal = Pcie_readRegs (handle, pcie_LOCATION_LOCAL, &getRegs)) != pcie_RET_OK) 
+  if ((retVal = Pcie_readRegs (handle, pcie_LOCATION_LOCAL, &getRegs)) != pcie_RET_OK)
   {
     PCIE_logPrintf ("Read Status Comand register failed!\n");
     return retVal;
@@ -421,9 +423,9 @@ pcieRet_e pcieCfgRC(Pcie_Handle handle)
   statusCmd.busMs  = 1;
   statusCmd.resp   = 1;
   statusCmd.serrEn = 1;
-  setRegs.statusCmd = &statusCmd;   
-  
-  if ((retVal = Pcie_writeRegs (handle, pcie_LOCATION_LOCAL, &setRegs)) != pcie_RET_OK) 
+  setRegs.statusCmd = &statusCmd;
+
+  if ((retVal = Pcie_writeRegs (handle, pcie_LOCATION_LOCAL, &setRegs)) != pcie_RET_OK)
   {
     PCIE_logPrintf ("SET Status Command register failed!\n");
     return retVal;
@@ -434,19 +436,19 @@ pcieRet_e pcieCfgRC(Pcie_Handle handle)
   memset (&getRegs, 0, sizeof(getRegs));
 
   getRegs.devStatCtrl = &devStatCtrl;
-  if ((retVal = Pcie_readRegs (handle, pcie_LOCATION_LOCAL, &getRegs)) != pcie_RET_OK) 
+  if ((retVal = Pcie_readRegs (handle, pcie_LOCATION_LOCAL, &getRegs)) != pcie_RET_OK)
   {
     PCIE_logPrintf ("Regad Device Status Control register failed!\n");
     return retVal;
   }
- 
+
   devStatCtrl.reqRp = 1;
   devStatCtrl.fatalErRp = 1;
   devStatCtrl.nFatalErRp = 1;
   devStatCtrl.corErRp = 1;
-  setRegs.devStatCtrl = &devStatCtrl;   
-  
-  if ((retVal = Pcie_writeRegs (handle, pcie_LOCATION_LOCAL, &setRegs)) != pcie_RET_OK) 
+  setRegs.devStatCtrl = &devStatCtrl;
+
+  if ((retVal = Pcie_writeRegs (handle, pcie_LOCATION_LOCAL, &setRegs)) != pcie_RET_OK)
   {
     PCIE_logPrintf ("SET Device Status Control register failed!\n");
     return retVal;
@@ -455,14 +457,14 @@ pcieRet_e pcieCfgRC(Pcie_Handle handle)
 #if defined(PCIE_REV0_HW) || defined(PCIE_REV2_HW)
   /* Enable ECRC */
   memset (&setRegs, 0, sizeof(setRegs));
-  
+
   accr.chkEn=1;
   accr.chkCap=1;
   accr.genEn=1;
   accr.genCap=1;
   setRegs.accr = &accr;
 
-  if ((retVal = Pcie_writeRegs (handle, pcie_LOCATION_LOCAL, &setRegs)) != pcie_RET_OK) 
+  if ((retVal = Pcie_writeRegs (handle, pcie_LOCATION_LOCAL, &setRegs)) != pcie_RET_OK)
   {
     PCIE_logPrintf ("SET ACCR register failed!\n");
     return retVal;
@@ -483,7 +485,7 @@ pcieRet_e pcieCfgEP(Pcie_Handle handle)
   pcieStatusCmdReg_t     statusCmd;
   pcieDevStatCtrlReg_t   devStatCtrl;
   pcieAccrReg_t          accr;
-                 
+
   pcieRegisters_t        setRegs;
   pcieRegisters_t        getRegs;
 
@@ -493,29 +495,29 @@ pcieRet_e pcieCfgEP(Pcie_Handle handle)
   memset (&accr,             0, sizeof(accr));
 
   /*Disable link training*/
-  if ((retVal = pcieLtssmCtrl(handle, FALSE)) != pcie_RET_OK) 
+  if ((retVal = pcieLtssmCtrl(handle, FALSE)) != pcie_RET_OK)
   {
     PCIE_logPrintf ("Failed to disable Link Training!\n");
     return retVal;
   }
-  
-  /* Configure the size of the translation regions */   
+
+  /* Configure the size of the translation regions */
   memset (&setRegs, 0, sizeof(setRegs));
   memset (&getRegs, 0, sizeof(getRegs));
-  
+
   /* Set gen2/link cap */
   if ((retVal = pcieSetGen2(handle)) != pcie_RET_OK)
   {
     PCIE_logPrintf ("pcieSetGen2 failed!\n");
     return retVal;
   }
-  
+
   /* Enable memory access and mastership of the bus */
   memset (&setRegs, 0, sizeof(setRegs));
   memset (&getRegs, 0, sizeof(getRegs));
 
   getRegs.statusCmd = &statusCmd;
-  if ((retVal = Pcie_readRegs (handle, pcie_LOCATION_LOCAL, &getRegs)) != pcie_RET_OK) 
+  if ((retVal = Pcie_readRegs (handle, pcie_LOCATION_LOCAL, &getRegs)) != pcie_RET_OK)
   {
     PCIE_logPrintf ("Read Status Comand register failed!\n");
     return retVal;
@@ -524,9 +526,9 @@ pcieRet_e pcieCfgEP(Pcie_Handle handle)
   statusCmd.busMs  = 1;
   statusCmd.resp   = 1;
   statusCmd.serrEn = 1;
-  setRegs.statusCmd = &statusCmd;   
-  
-  if ((retVal = Pcie_writeRegs (handle, pcie_LOCATION_LOCAL, &setRegs)) != pcie_RET_OK) 
+  setRegs.statusCmd = &statusCmd;
+
+  if ((retVal = Pcie_writeRegs (handle, pcie_LOCATION_LOCAL, &setRegs)) != pcie_RET_OK)
   {
     PCIE_logPrintf ("SET Status Command register failed!\n");
     return retVal;
@@ -537,35 +539,35 @@ pcieRet_e pcieCfgEP(Pcie_Handle handle)
   memset (&getRegs, 0, sizeof(getRegs));
 
   getRegs.devStatCtrl = &devStatCtrl;
-  if ((retVal = Pcie_readRegs (handle, pcie_LOCATION_LOCAL, &getRegs)) != pcie_RET_OK) 
+  if ((retVal = Pcie_readRegs (handle, pcie_LOCATION_LOCAL, &getRegs)) != pcie_RET_OK)
   {
     PCIE_logPrintf ("Regad Device Status Control register failed!\n");
     return retVal;
   }
- 
+
   devStatCtrl.reqRp = 1;
   devStatCtrl.fatalErRp = 1;
   devStatCtrl.nFatalErRp = 1;
   devStatCtrl.corErRp = 1;
-  setRegs.devStatCtrl = &devStatCtrl;   
-  
-  if ((retVal = Pcie_writeRegs (handle, pcie_LOCATION_LOCAL, &setRegs)) != pcie_RET_OK) 
+  setRegs.devStatCtrl = &devStatCtrl;
+
+  if ((retVal = Pcie_writeRegs (handle, pcie_LOCATION_LOCAL, &setRegs)) != pcie_RET_OK)
   {
     PCIE_logPrintf ("SET Device Status Control register failed!\n");
     return retVal;
   }
- 
+
 #if defined(PCIE_REV0_HW) || defined(PCIE_REV2_HW)
   /* Enable ECRC */
   memset (&setRegs, 0, sizeof(setRegs));
-  
+
   accr.chkEn=1;
   accr.chkCap=1;
   accr.genEn=1;
   accr.genCap=1;
   setRegs.accr = &accr;
 
-  if ((retVal = Pcie_writeRegs (handle, pcie_LOCATION_LOCAL, &setRegs)) != pcie_RET_OK) 
+  if ((retVal = Pcie_writeRegs (handle, pcie_LOCATION_LOCAL, &setRegs)) != pcie_RET_OK)
   {
     PCIE_logPrintf ("SET ACCR register failed!\n");
     return retVal;
@@ -593,7 +595,7 @@ pcieRet_e pcieObTransCfg(Pcie_Handle handle)
 
   if(PcieModeGbl == pcie_RC_MODE)
   {
-    
+
     /*Configure OB region for remote configuration access space*/
     regionParams.regionDir    = PCIE_ATU_REGION_DIR_OUTBOUND;
     regionParams.tlpType      = PCIE_TLP_TYPE_CFG;
@@ -610,14 +612,14 @@ pcieRet_e pcieObTransCfg(Pcie_Handle handle)
                      handle,
                      pcie_LOCATION_LOCAL,
                      (uint32_t) 4U,
-                     &regionParams)) != pcie_RET_OK) 
+                     &regionParams)) != pcie_RET_OK)
     {
       return retVal;
     }
-  
+
     for (i=0; i<4; i++) {
        memset (&regionParams, 0, sizeof(regionParams));
-    
+
        /*Configure OB region for memory transfer*/
        regionParams.regionDir    = PCIE_ATU_REGION_DIR_OUTBOUND;
        regionParams.tlpType      = PCIE_TLP_TYPE_MEM;
@@ -634,17 +636,17 @@ pcieRet_e pcieObTransCfg(Pcie_Handle handle)
                      handle,
                      pcie_LOCATION_LOCAL,
                      (uint32_t) i,
-                     &regionParams)) != pcie_RET_OK) 
+                     &regionParams)) != pcie_RET_OK)
        {
             return retVal;
        }
-    } 
-  } 
-  else 
+    }
+  }
+  else
   {
     for (i=0; i<4; i++) {
        memset (&regionParams, 0, sizeof(regionParams));
-    
+
        /*Configure OB region for memory transfer*/
        regionParams.regionDir    = PCIE_ATU_REGION_DIR_OUTBOUND;
        regionParams.tlpType      = PCIE_TLP_TYPE_MEM;
@@ -661,12 +663,12 @@ pcieRet_e pcieObTransCfg(Pcie_Handle handle)
                      handle,
                      pcie_LOCATION_LOCAL,
                      (uint32_t) i,
-                     &regionParams)) != pcie_RET_OK) 
+                     &regionParams)) != pcie_RET_OK)
        {
             return retVal;
-       } 
-    }       
-  }      
+       }
+    }
+  }
   return retVal;
 }
 
@@ -687,7 +689,7 @@ pcieRet_e pcieIbTransCfg(Pcie_Handle handle)
   for (i=0; i<4; i++) {
       /*Configure IB region for memory transfer*/
       memset (&regionParams, 0, sizeof(regionParams));
-  
+
       regionParams.regionDir    = PCIE_ATU_REGION_DIR_INBOUND;
       regionParams.tlpType      = PCIE_TLP_TYPE_MEM;
       regionParams.enableRegion = 1;
@@ -701,8 +703,8 @@ pcieRet_e pcieIbTransCfg(Pcie_Handle handle)
          /* This aligns the buffer to 4K, which needs to be compensated by the application */
          regionParams.lowerTargetAddr = ((uint32_t)lowPriAddr[i] & ~0xfffU) ;
          if (i == 3) {
-            regionParams.lowerTargetAddr = ((uint32_t)dstBuf.buf & ~0xfffU) ; 
-         }      
+            regionParams.lowerTargetAddr = ((uint32_t)dstBuf.buf & ~0xfffU) ;
+         }
          regionParams.upperTargetAddr = 0;
 
          if ( (retVal = Pcie_atuRegionConfig(
@@ -722,8 +724,8 @@ pcieRet_e pcieIbTransCfg(Pcie_Handle handle)
          /* This aligns the buffer to 4K, which needs to be compensated by the application */
          regionParams.lowerTargetAddr = ((uint32_t)lowPriAddr[i] & ~0xfffU) ;
          if (i == 3) {
-            regionParams.lowerTargetAddr = ((uint32_t)dstBuf.buf & ~0xfffU) ; 
-         }      
+            regionParams.lowerTargetAddr = ((uint32_t)dstBuf.buf & ~0xfffU) ;
+         }
          regionParams.upperTargetAddr = 0;
 
          if ( (retVal = Pcie_atuRegionConfig(
@@ -748,7 +750,7 @@ pcieRet_e pcieIbTransCfg(Pcie_Handle handle)
 void pcieInitAppBuf(void)
 {
   uint32_t i;
-  
+
   for (i=0; i<PCIE_BUFSIZE_APP; i++)
   {
     dstBuf.buf[i] = 0;
@@ -757,12 +759,12 @@ void pcieInitAppBuf(void)
       *(unsigned int*)(uintptr_t)(lowPriAddr[1] + 4*i) = 0;
      *(unsigned int*)(uintptr_t)(lowPriAddr[2] + 4*i) = 0;
   }
-  
+
   dstBuf.buf[PCIE_BUFSIZE_APP] = PCIE_EXAMPLE_BUF_EMPTY;
   *(unsigned int*)(uintptr_t)(lowPriAddr[0] + 4*PCIE_BUFSIZE_APP) = PCIE_EXAMPLE_BUF_EMPTY;
-  *(unsigned int*)(uintptr_t)(lowPriAddr[1] + 4*PCIE_BUFSIZE_APP) = PCIE_EXAMPLE_BUF_EMPTY;  
+  *(unsigned int*)(uintptr_t)(lowPriAddr[1] + 4*PCIE_BUFSIZE_APP) = PCIE_EXAMPLE_BUF_EMPTY;
   *(unsigned int*)(uintptr_t)(lowPriAddr[2] + 4*PCIE_BUFSIZE_APP) = PCIE_EXAMPLE_BUF_EMPTY;
-  
+
   cache_writeback ((void *)dstBuf.buf, PCIE_EXAMPLE_DSTBUF_BYTES);
   cache_writeback ((void *)lowPriAddr[0], PCIE_EXAMPLE_DSTBUF_BYTES);
   cache_writeback ((void *)lowPriAddr[1], PCIE_EXAMPLE_DSTBUF_BYTES);
@@ -780,15 +782,15 @@ void pcieWaitLinkUp(Pcie_Handle handle)
 
   pcieDebug0Reg_t            ltssmStateReg;
   getRegs.debug0 =          &ltssmStateReg;
-  
+
   memset (&ltssmStateReg,  0, sizeof(ltssmStateReg));
-  
+
   uint8_t ltssmState = 0;
- 
+
   while(ltssmState != pcie_LTSSM_L0)
   {
     cycleDelay(100);
-    if (Pcie_readRegs (handle, pcie_LOCATION_LOCAL, &getRegs) != pcie_RET_OK) 
+    if (Pcie_readRegs (handle, pcie_LOCATION_LOCAL, &getRegs) != pcie_RET_OK)
     {
       PCIE_logPrintf ("Read LTSSM state failed!\n");
       return;
@@ -803,7 +805,7 @@ pcieRet_e pcieCheckLinkParams(Pcie_Handle handle)
   pcieRet_e retVal = pcie_RET_OK;
   pcieRegisters_t regs;
   pcieLinkStatCtrlReg_t linkStatCtrl;
-    
+
   memset (&regs, 0, sizeof(regs));
   regs.linkStatCtrl = &linkStatCtrl;
 
@@ -834,11 +836,11 @@ void pcieSetLanes (Pcie_Handle handle)
     exit(1);
   }
   origLanes = lnkCtrlReg.lnkMode;
-#ifdef am65xx_idk  
+#ifdef am65xx_idk
   lnkCtrlReg.lnkMode = 3;
 #else
   lnkCtrlReg.lnkMode = 1;
-#endif  
+#endif
   if (Pcie_writeRegs (handle, pcie_LOCATION_LOCAL, &regs) != pcie_RET_OK)
   {
     PCIE_logPrintf ("Write LnkCtrl register failed!\n");
@@ -856,9 +858,9 @@ void pcieSetupVC(uint32_t csl_pcie_dat_base) {
      * TC/VC mapping must be identical for ports on both sides of a link.
      * For simplicity, a 1:1 TC to VC mapping is used here
      */
-     
+
     PCIE_logPrintf("PCIE VC setup ....\n");
-        
+
     /* VC_TC_MAP_VC0_BIT1: Bit locations within this field correspond to TC values */
     *((uint32_t *)(uintptr_t) (csl_pcie_dat_base + 0x115c)) = 0x00000001 ; //TC0 ----> VC0
     *((uint32_t *)(uintptr_t) (csl_pcie_dat_base + 0x115c)) = 0x80000001 ;
@@ -898,7 +900,7 @@ void pcieSetupVC(uint32_t csl_pcie_dat_base) {
     while ((*((uint32_t volatile *)(uintptr_t) (csl_pcie_dat_base + 0x116C)) >> 17) & 0x1);
     while ((*((uint32_t volatile *)(uintptr_t) (csl_pcie_dat_base + 0x1178)) >> 17) & 0x1);
     while ((*((uint32_t volatile *)(uintptr_t) (csl_pcie_dat_base + 0x1184)) >> 17) & 0x1);
-    
+
     PCIE_logPrintf("PCIE VC setup passed\n");
 }
 
@@ -906,44 +908,44 @@ void pcieConfigSlavePortOrderId(void) {
 
     /* If runs on A53, A53s are hard-coded to zero for SoC accesses outside of MSMC RAM and DDR, nothing can be done for setting orderID */
 #if defined (__TI_ARM_V7R4__)
-	/* If runs on R5F, configIdx 0, 1, 4, 5 for Read master 0, Write master 0, Read master 1, Write master 1, respectively. 
+	/* If runs on R5F, configIdx 0, 1, 4, 5 for Read master 0, Write master 0, Read master 1, Write master 1, respectively.
 	   Program QOS[a]_MAP[b] register bit field 7:4 for orderId = 0 (default value) */
 	uint32_t cba_qos_base = CSL_MCU_CBASS0_QOS_BASE;
 
-    *((uint32_t *)(uintptr_t) (cba_qos_base + 0*0x400 + 0x0100 + 0x00))   = 0x00007000; 
-    *((uint32_t *)(uintptr_t) (cba_qos_base + 1*0x400 + 0x0100 + 0x00))   = 0x00007000; 
-    *((uint32_t *)(uintptr_t) (cba_qos_base + 4*0x400 + 0x0100 + 0x00))   = 0x00007000; 
-    *((uint32_t *)(uintptr_t) (cba_qos_base + 5*0x400 + 0x0100 + 0x00))   = 0x00007000; 	
-#endif	
+    *((uint32_t *)(uintptr_t) (cba_qos_base + 0*0x400 + 0x0100 + 0x00))   = 0x00007000;
+    *((uint32_t *)(uintptr_t) (cba_qos_base + 1*0x400 + 0x0100 + 0x00))   = 0x00007000;
+    *((uint32_t *)(uintptr_t) (cba_qos_base + 4*0x400 + 0x0100 + 0x00))   = 0x00007000;
+    *((uint32_t *)(uintptr_t) (cba_qos_base + 5*0x400 + 0x0100 + 0x00))   = 0x00007000;
+#endif
 }
 
 void pcieConfigMasterPortOrderId(void){
 
     /* If runs on R5F, PCIe doesn’t have an Idx in the MCU CBASS. The orderID is not applied */
 #if defined __aarch64__
-	/* If runs on A53, configIdx 96, 97, 100, 101 for PCIE 0 HP Read master, Write master, PCIE 1 HP Read master, Write master, respectively. 
+	/* If runs on A53, configIdx 96, 97, 100, 101 for PCIE 0 HP Read master, Write master, PCIE 1 HP Read master, Write master, respectively.
 	   Program QOS[a]_MAP[b] register bit field 7:4 for orderId = 8 */
 
     uint32_t cba_qos_base = CSL_CBASS0_QOS_BASE;
- 
-    *((uint32_t *)(uintptr_t) (cba_qos_base + 96 *0x400 + 0x0100 + 0x00))   = 0x00007080; 
-    *((uint32_t *)(uintptr_t) (cba_qos_base + 97 *0x400 + 0x0100 + 0x00))   = 0x00007080; 
-    *((uint32_t *)(uintptr_t) (cba_qos_base + 100*0x400 + 0x0100 + 0x00))   = 0x00007080; 
-    *((uint32_t *)(uintptr_t) (cba_qos_base + 101*0x400 + 0x0100 + 0x00))   = 0x00007080; 
 
-	/* If runs on A53, configIdx 98, 99, 102, 103 for PCIE 0 LP Read master, Write master, PCIE 1 LP Read master, Write master, respectively. 
-	   Program QOS[a]_MAP[b] register bit field 7:4 for orderId = 0 (default) */	
+    *((uint32_t *)(uintptr_t) (cba_qos_base + 96 *0x400 + 0x0100 + 0x00))   = 0x00007080;
+    *((uint32_t *)(uintptr_t) (cba_qos_base + 97 *0x400 + 0x0100 + 0x00))   = 0x00007080;
+    *((uint32_t *)(uintptr_t) (cba_qos_base + 100*0x400 + 0x0100 + 0x00))   = 0x00007080;
+    *((uint32_t *)(uintptr_t) (cba_qos_base + 101*0x400 + 0x0100 + 0x00))   = 0x00007080;
 
-    *((uint32_t *)(uintptr_t) (cba_qos_base + 98 *0x400 + 0x0100 + 0x00))   = 0x00007000; 
-    *((uint32_t *)(uintptr_t) (cba_qos_base + 99 *0x400 + 0x0100 + 0x00))   = 0x00007000; 
-    *((uint32_t *)(uintptr_t) (cba_qos_base + 102*0x400 + 0x0100 + 0x00))   = 0x00007000; 
-    *((uint32_t *)(uintptr_t) (cba_qos_base + 103*0x400 + 0x0100 + 0x00))   = 0x00007000; 
- 
+	/* If runs on A53, configIdx 98, 99, 102, 103 for PCIE 0 LP Read master, Write master, PCIE 1 LP Read master, Write master, respectively.
+	   Program QOS[a]_MAP[b] register bit field 7:4 for orderId = 0 (default) */
+
+    *((uint32_t *)(uintptr_t) (cba_qos_base + 98 *0x400 + 0x0100 + 0x00))   = 0x00007000;
+    *((uint32_t *)(uintptr_t) (cba_qos_base + 99 *0x400 + 0x0100 + 0x00))   = 0x00007000;
+    *((uint32_t *)(uintptr_t) (cba_qos_base + 102*0x400 + 0x0100 + 0x00))   = 0x00007000;
+    *((uint32_t *)(uintptr_t) (cba_qos_base + 103*0x400 + 0x0100 + 0x00))   = 0x00007000;
+
 #endif
 }
 
 void configureNBThreadmap(void) {
-	
+
 	/* Maxwell has 2 ports into the NB that are based on orderIDs (0-7 and 8-15), so in effect the bits are for specific orderIDs. NAVSS_THREADMAP register has 2 MMR bits, where bit 0 is for orderIDs 0-7, and bit 1 is for orderIDs 8-15. And the value of each bit determines which thread in MSMC to map, 0 = thread 0 (NRT), 1 = thread 2 (RT).*/
 	/* NB0 for MSMC, NB1 for DDR */
 	*((uint32_t *)(uintptr_t) (0x03802010)) = 0x00000002;   //NAVSS0_NBSS_NB0_CFG_MMRS
@@ -1001,7 +1003,7 @@ void printQosResults(uint32_t iteration, uint32_t dataArray[], uint32_t size) {
     PCIE_logPrintf("Total outliners(20 percent higher than average): %d\n", outliner);
 }
 /*****************************************************************************
- * Function: pcie main task 
+ * Function: pcie main task
  ****************************************************************************/
 
 int i;
@@ -1055,11 +1057,11 @@ void pcie (void)
     PCIE_logPrintf ("*                RC mode                     *\n");
   else
     PCIE_logPrintf ("*                EP mode                     *\n");
-  
+
   PCIE_logPrintf ("**********************************************\n\n");
-  
+
   PCIE_logPrintf ("Version #: 0x%08x; string %s\n\n", (unsigned)Pcie_getVersion(), Pcie_getVersionStr());
-  
+
   /* Pass device config to LLD */
   if ((retVal = Pcie_init (&pcieInitCfg)) != pcie_RET_OK)
   {
@@ -1087,17 +1089,17 @@ void pcie (void)
     PCIE_logPrintf ("Set PCIe Mode failed (%d)\n", (int)retVal);
     exit(1);
   }
-  
+
   if(PcieModeGbl == pcie_RC_MODE)
   {
     /* Configure application registers for Root Complex*/
-    if ((retVal = pcieCfgRC(handle)) != pcie_RET_OK) 
+    if ((retVal = pcieCfgRC(handle)) != pcie_RET_OK)
     {
       PCIE_logPrintf ("Failed to configure PCIe in RC mode (%d)\n", (int)retVal);
       exit(1);
     }
-    
-    if ((retVal = pcieIbTransCfg(handle)) != pcie_RET_OK) 
+
+    if ((retVal = pcieIbTransCfg(handle)) != pcie_RET_OK)
     {
       PCIE_logPrintf ("Failed to configure Inbound Translation (%d)\n", (int)retVal);
       exit(1);
@@ -1107,7 +1109,7 @@ void pcie (void)
         PCIE_logPrintf ("Successfully configured Inbound Translation!\n");
     }
 
-    if ((retVal = pcieObTransCfg (handle)) != pcie_RET_OK) 
+    if ((retVal = pcieObTransCfg (handle)) != pcie_RET_OK)
     {
       PCIE_logPrintf ("Failed to configure Outbound Address Translation (%d)\n", (int)retVal);
       exit(1);
@@ -1120,13 +1122,13 @@ void pcie (void)
   else
   {
     /* Configure application registers for End Point*/
-    if ((retVal = pcieCfgEP(handle)) != pcie_RET_OK) 
+    if ((retVal = pcieCfgEP(handle)) != pcie_RET_OK)
     {
       PCIE_logPrintf ("Failed to configure PCIe in EP mode (%d)\n", (int)retVal);
       exit(1);
     }
 
-    if ((retVal = pcieIbTransCfg(handle)) != pcie_RET_OK) 
+    if ((retVal = pcieIbTransCfg(handle)) != pcie_RET_OK)
     {
       PCIE_logPrintf ("Failed to configure Inbound Translation (%d)!\n", (int)retVal);
       exit(1);
@@ -1135,8 +1137,8 @@ void pcie (void)
     {
       PCIE_logPrintf ("Successfully configured Inbound Translation!\n");
     }
-    
-    if ((retVal = pcieObTransCfg (handle)) != pcie_RET_OK) 
+
+    if ((retVal = pcieObTransCfg (handle)) != pcie_RET_OK)
     {
       PCIE_logPrintf ("Failed to configure Outbound Address Translation(%d)!\n", (int)retVal);
       exit(1);
@@ -1153,7 +1155,7 @@ void pcie (void)
   PCIE_logPrintf ("Starting link training...\n");
 
   /*Enable link training*/
-  if ((retVal = pcieLtssmCtrl(handle, TRUE)) != pcie_RET_OK) 
+  if ((retVal = pcieLtssmCtrl(handle, TRUE)) != pcie_RET_OK)
   {
     PCIE_logPrintf ("Failed to Enable Link Training! (%d)\n", (int)retVal);
     exit(1);
@@ -1176,24 +1178,24 @@ void pcie (void)
 
   if(PcieModeGbl == pcie_RC_MODE) {
 	  pcieConfigSlavePortOrderId();
-  } 
-  
+  }
+
   if(PcieModeGbl == pcie_EP_MODE) {
 	  pcieConfigMasterPortOrderId();
-  } 
-  
+  }
+
   configureNBThreadmap();
-  
+
   if ((retVal = Pcie_getMemSpaceRange (handle, &pcieBase, NULL)) != pcie_RET_OK) {
     PCIE_logPrintf ("getMemSpaceRange failed (%d)\n", (int)retVal);
     exit(1);
   }
-  
+
   /* Adjust PCIE base to point at remote target buffer */
   pcieBase = (char *) PCIE_WINDOW_MEM_BASE_VC3 +  /* data area doesn't start at low address */
                      (((uint32_t)&dstBuf) & 0xffff); /* dstBuf needs to be 64K aligned in addr tran */
 
-  pciedstBufBase = (dstBuf_t *)pcieBase; 
+  pciedstBufBase = (dstBuf_t *)pcieBase;
 
   if(PcieModeGbl == pcie_RC_MODE)
   {
@@ -1209,7 +1211,7 @@ void pcie (void)
   	  *(unsigned int*)(uintptr_t)(PCIE_WINDOW_MEM_BASE_VC1 + 4*i) = srcBuf[i] << 1;
  	  *(unsigned int*)(uintptr_t)(PCIE_WINDOW_MEM_BASE_VC2 + 4*i) = srcBuf[i] << 2;
     }
-    
+
     /* Mark that the buffer is full, so EP can process it */
     pciedstBufBase->buf[PCIE_BUFSIZE_APP] = PCIE_EXAMPLE_BUF_FULL;
     *(unsigned int*)(uintptr_t)(PCIE_WINDOW_MEM_BASE_VC0 + 4*PCIE_BUFSIZE_APP) = PCIE_EXAMPLE_BUF_FULL;
@@ -1218,7 +1220,7 @@ void pcie (void)
 
     /* Note on cache coherence: Write back is not necessary because pcieBase is in
        peripheral address space instead of physical memory*/
-    
+
     /* Data sent to EP.
        RC waits for the loopback to be completed and
        receive data back from EP */
@@ -1237,7 +1239,7 @@ void pcie (void)
       cache_invalidate ((void *)lowPriAddr[2], PCIE_EXAMPLE_DSTBUF_BYTES);
     } while(*(uint32_t volatile *)(uintptr_t)(lowPriAddr[2] + PCIE_BUFSIZE_APP * 4) != PCIE_EXAMPLE_BUF_FULL);
 	PCIE_logPrintf ("Root Complex received VC2 data.\n");
-	
+
 	do {
       cache_invalidate ((void *)dstBuf.buf, PCIE_EXAMPLE_DSTBUF_BYTES);
     } while(dstBuf.buf[PCIE_BUFSIZE_APP] != PCIE_EXAMPLE_BUF_FULL);
@@ -1263,17 +1265,17 @@ void pcie (void)
         PCIE_logPrintf ("Received data = %u\nTransmited data = %u\nIndex = %u.\n\nTest failed.\n",
                         *(uint32_t volatile *)(lowPriAddr[1] + i*4), (unsigned)srcBuf[i]<<1, (unsigned)i);
         exit(1);
-      }	 
+      }
 	  if(*(uint32_t volatile *)(uintptr_t)(lowPriAddr[2] + i*4) != (srcBuf[i] << 2))
       {
         PCIE_logPrintf ("Received data = %u\nTransmited data = %u\nIndex = %u.\n\nTest failed.\n",
                         *(uint32_t volatile *)(lowPriAddr[2] + i*4), (unsigned)srcBuf[i]<<2, (unsigned)i);
         exit(1);
-      }	  
+      }
     }
-    
+
     PCIE_logPrintf ("Root Complex received all correct data.\n");
-  
+
   }
   else
   {
@@ -1285,18 +1287,18 @@ void pcie (void)
     do {
       cache_invalidate ((void *)lowPriAddr[0], PCIE_EXAMPLE_DSTBUF_BYTES);
     } while(*(uint32_t volatile *)(uintptr_t)(lowPriAddr[0] + PCIE_BUFSIZE_APP * 4) != PCIE_EXAMPLE_BUF_FULL);
-    PCIE_logPrintf ("End Point received VC0 data.\n");     
-    
+    PCIE_logPrintf ("End Point received VC0 data.\n");
+
     do {
       cache_invalidate ((void *)lowPriAddr[1], PCIE_EXAMPLE_DSTBUF_BYTES);
     } while(*(uint32_t volatile *)(uintptr_t)(lowPriAddr[1] + PCIE_BUFSIZE_APP * 4) != PCIE_EXAMPLE_BUF_FULL);
-    PCIE_logPrintf ("End Point received VC1 data.\n");     
-    
+    PCIE_logPrintf ("End Point received VC1 data.\n");
+
     do {
       cache_invalidate ((void *)lowPriAddr[2], PCIE_EXAMPLE_DSTBUF_BYTES);
     } while(*(uint32_t volatile *)(uintptr_t)(lowPriAddr[2] + PCIE_BUFSIZE_APP * 4) != PCIE_EXAMPLE_BUF_FULL);
-    PCIE_logPrintf ("End Point received VC2 data.\n");     
-    
+    PCIE_logPrintf ("End Point received VC2 data.\n");
+
     do {
       cache_invalidate ((void *)dstBuf.buf, PCIE_EXAMPLE_DSTBUF_BYTES);
     } while(dstBuf.buf[PCIE_BUFSIZE_APP] != PCIE_EXAMPLE_BUF_FULL);
@@ -1311,7 +1313,7 @@ void pcie (void)
       *(uint32_t*)(uintptr_t)(PCIE_WINDOW_MEM_BASE_VC1 + 4*i) = *(uint32_t*)(uintptr_t)(lowPriAddr[1] + i*4);
       *(uint32_t*)(uintptr_t)(PCIE_WINDOW_MEM_BASE_VC2 + 4*i) = *(uint32_t*)(uintptr_t)(lowPriAddr[2] + i*4);
     }
-    
+
     /* Mark that the buffer is full, so RC can process it */
     pciedstBufBase->buf[PCIE_BUFSIZE_APP] = PCIE_EXAMPLE_BUF_FULL;
     *(unsigned int*)(uintptr_t)(PCIE_WINDOW_MEM_BASE_VC0 + 4*PCIE_BUFSIZE_APP) = PCIE_EXAMPLE_BUF_FULL;
@@ -1323,18 +1325,18 @@ void pcie (void)
 
     PCIE_logPrintf ("End Point sent data to Root Complex, completing the loopback.\n");
   }
- 
+
   /* PCIE QOS test only runs from RC side
      RC reads from EP's DDR into its own DDR through VC0, as the background traffic.
      Meanwhile, RC reads from EP's MSMC through VC3, the read latency is recorded.
      The record buffer is placed in OCMC to avoid interference with code running in MSMC
-  */ 
+  */
   if(PcieModeGbl == pcie_RC_MODE) {
 #ifdef UDMA
       PCIE_logPrintf("PCIE QOS test started ....\n");
-      
+
       ddrRefreshCtrlCheck();
-      
+
       configureNB1DdrAttr();
 
       if (pcieUdmaTest((void *)PCIE_WINDOW_MEM_BASE_VC0, PCIE_EXAMPLE_LINE_SIZE))
@@ -1358,7 +1360,7 @@ int main() {
   Task_create((Task_FuncPtr) pcie, &params, NULL);
 
   Board_initCfg boardCfg;
-  boardCfg = BOARD_INIT_UNLOCK_MMR 
+  boardCfg = BOARD_INIT_UNLOCK_MMR
 #ifndef IO_CONSOLE
                | BOARD_INIT_UART_STDIO
                | BOARD_INIT_MODULE_CLOCK

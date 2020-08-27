@@ -62,13 +62,15 @@
 #include <ti/sysbios/BIOS.h>
 #include <ti/sysbios/knl/Semaphore.h>
 #include <mcasp_drv.h>
+#ifdef _TMS320C6X
 #include <ti/csl/csl_chip.h>
+#endif
 
 #if defined(SOC_AM65XX) || defined (SOC_J721E) || defined (SOC_J7200)
  #define MCASP_UDMA_ENABLED
 #else
  #define MCASP_EDMA_ENABLED
-#endif 
+#endif
 
 
 #if defined(MCASP_EDMA_ENABLED)
@@ -78,7 +80,7 @@
 #elif defined(MCASP_UDMA_ENABLED)
  #include <ti/drv/udma/include/udma_types.h>
  #include <ti/drv/udma/udma.h>
-#endif 
+#endif
 
 #include "mcasp_osal.h"
 #include <ti/drv/mcasp/soc/mcasp_soc.h>
@@ -128,21 +130,21 @@ extern const ti_sysbios_heaps_HeapMem_Handle myHeap;
 #define BUFLEN                  (128) /* number of samples per serializer in the frame  */
 #define BUFALIGN                128 /* alignment of buffer for use of L2 cache */
 
-/* This is the number of buffers used by the application to be issued and reclaimed 
-   This number can be higher than 2 (Ping pong) also. The McASP driver puts them in 
+/* This is the number of buffers used by the application to be issued and reclaimed
+   This number can be higher than 2 (Ping pong) also. The McASP driver puts them in
    a queue internally and process them in order and give back to the application */
 #define UDMA_FIFO_DEPTH      (2)
 #define NUM_BUFS                (2) /* For ping pong */
 
 #if defined (MCASP_UDMA_ENABLED)
-  /* 
+  /*
    * For UDMAP/PDMA the prime count needs to be 4
    * */
   #define PRIME_COUNT                (2)
-#else 
+#else
   #define PRIME_COUNT                (2)
 #endif
-  
+
 #define TOTAL_PACKETS_TO_TRANSFER  (98+2) /* Including priming */
 #define NUM_APP_BUFS_QUEUE_ENTRIES  max(PRIME_COUNT,NUM_BUFS)
 #define MCASP_TEST_MAX_SERIALIZERS  (TX_NUM_SERIALIZER) /* defined in mcasp_cfg.h */
@@ -230,24 +232,24 @@ void McASP_App_BufferInfo_Init()
     uint32_t i,bufno;
 	Osal_Queue_construct(&McASP_App_Buffer_FreeList[APP_BUFFER_RX], (void *)NULL);
 	Osal_Queue_construct(&McASP_App_Buffer_TransitList[APP_BUFFER_RX], (void *)NULL);
-	
+
 	Osal_Queue_construct(&McASP_App_Buffer_FreeList[APP_BUFFER_TX], (void *)NULL);
 	Osal_Queue_construct(&McASP_App_Buffer_TransitList[APP_BUFFER_TX], (void *)NULL);
-	
+
     /* Put buffers in the queue */
 	for(i=0;i<test_prime_count;i++) {
       /* For priming, we would need to put 'prime_count' number of buffers in to the Free List to begin with.
 	   * During priming process, these will be popped and submitted to the McASP */
-	    bufno= i%test_num_bufs;	/* There are only NUM_BUFS buffers allocated from memory. If more buffers are needed for priming, say 4, these 
+	    bufno= i%test_num_bufs;	/* There are only NUM_BUFS buffers allocated from memory. If more buffers are needed for priming, say 4, these
 	                                       buffers tx/rxBufs[NUM_BUFS]are to be re-used. */
 	    McASP_App_bufs[APP_BUFFER_RX][i].buf = rxbuf[bufno];
 	    McASP_App_bufs[APP_BUFFER_RX][i].index = bufno;
         Osal_Queue_put((Osal_Queue_handle(&McASP_App_Buffer_FreeList[APP_BUFFER_RX])),(Osal_Queue_Elem *)&McASP_App_bufs[APP_BUFFER_RX][i]);
-      
+
 	    McASP_App_bufs[APP_BUFFER_TX][i].buf = txbuf[bufno];
 	    McASP_App_bufs[APP_BUFFER_TX][i].index = bufno;
         Osal_Queue_put((Osal_Queue_handle(&McASP_App_Buffer_FreeList[APP_BUFFER_TX])),(Osal_Queue_Elem *)&McASP_App_bufs[APP_BUFFER_TX][i]);
-	}  
+	}
 }
 /* Pop a buffer not in use */
 McASP_App_BufferInfo_t * McASP_App_Buffers_PopFree(McASP_App_Buffer_Direction_e dir)
@@ -313,7 +315,7 @@ static uintptr_t getGlobalAddr (uintptr_t addr)
 }
 /*********************** APPLICATION DEFINED FUNCTIONS: Begin ****************************/
 /* The below functions need to be defined by the application and are registered to the
-   McASP driver during instantiation 
+   McASP driver during instantiation
  */
 /*
  * This call back function is provided to the McASP driver during mcaspCreateChan()
@@ -333,10 +335,10 @@ void mcaspAppCallback(void* arg, MCASP_Packet *ioBuf)
 #endif
 
 	if(ioBuf->cmd == MCASP_READ)
-	{   
+	{
 		RxFlag++;
 		/* Get the buffer which is supposed to be the next. It should be in the transit queue */
-        bufInfo_transit = McASP_App_Buffers_PopTransitBuf(APP_BUFFER_RX);      
+        bufInfo_transit = McASP_App_Buffers_PopTransitBuf(APP_BUFFER_RX);
 		if(ioBuf->addr != (uintptr_t *)getGlobalAddr((uintptr_t)bufInfo_transit->buf)) {
 #if !defined(AUDIO_DC_DIGITAL_TEST)
 		   MCASP_log("Rx Buf Address mismatch on packet [%d] Expected %p, got %p with size %d\n",RxFlag,(uintptr_t *)getGlobalAddr((uintptr_t)bufInfo_transit->buf),ioBuf->addr,ioBuf->size);
@@ -345,49 +347,49 @@ void mcaspAppCallback(void* arg, MCASP_Packet *ioBuf)
            mcaspDebugLog(DEBUG_APP_CALLBACK_READ_MISMATCH, RxFlag,getGlobalAddr((uintptr_t)bufInfo_transit->buf),(uintptr_t)ioBuf->addr,ioBuf->size);
 #endif
 		}
-  	     
-#ifdef MCASP_ENABLE_DEBUG_LOG		
+
+#ifdef MCASP_ENABLE_DEBUG_LOG
 		buf_ptr = (uintptr_t *)getGlobalAddr((uintptr_t)ioBuf->addr);
        	mcaspDebugLog(DEBUG_APP_CALLBACK_READ, (uintptr_t)ioBuf->addr,ioBuf->size, buf_ptr[0],buf_ptr[1]);
 #endif
-        
-        /* Release it back to the Free list */ 
+
+        /* Release it back to the Free list */
         McASP_App_Buffers_Release(bufInfo_transit,APP_BUFFER_RX);
 
 	    /* post semaphore */
 	    Semaphore_post(semR);
-	
+
 	} else if(ioBuf->cmd == MCASP_WRITE)
 		{
 		 TxFlag++;
-        
+
           /* Get the buffer which is supposed to be in the top of the list */
-          bufInfo_transit = McASP_App_Buffers_PopTransitBuf(APP_BUFFER_TX);      
+          bufInfo_transit = McASP_App_Buffers_PopTransitBuf(APP_BUFFER_TX);
 		  if(ioBuf->addr != (uintptr_t *)getGlobalAddr((uintptr_t)bufInfo_transit->buf)) {
 #if !defined(AUDIO_DC_DIGITAL_TEST)
 		     MCASP_log("Tx Buf Address mismatch on packet[%d] Expected %p, got %p with size %d\n",TxFlag,(uintptr_t *)getGlobalAddr((uintptr_t)bufInfo_transit->buf),ioBuf->addr,ioBuf->size);
 #endif
-#ifdef MCASP_ENABLE_DEBUG_LOG		     
+#ifdef MCASP_ENABLE_DEBUG_LOG
              mcaspDebugLog(DEBUG_APP_CALLBACK_WRITE_MISMATCH, TxFlag,getGlobalAddr((uintptr_t)bufInfo_transit->buf),(uintptr_t)ioBuf->addr,ioBuf->size);
-#endif             
+#endif
 		  }
 
-#ifdef MCASP_ENABLE_DEBUG_LOG		  
+#ifdef MCASP_ENABLE_DEBUG_LOG
 		  buf_ptr = (uintptr_t *)getGlobalAddr((uintptr_t)ioBuf->addr);
        	  mcaspDebugLog(DEBUG_APP_CALLBACK_WRITE, (uintptr_t)ioBuf->addr,ioBuf->size, buf_ptr[0], buf_ptr[1]);
 #endif
-          /* Release it back to the Free list */ 
+          /* Release it back to the Free list */
           McASP_App_Buffers_Release(bufInfo_transit,APP_BUFFER_TX);
-        
+
 		  /* post semaphore */
 		  Semaphore_post(semT);
 		} else {
   		  MCASP_log("Callback: Spurious packet ! Buff addr = %p with size %d",ioBuf->addr,ioBuf->size);
-#ifdef MCASP_ENABLE_DEBUG_LOG  		  
+#ifdef MCASP_ENABLE_DEBUG_LOG
 		  mcaspDebugLog(DEBUG_APP_CALLBACK_SPURIOUS, ioBuf->cmd,(uintptr_t)ioBuf->addr,ioBuf->size,MCASP_DEBUG_UNDEFINED);
-#endif		  
+#endif
 		}
-	
+
 
 }
 /*
@@ -425,7 +427,7 @@ void GblErrRcv(Mcasp_errCbStatus errCbStat)
 /* FUNCTION DESCRIPTION: This function analyzes the result of error interrupts, if it
  * happened
 */
-/**************************************************************************************/	 
+/**************************************************************************************/
 void mcaspAnalyzeErrors(Mcasp_errCbStatus *errCbStat)
 {
     MCASP_log("\n------------ Error stats --------------\n");
@@ -458,21 +460,21 @@ void ErrorWatchDogRoutine()
 }
 
 /**************************************************************************************/
-/*   FUNCTION DESCRIPTION: This function creates the McASP channels for Tx and Rx 
+/*   FUNCTION DESCRIPTION: This function creates the McASP channels for Tx and Rx
      This function also creates the codec channels (if any)
 */
-/**************************************************************************************/	 
+/**************************************************************************************/
 static Void createStreams()
 {
 	int status;
 
-#if defined(AIC_CODEC)    
+#if defined(AIC_CODEC)
   	char remName[10]="aic";
 	int mode = IOM_INPUT;
-#endif	
+#endif
 #if !defined(MCASP_MASTER)
 /* Configure the external clock: In Slave mode, McASP is not the master, start initializing the external clock provider (AIC codec below),
-   before configuring McASP clocks (in mcaspCreateChan() below) 
+   before configuring McASP clocks (in mcaspCreateChan() below)
 */
 #if defined(AIC_CODEC)
 /* In this case AIC provides the frame clocks, hence we need to start it first */
@@ -492,9 +494,9 @@ static Void createStreams()
 		BIOS_exit(0);
 	}
 #endif
-	
+
 #endif
-	
+
 #if defined(AUDIO_DC_DIGITAL_TEST)
 	/* Create Mcasp channel for Tx */
 	status = mcaspCreateChan(&hMcaspTxChan, hMcaspDevDIT,
@@ -515,9 +517,9 @@ static Void createStreams()
 		BIOS_exit(0);
 	}
 
-#ifdef MCASP_ENABLE_DEBUG_LOG    
+#ifdef MCASP_ENABLE_DEBUG_LOG
     mcaspDebugLog(DEBUG_APP_AFTER_TX_CREATECHAN, MCASP_DEBUG_UNDEFINED, MCASP_DEBUG_UNDEFINED, MCASP_DEBUG_UNDEFINED,MCASP_DEBUG_UNDEFINED);
-#endif    
+#endif
 
 	/* Create Mcasp channel for Rx */
 	status = mcaspCreateChan(&hMcaspRxChan, hMcaspDev,
@@ -529,13 +531,13 @@ static Void createStreams()
 		MCASP_log("mcaspCreateChan for McASP2 Rx Failed\n");
 		BIOS_exit(0);
 	}
-#ifdef MCASP_ENABLE_DEBUG_LOG    
+#ifdef MCASP_ENABLE_DEBUG_LOG
     mcaspDebugLog(DEBUG_APP_AFTER_RX_CREATECHAN, MCASP_DEBUG_UNDEFINED, MCASP_DEBUG_UNDEFINED, MCASP_DEBUG_UNDEFINED,MCASP_DEBUG_UNDEFINED);
 #endif
 
 
 
-#if defined(MCASP_MASTER) 
+#if defined(MCASP_MASTER)
 /* If MCASP master, configure the clock of the slave device attached to McASP now.
     In the below case, it is the AIC codec */
 
@@ -576,7 +578,7 @@ Hwi_Handle myHwi;
 
 static Void prime()
 {
-	Error_Block  eb; 
+	Error_Block  eb;
     int32_t        count = 0, status;
     IHeap_Handle iheap;
     uint32_t tx_bytes_per_sample=(mcasp_chanparam[1].wordWidth/8);
@@ -614,7 +616,7 @@ static Void prime()
 #ifdef MCASP_ENABLE_DEBUG_LOG
     memset(mcaspFrames_rx,0xBB,sizeof(mcaspFrames_rx));
 #endif
-    
+
     McASP_App_BufferInfo_Init();
 
 #ifdef AUDIO_EQ_DEMO
@@ -626,7 +628,7 @@ static Void prime()
             appBuf_ptr=McASP_App_Buffers_PopFree(APP_BUFFER_RX);
             /* Issue the first & second empty buffers to the input stream         */
 	        memset((uint8_t *)appBuf_ptr->buf, (0xB0+count), rx_frame_size);
-    
+
 			/* RX frame processing */
 			rxFrame[count].cmd = MCASP_READ;
 			rxFrame[count].addr = (void*)(getGlobalAddr((uintptr_t)appBuf_ptr->buf));
@@ -635,16 +637,16 @@ static Void prime()
 			rxFrame[count].status = 0;
 			rxFrame[count].misc = 1;   /* reserved - used in callback to indicate asynch packet */
 
-#ifdef MCASP_ENABLE_DEBUG_LOG    
+#ifdef MCASP_ENABLE_DEBUG_LOG
 		   /* Submit McASP packet for Rx */
   	       mcaspDebugLog(DEBUG_APP_SUBMIT_READ, (uintptr_t)rxFrame[count].addr, rxFrame[count].size,((uint32_t *)(rxFrame[count].addr))[0],((uint32_t *)(rxFrame[count].addr))[1]);
 #endif
 		   status = mcaspSubmitChan(hMcaspRxChan, &(rxFrame[count]));
 
-#ifdef MCASP_ENABLE_DEBUG_LOG    
+#ifdef MCASP_ENABLE_DEBUG_LOG
       	   mcaspDebugLog(DEBUG_APP_SUBMIT_READ_COMPLETE, (uintptr_t)rxFrame[count].addr, rxFrame[count].size, ((uint32_t *)(rxFrame[count].addr))[0],((uint32_t *)(rxFrame[count].addr))[1]);
 #endif
-	
+
 		if((status != MCASP_PENDING))
 			MCASP_log ("Debug: Error McASP2 RX : Prime  buffer  #%d submission FAILED\n", count);
 
@@ -666,12 +668,12 @@ static Void prime()
          txFrame[count].addr = (void*)(getGlobalAddr((uintptr_t)appBuf_ptr->buf));
 #endif
 		 txFrame[count].size = tx_frame_size;
-	 
+
    		 txFrame[count].arg = (uintptr_t) hMcaspTxChan;
    		 txFrame[count].status = 0;
    		 txFrame[count].misc = 1;   /* reserved - used in callback to indicate asynch packet */
 
-#ifdef MCASP_ENABLE_DEBUG_LOG    
+#ifdef MCASP_ENABLE_DEBUG_LOG
    		 /* Submit McASP packet for Tx */
  	     mcaspDebugLog(DEBUG_APP_SUBMIT_WRITE, (uintptr_t)txFrame[count].addr, txFrame[count].size, ((uint32_t *)(txFrame[count].addr))[0],((uint32_t *)(txFrame[count].addr))[1]);
 #endif
@@ -679,7 +681,7 @@ static Void prime()
    		status = mcaspSubmitChan(hMcaspTxChan, &(txFrame[count]));
    		if((status != MCASP_PENDING))
    			MCASP_log ("Debug: Error McASP2 TX : Prime  buffer  #%d submission FAILED\n", count);
-#ifdef MCASP_ENABLE_DEBUG_LOG 
+#ifdef MCASP_ENABLE_DEBUG_LOG
 		mcaspDebugLog(DEBUG_APP_SUBMIT_WRITE_COMPLETE, (uintptr_t)txFrame[count].addr, txFrame[count].size, ((uint32_t *)(txFrame[count].addr))[0],((uint32_t *)(txFrame[count].addr))[1]);
 #endif
      }
@@ -785,7 +787,7 @@ Udma_DrvHandle McaspApp_udmaInit(Mcasp_HwInfo *cfg)
     if(gDrvHandle != NULL)
     {
         gDrvHandle = &gUdmaDrvObj;
-        cfg->dmaInfo.descType =      CSL_UDMAP_CPPI5_PD_DESCINFO_DTYPE_VAL_TR; 
+        cfg->dmaInfo.descType =      CSL_UDMAP_CPPI5_PD_DESCINFO_DTYPE_VAL_TR;
         cfg->dmaInfo.txChHandle     = &gUdmaTxChObj;
         cfg->dmaInfo.rxChHandle     = &gUdmaRxChObj;
         cfg->dmaInfo.txRingMem      = (void *)&gTxRingMem[0];
@@ -795,17 +797,17 @@ Udma_DrvHandle McaspApp_udmaInit(Mcasp_HwInfo *cfg)
         cfg->dmaInfo.cqRxRingMem    = (void *)&gRxCompRingMem[0];
         cfg->dmaInfo.tdCqRxRingMem  = (void *)&gTdRxCompRingMem[0];
         cfg->dmaInfo.ringCnt  = UDMA_TEST_APP_RING_ENTRIES;
-        
+
        for(i=0;i<MCASP_NUM_FREE_DESCS;i++) {
          cfg->dmaInfo.txHpdMem[i]    = (void *)&gUdmaTxHpdMem[i];
          cfg->dmaInfo.rxHpdMem[i]    = (void *)&gUdmaRxHpdMem[i];
-       } 
-        
+       }
+
         cfg->dmaInfo.txEventHandle  = (void *)&gUdmaTxCqEventObj;
         cfg->dmaInfo.tdTxEventHandle= (void *)&gUdmaTdTxCqEventObj;
         cfg->dmaInfo.rxEventHandle  = (void *)&gUdmaRxCqEventObj;
         cfg->dmaInfo.tdRxEventHandle= (void *)&gUdmaTdRxCqEventObj;
-    
+
     }
 
     return (gDrvHandle);
@@ -887,7 +889,7 @@ Void Audio_echo_Task()
   MCASP_log("NUM_BUFS=%d \n",test_num_bufs);
   MCASP_log("PRIME_COUNT=%d \n",test_prime_count);
 
-#ifdef MCASP_ENABLE_DEBUG_LOG   
+#ifdef MCASP_ENABLE_DEBUG_LOG
   mcaspDebugLog_init();
 #endif
 
@@ -992,7 +994,7 @@ Void Audio_echo_Task()
     createStreams();
 
     MCASP_log("Initialization complete. priming about to begin \n");
-    
+
     /* Call prime function to do priming                                      */
     prime();
 
@@ -1047,24 +1049,24 @@ Void Audio_echo_Task()
         }
 
 #ifdef MEASURE_TIME
-    profiling_end();  
+    profiling_end();
 #endif
 
         /******************************* Sample Processing Begins ***************************/
 	    /* (BUFLEN* RX_NUM_SERIALIZER) 32-bit samples samples have been accumulated in rxbuf[grxFrameIndexCount] now.
-	       Application specific processing on these samples, before sending it back to McASP via 
+	       Application specific processing on these samples, before sending it back to McASP via
 	       txbuf[grxFrameIndexCount].
 		   APPLICATION SPECIFIC PROCESSING could be done here. Below are the few audio demos and their
 		   application specific processing shown below.
 	    */
 #if defined(AUDIO_EQ_DEMO)
-        /* AUDIO_EQ CASE: The Audio EQ demo applies EQ parameters on the samples received from McASP before 
-		   sending it back to the Tx McASP 
+        /* AUDIO_EQ CASE: The Audio EQ demo applies EQ parameters on the samples received from McASP before
+		   sending it back to the Tx McASP
 		*/
 		audioEQ_process_samples((void *)((uint8_t *)appBuf_ptr_tx->buf),appBuf_ptr_rx->buf,rx_frame_size);
 #elif defined(DEVICE_LOOPBACK)
-        /* DEVICE LOOPBACK CASE: The Device loopback tests checks for Ramp continuity on the frame received 
-		 (the previous Tx frame sent and received via loopback)	and sends a continual ramp 
+        /* DEVICE LOOPBACK CASE: The Device loopback tests checks for Ramp continuity on the frame received
+		 (the previous Tx frame sent and received via loopback)	and sends a continual ramp
 		 on to the Tx McASP.
 		*/
         total_frames_sent = rx_frames + tx_frames;
@@ -1175,7 +1177,7 @@ Void Audio_echo_Task()
 #ifdef MEASURE_TIME
 		profiling_start();
 #endif
-		
+
 		/* Test Mcasp control API */
 		status = mcaspControlChanTest(hMcaspRxChan);
 		if(status != MCASP_COMPLETED) {
@@ -1183,7 +1185,7 @@ Void Audio_echo_Task()
 		}
 
     } /* end of for (i32Count = 0; i32Count >= 0; i32Count++) */
-       
+
         MCASP_log("\nTotal frames sent:     %d", tx_frames);
         MCASP_log("\nTotal frames received: %d", rx_frames);
   	    ErrorWatchDogRoutine();
@@ -1232,7 +1234,7 @@ Void Audio_echo_Task()
 					Memory_free(iheap,txbuf[i32Count],tx_frame_size);
 				}
 		}
-	  /* Display profiling results */	
+	  /* Display profiling results */
 #ifdef MEASURE_TIME
       profiling_display_results();
 #endif

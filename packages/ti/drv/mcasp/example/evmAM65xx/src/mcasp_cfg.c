@@ -64,7 +64,9 @@
 #include <mcasp_drv.h>
 #include <mcasp_cfg.h>
 #include <mcasp_tune.h>
+#ifdef _TMS320C6X
 #include <ti/csl/csl_chip.h>
+#endif
 #include "ICodec.h"
 #include "stdio.h"
 #include "string.h"

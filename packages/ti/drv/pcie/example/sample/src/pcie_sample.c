@@ -1,32 +1,32 @@
 /*  ============================================================================
  *   Copyright (c) Texas Instruments Incorporated 2010-2019
- * 
- *  Redistribution and use in source and binary forms, with or without 
- *  modification, are permitted provided that the following conditions 
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
  *  are met:
  *
- *    Redistributions of source code must retain the above copyright 
+ *    Redistributions of source code must retain the above copyright
  *    notice, this list of conditions and the following disclaimer.
  *
  *    Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the 
- *    documentation and/or other materials provided with the   
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the
  *    distribution.
  *
  *    Neither the name of Texas Instruments Incorporated nor the names of
  *    its contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
- *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
- *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
- *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT 
+ *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
  *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
  *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
- *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
+ *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
 */
@@ -35,13 +35,13 @@
 /**
  *   @file  pcie_sample.c
  *
- *   @brief   
- *      This is the PCIe example code.   
+ *   @brief
+ *      This is the PCIe example code.
  *
  */
 
-/** 
- * In the PCIe sample example two EVMs are used to test the PCIe driver. 
+/**
+ * In the PCIe sample example two EVMs are used to test the PCIe driver.
  * As described in the following figure, EVM RC is configured as a Root Complex
  * and EVM EP is configured as End Point.
  *
@@ -52,7 +52,7 @@
  *   |   Complex      | <-------------------------->|                 |
  *   |                |                             |                 |
  *   ------------------                             -------------------
- *  
+ *
  * Once the PCIe link is established, the following sequence of actions will happen:
  *  - EVM RC sends data to EVM EP
  *  - EVM EP waits to receive all the data
@@ -108,10 +108,10 @@
 #endif
 #endif
 #endif
-#ifdef _TMS320C6X 
+#ifdef _TMS320C6X
 #include <ti/csl/csl_cacheAux.h>
-#endif
 #include <ti/csl/csl_chip.h>
+#endif
 #if defined(SOC_AM65XX) || defined(SOC_J721E)
 #include <ti/csl/arch/csl_arch.h>
 #endif
@@ -185,7 +185,7 @@ uint64_t totalDMATime = 0;
  * This is done since EDMA cannot send a specific value or token
  * but instead it can send blocks of data.
  * */
- #ifdef _TMS320C6X 
+ #ifdef _TMS320C6X
 #pragma DATA_SECTION(dataContainer, ".testData")
 #pragma DATA_ALIGN(dataContainer, PCIE_EXAMPLE_LINE_SIZE)
 #endif
@@ -200,14 +200,14 @@ __attribute__((aligned(256))) /* GCC way of aligning */
 ; /* for dstBuf */
 #endif
 
-#ifdef _TMS320C6X 
+#ifdef _TMS320C6X
 extern volatile unsigned int cregister TSCL;
 #endif
 
 /* Global config variable that controls
    the PCIe mode. It is global so it can be poked
    from CCS. It should be set either to EP or RC. */
-pcieMode_e PcieModeGbl = pcie_EP_MODE;      
+pcieMode_e PcieModeGbl = pcie_EP_MODE;
 #if defined(SOC_AM571x)
 Board_IDInfo boardId;
 Board_STATUS ret;
@@ -221,7 +221,7 @@ Board_STATUS ret;
 #define CSL_PSC_PD_PCIE CSL_PSC_PD_PCIEX
 #endif
 
-#ifndef CSL_PSC_LPSC_PCIEX 
+#ifndef CSL_PSC_LPSC_PCIEX
 #ifndef CSL_PSC_LPSC_PCIE
 #define CSL_PSC_LPSC_PCIE CSL_PSC_LPSC_PCIE_0
 #endif
@@ -230,7 +230,7 @@ Board_STATUS ret;
 #endif
 void cache_invalidate (void *ptr, int size)
 {
-#ifdef _TMS320C6X 
+#ifdef _TMS320C6X
   uint32_t key;
   /* Disable Interrupts */
   key = _disable_interrupts();
@@ -255,7 +255,7 @@ void cache_invalidate (void *ptr, int size)
 
 void cache_writeback (void *ptr, int size)
 {
-#ifdef _TMS320C6X 
+#ifdef _TMS320C6X
   uint32_t key;
   /* Disable Interrupts */
   key = _disable_interrupts();
@@ -282,7 +282,7 @@ void cache_writeback (void *ptr, int size)
 }
 
 /*****************************************************************************
- * Function: Converts a core local L2 address to a global L2 address 
+ * Function: Converts a core local L2 address to a global L2 address
  *   Input addr:  L2 address to be converted to global.
  *   return:  uint32_t   Global L2 address
  *****************************************************************************/
@@ -293,8 +293,8 @@ uint32_t pcieConvert_CoreLocal2GlobalAddr (uintptr_t  addr)
   uint32_t coreNum;
 
   /* Get the core number. */
-  coreNum = CSL_chipReadReg(CSL_CHIP_DNUM); 
-  
+  coreNum = CSL_chipReadReg(CSL_CHIP_DNUM);
+
 #if defined(SOC_AM572x) || defined(SOC_AM571x) || defined(SOC_AM574x)
   /* Compute the global address. */
   return ((1 << 30) | (coreNum << 24) | (addr & 0x00ffffff));
@@ -306,22 +306,22 @@ uint32_t pcieConvert_CoreLocal2GlobalAddr (uintptr_t  addr)
 #else
   return addr;
 #endif
-}    
+}
 
 #ifdef PCIE_EXAMPLE_DMA_RC
 /*****************************************************************************
  * Pass one "token" by writing to the "write" address then attempting
- * to read the same value back via the "read" address.  
+ * to read the same value back via the "read" address.
  *
  * The EDMA generates the transactions
  *
  * 0: pass
  * 1: fail
  ****************************************************************************/
-int PcieExampleEdmaRC(dstBuf_t *remote_address, 
+int PcieExampleEdmaRC(dstBuf_t *remote_address,
                       uint32_t value,
                       uint64_t timeLimit,
-                      EDMA3_DRV_Handle hEdma) 
+                      EDMA3_DRV_Handle hEdma)
 {
   int ACount, BCount, CCount;
   int i;
@@ -334,7 +334,7 @@ int PcieExampleEdmaRC(dstBuf_t *remote_address,
   for (i = 0; i < PCIE_EXAMPLE_LINE_SIZE - 1U; i++) {
     dataContainer[i] = value;
   }
-  dataContainer[PCIE_EXAMPLE_LINE_SIZE - 1U] = PCIE_EXAMPLE_BUF_FULL; 
+  dataContainer[PCIE_EXAMPLE_LINE_SIZE - 1U] = PCIE_EXAMPLE_BUF_FULL;
   /*
    * Setting up EDMA parameters
    *
@@ -349,7 +349,7 @@ int PcieExampleEdmaRC(dstBuf_t *remote_address,
     BCount = 1;
   }
   CCount = 1;
-  
+
   remoteBuf = (remote_address->edma_buf);
   source = (uint32_t *)pcieConvert_CoreLocal2GlobalAddr((uintptr_t)dataContainer);
   totalTimePointer=&totalTime;
@@ -362,7 +362,7 @@ int PcieExampleEdmaRC(dstBuf_t *remote_address,
     PCIE_logPrintf("EDMA write %d bytes with %d cycles\n", (PCIE_EXAMPLE_LINE_SIZE*PCIE_EXAMPLE_UINT32_SIZE), (unsigned int)totalDMATime);
   do {
       cache_invalidate ((void *)dstBuf.edma_buf, PCIE_EDMA_EXAMPLE_DSTBUF_BYTES);
-  } while(dstBuf.edma_buf[PCIE_EXAMPLE_LINE_SIZE-1U] != PCIE_EXAMPLE_BUF_FULL);    
+  } while(dstBuf.edma_buf[PCIE_EXAMPLE_LINE_SIZE-1U] != PCIE_EXAMPLE_BUF_FULL);
 
   /* check all the data */
   for (i=0; i<PCIE_EXAMPLE_LINE_SIZE; i++)
@@ -381,7 +381,7 @@ int PcieExampleEdmaRC(dstBuf_t *remote_address,
 
   totalDMATime += *totalTimePointer;
   PCIE_logPrintf("EDMA read %d bytes with %d cycles\n", (PCIE_EXAMPLE_LINE_SIZE*PCIE_EXAMPLE_UINT32_SIZE), (unsigned int)totalDMATime);
-  
+
   return fail;
 }
 #endif /* PCIE_EXAMPLE_DMA_RC */
@@ -395,10 +395,10 @@ int PcieExampleEdmaRC(dstBuf_t *remote_address,
  * 0: pass
  * 1: fail
  ****************************************************************************/
-int PcieExampleEdmaEP(dstBuf_t *remote_address, 
+int PcieExampleEdmaEP(dstBuf_t *remote_address,
                       uint32_t value,
                       uint64_t timeLimit,
-                      EDMA3_DRV_Handle hEdma) 
+                      EDMA3_DRV_Handle hEdma)
 {
   int ACount, BCount, CCount;
   int fail = 0;
@@ -406,10 +406,10 @@ int PcieExampleEdmaEP(dstBuf_t *remote_address,
   volatile uint32_t *source;
   unsigned long totalTime=0;
   unsigned long*totalTimePointer;
-  
+
   do {
       cache_invalidate ((void *)dstBuf.edma_buf, PCIE_EDMA_EXAMPLE_DSTBUF_BYTES);
-  } while(dstBuf.edma_buf[PCIE_EXAMPLE_LINE_SIZE-1U] != PCIE_EXAMPLE_BUF_FULL);    
+  } while(dstBuf.edma_buf[PCIE_EXAMPLE_LINE_SIZE-1U] != PCIE_EXAMPLE_BUF_FULL);
 
   /*
    * Setting up EDMA parameters
@@ -423,7 +423,7 @@ int PcieExampleEdmaEP(dstBuf_t *remote_address,
     BCount = 1;
   }
   CCount = 1;
-  
+
   remoteBuf = remote_address->edma_buf;
   source = (volatile uint32_t *)pcieConvert_CoreLocal2GlobalAddr((uintptr_t)dstBuf.edma_buf);
   totalTimePointer=&totalTime;
@@ -451,14 +451,14 @@ pcieRet_e pcieCfgDbi(Pcie_Handle handle, uint8_t enable)
   memset (&regs, 0, sizeof(regs));
 
   regs.cmdStatus = &cmdStatus;
-  if ((retVal = Pcie_readRegs (handle, pcie_LOCATION_LOCAL, &regs)) != pcie_RET_OK) 
+  if ((retVal = Pcie_readRegs (handle, pcie_LOCATION_LOCAL, &regs)) != pcie_RET_OK)
   {
     PCIE_logPrintf ("Read CMD STATUS register failed!\n");
     return retVal;
   }
   cmdStatus.dbi = enable;
-  
-  if ((retVal = Pcie_writeRegs (handle, pcie_LOCATION_LOCAL, &regs)) != pcie_RET_OK) 
+
+  if ((retVal = Pcie_writeRegs (handle, pcie_LOCATION_LOCAL, &regs)) != pcie_RET_OK)
   {
     PCIE_logPrintf ("SET CMD STATUS register failed!\n");
     return retVal;
@@ -475,7 +475,7 @@ pcieRet_e pcieCfgDbi(Pcie_Handle handle, uint8_t enable)
 
   regs.plconfDbiRoWrEn = &dbiRo;
 
-  if ((retVal = Pcie_writeRegs (handle, pcie_LOCATION_LOCAL, &regs)) != pcie_RET_OK) 
+  if ((retVal = Pcie_writeRegs (handle, pcie_LOCATION_LOCAL, &regs)) != pcie_RET_OK)
   {
     PCIE_logPrintf ("SET CMD STATUS register failed!\n");
     return retVal;
@@ -500,7 +500,7 @@ pcieRet_e pcieCfgDbiRWE(Pcie_Handle handle, uint8_t enable)
   dbiRo.cxDbiRoWrEn = enable;
   regs.plconfDbiRoWrEn = &dbiRo;
 
-  if ((retVal = Pcie_writeRegs (handle, pcie_LOCATION_LOCAL, &regs)) != pcie_RET_OK) 
+  if ((retVal = Pcie_writeRegs (handle, pcie_LOCATION_LOCAL, &regs)) != pcie_RET_OK)
   {
     PCIE_logPrintf ("SET MISC_CONTROL register failed!\n");
     return retVal;
@@ -554,7 +554,7 @@ static uint32_t readTime32(void)
 }
 
 /*****************************************************************************
- * Function: Utility function to introduce delay 
+ * Function: Utility function to introduce delay
  ****************************************************************************/
 void cycleDelay (uint32_t count)
 {
@@ -564,7 +564,7 @@ void cycleDelay (uint32_t count)
 }
 
 /*****************************************************************************
- * Function: Serdes configuration 
+ * Function: Serdes configuration
  ****************************************************************************/
 pcieRet_e pcieSerdesCfg(void)
 {
@@ -794,7 +794,7 @@ pcieRet_e pcieSerdesCfg(void)
 #endif
   /*Wait for PLL to lock (3000 CLKIN1 cycles) */
   cycleDelay(10000);
-  
+
   return pcie_RET_OK;
 }
 
@@ -896,7 +896,7 @@ pcieRet_e pcieSetGen2(Pcie_Handle handle)
   {
     regs.linkCap = NULL; /* Nothing to write back */
   }
-#if defined(SOC_AM65XX)  
+#if defined(SOC_AM65XX)
   /* Set gen2/gen3 in link ctrl2 */
   regs.linkCtrl2 = &linkCtrl2;
   if ((retVal = Pcie_readRegs (handle, pcie_LOCATION_LOCAL, &regs)) != pcie_RET_OK)
@@ -950,7 +950,7 @@ pcieRet_e pcieCfgRC(Pcie_Handle handle)
   pcieStatusCmdReg_t     statusCmd;
   pcieDevStatCtrlReg_t   devStatCtrl;
   pcieAccrReg_t          accr;
-                 
+
   pcieRegisters_t        setRegs;
   pcieRegisters_t        getRegs;
 
@@ -961,22 +961,22 @@ pcieRet_e pcieCfgRC(Pcie_Handle handle)
   memset (&accr,             0, sizeof(accr));
 
   /*Disable link training*/
-  if ((retVal = pcieLtssmCtrl(handle, FALSE)) != pcie_RET_OK) 
+  if ((retVal = pcieLtssmCtrl(handle, FALSE)) != pcie_RET_OK)
   {
     PCIE_logPrintf ("Failed to disable Link Training!\n");
     return retVal;
   }
-  
-  /* Configure the size of the translation regions */   
+
+  /* Configure the size of the translation regions */
   memset (&setRegs, 0, sizeof(setRegs));
   memset (&getRegs, 0, sizeof(getRegs));
-  
+
 #ifdef PCIE_REV0_HW
   /* Only required for v0 hw */
   obSize.size = pcie_OB_SIZE_8MB;
   setRegs.obSize = &obSize;
-  
-  if ((retVal = Pcie_writeRegs (handle, pcie_LOCATION_LOCAL, &setRegs)) != pcie_RET_OK) 
+
+  if ((retVal = Pcie_writeRegs (handle, pcie_LOCATION_LOCAL, &setRegs)) != pcie_RET_OK)
   {
     PCIE_logPrintf ("SET OB_SIZE register failed!\n");
     return retVal;
@@ -999,15 +999,15 @@ pcieRet_e pcieCfgRC(Pcie_Handle handle)
     return retVal;
   }
 #endif
-  
+
 #if (!defined(PCIE_REV2_HW)) && (!defined(PCIE_REV3_HW)) /* RC does not support BAR */
-  /* Configure BAR Masks */   
+  /* Configure BAR Masks */
   /* First need to enable writing on BAR mask registers */
   if ((retVal = pcieCfgDbi (handle, 1)) != pcie_RET_OK)
   {
     return retVal;
   }
-  
+
   /* Configure Masks*/
   memset (&setRegs, 0, sizeof(setRegs));
   memset (&getRegs, 0, sizeof(getRegs));
@@ -1017,20 +1017,20 @@ pcieRet_e pcieCfgRC(Pcie_Handle handle)
 
   /* BAR 0 */
   type1Bar32bitIdx.idx = 0; /* configure BAR 0*/
-  if ((retVal = Pcie_writeRegs (handle, pcie_LOCATION_LOCAL, &setRegs)) != pcie_RET_OK) 
+  if ((retVal = Pcie_writeRegs (handle, pcie_LOCATION_LOCAL, &setRegs)) != pcie_RET_OK)
   {
     PCIE_logPrintf ("SET BAR MASK register failed!\n");
     return retVal;
   }
-  
+
   /* BAR 1 */
   type1Bar32bitIdx.idx = 1; /* configure BAR 1*/
-  if ((retVal = Pcie_writeRegs (handle, pcie_LOCATION_LOCAL, &setRegs)) != pcie_RET_OK) 
+  if ((retVal = Pcie_writeRegs (handle, pcie_LOCATION_LOCAL, &setRegs)) != pcie_RET_OK)
   {
     PCIE_logPrintf ("SET BAR MASK register failed!\n");
     return retVal;
   }
-  
+
   /* Disable writing on BAR Masks */
   if ((retVal = pcieCfgDbi (handle, 0)) != pcie_RET_OK)
   {
@@ -1043,7 +1043,7 @@ pcieRet_e pcieCfgRC(Pcie_Handle handle)
   memset (&getRegs, 0, sizeof(getRegs));
 
   getRegs.statusCmd = &statusCmd;
-  if ((retVal = Pcie_readRegs (handle, pcie_LOCATION_LOCAL, &getRegs)) != pcie_RET_OK) 
+  if ((retVal = Pcie_readRegs (handle, pcie_LOCATION_LOCAL, &getRegs)) != pcie_RET_OK)
   {
     PCIE_logPrintf ("Read Status Comand register failed!\n");
     return retVal;
@@ -1052,9 +1052,9 @@ pcieRet_e pcieCfgRC(Pcie_Handle handle)
   statusCmd.busMs  = 1;
   statusCmd.resp   = 1;
   statusCmd.serrEn = 1;
-  setRegs.statusCmd = &statusCmd;   
-  
-  if ((retVal = Pcie_writeRegs (handle, pcie_LOCATION_LOCAL, &setRegs)) != pcie_RET_OK) 
+  setRegs.statusCmd = &statusCmd;
+
+  if ((retVal = Pcie_writeRegs (handle, pcie_LOCATION_LOCAL, &setRegs)) != pcie_RET_OK)
   {
     PCIE_logPrintf ("SET Status Command register failed!\n");
     return retVal;
@@ -1065,19 +1065,19 @@ pcieRet_e pcieCfgRC(Pcie_Handle handle)
   memset (&getRegs, 0, sizeof(getRegs));
 
   getRegs.devStatCtrl = &devStatCtrl;
-  if ((retVal = Pcie_readRegs (handle, pcie_LOCATION_LOCAL, &getRegs)) != pcie_RET_OK) 
+  if ((retVal = Pcie_readRegs (handle, pcie_LOCATION_LOCAL, &getRegs)) != pcie_RET_OK)
   {
     PCIE_logPrintf ("Regad Device Status Control register failed!\n");
     return retVal;
   }
- 
+
   devStatCtrl.reqRp = 1;
   devStatCtrl.fatalErRp = 1;
   devStatCtrl.nFatalErRp = 1;
   devStatCtrl.corErRp = 1;
-  setRegs.devStatCtrl = &devStatCtrl;   
-  
-  if ((retVal = Pcie_writeRegs (handle, pcie_LOCATION_LOCAL, &setRegs)) != pcie_RET_OK) 
+  setRegs.devStatCtrl = &devStatCtrl;
+
+  if ((retVal = Pcie_writeRegs (handle, pcie_LOCATION_LOCAL, &setRegs)) != pcie_RET_OK)
   {
     PCIE_logPrintf ("SET Device Status Control register failed!\n");
     return retVal;
@@ -1086,14 +1086,14 @@ pcieRet_e pcieCfgRC(Pcie_Handle handle)
 #if defined(PCIE_REV0_HW) || defined(PCIE_REV2_HW) || defined(PCIE_REV3_HW)
   /* Enable ECRC */
   memset (&setRegs, 0, sizeof(setRegs));
-  
+
   accr.chkEn=1;
   accr.chkCap=1;
   accr.genEn=1;
   accr.genCap=1;
   setRegs.accr = &accr;
 
-  if ((retVal = Pcie_writeRegs (handle, pcie_LOCATION_LOCAL, &setRegs)) != pcie_RET_OK) 
+  if ((retVal = Pcie_writeRegs (handle, pcie_LOCATION_LOCAL, &setRegs)) != pcie_RET_OK)
   {
     PCIE_logPrintf ("SET ACCR register failed!\n");
     return retVal;
@@ -1116,7 +1116,7 @@ pcieRet_e pcieCfgEP(Pcie_Handle handle)
   pcieStatusCmdReg_t     statusCmd;
   pcieDevStatCtrlReg_t   devStatCtrl;
   pcieAccrReg_t          accr;
-                 
+
   pcieRegisters_t        setRegs;
   pcieRegisters_t        getRegs;
 
@@ -1128,22 +1128,22 @@ pcieRet_e pcieCfgEP(Pcie_Handle handle)
   memset (&accr,             0, sizeof(accr));
 
   /*Disable link training*/
-  if ((retVal = pcieLtssmCtrl(handle, FALSE)) != pcie_RET_OK) 
+  if ((retVal = pcieLtssmCtrl(handle, FALSE)) != pcie_RET_OK)
   {
     PCIE_logPrintf ("Failed to disable Link Training!\n");
     return retVal;
   }
-  
-  /* Configure the size of the translation regions */   
+
+  /* Configure the size of the translation regions */
   memset (&setRegs, 0, sizeof(setRegs));
   memset (&getRegs, 0, sizeof(getRegs));
-  
+
 #ifdef PCIE_REV0_HW
   /* Only required for rev 0 */
   obSize.size = pcie_OB_SIZE_8MB;
   setRegs.obSize = &obSize;
-  
-  if ((retVal = Pcie_writeRegs (handle, pcie_LOCATION_LOCAL, &setRegs)) != pcie_RET_OK) 
+
+  if ((retVal = Pcie_writeRegs (handle, pcie_LOCATION_LOCAL, &setRegs)) != pcie_RET_OK)
   {
     PCIE_logPrintf ("SET OB_SIZE register failed!\n");
     return retVal;
@@ -1166,8 +1166,8 @@ pcieRet_e pcieCfgEP(Pcie_Handle handle)
     return retVal;
   }
 #endif
-  
-  /* Configure BAR Masks */   
+
+  /* Configure BAR Masks */
   /* First need to enable writing on BAR mask registers */
   if ((retVal = pcieCfgDbi (handle, 1)) != pcie_RET_OK)
   {
@@ -1182,32 +1182,32 @@ pcieRet_e pcieCfgEP(Pcie_Handle handle)
 
   /* BAR 0 */
   type0Bar32bitIdx.idx = 0; /* configure BAR 0*/
-  if ((retVal = Pcie_writeRegs (handle, pcie_LOCATION_LOCAL, &setRegs)) != pcie_RET_OK) 
+  if ((retVal = Pcie_writeRegs (handle, pcie_LOCATION_LOCAL, &setRegs)) != pcie_RET_OK)
   {
     PCIE_logPrintf ("SET BAR MASK register failed!\n");
     return retVal;
   }
-  
+
   /* BAR 1 */
   type0Bar32bitIdx.idx = 1; /* configure BAR 1*/
-  if ((retVal = Pcie_writeRegs (handle, pcie_LOCATION_LOCAL, &setRegs)) != pcie_RET_OK) 
+  if ((retVal = Pcie_writeRegs (handle, pcie_LOCATION_LOCAL, &setRegs)) != pcie_RET_OK)
   {
     PCIE_logPrintf ("SET BAR MASK register failed!\n");
     return retVal;
   }
-  
+
   /* Disable DBI writes */
   if ((retVal = pcieCfgDbi (handle, 0)) != pcie_RET_OK)
   {
     return retVal;
   }
-  
+
   /* Enable memory access and mastership of the bus */
   memset (&setRegs, 0, sizeof(setRegs));
   memset (&getRegs, 0, sizeof(getRegs));
 
   getRegs.statusCmd = &statusCmd;
-  if ((retVal = Pcie_readRegs (handle, pcie_LOCATION_LOCAL, &getRegs)) != pcie_RET_OK) 
+  if ((retVal = Pcie_readRegs (handle, pcie_LOCATION_LOCAL, &getRegs)) != pcie_RET_OK)
   {
     PCIE_logPrintf ("Read Status Comand register failed!\n");
     return retVal;
@@ -1216,9 +1216,9 @@ pcieRet_e pcieCfgEP(Pcie_Handle handle)
   statusCmd.busMs  = 1;
   statusCmd.resp   = 1;
   statusCmd.serrEn = 1;
-  setRegs.statusCmd = &statusCmd;   
-  
-  if ((retVal = Pcie_writeRegs (handle, pcie_LOCATION_LOCAL, &setRegs)) != pcie_RET_OK) 
+  setRegs.statusCmd = &statusCmd;
+
+  if ((retVal = Pcie_writeRegs (handle, pcie_LOCATION_LOCAL, &setRegs)) != pcie_RET_OK)
   {
     PCIE_logPrintf ("SET Status Command register failed!\n");
     return retVal;
@@ -1229,35 +1229,35 @@ pcieRet_e pcieCfgEP(Pcie_Handle handle)
   memset (&getRegs, 0, sizeof(getRegs));
 
   getRegs.devStatCtrl = &devStatCtrl;
-  if ((retVal = Pcie_readRegs (handle, pcie_LOCATION_LOCAL, &getRegs)) != pcie_RET_OK) 
+  if ((retVal = Pcie_readRegs (handle, pcie_LOCATION_LOCAL, &getRegs)) != pcie_RET_OK)
   {
     PCIE_logPrintf ("Regad Device Status Control register failed!\n");
     return retVal;
   }
- 
+
   devStatCtrl.reqRp = 1;
   devStatCtrl.fatalErRp = 1;
   devStatCtrl.nFatalErRp = 1;
   devStatCtrl.corErRp = 1;
-  setRegs.devStatCtrl = &devStatCtrl;   
-  
-  if ((retVal = Pcie_writeRegs (handle, pcie_LOCATION_LOCAL, &setRegs)) != pcie_RET_OK) 
+  setRegs.devStatCtrl = &devStatCtrl;
+
+  if ((retVal = Pcie_writeRegs (handle, pcie_LOCATION_LOCAL, &setRegs)) != pcie_RET_OK)
   {
     PCIE_logPrintf ("SET Device Status Control register failed!\n");
     return retVal;
   }
- 
+
 #if defined(PCIE_REV0_HW) || defined(PCIE_REV2_HW) || defined(PCIE_REV3_HW)
   /* Enable ECRC */
   memset (&setRegs, 0, sizeof(setRegs));
-  
+
   accr.chkEn=1;
   accr.chkCap=1;
   accr.genEn=1;
   accr.genCap=1;
   setRegs.accr = &accr;
 
-  if ((retVal = Pcie_writeRegs (handle, pcie_LOCATION_LOCAL, &setRegs)) != pcie_RET_OK) 
+  if ((retVal = Pcie_writeRegs (handle, pcie_LOCATION_LOCAL, &setRegs)) != pcie_RET_OK)
   {
     PCIE_logPrintf ("SET ACCR register failed!\n");
     return retVal;
@@ -1286,7 +1286,7 @@ pcieRet_e pcieObTransCfg(Pcie_Handle handle, uint32_t obAddrLo, uint32_t obAddrH
   memset (&cmdStatus, 0, sizeof(cmdStatus));
 
   /* Set outbound offset registers */
-  if ((retVal = Pcie_cfgObOffset(handle, obAddrLo, obAddrHi, region)) != pcie_RET_OK) 
+  if ((retVal = Pcie_cfgObOffset(handle, obAddrLo, obAddrHi, region)) != pcie_RET_OK)
   {
     PCIE_logPrintf ("Failed to configure ObOffset registers!\n");
     return retVal;
@@ -1297,15 +1297,15 @@ pcieRet_e pcieObTransCfg(Pcie_Handle handle, uint32_t obAddrLo, uint32_t obAddrH
   memset (&getRegs,    0, sizeof(getRegs));
 
   getRegs.cmdStatus = &cmdStatus;
-  if ((retVal = Pcie_readRegs (handle, pcie_LOCATION_LOCAL, &getRegs)) != pcie_RET_OK) 
+  if ((retVal = Pcie_readRegs (handle, pcie_LOCATION_LOCAL, &getRegs)) != pcie_RET_OK)
   {
     PCIE_logPrintf ("Read CMD STATUS register failed!\n");
     return retVal;
   }
   cmdStatus.obXltEn = 1;
-  setRegs.cmdStatus = &cmdStatus;   
-  
-  if ((retVal = Pcie_writeRegs (handle, pcie_LOCATION_LOCAL, &setRegs)) != pcie_RET_OK) 
+  setRegs.cmdStatus = &cmdStatus;
+
+  if ((retVal = Pcie_writeRegs (handle, pcie_LOCATION_LOCAL, &setRegs)) != pcie_RET_OK)
   {
     PCIE_logPrintf ("SET CMD STATUS register failed!\n");
     return retVal;
@@ -1332,7 +1332,7 @@ pcieRet_e pcieIbTransCfg(Pcie_Handle handle, pcieIbTransCfg_t *ibCfg)
   memset (&cmdStatus, 0, sizeof(cmdStatus));
 
   /* Set inbound offset registers */
-  if ((retVal = Pcie_cfgIbTrans(handle, ibCfg)) != pcie_RET_OK) 
+  if ((retVal = Pcie_cfgIbTrans(handle, ibCfg)) != pcie_RET_OK)
   {
     PCIE_logPrintf ("Failed to configure Inbound Translation registers!\n");
     return retVal;
@@ -1343,15 +1343,15 @@ pcieRet_e pcieIbTransCfg(Pcie_Handle handle, pcieIbTransCfg_t *ibCfg)
   memset (&getRegs,    0, sizeof(getRegs));
 
   getRegs.cmdStatus = &cmdStatus;
-  if ((retVal = Pcie_readRegs (handle, pcie_LOCATION_LOCAL, &getRegs)) != pcie_RET_OK) 
+  if ((retVal = Pcie_readRegs (handle, pcie_LOCATION_LOCAL, &getRegs)) != pcie_RET_OK)
   {
     PCIE_logPrintf ("Read CMD STATUS register failed!\n");
     return retVal;
   }
   cmdStatus.ibXltEn = 1;
-  setRegs.cmdStatus = &cmdStatus;   
-  
-  if ((retVal = Pcie_writeRegs (handle, pcie_LOCATION_LOCAL, &setRegs)) != pcie_RET_OK) 
+  setRegs.cmdStatus = &cmdStatus;
+
+  if ((retVal = Pcie_writeRegs (handle, pcie_LOCATION_LOCAL, &setRegs)) != pcie_RET_OK)
   {
     PCIE_logPrintf ("SET CMD STATUS register failed!\n");
     return retVal;
@@ -1396,7 +1396,7 @@ pcieRet_e pcieObTransCfg(Pcie_Handle handle, uint32_t obAddrLo, uint32_t obAddrH
                      handle,
                      pcie_LOCATION_LOCAL,
                      (uint32_t) 0U,
-                     &regionParams)) != pcie_RET_OK) 
+                     &regionParams)) != pcie_RET_OK)
     {
       return retVal;
     }
@@ -1421,7 +1421,7 @@ pcieRet_e pcieObTransCfg(Pcie_Handle handle, uint32_t obAddrLo, uint32_t obAddrH
                      handle,
                      pcie_LOCATION_LOCAL,
                      (uint32_t) 0U,
-                     &regionParams)) != pcie_RET_OK) 
+                     &regionParams)) != pcie_RET_OK)
     {
       return retVal;
     }
@@ -1448,7 +1448,7 @@ pcieRet_e pcieObTransCfg(Pcie_Handle handle, uint32_t obAddrLo, uint32_t obAddrH
                      handle,
                      pcie_LOCATION_LOCAL,
                      (uint32_t) 0U,
-                     &regionParams)) != pcie_RET_OK) 
+                     &regionParams)) != pcie_RET_OK)
     {
       return retVal;
     }
@@ -1568,18 +1568,18 @@ pcieRet_e pcieIbTransCfg(Pcie_Handle handle, pcieIbTransCfg_t *ibCfg)
 void pcieInitAppBuf(void)
 {
   uint32_t i;
-  
+
   for (i=0; i<PCIE_BUFSIZE_APP; i++)
   {
     dstBuf.buf[i] = 0;
     srcBuf[i] = i;
   }
-  
+
   dstBuf.buf[PCIE_BUFSIZE_APP] = PCIE_EXAMPLE_BUF_EMPTY;
   cache_writeback ((void *)dstBuf.buf, PCIE_EXAMPLE_DSTBUF_BYTES);
-  
+
 #if defined(EDMA)||defined(UDMA)
-  for (i = 0; i < PCIE_EXAMPLE_LINE_SIZE - 1U; i++) 
+  for (i = 0; i < PCIE_EXAMPLE_LINE_SIZE - 1U; i++)
   {
     dstBuf.edma_buf[i] = 0;
   }
@@ -1604,11 +1604,11 @@ void pcieWaitLinkUp(Pcie_Handle handle)
   pcieTiConfDeviceCmdReg_t   ltssmStateReg;
   getRegs.tiConfDeviceCmd = &ltssmStateReg;
 #endif
-  
+
   memset (&ltssmStateReg,  0, sizeof(ltssmStateReg));
-  
+
   uint8_t ltssmState = 0;
- 
+
 #if defined(SOC_J721E)
   while(ltssmState != (pcie_LTSSM_L0-1)) /* For J721E 0x10 is L0 state */
 #else
@@ -1616,7 +1616,7 @@ void pcieWaitLinkUp(Pcie_Handle handle)
 #endif
   {
     cycleDelay(100);
-    if (Pcie_readRegs (handle, pcie_LOCATION_LOCAL, &getRegs) != pcie_RET_OK) 
+    if (Pcie_readRegs (handle, pcie_LOCATION_LOCAL, &getRegs) != pcie_RET_OK)
     {
       PCIE_logPrintf ("Read LTSSM state failed!\n");
       return;
@@ -1641,7 +1641,7 @@ pcieRet_e pcieCheckLinkParams(Pcie_Handle handle)
 #ifdef PCIESS1_X2
   expLanes = 2;
 #endif
-/* the following code distinguishes between AM571x & AM570x, 
+/* the following code distinguishes between AM571x & AM570x,
    AM570x is addressed name DRA71x */
 #if defined(SOC_AM571x)
   if ((boardId.boardName[0] == 'D') &&
@@ -1689,16 +1689,16 @@ pcieRet_e pcieCheckLinkParams(Pcie_Handle handle)
   pcieRegisters_t regs;
   pcieLinkStatCtrlReg_t linkStatCtrl;
   int32_t expLanes = 1, expSpeed = 1;
-  
+
   expSpeed = 3; /* expected GEN3 */
   expLanes = 2;  /* expected 2 lanes */
-      
+
   /* Get link status */
   memset (&regs, 0, sizeof(regs));
   regs.linkStatCtrl = &linkStatCtrl;
-  
+
   PCIE_logPrintf ("Checking link speed and # of lanes\n");
-  do 
+  do
   {
      retVal = Pcie_readRegs (handle, pcie_LOCATION_LOCAL, &regs);
      if (retVal != pcie_RET_OK) {
@@ -1718,7 +1718,7 @@ pcieRet_e pcieCheckLinkParams(Pcie_Handle handle)
 
 #ifdef GEN2
   expSpeed = 2; /* expected GEN2 */
-#endif  
+#endif
 #ifdef GEN3
   expSpeed = 3; /* expected GEN3 */
 #endif
@@ -1731,14 +1731,14 @@ pcieRet_e pcieCheckLinkParams(Pcie_Handle handle)
 #else
   expLanes = 2;  /* expected 2 lane case */
 #endif
-#endif	
+#endif
   /* Get link status */
   memset (&regs, 0, sizeof(regs));
   regs.linkStatCtrl = &linkStatCtrl;
 
-  
+
   PCIE_logPrintf ("Checking link speed and # of lanes\n");
-  do 
+  do
   {
      retVal = Pcie_readRegs (handle, pcie_LOCATION_LOCAL, &regs);
      if (retVal != pcie_RET_OK) {
@@ -1993,7 +1993,7 @@ void pcieEpSendInts (Pcie_Handle handle)
     intNum++;
   }
   PCIE_logPrintf("%d MSI interrupt sent/received!!!\n", intNum);
-  
+
   /* Now send legacy interrupts */
   memset (&regs, 0, sizeof(regs));
   memset (&intxAssert, 0, sizeof(intxAssert));
@@ -2138,7 +2138,7 @@ void pcieSetLanes (Pcie_Handle handle)
 }
 
 /*****************************************************************************
- * Function: pcie main task 
+ * Function: pcie main task
  ****************************************************************************/
 uint32_t OFFSET = 0;
 #if defined (SOC_AM65XX)
@@ -2151,7 +2151,7 @@ uint32_t base_address = 0x5500000;
 int i;
 void pcie (void)
 {
-#ifdef _TMS320C6X 
+#ifdef _TMS320C6X
   TSCL = 1;
 #endif
 #if !defined(DEVICE_K2K) && !defined(DEVICE_K2H) && !defined(DEVICE_K2E) && !defined(DEVICE_K2L) && \
@@ -2225,11 +2225,11 @@ void pcie (void)
     PCIE_logPrintf ("*                RC mode                     *\n");
   else
     PCIE_logPrintf ("*                EP mode                     *\n");
-  
+
   PCIE_logPrintf ("**********************************************\n\n");
-  
+
   PCIE_logPrintf ("Version #: 0x%08x; string %s\n\n", (unsigned)Pcie_getVersion(), Pcie_getVersionStr());
-  
+
   /* Pass device config to LLD */
   if ((retVal = Pcie_init (&pcieInitCfg)) != pcie_RET_OK)
   {
@@ -2262,17 +2262,17 @@ void pcie (void)
 
 #if defined(SOC_J721E)
   pcie_refclk_to_io(deviceNum, deviceNum);
-  
+
   /* SRIS disable */
   sris_control(handle, 0);
 #endif
-  
+
   /* Set the PCIe mode*/
   if ((retVal = Pcie_setInterfaceMode(handle, PcieModeGbl)) != pcie_RET_OK) {
     PCIE_logPrintf ("Set PCIe Mode failed (%d)\n", (int)retVal);
     exit(1);
   }
-  
+
   /* Wait until the PCIe SERDES PLL locks */
 #if !defined(DEVICE_K2K) && !defined(DEVICE_K2H) && !defined(DEVICE_K2E) && !defined(DEVICE_K2L) && \
     !defined(SOC_K2K) && !defined(SOC_K2H) && !defined(SOC_K2L) && !defined(SOC_K2E) && !defined(SOC_K2G) && \
@@ -2281,7 +2281,7 @@ void pcie (void)
   while (!lock)
   {
     CSL_BootCfgGetPCIEPLLLock(&lock);
-  }                    
+  }
 #endif /* !DEVICE_K2K && !DEVICE_K2H && !DEVICE_K2E && !DEVICE_K2L && !SOC_K2G && !SOC_AM572x && !SOC_AM571x && !SOC_AM574x */
 
 
@@ -2290,7 +2290,7 @@ void pcie (void)
   if(PcieModeGbl == pcie_RC_MODE)
   {
     /* Configure application registers for Root Complex*/
-    if ((retVal = pcieCfgRC(handle)) != pcie_RET_OK) 
+    if ((retVal = pcieCfgRC(handle)) != pcie_RET_OK)
     {
       PCIE_logPrintf ("Failed to configure PCIe in RC mode (%d)\n", (int)retVal);
       exit(1);
@@ -2298,7 +2298,7 @@ void pcie (void)
 
 #if !defined(PCIE_REV2_HW) /* RC does not support BAR */
     /* Configure Address Translation */
-    
+
     barCfg.location = pcie_LOCATION_LOCAL;
     barCfg.mode     = pcie_RC_MODE;
     barCfg.base     = PCIE_IB_LO_ADDR_RC;
@@ -2306,8 +2306,8 @@ void pcie (void)
     barCfg.type     = pcie_BAR_TYPE32;
     barCfg.memSpace = pcie_BAR_MEM_MEM;
     barCfg.idx      = PCIE_BAR_IDX_RC;
-    
-    if ((retVal = Pcie_cfgBar(handle, &barCfg)) != pcie_RET_OK) 
+
+    if ((retVal = Pcie_cfgBar(handle, &barCfg)) != pcie_RET_OK)
     {
       PCIE_logPrintf ("Failed to configure BAR (%d)\n", (int)retVal);
       exit(1);
@@ -2318,9 +2318,9 @@ void pcie (void)
     ibCfg.ibStartAddrLo = PCIE_IB_LO_ADDR_RC;
     ibCfg.ibStartAddrHi = PCIE_IB_HI_ADDR_RC;
     ibCfg.ibOffsetAddr  = (uint32_t)pcieConvert_CoreLocal2GlobalAddr ((uintptr_t)dstBuf.buf);
-    ibCfg.region        = PCIE_IB_REGION_RC;       
+    ibCfg.region        = PCIE_IB_REGION_RC;
 
-    if ((retVal = pcieIbTransCfg(handle, &ibCfg)) != pcie_RET_OK) 
+    if ((retVal = pcieIbTransCfg(handle, &ibCfg)) != pcie_RET_OK)
     {
       PCIE_logPrintf ("Failed to configure Inbound Translation (%d)\n", (int)retVal);
       exit(1);
@@ -2330,7 +2330,7 @@ void pcie (void)
       PCIE_logPrintf ("Successfully configured Inbound Translation!\n");
     }
 
-    if ((retVal = pcieObTransCfg (handle, PCIE_OB_LO_ADDR_RC, PCIE_OB_HI_ADDR_RC, PCIE_OB_REGION_RC)) != pcie_RET_OK) 
+    if ((retVal = pcieObTransCfg (handle, PCIE_OB_LO_ADDR_RC, PCIE_OB_HI_ADDR_RC, PCIE_OB_REGION_RC)) != pcie_RET_OK)
     {
       PCIE_logPrintf ("Failed to configure Outbound Address Translation (%d)\n", (int)retVal);
       exit(1);
@@ -2344,20 +2344,20 @@ void pcie (void)
   {
 
     /* Configure application registers for End Point*/
-    if ((retVal = pcieCfgEP(handle)) != pcie_RET_OK) 
+    if ((retVal = pcieCfgEP(handle)) != pcie_RET_OK)
     {
       PCIE_logPrintf ("Failed to configure PCIe in EP mode (%d)\n", (int)retVal);
       exit(1);
     }
 
     /* Configure Address Translation */
-    
+
 #if defined(SOC_J721E)
     barCfg.location = pcie_LOCATION_LOCAL;
     barCfg.mode     = pcie_EP_MODE;
     barCfg.base     = PCIE_IB_LO_ADDR_EP;
     barCfg.barxc = (uint8_t)0x4; /* BARxC set to 32bit memory BAR, non prefetchable */
-    barCfg.barxa     = (uint8_t)0x0F; /* BARxA set to 4 MB */ 
+    barCfg.barxa     = (uint8_t)0x0F; /* BARxA set to 4 MB */
     barCfg.idx        = PCIE_BAR_IDX_EP;
 #else
     barCfg.location = pcie_LOCATION_LOCAL;
@@ -2367,8 +2367,8 @@ void pcie (void)
     barCfg.type     = pcie_BAR_TYPE32;
     barCfg.memSpace = pcie_BAR_MEM_MEM;
     barCfg.idx      = PCIE_BAR_IDX_EP;
-#endif    
-    if ((retVal = Pcie_cfgBar(handle, &barCfg)) != pcie_RET_OK) 
+#endif
+    if ((retVal = Pcie_cfgBar(handle, &barCfg)) != pcie_RET_OK)
     {
       PCIE_logPrintf ("Failed to configure BAR!\n");
       exit(1);
@@ -2378,9 +2378,9 @@ void pcie (void)
     ibCfg.ibStartAddrLo = PCIE_IB_LO_ADDR_EP;
     ibCfg.ibStartAddrHi = PCIE_IB_HI_ADDR_EP;
     ibCfg.ibOffsetAddr  = (uint32_t)pcieConvert_CoreLocal2GlobalAddr ((uintptr_t)dstBuf.buf);
-    ibCfg.region        = PCIE_IB_REGION_EP;       
+    ibCfg.region        = PCIE_IB_REGION_EP;
 
-    if ((retVal = pcieIbTransCfg(handle, &ibCfg)) != pcie_RET_OK) 
+    if ((retVal = pcieIbTransCfg(handle, &ibCfg)) != pcie_RET_OK)
     {
       PCIE_logPrintf ("Failed to configure Inbound Translation (%d)!\n", (int)retVal);
       exit(1);
@@ -2390,7 +2390,7 @@ void pcie (void)
       PCIE_logPrintf ("Successfully configured Inbound Translation!\n");
     }
 
-    if ((retVal = pcieObTransCfg (handle, PCIE_OB_LO_ADDR_EP, PCIE_OB_HI_ADDR_EP, PCIE_OB_REGION_EP)) != pcie_RET_OK) 
+    if ((retVal = pcieObTransCfg (handle, PCIE_OB_LO_ADDR_EP, PCIE_OB_HI_ADDR_EP, PCIE_OB_REGION_EP)) != pcie_RET_OK)
     {
       PCIE_logPrintf ("Failed to configure Outbound Address Translation(%d)!\n", (int)retVal);
       exit(1);
@@ -2407,7 +2407,7 @@ void pcie (void)
   PCIE_logPrintf ("Starting link training...\n");
 
   /*Enable link training*/
-  if ((retVal = pcieLtssmCtrl(handle, TRUE)) != pcie_RET_OK) 
+  if ((retVal = pcieLtssmCtrl(handle, TRUE)) != pcie_RET_OK)
   {
     PCIE_logPrintf ("Failed to Enable Link Training! (%d)\n", (int)retVal);
     exit(1);
@@ -2430,10 +2430,10 @@ void pcie (void)
     PCIE_logPrintf ("getMemSpaceRange failed (%d)\n", (int)retVal);
     exit(1);
   }
-  
+
 #if defined(PCIE_REV1_HW)
   /* Adjust PCIE base to point at remote target buffer */
-  pcieBase = (char *)pcieBase + 
+  pcieBase = (char *)pcieBase +
                      PCIE_WINDOW_MEM_BASE +  /* data area doesn't start at low address */
                      (((uint32_t)&dstBuf) & 0xfff); /* dstBuf needs to be 4K aligned in addr tran */
 #elif defined(PCIE_REV2_HW)
@@ -2447,7 +2447,7 @@ void pcie (void)
 #else
   /* No adjustment needed */
 #endif
-  pciedstBufBase = (dstBuf_t *)pcieBase; 
+  pciedstBufBase = (dstBuf_t *)pcieBase;
 
   if(PcieModeGbl == pcie_RC_MODE)
   {
@@ -2463,13 +2463,13 @@ void pcie (void)
     {
       pciedstBufBase->buf[i] = srcBuf[i];
     }
-    
+
     /* Mark that the buffer is full, so EP can process it */
     pciedstBufBase->buf[PCIE_BUFSIZE_APP] = PCIE_EXAMPLE_BUF_FULL;
 
     /* Note on cache coherence: Write back is not necessary because pcieBase is in
        peripheral address space instead of physical memory*/
-    
+
     /* Data sent to EP.
        RC waits for the loopback to be completed and
        receive data back from EP */
@@ -2489,14 +2489,14 @@ void pcie (void)
         exit(1);
       }
     }
-    
+
     PCIE_logPrintf ("Root Complex received data.\n");
 #if defined(PCIE_REV1_HW) || (defined(PCIE_REV2_HW) && defined(BUILD_MPU)) || (defined(PCIE_REV3_HW) && defined(BUILD_MPU))
     pcieRcWaitInts (handle, sem, pcieBase);
 #endif
 
 
-  
+
 #ifdef PCIE_EXAMPLE_DMA_RC
     if (PcieExampleEdmaRC(pciedstBufBase, 0xbabeface, 100000,
                           (EDMA3_DRV_Handle)hEdma
@@ -2529,7 +2529,7 @@ PCIE_logPrintf ("Failed to pass token \n");
     {
       pciedstBufBase->buf[i] = dstBuf.buf[i];
     }
-    
+
     /* Mark that the buffer is full, so RC can process it */
     pciedstBufBase->buf[PCIE_BUFSIZE_APP] = PCIE_EXAMPLE_BUF_FULL;
 
@@ -2545,7 +2545,7 @@ PCIE_logPrintf ("Failed to pass token \n");
 
 #ifdef PCIE_EXAMPLE_DMA_EP
     if (PcieExampleEdmaEP(pciedstBufBase, 0xbabeface, 100000,
-                          (EDMA3_DRV_Handle)hEdma)) 
+                          (EDMA3_DRV_Handle)hEdma))
     {
       PCIE_logPrintf ("Failed to pass token \n");
       exit(1);
@@ -2568,8 +2568,8 @@ PCIE_logPrintf ("Failed to pass token \n");
   edmaDeinit(hEdma);
 #endif
 #ifdef EDMAPKTBENCH
-  if (PcieEdmaPktBench(&dstBuf.edmaPktBenchBuf.msiTracker[0], 
-                       &pciedstBufBase->edmaPktBenchBuf, 
+  if (PcieEdmaPktBench(&dstBuf.edmaPktBenchBuf.msiTracker[0],
+                       &pciedstBufBase->edmaPktBenchBuf,
                        PcieModeGbl, sem))
   {
     PCIE_logPrintf ("EDMA packet IO benchmark failed to execute correctly\n");
@@ -2650,7 +2650,7 @@ int main() {
 #if defined(SOC_AM574x) || defined(SOC_AM572x) || defined(SOC_AM571x) || \
     defined(SOC_K2G) || defined(SOC_AM65XX) || defined(SOC_J721E) || defined(__ARM_ARCH_7A__)
   Board_initCfg boardCfg;
-  boardCfg = BOARD_INIT_UNLOCK_MMR 
+  boardCfg = BOARD_INIT_UNLOCK_MMR
 #ifndef IO_CONSOLE
                | BOARD_INIT_UART_STDIO
                | BOARD_INIT_MODULE_CLOCK
