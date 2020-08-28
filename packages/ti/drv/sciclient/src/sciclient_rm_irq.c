@@ -1059,6 +1059,56 @@ int32_t Sciclient_rmTranslateIrOutput(uint16_t  ir_dev_id,
     return r;
 }
 
+int32_t Sciclient_rmTranslateIrqInput(uint16_t  dst_dev_id,
+                                      uint16_t  dst_input,
+                                      uint16_t  src_dev_id,
+                                      uint16_t  *src_output)
+{
+    int32_t r = CSL_PASS;
+    const struct Sciclient_rmIrqNode *cur_n;
+    const struct Sciclient_rmIrqIf *cur_if;
+    uint16_t i;
+    bool translated = false;
+
+    /* Only attempt to translate to IR/IA output if an IR/IA is passed */
+    if ((Sciclient_rmIrIsIr(src_dev_id) == true) ||
+        (Sciclient_rmIaIsIa(src_dev_id) == true)) {
+        /*
+         * Translate the specified destination processor IRQ input to the 
+         * IR/IA output
+         */
+        r = Sciclient_rmIrqGetNode(src_dev_id, &cur_n);
+        if (r == CSL_PASS) {
+            for (i = 0; i < cur_n->n_if; i++) {
+                r = Sciclient_rmIrqGetNodeItf(cur_n, i, &cur_if);
+                if (r != CSL_PASS) {
+                    break;
+                }
+
+                if ((dst_dev_id == cur_if->rid) &&
+                    (dst_input >= cur_if->rbase) &&
+                    (dst_input < (cur_if->rbase + cur_if->len))) {
+                    *src_output = SCICLIENT_INP_TO_OUTP(dst_input,
+                                                        cur_if->rbase,
+                                                        cur_if->lbase);
+                    translated = true;
+                    break;
+                }
+            }
+
+            if ((r == CSL_PASS) &&
+                (translated == false)) {
+                /* No translatable IR/IA input found. */
+                r = CSL_EBADARGS;
+            }
+        }
+    } else {
+        r = CSL_EBADARGS;
+    }
+
+    return r;
+}
+
 /* -------------------------------------------------------------------------- */
 /*                 Internal Function Definitions                              */
 /* -------------------------------------------------------------------------- */

@@ -313,6 +313,27 @@ int32_t Sciclient_rmIrqTranslateIrOutput(uint16_t   ir_dev_id,
                                          uint16_t   *dst_input);
 
 /**
+ *  \brief Translates a peripheral input to the connected interrupt router or aggregator output.
+ *         The primary use of the function is to retrieve the
+ *         interrupt router or aggregator output connected to a processor input IRQ.
+ *
+ *  \param  dst_dev_id      Device ID of entity connected to interrupt router or aggregator
+ *                          output
+ * 
+ *  \param  dst_input       Input index of entity connected to interrupt router or aggregator output
+ * 
+ *  \param  src_dev_id      Interrupt router or aggregator device ID
+ *
+ *  \param  src_output      Pointer to returned Interrupt router or aggregator output index
+ *
+ *  \return CSL_PASS on successful translation, else failure
+ */                                
+int32_t Sciclient_rmIrqTranslateIrqInput(uint16_t   dst_dev_id,
+                                         uint16_t   dst_input,
+                                         uint16_t   src_dev_id,
+                                         uint16_t   *src_output);
+
+/**
  *  \brief Configures individual peripherals within the interrupt subsystem
  *         (interrupt routers, interrupt aggregators, etc.) according to the
  *         configuration provided.  Each call of the API only configures a single

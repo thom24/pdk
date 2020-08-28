@@ -138,6 +138,17 @@ int32_t Sciclient_rmIrqTranslateIrOutput(uint16_t	ir_dev_id,
                                          dst_input);
 }
 
+int32_t Sciclient_rmIrqTranslateIrqInput(uint16_t	dst_dev_id,
+                                         uint16_t	dst_input,
+					 uint16_t	src_dev_id,
+					 uint16_t	*src_output)
+{
+    return Sciclient_rmTranslateIrqInput(dst_dev_id,
+                                         dst_input,
+                                         src_dev_id,
+                                         src_output);
+}
+
 int32_t Sciclient_rmIrqSetRaw(const struct tisci_msg_rm_irq_set_req *req,
                               const struct tisci_msg_rm_irq_set_resp *resp,
                               uint32_t timeout)
