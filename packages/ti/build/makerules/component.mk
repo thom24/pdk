@@ -1171,7 +1171,7 @@ ifeq ($(SOC),$(filter $(SOC), tpr12))
   PDK_COMMON_COMP += edma
 endif
 
-ifneq ($(SOC),$(filter $(SOC), am64x tda2xx tda2px tda2ex tda3xx))
+ifneq ($(SOC),$(filter $(SOC), tda2xx tda2px tda2ex tda3xx))
   PDK_COMMON_COMP += gpio
 endif
 

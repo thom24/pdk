@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019 - 2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -189,8 +189,8 @@ extern "C" {
 /* User LED Pin Details */
 #define BOARD_I2C_USER_LED_INSTANCE                     (0U)
 
-#define BOARD_USER_LED1                                 (6U)
-#define BOARD_USER_LED2                                 (7U)
+#define BOARD_USER_LED1                                 (1U) /* Main GPIO0_1 */
+#define BOARD_USER_LED2                                 (1U) /* MCU GPIO0_1 */
 
 #define BOARD_ICSS_EMAC_PORT_START                      (0) //J7ES_TODO: need to update
 #define BOARD_ICSS_EMAC_PORT_END                        (0) //J7ES_TODO: need to update

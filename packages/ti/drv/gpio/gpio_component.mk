@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2016-2018, Texas Instruments Incorporated
+# Copyright (c) 2016-2020, Texas Instruments Incorporated
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -67,9 +67,9 @@
 ifeq ($(gpio_component_make_include), )
 
 # under other list
-drvgpio_BOARDLIST       = am65xx_evm am65xx_idk j721e_sim j721e_evm j7200_evm tpr12_evm tpr12_qt
-drvgpio_SOCLIST         = am574x am572x am571x dra72x dra75x dra78x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j7200 tpr12
-drvgpio_SOCPROFILELIST  = am574x am572x am571x dra72x dra75x dra78x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138
+drvgpio_BOARDLIST       = am65xx_evm am65xx_idk j721e_sim j721e_evm j7200_evm tpr12_evm tpr12_qt am64x_evm
+drvgpio_SOCLIST         = am574x am572x am571x dra72x dra75x dra78x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j7200 tpr12 am64x
+drvgpio_SOCPROFILELIST  = am574x am572x am571x dra72x dra75x dra78x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 
 drvgpio_am574x_CORELIST = c66x a15_0 ipu1_0
 drvgpio_am572x_CORELIST = c66x a15_0 ipu1_0
 drvgpio_am571x_CORELIST = c66x a15_0 ipu1_0
@@ -93,6 +93,8 @@ drvgpio_j721e_CORELISTARM = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1
 drvgpio_j7200_CORELIST    = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
 drvgpio_j7200_CORELISTARM = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
 drvgpio_tpr12_CORELIST    = mcu1_0 c66xdsp_1
+drvgpio_am64x_CORELIST    = $(DEFAULT_am64x_CORELIST)
+drvgpio_am64x_CORELISTARM = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
 ############################
 # gpio package
 # List of components included under gpio rtos
@@ -241,13 +243,13 @@ GPIO_Baremetal_LedBlink_TestApp_PKG_LIST = GPIO_Baremetal_LedBlink_TestApp
 GPIO_Baremetal_LedBlink_TestApp_INCLUDE = $(GPIO_Baremetal_LedBlink_TestApp_PATH)
 GPIO_Baremetal_LedBlink_TestApp_BOARDLIST = $(drvgpio_BOARDLIST)
 export GPIO_Baremetal_LedBlink_TestApp_BOARDLIST
-ifeq ($(SOC),$(filter $(SOC), j721e j7200))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200 am64x))
 GPIO_Baremetal_LedBlink_TestApp_$(SOC)_CORELIST = $(drvgpio_$(SOC)_CORELISTARM)
 else
 GPIO_Baremetal_LedBlink_TestApp_$(SOC)_CORELIST = $(drvgpio_$(SOC)_CORELIST)
 endif
 export GPIO_Baremetal_LedBlink_TestApp_$(SOC)_CORELIST
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
 GPIO_Baremetal_LedBlink_TestApp_SBL_APPIMAGEGEN = yes
 export GPIO_Baremetal_LedBlink_TestApp_SBL_APPIMAGEGEN
 endif
@@ -270,7 +272,7 @@ GPIO_LedBlink_TestApp_BOARDLIST = $(drvgpio_BOARDLIST)
 export GPIO_LedBlink_TestApp_BOARDLIST
 GPIO_LedBlink_TestApp_$(SOC)_CORELIST = $(gpio_$(SOC)_CORELIST)
 export GPIO_LedBlink_TestApp_$(SOC)_CORELIST
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
 GPIO_LedBlink_TestApp_SBL_APPIMAGEGEN = yes
 export GPIO_LedBlink_TestApp_SBL_APPIMAGEGEN
 endif

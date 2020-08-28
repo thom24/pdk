@@ -10,7 +10,7 @@
  */
 
 /*
- * Copyright (C) 2014 - 2019 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2014 - 2020 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -66,14 +66,14 @@
 
 #include <ti/board/board.h>
 
-#if defined(SOC_J721E) || defined(SOC_J7200)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
 #include <ti/csl/soc.h>
 #if defined (BUILD_DSP_1) || defined (BUILD_DSP_2)
 #include  "ti/csl/csl_chipAux.h"
 #endif
 #endif
 
-#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)
+#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
 #include <ti/drv/sciclient/sciclient.h>
 #endif
 
@@ -88,7 +88,7 @@
 /**********************************************************************
  ************************** Macros ************************************
  **********************************************************************/
-#if defined (SOC_TPR12)
+#if defined (SIM_BUILD)
 /* TODO: To Test on EVM Update the delay macro. */
 #define DELAY_VALUE       (1)
 #else
@@ -116,7 +116,7 @@ extern void GPIOApp_UpdateBoardInfo(void);
 extern void GPIOAppUpdateConfig(uint32_t *gpioBaseAddr, uint32_t *gpioPin);
 #endif
 
-#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)
+#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
 /* Main domain GPIO interrupt events */
 #define MAIN_GPIO_INTRTR_GPIO0_BANK0_INT (0x000000C0) /* GPIO port 0 bank 0 interrupt event #, input to MAIN_GPIO_INTRTR */
 #define MAIN_GPIO_INTRTR_GPIO1_BANK0_INT (0x000000C8) /* GPIO port 1 bank 0 interrupt event #, input to MAIN_GPIO_INTRTR */
@@ -218,9 +218,27 @@ void GPIO_configIntRouter(uint32_t portNum, uint32_t pinNum, uint32_t gpioIntRtr
     intCfg[pinNum].intcMuxInEvent = 0;
     intCfg[pinNum].intcMuxOutEvent = 0;
 #endif
+
+    #if defined(am64x_evm)
+
+    cfg->baseAddr = CSL_GPIO0_BASE;
+
+    bankNum = pinNum/16; /* Each GPIO bank has 16 pins */
+
+    /* Main GPIO int router input interrupt is the GPIO bank interrupt */
+#if defined (BUILD_MPU)
+    intCfg[pinNum].intNum = CSLR_GICSS0_SPI_MAIN_GPIOMUX_INTROUTER0_OUTP_0 + bankNum;
+#endif
+#if defined (BUILD_MCU)
+    intCfg[pinNum].intNum = CSLR_R5FSS0_CORE0_INTR_MAIN_GPIOMUX_INTROUTER0_OUTP_0 + bankNum;
+#endif
+    intCfg[pinNum].intcMuxNum = INVALID_INTC_MUX_NUM;
+    intCfg[pinNum].intcMuxInEvent = 0;
+    intCfg[pinNum].intcMuxOutEvent = 0;
+#endif
     GPIO_log("\nIntConfig:  portNum[%d], pinNum[%d], bankNum[%d], intNum[%d], eventId[%d]", portNum, pinNum,bankNum, intCfg[pinNum].intNum, intCfg[pinNum].eventId);
 }
-#endif /* #if defined(SOC_AM65XX) || defined(SOC_J721E) */
+#endif /* #if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_AM64X) */
 
 /*
  *  ======== Board_initI2C ========
@@ -229,7 +247,7 @@ static void Board_initGPIO(void)
 {
     Board_initCfg boardCfg;
 
-#if defined(SOC_K2H) || defined(SOC_K2K) || defined(SOC_K2E) || defined(SOC_K2L) || defined(SOC_K2G) || defined(SOC_C6678) || defined(SOC_C6657) || defined(SOC_OMAPL137) || defined(SOC_OMAPL138) || defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)
+#if defined(SOC_K2H) || defined(SOC_K2K) || defined(SOC_K2E) || defined(SOC_K2L) || defined(SOC_K2G) || defined(SOC_C6678) || defined(SOC_C6657) || defined(SOC_OMAPL137) || defined(SOC_OMAPL138) || defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
     GPIO_v0_HwAttrs gpio_cfg;
 
     /* Get the default SPI init configurations */
@@ -379,6 +397,13 @@ static void Board_initGPIO(void)
   #endif
   GPIO_board_init_pinconfig();
 #endif
+
+#if defined (am64x_evm)
+    GPIO_configIntRouter(GPIO_LED0_PORT_NUM, GPIO_LED0_PIN_NUM, 0, &gpio_cfg);
+    GPIO_socSetInitCfg(GPIO_LED0_PORT_NUM, &gpio_cfg);
+    /* set pinmux for user led0 pin */
+    *((volatile uint32_t *)(0xf4004)) = 0x50007;
+#endif
 }
 
 /**********************************************************************
@@ -397,11 +422,11 @@ void gpio_test(UArg arg0, UArg arg1)
 #else
 int main()
 {
-
     Board_initGPIO();
 #endif
 #if defined(SOC_AM574x) || defined(SOC_AM572x) || defined(SOC_AM571x)|| defined(SOC_AM335x) || defined(SOC_AM437x) || \
-    defined(SOC_K2H) || defined(SOC_K2K) || defined(SOC_K2E) || defined(SOC_K2G) || defined(SOC_OMAPL137) || defined(SOC_OMAPL138) || defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)
+    defined(SOC_K2H) || defined(SOC_K2K) || defined(SOC_K2E) || defined(SOC_K2G) || defined(SOC_OMAPL137) || defined(SOC_OMAPL138) || \
+    defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
     uint32_t testOutput = 1;
 #endif
 
@@ -462,7 +487,7 @@ int main()
         /* Trigger interrupt */
         GPIOTriggerPinInt(gpioBaseAddr, 0, gpioPin);
 #endif
-#if defined(SOC_K2H) || defined(SOC_K2K) || defined(SOC_K2E) || defined(SOC_K2G) || defined(SOC_OMAPL137) || defined(SOC_OMAPL138) || defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)
+#if defined(SOC_K2H) || defined(SOC_K2K) || defined(SOC_K2E) || defined(SOC_K2G) || defined(SOC_OMAPL137) || defined(SOC_OMAPL138) || defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
         GPIO_toggle(USER_LED0);
 #endif
         AppDelay(DELAY_VALUE);
@@ -489,7 +514,7 @@ int main(void)
     AppGPIOInit();
 #endif
 
-#if defined (SOC_J721E) || defined(SOC_J7200) || defined (SOC_TPR12)
+#if defined (SOC_J721E) || defined(SOC_J7200) || defined (SOC_TPR12) || defined(SOC_AM64X)
     Task_Handle task;
     Error_Block eb;
     Task_Params taskParams;
@@ -550,7 +575,7 @@ void AppGpioCallbackFxn(void)
 #else
 void AppGpioCallbackFxn(void)
 {
-#if !defined(SOC_J721E) || !defined(SOC_J7200)
+#if !defined(SOC_J721E) || !defined(SOC_J7200) || !defined(SOC_AM64X)
     /* Toggle LED1 */
     GPIO_toggle(USER_LED1);
     AppLoopDelay(DELAY_VALUE);
