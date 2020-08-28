@@ -136,7 +136,7 @@ typedef uint32_t SemaphoreP_Mode;
 typedef struct SemaphoreP_Params_s {
     char *name;           /*!< Name of the semaphore instance. Memory must
                                persist for the life of the semaphore instance */
-    SemaphoreP_Mode mode; /*!< Mode for the semaphore */
+    SemaphoreP_Mode mode; /*!< Mode for the semaphore @ref SemaphoreP_Mode */
     uint32_t maxCount;    /*!< The max count allowed for counting semaphore */
 } SemaphoreP_Params;
 

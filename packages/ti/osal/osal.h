@@ -72,6 +72,11 @@ extern "C" {
 #include <ti/osal/EventCombinerP.h>
 #endif
 
+/**
+ *  \name Osal Error return Codes
+ *  @brief  Return error codes for Osal generic APIs
+ *  @{
+ */
 /*********************************************************************
  * @def osal_OK
  * OSAL operation successful
@@ -98,6 +103,7 @@ extern "C" {
  * memory blocks for semaphoreP and hwiP
  *********************************************************************/
 #define osal_NOMEM             (-(int32_t)(3))
+/* @} */
 
 /*********************************************************************
  * @def OSAL_NONOS_SEMAPHOREP_SIZE_BYTES
@@ -143,17 +149,17 @@ extern "C" {
  */
 typedef struct Osal_StaticMemoryStatus
 {
-    uint32_t peakSemObjs;
-    uint32_t numMaxSemObjs;
-    uint32_t numFreeSemObjs;
+    uint32_t peakSemObjs;       /*!< Maxmium number of Semaphore objects used */
+    uint32_t numMaxSemObjs;     /*!< Number of Semaphore objects allocated */
+    uint32_t numFreeSemObjs;    /*!< Number of Semaphore objects available */
 
-    uint32_t peakTimerObjs;
-    uint32_t numMaxTimerObjs;
-    uint32_t numFreeTimerObjs;
+    uint32_t peakTimerObjs;     /*!< Maxmium number of Timer objects used */
+    uint32_t numMaxTimerObjs;   /*!< Number of Timer objects allocated */
+    uint32_t numFreeTimerObjs;  /*!< Number of Timer objects available */
 
-    uint32_t peakHwiObjs;
-    uint32_t numMaxHwiObjs;
-    uint32_t numFreeHwiObjs;
+    uint32_t peakHwiObjs;       /*!< Maxmium number of Hwi objects used */
+    uint32_t numMaxHwiObjs;     /*!< Number of Hwi objects allocated */
+    uint32_t numFreeHwiObjs;    /*!< Number of Hwi objects available */
 } Osal_StaticMemStatus;
 
 /**
@@ -191,7 +197,7 @@ extern void Osal_DebugP_assert(int32_t expression, const char *file, int32_t lin
 extern Osal_ThreadType Osal_getThreadType(void);
 
 /*!
- *  @brief  Function to get the delay/sleep.
+ *  @brief  Function to delay/sleep the specified number of ticks.
  *
  *  @param  nTicks number of ticks
  *
@@ -209,8 +215,8 @@ extern int32_t Osal_delay(uint32_t nTicks);
  *
  */
 typedef enum {
-  OSAL_HWACCESS_UNRESTRICTED, /* No restriction on hardware access or configuration */
-  OSAL_HWACCESS_RESTRICTED    /* Restrictive access to hardware such as GIC */
+  OSAL_HWACCESS_UNRESTRICTED, /*!< No restriction on hardware access or configuration */
+  OSAL_HWACCESS_RESTRICTED    /*!< Restrictive access to hardware such as GIC */
 } Osal_HwAccessType;
 
 /*!
@@ -218,8 +224,8 @@ typedef enum {
  *
  */
 typedef struct Osal_memRange_s {
-  uintptr_t    base;          /**< Start address value */
-  uint32_t     size;          /**< size in bytes */
+  uintptr_t    base;          /*!< Start address value */
+  uint32_t     size;          /*!< size in bytes */
 } Osal_memRange;
 
 /*!
@@ -228,29 +234,39 @@ typedef struct Osal_memRange_s {
  */
 typedef struct Osal_HwAttrs_s
 {
-   /* CPU frequency in KHz */
-   int32_t  cpuFreqKHz;
-   /* External Clock value in KHz */
-   int32_t  extClkKHz;
+    /*! CPU frequency in KHz */
+    int32_t  cpuFreqKHz;
+    /*! External Clock value in KHz */
+    int32_t  extClkKHz;
 #if defined(gnu_targets_arm_A15F)
-   /* Set Target processor list */
-   uint32_t a15TargetProcMask;
+    /*! Set Target processor list */
+    uint32_t a15TargetProcMask;
 #endif
 #ifdef _TMS320C6X
-   int32_t ECM_intNum[4]; /* Interrupt numbers for Event combiner groups (0-3)*/
+    /*! Interrupt numbers for Event combiner groups (0-3) */
+    int32_t ECM_intNum[4]; /
 #endif
-   Osal_HwAccessType hwAccessType;
-   /* Below timer base configuration is applicable for only AM335x/AM437x SoCs
+    /*! Hardware access type */
+    Osal_HwAccessType hwAccessType;
+   /*!
+    * Delay timer base address:
+    * Delay timer base configuration is applicable for only AM335x/AM437x SoCs
     * It is not applicable and should not be set for other SoCs
     * Osal setHwAttrs API would return failure (osal_UNSUPPORTED) if attempted to
     * be set for SoCs other than AM335x and AM437x.
     */
    uintptr_t     osalDelayTimerBaseAddr;
+   /*! Semaphore external memory control block */
    Osal_memRange  extSemaphorePBlock;
+   /*! Hwi external memory control block */
    Osal_memRange  extHwiPBlock;
 } Osal_HwAttrs;
 
-
+/**
+ *  \anchor Osal_HwAttrs_ValidBits
+ *  \name Osal HwAttrs ValidBit definitions
+ *  @{
+ */
 /*!
  * bit map to set external clock in Osal_HwAttr default value
  */
@@ -290,6 +306,7 @@ typedef struct Osal_HwAttrs_s
  * bit map to set the target processor list to direct interrupts to specific core
  */
 #define OSAL_HWATTR_SET_TARG_PROC_LIST  (0x00000080)
+/* @} */
 
 
 /*!
@@ -345,7 +362,33 @@ extern Osal_HwAttrs  gOsal_HwAttrs;
  * This macro generates compilier error if postulate is false, so 
  * allows 0 overhead compile time size check.  This "works" when
  * the expression contains sizeof() which otherwise doesn't work
- * with preprocessor */
+ * with preprocessor
+ *
+ *   @b Example
+ *   @verbatim
+        #define  OSAL_TEST_STRUCT_SIZE_BYTES ((uint32_t) 48U)
+        typedef struct Test_Struct_Ext_s {
+            Bool        used;
+            Test_Struct test;
+        } Test_Struct_Ext;
+
+        void OsalTest_compileTime_SizeChk(void)
+        {
+        #if defined(__GNUC__) && !defined(__ti__)
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic ignored "-Wunused-variable"
+        #else
+        /* TI compiler */
+        #pragma diag_suppress 179
+        #endif
+            OSAL_COMPILE_TIME_SIZE_CHECK (sizeof(Test_Struct_Ext),OSAL_TEST_STRUCT_SIZE_BYTES);
+        #if defined(__GNUC__) && !defined(__ti__)
+        #pragma GCC diagnostic pop
+        #endif
+        }
+
+    @endverbatim
+ */
 #define OSAL_COMPILE_TIME_SIZE_CHECK(x,y)                              \
    do {                                                                 \
        struct {                                                 \

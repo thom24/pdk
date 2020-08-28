@@ -63,7 +63,14 @@ typedef enum MuxIntcP_Status_e {
     MuxIntcP_OK       = 0,
     MuxIntcP_FAILURE  = (-(int32_t)1)
 } MuxIntcP_Status;
-/* Cross bar MuxNum to be used for MuxIntcP_create() */
+/**
+ *  \anchor MuxIntcP_CrossBar_MuxNum
+ *  \name Cross bar MuxNum definitions
+ *  @{
+ */
+/*!
+ * Cross bar MuxNum to be used for MuxIntcP_create()
+ */
 #define MUXINTCP_CROSSBAR_MUXNUM_DSP1  (0)
 #define MUXINTCP_CROSSBAR_MUXNUM_DSP2  (1)
 #define MUXINTCP_CROSSBAR_MUXNUM_IPU1  (2)
@@ -71,6 +78,7 @@ typedef enum MuxIntcP_Status_e {
 #define MUXINTCP_CROSSBAR_MUXNUM_MPU   (4)
 
 #define MUXINTCP_CROSSBAR_MUXNUM_INVALID (-(int32_t)1)
+/* @} */
 
 /*!
  *  @brief  Prototype for the entry function for a cpIntc interrupt
@@ -97,6 +105,12 @@ typedef struct MuxIntcP_inParams_s {
     MuxIntcFxn muxIntcFxn;   /*!< K2: ISR function for CIC; AM: not used */
 } MuxIntcP_inParams;
 
+/*!
+ *  @brief    Basic MuxIntcP Output Parameters
+ *
+ *  Structure that contains the parameters returned from ::MuxIntcP_create
+ *  when creating a MuxIntcP instance.
+ */
 typedef struct MuxIntcP_outParams_s {
  /* Output parameters */
     uintptr_t  arg;          /*!< Argument passed out from the MuxIntc function. */

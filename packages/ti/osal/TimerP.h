@@ -78,7 +78,7 @@ extern "C" {
 /*!
  * Use default values as provided by the OSAL package
  */
- #define TimerP_USE_DEFAULT   (-(int32_t)1)
+#define TimerP_USE_DEFAULT   (-(int32_t)1)
 
 /*!
  *  @brief  Frequency-in-hertz struct
@@ -287,7 +287,7 @@ extern TimerP_Status TimerP_stop(TimerP_Handle timerHandle);
  */
 extern TimerP_Status TimerP_ClearInterrupt(TimerP_Handle timerHandle);
 
-/*
+/*!
  *  @brief  Function to return current time in units of micro-secs
  *
  *  @return Current time in units of micro-secs

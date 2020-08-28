@@ -127,21 +127,40 @@ int32_t EventCombinerP_SingleRegisterInt(int32_t groupNum, int32_t intNum);
  */
 int32_t EventCombinerP_GroupRegisterInt(int32_t intNum[]);
 
+/**
+ *  \name Osal Event Combiner return Codes
+ *  @brief  Return codes for Osal  Event Combiner functions
+ *  @{
+ */
+/*! Successful call */
 #define OSAL_EVTCOMBINE_GROUPREG_SUCCESS (0)
+/*! Registration Error */
 #define OSAL_EVTCOMBINE_ERR_GROUPREG_REGISTER_ERR (-1)
+/*! Invalid interrupt number */
 #define OSAL_EVTCOMBINE_ERR_GROUPREG_INVALID_INTNUM (-2)
+/* @} */
 
-/* These are the system default interrupt numbers if the Event Combiner has already not been registered
+/**
+ *  \name Osal Event Combiner Defualt Group Interrupts
+ *  @brief  Deafult group interrupt numbers for the Event Combiner
+ *
+ * These are the system default interrupt numbers if the Event Combiner has already not been registered
  * If applications register Event Combiners during startup, these values may not be used (in SYSBIOS case)
  * If not, these are the interrupts reserved for Event Combiner group events (0-3).
  * These defaults are stored in Osal_HwAttrs.ECM_intNum[] and can be obtained by the 
  * application at run time through the OSAL API Osal_getHwAttrs(). These values also can be modified 
  * using Osal_setHwAttrs(Osal_HwAttrs,OSAL_HWATTR_SET_ECM_INT)
+ *  @{
  */
+/*! ECM group 0 default interrupt: 4 */
 #define OSAL_ECM_GROUP0_INT 4
+/*! ECM group 1 default interrupt: 5 */
 #define OSAL_ECM_GROUP1_INT 5
+/*! ECM group 2 default interrupt: 6 */
 #define OSAL_ECM_GROUP2_INT 6
+/*! ECM group 3 default interrupt: 7 */
 #define OSAL_ECM_GROUP3_INT 7
+/* @} */
 
 #ifdef __cplusplus
 }

@@ -63,9 +63,9 @@ extern "C" {
 extern void CycleprofilerP_init(void);
 
 /*!
- *  @brief  Function to delete a semaphore.
+ *  @brief  Function to get current timestamp.
  *
- *  @return Get CPU cycle count time stamp
+ *  @return Timestamp in terms of CPU cycle count.
  */
 extern uint32_t CycleprofilerP_getTimeStamp(void);
 

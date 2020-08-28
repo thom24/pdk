@@ -29,6 +29,13 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+/**
+ *  \ingroup DRV_OSAL_MODULE
+ *  \defgroup DRV_OSAL_TaskP TaskP
+ *            TaskP interface
+ *
+ *  @{
+ */
 /** ============================================================================
  *  @file       TaskP.h
  *
@@ -84,10 +91,10 @@ typedef struct TaskP_Params_s
     uint8_t *name;           /*!< Name of the task instance.                  */
     void *pErrBlk; /*!< Pointer to the error block for task Create */
     int8_t priority;     /*!< The priority of the task                    */
-    uint32_t stacksize;   /*!< The stack size of the task                  */
-    void *arg0;           /*!< arg0                                        */
-    void *arg1;           /*!< arg1                                        */
-    void *stack;       /*!< pointer to stack memory, if NULL OS will allocate internally */
+    uint32_t stacksize;  /*!< The stack size of the task                  */
+    void *arg0;          /*!< argument 0                                        */
+    void *arg1;          /*!< argument 1                                        */
+    void *stack;         /*!< pointer to stack memory, if NULL OS will allocate internally */
 } TaskP_Params;
 
 /*!
@@ -136,7 +143,7 @@ extern void TaskP_sleep(uint32_t timeout);
 extern void TaskP_sleepInMsecs(uint32_t timeoutInMsecs);
 
 /*!
- *  @brief  Function for Task sleep.
+ *  @brief  Function to update Task priority.
  *
  *  @param handle  A TaskP_Handle returned from TaskP_create.
  *  @param priority  New priority to be set.
@@ -175,3 +182,4 @@ extern uint32_t TaskP_isTerminated(TaskP_Handle handle);
 #endif
 
 #endif /* ti_osal_TaskP__include */
+/* @} */

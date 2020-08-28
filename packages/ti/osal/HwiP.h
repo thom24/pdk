@@ -91,30 +91,28 @@ typedef enum HwiP_Status_e {
 /**
  *  @brief Enumerates the types different trigger types.
  *  Please refer to Section 4.3.13 Interrupt Configuration Registers, GICD_ICFGRn
- *  of ARM® Generic Interrupt Controller Architecture version 2.0
+ *  of ARM Generic Interrupt Controller Architecture version 2.0
  *  Architecture Specification document for details.
  */
 typedef enum
 {
-
-    /**< Corresponding interrupt is level-sensitive */
     OSAL_ARM_GIC_TRIG_TYPE_LEVEL = 1,
+    /**< Corresponding interrupt is level sensitive */
 
-    /**< Corresponding interrupt is edge  */
     OSAL_ARM_GIC_TRIG_TYPE_EDGE = 2,
+    /**< Corresponding interrupt is edge sensitive */
 
-    /**< Coressponding interrupt is high level sensitive */
     OSAL_ARM_GIC_TRIG_TYPE_HIGH_LEVEL = 3,
+    /**< Coressponding interrupt is high level sensitive */
 
-    /**< Coressponding interrupt is low level sensitive */
     OSAL_ARM_GIC_TRIG_TYPE_LOW_LEVEL = 4,
+    /**< Coressponding interrupt is low level sensitive */
 
-    /**< Coressponding interrupt is rising edge sensitive */
     OSAL_ARM_GIC_TRIG_TYPE_RISING_EDGE = 5,
+    /**< Coressponding interrupt is rising edge sensitive */
 
-    /**< Coressponding interrupt is falling edge sensitive */
     OSAL_ARM_GIC_TRIG_TYPE_FALLING_EDGE = 6
-
+    /**< Coressponding interrupt is falling edge sensitive */
 } OSAL_armGicTrigType_t;
 
 /*!

@@ -59,11 +59,13 @@ extern "C" {
 #include <stddef.h>
 #include <ti/sysbios/knl/Event.h>
 
-/*
+/**
+ * \name Event ID definitions
  * Pre-defined Event Ids. Event_Ids are provided to simplify the specification
  * of andMasks and orMasks arguments to Event_pend().
  * Since each Event_Id is a bitmask composed of only a single bit,
  * a group of Event_Ids within an andMask or orMask can be indicated by simply adding them together.
+ *  @{
  */
 
 /*!
@@ -114,6 +116,7 @@ extern "C" {
  *  @brief    Event ID 10
  */
 #define EventP_ID_10        Event_Id_10
+/* @} */
 
 /*!
  *  @brief    Status codes for EventP APIs
@@ -200,10 +203,10 @@ extern uint32_t EventP_pend(EventP_Handle handle, uint32_t andMask,
 extern void EventP_post(EventP_Handle handle, uint32_t eventMask);
 
 /*!
- *  @brief  Function for Event Post.
+ *  @brief  Function to return Event Posted.
  *
  *  @param handle  A EventP_Handle returned from EventP_create.
- *  @return All un-consumed events posted to the event
+ *  @return All un-consumed events posted
  */
 extern uint32_t EventP_getPostedEvents(EventP_Handle handle);
 
