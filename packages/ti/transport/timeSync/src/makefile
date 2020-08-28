@@ -5,10 +5,10 @@ include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 
 MODULE_NAME = timeSync
 
-ifneq ($(SOC),$(filter $(SOC), j721e))
+ifneq ($(SOC),$(filter $(SOC), j721e j7200))
 ifeq ($(SOC),$(filter $(SOC), am574x am572x am571x am335x am437x k2g))
   SRCDIR = src
-  INCDIR = . ../include .. $(EDMA3LLD_BIOS6_INSTALLDIR)/packages  
+  INCDIR = . ../include .. $(EDMA3LLD_BIOS6_INSTALLDIR)/packages
 endif
 
 # List all the external components/interfaces, whose interface header files

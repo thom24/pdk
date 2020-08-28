@@ -67,8 +67,8 @@
 ifeq ($(timeSync_component_make_include), )
 
 # under other list
-timeSync_default_BOARDLIST       = idkAM572x idkAM571x idkAM437x icev2AM335x j721e_evm
-timeSync_default_SOCLIST         = am572x am571x am574x am335x am437x k2g j721e
+timeSync_default_BOARDLIST       = idkAM572x idkAM571x idkAM437x icev2AM335x j721e_evm j7200_evm
+timeSync_default_SOCLIST         = am572x am571x am574x am335x am437x k2g j721e j7200
 timeSync_am572x_CORELIST         = c66x a15_0 ipu1_0
 timeSync_am574x_CORELIST         = c66x a15_0 ipu1_0
 timeSync_am571x_CORELIST         = c66x a15_0 ipu1_0
@@ -76,6 +76,7 @@ timeSync_k2g_CORELIST            = c66x a15_0
 timeSync_am335x_CORELIST         = a8host
 timeSync_am437x_CORELIST         = a9host
 timeSync_j721e_CORELIST          = mcu2_0
+timeSync_j7200_CORELIST          = mcu2_0
 
 ############################
 # timeSync package
