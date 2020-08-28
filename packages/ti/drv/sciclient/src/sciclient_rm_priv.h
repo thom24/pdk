@@ -290,40 +290,45 @@ int32_t Sciclient_rmClearInterruptRoute (const struct tisci_msg_rm_irq_release_r
                                          uint32_t timeout);
 
 /**
- *  \brief Translates an interrupt router output to the peripheral input it's
- *         connected to.  The primary use of the function is to retrieve the
- *         processor input IRQ an interrupt router output is connected to.
+ *  \brief Translates an interrupt router or aggregator output to the 
+ *         peripheral input or IR input it's connected to.  
+ *         The primary use of the function is to retrieve the processor 
+ *         input IRQ or IR input an interrupt router or aggregator 
+ *         output is connected to.
  *
- *  \param  ir_dev_id       Interrupt router device ID
+ *  \param  src_dev_id      Interrupt router or aggregator device ID
  *
- *  \param  ir_output       Interrupt router output index
+ *  \param  src_output      Interrupt router or aggregator output index
  *
  *  \param  dst_dev_id      Device ID of entity connected to interrupt router
- *                          output
+ *                          or aggregator output
  *
  *  \param  dst_input       Pointer to returned input index of entity connected
- *                          to interrupt router output
+ *                          to interrupt router or aggregator output
  *
  *  \return CSL_PASS on successful translation, else failure
  */
-int32_t Sciclient_rmTranslateIrOutput(uint16_t  ir_dev_id,
-                                      uint16_t  ir_output,
-                                      uint16_t  dst_dev_id,
-                                      uint16_t  *dst_input);
+int32_t Sciclient_rmTranslateIntOutput(uint16_t  src_dev_id,
+                                       uint16_t  src_output,
+                                       uint16_t  dst_dev_id,
+                                       uint16_t  *dst_input);
 
 /**
- *  \brief Translates a peripheral input to the connected interrupt router or aggregator output.
- *         The primary use of the function is to retrieve the
- *         interrupt router or aggregator output connected to a processor input IRQ.
+ *  \brief Translates a peripheral input to the connected interrupt router
+ *         or aggregator output.
+ *         The primary use of the function is to retrieve the interrupt router
+ *         or aggregator output connected to a processor input IRQ.
  *
- *  \param  dst_dev_id      Device ID of entity connected to interrupt router or aggregator
- *                          output
+ *  \param  dst_dev_id      Device ID of entity connected to interrupt router
+ *                          or aggregator output
  * 
- *  \param  dst_input       Input index of entity connected to interrupt router or aggregator output
+ *  \param  dst_input       Input index of entity connected to interrupt router
+ *                          or aggregator output
  * 
  *  \param  src_dev_id      Interrupt router or aggregator device ID
  *
- *  \param  src_output      Pointer to returned Interrupt router or aggregator output index
+ *  \param  src_output      Pointer to returned Interrupt router or 
+ *                          aggregator output index
  *
  *  \return CSL_PASS on successful translation, else failure
  */                                

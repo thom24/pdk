@@ -313,18 +313,44 @@ int32_t Sciclient_rmIrqTranslateIrOutput(uint16_t   ir_dev_id,
                                          uint16_t   *dst_input);
 
 /**
- *  \brief Translates a peripheral input to the connected interrupt router or aggregator output.
- *         The primary use of the function is to retrieve the
- *         interrupt router or aggregator output connected to a processor input IRQ.
+ *  \brief Translates an interrupt aggregator output to the peripheral input
+ *         it's connected to.
+ *         The primary use of the function is to retrieve the processor input
+ *         IRQ or IR input an interrupt aggregator output is connected to.
  *
- *  \param  dst_dev_id      Device ID of entity connected to interrupt router or aggregator
+ *  \param  ia_dev_id       Interrupt aggregator device ID
+ *
+ *  \param  ia_output       Interrupt aggregator output index
+ *
+ *  \param  dst_dev_id      Device ID of entity connected to interrupt router
  *                          output
+ *
+ *  \param  dst_input       Pointer to returned input index of entity 
+ *                          connected to interrupt router output
+ *
+ *  \return CSL_PASS on successful translation, else failure
+ */
+int32_t Sciclient_rmIrqTranslateIaOutput(uint16_t   ia_dev_id,
+                                         uint16_t   ia_output,
+                                         uint16_t   dst_dev_id,
+                                         uint16_t   *dst_input);
+
+/**
+ *  \brief Translates a peripheral input to the connected interrupt router
+ *         or aggregator output.
+ *         The primary use of the function is to retrieve the interrupt router
+ *         or aggregator output connected to a processor input IRQ.
+ *
+ *  \param  dst_dev_id      Device ID of entity connected to interrupt router
+ *                          or aggregator output
  * 
- *  \param  dst_input       Input index of entity connected to interrupt router or aggregator output
+ *  \param  dst_input       Input index of entity connected to interrupt router
+ *                          or aggregator output
  * 
  *  \param  src_dev_id      Interrupt router or aggregator device ID
  *
- *  \param  src_output      Pointer to returned Interrupt router or aggregator output index
+ *  \param  src_output      Pointer to returned Interrupt router or 
+ *                          aggregator output index
  *
  *  \return CSL_PASS on successful translation, else failure
  */                                

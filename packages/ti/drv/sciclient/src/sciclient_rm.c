@@ -132,10 +132,21 @@ int32_t Sciclient_rmIrqTranslateIrOutput(uint16_t	ir_dev_id,
 					 uint16_t	dst_dev_id,
 					 uint16_t	*dst_input)
 {
-    return Sciclient_rmTranslateIrOutput(ir_dev_id,
-                                         ir_output,
-                                         dst_dev_id,
-                                         dst_input);
+    return Sciclient_rmTranslateIntOutput(ir_dev_id,
+                                          ir_output,
+                                          dst_dev_id,
+                                          dst_input);
+}
+
+int32_t Sciclient_rmIrqTranslateIaOutput(uint16_t	ia_dev_id,
+                                         uint16_t	ia_output,
+					 uint16_t	dst_dev_id,
+					 uint16_t	*dst_input)
+{
+    return Sciclient_rmTranslateIntOutput(ia_dev_id,
+                                          ia_output,
+                                          dst_dev_id,
+                                          dst_input);
 }
 
 int32_t Sciclient_rmIrqTranslateIrqInput(uint16_t	dst_dev_id,

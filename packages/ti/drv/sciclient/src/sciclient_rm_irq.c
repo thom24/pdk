@@ -1010,8 +1010,8 @@ int32_t Sciclient_rmClearInterruptRoute (const struct tisci_msg_rm_irq_release_r
     return r;
 }
 
-int32_t Sciclient_rmTranslateIrOutput(uint16_t  ir_dev_id,
-                                      uint16_t  ir_output,
+int32_t Sciclient_rmTranslateIntOutput(uint16_t  src_dev_id,
+                                      uint16_t  src_output,
                                       uint16_t  dst_dev_id,
                                       uint16_t  *dst_input)
 {
@@ -1021,13 +1021,14 @@ int32_t Sciclient_rmTranslateIrOutput(uint16_t  ir_dev_id,
     uint16_t i;
     bool translated = false;
 
-    /* Only attempt to translate to destination input if an IR is passed */
-    if (Sciclient_rmIrIsIr(ir_dev_id) == true) {
+    /* Only attempt to translate to destination input if an IR/IA is passed */
+    if ((Sciclient_rmIrIsIr(src_dev_id) == true)||
+        (Sciclient_rmIaIsIa(src_dev_id) == true)) {
         /*
-         * Translate the specified IR output to the destination processor
+         * Translate the specified IR/IA output to the destination processor
          * IRQ input
          */
-        r = Sciclient_rmIrqGetNode(ir_dev_id, &cur_n);
+        r = Sciclient_rmIrqGetNode(src_dev_id, &cur_n);
         if (r == CSL_PASS) {
             for (i = 0; i < cur_n->n_if; i++) {
                 r = Sciclient_rmIrqGetNodeItf(cur_n, i, &cur_if);
@@ -1035,10 +1036,10 @@ int32_t Sciclient_rmTranslateIrOutput(uint16_t  ir_dev_id,
                     break;
                 }
 
-                if ((ir_output >= cur_if->lbase) &&
-                    (ir_output < (cur_if->lbase + cur_if->len)) &&
+                if ((src_output >= cur_if->lbase) &&
+                    (src_output < (cur_if->lbase + cur_if->len)) &&
                     (dst_dev_id == cur_if->rid)) {
-                    *dst_input = SCICLIENT_OUTP_TO_INP(ir_output,
+                    *dst_input = SCICLIENT_OUTP_TO_INP(src_output,
                                                        cur_if->lbase,
                                                        cur_if->rbase);
                     translated = true;
