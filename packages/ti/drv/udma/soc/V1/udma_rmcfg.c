@@ -175,8 +175,8 @@ const Udma_RmInitPrms gUdmaRmDefCfg_MainNavss[UDMA_NUM_CORE] =
         122U,                                       /* startRxCh */
         16U,                                        /* numRxCh */
 
-        {28U, 32U, 64U,128U},                       /* startUtcCh[] */
-        { 4U, 32U, 64U, 32U},                       /* numUtcCh[] */
+        {28U, 32U, 64U,  0U},                       /* startUtcCh[] */
+        { 4U, 32U, 64U,  0U},                       /* numUtcCh[] */
 
         32U,                                        /* startFreeFlow */
         72U,                                        /* numFreeFlow */
@@ -223,8 +223,8 @@ const Udma_RmInitPrms gUdmaRmDefCfg_MainNavss[UDMA_NUM_CORE] =
         139U,                                       /* startRxCh */
         1U,                                         /* numRxCh */
 
-        {0U, 0U, 0U, 0U},                           /* startUtcCh[] */
-        {0U, 0U, 0U, 0U},                           /* numUtcCh[] */
+        {0U, 0U, 0U,128U},                           /* startUtcCh[] */
+        {0U, 0U, 0U, 32U},                           /* numUtcCh[] */
 
         104U,                                       /* startFreeFlow */
         8U,                                         /* numFreeFlow */
