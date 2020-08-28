@@ -544,7 +544,7 @@ static TimerP_Status TimerP_dmTimerInstanceInit(TimerP_Struct *timer, uint32_t i
 
     HwiP_restore(key);
 
-    if (tempId == 0xffffU) {
+    if ((tempId == 0xffffU) || (0x0 == baseAddr)) {
       ret = TimerP_NOT_AVAILABLE;
     }
   }

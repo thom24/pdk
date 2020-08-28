@@ -41,6 +41,7 @@
 #include <ti/csl/tistdtypes.h>
 #include <ti/csl/arch/r5/interrupt.h>
 #include <ti/osal/src/nonos/Nonos_config.h>
+#include <ti/osal/soc/osal_soc.h>
 
 /* Local define */
 #define HWIP_R5F_DEFAULT_PRIORITY    ((uint32_t) 0x0FU)
@@ -478,7 +479,7 @@ void    osalArch_TimestampInit(void)
         timerParams.startMode = (uint32_t)TimerP_StartMode_USER;
         timerParams.periodType = (uint32_t)TimerP_PeriodType_MICROSECS;
         timerParams.period    = 1000000u;
-        timerHandle = TimerP_create((int32_t)TimerP_ANY, (TimerP_Fxn)&osalArch_TimestampCcntAutoRefresh, &timerParams);
+        timerHandle = TimerP_create(OSAL_ARCH_TIMER_INST_FOR_TS, (TimerP_Fxn)&osalArch_TimestampCcntAutoRefresh, &timerParams);
 
         if ( timerHandle != NULL_PTR)
         {

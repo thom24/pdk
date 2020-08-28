@@ -398,7 +398,10 @@ void BoardDiag_timerIntrDisable(void)
     /* Disable all the timer interrupts */
     for (timerCnt = 0; timerCnt < TimerP_numTimerDevices; timerCnt++)
     {
-        Intc_IntDisable(gDmTimerPInfoTbl[timerCnt].intNum);
+        if (0x0 != gDmTimerPInfoTbl[timerCnt].baseAddr)
+        {
+            Intc_IntDisable(gDmTimerPInfoTbl[timerCnt].intNum);
+        }
     }
 }
 #endif

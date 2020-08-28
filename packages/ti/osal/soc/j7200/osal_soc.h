@@ -67,14 +67,15 @@ extern "C" {
 #define  TIMERP_TIMER_FREQ_LO   ((int32_t) 25000000)
 #define  TIMERP_TIMER_FREQ_HI   ((int32_t) 0)
 
-#define TimerP_numTimerDevices          ((uint32_t) 20U )
-#if defined (BUILD_MCU)
-  #define TIMERP_ANY_MASK               ((uint32_t) 0x000F)
-  #define TIMERP_AVAILABLE_MASK       ((uint32_t)(0x000F))
-#else
-  #define TIMERP_ANY_MASK               ((uint32_t) 0x0FFF)
-  #define TIMERP_AVAILABLE_MASK       ((uint32_t)(0x0FFF))
-#endif
+#define TimerP_numTimerDevices  (20U)
+/**< Total number of instances in a given domain */
+#define TIMERP_ANY_MASK         ((uint32_t) 0x1FFFFF)
+/**< Any available */
+#define TIMERP_AVAILABLE_MASK   ((uint32_t)(0x1FFFFF))
+/**< Which instances are available */
+#define TIMERP_INST_4_TS        (TimerP_getPreferredDefInst)
+
+
 
 /* using the default timer base addresses */
 #if defined(__aarch64__)
@@ -100,6 +101,14 @@ extern "C" {
 
 /* external references */
 extern Osal_HwAttrs  gOsal_HwAttrs;
+#if defined (BUILD_MCU)
+extern inline int32_t TimerP_getPreferredDefInst(void);
+#define OSAL_ARCH_TIMER_INST_FOR_TS (TimerP_getPreferredDefInst())
+/**< Returns the instance of timers required for given instance */
+#else
+#define OSAL_ARCH_TIMER_INST_FOR_TS (2)
+/**< Default timer for MPU */
+#endif
 
 #ifdef __cplusplus
 }

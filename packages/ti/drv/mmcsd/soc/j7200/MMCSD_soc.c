@@ -260,7 +260,7 @@ MMCSD_Error MMCSD_configSocIntrPath(const void *hwAttrs_ptr, bool setIntrPath)
 {
    MMCSD_Error ret=MMCSD_OK;
    /* Only mcu R5f requires routing of interrupts */
-#if defined(BUILD_MCU1_0) || defined (BUILD_MCU1_1)
+#if defined(BUILD_MCU)
     CSL_ArmR5CPUInfo r5CpuInfo;
     int32_t retVal;
     MMCSD_v2_HwAttrs const *hwAttrs = (MMCSD_v2_HwAttrs const *)(hwAttrs_ptr);
@@ -308,7 +308,7 @@ MMCSD_Error MMCSD_configSocIntrPath(const void *hwAttrs_ptr, bool setIntrPath)
    {
      /* Nothing to be configured as the MMCSD0 -> MAIN R5 does not need any configuration.
       * It is direct to the core, bypassing INTR and MAIN2MCU RTR. Hence there is no
-      * firmware involvment needed. Consequently, the interrupt path configuration should
+      * firmware involvement needed. Consequently, the interrupt path configuration should
       * bypassed entirely.
       */
       ret = MMCSD_OK;

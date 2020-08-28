@@ -579,7 +579,7 @@ bool OSAL_timer_test()
 #endif
 #endif
 
-#if !defined(SOC_J721E) || defined(SOC_J7200)
+#if !defined(SOC_J721E) || !defined(SOC_J7200)
 #if defined(_TMS320C6X)
     timerParams.intNum     = 15;
     OSAL_log("\n set intNum=%d, id=%d,  \n", timerParams.intNum, id);
@@ -1578,6 +1578,7 @@ void sysIdleLoop(void)
  */
 int main(void)
 {
+
 #if defined(BUILD_C66X_1) || defined(BUILD_C66X_2)
 /* To set C66 timer interrupts on J7ES VLAB */
     C66xTimerInterruptInit();
