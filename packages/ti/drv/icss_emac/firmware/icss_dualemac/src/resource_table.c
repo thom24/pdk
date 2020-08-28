@@ -48,6 +48,7 @@ struct ch_map pru_intc_map[] = { {42, 0},
 				 {22, 4},
 				 {26, 6},
 				 {41, 7},
+				 {7, 7},
 };
 #endif
 #ifdef PRU1
