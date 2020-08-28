@@ -77,7 +77,7 @@
 #include <ti/drv/sciclient/sciclient.h>
 #endif
 
-#if !defined (SOC_TPR12)
+#if defined (SOC_AM65XX) || defined (SOC_J721E) || defined (SOC_J7200)
 #include <ti/csl/csl_clec.h>
 #endif
 
