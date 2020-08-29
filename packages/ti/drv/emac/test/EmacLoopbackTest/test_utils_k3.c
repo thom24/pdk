@@ -51,7 +51,9 @@
 #include <ti/sysbios/BIOS.h>
 #include <ti/sysbios/knl/Task.h>
 
+#ifdef _TMS320C6X
 #include <ti/csl/csl_chip.h>
+#endif
 #include <ti/csl/cslr_icss.h>
 /* EMAC Driver Header File. */
 #include <ti/drv/emac/emac_drv.h>
@@ -384,7 +386,7 @@ int32_t app_test_send_receive(uint32_t startP, uint32_t endP, uint32_t displayRe
  **********************************************************************/
 
 
-#define APP_TEST_PKT_SEND_COUNT 1024 
+#define APP_TEST_PKT_SEND_COUNT 1024
 #define APP_TEST_MIN_PKT_SEND_SIZE 60
 #define APP_TEST_MAX_PKT_SEND_SIZE 1500
 
@@ -842,7 +844,7 @@ void app_test_task_poll_ctrl (UArg arg0, UArg arg1)
     while(1)
     {
         SemaphoreP_pend(gAppTestPollCtrlTimerSem, BIOS_WAIT_FOREVER);
-        
+
         for (pNum = portNum; pNum  <= endPort; pNum++)
         {
             if (!port_en[pNum])
@@ -940,7 +942,7 @@ int32_t app_test_send(uint32_t pNum, uint8_t* pPkt, uint32_t pktChannel, uint32_
             app_free_pkt(pNum,p_pkt_desc);
             emac_send_fail++;
         }
-        
+
 #if !defined(EMAC_BENCHMARK)
     uint32_t timeout_count = 100;
     while(((pkt_received == 0) || (timestamp_received == 0)) && (timeout_count-- > 0))
@@ -955,7 +957,7 @@ int32_t app_test_send(uint32_t pNum, uint8_t* pPkt, uint32_t pktChannel, uint32_
 
         pkt_received = 0;
         pkt_send_count++;
-        
+
     }
     return gFail_count;
 }
