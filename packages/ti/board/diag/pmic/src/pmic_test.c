@@ -138,17 +138,21 @@ extern I2C_config_list I2C_config;
 #define TPS65917_PMIC_VOLTAGE_VAL          (0x44U)
 
 /* TPS65941 Register value */
-#define TPS65941_PMICA_I2C_SLAVE_ADDR      (0x48U)
-#define TPS65941_PMICB_I2C_SLAVE_ADDR      (0x4CU)
 #define TPS65941_PMICID_REG                (0x01U)
-#define TPS65941_PMIC_REG                  (0x0EU)
-#define TPS65941_PMIC_VOLTAGE_VAL          (0x41U)
+
+#define TPS65941_PMICA_I2C_SLAVE_ADDR      (0x48U)
+#define TPS65941_PMICA_REG                 (0x16U)/* BUCK5 */
+#define TPS65941_PMICA_VOLTAGE_VAL         (0xADU)/* 1.7V */
+
+#define TPS65941_PMICB_I2C_SLAVE_ADDR      (0x4CU)
+#define TPS65941_PMICB_REG                 (0x0EU)/* BUCK1 */
+#define TPS65941_PMICB_VOLTAGE_VAL         (0x41U)/* 0.8V */
 
 /* LP8764 Register value */
 #define LP8764_PMICB_I2C_SLAVE_ADDR        (0x4CU)
 #define LP8764_PMICID_REG                  (0x01U)
-#define LP8764_PMIC_REG                    (0x0EU)
-#define LP8764_PMIC_VOLTAGE_VAL            (0x41U)
+#define LP8764_PMIC_REG                    (0x14U)/* BUCK4 */
+#define LP8764_PMIC_VOLTAGE_VAL            (0xADU)/* 1.7V */
 
 /* TPS65313 Register value */
 #define TPS65313_PMIC_SPI_CS               (0x00U)
@@ -209,8 +213,8 @@ pmic_data_t tps65941_pmicA = {
     I2C_INSTANCE,
     TPS65941_PMICID_REG,
     0U,
-    TPS65941_PMIC_REG,
-    TPS65941_PMIC_VOLTAGE_VAL,
+    TPS65941_PMICA_REG,
+    TPS65941_PMICA_VOLTAGE_VAL,
     0U,
     0U
 };
@@ -220,8 +224,8 @@ pmic_data_t tps65941_pmicB = {
     I2C_INSTANCE,
     TPS65941_PMICID_REG,
     0U,
-    TPS65941_PMIC_REG,
-    TPS65941_PMIC_VOLTAGE_VAL,
+    TPS65941_PMICB_REG,
+    TPS65941_PMICB_VOLTAGE_VAL,
     0U,
     0U
 };
