@@ -129,7 +129,11 @@ static uint32_t pinMuxgpio[PADCONFIG_MAX_COUNT] =
     PIN_WKUP_GPIO0_13
 };
 switchDetails_t swDetails[NUM_OF_SW] = {
-    { "SW8",  8, 0 },
+    /* BOOTMODE7 (SW8.8) pin is used as WKUP_LFOSC_XI on J7200 platform which
+     * cannot be controlled through boot switch after board boot-up.
+     * Excluding this switch from the test.
+     */
+    { "SW8",  7, 0 },
     { "SW9",  8, 8 }
 };
 #endif
