@@ -467,23 +467,6 @@ void GPIO_socGetNumPinsPorts(uint32_t *numPins, uint32_t *numPorts)
     *numPorts = GPIO_NUM_PORTS;
 }
 
-void MuxIntcP_clearInEvent(int32_t muxNum, int32_t muxInEvent)
-{
-    (void)muxNum;
-    (void)muxInEvent;
-
-    return;
-}
-
-
-MuxIntcP_Status MuxIntcP_create(MuxIntcP_inParams *inParams, MuxIntcP_outParams *outParams)
-{
-    inParams = inParams;
-    outParams = outParams;
-
-    return (MuxIntcP_OK);
-}
-
 /* A count kept for each bank usage/ 16 pins share a bank */
 #define GPIO_NUM_BANKS        ((GPIO_NUM_PINS_PER_PORT + 15U) / 16U)
 uint32_t GPIO_PinBankUsageCount[GPIO_NUM_PORTS][GPIO_NUM_BANKS] = {0U, };
