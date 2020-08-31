@@ -36,7 +36,7 @@ MODULE_NAME = icss_switch
 SRCDIR += src/ $(icss_dualemac_PATH)/src
 INCDIR += src/ $(icss_dualemac_PATH)/src
 # Common source files across all platforms and cores
-SRCS_ASM_COMMON += micro_scheduler.asm emac_MII_Rcv.asm emac_MII_Xmt.asm emac_statistics.asm switch_collision_task.asm
+SRCS_ASM_COMMON += micro_scheduler.asm emac_MII_Rcv.asm emac_MII_Xmt.asm emac_statistics.asm switch_collision_task.asm emac_ptp.asm
 
 LNKFLAGS_LOCAL_COMMON = --entry_point=micro_scheduler
 
@@ -48,7 +48,7 @@ PACKAGE_SRCS_COMMON += src/ ../firmware/icss_dualemac/src build/makefile_icss_sw
 #  need to be included for this component
 INCLUDE_EXTERNAL_INTERFACES =
                       
-CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) -DICSS_SWITCH_BUILD -DPRU -DTWO_PORT_CFG
+CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) -DICSS_SWITCH_BUILD -DPRU -DTWO_PORT_CFG -DPTP
 
 # Include common make files
 ifeq ($(MAKERULEDIR), )

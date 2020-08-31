@@ -90,16 +90,23 @@ M_GPTP_ASSIGN_QOS    .macro
     QBBC    NOT_A_PTP_FRAME_2, R22, RX_IS_PTP_BIT
     ;Choose highest priority queue for PTP
 
-    .if $defined(PRU0)
-        ; for host context
+    .if $defined("ICSS_SWITCH_BUILD")
         LDI     RCV_TEMP_REG_1.b0, 1-1
         LDI     MII_RCV.qos_queue, 1-1   ;Choose highest priority queue for PTP
-    .else   ; PRU1
-        ; for host context
-        LDI     RCV_TEMP_REG_1.b0, 3-1
-        LDI     MII_RCV.qos_queue, 3-1   ;Choose highest priority queue for PTP
-    .endif ; PRU0
+    .else
+        .if $defined(PRU0)
+            ; for host context
+            LDI     RCV_TEMP_REG_1.b0, 1-1
+            LDI     MII_RCV.qos_queue, 1-1   ;Choose highest priority queue for PTP
+        .else   ; PRU1
+            ; for host context
+            LDI     RCV_TEMP_REG_1.b0, 3-1
+            LDI     MII_RCV.qos_queue, 3-1   ;Choose highest priority queue for PTP
+        .endif ; PRU0
 
+    .endif ;ICSS_SWITCH_BUILD
+
+    
     QBA     FB_QOS_LOADED
 NOT_A_PTP_FRAME_2:
     .endm 
@@ -112,10 +119,14 @@ NOT_A_PTP_FRAME_2:
 ; Output Parameters: none
 ;---------------------------------------------------------------------------------------------------------
 M_GPTP_CHECK_AND_SET_FLAGS    .macro
+    CLR     R22, R22, RX_IS_VLAN_BIT
     ;PTP_HSR_NON_LL_MAC_ID_L is 0
     QBNE    CHECK_PTP_LINK_LOCAL_RX, R3.w0, 0
     LDI32   RCV_TEMP_REG_2, PTP_HSR_PRP_NON_LL_MAC_ID_H
     QBNE    CHECK_PTP_LINK_LOCAL_RX, R2, RCV_TEMP_REG_2
+    .if $defined(ICSS_SWITCH_BUILD)
+        SET     MII_RCV.rx_flags, MII_RCV.rx_flags, fwd_flag_shift
+    .endif ;ICSS_SWITCH_BUILD
     QBA     SET_PTP_TAG_RX
     
 CHECK_PTP_LINK_LOCAL_RX:
@@ -129,24 +140,30 @@ CHECK_PTP_LINK_LOCAL_RX:
 SET_PTP_TAG_RX:
     SET     R22, R22, RX_IS_PTP_BIT
     SET     MII_RCV.rx_flags, MII_RCV.rx_flags, host_rcv_flag_shift     ; set flag that host queue will receive data
-    QBA     CHECK_IF_FROM_MASTER
+    QBA     GPTP_SKIP_CUT_THROUGH
 CHECK_UDP_PTP:
     LDI     RCV_TEMP_REG_2.w0, PTP_E2E_UDP_MAC_ID_H & 0xFFFF
     LDI     RCV_TEMP_REG_2.w2, PTP_E2E_UDP_MAC_ID_H >> 16
     QBNE    GPTP_CHECK_EXIT, R2, RCV_TEMP_REG_2    
     LDI     RCV_TEMP_REG_2.w0, PTP_E2E_UDP_MAC_ID_L    
+    QBEQ    SET_PTP_UDP_TAG_RX, R3.w0, RCV_TEMP_REG_2.w0
+    LDI     RCV_TEMP_REG_2.w0, PTP_E2E_UDP_PDELAY_MAC_ID_L    
     QBNE    GPTP_CHECK_EXIT, R3.w0, RCV_TEMP_REG_2.w0
+SET_PTP_UDP_TAG_RX:
     SET     R22, R22, RX_IS_UDP_PTP_BIT
+    SET     R22, R22, RX_IS_PTP_BIT
     SET     MII_RCV.rx_flags, MII_RCV.rx_flags, host_rcv_flag_shift
+    ;At this point we dont know if this is a link local frame or not so we will
+    ;set the forward flag and handle it later
+    .if $defined(ICSS_SWITCH_BUILD)
+        SET     MII_RCV.rx_flags, MII_RCV.rx_flags, fwd_flag_shift
+    .endif ;ICSS_SWITCH_BUILD
    
-CHECK_IF_FROM_MASTER:
-    ;check if frame is from master and set flag
-    ;this is used later in a segment of packet where MAC ID is not present
-    ;load 6 bytes into RCV_TEMP_REG_1 and RCV_TEMP_REG_2
-    LBCO    &RCV_TEMP_REG_1.w2, ICSS_SHARED_CONST, SYNC_MASTER_MAC_OFFSET, 6    
-    QBNE    GPTP_CHECK_EXIT, RCV_TEMP_REG_1.w2, R3.w2    
-    QBNE    GPTP_CHECK_EXIT, RCV_TEMP_REG_2, R4    
-    SET     R22, R22, PTP_PKT_FROM_MASTER_RX
+GPTP_SKIP_CUT_THROUGH:
+
+    QBNE    PTP_RX_IS_NOT_VLAN, R5.w0, VLAN_EtherType
+    SET     R22, R22, RX_IS_VLAN_BIT
+PTP_RX_IS_NOT_VLAN:
 
     ; skip any filtering + cut-through
     .if $defined(ICSS_DUAL_EMAC_BUILD)
@@ -186,6 +203,10 @@ SET_RX_UDP_PTP_BIT?:
     ; will be checked in second block if this bit is set, and bit cleared if not
     ; PTP message UDP port (319/320)
     SET     R22, R22, RX_IS_UDP_PTP_BIT
+    SET     R22, R22, RX_IS_PTP_BIT
+    .if $defined(ICSS_SWITCH_BUILD)
+        SET     MII_RCV.rx_flags, MII_RCV.rx_flags, fwd_flag_shift
+    .endif ;ICSS_SWITCH_BUILD
 
 GPTP_CHECK_EXIT_L4?:
     .endm   
@@ -253,35 +274,27 @@ CHECK_PTP_LINK_LOCAL_TX:
     QBEQ    CHECK_UDP_PTP_TX, R5.w0, R10.w0
 SET_PTP_TAG_TX:
     SET     R22, R22, TX_IS_PTP_BIT
+    ;Forcefully set two step flag here
+    ;check if frame carries VLAN tag
+    QBNE    NO_VLAN_TX_PRE_PROC, R5.w0, VLAN_EtherType
+    ADD     R1.b0, R1.b0, 4
+    SET     two_step_reg_vlan, two_step_reg_vlan, GPTP_802_3_two_step_bit
+    QBA     CONTINUE_PRE_PROC
+NO_VLAN_TX_PRE_PROC:
+    SET     two_step_reg, two_step_reg, GPTP_802_3_two_step_bit   
     QBA     CONTINUE_PRE_PROC
     
 CHECK_UDP_PTP_TX:
     ; Check for UDP PTP multicast MAC
-    LDI     R10.w0, PTP_E2E_UDP_MAC_ID_L
-    QBNE    CHECK_UDP_TX, R3.w0, R10.w0
     LDI32   R10, PTP_E2E_UDP_MAC_ID_H
     QBNE    CHECK_UDP_TX, R2, R10 
-
+    LDI     R10.w0, PTP_E2E_UDP_MAC_ID_L
+    QBEQ    SET_PTP_UDP_TX_TAG, R3.w0, R10.w0
+    LDI     R10.w0, PTP_E2E_UDP_PDELAY_MAC_ID_L
+    QBNE    CHECK_UDP_TX, R3.w0, R10.w0
+SET_PTP_UDP_TX_TAG:
     SET     R22, R22, TX_IS_UDP_PTP_BIT
-    QBA     CONTINUE_PRE_PROC
 
-CHECK_UDP_TX:
-    CLR     R22, R22, TX_IS_VLAN_BIT
-    ; Check if protocol is IPv4/UDP (PTP message may be unicast)
-    LDI     R10.w0, IPV4_EtherType
-    QBNE    NO_VLAN_TX_CHECK, R5.w0, VLAN_EtherType
-    SET     R22, R22, TX_IS_VLAN_BIT
-    QBNE    EXIT_PTP_TX_PRE_PROC, R6.w0, R10.w0
-    QBNE    EXIT_PTP_TX_PRE_PROC, IP_PROT_VLAN_REG, UDP_PROTOCOL_TYPE
-    QBA     SET_TX_UDP_PTP_BIT
-NO_VLAN_TX_CHECK:
-    QBNE    EXIT_PTP_TX_PRE_PROC, R5.w0, R10.w0
-    QBNE    EXIT_PTP_TX_PRE_PROC, IP_PROT_REG, UDP_PROTOCOL_TYPE
-SET_TX_UDP_PTP_BIT:
-    ; set UDP PTP bit here, but not guaranteed PTP message yet. UDP Port
-    ; will be checked in second block if this bit is set, and bit cleared if not
-    ; PTP message UDP port (319/320)
-    SET     R22, R22, TX_IS_UDP_PTP_BIT
 
 CONTINUE_PRE_PROC:
     .if !$defined(ICSS_REV1)
@@ -295,7 +308,7 @@ CONTINUE_PRE_PROC:
         LDI     RCV_TEMP_REG_1.w0, PTP_PREV_TX_TIMESTAMP_P2
         SBCO    &R10, ICSS_SHARED_CONST, RCV_TEMP_REG_1.w0, 8
     .else
-        LBCO    &R10, ICSS_IEP_CONST, CAP_RISE_TX_SOF_PORT1_OFFSET, 8
+        LBCO    &R10, IEP_CONST, CAP_RISE_TX_SOF_PORT1_OFFSET, 8
         LDI     RCV_TEMP_REG_1.w0, PTP_PREV_TX_TIMESTAMP_P1
         SBCO    &R10, ICSS_SHARED_CONST, RCV_TEMP_REG_1.w0, 8
     .endif ; PRU0
@@ -311,11 +324,6 @@ CONTINUE_PRE_PROC:
     .endif ; PRU0
     .endif ; ICSS_SWITCH_BUILD
     .endif ; ICSS_REV1
-    
-    LDI     R0.w2, DUT_IS_MASTER_OFFSET
-    LBCO    &R0.b0, ICSS_SHARED_CONST, R0.w2, 1
-    QBNE    EXIT_PTP_TX_PRE_PROC, R0.b0, 1
-    SET     R22, R22, DUT_IS_MASTER_BIT
 
 EXIT_PTP_TX_PRE_PROC:
     .endm 

@@ -112,9 +112,9 @@ GPTP_802_3_two_step_bit        .set                        1
         .asg    R7,       two_step_reg
         .asg    R5.b2,    PTP_802_3_msg_id_reg
         .asg    R8,       two_step_reg_vlan
-        .asg    R6,       IF_TWO_STEP_CLK_UDP
+        .asg    R6,       two_step_reg_udp
         .asg    R4.b2,    PTP_MSG_ID_REG_UDP
-        .asg    R7,       IF_TWO_STEP_CLK_UDP_VLAN
+        .asg    R7,       two_step_reg_udp_vlan
         .asg    R5.b2,    PTP_MSG_ID_REG_UDP_VLAN
         .asg    R7.b3,    IP_PROT_REG
         .asg    R8.b3,    IP_PROT_VLAN_REG

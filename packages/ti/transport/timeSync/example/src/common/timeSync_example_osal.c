@@ -370,6 +370,7 @@ void TimeSync_PdelayReqSendTask(UArg a0, UArg a1)
     uint8_t offset = timeSyncHandle->timeSyncConfig.frame_offset;
     uint32_t port, quePri, index;
 
+#ifndef EMAC_SWITCH
     /* Get the queue priority */
     if (TIMESYNC_TEST_PORT_NUM == 0)
     {
@@ -383,6 +384,10 @@ void TimeSync_PdelayReqSendTask(UArg a0, UArg a1)
         quePri = ICSS_EMAC_QUEUE3;
         index  = 1;
     }
+#else
+    port   = ICSS_EMAC_PORT_1;
+    quePri = ICSS_EMAC_QUEUE3;
+#endif
     while(1)
     {
         if(P2P == timeSyncHandle->timeSyncConfig.type)
@@ -395,7 +400,9 @@ void TimeSync_PdelayReqSendTask(UArg a0, UArg a1)
                  * available per handle */
                 linkStatus = ((ICSS_EmacObject *)
                               (timeSyncHandle->emacHandle)->object)->linkStatus[0];
-
+#ifdef EMAC_SWITCH
+                index = 0;
+#endif //EMAC_SWITCH
                 /*Send delay request frames in a burst*/
                 for(frameCount = 0;
                         frameCount < timeSyncHandle->timeSyncConfig.pdelayBurstNumPkts; frameCount++)
@@ -449,7 +456,7 @@ void TimeSync_PdelayReqSendTask(UArg a0, UArg a1)
 
                     }
 
-#if 0
+#ifdef EMAC_SWITCH
                     /* Below is needed to be done for SWITCH cases, during that modify
                      * above loop to have PORT1
                      */
@@ -461,7 +468,7 @@ void TimeSync_PdelayReqSendTask(UArg a0, UArg a1)
                     /***************************************************/
                     linkStatus = ((ICSS_EmacObject *)
                                   (timeSyncHandle->emacHandle)->object)->linkStatus[ICSS_EMAC_PORT_2 - 1];
-
+                    index = 1;
                     if(linkStatus)
                     {
                         /*write sequence id into memory*/

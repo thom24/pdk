@@ -379,15 +379,15 @@ START_TX_FIFO_FILL:
     ;Just before pushing to FIFO store the current Tx SOF TS
     ;This is used for comparison later to make sure SOF has actually
     ;updated
-    .if $defined (PTP)
+    .if $defined(PTP)
         .if $defined("ICSS_SWITCH_BUILD")
             .if $defined (PRU0)
-            LBCO    &R20, ICSS_IEP_CONST, CAP_RISE_TX_SOF_PORT2_OFFSET, 4
+            LBCO    &R20, IEP_CONST, CAP_RISE_TX_SOF_PORT2_OFFSET, 4
             LDI		RCV_TEMP_REG_2, PTP_PREV_TX_TIMESTAMP_P2
             SBCO    &R20, ICSS_SHARED_CONST, RCV_TEMP_REG_2, 4
             ;SBCO    &R20, ICSS_SHARED_CONST, PTP_PREV_TX_TIMESTAMP_P2, 4
             .else
-            LBCO    &R20, ICSS_IEP_CONST, CAP_RISE_TX_SOF_PORT1_OFFSET, 4
+            LBCO    &R20, IEP_CONST, CAP_RISE_TX_SOF_PORT1_OFFSET, 4
             ;LDI		RCV_TEMP_REG_1, PTP_PREV_TX_TIMESTAMP_P1
             ;SBCO    &R20, ICSS_SHARED_CONST, RCV_TEMP_REG_1, 4
             SBCO    &R20, ICSS_SHARED_CONST, PTP_PREV_TX_TIMESTAMP_P1, 4
@@ -414,7 +414,7 @@ START_TX_FIFO_FILL:
     .endif	;ICSS_REV1
 
 PUSH_FB:
-    .if $defined (PTP)
+    .if $defined(PTP)
     M_GPTP_TX_PRE_PROC 
     .endif ;PTP
         ; Insert the data in Tx Fifo
@@ -436,7 +436,7 @@ EndLoop_FB1:
     .endif	;ICSS_REV2
     ;For EMAC we don't do bridge delay correction
     ;So this can be called after pushing 32 bytes
-    .if $defined (PTP)
+    .if $defined(PTP)
     JAL     R0.w0, FN_PTP_TX_ADD_DELAY
     .endif
     
@@ -677,7 +677,7 @@ fetch_data_from_ocmc:
     ; Check if the RX EOF has come
     LBCO	&BUFFER, L3_OCMC_RAM_CONST, BUFFER_INDEX, 32        ;load new buffer data
 
-    .if $defined (PTP)
+    .if $defined(PTP)
     LDI    TEMP_REG_1.w0, PTP_IPV4_UDP_E2E_ENABLE
     LBCO   &TEMP_REG_1.b0, ICSS_SHARED_CONST, TEMP_REG_1.w0, 1
     QBEQ   PTP_NOT_ENABLED_TX_NB, TEMP_REG_1.b0, 0

@@ -63,18 +63,28 @@ void timeSync_example_configureInterrupts(uint32_t portNum, ICSSEMAC_InitConfig 
     /*Configure Time Sync interrupts*/
     timeSyncHandle->timeSyncConfig.txIntNum = TIMESYNC_APP_TSTX_INT_NUM;
 
-    /* Configure the other configurations */
+    if (switchEmacCfg->portMask != ICSS_EMAC_MODE_SWITCH)
+    {
     if (portNum == 0)
     {
         switchEmacCfg->portMask = ICSS_EMAC_MODE_MAC1;
-        switchEmacCfg->phyAddr[0]=BOARD_ICSS_EMAC_PORT0_PHY_ADDR;
         switchEmacCfg->ethPrioQueue = ICSS_EMAC_QUEUE2;
     }
     else
     {
         switchEmacCfg->portMask = ICSS_EMAC_MODE_MAC2;
-        switchEmacCfg->phyAddr[0]=BOARD_ICSS_EMAC_PORT1_PHY_ADDR;
-        switchEmacCfg->ethPrioQueue = ICSS_EMAC_QUEUE4;
+            switchEmacCfg->ethPrioQueue = ICSS_EMAC_QUEUE4;
+        }
+        /* Configure the other configurations */
+        if (portNum == 0)
+        {
+            switchEmacCfg->phyAddr[0]=BOARD_ICSS_EMAC_PORT0_PHY_ADDR;
+        }
+        else
+        {
+            switchEmacCfg->phyAddr[0]=BOARD_ICSS_EMAC_PORT1_PHY_ADDR;
+        }
+
     }
 
     switchEmacCfg->halfDuplexEnable = 1;

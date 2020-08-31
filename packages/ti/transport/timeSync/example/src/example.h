@@ -107,7 +107,11 @@
 
 /* Example specific header include */
 #include <src/soc/timeSyncExampleSoC.h>
+#ifdef EMAC_SWITCH
+#include <src/common/tiswitch_pruss_intc_mapping.h>
+#else
 #include <src/common/tiemac_pruss_intc_mapping.h>
+#endif //EMAC_SWITCH
 
 #include <src/common/osdrv_ndkdeviceconfig.h>
 #include <src/boardcfg/board_i2cLed.h>
