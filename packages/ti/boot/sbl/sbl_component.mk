@@ -825,6 +825,61 @@ endif
 sbl_multicore_amp_ordered_SBL_APPIMAGEGEN = no
 export sbl_multicore_amp_ordered_SBL_APPIMAGEGEN
 
+# Individual Core Boot Test (Short)
+sbl_boot_test_short_COMP_LIST = sbl_boot_test_short
+sbl_boot_test_short_RELPATH = ti/boot/sbl/example/k3MulticoreApp
+sbl_boot_test_short_BINPATH = $(PDK_SBL_COMP_PATH)/example/k3MulticoreApp/binary
+sbl_boot_test_short_PATH = $(PDK_SBL_COMP_PATH)/example/k3MulticoreApp
+sbl_boot_test_short_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_boot_test_short.mk
+export sbl_boot_test_short_MAKEFILE
+sbl_boot_test_short_BOARD_DEPENDENCY = no
+sbl_boot_test_short_SOC_DEPENDENCY = no
+sbl_boot_test_short_CORE_DEPENDENCY = no
+export sbl_boot_test_short_COMP_LIST
+export sbl_boot_test_short_BOARD_DEPENDENCY
+export sbl_boot_test_short_SOC_DEPENDENCY
+export sbl_boot_test_short_CORE_DEPENDENCY
+sbl_boot_test_short_PKG_LIST = sbl_boot_test_short
+sbl_boot_test_short_INCLUDE = $(sbl_boot_test_short_PATH)
+sbl_boot_test_short_BOARDLIST = $(sbl_BOARDLIST)
+export sbl_boot_test_short_BOARDLIST
+sbl_boot_test_short_$(SOC)_CORELIST = $(sbl_$(SOC)_CORELIST)
+export sbl_boot_test_short_$(SOC)_CORELIST
+ifneq ($(SOC), tpr12)
+sbl_EXAMPLE_LIST += sbl_boot_test_short
+endif
+sbl_boot_test_short_SBL_APPIMAGEGEN = yes
+export sbl_boot_test_short_SBL_APPIMAGEGEN
+
+# Multicore AMP Boot Test (Short)
+sbl_multicore_amp_short_COMP_LIST = sbl_multicore_amp_short
+sbl_multicore_amp_short_RELPATH = ti/boot/sbl/example/k3MulticoreApp
+sbl_multicore_amp_short_BINPATH = $(PDK_SBL_COMP_PATH)/example/k3MulticoreApp/binary
+sbl_multicore_amp_short_PATH = $(PDK_SBL_COMP_PATH)/example/k3MulticoreApp
+sbl_multicore_amp_short_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_multicore_amp_short.mk
+export sbl_multicore_amp_short_MAKEFILE
+# SBL multicore amp depends on sbl_boot_test for all the cores
+sbl_multicore_amp_short_DEPENDS_ON=sbl_boot_test_short
+export sbl_multicore_amp_short_DEPENDS_ON
+sbl_multicore_amp_short_BOARD_DEPENDENCY = no
+sbl_multicore_amp_short_SOC_DEPENDENCY = no
+sbl_multicore_amp_short_CORE_DEPENDENCY = no
+export sbl_multicore_amp_short_COMP_LIST
+export sbl_multicore_amp_short_BOARD_DEPENDENCY
+export sbl_multicore_amp_short_SOC_DEPENDENCY
+export sbl_multicore_amp_short_CORE_DEPENDENCY
+sbl_multicore_amp_short_PKG_LIST = sbl_multicore_amp_short
+sbl_multicore_amp_short_INCLUDE = $(sbl_multicore_amp_short_PATH)
+sbl_multicore_amp_short_BOARDLIST = $(sbl_BOARDLIST)
+export sbl_multicore_amp_short_BOARDLIST
+sbl_multicore_amp_short_$(SOC)_CORELIST = $($(SOC)_LASTCORE)
+export sbl_multicore_amp_short_$(SOC)_CORELIST
+ifneq ($(SOC), tpr12)
+sbl_EXAMPLE_LIST += sbl_multicore_amp_short
+endif
+sbl_multicore_amp_short_SBL_APPIMAGEGEN = no
+export sbl_multicore_amp_short_SBL_APPIMAGEGEN
+
 # Individual Core Boot Test
 sbl_boot_test_COMP_LIST = sbl_boot_test
 sbl_boot_test_RELPATH = ti/boot/sbl/example/k3MulticoreApp
