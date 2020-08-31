@@ -192,54 +192,55 @@ Mailbox_HwCfg g_Mailbox_HwCfg[MAILBOX_MAX_INST][MAILBOX_MAX_INST] =
     /* Host Processor - A53-vm0 */
     {
         { { 0xFFU, 0xFFU,  0U}, { 0xFFU, 0xFFU,  0U}, true, 0 },  /* Self - A53-vm0 */
-        { {    2U,    2U,  0U}, {    2U,    2U,  1U}, true, 0 },  /* mcu-r5f0 */
-        { {    3U,    2U,  0U}, {    3U,    2U,  1U}, true, 0 },  /* mcu-r5f1 */
-        { {    4U,    2U,  0U}, {    4U,    2U,  1U}, true, 0 },  /* pulsar1_cr5f_0 */
-        { {    5U,    2U,  2U}, {    5U,    2U,  3U}, true, 0 },  /* pulsar1_cr5f_1 */
+        { {    2U,    2U,  0U}, {    2U,    2U,  1U}, false, 0 },  /* mcu-r5f0 */
+        { {    2U,    2U,  2U}, {    2U,    2U,  3U}, false, 0 },  /* mcu-r5f1 */
+        { {    4U,    2U,  0U}, {    4U,    2U,  1U}, false, 0 },  /* pulsar1_cr5f_0 */
+        { {    4U,    2U,  2U}, {    4U,    2U,  3U}, false, 0 },  /* pulsar1_cr5f_1 */
         { {    6U,    2U,  0U}, {    6U,    2U,  1U}, true, 0 },  /* m4f_0 */
     },
     /* Host Processor - mcu1_0  */
     {
-        { {    2U,    0U,  1U }, {    2U, 0xFFU,  0U}, true, 0 },  /* A53-vm0 */
+        { {    2U,    0U,  1U }, {    2U,    0U,  0U}, true, 0 },  /* A53-vm0 */
         { { 0xFFU, 0xFFU,  0U }, { 0xFFU, 0xFFU,  0U}, true, 0 },  /* Self - mcu-r5f0 */
         { {    0U,    0U,  0U }, {    0U, 0xFFU,  1U}, true, 0 },  /* mcu-r5f1 */
         { {    1U,    0U,  0U }, {    0U, 0xFFU,  2U}, true, 0 },  /* pulsar1_cr5f_0 */
-        { {    3U,    0U,  2U }, {    0U, 0xFFU,  3U}, true, 0 },  /* pulsar1_cr5f_1 */
-        { {    6U,    0U,  2U }, {    7U, 0xFFU,  2U}, true, 0 },  /* m4f_0 */
+        { {    3U,    0U,  0U }, {    0U, 0xFFU,  3U}, true, 0 },  /* pulsar1_cr5f_1 */
+        { {    6U,    0U,  2U }, {    6U, 0xFFU,  3U}, true, 0 },  /* m4f_0 */
     },
     /* Host Processor - mcu1_1 */
     {
-        { {    3U,    1U,  1U }, {    3U,    2U,  0U}, true, 0 },  /* A53-vm0 */
-        { {    0U,    1U,  1U }, {    0U,    0U,  0U}, true, 0 },  /* mcu-r5f0 */
+        { {    2U,    1U,  3U }, {    2U,    1U,  2U}, true, 0 },  /* A53-vm0 */
+        { {    0U,    1U,  1U }, {    0U, 0xFFU,  0U}, true, 0 },  /* mcu-r5f0 */
         { { 0xFFU, 0xFFU,  0U }, { 0xFFU, 0xFFU,  0U}, true, 0 },  /* Self - mcu-r5f1 */
         { {    1U,    1U,  1U }, {    1U, 0xFFU,  2U}, true, 0 },  /* pulsar1_cr5f_0 */
-        { {    2U,    1U,  2U }, {    1U, 0xFFU,  3U}, true, 0 },  /* pulsar1_cr5F_1 */
-        { {    6U,    1U,  3U }, {    7U, 0xFFU,  3U}, true, 0 },  /* m4f_0 */
+        { {    3U,    1U,  1U }, {    1U, 0xFFU,  3U}, true, 0 },  /* pulsar1_cr5F_1 */
+        { {    6U,    1U,  4U }, {    6U, 0xFFU,  5U}, true, 0 },  /* m4f_0 */
     },
     /* Host Processor - pulsar1_cr5f_0 */
     {
-        { {    4U,    0U,  1U }, {    4U, 0xFFU,  0U}, true, 0 },  /* A53-vm0 */
+        { {    4U,    0U,  1U }, {    4U,    0U,  0U}, true, 0 },  /* A53-vm0 */
         { {    0U,    2U,  2U }, {    1U, 0xFFU,  0U}, true, 0 },  /* mcu-r5f0 */
         { {    1U,    2U,  2U }, {    1U, 0xFFU,  1U}, true, 0 },  /* mcu-r5f1 */
         { { 0xFFU, 0xFFU,  0U }, { 0xFFU, 0xFFU,  0U}, true, 0 },  /* Self - pulsar1_cr5f_0 */
-        { {    5U,    0U,  0U }, {    4U, 0xFFU,  2U}, true, 0 },  /* pulsar1_cr5f_1 */
-        { {    7U,    0U,  0U }, {    6U, 0xFFU,  4U}, true, 0 },  /* m4f_0 */
+        { {    5U,    0U,  2U }, {    5U, 0xFFU,  3U}, true, 0 },  /* pulsar1_cr5f_1 */
+        { {    7U,    0U,  2U }, {    7U, 0xFFU,  4U}, true, 0 },  /* m4f_0 */
     },
     /* Host Processor - pulsar1_cr5f_1 */
     {
-        { {    5U,    1U,  3U }, {    5U, 0xFFU,  2U}, true, 0 },  /* A53-vm0 */
-        { {    0U,    3U,  3U }, {    3U, 0xFFU,  2U}, true, 0 },  /* mcu-r5f0 */
-        { {    1U,    3U,  3U }, {    2U, 0xFFU,  2U}, true, 0 },  /* mcu-r5f1 */
-        { {    4U,    1U,  2U }, {    5U, 0xFFU,  0U}, true, 0 },  /* pulsar1_cr5f_0 */
+        { {    4U,    1U,  3U }, {    4U,    1U,  2U}, true, 0 },  /* A53-vm0 */
+        { {    0U,    3U,  3U }, {    3U, 0xFFU,  0U}, true, 0 },  /* mcu-r5f0 */
+        { {    1U,    3U,  3U }, {    3U, 0xFFU,  1U}, true, 0 },  /* mcu-r5f1 */
+        { {    5U,    1U,  3U }, {    5U, 0xFFU,  2U}, true, 0 },  /* pulsar1_cr5f_0 */
         { { 0xFFU, 0xFFU,  0U }, { 0xFFU, 0xFFU,  0U}, true, 0 },  /* Self - pulsar1_cr5f_1 */
-        { {    7U,    1U,  1U }, {    7U, 0xFFU,  4U}, true, 0 },  /* m4f_0 */
+        { {    7U,    1U,  3U }, {    7U, 0xFFU,  5U}, true, 0 },  /* m4f_0 */
     },
+    /* Host Processor - m4f_0 */
     {
-        { {    6U,    3U,  1U }, {    6U, 0xFFU,  0U}, false, 0 }, /* A53-vm0 */
-        { {    7U,    3U,  2U }, {    6U, 0xFFU,  2U}, false, 0 }, /* mcu-r5f0 */
-        { {    7U,    3U,  3U }, {    6U, 0xFFU,  3U}, false, 0 }, /* mcu-r5f1 */
-        { {    6U,    3U,  4U }, {    7U, 0xFFU,  0U}, false, 0 }, /* pulsar1_cr5f_0 */
-        { {    7U,    3U,  4U }, {    7U, 0xFFU,  1U}, false, 0 }, /* pulsar1_cr5f_1 */
+        { {    6U,    3U,  1U }, {    6U,    3U,  0U}, false, 0 }, /* A53-vm0 */
+        { {    6U,    3U,  3U }, {    6U, 0xFFU,  2U}, false, 0 }, /* mcu-r5f0 */
+        { {    6U,    3U,  5U }, {    6U, 0xFFU,  4U}, false, 0 }, /* mcu-r5f1 */
+        { {    7U,    3U,  4U }, {    7U, 0xFFU,  2U}, false, 0 }, /* pulsar1_cr5f_0 */
+        { {    7U,    3U,  5U }, {    7U, 0xFFU,  3U}, false, 0 }, /* pulsar1_cr5f_1 */
         { { 0xFFU, 0xFFU,  0U }, { 0xFFU, 0xFFU,  0U}, false, 0 }, /* Self - m4f_0 */
     }
 };

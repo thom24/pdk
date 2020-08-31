@@ -129,19 +129,19 @@ static Ipc_MailboxInfo   g_IPC_MailboxInfo[IPC_MAX_PROCS][IPC_MAX_PROCS] =
     /* Host Processor - A53-vm0	*/
     {
         { { 0xFFU, 0xFFU,  0U}, { 0xFFU, 0xFFU,  0U} },  /* Self - A53-vm0 */
-        { {    0U,    0U,  0U}, {    0U,    1U,  1U} },  /* mcu-r5f0 */
-        { {    1U,    0U,  0U}, {    1U,    1U,  1U} },  /* mcu-r5f1 */
+        { {    0U,    0U,  0U}, {    0U,    0U,  1U} },  /* mcu-r5f0 */
+        { {    1U,    0U,  0U}, {    1U,    0U,  1U} },  /* mcu-r5f1 */
     },
     /* Host Processor - mcu1_0 	*/
     {
-        { {    0U,    1U,  1U }, {    0U,    0U,  0U} },  /* A53-vm0 */
+        { {    0U,    1U,  1U }, {    0U,    1U,  0U} },  /* A53-vm0 */
         { { 0xFFU, 0xFFU,  0U }, { 0xFFU, 0xFFU,  0U} },  /* Self - mcu-r5f0 */
-        { {    2U,    0U,  0U }, {    2U,    1U,  1U} },  /* mcu-r5f1 */
+        { {    2U,    0U,  0U }, {    2U, 0xFFU,  1U} },  /* mcu-r5f1 */
     },
     /* Host Processor - mcu1_1 */
     {
-        { {    1U,    1U,  1U }, {    1U,    0U,  0U} },  /* A53-vm0 */
-        { {    2U,    1U,  1U }, {    2U,    0U,  0U} },  /* mcu-r5f0 */
+        { {    1U,    1U,  1U }, {    1U,    1U,  0U} },  /* A53-vm0 */
+        { {    2U,    1U,  1U }, {    2U, 0xFFU,  0U} },  /* mcu-r5f0 */
         { { 0xFFU, 0xFFU,  0U }, { 0xFFU, 0xFFU,  0U} },  /* Self - mcu-r5f1 */
     }
 };
