@@ -191,6 +191,38 @@ int32_t Sciclient_pmSetModuleRst(uint32_t moduleId,
     return retVal;
 }
 
+int32_t Sciclient_pmSetModuleRst_flags(uint32_t moduleId,
+                                 uint32_t resetBit,
+                                 uint32_t reqFlag,
+                                 uint32_t timeout)
+{
+    int32_t retVal = CSL_PASS;
+    struct tisci_msg_set_device_resets_req request;
+    request.id     = (uint32_t) moduleId;
+    request.resets = (uint32_t) resetBit;
+
+    Sciclient_ReqPrm_t reqParam;
+    reqParam.messageType    = (uint16_t) TISCI_MSG_SET_DEVICE_RESETS;
+    reqParam.flags          = (uint32_t) reqFlag;
+    reqParam.pReqPayload    = (const uint8_t *) &request;
+    reqParam.reqPayloadSize = (uint32_t) sizeof (request);
+    reqParam.timeout        = (uint32_t) timeout;
+
+    Sciclient_RespPrm_t respParam;
+    respParam.flags           = (uint32_t) 0;   /* Populated by the API */
+    respParam.pRespPayload    = (uint8_t *) 0;
+    respParam.respPayloadSize = (uint32_t) 0;
+
+    retVal = Sciclient_service(&reqParam, &respParam);
+
+    if((retVal != CSL_PASS) ||
+        ((respParam.flags & TISCI_MSG_FLAG_ACK) != TISCI_MSG_FLAG_ACK))
+    {
+        retVal = CSL_EFAIL;
+    }
+    return retVal;
+}
+
 int32_t Sciclient_pmModuleClkRequest(uint32_t moduleId,
                                      uint32_t clockId,
                                      uint32_t state,

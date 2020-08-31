@@ -155,6 +155,31 @@ int32_t Sciclient_pmGetModuleState(uint32_t  moduleId,
 int32_t Sciclient_pmSetModuleRst(uint32_t moduleId,
                                  uint32_t resetBit,
                                  uint32_t timeout);
+
+/**
+ *  \brief    Set the device reset state, allowing for user to set reqFlags
+ *  This is used to set or release various resets of the hardware block/module
+ *
+ *  \n<b>Message</b>:    #TISCI_MSG_SET_DEVICE_RESETS
+ *  \n<b>Request</b>:    #tisci_msg_set_device_resets_req
+ *  \n<b>Response</b>:   #tisci_msg_set_device_resets_resp
+ *
+ *  \param  moduleId        Module for which the state should be set.
+ *  \param  resetBit        Module Reset Bit to be set.
+ *                          1 - Assert the reset
+ *                          0 - Deassert the reset
+ *                          Note this convention is opposite of PSC MDCTL
+ *  \param  reqFlag         Can be TISCI_MSG_FLAG_AOR/TISCI_MSG_FLAG_AOP ORRed  
+ *                          with additional flag that can be set to alter the
+ *                          device state.
+ *  \param  timeout         Gives a sense of how long to wait for the operation.
+ *                          Refer \ref Sciclient_ServiceOperationTimeout.
+ *  \return CSL_PASS on success, else failure
+ */
+int32_t Sciclient_pmSetModuleRst_flags(uint32_t moduleId,
+                                       uint32_t resetBit,
+                                       uint32_t reqFlag,
+                                       uint32_t timeout);
 /**
  *  \brief    Message to set the clock state:
  *  This requests for finer control of hardware device's clocks. This allows

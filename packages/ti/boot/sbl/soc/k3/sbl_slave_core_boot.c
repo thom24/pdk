@@ -517,29 +517,7 @@ void SBL_SetupCoreMem(uint32_t core_id)
                 }
                 SBL_log(SBL_LOG_MAX, "Sciclient_pmSetModuleState Off, DevId 0x%x... \n", sblSlaveCoreInfoPtr->tisci_dev_id);
                 Sciclient_pmSetModuleState(sblSlaveCoreInfoPtr->tisci_dev_id, TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
-
-#ifdef VLAB_SIM
-            /* HALT issue on VLAB causes the core to a immediate halt. ASTC Ticket #*/
-              SBL_log(SBL_LOG_MAX, "Setting HALT for ProcId 0x%x...\n", sblSlaveCoreInfoPtr->tisci_proc_id);
-              status =  Sciclient_procBootSetSequenceCtrl(sblSlaveCoreInfoPtr->tisci_proc_id, TISCI_MSG_VAL_PROC_BOOT_CTRL_FLAG_R5_CORE_HALT, 0, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
-              if (status != CSL_PASS)
-              {
-                SBL_log(SBL_LOG_ERR, "Sciclient_procBootSetSequenceCtrl...FAILED \n");
-                SblErrLoop(__FILE__, __LINE__);
-              }
-#endif
             }
-
-#ifndef VLAB_SIM
-            /* In case of VLAB_SIM, the below step is done only for all but mcu1_0 shown above */
-            SBL_log(SBL_LOG_MAX, "Setting HALT for ProcId 0x%x...\n", sblSlaveCoreInfoPtr->tisci_proc_id);
-            status =  Sciclient_procBootSetSequenceCtrl(sblSlaveCoreInfoPtr->tisci_proc_id, TISCI_MSG_VAL_PROC_BOOT_CTRL_FLAG_R5_CORE_HALT, 0, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
-            if (status != CSL_PASS)
-            {
-              SBL_log(SBL_LOG_ERR, "Sciclient_procBootSetSequenceCtrl...FAILED \n");
-              SblErrLoop(__FILE__, __LINE__);
-            }
-#endif
 
             SBL_log(SBL_LOG_MAX, "Calling Sciclient_procBootGetProcessorState, ProcId 0x%x... \n", sblSlaveCoreInfoPtr->tisci_proc_id);
             status = Sciclient_procBootGetProcessorState(sblSlaveCoreInfoPtr->tisci_proc_id, &cpuStatus, SCICLIENT_SERVICE_WAIT_FOREVER);
@@ -575,6 +553,18 @@ void SBL_SetupCoreMem(uint32_t core_id)
             {
                 SBL_log(SBL_LOG_ERR, "Sciclient_procBootSetProcessorCfg...FAILED \n");
                 SblErrLoop(__FILE__, __LINE__);
+            }
+
+            /* For lockstep R5 pairs, this section will naturally only set HALT bit for MCU2_CPU0_ID or MCU3_CPU0_ID */
+            if (core_id != MCU1_CPU0_ID)
+            {
+                SBL_log(SBL_LOG_MAX, "Setting HALT for ProcId 0x%x...\n", sblSlaveCoreInfoPtr->tisci_proc_id);
+                status =  Sciclient_procBootSetSequenceCtrl(sblSlaveCoreInfoPtr->tisci_proc_id, TISCI_MSG_VAL_PROC_BOOT_CTRL_FLAG_R5_CORE_HALT, 0, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
+                if (status != CSL_PASS)
+                {
+                    SBL_log(SBL_LOG_ERR, "Sciclient_procBootSetSequenceCtrl...FAILED \n");
+                    SblErrLoop(__FILE__, __LINE__);
+                }
             }
 
             /* SBL running on MCU0, don't fool around with its power & TCMs */
@@ -647,7 +637,7 @@ void SBL_SetupCoreMem(uint32_t core_id)
                 SblErrLoop(__FILE__, __LINE__);
             }
             SBL_log(SBL_LOG_MAX, "Calling Sciclient_pmSetModuleRst, DevId 0x%x with RESET \n", sblSlaveCoreInfoPtr->tisci_dev_id);
-            status = Sciclient_pmSetModuleRst(sblSlaveCoreInfoPtr->tisci_dev_id,1,SCICLIENT_SERVICE_WAIT_FOREVER);
+            status = Sciclient_pmSetModuleRst(sblSlaveCoreInfoPtr->tisci_dev_id, 1, SCICLIENT_SERVICE_WAIT_FOREVER);
             if (status != CSL_PASS)
             {
                 SBL_log(SBL_LOG_ERR, "Sciclient_pmSetModuleRst RESET ...FAILED \n");
@@ -817,7 +807,39 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
                 SBL_RequestCore(core_id - 1);
             }
 
-            /* Setting up DMSC to wait for WFI */
+#if defined(SOC_AM65XX)
+            /**
+             * AM65x special case: Un-halt MCU1_1 early and let it run to "wfi" so that SYSFW can power down the cluster (once MCU1_0 is also in "wfi")
+             *                     NOTE: if MCU1_1 doesn't get to wfi/wfe before powering down the core, then R5 cluster won't do proper power down & up.
+             */
+            Sciclient_procBootSetSequenceCtrl(SBL_PROC_ID_MCU1_CPU1, 0, TISCI_MSG_VAL_PROC_BOOT_CTRL_FLAG_R5_CORE_HALT, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
+#endif
+            /** 
+             * Reset sequence for cluster running SBL
+             *
+             *   The reset sequence for the cluster running SBL has to be done differently from
+             *   that of other clusters. More detail is described in comments below, but a high-
+             *   level overview of the reset sequence is as follows:
+             *
+             *   1. Processor Boot Wait (holds the queue)
+             *   2. MCU1_1 Enter Reset - (AM65x case: Power OFF)
+             *   3. MCU1_0 Enter Reset - (AM65x case: Power OFF)
+             *   4. Un-halt MCU1_1 - (AM65x case: already did this earlier)
+             *   5. Release control of MCU1_0
+             *   6. Release control of MCU1_1
+             *   7. MCU1_0 Leave Reset - (AM65x case: Power ON)
+             *   8. MCU1_1 Leave Reset (if an application is requested to run there) - (AM65x case: Power ON)
+             */
+
+            /**
+             * Processor Boot Wait
+             *
+             *   DMSC will block until a WFI is issued, thus allowing the following commands
+             *   to be queued so this cluster may be reset by DMSC (queue length is defined in 
+             *   "drv/sciclient/soc/sysfw/include/<soc>/tisci_sec_proxy.h"). If these commands
+             *   were to be issued and executed prior to WFI, the cluster would enter reset and
+             *   SBL would quite sensibly not be able to tell DMSC to take itself out of reset.
+             */
             SBL_log(SBL_LOG_MAX, "Sciclient_procBootWaitProcessorState, ProcId 0x%x... \n", SBL_PROC_ID_MCU1_CPU0);
             status = Sciclient_procBootWaitProcessorState(SBL_PROC_ID_MCU1_CPU0, 1, 1, 0, 3, 0, 0, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
             if (status != CSL_PASS)
@@ -826,44 +848,53 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
                 SblErrLoop(__FILE__, __LINE__);
             }
 
-            /* Power down core running SBL */
+            /**
+             * Both cores enter reset
+             *
+             *   It is necessary to reset MCU1_1 before MCU1_0, so as to maintain the specification that
+             *   MCU1_1 may never ben in a higher functional state than MCU1_0.
+             */
+#if !defined(SOC_AM65XX)
+            Sciclient_pmSetModuleRst_flags(SBL_DEV_ID_MCU1_CPU1, 1, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
+            Sciclient_pmSetModuleRst_flags(SBL_DEV_ID_MCU1_CPU0, 1, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
+
+            /**
+             * Un-halt MCU1_1 (MCU1_0 is not halted)
+             */
+            Sciclient_procBootSetSequenceCtrl(SBL_PROC_ID_MCU1_CPU1, 0, TISCI_MSG_VAL_PROC_BOOT_CTRL_FLAG_R5_CORE_HALT, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
+#else
+            /* AM65x case (can't use local reset flags): Power down both cores */
+            Sciclient_pmSetModuleState(SBL_DEV_ID_MCU1_CPU1, TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
             Sciclient_pmSetModuleState(SBL_DEV_ID_MCU1_CPU0, TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
+#endif
 
-            /* Both cores halted at this point. Now un-halt them as needed */
-            Sciclient_procBootSetSequenceCtrl(SBL_PROC_ID_MCU1_CPU0, 0, TISCI_MSG_VAL_PROC_BOOT_CTRL_FLAG_R5_CORE_HALT, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
-            if (pAppEntry->CpuEntryPoint[core_id] <  SBL_INVALID_ENTRY_ADDR)
-            {
-                Sciclient_procBootSetSequenceCtrl(SBL_PROC_ID_MCU1_CPU1, 0, TISCI_MSG_VAL_PROC_BOOT_CTRL_FLAG_R5_CORE_HALT, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
-            }
-
-            /* Notifying SYSFW that the SBL is relinquishing the MCU cluster running the SBL */
+            /**
+             * Notify SYSFW that the SBL is relinquishing the MCU cluster running the SBL
+             */
             if (requestCoresFlag == SBL_REQUEST_CORE)
             {
                 Sciclient_procBootReleaseProcessor(SBL_PROC_ID_MCU1_CPU0, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
                 Sciclient_procBootReleaseProcessor(SBL_PROC_ID_MCU1_CPU1, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
             }
 
-            /* Power up cores as needed */
-#if defined(SOC_AM64X) || defined(SOC_J7200)
-            /* AM64X & J7200 have a different Power on sequence than other K3 SOCs.
-             * We must ensure that CPU1 is powered off, first, before turning on CPU0 (and then CPU1) */
+            /**
+             * MCU1_0 and (optionally) MCU1_1 leave reset
+             *
+             *   Ensuring that MCU1_1 is never in a higher functional state than MCU1_0, both cores
+             *   shall leave reset. Only take MCU1_1 out of reset if an application will be running
+             *   on it.
+             */
+#if !defined(SOC_AM65XX)
+            Sciclient_pmSetModuleRst_flags(SBL_DEV_ID_MCU1_CPU0, 0, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
             if (pAppEntry->CpuEntryPoint[core_id] <  SBL_INVALID_ENTRY_ADDR)
             {
-                /* Multicore image has valid images for both core 0 and core 1 */ 
-                Sciclient_pmSetModuleState(SBL_DEV_ID_MCU1_CPU1, TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
-                Sciclient_pmSetModuleState(SBL_DEV_ID_MCU1_CPU0, TISCI_MSG_VALUE_DEVICE_SW_STATE_ON, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
-                Sciclient_pmSetModuleState(SBL_DEV_ID_MCU1_CPU1, TISCI_MSG_VALUE_DEVICE_SW_STATE_ON, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
+                Sciclient_pmSetModuleRst_flags(SBL_DEV_ID_MCU1_CPU1, 0, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
             }
-            else
-            {
-                /* Multicore image has valid images for core 0 and no image for core 1 */ 
-                Sciclient_pmSetModuleState(SBL_DEV_ID_MCU1_CPU0, TISCI_MSG_VALUE_DEVICE_SW_STATE_ON, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
-            }	
 #else
+            /* AM65x case (can't use local reset flags): Power ON CPU0 core, then power ON CPU1 core if necessary */
             Sciclient_pmSetModuleState(SBL_DEV_ID_MCU1_CPU0, TISCI_MSG_VALUE_DEVICE_SW_STATE_ON, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
             if (pAppEntry->CpuEntryPoint[core_id] <  SBL_INVALID_ENTRY_ADDR)
             {
-                Sciclient_pmSetModuleState(SBL_DEV_ID_MCU1_CPU1, TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
                 Sciclient_pmSetModuleState(SBL_DEV_ID_MCU1_CPU1, TISCI_MSG_VALUE_DEVICE_SW_STATE_ON, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
             }
 #endif
@@ -900,8 +931,6 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
                     SBL_log(SBL_LOG_ERR, "Sciclient_procBootSetSequenceCtrl...FAILED \n");
                     SblErrLoop(__FILE__, __LINE__);
                 }
-                SBL_log(SBL_LOG_MAX, "Sciclient_pmSetModuleState On, DevId 0x%x... \n", sblSlaveCoreInfoPtr->tisci_dev_id);
-                Sciclient_pmSetModuleState(sblSlaveCoreInfoPtr->tisci_dev_id, TISCI_MSG_VALUE_DEVICE_SW_STATE_ON, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
             }
 
             /* Release core */
@@ -914,7 +943,7 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
             break;
        case M4F_CPU0_ID:
             SBL_log(SBL_LOG_MAX, "Calling Sciclient_pmSetModuleRst, ProcId 0x%x with RELEASE \n", sblSlaveCoreInfoPtr->tisci_proc_id);
-            status = Sciclient_pmSetModuleRst(sblSlaveCoreInfoPtr->tisci_dev_id,0,SCICLIENT_SERVICE_WAIT_FOREVER);
+            status = Sciclient_pmSetModuleRst(sblSlaveCoreInfoPtr->tisci_dev_id, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
             if (status != CSL_PASS)
             {
                 SBL_log(SBL_LOG_ERR, "Sciclient_pmSetModuleRst RELEASE...FAILED \n");
