@@ -4,8 +4,8 @@
 # ******************************************************************************
 # * FILE NAME: pdksetupenv.sh
 # *
-# * DESCRIPTION: 
-# *  Configures and sets up the Build Environment for PDK. 
+# * DESCRIPTION:
+# *  Configures and sets up the Build Environment for PDK.
 # *
 # *  The batch file expects an optional argument:PDK_INSTALL_PATH: Location
 # *  of the PDK package.  If the argument is not specified the batch file
@@ -36,7 +36,7 @@ fi
 # ********************** GET PARAMETERS PASSED THROUGH ARGUMENT   ***************
 # *******************************************************************************
 # Parameter Validation: Check if the argument was passed to the batch file and
-# if so we use that else we default to the working directory where the batch 
+# if so we use that else we default to the working directory where the batch
 # file was invoked from
 
 tempVar=$1
@@ -53,10 +53,7 @@ IFS='_' read -ra ADDR <<< "$CURDIR_LAST"
 
 # When pdk folder represents a device family, set a default SOC for that family
 if [ ${ADDR[1]} == "jacinto" ]; then
-    ADDR[1]="am65xx"
-fi
-if [ ${ADDR[1]} == "sitara" ]; then
-    ADDR[1]="am64x"
+    ADDR[1]="j721e"
 fi
 
 if [ -z $PDK_SOC ]; then
@@ -65,7 +62,7 @@ fi
 
 if [ -z "${ADDR[2]}" ]; then
     export PDK_VERSION=
-else    
+else
     export PDK_VERSION=${ADDR[2]}_${ADDR[3]}_${ADDR[4]}
 fi
 cd -
@@ -82,7 +79,7 @@ fi
 # *******************************************************************************
 
 
-# Rules.make location. 
+# Rules.make location.
 export RULES_MAKE="${PDK_INSTALL_PATH}/ti/build/Rules.make"
 
 

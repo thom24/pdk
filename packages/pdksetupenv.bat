@@ -3,7 +3,7 @@
 @REM ******************************************************************************
 @REM * FILE NAME: pdksetupenv.bat
 @REM *
-@REM * DESCRIPTION: 
+@REM * DESCRIPTION:
 @REM *  Configures and sets up the Build Environment for PDK.
 @REM *
 @REM *  The batch file expects an optional argument:PDK_INSTALL_PATH: Location
@@ -23,7 +23,7 @@
 @REM ********************** GET PARAMETERS PASSED THROUGH ARGUMENT   ***************
 @REM *******************************************************************************
 @REM Parameter Validation: Check if the argument was passed to the batch file and
-@REM if so we use that else we default to the working directory where the batch 
+@REM if so we use that else we default to the working directory where the batch
 @REM file was invoked from
 
 @REM PDK_INSTALL_PATH if it is passed as an argument.
@@ -48,10 +48,7 @@ set pdkdir_ver=%v1%_%v2%_%v3%
 
 @REM When pdk folder represents a device family, set a default SOC for that family
 if %pdksoc% == jacinto (
-    set pdksoc=am65xx
-)
-if %pdksoc% == sitara (
-    set pdksoc=am64x
+    set pdksoc=j721e
 )
 
 @REM Go to the SDK install directory
@@ -84,7 +81,7 @@ if not defined GMAKE_INSTALL_PATH (
     set GMAKE_INSTALL_PATH=%SDK_INSTALL_PATH%/xdctools_%XDC_VERSION%
 )
 set GMAKE_INSTALL_PATH=%GMAKE_INSTALL_PATH:\=/%
-@REM GMAKE Tool location; Uncomment the following line to set the 
+@REM GMAKE Tool location; Uncomment the following line to set the
 @REM gmake install path into env PATH variable.
 set PATH=%GMAKE_INSTALL_PATH:/=\%;%PATH%
 
