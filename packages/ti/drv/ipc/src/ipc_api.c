@@ -611,7 +611,7 @@ static int32_t RPMessage_processAnnounceMsg(RPMessage_Announcement *amsg, uint32
             p = &module.nameEntry[module.nameEntryCnt];
             p->endPt = amsg->endPt;
             p->procId = procId;
-            strncpy(p->name, amsg->name, SERVICENAMELEN-1);
+            strncpy(p->name, amsg->name, SERVICENAMELEN);
             p->name[SERVICENAMELEN-1] = '\0';
             module.nameEntryCnt++;
 
