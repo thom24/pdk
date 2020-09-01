@@ -831,4 +831,5 @@ extern uint16_t sblMapOtpVidToMilliVolts[256];
 void SBL_RAT_Config(sblRatCfgInfo_t *remap_list);
 void SBL_SocEarlyInit(void);
 void SBL_SocLateInit(void);
+void SBL_SetQoS(void);
 #endif

@@ -743,8 +743,6 @@ static void J721E_SetupLvCmosDriveStrength(void)
     }
 }
 
-#if !defined(SBL_ENABLE_DEV_GRP_MCU) && !defined(SBL_USE_MCU_DOMAIN_ONLY)
-
 /* NAVSS North Bridge (NB) */
 #define NAVSS0_NBSS_NB0_CFG_MMRS                0x3802000
 #define NAVSS0_NBSS_NB1_CFG_MMRS                0x3803000
@@ -817,8 +815,6 @@ static void J721E_SetupQoS(void)
     setup_dss_credentials();
 }
 
-#endif
-
 void SBL_SocEarlyInit(void)
 {
     J721E_SetupLvCmosDriveStrength();
@@ -865,3 +861,11 @@ void SBL_SocLateInit(void)
 
 }
 #endif
+
+/* This function is to be called from other apps (e.g., mcusw boot app) to set QoS settings */
+void SBL_SetQoS(void)
+{
+#if defined(SOC_J721E)
+    J721E_SetupQoS();
+#endif
+}
