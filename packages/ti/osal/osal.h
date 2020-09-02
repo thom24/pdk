@@ -378,7 +378,6 @@ extern Osal_HwAttrs  gOsal_HwAttrs;
         #pragma GCC diagnostic push
         #pragma GCC diagnostic ignored "-Wunused-variable"
         #else
-        /* TI compiler */
         #pragma diag_suppress 179
         #endif
             OSAL_COMPILE_TIME_SIZE_CHECK (sizeof(Test_Struct_Ext),OSAL_TEST_STRUCT_SIZE_BYTES);
