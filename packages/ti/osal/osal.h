@@ -244,7 +244,7 @@ typedef struct Osal_HwAttrs_s
 #endif
 #ifdef _TMS320C6X
     /*! Interrupt numbers for Event combiner groups (0-3) */
-    int32_t ECM_intNum[4]; /
+    int32_t ECM_intNum[4];
 #endif
     /*! Hardware access type */
     Osal_HwAccessType hwAccessType;
