@@ -258,4 +258,51 @@ int32_t SDTF_ECC_runNegativeTests(void);
  */
 int32_t SDTF_runECC2BitCodeInjectTest(void);
 
+
+/*********************************************************************
+ * @fn      SDTF_runECC2BitCBASSSelfTest
+ *
+ * @brief   Execute ECC Double bit error self test on CBASS ECC aggregator
+ *
+ * @param   None
+ *
+ * @return  0 : Success; < 0 for failures
+ */
+int32_t SDTF_runECC2BitCBASSSelfTest(void);
+
+/*********************************************************************
+ * @fn      SDTF_runECC2BitCBASSInjectTest
+ *
+ * @brief   Execute ECC Doule bit error inject test on CBASS ECC aggregator
+ *
+ * @param   None
+ *
+ * @return  0 : Success; < 0 for failures
+ */
+int32_t SDTF_runECC2BitCBASSInjectTest(void);
+
+
+/*********************************************************************
+ * @fn      SDTF_runECC1BitCBASSSelfTest
+ *
+ * @brief   Execute ECC Single bit error self test on CBASS ECC aggregator
+ *
+ * @param   None
+ *
+ * @return  0 : Success; < 0 for failures
+ */
+int32_t SDTF_runECC1BitCBASSSelfTest(void);
+
+/*********************************************************************
+ * @fn      SDTF_runECC1BitCBASSInjectTest
+ *
+ * @brief   Execute ECC Single bit error inject test on CBASS ECC aggregator
+ *
+ * @param   None
+ *
+ * @return  0 : Success; < 0 for failures
+ */
+int32_t SDTF_runECC1BitCBASSInjectTest(void);
+
+
 #endif /*  _INCLUDE_SDTF_ECC_H_ */

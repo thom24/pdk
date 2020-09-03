@@ -46,10 +46,15 @@ typedef struct SDR_RAMIdEntry_s
 {
     uint32_t RAMId;
     /**< Unique Ram Identifier */
-    bool aggregatorTypeInjectOnly;
+    uint32_t aggregatorTypeInjectOnly;
     /**< Variable to track if the ECC aggregator configuration
      * is only inject only or a full fledged ecc aggregator
-     * including tracking of error status */
+     * including tracking of error status
+     * A value of 1 represents "Inject Only", and a value of
+     * 0 represents "Inject with Error Capture" */
+    uint32_t ramIdType;
+    /**< Variable to track if the RAM ID is interconnect type (1)
+     * or wrapper type (0) */
 } SDR_RAMIdEntry_t;
 
 /** ---------------------------------------------------------------------------
@@ -58,14 +63,33 @@ typedef struct SDR_RAMIdEntry_s
  */
 typedef struct SDR_MemConfig_s
 {
+    SDR_ECC_MemSubType memSubType;
+    /**< Memory subtype - used to index/search for these memory configs */
     uintptr_t memStartAddr;
     /**< Memory start address */
     uint32_t size;
     /**< Size of memory in bytes */
     uint32_t stride;
     /**< Stride of memory in bytes */
+    uint32_t rowSize;
+    /**< Size of each row in the memory in number of bits */
     bool readable;
     /**< Memory section whether it is directly readable */
 }  SDR_MemConfig_t;
+
+/** ---------------------------------------------------------------------------
+ * \brief This structure defines the elements of ECC Group checker for Interconnect
+ * SDR_ECC_RamIdType
+ * ----------------------------------------------------------------------------
+ */
+typedef struct SDR_GrpChkConfig_s
+{
+    SDR_ECC_GrpChkType grpChkType;
+    /**< Group Checker type */
+    uint32_t stride;
+    /**< Stride of memory bus in bits */
+    uint32_t dataWidth;
+    /**< Length of memory bus covered in bits */
+}  SDR_GrpChkConfig_t;
 
 #endif /* INCLUDE_SDR_ECC_PRIV_H_ */

@@ -297,7 +297,7 @@ int32_t SDTF_runPeriodicTests(void)
 /* Number of commands run by the "run_all" command
  * Note: This should match number of entries in the tables below
  */
-#define SDTF_NUM_RUNALL_TEST_COMMANDS (35u)
+#define SDTF_NUM_RUNALL_TEST_COMMANDS (37u)
 
 /* Other commands not covered by run_all */
 #define SDTF_NUM_OTHER_TEST_COMMANDS (6u)
@@ -305,7 +305,7 @@ int32_t SDTF_runPeriodicTests(void)
 /* Number of commands run by the "run_all" command
  * Note: This should match number of entries in the tables below
  */
-#define SDTF_NUM_RUNALL_TEST_COMMANDS (41u)
+#define SDTF_NUM_RUNALL_TEST_COMMANDS (43u)
 
 /* Other commands not covered by run_all */
 #define SDTF_NUM_OTHER_TEST_COMMANDS (0u)
@@ -364,6 +364,8 @@ SDTF_commandList_t SDTF_commandList[SDTF_MAX_COMMANDS] =
     { "ecc2_programinject",          SDTF_runECC2BitCodeInjectTest },
     { "exception_runapitests",       SDTF_runExceptionApiTests },
     { "ecc1_inject",                 SDTF_runECC1BitInjectTest },
+    { "cbass2_inject",               SDTF_runECC2BitCBASSInjectTest },
+    { "cbass2_selftest",             SDTF_runECC2BitCBASSSelfTest },
     { "ecc2_vimramdedvector",        SDTF_runECC2BitVIMRAMDEDvector },
     { "ccm_selftest",                SDTF_runCCMSelfTest },
     { "ccm_selftest_polarityinvert", SDTF_runCCMSelfTestErrorForce },

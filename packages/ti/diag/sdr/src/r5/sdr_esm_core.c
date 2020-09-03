@@ -172,9 +172,6 @@ bool SDR_ESM_selectEsmInstFromAddr(uint32_t esmInstBaseAddr,
     return (instValid);
 }
 
-
-
-
 /** ============================================================================
  *
  * \brief   Handle any event that needs to be handled locally before
@@ -264,7 +261,61 @@ bool SDR_ESM_handleIntSrc(const SDR_ESM_Instance_t *pInstance, uint32_t intSrc)
                 handledFlag = pInstance->WDTCallBackFunction(SDR_ESM_TIMER_ID_1);
             }
             break;
+#ifdef SOC_J721E
+        case SDR_ESM_MAIN_MSMC_ECC_AGGR0_SEC_INT:
+            if ((void *)pInstance->eccCallBackFunction != ((void *)0u)) {
+                /* Call back function for Single bit ECC error */
+                pInstance->eccCallBackFunction(SDR_ESM_ECC_PARAM_MAIN_MSMC_AGGR0_SEC_ERROR,
+                                                    SDR_ESM_ERRORADDR_INVALID);
+                handledFlag = ((bool)true);
+            }
+            break;
 
+        case SDR_ESM_MAIN_MSMC_ECC_AGGR0_DED_INT:
+            if ((void *)pInstance->eccCallBackFunction != ((void *)0u)) {
+                /* Call back function for Double bit ECC error */
+                pInstance->eccCallBackFunction(SDR_ESM_ECC_PARAM_MAIN_MSMC_AGGR0_DED_ERROR,
+                                                    SDR_ESM_ERRORADDR_INVALID);
+                handledFlag = ((bool)true);
+            }
+            break;
+
+        case SDR_ESM_MAIN_A72_ECC_AGGR0_SEC_INT:
+            if ((void *)pInstance->eccCallBackFunction != ((void *)0u)) {
+                /* Call back function for Single bit ECC error */
+                pInstance->eccCallBackFunction(SDR_ESM_ECC_PARAM_MAIN_A72_AGGR0_SEC_ERROR,
+                                                    SDR_ESM_ERRORADDR_INVALID);
+                handledFlag = ((bool)true);
+            }
+            break;
+
+        case SDR_ESM_MAIN_A72_ECC_AGGR0_DED_INT:
+            if ((void *)pInstance->eccCallBackFunction != ((void *)0u)) {
+                /* Call back function for Double bit ECC error */
+                pInstance->eccCallBackFunction(SDR_ESM_ECC_PARAM_MAIN_A72_AGGR0_DED_ERROR ,
+                                                    SDR_ESM_ERRORADDR_INVALID);
+                handledFlag = ((bool)true);
+            }
+            break;
+
+        case SDR_ESM_MCU_CBASS_ECC_AGGR_SEC_INT:
+            if ((void *)pInstance->eccCallBackFunction != ((void *)0u)) {
+                /* Call back function for Single bit ECC error */
+                pInstance->eccCallBackFunction(SDR_ESM_ECC_PARAM_MCU_CBASS_SEC_ERROR,
+                                                    SDR_ESM_ERRORADDR_INVALID);
+                handledFlag = ((bool)true);
+            }
+            break;
+
+        case SDR_ESM_MCU_CBASS_ECC_AGGR_DED_INT:
+            if ((void *)pInstance->eccCallBackFunction != ((void *)0u)) {
+                /* Call back function for Single bit ECC error */
+                pInstance->eccCallBackFunction(SDR_ESM_ECC_PARAM_MCU_CBASS_DED_ERROR,
+                                                    SDR_ESM_ERRORADDR_INVALID);
+                handledFlag = ((bool)true);
+            }
+            break;
+#endif
         default:
             /* No actions for other ESM Events */
             break;

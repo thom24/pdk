@@ -28,9 +28,8 @@ SRCS_COMMON += sdtf_platform.c \
 ifeq ($(ISA),$(filter $(ISA), a53, a72))
   LNKFLAGS_LOCAL_$(CORE) += --entry Entry
 endif
-ifeq ($(SOC),$(filter $(SOC), j721e am65xx))
-  EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/diag/sdr/test/sdtf-test/build/r5f/linker_r5.lds
-endif
+
+EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/diag/sdr/test/sdtf-test/build/r5f/$(SOC)/linker_r5.lds
 
 # Common source files and CFLAGS across all platforms and cores
 PACKAGE_SRCS_COMMON = . ../ ../../

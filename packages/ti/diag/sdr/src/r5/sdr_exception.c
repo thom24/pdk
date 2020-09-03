@@ -175,7 +175,10 @@ void SDR_EXCEPTION_prefetchAbortExptnHandler(void *param)
         if ((void *)SDR_EXCEPTION_instance.ECCCallBackFunction != ((void *)0u)) {
             SDR_EXCEPTION_instance.ECCCallBackFunction(
                 SDR_LOCAL_EXCEPTION_DED_ERROR,
-                ifarValue);
+                ifarValue,
+                SDR_ESM_ERRORRAMID_INVALID,
+                SDR_ESM_ERRORBITOFFSET_INVALID,
+                SDR_ESM_ERRORBITGROUP_INVALID);
         }
     } else if ((ifsrValue & SDR_EXCEPTION_ASYNC_PARITY_OR_ECC_ERROR_MASK)
             == SDR_EXCEPTION_ASYNC_PARITY_OR_ECC_ERROR_MASK) {
@@ -183,7 +186,10 @@ void SDR_EXCEPTION_prefetchAbortExptnHandler(void *param)
             if ((void *)SDR_EXCEPTION_instance.ECCCallBackFunction != ((void *)0u)) {
                 SDR_EXCEPTION_instance.ECCCallBackFunction(
                     SDR_LOCAL_EXCEPTION_DED_ERROR,
-                    SDR_ESM_ERRORADDR_INVALID);
+                    SDR_ESM_ERRORADDR_INVALID,
+                    SDR_ESM_ERRORRAMID_INVALID,
+                    SDR_ESM_ERRORBITOFFSET_INVALID,
+                    SDR_ESM_ERRORBITGROUP_INVALID);
             }
     } else {
         /* Execute callback function */
@@ -221,7 +227,10 @@ void SDR_EXCEPTION_dataAbortExptnHandler(void *param)
        if ((void *)SDR_EXCEPTION_instance.ECCCallBackFunction != ((void *)0u)) {
            SDR_EXCEPTION_instance.ECCCallBackFunction(
                SDR_ESM_ECC_PARAM_MCU_CPU0_DED_ERROR,
-               dfarValue);
+               dfarValue,
+               SDR_ESM_ERRORRAMID_INVALID,
+               SDR_ESM_ERRORBITOFFSET_INVALID,
+               SDR_ESM_ERRORBITGROUP_INVALID);
        }
    } else if ((dfsrValue & SDR_EXCEPTION_ASYNC_PARITY_OR_ECC_ERROR_MASK)
            == SDR_EXCEPTION_ASYNC_PARITY_OR_ECC_ERROR_MASK) {
@@ -229,7 +238,10 @@ void SDR_EXCEPTION_dataAbortExptnHandler(void *param)
            if ((void *)SDR_EXCEPTION_instance.ECCCallBackFunction != ((void *)0u)) {
                SDR_EXCEPTION_instance.ECCCallBackFunction(
                    SDR_ESM_ECC_PARAM_MCU_CPU0_DED_ERROR,
-                   SDR_ESM_ERRORADDR_INVALID);
+                   SDR_ESM_ERRORADDR_INVALID,
+                   SDR_ESM_ERRORRAMID_INVALID,
+                   SDR_ESM_ERRORBITOFFSET_INVALID,
+                   SDR_ESM_ERRORBITGROUP_INVALID);
            }
    } else {
        /* Get the fault address */

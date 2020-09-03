@@ -185,6 +185,15 @@ typedef enum {
 /** \brief Address field: Error Address invalid */
 #define SDR_ESM_ERRORADDR_INVALID (0xffffffffu)
 
+/** \brief Address field: Error RAM ID invalid */
+#define SDR_ESM_ERRORRAMID_INVALID (0xffffffffu)
+
+/** \brief Address field: Error Bit Error Offset invalid */
+#define SDR_ESM_ERRORBITOFFSET_INVALID (0xffffffffffffffffu)
+
+/** \brief Address field: Error Bit Error Group invalid */
+#define SDR_ESM_ERRORBITGROUP_INVALID (0xffffffffu)
+
 /** \brief Maximum number of EVENT words */
 #define SDR_ESM_MAX_EVENT_MAP_NUM_WORDS (32u)
 
@@ -206,6 +215,21 @@ typedef uint32_t sdrEsmEccErrorSource_t;
 #define SDR_ESM_ECC_PARAM_MCU_CPU1_SEC_ERROR (3u)
 /** \brief MCU CPU1 detected 2-bit ECC error source */
 #define SDR_ESM_ECC_PARAM_MCU_CPU1_DED_ERROR (4u)
+/** \brief MCU CBASS detected 1-bit ECC error source */
+#define SDR_ESM_ECC_PARAM_MCU_CBASS_SEC_ERROR (5u)
+/** \brief MCU CBASS detected 2-bit ECC error source */
+#define SDR_ESM_ECC_PARAM_MCU_CBASS_DED_ERROR (6u)
+
+
+/** \brief Main MSMC ECC AGGR0 detected 1-bit ECC error source */
+#define SDR_ESM_ECC_PARAM_MAIN_MSMC_AGGR0_SEC_ERROR (10001u)
+/** \brief Main MSMC ECC AGGR0  detected 2-bit ECC error source */
+#define SDR_ESM_ECC_PARAM_MAIN_MSMC_AGGR0_DED_ERROR (10002u)
+/** \brief Main A72 ECC AGGR0 detected 1-bit ECC error source */
+#define SDR_ESM_ECC_PARAM_MAIN_A72_AGGR0_SEC_ERROR (10003u)
+/** \brief Main A72 ECC AGGR0 detected 2-bit ECC error source */
+#define SDR_ESM_ECC_PARAM_MAIN_A72_AGGR0_DED_ERROR (10004u)
+
 /* @} */
 
 /* @} */

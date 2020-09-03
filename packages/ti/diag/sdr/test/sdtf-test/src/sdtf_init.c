@@ -63,7 +63,8 @@
 #endif
 
 /* Defines */
-#define MAX_MEM_SECTIONS (8u)
+#define MCU_R5F_MAX_MEM_SECTIONS   (8u)
+#define MCU_CBASS_MAX_MEM_SECTIONS (3u)
 
 /* Function prototypes */
 void SDTF_copyResetVector(void);
@@ -183,7 +184,7 @@ SDR_ESM_InitConfig_t SDTF_esmInitConfig_MAIN =
      *   and PCIE events */
 };
 
-static SDR_ECC_MemSubType SDTF_R5FCoresubMemTypeList[MAX_MEM_SECTIONS] =
+static SDR_ECC_MemSubType SDTF_R5FCoresubMemTypeList[MCU_R5F_MAX_MEM_SECTIONS] =
 {
     SDR_ECC_R5F_MEM_SUBTYPE_ATCM0_BANK0_VECTOR_ID,
     SDR_ECC_R5F_MEM_SUBTYPE_ATCM0_BANK1_VECTOR_ID,
@@ -195,11 +196,27 @@ static SDR_ECC_MemSubType SDTF_R5FCoresubMemTypeList[MAX_MEM_SECTIONS] =
 };
 static SDR_ECC_InitConfig_t SDTF_R5FCoreECCInitConfig =
 {
-    .numRams = MAX_MEM_SECTIONS,
+    .numRams = MCU_R5F_MAX_MEM_SECTIONS,
     /**< Number of Rams ECC is enabled  */
     .pMemSubTypeList = &(SDTF_R5FCoresubMemTypeList[0]),
     /**< Sub type list  */
 };
+
+static SDR_ECC_MemSubType SDTF_MCUCBASSsubMemTypeList[MCU_CBASS_MAX_MEM_SECTIONS] =
+{
+    SDR_ECC_MCU_CBASS_MEM_SUBTYPE_WR_RAMECC_ID,
+    SDR_ECC_MCU_CBASS_MEM_SUBTYPE_RD_RAMECC_ID,
+    SDR_ECC_MCU_CBASS_MEM_SUBTYPE_EDC_CTRL_ID,
+};
+
+static SDR_ECC_InitConfig_t SDTF_MCUCBASSECCInitConfig =
+{
+    .numRams = MCU_CBASS_MAX_MEM_SECTIONS,
+    /**< Number of Rams ECC is enabled  */
+    .pMemSubTypeList = &(SDTF_MCUCBASSsubMemTypeList[0]),
+    /**< Sub type list  */
+};
+
 
 HwiP_Handle SDTF_EsmHiHwiPHandle;
 HwiP_Handle SDTF_EsmLoHwiPHandle;
@@ -396,10 +413,18 @@ int32_t SDTF_negativeInitTests (void)
             retValue = -1;
         }
     }
+
+    if (retValue == 0) {
+        result = SDR_ECC_init(SDR_ECC_MEMTYPE_MCU_CBASS_ECC_AGGR0, NULL);
+        if (result == SDR_PASS) {
+            /* Negative test failed */
+            SDTF_printf("SDTF_init: Error ECC Negative tests: result = %d\n", result);
+            retValue = -1;
+        }
+    }
     return retValue;
 }
 #endif
-
 
 /*********************************************************************
 * @fn      SDTF_init
@@ -413,6 +438,7 @@ int32_t SDTF_negativeInitTests (void)
 int32_t SDTF_init (void)
 {
     int32_t retValue=0;
+
     SDR_Result result;
 #ifdef SDTF_BOARD
     Board_initCfg boardCfg;
@@ -502,6 +528,45 @@ int32_t SDTF_init (void)
             retValue = -1;
         } else {
             SDTF_printf("\nSDTF_init: R5F Core Init ECC complete \n");
+        }
+    }
+
+    if (retValue == 0) {
+        /* Initialize ECC */
+        result = SDR_ECC_init(SDR_ECC_MEMTYPE_MCU_CBASS_ECC_AGGR0, &SDTF_MCUCBASSECCInitConfig);
+        if (result != SDR_PASS) {
+            /* print error and quit */
+             SDTF_printf("SDTF_init: Error initializing R5F core ECC: result = %d\n", result);
+
+            retValue = -1;
+        } else {
+            SDTF_printf("\nSDTF_init: R5F Core Init ECC complete \n");
+        }
+    }
+
+    if (retValue == 0) {
+        /* Initialize ECC callbacks within the MCU ESM */
+        result = SDR_ECC_initEsm(SDR_ESM_INSTANCE_MCU);
+        if (result != SDR_PASS) {
+            /* print error and quit */
+             SDTF_printf("SDTF_init: Error initializing ECC callback for MCU ESM: result = %d\n", result);
+
+            retValue = -1;
+        } else {
+            SDTF_printf("\nSDTF_init: ECC Callback Init complete for MCU ESM \n");
+        }
+    }
+
+    if (retValue == 0) {
+        /* Initialize ECC callbacks within the Main ESM */
+        result = SDR_ECC_initEsm(SDR_ESM_INSTANCE_MAIN);
+        if (result != SDR_PASS) {
+            /* print error and quit */
+             SDTF_printf("SDTF_init: Error initializing ECC callback for Main ESM: result = %d\n", result);
+
+            retValue = -1;
+        } else {
+            SDTF_printf("\nSDTF_init: ECC Callback Init complete for Main ESM \n");
         }
     }
 
@@ -610,10 +675,16 @@ void SDR_ESM_applicationCallbackFunction(SDR_ESM_InstanceType esmInstType,
 
 }
 
-void SDR_ECC_applicationCallbackFunction(uint32_t errorSrc, uint32_t address){
+void SDR_ECC_applicationCallbackFunction(uint32_t errorSrc,
+                                         uint32_t address,
+                                         uint32_t ramId,
+                                         uint64_t bitErrorOffset,
+                                         uint32_t bitErrorGroup){
 
-    SDTF_printf("\n  ECC Error Call back function called : errorSrc 0x%x, address 0x%x. \n",
-                errorSrc, address);
+    SDTF_printf("\n  ECC Error Call back function called : errorSrc 0x%x, address 0x%x, " \
+                "ramId %d, bitErrorOffset 0x%04x%04x, bitErrorGroup %d\n",
+                errorSrc, address, ramId, (uint32_t)(bitErrorOffset >> 32),
+                (uint32_t)(bitErrorOffset & 0x00000000FFFFFFFF), bitErrorGroup);
     SDTF_printf("  Take action \n");
 
     /* Any additional customer specific actions can be added here */

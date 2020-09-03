@@ -36,6 +36,7 @@
  */
 
 #include <stdint.h>
+#include <string.h>
 
 #include <sdr_ecc.h>
 
@@ -866,6 +867,210 @@ int32_t SDTF_runECC2BitB1TCM0Bank1SelfTest(void)
     } else {
         SDTF_printf("\n B1TCM0 Bank1 Double bit error self test: pErrMem 0x%p fixed location once test complete",
                     injectErrorConfig.pErrMem);
+        SDTF_printf("\n Cycles taken %u", SDTF_profileDelta(SDTF_PROFILE_ONESHOT));
+    }
+
+    return retVal;
+}
+
+
+/*********************************************************************
+ * @fn      SDTF_runECC1BitCBASSSelfTest
+ *
+ * @brief   Execute ECC Single bit error self test on CBASS ECC aggregator
+ *
+ * @param   None
+ *
+ * @return  0 : Success; < 0 for failures
+ */
+int32_t SDTF_runECC1BitCBASSSelfTest(void)
+{
+    SDR_Result result;
+    int32_t retVal=0;
+    uint32_t subType;
+
+    SDR_ECC_InjectErrorConfig_t injectErrorConfig;
+
+    SDTF_printf("\n CBASS Single bit error self test: starting");
+
+    memset(&injectErrorConfig, 0, sizeof(injectErrorConfig));
+
+    SDTF_profileBegin(SDTF_PROFILE_ONESHOT);
+    /* Run one shot test for CBASS 2 bit error */
+    /* Note the address is relative to start of ram */
+    injectErrorConfig.pErrMem = (uint32_t *)(0u);
+
+    injectErrorConfig.flipBitMask = 0x1;
+    injectErrorConfig.chkGrp = 0x0;
+    subType = SDR_ECC_MCU_CBASS_MEM_SUBTYPE_EDC_CTRL_ID;
+
+    result = SDR_ECC_selfTest(SDR_ECC_MEMTYPE_MCU_CBASS_ECC_AGGR0,
+                              subType,
+                              SDR_INJECT_ECC_ERROR_FORCING_1BIT_ONCE,
+                              &injectErrorConfig,
+                              1000);
+
+    SDTF_profileEnd(SDTF_PROFILE_ONESHOT);
+
+    if (result != SDR_PASS ) {
+        SDTF_printf("\n CBASS  Single bit error self test: Subtype %d: test failed",
+                    subType);
+        retVal = -1;
+    } else {
+        SDTF_printf("\n CBASS Single bit error self test: Subtype 0x%p test complete",
+                    subType);
+        SDTF_printf("\n Cycles taken %u", SDTF_profileDelta(SDTF_PROFILE_ONESHOT));
+    }
+
+    return retVal;
+}
+
+/*********************************************************************
+ * @fn      SDTF_runECC1BitCBASSInjectTest
+ *
+ * @brief   Execute ECC Single bit error inject test on CBASS ECC aggregator
+ *
+ * @param   None
+ *
+ * @return  0 : Success; < 0 for failures
+ */
+int32_t SDTF_runECC1BitCBASSInjectTest(void)
+{
+    SDR_Result result;
+    int32_t retVal=0;
+    uint32_t subType;
+
+    SDR_ECC_InjectErrorConfig_t injectErrorConfig;
+
+    memset(&injectErrorConfig, 0, sizeof(injectErrorConfig));
+
+    SDTF_printf("\n CBASS Single bit error inject test: starting");
+
+    SDTF_profileBegin(SDTF_PROFILE_ONESHOT);
+    /* Run one shot test for CBASS 2 bit error */
+    /* Note the address is relative to start of ram */
+    injectErrorConfig.pErrMem = (uint32_t *)(0u);
+
+    injectErrorConfig.flipBitMask = 0x1;
+    injectErrorConfig.chkGrp = 0x0;
+    subType = SDR_ECC_MCU_CBASS_MEM_SUBTYPE_EDC_CTRL_ID;
+    result = SDR_ECC_injectError(SDR_ECC_MEMTYPE_MCU_CBASS_ECC_AGGR0,
+                              subType,
+                              SDR_INJECT_ECC_ERROR_FORCING_1BIT_ONCE,
+                              &injectErrorConfig
+                              );
+
+    SDTF_profileEnd(SDTF_PROFILE_ONESHOT);
+
+    if (result != SDR_PASS ) {
+        SDTF_printf("\n CBASS  Single bit error inject test: Subtype %d: test failed",
+                    subType);
+        retVal = -1;
+    } else {
+        SDTF_printf("\n CBASS Single bit error inject test: Subtype 0x%p test complete",
+                    subType);
+        SDTF_printf("\n Cycles taken %u", SDTF_profileDelta(SDTF_PROFILE_ONESHOT));
+    }
+
+    return retVal;
+}
+
+
+/*********************************************************************
+ * @fn      SDTF_runECC2BitCBASSSelfTest
+ *
+ * @brief   Execute ECC Double bit error self test on CBASS ECC aggregator
+ *
+ * @param   None
+ *
+ * @return  0 : Success; < 0 for failures
+ */
+int32_t SDTF_runECC2BitCBASSSelfTest(void)
+{
+    SDR_Result result;
+    int32_t retVal=0;
+    uint32_t subType;
+
+    SDR_ECC_InjectErrorConfig_t injectErrorConfig;
+
+    SDTF_printf("\n CBASS Double bit error self test: starting");
+
+    memset(&injectErrorConfig, 0, sizeof(injectErrorConfig));
+
+    SDTF_profileBegin(SDTF_PROFILE_ONESHOT);
+    /* Run one shot test for CBASS 2 bit error */
+    /* Note the address is relative to start of ram */
+    injectErrorConfig.pErrMem = (uint32_t *)(0u);
+
+    injectErrorConfig.flipBitMask = 0x5;
+    injectErrorConfig.chkGrp = 0x0;
+    subType = SDR_ECC_MCU_CBASS_MEM_SUBTYPE_EDC_CTRL_ID;
+
+    result = SDR_ECC_selfTest(SDR_ECC_MEMTYPE_MCU_CBASS_ECC_AGGR0,
+                              subType,
+                              SDR_INJECT_ECC_ERROR_FORCING_2BIT_ONCE,
+                              &injectErrorConfig,
+                              1000);
+
+    SDTF_profileEnd(SDTF_PROFILE_ONESHOT);
+
+    if (result != SDR_PASS ) {
+        SDTF_printf("\n CBASS  Double bit error self test: Subtype %d: fixed location once test failed",
+                    subType);
+        retVal = -1;
+    } else {
+        SDTF_printf("\n CBASS Double bit error self test: Subtype 0x%p fixed location once test complete",
+                    subType);
+        SDTF_printf("\n Cycles taken %u", SDTF_profileDelta(SDTF_PROFILE_ONESHOT));
+    }
+
+    return retVal;
+}
+
+/*********************************************************************
+ * @fn      SDTF_runECC2BitCBASSInjectTest
+ *
+ * @brief   Execute ECC Doule bit error inject test on CBASS ECC aggregator
+ *
+ * @param   None
+ *
+ * @return  0 : Success; < 0 for failures
+ */
+int32_t SDTF_runECC2BitCBASSInjectTest(void)
+{
+    SDR_Result result;
+    int32_t retVal=0;
+    uint32_t subType;
+
+    SDR_ECC_InjectErrorConfig_t injectErrorConfig;
+
+    memset(&injectErrorConfig, 0, sizeof(injectErrorConfig));
+
+    SDTF_printf("\n CBASS Double bit error inject test: starting");
+
+    SDTF_profileBegin(SDTF_PROFILE_ONESHOT);
+    /* Run one shot test for CBASS 2 bit error */
+    /* Note the address is relative to start of ram */
+    injectErrorConfig.pErrMem = (uint32_t *)(0u);
+
+    injectErrorConfig.flipBitMask = 0x5;
+    injectErrorConfig.chkGrp = 0x0;
+    subType = SDR_ECC_MCU_CBASS_MEM_SUBTYPE_EDC_CTRL_ID;
+    result = SDR_ECC_injectError(SDR_ECC_MEMTYPE_MCU_CBASS_ECC_AGGR0,
+                              subType,
+                              SDR_INJECT_ECC_ERROR_FORCING_2BIT_ONCE,
+                              &injectErrorConfig
+                              );
+
+    SDTF_profileEnd(SDTF_PROFILE_ONESHOT);
+
+    if (result != SDR_PASS ) {
+        SDTF_printf("\n CBASS  Double bit error inject test: Subtype %d: test failed",
+                    subType);
+        retVal = -1;
+    } else {
+        SDTF_printf("\n CBASS Double bit error inject test: Subtype 0x%p test complete",
+                    subType);
         SDTF_printf("\n Cycles taken %u", SDTF_profileDelta(SDTF_PROFILE_ONESHOT));
     }
 

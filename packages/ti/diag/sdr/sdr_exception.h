@@ -84,7 +84,11 @@ extern "C" {
 
 
 /** \brief Format of Call back function for ECC error events */
-typedef void (*SDR_EXCEPTION_ECCCallback_t) (uint32_t intSource, uint32_t errorAddr);
+typedef void (*SDR_EXCEPTION_ECCCallback_t) (uint32_t intSource,
+                                             uint32_t errorAddr,
+                                             uint32_t ramId,
+                                             uint64_t bitErrorOffset,
+                                             uint32_t bitErrorGroup);
 
 /** \brief Format of Call back function for exception */
 typedef void (*SDR_EXCEPTION_Callback_t) (void);
