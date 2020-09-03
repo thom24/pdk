@@ -377,9 +377,12 @@ typedef enum
  *              when used in MAILBOX_MODE_CALLBACK.
  *              The callback can occur in task or HWI context.
  *
- *  @warning    Making Mailbox_read() calls within its own callback
+ *  @warning    For TPR12, making Mailbox_read() calls within its own callback
  *              routines are STRONGLY discouraged as it will impact Task and
  *              System stack size requirements!
+ *              For AM64x, it is advised to call Mailbox_read() within the callback
+ *              routine in this mode, because the interrupt will remain asserted until the
+ *              message is read.
  *
  *  @param      handle                  Mbox_Handle
  *  @param      remoteEndpoint          Remote endpoint
@@ -727,6 +730,14 @@ extern int32_t Mailbox_disableInterrupts(Mbox_Handle handle);
  *  In this mode, application does not know when acknowledgement is received and it may try to write the next message
  *  multiple times until it succeeds as if it is polling for the status of the acknowledgement.
  *
+ * In Mailbox_MODE_FAST: \n
+ *  Mailbox_write() will behave similar to Mailbox_MODE_POLLING, but limited to no error checking is performed in order to
+ *  achieve the best latency. It is the responsibility of the application to ensure that there is sufficient space in
+ *  the mailbox to complete the write operation successfully.
+ *  For performance reasons, no protection and limited error checking is provided in this mode. The application takes the
+ *  responsibility of making sure that access to the API is properly protected.
+ *  Please see the soc-specific documentation for support for this mode as this mode is not supported in all cases.
+ *
  *  @pre    Mailbox_open() has been called
  *
  *
@@ -802,7 +813,8 @@ extern int32_t Mailbox_write(Mbox_Handle handle, const uint8_t *buffer, uint32_t
  * RTOS applications as there is no support for this feature with RTOS currently. If this option is enabled for RTOS, it
  * will be ignored and fall back to the regular interrupt registration path.
  *
- * In any of the modes described above, Mailbox_readFlush() needs to be issued after the message is fully read by the application.
+ * For TPR12, in any of the modes described above, Mailbox_readFlush() needs to be issued after the message is fully
+ * read by the application.
  *
  *  @pre    Mailbox_open() has been called
  *
@@ -828,6 +840,7 @@ extern int32_t Mailbox_read(Mbox_Handle handle, uint8_t *buffer, uint32_t size);
  * Remote endpoint can not send a new message to the local endpoint until Mailbox_readFlush() is issued by the local endpoint.
  * Once Mailbox_readFlush() is issued, the local endpoint must assume that the previously received message
  * is no longer in the mailbox buffer and subsequent Mailbox_read() will return no data until a new message arrives in the mailbox.
+ * This applies only for TPR12 Mailbox LLD. It is not needed for AM64X.
  *
  *  @pre    Mailbox_open() has been called
  *
