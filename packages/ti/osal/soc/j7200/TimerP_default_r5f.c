@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2019, Texas Instruments Incorporated
+ * Copyright (c) 2015-2020, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,8 +48,6 @@
  * Main Domain A72: configures Main domain's DM Timer instance 0 - 19
  *
  */
-
-#if (BUILD_MCU)
 TimerP_dmTimerDefault gDmTimerPInfoTbl[OSAL_NONOS_MAX_TIMERP_PER_SOC] = {
     {
         "DMTimer0",
@@ -172,152 +170,6 @@ TimerP_dmTimerDefault gDmTimerPInfoTbl[OSAL_NONOS_MAX_TIMERP_PER_SOC] = {
         TIMERP_EVENT_NOT_AVAILABLE
     }
 };
-#endif /* MCU - R5F*/
-
-#if defined (BUILD_MPU)
-TimerP_dmTimerDefault gDmTimerPInfoTbl[TimerP_numTimerDevices] = {
-  /* Timer ID 0 */
-  {
-    "DMTimer0",
-    (uint32_t)CSL_TIMER0_CFG_BASE,
-    (int32_t)CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER0_INTR_PEND_0,
-    TIMERP_EVENT_NOT_AVAILABLE
-  },
-  /* Timer ID 1 */
-  {
-    "DMTimer1",
-    (uint32_t)CSL_TIMER1_CFG_BASE,
-    (int32_t)CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER1_INTR_PEND_0,
-    TIMERP_EVENT_NOT_AVAILABLE
-  },
-  /* Timer ID 2 */
-  {
-    "DMTimer2",
-    (uint32_t)CSL_TIMER2_CFG_BASE,
-    (int32_t)CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER2_INTR_PEND_0,
-    TIMERP_EVENT_NOT_AVAILABLE
-  },
-  /* Timer ID 3 */
-  {
-    "DMTimer3",
-    (uint32_t)CSL_TIMER3_CFG_BASE,
-    (int32_t)CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER3_INTR_PEND_0,
-    TIMERP_EVENT_NOT_AVAILABLE
-  },
-  /* Timer ID 4 */
-  {
-    "DMTimer4",
-    (uint32_t)CSL_TIMER4_CFG_BASE,
-    (int32_t)CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER4_INTR_PEND_0,
-    TIMERP_EVENT_NOT_AVAILABLE
-  },
-  /* Timer ID 5 */
-  {
-    "DMTimer5",
-    (uint32_t)CSL_TIMER5_CFG_BASE,
-    (int32_t)CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER5_INTR_PEND_0,
-    TIMERP_EVENT_NOT_AVAILABLE
-  },
-  /* Timer ID 6 */
-  {
-    "DMTimer6",
-    (uint32_t)CSL_TIMER6_CFG_BASE,
-    (int32_t)CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER6_INTR_PEND_0,
-    TIMERP_EVENT_NOT_AVAILABLE
-  },
-   /* Timer ID 7 */
-  {
-    "DMTimer7",
-    (uint32_t)CSL_TIMER7_CFG_BASE,
-    (int32_t)CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER7_INTR_PEND_0,
-    TIMERP_EVENT_NOT_AVAILABLE
-  },
-  /* Timer ID 8 */
-  {
-    "DMTimer8",
-    (uint32_t)0x0,
-    (int32_t)CSLR_MCU_R5FSS0_CORE0_INTR_MCU_TIMER8_INTR_PEND_0,
-    TIMERP_EVENT_NOT_AVAILABLE
-  },
-  /* Timer ID 9 */
-  {
-    "DMTimer9",
-    (uint32_t)0x0,
-    (int32_t)CSLR_MCU_R5FSS0_CORE0_INTR_MCU_TIMER9_INTR_PEND_0,
-    TIMERP_EVENT_NOT_AVAILABLE
-  },
-  /* Timer ID 10 */
-  {
-    "DMTimer10",
-    (uint32_t)0x0,
-    (int32_t)CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER10_INTR_PEND_0,
-    TIMERP_EVENT_NOT_AVAILABLE
-  },
-  /* Timer ID 11 */
-  {
-    "DMTimer11",
-    (uint32_t)0x0,
-    (int32_t)CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER11_INTR_PEND_0,
-    TIMERP_EVENT_NOT_AVAILABLE
-  },
-  /* Timer ID 12 */
-  {
-    "DMTimer12",
-    (uint32_t)0x0,
-    (int32_t)CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER12_INTR_PEND_0,
-    TIMERP_EVENT_NOT_AVAILABLE
-  },
-  /* Timer ID 13 */
-  {
-    "DMTimer13",
-    (uint32_t)0x0,
-    (int32_t)CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER13_INTR_PEND_0,
-    TIMERP_EVENT_NOT_AVAILABLE
-  },
-  /* Timer ID 14 */
-  {
-    "DMTimer14",
-    (uint32_t)0x0,
-    (int32_t)CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER14_INTR_PEND_0,
-    TIMERP_EVENT_NOT_AVAILABLE
-  },
-  /* Timer ID 15 */
-  {
-    "DMTimer15",
-    (uint32_t)0x0,
-    (int32_t)CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER15_INTR_PEND_0,
-    TIMERP_EVENT_NOT_AVAILABLE
-  },
-  /* Timer ID 16 */
-  {
-    "DMTimer16",
-    (uint32_t)0x0,
-    (int32_t)CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER16_INTR_PEND_0,
-    TIMERP_EVENT_NOT_AVAILABLE
-  },
-  /* Timer ID 17 */
-  {
-    "DMTimer17",
-    (uint32_t)0x0,
-    (int32_t)CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER17_INTR_PEND_0,
-    TIMERP_EVENT_NOT_AVAILABLE
-  },
-  /* Timer ID 18 */
-  {
-    "DMTimer18",
-    (uint32_t)0x0,
-    (int32_t)CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER18_INTR_PEND_0,
-    TIMERP_EVENT_NOT_AVAILABLE
-  },
-  /* Timer ID 19 */
-  {
-    "DMTimer19",
-    (uint32_t)0x0,
-    (int32_t)CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER19_INTR_PEND_0,
-    TIMERP_EVENT_NOT_AVAILABLE
-  }
-};
-#endif /* Main domain compute */
 
 /* Returns the default frequency lower 32 bits */
 int32_t TimerP_getDefaultFreqLo(uint32_t timerId)
@@ -335,7 +187,6 @@ int32_t TimerP_getDefaultFreqHi(uint32_t timerId)
     return(TIMERP_TIMER_FREQ_HI);
 }
 
-#if defined (BUILD_MCU)
 uint32_t TimerP_mapId(uint32_t id)
 {
     /* No remaps required */
@@ -409,8 +260,5 @@ inline int32_t TimerP_getPreferredDefInst(void)
     }
     return (instVal);
 }
-
-#endif /* MCU Specific */
-
 
 /* Nothing past this point */
