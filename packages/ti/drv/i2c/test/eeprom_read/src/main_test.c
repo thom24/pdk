@@ -78,7 +78,9 @@
 #include <ti/drv/sciclient/sciclient.h>
 #endif
 
+#if defined (BUILD_C7X_1)
 #include <ti/csl/csl_clec.h>
+#endif
 
 #include <ti/csl/arch/r5/csl_arm_r5.h>
 
