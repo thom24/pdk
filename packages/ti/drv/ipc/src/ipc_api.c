@@ -346,6 +346,8 @@ static int32_t RPMessage_enqueMsg(RPMessage_EndptPool *pool, RPMessage_MsgHeader
 #endif /* IPC_EXCLUDE_CTRL_TASKS */
     if (NULL != obj)
     {
+        key = pOsalPrms->lockHIsrGate(module.gateSwi);
+
         if (NULL != obj->recv_buffer)
         {
             memcpy(obj->recv_buffer, msg->payload, msg->dataLen);
@@ -353,6 +355,8 @@ static int32_t RPMessage_enqueMsg(RPMessage_EndptPool *pool, RPMessage_MsgHeader
             obj->payload.len = msg->dataLen;
             obj->payload.src = msg->srcAddr;
             obj->payload.procId = msg->srcProcId;
+
+            pOsalPrms->unLockHIsrGate(module.gateSwi, key);
 
             if (NULL != gIpcObject.initPrms.newMsgFxn)
             {
@@ -374,8 +378,7 @@ static int32_t RPMessage_enqueMsg(RPMessage_EndptPool *pool, RPMessage_MsgHeader
             /* Allocate a buffer to copy the payload: */
             size = msg->dataLen + sizeof(RPMessage_MsgElem);
 
-            /* HeapBuf_alloc() is non-blocking, so needs protection: */
-            key = pOsalPrms->lockHIsrGate(module.gateSwi);
+            /* HeapBuf_alloc() is non-blocking, so needs protection: HIsrGate has already been taken*/
             payload = (RPMessage_MsgElem *)IpcUtils_HeapAlloc(&obj->heap, size, 0);
 
             if (payload != NULL)
