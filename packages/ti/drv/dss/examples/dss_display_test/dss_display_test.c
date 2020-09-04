@@ -162,10 +162,10 @@ int32_t Dss_displayTest(void)
     Utils_prfLoadPrintAll(TRUE, 0);
     Utils_prfLoadCalcReset();
     Utils_prfLoadUnRegister(TaskP_self());
-    App_print("Number of frames = %d, elapsed msec = %d, fps = %d\n",
+    App_print("Number of frames = %d, elapsed msec = %d, fps = %0.2f\n",
             DISP_APP_RUN_COUNT,
             gTestStopTime - gTestStartTime,
-            (uint32_t)((float)DISP_APP_RUN_COUNT / ((gTestStopTime - gTestStartTime)/1000.0)));
+            (float)((float)DISP_APP_RUN_COUNT / ((gTestStopTime - gTestStartTime)/1000.0)));
 
 #endif
 
@@ -1079,12 +1079,14 @@ static int32_t DispApp_pipeCbFxn(Fvid2_Handle handle, void *appData)
 
 void App_print(const char *format, ...)
 {
-    va_list     vaArgPtr;
-    va_start(vaArgPtr, format);
+    char printBuffer[DISP_APP_PRINT_BUFFER_SIZE];
+    va_list arguments;
 
-    DSS_log(format, vaArgPtr);
-    va_end(vaArgPtr);
-
-    return;
+    /* Start the var args processing. */
+    va_start(arguments, format);
+    vsnprintf (printBuffer, sizeof(printBuffer), format, arguments);
+    DSS_log(printBuffer);
+    /* End the var args processing. */
+    va_end(arguments);
 }
 

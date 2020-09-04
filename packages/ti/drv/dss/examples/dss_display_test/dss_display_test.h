@@ -56,7 +56,7 @@ extern "C" {
 #if defined (SIMULATOR)
 #define DISP_APP_RUN_COUNT              (0x10U)
 #else
-#define DISP_APP_RUN_COUNT              (0x1000U)
+#define DISP_APP_RUN_COUNT              ((uint32_t)2000U)
 #endif
 
 /* Worst case frames per handle */
@@ -141,6 +141,8 @@ extern "C" {
 #define DSS_log                printf
 #endif
 
+/* Print buffer character limit for prints- UART or CCS Console */
+#define DISP_APP_PRINT_BUFFER_SIZE                   ((uint32_t)4000)
 /* ========================================================================== */
 /*                         Structure Declarations                             */
 /* ========================================================================== */
