@@ -76,7 +76,7 @@
  *
  *  \return  address   address of the thread status
  */
-static inline uint32_t Sciclient_threadStatusReg(uint32_t thread);
+static inline uintptr_t Sciclient_threadStatusReg(uint32_t thread);
 
 /**
  *  \brief   Read a 32 bit word from the thread.
@@ -240,10 +240,10 @@ void sciclient_util_byte_copy(uint8_t *src, uint8_t *dest,uint32_t num_bytes)
   int32_t i;
   uint8_t *srcP=src;
   uint8_t *destP=dest;
-  
-  for(i=0;i<num_bytes;i++) { 
+
+  for(i=0;i<num_bytes;i++) {
 	 *destP++ = *srcP++;
-  }  
+  }
 }
 
 #if defined(_TMS320C6X)
@@ -726,7 +726,7 @@ int32_t Sciclient_service(const Sciclient_ReqPrm_t *pReqPrm,
         }
         header = &dummyHdr->hdr;
         sciclient_util_byte_copy((uint8_t *)&(pReqPrm->messageType),(uint8_t *)&(header->type),sizeof(pReqPrm->messageType));
-        
+
         header->host = (uint8_t) gSciclientMap[contextId].hostId;
         localSeqId = (uint8_t) gSciclientHandle.currSeqId;
         header->seq = localSeqId;
@@ -739,9 +739,9 @@ int32_t Sciclient_service(const Sciclient_ReqPrm_t *pReqPrm,
             uint8_t *pDestFlags = ((uint8_t*)&header->flags) + numBytes;
             *pDestFlags = *pFlags;
             pFlags++;
-             
+
         }
-        
+
         gSciclientHandle.currSeqId = (gSciclientHandle.currSeqId + 1U) %
                                     SCICLIENT_MAX_QUEUE_SIZE;
         if (gSciclientHandle.currSeqId == 0U)
@@ -784,7 +784,8 @@ int32_t Sciclient_service(const Sciclient_ReqPrm_t *pReqPrm,
     if ((gSciclientHandle.opModeFlag ==
          SCICLIENT_SERVICE_OPERATION_MODE_POLLED) &&
         (status == CSL_PASS) &&
-        ((pReqPrm->flags & TISCI_MSG_FLAG_MASK) != 0U))
+        ((pReqPrm->flags & TISCI_MSG_FLAG_MASK) != 0U) &&
+        (pLocalRespHdr != NULL))
     {
         /* Check if some message is received*/
         while (((HW_RD_REG32(Sciclient_threadStatusReg(rxThread)) &
@@ -1058,9 +1059,9 @@ static void Sciclient_ISR(uintptr_t arg)
     //return;
 }
 
-static inline uint32_t Sciclient_threadStatusReg(uint32_t thread)
+static inline uintptr_t Sciclient_threadStatusReg(uint32_t thread)
 {
-    return ((uint32_t)(uintptr_t)(gSciclient_secProxyCfg.pSecProxyRtRegs) +
+    return ((uintptr_t)(gSciclient_secProxyCfg.pSecProxyRtRegs) +
         CSL_SEC_PROXY_RT_THREAD_STATUS(thread));
 }
 
