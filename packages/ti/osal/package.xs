@@ -16,14 +16,14 @@ function getLibs(prog)
     var suffix = prog.build.target.suffix;
 
     var name = this.$name + ".a" + suffix;
-	
-    var soc  = this.Settings.socType;	
-    
+
+    var soc  = this.Settings.socType;
+
     var osType = this.Settings.osType;
-	
+
     soc = soc.toLowerCase();
     osType = osType.toLowerCase();
-	
+
     /* Read LIBDIR variable */
     var lib = java.lang.System.getenv("LIBDIR");
 
@@ -36,17 +36,17 @@ function getLibs(prog)
     }
 
 	/* Get the Soc layer for bare metal case */
-    if (osType.equals("tirtos")) 
+    if (osType.equals("tirtos"))
     {
         lib = lib + "/" + osType;
         if (!soc)
         {
-            
+            throw new Error ("Soc is not defined");
         }
         else if (soc.substring(0, 2) == "am")
         {
 
-          if( soc.substring(0, 3) != "am6") 
+          if( soc.substring(0, 3) != "am6")
           {
 
             /* replace the last charecter in soc to x */
@@ -55,14 +55,14 @@ function getLibs(prog)
           }
           lib = lib + "/" + soc;
         }
-        else 
+        else
         {
             lib = lib + "/" + soc;
         }
     }
-	
+
 	/* Get the Soc layer for bare metal case */
-    if (osType.equals("nonos")) 
+    if (osType.equals("nonos"))
     {
         lib = lib + "/" + osType;
         if (!soc)
@@ -76,7 +76,7 @@ function getLibs(prog)
             soc = soc.concat("x");
             lib = lib + "/" + soc;
         }
-        else 
+        else
         {
             lib = lib + "/" + soc;
         }
@@ -96,7 +96,7 @@ function getLibs(prog)
     else if (java.lang.String(suffix).contains('e9') )
         lib = lib + "/arm9";
     else if (java.lang.String(suffix).contains('a8') )
-        lib = lib + "/a8";  
+        lib = lib + "/a8";
     else if (java.lang.String(suffix).contains('a53'))
 	lib = lib + "/a53";
     else if (java.lang.String(suffix).contains('r5f'))
@@ -113,7 +113,7 @@ function getLibs(prog)
             lib = lib + "/" + profile;
             break;
         }
-    }	
+    }
 
     /* Get library name with path */
     lib = lib + "/" + name;
@@ -135,7 +135,7 @@ function init() {
  *  ======== package.close ========
  */
 function close()
-{    
+{
     if (xdc.om.$name != 'cfg') {
         return;
     }
