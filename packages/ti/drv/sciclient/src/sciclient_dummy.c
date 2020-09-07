@@ -224,6 +224,30 @@ int32_t Sciclient_rmSetProxyCfg(const struct tisci_msg_rm_proxy_cfg_req *req, ui
     int32_t r = CSL_PASS;
     return r;
 }
+int32_t Sciclient_rmIrqTranslateIrOutput(uint16_t   ir_dev_id,
+                                         uint16_t   ir_output,
+                                         uint16_t   dst_dev_id,
+                                         uint16_t   *dst_input)
+{
+    int32_t r = CSL_PASS;
+    return r;
+}
+int32_t Sciclient_rmIrqTranslateIaOutput(uint16_t   ia_dev_id,
+                                         uint16_t   ia_output,
+                                         uint16_t   dst_dev_id,
+                                         uint16_t   *dst_input)
+{
+    int32_t r = CSL_PASS;
+    return r;
+}
+int32_t Sciclient_rmIrqTranslateIrqInput(uint16_t   dst_dev_id,
+                                         uint16_t   dst_input,
+                                         uint16_t   src_dev_id,
+                                         uint16_t   *src_output)
+{
+    int32_t r = CSL_PASS;
+    return r;
+}
 #endif
 
 #if defined (BUILD_MCU1_0)
