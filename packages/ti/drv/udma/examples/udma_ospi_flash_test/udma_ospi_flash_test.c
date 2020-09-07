@@ -1412,6 +1412,10 @@ static int32_t App_ospiFlashInit(uint32_t clk)
     int32_t status = UDMA_SOK;
 
     status += OspiFlash_ospiConfigClk(clk);
+    if(UDMA_SOK == status)
+    {
+        App_printNum("\n OSPI RCLK running at %d Hz. \n", clk);
+    }
 
     status += OspiFlash_ospiOpen(OSPI_FLASH_WRITE_TIMEOUT, OSPI_FLASH_CHECK_IDLE_DELAY, FALSE);
 

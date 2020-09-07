@@ -83,8 +83,7 @@ int main(void)
 
     boardCfg = BOARD_INIT_PINMUX_CONFIG |
                BOARD_INIT_MODULE_CLOCK |
-               BOARD_INIT_UART_STDIO  |
-               BOARD_INIT_PLL ;
+               BOARD_INIT_UART_STDIO;
     Board_init(boardCfg);
 
     /* Configure GTC Timer for profiling */
