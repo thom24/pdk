@@ -85,15 +85,9 @@ extern "C" {
 #define UDMA_TEST_INST_ID_MAIN_BC       (UDMA_INST_ID_MAIN_0)
 #define UDMA_TEST_INST_ID_MCU_BC        (UDMA_INST_ID_MCU_0)
 
-#define UDMA_TEST_RF_MAIN_BC_HC         (UDMA_TEST_RF_SOC | \
-                                         UDMA_TEST_RF_CORE_MPU1_0 | \
-                                         UDMA_TEST_RF_CORE_MCU2_0 | \
-                                         UDMA_TEST_RF_CORE_MCU2_1 | \
-                                         UDMA_TEST_RF_CFG_DEF)
+#define UDMA_TEST_RF_MAIN_BC_HC         (0U)
 #define UDMA_TEST_RF_MAIN_BC            (UDMA_TEST_RF_SOC | UDMA_TEST_RF_CORE_ALL | UDMA_TEST_RF_CFG_DEF)
-#define UDMA_TEST_RF_MCU_BC_HC          (UDMA_TEST_RF_SOC | \
-                                         UDMA_TEST_RF_CORE_MCU1_0 | \
-                                         UDMA_TEST_RF_CFG_DEF)
+#define UDMA_TEST_RF_MCU_BC_HC          (0U)
 #define UDMA_TEST_RF_MCU_BC             (UDMA_TEST_RF_SOC | \
                                          UDMA_TEST_RF_CORE_MPU1_0 | \
                                          UDMA_TEST_RF_CORE_MCU2_0 | \
@@ -126,37 +120,37 @@ extern "C" {
 #if defined (BUILD_MPU1_0)
 #define UDMA_TEST_RF_CORE               (UDMA_TEST_RF_CORE_MPU1_0)
 #define UDMA_TEST_MAX_MAIN_BC_UHC_CH    (0U)
-#define UDMA_TEST_MAX_MAIN_BC_HC_CH     (4U)
+#define UDMA_TEST_MAX_MAIN_BC_HC_CH     (0U)
 #define UDMA_TEST_MAX_MAIN_BC_CH        (4U)
 #define UDMA_TEST_MAX_MCU_BC_UHC_CH     (0U)
 #define UDMA_TEST_MAX_MCU_BC_HC_CH      (0U)
 #define UDMA_TEST_MAX_MCU_BC_CH         (3U)
 #define UDMA_TEST_MAX_DRU_CH            (0U)
-#define UDMA_TEST_MAIN_HC_START         (4U)
+#define UDMA_TEST_MAIN_HC_START         (0U)
 #define UDMA_TEST_MCU_HC_START          (0U)
 #endif
 #if defined (BUILD_MCU2_0)
 #define UDMA_TEST_RF_CORE               (UDMA_TEST_RF_CORE_MCU2_0)
 #define UDMA_TEST_MAX_MAIN_BC_UHC_CH    (0U)
-#define UDMA_TEST_MAX_MAIN_BC_HC_CH     (4U)
-#define UDMA_TEST_MAX_MAIN_BC_CH        (3U)
+#define UDMA_TEST_MAX_MAIN_BC_HC_CH     (0U)
+#define UDMA_TEST_MAX_MAIN_BC_CH        (2U)
 #define UDMA_TEST_MAX_MCU_BC_UHC_CH     (0U)
 #define UDMA_TEST_MAX_MCU_BC_HC_CH      (0U)
-#define UDMA_TEST_MAX_MCU_BC_CH         (1U)
+#define UDMA_TEST_MAX_MCU_BC_CH         (2U)
 #define UDMA_TEST_MAX_DRU_CH            (0U)
-#define UDMA_TEST_MAIN_HC_START         (8U)
+#define UDMA_TEST_MAIN_HC_START         (0U)
 #define UDMA_TEST_MCU_HC_START          (0U)
 #endif
 #if defined (BUILD_MCU2_1)
 #define UDMA_TEST_RF_CORE               (UDMA_TEST_RF_CORE_MCU2_1)
 #define UDMA_TEST_MAX_MAIN_BC_UHC_CH    (0U)
-#define UDMA_TEST_MAX_MAIN_BC_HC_CH     (4U)
-#define UDMA_TEST_MAX_MAIN_BC_CH        (4U)
+#define UDMA_TEST_MAX_MAIN_BC_HC_CH     (0U)
+#define UDMA_TEST_MAX_MAIN_BC_CH        (2U)
 #define UDMA_TEST_MAX_MCU_BC_UHC_CH     (0U)
 #define UDMA_TEST_MAX_MCU_BC_HC_CH      (0U)
-#define UDMA_TEST_MAX_MCU_BC_CH         (1U)
+#define UDMA_TEST_MAX_MCU_BC_CH         (2U)
 #define UDMA_TEST_MAX_DRU_CH            (0U)
-#define UDMA_TEST_MAIN_HC_START         (12U)
+#define UDMA_TEST_MAIN_HC_START         (0U)
 #define UDMA_TEST_MCU_HC_START          (0U)
 #endif
 #if defined (BUILD_MCU1_0)
@@ -165,10 +159,10 @@ extern "C" {
 #define UDMA_TEST_MAX_MAIN_BC_HC_CH     (0U)
 #define UDMA_TEST_MAX_MAIN_BC_CH        (2U)
 #define UDMA_TEST_MAX_MCU_BC_UHC_CH     (0U)
-#define UDMA_TEST_MAX_MCU_BC_HC_CH      (2U)
+#define UDMA_TEST_MAX_MCU_BC_HC_CH      (0U)
 #define UDMA_TEST_MAX_MCU_BC_CH         (2U)
 #define UDMA_TEST_MAX_DRU_CH            (0U)
-#define UDMA_TEST_MAIN_HC_START         (4U)
+#define UDMA_TEST_MAIN_HC_START         (0U)
 #define UDMA_TEST_MCU_HC_START          (0U)
 #endif
 #if defined (BUILD_MCU1_1)
@@ -178,9 +172,9 @@ extern "C" {
 #define UDMA_TEST_MAX_MAIN_BC_CH        (2U)
 #define UDMA_TEST_MAX_MCU_BC_UHC_CH     (0U)
 #define UDMA_TEST_MAX_MCU_BC_HC_CH      (0U)
-#define UDMA_TEST_MAX_MCU_BC_CH         (0U)
+#define UDMA_TEST_MAX_MCU_BC_CH         (2U)
 #define UDMA_TEST_MAX_DRU_CH            (0U)
-#define UDMA_TEST_MAIN_HC_START         (4U)
+#define UDMA_TEST_MAIN_HC_START         (0U)
 #define UDMA_TEST_MCU_HC_START          (0U)
 #endif
 
