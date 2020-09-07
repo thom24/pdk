@@ -483,7 +483,7 @@ NO_QUEUE_WRAP_XMT_FB:
     LBCO	&BUFFER, L3_OCMC_RAM_CONST, BUFFER_INDEX, 32	    ; load new data from buffer
     LDI	TX_DATA_POINTER, buffer_ptr	
 
-    .if $defined (PTP)
+    .if $defined(PTP)
     LDI    TEMP_REG_1.w0, PTP_IPV4_UDP_E2E_ENABLE
     LBCO   &TEMP_REG_1.b0, ICSS_SHARED_CONST, TEMP_REG_1.w0, 1
     QBEQ   PTP_NOT_ENABLED_TX, TEMP_REG_1.b0, 0
