@@ -75,6 +75,7 @@ endif
 endif
 
 ifeq ($(SOC),$(filter $(SOC), j7200))
+
 ifeq ($(CORE),$(filter $(CORE), mpu1_0))
 # Enable XDC build for application by providing XDC CFG File per core
 XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/j7200/sysbios_a72.cfg
@@ -86,11 +87,6 @@ XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/j7200/sysbios_r5f.cfg
 EXTERNAL_LNKCMD_FILE = $(PDK_INSTALL_PATH)/ti/build/j7200/linker_r5.lds
 endif
 
-ifeq ($(CORE),$(filter $(CORE), c7x_1))
-# Enable XDC build for application by providing XDC CFG File per core
-XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/j7200/sysbios_c7x.cfg
-EXTERNAL_LNKCMD_FILE = $(PDK_INSTALL_PATH)/ti/build/j7200/linker_c7x.lds
-endif
 endif
 
 ifeq ($(SOC),$(filter $(SOC), tpr12))
