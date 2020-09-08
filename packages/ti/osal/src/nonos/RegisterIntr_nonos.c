@@ -64,6 +64,7 @@ void Osal_RegisterInterrupt_initParams(OsalRegisterIntrParams_t *interruptRegPar
       interruptRegParams->corepacConfig.isrRoutine=(void (*)(uintptr_t arg)) NULL_PTR;
       interruptRegParams->corepacConfig.arg=(uintptr_t)0U;
       interruptRegParams->corepacConfig.priority=0x20U; /* Default */
+      interruptRegParams->corepacConfig.enableIntr=TRUE;
 #if defined (__ARM_ARCH_7A__)
       interruptRegParams->corepacConfig.triggerSensitivity = 0x3; /* interrupt edge triggered */
 #endif
@@ -102,12 +103,13 @@ OsalInterruptRetCode_e Osal_RegisterInterrupt(OsalRegisterIntrParams_t *interrup
       hwiInputParams.arg  = (uintptr_t)interruptRegParams->corepacConfig.arg;
       hwiInputParams.priority = interruptRegParams->corepacConfig.priority;
       hwiInputParams.evtId = (uint32_t)interruptRegParams->corepacConfig.corepacEventNum;
+      hwiInputParams.enableIntr = interruptRegParams->corepacConfig.enableIntr;
 #if defined (__ARM_ARCH_7A__) || defined (__aarch64__) || defined (__TI_ARM_V7R4__)
       hwiInputParams.triggerSensitivity = interruptRegParams->corepacConfig.triggerSensitivity;
 #endif
 
 #ifdef _TMS320C6X
-      /* Maps the core_event_in to the  hwi Vector core_intVecNum (4-15) for C6x and core_intNum for ARM */
+      /* Maps the core_event_in to the hwi Vector core_intVecNum (4-15) for C6x and core_intNum for ARM */
 /*       For C66x
             Use Event Combiner ALWAYS for c6x. Event_combiner_event (0-3) =  core_event_in/32.
             Hook the this Event_combiner_event(0-3) to the core_intVecNum.
@@ -118,9 +120,8 @@ OsalInterruptRetCode_e Osal_RegisterInterrupt(OsalRegisterIntrParams_t *interrup
       OsalArch_oneTimeInit();
       (void)EventCombinerP_dispatchPlug((uint32_t)interruptRegParams->corepacConfig.corepacEventNum,
                                   interruptRegParams->corepacConfig.isrRoutine,
-                                  interruptRegParams->corepacConfig.arg,(bool)true);
-
-      (void)EventCombinerP_enableEvent((uint32_t)interruptRegParams->corepacConfig.corepacEventNum);
+                                  interruptRegParams->corepacConfig.arg,
+                                  (bool)interruptRegParams->corepacConfig.enableIntr);
       /* Map to a particular group */
       if(hwiInputParams.evtId > 3U) {
           /* For C66X the interrupt needs to be grouped to {0,1,2,3} to either of the four 32-bit event registers  */
@@ -215,6 +216,7 @@ OsalInterruptRetCode_e Osal_RegisterInterruptDirect(OsalRegisterIntrParams_t *in
     hwiInputParams.arg  = (uintptr_t)interruptRegParams->corepacConfig.arg;
     hwiInputParams.priority = interruptRegParams->corepacConfig.priority;
     hwiInputParams.evtId = (uint32_t)interruptRegParams->corepacConfig.corepacEventNum;
+    hwiInputParams.enableIntr = interruptRegParams->corepacConfig.enableIntr;
 #if defined (__ARM_ARCH_7A__) || defined (__aarch64__) || defined (__TI_ARM_V7R4__)
     hwiInputParams.triggerSensitivity = interruptRegParams->corepacConfig.triggerSensitivity;
 #endif

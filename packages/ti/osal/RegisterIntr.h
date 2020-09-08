@@ -86,6 +86,9 @@ typedef struct {
                                       - A8/A9: Low/High Level and Rising/Falling/Both Edge Trigger
                                       - R5: Level Trigger and Pulse Trigger
                                   */
+    uint32_t enableIntr;          /*!< When set to TRUE, interrupt is enabled after registration
+                                       (@ref Osal_RegisterInterrupt) otherwise interrupt is disabled
+                                   */
 } OsalRegisterIntParams_corepac_t;
 
 /*!

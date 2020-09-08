@@ -195,7 +195,14 @@ int32_t EventCombinerP_dispatchPlug(uint32_t eventId, EventCombinerP_FuncPtr eve
    evtHandler.handler = (CSL_IntcEventHandler)eventIsrRoutine;
    evtHandler.arg     = (void *)arg;
    (void)CSL_intcPlugEventHandler(handleTemp, &evtHandler);
-   (void)EventCombinerP_disableEvent(eventId); /* Disable event by default */
+   if (unmask == (bool)TRUE)
+   {
+      (void)EventCombinerP_enableEvent(eventId);
+   }
+   else
+   {
+      (void)EventCombinerP_disableEvent(eventId);
+   }
    CSL_rint();
    
   /* Nothing to be done, as HwiP_Create() already takes care of this internally, via CSL_intcOpen() */
