@@ -103,7 +103,14 @@ extern "C" {
 #define UDMA_TEST_RF_MAIN_BC_HC_MT      (UDMA_TEST_RF_MAIN_BC_HC)
 #define UDMA_TEST_RF_MAIN_BC_MT         (UDMA_TEST_RF_MAIN_BC)
 #define UDMA_TEST_RF_MCU_BC_HC_MT       (UDMA_TEST_RF_MCU_BC_HC)
+/* Temp disable MCU NAVSS MT testcase on mpu1_0 until PDK-6611 is resolved
 #define UDMA_TEST_RF_MCU_BC_MT          (UDMA_TEST_RF_MCU_BC)
+*/
+#define UDMA_TEST_RF_MCU_BC_MT          (UDMA_TEST_RF_SOC | \
+                                         UDMA_TEST_RF_CORE_MCU2_0 | \
+                                         UDMA_TEST_RF_CORE_MCU2_1 | \
+                                         UDMA_TEST_RF_CORE_MCU1_0 | \
+                                         UDMA_TEST_RF_CFG_DEF)
 #define UDMA_TEST_RF_DRU_MT             (UDMA_TEST_RF_DRU)
 
 #define UDMA_TEST_RF_FLOW               (UDMA_TEST_RF_SOC | \
