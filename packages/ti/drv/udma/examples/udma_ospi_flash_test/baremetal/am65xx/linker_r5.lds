@@ -41,15 +41,11 @@ MEMORY
     MCU0_R5F1_ATCM (RWIX)  	    : origin=0x41400000 length=0x8000
     MCU0_R5F1_BTCM (RWIX) 	    : origin=0x41410000 length=0x8000
 
-    /* Fully avaialble for apps. Used by SBL to load SYSFW */
-    OCMRAM_LOW (RWIX) 		    : origin=0x41C00100 length=0x40600 - 0x100	     /* ~257KB */
-
     /* MCU0 memory used for SBL. Avaiable after boot for app starts for dynamic use */
-    SBL_RESERVED (RWIX) 	    : origin=0x41C40600 length=0x60000 - 0x40600	 /* ~126KB */
+    SBL_RESERVED (RWIX) 	    : origin=0x41C00100 length=0x50000 - 0x100	 /* ~319KB */
 
     /* MCU0 share locations */
-    OCMRAM (RWIX) 		        : origin=0x41C60000 length=0x20000 - 0x1000	     /* ~124KB */
-
+    OCMRAM (RWIX) 		        : origin=0x41C50000 length=0x80000 - 0x51000 /* ~188KB */
 
     /* AM65XX M4 locations */
     MSMC3 (RWIX)                : origin=0x70000000 length=0xF0000              /* 1MB - 64K */
@@ -70,13 +66,13 @@ SECTIONS
     .bootCode       : {} palign(8)      > MSMC3
     .startupCode    : {} palign(8)      > MSMC3
     .startupData    : {} palign(8)      > MSMC3, type = NOINIT
-    .text    	    : {} palign(8) 		> OCMRAM_LOW
+    .text    	    : {} palign(8) 		> OCMRAM
     .const   	    : {} palign(8) 		> OCMRAM
     .cinit   	    : {} palign(8) 		> OCMRAM
     .pinit   	    : {} palign(8) 		> OCMRAM
     .bss     	    : {} align(4)  		> OCMRAM
     .far     	    : {} align(4)  		> OCMRAM
-    .data    	    : {} palign(128) 	> OCMRAM_LOW
+    .data    	    : {} palign(128) 	> OCMRAM
     .boardcfg_data  : {} palign(128)    > MSMC3
     .sysmem  	    : {} 				> OCMRAM
 
