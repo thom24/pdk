@@ -388,7 +388,11 @@ I2C_Eeprom_TestApp_PKG_LIST = I2C_Eeprom_TestApp
 I2C_Eeprom_TestApp_INCLUDE = $(I2C_Eeprom_TestApp_PATH)
 I2C_Eeprom_TestApp_BOARDLIST = $(drvi2c_BOARDLIST)
 export I2C_Eeprom_TestApp_BOARDLIST
+ifeq ($(SOC),$(filter $(SOC), am64x))
+I2C_Eeprom_TestApp_$(SOC)_CORELIST = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
+else
 I2C_Eeprom_TestApp_$(SOC)_CORELIST = $(i2c_$(SOC)_CORELIST)
+endif
 export I2C_Eeprom_TestApp_$(SOC)_CORELIST
 export I2C_Eeprom_TestApp_SBL_APPIMAGEGEN = yes
 
