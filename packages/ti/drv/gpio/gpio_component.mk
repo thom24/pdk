@@ -270,7 +270,11 @@ GPIO_LedBlink_TestApp_PKG_LIST = GPIO_LedBlink_TestApp
 GPIO_LedBlink_TestApp_INCLUDE = $(GPIO_LedBlink_TestApp_PATH)
 GPIO_LedBlink_TestApp_BOARDLIST = $(drvgpio_BOARDLIST)
 export GPIO_LedBlink_TestApp_BOARDLIST
+ifeq ($(SOC),$(filter $(SOC), am64x))
+GPIO_LedBlink_TestApp_$(SOC)_CORELIST = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
+else
 GPIO_LedBlink_TestApp_$(SOC)_CORELIST = $(gpio_$(SOC)_CORELIST)
+endif
 export GPIO_LedBlink_TestApp_$(SOC)_CORELIST
 ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
 GPIO_LedBlink_TestApp_SBL_APPIMAGEGEN = yes
