@@ -167,25 +167,6 @@ typedef struct HWA_Driver_t {
      */
     HWA_DoneInterruptCtx             interruptCtxDoneALT;
 
-#if defined (__TI_ARM_V7R4__)
-    /**
-    * @brief   interrupt priority for HWA background thread done
-    */
-    uint32_t                         doneInterruptPriority;
-    /**
-    * @brief   interrupt priority for HWA ALT thread done
-    */
-    uint32_t                         doneALTInterruptPriority;
-    /**
-    * @brief   interrupt priority for paramsetDone interrupt 1
-    */
-    uint32_t                         paramsetInterrupt1Priority;
-    /**
-    * @brief   interrupt priority for paramsetDone interrupt 1
-    */
-    uint32_t                         paramsetInterrupt2Priority;
-
- #endif
 } HWA_Driver;
 
 /** @}*/

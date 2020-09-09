@@ -75,7 +75,7 @@ extern "C" {
 /* ========================================================================== */
 
 /*! \brief number of HWA instance */
-#define HWA_NUM_INSTANCES            (1U)
+#define HWA_NUM_INSTANCES               (1U)
 /*! \brief number of HWA memory banks */
 #define SOC_HWA_NUM_MEM_BANKS           (8U)
 /*! \brief number of HWA parameter sets */
@@ -83,7 +83,7 @@ extern "C" {
 /*! \brief number of HWA MDA channels */
 #define SOC_HWA_NUM_DAM_CHANNEL         (32U)
 /*! \brief number of HWA memory size in bytes */
-#define SOC_HWA_MEM_SIZE                (131072U)
+#define SOC_HWA_MEM_SIZE                (CSL_DSS_HWA_BANK_SIZE * SOC_HWA_NUM_MEM_BANKS)
 /*! \brief number of csirx IRQs*/
 #define SOC_HWA_NUM_CSIRX_IRQS          (20U)
 
@@ -91,16 +91,26 @@ extern "C" {
  /** @addtogroup HWA_RAM_Size
  @{ */
 
-#define HWA_RAM_WINDOW_SIZE_IN_BYTES                     8192      /*!<  Window RAM size in bytes. See \ref HWA_configRam */
-#define HWA_RAM_VECTORMULTIPLY_SIZE_IN_BYTES             8192      /*!<  internal ram for pre-loaded complex vector used in vector multiplication mode 1 and mode 2, for upto 1024 complex samples */
-#define HWA_RAM_LUT_FREQ_DEROTATE_SIZE_IN_BYTES          256       /*!<  stores upto 64 difference frequency de-rotation and starting phase values, each entry is 32 bits wide */
-#define HWA_RAM_SHUFFLE_RAM_SIZE_IN_BYTES                512       /*!<  stores 256 element with 14-bits number for shuffled addressing */
-#define HWA_RAM_HIST_THRESH_RAM_SIZE_IN_BYTES            8192      /*!<  if CDF count threshold mode is enabled, RAM stores the CFT bin number, CDF count, and histogram count at the bin, which hits the CDF threshold*/
-#define HWA_RAM_2DSTAT_ITER_VAL_SIZE_IN_BYTES            4096      /*!<  2-D maximum array, 1024 elements with 24 bits each, for maximum values of each iteration */
-#define HWA_RAM_2DSTAT_ITER_IDX_SIZE_IN_BYTES            2048      /*!<  2-D maximum array, 1024 elements with 10 bits each, for maximum locations of each iteration */
-#define HWA_RAM_2DSTAT_SMPL_VAL_SIZE_IN_BYTES            1024      /*!<  2-D maximum array, 256 elements with 24 bits each, for maximum values correspoinding to each sample index */
-#define HWA_RAM_2DSTAT_SMPL_IDX_SIZE_IN_BYTES            512       /*!<  2-D maximum array, 256 elements with 10 bits each, for maximum locations correspoinding to each sample index */
-#define HWA_RAM_HIST_RAM_SIZE_IN_BYTES                   8192      /*!< histogram output corresponding to each sample index */
+/*! \brief Window RAM size in bytes. See \ref HWA_configRam */
+#define HWA_RAM_WINDOW_SIZE_IN_BYTES                     CSL_DSS_HWA_WINDOW_RAM_U_SIZE
+/*! \brief Internal ram for pre-loaded complex vector used in vector multiplication mode 1 and mode 2, for upto 1024 complex samples */
+#define HWA_RAM_VECTORMULTIPLY_SIZE_IN_BYTES             CSL_DSS_HWA_MULT_RAM_U_SIZE
+/*! \brief Stores upto 64 difference frequency de-rotation and starting phase values, each entry is 32 bits wide */
+#define HWA_RAM_LUT_FREQ_DEROTATE_SIZE_IN_BYTES          CSL_DSS_HWA_DEROT_RAM_U_SIZE
+/*! \brief Stores 256 element with 14-bits number for shuffled addressing */
+#define HWA_RAM_SHUFFLE_RAM_SIZE_IN_BYTES                CSL_DSS_HWA_SHUFFLE_RAM_U_SIZE
+/*! \brief If CDF count threshold mode is enabled, RAM stores the CFT bin number, CDF count, and histogram count at the bin, which hits the CDF threshold*/
+#define HWA_RAM_HIST_THRESH_RAM_SIZE_IN_BYTES            CSL_DSS_HWA_HIST_THRESH_RAM_U_SIZE
+/*! \brief 2-D maximum array, 1024 elements with 24 bits each, for maximum values of each iteration */
+#define HWA_RAM_2DSTAT_ITER_VAL_SIZE_IN_BYTES            CSL_DSS_HWA_2DSTAT_ITER_VAL_RAM_U_SIZE
+/*! \brief 2-D maximum array, 1024 elements with 10 bits each, for maximum locations of each iteration */
+#define HWA_RAM_2DSTAT_ITER_IDX_SIZE_IN_BYTES            CSL_DSS_HWA_2DSTAT_ITER_IDX_RAM_U_SIZE
+/*! \brief 2-D maximum array, 256 elements with 24 bits each, for maximum values corresponding to each sample index */
+#define HWA_RAM_2DSTAT_SMPL_VAL_SIZE_IN_BYTES            CSL_DSS_HWA_2DSTAT_SMPL_VAL_RAM_U_SIZE
+/*! \brief 2-D maximum array, 256 elements with 10 bits each, for maximum locations corresponding to each sample index */
+#define HWA_RAM_2DSTAT_SMPL_IDX_SIZE_IN_BYTES            CSL_DSS_HWA_2DSTAT_SMPL_IDX_RAM_U_SIZE
+/*! \brief Histogram output corresponding to each sample index */
+#define HWA_RAM_HIST_RAM_SIZE_IN_BYTES                   CSL_DSS_HWA_HIST_RAM_U_SIZE
 
 /** @}*/ /* end addtogroup HWA_RAM_Size */
 

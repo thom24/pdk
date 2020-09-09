@@ -124,7 +124,7 @@ volatile uint8_t intr2ParamDoneCount = 0;
 #define HWA_TEST_SRC_TRIGGER_DMACH0       0
 #define HWA_TEST_SRC_TRIGGER_DMACH1       1
 
-#define HWA_MEMn_SIZE                     16*1024 //16K size
+#define HWA_MEMn_SIZE                     CSL_DSS_HWA_BANK_SIZE //16K size
 
 /* benchmark collect flag, if defined, benchmark is collected after functional test pass, if un-defined, no benchmark is collcted after the funtional test
  * default is HWA_TEST_COLLECTBENCHMARK defined
@@ -132,8 +132,8 @@ volatile uint8_t intr2ParamDoneCount = 0;
 #define HWA_TEST_COLLECTBENCHMARK
 
 /* hwa memory cache is disabeld by default in the test */
-#define SOC_HWA_MEM0  CSL_DSS_HWA_DMA0_U_BASE
-#define SOC_HWA_MEM1  (CSL_DSS_HWA_DMA0_U_BASE + 0x4000)
+#define SOC_HWA_MEM0  CSL_DSS_HWA_DMA0_RAM_BANK0_BASE
+#define SOC_HWA_MEM1  CSL_DSS_HWA_DMA0_RAM_BANK1_BASE
 
 cmplx32ImRe_t     DCEstResult[2 * HWA_TEST_NUM_RX_ANT];
 uint32_t          magEstResult[HWA_TEST_NUM_RX_ANT];
