@@ -108,6 +108,9 @@
 /* Enable interrupt instead of polling mode */
 #define UDMA_TEST_INTR
 
+/* Override default RM Shared Resource parameters */
+//#define UDMA_OVERRIDE_DEF_RM_SHARED_RES_PRMS
+
 /* ========================================================================== */
 /*                         Structure Declarations                             */
 /* ========================================================================== */
@@ -515,15 +518,45 @@ static int32_t App_init(Udma_DrvHandle drvHandle)
     instId = UDMA_INST_ID_MAIN_0;
 #endif
 #endif
+
+#if defined UDMA_OVERRIDE_DEF_RM_SHARED_RES_PRMS
+#if defined (SOC_J721E) || defined(SOC_J7200)
+    /* Override the default RM Shared Resource parameters. 
+    *  For example, using maximum no.of available resources of Gloable Events
+    *  for current instance and updating mimium requirement to 10U */
+    Udma_RmSharedResPrms *rmSharedResPrms;
+    
+    rmSharedResPrms = Udma_rmGetSharedResPrms(UDMA_RM_RES_ID_GLOBAL_EVENT);
+    if(NULL_PTR != rmSharedResPrms)
+    {
+        rmSharedResPrms->instShare[instId] = UDMA_RM_SHARED_RES_CNT_REST;
+        rmSharedResPrms->minReq            = 10U;
+        /* #UdmaInitPrms_init makes use of this information, 
+         * in initilaizing #Udma_RmInitPrms */
+    }
+    else
+    {
+        App_print("Global Event is not a shared resource!!\n");
+    }
+#endif
+#endif
+
     /* UDMA driver init */
-    UdmaInitPrms_init(instId, &initPrms);
-    initPrms.virtToPhyFxn   = &Udma_appVirtToPhyFxn;
-    initPrms.phyToVirtFxn   = &Udma_appPhyToVirtFxn;
-    initPrms.printFxn       = &App_print;
-    retVal = Udma_init(drvHandle, &initPrms);
+    retVal = UdmaInitPrms_init(instId, &initPrms);
     if(UDMA_SOK != retVal)
     {
-        App_print("[Error] UDMA init failed!!\n");
+        App_print("[Error] UDMA init prms init failed!!\n");
+    }
+    else
+    {
+        initPrms.virtToPhyFxn   = &Udma_appVirtToPhyFxn;
+        initPrms.phyToVirtFxn   = &Udma_appPhyToVirtFxn;
+        initPrms.printFxn       = &App_print;
+        retVal = Udma_init(drvHandle, &initPrms);
+        if(UDMA_SOK != retVal)
+        {
+            App_print("[Error] UDMA init failed!!\n");
+        }
     }
 
     return (retVal);
