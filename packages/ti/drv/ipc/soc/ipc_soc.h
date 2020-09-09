@@ -69,7 +69,7 @@ int32_t Ipc_getMailboxInfoRx(uint32_t selfId, uint32_t remoteId,
                  uint32_t *clusterId, uint32_t *userId, uint32_t *queueId);
 int32_t Ipc_getMailboxIntrRouterCfg(uint32_t selfId, uint32_t clusterId,
                  uint32_t userId, Ipc_MbConfig* cfg, uint32_t cnt);
-uint32_t Ipc_getMailboxBaseAddr(uint32_t clusterId);
+uintptr_t Ipc_getMailboxBaseAddr(uint32_t clusterId);
 
 /**
  * \brief Returns the core name for get core id

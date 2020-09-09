@@ -190,14 +190,14 @@ static inline void vring_init(struct VRing *vr, uint32_t num, void *p,
     vr->desc = (struct vring_desc *) p;
     vr->avail = (struct vring_avail *)
                     ((uintptr_t)p + (num * sizeof(struct vring_desc)));
-    vr->used = (struct vring_used *)(((uintptr_t)&vr->avail->ring[num] + pagesize-1)
-                & ~(pagesize - 1));
+    vr->used = (struct vring_used *)(((uintptr_t)&vr->avail->ring[num] + (uintptr_t)pagesize-1)
+                & ~((uintptr_t)pagesize - 1));
 }
 
 static inline uint32_t vring_size(uint32_t num, uint32_t pagesize)
 {
     return ((sizeof(struct vring_desc) * num + sizeof(uint16_t) * (2 + num)
-                + pagesize - 1) & ~(pagesize - 1))
+                + (uintptr_t)pagesize - 1) & ~((uintptr_t)pagesize - 1))
                 + sizeof(uint16_t) * 2 + sizeof(struct vring_used_elem) * num;
 }
 

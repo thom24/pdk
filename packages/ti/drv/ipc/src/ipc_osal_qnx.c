@@ -57,7 +57,7 @@
 #ifndef IPC_SUPPORT_SCICLIENT
 #include <ti/drv/ipc/src/ipc_utils.h>
 #define NVSS_INTRTR_SIZE    0x1000
-uint32_t g_navssIntRtrBaseVirtAddr = 0;
+uintptr_t g_navssIntRtrBaseVirtAddr = 0;
 #endif
 
 int32_t SystemP_printf(const char* fmt, ...)
@@ -91,7 +91,7 @@ void *Mailbox_plugInterrupt(Ipc_MbConfig *cfg, Ipc_OsalIsrFxn func, uintptr_t ar
         g_navssIntRtrBaseVirtAddr = IpcUtils_getMemoryAddress(IPC_MCU_NAVSS0_INTR0_CFG_BASE,
                 NVSS_INTRTR_SIZE );
     }
-    irRegs.pIntrRouterRegs = (CSL_intr_router_cfgRegs *)(uintptr_t)g_navssIntRtrBaseVirtAddr;
+    irRegs.pIntrRouterRegs = (CSL_intr_router_cfgRegs *)g_navssIntRtrBaseVirtAddr;
     irRegs.pIntdRegs       = (CSL_intr_router_intd_cfgRegs *) NULL;
     irRegs.numInputIntrs   = MAIN_NAVSS_MAILBOX_INPUTINTR_MAX;
     irRegs.numOutputIntrs  = MAIN_NAVSS_MAILBOX_OUTPUTINTR_MAX;

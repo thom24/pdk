@@ -275,7 +275,7 @@ void IpcUtils_HeapFree(IpcUtils_HeapHandle *pHndl, void* block, uint32_t size);
  *  Bios - returns same address
  *  Qnx - return memmap64() address
  */
-uint32_t IpcUtils_getMemoryAddress(uint32_t daAddr, uint32_t size);
+uintptr_t IpcUtils_getMemoryAddress(uint32_t daAddr, uint32_t size);
 
 /* ========================================================================== */
 /*                       Static Function Definitions                          */

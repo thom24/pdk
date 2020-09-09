@@ -77,7 +77,7 @@ typedef struct Ipc_MailboxFifo_s
 /* mboxData */
 typedef struct Ipc_MailboxData_s
 {
-    uint32_t          baseAddr;
+    uintptr_t         baseAddr;
     uint32_t          fifoCnt;
     Ipc_MailboxFifo   fifoTable[IPC_MBOX_MAXFIFO_CNT];
     uint32_t          noMsgCnt;
@@ -201,7 +201,7 @@ int32_t Ipc_mailboxModuleStartup (void)
 /**
  *  \brief Enable remote processor interrupt
  */
-void Ipc_mailboxEnable(uint32_t baseAddr, uint32_t userId, uint32_t queueId)
+void Ipc_mailboxEnable(uintptr_t baseAddr, uint32_t userId, uint32_t queueId)
 {
     MailboxEnableNewMsgInt(baseAddr, userId, queueId);
 }
@@ -209,7 +209,7 @@ void Ipc_mailboxEnable(uint32_t baseAddr, uint32_t userId, uint32_t queueId)
 /**
  *  \brief Disables remote processor interrupt
  */
-void Ipc_mailboxDisable(uint32_t baseAddr, uint32_t userId, uint32_t queueId)
+void Ipc_mailboxDisable(uintptr_t baseAddr, uint32_t userId, uint32_t queueId)
 {
     MailboxDisableNewMsgInt(baseAddr, userId, queueId);
 }
@@ -217,7 +217,7 @@ void Ipc_mailboxDisable(uint32_t baseAddr, uint32_t userId, uint32_t queueId)
 /**
  *  \brief Clear interrupt and return the message.
  */
-uint32_t Ipc_mailboxClear(uint32_t baseAddr, uint32_t queueId)
+uint32_t Ipc_mailboxClear(uintptr_t baseAddr, uint32_t queueId)
 {
     uint32_t retVal = 0;
     uint32_t msg[4];
@@ -237,7 +237,7 @@ int32_t Ipc_mailboxSend(uint32_t selfId, uint32_t remoteProcId, uint32_t val,
     uint32_t  clusterId;
     uint32_t  userId;
     uint32_t  queueId;
-    uint32_t  baseAddr;
+    uintptr_t baseAddr;
     uint32_t  cnt = timeoutCnt;
 
 #ifndef IPC_ONE_CONTEXT_FOR_HISRGATE_HWIGATE
@@ -310,7 +310,7 @@ int32_t Ipc_mailboxRegister(uint16_t selfId, uint16_t remoteProcId,
     uint32_t              clusterId;
     uint32_t              userId;
     uint32_t              queueId;
-    uint32_t              baseAddr;
+    uintptr_t             baseAddr;
     uint32_t              n;
     Ipc_MailboxData      *mbox = NULL;
     Ipc_Object           *pObj  = NULL;
@@ -500,7 +500,7 @@ void Ipc_mailboxEnableNewMsgInt(uint16_t selfId, uint16_t remoteProcId)
     uint32_t  clusterId;
     uint32_t  userId;
     uint32_t  queueId;
-    uint32_t  baseAddr;
+    uintptr_t baseAddr;
 
     if ((IPC_MAX_PROCS > selfId) && (IPC_MAX_PROCS > remoteProcId))
     {
@@ -518,7 +518,7 @@ void Ipc_mailboxDisableNewMsgInt(uint16_t selfId, uint16_t remoteProcId)
     uint32_t  clusterId;
     uint32_t  userId;
     uint32_t  queueId;
-    uint32_t  baseAddr;
+    uintptr_t baseAddr;
 
     if ((IPC_MAX_PROCS > selfId) && (IPC_MAX_PROCS > remoteProcId))
     {

@@ -73,9 +73,9 @@ typedef struct Ipc_VirtioInfo_s
 /* TranslationEntry */
 typedef struct Ipc_TranslationEntry
 {
-    uint32_t pa;  /* physical address */
-    uint32_t va;  /* virtual address  */
-    uint32_t len; /* Length of buffer */
+    uint32_t  pa;  /* physical address */
+    uintptr_t va;  /* virtual address  */
+    uint32_t  len; /* Length of buffer */
 }Ipc_TranslationEntry;
 
 #define   IPC_TABLE_MAX_CNT   64
@@ -177,7 +177,7 @@ typedef struct Virtio_Object_s
 typedef struct Vring_Params_s
 {
     uint32_t  num;
-    uint32_t  addr;
+    uintptr_t addr;
     uint32_t  align;
 } Vring_Params;
 
@@ -210,7 +210,7 @@ void Ipc_addTranslationEntry(uint32_t phyAddr, uint32_t len)
 {
     if(vrTranslationTable.count < IPC_TABLE_MAX_CNT-1)
     {
-       uint32_t va = IpcUtils_getMemoryAddress(phyAddr, len);
+       uintptr_t va = IpcUtils_getMemoryAddress(phyAddr, len);
        vrTranslationTable.entry[vrTranslationTable.count].pa  = phyAddr;
        vrTranslationTable.entry[vrTranslationTable.count].va  = va;
        vrTranslationTable.entry[vrTranslationTable.count].len = len;
@@ -232,7 +232,7 @@ void Ipc_addTranslationEntry(uint32_t phyAddr, uint32_t len)
 /**
  * \brief Get virual address for given physical address
  **/
-int32_t Ipc_physToVirt(uint32_t pa, uint32_t *va)
+int32_t Ipc_physToVirt(uint32_t pa, uintptr_t *va)
 {
     uint32_t                n;
     uint32_t                offset;
@@ -262,7 +262,7 @@ int32_t Ipc_physToVirt(uint32_t pa, uint32_t *va)
 /**
  * \brief Get physical address from given virual address
  **/
-int32_t Ipc_virtToPhys(uint32_t va, uint32_t *pa)
+int32_t Ipc_virtToPhys(uintptr_t va, uint32_t *pa)
 {
     uint32_t              n;
     uint32_t              offset;
@@ -426,11 +426,11 @@ void * Ipc_getResourceTraceBufPtr()
  */
 static inline void * mapPAtoVA(uint32_t pa)
 {
-    uint32_t va;
+    uintptr_t va;
 
     Ipc_physToVirt(pa, &va);
 
-    return (void*)(uintptr_t)va;
+    return (void*)va;
 }
 
 /**
@@ -440,7 +440,7 @@ static inline uint32_t mapVAtoPA(void * va)
 {
     uint32_t pa;
 
-    Ipc_virtToPhys((uint32_t)(uintptr_t)va, &pa);
+    Ipc_virtToPhys((uintptr_t)va, &pa);
 
     return pa;
 }
@@ -652,12 +652,12 @@ void Virtio_isr(uint32_t* msg, uint32_t priv)
         vq->direction      = direction;
         vq->timeoutCnt     = timeoutCnt;
 
-        vring_init(&(vq->vring), params->num, (void*)(uintptr_t)params->addr, params->align);
+        vring_init(&(vq->vring), params->num, (void*)params->addr, params->align);
 
         /* Each processor clears only its TX vq memory. */
         if (direction == VIRTIO_TX)
         {
-            memset((void*)(uintptr_t)params->addr, 0, vring_size(params->num, params->align));
+            memset((void*)params->addr, 0, vring_size(params->num, params->align));
             /* Don't trigger a mailbox message every time remote rpoc */
             /* makes another buffer available.                        */
             vq->vring.used->flags |= VRING_USED_F_NO_NOTIFY;
@@ -713,13 +713,13 @@ int32_t Virtio_setCallback(uint32_t procId, Virtio_callback callback, uint32_t* 
  *  a single block of memory beginning at addr.  It is assumed that
  *  addr has the appropriate alignment.
  */
-void Virtio_prime(Virtio_Object *vq, uint32_t addr, uint32_t num)
+void Virtio_prime(Virtio_Object *vq, uintptr_t addr, uint32_t num)
 {
     uint32_t i;
-    uint32_t buf;
+    uint8_t *buf;
 
     /* Add buffers to the vring's available ring. */
-    buf = addr;
+    buf = (uint8_t *)addr;
     for (i = 0; i < num; i++)
     {
         Virtio_addAvailBuf(vq, (void *)(uintptr_t)buf, (uint16_t)i);
@@ -791,7 +791,7 @@ int32_t VirtioIPC_createVirtioCorePair(Ipc_VirtioInfo* vqInfo, uint32_t timeoutC
 
     /* TX VQ */
     params.num   = vqInfo->num;
-    params.addr  = (uint32_t)(uintptr_t)mapPAtoVA(vqInfo->daTx);
+    params.addr  = (uintptr_t)mapPAtoVA(vqInfo->daTx);
     params.align = vqInfo->align;
     tx_vq = Virtio_create(vqInfo->txNotifyId, vqInfo->remoteId, NULL,
                   &params, VIRTIO_TX, status, timeoutCnt);
@@ -803,12 +803,12 @@ int32_t VirtioIPC_createVirtioCorePair(Ipc_VirtioInfo* vqInfo, uint32_t timeoutC
     if(retVal == IPC_SOK)
     {
         /* Prime the transmit buffer */
-        uint32_t  primeBuf = (uint32_t)(uintptr_t)mapPAtoVA(vqInfo->primeBuf);
-        Virtio_prime(tx_vq, primeBuf, vqInfo->num);
+        uint32_t *primeBuf = (uint32_t *)mapPAtoVA(vqInfo->primeBuf);
+        Virtio_prime(tx_vq, (uintptr_t)primeBuf, vqInfo->num);
 
         /* RX VQ */
         params.num   = vqInfo->num;
-        params.addr  = (uint32_t)(uintptr_t)mapPAtoVA(vqInfo->daRx);
+        params.addr  = (uintptr_t)mapPAtoVA(vqInfo->daRx);
         params.align = vqInfo->align;
         rx_vq = Virtio_create(vqInfo->rxNotifyId, vqInfo->remoteId, NULL,
                   &params, VIRTIO_RX, status, timeoutCnt);
