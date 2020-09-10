@@ -41,10 +41,13 @@ MEMORY
     MCU0_R5F1_BTCM (RWIX)       : origin=0x41410000 length=0x8000
 
     /* MCU0 memory used for SBL. Avaiable after boot for app starts for dynamic use */
-    SBL_RESERVED (RWIX) 	    : origin=0x41C00100 length=0x50000 - 0x100	 /* ~319KB */
+    SBL_RESERVED (RWIX) 	    : origin=0x41C00100 length=0x3E000 - 0x100	 /* ~247KB */
 
+    /* Used by SBL at runtime to load SYSFW. */
+    SBL_SYSFW_RESERVED (RWIX) 	: origin=0x41C3E000 length=0x100             /* ~256B */
+    
     /* MCU0 share locations */
-    OCMRAM (RWIX)               : origin=0x41C50000 length=0x80000 - 0x51000 /* ~188KB */
+    OCMRAM (RWIX)               : origin=0x41C3E100 length=0x80000 - 0x3F100 /* ~260KB */
 
     /* j7200 MCMS3 locations */
     /* j7200 Reserved Memory for ARM Trusted Firmware */
