@@ -1141,6 +1141,7 @@ extern HWA_Handle HWA_open(uint32_t index, HWA_OpenConfig * hwaCfg, int32_t* err
             }
             interruptRegParams.corepacConfig.intVecNum=(int32_t)gHWADriverPtr[index]->hwAttrs->intNum1ParamSet;  /* Host Interrupt vector */
             interruptRegParams.corepacConfig.corepacEventNum = (int32_t)gHWADriverPtr[index]->hwAttrs->intNum1ParamSet;
+            interruptRegParams.corepacConfig.triggerSensitivity = (uint32_t)OSAL_ARM_GIC_TRIG_TYPE_EDGE;
 #endif
            /* Register interrupts */
             osalRetVal = Osal_RegisterInterrupt(&interruptRegParams, &gHWADriverPtr[index]->hwiHandleParamSet);
@@ -1173,6 +1174,7 @@ extern HWA_Handle HWA_open(uint32_t index, HWA_OpenConfig * hwaCfg, int32_t* err
             }
             interruptRegParams.corepacConfig.intVecNum=(int32_t)gHWADriverPtr[index]->hwAttrs->intNumDone;  /* Host Interrupt vector */
             interruptRegParams.corepacConfig.corepacEventNum = (int32_t)gHWADriverPtr[index]->hwAttrs->intNumDone;
+            interruptRegParams.corepacConfig.triggerSensitivity = (uint32_t)OSAL_ARM_GIC_TRIG_TYPE_EDGE;
 #endif
             /* Register interrupts */
             osalRetVal = Osal_RegisterInterrupt(&interruptRegParams, &gHWADriverPtr[index]->hwiHandleDone);
@@ -1205,6 +1207,7 @@ extern HWA_Handle HWA_open(uint32_t index, HWA_OpenConfig * hwaCfg, int32_t* err
             }
             interruptRegParams.corepacConfig.intVecNum=(int32_t)gHWADriverPtr[index]->hwAttrs->intNum2ParamSet;  /* Host Interrupt vector */
             interruptRegParams.corepacConfig.corepacEventNum = (int32_t)gHWADriverPtr[index]->hwAttrs->intNum2ParamSet;
+            interruptRegParams.corepacConfig.triggerSensitivity = (uint32_t)OSAL_ARM_GIC_TRIG_TYPE_EDGE;
 #endif
 
             /* Register interrupts */
@@ -1237,6 +1240,7 @@ extern HWA_Handle HWA_open(uint32_t index, HWA_OpenConfig * hwaCfg, int32_t* err
             }
             interruptRegParams.corepacConfig.intVecNum=(int32_t)gHWADriverPtr[index]->hwAttrs->intNumDoneALT;  /* Host Interrupt vector */
             interruptRegParams.corepacConfig.corepacEventNum = (int32_t)gHWADriverPtr[index]->hwAttrs->intNumDoneALT;
+            interruptRegParams.corepacConfig.triggerSensitivity = (uint32_t)OSAL_ARM_GIC_TRIG_TYPE_EDGE;
 #endif
 
             /* Register interrupts */
