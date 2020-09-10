@@ -106,8 +106,8 @@ CSL_RatTranslationCfgInfo gCslM4RatCfg[8+1] __attribute__ ((section(".rat_cfg_bu
     /* Add an entry for accessing DDR addresses */
     {
         .sizeInBytes        = (uint64_t) (0x10000000UL), /* Size in Bytes for the map */
-        .baseAddress        = (uint32_t) (0x80000000U),  /* Translated base address */
-        .translatedAddress  = (uint64_t) (0x80000000UL)  /* Physical addresses */
+        .baseAddress        = (uint32_t) (0x90000000U),  /* Translated base address */
+        .translatedAddress  = (uint64_t) (0x90000000UL)  /* Physical addresses */
     },
     {
         .sizeInBytes        = (uint64_t) (0x01000000UL),

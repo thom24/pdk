@@ -15,19 +15,19 @@ MEMORY
     ATCM_TEST(RWIX)     : ORIGIN = 0x00000100 , LENGTH = 0x00000F00
     R5F_TCMB0(RWIX)     : ORIGIN = 0x41010000 , LENGTH = 0x00008000
     /* am64x MSMC3 locations */
-    MCU1_0_MSMC3   (RWIX)              : origin=0x000070001000 length=0x3E000 - 0x1000 /* .5 MB - 64K */
-    MCU1_0_MSMC3_DATA (RWIX)           : origin=0x00007003E000 length=0x40000 - 0x3E000
-    MCU1_1_MSMC3   (RWIX)              : origin=0x000070040000 length=0x7E000 - 0x40000
-    MCU1_1_MSMC3_DATA (RWIX)           : origin=0x00007007E000 length=0x80000 - 0x7E000
-    MCU2_0_MSMC3   (RWIX)              : origin=0x000070080000 length=0xBE000 - 0x80000
-    MCU2_1_MSMC3_DATA (RWIX)           : origin=0x0000700BE000 length=0xC0000 - 0xBE000
-    MCU2_1_MSMC3   (RWIX)              : origin=0x0000700C0000 length=0xEE000 - 0xC0000 /* .5 MB - 64K */
-    MCU2_2_MSMC3_DATA (RWIX)           : origin=0x0000700EE000 length=0xF0000 - 0xEE000
+    MCU1_0_MSMC3   (RWIX)              : origin=0x000070001000 length=0x30000 - 0x1000 /* .5 MB - 64K */
+    MCU1_0_MSMC3_DATA (RWIX)           : origin=0x000070030000 length=0x3C000 - 0x30000
+    MCU1_1_MSMC3   (RWIX)              : origin=0x00007003C000 length=0x6C000 - 0x3C000
+    MCU1_1_MSMC3_DATA (RWIX)           : origin=0x00007006C000 length=0x78000 - 0x6C000
+    MCU2_0_MSMC3   (RWIX)              : origin=0x000070078000 length=0xA8000 - 0x78000
+    MCU2_0_MSMC3_DATA (RWIX)           : origin=0x0000700A8000 length=0xB4000 - 0xA8000
+    MCU2_1_MSMC3   (RWIX)              : origin=0x0000700B4000 length=0xE4000 - 0xB4000 /* .5 MB - 64K */
+    MCU2_1_MSMC3_DATA (RWIX)           : origin=0x0000700E4000 length=0xF0000 - 0xE4000
     /* Reserved for DMSC */
     MSMC3_DMSC (RWIX)		: origin=0x700F0000 length=0x10000			/* 64K */
     MSMC3_H (RWIX)	 		: origin=0x70100000 length=0xF2000			/* 1MB -56K */
     MSMC3_NOCACHE (RWIX)	: origin=0x701F2000 length=0xE000			/* 56K */
-    DDR0    (RWIX)  		: origin=0x80080000 length=0x7FF80000    	/* 2GB */
+    DDR0    (RWIX)  		: origin=0x90030000 length=0x00010000    	/* 64K */
 
 /* Additional memory settings	*/
 
@@ -59,6 +59,9 @@ SECTIONS
     .sysmem     : {} align(8)    > MCU2_1_MSMC3
     .stack      : {} align(4)    > MCU2_1_MSMC3
     .data_buffer: {} palign(128) > MCU2_1_MSMC3
+
+    /* USB or any other LLD buffer for benchmarking */
+    .benchmark_buffer (NOLOAD) {} ALIGN (8) > MCU2_1_MSMC3_DATA
 
 /* Additional sections settings 	*/
 

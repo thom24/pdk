@@ -63,6 +63,8 @@ volatile uint32_t gMsg[MAILBOX_MAX_INST] = {0u};
 volatile int32_t  gMsgStatus       = MAILBOX_EINVAL;
 volatile uint32_t gDone            = 1u;
 volatile uint32_t gEndTask         = 0u;
+volatile uint32_t gEndTaskNum      = 0u;
+volatile uint32_t gEndTaskLast     = 0u;
 volatile uint32_t gNumMessagesRecd = 0u;
 volatile uint32_t gSendToken       = 0u;
 volatile uint16_t gSelfId;
@@ -71,6 +73,9 @@ volatile uint16_t gMasterId        = MAILBOX_INST_MPU1_0;
 volatile uint32_t gSkipCoreId      = MAILBOX_INST_MPU1_0;
 volatile uint32_t gInterruptMode   = 0u;
 volatile Mbox_Handle gHandles[MAILBOX_MAX_INST];
+
+uint32_t gTimeIntArray[MAILBOX_MAX_INST][MAILBOX_SEND_NUM_MESSAGES] __attribute__ ((section(".benchmark_buffer"), aligned (8)));
+uint32_t gTimePollArray[MAILBOX_MAX_INST][MAILBOX_SEND_NUM_MESSAGES] __attribute__ ((section(".benchmark_buffer"), aligned (8)));
 
 /* ========================================================================== */
 /*                 Internal Function Declarations                             */
@@ -182,7 +187,7 @@ int32_t perfTestInit(void)
     {
         openParam.cfg.writeMode = MAILBOX_MODE_FAST;
         openParam.cfg.readMode = MAILBOX_MODE_FAST;
-	openParam.cfg.readCallback = NULL;
+        openParam.cfg.readCallback = NULL;
         openParam.cfg.enableVIMDirectInterrupt = true;
     }
 
@@ -277,6 +282,7 @@ static void mailboxIsr(Mbox_Handle handle, Mailbox_Instance remoteEndpoint)
     {
         case MAILBOX_APP_STOP_MESSAGE:
             gEndTask = 1u;
+            gEndTaskNum++;
             break;
 
         case MAILBOX_APP_SEND_TOKEN_MESSAGE:
@@ -287,6 +293,7 @@ static void mailboxIsr(Mbox_Handle handle, Mailbox_Instance remoteEndpoint)
             gSendToken = 1U;
 #endif
             gEndTask = 1u;
+            gEndTaskNum++;
             break;
 
         default:
@@ -324,10 +331,10 @@ int perfTestSync(void)
         {
             continue;
         }
-	msg = MAILBOX_APP_SYNC_MESSAGE;
+        msg = MAILBOX_APP_SYNC_MESSAGE;
 
         /* Send initial Sync message */
-	Mailbox_write(gHandles[remoteId], (uint8_t *)&msg, sizeof(uint32_t));
+        Mailbox_write(gHandles[remoteId], (uint8_t *)&msg, sizeof(uint32_t));
     }
 
     /* Receive Ack message back for all cores */
@@ -375,7 +382,8 @@ int perfTestSync(void)
 
 void perfTestSendReceiveMessages(uint16_t remoteId)
 {
-    uint32_t startTimerCount, endTimerCount;
+    uint32_t allTimerCount=0u;
+    uint32_t allTimerCountWithoutFirst=0u;
     uint32_t clockDivideFactor;
 #ifdef DETAILED_PROFILING
     uint32_t midTimerCount0;
@@ -387,23 +395,12 @@ void perfTestSendReceiveMessages(uint16_t remoteId)
 #endif
 #if defined(MEASURE_LATENCY_DISTRIBUTION) || defined(DETAILED_PROFILING)
     uint32_t startTimerCount0, endTimerCount0;
-    uint32_t totalTimerCount, minTotalTimerCount=0xffffffffu, maxTotalTimerCount=0u, averageTotalTimerCount=0u;
+    uint32_t totalTimerCount, minTotalTimerCount=0xffffffffu, maxTotalTimerCount=0u;
+    uint32_t maxTotalTimerCountAfterFirst=0u;
 #endif
-#if defined(BUILD_MCU)
-#if defined(BUILD_MCU1_0)
-    uint32_t * timeArrayInt = (uint32_t *)0x7003E000;
-    uint32_t * timeArrayPoll = (uint32_t *)0x7003F000;
-#elif defined(BUILD_MCU1_1)
-    uint32_t * timeArrayInt = (uint32_t *)0x7007E000;
-    uint32_t * timeArrayPoll = (uint32_t *)0x7007F000;
-#elif defined(BUILD_MCU2_0)
-    uint32_t * timeArrayInt = (uint32_t *)0x700BE000;
-    uint32_t * timeArrayPoll = (uint32_t *)0x700BF000;
-#elif defined(BUILD_MCU2_1)
-    uint32_t * timeArrayInt = (uint32_t *)0x700EE000;
-    uint32_t * timeArrayPoll = (uint32_t *)0x700EF000;
-#endif
-#endif
+    uint32_t * timeArray;
+    uint32_t * timeArrayInt = gTimeIntArray[remoteId];
+    uint32_t * timeArrayPoll = gTimePollArray[remoteId];
 
     int i;
     uint32_t lastNumMessagesRecd;
@@ -411,7 +408,15 @@ void perfTestSendReceiveMessages(uint16_t remoteId)
 
     lastNumMessagesRecd = gNumMessagesRecd;
 
-    startTimerCount = perfTestGetTimerCount();
+    if (gInterruptMode == 1u)
+    {
+        timeArray = timeArrayInt;
+    }
+    else
+    {
+        timeArray = timeArrayPoll;
+    }
+
     for (i = 0; i < MAILBOX_SEND_NUM_MESSAGES; i++)
     {
 #if defined(MEASURE_LATENCY_DISTRIBUTION) || defined(DETAILED_PROFILING)
@@ -473,24 +478,22 @@ void perfTestSendReceiveMessages(uint16_t remoteId)
 #endif
 #if defined(MEASURE_LATENCY_DISTRIBUTION) || defined(DETAILED_PROFILING)
         totalTimerCount = endTimerCount0 - startTimerCount0;
-#if defined(BUILD_MCU)
-        if (gInterruptMode == 1u)
+        timeArray[i] = totalTimerCount;
+        allTimerCount += totalTimerCount;
+        if (i > 0)
         {
-            timeArrayInt[i] = totalTimerCount;
+            allTimerCountWithoutFirst += totalTimerCount;
         }
-        else
-        {
-            timeArrayPoll[i] = totalTimerCount;
-        }
-#endif
         minTotalTimerCount = (totalTimerCount < minTotalTimerCount) ? totalTimerCount : minTotalTimerCount;
+        if (i > 0)
+        {
+            maxTotalTimerCountAfterFirst = (totalTimerCount > maxTotalTimerCountAfterFirst) ? totalTimerCount : maxTotalTimerCountAfterFirst;
+        }
         maxTotalTimerCount = (totalTimerCount > maxTotalTimerCount) ? totalTimerCount : maxTotalTimerCount;
-        averageTotalTimerCount = (totalTimerCount + averageTotalTimerCount) >> 1;
 #endif
 
         lastNumMessagesRecd++;
     }
-    endTimerCount = perfTestGetTimerCount();
 
     if (gInterruptMode == 1u)
     {
@@ -502,12 +505,15 @@ void perfTestSendReceiveMessages(uint16_t remoteId)
     }
 
     MailboxAppPrintf("\nSelf id: %d, Remote id: %d, Delta_time: %d\n",
-                     gSelfId, remoteId, endTimerCount-startTimerCount);
+                     gSelfId, remoteId, allTimerCount);
 
     clockDivideFactor = MAILBOX_TEST_TIMER_FREQ_IN_HZ/100000000;  /* This helps convert to 100 MHz scale */
 
-    MailboxAppPrintf("\n Round trip Delay Average: %d in ns\n",
-             10*(endTimerCount-startTimerCount)/(clockDivideFactor*MAILBOX_SEND_NUM_MESSAGES));
+    MailboxAppPrintf("\n Round trip Delay Average: %d in ns, %d in ns (without first run)\n",
+             10*(allTimerCount)/(clockDivideFactor*MAILBOX_SEND_NUM_MESSAGES),
+             10*(allTimerCountWithoutFirst)/(clockDivideFactor*(MAILBOX_SEND_NUM_MESSAGES-1)));
+    MailboxAppPrintf("\n    For per-run values, dump %d bytes at address %p\n",
+                     sizeof(uint32_t)*MAILBOX_SEND_NUM_MESSAGES, timeArray);
 #ifdef DETAILED_PROFILING
 
     MailboxAppPrintf("\n  Tx time in ns: Min %d Max %d average %d \n",
@@ -535,10 +541,11 @@ void perfTestSendReceiveMessages(uint16_t remoteId)
     }
 #endif
 #if defined(MEASURE_LATENCY_DISTRIBUTION) || defined(DETAILED_PROFILING)
-    MailboxAppPrintf("\n  Total time in ns: Min %d Max %d average %d \n",
+    MailboxAppPrintf("\n  Total time in ns: Min %d Max %d, Min %d Max %d (without first run) \n",
                      10*(minTotalTimerCount)/(clockDivideFactor),
                      10*(maxTotalTimerCount)/(clockDivideFactor),
-                     10*(averageTotalTimerCount)/(clockDivideFactor));
+                     10*(minTotalTimerCount)/(clockDivideFactor),
+                     10*(maxTotalTimerCountAfterFirst)/(clockDivideFactor));
 #endif
 }
 
@@ -653,7 +660,8 @@ int32_t perfTestRun(void)
             gEndTask = 0u;
             if (gInterruptMode == 1u)
             {
-                while (!gEndTask);
+                while (gEndTaskNum <= gEndTaskLast);
+                gEndTaskLast++;
             }
             else
             {

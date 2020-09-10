@@ -208,6 +208,7 @@ static Void taskFxn(UArg a0, UArg a1)
 
 void MailboxAppPrint(const char * str)
 {
+#if !defined (SIM_BUILD) || !defined (BUILD_MPU1_0)
 #ifdef USE_STD_PRINTF
     printf(str);
 #else
@@ -215,6 +216,7 @@ void MailboxAppPrint(const char * str)
     UART_printf(str);
 #else
     UARTConfigPuts(uartBaseAddr, str, -1);
+#endif
 #endif
 #endif
 }

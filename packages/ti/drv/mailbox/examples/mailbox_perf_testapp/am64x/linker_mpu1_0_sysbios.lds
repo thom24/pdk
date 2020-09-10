@@ -9,7 +9,7 @@ MEMORY
     MSMC_MPU2	(RWX)	    : ORIGIN = 0x000070000800, LENGTH = 0x800
     MSMC_MPU1	(RWX)	    : ORIGIN = 0x000070001000, LENGTH = 0x200000-0x1000
     DDR_MPU1	(RWX)	    : ORIGIN =  0x88000000, LENGTH = 0x80000000
-
+    DDR0        (RWX)       : ORIGIN =  0x90040000, LENGTH = 0x00010000
 }
 REGION_ALIAS("REGION_TEXT_EL3", DDR_MPU1);
 REGION_ALIAS("BOOTVECTOR_EL3", DDR_MPU1);
@@ -106,7 +106,7 @@ SECTIONS {
 
     /* USB or any other LLD buffer for benchmarking */
     .benchmark_buffer (NOLOAD) : ALIGN (32) {
-    } > DDR_MPU1
+    } > DDR0
 
     .bss:frameBuffer (NOLOAD) : ALIGN (32) {
     } > DDR_MPU1

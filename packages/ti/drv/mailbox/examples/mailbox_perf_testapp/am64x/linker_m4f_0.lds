@@ -34,7 +34,7 @@ MEMORY
     /* M4F internal memory locations */
     IRAM_M4F_MEM   (RWIX)          : origin=0x0C00 length=0x30000 - 0xC00
     DRAM_M4F_MEM   (RWIX)          : origin=0x30000  length=0x10000
-    DDR0           (RWIX)          : origin=0x80000000 length=0x80000000      /* 2GB */
+    DDR0           (RWIX)          : origin=0x90050000 length=0x00010000      /* 2GB */
 }
 
 /* SPECIFY THE SECTIONS ALLOCATION INTO MEMORY */
