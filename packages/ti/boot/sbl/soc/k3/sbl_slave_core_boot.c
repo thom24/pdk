@@ -839,8 +839,8 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
             /* Notifying SYSFW that the SBL is relinquishing the MCU cluster running the SBL */
             if (requestCoresFlag == SBL_REQUEST_CORE)
             {
-                SBL_ReleaseCore(core_id - 1); /* MCU1_0 */
-                SBL_ReleaseCore(core_id);     /* MCU1_1 */
+                Sciclient_procBootReleaseProcessor(SBL_PROC_ID_MCU1_CPU0, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
+                Sciclient_procBootReleaseProcessor(SBL_PROC_ID_MCU1_CPU1, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
             }
 
             /* Power up cores as needed */
