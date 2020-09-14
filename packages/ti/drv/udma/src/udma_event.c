@@ -62,6 +62,8 @@
 static void Udma_eventIsrFxn(uintptr_t arg);
 static int32_t Udma_eventCheckParams(Udma_DrvHandle drvHandle,
                                      const Udma_EventPrms *eventPrms);
+static int32_t Udma_eventCheckUnRegister(Udma_DrvHandle drvHandle,
+                                         Udma_EventHandle eventHandle);
 static int32_t Udma_eventAllocResource(Udma_DrvHandle drvHandle,
                                        Udma_EventHandle eventHandle);
 static void Udma_eventFreeResource(Udma_DrvHandle drvHandle,
@@ -244,22 +246,8 @@ int32_t Udma_eventUnRegister(Udma_EventHandle eventHandle)
         }
         else
         {
-            if(eventHandle->eventInitDone != UDMA_INIT_DONE)
-            {
-                retVal = UDMA_EFAIL;
-            }
-            if(UDMA_SOK == retVal)
-            {
-                /* Can't free-up master event when shared events are still not yet
-                * unregistered */
-                if((NULL_PTR == eventHandle->eventPrms.masterEventHandle) &&
-                (NULL_PTR != eventHandle->nextEvent))
-                {
-                    retVal = UDMA_EFAIL;
-                    Udma_printf(drvHandle,
-                        "[Error] Can't free master event when shared events are still registered!!!\n");
-                }
-            }
+            retVal = Udma_eventCheckUnRegister(drvHandle, eventHandle);
+
             if(UDMA_SOK == retVal)
             {
                 if(NULL_PTR != eventHandle->hwiHandle)
@@ -618,6 +606,69 @@ static int32_t Udma_eventCheckParams(Udma_DrvHandle drvHandle,
             retVal = UDMA_EINVALID_PARAMS;
             Udma_printf(drvHandle,
                 "[Error] Master handle should be NULL_PTR for master event type!!!\n");
+        }
+    }
+
+    return (retVal);
+}
+
+static int32_t Udma_eventCheckUnRegister(Udma_DrvHandle drvHandle,
+                                         Udma_EventHandle eventHandle)
+{
+    int32_t             retVal = UDMA_SOK;
+    Udma_EventPrms     *eventPrms;
+    Udma_RingHandle     ringHandle;
+    uint32_t            fOcc;
+    uint32_t            rOcc;
+    
+    Udma_assert(drvHandle, eventHandle != NULL_PTR);
+    eventPrms = &eventHandle->eventPrms;
+
+    if(eventHandle->eventInitDone != UDMA_INIT_DONE)
+    {
+        retVal = UDMA_EFAIL;
+    }
+    if(UDMA_SOK == retVal)
+    {
+        /* Can't free-up master event when shared events are still not yet
+        * unregistered */
+        if((NULL_PTR == eventPrms->masterEventHandle) &&
+           (NULL_PTR != eventHandle->nextEvent))
+        {
+            retVal = UDMA_EFAIL;
+            Udma_printf(drvHandle,
+                "[Error] Can't free master event when shared events are still registered!!!\n");
+        }
+    }
+
+     if(UDMA_SOK == retVal)
+    {
+        /* Ring occupancies must be zero before unregistering Ring / DMA completion events.
+         * This is to make sure that there is no resource leak, because unregistering 
+         * these events will reset the ring. */
+        if((UDMA_EVENT_TYPE_DMA_COMPLETION == eventPrms->eventType) ||
+           (UDMA_EVENT_TYPE_RING == eventPrms->eventType))
+        {
+            if(UDMA_EVENT_TYPE_DMA_COMPLETION == eventPrms->eventType)
+            {
+                Udma_assert(drvHandle, eventPrms->chHandle != NULL_PTR);
+                ringHandle = eventPrms->chHandle->cqRing;
+            }
+            else
+            {
+                ringHandle = eventPrms->ringHandle;
+            }
+
+            Udma_assert(drvHandle, ringHandle != NULL_PTR);
+            fOcc = Udma_ringGetForwardRingOcc(ringHandle);
+            rOcc = Udma_ringGetReverseRingOcc(ringHandle); 
+
+            if((0U != fOcc) || (0U != rOcc)) 
+            {
+                retVal = UDMA_EFAIL;
+                Udma_printf(drvHandle,
+                    "[Error] Can't unregister the event when descriptors are present in the ring!!!\n");
+            }
         }
     }
 

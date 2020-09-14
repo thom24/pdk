@@ -858,6 +858,16 @@ static int32_t udmaTestRingEventTestLoop(UdmaTestTaskObj *taskObj)
                     }
                 }
 
+                /* Ring Event Unregister with descriptors present in ring - Error Check*/
+                retVal = Udma_eventUnRegister(eventHandle);
+                if(UDMA_SOK == retVal)
+                {
+                    GT_0trace(taskObj->traceMask, GT_ERR,
+                        " Ring Event Unregister did not fail when descriptors present in ring!!\n");
+                    retVal = UDMA_EFAIL;
+                    break; 
+                }
+
                 /* Dequeue */
                 for(qCnt = 0U; qCnt < elemCnt; qCnt++)
                 {

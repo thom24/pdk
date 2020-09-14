@@ -1078,8 +1078,6 @@ static int32_t App_delete(App_UdmaObj *appObj)
     App_UdmaTrObj  *appTrObj = &appChObj->appTrObj;
     Udma_ChHandle   chHandle = appChObj->chHandle;
     
-    
-
     retVal = Udma_chDisable(chHandle, UDMA_DEFAULT_CH_DISABLE_TIMEOUT);
     if(UDMA_SOK != retVal)
     {

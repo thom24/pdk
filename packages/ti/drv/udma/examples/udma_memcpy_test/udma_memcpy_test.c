@@ -682,6 +682,17 @@ static int32_t App_delete(Udma_DrvHandle drvHandle, Udma_ChHandle chHandle)
         App_print("[Error] UDMA channel disable failed!!\n");
     }
 
+    /* Flush any pending request from the free queue */
+    while(1)
+    {
+        tempRetVal = Udma_ringFlushRaw(
+                         Udma_chGetFqRingHandle(chHandle), &pDesc);
+        if(UDMA_ETIMEOUT == tempRetVal)
+        {
+            break;
+        }
+    }
+
     /* Unregister all events */
 #if defined (UDMA_TEST_INTR)
     cqEventHandle = &gUdmaCqEventObj;
@@ -699,17 +710,6 @@ static int32_t App_delete(Udma_DrvHandle drvHandle, Udma_ChHandle chHandle)
         App_print("[Error] UDMA event unregister failed!!\n");
     }
 #endif
-
-    /* Flush any pending request from the free queue */
-    while(1)
-    {
-        tempRetVal = Udma_ringFlushRaw(
-                         Udma_chGetFqRingHandle(chHandle), &pDesc);
-        if(UDMA_ETIMEOUT == tempRetVal)
-        {
-            break;
-        }
-    }
 
     retVal += Udma_chClose(chHandle);
     if(UDMA_SOK != retVal)

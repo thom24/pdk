@@ -382,6 +382,13 @@ int32_t Udma_eventRegister(Udma_DrvHandle drvHandle,
  *  event. This function returns error for master event if any other shared
  *  resource is still not unregistered.
  *
+ *  In case of Ring / DMA Completion events, All the unprocessed descriptors 
+ *  in the ring / processed descriptors returned to the ring, should be dequeued 
+ *  using #Udma_ringFlushRaw / #Udma_ringDequeueRaw before unregistering 
+ *  these events. This function returns error when the ring occupancy 
+ *  is non-zero. This is to make sure that there is no resource leak, 
+ *  because unregistering these events will reset the ring.
+ *
  *  In case of devices like AM64x in which teardown is not supported,
  *  for UDMA_EVENT_TYPE_TEARDOWN_PACKET it will return gracefully,
  *  without doing anything.
