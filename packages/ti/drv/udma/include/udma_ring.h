@@ -82,6 +82,11 @@ extern "C" {
  * one. Used in the API #Udma_ringMonAlloc.
  */
 #define UDMA_RING_MON_ANY               (UDMA_RING_ANY)
+/**
+ * \brief Macro used to specify that ring virt ID is invalid.
+ * Used in the API #Udma_ringAlloc.
+ */
+#define UDMA_RING_VIRTID_INVALID        ((uint16_t) 0xFFFFU)
 
 /** \brief Macro used to skip the ring size check by driver */
 #define UDMA_RING_SIZE_CHECK_SKIP       (0xABDCABCDU)
@@ -143,6 +148,8 @@ typedef struct
      *   backward combatibility when this is not set rightly by the caller */
     uint8_t                 mode;
     /**< Ring mode. Refer \ref tisci_msg_rm_ring_cfg_req::mode */
+    uint16_t                virtId;
+    /**< Ring virt ID. Refer \ref tisci_msg_rm_ring_cfg_req::virtid */
     uint32_t                elemCnt;
     /**< Ring element count.
      *      Set to queue depth of the ring.
