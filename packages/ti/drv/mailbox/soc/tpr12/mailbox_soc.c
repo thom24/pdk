@@ -250,7 +250,7 @@ int32_t Mailbox_isMultiChannelSupported(Mailbox_Instance localEndpoint, Mailbox_
     /* Multichannel supported only between DSS and MSS. */
     if ((localEndpoint == MAILBOX_INST_DSP) && (remoteEndpoint == MAILBOX_INST_MSS_CR5A))
     {
-        retVal = MAILBOX_EINVAL;
+        retVal = MAILBOX_SOK;
     }
 #else
     /* Currently not supported for other cores. */
@@ -936,7 +936,9 @@ static void Mailbox_boxFullISR(uintptr_t arg)
                 }
                 else
                 {
-                    Mailbox_boxFullISRProcessing((Mailbox_Driver*) remoteCfg->handleArray[id]);
+                    Mailbox_Driver* driver = remoteCfg->handleArray[id];
+                    driver->remoteCfgPtr->readChIDInUse = driver->cfg.chId;
+                    Mailbox_boxFullISRProcessing(driver);
                 }
             }
         }

@@ -79,6 +79,7 @@
 /*                          Function Declarations                             */
 /* ========================================================================== */
 static void Test_appCallbackFunction(Mbox_Handle handle, Mailbox_Instance remoteEndpoint);
+void multiChannelTest (void);
 
 /* ========================================================================== */
 /*                         Structure Declarations                             */
@@ -102,6 +103,9 @@ uint32_t gTestPatternWordReceive_3=0x88887777;
 uint32_t volatile gTestFailFlag = 0;
 
 volatile uint32_t testAppCallbackFlag=0;
+
+/*Global array to keep handles of channels between mss and dss*/
+Mbox_Handle  handleArray[MAILBOX_CH_ID_MAX + 1];
 /* ========================================================================== */
 /*                          Function Definitions                              */
 /* ========================================================================== */
@@ -135,6 +139,8 @@ void Test_initTask(UArg arg0, UArg arg1)
 
     /* Initialize the Mailbox */
     Mailbox_init(&initParam);
+
+    multiChannelTest();
 
     /* Setup the default Mailbox open Parameters */
     Mailbox_openParams_init(&openParam);
@@ -332,4 +338,291 @@ int main (void)
 static void Test_appCallbackFunction(Mbox_Handle handle, Mailbox_Instance remoteEndpoint)
 {
     testAppCallbackFlag=1;
+}
+
+volatile uint32_t testAppCallbackFlag1=0;
+static void Test_appCallbackFunction1(Mbox_Handle handleDss, Mailbox_Instance remoteEndpoint)
+{
+    testAppCallbackFlag1=1;
+}
+
+volatile uint32_t testAppCallbackFlag3=0;
+static void Test_appCallbackFunction3(Mbox_Handle handleDss, Mailbox_Instance remoteEndpoint)
+{
+    testAppCallbackFlag3=1;
+}
+
+void Test_channel1Task(UArg arg0, UArg arg1)
+{
+    uint32_t        bufferRx;
+    uint32_t        size;
+
+    while(1)
+    {
+        while (testAppCallbackFlag1 == 0)
+        {
+            Task_sleep(1);
+            Task_yield();
+        }
+        testAppCallbackFlag1 = 0;
+        System_printf("DSS: Channel 1 received message.\n");
+
+        /*read first word*/
+        bufferRx = 0;
+        size = Mailbox_read(handleArray[1], (uint8_t *)&bufferRx, 4);
+        System_printf("DSS: Read %d bytes. Val=0x%x \n",size, bufferRx);
+        if (bufferRx != gTestPatternWordReceive_1)
+        {
+            System_printf("DSS: Error. Pattern mismatch.\n");
+            gTestFailFlag = 1;
+            return;
+        }
+        Mailbox_readFlush(handleArray[1]);
+    }
+
+}
+
+void Test_channel3Task(UArg arg0, UArg arg1)
+{
+    uint32_t        bufferRx;
+    uint32_t        size;
+
+    while(1)
+    {
+        while (testAppCallbackFlag3 == 0)
+        {
+            Task_sleep(1);
+            Task_yield();
+        }
+        testAppCallbackFlag3 = 0;
+        System_printf("DSS: Channel 3 received message.\n");
+
+        /*read first word*/
+        bufferRx = 0;
+        size = Mailbox_read(handleArray[3], (uint8_t *)&bufferRx, 4);
+        System_printf("DSS: Read %d bytes. Val=0x%x \n",size, bufferRx);
+        if (bufferRx != gTestPatternWordReceive_3)
+        {
+            System_printf("DSS: Error. Pattern mismatch.\n");
+            gTestFailFlag = 1;
+            return;
+        }
+        Mailbox_readFlush(handleArray[3]);
+    }
+
+}
+
+void Test_channel4Task(UArg arg0, UArg arg1)
+{
+    uint32_t        bufferRx;
+    uint32_t        size;
+
+    while(1)
+    {
+        size = Mailbox_read(handleArray[4], (uint8_t *)&bufferRx, 4);
+        System_printf("DSS: Channel 4 received message.\n");
+        System_printf("DSS: Read %d bytes. Val=0x%x \n",size, bufferRx);
+        if (bufferRx != gTestPatternWordReceive_2)
+        {
+            System_printf("DSS: Error. Pattern mismatch.\n");
+            gTestFailFlag = 1;
+            return;
+        }
+        Mailbox_readFlush(handleArray[4]);
+    }
+
+}
+Task_Handle multiChTaskHandle[MAILBOX_CH_ID_MAX];
+
+void multiChannelTest (void)
+{
+    int32_t         errCode;
+    int32_t         size,i;
+    Task_Params     taskParams;
+    uint32_t        bufferRx;
+    Mailbox_openParams openParam;
+
+
+    System_printf("*************************************************\n");
+    System_printf("\nDSS: Starting Multichannel Test.\n");
+
+    /****** ch 1 *********************************************/
+    Mailbox_openParams_init(&openParam);
+    openParam.remoteEndpoint = MAILBOX_INST_MSS_CR5A;
+    openParam.cfg.chType       = MAILBOX_CHTYPE_MULTI;
+    openParam.cfg.chId         = MAILBOX_CH_ID_1;
+    openParam.cfg.readMode     = MAILBOX_MODE_CALLBACK;
+    openParam.cfg.readCallback = Test_appCallbackFunction1;
+    openParam.cfg.writeMode    = MAILBOX_MODE_POLLING;
+
+    handleArray[1] = Mailbox_open(&openParam, &errCode);
+    if (handleArray[1] == NULL)
+    {
+        System_printf("DSS: Error: Unable to open the Mailbox Instance\n");
+        gTestFailFlag = 1;
+        return;
+    }
+    if (errCode != 0)
+    {
+        System_printf("DSS: Error: Unable to open the Mailbox Instance. Error=%d\n",errCode);
+        gTestFailFlag = 1;
+        return;
+    }
+    System_printf("DSS: Mailbox Instance to MSS %p has been opened successfully\n", handleArray[1]);
+
+    /****** ch 3 *********************************************/
+    Mailbox_openParams_init(&openParam);
+    openParam.remoteEndpoint = MAILBOX_INST_MSS_CR5A;
+    openParam.cfg.chType       = MAILBOX_CHTYPE_MULTI;
+    openParam.cfg.chId         = MAILBOX_CH_ID_3;
+    openParam.cfg.readMode     = MAILBOX_MODE_CALLBACK;
+    openParam.cfg.readCallback = Test_appCallbackFunction3;
+    openParam.cfg.writeMode    = MAILBOX_MODE_BLOCKING;
+
+    handleArray[3] = Mailbox_open(&openParam, &errCode);
+    if (handleArray[3] == NULL)
+    {
+        System_printf("DSS: Error: Unable to open the Mailbox Instance\n");
+        gTestFailFlag = 1;
+        return;
+    }
+    if (errCode != 0)
+    {
+        System_printf("DSS: Error: Unable to open the Mailbox Instance. Error=%d\n",errCode);
+        gTestFailFlag = 1;
+        return;
+    }
+    System_printf("DSS: Mailbox Instance to MSS %p has been opened successfully\n", handleArray[3]);
+
+    /****** ch 4 *********************************************/
+    Mailbox_openParams_init(&openParam);
+    openParam.remoteEndpoint = MAILBOX_INST_MSS_CR5A;
+    openParam.cfg.chType       = MAILBOX_CHTYPE_MULTI;
+    openParam.cfg.chId         = MAILBOX_CH_ID_4;
+    openParam.cfg.readMode     = MAILBOX_MODE_BLOCKING;
+    openParam.cfg.writeMode    = MAILBOX_MODE_BLOCKING;
+
+    handleArray[4] = Mailbox_open(&openParam, &errCode);
+    if (handleArray[4] == NULL)
+    {
+        System_printf("DSS: Error: Unable to open the Mailbox Instance\n");
+        gTestFailFlag = 1;
+        return;
+    }
+    if (errCode != 0)
+    {
+        System_printf("DSS: Error: Unable to open the Mailbox Instance. Error=%d\n",errCode);
+        gTestFailFlag = 1;
+        return;
+    }
+    System_printf("DSS: Mailbox Instance to MSS %p has been opened successfully\n", handleArray[4]);
+
+    /****** ch 7 *********************************************/
+    Mailbox_openParams_init(&openParam);
+    openParam.remoteEndpoint = MAILBOX_INST_MSS_CR5A;
+    openParam.cfg.chType       = MAILBOX_CHTYPE_MULTI;
+    openParam.cfg.chId         = MAILBOX_CH_ID_7;
+    openParam.cfg.readMode     = MAILBOX_MODE_BLOCKING;
+    openParam.cfg.writeMode    = MAILBOX_MODE_BLOCKING;
+
+    handleArray[7] = Mailbox_open(&openParam, &errCode);
+    if (handleArray[7] == NULL)
+    {
+        System_printf("DSS: Error: Unable to open the Mailbox Instance\n");
+        gTestFailFlag = 1;
+        return;
+    }
+    if (errCode != 0)
+    {
+        System_printf("DSS: Error: Unable to open the Mailbox Instance. Error=%d\n",errCode);
+        gTestFailFlag = 1;
+        return;
+    }
+    System_printf("DSS: Mailbox Instance to DSS %p has been opened successfully\n", handleArray[7]);
+
+    /***************************************************/
+    /*start tasks used for the multichannel test*/
+    Task_Params_init(&taskParams);
+    taskParams.stackSize = 2*1024;
+    multiChTaskHandle[1] = Task_create(Test_channel1Task, &taskParams, NULL);
+
+    Task_Params_init(&taskParams);
+    taskParams.stackSize = 2*1024;
+    multiChTaskHandle[3] = Task_create(Test_channel3Task, &taskParams, NULL);
+
+    Task_Params_init(&taskParams);
+    taskParams.stackSize = 2*1024;
+    multiChTaskHandle[4] = Task_create(Test_channel4Task, &taskParams, NULL);
+
+    /*give time for remote endpoint to open channels*/
+    Task_sleep(4);
+
+    for(i=0;i<3;i++)
+    {
+        /* channels 3 and 4 are write blocking so can write back to back*/
+        System_printf("DSS: ************ Writing a message in CHANNEL 3 to MSS ****************\n");
+        size = Mailbox_write(handleArray[3], (uint8_t*)&gTestPatternWordSend_3, sizeof(gTestPatternWordSend_3));
+        if(size != sizeof(gTestPatternWordSend_3))
+        {
+            System_printf("DSS: Error. Write failed. Error=%d\n",size);
+            gTestFailFlag = 1;
+        }
+
+        System_printf("DSS: ************ Writing a message in CHANNEL 4 to MSS ****************\n");
+        size = Mailbox_write(handleArray[4], (uint8_t*)&gTestPatternWordSend_2, sizeof(gTestPatternWordSend_2));
+        if(size != sizeof(gTestPatternWordSend_2))
+        {
+            System_printf("DSS: Error. Write failed. Error=%d\n",size);
+            gTestFailFlag = 1;
+        }
+
+    }
+
+    System_printf("DSS: ************ Writing a message in CHANNEL 1 to MSS ****************\n");
+    size = Mailbox_write(handleArray[1], (uint8_t*)&gTestPatternWordSend_1, sizeof(gTestPatternWordSend_1));
+    if(size != sizeof(gTestPatternWordSend_1))
+    {
+        System_printf("DSS: Error. Write failed. Error=%d\n",size);
+        gTestFailFlag = 1;
+    }
+
+    /* Multichannel test end once a message is received in channel 7 which is readBlocking*/
+    size = Mailbox_read(handleArray[7], (uint8_t *)&bufferRx, 4);
+    System_printf("DSS: Channel 7 received message.\n");
+    System_printf("DSS: Read %d bytes. Val=0x%x \n",size, bufferRx);
+    if (bufferRx != gTestPatternWordReceive_0)
+    {
+        System_printf("DSS: Error. Pattern mismatch.\n");
+        gTestFailFlag = 1;
+        return;
+    }
+    Mailbox_readFlush(handleArray[7]);
+
+    System_printf("DSS: ************ Writing a message in CHANNEL 7 to MSS ****************\n");
+    size = Mailbox_write(handleArray[7], (uint8_t*)&gTestPatternWordSend_0, sizeof(gTestPatternWordSend_0));
+    if(size != sizeof(gTestPatternWordSend_0))
+    {
+        System_printf("DSS: Error. Write failed. Error=%d\n",size);
+        gTestFailFlag = 1;
+    }
+
+    /*close all channels*/
+    for(i=0;i<=MAILBOX_CH_ID_MAX;i++)
+    {
+        if((i==1) || (i==3) || (i==4) || (i==7))
+        {
+            if (Mailbox_close(handleArray[i]) != 0)
+            {
+                System_printf("DSS: Error: Failed to close instance %d\n",i);
+                gTestFailFlag = 1;
+            }
+            System_printf("Debug: closed instance %d\n",i);
+        }
+    }
+
+    /*close auxiliary tasks*/
+    Task_delete(&multiChTaskHandle[1]);
+    Task_delete(&multiChTaskHandle[3]);
+    Task_delete(&multiChTaskHandle[4]);
+
 }
