@@ -42,6 +42,8 @@
 #if defined(SBL_ENABLE_HLOS_BOOT)
 #  if defined(SOC_J721E)
 #    include <ti/drv/sciclient/soc/V1/sciclient_defaultBoardcfg_rm_linux_hex.h>
+#  elif defined(SOC_AM65XX)
+#    include <ti/drv/sciclient/soc/V0/sciclient_defaultBoardcfg_rm_linux_hex.h>
 #  endif
 #endif
 
