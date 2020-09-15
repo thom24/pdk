@@ -201,6 +201,7 @@ SBL_MCU3_CPU0_ATCM_BASE_ADDR_SOC,
 SBL_MCU3_CPU1_ATCM_BASE_ADDR_SOC
 };
 
+#if !defined(SOC_AM65XX)
 static const uint32_t SblBtcmAddr[] =
 {
 SBL_MCU_BTCM_BASE,
@@ -210,6 +211,7 @@ SBL_MCU2_CPU1_BTCM_BASE_ADDR_SOC,
 SBL_MCU3_CPU0_BTCM_BASE_ADDR_SOC,
 SBL_MCU3_CPU1_BTCM_BASE_ADDR_SOC
 };
+#endif
 /* ========================================================================== */
 /*                           Internal Functions                               */
 /* ========================================================================== */
@@ -432,8 +434,10 @@ void SBL_SetupCoreMem(uint32_t core_id)
     int32_t status = CSL_EFAIL;
     uint8_t runLockStep = 0;
     uint8_t mcuModeConfigured = 0;
+#if !defined(SOC_AM65XX)
     struct tisci_msg_proc_get_status_resp cpuStatus;
     struct tisci_msg_proc_set_config_req  proc_set_config_req;
+#endif
     const sblSlaveCoreInfo_t *sblSlaveCoreInfoPtr;
 
     SBL_ADD_PROFILE_POINT;
@@ -519,6 +523,8 @@ void SBL_SetupCoreMem(uint32_t core_id)
                 Sciclient_pmSetModuleState(sblSlaveCoreInfoPtr->tisci_dev_id, TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
             }
 
+#if !defined(SOC_AM65XX)
+            /* Leave TCM defaults, for AM65xx. TCMs must be loaded by the app itself to avoid losing data during power cycle */
             SBL_log(SBL_LOG_MAX, "Calling Sciclient_procBootGetProcessorState, ProcId 0x%x... \n", sblSlaveCoreInfoPtr->tisci_proc_id);
             status = Sciclient_procBootGetProcessorState(sblSlaveCoreInfoPtr->tisci_proc_id, &cpuStatus, SCICLIENT_SERVICE_WAIT_FOREVER);
             if (status != CSL_PASS)
@@ -615,6 +621,7 @@ void SBL_SetupCoreMem(uint32_t core_id)
                 SBL_log(SBL_LOG_MAX, "***Not Clearing*** BTCM @0x%x\n", SblBtcmAddr[core_id - MCU1_CPU0_ID]);
 #endif
             }
+#endif /* #if !defined(SOC_AM65XX) */
             break;
         case MPU1_SMP_ID:
         case MPU1_CPU0_ID:
@@ -707,6 +714,7 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
 
 #if defined(SBL_SKIP_MCU_RESET) && (defined(SBL_SKIP_BRD_CFG_BOARD) || defined(SBL_SKIP_BRD_CFG_PM) || defined(SBL_SKIP_SYSFW_INIT))
     /* Skip copy if R5 app entry point is already 0 */
+#if !defined(SOC_AM65XX)  /* Pre-loading ATCM is not permitted for AM65xx */
     if ((core_id == MCU1_CPU0_ID) &&
        (pAppEntry->CpuEntryPoint[core_id]) &&
        (pAppEntry->CpuEntryPoint[core_id] <  SBL_INVALID_ENTRY_ADDR))
@@ -715,6 +723,7 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
         memcpy(((void *)(SblAtcmAddr[core_id - MCU1_CPU0_ID])), (void *)(pAppEntry->CpuEntryPoint[core_id]), 128);
         return;
     }
+#endif
 
     /* Finished processing images for all cores, start MCU_0 */
     if ((core_id == MCU1_CPU1_ID) &&
@@ -773,6 +782,7 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
             /* Display profile logs */
             SBL_printProfileLog();
 
+#if !defined(SOC_AM65XX)  /* Pre-loading ATCM is not permitted for AM65xx */
             if (pAppEntry->CpuEntryPoint[core_id] <  SBL_INVALID_ENTRY_ADDR)
             {
                 /* Skip copy if R5 app entry point is already 0 */
@@ -782,12 +792,16 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
                     memcpy(((void *)(SblAtcmAddr[core_id - MCU1_CPU0_ID])), (void *)(pAppEntry->CpuEntryPoint[core_id]), 128);
                 }
             }
+#endif
 
 #ifdef SBL_SKIP_MCU_RESET
             if (pAppEntry->CpuEntryPoint[core_id] <  SBL_INVALID_ENTRY_ADDR)
             {
+#if !defined(SOC_AM65XX)
+                SBL_log(SBL_LOG_MAX, "Un-HALT for ProcId 0x%x...\n", sblSlaveCoreInfoPtr->tisci_proc_id);
                 Sciclient_procBootSetSequenceCtrl(SBL_PROC_ID_MCU1_CPU1, 0, TISCI_MSG_VAL_PROC_BOOT_CTRL_FLAG_R5_CORE_HALT, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
                 Sciclient_pmSetModuleState(SBL_DEV_ID_MCU1_CPU1, TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
+#endif
                 Sciclient_pmSetModuleState(SBL_DEV_ID_MCU1_CPU1, TISCI_MSG_VALUE_DEVICE_SW_STATE_ON, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
             }
   
@@ -801,19 +815,12 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
             /* Branch to start of ATCM */
             ((void(*)(void))0x0)();
 #else
-	    /* Request MCU1_0 */
+            /* Request MCU1_0 */
             if (requestCoresFlag == SBL_REQUEST_CORE)
             {
                 SBL_RequestCore(core_id - 1);
             }
 
-#if defined(SOC_AM65XX)
-            /**
-             * AM65x special case: Un-halt MCU1_1 early and let it run to "wfi" so that SYSFW can power down the cluster (once MCU1_0 is also in "wfi")
-             *                     NOTE: if MCU1_1 doesn't get to wfi/wfe before powering down the core, then R5 cluster won't do proper power down & up.
-             */
-            Sciclient_procBootSetSequenceCtrl(SBL_PROC_ID_MCU1_CPU1, 0, TISCI_MSG_VAL_PROC_BOOT_CTRL_FLAG_R5_CORE_HALT, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
-#endif
             /** 
              * Reset sequence for cluster running SBL
              *
@@ -822,9 +829,9 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
              *   level overview of the reset sequence is as follows:
              *
              *   1. Processor Boot Wait (holds the queue)
-             *   2. MCU1_1 Enter Reset - (AM65x case: Power OFF)
+             *   2. MCU1_1 Enter Reset - (AM65x case: already powered OFF)
              *   3. MCU1_0 Enter Reset - (AM65x case: Power OFF)
-             *   4. Un-halt MCU1_1 - (AM65x case: already did this earlier)
+             *   4. Un-halt MCU1_1
              *   5. Release control of MCU1_0
              *   6. Release control of MCU1_1
              *   7. MCU1_0 Leave Reset - (AM65x case: Power ON)
@@ -863,11 +870,9 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
              */
             Sciclient_procBootSetSequenceCtrl(SBL_PROC_ID_MCU1_CPU1, 0, TISCI_MSG_VAL_PROC_BOOT_CTRL_FLAG_R5_CORE_HALT, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
 #else
-            /* AM65x case (can't use local reset flags): Power down both cores */
-            Sciclient_pmSetModuleState(SBL_DEV_ID_MCU1_CPU1, TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
+            /* AM65x case (can't use local reset flags): Power down core running SBL */
             Sciclient_pmSetModuleState(SBL_DEV_ID_MCU1_CPU0, TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
 #endif
-
             /**
              * Notify SYSFW that the SBL is relinquishing the MCU cluster running the SBL
              */
@@ -906,11 +911,13 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
 
         case MCU1_CPU0_ID:
             /* Skip copy if R5 app entry point is already 0 */
+#if !defined(SOC_AM65XX)  /* Pre-loading ATCM is not permitted for AM65xx */
             if (pAppEntry->CpuEntryPoint[core_id])
             {
                 SBL_log(SBL_LOG_MAX, "Copying first 128 bytes from app to MCU ATCM @ 0x%x for core %d\n", SblAtcmAddr[core_id - MCU1_CPU0_ID], core_id);
                 memcpy(((void *)(SblAtcmAddr[core_id - MCU1_CPU0_ID])), (void *)(proc_set_config_req.bootvector_lo), 128);
             }
+#endif
             break;
         case MCU2_CPU0_ID:
         case MCU2_CPU1_ID:
