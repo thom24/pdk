@@ -41,7 +41,7 @@
 #include <ti/drv/pruss/soc/pruicss_v1.h>
 
 /* PRUICSS configuration structure */
-PRUICSS_HwAttrs prussInitCfg[PRUICCSS_INSTANCE_TWO] =
+PRUICSS_HwAttrs prussInitCfg[PRUICSS_INSTANCE_TWO] =
 {
     {
        CSL_PRU_ICSSG0_DRAM0_SLV_RAM_BASE,                 /* baseAddr */
@@ -116,10 +116,10 @@ PRUICSS_HwAttrs prussInitCfg[PRUICCSS_INSTANCE_TWO] =
 };
 
 /* PRUICSS objects */
-PRUICSS_V1_Object prussObjects[PRUICCSS_INSTANCE_MAX-1];
+PRUICSS_V1_Object prussObjects[PRUICSS_INSTANCE_MAX-1];
 
 /* PRUICSS configuration structure */
-PRUICSS_Config pruss_config[PRUICCSS_INSTANCE_MAX-1] = {
+PRUICSS_Config pruss_config[PRUICSS_INSTANCE_MAX-1] = {
     {
         &prussObjects[0],
         &prussInitCfg[0]

@@ -222,8 +222,8 @@ ESPI_SwIPAttrs espiInitCfg[CSL_ESPI_PER_CNT] __attribute__ ((section(".shdata"))
       0,	/* eventId */
       
       ESPI_ICSS_INSTANCE1, /*icssInstance*/
-      PRUICCSS_PRU1, /* bitbangPru */
-      PRUICCSS_PRU0, /* controlPru */
+      PRUICSS_PRU1, /* bitbangPru */
+      PRUICSS_PRU0, /* controlPru */
       &espiFwMemPtr, /* icssMemBuffer */
 
       /* GPO Pins */

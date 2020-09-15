@@ -117,7 +117,7 @@ I2C_SwIPAttrs i2cInitCfg2[I2C_SWIP_MAX_CNT] __attribute__ ((section(".shdata")))
 #else   // AM437X_ICSS0
         I2C_ICSS_INSTANCE1,
 #endif  // AM437X_ICSS0
-        PRUICCSS_PRU0,
+        PRUICSS_PRU0,
         &i2cFwMemPtr,
 #ifndef AM437X_ICSS0        
         {0x44E10880,  8, 0x6, 0x5},
@@ -152,7 +152,7 @@ I2C_SwIPAttrs i2cInitCfg2[I2C_SWIP_MAX_CNT] __attribute__ ((section(".shdata")))
 #else   // AM437X_ICSS0
         I2C_ICSS_INSTANCE1,
 #endif  // AM437X_ICSS0
-        PRUICCSS_PRU0,
+        PRUICSS_PRU0,
         &i2cFwMemPtr,
 #ifndef AM437X_ICSS0        
         {0x44E10830, 10, 0x6, 0x9},

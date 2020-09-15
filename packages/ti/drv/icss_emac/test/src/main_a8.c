@@ -118,9 +118,9 @@ static inline void linux_sleep_ms(unsigned long ms) {
 
 #ifdef __LINUX_USER_SPACE
 extern tprussdrv *pruss_drv_handle;
-extern PRUICSS_HwAttrs linux_prussHwAttrs[PRUICCSS_INSTANCE_MAX-1];
-extern PRUICSS_V1_Object linux_prussObjects[PRUICCSS_INSTANCE_MAX-1];
-extern PRUICSS_Config linux_pruss_config[PRUICCSS_INSTANCE_MAX];
+extern PRUICSS_HwAttrs linux_prussHwAttrs[PRUICSS_INSTANCE_MAX-1];
+extern PRUICSS_V1_Object linux_prussObjects[PRUICSS_INSTANCE_MAX-1];
+extern PRUICSS_Config linux_pruss_config[PRUICSS_INSTANCE_MAX];
 
 pthread_t port0_rxTask_th, port0_txTask_th, port0_ttsCycTask_th, port0_linkTask_th,
           port1_rxTask_th, port1_txTask_th, port1_ttsCycTask_th, port1_linkTask_th;
@@ -148,7 +148,7 @@ int32_t ICSS_EMAC_testPruIcssInstanceSetup(void)
     pthread_attr_t pthread_attr;
     struct sched_param sched_param;
 
-    linux_init((void**)&pruss_drv_handle, linux_prussHwAttrs, PRUICCSS_INSTANCE_ONE);
+    linux_init((void**)&pruss_drv_handle, linux_prussHwAttrs, PRUICSS_INSTANCE_ONE);
     cfg = linux_pruss_config;
 #else
     Task_Params taskParams;
@@ -156,7 +156,7 @@ int32_t ICSS_EMAC_testPruIcssInstanceSetup(void)
     if (ret  != PRUICSS_RETURN_SUCCESS)
         return (ret);
 #endif
-    ICSS_EMAC_testPruIcssHandle1 = PRUICSS_create((PRUICSS_Config*) cfg, PRUICCSS_INSTANCE_ONE);
+    ICSS_EMAC_testPruIcssHandle1 = PRUICSS_create((PRUICSS_Config*) cfg, PRUICSS_INSTANCE_ONE);
 
 #ifndef SWITCH_EMAC	
     /*Port I initializations*/

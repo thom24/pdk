@@ -108,9 +108,9 @@ extern uint8_t pru_imem1_rev2_end;
 #endif
 
 #if defined(icev2AM335x)
-uint32_t pruIcssInstance = PRUICCSS_INSTANCE_ONE;
+uint32_t pruIcssInstance = PRUICSS_INSTANCE_ONE;
 #elif defined(idkAM437x) || defined(idkAM571x) || defined(idkAM572x) || defined(iceK2G) || defined(idkAM574x)
-uint32_t pruIcssInstance = PRUICCSS_INSTANCE_TWO;
+uint32_t pruIcssInstance = PRUICSS_INSTANCE_TWO;
 #endif
 
 /* Handle to pru-icss instance */
@@ -127,9 +127,9 @@ uint32_t sorteDeviceType = SORTE_SLAVE_DEVICE;
 
 #ifdef __LINUX_USER_SPACE
 tprussdrv *pruss_drv_handle;
-PRUICSS_HwAttrs linux_prussHwAttrs[PRUICCSS_INSTANCE_MAX-1];
-PRUICSS_V1_Object linux_prussObjects[PRUICCSS_INSTANCE_MAX-1];
-PRUICSS_Config linux_pruss_config[PRUICCSS_INSTANCE_MAX] = {
+PRUICSS_HwAttrs linux_prussHwAttrs[PRUICSS_INSTANCE_MAX-1];
+PRUICSS_V1_Object linux_prussObjects[PRUICSS_INSTANCE_MAX-1];
+PRUICSS_Config linux_pruss_config[PRUICSS_INSTANCE_MAX] = {
                 {
                         &(linux_prussObjects[0]),
                         &(linux_prussHwAttrs[0])
@@ -201,9 +201,9 @@ void prussAppSorteInitCrc8Table(void)
  */
 void prussAppSorteRestartMaster(void)
 {
-    PRUICSS_pruDisable(pruIcss1Handle, PRUICCSS_PRU0);
-    PRUICSS_pruReset(pruIcss1Handle, PRUICCSS_PRU0);
-    PRUICSS_pruEnable(pruIcss1Handle, PRUICCSS_PRU0);
+    PRUICSS_pruDisable(pruIcss1Handle, PRUICSS_PRU0);
+    PRUICSS_pruReset(pruIcss1Handle, PRUICSS_PRU0);
+    PRUICSS_pruEnable(pruIcss1Handle, PRUICSS_PRU0);
     
 }
 
@@ -367,8 +367,8 @@ void sorteTaskPRU(UArg a0, UArg a1)
 
     PRUICSS_pinMuxConfig(pruIcss1Handle, 0x0); /* PRUSS pinmuxing */
     /*Disable PRUs - This is to ensure PRUs are not running when application is not initialized */
-    PRUICSS_pruDisable(pruIcss1Handle, PRUICCSS_PRU0);
-    PRUICSS_pruDisable(pruIcss1Handle, PRUICCSS_PRU1);
+    PRUICSS_pruDisable(pruIcss1Handle, PRUICSS_PRU0);
+    PRUICSS_pruDisable(pruIcss1Handle, PRUICSS_PRU1);
 
     PRINT("\n\rTI SORTE Demo Application\n");
 
@@ -379,8 +379,8 @@ void sorteTaskPRU(UArg a0, UArg a1)
 
     prussAppSorteMdioInit();
 
-    PRUICSS_pruReset(pruIcss1Handle, PRUICCSS_PRU0);
-    PRUICSS_pruReset(pruIcss1Handle, PRUICCSS_PRU1);
+    PRUICSS_pruReset(pruIcss1Handle, PRUICSS_PRU0);
+    PRUICSS_pruReset(pruIcss1Handle, PRUICSS_PRU1);
 
     if(sorteDeviceType==SORTE_MASTER_DEVICE)  /* master device */
     {
@@ -393,7 +393,7 @@ void sorteTaskPRU(UArg a0, UArg a1)
                                    (uint32_t *) &pru_imem0_rev1_start,
                                    &pru_imem0_rev1_end - &pru_imem0_rev1_start);
 #endif
-        PRUICSS_pruEnable(pruIcss1Handle, PRUICCSS_PRU0);
+        PRUICSS_pruEnable(pruIcss1Handle, PRUICSS_PRU0);
         SLEEP(1000);
         /* check to see if there are atleast 2 slaves  before downloading firmware */
         while((HW_RD_REG16(hwAttrs->prussPru0DramBase + SORTE_DISCOV_NUM_SLAVE_OFFSET)) <SORTE_MIN_NUM_SLAVE_DEVICES)
@@ -422,8 +422,8 @@ void sorteTaskPRU(UArg a0, UArg a1)
                                    (uint32_t *) &pru_imem1_rev1_start,
                                    &pru_imem1_rev1_end - &pru_imem1_rev1_start);
 #endif
-        PRUICSS_pruEnable(pruIcss1Handle, PRUICCSS_PRU0);
-        PRUICSS_pruEnable(pruIcss1Handle, PRUICCSS_PRU1);
+        PRUICSS_pruEnable(pruIcss1Handle, PRUICSS_PRU0);
+        PRUICSS_pruEnable(pruIcss1Handle, PRUICSS_PRU1);
     }
     do
     {

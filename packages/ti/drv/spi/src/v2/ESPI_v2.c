@@ -954,14 +954,14 @@ static int32_t ESPI_v2_initPruCore(PRUSS_PruCores pruInst,
     /**
      * Set PRU memory address values
      */
-    if(PRUICCSS_PRU0 == pruInst)
+    if(PRUICSS_PRU0 == pruInst)
     {   /* PRU0 */
         dramBufferStart = icssMemBuffer->dram0MemBufferStart;
         dramBufferEnd   = icssMemBuffer->dram0MemBufferEnd;
         iramBufferStart = icssMemBuffer->iram0MemBufferStart;
         iramBufferEnd   = icssMemBuffer->iram0MemBufferEnd;
     }
-    else if(PRUICCSS_PRU1 == pruInst)
+    else if(PRUICSS_PRU1 == pruInst)
     {   /* PRU1 */
         dramBufferStart = icssMemBuffer->dram1MemBufferStart;
         dramBufferEnd   = icssMemBuffer->dram1MemBufferEnd;

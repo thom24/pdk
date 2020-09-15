@@ -257,11 +257,11 @@ static void I2C_v2_hwiFxn(uintptr_t arg)
         }
 
         /*clear PRU-ICSS INTC interrupt*/
-        if(PRUICCSS_PRU0 == pruFuncPtr->pruInstance)
+        if(PRUICSS_PRU0 == pruFuncPtr->pruInstance)
         {
             HW_WR_REG32(((PRUICSS_HwAttrs const*)((PRUICSS_Handle)pruFuncPtr->pruIcssHandle)->hwAttrs)->prussIntcRegBase + I2C_ICSS_INTC_SECR0, ICSS_I2C_INTC_PRU0_BIT_VAL);
         }
-        else if(PRUICCSS_PRU1 == pruFuncPtr->pruInstance)
+        else if(PRUICSS_PRU1 == pruFuncPtr->pruInstance)
         {
             HW_WR_REG32(((PRUICSS_HwAttrs const*)((PRUICSS_Handle)pruFuncPtr->pruIcssHandle)->hwAttrs)->prussIntcRegBase + I2C_ICSS_INTC_SECR0, ICSS_I2C_INTC_PRU1_BIT_VAL);
         }
@@ -294,7 +294,7 @@ static I2C_Handle I2C_open_v2(I2C_Handle handle, const I2C_Params *params)
         swipAttrs = (I2C_SwIPAttrs const *)handle->hwAttrs;
         ICSSInst = swipAttrs->icssInstance;
         PRUInst = swipAttrs->pruInstance;
-        if ((ICSSInst > I2C_ICSS_INSTANCE2) || (PRUInst > PRUICCSS_PRU1))
+        if ((ICSSInst > I2C_ICSS_INSTANCE2) || (PRUInst > PRUICSS_PRU1))
         {
             ret_flag = 1;
         }
@@ -672,7 +672,7 @@ static int32_t I2C_v2_pruIcssInit(I2C_Handle handle, const I2C_Params *params)
         retVal  = PRUICSS_socGetInitCfg(&pruIcssCfg);
         if ((retVal != PRUICSS_RETURN_SUCCESS) ||
             (ICSSInst > I2C_ICSS_INSTANCE2)    ||
-            (PRUInst > PRUICCSS_PRU1))
+            (PRUInst > PRUICSS_PRU1))
         {
             retVal = I2C_STATUS_ERROR;
         }
@@ -700,7 +700,7 @@ static int32_t I2C_v2_pruIcssInit(I2C_Handle handle, const I2C_Params *params)
                 PRUICSS_pruInitMemory(pruIcssHandle, PRU_ICSS_DATARAM(PRUInst));
                 PRUICSS_pruInitMemory(pruIcssHandle, PRU_ICSS_IRAM(PRUInst));
                 
-                if(PRUICCSS_PRU0 == PRUInst)
+                if(PRUICSS_PRU0 == PRUInst)
                 {
                     PRUICSS_pruWriteMemory(pruIcssHandle,PRU_ICSS_DATARAM(PRUInst),0,
                                           ((ICSS_Mem_Ptr*)(swipAttrs->icssMemBuffer))->dram0MemBufferStart,
@@ -710,7 +710,7 @@ static int32_t I2C_v2_pruIcssInit(I2C_Handle handle, const I2C_Params *params)
                                           ((ICSS_Mem_Ptr*)(swipAttrs->icssMemBuffer))->iram0MemBufferStart,
                                           (uint32_t)((uint8_t*)(((ICSS_Mem_Ptr*)(swipAttrs->icssMemBuffer))->iram0MemBufferEnd)) - (uint32_t)((uint8_t*)(((ICSS_Mem_Ptr*)(swipAttrs->icssMemBuffer))->iram0MemBufferStart)));
                 }
-                else if(PRUICCSS_PRU1 == PRUInst)
+                else if(PRUICSS_PRU1 == PRUInst)
                 {
                     PRUICSS_pruWriteMemory(pruIcssHandle,PRU_ICSS_DATARAM(PRUInst),0,
                                           ((ICSS_Mem_Ptr*)(swipAttrs->icssMemBuffer))->dram1MemBufferStart,
@@ -759,7 +759,7 @@ static int32_t I2C_v2_pruIcssInit(I2C_Handle handle, const I2C_Params *params)
                     iepCounter32 /= iepCmpIncVal;
                     iepCounter32 += 15U;
                     iepCounter32 *= iepCmpIncVal;
-                    if(PRUICCSS_PRU1 == PRUInst)
+                    if(PRUICSS_PRU1 == PRUInst)
                     {
                         iepCounter32 += iepCmpIncValHalf;
                     }
@@ -777,7 +777,7 @@ static int32_t I2C_v2_pruIcssInit(I2C_Handle handle, const I2C_Params *params)
                     iepCounter64 /= iepCmpIncVal;
                     iepCounter64 += 15U;
                     iepCounter64 *= iepCmpIncVal;
-                    if(PRUICCSS_PRU1 == PRUInst)
+                    if(PRUICSS_PRU1 == PRUInst)
                     {
                         iepCounter64 += iepCmpIncValHalf;
                     }
@@ -816,7 +816,7 @@ static void I2C_close_v2(I2C_Handle handle)
         ICSSInst = swipAttrs->icssInstance;
         PRUInst = swipAttrs->pruInstance;
 
-        if ((ICSSInst <= I2C_ICSS_INSTANCE2) && (PRUInst <= PRUICCSS_PRU1))
+        if ((ICSSInst <= I2C_ICSS_INSTANCE2) && (PRUInst <= PRUICSS_PRU1))
         {
             pruIcssHandle = CurrentICSSMode[ICSSInst].pruMode[PRUInst].pruIcssHandle;
             

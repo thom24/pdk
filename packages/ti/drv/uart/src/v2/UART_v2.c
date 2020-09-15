@@ -1699,7 +1699,7 @@ static int32_t UART_v2_initIcssPru(UART_Handle handle, const UART_Params *params
             
             // Write PRU local memories
             
-            if (pruInstId == PRUICCSS_PRU0)
+            if (pruInstId == PRUICSS_PRU0)
             {
                 // Write DMEM0
                 sourceMem = ((UART_ICSS_Mem_Ptr *)(swipAttrs->icssMemBuff))->dram0MemBufferStart;
@@ -1725,7 +1725,7 @@ static int32_t UART_v2_initIcssPru(UART_Handle handle, const UART_Params *params
                 }
                 
             }
-            else if (pruInstId == PRUICCSS_PRU1)
+            else if (pruInstId == PRUICSS_PRU1)
             {
                 // Write PRU1 local memories
                 

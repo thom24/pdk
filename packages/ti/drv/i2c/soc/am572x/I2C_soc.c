@@ -177,7 +177,7 @@ I2C_SwIPAttrs i2cInitCfg2[I2C_SWIP_MAX_CNT] __attribute__ ((section(".shdata")))
         CSL_XBAR_PRUSS1_IRQ_HOST3,
         43,
         I2C_ICSS_INSTANCE1,
-        PRUICCSS_PRU1,
+        PRUICSS_PRU1,
 #if defined (__TI_ARM_V7M4__)
         CSL_XBAR_IRQ_CPU_ID_IPU1,
 #elif defined (__TMS320C6X__)

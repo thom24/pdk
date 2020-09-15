@@ -174,9 +174,9 @@ uint32_t ICSS_EMAC_testTotalPktRcvd = 0;
 #include <ti/drv/pruss/soc/pruicss_v1.h>
 tprussdrv *pruss_drv_handle;
 tprussdrv *pruss_drv_handle2;
-PRUICSS_HwAttrs linux_prussHwAttrs[PRUICCSS_INSTANCE_MAX-1];
-PRUICSS_V1_Object linux_prussObjects[PRUICCSS_INSTANCE_MAX-1];
-PRUICSS_Config linux_pruss_config[PRUICCSS_INSTANCE_MAX] = {
+PRUICSS_HwAttrs linux_prussHwAttrs[PRUICSS_INSTANCE_MAX-1];
+PRUICSS_V1_Object linux_prussObjects[PRUICSS_INSTANCE_MAX-1];
+PRUICSS_Config linux_pruss_config[PRUICSS_INSTANCE_MAX] = {
         {
             &(linux_prussObjects[0]),
             &(linux_prussHwAttrs[0])

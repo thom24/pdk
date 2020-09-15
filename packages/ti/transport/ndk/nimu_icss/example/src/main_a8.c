@@ -193,7 +193,7 @@ int main()
     ret  = PRUICSS_socGetInitCfg(&pruIcssCfg);
     if (ret  != PRUICSS_RETURN_SUCCESS)
         return (ret);
-    pruIcssHandle = PRUICSS_create((PRUICSS_Config*) pruIcssCfg,PRUICCSS_INSTANCE_ONE);
+    pruIcssHandle = PRUICSS_create((PRUICSS_Config*) pruIcssCfg,PRUICSS_INSTANCE_ONE);
 
     Task_Params_init(&taskParams);
     taskParams.priority = 15;

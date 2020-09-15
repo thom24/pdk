@@ -244,7 +244,7 @@ static int_fast32_t NIMU_start (NETIF_DEVICE* ptr_net_device)
      {
         case 0:
         case 1:
-            if ((prussHandle[0] =  PRUICSS_create((PRUICSS_Config*)prussCfg, PRUICCSS_INSTANCE_ONE)) == NULL)
+            if ((prussHandle[0] =  PRUICSS_create((PRUICSS_Config*)prussCfg, PRUICSS_INSTANCE_ONE)) == NULL)
             {
                 NIMU_drv_log1("NIMU_start: port: %d: PRUICSS_create failed\n", port_num);
                 return -1;
@@ -253,7 +253,7 @@ static int_fast32_t NIMU_start (NETIF_DEVICE* ptr_net_device)
             break;
         case 2:
         case 3:
-            if ((prussHandle[1] =  PRUICSS_create((PRUICSS_Config*)prussCfg, PRUICCSS_INSTANCE_TWO)) == NULL)
+            if ((prussHandle[1] =  PRUICSS_create((PRUICSS_Config*)prussCfg, PRUICSS_INSTANCE_TWO)) == NULL)
             {
                 NIMU_drv_log1("NIMU_start: port: %d: PRUICSS_create failed\n", port_num);
                 return -1;
@@ -262,7 +262,7 @@ static int_fast32_t NIMU_start (NETIF_DEVICE* ptr_net_device)
             break;
         case 4:
         case 5:
-            if ((prussHandle[2] =  PRUICSS_create((PRUICSS_Config*)prussCfg, PRUICCSS_INSTANCE_THREE)) == NULL)
+            if ((prussHandle[2] =  PRUICSS_create((PRUICSS_Config*)prussCfg, PRUICSS_INSTANCE_THREE)) == NULL)
             {
                 NIMU_drv_log1("NIMU_start: port: %d: PRUICSS_create failed\n", port_num);
                 return -1;
@@ -836,9 +836,9 @@ int32_t  nimu_disable_pruicss(uint32_t portNum)
     prussDrvHandle =prussHandle[portNum >> 1];
 
     slice_n = (portNum & 1);
-    pru_n = (slice_n) ? PRUICCSS_PRU1 : PRUICCSS_PRU0;
-    rtu_n = (slice_n) ? PRUICCSS_RTU1 : PRUICCSS_RTU0;
-    txpru_n = (slice_n) ? PRUICCSS_TPRU1 : PRUICCSS_TPRU0;
+    pru_n = (slice_n) ? PRUICSS_PRU1 : PRUICSS_PRU0;
+    rtu_n = (slice_n) ? PRUICSS_RTU1 : PRUICSS_RTU0;
+    txpru_n = (slice_n) ? PRUICSS_TPRU1 : PRUICSS_TPRU0;
 
     if (PRUICSS_pruDisable(prussDrvHandle, pru_n) != 0)
     {
@@ -881,9 +881,9 @@ int32_t  nimu_init_pruicss(uint32_t portNum)
     if (prussDrvHandle == NULL)
         return -1;
     slice_n = (portNum & 1);
-    pru_n = (slice_n) ? PRUICCSS_PRU1 : PRUICCSS_PRU0;
-    rtu_n = (slice_n) ? PRUICCSS_RTU1 : PRUICCSS_RTU0;
-    txpru_n = (slice_n) ? PRUICCSS_TPRU1 : PRUICCSS_TPRU0;
+    pru_n = (slice_n) ? PRUICSS_PRU1 : PRUICSS_PRU0;
+    rtu_n = (slice_n) ? PRUICSS_RTU1 : PRUICSS_RTU0;
+    txpru_n = (slice_n) ? PRUICSS_TPRU1 : PRUICSS_TPRU0;
 
     firmware = (gPgVersion == APP_TEST_AM65XX_PG1_0_VERSION)?firmware_pg1:firmware_pg2;
 

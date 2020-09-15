@@ -118,10 +118,10 @@ PRUICSS_HwAttrs prussInitCfg[2] =
 };
 
 /* PRUICSS objects */
-PRUICSS_V1_Object prussObjects[PRUICCSS_INSTANCE_MAX-1];
+PRUICSS_V1_Object prussObjects[PRUICSS_INSTANCE_MAX-1];
 
 /* PRUICSS configuration structure */
-PRUICSS_Config pruss_config[PRUICCSS_INSTANCE_MAX] = {
+PRUICSS_Config pruss_config[PRUICSS_INSTANCE_MAX] = {
     {
 
         &prussObjects[0],

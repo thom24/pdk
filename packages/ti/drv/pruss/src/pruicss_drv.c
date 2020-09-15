@@ -70,22 +70,22 @@ static uintptr_t pruicss_get_ctrl_addr (PRUICSS_HwAttrs const *hwAttrs,
     {
         switch (pruNum)
         {
-            case PRUICCSS_PRU0:
+            case PRUICSS_PRU0:
                 baseaddr = hwAttrs->prussPru0CtrlRegBase;
                 break;
-            case PRUICCSS_PRU1:
+            case PRUICSS_PRU1:
                 baseaddr = hwAttrs->prussPru1CtrlRegBase;
                 break;
-            case PRUICCSS_RTU0:
+            case PRUICSS_RTU0:
                 baseaddr = hwAttrs->prussRtu0CtrlRegBase;
                 break;
-            case PRUICCSS_RTU1:
+            case PRUICSS_RTU1:
                 baseaddr = hwAttrs->prussRtu1CtrlRegBase;
                 break;
-            case PRUICCSS_TPRU0:
+            case PRUICSS_TPRU0:
                 baseaddr = hwAttrs->prussTxPru0CtrlRegBase;
                 break;
-            case PRUICCSS_TPRU1:
+            case PRUICSS_TPRU1:
                 baseaddr = hwAttrs->prussTxPru1CtrlRegBase;
                 break;
             default:
@@ -114,7 +114,7 @@ PRUICSS_Handle  PRUICSS_create(PRUICSS_Config *config, int32_t instance)
     uintptr_t temp_addr = 0U;
     uint32_t temp_val;
 
-    if ((config == NULL) || (instance < PRUICCSS_INSTANCE_ONE) ||  (instance >= PRUICCSS_INSTANCE_MAX))
+    if ((config == NULL) || (instance < PRUICSS_INSTANCE_ONE) ||  (instance >= PRUICSS_INSTANCE_MAX))
     {
         return NULL;
     }
@@ -695,14 +695,14 @@ int32_t PRUICSS_pruExecProgram(PRUICSS_Handle handle,int32_t pruNum)
         if((pruNum <  PRUICSS_MAX_PRU) && (object->pruBinBuff[pruNum] != NULL) && (object->buffLen[pruNum] != 0U))
         {
             PRUICSS_pruDisable(handle,(uint8_t)pruNum);
-            if (pruNum <= PRUICCSS_RTU1)
+            if (pruNum <= PRUICSS_RTU1)
             {
                 PRUICSS_pruInitMemory(handle,PRU_ICSS_IRAM((uint32_t)pruNum));
                 PRUICSS_pruWriteMemory(handle,PRU_ICSS_IRAM((uint32_t)pruNum),0U,(uint32_t *) object->pruBinBuff[pruNum],object->buffLen[pruNum]);
             }
             else
             {
-                if (pruNum == PRUICCSS_TPRU0)
+                if (pruNum == PRUICSS_TPRU0)
                 {
                     PRUICSS_pruInitMemory(handle,PRU_ICSS_IRAM_TXPRU(0U));
                     PRUICSS_pruWriteMemory(handle,PRU_ICSS_IRAM_TXPRU(0U),0U,(uint32_t *) object->pruBinBuff[pruNum],object->buffLen[pruNum]);
@@ -797,7 +797,7 @@ int32_t PRUICSS_socGetInitCfg( PRUICSS_Config **cfg)
 int32_t PRUICSS_socSetInitCfg(PRUICSS_Config const *cfg)
 {
 #ifndef __LINUX_USER_SPACE
-    uint32_t len  = sizeof(PRUICSS_Config) * (PRUICCSS_INSTANCE_MAX -1U);
+    uint32_t len  = sizeof(PRUICSS_Config) * (PRUICSS_INSTANCE_MAX -1U);
     memcpy(&pruss_config, cfg, len);
 #endif
     return PRUICSS_RETURN_SUCCESS;
@@ -824,7 +824,7 @@ int32_t PRUICSS_setConstantTblEntry(PRUICSS_Handle handle, uint8_t pruNum, int32
     uint32_t currentval = 0U;
     int32_t ret_val = PRUICSS_RETURN_SUCCESS;
 
-    static uint32_t pruicssConstantIndex[PRUICCSS_ConstTblEntryMax] =
+    static uint32_t pruicssConstantIndex[PRUICSS_ConstTblEntryMax] =
     {
         CSL_ICSSPRUCTRL_CTBIR0,     /*For enry 24, PRU-ICSS PRU0 Data RAM */
         CSL_ICSSPRUCTRL_CTBIR0,     /*For enry 25, PRU-ICSS PRU1 Data RAM */
@@ -837,18 +837,18 @@ int32_t PRUICSS_setConstantTblEntry(PRUICSS_Handle handle, uint8_t pruNum, int32
     };
 
     /* verify constant table index is within valid range */
-    if (((constantTblEntry < 0) || (constantTblEntry >= PRUICCSS_ConstTblEntryMax)) || (pruNum > PRUICSS_MAX_PRU))
+    if (((constantTblEntry < 0) || (constantTblEntry >= PRUICSS_ConstTblEntryMax)) || (pruNum > PRUICSS_MAX_PRU))
     {
         ret_val = PRUICSS_RETURN_FAILURE;
     }
     else
     {
         hwAttrs = (PRUICSS_HwAttrs const *)handle->hwAttrs;
-        if(PRUICCSS_PRU0 == pruNum) 
+        if(PRUICSS_PRU0 == pruNum) 
         {
             baseaddr = hwAttrs->prussPru0CtrlRegBase;
         }
-        else if(PRUICCSS_PRU1 == pruNum)
+        else if(PRUICSS_PRU1 == pruNum)
         {
             baseaddr = hwAttrs->prussPru1CtrlRegBase;
         }
@@ -861,7 +861,7 @@ int32_t PRUICSS_setConstantTblEntry(PRUICSS_Handle handle, uint8_t pruNum, int32
             tempaddr = baseaddr + pruicssConstantIndex[constantTblEntry];
             switch (constantTblEntry)
             {
-                case PRUICCSS_ConstTblEntryC24:
+                case PRUICSS_ConstTblEntryC24:
                 {
                     currentval = HW_RD_REG32(tempaddr);
                     currentval &=  (~((uint32_t)CSL_ICSSPRUCTRL_CTBIR0_C24_BLK_INDEX_MASK));
@@ -869,7 +869,7 @@ int32_t PRUICSS_setConstantTblEntry(PRUICSS_Handle handle, uint8_t pruNum, int32
                     HW_WR_REG32(tempaddr,(uint32_t)(currentval |tempval));
                     break;
                 }
-                case PRUICCSS_ConstTblEntryC25:
+                case PRUICSS_ConstTblEntryC25:
                 {
                     currentval = HW_RD_REG32(tempaddr);
                     currentval &=  (~((uint32_t)CSL_ICSSPRUCTRL_CTBIR0_C25_BLK_INDEX_MASK));
@@ -878,7 +878,7 @@ int32_t PRUICSS_setConstantTblEntry(PRUICSS_Handle handle, uint8_t pruNum, int32
                     HW_WR_REG32(tempaddr,(uint32_t)(currentval |tempval));
                     break;
                 }
-                case PRUICCSS_ConstTblEntryC26:
+                case PRUICSS_ConstTblEntryC26:
                 {
                     currentval = HW_RD_REG32(tempaddr);
                     currentval &=  (~((uint32_t)CSL_ICSSPRUCTRL_CTBIR1_C26_BLK_INDEX_MASK));
@@ -887,7 +887,7 @@ int32_t PRUICSS_setConstantTblEntry(PRUICSS_Handle handle, uint8_t pruNum, int32
                     HW_WR_REG32(tempaddr,(uint32_t)(currentval |tempval));
                     break;
                 }
-                case PRUICCSS_ConstTblEntryC27:
+                case PRUICSS_ConstTblEntryC27:
                 {
                     currentval = HW_RD_REG32(tempaddr);
                     currentval &=  (~((uint32_t)CSL_ICSSPRUCTRL_CTBIR1_C27_BLK_INDEX_MASK));
@@ -896,7 +896,7 @@ int32_t PRUICSS_setConstantTblEntry(PRUICSS_Handle handle, uint8_t pruNum, int32
                     HW_WR_REG32(tempaddr,(uint32_t)(currentval |tempval));
                     break;
                 }
-                case PRUICCSS_ConstTblEntryC28:
+                case PRUICSS_ConstTblEntryC28:
                 {
                     currentval = HW_RD_REG32(tempaddr);
                     currentval &=  (~((uint32_t)CSL_ICSSPRUCTRL_CTPPR0_C28_POINTER_MASK));
@@ -905,7 +905,7 @@ int32_t PRUICSS_setConstantTblEntry(PRUICSS_Handle handle, uint8_t pruNum, int32
                     HW_WR_REG32(tempaddr,(uint32_t)(currentval |tempval));
                     break;
                 }
-                case PRUICCSS_ConstTblEntryC29:
+                case PRUICSS_ConstTblEntryC29:
                 {
                     currentval = HW_RD_REG32(tempaddr);
                     currentval &=  (~((uint32_t)CSL_ICSSPRUCTRL_CTPPR0_C29_POINTER_MASK));
@@ -914,7 +914,7 @@ int32_t PRUICSS_setConstantTblEntry(PRUICSS_Handle handle, uint8_t pruNum, int32
                     HW_WR_REG32(tempaddr,(uint32_t)(currentval |tempval));
                     break;
                 }
-                case PRUICCSS_ConstTblEntryC30:
+                case PRUICSS_ConstTblEntryC30:
                 {
                     currentval = HW_RD_REG32(tempaddr);
                     currentval &=  (~((uint32_t)CSL_ICSSPRUCTRL_CTPPR1_C30_POINTER_MASK));
@@ -923,7 +923,7 @@ int32_t PRUICSS_setConstantTblEntry(PRUICSS_Handle handle, uint8_t pruNum, int32
                     HW_WR_REG32(tempaddr,(uint32_t)(currentval |tempval));
                     break;
                 }
-                case PRUICCSS_ConstTblEntryC31:
+                case PRUICSS_ConstTblEntryC31:
                 {
                     currentval = HW_RD_REG32(tempaddr);
                     currentval &=  (~((uint32_t)CSL_ICSSPRUCTRL_CTPPR1_C31_POINTER_MASK));
@@ -963,11 +963,11 @@ int32_t PRUICSS_setGpMuxSel(PRUICSS_Handle handle, uint8_t pruNum, uint32_t mode
         hwAttrs = (PRUICSS_HwAttrs const *)handle->hwAttrs;
         switch (pruNum)
         {
-            case PRUICCSS_PRU0:
+            case PRUICSS_PRU0:
                 HW_WR_FIELD32((hwAttrs->prussCfgRegBase+CSL_ICSSCFG_GPCFG0), CSL_ICSSCFG_GPCFG0_PRU0_GP_MUX_SEL, mode);
                 ret_val = PRUICSS_RETURN_SUCCESS;
                 break;
-            case PRUICCSS_PRU1:
+            case PRUICSS_PRU1:
                 HW_WR_FIELD32((hwAttrs->prussCfgRegBase+CSL_ICSSCFG_GPCFG1), CSL_ICSSCFG_GPCFG0_PRU0_GP_MUX_SEL, mode);
                 ret_val = PRUICSS_RETURN_SUCCESS;
                 break;

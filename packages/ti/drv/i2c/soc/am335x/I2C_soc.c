@@ -104,7 +104,7 @@ I2C_SwIPAttrs  i2cInitCfg2[I2C_SWIP_MAX_CNT] __attribute__ ((section(".shdata"))
         20,
         0,
         I2C_ICSS_INSTANCE1,
-        PRUICCSS_PRU0,
+        PRUICSS_PRU0,
         &i2cFwMemPtr,
         {0x44E10994, 1, 0x6, 0x5},
         {0x44E10884, 7, 0x3, 0x4},

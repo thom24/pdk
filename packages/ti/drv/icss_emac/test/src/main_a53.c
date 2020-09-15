@@ -108,7 +108,7 @@ int32_t ICSS_EMAC_testPruIcssInstance2Setup(void)
     {
         return (ret);
     }
-    ICSS_EMAC_testPruIcssHandle2 = PRUICSS_create((PRUICSS_Config*)cfg,PRUICCSS_INSTANCE_TWO);
+    ICSS_EMAC_testPruIcssHandle2 = PRUICSS_create((PRUICSS_Config*)cfg,PRUICSS_INSTANCE_TWO);
 
     //mii related init
     mii_init();
@@ -277,12 +277,12 @@ void mii_init()
     (*((volatile uint32_t *)((((PRUICSS_HwAttrs *)(ICSS_EMAC_testPruIcssHandle2->hwAttrs))->prussMiiRtCfgRegBase) + 0x1000 + CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_ICSS_G_CFG))) = (0x10001);
 
     /* Setting up RX_ER/GPIO pin on the PHY as RX_ERR pin and COL/GPIO pin as LED_3 */
-    MDIO_phyExtRegWrite((((PRUICSS_HwAttrs *)(ICSS_EMAC_testPruIcssHandle2->hwAttrs))->prussMiiMdioRegBase), Board_getPhyAddress(PRUICCSS_INSTANCE_TWO, 1), DPPHY_GPIO_MUX_CTRL2, 0x60);
-    MDIO_phyExtRegWrite((((PRUICSS_HwAttrs *)(ICSS_EMAC_testPruIcssHandle2->hwAttrs))->prussMiiMdioRegBase), Board_getPhyAddress(PRUICCSS_INSTANCE_TWO, 2), DPPHY_GPIO_MUX_CTRL2, 0x60);
+    MDIO_phyExtRegWrite((((PRUICSS_HwAttrs *)(ICSS_EMAC_testPruIcssHandle2->hwAttrs))->prussMiiMdioRegBase), Board_getPhyAddress(PRUICSS_INSTANCE_TWO, 1), DPPHY_GPIO_MUX_CTRL2, 0x60);
+    MDIO_phyExtRegWrite((((PRUICSS_HwAttrs *)(ICSS_EMAC_testPruIcssHandle2->hwAttrs))->prussMiiMdioRegBase), Board_getPhyAddress(PRUICSS_INSTANCE_TWO, 2), DPPHY_GPIO_MUX_CTRL2, 0x60);
 
     /* Disable RGMII interface */
-    MDIO_phyExtRegWrite((((PRUICSS_HwAttrs *)(ICSS_EMAC_testPruIcssHandle2->hwAttrs))->prussMiiMdioRegBase), Board_getPhyAddress(PRUICCSS_INSTANCE_TWO, 1), DPPHY_RGMIICTL, 0x50);
-    MDIO_phyExtRegWrite((((PRUICSS_HwAttrs *)(ICSS_EMAC_testPruIcssHandle2->hwAttrs))->prussMiiMdioRegBase), Board_getPhyAddress(PRUICCSS_INSTANCE_TWO, 2), DPPHY_RGMIICTL, 0x50);
+    MDIO_phyExtRegWrite((((PRUICSS_HwAttrs *)(ICSS_EMAC_testPruIcssHandle2->hwAttrs))->prussMiiMdioRegBase), Board_getPhyAddress(PRUICSS_INSTANCE_TWO, 1), DPPHY_RGMIICTL, 0x50);
+    MDIO_phyExtRegWrite((((PRUICSS_HwAttrs *)(ICSS_EMAC_testPruIcssHandle2->hwAttrs))->prussMiiMdioRegBase), Board_getPhyAddress(PRUICSS_INSTANCE_TWO, 2), DPPHY_RGMIICTL, 0x50);
 
     PRUICSS_pinMuxConfig(ICSS_EMAC_testPruIcssHandle2, 0x0);   // PRUSS pinmuxing
 

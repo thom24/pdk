@@ -49,7 +49,7 @@
 #include <ti/drv/icss_emac/soc/icss_emacSoc.h>
 
 
-ICSS_EmacBaseAddrCfgParams icss_EmacBaseAddrCfgParams[PRUICCSS_INSTANCE_TWO] =
+ICSS_EmacBaseAddrCfgParams icss_EmacBaseAddrCfgParams[PRUICSS_INSTANCE_TWO] =
 {
     {
 
@@ -102,7 +102,7 @@ int32_t ICSS_EmacSocGetInitCfg(uint32_t instance, ICSS_EmacBaseAddrCfgParams *cf
 {
     int32_t ret = 0;
 
-    if (instance < PRUICCSS_INSTANCE_MAX)
+    if (instance < PRUICSS_INSTANCE_MAX)
     {
         *cfg = icss_EmacBaseAddrCfgParams[instance];
     }
@@ -127,7 +127,7 @@ int32_t ICSS_EmacSocSetInitCfg(uint32_t instance, const ICSS_EmacBaseAddrCfgPara
 {
     int32_t ret = 0;
 
-    if (instance < PRUICCSS_INSTANCE_MAX)
+    if (instance < PRUICSS_INSTANCE_MAX)
     {
         icss_EmacBaseAddrCfgParams[instance] = *cfg;
     }

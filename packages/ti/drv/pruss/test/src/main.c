@@ -133,9 +133,9 @@ int pru_num = 1, pru_core_num = 0;
 
 #ifdef __LINUX_USER_SPACE
 tprussdrv *pruss_drv_handle, *pruss_drv_handle2;
-PRUICSS_HwAttrs linux_prussInitCfg[PRUICCSS_INSTANCE_MAX-1];
-PRUICSS_V1_Object linux_prussObjects[PRUICCSS_INSTANCE_MAX-1];
-PRUICSS_Config linux_pruss_config[PRUICCSS_INSTANCE_MAX] = {
+PRUICSS_HwAttrs linux_prussInitCfg[PRUICSS_INSTANCE_MAX-1];
+PRUICSS_V1_Object linux_prussObjects[PRUICSS_INSTANCE_MAX-1];
+PRUICSS_Config linux_pruss_config[PRUICSS_INSTANCE_MAX] = {
 	{
 		&(linux_prussObjects[0]),
 		&(linux_prussInitCfg[0])
@@ -169,32 +169,32 @@ int32_t  prussTestVerifiyConstantTblUpdate(PRUICSS_Handle handle)
     if (pru_core_num == 0)
     {
         PRUICSS_HwAttrs      const    *hwAttrs = handle->hwAttrs;
-        PRUICSS_setConstantTblEntry(handle, pru_core_num,  PRUICCSS_ConstTblEntryC24, 0x00000001U);
-        PRUICSS_setConstantTblEntry(handle, pru_core_num,  PRUICCSS_ConstTblEntryC25, 0x00000002U);
+        PRUICSS_setConstantTblEntry(handle, pru_core_num,  PRUICSS_ConstTblEntryC24, 0x00000001U);
+        PRUICSS_setConstantTblEntry(handle, pru_core_num,  PRUICSS_ConstTblEntryC25, 0x00000002U);
         readval = HW_RD_REG32(hwAttrs->prussPru0CtrlRegBase + CSL_ICSSPRUCTRL_CTBIR0);
         if (readval != PRUSS_TEST_CONSTANT_TABLE_CHECK)
         {
             return 0;
         }
 
-        PRUICSS_setConstantTblEntry(handle, pru_core_num,  PRUICCSS_ConstTblEntryC26, 0x00000001U);
-        PRUICSS_setConstantTblEntry(handle, pru_core_num,  PRUICCSS_ConstTblEntryC27, 0x00000002U);
+        PRUICSS_setConstantTblEntry(handle, pru_core_num,  PRUICSS_ConstTblEntryC26, 0x00000001U);
+        PRUICSS_setConstantTblEntry(handle, pru_core_num,  PRUICSS_ConstTblEntryC27, 0x00000002U);
         readval = HW_RD_REG32(hwAttrs->prussPru0CtrlRegBase + CSL_ICSSPRUCTRL_CTBIR1);
         if (readval != PRUSS_TEST_CONSTANT_TABLE_CHECK)
         {
             return 0;
         }
 
-        PRUICSS_setConstantTblEntry(handle, pru_core_num,  PRUICCSS_ConstTblEntryC28, 0x00000001U);
-        PRUICSS_setConstantTblEntry(handle, pru_core_num,  PRUICCSS_ConstTblEntryC29, 0x00000002U);
+        PRUICSS_setConstantTblEntry(handle, pru_core_num,  PRUICSS_ConstTblEntryC28, 0x00000001U);
+        PRUICSS_setConstantTblEntry(handle, pru_core_num,  PRUICSS_ConstTblEntryC29, 0x00000002U);
         readval = HW_RD_REG32(hwAttrs->prussPru0CtrlRegBase + CSL_ICSSPRUCTRL_CTPPR0);
         if (readval != PRUSS_TEST_CONSTANT_TABLE_CHECK)
         {
             return 0;
         }
 
-        PRUICSS_setConstantTblEntry(handle, pru_core_num,  PRUICCSS_ConstTblEntryC30, 0x00000001U);
-        PRUICSS_setConstantTblEntry(handle, pru_core_num,  PRUICCSS_ConstTblEntryC31, 0x00000002U);
+        PRUICSS_setConstantTblEntry(handle, pru_core_num,  PRUICSS_ConstTblEntryC30, 0x00000001U);
+        PRUICSS_setConstantTblEntry(handle, pru_core_num,  PRUICSS_ConstTblEntryC31, 0x00000002U);
         readval = HW_RD_REG32(hwAttrs->prussPru0CtrlRegBase + CSL_ICSSPRUCTRL_CTPPR1);
         if (readval != PRUSS_TEST_CONSTANT_TABLE_CHECK)
         {
@@ -204,32 +204,32 @@ int32_t  prussTestVerifiyConstantTblUpdate(PRUICSS_Handle handle)
     else
     {
         PRUICSS_HwAttrs      const    *hwAttrs = handle->hwAttrs;
-        PRUICSS_setConstantTblEntry(handle, pru_core_num,  PRUICCSS_ConstTblEntryC24, 0x00000001U);
-        PRUICSS_setConstantTblEntry(handle, pru_core_num,  PRUICCSS_ConstTblEntryC25, 0x00000002U);
+        PRUICSS_setConstantTblEntry(handle, pru_core_num,  PRUICSS_ConstTblEntryC24, 0x00000001U);
+        PRUICSS_setConstantTblEntry(handle, pru_core_num,  PRUICSS_ConstTblEntryC25, 0x00000002U);
         readval = HW_RD_REG32(hwAttrs->prussPru1CtrlRegBase + CSL_ICSSPRUCTRL_CTBIR0);
         if (readval != PRUSS_TEST_CONSTANT_TABLE_CHECK)
         {
             return 0;
         }
 
-        PRUICSS_setConstantTblEntry(handle, pru_core_num,  PRUICCSS_ConstTblEntryC26, 0x00000001U);
-        PRUICSS_setConstantTblEntry(handle, pru_core_num,  PRUICCSS_ConstTblEntryC27, 0x00000002U);
+        PRUICSS_setConstantTblEntry(handle, pru_core_num,  PRUICSS_ConstTblEntryC26, 0x00000001U);
+        PRUICSS_setConstantTblEntry(handle, pru_core_num,  PRUICSS_ConstTblEntryC27, 0x00000002U);
         readval = HW_RD_REG32(hwAttrs->prussPru1CtrlRegBase + CSL_ICSSPRUCTRL_CTBIR1);
         if (readval != PRUSS_TEST_CONSTANT_TABLE_CHECK)
         {
             return 0;
         }
 
-        PRUICSS_setConstantTblEntry(handle, pru_core_num,  PRUICCSS_ConstTblEntryC28, 0x00000001U);
-        PRUICSS_setConstantTblEntry(handle, pru_core_num,  PRUICCSS_ConstTblEntryC29, 0x00000002U);
+        PRUICSS_setConstantTblEntry(handle, pru_core_num,  PRUICSS_ConstTblEntryC28, 0x00000001U);
+        PRUICSS_setConstantTblEntry(handle, pru_core_num,  PRUICSS_ConstTblEntryC29, 0x00000002U);
         readval = HW_RD_REG32(hwAttrs->prussPru1CtrlRegBase + CSL_ICSSPRUCTRL_CTPPR0);
         if (readval != PRUSS_TEST_CONSTANT_TABLE_CHECK)
         {
             return 0;
         }
 
-        PRUICSS_setConstantTblEntry(handle, pru_core_num,  PRUICCSS_ConstTblEntryC30, 0x00000001U);
-        PRUICSS_setConstantTblEntry(handle, pru_core_num,  PRUICCSS_ConstTblEntryC31, 0x00000002U);
+        PRUICSS_setConstantTblEntry(handle, pru_core_num,  PRUICSS_ConstTblEntryC30, 0x00000001U);
+        PRUICSS_setConstantTblEntry(handle, pru_core_num,  PRUICSS_ConstTblEntryC31, 0x00000002U);
         readval = HW_RD_REG32(hwAttrs->prussPru1CtrlRegBase + CSL_ICSSPRUCTRL_CTPPR1);
         if (readval != PRUSS_TEST_CONSTANT_TABLE_CHECK)
         {
@@ -252,7 +252,7 @@ Void taskFxn(UArg a0, UArg a1)
     PRUICSS_Config  *cfg;
     PRUICSS_IntrCfg intrCfg;
 
-    pru_num = PRUICCSS_INSTANCE_ONE;
+    pru_num = PRUICSS_INSTANCE_ONE;
 
 #ifdef __LINUX_USER_SPACE
     linux_init((void**)&pruss_drv_handle, linux_prussInitCfg, pru_num);
@@ -318,7 +318,7 @@ Void taskFxn(UArg a0, UArg a1)
                                                  &intrCfg);
 #endif
 
-    for (pru_core_num = PRUICCSS_PRU0; pru_core_num <= PRUICCSS_PRU1;pru_core_num++)
+    for (pru_core_num = PRUICSS_PRU0; pru_core_num <= PRUICSS_PRU1;pru_core_num++)
     {
         PRUICSS_pruDisable(handle,pru_core_num);
         /* Verification of PRUICSS_setConstantTblEntry API */
@@ -377,7 +377,7 @@ Void taskFxn2(UArg a0, UArg a1)
     while(taskFxnDone == 0)
         SLEEP(1000);
 
-    pru_num = PRUICCSS_INSTANCE_TWO;
+    pru_num = PRUICSS_INSTANCE_TWO;
 
 #ifdef __LINUX_USER_SPACE
     linux_init((void**)&pruss_drv_handle2, linux_prussInitCfg, pru_num);
@@ -459,7 +459,7 @@ Void taskFxn2(UArg a0, UArg a1)
                                                  &intrCfg);
 #endif
 
-    for (pru_core_num = PRUICCSS_PRU0; pru_core_num <= PRUICCSS_PRU1;pru_core_num++)
+    for (pru_core_num = PRUICSS_PRU0; pru_core_num <= PRUICSS_PRU1;pru_core_num++)
     {
         PRUICSS_pruDisable(handle2,pru_core_num);
         /* Verification of PRUICSS_setConstantTblEntry API */
@@ -482,7 +482,7 @@ Void taskFxn2(UArg a0, UArg a1)
                     if (pruEventCount2 == PRUSS_EVENT_COUNT)
                     {
                         PRINT("Testing for instance: %d, pru num: %d is complete\n", pru_num, pru_core_num);
-                        if(pru_core_num == PRUICCSS_PRU1)
+                        if(pru_core_num == PRUICSS_PRU1)
                         {
                             PRINT("All tests have passed\n");
                         }

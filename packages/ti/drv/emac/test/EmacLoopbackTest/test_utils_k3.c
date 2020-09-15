@@ -1499,15 +1499,15 @@ void app_test_task_benchmark(UArg arg0, UArg arg1)
 
 #ifdef EMAC_TEST_APP_ICSSG
     PRUICSS_socGetInitCfg(&prussCfg);
-    prussHandle[0] =  PRUICSS_create((PRUICSS_Config*)prussCfg,PRUICCSS_INSTANCE_ONE);
-    prussHandle[1] =  PRUICSS_create((PRUICSS_Config*)prussCfg,PRUICCSS_INSTANCE_TWO);
+    prussHandle[0] =  PRUICSS_create((PRUICSS_Config*)prussCfg,PRUICSS_INSTANCE_ONE);
+    prussHandle[1] =  PRUICSS_create((PRUICSS_Config*)prussCfg,PRUICSS_INSTANCE_TWO);
     if ((prussHandle[0] == NULL) || ((prussHandle[1] == NULL))
     {
        UART_printf("PRUICSS_create failure\n");
         while(1);
     }
 #if defined(SOC_AM65XX)
-    prussHandle[2] =  PRUICSS_create((PRUICSS_Config*)prussCfg,PRUICCSS_INSTANCE_THREE);
+    prussHandle[2] =  PRUICSS_create((PRUICSS_Config*)prussCfg,PRUICSS_INSTANCE_THREE);
     if (prussHandle[2] == NULL)
     {
        UART_printf("PRUICSS_create failure\n");
@@ -1584,15 +1584,15 @@ void test_EMAC_verify_ut_dual_mac_icssg(void)
 
 #ifdef EMAC_TEST_APP_ICSSG
         PRUICSS_socGetInitCfg(&prussCfg);
-        prussHandle[0] =  PRUICSS_create((PRUICSS_Config*)prussCfg,PRUICCSS_INSTANCE_ONE);
-        prussHandle[1] =  PRUICSS_create((PRUICSS_Config*)prussCfg,PRUICCSS_INSTANCE_TWO);
+        prussHandle[0] =  PRUICSS_create((PRUICSS_Config*)prussCfg,PRUICSS_INSTANCE_ONE);
+        prussHandle[1] =  PRUICSS_create((PRUICSS_Config*)prussCfg,PRUICSS_INSTANCE_TWO);
         if ((prussHandle[0] == NULL) || (prussHandle[1] == NULL))
         {
            UART_printf("PRUICSS_create failure\n");
            while(1);
         }
 #if defined(SOC_AM65XX)
-        prussHandle[2] =  PRUICSS_create((PRUICSS_Config*)prussCfg,PRUICCSS_INSTANCE_THREE);
+        prussHandle[2] =  PRUICSS_create((PRUICSS_Config*)prussCfg,PRUICSS_INSTANCE_THREE);
         if (prussHandle[2] == NULL)
         {
            UART_printf("PRUICSS_create failure\n");
@@ -1797,21 +1797,21 @@ int32_t  app_test_task_disable_pruicss(uint32_t portNum)
     }
     prussDrvHandle =prussHandle[portNum >> 1];
     slice_n = (portNum & 1);
-    pru_n = (slice_n) ? PRUICCSS_PRU1 : PRUICCSS_PRU0;
-    rtu_n = (slice_n) ? PRUICCSS_RTU1 : PRUICCSS_RTU0;
-    txpru_n = (slice_n) ? PRUICCSS_TPRU1 : PRUICCSS_TPRU0;
+    pru_n = (slice_n) ? PRUICSS_PRU1 : PRUICSS_PRU0;
+    rtu_n = (slice_n) ? PRUICSS_RTU1 : PRUICSS_RTU0;
+    txpru_n = (slice_n) ? PRUICSS_TPRU1 : PRUICSS_TPRU0;
 
     if (PRUICSS_pruDisable(prussDrvHandle, pru_n) != 0)
-        UART_printf("PRUICSS_pruDisable for PRUICCSS_PRU%d failed\n", slice_n);
+        UART_printf("PRUICSS_pruDisable for PRUICSS_PRU%d failed\n", slice_n);
 
     if (PRUICSS_pruDisable(prussDrvHandle, rtu_n) != 0)
-        UART_printf("PRUICSS_pruDisable for PRUICCSS_RTU%d failed\n", slice_n);
+        UART_printf("PRUICSS_pruDisable for PRUICSS_RTU%d failed\n", slice_n);
 
     /* pg version check: only disable txpru if NOT version PG1.0 */
     if (gPgVersion != APP_TEST_AM65XX_PG1_0_VERSION)
     {
         if (PRUICSS_pruDisable(prussDrvHandle, txpru_n) != 0)
-            UART_printf("PRUICSS_pruDisable for PRUICCSS_RTU%d failed\n", slice_n);
+            UART_printf("PRUICSS_pruDisable for PRUICSS_RTU%d failed\n", slice_n);
     }
 
     /* CLEAR SHARED MEM which is used for host/firmware handshake */
@@ -1835,22 +1835,22 @@ int32_t  app_test_task_init_pruicss(uint32_t portNum)
 
     prussDrvHandle =prussHandle[portNum >> 1];
     slice_n = (portNum & 1);
-    pru_n = (slice_n) ? PRUICCSS_PRU1 : PRUICCSS_PRU0;
-    rtu_n = (slice_n) ? PRUICCSS_RTU1 : PRUICCSS_RTU0;
-    txpru_n = (slice_n) ? PRUICCSS_TPRU1 : PRUICCSS_TPRU0;
+    pru_n = (slice_n) ? PRUICSS_PRU1 : PRUICSS_PRU0;
+    rtu_n = (slice_n) ? PRUICSS_RTU1 : PRUICSS_RTU0;
+    txpru_n = (slice_n) ? PRUICSS_TPRU1 : PRUICSS_TPRU0;
 
     firmware = (gPgVersion == APP_TEST_AM65XX_PG1_0_VERSION)?firmware_pg1:firmware_pg2;
 
     if (PRUICSS_pruWriteMemory(prussDrvHandle,PRU_ICSS_IRAM_PRU(slice_n), 0,
                                firmware[slice_n].pru, firmware[slice_n].pru_size) == 0)
     {
-         UART_printf("PRUICSS_pruWriteMemory for PRUICCSS_PRU%d failed\n", slice_n);
+         UART_printf("PRUICSS_pruWriteMemory for PRUICSS_PRU%d failed\n", slice_n);
          return -1;
     }
     if (PRUICSS_pruWriteMemory(prussDrvHandle,PRU_ICSS_IRAM_RTU(slice_n), 0,
                                    firmware[slice_n].rtu, firmware[slice_n].rtu_size) == 0)
     {
-        UART_printf("PRUICSS_pruWriteMemory for PRUICCSS_RTU%d failed\n", slice_n);
+        UART_printf("PRUICSS_pruWriteMemory for PRUICSS_RTU%d failed\n", slice_n);
         return -1;
     }
     if (gPgVersion != APP_TEST_AM65XX_PG1_0_VERSION)
@@ -1858,7 +1858,7 @@ int32_t  app_test_task_init_pruicss(uint32_t portNum)
         if (PRUICSS_pruWriteMemory(prussDrvHandle,PRU_ICSS_IRAM_TXPRU(slice_n), 0,
                                firmware[slice_n].txpru, firmware[slice_n].txpru_size) == 0)
         {
-            UART_printf("PRUICSS_pruWriteMemory for PRUICCSS_TXPRU%d failed\n", slice_n);
+            UART_printf("PRUICSS_pruWriteMemory for PRUICSS_TXPRU%d failed\n", slice_n);
             return -1;
         }
     }
@@ -1866,19 +1866,19 @@ int32_t  app_test_task_init_pruicss(uint32_t portNum)
 
     if (PRUICSS_pruEnable(prussDrvHandle, pru_n) != 0)
     {
-        UART_printf("PRUICSS_pruEnable for PRUICCSS_PRU%d failed\n", slice_n);
+        UART_printf("PRUICSS_pruEnable for PRUICSS_PRU%d failed\n", slice_n);
         return -1;
     }
     if (PRUICSS_pruEnable(prussDrvHandle, rtu_n) != 0)
     {
-        UART_printf("PRUICSS_pruEnable for PRUICCSS_RTU%d failed\n", slice_n);
+        UART_printf("PRUICSS_pruEnable for PRUICSS_RTU%d failed\n", slice_n);
         return -1;
     }
     if (gPgVersion != APP_TEST_AM65XX_PG1_0_VERSION)
     {
         if (PRUICSS_pruEnable(prussDrvHandle, txpru_n) != 0)
         {
-            UART_printf("PRUICSS_pruEnable for PRUICCSS_TXPRU%d failed\n", slice_n);
+            UART_printf("PRUICSS_pruEnable for PRUICSS_TXPRU%d failed\n", slice_n);
             return -1;
         }
     }

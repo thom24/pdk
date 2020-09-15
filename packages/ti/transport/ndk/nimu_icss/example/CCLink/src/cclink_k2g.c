@@ -193,11 +193,11 @@ int main()
    ret  = PRUICSS_socGetInitCfg(&pruIcssCfg);
     if (ret  != PRUICSS_RETURN_SUCCESS)
         return (ret);
-    pruIcssHandle = PRUICSS_create((PRUICSS_Config*) pruIcssCfg,PRUICCSS_INSTANCE_TWO);
+    pruIcssHandle = PRUICSS_create((PRUICSS_Config*) pruIcssCfg,PRUICSS_INSTANCE_TWO);
 
     /* Need to explicitly set MII mode for K2G in GPCFG registers*/
-    PRUICSS_setGpMuxSel(pruIcssHandle, PRUICCSS_PRU0, 2);
-    PRUICSS_setGpMuxSel(pruIcssHandle, PRUICCSS_PRU1, 2);
+    PRUICSS_setGpMuxSel(pruIcssHandle, PRUICSS_PRU0, 2);
+    PRUICSS_setGpMuxSel(pruIcssHandle, PRUICSS_PRU1, 2);
     Task_Params_init(&taskParams);
     taskParams.priority = 15;
     taskParams.instance->name = "SwitchTask";

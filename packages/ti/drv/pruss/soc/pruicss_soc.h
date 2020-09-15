@@ -54,8 +54,8 @@ extern "C" {
  */
 typedef enum PRUICSS_MaxInstances_s
 {
-   PRUICCSS_INSTANCE_ONE=1,
-   PRUICCSS_INSTANCE_MAX=2
+   PRUICSS_INSTANCE_ONE=1,
+   PRUICSS_INSTANCE_MAX=2
 }PRUICSS_MaxInstances;
 #elif defined(SOC_AM65XX)
 /*!
@@ -63,10 +63,10 @@ typedef enum PRUICSS_MaxInstances_s
  */
 typedef enum PRUICSS_MaxInstances_s
 {
-   PRUICCSS_INSTANCE_ONE=1,
-   PRUICCSS_INSTANCE_TWO=2,
-   PRUICCSS_INSTANCE_THREE=3,
-   PRUICCSS_INSTANCE_MAX=4
+   PRUICSS_INSTANCE_ONE=1,
+   PRUICSS_INSTANCE_TWO=2,
+   PRUICSS_INSTANCE_THREE=3,
+   PRUICSS_INSTANCE_MAX=4
 }PRUICSS_MaxInstances;
 #elif defined(SOC_J721E) || defined(SOC_AM64X)
 /*!
@@ -74,9 +74,9 @@ typedef enum PRUICSS_MaxInstances_s
  */
 typedef enum PRUICSS_MaxInstances_s
 {
-   PRUICCSS_INSTANCE_ONE=1,
-   PRUICCSS_INSTANCE_TWO=2,
-   PRUICCSS_INSTANCE_MAX=3
+   PRUICSS_INSTANCE_ONE=1,
+   PRUICSS_INSTANCE_TWO=2,
+   PRUICSS_INSTANCE_MAX=3
 }PRUICSS_MaxInstances;
 #else
 /*!
@@ -84,9 +84,9 @@ typedef enum PRUICSS_MaxInstances_s
  */
 typedef enum PRUICSS_MaxInstances_s
 {
-   PRUICCSS_INSTANCE_ONE=1,
-   PRUICCSS_INSTANCE_TWO=2,
-   PRUICCSS_INSTANCE_MAX=3
+   PRUICSS_INSTANCE_ONE=1,
+   PRUICSS_INSTANCE_TWO=2,
+   PRUICSS_INSTANCE_MAX=3
 }PRUICSS_MaxInstances;
 #endif
 

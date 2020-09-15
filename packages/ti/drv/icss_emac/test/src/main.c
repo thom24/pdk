@@ -96,9 +96,9 @@ extern uint8_t ICSS_EMAC_testLclMac3[];
 
 extern tprussdrv *pruss_drv_handle;
 extern tprussdrv *pruss_drv_handle2;
-extern PRUICSS_HwAttrs linux_prussHwAttrs[PRUICCSS_INSTANCE_MAX-1];
-extern PRUICSS_V1_Object linux_prussObjects[PRUICCSS_INSTANCE_MAX-1];
-extern PRUICSS_Config linux_pruss_config[PRUICCSS_INSTANCE_MAX];
+extern PRUICSS_HwAttrs linux_prussHwAttrs[PRUICSS_INSTANCE_MAX-1];
+extern PRUICSS_V1_Object linux_prussObjects[PRUICSS_INSTANCE_MAX-1];
+extern PRUICSS_Config linux_pruss_config[PRUICSS_INSTANCE_MAX];
 
 pthread_t port0_rxTask_th, port0_txTask_th, port0_ttsCycTask_th, port0_linkTask_th,
           port1_rxTask_th, port1_txTask_th, port1_ttsCycTask_th, port1_linkTask_th,
@@ -165,7 +165,7 @@ int32_t ICSS_EMAC_testPruIcssInstance1Setup(void)
     pthread_attr_t pthread_attr;
     struct sched_param sched_param;
 
-    linux_init((void**)&pruss_drv_handle, linux_prussHwAttrs, PRUICCSS_INSTANCE_ONE);
+    linux_init((void**)&pruss_drv_handle, linux_prussHwAttrs, PRUICSS_INSTANCE_ONE);
     cfg = linux_pruss_config;
 #else
     Task_Params taskParams;
@@ -174,12 +174,12 @@ int32_t ICSS_EMAC_testPruIcssInstance1Setup(void)
         return (ret);
 #endif
 
-    ICSS_EMAC_testPruIcssHandle1 = PRUICSS_create((PRUICSS_Config*) cfg,PRUICCSS_INSTANCE_ONE);
+    ICSS_EMAC_testPruIcssHandle1 = PRUICSS_create((PRUICSS_Config*) cfg,PRUICSS_INSTANCE_ONE);
 
     /* PRUSS Internal PINMUX settings for AM571x */
     if(ICSS_EMAC_testEvmType == ICSS_EMAC_TEST_BOARD_IDKAM571x)
     {
-        PRUICSS_setGpMuxSel(ICSS_EMAC_testPruIcssHandle1, PRUICCSS_PRU1, 4);
+        PRUICSS_setGpMuxSel(ICSS_EMAC_testPruIcssHandle1, PRUICSS_PRU1, 4);
     }
 
 #ifndef __LINUX_USER_SPACE
@@ -539,7 +539,7 @@ int32_t ICSS_EMAC_testPruIcssInstance2Setup(void)
     pthread_attr_t pthread_attr;
     struct sched_param sched_param;
 
-    linux_init((void**)&pruss_drv_handle2, linux_prussHwAttrs, PRUICCSS_INSTANCE_TWO);
+    linux_init((void**)&pruss_drv_handle2, linux_prussHwAttrs, PRUICSS_INSTANCE_TWO);
     cfg = linux_pruss_config;
 #else
     Task_Params taskParams;
@@ -550,13 +550,13 @@ int32_t ICSS_EMAC_testPruIcssInstance2Setup(void)
     }
 #endif
 
-    ICSS_EMAC_testPruIcssHandle2 = PRUICSS_create((PRUICSS_Config*)cfg,PRUICCSS_INSTANCE_TWO);
+    ICSS_EMAC_testPruIcssHandle2 = PRUICSS_create((PRUICSS_Config*)cfg,PRUICSS_INSTANCE_TWO);
 
     /* PRUSS Internal PINMUX settings for AM571x */
     if(ICSS_EMAC_testEvmType == ICSS_EMAC_TEST_BOARD_IDKAM571x)
     {
-        PRUICSS_setGpMuxSel(ICSS_EMAC_testPruIcssHandle2, PRUICCSS_PRU0, 4);
-        PRUICSS_setGpMuxSel(ICSS_EMAC_testPruIcssHandle2, PRUICCSS_PRU1, 4);
+        PRUICSS_setGpMuxSel(ICSS_EMAC_testPruIcssHandle2, PRUICSS_PRU0, 4);
+        PRUICSS_setGpMuxSel(ICSS_EMAC_testPruIcssHandle2, PRUICSS_PRU1, 4);
     }
 
 #ifndef __LINUX_USER_SPACE

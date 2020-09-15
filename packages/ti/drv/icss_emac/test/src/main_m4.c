@@ -173,12 +173,12 @@ int32_t ICSS_EMAC_testPruIcssInstance1Setup(void)
     if (ret  != PRUICSS_RETURN_SUCCESS)
         return (ret);
 
-    ICSS_EMAC_testPruIcssHandle1 = PRUICSS_create((PRUICSS_Config*) cfg,PRUICCSS_INSTANCE_ONE);
+    ICSS_EMAC_testPruIcssHandle1 = PRUICSS_create((PRUICSS_Config*) cfg,PRUICSS_INSTANCE_ONE);
 
     /* PRUSS Internal PINMUX settings for AM571x */
     if(ICSS_EMAC_testEvmType == ICSS_EMAC_TEST_BOARD_IDKAM571x)
     {
-        PRUICSS_setGpMuxSel(ICSS_EMAC_testPruIcssHandle1, PRUICCSS_PRU1, 4);
+        PRUICSS_setGpMuxSel(ICSS_EMAC_testPruIcssHandle1, PRUICSS_PRU1, 4);
     }
 
     /* For PRU1 Eth0 */
@@ -444,7 +444,7 @@ int32_t ICSS_EMAC_testPruIcssInstance2Setup(void)
         return (ret);
     }
 
-    ICSS_EMAC_testPruIcssHandle2 = PRUICSS_create((PRUICSS_Config*)cfg,PRUICCSS_INSTANCE_TWO);
+    ICSS_EMAC_testPruIcssHandle2 = PRUICSS_create((PRUICSS_Config*)cfg,PRUICSS_INSTANCE_TWO);
 
     /* Crosssbar confiiguration */
     /* For PRU2 Eth0 */

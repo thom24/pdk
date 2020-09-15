@@ -82,15 +82,15 @@ typedef struct  PRUICSS_Config_s          *PRUICSS_Handle;
  */
 typedef enum PRUICSS_ConstTblEntry_s
 {
-   PRUICCSS_ConstTblEntryC24,
-   PRUICCSS_ConstTblEntryC25,
-   PRUICCSS_ConstTblEntryC26,
-   PRUICCSS_ConstTblEntryC27,
-   PRUICCSS_ConstTblEntryC28,
-   PRUICCSS_ConstTblEntryC29,
-   PRUICCSS_ConstTblEntryC30,
-   PRUICCSS_ConstTblEntryC31,
-   PRUICCSS_ConstTblEntryMax
+   PRUICSS_ConstTblEntryC24,
+   PRUICSS_ConstTblEntryC25,
+   PRUICSS_ConstTblEntryC26,
+   PRUICSS_ConstTblEntryC27,
+   PRUICSS_ConstTblEntryC28,
+   PRUICSS_ConstTblEntryC29,
+   PRUICSS_ConstTblEntryC30,
+   PRUICSS_ConstTblEntryC31,
+   PRUICSS_ConstTblEntryMax
 }PRUICSS_ConstTblEntry;
 
 /***********************************************************************

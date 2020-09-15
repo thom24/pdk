@@ -155,7 +155,7 @@ int main()
     ret  = PRUICSS_socGetInitCfg(&pruIcssCfg);
     if (ret  != PRUICSS_RETURN_SUCCESS)
         return (ret);
-    pruIcssHandle = PRUICSS_create((PRUICSS_Config*) pruIcssCfg,PRUICCSS_INSTANCE_TWO);
+    pruIcssHandle = PRUICSS_create((PRUICSS_Config*) pruIcssCfg,PRUICSS_INSTANCE_TWO);
     mii_init();
 
     Board_STATUS status;
@@ -477,12 +477,12 @@ void mii_init()
     (*((volatile uint32_t *)((((PRUICSS_HwAttrs *)(pruIcssHandle->hwAttrs))->prussMiiRtCfgRegBase) + 0x1000 + CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_ICSS_G_CFG))) = (0x10001);
 
     /* Setting up RX_ER/GPIO pin on the PHY as RX_ERR pin and COL/GPIO pin as LED_3 */
-    MDIO_phyExtRegWrite((((PRUICSS_HwAttrs *)(pruIcssHandle->hwAttrs))->prussMiiMdioRegBase), Board_getPhyAddress(PRUICCSS_INSTANCE_TWO, 1), DPPHY_GPIO_MUX_CTRL2, 0x60);
-    MDIO_phyExtRegWrite((((PRUICSS_HwAttrs *)(pruIcssHandle->hwAttrs))->prussMiiMdioRegBase), Board_getPhyAddress(PRUICCSS_INSTANCE_TWO, 2), DPPHY_GPIO_MUX_CTRL2, 0x60);
+    MDIO_phyExtRegWrite((((PRUICSS_HwAttrs *)(pruIcssHandle->hwAttrs))->prussMiiMdioRegBase), Board_getPhyAddress(PRUICSS_INSTANCE_TWO, 1), DPPHY_GPIO_MUX_CTRL2, 0x60);
+    MDIO_phyExtRegWrite((((PRUICSS_HwAttrs *)(pruIcssHandle->hwAttrs))->prussMiiMdioRegBase), Board_getPhyAddress(PRUICSS_INSTANCE_TWO, 2), DPPHY_GPIO_MUX_CTRL2, 0x60);
 
     /* Disable RGMII interface */
-    MDIO_phyExtRegWrite((((PRUICSS_HwAttrs *)(pruIcssHandle->hwAttrs))->prussMiiMdioRegBase), Board_getPhyAddress(PRUICCSS_INSTANCE_TWO, 1), DPPHY_RGMIICTL, 0x50);
-    MDIO_phyExtRegWrite((((PRUICSS_HwAttrs *)(pruIcssHandle->hwAttrs))->prussMiiMdioRegBase), Board_getPhyAddress(PRUICCSS_INSTANCE_TWO, 2), DPPHY_RGMIICTL, 0x50);
+    MDIO_phyExtRegWrite((((PRUICSS_HwAttrs *)(pruIcssHandle->hwAttrs))->prussMiiMdioRegBase), Board_getPhyAddress(PRUICSS_INSTANCE_TWO, 1), DPPHY_RGMIICTL, 0x50);
+    MDIO_phyExtRegWrite((((PRUICSS_HwAttrs *)(pruIcssHandle->hwAttrs))->prussMiiMdioRegBase), Board_getPhyAddress(PRUICSS_INSTANCE_TWO, 2), DPPHY_RGMIICTL, 0x50);
 
     PRUICSS_pinMuxConfig(pruIcssHandle, 0x0);   // PRUSS pinmuxing
 

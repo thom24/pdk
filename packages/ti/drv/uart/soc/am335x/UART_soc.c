@@ -206,7 +206,7 @@ UART_SWIPAttrs uartInitCfg2[UART_SWIP_MAX_CNT] __attribute__ ((section(".shdata"
         (uint32_t)SOC_PRU_ICSS_DATA_RAM0 + (uint32_t)UART0_RX_BUFFER,           // UART instance Rx buffer base address
         20,                                                                     // UART instance Host interrupt number
         UART_ICSS_INSTANCE1,                                                    // UART ICSS instance ID
-        PRUICCSS_PRU0,                                                          // UART PRU core ID
+        PRUICSS_PRU0,                                                          // UART PRU core ID
         &uartFwMemPtr,                                                          // Pointer to PRU UART FW ICSS IMEM/DMEM addresses
         
         //0X44e10990: SOC_CONTROL_REGS + PIN_MCASP0_ACLKX
@@ -229,7 +229,7 @@ UART_SWIPAttrs uartInitCfg2[UART_SWIP_MAX_CNT] __attribute__ ((section(".shdata"
         (uint32_t)SOC_PRU_ICSS_DATA_RAM0 + (uint32_t)UART1_RX_BUFFER,           // UART instance Rx buffer base address
         21,                                                                     // UART instance Host interrupt number
         UART_ICSS_INSTANCE1,                                                    // UART ICSS instance ID
-        PRUICCSS_PRU0,                                                          // UART PRU core ID
+        PRUICSS_PRU0,                                                          // UART PRU core ID
         &uartFwMemPtr,                                                          // Pointer to PRU UART FW ICSS IMEM/DMEM addresses
         
         //0X44e10998: SOC_CONTROL_REGS + PIN_MCASP0_AXR0
@@ -252,7 +252,7 @@ UART_SWIPAttrs uartInitCfg2[UART_SWIP_MAX_CNT] __attribute__ ((section(".shdata"
         (uint32_t)SOC_PRU_ICSS_DATA_RAM0 + (uint32_t)UART2_RX_BUFFER,           // UART instance Rx buffer base address
         22,                                                                     // UART instance Host interrupt number
         UART_ICSS_INSTANCE1,                                                    // UART ICSS instance ID
-        PRUICCSS_PRU0,                                                          // UART PRU core ID
+        PRUICSS_PRU0,                                                          // UART PRU core ID
         &uartFwMemPtr,                                                          // Pointer to PRU UART FW ICSS IMEM/DMEM addresses
         
         //0X44e109A4: SOC_CONTROL_REGS + PIN_MCASP0_FSR
@@ -275,7 +275,7 @@ UART_SWIPAttrs uartInitCfg2[UART_SWIP_MAX_CNT] __attribute__ ((section(".shdata"
         (uint32_t)SOC_PRU_ICSS_DATA_RAM1 + (uint32_t)UART0_RX_BUFFER,           // UART instance Rx buffer base address
         23,                                                                     // UART instance Host interrupt number
         UART_ICSS_INSTANCE1,                                                    // UART ICSS instance ID
-        PRUICCSS_PRU1,                                                          // UART PRU core ID
+        PRUICSS_PRU1,                                                          // UART PRU core ID
         &uartFwMemPtr,                                                          // Pointer to PRU UART FW ICSS IMEM/DMEM addresses
         
         //0x44E108A0: SOC_CONTROL_REGS + PIN_LCD_DATA0
@@ -300,7 +300,7 @@ UART_SWIPAttrs uartInitCfg2[UART_SWIP_MAX_CNT] __attribute__ ((section(".shdata"
         (uint32_t)SOC_PRU_ICSS_DATA_RAM1 + (uint32_t)UART1_RX_BUFFER,           // UART instance Rx buffer base address
         24,                                                                     // UART instance Host interrupt number
         UART_ICSS_INSTANCE1,                                                    // UART ICSS instance ID
-        PRUICCSS_PRU1,                                                          // UART PRU core ID
+        PRUICSS_PRU1,                                                          // UART PRU core ID
         &uartFwMemPtr,                                                          // Pointer to PRU UART FW ICSS IMEM/DMEM addresses
         
         //0x44E108B0: SOC_CONTROL_REGS + PIN_LCD_DATA4
@@ -325,7 +325,7 @@ UART_SWIPAttrs uartInitCfg2[UART_SWIP_MAX_CNT] __attribute__ ((section(".shdata"
         (uint32_t)SOC_PRU_ICSS_DATA_RAM1 + (uint32_t)UART2_RX_BUFFER,           // UART instance Rx buffer base address
         25,                                                                     // UART instance Host interrupt number
         UART_ICSS_INSTANCE1,                                                    // UART ICSS instance ID
-        PRUICCSS_PRU1,                                                          // UART PRU core ID
+        PRUICSS_PRU1,                                                          // UART PRU core ID
         &uartFwMemPtr,                                                          // Pointer to PRU UART FW ICSS IMEM/DMEM addresses
         
         //0x44E108E0: SOC_CONTROL_REGS + PIN_LCD_VSYNC

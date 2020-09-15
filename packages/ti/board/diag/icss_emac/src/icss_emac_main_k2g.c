@@ -562,8 +562,8 @@ uint32_t icssemac_check_link(ICSS_EmacHandle emacHandle)
 void pru_load_firmware(PRUICSS_Handle pruIcssHandle)
 {
     /* Same flow as taskPruss */
-    PRUICSS_pruDisable(pruIcssHandle, PRUICCSS_PRU0);
-    PRUICSS_pruDisable(pruIcssHandle, PRUICCSS_PRU1);
+    PRUICSS_pruDisable(pruIcssHandle, PRUICSS_PRU0);
+    PRUICSS_pruDisable(pruIcssHandle, PRUICSS_PRU1);
 
     if(PRUICSS_pruWriteMemory(pruIcssHandle,PRU_ICSS_IRAM(0) ,0,
                             (uint32_t *) &pru_imem0_rev2_start,
@@ -575,10 +575,10 @@ void pru_load_firmware(PRUICSS_Handle pruIcssHandle)
                                 &pru_imem1_rev2_end - &pru_imem1_rev2_start))
 
         {
-            PRUICSS_pruReset(pruIcssHandle, PRUICCSS_PRU0);
-            PRUICSS_pruReset(pruIcssHandle, PRUICCSS_PRU1);
-            PRUICSS_pruEnable(pruIcssHandle, PRUICCSS_PRU0);
-            PRUICSS_pruEnable(pruIcssHandle, PRUICCSS_PRU1);
+            PRUICSS_pruReset(pruIcssHandle, PRUICSS_PRU0);
+            PRUICSS_pruReset(pruIcssHandle, PRUICSS_PRU1);
+            PRUICSS_pruEnable(pruIcssHandle, PRUICSS_PRU0);
+            PRUICSS_pruEnable(pruIcssHandle, PRUICSS_PRU1);
         }
     }
 }
@@ -586,10 +586,10 @@ void pru_load_firmware(PRUICSS_Handle pruIcssHandle)
 /* Function to close the PRU module for proper restart while repeating the test */
 uint32_t icssemac_pru_close(PRUICSS_Handle pruIcssHandle)
 {
-    PRUICSS_pruDisable(pruIcssHandle, PRUICCSS_PRU0);
-    PRUICSS_pruDisable(pruIcssHandle, PRUICCSS_PRU1);
-    PRUICSS_pruReset(pruIcssHandle, PRUICCSS_PRU0);
-    PRUICSS_pruReset(pruIcssHandle, PRUICCSS_PRU1);
+    PRUICSS_pruDisable(pruIcssHandle, PRUICSS_PRU0);
+    PRUICSS_pruDisable(pruIcssHandle, PRUICSS_PRU1);
+    PRUICSS_pruReset(pruIcssHandle, PRUICSS_PRU0);
+    PRUICSS_pruReset(pruIcssHandle, PRUICSS_PRU1);
 }
 
 /* Function to clear the interrupts for proper restart while repeating the test */

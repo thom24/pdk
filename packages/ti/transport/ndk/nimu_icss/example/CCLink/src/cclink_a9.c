@@ -150,7 +150,7 @@ int main()
     ret  = PRUICSS_socGetInitCfg(&pruIcssCfg);
     if (ret  != PRUICSS_RETURN_SUCCESS)
         return (ret);
-    pruIcssHandle = PRUICSS_create((PRUICSS_Config*) pruIcssCfg,PRUICCSS_INSTANCE_TWO);
+    pruIcssHandle = PRUICSS_create((PRUICSS_Config*) pruIcssCfg,PRUICSS_INSTANCE_TWO);
 
 
     Task_Params_init(&taskParams);

@@ -137,8 +137,8 @@ int32_t PRUICSS_pruIntcInit(PRUICSS_Handle handle, const PRUICSS_IntcInitData * 
     hwAttrs = (PRUICSS_HwAttrs const *)handle->hwAttrs;
     baseaddr = hwAttrs->baseAddr;
 
-    if ((object->instance >= PRUICCSS_INSTANCE_ONE) &&
-        (object->instance < PRUICCSS_INSTANCE_MAX))
+    if ((object->instance >= PRUICSS_INSTANCE_ONE) &&
+        (object->instance < PRUICSS_INSTANCE_MAX))
     {
         baseaddr = hwAttrs->prussIntcRegBase;
     }
@@ -502,8 +502,8 @@ int32_t PRUICSS_pruIntcClear(PRUICSS_Handle handle)
         hwAttrs = (PRUICSS_HwAttrs const *)handle->hwAttrs;
 
         /* verify the instance */
-        if ((object->instance >= PRUICCSS_INSTANCE_ONE) &&
-            (object->instance < PRUICCSS_INSTANCE_MAX))
+        if ((object->instance >= PRUICSS_INSTANCE_ONE) &&
+            (object->instance < PRUICSS_INSTANCE_MAX))
         {
             baseaddr = hwAttrs->prussIntcRegBase;
         }

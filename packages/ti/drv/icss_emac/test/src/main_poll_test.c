@@ -109,7 +109,7 @@ int32_t ICSS_EMAC_testPruIcssInstance2Setup(void)
     {
         return (ret);
     }
-    ICSS_EMAC_testPruIcssHandle2 = PRUICSS_create((PRUICSS_Config*)cfg,PRUICCSS_INSTANCE_TWO);
+    ICSS_EMAC_testPruIcssHandle2 = PRUICSS_create((PRUICSS_Config*)cfg,PRUICSS_INSTANCE_TWO);
 
     /*PRU2 ETH0 initializations*/
     ICSS_EMAC_testHandle2 = (ICSS_EmacHandle)malloc(sizeof(ICSS_EmacConfig));
