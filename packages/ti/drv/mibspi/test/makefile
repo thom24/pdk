@@ -43,9 +43,6 @@ endif
 # Common source files across all platforms and cores
 SRCS_COMMON += main_mibspi_test.c mibspi_test_common.c
 
-ifeq ($(SOC),$(filter $(SOC), tpr12))
-SRCS_COMMON += utils_virt2phys.c
-endif
 
 # List all the external components/interfaces, whose interface header files
 # need to be included for this component

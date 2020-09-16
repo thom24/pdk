@@ -157,7 +157,7 @@ int32_t MIBSPI_control(MIBSPI_Handle handle, uint32_t cmd, void *arg)
 /*
  *  ======== MIBSPI_init ========
  */
-void MIBSPI_init(MIBSPI_UtilsPrms *pUtilsPrms)
+void MIBSPI_init(void)
 {
     SemaphoreP_Params     semParams;
 
@@ -171,7 +171,7 @@ void MIBSPI_init(MIBSPI_UtilsPrms *pUtilsPrms)
         semParams.mode = SemaphoreP_Mode_BINARY;
         mibspiMutex = MIBSPI_osalCreateBlockingLock(1U, &semParams);
     
-        MibspiUtils_init(pUtilsPrms);
+        MibspiUtils_init();
     }
 }
 

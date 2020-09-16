@@ -507,12 +507,9 @@ void *Board_PmicInit(uint8_t devInstance)
 #if defined(SOC_TPR12)
     MIBSPI_Params     params;
     MIBSPI_Handle     handle;
-    MIBSPI_UtilsPrms utilsPrms;
 
     /* Initialize the SPI */
-    memset(&utilsPrms, 0, sizeof(utilsPrms));
-
-    MIBSPI_init(&utilsPrms);
+    MIBSPI_init();
 
     /* Setup the default SPI Parameters */
     MIBSPI_Params_init(&params);

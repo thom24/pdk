@@ -112,7 +112,6 @@ int8_t BoardDiag_expansionHeaderTest(void)
 {
     MIBSPI_Params     params;
     MIBSPI_Handle     handle;
-    MIBSPI_UtilsPrms utilsPrms;
 
     enum MibSpi_InstanceId mibspiInstance[BOARD_DIAG_NUM_MIBSPI_INSTANCES] =
                           {MIBSPI_INST_ID_RCSS_SPIA, MIBSPI_INST_ID_RCSS_SPIB};
@@ -133,9 +132,7 @@ int8_t BoardDiag_expansionHeaderTest(void)
     GPIO_init();
 
     /* Initialize the SPI */
-    memset(&utilsPrms, 0, sizeof(utilsPrms));
-
-    MIBSPI_init(&utilsPrms);
+    MIBSPI_init();
 
     /* Setup the default SPI Parameters */
     MIBSPI_Params_init(&params);

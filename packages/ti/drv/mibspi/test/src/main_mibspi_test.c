@@ -67,7 +67,6 @@
 /* SPI test include files */
 #include "mibspi_test_common.h"
 #include "MIBSPI_log.h"
-#include "utils_virt2phys.h"
 
 /**************************************************************************
  *************************** Local Definitions *********************************
@@ -114,40 +113,6 @@ static bool Board_initMIBSPI(void)
     }
 }
 
-#include <ti/csl/soc.h>
-
-/* Temporary hack until board lib enabled pinmux config */
-static void Board_initPinMux(void)
-{
-    CSL_mss_iomuxRegs  * MSS_IOMUX = (CSL_mss_iomuxRegs *)CSL_MSS_IOMUX_U_BASE;
-
-    CSL_FINS(MSS_IOMUX->PADAH_CFG_REG,MSS_IOMUX_PADAH_CFG_REG_OE_OVERRIDE_CTRL, 0x0);
-    CSL_FINS(MSS_IOMUX->PADAI_CFG_REG,MSS_IOMUX_PADAI_CFG_REG_OE_OVERRIDE_CTRL, 0x0);
-    CSL_FINS(MSS_IOMUX->PADAJ_CFG_REG,MSS_IOMUX_PADAJ_CFG_REG_OE_OVERRIDE_CTRL, 0x0);
-    CSL_FINS(MSS_IOMUX->PADAK_CFG_REG,MSS_IOMUX_PADAK_CFG_REG_OE_OVERRIDE_CTRL, 0x0);
-
-    CSL_FINS(MSS_IOMUX->PADAH_CFG_REG,MSS_IOMUX_PADAH_CFG_REG_OE_OVERRIDE, 0x0);
-    CSL_FINS(MSS_IOMUX->PADAI_CFG_REG,MSS_IOMUX_PADAI_CFG_REG_OE_OVERRIDE, 0x0);
-    CSL_FINS(MSS_IOMUX->PADAJ_CFG_REG,MSS_IOMUX_PADAJ_CFG_REG_OE_OVERRIDE, 0x0);
-    CSL_FINS(MSS_IOMUX->PADAK_CFG_REG,MSS_IOMUX_PADAK_CFG_REG_OE_OVERRIDE, 0x0);
-    //SPI Pin Config
-
-    CSL_FINS(MSS_IOMUX->PADAH_CFG_REG,MSS_IOMUX_PADAH_CFG_REG_PUPDSEL, 0x0); //PADAH MOSI
-    CSL_FINS(MSS_IOMUX->PADAI_CFG_REG,MSS_IOMUX_PADAI_CFG_REG_PUPDSEL, 0x0); //PADAI MISO
-    CSL_FINS(MSS_IOMUX->PADAJ_CFG_REG,MSS_IOMUX_PADAJ_CFG_REG_PUPDSEL, 0x0); //PADAJ CLK
-    CSL_FINS(MSS_IOMUX->PADAK_CFG_REG,MSS_IOMUX_PADAK_CFG_REG_PUPDSEL, 0x1); //PADAK CS
-    
-    CSL_FINS(MSS_IOMUX->PADAH_CFG_REG,MSS_IOMUX_PADAH_CFG_REG_PI, 0x0); //PADAH MOSI
-    CSL_FINS(MSS_IOMUX->PADAI_CFG_REG,MSS_IOMUX_PADAI_CFG_REG_PI, 0x0); //PADAI MISO
-    CSL_FINS(MSS_IOMUX->PADAJ_CFG_REG,MSS_IOMUX_PADAJ_CFG_REG_PI, 0x0); //PADAJ CLK
-    CSL_FINS(MSS_IOMUX->PADAK_CFG_REG,MSS_IOMUX_PADAK_CFG_REG_PI, 0x0); //PADAK CS
-
-    CSL_FINS(MSS_IOMUX->PADAH_CFG_REG,MSS_IOMUX_PADAH_CFG_REG_FUNC_SEL, 0x1); //PADAH
-    CSL_FINS(MSS_IOMUX->PADAI_CFG_REG,MSS_IOMUX_PADAI_CFG_REG_FUNC_SEL, 0x1); //PADAI
-    CSL_FINS(MSS_IOMUX->PADAJ_CFG_REG,MSS_IOMUX_PADAJ_CFG_REG_FUNC_SEL, 0x1); //PADAJ clk    i        o
-    CSL_FINS(MSS_IOMUX->PADAK_CFG_REG,MSS_IOMUX_PADAK_CFG_REG_FUNC_SEL, 0x1); //PADAK
-}
-
 
 /**
  *  @b Description
@@ -166,14 +131,12 @@ static void Test_initTask(UArg arg0, UArg arg1)
     int32_t         retVal = 0;
     MibSpi_HwCfg cfg;
     int32_t i;
-    MIBSPI_UtilsPrms utilsPrms;
 
     if (Board_initMIBSPI() != true)
     {
         printf("Board_initMIBSPI() failed\n");
         return;
     }
-    Board_initPinMux();
     for (i = 0; i < sizeof(gMibspiInst)/sizeof(gMibspiInst[0]); i++)
     {
         retVal = MIBSPI_socGetInitCfg(gMibspiInst[i], &cfg);
@@ -211,11 +174,7 @@ static void Test_initTask(UArg arg0, UArg arg1)
 #endif
     }
     /* Initialize the SPI */
-    memset(&utilsPrms, 0, sizeof(utilsPrms));
-    utilsPrms.printFxn = MIBSPI_log;
-    utilsPrms.traceFxn = MIBSPI_log;
-    utilsPrms.virt2phyFxn = UtilsMmap_virt2Phys;
-    MIBSPI_init(&utilsPrms);
+    MIBSPI_init();
 
     /* MibSPIA slave mode analog loopback test */
     //Test_loopbackSlave_oneInstance(1);

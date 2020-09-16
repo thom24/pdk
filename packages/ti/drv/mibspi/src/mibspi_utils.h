@@ -183,7 +183,7 @@ void MibspiUtils_trace(const char *format,
  *
  * \param pUtilsPrms   [IN] Pointer to the initialization parameters
  */
-void MibspiUtils_init(MIBSPI_UtilsPrms *pUtilsPrms);
+void MibspiUtils_init(void);
 
 /*!
  * \brief De-initialize utils module

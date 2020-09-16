@@ -524,33 +524,6 @@ typedef int (*Mibspi_TraceFxnCb)(const char *str, ...);
 typedef uint32_t (*Mibspi_VirtToPhyFxn)(const void *virtAddr);
 
 
-/*!
- * @brief MIBSPI utils parameters
- *
- * Data sturcture used to configure the application callback for utility
- * services used by the driver
- *
- * @ingroup MIBSPI_DRIVER_EXTERNAL_DATA_STRUCTURE
- */
-typedef struct
-{
-    /*! If not NULL, this function will be called to print debug/info message
-     *  with appropriate string */
-    Mibspi_PrintFxnCb printFxn;
-
-    /*! If not NULL, this function will be called to log trace message
-     *  with appropriate string */
-    Mibspi_TraceFxnCb traceFxn;
-
-    /*! If not NULL, this function will be invoked to translate virtual address
-    * to system physical address. This is required to convert CPU addresses to
-    * DMA addresses
-    */
-    Mibspi_VirtToPhyFxn virt2phyFxn;
-
-} MIBSPI_UtilsPrms;
-
-
 
 
 /*!
@@ -730,11 +703,9 @@ typedef struct MIBSPI_Params_t
  *  @brief  This function initializes the MIBSPI module.
  *
  *  @ingroup MIBSPI_DRIVER_EXTERNAL_FUNCTION
- *  @param  pUtilsPrms  Pointer to app callback functions for
- *                      utility services used by the driver
  *
  */
-extern void MIBSPI_init(MIBSPI_UtilsPrms *pUtilsPrms);
+extern void MIBSPI_init(void);
 
 /*!
  *  @brief  Function to initialize the MIBSPI_Params struct to its defaults

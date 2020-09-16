@@ -47,6 +47,8 @@
 /* This is needed for memset/memcpy */
 #include <string.h>
 
+#include <ti/csl/soc.h>
+#include <ti/osal/DebugP.h>
 #include <ti/drv/mibspi/MIBSPI.h>
 #include <ti/drv/mibspi/src/MIBSPI_osal.h>
 #include "mibspi_trace_config.h"
@@ -67,12 +69,6 @@
 
 typedef struct MibspiUtils_Obj_s
 {
-    Mibspi_PrintFxnCb printFxn;
-
-    Mibspi_TraceFxnCb traceFxn;
-
-    Mibspi_VirtToPhyFxn virt2phyFxn;
-
     void *printLock;
 
     char printBuf[MIBSPI_CFG_PRINT_BUF_LEN];
@@ -113,16 +109,12 @@ static SemaphoreP_Handle MibspiUtils_mutexCreate(void)
 
 
 
-void MibspiUtils_init(MIBSPI_UtilsPrms *pUtilsPrms)
+void MibspiUtils_init(void)
 {
     memset(&gMibspiUtilsObj, 0U, sizeof(MibspiUtils_Obj));
 
     gMibspiUtilsObj.printLock = MibspiUtils_mutexCreate();
     gMibspiUtilsObj.traceLock = MibspiUtils_mutexCreate();
-
-    gMibspiUtilsObj.printFxn = pUtilsPrms->printFxn;
-    gMibspiUtilsObj.traceFxn = pUtilsPrms->traceFxn;
-    gMibspiUtilsObj.virt2phyFxn = pUtilsPrms->virt2phyFxn;
 
     return;
 }
@@ -132,12 +124,6 @@ void MibspiUtils_deInit(void)
     MIBSPI_osalDeleteBlockingLock(gMibspiUtilsObj.printLock);
 
     MIBSPI_osalDeleteBlockingLock(gMibspiUtilsObj.traceLock);
-
-    gMibspiUtilsObj.printFxn = NULL;
-
-    gMibspiUtilsObj.traceFxn = NULL;
-
-    gMibspiUtilsObj.virt2phyFxn = NULL;
 
     return;
 }
@@ -151,19 +137,16 @@ void MibspiUtils_printf(const char *format,
     va_list vaArgPtr;
     char *buf;
 
-    if (gMibspiUtilsObj.printFxn != NULL)
-    {
-        MIBSPI_osalPendLock(gMibspiUtilsObj.printLock, SemaphoreP_WAIT_FOREVER);
+    MIBSPI_osalPendLock(gMibspiUtilsObj.printLock, SemaphoreP_WAIT_FOREVER);
 
-        buf = &gMibspiUtilsObj.printBuf[0];
-        (void)va_start(vaArgPtr, format);
-        (void)vsnprintf(buf, MIBSPI_CFG_PRINT_BUF_LEN, (const char *)format, vaArgPtr);
-        va_end(vaArgPtr);
+    buf = &gMibspiUtilsObj.printBuf[0];
+    (void)va_start(vaArgPtr, format);
+    (void)vsnprintf(buf, MIBSPI_CFG_PRINT_BUF_LEN, (const char *)format, vaArgPtr);
+    va_end(vaArgPtr);
 
-        gMibspiUtilsObj.printFxn(buf);
+    DebugP_log0(buf);
 
-        MIBSPI_osalPostLock(gMibspiUtilsObj.printLock);
-    }
+    MIBSPI_osalPostLock(gMibspiUtilsObj.printLock);
 #endif
 
     return;
@@ -175,17 +158,14 @@ void MibspiUtils_trace(const char *format,
 #if (MIBSPI_TRACE_CFG_TRACE_LEVEL > MIBSPI_TRACE_CFG_LEVEL_NONE)
     char *buf;
 
-    if (gMibspiUtilsObj.traceFxn != NULL)
-    {
-        MIBSPI_osalPendLock(gMibspiUtilsObj.traceLock, SemaphoreP_WAIT_FOREVER);
+    MIBSPI_osalPendLock(gMibspiUtilsObj.traceLock, SemaphoreP_WAIT_FOREVER);
 
-        buf = &gMibspiUtilsObj.traceBuf[0];
-        vsnprintf(buf, MIBSPI_CFG_TRACE_BUF_LEN, (const char *)format, vaArgPtr);
+    buf = &gMibspiUtilsObj.traceBuf[0];
+    vsnprintf(buf, MIBSPI_CFG_TRACE_BUF_LEN, (const char *)format, vaArgPtr);
 
-        gMibspiUtilsObj.traceFxn(buf);
+    DebugP_log0(buf);
 
-        MIBSPI_osalPostLock(gMibspiUtilsObj.traceLock);
-    }
+    MIBSPI_osalPostLock(gMibspiUtilsObj.traceLock);
 #endif
 }
 
@@ -193,14 +173,7 @@ uint32_t MibspiUtils_virtToPhy (const void *virtAddr)
 {
     uint32_t phyAddr;
 
-    if (gMibspiUtilsObj.virt2phyFxn != NULL)
-    {
-        phyAddr = gMibspiUtilsObj.virt2phyFxn(virtAddr);
-    }
-    else
-    {
-        phyAddr = (uintptr_t)(virtAddr);
-    }
+    phyAddr = (uint32_t) (CSL_locToGlobAddr((uintptr_t)virtAddr));
     return phyAddr;
 }
 
