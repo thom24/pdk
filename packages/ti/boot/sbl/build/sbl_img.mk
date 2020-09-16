@@ -142,7 +142,7 @@ endif
 SBL_OBJ_COPY := $(TOOLCHAIN_PATH_GCC_ARCH64)/bin/$(GCC_ARCH64_BIN_PREFIX)-objcopy
 #SoCs like TPR12 do not have GCC tool. So use TI ARM CGT objcopy instead
 ifeq ("$(wildcard ${TOOLCHAIN_PATH_GCC_ARCH64})","")
-SBL_OBJ_COPY := ${TOOLCHAIN_PATH_R5}/bin/arm-none-eabi-objcopy$(EXE_EXT)
+SBL_OBJ_COPY := ${TOOLCHAIN_PATH_R5}/bin/armobjcopy$(EXE_EXT)
 endif
 export SBL_OBJ_COPY
 

@@ -25,10 +25,7 @@ endif
   CG_XML_VERSION=2.61.00
 
 ifeq ($(BOARD),$(filter $(BOARD), tpr12_evm tpr12_qt))
-  BIOS_VERSION=6_82_00_16
-  XDC_VERSION=3_61_00_16_core
-  CGT_VERSION=8.3.3
-  CGT_ARM_VERSION=18.12.6.LTS
+  CGT_ARM_VERSION=20.2.2.LTS
 endif
 
 ifeq ($(BOARD),$(filter $(BOARD), am64x_evm am64x_svb))
@@ -45,7 +42,7 @@ endif
   NDK_VERSION=3_61_01_01
   NS_VERSION=2_60_01_06
 
-ifeq ($(BOARD),$(filter $(BOARD), am65xx_evm am65xx_idk j721e_evm j7200_evm am64x_evm am64x_svb))
+ifeq ($(BOARD),$(filter $(BOARD), am65xx_evm am65xx_idk j721e_evm j7200_evm am64x_evm am64x_svb tpr12_qt tpr12_evm))
   NDK_VERSION=3_80_00_19
   NS_VERSION=2_80_00_17
 endif
