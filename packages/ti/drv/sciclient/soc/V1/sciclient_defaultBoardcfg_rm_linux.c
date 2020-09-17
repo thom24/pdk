@@ -65,6 +65,7 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
             },
             .host_cfg_entries = {
                 {
+                    .host_id = TISCI_HOST_ID_R5_0,
                     .allowed_atype = 0b101010,
                     .allowed_qos   = 0xAAAA,
                     .allowed_orderid = 0xAAAAAAAA,
@@ -72,6 +73,7 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
                     .allowed_sched_priority = 0xAA
                 },
                 {
+                    .host_id = TISCI_HOST_ID_R5_2,
                     .allowed_atype = 0b101010,
                     .allowed_qos   = 0xAAAA,
                     .allowed_orderid = 0xAAAAAAAA,
@@ -79,6 +81,7 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
                     .allowed_sched_priority = 0xAA
                 },
                 {
+                    .host_id = TISCI_HOST_ID_A72_2,
                     .allowed_atype = 0b101010,
                     .allowed_qos   = 0xAAAA,
                     .allowed_orderid = 0xAAAAAAAA,
@@ -86,6 +89,7 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
                     .allowed_sched_priority = 0xAA
                 },
                 {
+                    .host_id = TISCI_HOST_ID_A72_3,
                     .allowed_atype = 0b101010,
                     .allowed_qos   = 0xAAAA,
                     .allowed_orderid = 0xAAAAAAAA,
@@ -93,6 +97,7 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
                     .allowed_sched_priority = 0xAA
                 },
                 {
+                    .host_id = TISCI_HOST_ID_C7X_1,
                     .allowed_atype = 0b101010,
                     .allowed_qos   = 0xAAAA,
                     .allowed_orderid = 0xAAAAAAAA,
@@ -100,6 +105,7 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
                     .allowed_sched_priority = 0xAA
                 },
                 {
+                    .host_id = TISCI_HOST_ID_C6X_0_1,
                     .allowed_atype = 0b101010,
                     .allowed_qos   = 0xAAAA,
                     .allowed_orderid = 0xAAAAAAAA,
@@ -107,6 +113,7 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
                     .allowed_sched_priority = 0xAA
                 },
                 {
+                    .host_id = TISCI_HOST_ID_C6X_1_1,
                     .allowed_atype = 0b101010,
                     .allowed_qos   = 0xAAAA,
                     .allowed_orderid = 0xAAAAAAAA,
@@ -114,6 +121,7 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
                     .allowed_sched_priority = 0xAA
                 },
                 {
+                    .host_id = TISCI_HOST_ID_MAIN_0_R5_0,
                     .allowed_atype = 0b101010,
                     .allowed_qos   = 0xAAAA,
                     .allowed_orderid = 0xAAAAAAAA,
@@ -121,6 +129,7 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
                     .allowed_sched_priority = 0xAA
                 },
                 {
+                    .host_id = TISCI_HOST_ID_MAIN_0_R5_2,
                     .allowed_atype = 0b101010,
                     .allowed_qos   = 0xAAAA,
                     .allowed_orderid = 0xAAAAAAAA,
@@ -128,6 +137,7 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
                     .allowed_sched_priority = 0xAA
                 },
                 {
+                    .host_id = TISCI_HOST_ID_MAIN_1_R5_0,
                     .allowed_atype = 0b101010,
                     .allowed_qos   = 0xAAAA,
                     .allowed_orderid = 0xAAAAAAAA,
@@ -135,6 +145,7 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
                     .allowed_sched_priority = 0xAA
                 },
                 {
+                    .host_id = TISCI_HOST_ID_MAIN_1_R5_2,
                     .allowed_atype = 0b101010,
                     .allowed_qos   = 0xAAAA,
                     .allowed_orderid = 0xAAAAAAAA,
@@ -148,7 +159,7 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
                 .magic = TISCI_BOARDCFG_RM_RESASG_MAGIC_NUM,
                 .size = (uint16_t) sizeof(struct tisci_boardcfg_rm_resasg),
             },
-            .resasg_entries_size = 348U * sizeof(struct tisci_boardcfg_rm_resasg_entry),
+            .resasg_entries_size = 346U * sizeof(struct tisci_boardcfg_rm_resasg_entry),
         },
     },
     .resasg_entries = {
@@ -261,22 +272,16 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
             .host_id = TISCI_HOST_ID_C6X_1_1,
         },
         {
-            .num_resource = 16,
+            .num_resource = 12,
             .type = TISCI_RESASG_UTYPE (TISCI_DEV_GPIOMUX_INTRTR0, TISCI_RESASG_SUBTYPE_IR_OUTPUT),
             .start_resource = 40,
             .host_id = TISCI_HOST_ID_A72_2,
         },
         {
-            .num_resource = 4,
+            .num_resource = 12,
             .type = TISCI_RESASG_UTYPE (TISCI_DEV_GPIOMUX_INTRTR0, TISCI_RESASG_SUBTYPE_IR_OUTPUT),
-            .start_resource = 56,
+            .start_resource = 52,
             .host_id = TISCI_HOST_ID_A72_3,
-        },
-        {
-            .num_resource = 4,
-            .type = TISCI_RESASG_UTYPE (TISCI_DEV_GPIOMUX_INTRTR0, TISCI_RESASG_SUBTYPE_IR_OUTPUT),
-            .start_resource = 60,
-            .host_id = TISCI_HOST_ID_C7X_1,
         },
         {
             .num_resource = 128,
@@ -327,34 +332,16 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
             .host_id = TISCI_HOST_ID_R5_2,
         },
         {
-            .num_resource = 4,
+            .num_resource = 6,
             .type = TISCI_RESASG_UTYPE (TISCI_DEV_WKUP_GPIOMUX_INTRTR0, TISCI_RESASG_SUBTYPE_IR_OUTPUT),
             .start_resource = 16,
             .host_id = TISCI_HOST_ID_A72_2,
         },
         {
-            .num_resource = 2,
-            .type = TISCI_RESASG_UTYPE (TISCI_DEV_WKUP_GPIOMUX_INTRTR0, TISCI_RESASG_SUBTYPE_IR_OUTPUT),
-            .start_resource = 20,
-            .host_id = TISCI_HOST_ID_A72_3,
-        },
-        {
-            .num_resource = 2,
+            .num_resource = 6,
             .type = TISCI_RESASG_UTYPE (TISCI_DEV_WKUP_GPIOMUX_INTRTR0, TISCI_RESASG_SUBTYPE_IR_OUTPUT),
             .start_resource = 22,
-            .host_id = TISCI_HOST_ID_MAIN_1_R5_0,
-        },
-        {
-            .num_resource = 2,
-            .type = TISCI_RESASG_UTYPE (TISCI_DEV_WKUP_GPIOMUX_INTRTR0, TISCI_RESASG_SUBTYPE_IR_OUTPUT),
-            .start_resource = 24,
-            .host_id = TISCI_HOST_ID_MAIN_1_R5_2,
-        },
-        {
-            .num_resource = 2,
-            .type = TISCI_RESASG_UTYPE (TISCI_DEV_WKUP_GPIOMUX_INTRTR0, TISCI_RESASG_SUBTYPE_IR_OUTPUT),
-            .start_resource = 26,
-            .host_id = TISCI_HOST_ID_C7X_1,
+            .host_id = TISCI_HOST_ID_A72_3,
         },
         {
             .num_resource = 2,
@@ -861,16 +848,28 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
             .host_id = TISCI_HOST_ID_C6X_1_1,
         },
         {
-            .num_resource = 4,
+            .num_resource = 2,
             .type = TISCI_RESASG_UTYPE (TISCI_DEV_NAVSS0_RINGACC0, TISCI_RESASG_SUBTYPE_RA_UDMAP_TX_EXT),
             .start_resource = 168,
             .host_id = TISCI_HOST_ID_MAIN_0_R5_0,
         },
         {
-            .num_resource = 128,
+            .num_resource = 2,
+            .type = TISCI_RESASG_UTYPE (TISCI_DEV_NAVSS0_RINGACC0, TISCI_RESASG_SUBTYPE_RA_UDMAP_TX_EXT),
+            .start_resource = 170,
+            .host_id = TISCI_HOST_ID_MAIN_0_R5_2,
+        },
+        {
+            .num_resource = 96,
             .type = TISCI_RESASG_UTYPE (TISCI_DEV_NAVSS0_RINGACC0, TISCI_RESASG_SUBTYPE_RA_UDMAP_TX_EXT),
             .start_resource = 172,
             .host_id = TISCI_HOST_ID_MAIN_0_R5_0,
+        },
+        {
+            .num_resource = 32,
+            .type = TISCI_RESASG_UTYPE (TISCI_DEV_NAVSS0_RINGACC0, TISCI_RESASG_SUBTYPE_RA_UDMAP_TX_EXT),
+            .start_resource = 268,
+            .host_id = TISCI_HOST_ID_MAIN_0_R5_2,
         },
         {
             .num_resource = 4,
@@ -943,12 +942,6 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
             .type = TISCI_RESASG_UTYPE (TISCI_DEV_NAVSS0_RINGACC0, TISCI_RESASG_SUBTYPE_RA_VIRTID),
             .start_resource = 3,
             .host_id = TISCI_HOST_ID_A72_3,
-        },
-        {
-            .num_resource = 4,
-            .type = TISCI_RESASG_UTYPE (TISCI_DEV_NAVSS0_RINGACC0, TISCI_RESASG_SUBTYPE_RA_VIRTID),
-            .start_resource = 4,
-            .host_id = TISCI_HOST_ID_ALL,
         },
         {
             .num_resource = 3,
@@ -1245,10 +1238,16 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
             .host_id = TISCI_HOST_ID_ALL,
         },
         {
-            .num_resource = 128,
+            .num_resource = 96,
             .type = TISCI_RESASG_UTYPE (TISCI_DEV_NAVSS0_UDMAP0, TISCI_RESASG_SUBTYPE_UDMAP_TX_ECHAN),
             .start_resource = 172,
             .host_id = TISCI_HOST_ID_MAIN_0_R5_0,
+        },
+        {
+            .num_resource = 32,
+            .type = TISCI_RESASG_UTYPE (TISCI_DEV_NAVSS0_UDMAP0, TISCI_RESASG_SUBTYPE_UDMAP_TX_ECHAN),
+            .start_resource = 268,
+            .host_id = TISCI_HOST_ID_MAIN_0_R5_2,
         },
         {
             .num_resource = 16,
@@ -1269,10 +1268,16 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
             .host_id = TISCI_HOST_ID_C6X_1_1,
         },
         {
-            .num_resource = 4,
+            .num_resource = 2,
             .type = TISCI_RESASG_UTYPE (TISCI_DEV_NAVSS0_UDMAP0, TISCI_RESASG_SUBTYPE_UDMAP_TX_ECHAN),
             .start_resource = 168,
             .host_id = TISCI_HOST_ID_MAIN_0_R5_0,
+        },
+        {
+            .num_resource = 2,
+            .type = TISCI_RESASG_UTYPE (TISCI_DEV_NAVSS0_UDMAP0, TISCI_RESASG_SUBTYPE_UDMAP_TX_ECHAN),
+            .start_resource = 170,
+            .host_id = TISCI_HOST_ID_MAIN_0_R5_2,
         },
         {
             .num_resource = 4,
@@ -1379,157 +1384,157 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
         {
             .num_resource = 32,
             .type = TISCI_RESASG_UTYPE (TISCI_DEV_MCU_NAVSS0_UDMASS_INTA_0, TISCI_RESASG_SUBTYPE_IA_VINT),
-            .start_resource = 8,
+            .start_resource = 16,
             .host_id = TISCI_HOST_ID_A72_2,
         },
         {
             .num_resource = 16,
             .type = TISCI_RESASG_UTYPE (TISCI_DEV_MCU_NAVSS0_UDMASS_INTA_0, TISCI_RESASG_SUBTYPE_IA_VINT),
-            .start_resource = 40,
+            .start_resource = 48,
             .host_id = TISCI_HOST_ID_A72_3,
         },
         {
             .num_resource = 64,
             .type = TISCI_RESASG_UTYPE (TISCI_DEV_MCU_NAVSS0_UDMASS_INTA_0, TISCI_RESASG_SUBTYPE_IA_VINT),
-            .start_resource = 56,
+            .start_resource = 64,
             .host_id = TISCI_HOST_ID_R5_0,
         },
         {
             .num_resource = 64,
             .type = TISCI_RESASG_UTYPE (TISCI_DEV_MCU_NAVSS0_UDMASS_INTA_0, TISCI_RESASG_SUBTYPE_IA_VINT),
-            .start_resource = 56,
+            .start_resource = 64,
             .host_id = TISCI_HOST_ID_R5_1,
         },
         {
             .num_resource = 4,
             .type = TISCI_RESASG_UTYPE (TISCI_DEV_MCU_NAVSS0_UDMASS_INTA_0, TISCI_RESASG_SUBTYPE_IA_VINT),
-            .start_resource = 120,
+            .start_resource = 128,
             .host_id = TISCI_HOST_ID_R5_2,
         },
         {
             .num_resource = 16,
             .type = TISCI_RESASG_UTYPE (TISCI_DEV_MCU_NAVSS0_UDMASS_INTA_0, TISCI_RESASG_SUBTYPE_IA_VINT),
-            .start_resource = 124,
+            .start_resource = 132,
             .host_id = TISCI_HOST_ID_MAIN_1_R5_0,
         },
         {
             .num_resource = 16,
             .type = TISCI_RESASG_UTYPE (TISCI_DEV_MCU_NAVSS0_UDMASS_INTA_0, TISCI_RESASG_SUBTYPE_IA_VINT),
-            .start_resource = 140,
+            .start_resource = 148,
             .host_id = TISCI_HOST_ID_MAIN_1_R5_2,
-        },
-        {
-            .num_resource = 8,
-            .type = TISCI_RESASG_UTYPE (TISCI_DEV_MCU_NAVSS0_UDMASS_INTA_0, TISCI_RESASG_SUBTYPE_IA_VINT),
-            .start_resource = 156,
-            .host_id = TISCI_HOST_ID_C7X_1,
         },
         {
             .num_resource = 8,
             .type = TISCI_RESASG_UTYPE (TISCI_DEV_MCU_NAVSS0_UDMASS_INTA_0, TISCI_RESASG_SUBTYPE_IA_VINT),
             .start_resource = 164,
-            .host_id = TISCI_HOST_ID_C6X_0_1,
+            .host_id = TISCI_HOST_ID_C7X_1,
         },
         {
             .num_resource = 8,
             .type = TISCI_RESASG_UTYPE (TISCI_DEV_MCU_NAVSS0_UDMASS_INTA_0, TISCI_RESASG_SUBTYPE_IA_VINT),
             .start_resource = 172,
+            .host_id = TISCI_HOST_ID_C6X_0_1,
+        },
+        {
+            .num_resource = 8,
+            .type = TISCI_RESASG_UTYPE (TISCI_DEV_MCU_NAVSS0_UDMASS_INTA_0, TISCI_RESASG_SUBTYPE_IA_VINT),
+            .start_resource = 180,
             .host_id = TISCI_HOST_ID_C6X_1_1,
         },
         {
             .num_resource = 24,
             .type = TISCI_RESASG_UTYPE (TISCI_DEV_MCU_NAVSS0_UDMASS_INTA_0, TISCI_RESASG_SUBTYPE_IA_VINT),
-            .start_resource = 180,
+            .start_resource = 188,
             .host_id = TISCI_HOST_ID_MAIN_0_R5_0,
         },
         {
             .num_resource = 8,
             .type = TISCI_RESASG_UTYPE (TISCI_DEV_MCU_NAVSS0_UDMASS_INTA_0, TISCI_RESASG_SUBTYPE_IA_VINT),
-            .start_resource = 204,
+            .start_resource = 212,
             .host_id = TISCI_HOST_ID_MAIN_0_R5_2,
         },
         {
-            .num_resource = 44,
+            .num_resource = 36,
             .type = TISCI_RESASG_UTYPE (TISCI_DEV_MCU_NAVSS0_UDMASS_INTA_0, TISCI_RESASG_SUBTYPE_IA_VINT),
-            .start_resource = 212,
+            .start_resource = 220,
             .host_id = TISCI_HOST_ID_ALL,
         },
         {
             .num_resource = 128,
             .type = TISCI_RESASG_UTYPE (TISCI_DEV_MCU_NAVSS0_UDMASS_INTA_0, TISCI_RESASG_SUBTYPE_GLOBAL_EVENT_SEVT),
-            .start_resource = 16392,
+            .start_resource = 16400,
             .host_id = TISCI_HOST_ID_A72_2,
         },
         {
             .num_resource = 128,
             .type = TISCI_RESASG_UTYPE (TISCI_DEV_MCU_NAVSS0_UDMASS_INTA_0, TISCI_RESASG_SUBTYPE_GLOBAL_EVENT_SEVT),
-            .start_resource = 16520,
+            .start_resource = 16528,
             .host_id = TISCI_HOST_ID_A72_3,
         },
         {
             .num_resource = 256,
             .type = TISCI_RESASG_UTYPE (TISCI_DEV_MCU_NAVSS0_UDMASS_INTA_0, TISCI_RESASG_SUBTYPE_GLOBAL_EVENT_SEVT),
-            .start_resource = 16648,
+            .start_resource = 16656,
             .host_id = TISCI_HOST_ID_R5_0,
         },
         {
             .num_resource = 256,
             .type = TISCI_RESASG_UTYPE (TISCI_DEV_MCU_NAVSS0_UDMASS_INTA_0, TISCI_RESASG_SUBTYPE_GLOBAL_EVENT_SEVT),
-            .start_resource = 16648,
+            .start_resource = 16656,
             .host_id = TISCI_HOST_ID_R5_1,
         },
         {
             .num_resource = 64,
             .type = TISCI_RESASG_UTYPE (TISCI_DEV_MCU_NAVSS0_UDMASS_INTA_0, TISCI_RESASG_SUBTYPE_GLOBAL_EVENT_SEVT),
-            .start_resource = 16904,
+            .start_resource = 16912,
             .host_id = TISCI_HOST_ID_R5_2,
         },
         {
             .num_resource = 128,
             .type = TISCI_RESASG_UTYPE (TISCI_DEV_MCU_NAVSS0_UDMASS_INTA_0, TISCI_RESASG_SUBTYPE_GLOBAL_EVENT_SEVT),
-            .start_resource = 16968,
+            .start_resource = 16976,
             .host_id = TISCI_HOST_ID_MAIN_1_R5_0,
         },
         {
             .num_resource = 128,
             .type = TISCI_RESASG_UTYPE (TISCI_DEV_MCU_NAVSS0_UDMASS_INTA_0, TISCI_RESASG_SUBTYPE_GLOBAL_EVENT_SEVT),
-            .start_resource = 17096,
+            .start_resource = 17104,
             .host_id = TISCI_HOST_ID_MAIN_1_R5_2,
         },
         {
             .num_resource = 64,
             .type = TISCI_RESASG_UTYPE (TISCI_DEV_MCU_NAVSS0_UDMASS_INTA_0, TISCI_RESASG_SUBTYPE_GLOBAL_EVENT_SEVT),
-            .start_resource = 17224,
+            .start_resource = 17232,
             .host_id = TISCI_HOST_ID_C7X_1,
         },
         {
             .num_resource = 64,
             .type = TISCI_RESASG_UTYPE (TISCI_DEV_MCU_NAVSS0_UDMASS_INTA_0, TISCI_RESASG_SUBTYPE_GLOBAL_EVENT_SEVT),
-            .start_resource = 17288,
+            .start_resource = 17296,
             .host_id = TISCI_HOST_ID_C6X_0_1,
         },
         {
             .num_resource = 64,
             .type = TISCI_RESASG_UTYPE (TISCI_DEV_MCU_NAVSS0_UDMASS_INTA_0, TISCI_RESASG_SUBTYPE_GLOBAL_EVENT_SEVT),
-            .start_resource = 17352,
+            .start_resource = 17360,
             .host_id = TISCI_HOST_ID_C6X_1_1,
         },
         {
             .num_resource = 128,
             .type = TISCI_RESASG_UTYPE (TISCI_DEV_MCU_NAVSS0_UDMASS_INTA_0, TISCI_RESASG_SUBTYPE_GLOBAL_EVENT_SEVT),
-            .start_resource = 17416,
+            .start_resource = 17424,
             .host_id = TISCI_HOST_ID_MAIN_0_R5_0,
         },
         {
             .num_resource = 128,
             .type = TISCI_RESASG_UTYPE (TISCI_DEV_MCU_NAVSS0_UDMASS_INTA_0, TISCI_RESASG_SUBTYPE_GLOBAL_EVENT_SEVT),
-            .start_resource = 17544,
+            .start_resource = 17552,
             .host_id = TISCI_HOST_ID_MAIN_0_R5_2,
         },
         {
-            .num_resource = 248,
+            .num_resource = 240,
             .type = TISCI_RESASG_UTYPE (TISCI_DEV_MCU_NAVSS0_UDMASS_INTA_0, TISCI_RESASG_SUBTYPE_GLOBAL_EVENT_SEVT),
-            .start_resource = 17672,
+            .start_resource = 17680,
             .host_id = TISCI_HOST_ID_ALL,
         },
         {
@@ -1885,12 +1890,6 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
             .type = TISCI_RESASG_UTYPE (TISCI_DEV_MCU_NAVSS0_RINGACC0, TISCI_RESASG_SUBTYPE_RA_VIRTID),
             .start_resource = 3,
             .host_id = TISCI_HOST_ID_A72_3,
-        },
-        {
-            .num_resource = 4,
-            .type = TISCI_RESASG_UTYPE (TISCI_DEV_MCU_NAVSS0_RINGACC0, TISCI_RESASG_SUBTYPE_RA_VIRTID),
-            .start_resource = 4,
-            .host_id = TISCI_HOST_ID_ALL,
         },
         {
             .num_resource = 3,
