@@ -211,6 +211,11 @@ int32_t Udma_eventRegister(Udma_DrvHandle drvHandle,
                     eventPrms->coreIntrNum    =
                         eventHandle->eventPrms.masterEventHandle->coreIntrNum;
                 }
+                /* Copy the same info to eventHandle->eventPrms*/
+                eventHandle->eventPrms.intrStatusReg   = eventPrms->intrStatusReg;
+                eventHandle->eventPrms.intrClearReg    = eventPrms->intrClearReg;
+                eventHandle->eventPrms.intrMask        = eventPrms->intrMask;
+                eventHandle->eventPrms.coreIntrNum     = eventPrms->coreIntrNum;
             }
         }
     }
