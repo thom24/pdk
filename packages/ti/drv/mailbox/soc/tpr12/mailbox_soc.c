@@ -936,7 +936,7 @@ static void Mailbox_boxFullISR(uintptr_t arg)
                 }
                 else
                 {
-                    Mailbox_Driver* driver = remoteCfg->handleArray[id];
+                    Mailbox_Driver* driver = (Mailbox_Driver*) remoteCfg->handleArray[id];
                     driver->remoteCfgPtr->readChIDInUse = driver->cfg.chId;
                     Mailbox_boxFullISRProcessing(driver);
                 }
