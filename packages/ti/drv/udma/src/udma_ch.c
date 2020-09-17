@@ -320,7 +320,7 @@ int32_t Udma_chConfigTx(Udma_ChHandle chHandle, const Udma_ChTxPrms *txPrms)
                                           TISCI_MSG_VALUE_RM_UDMAP_CH_TX_FILT_EINFO_VALID |
                                           TISCI_MSG_VALUE_RM_UDMAP_CH_TX_FILT_PSWORDS_VALID |
                                           TISCI_MSG_VALUE_RM_UDMAP_CH_TX_SUPR_TDPKT_VALID |
-                                          TISCI_MSG_VALUE_RM_UDMAP_CH_TX_FDEPTH_VALID |
+                                       /* TISCI_MSG_VALUE_RM_UDMAP_CH_TX_FDEPTH_VALID |         TODO: Enable when Bug SYSFW-4176 is fixed*/
                                           TISCI_MSG_VALUE_RM_UDMAP_CH_BURST_SIZE_VALID |
                                           TISCI_MSG_VALUE_RM_UDMAP_CH_TX_CREDIT_COUNT_VALID;
         rmUdmaTxReq.nav_id              = drvHandle->devIdUdma;
@@ -333,6 +333,8 @@ int32_t Udma_chConfigTx(Udma_ChHandle chHandle, const Udma_ChTxPrms *txPrms)
         rmUdmaTxReq.tx_priority         = txPrms->busPriority;
         rmUdmaTxReq.tx_qos              = txPrms->busQos;
         rmUdmaTxReq.tx_orderid          = txPrms->busOrderId;
+        /* fdepth is not marked as valid param due to Bug SYSFW-4176.
+         * So this param dosen't have any effect. */
         rmUdmaTxReq.fdepth              = txPrms->fifoDepth;
         rmUdmaTxReq.tx_burst_size       = txPrms->burstSize;
         rmUdmaTxReq.tx_sched_priority   = txPrms->dmaPriority;

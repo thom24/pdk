@@ -310,14 +310,17 @@ typedef struct
      *   While the maximum depth of the Tx FIFO is set at design time,
      *   the FIFO depth can be artificially reduced in order to control the
      *   maximum latency which can be introduced due to buffering effects.
-     *
-     *   The maximum FIFO depth suppported depends on the channel type as
-     *   given below:
+     *  
+     *   NOTE: Currently, UDMA driver dosen't support this feature due to the Bug 
+     *   SYSFW-4176 (#Sciclient_rmUdmapTxChCfg corrupts TX Ch FIFO Depth Register).
+     *   ie, It dosen't configure TCHAN_TFIFO_DEPTH register.
+     *   Therefore, Even if this parameter is passed it will be neglected.
+     *   And FIFO Depth will be set to the default value depending on the channel type
+     *   as given below: 
      *   Normal Capacity Channel        - CSL_NAVSS_UDMAP_TX_CHANS_FDEPTH (128 bytes)
      *   High Capacity Channel          - CSL_NAVSS_UDMAP_TX_HC_CHANS_FDEPTH (1024 bytes)
      *   Ultra High Capacity Channel    - CSL_NAVSS_UDMAP_TX_UHC_CHANS_FDEPTH (4096 bytes)
      *
-     *   The default init API will set this paramater as per the channel type.
      */
     uint8_t                 burstSize;
     /**< [IN] Specifies the nominal burst size and alignment for data transfers
