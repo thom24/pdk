@@ -43,12 +43,12 @@ MEMORY
     /* MCU0 share locations */
     OCMRAM  (RWIX)          : origin=0x41C00100 length=0x80000 - 0x1100      /* ~510KB */
 
-    /* j721e MCMS3 locations */
-    /* j721e Reserved Memory for ARM Trusted Firmware */
+    /* j7200 MCMS3 locations */
+    /* j7200 Reserved Memory for ARM Trusted Firmware */
     MSMC3_ARM_FW   (RWIX)   : origin=0x70000000 length=0x40000         /* 256KB */
-    MSMC3   (RWIX)          : origin=0x70040000 length=0x100000        /* 8MB - 320KB */
-    /* j721e Reserved Memory for DMSC Firmware */
-    MSMC3_DMSC_FW  (RWIX)   : origin=0x707F0000 length=0x10000         /* 64KB */
+    MSMC3   (RWIX)          : origin=0x70040000 length=0x40000         /* 256KB for diag framework */
+    /* j7200 Reserved Memory for DMSC Firmware */
+    MSMC3_DMSC_FW  (RWIX)   : origin=0x700F0000 length=0x10000         /* 64KB */
 
     DDR0    (RWIX)          : origin=0x80000000 length=0x80000000      /* 2GB */
 }

@@ -46,7 +46,7 @@ MEMORY
     /* j7200 MCMS3 locations */
     /* j7200 Reserved Memory for ARM Trusted Firmware */
     MSMC3_ARM_FW   (RWIX)   : origin=0x70000000 length=0x40000         /* 256KB */
-    MSMC3   (RWIX)          : origin=0x70040000 length=0xB0000         /* 1MB - 320KB */
+    MSMC3   (RWIX)          : origin=0x70080000 length=0x70000         /* 448KB for diag */
     /* j7200 Reserved Memory for DMSC Firmware */
     MSMC3_DMSC_FW  (RWIX)   : origin=0x700F0000 length=0x10000         /* 64KB */
 
@@ -73,10 +73,11 @@ SECTIONS
     .data          : {} palign(128)    > MSMC3
     .boardcfg_data : {} palign(128)    > MSMC3
     .sysmem        : {}                > MSMC3
-    .data_buffer   : {} palign(128)    > MSMC3
+    .data_buffer   : {} palign(128)    > DDR0
 
     /* USB or any other LLD buffer for benchmarking */
     .benchmark_buffer (NOLOAD) {} ALIGN (8) > MSMC3
+	uartbuffer (NOLOAD) {} ALIGN (8) > DDR0
 
     .stack      : {} align(4)       > MSMC3  (HIGH)
     .irqStack   : {. = . + __IRQ_STACK_SIZE;} align(4)      > MSMC3  (HIGH)
