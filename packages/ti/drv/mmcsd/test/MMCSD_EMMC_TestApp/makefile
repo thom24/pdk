@@ -11,6 +11,9 @@ export DISABLE_RECURSE_DEPS
 APP_NAME = MMCSD_EMMC_TestApp
 # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
 LOCAL_APP_NAME = MMCSD_$(BOARD)_EMMC_$(CORE)TestApp
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
+    LOCAL_APP_NAME =  MMCSD_EMMC_TestApp_$(CORE)
+endif
 
 ifeq ($(SOC),$(filter $(SOC), am65xx))
 SRCDIR = ../src ../../
