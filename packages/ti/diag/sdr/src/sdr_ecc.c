@@ -274,6 +274,7 @@ static void SDR_ECC_handleEccAggrEvent (SDR_ECC_MemType eccMemType, uint32_t err
     bool eventFound = ((bool)false);
     bool eventFound1;
     int32_t cslResult;
+    uint32_t selfTestErrorSrc;
 
     SDR_ECC_getAggrBaseAddr(eccMemType, &eccAggrRegs);
 
@@ -348,10 +349,16 @@ static void SDR_ECC_handleEccAggrEvent (SDR_ECC_MemType eccMemType, uint32_t err
                                                                  bitErrCnt);
             }
 
-            /* If it matches self test set flag */
-            if ((errorSrc
-                 == SDR_ECC_getDetectErrorSource(SDR_ECC_instance[eccMemType].eccSelfTestErrorType))
-                 && (ramId == SDR_ECC_instance[eccMemType].eccSelfTestRamId)) {
+            /* Check If it matches self test set flag.
+             * NOTE: For EDC interconnect type single bit error injection with parity checker type
+             *       Single bit error injection can result in Uncorrectable (double bit) error event
+             */
+            selfTestErrorSrc = SDR_ECC_getDetectErrorSource(SDR_ECC_instance[eccMemType].eccSelfTestErrorType);
+            if (((errorSrc == selfTestErrorSrc)
+                 || ((ramIdType == SDR_ECC_RAM_ID_TYPE_INTERCONNECT)
+                     && (selfTestErrorSrc == CSL_ECC_AGGR_INTR_SRC_SINGLE_BIT)
+                     && (errorSrc == CSL_ECC_AGGR_INTR_SRC_DOUBLE_BIT)))
+                && (ramId == SDR_ECC_instance[eccMemType].eccSelfTestRamId)) {
 
                  SDR_ECC_instance[eccMemType].eccErrorFlag = SDR_ECC_ERROR_FLAG_TRIGGERED;
             } else {
