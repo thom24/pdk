@@ -95,41 +95,6 @@ int32_t udmaTestInitDriver(UdmaTestObj *testObj)
         initPrms.virtToPhyFxn       = &Udma_appVirtToPhyFxn;
         initPrms.phyToVirtFxn       = &Udma_appPhyToVirtFxn;
         initPrms.printFxn           = &udmaDrvPrint;
-        /* Override RM params for HC and UHC blockcpy channels as they are not
-         * part of default table */
-#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
-        if(UDMA_INST_ID_MAIN_0 == instId)
-        {
-            initPrms.rmInitPrms.startBlkCopyUhcCh = UDMA_TEST_MAIN_UHC_START;
-            initPrms.rmInitPrms.numBlkCopyUhcCh   = UDMA_TEST_MAX_MAIN_BC_UHC_CH;
-            initPrms.rmInitPrms.startBlkCopyHcCh  = UDMA_TEST_MAIN_HC_START;
-            initPrms.rmInitPrms.numBlkCopyHcCh    = UDMA_TEST_MAX_MAIN_BC_HC_CH;
-        }
-        if(UDMA_INST_ID_MCU_0 == instId)
-        {
-            initPrms.rmInitPrms.startBlkCopyUhcCh = UDMA_TEST_MCU_UHC_START;
-            initPrms.rmInitPrms.numBlkCopyUhcCh   = UDMA_TEST_MAX_MCU_BC_UHC_CH;
-            initPrms.rmInitPrms.startBlkCopyHcCh  = UDMA_TEST_MCU_HC_START;
-            initPrms.rmInitPrms.numBlkCopyHcCh    = UDMA_TEST_MAX_MCU_BC_HC_CH;
-        }
-#endif
-#if (UDMA_SOC_CFG_LCDMA_PRESENT == 1)
-        if(UDMA_INST_ID_BCDMA_0 == instId)
-        {
-            initPrms.rmInitPrms.startBlkCopyUhcCh = UDMA_TEST_BCDMA_UHC_START;
-            initPrms.rmInitPrms.numBlkCopyUhcCh   = UDMA_TEST_MAX_BCDMA_BC_UHC_CH;
-            initPrms.rmInitPrms.startBlkCopyHcCh  = UDMA_TEST_BCDMA_HC_START;
-            initPrms.rmInitPrms.numBlkCopyHcCh    = UDMA_TEST_MAX_BCDMA_BC_HC_CH;
-        }
-        if(UDMA_INST_ID_PKTDMA_0 == instId)
-        {
-            initPrms.rmInitPrms.startBlkCopyUhcCh = UDMA_TEST_PKTDMA_UHC_START;
-            initPrms.rmInitPrms.numBlkCopyUhcCh   = UDMA_TEST_MAX_PKTDMA_BC_UHC_CH;
-            initPrms.rmInitPrms.startBlkCopyHcCh  = UDMA_TEST_PKTDMA_HC_START;
-            initPrms.rmInitPrms.numBlkCopyHcCh    = UDMA_TEST_MAX_PKTDMA_BC_HC_CH;
-        }
-#endif
-
         retVal += Udma_init(drvHandle, &initPrms);
         if(UDMA_SOK != retVal)
         {
