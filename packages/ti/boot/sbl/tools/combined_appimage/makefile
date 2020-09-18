@@ -32,7 +32,7 @@ comma := ,
 space := $(subst ,, )
 
 # Interleave two lists into one list (space-separated)
-zip = $(subst :, $(space), $(join $1, $(addprefix :, $2)))
+zip = $(subst ;, $(space), $(join $1, $(addprefix ;, $2)))
 
 # Split a comma-separated list into a space-separated list
 split = $(subst $(comma), ,$1)
