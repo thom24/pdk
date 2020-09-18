@@ -260,23 +260,7 @@ Udma_DrvHandle UartApp_udmaInit(UART_HwAttrs *cfg)
 #endif
 
         UdmaInitPrms_init(instId, &initPrms);
-#if defined(SOC_J721E) || defined(SOC_J7200)
-        /*
-         * Modify the default virtual interrupt configuration
-         * in UDMA RM table to support DMA mode, since UART
-         * DMA example uses more than two DMA events which
-         * requires numVintr > 2
-         */
-#if defined (BUILD_MCU2_1)
-        initPrms.rmInitPrms.startVintr = 226U;
-        initPrms.rmInitPrms.numVintr = 18U;
-#endif
-#if (defined (BUILD_MCU1_1) || defined(BUILD_MCU1_0))
-        initPrms.rmInitPrms.startVintr = 124U;
-        initPrms.rmInitPrms.numVintr = 4U;
-#endif
 
-#endif
         retVal = Udma_init(&gUdmaDrvObj, &initPrms);
         if(UDMA_SOK == retVal)
         {
