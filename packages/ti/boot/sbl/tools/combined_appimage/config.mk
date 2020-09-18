@@ -83,7 +83,8 @@ GCC_LINUX_ARM_PATH ?= $(SDK_INSTALL_PATH)/gcc-arm-$(GCC_ARCH64_VERSION)-x86_64-a
 ATF_IMG    ?= mpu1_0,$(HLOS_BIN_PATH)/bl31.bin,0x70000000,0x70000000
 OPTEE_IMG  ?= load_only,$(HLOS_BIN_PATH)/bl32.bin,0x9e800000,0x9e800000
 KERNEL_IMG ?= load_only,$(HLOS_BIN_PATH)/Image,0x80080000,0x80080000
-DTB_IMG    ?= load_only,$(HLOS_BIN_PATH)/base-board.dtb,0x82000000,0x82000000
+# Use board-specific pre-built DTBs to ensure SD card filesystem is used for Linux boot
+DTB_IMG    ?= load_only,$(mkfile_dir)bin/$(BOARD)/base-board.dtb,0x82000000,0x82000000
 SPL_IMG    ?= load_only,$(HLOS_BIN_PATH)/u-boot-spl.bin,0x80080000,0x80080000
 
 #################################################################################
