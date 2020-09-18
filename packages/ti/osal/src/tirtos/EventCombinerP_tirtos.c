@@ -50,6 +50,7 @@
 #include <ti/sysbios/family/c66/tci66xx/CpIntc.h>
 #include <ti/sysbios/family/c64p/EventCombiner.h>
 #include <ti/sysbios/family/c64p/Hwi.h>
+#include <ti/csl/src/intc/csl_intcAux.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -204,6 +205,19 @@ int32_t EventCombinerP_enableEvent(uint32_t eventNum)
     EventCombiner_enableEvent(eventNum);
     return OSAL_EVTCOMBINE_GROUPREG_SUCCESS;
 
+}
+/**************************************************************************
+   Description: Clear a particular event Number inside the Event Combiner
+
+   Argument: eventNum: The event number(4-127) to disable inside
+             the event combiner
+
+    Returns: OSAL_EVTCOMBINE_GROUPREG_SUCCESS
+****************************************************************************/
+int32_t EventCombinerP_clearEvent(uint32_t eventNum)
+{
+    CSL_intcEventClear(eventNum);
+    return OSAL_EVTCOMBINE_GROUPREG_SUCCESS;
 }
 /**************************************************************************
     Description: Plugs a event's(4-127) to the EventCombiner's dispatcher

@@ -369,21 +369,19 @@ void Osal_DisableInterrupt(int32_t corepacEvent,int32_t interruptNum)
  */
 void Osal_ClearInterrupt(int32_t corepacEvent,int32_t interruptNum)
 {
-    int32_t intNum=interruptNum;
 #ifdef _TMS320C6X
     if(interruptNum==OSAL_REGINT_INTVEC_EVENT_COMBINER) {
-        int32_t groupNum=corepacEvent/32;
      /* If this is called from a module which uses event combiner,
-      * get the corresponding interrupt number for that particular event
-      * before proceeding to clear it */
-        intNum=EventCombinerP_getIntNum(groupNum);
-     }
-     /* Clear the interrupt */
-     HwiP_clearInterrupt(intNum);
-
+      * Just clear the event inside the event combiner and
+      * not the whole interrupt as it will be used by the event dispatcher */
+        (void)EventCombinerP_clearEvent((uint32_t)corepacEvent);
+    } else {
+      /* This is not an event combiner based interrupt */
+        HwiP_clearInterrupt(interruptNum);
+    }
 #else
     /* For non c66x cases, there is no event combiner , just clear the interruptNum's vector */
-    HwiP_clearInterrupt(intNum);
+    HwiP_clearInterrupt(interruptNum);
 #endif
 }
 

@@ -79,6 +79,14 @@ int32_t EventCombinerP_disableEvent(uint32_t eventId);
 int32_t EventCombinerP_enableEvent(uint32_t eventId);
 
 /*!
+ *  @brief  Function to clear an event inside event combiner
+ *
+ *  @param  eventId  event ID to be cleared in the event combiner
+ *
+ */
+int32_t EventCombinerP_clearEvent(uint32_t eventId);
+
+/*!
  *  @brief  Function to plug an ISR handler to an event inside event combiner
  *
  *  @param  eventId  The event id (4-127)

@@ -168,6 +168,19 @@ int32_t EventCombinerP_disableEvent(uint32_t eventNum)
 	return OSAL_EVTCOMBINE_GROUPREG_SUCCESS;
 }
 /**************************************************************************
+   Description: Clear a particular event Number inside the Event Combiner
+
+   Argument: eventNum: The event number(4-127) to disable inside
+             the event combiner
+
+    Returns: OSAL_EVTCOMBINE_GROUPREG_SUCCESS
+****************************************************************************/
+int32_t EventCombinerP_clearEvent(uint32_t eventNum)
+{
+    CSL_intcEventClear(eventNum);
+    return OSAL_EVTCOMBINE_GROUPREG_SUCCESS;
+}
+/**************************************************************************
     Description: Plugs a event's(4-127) to the EventCombiner's dispatcher
 
     Arguments: eventId: The event number(4-127) 
