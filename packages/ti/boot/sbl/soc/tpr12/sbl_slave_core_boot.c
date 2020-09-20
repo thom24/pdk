@@ -64,6 +64,10 @@
 #include "sbl_uart.h"
 #endif
 
+#if defined(BOOT_QSPI)
+#include "sbl_qspi.h"
+#endif
+
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
@@ -253,6 +257,8 @@ int32_t SBL_ImageCopy(sblEntryPoint_t *pEntry)
 
 #if defined(BOOT_UART)
     if (SBL_UARTBootImage(pEntry) != E_PASS)
+#elif defined(BOOT_QSPI)
+    if (SBL_QSPIBootImage(pEntry) != E_PASS)
 #endif
     {
         retval = E_FAIL;

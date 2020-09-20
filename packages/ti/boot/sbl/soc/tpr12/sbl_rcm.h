@@ -377,6 +377,32 @@ typedef struct Rcm_PllHsDivOutConfig_s
     uint32_t hsDivOutFreqHz[RCM_PLL_HSDIV_OUTPUT_COUNT];
 } Rcm_PllHsDivOutConfig;
 
+#define RCM_EFUSE_QSPICLOCKFREQ_40MHz                                     (0x0U)
+#define RCM_EFUSE_QSPICLOCKFREQ_60MHz                                     (0x1U)
+#define RCM_EFUSE_QSPICLOCKFREQ_80MHz                                     (0x2U)
+
+#define RCM_EFUSE_FLASHCLKMODE_0                                          (0x0U)
+#define RCM_EFUSE_FLASHCLKMODE_3                                          (0x3U)
+
+
+
+typedef struct Rcm_EfuseQspiConfig_s
+{
+    /**
+     * @brief   Efuse value for Flash Clock Mode. Only 1-0 bits are valid
+     *          RCM_EFUSE_FLASHCLKMODE_0    - Phase 0 : Polarity 0
+     *          RCM_EFUSE_FLASHCLKMODE_3    - Phase 1 : Polarity 1
+     */
+    uint8_t           flashClockModeConfig;
+    /**
+     * @brief   Efuse value for QSPI Clock Frequency. Only 1-0 bits are valid
+     *          RCM_EFUSE_QSPICLOCKFREQ_40MHz   - QSPI output clock 40Mhz
+     *          RCM_EFUSE_QSPICLOCKFREQ_60MHz   - QSPI output clock 57.14Mhz
+     *          RCM_EFUSE_QSPICLOCKFREQ_80MHz   - QSPI output clock 80Mhz
+     */
+    uint8_t           QSPIClockFreqConfig;
+} Rcm_EfuseQspiConfig;
+
 
 /**************************************************************************
  ************************* Extern Declarations ****************************
@@ -408,6 +434,8 @@ extern Rcm_Return SBL_RcmSetPeripheralClock(Rcm_PeripheralId PeriphID, Rcm_Perip
 extern uint32_t SBL_RcmGetPeripheralClockFrequency(Rcm_PeripheralClockSource clkSource);
 
 extern Rcm_ResetCause SBL_RcmGetResetCause(void);
+
+extern void SBL_RcmGetEfuseQSPIConfig(Rcm_EfuseQspiConfig *qspiEfuseCfg);
 
 #ifdef __cplusplus
 }

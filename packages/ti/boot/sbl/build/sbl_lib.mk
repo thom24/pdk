@@ -34,6 +34,7 @@ INCDIR	+= $(PDK_SBL_COMP_PATH)/src/mmcsd
 INCDIR	+= $(PDK_SBL_COMP_PATH)/src/uart
 ifeq ($(SOC),$(filter $(SOC), tpr12))
 INCDIR	+= $(PDK_SBL_COMP_PATH)/soc/$(SOC)
+INCDIR	+= $(PDK_SBL_COMP_PATH)/src/qspi
 else
 INCDIR	+= $(PDK_SBL_COMP_PATH)/soc/k3
 endif
@@ -47,6 +48,7 @@ SRCDIR	+=$(PDK_SBL_COMP_PATH)/src/uart
 
 ifeq ($(SOC),$(filter $(SOC), tpr12))
 SRCDIR	+= $(PDK_SBL_COMP_PATH)/soc/$(SOC)
+SRCDIR	+= $(PDK_SBL_COMP_PATH)/src/qspi
 else
 SRCDIR	+= $(PDK_SBL_COMP_PATH)/soc/k3
 endif
@@ -134,6 +136,10 @@ ifeq ($(BOOTMODE), uart)
   SBL_CFLAGS += -DBOOT_UART
 endif # ifeq ($(BOOTMODE), uart)
 
+ifeq ($(BOOTMODE), qspi)
+  SBL_CFLAGS += -DBOOT_QSPI
+endif # ifeq ($(BOOTMODE), qspi)
+
 ifeq ($(filter $(SBL_CFLAGS), -DBOOT_MMCSD), -DBOOT_MMCSD)
   SRCS_COMMON += sbl_mmcsd.c
 endif # ifeq ($(filter $(SBL_CFLAGS), -DBOOT_MMCSD), -DBOOT_MMCSD)
@@ -150,6 +156,9 @@ ifeq ($(filter $(SBL_CFLAGS), -DBOOT_UART), -DBOOT_UART)
   SRCS_COMMON += sbl_uart.c sbl_xmodem.c
 endif # ifeq ($(filter $(SBL_CFLAGS), -DBOOT_UART), -DBOOT_UART)
 
+ifeq ($(filter $(SBL_CFLAGS), -DBOOT_QSPI), -DBOOT_QSPI)
+  SRCS_COMMON += sbl_qspi_boardflash.c
+endif # ifeq ($(filter $(SBL_CFLAGS), -DBOOT_QSPI), -DBOOT_QSPI)
 
 # Core/SoC/platform specific source files and CFLAGS
 # Example:

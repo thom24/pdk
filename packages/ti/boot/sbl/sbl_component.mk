@@ -105,6 +105,7 @@ else
   else
 	ifeq ($(SOC), tpr12)
       sbl_LIB_LIST = sbl_lib_uart
+      sbl_LIB_LIST += sbl_lib_qspi sbl_lib_qspi_nondma
 	else
       sbl_LIB_LIST = sbl_lib_mmcsd sbl_lib_ospi sbl_lib_uart sbl_lib_hyperflash sbl_lib_cust
       sbl_LIB_LIST += sbl_lib_mmcsd_hlos sbl_lib_ospi_hlos sbl_lib_hyperflash_hlos
@@ -126,7 +127,7 @@ else
     sbl_EXAMPLE_LIST = sbl_mmcsd_img sbl_mmcsd_img_hlos sbl_ospi_img sbl_ospi_img_hlos sbl_uart_img
   else
     ifeq ($(SOC), tpr12)
-      sbl_EXAMPLE_LIST = sbl_uart_img
+      sbl_EXAMPLE_LIST = sbl_uart_img sbl_qspi_img
     else
       sbl_EXAMPLE_LIST = sbl_uart_img
       sbl_EXAMPLE_LIST += sbl_mmcsd_img sbl_mmcsd_img_hlos sbl_ospi_img sbl_ospi_img_hlos sbl_hyperflash_img sbl_hyperflash_img_hlos
@@ -357,6 +358,49 @@ export sbl_lib_uart_SOCLIST
 export sbl_lib_uart_BOARDLIST
 sbl_lib_uart_$(SOC)_CORELIST = mcu1_0
 export sbl_lib_uart_$(SOC)_CORELIST
+
+# SBL QSPI LIB
+sbl_lib_qspi_COMP_LIST = sbl_lib_qspi
+sbl_lib_qspi_RELPATH = ti/boot/sbl
+export sbl_lib_qspi_OBJPATH = ti/boot/sbl/qspi
+sbl_lib_qspi_LIBNAME = sbl_lib_qspi
+sbl_lib_qspi_PATH = $(PDK_SBL_COMP_PATH)
+sbl_lib_qspi_LIBPATH = $(PDK_SBL_COMP_PATH)/lib/qspi
+sbl_lib_qspi_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_lib.mk BOOTMODE=qspi SBL_USE_DMA=yes
+export sbl_lib_qspi_MAKEFILE
+export sbl_lib_qspi_LIBNAME
+export sbl_lib_qspi_LIBPATH
+sbl_lib_qspi_BOARD_DEPENDENCY = yes
+sbl_lib_qspi_SOC_DEPENDENCY = yes
+sbl_lib_qspi_CORE_DEPENDENCY = no
+export sbl_lib_qspi_COMP_LIST
+export sbl_lib_qspi_BOARD_DEPENDENCY
+export sbl_lib_qspi_CORE_DEPENDENCY
+sbl_lib_qspi_PKG_LIST = sbl_lib_qspi
+sbl_lib_qspi_INCLUDE = $(sbl_lib_qspi_PATH)
+sbl_lib_qspi_SOCLIST = tpr12
+sbl_lib_qspi_BOARDLIST = tpr12_evm
+export sbl_lib_qspi_SOCLIST
+export sbl_lib_qspi_BOARDLIST
+sbl_lib_qspi_$(SOC)_CORELIST = mcu1_0
+export sbl_lib_qspi_$(SOC)_CORELIST
+
+# SBL QSPI LIB with NON-DMA - Needed for HS SBL, etc.
+export sbl_lib_qspi_nondma_COMP_LIST = sbl_lib_qspi_nondma
+sbl_lib_qspi_nondma_RELPATH = ti/boot/sbl
+export sbl_lib_qspi_nondma_OBJPATH = ti/boot/sbl/qspi_nondma
+sbl_lib_qspi_nondma_PATH = $(PDK_SBL_COMP_PATH)
+export sbl_lib_qspi_nondma_LIBNAME = sbl_lib_qspi_nondma
+export sbl_lib_qspi_nondma_LIBPATH = $(PDK_SBL_COMP_PATH)/lib/qspi
+export sbl_lib_qspi_nondma_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_lib.mk BOOTMODE=qspi SBL_USE_DMA=no
+export sbl_lib_qspi_nondma_BOARD_DEPENDENCY = yes
+export sbl_lib_qspi_nondma_SOC_DEPENDENCY = yes
+export sbl_lib_qspi_nondma_CORE_DEPENDENCY = no
+sbl_lib_qspi_nondma_PKG_LIST = sbl_lib_qspi_nondma
+sbl_lib_qspi_nondma_INCLUDE = $(sbl_lib_qspi_nondma_PATH)
+export sbl_lib_qspi_nondma_SOCLIST = tpr12
+export sbl_lib_qspi_nondma_BOARDLIST = tpr12_evm
+export sbl_lib_qspi_nondma_$(SOC)_CORELIST = mcu1_0
 
 #
 # SBL Examples
@@ -699,6 +743,32 @@ sbl_uart_img_hs_INCLUDE = $(sbl_uart_img_hs_PATH)
 export sbl_uart_img_hs_BOARDLIST = $(sbl_BOARDLIST)
 export sbl_uart_img_hs_$(SOC)_CORELIST = mcu1_0
 export sbl_uart_img_hs_SBL_IMAGEGEN = yes
+
+# SBL QSPI Image
+ifeq ($(SOC), tpr12)
+sbl_qspi_img_COMP_LIST = sbl_qspi_img
+sbl_qspi_img_RELPATH = ti/boot/sbl/board/tpr12
+sbl_qspi_img_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)/qspi/bin
+sbl_qspi_img_PATH = $(PDK_SBL_COMP_PATH)/board/evmTPR12
+sbl_qspi_img_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=qspi SBL_USE_DMA=yes BUILD_HS=no
+export sbl_qspi_img_MAKEFILE
+export sbl_qspi_img_SBL_CERT_KEY=$(SBL_CERT_KEY)
+sbl_qspi_img_BOARD_DEPENDENCY = yes
+sbl_qspi_img_SOC_DEPENDENCY = yes
+sbl_qspi_img_CORE_DEPENDENCY = no
+export sbl_qspi_img_COMP_LIST
+export sbl_qspi_img_BOARD_DEPENDENCY
+export sbl_qspi_img_SOC_DEPENDENCY
+export sbl_qspi_img_CORE_DEPENDENCY
+sbl_qspi_img_PKG_LIST = sbl
+sbl_qspi_img_INCLUDE = $(sbl_qspi_img_PATH)
+sbl_qspi_img_BOARDLIST = tpr12_evm
+export sbl_qspi_img_BOARDLIST
+sbl_qspi_img_$(SOC)_CORELIST = mcu1_0
+export sbl_qspi_img_$(SOC)_CORELIST
+sbl_qspi_img_SBL_IMAGEGEN = yes
+export sbl_qspi_img_SBL_IMAGEGEN
+endif
 
 # Individual Core Boot Test (Ordered)
 sbl_boot_test_ordered_COMP_LIST = sbl_boot_test_ordered

@@ -848,6 +848,42 @@ uint8_t CSL_TopCtrl_readPERADPLLTrimValidEfuse (const CSL_top_ctrlRegs* ptrTopCt
 /**
  *  @b Description
  *  @n
+ *      The function is read the Efuse row config for QSPI Clock Frequency
+ *
+ *  @param[in] ptrTopCtrlRegs
+ *      Pointer to the MSS TOP CTRL Registers base address
+ *
+ *  @retval
+ *      Efuse Row Value for QSPI Clock Frequency.
+ */
+uint8_t CSL_TopCtrl_readQSPIClkFreqEfuse (const CSL_top_ctrlRegs * ptrTopCtrlRegs)
+{
+    return (CSL_extract8 (ptrTopCtrlRegs->EFUSE1_ROW_11, \
+                          QSPIFREQCONFIG_END_BIT, \
+                          QSPIFREQCONFIG_START_BIT));
+}
+
+/**
+ *  @b Description
+ *  @n
+ *      The function is read the Efuse row config for Flash Mode
+ *
+ *  @param[in] ptrTopCtrlRegs
+ *      Pointer to the MSS TOP CTRL Registers base address
+ *
+ *  @retval
+ *      Efuse Row Value for FLash Mode.
+ */
+uint8_t CSL_TopCtrl_readFlashModeEfuse (const CSL_top_ctrlRegs * ptrTopCtrlRegs)
+{
+    return (CSL_extract8 (ptrTopCtrlRegs->EFUSE1_ROW_11, \
+                          FLASHMODECONFIG_END_BIT, \
+                          FLASHMODECONFIG_START_BIT));
+}
+
+/**
+ *  @b Description
+ *  @n
  *      The function is used to enable the access to the IO-Mux register space
  *
  *  @param[in] ptrIOMuxRegs
@@ -3187,4 +3223,16 @@ static uint32_t SBL_RcmADPLLJGetFOut(uint32_t Finp, uint32_t N, uint32_t M, uint
     }
     return FOut;
 }
+
+void SBL_RcmGetEfuseQSPIConfig(Rcm_EfuseQspiConfig *qspiEfuseCfg)
+{
+    CSL_top_ctrlRegs* ptrTopCtrlRegs;
+
+    ptrTopCtrlRegs = CSL_TopCtrl_getBaseAddress ();
+
+    qspiEfuseCfg->QSPIClockFreqConfig  = CSL_TopCtrl_readQSPIClkFreqEfuse(ptrTopCtrlRegs);
+    qspiEfuseCfg->flashClockModeConfig = CSL_TopCtrl_readFlashModeEfuse(ptrTopCtrlRegs);
+
+}
+
 

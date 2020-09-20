@@ -365,6 +365,7 @@ int main()
 
 #if !defined(SBL_SKIP_PINMUX_ENABLE)
     SBL_UARTAPinmuxConfig();
+    SBL_QSPIPinmuxConfig();
 #endif
 
 #if !defined(SBL_SKIP_LATE_INIT)

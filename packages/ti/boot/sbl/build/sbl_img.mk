@@ -96,6 +96,10 @@ ifeq ($(BOOTMODE), uart)
   SBL_CFLAGS += -DBOOT_UART
 endif # ifeq ($(BOOTMODE), uart)
 
+ifeq ($(BOOTMODE), qspi)
+  SBL_CFLAGS += -DBOOT_QSPI
+endif # ifeq ($(BOOTMODE), qspi)
+
 ifeq ($(filter $(SBL_CFLAGS), -DBOOT_MMCSD), -DBOOT_MMCSD)
   COMP_LIST_COMMON += mmcsd fatfs_indp
 endif # ifeq ($(filter $(SBL_CFLAGS), -DBOOT_MMCSD), -DBOOT_MMCSD)
@@ -111,6 +115,15 @@ else
   COMP_LIST_COMMON += spi
 endif # ifeq ($(filter $(SBL_CFLAGS), -DSBL_USE_DMA=1), -DSBL_USE_DMA=1)
 endif # ifeq ($(filter $(SBL_CFLAGS), -DBOOT_OSPI), -DBOOT_OSPI)
+
+ifeq ($(filter $(SBL_CFLAGS), -DBOOT_QSPI), -DBOOT_QSPI)
+ifeq ($(filter $(SBL_CFLAGS), -DSBL_USE_DMA=1), -DSBL_USE_DMA=1)
+  COMP_LIST_COMMON += spi_dma
+else
+  COMP_LIST_COMMON += spi
+endif # ifeq ($(filter $(SBL_CFLAGS), -DSBL_USE_DMA=1), -DSBL_USE_DMA=1)
+endif # ifeq ($(filter $(SBL_CFLAGS), -DBOOT_OSPI), -DBOOT_OSPI)
+
 
 SRCS_COMMON += sbl_main.c
 

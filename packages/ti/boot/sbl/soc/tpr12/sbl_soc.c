@@ -543,6 +543,8 @@ void SBL_SocLateInit(void)
 void SBL_moduleClockInit(void)
 {
     Rcm_Return retVal;
+    Rcm_EfuseQspiConfig qspiCfg;
+    uint32_t qspiClkFreq;
 
     /* Generate 96 MHz CSIRX Control Clock */
     //HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE+CSIRX_CLK_SRC_SEL, 0x222);
@@ -582,7 +584,22 @@ void SBL_moduleClockInit(void)
 
     //HW_WR_REG32(CSL_MSS_RCM_U_BASE+MSS_QSPI_CLK_DIV_VAL, 0x444);  //MSS_QSPI_CLK_DIV_VAL_CLKDIVR   = 0x444; 400/5
     //HW_WR_REG32(CSL_MSS_RCM_U_BASE+MSS_QSPI_CLK_SRC_SEL, 0x444);  //MSS_QSPI_CLK_SRC_SEL_CLKSRCSEL = 0x444;
-    retVal = SBL_RcmSetPeripheralClock(Rcm_PeripheralId_MSS_QSPI, Rcm_PeripheralClockSource_DPLL_CORE_HSDIV0_CLKOUT2, SBL_QSPI_FREQ_HZ);
+    SBL_RcmGetEfuseQSPIConfig(&qspiCfg);
+    switch (qspiCfg.QSPIClockFreqConfig)
+    {
+        case RCM_EFUSE_QSPICLOCKFREQ_40MHz:
+            qspiClkFreq = SBL_FREQ_MHZ2HZ(40U);
+            break;
+        case RCM_EFUSE_QSPICLOCKFREQ_60MHz:
+            qspiClkFreq = SBL_FREQ_MHZ2HZ(60U);
+            break;
+        case RCM_EFUSE_QSPICLOCKFREQ_80MHz:
+            qspiClkFreq = SBL_FREQ_MHZ2HZ(80U);
+            break;
+        default:
+            qspiClkFreq = SBL_QSPI_FREQ_HZ;
+    }
+    retVal = SBL_RcmSetPeripheralClock(Rcm_PeripheralId_MSS_QSPI, Rcm_PeripheralClockSource_DPLL_CORE_HSDIV0_CLKOUT2, qspiClkFreq);
     DebugP_assert(retVal == Rcm_Return_SUCCESS);
 
     //HW_WR_REG32(CSL_MSS_RCM_U_BASE+MSS_SPIA_CLK_DIV_VAL, 0x000);  //MSS_SPIA_CLK_DIV_VAL_CLKDIVR = 0x000;   200/1
