@@ -63,7 +63,7 @@
 #include "board.h"
 #include "board_cfg.h"
 
-#if (defined(SOC_K2G) || defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_AM64X))
+#if (defined(SOC_K2G) || defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_AM64X) || defined(SOC_J7200))
 #include "diag_common_cfg.h"
 #endif
 
@@ -182,8 +182,13 @@ static int8_t BoardDiag_socConfig(void);
  **********************************************************************/
 
 MMCSD_Handle handle = NULL;
+#if defined(DIAG_STRESS_TEST) && defined(j7200_evm)
+static uint8_t tx[SECTORSIZE*TESTSECTORS] __attribute__ ((section (".data_buffer")));
+static uint8_t rx[SECTORSIZE*TESTSECTORS] __attribute__ ((section (".data_buffer")));
+#else
 static uint8_t tx[SECTORSIZE * TESTSECTORS];
 static uint8_t rx[SECTORSIZE * TESTSECTORS];
+#endif
 
 /* ========================================================================== */
 /*                          Function Definitions                              */

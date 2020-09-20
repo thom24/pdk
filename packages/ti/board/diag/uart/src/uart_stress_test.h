@@ -52,7 +52,11 @@
 #include "board_cfg.h"
 #include "diag_common_cfg.h"
 
-#if defined(SOC_AM65XX)
+#if defined(j721e_evm) || defined(j7200_evm)
+#include "board_control.h"
+#endif
+
+#if defined(SOC_AM65XX) || defined(SOC_J7200)
 #include "board_i2c_io_exp.h"
 #endif
 

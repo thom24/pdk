@@ -77,7 +77,7 @@ SECTIONS
 
     /* USB or any other LLD buffer for benchmarking */
     .benchmark_buffer (NOLOAD) {} ALIGN (8) > MSMC3
-
+	uartbuffer (NOLOAD) {} ALIGN (8) > DDR0
     .stack      : {} align(4)       > MSMC3  (HIGH)
     .irqStack   : {. = . + __IRQ_STACK_SIZE;} align(4)      > MSMC3  (HIGH)
     RUN_START(__IRQ_STACK_START)

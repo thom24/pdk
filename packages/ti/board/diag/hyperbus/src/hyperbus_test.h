@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2019-2020 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -63,12 +63,18 @@ extern "C" {
 #define BOARD_DIAG_HPB_GPIO_VAL_LOW                 (0U)
 #define BOARD_DIAG_HPB_GPIO_VAL_HIGH                (1U)
 
-#define BOARD_DIAG_HPB_TEST_BYTES                   (512U)
-
+#ifdef DIAG_STRESS_TEST
+#define BOARD_DIAG_HPB_CHIP_ERASE                   (-1U)
+/* Hyper Flash verification offsets */
+#define BOARD_DIAG_HPB_FIRST_VERIFY_ADDR            (0x0U)
+#define BOARD_DIAG_HPB_LAST_VERIFY_ADDR             (0x03FC0000U) /* Starting Offset of last sector */
+#define BOARD_DIAG_HPB_TEST_BYTES                   (256U * 1024U) /* One sector */
+#else
 /* Hyper Flash verification offsets */
 #define BOARD_DIAG_HPB_FIRST_VERIFY_ADDR            (0x0U)
 #define BOARD_DIAG_HPB_LAST_VERIFY_ADDR             (0x3FFFE00U) /* Starting Offset of last 512 bytes */
 #define BOARD_DIAG_HPB_TEST_BYTES                   (512U)
+#endif
 
 /**
  * \brief   The function performs the Hyperbus Diagnostic test.

@@ -29,6 +29,7 @@ REGION_ALIAS("REGION_ARM_EXTAB", MSMC_MPU1);
 REGION_ALIAS("REGION_TEXT_STARTUP", MSMC_MPU1);
 REGION_ALIAS("REGION_DATA_BUFFER", MSMC_MPU1);
 REGION_ALIAS("IPC_DATA_BUFFER_1", MSMC_MPU1);
+REGION_ALIAS("REGION_UART_BUFFER", DDR_MPU1);
 
 SECTIONS {
 
@@ -112,6 +113,12 @@ SECTIONS {
     /* USB or any other LLD buffer for benchmarking */
     .benchmark_buffer (NOLOAD) : ALIGN (32) {
     } > MSMC_MPU1
+
+    uartbuffer (NOLOAD):
+    {
+        . = ALIGN(8);
+        *(uartbuffer*)
+    } > REGION_UART_BUFFER AT> REGION_UART_BUFFER
 
     .bss:frameBuffer (NOLOAD) : ALIGN (32) {
     } > MSMC_MPU1

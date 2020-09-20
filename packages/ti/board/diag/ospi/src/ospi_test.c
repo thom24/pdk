@@ -51,11 +51,19 @@
 #include "ospi_test.h"
 #include <ti/board/src/flash/nor/nor.h>
 
+#if (defined(DIAG_STRESS_TEST) && defined(j7200_evm))
+/* Buffer containing the known data that needs to be written to flash */
+uint8_t txBuf[MAX_BUFF_SIZE] __attribute__ ((section (".data_buffer")));
+/* Buffer containing the received data */
+uint8_t rxBuf[MAX_BUFF_SIZE] __attribute__ ((section (".data_buffer")));
+uint8_t verifyBuf[MAX_BUFF_SIZE] __attribute__ ((section (".data_buffer")));
+#else
 /* Buffer containing the known data that needs to be written to flash */
 uint8_t txBuf[MAX_BUFF_SIZE];
 /* Buffer containing the received data */
 uint8_t rxBuf[MAX_BUFF_SIZE] ;
 uint8_t verifyBuf[MAX_BUFF_SIZE];
+#endif
 
 #if defined(UDMA_ENABLE)
 /*
@@ -247,6 +255,11 @@ static int8_t BoardDiag_ospiFlashStressTest(void)
     ospiUdmaInit(&ospi_cfg);
 #else
     ospi_cfg.dmaEnable  = false;
+#endif
+#if defined(j7200_evm)
+    ospi_cfg.phyEnable  = false;
+    ospi_cfg.dtrEnable  = true;
+    ospi_cfg.dacEnable  = false;
 #endif
 
     /* Set the default OSPI init configurations */

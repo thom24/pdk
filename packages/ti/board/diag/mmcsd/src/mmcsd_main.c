@@ -111,8 +111,13 @@ static void delay(unsigned int delayValue);
  **********************************************************************/
 
 MMCSD_Handle handle = NULL;
+#if defined(DIAG_STRESS_TEST) && defined(j7200_evm)
+static uint8_t tx[SECTORSIZE*TESTSECTORS] __attribute__ ((section (".data_buffer")));
+static uint8_t rx[SECTORSIZE*TESTSECTORS] __attribute__ ((section (".data_buffer")));
+#else
 static uint8_t tx[SECTORSIZE*TESTSECTORS];
 static uint8_t rx[SECTORSIZE*TESTSECTORS];
+#endif
 
 /* ========================================================================== */
 /*                          Function Definitions                              */

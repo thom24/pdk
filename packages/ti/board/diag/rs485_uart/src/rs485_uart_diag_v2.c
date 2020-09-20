@@ -106,6 +106,10 @@
 
 uint8_t txBuf[TEST_DATA_LEN] __attribute__ ((section ("uartbuffer")));
 uint8_t rxBuf[TEST_DATA_LEN] __attribute__ ((section ("uartbuffer")));
+
+char echoPromptPass[] = "Stress Test Passed\n";
+char echoPromptFail[] = "Stress Test Failed\n";
+
 #else
 char echoPrompt[] =
 	"\n******************************************\n"
@@ -395,12 +399,14 @@ int BoardDiag_pruIcssUartTest(uint8_t portNum)
     if (BoardDiag_memCompare(&txBuf[0], &rxBuf[0], TEST_DATA_LEN, &failIndex) == false)
     {
         UART_write(uart,&input,1U);
+        UART_write(uart, echoPromptFail, sizeof(echoPromptFail));
         UART_close(uart);
         return -1;
     }
     else
     {
         UART_write(uart,&input,1U);
+        UART_write(uart, echoPromptPass, sizeof(echoPromptPass));
         UART_close(uart);
     }
 #else
@@ -430,6 +436,7 @@ int BoardDiag_pruIcssUartTest(uint8_t portNum)
 	}
 #endif
 
+    return 0;
 }
 
 int main(void)

@@ -345,8 +345,10 @@ static int8_t BoardDiag_spiNorflashRunTest(uint32_t  pageOffset)
     {
         if(!(pageOffset % BOARD_DIAG_SECTOR_SIZE))
         {
+#if !defined(DIAG_STRESS_TEST)
             UART_printf("Data Read matches with Data written\n");
             UART_printf("SPI Flash Test Passed!\n");
+#endif
         }
     }
     else
@@ -409,22 +411,81 @@ static int8_t BoardDiag_spiNorflashSpiInit(void)
     return 0;
 }
 
+#ifdef DIAG_STRESS_TEST
 /**
- *  \brief    This function runs spi norflash test.
+ *  \brief    This function runs spi norflash stress test.
  *
  *  \return   int8_t
  *               0 - in case of success
  *              -1 - in case of failure.
  *
  */
-int8_t BoardDiag_SpiNorflashTest(void)
+int8_t BoardDiag_spiNorFlashStressTest(void)
 {
     uint32_t pageNum;
     int8_t testStatus;
+    char rdBuf = 'y';
 
-    UART_printf("\n****************************************\n");
-    UART_printf  ("*           SPI NORFlASH Test          *\n");
-    UART_printf  ("****************************************\n");
+    testStatus = BoardDiag_spiNorflashSpiInit();
+    if(testStatus != 0)
+    {
+        UART_printf("\nSPI NOR Flash init Failed\n");
+        return -1;
+    }
+
+    testStatus = BoardDiag_spiNorFlashReadDevID();
+    if(testStatus != 0)
+    {
+        UART_printf("\nFlash Device ID Read Failed!!\n");
+        return -1;
+    }
+    else
+    {
+        UART_printf("\nFlash Device ID Read Passed!\n\n");
+    }
+
+    for(pageNum = 0; pageNum < BOARD_DIAG_SPI_FLASH_TEST_PAGES; pageNum += BOARD_DIAG_TESTPAGES)
+    {
+        if(!(pageNum & 0xff))
+        {
+            UART_printf("\nVerifying Sector - %d\n", (pageNum/BOARD_DIAG_PAGES_PER_SECTOR));
+        }
+
+        testStatus = BoardDiag_spiNorflashRunTest((BOARD_DIAG_NOR_PAGE_SIZE * pageNum));
+        if(testStatus != 0)
+        {
+            UART_printf("\nSPI NOR Flash Test Failed\n");
+            return -1;
+        }
+
+        /* Check if there a input from console to break the test */
+        rdBuf = (char)BoardDiag_getUserInput(BOARD_UART_INSTANCE);
+        if((rdBuf == 'b') || (rdBuf == 'B'))
+        {
+            UART_printf("Received Test Termination... Exiting the Test\n");
+            pageNum += BOARD_DIAG_TESTPAGES;
+            UART_printf("SPI NOR Flash Stress Test Status\n");
+            UART_printf("============================================\n");
+            UART_printf("\nSPI NOR Flash Verified up-to Page - %d\n", pageNum);
+            break;
+        }
+    }
+
+	return testStatus;
+}
+#else
+/**
+ *  \brief    This function runs spi norflash functional test.
+ *
+ *  \return   int8_t
+ *               0 - in case of success
+ *              -1 - in case of failure.
+ *
+ */
+int8_t BoardDiag_spiNorFlashFunctionalTest(void)
+{
+    uint32_t pageNum;
+    int8_t testStatus;
 
     testStatus = BoardDiag_spiNorflashSpiInit();
     if(testStatus != 0)
@@ -459,9 +520,35 @@ int8_t BoardDiag_SpiNorflashTest(void)
         }
     }
 
-    UART_printf("\nSPI NOR Flash Test Passed\n");
-
 	return testStatus;
+}
+#endif
+
+/**
+ *  \brief    This function executes spi norflash test.
+ *
+ *  \return   int8_t
+ *               0 - in case of success
+ *              -1 - in case of failure.
+ *
+ */
+int8_t BoardDiag_spiNorflashTest(void)
+{
+   int8_t ret;
+
+#ifdef DIAG_STRESS_TEST
+    UART_printf("\n****************************************************\n");
+    UART_printf  ("*             NOR FLASH Stress Test                *\n");
+    UART_printf  ("****************************************************\n");
+    ret = BoardDiag_spiNorFlashStressTest();
+#else
+    UART_printf("\n*********************************************\n");
+    UART_printf  ("*             NOR FLASH Test                *\n");
+    UART_printf  ("*********************************************\n");
+    ret = BoardDiag_spiNorFlashFunctionalTest();
+#endif /* #ifndef DIAG_STRESS_TEST */
+
+    return ret;
 }
 
 /**
@@ -501,7 +588,7 @@ int main(void)
 
     Board_control(BOARD_CTRL_CMD_SET_SOM_PROFIBUS_MUX, NULL);
 
-    ret = BoardDiag_SpiNorflashTest();
+    ret = BoardDiag_spiNorflashTest();
     if(ret != 0)
     {
         UART_printf("\nSPI Norflash Test Failed\n");

@@ -40,9 +40,9 @@
  *  UART TX and RX at maximum possible baud rate by receiving test string
  *  from host pc
  *
- *  Supported SoCs : AM65XX & TPR12.
+ *  Supported SoCs : AM65XX, J721E, J7200 & TPR12.
  *
- *  Supported Platforms: am65xx_evm, am65xx_idk & tpr12_evm.
+ *  Supported Platforms: am65xx_evm, am65xx_idk, j721e_evm, j7200_evm & tpr12_evm.
  *
  */
 
@@ -102,10 +102,11 @@ static int8_t BoardDiag_UartStressTest(uint32_t uartInstance, uint8_t setPort)
     uint32_t          index;
     uint32_t          failIndex;
     UART_HwAttrs uart_hwAttrs;
+
     uint8_t testPassMsg[] = "UART Stress Test Passed\n";
     uint8_t testFailMsg[] = "UART Stress Test Failed\n";
     uint8_t input = '\n';
-#if defined(SOC_AM65XX)
+#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)
     if(setPort == 1)
     {
         /* Enable MCU UART port */
@@ -235,6 +236,88 @@ static void BoardDiag_enableWkUPUARTSel(void)
 }
 #endif
 
+#if defined(j7200_evm)
+/**
+ * \brief  UART Mux enable function
+ *
+ * This function is used to enable the uart mux selection
+ *
+ * \param  pinNum    -  I2C IO EXPANDER pin number
+ *
+ */
+void BoardDiag_UartMuxEnable(uint8_t pinNum, uint8_t pinVal)
+{
+    Board_IoExpCfg_t ioExpCfg;
+    Board_STATUS status = BOARD_SOK;
+
+    /* Enable the UART1 and UART3 */
+    ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_SOM_DEVICE1_INSTANCE;
+    ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
+    ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_SOM_DEVICE1_ADDR;
+    ioExpCfg.enableIntr  = false;
+    ioExpCfg.ioExpType   = ONE_PORT_IOEXP;
+    ioExpCfg.portNum     = PORTNUM_0;
+    ioExpCfg.pinNum      = (i2cIoExpPinNumber_t) pinNum;
+    ioExpCfg.signalLevel = (i2cIoExpSignalLevel_t)pinVal;
+
+    status = Board_control(BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT, &ioExpCfg);
+    if(status != BOARD_SOK)
+    {
+        UART_printf("Failed to select the Uart Mux\n");
+    }
+}
+#endif
+
+#if defined(j721e_evm)
+/**
+ * \brief  MAIN UART4 Path Enable function
+ *
+ *  This function is configures the MUX to enable path for UART4.
+ *
+ */
+void BoardDiag_enableMAINUART4Sel(void)
+{
+    Board_I2cInitCfg_t i2cCfg;
+
+    i2cCfg.i2cInst   = BOARD_I2C_IOEXP_DEVICE2_INSTANCE;
+    i2cCfg.socDomain = BOARD_SOC_DOMAIN_MAIN;
+    i2cCfg.enableIntr = false;
+    Board_setI2cInitConfig(&i2cCfg);
+
+    Board_i2cIoExpInit();
+
+    /* Setting the pin direction as output */
+    Board_i2cIoExpSetPinDirection(BOARD_I2C_IOEXP_DEVICE2_ADDR,
+                                  THREE_PORT_IOEXP,
+                                  PORTNUM_1,
+                                  PIN_NUM_1,
+                                  PIN_DIRECTION_OUTPUT);
+
+    /* Pulling the MCASP/TRACE_MUX_S0 line to low */
+    Board_i2cIoExpPinLevelSet(BOARD_I2C_IOEXP_DEVICE2_ADDR,
+                              THREE_PORT_IOEXP,
+                              PORTNUM_1,
+                              PIN_NUM_1,
+                              GPIO_SIGNAL_LEVEL_LOW);
+
+    /* Setting the pin direction as output */
+    Board_i2cIoExpSetPinDirection(BOARD_I2C_IOEXP_DEVICE2_ADDR,
+                                  THREE_PORT_IOEXP,
+                                  PORTNUM_1,
+                                  PIN_NUM_2,
+                                  PIN_DIRECTION_OUTPUT);
+
+    /* Pulling the MCASP/TRACE_MUX_S1 line to high */
+    Board_i2cIoExpPinLevelSet(BOARD_I2C_IOEXP_DEVICE2_ADDR,
+                              THREE_PORT_IOEXP,
+                              PORTNUM_1,
+                              PIN_NUM_2,
+                              GPIO_SIGNAL_LEVEL_HIGH);
+
+    Board_i2cIoExpDeInit();
+}
+#endif  /* #if defined(j721e_evm) */
+
 /**
  * \brief  main function
  *
@@ -268,13 +351,51 @@ int main(void)
     {
         ret = -1;
     }
+#if defined(j721e_evm)
+    /* Enable the mux to select UART4 */
+    BoardDiag_enableMAINUART4Sel();
+    ret = BoardDiag_UartStressTest(BOARD_UART1_INSTANCE, 0);
+    if(ret != 0)
+    {
+        ret = -1;
+    }
+
+    ret = BoardDiag_UartStressTest(BOARD_UART2_INSTANCE, 0);
+    if(ret != 0)
+    {
+        ret = -1;
+    }
+
+    ret = BoardDiag_UartStressTest(BOARD_UART4_INSTANCE, 0);
+    if(ret != 0)
+    {
+        ret = -1;
+    }
+#endif
+#if defined(j7200_evm)
+    /* Enable the mux to select UART1 and UART3 */
+    BoardDiag_UartMuxEnable(PIN_NUM_4, 0);
+    BoardDiag_UartMuxEnable(PIN_NUM_3, 1);
+    BoardDiag_UartMuxEnable(PIN_NUM_2, 1);
+    ret = BoardDiag_UartStressTest(BOARD_UART1_INSTANCE, 0);
+    if(ret != 0)
+    {
+        ret = -1;
+    }
+
+    ret = BoardDiag_UartStressTest(BOARD_UART3_INSTANCE, 0);
+    if(ret != 0)
+    {
+        ret = -1;
+    }
+#endif
 #if defined(am65xx_evm)
     ret = BoardDiag_UartStressTest(BOARD_UART1_INSTANCE, 0);
     if (ret != 0)
     {
         ret = -1;
     }
-#elif defined(am65xx_idk)
+#elif defined(am65xx_idk) || defined(j721e_evm) || defined(j7200_evm)
     ret = BoardDiag_UartStressTest(BOARD_UART_INSTANCE, 1);
     if (ret != 0)
     {

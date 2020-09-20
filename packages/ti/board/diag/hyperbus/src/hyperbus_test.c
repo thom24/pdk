@@ -48,6 +48,107 @@
 
 #include "hyperbus_test.h"
 
+#if (defined(DIAG_STRESS_TEST) && defined(j7200_evm))
+uint8_t txBuf[BOARD_DIAG_HPB_TEST_BYTES] __attribute__ ((section (".data_buffer")));
+uint8_t rxBuf[BOARD_DIAG_HPB_TEST_BYTES] __attribute__ ((section (".data_buffer")));
+#else
+uint8_t txBuf[BOARD_DIAG_HPB_TEST_BYTES];
+uint8_t rxBuf[BOARD_DIAG_HPB_TEST_BYTES];
+#endif
+
+#if defined(DIAG_STRESS_TEST)
+/**
+ * \brief   This function executes HyperFlash stress test.
+ *
+ * \return  int8_t
+ *               0 - in case of success
+ *              -1 - in case of failure.
+ *
+ */
+static int8_t BoardDiag_hpbHyperFlashStressTest(void)
+{
+    Board_flashHandle boardHandle;
+    Board_FlashInfo *flashInfo;
+    Board_flash_STATUS retVal;
+    uint32_t offset;
+    uint32_t failIndex;
+    char rdBuf = 'y';
+
+    boardHandle = Board_flashOpen(BOARD_FLASH_ID_S71KS512S,
+                                  BOARD_HPF_INSTANCE, NULL);
+    if (!boardHandle)
+    {
+        UART_printf("Board_flashOpen Failed\n");
+        return -1;
+    }
+    else
+    {
+        flashInfo = (Board_FlashInfo *)boardHandle;
+        UART_printf("\nHyperFlash Device ID: 0x%x, Manufacturer ID: 0x%x \n",
+                            flashInfo->device_id, flashInfo->manufacturer_id);
+    }
+
+    flashInfo->blkErase_flag = false;
+    UART_printf("Erasing the complete chip... This will take few seconds\n\n");
+    /* Erasing the complete chip */
+    retVal = Board_flashEraseBlk(boardHandle, BOARD_DIAG_HPB_CHIP_ERASE);
+    if (retVal != BOARD_FLASH_EOK)
+    {
+        UART_printf("\nBoard_flashEraseBlk failed\n");
+        return -1;
+    }
+
+    BoardDiag_genPattern(&txBuf[0], BOARD_DIAG_HPB_TEST_BYTES,
+                         BOARD_DIAG_TEST_PATTERN_RANDOM);
+
+    for(offset = BOARD_DIAG_HPB_FIRST_VERIFY_ADDR;
+        offset <= BOARD_DIAG_HPB_LAST_VERIFY_ADDR;
+        offset += BOARD_DIAG_HPB_TEST_BYTES)
+    {
+        UART_printf("Verifying sector - %d...\n", (offset/BOARD_DIAG_HPB_TEST_BYTES));
+
+        /* Write buffer to hyperflash */
+        retVal = Board_flashWrite(boardHandle, offset,
+                                  &txBuf[0], BOARD_DIAG_HPB_TEST_BYTES, NULL);
+        if (retVal != BOARD_FLASH_EOK)
+        {
+            UART_printf("\nBoard_flashWrite failed\n");
+            return -1;
+        }
+
+        BoardDiag_genPattern(&rxBuf[0], BOARD_DIAG_HPB_TEST_BYTES,
+                             BOARD_DIAG_TEST_PATTERN_RANDOM);
+
+        /* Read the hyperflash memory */
+        retVal = Board_flashRead(boardHandle, offset,
+                                 &rxBuf[0], BOARD_DIAG_HPB_TEST_BYTES, NULL);
+        if (retVal != BOARD_FLASH_EOK)
+        {
+            UART_printf("\nBoard_flashRead failed\n");
+            return -1;
+        }
+
+        if (!(BoardDiag_memCompare(&txBuf[0], &rxBuf[0], BOARD_DIAG_HPB_TEST_BYTES, &failIndex)))
+        {
+            UART_printf("\nData mismatch at offset = 0x%x\n", offset+failIndex);
+            return -1;
+        }
+
+        /* Check if there a input from console to break the test */
+        rdBuf = (char)BoardDiag_getUserInput(BOARD_UART_INSTANCE);
+        if((rdBuf == 'b') || (rdBuf == 'B'))
+        {
+            UART_printf("Received Test Termination... Exiting the Test\n");
+            UART_printf("HyperFlash Stress Test Status\n");
+            UART_printf("============================================\n");
+            UART_printf("\nHyperFlash Verified upto Sector - %d\n", ((offset/BOARD_DIAG_HPB_TEST_BYTES) + 1));
+            break;
+        }
+    }
+    return 0;
+} /* DIAG_STRESS_TEST */
+#else
+
 /**
  * \brief   This function writes data, reads back the written data and compares.
  *
@@ -66,8 +167,6 @@ static int8_t BoardDiag_hpbReadWriteTest(Board_flashHandle handle,
     Board_flash_STATUS retVal;
     uint32_t blockNum, pageNum;
     uint32_t failIndex;
-    uint8_t txBuf[BOARD_DIAG_HPB_TEST_BYTES];
-    uint8_t rxBuf[BOARD_DIAG_HPB_TEST_BYTES];
 
     retVal = Board_flashOffsetToBlkPage(handle, offset, &blockNum, &pageNum);
     if (retVal != BOARD_FLASH_EOK)
@@ -115,17 +214,14 @@ static int8_t BoardDiag_hpbReadWriteTest(Board_flashHandle handle,
 }
 
 /**
- * \brief   This function runs Hyper Flash boundary verification test.
- *
- * \param   chipSel     [IN]    Chip select number of HyperFlash
- * \param   baseAddr    [IN]    Base Address of HyperFlash
+ * \brief   This function executes HyperFlash functionality test.
  *
  * \return  int8_t
  *               0 - in case of success
  *              -1 - in case of failure.
  *
  */
-static int8_t BoardDiag_hpbRunHyperFlashTest()
+static int8_t BoardDiag_hpbHyperFlashFunctionalTest(void)
 {
     Board_flashHandle boardHandle;
     Board_FlashInfo *flashInfo;
@@ -172,6 +268,7 @@ static int8_t BoardDiag_hpbRunHyperFlashTest()
 
     return 0;
 }
+#endif
 
 /**
  * \brief   The function performs the Hyperbus Diagnostic test.
@@ -185,14 +282,19 @@ int8_t BoardDiag_HyperBusTest(void)
 {
     int8_t ret;
 
-    ret = BoardDiag_hpbRunHyperFlashTest();
+#ifdef DIAG_STRESS_TEST
+    ret = BoardDiag_hpbHyperFlashStressTest();
+#else
+    ret = BoardDiag_hpbHyperFlashFunctionalTest();
+#endif
+
     if (ret)
     {
-        UART_printf("\nHyper Flash Test Failed!!\n");
+        UART_printf("\nHyperflash Test Failed!!\n");
     }
     else
     {
-        UART_printf("\nHyper Flash Test Passed!");
+        UART_printf("\nHyperflash Test Passed!");
     }
 
     return ret;
@@ -237,7 +339,7 @@ int main(void)
                BOARD_INIT_UART_STDIO;
 #else
     boardCfg = BOARD_INIT_UART_STDIO | 
-               BOARD_INIT_PINMUX_CONFIG;
+               BOARD_INIT_PINMUX_CONFIG | BOARD_INIT_PLL;
 #endif
 
     status = Board_init(boardCfg);
@@ -246,9 +348,15 @@ int main(void)
         return -1;
     }
 
+#ifdef DIAG_STRESS_TEST
+    UART_printf("\n***********************************************\n");
+    UART_printf  ("*            HYPERBUS Stress Test             *\n");
+    UART_printf  ("***********************************************\n");
+#else
     UART_printf("\n*********************************************\n");
     UART_printf  ("*              HYPERBUS Test                *\n");
     UART_printf  ("*********************************************\n");
+#endif
 
 #if defined (j721e_evm)
     UART_printf("\nConfiguring PLLs...");

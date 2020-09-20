@@ -75,7 +75,7 @@ extern "C" {
 /* ========================================================================== */
 /*                                Macros                                      */
 /* ========================================================================== */
-#if defined(DIAG_STRESS_TEST) && ((defined(am65xx_idk)) || defined(SOC_J721E))
+#if defined(DIAG_STRESS_TEST) && ((defined(am65xx_idk)) || defined(SOC_J721E) || defined(SOC_J7200))
 #define PKT_SEND_COUNT                  (10240U)
 #else
 #define PKT_SEND_COUNT                  (5U)
