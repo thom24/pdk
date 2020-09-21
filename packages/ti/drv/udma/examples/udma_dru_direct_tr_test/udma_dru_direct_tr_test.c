@@ -45,6 +45,7 @@
 
 #include <stdio.h>
 #include <ti/drv/udma/udma.h>
+#include <ti/osal/TaskP.h>
 #include <ti/drv/uart/UART.h>
 #include <ti/drv/uart/UART_stdio.h>
 #include <ti/drv/udma/examples/udma_apputils/udma_apputils.h>
@@ -63,6 +64,8 @@
 
 /** \brief Number of times to perform the memcpy operation */
 #define UDMA_TEST_APP_LOOP_CNT          (10U)
+/* Enable interrupt instead of polling mode */
+#define UDMA_TEST_INTR
 
 /* ========================================================================== */
 /*                         Structure Declarations                             */
@@ -80,9 +83,11 @@ static void App_udmaMemcpy(Udma_ChHandle chHandle,
                            void *srcBuf,
                            uint32_t length);
 
+#if defined (UDMA_TEST_INTR)
 static void App_udmaEventCb(Udma_EventHandle eventHandle,
                             uint32_t eventType,
                             void *appData);
+#endif
 
 static int32_t App_init(Udma_DrvHandle drvHandle);
 static int32_t App_deinit(Udma_DrvHandle drvHandle);
@@ -248,12 +253,29 @@ static void App_udmaMemcpy(Udma_ChHandle chHandle,
     /* Submit TR to DRU channel */
     Udma_chDruSubmitTr(chHandle, &tr);
 
+#if defined (UDMA_TEST_INTR)
     /* Wait for TR event - this marks the transfer completion */
     SemaphoreP_pend(gUdmaAppDoneSem, SemaphoreP_WAIT_FOREVER);
+#else
+    Udma_EventHandle    eventHandle = &gUdmaTrEventObj; 
+    while(1U)
+    {
+        volatile uint64_t   intrStatusReg;
+        intrStatusReg = CSL_REG64_RD(eventHandle->eventPrms.intrStatusReg);
+        if(intrStatusReg & eventHandle->eventPrms.intrMask)
+        {
+            /* Clear interrupt */
+            CSL_REG64_WR(eventHandle->eventPrms.intrClearReg, eventHandle->eventPrms.intrMask);
+            break;
+        }
+        TaskP_yield();
+    }
+#endif
 
     return;
 }
 
+#if defined (UDMA_TEST_INTR)
 static void App_udmaEventCb(Udma_EventHandle eventHandle,
                             uint32_t eventType,
                             void *appData)
@@ -269,6 +291,7 @@ static void App_udmaEventCb(Udma_EventHandle eventHandle,
 
     return;
 }
+#endif
 
 static int32_t App_init(Udma_DrvHandle drvHandle)
 {
@@ -386,8 +409,16 @@ static int32_t App_create(Udma_DrvHandle drvHandle, Udma_ChHandle chHandle)
         eventPrms.eventType         = UDMA_EVENT_TYPE_TR;
         eventPrms.eventMode         = UDMA_EVENT_MODE_SHARED;
         eventPrms.chHandle          = chHandle;
+#if defined (UDMA_TEST_INTR)
         eventPrms.masterEventHandle = Udma_eventGetGlobalHandle(drvHandle);
         eventPrms.eventCb           = &App_udmaEventCb;
+#else
+        /* For polling mode we can't use the existing master event as that is meant only for interrupt event - 
+         *  we can't mix interrupt and poll mode in same master handle. Set the parameter to NULL 
+         *  so that the driver creates a new master event. */
+        eventPrms.masterEventHandle = NULL;
+        eventPrms.eventCb           = NULL;
+#endif
         retVal = Udma_eventRegister(drvHandle, eventHandle, &eventPrms);
         if(UDMA_SOK != retVal)
         {
