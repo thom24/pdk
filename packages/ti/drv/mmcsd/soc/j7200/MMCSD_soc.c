@@ -217,8 +217,9 @@ MMCSD_Error MMCSD_socInit(void)
              else
              {
                 /* Configure the interrupts for MCU R5 */
-                MMCSDInitCfg[i].intNum = CSLR_MCU_R5FSS0_CORE1_INTR_MAIN2MCU_LVL_INTRTR0_OUTL_0 + i;
-             }   
+                MMCSDInitCfg[i].intNum = CSLR_MCU_R5FSS0_CORE1_INTR_MAIN2MCU_LVL_INTRTR0_OUTL_32 + i;
+                /* Interrupts are mapped to 192 to 223 on mcu 11 */
+             }
           }
           
     } else if (r5CpuInfo.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_1) /* Main R5 SS0*/
