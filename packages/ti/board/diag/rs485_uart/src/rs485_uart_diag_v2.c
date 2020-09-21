@@ -426,7 +426,6 @@ int BoardDiag_pruIcssUartTest(uint8_t portNum)
     {
 		UART_write(uart, echoPromptPass, sizeof(echoPromptPass));
 		UART_close(uart);
-		return 0;
 	}
 	else
     {
