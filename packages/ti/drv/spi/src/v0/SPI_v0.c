@@ -42,7 +42,7 @@
 #include <stdbool.h>
 #include <ti/drv/spi/SPI.h>
 #include <ti/drv/spi/src/v0/SPI_v0.h>
-#include <ti/csl/src/ip/mcspi/V1/spi.h>
+#include <ti/csl/src/ip/spi/V0/spi.h>
 #include <ti/drv/spi/src/SPI_osal.h>
 
 #define SPI_POLLING_TIMEOUT_LOOP    (1000U)

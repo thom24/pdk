@@ -46,7 +46,7 @@ extern "C" {
 
 #include <stdint.h>
 #include <stdbool.h>
-#include <ti/csl/src/ip/mcspi/V1/spi.h>
+#include <ti/csl/src/ip/spi/V0/spi.h>
 
 
 /**
