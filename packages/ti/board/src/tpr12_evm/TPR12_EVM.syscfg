@@ -2,18 +2,51 @@
  * These arguments were used when this file was generated. They will be automatically applied on subsequent loads
  * via the GUI or CLI. Run CLI with '--help' for additional information on how to override these arguments.
  * @cliArgs --device "TPR12" --package "ZCE" --part "Default" --product "TPR12@0.0.1"
- * @versions {"data":"2020091410","timestamp":"2020091410","tool":"1.0.0+dev","templates":"2020091410"}
+ * @versions {"data":"2020092112","timestamp":"2020092112","tool":"1.0.0+dev","templates":"2020092112"}
  */
 
 /**
  * Import the modules used in this configuration.
  */
+const DSS_UART     = scripting.addModule("/TPR12/DSS_UART", {}, false);
+const DSS_UART1    = DSS_UART.addInstance();
+const ERROR        = scripting.addModule("/TPR12/ERROR", {}, false);
+const ERROR1       = ERROR.addInstance();
+const FE1_REFCLK   = scripting.addModule("/TPR12/FE1_REFCLK", {}, false);
+const FE1_REFCLK1  = FE1_REFCLK.addInstance();
+const FE2_REFCLK   = scripting.addModule("/TPR12/FE2_REFCLK", {}, false);
+const FE2_REFCLK1  = FE2_REFCLK.addInstance();
+const JTAG         = scripting.addModule("/TPR12/JTAG", {}, false);
+const JTAG1        = JTAG.addInstance();
+const MSS_EPWM     = scripting.addModule("/TPR12/MSS_EPWM", {}, false);
+const MSS_EPWM1    = MSS_EPWM.addInstance();
+const MSS_GPIO     = scripting.addModule("/TPR12/MSS_GPIO", {}, false);
+const MSS_GPIO1    = MSS_GPIO.addInstance();
+const MSS_GPIO2    = MSS_GPIO.addInstance();
+const MSS_GPIO3    = MSS_GPIO.addInstance();
+const MSS_GPIO4    = MSS_GPIO.addInstance();
+const MSS_GPIO5    = MSS_GPIO.addInstance();
+const MSS_GPIO6    = MSS_GPIO.addInstance();
+const MSS_GPIO7    = MSS_GPIO.addInstance();
 const MSS_I2C      = scripting.addModule("/TPR12/MSS_I2C", {}, false);
 const MSS_I2C1     = MSS_I2C.addInstance();
+const MSS_MCAN     = scripting.addModule("/TPR12/MSS_MCAN", {}, false);
+const MSS_MCAN1    = MSS_MCAN.addInstance();
+const MSS_MCAN2    = MSS_MCAN.addInstance();
+const MSS_MDIO     = scripting.addModule("/TPR12/MSS_MDIO", {}, false);
+const MSS_MDIO1    = MSS_MDIO.addInstance();
+const MSS_MIBSPI   = scripting.addModule("/TPR12/MSS_MIBSPI", {}, false);
+const MSS_MIBSPI1  = MSS_MIBSPI.addInstance();
+const MSS_MIBSPI2  = MSS_MIBSPI.addInstance();
+const MSS_QSPI     = scripting.addModule("/TPR12/MSS_QSPI", {}, false);
+const MSS_QSPI1    = MSS_QSPI.addInstance();
 const MSS_RGMII    = scripting.addModule("/TPR12/MSS_RGMII", {}, false);
 const MSS_RGMII1   = MSS_RGMII.addInstance();
 const MSS_RS232    = scripting.addModule("/TPR12/MSS_RS232", {}, false);
 const MSS_RS2321   = MSS_RS232.addInstance();
+const MSS_UART     = scripting.addModule("/TPR12/MSS_UART", {}, false);
+const MSS_UART1    = MSS_UART.addInstance();
+const MSS_UART2    = MSS_UART.addInstance();
 const PMIC_CLKOUT  = scripting.addModule("/TPR12/PMIC_CLKOUT", {}, false);
 const PMIC_CLKOUT1 = PMIC_CLKOUT.addInstance();
 const RCSS_GPIO    = scripting.addModule("/TPR12/RCSS_GPIO", {}, false);
@@ -25,16 +58,131 @@ const RCSS_GPIO5   = RCSS_GPIO.addInstance();
 const RCSS_GPIO6   = RCSS_GPIO.addInstance();
 const RCSS_GPIO7   = RCSS_GPIO.addInstance();
 const RCSS_GPIO8   = RCSS_GPIO.addInstance();
+const RCSS_MIBSPI  = scripting.addModule("/TPR12/RCSS_MIBSPI", {}, false);
+const RCSS_MIBSPI1 = RCSS_MIBSPI.addInstance();
+const RCSS_MIBSPI2 = RCSS_MIBSPI.addInstance();
+const RCSS_UART    = scripting.addModule("/TPR12/RCSS_UART", {}, false);
+const RCSS_UART1   = RCSS_UART.addInstance();
+const TRACE        = scripting.addModule("/TPR12/TRACE", {}, false);
+const TRACE1       = TRACE.addInstance();
+const XREF_CLK0    = scripting.addModule("/TPR12/XREF_CLK0", {}, false);
+const XREF_CLK01   = XREF_CLK0.addInstance();
+const XREF_CLK1    = scripting.addModule("/TPR12/XREF_CLK1", {}, false);
+const XREF_CLK11   = XREF_CLK1.addInstance();
 
 /**
  * Write custom configuration values to the imported modules.
  */
+DSS_UART1.$name             = "TPR12_DSS_UART0";
+DSS_UART1.periph.$assign    = "DSS_UARTA";
+DSS_UART1.periph.TX.$assign = "PAD_DC";
+DSS_UART1.periph.RX.$assign = "PAD_DD";
+
+ERROR1.$name                = "TPR12_ERROR0";
+ERROR1.periph.IN.$assign    = "PAD_AR";
+ERROR1.periph.RESET.$assign = "PAD_AS";
+ERROR1.periph.OUT.$assign   = "PAD_AT";
+
+FE1_REFCLK1.$name                 = "TPR12_FE1_REFCLK0";
+FE1_REFCLK1.periph.$assign        = "FE1_REFCLK0";
+FE1_REFCLK1.periph.REFCLK.$assign = "PAD_AB";
+
+FE2_REFCLK1.$name                 = "TPR12_FE2_REFCLK0";
+FE2_REFCLK1.periph.$assign        = "FE2_REFCLK0";
+FE2_REFCLK1.periph.REFCLK.$assign = "PAD_AC";
+
+JTAG1.$name              = "TPR12_JTAG0";
+JTAG1.periph.$assign     = "JTAG0";
+JTAG1.periph.TCK.$assign = "PAD_AU";
+JTAG1.periph.TMS.$assign = "PAD_AV";
+JTAG1.periph.TDI.$assign = "PAD_AW";
+JTAG1.periph.TDO.$assign = "PAD_AX";
+
+MSS_EPWM1.$name               = "TPR12_MSS_EPWM0";
+MSS_EPWM1.periph["0"].$assign = "PAD_AY";
+MSS_EPWM1.periph["1"].$used   = false;
+MSS_EPWM1.periph.$assign      = "MSS_EPWMA";
+MSS_EPWM1.periph.SYNCI.$used  = false;
+MSS_EPWM1.periph.SYNCO.$used  = false;
+
+MSS_GPIO1.$name              = "TPR12_MSS_GPIO28";
+MSS_GPIO1.periph.$assign     = "MSS_GPIO28";
+MSS_GPIO1.periph.PIN.$assign = "PAD_BB";
+
+MSS_GPIO2.$name              = "TPR12_MSS_GPIO2";
+MSS_GPIO2.periph.$assign     = "MSS_GPIO2";
+MSS_GPIO2.periph.PIN.$assign = "PAD_AZ";
+
+MSS_GPIO3.$name              = "TPR12_MSS_GPIO8";
+MSS_GPIO3.periph.$assign     = "MSS_GPIO8";
+MSS_GPIO3.periph.PIN.$assign = "PAD_DM";
+
+MSS_GPIO4.$name              = "TPR12_MSS_GPIO9";
+MSS_GPIO4.periph.$assign     = "MSS_GPIO9";
+MSS_GPIO4.periph.PIN.$assign = "PAD_DN";
+
+MSS_GPIO5.$name              = "TPR12_MSS_GPIO10";
+MSS_GPIO5.periph.$assign     = "MSS_GPIO10";
+MSS_GPIO5.periph.PIN.$assign = "PAD_DO";
+
+MSS_GPIO6.$name              = "TPR12_MSS_GPIO11";
+MSS_GPIO6.periph.$assign     = "MSS_GPIO11";
+MSS_GPIO6.periph.PIN.$assign = "PAD_DP";
+
+MSS_GPIO7.$name              = "TPR12_MSS_GPIO13";
+MSS_GPIO7.periph.$assign     = "MSS_GPIO13";
+MSS_GPIO7.periph.PIN.$assign = "PAD_DR";
+
 MSS_I2C1.$name              = "TPR12_MSS_I2C0";
 MSS_I2C1.periph.$assign     = "MSS_I2CA";
 MSS_I2C1.periph.SCL.pull    = "pu";
 MSS_I2C1.periph.SCL.$assign = "PAD_BZ";
 MSS_I2C1.periph.SDA.pull    = "pu";
 MSS_I2C1.periph.SDA.$assign = "PAD_BY";
+
+MSS_MCAN1.$name             = "TPR12_MSS_MCAN0";
+MSS_MCAN1.periph.$assign    = "MSS_MCANA";
+MSS_MCAN1.periph.RX.$assign = "PAD_AF";
+MSS_MCAN1.periph.TX.$assign = "PAD_AG";
+
+MSS_MCAN2.$name             = "TPR12_MSS_MCAN1";
+MSS_MCAN2.periph.$assign    = "MSS_MCANB";
+MSS_MCAN2.periph.RX.$assign = "PAD_AD";
+MSS_MCAN2.periph.TX.$assign = "PAD_AE";
+
+MSS_MDIO1.$name               = "TPR12_MSS_MDIO0";
+MSS_MDIO1.periph.$assign      = "MSS_MDIO0";
+MSS_MDIO1.periph.DATA.$assign = "PAD_CM";
+MSS_MDIO1.periph.CLK.$assign  = "PAD_CN";
+
+MSS_MIBSPI1.$name                = "TPR12_MSS_MIBSPI0";
+MSS_MIBSPI1.periph.$assign       = "MSS_MIBSPIB";
+MSS_MIBSPI1.periph.HOSTIRQ.$used = false;
+MSS_MIBSPI1.periph.CS1.$assign   = "PAD_AA";
+MSS_MIBSPI1.periph.CS2.$assign   = "PAD_BC";
+MSS_MIBSPI1.periph.MOSI.$assign  = "PAD_AH";
+MSS_MIBSPI1.periph.MISO.$assign  = "PAD_AI";
+MSS_MIBSPI1.periph.CLK.$assign   = "PAD_AJ";
+MSS_MIBSPI1.periph.CS0.$assign   = "PAD_AK";
+
+MSS_MIBSPI2.$name                  = "TPR12_MSS_MIBSPI1";
+MSS_MIBSPI2.periph.$assign         = "MSS_MIBSPIA";
+MSS_MIBSPI2.periph.HOSTIRQ.$assign = "PAD_DL";
+MSS_MIBSPI2.periph.CS1.$used       = false;
+MSS_MIBSPI2.periph.CS2.$used       = false;
+MSS_MIBSPI2.periph.MOSI.$assign    = "PAD_DH";
+MSS_MIBSPI2.periph.MISO.$assign    = "PAD_DI";
+MSS_MIBSPI2.periph.CLK.$assign     = "PAD_DJ";
+MSS_MIBSPI2.periph.CS0.$assign     = "PAD_DK";
+
+MSS_QSPI1.$name               = "TPR12_MSS_QSPI0";
+MSS_QSPI1.periph["0"].$assign = "PAD_AL";
+MSS_QSPI1.periph["1"].$assign = "PAD_AM";
+MSS_QSPI1.periph["2"].$assign = "PAD_AN";
+MSS_QSPI1.periph["3"].$assign = "PAD_AO";
+MSS_QSPI1.periph.$assign      = "MSS_QSPI0";
+MSS_QSPI1.periph.CLK.$assign  = "PAD_AP";
+MSS_QSPI1.periph.CS.$assign   = "PAD_AQ";
 
 MSS_RGMII1.$name               = "TPR12_MSS_RGMII0";
 MSS_RGMII1.periph.$assign      = "MSS_RGMII0";
@@ -55,6 +203,16 @@ MSS_RS2321.$name             = "TPR12_MSS_RS2320";
 MSS_RS2321.periph.$assign    = "MSS_RS2320";
 MSS_RS2321.periph.RX.$assign = "PAD_BD";
 MSS_RS2321.periph.TX.$assign = "PAD_BE";
+
+MSS_UART1.$name             = "TPR12_MSS_UART0";
+MSS_UART1.periph.$assign    = "MSS_UARTA";
+MSS_UART1.periph.RX.$assign = "PAD_DA";
+MSS_UART1.periph.TX.$assign = "PAD_DB";
+
+MSS_UART2.$name             = "TPR12_MSS_UART1";
+MSS_UART2.periph.$assign    = "MSS_UARTB";
+MSS_UART2.periph.RX.$used   = false;
+MSS_UART2.periph.TX.$assign = "PAD_DE";
 
 PMIC_CLKOUT1.$name                 = "TPR12_PMIC_CLKOUT0";
 PMIC_CLKOUT1.periph.$assign        = "PMIC_CLKOUT0";
@@ -91,3 +249,62 @@ RCSS_GPIO7.periph.PIN.$assign = "PAD_DV";
 RCSS_GPIO8.$name              = "TPR12_RCSS_GPIO43";
 RCSS_GPIO8.periph.$assign     = "RCSS_GPIO43";
 RCSS_GPIO8.periph.PIN.$assign = "PAD_CZ";
+
+RCSS_MIBSPI1.$name               = "TPR12_RCSS_MIBSPI0";
+RCSS_MIBSPI1.periph.$assign      = "RCSS_MIBSPIA";
+RCSS_MIBSPI1.periph.MOSI.$assign = "PAD_CO";
+RCSS_MIBSPI1.periph.MISO.$assign = "PAD_CP";
+RCSS_MIBSPI1.periph.CLK.$assign  = "PAD_CQ";
+RCSS_MIBSPI1.periph.CS0.$assign  = "PAD_CR";
+RCSS_MIBSPI1.periph.CS1.$used    = false;
+
+RCSS_MIBSPI2.$name               = "TPR12_RCSS_MIBSPI1";
+RCSS_MIBSPI2.periph.$assign      = "RCSS_MIBSPIB";
+RCSS_MIBSPI2.periph.MOSI.$assign = "PAD_CT";
+RCSS_MIBSPI2.periph.MISO.$assign = "PAD_CU";
+RCSS_MIBSPI2.periph.CLK.$assign  = "PAD_CV";
+RCSS_MIBSPI2.periph.CS0.$assign  = "PAD_CW";
+RCSS_MIBSPI2.periph.CS1.$used    = false;
+
+RCSS_UART1.$name             = "TPR12_RCSS_UART0";
+RCSS_UART1.periph.$assign    = "RCSS_UARTA";
+RCSS_UART1.periph.RX.$assign = "PAD_DT";
+RCSS_UART1.periph.TX.$assign = "PAD_DS";
+RCSS_UART1.periph.RTS.$used  = false;
+RCSS_UART1.periph.CTS.$used  = false;
+
+TRACE1.$name                = "TPR12_TRACE0";
+TRACE1.periph["0"].$assign  = "PAD_BF";
+TRACE1.periph["1"].$assign  = "PAD_BG";
+TRACE1.periph["2"].$assign  = "PAD_BH";
+TRACE1.periph["3"].$assign  = "PAD_BI";
+TRACE1.periph["4"].$assign  = "PAD_BJ";
+TRACE1.periph["5"].$assign  = "PAD_BK";
+TRACE1.periph["6"].$assign  = "PAD_BL";
+TRACE1.periph["7"].$assign  = "PAD_BM";
+TRACE1.periph["8"].$assign  = "PAD_BN";
+TRACE1.periph["9"].$assign  = "PAD_BO";
+TRACE1.periph["10"].$assign = "PAD_BP";
+TRACE1.periph["11"].$assign = "PAD_BQ";
+TRACE1.periph["12"].$assign = "PAD_BR";
+TRACE1.periph["13"].$assign = "PAD_BS";
+TRACE1.periph["14"].$assign = "PAD_BT";
+TRACE1.periph["15"].$assign = "PAD_BU";
+TRACE1.periph.$assign       = "TRACE0";
+TRACE1.periph.CLK.$assign   = "PAD_BV";
+TRACE1.periph.CTL.$assign   = "PAD_BW";
+
+XREF_CLK01.$name               = "TPR12_XREF_CLK00";
+XREF_CLK01.periph.$assign      = "XREF_CLK00";
+XREF_CLK01.periph.CLK0.$assign = "PAD_DF";
+
+XREF_CLK11.$name               = "TPR12_XREF_CLK10";
+XREF_CLK11.periph.CLK1.$assign = "PAD_DG";
+
+/**
+ * Pinmux solution for unlocked pins/peripherals. This ensures that minor changes to the automatic solver in a future
+ * version of the tool will not impact the pinmux you originally saw.  These lines can be completely deleted in order to
+ * re-solve from scratch.
+ */
+ERROR1.periph.$suggestSolution     = "ERROR0";
+XREF_CLK11.periph.$suggestSolution = "XREF_CLK10";
