@@ -205,7 +205,14 @@ const FATFS_Config FATFS_config[_VOLUMES + 1] = {
 extern MMCSD_v1_HwAttrs MMCSDInitCfg[];
 #endif
 
-
+#if defined(SOC_J721E) || defined(SOC_J7200)
+#define SBL_WKUP_DEVSTAT_PRIMARY_BOOT_MASK      (0x78U)
+#define SBL_WKUP_DEVSTAT_PRIMARY_BOOT_MMCSD     (0x0U)
+#define SBL_MAIN_DEVSTAT_PRIMARY_BUS_WIDTH_MASK (0x20U)
+#define SBL_MAIN_DEVSTAT_BACKUP_BOOT_MASK       (0xEU)
+#define SBL_MAIN_DEVSTAT_BACKUP_BOOT_MMCSD      (0xAU)
+#define SBL_MAIN_DEVSTAT_PRIMARY_BOOT_B_MASK    (0x1U)
+#endif
 
 #ifdef SECURE_BOOT
 extern SBL_incomingBootData_S sblInBootData;
@@ -226,6 +233,35 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
        UART_printf("\nUnable to get config.Exiting. TEST FAILED.\r\n");
        retVal = E_FAIL;
      }
+
+#if defined(SOC_J721E) || defined(SOC_J7200)
+    uint32_t wkupCtrlDevstat = (*((volatile uint32_t *)(CSL_WKUP_CTRL_MMR0_CFG0_BASE + CSL_WKUP_CTRL_MMR_CFG0_WKUP_DEVSTAT)));
+    uint32_t mainCtrlDevstat = (*((volatile uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_MAIN_DEVSTAT)));
+
+    if(((wkupCtrlDevstat & SBL_WKUP_DEVSTAT_PRIMARY_BOOT_MASK) == SBL_WKUP_DEVSTAT_PRIMARY_BOOT_MMCSD) &&
+       ((mainCtrlDevstat & SBL_MAIN_DEVSTAT_PRIMARY_BOOT_B_MASK) == SBL_MAIN_DEVSTAT_PRIMARY_BOOT_B_MASK))
+    {
+        /* MMCSD as primary bootmode */
+        /* Check MAIN CTRL MMR DEVSTAT register for Primary boot mode Bus Width */
+        if((mainCtrlDevstat & SBL_MAIN_DEVSTAT_PRIMARY_BUS_WIDTH_MASK) == SBL_MAIN_DEVSTAT_PRIMARY_BUS_WIDTH_MASK)
+        {
+            hwAttrsConfig.supportedBusWidth = MMCSD_BUS_WIDTH_1BIT;
+        }
+        else
+        {
+            hwAttrsConfig.supportedBusWidth = MMCSD_BUS_WIDTH_4BIT;
+        }
+    }
+    else if((mainCtrlDevstat & SBL_MAIN_DEVSTAT_BACKUP_BOOT_MASK) == SBL_MAIN_DEVSTAT_BACKUP_BOOT_MMCSD)
+    {
+        /* MMCSD as backup bootmode only supports 1-bit bus width, as set by ROM code */
+        hwAttrsConfig.supportedBusWidth = MMCSD_BUS_WIDTH_1BIT;
+    }
+    else
+    {
+        hwAttrsConfig.supportedBusWidth = MMCSD_BUS_WIDTH_4BIT;
+    }
+#endif
 
     hwAttrsConfig.enableInterrupt = ((uint32_t)(0U));
     hwAttrsConfig.configSocIntrPath=NULL;
