@@ -38,6 +38,7 @@
 #include "sbl_rprc_parse.h"
 #include "sbl_sci_client.h"
 #include "sbl_err_trap.h"
+#include "sbl_qos.h"
 #include <strings.h>
 #include <ti/drv/i2c/I2C.h>
 #include <ti/drv/i2c/soc/I2C_soc.h>
@@ -743,84 +744,12 @@ static void J721E_SetupLvCmosDriveStrength(void)
     }
 }
 
-/* NAVSS North Bridge (NB) */
-#define NAVSS0_NBSS_NB0_CFG_MMRS                0x3802000
-#define NAVSS0_NBSS_NB1_CFG_MMRS                0x3803000
-#define NAVSS0_NBSS_NB0_CFG_NB_THREADMAP        (NAVSS0_NBSS_NB0_CFG_MMRS + 0x10)
-#define NAVSS0_NBSS_NB1_CFG_NB_THREADMAP        (NAVSS0_NBSS_NB1_CFG_MMRS + 0x10)
-/* CBASS */
-#define QOS_DSS0_DMA                            0x45dc2000
-#define QOS_DSS0_DMA_CBASS_GRP_MAP1(j)          (QOS_DSS0_DMA + 0x0 + (j) * 8)
-#define QOS_DSS0_DMA_CBASS_GRP_MAP2(j)          (QOS_DSS0_DMA + 0x4 + (j) * 8)
-#define QOS_DSS0_DMA_CBASS_MAP(i)               (QOS_DSS0_DMA + 0x100 + (i) * 4)
-
-#define QOS_DSS0_FBDC                           0x45dc2400
-#define QOS_DSS0_FBDC_CBASS_GRP_MAP1(j)         (QOS_DSS0_FBDC + 0x0 + (j) * 8)
-#define QOS_DSS0_FBDC_CBASS_GRP_MAP2(j)         (QOS_DSS0_FBDC + 0x4 + (j) * 8)
-#define QOS_DSS0_FBDC_CBASS_MAP(i)              (QOS_DSS0_FBDC + 0x100 + (i) * 4)
-
-#define writel(x,y) (*((uint32_t *)(y))=(x))
-
-static void setup_navss_nb(void)
-{
-    /* Map orderid 8-15 to VBUSM.C thread 2 (real-time traffic) */
-    writel(2, NAVSS0_NBSS_NB0_CFG_NB_THREADMAP);
-    writel(2, NAVSS0_NBSS_NB1_CFG_NB_THREADMAP);
-}
-
-static void setup_dss_credentials(void)
-{
-   unsigned int channel, group;
-
-   /* two master ports: dma and fbdc */
-   /* two groups: SRAM and DDR */
-   /* 10 channels: (pipe << 1) | is_second_buffer */
-
-   /* master port 1 (dma) */
-
-   for (group = 0; group < 2; ++group) {
-        writel(0x76543210, QOS_DSS0_DMA_CBASS_GRP_MAP1(group));
-        writel(0xfedcba98, QOS_DSS0_DMA_CBASS_GRP_MAP2(group));
-   }
-
-   for (channel = 0; channel < 10; ++channel) {
-        uint8_t orderid;
-        uint8_t atype = 0;
-
-        orderid = 0xf - channel;
-
-        writel((atype << 28) | (orderid << 4), QOS_DSS0_DMA_CBASS_MAP(channel));
-   }
-
-   /* master port 2 (fbdc) */
-
-   for (group = 0; group < 2; ++group) {
-        writel(0x76543210, QOS_DSS0_FBDC_CBASS_GRP_MAP1(group));
-        writel(0xfedcba98, QOS_DSS0_FBDC_CBASS_GRP_MAP2(group));
-   }
-
-   for (channel = 0; channel < 10; ++channel) {
-        uint8_t orderid;
-        uint8_t atype = 0;
-
-        orderid = 0xf - channel;
-
-        writel((atype << 28) | (orderid << 4), QOS_DSS0_FBDC_CBASS_MAP(channel));
-   }
-}
-
-static void J721E_SetupQoS(void)
-{
-    setup_navss_nb();
-    setup_dss_credentials();
-}
-
 void SBL_SocEarlyInit(void)
 {
     J721E_SetupLvCmosDriveStrength();
     J721E_UART_InitPwrClk();
 #if !defined(SBL_ENABLE_DEV_GRP_MCU) && !defined(SBL_USE_MCU_DOMAIN_ONLY)
-    J721E_SetupQoS();
+    SBL_SetQoS();
 #endif
 }
 
@@ -862,10 +791,3 @@ void SBL_SocLateInit(void)
 }
 #endif
 
-/* This function is to be called from other apps (e.g., mcusw boot app) to set QoS settings */
-void SBL_SetQoS(void)
-{
-#if defined(SOC_J721E)
-    J721E_SetupQoS();
-#endif
-}
