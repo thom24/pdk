@@ -65,7 +65,9 @@ extern void ConsoleUtilsInit(void);
  ************************** Macros ************************************
  **********************************************************************/
 /* Enable the below macro to have prints on the IO Console */
-//#define IO_CONSOLE
+#if defined(SOC_TPR12)
+#define IO_CONSOLE
+#endif
 
 #ifndef IO_CONSOLE
 #define I2C_log                UART_printf
