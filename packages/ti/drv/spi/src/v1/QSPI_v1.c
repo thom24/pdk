@@ -284,6 +284,9 @@ static SPI_Handle QSPI_open_v1(SPI_Handle handle, const SPI_Params *params)
         interruptRegParams.corepacConfig.corepacEventNum = hwAttrs->eventId;
         interruptRegParams.corepacConfig.intVecNum=hwAttrs->intrNum; /* Host Interrupt vector */
         interruptRegParams.corepacConfig.isrRoutine  = (void (*)(uintptr_t))(&QSPI_hwiFxn_v1);
+#if defined(SOC_TPR12) /* All TPR12 interrupts are pulse and not level */
+        interruptRegParams.corepacConfig.triggerSensitivity = OSAL_ARM_GIC_TRIG_TYPE_EDGE;
+#endif
         interruptRegParams.corepacConfig.arg         = (uintptr_t)handle;
 
         SPI_osalRegisterInterrupt(&interruptRegParams,&(object->hwi));
