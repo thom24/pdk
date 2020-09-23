@@ -282,6 +282,36 @@ static Board_STATUS Board_DDRHWRegInit(void)
 }
 
 /**
+ * \brief   DDR priority init function
+ *
+ * \return  BOARD_SOK in case of success or appropriate error code
+ */
+
+static void Board_DDRPriorityInit(void)
+{
+    /* Flatten out AXI priorities so that VBUSM.C priorities take effect */
+    uint32_t regVal;
+    uint32_t regAddr;
+
+    regVal = 0;
+	regVal = (0x7 << 28) |
+             (0x7 << 24) |
+             (0x7 << 20) |
+             (0x7 << 16) |
+             (0x7 << 12) |
+             (0x7 <<  8) |
+             (0x7 <<  4) |
+             (0x7 <<  0);
+
+    regAddr = 0x02980030; /* DDRSS_V2A_LPT_DEF_PRI_MAP_REG */
+    HW_WR_REG32(regAddr, regVal);
+
+    regAddr = 0x0298004C; /* DDRSS_V2A_HPT_DEF_PRI_MAP_REG */
+    HW_WR_REG32(regAddr, regVal);
+
+}
+
+/**
  * \brief   DDR start function
  *
  * \return  BOARD_SOK in case of success or appropriate error code
@@ -415,6 +445,8 @@ Board_STATUS Board_DDRInit(Bool eccEnable)
         return status;
     }
 
+    Board_DDRPriorityInit();
+    
     status = Board_DDRStart();
     if(status != BOARD_SOK)
     {
