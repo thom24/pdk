@@ -68,6 +68,10 @@
 #include "OSAL_log.h"
 
 #include "OSAL_board.h"
+
+#if defined (SOC_J721E) || defined(SOC_J7200)
+#include <ti/drv/sciclient/sciclient.h>
+#endif
 /**********************************************************************
  ************************** Internal functions ************************
  **********************************************************************/
@@ -97,12 +101,20 @@
 #else
 void ErrorHandler(Error_Block *eb)
 {
-    System_printf("ErrorHandler: ");
+    OSAL_log("ErrorHandler: ");
     Error_print(eb);
 }
 #endif
 
-void Osal_appC7xPreInit(void);
+#if defined(BUILD_C66X_1) || defined(BUILD_C66X_2)
+/* To set C66 timer interrupts on J7ES VLAB */
+void C66xTimerInterruptInit(void);
+#endif
+
+#ifdef BUILD_C7X_1
+void    Osal_appC7xPreInit(void);
+void    C7x_ConfigureTimerOutput(void);
+#endif
 
 #undef  ENABLE_GET_TIME_TEST
 #if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_AM572x) || defined(SOC_K2G) || defined(SOC_AM335x) || defined(SOC_AM437x) || defined(SOC_J7200)|| defined(SOC_TPR12)
@@ -120,6 +132,18 @@ void Osal_appC7xPreInit(void);
 TimerP_Handle handle;
 #endif
 
+/* Test application stack size */
+#if defined (__C7100__)
+/* Temp workaround to avoid assertion failure: A_stackSizeTooSmall : Task stack size must be >= 16KB.
+  * until the Bug PDK-7605 is resolved */
+#define APP_TSK_STACK_MAIN              (32U * 1024U)
+#else
+#define APP_TSK_STACK_MAIN              (16U * 1024U)
+#endif
+
+/* Test application stack */
+static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN] __attribute__((aligned(32)));
+
 /*
  *  ======== Board_initOSAL ========
  */
@@ -131,8 +155,11 @@ void Board_initOSAL(void)
     boardCfg = BOARD_INIT_MODULE_CLOCK |
         BOARD_INIT_UART_STDIO;
 #else
-    boardCfg = BOARD_INIT_PINMUX_CONFIG |
-        BOARD_INIT_MODULE_CLOCK;
+    boardCfg = BOARD_INIT_PINMUX_CONFIG;
+    #if !defined(_TMS320C6X)
+        boardCfg |= BOARD_INIT_MODULE_CLOCK;
+    #endif
+
     #if defined (UART_CONSOLE)
         boardCfg |= BOARD_INIT_UART_STDIO;
     #endif
@@ -1281,6 +1308,22 @@ void osal_test(UArg arg0, UArg arg1)
     bool testFail = false;
     Osal_StaticMemStatus pMemStats;
 
+    Board_initOSAL();
+
+#ifdef BUILD_C7X_1
+    Osal_appC7xPreInit();
+    C7x_ConfigureTimerOutput();
+#endif
+
+#ifdef BUILD_M4F    
+    OSAL_log("\n M4 test \n");
+#endif
+
+#if defined(BUILD_C66X_1) || defined(BUILD_C66X_2)
+/* To set C66 timer interrupts on J7ES VLAB */
+    C66xTimerInterruptInit();
+#endif
+
     OSAL_log(" OSAL Test Starting...\n Takes about 30 seconds ...\n"); 
 
 #if defined(BARE_METAL)
@@ -1513,56 +1556,61 @@ void C7x_ConfigureTimerOutput()
 /* To set C66 timer interrupts on J7ES VLAB */
 void C66xTimerInterruptInit(void)
 {
-    /*
-     * The C66 INTR_ROUTER on J7ES VLAB is not directly addressable by the
-     * C66 core itself, so we need to use the RAT.
-     *
-     * RAT is hard-coded at 0x07ff0000 for J7ES C66.  Choose an arbitrary
-     * RAT entry (2nd entry) at offset 0x30.  Region entries start at 0x20.
-     */
-    volatile int *RAT = (volatile int *)0x07ff0030;
-    /* Choose an arbitrary virtual address for intr_router RAT mapping */
-    volatile int *intr_router = (volatile int *)0x20000000;
+#if defined (_TMS320C6X)
+    struct tisci_msg_rm_irq_set_req     rmIrqReq;
+    struct tisci_msg_rm_irq_set_resp    rmIrqResp;
 
-    /* program virtual address to REGION_BASE */
-    RAT[1] = (int)intr_router;
-    /* program C66_0 INTR_ROUTER physical addr to REGION_TRANS_L */
-#ifdef BUILD_C66X_1
-    RAT[2] = 0x00ac0000;
+    /* On C66x builds we define OS timer tick in the configuration file to
+     * trigger event #21 for C66x_1 and #20 for C66x_2. Map
+     * DMTimer 0 interrupt to these events through DMSC RM API.
+     */
+    rmIrqReq.valid_params           = TISCI_MSG_VALUE_RM_DST_ID_VALID |
+                                      TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID;
+    rmIrqReq.src_id                 = TISCI_DEV_TIMER0;
+    rmIrqReq.src_index              = 0U;
+#if defined (BUILD_C66X_1)
+    rmIrqReq.dst_id                 = TISCI_DEV_C66SS0_CORE0;
+    rmIrqReq.dst_host_irq           = 21U;
 #endif
-#ifdef BUILD_C66X_2
-    RAT[2] = 0x00ad0000;
+#if defined (BUILD_C66X_2)
+    rmIrqReq.dst_id                 = TISCI_DEV_C66SS1_CORE0;
+    rmIrqReq.dst_host_irq           = 20U;
 #endif
-    /* enable region and set size to 512 B */
-    RAT[0] = 0x80000009;
+    /* Unused params */
+    rmIrqReq.global_event           = 0U;
+    rmIrqReq.ia_id                  = 0U;
+    rmIrqReq.vint                   = 0U;
+    rmIrqReq.vint_status_bit_index  = 0U;
+    rmIrqReq.secondary_host         = TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
 
-    /*
-     * intr_router[12] corresponds to output event #21, which is what we
-     * set eventId to in .cfg file.
-     *     - bit 16 enables the entry
-     *     - lower bits define input event (#1 for dmtimer #0)
-     * intr_router[13] corresponds to output event #22, which is what we
-     * set eventId to in this file.
-     *     - bit 16 enables the entry
-     *     - lower bits define input event (#3 for dmtimer #2)
+    Sciclient_rmIrqSet(&rmIrqReq, &rmIrqResp, SCICLIENT_SERVICE_WAIT_FOREVER);
+
+    /* On C66x builds we define OS timer tick in the configuration file to
+     * trigger event #22 for C66x_1 and #22 for C66x_2. Map
+     * DMTimer 0 interrupt to these events through DMSC RM API.
      */
-#ifdef BUILD_C66X_1
-    intr_router[12] = 0x00010001;
-    intr_router[13] = 0x00010003;
+    rmIrqReq.valid_params           = TISCI_MSG_VALUE_RM_DST_ID_VALID |
+                                      TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID;
+    rmIrqReq.src_id                 = TISCI_DEV_TIMER2;
+    rmIrqReq.src_index              = 0U;
+#if defined (BUILD_C66X_1)
+    rmIrqReq.dst_id                 = TISCI_DEV_C66SS0_CORE0;
+    rmIrqReq.dst_host_irq           = 22U;
 #endif
-    /*
-     * intr_router[11] corresponds to output event #20, which is what we
-     * set eventId to in .cfg file.
-     *     - bit 16 enables the entry
-     *     - lower bits define input event (#1 for dmtimer #0)
-     * intr_router[13] corresponds to output event #22, which is what we
-     * set eventId to in this file.
-     *     - bit 16 enables the entry
-     *     - lower bits define input event (#3 for dmtimer #2)
-     */
-#ifdef BUILD_C66X_2
-    intr_router[11] = 0x00010001;
-    intr_router[13] = 0x00010003;
+#if defined (BUILD_C66X_2)
+    rmIrqReq.dst_id                 = TISCI_DEV_C66SS1_CORE0;
+    rmIrqReq.dst_host_irq           = 22U;
+#endif
+
+    /* Unused params */
+    rmIrqReq.global_event           = 0U;
+    rmIrqReq.ia_id                  = 0U;
+    rmIrqReq.vint                   = 0U;
+    rmIrqReq.vint_status_bit_index  = 0U;
+    rmIrqReq.secondary_host         = TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
+
+    Sciclient_rmIrqSet(&rmIrqReq, &rmIrqResp, SCICLIENT_SERVICE_WAIT_FOREVER);
+
 #endif
 }
 
@@ -1579,23 +1627,6 @@ void sysIdleLoop(void)
 int main(void)
 {
 
-#if defined(BUILD_C66X_1) || defined(BUILD_C66X_2)
-/* To set C66 timer interrupts on J7ES VLAB */
-    C66xTimerInterruptInit();
-#endif
-
-    Osal_appC7xPreInit();
-
-#ifdef BUILD_C7X_1
-    C7x_ConfigureTimerOutput();
-#endif
-
-    Board_initOSAL();
-
-#ifdef BUILD_M4F    
-    OSAL_log("\n M4 test \n");
-#endif
-
 #ifdef BARE_METAL
     osal_test();
 #else
@@ -1608,8 +1639,10 @@ int main(void)
     TaskP_Params taskParams;
     Error_Block  eb;
     TaskP_Params_init(&taskParams);
-    taskParams.pErrBlk = &eb;
-    System_printf("Creating Task \n");
+    taskParams.priority =2;
+    taskParams.stack        = gAppTskStackMain;
+    taskParams.stacksize    = sizeof (gAppTskStackMain);
+    taskParams.pErrBlk      = &eb;
     TaskP_create(osal_test, &taskParams);
 #endif
     /* Start BIOS */
