@@ -291,7 +291,7 @@ static void SDR_ECC_handleEccAggrEvent (SDR_ECC_MemType eccMemType, uint32_t err
             continue;
         }
 
-        /* Check if this event in triggered, by reading the ECC aggregator status
+        /* Check if this event is triggered, by reading the ECC aggregator status
          * register */
         if (ramIdType == SDR_ECC_RAM_ID_TYPE_WRAPPER) {
             cslResult = CSL_ecc_aggrIsEccRamIntrPending(eccAggrRegs,
@@ -1050,23 +1050,26 @@ SDR_Result SDR_ECC_injectError(SDR_ECC_MemType eccMemType,
             retVal = SDR_ECC_getMemConfig(eccMemType, memSubType, &memConfig);
         }
 
-        if (retVal == SDR_PASS) {
-            if ( ((uintptr_t)pECCErrorConfig->pErrMem) < memConfig.memStartAddr) {
-                retVal = SDR_FAIL;
-            } else {
-                /* Calculate error offset */
-                errAddrOffset =  ((uintptr_t)pECCErrorConfig->pErrMem - memConfig.memStartAddr)
-                                / (memConfig.stride);
+        if ((retVal == SDR_PASS) && (memConfig.readable == true))
+        {
+            if (retVal == SDR_PASS) {
+                if ( ((uintptr_t)pECCErrorConfig->pErrMem) < memConfig.memStartAddr) {
+                    retVal = SDR_FAIL;
+                } else {
+                    /* Calculate error offset */
+                    errAddrOffset =  ((uintptr_t)pECCErrorConfig->pErrMem - memConfig.memStartAddr)
+                                    / (memConfig.stride);
+                }
             }
-        }
 
-        if (retVal == SDR_PASS) {
-            /* Set error Address in ECC Wrapper RAM ID */
-            cslRetval = CSL_ecc_aggrWriteEccRamErrCtrlReg(eccAggrRegs,
-                                                          ramId, 0u,
-                                                          errAddrOffset);
-            if (cslRetval != CSL_PASS) {
-                retVal = SDR_FAIL;
+            if (retVal == SDR_PASS) {
+                /* Set error Address in ECC Wrapper RAM ID */
+                cslRetval = CSL_ecc_aggrWriteEccRamErrCtrlReg(eccAggrRegs,
+                                                              ramId, 0u,
+                                                              errAddrOffset);
+                if (cslRetval != CSL_PASS) {
+                    retVal = SDR_FAIL;
+                }
             }
         }
 

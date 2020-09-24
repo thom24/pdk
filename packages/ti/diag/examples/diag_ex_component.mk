@@ -92,6 +92,27 @@ export diag_ex_esm_example_app_SBL_APPIMAGEGEN = yes
 
 diag_ex_EXAMPLE_LIST += diag_ex_esm_example_app
 
+# ECC example
+diag_ex_ecc_example_app_COMP_LIST = diag_ex_ecc_example_app
+diag_ex_ecc_example_app_RELPATH = ti/diag/examples/ecc_example_app
+diag_ex_ecc_example_app_PATH = $(PDK_DIAG_EX_COMP_PATH)/ecc_example_app
+diag_ex_ecc_example_app_MAKEFILE = -f makefile
+diag_ex_ecc_example_app_BOARD_DEPENDENCY = yes
+diag_ex_ecc_example_app_CORE_DEPENDENCY = yes
+export diag_ex_ecc_example_app_COMP_LIST
+export diag_ex_ecc_example_app_BOARD_DEPENDENCY
+export diag_ex_ecc_example_app_CORE_DEPENDENCY
+export diag_ex_ecc_example_app_MAKEFILE
+diag_ex_ecc_example_app_PKG_LIST = diag_ex_ecc_example_app
+diag_ex_ecc_example_app_INCLUDE = $(diag_ex_ecc_example_app_PATH)
+diag_ex_ecc_example_app_BOARDLIST = $(diag_ex_BOARDLIST)
+export diag_ex_ecc_example_app_BOARDLIST
+diag_ex_ecc_example_app_$(SOC)_CORELIST = $(diag_ex_$(SOC)_CORELIST)
+export diag_ex_ecc_example_app_$(SOC)_CORELIST
+export diag_ex_ecc_example_app_SBL_APPIMAGEGEN = yes
+
+diag_ex_EXAMPLE_LIST += diag_ex_ecc_example_app
+
 export diag_ex_LIB_LIST
 export diag_ex_EXAMPLE_LIST
 

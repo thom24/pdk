@@ -49,7 +49,8 @@
 // TODO - Macros defined within NOT_USE_CSLR to be used until CSLR values for J721E defined
 #if defined(NOT_USE_CSLR)
 
-#define CSL_COMPUTE_CLUSTER0_MSMC_ECC_AGGR0_CLEC_SRAM_RAMECC_SIZE                         (40U) //TBD
+#define CSL_COMPUTE_CLUSTER0_MSMC_ECC_AGGR0_CLEC_SRAM_RAMECC_ROW_WIDTH                    (22U)
+#define CSL_COMPUTE_CLUSTER0_MSMC_ECC_AGGR0_CLEC_SRAM_RAMECC_SIZE                         (5632U)
 
 
 /* ECC Row Widths for MCU Pulsar RAM ID's with Wrapper type
@@ -724,7 +725,8 @@ const SDR_RAMIdEntry_t SDR_ECC_mcuEccAggr0RamIdTable[SDR_MSMC_AGGR0_RAM_ID_TABLE
 const SDR_MemConfig_t SDR_ECC_mainMsmcAggr0MemEntries[SDR_MSMC_AGGR0_WRAPPER_RAM_IDS_TOTAL_ENTRIES] =
 {
     {SDR_ECC_MAIN_MSMC_MEM_WRAPPER_SUBTYPE, 0u,
-         CSL_COMPUTE_CLUSTER0_MSMC_ECC_AGGR0_CLEC_SRAM_RAMECC_SIZE, 4u, ((bool)false) },
+         CSL_COMPUTE_CLUSTER0_MSMC_ECC_AGGR0_CLEC_SRAM_RAMECC_SIZE, 4u,
+         CSL_COMPUTE_CLUSTER0_MSMC_ECC_AGGR0_CLEC_SRAM_RAMECC_ROW_WIDTH, ((bool)false) },
 };
 
 /** ----------------------------------------------------------------------------------
