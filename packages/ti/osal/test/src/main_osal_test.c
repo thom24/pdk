@@ -141,8 +141,12 @@ TimerP_Handle handle;
 #define APP_TSK_STACK_MAIN              (16U * 1024U)
 #endif
 
+#ifdef BARE_METAL
+/* No task support for Bare metal */
+#else
 /* Test application stack */
 static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN] __attribute__((aligned(32)));
+#endif
 
 /*
  *  ======== Board_initOSAL ========
@@ -1556,7 +1560,7 @@ void C7x_ConfigureTimerOutput()
 /* To set C66 timer interrupts on J7ES VLAB */
 void C66xTimerInterruptInit(void)
 {
-#if defined (_TMS320C6X)
+#if defined (_TMS320C6X) && !defined(SOC_TPR12)
     struct tisci_msg_rm_irq_set_req     rmIrqReq;
     struct tisci_msg_rm_irq_set_resp    rmIrqResp;
 
