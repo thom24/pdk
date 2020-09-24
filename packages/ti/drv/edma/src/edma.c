@@ -2428,7 +2428,7 @@ int32_t EDMA_configErrorMonitoring(EDMA_Handle handle, EDMA_errorConfig_t const 
 #endif
 
     /* event queue threshold configuration */
-    if (config->isEventQueueThresholdingEnabled == true)
+    if ((errorCode == EDMA_NO_ERROR) && (config->isEventQueueThresholdingEnabled == true))
     {
 #ifdef EDMA_PARAM_CHECK
         if (config->eventQueueThreshold > EDMA_EVENT_QUEUE_THRESHOLD_MAX)

@@ -136,7 +136,7 @@ void ESM_processInterrupt (uintptr_t arg, uint32_t vec, int32_t* groupNum, int32
     {
         /* group 1 error 32 and above */
 #ifdef ESM_DEBUG
-        object->debugEsmISRCount[vec/32]++;
+        object->debugEsmISRCount[((vec/32) % ESM_MAX_ISR_COUNT)]++;
 #endif
         vec = vec - 32;
         *groupNum = 1;
