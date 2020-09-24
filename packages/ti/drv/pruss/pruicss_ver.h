@@ -51,13 +51,13 @@ extern "C" {
  * format:
  *  0xAABBCCDD -> Arch (AA); API Changes (BB); Major (CC); Minor (DD)
  */
-#define PRUICSS_DRV_VERSION_ID                     (0x0100000F)
+#define PRUICSS_DRV_VERSION_ID                     (0x01000010)
 
 /**
  * @brief   This is the version string which describes the PRUICSS driver along with the
  * date and build information.
  */
-#define PRUICSS_DRV_VERSION_STR                    "pruss Driver Revision: 01.00.00.15"
+#define PRUICSS_DRV_VERSION_STR                    "pruss Driver Revision: 01.00.00.16"
 
 
 #ifdef __cplusplus
