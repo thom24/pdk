@@ -10,18 +10,7 @@ endif
 MODULE_NAME = udma
 
 SRCDIR = src
-ifeq ($(SOC),$(filter $(SOC), am65xx))
-  SRCDIR += soc/V0
-endif
-ifeq ($(SOC),$(filter $(SOC), j721e))
-  SRCDIR += soc/V1
-endif
-ifeq ($(SOC),$(filter $(SOC), j7200))
-  SRCDIR += soc/V2
-endif
-ifeq ($(SOC),$(filter $(SOC), am64x))
-  SRCDIR += soc/V3
-endif
+SRCDIR += soc/$(SOC)
 INCDIR =
 
 # List all the external components/interfaces, whose interface header files

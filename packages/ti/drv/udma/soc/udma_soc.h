@@ -44,19 +44,19 @@
 /* ========================================================================== */
 
 #if defined (SOC_AM65XX)
-#include <ti/drv/udma/soc/V0/udma_soc.h>
+#include <ti/drv/udma/soc/am65xx/udma_soc.h>
 #endif
 
 #if defined (SOC_J721E) || defined (SOC_AM77X)
-#include <ti/drv/udma/soc/V1/udma_soc.h>
+#include <ti/drv/udma/soc/j721e/udma_soc.h>
 #endif
 
 #if defined (SOC_J7200)
-#include <ti/drv/udma/soc/V2/udma_soc.h>
+#include <ti/drv/udma/soc/j7200/udma_soc.h>
 #endif
 
 #if defined (SOC_AM64X)
-#include <ti/drv/udma/soc/V3/udma_soc.h>
+#include <ti/drv/udma/soc/am64x/udma_soc.h>
 #endif
 
 #ifdef __cplusplus
