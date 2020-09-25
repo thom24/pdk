@@ -102,6 +102,7 @@ __mii_rcv_p	.set	1
         .global  TASK_EXECUTION_FINISHED
         .global  FN_TIMESTAMP_GPTP_PACKET
         .global  FN_CHECK_AND_CLR_PTP_FWD_FLAG
+        .global  FN_CHECK_AND_CLR_PTP_FWD_FLAG_L2
         .global  FN_COMPARE_DELAY_RESP_ID
 
     
@@ -1111,6 +1112,7 @@ LESS_THAN_32_BYTES_RCVD:
     .if $defined(PTP)
     ;we don't want to execute this for UDP frames, since this will be executed again later
     QBBS    PTP_SKIP_EARLY_TS_FOR_UDP_1, R22, RX_IS_UDP_PTP_BIT
+    JAL     RCV_TEMP_REG_3.w2, FN_CHECK_AND_CLR_PTP_FWD_FLAG_L2
     JAL     RCV_TEMP_REG_3.w2, FN_TIMESTAMP_GPTP_PACKET
 PTP_SKIP_EARLY_TS_FOR_UDP_1:
     .endif    ;PTP 
@@ -1461,6 +1463,7 @@ LB_STORE_FIRST_32_BYTES:
 
     ;we don't want to execute this for UDP frames, since this will be executed again later
     QBBS    MORE_THAN_32_BYTES_RCVD, R22, RX_IS_UDP_PTP_BIT
+    JAL     RCV_TEMP_REG_3.w2, FN_CHECK_AND_CLR_PTP_FWD_FLAG_L2
     JAL     RCV_TEMP_REG_3.w2, FN_TIMESTAMP_GPTP_PACKET
 
 MORE_THAN_32_BYTES_RCVD:

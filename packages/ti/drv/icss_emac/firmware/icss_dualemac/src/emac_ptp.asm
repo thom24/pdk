@@ -81,6 +81,7 @@ ____pn_gPtp_asm    .set    1
     .global  FN_PTP_BACKGROUND_TASK
     .global  FN_TIMESTAMP_GPTP_PACKET
     .global  FN_CHECK_AND_CLR_PTP_FWD_FLAG
+    .global  FN_CHECK_AND_CLR_PTP_FWD_FLAG_L2
     .global  FN_PTP_TX_ADD_DELAY
     .global  FN_PTP_TX_ADD_DELAY_UDP
     .global  FN_COMPARE_DELAY_RESP_ID
@@ -1147,8 +1148,36 @@ PTP_CHECK_UDP_RX_LINK_LOCAL:
     SET    R22, R22, PTP_RELEASE_PORT_QUEUE_BIT
     QBA    EXIT_FN_CHECK_AND_CLR_PTP_FWD_FLAG
 PTP_CHECK_PDLY_RESP_MSG_ID:
-    QBNE   EXIT_FN_CHECK_AND_CLR_PTP_FWD_FLAG, R20.b0, PTP_PDLY_RSP_MSG_ID
+    QBNE   PTP_CHECK_FLW_UP_MSG_ID, R20.b0, PTP_PDLY_RSP_MSG_ID
+    SET    R22, R22, PTP_RELEASE_PORT_QUEUE_BIT
+PTP_CHECK_FLW_UP_MSG_ID:
+    QBNE   EXIT_FN_CHECK_AND_CLR_PTP_FWD_FLAG, R20.b0, PTP_FOLLOW_UP_MSG_ID
     SET    R22, R22, PTP_RELEASE_PORT_QUEUE_BIT
 EXIT_FN_CHECK_AND_CLR_PTP_FWD_FLAG:
     JMP    RCV_TEMP_REG_3.w2
+
+;****************************************************************************
+;
+;     NAME             : FN_CHECK_AND_CLR_PTP_FWD_FLAG_L2
+;     DESCRIPTION      : Check if the PTP-UDP packet is Follow Up 
+;                        so it's not forwarded. Called when 0-32 bytes are in R2-R9
+;     Cycles           : TBD
+;     Register Usage   : R22 (flags), R20, R21, R10, R11, R13
+;     Pseudocode       :
+;***************************************************************************
+
+FN_CHECK_AND_CLR_PTP_FWD_FLAG_L2:
+    QBBC    EXIT_FN_CHECK_AND_CLR_PTP_FWD_FLAG_L2, R22, RX_IS_PTP_BIT
+    LDI     R1.b0, &R5.b2
+    QBNE    NO_VLAN_RX_L2, R5.w0, VLAN_EtherType
+    ADD     R1.b0, R1.b0, 4
+NO_VLAN_RX_L2:
+    MVIB    R20.b0, *R1.b0
+    ;check for follow up frame
+    QBNE    EXIT_FN_CHECK_AND_CLR_PTP_FWD_FLAG_L2, R20.b0, PTP_FOLLOW_UP_MSG_ID
+    SET     R22, R22, PTP_RELEASE_PORT_QUEUE_BIT
+EXIT_FN_CHECK_AND_CLR_PTP_FWD_FLAG_L2:    
+    JMP    RCV_TEMP_REG_3.w2
+
+
     .endif    ;____pn_gPtp_asm
