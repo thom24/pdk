@@ -28,12 +28,14 @@ endif
   SRCS_COMMON += main_tirtos.c
   # Enable XDC build for application by providing XDC CFG File per core
   XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
+
 ifeq ($(SOC),$(filter $(SOC), j721e j7200))
   XDC_CFG_UPDATE_$(CORE) = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/ipc_perf_test/ipc_override_$(SOC).cfg
   ifeq ($(ISA), r5f)
-	XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/ipc_perf_test/sysbios_$(ISA).cfg
+    XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/ipc_perf_test/$(SOC)/sysbios_$(ISA).cfg
   endif
   ifeq ($(CORE), mcu1_0)
+    XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/ipc_perf_test/$(SOC)/sysbios_$(ISA)_sbl.cfg
     EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/$(SOC)/linker_$(ISA)_$(CORE)_sbl_sysbios.lds
   else
     EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/$(SOC)/linker_$(ISA)_$(CORE)_sysbios.lds

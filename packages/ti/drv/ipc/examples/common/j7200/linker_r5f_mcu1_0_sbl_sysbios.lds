@@ -57,6 +57,7 @@
 #define OCMRAM_MCU1_1_START 0x41cff000
 
 -e __VECS_ENTRY_POINT
+--retain="*(.utilsCopyVecsToAtcm)"
 
 /*----------------------------------------------------------------------------*/
 /* Memory Map                                                                 */
@@ -118,6 +119,7 @@ SECTIONS
                      *(.text:ti_sysbios_family_arm_v7r_Cache_*)
                   }  > MCU1_R5F0_BTCM
     .text:xdc_runtime_Startup_reset__I : {} palign(8) > MCU1_R5F0_BTCM
+    .utilsCopyVecsToAtcm               : {} palign(8) > MCU1_R5F0_BTCM
     .bootCode    	: {} palign(8) 		> MCU1_R5F0_BTCM
     .startupCode 	: {} palign(8) 		> MCU1_R5F0_BTCM
     .startupData 	: {} palign(8) 		> MCU1_R5F0_BTCM, type = NOINIT
