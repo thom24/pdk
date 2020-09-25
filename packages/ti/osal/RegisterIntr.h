@@ -77,6 +77,9 @@ typedef struct {
                                      - ARP32: 1(NMI), 2-13(INT4-15)
                                      - R5: 0-15
                                      - M4: None
+                                     Note: For R5 Core, baremetal case, there is no device specific
+                                           priority set - all interrupts are handled at the same priority
+                                           So, this is not applicable for bare metal R5 Core interrupt config.
                                  */
     uint32_t triggerSensitivity; /*!< Set an interrupt's trigger sensitivity for ARM corepac as
                                       @ref OSAL_armGicTrigType_t. The applicable trigger types are

@@ -141,7 +141,12 @@ typedef struct HwiP_Params_s {
                                This can be used for debugging purposes, or
                                set to NULL if not needed. */
     uintptr_t  arg;       /*!< Argument passed into the Hwi function. */
-    uint32_t   priority;  /*!< Device specific priority. */
+    uint32_t   priority;  /*!< Device specific priority. 
+                               Note: For R5 Core, baremetal case, there is no 
+                               device specific priority set - all interrupts
+                               are handled at the same priority. So, this is not
+                               applicable for bare metal R5 Core interrupt config
+                           */
     uint32_t   enableIntr; /*!< When set to TRUE, interrupt is enabled after the create
                                 otherwise interrupt is disabled after HwiP_Create */
     uint32_t   evtId;     /*!< Event Id associated */
