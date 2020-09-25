@@ -129,12 +129,16 @@ extern "C" {
 
 /** Dummy cycles for Read operation */
 #define NOR_SINGLE_READ_DUMMY_CYCLE           (0U)
+#define NOR_SINGLE_CMD_READ_DUMMY_CYCLE       (1U)
 #define NOR_OCTAL_SDR_CMD_READ_DUMMY_CYCLE    (3U)
 #define NOR_OCTAL_DDR_CMD_READ_DUMMY_CYCLE    (4U)
 #define NOR_OCTAL_READ_DUMMY_CYCLE            (24U)
 #define NOR_OCTAL_READ_DUMMY_CYCLE_LC         (0xBU)
 #define NOR_OCTAL_READ_DUMMY_CYCLE_INDAC      (20U)
 #define NOR_OCTAL_READ_DUMMY_CYCLE_LC_INDAC   (0x8U)
+
+#define NOR_RDID_CMD_LENGTH_SINGLE            (1U)
+#define NOR_RDID_CMD_LENGTH_OCTAL             (5U)
 
 /** In Micro seconds */
 #define NOR_PAGE_PROG_TIMEOUT		(400U)
