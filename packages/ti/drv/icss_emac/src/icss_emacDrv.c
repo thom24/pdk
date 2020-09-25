@@ -1768,7 +1768,7 @@ int32_t ICSS_EmacRxPktGet(ICSS_EmacRxArgument *rxArg, void* userArg)
              if(ptp_pkt)
              {
                  aligned_length = (new_size & 0xFFE0) + 32;
-                 memcpy_local((int32_t*)(destAddress + new_size), (int32_t*)(rd_buffer_l3_addr + rd_packet_length), (size_t)10);
+                 memcpy_local((int32_t*)(destAddress + new_size), (int32_t*)(rd_buffer_l3_addr + aligned_length), (size_t)10);
              }
 
         }
