@@ -93,45 +93,6 @@ static void BoardDiag_cpswTxIsrFxn(void *appData)
     txSem = true;
 }
 
-static void BoardDiag_cpswTimerISR(uintptr_t arg)
-{
-    Cpsw_periodicTick(gCpswLpbkObj.hCpsw);
-}
-
-static TimerP_Handle BoardDiag_cpswCreateClock(void)
-{
-    TimerP_Handle timerHandle;
-    TimerP_Params timerParams;
-    uint32_t period = 1000 * 100; /* usecs */
-
-    TimerP_Params_init(&timerParams);
-
-    timerParams.startMode  = TimerP_StartMode_USER;
-    timerParams.periodType = TimerP_PeriodType_MICROSECS;
-    timerParams.period     = period;
-
-    timerHandle = TimerP_create(TimerP_ANY,
-                                (TimerP_Fxn) & BoardDiag_cpswTimerISR,
-                                &timerParams);
-
-    return timerHandle;
-}
-
-void BoardDiag_cpswStartClock(CpswApp_ClkHandle handle)
-{
-    TimerP_Handle timerHandle = (TimerP_Handle)handle;
-
-    /* start the timer */
-    TimerP_start(timerHandle);
-}
-
-void BoardDiag_cpswStopClock(TimerP_Handle handle)
-{
-    TimerP_Handle timerHandle = (TimerP_Handle)handle;
-
-    TimerP_stop(timerHandle);
-}
-
 /**
  * \brief   This function is used to queue the received packets to rx ready queue
  *
@@ -767,8 +728,6 @@ int32_t BoardDiag_cpswPktRxTx(void)
 int32_t BoardDiag_cpswOpenDma(void)
 {
     int32_t status = CPSW_SOK;
-    uint8_t macAddrBuf[CPSW_GESI_ETH_PORT_MAX][BOARD_MAC_ADDR_BYTES];
-    uint32_t macEntries;
 
     /* Open the CPSW TX channel  */
     CpswDma_initTxChParams(&cpswTxChCfg);
@@ -833,12 +792,6 @@ int32_t BoardDiag_cpswOpenDma(void)
                                 &gCpswLpbkObj.hostMacAddr0[0U],
                                 &gCpswLpbkObj.hRxFlow,
                                 &cpswRxFlowCfg);
-
-    /* For 1st Port */
-    Board_readMacAddr(0, &macAddrBuf[0][0], sizeof(macAddrBuf), &macEntries);
-    memcpy(&gCpswLpbkObj.hostMacAddr0[0U], &macAddrBuf[0][0], CPSW_MAC_ADDR_LEN);
-    /* For 2nd Port */
-    memcpy(&gCpswLpbkObj.hostMacAddr1[0U], &macAddrBuf[1][0], CPSW_MAC_ADDR_LEN);
 
         if (NULL == gCpswLpbkObj.hRxFlow)
         {
@@ -1068,12 +1021,11 @@ int32_t BoardDiag_cpswLoopbackTest(void)
     int32_t       status;
     bool          alive;
     uint8_t       index;
-    TimerP_Handle clkhandle = BoardDiag_cpswCreateClock();
 
     Cpsw_IoctlPrms prms;
     CpswAle_SetPortStateInArgs setPortStateInArgs;
 
-    CpswAppBoardUtils_init();
+    CpswAppBoardUtils_initEthFw();
     CpswAppUtils_enableClocks(gCpswLpbkObj.cpswType);
 
     gCpswLpbkObj.coreId = CpswAppSoc_getCoreId();
@@ -1152,8 +1104,6 @@ int32_t BoardDiag_cpswLoopbackTest(void)
         }
     }
 
-    BoardDiag_cpswStartClock(clkhandle);
-
     UART_printf("Waiting for link to up for portNum-%d and portNum-%d...\n\r",
                  gCpswLpbkObj.portNum0,
                  gCpswLpbkObj.portNum1);
@@ -1166,6 +1116,10 @@ int32_t BoardDiag_cpswLoopbackTest(void)
                                           gCpswLpbkObj.portNum0))
         {
             BoardDiag_cpswWait(1000);
+            /* Cpsw_periodicTick should be called from non-ISR context.
+             * Calling Cpsw_periodicTick at regular intervals for port link detect before
+             * starting packet RX/TX */
+            Cpsw_periodicTick(gCpswLpbkObj.hCpsw);
         }
 
         while (!CpswAppUtils_isPortLinkUp(gCpswLpbkObj.hCpsw,
@@ -1173,6 +1127,10 @@ int32_t BoardDiag_cpswLoopbackTest(void)
                                           gCpswLpbkObj.portNum1))
         {
             BoardDiag_cpswWait(1000);
+            /* Cpsw_periodicTick should be called from non-ISR context.
+             * Calling Cpsw_periodicTick at regular intervals for port link detect before
+             * starting packet RX/TX */
+            Cpsw_periodicTick(gCpswLpbkObj.hCpsw);
         }
 
         UART_printf("Link up for portNum-%d and portNum-%d\n\r",
@@ -1213,8 +1171,6 @@ int32_t BoardDiag_cpswLoopbackTest(void)
     CpswAppUtils_disableClocks(gCpswLpbkObj.cpswType);
     CpswAppBoardUtils_deInit();
 
-    BoardDiag_cpswStopClock(clkhandle);
-
     return 0;
 }
 
@@ -1229,7 +1185,7 @@ int32_t BoardDiag_cpswLoopbackTest(void)
 int8_t BoardDiag_CpswEthRunTest(void)
 {
     int8_t ret;
-    uint8_t userInput;
+    uint32_t userInput;
 
     UART_printf  ("************************************************\n");
     UART_printf  ("*             CPSW Ethernet Test           *\n");
@@ -1249,7 +1205,7 @@ int8_t BoardDiag_CpswEthRunTest(void)
     UART_printf("1 - PRG0 ports verification\n\r");
     UART_printf("2 - PRG1 ports verification\n\r");
 
-    UART_scanFmt("%d", &userInput);
+    UART_scanFmt("%d", (uint8_t*)&userInput);
 
     while((userInput != PRG0_PORT_VERIFICATION) &&
           (userInput != PRG1_PORT_VERIFICATION))
@@ -1271,11 +1227,6 @@ int8_t BoardDiag_CpswEthRunTest(void)
 
     /* Run the loopback test */
     ret = BoardDiag_cpswLoopbackTest();
-    if(ret == -1)
-    {
-        UART_printf("CPSW Loopback Test failed\n\r");
-        return -1;
-    }
 
     return ret;
 }
@@ -1332,7 +1283,12 @@ int main(void)
     ret = BoardDiag_CpswEthRunTest();
     if(ret == 0)
     {
-        UART_printf("CPSW loopback test completed successfully\n");
+        UART_printf("CPSW Loopback Test Passed\n\r");
+        UART_printf("All tests have passed\n\r");
+    }
+    else
+    {
+        UART_printf("CPSW Loopback Test failed\n\r");
     }
 
     return ret;
