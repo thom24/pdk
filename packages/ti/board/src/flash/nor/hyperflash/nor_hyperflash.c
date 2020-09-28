@@ -160,11 +160,7 @@ static NOR_STATUS Nor_hpfReadId(NOR_Info *Nor_hpfInfo)
         count++;
     }
 
-#ifdef NOT_YET
     HW_WR_REG16((hpfObject->baseAddr), NOR_CMD_RESET);
-    We require to ensure device is up/functional before next command.
-    will have to update to add this check
-#endif
 
     return(retVal);
 }
