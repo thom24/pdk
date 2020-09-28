@@ -69,15 +69,35 @@ INCLUDE_EXTERNAL_INTERFACES = pdk
 
 # List all the components required by the application
 COMP_LIST_COMMON = $(PDK_COMMON_BAREMETAL_COMP)
+
+ifeq ($(SOC), $(filter $(SOC), tpr12))
+COMP_LIST_COMMON += csirx
+else
 COMP_LIST_COMMON += fvid2 csirx dss
+endif
 
 # Common source files and CFLAGS across all platforms and cores
-PACKAGE_SRCS_COMMON = ../src makefile
+PACKAGE_SRCS_COMMON = makefile
 PACKAGE_SRCS_COMMON += ../../common/$(SOC)
 PACKAGE_SRCS_COMMON += ../../board_diag_component.mk
 PACKAGE_SRCS_COMMON += ../../create_sd.bat ../../create_sd.sh
 
-SRCS_COMMON += csirx_test.c csirx_display.c diag_common_cfg.c
+ifeq ($(SOC), $(filter $(SOC), tpr12))
+PACKAGE_SRCS_COMMON += ../src/csirx_test_tpr12.c ../src/csirx_test_tpr12.h
+SRCS_COMMON += csirx_test_tpr12.c
+else
+PACKAGE_SRCS_COMMON += ../src/csirx_display.c ../src/csirx_display.h ../src/csirx_test.c ../src/csirx_test.h
+SRCS_COMMON += csirx_test.c csirx_display.c
+endif
+
+SRCS_COMMON += diag_common_cfg.c
+
+ifeq ($(SOC), $(filter $(SOC), tpr12))
+ifeq ($(CORE),$(filter $(CORE), mcu1_0))
+SRCS_ASM_COMMON += diag_entry_r5.asm
+EXTERNAL_LNKCMD_FILE_LOCAL = ../../common/$(SOC)/linker_$(CORE).lds
+endif
+endif
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) -DDIAG_$(TESTMODE) $(BOARD_DIAG_CFLAGS)
 

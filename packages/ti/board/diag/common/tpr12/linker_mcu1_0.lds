@@ -40,7 +40,9 @@ PAGE 0:
     TCMA_RAM (RX) : origin=0x00000100 length=0x00007F00
     TCMB_RAM (RW) : origin=0x00080000 length=0x00008000
     L2_RAM (RW)   : origin=0x10200000 length=0x000EF000
-    L3_RAM (RW)   : origin=0x88000000 length=0x00390000
+    L3_RAM (RW)   : origin=0x88000000 length=0x00300000
+    L3_RAM_Ping (RW)   : origin=0x88300000 length=0x0040000
+    L3_RAM_Pong (RW)   : origin=0x88340000 length=0x0040000
     HWA_RAM (RW)  : origin=0x82000000 length=0x00020000
 
 PAGE 1:
@@ -63,6 +65,11 @@ SECTIONS{
        and allowed to overflow into Z and cannot be split from Y to Z. Some sections
        like bss are not allowed to be split so > notation is used for them
     */
+    .l2ram   : {} > L2_RAM
+    .l3ram   : {} > L3_RAM
+    .pingl3ram   : {} > L3_RAM_Ping
+    .pongl3ram   : {} > L3_RAM_Pong
+	.hwaram  : {} > HWA_RAM
     .text    : {} >> TCMA_RAM | L2_RAM
 
     .const   : {} > L2_RAM

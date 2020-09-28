@@ -274,8 +274,12 @@ export board_diag_csirx_CORE_DEPENDENCY
 export board_diag_csirx_MAKEFILE
 board_diag_csirx_PKG_LIST = board_diag_csirx
 board_diag_csirx_INCLUDE = $(board_diag_csirx_PATH)
-board_diag_csirx_BOARDLIST = j721e_evm
+board_diag_csirx_BOARDLIST = j721e_evm tpr12_evm
+ifeq ($(SOC),$(filter $(SOC), tpr12))
+board_diag_csirx_$(SOC)_CORELIST = mcu1_0
+else
 board_diag_csirx_$(SOC)_CORELIST = mcu2_0
+endif
 export board_diag_csirx_$(SOC)_CORELIST
 export board_diag_csirx_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
 
