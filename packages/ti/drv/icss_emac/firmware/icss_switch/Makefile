@@ -15,7 +15,7 @@ SRCDIR += ./src ../icss_dualemac/src
 INCDIR += ./src ../icss_dualemac/src ./
 # Common source files across all platforms and cores
 SRCS += resource_table.c
-SRCS_ASM += micro_scheduler.asm emac_MII_Rcv.asm emac_MII_Xmt.asm emac_statistics.asm switch_collision_task.asm
+SRCS_ASM += micro_scheduler.asm emac_MII_Rcv.asm emac_MII_Xmt.asm emac_statistics.asm switch_collision_task.asm emac_ptp.asm
 
 LNKFLAGS_LOCAL_COMMON = --entry_point=micro_scheduler
 
@@ -54,7 +54,7 @@ OBJ_PATHS = $(patsubst %.c, $(OBJDIR)/%.$(OBJEXT), $(SRCS))
 OBJ_PATHS_ASM = $(patsubst %.asm, $(OBJDIR)/%.$(OBJEXT), $(SRCS_ASM))
 
 CFLAGS_DIROPTS = -fr=$(OBJDIR) -fs=$(OBJDIR)
-CFLAGS_PRU = -v3 -DICSS_$(PRU_VERSION) -D$(PRU_CORE) -DICSS_SWITCH_BUILD -DPRU -DTWO_PORT_CFG -DICSS_STP_SWITCH
+CFLAGS_PRU = -v3 -DICSS_$(PRU_VERSION) -D$(PRU_CORE) -DICSS_SWITCH_BUILD -DPRU -DTWO_PORT_CFG -DICSS_STP_SWITCH -DPTP
 
 CFLAGS = $(CFLAGS_PRU) $(CFLAGS_INTERNAL)
 INCLUDE_DIRS = $(INCDIR) $(CODEGEN_INCLUDE)
