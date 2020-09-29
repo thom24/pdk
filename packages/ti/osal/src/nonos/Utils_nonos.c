@@ -59,7 +59,11 @@ uint32_t  gOsalSemAllocCnt   = 0U, gOsalSemPeak = 0U;
 uint32_t  gOsalTimerAllocCnt = 0U, gOsalTimerPeak = 0U;
 uint32_t  gOsalHwiAllocCnt   = 0U, gOsalHwiPeak = 0U;
 #ifndef OSAL_CPU_FREQ_KHZ_DEFAULT
+#if defined(SOC_J721E)
+#define OSAL_CPU_FREQ_KHZ_DEFAULT (1000000)
+#else
 #define OSAL_CPU_FREQ_KHZ_DEFAULT (400000)
+#endif
 #endif
 
 volatile bool Osal_DebugP_Assert_Val=(bool)true;
