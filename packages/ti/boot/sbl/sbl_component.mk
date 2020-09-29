@@ -998,7 +998,7 @@ export sbl_boot_xip_entry_SBL_APPIMAGEGEN
 #SBL_CFLAGS += -DSBL_DISPLAY_PROFILE_INFO
 
 ifeq ($(SOC), am64x)
-SBL_CFLAGS += -DSBL_BYPASS_OSPI_DRIVER
+SBL_CFLAGS += -DSBL_BYPASS_OSPI_DRIVER_FOR_SYSFW_DOWNLOAD
 endif
 
 ###### Use boot_perf_benchmark example#######
