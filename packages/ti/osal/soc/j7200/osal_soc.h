@@ -55,6 +55,7 @@ extern "C" {
 
 #define  EXTERNAL_CLOCK_KHZ_DEFAULT       (24000)
 #define  PMU_CLOCK_KHZ_DEFAULT            (1000000U)
+#define  OSAL_CPU_FREQ_KHZ_DEFAULT        (1000000U)
 
 #if defined(TIMERP_TIMER_FREQ_LO)
 #undef   TIMERP_TIMER_FREQ_LO
