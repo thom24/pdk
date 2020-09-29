@@ -298,7 +298,11 @@ SBL_ADD_PROFILE_POINT;
 
 int32_t SBL_ospiInit(void *handle)
 {
-#if !defined(SBL_BYPASS_OSPI_DRIVER)
+#if (!defined(SBL_BYPASS_OSPI_DRIVER) \
+     /* In simulation, we must ALWAYS bypass the OSPI driver regardless of what */ \
+     /* .. bypass option is requested. REMOVE WHEN SIMULATION IS IRRELEVANT. */ \
+     && !(defined(SBL_BYPASS_OSPI_DRIVER_FOR_SYSFW_DOWNLOAD) && defined(SIM_BUILD)))
+
     Board_flashHandle h = *(Board_flashHandle *) handle;
 
     SBL_ADD_PROFILE_POINT;
@@ -401,7 +405,10 @@ int32_t SBL_ospiFlashRead(const void *handle, uint8_t *dst, uint32_t length,
     uint32_t start_time = SBL_ADD_PROFILE_POINT;
     uint32_t end_time = 0;
 
-#if !defined(SBL_BYPASS_OSPI_DRIVER)
+#if (!defined(SBL_BYPASS_OSPI_DRIVER) \
+     /* In simulation, we must ALWAYS bypass the OSPI driver regardless of what */ \
+     /* .. bypass option is requested. REMOVE WHEN SIMULATION IS IRRELEVANT. */ \
+     && !(defined(SBL_BYPASS_OSPI_DRIVER_FOR_SYSFW_DOWNLOAD) && defined(SIM_BUILD)))
 #if SBL_USE_DMA
     if (length > 4 * 1024)
     {
@@ -497,7 +504,11 @@ int32_t SBL_ospiFlashRead(const void *handle, uint8_t *dst, uint32_t length,
 
 int32_t SBL_ospiClose(const void *handle)
 {
-#if !defined(SBL_BYPASS_OSPI_DRIVER)
+#if (!defined(SBL_BYPASS_OSPI_DRIVER) \
+     /* In simulation, we must ALWAYS bypass the OSPI driver regardless of what */ \
+     /* .. bypass option is requested. REMOVE WHEN SIMULATION IS IRRELEVANT. */ \
+     && !(defined(SBL_BYPASS_OSPI_DRIVER_FOR_SYSFW_DOWNLOAD) && defined(SIM_BUILD)))
+
     Board_flashHandle h = *(const Board_flashHandle *) handle;
 
     SBL_ADD_PROFILE_POINT;
