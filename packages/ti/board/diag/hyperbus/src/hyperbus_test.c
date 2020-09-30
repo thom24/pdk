@@ -358,7 +358,7 @@ int main(void)
     UART_printf  ("*********************************************\n");
 #endif
 
-#if defined (j721e_evm)
+#if defined (j721e_evm) || defined (j7200_evm)
     UART_printf("\nConfiguring PLLs...");
     status = Board_init(BOARD_INIT_PLL);
     if(status != BOARD_SOK)
