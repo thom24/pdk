@@ -67,7 +67,7 @@
 extern "C" {
 #endif
 
-//#define UDMA_ENABLE
+#define UDMA_ENABLE
 #if defined(UDMA_ENABLE)
 /* for enabling SPI_DMA */
 #include <ti/drv/udma/udma.h>
