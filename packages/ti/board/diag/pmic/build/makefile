@@ -62,6 +62,9 @@ endif
 
 SRCDIR = ../src ../../common/$(SOC)
 INCDIR = ../../../../board ../src ../../../src/$(BOARD)/include ../../../src/$(BOARD) ../../../src/flash ../../common/$(SOC) ../../../../csl
+ifeq ($(BOARD), $(filter $(BOARD), j721e_evm j7200_evm))
+INCDIR += ../../../../drv/pmic/include ../../../../drv/pmic
+endif
 
 # List all the external components/interfaces, whose interface header files
 # need to be included for this component
@@ -75,12 +78,23 @@ COMP_LIST_COMMON += mibspi
 endif
 
 # Common source files and CFLAGS across all platforms and cores
-PACKAGE_SRCS_COMMON = ../src makefile
+ifeq ($(BOARD), $(filter $(BOARD), j721e_evm j7200_evm))
+PACKAGE_SRCS_COMMON = ../src/pmic_test_v2.c ../src/pmic_test_v2.h 
+else
+PACKAGE_SRCS_COMMON = ../src/pmic_test.c ../src/pmic_test.h
+endif
+PACKAGE_SRCS_COMMON += makefile
 PACKAGE_SRCS_COMMON += ../../common/$(SOC)
 PACKAGE_SRCS_COMMON += ../../board_diag_component.mk
 PACKAGE_SRCS_COMMON += ../../create_sd.bat ../../create_sd.sh
 
-SRCS_COMMON += pmic_test.c diag_common_cfg.c
+ifeq ($(BOARD), $(filter $(BOARD), j721e_evm j7200_evm))
+SRCS_COMMON += pmic_test_v2.c
+else
+SRCS_COMMON += pmic_test.c
+endif
+
+SRCS_COMMON += diag_common_cfg.c
 
 ifeq ($(CORE),$(filter $(CORE), mcu1_0))
 SRCS_ASM_COMMON += diag_entry_r5.asm
