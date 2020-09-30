@@ -80,6 +80,7 @@ PACKAGE_SRCS_COMMON += ./.gitignore ./sbl_component.mk ./makefile ./sbl_ver.h
 SRCS_COMMON = sbl_soc.c
 SRCS_COMMON += sbl_rprc.c
 SRCS_COMMON += sbl_slave_core_boot.c
+SRCS_COMMON += sbl_qos.c
 SRCS_COMMON += UART_soc.c
 
 ifeq ($(SOC),$(filter $(SOC), tpr12))

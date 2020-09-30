@@ -525,6 +525,7 @@ static void J721E_SetupQoS(void)
     setup_gpu_qos();
     setup_encoder_qos();
 }
+#endif
 
 /* This function is to be called from other apps (e.g., mcusw boot app) to set QoS settings */
 void SBL_SetQoS(void)
@@ -534,4 +535,3 @@ void SBL_SetQoS(void)
 #endif
 }
 
-#endif
