@@ -88,7 +88,7 @@ MEMORY
     MCU2_1_R5F_MEM_DATA (RWIX)	: origin=MCU2_1_R5F_MEM_DATA_BASE length=0x00100000	/*   1MB */
     MCU2_1_DDR_SPACE (RWIX)	: origin=MCU2_1_DDR_SPACE_BASE    length=0x00C00000	/*  12MB */
 
-    SHARED_DDR_SPACE (RWIX)	: origin=0xAA000000 length=0x01C00000           /*  2MB */
+    SHARED_DDR_SPACE (RWIX)	: origin=0xA5000000 length=0x00800000           /*  8MB */
 
 }  /* end of MEMORY */
 

@@ -96,6 +96,10 @@ void Osal_initMmuDefault(void)
     Mmu_map(0x70000000U, 0x70000000U, 0x00200000U, &attrs); /* MSMC - 2MB */
     Mmu_map(0x41C00000U, 0x41C00000U, 0x00080000U, &attrs); /* OCMC - 512KB */
 
+    /* IPC VRing Buffer - uncached */
+    attrs.attrIndx =  Mmu_AttrIndx_MAIR4;
+    (void)Mmu_map(0xA5000000U, 0xA5000000U, 0x00800000U, &attrs);
+
     return;
 }
 #endif

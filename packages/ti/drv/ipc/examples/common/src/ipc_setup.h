@@ -50,11 +50,13 @@ extern "C" {
 #define RPMSG_DATA_SIZE         (256U*512U + IPC_RPMESSAGE_OBJ_SIZE)
 #define VQ_BUF_SIZE             2048U
 
-/* Same Start Address using for Maxwell & J721E device */
+/* Vring start address for each device */
 #ifdef SOC_AM65XX
 #define VRING_BASE_ADDRESS      0xA2000000U
 #elif defined (SOC_J7200)
 #define VRING_BASE_ADDRESS      0xA4000000U
+#elif defined (SOC_AM64X)
+#define VRING_BASE_ADDRESS      0xA5000000U
 #else
 #define VRING_BASE_ADDRESS      0xAA000000U
 #endif

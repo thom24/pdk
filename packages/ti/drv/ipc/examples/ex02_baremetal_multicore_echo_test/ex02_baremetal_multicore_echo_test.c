@@ -101,7 +101,7 @@ uint32_t remoteProc[] =
     IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1, IPC_MCU3_0, IPC_MCU3_1, IPC_C66X_1, IPC_C66X_2, IPC_C7X_1
 #elif defined (SOC_J7200)
     IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1
-#elif defined (SOC_AM64x)
+#elif defined (SOC_AM64X)
     IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1, IPC_M4F_0
 #endif
 };

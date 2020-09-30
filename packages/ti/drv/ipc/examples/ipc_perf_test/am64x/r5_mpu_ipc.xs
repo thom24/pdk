@@ -54,7 +54,7 @@
  * |----|--------------|------|----|-------------------------------------------|----|---------------------|------|
  * | 7  | 0xA0000000   | 2MB  | T  | DDR (Linux VRing Buffer) - Uncacheble     | F  | RW at PL 1 & PL 3   | 0x0  |
  * |----|--------------|------|----|-------------------------------------------|----|---------------------|------|
- * | 8  | 0xAA000000   | 32MB | T  | DDR (VRing Buffer) - Uncacheble           | F  | RW at PL 1 & PL 3   | 0x0  |
+ * | 8  | 0xA5000000   | 8MB  | T  | DDR (VRing Buffer) - Uncacheble           | F  | RW at PL 1 & PL 3   | 0x0  |
  *  -------------------------------------------------------------------------------------------------------------
  */
 
@@ -158,4 +158,4 @@ attrs.noExecute = true;
 attrs.accPerm = 3;          /* RW at PL1 */
 attrs.tex = 0;
 attrs.subregionDisableMask = 0;
-MPU.setRegionMeta(7, 0xAA000000, MPU.RegionSize_32M, attrs);
+MPU.setRegionMeta(7, 0xA5000000, MPU.RegionSize_8M, attrs);

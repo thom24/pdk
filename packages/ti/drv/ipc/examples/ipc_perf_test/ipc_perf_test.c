@@ -80,6 +80,8 @@
 #define VRING_BASE_ADDRESS      0xA2000000U
 #elif defined(SOC_J7200)
 #define VRING_BASE_ADDRESS      0xA4000000U
+#elif defined(SOC_AM64X)
+#define VRING_BASE_ADDRESS      0xA5000000U
 #else
 #define VRING_BASE_ADDRESS      0xAA000000U
 #endif
