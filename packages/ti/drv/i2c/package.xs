@@ -77,8 +77,8 @@ function getLibs(prog)
                      'am65xx',
                      'j721e',
                      'j7200',
-                     'am64x'
-		     'tpr12'
+                     'am64x',
+                     'tpr12'
                    ];
 
     /* Get the SOC */
@@ -159,19 +159,19 @@ function close()
         socType = socType.concat("x");
     }
     print ("\t SoC Type is " + socType );
-    
+
     /* Append list for SoC which depend on PRUSS. */
     /* This is for PRU UART firmware. */
     /* Add entry in this array for newly supported SoCs. */
     var prussDepSocTypes = [
                         'k2g',
-                        'am335x', 
+                        'am335x',
                         'am437x',
                         'am572x',
                         'am571x',
                         'am574x'
                       ];
-    
+
     if (this.Settings.enableSwIp == true)
     {
         for each(var soc in prussDepSocTypes)
