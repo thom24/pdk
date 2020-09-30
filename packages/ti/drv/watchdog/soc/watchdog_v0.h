@@ -48,7 +48,7 @@ extern "C" {
 
 #include <stdint.h>
 #include <ti/drv/watchdog/watchdog.h>
-#include <ti/csl/src/ip/rti/V0/rti.h>
+#include <ti/csl/csl_rti.h>
 
 /**************************************************************************
  ************************* Extern Declarations ****************************
