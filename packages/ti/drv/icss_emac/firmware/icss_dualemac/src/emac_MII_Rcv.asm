@@ -1713,12 +1713,6 @@ LB_RESET_RX_FIFO:
     JMP	LB_RELEASE_QUEUE   ; Clear the EOF and other possible error flags.
     
 LB_NO_RX_FRAME_ERROR:
-    
-    .if $defined(PTP)
-    QBBS    LB_RELEASE_HOST_QUEUE, R22, PTP_RELEASE_HOST_QUEUE_BIT
-
-PTP_HOST_QUEUE_RELEASE_DONE:
-    .endif ;PTP
 
     .if $defined("ICSS_SWITCH_BUILD")
     .if $defined(PTP)	
@@ -1963,13 +1957,7 @@ LB_NO_HOST_QUEUE_OVERFLOW_OCCURED_SLAVE:
     SBCO	&RCV_TEMP_REG_2, ICSS_SHARED_CONST, RCV_TEMP_REG_1.w0, 4	
     .endif ;TWO_PORT_CFG
     .endif
-    .if $defined(PTP)
-    QBBC    LB_RELEASE_QUEUE_CHECK_FWD_FLAG, R22, PTP_RELEASE_HOST_QUEUE_BIT
-    CLR     R22, R22, PTP_RELEASE_HOST_QUEUE_BIT
-    CLR     MII_RCV.rx_flags, MII_RCV.rx_flags, host_rcv_flag_shift
-    QBA     PTP_HOST_QUEUE_RELEASE_DONE
-    .endif
-
+    
 LB_RELEASE_QUEUE_CHECK_FWD_FLAG:
     .if $defined("ICSS_SWITCH_BUILD")
     QBBS    LB_RELEASE_PORT_QUEUE, MII_RCV.rx_flags_extended, port_queue_overflow_shift    ;MII_RCV.rx_flags_extended.port_queue_overflow
