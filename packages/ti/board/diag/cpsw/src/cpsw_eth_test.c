@@ -33,10 +33,10 @@
 /**
  *  \file   cpsw_test.c
  *
- *  \brief  CPSW9G ethernet diagnostic test file
+ *  \brief  CPSW ethernet diagnostic test file
  *
  *  Targeted Functionality: Verification of basic functionality of
- *  CPSW9G Ethernet interface.
+ *  CPSW Ethernet interface.
  *
  *  Operation: This is the Loopback test code for the Ethernet Interface.
  *  The test code showcases usage of the CPSW Driver exported API for
@@ -64,7 +64,11 @@ static CpswDma_OpenTxChPrms   cpswTxChCfg;
 static CpswDma_OpenRxFlowPrms cpswRxFlowCfg;
 
 static cpsw_Obj gCpswLpbkObj = {
+#if defined(SOC_J721E)
     .cpswType = CPSW_9G,
+#else
+    .cpswType = CPSW_5G,
+#endif
 };
 
 /**
@@ -721,6 +725,8 @@ int32_t BoardDiag_cpswPktRxTx(void)
 /**
  * \brief   This function is used to open the CPSW DMA module
  *
+ * \param   testMode   [IN/OUT]   Pointer to virtual address
+ *
  * \return  int32_t
  *               0 - in case of success
  *              -1 - in case of failure.
@@ -836,7 +842,7 @@ int32_t BoardDiag_cpswOpenDma(void)
  *              -1 - in case of failure.
  *
  */
-static int32_t BoardDiag_cpswOpen(void)
+static int32_t BoardDiag_cpswOpen(uint32_t testMode)
 {
     Cpsw_Config    cpswCfg;
     CpswOsal_Prms  osalPrms;
@@ -856,12 +862,7 @@ static int32_t BoardDiag_cpswOpen(void)
                                     &cpswCfg.resourceConfig);
     BoardDiag_cpswInitAleConfig(&cpswCfg.aleConfig);
 
-    UART_printf("CPSW_9G Test on MAIN NAVSS\n");
-
     cpswCfg.dmaConfig.rxChInitPrms.dmaPriority = UDMA_DEFAULT_RX_CH_DMA_PRIORITY;
-
-
-
 
     /* App should open UDMA first as UDMA handle is needed to initialize
      * CPSW RX channel */
@@ -942,12 +943,35 @@ static int32_t BoardDiag_cpswOpen(void)
 
         BoardDiag_cpswChangeHostAleEntry(&gCpswLpbkObj.hostMacAddr0[0U]);
 
+#if defined(j7200_evm)
+        if(testMode == BOARD_DIAG_CPSW_RGMII_TEST)
+        {
+            /*
+             * J7200 EVM has only one RGMII port supported on GESI board.
+             * Loopback test is done between GESI RGMII port and one SGMII Ethernet port.
+             * Port0 is configured for SGMII and port1 is configured for RGMII.
+             */
+            CpswAppBoardUtils_setPhyConfigQsgmii(gCpswLpbkObj.cpswType,
+                                                 linkArgs0.portNum,
+                                                 macConfig,
+                                                 interface,
+                                                 phyConfig);
+        }
+        else
+        {
+            CpswAppBoardUtils_setPhyConfig(gCpswLpbkObj.cpswType,
+                                           linkArgs0.portNum,
+                                           macConfig,
+                                           interface,
+                                           phyConfig);
+        }
+#else
         CpswAppBoardUtils_setPhyConfig(gCpswLpbkObj.cpswType,
                                        linkArgs0.portNum,
                                        macConfig,
                                        interface,
                                        phyConfig);
-
+#endif
         macConfig->enableLoopback = false;
         linkConfig->speed     = CPSW_SPEED_AUTO;
         linkConfig->duplexity = CPSW_DUPLEX_AUTO;
@@ -965,11 +989,35 @@ static int32_t BoardDiag_cpswOpen(void)
 
         BoardDiag_cpswChangeHostAleEntry(&gCpswLpbkObj.hostMacAddr1[0U]);
 
+#if defined(j7200_evm)
+        if(testMode == BOARD_DIAG_CPSW_RGMII_TEST)
+        {
+            /*
+             * J7200 EVM has only one RGMII port supported on GESI board.
+             * Loopback test is done between GESI RGMII port and one SGMII Ethernet port.
+             * Port0 is configured for SGMII and port1 is configured for RGMII.
+             */
+            CpswAppBoardUtils_setPhyConfigRgmii(gCpswLpbkObj.cpswType,
+                                                linkArgs1.portNum,
+                                                macConfig,
+                                                interface,
+                                                phyConfig);
+        }
+        else
+        {
+            CpswAppBoardUtils_setPhyConfig(gCpswLpbkObj.cpswType,
+                                           linkArgs1.portNum,
+                                           macConfig,
+                                           interface,
+                                           phyConfig);
+        }
+#else
         CpswAppBoardUtils_setPhyConfig(gCpswLpbkObj.cpswType,
                                        linkArgs1.portNum,
                                        macConfig,
                                        interface,
                                        phyConfig);
+#endif
         if(status == CPSW_PHY_INVALID_PHYADDR)
         {
             UART_printf("PHY configuration failed\n\r");
@@ -1046,15 +1094,17 @@ void BoardDiag_enetPhyEnable(void)
 }
 
 /**
- * \brief   This function is used to perform the CPSW9G
+ * \brief   This function is used to perform the CPSW
  *          Ethernet port to port external loopback test
+ *
+ * \param   testMode   [IN/OUT]   Pointer to virtual address
  *
  * \return  int32_t
  *               0 - in case of success
  *              -1 - in case of failure.
  *
  */
-int32_t BoardDiag_cpswLoopbackTest(void)
+int32_t BoardDiag_cpswLoopbackTest(uint32_t testMode)
 {
     int32_t       status;
     bool          alive;
@@ -1069,7 +1119,7 @@ int32_t BoardDiag_cpswLoopbackTest(void)
     gCpswLpbkObj.coreId = CpswAppSoc_getCoreId();
 
     /* Open the CPSW */
-    status = BoardDiag_cpswOpen();
+    status = BoardDiag_cpswOpen(testMode);
     if (status != CPSW_SOK)
     {
         UART_printf("Failed to open CPSW: %d\n", status);
@@ -1212,6 +1262,7 @@ int32_t BoardDiag_cpswLoopbackTest(void)
     return 0;
 }
 
+#if defined (j721e_evm)
 void BoardDiag_rgmiiPortSelect(void)
 {
     uint32_t userInput = 0;
@@ -1240,6 +1291,16 @@ void BoardDiag_rgmiiPortSelect(void)
         gCpswLpbkObj.portNum1 = CPSW_MAC_PORT_7;
     }
 }
+#else
+void BoardDiag_rgmiiPortSelect(void)
+{
+    gCpswLpbkObj.portNum0 = CPSW_MAC_PORT_0;
+    gCpswLpbkObj.portNum1 = CPSW_MAC_PORT_1;
+
+    Board_serdesCfgQsgmii();
+    BoardDiag_enetPhyEnable();
+}
+#endif
 
 void BoardDiag_sgmiiPortSelect(void)
 {
@@ -1258,6 +1319,7 @@ void BoardDiag_sgmiiPortSelect(void)
         UART_scanFmt("%d", &userInput);
     }
 
+#if defined (j721e_evm)
     if(userInput == BOARD_DIAG_CPSW_SGMII_P0P1_TEST)
     {
         gCpswLpbkObj.portNum0 = CPSW_MAC_PORT_1;
@@ -1268,6 +1330,18 @@ void BoardDiag_sgmiiPortSelect(void)
         gCpswLpbkObj.portNum0 = CPSW_MAC_PORT_5;
         gCpswLpbkObj.portNum1 = CPSW_MAC_PORT_6;
     }
+#else
+    if(userInput == BOARD_DIAG_CPSW_SGMII_P0P1_TEST)
+    {
+        gCpswLpbkObj.portNum0 = CPSW_MAC_PORT_0;
+        gCpswLpbkObj.portNum1 = CPSW_MAC_PORT_1;
+    }
+    else
+    {
+        gCpswLpbkObj.portNum0 = CPSW_MAC_PORT_2;
+        gCpswLpbkObj.portNum1 = CPSW_MAC_PORT_3;
+    }
+#endif
 
     Board_serdesCfgQsgmii();
     BoardDiag_enetPhyEnable();
@@ -1291,8 +1365,13 @@ int8_t BoardDiag_CpswEthRunTest(void)
     UART_printf  ("************************************************\n");
 
     UART_printf("Select any one option from below\n\r");
+#if defined (j721e_evm)
     UART_printf("1 - CPSW9G RGMII Ethernet Test\n\r");
     UART_printf("2 - CPSW9G SGMII Ethernet Test\n\r");
+#else
+    UART_printf("1 - CPSW5G RGMII Ethernet Test\n\r");
+    UART_printf("2 - CPSW5G SGMII Ethernet Test\n\r");
+#endif
     UART_scanFmt("%d", (uint8_t*)&userInput);
 
     if(userInput == BOARD_DIAG_CPSW_RGMII_TEST)
@@ -1305,7 +1384,7 @@ int8_t BoardDiag_CpswEthRunTest(void)
     }
 
     /* Run the loopback test */
-    ret = BoardDiag_cpswLoopbackTest();
+    ret = BoardDiag_cpswLoopbackTest(userInput);
 
     return ret;
 }
@@ -1313,7 +1392,7 @@ int8_t BoardDiag_CpswEthRunTest(void)
 /**
  * \brief  CPSW diagnostic test main function
  *
- *  This function performs board initializations and calls cpsw9g ethernet test
+ *  This function performs board initializations and calls cpsw ethernet test
  *
  * \return  int
  *              0  - in case of success
@@ -1336,13 +1415,18 @@ int main(void)
 #ifdef PDK_RAW_BOOT
     boardCfg = BOARD_INIT_MODULE_CLOCK |
                BOARD_INIT_PINMUX_CONFIG |
-               BOARD_INIT_UART_STDIO |
-               BOARD_INIT_ENETCTRL_CPSW9G;
+               BOARD_INIT_UART_STDIO;
 #else
     boardCfg = BOARD_INIT_PINMUX_CONFIG |
-               BOARD_INIT_UART_STDIO |
-               BOARD_INIT_ENETCTRL_CPSW9G |
-               BOARD_INIT_CPSW9G_ETH_PHY;
+               BOARD_INIT_UART_STDIO;
+#endif
+
+#if defined (j721e_evm)
+    boardCfg |= BOARD_INIT_ENETCTRL_CPSW9G |
+                BOARD_INIT_CPSW9G_ETH_PHY;
+#else
+    boardCfg |= BOARD_INIT_ENETCTRL_CPSW5G |
+                BOARD_INIT_CPSW5G_ETH_PHY;
 #endif
 
     status = Board_init(boardCfg);
@@ -1351,7 +1435,7 @@ int main(void)
         return -1;
     }
 
-    /* Enable CPSW9G MDIO mux */
+    /* Enable CPSW RGMII MDIO mux */
     status = Board_control(BOARD_CTRL_CMD_SET_GESI_CPSW_MDIO_MUX,
                            NULL);
     if(status != BOARD_SOK)

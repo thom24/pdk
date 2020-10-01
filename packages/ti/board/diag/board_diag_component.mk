@@ -250,7 +250,7 @@ export board_diag_cpsw_CORE_DEPENDENCY
 export board_diag_cpsw_MAKEFILE
 board_diag_cpsw_PKG_LIST = board_diag_cpsw
 board_diag_cpsw_INCLUDE = $(board_diag_cpsw_PATH)
-board_diag_cpsw_BOARDLIST = j721e_evm
+board_diag_cpsw_BOARDLIST = j721e_evm j7200_evm
 board_diag_cpsw_$(SOC)_CORELIST = mcu2_0
 export board_diag_cpsw_$(SOC)_CORELIST
 export board_diag_cpsw_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
