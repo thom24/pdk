@@ -62,6 +62,12 @@ uint32_t gSciclient_firmware[1];
 #error "SYSFW too large...update SBL_SYSFW_MAX_SIZE"
 #endif
 
+#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)
+/* Firewall ID for MCU_FSS0_S0 */
+#define MCU_FSS0_S0_FWID (1036)
+#define MCU_FSS0_S0_FW_REGIONS (8)
+#endif
+
 uint32_t SBL_IsAuthReq(void)
 {
     uint32_t retVal = SBL_ALWAYS_AUTH_APP;
@@ -220,6 +226,34 @@ void SBL_SciClientInit(void)
         SBL_log(SBL_LOG_ERR,"SYSFW board config sec...FAILED \n");
         SblErrLoop(__FILE__, __LINE__);
     }
+#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)
+    /* Secure ROM has left firewall regions for FSS DAT0 set.  Disable them for DMA usage. */
+    uint16_t i;
+    struct tisci_msg_fwl_set_firewall_region_resp respFwCtrl = {0};
+    struct tisci_msg_fwl_set_firewall_region_req reqFwCtrl =
+    {
+        .fwl_id = (uint16_t) MCU_FSS0_S0_FWID,
+        .region = (uint16_t) 0,
+        .n_permission_regs = (uint32_t) 3,
+        /* Set .control to zero to disable the firewall region */
+        .control = (uint32_t) 0,
+        .permissions[0] = (uint32_t) 0,
+        .permissions[1] = (uint32_t) 0,
+        .permissions[2] = (uint32_t) 0,
+        .start_address = 0,
+        .end_address = 0
+    };
+
+    for (i = 0; i < MCU_FSS0_S0_FW_REGIONS; i++)
+    {
+        reqFwCtrl.region = i;
+        status = Sciclient_firewallSetRegion(&reqFwCtrl, &respFwCtrl, SCICLIENT_SERVICE_WAIT_FOREVER);
+        if (status != CSL_PASS)
+        {
+            SBL_log(SBL_LOG_ERR,"MCU FSS0_S0 firewall region # %d disable...FAILED \n", i);
+        }
+    }
+#endif
 #endif
 
     /* Get SYSFW version */

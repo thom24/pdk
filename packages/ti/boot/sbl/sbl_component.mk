@@ -246,7 +246,7 @@ export sbl_lib_ospi_hlos_BOARDLIST
 sbl_lib_ospi_hlos_$(SOC)_CORELIST = mcu1_0
 export sbl_lib_ospi_hlos_$(SOC)_CORELIST
 
-# SBL OSPI LIB with NON-DMA - Needed for HS SBL, etc.
+# SBL OSPI LIB with NON-DMA
 export sbl_lib_ospi_nondma_COMP_LIST = sbl_lib_ospi_nondma
 sbl_lib_ospi_nondma_RELPATH = ti/boot/sbl
 export sbl_lib_ospi_nondma_OBJPATH = ti/boot/sbl/ospi_nondma
@@ -565,7 +565,7 @@ sbl_ospi_img_hs_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)_hs/ospi/bi
 #Because of this multiple lto_ files with same name can be created if app name
 #and app path are same
 sbl_ospi_img_hs_PATH = $(PDK_SBL_COMP_PATH)/build
-export sbl_ospi_img_hs_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=ospi SBL_USE_DMA=no BUILD_HS=yes
+export sbl_ospi_img_hs_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=ospi SBL_USE_DMA=yes BUILD_HS=yes
 export sbl_ospi_img_hs_SBL_CERT_KEY=$(SBL_CERT_KEY_HS)
 export sbl_ospi_img_hs_BOARD_DEPENDENCY = yes
 export sbl_ospi_img_hs_SOC_DEPENDENCY = yes
@@ -587,7 +587,7 @@ sbl_ospi_img_hlos_hs_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)_hs/os
 #Because of this multiple lto_ files with same name can be created if app name
 #and app path are same
 sbl_ospi_img_hlos_hs_PATH = $(PDK_SBL_COMP_PATH)/build
-export sbl_ospi_img_hlos_hs_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=ospi HLOS_BOOT=yes SBL_USE_DMA=no BUILD_HS=yes
+export sbl_ospi_img_hlos_hs_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=ospi HLOS_BOOT=yes SBL_USE_DMA=yes BUILD_HS=yes
 export sbl_ospi_img_hlos_hs_SBL_CERT_KEY=$(SBL_CERT_KEY_HS)
 export sbl_ospi_img_hlos_hs_BOARD_DEPENDENCY = yes
 export sbl_ospi_img_hlos_hs_SOC_DEPENDENCY = yes
