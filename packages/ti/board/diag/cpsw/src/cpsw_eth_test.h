@@ -52,6 +52,7 @@
 #include "board_ethernet_config.h"
 #include "board_pinmux.h"
 #include "board_control.h"
+#include "board_serdes_cfg.h"
 
 #include <ti/drv/sciclient/sciclient.h>
 
@@ -94,18 +95,23 @@ extern "C" {
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
 
-#define TEST_LEN                    (500U)
+#define BOARD_DIAG_CPSW_TEST_LEN                (500U)
 
-#define TEST_NUM_LOOP               (1U)
-#define TEST_PTK_NUM                (128U)
+#define BOARD_DIAG_CPSW_TEST_NUM_LOOP           (1U)
+#define BOARD_DIAG_CPSW_TEST_PTK_NUM            (128U)
 
-#define PRG0_PORT_VERIFICATION      (1U)
-#define PRG1_PORT_VERIFICATION      (2U)
+#define BOARD_DIAG_CPSW_RGMII_TEST              (1U)
+#define BOARD_DIAG_CPSW_SGMII_TEST              (2U)
+#define BOARD_DIAG_MCU_CPSW_RGMII_TEST          (3U)
 
-#define CPSW_PHY_START_ADDRESS      (0U)
-#define CPSW_PHY_END_ADDRESS        (31U)
+#define BOARD_DIAG_CPSW_RGMII_PRG0_TEST         (1U)
+#define BOARD_DIAG_CPSW_RGMII_PRG1_TEST         (2U)
 
-#define CPSW_GESI_ETH_PORT_MAX      (5U)
+#define BOARD_DIAG_CPSW_SGMII_P0P1_TEST         (1U)
+#define BOARD_DIAG_CPSW_SGMII_P2P3_TEST         (2U)
+
+#define BOARD_DIAG_CPSW_PHY_START_ADDRESS       (0U)
+#define BOARD_DIAG_CPSW_PHY_END_ADDRESS         (31U)
 
 typedef void *CpswApp_ClkHandle;
 

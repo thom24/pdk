@@ -578,10 +578,10 @@ int32_t BoardDiag_cpswPktRxTx(void)
     int32_t          status = CPSW_SOK;
 
     totalTxCnt = 0U;
-    for (loopCnt = 0U; loopCnt < TEST_NUM_LOOP; loopCnt++)
+    for (loopCnt = 0U; loopCnt < BOARD_DIAG_CPSW_TEST_NUM_LOOP; loopCnt++)
     {
         pktCnt = 0U;
-        while (pktCnt < TEST_PTK_NUM)
+        while (pktCnt < BOARD_DIAG_CPSW_TEST_PTK_NUM)
         {
             loopRxPktCnt = loopTxPktCnt = 0U;
             /* Transmit a single packet */
@@ -607,8 +607,8 @@ int32_t BoardDiag_cpswPktRxTx(void)
                 frame->hdr.etherType = htons(ETHERTYPE_EXPERIMENTAL1);
                 memset(&frame->payload[0U],
                        (uint8_t)(0xA5 + pktCnt),
-                       TEST_LEN);
-                pktInfo->userBufLen = TEST_LEN + sizeof (EthFrameHeader);
+                       BOARD_DIAG_CPSW_TEST_LEN);
+                pktInfo->userBufLen = BOARD_DIAG_CPSW_TEST_LEN + sizeof (EthFrameHeader);
                 pktInfo->appPriv    = &gCpswLpbkObj;
                 CpswUtils_checkPktState(&pktInfo->pktState,
                                         CPSW_PKTSTATE_MODULE_APP,
@@ -619,7 +619,7 @@ int32_t BoardDiag_cpswPktRxTx(void)
                 CpswUtils_enQ(&txSubmitQ,
                               &pktInfo->node);
 
-                if (pktCnt >= TEST_PTK_NUM)
+                if (pktCnt >= BOARD_DIAG_CPSW_TEST_PTK_NUM)
                 {
                     break;
                 }
@@ -711,7 +711,8 @@ int32_t BoardDiag_cpswPktRxTx(void)
     }
     else
     {
-        UART_printf("Failed to transmit/receive packets: %d, transmitted: %d \n", TEST_PTK_NUM, totalTxCnt);
+        UART_printf("Failed to transmit/receive packets: %d, transmitted: %d \n",
+                    BOARD_DIAG_CPSW_TEST_PTK_NUM, totalTxCnt);
     }
 
     return status;
@@ -1007,6 +1008,43 @@ static int32_t BoardDiag_cpswOpen(void)
     return status;
 }
 
+void BoardDiag_enetPhyEnable(void)
+{
+    Board_I2cInitCfg_t i2cCfg;
+
+    i2cCfg.i2cInst   = BOARD_I2C_IOEXP_DEVICE2_INSTANCE;
+    i2cCfg.socDomain = BOARD_SOC_DOMAIN_MAIN;
+    i2cCfg.enableIntr = false;
+    Board_setI2cInitConfig(&i2cCfg);
+
+    Board_i2cIoExpInit();
+
+
+    Board_i2cIoExpSetPinDirection(BOARD_I2C_IOEXP_DEVICE2_ADDR,
+                                  THREE_PORT_IOEXP,
+                                  PORTNUM_2,
+                                  PIN_NUM_0,
+                                  PIN_DIRECTION_OUTPUT);
+
+    Board_i2cIoExpPinLevelSet(BOARD_I2C_IOEXP_DEVICE2_ADDR,
+                              THREE_PORT_IOEXP,
+                              PORTNUM_2,
+                              PIN_NUM_0,
+                              GPIO_SIGNAL_LEVEL_LOW);
+
+    Board_i2cIoExpSetPinDirection(BOARD_I2C_IOEXP_DEVICE2_ADDR,
+                                  THREE_PORT_IOEXP,
+                                  PORTNUM_2,
+                                  PIN_NUM_1,
+                                  PIN_DIRECTION_OUTPUT);
+
+    Board_i2cIoExpPinLevelSet(BOARD_I2C_IOEXP_DEVICE2_ADDR,
+                              THREE_PORT_IOEXP,
+                              PORTNUM_2,
+                              PIN_NUM_1,
+                              GPIO_SIGNAL_LEVEL_HIGH);
+}
+
 /**
  * \brief   This function is used to perform the CPSW9G
  *          Ethernet port to port external loopback test
@@ -1081,7 +1119,7 @@ int32_t BoardDiag_cpswLoopbackTest(void)
     /* Show alive PHYs */
     if (status == CPSW_SOK)
     {
-        for (index = CPSW_PHY_START_ADDRESS; index < CPSW_PHY_END_ADDRESS; index++)
+        for (index = BOARD_DIAG_CPSW_PHY_START_ADDRESS; index < BOARD_DIAG_CPSW_PHY_END_ADDRESS; index++)
         {
             CPSW_IOCTL_SET_INOUT_ARGS(&prms, &index, &alive);
 
@@ -1174,8 +1212,69 @@ int32_t BoardDiag_cpswLoopbackTest(void)
     return 0;
 }
 
+void BoardDiag_rgmiiPortSelect(void)
+{
+    uint32_t userInput = 0;
+
+    UART_printf("Select any one option from below\n\r");
+    UART_printf("1 - PRG0 Port Loopback Test\n\r");
+    UART_printf("2 - PRG1 Port Loopback Test\n\r");
+
+    UART_scanFmt("%d", (uint8_t*)&userInput);
+
+    while((userInput != BOARD_DIAG_CPSW_RGMII_PRG0_TEST) &&
+          (userInput != BOARD_DIAG_CPSW_RGMII_PRG1_TEST))
+    {
+        UART_printf("Invalid userInput, Please try again\n\r");
+        UART_scanFmt("%d", &userInput);
+    }
+
+    if(userInput == BOARD_DIAG_CPSW_RGMII_PRG0_TEST)
+    {
+        gCpswLpbkObj.portNum0 = CPSW_MAC_PORT_2;
+        gCpswLpbkObj.portNum1 = CPSW_MAC_PORT_3;
+    }
+    else
+    {
+        gCpswLpbkObj.portNum0 = CPSW_MAC_PORT_0;
+        gCpswLpbkObj.portNum1 = CPSW_MAC_PORT_7;
+    }
+}
+
+void BoardDiag_sgmiiPortSelect(void)
+{
+    uint32_t userInput = 0;
+
+    UART_printf("Select any one option from below\n\r");
+    UART_printf("1 - Port0 & Port1 Loopback Test\n\r");
+    UART_printf("2 - Port2 & Port3 Loopback Test\n\r");
+
+    UART_scanFmt("%d", (uint8_t*)&userInput);
+
+    while((userInput != BOARD_DIAG_CPSW_SGMII_P0P1_TEST) &&
+          (userInput != BOARD_DIAG_CPSW_SGMII_P2P3_TEST))
+    {
+        UART_printf("Invalid userInput, Please try again\n\r");
+        UART_scanFmt("%d", &userInput);
+    }
+
+    if(userInput == BOARD_DIAG_CPSW_SGMII_P0P1_TEST)
+    {
+        gCpswLpbkObj.portNum0 = CPSW_MAC_PORT_1;
+        gCpswLpbkObj.portNum1 = CPSW_MAC_PORT_4;
+    }
+    else
+    {
+        gCpswLpbkObj.portNum0 = CPSW_MAC_PORT_5;
+        gCpswLpbkObj.portNum1 = CPSW_MAC_PORT_6;
+    }
+
+    Board_serdesCfgQsgmii();
+    BoardDiag_enetPhyEnable();
+}
+
 /**
- *  \brief    This function runs CPSW9G ethernet test
+ *  \brief    This function runs CPSW ethernet test
  *
  *  \return   int8_t
  *               0 - in case of success
@@ -1185,44 +1284,24 @@ int32_t BoardDiag_cpswLoopbackTest(void)
 int8_t BoardDiag_CpswEthRunTest(void)
 {
     int8_t ret;
-    uint32_t userInput;
+    uint32_t userInput = 0;
 
     UART_printf  ("************************************************\n");
-    UART_printf  ("*             CPSW Ethernet Test           *\n");
+    UART_printf  ("*             CPSW Ethernet Test               *\n");
     UART_printf  ("************************************************\n");
-
-    /* This should not be removed, as this is fix for linker issue in release mode.
-     * If removed linker will complain "undefined reference to `_sbrk'".
-     * This arises whenever library invokes printf() but the app doesn't.
-     */
-#ifndef UART_ENABLED
-    printf( "CPSW Bare metal Loopback App \n");
-#endif
-
-    UART_printf("Loopback test for Port 0\n\r");
 
     UART_printf("Select any one option from below\n\r");
-    UART_printf("1 - PRG0 ports verification\n\r");
-    UART_printf("2 - PRG1 ports verification\n\r");
-
+    UART_printf("1 - CPSW9G RGMII Ethernet Test\n\r");
+    UART_printf("2 - CPSW9G SGMII Ethernet Test\n\r");
     UART_scanFmt("%d", (uint8_t*)&userInput);
 
-    while((userInput != PRG0_PORT_VERIFICATION) &&
-          (userInput != PRG1_PORT_VERIFICATION))
+    if(userInput == BOARD_DIAG_CPSW_RGMII_TEST)
     {
-        UART_printf("Invalid userInput, Please try again\n\r");
-        UART_scanFmt("%d", &userInput);
-    }
-
-    if(userInput == PRG0_PORT_VERIFICATION)
-    {
-        gCpswLpbkObj.portNum0 = CPSW_MAC_PORT_2;
-        gCpswLpbkObj.portNum1 = CPSW_MAC_PORT_3;
+        BoardDiag_rgmiiPortSelect();
     }
     else
     {
-        gCpswLpbkObj.portNum0 = CPSW_MAC_PORT_0;
-        gCpswLpbkObj.portNum1 = CPSW_MAC_PORT_7;
+        BoardDiag_sgmiiPortSelect();
     }
 
     /* Run the loopback test */
