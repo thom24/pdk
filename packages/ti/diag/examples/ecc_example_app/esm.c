@@ -76,16 +76,21 @@
 /* ESM event log entry */
 typedef struct
 {
+    /* ECC Aggregator where the event originated from */
+    SDR_ECC_MemType eccMemType;
     /* Type of ECC Error Received
      * Possible values are SDR_INJECT_ECC_ERROR_FORCING_1BIT_ONCE = 1, or
      * SDR_INJECT_ECC_ERROR_FORCING_2BIT_ONCE = 2 */
     uint32_t             errorSrc;
+    /* Address where the ECC error occurred - Not currently populated/used */
     uint32_t             address;
     /* Ram ID for the memory where the error occurred */
     uint32_t             ramId;
     /* Offset into the Ram ID where the error occurred */
     uint64_t             bitErrorOffset;
+    /* ECC Error Group where the error occurred - Interconnect RAM ID types only */
     uint32_t             bitErrorGroup;
+    /* Use Case number */
     uint8_t              useCaseNum;
 } ECC_Example_log_entry_t;
 
@@ -119,49 +124,56 @@ static volatile uint32_t totalExpectedEccEvtsPerUseCase[6] = {2, 2, 2, 2, 20, 20
 
 static ECC_Example_log_entry_t expectedEccEventLog[MAX_ESM_EVENTS_LOGGED] =
 {
-    {CSL_ECC_AGGR_INTR_SRC_SINGLE_BIT,                /* errorSrc */
+    {SDR_ECC_MEMTYPE_MCU_R5F0_CORE,                   /* eccMemType */
+     CSL_ECC_AGGR_INTR_SRC_SINGLE_BIT,                /* errorSrc */
      SDR_ESM_ERRORADDR_INVALID,                       /* address */
      SDR_ECC_R5F_MEM_SUBTYPE_VBUSM2AXI_EDC_VECTOR_ID, /* ramId */
      0x0000000000000004,                              /* bitErrorOffset */
      21,                                              /* bitErrorGroup */
      0                                                /* useCaseNum */
     },
-    {CSL_ECC_AGGR_INTR_SRC_DOUBLE_BIT,                /* errorSrc */
+    {SDR_ECC_MEMTYPE_MCU_R5F0_CORE,                   /* eccMemType */
+     CSL_ECC_AGGR_INTR_SRC_DOUBLE_BIT,                /* errorSrc */
      SDR_ESM_ERRORADDR_INVALID,                       /* address */
      SDR_ECC_R5F_MEM_SUBTYPE_VBUSM2AXI_EDC_VECTOR_ID, /* ramId */
      0x0000000000000000,                              /* bitErrorOffset */
      21,                                              /* bitErrorGroup */
      0                                                /* useCaseNum */
     },
-    {CSL_ECC_AGGR_INTR_SRC_SINGLE_BIT,                /* errorSrc */
+    {SDR_ECC_MEMTYPE_MCU_R5F0_CORE,                   /* eccMemType */
+     CSL_ECC_AGGR_INTR_SRC_SINGLE_BIT,                /* errorSrc */
      SDR_ESM_ERRORADDR_INVALID,                       /* address */
      SDR_ECC_R5F_MEM_SUBTYPE_KS_VIM_RAM_VECTOR_ID,    /* ramId */
      0x0000000000000024,                              /* bitErrorOffset */
      0,                                               /* bitErrorGroup */
      1                                                /* useCaseNum */
     },
-    {CSL_ECC_AGGR_INTR_SRC_DOUBLE_BIT,                /* errorSrc */
+    {SDR_ECC_MEMTYPE_MCU_R5F0_CORE,                   /* eccMemType */
+     CSL_ECC_AGGR_INTR_SRC_DOUBLE_BIT,                /* errorSrc */
      SDR_ESM_ERRORADDR_INVALID,                       /* address */
      SDR_ECC_R5F_MEM_SUBTYPE_KS_VIM_RAM_VECTOR_ID,    /* ramId */
      0x0000000000000020,                              /* bitErrorOffset */
      0,                                               /* bitErrorGroup */
      1                                                /* useCaseNum */
     },
-    {CSL_ECC_AGGR_INTR_SRC_SINGLE_BIT,                /* errorSrc */
+    {SDR_ECC_MEMTYPE_MAIN_MSMC_AGGR0,                 /* eccMemType */
+     CSL_ECC_AGGR_INTR_SRC_SINGLE_BIT,                /* errorSrc */
      SDR_ESM_ERRORADDR_INVALID,                       /* address */
      SDR_ECC_MAIN_MSMC_MEM_INTERCONN_SUBTYPE,         /* ramId */
      0x0000000000000004,                              /* bitErrorOffset */
      0,                                               /* bitErrorGroup */
      2                                                /* useCaseNum */
     },
-    {CSL_ECC_AGGR_INTR_SRC_DOUBLE_BIT,                /* errorSrc */
+    {SDR_ECC_MEMTYPE_MAIN_MSMC_AGGR0,                 /* eccMemType */
+     CSL_ECC_AGGR_INTR_SRC_DOUBLE_BIT,                /* errorSrc */
      SDR_ESM_ERRORADDR_INVALID,                       /* address */
      SDR_ECC_MAIN_MSMC_MEM_INTERCONN_SUBTYPE,         /* ramId */
      0x0000000000000000,                              /* bitErrorOffset */
      0,                                               /* bitErrorGroup */
      2                                                /* useCaseNum */
     },
-    {CSL_ECC_AGGR_INTR_SRC_SINGLE_BIT,                /* errorSrc */
+    {SDR_ECC_MEMTYPE_MAIN_MSMC_AGGR0,                 /* eccMemType */
+     CSL_ECC_AGGR_INTR_SRC_SINGLE_BIT,                /* errorSrc */
      SDR_ESM_ERRORADDR_INVALID,                       /* address */
      SDR_ECC_MAIN_MSMC_MEM_WRAPPER_SUBTYPE,           /* ramId */
      0x000000000000010c,                              /* bitErrorOffset - Note that
@@ -170,7 +182,8 @@ static ECC_Example_log_entry_t expectedEccEventLog[MAX_ESM_EVENTS_LOGGED] =
      0,                                               /* bitErrorGroup */
      3                                                /* useCaseNum */
     },
-    {CSL_ECC_AGGR_INTR_SRC_DOUBLE_BIT,                /* errorSrc */
+    {SDR_ECC_MEMTYPE_MAIN_MSMC_AGGR0,                 /* eccMemType */
+     CSL_ECC_AGGR_INTR_SRC_DOUBLE_BIT,                /* errorSrc */
      SDR_ESM_ERRORADDR_INVALID,                       /* address */
      SDR_ECC_MAIN_MSMC_MEM_WRAPPER_SUBTYPE,           /* ramId */
      0x0000000000000108,                              /* bitErrorOffset - Note that
@@ -181,7 +194,8 @@ static ECC_Example_log_entry_t expectedEccEventLog[MAX_ESM_EVENTS_LOGGED] =
     },
     /* Multiple SEC events consecutively - the following entry should occur
      * NUM_MULTIPLE_SEC_EVENTS times */
-    {CSL_ECC_AGGR_INTR_SRC_SINGLE_BIT,                /* errorSrc */
+    {SDR_ECC_MEMTYPE_MAIN_MSMC_AGGR0,                 /* eccMemType */
+     CSL_ECC_AGGR_INTR_SRC_SINGLE_BIT,                /* errorSrc */
      SDR_ESM_ERRORADDR_INVALID,                       /* address */
      SDR_ECC_MAIN_MSMC_MEM_INTERCONN_SUBTYPE,         /* ramId */
      0x0000000000000004,                              /* bitErrorOffset */
@@ -190,7 +204,8 @@ static ECC_Example_log_entry_t expectedEccEventLog[MAX_ESM_EVENTS_LOGGED] =
     },
     /* Multiple DED events consecutively - the following entry should occur
      * NUM_MULTIPLE_DED_EVENTS times */
-    {CSL_ECC_AGGR_INTR_SRC_DOUBLE_BIT,                /* errorSrc */
+    {SDR_ECC_MEMTYPE_MAIN_MSMC_AGGR0,                 /* eccMemType */
+     CSL_ECC_AGGR_INTR_SRC_DOUBLE_BIT,                /* errorSrc */
      SDR_ESM_ERRORADDR_INVALID,                       /* address */
      SDR_ECC_MAIN_MSMC_MEM_INTERCONN_SUBTYPE,         /* ramId */
      0x0000000000000000,                              /* bitErrorOffset */
@@ -199,7 +214,8 @@ static ECC_Example_log_entry_t expectedEccEventLog[MAX_ESM_EVENTS_LOGGED] =
     },
     /* Multiple SEC events consecutively - the following entry should occur
      * NUM_MULTIPLE_SEC_EVENTS times */
-    {CSL_ECC_AGGR_INTR_SRC_SINGLE_BIT,                /* errorSrc */
+    {SDR_ECC_MEMTYPE_MAIN_MSMC_AGGR0,                 /* eccMemType */
+     CSL_ECC_AGGR_INTR_SRC_SINGLE_BIT,                /* errorSrc */
      SDR_ESM_ERRORADDR_INVALID,                       /* address */
      SDR_ECC_MAIN_MSMC_MEM_WRAPPER_SUBTYPE,           /* ramId */
      0x000000000000010c,                              /* bitErrorOffset - Note that
@@ -210,7 +226,8 @@ static ECC_Example_log_entry_t expectedEccEventLog[MAX_ESM_EVENTS_LOGGED] =
     },
     /* Multiple DED events consecutively - the following entry should occur
      * NUM_MULTIPLE_DED_EVENTS times */
-    {CSL_ECC_AGGR_INTR_SRC_DOUBLE_BIT,                /* errorSrc */
+    {SDR_ECC_MEMTYPE_MAIN_MSMC_AGGR0,                 /* eccMemType */
+     CSL_ECC_AGGR_INTR_SRC_DOUBLE_BIT,                /* errorSrc */
      SDR_ESM_ERRORADDR_INVALID,                       /* address */
      SDR_ECC_MAIN_MSMC_MEM_WRAPPER_SUBTYPE,           /* ramId */
      0x0000000000000108,                              /* bitErrorOffset - Note that
@@ -408,7 +425,8 @@ extern volatile uint8_t  currUseCase;
 /*                          Function Definitions                              */
 /* ========================================================================== */
 
-void SDR_ECC_applicationCallbackFunction(uint32_t errorSrc,
+void SDR_ECC_applicationCallbackFunction(SDR_ECC_MemType eccMemType,
+                                         uint32_t errorSrc,
                                          uint32_t address,
                                          uint32_t ramId,
                                          uint64_t bitErrorOffset,
@@ -417,15 +435,16 @@ void SDR_ECC_applicationCallbackFunction(uint32_t errorSrc,
     int32_t useCaseCheck;
 
 #ifdef PRINT_EVENTS
-    DIAG_printf("\n  ECC Error Call back function called : errorSrc 0x%x, address 0x%x, " \
-                "ramId %d, bitErrorOffset 0x%08x%08x, bitErrorGroup %d\n",
-                errorSrc, address, ramId, (uint32_t)(bitErrorOffset >> 32),
+    DIAG_printf("\n  ECC Error Call back function called : eccMemType %d, errorSrc 0x%x, " \
+                "address 0x%x, ramId %d, bitErrorOffset 0x%08x%08x, bitErrorGroup %d\n",
+                eccMemType, errorSrc, address, ramId, (uint32_t)(bitErrorOffset >> 32),
                 (uint32_t)(bitErrorOffset & 0x00000000FFFFFFFF), bitErrorGroup);
     DIAG_printf("  Take action \n");
 #endif
 
     /* Log the event */
     eccEventLog[totalEccEventsLogged].useCaseNum     = currUseCase;
+    eccEventLog[totalEccEventsLogged].eccMemType     = eccMemType;
     eccEventLog[totalEccEventsLogged].errorSrc       = errorSrc;
     eccEventLog[totalEccEventsLogged].address        = address;
     eccEventLog[totalEccEventsLogged].ramId          = ramId;
@@ -774,6 +793,27 @@ static const char *printEccErrorType(SDR_ECC_InjectErrorType eccErrorType)
 
 }
 
+static const char *printEccAggregator(SDR_ECC_MemType eccMemType)
+{
+    char *pStr;
+
+    switch(eccMemType)
+    {
+        case SDR_ECC_MEMTYPE_MCU_R5F0_CORE:
+            pStr = "R5FSS0_CORE0_ECC_AGGR ECC Aggregator";
+            break;
+        case SDR_ECC_MEMTYPE_MAIN_MSMC_AGGR0:
+            pStr = "COMPUTE_CLUSTER0_MSMC_ECC_AGGR0 ECC Aggregator";
+            break;
+        default:
+            pStr = NULL;
+            break;
+    }
+
+    return pStr;
+
+}
+
 /*********************************************************************
 * @fn      ECC_Example_printSummary
 *
@@ -798,9 +838,11 @@ void ECC_Example_printSummary(void)
     DIAG_printf("------------------\n");
     for (i = 0; i < totalEccEventsLogged; i++) {
         DIAG_printf("\nUse Case %d: ECC Call back function called : \n"
+                    "    ECC Aggregator = %s, \n" \
                     "    ECC Error Type = %s, address 0x%x, \n" \
                     "    ramId %d, bitErrorOffset 0x%08x%08x, bitErrorGroup %d\n",
                     eccEventLog[i].useCaseNum,
+                    printEccAggregator(eccEventLog[i].eccMemType),
                     printEccErrorType((SDR_ECC_InjectErrorType)eccEventLog[i].errorSrc),
                     eccEventLog[i].address,
                     eccEventLog[i].ramId,
@@ -828,6 +870,12 @@ static int32_t checkUseCaseStructs(uint8_t actualLogSlot, uint8_t expectedLogSlo
     }
 
     /* Check event for proper information */
+    if (expectedEccEventLog[expectedLogSlot].eccMemType !=
+        eccEventLog[actualLogSlot].eccMemType) {
+        DIAG_printf("Error - Incorrect eccMemType for %s event in " \
+                    "Use Case %d\n", pStrErrType, useCaseNum);
+        retValue = -1;
+    }
     if (expectedEccEventLog[expectedLogSlot].errorSrc !=
         eccEventLog[actualLogSlot].errorSrc) {
         DIAG_printf("Error - Incorrect errorSrc for %s event in " \

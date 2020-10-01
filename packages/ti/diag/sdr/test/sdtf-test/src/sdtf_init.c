@@ -675,15 +675,16 @@ void SDR_ESM_applicationCallbackFunction(SDR_ESM_InstanceType esmInstType,
 
 }
 
-void SDR_ECC_applicationCallbackFunction(uint32_t errorSrc,
+void SDR_ECC_applicationCallbackFunction(SDR_ECC_MemType eccMemType,
+                                         uint32_t errorSrc,
                                          uint32_t address,
                                          uint32_t ramId,
                                          uint64_t bitErrorOffset,
                                          uint32_t bitErrorGroup){
 
-    SDTF_printf("\n  ECC Error Call back function called : errorSrc 0x%x, address 0x%x, " \
-                "ramId %d, bitErrorOffset 0x%04x%04x, bitErrorGroup %d\n",
-                errorSrc, address, ramId, (uint32_t)(bitErrorOffset >> 32),
+    SDTF_printf("\n  ECC Error Call back function called : eccMemType %d, errorSrc 0x%x, " \
+                "address 0x%x, ramId %d, bitErrorOffset 0x%04x%04x, bitErrorGroup %d\n",
+                eccMemType, errorSrc, address, ramId, (uint32_t)(bitErrorOffset >> 32),
                 (uint32_t)(bitErrorOffset & 0x00000000FFFFFFFF), bitErrorGroup);
     SDTF_printf("  Take action \n");
 

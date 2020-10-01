@@ -571,7 +571,8 @@ void SDR_ECC_registerVIMDEDHandler(SDR_ECC_VIMDEDVector_t VIMDEDHandler);
  *
  * \return  None
  */
-void SDR_ECC_applicationCallbackFunction(uint32_t errorSrc,
+void SDR_ECC_applicationCallbackFunction(SDR_ECC_MemType eccMemType,
+                                         uint32_t errorSrc,
                                          uint32_t address,
                                          uint32_t ramId,
                                          uint64_t bitErrorOffset,

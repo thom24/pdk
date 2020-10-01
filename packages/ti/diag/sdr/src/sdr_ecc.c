@@ -387,7 +387,8 @@ static void SDR_ECC_handleEccAggrEvent (SDR_ECC_MemType eccMemType, uint32_t err
                 }
 
                 /* Call application callback function to indicate error */
-                SDR_ECC_applicationCallbackFunction(errorSrc,
+                SDR_ECC_applicationCallbackFunction(eccMemType,
+                                                    errorSrc,
                                                     errorAddr,
                                                     ramId,
                                                     bitErrorOffset,
@@ -463,7 +464,8 @@ static void SDR_ECC_callBackFunction (uint32_t errorSrc, uint32_t errorAddr,
                 SDR_ECC_instance[eccMemType].eccErrorFlag = SDR_ECC_ERROR_FLAG_TRIGGERED;
             } else {
                 /* Execute call back */
-                SDR_ECC_applicationCallbackFunction(errorSrc,
+                SDR_ECC_applicationCallbackFunction(eccMemType,
+                                                    errorSrc,
                                                     errorAddr,
                                                     ramId,
                                                     bitErrorOffset,
