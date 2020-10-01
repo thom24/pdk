@@ -46,6 +46,8 @@
 /* ========================================================================== */
 #include <stdint.h>
 #include <diag_utils.h>
+
+#include <ti/csl/csl_ecc_aggr.h>
 #include <sdr_ecc.h>
 
 #include "ecc_trigger_func.h"
@@ -72,7 +74,7 @@ typedef struct diag_ecc_use_case_s
     SDR_ECC_InjectErrorType dedInjErrType; /* DED Inject Error Type */
     uint32_t                dedFlipMask;   /* DED Error injection bitmask */
     SDR_ECC_RamIdType       ramIdType;     /* ECC RAM ID Type - Wrapper or Interconnect */
-    SDR_ECC_MemSubSubType   chkGrp;        /* ECC Checker Group - Only for Interconnect Type */
+    uint32_t                chkGrp;        /* ECC Checker Group - Only for Interconnect Type */
     uint32_t                testAddressTrigLoc;    /* Memory location to read for event trigger.
                                                       For accessible Wrapper types only. */
     int32_t                 (*testTrigFunc)(void); /* Function to run for event trigger.
@@ -88,7 +90,7 @@ static int32_t runSingleSECEvent(SDR_ECC_MemType eccAggrId,
                                  SDR_ECC_InjectErrorType injErrType,
                                  uint32_t flipMask,
                                  uint32_t ramIdType,
-                                 SDR_ECC_MemSubSubType chkGrp,
+                                 uint32_t chkGrp,
                                  uint32_t testAddressTrigLoc,
                                  int32_t (*testTrigFunc)(void) );
 
@@ -97,7 +99,7 @@ static int32_t runSingleDEDEvent(SDR_ECC_MemType eccAggrId,
                                  SDR_ECC_InjectErrorType injErrType,
                                  uint32_t flipMask,
                                  uint32_t ramIdType,
-                                 SDR_ECC_MemSubSubType chkGrp,
+                                 uint32_t chkGrp,
                                  uint32_t testAddressTrigLoc,
                                  int32_t (*testTrigFunc)(void) );
 
@@ -111,38 +113,38 @@ diag_ecc_use_case_t useCaseArray[6] =
 {
     /* MCU ESM, MCU_R5FSS0_0 ECC Aggregator, Interconnect ECC Type */
     {SDR_ECC_MEMTYPE_MCU_R5F0_CORE,                   /* eccAggrId of type SDR_ECC_MemType */
-     SDR_ECC_R5F_MEM_SUBTYPE_VBUSM2AXI_EDC_VECTOR_ID, /* RAM ID = 28 */
+     SDR_ECC_R5F_MEM_SUBTYPE_VBUSM2AXI_EDC_VECTOR_ID, /* eccRamId of type SDR_ECC_MemSubType - CSL_MCU_R5FSS0_CORE0_ECC_AGGR_KSBUS_VBUSM2AXI0_EDC_CTRL_RAM_ID */
      SDR_INJECT_ECC_ERROR_FORCING_1BIT_ONCE,          /* SEC Inject Error Type */
      0x10,                                            /* secFlipMask of type uint32_t */
      SDR_INJECT_ECC_ERROR_FORCING_2BIT_ONCE,          /* DED Inject Error Type */
      0x101,                                           /* dedFlipMask of type uint32_t */
      SDR_ECC_RAM_ID_TYPE_INTERCONNECT,                /* ramIdType of type SDR_ECC_RamIdType */
-     SDR_ECC_R5F_MEM_SUBSUBTYPE_VBUSM2AXI_EDC_VECTOR_INT_UNCOR_WDATA_31_0, /* EDC Group Type */
+     CSL_MCU_R5FSS0_CORE0_ECC_AGGR_KSBUS_VBUSM2AXI0_EDC_CTRL_GROUP_21_ID, /* EDC Group Type */
      0x0,                                             /* testAddressTrigLoc of type uint32_t,
                                                        * not used for Interconnect Type */
      NULL                                             /* testTrigFunc filled in initialization function */
     },
     /* MCU ESM, MCU_R5FSS0_0 ECC Aggregator, Wrapper ECC Type */
     {SDR_ECC_MEMTYPE_MCU_R5F0_CORE,                    /* eccAggrId of type SDR_ECC_MemType */
-     SDR_ECC_R5F_MEM_SUBTYPE_KS_VIM_RAM_VECTOR_ID,     /* eccRamId of type SDR_ECC_MemSubType - CSL_ECC_AGGR_MCU_R5FSS0_R5_ECC_AGGR_0_CPU0_KS_VIM_RAMECC_ID  */
+     SDR_ECC_R5F_MEM_SUBTYPE_KS_VIM_RAM_VECTOR_ID,     /* eccRamId of type SDR_ECC_MemSubType - CSL_MCU_R5FSS0_CORE0_ECC_AGGR_CPU0_KS_VIM_RAMECC_RAM_ID */
      SDR_INJECT_ECC_ERROR_FORCING_1BIT_ONCE,           /* SEC Inject Error Type */
      0x10,                                             /* secFlipMask of type uint32_t */
      SDR_INJECT_ECC_ERROR_FORCING_2BIT_ONCE,           /* DED Inject Error Type */
      0x101,                                            /* dedFlipMask of type uint32_t */
      SDR_ECC_RAM_ID_TYPE_WRAPPER,                      /* ramIdType of type SDR_ECC_RamIdType */
      0,                                                /* Wrapper type, so no Group checker ID */
-     0x40F82004u,                                      /* testAddressTrigLoc of type uint32_t */ // TODO - BASE OFF CSLR BASE ADDRESS VALUE, FIND RIGHT VALUE
+     0x40F82004u,                                      /* testAddressTrigLoc of type uint32_t */
      NULL                                              /* testTrigFunc filled in initialization function */
     },
     /* Main ESM, MSMC ECC Aggregator, Interconnect ECC Type */
     {SDR_ECC_MEMTYPE_MAIN_MSMC_AGGR0,                  /* eccAggrId of type SDR_ECC_MemType */
-     SDR_ECC_MAIN_MSMC_MEM_INTERCONN_SUBTYPE,          /* eccRamId of type SDR_ECC_MemSubType *///CSL_ECC_AGGR_COMPUTE_CLUSTER0_MSMC_ES_ECC_AGGR0_RMW0_QUEUE_BUSECC_0_ID 
+     SDR_ECC_MAIN_MSMC_MEM_INTERCONN_SUBTYPE,          /* eccRamId of type SDR_ECC_MemSubType - CSL_COMPUTE_CLUSTER0_MSMC_ECC_AGGR0_MSMC_MMR_BUSECC_RAM_ID  */
      SDR_INJECT_ECC_ERROR_FORCING_1BIT_ONCE,           /* SEC Inject Error Type */
      0x10,                                             /* secFlipMask of type uint32_t */
      SDR_INJECT_ECC_ERROR_FORCING_2BIT_ONCE,           /* DED Inject Error Type */
      0x101,                                            /* dedFlipMask of type uint32_t */
      SDR_ECC_RAM_ID_TYPE_INTERCONNECT,                 /* ramIdType of type SDR_ECC_RamIdType */
-     0,                                                /* Choose Group checker ID of 0 */
+     CSL_COMPUTE_CLUSTER0_MSMC_ECC_AGGR0_MSMC_MMR_BUSECC_GROUP_0_ID, /* EDC Group Type */
      0x0,                                              /* testAddressTrigLoc of type uint32_t,
                                                         * not used for Interconnect Type */
      NULL                                              /* testTrigFunc filled in initialization function */
@@ -168,7 +170,7 @@ diag_ecc_use_case_t useCaseArray[6] =
      SDR_INJECT_ECC_ERROR_FORCING_2BIT_ONCE,           /* DED Inject Error Type */
      0x101,                                            /* dedFlipMask of type uint32_t */
      SDR_ECC_RAM_ID_TYPE_INTERCONNECT,                 /* ramIdType of type SDR_ECC_RamIdType */
-     0,                                                /* Choose Group checker ID of 0 */
+     CSL_COMPUTE_CLUSTER0_MSMC_ECC_AGGR0_MSMC_MMR_BUSECC_GROUP_0_ID, /* EDC Group Type */
      0x0,                                              /* testAddressTrigLoc of type uint32_t,
                                                         * not used for Interconnect Type */
      NULL                                              /* testTrigFunc filled in initialization function */
@@ -226,7 +228,7 @@ static int32_t runSingleSECEvent(SDR_ECC_MemType eccAggrId,
                                  SDR_ECC_InjectErrorType injErrType,
                                  uint32_t flipMask,
                                  uint32_t ramIdType,
-                                 SDR_ECC_MemSubSubType chkGrp, 
+                                 uint32_t chkGrp,
                                  uint32_t testAddressTrigLoc,
                                  int32_t (*testTrigFunc)(void) )
 {
@@ -301,7 +303,7 @@ static int32_t runSingleDEDEvent(SDR_ECC_MemType eccAggrId,
                                  SDR_ECC_InjectErrorType injErrType,
                                  uint32_t flipMask, 
                                  uint32_t ramIdType,
-                                 SDR_ECC_MemSubSubType chkGrp, 
+                                 uint32_t chkGrp,
                                  uint32_t testAddressTrigLoc,
                                  int32_t (*testTrigFunc)(void) )
 {

@@ -144,7 +144,7 @@ static ECC_Example_log_entry_t expectedEccEventLog[MAX_ESM_EVENTS_LOGGED] =
      CSL_ECC_AGGR_INTR_SRC_SINGLE_BIT,                /* errorSrc */
      SDR_ESM_ERRORADDR_INVALID,                       /* address */
      SDR_ECC_R5F_MEM_SUBTYPE_KS_VIM_RAM_VECTOR_ID,    /* ramId */
-     0x0000000000000024,                              /* bitErrorOffset */
+     0x0000000000000022,                              /* bitErrorOffset */
      0,                                               /* bitErrorGroup */
      1                                                /* useCaseNum */
     },
@@ -152,7 +152,7 @@ static ECC_Example_log_entry_t expectedEccEventLog[MAX_ESM_EVENTS_LOGGED] =
      CSL_ECC_AGGR_INTR_SRC_DOUBLE_BIT,                /* errorSrc */
      SDR_ESM_ERRORADDR_INVALID,                       /* address */
      SDR_ECC_R5F_MEM_SUBTYPE_KS_VIM_RAM_VECTOR_ID,    /* ramId */
-     0x0000000000000020,                              /* bitErrorOffset */
+     0x000000000000001e,                              /* bitErrorOffset */
      0,                                               /* bitErrorGroup */
      1                                                /* useCaseNum */
     },

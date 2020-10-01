@@ -42,6 +42,10 @@
 
 #define SDR_ECC_EVENT_FOUND (1u)
 
+#define SDR_ECC_RAMID_INVALID      (0xffffffffu)
+#define SDR_ECC_INJECTTYPE_INVALID (0xffffffffu)
+#define SDR_ECC_ECC_TYPE_INVALD    (0xffffffffu)
+
 typedef struct SDR_RAMIdEntry_s
 {
     uint32_t RAMId;
@@ -84,10 +88,8 @@ typedef struct SDR_MemConfig_s
  */
 typedef struct SDR_GrpChkConfig_s
 {
-    SDR_ECC_GrpChkType grpChkType;
+    uint32_t grpChkType;
     /**< Group Checker type */
-    uint32_t stride;
-    /**< Stride of memory bus in bits */
     uint32_t dataWidth;
     /**< Length of memory bus covered in bits */
 }  SDR_GrpChkConfig_t;
