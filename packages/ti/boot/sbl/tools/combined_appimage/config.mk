@@ -66,7 +66,7 @@ HLOS_BOOT ?= optimized
 HLOS_BIN_PATH ?= $(SDK_INSTALL_PATH)/ti-processor-sdk-linux/board-support/prebuilt-images/$(BOARD)
 
 # GCC PATH
-GCC_LINUX_ARM_PATH ?= $(SDK_INSTALL_PATH)/gcc-arm-$(GCC_ARCH64_VERSION)-x86_64-aarch64-none-linux-gnu
+GCC_LINUX_ARM_PATH ?= $(SDK_INSTALL_PATH)/gcc-arm-$(GCC_ARCH64_VERSION)-x86_64-$(GCC_ARCH64_BIN_PREFIX)
 
 # HLOS Images
 #

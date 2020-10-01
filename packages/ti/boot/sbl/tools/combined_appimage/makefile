@@ -127,7 +127,7 @@ APP_IMAGE = $(OUT_DIR)/$(OUT_IMG)
 # Template rule for creating ELF files
 define ELF_RULE
 %.elf: $1
-	$(GCC_LINUX_ARM_PATH)/bin/aarch64-none-linux-gnu-ld -b binary -A aarch64 --oformat elf64-littleaarch64 \
+	$(GCC_LINUX_ARM_PATH)/bin/$(GCC_ARCH64_BIN_PREFIX)-ld -b binary -A aarch64 --oformat elf64-littleaarch64 \
 		$$(call fmt_load_addr,$$(IMG_LIST),$$^) \
 		$$(call fmt_entry_point,$$(IMG_LIST),$$^) \
 		$$^ -o $$@
@@ -161,7 +161,11 @@ $(foreach _pattern, $(RAW_PATTERNS), $(eval $(call ELF_RULE, $(_pattern))))
 
 # Create the output directory
 $(OUT_DIR):
+ifeq ($(OS),Windows_NT)
+	cmd /E:ON /C mkdir $(subst /,\,$@)
+else
 	mkdir -p $(OUT_DIR)
+endif
 
 .PHONY: clean
 clean:
