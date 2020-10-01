@@ -81,7 +81,7 @@ endif
 ifeq ($(BOARD), $(filter $(BOARD), j721e_evm j7200_evm))
 PACKAGE_SRCS_COMMON = ../src/pmic_test_v2.c ../src/pmic_test_v2.h 
 else
-PACKAGE_SRCS_COMMON = ../src/pmic_test.c ../src/pmic_test.h
+PACKAGE_SRCS_COMMON = ../src/pmic_test.c
 endif
 PACKAGE_SRCS_COMMON += makefile
 PACKAGE_SRCS_COMMON += ../../common/$(SOC)
