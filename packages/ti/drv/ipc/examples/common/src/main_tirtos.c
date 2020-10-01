@@ -125,7 +125,6 @@ void ipc_boardInit()
 }
 #endif
 
-#ifdef IPC_NEGATIVE_TEST
 #if defined (__C7100__)
 /* To set C71 timer interrupts */
 void ipc_timerInterruptInit(void)
@@ -188,7 +187,6 @@ void ipc_timerInterruptInit(void)
     return;
 }
 #endif
-#endif
 
 int main(void)
 {
@@ -203,10 +201,8 @@ int main(void)
     ipc_boardInit();
 #endif
 
-#ifdef IPC_NEGATIVE_TEST
 #if defined (__C7100__) ||  defined (_TMS320C6X)
     ipc_timerInterruptInit();
-#endif
 #endif
 
     Error_init(&eb);

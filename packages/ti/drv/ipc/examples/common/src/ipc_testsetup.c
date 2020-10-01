@@ -413,7 +413,7 @@ int32_t Ipc_echo_test(void)
     {
         while(!Ipc_isRemoteReady(pRemoteProcArray[t]))
         {
-            // Task_sleep(100);
+            Task_sleep(10);
         }
     }
     //System_printf("Linux VDEV ready now .....\n");
