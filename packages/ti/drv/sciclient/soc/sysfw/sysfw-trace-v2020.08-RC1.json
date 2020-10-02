@@ -208,28 +208,7 @@
                 "design_sectionname": "Final Decision"
             }
         ],
-        "design_traceability": [
-            {
-                "design_id": "did_sdbg_firewalls",
-                "source_ids": [
-                    "fwl_reg_write_perm"
-                ]
-            },
-            {
-                "design_id": "did_mat_msmc_erratum",
-                "source_ids": [
-                    "mat_erratum_init"
-                ]
-            },
-            {
-                "design_id": "did_msmc",
-                "source_ids": [
-                    "msmc_config_init",
-                    "is_msmc_in_devgrp",
-                    "msmc_driver_init"
-                ]
-            }
-        ],
+        "design_traceability": [],
         "requirement_traceability": [
             {
                 "arch_ids": [],
@@ -482,32 +461,6 @@
                 "source_ids": []
             }
         ],
-        "source_identifier": [
-            {
-                "source_file": "security/firewall/firewall.c",
-                "source_id": "fwl_reg_write_perm",
-                "source_linenumber": 102
-            },
-            {
-                "source_file": "drivers/mat/mat_msmc_erratum.c",
-                "source_id": "mat_erratum_init",
-                "source_linenumber": 75
-            },
-            {
-                "source_file": "drivers/msmc/msmc.c",
-                "source_id": "msmc_config_init",
-                "source_linenumber": 293
-            },
-            {
-                "source_file": "drivers/msmc/msmc.c",
-                "source_id": "is_msmc_in_devgrp",
-                "source_linenumber": 316
-            },
-            {
-                "source_file": "drivers/msmc/msmc.c",
-                "source_id": "msmc_driver_init",
-                "source_linenumber": 380
-            }
-        ]
+        "source_identifier": []
     }
 }

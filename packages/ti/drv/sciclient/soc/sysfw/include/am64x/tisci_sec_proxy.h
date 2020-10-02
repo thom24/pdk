@@ -62,12 +62,12 @@
 /** Thread ID macro for MAIN_0_R5_0 response */
 #define TISCI_SEC_PROXY_MAIN_0_R5_0_READ_RESPONSE_THREAD_ID (0U)
 /** Num messages macro for MAIN_0_R5_0 response */
-#define TISCI_SEC_PROXY_MAIN_0_R5_0_READ_RESPONSE_NUM_MESSAGES (6U)
+#define TISCI_SEC_PROXY_MAIN_0_R5_0_READ_RESPONSE_NUM_MESSAGES (11U)
 
 /** Thread ID macro for MAIN_0_R5_0 low_priority */
 #define TISCI_SEC_PROXY_MAIN_0_R5_0_WRITE_LOW_PRIORITY_THREAD_ID (1U)
 /** Num messages macro for MAIN_0_R5_0 low_priority */
-#define TISCI_SEC_PROXY_MAIN_0_R5_0_WRITE_LOW_PRIORITY_NUM_MESSAGES (5U)
+#define TISCI_SEC_PROXY_MAIN_0_R5_0_WRITE_LOW_PRIORITY_NUM_MESSAGES (10U)
 
 /*
  * Secure Proxy configurations for MAIN_0_R5_1 host
@@ -76,12 +76,12 @@
 /** Thread ID macro for MAIN_0_R5_1 response */
 #define TISCI_SEC_PROXY_MAIN_0_R5_1_READ_RESPONSE_THREAD_ID (2U)
 /** Num messages macro for MAIN_0_R5_1 response */
-#define TISCI_SEC_PROXY_MAIN_0_R5_1_READ_RESPONSE_NUM_MESSAGES (6U)
+#define TISCI_SEC_PROXY_MAIN_0_R5_1_READ_RESPONSE_NUM_MESSAGES (11U)
 
 /** Thread ID macro for MAIN_0_R5_1 low_priority */
 #define TISCI_SEC_PROXY_MAIN_0_R5_1_WRITE_LOW_PRIORITY_THREAD_ID (3U)
 /** Num messages macro for MAIN_0_R5_1 low_priority */
-#define TISCI_SEC_PROXY_MAIN_0_R5_1_WRITE_LOW_PRIORITY_NUM_MESSAGES (5U)
+#define TISCI_SEC_PROXY_MAIN_0_R5_1_WRITE_LOW_PRIORITY_NUM_MESSAGES (10U)
 
 /*
  * Secure Proxy configurations for MAIN_0_R5_2 host

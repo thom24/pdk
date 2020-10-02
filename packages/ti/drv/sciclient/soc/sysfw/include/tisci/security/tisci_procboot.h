@@ -188,7 +188,8 @@ struct tisci_msg_proc_handover_resp {
 #define TISCI_MSG_VAL_PROC_BOOT_CFG_FLAG_R5_ATCM_EN           (0x00002000U)
 /** R5 Disables SRAM initialization (TCM, etc) at reset */
 #define TISCI_MSG_VAL_PROC_BOOT_CFG_FLAG_R5_MEM_INIT_DIS      (0x00004000U)
-/** R5 Single / Dual CPU Mode 0 = Both CPUs are enabled, 1 = CPU1 Core is disabled */
+/** R5 Single / Dual CPU Mode 0 = Both CPUs are enabled, 1 = CPU1 Core is
+ *  disabled */
 #define TISCI_MSG_VAL_PROC_BOOT_CFG_FLAG_R5_SINGLE_CORE       (0x00008000U)
 
 /* C7x Config Flags */
@@ -297,6 +298,10 @@ struct tisci_msg_proc_set_config_resp {
 
 /** R5 Core Halt */
 #define TISCI_MSG_VAL_PROC_BOOT_CTRL_FLAG_R5_CORE_HALT                (0x00000001U)
+/** R5F Processor LPSC Control */
+#define TISCI_MSG_VAL_PROC_BOOT_CTRL_FLAG_R5_LPSC                     (0x00000002U)
+/** R5F Processor Reset Control */
+#define TISCI_MSG_VAL_PROC_BOOT_CTRL_FLAG_R5_RESET                    (0x00000004U)
 
 /**
  * \brief Optional processor specific message for sequence control

@@ -297,6 +297,23 @@ struct tisci_boardcfg_secure_debug_config {
 } __attribute__((__packed__));
 
 /**
+ * \brief Configuration of security handover
+ *
+ * Only applicable to certain devices
+ *
+ * \param subhdr Magic and size for integrity check
+ * \param handover_msg_sender Host which will send the security handover message
+ * \param handover_to_host_id Host to which security functionality is handed over
+ * \param rsvd Reserved
+ */
+struct tisci_boardcfg_sec_handover {
+    struct tisci_boardcfg_substructure_header    subhdr;
+    uint8_t                    handover_msg_sender;
+    uint8_t                    handover_to_host_id;
+    uint8_t                    rsvd[4];
+};
+
+/**
  * \brief Format of the complete board configuration.
  *
  * \param tisci_boardcfg_abi_rev Secure Board Config ABI version (separate from DMSC ABI version)
@@ -306,6 +323,7 @@ struct tisci_boardcfg_secure_debug_config {
  * \param dkek_config  DKEK Configuration
  * \param sec_dbg_config  Secure JTAG Unlock Configuration
  * \param tisci_boardcfg_sa2ul_cfg SA2UL resource configuration
+ * \param sec_handover_cfg Security handover configuration
  */
 struct tisci_boardcfg_sec {
     struct tisci_boardcfg_abi_rev            rev;
@@ -315,6 +333,7 @@ struct tisci_boardcfg_sec {
     struct tisci_boardcfg_dkek            dkek_config;
     struct tisci_boardcfg_sa2ul_cfg        sa2ul_auth_cfg;
     struct tisci_boardcfg_secure_debug_config    sec_dbg_config;
+    struct tisci_boardcfg_sec_handover        sec_handover_cfg;
 } __attribute__((__packed__));
 
 /**

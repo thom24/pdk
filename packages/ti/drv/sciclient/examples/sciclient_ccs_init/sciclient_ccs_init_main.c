@@ -158,11 +158,14 @@ uint32_t sciclientInitTimeCount = 0;
 
 void dmtimer0_read()
 {
+#if !defined(SOC_AM64X)
         sciclientInitTimeStamp[sciclientInitTimeCount] =  *(volatile uint32_t*)0x4413303C;
         sciclientInitTimeCount = (sciclientInitTimeCount + 1)%30;
+#endif
 }
 void dmtimer0_enable()
 {
+#if !defined(SOC_AM64X)
         /* Unlock the the PM Ctrl registers */
         *(volatile uint32_t *)0x44130020 = 0x8a6b7cda;
         *(volatile uint32_t *)0x44130024 = 0x823caef9;
@@ -172,6 +175,7 @@ void dmtimer0_enable()
         *(volatile uint32_t *)0x44133038 = 0x3;
         sciclientInitTimeCount = 0;
         dmtimer0_read();
+#endif
 }
 
 /* ========================================================================== */

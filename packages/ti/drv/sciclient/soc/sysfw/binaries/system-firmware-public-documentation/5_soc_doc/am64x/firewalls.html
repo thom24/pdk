@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>AM6 Firewall Descriptions &mdash; TISCI User Guide</title>
+  <title>AM64X Firewall Descriptions &mdash; TISCI User Guide</title>
   
 
   
@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                20.05.00
+                20.00.00
               </div>
             
           
@@ -122,7 +122,7 @@
 <li class="toctree-l3"><a class="reference internal" href="sec_proxy.html">AM64X Secure Proxy Descriptions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="processors.html">AM64X Processor Descriptions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="runtime_keystore.html">AM6 Runtime Keystore</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">AM6 Firewall Descriptions</a><ul>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">AM64X Firewall Descriptions</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#introduction">Introduction</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#list-of-region-based-firewalls">List of Region Based Firewalls</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#list-of-channelized-firewalls">List of Channelized Firewalls</a></li>
@@ -133,6 +133,8 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#j721e">J721E</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#j721e-legacy">J721E Legacy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#j7200">J7200</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../6_topic_user_guides/index.html">Chapter 6: Topic User Guides</a></li>
@@ -168,7 +170,7 @@
       
           <li><a href="../index.html">Chapter 5: SoC Family Specific Documentation</a> &raquo;</li>
       
-    <li>AM6 Firewall Descriptions</li>
+    <li>AM64X Firewall Descriptions</li>
       <li class="wy-breadcrumbs-aside">
         
           
@@ -180,10 +182,10 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="am6-firewall-descriptions">
-<h1>AM6 Firewall Descriptions<a class="headerlink" href="#am6-firewall-descriptions" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="am64x-firewall-descriptions">
+<h1>AM64X Firewall Descriptions<a class="headerlink" href="#am64x-firewall-descriptions" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="introduction">
-<span id="soc-doc-am64x-public-fwl-desc-intro"></span><h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<span id="soc-doc-am64-public-fwl-desc-intro"></span><h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
 <p>This chapter provides information on firewalls that system firmware configures
 by default at boot time. Guide to read the tables in this chapter is provided
 below. For more details on firewalls refer to “Interconnect Firewalls” section
@@ -200,16 +202,16 @@ Firewall configuration is internally handled by RM based on RM boardcfg.</p>
 </div>
 </div>
 <div class="section" id="list-of-region-based-firewalls">
-<span id="soc-doc-am64x-public-fwl-desc-region-fwl-list"></span><h2>List of Region Based Firewalls<a class="headerlink" href="#list-of-region-based-firewalls" title="Permalink to this headline">¶</a></h2>
+<span id="soc-doc-am64-public-fwl-desc-region-fwl-list"></span><h2>List of Region Based Firewalls<a class="headerlink" href="#list-of-region-based-firewalls" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
 <colgroup>
-<col width="13%" />
-<col width="8%" />
-<col width="15%" />
-<col width="13%" />
-<col width="18%" />
-<col width="17%" />
-<col width="17%" />
+<col width="12%" />
+<col width="7%" />
+<col width="14%" />
+<col width="12%" />
+<col width="23%" />
+<col width="16%" />
+<col width="16%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Firewall ID</th>
@@ -222,6 +224,230 @@ Firewall configuration is internally handled by RM based on RM boardcfg.</p>
 </tr>
 </thead>
 <tbody valign="top">
+<tr class="row-even"><td>20</td>
+<td>dmsc</td>
+<td>0x4D000000</td>
+<td>0x4D001FFF</td>
+<td>main_0_r5_0_secure,rwcd</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>20</td>
+<td>dmsc</td>
+<td>0x4D004000</td>
+<td>0x4D005FFF</td>
+<td>main_0_r5_1_secure,rwcd</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>20</td>
+<td>dmsc</td>
+<td>0x4D008000</td>
+<td>0x4D009FFF</td>
+<td>a53_secure_supervisor,rwcd</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>20</td>
+<td>dmsc</td>
+<td>0x4D012000</td>
+<td>0x4D013FFF</td>
+<td>main_1_r5_0_secure,rwcd</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>20</td>
+<td>dmsc</td>
+<td>0x4D016000</td>
+<td>0x4D017FFF</td>
+<td>main_1_r5_1_secure,rwcd</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>20</td>
+<td>dmsc</td>
+<td>0x4D03C000</td>
+<td>0x4D04BFFF</td>
+<td>dmsc,rwcd</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>20</td>
+<td>none</td>
+<td>0x4D000000</td>
+<td>0x4E3FFFFF</td>
+<td>everyone,rwcd</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>20</td>
+<td>dmsc</td>
+<td>0x4E004000</td>
+<td>0x4E013FFF</td>
+<td>sproxy_private,rwcd</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>21</td>
+<td>none</td>
+<td>0x00000000</td>
+<td>0xFFFFFFFFFFF</td>
+<td>everyone,rwcd</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>21</td>
+<td>dmsc</td>
+<td>0x04210000</td>
+<td>0x042101FF</td>
+<td>dmsc,rwcd</td>
+<td>everyone,r</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>22</td>
+<td>dmsc</td>
+<td>0x49800000</td>
+<td>0x4A67FFFF</td>
+<td>dmsc,rwcd</td>
+<td>everyone,r</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>22</td>
+<td>dmsc</td>
+<td>0x48100000</td>
+<td>0x482500FF</td>
+<td>dmsc,rwcd</td>
+<td>everyone,r</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>22</td>
+<td>dmsc</td>
+<td>0x48400000</td>
+<td>0x48411FFF</td>
+<td>dmsc,rwcd</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>22</td>
+<td>dmsc</td>
+<td>0x48420000</td>
+<td>0x48607FFF</td>
+<td>dmsc,rwcd</td>
+<td>everyone,r</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>22</td>
+<td>none</td>
+<td>0x01000000</td>
+<td>0x4C01FFFF</td>
+<td>everyone,rwcd</td>
+<td>everyone,rwcd</td>
+<td>everyone,rwcd</td>
+</tr>
+<tr class="row-odd"><td>22</td>
+<td>dmsc</td>
+<td>0x4A811000</td>
+<td>0x4A812FFF</td>
+<td>dmsc,rwcd</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>22</td>
+<td>dmsc</td>
+<td>0x4AA16000</td>
+<td>0x4AA16FFF</td>
+<td>dmsc,rwcd</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>22</td>
+<td>dmsc</td>
+<td>0x4B920000</td>
+<td>0x4B92FFFF</td>
+<td>dmsc,rwcd</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>22</td>
+<td>dmsc</td>
+<td>0x4B8A0000</td>
+<td>0x4B8AFFFF</td>
+<td>dmsc,rwcd</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>22</td>
+<td>dmsc</td>
+<td>0x49000000</td>
+<td>0x49013FFF</td>
+<td>dmsc,rwcd</td>
+<td>everyone,r</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>24</td>
+<td>dmsc</td>
+<td>0x44060000</td>
+<td>0x4407BFFF</td>
+<td>dmsc,rwcd</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>24</td>
+<td>dmsc</td>
+<td>0x701FC000</td>
+<td>0x701FFFFF</td>
+<td>sproxy_private,rwcd</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>24</td>
+<td>dmsc</td>
+<td>0x4407C000</td>
+<td>0x4407FFFF</td>
+<td>sproxy_private,rwcd</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>24</td>
+<td>dmsc</td>
+<td>0x701C0000</td>
+<td>0x701DFFFF</td>
+<td>everyone,rwcd</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>34</td>
+<td>none</td>
+<td>0x00000000</td>
+<td>0xFFFFFFFFFFF</td>
+<td>everyone,rwcd</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>34</td>
+<td>dmsc</td>
+<td>0x00A00000</td>
+<td>0x00A307FF</td>
+<td>dmsc,rwcd</td>
+<td>everyone,r</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>34</td>
+<td>dmsc</td>
+<td>0x00300000</td>
+<td>0x003000FF</td>
+<td>dmsc,rwcd</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>512</td>
+<td>dmsc</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>dmsc,rwcd</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
 <tr class="row-even"><td>513</td>
 <td>dmsc</td>
 <td>&#160;</td>
@@ -238,532 +464,172 @@ Firewall configuration is internally handled by RM based on RM boardcfg.</p>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
-<tr class="row-even"><td>515</td>
+<tr class="row-even"><td>528</td>
 <td>dmsc</td>
+<td>0x00000000</td>
+<td>0xFFFFFFFFFFF</td>
+<td>dmsc,rwd</td>
 <td>&#160;</td>
 <td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>536</td>
+<td>dmsc</td>
+<td>0x00000000</td>
+<td>0xFFFFFFFFFFF</td>
+<td>dmsc,rwd</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>537</td>
+<td>dmsc</td>
+<td>0x00000000</td>
+<td>0xFFFFFFFFFFF</td>
+<td>dmsc,rwd</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>544</td>
+<td>dmsc</td>
+<td>0x00000000</td>
+<td>0xFFFFFFFFFFF</td>
+<td>dmsc,rwd</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>545</td>
+<td>dmsc</td>
+<td>0x00000000</td>
+<td>0xFFFFFFFFFFF</td>
+<td>dmsc,rwd</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>552</td>
+<td>dmsc</td>
+<td>0x00000000</td>
+<td>0xFFFFFFFFFFF</td>
+<td>dmsc,rwd</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>562</td>
+<td>dmsc</td>
+<td>0x00000000</td>
+<td>0xFFFFFFFFFFF</td>
+<td>dmsc,rwd</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>576</td>
+<td>dmsc</td>
+<td>0x00000000</td>
+<td>0xFFFFFFFFFFF</td>
+<td>dmsc,rwd</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>578</td>
+<td>dmsc</td>
+<td>0x00000000</td>
+<td>0xFFFFFFFFFFF</td>
+<td>dmsc,rwd</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>582</td>
+<td>dmsc</td>
+<td>0x44234000</td>
+<td>0x44234FFF</td>
+<td>everyone,r</td>
+<td>everyone,r</td>
+<td>everyone,r</td>
+</tr>
+<tr class="row-even"><td>582</td>
+<td>dmsc</td>
+<td>0x44235000</td>
+<td>0x44237FFF</td>
 <td>dmsc,rwcd</td>
+<td>dmsc,rwcd</td>
+<td>dmsc,rwcd</td>
+</tr>
+<tr class="row-odd"><td>592</td>
+<td>dmsc</td>
+<td>0x00000000</td>
+<td>0xFFFFFFFFFFF</td>
+<td>dmsc,rwd</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>593</td>
+<td>dmsc</td>
+<td>0x00000000</td>
+<td>0xFFFFFFFFFFF</td>
+<td>dmsc,rwd</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>602</td>
+<td>dmsc</td>
+<td>0x00000000</td>
+<td>0xFFFFFFFFFFF</td>
+<td>dmsc,rwd</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>607</td>
+<td>dmsc</td>
+<td>0x00000000</td>
+<td>0xFFFFFFFFFFF</td>
+<td>dmsc,rwd</td>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
 <tr class="row-odd"><td>639</td>
 <td>dmsc</td>
+<td>0x45080000</td>
+<td>0x45CFFFFF</td>
+<td>dmsc,rwd</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>639</td>
+<td>dmsc</td>
 <td>0x45000000</td>
+<td>0x4507FFFF</td>
+<td>dmsc,rwd</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>639</td>
+<td>dmsc</td>
+<td>0x45D00000</td>
+<td>0x45DFFFFF</td>
+<td>everyone,rwcd</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>639</td>
+<td>dmsc</td>
+<td>0x45E00000</td>
 <td>0x45FFFFFF</td>
 <td>dmsc,rwd</td>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
-<tr class="row-even"><td>1280</td>
-<td>none</td>
-<td>0x00000000</td>
-<td>0xFFFFFFFFFFF</td>
-<td>everyone,rwcd</td>
-<td>everyone,rwcd</td>
-<td>everyone,rwcd</td>
-</tr>
-<tr class="row-odd"><td>2048</td>
-<td>none</td>
-<td>0x00000000</td>
-<td>0xFFFFFFFFFFF</td>
-<td>everyone,rwcd</td>
-<td>everyone,rwcd</td>
-<td>everyone,rwcd</td>
-</tr>
-<tr class="row-even"><td>4136</td>
-<td>dmsc</td>
-<td>0x30800000</td>
-<td>0x3080001F</td>
-<td>dmsc,rwcd</td>
-<td>everyone,r</td>
-<td>everyone,r</td>
-</tr>
-<tr class="row-odd"><td>4136</td>
-<td>dmsc</td>
-<td>0x30900000</td>
-<td>0x30907FFF</td>
-<td>dmsc,rwcd</td>
-<td>everyone,r</td>
-<td>everyone,r</td>
-</tr>
-<tr class="row-even"><td>4136</td>
-<td>dmsc</td>
-<td>0x33C00000</td>
-<td>0x33C3FFFF</td>
-<td>dmsc,rwcd</td>
-<td>everyone,rwcd</td>
-<td>everyone,rwcd</td>
-</tr>
-<tr class="row-odd"><td>4144</td>
-<td>dmsc</td>
-<td>0x30801000</td>
-<td>0x3080101F</td>
-<td>dmsc,rwcd</td>
-<td>everyone,r</td>
-<td>everyone,r</td>
-</tr>
-<tr class="row-even"><td>4144</td>
-<td>dmsc</td>
-<td>0x30908000</td>
-<td>0x3090FFFF</td>
-<td>dmsc,rwcd</td>
-<td>everyone,r</td>
-<td>everyone,r</td>
-</tr>
-<tr class="row-odd"><td>4144</td>
-<td>dmsc</td>
-<td>0x33C40000</td>
-<td>0x33C7FFFF</td>
-<td>dmsc,rwcd</td>
-<td>everyone,rwcd</td>
-<td>everyone,rwcd</td>
-</tr>
-<tr class="row-even"><td>4152</td>
-<td>dmsc</td>
-<td>0x31120000</td>
-<td>0x311200FF</td>
-<td>dmsc,rwcd</td>
-<td>everyone,r</td>
-<td>everyone,r</td>
-</tr>
-<tr class="row-odd"><td>4152</td>
-<td>dmsc</td>
-<td>0x33400000</td>
-<td>0x3343FFFF</td>
-<td>dmsc,rwcd</td>
-<td>everyone,rwcd</td>
-<td>everyone,rwcd</td>
-</tr>
-<tr class="row-even"><td>4152</td>
-<td>dmsc</td>
-<td>0x31130000</td>
-<td>0x31133FFF</td>
-<td>dmsc,rwcd</td>
-<td>everyone,r</td>
-<td>everyone,r</td>
-</tr>
-<tr class="row-odd"><td>4168</td>
-<td>dmsc</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>dmsc,rwcd</td>
-<td>everyone,r</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>4288</td>
-<td>dmsc</td>
-<td>0x31160000</td>
-<td>0x311603FF</td>
-<td>dmsc,rwcd</td>
-<td>everyone,r</td>
-<td>everyone,r</td>
-</tr>
-<tr class="row-odd"><td>4288</td>
-<td>dmsc</td>
-<td>0x31080000</td>
-<td>0x310BFFFF</td>
-<td>dmsc,rwcd</td>
-<td>everyone,r</td>
-<td>everyone,r</td>
-</tr>
-<tr class="row-even"><td>4288</td>
-<td>dmsc</td>
-<td>0x3C000000</td>
-<td>0x3C3FFFFF</td>
-<td>dmsc,rwcd</td>
-<td>everyone,rwcd</td>
-<td>everyone,rwcd</td>
-</tr>
-<tr class="row-odd"><td>4288</td>
-<td>dmsc</td>
-<td>0x32000000</td>
-<td>0x3201FFFF</td>
-<td>dmsc,rwcd</td>
-<td>everyone,rwcd</td>
-<td>everyone,rwcd</td>
-</tr>
-<tr class="row-even"><td>4352</td>
-<td>dmsc</td>
-<td>0x30802000</td>
-<td>0x3080201F</td>
-<td>dmsc,rwcd</td>
-<td>everyone,r</td>
-<td>everyone,r</td>
-</tr>
-<tr class="row-odd"><td>4352</td>
-<td>dmsc</td>
-<td>0x30940000</td>
-<td>0x3097FFFF</td>
-<td>dmsc,rwcd</td>
-<td>everyone,r</td>
-<td>everyone,r</td>
-</tr>
-<tr class="row-even"><td>4352</td>
-<td>dmsc</td>
-<td>0x33D00000</td>
-<td>0x33DFFFFF</td>
-<td>dmsc,rwcd</td>
-<td>everyone,rwcd</td>
-<td>everyone,rwcd</td>
-</tr>
-<tr class="row-odd"><td>4352</td>
-<td>dmsc</td>
-<td>0x31100000</td>
-<td>0x3110007F</td>
-<td>dmsc,rwcd</td>
-<td>everyone,r</td>
-<td>everyone,r</td>
-</tr>
-<tr class="row-even"><td>4352</td>
-<td>dmsc</td>
-<td>0x31110000</td>
-<td>0x31113FFF</td>
-<td>dmsc,rwcd</td>
-<td>everyone,r</td>
-<td>everyone,r</td>
-</tr>
-<tr class="row-odd"><td>4352</td>
-<td>dmsc</td>
-<td>0x31040000</td>
-<td>0x31043FFF</td>
-<td>dmsc,rwcd</td>
-<td>everyone,r</td>
-<td>everyone,r</td>
-</tr>
-<tr class="row-even"><td>4352</td>
-<td>dmsc</td>
-<td>0x33800000</td>
-<td>0x339FFFFF</td>
-<td>dmsc,rwcd</td>
-<td>everyone,rwcd</td>
-<td>everyone,rwcd</td>
-</tr>
-<tr class="row-odd"><td>4384</td>
-<td>dmsc</td>
-<td>0x31150000</td>
-<td>0x311500FF</td>
-<td>dmsc,rwcd</td>
-<td>everyone,r</td>
-<td>everyone,r</td>
-</tr>
-<tr class="row-even"><td>4384</td>
-<td>dmsc</td>
-<td>0x30D00000</td>
-<td>0x30D07FFF</td>
-<td>dmsc,rwcd</td>
-<td>everyone,r</td>
-<td>everyone,r</td>
-</tr>
-<tr class="row-odd"><td>4384</td>
-<td>dmsc</td>
-<td>0x30B00000</td>
-<td>0x30B0FFFF</td>
-<td>dmsc,rwcd</td>
-<td>everyone,r</td>
-<td>everyone,r</td>
-</tr>
-<tr class="row-even"><td>4384</td>
-<td>dmsc</td>
-<td>0x30C00000</td>
-<td>0x30C0FFFF</td>
-<td>dmsc,rwcd</td>
-<td>everyone,r</td>
-<td>everyone,r</td>
-</tr>
-<tr class="row-odd"><td>4384</td>
-<td>dmsc</td>
-<td>0x35000000</td>
-<td>0x350FFFFF</td>
-<td>dmsc,rwcd</td>
-<td>everyone,rwcd</td>
-<td>everyone,rwcd</td>
-</tr>
-<tr class="row-even"><td>4384</td>
-<td>dmsc</td>
-<td>0x34000000</td>
-<td>0x340FFFFF</td>
-<td>dmsc,rwcd</td>
-<td>everyone,rwcd</td>
-<td>everyone,rwcd</td>
-</tr>
-<tr class="row-odd"><td>4396</td>
-<td>dmsc</td>
-<td>0x33000000</td>
-<td>0x3303FFFF</td>
-<td>dmsc,rwcd</td>
-<td>everyone,rwcd</td>
-<td>everyone,rwcd</td>
-</tr>
-<tr class="row-even"><td>4408</td>
-<td>dmsc</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>everyone,rwcd</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>4448</td>
-<td>dmsc</td>
-<td>0x38000000</td>
-<td>0x383FFFFF</td>
-<td>dmsc,rwcd</td>
-<td>everyone,rwcd</td>
-<td>everyone,rwcd</td>
-</tr>
-<tr class="row-even"><td>4449</td>
-<td>none</td>
-<td>0x70000000</td>
-<td>0x701FFFFF</td>
-<td>everyone,rwcd</td>
-<td>everyone,rwcd</td>
-<td>everyone,rwcd</td>
-</tr>
-<tr class="row-odd"><td>4449</td>
-<td>dmsc</td>
-<td>0x60000000</td>
-<td>0x6CFFFFFF</td>
-<td>dmsc,rwcd</td>
-<td>everyone,r</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>4449</td>
-<td>none</td>
-<td>0x6D000000</td>
-<td>0x6DFFFFFF</td>
-<td>everyone,rwcd</td>
-<td>everyone,rwcd</td>
-<td>everyone,rwcd</td>
-</tr>
-<tr class="row-odd"><td>4449</td>
-<td>dmsc</td>
-<td>0x6E000000</td>
-<td>0x6EFFFFFF</td>
-<td>dmsc,rwcd</td>
-<td>everyone,r</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>4449</td>
-<td>dmsc</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>sproxy_private,rwcd</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>6148</td>
-<td>dmsc</td>
-<td>0x28590000</td>
-<td>0x285900FF</td>
-<td>dmsc,rwcd</td>
-<td>everyone,r</td>
-<td>everyone,r</td>
-</tr>
-<tr class="row-even"><td>6148</td>
-<td>dmsc</td>
-<td>0x2A580000</td>
-<td>0x2A5BFFFF</td>
-<td>dmsc,rwcd</td>
-<td>everyone,rwcd</td>
-<td>everyone,rwcd</td>
-</tr>
-<tr class="row-odd"><td>6148</td>
-<td>dmsc</td>
-<td>0x285A0000</td>
-<td>0x285A3FFF</td>
-<td>dmsc,rwcd</td>
-<td>everyone,r</td>
-<td>everyone,r</td>
-</tr>
-<tr class="row-even"><td>6156</td>
-<td>dmsc</td>
-<td>0x285B0000</td>
-<td>0x2A47FFFF</td>
-<td>dmsc,rwcd</td>
-<td>everyone,r</td>
-<td>everyone,r</td>
-</tr>
-<tr class="row-odd"><td>6176</td>
-<td>dmsc</td>
-<td>0x285D0000</td>
-<td>0x285D03FF</td>
-<td>dmsc,rwcd</td>
-<td>everyone,r</td>
-<td>everyone,r</td>
-</tr>
-<tr class="row-even"><td>6176</td>
-<td>dmsc</td>
-<td>0x28440000</td>
-<td>0x2847FFFF</td>
-<td>dmsc,rwcd</td>
-<td>everyone,r</td>
-<td>everyone,r</td>
-</tr>
-<tr class="row-odd"><td>6176</td>
-<td>dmsc</td>
-<td>0x2B800000</td>
-<td>0x2BBFFFFF</td>
-<td>dmsc,rwcd</td>
-<td>everyone,rwcd</td>
-<td>everyone,rwcd</td>
-</tr>
-<tr class="row-even"><td>6176</td>
-<td>dmsc</td>
-<td>0x2A280000</td>
-<td>0x2A29FFFF</td>
-<td>dmsc,rwcd</td>
-<td>everyone,rwcd</td>
-<td>everyone,rwcd</td>
-</tr>
-<tr class="row-odd"><td>6240</td>
-<td>dmsc</td>
-<td>0x283C0000</td>
-<td>0x283C001F</td>
-<td>dmsc,rwcd</td>
-<td>everyone,r</td>
-<td>everyone,r</td>
-</tr>
-<tr class="row-even"><td>6240</td>
-<td>dmsc</td>
-<td>0x28560000</td>
-<td>0x2856FFFF</td>
-<td>dmsc,rwcd</td>
-<td>everyone,r</td>
-<td>everyone,r</td>
-</tr>
-<tr class="row-odd"><td>6240</td>
-<td>dmsc</td>
-<td>0x2A700000</td>
-<td>0x2A7FFFFF</td>
-<td>dmsc,rwcd</td>
-<td>everyone,rwcd</td>
-<td>everyone,rwcd</td>
-</tr>
-<tr class="row-even"><td>6240</td>
-<td>dmsc</td>
-<td>0x28570000</td>
-<td>0x2857007F</td>
-<td>dmsc,rwcd</td>
-<td>everyone,r</td>
-<td>everyone,r</td>
-</tr>
-<tr class="row-odd"><td>6240</td>
-<td>dmsc</td>
-<td>0x28580000</td>
-<td>0x28580FFF</td>
-<td>dmsc,rwcd</td>
-<td>everyone,r</td>
-<td>everyone,r</td>
-</tr>
-<tr class="row-even"><td>6240</td>
-<td>dmsc</td>
-<td>0x28480000</td>
-<td>0x28481FFF</td>
-<td>dmsc,rwcd</td>
-<td>everyone,r</td>
-<td>everyone,r</td>
-</tr>
-<tr class="row-odd"><td>6240</td>
-<td>dmsc</td>
-<td>0x2A600000</td>
-<td>0x2A6FFFFF</td>
-<td>dmsc,rwcd</td>
-<td>everyone,rwcd</td>
-<td>everyone,rwcd</td>
-</tr>
-<tr class="row-even"><td>6248</td>
-<td>dmsc</td>
-<td>0x285C0000</td>
-<td>0x285C00FF</td>
-<td>dmsc,rwcd</td>
-<td>everyone,r</td>
-<td>everyone,r</td>
-</tr>
-<tr class="row-odd"><td>6248</td>
-<td>dmsc</td>
-<td>0x28400000</td>
-<td>0x28401FFF</td>
-<td>dmsc,rwcd</td>
-<td>everyone,r</td>
-<td>everyone,r</td>
-</tr>
-<tr class="row-even"><td>6248</td>
-<td>dmsc</td>
-<td>0x284A0000</td>
-<td>0x284A3FFF</td>
-<td>dmsc,rwcd</td>
-<td>everyone,r</td>
-<td>everyone,r</td>
-</tr>
-<tr class="row-odd"><td>6248</td>
-<td>dmsc</td>
-<td>0x284C0000</td>
-<td>0x284C3FFF</td>
-<td>dmsc,rwcd</td>
-<td>everyone,r</td>
-<td>everyone,r</td>
-</tr>
-<tr class="row-even"><td>6248</td>
-<td>dmsc</td>
-<td>0x2AA00000</td>
-<td>0x2AA3FFFF</td>
-<td>dmsc,rwcd</td>
-<td>everyone,rwcd</td>
-<td>everyone,rwcd</td>
-</tr>
-<tr class="row-odd"><td>6248</td>
-<td>dmsc</td>
-<td>0x2A800000</td>
-<td>0x2A83FFFF</td>
-<td>dmsc,rwcd</td>
-<td>everyone,rwcd</td>
-<td>everyone,rwcd</td>
-</tr>
-<tr class="row-even"><td>6260</td>
-<td>dmsc</td>
-<td>0x2A500000</td>
-<td>0x2A53FFFF</td>
-<td>dmsc,rwcd</td>
-<td>everyone,rwcd</td>
-<td>everyone,rwcd</td>
-</tr>
-<tr class="row-odd"><td>6268</td>
-<td>dmsc</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>everyone,rwcd</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>6269</td>
-<td>dmsc</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>sproxy_private,rwcd</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>6288</td>
-<td>dmsc</td>
-<td>0x2B000000</td>
-<td>0x2B3FFFFF</td>
-<td>dmsc,rwcd</td>
-<td>everyone,rwcd</td>
-<td>everyone,rwcd</td>
-</tr>
 </tbody>
 </table>
 </div>
 <div class="section" id="list-of-channelized-firewalls">
-<span id="soc-doc-am64x-public-fwl-desc-channel-fwl-list"></span><h2>List of Channelized Firewalls<a class="headerlink" href="#list-of-channelized-firewalls" title="Permalink to this headline">¶</a></h2>
+<span id="soc-doc-am64-public-fwl-desc-channel-fwl-list"></span><h2>List of Channelized Firewalls<a class="headerlink" href="#list-of-channelized-firewalls" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
 <colgroup>
-<col width="12%" />
-<col width="7%" />
 <col width="13%" />
-<col width="12%" />
-<col width="25%" />
-<col width="16%" />
-<col width="16%" />
+<col width="8%" />
+<col width="15%" />
+<col width="13%" />
+<col width="17%" />
+<col width="17%" />
+<col width="17%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Firewall ID</th>
@@ -776,331 +642,11 @@ Firewall configuration is internally handled by RM based on RM boardcfg.</p>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>4132</td>
-<td>rm</td>
-<td>0</td>
-<td>0</td>
-<td>block_everyone,r</td>
+<tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>4140</td>
-<td>rm</td>
-<td>0</td>
-<td>0</td>
-<td>block_everyone,r</td>
 <td>&#160;</td>
 <td>&#160;</td>
-</tr>
-<tr class="row-even"><td>4148</td>
-<td>dmsc</td>
-<td>0</td>
-<td>0</td>
-<td>dmsc,rwcd</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>4160</td>
-<td>dmsc</td>
-<td>0</td>
-<td>159</td>
-<td>dmsc,rwcd</td>
-<td>everyone,r</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>4256</td>
-<td>dmsc</td>
-<td>0</td>
-<td>0</td>
-<td>dmsc,rwcd</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>4256</td>
-<td>dmsc</td>
-<td>152</td>
-<td>152</td>
-<td>dmsc,rwcd</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>4256</td>
-<td>dmsc</td>
-<td>302</td>
-<td>303</td>
-<td>dmsc,rwcd</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>4256</td>
-<td>dmsc</td>
-<td>768</td>
-<td>817</td>
-<td>sproxy_private,rwcd</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>4320</td>
-<td>rm</td>
-<td>0</td>
-<td>0</td>
-<td>block_everyone,r</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>4320</td>
-<td>rm</td>
-<td>256</td>
-<td>256</td>
-<td>block_everyone,r</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>4368</td>
-<td>dmsc</td>
-<td>0</td>
-<td>0</td>
-<td>dmsc,rwcd</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>4368</td>
-<td>rm</td>
-<td>1</td>
-<td>151</td>
-<td>dmsc,r</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>4368</td>
-<td>dmsc</td>
-<td>152</td>
-<td>153</td>
-<td>dmsc,rwcd</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>4368</td>
-<td>rm</td>
-<td>154</td>
-<td>301</td>
-<td>dmsc,r</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>4392</td>
-<td>dmsc</td>
-<td>0</td>
-<td>0</td>
-<td>dmsc,rwcd</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>4400</td>
-<td>dmsc</td>
-<td>0</td>
-<td>9</td>
-<td>a53_secure_supervisor,rwcd</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>4400</td>
-<td>dmsc</td>
-<td>10</td>
-<td>39</td>
-<td>a53_non_secure_supervisor,rwcd</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>4400</td>
-<td>dmsc</td>
-<td>40</td>
-<td>54</td>
-<td>icssg,rwcd</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>4400</td>
-<td>dmsc</td>
-<td>55</td>
-<td>64</td>
-<td>gpu_0,rwcd</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>4400</td>
-<td>dmsc</td>
-<td>128</td>
-<td>159</td>
-<td>dmsc,rwcd</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>4416</td>
-<td>dmsc</td>
-<td>0</td>
-<td>0</td>
-<td>dmsc,rwcd</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>4416</td>
-<td>dmsc</td>
-<td>152</td>
-<td>152</td>
-<td>dmsc,rwcd</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>4416</td>
-<td>dmsc</td>
-<td>302</td>
-<td>303</td>
-<td>dmsc,rwcd</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>4416</td>
-<td>dmsc</td>
-<td>768</td>
-<td>817</td>
-<td>sproxy_private,rwcd</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>6146</td>
-<td>rm</td>
-<td>0</td>
-<td>0</td>
-<td>block_everyone,r</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>6152</td>
-<td>dmsc</td>
-<td>5</td>
-<td>5</td>
-<td>everyone,r</td>
-<td>dmsc,rwcd</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>6152</td>
-<td>dmsc</td>
-<td>0</td>
-<td>4</td>
-<td>dmsc,rwcd</td>
-<td>everyone,r</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>6152</td>
-<td>dmsc</td>
-<td>6</td>
-<td>89</td>
-<td>dmsc,rwcd</td>
-<td>everyone,r</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>6160</td>
-<td>rm</td>
-<td>0</td>
-<td>0</td>
-<td>block_everyone,r</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>6160</td>
-<td>rm</td>
-<td>286</td>
-<td>286</td>
-<td>block_everyone,r</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>6208</td>
-<td>rm</td>
-<td>0</td>
-<td>0</td>
-<td>block_everyone,r</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>6208</td>
-<td>rm</td>
-<td>256</td>
-<td>256</td>
-<td>block_everyone,r</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>6244</td>
-<td>rm</td>
-<td>0</td>
-<td>0</td>
-<td>block_everyone,r</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>6244</td>
-<td>rm</td>
-<td>1</td>
-<td>47</td>
-<td>dmsc,r</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>6244</td>
-<td>rm</td>
-<td>48</td>
-<td>48</td>
-<td>block_everyone,r</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>6244</td>
-<td>rm</td>
-<td>49</td>
-<td>95</td>
-<td>dmsc,r</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>6256</td>
-<td>rm</td>
-<td>0</td>
-<td>0</td>
-<td>block_everyone,r</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>6264</td>
-<td>dmsc</td>
-<td>0</td>
-<td>9</td>
-<td>pulsar_0,rwcd</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>6264</td>
-<td>dmsc</td>
-<td>10</td>
-<td>19</td>
-<td>pulsar_1,rwcd</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>6264</td>
-<td>dmsc</td>
-<td>76</td>
-<td>89</td>
-<td>dmsc,rwcd</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>6272</td>
-<td>dmsc</td>
-<td>256</td>
-<td>285</td>
-<td>sproxy_private,rwcd</td>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
@@ -1108,16 +654,16 @@ Firewall configuration is internally handled by RM based on RM boardcfg.</p>
 </table>
 </div>
 <div class="section" id="list-of-priv-ids">
-<span id="soc-doc-am64x-public-fwl-desc-priv-id-list"></span><h2>List of priv-ids<a class="headerlink" href="#list-of-priv-ids" title="Permalink to this headline">¶</a></h2>
+<span id="soc-doc-am64-public-fwl-desc-priv-id-list"></span><h2>List of priv-ids<a class="headerlink" href="#list-of-priv-ids" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
 <colgroup>
-<col width="26%" />
+<col width="28%" />
 <col width="11%" />
 <col width="10%" />
-<col width="14%" />
-<col width="14%" />
+<col width="15%" />
+<col width="15%" />
 <col width="8%" />
-<col width="18%" />
+<col width="13%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Master name</th>
@@ -1136,7 +682,7 @@ Firewall configuration is internally handled by RM based on RM boardcfg.</p>
 <td>True</td>
 <td>True</td>
 <td>False</td>
-<td>12,13,14,15,16,17</td>
+<td>11,12,13</td>
 </tr>
 <tr class="row-odd"><td>a53_secure_supervisor</td>
 <td>1</td>
@@ -1144,7 +690,7 @@ Firewall configuration is internally handled by RM based on RM boardcfg.</p>
 <td>False</td>
 <td>True</td>
 <td>False</td>
-<td>10,11</td>
+<td>10</td>
 </tr>
 <tr class="row-even"><td>sproxy_private</td>
 <td>11</td>
@@ -1154,37 +700,21 @@ Firewall configuration is internally handled by RM based on RM boardcfg.</p>
 <td>True</td>
 <td>N/A</td>
 </tr>
-<tr class="row-odd"><td>pulsar_0</td>
-<td>96</td>
-<td>True</td>
-<td>True</td>
-<td>True</td>
+<tr class="row-odd"><td>m4_0</td>
+<td>100</td>
 <td>False</td>
-<td>3,4</td>
+<td>True</td>
+<td>True</td>
+<td>True</td>
+<td>30</td>
 </tr>
-<tr class="row-even"><td>pulsar_1</td>
-<td>97</td>
-<td>True</td>
-<td>True</td>
-<td>True</td>
-<td>False</td>
-<td>5,6</td>
-</tr>
-<tr class="row-odd"><td>icssg</td>
+<tr class="row-even"><td>main_0_icssg_0</td>
 <td>136</td>
 <td>False</td>
 <td>True</td>
 <td>True</td>
 <td>True</td>
-<td>50,51,52</td>
-</tr>
-<tr class="row-even"><td>gpu_0</td>
-<td>184</td>
-<td>False</td>
-<td>True</td>
-<td>True</td>
-<td>True</td>
-<td>30,31</td>
+<td>50</td>
 </tr>
 <tr class="row-odd"><td>everyone</td>
 <td>195</td>
@@ -1209,6 +739,70 @@ Firewall configuration is internally handled by RM based on RM boardcfg.</p>
 <td>True</td>
 <td>True</td>
 <td>N/A</td>
+</tr>
+<tr class="row-even"><td>main_0_r5_0_nonsecure</td>
+<td>212</td>
+<td>False</td>
+<td>True</td>
+<td>True</td>
+<td>True</td>
+<td>36</td>
+</tr>
+<tr class="row-odd"><td>main_0_r5_0_secure</td>
+<td>212</td>
+<td>True</td>
+<td>False</td>
+<td>True</td>
+<td>True</td>
+<td>35</td>
+</tr>
+<tr class="row-even"><td>main_0_r5_1_nonsecure</td>
+<td>213</td>
+<td>False</td>
+<td>True</td>
+<td>True</td>
+<td>True</td>
+<td>38</td>
+</tr>
+<tr class="row-odd"><td>main_0_r5_1_secure</td>
+<td>213</td>
+<td>True</td>
+<td>False</td>
+<td>True</td>
+<td>True</td>
+<td>37</td>
+</tr>
+<tr class="row-even"><td>main_1_r5_0_nonsecure</td>
+<td>214</td>
+<td>False</td>
+<td>True</td>
+<td>True</td>
+<td>True</td>
+<td>41</td>
+</tr>
+<tr class="row-odd"><td>main_1_r5_0_secure</td>
+<td>214</td>
+<td>True</td>
+<td>False</td>
+<td>True</td>
+<td>True</td>
+<td>40</td>
+</tr>
+<tr class="row-even"><td>main_1_r5_1_nonsecure</td>
+<td>215</td>
+<td>False</td>
+<td>True</td>
+<td>True</td>
+<td>True</td>
+<td>43</td>
+</tr>
+<tr class="row-odd"><td>main_1_r5_1_secure</td>
+<td>215</td>
+<td>True</td>
+<td>False</td>
+<td>True</td>
+<td>True</td>
+<td>42</td>
 </tr>
 </tbody>
 </table>
@@ -1256,7 +850,7 @@ Firewall configuration is internally handled by RM based on RM boardcfg.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'20.05.00',
+            VERSION:'20.00.00',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
@@ -1265,7 +859,7 @@ Firewall configuration is internally handled by RM based on RM boardcfg.</p>
       <script type="text/javascript" src="../../_static/jquery.js"></script>
       <script type="text/javascript" src="../../_static/underscore.js"></script>
       <script type="text/javascript" src="../../_static/doctools.js"></script>
-      <script type="text/javascript" src="../../_static/language_data.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
     <script src="http://www.ti.com/assets/js/headerfooter/analytics.js" type="text/javascript" charset="utf-8"></script>
 

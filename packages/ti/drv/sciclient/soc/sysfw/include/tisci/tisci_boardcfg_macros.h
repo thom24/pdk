@@ -84,7 +84,15 @@
 #define TISCI_BOARDCFG_SA2UL_CFG_MAGIC_NUM                            (0xB4FDU)
 #define TISCI_BOARDCFG_SA2UL_CFG_MAGIC_NUM_RSVD                       (0x23BEU)
 #define TISCI_BOARDCFG_SEC_DBG_CTRL_MAGIC_NUM                         (0x42AFU)
+#define TISCI_BOARDCFG_SEC_HANDOVER_CFG_MAGIC_NUM                     (0x608FU)
 
+/*
+ * NOTE: We are trying to assign the board configuration number with a pattern.
+ * alternatively increment and decrement the digits in previous
+ * board configuration macro. This should allow for 16 magic words
+ * before needing to pick a new seed.
+ * e.g. 0x3172U -> 0x4081U, 0x42AFU -> 0x33BEU
+ */
 #endif
 
 /* @} */

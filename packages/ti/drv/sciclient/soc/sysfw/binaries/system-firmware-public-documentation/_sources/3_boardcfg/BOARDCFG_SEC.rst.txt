@@ -329,3 +329,46 @@ Secure Debug Unlock
 +------------------------------+----------------------------+---------------------------------------------------------------+
 
 The magic number to be populated in the ``subhdr`` is ``0x42AF``.
+
+
+.. _pub_boardcfg_security_handover:
+
+Security Handover
+-----------------
+
+.. note::
+
+   This section is only processed on AM64 devices.
+
+Please also refer to the below documents to understand the usage of the board configuration structure.
+
+1. :doc:`../6_topic_user_guides/security_handover` and
+2. :doc:`../2_tisci_msgs/security/security_handover` and
+
++------------------------------+----------------------------+---------------------------------------------------------------+
+|     Element                  |                 Type       |            Description                                        |
++==============================+============================+===============================================================+
+| subhdr                       | :ref:`pub_boardcfg_subhdr` | Magic and size for integrity check                            |
++------------------------------+----------------------------+---------------------------------------------------------------+
+| handover_msg_sender          | u8                         | ID of the host who will send the security handover message    |
+|                              |                            |                                                               |
+|                              |                            | Set to 0 if security handover is not desired                  |
+|                              |                            | or is unsupported on the device.                              |
++------------------------------+----------------------------+---------------------------------------------------------------+
+| handover_to_host_id          | u8                         | ID of the host who takes over the security functionality      |
+|                              |                            |                                                               |
+|                              |                            | The credentials of this host are programmed in the firewalls  |
+|                              |                            | protecting the security configuration registers.              |
+|                              |                            |                                                               |
+|                              |                            | Set to 0 if security handover is not desired                  |
+|                              |                            | or is unsupported on the device.                              |
++------------------------------+----------------------------+---------------------------------------------------------------+
+| rsvd                         | u8[4]                      | Reserved field. Currently unused. Set to 0.                   |
+|                              |                            |                                                               |
+|                              |                            | Security handover currently transfers   ownership of the      |
+|                              |                            | SOC firewalls. These flags are intended for future use        |
+|                              |                            | to indicate whether ownership of additional resources must    |
+|                              |                            | be transferred                                                |
++------------------------------+----------------------------+---------------------------------------------------------------+
+
+The magic number to be populated in the ``subhdr`` is ``0x608F``.

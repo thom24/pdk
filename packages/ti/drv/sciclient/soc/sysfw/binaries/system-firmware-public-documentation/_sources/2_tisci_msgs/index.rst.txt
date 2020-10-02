@@ -62,3 +62,4 @@ Secure Management
    security/runtime_debug
    security/extended_otp
    security/dkek_management
+   security/security_handover

@@ -79,7 +79,7 @@ endif
 
 # Parser SOC derivation
 ifeq ($(SOC),$(filter $(SOC), j721e))
-PARSER_SOC := j721e
+PARSER_SOC := j721e_legacy
 endif
 ifeq ($(SOC),$(filter $(SOC), j7200))
 PARSER_SOC := j7200

@@ -217,7 +217,6 @@ struct tisci_boardcfg_rm_resasg {
     struct tisci_boardcfg_substructure_rm_header    subhdr;
     uint16_t                    resasg_entries_size;
     uint16_t                    reserved;
-    struct tisci_boardcfg_rm_resasg_entry        resasg_entries[];
 } __attribute__((__packed__));
 
 /**

@@ -317,7 +317,7 @@ The debug control data is decoded as a structure below:
 
     struct sdbg_debug_ctrl {
         u16 debug_priv_level;
-        u16 hw_key_hide_flags;
+        u16 reserved;
         u8 debug_core_sel[MAX_CPU_CORES];
         u8 sec_debug_core_sel[MAX_CPU_CORES];
     }
@@ -330,7 +330,7 @@ The table below shows the way **UID-Debug** fields are decoded into **struct sdb
 | debug_priv_level       |debugCtrl field is decoded as a u32 value and the lower 16|
 |                        |bit value is picked up                                    |
 +------------------------+----------------------------------------------------------+
-| hw_key_hide_flags      |debugCtrl field is decoded as a u32 value and the upper 16|
+| reserved               |debugCtrl field is decoded as a u32 value and the upper 16|
 |                        |bit value is picked up                                    |
 +------------------------+----------------------------------------------------------+
 | debug_core_sel         |coreDbgEn field is decoded as an array of u8 values of    |
@@ -340,6 +340,9 @@ The table below shows the way **UID-Debug** fields are decoded into **struct sdb
 | sec_debug_core_sel     |coreDbgSecEn field is decoded as an array of u8 values of |
 |                        |processor IDs for which secure debug should be enabled    |
 +------------------------+----------------------------------------------------------+
+
+
+.. _sysfw_x509_ext_doc_debug_levels_table:
 
 The following table shows the enumeration of values for **debug_priv_level**:
 
@@ -361,18 +364,6 @@ The following table shows the enumeration of values for **debug_priv_level**:
 | DEBUG_SECURE_USER | 5     | Enable debug for both secure and non-secure at user   |
 |                   |       | level only                                            |
 +-------------------+-------+-------------------------------------------------------+
-
-The following table shows the enumeration of the bitfield **hw_key_hide_flags**:
-
-+-------------------------+-------+---------------------------------------------------+
-|    Enumeration name     | Value |                                Meaning            |
-+=========================+=======+===================================================+
-| CERT_KEY_FLAGS_KEK      | 1     | If this bit is set, the KEK must be hidden with a |
-|                         |       | software KEK                                      |
-+-------------------------+-------+---------------------------------------------------+
-| CERT_KEY_FLAGS_CUST_SSK | 2     | If this bit is set, customer secret keys (SMPK &  |
-|                         |       | BMPK) must be hidden                              |
-+-------------------------+-------+---------------------------------------------------+
 
 For an example, please refer to the section ``[ debug ]`` in :ref:`sysfw_x509_template_example`.
 
@@ -488,6 +479,14 @@ Sample x509 template
    - For authenticating a binary, only the Load (``sysfw_image_load``) and
      Image integrity (``sysfw_image_integrity``) extensions are required.
 
+.. note::
+
+   The data in the ``req_distinguished_name`` section is random to indicates
+
+   1. |sysfw| does not process the information in the section.
+   2. This needs to be updated by the user to reflect his information.
+
+
 .. code-block :: bash
 
     [ req ]
@@ -502,18 +501,20 @@ Sample x509 template
     # System firmware does not make decisions based
     # on the contents of this distinguished name block.
     [ req_distinguished_name ]
-    C = US
-    ST = Texas
-    L = Dallas
-    O = Texas Instruments
-    OU = K3
-    CN = www.ti.com
-    emailAddress = noreply@ti.com
+    C = oR
+    ST = rx
+    L = gQE843yQV0sag
+    O = dqhGYAQ2Y4gFfCq0t1yABCYxex9eAxt71f
+    OU = a87RB35W
+    CN = x0FSqGTPWbGpuiV
+    emailAddress = kFp5uGcgWXxcfxi@vsHs9C9qQWGrBs.com
 
     [ v3_ca ]
     basicConstraints = CA:true
     1.3.6.1.4.1.294.1.3=ASN1:SEQUENCE:swrv
     1.3.6.1.4.1.294.1.4=ASN1:SEQUENCE:encryption
+    1.3.6.1.4.1.294.1.8=ASN1:SEQUENCE:debug
+    1.3.6.1.4.1.294.1.36=ASN1:SEQUENCE:sysfw_hs_boardcfg
     1.3.6.1.4.1.294.1.33=ASN1:SEQUENCE:sysfw_boot_seq
     1.3.6.1.4.1.294.1.34=ASN1:SEQUENCE:sysfw_image_integrity
     1.3.6.1.4.1.294.1.35=ASN1:SEQUENCE:sysfw_image_load
@@ -544,7 +545,7 @@ Sample x509 template
 
     [ debug ]
     debugUID = FORMAT:HEX,OCT:0000000000000000000000000000000000000000000000000000000000000000
-    debugType = INTEGER:0x00010005
+    debugType = INTEGER:0x00000004
     coreDbgEn = INTEGER:0x20210102
     coreDbgSecEn = INTEGER:0x2223
 

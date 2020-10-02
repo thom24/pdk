@@ -67,17 +67,17 @@
 /** Thread ID macro for MCU_0_R5_0 response */
 #define TISCI_SEC_PROXY_MCU_0_R5_0_READ_RESPONSE_THREAD_ID (1U)
 /** Num messages macro for MCU_0_R5_0 response */
-#define TISCI_SEC_PROXY_MCU_0_R5_0_READ_RESPONSE_NUM_MESSAGES (7U)
+#define TISCI_SEC_PROXY_MCU_0_R5_0_READ_RESPONSE_NUM_MESSAGES (20U)
 
 /** Thread ID macro for MCU_0_R5_0 high_priority */
 #define TISCI_SEC_PROXY_MCU_0_R5_0_WRITE_HIGH_PRIORITY_THREAD_ID (2U)
 /** Num messages macro for MCU_0_R5_0 high_priority */
-#define TISCI_SEC_PROXY_MCU_0_R5_0_WRITE_HIGH_PRIORITY_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_MCU_0_R5_0_WRITE_HIGH_PRIORITY_NUM_MESSAGES (10U)
 
 /** Thread ID macro for MCU_0_R5_0 low_priority */
 #define TISCI_SEC_PROXY_MCU_0_R5_0_WRITE_LOW_PRIORITY_THREAD_ID (3U)
 /** Num messages macro for MCU_0_R5_0 low_priority */
-#define TISCI_SEC_PROXY_MCU_0_R5_0_WRITE_LOW_PRIORITY_NUM_MESSAGES (5U)
+#define TISCI_SEC_PROXY_MCU_0_R5_0_WRITE_LOW_PRIORITY_NUM_MESSAGES (10U)
 
 /** Thread ID macro for MCU_0_R5_0 notify_resp */
 #define TISCI_SEC_PROXY_MCU_0_R5_0_WRITE_NOTIFY_RESP_THREAD_ID (4U)
@@ -96,17 +96,17 @@
 /** Thread ID macro for MCU_0_R5_1 response */
 #define TISCI_SEC_PROXY_MCU_0_R5_1_READ_RESPONSE_THREAD_ID (6U)
 /** Num messages macro for MCU_0_R5_1 response */
-#define TISCI_SEC_PROXY_MCU_0_R5_1_READ_RESPONSE_NUM_MESSAGES (7U)
+#define TISCI_SEC_PROXY_MCU_0_R5_1_READ_RESPONSE_NUM_MESSAGES (20U)
 
 /** Thread ID macro for MCU_0_R5_1 high_priority */
 #define TISCI_SEC_PROXY_MCU_0_R5_1_WRITE_HIGH_PRIORITY_THREAD_ID (7U)
 /** Num messages macro for MCU_0_R5_1 high_priority */
-#define TISCI_SEC_PROXY_MCU_0_R5_1_WRITE_HIGH_PRIORITY_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_MCU_0_R5_1_WRITE_HIGH_PRIORITY_NUM_MESSAGES (10U)
 
 /** Thread ID macro for MCU_0_R5_1 low_priority */
 #define TISCI_SEC_PROXY_MCU_0_R5_1_WRITE_LOW_PRIORITY_THREAD_ID (8U)
 /** Num messages macro for MCU_0_R5_1 low_priority */
-#define TISCI_SEC_PROXY_MCU_0_R5_1_WRITE_LOW_PRIORITY_NUM_MESSAGES (5U)
+#define TISCI_SEC_PROXY_MCU_0_R5_1_WRITE_LOW_PRIORITY_NUM_MESSAGES (10U)
 
 /** Thread ID macro for MCU_0_R5_1 notify_resp */
 #define TISCI_SEC_PROXY_MCU_0_R5_1_WRITE_NOTIFY_RESP_THREAD_ID (9U)

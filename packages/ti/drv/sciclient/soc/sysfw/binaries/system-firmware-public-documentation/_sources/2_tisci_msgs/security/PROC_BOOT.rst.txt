@@ -564,11 +564,41 @@ ARM R5
 
 -  control_flags_1 Fields
 
-+-----------+------------+-------------+
-| Flag Name | Bit Offset | Description |
-+===========+============+=============+
-| CORE_HALT | 0          | Halt Core   |
-+-----------+------------+-------------+
++-----------+------------+-------------------------------------------------------------------------------------------------------------+
+| Flag Name | Bit Offset | Description                                                                                                 |
++===========+============+=============================================================================================================+
+| CORE_HALT | 0          | Halt Core                                                                                                   |
++-----------+------------+-------------------------------------------------------------------------------------------------------------+
+| R5_LPSC   | 1          | Command for R5F LPSC Control (1 - LPSC ON, 0 - LPSC OFF)                                                    |
+|           |            | Reads will always return 0. You are expected to read the PM status via the PM message TISCI_MSG_GET_DEVICE  |
+|           |            | This particular control is applicable only for J721E and J7200 devices (MCU_R5 only). This is done because  |
+|           |            | the MCU R5F is running PM and RM and the MCU R5F cannot control its owner power down and power up.          |
++-----------+------------+-------------------------------------------------------------------------------------------------------------+
+| R5 RESET  | 2          | R5F Reset control command (1- Assert Reset, 0 - Deassert Reset)                                             |
+|           |            | This particular control is applicable only for J721E and J7200 devices (MCU_R5 only). This is done because  |
+|           |            | the MCU R5F is running PM and RM and the MCU R5F cannot control its owner power down and power up.          |
++-----------+------------+-------------------------------------------------------------------------------------------------------------+
+
+The usage of R5_LPSC and R5_RESET is only for the MCU R5F. On the J721E and
+J7200 family of devices the RM and PM functions run on the MCU R5F. The MCU
+R5F cannot turn off and on its own self during a re-boot sequence which
+requires the following fundamental sequence of steps:
+
+1. Wait for the R5F to hit WFI. (MCU at this point is running WFI and cannot run
+   steps 2 and 3)
+2. Power off the R5F by writing to PSC registers.
+3. Power on the R5F by writing to PSC registers.
+
+In order to handle this the TIFS provides a special function for handling the LPSC
+control only for MCU R5F core 0 and core 1 which can enable performing the sequence
+of powering down and powering up the MCU R5Fs once the MCU R5F hits WFI.
+
+Similar to the LPSC control for power off and power on, the TIFS also controls the
+reset control for R5F LPSC reset controls as the MCU R5F cannot handle its own resets.
+
+For all other devices in the SoC the MCU R5F handles the LPSC configuration. For the 
+devices like AM6 the TIFS, Power Management and Resource management run on the DMSC.
+Hence these controls are not applicable to these devices.
 
 -  status_flags_1 Fields
 

@@ -404,17 +404,17 @@
 /** Thread ID macro for R5_0 response */
 #define TISCI_SEC_PROXY_R5_0_RESPONSE_READ_THREAD_ID (1U)
 /** Num Messages macro for R5_0 response */
-#define TISCI_SEC_PROXY_R5_0_RESPONSE_READ_NUM_MESSAGES (7U)
+#define TISCI_SEC_PROXY_R5_0_RESPONSE_READ_NUM_MESSAGES (20U)
 
 /** Thread ID macro for R5_0 high_priority */
 #define TISCI_SEC_PROXY_R5_0_HIGH_PRIORITY_WRITE_THREAD_ID (2U)
 /** Num Messages macro for R5_0 high_priority */
-#define TISCI_SEC_PROXY_R5_0_HIGH_PRIORITY_WRITE_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_R5_0_HIGH_PRIORITY_WRITE_NUM_MESSAGES (10U)
 
 /** Thread ID macro for R5_0 low_priority */
 #define TISCI_SEC_PROXY_R5_0_LOW_PRIORITY_WRITE_THREAD_ID (3U)
 /** Num Messages macro for R5_0 low_priority */
-#define TISCI_SEC_PROXY_R5_0_LOW_PRIORITY_WRITE_NUM_MESSAGES (5U)
+#define TISCI_SEC_PROXY_R5_0_LOW_PRIORITY_WRITE_NUM_MESSAGES (10U)
 
 /** Thread ID macro for R5_0 notify_resp */
 #define TISCI_SEC_PROXY_R5_0_NOTIFY_RESP_WRITE_THREAD_ID (4U)
@@ -429,17 +429,17 @@
 /** Thread ID macro for R5_1 response */
 #define TISCI_SEC_PROXY_R5_1_RESPONSE_READ_THREAD_ID (6U)
 /** Num Messages macro for R5_1 response */
-#define TISCI_SEC_PROXY_R5_1_RESPONSE_READ_NUM_MESSAGES (7U)
+#define TISCI_SEC_PROXY_R5_1_RESPONSE_READ_NUM_MESSAGES (20U)
 
 /** Thread ID macro for R5_1 high_priority */
 #define TISCI_SEC_PROXY_R5_1_HIGH_PRIORITY_WRITE_THREAD_ID (7U)
 /** Num Messages macro for R5_1 high_priority */
-#define TISCI_SEC_PROXY_R5_1_HIGH_PRIORITY_WRITE_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_R5_1_HIGH_PRIORITY_WRITE_NUM_MESSAGES (10U)
 
 /** Thread ID macro for R5_1 low_priority */
 #define TISCI_SEC_PROXY_R5_1_LOW_PRIORITY_WRITE_THREAD_ID (8U)
 /** Num Messages macro for R5_1 low_priority */
-#define TISCI_SEC_PROXY_R5_1_LOW_PRIORITY_WRITE_NUM_MESSAGES (5U)
+#define TISCI_SEC_PROXY_R5_1_LOW_PRIORITY_WRITE_NUM_MESSAGES (10U)
 
 /** Thread ID macro for R5_1 notify_resp */
 #define TISCI_SEC_PROXY_R5_1_NOTIFY_RESP_WRITE_THREAD_ID (9U)

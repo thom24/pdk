@@ -10,7 +10,7 @@ type IDs that are permitted in the J721E SoC.  The resource type IDs represent
 J721E resources ranges assignable to SoC processing entities (or PEs).
 
 
-**WARNING**: System Firmware RM currently supports a maximum of 420 RM board
+**WARNING**: System Firmware RM currently supports a maximum of 600 RM board
 configuration resource assignment ranges on the J721E SoC.  Sending more entries
 than the maximum will result in the RM board configuration being NACK'd
 

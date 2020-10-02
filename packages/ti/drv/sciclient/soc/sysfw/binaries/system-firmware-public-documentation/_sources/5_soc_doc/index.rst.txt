@@ -52,6 +52,29 @@ AM65x SR2
    am65x_sr2/soc_devgrps
 
 =====
+AM64x
+=====
+
+.. toctree::
+   :maxdepth: 1
+
+   am64x/hosts
+   am64x/devices
+   am64x/clocks
+   am64x/pll_data
+   am64x/resasg_types
+   am64x/interrupt_cfg
+   am64x/ra_cfg
+   am64x/dma_cfg
+   am64x/psil_cfg
+   am64x/proxy_cfg
+   am64x/sec_proxy
+   am64x/processors
+   am64x/runtime_keystore
+   am64x/firewalls
+   am64x/soc_devgrps
+
+=====
 J721E
 =====
 

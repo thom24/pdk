@@ -164,20 +164,27 @@ class sysfw_boardcfg_rules:
             self.output_class.send_next_line(
                 'Found %s resource entries' % num_entries)
 
+            matched_r_dict = list()
             for entry in r_dict:
                 valid = False
                 closest_matches = list()
                 e_start = entry['start_resource']
-                e_end = entry['start_resource'] + entry['num_resource'] - 1
+                e_end = entry['start_resource'] + entry['num_resource']
 
                 for v_entry in validator['values']:
                     if entry['type'] == v_entry['type']:
                         v_start = v_entry['start_resource']
                         v_end = v_entry['start_resource'] + \
-                            v_entry['num_resource'] - 1
+                            v_entry['num_resource']
                         closest_matches.append(v_entry)
 
                         if e_start >= v_start and e_end <= v_end:
+                            if entry['num_resource'] != 0:
+                                # Entries with a number of resources equal to
+                                # zero are allowed but shouldn't be validated
+                                # against adjacent ranges so do not pass them
+                                # along for further validation
+                                matched_r_dict.append(entry)
                             valid = True
 
                 if not valid:
@@ -197,6 +204,8 @@ class sysfw_boardcfg_rules:
                         self.output_class.send_next_line('None')
 
                     break
+
+            r_dict = matched_r_dict
 
         if valid:
             host_id_all = 128
@@ -530,7 +539,7 @@ class sysfw_trace_cli:
             help="SoC supported by input binary",
             action="store",
             type=str,
-            choices={'am6', 'am65x_sr2', 'am64x', 'j721e', 'j7200'},
+            choices={'am6', 'am65x_sr2', 'am64x', 'j721e', 'j721e_legacy', 'j7200'},
             required=True)
 
         # Required output arguments

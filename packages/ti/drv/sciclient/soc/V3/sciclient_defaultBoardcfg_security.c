@@ -41,8 +41,8 @@
 /* ========================================================================== */
 
 #include <ti/drv/sciclient/soc/V3/sciclient_defaultBoardcfg.h>
-#include <ti/drv/sciclient/soc/sysfw/include/j721e/tisci_hosts.h>
-#include <ti/drv/sciclient/soc/sysfw/include/j721e/tisci_boardcfg_constraints.h>
+#include <ti/drv/sciclient/soc/sysfw/include/am64x/tisci_hosts.h>
+#include <ti/drv/sciclient/soc/sysfw/include/am64x/tisci_boardcfg_constraints.h>
 
 /* ========================================================================== */
 /*                            Global Variables                                */
@@ -106,6 +106,33 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
         .auth_resource_owner = 0,
         .rsvd = {0, 0, 0},
     },
+    /* Debug  config */
+    .sec_dbg_config = {
+        .subhdr = {
+            .magic = TISCI_BOARDCFG_SEC_DBG_CTRL_MAGIC_NUM,
+            .size = sizeof(struct tisci_boardcfg_secure_debug_config),
+        },
+
+        .rsvd = 0,
+        .allow_jtag_unlock = 0,
+        .allow_wildcard_unlock = 0,
+        .allowed_debug_level_rsvd = 0,
+        .rsvd = 0,
+        .min_cert_rev=0,
+
+        .jtag_unlock_hosts = {0, 0, 0, 0},
+    },
+    /* Sec config */
+    .sec_handover_cfg = {
+        .subhdr = {
+            .magic = TISCI_BOARDCFG_SEC_HANDOVER_CFG_MAGIC_NUM,
+            .size = sizeof(struct tisci_boardcfg_sec_handover),
+        },
+        .handover_msg_sender = TISCI_HOST_ID_MAIN_0_R5_0,
+        .handover_to_host_id = TISCI_HOST_ID_MAIN_0_R5_0,
+        .rsvd = {0, 0, 0, 0},
+    },
+
 };
 #endif
 
