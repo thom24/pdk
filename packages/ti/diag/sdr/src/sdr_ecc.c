@@ -1554,7 +1554,7 @@ static SDR_Result SDR_ECC_getMemConfig(SDR_ECC_MemType eccMemType, SDR_ECC_MemSu
  * \param1  eccMemType: Memory type for self test
  * \param2  memSubType: Memory subtype for self test
  * \param2  chkGrp:     Checker group for self test
- * \param3  pMemConfig: pointer to return memory configuration
+ * \param3  grpChkConfig: pointer to Group checker configuration
  *
  * \return  SDR_PASS : Success; SDR_FAIL for failures
  */
@@ -1580,7 +1580,7 @@ static SDR_Result SDR_ECC_getEDCCheckerGroupConfig(SDR_ECC_MemType eccMemType,
 
 #ifdef SOC_J721E
         } else if (eccMemType == SDR_ECC_MEMTYPE_MAIN_MSMC_AGGR0) {
-            if((memSubType == SDR_ECC_R5F_MEM_SUBTYPE_VBUSM2AXI_EDC_VECTOR_ID)
+            if((memSubType == SDR_ECC_MAIN_MSMC_MEM_INTERCONN_SUBTYPE)
                && (chkGrp < SDR_MSMC_AGGR0_RAM_ID_MSMC_MMR_BUSECC_GRP_MAX_ENTRIES)) {
                 *grpChkConfig = SDR_ECC_ramIdMsmcMMRBuseccGrpEntries[chkGrp];
             } else
