@@ -176,6 +176,12 @@ const SDR_RAMIdEntry_t SDR_ECC_mcuArmssRamIdTable[SDR_PULSAR_CPU_RAM_ID_TABLE_MA
  * @brief This structure holds the memory config for each memory subtype in MCU domain
  * -----------------------------------------------------------------------------------
  */
+
+/* NOTE: For VIM RAM Id, with a 32 bit vector, the 2 LSB bits are not used.
+ECC is done only on  30 bits. But need to add a correction of 2 to get the address
+calculation to be right */
+#define SDR_ECC_VIM_RAM_ID_WIDTH_CORRECTION     (2U)
+
 const SDR_MemConfig_t SDR_ECC_mcuArmssMemEntries[SDR_PULSAR_CPU_WRAPPER_RAM_IDS_TOTAL_ENTRIES] =
 {
     {SDR_ECC_R5F_MEM_SUBTYPE_ITAG_RAM0_VECTOR_ID, 0u,
@@ -259,9 +265,10 @@ const SDR_MemConfig_t SDR_ECC_mcuArmssMemEntries[SDR_PULSAR_CPU_WRAPPER_RAM_IDS_
     {SDR_ECC_R5F_MEM_SUBTYPE_B1TCM0_BANK1_VECTOR_ID, 0x4101000cu,
                   CSL_MCU_R5FSS0_CORE0_ECC_AGGR_PULSAR_SL_B1TCM0_BANK1_RAM_SIZE, 16u,
                   CSL_MCU_R5FSS0_CORE0_ECC_AGGR_PULSAR_SL_B1TCM0_BANK1_ROW_WIDTH, ((bool)true)  },
+    /* NOTE: VIM width and size needs correction: see note above */
     {SDR_ECC_R5F_MEM_SUBTYPE_KS_VIM_RAM_VECTOR_ID, 0x40f82000u,
-                  CSL_MCU_R5FSS0_CORE0_ECC_AGGR_CPU0_KS_VIM_RAMECC_RAM_SIZE, 4u,
-                  CSL_MCU_R5FSS0_CORE0_ECC_AGGR_CPU0_KS_VIM_RAMECC_ROW_WIDTH, ((bool)true) },
+                  ((CSL_MCU_R5FSS0_CORE0_ECC_AGGR_CPU0_KS_VIM_RAMECC_RAM_SIZE *(CSL_MCU_R5FSS0_CORE0_ECC_AGGR_CPU0_KS_VIM_RAMECC_ROW_WIDTH+SDR_ECC_VIM_RAM_ID_WIDTH_CORRECTION))/CSL_MCU_R5FSS0_CORE0_ECC_AGGR_CPU0_KS_VIM_RAMECC_ROW_WIDTH), 4u,
+                  (CSL_MCU_R5FSS0_CORE0_ECC_AGGR_CPU0_KS_VIM_RAMECC_ROW_WIDTH+SDR_ECC_VIM_RAM_ID_WIDTH_CORRECTION), ((bool)true) },
 };
 
 /* Max entries based on max mem type */
