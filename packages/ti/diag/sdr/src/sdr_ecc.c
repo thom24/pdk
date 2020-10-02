@@ -61,6 +61,7 @@
 #define ECC_AGGR_LINE_SIZE (4)
 
 #define SDR_ECC_INVALID_SELF_TEST_RAM_ID (0xffffffffu)
+#define SDR_ECC_INVALID_CHECKER_TYPE     (0xffffffffu)
 
 /** ---------------------------------------------------------------------------
  * @brief This enumerator defines the values for ecc self test flag
@@ -82,16 +83,18 @@ typedef enum {
  */
 typedef struct SDR_ECC_Instance_s
 {
-   SDR_ECC_InitConfig_t eccInitConfig;
-   /**< ecc Initial configuration */
-   SDR_ECC_ErrorFlag eccErrorFlag;
-   /**< Ecc error triggered flag */
-   SDR_ECC_InjectErrorType eccSelfTestErrorType;
-   /**< Ecc self type error type in progress */
-   uint32_t eccSelfTestRamId;
-   /**< Ram id used in self test in progress */
-   uint32_t *eccSelfTestAddr;
-   /**< Address used in self test in progress */
+    SDR_ECC_InitConfig_t eccInitConfig;
+    /**< ecc Initial configuration */
+    SDR_ECC_ErrorFlag eccErrorFlag;
+    /**< Ecc error triggered flag */
+    SDR_ECC_InjectErrorType eccSelfTestErrorType;
+    /**< Ecc self type error type in progress */
+    uint32_t eccSelfTestRamId;
+    /**< Ram id used in self test in progress */
+    uint32_t *eccSelfTestAddr;
+    /**< Address used in self test in progress */
+    uint32_t eccSelfTestcheckerType;
+    /**< Group checker (for Interconnect RAM ID's only) */
 }  SDR_ECC_Instance_t;
 
 /* Global objects */
@@ -108,6 +111,10 @@ static void SDR_ECC_triggerAccessForEcc(const uint32_t *memoryAccessAddr);
 
 static SDR_Result SDR_ECC_getMemConfig(SDR_ECC_MemType eccMemType, SDR_ECC_MemSubType memSubType,
                                SDR_MemConfig_t *memConfig);
+static SDR_Result SDR_ECC_getEDCCheckerGroupConfig(SDR_ECC_MemType eccMemType,
+                                                   SDR_ECC_MemSubType memSubType,
+                                                   uint32_t chkGrp,
+                                                   SDR_GrpChkConfig_t *grpChkConfig);
 static uint32_t SDR_ECC_getDetectErrorSource (SDR_ECC_InjectErrorType injectErorType);
 static SDR_Result SDR_ECC_getBitLocation(uint32_t bitMask,
                             uint32_t startBitLocation,
@@ -356,8 +363,11 @@ static void SDR_ECC_handleEccAggrEvent (SDR_ECC_MemType eccMemType, uint32_t err
             selfTestErrorSrc = SDR_ECC_getDetectErrorSource(SDR_ECC_instance[eccMemType].eccSelfTestErrorType);
             if (((errorSrc == selfTestErrorSrc)
                  || ((ramIdType == SDR_ECC_RAM_ID_TYPE_INTERCONNECT)
+                     && (SDR_ECC_instance[eccMemType].eccSelfTestcheckerType != CSL_ECC_AGGR_CHECKER_TYPE_EDC) 
                      && (selfTestErrorSrc == CSL_ECC_AGGR_INTR_SRC_SINGLE_BIT)
-                     && (errorSrc == CSL_ECC_AGGR_INTR_SRC_DOUBLE_BIT)))
+                     && (errorSrc == CSL_ECC_AGGR_INTR_SRC_DOUBLE_BIT)
+                    )
+                )
                 && (ramId == SDR_ECC_instance[eccMemType].eccSelfTestRamId)) {
 
                  SDR_ECC_instance[eccMemType].eccErrorFlag = SDR_ECC_ERROR_FLAG_TRIGGERED;
@@ -761,6 +771,7 @@ SDR_Result SDR_ECC_init (SDR_ECC_MemType eccMemType,
         SDR_ECC_instance[eccMemType].eccSelfTestErrorType = SDR_INJECT_ECC_NO_ERROR;
         SDR_ECC_instance[eccMemType].eccSelfTestRamId = (SDR_ECC_INVALID_SELF_TEST_RAM_ID);
         SDR_ECC_instance[eccMemType].eccSelfTestAddr = NULL;
+        SDR_ECC_instance[eccMemType].eccSelfTestcheckerType = SDR_ECC_INVALID_CHECKER_TYPE;
     }
 
     return retVal;
@@ -877,6 +888,7 @@ SDR_Result SDR_ECC_selfTest(SDR_ECC_MemType eccMemType,
     uint32_t retVal2;
     uint32_t *testLocationAddress;
     SDR_MemConfig_t memConfig;
+    SDR_GrpChkConfig_t grpChkConfig;
 
     if (pECCErrorConfig == NULL) {
         retVal = SDR_BADARGS;
@@ -894,6 +906,11 @@ SDR_Result SDR_ECC_selfTest(SDR_ECC_MemType eccMemType,
         if (ramIdType == SDR_ECC_RAM_ID_TYPE_WRAPPER) {
             /* Get memory configuration only for Wrapper RAM ID's */
             retVal = SDR_ECC_getMemConfig(eccMemType, memSubType, &memConfig);
+        } else {
+            /* Get EDC Checker group config */
+            retVal = SDR_ECC_getEDCCheckerGroupConfig(eccMemType, memSubType,
+                                                      pECCErrorConfig->chkGrp,
+                                                      &grpChkConfig);
         }
     }
 
@@ -912,6 +929,7 @@ SDR_Result SDR_ECC_selfTest(SDR_ECC_MemType eccMemType,
         SDR_ECC_instance[eccMemType].eccSelfTestErrorType = errorType;
         SDR_ECC_instance[eccMemType].eccSelfTestRamId = ramId;
         SDR_ECC_instance[eccMemType].eccSelfTestAddr = testLocationAddress;
+        SDR_ECC_instance[eccMemType].eccSelfTestcheckerType = grpChkConfig.grpChkType;
 
         /* Enable PMU to monitor event about to be triggerred */
         SDR_ECC_enableECCEventCheck(eccMemType, memSubType, errorType);
@@ -963,6 +981,7 @@ SDR_Result SDR_ECC_selfTest(SDR_ECC_MemType eccMemType,
     SDR_ECC_instance[eccMemType].eccSelfTestErrorType = SDR_INJECT_ECC_NO_ERROR;
     SDR_ECC_instance[eccMemType].eccSelfTestRamId = (SDR_ECC_INVALID_SELF_TEST_RAM_ID);
     SDR_ECC_instance[eccMemType].eccSelfTestAddr = NULL;
+    SDR_ECC_instance[eccMemType].eccSelfTestcheckerType = SDR_ECC_INVALID_CHECKER_TYPE;
 
     return retVal;
 }
@@ -1029,6 +1048,7 @@ SDR_Result SDR_ECC_injectError(SDR_ECC_MemType eccMemType,
     SDR_Result retVal = SDR_PASS;
     int32_t cslRetval;
     SDR_MemConfig_t memConfig;
+    SDR_GrpChkConfig_t grpChkConfig;
 
     if (pECCErrorConfig == NULL) {
         retVal = SDR_BADARGS;
@@ -1210,47 +1230,63 @@ SDR_Result SDR_ECC_injectError(SDR_ECC_MemType eccMemType,
         }
     } /* if (ramIdType == SDR_ECC_RAM_ID_TYPE_WRAPPER) {*/
     else if (ramIdType == SDR_ECC_RAM_ID_TYPE_INTERCONNECT) {
-        eccErrInjInfo.eccGroup = pECCErrorConfig->chkGrp;
-        // TODO - NEED TO LOOK UP IN RAM ID's GROUP CHECKER TABLE WHAT WIDTH AND TYPE IS BEING CHOSEN, and THEN LATER AFTER getBitLocation() make sure it is not wider than the WIDTH
-        // USE SINGLE ERROR WITH PARITY - when inserting with single bit, we expect to get a double bit error
-        eccErrInjInfo.bNextBit = FALSE;
-        eccErrInjInfo.eccPattern = 2U;
 
-        switch (errorType) {
-            case SDR_INJECT_ECC_ERROR_FORCING_1BIT_ONCE:
-                /* Get bit location */
-                retVal = SDR_ECC_getBitLocation(pECCErrorConfig->flipBitMask,
-                                                0u, &firstBitLocation);
-                if (retVal != SDR_PASS) {
+        if (retVal == SDR_PASS) {
+            /* Get memory configuration */
+            retVal = SDR_ECC_getEDCCheckerGroupConfig(eccMemType, memSubType,
+                                                      pECCErrorConfig->chkGrp,
+                                                      &grpChkConfig);
+        }
+        if (retVal == SDR_PASS) {
+        
+            eccErrInjInfo.eccGroup = pECCErrorConfig->chkGrp;
+
+            eccErrInjInfo.bNextBit = FALSE;
+            eccErrInjInfo.eccPattern = 2U;
+
+            switch (errorType) {
+                case SDR_INJECT_ECC_ERROR_FORCING_1BIT_ONCE:
+                    /* Get bit location */
+                    retVal = SDR_ECC_getBitLocation(pECCErrorConfig->flipBitMask,
+                                                    0u, &firstBitLocation);
+                    if ((retVal != SDR_PASS)
+                        || (firstBitLocation > grpChkConfig.dataWidth)){
+                        retVal = SDR_FAIL;
+                        break;
+                    }
+
+                    eccErrInjInfo.eccBit1  = firstBitLocation;
+                    eccErrInjInfo.eccBit2  = 0u;
+                    eccErrInjInfo.intrSrc  = CSL_ECC_AGGR_INTR_SRC_SINGLE_BIT;
                     break;
-                }
-                eccErrInjInfo.eccBit1  = firstBitLocation;
-                eccErrInjInfo.eccBit2  = 0u;
-                eccErrInjInfo.intrSrc  = CSL_ECC_AGGR_INTR_SRC_SINGLE_BIT;
-                break;
 
-            case SDR_INJECT_ECC_ERROR_FORCING_2BIT_ONCE:
-                /* Get bit location */
-                retVal = SDR_ECC_getBitLocation(pECCErrorConfig->flipBitMask,
-                                                 0u, &firstBitLocation);
-                if (retVal != SDR_PASS) {
+                case SDR_INJECT_ECC_ERROR_FORCING_2BIT_ONCE:
+                    /* Get bit location */
+                    retVal = SDR_ECC_getBitLocation(pECCErrorConfig->flipBitMask,
+                                                     0u, &firstBitLocation);
+                    if ((retVal != SDR_PASS)
+                        || (firstBitLocation > grpChkConfig.dataWidth)){
+                        retVal = SDR_FAIL;
+                        break;
+                    }
+                    eccErrInjInfo.eccBit1  = firstBitLocation;
+
+                    /* Get Second bit location */
+                    retVal = SDR_ECC_getBitLocation(pECCErrorConfig->flipBitMask,
+                                                    firstBitLocation+1u, &secondBitLocation);
+                    if ((retVal != SDR_PASS)
+                        || (secondBitLocation > grpChkConfig.dataWidth)){
+                        retVal = SDR_FAIL;
+                        break;
+                    }
+                    eccErrInjInfo.eccBit2  = secondBitLocation;
+                    eccErrInjInfo.intrSrc  = CSL_ECC_AGGR_INTR_SRC_DOUBLE_BIT;
                     break;
-                }
-                eccErrInjInfo.eccBit1  = firstBitLocation;
 
-                /* Get Second bit location */
-                retVal = SDR_ECC_getBitLocation(pECCErrorConfig->flipBitMask,
-                                                firstBitLocation+1u, &secondBitLocation);
-                if (retVal != SDR_PASS) {
-                    break;
-                }
-                eccErrInjInfo.eccBit2  = secondBitLocation;
-                eccErrInjInfo.intrSrc  = CSL_ECC_AGGR_INTR_SRC_DOUBLE_BIT;
-                break;
-
-            default:
-                 retVal = SDR_FAIL;
-                 break;
+                default:
+                     retVal = SDR_FAIL;
+                     break;
+            }
         }
 
         if (retVal == SDR_PASS) {
@@ -1460,7 +1496,7 @@ static SDR_Result SDR_ECC_searchMemEntryTable(SDR_ECC_MemSubType memSubType,
 
 /** ============================================================================
  *
- * \brief   Get Ram Id for given memory and memory subtype
+ * \brief   Get Memory configuration for given memory type  and memory subtype
  *
  * \param1  eccMemType: Memory type for self test
  * \param2  memSubType: Memory subtype for self test
@@ -1501,6 +1537,64 @@ static SDR_Result SDR_ECC_getMemConfig(SDR_ECC_MemType eccMemType, SDR_ECC_MemSu
                                                  SDR_ECC_MCUCBASSMemEntries,
                                                  tableSize,
                                                  pMemConfig);
+#endif
+        } else {
+            retVal = SDR_FAIL;
+        }
+    }
+
+   return retVal;
+}
+
+/** ============================================================================
+ *
+ * \brief   Get EDC Checker configuration given memory type, memory subtype
+ *          and memory subsubtype
+ *
+ * \param1  eccMemType: Memory type for self test
+ * \param2  memSubType: Memory subtype for self test
+ * \param2  chkGrp:     Checker group for self test
+ * \param3  pMemConfig: pointer to return memory configuration
+ *
+ * \return  SDR_PASS : Success; SDR_FAIL for failures
+ */
+static SDR_Result SDR_ECC_getEDCCheckerGroupConfig(SDR_ECC_MemType eccMemType,
+                                                   SDR_ECC_MemSubType memSubType,
+                                                   uint32_t chkGrp,
+                                                   SDR_GrpChkConfig_t *grpChkConfig)
+{
+    SDR_Result retVal = SDR_PASS;
+
+    retVal = SDR_ECC_checkMemoryType(eccMemType, memSubType);
+
+    if (retVal == SDR_PASS) {
+        /* Get EDC checker configuration from table */
+        if (eccMemType == SDR_ECC_MEMTYPE_MCU_R5F0_CORE) {
+            if((memSubType == SDR_ECC_R5F_MEM_SUBTYPE_VBUSM2AXI_EDC_VECTOR_ID)
+               && (chkGrp <= SDR_PULSAR_CPU_RAM_ID_VBUSM2_AXI_EDC_VECTOR_GRP_MAX_ENTRIES)) {
+                *grpChkConfig = SDR_ECC_ramIdVbusM2AxiEdcVectorGrpEntries[chkGrp];
+            } else
+            {
+                retVal = SDR_FAIL;
+            }
+
+#ifdef SOC_J721E
+        } else if (eccMemType == SDR_ECC_MEMTYPE_MAIN_MSMC_AGGR0) {
+            if((memSubType == SDR_ECC_R5F_MEM_SUBTYPE_VBUSM2AXI_EDC_VECTOR_ID)
+               && (chkGrp < SDR_MSMC_AGGR0_RAM_ID_MSMC_MMR_BUSECC_GRP_MAX_ENTRIES)) {
+                *grpChkConfig = SDR_ECC_ramIdMsmcMMRBuseccGrpEntries[chkGrp];
+            } else
+            {
+                retVal = SDR_FAIL;
+            }
+       } else if (eccMemType == SDR_ECC_MEMTYPE_MCU_CBASS_ECC_AGGR0) {
+            if((memSubType == SDR_ECC_MCU_CBASS_MEM_SUBTYPE_EDC_CTRL_ID)
+               && (chkGrp < CSL_MCU_CBASS_ECC_AGGR_IMCU_COR_FW_GRP_MAX_ENTRIES )) {
+                *grpChkConfig = SDR_ECC_MCU_CBASS_ramId2GrpEntries[chkGrp];
+            } else
+            {
+                retVal = SDR_FAIL;
+            }
 #endif
         } else {
             retVal = SDR_FAIL;
