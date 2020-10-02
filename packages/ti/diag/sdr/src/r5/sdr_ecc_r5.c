@@ -81,29 +81,29 @@ SDR_Result SDR_ECC_configECCRam(uint32_t ramId)
 
     switch(ramId) {
 
-        case CSL_ECCAGGR_PULSAR_SL_CPU0_ATCM0_BANK0_VECTOR_ID:
-        case CSL_ECCAGGR_PULSAR_SL_CPU0_ATCM0_BANK1_VECTOR_ID:
+        case CSL_MCU_R5FSS0_CORE0_ECC_AGGR_PULSAR_SL_ATCM0_BANK0_RAM_ID:
+        case CSL_MCU_R5FSS0_CORE0_ECC_AGGR_PULSAR_SL_ATCM0_BANK1_RAM_ID:
             /* Enable ECC for ATCM */
             SDR_ECC_UTILS_enableECCATCM();
 
             break;
 
-        case CSL_ECCAGGR_PULSAR_SL_CPU0_B0TCM0_BANK0_VECTOR_ID:
-        case CSL_ECCAGGR_PULSAR_SL_CPU0_B0TCM0_BANK1_VECTOR_ID:
+        case CSL_MCU_R5FSS0_CORE0_ECC_AGGR_PULSAR_SL_B0TCM0_BANK0_RAM_ID:
+        case CSL_MCU_R5FSS0_CORE0_ECC_AGGR_PULSAR_SL_B0TCM0_BANK1_RAM_ID:
             /* Enable ECC for B0TCM */
             SDR_ECC_UTILS_enableECCB0TCM();
 
             break;
 
-        case CSL_ECCAGGR_PULSAR_SL_CPU0_B1TCM0_BANK0_VECTOR_ID:
-        case CSL_ECCAGGR_PULSAR_SL_CPU0_B1TCM0_BANK1_VECTOR_ID:
+        case CSL_MCU_R5FSS0_CORE0_ECC_AGGR_PULSAR_SL_B1TCM0_BANK0_RAM_ID:
+        case CSL_MCU_R5FSS0_CORE0_ECC_AGGR_PULSAR_SL_B1TCM0_BANK1_RAM_ID:
             /* Enable ECC for B1TCM */
             SDR_ECC_UTILS_enableECCB1TCM();
 
             break;
 
         default:
-            if ( ramId > CSL_ECCAGGR_PULSAR_SL_CPU0_KS_VIM_RAMECC_VECTOR_ID) {
+            if ( ramId > CSL_MCU_R5FSS0_CORE0_ECC_AGGR_CPU0_KS_VIM_RAMECC_RAM_ID) {
                 retVal = SDR_FAIL;
             }
             break;
