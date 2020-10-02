@@ -93,5 +93,10 @@ Board_STATUS Board_unlockMMR(void)
     lock1 = (uint32_t *)(BOARD_RCSS_CTRL_U_BASE + BOARD_RCSS_CTRL_LOCK0_KICK1);
     MMR_unlock(lock0, lock1);
 
+    lock0 = (uint32_t *)(CSL_MSS_IOMUX_U_BASE + CSL_MSS_IOMUX_IOCFGKICK0);
+    lock1 = (uint32_t *)(CSL_MSS_IOMUX_U_BASE + CSL_MSS_IOMUX_IOCFGKICK1);
+    HW_WR_REG32(lock0, BOARD_IOMUX_KICK0_UNLOCK_VAL);
+    HW_WR_REG32(lock1, BOARD_IOMUX_KICK1_UNLOCK_VAL);
+
     return BOARD_SOK;
 }

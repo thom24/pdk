@@ -116,6 +116,11 @@ Board_STATUS Board_init(Board_initCfg cfg)
     if (ret != BOARD_SOK)
         return ret;
 
+    if (cfg & BOARD_INIT_UART_STDIO)
+        ret = Board_uartStdioInit();
+    if (ret != BOARD_SOK)
+        return ret;
+
     return ret;
 }
 

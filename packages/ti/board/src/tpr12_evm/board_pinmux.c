@@ -80,6 +80,8 @@ Board_STATUS Board_pinmuxConfig (void)
     int32_t i, j, k;
     uint32_t rdRegVal;
 
+    Board_unlockMMR();
+
     for(i = 0; PINMUX_END != gTPR12PinmuxData[i].moduleId; i++)
     {
         pModuleData = gTPR12PinmuxData[i].modulePinCfg;

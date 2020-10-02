@@ -75,9 +75,11 @@ typedef struct Board_I2cObj_s
     uint32_t      i2cBaseAddr;
 } Board_I2cObj_t;
 
-/*TODO: Need to update unlock kick register values for tpr12_evm */
 #define BOARD_KICK0_UNLOCK_VAL                 (0x01234567U)
 #define BOARD_KICK1_UNLOCK_VAL                 (0x0FEDCBA8U)
+
+#define BOARD_IOMUX_KICK0_UNLOCK_VAL           (0x83E70B13U)
+#define BOARD_IOMUX_KICK1_UNLOCK_VAL           (0x95A4F1E0U)
 
 /* Domain specific base adress */
 #define BOARD_MSS_TOPRCM_U_BASE 			(CSL_MSS_TOPRCM_U_BASE)
@@ -106,6 +108,9 @@ typedef struct Board_I2cObj_s
 #define BOARD_RCSS_RCM_LOCK0_KICK1			(CSL_RCSS_RCM_LOCK0_KICK1)
 #define BOARD_RCSS_CTRL_LOCK0_KICK0			(CSL_RCSS_CTRL_LOCK0_KICK0)
 #define BOARD_RCSS_CTRL_LOCK0_KICK1			(CSL_RCSS_CTRL_LOCK0_KICK1)
+
+#define BOARD_IOMUX_CFG_LOCK0_KICK0			(CSL_MSS_IOMUX_IOCFGKICK0)
+#define BOARD_IOMUX_CFG_LOCK0_KICK1			(CSL_MSS_IOMUX_IOCFGKICK1)
 
 /* TPR12_EVM MCU and DSS domain clock frequencies */
 #define BOARD_MCU_PLL_CLK_FREQ                 (400000000U)

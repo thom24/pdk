@@ -236,12 +236,12 @@ static pinmuxPerCfg_t gTpr12_mss_i2c0PinCfg[] =
     /* MyMSS_I2C1 -> MSS_I2CA_SCL -> F18 */
     {
         CSL_MSS_IOMUX_PADBZ_CFG_REG, PIN_MODE(3) | \
-        ((~PIN_PULL_DISABLE) & (~PIN_PULL_DIRECTION))
+        (PIN_PULL_DISABLE) & (~PIN_PULL_DIRECTION)
     },
     /* MyMSS_I2C1 -> MSS_I2CA_SDA -> F16 */
     {
         CSL_MSS_IOMUX_PADBY_CFG_REG, PIN_MODE(3) | \
-        ((~PIN_PULL_DISABLE) & (~PIN_PULL_DIRECTION))
+        (PIN_PULL_DISABLE) & (~PIN_PULL_DIRECTION)
     },
     {PINMUX_END}
 };
