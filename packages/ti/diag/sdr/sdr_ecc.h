@@ -195,7 +195,6 @@ typedef uint32_t SDR_ECC_MemType;
 /** \brief Select Main MSMC AGGR2 type */
 #define SDR_ECC_MEMTYPE_MAIN_MSMC_AGGR2 (18u)
 
-// TODO - REMOVE
 /** \brief Select Main A72 AGGR0 type */
 #define SDR_ECC_MEMTYPE_MAIN_A72_AGGR0 (19u)
 
