@@ -45,6 +45,7 @@
 #include <ti/board/src/flash/nor/ospi/nor_spi_phy_tune.h>
 
 #undef NOR_SPI_TUNE_DEBUG
+#undef NOR_DISABLE_TXDLL_WINDOW
 
 #ifdef NOR_SPI_TUNE_DEBUG
 #define NOR_log printf
@@ -291,9 +292,56 @@ NOR_STATUS Nor_spiPhyDdrTune(SPI_Handle handle, uint32_t offset)
      */
     rdDelay = 1U;
 
+    /*
+     * Finding RxDLL fails at some of the TxDLL values based on the HW platform.
+     * A window of TxDLL values is used to find the RxDLL without errors.
+     * This can increase the number of CPU cycles taken for the PHY tuning
+     * in the cases where more TxDLL values need to be parsed to find a stable RxDLL.
+     *
+     * Update NOR_SPI_PHY_TXDLL_LOW_WINDOW_START based on the TxDLL value where
+     * stable RxDLL can be found consistently for a given platform and
+     * define the macro NOR_DISABLE_TXDLL_WINDOW after fixing TxDLL value
+     * to reduce the time taken for PHY tuning.
+     */
+#if !defined(NOR_DISABLE_TXDLL_WINDOW)
+    /* Look for rxDLL boundaries at a txDLL Window to find rxDLL Min */
+    searchPoint.txDLL = NOR_SPI_PHY_TXDLL_LOW_WINDOW_START;
+    while(searchPoint.txDLL <= NOR_SPI_PHY_TXDLL_LOW_WINDOW_END)
+    {
+        searchPoint.rdDelay = rdDelay;
+        searchPoint.rxDLL   = 0;
+        rxLow = NOR_spiPhyFindRxLow(handle, searchPoint, offset);
+        while(rxLow.rxDLL == 128U)
+        {
+            searchPoint.rdDelay++;
+            if(searchPoint.rdDelay > 4U)
+            {
+                if(searchPoint.txDLL >= NOR_SPI_PHY_TXDLL_LOW_WINDOW_END)
+                {
+#ifdef NOR_SPI_TUNE_DEBUG
+                    NOR_log("Unable to find RX Min\n");
+#endif
+                    return NOR_FAIL;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            rxLow = NOR_spiPhyFindRxLow(handle, searchPoint, offset);
+        }
+
+        if(rxLow.rxDLL != 128U)
+        {
+            break;
+        }
+
+        searchPoint.txDLL++;
+    }
+#else
     /* Look for rxDLL boundaries at txDLL = 16 to find rxDLL Min */
     searchPoint.rdDelay = rdDelay;
-    searchPoint.txDLL = 16U;
+    searchPoint.txDLL = NOR_SPI_PHY_TXDLL_LOW_WINDOW_START;
     searchPoint.rxDLL = 0U;
     rxLow = NOR_spiPhyFindRxLow(handle, searchPoint, offset);
     while(rxLow.rxDLL == 128U)
@@ -308,8 +356,9 @@ NOR_STATUS Nor_spiPhyDdrTune(SPI_Handle handle, uint32_t offset)
         }
         rxLow = NOR_spiPhyFindRxLow(handle, searchPoint, offset);
     }
+#endif  /* #if !defined(NOR_DISABLE_TXDLL_WINDOW) */
 
-    /* Find rxDLL Max at txDLL = 16 */
+    /* Find rxDLL Max at a txDLL */
     searchPoint.rxDLL = 63U;
     rxHigh = NOR_spiPhyFindRxHigh(handle, searchPoint, offset);
     while(rxHigh.rxDLL == 128U)
@@ -318,7 +367,7 @@ NOR_STATUS Nor_spiPhyDdrTune(SPI_Handle handle, uint32_t offset)
         if(searchPoint.rdDelay > 4U)
         {
 #ifdef NOR_SPI_TUNE_DEBUG
-            NOR_log("Unable to find RX Max\n");
+            NOR_log("Unable to find RX Min\n");
 #endif
             return NOR_FAIL;
         }
@@ -331,9 +380,62 @@ NOR_STATUS Nor_spiPhyDdrTune(SPI_Handle handle, uint32_t offset)
      */
     if (rxLow.rdDelay == rxHigh.rdDelay)
     {
+#ifdef NOR_SPI_TUNE_DEBUG
+        NOR_log("rxLow and rxHigh are on the same rdDelay\n");
+#endif
+
+    /*
+     * Finding RxDLL fails at some of the TxDLL values based on the HW platform.
+     * A window of TxDLL values is used to find the RxDLL without errors.
+     * This can increase the number of CPU cycles taken for the PHY tuning
+     * in the cases where more TxDLL values need to be parsed to find a stable RxDLL.
+     *
+     * Update NOR_SPI_PHY_TXDLL_HIGH_WINDOW_START based on the TxDLL value where
+     * stable RxDLL can be found consistently for a given platform and
+     * define the macro NOR_DISABLE_TXDLL_WINDOW after fixing TxDLL value
+     * to reduce the time taken for PHY tuning.
+     */
+#if !defined(NOR_DISABLE_TXDLL_WINDOW)
+        /* Look for rxDLL boundaries at a txDLL Window */
+        searchPoint.txDLL = NOR_SPI_PHY_TXDLL_HIGH_WINDOW_START;
+
+        /* Find rxDLL Min */
+        while(searchPoint.txDLL >= NOR_SPI_PHY_TXDLL_HIGH_WINDOW_END)
+        {
+            searchPoint.rdDelay = rdDelay;
+            searchPoint.rxDLL   = 0;
+            temp = NOR_spiPhyFindRxLow(handle, searchPoint, offset);
+            while(temp.rxDLL == 128U)
+            {
+                searchPoint.rdDelay++;
+                if(searchPoint.rdDelay > 4U)
+                {
+                    if(searchPoint.txDLL <= NOR_SPI_PHY_TXDLL_HIGH_WINDOW_END)
+                    {
+#ifdef NOR_SPI_TUNE_DEBUG
+                        NOR_log("Unable to find RX Min\n");
+#endif
+                        return NOR_FAIL;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                temp = NOR_spiPhyFindRxLow(handle, searchPoint, offset);
+            }
+
+            if(temp.rxDLL != 128U)
+            {
+                break;
+            }
+
+            searchPoint.txDLL--;
+        }
+#else
         /* Look for rxDLL boundaries at txDLL=48 */
         searchPoint.rdDelay = rdDelay;
-        searchPoint.txDLL = 48;
+        searchPoint.txDLL = NOR_SPI_PHY_TXDLL_HIGH_WINDOW_START;
         searchPoint.rxDLL = 0;
 
         /* Find rxDLL Min */
@@ -350,6 +452,8 @@ NOR_STATUS Nor_spiPhyDdrTune(SPI_Handle handle, uint32_t offset)
             }
             temp = NOR_spiPhyFindRxLow(handle, searchPoint, offset);
         }
+#endif
+
         if(temp.rxDLL<rxLow.rxDLL){
             rxLow = temp;
         }
@@ -600,7 +704,7 @@ NOR_STATUS Nor_spiPhyDdrTune(SPI_Handle handle, uint32_t offset)
     NOR_spiPhyConfig(handle,searchPoint);
 
     /* Save SDR tuning config point data */
-    sdrTuningPoint = searchPoint;
+    ddrTuningPoint = searchPoint;
 
     return NOR_PASS;
 }
@@ -821,7 +925,7 @@ NOR_STATUS Nor_spiPhySdrTune(SPI_Handle handle, uint32_t offset)
     NOR_spiPhyConfig(handle, tuningPoint);
 
     /* Save ddr tuning config point data */
-    ddrTuningPoint = tuningPoint;
+    sdrTuningPoint = tuningPoint;
 
     return NOR_PASS;
 }
