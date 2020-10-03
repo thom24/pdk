@@ -304,6 +304,7 @@ int32_t SBL_ospiInit(void *handle)
      && !(defined(SBL_BYPASS_OSPI_DRIVER_FOR_SYSFW_DOWNLOAD) && defined(SIM_BUILD)))
 
     Board_flashHandle h = *(Board_flashHandle *) handle;
+    static uint32_t enableTuning = TRUE;
 
     SBL_ADD_PROFILE_POINT;
 
@@ -353,13 +354,7 @@ int32_t SBL_ospiInit(void *handle)
 #endif
 #endif
 
-#ifndef SBL_HLOS_OWNS_FLASH
-    /* Setting flash config in XIP mode is only done when MCU R5 will continue to
-     * own the flash.  Else, it is difficult for the HLOS to take over control
-     * (reset the flash, etc.), once we have already configured it for XIP.
-     * We set xipEnable = true only at the last open() */
-    ospi_cfg.xipEnable = true;
-#endif
+    ospi_cfg.xipEnable = false;
 #if defined(SIM_BUILD)
     ospi_cfg.phyEnable = false;
 #else
@@ -373,10 +368,10 @@ int32_t SBL_ospiInit(void *handle)
 
 #if defined(SOC_J7200)
     h = Board_flashOpen(BOARD_FLASH_ID_S28HS512T,
-                        BOARD_OSPI_NOR_INSTANCE, NULL);
+                        BOARD_OSPI_NOR_INSTANCE, (void *)(enableTuning));
 #else
     h = Board_flashOpen(BOARD_FLASH_ID_MT35XU512ABA1G12,
-                            BOARD_OSPI_NOR_INSTANCE, NULL);
+                            BOARD_OSPI_NOR_INSTANCE, (void *)(enableTuning));
 #endif
     if (h)
     {
