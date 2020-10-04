@@ -66,7 +66,7 @@ extern unsigned int __bss_start__, __bss_end__;
 extern unsigned int __bss_common_start__, __bss_common_end__;
 extern unsigned int __data_load__, __data_start__, __data_end__;
 extern int main();
-uint32_t start_boot_diag(void);
+int32_t start_boot_diag(void);
 
 __attribute__((aligned(4096))) uint64_t gCSLa53Mmulevel1TableDiag[CSL_a53Mmu_NUM_LEVEL1_ENTRIES];
 __attribute__((aligned(4096))) uint64_t gCSLa53Mmulevel2TableDiag[CSL_a53Mmu_NUM_LEVEL1_ENTRIES];
@@ -192,7 +192,7 @@ static void BoardDiag_mmuStartup(void)
     CSL_a53v8EnableMMUEl1();
 }
 
-uint32_t start_boot_diag(void)
+int32_t start_boot_diag(void)
 {
     unsigned int * bs;
     unsigned int * be;
@@ -201,6 +201,7 @@ uint32_t start_boot_diag(void)
     unsigned int * de;
     uint64_t      cpuId;
     uint8_t       coreId;
+    int32_t       ret;
 
     cpuId = CSL_a53v8GetCpuId();
     coreId = (uint8_t) cpuId & (uint8_t)0xFFU;
@@ -239,7 +240,17 @@ uint32_t start_boot_diag(void)
     Intc_Init(coreId);
 
     /* Calling the main */
-    return(main());
+    ret = main();
+    if(ret)
+    {
+        UART_printf("\n Some tests have failed\n");
+    }
+    else
+    {
+        UART_printf("\n All tests have passed\n");
+    }
+
+    return(ret);
 }
 #else
 #include <ti/csl/arch/r5/csl_arm_r5.h>
@@ -248,6 +259,8 @@ uint32_t start_boot_diag(void)
 #include <ti/osal/src/nonos/Nonos_config.h>
 
 extern TimerP_dmTimerDefault gDmTimerPInfoTbl[TimerP_numTimerDevices];
+extern int main();
+int32_t start_boot_diag(void);
 
 /* Below srtucture overrides the default MPU configurations in CSL to disable
  * caching for memory used by diagnostic tests
@@ -404,6 +417,25 @@ void BoardDiag_timerIntrDisable(void)
         }
     }
 }
+
+int32_t start_boot_diag(void)
+{
+    int32_t    ret;
+
+    /* Calling the main */
+    ret = main();
+    if(ret)
+    {
+        UART_printf("\n Some tests have failed\n");
+    }
+    else
+    {
+        UART_printf("\n All tests have passed\n");
+    }
+
+    return(ret);
+}
+
 #endif
 
 /**

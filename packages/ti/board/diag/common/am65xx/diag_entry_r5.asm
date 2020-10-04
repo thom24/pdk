@@ -115,6 +115,7 @@ __stack:.usect	".stack", 0, 4
 
 	.global	_c_int00
     .global BoardDiag_timerIntrDisable
+    .global start_boot_diag
     .sect   ".bootCode"
 ;***************************************************************
 ;* FUNCTION DEF: _c_int00
@@ -330,7 +331,7 @@ bypass_auto_init:
 	;* CALL APPLICATION
         ;*------------------------------------------------------
         BL      BoardDiag_timerIntrDisable
-        BL      ARGS_MAIN_RTN
+        BL      start_boot_diag
 
         LDMFD sp!, {r1, r2} ;Load the context of diag framework
         MOV sp, r1
