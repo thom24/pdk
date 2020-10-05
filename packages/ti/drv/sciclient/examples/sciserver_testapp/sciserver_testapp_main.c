@@ -51,7 +51,8 @@
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
 
-/* None */
+/** \brief Aligned address at which the X509 header is placed. */
+#define SCISERVER_COMMON_X509_HEADER_ADDR (0x41cffb00)
 
 /* ========================================================================== */
 /*                         Structures and Enums                               */
@@ -84,6 +85,14 @@ int main(void)
     /* Sciclient needs to be initialized before Sciserver. Sciserver depends on
      * Sciclient API to execute message forwarding */
     ret = Sciclient_configPrmsInit(&clientPrms);
+
+    if (ret == CSL_PASS)
+    {
+        ret = Sciclient_boardCfgParseHeader(
+            (uint8_t *) SCISERVER_COMMON_X509_HEADER_ADDR,
+            &clientPrms.inPmPrms, &clientPrms.inRmPrms);
+    }
+    
     if (ret == CSL_PASS)
     {
         ret = Sciclient_init(&clientPrms);

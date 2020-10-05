@@ -325,6 +325,7 @@ typedef uint8_t devgrp_t;
 #include <ti/drv/sciclient/soc/sysfw/include/tisci/rm/tisci_rm_shared.h>
 #include <ti/drv/sciclient/soc/sysfw/include/tisci/rm/tisci_rm_core.h>
 #include <ti/drv/sciclient/soc/sysfw/include/tisci/rm/tisci_rm_proxy.h>
+#include <ti/drv/sciclient/soc/sciclient_soc_priv.h>
 #include <ti/drv/sciclient/include/sciclient_soc.h>
 #include <ti/drv/sciclient/include/sciclient_pm.h>
 #include <ti/drv/sciclient/include/sciclient_rm.h>
@@ -370,6 +371,11 @@ extern "C" {
 #define SCICLIENT_SERVICE_WAIT_FOREVER                    (0xFFFFFFFFU)
 #define SCICLIENT_SERVICE_NO_WAIT                         (0x0U)
 /* @} */
+
+/** Fault tolerant Pass */
+#define SCICLIENT_FT_PASS (0xA5A5U)
+/** Fault tolerant Fail */
+#define SCICLIENT_FT_FAIL (0x5A5AU)
 
 
 /* ========================================================================== */
@@ -599,6 +605,45 @@ void Sciclient_TisciMsgSetAckResp(struct tisci_header *hdr);
  *
  */
 void Sciclient_TisciMsgSetNakResp(struct tisci_header *hdr);
+
+/**
+ *  \brief Prepare the header for the board configuration. This API is typically
+ *         only used by SBL where it will prepare the headers for the
+ *         sciserver to come and then read the board configurations for PM and
+ *         RM. This will set up the headers which Sciserver will look to read
+ *         the board configuration which the SBL leaves behind after boot.
+ *         The Sciserver app will then send the configs for board configuration
+ *         based on this.
+ *  \param pCommonHeader Pointer to the common header which corresponds to the
+ *                       format for the component left behind.
+ *  \param pBoardCfgHeader Pointer to the board configuration header which
+ *                         corresponds to the table which defines the board
+ *                         config params.
+ *  \param pInPmPrms    Pointer to the PM parameters.
+ *  \param pInRmPrms    Pointer to the RM parameters.
+ *  \return ret CSL_PASS if the paramters are populated correctly in the header.
+ *              Fail otherwise.
+ */
+int32_t Sciclient_boardCfgPrepHeader (
+    uint8_t * pCommonHeader, uint8_t * pBoardCfgHeader,
+    const Sciclient_BoardCfgPrms_t * pInPmPrms,
+    const Sciclient_BoardCfgPrms_t * pInRmPrms);
+
+/**
+ *  \brief Parse the header left behind by the SBL in the SCISERVER. This is
+ *         used in the SCISERVER App to read the left behind header and
+ *         configuration paramter.
+ *  \param pCommonHeader Pointer to the common header which corresponds to the
+ *                       format for the component left behind.
+ *  \param pInPmPrms    Pointer to the PM parameters popolated by the API.
+ *  \param pInRmPrms    Pointer to the RM parameters popolated by the API.
+ *  \return ret CSL_PASS if the paramters are populated correctly.
+ *              Fail otherwise.
+ */
+int32_t Sciclient_boardCfgParseHeader (
+    uint8_t * pCommonHeader,
+    Sciclient_BoardCfgPrms_t * pInPmPrms,
+    Sciclient_BoardCfgPrms_t * pInRmPrms);
 
 /* ========================================================================== */
 /*                       Static Function Definitions                          */

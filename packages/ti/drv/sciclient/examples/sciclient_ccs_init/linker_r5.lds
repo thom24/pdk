@@ -61,6 +61,15 @@ MEMORY
 
     /* Used by sciclientTest at runtime to load SYSFW. Available to app for dynamic use */
     OCMRAM_sciclientTest_SYSFW (RWIX)   : origin=0x41C50000 length=0x30000
+    
+    /* Populate the SCISERVER Board configuration paramters */
+    OCMC_RAM_BOARD_CFG_TABLE (RWIX) : ORIGIN = 0x41c80000 , LENGTH = 0x40
+    /* Location of all board configurations */
+    OCMC_RAM_BOARD_CFG (RWIX)       : ORIGIN = 0x41c80040 , LENGTH = 0x2000 - 0x40
+    /* Space where Sciserver App will run */
+    OCMC_RAM_SCISERVER (RWIX)       : ORIGIN = 0x41C82000 , LENGTH = 0x60000
+    /* X509 Header to be left behind by CCS Init for Sciserver to read */
+    OCMC_RAM_X509_HEADER (RWIX)     : ORIGIN = 0x41cffb00 , LENGTH = 0x500
 
 }  /* end of MEMORY */
 

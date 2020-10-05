@@ -62,6 +62,9 @@ MEMORY
 
     /* Used by sciclientTest at runtime to load SYSFW. Available to app for dynamic use */
     OCMRAM_sciclientTest_SYSFW (RWIX)   : origin=0x7003F000 length=0x41000
+    
+    /* Sciserver app Space */
+    OCMC_RAM_SCISERVER (RWIX)   : origin=0x41c82000 length=0x60000
 
 }  /* end of MEMORY */
 

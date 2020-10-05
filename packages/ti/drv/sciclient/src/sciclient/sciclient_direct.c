@@ -42,12 +42,13 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include <string.h>
 #include <ti/drv/sciclient/soc/sysfw/include/tisci/tisci_protocol.h>
 #include <boardcfg/boardcfg.h>
 #include <startup.h>
 #include <pm.h>
 #include <rm.h>
-/* Sciclient APIs are kept in the end of the include list to make sure the 
+/* Sciclient APIs are kept in the end of the include list to make sure the
  * RM and PM HAL typedefs are used.
  */
 #include <ti/drv/sciclient/sciclient.h>
@@ -58,13 +59,125 @@
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
 
-/* None */
+/**
+ * \def SCICLIENT_DIRECT_EXTBOOT_X509_MAGIC_WORD_LEN
+ * Length of magic word for extended boot info table.
+ *
+ * \def SCICLIENT_DIRECT_EXTBOOT_X509_MIN_COMPONENTS
+ * Minimum number of components that should be present in combined image.
+ *
+ * \def SCICLIENT_DIRECT_EXTBOOT_X509_MAX_COMPONENTS
+ * Max number of components in extended boot info table.
+ *
+ * \def SCICLIENT_DIRECT_EXTBOOT_X509_ROM_INFO_BASE
+ * Base address where ROM loads the extended boot info.
+ *
+ * \def SCICLIENT_DIRECT_EXTBOOT_X509_COMPTYPE_SYSFW_DATA
+ * Component type corresponding to SYSFW data blob.
+ *
+ * \def SCICLIENT_DIRECT_EXTBOOT_X509_COMPTYPE_SBL_DATA
+ * Component type corresponding to SBL data blob.
+ */
+#define SCICLIENT_DIRECT_EXTBOOT_X509_MAGIC_WORD_LEN             (8)
+#define SCICLIENT_DIRECT_EXTBOOT_X509_MIN_COMPONENTS             (3)
+#define SCICLIENT_DIRECT_EXTBOOT_X509_MAX_COMPONENTS             (8)
+#define SCICLIENT_DIRECT_EXTBOOT_X509_COMPTYPE_SYSFW_DATA        (0x12)
+#define SCICLIENT_DIRECT_EXTBOOT_X509_COMPTYPE_SBL_DATA          (0x11)
+
+/**
+ * \def SCICLIENT_DIRECT_EXTBOOT_BOARDCFG_INDEX
+ * Index of boardcfg in boardcfg descriptor table
+ *
+ * \def SCICLIENT_DIRECT_EXTBOOT_BOARDCFG_SECURITY_INDEX
+ * Index of security boardcfg in boardcfg descriptor table
+ *
+ * \def SCICLIENT_DIRECT_EXTBOOT_BOARDCFG_PM_INDEX
+ * Index of PM boardcfg in boardcfg descriptor table
+ *
+ * \def SCICLIENT_DIRECT_EXTBOOT_BOARDCFG_RM_INDEX
+ * Index of RM boardcfg in boardcfg descriptor table
+ *
+ * \def SCICLIENT_DIRECT_EXTBOOT_BOARDCFG_NUM_DESCS
+ * Number of boardcfg data in SYSFW data blob.
+ */
+#define SCICLIENT_DIRECT_EXTBOOT_BOARDCFG_INDEX                  (0)
+#define SCICLIENT_DIRECT_EXTBOOT_BOARDCFG_SECURITY_INDEX         (1)
+#define SCICLIENT_DIRECT_EXTBOOT_BOARDCFG_PM_INDEX               (2)
+#define SCICLIENT_DIRECT_EXTBOOT_BOARDCFG_RM_INDEX               (3)
+#define SCICLIENT_DIRECT_EXTBOOT_BOARDCFG_NUM_DESCS              (4)
 
 /* ========================================================================== */
 /*                         Structure Declarations                             */
 /* ========================================================================== */
 
-/* None */
+/**
+ * \brief Component information populated by ROM. The combined image has
+ *        multiple components.
+ *        ROM populates this information for each component.
+ *
+ * \param comp_type Type of component
+ * \param boot_core Core that loads or runs image
+ * \param comp_opts Component options. Not used for now.
+ * \param dest_addr Image destination address
+ * \param comp_size Size of the component in bytes
+ */
+typedef struct {
+    uint32_t comp_type;
+    uint32_t boot_core;
+    uint32_t comp_opts;
+    uint64_t dest_addr;
+    uint32_t comp_size;
+} Sciclient_DirectExtBootX509Comp;
+
+/**
+ * \brief Component information table populated by ROM.
+ *
+ * \param magic_word Magic word for extended boot
+ * \param num_comps Number of components present in extended boot info table
+ * \param comps Information for each component
+ */
+typedef struct {
+    uint8_t                             magic_word[
+        SCICLIENT_DIRECT_EXTBOOT_X509_MAGIC_WORD_LEN];
+    uint32_t                            num_comps;
+    Sciclient_DirectExtBootX509Comp     comps[
+        SCICLIENT_DIRECT_EXTBOOT_X509_MAX_COMPONENTS];
+} Sciclient_DirectExtBootX509Table;
+
+/**
+ * \brief Describes the board config data
+ *
+ * \param type Type of board config data. This should map to corresponding TISCI
+ *      message type. For example, a PM boardcfg should have a descriptor
+ *      type TISCI_MSG_BOARD_CONFIG_PM.
+ * \param offset Offset for board config data from beginning of SYSFW data
+ *               binary blob
+ * \param size Size of board config data
+ * \param devgrp Device group to be used by SYSFW for automatic board
+ *               config processing
+ * \param reserved Reserved field. Not to be used.
+ */
+typedef struct {
+    uint16_t type;
+    uint16_t offset;
+    uint16_t size;
+    uint8_t  devgrp;
+    uint8_t  reserved;
+} __attribute__((__packed__)) Sciclient_DirectExtBootBoardCfgDesc ;
+
+/**
+ * \brief Boardcfg descriptor table provided by system integrator
+ *
+ * \param num_elems Number of elements in board config table.
+ * \param sw_rev SW revision populated by system integrator.
+ * \param descs Array of board config descriptors
+ */
+typedef struct {
+    uint8_t                                 num_elems;
+    uint8_t                                 sw_rev;
+    Sciclient_DirectExtBootBoardCfgDesc     descs[
+        SCICLIENT_DIRECT_EXTBOOT_BOARDCFG_NUM_DESCS];
+} __attribute__((__packed__)) Sciclient_DirectBoardCfgDescTable;
 
 /* ========================================================================== */
 /*                          Function Declarations                             */
@@ -76,7 +189,13 @@ static int32_t board_config_pm_handler(uint32_t *msg_recv);
 /*                            Global Variables                                */
 /* ========================================================================== */
 
-/* None */
+/**
+ * \def gcSciclientDirectExtBootX509MagicWord
+ * Magic word that specifies whether combined image is being used.
+ */
+const uint8_t gcSciclientDirectExtBootX509MagicWord[
+    SCICLIENT_DIRECT_EXTBOOT_X509_MAGIC_WORD_LEN] =
+    { 'E', 'X', 'T', 'B', 'O', 'O', 'T', 0 };
 
 /* ========================================================================== */
 /*                          Function Definitions                              */
@@ -246,7 +365,7 @@ static int32_t board_config_pm_handler(uint32_t *msg_recv)
     return ret;
 }
 
-static int32_t Sciclient_pmSetMsgProxy(u32 *msg_recv, uint32_t reqFlags, u32 procId)
+static int32_t Sciclient_pmSetMsgProxy(uint32_t *msg_recv, uint32_t reqFlags, uint32_t procId)
 {
     int32_t ret = CSL_PASS;
     /* Special device handling when performing the LPSC config for
@@ -254,8 +373,8 @@ static int32_t Sciclient_pmSetMsgProxy(u32 *msg_recv, uint32_t reqFlags, u32 pro
      */
     struct tisci_msg_set_device_req *req =
         (struct tisci_msg_set_device_req *) msg_recv;
-    u8 state = req->state;
-    
+    uint8_t state = req->state;
+
     switch (state) {
         case TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF:
             Sciclient_procBootSetSequenceCtrl(procId,
@@ -278,7 +397,7 @@ static int32_t Sciclient_pmSetMsgProxy(u32 *msg_recv, uint32_t reqFlags, u32 pro
     return ret;
 }
 
-static int32_t Sciclient_pmSetCpuResetMsgProxy(u32 *msg_recv, u32 procId)
+static int32_t Sciclient_pmSetCpuResetMsgProxy(uint32_t *msg_recv, uint32_t procId)
 {
     int32_t ret = CSL_PASS;
     /* Special device handling when performing targeted CPU resets
@@ -286,7 +405,7 @@ static int32_t Sciclient_pmSetCpuResetMsgProxy(u32 *msg_recv, u32 procId)
      */
     struct tisci_msg_set_device_resets_req *req =
         (struct tisci_msg_set_device_resets_req *) msg_recv;
-    u32 reset = req->resets;
+    uint32_t reset = req->resets;
 
     switch (reset) {
         case 0: /* Take CPU out of RESET */
@@ -340,7 +459,7 @@ int32_t Sciclient_ProcessPmMessage(const uint32_t reqFlags, void *tx_msg)
             {
                 struct tisci_msg_set_device_req *req =
                     (struct tisci_msg_set_device_req *) tx_msg;
-                u32 id = req->id;
+                uint32_t id = req->id;
                 switch (id)
                 {
                     case SCICLIENT_DEV_MCU_R5FSS0_CORE0:
@@ -353,7 +472,7 @@ int32_t Sciclient_ProcessPmMessage(const uint32_t reqFlags, void *tx_msg)
                                 reqFlags,
                                 SCICLIENT_DEV_MCU_R5FSS0_CORE1_PROCID);
                     break;
-                    default: 
+                    default:
                         ret = set_device_handler((uint32_t*)tx_msg);
                 }
             }
@@ -364,7 +483,7 @@ int32_t Sciclient_ProcessPmMessage(const uint32_t reqFlags, void *tx_msg)
             {
                 struct tisci_msg_set_device_resets_req *req =
                     (struct tisci_msg_set_device_resets_req *) tx_msg;
-                u32 id = req->id;
+                uint32_t id = req->id;
                 switch (id)
                 {
                     case SCICLIENT_DEV_MCU_R5FSS0_CORE0:
@@ -497,3 +616,139 @@ int32_t Sciclient_ProcessRmMessage(void *tx_msg)
 
     return r;
 }
+
+int32_t Sciclient_boardCfgPrepHeader (
+    uint8_t * pCommonHeader, uint8_t * pBoardCfgHeader,
+    const Sciclient_BoardCfgPrms_t * pInPmPrms,
+    const Sciclient_BoardCfgPrms_t * pInRmPrms)
+{
+    int32_t ret = CSL_PASS;
+    if ((pCommonHeader == NULL) || (pBoardCfgHeader == NULL) ||
+        (pInPmPrms == NULL) || (pInRmPrms == NULL))
+    {
+        ret = CSL_EBADARGS;
+    }
+    /* Populate the common header which will be loaded by ROM in case of 
+     * combined boot image format.
+     */
+    if (CSL_PASS == ret)
+    {
+        Sciclient_DirectExtBootX509Table  *pX509Table = 
+            (Sciclient_DirectExtBootX509Table *) pCommonHeader;
+        memcpy(pX509Table->magic_word, gcSciclientDirectExtBootX509MagicWord,
+               sizeof(gcSciclientDirectExtBootX509MagicWord));
+        pX509Table->num_comps = 1;
+        pX509Table->comps[0].comp_type =
+            SCICLIENT_DIRECT_EXTBOOT_X509_COMPTYPE_SBL_DATA;
+        pX509Table->comps[0].boot_core = 0x10;
+        pX509Table->comps[0].comp_opts = 0;
+        pX509Table->comps[0].dest_addr = (uint64_t) pBoardCfgHeader;
+        pX509Table->comps[0].comp_size = 
+            sizeof(Sciclient_DirectBoardCfgDescTable) +
+            SCICLIENT_BOARDCFG_PM_SIZE_IN_BYTES +
+            SCICLIENT_BOARDCFG_RM_SIZE_IN_BYTES;
+    }
+    /* Populate the Board config structure */
+    if (CSL_PASS == ret)
+    {
+        Sciclient_DirectBoardCfgDescTable * pBoardCfgDesc =
+            (Sciclient_DirectBoardCfgDescTable *) pBoardCfgHeader;
+        pBoardCfgDesc->num_elems = 2U;
+        pBoardCfgDesc->sw_rev  = 0U; /* Not Used for RM and PM */
+        pBoardCfgDesc->descs[0].type = SCICLIENT_DIRECT_EXTBOOT_BOARDCFG_PM_INDEX;
+        pBoardCfgDesc->descs[0].offset = (uint32_t) pInPmPrms->boardConfigLow -
+                                         (uint32_t) pBoardCfgHeader;
+        pBoardCfgDesc->descs[0].size = pInPmPrms->boardConfigSize;
+        pBoardCfgDesc->descs[0].devgrp = pInPmPrms->devGrp;
+        pBoardCfgDesc->descs[0].reserved = 0x0;
+        pBoardCfgDesc->descs[1].type = SCICLIENT_DIRECT_EXTBOOT_BOARDCFG_RM_INDEX;
+        pBoardCfgDesc->descs[1].offset = 
+            (uint32_t) pInRmPrms->boardConfigLow -
+            (uint32_t) pBoardCfgHeader;
+        pBoardCfgDesc->descs[1].size = pInRmPrms->boardConfigSize;
+        pBoardCfgDesc->descs[1].devgrp = pInRmPrms->devGrp;
+        pBoardCfgDesc->descs[1].reserved = 0x0;
+    }
+    return ret;
+}
+
+int32_t Sciclient_boardCfgParseHeader (
+    uint8_t * pCommonHeader,
+    Sciclient_BoardCfgPrms_t * pInPmPrms,
+    Sciclient_BoardCfgPrms_t * pInRmPrms)
+{
+    int32_t ret = CSL_PASS;
+    Sciclient_DirectExtBootX509Table  *pX509Table = 
+            (Sciclient_DirectExtBootX509Table *) pCommonHeader;
+    if ((pCommonHeader == NULL) || (pInPmPrms == NULL) || (pInRmPrms == NULL))
+    {
+        ret = CSL_EBADARGS;
+    }
+    /* Populate the common header which will be loaded by ROM in case of 
+     * combined boot image format.
+     */
+    if (CSL_PASS == ret)
+    {
+        if (memcmp(pX509Table->magic_word,
+            gcSciclientDirectExtBootX509MagicWord,
+            sizeof(gcSciclientDirectExtBootX509MagicWord)) == 0)
+        {
+            ret = CSL_PASS;
+        }
+        else
+        {
+            ret = CSL_EFAIL;
+        }
+    }
+    if (CSL_PASS == ret)
+    {
+        uint32_t i = 0U;
+        uint32_t foundRm = 0U, foundPm = 0U;
+        uint32_t j = 0U;
+        for (j = 0U; j < pX509Table->num_comps; j++)
+        {
+            uint32_t addr = (uint32_t) (pX509Table->comps[j].dest_addr
+                 & (uint64_t) 0xFFFFFFFF);
+            if (pX509Table->comps[j].comp_type !=
+                SCICLIENT_DIRECT_EXTBOOT_X509_COMPTYPE_SBL_DATA)
+            {
+                continue;
+            }
+            Sciclient_DirectBoardCfgDescTable *pBoardCfgDesc = 
+                (Sciclient_DirectBoardCfgDescTable *) addr;
+            for (i = 0U; i < pBoardCfgDesc->num_elems; i++)
+            {
+                if (pBoardCfgDesc->descs[i].type ==
+                    SCICLIENT_DIRECT_EXTBOOT_BOARDCFG_PM_INDEX)
+                {
+                    pInPmPrms->boardConfigLow = pBoardCfgDesc->descs[i].offset + 
+                        (uint32_t) pBoardCfgDesc;
+                    pInPmPrms->boardConfigSize = pBoardCfgDesc->descs[i].size;
+                    pInPmPrms->devGrp = pBoardCfgDesc->descs[i].devgrp;
+                    pInPmPrms->boardConfigHigh = 0U;
+                    foundPm = 1U;
+                }
+                if (pBoardCfgDesc->descs[i].type ==
+                    SCICLIENT_DIRECT_EXTBOOT_BOARDCFG_RM_INDEX)
+                {
+                    pInRmPrms->boardConfigLow = pBoardCfgDesc->descs[i].offset + 
+                        (uint32_t) pBoardCfgDesc;
+                    pInRmPrms->boardConfigSize = pBoardCfgDesc->descs[i].size;
+                    pInRmPrms->devGrp = pBoardCfgDesc->descs[i].devgrp;
+                    pInRmPrms->boardConfigHigh = 0U;
+                    foundRm = 1U;
+                }
+            }
+        }
+        if ((foundPm == 1U) && (foundRm == 1U))
+        {
+            ret = CSL_PASS;
+        }
+        else
+        {
+            ret = CSL_EFAIL;
+        }
+    }
+    return ret;
+}
+

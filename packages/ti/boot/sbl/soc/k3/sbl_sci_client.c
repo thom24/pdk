@@ -66,6 +66,22 @@ uint32_t gSciclient_firmware[1];
 /* Firewall ID for MCU_FSS0_S0 */
 #define MCU_FSS0_S0_FWID (1036)
 #define MCU_FSS0_S0_FW_REGIONS (8)
+
+#if (!defined(SBL_SKIP_BRD_CFG_PM)) || (!defined(SBL_SKIP_BRD_CFG_RM))
+static int32_t Sciclient_setBoardConfigHeader ();
+
+#if defined (SOC_J721E) || defined (SOC_J7200)
+/** \brief Aligned address at which the X509 header is placed. */
+#define SCISERVER_COMMON_X509_HEADER_ADDR (0x41cffb00U)
+
+/** \brief Aligned address at which the Board Config header is placed. */
+#define SCISERVER_BOARDCONFIG_HEADER_ADDR (0x41c80000U)
+
+/** \brief Aligned address at which the Board Config is placed. */
+#define SCISERVER_BOARDCONFIG_DATA_ADDR (0x41c80040U)
+
+#endif
+#endif
 #endif
 
 uint32_t SBL_IsAuthReq(void)
@@ -92,6 +108,15 @@ uint32_t SBL_IsAuthReq(void)
     return retVal;
 }
 
+#ifndef SBL_SKIP_SYSFW_INIT
+Sciclient_BoardCfgPrms_t sblBoardCfgPrms = {0};
+Sciclient_BoardCfgPrms_t sblBoardCfgPmPrms = {0};
+Sciclient_BoardCfgPrms_t sblBoardCfgRmPrms = {0};
+#ifndef SBL_SKIP_BRD_CFG_SEC
+Sciclient_BoardCfgPrms_t sblBoardCfgSecPrms = {0};
+#endif
+#endif
+
 void SBL_SciClientInit(void)
 {
     int32_t status = CSL_EFAIL;
@@ -100,12 +125,6 @@ void SBL_SciClientInit(void)
 #ifndef SBL_SKIP_SYSFW_INIT
     /* SYSFW board configurations */
     Sciclient_DefaultBoardCfgInfo_t boardCfgInfo;
-    Sciclient_BoardCfgPrms_t sblBoardCfgPrms;
-    Sciclient_BoardCfgPrms_t sblBoardCfgPmPrms;
-    Sciclient_BoardCfgPrms_t sblBoardCfgRmPrms;
-#ifndef SBL_SKIP_BRD_CFG_SEC
-    Sciclient_BoardCfgPrms_t sblBoardCfgSecPrms;
-#endif
     Sciclient_ConfigPrms_t        config =
     {
         SCICLIENT_SERVICE_OPERATION_MODE_POLLED,
@@ -299,6 +318,21 @@ void SBL_SciClientInit(void)
         }
     }
 
+
+#if (!defined(SBL_SKIP_BRD_CFG_PM)) || (!defined(SBL_SKIP_BRD_CFG_RM))
+    status = Sciclient_setBoardConfigHeader();
+    if (CSL_PASS == status)
+    {
+        SBL_log(SBL_LOG_MAX,"Sciclient_setBoardConfigHeader... PASSED\n");
+    }
+    else
+    {
+        SBL_log(SBL_LOG_ERR,"Sciclient_setBoardConfigHeader... FAILED\n");
+        SblErrLoop(__FILE__, __LINE__);
+    }
+#endif
+
+
 #if !defined(SBL_SKIP_MCU_RESET)
     /* RTI seems to be turned on by ROM. Turning it off so that Power domain can transition */
     Sciclient_pmSetModuleState(SBL_DEV_ID_RTI0, TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
@@ -317,3 +351,46 @@ void SBL_SciClientInit(void)
 
     SBL_ADD_PROFILE_POINT;
 }
+
+#if (!defined(SBL_SKIP_BRD_CFG_PM)) || (!defined(SBL_SKIP_BRD_CFG_RM))
+static int32_t Sciclient_setBoardConfigHeader ()
+{
+    int32_t status = CSL_PASS;
+#if defined (SOC_J7200) || defined (SOC_J721E)
+    //uint32_t alignedOffset = ((SCICLIENT_BOARDCFG_PM_SIZE_IN_BYTES + 128U)/128U)*128U;
+    uint32_t alignedOffset = SCICLIENT_BOARDCFG_PM_SIZE_IN_BYTES;
+    Sciclient_BoardCfgPrms_t boardCfgPrms_pm =
+    {
+        .boardConfigLow = (uint32_t)SCISERVER_BOARDCONFIG_DATA_ADDR,
+        .boardConfigHigh = 0,
+        .boardConfigSize = SCICLIENT_BOARDCFG_PM_SIZE_IN_BYTES,
+        .devGrp = DEVGRP_ALL
+    };
+    Sciclient_BoardCfgPrms_t boardCfgPrms_rm =
+    {
+        .boardConfigLow =
+            (uint32_t) SCISERVER_BOARDCONFIG_DATA_ADDR + alignedOffset,
+        .boardConfigHigh = 0,
+        .boardConfigSize = SCICLIENT_BOARDCFG_RM_SIZE_IN_BYTES,
+        .devGrp = DEVGRP_ALL
+    };
+    status = Sciclient_boardCfgPrepHeader (
+        (uint8_t *) SCISERVER_COMMON_X509_HEADER_ADDR,
+        (uint8_t *) SCISERVER_BOARDCONFIG_HEADER_ADDR,
+        &boardCfgPrms_pm, &boardCfgPrms_rm);
+    if (CSL_PASS == status)
+    {
+        SBL_log(SBL_LOG_MAX,"SCISERVER Board Configuration header population... ");
+        SBL_log(SBL_LOG_MAX,"PASSED\n");
+    }
+    else
+    {
+        SBL_log(SBL_LOG_MIN,"SCISERVER Board Configuration header population... ");
+        SBL_log(SBL_LOG_MIN,"FAILED\n");
+    }
+    memcpy((void *)boardCfgPrms_pm.boardConfigLow, (void *) sblBoardCfgPmPrms.boardConfigLow, SCICLIENT_BOARDCFG_PM_SIZE_IN_BYTES);
+    memcpy((void *)boardCfgPrms_rm.boardConfigLow, (void *) sblBoardCfgRmPrms.boardConfigLow, SCICLIENT_BOARDCFG_RM_SIZE_IN_BYTES);
+#endif
+    return status;
+}
+#endif

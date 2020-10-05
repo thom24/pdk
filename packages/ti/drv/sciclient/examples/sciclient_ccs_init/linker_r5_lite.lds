@@ -52,6 +52,8 @@ MEMORY
     RESET_VECTORS (X)                : origin=0x70000000 length=0x100
     /* Last 64K of the OSMCRAM is used by SYSFW for the Secure Proxy Backing RAM */
     OCMRAM_sciclientTest    (RWIX)   : origin=0x70000100 length=0x180000-0x100-0x10000 /* 1.5MB - 0x1100 */
+    /* Sciserver App Space */
+    OCMC_RAM_SCISERVER (RWIX)   : origin=0x41c82000 length=0x60000
 
 }  /* end of MEMORY */
 

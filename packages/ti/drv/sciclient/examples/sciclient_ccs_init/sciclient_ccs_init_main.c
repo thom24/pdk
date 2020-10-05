@@ -83,6 +83,19 @@
 #define SCICLIENT_CCS_DEVGRP0 (DEVGRP_ALL)
 #endif
 
+#if defined (SOC_J721E) || defined (SOC_J7200)
+/** \brief Aligned address at which the X509 header is placed. */
+#define SCISERVER_COMMON_X509_HEADER_ADDR (0x41cffb00U)
+
+/** \brief Aligned address at which the Board Config header is placed. */
+#define SCISERVER_BOARDCONFIG_HEADER_ADDR (0x41c80000U)
+
+/** \brief Aligned address at which the Board Config is placed. */
+#define SCISERVER_BOARDCONFIG_DATA_ADDR (0x41c80040U)
+
+#define SCISERVER_POPULATE_BOARDCFG (1U)
+#endif
+
 /* ========================================================================== */
 /*                            Global Variables                                */
 /* ========================================================================== */
@@ -175,31 +188,6 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
     }
 };
 
-uint32_t sciclientInitTimeStamp[30] = {0};
-uint32_t sciclientInitTimeCount = 0;
-
-void dmtimer0_read()
-{
-#if !defined(SOC_AM64X)
-    sciclientInitTimeStamp[sciclientInitTimeCount] =  *(volatile uint32_t*)0x4413303C;
-    sciclientInitTimeCount = (sciclientInitTimeCount + 1)%30;
-#endif
-}
-void dmtimer0_enable()
-{
-#if !defined(SOC_AM64X)
-    /* Unlock the the PM Ctrl registers */
-    *(volatile uint32_t *)0x44130020 = 0x8a6b7cda;
-    *(volatile uint32_t *)0x44130024 = 0x823caef9;
-    /* Set the DMTimer Source to be MOSC Clock - 25 MHz for AM65x */
-    *(volatile uint32_t *)0x44130200 = 0x2;
-    /* Start the timer */
-    *(volatile uint32_t *)0x44133038 = 0x3;
-    sciclientInitTimeCount = 0;
-    dmtimer0_read();
-#endif
-}
-
 /* ========================================================================== */
 /*                         Structure Declarations                             */
 /* ========================================================================== */
@@ -215,6 +203,9 @@ static int32_t setPLLClk(uint32_t modId, uint32_t clkId, uint64_t clkRate);
 #endif
 static int32_t App_getRevisionTest(void);
 static int32_t Sciclient_ccs_init_send_boardcfg (uint8_t devgrp_curr);
+#if defined (SCISERVER_POPULATE_BOARDCFG)
+static void Sciclient_ccsSetBoardConfigHeader ();
+#endif
 
 /* ========================================================================== */
 /*                          Function Definitions                              */
@@ -223,6 +214,10 @@ static int32_t Sciclient_ccs_init_send_boardcfg (uint8_t devgrp_curr);
 int32_t main(void)
 {
     App_getRevisionTest();
+
+    #if defined (SCISERVER_POPULATE_BOARDCFG)
+    Sciclient_ccsSetBoardConfigHeader ();
+    #endif
 
     return 0;
 }
@@ -269,8 +264,6 @@ static int32_t App_getRevisionTest(void)
     {
         printf ("Sciclinet_Init Failed.\n");
     }
-    dmtimer0_enable();
-
     status = Sciclient_ccs_init_send_boardcfg (SCICLIENT_CCS_DEVGRP0);
 #if defined (SCICLIENT_CCS_DEVGRP1)
     if (CSL_PASS == status)
@@ -369,9 +362,7 @@ static int32_t Sciclient_ccs_init_send_boardcfg (uint8_t devgrp_curr)
             .boardConfigSize = sizeof(gBoardConfigLow_debug),
             .devGrp = devgrp_curr
         };
-        dmtimer0_read();
         status = Sciclient_boardCfg(&boardCfgPrms);
-        dmtimer0_read();
         if (CSL_PASS == status)
         {
             printf("PASSED\n");
@@ -397,9 +388,7 @@ static int32_t Sciclient_ccs_init_send_boardcfg (uint8_t devgrp_curr)
             .devGrp = devgrp_curr
         };
         printf("SYSFW PM Board Configuration... ");
-        dmtimer0_read();
         status = Sciclient_boardCfgPm(&boardCfgPrms_pm);
-        dmtimer0_read();
         if (CSL_PASS == status)
         {
             printf("PASSED\n");
@@ -425,9 +414,7 @@ static int32_t Sciclient_ccs_init_send_boardcfg (uint8_t devgrp_curr)
             .devGrp = devgrp_curr
         };
         printf("SYSFW RM Board Configuration... ");
-        dmtimer0_read();
         status = Sciclient_boardCfgRm(&boardCfgPrms_rm);
-        dmtimer0_read();
         if (CSL_PASS == status)
         {
             printf("PASSED\n");
@@ -451,9 +438,7 @@ static int32_t Sciclient_ccs_init_send_boardcfg (uint8_t devgrp_curr)
             .devGrp = devgrp_curr
         };
         printf("SYSFW Security Board Configuration... ");
-        dmtimer0_read();
         status = Sciclient_boardCfgSec(&boardCfgPrms_security) ;
-        dmtimer0_read();
         if (CSL_PASS == status)
         {
             printf("PASSED\n");
@@ -620,3 +605,42 @@ static int32_t setPLLClk(uint32_t modId,
 }
 #endif
 
+#if defined (SCISERVER_POPULATE_BOARDCFG)
+static void Sciclient_ccsSetBoardConfigHeader ()
+{
+    int32_t status = CSL_PASS;
+    uint32_t boardCfgLowPm[] = SCICLIENT_BOARDCFG_PM;
+    uint32_t boardCfgLowRm[] = SCICLIENT_BOARDCFG_RM;
+    uint32_t alignedOffset = ((sizeof(boardCfgLowPm) + 128U)/128U)*128U;
+    Sciclient_BoardCfgPrms_t boardCfgPrms_pm =
+    {
+        .boardConfigLow = (uint32_t)SCISERVER_BOARDCONFIG_DATA_ADDR,
+        .boardConfigHigh = 0,
+        .boardConfigSize = SCICLIENT_BOARDCFG_PM_SIZE_IN_BYTES,
+        .devGrp = DEVGRP_ALL
+    };
+    Sciclient_BoardCfgPrms_t boardCfgPrms_rm =
+    {
+        .boardConfigLow =
+            (uint32_t) SCISERVER_BOARDCONFIG_DATA_ADDR + alignedOffset,
+        .boardConfigHigh = 0,
+        .boardConfigSize = SCICLIENT_BOARDCFG_RM_SIZE_IN_BYTES,
+        .devGrp = DEVGRP_ALL
+    };
+    printf("SCISERVER Board Configuration header population... ");
+    status = Sciclient_boardCfgPrepHeader (
+        (uint8_t *) SCISERVER_COMMON_X509_HEADER_ADDR,
+        (uint8_t *) SCISERVER_BOARDCONFIG_HEADER_ADDR,
+        &boardCfgPrms_pm, &boardCfgPrms_rm);
+    if (CSL_PASS == status)
+    {
+        printf("PASSED\n");
+    }
+    else
+    {
+        printf("FAILED\n");
+    }
+    memcpy((void *)boardCfgPrms_pm.boardConfigLow, (void *) boardCfgLowPm, sizeof(boardCfgLowPm));
+    memcpy((void *)boardCfgPrms_rm.boardConfigLow, (void *) boardCfgLowRm, sizeof(boardCfgLowRm));
+}
+#endif

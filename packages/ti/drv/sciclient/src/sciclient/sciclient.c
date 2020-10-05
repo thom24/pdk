@@ -214,21 +214,6 @@ int32_t Sciclient_init(const Sciclient_ConfigPrms_t *pCfgPrms)
     }
     if(1U == b_doInit)
     {
-#if defined(BUILD_MCU1_0) && (defined(SOC_J721E) || defined(SOC_J7200))
-        if (pCfgPrms->skipLocalBoardCfgProcess == FALSE)
-        {
-            /* Run pm_init */
-            if (status == CSL_PASS)
-            {
-                status = Sciclient_boardCfgPm(&pCfgPrms->inPmPrms);
-            }
-            /* Run rm_init */
-            if (status == CSL_PASS)
-            {
-                status = Sciclient_boardCfgRm(&pCfgPrms->inRmPrms);
-            }
-        }
-#endif
         if ((gSciclientHandle.opModeFlag ==
                     SCICLIENT_SERVICE_OPERATION_MODE_INTERRUPT) &&
                 (status == CSL_PASS))
@@ -397,6 +382,35 @@ int32_t Sciclient_init(const Sciclient_ConfigPrms_t *pCfgPrms)
          * configuration.
          */
         gSciclientHandle.isSecureMode = 1U;
+        if (pCfgPrms->skipLocalBoardCfgProcess == FALSE)
+        {
+            /* Run pm_init */
+            if (status == CSL_PASS)
+            {
+                status = Sciclient_boardCfgPm(&pCfgPrms->inPmPrms);
+                if (status == CSL_PASS)
+                {
+                    gSciclientHandle.pmBoardConfigComplete = SCICLIENT_FT_PASS;
+                }
+                else
+                {
+                    gSciclientHandle.pmBoardConfigComplete = SCICLIENT_FT_FAIL;
+                }
+            }
+            /* Run rm_init */
+            if (status == CSL_PASS)
+            {
+                status = Sciclient_boardCfgRm(&pCfgPrms->inRmPrms);
+                if (status == CSL_PASS)
+                {
+                    gSciclientHandle.rmBoardConfigComplete = SCICLIENT_FT_PASS;
+                }
+                else
+                {
+                    gSciclientHandle.rmBoardConfigComplete = SCICLIENT_FT_FAIL;
+                }
+            }
+        }
 #endif
 #if defined(_TMS320C6X)
         if (pCfgPrms != NULL)

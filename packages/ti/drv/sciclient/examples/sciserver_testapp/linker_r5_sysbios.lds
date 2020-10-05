@@ -55,10 +55,13 @@ __SVC_STACK_SIZE = 0x100;
 MEMORY
 {
     /* Bottom 256 KB used by SBL */
-    RESET_VECTORS(X)    : ORIGIN = 0x00000000 , LENGTH = 0x100
-    R5F_TCMA0(RWIX)     : ORIGIN = 0x00000100 , LENGTH = 0x00008000 - 0x100
-    R5F_TCMB0(RWIX)     : ORIGIN = 0x41010000 , LENGTH = 0x00008000
-    OCMC_RAM (RWIX)     : ORIGIN = 0x41C80100 , LENGTH = 0x80000 - 0x100
+    RESET_VECTORS(X)            : ORIGIN = 0x00000000 , LENGTH = 0x100
+    R5F_TCMA0(RWIX)             : ORIGIN = 0x00000100 , LENGTH = 0x00008000 - 0x100
+    R5F_TCMB0(RWIX)             : ORIGIN = 0x41010000 , LENGTH = 0x00008000
+    OCMC_RAM_BOARD_CFG (RWIX)   : ORIGIN = 0x41c80000 , LENGTH = 0x2000
+    /* Sciserver App Space */
+    OCMC_RAM_SCISERVER (RWIX)   : ORIGIN = 0x41C82000 , LENGTH = 0x60000
+    OCMC_RAM_X509_HEADER (RWIX) : ORIGIN = 0x41cffb00 , LENGTH = 0x500
 }
 
 SECTIONS
@@ -74,32 +77,32 @@ SECTIONS
     .text:ti_sysbios_family_arm_MPU*       : {} palign(8) > R5F_TCMA0
     .utilsCopyVecsToAtcm                   : {} palign(8) > R5F_TCMA0
 
-    .text           : {} palign(8)   > OCMC_RAM
-    .cinit          : {} palign(8)   > OCMC_RAM
-    .bss            : {} align(8)    > OCMC_RAM
-    .far            : {} align(8)    > OCMC_RAM
-    .const          : {} palign(8)   > OCMC_RAM
-    .data           : {} palign(128) > OCMC_RAM
-    .sysmem         : {} align(8)    > OCMC_RAM
-    .stack          : {} align(4)    > OCMC_RAM
-    .data_buffer    : {} palign(128) > OCMC_RAM
-    .boardcfg_data  : {} palign(8)   > OCMC_RAM
-    .const*         : {} palign(4)   > OCMC_RAM
-    .bss*           : {} align(4)    > OCMC_RAM
+    .text           : {} palign(8)   > OCMC_RAM_SCISERVER
+    .cinit          : {} palign(8)   > OCMC_RAM_SCISERVER
+    .bss            : {} align(8)    > OCMC_RAM_SCISERVER
+    .far            : {} align(8)    > OCMC_RAM_SCISERVER
+    .const          : {} palign(8)   > OCMC_RAM_SCISERVER
+    .data           : {} palign(128) > OCMC_RAM_SCISERVER
+    .sysmem         : {} align(8)    > OCMC_RAM_SCISERVER
+    .stack          : {} align(4)    > OCMC_RAM_SCISERVER
+    .data_buffer    : {} palign(128) > OCMC_RAM_SCISERVER
+    .boardcfg_data  : {} palign(8)   > OCMC_RAM_SCISERVER
+    .const*         : {} palign(4)   > OCMC_RAM_SCISERVER
+    .bss*           : {} align(4)    > OCMC_RAM_SCISERVER
 
-    .irqStack       : {. = . + __IRQ_STACK_SIZE;} align(4)    > OCMC_RAM  (HIGH)
+    .irqStack       : {. = . + __IRQ_STACK_SIZE;} align(4)    > OCMC_RAM_SCISERVER  (HIGH)
                         RUN_START(__IRQ_STACK_START)
                         RUN_END(__IRQ_STACK_END)
-    .fiqStack       : {. = . + __FIQ_STACK_SIZE;} align(4)    > OCMC_RAM  (HIGH)
+    .fiqStack       : {. = . + __FIQ_STACK_SIZE;} align(4)    > OCMC_RAM_SCISERVER  (HIGH)
                         RUN_START(__FIQ_STACK_START)
                         RUN_END(__FIQ_STACK_END)
-    .abortStack     : {. = . + __ABORT_STACK_SIZE;} align(4)  > OCMC_RAM  (HIGH)
+    .abortStack     : {. = . + __ABORT_STACK_SIZE;} align(4)  > OCMC_RAM_SCISERVER  (HIGH)
                         RUN_START(__ABORT_STACK_START)
                         RUN_END(__ABORT_STACK_END)
-    .undStack       : {. = . + __UND_STACK_SIZE;} align(4)    > OCMC_RAM  (HIGH)
+    .undStack       : {. = . + __UND_STACK_SIZE;} align(4)    > OCMC_RAM_SCISERVER  (HIGH)
                         RUN_START(__UND_STACK_START)
                         RUN_END(__UND_STACK_END)
-    .svcStac        : {. = . + __SVC_STACK_SIZE;} align(4)    > OCMC_RAM  (HIGH)
+    .svcStac        : {. = . + __SVC_STACK_SIZE;} align(4)    > OCMC_RAM_SCISERVER  (HIGH)
                         RUN_START(__SVC_STACK_START)
                         RUN_END(__SVC_STACK_END)
     

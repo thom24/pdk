@@ -43,11 +43,18 @@ MEMORY
     /* RBL uses 0x41CC0000 and beyond. SBL, at load cannot cross this */
     OCMRAM_SBL    (RWIX)   : origin=0x41C00200 length=0x80000-0x200
 
-    /* Used by SBL at runtime to load SYSFW. Available to app for dynamic use */
+    /* Used by SBL at runtime to load SYSFW. Available to app for dynamic use
+     * Populate the SCISERVER Board configuration paramters at 0x41C80000
+     * after SYSFW is done.
+     * Location of all board configurations: 0x41c80040 after SYSFW is done.
+     */
     OCMRAM_SBL_SYSFW (RWIX)   : origin=0x41C80000 length=0x40000
 
     /* This is the maximum required by custom boot app. Do not use. */
-    OCMRAM_SBL_RESERVED_CUST_BOOT (RWIX)   : origin=0x41CC0000 length=0x40000
+    OCMRAM_SBL_RESERVED_CUST_BOOT (RWIX)   : origin=0x41CC0000 length=0x40000 - 0x500
+
+    /* X509 Header to be left behind by CCS Init for Sciserver to read */
+    OCMC_RAM_X509_HEADER (RWIX)     : ORIGIN = 0x41cffb00 , LENGTH = 0x500
 
 }  /* end of MEMORY */
 
