@@ -152,6 +152,15 @@ const Rcm_ADPLLJConfig_t gADPLLJConfigTbl[] =
         .M = 2000U,
         .FracM = 0U,
     },
+    /* CORE_DSP_2000_40MHz */
+    {
+        .Finp = 40U,
+        .N = 19U,
+        .Fout = 2000U,
+        .M2 = 1U,
+        .M = 1000U,
+        .FracM = 0U,
+    },
     /* CORE_PER_1728_40MHz */
     {
         .Finp = 40U,

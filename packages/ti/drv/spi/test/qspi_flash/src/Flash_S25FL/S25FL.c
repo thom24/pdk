@@ -143,7 +143,7 @@ bool SF25FL_bufferWrite(S25FL_Handle flashHandle,
 #ifdef SPI_DMA_ENABLE
         if (hwAttrs->dmaEnable)
         {
-            segLen = 128;
+            segLen = 32;
         }
 #endif
         remainSize = length;
@@ -411,44 +411,48 @@ bool S25FLFlash_WriteEnable(S25FL_Handle flashHandle)
     unsigned int transferType;
     QSPI_v1_Object  *object;
     unsigned int rxLinesArg;
+    uint32_t flashStatus;
 
-    /* Get the pointer to the object and hwAttrs */
-    object = handle->object;
+    do {
+        /* Get the pointer to the object and hwAttrs */
+        object = handle->object;
 
-    /* These operations require the qspi to be configured in the following mode
-       only: tx/rx single line and config mode. */
+        /* These operations require the qspi to be configured in the following mode
+           only: tx/rx single line and config mode. */
 
-    /* Save the current mode and rxLine configurations */
-    operMode = object->qspiMode;
-    rxLines  = object->rxLines;
+        /* Save the current mode and rxLine configurations */
+        operMode = object->qspiMode;
+        rxLines  = object->rxLines;
 
-    /* Update the mode and rxLines with the required values */
-    SPI_control(handle, SPI_V1_CMD_SETCONFIGMODE, NULL);
+        /* Update the mode and rxLines with the required values */
+        SPI_control(handle, SPI_V1_CMD_SETCONFIGMODE, NULL);
 
-    rxLinesArg = QSPI_RX_LINES_SINGLE;
-    SPI_control(handle, SPI_V1_CMD_SETRXLINES, (void *)&rxLinesArg);
+        rxLinesArg = QSPI_RX_LINES_SINGLE;
+        SPI_control(handle, SPI_V1_CMD_SETRXLINES, (void *)&rxLinesArg);
 
-    /* transaction frame length in words (bytes) */
-    frmLength = 1;
-    SPI_control(handle, SPI_V1_CMD_SETFRAMELENGTH, (void *)&frmLength);
+        /* transaction frame length in words (bytes) */
+        frmLength = 1;
+        SPI_control(handle, SPI_V1_CMD_SETFRAMELENGTH, (void *)&frmLength);
 
-    /* Write enable command */
-    writeVal = QSPI_LIB_CMD_WRITE_ENABLE;
+        /* Write enable command */
+        writeVal = QSPI_LIB_CMD_WRITE_ENABLE;
 
-    /* Update transaction parameters */
-    transaction.txBuf = (unsigned char *)&writeVal;
-    transaction.rxBuf = NULL;
-    transaction.count  = 1;
+        /* Update transaction parameters */
+        transaction.txBuf = (unsigned char *)&writeVal;
+        transaction.rxBuf = NULL;
+        transaction.count  = 1;
 
-    transferType = SPI_TRANSACTION_TYPE_WRITE;
-    SPI_control(handle, SPI_V1_CMD_TRANSFERMODE_RW, (void *)&transferType);
+        transferType = SPI_TRANSACTION_TYPE_WRITE;
+        SPI_control(handle, SPI_V1_CMD_TRANSFERMODE_RW, (void *)&transferType);
 
-    retVal = SPI_transfer(handle, &transaction);
+        retVal = SPI_transfer(handle, &transaction);
 
-    /* Restore operating mode and rx Lines */
-    object->qspiMode = operMode;
-    SPI_control(handle, SPI_V1_CMD_SETRXLINES, (void *)&rxLines);
+        /* Restore operating mode and rx Lines */
+        object->qspiMode = operMode;
+        SPI_control(handle, SPI_V1_CMD_SETRXLINES, (void *)&rxLines);
 
+        flashStatus = FlashStatus(flashHandle);
+    } while ((flashStatus & 0x2) == 0);
     return retVal;
 }
 
@@ -582,7 +586,7 @@ uint32_t FlashStatus(S25FL_Handle flashHandle)
     return (rxData & 0xFF);
 }
 
-#if defined(SOC_AM574x) || defined (SOC_AM571x) || defined (SOC_AM572x) || defined (SOC_DRA72x) || defined (SOC_DRA75x) || defined (SOC_DRA78x) || defined (SOC_TPR12)
+#if defined(SOC_AM574x) || defined (SOC_AM571x) || defined (SOC_AM572x) || defined (SOC_DRA72x) || defined (SOC_DRA75x) || defined (SOC_DRA78x)
 bool S25FLFlash_QuadModeEnable(S25FL_Handle flashHandle)
 {
     SPI_Handle handle = flashHandle->spiHandle; /* SPI handle */
@@ -727,6 +731,7 @@ bool S25FLFlash_QuadModeEnable(S25FL_Handle flashHandle)
     rxLinesArg = QSPI_RX_LINES_SINGLE;
     SPI_control(handle, SPI_V1_CMD_SETRXLINES, (void *)&rxLinesArg);
 
+
     /* Set transfer length in bytes: Reading status register */
     frmLength = 1 + 1;
     SPI_control(handle, SPI_V1_CMD_SETFRAMELENGTH, (void *)&frmLength);
@@ -796,6 +801,93 @@ bool S25FLFlash_QuadModeEnable(S25FL_Handle flashHandle)
 }
 #endif
 
+#if defined (SOC_TPR12)
+#include <ti/osal/DebugP.h>
+
+void S25FLFlash_WriteQEStatus(S25FL_Handle flashHandle)
+{
+    SPI_Handle handle = flashHandle->spiHandle; /* SPI handle */
+    uint8_t norStatus;             /* flash status value */
+    unsigned int frmLength;
+    unsigned char writeVal = 0U;    /* data to be written */
+    bool retVal = false;            /* return value */
+    unsigned int transferType;
+
+    norStatus = FlashStatus(flashHandle);
+
+    if ((norStatus & (0x1U << 0x6U)) == 0)
+    {
+            S25FLFlash_WriteEnable(flashHandle);
+        
+            /* Set transfer length in bytes: Reading status register */
+            frmLength = 1 + 1;
+            retVal = SPI_control(handle, SPI_V1_CMD_SETFRAMELENGTH, (void *)&frmLength);
+            DebugP_assert(retVal == 0);
+        
+            /* Read command register */
+            writeVal = 0x01U;   //QSPI_LIB_CMD_QUAD_RD_CMD_REG;
+            transaction.txBuf = (unsigned char *)&writeVal;
+            transaction.rxBuf = NULL;
+            transaction.count = 1;
+        
+            transferType = SPI_TRANSACTION_TYPE_WRITE;
+            retVal = SPI_control(handle, SPI_V1_CMD_TRANSFERMODE_RW, (void *)&transferType);
+            DebugP_assert(retVal == 0);
+        
+            retVal = SPI_transfer(handle, &transaction);
+            DebugP_assert(retVal == true);
+        
+            /* Set status register 6th bit to 1 for Quad enable
+             * Write this value to the status register.
+             */
+            norStatus |= (0x1U << 0x6U);
+        
+            transaction.txBuf = (unsigned char *)&norStatus;
+            transaction.rxBuf = NULL;
+            transaction.count = 1;
+        
+            transferType = SPI_TRANSACTION_TYPE_WRITE;
+            retVal = SPI_control(handle, SPI_V1_CMD_TRANSFERMODE_RW, (void *)&transferType);
+            DebugP_assert(retVal == 0);
+        
+            retVal = SPI_transfer(handle, &transaction);
+            DebugP_assert(retVal == true);
+        
+            /* Wait till the status register is being written */
+            while (1U == (FlashStatus(flashHandle) & 0x1U));
+        
+            while ((FlashStatus(flashHandle) & (0x1U << 0x6)) == 0);
+    }
+}
+
+bool S25FLFlash_QuadModeEnable(S25FL_Handle flashHandle)
+{
+    SPI_Handle handle = flashHandle->spiHandle; /* SPI handle */
+    bool retVal = false;            /* return value */
+    unsigned int operMode;          /* temp variable to hold mode */
+    unsigned int rxLines;           /* temp variable to hold rx lines */
+    QSPI_v1_Object  *object;
+
+    /* Get the pointer to the object and hwAttrs */
+    object = handle->object;
+
+    /* These operations require the qspi to be configured in the following mode
+       only: tx/rx single line and config mode. */
+
+    /* Save the current mode and rxLine configurations */
+    operMode = object->qspiMode;
+    rxLines  = object->rxLines;
+
+    S25FLFlash_WriteQEStatus(flashHandle);
+
+
+    /* Restore operating mode and rx Lines */
+    object->qspiMode = operMode;
+    SPI_control(handle, SPI_V1_CMD_SETRXLINES, (void *)&rxLines);
+
+    return retVal;
+}
+#endif
 
 
 bool S25FLFlash_BlockErase(S25FL_Handle flashHandle, unsigned int blockNumber)
