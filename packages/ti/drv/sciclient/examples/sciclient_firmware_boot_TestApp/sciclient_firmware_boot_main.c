@@ -67,7 +67,7 @@
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
 
-#if defined (SOC_AM64X) || defined (SOC_J7200)
+#if defined (SOC_AM64X) || defined (SOC_J7200) || defined (SOC_AM65XX)
 #define PRINT_UART
 #endif
 
@@ -167,6 +167,7 @@ void _resetvectors (void);
 #endif
 int32_t main(void)
 {
+    int32_t status;
 #if defined (SOC_J721E) || defined (SOC_J7200)
     /* Relocate CSL Vectors to ATCM*/
     memcpy((void *)CSL_MCU_ARMSS_ATCM_BASE, (void *)_resetvectors, 0x100);
@@ -181,12 +182,29 @@ int32_t main(void)
     App_sciclientConsoleInit();
 #endif
 #endif
-    App_loadFirmwareTest();
-    App_getRevisionTestPol();
-    App_boardCfgTest();
+    status = App_loadFirmwareTest();
+    if (status == CSL_PASS)
+    {
+        status = App_boardCfgTest();
+    }
+    if (status == CSL_PASS)
+    {
+        status = App_getRevisionTestPol();
+    }
     #if defined(SOC_AM65XX)
-    App_printPerfStats();
+    if (status == CSL_PASS)
+    {
+        App_printPerfStats();
+    }
     #endif
+    if (status == CSL_PASS)
+    {
+        App_sciclientPrintf("All tests have passed.\n");
+    }
+    else
+    {
+        App_sciclientPrintf("Some Test have failed\n");
+    }
     
     while (loop) {;}
     
@@ -205,36 +223,16 @@ int32_t App_loadFirmwareTest(void)
     void *sysfw_ptr = gSciclient_firmware;
 
 #if defined(SOC_AM65XX)
-#ifdef PRINT_UART
-    App_sciclientPrintf(
-                      "Make sure sysfw.bin is present in SD Card... \n");
-    App_sciclientPrintf(
-                      " Reading from SD Card... \n");
-#endif
     status = sciclientTest_ReadSysfwImage(sysfw_ptr, SCICLIENT_FIRMWARE_SIZE_IN_BYTES);
     /*Do a cache writeback*/
     CacheP_wbInv(sysfw_ptr, SCICLIENT_FIRMWARE_SIZE_IN_BYTES);
 
-    if (status != CSL_PASS)
-    {
-#ifdef PRINT_UART
-        App_sciclientPrintf(
-                      " DMSC read from SD Card Failed... \n");
-#endif
-    }
-    else
-    {
-#ifdef PRINT_UART
-        App_sciclientPrintf(
-                       " DMSC Loading the Firmware... \n");
-#endif
-    }
-    #else
+#else
     sysfw_ptr = (void *)&gSciclient_firmware;
 
     /*Do a cache writeback*/
     CacheP_wbInv(sysfw_ptr, SCICLIENT_FIRMWARE_SIZE_IN_BYTES);
-    #endif
+#endif
 
     start_ticks = TimerP_getTimeInUsecs();
     status = Sciclient_loadFirmware(sysfw_ptr);
@@ -244,22 +242,6 @@ int32_t App_loadFirmwareTest(void)
 
     start_ticks=0U;
     stop_ticks=0U;
-
-    if (status == CSL_PASS)
-    {
-#ifdef PRINT_UART
-        App_sciclientPrintf(
-                          " DMSC Loading the Firmware...SUCCESS \n");
-#endif
-    }
-    else
-    {
-#ifdef PRINT_UART
-        App_sciclientPrintf(
-                          " DMSC Loading the Firmware...FAILED \n");
-#endif
-        while (loop) {;}
-    }
 
     return status;
 }
@@ -386,16 +368,15 @@ int32_t App_getRevisionTestPol(void)
             }
             else
             {
-                while (loop) {;}
 #ifdef PRINT_UART
                 App_sciclientPrintf(
                                   " DMSC Firmware Get Version failed \n");
 #endif
+                status = CSL_EFAIL;
             }
         }
         else
         {
-            while (loop) {;}
 #ifdef PRINT_UART
             App_sciclientPrintf(
                               " DMSC Firmware Get Version failed \n");
@@ -431,11 +412,6 @@ int32_t App_boardCfgTest(void)
 
     if (Sciclient_init(&config) == CSL_PASS)
     {
-#ifdef PRINT_UART
-        App_sciclientPrintf(
-                          "Sciclient init...PASSED \n");
-#endif
-
         start_ticks = TimerP_getTimeInUsecs();
         temp_status = Sciclient_boardCfg(NULL);
         stop_ticks = TimerP_getTimeInUsecs();
@@ -444,23 +420,11 @@ int32_t App_boardCfgTest(void)
         start_ticks=0U;
         stop_ticks=0U;
 
-        if (temp_status == CSL_PASS)
+        if (temp_status != CSL_PASS)
         {
-#ifdef PRINT_UART
-            App_sciclientPrintf(
-                              " Board configuration test...PASSED \n");
-#endif
-        }
-        else
-        {
-            while (loop) {;}
-#ifdef PRINT_UART
-            App_sciclientPrintf(
-                              " Board configuration test...FAILED \n");
-#endif
             status = CSL_EFAIL;
         }
-        if (Sciclient_boardCfgPm(NULL) == CSL_PASS)
+        if ((status == CSL_PASS) && (Sciclient_boardCfgPm(NULL) == CSL_PASS))
         {
 #ifdef PRINT_UART
             App_sciclientPrintf(
@@ -469,7 +433,6 @@ int32_t App_boardCfgTest(void)
         }
         else
         {
-            while (loop) {;}
 #ifdef PRINT_UART
             App_sciclientPrintf(
                               " Board configuration for PM test...FAILED \n");
@@ -477,7 +440,7 @@ int32_t App_boardCfgTest(void)
             status = CSL_EFAIL;
         }
 
-        if (Sciclient_boardCfgRm(NULL) == CSL_PASS)
+        if ((status == CSL_PASS) && (Sciclient_boardCfgRm(NULL) == CSL_PASS))
         {
 #ifdef PRINT_UART
             App_sciclientPrintf(
@@ -486,14 +449,13 @@ int32_t App_boardCfgTest(void)
         }
         else
         {
-            while (loop) {;}
 #ifdef PRINT_UART
             App_sciclientPrintf(
                               " Board configuration for RM test...FAILED \n");
 #endif
             status = CSL_EFAIL;
         }
-        if (Sciclient_boardCfgSec(NULL) == CSL_PASS)
+        if ((status == CSL_PASS) && (Sciclient_boardCfgSec(NULL) == CSL_PASS))
         {
 #ifdef PRINT_UART
             App_sciclientPrintf(
@@ -502,7 +464,6 @@ int32_t App_boardCfgTest(void)
         }
         else
         {
-            while (loop) {;}
 #ifdef PRINT_UART
             App_sciclientPrintf(
                               " Board configuration for SECURITY test...FAILED \n");
@@ -512,7 +473,6 @@ int32_t App_boardCfgTest(void)
     }
     else
     {
-        while (loop) {;}
 #ifdef PRINT_UART
         App_sciclientPrintf(
                           "Sciclient init...FAILED \n");
@@ -530,11 +490,11 @@ void App_printPerfStats()
     App_sciclientPrintf("           PERFORMANCE OF APIS          \n");
     App_sciclientPrintf("======================================\n");
 
-    App_sciclientPrintf("Sciclient_loadFirmware |   %llu us    \n", time_usecs[0]);
-    App_sciclientPrintf("Sciclient_init         |   %llu us    \n", time_usecs[1]);
-    App_sciclientPrintf("Sciclient_service      |   %llu us    \n", time_usecs[2]);
-    App_sciclientPrintf("Sciclient_deinit       |   %llu us    \n", time_usecs[3]);
-    App_sciclientPrintf("Sciclient_boardCfg     |   %llu us    \n", time_usecs[4]);
+    App_sciclientPrintf("Sciclient_loadFirmware |   %d us    \n", (uint32_t) (time_usecs[0] & (0xFFFFFFFFU)));
+    App_sciclientPrintf("Sciclient_init         |   %d us    \n", (uint32_t) (time_usecs[1] & (0xFFFFFFFFU)));
+    App_sciclientPrintf("Sciclient_service      |   %d us    \n", (uint32_t) (time_usecs[2] & (0xFFFFFFFFU)));
+    App_sciclientPrintf("Sciclient_deinit       |   %d us    \n", (uint32_t) (time_usecs[3] & (0xFFFFFFFFU)));
+    App_sciclientPrintf("Sciclient_boardCfg     |   %d us    \n", (uint32_t) (time_usecs[4] & (0xFFFFFFFFU)));
     App_sciclientPrintf("======================================\n\n Note: Here Sciclient_service is done for getRevision(Polling).\n");
 #endif
 }
