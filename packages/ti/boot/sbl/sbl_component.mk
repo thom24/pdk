@@ -101,7 +101,7 @@ ifeq ($(SOC), am64x)
 sbl_LIB_LIST = sbl_lib_ospi_nondma sbl_lib_cust sbl_lib_mmcsd sbl_lib_uart
 else
   ifeq ($(SOC), j7200)
-    sbl_LIB_LIST = sbl_lib_mmcsd sbl_lib_mmcsd_hlos sbl_lib_ospi_nondma sbl_lib_ospi_nondma_hlos sbl_lib_uart sbl_lib_cust
+    sbl_LIB_LIST = sbl_lib_mmcsd sbl_lib_mmcsd_hlos sbl_lib_ospi sbl_lib_ospi_hlos sbl_lib_uart sbl_lib_cust
   else
 	ifeq ($(SOC), tpr12)
       sbl_LIB_LIST = sbl_lib_uart
@@ -503,7 +503,7 @@ sbl_ospi_img_COMP_LIST = sbl_ospi_img
 sbl_ospi_img_RELPATH = ti/boot/sbl/board/k3
 sbl_ospi_img_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)/ospi/bin
 sbl_ospi_img_PATH = $(PDK_SBL_COMP_PATH)/board/k3
-ifeq ($(SOC),$(filter $(SOC), am64x j7200))
+ifeq ($(SOC),$(filter $(SOC), am64x))
   sbl_ospi_img_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=ospi SBL_USE_DMA=no BUILD_HS=no
 else
   sbl_ospi_img_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=ospi SBL_USE_DMA=yes BUILD_HS=no
@@ -531,7 +531,7 @@ sbl_ospi_img_hlos_COMP_LIST = sbl_ospi_img_hlos
 sbl_ospi_img_hlos_RELPATH = ti/boot/sbl/board/k3
 sbl_ospi_img_hlos_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)/ospi/bin
 sbl_ospi_img_hlos_PATH = $(PDK_SBL_COMP_PATH)/board/k3
-ifeq ($(SOC),$(filter $(SOC), am64x j7200))
+ifeq ($(SOC),$(filter $(SOC), am64x))
   sbl_ospi_img_hlos_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=ospi HLOS_BOOT=yes SBL_USE_DMA=no BUILD_HS=no
 else
   sbl_ospi_img_hlos_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=ospi HLOS_BOOT=yes SBL_USE_DMA=yes BUILD_HS=no
@@ -1173,7 +1173,7 @@ CUST_SBL_TEST_BOARDS = am65xx_evm j721e_evm j7200_evm am64x_evm
 #CUST_SBL_TEST_FLAGS =" -DSBL_USE_DMA=0 -DSBL_LOG_LEVEL=0 -DSBL_SCRATCH_MEM_START=0x70100000 -DSBL_SCRATCH_MEM_SIZE=0xF0000 -DSBL_SKIP_SYSFW_INIT -DSBL_SKIP_MCU_RESET -DBOOT_OSPI"
 #CUST_SBL_TEST_FLAGS =" -DSBL_USE_DMA=1 -DSBL_LOG_LEVEL=1 -DSBL_SCRATCH_MEM_START=0xB8000000 -DSBL_SCRATCH_MEM_SIZE=0x4000000 -DSBL_ENABLE_PLL -DSBL_ENABLE_CLOCKS -DSBL_ENABLE_DDR -DSBL_SKIP_MCU_RESET -DBOOT_OSPI"
 ifeq ($(SOC), j7200)
-CUST_SBL_TEST_FLAGS =" -DSBL_USE_DMA=0 -DSBL_LOG_LEVEL=2 -DSBL_SCRATCH_MEM_START=0x41cc0000 -DSBL_SCRATCH_MEM_SIZE=0x40000 -DSBL_ENABLE_PLL -DSBL_ENABLE_CLOCKS -DSBL_SKIP_MCU_RESET -DBOOT_OSPI -DSBL_ENABLE_DEV_GRP_MCU -DSBL_HLOS_OWNS_FLASH"
+CUST_SBL_TEST_FLAGS =" -DSBL_USE_DMA=0 -DSBL_LOG_LEVEL=1 -DSBL_SCRATCH_MEM_START=0x41cc0000 -DSBL_SCRATCH_MEM_SIZE=0x40000 -DSBL_ENABLE_PLL -DSBL_ENABLE_CLOCKS -DSBL_SKIP_MCU_RESET -DBOOT_OSPI -DSBL_ENABLE_DEV_GRP_MCU -DSBL_HLOS_OWNS_FLASH"
 else
   ifeq ($(findstring j7,$(SOC)),j7)
 CUST_SBL_TEST_FLAGS =" -DSBL_USE_DMA=0 -DSBL_LOG_LEVEL=1 -DSBL_SCRATCH_MEM_START=0x41cc0000 -DSBL_SCRATCH_MEM_SIZE=0x40000 -DSBL_ENABLE_PLL -DSBL_ENABLE_CLOCKS -DSBL_SKIP_MCU_RESET -DBOOT_OSPI -DSBL_ENABLE_DEV_GRP_MCU -DSBL_HLOS_OWNS_FLASH"

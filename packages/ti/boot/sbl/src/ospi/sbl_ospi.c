@@ -347,21 +347,17 @@ int32_t SBL_ospiInit(void *handle)
     ospi_cfg.funcClk = OSPI_MODULE_CLK_133M;
 #endif
 
-#if !defined(SOC_J7200)
 #if SBL_USE_DMA
-    ospi_cfg.dmaEnable = SBL_USE_DMA;
+    ospi_cfg.dmaEnable = true;
     Ospi_udma_init(&ospi_cfg);
 #endif
-#endif
 
-    ospi_cfg.xipEnable = false;
 #if defined(SIM_BUILD)
     ospi_cfg.phyEnable = false;
 #else
-#if defined(SOC_J7200)
-    /* Enable the PHY mode which is disabled in SBL_ReadSysfwImage function. */
+    /* J721E: PHY mode was already previously enabled, so we keep it enabled */
+    /* J7200: Enable the PHY mode which was disabled in SBL_ReadSysfwImage */
     ospi_cfg.phyEnable = true;
-#endif
 #endif
     /* Set the default SPI init configurations */
     OSPI_socSetInitCfg(BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
@@ -404,11 +400,13 @@ int32_t SBL_ospiFlashRead(const void *handle, uint8_t *dst, uint32_t length,
      /* In simulation, we must ALWAYS bypass the OSPI driver regardless of what */ \
      /* .. bypass option is requested. REMOVE WHEN SIMULATION IS IRRELEVANT. */ \
      && !(defined(SBL_BYPASS_OSPI_DRIVER_FOR_SYSFW_DOWNLOAD) && defined(SIM_BUILD)))
+
 #if SBL_USE_DMA
+    Board_flashHandle h = *(const Board_flashHandle *) handle;
+    uint32_t ioMode = OSPI_FLASH_OCTAL_READ;
+
     if (length > 4 * 1024)
     {
-        Board_flashHandle h = *(const Board_flashHandle *) handle;
-        uint32_t ioMode  = OSPI_FLASH_OCTAL_READ;
         /* split transfer if not reading from 16 byte aligned flash offset */
         uint32_t dma_offset  = (offset + 0xF) & (~0xF);
         uint32_t non_aligned_bytes = dma_offset - offset;
@@ -431,56 +429,8 @@ int32_t SBL_ospiFlashRead(const void *handle, uint8_t *dst, uint32_t length,
     }
     else
     {
-        memcpy((void *)dst, (void *)(ospi_cfg.dataAddr + offset), length);
-    }
-#elif defined(SOC_J7200)
-    /* For J7200 w/ xSPI PHY enabled */
-    Board_flashHandle h = *(const Board_flashHandle *) handle;
-    uint32_t ioMode  = OSPI_FLASH_OCTAL_READ;
-    static uint32_t tryPhyEnabled = 1;
-
-    if (tryPhyEnabled)
-    {
-        if (Board_flashRead(h, offset, dst, length, (void *)(&ioMode)))
-        {
-             SBL_log(SBL_LOG_ERR, "\nWARNING: xSPI PHY tuning failed\n");
-
-             /* Re-open Flash and try COPY again with PHY disabled */
-             Board_flashClose(h);
-
-             ospi_cfg.funcClk = OSPI_MODULE_CLK_133M;
-             ospi_cfg.dacEnable = true;
-             ospi_cfg.dtrEnable = true;
-             ospi_cfg.dmaEnable = false;
-             ospi_cfg.phyEnable = false;
-             /* Set OSPI cfg */
-             OSPI_socSetInitCfg(BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
-
-             h = Board_flashOpen(BOARD_FLASH_ID_S28HS512T,
-                                 BOARD_OSPI_NOR_INSTANCE, NULL);
-             if (h)
-             {
-                 /* Disable PHY pipeline mode */
-                 CSL_ospiPipelinePhyEnable((const CSL_ospi_flash_cfgRegs *)(ospi_cfg.baseAddr), FALSE);
-
-                 *(Board_flashHandle *) handle = h;
-             }
-             else
-             {
-                 SBL_log(SBL_LOG_ERR, "Board_flashOpen failed!\n");
-                 SblErrLoop(__FILE__, __LINE__);
-             }
-
-             /* Set flag that the PHY is no longer enabled, for future reads */
-             tryPhyEnabled = 0;
-
-             /* Finally, do the expected COPY operation */
-             memcpy((void *)dst, (void *)(ospi_cfg.dataAddr + offset), length);
-        }
-    }
-    else
-    {
-        memcpy((void *)dst, (void *)(ospi_cfg.dataAddr + offset), length);
+        SBL_DCacheClean((void *)dst, length);
+        Board_flashRead(h, offset, dst, length, (void *)(&ioMode));
     }
 #else
     memcpy((void *)dst, (void *)(ospi_cfg.dataAddr + offset), length);
@@ -626,9 +576,11 @@ int32_t SBL_OSPIBootImage(sblEntryPoint_t *pEntry)
 
     SBL_ospiClose(&boardHandle);
 
+#if defined(SOC_J721E)
 #if defined(SBL_HLOS_OWNS_FLASH) && !defined(SBL_USE_MCU_DOMAIN_ONLY) && !defined(SBL_ENABLE_DEV_GRP_MCU)
 /* Only put OSPI flash back into SPI mode if we're going to directly boot ATF/U-boot/Linux from SBL */
     SBL_ospiLeaveConfigSPI();
+#endif
 #endif
 
     return retVal;
