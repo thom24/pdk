@@ -365,12 +365,6 @@ extern Mbox_Handle Mailbox_open(Mailbox_openParams *openParam,  int32_t* errCode
     /* Setup the return handle: */
     retHandle = (Mbox_Handle)mailboxDriver;
 
-    *errCode = Mailbox_registerInterrupts(retHandle);
-    if (*errCode != MAILBOX_SOK)
-    {
-        goto exit;
-    }
-
     /* Is the write mode blocking? */
     if(mailboxDriver->cfg.writeMode == MAILBOX_MODE_BLOCKING)
     {
@@ -386,8 +380,6 @@ extern Mbox_Handle Mailbox_open(Mailbox_openParams *openParam,  int32_t* errCode
     }
 
     /* Instance of the driver for the specific endpoint is created */
-    gMailboxMCB.totalInstCnt++;
-    remoteCfg->instCount++;
     if (openParam->cfg.chType == MAILBOX_CHTYPE_SINGLE)
     {
         /* Store the handle of driver in first channel.*/
@@ -399,6 +391,26 @@ extern Mbox_Handle Mailbox_open(Mailbox_openParams *openParam,  int32_t* errCode
         remoteCfg->handleArray[openParam->cfg.chId] = retHandle;
     }
 
+    *errCode = Mailbox_registerInterrupts(retHandle);
+    if (*errCode != MAILBOX_SOK)
+    {
+        /* Instance of the driver for the specific endpoint is created */
+        if (openParam->cfg.chType == MAILBOX_CHTYPE_SINGLE)
+        {
+            /* Store the handle of driver in first channel.*/
+            remoteCfg->handleArray[0U] = NULL;
+        }
+        else
+        {
+            /* Store handle of driver into hash array */
+            remoteCfg->handleArray[openParam->cfg.chId] = NULL;
+        }
+        goto exit;
+    }
+
+    gMailboxMCB.totalInstCnt++;
+    remoteCfg->instCount++;
+
     DebugP_log1("MAILBOX: Mailbox Driver (%p) open successful.\n", (uintptr_t)mailboxDriver);
 
 exit:
@@ -409,6 +421,11 @@ exit:
         {
             /* This is first driver open which resulted in error. */
             Mailbox_RemoteCfg_init(remoteCfg);
+        }
+        if (retHandle != NULL)
+        {
+            Mailbox_freeDriver(retHandle);
+            retHandle = NULL;
         }
     }
     if (invalidOsal == FALSE)

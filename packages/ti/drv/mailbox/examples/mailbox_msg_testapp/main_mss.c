@@ -426,6 +426,7 @@ void multiChannelTest (void)
     Task_Params        taskParams;
     uint32_t        bufferRx;
     Mailbox_openParams openParam;
+    uint32_t syncData;
 
     printf("*************************************************\n");
     printf("\nMSS: Starting Multichannel Test.\n");
@@ -525,6 +526,26 @@ void multiChannelTest (void)
     }
     printf("MSS: Mailbox Instance to DSS %p has been opened successfully\n", handleArray[7]);
 
+    /****** ch 0 for Sync ************************************/
+    Mailbox_openParams_init(&openParam);
+    openParam.remoteEndpoint = MAILBOX_INST_DSP;
+    openParam.cfg.chType       = MAILBOX_CHTYPE_MULTI;
+    openParam.cfg.chId         = MAILBOX_CH_ID_0;
+    openParam.cfg.readMode     = MAILBOX_MODE_BLOCKING;
+    openParam.cfg.writeMode    = MAILBOX_MODE_BLOCKING;
+
+    handleArray[0] = Mailbox_open(&openParam, &errCode);
+
+    printf("MSS: Waiting for sync msg from dss.\n");
+
+    /* wait for Sync msg from remote core. */
+    Mailbox_read(handleArray[0], (uint8_t*)&syncData, sizeof(syncData));
+    Mailbox_readFlush(handleArray[0]);
+
+    syncData = 0xFFFFFFFFU;
+    /* Send sync data to dss core. */
+    Mailbox_write(handleArray[0], (uint8_t*)&syncData, sizeof(syncData));
+
     /***************************************************/
 
     Task_Params_init(&taskParams);
@@ -538,10 +559,6 @@ void multiChannelTest (void)
     Task_Params_init(&taskParams);
     taskParams.stackSize = 2*1024;
     multiChTaskHandle[4] = Task_create(Test_channel4Task, &taskParams, NULL);
-
-    /*give time for remote endpoint to open channels*/
-    Task_sleep(4);
-
 
     for(i=0;i<3;i++)
     {
@@ -605,14 +622,14 @@ void multiChannelTest (void)
     for(i=0;i<=MAILBOX_CH_ID_MAX;i++)
     {
         /* Open the  Instance */
-        if((i==1) || (i==3) || (i==4) || (i==7))
+        if((i==0) ||(i==1) || (i==3) || (i==4) || (i==7))
         {
             if (Mailbox_close(handleArray[i]) != 0)
             {
                 printf("MSS: Error: Failed to close instance %d\n",i);
                 gTestFailFlag = 1;
             }
-            printf("Debug: closed instance %d\n",i);
+            printf("MSS: closed instance %d\n",i);
         }
     }
 
@@ -621,5 +638,5 @@ void multiChannelTest (void)
     Task_delete(&multiChTaskHandle[3]);
     Task_delete(&multiChTaskHandle[4]);
 
-
+    Task_sleep(4);
 }

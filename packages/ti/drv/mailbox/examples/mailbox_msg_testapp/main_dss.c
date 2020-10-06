@@ -81,6 +81,7 @@
 static void Test_appCallbackFunction(Mbox_Handle handle, Mailbox_Instance remoteEndpoint);
 void multiChannelTest (void);
 
+
 /* ========================================================================== */
 /*                         Structure Declarations                             */
 /* ========================================================================== */
@@ -434,6 +435,16 @@ void Test_channel4Task(UArg arg0, UArg arg1)
 }
 Task_Handle multiChTaskHandle[MAILBOX_CH_ID_MAX];
 
+uint32_t gMssSync = 0U;
+
+void mailboxMssSyncCallback (Mbox_Handle handle, Mailbox_Instance remoteEndpoint)
+{
+    uint32_t syncData;
+    Mailbox_read(handle, (uint8_t*)&syncData, sizeof(syncData));
+    Mailbox_readFlush(handle);
+    gMssSync = 1;
+}
+
 void multiChannelTest (void)
 {
     int32_t         errCode;
@@ -441,6 +452,7 @@ void multiChannelTest (void)
     Task_Params     taskParams;
     uint32_t        bufferRx;
     Mailbox_openParams openParam;
+    int32_t syncRetVal;
 
 
     System_printf("*************************************************\n");
@@ -538,7 +550,31 @@ void multiChannelTest (void)
         gTestFailFlag = 1;
         return;
     }
-    System_printf("DSS: Mailbox Instance to DSS %p has been opened successfully\n", handleArray[7]);
+    System_printf("DSS: Mailbox Instance to MSS %p has been opened successfully\n", handleArray[7]);
+
+    /****** ch 0 for Sync ************************************/
+    Mailbox_openParams_init(&openParam);
+    openParam.remoteEndpoint = MAILBOX_INST_MSS_CR5A;
+    openParam.cfg.chType       = MAILBOX_CHTYPE_MULTI;
+    openParam.cfg.chId         = MAILBOX_CH_ID_0;
+    openParam.cfg.readMode     = MAILBOX_MODE_CALLBACK;
+    openParam.cfg.readCallback = mailboxMssSyncCallback;
+    openParam.cfg.writeMode    = MAILBOX_MODE_BLOCKING;
+    openParam.cfg.writeTimeout = 5U;
+
+    handleArray[0] = Mailbox_open(&openParam, &errCode);
+    System_printf("DSS: Mailbox Instance to MSS %p has been opened successfully\n", handleArray[0]);
+
+    do
+    {
+        uint32_t syncData = 0xFFFFFFFFU;
+        /* Send sync data to mss core. */
+        syncRetVal = Mailbox_write(handleArray[0], (uint8_t*)&syncData, sizeof(syncData));
+        if (syncRetVal != MAILBOX_SOK)
+        {
+            printf("DSS: Waiting for sync msg from mss.\n");
+        }
+    } while (gMssSync == 0U);
 
     /***************************************************/
     /*start tasks used for the multichannel test*/
@@ -553,9 +589,6 @@ void multiChannelTest (void)
     Task_Params_init(&taskParams);
     taskParams.stackSize = 2*1024;
     multiChTaskHandle[4] = Task_create(Test_channel4Task, &taskParams, NULL);
-
-    /*give time for remote endpoint to open channels*/
-    Task_sleep(4);
 
     for(i=0;i<3;i++)
     {
@@ -599,7 +632,16 @@ void multiChannelTest (void)
     Mailbox_readFlush(handleArray[7]);
 
     System_printf("DSS: ************ Writing a message in CHANNEL 7 to MSS ****************\n");
+    MULTI_CH7_WRITE:
     size = Mailbox_write(handleArray[7], (uint8_t*)&gTestPatternWordSend_0, sizeof(gTestPatternWordSend_0));
+    if (size == MAILBOX_ECHINUSE)
+    {
+        /* Previous write is in polling mode and did not get the Ack.
+         * Try write after some time.
+         */
+        Task_sleep(1);
+        goto MULTI_CH7_WRITE;
+    }
     if(size != sizeof(gTestPatternWordSend_0))
     {
         System_printf("DSS: Error. Write failed. Error=%d\n",size);
@@ -609,14 +651,14 @@ void multiChannelTest (void)
     /*close all channels*/
     for(i=0;i<=MAILBOX_CH_ID_MAX;i++)
     {
-        if((i==1) || (i==3) || (i==4) || (i==7))
+        if((i==0) ||(i==1) || (i==3) || (i==4) || (i==7))
         {
             if (Mailbox_close(handleArray[i]) != 0)
             {
                 System_printf("DSS: Error: Failed to close instance %d\n",i);
                 gTestFailFlag = 1;
             }
-            System_printf("Debug: closed instance %d\n",i);
+            System_printf("DSS: closed instance %d\n",i);
         }
     }
 
@@ -625,4 +667,5 @@ void multiChannelTest (void)
     Task_delete(&multiChTaskHandle[3]);
     Task_delete(&multiChTaskHandle[4]);
 
+    Task_sleep(4);
 }

@@ -799,6 +799,19 @@ int32_t Mailbox_write(Mbox_Handle handle, const uint8_t *buffer, uint32_t size)
             /* Report the error condition: */
             DebugP_log2 ("MAILBOX:(%p) Write acknowledge timed out. Ack was never received. Number of received TX messages = %d.\n",
                          (uintptr_t)driver, driver->txCount);
+            /* Reset the driver status. */
+            /* Critical Section Protection*/
+            key = gMailboxMCB.initParam.osalPrms.disableAllIntr();
+
+            /* update txBox status flag */
+            driver->txBoxStatus = MAILBOX_TX_BOX_EMPTY;
+
+            /* update TX box multichannel status */
+            if(driver->cfg.chType == MAILBOX_CHTYPE_MULTI)
+            {
+                driver->remoteCfgPtr->writeChIDInUse = MAILBOX_UNUSED_CHANNEL_ID;
+            }
+            gMailboxMCB.initParam.osalPrms.restoreAllIntr(key);
         }
     }
 
@@ -916,7 +929,16 @@ static void Mailbox_boxFullISR(uintptr_t arg)
             remoteCfg = &gMailboxMCB.remoteConfig[i];
             if (remoteCfg->chType == MAILBOX_CHTYPE_SINGLE)
             {
-                Mailbox_boxFullISRProcessing((Mailbox_Driver*) remoteCfg->handleArray[0]);
+                Mailbox_Driver *driver = (Mailbox_Driver*) remoteCfg->handleArray[0];
+                if (driver == NULL)
+                {
+                    /* driver not opened. Clear the interrupt. */
+                    CSL_Mbox_clearBoxFullInterrupt(&gMboxReg, remoteEndpoint);
+                }
+                else
+                {
+                    Mailbox_boxFullISRProcessing(driver);
+                }
             }
             else
             {
@@ -927,25 +949,42 @@ static void Mailbox_boxFullISR(uintptr_t arg)
                     hwCfg = (Mailbox_HwCfg *)remoteCfg->hwCfgPtr;
                     memcpy((void *)&header, (void *)(hwCfg->baseRemoteToLocal.data), sizeof(header));
                     id = (uint8_t)(header & 0x7U);
-                }
-
-                if(id > MAILBOX_CH_ID_MAX)
-                {
-                    /*error*/
-                    gMailboxMCB.errCnt.mailboxFull++;
+                    if(id > MAILBOX_CH_ID_MAX)
+                    {
+                        /*error*/
+                        gMailboxMCB.errCnt.mailboxFull++;
+                        /* clear the interrupt. */
+                        CSL_Mbox_clearBoxFullInterrupt(&gMboxReg, remoteEndpoint);
+                    }
+                    else
+                    {
+                        /* get the driver handle for particular channel. */
+                        Mailbox_Driver* driver = (Mailbox_Driver*) remoteCfg->handleArray[id];
+                        if (driver == NULL)
+                        {
+                            /* driver not opened. Clear the interrupt. */
+                            CSL_Mbox_clearBoxFullInterrupt(&gMboxReg, remoteEndpoint);
+                        }
+                        else
+                        {
+                            driver->remoteCfgPtr->readChIDInUse = driver->cfg.chId;
+                            Mailbox_boxFullISRProcessing(driver);
+                        }
+                    }
                 }
                 else
                 {
-                    Mailbox_Driver* driver = (Mailbox_Driver*) remoteCfg->handleArray[id];
-                    driver->remoteCfgPtr->readChIDInUse = driver->cfg.chId;
-                    Mailbox_boxFullISRProcessing(driver);
+                    /* driver not opened for any channel. Clear the interrupt. */
+                    CSL_Mbox_clearBoxFullInterrupt(&gMboxReg, remoteEndpoint);
                 }
             }
         }
         else
         {
-            /* TODO: Sphurious interrupt, Not registerded remote proc. Disable it. */
+            /* Spurious interrupt, Not registered remote proc. Disable it. */
             gMailboxMCB.errCnt.mailboxFull++;
+            /* driver not opened for any channel. Clear the interrupt. */
+            CSL_Mbox_clearBoxFullInterrupt(&gMboxReg, remoteEndpoint);
         }
     }
     return;
@@ -1046,13 +1085,13 @@ static void Mailbox_boxEmptyISR(uintptr_t arg)
             }
             else
             {
-                /* TODO: Sphurious interrupt, clear it. */
+                /* TODO: Spurious interrupt, clear it. */
                 gMailboxMCB.errCnt.mailboxEmpty++;
             }
         }
         else
         {
-            /* TODO: Sphurious interrupt, Not registerded remote proc. Disable it. */
+            /* TODO: Spurious interrupt, Not registered remote proc. Disable it. */
             gMailboxMCB.errCnt.mailboxFull++;
         }
     }
