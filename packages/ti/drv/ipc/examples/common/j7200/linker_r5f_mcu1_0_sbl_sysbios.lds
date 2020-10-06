@@ -53,9 +53,6 @@
 #define MCU2_1_R5F_MEM_DATA_BASE (MCU2_1_ALLOCATED_START + 0x00300000)
 #define MCU2_1_DDR_SPACE_BASE    (MCU2_1_ALLOCATED_START + 0x00400000)
 
-#define OCMRAM_MCU1_0_START 0x41cfe000
-#define OCMRAM_MCU1_1_START 0x41cff000
-
 -e __VECS_ENTRY_POINT
 --retain="*(.utilsCopyVecsToAtcm)"
 
@@ -73,8 +70,9 @@ MEMORY
     MCU1_R5F0_BTCM (RWIX) 	: origin=0x41010000 length=0x8000
 
     /* MCUSS RAM - Start towards the end to avoid Bootloader usage of the SRAM */
-    OCMRAM_MCU1_0 (RWIX)        : origin=OCMRAM_MCU1_0_START length=0x1000
-    OCMRAM_MCU1_1 (RWIX)        : origin=OCMRAM_MCU1_1_START length=0x1000
+    OCMC_RAM_BOARD_CFG (RWIX)   : origin=0x41c80000 length=0x2000
+    OCMC_RAM (RWIX)             : origin=0x41c82000 length=0x7DB00
+    OCMC_RAM_X509_HEADER (RWIX) : origin=0x41cffb00 length=0x500
 
     DDR0_RESERVED    (RWIX)  	: origin=0x80000000 length=0x20000000	  	/* 512MB */
     MCU1_0_IPC_DATA (RWIX)	: origin=DDR0_ALLOCATED_START     length=0x00100000	/*   1MB */

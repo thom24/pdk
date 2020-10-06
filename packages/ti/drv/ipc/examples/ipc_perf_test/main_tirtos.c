@@ -52,6 +52,7 @@
 #include <ti/sysbios/BIOS.h>
 #include <ti/sysbios/knl/Task.h>
 
+#include <ti/csl/csl_types.h>
 #include <ti/csl/soc.h>
 #include <ti/board/board.h>
 #include <ti/drv/sciclient/sciclient.h>
@@ -74,6 +75,9 @@
 #define IPC_SETUP_SCISERVER_TASK_PRI_HIGH   (IPC_SETUP_TASK_PRI + 1)
 /* Low Priority for SCI Server */
 #define IPC_SETUP_SCISERVER_TASK_PRI_LOW    (1)
+
+/* Aligned address at which the X509 header is placed */
+#define SCISERVER_COMMON_X509_HEADER_ADDR (0x41cffb00)
 
 /* ========================================================================== */
 /*                         Structure Declarations                             */
@@ -105,13 +109,35 @@ __attribute__ ((aligned(8192)));
 
 void ipc_initSciclient()
 {
+    int32_t ret = CSL_PASS;
     Sciclient_ConfigPrms_t        config;
 
     /* Now reinitialize it as default parameter */
-    Sciclient_configPrmsInit(&config);
+    ret = Sciclient_configPrmsInit(&config);
 
-    Sciclient_init(&config);
+#if (defined (BUILD_MCU1_0) && (defined (SOC_J721E) || defined (SOC_J7200)))
+    if (ret == CSL_PASS)
+    {
+        ret = Sciclient_boardCfgParseHeader(
+            (uint8_t *)SCISERVER_COMMON_X509_HEADER_ADDR,
+            &config.inPmPrms, &config.inRmPrms);
+    }
+    else
+    {
+        System_printf("Sciclient_configPrmsInit Failed\n");
+    }
+#endif
 
+    if (ret == CSL_PASS)
+    {
+        Sciclient_init(&config);
+    }
+#if (defined (BUILD_MCU1_0) && (defined (SOC_J721E) || defined (SOC_J7200)))
+    else
+    {
+        System_printf("Sciclient_boardCfgParseHeader Failed\n");
+    }
+#endif
 }
 
 int main(void)

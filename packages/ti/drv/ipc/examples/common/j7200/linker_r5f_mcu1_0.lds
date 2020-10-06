@@ -51,8 +51,6 @@ __SVC_STACK_SIZE = 0x1000;
 #define MCU2_1_DDR_SPACE_BASE    (MCU2_1_ALLOCATED_START + 0x00400000)
 
 #define ATCM_START 0x00000000
-#define OCMRAM_MCU1_0_START 0x41cfe000
-#define OCMRAM_MCU1_1_START 0x41cff000
 
 /* Memory Map */
 MEMORY
@@ -69,7 +67,9 @@ MEMORY
     MCU0_R5F1_BTCM (RWIX)   : origin=0x41410000 length=0x8000
 
     /* MCU0 share locations */
-    OCMRAM  (RWIX)          : origin=0x41C00100 length=0x80000 - 0x1100      /* ~510KB */
+    OCMC_RAM_BOARD_CFG (RWIX)   : origin=0x41c80000 length=0x2000
+    OCMC_RAM (RWIX)             : origin=0x41c82000 length=0x7DB00
+    OCMC_RAM_X509_HEADER (RWIX) : origin=0x41cffb00 length=0x500
 
     /* j7200 MCMS3 locations */
     /* j7200 Reserved Memory for ARM Trusted Firmware */
