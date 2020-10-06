@@ -177,12 +177,47 @@ function disconnectTargets()
     dsDMSC_0.target.disconnect();
 }
 
+function sampleDDRCheck ()
+{
+    print("Running DDR Memory Checks....");
+    dsMCU1_0.memory.fill (0x80000000, 0, 1024, 0xA5A5A5A5);
+    ar = dsMCU1_0.memory.readWord(0, 0x80000000, 1024);
+    fail = 0 
+    for (i = 0; i < ar.length; i++) {
+            x = ar[i]; 
+            if (x != 0xA5A5A5A5)
+            {   
+                fail = 1;
+            }
+        } 
+    if (fail == 1)
+    {   
+        print ("0x80000000: DDR memory sample check failed !!");
+    }
+    dsMCU1_0.memory.fill (0x81000000, 0, 1024, 0x5A5A5A5A);
+    ar = dsMCU1_0.memory.readWord(0, 0x81000000, 1024);
+    fail = 0 
+    for (i = 0; i < ar.length; i++) {
+            x = ar[i]; 
+            if (x != 0x5a5a5a5a)
+            {   
+                fail = 1;
+            }
+        } 
+    if (fail == 1)
+    {   
+        print ("0x81000000: DDR memory sample check failed !!");
+    }
+
+}
+
 function doEverything()
 {
     printVars();
     connectTargets();
     disconnectTargets();
-    print("Okay you are good to go.. Happy Debugging!!");
+    sampleDDRCheck ();
+    print("Happy Debugging!!");
 }
 
 var ds;
