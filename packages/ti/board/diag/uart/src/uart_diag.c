@@ -561,7 +561,11 @@ int main(void)
 #endif
 
     UART_stdioDeInit();
+#if defined (__aarch64__)
     BoardDiag_enableMAINUART();
+#else
+    BoardDiag_enableMCUUART();
+#endif
     UART_stdioInit(BOARD_UART_INSTANCE);
     UART_printf("\nUART Test Completed!!\n");
 
