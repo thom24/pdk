@@ -1639,7 +1639,7 @@ int main(void)
      * For AM65XX TPR12 and J7 the common RTSC cfg file is used and hence there is
      * no test application specific task is created in teh RTSC cfg file
      */
-#if defined (SOC_AM65XX) || defined (SOC_J721E) || defined(SOC_J7200) || defined(SOC_TPR12)
+#if defined (SOC_AM65XX) || defined (SOC_J721E) || defined(SOC_J7200) || defined(SOC_TPR12) || defined(SOC_AM64X)
     TaskP_Params taskParams;
     Error_Block  eb;
     TaskP_Params_init(&taskParams);
