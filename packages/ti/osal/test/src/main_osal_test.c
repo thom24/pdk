@@ -1312,7 +1312,7 @@ void osal_test(UArg arg0, UArg arg1)
     bool testFail = false;
     Osal_StaticMemStatus pMemStats;
 
-    Board_initOSAL();
+//    Board_initOSAL();
 
 #ifdef BUILD_C7X_1
     Osal_appC7xPreInit();
