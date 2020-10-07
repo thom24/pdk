@@ -73,6 +73,8 @@
 #include <ti/drv/mailbox/mailbox.h>
 #include <ti/drv/mailbox/src/mailbox_internal.h>
 
+#include "app_sync.h"
+
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
@@ -122,13 +124,30 @@ int32_t Test_mailboxWrite(Mbox_Handle handle, uint8_t * buffer, uint32_t bufferS
     int32_t retVal;
 
     do {
-		retVal = Mailbox_write(handle, buffer, bufferSize);
-		if (retVal == MAILBOX_ETXACKTIMEDOUT)
-		{
-			System_printf("MSS: Error. Write timedout.Rewriting msg \n");
-		}
+        retVal = Mailbox_write(handle, buffer, bufferSize);
+        if (retVal == MAILBOX_ETXACKTIMEDOUT)
+        {
+            System_printf("MSS: Error. Write timedout.Rewriting msg \n");
+        }
     } while (retVal == MAILBOX_ETXACKTIMEDOUT);
-	return retVal;
+    return retVal;
+}
+
+void Test_mssWaitSync(void)
+{
+    uint32_t  retVal = 0;
+
+    printf("MSS: App Sync\n");
+    App_setMssState(1U);
+
+    while (retVal == 0)
+    {
+        retVal = App_getDssState();
+        Task_sleep(1);
+    }
+
+    printf("MSS: App Sync Done.\n");
+    App_setDssState (0U);
 }
 
 void Test_initTask(UArg arg0, UArg arg1)
@@ -171,6 +190,8 @@ void Test_initTask(UArg arg0, UArg arg1)
         return;
     }
     System_printf("MSS: Mailbox Instance to DSS %p has been opened successfully\n", handleDss);
+
+    Test_mssWaitSync();
 
     /**************************************************************************
      * Test: Write message to DSS
@@ -447,7 +468,6 @@ void multiChannelTest (void)
     Task_Params        taskParams;
     uint32_t        bufferRx;
     Mailbox_openParams openParam;
-    uint32_t syncData;
 
     System_printf("*************************************************\n");
     System_printf("\nMSS: Starting Multichannel Test.\n");
@@ -551,29 +571,9 @@ void multiChannelTest (void)
     }
     System_printf("MSS: Mailbox Instance to DSS %p has been opened successfully\n", handleArray[7]);
 
-    /****** ch 0 for Sync ************************************/
-    Mailbox_openParams_init(&openParam);
-    openParam.remoteEndpoint = MAILBOX_INST_DSP;
-    openParam.cfg.chType       = MAILBOX_CHTYPE_MULTI;
-    openParam.cfg.chId         = MAILBOX_CH_ID_0;
-    openParam.cfg.readMode     = MAILBOX_MODE_BLOCKING;
-    openParam.cfg.writeMode    = MAILBOX_MODE_BLOCKING;
-    openParam.cfg.writeTimeout = 1000U;
-
-    handleArray[0] = Mailbox_open(&openParam, &errCode);
-
-    System_printf("MSS: Waiting for sync msg from dss.\n");
-
-    /* wait for Sync msg from remote core. */
-    Mailbox_read(handleArray[0], (uint8_t*)&syncData, sizeof(syncData));
-    Mailbox_readFlush(handleArray[0]);
-
-    syncData = 0xFFFFFFFFU;
-    /* Send sync data to dss core. */
-    Test_mailboxWrite(handleArray[0], (uint8_t*)&syncData, sizeof(syncData));
+    Test_mssWaitSync();
 
     /***************************************************/
-
     Task_Params_init(&taskParams);
     taskParams.stackSize = 2*1024;
     multiChTaskHandle[1] = Task_create(Test_channel1Task, &taskParams, NULL);
@@ -648,7 +648,7 @@ void multiChannelTest (void)
     for(i=0;i<=MAILBOX_CH_ID_MAX;i++)
     {
         /* Open the  Instance */
-        if((i==0) ||(i==1) || (i==3) || (i==4) || (i==7))
+        if((i==1) || (i==3) || (i==4) || (i==7))
         {
             if (Mailbox_close(handleArray[i]) != 0)
             {
