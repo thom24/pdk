@@ -413,7 +413,14 @@ void Ipc_mailboxInternalCallback(Mbox_Handle handle, Mailbox_Instance remoteEndp
 
     if (ret == MAILBOX_SOK)
     {
-        (g_ipc_mBoxData[remoteProcId].func)(&msg, g_ipc_mBoxData[remoteProcId].arg);
+        if (g_ipc_mBoxData[remoteProcId].func)
+        {
+            (g_ipc_mBoxData[remoteProcId].func)(&msg, g_ipc_mBoxData[remoteProcId].arg);
+        }
+        else
+        {
+            SystemP_printf("Ipc_mailboxInternalCallback: callback for procId %d with NULL func!\n", remoteProcId);
+        }
     }
     else
     {
