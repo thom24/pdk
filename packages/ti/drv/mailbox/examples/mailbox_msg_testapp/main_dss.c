@@ -110,6 +110,20 @@ Mbox_Handle  handleArray[MAILBOX_CH_ID_MAX + 1];
 /* ========================================================================== */
 /*                          Function Definitions                              */
 /* ========================================================================== */
+int32_t Test_mailboxWrite(Mbox_Handle handle, uint8_t * buffer, uint32_t bufferSize)
+{
+    int32_t retVal;
+
+    do {
+		retVal = Mailbox_write(handle, buffer, bufferSize);
+		if (retVal == MAILBOX_ETXACKTIMEDOUT)
+		{
+			System_printf("MSS: Error. Write timedout.Rewriting msg \n");
+		}
+    } while (retVal == MAILBOX_ETXACKTIMEDOUT);
+	return retVal;
+}
+
 void Test_initTask(UArg arg0, UArg arg1)
 {
     Mailbox_initParams initParam;
@@ -118,7 +132,7 @@ void Test_initTask(UArg arg0, UArg arg1)
     int32_t         errCode;
     uint32_t        bufferRx;
     uint32_t        bufferTx[3];
-    uint32_t        size;
+    int32_t        size;
     Hwi_Params      params;
     uint32_t        i;
 
@@ -148,6 +162,7 @@ void Test_initTask(UArg arg0, UArg arg1)
     openParam.remoteEndpoint = MAILBOX_INST_MSS_CR5A;
     openParam.cfg.readMode = MAILBOX_MODE_CALLBACK;
     openParam.cfg.readCallback = Test_appCallbackFunction;
+    openParam.cfg.writeTimeout = 1000U;
 
     /* Open the  Instance */
     handle = Mailbox_open(&openParam, &errCode);
@@ -220,7 +235,7 @@ void Test_initTask(UArg arg0, UArg arg1)
     memcpy ((void *)(&bufferTx[1]), (void *)&gTestPatternWordSend_1, sizeof(gTestPatternWordSend_1));
     memcpy ((void *)(&bufferTx[2]), (void *)&gTestPatternWordSend_2, sizeof(gTestPatternWordSend_2));
 
-    size = Mailbox_write(handle, (uint8_t*)bufferTx, sizeof(bufferTx));
+    size = Test_mailboxWrite(handle, (uint8_t*)bufferTx, sizeof(bufferTx));
     System_printf("DSS: Ack received from MSS for message 2. Size=%d\n",size);
     if(size != sizeof(bufferTx))
     {
@@ -261,7 +276,7 @@ void Test_initTask(UArg arg0, UArg arg1)
     Task_sleep(4);
     memset ((void *)bufferTx, 0, sizeof(bufferTx));
     memcpy ((void *)(&bufferTx[0]), (void *)&gTestPatternWordSend_3, sizeof(gTestPatternWordSend_3));
-    size = Mailbox_write(handle, (uint8_t*)bufferTx, sizeof(gTestPatternWordSend_3));
+    size = Test_mailboxWrite(handle, (uint8_t*)bufferTx, sizeof(gTestPatternWordSend_3));
     System_printf("DSS: Ack received from MSS for message 4. Size=%d\n",size);
     if(size != sizeof(gTestPatternWordSend_3))
     {
@@ -490,6 +505,7 @@ void multiChannelTest (void)
     openParam.cfg.readMode     = MAILBOX_MODE_CALLBACK;
     openParam.cfg.readCallback = Test_appCallbackFunction3;
     openParam.cfg.writeMode    = MAILBOX_MODE_BLOCKING;
+    openParam.cfg.writeTimeout = 1000U;
 
     handleArray[3] = Mailbox_open(&openParam, &errCode);
     if (handleArray[3] == NULL)
@@ -513,6 +529,7 @@ void multiChannelTest (void)
     openParam.cfg.chId         = MAILBOX_CH_ID_4;
     openParam.cfg.readMode     = MAILBOX_MODE_BLOCKING;
     openParam.cfg.writeMode    = MAILBOX_MODE_BLOCKING;
+    openParam.cfg.writeTimeout = 1000U;
 
     handleArray[4] = Mailbox_open(&openParam, &errCode);
     if (handleArray[4] == NULL)
@@ -536,6 +553,7 @@ void multiChannelTest (void)
     openParam.cfg.chId         = MAILBOX_CH_ID_7;
     openParam.cfg.readMode     = MAILBOX_MODE_BLOCKING;
     openParam.cfg.writeMode    = MAILBOX_MODE_BLOCKING;
+    openParam.cfg.writeTimeout = 1000U;
 
     handleArray[7] = Mailbox_open(&openParam, &errCode);
     if (handleArray[7] == NULL)
@@ -572,7 +590,7 @@ void multiChannelTest (void)
         syncRetVal = Mailbox_write(handleArray[0], (uint8_t*)&syncData, sizeof(syncData));
         if (syncRetVal != MAILBOX_SOK)
         {
-            printf("DSS: Waiting for sync msg from mss.\n");
+            System_printf("DSS: Waiting for sync msg from mss.\n");
         }
     } while (gMssSync == 0U);
 
@@ -594,7 +612,7 @@ void multiChannelTest (void)
     {
         /* channels 3 and 4 are write blocking so can write back to back*/
         System_printf("DSS: ************ Writing a message in CHANNEL 3 to MSS ****************\n");
-        size = Mailbox_write(handleArray[3], (uint8_t*)&gTestPatternWordSend_3, sizeof(gTestPatternWordSend_3));
+        size = Test_mailboxWrite(handleArray[3], (uint8_t*)&gTestPatternWordSend_3, sizeof(gTestPatternWordSend_3));
         if(size != sizeof(gTestPatternWordSend_3))
         {
             System_printf("DSS: Error. Write failed. Error=%d\n",size);
@@ -602,7 +620,7 @@ void multiChannelTest (void)
         }
 
         System_printf("DSS: ************ Writing a message in CHANNEL 4 to MSS ****************\n");
-        size = Mailbox_write(handleArray[4], (uint8_t*)&gTestPatternWordSend_2, sizeof(gTestPatternWordSend_2));
+        size = Test_mailboxWrite(handleArray[4], (uint8_t*)&gTestPatternWordSend_2, sizeof(gTestPatternWordSend_2));
         if(size != sizeof(gTestPatternWordSend_2))
         {
             System_printf("DSS: Error. Write failed. Error=%d\n",size);
@@ -612,7 +630,7 @@ void multiChannelTest (void)
     }
 
     System_printf("DSS: ************ Writing a message in CHANNEL 1 to MSS ****************\n");
-    size = Mailbox_write(handleArray[1], (uint8_t*)&gTestPatternWordSend_1, sizeof(gTestPatternWordSend_1));
+    size = Test_mailboxWrite(handleArray[1], (uint8_t*)&gTestPatternWordSend_1, sizeof(gTestPatternWordSend_1));
     if(size != sizeof(gTestPatternWordSend_1))
     {
         System_printf("DSS: Error. Write failed. Error=%d\n",size);
@@ -633,7 +651,7 @@ void multiChannelTest (void)
 
     System_printf("DSS: ************ Writing a message in CHANNEL 7 to MSS ****************\n");
     MULTI_CH7_WRITE:
-    size = Mailbox_write(handleArray[7], (uint8_t*)&gTestPatternWordSend_0, sizeof(gTestPatternWordSend_0));
+    size = Test_mailboxWrite(handleArray[7], (uint8_t*)&gTestPatternWordSend_0, sizeof(gTestPatternWordSend_0));
     if (size == MAILBOX_ECHINUSE)
     {
         /* Previous write is in polling mode and did not get the Ack.

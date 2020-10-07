@@ -62,8 +62,12 @@
 #include <stdio.h>
 
 /* BIOS/XDC Include Files. */
+#include <xdc/std.h>
+#include <xdc/runtime/System.h>
 #include <ti/sysbios/BIOS.h>
 #include <ti/sysbios/knl/Task.h>
+
+#include <ti/osal/DebugP.h>
 
 /* Mailbox Driver: */
 #include <ti/drv/mailbox/mailbox.h>
@@ -108,9 +112,25 @@ volatile uint32_t testAppCallbackFlag=0;
 /*Global array to keep handles of channels between mss and dss*/
 Mbox_Handle  handleArray[MAILBOX_CH_ID_MAX + 1];
 
+
+
 /* ========================================================================== */
 /*                          Function Definitions                              */
 /* ========================================================================== */
+int32_t Test_mailboxWrite(Mbox_Handle handle, uint8_t * buffer, uint32_t bufferSize)
+{
+    int32_t retVal;
+
+    do {
+		retVal = Mailbox_write(handle, buffer, bufferSize);
+		if (retVal == MAILBOX_ETXACKTIMEDOUT)
+		{
+			System_printf("MSS: Error. Write timedout.Rewriting msg \n");
+		}
+    } while (retVal == MAILBOX_ETXACKTIMEDOUT);
+	return retVal;
+}
+
 void Test_initTask(UArg arg0, UArg arg1)
 {
     Mailbox_initParams initParam;
@@ -119,7 +139,7 @@ void Test_initTask(UArg arg0, UArg arg1)
     int32_t         errCode;
     uint32_t        bufferRx;
     uint32_t        bufferTx[3];
-    uint32_t        size;
+    int32_t        size;
     Mailbox_Driver *driver;
 
     /* Setup the default Mailbox init Parameters */
@@ -136,35 +156,36 @@ void Test_initTask(UArg arg0, UArg arg1)
     openParam.remoteEndpoint = MAILBOX_INST_DSP;
     openParam.cfg.readMode = MAILBOX_MODE_CALLBACK;
     openParam.cfg.readCallback = Test_appCallbackFunction;
+    openParam.cfg.writeTimeout = 1000U;
 
     /* Open the  Instance to DSS */
     handleDss = Mailbox_open(&openParam, &errCode);
     if (handleDss == NULL)
     {
-        printf("MSS: Error: Unable to open the Mailbox Instance\n");
+        System_printf("MSS: Error: Unable to open the Mailbox Instance\n");
         return;
     }
     if (errCode != 0)
     {
-        printf("MSS: Error: Unable to open the Mailbox Instance. Error=%d\n",errCode);
+        System_printf("MSS: Error: Unable to open the Mailbox Instance. Error=%d\n",errCode);
         return;
     }
-    printf("MSS: Mailbox Instance to DSS %p has been opened successfully\n", handleDss);
+    System_printf("MSS: Mailbox Instance to DSS %p has been opened successfully\n", handleDss);
 
     /**************************************************************************
      * Test: Write message to DSS
      **************************************************************************/
-    printf("MSS: ************ Writing message 1 to DSS ****************\n");
+    System_printf("MSS: ************ Writing message 1 to DSS ****************\n");
     memset ((void *)bufferTx, 0, sizeof(bufferTx));
     memcpy ((void *)(&bufferTx[0]), (void *)&gTestPatternWordSend_0, sizeof(gTestPatternWordSend_0));
     memcpy ((void *)(&bufferTx[1]), (void *)&gTestPatternWordSend_1, sizeof(gTestPatternWordSend_1));
     memcpy ((void *)(&bufferTx[2]), (void *)&gTestPatternWordSend_2, sizeof(gTestPatternWordSend_2));
 
-    size = Mailbox_write(handleDss, (uint8_t*)bufferTx, sizeof(bufferTx));
-    printf("MSS: Ack received from DSS for message 1. Size=%d\n",size);
+    size = Test_mailboxWrite(handleDss, (uint8_t*)bufferTx, sizeof(bufferTx));
+    System_printf("MSS: Ack received from DSS for message 1. Size=%d\n",size);
     if(size != sizeof(bufferTx))
     {
-        printf("MSS: Error. Write failed.\n");
+        System_printf("MSS: Error. Write failed.\n");
         gTestFailFlag = 1;
     }
 
@@ -172,80 +193,80 @@ void Test_initTask(UArg arg0, UArg arg1)
     /**************************************************************************
      * Test: Wait for message from DSS
      **************************************************************************/
-    printf("MSS: ************ Waiting for message 2 from DSS ****************\n");
+    System_printf("MSS: ************ Waiting for message 2 from DSS ****************\n");
 
     /* wait for call back to set flag */
     while (testAppCallbackFlag == 0){}
-    printf("MSS: Message 2 received.\n");
+    System_printf("MSS: Message 2 received.\n");
 
     /*read first word*/
     bufferRx = 0;
     size = Mailbox_read(handleDss, (uint8_t *)&bufferRx, 4);
-    printf("MSS: Read %d bytes. Val=0x%x \n",size, bufferRx);
+    System_printf("MSS: Read %d bytes. Val=0x%x \n",size, bufferRx);
     if (bufferRx != gTestPatternWordReceive_0)
     {
-        printf("MSS: Error. Pattern mismatch.\n");
+        System_printf("MSS: Error. Pattern mismatch.\n");
         gTestFailFlag = 1;
     }
 
     /*read second word*/
     bufferRx = 0;
     size = Mailbox_read(handleDss, (uint8_t *)&bufferRx, 4);
-    printf("MSS: Read %d bytes. Val=0x%x \n",size, bufferRx);
+    System_printf("MSS: Read %d bytes. Val=0x%x \n",size, bufferRx);
     if (bufferRx != gTestPatternWordReceive_1)
     {
-        printf("MSS: Error. Pattern mismatch.\n");
+        System_printf("MSS: Error. Pattern mismatch.\n");
         gTestFailFlag = 1;
     }
 
     /*read third word*/
     bufferRx = 0;
     size = Mailbox_read(handleDss, (uint8_t *)&bufferRx, 4);
-    printf("MSS: Read %d bytes. Val=0x%x \n",size, bufferRx);
+    System_printf("MSS: Read %d bytes. Val=0x%x \n",size, bufferRx);
     if (bufferRx != gTestPatternWordReceive_2)
     {
-        printf("MSS: Error. Pattern mismatch.\n");
+        System_printf("MSS: Error. Pattern mismatch.\n");
         gTestFailFlag = 1;
     }
 
-    printf("MSS: Flushing read\n");
+    System_printf("MSS: Flushing read\n");
     Mailbox_readFlush(handleDss);
     testAppCallbackFlag = 0;
 
     /**************************************************************************
      * Test: Write message to DSS
      **************************************************************************/
-    printf("MSS: ************ Writing message 3 to DSS ****************\n");
+    System_printf("MSS: ************ Writing message 3 to DSS ****************\n");
     memset ((void *)bufferTx, 0, sizeof(bufferTx));
     memcpy ((void *)(&bufferTx[0]), (void *)&gTestPatternWordSend_3, sizeof(gTestPatternWordSend_3));
-    size = Mailbox_write(handleDss, (uint8_t*)bufferTx, sizeof(gTestPatternWordSend_3));
-    printf("MSS: Ack received from DSS for message 3. Size=%d\n",size);
+    size = Test_mailboxWrite(handleDss, (uint8_t*)bufferTx, sizeof(gTestPatternWordSend_3));
+    System_printf("MSS: Ack received from DSS for message 3. Size=%d\n",size);
     if(size != sizeof(gTestPatternWordSend_3))
     {
-        printf("MSS: Error. Write failed.\n");
+        System_printf("MSS: Error. Write failed.\n");
         gTestFailFlag = 1;
     }
 
     /**************************************************************************
      * Test: Wait for message from DSS
      **************************************************************************/
-    printf("MSS: ************ Waiting for message 4 from DSS ****************\n");
+    System_printf("MSS: ************ Waiting for message 4 from DSS ****************\n");
 
     /* wait for call back to set flag */
     while (testAppCallbackFlag == 0){}
-    printf("MSS: Message 4 received.\n");
+    System_printf("MSS: Message 4 received.\n");
 
     /*read first word*/
     bufferRx = 0;
     size = Mailbox_read(handleDss, (uint8_t *)&bufferRx, 4);
-    printf("MSS: Read %d bytes. Val=0x%x \n",size, bufferRx);
+    System_printf("MSS: Read %d bytes. Val=0x%x \n",size, bufferRx);
     if (bufferRx != gTestPatternWordReceive_3)
     {
-        printf("MSS: Error. Pattern mismatch.\n");
+        System_printf("MSS: Error. Pattern mismatch.\n");
         gTestFailFlag = 1;
     }
 
-    printf("MSS: Flushing read\n");
+    System_printf("MSS: Flushing read\n");
     Mailbox_readFlush(handleDss);
     testAppCallbackFlag = 0;
 
@@ -254,7 +275,7 @@ void Test_initTask(UArg arg0, UArg arg1)
      * Test: Check driver internal stats
      **************************************************************************/
     driver = (Mailbox_Driver*)handleDss;
-    printf("MSS: Checking driver internal stats\n");
+    System_printf("MSS: Checking driver internal stats\n");
     if( driver->txBoxStatus       != MAILBOX_TX_BOX_EMPTY            ||
         driver->txCount           != 2                               ||
         driver->rxCount           != 2                               ||
@@ -264,25 +285,25 @@ void Test_initTask(UArg arg0, UArg arg1)
         driver->boxEmptyIsrCount  != 2                               ||
         driver->readFlushCount    != 2)
     {
-        printf("MSS: Error. Internal stats failed.\n");
-        printf("MSS: txBoxStatus      =%d\n",driver->txBoxStatus     );
-        printf("MSS: txCount          =%d\n",driver->txCount         );
-        printf("MSS: rxCount          =%d\n",driver->rxCount         );
-        printf("MSS: newMessageFlag   =%d\n",driver->newMessageFlag  );
-        printf("MSS: numBytesRead     =%d\n",driver->numBytesRead    );
-        printf("MSS: boxFullIsrCount  =%d\n",driver->boxFullIsrCount );
-        printf("MSS: boxEmptyIsrCount =%d\n",driver->boxEmptyIsrCount);
-        printf("MSS: readFlushCount   =%d\n",driver->readFlushCount  );
+        System_printf("MSS: Error. Internal stats failed.\n");
+        System_printf("MSS: txBoxStatus      =%d\n",driver->txBoxStatus     );
+        System_printf("MSS: txCount          =%d\n",driver->txCount         );
+        System_printf("MSS: rxCount          =%d\n",driver->rxCount         );
+        System_printf("MSS: newMessageFlag   =%d\n",driver->newMessageFlag  );
+        System_printf("MSS: numBytesRead     =%d\n",driver->numBytesRead    );
+        System_printf("MSS: boxFullIsrCount  =%d\n",driver->boxFullIsrCount );
+        System_printf("MSS: boxEmptyIsrCount =%d\n",driver->boxEmptyIsrCount);
+        System_printf("MSS: readFlushCount   =%d\n",driver->readFlushCount  );
         gTestFailFlag = 1;
     }
     else
     {
-        printf("MSS: stats OK for DSS mailbox instance.\n");
+        System_printf("MSS: stats OK for DSS mailbox instance.\n");
     }
 
     if (Mailbox_close(handleDss) != 0)
     {
-        printf("MSS: Error: Failed to close Dss mailbox\n");
+        System_printf("MSS: Error: Failed to close Dss mailbox\n");
         gTestFailFlag = 1;
         return;
     }
@@ -290,14 +311,14 @@ void Test_initTask(UArg arg0, UArg arg1)
     /**************************************************************************
      * Test END
      **************************************************************************/
-    printf("MSS: TEST ENDED\n");
+    System_printf("MSS: TEST ENDED\n");
     if(gTestFailFlag == 0)
     {
-        printf("MSS: Test Passed\n");
+        System_printf("MSS: Test Passed\n");
     }
     else
     {
-        printf("MSS: Test Failed\n");
+        System_printf("MSS: Test Failed\n");
     }
 
     /* Exit BIOS */
@@ -349,15 +370,15 @@ void Test_channel1Task(UArg arg0, UArg arg1)
             Task_yield();
         }
         testAppCallbackFlag1 = 0;
-        printf("MSS: Channel 1 received message.\n");
+        System_printf("MSS: Channel 1 received message.\n");
 
         /*read first word*/
         bufferRx = 0;
         size = Mailbox_read(handleArray[1], (uint8_t *)&bufferRx, 4);
-        printf("MSS: Read %d bytes. Val=0x%x \n",size, bufferRx);
+        System_printf("MSS: Read %d bytes. Val=0x%x \n",size, bufferRx);
         if (bufferRx != gTestPatternWordReceive_1)
         {
-            printf("MSS: Error. Pattern mismatch.\n");
+            System_printf("MSS: Error. Pattern mismatch.\n");
             gTestFailFlag = 1;
             return;
         }
@@ -379,15 +400,15 @@ void Test_channel3Task(UArg arg0, UArg arg1)
             Task_yield();
         }
         testAppCallbackFlag3 = 0;
-        printf("MSS: Channel 3 received message.\n");
+        System_printf("MSS: Channel 3 received message.\n");
 
         /*read first word*/
         bufferRx = 0;
         size = Mailbox_read(handleArray[3], (uint8_t *)&bufferRx, 4);
-        printf("MSS: Read %d bytes. Val=0x%x \n",size, bufferRx);
+        System_printf("MSS: Read %d bytes. Val=0x%x \n",size, bufferRx);
         if (bufferRx != gTestPatternWordReceive_3)
         {
-            printf("MSS: Error. Pattern mismatch.\n");
+            System_printf("MSS: Error. Pattern mismatch.\n");
             gTestFailFlag = 1;
             return;
         }
@@ -404,11 +425,11 @@ void Test_channel4Task(UArg arg0, UArg arg1)
     while(1)
     {
         size = Mailbox_read(handleArray[4], (uint8_t *)&bufferRx, 4);
-        printf("MSS: Channel 4 received message.\n");
-        printf("MSS: Read %d bytes. Val=0x%x \n",size, bufferRx);
+        System_printf("MSS: Channel 4 received message.\n");
+        System_printf("MSS: Read %d bytes. Val=0x%x \n",size, bufferRx);
         if (bufferRx != gTestPatternWordReceive_2)
         {
-            printf("MSS: Error. Pattern mismatch.\n");
+            System_printf("MSS: Error. Pattern mismatch.\n");
             gTestFailFlag = 1;
             return;
         }
@@ -428,8 +449,8 @@ void multiChannelTest (void)
     Mailbox_openParams openParam;
     uint32_t syncData;
 
-    printf("*************************************************\n");
-    printf("\nMSS: Starting Multichannel Test.\n");
+    System_printf("*************************************************\n");
+    System_printf("\nMSS: Starting Multichannel Test.\n");
 
     /****** ch 1 *********************************************/
     /* Setup the default Mailbox open Parameters */
@@ -441,20 +462,21 @@ void multiChannelTest (void)
     openParam.cfg.readCallback = Test_appCallbackFunction1;
     openParam.cfg.writeMode    = MAILBOX_MODE_POLLING;
 
+
     handleArray[1] = Mailbox_open(&openParam, &errCode);
     if (handleArray[1] == NULL)
     {
-        printf("MSS: Error: Unable to open the Mailbox Instance\n");
+        System_printf("MSS: Error: Unable to open the Mailbox Instance\n");
         gTestFailFlag = 1;
         return;
     }
     if (errCode != 0)
     {
-        printf("MSS: Error: Unable to open the Mailbox Instance. Error=%d\n",errCode);
+        System_printf("MSS: Error: Unable to open the Mailbox Instance. Error=%d\n",errCode);
         gTestFailFlag = 1;
         return;
     }
-    printf("MSS: Mailbox Instance to DSS %p has been opened successfully\n", handleArray[1]);
+    System_printf("MSS: Mailbox Instance to DSS %p has been opened successfully\n", handleArray[1]);
 
     /****** ch 3 *********************************************/
     Mailbox_openParams_init(&openParam);
@@ -464,21 +486,22 @@ void multiChannelTest (void)
     openParam.cfg.readMode     = MAILBOX_MODE_CALLBACK;
     openParam.cfg.readCallback = Test_appCallbackFunction3;
     openParam.cfg.writeMode    = MAILBOX_MODE_BLOCKING;
+    openParam.cfg.writeTimeout = 1000U;
 
     handleArray[3] = Mailbox_open(&openParam, &errCode);
     if (handleArray[3] == NULL)
     {
-        printf("MSS: Error: Unable to open the Mailbox Instance\n");
+        System_printf("MSS: Error: Unable to open the Mailbox Instance\n");
         gTestFailFlag = 1;
         return;
     }
     if (errCode != 0)
     {
-        printf("MSS: Error: Unable to open the Mailbox Instance. Error=%d\n",errCode);
+        System_printf("MSS: Error: Unable to open the Mailbox Instance. Error=%d\n",errCode);
         gTestFailFlag = 1;
         return;
     }
-    printf("MSS: Mailbox Instance to DSS %p has been opened successfully\n", handleArray[3]);
+    System_printf("MSS: Mailbox Instance to DSS %p has been opened successfully\n", handleArray[3]);
 
     /****** ch 4 *********************************************/
     Mailbox_openParams_init(&openParam);
@@ -487,21 +510,22 @@ void multiChannelTest (void)
     openParam.cfg.chId         = MAILBOX_CH_ID_4;
     openParam.cfg.readMode     = MAILBOX_MODE_BLOCKING;
     openParam.cfg.writeMode    = MAILBOX_MODE_BLOCKING;
+    openParam.cfg.writeTimeout = 1000U;
 
     handleArray[4] = Mailbox_open(&openParam, &errCode);
     if (handleArray[4] == NULL)
     {
-        printf("MSS: Error: Unable to open the Mailbox Instance\n");
+        System_printf("MSS: Error: Unable to open the Mailbox Instance\n");
         gTestFailFlag = 1;
         return;
     }
     if (errCode != 0)
     {
-        printf("MSS: Error: Unable to open the Mailbox Instance. Error=%d\n",errCode);
+        System_printf("MSS: Error: Unable to open the Mailbox Instance. Error=%d\n",errCode);
         gTestFailFlag = 1;
         return;
     }
-    printf("MSS: Mailbox Instance to DSS %p has been opened successfully\n", handleArray[4]);
+    System_printf("MSS: Mailbox Instance to DSS %p has been opened successfully\n", handleArray[4]);
 
     /****** ch 7 *********************************************/
     Mailbox_openParams_init(&openParam);
@@ -510,21 +534,22 @@ void multiChannelTest (void)
     openParam.cfg.chId         = MAILBOX_CH_ID_7;
     openParam.cfg.readMode     = MAILBOX_MODE_BLOCKING;
     openParam.cfg.writeMode    = MAILBOX_MODE_BLOCKING;
+    openParam.cfg.writeTimeout = 1000U;
 
     handleArray[7] = Mailbox_open(&openParam, &errCode);
     if (handleArray[7] == NULL)
     {
-        printf("MSS: Error: Unable to open the Mailbox Instance\n");
+        System_printf("MSS: Error: Unable to open the Mailbox Instance\n");
         gTestFailFlag = 1;
         return;
     }
     if (errCode != 0)
     {
-        printf("MSS: Error: Unable to open the Mailbox Instance. Error=%d\n",errCode);
+        System_printf("MSS: Error: Unable to open the Mailbox Instance. Error=%d\n",errCode);
         gTestFailFlag = 1;
         return;
     }
-    printf("MSS: Mailbox Instance to DSS %p has been opened successfully\n", handleArray[7]);
+    System_printf("MSS: Mailbox Instance to DSS %p has been opened successfully\n", handleArray[7]);
 
     /****** ch 0 for Sync ************************************/
     Mailbox_openParams_init(&openParam);
@@ -533,10 +558,11 @@ void multiChannelTest (void)
     openParam.cfg.chId         = MAILBOX_CH_ID_0;
     openParam.cfg.readMode     = MAILBOX_MODE_BLOCKING;
     openParam.cfg.writeMode    = MAILBOX_MODE_BLOCKING;
+    openParam.cfg.writeTimeout = 1000U;
 
     handleArray[0] = Mailbox_open(&openParam, &errCode);
 
-    printf("MSS: Waiting for sync msg from dss.\n");
+    System_printf("MSS: Waiting for sync msg from dss.\n");
 
     /* wait for Sync msg from remote core. */
     Mailbox_read(handleArray[0], (uint8_t*)&syncData, sizeof(syncData));
@@ -544,7 +570,7 @@ void multiChannelTest (void)
 
     syncData = 0xFFFFFFFFU;
     /* Send sync data to dss core. */
-    Mailbox_write(handleArray[0], (uint8_t*)&syncData, sizeof(syncData));
+    Test_mailboxWrite(handleArray[0], (uint8_t*)&syncData, sizeof(syncData));
 
     /***************************************************/
 
@@ -563,35 +589,35 @@ void multiChannelTest (void)
     for(i=0;i<3;i++)
     {
         /* channels 3 and 4 are write blocking so can write back to back*/
-        printf("MSS: ************ Writing a message in CHANNEL 3 to DSS ****************\n");
-        size = Mailbox_write(handleArray[3], (uint8_t*)&gTestPatternWordSend_3, sizeof(gTestPatternWordSend_3));
+        System_printf("MSS: ************ Writing a message in CHANNEL 3 to DSS ****************\n");
+        size = Test_mailboxWrite(handleArray[3], (uint8_t*)&gTestPatternWordSend_3, sizeof(gTestPatternWordSend_3));
         if(size != sizeof(gTestPatternWordSend_3))
         {
-            printf("MSS: Error. Write failed. Error=%d\n",size);
+            System_printf("MSS: Error. Write failed. Error=%d\n",size);
             gTestFailFlag = 1;
         }
 
-        printf("MSS: ************ Writing a message in CHANNEL 4 to DSS ****************\n");
-        size = Mailbox_write(handleArray[4], (uint8_t*)&gTestPatternWordSend_2, sizeof(gTestPatternWordSend_2));
+        System_printf("MSS: ************ Writing a message in CHANNEL 4 to DSS ****************\n");
+        size = Test_mailboxWrite(handleArray[4], (uint8_t*)&gTestPatternWordSend_2, sizeof(gTestPatternWordSend_2));
         if(size != sizeof(gTestPatternWordSend_2))
         {
-            printf("MSS: Error. Write failed. Error=%d\n",size);
+            System_printf("MSS: Error. Write failed. Error=%d\n",size);
             gTestFailFlag = 1;
         }
 
     }
 
-    printf("MSS: ************ Writing a message in CHANNEL 1 to DSS ****************\n");
-    size = Mailbox_write(handleArray[1], (uint8_t*)&gTestPatternWordSend_1, sizeof(gTestPatternWordSend_1));
+    System_printf("MSS: ************ Writing a message in CHANNEL 1 to DSS ****************\n");
+    size = Test_mailboxWrite(handleArray[1], (uint8_t*)&gTestPatternWordSend_1, sizeof(gTestPatternWordSend_1));
     if(size != sizeof(gTestPatternWordSend_1))
     {
-        printf("MSS: Error. Write failed. Error=%d\n",size);
+        System_printf("MSS: Error. Write failed. Error=%d\n",size);
         gTestFailFlag = 1;
     }
 
-    printf("MSS: ************ Writing a message in CHANNEL 7 to DSS ****************\n");
+    System_printf("MSS: ************ Writing a message in CHANNEL 7 to DSS ****************\n");
     MULTI_CH7_WRITE:
-    size = Mailbox_write(handleArray[7], (uint8_t*)&gTestPatternWordSend_0, sizeof(gTestPatternWordSend_0));
+    size = Test_mailboxWrite(handleArray[7], (uint8_t*)&gTestPatternWordSend_0, sizeof(gTestPatternWordSend_0));
     if (size == MAILBOX_ECHINUSE)
     {
         /* Previous write is in polling mode and did not get the Ack.
@@ -602,17 +628,17 @@ void multiChannelTest (void)
     }
     if(size != sizeof(gTestPatternWordSend_0))
     {
-        printf("MSS: Error. Write failed. Error=%d\n",size);
+        System_printf("MSS: Error. Write failed. Error=%d\n",size);
         gTestFailFlag = 1;
     }
 
     /* Multichannel test end once a message is received in channel 7 which is readBlocking*/
     size = Mailbox_read(handleArray[7], (uint8_t *)&bufferRx, 4);
-    printf("MSS: Channel 7 received message.\n");
-    printf("MSS: Read %d bytes. Val=0x%x \n",size, bufferRx);
+    System_printf("MSS: Channel 7 received message.\n");
+    System_printf("MSS: Read %d bytes. Val=0x%x \n",size, bufferRx);
     if (bufferRx != gTestPatternWordReceive_0)
     {
-        printf("MSS: Error. Pattern mismatch.\n");
+        System_printf("MSS: Error. Pattern mismatch.\n");
         gTestFailFlag = 1;
         return;
     }
@@ -626,10 +652,10 @@ void multiChannelTest (void)
         {
             if (Mailbox_close(handleArray[i]) != 0)
             {
-                printf("MSS: Error: Failed to close instance %d\n",i);
+                System_printf("MSS: Error: Failed to close instance %d\n",i);
                 gTestFailFlag = 1;
             }
-            printf("MSS: closed instance %d\n",i);
+            System_printf("MSS: closed instance %d\n",i);
         }
     }
 
