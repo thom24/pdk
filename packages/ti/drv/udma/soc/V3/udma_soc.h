@@ -69,6 +69,8 @@ extern "C" {
 #define UDMA_INST_ID_START               (UDMA_INST_ID_2)
 /** \brief Maximum number of UDMA instance */
 #define UDMA_INST_ID_MAX                 (UDMA_INST_ID_3)
+/** \brief Total number of UDMA instances */
+#define UDMA_NUM_INST_ID                 (UDMA_INST_ID_MAX - UDMA_INST_ID_START + 1U)
 /* @} */
  
 /**
@@ -400,6 +402,10 @@ extern "C" {
 /* @} */
 
 /* @} */
+
+/** \brief Maximum no.of instances to split a shared resource. 
+ *  Note: This is only used when querying from defaultBoardCfg*/ 
+#define UDMA_RM_SHARED_RES_MAX_INST              (0)
 
 /**
  *  \brief UDMA mapped channel ring attributes.

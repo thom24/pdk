@@ -335,19 +335,6 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
     return;
 }
 
-void UdmaRmInitPrms_init(uint32_t instId, Udma_RmInitPrms *rmInitPrms)
-{
-    const Udma_RmInitPrms *rmInitDefaultCfg;
-
-    if(NULL_PTR != rmInitPrms)
-    {
-        rmInitDefaultCfg = Udma_rmGetDefaultCfg(instId);
-        (void) memcpy(rmInitPrms, rmInitDefaultCfg, sizeof (Udma_RmInitPrms));
-    }
-
-    return;
-}
-
 uint32_t Udma_getCoreId(void)
 {
     uint32_t coreId;

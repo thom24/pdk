@@ -108,7 +108,20 @@ extern "C" {
 /*                         Structure Declarations                             */
 /* ========================================================================== */
 
-/* None */
+/**
+ *  \brief UDMA Sciclient Default BoardCfg RM parameters.
+ */
+typedef struct
+{
+    uint32_t                resId;
+    /**< UDMA Resource Id \ref Udma_RmResId macros. */
+    uint16_t                sciclientReqType;
+    /**< Sciclient RM resource assignment type */
+    uint16_t                sciclientReqSubtype;
+    /**< Sciclient RM resource assignment subtype */
+    uint8_t                 sciclientSecHost;
+    /**< Sciclient Secondary host */
+} Udma_RmDefBoardCfgPrms;
 
 /* ========================================================================== */
 /*                         Global Variables                                   */
@@ -122,7 +135,8 @@ extern "C" {
 
 /* SOC APIs */
 void Udma_initDrvHandle(Udma_DrvHandle drvHandle);
-void UdmaRmInitPrms_init(uint32_t instId, Udma_RmInitPrms *rmInitPrms);
+int32_t UdmaRmInitPrms_init(uint32_t instId, Udma_RmInitPrms *rmInitPrms);
+const Udma_RmDefBoardCfgPrms *Udma_rmGetDefBoardCfgPrms(uint32_t instId);
 #if ((UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP) > 0)
 int32_t Udma_getMappedChRingAttributes(Udma_DrvHandle drvHandle,
                                        uint32_t mappedGrp,
@@ -301,6 +315,19 @@ uint32_t Udma_rmAllocIrIntr(uint32_t preferredIrIntrNum,
 void Udma_rmFreeIrIntr(uint32_t irIntrNum, Udma_DrvHandle drvHandle);
 uint32_t Udma_rmTranslateIrOutput(Udma_DrvHandle drvHandle, uint32_t irIntrNum);
 uint32_t Udma_rmTranslateCoreIntrInput(Udma_DrvHandle drvHandle, uint32_t coreIntrNum);
+void Udma_rmFreeCoreIntr(uint32_t coreIntrNum, Udma_DrvHandle drvHandle);
+/* Query Sciclient_DefaultBoardCfg_rm API */
+int32_t Udma_rmGetSciclientDefaultBoardCfgRmRange(const Udma_RmDefBoardCfgPrms *rmDefBoardCfgPrms,
+                                                  struct tisci_msg_rm_get_resource_range_resp *res,
+                                                  uint32_t *splitResFlag);
+/* Set Shared Resource rmInitPrms API */
+int32_t Udma_rmSetSharedResRmInitPrms(const Udma_RmSharedResPrms *rmSharedResPrms,
+                                      uint32_t instId,
+                                      uint32_t rangeStart,
+                                      uint32_t rangeTotalNum,
+                                      uint32_t *start,
+                                      uint32_t *num);
+
 /* Utils APIs */
 uint64_t Udma_virtToPhyFxn(const void *virtAddr,
                            Udma_DrvHandle drvHandle,

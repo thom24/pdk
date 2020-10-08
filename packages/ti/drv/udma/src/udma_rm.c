@@ -87,11 +87,14 @@ int32_t Udma_rmInit(Udma_DrvHandle drvHandle)
     uint32_t            mappedGrp;
 #endif
 
+#if defined (SOC_AM64X) || defined(SOC_AM65XX)
     /* Check if the default config has any overlap */
+    /* Other SOC's queries from Sciclient Default BoardCfg - No need of Check */
     if(FALSE == drvHandle->initPrms.skipRmOverlapCheck)
     {
         retVal = Udma_rmCheckDefaultCfg();
     }
+#endif
 
     if(UDMA_SOK == retVal)
     {
@@ -1957,7 +1960,7 @@ uint32_t Udma_rmTranslateIrOutput(Udma_DrvHandle drvHandle, uint32_t irIntrNum)
     else
     {
 #if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
-#if defined (BUILD_C66X_1) || defined (BUILD_C66X_2)
+#if defined (_TMS320C6X)
         /* For C66x Sciclient translates NAVSS IR Idx to corresponding C66 IR Idx,
          * Not the Core Interrupt Idx. */
         Udma_RmInitPrms    *rmInitPrms = &drvHandle->initPrms.rmInitPrms;
@@ -1996,7 +1999,7 @@ uint32_t Udma_rmTranslateCoreIntrInput(Udma_DrvHandle drvHandle, uint32_t coreIn
     else
     {
 #if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
-#if defined (BUILD_C66X_1) || defined (BUILD_C66X_2)
+#if defined (_TMS320C6X)
         /* For C66x Sciclient expects C66 IR Idx to translate to NAVSS IR Idx.
          * Not the Core Interrupt Idx. */
         Udma_RmInitPrms    *rmInitPrms = &drvHandle->initPrms.rmInitPrms;
@@ -2021,6 +2024,152 @@ uint32_t Udma_rmTranslateCoreIntrInput(Udma_DrvHandle drvHandle, uint32_t coreIn
 
     return (irIntrNum);
 } 
+
+int32_t Udma_rmGetSciclientDefaultBoardCfgRmRange(const Udma_RmDefBoardCfgPrms *rmDefBoardCfgPrms,
+                                                  struct tisci_msg_rm_get_resource_range_resp *res,
+                                                  uint32_t *splitResFlag)
+{
+    int32_t                                     retVal = UDMA_SOK;
+    struct tisci_msg_rm_get_resource_range_req  req = {0};
+
+    req.type           = rmDefBoardCfgPrms->sciclientReqType;
+    req.subtype        = rmDefBoardCfgPrms->sciclientReqSubtype;
+    req.secondary_host = rmDefBoardCfgPrms->sciclientSecHost;
+
+    res->range_num       = 0;
+    res->range_start     = 0;
+    res->range_num_sec   = 0;
+    res->range_start_sec = 0;
+
+    /* Get resource number range */
+    retVal =  Sciclient_rmGetResourceRange(
+                &req,
+                res,
+                UDMA_SCICLIENT_TIMEOUT);
+    if((CSL_PASS != retVal) || 
+       ((res->range_num == 0) && (res->range_num_sec == 0)))
+    {
+        /* If range_num and range_num_sec = 0 (no entry for the core),
+         * There is no reservation for the current core.
+         * In this case, Try with HOST_ID_ALL*/
+        req.secondary_host = TISCI_HOST_ID_ALL;
+
+        retVal = Sciclient_rmGetResourceRange(
+                    &req,
+                    res,
+                    UDMA_SCICLIENT_TIMEOUT);
+        if((CSL_PASS == retVal) && (res->range_num != 0)) 
+        {
+            /* If range_num != 0, 
+             * ie, When using TISCI_HOST_ID_ALL entry, 
+             * Set the split resource flag, if passed.
+             * (no need to check for range_num_sec, 
+             *  since there will only be single entry for TISCI_HOST_ID_ALL) */
+             if(NULL_PTR != splitResFlag)
+            { 
+                *splitResFlag = 1;
+            }
+        }
+    }
+    
+    return (retVal);
+}
+
+int32_t Udma_rmSetSharedResRmInitPrms(const Udma_RmSharedResPrms *rmSharedResPrms,
+                                      uint32_t  instId,
+                                      uint32_t  rangeStart,
+                                      uint32_t  rangeTotalNum,
+                                      uint32_t *start,
+                                      uint32_t *num)
+{
+    int32_t     retVal = UDMA_SOK;
+    uint32_t    i;
+    uint32_t    sumInstShare = 0U;
+    uint32_t    instFinalShare[UDMA_RM_SHARED_RES_MAX_INST];
+    uint32_t    splitCnt = 0U;
+    uint32_t    splitShare;
+    uint32_t    splitMod;
+    uint32_t    udmaResvCnt;
+    uint32_t    numInst = rmSharedResPrms->numInst; 
+    uint32_t    minReq = rmSharedResPrms->minReq;
+    uint32_t    startResrvCnt = rmSharedResPrms->startResrvCnt;
+    uint32_t    endResrvCnt = rmSharedResPrms->endResrvCnt;
+    uint32_t    numUnresvRes = (rangeTotalNum > (startResrvCnt + endResrvCnt)) ?
+                                    (rangeTotalNum - (startResrvCnt + endResrvCnt)) : 0U;
+
+    /* Error Check */
+    if(NULL_PTR == rmSharedResPrms)
+    {
+        retVal = UDMA_EBADARGS;
+    }
+    if(UDMA_SOK == retVal)
+    {
+        /* Check for minimum requirement with total usable*/
+        if((numInst > UDMA_RM_SHARED_RES_MAX_INST) ||
+           (numUnresvRes < (numInst * minReq)))
+        {
+            retVal = UDMA_EBADARGS;
+        }
+    }
+
+    if(UDMA_SOK == retVal)
+    {
+        /* Populate share for each instance; Get sum of shares for validation */
+        for(i = 0U;i < numInst; i++)
+        {
+            if(rmSharedResPrms->instShare[i] == UDMA_RM_SHARED_RES_CNT_MIN)
+            {
+                sumInstShare += minReq;
+                instFinalShare[i] = minReq;
+            }
+            else if(rmSharedResPrms->instShare[i] == UDMA_RM_SHARED_RES_CNT_REST)
+            {
+                sumInstShare += minReq;
+                splitCnt++;
+            }
+            else
+            {
+                sumInstShare += rmSharedResPrms->instShare[i];
+                instFinalShare[i] = rmSharedResPrms->instShare[i];
+            }
+        }
+        /* Check for sum of share with total usable */
+        if(numUnresvRes < sumInstShare)
+        {
+            retVal = UDMA_EINVALID_PARAMS;
+        }
+    }
+
+    if(UDMA_SOK == retVal)
+    {
+        if(splitCnt > 0U)
+        {
+            /* Populate for #UDMA_RM_SHARED_RES_CNT_REST with rest of the available resources */
+            udmaResvCnt = sumInstShare - (splitCnt * minReq);
+            splitShare = (numUnresvRes - udmaResvCnt) / splitCnt;
+            splitMod = (numUnresvRes - udmaResvCnt) % splitCnt;
+            for(i = 0U; i < numInst; i++)
+            {
+                if(rmSharedResPrms->instShare[i] == UDMA_RM_SHARED_RES_CNT_REST)
+                {
+                    instFinalShare[i] = splitShare + splitMod;
+                    splitMod = 0U;
+                }
+            }
+        }
+
+        *num = instFinalShare[instId];
+        /* Calculate the start for requested instance */
+        *start = rangeStart + startResrvCnt;
+        for(i = 0U; i < instId; i++)
+        {
+            *start += instFinalShare[i];
+        }
+    }
+    
+    return (retVal);
+}
+
 static int32_t Udma_rmCheckResLeak(Udma_DrvHandle drvHandle,
                                    const uint32_t *allocFlag,
                                    uint32_t numRes,

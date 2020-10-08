@@ -309,12 +309,31 @@ int32_t Udma_deinit(Udma_DrvHandle drvHandle);
  */
 /**
  *  \brief Udma_InitPrms structure init function.
- *
+ *  
+ *  Note: API returns error when there is a failure in intilaizing
+ *  \ref Udma_RmInitPrms. This can be due to the following reasons:
+ *  - Wrong entry for resources in Default Board Cfg 
+ *    (Sciclient_defaultBoardCfg_rm.c)
+ *  - Number of resources reserved in Default Board Cfg is less
+ *    than the 'minumum requirement' specified as per 
+ *    UDMA RM Shared resource parameters \ref Udma_RmSharedResPrms.
+ *    In this case, user should reserve more resources in Default Board Cfg 
+ *    OR override the default UDMA RM Shared resource parameters.
+ *    (Use \ref Udma_rmGetSharedResPrms API to get default 
+ *     UDMA RM Shared resource parameters)
+ *  - Total number of resources requested for each instance
+ *    as per UDMA RM Shared resource parameters
+ *    is greater than the number of resorurces reserved in Default 
+ *    Board Cfg.
+ *    In this case, user should reduce the requested share for each 
+ *    instance in UDMA RM Shared resource parameters.
+ * 
  *  \param instId       [IN] \ref Udma_InstanceIdSoc
  *  \param initPrms     [IN] Pointer to #Udma_InitPrms structure.
  *
+ *  \return \ref Udma_ErrorCodes
  */
-void UdmaInitPrms_init(uint32_t instId, Udma_InitPrms *initPrms);
+int32_t UdmaInitPrms_init(uint32_t instId, Udma_InitPrms *initPrms);
 
 /* ========================================================================== */
 /*      Internal Function Declarations (Needed for other static inlines)      */

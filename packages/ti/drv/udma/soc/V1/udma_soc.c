@@ -47,34 +47,7 @@
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
 
-/** \brief External start channel of DRU0 UTC */
-#define UDMA_UTC_START_CH_DRU0              (0U)
-/** \brief Number of channels present in DRU0 UTC */
-#define UDMA_UTC_NUM_CH_DRU0                (CSL_PSILCFG_NAVSS_MAIN_MSMC0_PSILS_THREAD_CNT)
-/** \brief Start thread ID of DRU0 UTC */
-#define UDMA_UTC_START_THREAD_ID_DRU0       (CSL_PSILCFG_NAVSS_MAIN_MSMC0_PSILD_THREAD_OFFSET)
-
-/** \brief External start channel of VPAC TC0 UTC */
-#define UDMA_UTC_START_CH_VPAC_TC0          (CSL_PSILCFG_NAVSS_MAIN_VPAC_TC0_CC_PSILS_THREAD_OFFSET - CSL_PSILCFG_NAVSS_MAIN_MSMC0_PSILS_THREAD_OFFSET)
-/** \brief Number of channels present in VPAC TC0 UTC */
-#define UDMA_UTC_NUM_CH_VPAC_TC0            (CSL_PSILCFG_NAVSS_MAIN_VPAC_TC0_CC_PSILS_THREAD_CNT)
-/** \brief Start thread ID of VPAC TC0 UTC */
-#define UDMA_UTC_START_THREAD_ID_VPAC_TC0   (CSL_PSILCFG_NAVSS_MAIN_VPAC_TC0_CC_PSILD_THREAD_OFFSET)
-
-/** \brief External start channel of VPAC TC1 UTC */
-#define UDMA_UTC_START_CH_VPAC_TC1          (CSL_PSILCFG_NAVSS_MAIN_VPAC_TC1_CC_PSILS_THREAD_OFFSET - CSL_PSILCFG_NAVSS_MAIN_MSMC0_PSILS_THREAD_OFFSET)
-/** \brief Number of channels present in VPAC TC1 UTC */
-#define UDMA_UTC_NUM_CH_VPAC_TC1            (CSL_PSILCFG_NAVSS_MAIN_VPAC_TC1_CC_PSILS_THREAD_CNT)
-/** \brief Start thread ID of VPAC TC1 UTC */
-#define UDMA_UTC_START_THREAD_ID_VPAC_TC1   (CSL_PSILCFG_NAVSS_MAIN_VPAC_TC1_CC_PSILD_THREAD_OFFSET)
-
-/** \brief External start channel of DMPAC TC0 UTC */
-#define UDMA_UTC_START_CH_DMPAC_TC0         (CSL_PSILCFG_NAVSS_MAIN_DMPAC_TC0_CC_PSILS_THREAD_OFFSET - CSL_PSILCFG_NAVSS_MAIN_MSMC0_PSILS_THREAD_OFFSET)
-/** \brief Number of channels present in DMPAC TC0 UTC */
-#define UDMA_UTC_NUM_CH_DMPAC_TC0           (CSL_PSILCFG_NAVSS_MAIN_DMPAC_TC0_CC_PSILS_THREAD_CNT)
-/** \brief Start thread ID of DMPAC TC0 UTC */
-#define UDMA_UTC_START_THREAD_ID_DMPAC_TC0  (CSL_PSILCFG_NAVSS_MAIN_DMPAC_TC0_CC_PSILD_THREAD_OFFSET)
-
+/* None */
 
 /* ========================================================================== */
 /*                         Structure Declarations                             */
@@ -541,19 +514,6 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
     drvHandle->extChOffset           = drvHandle->txChOffset + pUdmapRegs->txChanCnt;
     drvHandle->rxChOffset            =
         drvHandle->extChOffset + pUdmapRegs->txExtUtcChanCnt;
-
-    return;
-}
-
-void UdmaRmInitPrms_init(uint32_t instId, Udma_RmInitPrms *rmInitPrms)
-{
-    const Udma_RmInitPrms *rmInitDefaultCfg;
-
-    if(NULL_PTR != rmInitPrms)
-    {
-        rmInitDefaultCfg = Udma_rmGetDefaultCfg(instId);
-        (void) memcpy(rmInitPrms, rmInitDefaultCfg, sizeof (Udma_RmInitPrms));
-    }
 
     return;
 }

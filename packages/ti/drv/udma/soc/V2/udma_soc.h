@@ -69,6 +69,8 @@ extern "C" {
 #define UDMA_INST_ID_START              (UDMA_INST_ID_0)
 /** \brief Maximum number of UDMA instance */
 #define UDMA_INST_ID_MAX                (UDMA_INST_ID_1)
+/** \brief Total number of UDMA instances */
+#define UDMA_NUM_INST_ID                (UDMA_INST_ID_MAX - UDMA_INST_ID_START + 1U)
 /* @} */
  
 /**
@@ -198,6 +200,51 @@ extern "C" {
 /* Total number of cores */
 #define UDMA_NUM_CORE                   (UDMA_NUM_MAIN_CORE + UDMA_NUM_MCU_CORE)
 /* @} */
+
+/**
+ *  \anchor Udma_RmResId
+ *  \name UDMA Resources ID
+ *
+ *  List of all UDMA Resources Id's.
+ *
+ *  @{
+ */
+/** \brief Ultra High Capacity TX and Block Copy Channels */
+#define UDMA_RM_RES_ID_TX_UHC                   (0U)
+/** \brief High Capacity TX and Block Copy Channels */
+#define UDMA_RM_RES_ID_TX_HC                    (1U) 
+/** \brief Normal Capacity TX and Block Copy Channels */
+#define UDMA_RM_RES_ID_TX                       (2U) 
+/** \brief Ultra High Capacity RX Channels */
+#define UDMA_RM_RES_ID_RX_UHC                   (3U) 
+/** \brief High Capacity RX Channels */
+#define UDMA_RM_RES_ID_RX_HC                    (4U) 
+/** \brief Normal Capacity RX Channels */
+#define UDMA_RM_RES_ID_RX                       (5U) 
+/** \brief Free Flows */
+#define UDMA_RM_RES_ID_RX_FLOW                  (6U) 
+/** \brief Free Rings */
+#define UDMA_RM_RES_ID_RING                     (7U) 
+/** \brief Global Event */
+#define UDMA_RM_RES_ID_GLOBAL_EVENT             (8U) 
+/** \brief Virtual Interrupts */
+#define UDMA_RM_RES_ID_VINTR                    (9U) 
+/** \brief Interrupt Router Interrupts */
+#define UDMA_RM_RES_ID_IR_INTR                  (10U) 
+/** \brief Proxy */
+#define UDMA_RM_RES_ID_PROXY                    (11U) 
+/** \brief Ring Monitors */
+#define UDMA_RM_RES_ID_RING_MON                 (12U) 
+/** \brief Total number of resources */
+#define UDMA_RM_NUM_RES                         (13U) 
+/* @} */
+
+/** \brief Total number of shared resources - 
+ *  Free_Flows/Global_Event/IR Intr/VINT */
+#define UDMA_RM_NUM_SHARED_RES                  (4U) 
+/** \brief Maximum no.of instances to split a shared resource. 
+ *  This should be max(UDMA_NUM_CORE,UDMA_NUM_INST_ID) */
+#define UDMA_RM_SHARED_RES_MAX_INST             (UDMA_NUM_CORE)
 
 /**
  *  \anchor Udma_PsilCh

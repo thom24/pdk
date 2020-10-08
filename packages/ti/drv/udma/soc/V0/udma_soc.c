@@ -303,8 +303,10 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
     return;
 }
 
-void UdmaRmInitPrms_init(uint32_t instId, Udma_RmInitPrms *rmInitPrms)
+int32_t UdmaRmInitPrms_init(uint32_t instId, Udma_RmInitPrms *rmInitPrms)
 {
+    int32_t retVal = UDMA_SOK;
+
     const Udma_RmInitPrms *rmInitDefaultCfg;
 
     if(NULL_PTR != rmInitPrms)
@@ -313,7 +315,7 @@ void UdmaRmInitPrms_init(uint32_t instId, Udma_RmInitPrms *rmInitPrms)
         (void) memcpy(rmInitPrms, rmInitDefaultCfg, sizeof (Udma_RmInitPrms));
     }
 
-    return;
+    return (retVal);
 }
 
 uint32_t Udma_getCoreId(void)

@@ -48,1268 +48,189 @@
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
 
-/* TODO: Replace when CSLR is ready */
-#define UDMA_MAIN_NAVSS0_EVENT_CNT      (4608U)
-#define UDMA_MAIN_NAVSS0_VINTR_CNT      (256U)
-#define UDMA_MCU_NAVSS0_EVENT_CNT       (1536U)
-#define UDMA_MCU_NAVSS0_VINTR_CNT       (256U)
-
-/* Block copy needs to be checked against BC_HC/BC_UHC, TX/TX_HC/TX_UHC and
- * RX/RX_HC/RX_UHC. Hence need six sets to compare */
-#define UDMA_RM_CHECK_MAX_ENTRY         (UDMA_NUM_CORE * 6U)
-/* This is an assumption and should the max of all resource count across cores */
-#define UDMA_RM_CHECK_MAX_WORDS         (150U)
+/* None */
 
 /* ========================================================================== */
 /*                         Structure Declarations                             */
 /* ========================================================================== */
 
-/**
- *  \brief UDMA instance RM check parameters - local defined for passing
- *  multiple parameters to check function.
- */
-typedef struct
-{
-    uint32_t                numCores;
-    uint32_t                startCoreId;
-    uint32_t                maxTxCh;
-    uint32_t                maxRxCh;
-    uint32_t                maxUtcCh;
-    uint32_t                maxFreeRing;
-    uint32_t                maxFreeFlow;
-    uint32_t                maxEvents;
-    uint32_t                maxVintr;
-    uint32_t                maxProxy;
-    uint32_t                maxRingMon;
-    const Udma_RmInitPrms  *selfCfg;
-    const Udma_RmInitPrms  *crossCfg;
-} Udma_RmInstCheckPrms;
+/* None */
 
 /* ========================================================================== */
 /*                          Function Declarations                             */
 /* ========================================================================== */
 
-static int32_t Udma_rmCheckInstOverlap(const Udma_RmInstCheckPrms *prms);
-static int32_t Udma_rmCheckOverlap(uint32_t startRes[UDMA_RM_CHECK_MAX_ENTRY],
-                                   uint32_t numRes[UDMA_RM_CHECK_MAX_ENTRY],
-                                   uint32_t numEntries,
-                                   uint32_t maxRes);
+/* None */
 
 /* ========================================================================== */
 /*                            Global Variables                                */
 /* ========================================================================== */
 
-/* This assumes all resources are equally split across cores.
- * Once RM is aligned across usecases, this will be fixed to reflect that */
-/** \brief Main Navss default configuration */
-const Udma_RmInitPrms gUdmaRmDefCfg_MainNavss[UDMA_NUM_CORE] =
+/** \brief Main Navss defaultBoardCfg Params */
+const Udma_RmDefBoardCfgPrms gUdmaRmDefBoardCfg_MainNavss[UDMA_RM_NUM_RES] =
 {
-    /* MPU1_0 */
-    {
-        0U,                                         /* startBlkCopyUhcCh */
-        0U,                                         /* numBlkCopyUhcCh */
-        0U,                                         /* startBlkCopyHcCh */
-        0U,                                         /* numBlkCopyHcCh */
-        16U,                                        /* startBlkCopyCh */
-        8U,                                         /* numBlkCopyCh */
-
-        0U,                                         /* startTxUhcCh */
-        2U,                                         /* numTxUhcCh */
-        4U,                                         /* startTxHcCh */
-        4U,                                         /* numTxHcCh */
-        24U,                                        /* startTxCh */
-        28U,                                        /* numTxCh */
-
-        0U,                                         /* startRxUhcCh */
-        2U,                                         /* numRxUhcCh */
-        4U,                                         /* startRxHcCh */
-        4U,                                         /* numRxHcCh */
-        24U,                                        /* startRxCh */
-        28U,                                        /* numRxCh */
-
-        {0U, 0U, 0U, 0U},                           /* startUtcCh[] */
-        {0U, 0U, 0U, 0U},                           /* numUtcCh[] */
-
-        0U,                                         /* startFreeFlow */
-        16U,                                        /* numFreeFlow */
-        0U,                                         /* startFreeRing */
-        150U,                                       /* numFreeRing */
-
-        38U,                                        /* startGlobalEvent */
-        974U,                                       /* numGlobalEvent */
-        38U,                                        /* startVintr */
-        82U,                                        /* numVintr */
-        20U,                                        /* startIrIntr */
-        20U,                                        /* numIrIntr */
-
-        0U,                                         /* proxyThreadNum */
-        0U,                                         /* startC7xCoreIntr */
-        0U,                                         /* startC66xCoreIntr */
-
-        1U,                                         /* startProxy */
-        3U,                                         /* numProxy */
-
-        0U,                                         /* startRingMon */
-        3U,                                         /* numRingMon */
-    },
-    /* MCU2_0 */
-    {
-        0U,                                         /* startBlkCopyUhcCh */
-        0U,                                         /* numBlkCopyUhcCh */
-        0U,                                         /* startBlkCopyHcCh */
-        0U,                                         /* numBlkCopyHcCh */
-        118U,                                       /* startBlkCopyCh */
-        4U,                                         /* numBlkCopyCh */
-
-        2U,                                         /* startTxUhcCh */
-        2U,                                         /* numTxUhcCh */
-        8U,                                         /* startTxHcCh */
-        6U,                                         /* numTxHcCh */
-        122U,                                       /* startTxCh */
-        10U,                                        /* numTxCh */
-
-        2U,                                         /* startRxUhcCh */
-        2U,                                         /* numRxUhcCh */
-        8U,                                         /* startRxHcCh */
-        6U,                                         /* numRxHcCh */
-        122U,                                       /* startRxCh */
-        16U,                                        /* numRxCh */
-
-        {28U, 32U, 64U,  0U},                       /* startUtcCh[] */
-        { 2U, 32U, 64U,  0U},                       /* numUtcCh[] */
-
-        32U,                                        /* startFreeFlow */
-        72U,                                        /* numFreeFlow */
-        304U,                                       /* startFreeRing */
-        182U,                                       /* numFreeRing */
-
-        2918U,                                      /* startGlobalEvent */
-        462U,                                       /* numGlobalEvent */
-        216U,                                       /* startVintr */
-        20U,                                        /* numVintr */
-        196U,                                       /* startIrIntr */
-        20U,                                        /* numIrIntr */
-
-        36U,                                        /* proxyThreadNum */
-        0U,                                         /* startC7xCoreIntr */
-        0U,                                         /* startC66xCoreIntr */
-
-        37U,                                        /* startProxy */
-        11U,                                        /* numProxy */
-
-        22U,                                        /* startRingMon */
-        6U,                                         /* numRingMon */
-    },
-    /* MCU2_1 */
-    {
-        0U,                                         /* startBlkCopyUhcCh */
-        0U,                                         /* numBlkCopyUhcCh */
-        0U,                                         /* startBlkCopyHcCh */
-        0U,                                         /* numBlkCopyHcCh */
-        138U,                                       /* startBlkCopyCh */
-        1U,                                         /* numBlkCopyCh */
-
-        0U,                                         /* startTxUhcCh */
-        0U,                                         /* numTxUhcCh */
-        0U,                                         /* startTxHcCh */
-        0U,                                         /* numTxHcCh */
-        132U,                                       /* startTxCh */
-        6U,                                         /* numTxCh */
-
-        0U,                                         /* startRxUhcCh */
-        0U,                                         /* numRxUhcCh */
-        0U,                                         /* startRxHcCh */
-        0U,                                         /* numRxHcCh */
-        139U,                                       /* startRxCh */
-        1U,                                         /* numRxCh */
-
-        {30U, 0U, 0U,128U},                         /* startUtcCh[] */
-        {2U, 0U, 0U, 32U},                          /* numUtcCh[] */
-
-        104U,                                       /* startFreeFlow */
-        8U,                                         /* numFreeFlow */
-        486U,                                       /* startFreeRing */
-        40U,                                        /* numFreeRing */
-
-        3430U,                                      /* startGlobalEvent */
-        206U,                                       /* numGlobalEvent */
-        244U,                                       /* startVintr */
-        4U,                                         /* numVintr */
-        228U,                                       /* startIrIntr */
-        16U,                                        /* numIrIntr */
-
-        48U,                                        /* proxyThreadNum */
-        0U,                                         /* startC7xCoreIntr */
-        0U,                                         /* startC66xCoreIntr */
-
-        49U,                                        /* startProxy */
-        3U,                                         /* numProxy */
-
-        28U,                                        /* startRingMon */
-        3U,                                         /* numRingMon */
-    },
-    /* MCU3_0 */
-    {
-        0U,                                         /* startBlkCopyUhcCh */
-        0U,                                         /* numBlkCopyUhcCh */
-        0U,                                         /* startBlkCopyHcCh */
-        0U,                                         /* numBlkCopyHcCh */
-        76U,                                        /* startBlkCopyCh */
-        2U,                                         /* numBlkCopyCh */
-
-        0U,                                         /* startTxUhcCh */
-        0U,                                         /* numTxUhcCh */
-        0U,                                         /* startTxHcCh */
-        0U,                                         /* numTxHcCh */
-        78U,                                        /* startTxCh */
-        4U,                                         /* numTxCh */
-
-        0U,                                         /* startRxUhcCh */
-        0U,                                         /* numRxUhcCh */
-        0U,                                         /* startRxHcCh */
-        0U,                                         /* numRxHcCh */
-        78U,                                        /* startRxCh */
-        4U,                                         /* numRxCh */
-
-        {0U, 0U, 0U, 0U},                           /* startUtcCh[] */
-        {0U, 0U, 0U, 0U},                           /* numUtcCh[] */
-
-        0U,                                         /* startFreeFlow */
-        0U,                                         /* numFreeFlow */
-        202U,                                       /* startFreeRing */
-        10U,                                        /* numFreeRing */
-
-        1638U,                                      /* startGlobalEvent */
-        206U,                                       /* numGlobalEvent */
-        156U,                                       /* startVintr */
-        8U,                                         /* numVintr */
-        260U,                                       /* startIrIntr */
-        16U,                                        /* numIrIntr */
-
-        16U,                                        /* proxyThreadNum */
-        0U,                                         /* startC7xCoreIntr */
-        0U,                                         /* startC66xCoreIntr */
-
-        17U,                                        /* startProxy */
-        3U,                                         /* numProxy */
-
-        7U,                                         /* startRingMon */
-        3U,                                         /* numRingMon */
-    },
-    /* MCU3_1 */
-    {
-        0U,                                         /* startBlkCopyUhcCh */
-        0U,                                         /* numBlkCopyUhcCh */
-        0U,                                         /* startBlkCopyHcCh */
-        0U,                                         /* numBlkCopyHcCh */
-        82U,                                        /* startBlkCopyCh */
-        2U,                                         /* numBlkCopyCh */
-
-        0U,                                         /* startTxUhcCh */
-        0U,                                         /* numTxUhcCh */
-        0U,                                         /* startTxHcCh */
-        0U,                                         /* numTxHcCh */
-        84U,                                        /* startTxCh */
-        4U,                                         /* numTxCh */
-
-        0U,                                         /* startRxUhcCh */
-        0U,                                         /* numRxUhcCh */
-        0U,                                         /* startRxHcCh */
-        0U,                                         /* numRxHcCh */
-        84U,                                        /* startRxCh */
-        4U,                                         /* numRxCh */
-
-        {0U, 0U, 0U, 0U},                           /* startUtcCh[] */
-        {0U, 0U, 0U, 0U},                           /* numUtcCh[] */
-
-        0U,                                         /* startFreeFlow */
-        0U,                                         /* numFreeFlow */
-        212U,                                       /* startFreeRing */
-        10U,                                        /* numFreeRing */
-
-        1894U,                                      /* startGlobalEvent */
-        206U,                                       /* numGlobalEvent */
-        168U,                                       /* startVintr */
-        8U,                                         /* numVintr */
-        292U,                                       /* startIrIntr */
-        8U,                                         /* numIrIntr */
-
-        20U,                                        /* proxyThreadNum */
-        0U,                                         /* startC7xCoreIntr */
-        0U,                                         /* startC66xCoreIntr */
-
-        21U,                                        /* startProxy */
-        3U,                                         /* numProxy */
-
-        10U,                                        /* startRingMon */
-        3U,                                         /* numRingMon */
-    },
-    /* C7X_1 */
-    {
-        0U,                                         /* startBlkCopyUhcCh */
-        0U,                                         /* numBlkCopyUhcCh */
-        0U,                                         /* startBlkCopyHcCh */
-        0U,                                         /* numBlkCopyHcCh */
-        88U,                                        /* startBlkCopyCh */
-        2U,                                         /* numBlkCopyCh */
-
-        0U,                                         /* startTxUhcCh */
-        0U,                                         /* numTxUhcCh */
-        0U,                                         /* startTxHcCh */
-        0U,                                         /* numTxHcCh */
-        90U,                                        /* startTxCh */
-        4U,                                         /* numTxCh */
-
-        0U,                                         /* startRxUhcCh */
-        0U,                                         /* numRxUhcCh */
-        0U,                                         /* startRxHcCh */
-        0U,                                         /* numRxHcCh */
-        90U,                                        /* startRxCh */
-        4U,                                         /* numRxCh */
-
-        {0U, 0U, 0U, 0U},                           /* startUtcCh[] */
-        {16U, 0U, 0U, 0U},                          /* numUtcCh[] */
-
-        0U,                                         /* startFreeFlow */
-        0U,                                         /* numFreeFlow */
-        222U,                                       /* startFreeRing */
-        32U,                                        /* numFreeRing */
-
-        2150U,                                      /* startGlobalEvent */
-        206U,                                       /* numGlobalEvent */
-        180U,                                       /* startVintr */
-        8U,                                         /* numVintr */
-        156U,                                       /* startIrIntr */
-        8U,                                         /* numIrIntr */
-
-        24U,                                        /* proxyThreadNum */
-        32U,                                        /* startC7xCoreIntr */
-        0U,                                         /* startC66xCoreIntr */
-
-        25U,                                        /* startProxy */
-        3U,                                         /* numProxy */
-
-        13U,                                        /* startRingMon */
-        3U,                                         /* numRingMon */
-    },
-    /* C66X_1 */
-    {
-        0U,                                         /* startBlkCopyUhcCh */
-        0U,                                         /* numBlkCopyUhcCh */
-        0U,                                         /* startBlkCopyHcCh */
-        0U,                                         /* numBlkCopyHcCh */
-        94U,                                        /* startBlkCopyCh */
-        8U,                                         /* numBlkCopyCh */
-
-        0U,                                         /* startTxUhcCh */
-        0U,                                         /* numTxUhcCh */
-        0U,                                         /* startTxHcCh */
-        0U,                                         /* numTxHcCh */
-        102U,                                       /* startTxCh */
-        8U,                                         /* numTxCh */
-
-        0U,                                         /* startRxUhcCh */
-        0U,                                         /* numRxUhcCh */
-        0U,                                         /* startRxHcCh */
-        0U,                                         /* numRxHcCh */
-        102U,                                       /* startRxCh */
-        8U,                                         /* numRxCh */
-
-        {16U, 0U, 0U, 0U},                          /* startUtcCh[] */
-        {6U, 0U, 0U, 0U},                           /* numUtcCh[] */
-
-        0U,                                         /* startFreeFlow */
-        0U,                                         /* numFreeFlow */
-        254U,                                       /* startFreeRing */
-        38U,                                        /* numFreeRing */
-
-        2406U,                                      /* startGlobalEvent */
-        206U,                                       /* numGlobalEvent */
-        192U,                                       /* startVintr */
-        8U,                                         /* numVintr */
-        320U,                                       /* startIrIntr */
-        8U,                                         /* numIrIntr */
-
-        28U,                                        /* proxyThreadNum */
-        0U,                                         /* startC7xCoreIntr */
-        32U,                                        /* startC66xCoreIntr */
-
-        29U,                                        /* startProxy */
-        3U,                                         /* numProxy */
-
-        16U,                                        /* startRingMon */
-        3U,                                         /* numRingMon */
-    },
-    /* C66X_2 */
-    {
-        0U,                                         /* startBlkCopyUhcCh */
-        0U,                                         /* numBlkCopyUhcCh */
-        0U,                                         /* startBlkCopyHcCh */
-        0U,                                         /* numBlkCopyHcCh */
-        110U,                                       /* startBlkCopyCh */
-        2U,                                         /* numBlkCopyCh */
-
-        0U,                                         /* startTxUhcCh */
-        0U,                                         /* numTxUhcCh */
-        0U,                                         /* startTxHcCh */
-        0U,                                         /* numTxHcCh */
-        112U,                                       /* startTxCh */
-        6U,                                         /* numTxCh */
-
-        0U,                                         /* startRxUhcCh */
-        0U,                                         /* numRxUhcCh */
-        0U,                                         /* startRxHcCh */
-        0U,                                         /* numRxHcCh */
-        112U,                                       /* startRxCh */
-        6U,                                         /* numRxCh */
-
-        {22U, 0U, 0U, 0U},                          /* startUtcCh[] */
-        {6U, 0U, 0U, 0U},                           /* numUtcCh[] */
-
-        0U,                                         /* startFreeFlow */
-        0U,                                         /* numFreeFlow */
-        292U,                                       /* startFreeRing */
-        12U,                                        /* numFreeRing */
-
-        2662U,                                      /* startGlobalEvent */
-        206U,                                       /* numGlobalEvent */
-        204U,                                       /* startVintr */
-        8U,                                         /* numVintr */
-        352U,                                       /* startIrIntr */
-        8U,                                         /* numIrIntr */
-
-        32U,                                        /* proxyThreadNum */
-        0U,                                         /* startC7xCoreIntr */
-        32U,                                        /* startC66xCoreIntr */
-
-        33U,                                        /* startProxy */
-        3U,                                         /* numProxy */
-
-        19U,                                        /* startRingMon */
-        3U,                                         /* numRingMon */
-    },
-    /* MCU1_0 */
-    {
-        0U,                                         /* startBlkCopyUhcCh */
-        0U,                                         /* numBlkCopyUhcCh */
-        0U,                                         /* startBlkCopyHcCh */
-        0U,                                         /* numBlkCopyHcCh */
-        72U,                                        /* startBlkCopyCh */
-        2U,                                         /* numBlkCopyCh */
-
-        0U,                                         /* startTxUhcCh */
-        0U,                                         /* numTxUhcCh */
-        0U,                                         /* startTxHcCh */
-        0U,                                         /* numTxHcCh */
-        0U,                                         /* startTxCh */
-        0U,                                         /* numTxCh */
-
-        0U,                                         /* startRxUhcCh */
-        0U,                                         /* numRxUhcCh */
-        0U,                                         /* startRxHcCh */
-        0U,                                         /* numRxHcCh */
-        0U,                                         /* startRxCh */
-        0U,                                         /* numRxCh */
-
-        {0U, 0U, 0U, 0U},                           /* startUtcCh[] */
-        {0U, 0U, 0U, 0U},                           /* numUtcCh[] */
-
-        0U,                                         /* startFreeFlow */
-        0U,                                         /* numFreeFlow */
-        190U,                                       /* startFreeRing */
-        6U,                                         /* numFreeRing */
-
-        472U,                                       /* startGlobalEvent */
-        56U,                                        /* numGlobalEvent */
-        124U,                                       /* startVintr */
-        4U,                                         /* numVintr */
-        14U,                                        /* startIrIntr */
-        4U,                                         /* numIrIntr */
-
-        8U,                                         /* proxyThreadNum */
-        0U,                                         /* startC7xCoreIntr */
-        0U,                                         /* startC66xCoreIntr */
-
-        9U,                                         /* startProxy */
-        3U,                                         /* numProxy */
-
-        5U,                                         /* startRingMon */
-        1U,                                         /* numRingMon */
-    },
-    /* MCU1_1 */
-    {
-        0U,                                         /* startBlkCopyUhcCh */
-        0U,                                         /* numBlkCopyUhcCh */
-        0U,                                         /* startBlkCopyHcCh */
-        0U,                                         /* numBlkCopyHcCh */
-        74U,                                        /* startBlkCopyCh */
-        2U,                                         /* numBlkCopyCh */
-
-        0U,                                         /* startTxUhcCh */
-        0U,                                         /* numTxUhcCh */
-        0U,                                         /* startTxHcCh */
-        0U,                                         /* numTxHcCh */
-        0U,                                         /* startTxCh */
-        0U,                                         /* numTxCh */
-
-        0U,                                         /* startRxUhcCh */
-        0U,                                         /* numRxUhcCh */
-        0U,                                         /* startRxHcCh */
-        0U,                                         /* numRxHcCh */
-        0U,                                         /* startRxCh */
-        0U,                                         /* numRxCh */
-
-        {0U, 0U, 0U, 0U},                           /* startUtcCh[] */
-        {0U, 0U, 0U, 0U},                           /* numUtcCh[] */
-
-        0U,                                         /* startFreeFlow */
-        0U,                                         /* numFreeFlow */
-        196U,                                       /* startFreeRing */
-        6U,                                         /* numFreeRing */
-
-        576U,                                       /* startGlobalEvent */
-        16U,                                        /* numGlobalEvent */
-        130U,                                       /* startVintr */
-        2U,                                         /* numVintr */
-        46U,                                        /* startIrIntr */
-        4U,                                         /* numIrIntr */
-
-        12U,                                        /* proxyThreadNum */
-        0U,                                         /* startC7xCoreIntr */
-        0U,                                         /* startC66xCoreIntr */
-
-        13U,                                        /* startProxy */
-        3U,                                         /* numProxy */
-
-        6U,                                         /* startRingMon */
-        1U,                                         /* numRingMon */
-    }
+    /* resId,                     reqType,                            reqSubtype,                               secHost */
+    {UDMA_RM_RES_ID_TX_UHC,       TISCI_DEV_NAVSS0_UDMAP0,            TISCI_RESASG_SUBTYPE_UDMAP_TX_UHCHAN,      TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST},
+    {UDMA_RM_RES_ID_TX_HC,        TISCI_DEV_NAVSS0_UDMAP0,            TISCI_RESASG_SUBTYPE_UDMAP_TX_HCHAN,       TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST},
+    {UDMA_RM_RES_ID_TX,           TISCI_DEV_NAVSS0_UDMAP0,            TISCI_RESASG_SUBTYPE_UDMAP_TX_CHAN,        TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST},
+    {UDMA_RM_RES_ID_RX_UHC,       TISCI_DEV_NAVSS0_UDMAP0,            TISCI_RESASG_SUBTYPE_UDMAP_RX_UHCHAN,      TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST},
+    {UDMA_RM_RES_ID_RX_HC,        TISCI_DEV_NAVSS0_UDMAP0,            TISCI_RESASG_SUBTYPE_UDMAP_RX_HCHAN,       TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST},
+    {UDMA_RM_RES_ID_RX,           TISCI_DEV_NAVSS0_UDMAP0,            TISCI_RESASG_SUBTYPE_UDMAP_RX_CHAN,        TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST},
+    {UDMA_RM_RES_ID_UTC,          TISCI_DEV_NAVSS0_UDMAP0,            TISCI_RESASG_SUBTYPE_UDMAP_TX_ECHAN,       TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST},
+    {UDMA_RM_RES_ID_RX_FLOW,      TISCI_DEV_NAVSS0_UDMAP0,            TISCI_RESASG_SUBTYPE_UDMAP_RX_FLOW_COMMON, TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST},
+    {UDMA_RM_RES_ID_RING,         TISCI_DEV_NAVSS0_RINGACC0,          TISCI_RESASG_SUBTYPE_RA_GP,                TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST},
+#if defined (BUILD_MCU1_0) || defined (BUILD_MCU1_1) /* Tied to cores and not split based on NAVSS instance */
+    {UDMA_RM_RES_ID_GLOBAL_EVENT, TISCI_DEV_MCU_NAVSS0_UDMASS_INTA_0, TISCI_RESASG_SUBTYPE_GLOBAL_EVENT_SEVT,    TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST},
+    {UDMA_RM_RES_ID_VINTR,        TISCI_DEV_MCU_NAVSS0_UDMASS_INTA_0, TISCI_RESASG_SUBTYPE_IA_VINT,              TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST},
+    {UDMA_RM_RES_ID_IR_INTR,      TISCI_DEV_MCU_NAVSS0_INTR_0,        TISCI_RESASG_SUBTYPE_IR_OUTPUT,            TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST},
+#else
+    {UDMA_RM_RES_ID_GLOBAL_EVENT, TISCI_DEV_NAVSS0_UDMASS_INTAGGR_0,  TISCI_RESASG_SUBTYPE_GLOBAL_EVENT_SEVT,    TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST},
+    {UDMA_RM_RES_ID_VINTR,        TISCI_DEV_NAVSS0_UDMASS_INTAGGR_0,  TISCI_RESASG_SUBTYPE_IA_VINT,              TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST},
+    {UDMA_RM_RES_ID_IR_INTR,      TISCI_DEV_NAVSS0_INTR_ROUTER_0,     TISCI_RESASG_SUBTYPE_IR_OUTPUT,            TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST},
+#endif
+    {UDMA_RM_RES_ID_PROXY,        TISCI_DEV_NAVSS0_PROXY_0,           TISCI_RESASG_SUBTYPE_PROXY_PROXIES,        TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST},
+    {UDMA_RM_RES_ID_RING_MON,     TISCI_DEV_NAVSS0_RINGACC0,          TISCI_RESASG_SUBTYPE_RA_MONITORS,          TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST}
 };
 
-/** \brief MCU Navss default configuration */
-const Udma_RmInitPrms gUdmaRmDefCfg_McuNavss[UDMA_NUM_CORE] =
+/** \brief MCU Navss defaultBoardCfg Params */
+const Udma_RmDefBoardCfgPrms gUdmaRmDefBoardCfg_McuNavss[UDMA_RM_NUM_RES] =
 {
-    /* MPU1_0 */
-    {
-        0U,         /* startBlkCopyUhcCh */
-        0U,         /* numBlkCopyUhcCh */
-        0U,         /* startBlkCopyHcCh */
-        0U,         /* numBlkCopyHcCh */
-        2U,         /* startBlkCopyCh */
-        3U,         /* numBlkCopyCh */
-
-        0U,         /* startTxUhcCh */
-        0U,         /* numTxUhcCh */
-        0U,         /* startTxHcCh */
-        0U,         /* numTxHcCh */
-        5U,         /* startTxCh */
-        9U,         /* numTxCh */
-
-        0U,         /* startRxUhcCh */
-        0U,         /* numRxUhcCh */
-        0U,         /* startRxHcCh */
-        0U,         /* numRxHcCh */
-        5U,         /* startRxCh */
-        9U,         /* numRxCh */
-
-        {0U, 0U, 0U, 0U},       /* startUtcCh[] */
-        {0U, 0U, 0U, 0U},       /* numUtcCh[] */
-
-        0U,         /* startFreeFlow */
-        8U,         /* numFreeFlow */
-        0U,         /* startFreeRing */
-        20U,        /* numFreeRing */
-
-        1012U,      /* startGlobalEvent */
-        50U,        /* numGlobalEvent */
-        120U,       /* startVintr */
-        4U,         /* numVintr */
-        64U,        /* startIrIntr */
-        4U,         /* numIrIntr */
-
-        1U,         /* proxyThreadNum */
-        0U,         /* startC7xCoreIntr */
-        0U,         /* startC66xCoreIntr */
-
-        2U,         /* startProxy */
-        3U,         /* numProxy */
-
-        0U,         /* startRingMon */
-        3U,         /* numRingMon */
-    },
-    /* MCU2_0 */
-    {
-        0U,         /* startBlkCopyUhcCh */
-        0U,         /* numBlkCopyUhcCh */
-        0U,         /* startBlkCopyHcCh */
-        0U,         /* numBlkCopyHcCh */
-        37U,        /* startBlkCopyCh */
-        1U,         /* numBlkCopyCh */
-
-        0U,         /* startTxUhcCh */
-        0U,         /* numTxUhcCh */
-        0U,         /* startTxHcCh */
-        0U,         /* numTxHcCh */
-        38U,        /* startTxCh */
-        2U,         /* numTxCh */
-
-        0U,         /* startRxUhcCh */
-        0U,         /* numRxUhcCh */
-        0U,         /* startRxHcCh */
-        0U,         /* numRxHcCh */
-        38U,        /* startRxCh */
-        2U,         /* numRxCh */
-
-        {0U, 0U, 0U, 0U},       /* startUtcCh[] */
-        {0U, 0U, 0U, 0U},       /* numUtcCh[] */
-
-        32U,        /* startFreeFlow */
-        8U,         /* numFreeFlow */
-        112U,       /* startFreeRing */
-        16U,        /* numFreeRing */
-
-        3380U,      /* startGlobalEvent */
-        50U,        /* numGlobalEvent */
-        236U,       /* startVintr */
-        8U,         /* numVintr */
-        216U,       /* startIrIntr */
-        8U,         /* numIrIntr */
-
-        37U,        /* proxyThreadNum */
-        0U,         /* startC7xCoreIntr */
-        0U,         /* startC66xCoreIntr */
-
-        38U,        /* startProxy */
-        15U,        /* numProxy */
-
-        26U,        /* startRingMon */
-        3U,         /* numRingMon */
-    },
-    /* MCU2_1 */
-    {
-        0U,         /* startBlkCopyUhcCh */
-        0U,         /* numBlkCopyUhcCh */
-        0U,         /* startBlkCopyHcCh */
-        0U,         /* numBlkCopyHcCh */
-        40U,        /* startBlkCopyCh */
-        1U,         /* numBlkCopyCh */
-
-        0U,         /* startTxUhcCh */
-        0U,         /* numTxUhcCh */
-        0U,         /* startTxHcCh */
-        0U,         /* numTxHcCh */
-        41U,        /* startTxCh */
-        1U,         /* numTxCh */
-
-        0U,         /* startRxUhcCh */
-        0U,         /* numRxUhcCh */
-        0U,         /* startRxHcCh */
-        0U,         /* numRxHcCh */
-        41U,        /* startRxCh */
-        1U,         /* numRxCh */
-
-        {0U, 0U, 0U, 0U},       /* startUtcCh[] */
-        {0U, 0U, 0U, 0U},       /* numUtcCh[] */
-
-        40U,        /* startFreeFlow */
-        4U,         /* numFreeFlow */
-        128U,       /* startFreeRing */
-        8U,         /* numFreeRing */
-
-        3636U,      /* startGlobalEvent */
-        50U,        /* numGlobalEvent */
-        248U,       /* startVintr */
-        4U,         /* numVintr */
-        248U,       /* startIrIntr */
-        4U,         /* numIrIntr */
-
-        53U,        /* proxyThreadNum */
-        0U,         /* startC7xCoreIntr */
-        0U,         /* startC66xCoreIntr */
-
-        54U,        /* startProxy */
-        3U,         /* numProxy */
-
-        29U,        /* startRingMon */
-        3U,         /* numRingMon */
-    },
-    /* MCU3_0 */
-    {
-        0U,         /* startBlkCopyUhcCh */
-        0U,         /* numBlkCopyUhcCh */
-        0U,         /* startBlkCopyHcCh */
-        0U,         /* numBlkCopyHcCh */
-        27U,        /* startBlkCopyCh */
-        1U,         /* numBlkCopyCh */
-
-        0U,         /* startTxUhcCh */
-        0U,         /* numTxUhcCh */
-        0U,         /* startTxHcCh */
-        0U,         /* numTxHcCh */
-        28U,        /* startTxCh */
-        1U,         /* numTxCh */
-
-        0U,         /* startRxUhcCh */
-        0U,         /* numRxUhcCh */
-        0U,         /* startRxHcCh */
-        0U,         /* numRxHcCh */
-        28U,        /* startRxCh */
-        1U,         /* numRxCh */
-
-        {0U, 0U, 0U, 0U},       /* startUtcCh[] */
-        {0U, 0U, 0U, 0U},       /* numUtcCh[] */
-
-        24U,        /* startFreeFlow */
-        4U,         /* numFreeFlow */
-        72U,        /* startFreeRing */
-        8U,         /* numFreeRing */
-
-        1844U,      /* startGlobalEvent */
-        50U,        /* numGlobalEvent */
-        164U,       /* startVintr */
-        4U,         /* numVintr */
-        280U,       /* startIrIntr */
-        8U,         /* numIrIntr */
-
-        17U,        /* proxyThreadNum */
-        0U,         /* startC7xCoreIntr */
-        0U,         /* startC66xCoreIntr */
-
-        18U,        /* startProxy */
-        3U,         /* numProxy */
-
-        11U,        /* startRingMon */
-        3U,         /* numRingMon */
-    },
-    /* MCU3_1 */
-    {
-        0U,         /* startBlkCopyUhcCh */
-        0U,         /* numBlkCopyUhcCh */
-        0U,         /* startBlkCopyHcCh */
-        0U,         /* numBlkCopyHcCh */
-        29U,        /* startBlkCopyCh */
-        1U,         /* numBlkCopyCh */
-
-        0U,         /* startTxUhcCh */
-        0U,         /* numTxUhcCh */
-        0U,         /* startTxHcCh */
-        0U,         /* numTxHcCh */
-        30U,        /* startTxCh */
-        1U,         /* numTxCh */
-
-        0U,         /* startRxUhcCh */
-        0U,         /* numRxUhcCh */
-        0U,         /* startRxHcCh */
-        0U,         /* numRxHcCh */
-        30U,        /* startRxCh */
-        1U,         /* numRxCh */
-
-        {0U, 0U, 0U, 0U},       /* startUtcCh[] */
-        {0U, 0U, 0U, 0U},       /* numUtcCh[] */
-
-        28U,        /* startFreeFlow */
-        4U,         /* numFreeFlow */
-        80U,        /* startFreeRing */
-        8U,         /* numFreeRing */
-
-        2100U,      /* startGlobalEvent */
-        50U,        /* numGlobalEvent */
-        176U,       /* startVintr */
-        4U,         /* numVintr */
-        312U,       /* startIrIntr */
-        8U,         /* numIrIntr */
-
-        21U,        /* proxyThreadNum */
-        0U,         /* startC7xCoreIntr */
-        0U,         /* startC66xCoreIntr */
-
-        22U,        /* startProxy */
-        3U,         /* numProxy */
-
-        14U,        /* startRingMon */
-        3U,         /* numRingMon */
-    },
-    /* C7X_1 */
-    {
-        0U,         /* startBlkCopyUhcCh */
-        0U,         /* numBlkCopyUhcCh */
-        0U,         /* startBlkCopyHcCh */
-        0U,         /* numBlkCopyHcCh */
-        31U,        /* startBlkCopyCh */
-        1U,         /* numBlkCopyCh */
-
-        0U,         /* startTxUhcCh */
-        0U,         /* numTxUhcCh */
-        0U,         /* startTxHcCh */
-        0U,         /* numTxHcCh */
-        32U,        /* startTxCh */
-        1U,         /* numTxCh */
-
-        0U,         /* startRxUhcCh */
-        0U,         /* numRxUhcCh */
-        0U,         /* startRxHcCh */
-        0U,         /* numRxHcCh */
-        32U,        /* startRxCh */
-        1U,         /* numRxCh */
-
-        {0U, 0U, 0U, 0U},       /* startUtcCh[] */
-        {0U, 0U, 0U, 0U},       /* numUtcCh[] */
-
-        0U,         /* startFreeFlow */
-        0U,         /* numFreeFlow */
-        88U,        /* startFreeRing */
-        8U,         /* numFreeRing */
-
-        2356U,      /* startGlobalEvent */
-        50U,        /* numGlobalEvent */
-        188U,       /* startVintr */
-        4U,         /* numVintr */
-        166U,       /* startIrIntr */
-        4U,         /* numIrIntr */
-
-        25U,        /* proxyThreadNum */
-        40U,        /* startC7xCoreIntr */
-        0U,         /* startC66xCoreIntr */
-
-        26U,        /* startProxy */
-        3U,         /* numProxy */
-
-        17U,        /* startRingMon */
-        3U,         /* numRingMon */
-    },
-    /* C66X_1 */
-    {
-        0U,         /* startBlkCopyUhcCh */
-        0U,         /* numBlkCopyUhcCh */
-        0U,         /* startBlkCopyHcCh */
-        0U,         /* numBlkCopyHcCh */
-        33U,        /* startBlkCopyCh */
-        1U,         /* numBlkCopyCh */
-
-        0U,         /* startTxUhcCh */
-        0U,         /* numTxUhcCh */
-        0U,         /* startTxHcCh */
-        0U,         /* numTxHcCh */
-        34U,        /* startTxCh */
-        1U,         /* numTxCh */
-
-        0U,         /* startRxUhcCh */
-        0U,         /* numRxUhcCh */
-        0U,         /* startRxHcCh */
-        0U,         /* numRxHcCh */
-        34U,        /* startRxCh */
-        1U,         /* numRxCh */
-
-        {0U, 0U, 0U, 0U},       /* startUtcCh[] */
-        {0U, 0U, 0U, 0U},       /* numUtcCh[] */
-
-        0U,         /* startFreeFlow */
-        0U,         /* numFreeFlow */
-        96U,        /* startFreeRing */
-        8U,         /* numFreeRing */
-
-        2612U,      /* startGlobalEvent */
-        50U,        /* numGlobalEvent */
-        200U,       /* startVintr */
-        4U,         /* numVintr */
-        328U,       /* startIrIntr */
-        4U,         /* numIrIntr */
-
-        29U,        /* proxyThreadNum */
-        0U,         /* startC7xCoreIntr */
-        40U,        /* startC66xCoreIntr */
-
-        30U,        /* startProxy */
-        3U,         /* numProxy */
-
-        20U,        /* startRingMon */
-        3U,         /* numRingMon */
-    },
-    /* C66X_2 */
-    {
-        0U,         /* startBlkCopyUhcCh */
-        0U,         /* numBlkCopyUhcCh */
-        0U,         /* startBlkCopyHcCh */
-        0U,         /* numBlkCopyHcCh */
-        35U,        /* startBlkCopyCh */
-        1U,         /* numBlkCopyCh */
-
-        0U,         /* startTxUhcCh */
-        0U,         /* numTxUhcCh */
-        0U,         /* startTxHcCh */
-        0U,         /* numTxHcCh */
-        36U,        /* startTxCh */
-        1U,         /* numTxCh */
-
-        0U,         /* startRxUhcCh */
-        0U,         /* numRxUhcCh */
-        0U,         /* startRxHcCh */
-        0U,         /* numRxHcCh */
-        36U,        /* startRxCh */
-        1U,         /* numRxCh */
-
-        {0U, 0U, 0U, 0U},       /* startUtcCh[] */
-        {0U, 0U, 0U, 0U},       /* numUtcCh[] */
-
-        0U,         /* startFreeFlow */
-        0U,         /* numFreeFlow */
-        104U,       /* startFreeRing */
-        8U,         /* numFreeRing */
-
-        2868U,      /* startGlobalEvent */
-        50U,        /* numGlobalEvent */
-        212U,       /* startVintr */
-        4U,         /* numVintr */
-        360U,       /* startIrIntr */
-        4U,         /* numIrIntr */
-
-        33U,        /* proxyThreadNum */
-        0U,         /* startC7xCoreIntr */
-        40U,        /* startC66xCoreIntr */
-
-        34U,        /* startProxy */
-        3U,         /* numProxy */
-
-        23U,        /* startRingMon */
-        3U,         /* numRingMon */
-    },
-    /* MCU1_0 */
-    {
-        0U,         /* startBlkCopyUhcCh */
-        0U,         /* numBlkCopyUhcCh */
-        0U,         /* startBlkCopyHcCh */
-        0U,         /* numBlkCopyHcCh */
-        20U,        /* startBlkCopyCh */
-        2U,         /* numBlkCopyCh */
-
-        0U,         /* startTxUhcCh */
-        0U,         /* numTxUhcCh */
-        0U,         /* startTxHcCh */
-        2U,         /* numTxHcCh */
-        22U,        /* startTxCh */
-        3U,         /* numTxCh */
-
-        0U,         /* startRxUhcCh */
-        0U,         /* numRxUhcCh */
-        0U,         /* startRxHcCh */
-        2U,         /* numRxHcCh */
-        22U,        /* startRxCh */
-        3U,         /* numRxCh */
-
-        {0U, 0U, 0U, 0U},       /* startUtcCh[] */
-        {0U, 0U, 0U, 0U},       /* numUtcCh[] */
-
-        12U,        /* startFreeFlow */
-        8U,         /* numFreeFlow */
-        28U,        /* startFreeRing */
-        32U,        /* numFreeRing */
-
-        272U,       /* startGlobalEvent */
-        200U,       /* numGlobalEvent */
-        64U,        /* startVintr */
-        60U,        /* numVintr */
-        12U,        /* startIrIntr */
-        6U,         /* numIrIntr */
-
-        9U,         /* proxyThreadNum */
-        0U,         /* startC7xCoreIntr */
-        0U,         /* startC66xCoreIntr */
-
-        10U,        /* startProxy */
-        3U,         /* numProxy */
-
-        5U,         /* startRingMon */
-        3U,         /* numRingMon */
-    },
-    /* MCU1_1 */
-    {
-        0U,         /* startBlkCopyUhcCh */
-        0U,         /* numBlkCopyUhcCh */
-        0U,         /* startBlkCopyHcCh */
-        0U,         /* numBlkCopyHcCh */
-        0U,         /* startBlkCopyCh */
-        0U,         /* numBlkCopyCh */
-
-        0U,         /* startTxUhcCh */
-        0U,         /* numTxUhcCh */
-        0U,         /* startTxHcCh */
-        0U,         /* numTxHcCh */
-        25U,        /* startTxCh */
-        2U,         /* numTxCh */
-
-        0U,         /* startRxUhcCh */
-        0U,         /* numRxUhcCh */
-        0U,         /* startRxHcCh */
-        0U,         /* numRxHcCh */
-        25U,        /* startRxCh */
-        2U,         /* numRxCh */
-
-        {0U, 0U, 0U, 0U},       /* startUtcCh[] */
-        {0U, 0U, 0U, 0U},       /* numUtcCh[] */
-
-        20U,        /* startFreeFlow */
-        4U,         /* numFreeFlow */
-        60U,        /* startFreeRing */
-        12U,        /* numFreeRing */
-
-        528U,       /* startGlobalEvent */
-        48U,        /* numGlobalEvent */
-        128U,       /* startVintr */
-        2U,         /* numVintr */
-        40U,        /* startIrIntr */
-        6U,         /* numIrIntr */
-
-        13U,        /* proxyThreadNum */
-        0U,         /* startC7xCoreIntr */
-        0U,         /* startC66xCoreIntr */
-
-        14U,        /* startProxy */
-        3U,         /* numProxy */
-
-        8U,         /* startRingMon */
-        3U,         /* numRingMon */
-    }
+    /* resId,                     reqType,                            reqSubtype,                               secHost */
+    {UDMA_RM_RES_ID_TX_UHC,       TISCI_DEV_MCU_NAVSS0_UDMAP0,        TISCI_RESASG_SUBTYPE_UDMAP_TX_UHCHAN,      TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST},
+    {UDMA_RM_RES_ID_TX_HC,        TISCI_DEV_MCU_NAVSS0_UDMAP0,        TISCI_RESASG_SUBTYPE_UDMAP_TX_HCHAN,       TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST},
+    {UDMA_RM_RES_ID_TX,           TISCI_DEV_MCU_NAVSS0_UDMAP0,        TISCI_RESASG_SUBTYPE_UDMAP_TX_CHAN,        TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST},
+    {UDMA_RM_RES_ID_RX_UHC,       TISCI_DEV_MCU_NAVSS0_UDMAP0,        TISCI_RESASG_SUBTYPE_UDMAP_RX_UHCHAN,      TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST},
+    {UDMA_RM_RES_ID_RX_HC,        TISCI_DEV_MCU_NAVSS0_UDMAP0,        TISCI_RESASG_SUBTYPE_UDMAP_RX_HCHAN,       TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST},
+    {UDMA_RM_RES_ID_RX,           TISCI_DEV_MCU_NAVSS0_UDMAP0,        TISCI_RESASG_SUBTYPE_UDMAP_RX_CHAN,        TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST},
+    {UDMA_RM_RES_ID_UTC,          TISCI_DEV_MCU_NAVSS0_UDMAP0,        TISCI_RESASG_SUBTYPE_UDMAP_TX_ECHAN,       TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST},
+    {UDMA_RM_RES_ID_RX_FLOW,      TISCI_DEV_MCU_NAVSS0_UDMAP0,        TISCI_RESASG_SUBTYPE_UDMAP_RX_FLOW_COMMON, TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST},
+    {UDMA_RM_RES_ID_RING,         TISCI_DEV_MCU_NAVSS0_RINGACC0,      TISCI_RESASG_SUBTYPE_RA_GP,                TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST},
+#if defined (BUILD_MCU1_0) || defined (BUILD_MCU1_1) /* Tied to cores and not split based on NAVSS instance */
+    {UDMA_RM_RES_ID_GLOBAL_EVENT, TISCI_DEV_MCU_NAVSS0_UDMASS_INTA_0, TISCI_RESASG_SUBTYPE_GLOBAL_EVENT_SEVT,    TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST},
+    {UDMA_RM_RES_ID_VINTR,        TISCI_DEV_MCU_NAVSS0_UDMASS_INTA_0, TISCI_RESASG_SUBTYPE_IA_VINT,              TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST},
+    {UDMA_RM_RES_ID_IR_INTR,      TISCI_DEV_MCU_NAVSS0_INTR_0,        TISCI_RESASG_SUBTYPE_IR_OUTPUT,            TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST},
+#else
+    {UDMA_RM_RES_ID_GLOBAL_EVENT, TISCI_DEV_NAVSS0_UDMASS_INTAGGR_0,  TISCI_RESASG_SUBTYPE_GLOBAL_EVENT_SEVT,    TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST},
+    {UDMA_RM_RES_ID_VINTR,        TISCI_DEV_NAVSS0_UDMASS_INTAGGR_0,  TISCI_RESASG_SUBTYPE_IA_VINT,              TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST},
+    {UDMA_RM_RES_ID_IR_INTR,      TISCI_DEV_NAVSS0_INTR_ROUTER_0,     TISCI_RESASG_SUBTYPE_IR_OUTPUT,            TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST},
+#endif
+    {UDMA_RM_RES_ID_PROXY,        TISCI_DEV_MCU_NAVSS0_PROXY0,        TISCI_RESASG_SUBTYPE_PROXY_PROXIES,        TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST},
+    {UDMA_RM_RES_ID_RING_MON,     TISCI_DEV_MCU_NAVSS0_RINGACC0,      TISCI_RESASG_SUBTYPE_RA_MONITORS,          TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST}
+};
+
+/** \brief Shared resource Params */
+Udma_RmSharedResPrms gUdmaRmSharedResPrms[UDMA_RM_NUM_SHARED_RES] =
+{
+    /* MAIN NAVSS RX Free Flows are assigned to HOST_ID_ALL and some cores dosen't have core specific reservation */
+    /* resId,                     startResrvCnt, endResrvCnt, numInst,           minReq, instShare[core] */
+    {UDMA_RM_RES_ID_RX_FLOW,      0U,            0U,          UDMA_NUM_CORE,     0U,     {0U,                            /* MPU1_0  - Reserved in BoardCfg*/
+                                                                                          UDMA_RM_SHARED_RES_CNT_REST,   /* MCU2_0 */
+                                                                                          8U,                            /* MCU2_1 */
+                                                                                          0U,                            /* MCU3_0 */
+                                                                                          0U,                            /* MCU3_1 */
+                                                                                          0U,                            /* C7X_1 */
+                                                                                          0U,                            /* C66X_1 */
+                                                                                          0U,                            /* C66X_2 */
+                                                                                          0U,                            /* MCU1_0 */
+                                                                                          0U} },                         /* MCU1_1 */
+    /* Global Events/VINTR/IN INTR must be used based on core and split across MCU and MAIN NAVSS instances */
+#if defined (BUILD_MPU1_0)
+    /* resId,                     startResrvCnt, endResrvCnt, numInst,           minReq, instShare[MAIN_NAVSS,MCU_NAVSS] */
+    {UDMA_RM_RES_ID_GLOBAL_EVENT, 0U,            0U,          UDMA_NUM_INST_ID,  50U,    {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN} },
+    {UDMA_RM_RES_ID_VINTR,        0U,            0U,          UDMA_NUM_INST_ID,  4U,     {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN} },
+    {UDMA_RM_RES_ID_IR_INTR,      0U,            5U,          UDMA_NUM_INST_ID,  4U,     {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN} },
+#endif
+#if defined (BUILD_MCU2_0)
+    /* resId,                     startResrvCnt, endResrvCnt, numInst,           minReq, instShare[MAIN_NAVSS,MCU_NAVSS] */
+    {UDMA_RM_RES_ID_GLOBAL_EVENT, 0U,            0U,          UDMA_NUM_INST_ID,  50U,    {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN} },
+    {UDMA_RM_RES_ID_VINTR,        0U,            0U,          UDMA_NUM_INST_ID,  8U,     {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN} },
+    {UDMA_RM_RES_ID_IR_INTR,      0U,            5U,          UDMA_NUM_INST_ID,  8U,     {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN} },
+#endif
+#if defined (BUILD_MCU2_1)
+    /* resId,                     startResrvCnt, endResrvCnt, numInst,           minReq, instShare[MAIN_NAVSS,MCU_NAVSS] */
+    {UDMA_RM_RES_ID_GLOBAL_EVENT, 0U,            0U,          UDMA_NUM_INST_ID,  50U,    {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN} },
+    {UDMA_RM_RES_ID_VINTR,        0U,            0U,          UDMA_NUM_INST_ID,  4U,     {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN} },
+    {UDMA_RM_RES_ID_IR_INTR,      0U,            5U,          UDMA_NUM_INST_ID,  4U,     {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN} },
+#endif
+#if defined (BUILD_MCU3_0)
+    /* resId,                     startResrvCnt, endResrvCnt, numInst,           minReq, instShare[MAIN_NAVSS,MCU_NAVSS] */
+    {UDMA_RM_RES_ID_GLOBAL_EVENT, 0U,            0U,          UDMA_NUM_INST_ID,  50U,    {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN} },
+    {UDMA_RM_RES_ID_VINTR,        0U,            0U,          UDMA_NUM_INST_ID,  4U,     {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN} },
+    {UDMA_RM_RES_ID_IR_INTR,      0U,            5U,          UDMA_NUM_INST_ID,  8U,     {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN} },
+#endif
+#if defined (BUILD_MCU3_1)
+    /* resId,                     startResrvCnt, endResrvCnt, numInst,           minReq, instShare[MAIN_NAVSS,MCU_NAVSS] */
+    {UDMA_RM_RES_ID_GLOBAL_EVENT, 0U,            0U,          UDMA_NUM_INST_ID,  50U,    {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN} },
+    {UDMA_RM_RES_ID_VINTR,        0U,            0U,          UDMA_NUM_INST_ID,  4U,     {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN} },
+    {UDMA_RM_RES_ID_IR_INTR,      0U,            5U,          UDMA_NUM_INST_ID,  4U,     {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN} },
+#endif
+#if defined (BUILD_C7X_1)
+    /* resId,                     startResrvCnt, endResrvCnt, numInst,           minReq, instShare[MAIN_NAVSS,MCU_NAVSS] */
+    {UDMA_RM_RES_ID_GLOBAL_EVENT, 0U,            0U,          UDMA_NUM_INST_ID,  50U,    {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN} },
+    {UDMA_RM_RES_ID_VINTR,        0U,            0U,          UDMA_NUM_INST_ID,  4U,     {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN} },
+    {UDMA_RM_RES_ID_IR_INTR,      0U,            5U,          UDMA_NUM_INST_ID,  4U,     {8U,                          UDMA_RM_SHARED_RES_CNT_MIN} },
+#endif
+#if defined (BUILD_C66X_1)
+    /* resId,                     startResrvCnt, endResrvCnt, numInst,           minReq, instShare[MAIN_NAVSS,MCU_NAVSS] */
+    {UDMA_RM_RES_ID_GLOBAL_EVENT, 0U,            0U,          UDMA_NUM_INST_ID,  50U,    {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN} },
+    {UDMA_RM_RES_ID_VINTR,        0U,            0U,          UDMA_NUM_INST_ID,  4U,     {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN} },
+    {UDMA_RM_RES_ID_IR_INTR,      0U,            5U,          UDMA_NUM_INST_ID,  4U,     {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN} },
+#endif
+#if defined (BUILD_C66X_2)
+    /* resId,                     startResrvCnt, endResrvCnt, numInst,           minReq, instShare[MAIN_NAVSS,MCU_NAVSS] */
+    {UDMA_RM_RES_ID_GLOBAL_EVENT, 0U,            0U,          UDMA_NUM_INST_ID,  50U,    {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN} },
+    {UDMA_RM_RES_ID_VINTR,        0U,            0U,          UDMA_NUM_INST_ID,  4U,     {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN} },
+    {UDMA_RM_RES_ID_IR_INTR,      0U,            5U,          UDMA_NUM_INST_ID,  4U,     {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN} },
+#endif
+#if defined (BUILD_MCU1_0)
+    /* resId,                     startResrvCnt, endResrvCnt, numInst,           minReq, instShare[MAIN_NAVSS,MCU_NAVSS] */
+    {UDMA_RM_RES_ID_GLOBAL_EVENT, 0U,            0U,          UDMA_NUM_INST_ID,  50U,    {UDMA_RM_SHARED_RES_CNT_MIN, UDMA_RM_SHARED_RES_CNT_REST} },
+    {UDMA_RM_RES_ID_VINTR,        0U,            0U,          UDMA_NUM_INST_ID,  4U,     {UDMA_RM_SHARED_RES_CNT_MIN, UDMA_RM_SHARED_RES_CNT_REST} },
+    {UDMA_RM_RES_ID_IR_INTR,      0U,            5U,          UDMA_NUM_INST_ID,  4U,     {UDMA_RM_SHARED_RES_CNT_MIN, UDMA_RM_SHARED_RES_CNT_REST} },
+#endif
+#if defined (BUILD_MCU1_1)
+    /* resId,                     startResrvCnt, endResrvCnt, numInst,           minReq, instShare[MAIN_NAVSS,MCU_NAVSS] */
+    {UDMA_RM_RES_ID_GLOBAL_EVENT, 0U,            0U,          UDMA_NUM_INST_ID,  16U,    {UDMA_RM_SHARED_RES_CNT_MIN, UDMA_RM_SHARED_RES_CNT_REST} },
+    {UDMA_RM_RES_ID_VINTR,        0U,            0U,          UDMA_NUM_INST_ID,  2U,     {UDMA_RM_SHARED_RES_CNT_MIN, UDMA_RM_SHARED_RES_CNT_REST} },
+    {UDMA_RM_RES_ID_IR_INTR,      0U,            5U,          UDMA_NUM_INST_ID,  4U,     {UDMA_RM_SHARED_RES_CNT_MIN, UDMA_RM_SHARED_RES_CNT_REST} },
+#endif
 };
 
 /* ========================================================================== */
 /*                          Function Definitions                              */
 /* ========================================================================== */
 
-const Udma_RmInitPrms *Udma_rmGetDefaultCfg(uint32_t instId)
+const Udma_RmDefBoardCfgPrms *Udma_rmGetDefBoardCfgPrms(uint32_t instId)
 {
-    uint32_t                coreId;
-    const Udma_RmInitPrms  *rmInitPrms;
+    const Udma_RmDefBoardCfgPrms  *rmDefBoardCfgPrms;
 
-    coreId = Udma_getCoreId();
     if(UDMA_INST_ID_MCU_0 == instId)
     {
-        rmInitPrms = &gUdmaRmDefCfg_McuNavss[coreId];
+        rmDefBoardCfgPrms = &gUdmaRmDefBoardCfg_McuNavss[0U];
     }
     else
     {
-        rmInitPrms = &gUdmaRmDefCfg_MainNavss[coreId];
+        rmDefBoardCfgPrms = &gUdmaRmDefBoardCfg_MainNavss[0U];
     }
 
-    return (rmInitPrms);
+    return (rmDefBoardCfgPrms);
 }
 
-int32_t Udma_rmCheckDefaultCfg(void)
+Udma_RmSharedResPrms *Udma_rmGetSharedResPrms(uint32_t resId)
 {
-    int32_t                 retVal = UDMA_SOK;
-    Udma_RmInstCheckPrms    prms;
+    Udma_RmSharedResPrms  *rmSharedResPrms = NULL;
+    uint32_t    i;
 
-    /* Check MCU instance */
-    prms.selfCfg     = &gUdmaRmDefCfg_McuNavss[0U];
-    prms.crossCfg    = &gUdmaRmDefCfg_MainNavss[0U];
-    prms.numCores    = UDMA_NUM_MCU_CORE;
-    prms.startCoreId = UDMA_CORE_ID_MCU1_0;
-    prms.maxTxCh     = CSL_NAVSS_MCU_UDMAP_NUM_TX_CHANS;
-    prms.maxRxCh     = CSL_NAVSS_MCU_UDMAP_NUM_RX_CHANS;
-    prms.maxUtcCh    = CSL_NAVSS_MCU_UDMAP_NUM_EXT_CHANS;
-    prms.maxFreeRing = CSL_NAVSS_MCU_RINGACC_RING_CNT -
-                        (prms.maxTxCh + prms.maxRxCh + prms.maxUtcCh + CSL_NAVSS_MCU_UDMAP_NUM_SECURE_CHANS);
-    prms.maxFreeFlow = CSL_NAVSS_MCU_UDMAP_NUM_RX_FLOWS - prms.maxRxCh;
-    prms.maxEvents   = UDMA_MCU_NAVSS0_EVENT_CNT;
-    prms.maxVintr    = UDMA_MCU_NAVSS0_VINTR_CNT;
-    prms.maxProxy    = CSL_NAVSS_MCU_PROXY_NUM_PROXIES;
-    prms.maxRingMon  = CSL_NAVSS_MCU_RINGACC_NUM_MONITORS;
-    retVal += Udma_rmCheckInstOverlap(&prms);
-
-    /* Check Main instance */
-    prms.selfCfg     = &gUdmaRmDefCfg_MainNavss[0U];
-    prms.crossCfg    = &gUdmaRmDefCfg_McuNavss[0U];
-    prms.numCores    = UDMA_NUM_MAIN_CORE;
-    prms.startCoreId = UDMA_CORE_ID_MPU1_0;
-    prms.maxTxCh     = CSL_NAVSS_MAIN_UDMAP_NUM_TX_CHANS;
-    prms.maxRxCh     = CSL_NAVSS_MAIN_UDMAP_NUM_RX_CHANS;
-    prms.maxUtcCh    = CSL_NAVSS_MAIN_UDMAP_NUM_EXT_CHANS;
-    prms.maxFreeRing = CSL_NAVSS_MAIN_RINGACC_RING_CNT -
-                        (prms.maxTxCh + prms.maxRxCh + prms.maxUtcCh + CSL_NAVSS_MAIN_UDMAP_NUM_SECURE_CHANS);
-    prms.maxFreeFlow = CSL_NAVSS_MAIN_UDMAP_NUM_RX_FLOWS - prms.maxRxCh;
-    prms.maxEvents   = UDMA_MAIN_NAVSS0_EVENT_CNT;
-    prms.maxVintr    = UDMA_MAIN_NAVSS0_VINTR_CNT;
-    prms.maxProxy    = CSL_NAVSS_MAIN_PROXY_NUM_PROXIES;
-    prms.maxRingMon  = CSL_NAVSS_MAIN_RINGACC_NUM_MONITORS;
-    retVal += Udma_rmCheckInstOverlap(&prms);
-
-    return (retVal);
+    for (i = 0; i < UDMA_RM_NUM_SHARED_RES; i++)
+    {
+        if(resId == gUdmaRmSharedResPrms[i].resId)
+        {
+            rmSharedResPrms = &gUdmaRmSharedResPrms[i]; 
+            break;   
+        }
+    }
+    
+    return (rmSharedResPrms);
 }
 
-static int32_t Udma_rmCheckInstOverlap(const Udma_RmInstCheckPrms *prms)
-{
-    int32_t     retVal = UDMA_SOK;
-    uint32_t    startRes[UDMA_RM_CHECK_MAX_ENTRY];
-    uint32_t    numRes[UDMA_RM_CHECK_MAX_ENTRY];
-    uint32_t    startIdx, numIdx;
-    uint32_t    utcId, coreId;
 
-    /* Check TX channels */
-    startIdx = 0U; numIdx = 0U;
-    for(coreId = 0U; coreId < UDMA_NUM_CORE; coreId++)
-    {
-        startRes[startIdx] = prms->selfCfg[coreId].startBlkCopyCh; startIdx++;
-        startRes[startIdx] = prms->selfCfg[coreId].startBlkCopyHcCh; startIdx++;
-        startRes[startIdx] = prms->selfCfg[coreId].startBlkCopyUhcCh; startIdx++;
-        startRes[startIdx] = prms->selfCfg[coreId].startTxCh; startIdx++;
-        startRes[startIdx] = prms->selfCfg[coreId].startTxHcCh; startIdx++;
-        startRes[startIdx] = prms->selfCfg[coreId].startTxUhcCh; startIdx++;
-        numRes[numIdx] = prms->selfCfg[coreId].numBlkCopyCh; numIdx++;
-        numRes[numIdx] = prms->selfCfg[coreId].numBlkCopyHcCh; numIdx++;
-        numRes[numIdx] = prms->selfCfg[coreId].numBlkCopyUhcCh; numIdx++;
-        numRes[numIdx] = prms->selfCfg[coreId].numTxCh; numIdx++;
-        numRes[numIdx] = prms->selfCfg[coreId].numTxHcCh; numIdx++;
-        numRes[numIdx] = prms->selfCfg[coreId].numTxUhcCh; numIdx++;
-    }
-    retVal += Udma_rmCheckOverlap(startRes, numRes, startIdx, prms->maxTxCh);
-
-    /* Check RX channels */
-    startIdx = 0U; numIdx = 0U;
-    for(coreId = 0U; coreId < UDMA_NUM_CORE; coreId++)
-    {
-        startRes[startIdx] = prms->selfCfg[coreId].startBlkCopyCh; startIdx++;
-        startRes[startIdx] = prms->selfCfg[coreId].startBlkCopyHcCh; startIdx++;
-        startRes[startIdx] = prms->selfCfg[coreId].startBlkCopyUhcCh; startIdx++;
-        startRes[startIdx] = prms->selfCfg[coreId].startRxCh; startIdx++;
-        startRes[startIdx] = prms->selfCfg[coreId].startRxHcCh; startIdx++;
-        startRes[startIdx] = prms->selfCfg[coreId].startRxUhcCh; startIdx++;
-        numRes[numIdx] = prms->selfCfg[coreId].numBlkCopyCh; numIdx++;
-        numRes[numIdx] = prms->selfCfg[coreId].numBlkCopyHcCh; numIdx++;
-        numRes[numIdx] = prms->selfCfg[coreId].numBlkCopyUhcCh; numIdx++;
-        numRes[numIdx] = prms->selfCfg[coreId].numRxCh; numIdx++;
-        numRes[numIdx] = prms->selfCfg[coreId].numRxHcCh; numIdx++;
-        numRes[numIdx] = prms->selfCfg[coreId].numRxUhcCh; numIdx++;
-    }
-    retVal += Udma_rmCheckOverlap(startRes, numRes, startIdx, prms->maxRxCh);
-
-    /* Check UTC channels */
-    startIdx = 0U; numIdx = 0U;
-    for(utcId = 0U; utcId < UDMA_NUM_UTC_INSTANCE; utcId++)
-    {
-        for(coreId = 0U; coreId < UDMA_NUM_CORE; coreId++)
-        {
-            startRes[startIdx] = prms->selfCfg[coreId].startUtcCh[utcId]; startIdx++;
-            numRes[numIdx] = prms->selfCfg[coreId].numUtcCh[utcId]; numIdx++;
-        }
-    }
-    retVal += Udma_rmCheckOverlap(startRes, numRes, startIdx, prms->maxUtcCh);
-
-    /* Check free ring */
-    startIdx = 0U; numIdx = 0U;
-    for(coreId = 0U; coreId < UDMA_NUM_CORE; coreId++)
-    {
-        startRes[startIdx] = prms->selfCfg[coreId].startFreeRing; startIdx++;
-        numRes[numIdx] = prms->selfCfg[coreId].numFreeRing; numIdx++;
-    }
-    retVal += Udma_rmCheckOverlap(startRes, numRes, startIdx, prms->maxFreeRing);
-
-    /* Check free flow */
-    startIdx = 0U; numIdx = 0U;
-    for(coreId = 0U; coreId < UDMA_NUM_CORE; coreId++)
-    {
-        startRes[startIdx] = prms->selfCfg[coreId].startFreeFlow; startIdx++;
-        numRes[numIdx] = prms->selfCfg[coreId].numFreeFlow; numIdx++;
-    }
-    retVal += Udma_rmCheckOverlap(startRes, numRes, startIdx, prms->maxFreeFlow);
-
-    /*
-     * Note the cross usage!! This is intentional as events/interrupts
-     * are allocated based on core and not based on UDMA instance
-     *
-     */
-    /* Check events */
-    startIdx = 0U; numIdx = 0U;
-    for(coreId = 0U; coreId < prms->numCores; coreId++)
-    {
-        startRes[startIdx] = prms->selfCfg[prms->startCoreId + coreId].startGlobalEvent; startIdx++;
-        startRes[startIdx] = prms->crossCfg[prms->startCoreId + coreId].startGlobalEvent; startIdx++;
-        numRes[numIdx] = prms->selfCfg[prms->startCoreId + coreId].numGlobalEvent; numIdx++;
-        numRes[numIdx] = prms->crossCfg[prms->startCoreId + coreId].numGlobalEvent; numIdx++;
-    }
-    retVal += Udma_rmCheckOverlap(startRes, numRes, startIdx, prms->maxEvents);
-
-    /* Check VINTR */
-    startIdx = 0U; numIdx = 0U;
-    for(coreId = 0U; coreId < prms->numCores; coreId++)
-    {
-        startRes[startIdx] = prms->selfCfg[prms->startCoreId + coreId].startVintr; startIdx++;
-        startRes[startIdx] = prms->crossCfg[prms->startCoreId + coreId].startVintr; startIdx++;
-        numRes[numIdx] = prms->selfCfg[prms->startCoreId + coreId].numVintr; numIdx++;
-        numRes[numIdx] = prms->crossCfg[prms->startCoreId + coreId].numVintr; numIdx++;
-    }
-    retVal += Udma_rmCheckOverlap(startRes, numRes, startIdx, prms->maxVintr);
-
-    /* Check proxy */
-    startIdx = 0U; numIdx = 0U;
-    for(coreId = 0U; coreId < UDMA_NUM_CORE; coreId++)
-    {
-        startRes[startIdx] = prms->selfCfg[coreId].proxyThreadNum; startIdx++;
-        startRes[startIdx] = prms->selfCfg[coreId].startProxy; startIdx++;
-        numRes[numIdx] = 1U; numIdx++;
-        numRes[numIdx] = prms->selfCfg[coreId].numProxy; numIdx++;
-    }
-    retVal += Udma_rmCheckOverlap(startRes, numRes, startIdx, prms->maxProxy);
-
-    /* Check ring monitor */
-    startIdx = 0U; numIdx = 0U;
-    for(coreId = 0U; coreId < UDMA_NUM_CORE; coreId++)
-    {
-        startRes[startIdx] = prms->selfCfg[coreId].startRingMon; startIdx++;
-        numRes[numIdx] = prms->selfCfg[coreId].numRingMon; numIdx++;
-    }
-    retVal += Udma_rmCheckOverlap(startRes, numRes, startIdx, prms->maxRingMon);
-
-    return (retVal);
-}
-
-static int32_t Udma_rmCheckOverlap(uint32_t startRes[UDMA_RM_CHECK_MAX_ENTRY],
-                                   uint32_t numRes[UDMA_RM_CHECK_MAX_ENTRY],
-                                   uint32_t numEntries,
-                                   uint32_t maxRes)
-{
-    uint32_t                i, j;
-    uint32_t                offset, bitPos, bitMask;
-    int32_t                 retVal = UDMA_SOK;
-    uint32_t                mask[UDMA_RM_CHECK_MAX_WORDS];
-
-    /* Reset */
-    for(i = 0U; i < UDMA_RM_CHECK_MAX_WORDS; i++)
-    {
-        mask[i] = 0U;
-    }
-    for(j = 0U; j < numEntries; j++)
-    {
-        if((startRes[j]+numRes[j]) > maxRes)
-        {
-            /* Resource going out of bound */
-            retVal = UDMA_EFAIL;
-        }
-        else
-        {
-            for(i = 0U; i < numRes[j]; i++)
-            {
-                offset = (i + startRes[j]) >> 5U;
-                bitPos = (i + startRes[j]) - (offset << 5U);
-                bitMask = (uint32_t) 1U << bitPos;
-                if((offset >= UDMA_RM_CHECK_MAX_WORDS) ||
-                   ((mask[offset] & bitMask) == bitMask))
-                {
-                    /* Resource already allocate or array out of bound */
-                    retVal = UDMA_EFAIL;
-                    break;
-                }
-                else
-                {
-                    mask[offset] |= bitMask;
-                }
-            }
-        }
-
-        /* Break on error */
-        if(retVal != UDMA_SOK)
-        {
-            break;
-        }
-    }
-
-    return (retVal);
-}

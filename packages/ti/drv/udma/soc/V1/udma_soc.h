@@ -69,6 +69,8 @@ extern "C" {
 #define UDMA_INST_ID_START              (UDMA_INST_ID_0)
 /** \brief Maximum number of UDMA instance */
 #define UDMA_INST_ID_MAX                (UDMA_INST_ID_1)
+/** \brief Total number of UDMA instances */
+#define UDMA_NUM_INST_ID                (UDMA_INST_ID_MAX - UDMA_INST_ID_START + 1U)
 /* @} */
  
 /**
@@ -178,6 +180,34 @@ extern "C" {
 #define UDMA_UTC_ID_DMPAC_TC0           (UDMA_UTC_ID3)
 /* @} */
 
+/** \brief External start channel of DRU0 UTC */
+#define UDMA_UTC_START_CH_DRU0              (0U)
+/** \brief Number of channels present in DRU0 UTC */
+#define UDMA_UTC_NUM_CH_DRU0                (CSL_PSILCFG_NAVSS_MAIN_MSMC0_PSILS_THREAD_CNT)
+/** \brief Start thread ID of DRU0 UTC */
+#define UDMA_UTC_START_THREAD_ID_DRU0       (CSL_PSILCFG_NAVSS_MAIN_MSMC0_PSILD_THREAD_OFFSET)
+
+/** \brief External start channel of VPAC TC0 UTC */
+#define UDMA_UTC_START_CH_VPAC_TC0          (CSL_PSILCFG_NAVSS_MAIN_VPAC_TC0_CC_PSILS_THREAD_OFFSET - CSL_PSILCFG_NAVSS_MAIN_MSMC0_PSILS_THREAD_OFFSET)
+/** \brief Number of channels present in VPAC TC0 UTC */
+#define UDMA_UTC_NUM_CH_VPAC_TC0            (CSL_PSILCFG_NAVSS_MAIN_VPAC_TC0_CC_PSILS_THREAD_CNT)
+/** \brief Start thread ID of VPAC TC0 UTC */
+#define UDMA_UTC_START_THREAD_ID_VPAC_TC0   (CSL_PSILCFG_NAVSS_MAIN_VPAC_TC0_CC_PSILD_THREAD_OFFSET)
+
+/** \brief External start channel of VPAC TC1 UTC */
+#define UDMA_UTC_START_CH_VPAC_TC1          (CSL_PSILCFG_NAVSS_MAIN_VPAC_TC1_CC_PSILS_THREAD_OFFSET - CSL_PSILCFG_NAVSS_MAIN_MSMC0_PSILS_THREAD_OFFSET)
+/** \brief Number of channels present in VPAC TC1 UTC */
+#define UDMA_UTC_NUM_CH_VPAC_TC1            (CSL_PSILCFG_NAVSS_MAIN_VPAC_TC1_CC_PSILS_THREAD_CNT)
+/** \brief Start thread ID of VPAC TC1 UTC */
+#define UDMA_UTC_START_THREAD_ID_VPAC_TC1   (CSL_PSILCFG_NAVSS_MAIN_VPAC_TC1_CC_PSILD_THREAD_OFFSET)
+
+/** \brief External start channel of DMPAC TC0 UTC */
+#define UDMA_UTC_START_CH_DMPAC_TC0         (CSL_PSILCFG_NAVSS_MAIN_DMPAC_TC0_CC_PSILS_THREAD_OFFSET - CSL_PSILCFG_NAVSS_MAIN_MSMC0_PSILS_THREAD_OFFSET)
+/** \brief Number of channels present in DMPAC TC0 UTC */
+#define UDMA_UTC_NUM_CH_DMPAC_TC0           (CSL_PSILCFG_NAVSS_MAIN_DMPAC_TC0_CC_PSILS_THREAD_CNT)
+/** \brief Start thread ID of DMPAC TC0 UTC */
+#define UDMA_UTC_START_THREAD_ID_DMPAC_TC0  (CSL_PSILCFG_NAVSS_MAIN_DMPAC_TC0_CC_PSILD_THREAD_OFFSET)
+
 /**
  *  \anchor Udma_CoreId
  *  \name Core ID specific to a SOC
@@ -235,6 +265,58 @@ extern "C" {
 #define UDMA_DRU_CORE_ID_MCU1_0         (CSL_DRU_CORE_ID_2)
 #define UDMA_DRU_CORE_ID_MCU1_1         (CSL_DRU_CORE_ID_2)
 /* @} */
+
+/**
+ *  \anchor Udma_RmResId
+ *  \name UDMA Resources ID
+ *
+ *  List of all UDMA Resources Id's.
+ *
+ *  @{
+ */
+/** \brief Ultra High Capacity TX and Block Copy Channels */
+#define UDMA_RM_RES_ID_TX_UHC                   (0U)
+/** \brief High Capacity TX and Block Copy Channels */
+#define UDMA_RM_RES_ID_TX_HC                    (1U) 
+/** \brief Normal Capacity TX and Block Copy Channels */
+#define UDMA_RM_RES_ID_TX                       (2U) 
+/** \brief Ultra High Capacity RX Channels */
+#define UDMA_RM_RES_ID_RX_UHC                   (3U) 
+/** \brief High Capacity RX Channels */
+#define UDMA_RM_RES_ID_RX_HC                    (4U) 
+/** \brief Normal Capacity RX Channels */
+#define UDMA_RM_RES_ID_RX                       (5U) 
+/** \brief UTC - Extended Channels (MSMC_DRU/VPAC_TC0/VPAC_TC1/DMPAC) */
+#define UDMA_RM_RES_ID_UTC                      (6U) 
+/** \brief Free Flows */
+#define UDMA_RM_RES_ID_RX_FLOW                  (7U) 
+/** \brief Free Rings */
+#define UDMA_RM_RES_ID_RING                     (8U) 
+/** \brief Global Event */
+#define UDMA_RM_RES_ID_GLOBAL_EVENT             (9U) 
+/** \brief Virtual Interrupts */
+#define UDMA_RM_RES_ID_VINTR                    (10U) 
+/** \brief Interrupt Router Interrupts */
+#define UDMA_RM_RES_ID_IR_INTR                  (11U) 
+/** \brief Proxy */
+#define UDMA_RM_RES_ID_PROXY                    (12U) 
+/** \brief Ring Monitors */
+#define UDMA_RM_RES_ID_RING_MON                 (13U) 
+/** \brief Total number of resources */
+#define UDMA_RM_NUM_RES                         (14U) 
+/* @} */
+
+/** \brief Total number of shared resources - 
+ *  Free_Flows/Global_Event/IR Intr/VINT */
+#define UDMA_RM_NUM_SHARED_RES                  (4U) 
+/** \brief Maximum no.of instances to split a shared resource. 
+ *  This should be max(UDMA_NUM_CORE,UDMA_NUM_INST_ID) */
+#define UDMA_RM_SHARED_RES_MAX_INST             (UDMA_NUM_CORE)
+
+/* Start of C7x non-discrete(?) events associated to CLEC inputs is 32 */
+#define UDMA_C7X_CORE_INTR_OFFSET               (32U)
+/* Start of C66x core interrupts */
+#define UDMA_C66X_CORE_INTR_OFFSET              (32U)
 
 /**
  *  \anchor Udma_PsilCh

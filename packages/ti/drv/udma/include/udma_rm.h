@@ -62,7 +62,14 @@ extern "C" {
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
 
-/* None */
+/** \brief Macro used to specify that Resource ID is invalid. */
+#define UDMA_RM_RES_ID_INVALID         ((uint32_t) 0xFFFF0005U)
+
+/** \brief Macro used to specify - reserve minimum required number of resources for an instance */
+#define UDMA_RM_SHARED_RES_CNT_MIN      ((uint32_t) 0xFFFF0006U)
+
+/** \brief Macro used to specify - reserve all the remaining unreserved resources for an instance */
+#define UDMA_RM_SHARED_RES_CNT_REST     ((uint32_t) 0xFFFF0007U)
 
 /* ========================================================================== */
 /*                         Structure Declarations                             */
@@ -247,10 +254,93 @@ typedef struct
      *   Note: This cannot exceed #UDMA_RM_MAX_RING_MON */
 } Udma_RmInitPrms;
 
+/**
+ *  \brief UDMA resource manager shared resource parameters.
+ */
+typedef struct
+{
+    uint32_t                resId;
+    /**< UDMA Resource Id. Refer \ref Udma_RmResId macros. */
+    uint32_t                startResrvCnt;
+    /**< No. of resources from the start left reserved and can't be used by UDMA 
+     *   Ex: Core Interrupts(IR Interrupts) used by IPC, CPSW9G etc */
+    uint32_t                endResrvCnt;
+    /**< No. of resources from the end left reserved and can't be used by UDMA
+     *   Ex: Core Interrupts(IR Interrupts) used by IPC, CPSW9G etc */
+    uint32_t                numInst;
+    /**< No. of instances for which the available resources should be split.
+     *   -This can be no. of UDMA Instances (#UDMA_NUM_INST_ID) incase of 
+     *    resources like Gloable Events, IR Intr, VINT etc.
+     *   -This can be no.of cores (#UDMA_NUM_CORE) incase of splitting 
+     *    resources that are assigned #TISCI_HOST_ID_ALL between different cores*/
+    uint32_t                minReq;
+     /**< Minimum no. of resources required per instance.
+      *   This is validated with the unresrved number of resources.
+      *   ie, UDMA Driver will return error (#UDMA_EBADARGS) when:
+      *     (numInst * minReq) > (total_num_res -  startResrvCnt - endResrvCnt)
+      *      where, total_num_res = range_num returned by \ref Sciclient_rmGetResourceRange 
+      * 
+      *   For example, 
+      *   When numInst = 2; minReq = 50; 
+      *   range_num = 110; startResrvCnt = 10; endResrvCnt = 10;
+      * 
+      *   no.of unreserved resources = 110-10-10 = 90
+      *   But, total requirment = minReq*numInst = 50*2 = 100
+      *   Since the requirment cant be met, UDMA Driver will return #UDMA_EBADARGS
+      *  
+      *   In this case either more no.of resources should be reserved in
+      *   Sciclient_deafaultBoardCfg_rm.c 
+      *   OR 
+      *   Adjustments should be made in minReq/startResrvCnt/endResrvCnt.
+      */
+    uint32_t                instShare[UDMA_RM_SHARED_RES_MAX_INST];
+    /**< No. of resources for each instance.
+     *   This can be:
+     *   - #UDMA_RM_SHARED_RES_CNT_MIN - Reserves 'minReq' no.of resources for the instance
+     *       ie, final_share = minReq
+     *   - #UDMA_RM_SHARED_RES_CNT_REST - Reserves all the remaining unreserved resources.
+     *       ie, final_share = total_num_res -  startResrvCnt - endResrvCnt - sum(other_instance_share)
+     *       If more than one instance uses #UDMA_RM_SHARED_RES_CNT_REST, 
+     *       the remaining will be split equally.
+     *   - Any specific number such that:-
+     *       sum of instance shares is less than unresrved number of resources
+     *       ie, "sum(instShare[]) < (total_num_res -  startResrvCnt - endResrvCnt)"
+     *       Else will return error (#UDMA_EINVALID_PARAMS)
+     *       Note: While calculating 'sum(instShare[])', 'minReq' count 
+     *       will be used for shares with #UDMA_RM_SHARED_RES_CNT_MIN or
+     *       #UDMA_RM_SHARED_RES_CNT_REST
+     * 
+     *   For example,
+     *   When numInst = 4; minReq = 50; range_num = 410;
+     *   startResrvCnt = 7; endResrvCnt = 3;
+     *   (Here, no.of unreserved resources = 410-7-3 = 400)
+     * 
+     *   Case 1: instShare[] = {UDMA_RM_SHARED_RES_CNT_MIN,
+     *                          UDMA_RM_SHARED_RES_CNT_REST,
+     *                          UDMA_RM_SHARED_RES_CNT_REST,
+     *                          100U}
+     *  
+     *       sum(instShare[]) = 50+50+50+100 = 250 
+     *       This is less than no.of unreserved resources(400)
+     * 
+     *       Therefore, final_share will be {50,125,125,100}
+     *  
+     *   Case 2: instShare[] = {UDMA_RM_SHARED_RES_CNT_MIN,
+     *                          UDMA_RM_SHARED_RES_CNT_REST,
+     *                          250U,
+     *                          100U}
+     *  
+     *       sum(instShare[]) = 50+50+250+100 = 450 
+     *       Since this is greater than no.of unreserved resources(400),
+     *       UDMA Driver will return #UDMA_EINVALID_PARAMS
+     */
+} Udma_RmSharedResPrms;
+
 /* ========================================================================== */
 /*                          Function Declarations                             */
 /* ========================================================================== */
 
+#if defined (SOC_AM64X) || defined(SOC_AM65XX)
 /**
  *  \brief Returns the default RM config structure based on instance and core.
  *  User can use this API to get the default config and override as per need.
@@ -270,6 +360,23 @@ const Udma_RmInitPrms *Udma_rmGetDefaultCfg(uint32_t instId);
  *  \return \ref Udma_ErrorCodes
  */
 int32_t Udma_rmCheckDefaultCfg(void);
+#else
+/**
+ *  \brief Returns the RM Shared Resource default parameters structure for the 
+ *  requested resource.
+ *  User can use this API to get the default parameters for a resource 
+ *  and override as per need.
+ *
+ *  \param resId       [IN] \ref Udma_RmResId
+ *
+ *  \return Pointer to default RM Shared Resource parameters
+ *          #Udma_RmSharedResPrms
+ *          Note: Returns NULL_PTR if the requested \ref Udma_RmResId
+ *          dosen't have an entry in the array of default RM Shared Resource 
+ *          parameters structure
+ */
+Udma_RmSharedResPrms *Udma_rmGetSharedResPrms(uint32_t resId);
+#endif
 
 /* ========================================================================== */
 /*                       Static Function Definitions                          */

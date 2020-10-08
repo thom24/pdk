@@ -229,12 +229,20 @@ int32_t Udma_deinit(Udma_DrvHandle drvHandle)
     return (retVal);
 }
 
-void UdmaInitPrms_init(uint32_t instId, Udma_InitPrms *initPrms)
+int32_t UdmaInitPrms_init(uint32_t instId, Udma_InitPrms *initPrms)
 {
-    if(NULL_PTR != initPrms)
+    int32_t retVal = UDMA_SOK;
+
+    /* Error check */
+    if(NULL_PTR == initPrms)
+    {
+        retVal = UDMA_EBADARGS;
+    }
+
+    if(UDMA_SOK == retVal)
     {
         initPrms->instId                = instId;
-        UdmaRmInitPrms_init(instId, &initPrms->rmInitPrms);
+        retVal = UdmaRmInitPrms_init(instId, &initPrms->rmInitPrms);
         UdmaOsalPrms_init(&initPrms->osalPrms);
         initPrms->skipRmOverlapCheck    = FALSE;
         initPrms->skipGlobalEventReg    = FALSE;
@@ -243,5 +251,5 @@ void UdmaInitPrms_init(uint32_t instId, Udma_InitPrms *initPrms)
         initPrms->printFxn              = (Udma_PrintFxn) NULL_PTR;
     }
 
-    return;
+    return (retVal);
 }
