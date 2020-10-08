@@ -29,8 +29,8 @@ ifeq ($(BOARD),$(filter $(BOARD), tpr12_evm tpr12_qt))
 endif
 
 ifeq ($(BOARD),$(filter $(BOARD), am64x_evm am64x_svb))
-  BIOS_VERSION=6_82_02_20_eng
-  XDC_VERSION=3_61_00_16_core
+  BIOS_VERSION=6_83_02_07
+  XDC_VERSION=3_61_04_40_core
 endif
 
   EDMA_VERSION=2_12_05_30E
