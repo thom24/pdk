@@ -262,8 +262,19 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
         /* Enable PHY pipeline mode  even though DMA is not used */
         CSL_ospiPipelinePhyEnable((const CSL_ospi_flash_cfgRegs *)(ospi_cfg.baseAddr), TRUE);
 #endif
+
+#if defined(SOC_J7200)
+        /* Until OSPI PHY + DMA is enabled at this early stage, the
+         * ROM can more efficiently load the SYSFW directly from xSPI flash */
+        if(pBuffer)
+        {
+            /* Set up ROM to load system firmware */
+            *pBuffer = (void *)(ospi_cfg.dataAddr + OSPI_OFFSET_SYSFW);
+        }
+#else
         /* Optimized CPU copy loop - can be removed once ROM load is working */
         SBL_SysFwLoad((void *)(*pBuffer), (void *)(ospi_cfg.dataAddr + OSPI_OFFSET_SYSFW), num_bytes);
+#endif
 
         /* Update handle for later use*/
         boardHandle = (void *)h;
@@ -274,7 +285,7 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
         SblErrLoop(__FILE__, __LINE__);
     }
 
-SBL_ADD_PROFILE_POINT;
+    SBL_ADD_PROFILE_POINT;
 
     return CSL_PASS;
 #else
