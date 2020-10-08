@@ -331,28 +331,22 @@ int32_t Ipc_mailboxRegister(uint16_t selfId, uint16_t remoteProcId,
            Mailbox_hwiCallback func, uint32_t arg)
 {
     int32_t               retVal = IPC_SOK;
-    uintptr_t             key   = 0U;
-    Ipc_Object           *pObj  = NULL;
-    Ipc_OsalPrms         *pOsal = NULL;
     Mailbox_openParams openParam;
     Mbox_Handle        handle;
     int32_t            errCode;
-
-    pObj = getIpcObjInst(0U);
-    pOsal = &pObj->initPrms.osalPrms;
 
     Mailbox_openParams_init(&openParam);
 
     openParam.cfg.writeMode = MAILBOX_MODE_POLLING;
     openParam.cfg.readMode = MAILBOX_MODE_CALLBACK;
     openParam.cfg.readCallback = Ipc_mailboxInternalCallback;
+    /*
+     * Set enableInterrupts to false, we want to enable later after
+     * control endpoint callback is configured
+     */
+    openParam.cfg.enableInterrupts = false;
 
     openParam.remoteEndpoint = Ipc_rprocIdToMboxId(remoteProcId);
-
-    if (NULL != pOsal->disableAllIntr)
-    {
-        key = pOsal->disableAllIntr();
-    }
 
     handle = Mailbox_open(&openParam, &errCode);
 
@@ -374,11 +368,6 @@ int32_t Ipc_mailboxRegister(uint16_t selfId, uint16_t remoteProcId,
                 mbox->fifoCnt, selfId, remoteProcId, clusterId, userId, queueId, arg,
                 g_ipc_mBoxCnt);
 #endif
-
-    if (NULL != pOsal->restoreAllIntr)
-    {
-        pOsal->restoreAllIntr(key);
-    }
 
     return retVal;
 }
@@ -430,12 +419,20 @@ void Ipc_mailboxInternalCallback(Mbox_Handle handle, Mailbox_Instance remoteEndp
 
 void Ipc_mailboxEnableNewMsgInt(uint16_t selfId, uint16_t remoteProcId)
 {
-    /* not supported */
+    if (g_ipc_mBoxData[remoteProcId].handle != NULL)
+    {
+        Mailbox_enableInterrupts(g_ipc_mBoxData[remoteProcId].handle);
+    }
+
     return;
 }
 
 void Ipc_mailboxDisableNewMsgInt(uint16_t selfId, uint16_t remoteProcId)
 {
-    /* not supported */
+    if (g_ipc_mBoxData[remoteProcId].handle != NULL)
+    {
+        Mailbox_disableInterrupts(g_ipc_mBoxData[remoteProcId].handle);
+    }
+
     return;
 }
