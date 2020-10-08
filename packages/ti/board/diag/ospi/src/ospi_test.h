@@ -117,6 +117,7 @@ extern "C" {
 #if defined (am64x_evm)
 #define NOR_SIZE                     (64U * 1024U * 1024U)
 #define NOR_PAGE_SIZE                (256U)
+#define NOR_BLOCK_SIZE               (256U * 1024U)
 #endif
 
 
