@@ -204,8 +204,8 @@ const Udma_RmInitPrms gUdmaRmDefCfg_Bcdma[UDMA_NUM_CORE] =
         128U,                                       /* numGlobalEvent */
         100U,                                       /* startVintr */
         6U,                                         /* numVintr */
-        8U,                                         /* startIrIntr */
-        8U,                                         /* numIrIntr */
+        76U,                                        /* startIrIntr */
+        6U,                                         /* numIrIntr */
 
         0U,                                         /* proxyThreadNum */
         0U,                                         /* startC7xCoreIntr */
@@ -258,8 +258,8 @@ const Udma_RmInitPrms gUdmaRmDefCfg_Bcdma[UDMA_NUM_CORE] =
         64U,                                        /* numGlobalEvent */
         114U,                                       /* startVintr */
         6U,                                         /* numVintr */
-        8U,                                         /* startIrIntr */
-        8U,                                         /* numIrIntr */
+        90U,                                        /* startIrIntr */
+        6U,                                         /* numIrIntr */
 
         0U,                                         /* proxyThreadNum */
         0U,                                         /* startC7xCoreIntr */
@@ -312,8 +312,8 @@ const Udma_RmInitPrms gUdmaRmDefCfg_Bcdma[UDMA_NUM_CORE] =
         128U,                                       /* numGlobalEvent */
         52U,                                        /* startVintr */
         6U,                                         /* numVintr */
-        8U,                                         /* startIrIntr */
-        8U,                                         /* numIrIntr */
+        76U,                                        /* startIrIntr */
+        6U,                                         /* numIrIntr */
 
         0U,                                         /* proxyThreadNum */
         0U,                                         /* startC7xCoreIntr */
@@ -366,8 +366,8 @@ const Udma_RmInitPrms gUdmaRmDefCfg_Bcdma[UDMA_NUM_CORE] =
         64U,                                        /* numGlobalEvent */
         66U,                                        /* startVintr */
         6U,                                         /* numVintr */
-        8U,                                         /* startIrIntr */
-        8U,                                         /* numIrIntr */
+        90U,                                        /* startIrIntr */
+        6U,                                         /* numIrIntr */
 
         0U,                                         /* proxyThreadNum */
         0U,                                         /* startC7xCoreIntr */
@@ -534,7 +534,7 @@ const Udma_RmInitPrms gUdmaRmDefCfg_Pktdma[UDMA_NUM_CORE] =
         92U,        /* startVintr */
         8U,         /* numVintr */
         68U,        /* startIrIntr */
-        14U,        /* numIrIntr */
+        8U,         /* numIrIntr */
 
         0U,         /* proxyThreadNum */
         0U,         /* startC7xCoreIntr */
@@ -588,7 +588,7 @@ const Udma_RmInitPrms gUdmaRmDefCfg_Pktdma[UDMA_NUM_CORE] =
         106U,       /* startVintr */
         8U,         /* numVintr */
         82U,        /* startIrIntr */
-        14U,        /* numIrIntr */
+        8U,         /* numIrIntr */
 
         0U,         /* proxyThreadNum */
         0U,         /* startC7xCoreIntr */
@@ -642,7 +642,7 @@ const Udma_RmInitPrms gUdmaRmDefCfg_Pktdma[UDMA_NUM_CORE] =
         44U,        /* startVintr */
         8U,         /* numVintr */
         68U,        /* startIrIntr */
-        14U,        /* numIrIntr */
+        8U,         /* numIrIntr */
 
         0U,         /* proxyThreadNum */
         0U,         /* startC7xCoreIntr */
@@ -696,7 +696,7 @@ const Udma_RmInitPrms gUdmaRmDefCfg_Pktdma[UDMA_NUM_CORE] =
         58U,        /* startVintr */
         8U,         /* numVintr */
         82U,        /* startIrIntr */
-        14U,        /* numIrIntr */
+        8U,         /* numIrIntr */
 
         0U,         /* proxyThreadNum */
         0U,         /* startC7xCoreIntr */
