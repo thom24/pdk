@@ -472,6 +472,16 @@ typedef struct Mailbox_Config_t
      *         support for this feature.
      */
     bool                     enableVIMDirectInterrupt;
+    /**
+     * \brief  Whether to enable interrupts during interrupt registration
+     *         or not. Some software may want to control when the interrupts
+     *         begin coming. Defaults to TRUE (interrupts will be enabled
+     *         during Mailbox_open). If set to FALSE, the application must
+     *         call Mailbox_enableInterrupts() for the mailbox instance
+     *         in order to enable the interrupts.
+     *         The only supported value for TPR12 is TRUE.
+     */
+    bool                     enableInterrupts;
 } Mailbox_Config;
 
 /**
@@ -653,6 +663,39 @@ extern int32_t Mailbox_deinit(void);
  *
  */
 extern Mbox_Handle Mailbox_open(Mailbox_openParams *openParam,  int32_t* errCode);
+
+/*!
+ *  \brief  Function to enable the mailbox interrupts for a mailbox instance if
+ *          enableInterrupts was set to false in the Mailbox_open params.
+ *          This is useful for the situation where the application wishes to
+ *          delay enabling of interrupts until it has been able to do further setup.
+ *          This functionality is not supported on TPR12.
+ *
+ *  @pre    Mailbox_open() has been called
+ *
+ *  @param[in]  handle      A Mbox_Handle
+ *
+ *  @return Returns error code in case of failure.
+ *
+ *  \ingroup MAILBOX_DRIVER_EXTERNAL_FUNCTION
+ *
+ */
+extern int32_t Mailbox_enableInterrupts(Mbox_Handle handle);
+
+/*!
+ *  \brief  Function to disable the mailbox interrupts for a mailbox instance.
+ *          This functionality is not supported on TPR12.
+ *
+ *  @pre    Mailbox_open() with open param enableInterrupts set to true or
+ *          Mailbox_enableInterrupts() has been called.
+ *
+ *  @param[in]  handle      A Mbox_Handle
+ *
+ *  @return Returns error code in case of failure.
+ *
+ *  \ingroup MAILBOX_DRIVER_EXTERNAL_FUNCTION
+ */
+extern int32_t Mailbox_disableInterrupts(Mbox_Handle handle);
 
 /*!
  *  \brief  Function that writes data to a Mailbox.
@@ -908,6 +951,7 @@ static inline int32_t Mailbox_openParams_init (Mailbox_openParams *openParam)
         openParam->cfg.chType           = MAILBOX_CHTYPE_SINGLE;
         openParam->cfg.chId             = MAILBOX_CH_ID_0;
         openParam->cfg.enableVIMDirectInterrupt = false;
+        openParam->cfg.enableInterrupts = true;
         retVal = MAILBOX_SOK;
     }
     return retVal;

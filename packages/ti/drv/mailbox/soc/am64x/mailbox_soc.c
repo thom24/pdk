@@ -855,19 +855,6 @@ void Mailbox_InternalCallback(uintptr_t arg)
     }
 }
 
-/**
- *  \brief Clear interrupt and return the message.
- */
-static uint32_t Mailbox_mailboxClear(uint32_t baseAddr, uint32_t queueId)
-{
-    uint32_t retVal = 0;
-    uint32_t msg;
-
-    retVal = MailboxGetMessage(baseAddr, queueId, &msg);
-
-    return retVal;
-}
-
 int32_t Mailbox_registerInterrupts(Mbox_Handle handle)
 {
     Mailbox_Driver        *driver;
@@ -880,6 +867,7 @@ int32_t Mailbox_registerInterrupts(Mbox_Handle handle)
     void                  *hwiHandle = NULL;
     uint32_t              i = 0;
     Mailbox_Instance remoteEndpoint;
+    uint32_t              q = 0;
 
     driver = (Mailbox_Driver *)handle;
     localEndpoint = driver->localEndpoint;
@@ -922,7 +910,16 @@ int32_t Mailbox_registerInterrupts(Mbox_Handle handle)
                 mbox->fifoCnt  = 0;
                 mbox->userId   = hwCfg->rx.user;
 
-                Mailbox_mailboxClear(driver->baseAddrRx, hwCfg->rx.fifo);
+                /*
+                 * Before we register for the interrupt, make sure that all the fifo
+                 * new msg interrupts are disabled. This helps in case there is
+                 * some stale state from previous run.
+                 */
+                for (q = 0; q < MAILBOX_MAXFIFO_CNT; q++)
+                {
+                    MailboxDisableNewMsgInt(driver->baseAddrRx, hwCfg->rx.user, q);
+                    MailboxClrNewMsgStatus(driver->baseAddrRx, hwCfg->rx.user, q);
+                }
 
                 /* clear new msg status */
                 MailboxClrNewMsgStatus(driver->baseAddrRx, hwCfg->rx.user, hwCfg->rx.fifo);
@@ -1006,8 +1003,11 @@ int32_t Mailbox_registerInterrupts(Mbox_Handle handle)
                 mbox->fifoCnt++;
             }
 
-            /* enable the mailbox interrupt */
-            MailboxEnableNewMsgInt(driver->baseAddrRx, hwCfg->rx.user, hwCfg->rx.fifo);
+            if (driver->cfg.enableInterrupts == true)
+            {
+                /* enable the mailbox interrupt */
+                MailboxEnableNewMsgInt(driver->baseAddrRx, hwCfg->rx.user, hwCfg->rx.fifo);
+            }
         }
     }
 
@@ -1047,6 +1047,62 @@ int32_t Mailbox_unregisterInterrupts(Mbox_Handle handle)
                 mbox->fifoTable[i].handle  = NULL;
             }
         }
+    }
+
+    return retVal;
+}
+
+int32_t Mailbox_enableInterrupts(Mbox_Handle handle)
+{
+    Mailbox_Driver*    driver;
+    int32_t            retVal = MAILBOX_SOK;
+    Mailbox_HwCfg      *hwCfg = NULL;
+
+    if (handle != NULL)
+    {
+        driver = (Mailbox_Driver *)handle;
+        hwCfg = (Mailbox_HwCfg *)driver->hwCfg;
+
+        if (hwCfg != NULL)
+        {
+            MailboxEnableNewMsgInt(driver->baseAddrRx, hwCfg->rx.user, hwCfg->rx.fifo);
+	}
+        else
+        {
+            retVal = MAILBOX_EINVAL;
+        }
+    }
+    else
+    {
+        retVal = MAILBOX_EINVAL;
+    }
+
+    return retVal;
+}
+
+int32_t Mailbox_disableInterrupts(Mbox_Handle handle)
+{
+    Mailbox_Driver*    driver;
+    int32_t            retVal = MAILBOX_SOK;
+    Mailbox_HwCfg      *hwCfg = NULL;
+
+    if (handle != NULL)
+    {
+        driver = (Mailbox_Driver *)handle;
+        hwCfg = (Mailbox_HwCfg *)driver->hwCfg;
+
+        if (hwCfg != NULL)
+        {
+            MailboxDisableNewMsgInt(driver->baseAddrRx, hwCfg->rx.user, hwCfg->rx.fifo);
+        }
+        else
+        {
+            retVal = MAILBOX_EINVAL;
+        }
+    }
+    else
+    {
+        retVal = MAILBOX_EINVAL;
     }
 
     return retVal;
