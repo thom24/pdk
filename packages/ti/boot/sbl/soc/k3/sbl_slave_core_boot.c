@@ -434,10 +434,8 @@ void SBL_SetupCoreMem(uint32_t core_id)
     int32_t status = CSL_EFAIL;
     uint8_t runLockStep = 0;
     uint8_t mcuModeConfigured = 0;
-#if !defined(SOC_AM65XX)
     struct tisci_msg_proc_get_status_resp cpuStatus;
     struct tisci_msg_proc_set_config_req  proc_set_config_req;
-#endif
     const sblSlaveCoreInfo_t *sblSlaveCoreInfoPtr;
 
     SBL_ADD_PROFILE_POINT;
@@ -523,8 +521,6 @@ void SBL_SetupCoreMem(uint32_t core_id)
                 Sciclient_pmSetModuleState(sblSlaveCoreInfoPtr->tisci_dev_id, TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
             }
 
-#if !defined(SOC_AM65XX)
-            /* Leave TCM defaults, for AM65xx. TCMs must be loaded by the app itself to avoid losing data during power cycle */
             SBL_log(SBL_LOG_MAX, "Calling Sciclient_procBootGetProcessorState, ProcId 0x%x... \n", sblSlaveCoreInfoPtr->tisci_proc_id);
             status = Sciclient_procBootGetProcessorState(sblSlaveCoreInfoPtr->tisci_proc_id, &cpuStatus, SCICLIENT_SERVICE_WAIT_FOREVER);
             if (status != CSL_PASS)
@@ -538,9 +534,13 @@ void SBL_SetupCoreMem(uint32_t core_id)
             proc_set_config_req.bootvector_hi = cpuStatus.bootvector_hi;
             proc_set_config_req.config_flags_1_set = 0;
             proc_set_config_req.config_flags_1_clear = 0;
-            proc_set_config_req.config_flags_1_set |= TISCI_MSG_VAL_PROC_BOOT_CFG_FLAG_R5_ATCM_EN;
-
+#if defined(SOC_AM65XX)
+            SBL_log(SBL_LOG_MAX, "Restore TCM defaults (ATCM disabled), after reset, for core %d\n", core_id);
+            proc_set_config_req.config_flags_1_clear |= TISCI_MSG_VAL_PROC_BOOT_CFG_FLAG_R5_ATCM_EN;
+#else
             SBL_log(SBL_LOG_MAX, "Enabling MCU TCMs after reset for core %d\n", core_id);
+            proc_set_config_req.config_flags_1_set |= TISCI_MSG_VAL_PROC_BOOT_CFG_FLAG_R5_ATCM_EN;
+#endif
             proc_set_config_req.config_flags_1_set |= (TISCI_MSG_VAL_PROC_BOOT_CFG_FLAG_R5_BTCM_EN |
                                                        TISCI_MSG_VAL_PROC_BOOT_CFG_FLAG_R5_TCM_RSTBASE);
 
@@ -560,6 +560,9 @@ void SBL_SetupCoreMem(uint32_t core_id)
                 SBL_log(SBL_LOG_ERR, "Sciclient_procBootSetProcessorCfg...FAILED \n");
                 SblErrLoop(__FILE__, __LINE__);
             }
+
+#if !defined(SOC_AM65XX)
+            /* Only initialize TCMs for Non-AM65xx SoCs. For AM65xx, TCMs must be initialized by the app itself. */
 
             /* For lockstep R5 pairs, this section will naturally only set HALT bit for MCU2_CPU0_ID or MCU3_CPU0_ID */
             if (core_id != MCU1_CPU0_ID)
@@ -831,7 +834,7 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
              *   1. Processor Boot Wait (holds the queue)
              *   2. MCU1_1 Enter Reset - (AM65x case: already powered OFF)
              *   3. MCU1_0 Enter Reset - (AM65x case: Power OFF)
-             *   4. Un-halt MCU1_1
+             *   4. Un-halt MCU1_1     - (AM65x case: Not necessary)
              *   5. Release control of MCU1_0
              *   6. Release control of MCU1_1
              *   7. MCU1_0 Leave Reset - (AM65x case: Power ON)
