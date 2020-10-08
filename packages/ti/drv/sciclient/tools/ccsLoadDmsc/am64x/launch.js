@@ -62,7 +62,7 @@ pdkPath = "/ti/j7presi/workarea/pdk";
 ccs_init_elf_file = pdkPath+"/packages/ti/drv/sciclient/tools/ccsLoadDmsc/am64x/sciclient_ccs_init_mcu1_0_release.xer5f";
 
 //path to sysfw bin
-sysfw_bin = pdkPath+"/packages/ti/drv/sciclient/soc/sysfw/binaries/ti-sci-firmware-am64x-gp-vlab-no-fwl.bin"
+sysfw_bin = pdkPath+"/packages/ti/drv/sciclient/soc/sysfw/binaries/ti-sci-firmware-am64x-gp-vlab.bin"
 
 //<!!!!!! EDIT THIS !!!!!>
 
