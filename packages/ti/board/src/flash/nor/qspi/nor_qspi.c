@@ -626,3 +626,4 @@ NOR_STATUS Nor_qspiErase(NOR_HANDLE handle, int32_t erLoc, bool blkErase)
 
     return NOR_PASS;
 }
+
