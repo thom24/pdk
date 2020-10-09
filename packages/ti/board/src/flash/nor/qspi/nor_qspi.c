@@ -42,8 +42,8 @@ static NOR_STATUS Nor_qspiRead(NOR_HANDLE handle, uint32_t addr,
 static NOR_STATUS Nor_qspiWrite(NOR_HANDLE handle, uint32_t addr,
                                 uint32_t len, uint8_t *buf, uint32_t mode);
 static NOR_STATUS Nor_qspiErase(NOR_HANDLE handle, int32_t erLoc, bool blkErase);
-static NOR_STATUS Nor_qspiQuadModeCtrl(SPI_Handle handle,
-                                       uint8_t enable);
+NOR_STATUS Nor_qspiQuadModeCtrl(SPI_Handle handle,
+                                uint8_t enable);
 
 /* NOR function table for NOR QSPI interface implementation */
 const NOR_FxnTable Nor_qspiFxnTable =
@@ -71,27 +71,59 @@ NOR_Info Nor_qspiInfo =
 static NOR_STATUS NOR_qspiCmdRead(SPI_Handle handle, uint8_t *cmdBuf,
                             uint32_t cmdLen, uint8_t *rxBuf, uint32_t rxLen)
 {
+    QSPI_v1_Object  *object;
     SPI_Transaction  transaction;
-    uint32_t         transferType = SPI_TRANSACTION_TYPE_READ;
+    uint32_t         transferType;
     bool             ret;
+    unsigned int rxLines;
+    unsigned int frmLength;
+    unsigned int rxLinesArg;
+    unsigned int operMode;
+
+    object = handle->object;
+
+    operMode = object->qspiMode;
+    rxLines  = object->rxLines;
 
     /* Update the mode and transfer type with the required values */
     SPI_control(handle, SPI_CMD_SETCONFIGMODE, NULL);
-    SPI_control(handle, SPI_CMD_TRANSFERMODE_RW, (void *)&transferType);
+
+    rxLinesArg = QSPI_RX_LINES_SINGLE;
+    SPI_control(handle, SPI_V1_CMD_SETRXLINES, (void *)&rxLinesArg);
 
     transaction.txBuf = (void *)cmdBuf;
-    transaction.rxBuf = (void *)rxBuf;
-    transaction.count = cmdLen + rxLen;
+    transaction.rxBuf = NULL;
+    transaction.count = cmdLen;
+
+    frmLength = cmdLen + rxLen;
+    SPI_control(handle, SPI_V1_CMD_SETFRAMELENGTH, (void *)&frmLength);
+
+    transferType = SPI_TRANSACTION_TYPE_WRITE;
+    SPI_control(handle, SPI_CMD_TRANSFERMODE_RW, (void *)&transferType);
 
     ret = SPI_transfer(handle, &transaction);
-    if (ret == true)
-    {
-        return NOR_PASS;
-    }
-    else
+    if (ret != true)
     {
         return NOR_FAIL;
     }
+
+    transaction.txBuf = NULL;
+    transaction.rxBuf = (void *)rxBuf;
+    transaction.count = rxLen;
+
+    transferType = SPI_TRANSACTION_TYPE_READ;
+    SPI_control(handle, SPI_CMD_TRANSFERMODE_RW, (void *)&transferType);
+
+    ret = SPI_transfer(handle, &transaction);
+    if (ret != true)
+    {
+        return NOR_FAIL;
+    }
+
+    object->qspiMode = operMode;
+    SPI_control(handle, SPI_V1_CMD_SETRXLINES, (void *)&rxLines);
+
+    return NOR_PASS;
 }
 
 static NOR_STATUS Nor_qspiReadId(SPI_Handle handle)
@@ -127,6 +159,7 @@ NOR_HANDLE Nor_qspiOpen(uint32_t norIntf, uint32_t portNum, void *params)
     NOR_HANDLE      norHandle = 0;
     uint8_t         status;
     uint8_t         cmd = NOR_CMD_RDSR;
+    unsigned int rxLinesArg;
 
     /* Init SPI driver */
     SPI_init();
@@ -142,11 +175,13 @@ NOR_HANDLE Nor_qspiOpen(uint32_t norIntf, uint32_t portNum, void *params)
     }
     hwHandle = (SPI_Handle)SPI_open(portNum + SPI_CONFIG_OFFSET, &spiParams);
 
+    rxLinesArg = QSPI_RX_LINES_SINGLE;
+    SPI_control(hwHandle, SPI_V1_CMD_SETRXLINES, (void *)&rxLinesArg);
+
     if (hwHandle)
     {
         if (Nor_qspiReadId(hwHandle) == NOR_PASS)
         {
-#if defined(tpr12_evm) || defined(tpr12_qt)
             /* Quad enable bit is set by default for TPR12 as needed for RoM boot */
             if (NOR_qspiCmdRead(hwHandle, &cmd, 1, &status, 1))
             {
@@ -159,8 +194,11 @@ NOR_HANDLE Nor_qspiOpen(uint32_t norIntf, uint32_t portNum, void *params)
                 {
                     return NOR_FAIL;
                 }
+
+                rxLinesArg = QSPI_RX_LINES_QUAD;
+                SPI_control(hwHandle, SPI_V1_CMD_SETRXLINES, (void *)&rxLinesArg);
             }
-#endif
+
             Nor_qspiInfo.hwHandle = (uint32_t)hwHandle;
             norHandle = (NOR_HANDLE)(&Nor_qspiInfo);
         }
@@ -189,28 +227,46 @@ void Nor_qspiClose(NOR_HANDLE handle)
 static NOR_STATUS Nor_qspiCmdWrite(SPI_Handle handle, uint8_t *cmdBuf,
                                         uint32_t cmdLen, uint32_t dataLen)
 {
+    QSPI_v1_Object  *object;
     SPI_Transaction  transaction;
     uint32_t         transferType = SPI_TRANSACTION_TYPE_WRITE;
     bool             ret;
+    unsigned int operMode;
+    unsigned int rxLines;
+    unsigned int rxLinesArg;
+    unsigned int frmLength;
+
+    object = handle->object;
+
+    operMode = object->qspiMode;
+    rxLines  = object->rxLines;
 
     /* Update the mode and transfer type with the required values */
     SPI_control(handle, SPI_CMD_SETCONFIGMODE, NULL);
     SPI_control(handle, SPI_CMD_TRANSFERMODE_RW, (void *)&transferType);
+
+    rxLinesArg = QSPI_RX_LINES_SINGLE;
+    SPI_control(handle, SPI_V1_CMD_SETRXLINES, (void *)&rxLinesArg);
 
     transaction.txBuf = (void *)cmdBuf; /* Buffer includes command and write data */
     transaction.count = cmdLen + dataLen;
     transaction.rxBuf = NULL;
     transaction.arg = (void *)dataLen;
 
+    /* Total transaction frame length */
+    frmLength = transaction.count;
+    SPI_control(handle, SPI_V1_CMD_SETFRAMELENGTH, ((void *)&frmLength));
+
     ret = SPI_transfer(handle, &transaction);
-    if (ret == true)
-    {
-        return NOR_PASS;
-    }
-    else
+    if (ret != true)
     {
         return NOR_FAIL;
     }
+
+    object->qspiMode = operMode;
+    SPI_control(handle, SPI_V1_CMD_SETRXLINES, (void *)&rxLines);
+
+    return NOR_PASS;
 }
 
 static NOR_STATUS Nor_qspiWaitReady(SPI_Handle handle, uint32_t timeOut)
@@ -246,8 +302,8 @@ static NOR_STATUS Nor_qspiWaitReady(SPI_Handle handle, uint32_t timeOut)
 }
 
 #if defined (tpr12_evm) || defined(tpr12_qt)
-static NOR_STATUS Nor_qspiQuadModeCtrl(SPI_Handle handle,
-                                       uint8_t enable)
+NOR_STATUS Nor_qspiQuadModeCtrl(SPI_Handle handle,
+                                uint8_t enable)
 {
     uint8_t status;
     uint8_t cmd[3];
@@ -311,7 +367,7 @@ err :
 
 #else
 
-static NOR_STATUS Nor_qspiQuadModeCtrl(SPI_Handle handle,
+NOR_STATUS Nor_qspiQuadModeCtrl(SPI_Handle handle,
                                        uint8_t enable)
 {
     uint8_t status;
@@ -392,6 +448,9 @@ NOR_STATUS Nor_qspiRead(NOR_HANDLE handle, uint32_t addr,
 #else
     uint32_t         rx_lines;
 #endif
+    unsigned int frmLength;
+    unsigned char writeVal[4];
+
     if (!handle)
     {
         return NOR_FAIL;
@@ -460,21 +519,55 @@ NOR_STATUS Nor_qspiRead(NOR_HANDLE handle, uint32_t addr,
     }
 
     /* Update the indirect read command, rx lines and read dummy cycles */
+#if !defined(tpr12_evm) && !defined(tpr12_qt)
     SPI_control(spiHandle, SPI_CMD_SETQSPIMODE, NULL);
     SPI_control(spiHandle, SPI_CMD_TRANSFER_CMD, (void *)&command);
-#if !defined(tpr12_evm) && !defined(tpr12_qt)
     SPI_control(spiHandle, SPI_CMD_SETXFERLINES, (void *)&rx_lines);
     SPI_control(spiHandle, SPI_V0_CMD_RD_DUMMY_CLKS, (void *)&dummyCycles);
 #else
-    /* Dummy Byte Write */
-    dummyWrite[0] = 0U;
-    transaction.txBuf = (unsigned char *)&dummyWrite[0];
+
+    /* total transaction frame length */
+    frmLength = len+1+3;
+    SPI_control(spiHandle, SPI_V1_CMD_SETFRAMELENGTH, (void *)&frmLength);
+
+    /* Write read command */
+    writeVal[0] = command;
+    transaction.txBuf = (unsigned char *)&writeVal[0];
     transaction.rxBuf = NULL;
-    transaction.count = (dummyCycles >> 3);      /* In bytes */
+    transaction.count = 1;
 
     transferType = SPI_TRANSACTION_TYPE_WRITE;
-    SPI_control(spiHandle, SPI_CMD_TRANSFERMODE_RW, (void *)&transferType);
+    SPI_control(spiHandle, SPI_V1_CMD_TRANSFERMODE_RW, (void *)&transferType);
     ret = SPI_transfer(spiHandle, &transaction);
+
+    /* Write Address Bytes */
+    writeVal[0] = (addr >> 16) & 0xFF;
+    writeVal[1] = (addr >> 8) & 0xFF;
+    writeVal[2] = (addr >> 0) & 0xFF;
+    transaction.txBuf = (unsigned char *)&writeVal[0];
+    transaction.rxBuf = NULL;
+    transaction.count = 3;
+
+    transferType = SPI_TRANSACTION_TYPE_WRITE;
+    SPI_control(spiHandle, SPI_V1_CMD_TRANSFERMODE_RW, (void *)&transferType);
+    ret = SPI_transfer(spiHandle, &transaction);
+
+    if(dummyCycles != 0)
+    {
+        /* Dummy Byte Write */
+        dummyWrite[0] = 0U;
+        transaction.txBuf = (unsigned char *)&dummyWrite[0];
+        transaction.rxBuf = NULL;
+        transaction.count = (dummyCycles >> 3);      /* In bytes */
+
+        transferType = SPI_TRANSACTION_TYPE_WRITE;
+        SPI_control(spiHandle, SPI_CMD_TRANSFERMODE_RW, (void *)&transferType);
+        ret = SPI_transfer(spiHandle, &transaction);
+    }
+
+    transferType = SPI_TRANSACTION_TYPE_READ;
+    SPI_control(spiHandle, SPI_V1_CMD_TRANSFERMODE_RW, (void *)&transferType);
+
 #endif
     transaction.arg   = (void *)addr;
     transaction.txBuf = NULL;
@@ -507,6 +600,9 @@ NOR_STATUS Nor_qspiWrite(NOR_HANDLE handle, uint32_t addr, uint32_t len,
     uint32_t         pageSize;
     uint32_t         chunkLen;
     uint32_t         actual;
+    unsigned int frmLength;
+    unsigned char writeVal[4];
+    unsigned int transferType;
 
     if (!handle)
     {
@@ -581,9 +677,9 @@ NOR_STATUS Nor_qspiWrite(NOR_HANDLE handle, uint32_t addr, uint32_t len,
         }
 
         /* Update the indirect write command and tx lines */
+#if !defined (tpr12_evm) && !defined(tpr12_qt)
         SPI_control(spiHandle, SPI_CMD_SETQSPIMODE, NULL);
         SPI_control(spiHandle, SPI_CMD_TRANSFER_CMD, (void *)&command);
-#if !defined (tpr12_evm) && !defined(tpr12_qt)
         SPI_control(spiHandle, SPI_CMD_SETXFERLINES, (void *)&tx_lines);
 #endif
 
@@ -591,10 +687,40 @@ NOR_STATUS Nor_qspiWrite(NOR_HANDLE handle, uint32_t addr, uint32_t len,
         chunkLen = ((len - actual) < (pageSize - byteAddr) ?
                 (len - actual) : (pageSize - byteAddr));
 
+#if defined (tpr12_evm) || defined(tpr12_qt)
+        frmLength = chunkLen + 4;
+        SPI_control(spiHandle, SPI_V1_CMD_SETFRAMELENGTH, ((void *)&frmLength));
+#endif
+
+        /* Send Flash write command */
+        writeVal[0] = command;   /* Flash write command */
+        transaction.txBuf = (unsigned char *)&writeVal[0];
+        transaction.rxBuf = NULL;
+        transaction.count = 1U;
+
+        transferType = SPI_TRANSACTION_TYPE_WRITE;
+        SPI_control(spiHandle, SPI_V1_CMD_TRANSFERMODE_RW, (void *)&transferType);
+        ret = SPI_transfer(spiHandle, &transaction);
+
+        /* Send flash address offset to which data has to be written */
+        writeVal[0] = (addr >> 16) & 0xFF;
+        writeVal[1] = (addr >> 8) & 0xFF;
+        writeVal[2] = (addr >> 0) & 0xFF;
+        transaction.txBuf = (unsigned char *)&writeVal[0];
+        transaction.rxBuf = NULL;
+        transaction.count = 3;
+
+        transferType = SPI_TRANSACTION_TYPE_WRITE;
+        SPI_control(spiHandle, SPI_V1_CMD_TRANSFERMODE_RW, (void *)&transferType);
+        ret = SPI_transfer(spiHandle, &transaction);
+
         transaction.arg   = (void *)addr;
         transaction.txBuf = (void *)(buf + actual);
         transaction.rxBuf = NULL;
         transaction.count = chunkLen;
+
+        transferType = SPI_TRANSACTION_TYPE_WRITE;
+        SPI_control(spiHandle, SPI_V1_CMD_TRANSFERMODE_RW, (void *)&transferType);
 
         ret = SPI_transfer(spiHandle, &transaction);
         if (ret == false)
@@ -723,6 +849,9 @@ NOR_STATUS Nor_qspiErase(NOR_HANDLE handle, int32_t erLoc, bool blkErase)
         cmdLen = 4;
     }
 
+    /* Update the mode and rxLines with the required values */
+    SPI_control(spiHandle, SPI_V1_CMD_SETCONFIGMODE, NULL);
+
     if (Nor_qspiCmdWrite(spiHandle, &cmdWren, 1, 0))
     {
         return NOR_FAIL;
@@ -733,7 +862,7 @@ NOR_STATUS Nor_qspiErase(NOR_HANDLE handle, int32_t erLoc, bool blkErase)
         return NOR_FAIL;
     }
 
-    if (Nor_qspiCmdWrite(spiHandle, cmd, cmdLen, 0))
+    if (Nor_qspiCmdWrite(spiHandle, &cmd[1], cmdLen, 0))
     {
         return NOR_FAIL;
     }

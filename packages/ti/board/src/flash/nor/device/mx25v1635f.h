@@ -85,8 +85,8 @@ extern "C" {
 
 /* \brief Read ID command definitions */
 #define NOR_RDID_NUM_BYTES          (0x3U)
-#define NOR_MANF_ID                 (0x15U)   /* Manufacturer ID */
-#define NOR_DEVICE_ID               (0xC2U)  /* Device ID */
+#define NOR_MANF_ID                 (0xC2U)   /* Manufacturer ID */
+#define NOR_DEVICE_ID               (0x2315U)  /* Device ID */
 
 /** Status Register, Write-in-Progress bit */
 #define NOR_SR_WIP			        (1U << 0U)

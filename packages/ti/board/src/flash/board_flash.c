@@ -60,7 +60,8 @@ static uint32_t Board_getFlashIntf(uint32_t deviceId)
     }
     else if((deviceId == BOARD_FLASH_ID_MT25QU512ABB) || \
             (deviceId == BOARD_FLASH_ID_S25FL512S) || \
-            (deviceId == BOARD_FLASH_ID_S25FL256S))
+            (deviceId == BOARD_FLASH_ID_S25FL256S) ||
+            (deviceId == BOARD_FLASH_ID_MX25V1635F))
     {
         flashIntf = BOARD_FLASH_NOR_QSPI;
     }
