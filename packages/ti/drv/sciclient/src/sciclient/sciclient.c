@@ -457,7 +457,7 @@ int32_t Sciclient_serviceGetThreadIds (const Sciclient_ReqPrm_t *pReqPrm,
          */
         if (pReqPrm->forwardStatus == SCISERVER_FORWARD_MSG)
         {
-            *txThread = TISCI_SEC_PROXY_DM2DMSC_WRITE_HIGH_PRIORITY_THREAD_ID;
+            *txThread = TISCI_SEC_PROXY_DM2DMSC_WRITE_NOTIFY_RESP_THREAD_ID;
             *rxThread = TISCI_SEC_PROXY_DM2DMSC_READ_RESPONSE_THREAD_ID;
         }
         else
