@@ -52,9 +52,11 @@
 typedef enum {
     SDR_WDT_TEST_FLAG_NONE=0,
     /**< Error flag no action */
-    SDR_WDT_TEST_FLAG_INPROGRESS=1,
+    SDR_WDT_TEST_FLAG_PREPARING=1,
     /**< Error flag to indicate self test in progress */
-    SDR_WDT_TEST_FLAG_TRIGGERED=2,
+    SDR_WDT_TEST_FLAG_INPROGRESS=2,
+    /**< Error flag to indicate self test in progress */
+    SDR_WDT_TEST_FLAG_TRIGGERED=3,
     /**< Error flag to indicate error triggerred */
 } SDR_WDT_TestFlag;
 
@@ -120,9 +122,6 @@ SDR_Result SDR_WDT_selftest (const SDR_WDT_TimerConfig_t *pTimerConfig,
     }
 
     if ( result == SDR_PASS ) {
-        /* Register callback function with MCU ESM */
-        (void)SDR_ESM_registerWDTHandler(SDR_ESM_INSTANCE_MCU,
-                                         &SDR_ESM_WDT_callBackFunction);
 
         /* Calculate the low time out period */
         lowTimeout = SDR_WDT_getLowTimeout(pTimerConfig);
@@ -137,8 +136,18 @@ SDR_Result SDR_WDT_selftest (const SDR_WDT_TimerConfig_t *pTimerConfig,
         /* Get the interrupt source */
         SDR_WDT_instance.selfTestintSrc = SDR_WDT_getIntSource(pTimerConfig->timerId);
 
+        /* Set flag to indicate preparing for test */
+        SDR_WDT_instance.testFlag = SDR_WDT_TEST_FLAG_PREPARING;
+
+        /* Register callback function with MCU ESM */
+        (void)SDR_ESM_registerWDTHandler(SDR_ESM_INSTANCE_MCU,
+                                         &SDR_ESM_WDT_callBackFunction);
+
         /* Feed the watchdog to start */
         SDR_WDT_feedWatchdog(pTimerConfig->timerId);
+
+        /* Clear any initial violations */
+        SDR_WDT_clearAllInterruptEvents(SDR_WDT_instance.selfTestintSrc);
 
         /* Get start time and record it as both start time and last time stamp */
         timeStamp = SDR_getTime();
@@ -166,11 +175,12 @@ SDR_Result SDR_WDT_selftest (const SDR_WDT_TimerConfig_t *pTimerConfig,
             feedDeltaTime = SDR_WDT_instance.elapsedTime;
         }
 
-
         /* Set the Test flag to in progress */
         SDR_WDT_instance.testFlag = SDR_WDT_TEST_FLAG_INPROGRESS;
 
-        /* Feed the watchdog */
+        /* Feed the watchdog
+           NOTE: For test type Window violation, this will act as a purposefully wrong
+           feed to trigger the Window violation event*/
         SDR_WDT_feedWatchdog(pTimerConfig->timerId);
 
         /* Wait in a loop for events */
@@ -201,7 +211,7 @@ SDR_Result SDR_WDT_selftest (const SDR_WDT_TimerConfig_t *pTimerConfig,
         if ( result == SDR_PASS ) {
             if ( SDR_WDT_instance.triggerTimeStamp > SDR_WDT_instance.lastTimeStamp) {
                 /* Check if the WDT event occured within the window */
-                triggerDelta = SDR_WDT_instance.triggerTimeStamp-SDR_WDT_instance.lastTimeStamp;
+                triggerDelta = SDR_WDT_instance.triggerTimeStamp - SDR_WDT_instance.lastTimeStamp;
             } else {
                 triggerDelta = ((uint32_t)0u);
             }
@@ -217,6 +227,8 @@ SDR_Result SDR_WDT_selftest (const SDR_WDT_TimerConfig_t *pTimerConfig,
                 }
             }
         }
+        SDR_WDT_clearAllInterruptEvents(SDR_WDT_instance.selfTestintSrc);
+
         /* De-register WDT handler */
         SDR_ESM_deRegisterWDTHandler(SDR_ESM_INSTANCE_MCU);
     }
@@ -244,6 +256,10 @@ static bool SDR_ESM_WDT_callBackFunction (SDR_ESM_WDT_IntSrc intSrc)
         }
         retVal = (bool)true;
     } else {
+        if ((SDR_WDT_instance.testFlag == SDR_WDT_TEST_FLAG_PREPARING)
+            || (SDR_WDT_instance.testFlag == SDR_WDT_TEST_FLAG_TRIGGERED)){
+            retVal = (bool)true;
+        }
         SDR_WDT_clearAllInterruptEvents(intSrc);
     }
 
