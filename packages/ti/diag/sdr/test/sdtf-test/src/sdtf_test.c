@@ -199,6 +199,9 @@ void SDTF_triggerPeriodicTests(uintptr_t arg)
 
     /* Set the flag to trigger periodic tests */
     SDTF_periodTaskTrigger = SDTF_PERIODIC_TASK_TRIGGER_ENABLE;
+
+    /* Feed watchdog timer */
+    SDTF_WDT_feedWatchdogTimer();
 }
 /*********************************************************************
  * @fn      SDTF_runPeriodicTests
@@ -293,19 +296,21 @@ int32_t SDTF_runPeriodicTests(void)
  */
 #define SDTF_MAX_SPECIAL_COMMANDS (5u)
 
+#ifdef SOC_AM65XX
+/* Number of commands run by the "run_all" command
+ * Note: This should match number of entries in the tables below
+ */
+#define SDTF_NUM_RUNALL_TEST_COMMANDS (41u)
+
+/* Other commands not covered by run_all */
+#define SDTF_NUM_OTHER_TEST_COMMANDS (0u)
+#endif
+
 #ifdef SOC_J721E
 /* Number of commands run by the "run_all" command
  * Note: This should match number of entries in the tables below
  */
 #define SDTF_NUM_RUNALL_TEST_COMMANDS (39u)
-
-/* Other commands not covered by run_all */
-#define SDTF_NUM_OTHER_TEST_COMMANDS (6u)
-#else
-/* Number of commands run by the "run_all" command
- * Note: This should match number of entries in the tables below
- */
-#define SDTF_NUM_RUNALL_TEST_COMMANDS (45u)
 
 /* Other commands not covered by run_all */
 #define SDTF_NUM_OTHER_TEST_COMMANDS (0u)
@@ -364,17 +369,23 @@ SDTF_commandList_t SDTF_commandList[SDTF_MAX_COMMANDS] =
     { "ecc2_programinject",          SDTF_runECC2BitCodeInjectTest },
     { "exception_runapitests",       SDTF_runExceptionApiTests },
     { "ecc1_inject",                 SDTF_runECC1BitInjectTest },
+#ifdef SOC_J721E
     { "cbass_1bitinject",            SDTF_runECC1BitCBASSInjectTest },
     { "cbass_1bitselftest",          SDTF_runECC1BitCBASSSelfTest },
     { "cbass_2bitinject",            SDTF_runECC2BitCBASSInjectTest },
     { "cbass_2bitselftest",          SDTF_runECC2BitCBASSSelfTest },
-    { "ecc2_vimramdedvector",        SDTF_runECC2BitVIMRAMDEDvector },
+#endif
+#ifdef SOC_AM65XX
     { "ccm_selftest",                SDTF_runCCMSelfTest },
     { "ccm_selftest_polarityinvert", SDTF_runCCMSelfTestErrorForce },
     { "ccm_vimselftest",             SDTF_runCCMVIMSelfTest },
     { "ccm_inactivityselftest",      SDTF_runCCMInactivitySelfTest },
     { "ccm_inject",                  SDTF_runCCMInjectError },
     { "ccm_selftest_errorforce",     SDTF_runCCMSelftestPolarityInvert },
+#endif
+    /* This needs to be last as it is destructive */
+    { "ecc2_vimramdedvector",        SDTF_runECC2BitVIMRAMDEDvector },
+
 
      /* The following tests are not covered by run all */
 
@@ -485,7 +496,7 @@ int32_t SDTF_runInteractiveTests(void)
             sscanf(buffPointer2, "%x", &regAddress);
 
             if (strncmp(buffPointer, "read_reg", SDTF_MAX_COMMAND_LEN) == 0) {
-                SDTF_printf("\n Read value at 0x%x is 0x%x", regAddress, *((uint32_t *)regAddress));
+                SDTF_printf("\n Read value at 0x%x is 0x%x", regAddress, *((volatile uint32_t *)regAddress));
             } else {
                 char buffPointer3[256];
                 uint32_t regValue;
@@ -501,9 +512,9 @@ int32_t SDTF_runInteractiveTests(void)
                     continue;
                 }
                 sscanf(buffPointer3, "%x", &regValue);
-                *((uint32_t *)regAddress) = regValue;
+                *((volatile uint32_t *)regAddress) = regValue;
                 SDTF_printf("\n Written address 0x%x with value: 0x%x read value 0x%x",
-                            regAddress, regValue, *((uint32_t *)regAddress));
+                            regAddress, regValue, *((volatile uint32_t *)regAddress));
             }
 
         }

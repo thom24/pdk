@@ -45,6 +45,7 @@ ifeq ($(SOC),$(filter $(SOC), am65xx j721e))
  INCDIR += $(PDK_INSTALL_PATH)/ti/build/unit-test/config
  SRCS_COMMON += unity_config.c unity.c
  CFLAGS_LOCAL_COMMON += -DUNITY_INCLUDE_CONFIG_H
+ CFLAGS_LOCAL_COMMON += -DSDTF_BOARD
 endif
 
 # Core/SoC/platform specific source files and CFLAGS

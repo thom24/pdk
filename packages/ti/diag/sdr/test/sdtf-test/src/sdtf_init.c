@@ -56,6 +56,7 @@
 #include "sdtf_profile.h"
 #include "sdtf_wdt.h"
 #include "sdtf_ecc.h"
+#include <sdtf_soc.h>
 
 #ifdef SDTF_BOARD
 #include <ti/board/board.h>
@@ -73,116 +74,6 @@ int32_t SDTF_EsmInitHandlerInit(SDR_ESM_InstanceType esmInstType);
 int32_t SDTF_init (void);
 void SDTF_VIMDEDInterruptHandler(void);
 
-
-SDR_ESM_InitConfig_t SDTF_esmInitConfig_MCU =
-{
-    .esmErrorConfig = {0u, 3u}, /* Self test error config */
-    .eventMap = {0xffffffffu, 0xff0fffffu, 0x7fffffffu, 0xffffffe7u,
-                 0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
-                 0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
-                 0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
-                 0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
-                 0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
-                 0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
-                 0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
-                },
-     /**< All events enable: except timer and self test  events, and Main ESM output */
-    /* Temporarily disabling vim compare error as well*/
-    .eventPriorityMap = {0xffffffffu, 0xff0fffffu, 0x7fffffffu, 0xffffffe6u,
-                         0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
-                         0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
-                         0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
-                         0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
-                         0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
-                         0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
-                         0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
-                        },
-    /**< All events high priority: except timer, selftest error events, and Main ESM output */
-    .errorOutputMap = {0xffffffffu, 0xff0fffffu, 0x7fffffffu, 0xffffffe6u,
-                       0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
-                       0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
-                       0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
-                       0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
-                       0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
-                       0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
-                       0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
-                      },
-    /**< All events high priority: except timer, selftest error events, and Main ESM output */
-};
-
-SDR_ESM_InitConfig_t SDTF_esmInitConfig_WKUP =
-{
-    .esmErrorConfig = {0u, 8u}, /* Self test error config */
-    .eventMap = {0xffffffffu, 0x00180003u, 0xffffffffu, 0x00000000u,
-                 0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
-                 0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
-                 0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
-                 0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
-                 0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
-                 0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
-                 0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
-                },
-     /**< All events enable: except clkstop events for unused clocks */
-    .eventPriorityMap = {0xffffffffu, 0x00180003u, 0xffffffffu, 0x00000000u,
-                         0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
-                         0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
-                         0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
-                         0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
-                         0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
-                         0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
-                         0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
-                        },
-    /**< All events high priority: except clkstop events for unused clocks */
-    .errorOutputMap = {0xffffffffu, 0x00180003u, 0xffffffffu, 0x00000000u,
-                       0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
-                       0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
-                       0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
-                       0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
-                       0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
-                       0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
-                       0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
-                      },
-    /**< All events high priority: except clkstop for unused clocks
-     *   and selftest error events */
-};
-
-SDR_ESM_InitConfig_t SDTF_esmInitConfig_MAIN =
-{
-    .esmErrorConfig = {1u, 8u}, /* Self test error config */
-    .eventMap = {0x00000000u, 0xfffffffbu, 0x7fffffffu, 0xffffffffu,
-                 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu,
-                 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu,
-                 0xffffffffu, 0xffffffffu, 0xffffffffu, 0x00000000u,
-                 0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
-                 0xffffffffu, 0x00000000u, 0x00000000u, 0x00000000u,
-                 0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
-                 0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
-                },
-     /**< All events enable: except clkstop events for unused clocks
-      *   and PCIE events */
-    .eventPriorityMap = {0x00000000u, 0xfffffffbu, 0x7fffffffu, 0xffffffffu,
-                         0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu,
-                         0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu,
-                         0xffffffffu, 0xffffffffu, 0xffffffffu, 0x00000000u,
-                         0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
-                         0xffffffffu, 0x00000000u, 0x00000000u, 0x00000000u,
-                         0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
-                         0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
-                        },
-    /**< All events high priority: except clkstop events for unused clocks
-     *   and PCIE events */
-    .errorOutputMap = {0x00000000u, 0xfffffffbu, 0x7fffffffu, 0xffffffffu,
-                       0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu,
-                       0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu,
-                       0xffffffffu, 0xffffffffu, 0xffffffffu, 0x00000000u,
-                       0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
-                       0xffffffffu, 0x00000000u, 0x00000000u, 0x00000000u,
-                       0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
-                       0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
-                      },
-    /**< All events high priority: except clkstop for unused clocks
-     *   and PCIE events */
-};
 
 static SDR_ECC_MemSubType SDTF_R5FCoresubMemTypeList[MCU_R5F_MAX_MEM_SECTIONS] =
 {
@@ -202,12 +93,14 @@ static SDR_ECC_InitConfig_t SDTF_R5FCoreECCInitConfig =
     /**< Sub type list  */
 };
 
+#ifdef SOC_J721E
 static SDR_ECC_MemSubType SDTF_MCUCBASSsubMemTypeList[MCU_CBASS_MAX_MEM_SECTIONS] =
 {
     SDR_ECC_MCU_CBASS_MEM_SUBTYPE_WR_RAMECC_ID,
     SDR_ECC_MCU_CBASS_MEM_SUBTYPE_RD_RAMECC_ID,
     SDR_ECC_MCU_CBASS_MEM_SUBTYPE_EDC_CTRL_ID,
 };
+
 
 static SDR_ECC_InitConfig_t SDTF_MCUCBASSECCInitConfig =
 {
@@ -216,7 +109,7 @@ static SDR_ECC_InitConfig_t SDTF_MCUCBASSECCInitConfig =
     .pMemSubTypeList = &(SDTF_MCUCBASSsubMemTypeList[0]),
     /**< Sub type list  */
 };
-
+#endif
 
 HwiP_Handle SDTF_EsmHiHwiPHandle;
 HwiP_Handle SDTF_EsmLoHwiPHandle;
@@ -527,10 +420,11 @@ int32_t SDTF_init (void)
 
             retValue = -1;
         } else {
-            SDTF_printf("\nSDTF_init: R5F Core Init ECC complete \n");
+            SDTF_printf("\nSDTF_init: R5F Core ECC Init complete \n");
         }
     }
 
+#ifdef SOC_J721E
     if (retValue == 0) {
         /* Initialize ECC */
         result = SDR_ECC_init(SDR_ECC_MEMTYPE_MCU_CBASS_ECC_AGGR0, &SDTF_MCUCBASSECCInitConfig);
@@ -540,10 +434,10 @@ int32_t SDTF_init (void)
 
             retValue = -1;
         } else {
-            SDTF_printf("\nSDTF_init: R5F Core Init ECC complete \n");
+            SDTF_printf("\nSDTF_init: MCU CBASS ECC Init complete \n");
         }
     }
-
+#endif
     if (retValue == 0) {
         /* Initialize ECC callbacks within the MCU ESM */
         result = SDR_ECC_initEsm(SDR_ESM_INSTANCE_MCU);
@@ -567,6 +461,19 @@ int32_t SDTF_init (void)
             retValue = -1;
         } else {
             SDTF_printf("\nSDTF_init: ECC Callback Init complete for Main ESM \n");
+        }
+    }
+
+    if (retValue == 0) {
+        /* Initialize ECC callbacks within the WKUP ESM */
+        result = SDR_ECC_initEsm(SDR_ESM_INSTANCE_WKUP);
+        if (result != SDR_PASS) {
+            /* print error and quit */
+             SDTF_printf("SDTF_init: Error initializing ECC callback for WKUP ESM: result = %d\n", result);
+
+            retValue = -1;
+        } else {
+            SDTF_printf("\nSDTF_init: ECC Callback Init complete for WKUP ESM \n");
         }
     }
 

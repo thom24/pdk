@@ -64,9 +64,17 @@ typedef enum rtiClockSource
     /**< to select clock frequency of 32KHz */
 }rtiClockSource_t;
 
+
+/* Static variables */
+
+static volatile bool gWDTStartedFlag = false;
+static volatile uint32_t gTimerCount;
+static volatile bool gSelfTestFlag = false;
+
 #ifdef SDTF_WDT_THROUGH_INTERRUPT
 /* ============================================= */
 volatile uint32_t isrFlag = 0U;
+
 
 static void RTIAppISR(uintptr_t handle)
 {
@@ -114,11 +122,14 @@ int32_t SDTF_WDT_init(void)
     uint32_t preloadValue;
     int32_t cslStatus = CSL_PASS;
     uint32_t intrStatus;
-
+    volatile uint32_t *hwRegPtr;
+    uint32_t regValue;
+    
+#ifdef SDTF_WDT_THROUGH_INTERRUPT
     /* Add RTI handling through direct CPU interrupt */
     /* Disable this for now to avoid interference with self test */
-    /* RTIInterruptConfig(); */
-
+    RTIInterruptConfig();
+#endif
     /* Clear any pending interrupt */
     RTIDwwdGetStatus(CSL_MCU_RTI1_CFG_BASE, &intrStatus);
     RTIDwwdClearStatus(CSL_MCU_RTI1_CFG_BASE, intrStatus);
@@ -127,17 +138,28 @@ int32_t SDTF_WDT_init(void)
     preloadValue = (uint32_t)SDTF_RTI_CLOCK_SOURCE_32KHZ*(uint32_t)SDTF_RTI_DWWD_TIMEOUT_VALUE;
 
     /* Select RTI module clock source */
-    HW_WR_FIELD32(CSL_MCU_CTRL_MMR0_CFG0_BASE +
-                  CSL_MCU_CTRL_MMR_CFG0_MCU_RTI1_CLKSEL,
-                  CSL_MCU_CTRL_MMR_CFG0_MCU_RTI1_CLKSEL_CLK_SEL,
-                  RTI_CLOCK_SOURCE_32KHZ);
-    /* Configure Watchdog */
-    cslStatus = RTIDwwdWindowConfig(CSL_MCU_RTI1_CFG_BASE,
-                                    RTI_DWWD_REACTION_GENERATE_NMI,
-                                    preloadValue,
-                                    RTI_RTIDWWDSIZECTRL_DWWDSIZE_50_PERCENT);
-    if (cslStatus !=  CSL_PASS) {
+    hwRegPtr = (uint32_t *) (CSL_MCU_CTRL_MMR0_CFG0_BASE + CSL_MCU_CTRL_MMR_CFG0_MCU_RTI1_CLKSEL);
+    regValue = (RTI_CLOCK_SOURCE_32KHZ << CSL_MCU_CTRL_MMR_CFG0_MCU_RTI1_CLKSEL_CLK_SEL_SHIFT);
+    hwRegPtr[0] = (hwRegPtr[0]
+                  & (~CSL_MCU_CTRL_MMR_CFG0_MCU_RTI1_CLKSEL_CLK_SEL_MASK))
+                  | regValue;
+
+    /* Read back to check if the value is set */
+    if ((hwRegPtr[0] & CSL_MCU_CTRL_MMR_CFG0_MCU_RTI1_CLKSEL_CLK_SEL_MASK)
+        != regValue)
+    {
         result = -1;
+    }
+
+    if (result == 0) {
+        /* Configure Watchdog */
+        cslStatus = RTIDwwdWindowConfig(CSL_MCU_RTI1_CFG_BASE,
+                                        RTI_DWWD_REACTION_GENERATE_NMI,
+                                        preloadValue,
+                                        RTI_RTIDWWDSIZECTRL_DWWDSIZE_50_PERCENT);
+        if (cslStatus !=  CSL_PASS) {
+            result = -1;
+        }
     }
 
     if (result == 0) {
@@ -150,8 +172,6 @@ int32_t SDTF_WDT_init(void)
         }
     }
 
-    RTIDwwdCounterEnable(CSL_MCU_RTI1_CFG_BASE);
-
     return result;
 
 }
@@ -159,7 +179,22 @@ int32_t SDTF_WDT_init(void)
 
 void SDTF_WDT_feedWatchdogTimer(void)
 {
-    RTIDwwdService(CSL_MCU_RTI1_CFG_BASE);
+    if(gWDTStartedFlag == false) {
+        gWDTStartedFlag = true;
+        RTIDwwdCounterEnable(CSL_MCU_RTI1_CFG_BASE);
+        gTimerCount = 0U;
+    } else {
+        gTimerCount++;
+        /* Once it crosses the 50% window, feed the Watchdog */
+        if (gTimerCount > (SDTF_RTI_DWWD_TIMEOUT_VALUE/2000U)) {
+            /* Skip if in self test */
+            if (gSelfTestFlag == false)
+            {
+                RTIDwwdService(CSL_MCU_RTI1_CFG_BASE);
+            }
+            gTimerCount = 0U;
+        }
+    }
 }
 
 /*********************************************************************
@@ -188,6 +223,7 @@ int32_t SDTF_runWDTSelfTestEndViolation(void)
     testConfig.testType = SDR_WDT_TEST_TYPE_END_VIOLATION;
     testConfig.timeoutPeriod = (uint64_t)20000*SDTF_PROFILE_CLOCK_FREQUENCY;
 
+    gSelfTestFlag = true;
     result = SDR_WDT_selftest (&timerConfig, &testConfig);
 
     SDTF_profileEnd(SDTF_PROFILE_ONESHOT);
@@ -199,6 +235,7 @@ int32_t SDTF_runWDTSelfTestEndViolation(void)
         SDTF_printf("\n Watchdog self test end violation complete");
         SDTF_printf("\n Cycles taken %u", SDTF_profileDelta(SDTF_PROFILE_ONESHOT));
     }
+    gSelfTestFlag = false;
 
     return retVal;
 }
@@ -228,10 +265,12 @@ int32_t SDTF_runWDTSelfTestWindowViolation(void)
 
     testConfig.testType = SDR_WDT_TEST_TYPE_WINDOW_VIOLATION;
     testConfig.timeoutPeriod = (uint64_t)20000*SDTF_PROFILE_CLOCK_FREQUENCY;
+    gSelfTestFlag = true;
 
     result = SDR_WDT_selftest (&timerConfig, &testConfig);
 
     SDTF_profileEnd(SDTF_PROFILE_ONESHOT);
+
 
     if (result != SDR_PASS ) {
         SDTF_printf("\n Watchdog self test window violation failed");
@@ -240,7 +279,7 @@ int32_t SDTF_runWDTSelfTestWindowViolation(void)
         SDTF_printf("\n Watchdog self test window violation complete");
         SDTF_printf("\n Cycles taken %u", SDTF_profileDelta(SDTF_PROFILE_ONESHOT));
     }
-
+    gSelfTestFlag = false;
     return retVal;
 }
 
@@ -270,7 +309,7 @@ int32_t SDTF_runWDTNegativeTests(void)
 
     result = SDR_WDT_selftest (NULL_PTR, &testConfig);
 
-    /* There is expecte error here */
+    /* There is expected error here */
     if (result == SDR_PASS) {
         retVal = -1;
     }
@@ -278,7 +317,7 @@ int32_t SDTF_runWDTNegativeTests(void)
     if (retVal == 0) {
         result = SDR_WDT_selftest (&timerConfig, NULL_PTR);
 
-        /* There is expecte error here */
+        /* There is expected error here */
         if (result == SDR_PASS) {
             retVal = -1;
         }
@@ -288,10 +327,11 @@ int32_t SDTF_runWDTNegativeTests(void)
 
         /* Specifically give lower timeout */
         testConfig.timeoutPeriod = (uint64_t)10*SDTF_PROFILE_CLOCK_FREQUENCY;
-
+        gSelfTestFlag = true;
         result = SDR_WDT_selftest (&timerConfig, &testConfig);
+        gSelfTestFlag = false;
 
-        /* There is expecte error here */
+        /* There is expected error here */
         if (result == SDR_PASS) {
             retVal = -1;
         }
