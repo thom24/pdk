@@ -90,6 +90,47 @@ bool SDR_ESM_getBaseAddr(const SDR_ESM_InstanceType esmInstType, uint32_t *esmBa
 
 /** ================================================================================
  *
+ * \brief        Get the max number of ESM events supported for a given ESM instance
+ *
+ * \param [in]   esmInstType: ESM instance type
+ * \param [out]  esmMaxNumEvents: Maximum number of ESM events supported
+ *
+ * \return       true: if valid instance type; false if not valid instance type
+ */
+bool SDR_ESM_getMaxNumEvents(const SDR_ESM_InstanceType esmInstType,
+                             uint32_t *esmMaxNumEvents)
+{
+    bool instValid = ((bool)false);
+
+    if (esmMaxNumEvents != NULL)
+    {
+        switch(esmInstType)
+        {
+            case SDR_ESM_INSTANCE_MCU:
+                instValid = ((bool)true);
+                *esmMaxNumEvents = SOC_MCU_ESM_MAX_NUM_EVENTS;
+                break;
+
+            case SDR_ESM_INSTANCE_WKUP:
+                instValid = ((bool)true);
+                *esmMaxNumEvents = SOC_MCU_ESM_MAX_NUM_EVENTS;
+                break;
+
+            case SDR_ESM_INSTANCE_MAIN:
+                instValid = ((bool)true);
+                *esmMaxNumEvents = SOC_MCU_ESM_MAX_NUM_EVENTS;
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    return (instValid);
+}
+
+/** ================================================================================
+ *
  * \brief        Check that ESM instance type or ESM base address is valid for this
  *               device, and fill the SDR_ESM instance
  *

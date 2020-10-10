@@ -115,4 +115,16 @@ bool SDR_ESM_selectEsmInstFromAddr(uint32_t esmInstBaseAddr,
                                    SDR_ESM_InstanceType *pEsmInstType,
                                    SDR_ESM_Instance_t **pEsmInstancePtr);
 
+/** ================================================================================
+ *
+ * \brief        Get the max number of ESM events supported for a given ESM instance
+ *
+ * \param [in]   esmInstType: ESM instance type
+ * \param [out]  esmMaxNumEvents: Maximum number of ESM events supported
+ *
+ * \return       true: if valid instance type; false if not valid instance type
+ */
+bool SDR_ESM_getMaxNumEvents(const SDR_ESM_InstanceType esmInstType,
+                             uint32_t *esmMaxNumEvents);
+
 #endif /* INCLUDE_SDR_ESM_PRIV_H_ */

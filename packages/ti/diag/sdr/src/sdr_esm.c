@@ -85,14 +85,16 @@ SDR_Result SDR_ESM_init (const SDR_ESM_InstanceType esmInstType,
     bool enableWr, enableRd;
     uint32_t influence;
     uint32_t esmInstBaseAddr;
+    uint32_t esmMaxNumevents;
 
     SDR_ESM_Instance_t *SDR_ESM_instance;
 
     /* Check for valid esmInstConfig and esmInstType, and initialize appropriate
-     * esmInstBaseAddr for register base and SDM_ESM_instance for SW instance structure. */
+     * esmInstBaseAddr for register base and SDM_ESM_instance for SW instance structure. Also get Maximum number of events corresponding to the instance */
     if (( esmInitConfig == ((void *)0u)) ||
         ( SDR_ESM_getBaseAddr(esmInstType, &esmInstBaseAddr) == ((bool)false)) ||
-        ( SDR_ESM_selectEsmInst(esmInstType, &SDR_ESM_instance) == ((bool)false))) {
+        ( SDR_ESM_selectEsmInst(esmInstType, &SDR_ESM_instance) == ((bool)false)) ||
+        ( SDR_ESM_getMaxNumEvents(esmInstType, &esmMaxNumevents) == ((bool)false))) {
             result = SDR_FAIL;
     } else {
         /* Record init config in instance */
@@ -102,8 +104,13 @@ SDR_Result SDR_ESM_init (const SDR_ESM_InstanceType esmInstType,
         cslRet = ESMReset(esmInstBaseAddr);
 
         /* Enable interrupt for all events from init configuration*/
-        for(i=((uint32_t)0u); i< SDR_ESM_MAX_EVENT_MAP_NUM_WORDS; i++) {
-            for(j=((uint32_t)0u); j< BITS_PER_WORD; j++) {
+        for(i=((uint32_t)0u); i <= esmMaxNumevents/BITS_PER_WORD; i++) {
+            uint32_t remainingBits = esmMaxNumevents - (i*BITS_PER_WORD);
+
+            if (remainingBits > BITS_PER_WORD)
+                remainingBits = BITS_PER_WORD;
+
+            for(j=((uint32_t)0u); j< remainingBits; j++) {
                 intNum = (i*BITS_PER_WORD)+j;
                 /*
                  * Clear interrupt status and verifiy if interrupt
