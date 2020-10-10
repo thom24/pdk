@@ -82,16 +82,8 @@
 #define OSPI_MPU_REGION_NUM         (0x6)
 #define OSPI_MPU_ENABLE_REGION      (0x1)
 
-/* OSPI Flash Read Sector API. */
-static int32_t SBL_OSPI_ReadSectors(void *dstAddr,
-                             void *srcOffsetAddr,
-                             uint32_t length);
-
 /* Initialize the OSPI driver and the controller. */
 static void SBL_OSPI_Initialize(void);
-
-/* Sets the src address to the given offset address. */
-static void SBL_OSPI_seek(void *srcAddr, uint32_t location);
 
 void SBL_DCacheClean(void *addr, uint32_t size);
 
@@ -326,6 +318,9 @@ int32_t SBL_ospiInit(void *handle)
 
     }
 
+    /* Get default OSPI cfg */
+    OSPI_socGetInitCfg(BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
+
 #if !defined(SBL_SKIP_BRD_CFG_PM) && !defined(SBL_SKIP_SYSFW_INIT)
     {
         struct ospiClkParams
@@ -383,6 +378,8 @@ int32_t SBL_ospiInit(void *handle)
     if (h)
     {
         *(Board_flashHandle *) handle = h;
+        /* Update the static handle as well, for later use */
+        boardHandle = (void *)h;
     }
     else
     {
@@ -616,7 +613,12 @@ static void SBL_OSPI_Initialize(void)
 
 #ifndef SECURE_BOOT
 
-static int32_t SBL_OSPI_ReadSectors(void *dstAddr,
+void SBL_SPI_init()
+{
+    SPI_init();
+}
+
+int32_t SBL_OSPI_ReadSectors(void *dstAddr,
                              void *srcOffsetAddr,
                              uint32_t length)
 {
@@ -627,7 +629,7 @@ static int32_t SBL_OSPI_ReadSectors(void *dstAddr,
     return ret;
 }
 
-static void SBL_OSPI_seek(void *srcAddr, uint32_t location)
+void SBL_OSPI_seek(void *srcAddr, uint32_t location)
 {
     *((uint32_t *) srcAddr) = location;
 }

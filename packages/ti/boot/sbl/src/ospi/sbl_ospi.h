@@ -120,6 +120,19 @@ int32_t SBL_ospiFlashRead(const void *handle, uint8_t *dst, uint32_t length,
  */
 int32_t SBL_ospiClose(const void *handle);
 
+#ifndef SECURE_BOOT
+/* OSPI Flash Read Sector API */
+int32_t SBL_OSPI_ReadSectors(void *dstAddr,
+                             void *srcOffsetAddr,
+                             uint32_t length);
+
+/* Sets the src address to the given offset address */
+void SBL_OSPI_seek(void *srcAddr, uint32_t location);
+
+/* Proxy function for apps to be able to use same SPI_init func, but called externally */
+void SBL_SPI_init();
+#endif
+
 #ifdef __cplusplus
 }
 #endif
