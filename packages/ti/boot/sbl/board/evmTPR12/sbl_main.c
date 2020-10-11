@@ -341,10 +341,12 @@ int main()
     {
         UART_HwAttrs uart_cfg;
         UART_Params uartPrms;
+        Rcm_Return retVal;
 
         UART_socGetInitCfg(BOARD_UART_INSTANCE, &uart_cfg);
         /* Use UART fclk freq setup by ROM */
-        uart_cfg.clockFrequency = SBL_RcmGetPeripheralClockFrequency(Rcm_PeripheralClockSource_SYS_CLK);
+        retVal =  SBL_RcmGetPeripheralFreq(Rcm_PeripheralId_MSS_SCIA, &uart_cfg.clockFrequency);
+        DebugP_assert(retVal == Rcm_Return_SUCCESS);
         /* Disable the UART interrupt */
         uart_cfg.enableInterrupt = FALSE;
         /* Disable the DMA mode for UART */

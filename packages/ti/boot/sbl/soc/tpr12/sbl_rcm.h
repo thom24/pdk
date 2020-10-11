@@ -437,6 +437,10 @@ extern Rcm_ResetCause SBL_RcmGetResetCause(void);
 
 extern void SBL_RcmGetEfuseQSPIConfig(Rcm_EfuseQspiConfig *qspiEfuseCfg);
 
+extern Rcm_Return SBL_RcmGetPeripheralFreq (Rcm_PeripheralId periphID,
+                                            uint32_t *freqHz);
+extern uint32_t SBL_RcmGetCR5Freq(void);
+
 #ifdef __cplusplus
 }
 #endif

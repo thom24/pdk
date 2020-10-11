@@ -934,6 +934,29 @@ void CSL_DSS_CTRL_enableAccess(CSL_dss_ctrlRegs *ptrDSSCtrlRegs)
  ************************** RCM Functions *****************************
  **************************************************************************/
 
+static uint32_t getClkSrcFromClkSelVal(uint16_t *clkSelTbl, uint32_t numEntries, uint32_t clkSelMatchVal)
+{
+    uint32_t i;
+    uint32_t clkSource;
+
+    for (i = 0; i < numEntries; i++)
+    {
+        if (clkSelMatchVal == clkSelTbl[i])
+        {
+            break;
+        }
+    }
+    if (i < numEntries)
+    {
+        clkSource = i;
+    }
+    else
+    {
+        clkSource = ~0U;
+    }
+    return clkSource;
+}
+
 
 /**
  *  @b Description
@@ -1199,6 +1222,307 @@ static void getClkSrcAndDivReg (Rcm_PeripheralId PeriphID,
  *
  *  @retval     None
  */
+static Rcm_Return getClkSrcAndDivValue (Rcm_PeripheralId PeriphID,
+                                        Rcm_PeripheralClockSource *clkSource, 
+                                        volatile uint32_t *clkDiv)
+{
+    CSL_mss_rcmRegs *ptrMSSRCMRegs;
+    CSL_dss_rcmRegs *ptrDSSRCMRegs;
+    CSL_rcss_rcmRegs *ptrRCSSRCMRegs;
+    CSL_mss_toprcmRegs *ptrTOPRCMRegs;
+    uint32_t clkSrc;
+    uint32_t clkSrcId;
+    Rcm_Return retVal = Rcm_Return_SUCCESS;
+
+    ptrMSSRCMRegs = CSL_RCM_getBaseAddress ();
+    ptrDSSRCMRegs = CSL_DSSRCM_getBaseAddress ();
+    ptrTOPRCMRegs = CSL_TopRCM_getBaseAddress ();
+    ptrRCSSRCMRegs = CSL_RCSSRCM_getBaseAddress ();
+
+    switch (PeriphID)
+    {
+        case Rcm_PeripheralId_MSS_RTIA:
+        {
+            clkSrc  = ptrMSSRCMRegs->MSS_RTIA_CLK_SRC_SEL;
+            *clkDiv = ptrMSSRCMRegs->MSS_RTIA_CLK_DIV_VAL;
+            clkSrcId = getClkSrcFromClkSelVal(gRtiClkSrcValMap, SBL_UTILS_ARRAYSIZE(gRtiClkSrcValMap), clkSrc);
+            DebugP_assert(clkSrcId != ~0U);
+            *clkSource = (Rcm_PeripheralClockSource) clkSrcId;
+            break;
+        }
+        case Rcm_PeripheralId_MSS_RTIB:
+        {
+            clkSrc  = ptrMSSRCMRegs->MSS_RTIB_CLK_SRC_SEL;
+            *clkDiv = ptrMSSRCMRegs->MSS_RTIB_CLK_DIV_VAL;
+            clkSrcId = getClkSrcFromClkSelVal(gRtiClkSrcValMap, SBL_UTILS_ARRAYSIZE(gRtiClkSrcValMap), clkSrc);
+            DebugP_assert(clkSrcId != ~0U);
+            *clkSource = (Rcm_PeripheralClockSource) clkSrcId;
+            break;
+        }
+        case Rcm_PeripheralId_MSS_RTIC:
+        {
+            clkSrc  = ptrMSSRCMRegs->MSS_RTIC_CLK_SRC_SEL;
+            *clkDiv = ptrMSSRCMRegs->MSS_RTIC_CLK_DIV_VAL;
+            clkSrcId = getClkSrcFromClkSelVal(gRtiClkSrcValMap, SBL_UTILS_ARRAYSIZE(gRtiClkSrcValMap), clkSrc);
+            DebugP_assert(clkSrcId != ~0U);
+            *clkSource = (Rcm_PeripheralClockSource) clkSrcId;
+
+            break;
+        }
+        case Rcm_PeripheralId_MSS_WDT:
+        {
+            clkSrc  = ptrMSSRCMRegs->MSS_WDT_CLK_SRC_SEL;
+            *clkDiv = ptrMSSRCMRegs->MSS_WDT_CLK_DIV_VAL;
+            clkSrcId = getClkSrcFromClkSelVal(gRtiClkSrcValMap, SBL_UTILS_ARRAYSIZE(gRtiClkSrcValMap), clkSrc);
+            DebugP_assert(clkSrcId != ~0U);
+            *clkSource = (Rcm_PeripheralClockSource) clkSrcId;
+            break;
+        }
+        case Rcm_PeripheralId_MSS_SCIA:
+        {
+            clkSrc  = ptrMSSRCMRegs->MSS_SCIA_CLK_SRC_SEL;
+            *clkDiv = ptrMSSRCMRegs->MSS_SCIA_CLK_DIV_VAL;
+            clkSrcId = getClkSrcFromClkSelVal(gSciClkSrcValMap, SBL_UTILS_ARRAYSIZE(gSciClkSrcValMap), clkSrc);
+            DebugP_assert(clkSrcId != ~0U);
+            *clkSource = (Rcm_PeripheralClockSource) clkSrcId;
+            break;
+        }
+        case Rcm_PeripheralId_MSS_SCIB:
+        {
+            clkSrc  = ptrMSSRCMRegs->MSS_SCIB_CLK_SRC_SEL;
+            *clkDiv = ptrMSSRCMRegs->MSS_SCIB_CLK_DIV_VAL;
+            clkSrcId = getClkSrcFromClkSelVal(gSciClkSrcValMap, SBL_UTILS_ARRAYSIZE(gSciClkSrcValMap), clkSrc);
+            DebugP_assert(clkSrcId != ~0U);
+            *clkSource = (Rcm_PeripheralClockSource) clkSrcId;
+            break;
+        }
+        case Rcm_PeripheralId_MSS_SPIA:
+        {
+            clkSrc  = ptrMSSRCMRegs->MSS_SPIA_CLK_SRC_SEL;
+            *clkDiv = ptrMSSRCMRegs->MSS_SPIA_CLK_DIV_VAL;
+            clkSrcId = getClkSrcFromClkSelVal(gSpiClkSrcValMap, SBL_UTILS_ARRAYSIZE(gSpiClkSrcValMap), clkSrc);
+            DebugP_assert(clkSrcId != ~0U);
+            *clkSource = (Rcm_PeripheralClockSource) clkSrcId;
+            break;
+        }
+        case Rcm_PeripheralId_MSS_SPIB:
+        {
+            clkSrc  = ptrMSSRCMRegs->MSS_SPIB_CLK_SRC_SEL;
+            *clkDiv = ptrMSSRCMRegs->MSS_SPIB_CLK_DIV_VAL;
+            clkSrcId = getClkSrcFromClkSelVal(gSpiClkSrcValMap, SBL_UTILS_ARRAYSIZE(gSpiClkSrcValMap), clkSrc);
+            DebugP_assert(clkSrcId != ~0U);
+            *clkSource = (Rcm_PeripheralClockSource) clkSrcId;
+            break;
+        }
+        case Rcm_PeripheralId_MSS_I2C:
+        {
+            clkSrc  = ptrMSSRCMRegs->MSS_I2C_CLK_SRC_SEL;
+            *clkDiv = ptrMSSRCMRegs->MSS_I2C_CLK_DIV_VAL;
+            clkSrcId = getClkSrcFromClkSelVal(gI2CClkSrcValMap, SBL_UTILS_ARRAYSIZE(gI2CClkSrcValMap), clkSrc);
+            DebugP_assert(clkSrcId != ~0U);
+            *clkSource = (Rcm_PeripheralClockSource) clkSrcId;
+            break;
+        }
+        case Rcm_PeripheralId_MSS_QSPI:
+        {
+            clkSrc  = ptrMSSRCMRegs->MSS_QSPI_CLK_SRC_SEL;
+            *clkDiv = ptrMSSRCMRegs->MSS_QSPI_CLK_DIV_VAL;
+            clkSrcId = getClkSrcFromClkSelVal(gQspiClkSrcValMap, SBL_UTILS_ARRAYSIZE(gQspiClkSrcValMap), clkSrc);
+            DebugP_assert(clkSrcId != ~0U);
+            *clkSource = (Rcm_PeripheralClockSource) clkSrcId;
+            break;
+        }
+        case Rcm_PeripheralId_MSS_MCANA:
+        {
+            clkSrc  = ptrMSSRCMRegs->MSS_MCANA_CLK_SRC_SEL;
+            *clkDiv = ptrMSSRCMRegs->MSS_MCANA_CLK_DIV_VAL;
+            clkSrcId = getClkSrcFromClkSelVal(gMcanClkSrcValMap, SBL_UTILS_ARRAYSIZE(gMcanClkSrcValMap), clkSrc);
+            DebugP_assert(clkSrcId != ~0U);
+            *clkSource = (Rcm_PeripheralClockSource) clkSrcId;
+            break;
+        }
+        case Rcm_PeripheralId_MSS_MCANB:
+        {
+            clkSrc  = ptrMSSRCMRegs->MSS_MCANB_CLK_SRC_SEL;
+            *clkDiv = ptrMSSRCMRegs->MSS_MCANB_CLK_DIV_VAL;
+            clkSrcId = getClkSrcFromClkSelVal(gMcanClkSrcValMap, SBL_UTILS_ARRAYSIZE(gMcanClkSrcValMap), clkSrc);
+            DebugP_assert(clkSrcId != ~0U);
+            *clkSource = (Rcm_PeripheralClockSource) clkSrcId;
+            break;
+        }
+        case Rcm_PeripheralId_MSS_CPSW:
+        {
+            clkSrc  = ptrMSSRCMRegs->MSS_CPSW_CLK_SRC_SEL;
+            *clkDiv = ptrMSSRCMRegs->MSS_CPSW_CLK_DIV_VAL;
+            clkSrcId = getClkSrcFromClkSelVal(gCpswClkSrcValMap, SBL_UTILS_ARRAYSIZE(gCpswClkSrcValMap), clkSrc);
+            DebugP_assert(clkSrcId != ~0U);
+            *clkSource = (Rcm_PeripheralClockSource) clkSrcId;
+            break;
+        }
+        case Rcm_PeripheralId_MSS_CPTS:
+        {
+            clkSrc  = ptrMSSRCMRegs->MSS_CPTS_CLK_SRC_SEL;
+            *clkDiv = ptrMSSRCMRegs->MSS_CPTS_CLK_DIV_VAL;
+            clkSrcId = getClkSrcFromClkSelVal(gCptsClkSrcValMap, SBL_UTILS_ARRAYSIZE(gCptsClkSrcValMap), clkSrc);
+            DebugP_assert(clkSrcId != ~0U);
+            *clkSource = (Rcm_PeripheralClockSource) clkSrcId;
+            break;
+        }
+        case Rcm_PeripheralId_CSIRX:
+        {
+            clkSrc  = ptrTOPRCMRegs->CSIRX_CLK_SRC_SEL;
+            *clkDiv = ptrTOPRCMRegs->CSIRX_DIV_VAL;
+            clkSrcId = getClkSrcFromClkSelVal(gCsiRxClkSrcValMap, SBL_UTILS_ARRAYSIZE(gCsiRxClkSrcValMap), clkSrc);
+            DebugP_assert(clkSrcId != ~0U);
+            *clkSource = (Rcm_PeripheralClockSource) clkSrcId;
+            break;
+        }
+        case Rcm_PeripheralId_DSS_RTIA:
+        {
+            clkSrc  = ptrDSSRCMRegs->DSS_RTIA_CLK_SRC_SEL;
+            *clkDiv = ptrDSSRCMRegs->DSS_RTIA_CLK_DIV_VAL;
+            clkSrcId = getClkSrcFromClkSelVal(gDssRtiClkSrcValMap, SBL_UTILS_ARRAYSIZE(gDssRtiClkSrcValMap), clkSrc);
+            DebugP_assert(clkSrcId != ~0U);
+            *clkSource = (Rcm_PeripheralClockSource) clkSrcId;
+            break;
+        }
+        case Rcm_PeripheralId_DSS_RTIB:
+        {
+            clkSrc  = ptrDSSRCMRegs->DSS_RTIB_CLK_SRC_SEL;
+            *clkDiv = ptrDSSRCMRegs->DSS_RTIB_CLK_DIV_VAL;
+            clkSrcId = getClkSrcFromClkSelVal(gDssRtiClkSrcValMap, SBL_UTILS_ARRAYSIZE(gDssRtiClkSrcValMap), clkSrc);
+            DebugP_assert(clkSrcId != ~0U);
+            *clkSource = (Rcm_PeripheralClockSource) clkSrcId;
+            break;
+        }
+        case Rcm_PeripheralId_DSS_WDT:
+        {
+            clkSrc  = ptrDSSRCMRegs->DSS_WDT_CLK_SRC_SEL;
+            *clkDiv = ptrDSSRCMRegs->DSS_WDT_CLK_DIV_VAL;
+            clkSrcId = getClkSrcFromClkSelVal(gDssRtiClkSrcValMap, SBL_UTILS_ARRAYSIZE(gDssRtiClkSrcValMap), clkSrc);
+            DebugP_assert(clkSrcId != ~0U);
+            *clkSource = (Rcm_PeripheralClockSource) clkSrcId;
+            break;
+        }
+        case Rcm_PeripheralId_DSS_SCIA:
+        {
+            clkSrc  = ptrDSSRCMRegs->DSS_SCIA_CLK_SRC_SEL;
+            *clkDiv = ptrDSSRCMRegs->DSS_SCIA_CLK_DIV_VAL;
+            clkSrcId = getClkSrcFromClkSelVal(gDssSciClkSrcValMap, SBL_UTILS_ARRAYSIZE(gDssSciClkSrcValMap), clkSrc);
+            DebugP_assert(clkSrcId != ~0U);
+            *clkSource = (Rcm_PeripheralClockSource) clkSrcId;
+            break;
+        }
+        case Rcm_PeripheralId_RCSS_SCIA:
+        {
+            clkSrc  = ptrRCSSRCMRegs->RCSS_SCIA_CLK_SRC_SEL;
+            *clkDiv = ptrRCSSRCMRegs->RCSS_SCIA_CLK_DIV_VAL;
+            clkSrcId = getClkSrcFromClkSelVal(gRcssSciClkSrcValMap, SBL_UTILS_ARRAYSIZE(gRcssSciClkSrcValMap), clkSrc);
+            DebugP_assert(clkSrcId != ~0U);
+            *clkSource = (Rcm_PeripheralClockSource) clkSrcId;
+            break;
+        }
+        case Rcm_PeripheralId_RCSS_SPIA:
+        {
+            clkSrc  = ptrRCSSRCMRegs->RCSS_SPIA_CLK_SRC_SEL;
+            *clkDiv = ptrRCSSRCMRegs->RCSS_SPIA_CLK_DIV_VAL;
+            clkSrcId = getClkSrcFromClkSelVal(gRcssSpiClkSrcValMap, SBL_UTILS_ARRAYSIZE(gRcssSpiClkSrcValMap), clkSrc);
+            DebugP_assert(clkSrcId != ~0U);
+            *clkSource = (Rcm_PeripheralClockSource) clkSrcId;
+            break;
+        }
+        case Rcm_PeripheralId_RCSS_SPIB:
+        {
+            clkSrc  = ptrRCSSRCMRegs->RCSS_SPIB_CLK_SRC_SEL;
+            *clkDiv = ptrRCSSRCMRegs->RCSS_SPIB_CLK_DIV_VAL;
+            clkSrcId = getClkSrcFromClkSelVal(gRcssSpiClkSrcValMap, SBL_UTILS_ARRAYSIZE(gRcssSpiClkSrcValMap), clkSrc);
+            DebugP_assert(clkSrcId != ~0U);
+            *clkSource = (Rcm_PeripheralClockSource) clkSrcId;
+            break;
+        }
+        case Rcm_PeripheralId_RCSS_I2CA:
+        {
+            clkSrc  = ptrRCSSRCMRegs->RCSS_I2CA_CLK_SRC_SEL;
+            *clkDiv = ptrRCSSRCMRegs->RCSS_I2CA_CLK_DIV_VAL;
+            clkSrcId = getClkSrcFromClkSelVal(gRcssI2CClkSrcValMap, SBL_UTILS_ARRAYSIZE(gRcssI2CClkSrcValMap), clkSrc);
+            DebugP_assert(clkSrcId != ~0U);
+            *clkSource = (Rcm_PeripheralClockSource) clkSrcId;
+            break;
+        }
+        case Rcm_PeripheralId_RCSS_I2CB:
+        {
+            clkSrc  = ptrRCSSRCMRegs->RCSS_I2CB_CLK_SRC_SEL;
+            *clkDiv = ptrRCSSRCMRegs->RCSS_I2CB_CLK_DIV_VAL;
+            clkSrcId = getClkSrcFromClkSelVal(gRcssI2CClkSrcValMap, SBL_UTILS_ARRAYSIZE(gRcssI2CClkSrcValMap), clkSrc);
+            DebugP_assert(clkSrcId != ~0U);
+            *clkSource = (Rcm_PeripheralClockSource) clkSrcId;
+            break;
+        }
+        case Rcm_PeripheralId_RCSS_ATL:
+        {
+            clkSrc  = ptrRCSSRCMRegs->RCSS_ATL_CLK_SRC_SEL;
+            *clkDiv = ptrRCSSRCMRegs->RCSS_ATL_CLK_DIV_VAL;
+            clkSrcId = getClkSrcFromClkSelVal(gRcssATLClkSrcValMap, SBL_UTILS_ARRAYSIZE(gRcssATLClkSrcValMap), clkSrc);
+            DebugP_assert(clkSrcId != ~0U);
+            *clkSource = (Rcm_PeripheralClockSource) clkSrcId;
+            break;
+        }
+        case Rcm_PeripheralId_RCSS_MCASPA_AUX:
+        {
+            clkSrc  = ptrRCSSRCMRegs->RCSS_MCASPA_AUX_CLK_SRC_SEL;
+            *clkDiv = ptrRCSSRCMRegs->RCSS_MCASPA_AUX_CLK_DIV_VAL;
+            clkSrcId = getClkSrcFromClkSelVal(gRcssMCASPAuxClkSrcValMap, SBL_UTILS_ARRAYSIZE(gRcssMCASPAuxClkSrcValMap), clkSrc);
+            DebugP_assert(clkSrcId != ~0U);
+            *clkSource = (Rcm_PeripheralClockSource) clkSrcId;
+            break;
+        }
+        case Rcm_PeripheralId_RCSS_MCASPB_AUX:
+        {
+            clkSrc  = ptrRCSSRCMRegs->RCSS_MCASPB_AUX_CLK_SRC_SEL;
+            *clkDiv = ptrRCSSRCMRegs->RCSS_MCASPB_AUX_CLK_DIV_VAL;
+            clkSrcId = getClkSrcFromClkSelVal(gRcssMCASPAuxClkSrcValMap, SBL_UTILS_ARRAYSIZE(gRcssMCASPAuxClkSrcValMap), clkSrc);
+            DebugP_assert(clkSrcId != ~0U);
+            *clkSource = (Rcm_PeripheralClockSource) clkSrcId;
+            break;
+        }
+        case Rcm_PeripheralId_RCSS_MCASPC_AUX:
+        {
+            clkSrc  = ptrRCSSRCMRegs->RCSS_MCASPC_AUX_CLK_SRC_SEL;
+            *clkDiv = ptrRCSSRCMRegs->RCSS_MCASPC_AUX_CLK_DIV_VAL;
+            clkSrcId = getClkSrcFromClkSelVal(gRcssMCASPAuxClkSrcValMap, SBL_UTILS_ARRAYSIZE(gRcssMCASPAuxClkSrcValMap), clkSrc);
+            DebugP_assert(clkSrcId != ~0U);
+            *clkSource = (Rcm_PeripheralClockSource) clkSrcId;
+            break;
+        }
+        default:
+        {
+            *clkDiv = 0U;
+            retVal = Rcm_Return_ERROR;
+        }
+    }
+    return retVal;
+}
+
+/**
+ *  @b Description
+ *  @n
+ *      This API returns Clk Src Selection register, Clk  Divider Register for
+ *      specified peripheral. It also returns the Clk Src Selection value for a
+ *      specified clock
+ *
+ *  @param[in]  PeriphID
+ *      Peripheral Id
+ *  @param[in]  clkSource
+ *      Clock Source
+ *  @param[out]  clkSrcVal
+ *      Value to be programmed corresponding to the ClkSource
+ *  @param[out]  clkSrcReg
+ *      Register Address for programming Clock Source Selection
+ *  @param[in]  clkdDivReg
+ *      PRegister Address for programming Clock Divider Selection
+ *
+ *  @retval     None
+ */
 static void getDSPClkSrcAndDivReg (Rcm_DSPClockSource clkSource,
                                    uint16_t *clkSrcVal,
                                    volatile uint32_t **clkSrcReg,
@@ -1213,6 +1537,30 @@ static void getDSPClkSrcAndDivReg (Rcm_DSPClockSource clkSource,
     *clkSrcVal = gDspcoreClkSrcValMap[clkSource];
 
     return;
+}
+
+
+static Rcm_Return getDSPClkSrcAndDivValue(Rcm_DSPClockSource *clkSource,
+                                          uint32_t *clkDiv)
+{
+    uint32_t clkSrc, clkSrcId;
+    Rcm_Return retVal = Rcm_Return_SUCCESS;
+    CSL_dss_rcmRegs *ptrDSSRCMRegs;
+
+    ptrDSSRCMRegs = CSL_DSSRCM_getBaseAddress ();
+    clkSrc  = ptrDSSRCMRegs->DSS_DSP_CLK_SRC_SEL;
+    *clkDiv = ptrDSSRCMRegs->DSS_DSP_CLK_DIV_VAL;
+    clkSrcId = getClkSrcFromClkSelVal(gDspcoreClkSrcValMap, SBL_UTILS_ARRAYSIZE(gDspcoreClkSrcValMap), clkSrc);
+    DebugP_assert(clkSrcId != ~0U);
+    if (clkSrcId != ~0U)
+    {
+        *clkSource = (Rcm_DSPClockSource) clkSrcId;
+    }
+    else
+    {
+        retVal = Rcm_Return_ERROR;
+    }
+    return retVal;
 }
 
 /**
@@ -1964,6 +2312,14 @@ static uint32_t SBL_RcmGetModuleClkDivRegVal(uint32_t moduleClkDivVal)
     return moduleClkDivRegVal;
 }
 
+static uint32_t SBL_RcmGetModuleClkDivFromRegVal(uint32_t moduleClkDivRegVal)
+{
+    uint32_t moduleClkDivVal;
+
+    moduleClkDivVal = ((moduleClkDivRegVal & 0xF) + 1);
+    return moduleClkDivVal;
+}
+
 void SBL_RcmSetCR5SysClock(uint32_t cr5FreqHz, uint32_t sysClkFreqHz)
 {
     CSL_mss_toprcmRegs *ptrTopRCMRegs;
@@ -1987,6 +2343,19 @@ void SBL_RcmSetCR5SysClock(uint32_t cr5FreqHz, uint32_t sysClkFreqHz)
     ptrTopRCMRegs->MSS_CR5_CLK_SRC_SEL = CSL_insert16 (ptrTopRCMRegs->MSS_CR5_CLK_SRC_SEL, 11U, 0U, gCR5ClkSrcValMap[Rcm_CR5ClockSource_DPLL_CORE_HSDIV0_CLKOUT2]);
 }
 
+uint32_t SBL_RcmGetCR5Freq(void)
+{
+    uint32_t Finp;
+    uint32_t moduleClkDivRegVal;
+    uint32_t clkDivVal;
+    CSL_mss_toprcmRegs *ptrTopRCMRegs;
+
+    ptrTopRCMRegs = CSL_TopRCM_getBaseAddress ();
+    Finp = SBL_RcmGetCR5SysclkInFrequency();
+    moduleClkDivRegVal = ptrTopRCMRegs->MSS_CR5_DIV_VAL;
+    clkDivVal = SBL_RcmGetModuleClkDivFromRegVal(moduleClkDivRegVal);
+    return (Finp / clkDivVal);
+}
 
 /**
  *  @b Description
@@ -2040,6 +2409,42 @@ Rcm_Return SBL_RcmSetPeripheralClock (Rcm_PeripheralId periphID,
         retVal = Rcm_Return_ERROR;
     }
 
+    return (retVal);
+}
+
+/**
+ *  @b Description
+ *  @n
+ *      This API gets the frequency configured for a specified peripheral Id.
+ *
+ *  @param[in]  periphID
+ *      Peripheral Id
+ *  @param[in]  clkSource
+ *      Clock Source
+ *  @param[in]  clkDivisor
+ *      Clock Divider Value
+ *
+ *  \ingroup DRIVER_RCM_FUNCTIONS
+ *
+ *  @retval     Rcm_Return
+ */
+Rcm_Return SBL_RcmGetPeripheralFreq (Rcm_PeripheralId periphID,
+                                      uint32_t *freqHz)
+{
+    uint32_t            clkDivisorRegVal;
+    uint32_t            clkDivisor;
+    Rcm_Return          retVal;
+    uint32_t            Finp;
+    Rcm_PeripheralClockSource clkSource;
+
+    retVal = getClkSrcAndDivValue(periphID, &clkSource, &clkDivisorRegVal);
+    DebugP_assert(retVal == Rcm_Return_SUCCESS);
+    if (Rcm_Return_SUCCESS == retVal)
+    {
+        Finp = SBL_RcmGetPeripheralClockFrequency(clkSource);
+        clkDivisor = SBL_RcmGetModuleClkDivFromRegVal(clkDivisorRegVal);
+        *freqHz = Finp / clkDivisor;
+    }
     return (retVal);
 }
 
@@ -2558,7 +2963,7 @@ Rcm_Return SBL_RcmSetDspCoreClock (Rcm_DSPClockSource clkSource,
  *  @n
  *      This API returns the frequency of the clock which is passed as parameter
  *  @param[in]  clkSource
-5 *      clock source for which frequency is requested
+ *      clock source for which frequency is requested
  *
  *  \ingroup DRIVER_RCM_FUNCTIONS
  *
@@ -2617,6 +3022,40 @@ uint32_t SBL_RcmGetDSPClockFrequency(Rcm_DSPClockSource clkSource)
     return (clkFreq);
 }
 
+/**
+ *  @b Description
+ *  @n
+ *      This API get the c66x core configured frequency 
+ *
+ *  @param[out]  freqHz
+ *      c66x core clock frequency
+ *
+ *  \ingroup DRIVER_RCM_FUNCTIONS
+ *
+ *  @retval     Rcm_Return
+ */
+Rcm_Return SBL_RcmGetDspCoreFreq (uint32_t *freqHz)
+{
+    Rcm_Return          retVal;
+    CSL_dss_rcmRegs     *ptrDSSRcmRegs = CSL_DSSRCM_getBaseAddress();
+    uint32_t            pllFout;
+    uint32_t            clkDivisorRegVal;
+    uint32_t            clkDiv;
+    Rcm_DSPClockSource  clkSource;
+
+
+    CSL_DSSRCM_enableAccess(ptrDSSRcmRegs);
+    retVal= getDSPClkSrcAndDivValue (&clkSource, &clkDivisorRegVal);
+
+    DebugP_assert(retVal == Rcm_Return_SUCCESS);
+    if (Rcm_Return_SUCCESS == retVal)
+    {
+        pllFout = SBL_RcmGetDSPClockFrequency(clkSource);
+        clkDiv = SBL_RcmGetModuleClkDivFromRegVal(clkDivisorRegVal);
+        *freqHz = (pllFout / clkDiv);
+    }
+    return (retVal);
+}
 
 
 static Rcm_ADPLLJConfig_t const * SBL_getADPLLJConfig(uint32_t Finp, Rcm_PllFoutFreqId foutFreqId)

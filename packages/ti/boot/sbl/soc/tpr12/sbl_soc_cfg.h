@@ -96,5 +96,6 @@
 /* ========================================================================== */
 void SBL_SocEarlyInit(void);
 void SBL_SocLateInit(void);
-void SBL_moduleClockInit(void);
+extern void SBL_moduleClockInit(void);
+
 #endif

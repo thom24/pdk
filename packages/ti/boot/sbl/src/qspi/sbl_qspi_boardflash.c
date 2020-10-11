@@ -57,6 +57,7 @@
 #include <ti/drv/edma/edma.h>
 #endif
 
+#include <ti/osal/DebugP.h>
 #include <ti/drv/spi/src/SPI_osal.h>
 #include <ti/drv/uart/UART_stdio.h>
 #include <ti/drv/spi/soc/SPI_soc.h>
@@ -165,7 +166,6 @@ int32_t SBL_qspiInit(void *handle)
 #if !defined(SBL_BYPASS_QSPI_DRIVER)
     Board_flashHandle h = *(Board_flashHandle *) handle;
     int32_t retVal; 
-    Rcm_EfuseQspiConfig qspiEfuseCfg;
     uint32_t qspiClkFreq;
 
     SBL_ADD_PROFILE_POINT;
@@ -177,27 +177,16 @@ int32_t SBL_qspiInit(void *handle)
     }
     retVal = QSPI_socGetInitCfg(BOARD_QSPI_NOR_INSTANCE, &qspi_cfg);
     DebugP_assert(retVal == 0);
+#ifdef SOC_TPR12
+    {
+        Rcm_Return rcmRetVal;
 
-    SBL_RcmGetEfuseQSPIConfig(&qspiEfuseCfg);
-    switch (qspiEfuseCfg.QSPIClockFreqConfig)
-    {
-        case RCM_EFUSE_QSPICLOCKFREQ_40MHz:
-            qspiClkFreq = SBL_FREQ_MHZ2HZ(40U);
-            break;
-        case RCM_EFUSE_QSPICLOCKFREQ_60MHz:
-            qspiClkFreq = SBL_FREQ_MHZ2HZ(60U);
-            break;
-        case RCM_EFUSE_QSPICLOCKFREQ_80MHz:
-            qspiClkFreq = SBL_FREQ_MHZ2HZ(80U);
-            break;
-        default:
-            qspiClkFreq = SBL_QSPI_FREQ_HZ;
+        rcmRetVal = SBL_RcmGetPeripheralFreq(Rcm_PeripheralId_MSS_QSPI, &qspiClkFreq);
+        DebugP_assert(rcmRetVal == Rcm_Return_SUCCESS);
     }
-#if !defined(SBL_SKIP_BRD_CFG_PM)
-    {
-        retVal = SBL_RcmSetPeripheralClock(Rcm_PeripheralId_MSS_QSPI, Rcm_PeripheralClockSource_DPLL_CORE_HSDIV0_CLKOUT2, qspiClkFreq);
-        DebugP_assert(retVal == Rcm_Return_SUCCESS);
-    }
+#else
+    #error "Configure QSPI qspiClkFreq for the SOC"
+    qspiClkFreq = 0;
 #endif
     qspi_cfg.funcClk = qspiClkFreq;
     SBL_log(SBL_LOG_MAX, "qspiFunClk = %d Hz \n", qspi_cfg.funcClk);

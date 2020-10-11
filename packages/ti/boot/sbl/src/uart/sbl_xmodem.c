@@ -53,11 +53,42 @@
 #define SBL_XMODEM_DELAY    (0x3FFFFF)
 #ifdef SOC_TPR12
 #include <ti/csl/soc.h>
+#include <ti/csl/cslr_sci.h>
+
+/* TPR12 Does not have CSL-FL layer for UART. Som implementing the 
+ * UART character read function here
+ */
+
+static uint32_t UartSci_isRxFree (const CSL_sciRegs* ptrSCIRegs)
+{
+    return CSL_FEXT(ptrSCIRegs->SCIFLR, SCI_SCIFLR_RXRDY);
+}
+
+static uint8_t UartSci_getCh (const CSL_sciRegs* ptrSCIRegs)
+{
+    return (uint8_t)CSL_FEXT(ptrSCIRegs->SCIRD, SCI_SCIRD_RD);
+}
+
 
 uint32_t READBYTE_WITH_TIMEOUT(uint32_t xmodemUartAddr, uint32_t delayMs, uint8_t *pData)
 {
-    *pData = UART_getc();
-    return TRUE;
+    int32_t timeCounter = delayMs;
+    bool charReceived = false;
+    const CSL_sciRegs* ptrSCIRegs = (const CSL_sciRegs*)xmodemUartAddr;
+
+    /* Is the receiver free? */
+    while (timeCounter > 10)
+    {
+        if (UartSci_isRxFree(ptrSCIRegs) == 1U)
+        {
+              /* YES: Read out a character from the buffer. */
+              *pData = UartSci_getCh (ptrSCIRegs);
+              charReceived = true;
+              break;
+        }
+        timeCounter--;
+    }
+    return charReceived;
 }
 #else
  #ifdef SOC_K2G

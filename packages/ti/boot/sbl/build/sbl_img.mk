@@ -129,6 +129,7 @@ SRCS_COMMON += sbl_main.c
 
 ifeq ($(SOC), tpr12)
   SRCS_COMMON += sbl_pinmux.c
+  SRCS_COMMON += sbl_module_clock_config.c
 endif
 
 

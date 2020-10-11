@@ -180,7 +180,14 @@ int32_t SBL_UARTBootImage(sblEntryPoint_t *pEntry)
     /* depending on whether SysFwConfigPm has run */
     /* or not                                     */
 #if defined(SOC_TPR12)
-      SBL_uartInit(SBL_RcmGetPeripheralClockFrequency(Rcm_PeripheralClockSource_SYS_CLK));
+    {
+        uint32_t uartFreq;
+        Rcm_Return rcmRetVal;
+
+        rcmRetVal = SBL_RcmGetPeripheralFreq(Rcm_PeripheralId_MSS_SCIA, &uartFreq);
+        DebugP_assert(rcmRetVal == Rcm_Return_SUCCESS);
+        SBL_uartInit(uartFreq);
+    }
 #else
  #if defined(DSBL_SKIP_BRD_CFG_PM) || defined(SBL_SKIP_SYSFW_INIT)
       SBL_uartInit(SBL_ROM_UART_MODULE_INPUT_CLK);
