@@ -1715,7 +1715,11 @@ LB_RESET_RX_FIFO:
 LB_NO_RX_FRAME_ERROR:
 
     .if $defined("ICSS_SWITCH_BUILD")
-    .if $defined(PTP)	
+    .if $defined(PTP)
+    ;This code is used to control PTP packet forwarding from driver, if mem location
+    ;is set to 1 then FW skips the flow. By default (0) flow is taken
+    LBCO    &RCV_TEMP_REG_2.b0, ICSS_SHARED_CONST, DISABLE_PTP_FRAME_FORWARDING_CTRL_OFFSET, 1
+    QBEQ    PTP_PORT_QUEUE_RELEASE_DONE, RCV_TEMP_REG_2.b0, 1        
     QBBS    LB_RELEASE_PORT_QUEUE, R22, PTP_RELEASE_PORT_QUEUE_BIT
 
 PTP_PORT_QUEUE_RELEASE_DONE:

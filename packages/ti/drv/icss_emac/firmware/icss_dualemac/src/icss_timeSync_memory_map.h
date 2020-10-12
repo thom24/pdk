@@ -68,6 +68,7 @@
 #define RX_SYNC_TIMESTAMP_OFFSET_P1                      ( GPTP_BASE_ADDR_OFFSET + 0 )                  /* 12 bytes */
 #define RX_TIMESTAMP_OFFSET_P1                           ( GPTP_BASE_ADDR_OFFSET + 0 )                  /* 12 bytes*/
 #define RX_PDELAY_REQ_TIMESTAMP_OFFSET_P1                ( RX_SYNC_TIMESTAMP_OFFSET_P1 + 12 )           /* 12 bytes */
+#define DISABLE_PTP_FRAME_FORWARDING_CTRL_OFFSET         ( RX_SYNC_TIMESTAMP_OFFSET_P1 + 12)            /* 1 byte */
 #define RX_PDELAY_RESP_TIMESTAMP_OFFSET_P1               ( RX_PDELAY_REQ_TIMESTAMP_OFFSET_P1 + 12 )     /* 12 bytes */
 #define RX_SYNC_TIMESTAMP_OFFSET_P2                      ( RX_PDELAY_RESP_TIMESTAMP_OFFSET_P1 + 12 )    /* 12 bytes */
 #define RX_TIMESTAMP_OFFSET_P2                           ( RX_PDELAY_RESP_TIMESTAMP_OFFSET_P1 + 12 )    /* 12 bytes */

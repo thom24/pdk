@@ -120,12 +120,17 @@ NOT_A_PTP_FRAME_2:
 ;---------------------------------------------------------------------------------------------------------
 M_GPTP_CHECK_AND_SET_FLAGS    .macro
     CLR     R22, R22, RX_IS_VLAN_BIT
+    ;This code is used to control PTP packet forwarding from driver, if mem location
+    ;is set to 1 then FW skips the flow. By default (0) flow is taken
+    LBCO    &RCV_TEMP_REG_3.b0, ICSS_SHARED_CONST, DISABLE_PTP_FRAME_FORWARDING_CTRL_OFFSET, 1    
     ;PTP_HSR_NON_LL_MAC_ID_L is 0
     QBNE    CHECK_PTP_LINK_LOCAL_RX, R3.w0, 0
     LDI32   RCV_TEMP_REG_2, PTP_HSR_PRP_NON_LL_MAC_ID_H
     QBNE    CHECK_PTP_LINK_LOCAL_RX, R2, RCV_TEMP_REG_2
     .if $defined(ICSS_SWITCH_BUILD)
+        QBEQ    SKIP_PTP_FWD_FLAG_SET_1, RCV_TEMP_REG_3.b0, 1      
         SET     MII_RCV.rx_flags, MII_RCV.rx_flags, fwd_flag_shift
+SKIP_PTP_FWD_FLAG_SET_1:
     .endif ;ICSS_SWITCH_BUILD
     QBA     SET_PTP_TAG_RX
     
@@ -156,7 +161,9 @@ SET_PTP_UDP_TAG_RX:
     ;At this point we dont know if this is a link local frame or not so we will
     ;set the forward flag and handle it later
     .if $defined(ICSS_SWITCH_BUILD)
+        QBEQ    SKIP_PTP_FWD_FLAG_SET_2, RCV_TEMP_REG_3.b0, 1 
         SET     MII_RCV.rx_flags, MII_RCV.rx_flags, fwd_flag_shift
+SKIP_PTP_FWD_FLAG_SET_2:
     .endif ;ICSS_SWITCH_BUILD
    
 GPTP_SKIP_CUT_THROUGH:
@@ -187,6 +194,9 @@ GPTP_CHECK_EXIT:
 M_GPTP_CHECK_AND_SET_FLAGS_L4    .macro
     ; If UDP PTP bit already set then frame is PTP msg bc of MC PTP MAC
     QBBS    GPTP_CHECK_EXIT_L4?, R22, RX_IS_UDP_PTP_BIT
+    ;This code is used to control PTP packet forwarding from driver, if mem location
+    ;is set to 1 then FW skips the flow. By default (0) flow is taken
+    LBCO    &RCV_TEMP_REG_3.b0, ICSS_SHARED_CONST, DISABLE_PTP_FRAME_FORWARDING_CTRL_OFFSET, 1   
     CLR     R22, R22, RX_IS_VLAN_BIT
     LDI     RCV_TEMP_REG_2.w0, IPV4_EtherType
     QBNE    NO_VLAN_RX_CHECK?, R5.w0, VLAN_EtherType
@@ -205,7 +215,9 @@ SET_RX_UDP_PTP_BIT?:
     SET     R22, R22, RX_IS_UDP_PTP_BIT
     SET     R22, R22, RX_IS_PTP_BIT
     .if $defined(ICSS_SWITCH_BUILD)
+        QBEQ    SKIP_PTP_FWD_FLAG_SET_3, RCV_TEMP_REG_3.b0, 1 
         SET     MII_RCV.rx_flags, MII_RCV.rx_flags, fwd_flag_shift
+SKIP_PTP_FWD_FLAG_SET_3:
     .endif ;ICSS_SWITCH_BUILD
 
 GPTP_CHECK_EXIT_L4?:
