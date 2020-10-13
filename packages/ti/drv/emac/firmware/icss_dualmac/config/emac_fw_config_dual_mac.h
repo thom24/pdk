@@ -44,6 +44,7 @@ extern "C" {
 
 #include <ti/drv/emac/src/v5/emac_drv_v5.h>
 
+//#define SUPPORT_MII
 
 extern int32_t emacGetDualMacFwConfig(uint32_t portNum, EMAC_PER_PORT_ICSSG_FW_CFG **pStaticMMap);
 extern int32_t emacSettDualMacFwConfig(uint32_t portNum, const EMAC_PER_PORT_ICSSG_FW_CFG *pStaticCfg);

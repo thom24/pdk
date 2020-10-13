@@ -1298,6 +1298,22 @@ void app_test_config_promiscous_mode(uint32_t enable)
         emac_ioctl(pNum,EMAC_IOCTL_PROMISCOUS_MODE_CTRL,(void*)(&params));
     }
 
+    for (pNum =portNum; pNum  <= endPort; pNum++)
+    {
+        if ((!port_en[pNum]) || (pNum == 6))
+            continue;
+
+        if(enable)
+        {
+            params.subCommand =  EMAC_IOCTL_PORT_MC_FLOODING_ENABLE;
+        }
+        else
+        {
+            params.subCommand =  EMAC_IOCTL_PORT_MC_FLOODING_DISABLE;
+        }
+
+        emac_ioctl(pNum, EMAC_IOCTL_MC_FLOODING_CTRL, (void *)(&params));
+    }
 }
 
 void  app_test_promiscous_mode(void)
@@ -1473,6 +1489,383 @@ void app_test_check_port_link(uint32_t startP, uint32_t endP)
         UART_printf("Link for port %d is now UP\n", pNum);
     }
 }
+#ifdef SUPPORT_MII
+#include <ti/board/src/am65xx_idk/include/pinmux.h>
+#include <ti/board/src/am65xx_idk/am65xx_idk_pinmux.h>
+#include  <ti/csl/src/ip/mdio/V5/csl_mdio.h>
+
+#define DPPHY_REGCR_REG         0x0D
+#define DPPHY_ADDR_REG          0x0E
+#define DPPHY_RGMIICTL          0x32
+#define DPPHY_GPIO_MUX_CTRL2    0x172
+
+#define EXT_REG_ADDRESS_ACCESS      0x001F
+#define EXT_REG_DATA_NORMAL_ACCESS  0x401F
+
+void MDIO_phyExtRegRead(uint32_t mdioBaseAddress, uint32_t phyNum,
+                        uint32_t regNum, uint16_t *phyregval)
+{
+    CSL_MDIO_phyRegWrite(mdioBaseAddress, phyNum, DPPHY_REGCR_REG,
+                         EXT_REG_ADDRESS_ACCESS);
+    CSL_MDIO_phyRegWrite(mdioBaseAddress, phyNum, DPPHY_ADDR_REG, regNum);
+    CSL_MDIO_phyRegWrite(mdioBaseAddress, phyNum, DPPHY_REGCR_REG,
+                         EXT_REG_DATA_NORMAL_ACCESS);
+    CSL_MDIO_phyRegRead(mdioBaseAddress, phyNum, DPPHY_ADDR_REG, phyregval);
+    return;
+}
+
+void MDIO_phyExtRegWrite(uint32_t mdioBaseAddress, uint32_t phyNum,
+                         uint32_t regNum, uint16_t phyregval)
+{
+    CSL_MDIO_phyRegWrite(mdioBaseAddress, phyNum, DPPHY_REGCR_REG,
+                         EXT_REG_ADDRESS_ACCESS);
+    CSL_MDIO_phyRegWrite(mdioBaseAddress, phyNum, DPPHY_ADDR_REG, regNum);
+    CSL_MDIO_phyRegWrite(mdioBaseAddress, phyNum, DPPHY_REGCR_REG,
+                         EXT_REG_DATA_NORMAL_ACCESS);
+    CSL_MDIO_phyRegWrite(mdioBaseAddress, phyNum, DPPHY_ADDR_REG, phyregval);
+    return;
+}
+
+static pinmuxPerCfg_t gPru_icssg0_mii_g_rt0PinCfg[] =
+{
+    /* MyPRU_ICSSG0_MII_G_RT1 -> pr0_mii_mt0_clk -> AC24 */
+    {
+        PIN_PRG0_PRU1_GPO16, PIN_MODE(1) | \
+        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+    },
+    /* MyPRU_ICSSG0_MII_G_RT1 -> pr0_mii0_txen -> AE27 */
+    {
+        PIN_PRG0_PRU1_GPO15, PIN_MODE(0) | \
+        ((PIN_PULL_DISABLE) & (~PIN_PULL_DIRECTION & ~PIN_INPUT_ENABLE))
+    },
+    /* MyPRU_ICSSG0_MII_G_RT1 -> pr0_mii0_txd3 -> AD24 */
+    {
+        PIN_PRG0_PRU1_GPO14, PIN_MODE(0) | \
+        ((PIN_PULL_DISABLE) & (~PIN_PULL_DIRECTION & ~PIN_INPUT_ENABLE))
+    },
+    /* MyPRU_ICSSG0_MII_G_RT1 -> pr0_mii0_txd2 -> AD25 */
+    {
+        PIN_PRG0_PRU1_GPO13, PIN_MODE(0) | \
+        ((PIN_PULL_DISABLE) & (~PIN_PULL_DIRECTION & ~PIN_INPUT_ENABLE))
+    },
+    /* MyPRU_ICSSG0_MII_G_RT1 -> pr0_mii0_txd1 -> AC25 */
+    {
+        PIN_PRG0_PRU1_GPO12, PIN_MODE(0) | \
+        ((PIN_PULL_DISABLE) & (~PIN_PULL_DIRECTION & ~PIN_INPUT_ENABLE))
+    },
+    /* MyPRU_ICSSG0_MII_G_RT1 -> pr0_mii0_txd0 -> AB24 */
+    {
+        PIN_PRG0_PRU1_GPO11, PIN_MODE(0) | \
+        ((PIN_PULL_DISABLE) & (~PIN_PULL_DIRECTION & ~PIN_INPUT_ENABLE))
+    },
+    /* MyPRU_ICSSG0_MII_G_RT1 -> pr0_mii0_rxdv -> Y24 */
+    {
+        PIN_PRG0_PRU0_GPO4, PIN_MODE(1) | \
+        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+    },
+    /* MyPRU_ICSSG0_MII_G_RT1 -> pr0_mii_mr0_clk -> Y25 */
+    {
+        PIN_PRG0_PRU0_GPO6, PIN_MODE(1) | \
+        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+    },
+    /* MyPRU_ICSSG0_MII_G_RT1 -> pr0_mii0_rxd3 -> AA27 */
+    {
+        PIN_PRG0_PRU0_GPO3, PIN_MODE(1) | \
+        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+    },
+    /* MyPRU_ICSSG0_MII_G_RT1 -> pr0_mii0_rxd2 -> W24 */
+    {
+        PIN_PRG0_PRU0_GPO2, PIN_MODE(1) | \
+        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+    },
+    /* MyPRU_ICSSG0_MII_G_RT1 -> pr0_mii0_rxer -> V28 */
+    {
+        PIN_PRG0_PRU0_GPO5, PIN_MODE(1) | \
+        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+    },
+    /* MyPRU_ICSSG0_MII_G_RT1 -> pr0_mii0_rxd1 -> W25 */
+    {
+        PIN_PRG0_PRU0_GPO1, PIN_MODE(1) | \
+        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+    },
+    /* MyPRU_ICSSG0_MII_G_RT1 -> pr0_mii0_rxd0 -> V24 */
+    {
+        PIN_PRG0_PRU0_GPO0, PIN_MODE(1) | \
+        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+    },
+    /* MyPRU_ICSSG0_MII_G_RT1 -> pr0_mii0_rxlink -> V27 */
+    {
+        PIN_PRG0_PRU0_GPO8, PIN_MODE(1) | \
+        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+    },
+    /* MyPRU_ICSSG0_MII_G_RT1 -> pr0_mii_mt1_clk -> AD28 */
+    {
+        PIN_PRG0_PRU0_GPO16, PIN_MODE(1) | \
+        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+    },
+    /* MyPRU_ICSSG0_MII_G_RT1 -> pr0_mii1_txen -> AA24 */
+    {
+        PIN_PRG0_PRU0_GPO15, PIN_MODE(0) | \
+        ((PIN_PULL_DISABLE) & (~PIN_PULL_DIRECTION & ~PIN_INPUT_ENABLE))
+    },
+    /* MyPRU_ICSSG0_MII_G_RT1 -> pr0_mii1_txd3 -> AD26 */
+    {
+        PIN_PRG0_PRU0_GPO14, PIN_MODE(0) | \
+        ((PIN_PULL_DISABLE) & (~PIN_PULL_DIRECTION & ~PIN_INPUT_ENABLE))
+    },
+    /* MyPRU_ICSSG0_MII_G_RT1 -> pr0_mii1_txd2 -> AC26 */
+    {
+        PIN_PRG0_PRU0_GPO13, PIN_MODE(0) | \
+        ((PIN_PULL_DISABLE) & (~PIN_PULL_DIRECTION & ~PIN_INPUT_ENABLE))
+    },
+    /* MyPRU_ICSSG0_MII_G_RT1 -> pr0_mii1_txd1 -> AD27 */
+    {
+        PIN_PRG0_PRU0_GPO12, PIN_MODE(0) | \
+        ((PIN_PULL_DISABLE) & (~PIN_PULL_DIRECTION & ~PIN_INPUT_ENABLE))
+    },
+    /* MyPRU_ICSSG0_MII_G_RT1 -> pr0_mii1_txd0 -> AB25 */
+    {
+        PIN_PRG0_PRU0_GPO11, PIN_MODE(0) | \
+        ((PIN_PULL_DISABLE) & (~PIN_PULL_DIRECTION & ~PIN_INPUT_ENABLE))
+    },
+    /* MyPRU_ICSSG0_MII_G_RT1 -> pr0_mii1_rxdv -> AA25 */
+    {
+        PIN_PRG0_PRU1_GPO4, PIN_MODE(1) | \
+        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+    },
+    /* MyPRU_ICSSG0_MII_G_RT1 -> pr0_mii_mr1_clk -> AB27 */
+    {
+        PIN_PRG0_PRU1_GPO6, PIN_MODE(1) | \
+        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+    },
+    /* MyPRU_ICSSG0_MII_G_RT1 -> pr0_mii1_rxd3 -> AB26 */
+    {
+        PIN_PRG0_PRU1_GPO3, PIN_MODE(1) | \
+        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+    },
+    /* MyPRU_ICSSG0_MII_G_RT1 -> pr0_mii1_rxd2 -> AC27 */
+    {
+        PIN_PRG0_PRU1_GPO2, PIN_MODE(1) | \
+        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+    },
+    /* MyPRU_ICSSG0_MII_G_RT1 -> pr0_mii1_rxer -> U23 */
+    {
+        PIN_PRG0_PRU1_GPO5, PIN_MODE(1) | \
+        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+    },
+    /* MyPRU_ICSSG0_MII_G_RT1 -> pr0_mii1_rxd1 -> AC28 */
+    {
+        PIN_PRG0_PRU1_GPO1, PIN_MODE(1) | \
+        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+    },
+    /* MyPRU_ICSSG0_MII_G_RT1 -> pr0_mii1_rxd0 -> AB28 */
+    {
+        PIN_PRG0_PRU1_GPO0, PIN_MODE(1) | \
+        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+    },
+    /* MyPRU_ICSSG0_MII_G_RT1 -> pr0_mii1_rxlink -> W27 */
+    {
+        PIN_PRG0_PRU1_GPO8, PIN_MODE(1) | \
+        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+    },
+    {PINMUX_END}
+};
+
+static pinmuxModuleCfg_t gPru_icssg0_mii_g_rtPinCfg[] =
+{
+    {0, TRUE, gPru_icssg0_mii_g_rt0PinCfg},
+    {PINMUX_END}
+};
+
+
+static pinmuxPerCfg_t gPru_icssg1_mii_g_rt0PinCfg[] =
+{
+    /* MyPRU_ICSSG1_MII_G_RT1 -> pr1_mii_mt0_clk -> AE19 */
+    {
+        PIN_PRG1_PRU1_GPO16, PIN_MODE(1) | \
+        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+    },
+    /* MyPRU_ICSSG1_MII_G_RT1 -> pr1_mii0_txen -> AG19 */
+    {
+        PIN_PRG1_PRU1_GPO15, PIN_MODE(0) | \
+        ((PIN_PULL_DISABLE) & (~PIN_PULL_DIRECTION & ~PIN_INPUT_ENABLE))
+    },
+    /* MyPRU_ICSSG1_MII_G_RT1 -> pr1_mii0_txd3 -> AH19 */
+    {
+        PIN_PRG1_PRU1_GPO14, PIN_MODE(0) | \
+        ((PIN_PULL_DISABLE) & (~PIN_PULL_DIRECTION & ~PIN_INPUT_ENABLE))
+    },
+    /* MyPRU_ICSSG1_MII_G_RT1 -> pr1_mii0_txd2 -> AF19 */
+    {
+        PIN_PRG1_PRU1_GPO13, PIN_MODE(0) | \
+        ((PIN_PULL_DISABLE) & (~PIN_PULL_DIRECTION & ~PIN_INPUT_ENABLE))
+    },
+    /* MyPRU_ICSSG1_MII_G_RT1 -> pr1_mii0_txd1 -> AE20 */
+    {
+        PIN_PRG1_PRU1_GPO12, PIN_MODE(0) | \
+        ((PIN_PULL_DISABLE) & (~PIN_PULL_DIRECTION & ~PIN_INPUT_ENABLE))
+    },
+    /* MyPRU_ICSSG1_MII_G_RT1 -> pr1_mii0_txd0 -> AC20 */
+    {
+        PIN_PRG1_PRU1_GPO11, PIN_MODE(0) | \
+        ((PIN_PULL_DISABLE) & (~PIN_PULL_DIRECTION & ~PIN_INPUT_ENABLE))
+    },
+    /* MyPRU_ICSSG1_MII_G_RT1 -> pr1_mii0_rxdv -> AG23 */
+    {
+        PIN_PRG1_PRU0_GPO4, PIN_MODE(1) | \
+        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+    },
+    /* MyPRU_ICSSG1_MII_G_RT1 -> pr1_mii_mr0_clk -> AF22 */
+    {
+        PIN_PRG1_PRU0_GPO6, PIN_MODE(1) | \
+        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+    },
+    /* MyPRU_ICSSG1_MII_G_RT1 -> pr1_mii0_rxd3 -> AD21 */
+    {
+        PIN_PRG1_PRU0_GPO3, PIN_MODE(1) | \
+        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+    },
+    /* MyPRU_ICSSG1_MII_G_RT1 -> pr1_mii0_rxd2 -> AF23 */
+    {
+        PIN_PRG1_PRU0_GPO2, PIN_MODE(1) | \
+        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+    },
+    /* MyPRU_ICSSG1_MII_G_RT1 -> pr1_mii0_rxer -> AF27 */
+    {
+        PIN_PRG1_PRU0_GPO5, PIN_MODE(1) | \
+        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+    },
+    /* MyPRU_ICSSG1_MII_G_RT1 -> pr1_mii0_rxd1 -> AG24 */
+    {
+        PIN_PRG1_PRU0_GPO1, PIN_MODE(1) | \
+        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+    },
+    /* MyPRU_ICSSG1_MII_G_RT1 -> pr1_mii0_rxd0 -> AE22 */
+    {
+        PIN_PRG1_PRU0_GPO0, PIN_MODE(1) | \
+        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+    },
+    /* MyPRU_ICSSG1_MII_G_RT1 -> pr1_mii0_rxlink -> AF28 */
+    {
+        PIN_PRG1_PRU0_GPO8, PIN_MODE(1) | \
+        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+    },
+    /* MyPRU_ICSSG1_MII_G_RT1 -> pr1_mii_mt1_clk -> AD20 */
+    {
+        PIN_PRG1_PRU0_GPO16, PIN_MODE(1) | \
+        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+    },
+    /* MyPRU_ICSSG1_MII_G_RT1 -> pr1_mii1_txen -> AD19 */
+    {
+        PIN_PRG1_PRU0_GPO15, PIN_MODE(0) | \
+        ((PIN_PULL_DISABLE) & (~PIN_PULL_DIRECTION & ~PIN_INPUT_ENABLE))
+    },
+    /* MyPRU_ICSSG1_MII_G_RT1 -> pr1_mii1_txd3 -> AG20 */
+    {
+        PIN_PRG1_PRU0_GPO14, PIN_MODE(0) | \
+        ((PIN_PULL_DISABLE) & (~PIN_PULL_DIRECTION & ~PIN_INPUT_ENABLE))
+    },
+    /* MyPRU_ICSSG1_MII_G_RT1 -> pr1_mii1_txd2 -> AH21 */
+    {
+        PIN_PRG1_PRU0_GPO13, PIN_MODE(0) | \
+        ((PIN_PULL_DISABLE) & (~PIN_PULL_DIRECTION & ~PIN_INPUT_ENABLE))
+    },
+    /* MyPRU_ICSSG1_MII_G_RT1 -> pr1_mii1_txd1 -> AH20 */
+    {
+        PIN_PRG1_PRU0_GPO12, PIN_MODE(0) | \
+        ((PIN_PULL_DISABLE) & (~PIN_PULL_DIRECTION & ~PIN_INPUT_ENABLE))
+    },
+    /* MyPRU_ICSSG1_MII_G_RT1 -> pr1_mii1_txd0 -> AF21 */
+    {
+        PIN_PRG1_PRU0_GPO11, PIN_MODE(0) | \
+        ((PIN_PULL_DISABLE) & (~PIN_PULL_DIRECTION & ~PIN_INPUT_ENABLE))
+    },
+    /* MyPRU_ICSSG1_MII_G_RT1 -> pr1_mii1_rxdv -> AE21 */
+    {
+        PIN_PRG1_PRU1_GPO4, PIN_MODE(1) | \
+        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+    },
+    /* MyPRU_ICSSG1_MII_G_RT1 -> pr1_mii_mr1_clk -> AG22 */
+    {
+        PIN_PRG1_PRU1_GPO6, PIN_MODE(1) | \
+        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+    },
+    /* MyPRU_ICSSG1_MII_G_RT1 -> pr1_mii1_rxd3 -> AH22 */
+    {
+        PIN_PRG1_PRU1_GPO3, PIN_MODE(1) | \
+        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+    },
+    /* MyPRU_ICSSG1_MII_G_RT1 -> pr1_mii1_rxd2 -> AG21 */
+    {
+        PIN_PRG1_PRU1_GPO2, PIN_MODE(1) | \
+        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+    },
+    /* MyPRU_ICSSG1_MII_G_RT1 -> pr1_mii1_rxer -> AC22 */
+    {
+        PIN_PRG1_PRU1_GPO5, PIN_MODE(1) | \
+        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+    },
+    /* MyPRU_ICSSG1_MII_G_RT1 -> pr1_mii1_rxd1 -> AH23 */
+    {
+        PIN_PRG1_PRU1_GPO1, PIN_MODE(1) | \
+        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+    },
+    /* MyPRU_ICSSG1_MII_G_RT1 -> pr1_mii1_rxd0 -> AH24 */
+    {
+        PIN_PRG1_PRU1_GPO0, PIN_MODE(1) | \
+        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+    },
+    /* MyPRU_ICSSG1_MII_G_RT1 -> pr1_mii1_rxlink -> AE24 */
+    {
+        PIN_PRG1_PRU1_GPO8, PIN_MODE(1) | \
+        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+    },
+    {PINMUX_END}
+};
+
+static pinmuxModuleCfg_t gPru_icssg1_mii_g_rtPinCfg[] =
+{
+    {0, TRUE, gPru_icssg1_mii_g_rt0PinCfg},
+    {PINMUX_END}
+};
+
+pinmuxBoardCfg_t gAM65xxMIIPinmuxData[] =
+{
+    {0, gPru_icssg0_mii_g_rtPinCfg},
+    {1, gPru_icssg1_mii_g_rtPinCfg},
+    {PINMUX_END}
+};
+
+void emac_mii_pinmuxConfig (void)
+{
+    pinmuxModuleCfg_t* pModuleData = NULL;
+    pinmuxPerCfg_t* pInstanceData = NULL;
+    int32_t i, j, k;
+    uint32_t rdRegVal;
+
+    for(i = 0; PINMUX_END != gAM65xxMIIPinmuxData[i].moduleId; i++)
+    {
+        pModuleData = gAM65xxMIIPinmuxData[i].modulePinCfg;
+        for(j = 0; (PINMUX_END != pModuleData[j].modInstNum); j++)
+        {
+            if(pModuleData[j].doPinConfig == TRUE)
+            {
+                pInstanceData = pModuleData[j].instPins;
+                for(k = 0; (PINMUX_END != pInstanceData[k].pinOffset); k++)
+                {
+                    rdRegVal = HW_RD_REG32((MAIN_PMUX_CTRL + pInstanceData[k].pinOffset));
+                    rdRegVal = (rdRegVal & PINMUX_BIT_MASK);
+                    HW_WR_REG32((MAIN_PMUX_CTRL + pInstanceData[k].pinOffset),
+                                (pInstanceData[k].pinSettings));
+                    //UART_printf("Offset:%x Settings: %x\n", MAIN_PMUX_CTRL + pInstanceData[k].pinOffset, pInstanceData[k].pinSettings);
+                }
+            }
+        }
+    }
+
+    return;
+}
+#endif //MII_SUPPORT
 
 #ifdef EMAC_BENCHMARK
 void app_test_task_benchmark(UArg arg0, UArg arg1)
@@ -1560,8 +1953,13 @@ void test_EMAC_verify_ut_dual_mac_icssg(void)
 #ifdef EMAC_TEST_APP_WITHOUT_DDR
     Task_sleep(2000);
 #endif
+#ifdef SUPPORT_MII
+    Board_initCfg cfg = BOARD_INIT_UART_STDIO | BOARD_INIT_PINMUX_CONFIG | BOARD_INIT_MODULE_CLOCK  | BOARD_INIT_ETH_PHY | BOARD_INIT_ENETCTRL_ICSS;
+    boardInitStatus = Board_init(cfg);
+    emac_mii_pinmuxConfig();
+    Board_init(BOARD_INIT_ICSS_ETH_PHY);
+#else
     Board_initCfg cfg = BOARD_INIT_UART_STDIO | BOARD_INIT_PINMUX_CONFIG | BOARD_INIT_MODULE_CLOCK | BOARD_INIT_ICSS_ETH_PHY | BOARD_INIT_ETH_PHY | BOARD_INIT_ENETCTRL_ICSS;
-
 #if defined(SOC_J721E)
     /* PINMUX config of GESI for ICSSG */
     Board_PinmuxConfig_t gesiIcssgPinmux;
@@ -1569,8 +1967,10 @@ void test_EMAC_verify_ut_dual_mac_icssg(void)
     gesiIcssgPinmux.autoCfg = BOARD_PINMUX_CUSTOM;
     gesiIcssgPinmux.gesiExp = BOARD_PINMUX_GESI_ICSSG;
     Board_pinmuxSetCfg(&gesiIcssgPinmux);
-#endif
+#endif //SOC_J721E
     boardInitStatus = Board_init(cfg);
+#endif //SUPPORT_MII
+
     if (boardInitStatus !=BOARD_SOK)
     {
         UART_printf("Board_init failure\n");
@@ -1882,7 +2282,18 @@ int32_t  app_test_task_init_pruicss(uint32_t portNum)
             return -1;
         }
     }
-
+#ifdef SUPPORT_MII
+    /* Setting up RX_ER/GPIO pin on the PHY as RX_ERR pin and COL/GPIO pin as LED_3 */
+    MDIO_phyExtRegWrite((((PRUICSS_HwAttrs *)(prussDrvHandle->hwAttrs))->prussMiiMdioRegBase),0,
+                        DPPHY_GPIO_MUX_CTRL2, 0x60);
+    MDIO_phyExtRegWrite((((PRUICSS_HwAttrs *)(prussDrvHandle->hwAttrs))->prussMiiMdioRegBase), 3,
+                        DPPHY_GPIO_MUX_CTRL2, 0x60);
+    /* Disable RGMII interface */
+    MDIO_phyExtRegWrite((((PRUICSS_HwAttrs *)(prussDrvHandle->hwAttrs))->prussMiiMdioRegBase), 0,
+                        DPPHY_RGMIICTL, 0x50);
+    MDIO_phyExtRegWrite((((PRUICSS_HwAttrs *)(prussDrvHandle->hwAttrs))->prussMiiMdioRegBase), 3,
+                        DPPHY_RGMIICTL, 0x50);
+#endif
     return 0;
 }
 #endif
