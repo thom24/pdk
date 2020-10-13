@@ -39,6 +39,7 @@
  *
  */
 
+#include <stdlib.h>
 
 #ifdef USE_BIOS
 /* XDCtools Header files */
@@ -109,7 +110,8 @@ typedef struct QSPI_Tests_s
     bool     dmaMode;
     bool     mmapMode;
     char     testDesc[80];
-
+    char     *fileName;
+    uint32_t flashWriteOffset;
 } QSPI_Tests;
 
 /**********************************************************************
@@ -426,6 +428,350 @@ static bool QSPI_test_func (void *arg)
     return (retVal);
 }
 
+#include <string.h>
+#include <stdio.h>
+
+#define MEM_SIZE_KB                         (1024)
+#define QSPI_DEVICE_BLOCK_SIZE              (64 * MEM_SIZE_KB)
+/* Maximum length of each config line */
+#define MAX_LINE_LENGTH                     256
+#define FREAD_TEST_CONFIG_FILE_PATH         "C:\\delete\\FlashReadConfig.txt"
+
+uint8_t fileLoadBuffer[192 * 1024];
+uint8_t fileReadBuffer[192 * 1024];
+
+/**
+ * @brief - QSPI_test_flashWrite() - function to do flash SPI
+ *
+ * @param
+ *     handle = pointer to SPI handle
+ *     src = byte pointer to source
+ *     length = size of source to copy
+ *     offset = SPI offset to flash into
+ *
+ * @return - int32t
+ *      0 = Init completed successfully
+ *     <0 = Negative value indicate error occurred
+ *
+ */
+int32_t QSPI_test_flashWrite(S25FL_Handle flashHandle, uint8_t *src, uint32_t length,
+    uint32_t offset, bool dmaMode, bool mmapMode)
+{
+    uint32_t startBlockNumber, endBlockNumber;
+    uint32_t i;
+    S25FL_Transaction flashTransaction;
+    int32_t retVal;
+
+    /* Computing the block numbers to be erased  */
+    startBlockNumber = (offset / QSPI_DEVICE_BLOCK_SIZE);
+    endBlockNumber = (offset + length) /
+        QSPI_DEVICE_BLOCK_SIZE;
+
+    for (i = startBlockNumber; i <= endBlockNumber; i++)
+    {
+        S25FLFlash_BlockErase(flashHandle, i);
+    }
+
+#ifdef SPI_DMA_ENABLE
+    if (dmaMode)
+    {
+        CacheP_wbInv((void *)src, length);
+    }
+#endif
+
+    /* Update transaction parameters */
+#ifdef SPI_DMA_ENABLE
+    if (dmaMode)
+    {
+        flashTransaction.data    = (uint8_t *)l2_global_address((uintptr_t)src);
+    }
+    else
+#endif
+    {
+        flashTransaction.data    = src;
+    }
+
+    if (mmapMode)
+    {
+        flashTransaction.address = offset;
+    }
+    else
+    {
+        /*
+         * For CFG Mode,flashTransaction.address should be assigned with the
+         * address of the variable which contains the flash offset value
+         */
+        flashTransaction.address = (uint32_t)&offset;
+    }
+    flashTransaction.dataSize    = length;  /* In bytes */
+
+    /* Write buffer to flash */
+    retVal = SF25FL_bufferWrite(flashHandle, &flashTransaction);
+
+    DebugP_assert(retVal == true);
+    return !retVal;
+}
+
+
+/**
+ * @brief - QSPI_test_flashRead() - function to do flash SPI
+ *
+ * @param
+ *     handle = pointer to SPI handle
+ *     dst = byte pointer to destination
+ *     length = size of source to copy
+ *     offset = SPI offset to flash into
+ *
+ * @return - int32t
+ *      0 = Init completed successfully
+ *     <0 = Negative value indicate error occurred
+ *
+ */
+int32_t QSPI_test_flashRead(S25FL_Handle flashHandle, uint8_t *dst, uint32_t length,
+    uint32_t offset, bool dmaMode, bool mmapMode, bool enableQuadMode)
+{
+    S25FL_Transaction flashTransaction;
+    int32_t retVal;
+
+    if(enableQuadMode)
+    {
+        S25FLFlash_QuadModeEnable(flashHandle);
+    }
+
+#ifdef SPI_DMA_ENABLE
+    if (dmaMode)
+    {
+        CacheP_wbInv((void *)dst, length);
+    }
+#endif
+
+        /* Update transaction parameters */
+#ifdef SPI_DMA_ENABLE
+    if (dmaMode)
+    {
+        flashTransaction.data    = (uint8_t *)l2_global_address((uintptr_t)dst);
+    }
+    else
+#endif
+    {
+        flashTransaction.data    = dst;
+    }
+
+    if (mmapMode)
+    {
+        flashTransaction.address = offset;
+    }
+    else
+    {
+        /*
+         * For CFG Mode,flashTransaction.address should be assigned with the
+         * address of the variable which contains the flash offset value
+         */
+        flashTransaction.address = (uint32_t)&offset;
+    }
+    flashTransaction.dataSize    = length; /* In bytes */
+
+    /* Read data from flash */
+    retVal = SF25FL_bufferRead(flashHandle, &flashTransaction);
+
+    DebugP_assert(retVal == true);
+    /* SPI_transfer() returns TRUE if successful
+       SBL_qspiFlashRead() needs to return 0 if there's no errors */
+    return !retVal;
+}
+
+size_t  QSPI_freadProgress(void *ptr, size_t size, size_t nmemb, FILE *fp)
+{
+    uint32_t chunkCount;
+    size_t chunkSize = (nmemb / 100);
+    size_t totalReadSize;
+    size_t chunkReadSize;
+    uint8_t *fileLoadBuffer = ptr;
+
+    totalReadSize = 0;
+    SPI_log("\r\n File Read Progress:\n");
+    if (chunkSize > 0)
+    {
+        for (chunkCount = 0; chunkCount < 100; chunkCount++)
+        {
+            chunkReadSize = fread(fileLoadBuffer, size, chunkSize, fp);
+            if (chunkReadSize != chunkSize)
+            {
+                break;
+            }
+            totalReadSize += chunkSize;
+            fileLoadBuffer += (size * chunkSize);
+            if ((chunkCount % 5) == 0)
+            {
+                SPI_log("%d%% \r\n", chunkCount);
+            }
+        }
+    }
+    if ((nmemb - totalReadSize) > 0)
+    {
+        chunkReadSize = fread(fileLoadBuffer, size, (nmemb - totalReadSize), fp);
+        totalReadSize += chunkReadSize;
+    }
+    return totalReadSize;
+}
+
+
+int32_t QSPI_test_readInputFile(S25FL_Handle flashHandle, QSPI_Tests *test, bool enableQuadMode)
+{
+    FILE *fp;
+    FILE *binPtr;
+    char line[MAX_LINE_LENGTH];
+    char fileName[MAX_LINE_LENGTH];
+    int32_t offsetAddr = 0U;
+    uint32_t len, i;
+    int32_t ret;
+    const char *s = FREAD_TEST_CONFIG_FILE_PATH;
+    uint32_t readlen;
+
+    fp = fopen(s, "r");
+    if (fp == NULL)
+    {
+        SPI_log("\r\n Error opening file %s\r\n", s);
+        return -1;
+    }
+
+    memset(line, 0, MAX_LINE_LENGTH);
+
+    while (fgets(line, MAX_LINE_LENGTH, fp) != 0)
+    {
+        if (sscanf(line,"%s %x", fileName, &offsetAddr) < 0)
+        {
+            SPI_log("Error parsing config line -\n");
+            SPI_log("\t Make sure each line is in the format: [filename] [address]\n");
+            fclose(fp);
+            return -2;
+        }
+        else
+        {
+            SPI_log("Parsed config line, received parameters: filename = %s, address = 0x%x\n", fileName, offsetAddr);
+            binPtr = fopen(fileName, "rb");
+            if (binPtr == NULL)
+            {
+                SPI_log("\tUnable to open file to load: %s\n", fileName);
+                fclose(fp);
+                return -3;
+            }
+            fseek(binPtr, 0, SEEK_END);
+            len = ftell(binPtr);
+            fseek(binPtr, 0, SEEK_SET);
+            if (len == 0)
+            {
+                SPI_log("\tUnable to read size of file %s\n", fileName);
+                fclose(binPtr);
+                fclose(fp);
+                return -4;
+            }
+            else
+            {
+                SPI_log("\tSize of %s is 0x%x\n", fileName, len);
+            }
+            if (len > sizeof(fileLoadBuffer))
+            {
+                SPI_log("\tFile size exceeds max size  %d\n", sizeof(fileLoadBuffer));
+                fclose(binPtr);
+                fclose(fp);
+                return -4;
+            }
+            SPI_log("\tLoading binary to memory ...\n");
+            readlen = QSPI_freadProgress(fileLoadBuffer, 1, len, binPtr);
+            DebugP_assert(readlen == len);
+            SPI_log("\tFinished loading binary to memory!\n");
+            if (ret = QSPI_test_flashWrite(flashHandle, fileLoadBuffer, len, offsetAddr, test->dmaMode, test->mmapMode))
+            {
+                SPI_log("\tError flashing memory! Error code %d\n", ret);
+                return -5;
+            }
+            else
+            {
+                SPI_log("\tFlashed %s to offset 0x%x!\n", fileName, offsetAddr);
+            }
+            if (ret = QSPI_test_flashRead(flashHandle, fileReadBuffer, len, offsetAddr, test->dmaMode, test->mmapMode, enableQuadMode))
+            {
+                SPI_log("\tError reading memory at addr 0x%x\n", offsetAddr);
+                return -6;
+            }
+            else
+            {
+                SPI_log("\tRead flash memory at 0x%x, checking flashed content...\n", offsetAddr);
+            }
+            for (i = 0; i<len; i+=4)
+            {
+                if ( (*(uint32_t *) (fileLoadBuffer + i)) != (*(uint32_t *) (fileReadBuffer + i)) )
+                {
+                    SPI_log("\t\tMismatched data at offset 0x%x, expected = 0x%08x, read = 0x%08x\n",
+                        i, (*(uint32_t *) (fileLoadBuffer + i)), (*(uint32_t *) (fileReadBuffer + i)));
+                    ret = -7;
+                }
+            }
+            if (ret == -7)
+            {
+                SPI_log("\tVerifying flashed data failed!\n");
+                //return ret;
+            }
+            else
+            {
+                SPI_log("\tVerified flash data equal expected data!\n");
+            }
+            fclose(binPtr);
+
+        }
+    }
+    fclose(fp);
+
+    return 0;
+}
+
+static bool QSPI_test_func_file_write (void *arg)
+{
+    QSPI_Tests        *test = (QSPI_Tests *)arg;
+    SPI_Params         spiParams;
+    S25FL_Handle       flashHandle;            /* Flash handle */
+    SPI_Handle         handle;                 /* SPI handle */
+    QSPI_HwAttrs      *hwAttrs;                /* QSPI hardware attributes */
+    bool               retVal = true;          /* return value */
+    uint32_t           rxLines;
+    uint32_t           qspiMode;
+
+    QSPI_initConfig(0, test);
+
+    /* Default SPI configuration parameters */
+    SPI_Params_init(&spiParams);
+
+    /* Open QSPI driver */
+    flashHandle = SF25FL_open(((QSPI_INSTANCE - 1)+(QSPI_OFFSET)), &spiParams);
+
+    /* Extract hardware attributes */
+    handle = flashHandle->spiHandle;
+    hwAttrs = (QSPI_HwAttrs *)handle->hwAttrs;
+
+    /* Print flash Id */
+    FlashPrintId(flashHandle);
+
+    rxLines = QSPI_RX_LINES_QUAD;
+    if (test->mmapMode)
+    {
+        qspiMode = QSPI_OPER_MODE_MMAP;
+        SPI_control(handle, SPI_V1_CMD_SETMEMMORYMAPMODE, (void *)&qspiMode);
+    }
+    else
+    {
+        qspiMode = QSPI_OPER_MODE_CFG;
+        SPI_control(handle, SPI_V1_CMD_SETCONFIGMODE, (void *)&qspiMode);
+    }
+
+    SPI_control(handle, SPI_V1_CMD_SETRXLINES, (void *)&rxLines);
+
+    retVal = QSPI_test_readInputFile(flashHandle, test,(QSPI_RX_LINES_QUAD == hwAttrs->rxLines));
+    SF25FL_close(flashHandle);
+
+    return (retVal);
+}
+
 QSPI_Tests qspi_tests[] =
 {
     /* testFunc      testID                 intrMode dmaMode mmapMode testDesc */
@@ -434,6 +780,7 @@ QSPI_Tests qspi_tests[] =
 #ifdef SPI_DMA_ENABLE
     {QSPI_test_func, QSPI_TEST_ID_MMAP_DMA, false,   true,   true,   "\r\n QSPI flash memory map mode with DMA enabled test", },
 #endif
+    {QSPI_test_func_file_write, QSPI_TEST_ID_MMAP_DMA, false,   false,   true,   "\r\n QSPI file write to flash and verify in mmap mode test", },
     {NULL, },
 };
 

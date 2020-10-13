@@ -192,7 +192,7 @@ int32_t SBL_qspiInit(void *handle)
     SBL_log(SBL_LOG_MAX, "qspiFunClk = %d Hz \n", qspi_cfg.funcClk);
 
 #if SBL_USE_DMA
-    qspi_cfg.dmaEnable = true;
+    qspi_cfg.dmaEnable = false;
     retVal = Qspi_edma_init();
     DebugP_assert(retVal == EDMA_NO_ERROR);
     qspi_cfg.edmaHandle =  gEdmaHandle;
@@ -201,7 +201,7 @@ int32_t SBL_qspiInit(void *handle)
     /* Set the default SPI init configurations */
     QSPI_socSetInitCfg(BOARD_QSPI_NOR_INSTANCE, &qspi_cfg);
 
-    h = Board_flashOpen(BOARD_FLASH_ID_S25FL256S,
+    h = Board_flashOpen(BOARD_FLASH_ID_MX25V1635F,
                         BOARD_QSPI_NOR_INSTANCE, NULL);
     if (h)
     {
@@ -231,7 +231,7 @@ int32_t SBL_qspiFlashRead(void *handle, uint8_t *dst, uint32_t length,
     uint32_t end_time = 0;
 
 #if !defined(SBL_BYPASS_QSPI_DRIVER)
-#if SBL_USE_DMA
+#if 0
     if (length > 4 * 1024)
     {
         Board_flashHandle h = *(const Board_flashHandle *) handle;
