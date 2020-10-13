@@ -106,6 +106,7 @@ PACKAGE_SRCS_COMMON += src/sciclient_indirect_makefile
 PACKAGE_SRCS_COMMON += src/sciserver
 PACKAGE_SRCS_COMMON += src/sciserver_makefile
 ifeq ($(SOC),$(filter $(SOC), j721e j7200))
+PACKAGE_SRCS_COMMON += src/sciclient
 PACKAGE_SRCS_COMMON += src/rm_pm_hal/Kconfig
 PACKAGE_SRCS_COMMON += src/rm_pm_hal/Makefile
 PACKAGE_SRCS_COMMON += src/rm_pm_hal/build
