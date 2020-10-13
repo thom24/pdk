@@ -40,4 +40,8 @@
 
 #define UART_INSTANCE 0
 
+#define MAIN_UART_INSTANCE (2U)
+#define MAIN_UART_FREQ (115200)
+#define MAIN_UART_BASE (0x2820000UL)
+
 #endif /* _INCLUDE_PLATFORM_H_ */
