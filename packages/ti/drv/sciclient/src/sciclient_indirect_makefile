@@ -101,11 +101,11 @@ PACKAGE_SRCS_COMMON += src/build.inc
 PACKAGE_SRCS_COMMON += src/priv
 PACKAGE_SRCS_COMMON += src/rm_pm_hal_build.mk
 PACKAGE_SRCS_COMMON += src/rm_pm_hal_makefile
-PACKAGE_SRCS_COMMON += src/sciclient
 PACKAGE_SRCS_COMMON += src/sciclient_direct_makefile
 PACKAGE_SRCS_COMMON += src/sciclient_indirect_makefile
 PACKAGE_SRCS_COMMON += src/sciserver
 PACKAGE_SRCS_COMMON += src/sciserver_makefile
+ifeq ($(SOC),$(filter $(SOC), j721e j7200))
 PACKAGE_SRCS_COMMON += src/rm_pm_hal/Kconfig
 PACKAGE_SRCS_COMMON += src/rm_pm_hal/Makefile
 PACKAGE_SRCS_COMMON += src/rm_pm_hal/build
@@ -116,7 +116,7 @@ PACKAGE_SRCS_COMMON += src/rm_pm_hal/pm
 PACKAGE_SRCS_COMMON += src/rm_pm_hal/rm
 PACKAGE_SRCS_COMMON += src/rm_pm_hal/scripts
 PACKAGE_SRCS_COMMON += src/rm_pm_hal/utils
-
+endif
 
 # Core/SoC/platform specific source files and CFLAGS
 # Example:
