@@ -72,9 +72,6 @@ __SVC_STACK_SIZE = 0x1000;
 /* Memory Map                                                                 */
 MEMORY
 {
-    VECTORS_MCU1_0 (X)          : origin=0x41C7F000     length=0x1000
-    VECTORS_MCU1_1 (X)          : origin=0x41C7E000     length=0x1000
-    /*  Reset Vectors base address(RESET_VECTORS) should be 64 bytes aligned  */
     MCU1_0_RESET_VECTORS (X)    : origin=0x41C00000     length=0x100
     MCU1_1_RESET_VECTORS (X)    : origin=0x41C00100     length=0x200 - 0x100
     /* MCU0_R5F_0 local view 												  */
@@ -89,8 +86,13 @@ MEMORY
     /* MCU0 memory used for SBL and SYSFW. Avaiable after boot for appi starts for dynamic use					  */
     SBL_RESERVED 	(RWIX) 		: origin=0x41C00100     length=0x60000 - 0x100  /* ~383KB */
 
-    /* MCU0 share locations													  */
-    OCMRAM 	(RWIX) 			    : origin=0x41C60000     length=0x20000 - 0x2000 /* ~124KB */
+    /* Refer the user guide for details on persistence of these sections */
+    OCMC_RAM_BOARD_CFG (RWIX)   : origin=0x41C80000 length=0x2000
+    OCMC_RAM_SCISERVER (RWIX)   : origin=0x41C82000 length=0x60000
+    VECTORS_MCU1_0 (X)          : origin=0x41CE2000 length=0x1000
+    VECTORS_MCU1_1 (X)          : origin=0x41CE1000 length=0x1000
+    OCMC_RAM (RWIX)             : origin=0x41CE4100 length=0x1BA00
+    OCMC_RAM_X509_HEADER (RWIX) : origin=0x41CFFB00 length=0x500
 
     /* MCU0 Location RESERVED for SDR RAT Self Test */
     SDR_OCMC_RAT_SELFTEST (R) : origin=0x41C7EFC0 length=32

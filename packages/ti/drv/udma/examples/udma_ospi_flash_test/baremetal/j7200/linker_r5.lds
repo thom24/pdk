@@ -28,9 +28,6 @@ __SVC_STACK_SIZE    = 0x1000;
 /* Memory Map */
 MEMORY
 {
-    VECTORS (X)                 : origin=0x41C7F000 length=0x1000
-    /*  Reset Vectors base address(RESET_VECTORS) should be 64 bytes aligned  */
-    RESET_VECTORS (X)           : origin=0x41C00000 length=0x100
     /* MCU0_R5F_0 local view */
     MCU0_R5F_TCMA_SBL_RSVD (X)  : origin=0x0        length=0x100
     MCU0_R5F_TCMA (X)           : origin=0x100      length=0x8000 - 0x100
@@ -40,14 +37,13 @@ MEMORY
     MCU0_R5F1_ATCM (RWIX)       : origin=0x41400000 length=0x8000
     MCU0_R5F1_BTCM (RWIX)       : origin=0x41410000 length=0x8000
 
-    /* MCU0 memory used for SBL. Avaiable after boot for app starts for dynamic use */
-    SBL_RESERVED (RWIX) 	    : origin=0x41C00100 length=0x3E000 - 0x100	 /* ~247KB */
-
-    /* Used by SBL at runtime to load SYSFW. */
-    SBL_SYSFW_RESERVED (RWIX) 	: origin=0x41C3E000 length=0x100             /* ~256B */
-    
-    /* MCU0 share locations */
-    OCMRAM (RWIX)               : origin=0x41C3E100 length=0x80000 - 0x3F100 /* ~260KB */
+    /* Refer the user guide for details on persistence of these sections */
+    OCMC_RAM_BOARD_CFG (RWIX)   : origin=0x41C80000 length=0x2000
+    OCMC_RAM_SCISERVER (RWIX)   : origin=0x41C82000 length=0x60000
+    VECTORS (X)                 : origin=0x41CE2000 length=0x1000
+    RESET_VECTORS (X)           : origin=0x41CE3000 length=0x100
+    OCMC_RAM (RWIX)             : origin=0x41CE3100 length=0x1CA00
+    OCMC_RAM_X509_HEADER (RWIX) : origin=0x41CFFB00 length=0x500
 
     /* j7200 MCMS3 locations */
     /* j7200 Reserved Memory for ARM Trusted Firmware */
@@ -70,44 +66,41 @@ SECTIONS
     .bootCode      : {} palign(8)      > MSMC3
     .startupCode   : {} palign(8)      > MSMC3
     .startupData   : {} palign(8)      > MSMC3, type = NOINIT
-    .text          : {} palign(8)      > OCMRAM
-    .const         : {} palign(8)      > OCMRAM
-    .cinit         : {} palign(8)      > OCMRAM
-    .pinit         : {} palign(8)      > OCMRAM
-    .bss           : {} align(4)       > OCMRAM
-    .far           : {} align(4)       > OCMRAM
-    .data          : {} palign(128)    > OCMRAM
+    .text          : {} palign(8)      > MSMC3
+    .const         : {} palign(8)      > MSMC3
+    .cinit         : {} palign(8)      > MSMC3
+    .pinit         : {} palign(8)      > MSMC3
+    .bss           : {} align(4)       > MSMC3
+    .far           : {} align(4)       > MSMC3
+    .data          : {} palign(128)    > MSMC3
     .boardcfg_data : {} palign(128)    > MSMC3
-    .sysmem        : {}                > OCMRAM
-    .data_buffer   : {} palign(128)    > OCMRAM
+    .sysmem        : {}                > MSMC3
+    .data_buffer   : {} palign(128)    > MSMC3
     .bss.devgroup* : {} align(4)       > MSMC3
     .const.devgroup*: {} align(4)      > MSMC3
     .rm_pm_hal : {
         *rm_pm_hal.aer5f(.*)
     }                   palign(8)      > MSMC3
 
-    /* USB or any other LLD buffer for benchmarking */
-    .benchmark_buffer (NOLOAD) {} ALIGN (8) > OCMRAM
-
     /* OSPI app sections */
     .udma_buffer_r5_tcm : {} palign(128) > MCU0_R5F_TCMA
     .udma_critical_fxns : {} palign(8)   > MCU0_R5F_TCMA
     
-    .stack      : {} align(4)       > OCMRAM  (HIGH)
+    .stack      : {} align(4)       > OCMC_RAM  (HIGH)
     
-    .irqStack   : {. = . + __IRQ_STACK_SIZE;} align(4)      > OCMRAM  (HIGH)
+    .irqStack   : {. = . + __IRQ_STACK_SIZE;} align(4)      > MSMC3  (HIGH)
     RUN_START(__IRQ_STACK_START)
     RUN_END(__IRQ_STACK_END)
-    .fiqStack   : {. = . + __FIQ_STACK_SIZE;} align(4)      > OCMRAM  (HIGH)
+    .fiqStack   : {. = . + __FIQ_STACK_SIZE;} align(4)      > MSMC3  (HIGH)
     RUN_START(__FIQ_STACK_START)
     RUN_END(__FIQ_STACK_END)
-    .abortStack : {. = . + __ABORT_STACK_SIZE;} align(4)    > OCMRAM  (HIGH)
+    .abortStack : {. = . + __ABORT_STACK_SIZE;} align(4)    > MSMC3  (HIGH)
     RUN_START(__ABORT_STACK_START)
     RUN_END(__ABORT_STACK_END)
-    .undStack   : {. = . + __UND_STACK_SIZE;} align(4)      > OCMRAM  (HIGH)
+    .undStack   : {. = . + __UND_STACK_SIZE;} align(4)      > MSMC3  (HIGH)
     RUN_START(__UND_STACK_START)
     RUN_END(__UND_STACK_END)
-    .svcStack   : {. = . + __SVC_STACK_SIZE;} align(4)      > OCMRAM  (HIGH)
+    .svcStack   : {. = . + __SVC_STACK_SIZE;} align(4)      > MSMC3  (HIGH)
     RUN_START(__SVC_STACK_START)
     RUN_END(__SVC_STACK_END)
 }

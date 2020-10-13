@@ -9,10 +9,16 @@
 MEMORY
 {
     R5F_TCMA_SBL_RSVD(X): ORIGIN = 0x00000000, LENGTH = 0x100
-    RESET_VECTORS(X)    : ORIGIN = 0x41C44000, LENGTH = 0x100
     R5F_TCMB0   (RWIX)  : ORIGIN = 0x41010000, LENGTH = 0x00008000  /*  32 KB */
     DDR0        (RWIX)  : ORIGIN = 0xC0000000, LENGTH = 0x08000000  /* 128 MB per core */
-    OCMRAM      (RWIX)  : ORIGIN = 0x41C30000, LENGTH = 0x00008000  /*  32 KB per core */
+
+    /* Refer the user guide for details on persistence of these sections */
+    OCMC_RAM_BOARD_CFG (RWIX)   : origin=0x41C80000 length=0x2000
+    OCMC_RAM_SCISERVER (RWIX)   : origin=0x41C82000 length=0x60000
+    RESET_VECTORS (X)           : origin=0x41CE2000 length=0x100
+    OCMC_RAM (RWIX)             : origin=0x41CE2100 length=0x1DA00
+    OCMC_RAM_X509_HEADER (RWIX) : origin=0x41CFFB00 length=0x500
+
     MSMC3       (RWIX)  : ORIGIN = 0x70300000, LENGTH = 0x00080000  /* 512 KB per core */
 }
 
@@ -41,5 +47,5 @@ SECTIONS
     .udma_buffer_ddr                        : {} palign(128) > DDR0
     .udma_buffer_ospi                       : {} palign(128) > DDR0
     .udma_buffer_msmc                       : {} palign(128) > MSMC3
-    .udma_buffer_internal                   : {} palign(128) > OCMRAM
+    .udma_buffer_internal                   : {} palign(128) > OCMC_RAM
 }
