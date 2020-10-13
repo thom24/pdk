@@ -1302,6 +1302,7 @@ void app_test_config_promiscous_mode(uint32_t enable)
     {
         if ((!port_en[pNum]) || (pNum == 6))
             continue;
+        params.seqNumber = gAppTestSequenceNumber++;
 
         if(enable)
         {
@@ -1313,6 +1314,7 @@ void app_test_config_promiscous_mode(uint32_t enable)
         }
 
         emac_ioctl(pNum, EMAC_IOCTL_MC_FLOODING_CTRL, (void *)(&params));
+        app_test_wait_mgmt_resp(100);
     }
 }
 
