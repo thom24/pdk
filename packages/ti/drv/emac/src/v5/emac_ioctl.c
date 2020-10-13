@@ -1018,6 +1018,31 @@ EMAC_DRV_ERR_E emac_ioctl_uc_flooding_ctrl(uint32_t portNum, void* p_params)
 /*
  *  ======== emac_ioctl_configure_interface_mac_ctrl ========
  */
+EMAC_DRV_ERR_E emac_ioctl_mc_flooding_ctrl(uint32_t portNum, void* p_params)
+{
+    EMAC_DRV_ERR_E retVal = EMAC_DRV_RESULT_IOCTL_ERR;
+    EMAC_IOCTL_PARAMS *pParams = (EMAC_IOCTL_PARAMS*) p_params;
+    UTILS_trace(UTIL_TRACE_LEVEL_INFO, emac_mcb.drv_trace_cb, "port: %d: ENTER",portNum);
+
+    switch (pParams->subCommand)
+    {
+        case EMAC_IOCTL_PORT_MC_FLOODING_ENABLE:
+            retVal = emac_send_R30_cmd(EMAC_PORT_MC_FLOODING_ENABLE, portNum, pParams->seqNumber);
+            break;
+        case EMAC_IOCTL_PORT_MC_FLOODING_DISABLE:
+            retVal = emac_send_R30_cmd(EMAC_PORT_MC_FLOODING_DISABLE, portNum, pParams->seqNumber);
+            break;
+         default:
+            break;
+    }
+
+    UTILS_trace(UTIL_TRACE_LEVEL_INFO, emac_mcb.drv_trace_cb, "port: %d: EXIT with status: %d",portNum, retVal);
+    return retVal;
+}
+
+/*
+ *  ======== emac_ioctl_configure_interface_mac_ctrl ========
+ */
 EMAC_DRV_ERR_E emac_ioctl_configure_interface_mac_ctrl(uint32_t portNum, void* p_params)
 {
     int32_t macLo;

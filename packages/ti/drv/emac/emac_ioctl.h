@@ -497,6 +497,31 @@ typedef struct EMAC_IOCTL_FDB_ENTRY_MULTIPLE_S {
  *  @def  EMAC_IOCTL_INTERFACE_MAC_ADD
  *        Enable UC flooding
  */
+#define EMAC_IOCTL_PORT_MC_FLOODING_ENABLE                 ((uint32_t)1U)
+
+/**
+ *  @def  EMAC_IOCTL_PORT_MC_FLOODING_DISABLE
+ *        Disable MC flooding
+ */
+#define EMAC_IOCTL_PORT_MC_FLOODING_DISABLE                ((uint32_t)2U)
+
+/*@}*/
+/** @} */
+/**
+ *  @defgroup  EMAC_IOCTL_INTERFACE_MAC_CTRL Control sub-commands
+ *  @ingroup emaclld_api_ioctl_macros
+ *  @{
+ *
+ *  @name EMAC_IOCTL_INTERFACE_MAC_CTRL sub-commands
+ *  @details The following macros are sub-commands that to be used when issueing
+ *  emac_ioctl with EMAC_IOCTL_CMD set to EMAC_IOCTL_INTERFACE_MAC_CTRL
+ *
+ */
+/*@{*/
+/**
+ *  @def  EMAC_IOCTL_INTERFACE_MAC_ADD
+ *        Enable UC flooding
+ */
 #define EMAC_IOCTL_INTERFACE_MAC_ADD                       ((uint32_t)1U)
 
 /*@}*/
@@ -644,6 +669,7 @@ extern EMAC_DRV_ERR_E emac_ioctl_accept_frame_check_ctrl(uint32_t port_num, void
 extern void emac_switch_config_ft3_priority_tag(uint32_t port_num);
 extern EMAC_DRV_ERR_E emac_ioctl_prio_regen_mapping_ctrl(uint32_t port_num, void*  ctrl);
 extern EMAC_DRV_ERR_E emac_ioctl_uc_flooding_ctrl(uint32_t port_num, void* p_params);
+extern EMAC_DRV_ERR_E emac_ioctl_mc_flooding_ctrl(uint32_t port_num, void* p_params);
 extern EMAC_DRV_ERR_E emac_ioctl_configure_interface_mac_ctrl(uint32_t port_num, void* p_params);
 extern EMAC_DRV_ERR_E emac_ioctl_configure_interface_mac_ctrl_host_port(uint32_t port_num, void* p_params);
 extern EMAC_DRV_ERR_E emac_ioctl_configure_cut_through_or_prempt_select_ctrl(uint32_t port_num, void* p_params);
@@ -673,6 +699,8 @@ typedef enum EMAC_IOctlR30Cmd_E{
     EMAC_PORT_TAS_DISABLE,
     EMAC_PORT_UC_FLOODING_ENABLE,
     EMAC_PORT_UC_FLOODING_DISABLE,
+    EMAC_PORT_MC_FLOODING_ENABLE,
+    EMAC_PORT_MC_FLOODING_DISABLE,
     EMAC_PORT_PREMPT_TX_ENABLE,
     EMAC_PORT_PREMPT_TX_DISABLE,
     EMAC_PORT_MAX_COMMANDS

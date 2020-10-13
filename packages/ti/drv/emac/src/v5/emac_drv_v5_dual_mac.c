@@ -394,6 +394,18 @@ static EMAC_DRV_ERR_E emac_ioctl_v5_icssg_dual_mac(uint32_t portNum, EMAC_IOCTL_
                         break;
                 }
                 break;
+            case EMAC_IOCTL_MC_FLOODING_CTRL:
+                switch (emacIoctlParams->subCommand)
+                {
+                    case EMAC_IOCTL_PORT_MC_FLOODING_ENABLE:
+                    case EMAC_IOCTL_PORT_MC_FLOODING_DISABLE:
+                        retVal = emac_ioctl_mc_flooding_ctrl(portNum, (void*)emacIoctlParams);
+                        break;
+                    default:
+                        retVal = EMAC_DRV_RESULT_IOCTL_ERR;
+                        break;
+                }
+                break;
             case EMAC_IOCTL_INTERFACE_MAC_CONFIG:
                 switch (emacIoctlParams->subCommand)
                 {

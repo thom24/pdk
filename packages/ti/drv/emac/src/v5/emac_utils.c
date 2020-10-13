@@ -198,19 +198,21 @@ typedef struct EMAC_R30_CMD_S {
 
 static EMAC_R30_CMD_T emac_R30_bitmask[EMAC_PORT_MAX_COMMANDS] =
 {
-    {{0xffff0004, 0xffff0100, 0xffff0100 ,EMAC_NONE}},      /* EMAC_PORT_DISABLE */
-    {{0xfffb0040, 0xfeff0200, 0xfeff0200 ,EMAC_NONE}},      /* EMAC_PORT_BLOCK */
-    {{0xffbb0000, 0xfcff0000, 0xdcff0000 ,EMAC_NONE}},      /* EMAC_PORT_FORWARD */
-    {{0xffbb0000, 0xfcff0000, 0xfcff2000 ,EMAC_NONE}},      /*EMAC_PORT_FORWARD_WO_LEARNING */
-    {{0xffff0001, EMAC_NONE,  EMAC_NONE  ,EMAC_NONE}},      /* ACCEPT ALL */
-    {{0xfffe0002, EMAC_NONE,  EMAC_NONE  ,EMAC_NONE}},      /* ACCEPT TAGGED */
-    {{0xfffc0000, EMAC_NONE,  EMAC_NONE  ,EMAC_NONE}},      /*ACCEPT UNTAGGED and PRIO */
+    {{0xffff0004, 0xffff0100, 0xffff0104 ,EMAC_NONE}},      /* EMAC_PORT_DISABLE */
+    {{0xfffb0040, 0xfeff0200, 0xfefb0208 ,EMAC_NONE}},      /* EMAC_PORT_BLOCK */
+    {{0xffbb0000, 0xfcff0000, 0xdcf30000 ,EMAC_NONE}},      /* EMAC_PORT_FORWARD */
+    {{0xffbb0000, 0xfcff0000, 0xfcf32000 ,EMAC_NONE}},      /* EMAC_PORT_FORWARD_WO_LEARNING */
+    {{0xffff0001, EMAC_NONE,  0xffff0001 ,EMAC_NONE}},      /* ACCEPT ALL */
+    {{0xfffe0002, EMAC_NONE,  0xfffe0002 ,EMAC_NONE}},      /* ACCEPT TAGGED */
+    {{0xfffc0000, EMAC_NONE,  0xfffc0000 ,EMAC_NONE}},      /* ACCEPT UNTAGGED and PRIO */
     {{EMAC_NONE,  0xffff0020, EMAC_NONE  ,EMAC_NONE}},      /*TAS Trigger List change */
     {{EMAC_NONE,  0xdfff1000, EMAC_NONE  ,EMAC_NONE}},      /*TAS set state ENABLE*/
     {{EMAC_NONE,  0xefff2000, EMAC_NONE  ,EMAC_NONE}},      /*TAS set state RESET*/
     {{EMAC_NONE,  0xcfff0000, EMAC_NONE  ,EMAC_NONE}},      /*TAS set state DISABLE*/
     {{EMAC_NONE,  EMAC_NONE,  0xffff0400 ,EMAC_NONE}},      /*UC flooding ENABLE*/
     {{EMAC_NONE,  EMAC_NONE,  0xfbff0000 ,EMAC_NONE}},      /*UC flooding DISABLE*/
+    {{EMAC_NONE,  EMAC_NONE,  0xffff0800 ,EMAC_NONE}},      /*MC flooding ENABLE*/
+    {{EMAC_NONE,  EMAC_NONE,  0xf7ff0000 ,EMAC_NONE}},      /*MC flooding DISABLE*/
     {{EMAC_NONE,  0xffff4000, EMAC_NONE  ,EMAC_NONE}},      /*Premption on Tx ENABLE*/
     {{EMAC_NONE,  0xbfff0000, EMAC_NONE  ,EMAC_NONE}}        /*Premption on Tx DISABLE*/
 };
