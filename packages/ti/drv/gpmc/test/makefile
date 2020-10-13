@@ -38,9 +38,9 @@ endif
 # DMA enabled build
 ifeq ($(DMA), enable)
     #Name of the directory created under packages/ti/binary/
-    APP_NAME = GPMC$(GPMC_OS_TYPE)_DMA_TestApp
+    APP_NAME = GPMC$(GPMC_OS_TYPE)_Dma_TestApp
     # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
-    LOCAL_APP_NAME =  GPMC$(GPMC_OS_TYPE)_DMA_$(BOARD)_$(CORE)TestApp
+    LOCAL_APP_NAME =  GPMC$(GPMC_OS_TYPE)_Dma_$(BOARD)_$(CORE)TestApp
 
     COMP_LIST_COMMON   += gpmc_dma
     CFLAGS_GPMC_DMA    = -DGPMC_DMA_ENABLE -D$(BOARD)=$(BOARD)
@@ -54,7 +54,7 @@ else
     CFLAGS_GPMC_DMA    =
 endif
 
-PACKAGE_SRCS_COMMON = makefile src/ 
+PACKAGE_SRCS_COMMON = makefile src/
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_GPMC_DMA) $(CFLAGS_OS_DEFINES)
 
