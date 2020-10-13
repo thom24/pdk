@@ -68,33 +68,41 @@
 #include "board_cfg.h"
 #include "board_pinmux.h"
 
-#define BOARD_DIAG_GPIO_PIN_HIGH					(0x01U)
-#define BOARD_DIAG_GPIO_PIN_LOW						(0x00U)
-#define BOARD_DIAG_MAX_GPIO_CNTRL_LINES				(0x02U)
-#define BOARD_DIAG_GPIO_TOGGLE_FREQUENCY			(0x05U)
-#define BOARD_DIAG_NUM_MIBSPI_INSTANCES				(2U)
-#define BOARD_DIAG_MAX_GPIO_LINES_PER_SPI_INST		(2U)
+#define BOARD_DIAG_TEST_SIZE                         (64U)
+#define BOARD_DIAG_GPIO_PIN_HIGH                     (0x01U)
+#define BOARD_DIAG_GPIO_PIN_LOW                      (0x00U)
+#define BOARD_DIAG_MAX_GPIO_CNTRL_LINES              (0x02U)
+#define BOARD_DIAG_GPIO_TOGGLE_FREQUENCY             (0x05U)
+#define BOARD_DIAG_NUM_MIBSPI_INSTANCES              (2U)
+#define BOARD_DIAG_MAX_GPIO_LINES_PER_SPI_INST       (2U)
 /*Total number of gpio lines */
-#define BOARD_DIAG_TOTAL_NUM_GPIO_LINES	\
-	(BOARD_DIAG_MAX_GPIO_LINES_PER_SPI_INST * BOARD_DIAG_NUM_MIBSPI_INSTANCES)
+#define BOARD_DIAG_TOTAL_NUM_GPIO_LINES    \
+    (BOARD_DIAG_MAX_GPIO_LINES_PER_SPI_INST * BOARD_DIAG_NUM_MIBSPI_INSTANCES)
 
 
-#define BOARD_DIAG_SPI_MASTER_START_COMMAND			(0x5AU)
-#define BOARD_DIAG_SPI_SLAVE_ACK					(0xA5U)
-#define BOARD_DIAG_SPI_SLAVE_STOP_COMMAND			(0xAAU)
+#define BOARD_DIAG_SPI_MASTER_START_COMMAND            (0x5AU)
+#define BOARD_DIAG_SPI_SLAVE_ACK                       (0xA5U)
+#define BOARD_DIAG_SPI_SLAVE_STOP_COMMAND              (0xAAU)
 
 /* MIBPSIA_HOST_IRQ pinmux offset */
-#define BOARD_DIAG_PAD_CS_OFFSET_ADDRESS			(0x118U)
+#define BOARD_DIAG_PAD_CY_OFFSET_ADDRESS            (0x130U)
 /* SYNC_FE1 pinmux offset */
-#define BOARD_DIAG_PAD_CY_OFFSET_ADDRESS			(0x130U)
+#define BOARD_DIAG_PAD_CS_OFFSET_ADDRESS            (0x118U)
 /* MIBPSIB_HOST_IRQ pinmux offset */
-#define BOARD_DIAG_PAD_CX_OFFSET_ADDRESS			(0x12CU)
+#define BOARD_DIAG_PAD_CZ_OFFSET_ADDRESS            (0x134U)
 /* SYNC_FE2 pinmux offset */
-#define BOARD_DIAG_PAD_CZ_OFFSET_ADDRESS			(0x134U)
+#define BOARD_DIAG_PAD_CX_OFFSET_ADDRESS            (0x12CU)
 
-#define BOARD_DIAG_GPIO_MUX_MODE					(0x00U)
-/* Lower 4 bits for	setting mux mode */
-#define BOARD_DIAG_MUX_MODE_PIN_MASK				(0x0FU)
+/* gpio Mux mode for each pin */
+#define BOARD_DIAG_GPIO_42_MUX_MODE                (0U)
+#define BOARD_DIAG_GPIO_34_MUX_MODE                (7U)
+#define BOARD_DIAG_GPIO_43_MUX_MODE                (0U)
+#define BOARD_DIAG_GPIO_35_MUX_MODE                (10U)
+
+/* Lower 4 bits for    setting mux mode */
+#define BOARD_DIAG_MUX_MODE_PIN_MASK               (0x0FU)
+
+#define BOARD_DIAG_SPI_A_TEST    (1U)
 
 /**
  *  \brief    The function performs Expansion header verification test.
