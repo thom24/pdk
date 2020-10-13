@@ -1194,7 +1194,7 @@ sbl_lib_cust_LIBNAME = sbl_lib_cust
 sbl_lib_cust_PATH = $(PDK_SBL_COMP_PATH)
 sbl_lib_cust_LIBNAME = sbl_lib_cust
 sbl_lib_cust_LIBPATH = $(PDK_SBL_COMP_PATH)/lib/cust
-ifeq ($(SOC), j7200 j721e)
+ifeq ($(SOC),$(filter $(SOC), j7200 j721e))
 # Must use DMA mode for J7200 when PHY is enabled for OSPI; Prefer to use DMA mode for J721E as well
 sbl_lib_cust_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_lib.mk BOOTMODE=cust SBL_USE_DMA=yes CUST_SBL_FLAGS=$(CUST_SBL_TEST_FLAGS)
 else
@@ -1223,7 +1223,7 @@ sbl_cust_img_COMP_LIST = sbl_cust_img
 sbl_cust_img_RELPATH = ti/boot/sbl/board/k3
 sbl_cust_img_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)/cust/bin
 sbl_cust_img_PATH = $(PDK_SBL_COMP_PATH)/board/k3
-ifeq ($(SOC), j7200 j721e)
+ifeq ($(SOC),$(filter $(SOC), j7200 j721e))
 # Must use DMA mode for J7200 when PHY is enabled for OSPI; Prefer to use DMA mode for J721E as well
 sbl_cust_img_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=cust SBL_USE_DMA=yes BUILD_HS=no CUST_SBL_FLAGS=$(CUST_SBL_TEST_FLAGS)
 else
@@ -1246,7 +1246,7 @@ export sbl_cust_img_SOCLIST
 export sbl_cust_img_BOARDLIST
 sbl_cust_img_$(SOC)_CORELIST = mcu1_0
 export sbl_cust_img_$(SOC)_CORELIST
-ifneq ($(SOC), am64x tpr12)
+ifneq ($(SOC),$(filter $(SOC), am64x tpr12))
 sbl_EXAMPLE_LIST += sbl_cust_img
 endif
 sbl_cust_img_SBL_IMAGEGEN = yes
@@ -1300,7 +1300,7 @@ export sbl_boot_perf_test_SOCLIST
 export sbl_boot_perf_test_BOARDLIST
 sbl_boot_perf_test_$(SOC)_CORELIST = mcu1_0
 export sbl_boot_perf_test_$(SOC)_CORELIST
-ifneq ($(SOC), am64x tpr12)
+ifneq ($(SOC),$(filter $(SOC), am64x tpr12))
 sbl_EXAMPLE_LIST += sbl_boot_perf_test
 endif
 sbl_boot_perf_test_SBL_APPIMAGEGEN = yes
