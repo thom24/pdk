@@ -14,12 +14,9 @@
 /*----------------------------------------------------------------------------*/
 /* Linker Settings                                                            */
 /* Standard linker options													  */
---retain="*(.intvecs)"
---retain="*(.intc_text)"
---retain="*(.rstvectors)"
 --fill_value=0
---entry_point=ti_sysbios_family_arm_v7r_keystone3_Hwi_vectors /* Default BIOS */
---retain="*(.utilsCopyVecsToAtcm)"
+-e __VECS_ENTRY_POINT
+
 
 /*----------------------------------------------------------------------------*/
 /* Memory Map                                                                 */
@@ -44,7 +41,8 @@ MEMORY
     SBL_RESERVED 	(RWIX) 	: origin=0x41C40600 length=0x60000 - 0x40600	     /* ~126KB */
 
     /* MCU0 share locations */
-    OCMRAM 	(RWIX) 		: origin=0x41C60000 length=0x20000 - 0x1000	     /* ~124KB */
+    OCMRAM_VECS (RWIX)  : origin=0x41C60000 length=0x100
+    OCMRAM 	(RWIX) 		: origin=0x41C60100 length=0x1EF00
 
     /* AM65XX M4 locations */
     MSMC3       (RWIX)          : origin=0x70000000 length=0xF0000             /* 1MB - 64K */
@@ -64,12 +62,22 @@ MEMORY
 
 SECTIONS
 {
-/* 'intvecs' and 'intc_text' sections shall be placed within                  */
-/* a range of +\- 16 MB                                                       */
-    .intvecs 	: {} palign(8) 		> VECTORS
-    .intc_text 	: {} palign(8) 		> VECTORS
-    .rstvectors : {} palign(8) 	    > RESET_VECTORS
-    .utilsCopyVecsToAtcm : {} palign(8) > MCU0_R5F_TCMB0
+    .vecs : {
+         *(.vecs)
+    } palign(8) > OCMRAM_VECS
+    .vecs       : {
+        __VECS_ENTRY_POINT = .;
+    } > OCMRAM_VECS
+    xdc.meta (COPY): { *(xdc.meta) } > OCMRAM
+    .init_text  : {
+                     boot.*(.text)
+                     *(.text:ti_sysbios_family_arm_MPU_*)
+                     *(.text:ti_sysbios_family_arm_v7r_Cache_*)
+                  }  palign(8) > OCMRAM
+    .text:xdc_runtime_Startup_reset__I     : {} palign(8) > OCMRAM
+    .bootCode    	: {} palign(8) 		> OCMRAM
+    .startupCode 	: {} palign(8) 		> OCMRAM
+    .startupData 	: {} palign(8) 		> OCMRAM, type = NOINIT
     .text    	: {} palign(8) 		> MSMC3
     .const   	: {} palign(8) 		> MSMC3
     .cinit   	: {} palign(8) 		> MSMC3
