@@ -62,13 +62,13 @@ uint32_t gSciclient_firmware[1];
 #error "SYSFW too large...update SBL_SYSFW_MAX_SIZE"
 #endif
 
+#if (!defined(SBL_SKIP_BRD_CFG_PM)) || (!defined(SBL_SKIP_BRD_CFG_RM))
+static int32_t Sciclient_setBoardConfigHeader ();
+#endif
 #if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)
 /* Firewall ID for MCU_FSS0_S0 */
 #define MCU_FSS0_S0_FWID (1036)
 #define MCU_FSS0_S0_FW_REGIONS (8)
-
-#if (!defined(SBL_SKIP_BRD_CFG_PM)) || (!defined(SBL_SKIP_BRD_CFG_RM))
-static int32_t Sciclient_setBoardConfigHeader ();
 
 #if defined (SOC_J721E) || defined (SOC_J7200)
 /** \brief Aligned address at which the X509 header is placed. */
@@ -80,7 +80,6 @@ static int32_t Sciclient_setBoardConfigHeader ();
 /** \brief Aligned address at which the Board Config is placed. */
 #define SCISERVER_BOARDCONFIG_DATA_ADDR (0x41c80040U)
 
-#endif
 #endif
 #endif
 
