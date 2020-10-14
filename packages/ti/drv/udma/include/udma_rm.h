@@ -272,7 +272,7 @@ typedef struct
      *   -This can be no. of UDMA Instances (#UDMA_NUM_INST_ID) incase of 
      *    resources like Gloable Events, IR Intr, VINT etc.
      *   -This can be no.of cores (#UDMA_NUM_CORE) incase of splitting 
-     *    resources that are assigned #TISCI_HOST_ID_ALL between different cores*/
+     *    resources that are assigned TISCI_HOST_ID_ALL between different cores*/
     uint32_t                minReq;
      /**< Minimum no. of resources required per instance.
       *   This is validated with the unresrved number of resources.

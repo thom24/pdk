@@ -211,6 +211,16 @@ extern "C" {
 /* @} */
 
 /**
+ *  \anchor Udma_RmResId
+ *  \name UDMA Resources ID
+ *
+ *  List of all UDMA Resources Id's.
+ *
+ *  @{
+ */
+/* @} */
+
+/**
  *  \anchor Udma_PsilCh
  *  \name PSIL Channels
  *
