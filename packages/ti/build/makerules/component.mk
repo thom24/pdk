@@ -1155,7 +1155,10 @@ ifeq ($(SOC),$(filter $(SOC), j721e j7200))
     PDK_COMMON_COMP += sciclient
   endif
 endif
-ifeq ($(SOC),$(filter $(SOC), am65xx am64x))
+ifeq ($(SOC),$(filter $(SOC), am64x))
+  PDK_COMMON_COMP += sciclient udma
+endif
+ifeq ($(SOC),$(filter $(SOC), am65xx))
   ifeq ($(CORE),$(filter $(CORE), mpu1_0 mcu1_0 mcu1_1))
     PDK_COMMON_COMP += sciclient udma
   endif
