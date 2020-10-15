@@ -35,7 +35,7 @@
 #         For AM65XX-HS : ./firmwareHeaderGen.sh am65x-hs
 #         For AM65XX-HS : ./firmwareHeaderGen.sh am65x_sr2-hs
 #         For J721E     : ./firmwareHeaderGen.sh j721e-no-pm-rm
-#         For J721E-HS  : ./firmwareHeaderGen.sh j721e-hs
+#         For J721E-HS  : ./firmwareHeaderGen.sh j721e-no-pm-rm-hs
 #         For AM64x     : ./firmwareHeaderGen.sh am64x-vlab
 #         For AM64x     : ./firmwareHeaderGen.sh am64x-zebu
 #         For J7200     : ./firmwareHeaderGen.sh j7200
@@ -125,6 +125,16 @@ fi
 if [ "$FW_SOC" = "j721e-no-pm-rm" ]; then
 FW_SOC="j721e-gp-no-pm-rm"
 FW_SOC_TYPE=""
+export SCI_CLIENT_OUT_SOC_DIR=$SCI_CLIENT_DIR/soc/V1
+export SCICLIENT_FIRMWARE_HEADER=sciclient_firmware_no_pm_rm_V1$BIN_EXT.h
+SYSFW_SE_SIGNED=$SCI_CLIENT_OUT_SOC_DIR/sysfw_no_pm_rm$BIN_EXT.bin
+export SYSFW_LOAD_ADDR=0x40000
+fi
+
+if [ "$FW_SOC" = "j721e-hs-no-pm-rm" ]; then
+FW_SOC="j721e-hs-no-pm-rm"
+FW_SOC_TYPE=-hs-no-pm-rm-enc
+BIN_EXT=no-pm-rm-hs-enc
 export SCI_CLIENT_OUT_SOC_DIR=$SCI_CLIENT_DIR/soc/V1
 export SCICLIENT_FIRMWARE_HEADER=sciclient_firmware_no_pm_rm_V1$BIN_EXT.h
 SYSFW_SE_SIGNED=$SCI_CLIENT_OUT_SOC_DIR/sysfw_no_pm_rm$BIN_EXT.bin
