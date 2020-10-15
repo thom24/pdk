@@ -45,7 +45,6 @@ MEMORY
     OCMC_RAM (RWIX)             : origin=0x41CE3100 length=0x1CA00
     OCMC_RAM_X509_HEADER (RWIX) : origin=0x41CFFB00 length=0x500
 
-
     /* j7200 MCMS3 locations */
     /* j7200 Reserved Memory for ARM Trusted Firmware */
     MSMC3_ARM_FW   (RWIX)   : origin=0x70000000 length=0x40000         /* 256KB */

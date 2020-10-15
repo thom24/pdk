@@ -48,7 +48,9 @@ MEMORY
     /* j7200 MCMS3 locations */
     /* j7200 Reserved Memory for ARM Trusted Firmware */
     MSMC3_ARM_FW   (RWIX)   : origin=0x70000000 length=0x40000         /* 256KB */
-    MSMC3   (RWIX)          : origin=0x70040000 length=0xC0000
+    MSMC3   (RWIX)          : origin=0x70040000 length=0xB0000         /* 1MB - 320KB */
+    /* j7200 Reserved Memory for DMSC Firmware */
+    MSMC3_DMSC_FW  (RWIX)   : origin=0x700F0000 length=0x10000         /* 64KB */
 
     DDR0    (RWIX)          : origin=0x80000000 length=0x80000000      /* 2GB */
 }
@@ -61,39 +63,39 @@ SECTIONS
     .intvecs       : {} palign(8)      > VECTORS
     .intc_text     : {} palign(8)      > VECTORS
     .rstvectors    : {} palign(8)      > RESET_VECTORS
-    .bootCode      : {} palign(8)      > OCMC_RAM
-    .startupCode   : {} palign(8)      > OCMC_RAM
-    .startupData   : {} palign(8)      > OCMC_RAM, type = NOINIT
-    .text          : {} palign(8)      > OCMC_RAM
-    .const         : {} palign(8)      > OCMC_RAM
-    .cinit         : {} palign(8)      > OCMC_RAM
-    .pinit         : {} palign(8)      > OCMC_RAM
-    .bss           : {} align(4)       > OCMC_RAM
-    .far           : {} align(4)       > OCMC_RAM
-    .data          : {} palign(128)    > OCMC_RAM
-    .boardcfg_data : {} palign(128)    > OCMC_RAM
-    .sysmem        : {}                > OCMC_RAM
-    .data_buffer   : {} palign(128)    > OCMC_RAM
+    .bootCode      : {} palign(8)      > MSMC3
+    .startupCode   : {} palign(8)      > MSMC3
+    .startupData   : {} palign(8)      > MSMC3, type = NOINIT
+    .text          : {} palign(8)      > MSMC3
+    .const         : {} palign(8)      > MSMC3
+    .cinit         : {} palign(8)      > MSMC3
+    .pinit         : {} palign(8)      > MSMC3
+    .bss           : {} align(4)       > MSMC3
+    .far           : {} align(4)       > MSMC3
+    .data          : {} palign(128)    > MSMC3
+    .boardcfg_data : {} palign(128)    > MSMC3
+    .sysmem        : {}                > MSMC3
+    .data_buffer   : {} palign(128)    > MSMC3
     .bss.devgroup* : {} align(4)       > DDR0
     .const.devgroup*: {} align(4)      > DDR0
 
     /* USB or any other LLD buffer for benchmarking */
-    .benchmark_buffer (NOLOAD) {} ALIGN (8) > OCMC_RAM
+    .benchmark_buffer (NOLOAD) {} ALIGN (8) > MSMC3
 
-    .stack      : {} align(4)       > OCMC_RAM  (HIGH)
-    .irqStack   : {. = . + __IRQ_STACK_SIZE;} align(4)      > OCMC_RAM  (HIGH)
+    .stack      : {} align(4)       > MSMC3  (HIGH)
+    .irqStack   : {. = . + __IRQ_STACK_SIZE;} align(4)      > MSMC3  (HIGH)
     RUN_START(__IRQ_STACK_START)
     RUN_END(__IRQ_STACK_END)
-    .fiqStack   : {. = . + __FIQ_STACK_SIZE;} align(4)      > OCMC_RAM  (HIGH)
+    .fiqStack   : {. = . + __FIQ_STACK_SIZE;} align(4)      > MSMC3  (HIGH)
     RUN_START(__FIQ_STACK_START)
     RUN_END(__FIQ_STACK_END)
-    .abortStack : {. = . + __ABORT_STACK_SIZE;} align(4)    > OCMC_RAM  (HIGH)
+    .abortStack : {. = . + __ABORT_STACK_SIZE;} align(4)    > MSMC3  (HIGH)
     RUN_START(__ABORT_STACK_START)
     RUN_END(__ABORT_STACK_END)
-    .undStack   : {. = . + __UND_STACK_SIZE;} align(4)      > OCMC_RAM  (HIGH)
+    .undStack   : {. = . + __UND_STACK_SIZE;} align(4)      > MSMC3  (HIGH)
     RUN_START(__UND_STACK_START)
     RUN_END(__UND_STACK_END)
-    .svcStack   : {. = . + __SVC_STACK_SIZE;} align(4)      > OCMC_RAM  (HIGH)
+    .svcStack   : {. = . + __SVC_STACK_SIZE;} align(4)      > MSMC3  (HIGH)
     RUN_START(__SVC_STACK_START)
     RUN_END(__SVC_STACK_END)
 }
