@@ -73,8 +73,8 @@
 /* Macro representing the offset where the App Image has to be written/Read from
  * the HyperFlash.
  */
-#define HYPERFLASH_OFFSET_SI              (0xC0000U)
-#define HYPERFLASH_OFFSET_SYSFW           (0x40000U)
+#define HYPERFLASH_OFFSET_SI              (0x100000U)
+#define HYPERFLASH_OFFSET_SYSFW           (0x80000U)
 
 uint32_t gBaseAddress = SBL_HYPERFLASH_BASE_ADDRESS;
 

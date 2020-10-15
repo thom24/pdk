@@ -77,8 +77,8 @@
 /* Macro representing the offset where the App Image has to be written/Read from
    the OSPI Flash.
 */
-#define OSPI_OFFSET_SI              (0xA0000U)
-#define OSPI_OFFSET_SYSFW           (0x40000U)
+#define OSPI_OFFSET_SI              (0x100000U)
+#define OSPI_OFFSET_SYSFW           (0x80000U)
 #define OSPI_MPU_REGION_NUM         (0x6)
 #define OSPI_MPU_ENABLE_REGION      (0x1)
 

@@ -12,8 +12,8 @@
 
 MEMORY
 {
-    OSPI_MCU1_CPU0_XIP_VEC      : origin=0x500e0000 length=0x40			/* 64B */
-    OSPI_MCU1_CPU0_XIP	        : origin=0x500e0040 length=0x2000 - 0x40	/* 8KB - 64B*/
+    OSPI_MCU1_CPU0_XIP_VEC      : origin=0x501c0000 length=0x40			/* 64B */
+    OSPI_MCU1_CPU0_XIP	        : origin=0x501c0040 length=0x2000 - 0x40	/* 8KB - 64B*/
     OCMRAM_SBL_SYSFW	        : origin=0x41C3E000 length=0x2000 - 0x800	/* 8KB */
 }
 
