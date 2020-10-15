@@ -1243,7 +1243,7 @@ int8_t ICSS_EmacSwitchInit(ICSS_EmacHandle icssEmacHandle,
     ICSSMemInit(icssEmacHandle);
     ICSSSwitchConfig(icssEmacHandle);
 
-    if (icss_version >= 0x201U)
+    if ((icss_version >= 0x201U) || (icss_version == 0x103))
     {
         temp_addr = (icssEmacBaseAddressHandle->prussPru0CtrlRegs + CSL_ICSSPRUCTRL_CTPPR0);
         /* Set in constant table C28 to ICSS Shared memory 0x10000 */
@@ -1839,7 +1839,7 @@ static void PRUSSDRVPruCfgInit(ICSS_EmacHandle emacSubSysHandle)
     HW_WR_FIELD32((icssEmacBaseAddressHandle->prussCfgRegs) + CSL_ICSSCFG_SYSCFG,
                         CSL_ICSSCFG_SYSCFG_STANDBY_MODE , 1);
 
-    if (icss_version >= 0x201U)
+    if ((icss_version >= 0x201U) || (icss_version == 0x103))
     {
         HW_WR_FIELD32((icssEmacBaseAddressHandle->prussCfgRegs) + CSL_ICSSCFG_GPCFG0,
                             CSL_ICSSCFG_GPCFG0_PRU0_GPI_MODE , 3);
@@ -1880,7 +1880,7 @@ static void PRUSSDRVPruMiiRtCfgInit(ICSS_EmacHandle emacSubSysHandle)
             CSL_ICSSMIIRT_RXCFG0_RX_ENABLE , 1);
 
 
-    if (icss_version >= 0x201U)
+    if ((icss_version >= 0x201U) || (icss_version == 0x103))
     {
         HW_WR_FIELD32((icssEmacBaseAddressHandle->prussMiiRtCfgRegsBaseAddr) + CSL_ICSSMIIRT_RXCFG0,
                 CSL_ICSSMIIRT_RXCFG0_RX_DATA_RDY_MODE_DIS , 1);
@@ -1894,7 +1894,7 @@ static void PRUSSDRVPruMiiRtCfgInit(ICSS_EmacHandle emacSubSysHandle)
             CSL_ICSSMIIRT_RXCFG0_RX_CUT_PREAMBLE , 1);
 
 
-    if (icss_version >= 0x201U)
+    if ((icss_version >= 0x201U) || (icss_version == 0x103))
     {
         /* Enable the clearing of RX_EOF from PRU R31 command */
         HW_WR_FIELD32((icssEmacBaseAddressHandle->prussMiiRtCfgRegsBaseAddr) + CSL_ICSSMIIRT_RXCFG0,
@@ -1910,7 +1910,7 @@ static void PRUSSDRVPruMiiRtCfgInit(ICSS_EmacHandle emacSubSysHandle)
     HW_WR_FIELD32((icssEmacBaseAddressHandle->prussMiiRtCfgRegsBaseAddr) + CSL_ICSSMIIRT_TXCFG0,
             CSL_ICSSMIIRT_TXCFG0_TX_AUTO_PREAMBLE , 1);
 
-    if (icss_version >= 0x201U)
+    if ((icss_version >= 0x201U) || (icss_version == 0x103))
     {
         /* Enable the 32 bit insert in Tx FIFO */
         HW_WR_FIELD32((icssEmacBaseAddressHandle->prussMiiRtCfgRegsBaseAddr) + CSL_ICSSMIIRT_TXCFG0,
@@ -1946,7 +1946,7 @@ static void PRUSSDRVPruMiiRtCfgInit(ICSS_EmacHandle emacSubSysHandle)
     HW_WR_FIELD32((icssEmacBaseAddressHandle->prussMiiRtCfgRegsBaseAddr) + CSL_ICSSMIIRT_TXCFG0,
             CSL_ICSSMIIRT_TXCFG0_TX_START_DELAY , 0x40);
 
-    if (icss_version >= 0x201U)
+    if ((icss_version >= 0x201U) || (icss_version == 0x103))
     {
         HW_WR_FIELD32((icssEmacBaseAddressHandle->prussMiiRtCfgRegsBaseAddr) + CSL_ICSSMIIRT_TXCFG0,
             CSL_ICSSMIIRT_TXCFG0_TX_CLK_DELAY , 0x6);
@@ -1957,7 +1957,7 @@ static void PRUSSDRVPruMiiRtCfgInit(ICSS_EmacHandle emacSubSysHandle)
     HW_WR_FIELD32((icssEmacBaseAddressHandle->prussMiiRtCfgRegsBaseAddr) + CSL_ICSSMIIRT_RXCFG1,
             CSL_ICSSMIIRT_RXCFG1_RX_ENABLE , 1);
 
-    if (icss_version >= 0x201U)
+    if ((icss_version >= 0x201U) || (icss_version == 0x103))
     {
         HW_WR_FIELD32((icssEmacBaseAddressHandle->prussMiiRtCfgRegsBaseAddr) + CSL_ICSSMIIRT_RXCFG1,
             CSL_ICSSMIIRT_RXCFG1_RX_DATA_RDY_MODE_DIS , 1);
@@ -1970,7 +1970,7 @@ static void PRUSSDRVPruMiiRtCfgInit(ICSS_EmacHandle emacSubSysHandle)
     HW_WR_FIELD32((icssEmacBaseAddressHandle->prussMiiRtCfgRegsBaseAddr) + CSL_ICSSMIIRT_RXCFG1,
             CSL_ICSSMIIRT_RXCFG1_RX_CUT_PREAMBLE , 1);
 
-    if (icss_version >= 0x201U)
+    if ((icss_version >= 0x201U) || (icss_version == 0x103))
     {
         /* Enable the clearing of RX_EOF from PRU R31 command */
         HW_WR_FIELD32((icssEmacBaseAddressHandle->prussMiiRtCfgRegsBaseAddr) + CSL_ICSSMIIRT_RXCFG1,
@@ -1984,7 +1984,7 @@ static void PRUSSDRVPruMiiRtCfgInit(ICSS_EmacHandle emacSubSysHandle)
     HW_WR_FIELD32((icssEmacBaseAddressHandle->prussMiiRtCfgRegsBaseAddr) + CSL_ICSSMIIRT_TXCFG1,
             CSL_ICSSMIIRT_TXCFG1_TX_AUTO_PREAMBLE , 1);
 
-    if (icss_version >= 0x201U)
+    if ((icss_version >= 0x201U) || (icss_version == 0x103))
     {
         /* Enable the 32 bit insert in Tx FIFO */
         HW_WR_FIELD32((icssEmacBaseAddressHandle->prussMiiRtCfgRegsBaseAddr) + CSL_ICSSMIIRT_TXCFG1,
@@ -2019,7 +2019,7 @@ static void PRUSSDRVPruMiiRtCfgInit(ICSS_EmacHandle emacSubSysHandle)
     HW_WR_FIELD32((icssEmacBaseAddressHandle->prussMiiRtCfgRegsBaseAddr) + CSL_ICSSMIIRT_TXCFG1,
             CSL_ICSSMIIRT_TXCFG1_TX_START_DELAY , 0x40);
 
-    if (icss_version >= 0x201U)
+    if ((icss_version >= 0x201U) || (icss_version == 0x103))
     {
         HW_WR_FIELD32((icssEmacBaseAddressHandle->prussMiiRtCfgRegsBaseAddr) + CSL_ICSSMIIRT_TXCFG1,
             CSL_ICSSMIIRT_TXCFG1_TX_CLK_DELAY , 0x6);
