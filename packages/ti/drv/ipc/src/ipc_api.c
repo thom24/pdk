@@ -1469,8 +1469,8 @@ int32_t RPMessage_recvNb(RPMessage_Handle handle, void* data, uint16_t *len,
     int32_t             status = IPC_EBADARGS;
     Ipc_OsalPrms *pOsalPrms = &gIpcObject.initPrms.osalPrms;
 
-    if (((NULL != data) && (NULL != len)) &&
-        ((NULL != rplyEndPt) && (NULL != rplyProcId)))
+    if ((handle != NULL) && (NULL != data) && (NULL != len) &&
+        (NULL != rplyEndPt) && (NULL != rplyProcId))
     {
         obj = (RPMessage_Object *)handle;
         status = IPC_ETIMEOUT;

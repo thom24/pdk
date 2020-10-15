@@ -69,14 +69,27 @@
 /* Size of message */
 #define MSGSIZE  256U
 /* Service name to be registered for the end point */
-#define SERVICE  "ti.ipc4.ping-pong"
+#define SERVICE_PING   "ti.ipc4.ping-pong"
 /* End point number to be used for IPC communication */
-#define ENDPT1   13U
+#define ENDPT_PING     13U
+/* Service name to be registered for chrdev end point */
+#define SERVICE_CHRDEV "rpmsg_chrdev"
+/* End point number to be used for chrdev end point */
+#define ENDPT_CHRDEV   14U
 #if defined(SIM_BUILD)
 #define NUMMSGS  1000
 #else
 #define NUMMSGS  10000 /* number of message sent by the sender function */
 #endif
+
+typedef struct Ipc_TestParams_s
+{
+    uint32_t endPt;
+    char     name[32];
+} Ipc_TestParams;
+
+Ipc_TestParams service_ping = { ENDPT_PING, SERVICE_PING };
+Ipc_TestParams service_chrdev = { ENDPT_CHRDEV, SERVICE_CHRDEV };
 
 extern uint8_t  *pCntrlBuf;
 //extern uint8_t  *pTaskBuf;
@@ -92,6 +105,8 @@ extern RPMessage_Handle *pHandleArray;
 extern uint32_t         *pEndptArray;
 extern uint32_t         *pCntPing;
 extern uint32_t         *pCntPong;
+
+uint32_t gRecvTaskBufIdx = 0;
 
 uint32_t rpmsgDataSize = RPMSG_DATA_SIZE;
 
@@ -215,7 +230,7 @@ void rpmsg_vdevMonitorFxn(void)
         return;
     }
 
-    status = RPMessage_announce(IPC_MPU1_0, RecvEndPt, SERVICE);
+    status = RPMessage_announce(IPC_MPU1_0, RecvEndPt, SERVICE_PING);
     if(status != IPC_SOK)
     {
         System_printf("rpmsg_vdevMonitorFxn: RPMessage_announce() failed\n");
@@ -244,6 +259,10 @@ void rpmsg_exit_responseTask()
 void rpmsg_responderFxn(uintptr_t arg0, uintptr_t arg1)
 {
     RPMessage_Handle handle;
+#if !defined(BUILD_MPU1_0) && defined(A72_LINUX_OS)
+    RPMessage_Handle handle_chrdev;
+#endif
+    RPMessage_Handle *responseHandle = NULL;
     RPMessage_Params params;
     uint32_t         myEndPt = 0;
     uint32_t         remoteEndPt;
@@ -261,7 +280,7 @@ void rpmsg_responderFxn(uintptr_t arg0, uintptr_t arg1)
     uint32_t         bufSize = rpmsgDataSize;
     char             str[MSGSIZE];
 
-    buf = pRecvTaskBuf;
+    buf = &pRecvTaskBuf[gRecvTaskBufIdx++ * rpmsgDataSize];
     if(buf == NULL)
     {
         System_printf("RecvTask: buffer allocation failed\n");
@@ -270,7 +289,7 @@ void rpmsg_responderFxn(uintptr_t arg0, uintptr_t arg1)
 
     RPMessageParams_init(&params);
 
-    params.requestedEndpt = ENDPT1;
+    params.requestedEndpt = service_ping.endPt;
 
     params.buf = buf;
     params.bufSize = bufSize;
@@ -283,15 +302,37 @@ void rpmsg_responderFxn(uintptr_t arg0, uintptr_t arg1)
     }
 
 #if !defined(BUILD_MPU1_0) && defined(A72_LINUX_OS) && defined(A72_LINUX_OS_IPC_ATTACH)
-    RecvEndPt = myEndPt;
+    if (requestedEpt == ENDPT_PING)
+    {
+        RecvEndPt = myEndPt;
+    }
 #endif
 
-    status = RPMessage_announce(RPMESSAGE_ALL, myEndPt, SERVICE);
+    status = RPMessage_announce(RPMESSAGE_ALL, myEndPt, service_ping.name);
     if(status != IPC_SOK)
     {
-        System_printf("RecvTask: RPMessage_announce() failed\n");
+        System_printf("RecvTask: RPMessage_announce() for %s failed\n", service_ping.name);
         return;
     }
+
+#if !defined(BUILD_MPU1_0) && defined(A72_LINUX_OS)
+    params.requestedEndpt = service_chrdev.endPt;
+    buf = &pRecvTaskBuf[gRecvTaskBufIdx++ * rpmsgDataSize];
+    params.buf = buf;
+    params.bufSize = bufSize;
+
+    handle_chrdev = RPMessage_create(&params, &myEndPt);
+    if (!handle_chrdev)
+    {
+        System_printf("RecvTask: Failed to create chrdev endpoint\n");
+        return;
+    }
+    status = RPMessage_announce(RPMESSAGE_ALL, myEndPt, service_chrdev.name);
+    if (status != IPC_SOK)
+    {
+        System_printf("RecvTask: RPMessage_announce() for %s failed\n", service_chrdev.name);
+    }
+#endif
 
     /* initialize the sender handles */
     for (i = 0; i < numProc; i++)
@@ -317,7 +358,7 @@ void rpmsg_responderFxn(uintptr_t arg0, uintptr_t arg1)
 
             if (pHandleArray[i] == NULL)
             {
-                status = RPMessage_getRemoteEndPt(pRemoteProcArray[i], SERVICE, &remoteProcId,
+                status = RPMessage_getRemoteEndPt(pRemoteProcArray[i], SERVICE_PING, &remoteProcId,
                                                   &remoteEndPt, 0);
                 if (status == IPC_SOK)
 		{
@@ -332,6 +373,18 @@ void rpmsg_responderFxn(uintptr_t arg0, uintptr_t arg1)
         status = RPMessage_recvNb(handle,
                                   (Ptr)str, &len, &remoteEndPt,
                                   &remoteProcId);
+        responseHandle = &handle;
+#if !defined(BUILD_MPU1_0) && defined(A72_LINUX_OS)
+        if (status != IPC_SOK)
+        {
+            /* Try the chrdev handle */
+            status = RPMessage_recvNb(handle_chrdev,
+                                      (Ptr)str, &len, &remoteEndPt,
+                                      &remoteProcId);
+            responseHandle = &handle_chrdev;
+        }
+#endif
+
         if (status != IPC_SOK)
         {
             /* Try the sender function handles */
@@ -423,7 +476,7 @@ void rpmsg_responderFxn(uintptr_t arg0, uintptr_t arg1)
                                       Ipc_mpGetName(remoteProcId));
 #endif
 
-                        status = RPMessage_send(pHandleArray[i], remoteProcId, ENDPT1, pEndptArray[i], (Ptr)str, len);
+                        status = RPMessage_send(pHandleArray[i], remoteProcId, ENDPT_PING, pEndptArray[i], (Ptr)str, len);
                         if (status != IPC_SOK)
                         {
                             System_printf("SendTask%d: RPMessage_send Failed Msg-> \"%s\" from %s to %s...\n",
@@ -461,7 +514,7 @@ void rpmsg_responderFxn(uintptr_t arg0, uintptr_t arg1)
                               str, len, Ipc_mpGetSelfName(),
                               Ipc_mpGetName(remoteProcId));
 #endif
-                status = RPMessage_send(handle, remoteProcId, remoteEndPt, myEndPt, str, len);
+                status = RPMessage_send(*responseHandle, remoteProcId, remoteEndPt, myEndPt, str, len);
                 if (status != IPC_SOK)
                 {
                     System_printf("RecvTask: Sending msg \"%s\" len %d from %s to %s failed!!!\n",
@@ -478,9 +531,8 @@ void rpmsg_responderFxn(uintptr_t arg0, uintptr_t arg1)
 }
 
 /*
- * This function sends a message and waits for a response
- * and repeats the cycle for predetermined number of messages.
- * NOTE: In this example this sender function is not active.
+ * This function sends a message to kick start the ping/pong messaging that will
+ * repeat for predetermined number of messages. The response is handled in the responderFxn
  */
 void rpmsg_startSender(uint16_t dstProc, uint32_t numProc, RPMessage_Handle *handle, uint32_t *myEndPt)
 {
@@ -506,7 +558,7 @@ void rpmsg_startSender(uint16_t dstProc, uint32_t numProc, RPMessage_Handle *han
     }
 
 #if 0 /* RPMessage_getRemoteEndPt isn't currently supported in baremetal ipc library */
-    status = RPMessage_getRemoteEndPt(dstProc, SERVICE, &remoteProcId,
+    status = RPMessage_getRemoteEndPt(dstProc, SERVICE_PING, &remoteProcId,
             &remoteEndPt, TEST_TIMEOUT_FOREVER);
     if(dstProc != remoteProcId)
     {
@@ -535,7 +587,7 @@ void rpmsg_startSender(uint16_t dstProc, uint32_t numProc, RPMessage_Handle *han
                   Ipc_mpGetName(dstProc));
 #endif
 
-    status = RPMessage_send(*handle, dstProc, ENDPT1, *myEndPt, (Ptr)buf, len);
+    status = RPMessage_send(*handle, dstProc, ENDPT_PING, *myEndPt, (Ptr)buf, len);
     if (status != IPC_SOK)
     {
         System_printf("SendTask%d: RPMessage_send Failed Msg-> \"%s\" from %s to %s...\n",

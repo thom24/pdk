@@ -70,14 +70,25 @@
 #endif
 
 #define MSGSIZE  256U
-#define SERVICE  "ti.ipc4.ping-pong"
-#define ENDPT1   13U
+#define SERVICE_PING   "ti.ipc4.ping-pong"
+#define ENDPT_PING     13U
+#define SERVICE_CHRDEV "rpmsg_chrdev"
+#define ENDPT_CHRDEV   14U
 #if defined(SIM_BUILD)
 #define NUMMSGS  1000
 #else
 #define NUMMSGS  10000 /* number of message sent per task */
 #endif
 //#define NUMMSGS  1000000   /* number of message sent per task */
+
+typedef struct Ipc_TestParams_s
+{
+    uint32_t endPt;
+    char     name[32];
+} Ipc_TestParams;
+
+Ipc_TestParams service_ping = { ENDPT_PING, SERVICE_PING };
+Ipc_TestParams service_chrdev = { ENDPT_CHRDEV, SERVICE_CHRDEV };
 
 extern uint8_t  *pCntrlBuf;
 extern uint8_t  *pTaskBuf;
@@ -88,6 +99,8 @@ extern uint8_t  *pSysVqBuf;
 extern uint32_t  selfProcId;
 extern uint32_t *pRemoteProcArray;
 extern uint32_t  gNumRemoteProc;
+
+uint32_t gRecvTaskBufIdx = 0;
 
 uint32_t rpmsgDataSize = RPMSG_DATA_SIZE;
 
@@ -139,11 +152,13 @@ void rpmsg_responderFxn(UArg arg0, UArg arg1)
     int32_t		n;
     int32_t		status = 0;
     void		*buf;
+    uint32_t            requestedEpt = (uint32_t)arg0;
+    char *              name = (char *)arg1;
 
     uint32_t            bufSize = rpmsgDataSize;
     char                str[MSGSIZE];
 
-    buf = pRecvTaskBuf; 
+    buf = &pRecvTaskBuf[gRecvTaskBufIdx++ * rpmsgDataSize];
     if(buf == NULL) 
     {
         System_printf("RecvTask: buffer allocation failed\n");
@@ -151,7 +166,7 @@ void rpmsg_responderFxn(UArg arg0, UArg arg1)
     }
 
     RPMessageParams_init(&params);
-    params.requestedEndpt = ENDPT1;
+    params.requestedEndpt = requestedEpt;
     params.buf = buf;
     params.bufSize = bufSize;
 
@@ -163,13 +178,16 @@ void rpmsg_responderFxn(UArg arg0, UArg arg1)
     }
 
 #if !defined(BUILD_MPU1_0) && defined(A72_LINUX_OS) && defined(A72_LINUX_OS_IPC_ATTACH)
-    RecvEndPt = myEndPt;
+    if (requestedEpt == ENDPT_PING)
+    {
+        RecvEndPt = myEndPt;
+    }
 #endif
 
-    status = RPMessage_announce(RPMESSAGE_ALL, myEndPt, SERVICE);
+    status = RPMessage_announce(RPMESSAGE_ALL, myEndPt, name);
     if(status != IPC_SOK) 
     {
-        System_printf("RecvTask: RPMessage_announce() failed\n");
+        System_printf("RecvTask: RPMessage_announce() for %s failed\n", name);
         return;
     }
 
@@ -262,7 +280,7 @@ void rpmsg_senderFxn(UArg arg0, UArg arg1)
         return;
     }
 
-    status = RPMessage_getRemoteEndPt(dstProc, SERVICE, &remoteProcId,
+    status = RPMessage_getRemoteEndPt(dstProc, SERVICE_PING, &remoteProcId,
             &remoteEndPt, BIOS_WAIT_FOREVER);
     if(dstProc != remoteProcId) 
     {
@@ -291,7 +309,7 @@ void rpmsg_senderFxn(UArg arg0, UArg arg1)
         /* Increase the Ping Counter */
         cntPing++;
 
-        status = RPMessage_send(handle, dstProc, ENDPT1, myEndPt, (Ptr)buf, len);
+        status = RPMessage_send(handle, dstProc, ENDPT_PING, myEndPt, (Ptr)buf, len);
         if (status != IPC_SOK) 
         {
             System_printf("SendTask%d: RPMessage_send Failed Msg-> \"%s\" from %s to %s...\n", 
@@ -375,7 +393,7 @@ void rpmsg_vdevMonitorFxn(UArg arg0, UArg arg1)
         return;
     }
 
-    status = RPMessage_announce(IPC_MPU1_0, RecvEndPt, SERVICE);
+    status = RPMessage_announce(IPC_MPU1_0, RecvEndPt, SERVICE_PING);
     if(status != IPC_SOK)
     {
         System_printf("rpmsg_vdevMonitorFxn: RPMessage_announce() failed\n");
@@ -446,13 +464,25 @@ int32_t Ipc_echo_test(void)
     cntrlParam.stackSize   = IPC_TASK_STACKSIZE;
     RPMessage_init(&cntrlParam);
 
-    /* Respond to messages coming in to endPt ENDPT1 */
+    /* Respond to messages coming in to endPt ENDPT_PING */
+    Task_Params_init(&params);
+    params.priority   = 3;
+    params.stack      = &pTaskBuf[index++ * IPC_TASK_STACKSIZE];
+    params.stackSize  = IPC_TASK_STACKSIZE;
+    params.arg0       = service_ping.endPt;
+    params.arg1       = (uintptr_t)service_ping.name;
+    Task_create(rpmsg_responderFxn, &params, NULL);
+
+#if !defined(BUILD_MPU1_0) && defined(A72_LINUX_OS)
+    /* Respond to messages coming in to endPt ENDPT_CHRDEV (for testing rpmsg_chrdev) */
     Task_Params_init(&params);
     params.priority   = IPC_SETUP_TASK_PRI;
     params.stack      = &pTaskBuf[index++ * IPC_TASK_STACKSIZE];
     params.stackSize  = IPC_TASK_STACKSIZE;
-    params.arg0       = 0;
+    params.arg0       = service_chrdev.endPt;
+    params.arg1       = (uintptr_t)service_chrdev.name;
     Task_create(rpmsg_responderFxn, &params, NULL);
+#endif
 
     for(t = 0; t < numProc; t++, index++)
     {
@@ -461,7 +491,7 @@ int32_t Ipc_echo_test(void)
         if(pRemoteProcArray[t] == IPC_MPU1_0)
             continue;
 #endif
-        /* send messages to peer(s) on ENDPT1 */
+        /* send messages to peer(s) on ENDPT_PING */
         Task_Params_init(&params);
         params.priority  = IPC_SETUP_TASK_PRI;
         params.stack     = &pTaskBuf[index * IPC_TASK_STACKSIZE];
@@ -473,7 +503,7 @@ int32_t Ipc_echo_test(void)
     }
 
 #if !defined(BUILD_MPU1_0) && defined(A72_LINUX_OS) && defined(A72_LINUX_OS_IPC_ATTACH)
-    /* Respond to messages coming in to endPt ENDPT1 */
+    /* Respond to messages coming in to endPt ENDPT_PING */
     Task_Params_init(&params);
     params.priority = IPC_SETUP_TASK_PRI;
     params.stackSize = 0x1000;

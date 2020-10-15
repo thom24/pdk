@@ -73,6 +73,7 @@
 #error "Invalid SOC"
 #endif
 
+#define NUM_RESPONDER_TASKS     2
 
 /* ========================================================================== */
 /*                         Structure Declarations                             */
@@ -91,7 +92,7 @@
 uint8_t  gCntrlBuf[RPMSG_DATA_SIZE] __attribute__ ((section("ipc_data_buffer"), aligned (8)));
 uint8_t  gSysVqBuf[VQ_BUF_SIZE]  __attribute__ ((section ("ipc_data_buffer"), aligned (8)));
 uint8_t  gSendBuf[RPMSG_DATA_SIZE * CORE_IN_TEST]  __attribute__ ((section ("ipc_data_buffer"), aligned (8)));
-uint8_t  gRspBuf[RPMSG_DATA_SIZE]  __attribute__ ((section ("ipc_data_buffer"), aligned (8)));
+uint8_t  gRspBuf[RPMSG_DATA_SIZE * NUM_RESPONDER_TASKS]  __attribute__ ((section ("ipc_data_buffer"), aligned (8)));
 
 uint8_t *pCntrlBuf = gCntrlBuf;
 uint8_t *pSendTaskBuf = gSendBuf;

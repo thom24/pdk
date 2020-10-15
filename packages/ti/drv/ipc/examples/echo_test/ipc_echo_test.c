@@ -93,6 +93,8 @@
 #error "Invalid SOC"
 #endif
 
+#define NUM_RESPONDER_TASKS     2
+
 #if !defined(BAREMETAL)
 /*
  * In the cfg file of R5F, C66x, default heap is 48K which is not
@@ -101,7 +103,7 @@
  */
 #if !defined(BUILD_C7X_1)
 
-uint8_t  g_taskStackBuf[(CORE_IN_TEST+2)*IPC_TASK_STACKSIZE];
+uint8_t  g_taskStackBuf[(CORE_IN_TEST+3)*IPC_TASK_STACKSIZE];
 
 #else
 
@@ -111,7 +113,7 @@ uint8_t  g_taskStackBuf[(CORE_IN_TEST+2)*IPC_TASK_STACKSIZE];
  * - AND stack assigned for task context is "size - 8KB"
 *       - 8KB chunk for the stack area is used for interrupt handling in this task context
 */
-uint8_t g_taskStackBuf[(CORE_IN_TEST+2)*IPC_TASK_STACKSIZE]
+uint8_t g_taskStackBuf[(CORE_IN_TEST+3)*IPC_TASK_STACKSIZE]
 __attribute__ ((section(".bss:taskStackSection")))
 __attribute__ ((aligned(8192)))
     ;
@@ -121,7 +123,7 @@ __attribute__ ((aligned(8192)))
 uint8_t  gCntrlBuf[RPMSG_DATA_SIZE] __attribute__ ((section("ipc_data_buffer"), aligned (8)));
 uint8_t  sysVqBuf[VQ_BUF_SIZE]  __attribute__ ((section ("ipc_data_buffer"), aligned (8)));
 uint8_t  g_sendBuf[RPMSG_DATA_SIZE * CORE_IN_TEST]  __attribute__ ((section ("ipc_data_buffer"), aligned (8)));
-uint8_t  g_rspBuf[RPMSG_DATA_SIZE]  __attribute__ ((section ("ipc_data_buffer"), aligned (8)));
+uint8_t  g_rspBuf[RPMSG_DATA_SIZE * NUM_RESPONDER_TASKS]  __attribute__ ((section ("ipc_data_buffer"), aligned (8)));
 
 uint8_t *pCntrlBuf = gCntrlBuf;
 #if !defined(BAREMETAL)
