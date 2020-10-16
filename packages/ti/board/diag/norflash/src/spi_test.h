@@ -69,7 +69,11 @@
 #define SPI_INSTANCE      (2U)
 
 #define BOARD_SPI_FIRST_PAGE        (0x0000)
+#if defined(tpr12_evm)
+#define BOARD_SPI_LAST_PAGE         (0x1FF000)
+#else
 #define BOARD_SPI_LAST_PAGE         (0xFFFF00)
+#endif
 
 #define MAX_CLOCK 50000000 /* 50MHz */
 

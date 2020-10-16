@@ -108,6 +108,7 @@ int BoardDiag_SpiReadWriteTest(Board_flashHandle  handle,
     if (BoardDiag_memCompare(&txBuf[0],&rxBuf[0],TEST_DATA_LEN, &failIndex) == false)
     {
         UART_printf("\n Data mismatch at offset = 0x%x\n", failIndex);
+        return -1;
     }
 
     /* Erase block */
@@ -368,7 +369,7 @@ int BoardDiag_SpiFlashTest(void)
                 
     UART_printf("\n Verifying the SPI Flash first page...\n");
     testStatus = BoardDiag_SpiReadWriteTest(boardHandle, BOARD_SPI_FIRST_PAGE);
-    if(testStatus == true)
+    if(testStatus == 0)
     {
         UART_printf("SPI NOR Flash first page verification Sucessful\n");
     }
@@ -380,7 +381,7 @@ int BoardDiag_SpiFlashTest(void)
 
     UART_printf("\n Verifying the SPI Flash last page...\n");
     testStatus = BoardDiag_SpiReadWriteTest(boardHandle, BOARD_SPI_LAST_PAGE);
-    if(testStatus == true)
+    if(testStatus == 0)
     {
         UART_printf("SPI NOR Flash last page verification Sucessful\n");
     }
