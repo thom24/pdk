@@ -323,15 +323,14 @@ static void GPIO_init_v2(void)
             interruptRegParams.corepacConfig.arg         = (uintptr_t)(instIndex);
 
             interruptRegParams.corepacConfig.corepacEventNum = gpioHwAttr->highInterruptNum;
-#if defined(SOC_TPR12) /* All TPR12 interrupts are pulse and not level */
-            interruptRegParams.corepacConfig.triggerSensitivity = OSAL_ARM_GIC_TRIG_TYPE_EDGE;
-#endif
         #if defined(_TMS320C6X)
             interruptRegParams.corepacConfig.intVecNum = OSAL_REGINT_INTVEC_EVENT_COMBINER;
         #else
             interruptRegParams.corepacConfig.intVecNum = gpioHwAttr->highInterruptNum;
         #endif
-
+#if defined(SOC_TPR12) /* All TPR12 interrupts are pulse and not level */
+            interruptRegParams.corepacConfig.triggerSensitivity = OSAL_ARM_GIC_TRIG_TYPE_EDGE;
+#endif
             GPIO_osalRegisterInterrupt(&interruptRegParams,&(gGPIOMCB.hwiHandleHigh[instIndex]));
 
             /* Register the Low Priority Interrupt: */
@@ -348,7 +347,9 @@ static void GPIO_init_v2(void)
         #else
             interruptRegParams.corepacConfig.intVecNum = gpioHwAttr->lowInterruptNum;
         #endif
-
+#if defined(SOC_TPR12) /* All TPR12 interrupts are pulse and not level */
+            interruptRegParams.corepacConfig.triggerSensitivity = OSAL_ARM_GIC_TRIG_TYPE_EDGE;
+#endif
             GPIO_osalRegisterInterrupt(&interruptRegParams,&(gGPIOMCB.hwiHandleLow[instIndex]));
         }
     }
@@ -581,15 +582,16 @@ static void GPIO_setConfig_v2(uint32_t index, GPIO_PinConfig pinConfig)
         }
         else
         {
-            /* Output: Set the data direction */
-            GPIO_setOutputDataDirection (baseAddr, port, pin, 1U);
-
             /* Is the GPIO Port/Pin open open drain? */
             if (pinConfig & GPIO_CFG_OUT_OD_NOPULL)
             {
                 /* YES: Open Drain */
                 GPIO_setOpenDrainStatus (baseAddr, port, pin, 1U);
             }
+           
+            /* Output: Set the data direction */
+            GPIO_setOutputDataDirection (baseAddr, port, pin, 1U);
+
         }
 
         /* Update pinConfig with the latest GPIO configuration */
@@ -620,7 +622,7 @@ static void GPIO_setConfig_v2(uint32_t index, GPIO_PinConfig pinConfig)
             }
 
             /* Do we need to handle interrupts on both edges? */
-            if (pinConfig & GPIO_CFG_IN_INT_BOTH_EDGES)
+            if ((pinConfig & GPIO_CFG_IN_INT_BOTH_EDGES) == GPIO_CFG_IN_INT_BOTH_EDGES)
             {
                 /* YES: Ignore the polarity since interrupts can be triggered on either edge */
                 GPIO_ignorePolarity (baseAddr, port, pin);

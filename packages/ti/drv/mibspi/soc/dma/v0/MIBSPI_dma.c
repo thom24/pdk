@@ -38,6 +38,7 @@
  */
 
 #include <string.h>
+#include <ti/csl/soc.h>
 #include <ti/drv/mibspi/MIBSPI.h>
 #include <ti/drv/mibspi/src/mibspi_priv.h>
 #include <ti/drv/mibspi/src/mibspi_utils.h>
@@ -420,7 +421,7 @@ static void MIBSPI_edmaRegUpdateRxParams(const MibSpiDriver_Object*    ptrMibSpi
     else
     {
         /* destinationAddress is address of memory location named buffer.*/
-        rxParamSet->paramSetConfig.destinationAddress = (uintptr_t)(&ptrMibSpiDriver->rxScratchBuffer);
+        rxParamSet->paramSetConfig.destinationAddress = CSL_locToGlobAddr((uintptr_t)(&ptrMibSpiDriver->rxScratchBuffer));
     }
     
     Mibspi_assert(xferSizeInfo->elemSize <= 2);
@@ -498,7 +499,7 @@ static void MIBSPI_edmaRegUpdateTxParams(const MibSpiDriver_Object*    ptrMibSpi
     else
     {
         /* sourceAddress holds address of memory location buffer. */
-        txParamSet->paramSetConfig.sourceAddress = (uintptr_t) &ptrMibSpiDriver->txScratchBuffer;
+        txParamSet->paramSetConfig.sourceAddress = CSL_locToGlobAddr((uintptr_t) &ptrMibSpiDriver->txScratchBuffer);
     }
     /* destinationAddress holds address of SPIDAT1 register. */
     txParamSet->paramSetConfig.destinationAddress = xferAddrInfo->daddr;
@@ -582,7 +583,7 @@ static void MIBSPI_edmaRamUpdateRxParams(const MibSpiDriver_Object*    ptrMibSpi
     else
     {
         /* Source address */
-        rxParamSet->paramSetConfig.destinationAddress = (uintptr_t) &ptrMibSpiDriver->rxScratchBuffer;
+        rxParamSet->paramSetConfig.destinationAddress = CSL_locToGlobAddr((uintptr_t) &ptrMibSpiDriver->rxScratchBuffer);
     }
 
     /* aCount holds the number of bytes in an array.*/
@@ -654,7 +655,7 @@ static void MIBSPI_edmaRamUpdateTxParams(const MibSpiDriver_Object*    ptrMibSpi
     }
     else
     {
-        txParamSet->paramSetConfig.sourceAddress = (uintptr_t)(&ptrMibSpiDriver->txScratchBuffer);
+        txParamSet->paramSetConfig.sourceAddress = CSL_locToGlobAddr((uintptr_t)(&ptrMibSpiDriver->txScratchBuffer));
     }
 
     /* destinationAddress holds address of SPIDAT1 register. */

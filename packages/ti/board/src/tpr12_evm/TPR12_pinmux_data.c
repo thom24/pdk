@@ -174,11 +174,13 @@ static pinmuxPerCfg_t gTpr12_mss_gpio2PinCfg[] =
     },
     {PINMUX_END}
 };
+
+
 static pinmuxPerCfg_t gTpr12_mss_gpio8PinCfg[] =
 {
-    /* MyMSS_GPIO1 -> MSS_GPIO8_PIN -> B3 */
+    /* MyRCSS_GPIO1 -> MSS_GPIO_8 -> U18  FE1 Host Intr*/
     {
-        CSL_MSS_IOMUX_PADDM_CFG_REG, PIN_MODE(0) | \
+        CSL_MSS_IOMUX_PADCS_CFG_REG, PIN_MODE(3) | \
         ((PIN_PULL_DISABLE) & (~PIN_PULL_DIRECTION))
     },
     {PINMUX_END}
@@ -219,6 +221,20 @@ static pinmuxPerCfg_t gTpr12_mss_gpio13PinCfg[] =
     },
     {PINMUX_END}
 };
+
+
+
+static pinmuxPerCfg_t gTpr12_mss_gpio18PinCfg[] =
+{
+    /* MyRCSS_GPIO1 -> MSS_GPIO18_PIN -> B15  FE1 NRESET*/
+    {
+        CSL_MSS_IOMUX_PADDW_CFG_REG, PIN_MODE(0) | \
+        ((PIN_PULL_DISABLE) & (~PIN_PULL_DIRECTION))
+    },
+    {PINMUX_END}
+};
+
+
 static pinmuxModuleCfg_t gMss_gpioPinCfg[] =
 {
     { 28, TRUE, gTpr12_mss_gpio28PinCfg},
@@ -228,6 +244,7 @@ static pinmuxModuleCfg_t gMss_gpioPinCfg[] =
     { 10, TRUE, gTpr12_mss_gpio10PinCfg},
     { 11, TRUE, gTpr12_mss_gpio11PinCfg},
     { 13, TRUE, gTpr12_mss_gpio13PinCfg},
+    { 18, TRUE, gTpr12_mss_gpio18PinCfg},
     {PINMUX_END}
 };
        
@@ -551,24 +568,7 @@ static pinmuxModuleCfg_t gPmic_clkoutPinCfg[] =
     {PINMUX_END}
 };
        
-static pinmuxPerCfg_t gTpr12_rcss_gpio50PinCfg[] =
-{
-    /* MyRCSS_GPIO1 -> RCSS_GPIO50_PIN -> B15 */
-    {
-        CSL_MSS_IOMUX_PADDW_CFG_REG, PIN_MODE(12) | \
-        ((PIN_PULL_DISABLE) & (~PIN_PULL_DIRECTION))
-    },
-    {PINMUX_END}
-};
-static pinmuxPerCfg_t gTpr12_rcss_gpio34PinCfg[] =
-{
-    /* MyRCSS_GPIO1 -> RCSS_GPIO34_PIN -> U18 */
-    {
-        CSL_MSS_IOMUX_PADCS_CFG_REG, PIN_MODE(7) | \
-        ((PIN_PULL_DISABLE) & (~PIN_PULL_DIRECTION))
-    },
-    {PINMUX_END}
-};
+
 static pinmuxPerCfg_t gTpr12_rcss_gpio48PinCfg[] =
 {
     /* MyRCSS_GPIO1 -> RCSS_GPIO48_PIN -> C15 */
@@ -625,8 +625,6 @@ static pinmuxPerCfg_t gTpr12_rcss_gpio43PinCfg[] =
 };
 static pinmuxModuleCfg_t gRcss_gpioPinCfg[] =
 {
-    { 50, TRUE, gTpr12_rcss_gpio50PinCfg},
-    { 34, TRUE, gTpr12_rcss_gpio34PinCfg},
     { 48, TRUE, gTpr12_rcss_gpio48PinCfg},
     { 42, TRUE, gTpr12_rcss_gpio42PinCfg},
     { 51, TRUE, gTpr12_rcss_gpio51PinCfg},

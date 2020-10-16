@@ -350,6 +350,9 @@ static void MIBSPI_enablePinSettings(CSL_mss_spiRegs  *ptrMibSpiReg, MIBSPI_PinM
             CSL_FINS(regVal, SPI_SPIPC0_CLKFUN, 1U);
             CSL_FINS(regVal, SPI_SPIPC0_SIMOFUN0, 1U);
             CSL_FINS(regVal, SPI_SPIPC0_SOMIFUN0, 1U);
+           
+           //CSL_FINS(regVal, SPI_SPIPC0_SOMIFUN, 0U);
+           //CSL_FINS(regVal, SPI_SPIPC0_SOMIFUN, 0U);
 
             ptrMibSpiReg->SPIPC0 = regVal;         /* enable SOMI */
             break;
@@ -1528,10 +1531,24 @@ static void MIBSPI_dataTransfer
 
          /* Case 1: SrcData=NULL, DstData!=NULL  => Read data from SPI with dummy write */
         dmaXferInfo.dmaReqLine = group;
-        dmaXferInfo.tx.saddr = MibspiUtils_virtToPhy(srcData);
+        if (srcData != NULL)
+        {
+            dmaXferInfo.tx.saddr = MibspiUtils_virtToPhy(srcData);
+        }
+        else
+        {
+            dmaXferInfo.tx.saddr = NULL;
+        }
         dmaXferInfo.tx.daddr = MibspiUtils_virtToPhy((const void *)txRAMAddr);
         dmaXferInfo.rx.saddr = MibspiUtils_virtToPhy((const void *)rxRAMAddr);
-        dmaXferInfo.rx.daddr = MibspiUtils_virtToPhy(dstData);
+        if (dstData != NULL)
+        {
+            dmaXferInfo.rx.daddr = MibspiUtils_virtToPhy(dstData);
+        }
+        else
+        {
+            dmaXferInfo.rx.daddr = NULL;
+        }
         if(ptrMibSpiDriver->params.dataSize == 8U)
         {
             dmaXferInfo.size.elemSize = 1;
