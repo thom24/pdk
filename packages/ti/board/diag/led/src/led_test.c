@@ -52,8 +52,12 @@
 #include "led_test.h"
 
 #if (defined(SOC_J721E) || defined(SOC_J7200))
-    i2cIoExpPinNumber_t gUserLeds[BOARD_GPIO_LED_NUM] = { PIN_NUM_6,
-                                                          PIN_NUM_7 };
+i2cIoExpPinNumber_t gUserLeds[BOARD_GPIO_LED_NUM] = { PIN_NUM_6,
+                                                      PIN_NUM_7 };
+#endif
+
+#if defined(SOC_TPR12)
+extern GPIO_v2_Config GPIO_v2_config;
 #endif
 
 /**
@@ -146,7 +150,10 @@ static int8_t led_run_test(void)
     Board_I2cInitCfg_t i2cCfg;
 #endif
     char p = 'y';
-    int i, j, k;
+    int i, j;
+#if !defined(tpr12_evm)
+    int k;
+#endif
 
 #if defined (iceK2G) /*  Test is executed with GPIO interrupts enabled on iceK2G */
     /* Setup GPIO interrupt configurations */
@@ -175,6 +182,9 @@ static int8_t led_run_test(void)
 
     Board_i2cIoExpInit();
 #else
+#if defined(SOC_TPR12)
+    GPIO_v2_updateConfig(&GPIO_v2_config);
+#endif
     GPIO_init();
 #endif
 
@@ -219,7 +229,13 @@ static int8_t led_run_test(void)
                                   gUserLeds[i],
                                   GPIO_SIGNAL_LEVEL_HIGH);
 #else
+
+#if defined(SOC_TPR12)
+        GPIO_write(GPIO_v2_config.pinConfigs[i].pinIndex, GPIO_PIN_VAL_LOW);
+#else
         GPIO_write(i, GPIO_PIN_VAL_LOW);
+#endif
+
 #endif
     }
 
@@ -228,6 +244,17 @@ static int8_t led_run_test(void)
         UART_printf("Press 'y' to verify pass, 'r' to blink again,\n");
         UART_printf("or any other character to indicate failure: ");
 #endif
+
+#if defined(tpr12_evm)
+        for (i=0; i<NUMBER_OF_CYCLES; i++) {
+            for (j=0; j<BOARD_GPIO_LED_NUM; j++) {
+                GPIO_write(GPIO_v2_config.pinConfigs[j].pinIndex, GPIO_PIN_VAL_HIGH);
+                BOARD_delay(250000);
+                GPIO_write(GPIO_v2_config.pinConfigs[j].pinIndex, GPIO_PIN_VAL_LOW);
+                BOARD_delay(250000);
+            }
+        }
+#else
         for (i=0; i<NUMBER_OF_CYCLES; i++) {
             for (j=0; j<BOARD_GPIO_LED_NUM; j++) {
                 for (k=0; k<BOARD_GPIO_LED_NUM; k++) {
@@ -243,6 +270,7 @@ static int8_t led_run_test(void)
                                                   GPIO_SIGNAL_LEVEL_LOW);
 #else
                         GPIO_write(k, GPIO_PIN_VAL_HIGH);
+
 #endif
                     }
                     else {
@@ -269,6 +297,8 @@ static int8_t led_run_test(void)
             led_write(handle, 0xFF);
 #endif
         }
+#endif
+
 #if !defined (DIAG_STRESS_TEST) && !defined(DIAG_COMPLIANCE_TEST)
         UART_scanFmt("%c", &p);
 #endif
@@ -284,7 +314,11 @@ static int8_t led_run_test(void)
                               gUserLeds[i],
                               GPIO_SIGNAL_LEVEL_HIGH);
 #else
+#if defined(SOC_TPR12)
+        GPIO_write(GPIO_v2_config.pinConfigs[i].pinIndex, GPIO_PIN_VAL_LOW);
+#else
         GPIO_write(i, GPIO_PIN_VAL_LOW);
+#endif
 #endif
     }
 
