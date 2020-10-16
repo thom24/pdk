@@ -37,6 +37,7 @@ __SVC_STACK_SIZE = 0x2000;
  * code should setup the MPU to allow L2 execution permissions
  ***********************************************************************************/
 #define SBL_INIT_CODE_SIZE          640
+#define SBL_TEST_CCS_LOAD           1
 
 /*----------------------------------------------------------------------------*/
 /* Memory Map                                                                 */
@@ -66,13 +67,19 @@ SECTIONS
     {
        *(.rstvectors) /* IVT is put at the beginning of the section */
        . = align(8);
-	   *(.bootCode)
-	   . = align(8);
-    }load=L2_RESVD, run=INIT_CODE
+       *(.bootCode)
+       . = align(8);
+#if  (SBL_TEST_CCS_LOAD == 1)
+    } > INIT_CODE
+#else
+    } load=L2_RESVD, run=INIT_CODE
+#endif
 
+
+    .bootCode             : {} palign(8)                            > L2_RAM_SBL
+    .startupCode          : {} palign(8)                            > L2_RAM_SBL
+    .startupData          : {} palign(8)                            > L2_RAM_SBL
     .sblScratch           : {} palign(8)                            > SBL_SCRATCH, type = NOINIT
-	.startupCode          : {} palign(8)                            > L2_RAM_SBL
-    .startupData          : {} palign(8)                            > L2_RAM_SBL   
     .sbl_profile_info     : {} palign(8)                            > L2_RAM_SBL
     .text    	          : {} palign(8)                            > L2_RAM_SBL
     .const   	          : {} palign(8)                            > L2_RAM_SBL

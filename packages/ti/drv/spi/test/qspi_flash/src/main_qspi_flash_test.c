@@ -723,7 +723,7 @@ int32_t QSPI_test_readInputFile(S25FL_Handle flashHandle, QSPI_Tests *test, bool
     }
     fclose(fp);
 
-    return 0;
+    return true;
 }
 
 static bool QSPI_test_func_file_write (void *arg)

@@ -131,7 +131,7 @@ void Test_dssWaitSync(void)
 {
     uint32_t  retVal = 0;
 
-    printf("DSS: App Sync\n");
+    System_printf("DSS: App Sync\n");
     App_setDssState(1U);
 
     while (retVal == 0)
@@ -140,7 +140,7 @@ void Test_dssWaitSync(void)
         Task_sleep(1);
     }
 
-    printf("DSS: App Sync Done.\n");
+    System_printf("DSS: App Sync Done.\n");
     App_setMssState (0U);
 }
 
@@ -183,7 +183,7 @@ void Test_initTask(UArg arg0, UArg arg1)
     openParam.remoteEndpoint = MAILBOX_INST_MSS_CR5A;
     openParam.cfg.readMode = MAILBOX_MODE_CALLBACK;
     openParam.cfg.readCallback = Test_appCallbackFunction;
-    openParam.cfg.writeTimeout = 1000U;
+    //openParam.cfg.writeTimeout = 1000U;
 
     /* Open the  Instance */
     handle = Mailbox_open(&openParam, &errCode);
@@ -526,7 +526,7 @@ void multiChannelTest (void)
     openParam.cfg.readMode     = MAILBOX_MODE_CALLBACK;
     openParam.cfg.readCallback = Test_appCallbackFunction3;
     openParam.cfg.writeMode    = MAILBOX_MODE_BLOCKING;
-    openParam.cfg.writeTimeout = 1000U;
+    //openParam.cfg.writeTimeout = 1000U;
 
     handleArray[3] = Mailbox_open(&openParam, &errCode);
     if (handleArray[3] == NULL)
@@ -550,7 +550,7 @@ void multiChannelTest (void)
     openParam.cfg.chId         = MAILBOX_CH_ID_4;
     openParam.cfg.readMode     = MAILBOX_MODE_BLOCKING;
     openParam.cfg.writeMode    = MAILBOX_MODE_BLOCKING;
-    openParam.cfg.writeTimeout = 1000U;
+    //openParam.cfg.writeTimeout = 1000U;
 
     handleArray[4] = Mailbox_open(&openParam, &errCode);
     if (handleArray[4] == NULL)
@@ -574,7 +574,7 @@ void multiChannelTest (void)
     openParam.cfg.chId         = MAILBOX_CH_ID_7;
     openParam.cfg.readMode     = MAILBOX_MODE_BLOCKING;
     openParam.cfg.writeMode    = MAILBOX_MODE_BLOCKING;
-    openParam.cfg.writeTimeout = 1000U;
+    //openParam.cfg.writeTimeout = 1000U;
 
     handleArray[7] = Mailbox_open(&openParam, &errCode);
     if (handleArray[7] == NULL)

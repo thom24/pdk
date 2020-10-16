@@ -427,7 +427,7 @@ const Rcm_ClkSrcInfo gCR5ClkSrcInfoMap =
  * @details
  *  Mapping Array between Clock mode and Clock Mode Value for RTI and WDG
  */
-static uint16_t gRtiClkSrcValMap[] =
+static const uint16_t gRtiClkSrcValMap[] =
 {
     [Rcm_PeripheralClockSource_XTAL_CLK] = 0x000U, /* XTAL_CLK */
     [Rcm_PeripheralClockSource_SYS_CLK]  = 0x222U, /* SYS_CLK */
@@ -444,7 +444,7 @@ static uint16_t gRtiClkSrcValMap[] =
  * @details
  *  Mapping Array between Clock mode and Clock Mode Value for SPI
  */
-static uint16_t gSpiClkSrcValMap[] =
+static const uint16_t gSpiClkSrcValMap[] =
 {
     [Rcm_PeripheralClockSource_XTAL_CLK] = 0x111U, /* XTAL_CLK */
     [Rcm_PeripheralClockSource_SYS_CLK]  = 0x222U, /* SYS_CLK */
@@ -454,7 +454,7 @@ static uint16_t gSpiClkSrcValMap[] =
     [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT3] = 0x888U, /* Set unsupported clock source to 0x888 which indicates invalid value */
 };
 
-static uint16_t gI2CClkSrcValMap[] = 
+static const uint16_t gI2CClkSrcValMap[] = 
 {
     [Rcm_PeripheralClockSource_XTAL_CLK] = 0x111U,
     [Rcm_PeripheralClockSource_SYS_CLK] = 0x222U,
@@ -473,7 +473,7 @@ static uint16_t gI2CClkSrcValMap[] =
  * @details
  *  Mapping Array between Clock mode and Clock Mode Value for QSPI
  */
-static uint16_t gQspiClkSrcValMap[] =
+static const uint16_t gQspiClkSrcValMap[] =
 {
     [Rcm_PeripheralClockSource_XTAL_CLK] = 0x000U, /* XTAL_CLK */
     [Rcm_PeripheralClockSource_SYS_CLK]  = 0x222U, /* SYS_CLK */
@@ -491,7 +491,7 @@ static uint16_t gQspiClkSrcValMap[] =
  * @details
  *  Mapping Array between Clock mode and Clock Mode Value for SCI
  */
-static uint16_t gSciClkSrcValMap[] =
+static const uint16_t gSciClkSrcValMap[] =
 {
     [Rcm_PeripheralClockSource_XTAL_CLK] = 0x111U, /* XTAL_CLK */
     [Rcm_PeripheralClockSource_SYS_CLK] = 0x222U, /* SYS_CLK */
@@ -502,7 +502,7 @@ static uint16_t gSciClkSrcValMap[] =
 
 };
 
-static uint16_t gMcanClkSrcValMap[] = 
+static const uint16_t gMcanClkSrcValMap[] = 
 {
     [Rcm_PeripheralClockSource_XTAL_CLK] = 0x888U, /* XTAL clock source not supported for MCANA */
     [Rcm_PeripheralClockSource_SYS_CLK]  = 0x222U,
@@ -513,7 +513,7 @@ static uint16_t gMcanClkSrcValMap[] =
 
 };
 
-static uint16_t gCsiRxClkSrcValMap[] = 
+static const uint16_t gCsiRxClkSrcValMap[] = 
 {
     [Rcm_PeripheralClockSource_XTAL_CLK] = 0x666U, /* XTAL clock source not supported for MCANA */
     [Rcm_PeripheralClockSource_SYS_CLK]  = 0x888U,
@@ -523,7 +523,7 @@ static uint16_t gCsiRxClkSrcValMap[] =
     [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT3] = 0x888U, /* Set unsupported clock source to 0x888 which indicates invalid value */
 };
 
-static uint16_t gDssRtiClkSrcValMap[] = 
+static const uint16_t gDssRtiClkSrcValMap[] = 
 {
     [Rcm_PeripheralClockSource_XTAL_CLK] = 0x111U,
     [Rcm_PeripheralClockSource_SYS_CLK] = 0x222U,
@@ -533,7 +533,7 @@ static uint16_t gDssRtiClkSrcValMap[] =
     [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT3] = 0x888U, /* Set unsupported clock source to 0x888 which indicates invalid value */
 };
 
-static uint16_t gDssSciClkSrcValMap[] = 
+static const uint16_t gDssSciClkSrcValMap[] = 
 {
     [Rcm_PeripheralClockSource_XTAL_CLK] = 0x111U,
     [Rcm_PeripheralClockSource_SYS_CLK] = 0x222U,
@@ -543,7 +543,7 @@ static uint16_t gDssSciClkSrcValMap[] =
     [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT3] = 0x888U, /* Set unsupported clock source to 0x888 which indicates invalid value */
 };
 
-static uint16_t gRcssSciClkSrcValMap[] = 
+static const uint16_t gRcssSciClkSrcValMap[] = 
 {
     [Rcm_PeripheralClockSource_XTAL_CLK] = 0x111U,
     [Rcm_PeripheralClockSource_SYS_CLK] = 0x222U,
@@ -553,7 +553,7 @@ static uint16_t gRcssSciClkSrcValMap[] =
     [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT3] = 0x888U, /* Set unsupported clock source to 0x888 which indicates invalid value */
 };
 
-static uint16_t gRcssSpiClkSrcValMap[] = 
+static const uint16_t gRcssSpiClkSrcValMap[] = 
 {
     [Rcm_PeripheralClockSource_XTAL_CLK] = 0x111U,
     [Rcm_PeripheralClockSource_SYS_CLK] = 0x222U,
@@ -563,7 +563,7 @@ static uint16_t gRcssSpiClkSrcValMap[] =
     [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT3] = 0x888U, /* Set unsupported clock source to 0x888 which indicates invalid value */
 };
 
-static uint16_t gRcssI2CClkSrcValMap[] = 
+static const uint16_t gRcssI2CClkSrcValMap[] = 
 {
     [Rcm_PeripheralClockSource_XTAL_CLK] = 0x111U,
     [Rcm_PeripheralClockSource_SYS_CLK] = 0x222U,
@@ -573,7 +573,7 @@ static uint16_t gRcssI2CClkSrcValMap[] =
     [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT3] = 0x888U, /* Set unsupported clock source to 0x888 which indicates invalid value */
 };
 
-static uint16_t gRcssATLClkSrcValMap[] = 
+static const uint16_t gRcssATLClkSrcValMap[] = 
 {
     [Rcm_PeripheralClockSource_XTAL_CLK] = 0x111U,
     [Rcm_PeripheralClockSource_SYS_CLK] = 0x222U,
@@ -583,7 +583,7 @@ static uint16_t gRcssATLClkSrcValMap[] =
     [Rcm_PeripheralClockSource_DPLL_CORE_HSDIV0_CLKOUT2] = 0x888U,
 };
 
-static uint16_t gRcssMCASPAuxClkSrcValMap[] = 
+static const uint16_t gRcssMCASPAuxClkSrcValMap[] = 
 {
     [Rcm_PeripheralClockSource_XTAL_CLK] = 0x888U,
     [Rcm_PeripheralClockSource_SYS_CLK] = 0x888U,
@@ -593,7 +593,7 @@ static uint16_t gRcssMCASPAuxClkSrcValMap[] =
     [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT3] = 0x444U,
 };
 
-static uint16_t gCptsClkSrcValMap[] = 
+static const uint16_t gCptsClkSrcValMap[] = 
 {
     [Rcm_PeripheralClockSource_XTAL_CLK] = 0x111U,
     [Rcm_PeripheralClockSource_SYS_CLK] = 0x222U,
@@ -603,7 +603,7 @@ static uint16_t gCptsClkSrcValMap[] =
     [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT3] = 0x888U, /* Set unsupported clock source to 0x888 which indicates invalid value */
 };
 
-static uint16_t gCpswClkSrcValMap[] = 
+static const uint16_t gCpswClkSrcValMap[] = 
 {
     [Rcm_PeripheralClockSource_XTAL_CLK] = 0x111U,
     [Rcm_PeripheralClockSource_SYS_CLK] = 0x222U,
@@ -613,14 +613,14 @@ static uint16_t gCpswClkSrcValMap[] =
     [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT3] = 0x888U, /* Set unsupported clock source to 0x888 which indicates invalid value */
 };
 
-static uint16_t gDspcoreClkSrcValMap[] = 
+static const uint16_t gDspcoreClkSrcValMap[] = 
 {
     [Rcm_DSPClockSource_XTAL_CLK] = 0x111,
     [Rcm_DSPClockSource_DPLL_DSP_HSDIV0_CLKOUT1] = 0x222,
     [Rcm_DSPClockSource_DPLL_CORE_HSDIV0_CLKOUT1] = 0x444
 };
 
-static uint16_t gCR5ClkSrcValMap[] = 
+static const uint16_t gCR5ClkSrcValMap[] = 
 {
     [Rcm_CR5ClockSource_DPLL_CORE_HSDIV0_CLKOUT2] = 0x222U,
 };
@@ -632,7 +632,7 @@ static uint16_t gCR5ClkSrcValMap[] =
  * @details
  *  Mapping Array between Reset Cause Bit and Reset Cause
  */
-static Rcm_ResetCause gResetBitToResetCause[11U] =
+static const Rcm_ResetCause gResetBitToResetCause[11U] =
 {
     Rcm_ResetCause_POWER_ON_RESET,
     Rcm_ResetCause_WARM_RESET,
@@ -934,7 +934,7 @@ void CSL_DSS_CTRL_enableAccess(CSL_dss_ctrlRegs *ptrDSSCtrlRegs)
  ************************** RCM Functions *****************************
  **************************************************************************/
 
-static uint32_t getClkSrcFromClkSelVal(uint16_t *clkSelTbl, uint32_t numEntries, uint32_t clkSelMatchVal)
+static uint32_t getClkSrcFromClkSelVal(const uint16_t *clkSelTbl, uint32_t numEntries, uint32_t clkSelMatchVal)
 {
     uint32_t i;
     uint32_t clkSource;
