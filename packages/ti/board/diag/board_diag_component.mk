@@ -345,6 +345,26 @@ export board_diag_dsi_$(SOC)_CORELIST
 export board_diag_dsi_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
 board_diag_EXAMPLE_LIST += board_diag_dsi
 
+# DSITX
+board_diag_dsitx_COMP_LIST = board_diag_dsitx
+board_diag_dsitx_RELPATH = ti/board/diag/dsitx/build
+board_diag_dsitx_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/dsitx/build
+board_diag_dsitx_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
+board_diag_dsitx_MAKEFILE = -f makefile
+board_diag_dsitx_BOARD_DEPENDENCY = yes
+board_diag_dsitx_CORE_DEPENDENCY = yes
+export board_diag_dsitx_COMP_LIST
+export board_diag_dsitx_BOARD_DEPENDENCY
+export board_diag_dsitx_CORE_DEPENDENCY
+export board_diag_dsitx_MAKEFILE
+board_diag_dsitx_PKG_LIST = board_diag_dsitx
+board_diag_dsitx_INCLUDE = $(board_diag_dsitx_PATH)
+board_diag_dsitx_BOARDLIST = j721e_evm
+board_diag_dsitx_$(SOC)_CORELIST = mcu2_0
+export board_diag_dsitx_$(SOC)_CORELIST
+export board_diag_dsitx_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
+board_diag_EXAMPLE_LIST += board_diag_dsitx
+
 # EEPROM
 board_diag_eeprom_COMP_LIST = board_diag_eeprom
 board_diag_eeprom_RELPATH = ti/board/diag/eeprom/build
