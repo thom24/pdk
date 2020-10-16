@@ -47,6 +47,8 @@
 extern "C" {
 #endif
 
+#define ENABLE_TPR12_BOARD_MDIO  (TRUE)
+
 /**
  * \enum emac_mode
  *

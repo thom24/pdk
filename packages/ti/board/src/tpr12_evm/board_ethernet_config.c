@@ -250,10 +250,21 @@ static Board_STATUS Board_setEthPhySpeed(uint32_t baseAddr,
 /**
  * \brief  Sets the Ethernet subsytem board specific configurations
  *
+ * \param  mode    [IN]    Mode selection for the specified port number
+ *                         001 - RMII
+ *                         010 - RGMII
  * \return  none
  */
-Board_STATUS Board_ethConfig(void)
+Board_STATUS Board_ethConfig(uint8_t mode)
 {
+    uint32_t regData;
+
+    Board_unlockMMR();
+
+    regData = CSL_REG32_RD(BOARD_CPSW_CTRL_REG_ADDR);
+    regData = (regData & 0x7) | mode;
+    CSL_REG32_WR(BOARD_CPSW_CTRL_REG_ADDR, regData);
+
     return BOARD_SOK;
 }
 
@@ -269,6 +280,7 @@ Board_STATUS Board_ethPhyConfig(void)
 
     baseAddr = (BOARD_ETH_BASE_ADDR + 0x0F00);
 
+    Board_ethConfig(RGMII);
     Board_mdioInit(baseAddr);
 
     /* Enable PHY speed LED functionality */

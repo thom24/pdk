@@ -118,11 +118,10 @@ typedef struct Board_I2cObj_s
 
 #define BOARD_I2C_PORT_CNT                   (CSL_MSS_I2C_PER_CNT)
 
+/* Ethernet module base address */
+#define BOARD_ETH_BASE_ADDR			        (CSL_MSS_CPSW_U_BASE)
 /* Etherent control registers */
-/* TODO: Need to get the value from csl*/
-#define BOARD_ENET_CTRL_REG_ADDR	        (0x40F04040U)
-/*TODO: Need to get the value from csl*/
-#define BOARD_ETH_BASE_ADDR			        (0x46000000U)
+#define BOARD_CPSW_CTRL_REG_ADDR	        (CSL_MSS_CTRL_U_BASE + 0x16C)
 
 #define BOARD_ETH_PHY_SPEED_MASK             (0x2040U)
 #define BOARD_ETH_PHY_AUTONEG_MASK           (0x1000U)
@@ -196,9 +195,12 @@ Board_STATUS Board_moduleClockInit(void);
 /**
  * \brief  Sets the Ethernet subsytem board specific configurations
  *
+ * \param  mode    [IN]    Mode selection for the specified port number
+ *                         001 - RMII
+ *                         010 - RGMII
  * \return  none
  */
-Board_STATUS Board_ethConfig(void);
+Board_STATUS Board_ethConfig(uint8_t mode);
 
 /**
  * \brief  Board specific configurations for Ethernet PHY
