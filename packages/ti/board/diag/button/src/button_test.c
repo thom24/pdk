@@ -46,13 +46,16 @@
  *
  *  Supported SoCs: AM335x, AM437x, AM65xx & TPR12.
  *
- *  Supported Platforms: skAM335x, skAM437x, evmAM437x am65xx_evm, am65xx_idk.
- *						 & tpr12_evm.
+ *  Supported Platforms: skAM335x, skAM437x, evmAM437x am65xx_evm, am65xx_idk,
+ *                       tpr12_evm.
  *
  */
 
 #include "button_test.h"
 
+#if defined(SOC_TPR12)
+extern GPIO_v2_Config GPIO_v2_config;
+#endif
 
 uint32_t buttonOffset[2]={0, 0};
 uint32_t powerOffset[2]={0, 0};
@@ -171,7 +174,7 @@ int32_t BoardDiag_ButtonTest(keyPadInfo_t *pBoardKeyPad)
     uint32_t i, j, k;
 
     /* Initialize the GPIO driver. */
-	UART_printf("\nRunning button test...\n");
+    UART_printf("\nRunning button test...\n");
 #if defined(SOC_AM65XX)
     GPIO_v0_HwAttrs gpioCfg;
     GPIO_socGetInitCfg(0, &gpioCfg);
@@ -179,6 +182,9 @@ int32_t BoardDiag_ButtonTest(keyPadInfo_t *pBoardKeyPad)
     GPIO_socSetInitCfg(0, &gpioCfg);
     GPIO_init();
 #else
+#if defined(SOC_TPR12)
+    GPIO_v2_updateConfig(&GPIO_v2_config);
+#endif
     GPIO_init();
 #endif
 
@@ -222,7 +228,7 @@ int32_t BoardDiag_KeyPressCheck(keyPadInfo_t *pBoardKeyPad,
 #if defined (DIAG_COMPLIANCE_TEST)
     UART_printf(  "Button SW %2d            ", button);
 
-	level = GPIO_read(scnKey);
+    level = GPIO_read(scnKey);
 
     UART_printf("Button SW %2d Value - %d\n", button, level);
     ret_val = S_PASS;
@@ -233,18 +239,34 @@ int32_t BoardDiag_KeyPressCheck(keyPadInfo_t *pBoardKeyPad,
     UART_printf("WAIT      Waiting for button press");
 
 #if (defined(SOC_AM65XX) || defined(SOC_TPR12))
-	do
+    do
     {
+#if defined(SOC_TPR12)
+        level = GPIO_read(GPIO_v2_config.pinConfigs[scnKey].pinIndex);
+#else
         level = GPIO_read(scnKey);
+#endif
+#if defined(SOC_TPR12)
+    }while(level == 0);
+#else
     }while(level == 1);
+#endif
     UART_printf("...   Button %2d Pressed \n", button);
 
     UART_printf(  "Button SW %2d            ", button);
     UART_printf("WAIT      Waiting for button release...");
     do
     {
+#if defined(SOC_TPR12)
+        level = GPIO_read(GPIO_v2_config.pinConfigs[scnKey].pinIndex);
+#else
         level = GPIO_read(scnKey);
+#endif
+#if defined(SOC_TPR12)
+    }while(level == 1);
+#else
     }while(level == 0);
+#endif
     UART_printf(" Button %2d released\n", button);
 #else
     BoardDiag_BtnPwr(pBoardKeyPad, pwrKey);
@@ -382,9 +404,11 @@ int32_t BoardDiag_GetKeyPadInfo(char *pBoardName, keyPadInfo_t *pBoardKeyPad)
         KeyScn[1].instance=0;
         KeyScn[1].pin=27;
     }
-	/* Check if the board is EVM TPR12 by comparing the string read from
+#if defined(SOC_TPR12)
+    /* TODO: Need to update after programming board ID EEPROM
+     * Check if the board is EVM TPR12 by comparing the string read from
        EEPROM. */
-    else if (strncmp("TPR_EVM", pBoardName, BOARD_NAME_LENGTH) == 0U)
+    else if(status == S_PASS)
     {
 
         pBoardKeyPad->buttonSet = 1;
@@ -400,6 +424,7 @@ int32_t BoardDiag_GetKeyPadInfo(char *pBoardName, keyPadInfo_t *pBoardKeyPad)
         KeyScn[0].pin=28;
 
     }
+#endif
     else
     {
         status = E_FAIL;

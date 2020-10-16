@@ -48,15 +48,15 @@
 /* Port and pin number mask for push button.
    Bits 7-0: Pin number and Bits 15-8: Port number */
 
-#define BOARD_DIAG_PUSH_BUTTON    (0x001CU)	/* MSS GPIO0_28 */
+#define BOARD_DIAG_PUSH_BUTTON    (SOC_TPR12_GPIO_28)	/* MSS GPIO0_28 */
 
 /* GPIO Driver board specific pin configuration structure */
 GPIO_v2_PinConfig gpioPinConfigs[] = {
-    {BOARD_DIAG_PUSH_BUTTON, GPIO_CFG_OUTPUT, NULL}
+    {BOARD_DIAG_PUSH_BUTTON, GPIO_CFG_INPUT, NULL}
 };
 
 /* GPIO Driver configuration structure */
 GPIO_v2_Config GPIO_v2_config = {
     gpioPinConfigs,
-    sizeof(gpioPinConfigs) / sizeof(GPIO_PinConfig),
+    sizeof(gpioPinConfigs) / sizeof(GPIO_v2_PinConfig),
 };
