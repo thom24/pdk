@@ -92,7 +92,8 @@ extern I2C_config_list I2C_config;
 #define I2C_INSTANCE                       (0U)
 
 #define SPI_INSTANCE                       (1U)  /* MIBSPI_INST_ID_MSS_SPIB */
-#define PMIC_RD_CMD                        (0x02U)
+#define PMIC_RDID_CMD                      (0x02U)
+#define PMIC_RD_REVID_CMD                   (0X01U)
 
 #if defined(SOC_J721E) || defined(SOC_J7200)
 #define BOARD_NAME_LENGTH                  (16)
@@ -243,7 +244,7 @@ pmic_data_t lp8764 = {
 
 pmic_data_t tps65313 = {
     TPS65313_PMIC_SPI_CS,
-    SPI_INSTANCE,
+    MIBSPI_INST_ID_MSS_SPIB,
     TPS65313_PMICID_REG,
     0U,
     TPS65313_PMIC_REG,
@@ -383,7 +384,7 @@ uint32_t getPmicId(void *h, pmic_data_t *pPmicData)
 #if defined(SOC_TPR12)
     uint8_t tx[2] = {0, 0};
     uint8_t rx[2];
-    uint8_t status = 0;
+    //uint8_t status = 0;
 
     MIBSPI_Handle handle;
     handle = (MIBSPI_Handle)h;
@@ -391,35 +392,33 @@ uint32_t getPmicId(void *h, pmic_data_t *pPmicData)
 
     memset(&transaction, 0, sizeof(transaction));
 
-    tx[0] = PMIC_RD_CMD;
-    tx[1] = pPmicData->pmicIdReg;
-
-    /* Transfer Deivce ID read Command */
-    transaction.txBuf = tx;
-    transaction.rxBuf = NULL;
-    transaction.count = 2;
-    transaction.slaveIndex = 0;
-    MIBSPI_transfer(handle, &transaction);
-
+    UART_printf("Reading revision ID.. \n");
+    /* Read revision ID */
+    tx[0] = PMIC_RD_REVID_CMD;
+    tx[1] = 0x01;
     /* Read Device ID in rx buffer */
-    transaction.txBuf = NULL;
+    transaction.txBuf = tx;
     transaction.rxBuf = rx;
     transaction.count = 2;
     transaction.slaveIndex = 0;
     MIBSPI_transfer(handle, &transaction);
 
-    /*check the status register for command SAFE and Invalid bit*/
-    status = rx[0];
-    if((!(status & 0x1) && (status & 0x10)))
-    {
-        UART_printf("Command transferred successfully\n");
-    }
-    else
-    {
-        UART_printf("Read ID command transfer failed\n");
-    }
+    UART_printf("PMIC Revision ID = 0x%08x\n\n", rx[0]);
+
+    UART_printf("Reading PMIC Device ID.. \n");
+
+    tx[0] = PMIC_RDID_CMD;
+    tx[1] = pPmicData->pmicIdReg;
+
+    /* Transfer Deivce ID read Command */
+    transaction.txBuf = tx;
+    transaction.rxBuf = rx;
+    transaction.count = 2;
+    transaction.slaveIndex = 0;
+    MIBSPI_transfer(handle, &transaction);
+
     /* return read ID command*/
-    return rx[1];
+    return rx[0];
 
 #else
     uint8_t tx[2] = {0, 0};
@@ -520,6 +519,16 @@ void *Board_PmicInit(uint8_t devInstance)
 
     /* Set SPI in master mode */
     params.mode = MIBSPI_MASTER;
+    //params->u.masterParams = MIBSPI_defaultMasterParams;
+    params.u.masterParams.bitRate = 5000000U;
+
+    params.u.masterParams.numSlaves = 1U;
+    params.u.masterParams.t2cDelay  = 0,                   /* t2cDelay */
+    params.u.masterParams.c2tDelay  = 0,                   /* c2tDelay */
+    params.u.masterParams.wDelay    = 0,                   /* wDelay */
+    params.u.masterParams.slaveProf[0].chipSelect = 0U;
+    params.u.masterParams.slaveProf[0].ramBufLen = MIBSPI_RAM_MAX_ELEM;
+    params.u.masterParams.slaveProf[0].dmaReqLine = 0U;
 
     /* Open the SPI Instance for MibSpi */
     handle = MIBSPI_open((enum MibSpi_InstanceId)devInstance, &params);
@@ -561,7 +570,10 @@ void Board_PmicDeinit(void* h)
 int pmic_test()
 {
     int ret = 0;
+/* TODO: Need to update it for tpr12 after getting register details*/
+#if !defined(SOC_TPR12)
     uint8_t voltage, val;
+#endif
     void* handle = NULL;
 #if defined(SOC_J721E) || defined(SOC_J7200)
     Board_IDInfo_v2 info = {0};
@@ -578,12 +590,23 @@ int pmic_test()
     stat = Board_getIDInfo(&boardInfo);
 #endif
 
+/* TODO: Need to update it for tpr12 */
+#if defined(SOC_TPR12)
+    stat = BOARD_SOK;
+#endif
+
     if(stat == BOARD_SOK)
     {
 #if defined(SOC_J721E) || defined(SOC_J7200)
         pPmicData = Get_PmicData(info.boardInfo.boardName);
 #else
+/* TODO : Need to update this after Flashing board id details */
+#if defined(SOC_TPR12)
+        pPmicData = &tps65313;
+        numPmic = 1;
+#else
         pPmicData = Get_PmicData(boardInfo.boardName);
+#endif
 #endif
         handle = (void *)Board_PmicInit(pPmicData->devInstance);
 
@@ -593,9 +616,13 @@ int pmic_test()
 
         while(numPmic)
         {
+#if !defined(SOC_TPR12)
             val = pPmicData->pmicVoltVal;
+#endif
             UART_printf("Testing PMIC module... \n");
             UART_printf("PMIC ID = 0x%08x\n", getPmicId(handle, pPmicData));
+            numPmic--;
+#if !defined(SOC_TPR12)
             voltage = readPmicVoltage(handle, pPmicData->slaveSelect, pPmicData->pmicReg);
             UART_printf("Initial PMIC voltage = 0x%x\n", voltage);
             UART_printf("Setting PMIC voltage to 0x%x\n", val);
@@ -611,6 +638,7 @@ int pmic_test()
             {
                 pPmicData = gDualPmicData;
             }
+#endif
         }
 
         UART_printf("Test PASSED!\n");
