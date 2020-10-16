@@ -267,10 +267,10 @@ diag_ex_wwdt_late_example_app_multicore_SBL_APPIMAGEGEN = no
 export diag_ex_wwdt_late_example_app_multicore_SBL_APPIMAGEGEN
 
 diag_ex_EXAMPLE_LIST += diag_ex_esm_example_app
-diag_ex_EXAMPLE_LIST += diag_ex_wwdt_perm_example_app_multicore
-diag_ex_EXAMPLE_LIST += diag_ex_wwdt_perm_fifty_example_app_multicore
-diag_ex_EXAMPLE_LIST += diag_ex_wwdt_early_example_app_multicore
-diag_ex_EXAMPLE_LIST += diag_ex_wwdt_late_example_app_multicore
+#diag_ex_EXAMPLE_LIST += diag_ex_wwdt_perm_example_app_multicore
+#diag_ex_EXAMPLE_LIST += diag_ex_wwdt_perm_fifty_example_app_multicore
+#diag_ex_EXAMPLE_LIST += diag_ex_wwdt_early_example_app_multicore
+#diag_ex_EXAMPLE_LIST += diag_ex_wwdt_late_example_app_multicore
 
 # ECC example
 diag_ex_ecc_example_app_COMP_LIST = diag_ex_ecc_example_app
