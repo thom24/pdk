@@ -372,6 +372,13 @@ typedef uint32_t Board_initCfg;
 #define BOARD_DEINIT_UART_STDIO         (1 << 3U)
 #define BOARD_DEINIT_DEFAULT            BOARD_DEINIT_ALL
 
+#define BOARD_RESOURCE_ALL              (0xFFFFU)
+#define BOARD_RESOURCE_MMR              (1U)
+#define BOARD_RESOURCE_MODULE_CLOCK     (2U)
+#define BOARD_RESOURCE_UART_STDIO       (3U)
+#define BOARD_RESOURCE_SCICLIENT        (4U)
+
+
 typedef void (*Board_thermalMgmtCallbackFunction_t)(Board_DDRTempEventType DDRTempEventType);
 
 /* @} */
@@ -457,6 +464,15 @@ Board_STATUS Board_init(Board_initCfg cfg);
  * @return  BOARD_SOK in case of success or appropriate error code
  */
 Board_STATUS Board_deinit(Board_initCfg cfg);
+
+/**
+ * \brief  Board library function to release the resources
+ *
+ * \param   resourceID [IN]    Resource ID
+ *
+ * \return  BOARD_SOK in case of success or appropriate error code
+ */
+Board_STATUS Board_releaseResource (uint32_t resourceID);
 
 /**
  *  @brief      Initialize Board DDR Temperature monitoring.

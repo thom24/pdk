@@ -110,7 +110,6 @@ typedef struct Board_initParams_s
         BOARD_MCU_CLOCK_GROUP_ALL - Enable clock for all groups in mcu domain
         BOARD_MCU_CLOCK_GROUP1 - Enable clock for all group1 in mcu domain
         BOARD_MCU_CLOCK_GROUP2 - Enable clock for all group2 in mcu domain */
-    /** Note: This parameter is currently not in use. Place holder for future use */
     uint8_t mcuClkGrp;
 } Board_initParams_t;
 

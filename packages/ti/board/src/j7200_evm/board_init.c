@@ -313,8 +313,6 @@ Board_STATUS Board_deinit(Board_initCfg cfg)
 {
     Board_STATUS ret = BOARD_SOK;
 
-    Board_sysDeinit();
-
     if (cfg & BOARD_DEINIT_UART_STDIO)
         ret = Board_uartDeInit();
     if (ret != BOARD_SOK)
@@ -334,6 +332,69 @@ Board_STATUS Board_deinit(Board_initCfg cfg)
         ret = Board_lockMMR();
     if (ret != BOARD_SOK)
         return ret;
+
+    Board_sysDeinit();
+
+    return ret;
+}
+
+/**
+ * \brief  Board library function to release the resources
+ *
+ *  resourceID selects the resource to be released as per below IDs.
+ *  Only one resource sould be released in one function call.
+ *
+ *  BOARD_RESOURCE_MMR -
+ *      Locks the MMR registers of the SoC.
+ *
+ *  BOARD_RESOURCE_UART_STDIO -
+ *      Closes the board UART instance configured for serial console logs
+ *
+ *  BOARD_RESOURCE_MODULE_CLOCK -
+ *      Releases the PSC clocks for all the modules listed by the clock groups
+ *
+ *  BOARD_RESOURCE_ALL -
+ *      Releases All the resources held by board library
+ *
+ * \param   resourceID [IN]    Resource ID
+ *
+ * \return  BOARD_SOK in case of success or appropriate error code
+ */
+Board_STATUS Board_releaseResource (uint32_t resourceID)
+{
+    Board_STATUS ret = BOARD_SOK;
+
+    switch(resourceID)
+    {
+        case BOARD_RESOURCE_UART_STDIO:
+            ret = Board_uartDeInit();
+            break;
+
+        case BOARD_RESOURCE_MODULE_CLOCK:
+            ret = Board_moduleClockDeinitMcu();
+            ret |= Board_moduleClockDeinitMain();
+            break;
+
+        case BOARD_RESOURCE_MMR:
+            ret = Board_lockMMR();
+            break;
+
+        case BOARD_RESOURCE_SCICLIENT:
+            ret = Board_sysDeinit();
+            break;
+
+        case BOARD_RESOURCE_ALL:
+            ret  = Board_uartDeInit();
+            ret |= Board_moduleClockDeinitMcu();
+            ret |= Board_moduleClockDeinitMain();
+            ret |= Board_lockMMR();
+            ret |= Board_sysDeinit();
+            break;
+
+        default:
+            ret = BOARD_INVALID_PARAM;
+            break;
+    }
 
     return ret;
 }

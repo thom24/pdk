@@ -496,6 +496,7 @@ int main()
     Board_initParams_t initParams;
     Board_getInitParams(&initParams);
     initParams.mainClkGrp = BOARD_MAIN_CLOCK_GROUP1;
+    initParams.mcuClkGrp  = BOARD_MCU_CLOCK_GROUP1;
     Board_setInitParams(&initParams);
 #endif
 #endif
@@ -536,6 +537,9 @@ int main()
         if (k3xx_evmEntry.CpuEntryPoint[core_id] != SBL_INVALID_ENTRY_ADDR)
             SBL_SlaveCoreBoot(core_id, NULL, &k3xx_evmEntry, SBL_REQUEST_CORE);
     }
+
+    Board_releaseResource(BOARD_RESOURCE_MODULE_CLOCK);
+
     /* Boot the HLOS on the Cortex-A cores towards the end */
     for (core_id = MPU1_CPU0_ID; core_id <= MPU1_CPU1_ID; core_id ++)
     {

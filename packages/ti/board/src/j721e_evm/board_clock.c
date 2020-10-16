@@ -44,27 +44,37 @@
 
 extern Board_initParams_t gBoardInitParams;
 
-uint32_t gBoardClkModuleMcuID[] = {
-    TISCI_DEV_MCU_ADC12_16FFC0,
-    TISCI_DEV_MCU_ADC12_16FFC1,
-    TISCI_DEV_MCU_CPSW0,
+uint32_t gBoardClkModuleMcuIDInitGroupl[] = {
     TISCI_DEV_MCU_TIMER0,
     TISCI_DEV_MCU_FSS0_HYPERBUS1P0_0,
     TISCI_DEV_MCU_FSS0_OSPI_0,
     TISCI_DEV_MCU_FSS0_OSPI_1,
+    TISCI_DEV_MCU_UART0,
+    TISCI_DEV_WKUP_I2C0,
+    TISCI_DEV_WKUP_UART0,
+};
+
+uint32_t gBoardClkModuleMcuIDInitGroup2[] = {
+    TISCI_DEV_MCU_ADC12_16FFC0,
+    TISCI_DEV_MCU_ADC12_16FFC1,
+    TISCI_DEV_MCU_CPSW0,
     TISCI_DEV_WKUP_GPIO0,
     TISCI_DEV_WKUP_GPIO1,
     TISCI_DEV_WKUP_GPIOMUX_INTRTR0,
-    TISCI_DEV_MCU_UART0,
     TISCI_DEV_MCU_MCAN0,
     TISCI_DEV_MCU_MCAN1,
     TISCI_DEV_MCU_I2C0,
     TISCI_DEV_MCU_I2C1,
-    TISCI_DEV_WKUP_I2C0,
     TISCI_DEV_MCU_SA2_UL0,
     TISCI_DEV_WKUPMCU2MAIN_VD,
     TISCI_DEV_MAIN2WKUPMCU_VD,
-    TISCI_DEV_WKUP_UART0,  //Note: Keep the wakeup UART at end to skip it during clock deinit
+};
+
+uint32_t gBoardClkModuleMcuIDDeinitGroupl[] = {
+    TISCI_DEV_MCU_FSS0_HYPERBUS1P0_0,
+    TISCI_DEV_MCU_FSS0_OSPI_0,
+    TISCI_DEV_MCU_FSS0_OSPI_1,
+    TISCI_DEV_WKUP_I2C0,
 };
 
 uint32_t gBoardClkModuleMainIDGroup1[] = {
@@ -75,6 +85,12 @@ uint32_t gBoardClkModuleMainIDGroup1[] = {
     TISCI_DEV_GPIO4,
     TISCI_DEV_GPIO5,
     TISCI_DEV_UART0,
+    TISCI_DEV_GTC0,
+};
+
+uint32_t gBoardClkModuleMainIDDeinitGroup1[] = {
+    TISCI_DEV_MMCSD0,
+    TISCI_DEV_MMCSD1,
     TISCI_DEV_GTC0,
 };
 
@@ -333,8 +349,27 @@ Board_STATUS Board_moduleClockInitMcu(void)
     /* Restoring MCU DMtimer0 FCLK to HFOSC0 (changed by ROM) */
     HW_WR_REG32((CSL_MCU_CTRL_MMR0_CFG0_BASE + CSL_MCU_CTRL_MMR_CFG0_MCU_TIMER0_CLKSEL), 0);
 
-    size = sizeof(gBoardClkModuleMcuID) / sizeof(uint32_t);
-    status = Board_moduleClockInit(gBoardClkModuleMcuID, size);
+    if((gBoardInitParams.mcuClkGrp == BOARD_MCU_CLOCK_GROUP_ALL) ||
+       (gBoardInitParams.mcuClkGrp == BOARD_MCU_CLOCK_GROUP1))
+    {
+        size = sizeof(gBoardClkModuleMcuIDInitGroupl) / sizeof(uint32_t);
+        status = Board_moduleClockInit(gBoardClkModuleMcuIDInitGroupl, size);
+        if(status != BOARD_SOK)
+        {
+            return status;
+        }
+    }
+
+    if((gBoardInitParams.mcuClkGrp == BOARD_MCU_CLOCK_GROUP_ALL) ||
+       (gBoardInitParams.mcuClkGrp == BOARD_MCU_CLOCK_GROUP2))
+    {
+        size = sizeof(gBoardClkModuleMcuIDInitGroup2) / sizeof(uint32_t);
+        status = Board_moduleClockInit(gBoardClkModuleMcuIDInitGroup2, size);
+        if(status != BOARD_SOK)
+        {
+            return status;
+        }
+    }
 
 #if defined(BUILD_MCU)
     if(status == BOARD_SOK)
@@ -425,9 +460,27 @@ Board_STATUS Board_moduleClockDeinitMcu(void)
 	Board_STATUS  status = BOARD_SOK;
     uint32_t size;
 
-    size = sizeof(gBoardClkModuleMcuID) / sizeof(uint32_t);
-    /* (size - 1) to avoid wakeup UART disable which is used by DMSC */
-    Board_moduleClockDeinit(gBoardClkModuleMcuID, (size - 1));
+    if((gBoardInitParams.mcuClkGrp == BOARD_MCU_CLOCK_GROUP_ALL) ||
+       (gBoardInitParams.mcuClkGrp == BOARD_MCU_CLOCK_GROUP1))
+    {
+        size = sizeof(gBoardClkModuleMcuIDDeinitGroupl) / sizeof(uint32_t);
+        status = Board_moduleClockDeinit(gBoardClkModuleMcuIDDeinitGroupl, size);
+        if(status != BOARD_SOK)
+        {
+            return status;
+        }
+    }
+
+    if((gBoardInitParams.mcuClkGrp == BOARD_MCU_CLOCK_GROUP_ALL) ||
+       (gBoardInitParams.mcuClkGrp == BOARD_MCU_CLOCK_GROUP2))
+    {
+        size = sizeof(gBoardClkModuleMcuIDInitGroup2) / sizeof(uint32_t);
+        status = Board_moduleClockDeinit(gBoardClkModuleMcuIDInitGroup2, size);
+        if(status != BOARD_SOK)
+        {
+            return status;
+        }
+    }
 
     return status;
 }
@@ -449,8 +502,8 @@ Board_STATUS Board_moduleClockDeinitMain(void)
     if((gBoardInitParams.mainClkGrp == BOARD_MAIN_CLOCK_GROUP_ALL) ||
        (gBoardInitParams.mainClkGrp == BOARD_MAIN_CLOCK_GROUP1))
     {
-        size = sizeof(gBoardClkModuleMainIDGroup1) / sizeof(uint32_t);
-        status = Board_moduleClockDeinit(gBoardClkModuleMainIDGroup1, size);
+        size = sizeof(gBoardClkModuleMainIDDeinitGroup1) / sizeof(uint32_t);
+        status = Board_moduleClockDeinit(gBoardClkModuleMainIDDeinitGroup1, size);
         if(status != BOARD_SOK)
         {
             return status;
