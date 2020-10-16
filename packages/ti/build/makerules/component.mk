@@ -1141,45 +1141,56 @@ endif
 export PDK_CFLAGS
 export PDK_LNKFLAGS
 
-PDK_COMMON_COMP = csl uart i2c
-ifneq ($(CORE),$(filter $(CORE), c7x-hostemu))
-  PDK_COMMON_COMP += board
-endif
-
-
-ifeq ($(SOC),$(filter $(SOC), j721e j7200))
-  PDK_COMMON_COMP += udma
+ifeq ($(SOC),$(filter $(SOC), j721e))
+  PDK_COMMON_COMP = csl uart i2c udma gpio pmic pm_lib
+  ifneq ($(CORE),$(filter $(CORE), c7x-hostemu))
+    PDK_COMMON_COMP += board
+  endif
   ifeq ($(CORE),mcu1_0)
     PDK_COMMON_COMP += sciclient_direct rm_pm_hal
   else
     PDK_COMMON_COMP += sciclient
   endif
 endif
-ifeq ($(SOC),$(filter $(SOC), am64x))
-  PDK_COMMON_COMP += sciclient udma
+
+ifeq ($(SOC),$(filter $(SOC), j7200)) 
+  PDK_COMMON_COMP = csl uart i2c board udma gpio pmic pm_lib
+  ifeq ($(CORE),mcu1_0)
+    PDK_COMMON_COMP += sciclient_direct rm_pm_hal
+  else
+    PDK_COMMON_COMP += sciclient
+  endif
 endif
-ifeq ($(SOC),$(filter $(SOC), am65xx))
+
+ifeq ($(SOC),$(filter $(SOC), am65xx)) 
+  PDK_COMMON_COMP = csl uart i2c board gpio pm_lib
   ifeq ($(CORE),$(filter $(CORE), mpu1_0 mcu1_0 mcu1_1))
     PDK_COMMON_COMP += sciclient udma
   endif
 endif
-ifeq ($(SOC),$(filter $(SOC), tpr12))
-  PDK_COMMON_COMP += edma
+
+ifeq ($(SOC),$(filter $(SOC), am64x)) 
+  PDK_COMMON_COMP = csl uart i2c board gpio sciclient udma
 endif
 
-ifneq ($(SOC),$(filter $(SOC), tda2xx tda2px tda2ex tda3xx))
-  PDK_COMMON_COMP += gpio
+ifeq ($(SOC),$(filter $(SOC), tpr12)) 
+  PDK_COMMON_COMP = csl uart i2c board gpio edma
 endif
 
-ifeq ($(SOC),$(filter $(SOC), j721e j7200))
- PDK_COMMON_COMP += pmic
+ifeq ($(SOC),$(filter $(SOC), am571x am572x am574x dra72x dra75x dra78x))
+  PDK_COMMON_COMP = csl uart i2c board gpio pm_lib pm_hal
 endif
 
-ifeq ($(SOC),$(filter $(SOC), tda2xx tda2px tda2ex tda3xx am574x am572x dra72x dra75x am571x dra78x am65xx j721e j7200))
- PDK_COMMON_COMP += pm_lib
- ifneq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
-  PDK_COMMON_COMP += pm_hal
- endif
+ifeq ($(SOC),$(filter $(SOC), tda2xx tda2px tda2ex tda3xx))
+  PDK_COMMON_COMP = csl uart i2c board pm_lib pm_hal
+endif
+
+ifeq ($(SOC),$(filter $(SOC), am335x am437x c6657 c6678 k2e k2g k2h k2k k2l omapl137 omapl138))
+  PDK_COMMON_COMP = csl uart i2c board gpio
+endif
+
+ifeq ($(SOC),$(filter $(SOC), c6747))
+  PDK_COMMON_COMP = csl
 endif
 
 PDK_COMMON_TIRTOS_COMP = $(PDK_COMMON_COMP) osal_tirtos
