@@ -293,7 +293,12 @@ int32_t PRUICSS_registerIrqHandler(PRUICSS_Handle handle,
             PRUICSS_osalHwiParamsInit(&hwiParams);
             hwiParams.arg = (uintptr_t)(&object->pruEvntOutFnMapArray[pruEvtoutNum]);
             hwiParams.evtId = eventNum;
+#if defined (__aarch64__)
             hwiParams.priority = 0x20;
+#else
+        /* Setting to 1 as R5F VIM support only 16 priority levels (0-15) and SYSBIOS-1422 workaroundHwi priority is 0 */
+            hwiParams.priority = 0x1;
+#endif
             hwiHandle = PRUICSS_osalRegisterInterrupt(intrNum,PRUICSS_hwiIntHandler,&hwiParams);
         }
 
