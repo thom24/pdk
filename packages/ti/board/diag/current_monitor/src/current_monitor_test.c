@@ -135,12 +135,11 @@ inaCfgObj_t inaDevice[NUM_OF_INA_DEVICES] = {
     {"EXP_3V3",             0x4FU, {0.01,  0.0025, 1.25, 0.007629395, 0.0003052, 1677}}
 };
 #elif defined(SOC_TPR12)
-/* TODO: Need to update the values for TPR12_EVM */
 inaCfgObj_t inaDevice[NUM_OF_INA_DEVICES] = {
-    {"VDD_1V2",      0x40, {0.01, 0.0025, 1.25, 305.17, 122.07}},
-    {"VIOIN_1V8", 	 0x41, {0.01, 0.0025, 1.25,  38.14,  15.25}},
-    {"VIOIN_3V3",    0x44, {0.01, 0.0025, 1.25, 167.84,  67.13}},
-    {"VDD_SRAM_1V2", 0x45, {0.01, 0.0025, 1.25,  86.21,  34.48}}
+    {"VDD_1V2",      0x40, {0.002, 0.0025, 1.25, 0.001373291, 0.0000549, 46603}},
+    {"VIOIN_1V8", 	 0x41, {0.002, 0.0025, 1.25, 0.000991821, 0.0000397, 64528}},
+    {"VIOIN_3V3",    0x44, {0.002, 0.0025, 1.25, 0.001068115, 0.0000427, 59919}},
+    {"VDD_SRAM_1V2", 0x45, {0.002, 0.0025, 1.25, 0.000991821, 0.0000397, 64528}}
 };
 #elif defined(SOC_AM64X)  //AM64X_TODO: Need to update Values
 inaCfgObj_t inaDevice[NUM_OF_INA_DEVICES] = {
