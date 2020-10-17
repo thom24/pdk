@@ -391,6 +391,10 @@ const CSL_ArmR5MpuRegionCfg gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
 #endif
 int main()
 {
+#if defined(SBL_ENABLE_HLOS_BOOT) && (defined(SOC_J721E) || defined(SOC_J7200))
+    cpu_core_id_t core_id;
+#endif
+
     SBL_ADD_PROFILE_POINT;
 
     /* Any SoC specific Init. */
@@ -523,6 +527,23 @@ int main()
     sblProfileLogAddr = sblProfileLog;
     sblProfileLogIndxAddr = &sblProfileLogIndx;
     sblProfileLogOvrFlwAddr = &sblProfileLogOvrFlw;
+
+#if defined(SBL_ENABLE_HLOS_BOOT) && (defined(SOC_J721E) || defined(SOC_J7200))
+    /* For J721E/J7200 we have to manage all core boots at the end, to load mcu1_0 sciserver app */
+    for (core_id = MCU2_CPU0_ID; core_id <= SBL_LAST_CORE_ID; core_id ++)
+    {
+        /* Try booting all MAIN domain cores except the Cortex-A cores */
+        if (k3xx_evmEntry.CpuEntryPoint[core_id] != SBL_INVALID_ENTRY_ADDR)
+            SBL_SlaveCoreBoot(core_id, NULL, &k3xx_evmEntry, SBL_REQUEST_CORE);
+    }
+    /* Boot the HLOS on the Cortex-A cores towards the end */
+    for (core_id = MPU1_CPU0_ID; core_id <= MPU1_CPU1_ID; core_id ++)
+    {
+        /* Try booting all cores other than the cluster running the SBL */
+        if (k3xx_evmEntry.CpuEntryPoint[core_id] != SBL_INVALID_ENTRY_ADDR)
+            SBL_SlaveCoreBoot(core_id, NULL, &k3xx_evmEntry, SBL_REQUEST_CORE);
+    }
+#endif
 
     /* Boot the core running SBL in the end */
     if ((k3xx_evmEntry.CpuEntryPoint[MCU1_CPU1_ID] != SBL_INVALID_ENTRY_ADDR) ||
