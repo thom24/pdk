@@ -67,7 +67,7 @@
 extern "C" {
 #endif
 
-#if defined(SOC_J7200)
+#if defined(SOC_J7200) || defined(SOC_AM64X)
 #define NUM_OF_ADC			(1U)
 #else
 #define NUM_OF_ADC			(2U)

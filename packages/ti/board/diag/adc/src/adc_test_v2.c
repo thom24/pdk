@@ -41,9 +41,9 @@
  *  Operation: This test verifies by reading the Analogue input
 			   given to the connector.
  *
- *  Supported SoCs: AM65xx, J721E & J7200.
+ *  Supported SoCs: AM65xx, J721E, J7200, AM64x.
  *
- *  Supported Platforms: am65xx_evm, am65xx_idk, j721e_evm & j7200_evm.
+ *  Supported Platforms: am65xx_evm, am65xx_idk, j721e_evm, j7200_evm, am64x_evm.
  */
 
 #include "adc_test_v2.h"
@@ -51,6 +51,10 @@
 #if defined(j7200_evm)
 adcDetails_t adc[NUM_OF_ADC] = {
 	{ CSL_MCU_ADC0_BASE, ADC0_CHANNEL_NO }
+};
+#elif defined(am64x_evm)
+adcDetails_t adc[NUM_OF_ADC] = {
+	{ CSL_ADC0_BASE, ADC0_CHANNEL_NO }
 };
 #else
 adcDetails_t adc[NUM_OF_ADC] = {
