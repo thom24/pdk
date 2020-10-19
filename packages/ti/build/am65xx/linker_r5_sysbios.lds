@@ -1,31 +1,59 @@
-
-/* This is standard linker options used by examples applications and tests    */
-/* Please refer user guide that came with this release for more details       */
-/* on which sections could be used at load time and runtime                   */
-
+/*----------------------------------------------------------------------------*/
+/* File: k3m4_r5f_linker.cmd                                                  */
+/* Description:																  */
+/*    Link command file for AM65XX M4 MCU 0 view							  */
+/*	  TI ARM Compiler version 15.12.3 LTS or later							  */
+/*                                                                            */
+/*    Platform: QT                                                            */
+/* (c) Texas Instruments 2017, All rights reserved.                           */
+/*----------------------------------------------------------------------------*/
+/*  History:															      *'
+/*    Aug 26th, 2016 Original version .......................... Loc Truong   */
+/*    Aug 01th, 2017 new TCM mem map  .......................... Loc Truong   */
+/*    Nov 07th, 2017 Changes for R5F Init Code.................. Vivek Dhande */
+/*----------------------------------------------------------------------------*/
+/* Linker Settings                                                            */
+/* Standard linker options													  */
 --fill_value=0
-/* Retain entry point */
 -e __VECS_ENTRY_POINT
 
+
 /*----------------------------------------------------------------------------*/
-/* Memory Sections                                                            */
+/* Memory Map                                                                 */
 MEMORY
 {
-    /* Refer the user guide for details on persistence of these sections */
-    /* Also, when these memories can be used by apps */
-    MCU0_ATCM_NOT_USED          (R)     : origin=0x0        length=0x7FFF
-    MCU0_BTCM_NOT_USED          (R)     : origin=0x41010000 length=0x7FFF
+    VECTORS (X)  		: origin=0x41C7F000 length=0x1000
+    /*  Reset Vectors base address(RESET_VECTORS) should be 64 bytes aligned  */
+    RESET_VECTORS (X) 		: origin=0x41C00000 length=0x100
+    /* MCU0_R5F_0 local view */
+    MCU0_R5F_TCMA_SBL_RSVD (X)	: origin=0x0		length=0x100
+    MCU0_R5F_TCMA (X)		: origin=0x100		length=0x8000 - 0x100
+    MCU0_R5F_TCMB0 (RWIX)	: origin=0x41010000	length=0x8000
 
-    MCU_MSRAM_RSVD_UNUSED       (R)     : origin=0x41C00000 length=0x200
-    MCU_MSRAM_RSVD_SBL          (RWIX)  : origin=0x41C00200 length=0x3DE00
+    /* MCU0_R5F_1 SoC view */
+    MCU0_R5F1_ATCM (RWIX)  	: origin=0x41400000 length=0x8000
+    MCU0_R5F1_BTCM (RWIX) 	: origin=0x41410000 length=0x8000
 
-    MCU_MSRAM_APPS_VECS         (RWIX)  : origin=0x41C3E000 length=0x100
-    MCU_MSRAM_APPS              (RWIX)  : origin=0x41C3E100 length=0x41F00
+    /* Fully avaialble for apps. Used by SBL to load SYSFW */
+    OCMRAM_LOW 	(RWIX) 		: origin=0x41C00100 length=0x40600 - 0x100	     /* ~257KB */
 
-    /* COMPUTE_CLUSTER0_MSMC_SRAM */
-    CMPT_CLUST_MSMC_SRAM_APPS   (RWIX) : origin=0x70000000 length=0x1EFC00
+    /* MCU0 memory used for SBL. Avaiable after boot for app starts for dynamic use */
+    SBL_RESERVED 	(RWIX) 	: origin=0x41C40600 length=0x60000 - 0x40600	     /* ~126KB */
 
-    DDR_APPS                    (RWIX)  : origin=0x80000000 length=0x7FFFFFE4
+    /* MCU0 share locations */
+    OCMRAM_VECS (RWIX)  : origin=0x41C60000 length=0x100
+    OCMRAM 	(RWIX) 		: origin=0x41C60100 length=0x1EF00
+
+    /* AM65XX M4 locations */
+    MSMC3       (RWIX)          : origin=0x70000000 length=0xF0000             /* 1MB - 64K */
+    MSMC3_H (RWIX)              : origin=0x70100000 length=0xE2000             /* 1MB -56K */
+
+    /* Reserved for DMSC */
+    MSMC3_DMSC (RWIX)           : origin=0x701F0000 length=0x10000             /* 64K */
+
+    DDR0    (RWIX)  		: origin=0x80000000 length=0x80000000    	/* 2GB */
+
+/* Additional memory settings	*/
 
 }  /* end of MEMORY */
 
@@ -34,50 +62,47 @@ MEMORY
 
 SECTIONS
 {
-    /* Place sysbios entry point - starts */
-    .vecs : { *(.vecs) } palign(8) > MCU_MSRAM_APPS_VECS
-    .vecs : { __VECS_ENTRY_POINT = .; } > MCU_MSRAM_APPS_VECS
-
-    xdc.meta (COPY): { *(xdc.meta) } > MCU_MSRAM_APPS
+    .vecs : {
+         *(.vecs)
+    } palign(8) > OCMRAM_VECS
+    .vecs       : {
+        __VECS_ENTRY_POINT = .;
+    } > OCMRAM_VECS
+    xdc.meta (COPY): { *(xdc.meta) } > OCMRAM
     .init_text  : {
                      boot.*(.text)
                      *(.text:ti_sysbios_family_arm_MPU_*)
                      *(.text:ti_sysbios_family_arm_v7r_Cache_*)
-                  }  palign(8) > MCU_MSRAM_APPS
-
-    .text:xdc_runtime_Startup_reset__I: {} palign(8) > MCU_MSRAM_APPS
-
-    .bootCode       : {} palign(8) > MCU_MSRAM_APPS
-    .startupCode    : {} palign(8) > MCU_MSRAM_APPS
-    .startupData    : {} palign(8) > MCU_MSRAM_APPS, type = NOINIT
-
-    /* Place sysbios entry point - ends */
-
-    .text    : {} palign(8) > CMPT_CLUST_MSMC_SRAM_APPS
-    .const   : {} palign(8) > CMPT_CLUST_MSMC_SRAM_APPS
-    .cinit   : {} palign(8) > CMPT_CLUST_MSMC_SRAM_APPS
-    .pinit   : {} palign(8) > CMPT_CLUST_MSMC_SRAM_APPS
+                  }  palign(8) > OCMRAM
+    .text:xdc_runtime_Startup_reset__I     : {} palign(8) > OCMRAM
+    .bootCode    	: {} palign(8) 		> OCMRAM
+    .startupCode 	: {} palign(8) 		> OCMRAM
+    .startupData 	: {} palign(8) 		> OCMRAM, type = NOINIT
+    .text    	: {} palign(8) 		> MSMC3
+    .const   	: {} palign(8) 		> MSMC3
+    .cinit   	: {} palign(8) 		> MSMC3
+    .pinit   	: {} palign(8) 		> MSMC3
 
     /* For NDK packet memory, we need to map this sections before .bss*/
-    .bss:NDK_MMBUFFER  (NOLOAD) {} ALIGN (128) > DDR_APPS
-    .bss:NDK_PACKETMEM (NOLOAD) {} ALIGN (128) > DDR_APPS
+    .bss:NDK_MMBUFFER  (NOLOAD) {} ALIGN (128) > DDR0
+    .bss:NDK_PACKETMEM (NOLOAD) {} ALIGN (128) > DDR0
 
-    .bss    : {} align(8)   > CMPT_CLUST_MSMC_SRAM_APPS
-    .far    : {} align(8)   > DDR_APPS
-    .data   : {} palign(128)> CMPT_CLUST_MSMC_SRAM_APPS
-    .boardcfg_data : {} palign(128) > CMPT_CLUST_MSMC_SRAM_APPS
-    .sysmem : {} align(8)   > CMPT_CLUST_MSMC_SRAM_APPS
-    .stack  : {} align(8)   > CMPT_CLUST_MSMC_SRAM_APPS  (HIGH)
+    .bss     	: {} align(4)  		> MSMC3
+    .far     	: {} align(4)  		> DDR0
+    .data    	: {} palign(128) 	> MSMC3
+    .boardcfg_data        : {} palign(128)           > MSMC3
+	.sysmem  	: {} 				> MSMC3
+	.stack  	: {} align(4)		> MSMC3  (HIGH)
 
     /* SA sections */
-    .scBufs         : {} align(8)   > DDR_APPS
-    .saSrcBuffers   : {} align(8)   > DDR_APPS
-    .saDstBuffers   : {} align(8)   > DDR_APPS
+    .scBufs     	: {} align(4)  		> DDR0
+    .saSrcBuffers     	: {} align(4)  		> DDR0
+    .saDstBuffers     	: {} align(4)  		> DDR0
 
-    /* LLD buffer for benchmarking */
-    .benchmark_buffer (NOLOAD) {} ALIGN (8) > DDR_APPS
+    /* USB or any other LLD buffer for benchmarking */
+    .benchmark_buffer (NOLOAD) {} ALIGN (8) > DDR0
 
-    /* Additional sections settings */
+/* Additional sections settings 	*/
 
 }  /* end of SECTIONS */
 
