@@ -39,9 +39,8 @@
 #include <stdlib.h>
 
 #include <ti/osal/TimerP.h>
-#include <ti/csl/hw_types.h>
 #include <ti/csl/soc.h>
-#include <ti/csl/cslr_rti.h>
+#include <ti/csl/csl_rti.h>
 #include <ti/csl/arch/csl_arch.h>
 #include <ti/osal/src/nonos/Nonos_config.h>
 
@@ -52,7 +51,7 @@ extern void Osal_DebugP_assert(int32_t expression, const char *file, int32_t lin
 
 /* Local defines for the rti timer */
 #define TIMERP_RTI_MAX_PERIOD                (0xffffffffU)
-#define TIMERP_PRESCALE_DEF                  (1U)
+#define TIMERP_PRESCALER_DEF                 (1U)
 /* Local Timer Struct */
 typedef struct TimerP_Struct_s
 {
@@ -70,7 +69,7 @@ typedef struct TimerP_Struct_s
   HwiP_Handle hwi;      /* Hwi handle for tickFxn */
   int32_t  eventId;     /* Event Id for C66x */
   int32_t  intNum;      /* Interrupt Number */
-  uint32_t prescale;
+  uint32_t prescaler;
 }TimerP_Struct;
 
 /* As static allocation is used, the following provides the structs
@@ -128,10 +127,10 @@ static void TimerP_rtiTimerStub(uintptr_t arg)
 
   /* acknowledge the interrupt */
   if ((timer->id & 0x01U) != 0U) {
-    HW_WR_FIELD32(baseAddr + RTI_RTIINTFLAG, RTI_RTIINTFLAG_INT1, 1);
+    (void)RTITmrIntStatusClear(baseAddr, RTI_TMR_INT_INT1_FLAG);
   }
   else {
-    HW_WR_FIELD32(baseAddr + RTI_RTIINTFLAG, RTI_RTIINTFLAG_INT0, 1);
+    (void)RTITmrIntStatusClear(baseAddr, RTI_TMR_INT_INT0_FLAG);
   }
 
   /* call the user's ISR */
@@ -150,16 +149,10 @@ static void  TimerP_rtiTimerInitDevice(const TimerP_Struct *timer, uint32_t base
   key = (uint32_t)HwiP_disable();
 
   if ((timer->id & 0x01U) != 0U) {
-    HW_WR_FIELD32(baseAddr + RTI_RTIGCTRL, RTI_RTIGCTRL_CNT1EN, 0);
-    HW_WR_REG32(baseAddr + RTI_RTIUDCP1, 0);
-    HW_WR_REG32(baseAddr + RTI_RTICOMP1, 0);
-    HW_WR_REG32(baseAddr + RTI_RTICPUC1, 0);
+    (void)RTITmrClear(baseAddr, RTI_TMR_CNT_BLK_INDEX_1, RTI_TMR_CMP_BLK_INDEX_1);
   }
   else {
-    HW_WR_FIELD32(baseAddr + RTI_RTIGCTRL, RTI_RTIGCTRL_CNT0EN, 0);
-    HW_WR_REG32(baseAddr + RTI_RTIUDCP0, 0);
-    HW_WR_REG32(baseAddr + RTI_RTICOMP0, 0);
-    HW_WR_REG32(baseAddr + RTI_RTICPUC0, 0);
+    (void)RTITmrClear(baseAddr, RTI_TMR_CNT_BLK_INDEX_0, RTI_TMR_CMP_BLK_INDEX_0);
   }
 
   if (timer->hwi != NULL_PTR) {
@@ -193,9 +186,9 @@ static bool TimerP_rtiTimerSetMicroSeconds(TimerP_Struct *timer, uint32_t period
   (void)TimerP_stop(timer);
 
   /*
-   * The frequency of FRC is equal to the clock rate divided by (prescale + 1)
+   * The frequency of FRC is equal to the clock rate divided by (prescaler + 1)
    */
-  freqKHz = ((timer->freqLo/(TIMERP_PRESCALE_DEF+1U)) + 500U)/ 1000U;
+  freqKHz = ((timer->freqLo/(TIMERP_PRESCALER_DEF+1U)) + 500U)/ 1000U;
   if (TimerP_rtiTimerCheckOverflow(freqKHz, period/1000U)) {
     ret = (bool) false;
   }
@@ -210,7 +203,7 @@ static bool TimerP_rtiTimerSetMicroSeconds(TimerP_Struct *timer, uint32_t period
   if (ret == (bool) true) {
     timer->period = (uint32_t)counts;
     timer->periodType = (uint32_t)TimerP_PeriodType_COUNTS;
-    timer->prescale = TIMERP_PRESCALE_DEF;
+    timer->prescaler = TIMERP_PRESCALER_DEF;
   }
   return(ret);
 }
@@ -223,6 +216,7 @@ static TimerP_Status TimerP_rtiTimerDeviceCfg(TimerP_Struct *timer, uint32_t bas
 {
   uint32_t key;
   TimerP_Status retVal=TimerP_OK;
+  rtiTmrConfig_t rtiCfg;
 
   /* initialize the timer */
   TimerP_rtiTimerInitDevice(timer, baseAddr);
@@ -240,18 +234,19 @@ static TimerP_Status TimerP_rtiTimerDeviceCfg(TimerP_Struct *timer, uint32_t bas
   if(retVal == TimerP_OK)
   {
     /* Set prescaler, enable interrupt and select counter for comparator */
+    /* Use internal up-counter to clock free-running counter 0 */
+    rtiCfg.clkSrc = RTI_TMR_CLK_SRC_COUNTER;
+    rtiCfg.period = timer->period;
+    rtiCfg.prescaler = timer->prescaler;
     if ((timer->id & 0x01U) != 0U) {
-      HW_WR_REG32(baseAddr + RTI_RTICPUC1, timer->prescale);
-      HW_WR_FIELD32(baseAddr + RTI_RTICOMPCTRL, RTI_RTICOMPCTRL_COMPSEL1, 1);
-      HW_WR_FIELD32(baseAddr + RTI_RTISETINT, RTI_RTISETINT_SETINT1, 1);
+      rtiCfg.cntBlkIndex = RTI_TMR_CNT_BLK_INDEX_1;
+      rtiCfg.cmpBlkIndex = RTI_TMR_CMP_BLK_INDEX_1;
     }
     else {
-      /* Use internal up-counter to clock free-running counter 0 */
-      HW_WR_FIELD32(baseAddr + RTI_RTITBCTRL, RTI_RTITBCTRL_TBEXT, 0);
-      HW_WR_REG32(baseAddr + RTI_RTICPUC0, timer->prescale);
-      HW_WR_FIELD32(baseAddr + RTI_RTICOMPCTRL, RTI_RTICOMPCTRL_COMPSEL0, 0);
-      HW_WR_FIELD32(baseAddr + RTI_RTISETINT, RTI_RTISETINT_SETINT0, 1);
+      rtiCfg.cntBlkIndex = RTI_TMR_CNT_BLK_INDEX_0;
+      rtiCfg.cmpBlkIndex = RTI_TMR_CMP_BLK_INDEX_0;
     }
+    (void)RTITmrConfigure(baseAddr, &rtiCfg);
     HwiP_restore(key);
   }
 
@@ -634,30 +629,21 @@ TimerP_Status TimerP_start(TimerP_Handle handle)
     (void)TimerP_stop(handle);
 
     if ((timer->id & 0x01U) != 0U) {
-      HW_WR_REG32(baseAddr + RTI_RTIUC1, 0);
-      HW_WR_REG32(baseAddr + RTI_RTIFRC1, 0);
-      HW_WR_REG32(baseAddr + RTI_RTICOMP1, timer->period);
-      HW_WR_REG32(baseAddr + RTI_RTIUDCP1, timer->period);
-      HW_WR_FIELD32(baseAddr + RTI_RTIINTFLAG, RTI_RTIINTFLAG_INT1, 1);
+      (void)RTITmrIntStatusClear(baseAddr, RTI_TMR_INT_INT1_FLAG);
     }
     else {
-      HW_WR_REG32(baseAddr + RTI_RTIUC0, 0);
-      HW_WR_REG32(baseAddr + RTI_RTIFRC0, 0);
-      HW_WR_REG32(baseAddr + RTI_RTICOMP0, timer->period);
-      HW_WR_REG32(baseAddr + RTI_RTIUDCP0, timer->period);
-      HW_WR_FIELD32(baseAddr + RTI_RTIINTFLAG, RTI_RTIINTFLAG_INT0, 1);
+      (void)RTITmrIntStatusClear(baseAddr, RTI_TMR_INT_INT0_FLAG);
     }
-
     if(timer->hwi != NULL_PTR) {
       Osal_ClearInterrupt(timer->eventId, timer->intNum);
       Osal_EnableInterrupt(timer->eventId, timer->intNum);
     }
 
     if ((timer->id & 0x01U) != 0U) {
-      HW_WR_FIELD32(baseAddr + RTI_RTIGCTRL, RTI_RTIGCTRL_CNT1EN, 1);
+      (void)RTITmrEnable(baseAddr, RTI_TMR_CNT_BLK_INDEX_1);
     }
     else {
-      HW_WR_FIELD32(baseAddr + RTI_RTIGCTRL, RTI_RTIGCTRL_CNT0EN, 1);
+      (void)RTITmrEnable(baseAddr, RTI_TMR_CNT_BLK_INDEX_0);
     }
 
     HwiP_restore(key);
@@ -686,10 +672,10 @@ TimerP_Status TimerP_stop(TimerP_Handle handle)
     key = (uint32_t)HwiP_disable();
 
     if ((timer->id & 0x01U) != 0U) {
-      HW_WR_FIELD32(baseAddr + RTI_RTIGCTRL, RTI_RTIGCTRL_CNT1EN, 0);
+      (void)RTITmrDisable(baseAddr, RTI_TMR_CNT_BLK_INDEX_1);
     }
     else {
-      HW_WR_FIELD32(baseAddr + RTI_RTIGCTRL, RTI_RTIGCTRL_CNT0EN, 0);
+      (void)RTITmrDisable(baseAddr, RTI_TMR_CNT_BLK_INDEX_0);
     }
 
     if(timer->hwi != NULL_PTR) {
