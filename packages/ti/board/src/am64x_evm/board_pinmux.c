@@ -392,3 +392,69 @@ void Board_uartTxPinmuxConfig(void)
     HW_WR_REG32(BOARD_UART_TX_LOCK_KICK_ADDR, 0);
 #endif
 }
+
+/**
+ *  \brief  Gets base address of padconfig registers
+ *
+ *  \param   domain [IN]  SoC domain for pinmux
+ *  \n                     BOARD_SOC_DOMAIN_MAIN - Main domain
+ *  \n                     BOARD_SOC_DOMAIN_MCU  - MCU domain
+ *
+ *  \return   Valid address in case success or 0 in case of failure
+ */
+static uint32_t Board_pinmuxGetBaseAddr(uint8_t domain)
+{
+    uint32_t baseAddr;
+
+    switch(domain)
+    {
+        case BOARD_SOC_DOMAIN_MAIN:
+            baseAddr = BOARD_MAIN_PMUX_CTRL;
+        break;
+        case BOARD_SOC_DOMAIN_MCU:
+            baseAddr = BOARD_WKUP_PMUX_CTRL;
+        break;
+        default:
+            baseAddr = 0;
+        break;
+    }
+
+    return baseAddr;
+}
+
+/**
+ *  \brief Sets padconfig register of a pin at given offset
+ *
+ *  Configures whole padconfig register of the pin at given offset
+ *  with the value in 'muxData'.
+ *
+ *  \param   domain  [IN]  SoC domain for pinmux
+ *  \n                      BOARD_SOC_DOMAIN_MAIN - Main domain
+ *
+ *  \param   offset  [IN]  Pad config offset of the pin
+ *  \param   muxData [IN]  Value to be written to padconfig register
+ *
+ *  \return   BOARD_SOK in case of success or appropriate error code
+ *
+ */
+Board_STATUS Board_pinmuxSetReg(uint8_t  domain,
+                                uint32_t offset,
+                                uint32_t muxData)
+{
+    uint32_t baseAddr;
+    Board_STATUS status = BOARD_SOK;
+
+    Board_unlockMMR();
+
+    baseAddr = Board_pinmuxGetBaseAddr(domain);
+    if(baseAddr != 0)
+    {
+        HW_WR_REG32(baseAddr, muxData);
+    }
+    else
+    {
+        status = BOARD_INVALID_PARAM;
+    }
+
+    return status;
+}

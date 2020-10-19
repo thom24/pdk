@@ -41,9 +41,9 @@
  *  Operation: This test verifies the boot switch mode by reading the 
  *              boot values and compared with expected values.
  *
- *  Supported SoCs: AM65XX, J721E & J7200.
+ *  Supported SoCs: AM65XX, J721E, J7200, AM64x.
  *
- *  Supported Platforms: am65xx_idk, am65xx_evm, j721e_evm & j7200_evm.
+ *  Supported Platforms: am65xx_idk, am65xx_evm, j721e_evm, j7200_evm, am64x_evm.
  *
  */
 
@@ -79,7 +79,34 @@ switchDetails_t swDetails[NUM_OF_SW] = {
     { "SW3", 10,  0 },
     { "SW2",  9, 10 },
     { "SW4",  2, 19 }
-};  
+};
+#elif defined(am64x_evm)
+static uint32_t pinMuxgpio[PADCONFIG_MAX_COUNT] =
+{
+    /*      SW12         */
+    PIN_GPMC0_AD0,
+    PIN_GPMC0_AD1,
+    PIN_GPMC0_AD2,
+    PIN_GPMC0_AD3,
+    PIN_GPMC0_AD4,
+    PIN_GPMC0_AD5,
+    PIN_GPMC0_AD6,
+    PIN_GPMC0_AD7,
+    /*      SW9         */
+    PIN_GPMC0_AD8,
+    PIN_GPMC0_AD9,
+    PIN_GPMC0_AD10,
+    PIN_GPMC0_AD11,
+    PIN_GPMC0_AD12,
+    PIN_GPMC0_AD13,
+    PIN_GPMC0_AD14,
+    PIN_GPMC0_AD15
+};
+
+switchDetails_t swDetails[NUM_OF_SW] = {
+    { "SW12", 8,  0 },
+    { "SW9",  8,  8 }
+};
 #elif defined(SOC_J721E)
 static uint32_t pinMuxgpio[PADCONFIG_MAX_COUNT] =
 {
@@ -176,6 +203,7 @@ static uint32_t readSwPositions(uint8_t numOfSwPos, int8_t pinOffset)
     uint8_t swPosIndex = 0;
     uint8_t rdSignalLevel;
 
+#if !(defined(SOC_AM64X))
     if (pinOffset >= START_OF_WKUP_PIN_OFFSET)
     {
         /* Initializing GPIO to MAIN domain */
@@ -185,6 +213,7 @@ static uint32_t readSwPositions(uint8_t numOfSwPos, int8_t pinOffset)
         GPIO_socSetInitCfg(0, &gpioCfg);
         GPIO_init();
     }
+#endif
 
     while(numOfSwPos > swPosIndex)
     {
@@ -294,6 +323,7 @@ static int8_t BoardDiag_bootSwTest(void)
 #endif
     }
 
+#if !defined(SOC_AM64X)
 	/* set board pin mux mode to WAKEUP domain */
     for(index = MAIN_PADCONFIG_MAX_COUNT; index < TOT_NUM_OF_SW; index++)
     {
@@ -312,6 +342,7 @@ static int8_t BoardDiag_bootSwTest(void)
         }
 #endif
     }
+#endif
     
 #if ((defined(am65xx_evm)) || (defined(am65xx_idk)))
     *(uint32_t *)(0x4301C0C0) = 0x0040007;

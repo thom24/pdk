@@ -70,11 +70,12 @@ extern "C" {
 #define PINMUX_BIT_MASK                      (0xFFF8FFF0U)
 #define GPIO_PIN_MUX_CFG                     (0x50007U)
 
-/* MAIN CTRL base address + offset to beginning of PAD CONFIG  section */
-#define MAIN_PMUX_CTRL	                     (0)  //J7ES_TODO: Need to update
+#define BOARD_PADCFG_PMUX_OFFSET             (0x4000)
+/* MAIN CTRL pinmux base address */
+#define BOARD_MAIN_PMUX_CTRL	             (CSL_PADCFG_CTRL0_CFG0_BASE + BOARD_PADCFG_PMUX_OFFSET)
 
-/* WKUP CTRL base address + offset to beginning of PAD CONFIG section */
-#define WKUP_PMUX_CTRL	                     (0)  //J7ES_TODO: Need to update
+/* WKUP CTRL pinmux base address */
+#define BOARD_WKUP_PMUX_CTRL	              (CSL_MCU_PADCFG_CTRL0_CFG0_BASE + BOARD_PADCFG_PMUX_OFFSET)
 
 /*****************************************************************************
  * Internal Objects                                                          *
@@ -238,6 +239,25 @@ Board_STATUS Board_serdesCfg(void);
  * \return BOARD_SOK in case of success or appropriate error code
  */
 Board_STATUS Board_PLLInitAll(void);
+
+/**
+ *  \brief Sets padconfig register of a pin at given offset
+ *
+ *  Configures whole padconfig register of the pin at given offset
+ *  with the value in 'muxData'.
+ *
+ *  \param   domain  [IN]  SoC domain for pinmux
+ *  \n                      BOARD_SOC_DOMAIN_MAIN - Main domain
+ *
+ *  \param   offset  [IN]  Pad config offset of the pin
+ *  \param   muxData [IN]  Value to be written to padconfig register
+ *
+ *  \return   BOARD_SOK in case of success or appropriate error code
+ *
+ */
+Board_STATUS Board_pinmuxSetReg(uint8_t  domain,
+                                uint32_t offset,
+                                uint32_t muxData);
 
 #ifdef __cplusplus
 }
