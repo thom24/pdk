@@ -44,10 +44,10 @@
  *             On a key press the diagnostic test sequentially moves to the
  *             other buttons in the keypad.
  *
- *  Supported SoCs: AM335x, AM437x, AM65xx & TPR12.
+ *  Supported SoCs: AM335x, AM437x, AM65xx, TPR12,AM64x.
  *
  *  Supported Platforms: skAM335x, skAM437x, evmAM437x am65xx_evm, am65xx_idk,
- *                       tpr12_evm.
+ *                       tpr12_evm,am64x_evm.
  *
  */
 
@@ -75,7 +75,7 @@ gpioInfo_t KeyScn[4];
 int main(void)
 {
     int status = S_PASS;
-#if (defined(SOC_AM65XX) || defined(SOC_TPR12))
+#if (defined(SOC_AM65XX) || defined(SOC_TPR12) || defined(SOC_AM64X))
     Board_IDInfo_v2 info;
 #else
     Board_IDInfo boardInfo;
@@ -100,14 +100,14 @@ int main(void)
     UART_printf  ("*                 Button Test               *\n");
     UART_printf  ("*********************************************\n");
 
-#if (defined(SOC_AM65XX) || defined(SOC_TPR12))
+#if (defined(SOC_AM65XX) || defined(SOC_TPR12) || defined(SOC_AM64X))
     Board_getIDInfo_v2(&info, BOARD_I2C_EEPROM_ADDR);
 #else
     Board_getIDInfo(&boardInfo);
 #endif
 
     /* Update the KeyPad information. */
-#if (defined(SOC_AM65XX) || defined(SOC_TPR12))
+#if (defined(SOC_AM65XX) || defined(SOC_TPR12) || defined(SOC_AM64X))
     status = BoardDiag_GetKeyPadInfo(info.boardInfo.boardName, &boardKeyPad);
 #else
     status = BoardDiag_GetKeyPadInfo(boardInfo.boardName, &boardKeyPad);
@@ -181,6 +181,14 @@ int32_t BoardDiag_ButtonTest(keyPadInfo_t *pBoardKeyPad)
     gpioCfg.baseAddr = CSL_WKUP_GPIO0_BASE;
     GPIO_socSetInitCfg(0, &gpioCfg);
     GPIO_init();
+#elif defined(SOC_AM64X)
+    GPIO_init();
+
+    GPIO_v0_HwAttrs gpioCfg;
+    GPIO_socGetInitCfg(1, &gpioCfg);
+    gpioCfg.baseAddr = CSL_MCU_GPIO0_BASE;
+    GPIO_socSetInitCfg(1, &gpioCfg);
+    GPIO_init();
 #else
 #if defined(SOC_TPR12)
     GPIO_v2_updateConfig(&GPIO_v2_config);
@@ -238,7 +246,7 @@ int32_t BoardDiag_KeyPressCheck(keyPadInfo_t *pBoardKeyPad,
     UART_printf(  "Button SW %2d            ", button);
     UART_printf("WAIT      Waiting for button press");
 
-#if (defined(SOC_AM65XX) || defined(SOC_TPR12))
+#if (defined(SOC_AM65XX) || defined(SOC_TPR12) || defined(SOC_AM64X))
     do
     {
 #if defined(SOC_TPR12)
@@ -278,7 +286,7 @@ int32_t BoardDiag_KeyPressCheck(keyPadInfo_t *pBoardKeyPad,
 
     UART_printf("Button SW %2d            ", button);
 
-#if (!(defined(SOC_AM65XX) || defined(SOC_TPR12)))
+#if (!(defined(SOC_AM65XX) || defined(SOC_TPR12) || defined(SOC_AM64X)))
     if(level != 1)
     {
         UART_printf("FAIL                                            \n");
@@ -425,6 +433,26 @@ int32_t BoardDiag_GetKeyPadInfo(char *pBoardName, keyPadInfo_t *pBoardKeyPad)
 
     }
 #endif
+    /* Check if the board is EVM AM64X by comparing the string read from
+       EEPROM. */
+    else if (strncmp("AM64-COMP", pBoardName, BOARD_NAME_LENGTH) == 0U)
+    {
+
+        pBoardKeyPad->buttonSet = 1;
+        pBoardKeyPad->scnKeyNum = 2;
+        pBoardKeyPad->pwrKeyNum = 1;
+        pBoardKeyPad->pwrKeyIdx = 0;
+        buttonStart[0]=5;
+        buttonOffset[0]=1;
+        powerOffset[0]=1;
+
+        /* Update the GPIO data for keypad inputs. */
+        KeyScn[0].instance=1;
+        KeyScn[0].pin=43;
+
+        KeyScn[1].instance=0;
+        KeyScn[1].pin=6;
+    }
     else
     {
         status = E_FAIL;

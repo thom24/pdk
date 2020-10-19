@@ -47,7 +47,7 @@
 #include <string.h>
 
 #include <ti/drv/gpio/GPIO.h>
-#if (!(defined(SOC_AM65XX)))
+#if (!(defined(SOC_AM65XX) || defined(SOC_AM64X)))
 #include <ti/drv/gpio/soc/GPIO_soc.h>
 #else
 #include <ti/drv/gpio/soc/GPIO_soc.h>
@@ -55,11 +55,11 @@
 
 #include <ti/drv/uart/UART_stdio.h>
 #include <ti/csl/soc.h>
-#if (!(defined(SOC_AM65XX) || defined(SOC_TPR12)))
+#if (!(defined(SOC_AM65XX) || defined(SOC_TPR12) || defined(SOC_AM64X)))
 #include <ti/starterware/include/interrupt.h>
 #endif
 
-#if (defined(SOC_AM65XX) || defined(SOC_TPR12))
+#if (defined(SOC_AM65XX) || defined(SOC_TPR12) || defined(SOC_AM64X))
 #include "diag_common_cfg.h"
 #endif
 

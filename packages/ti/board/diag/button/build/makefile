@@ -78,7 +78,7 @@ PACKAGE_SRCS_COMMON += ../../create_sd.bat ../../create_sd.sh
 
 SRCS_COMMON += button_test.c diag_common_cfg.c
 
-ifeq ($(BOARD), $(filter $(BOARD), am65xx_evm am65xx_idk tpr12_evm))
+ifeq ($(BOARD), $(filter $(BOARD), am65xx_evm am65xx_idk tpr12_evm am64x_evm))
 SRCS_COMMON += GPIO_Button_config.c
 endif
 
