@@ -80,7 +80,7 @@ static NOR_STATUS NOR_qspiCmdRead(SPI_Handle handle, uint8_t *cmdBuf,
     unsigned int rxLinesArg;
     unsigned int operMode;
 
-    object = handle->object;
+    object = (QSPI_v1_Object *)handle->object;
 
     operMode = object->qspiMode;
     rxLines  = object->rxLines;
@@ -236,7 +236,7 @@ static NOR_STATUS Nor_qspiCmdWrite(SPI_Handle handle, uint8_t *cmdBuf,
     unsigned int rxLinesArg;
     unsigned int frmLength;
 
-    object = handle->object;
+    object = (QSPI_v1_Object *)handle->object;
 
     operMode = object->qspiMode;
     rxLines  = object->rxLines;
