@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, Texas Instruments Incorporated
+ * Copyright (c) 2016-2020, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,20 +37,26 @@
  *
  * \brief This file contains oled display test functions.
  *
+ *  Supported SoCs : K2G & AM64X
+ *
+ *  Supported Platforms: k2g_ice & am64x_evm.
+ *
  ******************************************************************************/
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
+#if !defined(SOC_AM64X)
 #include <ti/drv/gpio/GPIO.h>
 #include <ti/drv/gpio/soc/GPIO_soc.h>
+#endif
 
 #include <ti/drv/i2c/I2C.h>
 #include <ti/drv/i2c/soc/I2C_soc.h>
 #include <ti/drv/uart/UART_stdio.h>
 
-#ifdef SOC_K2G
+#if defined(SOC_K2G) || defined(SOC_AM64X)
 #include "diag_common_cfg.h"
 #endif
 
@@ -59,6 +65,19 @@
 #include "oled_display.h"
 #include "icek2g_oled.h"
 
+#if defined(SOC_AM64X)
+#include <ti/drv/i2c/I2C.h>
+#include <ti/drv/i2c/soc/I2C_soc.h>
+#include "board_internal.h"
+#include "board_i2c_io_exp.h"
+
+/* Platform test return codes */
+#define TEST_PASS     (0)
+#define TEST_FAIL     (-1)
+
+#endif
+
+#if !defined(SOC_AM64X)
 /* GPIO pin value definitions */
 #define GPIO_PIN_VAL_LOW     (0U)
 #define GPIO_PIN_VAL_HIGH    (1U)
@@ -69,8 +88,11 @@
    Bits 7-0: Pin number  and Bits 15-8: Port number */
 #define LCD_BST_CONV_CTL_GPIO    0x002D
 #define LCD_RESET                0x0134
+#endif
 
 extern I2C_config_list I2C_config;
+
+#if !defined(SOC_AM64X)
 extern void BOARD_delay(uint32_t usecs);
 
 /* GPIO Driver board specific pin configuration structure */
@@ -92,6 +114,7 @@ GPIO_v0_Config GPIO_v0_config = {
     0,
 };
 
+#endif
 /**
  *  \brief    This function executes oled display detection test
  *
@@ -152,6 +175,7 @@ static TEST_STATUS oled_display_detect_test(void)
     return (TEST_PASS);
 }
 
+#if !defined(SOC_AM64X)
 /**
  * \brief	This function configures voltage regulator gpio's for lcd
  *
@@ -174,6 +198,7 @@ static TEST_STATUS lcd_gpio_config(void)
 
 	return (TEST_PASS);
 }
+#endif
 
 /**
  *  \brief    This function is used to perform Oled display detection
@@ -190,6 +215,7 @@ static TEST_STATUS run_oled_display_test(void)
 	OLED_RET retVal;
 	TEST_STATUS testStatus;
 
+#if !defined(SOC_AM64X)
 	GPIO_init();
 
 	testStatus = lcd_gpio_config();
@@ -198,6 +224,7 @@ static TEST_STATUS run_oled_display_test(void)
 		UART_printf("\n gpio_config Failed\n");
 		return (testStatus);
 	}
+#endif
 
     UART_printf("\nRunning Oled display Detect Test\n");
 
@@ -332,7 +359,10 @@ static TEST_STATUS run_oled_display_test(void)
 		return TEST_FAIL;
 	}
 
+#if !defined(SOC_AM64X)
     return (testStatus);
+#endif
+
 }
 
 /**
@@ -354,8 +384,38 @@ TEST_STATUS oledTest(void)
 	UART_printf(  "********************************\n");
 
 	//Release OLED reset
+#if defined(SOC_AM64X)
+    Board_I2cInitCfg_t i2cCfg;
+
+#if !defined (__aarch64__)
+    /* MCU I2C instance will be active by default for R5 core.
+     * Need update HW attrs to enable MAIN I2C instance.
+     */
+    enableMAINI2C(1, CSL_I2C1_CFG_BASE);
+#endif
+
+    i2cCfg.i2cInst   = BOARD_I2C_IOEXP_DEVICE1_INSTANCE;
+    i2cCfg.socDomain = BOARD_SOC_DOMAIN_MAIN;
+    Board_setI2cInitConfig(&i2cCfg);
+
+    Board_i2cIoExpInit();
+	Board_i2cIoExpSetPinDirection(BOARD_I2C_IOEXP_DEVICE1_ADDR,
+                                  THREE_PORT_IOEXP,
+                                  PORTNUM_1,
+                                  PIN_NUM_6,
+                                  PIN_DIRECTION_OUTPUT);
+
+    /* Pulling GPIO_OLED_RESETn pin to high for accessing the INA devices */
+    Board_i2cIoExpPinLevelSet(BOARD_I2C_IOEXP_DEVICE1_ADDR,
+                              THREE_PORT_IOEXP,
+                              PORTNUM_1,
+                              PIN_NUM_6,
+                              (i2cIoExpSignalLevel_t) GPIO_SIGNAL_LEVEL_HIGH);
+
+#else
 	GPIO_init();
 	GPIO_write(0, 1);
+#endif
 
 	testStatus = run_oled_display_test();
 	if(testStatus != 0)
@@ -369,6 +429,10 @@ TEST_STATUS oledTest(void)
 
 	UART_printf("\nOled Tests Completed!!\n");
 	UART_printf("\n-----------------X-----------------\n\n\n");
+
+#if defined(SOC_AM64X)
+    Board_i2cIoExpDeInit();
+#endif
 
 	return (testStatus);
 

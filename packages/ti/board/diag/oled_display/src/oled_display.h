@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, Texas Instruments Incorporated
+ * Copyright (c) 2016-2020, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,6 +44,11 @@
 #define _OLED_TEST_H_
 
 #include "board_cfg.h"
+
+#if defined(SOC_AM64X)
+/* Platform test return type */
+typedef	int16_t TEST_STATUS;
+#endif
 
 /**
  * \brief This function performs oled test

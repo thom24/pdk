@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, Texas Instruments Incorporated
+ * Copyright (c) 2016-2020, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,6 +37,9 @@
  *
  * \brief This contains specific oled functions.
  *
+ *  Supported SoCs : K2G & AM64X
+ *
+ *  Supported Platforms: k2g_ice & am64x_evm.
  ******************************************************************************/
 
 #include "icek2g_oled.h"
@@ -44,7 +47,7 @@
 #include <ti/drv/i2c/soc/I2C_soc.h>
 #include <ti/drv/uart/UART_stdio.h>
 
-#ifdef SOC_K2G
+#if defined(SOC_K2G) || defined(SOC_AM64X)
 #include "diag_common_cfg.h"
 #endif
 

@@ -760,6 +760,26 @@ export board_diag_norflash_$(SOC)_CORELIST
 export board_diag_norflash_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
 board_diag_EXAMPLE_LIST += board_diag_norflash
 
+# OLED DISPLAY
+board_diag_oledDisplay_COMP_LIST = board_diag_oledDisplay
+board_diag_oledDisplay_RELPATH = ti/board/diag/oled_display/build
+board_diag_oledDisplay_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/oled_display/build
+board_diag_oledDisplay_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
+board_diag_oledDisplay_MAKEFILE = -f makefile
+board_diag_oledDisplay_BOARD_DEPENDENCY = yes
+board_diag_oledDisplay_CORE_DEPENDENCY = yes
+export board_diag_oledDisplay_COMP_LIST
+export board_diag_oledDisplay_BOARD_DEPENDENCY
+export board_diag_oledDisplay_CORE_DEPENDENCY
+export board_diag_oledDisplay_MAKEFILE
+board_diag_oledDisplay_PKG_LIST = board_diag_oledDisplay
+board_diag_oledDisplay_INCLUDE = $(board_diag_oledDisplay_PATH)
+board_diag_oledDisplay_BOARDLIST = am64x_evm
+board_diag_oledDisplay_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
+export board_diag_oledDisplay_$(SOC)_CORELIST
+export board_diag_oledDisplay_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
+board_diag_EXAMPLE_LIST += board_diag_oledDisplay
+
 # OSPI
 board_diag_ospi_COMP_LIST = board_diag_ospi
 board_diag_ospi_RELPATH = ti/board/diag/ospi/build

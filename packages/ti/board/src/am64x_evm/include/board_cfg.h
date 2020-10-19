@@ -275,6 +275,9 @@ extern "C" {
 
 #define BOARD_I2C_CURRENT_MONITOR_INSTANCE              (2U)
 
+/* I2C instance connected to OLED DISPLAY */
+#define BOARD_OLED_DISPLAY_INSTANCE                     (1)
+
 /* Instance for interfaces connected to MMCSD */
 #define BOARD_MMCSD_SD_INSTANCE                         (1U)
 #define BOARD_MMCSD_EMMC_INSTANCE                       (0)
