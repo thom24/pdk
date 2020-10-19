@@ -224,6 +224,7 @@ int32_t Sciclient_rmSetProxyCfg(const struct tisci_msg_rm_proxy_cfg_req *req, ui
     int32_t r = CSL_PASS;
     return r;
 }
+
 int32_t Sciclient_rmIrqTranslateIrOutput(uint16_t   ir_dev_id,
                                          uint16_t   ir_output,
                                          uint16_t   dst_dev_id,
@@ -232,6 +233,7 @@ int32_t Sciclient_rmIrqTranslateIrOutput(uint16_t   ir_dev_id,
     int32_t r = CSL_PASS;
     return r;
 }
+
 int32_t Sciclient_rmIrqTranslateIaOutput(uint16_t   ia_dev_id,
                                          uint16_t   ia_output,
                                          uint16_t   dst_dev_id,
@@ -240,6 +242,7 @@ int32_t Sciclient_rmIrqTranslateIaOutput(uint16_t   ia_dev_id,
     int32_t r = CSL_PASS;
     return r;
 }
+
 int32_t Sciclient_rmIrqTranslateIrqInput(uint16_t   dst_dev_id,
                                          uint16_t   dst_input,
                                          uint16_t   src_dev_id,
@@ -247,6 +250,24 @@ int32_t Sciclient_rmIrqTranslateIrqInput(uint16_t   dst_dev_id,
 {
     int32_t r = CSL_PASS;
     return r;
+}
+
+int32_t Sciclient_rmGetResourceRange(
+                const struct tisci_msg_rm_get_resource_range_req *req,
+                struct tisci_msg_rm_get_resource_range_resp *resp,
+                uint32_t timeout)
+{
+    int32_t retVal = CSL_PASS;
+
+    /* In Host Emulation mode, it is sufficent that we give some range.
+     * So we are passing 0-4 as primary range and 5-9 as secondary range
+     * which will work for most of the cases. */
+    resp->range_start     = 0U;
+    resp->range_num       = 5U;
+    resp->range_start_sec = 5U;
+    resp->range_num_sec   = 5U;
+
+    return retVal;
 }
 #endif
 
