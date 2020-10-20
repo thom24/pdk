@@ -534,6 +534,8 @@ NOR_HANDLE Nor_xspiOpen(uint32_t norIntf, uint32_t portNum, void *params)
                 {
                     Nor_xspiEnableSDR(hwHandle);
                 }
+
+                Nor_ospiSetOpcode(hwHandle);
             }
             else
             {
@@ -542,14 +544,13 @@ NOR_HANDLE Nor_xspiOpen(uint32_t norIntf, uint32_t portNum, void *params)
                 CSL_ospiSetDualByteOpcodeMode((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
                                               FALSE);
                 Nor_xspiResetMemory(hwHandle);
-                retVal = Nor_xspiWaitReady(hwHandle, NOR_WRR_WRITE_TIMEOUT);
+                Nor_ospiSetOpcode(hwHandle);
+                Nor_xspiWaitReady(hwHandle, NOR_WRR_WRITE_TIMEOUT);
                 if(retVal != NOR_PASS)
                 {
                     return NOR_FAIL;
                 }
             }
-
-            Nor_ospiSetOpcode(hwHandle);
 
             if (Nor_xspiReadId(hwHandle) == NOR_PASS)
             {
@@ -594,16 +595,27 @@ static NOR_STATUS Nor_xspiWaitReady(SPI_Handle handle, uint32_t timeOut)
 {
     uint8_t         status;
     uint8_t         cmd[6];
+    uint32_t        cmdLen;
+    OSPI_v0_HwAttrs const *hwAttrs= (OSPI_v0_HwAttrs const *)handle->hwAttrs;
 
-    cmd[0] = NOR_CMD_RDREG;
-    cmd[1] = 0;
-    cmd[2] = NOR_VREG_OFFSET;
-    cmd[3] = 0;
-    cmd[4] = 0;
+    if (hwAttrs->xferLines == OSPI_XFER_LINES_OCTAL)
+    {
+        cmd[0] = NOR_CMD_RDREG;
+        cmd[1] = 0;
+        cmd[2] = NOR_VREG_OFFSET;
+        cmd[3] = 0;
+        cmd[4] = 0;
+        cmdLen = 5;
+    }
+    else
+    {
+        cmd[0] = NOR_CMD_RDSR;
+        cmdLen = 1;
+    }
 
     do
     {
-        if (Nor_xspiCmdRead(handle, cmd, 5, &status, 1))
+        if (Nor_xspiCmdRead(handle, cmd, cmdLen, &status, 1))
         {
             return NOR_FAIL;
         }
