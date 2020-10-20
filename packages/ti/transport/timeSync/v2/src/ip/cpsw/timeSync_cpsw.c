@@ -56,12 +56,12 @@
  * for type contained in the enet_dma.h */
 #include <ti/drv/enet/include/core/enet_dma.h>
 
-#include <ti/drv/enet/examples/utils/include/cpsw_appmemutils_cfg.h>
-#include <ti/drv/enet/examples/utils/include/cpsw_appmemutils.h>
-#include <ti/drv/enet/examples/utils/include/cpsw_apputils.h>
-#include <ti/drv/enet/examples/utils/include/cpsw_appsoc.h>
-#include <ti/drv/enet/examples/utils/include/cpswapp_ethutils.h>
-#include <ti/drv/enet/examples/utils/include/cpsw_mcm.h>
+#include <ti/drv/enet/examples/utils/include/enet_appmemutils_cfg.h>
+#include <ti/drv/enet/examples/utils/include/enet_appmemutils.h>
+#include <ti/drv/enet/examples/utils/include/enet_apputils.h>
+#include <ti/drv/enet/examples/utils/include/enet_appsoc.h>
+#include <ti/drv/enet/examples/utils/include/enet_ethutils.h>
+#include <ti/drv/enet/examples/utils/include/enet_mcm.h>
 
 #include <ti/drv/enet/include/core/enet_mod_timesync.h>
 
@@ -178,11 +178,11 @@ typedef struct TimeSync_Obj_s
 
     EnetMcm_CmdIf hMcmCmdIf;
 
-    EnetDma_PktInfoQ rxFreeQ;
+    EnetDma_PktQ rxFreeQ;
 
-    EnetDma_PktInfoQ rxReadyQ;
+    EnetDma_PktQ rxReadyQ;
 
-    EnetDma_PktInfoQ txFreePktInfoQ;
+    EnetDma_PktQ txFreePktInfoQ;
 
     TimeSync_TxPktInfo txTsPktInfo;
 } TimeSync_Obj;
@@ -617,7 +617,7 @@ int32_t TimeSync_getPtpFrame(TimeSync_Handle timeSyncHandle,
                              uint8_t *rxPort)
 {
     int32_t status = TIMESYNC_OK;
-    EnetDma_PktInfo *pktInfo;
+    EnetDma_Pkt *pktInfo;
     EthFrame *rxFrame;
     uint32_t rxReadyCnt;
 
@@ -627,7 +627,7 @@ int32_t TimeSync_getPtpFrame(TimeSync_Handle timeSyncHandle,
         if (rxReadyCnt > 0U)
         {
             /* Consume the received packets and release them */
-            pktInfo = (EnetDma_PktInfo *)EnetQueue_deq(&gTimeSyncCpswObj.rxReadyQ);
+            pktInfo = (EnetDma_Pkt *)EnetQueue_deq(&gTimeSyncCpswObj.rxReadyQ);
             EnetDma_checkPktState(&pktInfo->pktState,
                                     ENET_PKTSTATE_MODULE_APP,
                                     ENET_PKTSTATE_APP_WITH_READYQ,
@@ -668,8 +668,8 @@ int32_t TimeSync_sendPtpFrame(TimeSync_Handle timeSyncHandle,
                               uint8_t txPort)
 {
     int32_t status = TIMESYNC_OK;
-    EnetDma_PktInfoQ txSubmitQ;
-    EnetDma_PktInfo *pktInfo;
+    EnetDma_PktQ txSubmitQ;
+    EnetDma_Pkt *pktInfo;
     uint8_t *txFrame;
     TimeSync_TxPktInfo *pTxTsPktInfo = NULL;
     TimeSync_TxPktInfoEle *pTxTsPktInfoEle = NULL;
@@ -677,7 +677,7 @@ int32_t TimeSync_sendPtpFrame(TimeSync_Handle timeSyncHandle,
     if (timeSyncHandle != NULL)
     {
         EnetQueue_initQ(&txSubmitQ);
-        pktInfo = (EnetDma_PktInfo *)EnetQueue_deq(&gTimeSyncCpswObj.txFreePktInfoQ);
+        pktInfo = (EnetDma_Pkt *)EnetQueue_deq(&gTimeSyncCpswObj.txFreePktInfoQ);
         if (NULL != pktInfo)
         {
             txFrame = (uint8_t *)pktInfo->bufPtr;
@@ -702,7 +702,7 @@ int32_t TimeSync_sendPtpFrame(TimeSync_Handle timeSyncHandle,
 
             if (0U != EnetQueue_getQCount(&txSubmitQ))
             {
-                status = EnetDma_submitTxReadyPktQ(gTimeSyncCpswObj.hTxCh,
+                status = EnetDma_submitTxPktQ(gTimeSyncCpswObj.hTxCh,
                                                       &txSubmitQ);
             }
         }
@@ -850,7 +850,7 @@ int32_t TimeSync_isSingleStepSupported(TimeSync_Handle timeSyncHandle)
 void TimeSync_reset(TimeSync_Handle timeSyncHandle)
 {
     int32_t status = TIMESYNC_OK;
-    EnetDma_PktInfo *pktInfo;
+    EnetDma_Pkt *pktInfo;
     Enet_IoctlPrms prms;
 
     if (timeSyncHandle != NULL)
@@ -871,7 +871,7 @@ void TimeSync_reset(TimeSync_Handle timeSyncHandle)
         /* Clean the SW queues */
         if (status == TIMESYNC_OK)
         {
-            pktInfo = (EnetDma_PktInfo *)EnetQueue_deq(&gTimeSyncCpswObj.rxReadyQ);
+            pktInfo = (EnetDma_Pkt *)EnetQueue_deq(&gTimeSyncCpswObj.rxReadyQ);
             while (pktInfo != NULL)
             {
                 /* Consume the received packets and release them */
@@ -886,7 +886,7 @@ void TimeSync_reset(TimeSync_Handle timeSyncHandle)
                                                  ENET_PKTSTATE_APP_WITH_FREEQ,
                                                  ENET_PKTSTATE_APP_WITH_DRIVER);
 
-                pktInfo = (EnetDma_PktInfo *)EnetQueue_deq(&gTimeSyncCpswObj.rxReadyQ);
+                pktInfo = (EnetDma_Pkt *)EnetQueue_deq(&gTimeSyncCpswObj.rxReadyQ);
             }
             EnetDma_submitRxPktQ(gTimeSyncCpswObj.hRxFlow,
                                          &gTimeSyncCpswObj.rxFreeQ);
@@ -1092,8 +1092,8 @@ static int32_t TimeSync_openDma(void)
 static void TimeSync_closeDma(void)
 {
     int32_t status = TIMESYNC_OK;
-    EnetDma_PktInfoQ fqPktInfoQ;
-    EnetDma_PktInfoQ cqPktInfoQ;
+    EnetDma_PktQ fqPktInfoQ;
+    EnetDma_PktQ cqPktInfoQ;
 
     EnetQueue_initQ(&fqPktInfoQ);
     EnetQueue_initQ(&cqPktInfoQ);
@@ -1148,7 +1148,7 @@ static void TimeSync_closeDma(void)
 
 static void TimeSync_initTxFreePktQ(void)
 {
-    EnetDma_PktInfo *pPktInfo;
+    EnetDma_Pkt *pPktInfo;
     uint32_t i;
 
     /* Initialize all queues */
@@ -1169,8 +1169,8 @@ static void TimeSync_initTxFreePktQ(void)
 
 static void TimeSync_initRxReadyPktQ(void)
 {
-    EnetDma_PktInfoQ rxReadyQ;
-    EnetDma_PktInfo *pPktInfo;
+    EnetDma_PktQ rxReadyQ;
+    EnetDma_Pkt *pPktInfo;
     int32_t status;
     uint32_t i;
 
@@ -1384,20 +1384,20 @@ static void TimeSync_setPortTsEventPrms(CpswMacPort_TsEventCfg *tsPortEventCfg)
 
 static uint32_t TimeSync_retrieveTxDonePkts(void)
 {
-    EnetDma_PktInfoQ txFreeQ;
-    EnetDma_PktInfo *pktInfo;
+    EnetDma_PktQ txFreeQ;
+    EnetDma_Pkt *pktInfo;
     int32_t status;
     uint32_t txFreeQCnt = 0U;
 
     EnetQueue_initQ(&txFreeQ);
 
     /* Retrieve any CPSW packets that may be free now */
-    status = EnetDma_retrieveTxDonePktQ(gTimeSyncCpswObj.hTxCh, &txFreeQ);
+    status = EnetDma_retrieveTxPktQ(gTimeSyncCpswObj.hTxCh, &txFreeQ);
     if (status == TIMESYNC_OK)
     {
         txFreeQCnt = EnetQueue_getQCount(&txFreeQ);
 
-        pktInfo = (EnetDma_PktInfo *)EnetQueue_deq(&txFreeQ);
+        pktInfo = (EnetDma_Pkt *)EnetQueue_deq(&txFreeQ);
         while (NULL != pktInfo)
         {
             EnetDma_checkPktState(&pktInfo->pktState,
@@ -1406,12 +1406,12 @@ static uint32_t TimeSync_retrieveTxDonePkts(void)
                                     ENET_PKTSTATE_APP_WITH_FREEQ);
 
             EnetQueue_enq(&gTimeSyncCpswObj.txFreePktInfoQ, &pktInfo->node);
-            pktInfo = (EnetDma_PktInfo *)EnetQueue_deq(&txFreeQ);
+            pktInfo = (EnetDma_Pkt *)EnetQueue_deq(&txFreeQ);
         }
     }
     else
     {
-        EnetAppUtils_print("EnetDma_retrieveTxDonePktQ() failed to retrieve pkts: %d\n",
+        EnetAppUtils_print("EnetDma_retrieveTxPktQ() failed to retrieve pkts: %d\n",
                            status);
     }
 
@@ -1420,8 +1420,8 @@ static uint32_t TimeSync_retrieveTxDonePkts(void)
 
 static uint32_t TimeSync_receiveRxReadyPkts(void)
 {
-    EnetDma_PktInfoQ rxReadyQ;
-    EnetDma_PktInfo *pktInfo;
+    EnetDma_PktQ rxReadyQ;
+    EnetDma_Pkt *pktInfo;
     int32_t status;
     uint32_t rxReadyCnt = 0U;
 
@@ -1433,7 +1433,7 @@ static uint32_t TimeSync_receiveRxReadyPkts(void)
     if (status == TIMESYNC_OK)
     {
         /* Queue the received packet to rxReadyQ and pass new ones from rxFreeQ */
-        pktInfo = (EnetDma_PktInfo *)EnetQueue_deq(&rxReadyQ);
+        pktInfo = (EnetDma_Pkt *)EnetQueue_deq(&rxReadyQ);
         while (pktInfo != NULL)
         {
             EnetDma_checkPktState(&pktInfo->pktState,
@@ -1442,7 +1442,7 @@ static uint32_t TimeSync_receiveRxReadyPkts(void)
                                     ENET_PKTSTATE_APP_WITH_READYQ);
 
             EnetQueue_enq(&gTimeSyncCpswObj.rxReadyQ, &pktInfo->node);
-            pktInfo = (EnetDma_PktInfo *)EnetQueue_deq(&rxReadyQ);
+            pktInfo = (EnetDma_Pkt *)EnetQueue_deq(&rxReadyQ);
         }
     }
     else
