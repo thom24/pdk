@@ -170,6 +170,9 @@ int32_t Udma_ringDequeueRawLcdma(Udma_DrvHandle  drvHandle, Udma_RingHandle ring
 int32_t Udma_ringFlushRawLcdma(Udma_DrvHandle drvHandle, Udma_RingHandle ringHandle, uint64_t *phyDescMem)
 {
     int32_t         retVal = UDMA_SOK, cslRetVal;
+    uint32_t        addrlo;
+    struct tisci_msg_rm_ring_cfg_req    rmRingReq;
+    struct tisci_msg_rm_ring_cfg_resp   rmRingResp;
 
     cslRetVal = CSL_lcdma_ringaccDequeue(
             &ringHandle->drvHandle->lcdmaRaRegs,
@@ -177,12 +180,41 @@ int32_t Udma_ringFlushRawLcdma(Udma_DrvHandle drvHandle, Udma_RingHandle ringHan
             phyDescMem);
     if(0 != cslRetVal)
     {
-        /* In case of LCDMA Rings, #CSL_lcdma_ringaccDequeue returns -1 
+        /*---------------------------------------------------------------------------------------
+         * In case of LCDMA Rings, #CSL_lcdma_ringaccDequeue returns -1 
          * when ring is empty (there are no more unprocessed descriptors in the ring to dequeue).
-         * At this stage, calling #CSL_lcdma_ringaccResetRing is strongly suggested as part of the procedure 
-         * for returning a ring to a known state. Refer \ref CSL_lcdma_ringaccResetRing for details. */
-        CSL_lcdma_ringaccResetRing( &ringHandle->drvHandle->lcdmaRaRegs, &ringHandle->lcdmaCfg);
-        retVal = UDMA_ETIMEOUT;
+         * At this stage, resetting the ring is strongly suggested as part of the procedure 
+         * for returning a ring to a known state.
+        -----------------------------------------------------------------------------------------*/
+        /* Reset the ring by writing to ring's BA_LO, BA_HI, or SIZE register */
+        addrlo = CSL_REG32_FEXT(&ringHandle->pLcdmaCfgRegs->BA_LO, LCDMA_RINGACC_RING_CFG_RING_BA_LO_ADDR_LO);
+        rmRingReq.valid_params  = TISCI_MSG_VALUE_RM_RING_MODE_VALID |
+                                  TISCI_MSG_VALUE_RM_RING_ADDR_LO_VALID;
+        rmRingReq.nav_id        = drvHandle->devIdRing;
+        rmRingReq.index         = ringHandle->ringNum;
+        rmRingReq.mode          = TISCI_MSG_VALUE_RM_RING_MODE_RING;
+        rmRingReq.addr_lo       = addrlo;
+        /* Not used */
+        rmRingReq.addr_hi       = 0U;
+        rmRingReq.size          = 0U;
+        rmRingReq.count         = 0U;
+        rmRingReq.order_id      = UDMA_DEFAULT_RING_ORDER_ID;
+        retVal = Sciclient_rmRingCfg(
+                        &rmRingReq, &rmRingResp, UDMA_SCICLIENT_TIMEOUT);
+        if(CSL_PASS != retVal)
+        {
+            Udma_printf(drvHandle, "[Error] Ring reset failed!!!\n");
+            retVal = UDMA_EFAIL;
+        }
+        else
+        {
+            /* Initialize state fields */
+            CSL_lcdma_ringaccInitRingObj(ringHandle->ringNum, &ringHandle->lcdmaCfg);
+            /* ringFlush API returns UDMA_ETIMEOUT when there are no more 
+             * unprocessed descriptors to be dequeued and the ring reset 
+             * was successfull for returning a ring to a known state. */
+            retVal = UDMA_ETIMEOUT;
+        }
     }
     return (retVal);
 }
