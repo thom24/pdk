@@ -358,12 +358,12 @@ int32_t SBL_ospiInit(void *handle)
     Ospi_udma_init(&ospi_cfg);
 #endif
 
-#if defined(SIM_BUILD)
-    ospi_cfg.phyEnable = false;
-#else
+#if SBL_USE_DMA
     /* J721E: PHY mode was already previously enabled, so we keep it enabled */
     /* J7200: Enable the PHY mode which was disabled in SBL_ReadSysfwImage */
     ospi_cfg.phyEnable = true;
+#else
+    ospi_cfg.phyEnable = false;
 #endif
     /* Set the default SPI init configurations */
     OSPI_socSetInitCfg(BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
@@ -380,6 +380,10 @@ int32_t SBL_ospiInit(void *handle)
         *(Board_flashHandle *) handle = h;
         /* Update the static handle as well, for later use */
         boardHandle = (void *)h;
+#if !(SBL_USE_DMA)
+        /* Disable PHY pipeline mode if not using DMA */
+        CSL_ospiPipelinePhyEnable((const CSL_ospi_flash_cfgRegs *)(ospi_cfg.baseAddr), FALSE);
+#endif
     }
     else
     {
