@@ -586,6 +586,10 @@ static int32_t Sciserver_UserProcessMsg(uint32_t *msg_recv,
             isPmMsg = 1;
             respMsgSize = sizeof(struct tisci_msg_set_device_resets_resp);
             break;
+        case TISCI_MSG_SYS_RESET:
+            isPmMsg = 1;
+            respMsgSize = sizeof(struct tisci_msg_sys_reset_resp);
+            break;
 
         default:
             isRmMsg = 0;
