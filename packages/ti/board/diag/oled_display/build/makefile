@@ -69,10 +69,6 @@ INCLUDE_EXTERNAL_INTERFACES = pdk
 
 # List all the components required by the application
 COMP_LIST_COMMON = $(PDK_COMMON_BAREMETAL_COMP)
-ifeq ($(SOC), $(filter $(SOC), am64x))
-COMP_LIST_COMMON += sciclient
-endif
-
 
 # Common source files and CFLAGS across all platforms and cores
 #PACKAGE_SRCS_COMMON = ../src makefile
