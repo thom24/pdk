@@ -63,11 +63,12 @@ extern UART_FxnTable gUartSciFxnTable;
  
 
 #if defined (__TI_ARM_V7R4__)
-#define CSL_UART_PER_CNT    CSL_MSS_UART_PER_CNT
+#define CSL_UART_PER_CNT    (CSL_MSS_UART_PER_CNT + CSL_DSS_UART_PER_CNT)
 
 /**
- * @brief   This is the TPR12 MSS specific UART configuration. There are
- * 2 UART instances (SCI-A and SCI-B) available on the MSS. 
+ * @brief This is the TPR12 MSS accessible UART configuration. There are
+ * 2 UART instances (SCI-A and SCI-B) available on the MSS and 1 UART
+ * instance (SCI-A) available on the DSS.
  */
 UartSci_HwCfg uartInitCfg[CSL_UART_PER_CNT] =
 {
@@ -133,6 +134,39 @@ UartSci_HwCfg uartInitCfg[CSL_UART_PER_CNT] =
             FALSE, /* Loopback disabled by default */
 		    TRUE   /* Interrupt enabled by default */
         }
+    },
+
+    /* DSS UART Hardware configuration:
+     * - Capable of sending and receiving data
+     * Note: Need to use EDMA_DRV_INST_DSS_B for EDMA_DSS_TPCC_B
+     */
+    {
+        (CSL_sciRegs *)CSL_DSS_SCIA_U_BASE,
+        UartSci_Duplexity_FULL,
+        CSL_MSS_INTR_DSS_SCIA_INT0,
+        EDMA_DSS_TPCC_B_EVT_SCIA_TX_DMA_REQ,
+        EDMA_DSS_TPCC_B_EVT_SCIA_RX_DMA_REQ,
+#ifdef UART_DMA_ENABLE
+        &UartSci_openEDMA,
+        &UartSci_closeEDMA,
+        &UartSci_isEDMAEnabled,
+        &UartSci_initiateRxEDMA,
+        &UartSci_initiateTxEDMA,
+#else
+        NULL,
+        NULL,
+        NULL,
+        NULL,
+        NULL,
+#endif
+        {
+            UART_MODULE_FREQ_200M,
+            NULL,
+            0,
+            TRUE,  /* default DMA mode */
+            FALSE, /* Loopback disabled by default */
+		    TRUE   /* Interrupt enabled by default */
+        }
     }
 };
 
@@ -140,7 +174,7 @@ UartSci_HwCfg uartInitCfg[CSL_UART_PER_CNT] =
 UartSci_Driver UartObjects[CSL_UART_PER_CNT];
 
 /**
- * @brief   The MSS on the TPR12 Platform has 2 UART Modules which can be used.
+ * @brief   The MSS on the TPR12 Platform has 3 UART Modules which can be used.
  */
 UART_Config UART_config[] =
 {
@@ -153,6 +187,11 @@ UART_Config UART_config[] =
         &gUartSciFxnTable,            /* UART SCI Driver Function Table:        */
         (void *)&UartObjects[1],      /* UART Driver Object:                    */
         (void *)&uartInitCfg[1]       /* UART Hw configuration:                 */
+    },
+    {
+        &gUartSciFxnTable,            /* UART SCI Driver Function Table:        */
+        (void *)&UartObjects[2],      /* UART Driver Object:                    */
+        (void *)&uartInitCfg[2]       /* UART Hw configuration:                 */
     },
     {
         NULL,                         /* UART SCI Driver Function Table:        */
@@ -171,7 +210,7 @@ UART_Config UART_config[] =
  
 UartSci_HwCfg uartInitCfg[CSL_UART_PER_CNT] =
 {
-    /* UART2 Hardware configuration:
+    /* DSS UART Hardware configuration:
      * - Capable of sending and receiving data
      */
     {

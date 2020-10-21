@@ -1164,6 +1164,27 @@ static uint32_t UartSci_isTxFree (const CSL_sciRegs* ptrSCIRegs)
 /**
  *  @b Description
  *  @n
+ *      Utility function which is used to determine if the SCI transmitter
+ *      is empty, i.e. there is no data transmission in progress
+ *
+ *  @param[in]  ptrSCIRegs
+ *      Point to the SCI Base
+ *
+ *  \ingroup UART_SCI_INTERNAL_FUNCTION
+ *
+ *  @retval
+ *      1   -   Transmitter is empty
+ *  @retval
+ *      0   -   Transmitter is not empty
+ */
+static uint32_t UartSci_isTxEmpty (const CSL_sciRegs* ptrSCIRegs)
+{
+    return CSL_FEXT(ptrSCIRegs->SCIFLR, SCI_SCIFLR_TX_EMPTY);
+}
+
+/**
+ *  @b Description
+ *  @n
  *      Utility function which is used to put a character
  *
  *  @param[in]  ptrSCIRegs
@@ -1176,6 +1197,7 @@ static uint32_t UartSci_isTxFree (const CSL_sciRegs* ptrSCIRegs)
  *  @retval
  *      Not applicable
  */
+
 static void UartSci_putCh (CSL_sciRegs* ptrSCIRegs, uint8_t ch)
 {
     CSL_FINS(ptrSCIRegs->SCITD, SCI_SCITD_TD, ch);
@@ -1986,6 +2008,8 @@ static int32_t UartSci_write(UART_Handle handle, const void *buffer, size_t size
             * because the Transmit interrupt is only generated after the
             * first transfer from the TD to the TXSHF
             ****************************************************************/
+	    /* Wait for Tx Ready */
+            while (UartSci_isTxFree(ptrHwCfg->ptrSCIRegs) == 0U) {};
             UartSci_writeChar(ptrUartSciDriver, ptrHwCfg);
 
             /* Do we have more data to send? */
@@ -2700,6 +2724,11 @@ static void UartSci_close(UART_Handle handle)
         /* YES: Delete and unregister the interrupt handler. */
         (void)UART_osalHardwareIntDestruct(ptrUartSciDriver->hwiHandle, (int32_t)(ptrHwCfg->interruptNum));
     }
+
+    /*
+     * Wait for the ongoing transmission to be completed.
+     */
+    while(!UartSci_isTxEmpty(ptrHwCfg->ptrSCIRegs)){};
 
     /* Was the UART Driver operating in Write Blocking mode? */
     if (ptrUartSciDriver->writeSem)

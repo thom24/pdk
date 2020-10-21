@@ -73,6 +73,10 @@ extern EDMA3_RM_GblConfigParams sampleEdma3GblCfgParams[];
 #if defined(idkAM574x) || defined (idkAM572x) || defined (idkAM571x)
 #define UART_INSTANCE   (2U)
 #elif defined(SOC_TPR12)
+/*
+ * MCU: 0 (MSS UART 0), 1 (MSS UART 1, tx only), 2 (DSS UART 0)
+ * DSP: 0 (DSS UART 0)
+ */
 #define UART_INSTANCE   (0U)
 #else
 #define UART_INSTANCE   (BOARD_UART_INSTANCE)

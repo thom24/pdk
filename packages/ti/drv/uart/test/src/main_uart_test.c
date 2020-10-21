@@ -99,7 +99,9 @@
 
 
 #if defined(SOC_TPR12)
+#if defined(SIM_BUILD)
 #define UART_RX_LOOPBACK_ONLY
+#endif
 #define UART_API2_NOT_SUPPORTED
 #define UART_NO_FIFO
 #endif
@@ -150,7 +152,7 @@ typedef struct UART_Tests_s
 #ifdef SIM_BUILD
 #define UART_TEST_TIMEOUT      (50U)
 #else
-#define UART_TEST_TIMEOUT      (5000U)
+#define UART_TEST_TIMEOUT      (10000U)
 #endif
 
 /* Max number of instances to test in multiple instance test case */
@@ -158,24 +160,26 @@ typedef struct UART_Tests_s
 /* MAX Data Pattern Test Size for the Data Tests: */
 #define MAX_TEST_BUFFER_SIZE   256
 
-#define UART_TEST_CACHE_LINE_SIZE (128U)
-#if (defined(_TMS320C6X) || defined (__TI_ARM_V7M4__))
-#pragma DATA_ALIGN (scanPrompt, UART_TEST_CACHE_LINE_SIZE)
-char scanPrompt[MAX_TEST_BUFFER_SIZE];
+#if defined(CSL_CACHE_L2_LINESIZE)
+#define UART_TEST_CACHE_LINE_SIZE CSL_CACHE_L2_LINESIZE
+#elif defined(CSL_CACHE_L1D_LINESIZE)
+#define UART_TEST_CACHE_LINE_SIZE CSL_CACHE_L1D_LINESIZE
 #else
-char scanPrompt[MAX_TEST_BUFFER_SIZE] __attribute__ ((aligned (UART_TEST_CACHE_LINE_SIZE)));
+#define UART_TEST_CACHE_LINE_SIZE (128U)
 #endif
-char echoPrompt[40] = "\n\r Data entered is as follows \r\n";
-char dataPrint[40] = "\r\n enter the data of 16 character \r\n";
-char readTimeoutPrompt[60] = "\r\n Read timed out \r\n";
-char breakErrPrompt[60] = "\r\n Received a break condition error \r\n";
-char rdCancelPrompt[60] = "\r\n Previous read canceled \r\n";
-char wrCancelPrompt[60] = "\r\n Previous write canceled \r\n";
-char fifoTrgLvlData[MAX_TEST_BUFFER_SIZE] = "0123456789112345678921234567893123456789412345678951234567896123456789712345678981234567899123456789"
-					    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789abcedef12345"
-					    "6789ABCDEF012345678901234567899876543210deadbeef89512345";
 
-char stdioPrint[64] = "\r\n enter the data of 16 character and press ENTER \r\n";
+char scanPrompt[MAX_TEST_BUFFER_SIZE] __attribute__ ((aligned (UART_TEST_CACHE_LINE_SIZE)));
+char echoPrompt[40] __attribute__ ((aligned (UART_TEST_CACHE_LINE_SIZE))) = "\n\r Data entered is as follows \r\n";
+char dataPrint[40] __attribute__ ((aligned (UART_TEST_CACHE_LINE_SIZE))) = "\r\n enter the data of 16 character \r\n";
+char readTimeoutPrompt[60] __attribute__ ((aligned (UART_TEST_CACHE_LINE_SIZE))) = "\r\n Read timed out \r\n";
+char breakErrPrompt[60] __attribute__ ((aligned (UART_TEST_CACHE_LINE_SIZE))) = "\r\n Received a break condition error \r\n";
+char rdCancelPrompt[60] __attribute__ ((aligned (UART_TEST_CACHE_LINE_SIZE))) = "\r\n Previous read canceled \r\n";
+char wrCancelPrompt[60] __attribute__ ((aligned (UART_TEST_CACHE_LINE_SIZE))) = "\r\n Previous write canceled \r\n";
+char fifoTrgLvlData[MAX_TEST_BUFFER_SIZE] __attribute__ ((aligned (UART_TEST_CACHE_LINE_SIZE))) =
+                        "0123456789112345678921234567893123456789412345678951234567896123456789712345678981234567899123456789"
+                        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789abcedef12345"
+                        "6789ABCDEF012345678901234567899876543210deadbeef89512345";
+char stdioPrint[64] __attribute__ ((aligned (UART_TEST_CACHE_LINE_SIZE))) = "\r\n enter the data of 16 character and press ENTER \r\n";
 
 UART_Transaction  callbackTransaction;
 SemaphoreP_Handle callbackSem = NULL;
@@ -1045,7 +1049,7 @@ Void UART_simultaneous_rw_write(UArg a0, UArg a1)
     while (taskSyncFlag == true)
 	{
         transaction.buf = (void *)(uintptr_t)addrDataPrint;
-	    transaction.count = sizeof(dataPrint);
+	    transaction.count = strlen(dataPrint);
 	    UART_write2(uart, &transaction);
 	    Osal_delay(100);
 	}
@@ -1167,7 +1171,7 @@ static bool UART_test_simultaneous_rw(bool dmaMode)
 
     UART_transactionInit(&transaction);
     transaction.buf = (void *)(uintptr_t)addrEchoPrompt;
-    transaction.count = sizeof(echoPrompt);
+    transaction.count = strlen(echoPrompt);
     if (UART_write2(uart, &transaction) == UART_ERROR)
     {
         goto Err;
@@ -1205,8 +1209,7 @@ Err:
  *  the read is complete.
  *
  */
-//static bool UART_test_read_write_cancel(bool dmaMode)
-bool UART_test_read_write_cancel(bool dmaMode)
+static bool UART_test_read_write_cancel(bool dmaMode)
 {
     UART_Handle       uart = NULL;
     UART_Params       uartParams;
@@ -1287,7 +1290,7 @@ bool UART_test_read_write_cancel(bool dmaMode)
     /* Print read cancelled prompt */
     UART_transactionInit(&transaction);
     transaction.buf = (void *)(uintptr_t)addrRdCancelPrompt;
-    transaction.count = sizeof(rdCancelPrompt);
+    transaction.count = strlen(rdCancelPrompt);
 #if !defined(UART_API2_NOT_SUPPORTED)
     if (UART_write2(uart, &transaction) == UART_ERROR)
 #else
@@ -1299,7 +1302,7 @@ bool UART_test_read_write_cancel(bool dmaMode)
 
     UART_transactionInit(&transaction);
     transaction.buf = (void *)(uintptr_t)addrDataPrint;
-    transaction.count = sizeof(dataPrint);
+    transaction.count = strlen(dataPrint);
 #if !defined(UART_API2_NOT_SUPPORTED)
     if (UART_write2(uart, &transaction) == UART_ERROR)
 #else
@@ -1335,7 +1338,7 @@ bool UART_test_read_write_cancel(bool dmaMode)
 #endif
     UART_transactionInit(&transaction);
     transaction.buf = (void *)(uintptr_t)addrEchoPrompt;
-    transaction.count = sizeof(echoPrompt);
+    transaction.count = strlen(echoPrompt);
 #if !defined(UART_API2_NOT_SUPPORTED)
     if (UART_write2(uart, &transaction) == UART_ERROR)
 #else
@@ -1388,7 +1391,7 @@ bool UART_test_read_write_cancel(bool dmaMode)
     /* Perform the 1st write */
     UART_transactionInit(&callbackTransaction);
     callbackTransaction.buf = (void *)(uintptr_t)addrWrCancelPrompt;
-    callbackTransaction.count = sizeof(wrCancelPrompt);
+    callbackTransaction.count = strlen(wrCancelPrompt);
 #if !defined(UART_API2_NOT_SUPPORTED)
     if (UART_write2(uart, &callbackTransaction) == UART_ERROR)
 #else
@@ -1407,7 +1410,7 @@ bool UART_test_read_write_cancel(bool dmaMode)
     /* Perform the 2nd write */
     UART_transactionInit(&callbackTransaction);
     callbackTransaction.buf = (void *)(uintptr_t)addrWrCancelPrompt;
-    callbackTransaction.count = sizeof(wrCancelPrompt);
+    callbackTransaction.count = strlen(wrCancelPrompt);
 #if !defined(UART_API2_NOT_SUPPORTED)
     if (UART_write2(uart, &callbackTransaction) == UART_ERROR)
 #else
@@ -1492,7 +1495,7 @@ static bool UART_test_rx_err(bool dmaMode)
     	{
     	    UART_transactionInit(&transaction);
             transaction.buf = (void *)(uintptr_t)addrBreakErrPrompt;
-            transaction.count = sizeof(breakErrPrompt);
+            transaction.count = strlen(breakErrPrompt);
             if (UART_write2(uart, &transaction) == UART_ERROR)
             {
                 goto Err;
@@ -1536,9 +1539,7 @@ static bool UART_test_timeout(bool dmaMode)
     /* Initialize the default configuration params. */
     UART_Params_init(&uartParams);
     uartParams.parityType = uartParity;
-#if defined(UART_API2_NOT_SUPPORTED)
     uartParams.readTimeout = UART_TEST_TIMEOUT;
-#endif
 
     if (dmaMode)
     {
@@ -1567,7 +1568,7 @@ static bool UART_test_timeout(bool dmaMode)
     transaction.buf = (void *)(uintptr_t)scanPrompt;
     transaction.count = UART_TEST_READ_LEN;
     transaction.timeout = UART_TEST_TIMEOUT;
-#if defined(UART_API2_NOT_SUPPORTED)
+#if !defined(UART_API2_NOT_SUPPORTED)
     if (UART_read2(uart, &transaction) == UART_ERROR)
 #else
     if (UART_read(uart, transaction.buf, transaction.count) == UART_ERROR)
@@ -1575,7 +1576,7 @@ static bool UART_test_timeout(bool dmaMode)
     {
         UART_transactionInit(&transaction);
         transaction.buf = (void *)(uintptr_t)addrReadTimeoutPrompt;
-        transaction.count = sizeof(readTimeoutPrompt);
+        transaction.count = strlen(readTimeoutPrompt);
         transaction.timeout = UART_TEST_TIMEOUT;
         if (UART_write2(uart, &transaction) == UART_ERROR)
         {
@@ -1605,7 +1606,7 @@ static bool UART_test_polling_timeout(bool dmaMode)
     UART_Params      uartParams;
     bool             ret = false;
     uint32_t         rdSize = UART_TEST_READ_LEN;
-    uint32_t         wrSize = sizeof(readTimeoutPrompt);
+    uint32_t         wrSize = strlen(readTimeoutPrompt);
 
     /* UART SoC init configuration */
     UART_initConfig(dmaMode);
@@ -1671,7 +1672,7 @@ static bool UART_test_polling_timeout(bool dmaMode)
             goto Err;
         }
 
-        wrSize = sizeof(dataPrint);
+        wrSize = strlen(dataPrint);
         UART_writePolling(uart, (const void *)dataPrint, wrSize);
 
         memset(scanPrompt, 0, sizeof(scanPrompt));
@@ -1682,7 +1683,7 @@ static bool UART_test_polling_timeout(bool dmaMode)
             goto Err;
         }
 #endif
-        wrSize = sizeof(echoPrompt);
+        wrSize = strlen(echoPrompt);
         UART_writePolling(uart, (const void *)echoPrompt, wrSize);
         UART_writePolling(uart, (const void *)scanPrompt, rdSize);
 
@@ -1749,7 +1750,7 @@ static bool UART_test_callback(bool dmaMode)
     }
 
     /* Write DMA or non-DMA test prompt */
-    if (UART_write(uart, (void *)(uintptr_t)addrDataPrint, sizeof(dataPrint)) == UART_ERROR)
+    if (UART_write(uart, (void *)(uintptr_t)addrDataPrint, strlen(dataPrint)) == UART_ERROR)
     {
         goto Err;
     }
@@ -1777,7 +1778,7 @@ static bool UART_test_callback(bool dmaMode)
 
 #endif
 
-    if (UART_write(uart, (void *)(uintptr_t)addrEchoPrompt, sizeof(echoPrompt)) == UART_ERROR)
+    if (UART_write(uart, (void *)(uintptr_t)addrEchoPrompt, strlen(echoPrompt)) == UART_ERROR)
     {
         goto Err;
     }
@@ -1813,7 +1814,7 @@ static bool UART_test_callback(bool dmaMode)
 
     UART_transactionInit(&callbackTransaction);
     callbackTransaction.buf = (void *)(uintptr_t)addrDataPrint;
-    callbackTransaction.count = sizeof(dataPrint);
+    callbackTransaction.count = strlen(dataPrint);
     if (UART_write2(uart, &callbackTransaction) == UART_ERROR)
     {
         goto Err;
@@ -1845,7 +1846,7 @@ static bool UART_test_callback(bool dmaMode)
 
     UART_transactionInit(&callbackTransaction);
     callbackTransaction.buf = (void *)(uintptr_t)addrEchoPrompt;
-    callbackTransaction.count = sizeof(echoPrompt);
+    callbackTransaction.count = strlen(echoPrompt);
     if (UART_write2(uart, &callbackTransaction) == UART_ERROR)
     {
         goto Err;
@@ -2185,7 +2186,7 @@ static bool UART_test_read_write(bool dmaMode)
     }
 
     /* Test read/write API's in blocking mode */
-    if (UART_write(uart, (void *)(uintptr_t)addrDataPrint, sizeof(dataPrint)) == UART_ERROR)
+    if (UART_write(uart, (void *)(uintptr_t)addrDataPrint, strlen(dataPrint)) == UART_ERROR)
     {
         goto Err;
     }
@@ -2203,7 +2204,7 @@ static bool UART_test_read_write(bool dmaMode)
     }
 #endif
 
-    UART_write(uart, (void *)(uintptr_t)addrEchoPrompt, sizeof(echoPrompt));
+    UART_write(uart, (void *)(uintptr_t)addrEchoPrompt, strlen(echoPrompt));
 
     UART_write(uart, (void *)(uintptr_t)addrScanPrompt, length);
     UART_close(uart);
@@ -2218,7 +2219,7 @@ static bool UART_test_read_write(bool dmaMode)
     /* Test read2/write2 API's in blocking mode */
     UART_transactionInit(&transaction);
     transaction.buf = (void *)(uintptr_t)addrDataPrint;
-    transaction.count = sizeof(dataPrint);
+    transaction.count = strlen(dataPrint);
     if (UART_write2(uart, &transaction) == UART_ERROR)
     {
         goto Err;
@@ -2244,7 +2245,7 @@ static bool UART_test_read_write(bool dmaMode)
 
     UART_transactionInit(&transaction);
     transaction.buf = (void *)(uintptr_t)addrEchoPrompt;
-    transaction.count = sizeof(echoPrompt);
+    transaction.count = strlen(echoPrompt);
     if (UART_write2(uart, &transaction) == UART_ERROR)
     {
         goto Err;
@@ -2324,7 +2325,7 @@ static bool UART_test_read_write_int_disable(bool dmaMode)
     }
 
     /* Test read/write API's in blocking mode */
-    if (UART_write(uart, (void *)(uintptr_t)addrDataPrint, sizeof(dataPrint)) == UART_ERROR)
+    if (UART_write(uart, (void *)(uintptr_t)addrDataPrint, strlen(dataPrint)) == UART_ERROR)
     {
         goto Err;
     }
@@ -2342,7 +2343,7 @@ static bool UART_test_read_write_int_disable(bool dmaMode)
         goto Err;
     }
 #endif
-    UART_write(uart, (void *)(uintptr_t)addrEchoPrompt, sizeof(echoPrompt));
+    UART_write(uart, (void *)(uintptr_t)addrEchoPrompt, strlen(echoPrompt));
 
     UART_write(uart, (void *)(uintptr_t)addrScanPrompt, length);
     UART_close(uart);
@@ -2357,7 +2358,7 @@ static bool UART_test_read_write_int_disable(bool dmaMode)
     /* Test read2/write2 API's in blocking mode */
     UART_transactionInit(&transaction);
     transaction.buf = (void *)(uintptr_t)addrDataPrint;
-    transaction.count = sizeof(dataPrint);
+    transaction.count = strlen(dataPrint);
     if (UART_write2(uart, &transaction) == UART_ERROR)
     {
         goto Err;
@@ -2383,7 +2384,7 @@ static bool UART_test_read_write_int_disable(bool dmaMode)
 
     UART_transactionInit(&transaction);
     transaction.buf = (void *)(uintptr_t)addrEchoPrompt;
-    transaction.count = sizeof(echoPrompt);
+    transaction.count = strlen(echoPrompt);
     if (UART_write2(uart, &transaction) == UART_ERROR)
     {
         goto Err;
@@ -2416,7 +2417,7 @@ Err:
 }
 
 #ifdef UART_DMA_ENABLE
-#if !defined(UART_RX_LOOPBACK_ONLY)
+#if !defined(SOC_TPR12)
 static uint32_t UART_getMaxNumInst(uint32_t numInst)
 {
     uint32_t     i = 0;
@@ -2576,7 +2577,7 @@ Err:
     uartTestInstance = uartTestStartInst;
     return (ret);
 }
-#endif /* if UART_RX_LOOPBACK_ONLY */
+#endif /* if SOC_TPR12 */
 #endif /* if DMA */
 
 /**
@@ -2759,7 +2760,7 @@ bool UART_test_api (bool dmaMode)
     return true;
 }
 
-#if defined(SOC_TPR12)
+#if defined(SOC_TPR12) && defined(SIM_BUILD)
 
 /**
  *  @b Description
@@ -3144,12 +3145,12 @@ UART_Tests Uart_tests[] =
     {UART_test_read_write_int_disable, false, UART_TEST_ID_INT_DISABLE, "\r\n UART read write test with interrupt disabled"},
     {UART_test_read_verify, false, UART_TEST_ID_RDVERIFY, "\r\n UART non-DMA read API test in loopback mode"},
 #ifdef UART_DMA_ENABLE
-#if !defined(UART_RX_LOOPBACK_ONLY)
+#if !defined(SOC_TPR12)
     {UART_test_multiple_instances, true, UART_TEST_ID_MULTI_INSTS, "\r\n UART DMA multiple instances loopback test "},
 #endif
 #endif
     {UART_test_api, false, UART_TEST_ID_API, "\r\n UART API Test"},
-#if defined(SOC_TPR12)
+#if defined(SOC_TPR12) && defined(SIM_BUILD)
     {UART_test_profile_tx, false, UART_TEST_ID_PROF_TX, "\r\n UART non-DMA/DMA Blocking/Polling transmit profiling"},
 #endif
 #ifdef UART_DMA_ENABLE
@@ -3215,19 +3216,19 @@ void UART_test_print_test_result(UART_Tests *test, bool pass)
 
     /* Print unit test ID */
     sprintf(testId, "%d", test->testId);
-    UART_write(uart, (void *)(uintptr_t)crPrompt, sizeof(crPrompt));
-    UART_write(uart, (void *)(uintptr_t)testIdPrompt, sizeof(testIdPrompt));
-    UART_write(uart, (void *)(uintptr_t)testId, sizeof(testId));
+    UART_write(uart, (void *)(uintptr_t)crPrompt, strlen(crPrompt));
+    UART_write(uart, (void *)(uintptr_t)testIdPrompt, strlen(testIdPrompt));
+    UART_write(uart, (void *)(uintptr_t)testId, strlen(testId));
     if (pass == true)
     {
-        UART_write(uart, (void *)(uintptr_t)resultPass, sizeof(resultPass));
+        UART_write(uart, (void *)(uintptr_t)resultPass, strlen(resultPass));
     }
     else
     {
-        UART_write(uart, (void *)(uintptr_t)resultFail, sizeof(resultFail));
+        UART_write(uart, (void *)(uintptr_t)resultFail, strlen(resultFail));
     }
 
-    UART_write(uart, (void *)(uintptr_t)crPrompt, sizeof(crPrompt));
+    UART_write(uart, (void *)(uintptr_t)crPrompt, strlen(crPrompt));
 
     UART_close(uart);
 #else
@@ -3241,6 +3242,7 @@ void UART_test_print_test_results(bool pass)
     const char  resultFail[32] = "\r\n Some tests have failed. \r\n";
 
 #if !defined(SIM_BUILD)
+
     /* UART SoC init configuration */
     UART_initConfig(false);
 
@@ -3254,7 +3256,6 @@ void UART_test_print_test_results(bool pass)
     {
         UART_printStatus(resultFail);
     }
-
     UART_stdioDeInit();
 #else
     printf("%s", pass?resultPass:resultFail);
@@ -3451,6 +3452,7 @@ static EDMA_Handle UartApp_edmaInit(void)
     EDMA_errorConfig_t  errorConfig;
     EDMA_instanceInfo_t instanceInfo;
     EDMA3CCInitParams 	initParam;
+    uint32_t            edmaInstId = UART_EDMA_INSTANCE_ID;
     int32_t             errCode;
 
     if (gEdmaHandle != NULL)
@@ -3458,10 +3460,16 @@ static EDMA_Handle UartApp_edmaInit(void)
         return(gEdmaHandle);
     }
 
+    if (uartTestInstance == 2)
+    {
+        /* UART Instance 2 uses DSS EDMA instance B */
+        edmaInstId = EDMA_DRV_INST_DSS_B;
+    }
+
     /* Initialize the UART edma instance */
     EDMA3CCInitParams_init(&initParam);
     initParam.initParamSet = TRUE;
-    errCode = EDMA_init(UART_EDMA_INSTANCE_ID, &initParam);
+    errCode = EDMA_init(edmaInstId, &initParam);
     if (errCode != EDMA_NO_ERROR)
     {
         printf("Error: Unable to initialize EDMA, errorCode = %d\n", errCode);
@@ -3469,7 +3477,7 @@ static EDMA_Handle UartApp_edmaInit(void)
     }
 
     /* Open the UART edma Instance */
-    gEdmaHandle = EDMA_open(UART_EDMA_INSTANCE_ID, &errCode, &instanceInfo);
+    gEdmaHandle = EDMA_open(edmaInstId, &errCode, &instanceInfo);
     if (gEdmaHandle == NULL)
     {
         printf("Error: Unable to open the edma Instance(%d), erorCode = %d\n",
@@ -3494,7 +3502,7 @@ static EDMA_Handle UartApp_edmaInit(void)
 
     return(gEdmaHandle);
 }
-#endif
+#endif /* SOC_TPR12 */
 #endif
 
 #if defined(BUILD_MPU) || defined (__C7100__)
