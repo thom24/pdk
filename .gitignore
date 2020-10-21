@@ -17,4 +17,5 @@ packages/ti/*/lib
 packages/ti/*/*/lib
 packages/ti/*/*/*/lib
 packages/ti/boot/sbl/tools/combined_appimage/bin/
+packages/ti/diag/serdes_diag/
 
