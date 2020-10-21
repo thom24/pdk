@@ -260,7 +260,6 @@ int32_t Sciclient_service (const Sciclient_ReqPrm_t *pReqPrm,
                 pRespPrm->flags = hdr->flags;
                 break;
             /* RM messages processed solely by RM within DM on MCU R5F */
-            case TISCI_MSG_BOARD_CONFIG_RM:
             case TISCI_MSG_RM_GET_RESOURCE_RANGE:
             case TISCI_MSG_RM_IRQ_RELEASE:
             case TISCI_MSG_RM_UDMAP_FLOW_CFG:
@@ -306,6 +305,21 @@ int32_t Sciclient_service (const Sciclient_ReqPrm_t *pReqPrm,
                 }
 
                 break;
+            /* RM boardcfg must be sent to TIFS before local processing */
+            case TISCI_MSG_BOARD_CONFIG_RM:
+                ret = Sciclient_serviceSecureProxy(pReqPrm, pRespPrm);
+                if (ret == CSL_PASS)
+                {
+                    memcpy(message, pReqPrm->pReqPayload, pReqPrm->reqPayloadSize);
+                    ret = Sciclient_ProcessRmMessage(message);
+                    if (pRespPrm->pRespPayload != NULL)
+                    {
+                        memcpy(pRespPrm->pRespPayload, message, pRespPrm->respPayloadSize);
+                    }
+                    hdr = (struct tisci_header *) &message;
+                    pRespPrm->flags = hdr->flags;
+                }
+                break;
             /* RM messages processed by Secure RM within TIFS on M3 */
             case TISCI_MSG_RM_PSIL_PAIR:
             case TISCI_MSG_RM_PSIL_UNPAIR:
@@ -320,6 +334,7 @@ int32_t Sciclient_service (const Sciclient_ReqPrm_t *pReqPrm,
                  * setting the forward status prior to calling this function.
                  */
                 ret = Sciclient_serviceSecureProxy(pReqPrm, pRespPrm);
+                break;
         }
     }
 
