@@ -71,7 +71,7 @@ extern "C" {
 *       indicate backward compatibility is maintained,
 *       however, new messages OR extensions to existing
 *       messages might have been adde */
-#define SCICLIENT_FIRMWARE_ABI_MINOR                     (0U)
+#define SCICLIENT_FIRMWARE_ABI_MINOR                     (1U)
 /* @} */
 
 /**

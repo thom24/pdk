@@ -423,6 +423,10 @@ int32_t Sciclient_init(const Sciclient_ConfigPrms_t *pCfgPrms)
         }
 #endif
     }
+    if (status == CSL_PASS)
+    {
+        status = Sciclient_abiCheck();
+    }
     return status;
 }
 
