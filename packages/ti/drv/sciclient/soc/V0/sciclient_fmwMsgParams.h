@@ -46,6 +46,7 @@
 /* ========================================================================== */
 
 #include <stdint.h>
+#include <ti/csl/soc.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -215,6 +216,11 @@ extern "C" {
 #define SCICLIENT_DEV_MCU_R5FSS0_CORE0_PROCID  (SCICLIENT_PROCID_R5_CL0_C0)
 #define SCICLIENT_DEV_MCU_R5FSS0_CORE1_PROCID  (SCICLIENT_PROCID_R5_CL0_C1)
 /* @} */
+
+/** Board config Base start address */
+#define SCICLIENT_ALLOWED_BOARDCFG_BASE_START (CSL_MCU_MSRAM0_RAM_BASE)
+/** Board config Base end address */
+#define SCICLIENT_ALLOWED_BOARDCFG_BASE_END   (CSL_MCU_MSRAM0_RAM_BASE + CSL_MCU_MSRAM0_RAM_SIZE)
 
 /* ========================================================================== */
 /*                         Structure Declarations                             */

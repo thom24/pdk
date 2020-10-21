@@ -60,6 +60,8 @@
 /** Indicate that this message is marked secure */
 #define TISCI_MSG_FLAG_MASK    (TISCI_BIT(0) | TISCI_BIT(1))
 
+#define SCICLIENT_COMMON_X509_HEADER_ADDR (0x41cffb00)
+
 /* ========================================================================== */
 /*                         Structure Declarations                             */
 /* ========================================================================== */
@@ -150,15 +152,27 @@ int32_t Sciclient_configPrmsInit(Sciclient_ConfigPrms_t *pCfgPrms)
         ret = Sciclient_getDefaultBoardCfgInfo(&boardCfgInfo);
         if (ret == CSL_PASS)
         {
-            pCfgPrms->inPmPrms.boardConfigLow = (uintptr_t)boardCfgInfo.boardCfgLowPm;
-            pCfgPrms->inPmPrms.boardConfigHigh = 0U;
-            pCfgPrms->inPmPrms.boardConfigSize = boardCfgInfo.boardCfgLowPmSize;
-            pCfgPrms->inPmPrms.devGrp = DEVGRP_ALL;
-
-            pCfgPrms->inRmPrms.boardConfigLow = (uintptr_t)boardCfgInfo.boardCfgLowRm;
-            pCfgPrms->inRmPrms.boardConfigHigh = 0U;
-            pCfgPrms->inRmPrms.boardConfigSize = boardCfgInfo.boardCfgLowRmSize;
-            pCfgPrms->inRmPrms.devGrp = DEVGRP_ALL;
+            if (((uint64_t)boardCfgInfo.boardCfgLowPm >= SCICLIENT_ALLOWED_BOARDCFG_BASE_START) &&
+                    ((uint64_t)boardCfgInfo.boardCfgLowPm < SCICLIENT_ALLOWED_BOARDCFG_BASE_END) &&
+                    ((uint64_t)boardCfgInfo.boardCfgLowRm >= SCICLIENT_ALLOWED_BOARDCFG_BASE_START) &&
+                    ((uint64_t)boardCfgInfo.boardCfgLowRm < SCICLIENT_ALLOWED_BOARDCFG_BASE_END))
+            {
+                pCfgPrms->inPmPrms.boardConfigLow = (uintptr_t)boardCfgInfo.boardCfgLowPm;
+                pCfgPrms->inPmPrms.boardConfigHigh = 0U;
+                pCfgPrms->inPmPrms.boardConfigSize = boardCfgInfo.boardCfgLowPmSize;
+                pCfgPrms->inPmPrms.devGrp = DEVGRP_ALL;
+                
+                pCfgPrms->inRmPrms.boardConfigLow = (uintptr_t)boardCfgInfo.boardCfgLowRm;
+                pCfgPrms->inRmPrms.boardConfigHigh = 0U;
+                pCfgPrms->inRmPrms.boardConfigSize = boardCfgInfo.boardCfgLowRmSize;
+                pCfgPrms->inRmPrms.devGrp = DEVGRP_ALL;
+            }
+            else
+            {
+                ret = Sciclient_boardCfgParseHeader(
+                            (uint8_t *) SCICLIENT_COMMON_X509_HEADER_ADDR,
+                            &pCfgPrms->inPmPrms, &pCfgPrms->inRmPrms);
+            }
         }
 #endif
         pCfgPrms->opModeFlag     = SCICLIENT_SERVICE_OPERATION_MODE_POLLED;

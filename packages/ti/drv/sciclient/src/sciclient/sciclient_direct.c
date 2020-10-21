@@ -260,7 +260,6 @@ int32_t Sciclient_service (const Sciclient_ReqPrm_t *pReqPrm,
                 pRespPrm->flags = hdr->flags;
                 break;
             /* RM messages processed solely by RM within DM on MCU R5F */
-            case TISCI_MSG_BOARD_CONFIG_RM:
             case TISCI_MSG_RM_GET_RESOURCE_RANGE:
             case TISCI_MSG_RM_IRQ_RELEASE:
             case TISCI_MSG_RM_UDMAP_FLOW_CFG:
@@ -340,6 +339,7 @@ int32_t Sciclient_service (const Sciclient_ReqPrm_t *pReqPrm,
                  * setting the forward status prior to calling this function.
                  */
                 ret = Sciclient_serviceSecureProxy(pReqPrm, pRespPrm);
+                break;
         }
     }
 

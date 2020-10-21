@@ -65,7 +65,7 @@ loadSciserverFlag = 1;
 sciserver_elf_file = pathSciclient+"sciserver_testapp_mcu1_0_release.xer5f";
 
 //path to sysfw bin
-sysfw_bin = pdkPath+"/packages/ti/drv/sciclient/soc/sysfw/binaries/ti-sci-firmware-j7200-gp.bin"
+sysfw_bin = pdkPath+"/packages/ti/drv/sciclient/soc/sysfw/binaries/ti-fs-firmware-j7200-gp.bin"
 
 //<!!!!!! EDIT THIS !!!!!>
 
