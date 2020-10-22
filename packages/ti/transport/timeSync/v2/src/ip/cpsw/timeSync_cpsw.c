@@ -346,7 +346,7 @@ TimeSync_Handle TimeSync_open(TimeSync_Config *timeSyncConfig)
 
         EnetAppUtils_assert(status == TIMESYNC_OK);
 
-        gTimeSyncCpswObj.coreId = CpswAppSoc_getCoreId();
+        gTimeSyncCpswObj.coreId = EnetSoc_getCoreId();
 
         EnetMcm_getCmdIf(gTimeSyncCpswObj.enetType, &gTimeSyncCpswObj.hMcmCmdIf);
         EnetAppUtils_assert(gTimeSyncCpswObj.hMcmCmdIf.hMboxCmd != NULL);
@@ -684,7 +684,7 @@ int32_t TimeSync_sendPtpFrame(TimeSync_Handle timeSyncHandle,
             memcpy(txFrame, frame, size);
             pktInfo->userBufLen = size;
             pktInfo->appPriv = (void *)timeSyncHandle;
-            pktInfo->txPortNum = (Enet_MacPort)ENET_NORM_MACPORT(txPort);
+            pktInfo->txPortNum = (Enet_MacPort)ENET_MACPORT_NORM(txPort);
 
             /* Save tx pkt info to re-use during notify callback */
             pTxTsPktInfo = &timeSyncHandle->txTsPktInfo;
@@ -831,7 +831,7 @@ int8_t TimeSync_isPortLinkUp(TimeSync_Handle timeSyncHandle,
     {
         isLinkUpFlag = EnetAppUtils_isPortLinkUp(timeSyncHandle->hEnet,
                                                  timeSyncHandle->coreId,
-                                                 (Enet_MacPort)(ENET_NORM_MACPORT(portNum)));
+                                                 (Enet_MacPort)(ENET_MACPORT_NORM(portNum)));
     }
 
     if (isLinkUpFlag == true)
@@ -1155,10 +1155,10 @@ static void TimeSync_initTxFreePktQ(void)
     EnetQueue_initQ(&gTimeSyncCpswObj.txFreePktInfoQ);
 
     /* Initialize TX EthPkts and queue them to txFreePktInfoQ */
-    for (i = 0U; i < CPSW_APPMEMUTILS_NUM_TX_PKTS; i++)
+    for (i = 0U; i < ENET_MEM_NUM_TX_PKTS; i++)
     {
-        pPktInfo = CpswAppMemUtils_allocEthPktFxn(&gTimeSyncCpswObj,
-                                                  CPSW_APPMEMUTILS_LARGE_POOL_PKT_SIZE,
+        pPktInfo = EnetMem_allocEthPkt(&gTimeSyncCpswObj,
+                                                  ENET_MEM_LARGE_POOL_PKT_SIZE,
                                                   UDMA_CACHELINE_ALIGNMENT);
         EnetAppUtils_assert(pPktInfo != NULL);
         ENET_UTILS_SET_PKT_APP_STATE(&pPktInfo->pktState, ENET_PKTSTATE_APP_WITH_FREEQ);
@@ -1178,10 +1178,10 @@ static void TimeSync_initRxReadyPktQ(void)
     EnetQueue_initQ(&gTimeSyncCpswObj.rxReadyQ);
     EnetQueue_initQ(&rxReadyQ);
 
-    for (i = 0U; i < CPSW_APPMEMUTILS_NUM_RX_PKTS; i++)
+    for (i = 0U; i < ENET_MEM_NUM_RX_PKTS; i++)
     {
-        pPktInfo = CpswAppMemUtils_allocEthPktFxn(&gTimeSyncCpswObj,
-                                                  CPSW_APPMEMUTILS_LARGE_POOL_PKT_SIZE,
+        pPktInfo = EnetMem_allocEthPkt(&gTimeSyncCpswObj,
+                                                  ENET_MEM_LARGE_POOL_PKT_SIZE,
                                                   UDMA_CACHELINE_ALIGNMENT);
         EnetAppUtils_assert(pPktInfo != NULL);
         ENET_UTILS_SET_PKT_APP_STATE(&pPktInfo->pktState, ENET_PKTSTATE_APP_WITH_FREEQ);
@@ -1324,7 +1324,7 @@ static int32_t TimeSync_setMacPortConfig(void)
     {
         if (TIMESYNC_IS_BIT_SET(gTimeSyncCpswObj.timeSyncConfig.protoCfg.portMask, i))
         {
-            enableTsEventInArgs.macPort = (Enet_MacPort)(ENET_NORM_MACPORT(i));
+            enableTsEventInArgs.macPort = (Enet_MacPort)(ENET_MACPORT_NORM(i));
             ENET_IOCTL_SET_IN_ARGS(&prms, &enableTsEventInArgs);
             status = Enet_ioctl(gTimeSyncCpswObj.hEnet,
                                 gTimeSyncCpswObj.coreId,
