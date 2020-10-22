@@ -46,33 +46,37 @@ export CAT=cat
 # Parse CLI arguments
 for i in "$@"; do
 case $i in
+    -sr|--skip-reset) # Skips the PDK reset and rebase step
+        SKIP_RESET=YES
+        shift
+        ;;
     -sk|--skip-checkout) # Skips the SYSFW checkout step
-	SKIP_CHECKOUT=YES
-	shift
-	;;
+        SKIP_CHECKOUT=YES
+        shift
+        ;;
     -sb|--skip-build) # Skips the sciclient_ccs_init build step
-	SKIP_BUILD=YES
-	shift
-	;;
+        SKIP_BUILD=YES
+        shift
+        ;;
     -sg|--skip-gen) # Skips the firmwareHeaderGen.sh step
-	SKIP_GEN_BIN=YES
-	shift
-	;;
+        SKIP_GEN_BIN=YES
+        shift
+        ;;
     -sc|--skip-commit) # Skips the PDK commit step
-	SKIP_COMMIT=YES
-	shift
-	;;
+        SKIP_COMMIT=YES
+        shift
+        ;;
     -*) # Invalid flag
-	$ECHO "!!!WARNING!!! - IGNORING INVALID FLAG: $1"
-	shift
-	;;
+        $ECHO "!!!WARNING!!! - IGNORING INVALID FLAG: $1"
+        shift
+        ;;
     *)  # Any positional arg will overwrite previous positional arg
-	if [ "$RELEASE_TAG" != "" ]; then
-	    $ECHO "!!!WARNING!!! - OVERWRITING \$RELEASE_TAG: $RELEASE_TAG->$1"
-	fi
-	RELEASE_TAG="$1"
-	shift
-	;;
+        if [ "$RELEASE_TAG" != "" ]; then
+            $ECHO "!!!WARNING!!! - OVERWRITING \$RELEASE_TAG: $RELEASE_TAG->$1"
+        fi
+        RELEASE_TAG="$1"
+        shift
+        ;;
 esac
 done
 
@@ -90,18 +94,22 @@ export ROOTDIR=$(cd "$SCI_CLIENT_DIR/../../.." && pwd )
 
 ################################################################################
 # Checkout SYSFW release and prepare it for use with PDK
-if [ "$SKIP_CHECKOUT" != "YES" ]; then
+
+if [ "$SKIP_RESET" != "YES" ]; then
     $ECHO "Reset PDK branch and rebase onto master"
     git reset --hard HEAD
     git fetch origin; git rebase origin/master
+fi
+
+if [ "$SKIP_CHECKOUT" != "YES" ]; then
 
     $ECHO "Cloning the system-firmware-releases"
     cd $SCI_CLIENT_DIR/soc/
     git clone ssh://git@bitbucket.itg.ti.com/sysfw/system-firmware-releases.git --branch $RELEASE_TAG
     if [ $? -ne 0 ]; then
-	$ECHO
-	$ECHO "!!!ABORT!!! - SYSFW TAG NOT FOUND: $RELEASE_TAG"
-	exit 1
+        $ECHO
+        $ECHO "!!!ABORT!!! - SYSFW TAG NOT FOUND: $RELEASE_TAG"
+        exit 1
     fi
 
     $ECHO "Remove old SYSFW dir, and replace it with the newly cloned repo"
