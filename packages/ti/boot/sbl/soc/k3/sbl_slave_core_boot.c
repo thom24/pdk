@@ -800,7 +800,7 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
             if (pAppEntry->CpuEntryPoint[core_id] <  SBL_INVALID_ENTRY_ADDR)
             {
 #if !defined(SOC_AM65XX)
-                SBL_log(SBL_LOG_MAX, "Un-HALT for ProcId 0x%x...\n", sblSlaveCoreInfoPtr->tisci_proc_id);
+                /* Un-halt MCU1_1 core */
                 Sciclient_procBootSetSequenceCtrl(SBL_PROC_ID_MCU1_CPU1, 0, TISCI_MSG_VAL_PROC_BOOT_CTRL_FLAG_R5_CORE_HALT, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
                 Sciclient_pmSetModuleState(SBL_DEV_ID_MCU1_CPU1, TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
 #endif
@@ -813,8 +813,7 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
                 SBL_ReleaseCore(core_id, TISCI_MSG_FLAG_AOP);
             }
 
-            SBL_log(SBL_LOG_MAX, "Starting app, branching to 0x0 \n");
-            /* Branch to start of ATCM */
+            /* Start the App - Branch to start of ATCM (0x0) */
             ((void(*)(void))0x0)();
 #else
             /* Request MCU1_0 */
@@ -849,7 +848,7 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
              *   were to be issued and executed prior to WFI, the cluster would enter reset and
              *   SBL would quite sensibly not be able to tell DMSC to take itself out of reset.
              */
-            SBL_log(SBL_LOG_MAX, "Sciclient_procBootWaitProcessorState, ProcId 0x%x... \n", SBL_PROC_ID_MCU1_CPU0);
+            /* SBL_log(SBL_LOG_MAX, "Sciclient_procBootWaitProcessorState, ProcId 0x%x... \n", SBL_PROC_ID_MCU1_CPU0); */
             status = Sciclient_procBootWaitProcessorState(SBL_PROC_ID_MCU1_CPU0, 1, 1, 0, 3, 0, 0, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
             if (status != CSL_PASS)
             {
