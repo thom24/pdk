@@ -65,6 +65,8 @@ static uint32_t sbl_scratch_sz = SBL_SCRATCH_MEM_SIZE;
 /******************************************************************************
  ***                     SBL Multicore RPRC parse functions                 ***
 *******************************************************************************/
+void SBL_DCacheClean(void *addr, uint32_t size);
+
 /* read of block of data from buffer */
 int32_t SBL_ReadMem(void       *buff,
                     void       *srcAddr,
@@ -966,6 +968,7 @@ static int32_t SBL_RprcImageParse(void *srcAddr,
             {
                 SBL_log(SBL_LOG_MAX, "Copying 0x%x bytes to 0x%x\n", section.size, section.addr);
                 fp_readData((void *)(uintptr_t)(section.addr), srcAddr, section.size);
+                SBL_DCacheClean((void *)(uintptr_t)(section.addr), section.size);
             }
         }
     }
