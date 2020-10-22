@@ -594,8 +594,11 @@ static int32_t Sciserver_UserProcessMsg(uint32_t *msg_recv,
         default:
             isRmMsg = 0;
             isPmMsg = 0;
-            isPmMsg = 0;
-            respMsgSize = sizeof(struct tisci_header);
+            isFwdMsg = 1;
+
+            /* Forward the full message size */
+            reqMsgSize = SCISERVER_HW_QUEUE_SIZE;
+            respMsgSize = SCISERVER_HW_QUEUE_SIZE;
             break;
     }
 
