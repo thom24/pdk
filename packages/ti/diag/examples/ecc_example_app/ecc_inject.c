@@ -48,6 +48,7 @@
 #include <diag_utils.h>
 
 #include <ti/csl/csl_ecc_aggr.h>
+#include <ti/csl/soc/cslr_soc_ecc_aggr.h>
 #include <sdr_ecc.h>
 
 #include "ecc_trigger_func.h"
@@ -151,7 +152,7 @@ diag_ecc_use_case_t useCaseArray[6] =
     },
     /* Main ESM, MSMC ECC Aggregator, Wrapper ECC Type */
     {SDR_ECC_MEMTYPE_MAIN_MSMC_AGGR0,                  /* eccAggrId of type SDR_ECC_MemType */
-     SDR_ECC_MAIN_MSMC_MEM_WRAPPER_SUBTYPE,            /* eccRamId of type SDR_ECC_MemSubType */ 
+     SDR_ECC_MAIN_MSMC_MEM_WRAPPER_SUBTYPE,            /* eccRamId of type SDR_ECC_MemSubType */
      SDR_INJECT_ECC_ERROR_FORCING_1BIT_N_ROW_ONCE,     /* SEC Inject Error Type */
      0x10,                                             /* secFlipMask of type uint32_t */
      SDR_INJECT_ECC_ERROR_FORCING_2BIT_N_ROW_ONCE,     /* DED Inject Error Type */

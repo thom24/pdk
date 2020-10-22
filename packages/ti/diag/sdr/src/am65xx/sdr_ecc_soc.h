@@ -41,6 +41,7 @@
 #include <stdint.h>
 #include <sdr_ecc.h>
 #include <ti/csl/csl_ecc_aggr.h>
+#include <ti/csl/soc/cslr_soc_ecc_aggr.h>
 
 #include "sdr_ecc_priv.h"
 

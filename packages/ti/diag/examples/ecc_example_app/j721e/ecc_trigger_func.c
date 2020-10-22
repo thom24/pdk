@@ -48,6 +48,7 @@
 #include <stdint.h>
 
 #include <ti/csl/soc.h>
+#include <ti/csl/soc/cslr_soc_ecc_aggr.h>
 #include <ti/csl/csl_cbass.h>
 #include <ti/csl/csl_clec.h>
 #include <ti/drv/sciclient/sciclient.h>

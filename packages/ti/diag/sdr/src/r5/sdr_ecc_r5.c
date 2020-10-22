@@ -39,6 +39,7 @@
 #include <sdr_ecc.h>
 #include <ti/csl/csl_ecc_aggr.h>
 #include <ti/csl/soc.h>
+#include <ti/csl/soc/cslr_soc_ecc_aggr.h>
 
 #include <ti/csl/arch/r5/csl_arm_r5_pmu.h>
 #include <ti/csl/arch/r5/csl_vim.h>
