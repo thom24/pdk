@@ -79,10 +79,15 @@
 
 #define APP_TSK_STACK_MAIN              (32U * 1024U)
 /**< Test application stack size */
-#define IPC_SETUP_SCISERVER_TASK_PRI_HIGH   (3 + 1)
-/**< High Priority for SCI Server */
-#define IPC_SETUP_SCISERVER_TASK_PRI_LOW    (1)
-/**< High Priority for SCI Server */
+
+/* High Priority for SCI Server - must be higher than Low priority task */
+#define IPC_SETUP_SCISERVER_TASK_PRI_HIGH   (5)
+/*
+ * Low Priority for SCI Server - must be higher than IPC echo test tasks
+ * to prevent delay in handling Sciserver requests when test is performing
+ * multicore ping/pong.
+ */
+#define IPC_SETUP_SCISERVER_TASK_PRI_LOW    (4)
 
 /* ========================================================================== */
 /*                         Structure Declarations                             */
