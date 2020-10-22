@@ -34,54 +34,38 @@
  *  \file udma_ospi_flash_test.c
  *
  *  \brief UDMA OSPI Flash sample application performs DAC DMA mode ospi write and read 
- *  at 133MHz RCLK and 166MHz RCLK with UDMA 3D transfer using SW trigger method as below
+ *  at 133MHz RCLK and 166MHz RCLK with UDMA 3D transfer using SW trigger method as below.
  * 
- *  Loop N times (icnt2)
- *      [This following performs OSPI write of icnt0*icnt1 bytes]
+ *  Performs OSPI write of "appTestObj->numBytes" bytes:
  *      - Loop L times (icnt1)
  *         - SW trigger UDMA Channel -> Triggers OSPI Write of K bytes from R5 TCM to OSPI Data Buffer
  *         - wait for transfer to complete
  *         - wait for ospi flash to get ready for next write
- * 
- *  > Each outer loop writes M (icnt0*icnt1) bytes of data
  *  > Eack inner loop writes K (inct0) bytes of data and wait for device to be ready.
- *  > R5 TCM and OSPI Data Buffer size is M x N bytes.
+ *  > R5 TCM and OSPI Data Buffer size is L x K bytes.
  * 
  *  Where,
  *      - K is icnt0 - "UDMA_TEST_WRITE_CHUNK_SIZE"
  *      - L is icnt1 - is chunkCnt: "appTestObj->numBytes/UDMA_TEST_WRITE_CHUNK_SIZE"
- *      - M is icnt0*icnt1 - "appTestObj->numBytes"  
- *          This refers to the no. of bytes transferred per OSPI Read/Write operation.
- *      - N is icnt2 - UDMA_TEST_XFER_CNT 
- *          This parameter can be used to configure the no.of times the transfer operation to be carried out for continous data.
  * 
- *  Loop QxPxN times (icnt3*icnt2*inct1)
- * 
- *      [The following performs OSPI read of icnt0 bytes]
- *      - SW trigger UDMA Channel -> Triggers OSPI Read M bytes from OSPI Data Buffer to R5 TCM 
- *      - Wait for transfer to complete
+ *  Performs OSPI read of "appTestObj->numBytes" bytes, UDMA_TEST_XFER_REPEAT_CNT no. of times
+ *     - Loop N times:
+ *          [The following performs OSPI read of icnt0 bytes]
+ *          - SW trigger UDMA Channel -> Triggers OSPI Read M bytes from OSPI Data Buffer to R5 TCM 
+ *          - Wait for transfer to complete
  * 
  *  > Each loop transfers M (icnt0) bytes of data
- *  > R5 TCM and OSPI Data Buffer size is M x N bytes.
- *  > After each N no.of loops (ie, after performing MxN continous bytes tranfer), 
- *    the tranfers restarts from the origin address.
- *    This happens QxP times.
- *    Memory is set to wrap around after MxN bytes of transfer.
- *    This shows how to do tranfer on circular buffer of size MxN bytes
+ *  > R5 TCM and OSPI Data Buffer size is M bytes.
+ *  > For each loop the tranfer restarts from the origin address.
  *
  *  Where,
  *      - M is icnt0 - "appTestObj->numBytes"  
- *          This refers to the no. of bytes transferred per OSPI Read/Write operation.
- *      - N is icnt1 - UDMA_TEST_XFER_CNT 
- *          This parameter can be used to configure the no.of times the transfer operation to be carried out for continous data.
- *      - P is icnt2 = UDMA_TEST_XFER_REPEAT_CNT_0 and
- *        Q is icnt3 = UDMA_TEST_XFER_REPEAT_CNT_1
- *          This parameters can be used to configure the the no.of times to repeat the whole transfer starting from the origin address.
+ *          This refers to the no. of bytes transferred per OSPI Read operation.
+ *      - N is UDMA_TEST_XFER_REPEAT_CNT
+ *         This parameters can be used to configure the the no.of times to repeat the whole transfer starting from the origin address.
  * 
- *  NOTE: As per the requirments of the specific usecase, N,Q and P can be used interchangeably by making appropiate changes in the TRPD.
- *  For example UDMA_TEST_XFER_CNT can be NxP (icnt1xicnt2) with UDMA_TEST_XFER_REPEAT_CNT as Q.
- *  Or even UDMA_TEST_XFER_CNT can be NxPxQ (icnt1xicnt2xicnt3) with UDMA_TEST_XFER_REPEAT_CNT as 1.
- *  And conversly, UDMA_TEST_XFER_REPEAT_CNT can be NxPxQ (icnt1xicnt2xicnt3) with UDMA_TEST_XFER_CNT as 1.
+ *  This read illustrates TR Reload Feature in which TR Reload count is set as 0x1FFU for perpetual loop.
+ *  In this example, after UDMA_TEST_XFER_REPEAT_CNT no.of read operations, we teardown the channel to exit from the loop.
  */
 
 /* ========================================================================== */
@@ -107,12 +91,8 @@
  */
 /** \brief Maximum Number of bytes to perform OSPI Read/Write per operation (Actual number based on test) */
 #define UDMA_TEST_XFER_MAX_NUM_BYTES    (1024U)
-/** \brief Number of times to do continous data tranfer */
-#define UDMA_TEST_XFER_CNT              (5U)
 /** \brief Number of times to repeat whole data tranfer */
-#define UDMA_TEST_XFER_REPEAT_CNT_0     (2U)
-/** \brief Number of times to repeat whole data tranfer */
-#define UDMA_TEST_XFER_REPEAT_CNT_1     (1U)
+#define UDMA_TEST_XFER_REPEAT_CNT       (10U)
 /** \brief ChunkSize in bytes for each DMA mode OSPI Flash Write operation */
 #define UDMA_TEST_WRITE_CHUNK_SIZE      (16U)
 
@@ -121,11 +101,9 @@
  */
 
 /** \brief Total number of bytes to copy and buffer allocation */
-#define UDMA_TEST_APP_MAX_TOTAL_NUM_BYTES   (UDMA_TEST_XFER_MAX_NUM_BYTES * UDMA_TEST_XFER_CNT)
+#define UDMA_TEST_APP_MAX_TOTAL_NUM_BYTES   (UDMA_TEST_XFER_MAX_NUM_BYTES)
 /** \brief This ensures every channel memory is aligned */
 #define UDMA_TEST_APP_BUF_SIZE_ALIGN        ((UDMA_TEST_APP_MAX_TOTAL_NUM_BYTES + UDMA_CACHELINE_ALIGNMENT) & ~(UDMA_CACHELINE_ALIGNMENT - 1U))
-/** \brief Number of times to perform the memcpy operation */
-#define UDMA_TEST_APP_LOOP_CNT              (1U)
 
 /*
  * Ring parameters
@@ -196,6 +174,9 @@ typedef struct
     Udma_EventHandle        trEventHandle;
     Udma_EventPrms          trEventPrms;
 
+    /**< TR Reload Count */
+    uint32_t                reloadCnt;
+
     uint32_t                trigger;
     /**< Global0 or Global 1 Trigger - refer \ref CSL_UdmapTrFlagsTrigger. */
     uint32_t                eventSize;
@@ -253,22 +234,22 @@ typedef struct
 typedef struct
 {
     /**< GTC Timer ticks at start of profiling OSPI write. */
-    volatile uint64_t       txStartTicks[UDMA_TEST_XFER_CNT];
+    volatile uint64_t       txStartTicks;
     /**< GTC Timer ticks at stop of profiling OSPI write. */
-    volatile uint64_t       txStopTicks[UDMA_TEST_XFER_CNT];
+    volatile uint64_t       txStopTicks;
     /**< Measured total no. of GTC Timer ticks for OSPI write. */
-    volatile uint64_t       txTotalTicks[(UDMA_TEST_XFER_CNT) + 1U];
+    volatile uint64_t       txTotalTicks;
     /**< Elapsed time in nsec for OSPI write.. */
-    volatile uint64_t       txElapsedTime[(UDMA_TEST_XFER_CNT) + 1U];
+    volatile uint64_t       txElapsedTime;
 
     /**< GTC Timer ticks at start of profiling OSPI read. */
-    volatile uint64_t       rxStartTicks[UDMA_TEST_XFER_CNT * UDMA_TEST_XFER_REPEAT_CNT_0 * UDMA_TEST_XFER_REPEAT_CNT_1];
+    volatile uint64_t       rxStartTicks[UDMA_TEST_XFER_REPEAT_CNT];
     /**< GTC Timer ticks at stop of profiling OSPI read. */
-    volatile uint64_t       rxStopTicks[UDMA_TEST_XFER_CNT * UDMA_TEST_XFER_REPEAT_CNT_0 * UDMA_TEST_XFER_REPEAT_CNT_1];
+    volatile uint64_t       rxStopTicks[UDMA_TEST_XFER_REPEAT_CNT];
     /**< Measured total no. of GTC Timer ticks for OSPI read. */
-    volatile uint64_t       rxTotalTicks[(UDMA_TEST_XFER_CNT * UDMA_TEST_XFER_REPEAT_CNT_0 * UDMA_TEST_XFER_REPEAT_CNT_1) + 1U];
+    volatile uint64_t       rxTotalTicks[UDMA_TEST_XFER_REPEAT_CNT + 1U];
     /**< Elapsed time in nsec for OSPI read. */
-    volatile uint64_t       rxElapsedTime[(UDMA_TEST_XFER_CNT * UDMA_TEST_XFER_REPEAT_CNT_0 * UDMA_TEST_XFER_REPEAT_CNT_1) + 1U];
+    volatile uint64_t       rxElapsedTime[UDMA_TEST_XFER_REPEAT_CNT + 1U];
 
 } App_UdmaCounterObj;
 
@@ -400,7 +381,7 @@ int32_t Udma_ospiFlashTest(void)
         }
 
         appObj->appTestObj = *test;
-        appObj->totalNumBytes = test->numBytes * UDMA_TEST_XFER_CNT;
+        appObj->totalNumBytes = test->numBytes;
         retVal = test->testFunc();
         if((UDMA_SOK == retVal) && (UDMA_SOK == gUdmaTestResult))
         {
@@ -482,34 +463,24 @@ static int32_t Udma_ospiFlashTestRun(void)
 static int32_t App_ospiFlashTest(App_UdmaObj *appObj)
 {
     int32_t         retVal = UDMA_SOK;
-    uint32_t        loopCnt = 0U;
     uint32_t        i;
     uint8_t        *rxBuf;
 
-    while(loopCnt < UDMA_TEST_APP_LOOP_CNT)
+    /* Reset RX buffer */
+    rxBuf  = &gUdmaTestRxBuf[0U];
+    for(i = 0U; i < appObj->totalNumBytes; i++)
     {
-        /* Reset RX buffer */
-        rxBuf  = &gUdmaTestRxBuf[0U];
-        for(i = 0U; i < appObj->totalNumBytes; i++)
-        {
-            rxBuf[i] = 0U;
-        }
-        /* Writeback RX buffer */
-        Udma_appUtilsCacheWb(rxBuf, appObj->totalNumBytes);
+        rxBuf[i] = 0U;
+    }
+    /* Writeback RX buffer */
+    Udma_appUtilsCacheWb(rxBuf, appObj->totalNumBytes);
 
-        /* Perform UDMA memcpy */
-        retVal = App_udmaOspiFlash(appObj);
-        if(UDMA_SOK != retVal)
-        {
-            break;
-        }
-        else
-        {
-            /* Print performance results for OSPI Flash in DAC DMA mode */
-            App_printPerfResults(appObj);
-        }
-    
-        loopCnt++;
+    /* Perform UDMA memcpy */
+    retVal = App_udmaOspiFlash(appObj);
+    if(UDMA_SOK == retVal)
+    {
+        /* Print performance results for OSPI Flash in DAC DMA mode */
+        App_printPerfResults(appObj);
     }
 
     return (retVal);
@@ -570,8 +541,6 @@ static int32_t App_udmaOspiFlashWrite(App_UdmaObj *appObj)
     int32_t              retVal = UDMA_SOK;
     uint64_t             pDesc = 0;
     uint32_t             i;
-    uint32_t             triggerCnt, tCnt;
-    uint8_t             *txChunkAddr;
     uint32_t             chunkCnt, cCnt;
     /* Use local variables in real-time loop for optimized performance */
     uint32_t             txStartTicks, txStopTicks;
@@ -620,88 +589,82 @@ static int32_t App_udmaOspiFlashWrite(App_UdmaObj *appObj)
 
     if(UDMA_SOK == retVal)
     {
-        /* Set number of times to repeat TX transfer */
-        triggerCnt = UDMA_TEST_XFER_CNT; /* = appTrObj->icnt[2] */
-        /* Set number of times to trigger TX transfer during each iteration of tCnt. */
-        chunkCnt = appTestObj->numBytes/UDMA_TEST_WRITE_CHUNK_SIZE; /* appTrObj->icnt[1] = appTestObj->numBytes/appTrObj->icnt[0] */
-        for(tCnt = 0U; tCnt < triggerCnt; tCnt++)
+
+        /*****************************************************************************
+         * OSPI Write "appTestObj->numBytes" (= appTrObj->icnt[0]* appTrObj->icnt[1] )
+         *****************************************************************************/
+        txStartTicks = App_getGTCTimerTicks();
+
+        /* Do Cache write-back for "appTestObj->numBytes" chunk to be tranferred */
+        CSL_armR5CacheWb(txBuf, size);
+        
+        /* Set number of times to trigger TX transfer */
+        chunkCnt = appTrObj->icnt[1];
+        for(cCnt = 0U; cCnt < chunkCnt; cCnt++)
         {
-            /* Calculate start of address to do cacheOps */
-            txChunkAddr = txBuf + (tCnt * size);
+            /* Write UDMA_TEST_WRITE_CHUNK_SIZE(= appTrObj->icnt[0]) bytes and wait for device to be ready */
 
-             /*****************************************************************************
-             * OSPI Write "appTestObj->numBytes" (= appTrObj->icnt[0]* appTrObj->icnt[1] )
-             *****************************************************************************/
-            txStartTicks = App_getGTCTimerTicks();
+            /* Set channel trigger and wait for completion */
+            CSL_REG32_WR(pSwTriggerReg, triggerMask);
 
-            /* Do Cache write-back for "appTestObj->numBytes" chunk to be tranferred */
-            CSL_armR5CacheWb(txChunkAddr, size);
-
-            for(cCnt = 0U; cCnt < chunkCnt; cCnt++)
+            /* Wait for the transfer to complete in polling mode */
+            while(1U)
             {
-                /* Write UDMA_TEST_WRITE_CHUNK_SIZE(= appTrObj->icnt[0]) bytes and wait for device to be ready */
-
-                /* Set channel trigger and wait for completion */
-                CSL_REG32_WR(pSwTriggerReg, triggerMask);
-
-                /* Wait for the transfer to complete in polling mode */
-                while(1U)
+                volatile uint64_t   intrStatusReg;
+                intrStatusReg = CSL_REG64_RD(pintrStatusReg);
+                /* Check whether the interrupt status Reg is set - which indicates the
+                * tranfser completion of appTestObj->numBytes */
+                if(intrStatusReg & intrMask)
                 {
-                    volatile uint64_t   intrStatusReg;
-                    intrStatusReg = CSL_REG64_RD(pintrStatusReg);
-                    /* Check whether the interrupt status Reg is set - which indicates the
-                    * tranfser completion of appTestObj->numBytes */
-                    if(intrStatusReg & intrMask)
-                    {
-                        /* Clear interrupt */
-                        CSL_REG64_WR(intrClearReg, intrMask);
-                        break;
-                    }
+                    /* Clear interrupt */
+                    CSL_REG64_WR(intrClearReg, intrMask);
+                    break;
                 }
+            }
 
-                /* Wait device to be ready after write operation */
-                uint32_t timeOutVal = OSPI_FLASH_WRITE_TIMEOUT;
-                uint32_t retry = OSPI_FLASH_WRITE_TIMEOUT;
-                volatile uint32_t delay = OSPI_FLASH_CHECK_IDLE_DELAY;
-                uint8_t  status = 0xFF;
-                uint32_t regVal;
-                while (timeOutVal != 0U)
+            /* Wait device to be ready after write operation */
+            uint32_t timeOutVal = OSPI_FLASH_WRITE_TIMEOUT;
+            uint32_t retry = OSPI_FLASH_WRITE_TIMEOUT;
+            volatile uint32_t delay = OSPI_FLASH_CHECK_IDLE_DELAY;
+            uint8_t  status = 0xFF;
+            uint32_t regVal;
+            while (timeOutVal != 0U)
+            {
+                (void)CSL_ospiCmdRead(baseAddr, OSPI_FLASH_CMD_RDSR, 1U);
+                while(!CSL_ospiIsIdle(baseAddr));
+                CSL_ospiFlashExecCmd(baseAddr);
+                while(retry != 0U)
                 {
-                    (void)CSL_ospiCmdRead(baseAddr, OSPI_FLASH_CMD_RDSR, 1U);
-                    while(!CSL_ospiIsIdle(baseAddr));
-                    CSL_ospiFlashExecCmd(baseAddr);
-                    while(retry != 0U)
-                    {
-                        if(CSL_ospiFlashExecCmdComplete(baseAddr) == TRUE)
-                        {
-                            break;
-                        }
-                        while (delay > 0U)
-                        {  
-                            delay = delay - 1U;
-                        }
-                        retry--;
-                    }
-                    while(!CSL_ospiIsIdle(baseAddr));
-                    regVal = CSL_REG32_RD(&baseAddr->FLASH_RD_DATA_LOWER_REG);
-                    (void)memcpy((void *)&status, (void *)(&regVal), 1U);
-                    if ((status & 1U) == 0U)
+                    if(CSL_ospiFlashExecCmdComplete(baseAddr) == TRUE)
                     {
                         break;
                     }
-                    timeOutVal--;
-                    delay = OSPI_FLASH_CHECK_IDLE_DELAY;
                     while (delay > 0U)
                     {  
                         delay = delay - 1U;
                     }
+                    retry--;
                 }
-            } 
-            txStopTicks = App_getGTCTimerTicks();
+                while(!CSL_ospiIsIdle(baseAddr));
+                regVal = CSL_REG32_RD(&baseAddr->FLASH_RD_DATA_LOWER_REG);
+                (void)memcpy((void *)&status, (void *)(&regVal), 1U);
+                if ((status & 1U) == 0U)
+                {
+                    break;
+                }
+                timeOutVal--;
+                delay = OSPI_FLASH_CHECK_IDLE_DELAY;
+                while (delay > 0U)
+                {  
+                    delay = delay - 1U;
+                }
+            }
+        } 
+        txStopTicks = App_getGTCTimerTicks();
 
-            appCounterObj->txStartTicks[tCnt] = txStartTicks;
-            appCounterObj->txStopTicks[tCnt] = txStopTicks;
-        }
+        appCounterObj->txStartTicks = txStartTicks;
+        appCounterObj->txStopTicks = txStopTicks;
+        
     }
     if(UDMA_SOK == retVal)
     {
@@ -726,10 +689,7 @@ static int32_t App_udmaOspiFlashWrite(App_UdmaObj *appObj)
 static int32_t App_udmaOspiFlashRead(App_UdmaObj *appObj)
 {
     int32_t              retVal = UDMA_SOK;
-    uint64_t             pDesc = 0;
     uint32_t             triggerCnt, tCnt;
-    uint8_t             *rxChunkAddr;
-    volatile uint32_t    offset;
     /* Use local variables in real-time loop for optimized performance */
     volatile uint32_t   *pSwTriggerReg;
     uint32_t             triggerMask;
@@ -741,7 +701,6 @@ static int32_t App_udmaOspiFlashRead(App_UdmaObj *appObj)
     Udma_ChHandle        chHandle         = appChObj->chHandle;
     uint8_t             *rxBuf            = &gUdmaTestRxBuf[0U];
     const uint16_t       size             = appTestObj->numBytes;
-    const uint16_t       totalSize        = appObj->totalNumBytes;
     volatile uint64_t   *pintrStatusReg   = appTrObj->trEventPrms.intrStatusReg;
     uint64_t             intrMask         = appTrObj->trEventPrms.intrMask;
     volatile uint64_t   *intrClearReg     = appTrObj->trEventPrms.intrClearReg;
@@ -770,14 +729,9 @@ static int32_t App_udmaOspiFlashRead(App_UdmaObj *appObj)
     if(UDMA_SOK == retVal)
     {
         /* Set number of times to trigger RX transfer */
-        triggerCnt = UDMA_TEST_XFER_CNT * UDMA_TEST_XFER_REPEAT_CNT_0 * UDMA_TEST_XFER_REPEAT_CNT_1;
-        /* = appTrObj->icnt[1]*appTrObj->icnt[2]*appTrObj->icnt[3] */
+        triggerCnt = UDMA_TEST_XFER_REPEAT_CNT;
         for(tCnt = 0U; tCnt < triggerCnt; tCnt++)
         {      
-            /* Calculate start of address to do cacheOps */      
-            offset = tCnt * size;
-            offset = offset % totalSize;
-            rxChunkAddr = rxBuf + offset;
 
             /********************************************************
              * OSPI Read "appTestObj->numBytes" (= appTrObj->icnt[0])
@@ -803,7 +757,7 @@ static int32_t App_udmaOspiFlashRead(App_UdmaObj *appObj)
                 }
             }
             /* Do Cache invalidate for the received chunk */
-            CSL_armR5CacheInv(rxChunkAddr, size);
+            CSL_armR5CacheInv(rxBuf, size);
 
             rxStopTicks = App_getGTCTimerTicks();
 
@@ -811,23 +765,13 @@ static int32_t App_udmaOspiFlashRead(App_UdmaObj *appObj)
             appCounterObj->rxStopTicks[tCnt] = rxStopTicks;
         }
     }
-    if(UDMA_SOK == retVal)
+    /* Since TR Reload Count Set for perpetual loop, TRPD never completes and comes back to CQ.
+     * To exit, teardown the channel using Udma_chDisable */
+    retVal = Udma_chDisable(chHandle, UDMA_DEFAULT_CH_DISABLE_TIMEOUT);
+    if(UDMA_SOK != retVal)
     {
-        /* wait for response to be received in completion queue */
-        while(1)
-        {
-            retVal =
-                Udma_ringDequeueRaw(Udma_chGetCqRingHandle(chHandle), &pDesc);
-            if(UDMA_SOK == retVal)
-            {
-                break;
-            }
-        }
-
-        /* Sanity check - Check returned descriptor pointer & TR response status*/
-        retVal = App_udmaTrpdSanityCheck(appChObj, pDesc);
+        App_print("\n [Error] UDMA channel disable failed!!\n");
     }
-
     return (retVal);
 }
 
@@ -1078,11 +1022,6 @@ static int32_t App_delete(App_UdmaObj *appObj)
     App_UdmaTrObj  *appTrObj = &appChObj->appTrObj;
     Udma_ChHandle   chHandle = appChObj->chHandle;
     
-    retVal = Udma_chDisable(chHandle, UDMA_DEFAULT_CH_DISABLE_TIMEOUT);
-    if(UDMA_SOK != retVal)
-    {
-        App_print("\n [Error] UDMA channel disable failed!!\n");
-    }
 
     /* Flush any pending request from the free queue */
     while(1)
@@ -1098,7 +1037,7 @@ static int32_t App_delete(App_UdmaObj *appObj)
     /* Unregister all events */
     if(NULL != appTrObj->trEventHandle)
     {
-        retVal += Udma_eventUnRegister(appTrObj->trEventHandle);
+        retVal = Udma_eventUnRegister(appTrObj->trEventHandle);
         if(UDMA_SOK != retVal)
         {
             App_print("\n [Error] UDMA event unregister failed!!\n");
@@ -1135,6 +1074,7 @@ static void App_udmaTrpdInit(App_UdmaTrObj *appTrObj, App_UdmaChObj  *appChObj)
 
     /* Make TRPD */
     UdmaUtils_makeTrpd(pTrpd, UDMA_TR_TYPE_15, 1U, cqRingNum);
+    CSL_udmapCppi5TrSetReload((CSL_UdmapCppi5TRPD*)pTrpd, appTrObj->reloadCnt, 0U);
 
     /* Setup TR */
     pTr->flags  = CSL_FMK(UDMAP_TR_FLAGS_TYPE, CSL_UDMAP_TR_FLAGS_TYPE_4D_BLOCK_MOVE_REPACKING_INDIRECTION);
@@ -1214,39 +1154,41 @@ static int32_t App_udmaTrpdSanityCheck(App_UdmaChObj *appChObj, uint64_t pDesc)
 
 static inline void App_udmaTrObjInitRead(App_UdmaTestObj *appTestObj, App_UdmaTrObj *appTrObj)
 {
+    /* TR Reload Count */
+    appTrObj->reloadCnt    = 0x1FFU; /* Set to 0x1FFU for perpetual loop */
     appTrObj->trigger      = CSL_UDMAP_TR_FLAGS_TRIGGER_GLOBAL0;
-    /* Set interrupt after transferring icnt0 bytes */
-    appTrObj->eventSize    = CSL_UDMAP_TR_FLAGS_EVENT_SIZE_ICNT1_DEC; 
-    /* Transfer icnt0 bytes after a trigger */
-    appTrObj->triggerType  = CSL_UDMAP_TR_FLAGS_TRIGGER_TYPE_ICNT1_DEC;
-    /* EOL boundaries for each icnt0 bytes */
-    appTrObj->eolType      = CSL_UDMAP_TR_FLAGS_EOL_ICNT0; 
+    /* Set interrupt after transferring icnt0*icnt1*icnt2*icnt3 bytes - When TR is completed */
+    appTrObj->eventSize    = CSL_UDMAP_TR_FLAGS_EVENT_SIZE_COMPLETION; 
+    /* Transfer icnt0*icnt1*icnt2*icnt3 bytes(entire TR) after a trigger */
+    appTrObj->triggerType  = CSL_UDMAP_TR_FLAGS_TRIGGER_TYPE_ALL;
+    /* EOL boundaries for each icnt0*icnt1*icnt2*icnt3 bytes */
+    appTrObj->eolType      = CSL_UDMAP_TR_FLAGS_EOL_ICNT0_ICNT1_ICNT2_ICNT3; 
 
     /* No. of bytes to tansfer after getting interrupt (in this case)*/
     appTrObj->icnt[0] = appTestObj->numBytes; 
     /* No. of times to repeat the tansfer of inct0 bytes */
-    appTrObj->icnt[1] = UDMA_TEST_XFER_CNT;
+    appTrObj->icnt[1] = 1U;
     /* No. of times to repeat the tansfer of inct0*icnt1 bytes */
-    appTrObj->icnt[2] = UDMA_TEST_XFER_REPEAT_CNT_0;
+    appTrObj->icnt[2] = 1U;
     /* No. of times to repeat the tansfer of inct0*icnt1*inct2 bytes */
-    appTrObj->icnt[3] = UDMA_TEST_XFER_REPEAT_CNT_1;
+    appTrObj->icnt[3] = 1U;
     /* similar destination params */
     appTrObj->dicnt[0] = appTestObj->numBytes; 
-    appTrObj->dicnt[1] = UDMA_TEST_XFER_CNT;
-    appTrObj->dicnt[2] = UDMA_TEST_XFER_REPEAT_CNT_0;
-    appTrObj->dicnt[3] = UDMA_TEST_XFER_REPEAT_CNT_1;
+    appTrObj->dicnt[1] = 1U;
+    appTrObj->dicnt[2] = 1U;
+    appTrObj->dicnt[3] = 1U;
 
     /* DIM1: Offset for source OSPI data address after transferring inct0 bytes */
     appTrObj->dim[0]  = appTrObj->icnt[0]; /* Use inct0 bytes so that successive triger tranfers the next icnt0 bytes */
-    /* Offset for source OSPI data address after transferring inct0*inct1 bytes */
-    appTrObj->dim[1]  = 0U; /* To restart from the buffer origin */
-    /* Offset for source OSPI data address after transferring inct0*inct1*inct2 bytes */
-    appTrObj->dim[2]  = 0U; /* To restart from the buffer origin */
+    /* DIM2 - Offset for source OSPI data address after transferring inct0*inct1 bytes */
+    appTrObj->dim[1]  = appTrObj->icnt[0]*appTrObj->icnt[1]; /* Use inct0*icnt1 bytes so that successive iteration tranfers the next icnt0*icnt1 bytes */
+    /* DIM3 - Offset for source OSPI data address after transferring inct0*inct1*inct2 bytes */
+    appTrObj->dim[2]  = appTrObj->icnt[0]*appTrObj->icnt[1]*appTrObj->icnt[2]; /* Use inct0*icnt1*icnt2 bytes so that successive iteration tranfers the next inct0*icnt1*icnt2 bytes */
 
     /* Similar offset for destination RX buffer address */
     appTrObj->ddim[0]  = appTrObj->dicnt[0]; 
-    appTrObj->ddim[1]  = 0U;
-    appTrObj->ddim[2]  = 0U;
+    appTrObj->ddim[1]  = appTrObj->dicnt[0]*appTrObj->dicnt[1];
+    appTrObj->ddim[2]  = appTrObj->dicnt[0]*appTrObj->dicnt[1]*appTrObj->dicnt[2];
 
     /* Source Address - OSPI Data address */
     appTrObj->addr  = gUdmaTestOspiFlashDataAddr;
@@ -1258,6 +1200,8 @@ static inline void App_udmaTrObjInitRead(App_UdmaTestObj *appTestObj, App_UdmaTr
 
 static inline void App_udmaTrObjInitWrite(App_UdmaTestObj *appTestObj, App_UdmaTrObj *appTrObj)
 {
+    /* TR Reload Count */
+    appTrObj->reloadCnt    = 0U; 
     appTrObj->trigger      = CSL_UDMAP_TR_FLAGS_TRIGGER_GLOBAL0;
     /* Set interrupt after transferring icnt0 bytes */
     appTrObj->eventSize    = CSL_UDMAP_TR_FLAGS_EVENT_SIZE_ICNT1_DEC; 
@@ -1266,32 +1210,42 @@ static inline void App_udmaTrObjInitWrite(App_UdmaTestObj *appTestObj, App_UdmaT
     /* EOL boundaries for each icnt0 bytes */
     appTrObj->eolType      = CSL_UDMAP_TR_FLAGS_EOL_ICNT0; 
 
-    /* For OSPI DMA write, write in chunks. No. of bytes to tansfer after getting interrupt(in this case) */
-    appTrObj->icnt[0] = UDMA_TEST_WRITE_CHUNK_SIZE; 
-    /* No. of times to repeat the tansfer of inct0 bytes (= No.of chunks in this case) */
-    appTrObj->icnt[1] = appTestObj->numBytes/UDMA_TEST_WRITE_CHUNK_SIZE;
+    if(appTestObj->numBytes > UDMA_TEST_WRITE_CHUNK_SIZE)
+    {
+        /* For OSPI DMA write, write in chunks. No. of bytes to tansfer after getting interrupt(in this case) */
+        appTrObj->icnt[0] = UDMA_TEST_WRITE_CHUNK_SIZE; 
+        /* No. of times to repeat the tansfer of inct0 bytes (= No.of chunks in this case) */
+        appTrObj->icnt[1] = appTestObj->numBytes/UDMA_TEST_WRITE_CHUNK_SIZE;
 
-    /* No. of times to repeat the tansfer of inct0*icnt1 bytes */
-    appTrObj->icnt[2] = UDMA_TEST_XFER_CNT;
-    /* No. of times to repeat the tansfer of inct0*icnt1*inct2 bytes */
+        appTrObj->dicnt[0] = UDMA_TEST_WRITE_CHUNK_SIZE; 
+        appTrObj->dicnt[1] = appTestObj->numBytes/UDMA_TEST_WRITE_CHUNK_SIZE;
+    }
+    else
+    {
+        appTrObj->icnt[0] = appTestObj->numBytes;
+        appTrObj->icnt[1] = 1U;
+        
+        appTrObj->dicnt[0] = appTestObj->numBytes;
+        appTrObj->dicnt[1] = 1U;
+    }
+    
+    appTrObj->icnt[2] = 1U;
     appTrObj->icnt[3] = 1U;
-    /* similar destination params */
-    appTrObj->dicnt[0] = UDMA_TEST_WRITE_CHUNK_SIZE; 
-    appTrObj->dicnt[1] = appTestObj->numBytes/UDMA_TEST_WRITE_CHUNK_SIZE;
-    appTrObj->dicnt[2] = UDMA_TEST_XFER_CNT;
+    
+    appTrObj->dicnt[2] = 1U;
     appTrObj->dicnt[3] = 1U;
 
     /* DIM1- Offset for source TX Buffer address after transferring inct0 bytes */
-    appTrObj->dim[0]  = appTrObj->icnt[0]; /* chunkSize - so that successive triger tranfers the next icnt0(chubkSize) bytes */
+    appTrObj->dim[0]  = appTrObj->icnt[0]; /* chunkSize - so that successive triger tranfers the next icnt0(chunkSize) bytes */
     /* DIM2 - Offset for source TX Buffer address after transferring inct0*inct1 bytes */
     appTrObj->dim[1]  = appTrObj->icnt[0]*appTrObj->icnt[1]; /* inct0*icnt1 bytes - so that successive iteration tranfers the next icnt0*icnt1 bytes */
     /* DIM3 - Offset for source TX Buffer address after transferring inct0*inct1*inct2 bytes */
-    appTrObj->dim[2]  = 0U; /* To restart from the buffer origin */
+    appTrObj->dim[2]  = appTrObj->icnt[0]*appTrObj->icnt[1]*appTrObj->icnt[2]; /* inct0*icnt1*icnt2 bytes - so that successive iteration tranfers the next inct0*icnt1*icnt2 bytes */
 
     /* DDIM1/DDIM2/DDIM3 - Similar offset for destination RX buffer address */
     appTrObj->ddim[0]  = appTrObj->dicnt[0]; 
     appTrObj->ddim[1]  = appTrObj->dicnt[0]*appTrObj->dicnt[1];
-    appTrObj->ddim[2]  = 0U;
+    appTrObj->ddim[2]  = appTrObj->dicnt[0]*appTrObj->dicnt[1]*appTrObj->dicnt[2];
 
     /* Source Address - TX Buffer */
     appTrObj->addr  = &gUdmaTestTxBuf[0U];
@@ -1308,27 +1262,14 @@ static void App_printPerfResults(App_UdmaObj *appObj)
     uint32_t             tCnt;
     uint32_t             triggerCnt;
     
-    triggerCnt = UDMA_TEST_XFER_CNT;
-    for(tCnt = 0U; tCnt < triggerCnt; tCnt++)
-    {
-        appCounterObj->txTotalTicks[tCnt] = appCounterObj->txStopTicks[tCnt] - appCounterObj->txStartTicks[tCnt]  - getTicksDelay;
-        appCounterObj->txTotalTicks[triggerCnt] += appCounterObj->txTotalTicks[tCnt];
-        appCounterObj->txElapsedTime[tCnt] = (appCounterObj->txTotalTicks[tCnt]*1000000000U)/(uint64_t)OSPI_FLASH_GTC_CLK_FREQ;
+    appCounterObj->txTotalTicks = appCounterObj->txStopTicks - appCounterObj->txStartTicks  - getTicksDelay;
+    appCounterObj->txElapsedTime = (appCounterObj->txTotalTicks*1000000000U)/(uint64_t)OSPI_FLASH_GTC_CLK_FREQ;
 
-        App_printNum("\n OSPI Write %d", appTestObj->numBytes);
-        App_printNum(" bytes in %d", (uint32_t)appCounterObj->txElapsedTime[tCnt]);
-        App_print("ns.");
-    }
-
-    /* Print average time */
-    appCounterObj->txTotalTicks[triggerCnt] = appCounterObj->txTotalTicks[triggerCnt]/triggerCnt;
-    appCounterObj->txElapsedTime[triggerCnt] = (appCounterObj->txTotalTicks[triggerCnt]*1000000000U)/(uint64_t)OSPI_FLASH_GTC_CLK_FREQ;
-    App_printNum("\n\n Average time for OSPI Write %d", appTestObj->numBytes);
-    App_printNum(" bytes = %d", (uint32_t)appCounterObj->txElapsedTime[triggerCnt]);
+    App_printNum("\n OSPI Write %d", appTestObj->numBytes);
+    App_printNum(" bytes in %d", (uint32_t)appCounterObj->txElapsedTime);
     App_print("ns.");
 
-
-    triggerCnt = UDMA_TEST_XFER_CNT * UDMA_TEST_XFER_REPEAT_CNT_0 * UDMA_TEST_XFER_REPEAT_CNT_1;
+    triggerCnt = UDMA_TEST_XFER_REPEAT_CNT;
     for(tCnt = 0U; tCnt < triggerCnt; tCnt++)
     {
         appCounterObj->rxTotalTicks[tCnt] = appCounterObj->rxStopTicks[tCnt] - appCounterObj->rxStartTicks[tCnt]  - getTicksDelay;
