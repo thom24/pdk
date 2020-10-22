@@ -73,14 +73,17 @@
 
 void Udma_chDruSubmitTr(Udma_ChHandle chHandle, const CSL_UdmapTR *tr)
 {
-    uint32_t                utcChNum;
-    Udma_DrvHandle          drvHandle = chHandle->drvHandle;
+    uint32_t                utcChNum;   
     const Udma_UtcInstInfo *utcInfo;
 
     utcInfo = chHandle->utcInfo;
     utcChNum = chHandle->extChNum - utcInfo->startCh;
-
+#if defined (__C7100__)
+    CSL_druChSubmitAtomicTr(utcInfo->druRegs, utcChNum, (__ulong8 *)  tr);
+#else
+    Udma_DrvHandle          drvHandle = chHandle->drvHandle;
     CSL_druChSubmitTr(utcInfo->druRegs, utcChNum, drvHandle->druCoreId, tr);
+#endif
 
     return;
 }
