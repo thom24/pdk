@@ -81,6 +81,12 @@ typedef struct {
  */
 int32_t Sciserver_tirtosInit(Sciserver_TirtosCfgPrms_t *pPrms);
 
+/** \brief Sciserver TI-RTOS Application Deinit.
+ *  \param None
+ *  \return None
+ */
+void Sciserver_tirtosDeinit();
+
 /* ========================================================================== */
 /*                       Static Function Definitions                          */
 /* ========================================================================== */
