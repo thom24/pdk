@@ -7,7 +7,9 @@ __TI_STACK_SIZE = __STACK_SIZE;
 
 MEMORY
 {
-    OCMCRAM     : ORIGIN = 0x000041C00000, LENGTH = 0x00080000				/* MCUSS-OCMC RAM - 512KB 					*/
+    /* Reserved for SBL/Available at run time from 0x000041C00000 to 0x000041C3E000 */
+    /* Refer user guide for details */
+	OCMCRAM     : ORIGIN = 0x000041C3E000, LENGTH = 0x00042000				/* MCUSS-OCMC RAM - 512KB 					*/
     BOOTVECTOR  : ORIGIN = 0x000070000100, LENGTH = 0x00001000 - 0x100      /* MSMC RAM INIT CODE (4 KB)				*/
     DIAG_FRAMEWORK  : ORIGIN = 0x000070001000, LENGTH = 0x6E000             /* MSMC resrved for diag framework - Don't use for diag tests */
     DIAG_FW_STACK   : ORIGIN = 0x00007006F000, LENGTH = 0x10000				/* MSMC for diag framework common usage */
