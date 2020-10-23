@@ -37,7 +37,7 @@ __SVC_STACK_SIZE = 0x2000;
  * code should setup the MPU to allow L2 execution permissions
  ***********************************************************************************/
 #define SBL_INIT_CODE_SIZE          640
-#define SBL_TEST_CCS_LOAD           1
+#define SBL_TEST_CCS_LOAD           0
 
 /*----------------------------------------------------------------------------*/
 /* Memory Map                                                                 */

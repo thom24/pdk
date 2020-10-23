@@ -91,6 +91,11 @@
 #define SBL_RCSS_MCASPC_AUX_FREQ_HZ                       (SBL_FREQ_MHZ2HZ(96U))
 #define SBL_RCSS_MCASPA_REF0_FREQ_HZ                      (SBL_FREQ_MHZ2HZ(100U))
 
+/* Macro representing the offset where the App Image has to be written/Read from
+   the QSPI Flash.
+*/
+#define QSPI_OFFSET_SI              (0xA0000U)
+
 /* ========================================================================== */
 /*                          Function Declarations                             */
 /* ========================================================================== */

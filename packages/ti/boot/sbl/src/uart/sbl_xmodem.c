@@ -211,6 +211,7 @@ int32_t SBL_uartXmodemRead(uint8_t *dest, uint32_t destsz)
 #error "UART base address is set assuming UART instance 0 (MSS SCIA)"
 #endif
     uint32_t sbl_uart_baseAddr = CSL_MSS_SCIA_U_BASE;
+    UART_putc(XMODEM_STS_ACK);
 #else
     UART_HwAttrs uart_cfg;
     uint32_t sbl_uart_baseAddr;
@@ -218,6 +219,7 @@ int32_t SBL_uartXmodemRead(uint8_t *dest, uint32_t destsz)
     UART_socGetInitCfg(BOARD_UART_INSTANCE, &uart_cfg);
     sbl_uart_baseAddr = uart_cfg.baseAddr;
 #endif
+
 
     for(;;)
     {

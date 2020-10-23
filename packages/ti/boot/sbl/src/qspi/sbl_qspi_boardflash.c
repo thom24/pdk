@@ -70,12 +70,9 @@
 #include <ti/board/src/flash/include/board_flash.h>
 #include "sbl_qspi_boardflash.h"
 
-
-/* Macro representing the offset where the App Image has to be written/Read from
-   the QSPI Flash.
-*/
-#define QSPI_OFFSET_SI              (0xA0000U)
-
+#if defined(tpr12_evm)
+#define QSPI_FLASH_ID           BOARD_FLASH_ID_GD25B16CSAG
+#endif
 
 /* QSPI Flash Read Sector API. */
 static int32_t SBL_QSPI_ReadSectors(void *dstAddr,
@@ -201,7 +198,7 @@ int32_t SBL_qspiInit(void *handle)
     /* Set the default SPI init configurations */
     QSPI_socSetInitCfg(BOARD_QSPI_NOR_INSTANCE, &qspi_cfg);
 
-    h = Board_flashOpen(BOARD_FLASH_ID_MX25V1635F,
+    h = Board_flashOpen(QSPI_FLASH_ID,
                         BOARD_QSPI_NOR_INSTANCE, NULL);
     if (h)
     {

@@ -84,7 +84,7 @@ extern "C" {
 #define QSPI_FLASH_ID           BOARD_FLASH_ID_MT25QU512ABB
 #define QSPI_NOR_BLOCK_SIZE     (64U * 1024U)
 #elif defined(tpr12_evm)
-#define QSPI_FLASH_ID           BOARD_FLASH_ID_MX25V1635F
+#define QSPI_FLASH_ID           BOARD_FLASH_ID_GD25B16CSAG
 #endif
 
 #if !(defined(SOC_K2G) || defined(j721e_evm))
