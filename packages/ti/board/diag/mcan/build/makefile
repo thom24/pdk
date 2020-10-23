@@ -71,12 +71,19 @@ INCLUDE_EXTERNAL_INTERFACES = pdk
 COMP_LIST_COMMON = $(PDK_COMMON_BAREMETAL_COMP)
 
 # Common source files and CFLAGS across all platforms and cores
-PACKAGE_SRCS_COMMON = ../src $(BOARD) makefile
+PACKAGE_SRCS_COMMON = ../src makefile
 PACKAGE_SRCS_COMMON += ../../common/$(SOC)
 PACKAGE_SRCS_COMMON += ../../board_diag_component.mk
 PACKAGE_SRCS_COMMON += ../../create_sd.bat ../../create_sd.sh
+ifeq ($(BOARD), $(filter $(BOARD), j721e_evm am65xx_idk j7200_evm))
+PACKAGE_SRCS_COMMON =+ $(BOARD)
+endif
 
-SRCS_COMMON += mcan_test.c diag_common_cfg.c GPIO_MCAN_config.c
+SRCS_COMMON += mcan_test.c diag_common_cfg.c
+
+ifeq ($(BOARD), $(filter $(BOARD), j721e_evm am65xx_idk j7200_evm))
+SRCS_COMMON += GPIO_MCAN_config.c
+endif
 
 ifeq ($(CORE),$(filter $(CORE), mcu1_0))
 SRCS_ASM_COMMON += diag_entry_r5.asm

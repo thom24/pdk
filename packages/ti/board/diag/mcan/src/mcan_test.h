@@ -55,9 +55,16 @@
 #include <ti/csl/arch/csl_arch.h>
 #include <ti/drv/uart/UART_stdio.h>
 #include <ti/csl/csl_mcan.h>
+#if !defined(SOC_AM64X)
 #include <ti/drv/gpio/GPIO.h>
 #include <ti/drv/gpio/soc/GPIO_soc.h>
+#endif
+
 #include "board.h"
+
+#if defined(SOC_AM64X)
+#include "board_cfg.h"
+#endif
 #include "diag_common_cfg.h"
 
 #if defined(SOC_J721E) || defined(SOC_J7200)
@@ -176,6 +183,18 @@ extern "C" {
 #define MAIN_MCAN11_RX_INT_NUM  (CSLR_R5FSS0_CORE0_INTR_MCAN11_MCANSS_MCAN_LVL_INT_1)
 #define MAIN_MCAN11_TS_INT_NUM  (CSLR_R5FSS0_CORE0_INTR_MCAN11_MCANSS_EXT_TS_ROLLOVER_LVL_INT_0)
 #endif
+#elif defined(SOC_AM64X)
+#define MCAN_MAX_PORTS    (2U)
+
+/* Interrupt configurations */
+
+#define MAIN_MCAN0_TX_INT_NUM   (CSLR_R5FSS0_CORE0_INTR_MCAN0_MCANSS_MCAN_LVL_INT_0)
+#define MAIN_MCAN0_RX_INT_NUM   (CSLR_R5FSS0_CORE0_INTR_MCAN0_MCANSS_MCAN_LVL_INT_1)
+#define MAIN_MCAN0_TS_INT_NUM   (CSLR_R5FSS0_CORE0_INTR_MCAN0_MCANSS_EXT_TS_ROLLOVER_LVL_INT_0)
+
+#define MAIN_MCAN1_TX_INT_NUM   (CSLR_R5FSS0_CORE0_INTR_MCAN1_MCANSS_MCAN_LVL_INT_0)
+#define MAIN_MCAN1_RX_INT_NUM   (CSLR_R5FSS0_CORE0_INTR_MCAN1_MCANSS_MCAN_LVL_INT_1)
+#define MAIN_MCAN1_TS_INT_NUM   (CSLR_R5FSS0_CORE0_INTR_MCAN1_MCANSS_EXT_TS_ROLLOVER_LVL_INT_0)
 
 #else
 #define MCAN_MAX_PORTS    (2U)

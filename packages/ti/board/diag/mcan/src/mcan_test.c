@@ -42,9 +42,9 @@
  *  Operation: MCAN operational mode is set to CAN-FD. This test will need
  *  two MCAN ports.
  *
- *  Supported SoCs: AM65XX, J721E & J7200.
+ *  Supported SoCs: AM65XX, J721E, J7200,AM64x.
  *
- *  Supported Platforms: am65xx_idk, j721e_evm & j7200_evm.
+ *  Supported Platforms: am65xx_idk, j721e_evm, j7200_evm, am64x_evm.
  *
  */
 
@@ -78,6 +78,11 @@ BoardDiag_McanPortInfo_t gMcanDiagPortInfo[MCAN_MAX_PORTS_EXP] =
  {CSL_MCAN8_MSGMEM_RAM_BASE,     8, MAIN_MCAN8_TX_INT_NUM, MAIN_MCAN8_RX_INT_NUM, MAIN_MCAN8_TS_INT_NUM},
  {CSL_MCAN10_MSGMEM_RAM_BASE,   10, MAIN_MCAN10_TX_INT_NUM, MAIN_MCAN10_RX_INT_NUM, MAIN_MCAN10_TS_INT_NUM}
 };
+#elif defined(SOC_AM64X)
+BoardDiag_McanPortInfo_t  gMcanDiagPortInfo[MCAN_MAX_PORTS] = {{CSL_MCAN0_MSGMEM_RAM_BASE,     0, MAIN_MCAN0_TX_INT_NUM, MAIN_MCAN0_RX_INT_NUM, MAIN_MCAN0_TS_INT_NUM},
+                                                       {CSL_MCAN1_MSGMEM_RAM_BASE,     1, MAIN_MCAN1_TX_INT_NUM, MAIN_MCAN1_RX_INT_NUM, MAIN_MCAN1_TS_INT_NUM},
+                                                      };
+
 #else
 BoardDiag_McanPortInfo_t gMcanDiagPortInfo[MCAN_MAX_PORTS_EXP] =
 {{CSL_MCU_MCAN0_MSGMEM_RAM_BASE, 0, MCU_MCAN0_TX_INT_NUM,  MCU_MCAN0_RX_INT_NUM,  MCU_MCAN0_TS_INT_NUM},
@@ -403,6 +408,7 @@ static void BoardDiag_mcanRxIntrISR(void *handle)
  */
 static void BoardDiag_mcanTxIntrConfig(uint32_t index)
 {
+#if !defined(SOC_AM64X)
 #if defined (__aarch64__)
     Intc_Init(0);
 
@@ -412,6 +418,18 @@ static void BoardDiag_mcanTxIntrConfig(uint32_t index)
     Intc_IntPrioritySet(gMcanDiagPortInfo[index].mcanTxIntNum, 1U, 0U);
     Intc_SystemEnable(gMcanDiagPortInfo[index].mcanTxIntNum);
     UART_printf("Tx Interrupt Configuration done.\n");
+#endif
+#else
+#if !defined (__aarch64__)
+    Intc_Init(0);
+
+    /* Enable CPU Interrupts and register ISR - MCAN Intr0 */
+    Intc_IntRegister(gMcanDiagPortInfo[index].mcanTxIntNum,
+                    (IntrFuncPtr) BoardDiag_mcanTxIntrISR, (void*)(&gmcanDiagportInfo[index]));
+    Intc_IntPrioritySet(gMcanDiagPortInfo[index].mcanTxIntNum, 1U, 0U);
+    Intc_SystemEnable(gMcanDiagPortInfo[index].mcanTxIntNum);
+    UART_printf("Tx Interrupt Configuration done.\n");
+#endif
 #endif
 }
 
@@ -423,6 +441,7 @@ static void BoardDiag_mcanTxIntrConfig(uint32_t index)
  */
 static void BoardDiag_mcanRxIntrConfig(uint32_t index)
 {
+#if !defined(SOC_AM64X)
 #if defined (__aarch64__)
     Intc_Init(0);
 
@@ -432,6 +451,18 @@ static void BoardDiag_mcanRxIntrConfig(uint32_t index)
     Intc_IntPrioritySet(gMcanDiagPortInfo[index].mcanRxIntNum, 1U, 0U);
     Intc_SystemEnable(gMcanDiagPortInfo[index].mcanRxIntNum);
     UART_printf("Rx Interrupt Configuration done.\n");
+#endif
+#else
+#if !defined (__aarch64__)
+    Intc_Init(0);
+
+    /* Enable CPU Interrupts and register ISR - MCAN Intr0 */
+    Intc_IntRegister(gMcanDiagPortInfo[index].mcanRxIntNum,
+                    (IntrFuncPtr) BoardDiag_mcanRxIntrISR, (void*)(&gmcanDiagportInfo[index]));
+    Intc_IntPrioritySet(gMcanDiagPortInfo[index].mcanRxIntNum, 1U, 0U);
+    Intc_SystemEnable(gMcanDiagPortInfo[index].mcanRxIntNum);
+    UART_printf("Rx Interrupt Configuration done.\n");
+#endif
 #endif
 }
 
@@ -466,6 +497,7 @@ static void BoardDiag_mcanTsIntrISR(void *handle)
  */
 static void BoardDiag_mcanTsIntrConfig(uint32_t index)
 {
+#if !defined(SOC_AM64X)
 #if defined (__aarch64__)
     Intc_Init(0);
 
@@ -475,6 +507,18 @@ static void BoardDiag_mcanTsIntrConfig(uint32_t index)
     Intc_IntPrioritySet(gMcanDiagPortInfo[index].mcanTsIntNum, 1U, 0U);
     Intc_SystemEnable(gMcanDiagPortInfo[index].mcanTsIntNum);
     UART_printf("Tx Interrupt Configuration done.\n");
+#endif
+#else
+#if !defined (__aarch64__)
+    Intc_Init(0);
+
+    /* Enable CPU Interrupts and register ISR - MCAN Intr0 */
+    Intc_IntRegister(gMcanDiagPortInfo[index].mcanTsIntNum,
+                    (IntrFuncPtr) BoardDiag_mcanTsIntrISR, (void*)(&gmcanDiagportInfo[index]));
+    Intc_IntPrioritySet(gMcanDiagPortInfo[index].mcanTsIntNum, 1U, 0U);
+    Intc_SystemEnable(gMcanDiagPortInfo[index].mcanTsIntNum);
+    UART_printf("Tx Interrupt Configuration done.\n");
+#endif
 #endif
 }
 #endif  /* #if defined(MCAN_DIAG_TS_INT_ENABLE) */
@@ -767,6 +811,8 @@ static void BoardDiag_mcanMainconfigs(void)
 }
 #endif  /* #if defined(SOC_J721E) || defined(SOC_J7200) */
 
+#if !defined(SOC_AM64X)
+
 /**
  * \brief   This API Initializes the GPIO module
  *
@@ -783,6 +829,7 @@ static void BoardDiag_mcanGpioConfig(uint32_t gpioBaseAddrs,uint32_t port)
     /* GPIO initialization */
     GPIO_init();
 }
+#endif
 
 #if defined(j7200_evm)
 /**
@@ -834,6 +881,45 @@ static void BoardDiag_mcanEnable(void)
     BoardDiag_mcanGpioConfig(CSL_GPIO1_BASE, 1);
     GPIO_write(0, 1);
     GPIO_write(1, 1);
+#elif defined(SOC_AM64X)
+    Board_I2cInitCfg_t i2cCfg;
+
+    i2cCfg.i2cInst   = BOARD_I2C_IOEXP_DEVICE1_INSTANCE;
+    i2cCfg.socDomain = BOARD_SOC_DOMAIN_MAIN;
+    i2cCfg.enableIntr = false;  //AM64X_TODO: Need to check this
+    Board_setI2cInitConfig(&i2cCfg);
+
+    Board_i2cIoExpInit();
+    /* Setting the pin direction as output */
+    Board_i2cIoExpSetPinDirection(BOARD_I2C_IOEXP_DEVICE1_ADDR,
+                                  THREE_PORT_IOEXP,
+                                  PORTNUM_1,
+                                  PIN_NUM_0,
+                                  PIN_DIRECTION_OUTPUT);
+
+    /* Pulling the MCAN0_STB_EN pin to high for the reset to happen */
+    Board_i2cIoExpPinLevelSet(BOARD_I2C_IOEXP_DEVICE1_ADDR,
+                              THREE_PORT_IOEXP,
+                              PORTNUM_1,
+                              PIN_NUM_0,
+                              GPIO_SIGNAL_LEVEL_HIGH);
+
+    /* Setting the pin direction as output */
+    Board_i2cIoExpSetPinDirection(BOARD_I2C_IOEXP_DEVICE1_ADDR,
+                                  THREE_PORT_IOEXP,
+                                  PORTNUM_1,
+                                  PIN_NUM_1,
+                                  PIN_DIRECTION_OUTPUT);
+
+    /* Pulling the MCAN1_STB_EN pin to high for the reset to happen */
+    Board_i2cIoExpPinLevelSet(BOARD_I2C_IOEXP_DEVICE1_ADDR,
+                              THREE_PORT_IOEXP,
+                              PORTNUM_1,
+                              PIN_NUM_1,
+                              GPIO_SIGNAL_LEVEL_HIGH);
+
+    BOARD_delay(1000);
+    Board_i2cIoExpDeInit();
 #else
     BoardDiag_mcanGpioConfig(CSL_WKUP_GPIO0_BASE,0);
     /* Enable MCU CAN transceivers by setting the STB pins */
@@ -896,11 +982,11 @@ int32_t BoardDiag_mcanTest(void)
     uint32_t  index;
     uint32_t  portNum;
 
-#if defined(DIAG_STRESS_TEST) && (defined(am65xx_idk) || defined(SOC_J721E) || defined(SOC_J7200))
+#if defined(DIAG_STRESS_TEST) && (defined(am65xx_idk) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X))
     char rdBuf = 'y';
 #endif
 
-#if defined(DIAG_STRESS_TEST) && ((defined(am65xx_idk)) || defined(SOC_J721E) || defined(SOC_J7200))
+#if defined(DIAG_STRESS_TEST) && ((defined(am65xx_idk)) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X))
     UART_printf  ("***********************************************\n");
     UART_printf  ("*                MCAN Stress Test             *\n");
     UART_printf  ("***********************************************\n");
@@ -911,7 +997,7 @@ int32_t BoardDiag_mcanTest(void)
 #endif
 
     BoardDiag_mcanEnable();
-#if defined(am65xx_idk)
+#if defined(am65xx_idk) || defined(am64x_evm)
     mcanMaxPorts = MCAN_MAX_PORTS;
 #else
     if(expBoardDetect)
@@ -978,7 +1064,7 @@ int32_t BoardDiag_mcanTest(void)
             }
 
             UART_printf("\nReceived Packet - %d\n\n", (index + 1));
-#if defined(DIAG_STRESS_TEST) && ((defined(am65xx_idk)) || defined(SOC_J721E) || defined(SOC_J7200))
+#if defined(DIAG_STRESS_TEST) && ((defined(am65xx_idk)) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X))
             /* Check if there a input from console to break the test */
             rdBuf = (char)BoardDiag_getUserInput(BOARD_UART_INSTANCE);
             if((rdBuf == 'b') || (rdBuf == 'B'))
@@ -1026,7 +1112,7 @@ int32_t BoardDiag_mcanTest(void)
             }
 
             UART_printf("\nReceived Packet - %d\n\n", (index + 1));
-#if defined(DIAG_STRESS_TEST) && ((defined(am65xx_idk)) || defined(SOC_J721E) || defined(SOC_J7200))
+#if defined(DIAG_STRESS_TEST) && ((defined(am65xx_idk)) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X))
             /* Check if there a input from console to break the test */
             rdBuf = (char)BoardDiag_getUserInput(BOARD_UART_INSTANCE);
             if((rdBuf == 'b') || (rdBuf == 'B'))
