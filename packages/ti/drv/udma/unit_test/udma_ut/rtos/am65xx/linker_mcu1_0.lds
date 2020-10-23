@@ -6,8 +6,8 @@
 --fill_value=0
 --stack_size=0x2000
 --heap_size=0x1000
---entry_point=ti_sysbios_family_arm_v7r_keystone3_Hwi_vectors /* Default BIOS */
---retain="*(.utilsCopyVecsToAtcm)"
+/* Retain entry point */
+-e __VECS_ENTRY_POINT
 
 -stack  0x2000                              /* SOFTWARE STACK SIZE           */
 -heap   0x2000                              /* HEAP AREA SIZE                */
@@ -46,10 +46,25 @@ MEMORY
 
 SECTIONS
 {
-    .intvecs                : {} palign(8)      > VECTORS
-    .intc_text              : {} palign(8)      > VECTORS
-    .rstvectors             : {} palign(8)      > RESET_VECTORS
-    .utilsCopyVecsToAtcm    : {} palign(8)      > MCU0_R5F_TCMB0
+    /* Place sysbios entry point - starts */
+    .vecs : { *(.vecs) } palign(8) > VECTORS
+    .vecs : { __VECS_ENTRY_POINT = .; } > VECTORS
+
+    xdc.meta (COPY): { *(xdc.meta) } > OCMRAM
+    .init_text  : {
+                     boot.*(.text)
+                     *(.text:ti_sysbios_family_arm_MPU_*)
+                     *(.text:ti_sysbios_family_arm_v7r_Cache_*)
+                  }  palign(8) > OCMRAM
+
+    .text:xdc_runtime_Startup_reset__I: {} palign(8) > OCMRAM
+
+    .bootCode       : {} palign(8) > OCMRAM
+    .startupCode    : {} palign(8) > OCMRAM
+    .startupData    : {} palign(8) > OCMRAM, type = NOINIT
+
+    /* Place sysbios entry point - ends */
+
     .text                   : {} palign(8)      > MSMC3
     .const                  : {} palign(8)      > DDR0
     .cinit                  : {} palign(8)      > DDR0
