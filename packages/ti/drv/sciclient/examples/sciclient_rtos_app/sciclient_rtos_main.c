@@ -103,7 +103,7 @@ void App_sciclientC66xIntrConfig(void);
 /*                            Global Variables                                */
 /* ========================================================================== */
 
-/* None */
+int32_t tsk1Pass = CSL_EFAIL, tsk2Pass = CSL_EFAIL;
 
 /* ========================================================================== */
 /*                          Function Definitions                              */
@@ -214,6 +214,22 @@ void GetRevisionTest1(UArg arg0, UArg arg1)
     {
         status = Sciclient_deinit();
     }
+    if (status == CSL_PASS)
+    {
+        tsk1Pass = CSL_PASS;
+    }
+    else
+    {
+        tsk1Pass = CSL_EFAIL;
+    }
+    if ((tsk1Pass == CSL_PASS) && (tsk2Pass == CSL_PASS))
+    {
+        App_sciclientPrintf("All Tests Passed \n");
+    }
+    if (tsk1Pass != CSL_PASS)
+    {
+        App_sciclientPrintf("Some Tests have failed \n");
+    }
     while (loopForever) {;}
 }
 
@@ -279,6 +295,22 @@ void GetRevisionTest2(UArg arg0, UArg arg1)
     if (status == CSL_PASS)
     {
         status = Sciclient_deinit();
+    }
+    if (status == CSL_PASS)
+    {
+        tsk2Pass = CSL_PASS;
+    }
+    else
+    {
+        tsk2Pass = CSL_EFAIL;
+    }
+    if ((tsk1Pass == CSL_PASS) && (tsk2Pass == CSL_PASS))
+    {
+        App_sciclientPrintf("All Tests Passed \n");
+    }
+    if (tsk2Pass != CSL_PASS)
+    {
+        App_sciclientPrintf("Some Tests have failed \n");
     }
     while (loopForever) {;}
 }
