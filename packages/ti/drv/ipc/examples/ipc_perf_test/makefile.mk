@@ -49,10 +49,13 @@ ifeq ($(SOC),$(filter $(SOC), j721e j7200))
 endif
 ifeq ($(SOC),$(filter $(SOC), am65xx am64x))
   XDC_CFG_UPDATE_$(CORE) = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/ipc_perf_test/ipc_override_$(SOC).cfg
+  EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/$(SOC)/linker_$(ISA)_$(CORE)_sysbios.lds
   ifeq ($(ISA), r5f)
     XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/ipc_perf_test/$(SOC)/sysbios_$(ISA).cfg
+    ifeq ($(SOC),$(filter $(SOC), am65xx))
+      EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/$(SOC)/linker_$(ISA)_$(CORE)_sbl_sysbios.lds
+    endif
   endif
-  EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/$(SOC)/linker_$(ISA)_$(CORE)_sysbios.lds
 endif
 endif
 
