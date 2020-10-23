@@ -53,17 +53,17 @@
 #define MCU2_1_R5F_MEM_DATA_BASE (MCU2_1_ALLOCATED_START + 0x00300000)
 #define MCU2_1_DDR_SPACE_BASE    (MCU2_1_ALLOCATED_START + 0x00400000)
 
-#define ATCM_START 0x00000000
-
 -e __VECS_ENTRY_POINT
+--retain="*(.utilsCopyVecsToAtcm)"
 
 /*----------------------------------------------------------------------------*/
 /* Memory Map                                                                 */
 MEMORY
 {
     /* MCU1_R5F_0 local view  */
-    MCU_ATCM (RWX)		: origin=ATCM_START	length=0x8000
     /* MCU1_R5F0_TCMB0 (RWIX)	: origin=0x41010000	length=0x8000 (documented only, to avoid conflict below) */
+    R5F_TCMA_SBL_RSVD(X): ORIGIN = 0x00000000, LENGTH = 0x100
+    RESET_VECTORS(X)    : ORIGIN = 0x41C40000, LENGTH = 0x100
 
     /* MCU1_R5F_0 SoC view  */
     MCU1_R5F0_ATCM (RWIX)  	: origin=0x41000000 length=0x8000
@@ -107,19 +107,20 @@ SECTIONS
 {
     .vecs : {
          *(.vecs)
-    } palign(8) > ATCM_START
+    } palign(8) > RESET_VECTORS
     .vecs       : {
         __VECS_ENTRY_POINT = .;
-    } palign(8) > MCU_ATCM
+    } palign(8) > RESET_VECTORS
     .init_text  : {
                      boot.*(.text)
                      *(.text:ti_sysbios_family_arm_MPU_*)
                      *(.text:ti_sysbios_family_arm_v7r_Cache_*)
-                  }  > MCU_ATCM
-    .text:xdc_runtime_Startup_reset__I : {} palign(8) > MCU_ATCM
-    .bootCode    	: {} palign(8) 		> MCU_ATCM
-    .startupCode 	: {} palign(8) 		> MCU_ATCM
-    .startupData 	: {} palign(8) 		> MCU_ATCM, type = NOINIT
+                  }  > MCU1_R5F0_BTCM
+    .text:xdc_runtime_Startup_reset__I : {} palign(8) > MCU1_R5F0_BTCM
+    .utilsCopyVecsToAtcm               : {} palign(8) > MCU1_R5F0_BTCM
+    .bootCode    	: {} palign(8) 		> MCU1_R5F0_BTCM
+    .startupCode 	: {} palign(8) 		> MCU1_R5F0_BTCM
+    .startupData 	: {} palign(8) 		> MCU1_R5F0_BTCM, type = NOINIT
     .text	: {} palign(8)		> MCU1_0_DDR_SPACE
     .const   	: {} palign(8) 		> MCU1_0_DDR_SPACE
     .cinit   	: {} palign(8) 		> MCU1_0_DDR_SPACE

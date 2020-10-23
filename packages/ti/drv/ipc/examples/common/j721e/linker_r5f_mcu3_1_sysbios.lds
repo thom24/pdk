@@ -139,6 +139,7 @@ SECTIONS
                   }  > MCU_ATCM
     .text:xdc_runtime_Startup_reset__I : {} palign(8) > MCU_ATCM
     .bootCode    	: {} palign(8) 		> MCU_ATCM
+    .utilsCopyVecsToAtcm               : {} palign(8) > MCU_ATCM
     .startupCode 	: {} palign(8) 		> MCU_ATCM
     .startupData 	: {} palign(8) 		> MCU_ATCM, type = NOINIT
     .text	: {} palign(8)		> MCU3_1_DDR_SPACE

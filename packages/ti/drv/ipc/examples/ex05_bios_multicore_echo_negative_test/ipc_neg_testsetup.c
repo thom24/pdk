@@ -61,9 +61,12 @@
 #include <ti/drv/ipc/examples/common/src/ipc_setup.h>
 #include <ti/drv/ipc/examples/ex05_bios_multicore_echo_negative_test/ipc_neg_setup.h>
 #include <ti/osal/osal.h>
+#include <ti/drv/uart/UART.h>
+#include <ti/drv/uart/UART_stdio.h>
 
 #define MSGSIZE  256U
 #define SERVICE  "ti.ipc4.ping-pong"
+#define FAKE_SERVICE "negative-test"
 #define ENDPT1   13U
 #define ENDPT2   14U
 #define NUMMSGS  10000 /* number of message sent per task */
@@ -105,22 +108,56 @@ uint32_t rpmsgNegDataSize = RPMSG_DATA_SIZE;
 static uint32_t        RecvEndPt = 0;
 #endif
 
-static bool test_rpmsg_pkt_large_than_vring_buf_flag = 0;
-static bool test_virtio_init_param_null_flag = 0;
-static bool test_rpmsg_init_param_null_flag = 0;
-static bool test_rpmsg_create_null_endpnt_flag = 0;
-static bool test_rpmsg_snd_null_data_flag = 0;
-static bool test_rpmsg_snd_unpair_core_flag = 0;
-static bool test_rpmsg_rcv_hndl_null_flag = 0;
-static bool test_rpmsg_snd_hndl_null_flag = 0;
-static bool test_virtio_param_vqbuf_size_zero_flag = 0;
-static bool test_virtio_param_vringbuf_size_zero_flag = 0;
-static bool test_rpmsg_param_buf_null_flag = 0;
-static bool test_rpmsg_param_buf_size_zero_flag = 0;
-static bool test_rpmsg_param_stkbuf_null_flag = 0;
-static bool test_rpmsg_param_stk_size_zero_flag = 0;
-static bool test_rpmsg_rcv_timeout_flag = 0;
-static bool test_rpmsg_remote_end_timeout_flag = 0;
+static uint32_t gTotalTests = 0;
+static uint32_t gTotalTestsPassed = 0;
+static uint32_t gTotalTestsFailed = 0;
+
+typedef enum Ipc_NegTestId_e {
+    TEST_RPMSG_PKT_LARGE_THAN_VRING_BUF,
+    TEST_VIRTIO_INIT_PARAM_NULL,
+    TEST_RPMSG_INIT_PARAM_NULL,
+    TEST_RPMSG_CREATE_NULL_ENDPNT,
+    TEST_RPMSG_SND_NULL_DATA,
+    TEST_RPMSG_SND_UNPAIR_CORE,
+    TEST_RPMSG_RCV_HNDL_NULL,
+    TEST_RPMSG_SND_HNDL_NULL,
+    TEST_VIRTIO_PARAM_VQBUF_SIZE_ZERO,
+    TEST_VIRTIO_PARAM_VRINGBUF_SIZE_ZERO,
+    TEST_RPMSG_PARAM_BUF_NULL,
+    TEST_RPMSG_PARAM_BUF_SIZE_ZERO,
+    TEST_RPMSG_PARAM_STKBUF_NULL,
+    TEST_RPMSG_PARAM_STK_SIZE_ZERO,
+    TEST_RPMSG_RCV_TIMEOUT,
+    TEST_RPMSG_REMOTE_END_TIMEOUT,
+    TEST_END
+} Ipc_NegTestId;
+
+typedef struct Ipc_NegTestParams_s
+{
+    uint32_t  testId;
+    char     *testName;
+} Ipc_TestParams;
+
+Ipc_TestParams negTestCases[] =
+{
+    { TEST_RPMSG_PKT_LARGE_THAN_VRING_BUF, "test_rpmsg_pkt_large_than_vring_buf" },
+    { TEST_VIRTIO_INIT_PARAM_NULL, "test_virtio_init_param_null" },
+    { TEST_RPMSG_INIT_PARAM_NULL, "test_rpmsg_init_param_null" },
+    { TEST_RPMSG_CREATE_NULL_ENDPNT, "test_rpmsg_create_null_endpnt" },
+    { TEST_RPMSG_SND_NULL_DATA, "test_rpmsg_snd_null_data" },
+    { TEST_RPMSG_SND_UNPAIR_CORE, "test_rpmsg_snd_unpair_core" },
+    { TEST_RPMSG_RCV_HNDL_NULL, "test_rpmsg_rcv_hndl_null" },
+    { TEST_RPMSG_SND_HNDL_NULL, "test_rpmsg_snd_hndl_null" },
+    { TEST_VIRTIO_PARAM_VQBUF_SIZE_ZERO, "test_virtio_param_vqbuf_size_zero" },
+    { TEST_VIRTIO_PARAM_VRINGBUF_SIZE_ZERO, "test_virtio_param_vringbuf_size_zero" },
+    { TEST_RPMSG_PARAM_BUF_NULL, "test_rpmsg_param_buf_null" },
+    { TEST_RPMSG_PARAM_BUF_SIZE_ZERO, "test_rpmsg_param_buf_size_zero" },
+    { TEST_RPMSG_PARAM_STKBUF_NULL, "test_rpmsg_param_stkbuf_null" },
+    { TEST_RPMSG_PARAM_STK_SIZE_ZERO, "test_rpmsg_param_stk_size_zero" },
+    { TEST_RPMSG_RCV_TIMEOUT, "test_rpmsg_rcv_timeout" },
+    { TEST_RPMSG_REMOTE_END_TIMEOUT, "test_rpmsg_remote_end_timeout" },
+    { TEST_END, NULL },
+};
 
 //#define DEBUG_PRINT
 
@@ -131,11 +168,28 @@ void rpmsg_neg_exit_responseTask()
     g_neg_exitRespTsk = 1;
 }
 
+void Ipc_reportResult(uint32_t id, int32_t result)
+{
+    gTotalTests++;
+    if (result == IPC_SOK)
+    {
+        System_printf("[%s] [%s] : [TEST_PASS]\n", Ipc_mpGetSelfName(), negTestCases[id].testName);
+        UART_printf("[%s] [%s] : [TEST_PASS]\n", Ipc_mpGetSelfName(), negTestCases[id].testName);
+        gTotalTestsPassed++;
+    }
+    else
+    {
+        System_printf("[%s] [%s] : [TEST_FAIL]\n", Ipc_mpGetSelfName(), negTestCases[id].testName);
+        UART_printf("[%s] [%s] : [TEST_FAIL]\n", Ipc_mpGetSelfName(), negTestCases[id].testName);
+        gTotalTestsFailed++;
+    }
+}
+
 /*
  * This "Task" waits for a "ping" message from any processor
  * then replies with a "pong" message.
  */
-void rpmsg_neg_responderFxn(UArg arg0, UArg arg1)
+int32_t rpmsg_neg_responderFxn(uint32_t testId)
 {
     RPMessage_Handle    handle;
     RPMessage_Handle    handleTimeout;
@@ -145,19 +199,35 @@ void rpmsg_neg_responderFxn(UArg arg0, UArg arg1)
     uint32_t        remoteEndPt;
     uint32_t        remoteProcId;
     uint16_t        len;
-    int32_t         n;
     int32_t         status = 0;
     void            *buf;
     void            *buf2;
 
     uint32_t            bufSize = rpmsgNegDataSize;
     char                str[MSGSIZE];
+    char                test_buf[RP_MSG_TEST_BUF_SIZE + 1];
+
 
     buf = pRecvTaskBuf;
-    if(buf == NULL)
+    if (buf == NULL)
     {
         System_printf("RecvTask: buffer allocation failed\n");
-        return;
+        return IPC_EFAIL;
+    }
+
+    /* Testing TEST_RPMSG_REMOTE_END_TIMEOUT */
+    {
+        status = RPMessage_getRemoteEndPt(IPC_MCU1_0, FAKE_SERVICE, &remoteProcId,
+                &remoteEndPt, 1000);
+        if (status != IPC_SOK)
+        {
+            Ipc_reportResult(TEST_RPMSG_REMOTE_END_TIMEOUT, IPC_SOK);
+        }
+        else
+        {
+            Ipc_reportResult(TEST_RPMSG_REMOTE_END_TIMEOUT, IPC_EFAIL);
+            return IPC_EFAIL;
+        }
     }
 
     RPMessageParams_init(&params);
@@ -165,11 +235,26 @@ void rpmsg_neg_responderFxn(UArg arg0, UArg arg1)
     params.buf = buf;
     params.bufSize = bufSize;
 
+    /* Testing TEST_RPMSG_CREATE_NULL_ENDPNT */
+    {
+        System_printf("RPMessage_create NULL Endpt\n");
+        handle = RPMessage_create(&params, NULL);
+        if (!handle)
+        {
+            Ipc_reportResult(TEST_RPMSG_CREATE_NULL_ENDPNT, IPC_SOK);
+        }
+        else
+        {
+            Ipc_reportResult(TEST_RPMSG_CREATE_NULL_ENDPNT, IPC_EFAIL);
+            return IPC_EFAIL;
+        }
+    }
+
     handle = RPMessage_create(&params, &myEndPt);
-    if(!handle)
+    if (!handle)
     {
         System_printf("RecvTask: Failed to create endpoint\n");
-        return;
+        return IPC_EFAIL;
     }
     buf2 = pTimeoutBuf;
     params.requestedEndpt = ENDPT2;
@@ -179,455 +264,131 @@ void rpmsg_neg_responderFxn(UArg arg0, UArg arg1)
     if (!handleTimeout)
     {
         System_printf("RecvTask: Failed to create timeout endpoint\n");
-        return;
+        RPMessage_delete(&handle);
+        return IPC_EFAIL;
     }
 
 #if !defined(BUILD_MPU1_0) && defined(A72_LINUX_OS) && defined(A72_LINUX_OS_IPC_ATTACH)
     RecvEndPt = myEndPt;
 #endif
 
-    if(test_rpmsg_snd_hndl_null_flag || test_rpmsg_rcv_hndl_null_flag ||
-            test_rpmsg_pkt_large_than_vring_buf_flag || test_rpmsg_snd_null_data_flag
-            || test_rpmsg_snd_unpair_core_flag || test_rpmsg_remote_end_timeout_flag)
-    {
-
-    }
-    else
-    {
-        status = RPMessage_announce(RPMESSAGE_ALL, myEndPt, SERVICE);
-        if(status != IPC_SOK)
-        {
-            System_printf("RecvTask: RPMessage_announce() failed\n");
-            return;
-        }
-    }
-
-    while(!g_neg_exitRespTsk)
-    {
-
-        if(test_rpmsg_rcv_hndl_null_flag)
-        {
-            test_rpmsg_rcv_hndl_null_flag = 0;
-            status = RPMessage_recv(NULL, (Ptr)str, &len, &remoteEndPt, &remoteProcId,
-                    IPC_RPMESSAGE_TIMEOUT_FOREVER);
-            if(status != IPC_SOK)
-            {
-                System_printf("[%s] [test_rpmsg_rcv_hndl_null_flag] : [TEST_PASS]\n", Ipc_mpGetSelfName());
-                return;
-            }
-            else
-            {
-                System_printf("[%s] [test_rpmsg_rcv_hndl_null_flag] : [TEST_FAIL]\n", Ipc_mpGetSelfName());
-                return;
-            }
-        }
-        else if(test_rpmsg_rcv_timeout_flag)
-        {
-            test_rpmsg_rcv_timeout_flag = 0;
-            System_printf("[%s] calling RPMessage_recv with timeout 100...\n", Ipc_mpGetSelfName());
-            status = RPMessage_recv(handleTimeout, (Ptr)str, &len, &remoteEndPt, &remoteProcId, 100);
-            if(status != IPC_ETIMEOUT)
-            {
-                System_printf("[%s] [test_rpmsg_rcv_timeout_flag] : [TEST_FAIL]\n", Ipc_mpGetSelfName());
-                return;
-            }
-            else
-            {
-                System_printf("[%s] [test_rpmsg_rcv_timeout_flag] : [TEST_PASS]\n", Ipc_mpGetSelfName());
-                return;
-            }
-        }
-        else
-        {
-            status = RPMessage_recv(handle, (Ptr)str, &len, &remoteEndPt, &remoteProcId,
-                    IPC_RPMESSAGE_TIMEOUT_FOREVER);
-        }
-        if(status != IPC_SOK)
-        {
-            System_printf("RecvTask: failed with code %d\n", status);
-        }
-        else
-        {
-            /* NULL terminated string */
-            str[len] = '\0';
-#ifdef DEBUG_PRINT
-            System_printf("RecvTask: Revcvd msg \"%s\" len %d from %s\n",
-                    str, len, Ipc_mpGetName(remoteProcId));
+#if defined (BUILD_MPU1_0)
+    remoteProcId = IPC_MCU1_0;
+#else
+    remoteProcId = IPC_MPU1_0;
 #endif
+
+    /* Testing TEST_RPMSG_PKT_LARGE_THAN_VRING_BUF */
+    {
+        /* Send data to remote endPt: */
+        memset(test_buf, 0, RP_MSG_TEST_BUF_SIZE);
+
+        len = snprintf(test_buf, RP_MSG_TEST_BUF_SIZE, "ping %d", 0);
+
+        if(len > RP_MSG_TEST_BUF_SIZE)
+        {
+            System_printf("SendTask%d: snprintf failed, len %d\n", remoteProcId, len);
+            len = RP_MSG_TEST_BUF_SIZE;
         }
 
-        status = sscanf(str, "ping %d", &n);
-        if(status == 1)
-        {
-            memset(str, 0, MSGSIZE);
-            len = snprintf(str, 255, "pong %d", n);
-            if(len > 255)
-            {
-                System_printf("RecvTask: snprintf failed, len %d\n", len);
-                len = 255;
-            }
-            str[len++] = '\0';
-        }
-        else
-        {
-            /* If this is not ping/pong message, just print the message */
-            System_printf("%s <--> %s : %s recvd\n",
-                    Ipc_mpGetSelfName(),
-                    Ipc_mpGetName(remoteProcId),
-                    str);
-        }
-#ifdef DEBUG_PRINT
-        System_printf("RecvTask: Sending msg \"%s\" len %d from %s to %s\n",
-                str, len, Ipc_mpGetSelfName(),
-                Ipc_mpGetName(remoteProcId));
-#endif
-        status = RPMessage_send(handle, remoteProcId, remoteEndPt, myEndPt, str, len);
+        len = RP_MSG_TEST_BUF_SIZE;
+        test_buf[len++] = '\0';
+
+        status = RPMessage_send(handle, remoteProcId, ENDPT1, myEndPt, (Ptr)test_buf, len);
         if (status != IPC_SOK)
         {
-            System_printf("RecvTask: Sending msg \"%s\" len %d from %s to %s failed!!!\n",
-                str, len, Ipc_mpGetSelfName(),
-                Ipc_mpGetName(remoteProcId));
-        }
-    }
-
-    System_printf("%s responder task exiting ...\n",
-                    Ipc_mpGetSelfName());
-}
-
-void rpmsg_neg_senderFxn(UArg arg0, UArg arg1)
-{
-    RPMessage_Handle    handle;
-    RPMessage_Params    params;
-    uint32_t            myEndPt = 0;
-    uint32_t            remoteEndPt;
-    uint32_t            remoteProcId;
-    uint16_t            dstProc;
-    uint16_t            len;
-    int32_t             i;
-    int32_t             status = 0;
-    char                test_buf[RP_MSG_TEST_BUF_SIZE + 1];
-    char                buf[256];
-    uint8_t            *buf1;
-
-    uint32_t            cntPing = 0;
-    uint32_t            cntPong = 0;
-
-    buf1 = &pSendTaskBuf[rpmsgNegDataSize * arg1];
-    dstProc = arg0;
-
-    /* Create the endpoint for receiving. */
-    RPMessageParams_init(&params);
-    params.numBufs = 2;
-    params.buf = buf1;
-    params.bufSize = rpmsgNegDataSize;
-
-    if(test_rpmsg_create_null_endpnt_flag)
-    {
-        test_rpmsg_create_null_endpnt_flag = 0;
-        handle = RPMessage_create(&params, NULL);
-        if(!handle)
-        {
-            System_printf("[%s] [test_rpmsg_create_null_endpnt_flag] : [TEST_PASS]\n", Ipc_mpGetSelfName());
-            return;
+            Ipc_reportResult(TEST_RPMSG_PKT_LARGE_THAN_VRING_BUF, IPC_SOK);
         }
         else
         {
-            System_printf("[%s] [test_rpmsg_create_null_endpnt_flag] : [TEST_FAIL]\n", Ipc_mpGetSelfName());
-            return;
+            Ipc_reportResult(TEST_RPMSG_PKT_LARGE_THAN_VRING_BUF, IPC_EFAIL);
+            return IPC_EFAIL;
         }
     }
-    else
-    {
-        handle = RPMessage_create(&params, &myEndPt);
-    }
 
-    if(!handle)
+    /* Testing TEST_RPMSG_SND_NULL_DATA */
     {
-        System_printf("SendTas %d: Failed to create message endpoint\n",
-                dstProc);
-        return;
-    }
+        status = RPMessage_send(handle, remoteProcId, ENDPT1, myEndPt, NULL, len);
 
-    if(test_rpmsg_remote_end_timeout_flag)
-    {
-        test_rpmsg_remote_end_timeout_flag = 0;
-        status = RPMessage_getRemoteEndPt(dstProc, SERVICE, &remoteProcId,
-                &remoteEndPt, 1000);
-        if(status != IPC_SOK)
+        if (status != IPC_SOK)
         {
-            System_printf("[%s] [test_rpmsg_remote_end_timeout_flag] : [TEST_PASS]\n", Ipc_mpGetSelfName());
-            return;
+            Ipc_reportResult(TEST_RPMSG_SND_NULL_DATA, IPC_SOK);
         }
         else
         {
-            System_printf("[%s] [test_rpmsg_remote_end_timeout_flag] : [TEST_FAIL]\n", Ipc_mpGetSelfName());
-            return;
-        }
-    }
-    else
-    {
-        if(test_rpmsg_pkt_large_than_vring_buf_flag || test_rpmsg_snd_null_data_flag
-                || test_rpmsg_snd_unpair_core_flag || test_rpmsg_snd_hndl_null_flag)
-        {
-
-        }
-        else
-        {
-            status = RPMessage_getRemoteEndPt(dstProc, SERVICE, &remoteProcId,
-                    &remoteEndPt, BIOS_WAIT_FOREVER);
-            if(dstProc != remoteProcId)
-            {
-                System_printf("SendTask%d: RPMessage_getRemoteEndPt() malfunctioned, status %d\n",
-                        dstProc, status);
-                return;
-            }
+            Ipc_reportResult(TEST_RPMSG_SND_NULL_DATA, IPC_EFAIL);
+            return IPC_EFAIL;
         }
     }
 
-    for (i = 0; i < NUMMSGS; i++)
+    /* Testing TEST_RPMSG_SND_UNPAIR_CORE */
     {
-
-        if(test_rpmsg_pkt_large_than_vring_buf_flag)
-        {
-
-            test_rpmsg_pkt_large_than_vring_buf_flag = 0;
-            /* Send data to remote endPt: */
-            memset(test_buf, 0, RP_MSG_TEST_BUF_SIZE);
-
-            len = snprintf(test_buf, RP_MSG_TEST_BUF_SIZE, "ping %d", i);
-
-            if(len > RP_MSG_TEST_BUF_SIZE)
-            {
-                System_printf("SendTask%d: snprintf failed, len %d\n", dstProc, len);
-                len = RP_MSG_TEST_BUF_SIZE;
-            }
-
-            len = RP_MSG_TEST_BUF_SIZE;
-            test_buf[len++] = '\0';
-
-            /* Increase the Ping Counter */
-            cntPing++;
-
-            status = RPMessage_send(handle, dstProc, ENDPT1, myEndPt, (Ptr)test_buf, len);
-            if (status != IPC_SOK)
-            {
-                System_printf("[%s] [test_rpmsg_pkt_large_than_vring_buf_flag] : [TEST_PASS]\n", Ipc_mpGetSelfName());
-
-                /* Delete the RPMesg object now */
-                RPMessage_delete(&handle);
-                return;
-            }
-            else
-            {
-                System_printf("[%s] [test_rpmsg_pkt_large_than_vring_buf_flag] : [TEST_FAIL]\n", Ipc_mpGetSelfName());
-
-                /* Delete the RPMesg object now */
-                RPMessage_delete(&handle);
-                return;
-            }
-        }
-        else
-        {
-            /* Send data to remote endPt: */
-            memset(buf, 0, 256);
-
-            len = snprintf(buf, 255, "ping %d", i);
-
-            if(len > 255)
-            {
-                System_printf("SendTask%d: snprintf failed, len %d\n", dstProc, len);
-                len = 255;
-            }
-
-            buf[len++] = '\0';
-
-#ifdef DEBUG_PRINT
-            System_printf("SendTask%d: Sending \"%s\" from %s to %s...\n", dstProc,
-                    buf, Ipc_mpGetSelfName(),
-                    Ipc_mpGetName(dstProc));
-#endif
-            /* Increase the Ping Counter */
-            cntPing++;
-
-            if(test_rpmsg_snd_null_data_flag)
-            {
-                test_rpmsg_snd_null_data_flag = 0;
-                status = RPMessage_send(handle, dstProc, ENDPT1, myEndPt, NULL, len);
-                if (status != IPC_SOK)
-                {
-                    System_printf("[%s] [test_rpmsg_snd_null_data_flag] : [TEST_PASS]\n", Ipc_mpGetSelfName());
-                    /* Delete the RPMesg object now */
-                    RPMessage_delete(&handle);
-                    return;
-                }
-                else
-                {
-                    System_printf("[%s] [test_rpmsg_snd_null_data_flag] : [TEST_FAIL]\n", Ipc_mpGetSelfName());
-                    /* Delete the RPMesg object now */
-                    RPMessage_delete(&handle);
-                    return;
-                }
-            }
-            else if(test_rpmsg_snd_unpair_core_flag)
-            {
-                test_rpmsg_snd_unpair_core_flag = 0;
 #ifdef BUILD_C66X_1
-                dstProc = IPC_C66X_1;
+        remoteProcId = IPC_C66X_1; // todo: what should dstProc be??
 #endif
-                status = RPMessage_send(handle, dstProc, ENDPT1, myEndPt, (Ptr)buf, len);
-                if (status != IPC_SOK)
-                {
-                    System_printf("[%s] [test_rpmsg_snd_unpair_core_flag] : [TEST_PASS]\n", Ipc_mpGetSelfName());
-                    /* Delete the RPMesg object now */
-                    RPMessage_delete(&handle);
-                    return;
-                }
-                else
-                {
-                    System_printf("[%s] [test_rpmsg_snd_unpair_core_flag] : [TEST_FAIL]\n", Ipc_mpGetSelfName());
-                    /* Delete the RPMesg object now */
-                    RPMessage_delete(&handle);
-                    return;
-                }
-            }
-            else if(test_rpmsg_snd_hndl_null_flag)
-            {
-                test_rpmsg_snd_hndl_null_flag = 0;
-                status = RPMessage_send(NULL, dstProc, ENDPT1, myEndPt, (Ptr)buf, len);
-                if (status != IPC_SOK)
-                {
-                    System_printf("[%s] [test_rpmsg_snd_hndl_null_flag] : [TEST_PASS]\n", Ipc_mpGetSelfName());
-                    /* Delete the RPMesg object now */
-                    RPMessage_delete(&handle);
-                    return;
-                }
-                else
-                {
-                    System_printf("[%s] [test_rpmsg_snd_hndl_null_flag] : [TEST_FAIL]\n", Ipc_mpGetSelfName());
-                    /* Delete the RPMesg object now */
-                    RPMessage_delete(&handle);
-                    return;
-                }
-            }
-            else
-            {
-                status = RPMessage_send(handle, dstProc, ENDPT1, myEndPt, (Ptr)buf, len);
-                if (status != IPC_SOK)
-                {
-                    System_printf("SendTask%d: RPMessage_send Failed Msg-> \"%s\" from %s to %s...\n",
-                            dstProc,
-                            buf, Ipc_mpGetSelfName(),
-                            Ipc_mpGetName(dstProc));
-                    break;
-                }
-            }
-        }
+        status = RPMessage_send(handle, remoteProcId, ENDPT1, myEndPt, (Ptr)buf, len);
 
-        /* wait a for a response message: */
-        status = RPMessage_recv(handle, (Ptr)buf, &len, &remoteEndPt,
-                &remoteProcId, IPC_RPMESSAGE_TIMEOUT_FOREVER);
-
-        if(status != IPC_SOK)
+        if (status != IPC_SOK)
         {
-            System_printf("SendTask%d: RPMessage_recv failed with code %d\n",
-                    dstProc, status);
-            break;
-        }
-
-        /* Make it NULL terminated string */
-        if(len >= MSGSIZE)
-        {
-            buf[MSGSIZE-1] = '\0';
+            Ipc_reportResult(TEST_RPMSG_SND_UNPAIR_CORE, IPC_SOK);
         }
         else
         {
-            buf[len] = '\0';
+            Ipc_reportResult(TEST_RPMSG_SND_UNPAIR_CORE, IPC_EFAIL);
+            return IPC_EFAIL;
         }
-#ifdef DEBUG_PRINT
-        System_printf("SendTask%d: Received \"%s\" len %d from %s endPt %d \n",
-                dstProc, buf, len, Ipc_mpGetName(remoteProcId),
-                remoteEndPt);
-#endif
-        cntPong++;
-        if((i+1)%50 == 0)
+    }
+
+    /* Testing TEST_RPMSG_SND_HNDL_NULL */
+    {
+        status = RPMessage_send(NULL, remoteProcId, ENDPT1, myEndPt, (Ptr)buf, len);
+        if (status != IPC_SOK)
         {
-            //System_printf("%s <--> %s, ping/pong iteration %d ...\n",
-            //        Ipc_mpGetSelfName(), Ipc_mpGetName(dstProc), i);
+            Ipc_reportResult(TEST_RPMSG_SND_HNDL_NULL, IPC_SOK);
+        }
+        else
+        {
+            Ipc_reportResult(TEST_RPMSG_SND_HNDL_NULL, IPC_EFAIL);
+            return IPC_EFAIL;
         }
     }
 
-    System_printf("%s <--> %s, Ping- %d, pong - %d completed\n",
-            Ipc_mpGetSelfName(),
-            Ipc_mpGetName(dstProc),
-            cntPing, cntPong);
+    /* Testing TEST_RPMSG_RCV_HNDL_NULL */
+    {
+        status = RPMessage_recv(NULL, (Ptr)str, &len, &remoteEndPt, &remoteProcId,
+                    IPC_RPMESSAGE_TIMEOUT_FOREVER);
+        if (status != IPC_SOK)
+        {
+            Ipc_reportResult(TEST_RPMSG_RCV_HNDL_NULL, IPC_SOK);
+        }
+        else
+        {
+            Ipc_reportResult(TEST_RPMSG_RCV_HNDL_NULL, IPC_EFAIL);
+            return IPC_EFAIL;
+        }
+    }
 
-    /* Delete the RPMesg object now */
-    RPMessage_delete(&handle);
+    /* Testing TEST_RPMSG_RCV_TIMEOUT */
+    {
+        System_printf("[%s] calling RPMessage_recv with timeout 100...\n", Ipc_mpGetSelfName());
+        status = RPMessage_recv(handleTimeout, (Ptr)str, &len, &remoteEndPt, &remoteProcId, 100);
+
+        if (status != IPC_ETIMEOUT)
+        {
+            Ipc_reportResult(TEST_RPMSG_RCV_TIMEOUT, IPC_EFAIL);
+            return IPC_EFAIL;
+        }
+        else
+        {
+            Ipc_reportResult(TEST_RPMSG_RCV_TIMEOUT, IPC_SOK);
+        }
+    }
+
+    return IPC_SOK;
 }
 
-/*
- * This "Task" waits for Linux vdev ready, and late create the vrings
- *
- */
-#if !defined(BUILD_MPU1_0) && defined(A72_LINUX_OS) && defined(A72_LINUX_OS_IPC_ATTACH)
-void rpmsg_neg_vdevMonitorFxn(UArg arg0, UArg arg1)
+int32_t ipc_neg_test(uint32_t testId)
 {
-    int32_t status;
-
-    /* Wait for Linux VDev ready... */
-    while(!Ipc_isRemoteReady(IPC_MPU1_0))
-    {
-        Task_sleep(10);
-    }
-
-    /* Create the VRing now ... */
-    status = Ipc_lateVirtioCreate(IPC_MPU1_0);
-    if(status != IPC_SOK)
-    {
-        System_printf("%s: Ipc_lateVirtioCreate failed\n", __func__);
-        return;
-    }
-
-    status = RPMessage_lateInit(IPC_MPU1_0);
-    if(status != IPC_SOK)
-    {
-        System_printf("%s: RPMessage_lateInit failed\n", __func__);
-        return;
-    }
-
-    status = RPMessage_announce(IPC_MPU1_0, RecvEndPt, SERVICE);
-    if(status != IPC_SOK)
-    {
-        System_printf("rpmsg_neg_vdevMonitorFxn: RPMessage_announce() failed\n");
-    }
-}
-#endif /* !defined(BUILD_MPU1_0) && defined(A72_LINUX_OS) && defined(A72_LINUX_OS_IPC_ATTACH)*/
-
-
-
-void clear_all_test_flags(void)
-{
-    test_rpmsg_pkt_large_than_vring_buf_flag = 0;
-    test_virtio_init_param_null_flag = 0;
-    test_rpmsg_init_param_null_flag = 0;
-    test_rpmsg_create_null_endpnt_flag = 0;
-    test_rpmsg_snd_null_data_flag = 0;
-    test_rpmsg_snd_unpair_core_flag = 0;
-    test_rpmsg_rcv_hndl_null_flag = 0;
-    test_rpmsg_snd_hndl_null_flag = 0;
-    test_virtio_param_vqbuf_size_zero_flag = 0;
-    test_virtio_param_vringbuf_size_zero_flag = 0;
-    test_rpmsg_param_buf_null_flag = 0;
-    test_rpmsg_param_buf_size_zero_flag = 0;
-    test_rpmsg_param_stkbuf_null_flag = 0;
-    test_rpmsg_param_stk_size_zero_flag = 0;
-    test_rpmsg_rcv_timeout_flag = 0;
-    test_rpmsg_remote_end_timeout_flag = 0;
-}
-int32_t ipc_neg_test(void)
-{
-    uint32_t          t;
-    Task_Params       params;
     uint32_t          numProc = gNumRemoteProc;
     Ipc_VirtIoParams  vqParam;
     uint32_t          index = 0;
@@ -641,29 +402,6 @@ int32_t ipc_neg_test(void)
 
     Ipc_init(NULL);
 
-    //System_printf("Required Local memory for Virtio_Object = %d\r\n",
-    //   numProc * Ipc_getVqObjMemoryRequiredPerCore());
-
-#if !defined(BUILD_MPU1_0) && defined(A72_LINUX_OS)
-    /* If A72 remote core is running Linux OS, then
-     * load resource table
-     */
-
-    Ipc_loadResourceTable((void*)&ti_ipc_remoteproc_ResourceTable);
-
-#if !defined(A72_LINUX_OS_IPC_ATTACH)
-    /* Wait for Linux VDev ready... */
-    for(t = 0; t < numProc; t++)
-    {
-        while(!Ipc_isRemoteReady(pRemoteProcArray[t]))
-        {
-            Task_sleep(10);
-        }
-    }
-    //System_printf("Linux VDEV ready now .....\n");
-#endif
-#endif
-
     /* Step2 : Initialize Virtio */
     vqParam.vqObjBaseAddr = (void*)pSysVqBuf;
     vqParam.vqBufSize     = numProc * Ipc_getVqObjMemoryRequiredPerCore();
@@ -671,67 +409,65 @@ int32_t ipc_neg_test(void)
     vqParam.vringBufSize  = IPC_VRING_BUFFER_SIZE;
     vqParam.timeoutCnt    = 100;  /* Wait for counts */
 
-    if(test_virtio_init_param_null_flag)
+    /* Testing TEST_VIRTIO_INIT_PARAM_NULL */
     {
-        memset(&vqParam, 0, sizeof(vqParam));
         status = Ipc_initVirtIO( NULL );
         if(status != IPC_SOK)
         {
-            System_printf("[%s] [test_virtio_init_param_null_flag] : [TEST_PASS]\n", Ipc_mpGetSelfName());
-            return IPC_EFAIL;
+            Ipc_reportResult(TEST_VIRTIO_INIT_PARAM_NULL, IPC_SOK);
         }
         else
         {
-            System_printf("[%s] [test_virtio_init_param_null_flag] : [TEST_FAIL]\n", Ipc_mpGetSelfName());
+            Ipc_reportResult(TEST_VIRTIO_INIT_PARAM_NULL, IPC_EFAIL);
             return IPC_EFAIL;
         }
     }
-    else if(test_virtio_param_vqbuf_size_zero_flag)
+
+    /* Testing TEST_VIRTIO_PARAM_VQBUF_SIZE_ZERO */
     {
         vqParam.vqBufSize     = 0;
 
         status = Ipc_initVirtIO(&vqParam);
         if(status != IPC_SOK)
         {
-            System_printf("[%s] [test_virtio_param_vqbuf_size_zero_flag] : [TEST_PASS]\n", Ipc_mpGetSelfName());
-            return IPC_EFAIL;
+            Ipc_reportResult(TEST_VIRTIO_PARAM_VQBUF_SIZE_ZERO, IPC_SOK);
         }
         else
         {
-            System_printf("[%s] [test_virtio_param_vqbuf_size_zero_flag] : [TEST_FAIL]\n", Ipc_mpGetSelfName());
+            Ipc_reportResult(TEST_VIRTIO_PARAM_VQBUF_SIZE_ZERO, IPC_EFAIL);
             return IPC_EFAIL;
         }
     }
-    else if(test_virtio_param_vringbuf_size_zero_flag)
+
+    /* Testing TEST_VIRTIO_PARAM_VRINGBUF_SIZE_ZERO */
     {
+        vqParam.vqBufSize     = numProc * Ipc_getVqObjMemoryRequiredPerCore();
         vqParam.vringBufSize  = 0;
 
         status = Ipc_initVirtIO(&vqParam);
         if(status != IPC_SOK)
         {
-            System_printf("[%s] [test_virtio_param_vringbuf_size_zero_flag] : [TEST_PASS]\n", Ipc_mpGetSelfName());
-            return IPC_EFAIL;
+            Ipc_reportResult(TEST_VIRTIO_PARAM_VRINGBUF_SIZE_ZERO, IPC_SOK);
         }
         else
         {
-            System_printf("[%s] [test_virtio_param_vringbuf_size_zero_flag] : [TEST_FAIL]\n", Ipc_mpGetSelfName());
+            Ipc_reportResult(TEST_VIRTIO_PARAM_VRINGBUF_SIZE_ZERO, IPC_EFAIL);
             return IPC_EFAIL;
         }
     }
-    else
+
+
+    System_printf("Ipc_initVirtIO\n");
+    vqParam.vringBufSize  = IPC_VRING_BUFFER_SIZE;
+    status = Ipc_initVirtIO(&vqParam);
+    if (status != IPC_SOK)
     {
-        status = Ipc_initVirtIO(&vqParam);
-        if (status != IPC_SOK)
-        {
-            System_printf("[%s] Ipc_initVirtIO failed\n");
-            return IPC_EFAIL;
-        }
+        System_printf("[%s] Ipc_initVirtIO failed\n");
+        return IPC_EFAIL;
     }
+
     /* Step 3: Initialize RPMessage */
     RPMessage_Params cntrlParam;
-
-    //System_printf("Required Local memory for RPMessage Object = %d\n",
-    //   RPMessage_getObjMemRequired());
 
     /* Initialize the param */
     RPMessageParams_init(&cntrlParam);
@@ -739,282 +475,113 @@ int32_t ipc_neg_test(void)
     /* Set memory for HeapMemory for control task */
     cntrlParam.buf         = pCntrlBuf;
     cntrlParam.bufSize     = rpmsgNegDataSize;
-    cntrlParam.stackBuffer = &pTaskBuf[index++ * IPC_TASK_STACKSIZE];
+    cntrlParam.stackBuffer = &pTaskBuf[index * IPC_TASK_STACKSIZE];
     cntrlParam.stackSize   = IPC_TASK_STACKSIZE;
 
-    if(test_rpmsg_init_param_null_flag)
+    /* Testing TEST_RPMSG_INIT_PARAM_NULL */
     {
         status = RPMessage_init(NULL);
         if(status != IPC_SOK)
         {
-            System_printf("[%s] [test_rpmsg_init_param_null_flag] : [TEST_PASS]\n", Ipc_mpGetSelfName());
-            return IPC_EFAIL;
+            Ipc_reportResult(TEST_RPMSG_INIT_PARAM_NULL, IPC_SOK);
         }
         else
         {
-            System_printf("[%s] [test_rpmsg_init_param_null_flag] : [TEST_FAIL]\n", Ipc_mpGetSelfName());
+            Ipc_reportResult(TEST_RPMSG_INIT_PARAM_NULL, IPC_EFAIL);
             return IPC_EFAIL;
         }
     }
-    else if(test_rpmsg_param_buf_null_flag)
+
+    /* Testing TEST_RPMSG_PARAM_BUF_NULL */
     {
         cntrlParam.buf =  NULL;
 
         status = RPMessage_init(&cntrlParam);
         if(status != IPC_SOK)
         {
-            System_printf("[%s] [test_rpmsg_param_buf_null_flag] : [TEST_PASS]\n", Ipc_mpGetSelfName());
-            return IPC_EFAIL;
+            Ipc_reportResult(TEST_RPMSG_PARAM_BUF_NULL, IPC_SOK);
         }
         else
         {
-            System_printf("[%s] [test_rpmsg_param_buf_null_flag] : [TEST_FAIL]\n", Ipc_mpGetSelfName());
+            Ipc_reportResult(TEST_RPMSG_PARAM_BUF_NULL, IPC_EFAIL);
             return IPC_EFAIL;
         }
     }
-    else if(test_rpmsg_param_buf_size_zero_flag)
+
+    /* Testing TEST_RPMSG_PARAM_BUF_SIZE_ZERO */
     {
+        cntrlParam.buf = pCntrlBuf;
         cntrlParam.bufSize = 0;
 
         status = RPMessage_init(&cntrlParam);
         if(status != IPC_SOK)
         {
-            System_printf("[%s] [test_rpmsg_param_buf_size_zero_flag] : [TEST_PASS]\n", Ipc_mpGetSelfName());
-            return IPC_EFAIL;
+            Ipc_reportResult(TEST_RPMSG_PARAM_BUF_SIZE_ZERO, IPC_SOK);
         }
         else
         {
-            System_printf("[%s] [test_rpmsg_param_buf_size_zero_flag] : [TEST_FAIL]\n", Ipc_mpGetSelfName());
+            Ipc_reportResult(TEST_RPMSG_PARAM_BUF_SIZE_ZERO, IPC_EFAIL);
             return IPC_EFAIL;
         }
     }
 #ifndef IPC_EXCLUDE_CTRL_TASKS
-    else if(test_rpmsg_param_stkbuf_null_flag)
+    /* Testing TEST_RPMSG_PARAM_STKBUF_NULL */
     {
+        cntrlParam.bufSize     = rpmsgNegDataSize;
         cntrlParam.stackBuffer = NULL;
 
         status = RPMessage_init(&cntrlParam);
         if(status != IPC_SOK)
         {
-            System_printf("[%s] [test_rpmsg_param_stkbuf_null_flag] : [TEST_PASS]\n", Ipc_mpGetSelfName());
-            return IPC_EFAIL;
+            Ipc_reportResult(TEST_RPMSG_PARAM_STKBUF_NULL, IPC_SOK);
         }
         else
         {
-            System_printf("[%s] [test_rpmsg_param_stkbuf_null_flag] : [TEST_FAIL]\n", Ipc_mpGetSelfName());
+            Ipc_reportResult(TEST_RPMSG_PARAM_STKBUF_NULL, IPC_EFAIL);
             return IPC_EFAIL;
         }
     }
-    else if(test_rpmsg_param_stk_size_zero_flag)
+    /* Testing TEST_RPMSG_PARAM_STK_SIZE_ZERO */
     {
+        cntrlParam.stackBuffer = &pTaskBuf[index * IPC_TASK_STACKSIZE];
         cntrlParam.stackSize = 0;
 
         status = RPMessage_init(&cntrlParam);
         if(status != IPC_SOK)
         {
-            System_printf("[%s] [test_rpmsg_param_stk_size_zero_flag] : [TEST_PASS]\n", Ipc_mpGetSelfName());
-            return IPC_EFAIL;
+            Ipc_reportResult(TEST_RPMSG_PARAM_STK_SIZE_ZERO, IPC_SOK);
         }
         else
         {
-            System_printf("[%s] [test_rpmsg_param_stk_size_zero_flag] : [TEST_FAIL]\n", Ipc_mpGetSelfName());
+            Ipc_reportResult(TEST_RPMSG_PARAM_STK_SIZE_ZERO, IPC_EFAIL);
             return IPC_EFAIL;
         }
     }
 #endif /* IPC_EXCLUDE_CTRL_TASKS */
-    else
+
+    System_printf("RPMessage_init\n");
+    cntrlParam.stackSize   = IPC_TASK_STACKSIZE;
+    status = RPMessage_init(&cntrlParam);
+    if (status != IPC_SOK)
     {
-        status = RPMessage_init(&cntrlParam);
-        if (status != IPC_SOK)
-        {
-            System_printf("[%s] RPMessage_init failed\n", Ipc_mpGetSelfName());
-            return IPC_EFAIL;
-        }
+        System_printf("[%s] RPMessage_init failed\n", Ipc_mpGetSelfName());
+        return IPC_EFAIL;
     }
 
-    /* Respond to messages coming in to endPt ENDPT1 */
-    Task_Params_init(&params);
-    params.priority   = 3;
-    params.stack      = &pTaskBuf[index++ * IPC_TASK_STACKSIZE];
-    params.stackSize  = IPC_TASK_STACKSIZE;
-    params.arg0       = 0;
-    Task_create(rpmsg_neg_responderFxn, &params, NULL);
-
-    for(t = 0; t < numProc; t++, index++)
-    {
-#if !defined(BUILD_MPU1_0) && defined(A72_LINUX_OS)
-        /* Linux does not have a responder func running */
-        if(pRemoteProcArray[t] == IPC_MPU1_0)
-            continue;
-#endif
-        /* send messages to peer(s) on ENDPT1 */
-        Task_Params_init(&params);
-        params.priority  = 3;
-        params.stack     = &pTaskBuf[index * IPC_TASK_STACKSIZE];
-        params.stackSize = IPC_TASK_STACKSIZE;
-        params.arg0      = pRemoteProcArray[t];
-        params.arg1      = t;
-        Task_create(rpmsg_neg_senderFxn, &params, NULL);
-
-    }
-
-#if !defined(BUILD_MPU1_0) && defined(A72_LINUX_OS) && defined(A72_LINUX_OS_IPC_ATTACH)
-    /* Respond to messages coming in to endPt ENDPT1 */
-    Task_Params_init(&params);
-    params.priority = 3;
-    params.stackSize = 0x1000;
-    params.arg0 = 0;
-    Task_create(rpmsg_neg_vdevMonitorFxn, &params, NULL);
-#endif /* !defined(BUILD_MPU1_0) && defined(A72_LINUX_OS) && defined(A72_LINUX_OS_IPC_ATTACH) */
-
-    return 1;
+    return rpmsg_neg_responderFxn(testId);
 }
 
 int32_t Ipc_echo_neg_test(void)
 {
-    /* RPMessage_Recv timeout set to 1ms for timeout test */
-    g_neg_exitRespTsk = 0;
-    clear_all_test_flags();
-    test_rpmsg_rcv_timeout_flag = 1;
-    ipc_neg_test();
-    rpmsg_neg_exit_responseTask();
+    uint32_t i = 0;
 
-    Task_sleep(20000);
+    ipc_neg_test(i);
 
-    /* set vqBufSize to zero as init param for virtIO */
-    g_neg_exitRespTsk = 0;
-    clear_all_test_flags();
-    test_virtio_param_vqbuf_size_zero_flag = 1;
-    ipc_neg_test();
-    rpmsg_neg_exit_responseTask();
-
-    Task_sleep(20000);
-
-    /* set vringBufSize to zero as init param for virtIO */
-    g_neg_exitRespTsk = 0;
-    clear_all_test_flags();
-    test_virtio_param_vringbuf_size_zero_flag = 1;
-    ipc_neg_test();
-    rpmsg_neg_exit_responseTask();
-
-    Task_sleep(20000);
-
-    /* set bufSize to zero as init param for RPmessage */
-    g_neg_exitRespTsk = 0;
-    clear_all_test_flags();
-    test_rpmsg_param_buf_size_zero_flag = 1;
-    ipc_neg_test();
-    rpmsg_neg_exit_responseTask();
-
-    Task_sleep(20000);
-
-    /* set buf to NULL as init param for RPmessage */
-    g_neg_exitRespTsk = 0;
-    clear_all_test_flags();
-    test_rpmsg_param_buf_null_flag = 1;
-    ipc_neg_test();
-    rpmsg_neg_exit_responseTask();
-
-    Task_sleep(20000);
-
-#ifndef IPC_EXCLUDE_CTRL_TASKS
-    /* set stackSize to zero as init param for RPmessage */
-    g_neg_exitRespTsk = 0;
-    clear_all_test_flags();
-    test_rpmsg_param_stk_size_zero_flag = 1;
-    ipc_neg_test();
-    rpmsg_neg_exit_responseTask();
-
-    Task_sleep(20000);
-
-    /* set stackBuffer to NULL as init param for RPmessage */
-    g_neg_exitRespTsk = 0;
-    clear_all_test_flags();
-    test_rpmsg_param_stkbuf_null_flag = 1;
-    ipc_neg_test();
-    rpmsg_neg_exit_responseTask();
-
-    Task_sleep(20000);
-#endif /* IPC_EXCLUDE_CTRL_TASKS */
-
-    /* send NULL params as part of init virtIO */
-    g_neg_exitRespTsk = 0;
-    clear_all_test_flags();
-    test_virtio_init_param_null_flag = 1;
-    ipc_neg_test();
-    rpmsg_neg_exit_responseTask();
-
-    Task_sleep(20000);
-
-    /* send NULL params as part of init RPMessage */
-    g_neg_exitRespTsk = 0;
-    clear_all_test_flags();
-    test_rpmsg_init_param_null_flag = 1;
-    ipc_neg_test();
-    rpmsg_neg_exit_responseTask();
-
-    Task_sleep(20000);
-
-    /* send RPmessage packet size larger than vring buffer size */
-    g_neg_exitRespTsk = 0;
-    clear_all_test_flags();
-    test_rpmsg_pkt_large_than_vring_buf_flag = 1;
-    ipc_neg_test();
-    rpmsg_neg_exit_responseTask();
-
-    Task_sleep(20000);
-
-    /* send NULL handle as part of RPMessag receive */
-    g_neg_exitRespTsk = 0;
-    clear_all_test_flags();
-    test_rpmsg_rcv_hndl_null_flag = 1;
-    ipc_neg_test();
-    rpmsg_neg_exit_responseTask();
-
-    Task_sleep(20000);
-
-    /* RPMessage_getRemoteEndPt timeout set to 1000 ticks for timeout */
-    g_neg_exitRespTsk = 0;
-    clear_all_test_flags();
-    test_rpmsg_remote_end_timeout_flag = 1;
-    ipc_neg_test();
-    rpmsg_neg_exit_responseTask();
-
-    Task_sleep(20000);
-
-    /* send RPMessage create end point as NULL */
-    g_neg_exitRespTsk = 0;
-    clear_all_test_flags();
-    test_rpmsg_create_null_endpnt_flag = 1;
-    ipc_neg_test();
-    rpmsg_neg_exit_responseTask();
-
-    Task_sleep(20000);
-
-    /* send NULL handle as part of RPMessag send */
-    g_neg_exitRespTsk = 0;
-    clear_all_test_flags();
-    test_rpmsg_snd_hndl_null_flag = 1;
-    ipc_neg_test();
-    rpmsg_neg_exit_responseTask();
-
-    Task_sleep(20000);
-
-    /* send NULL data as part of RPMessag send */
-    g_neg_exitRespTsk = 0;
-    clear_all_test_flags();
-    test_rpmsg_snd_null_data_flag = 1;
-    ipc_neg_test();
-    rpmsg_neg_exit_responseTask();
-
-    Task_sleep(20000);
-
-    /* send NULL data as part of RPMessag send */
-    g_neg_exitRespTsk = 0;
-    clear_all_test_flags();
-    test_rpmsg_snd_unpair_core_flag = 1;
-    ipc_neg_test();
-    rpmsg_neg_exit_responseTask();
-
+    UART_printf("Tests finished\n");
+    UART_printf("Total tests: %d Passed: %d Failed %d\n", gTotalTests, gTotalTestsPassed, gTotalTestsFailed);
+    if (gTotalTests == gTotalTestsPassed)
+    {
+        UART_printf("All tests have passed.\n\n\n");
+    }
     return 0;
 }

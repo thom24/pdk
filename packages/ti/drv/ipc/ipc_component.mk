@@ -301,6 +301,7 @@ export ex05_bios_multicore_echo_negative_test_BOARDLIST
 ex05_bios_multicore_echo_negative_test_$(SOC)_CORELIST = $(drvipc_$(SOC)_TIRTOS_CORELIST)
 export ex05_bios_multicore_echo_negative_test_$(SOC)_CORELIST
 ipc_EXAMPLE_LIST += ex05_bios_multicore_echo_negative_test
+export ex05_bios_multicore_echo_negative_test_SBL_APPIMAGEGEN = yes
 
 # IPC ex02_bios_multicore_echo_testb - use R5F BTCM
 ex02_bios_multicore_echo_testb_COMP_LIST = ex02_bios_multicore_echo_testb
