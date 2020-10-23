@@ -173,7 +173,6 @@ void mainTask(UArg arg0, UArg arg1)
 
     while(loopForever);
 }
-
 uint32_t App_sciclientGetNumTests(void)
 {
     return SCICLIENT_NUM_TESTCASES;
@@ -286,8 +285,9 @@ int32_t App_getRevisionTestIntr(void)
     int32_t status = CSL_EFAIL;
     Sciclient_ConfigPrms_t        config =
     {
-        SCICLIENT_SERVICE_OPERATION_MODE_INTERRUPT,
-        NULL
+        SCICLIENT_SERVICE_OPERATION_MODE_POLLED,
+        NULL,
+        1
     };
 
     struct tisci_msg_version_req request;
@@ -350,8 +350,9 @@ static int32_t App_invalidReqPrmTest(void)
 
     Sciclient_ConfigPrms_t        config =
     {
-        SCICLIENT_SERVICE_OPERATION_MODE_INTERRUPT,
-        NULL
+        SCICLIENT_SERVICE_OPERATION_MODE_POLLED,
+        NULL,
+        1
     };
     struct tisci_msg_version_req request;
     const Sciclient_ReqPrm_t      reqPrm_badTxSize =
@@ -433,8 +434,9 @@ static int32_t App_timeoutTest(void)
     int32_t status = CSL_EFAIL;
     Sciclient_ConfigPrms_t        config =
     {
-        SCICLIENT_SERVICE_OPERATION_MODE_INTERRUPT,
-        NULL
+        SCICLIENT_SERVICE_OPERATION_MODE_POLLED,
+        NULL,
+        1
     };
     struct tisci_msg_version_req request;
     const Sciclient_ReqPrm_t      reqPrm =
@@ -483,7 +485,8 @@ static int32_t App_msmcQueryTest(void)
     Sciclient_ConfigPrms_t        config =
     {
         SCICLIENT_SERVICE_OPERATION_MODE_POLLED,
-        NULL
+        NULL,
+        1
     };
 
     const struct tisci_query_msmc_req req = {};
@@ -589,7 +592,8 @@ static int32_t App_rmGetResourceRange(void)
     Sciclient_ConfigPrms_t        config =
     {
         SCICLIENT_SERVICE_OPERATION_MODE_POLLED,
-        NULL
+        NULL,
+        1
     };
 
     status = Sciclient_init(&config);
