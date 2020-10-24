@@ -65,7 +65,11 @@ static uint32_t sbl_scratch_sz = SBL_SCRATCH_MEM_SIZE;
 /******************************************************************************
  ***                     SBL Multicore RPRC parse functions                 ***
 *******************************************************************************/
-void SBL_DCacheClean(void *addr, uint32_t size);
+#if defined(SOC_AM65XX) || defined (SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
+#if defined(BUILD_MCU1_0)
+extern void SBL_DCacheClean(void *addr, uint32_t size);
+#endif
+#endif
 
 /* read of block of data from buffer */
 int32_t SBL_ReadMem(void       *buff,
@@ -968,7 +972,9 @@ static int32_t SBL_RprcImageParse(void *srcAddr,
             {
                 SBL_log(SBL_LOG_MAX, "Copying 0x%x bytes to 0x%x\n", section.size, section.addr);
                 fp_readData((void *)(uintptr_t)(section.addr), srcAddr, section.size);
+#if defined(BUILD_MCU1_0)
                 SBL_DCacheClean((void *)(uintptr_t)(section.addr), section.size);
+#endif
             }
         }
     }

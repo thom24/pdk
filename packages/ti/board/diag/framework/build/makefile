@@ -54,8 +54,8 @@ EXTERNAL_INTERFACES =
 XDC_CFG_FILE_mpu1_0 =
 XDC_CFG_FILE_mcu1_0 =
 
-SRCDIR = ../src ../../common/$(SOC) ./$(BOARD) ../../../../boot/sbl/src/mmcsd ../../../../boot/sbl/src/rprc
-INCDIR = ../../../../board ../src ../../../src/$(BOARD)/include ../../../src/$(BOARD) ../../../src/flash ../../common/$(SOC) ../../../../boot/sbl/soc/k3 ../../../../boot/sbl/src/rprc ../../../../boot/sbl
+SRCDIR = ../src ../../common/$(SOC) ./$(BOARD) ../../../../boot/sbl/src/mmcsd ../../../../boot/sbl/src/rprc ../../../../boot/sbl/soc/k3
+INCDIR = ../../../../board ../src ../../../src/$(BOARD)/include ../../../src/$(BOARD) ../../../src/flash ../../common/$(SOC) ../../../../boot/sbl/soc ../../../../boot/sbl/soc/k3 ../../../../boot/sbl/src/rprc ../../../../boot/sbl
 
 # List all the external components/interfaces, whose interface header files
 # need to be included for this component
@@ -83,6 +83,10 @@ EXTERNAL_LNKCMD_FILE_LOCAL = ../../common/$(SOC)/framework_linker.lds
 endif
 
 ifeq ($(CORE),$(filter $(CORE), mcu1_0))
+ifeq ($(SOC), $(filter $(SOC), am65xx j721e j7200))
+SRCS_COMMON += sbl_soc.c sbl_sci_client.c
+SRCS_ASM_COMMON += sbl_misc.asm
+endif
 EXTERNAL_LNKCMD_FILE_LOCAL = ../../common/$(SOC)/framework_linker_r5.lds
 endif
 
