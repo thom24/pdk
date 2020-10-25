@@ -60,13 +60,13 @@
 /** DM(Non Secure): Device Management */
 #define TISCI_HOST_ID_DM (254U)
 /** MCU_0_R5_0(Non Secure): Cortex R5 context 0 on MCU island */
-#define TISCI_HOST_ID_R5_0 (3U)
+#define TISCI_HOST_ID_MCU_0_R5_0 (3U)
 /** MCU_0_R5_1(Secure): Cortex R5 context 1 on MCU island(Boot) */
-#define TISCI_HOST_ID_R5_1 (4U)
+#define TISCI_HOST_ID_MCU_0_R5_1 (4U)
 /** MCU_0_R5_2(Non Secure): Cortex R5 context 2 on MCU island */
-#define TISCI_HOST_ID_R5_2 (5U)
+#define TISCI_HOST_ID_MCU_0_R5_2 (5U)
 /** MCU_0_R5_3(Secure): Cortex R5 context 3 on MCU island */
-#define TISCI_HOST_ID_R5_3 (6U)
+#define TISCI_HOST_ID_MCU_0_R5_3 (6U)
 /** A72_0(Secure): Cortex A72 context 0 on Main island */
 #define TISCI_HOST_ID_A72_0 (10U)
 /** A72_1(Secure): Cortex A72 context 1 on Main island */

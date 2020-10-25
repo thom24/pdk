@@ -92,6 +92,7 @@
 #define MCU_SRAM_FWL_ID (1050)
 #define MSMC_SRAM_FWL_ID (4760)
 #define DRAM_FWL_ID (1280)
+#define PROC_HOST_ID (TISCI_HOST_ID_R5_0)
 #endif
 
 #if defined (SOC_J7200)
@@ -99,6 +100,7 @@
 #define MCU_SRAM_FWL_ID (1050)
 #define MSMC_SRAM_FWL_ID (4760)
 #define DRAM_FWL_ID (1280)
+#define PROC_HOST_ID (TISCI_HOST_ID_MCU_0_R5_0)
 #endif
 
 #if defined (SOC_AM65XX)
@@ -106,6 +108,7 @@
 #define MCU_SRAM_FWL_ID (1050)
 #define MSMC_SRAM_FWL_ID (4449)
 #define DRAM_FWL_ID (1280)
+#define PROC_HOST_ID (TISCI_HOST_ID_R5_0)
 #endif
 
 /* ========================================================================== */
@@ -211,7 +214,7 @@ void mainTask(UArg arg0, UArg arg1)
                 MCU_SRAM_ADDRESS_PASS_END,
                 MCU_SRAM_ADDRESS_FAIL_START,
                 MCU_SRAM_ADDRESS_FAIL_END,
-                TISCI_HOST_ID_R5_0,
+                PROC_HOST_ID,
                 MCU_1_0_PRIVID, TRUE, TRUE);
         if (CSL_PASS == r)
         {
@@ -238,7 +241,7 @@ void mainTask(UArg arg0, UArg arg1)
                 MSMC_RAM_ADDRESS_PASS_END,
                 MSMC_RAM_ADDRESS_FAIL_START,
                 MSMC_RAM_ADDRESS_FAIL_END,
-                TISCI_HOST_ID_R5_0,
+                PROC_HOST_ID,
                 MCU_1_0_PRIVID,
                 FALSE, TRUE);
         if (CSL_PASS == r)
@@ -275,7 +278,7 @@ void mainTask(UArg arg0, UArg arg1)
                 DRAM_ADDRESS_PASS_END,
                 DRAM_ADDRESS_FAIL_START,
                 DRAM_ADDRESS_FAIL_END,
-                TISCI_HOST_ID_R5_0,
+                PROC_HOST_ID,
                 MCU_1_0_PRIVID,
                 TRUE, TRUE);
         if (CSL_PASS == r)
@@ -325,7 +328,7 @@ int32_t Sciclient_firewallBackground()
     struct tisci_msg_fwl_change_owner_info_req req = {
         .fwl_id = (uint16_t)0,
         .region = (uint16_t) 0,
-        .owner_index = (uint8_t) TISCI_HOST_ID_R5_0
+        .owner_index = (uint8_t) PROC_HOST_ID
         };
     struct tisci_msg_fwl_change_owner_info_resp resp = {0};
     struct tisci_msg_fwl_set_firewall_region_resp resp_fw_set_pass = {0};

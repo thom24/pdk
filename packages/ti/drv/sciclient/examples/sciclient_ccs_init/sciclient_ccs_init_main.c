@@ -124,6 +124,8 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
          */
 #if defined (SOC_AM64X)
         .main_isolation_hostid = TISCI_HOST_ID_MAIN_0_R5_0,
+#elif defined (SOC_J7200)
+        .main_isolation_hostid = TISCI_HOST_ID_MCU_0_R5_1,
 #else
         .main_isolation_hostid = TISCI_HOST_ID_R5_1,
 #endif

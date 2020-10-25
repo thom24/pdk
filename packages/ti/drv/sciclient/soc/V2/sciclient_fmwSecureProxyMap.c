@@ -72,7 +72,7 @@ const Sciclient_MapStruct_t gSciclientMap[SCICLIENT_CONTEXT_MAX_NUM] =
         /** Context **/
         SCICLIENT_NON_SECURE_CONTEXT,
         /** CPU ID of the A53/A72/R5F/DSP */
-        TISCI_HOST_ID_R5_0,
+        TISCI_HOST_ID_MCU_0_R5_0,
         /** Thread ID of the high priority thread(write) allowed for the CPU */
         TISCI_SEC_PROXY_MCU_0_R5_0_WRITE_HIGH_PRIORITY_THREAD_ID,
         /** Thread ID of the low priority thread(write) allowed for the CPU */
@@ -90,7 +90,7 @@ const Sciclient_MapStruct_t gSciclientMap[SCICLIENT_CONTEXT_MAX_NUM] =
         /** Context **/
         SCICLIENT_SECURE_CONTEXT,
         /** CPU ID of the A53/A72/R5F/DSP */
-        TISCI_HOST_ID_R5_1,
+        TISCI_HOST_ID_MCU_0_R5_1,
         /** Thread ID of the high priority thread(write) allowed for the CPU */
         TISCI_SEC_PROXY_MCU_0_R5_1_WRITE_HIGH_PRIORITY_THREAD_ID,
         /** Thread ID of the low priority thread(write) allowed for the CPU */
@@ -108,7 +108,7 @@ const Sciclient_MapStruct_t gSciclientMap[SCICLIENT_CONTEXT_MAX_NUM] =
         /** Context **/
         SCICLIENT_NON_SECURE_CONTEXT,
         /** CPU ID of the A53/A72/R5F/DSP */
-        TISCI_HOST_ID_R5_2,
+        TISCI_HOST_ID_MCU_0_R5_2,
         /** Thread ID of the high priority thread(write) allowed for the CPU */
         TISCI_SEC_PROXY_MCU_0_R5_2_WRITE_HIGH_PRIORITY_THREAD_ID,
         /** Thread ID of the low priority thread(write) allowed for the CPU */
@@ -126,7 +126,7 @@ const Sciclient_MapStruct_t gSciclientMap[SCICLIENT_CONTEXT_MAX_NUM] =
         /** Context **/
         SCICLIENT_SECURE_CONTEXT,
         /** CPU ID of the A53/A72/R5F/DSP */
-        TISCI_HOST_ID_R5_3,
+        TISCI_HOST_ID_MCU_0_R5_3,
         /** Thread ID of the high priority thread(write) allowed for the CPU */
         TISCI_SEC_PROXY_MCU_0_R5_3_WRITE_HIGH_PRIORITY_THREAD_ID,
         /** Thread ID of the low priority thread(write) allowed for the CPU */
