@@ -72,7 +72,7 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
         /* Host-ID allowed to send SCI-message for main isolation.
          * If mismatch, SCI message will be rejected with NAK.
          */
-        .main_isolation_hostid = TISCI_HOST_ID_R5_1,
+        .main_isolation_hostid = TISCI_HOST_ID_MCU_0_R5_1,
     },
 
     /* tisci_boardcfg_sec_proxy */

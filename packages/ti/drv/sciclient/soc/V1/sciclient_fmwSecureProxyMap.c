@@ -72,7 +72,7 @@ const Sciclient_MapStruct_t gSciclientMap[SCICLIENT_CONTEXT_MAX_NUM] =
         /** Context **/
         SCICLIENT_NON_SECURE_CONTEXT,
         /** CPU ID of the A53/A72/R5F/DSP */
-        TISCI_HOST_ID_R5_0,
+        TISCI_HOST_ID_MCU_0_R5_0,
         /** Thread ID of the high priority thread(write) allowed for the CPU */
         TISCI_SEC_PROXY_MCU_0_R5_0_WRITE_HIGH_PRIORITY_THREAD_ID,
         /** Thread ID of the low priority thread(write) allowed for the CPU */
@@ -84,17 +84,13 @@ const Sciclient_MapStruct_t gSciclientMap[SCICLIENT_CONTEXT_MAX_NUM] =
         /** Thread ID of the notification thread(read) available for the CPU */
         TISCI_SEC_PROXY_MCU_0_R5_0_READ_NOTIFY_THREAD_ID,
         /** Notification Interrupt Number.  */
-#ifdef SOC_J7200
-        0
-#else
         CSLR_MCU_R5FSS0_CORE0_INTR_MCU_NAVSS0_INTR_ROUTER_0_OUTL_INTR_1
-#endif
     },
     {
         /** Context **/
         SCICLIENT_SECURE_CONTEXT,
         /** CPU ID of the A53/A72/R5F/DSP */
-        TISCI_HOST_ID_R5_1,
+        TISCI_HOST_ID_MCU_0_R5_1,
         /** Thread ID of the high priority thread(write) allowed for the CPU */
         TISCI_SEC_PROXY_MCU_0_R5_1_WRITE_HIGH_PRIORITY_THREAD_ID,
         /** Thread ID of the low priority thread(write) allowed for the CPU */
@@ -106,17 +102,13 @@ const Sciclient_MapStruct_t gSciclientMap[SCICLIENT_CONTEXT_MAX_NUM] =
         /** Thread ID of the notification thread(read) available for the CPU */
         TISCI_SEC_PROXY_MCU_0_R5_1_READ_NOTIFY_THREAD_ID,
         /** Notification Interrupt Number.  */
-#ifdef SOC_J7200
-        0
-#else
         CSLR_MCU_R5FSS0_CORE0_INTR_MCU_NAVSS0_INTR_ROUTER_0_OUTL_INTR_3
-#endif
     },
     {
         /** Context **/
         SCICLIENT_NON_SECURE_CONTEXT,
         /** CPU ID of the A53/A72/R5F/DSP */
-        TISCI_HOST_ID_R5_2,
+        TISCI_HOST_ID_MCU_0_R5_2,
         /** Thread ID of the high priority thread(write) allowed for the CPU */
         TISCI_SEC_PROXY_MCU_0_R5_2_WRITE_HIGH_PRIORITY_THREAD_ID,
         /** Thread ID of the low priority thread(write) allowed for the CPU */
@@ -128,17 +120,13 @@ const Sciclient_MapStruct_t gSciclientMap[SCICLIENT_CONTEXT_MAX_NUM] =
         /** Thread ID of the notification thread(read) available for the CPU */
         TISCI_SEC_PROXY_MCU_0_R5_2_READ_NOTIFY_THREAD_ID,
         /** Notification Interrupt Number.  */
-#ifdef SOC_J7200
-        0
-#else
         CSLR_MCU_R5FSS0_CORE1_INTR_MCU_NAVSS0_INTR_ROUTER_0_OUTL_INTR_33
-#endif
     },
     {
         /** Context **/
         SCICLIENT_SECURE_CONTEXT,
         /** CPU ID of the A53/A72/R5F/DSP */
-        TISCI_HOST_ID_R5_3,
+        TISCI_HOST_ID_MCU_0_R5_3,
         /** Thread ID of the high priority thread(write) allowed for the CPU */
         TISCI_SEC_PROXY_MCU_0_R5_3_WRITE_HIGH_PRIORITY_THREAD_ID,
         /** Thread ID of the low priority thread(write) allowed for the CPU */
@@ -150,11 +138,7 @@ const Sciclient_MapStruct_t gSciclientMap[SCICLIENT_CONTEXT_MAX_NUM] =
         /** Thread ID of the notification thread(read) available for the CPU */
         TISCI_SEC_PROXY_MCU_0_R5_3_READ_NOTIFY_THREAD_ID,
         /** Notification Interrupt Number.  */
-#ifdef SOC_J7200
-        0
-#else
         CSLR_MCU_R5FSS0_CORE1_INTR_MCU_NAVSS0_INTR_ROUTER_0_OUTL_INTR_35
-#endif
     },
     {
         /** Context **/
@@ -172,11 +156,7 @@ const Sciclient_MapStruct_t gSciclientMap[SCICLIENT_CONTEXT_MAX_NUM] =
         /** Thread ID of the notification thread(read) available for the CPU */
         TISCI_SEC_PROXY_A72_0_READ_NOTIFY_THREAD_ID,
         /** Notification Interrupt Number.  */
-#ifdef SOC_J7200
-        0
-#else
         CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_ROUTER_0_OUTL_INTR_1
-#endif
     },
     {
         /** Context **/
@@ -194,11 +174,7 @@ const Sciclient_MapStruct_t gSciclientMap[SCICLIENT_CONTEXT_MAX_NUM] =
         /** Thread ID of the notification thread(read) available for the CPU */
         TISCI_SEC_PROXY_A72_1_READ_NOTIFY_THREAD_ID,
         /** Notification Interrupt Number.  */
-#ifdef SOC_J7200
-        0
-#else
         CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_ROUTER_0_OUTL_INTR_3
-#endif
     },
     {
         /** Context **/
@@ -216,11 +192,7 @@ const Sciclient_MapStruct_t gSciclientMap[SCICLIENT_CONTEXT_MAX_NUM] =
         /** Thread ID of the notification thread(read) available for the CPU */
         TISCI_SEC_PROXY_A72_2_READ_NOTIFY_THREAD_ID,
         /** Notification Interrupt Number.  */
-#ifdef SOC_J7200
-        0
-#else
         CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_ROUTER_0_OUTL_INTR_5
-#endif
     },
     {
         /** Context **/
@@ -238,11 +210,7 @@ const Sciclient_MapStruct_t gSciclientMap[SCICLIENT_CONTEXT_MAX_NUM] =
         /** Thread ID of the notification thread(read) available for the CPU */
         TISCI_SEC_PROXY_A72_3_READ_NOTIFY_THREAD_ID,
         /** Notification Interrupt Number.  */
-#ifdef SOC_J7200
-        0
-#else
         CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_ROUTER_0_OUTL_INTR_7
-#endif
     },
     {
         /** Context **/
@@ -260,11 +228,7 @@ const Sciclient_MapStruct_t gSciclientMap[SCICLIENT_CONTEXT_MAX_NUM] =
         /** Thread ID of the notification thread(read) available for the CPU */
         TISCI_SEC_PROXY_A72_4_READ_NOTIFY_THREAD_ID,
         /** Notification Interrupt Number.  */
-#ifdef SOC_J7200
-        0
-#else
         CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_ROUTER_0_OUTL_INTR_9
-#endif
     },
     {
         /** Context **/
@@ -408,11 +372,7 @@ const Sciclient_MapStruct_t gSciclientMap[SCICLIENT_CONTEXT_MAX_NUM] =
         /** Thread ID of the notification thread(read) available for the CPU */
         TISCI_SEC_PROXY_MAIN_0_R5_0_READ_NOTIFY_THREAD_ID,
         /** Notification Interrupt Number.  */
-#ifdef SOC_J7200
-        0
-#else
         CSLR_R5FSS0_CORE0_INTR_NAVSS0_INTR_ROUTER_0_OUTL_INTR_193
-#endif
     },
     {
         /** Context **/
@@ -430,11 +390,7 @@ const Sciclient_MapStruct_t gSciclientMap[SCICLIENT_CONTEXT_MAX_NUM] =
         /** Thread ID of the notification thread(read) available for the CPU */
         TISCI_SEC_PROXY_MAIN_0_R5_1_READ_NOTIFY_THREAD_ID,
         /** Notification Interrupt Number.  */
-#ifdef SOC_J7200
-        0
-#else
         CSLR_R5FSS0_CORE0_INTR_NAVSS0_INTR_ROUTER_0_OUTL_INTR_195
-#endif
     },
     {
         /** Context **/
@@ -452,11 +408,7 @@ const Sciclient_MapStruct_t gSciclientMap[SCICLIENT_CONTEXT_MAX_NUM] =
         /** Thread ID of the notification thread(read) available for the CPU */
         TISCI_SEC_PROXY_MAIN_0_R5_2_READ_NOTIFY_THREAD_ID,
         /** Notification Interrupt Number.  */
-#ifdef SOC_J7200
-        0
-#else
         CSLR_R5FSS0_CORE1_INTR_NAVSS0_INTR_ROUTER_0_OUTL_INTR_225
-#endif
     },
     {
         /** Context **/
@@ -476,9 +428,6 @@ const Sciclient_MapStruct_t gSciclientMap[SCICLIENT_CONTEXT_MAX_NUM] =
         /** Notification Interrupt Number.  */
         CSLR_R5FSS0_CORE1_INTR_NAVSS0_INTR_ROUTER_0_OUTL_INTR_227
     },
-#ifdef SOC_J7200
-        /* The following are not available on J7200 */
-#else
     {
         /** Context **/
         SCICLIENT_NON_SECURE_CONTEXT,
@@ -569,5 +518,4 @@ const Sciclient_MapStruct_t gSciclientMap[SCICLIENT_CONTEXT_MAX_NUM] =
         /** Notification Interrupt Number.  */
         0
     }
-#endif
 };

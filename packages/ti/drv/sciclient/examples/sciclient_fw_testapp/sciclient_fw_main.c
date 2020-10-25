@@ -92,7 +92,7 @@
 #define MCU_SRAM_FWL_ID (1050)
 #define MSMC_SRAM_FWL_ID (4760)
 #define DRAM_FWL_ID (1280)
-#define PROC_HOST_ID (TISCI_HOST_ID_R5_0)
+#define PROC_HOST_ID (TISCI_HOST_ID_MCU_0_R5_0)
 #endif
 
 #if defined (SOC_J7200)
