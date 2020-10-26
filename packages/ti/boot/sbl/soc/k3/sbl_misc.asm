@@ -96,6 +96,44 @@ sbl_btcm_base .word 0x41010000
 
 	.endasmfunc
 
+
+;****************************************************************************
+; SBL Read ATCM Size Register
+;****************************************************************************
+	.sect   ".text"
+	.global sblAtcmSize
+
+sblAtcmSize:
+	.asmfunc
+    mrc     p15, #0, r0, c9, c1, #1     ;; Read ATCM region Register
+    and     r0, r0, #0xFF               ;; Extract  ATCM region Register
+    lsr     r0, r0, #0x2                ;; Extract  ATCM region Register
+    mov     r1, #0x200                  ;; Calculate size of ATCM in bytes
+    lsl     r0, r1, r0                  ;; Calculate size of ATCM in bytes
+
+    BX      lr
+
+	.endasmfunc
+
+;****************************************************************************
+; SBL Read BTCM Size Register
+;****************************************************************************
+	.sect   ".text"
+	.global sblBtcmSize
+
+sblBtcmSize:
+	.asmfunc
+    mrc     p15, #0, r0, c9, c1, #0      ;; Read BTCM region Register
+    and     r0, r0, #0xFF                ;; Extract  BTCM region Register
+    lsr     r0, r0, #0x2                 ;; Extract  BTCM region Register
+    mov     r1, #0x200                   ;; Calculate size of BTCM in bytes
+    lsl     r0, r1, r0                   ;; Calculate size of BTCM in bytes
+
+    BX      lr
+
+	.endasmfunc
+
+
 ;****************************************************************************
 ; Supress Klockworks Ptr Errors
 ;****************************************************************************

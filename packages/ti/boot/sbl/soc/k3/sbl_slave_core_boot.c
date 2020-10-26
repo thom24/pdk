@@ -562,6 +562,9 @@ void SBL_SetupCoreMem(uint32_t core_id)
             /* SBL running on MCU0, don't fool around with its power & TCMs */
             if (core_id != MCU1_CPU0_ID)
             {
+                uint32_t atcm_size =  sblAtcmSize();
+                uint32_t btcm_size =  sblBtcmSize();
+
                 if (runLockStep)
                 {
                     /* If in lock-step mode, need to bring Core 1 out of reset, before Core 0, in order to init TCMs */
@@ -572,36 +575,12 @@ void SBL_SetupCoreMem(uint32_t core_id)
                 Sciclient_pmSetModuleState(sblSlaveCoreInfoPtr->tisci_dev_id, TISCI_MSG_VALUE_DEVICE_SW_STATE_ON, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
 
                 /* Initialize the TCMs - TCMs of MCU running SBL are already initialized by ROM & SBL */
-#if defined(SOC_J7200)
-                /* J7200: ATCM in lock-step is the combined size of both the split-mode ATCMs */
-                if (runLockStep)
-                {
-                    SBL_log(SBL_LOG_MAX, "Clearing core_id %d (lock-step) ATCM @ 0x%x\n", core_id, SblAtcmAddr[core_id - MCU1_CPU0_ID]);
-                    memset(((void *)(SblAtcmAddr[core_id - MCU1_CPU0_ID])), 0xFF, 0x10000);
-                }
-                else
-                /* Clear the normal size of ATCM for non-lockstep cores */
-#endif
-                {
-                    SBL_log(SBL_LOG_MAX, "Clearing core_id %d  ATCM @ 0x%x\n", core_id, SblAtcmAddr[core_id - MCU1_CPU0_ID]);
-                    memset(((void *)(SblAtcmAddr[core_id - MCU1_CPU0_ID])), 0xFF, 0x8000);
-                }
+                SBL_log(SBL_LOG_MAX, "Clearing core_id %d (lock-step) ATCM @ 0x%x\n", core_id, SblAtcmAddr[core_id - MCU1_CPU0_ID]);
+                memset(((void *)(SblAtcmAddr[core_id - MCU1_CPU0_ID])), 0xFF, atcm_size);
 
 #ifndef VLAB_SIM
-#if defined(SOC_J7200)
-                /* J7200: BTCM in lock-step is the combined size of both the split-mode BTCMs */
-                if (runLockStep)
-                {
-                    SBL_log(SBL_LOG_MAX, "Clearing core_id %d (lock-step) BTCM @ 0x%x\n", core_id, SblBtcmAddr[core_id - MCU1_CPU0_ID]);
-                    memset(((void *)(SblBtcmAddr[core_id - MCU1_CPU0_ID])), 0xFF, 0x10000);
-                }
-                else
-                /* Clear the normal size of BTCM for non-lockstep cores */
-#endif
-                {
-                    SBL_log(SBL_LOG_MAX, "Clearing core_id %d  BTCM @ 0x%x\n", core_id, SblBtcmAddr[core_id - MCU1_CPU0_ID]);
-                    memset(((void *)(SblBtcmAddr[core_id - MCU1_CPU0_ID])), 0xFF, 0x8000);
-                }
+                SBL_log(SBL_LOG_MAX, "Clearing core_id %d (lock-step) BTCM @ 0x%x\n", core_id, SblBtcmAddr[core_id - MCU1_CPU0_ID]);
+                memset(((void *)(SblBtcmAddr[core_id - MCU1_CPU0_ID])), 0xFF, btcm_size);
 #else
 /* BTCM is not recognized in VLAB : ASTC TICKET # TBD */
                 SBL_log(SBL_LOG_MAX, "***Not Clearing*** BTCM @0x%x\n", SblBtcmAddr[core_id - MCU1_CPU0_ID]);

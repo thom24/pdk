@@ -831,4 +831,6 @@ extern uint16_t sblMapOtpVidToMilliVolts[256];
 void SBL_RAT_Config(sblRatCfgInfo_t *remap_list);
 void SBL_SocEarlyInit(uint32_t isBuildHs);
 void SBL_SocLateInit(void);
+uint32_t sblAtcmSize(void);
+uint32_t sblBtcmSize(void);
 #endif

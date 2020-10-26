@@ -395,6 +395,7 @@ int main()
     cpu_core_id_t core_id;
 #endif
     uint32_t isBuildHs;
+    uint32_t atcm_size;
 
     SBL_ADD_PROFILE_POINT;
 
@@ -434,8 +435,9 @@ int main()
 
     SBL_ADD_PROFILE_POINT;
 
-   /* Initialize the ATCM */
-    memset((void *)SBL_MCU_ATCM_BASE, 0xFF, 0x8000);
+    /* Initialize the ATCM */
+    atcm_size = sblAtcmSize();
+    memset((void *)SBL_MCU_ATCM_BASE, 0xFF, atcm_size);
 
     /* Relocate CSL Vectors to ATCM*/
     memcpy((void *)SBL_MCU_ATCM_BASE, (void *)_resetvectors, 0x100);
