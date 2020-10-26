@@ -4,10 +4,12 @@
 SRCDIR = src \
 		 src/$(BOARD) \
 		 src/$(BOARD)/r5f \
-		 src/$(BOARD)/r5f/baremetal
+		 src/$(BOARD)/r5f/baremetal \
+		 src/r5f/
 INCDIR = ../../ src \
 		 src/$(BOARD) \
-		 src/$(BOARD)/r5f
+		 src/$(BOARD)/r5f \
+		 src/r5f/
 
 # List all the external components/interfaces, whose interface header files
 #  need to be included for this component
@@ -24,7 +26,10 @@ SRCS_COMMON += sdtf_platform.c \
 			   sdtf_core.c \
 			   sdtf_exception.c \
 			   sdtf_mpu_default.c \
-			   sdtf_rat.c
+			   sdtf_rat.c \
+                           sdtf_utils.c
+
+SRCS_ASM_COMMON += sdtf_utils_asm.asm
 ifeq ($(ISA),$(filter $(ISA), a53, a72))
   LNKFLAGS_LOCAL_$(CORE) += --entry Entry
 endif

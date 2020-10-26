@@ -73,8 +73,8 @@ MEMORY
     /*  Reset Vectors base address(RESET_VECTORS) should be 64 bytes aligned  */
     RESET_VECTORS (X)  			: origin=0x41C00000 length=0x100
     /* MCU0_R5F_0 local view 												  */
-    MCU0_R5F_TCMA (X)		: origin=0x0			length=0x7c00 fill=0xffffffff
-    MCU0_R5F_TCMA_TEST (X)      : origin=0x7c00			length=0x400 fill=0xffffffff
+    MCU0_R5F_TCMA (X)		: origin=0x0			length=0x7c00
+    MCU0_R5F_TCMA_TEST (X)      : origin=0x7c00			length=0x400
 
     /* MCU0_R5F_1 SoC view													  */
     MCU0_R5F1_ATCM (RWIX)  	: origin=0x41400000 length=0x8000

@@ -56,6 +56,7 @@
 #include "sdtf_profile.h"
 #include "sdtf_wdt.h"
 #include "sdtf_ecc.h"
+#include "sdtf_utils.h"
 #include <sdtf_soc.h>
 
 #ifdef SDTF_BOARD
@@ -333,6 +334,13 @@ int32_t SDTF_init (void)
     int32_t retValue=0;
 
     SDR_Result result;
+
+    /* Enable ATCM and BTCM */
+    SDTF_UTILS_TCMEnable();
+
+    /* Initialize ATCM */
+    SDTF_UTILS_initATCM();
+
 #ifdef SDTF_BOARD
     Board_initCfg boardCfg;
 
