@@ -75,7 +75,11 @@
 
 static Void taskFxn(UArg a0, UArg a1);
 extern int32_t Dss_displayTest(void);
-
+#if(1U == DISP_APP_TEST_OVERLAY_VP_4)
+static void App_clkRateSet(uint32_t moduleId,
+                           uint32_t clkId,
+                           uint64_t clkRateHz);
+#endif
 /* ========================================================================== */
 /*                            Global Variables                                */
 /* ========================================================================== */
@@ -190,6 +194,31 @@ static Void taskFxn(UArg a0, UArg a1)
                                    TISCI_MSG_FLAG_AOP,
                                    SCICLIENT_SERVICE_WAIT_FOREVER);
 #endif
+#if(1U == DISP_APP_TEST_OVERLAY_VP_4)
+    uint64_t clkFreq = 0U;
+    
+    /* set CSITX clocks */
+    App_clkRateSet(TISCI_DEV_DSS0,
+                   TISCI_DEV_DSS0_DSS_INST0_DPI_3_IN_2X_CLK,
+                   148500000U);
+    /* Get the CSITX clock frequencies */
+    retVal += PMLIBClkRateGet(TISCI_DEV_DSS0,
+                              TISCI_DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK,
+                              &clkFreq);
+    App_print("\n TISCI_DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK = %lld Hz\n", clkFreq);
+    retVal += PMLIBClkRateGet(TISCI_DEV_DSS0,
+                              TISCI_DEV_DSS0_DSS_INST0_DPI_1_IN_2X_CLK,
+                              &clkFreq);
+    App_print("\n TISCI_DEV_DSS0_DSS_INST0_DPI_1_IN_2X_CLK = %lld Hz\n", clkFreq);
+    retVal += PMLIBClkRateGet(TISCI_DEV_DSS0,
+                              TISCI_DEV_DSS0_DSS_INST0_DPI_2_IN_2X_CLK,
+                              &clkFreq);
+    App_print("\n TISCI_DEV_DSS0_DSS_INST0_DPI_2_IN_2X_CLK = %lld Hz\n", clkFreq);
+    retVal += PMLIBClkRateGet(TISCI_DEV_DSS0,
+                              TISCI_DEV_DSS0_DSS_INST0_DPI_3_IN_2X_CLK,
+                              &clkFreq);
+    App_print("\n TISCI_DEV_DSS0_DSS_INST0_DPI_3_IN_2X_CLK = %lld Hz\n", clkFreq);
+#endif
     if (retVal == CSL_PASS)
     {
         Dss_displayTest();
@@ -211,3 +240,28 @@ void App_wait(uint32_t wait_in_ms)
 {
     Task_sleep(wait_in_ms);
 }
+
+#if(1U == DISP_APP_TEST_OVERLAY_VP_4)
+static void App_clkRateSet(uint32_t moduleId,
+                           uint32_t clkId,
+                           uint64_t clkRateHz)
+{
+    int32_t status;
+    uint64_t currClkFreqHz;
+
+    status = PMLIBClkRateGet(moduleId, clkId, &currClkFreqHz);
+    if ((status == CSL_PASS) &&
+        (currClkFreqHz != clkRateHz))
+    {
+        status = PMLIBClkRateSet(moduleId, clkId, clkRateHz);
+        if (status == CSL_PASS)
+        {
+            App_print("\nPMLIBClkRateSet Passed for clock Id = %d\n", clkId);
+        }
+        else
+        {
+            App_print("\nPMLIBClkRateSet failed for clock Id = %d\n", clkId);
+        }
+    }
+}
+#endif
