@@ -1222,7 +1222,7 @@ static int32_t TimeSync_setCpswAleClassifier(void)
                &peerDlyMsgMAC[0U],
                ENET_MAC_ADDR_LEN);
 
-        setPolicerEntryInArgs.threadIdEnable = true;
+        setPolicerEntryInArgs.threadIdEn = true;
         setPolicerEntryInArgs.threadId = gTimeSyncCpswObj.rxFlowIdx;
 
         ENET_IOCTL_SET_INOUT_ARGS(&prms, &setPolicerEntryInArgs, &setPolicerEntryOutArgs);
@@ -1243,7 +1243,7 @@ static int32_t TimeSync_setCpswAleClassifier(void)
                &nonPeerDlyMsgMAC[0U],
                ENET_MAC_ADDR_LEN);
 
-        setPolicerEntryInArgs.threadIdEnable = true;
+        setPolicerEntryInArgs.threadIdEn = true;
         setPolicerEntryInArgs.threadId = gTimeSyncCpswObj.rxFlowIdx;
 
         ENET_IOCTL_SET_INOUT_ARGS(&prms, &setPolicerEntryInArgs, &setPolicerEntryOutArgs);
@@ -1266,7 +1266,7 @@ static int32_t TimeSync_setCpswAleClassifier(void)
                ENET_IPv4_ADDR_LEN);
         setPolicerEntryInArgs.policerMatch.dstIpInfo.ipv4Info.numLSBIgnoreBits = 0U;
 
-        setPolicerEntryInArgs.threadIdEnable = true;
+        setPolicerEntryInArgs.threadIdEn = true;
         setPolicerEntryInArgs.threadId = gTimeSyncCpswObj.rxFlowIdx;
 
         ENET_IOCTL_SET_INOUT_ARGS(&prms, &setPolicerEntryInArgs, &setPolicerEntryOutArgs);
@@ -1287,7 +1287,7 @@ static int32_t TimeSync_setCpswAleClassifier(void)
                ENET_IPv4_ADDR_LEN);
         setPolicerEntryInArgs.policerMatch.dstIpInfo.ipv4Info.numLSBIgnoreBits = 0U;
 
-        setPolicerEntryInArgs.threadIdEnable = true;
+        setPolicerEntryInArgs.threadIdEn = true;
         setPolicerEntryInArgs.threadId = gTimeSyncCpswObj.rxFlowIdx;
 
         ENET_IOCTL_SET_INOUT_ARGS(&prms, &setPolicerEntryInArgs, &setPolicerEntryOutArgs);
