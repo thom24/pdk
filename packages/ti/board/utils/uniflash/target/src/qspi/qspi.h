@@ -66,6 +66,14 @@ extern "C" {
 #elif defined(SOC_TPR12)
 #include <ti/board/src/flash/include/board_flash.h>
 #include <ti/board/src/flash/nor/qspi/nor_qspi.h>
+
+#ifdef SPI_DMA_ENABLE
+#include <ti/csl/soc.h>
+#include <ti/osal/CacheP.h>
+/* EDMA3 Header files */
+#include <ti/drv/edma/edma.h>
+#endif
+
 #endif
 
 #ifdef iceK2G

@@ -79,6 +79,48 @@ const UFP_fxnTable UFP_qspiFxnTable = {
 /*                          Function Definitions                              */
 /* ========================================================================== */
 
+#if defined(SOC_TPR12) && defined(SPI_DMA_ENABLE)
+/**
+ * \brief      Function to initialize the edma driver and get the handle to the
+ *             edma driver;
+ */
+EDMA_Handle  gUfpEdmaHandle = NULL;
+
+static EDMA_Handle UFP_qspiEdmaInit(void)
+{
+    uint32_t edma3Id = EDMA_DRV_INST_MSS_A;
+    EDMA_instanceInfo_t instanceInfo;
+    int32_t errorCode;
+
+    gUfpEdmaHandle = EDMA_getHandle(edma3Id, &instanceInfo);
+    if(gUfpEdmaHandle == NULL)
+    {
+        EDMA3CCInitParams 	initParam;
+
+        EDMA3CCInitParams_init(&initParam);
+        initParam.initParamSet = TRUE;
+        if (EDMA_init(edma3Id, &initParam) != EDMA_NO_ERROR)
+        {
+            return(gUfpEdmaHandle);
+        }
+
+        /* Open DMA driver instance 0 for SPI test */
+        gUfpEdmaHandle = EDMA_open(edma3Id, &errorCode, &instanceInfo);
+        if(gUfpEdmaHandle == NULL)
+        {
+            return(gUfpEdmaHandle);
+        }
+    }
+
+    return(gUfpEdmaHandle);
+}
+
+static uintptr_t UFP_l2GlobalAddress (uintptr_t addr)
+{
+    return ((uintptr_t)CSL_locToGlobAddr(addr));
+}
+#endif
+
 /**
  *  \brief		This function closes the qspi Handle.
  *
@@ -236,6 +278,44 @@ static int8_t UFP_qspiFlashWrite(uint8_t *src, uint32_t offset, uint32_t length)
  *	               -1		- in case of failure.
  *
  */
+#if defined(SOC_TPR12)
+static int8_t UFP_qspiFlashImage(uint8_t *flashAddr, uint8_t *checkAddr,
+                                 uint32_t offset, uint32_t size)
+{
+    int8_t ret;
+    uint8_t *pFlashAddr;
+    uint8_t *pCheckAddr;
+
+#if defined(SPI_DMA_ENABLE)
+    CacheP_wbInv((void *)flashAddr, (int32_t)size);
+    CacheP_wbInv((void *)checkAddr, (int32_t)size);
+    pFlashAddr = (uint8_t *)UFP_l2GlobalAddress((uintptr_t)flashAddr);
+    pCheckAddr = (uint8_t *)UFP_l2GlobalAddress((uintptr_t)checkAddr);
+#else
+    pFlashAddr = flashAddr;
+    pCheckAddr = checkAddr;
+#endif
+
+    ret = UFP_qspiFlashWrite(pFlashAddr, offset, size);
+    if (ret != 0)
+    {
+        return -1;
+    }
+
+    delay(QSPI_FW_WRITE_DELAY);
+    ret = UFP_qspiFlashRead(pCheckAddr, offset, size);
+    if (ret != 0)
+    {
+        return -1;
+    }
+
+#if defined(SOC_TPR12) && defined(SPI_DMA_ENABLE)
+    CacheP_wbInv((void *)checkAddr, (int32_t)size);
+#endif
+
+	return 0;
+}
+#else
 static int8_t UFP_qspiFlashImage(uint8_t *flashAddr, uint8_t *checkAddr,
                                  uint32_t offset, uint32_t size)
 {
@@ -256,6 +336,7 @@ static int8_t UFP_qspiFlashImage(uint8_t *flashAddr, uint8_t *checkAddr,
 
 	return 0;
 }
+#endif
 
 /**
  *  \brief		This function erases the qspi flash upto specified length
@@ -335,6 +416,11 @@ static int8_t UFP_qspiInit(void)
     /* Modify the default QSPI configurations if necessary */
     /* Turning off interrupts for baremetal mode. May be re-enabled by app */
     qspi_cfg.intrEnable = false;
+
+#if defined(SOC_TPR12) && defined(SPI_DMA_ENABLE)
+    qspi_cfg.edmaHandle = UFP_qspiEdmaInit();
+    qspi_cfg.dmaEnable  = true;
+#endif
 
     /* Set the default QSPI init configurations */
     QSPI_socSetInitCfg(BOARD_QSPI_NOR_INSTANCE, &qspi_cfg);

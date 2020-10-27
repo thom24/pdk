@@ -135,6 +135,7 @@ endif
 ifeq ($(BOARD), $(filter $(BOARD), tpr12_evm))
 SRCS_COMMON += qspi.c
 EXTERNAL_LNKCMD_FILE_LOCAL = $(UNIFLASH_BASE_DIR)/soc/$(SOC)/linker.cmd
+BOARD_UTILS_CFLAGS += -DSPI_DMA_ENABLE
 endif
 
 ifeq ($(NOJTAG), yes)

@@ -236,6 +236,11 @@ uint32_t UFP_getMaxBaudrate(void)
 void UFP_uartInit(void)
 {
     UART_Params_init(&gUartParams);
+#if defined(SOC_TPR12)
+    gUartParams.readDataMode = UART_DATA_BINARY;
+    gUartParams.readTimeout  = 1000;
+    gUartParams.writeTimeout = 1000;
+#endif
     UART_init();
 }
 

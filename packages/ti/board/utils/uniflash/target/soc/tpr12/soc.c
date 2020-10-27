@@ -43,6 +43,7 @@
 #include <ti/board/board_cfg.h>
 #include <ti/board/board.h>
 #include <ti/board/src/flash/include/board_flash.h>
+#include "flash_programmer.h"
 
 uint8_t uart_inst = BOARD_UART_INSTANCE;
 uint32_t uart_baseAddr = CSL_MSS_SCIA_U_BASE;
@@ -63,8 +64,7 @@ int8_t UFP_socInit(Board_initCfg *cfg)
 
     if (cfg == NULL)
     {
-        boardCfg = BOARD_INIT_PLL |
-                   BOARD_INIT_MODULE_CLOCK |
+        boardCfg = BOARD_INIT_MODULE_CLOCK |
                    BOARD_INIT_PINMUX_CONFIG;
     }
     else
@@ -77,5 +77,8 @@ int8_t UFP_socInit(Board_initCfg *cfg)
     {
         return -1;
     }
+
+    UFP_uartConfig(UFP_BAUDRATE_115200);
+
     return 0;
 }
