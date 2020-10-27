@@ -75,6 +75,7 @@ SECTIONS{
     .bss     : {} > L2_RAM
     .stack   : {} > TCMB_RAM | L2_RAM
     .sysmem  : {} > L2_RAM
+    uartbuffer : {} palign(8) > L3_RAM
     .irqStack  : {. = . + __IRQ_STACK_SIZE;} align(4)    > L2_RAM  (HIGH)
     RUN_START(__IRQ_STACK_START)
     RUN_END(__IRQ_STACK_END)

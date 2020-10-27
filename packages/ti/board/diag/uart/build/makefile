@@ -86,6 +86,10 @@ SRCS_ASM_COMMON += diag_entry.asm
 EXTERNAL_LNKCMD_FILE_LOCAL = ../../common/$(SOC)/linker_$(CORE).lds
 endif
 
+ifeq ($(CORE),$(filter $(CORE), c66xdsp_1))
+EXTERNAL_LNKCMD_FILE_LOCAL = ../../common/$(SOC)/linker_$(CORE).cmd
+endif
+
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) -DDIAG_$(TESTMODE) $(BOARD_DIAG_CFLAGS)
 
 # Include common make files
