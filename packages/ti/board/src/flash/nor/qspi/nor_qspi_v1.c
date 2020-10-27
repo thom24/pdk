@@ -397,7 +397,7 @@ NOR_STATUS Nor_qspiRead(NOR_HANDLE handle, uint32_t addr,
         return NOR_FAIL;
     }
     spiHandle = (SPI_Handle)norQspiInfo->hwHandle;
-    object = spiHandle->object;
+    object = (QSPI_v1_Object *)spiHandle->object;
 
     rxLinesArg = object->rxLines;
 
@@ -544,7 +544,7 @@ NOR_STATUS Nor_qspiWrite(NOR_HANDLE handle, uint32_t addr, uint32_t len,
         return NOR_FAIL;
     }
     spiHandle = (SPI_Handle)norQspiInfo->hwHandle;
-    object    = spiHandle->object;
+    object    = (QSPI_v1_Object *)spiHandle->object;
     hwAttrs   = (QSPI_HwAttrs *)(spiHandle->hwAttrs);
 
     /* Validate address input */
@@ -598,8 +598,6 @@ NOR_STATUS Nor_qspiWrite(NOR_HANDLE handle, uint32_t addr, uint32_t len,
 
             addr += chunkLen;
             byteAddr = 0;
-
-            BOARD_delay(10);
         }
     }
     else
@@ -669,8 +667,6 @@ NOR_STATUS Nor_qspiWrite(NOR_HANDLE handle, uint32_t addr, uint32_t len,
 
             addr += chunkLen;
             byteAddr = 0;
-
-            BOARD_delay(10);
         }
     }
 
