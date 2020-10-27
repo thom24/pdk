@@ -100,6 +100,10 @@ export sdr_test_COMP_LIST
 export sdr_test_BOARD_DEPENDENCY
 export sdr_test_CORE_DEPENDENCY
 export sdr_test_XDC_CONFIGURO
+ifeq ($(SOC),$(filter $(SOC), am65xx))
+sdr_test_APP_SMP_CONFIG = yes
+export sdr_test_APP_SMP_CONFIG
+endif
 sdr_test_PKG_LIST = sdr_test
 sdr_test_INCLUDE = $(sdr_test_PATH)
 sdr_test_BOARDLIST = $(compsdr_BOARDLIST)

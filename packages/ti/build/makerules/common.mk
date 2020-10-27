@@ -526,7 +526,11 @@ ifeq ($(SOC),$(filter $(SOC), j721e j7200))
   endif
 endif
 
+ifeq ($($(APP_NAME)_APP_SMP_CONFIG),yes)
+MULTI_CORE_APP_PARAMS += $(SBL_CORE_ID_$(CORE)_smp) $(SBL_RPRC_PATH)
+else
 MULTI_CORE_APP_PARAMS += $(SBL_CORE_ID_$(CORE)) $(SBL_RPRC_PATH)
+endif
 
 ifeq ($(OS),Windows_NT)
   SBL_CERT_GEN=powershell -executionpolicy unrestricted -command $(ROOTDIR)/ti/build/makerules/x509CertificateGen.ps1
