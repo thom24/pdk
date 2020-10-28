@@ -41,12 +41,12 @@
  *  Operation: This test verifies by toggling all available general
  *             purpose LEDs.
  *
- *  Supported SoCs: AM335x, AM437x, AM571x, AM572x, K2G, AM65xx, J721E, TPR12 & J7200.
+ *  Supported SoCs: AM335x, AM437x, AM571x, AM572x, K2G, AM65xx, J721E, TPR12, J7200,AM64x
  *
  *  Supported Platforms: bbbAM335x, skAM335x, icev2AM335x, iceAMIC110,
  *                       evmAM437x, idkAM437x, skAM437x, evmAM571x, idkAM571x,
  *                       evmAM572x, idkAM572x, evmK2G, iceK2G, am65xx_evm,
- *                       am65xx_idk, j721e_evm, tpr12_evm & j7200_evm.
+ *                       am65xx_idk, j721e_evm, tpr12_evm, j7200_evm,am64x_evm.
  */
 
 #include "led_test.h"
@@ -66,7 +66,7 @@ extern GPIO_v2_Config GPIO_v2_config;
  *  \param    delayValue          [IN]   Delay count.
  *
  */
-#if (!(defined(AM65XX) || defined(SOC_J721E) || defined(SOC_TPR12) || defined(SOC_J7200)))
+#if (!(defined(AM65XX) || defined(SOC_J721E) || defined(SOC_TPR12) || defined(SOC_J7200) || defined(SOC_AM64X)))
 void BoardDiag_AppDelay(uint32_t delayVal)
 {
     uint32_t cnt = 0;
@@ -146,7 +146,7 @@ void AppGpioCallbackFxn(void)
  */
 static int8_t led_run_test(void)
 {
-#if (defined(SOC_J721E) || defined(SOC_J7200))
+#if (defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X))
     Board_I2cInitCfg_t i2cCfg;
 #endif
     char p = 'y';
@@ -181,6 +181,18 @@ static int8_t led_run_test(void)
     Board_setI2cInitConfig(&i2cCfg);
 
     Board_i2cIoExpInit();
+#elif defined(SOC_AM64X)
+    i2cCfg.i2cInst   = BOARD_I2C_IOEXP_DEVICE1_INSTANCE;
+    i2cCfg.socDomain = BOARD_SOC_DOMAIN_MAIN;
+    Board_setI2cInitConfig(&i2cCfg);
+
+    Board_i2cIoExpInit();
+
+    GPIO_v0_HwAttrs gpioCfg;
+    GPIO_socGetInitCfg(0, &gpioCfg);
+    gpioCfg.baseAddr = CSL_MCU_GPIO0_BASE;
+    GPIO_socSetInitCfg(0, &gpioCfg);
+    GPIO_init();
 #else
 #if defined(SOC_TPR12)
     GPIO_v2_updateConfig(&GPIO_v2_config);
@@ -228,6 +240,20 @@ static int8_t led_run_test(void)
                                   PORTNUM_2,
                                   gUserLeds[i],
                                   GPIO_SIGNAL_LEVEL_HIGH);
+#elif defined(SOC_AM64X)
+        Board_i2cIoExpSetPinDirection(BOARD_I2C_IOEXP_DEVICE1_ADDR,
+                                      THREE_PORT_IOEXP,
+                                      PORTNUM_2,
+                                      PIN_NUM_0,
+                                      PIN_DIRECTION_OUTPUT);
+
+        Board_i2cIoExpPinLevelSet(BOARD_I2C_IOEXP_DEVICE1_ADDR,
+                                  THREE_PORT_IOEXP,
+                                  PORTNUM_2,
+                                  PIN_NUM_0,
+                                  GPIO_SIGNAL_LEVEL_LOW);
+
+        GPIO_write(i, GPIO_PIN_VAL_LOW);
 #else
 
 #if defined(SOC_TPR12)
@@ -268,6 +294,14 @@ static int8_t led_run_test(void)
                                                   PORTNUM_2,
                                                   gUserLeds[k],
                                                   GPIO_SIGNAL_LEVEL_LOW);
+#elif defined(SOC_AM64X)
+                        Board_i2cIoExpPinLevelSet(BOARD_I2C_IOEXP_DEVICE1_ADDR,
+                                                  THREE_PORT_IOEXP,
+                                                  PORTNUM_2,
+                                                  PIN_NUM_0,
+                                                  GPIO_SIGNAL_LEVEL_HIGH);
+
+                        GPIO_write(k, GPIO_PIN_VAL_HIGH);
 #else
                         GPIO_write(k, GPIO_PIN_VAL_HIGH);
 
@@ -280,12 +314,20 @@ static int8_t led_run_test(void)
                                                   PORTNUM_2,
                                                   gUserLeds[k],
                                                   GPIO_SIGNAL_LEVEL_HIGH);
+#elif defined(SOC_AM64X)
+                        Board_i2cIoExpPinLevelSet(BOARD_I2C_IOEXP_DEVICE1_ADDR,
+                                                  THREE_PORT_IOEXP,
+                                                  PORTNUM_2,
+                                                  PIN_NUM_0,
+                                                  GPIO_SIGNAL_LEVEL_LOW);
+
+                        GPIO_write(k, GPIO_PIN_VAL_LOW);
 #else
                         GPIO_write(k, GPIO_PIN_VAL_LOW);
 #endif
                     }
                 }
-#if (!(defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_TPR12) || defined(SOC_J7200)))
+#if (!(defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_TPR12) || defined(SOC_J7200) || defined(SOC_AM64X)))
                 BoardDiag_AppDelay(5000000);
 #else
                 BOARD_delay(250000);
@@ -313,6 +355,15 @@ static int8_t led_run_test(void)
                               PORTNUM_2,
                               gUserLeds[i],
                               GPIO_SIGNAL_LEVEL_HIGH);
+#elif defined(SOC_AM64X)
+    /* Turn OFF the user LEDs */
+        Board_i2cIoExpPinLevelSet(BOARD_I2C_IOEXP_DEVICE1_ADDR,
+                              THREE_PORT_IOEXP,
+                              PORTNUM_2,
+                              PIN_NUM_0,
+                              GPIO_SIGNAL_LEVEL_LOW);
+
+        GPIO_write(i, GPIO_PIN_VAL_LOW);
 #else
 #if defined(SOC_TPR12)
         GPIO_write(GPIO_v2_config.pinConfigs[i].pinIndex, GPIO_PIN_VAL_LOW);
@@ -326,7 +377,7 @@ static int8_t led_run_test(void)
 
 #if defined(SOC_AM65XX) && defined(AM65XX_BETA_BOARD)
     I2C_close(handle);
-#elif (defined(SOC_J721E) || defined(SOC_J7200))
+#elif (defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X))
     Board_i2cIoExpDeInit();
 #endif
 

@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2018 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -50,11 +50,11 @@
 #include <ti/drv/i2c/soc/I2C_soc.h>
 #include <ti/drv/uart/UART_stdio.h>
 
-#if (defined(SOC_AM65XX) || defined(SOC_K2G))
+#if (defined(SOC_AM65XX) || defined(SOC_K2G) || defined(SOC_AM64X))
 #include "diag_common_cfg.h"
 #endif
 
-#if defined(SOC_AM65XX)
+#if (defined(SOC_AM65XX) || defined(SOC_AM64X))
 #include "board_i2c_io_exp.h"
 #endif
 
@@ -74,7 +74,7 @@ extern "C" {
  *  \param    delayValue          [IN]   Delay count.
  *
  */
-#if ((!(defined(SOC_AM65XX))) || (!(defined(SOC_K2G))))
+#if ((!(defined(SOC_AM65XX) || defined(SOC_AM64X))) || (!(defined(SOC_K2G))))
 void BoardDiag_AppDelay(uint32_t delayVal);
 #endif
 
@@ -90,7 +90,7 @@ void BoardDiag_AppDelay(uint32_t delayVal);
  *              -1 - in case of failure.
  *
  */
-#if (!defined(SOC_AM65XX))
+#if (!(defined(SOC_AM65XX) || defined(SOC_AM64X)))
 void led_write(I2C_Handle handle, uint8_t signalLevelData);
 #endif
 

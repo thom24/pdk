@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2018 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2015-2020 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -41,9 +41,9 @@
  *  Operation: This test verifies the accessing of all the Industrial LEDs
  *             by glowing one by one using i2c interface.
  *
- *  Supported SoCs: AM571x, AM572x, K2G & AM65XX.
+ *  Supported SoCs: AM571x, AM572x, K2G, AM65XX & AM64X.
  *
- *  Supported Platforms: idkAM571x, idkAM572x, iceK2G, am65xx_evm & am65xx_idk.
+ *  Supported Platforms: idkAM571x, idkAM572x, iceK2G, am65xx_evm, am65xx_idk & am64x_evm.
  *
  */
 
@@ -63,7 +63,7 @@ extern I2C_config_list I2C_config;
  *              -1 - in case of failure.
  *
  */
-#if (!defined(SOC_AM65XX))
+#if (!(defined(SOC_AM65XX) || defined(SOC_AM64X)))
 void led_write(I2C_Handle handle, uint8_t signalLevelData)
 {
     uint8_t tx[2];
@@ -89,7 +89,7 @@ void led_write(I2C_Handle handle, uint8_t signalLevelData)
  *  \param    delayValue          [IN]   Delay count.
  *
  */
-#if ((!(defined(SOC_AM65XX))) || (!(defined(SOC_K2G))))
+#if ((!(defined(SOC_AM65XX) || defined(SOC_AM64X))) || (!(defined(SOC_K2G))))
 void BoardDiag_AppDelay(uint32_t delayVal)
 {
     volatile uint32_t delay = 0;
@@ -116,7 +116,7 @@ static int8_t BoardDiag_i2c_slave_device_led_test(void)
     uint8_t writeRegData = 0;
     int8_t index;
 
-#if (!defined(SOC_AM65XX))
+#if (!(defined(SOC_AM65XX) || defined(SOC_AM64X)))
     I2C_Params i2cParams;
     I2C_HwAttrs i2cConfig;
     I2C_Handle handle = NULL;
@@ -152,11 +152,18 @@ static int8_t BoardDiag_i2c_slave_device_led_test(void)
         {
             if((writeRegData & 0xff) == 0)
                  writeRegData = 0x80;
-#if (!defined(SOC_AM65XX))
+#if (!(defined(SOC_AM65XX) || defined(SOC_AM64X)))
             led_write(handle, writeRegData);
+#else
+#if defined(SOC_AM64X)
+            ret = Board_i2cIoExpWritePort(BOARD_I2C_IOEXP_DEVICE2_ADDR,
+                                          THREE_PORT_IOEXP,
+                                          PORTNUM_0,
+                                          writeRegData);
 #else
             ret = Board_i2cIoExpWritePort(BOARD_I2C_IOEXP_DEVICE1_ADDR,
                                           PORTNUM_NONE, writeRegData);
+#endif
             if(ret != 0)
             {
                 UART_printf("Writing on to the IO expander port "
@@ -165,7 +172,7 @@ static int8_t BoardDiag_i2c_slave_device_led_test(void)
             }
 #endif
             writeRegData >>= 1;
-#if defined(SOC_K2G) || defined (SOC_AM65XX)
+#if defined(SOC_K2G) || defined (SOC_AM65XX) || defined(SOC_AM64X)
 		    BOARD_delay(200000);
 #elif defined (SOC_AM437x)
             BoardDiag_AppDelay(0x1FFFF);
@@ -241,7 +248,7 @@ static int8_t BoardDiag_i2c_slave_device_led_test(void)
 
 #endif
 
-#if defined(SOC_AM65XX)
+#if defined(SOC_AM65XX) || defined(SOC_AM64X)
     Board_i2cIoExpDeInit();
 #endif
 
@@ -360,11 +367,15 @@ int main(void)
     int8_t ret = 0;
     Board_initCfg boardCfg;
 
-#if defined(SOC_AM65XX) && !defined (__aarch64__)
+#if (defined(SOC_AM65XX)) && !defined (__aarch64__)
     /* MCU I2C instance will be active by default for R5 core.
      * Need update HW attrs to enable MAIN I2C instance.
      */
     enableMAINI2C(0, CSL_I2C0_CFG_BASE);
+#endif
+
+#if defined(SOC_AM64X)
+    enableMAINI2C(BOARD_I2C_IOEXP_DEVICE1_INSTANCE, CSL_I2C1_CFG_BASE);
 #endif
 
 #ifdef SOC_K2G

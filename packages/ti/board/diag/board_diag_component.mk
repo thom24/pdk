@@ -604,7 +604,7 @@ export board_diag_led_CORE_DEPENDENCY
 export board_diag_led_MAKEFILE
 board_diag_led_PKG_LIST = board_diag_led
 board_diag_led_INCLUDE = $(board_diag_led_PATH)
-board_diag_led_BOARDLIST = j721e_evm am65xx_evm am65xx_idk tpr12_evm j7200_evm
+board_diag_led_BOARDLIST = j721e_evm am65xx_evm am65xx_idk tpr12_evm j7200_evm am64x_evm
 board_diag_led_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
 export board_diag_led_$(SOC)_CORELIST
 export board_diag_led_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
@@ -620,7 +620,7 @@ export board_diag_ledIndustrial_BOARD_DEPENDENCY = yes
 export board_diag_ledIndustrial_CORE_DEPENDENCY = yes
 board_diag_ledIndustrial_PKG_LIST = board_diag_ledIndustrial
 board_diag_ledIndustrial_INCLUDE = $(board_diag_ledIndustrial_PATH)
-board_diag_ledIndustrial_BOARDLIST = am65xx_evm am65xx_idk
+board_diag_ledIndustrial_BOARDLIST = am65xx_evm am65xx_idk am64x_evm
 export board_diag_ledIndustrial_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
 export board_diag_ledIndustrial_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
 board_diag_EXAMPLE_LIST += board_diag_ledIndustrial
