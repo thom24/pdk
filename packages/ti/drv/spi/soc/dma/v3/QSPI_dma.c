@@ -92,6 +92,8 @@ int32_t QSPI_dmaConfig(SPI_Handle handle)
     return status;
 }
 
+#define QSPI_DMA_MAX_XFER_SIZE (31U * 1024U)
+
 int32_t QSPI_dmaTransfer(SPI_Handle             handle,
                          const SPI_Transaction *transaction)
 {
@@ -108,11 +110,23 @@ int32_t QSPI_dmaTransfer(SPI_Handle             handle,
 
     if(SPI_TRANSACTION_TYPE_READ == object->transactionType)
     {
-        /* RX Mode */
-        status = QSPI_dmaMemcpy(handle,
-                                (uintptr_t)transaction->rxBuf,
-                                (uintptr_t)dataPtr,
-                                transaction->count);
+        uint32_t i;
+
+        for (i = 0; i < transaction->count; i += QSPI_DMA_MAX_XFER_SIZE)
+        {
+            uint32_t xferLen = CSL_NEXT_MULTIPLE_OF(CSL_MIN((transaction->count - i), QSPI_DMA_MAX_XFER_SIZE), 4);
+
+            if (transaction->count > (i + xferLen))
+            {
+                object->intermediateDmaXferInitiated = true;
+            }
+            /* RX Mode */
+            status = QSPI_dmaMemcpy(handle,
+                                    ((uintptr_t)transaction->rxBuf + i),
+                                    ((uintptr_t)dataPtr + i),
+                                    xferLen);
+            while (object->intermediateDmaXferInitiated == true);
+        }
     }
     else
     {
@@ -158,15 +172,24 @@ static void QSPI_dmaIsrHandler (uintptr_t appData, uint8_t tcc)
     object   = (QSPI_v1_Object*)handle->object;
     hwAttrs  = (QSPI_HwAttrs*)handle->hwAttrs;
 
-    object->transaction->status = SPI_TRANSFER_COMPLETED;
-
+    if (object->intermediateDmaXferInitiated == false)
+    {
+        object->transaction->status = SPI_TRANSFER_COMPLETED;
+    }
     /* EDMA is done - disable the DMA channel */
     EDMA_disableChannel(hwAttrs->edmaHandle,
                         tcc,
                         EDMA3_CHANNEL_TYPE_DMA);
 
-    /* Call the transfer completion callback function */
-    object->qspiParams.transferCallbackFxn(handle, object->transaction);
+    if (object->intermediateDmaXferInitiated == false)
+    {
+        /* Call the transfer completion callback function */
+        object->qspiParams.transferCallbackFxn(handle, object->transaction);
+    }
+    else
+    {
+        object->intermediateDmaXferInitiated = false;
+    }
 }
 
 static void QSPI_edmaParamInit(EDMA_paramSetConfig_t *param, uint8_t tcc, uint8_t xferType)
@@ -259,16 +282,9 @@ static int32_t QSPI_dmaMemcpy(SPI_Handle     handle,
      * bCnt holds the number of such arrays to be transferred.
      * cCnt holds the number of frames of aCnt*bBcnt bytes to be transferred
      */
-    if (length < 0x8000U)
-    {
-        paramSet.paramSetConfig.bCount = (uint16_t)length;
-        paramSet.paramSetConfig.cCount = (uint16_t)1;
-    }
-    else
-    {
-        paramSet.paramSetConfig.bCount = (uint16_t)0x4000;
-        paramSet.paramSetConfig.cCount = (uint16_t)(length / paramSet.paramSetConfig.bCount);
-    }
+    DebugP_assert (length < 0x8000U);
+    paramSet.paramSetConfig.bCount = (uint16_t)length;
+    paramSet.paramSetConfig.cCount = (uint16_t)1;
     cIdx = (int32_t)paramSet.paramSetConfig.bCount;
 
     /**

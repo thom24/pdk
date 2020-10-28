@@ -193,9 +193,9 @@ const CSL_ArmR5MpuRegionCfg gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         .exeNeverControl  = 1U,
         .accessPermission = CSL_ARM_R5_ACC_PERM_PRIV_USR_RD_WR,
         .shareable        = 0U,
-        .cacheable        = (uint32_t)TRUE,
-        .cachePolicy      = CSL_ARM_R5_MEM_ATTR_CACHED_WT_NO_WA,
-        .memAttr          = 0U,
+        .cacheable        = (uint32_t)FALSE,
+        .cachePolicy      = 0U,
+        .memAttr          = CSL_ARM_R5_MEM_ATTR_STRONGLY_ORDERED,
     },
     {
         /* Region 8 configuration: QSPI register space */
@@ -314,7 +314,6 @@ const CSL_ArmR5MpuRegionCfg gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
 int main()
 {
     cpu_core_id_t core_id;
-
 
     SBL_ADD_PROFILE_POINT;
     Board_init(BOARD_INIT_UNLOCK_MMR);

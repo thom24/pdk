@@ -699,12 +699,12 @@ int32_t QSPI_test_readInputFile(S25FL_Handle flashHandle, QSPI_Tests *test, bool
             {
                 SPI_log("\tRead flash memory at 0x%x, checking flashed content...\n", offsetAddr);
             }
-            for (i = 0; i<len; i+=4)
+            for (i = 0; i<len; i++)
             {
-                if ( (*(uint32_t *) (fileLoadBuffer + i)) != (*(uint32_t *) (fileReadBuffer + i)) )
+                if ( (*(uint8_t *) (fileLoadBuffer + i)) != (*(uint8_t *) (fileReadBuffer + i)) )
                 {
-                    SPI_log("\t\tMismatched data at offset 0x%x, expected = 0x%08x, read = 0x%08x\n",
-                        i, (*(uint32_t *) (fileLoadBuffer + i)), (*(uint32_t *) (fileReadBuffer + i)));
+                    SPI_log("\t\tMismatched data at offset 0x%x, expected = 0x%02x, read = 0x%02x\n",
+                        i, (*(uint8_t *) (fileLoadBuffer + i)), (*(uint8_t *) (fileReadBuffer + i)));
                     ret = -7;
                 }
             }
@@ -780,7 +780,7 @@ QSPI_Tests qspi_tests[] =
 #ifdef SPI_DMA_ENABLE
     {QSPI_test_func, QSPI_TEST_ID_MMAP_DMA, false,   true,   true,   "\r\n QSPI flash memory map mode with DMA enabled test", },
 #endif
-    {QSPI_test_func_file_write, QSPI_TEST_ID_MMAP_DMA, false,   false,   true,   "\r\n QSPI file write to flash and verify in mmap mode test", },
+    {QSPI_test_func_file_write, QSPI_TEST_ID_MMAP_DMA, false,   true,   true,   "\r\n QSPI file write to flash and verify in mmap mode test", },
     {NULL, },
 };
 

@@ -189,7 +189,7 @@ int32_t SBL_qspiInit(void *handle)
     SBL_log(SBL_LOG_MAX, "qspiFunClk = %d Hz \n", qspi_cfg.funcClk);
 
 #if SBL_USE_DMA
-    qspi_cfg.dmaEnable = false;
+    qspi_cfg.dmaEnable = true;
     retVal = Qspi_edma_init();
     DebugP_assert(retVal == EDMA_NO_ERROR);
     qspi_cfg.edmaHandle =  gEdmaHandle;
@@ -228,7 +228,7 @@ int32_t SBL_qspiFlashRead(void *handle, uint8_t *dst, uint32_t length,
     uint32_t end_time = 0;
 
 #if !defined(SBL_BYPASS_QSPI_DRIVER)
-#if 0
+#if SBL_USE_DMA
     if (length > 4 * 1024)
     {
         Board_flashHandle h = *(const Board_flashHandle *) handle;
@@ -241,12 +241,14 @@ int32_t SBL_qspiFlashRead(void *handle, uint8_t *dst, uint32_t length,
 
         SBL_DCacheClean((void *)dst, length);
 
+        dst = (uint8_t *)((uintptr_t)(CSL_locToGlobAddr((uintptr_t)dst)));
         if ((non_aligned_bytes) && (Board_flashRead(h, offset, dst, non_aligned_bytes, (void *)(&ioMode))))
         {
             SBL_log(SBL_LOG_ERR, "Board_flashRead failed!\n");
             SblErrLoop(__FILE__, __LINE__);
         }
 
+        dma_dst = (uint8_t *)((uintptr_t)(CSL_locToGlobAddr((uintptr_t)dma_dst)));
         if (Board_flashRead(h, dma_offset, dma_dst, dma_len, (void *)(&ioMode)))
         {
             SBL_log(SBL_LOG_ERR, "Board_flashRead failed!\n");
