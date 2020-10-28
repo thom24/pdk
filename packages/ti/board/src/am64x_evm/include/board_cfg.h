@@ -285,6 +285,12 @@ extern "C" {
 /* GPMC instance connected to the flash */
 #define BOARD_GPMC_INSTANCE                             (0U)
 
+/* Number of LEDS connected to GPIO */
+#define BOARD_GPIO_LED_NUM                              (1U)
+
+/* SPI instance connected to EEPROM */
+#define BOARD_EEPROM_SPI0_PORT                          (0U)
+
 /* Enable NOR flash driver */
 #define BOARD_NOR_FLASH_IN //J7ES_TODO: need to update
 

@@ -870,6 +870,26 @@ export board_diag_rs485Uart_$(SOC)_CORELIST
 export board_diag_rs485Uart_SBL_APPIMAGEGEN = yes
 board_diag_EXAMPLE_LIST += board_diag_rs485Uart
 
+# SPI EEPROM
+board_diag_spiEeprom_COMP_LIST = board_diag_spiEeprom
+board_diag_spiEeprom_RELPATH = ti/board/diag/spi_eeprom/build
+board_diag_spiEeprom_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/spi_eeprom/build
+board_diag_spiEeprom_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
+board_diag_spiEeprom_MAKEFILE = -f makefile
+board_diag_spiEeprom_BOARD_DEPENDENCY = yes
+board_diag_spiEeprom_CORE_DEPENDENCY = yes
+export board_diag_spiEeprom_COMP_LIST
+export board_diag_spiEeprom_BOARD_DEPENDENCY
+export board_diag_spiEeprom_CORE_DEPENDENCY
+export board_diag_spiEeprom_MAKEFILE
+board_diag_spiEeprom_PKG_LIST = board_diag_spiEeprom
+board_diag_spiEeprom_INCLUDE = $(board_diag_spiEeprom_PATH)
+board_diag_spiEeprom_BOARDLIST = am64x_evm
+board_diag_spiEeprom_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
+export board_diag_spiEeprom_$(SOC)_CORELIST
+export board_diag_spiEeprom_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
+board_diag_EXAMPLE_LIST += board_diag_spiEeprom
+
 # TEMPERATURE
 board_diag_temperature_COMP_LIST = board_diag_temperature
 board_diag_temperature_RELPATH = ti/board/diag/temperature/build
