@@ -45,7 +45,7 @@
 #include <ti/csl/tistdtypes.h>
 #include <ti/fs/fatfs/ff.h>
 
-#if !defined(SOC_AM65XX) && !defined(SOC_J721E) && !defined(SOC_J7200)
+#if !defined(SOC_AM65XX) && !defined(SOC_J721E) && !defined(SOC_J7200) && !defined(SOC_AM64X)
 #include <ti/csl/csl_a15.h>
 #endif
 
@@ -108,7 +108,7 @@ void DIAG_printMenu()
     UART_printf("\tstatus - prints the test status\n");
 }
 
-#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)
+#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
 /* Added this function for getting code re-used from sbl to built with diag framework.
    This function is invoked by rprc parse function to support interleaved boot.
    Using this function from sbl code requires mutliple files which are not
@@ -266,7 +266,7 @@ void DIAG_parseApps()
             break;
         }
     }
-#if defined(SOC_K2G) || defined(SOC_AM572x) || defined(SOC_AM571x) || defined(SOC_AM574x) || defined (am65xx_evm) || defined (am65xx_idk) || defined(j721e_evm) || defined(j7200_evm)
+#if defined(SOC_K2G) || defined(SOC_AM572x) || defined(SOC_AM571x) || defined(SOC_AM574x) || defined (am65xx_evm) || defined (am65xx_idk) || defined(j721e_evm) || defined(j7200_evm) || defined(am64x_evm)
     fp_readData = &DIAG_fread;
     fp_seek = &DIAG_fseek;
 #endif
@@ -329,7 +329,7 @@ void DIAG_runTest()
     sblEntryPoint_t pEntry;
 
     diagMainFxn func_ptr;
-#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)
+#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
 #if defined(__aarch64__)
     register int result asm("x20");
 #else
@@ -380,7 +380,7 @@ void DIAG_runTest()
             }
             else
             {
-#if defined(am65xx_evm) || defined(am65xx_idk) || defined(j721e_evm) || defined(j7200_evm)
+#if defined(am65xx_evm) || defined(am65xx_idk) || defined(j721e_evm) || defined(j7200_evm) || defined(am64x_evm)
 #if defined (__aarch64__)
                 if (pEntry.CpuEntryPoint[MPU1_CPU0_ID] == 0)
 #else
@@ -398,7 +398,7 @@ void DIAG_runTest()
                     UART_printf("Running %s\n", DIAG_appTbl[n-1].appName);
                     DIAG_appTbl[n-1].appRan++;
                     
-#if defined(am65xx_evm) || defined(am65xx_idk) || defined(j721e_evm) || defined(j7200_evm)
+#if defined(am65xx_evm) || defined(am65xx_idk) || defined(j721e_evm) || defined(j7200_evm) || defined(am64x_evm)
 #if defined (__aarch64__)
                     func_ptr = (diagMainFxn) (uintptr_t)pEntry.CpuEntryPoint[MPU1_CPU0_ID];
 #else
@@ -414,7 +414,7 @@ void DIAG_runTest()
                     __sync_synchronize();
 #endif
 
-#if (defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)) && !defined(__aarch64__)
+#if (defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined (SOC_AM64X)) && !defined(__aarch64__)
                     func_ptr(DIAG_VAL, &result);
 #else
                     func_ptr(DIAG_VAL);

@@ -499,7 +499,7 @@ export board_diag_framework_CORE_DEPENDENCY
 export board_diag_framework_MAKEFILE
 board_diag_framework_PKG_LIST = board_diag_framework
 board_diag_framework_INCLUDE = $(board_diag_framework_PATH)
-board_diag_framework_BOARDLIST = j721e_evm am65xx_evm am65xx_idk j7200_evm
+board_diag_framework_BOARDLIST = j721e_evm am65xx_evm am65xx_idk j7200_evm am64x_evm
 board_diag_framework_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
 export board_diag_framework_$(SOC)_CORELIST
 export board_diag_framework_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)

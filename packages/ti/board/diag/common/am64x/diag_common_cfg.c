@@ -55,7 +55,6 @@
 #include <ti/drv/i2c/soc/I2C_soc.h>
 #include <ti/drv/uart/UART_stdio.h>
 
-
 /**
  * \brief  Diagnostic init function
  *
@@ -236,3 +235,19 @@ void BoardDiag_enableI2C(uint8_t instance, uint32_t baseAddr)
 
     I2C_socSetInitCfg(instance, &i2cCfg);
 }
+
+/**
+ * \brief  Function to disable timer interrupts
+ *
+ * OSAL uses timer interrupt to track the timestamp overflow.
+ * Timer interrupts triggered while diagnostic test is invoked from
+ * framework are causing exception. This function disables timer interrupts.
+ * All the diagnostic tests should call this function befor main
+ * to avoid exceptions while executing on R5 core.
+ *
+ */
+void BoardDiag_timerIntrDisable(void)
+{
+
+}
+

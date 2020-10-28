@@ -63,3 +63,4 @@ void BoardDiag_genPattern(uint8_t *buf, uint32_t length, uint8_t flag);
 int8_t BoardDiag_getUserInput(uint8_t instance);
 void enableMAINI2C(uint8_t instance, uint32_t baseAddr);
 void BoardDiag_enableI2C(uint8_t instance, uint32_t baseAddr);
+void BoardDiag_timerIntrDisable(void);
