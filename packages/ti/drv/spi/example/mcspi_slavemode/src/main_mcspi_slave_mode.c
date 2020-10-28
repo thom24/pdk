@@ -89,6 +89,7 @@
 #include <xdc/runtime/System.h>
 #include <stdio.h>
 #include <ti/sysbios/knl/Task.h>
+#include <ti/sysbios/hal/Hwi.h>
 
 /* BIOS Header files */
 #include <ti/sysbios/BIOS.h>
@@ -149,6 +150,15 @@ static EDMA3_RM_Handle MCSPIApp_edmaInit(void);
 extern EDMA3_RM_InstanceInitConfig sampleInstInitConfig[][EDMA3_MAX_REGIONS];
 extern EDMA3_RM_GblConfigParams sampleEdma3GblCfgParams[];
 #endif
+#endif
+#endif
+
+#if (defined (SOC_J721E) || defined (SOC_J7200))
+#include <ti/drv/sciclient/sciclient.h>
+#if defined (BUILD_MCU1_0)
+#include <ti/drv/sciclient/sciserver_tirtos.h>
+/* Aligned address at which the X509 header is placed */
+#define SCISERVER_COMMON_X509_HEADER_ADDR (0x41cffb00)
 #endif
 #endif
 
@@ -1499,7 +1509,9 @@ SPI_Tests Spi_tests_slave[] =
 #endif
     {NULL, },
 };
-
+#if defined (SOC_J721E) || defined (SOC_J7200)
+#define MCSPI_SYNC_ADDR         (0x90000000U)
+#endif
 /*
  *  ======== slaveTaskFxn ========
  *  The task is part of separate slave example project.
@@ -1517,7 +1529,14 @@ void slaveTaskFxn()
     bool      testFail = false;
     SPI_Tests *test;
 
+    SPI_log("Starting SPI Slave test. \n");
+
     SPI_init();
+
+#if defined (SOC_J721E) || defined (SOC_J7200)
+    *((volatile uint32_t *)(MCSPI_SYNC_ADDR)) = 0x12341234U;
+    CacheP_wb((void *)MCSPI_SYNC_ADDR, 4);
+#endif
 
     for (i = 0; ; i++)
     {
@@ -1581,6 +1600,17 @@ void masterTaskFxn()
     bool      testFail = false;
     SPI_Tests *test;
 
+    SPI_log("Starting SPI Master test. \n");
+
+#if defined (SOC_J721E) || defined (SOC_J7200)
+    while ( *((volatile uint32_t *)(MCSPI_SYNC_ADDR)) != 0x12341234U)
+    {
+        Task_yield();
+        /* wait for slave to start. */
+        CacheP_Inv((void *)MCSPI_SYNC_ADDR, 4);
+    }
+#endif
+
     SPI_init();
 
     for (i = 0; ; i++)
@@ -1625,6 +1655,76 @@ void masterTaskFxn()
     {
     }
 }
+
+#if (defined (USE_BIOS)  && (defined (SOC_J721E) || defined (SOC_J7200)))
+#if defined (BUILD_MCU1_0)
+void MCSPI_setupSciServer(void)
+{
+
+    Sciserver_TirtosCfgPrms_t appPrms;
+    int32_t ret = CSL_PASS;
+
+    ret = Sciserver_tirtosInitPrms_Init(&appPrms);
+
+    appPrms.taskPriority[SCISERVER_TASK_USER_LO] =
+                                            4;
+    appPrms.taskPriority[SCISERVER_TASK_USER_HI] =
+                                            5;
+
+    if (ret == CSL_PASS)
+    {
+        ret = Sciserver_tirtosInit(&appPrms);
+    }
+
+    if (ret == CSL_PASS)
+    {
+        System_printf("Starting Sciserver..... PASSED\n");
+    }
+    else
+    {
+        System_printf("Starting Sciserver..... FAILED\n");
+    }
+
+    return;
+}
+#endif
+
+void MCSPI_initSciclient()
+{
+    int32_t ret = CSL_PASS;
+    Sciclient_ConfigPrms_t        config;
+
+    /* Now reinitialize it as default parameter */
+    ret = Sciclient_configPrmsInit(&config);
+    if (ret != CSL_PASS)
+    {
+        System_printf("Sciclient_configPrmsInit Failed\n");
+    }
+
+#if defined (BUILD_MCU1_0)
+    if (ret == CSL_PASS)
+    {
+        ret = Sciclient_boardCfgParseHeader(
+            (uint8_t *)SCISERVER_COMMON_X509_HEADER_ADDR,
+            &config.inPmPrms, &config.inRmPrms);
+        if (ret != CSL_PASS)
+        {
+            System_printf("Sciclient_boardCfgParseHeader Failed\n");
+        }
+    }
+#endif
+
+    if (ret == CSL_PASS)
+    {
+        ret = Sciclient_init(&config);
+        if (ret != CSL_PASS)
+        {
+            System_printf("Sciclient_init Failed\n");
+        }
+    }
+}
+
+#endif
 
 /*
  *  ======== main ========
@@ -1673,6 +1773,14 @@ int main(void)
 #endif /* Soc type */
 #endif /* #ifdef USE_BIOS */
 
+#if (defined (USE_BIOS)  && (defined (SOC_J721E) || defined (SOC_J7200)))
+#if defined (BUILD_MCU1_0)
+    MCSPI_setupSciServer();
+#endif
+    /* It must be called before board init */
+    MCSPI_initSciclient();
+#endif
+
 #if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)
 /*
  * For AM65XX/J721E/J7200, master and slave apps are
@@ -1685,7 +1793,8 @@ int main(void)
                BOARD_INIT_MODULE_CLOCK |
                BOARD_INIT_UART_STDIO;
 #else
-    boardCfg = BOARD_INIT_MODULE_CLOCK |
+    boardCfg = BOARD_INIT_PINMUX_CONFIG |
+               BOARD_INIT_MODULE_CLOCK |
                BOARD_INIT_UART_STDIO;
 #endif
 #else

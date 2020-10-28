@@ -18,8 +18,9 @@ MEMORY
     OCMC_RAM (RWIX)             : origin=0x41CE2100 length=0x1DA00
     OCMC_RAM_X509_HEADER (RWIX) : origin=0x41CFFB00 length=0x500
 
+    /* Donot use MSMC. Used by MPU. */
     MSMC3(RWIX)         : ORIGIN = 0x70080000 , LENGTH = 0x770000
-    DDR0(RWIX)          : ORIGIN = 0x80000000 , LENGTH = 0x80000000
+    DDR0(RWIX)          : ORIGIN = 0x88000000 , LENGTH = 0x8000000
 }
 
 SECTIONS
@@ -35,14 +36,14 @@ SECTIONS
     .text:ti_sysbios_family_arm_MPU*       : {} palign(8) > R5F_TCMB0
     .utilsCopyVecsToAtcm                   : {} palign(8) > R5F_TCMB0
 
-    .text       : {} palign(8)   > MSMC3
-    .cinit      : {} palign(8)   > MSMC3
-    .bss        : {} align(8)    > MSMC3
-    .far        : {} align(8)    > MSMC3
-    .const      : {} palign(8)   > MSMC3
-    .data       : {} palign(128) > MSMC3
-    .sysmem     : {} align(8)    > MSMC3
-    .stack      : {} align(4)    > MSMC3
+    .text       : {} palign(8)   > DDR0
+    .cinit      : {} palign(8)   > DDR0
+    .bss        : {} align(8)    > DDR0
+    .far        : {} align(8)    > DDR0
+    .const      : {} palign(8)   > DDR0
+    .data       : {} palign(128) > DDR0
+    .sysmem     : {} align(8)    > DDR0
+    .stack      : {} align(4)    > DDR0
     .data_buffer: {} palign(128) > DDR0
     .bss.devgroup*  : {} align(4) > DDR0
     .const.devgroup*: {} align(4) > DDR0

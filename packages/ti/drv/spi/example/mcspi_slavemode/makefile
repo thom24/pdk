@@ -109,6 +109,12 @@ ifeq ($(BOARD),$(filter $(BOARD), am65xx_evm am65xx_idk j721e_sim j721e_evm j720
 CFLAGS_SPI_UT    = -DMCSPI_MULT_CHANNEL
 endif
 
+ifeq ($(SOC),$(filter $(SOC), j721e j7200))
+  ifeq ($(CORE),mcu1_0)
+    COMP_LIST_COMMON += sciserver_tirtos
+  endif
+endif
+
 PACKAGE_SRCS_COMMON = .
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_SPI_UT) $(CFLAGS_SPI_DMA) $(CFLAGS_SPI_MS) $(CFLAGS_OS_DEFINES)
 
