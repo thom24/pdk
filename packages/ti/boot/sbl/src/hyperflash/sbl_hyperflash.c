@@ -106,9 +106,11 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
     if(h)
     {
         SBL_ADD_PROFILE_POINT;
-
+#if defined(SOC_J721E) || defined(SOC_J7200)
+        SBL_log(SBL_LOG_MAX, "Waiting for tifs.bin ...\n");
+#else
         SBL_log(SBL_LOG_MAX, "Waiting for sysfw.bin ...\n");
-
+#endif
         *pBuffer = (void *)(gBaseAddress + HYPERFLASH_OFFSET_SYSFW);
 
         /* Update handle for later use*/

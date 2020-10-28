@@ -137,7 +137,11 @@ void SBL_SciClientInit(void)
     status = SBL_ReadSysfwImage(&sysfw_ptr, SBL_SYSFW_MAX_SIZE);
     if (status != CSL_PASS)
     {
+#if defined(SOC_J721E) || defined(SOC_J7200)
+        SBL_log(SBL_LOG_ERR,"TIFS read...FAILED \n");
+#else
         SBL_log(SBL_LOG_ERR,"SYSFW read...FAILED \n");
+#endif
         SblErrLoop(__FILE__, __LINE__);
     }
 
@@ -154,14 +158,18 @@ void SBL_SciClientInit(void)
 
     if (status != CSL_PASS)
     {
-        SBL_log(SBL_LOG_ERR,"SYSFW get default board config...FAILED \n");
+        SBL_log(SBL_LOG_ERR,"Sciclient get default board config...FAILED \n");
         SblErrLoop(__FILE__, __LINE__);
     }
 
     status = Sciclient_loadFirmware((const uint32_t *) sysfw_ptr);
     if (status != CSL_PASS)
     {
+#if defined(SOC_J721E) || defined(SOC_J7200)
+        SBL_log(SBL_LOG_ERR,"TIFS load...FAILED \n");
+#else
         SBL_log(SBL_LOG_ERR,"SYSFW load...FAILED \n");
+#endif
         SblErrLoop(__FILE__, __LINE__);
     }
 
@@ -169,7 +177,7 @@ void SBL_SciClientInit(void)
     status = Sciclient_init(&config);
     if (status != CSL_PASS)
     {
-        SBL_log(SBL_LOG_ERR,"SYSFW init ...FAILED \n");
+        SBL_log(SBL_LOG_ERR,"Sciclient init ...FAILED \n");
         SblErrLoop(__FILE__, __LINE__);
     }
 
@@ -182,7 +190,7 @@ void SBL_SciClientInit(void)
     status = Sciclient_boardCfg(&sblBoardCfgPrms);
     if (status != CSL_PASS)
     {
-        SBL_log(SBL_LOG_ERR,"SYSFW board config ...FAILED \n");
+        SBL_log(SBL_LOG_ERR,"Sciclient board config ...FAILED \n");
         SblErrLoop(__FILE__, __LINE__);
     }
 #endif
@@ -201,7 +209,7 @@ void SBL_SciClientInit(void)
     status = Sciclient_boardCfgPm(&sblBoardCfgPmPrms);
     if (status != CSL_PASS)
     {
-        SBL_log(SBL_LOG_ERR,"SYSFW board config pm...FAILED \n")
+        SBL_log(SBL_LOG_ERR,"Sciclient board config pm...FAILED \n")
         SblErrLoop(__FILE__, __LINE__);
     }
 
@@ -227,7 +235,7 @@ void SBL_SciClientInit(void)
     status = Sciclient_boardCfgRm(&sblBoardCfgRmPrms);
     if (status != CSL_PASS)
     {
-        SBL_log(SBL_LOG_ERR,"SYSFW board config rm...FAILED \n");
+        SBL_log(SBL_LOG_ERR,"Sciclient board config rm...FAILED \n");
         SblErrLoop(__FILE__, __LINE__);
     }
 #endif
@@ -241,7 +249,7 @@ void SBL_SciClientInit(void)
     status = Sciclient_boardCfgSec(&sblBoardCfgSecPrms);
     if (status != CSL_PASS)
     {
-        SBL_log(SBL_LOG_ERR,"SYSFW board config sec...FAILED \n");
+        SBL_log(SBL_LOG_ERR,"Sciclient board config sec...FAILED \n");
         SblErrLoop(__FILE__, __LINE__);
     }
 #if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)
@@ -274,7 +282,7 @@ void SBL_SciClientInit(void)
 #endif
 #endif
 
-    /* Get SYSFW version */
+    /* Get SYSFW/TIFS version */
     SBL_ADD_PROFILE_POINT;
 
     if (SBL_LOG_LEVEL > SBL_LOG_ERR)
@@ -303,11 +311,19 @@ void SBL_SciClientInit(void)
             if (respPrm.flags == (uint32_t)TISCI_MSG_FLAG_ACK)
             {
                 SBL_ADD_PROFILE_POINT;
+#if defined(SOC_J721E) || defined(SOC_J7200)
+                SBL_log(SBL_LOG_MIN,"TIFS  ver: %s\n", (char *) response.str);
+#else
                 SBL_log(SBL_LOG_MIN,"SYSFW  ver: %s\n", (char *) response.str);
+#endif
             }
             else
             {
+#if defined(SOC_J721E) || defined(SOC_J7200)
+                SBL_log(SBL_LOG_ERR,"TIFS Get Version failed \n");
+#else
                 SBL_log(SBL_LOG_ERR,"SYSFW Get Version failed \n");
+#endif
                 SblErrLoop(__FILE__, __LINE__);
             }
         }

@@ -222,7 +222,11 @@ extern SBL_incomingBootData_S sblInBootData;
 int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
 {
     int32_t retVal = CSL_PASS;
+#if defined(SOC_J721E) || defined(SOC_J7200)
+    const TCHAR *fileName = "0:/tifs.bin";
+#else
     const TCHAR *fileName = "0:/sysfw.bin";
+#endif
     FIL     fp = {0};
     FRESULT  fresult;
     uint32_t bytes_read = 0;
@@ -280,7 +284,11 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
     fresult = f_open(&fp, fileName, ((BYTE)FA_READ));
     if (fresult != FR_OK)
     {
+#if defined(SOC_J721E) || defined(SOC_J7200)
+        UART_printf("\n SD Boot - tifs File open fails \n");
+#else
         UART_printf("\n SD Boot - sysfw File open fails \n");
+#endif
         retVal = E_FAIL;
     }
     else
@@ -288,7 +296,11 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
         fresult  = f_read(&fp, sysfw_ptr, num_bytes, &bytes_read);
         if (fresult != FR_OK)
         {
+#if defined(SOC_J721E) || defined(SOC_J7200)
+            UART_printf("\n SD Boot - tifs read fails \n");
+#else
             UART_printf("\n SD Boot - sysfw read fails \n");
+#endif
             retVal = E_FAIL;
         }
 
