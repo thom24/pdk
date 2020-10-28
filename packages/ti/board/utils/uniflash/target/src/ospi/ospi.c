@@ -121,11 +121,16 @@ static int32_t ospiUdmaInit(OSPI_v0_HwAttrs *cfg)
 
     if (gDrvHandle == NULL)
     {
+#if defined (SOC_AM64X)
+        /* Use Block Copy DMA instance for AM64x */
+        instId = UDMA_INST_ID_BCDMA_0;
+#else
         /* UDMA driver init */
 #if defined (__aarch64__)
         instId = UDMA_INST_ID_MAIN_0;
 #else
         instId = UDMA_INST_ID_MCU_0;
+#endif
 #endif
         UdmaInitPrms_init(instId, &initPrms);
         retVal = Udma_init(&gUdmaDrvObj, &initPrms);

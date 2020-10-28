@@ -65,7 +65,7 @@
 #include <hyperflash.h>
 #endif
 
-#if defined(am65xx_evm) || defined(am65xx_idk) || defined(j721e_evm) || defined(j7200_evm)
+#if defined(am65xx_evm) || defined(am65xx_idk) || defined(j721e_evm) || defined(j7200_evm) || defined(am64x_evm)
 #include <ti/osal/CacheP.h>
 #endif
 
@@ -131,7 +131,7 @@ UFP_flashConfig UPF_flashFxnPtr[FLASH_DEVICE_MAX] = {
 
 };
 
-#if defined(am65xx_evm) || defined(am65xx_idk) || defined(j721e_evm) || defined(j7200_evm)
+#if defined(am65xx_evm) || defined(am65xx_idk) || defined(j721e_evm) || defined(j7200_evm) || defined(am64x_evm)
 #pragma DATA_SECTION(gSysFirmware, ".firmware")
 uint32_t gSysFirmware[1];
 #endif
@@ -184,7 +184,7 @@ static int8_t UFP_parseHeader(unsigned char *hdrBuf,
         case UFP_CMD_GET_MAX_BAUDRATE:
             outbyte(MAX_BAUDRATE_SUPPORTED);
             c = inbyte(DELAY);
-#if defined(j7200_evm) || defined(j721e_evm) || defined(am65xx_evm) || defined(am65xx_idk)
+#if defined(j7200_evm) || defined(j721e_evm) || defined(am65xx_evm) || defined(am65xx_idk) || defined(am64x_evm)
             if (c == XMODEM_STS_NSUP)
             {
                 outbyte(MAX_BAUDRATE_SUPPORTED_LINUX);
@@ -346,7 +346,7 @@ int main(void)
            No need to flash onto boot device */
         if (imgType == UFP_IMAGE_SYSFW)
         {
-#if defined(am65xx_evm) || defined(am65xx_idk) || defined(j721e_evm) || defined(j7200_evm)
+#if defined(am65xx_evm) || defined(am65xx_idk) || defined(j721e_evm) || defined(j7200_evm) || defined(am64x_evm)
             offset = UFP_xModemFirmwareReceive((unsigned char *)gSysFirmware,
                                                UFP_SYSFW_SIZE);
             if(offset != 0)

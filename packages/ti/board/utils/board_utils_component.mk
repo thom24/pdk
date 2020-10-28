@@ -86,6 +86,8 @@ board_utils_j7200_BOARDLIST = j7200_evm
 board_utils_j7200_CORELIST = mcu1_0
 board_utils_tpr12_BOARDLIST = tpr12_evm
 board_utils_tpr12_CORELIST = mcu1_0
+board_utils_am64x_BOARDLIST = am64x_evm
+board_utils_am64x_CORELIST = mcu1_0
 
 ############################
 # Board utils example

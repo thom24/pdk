@@ -51,6 +51,11 @@ extern "C" {
 #include <ti/board/src/evmKeystone3/include/board_i2c_io_exp.h>
 #endif
 
+#if defined(SOC_AM64X)
+#include <ti/board/src/am64x_evm/include/board_i2c_io_exp.h>
+#include <ti/board/src/am64x_evm/include/board_utils.h>
+#endif
+
 #define EMMC_INSTANCE  					(0U)
 
 #define EMMC_SECTOR_SIZE   				(512U)

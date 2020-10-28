@@ -86,8 +86,7 @@ const UFP_fxnTable UFP_emmcFxnTable = {
  */
 static void UFP_emmcReset(void)
 {
-#if !(defined(SOC_J721E) || defined(SOC_J7200))
-#if defined(SOC_AM65XX) && !defined (__aarch64__)
+#if defined(SOC_AM65XX)
     I2C_HwAttrs i2cCfg;
 
     I2C_socGetInitCfg(0, &i2cCfg);
@@ -96,7 +95,6 @@ static void UFP_emmcReset(void)
     i2cCfg.enableIntr = 0;
 
     I2C_socSetInitCfg(0, &i2cCfg);
-#endif
 
     Board_i2cIoExpInit();
     /* Setting the pin direction as output */
@@ -119,6 +117,42 @@ static void UFP_emmcReset(void)
                               PIN_NUM_0,
                               GPIO_SIGNAL_LEVEL_HIGH);
 #endif
+
+#if defined(am64x_evm)
+    Board_I2cInitCfg_t i2cCfg;
+
+    i2cCfg.i2cInst    = BOARD_I2C_IOEXP_DEVICE1_INSTANCE;
+    i2cCfg.socDomain  = BOARD_SOC_DOMAIN_MAIN;
+    i2cCfg.enableIntr = false;
+    Board_setI2cInitConfig(&i2cCfg);
+
+    Board_i2cIoExpInit();
+    /* Setting the pin direction as output */
+    Board_i2cIoExpSetPinDirection(BOARD_I2C_IOEXP_DEVICE1_ADDR,
+                                  THREE_PORT_IOEXP,
+                                  PORTNUM_0,
+                                  PIN_NUM_0,
+                                  PIN_DIRECTION_OUTPUT);
+
+    /* Pulling the EMMC RST line to low for the reset to happen */
+    Board_i2cIoExpPinLevelSet(BOARD_I2C_IOEXP_DEVICE1_ADDR,
+                              THREE_PORT_IOEXP,
+                              PORTNUM_0,
+                              PIN_NUM_0,
+                              GPIO_SIGNAL_LEVEL_LOW);
+
+    /* Wait for short duration before pulling the reset line high
+       to initiate eMMC reset */
+    Osal_delay(EMMC_FW_DELAY);
+
+    /* Pulling the EMMC RST line to high for the reset to happen */
+    Board_i2cIoExpPinLevelSet(BOARD_I2C_IOEXP_DEVICE1_ADDR,
+                              THREE_PORT_IOEXP,
+                              PORTNUM_0,
+                              PIN_NUM_0,
+                              GPIO_SIGNAL_LEVEL_HIGH);
+#endif
+
 }
 
 /**

@@ -79,6 +79,8 @@ extern "C" {
 #endif
 #elif defined(SOC_AM65XX)
 #define UFP_MCU_ARMSS_ATCM_BASE             (CSL_MCU_ATCM_BASE)
+#elif defined(SOC_AM64X)
+#define UFP_MCU_ARMSS_ATCM_BASE             (0) // AM64x_TODO: Need check this address during the verification
 #endif
 
 #define UFP_ROM_UART_MODULE_INPUT_CLK       (48000000U)

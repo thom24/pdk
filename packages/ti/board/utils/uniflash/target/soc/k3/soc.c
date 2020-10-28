@@ -54,6 +54,7 @@ int8_t UFP_openUartHandle(void);
 
 static int32_t UFP_isNoBootEnabled(void)
 {
+#if !defined(am64x_evm) // AM64x_TODO: Need update this for am64x evm
     uint32_t mainDevStat;
     uint32_t wkupDevStat;
 
@@ -65,6 +66,7 @@ static int32_t UFP_isNoBootEnabled(void)
     {
         return (TRUE);
     }
+#endif
 
     return (FALSE);
 }
@@ -288,6 +290,7 @@ int8_t UFP_sciclientInit(void *sysfw)
         return (-1);
     }
 
+#if !defined(am64x_evm)
     /* RTI seems to be turned on by ROM. Turning it off so that Power domain can transition */
     Sciclient_pmSetModuleState(TISCI_DEV_MCU_RTI0,
                                TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF,
@@ -297,6 +300,7 @@ int8_t UFP_sciclientInit(void *sysfw)
                                TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF,
                                TISCI_MSG_FLAG_AOP,
                                SCICLIENT_SERVICE_WAIT_FOREVER);
+#endif
 
     return 0;
 }

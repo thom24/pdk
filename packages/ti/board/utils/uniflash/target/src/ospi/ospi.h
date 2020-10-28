@@ -79,7 +79,7 @@ extern "C" {
 
 #if defined(SOC_AM65XX) || defined(j721e_evm)
 #define OSPI_FLASH_ID   BOARD_FLASH_ID_MT35XU512ABA1G12
-#elif defined(j7200_evm)
+#elif defined(j7200_evm) || defined (am64x_evm)
 #define OSPI_FLASH_ID   BOARD_FLASH_ID_S28HS512T
 #else
 #define OSPI_FLASH_ID   BOARD_FLASH_ID_MT35XU256ABA1G12
