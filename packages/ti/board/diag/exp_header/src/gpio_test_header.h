@@ -60,13 +60,13 @@
 #include "src/am65xx_evm/am65xx_evm_pinmux.h"
 #elif defined(am65xx_idk)
 #include "src/am65xx_idk/am65xx_idk_pinmux.h"
-#elif defined(SOC_J721E) || defined(SOC_J7200)
+#elif defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
 #include "board_pinmux.h"
 #endif
 
 #include "diag_common_cfg.h"
 
-#if (defined(SOC_J721E) || defined(SOC_J7200))
+#if (defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X))
 #include <ti/csl/csl_gpio.h>
 #include "board_i2c_io_exp.h"
 #include "board_internal.h"
@@ -100,6 +100,12 @@ extern "C" {
 #define NUM_OF_MLB_HEADER_PINS      (3U)
 /* number of gpio pin sets for loopback test*/
 #define NUM_PIN_SETS                (3U)
+#elif defined(SOC_AM64X)
+/* Maximum number of pad config registers supported */
+#define MAIN_PADCONFIG_MAX_COUNT    (85U)
+#define PADCONFIG_MAX_COUNT         (103U)
+/* number of gpio pin sets for loopback test*/
+#define NUM_PIN_SETS                (2U)
 #else /*j7200_evm*/
 
 #define PADCONFIG_MAX_COUNT         (2U)
@@ -115,6 +121,11 @@ extern "C" {
 #if defined(SOC_J721E)
 #define I2C_INSTANCE                (0)
 #endif
+
+#if defined(SOC_AM64X)
+#define I2C_INSTANCE                (BOARD_I2C_IOEXP_DEVICE1_INSTANCE)
+#endif
+
 
 typedef struct testHeaderPinDetails
 {

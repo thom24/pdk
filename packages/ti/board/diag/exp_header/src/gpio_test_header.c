@@ -43,9 +43,9 @@
  *             on one pin and verifying the same on the other pin
  *             with both the pins connected externally.
  *
- *  Supported SoCs: AM65xx, J721E & J7200.
+ *  Supported SoCs: AM65xx, J721E, J7200, AM64x.
  *
- *  Supported Platforms: am65xx_evm, am65xx_idk, j721e_evm & j7200_evm.
+ *  Supported Platforms: am65xx_evm, am65xx_idk, j721e_evm, j7200_evm, am64x_evm.
  */
 
 #include "gpio_test_header.h"
@@ -65,6 +65,120 @@ static uint32_t pinMuxgpio[PADCONFIG_MAX_COUNT] =
     PIN_SPI1_CLK,
     PIN_TIMER_IO0,
     PIN_TIMER_IO1
+};
+#elif defined(SOC_AM64X)
+testHeaderPinDetails_t testHeaderPin[NUM_PIN_SETS] = {
+    {"HSE TEST JIG PINS\0",      0U,     85U,     CSL_GPIO0_BASE},
+    {"SAFETY TEST JIG PINS\0",   85,     18U,     CSL_MCU_GPIO0_BASE}
+};
+
+/* Pad Config register offset address details */
+static uint32_t pinMuxgpio[PADCONFIG_MAX_COUNT] =
+{
+    PIN_PRG0_MDIO0_MDIO,
+    PIN_SPI1_D1,
+    PIN_PRG0_MDIO0_MDC,
+    PIN_SPI1_D0,
+    PIN_PRG0_PRU0_GPO8,
+    PIN_PRG0_PRU1_GPO8,
+    PIN_PRG0_PRU0_GPO2,
+    PIN_PRG0_PRU1_GPO1,
+    PIN_PRG0_PRU0_GPO3,
+    PIN_PRG0_PRU1_GPO0,
+    PIN_PRG0_PRU0_GPO4,
+    PIN_PRG0_PRU0_GPO7,
+    PIN_PRG0_PRU0_GPO12,
+    PIN_PRG0_PRU0_GPO17,
+    PIN_PRG0_PRU1_GPO16,
+    PIN_PRG0_PRU0_GPO18,
+    PIN_GPMC0_AD15,
+    PIN_PRG0_PRU0_GPO19,
+    PIN_GPMC0_BE1N,
+    PIN_PRG0_PRU0_GPO0,
+    PIN_GPMC0_AD9,
+    PIN_PRG0_PRU1_GPO4,
+    PIN_GPMC0_AD8,
+    PIN_PRG0_PRU0_GPO11,
+    PIN_PRG0_PRU1_GPO12,
+    PIN_GPMC0_AD14,
+    PIN_GPMC0_AD10,
+    PIN_GPMC0_BE0N_CLE,
+    PIN_GPMC0_CLK,
+    PIN_PRG0_PRU0_GPO10,
+    PIN_SPI1_CLK,
+    PIN_PRG0_PRU0_GPO13,
+    PIN_PRG0_PRU0_GPO5,
+    PIN_PRG0_PRU1_GPO3,
+    PIN_PRG0_PRU0_GPO14,
+    PIN_PRG0_PRU0_GPO6,
+    PIN_PRG0_PRU1_GPO15,
+    PIN_PRG0_PRU1_GPO2,
+    PIN_PRG1_PRU1_GPO19,
+    PIN_GPMC0_AD2,
+    PIN_GPMC0_AD5,
+    PIN_GPMC0_AD12,
+    PIN_GPMC0_ADVN_ALE,
+    PIN_GPMC0_AD7,
+    PIN_GPMC0_WEN,
+    PIN_GPMC0_CSN2,
+    PIN_GPMC0_WAIT0,
+    PIN_GPMC0_CSN3,
+    PIN_GPMC0_WPN,
+    PIN_PRG0_PRU1_GPO17,
+    PIN_PRG0_PRU1_GPO19,
+    PIN_MCAN1_RX,
+    PIN_SPI1_CS0,
+    PIN_PRG0_PRU1_GPO13,
+    PIN_SPI1_CS1,
+    PIN_PRG0_PRU1_GPO5,
+    PIN_PRG0_PRU1_GPO11,
+    PIN_GPMC0_AD1,
+    PIN_PRG0_PRU0_GPO15,
+    PIN_GPMC0_AD4,
+    PIN_GPMC0_AD13,
+    PIN_GPMC0_DIR,
+    PIN_GPMC0_OEN_REN,
+    PIN_MCAN0_TX,
+    PIN_PRG0_PRU1_GPO18,
+    PIN_MCAN1_TX,
+    PIN_PRG0_PRU0_GPO1,
+    PIN_PRG0_PRU1_GPO6,
+    PIN_PRG0_PRU0_GPO16,
+    PIN_PRG0_PRU1_GPO14,
+    PIN_PRG1_PRU1_GPO18,
+    PIN_GPMC0_AD3,
+    PIN_GPMC0_CSN1,
+    PIN_GPMC0_AD11,
+    PIN_PRG0_PRU1_GPO9,
+    PIN_GPMC0_WAIT1,
+    PIN_MCAN0_RX,
+    PIN_PRG0_PRU1_GPO10,
+    PIN_GPMC0_AD0,
+    PIN_GPMC0_AD6,
+    PIN_I2C0_SCL,
+    PIN_I2C0_SDA,
+    PIN_PRG0_PRU1_GPO7,
+    PIN_GPMC0_CSN0,
+    PIN_PRG0_PRU0_GPO9,
+/* Safety Connector Pins  */
+    PIN_MCU_SPI0_D1,
+    PIN_MCU_SPI0_CS0,
+    PIN_MCU_SPI0_D0,
+    PIN_MCU_SPI1_CS1,
+    PIN_MCU_UART1_CTSN,
+    PIN_MCU_I2C1_SDA,
+    PIN_MCU_SPI1_D1,
+    PIN_MCU_SPI0_CLK,
+    PIN_MCU_I2C1_SCL,
+    PIN_MCU_UART1_TXD,
+    PIN_MCU_SPI0_CS1,
+    PIN_MCU_SPI1_CLK,
+    PIN_MCU_SPI1_D0,
+    PIN_MCU_UART1_RXD,
+    PIN_MCU_UART1_RTSN,
+    PIN_MCU_RESETSTATZ,
+    PIN_MCU_I2C0_SCL,
+    PIN_MCU_I2C0_SDA
 };
 #elif defined(SOC_J721E)
 uint8_t gPadConfigMaxCount;
@@ -263,15 +377,11 @@ int8_t BoardDiag_runExpHeaderTest(void)
 {
     int8_t ret = 0;
     uint8_t index;
-#if defined(SOC_J721E)
-#ifndef DIAG_STRESS_TEST
+#if defined(SOC_J721E) && !defined(DIAG_STRESS_TEST)
     uint8_t userInput;
 #endif
+
     Board_STATUS status = BOARD_SOK;
-#endif
-#if defined(SOC_J7200)
-    Board_STATUS status = BOARD_SOK;
-#endif
 
     /* set board pin mux mode to MAIN domain */
 #if defined(SOC_AM65XX)
@@ -296,6 +406,28 @@ int8_t BoardDiag_runExpHeaderTest(void)
     for(index = gMainPadConfigMaxCount; index < gPadConfigMaxCount; index++)
     {
         status = Board_pinmuxSetReg(BOARD_SOC_DOMAIN_WKUP,
+                                    pinMuxgpio[index],
+                                    BOARD_GPIO_PIN_MUX_CFG);
+        if (status != BOARD_SOK)
+        {
+            return status;
+        }
+    }
+#elif defined(SOC_AM64X)
+    for(index = 0; index < MAIN_PADCONFIG_MAX_COUNT; index++)
+    {
+        status = Board_pinmuxSetReg(BOARD_SOC_DOMAIN_MAIN,
+                                    pinMuxgpio[index],
+                                    BOARD_GPIO_PIN_MUX_CFG);
+        if (status != BOARD_SOK)
+        {
+            return status;
+        }
+    }
+    /* set board pin mux mode to WAKEUP domain */
+    for(index = MAIN_PADCONFIG_MAX_COUNT; index < PADCONFIG_MAX_COUNT; index++)
+    {
+        status = Board_pinmuxSetReg(BOARD_SOC_DOMAIN_MCU,
                                     pinMuxgpio[index],
                                     BOARD_GPIO_PIN_MUX_CFG);
         if (status != BOARD_SOK)
@@ -446,7 +578,7 @@ int8_t BoardDiag_expHeaderStressTest(void)
 }
 #endif
 
-#if defined(SOC_J721E)
+#if (defined(SOC_J721E) || defined(SOC_AM64X))
 static int16_t BoardDiag_ioExpMuxSel(uint8_t slaveAddr,
                                      i2cIoExpType_t ioExpType,
                                      i2cIoExpPortNumber_t portNum,
@@ -481,7 +613,9 @@ static int16_t BoardDiag_ioExpMuxSel(uint8_t slaveAddr,
     }
     return 0;
 }
+#endif
 
+#if defined(SOC_J721E)
 /**
  *  \brief    The function performs MLB header verification test.
  *
@@ -552,7 +686,10 @@ int main(void)
     Board_STATUS status;
     Board_initCfg boardCfg;
     int8_t ret = 0;
-#if defined(SOC_J721E)
+#if defined(SOC_AM64X)
+    char p = 'n';
+#endif
+#if (defined(SOC_J721E) || defined(SOC_AM64X))
     Board_I2cInitCfg_t i2cCfg;
 #endif
 
@@ -576,7 +713,7 @@ int main(void)
     UART_printf(  "**********************************************\n");
 
     GPIO_init();
-#if defined(SOC_J721E)
+#if (defined(SOC_J721E) || defined(SOC_AM64X))
     i2cCfg.i2cInst   = I2C_INSTANCE;
     i2cCfg.socDomain = BOARD_SOC_DOMAIN_MAIN;
     Board_setI2cInitConfig(&i2cCfg);
@@ -588,7 +725,7 @@ int main(void)
         return ret;
     }
 
-#if !defined(DIAG_STRESS_TEST)
+#if defined(SOC_J721E) && !(defined(DIAG_STRESS_TEST))
     ret = BoardDiag_runMlbHeaderToggleTest();
     if(ret != 0)
     {
@@ -599,6 +736,35 @@ int main(void)
 
     UART_printf("\nI2C IO-Expander Mux Configuration... \n\r");
 
+#if defined(SOC_AM64X)
+/* CPSW_FET_SEL - High - P12 - I2C1 - 0x22 */
+    BoardDiag_ioExpMuxSel(BOARD_I2C_IOEXP_DEVICE1_ADDR,
+                          THREE_PORT_IOEXP,
+                          PORTNUM_1,
+                          PIN_NUM_2,
+                          GPIO_SIGNAL_LEVEL_HIGH);
+
+/* CPSW_FET2_SEL - High - P13 - I2C1 - 0x22 */
+    BoardDiag_ioExpMuxSel(BOARD_I2C_IOEXP_DEVICE1_ADDR,
+                          THREE_PORT_IOEXP,
+                          PORTNUM_1,
+                          PIN_NUM_3,
+                          GPIO_SIGNAL_LEVEL_HIGH);
+
+/* CAN_MUX_SEL - High - P01 - I2C1 - 0x22 */
+    BoardDiag_ioExpMuxSel(BOARD_I2C_IOEXP_DEVICE1_ADDR,
+                          THREE_PORT_IOEXP,
+                          PORTNUM_0,
+                          PIN_NUM_1,
+                          GPIO_SIGNAL_LEVEL_HIGH);
+
+/* FSI_FET_SEL - Low - P07 - I2C1 - 0x22 */
+    BoardDiag_ioExpMuxSel(BOARD_I2C_IOEXP_DEVICE1_ADDR,
+                          THREE_PORT_IOEXP,
+                          PORTNUM_0,
+                          PIN_NUM_7,
+                          GPIO_SIGNAL_LEVEL_LOW);
+#elif defined(SOC_J721E)
     BoardDiag_ioExpMuxSel(BOARD_I2C_IOEXP_DEVICE1_ADDR,
                           TWO_PORT_IOEXP,
                           PORTNUM_1,
@@ -646,6 +812,7 @@ int main(void)
                           PORTNUM_1,
                           PIN_NUM_6,
                           GPIO_SIGNAL_LEVEL_LOW);
+#endif
 
     Board_i2cIoExpDeInit();
 #endif
@@ -655,6 +822,18 @@ int main(void)
                        PIN_PRG0_PRU0_GPO5,
                        BOARD_GPIO_PIN_MUX_CFG);
     GPIO_write(0, GPIO_PIN_VAL_HIGH);
+#endif
+
+#if defined(SOC_AM64X)
+    UART_printf("\nPress 'y' if Test Jig Connected");
+
+    UART_scanFmt("%c", &p);
+    if ( (p != 'Y') || (p != 'y') )
+    {
+        UART_printf("\nPlease Connect the HSE test Jig");
+        UART_printf("\nTest Failed");
+		return 0;
+	}
 #endif
 
 #ifdef DIAG_STRESS_TEST
