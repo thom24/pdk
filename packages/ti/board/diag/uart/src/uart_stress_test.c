@@ -40,9 +40,9 @@
  *  UART TX and RX at maximum possible baud rate by receiving test string
  *  from host pc
  *
- *  Supported SoCs : AM65XX, J721E, J7200 & TPR12.
+ *  Supported SoCs : AM65XX, J721E, J7200,AM64x, TPR12.
  *
- *  Supported Platforms: am65xx_evm, am65xx_idk, j721e_evm, j7200_evm & tpr12_evm.
+ *  Supported Platforms: am65xx_evm, am65xx_idk, j721e_evm, j7200_evm, tpr12_evm,am64x_evm.
  *
  */
 
@@ -116,7 +116,8 @@ static int8_t BoardDiag_UartStressTest(uint32_t uartInstance, uint8_t setPort)
         uart_hwAttrs.frequency = 96000000;
         UART_socSetInitCfg(uartInstance, &uart_hwAttrs);
     }
-    if(setPort == 2)
+#if !defined(SOC_AM64X)
+    else if(setPort == 2)
     {
         /* Enable Wake-up UART port */
         UART_socGetInitCfg(uartInstance, &uart_hwAttrs);
@@ -125,7 +126,8 @@ static int8_t BoardDiag_UartStressTest(uint32_t uartInstance, uint8_t setPort)
         uart_hwAttrs.frequency = 96000000;
         UART_socSetInitCfg(uartInstance, &uart_hwAttrs);
     }
-	else
+#endif
+    else
     {
         UART_socGetInitCfg(uartInstance, &uart_hwAttrs);
         uart_hwAttrs.enableInterrupt = 0;
@@ -389,12 +391,19 @@ int main(void)
         ret = -1;
     }
 #endif
-#if defined(am65xx_evm)
+#if defined(am65xx_evm) || defined(am64x_evm)
     ret = BoardDiag_UartStressTest(BOARD_UART1_INSTANCE, 0);
     if (ret != 0)
     {
         ret = -1;
     }
+#if defined(am64x_evm)
+    ret = BoardDiag_UartStressTest(BOARD_UART3_INSTANCE, 0);
+    if (ret != 0)
+    {
+        ret = -1;
+    }
+#endif
 #elif defined(am65xx_idk) || defined(j721e_evm) || defined(j7200_evm)
     ret = BoardDiag_UartStressTest(BOARD_UART_INSTANCE, 1);
     if (ret != 0)
@@ -402,6 +411,7 @@ int main(void)
         ret = -1;
     }
 
+#if !defined(am64x_evm)
     ret = BoardDiag_UartStressTest(BOARD_UART_INSTANCE, 2);
     if (ret != 0)
     {
