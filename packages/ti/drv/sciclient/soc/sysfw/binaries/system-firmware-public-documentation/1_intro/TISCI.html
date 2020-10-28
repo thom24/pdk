@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                20.00.02
+                20.00.03
               </div>
             
           
@@ -105,6 +105,7 @@
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Introduction</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#centralized-device-management">Centralized Device Management</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#centralized-foundational-security-management">Centralized Foundational Security Management</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#architecture-change-between-sdk-7-0-and-sdk-7-1">Architecture Change between SDK 7.0 and SDK 7.1</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#further-reading">Further Reading</a></li>
 </ul>
 </li>
@@ -174,11 +175,88 @@ workarounds for system quirks.</li>
 <li>Equivalent system capability entitlement on all variations of operation
 conditions.</li>
 </ul>
-<div class="section" id="centralized-device-management">
-<h2>Centralized Device Management<a class="headerlink" href="#centralized-device-management" title="Permalink to this headline">¶</a></h2>
 <p>K3 devices introduces the concept of a centralized Power, Resource and Security
 Management to allow mitigating the challenges of the traditional approach to
 system control.</p>
+<p>System Firmware is a collective term used to describe the TI Foundational Security (TIFS)
+and Resource Management (RM)/ Power Management (PM) services.</p>
+<p>System Firmware executes on the Security Manager and Device Manager Core.
+On K3 devices, the DMSC subsystem is the Security Manager Core in the SoC.
+The Device Manager core can be on the DMSC itself or the MCU R5F.
+The choice of whether this runs on the DMSC or the
+MCU R5F is based on the kind of applications the device is targeting.
+If the device is targetting applications, where there is a need for a dedicated
+HSM, the Device manager core is independent of the DMSC (which is exclusively
+kept for Security functions). For devices which do not have need for a dedicated
+security island or HSM, the device manager runs on the DMSC.</p>
+<p>The following table highlights the variations
+of where the RM and PM execute versus the TIFS on the different K3 family of
+devices.</p>
+<span id="pub-sysfw-map-per-device"></span><table border="1" class="docutils" id="id1">
+<caption><span class="caption-number">Table 1 </span><span class="caption-text">TI Foundational Security Software and RM/PM SCI Server Mapping</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col width="18%" />
+<col width="29%" />
+<col width="29%" />
+<col width="24%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Device</th>
+<th class="head">TI Foundation Security</th>
+<th class="head">3rd Party HSM/SHE stack</th>
+<th class="head">RM/PM SCI Server</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>AM65x/ DRA80x,
+AM64x</td>
+<td>DMSC (M3 based)</td>
+<td>NA</td>
+<td>DMSC (M3 based)</td>
+</tr>
+<tr class="row-odd"><td>DRA82X, TDA4X</td>
+<td>DMSC (M3 based)</td>
+<td>DMSC (M3 based)</td>
+<td>Library on MCU R5*</td>
+</tr>
+</tbody>
+</table>
+<p>Note, the TI provided software does not allow for a given SoC to support both HSM and non
+HSM applications. To know the mapping refer <a class="reference internal" href="#pub-sysfw-map-per-device"><span class="std std-ref">TI Foundational Security Software and RM/PM SCI Server Mapping</span></a>.</p>
+<p>The purpose of this document is to define the software interface for
+the System Firmware. The split up of the responsibilities are:</p>
+<ul class="simple">
+<li><dl class="first docutils">
+<dt>TIFS:</dt>
+<dd><ul class="first last">
+<li>Responsible for Centralized Foundational Security Management. These
+include functions like authenticated boot, JTAG unlock etc.</li>
+<li>Behaves like a forwarding agent for Resource Management and Power Management
+requests made by Secure hosts (other CPUs) in the SoC.</li>
+<li>Behaves as a forwarding agent for Resource Management and Power Management
+responses from the device manager to the Secure Hosts.</li>
+<li>Firewall Management for resources requested by both secure and non-secure
+hosts.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Device Manager (DMSC M3 or MCU R5F based on the device)</dt>
+<dd><ul class="first last">
+<li>Responsible for servicing resource management and power management messages
+from secure and non-secure hosts.</li>
+<li>Reponsible for forwarding non-secure host requests to set the processor
+boot control or firewall configuration for safety applications to the DMSC.</li>
+<li>Responsible for forwaring response recieved from the DMSC to non-secure
+hosts for the above forwarded messages.</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<div class="section" id="centralized-device-management">
+<h2>Centralized Device Management<a class="headerlink" href="#centralized-device-management" title="Permalink to this headline">¶</a></h2>
 <p>In the Power management domain, the centralized power management takes into account that every device has:</p>
 <ul class="simple">
 <li>Different power and clock domains.</li>
@@ -190,26 +268,17 @@ management entity aims to provide the same control for power and clock setting a
 <p>Centralized Resource management is driven by the centralized DMA architecture. Key components
 of the centralized resource management include:</p>
 <ul class="simple">
-<li>Navigator Subsystem: Collection of Data movement components<ul>
+<li>Navigator Subsystem: Collection of Data movement components</li>
 <li>UDMA (Unified DMA), PKTDMA, BCDMA: DMA engine for standard parallel DMA (CBA) or PSI/stream based IP.</li>
-</ul>
-</li>
 <li>RA (Ring Accelerator): Queue management providing abstract SW view to HW DMA queues</li>
 <li>Proxy: Allows efficient access to RA queues, also enables address containment/virtualization (access RA via separate MMU page / regions)</li>
 <li>Interrupt &amp; events handling: Interrupt aggregators and Interrupt routers</li>
 </ul>
-<p>In K3 devices, there is a Single Entity responsible for:</p>
-<ul class="simple">
-<li>Abstracting HW details for power, DMA common resources and Interrupt management.</li>
-<li>Maintaining knowledge of the system state centrally.</li>
-<li>Partition resources in the system across CPU cores.</li>
-</ul>
-<p>This centralized power management and resource management entity executes on the DMSC M3.</p>
 </div>
 <div class="section" id="centralized-foundational-security-management">
 <h2>Centralized Foundational Security Management<a class="headerlink" href="#centralized-foundational-security-management" title="Permalink to this headline">¶</a></h2>
 <p>The DMSC M3 subsystem in the K3 family of devices is responsible to run the software stack for
-the devices foundational security management. This software entity is responsible for:</p>
+the device foundational security management. This software entity is responsible for:</p>
 <ul>
 <li><p class="first">Foundational device security in DMSC</p>
 <blockquote>
@@ -217,12 +286,7 @@ the devices foundational security management. This software entity is responsibl
 <li>Secure boot with secure keys/root-of-trust, Security configuration and Debug unlock</li>
 <li>RSA or ECC Root Keys, AES symmetric key</li>
 <li>Utilizes PKA, SHA2 and AES Crypto accelerators</li>
-</ul>
-</div></blockquote>
-</li>
-<li><p class="first">Basic security functionality to extend root of trust (optional)</p>
-<blockquote>
-<div><ul class="simple">
+<li>Basic security functionality to extend root of trust (optional)</li>
 <li>Authenticated Key ring to extend root-of-trust keys</li>
 <li>SYSFW and Bootloader Rollback protection via eFuse</li>
 <li>Device Unique Key / Key Derivation to support 3P stacks</li>
@@ -235,9 +299,36 @@ refered to as System Control Entity and System Firmware interchangeably.
 Any software and hardware entity which communicates with the System Control
 Entity is refered to as “Host”.
 The block diagram of the System Controller Entity or System firmware is as below:</p>
-<div class="figure" id="id1">
+<div class="figure" id="id2">
 <img alt="../_images/blockDiagram.png" src="../_images/blockDiagram.png" />
 <p class="caption"><span class="caption-number">Fig. 1 </span><span class="caption-text">System Controller Entity interacting with Other Hosts</span></p>
+</div>
+</div>
+<div class="section" id="architecture-change-between-sdk-7-0-and-sdk-7-1">
+<h2>Architecture Change between SDK 7.0 and SDK 7.1<a class="headerlink" href="#architecture-change-between-sdk-7-0-and-sdk-7-1" title="Permalink to this headline">¶</a></h2>
+<p>The SDK 7.1 (v2020.08 of System Firmware) firmware is not compatible with SDK 7.0.
+(v2020.04 of the System Firmware) and earlier releases in terms of location of the binaries.
+Note the TISCI interface is the same as what is available on earlier releases.</p>
+<p>The following figure describes the typical software stack and highlights the
+difference in the location of execution of centralized services from System Firmware.</p>
+<div class="figure" id="id3">
+<img alt="../_images/softwareStack.png" src="../_images/softwareStack.png" />
+<p class="caption"><span class="caption-number">Fig. 2 </span><span class="caption-text">DMSC Firmware Change | TDA4VM, DRA829, DRA821</span></p>
+</div>
+<p>Purpose of DMSC firmware change
+- Secure HSM functions can run on a DMSC Security Island
+- Free a main domain R5F for general customer use.
+- Enables MCU Only mode with HSM functions on DMSC
+- Lockstep Safety R5F runs safety critical PM &amp; RM functions.</p>
+<p>The Memory / CPU requirement is minimal (&lt; 150 KB, &lt; 10 MHz) so having the RM
+and PM execute on the MCU R5f has minimal impact to user applications.</p>
+<p>The SW impact summary for the end users is as given below. Kindly note since the
+API interface remains the same, the rest of the documentation for System Firmware is the
+same between SDK 7.1 and 7.0. Refer to the SDK documentation to know more about
+the changes required for integration of the SCISERVER and RM/PM on the MCU R5F.</p>
+<div class="figure" id="id4">
+<img alt="../_images/swimpact.png" src="../_images/swimpact.png" />
+<p class="caption"><span class="caption-number">Fig. 3 </span><span class="caption-text">SW Impact for end-users between SDK 7.0 and SDK 7.1</span></p>
 </div>
 </div>
 <div class="section" id="further-reading">
@@ -293,7 +384,7 @@ The block diagram of the System Controller Entity or System firmware is as below
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'20.00.02',
+            VERSION:'20.00.03',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

@@ -44,6 +44,27 @@ is available for other devices.
    implementation of another operating system. Users can look at the
    integration in Processor SDK for an example.
 
+On devices with distributed TIFS and DM services across multiple cores,
+the interaction between the hosts and the security and device manager is as below:
+
+.. figure:: ../../img/softwareInteraction.png
+
+    Software on different cores  and secure proxy communication channels
+
+The communication mechanism for different cores is as below
+
+For secure cores the communication mechanism is as below:
+
+.. figure:: ../../img/SeqDiagram_Secure.png
+
+For messages running from MCU R5F the communication mechanism is as below:
+
+.. figure:: ../../img/SeqDiagram_NonSecure_R5.png
+
+For messages running from other non-secure cores the communication mechanism is as below:
+
+.. figure:: ../../img/SeqDiagram_NonSecure_other.png
+
 The following subsections gives a high level overview of the different
 APIs and functions available via the TISCI interface.
 

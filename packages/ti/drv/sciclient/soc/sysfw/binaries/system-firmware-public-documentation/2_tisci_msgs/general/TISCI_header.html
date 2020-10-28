@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                20.00.02
+                20.00.03
               </div>
             
           
@@ -217,6 +217,25 @@ Processor SDK, TISCI is provided to access system services.</p>
 <p class="last">An example of when you may need to make use of TISCI is for the
 implementation of another operating system. Users can look at the
 integration in Processor SDK for an example.</p>
+</div>
+<p>On devices with distributed TIFS and DM services across multiple cores,
+the interaction between the hosts and the security and device manager is as below:</p>
+<div class="figure" id="id1">
+<img alt="../../_images/softwareInteraction.png" src="../../_images/softwareInteraction.png" />
+<p class="caption"><span class="caption-number">Fig. 4 </span><span class="caption-text">Software on different cores  and secure proxy communication channels</span></p>
+</div>
+<p>The communication mechanism for different cores is as below</p>
+<p>For secure cores the communication mechanism is as below:</p>
+<div class="figure">
+<img alt="../../_images/SeqDiagram_Secure.png" src="../../_images/SeqDiagram_Secure.png" />
+</div>
+<p>For messages running from MCU R5F the communication mechanism is as below:</p>
+<div class="figure">
+<img alt="../../_images/SeqDiagram_NonSecure_R5.png" src="../../_images/SeqDiagram_NonSecure_R5.png" />
+</div>
+<p>For messages running from other non-secure cores the communication mechanism is as below:</p>
+<div class="figure">
+<img alt="../../_images/SeqDiagram_NonSecure_other.png" src="../../_images/SeqDiagram_NonSecure_other.png" />
 </div>
 <p>The following subsections gives a high level overview of the different
 APIs and functions available via the TISCI interface.</p>
@@ -391,9 +410,9 @@ contain the secure messaging header.</p>
 </tbody>
 </table>
 </p>
-<div class="figure" id="id1">
+<div class="figure" id="id2">
 <img alt="../../_images/secure-header.png" src="../../_images/secure-header.png" />
-<p class="caption"><span class="caption-number">Fig. 2 </span><span class="caption-text">Secure Messaging Header format</span></p>
+<p class="caption"><span class="caption-number">Fig. 5 </span><span class="caption-text">Secure Messaging Header format</span></p>
 </div>
 <ol class="arabic simple">
 <li>The Secure header is mandatory for all messages that are received via secure
@@ -414,9 +433,9 @@ initialized to zero.</li>
 <p>The maximum length of the data that needs to be integrity checked is 56 bytes.
 Of these 8 bytes are taken up by the standard TISCI header, 4 bytes by the
 secure header leaving 44 bytes for the payload.</p>
-<div class="figure" id="id2">
+<div class="figure" id="id3">
 <img alt="../../_images/user-integrity-check-calculation.png" src="../../_images/user-integrity-check-calculation.png" />
-<p class="caption"><span class="caption-number">Fig. 3 </span><span class="caption-text">Integrity Check calculation in the request path</span></p>
+<p class="caption"><span class="caption-number">Fig. 6 </span><span class="caption-text">Integrity Check calculation in the request path</span></p>
 </div>
 <p>The user is expected to</p>
 <ol class="arabic simple">
@@ -526,7 +545,7 @@ message is limited to being sent over secure queues only.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'20.00.02',
+            VERSION:'20.00.03',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

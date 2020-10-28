@@ -34,8 +34,8 @@
 #         For AM65XX    : ./firmwareHeaderGen.sh am65x_sr2
 #         For AM65XX-HS : ./firmwareHeaderGen.sh am65x-hs
 #         For AM65XX-HS : ./firmwareHeaderGen.sh am65x_sr2-hs
-#         For J721E     : ./firmwareHeaderGen.sh j721e-no-pm-rm
-#         For J721E-HS  : ./firmwareHeaderGen.sh j721e-hs-no-pm-rm
+#         For J721E     : ./firmwareHeaderGen.sh j721e
+#         For J721E-HS  : ./firmwareHeaderGen.sh j721e-hs
 #         For AM64x     : ./firmwareHeaderGen.sh am64x-vlab
 #         For AM64x     : ./firmwareHeaderGen.sh am64x-zebu
 #         For J7200     : ./firmwareHeaderGen.sh j7200
@@ -105,49 +105,39 @@ if [ "$FW_SOC" = "am65x" ]; then
 export SCI_CLIENT_OUT_SOC_DIR=$SCI_CLIENT_DIR/soc/V0
 export SCICLIENT_FIRMWARE_HEADER=sciclient_firmware_V0$BIN_EXT.h
 export SYSFW_SE_SIGNED=$SCI_CLIENT_OUT_SOC_DIR/sysfw$BIN_EXT.bin
+export FIRMWARE_SILICON=$SCI_CLIENT_IN_SOC_DIR/ti-sci-firmware-$FW_SOC$FW_SOC_TYPE.bin
+export SYSFW_SE_INNER_CERT=$SCI_CLIENT_IN_SOC_DIR/ti-sci-firmware-$FW_SOC${FW_SOC_TYPE%-enc}-cert.bin
+export SYSFW_SE_CUST_CERT=$SCI_CLIENT_OUT_SOC_DIR/sysfw_cert.bin
 export SYSFW_LOAD_ADDR=0x40000
 fi
 
 if [ "$FW_SOC" = "am65x_sr2" ]; then
 export SCI_CLIENT_OUT_SOC_DIR=$SCI_CLIENT_DIR/soc/V0
 export SCICLIENT_FIRMWARE_HEADER=sciclient_firmware_V0_sr2$BIN_EXT.h
-SYSFW_SE_SIGNED=$SCI_CLIENT_OUT_SOC_DIR/sysfw_sr2$BIN_EXT.bin
+export SYSFW_SE_SIGNED=$SCI_CLIENT_OUT_SOC_DIR/sysfw_sr2$BIN_EXT.bin
+export FIRMWARE_SILICON=$SCI_CLIENT_IN_SOC_DIR/ti-sci-firmware-$FW_SOC$FW_SOC_TYPE.bin
+export SYSFW_SE_INNER_CERT=$SCI_CLIENT_IN_SOC_DIR/ti-sci-firmware-$FW_SOC${FW_SOC_TYPE%-enc}-cert.bin
+export SYSFW_SE_CUST_CERT=$SCI_CLIENT_OUT_SOC_DIR/sysfw_cert.bin
 export SYSFW_LOAD_ADDR=0x40000
 fi
 
 if [ "$FW_SOC" = "j721e" ]; then
 export SCI_CLIENT_OUT_SOC_DIR=$SCI_CLIENT_DIR/soc/V1
 export SCICLIENT_FIRMWARE_HEADER=sciclient_firmware_V1$BIN_EXT.h
-SYSFW_SE_SIGNED=$SCI_CLIENT_OUT_SOC_DIR/sysfw$BIN_EXT.bin
-export SYSFW_LOAD_ADDR=0x40000
-fi
-
-if [ "$FW_SOC" = "j721e-no-pm-rm" ]; then
-FW_SOC="j721e-gp-no-pm-rm"
-FW_SOC_TYPE=""
-export SCI_CLIENT_OUT_SOC_DIR=$SCI_CLIENT_DIR/soc/V1
-export SCICLIENT_FIRMWARE_HEADER=sciclient_firmware_no_pm_rm_V1$BIN_EXT.h
-SYSFW_SE_SIGNED=$SCI_CLIENT_OUT_SOC_DIR/sysfw_no_pm_rm$BIN_EXT.bin
-export SYSFW_LOAD_ADDR=0x40000
-fi
-
-if [ "$FW_SOC" = "j721e-hs-no-pm-rm" ]; then
-echo "########################################"
-echo "Here I am"
-echo "########################################"
-FW_SOC="j721e-hs-no-pm-rm"
-FW_SOC_TYPE="-enc"
-BIN_EXT=-hs-enc
-export SCI_CLIENT_OUT_SOC_DIR=$SCI_CLIENT_DIR/soc/V1
-export SCICLIENT_FIRMWARE_HEADER=sciclient_firmware_no_pm_rm_V1$BIN_EXT.h
-SYSFW_SE_SIGNED=$SCI_CLIENT_OUT_SOC_DIR/sysfw_no_pm_rm$BIN_EXT.bin
+export SYSFW_SE_SIGNED=$SCI_CLIENT_OUT_SOC_DIR/tifs$BIN_EXT.bin
+export FIRMWARE_SILICON=$SCI_CLIENT_IN_SOC_DIR/ti-fs-firmware-$FW_SOC$FW_SOC_TYPE.bin
+export SYSFW_SE_INNER_CERT=$SCI_CLIENT_IN_SOC_DIR/ti-fs-firmware-$FW_SOC${FW_SOC_TYPE%-enc}-cert.bin
+export SYSFW_SE_CUST_CERT=$SCI_CLIENT_OUT_SOC_DIR/tifs_cert.bin
 export SYSFW_LOAD_ADDR=0x40000
 fi
 
 if [ "$FW_SOC" = "j7200" ]; then
 export SCI_CLIENT_OUT_SOC_DIR=$SCI_CLIENT_DIR/soc/V2
 export SCICLIENT_FIRMWARE_HEADER=sciclient_firmware_V2$BIN_EXT.h
-SYSFW_SE_SIGNED=$SCI_CLIENT_OUT_SOC_DIR/sysfw$BIN_EXT.bin
+export FIRMWARE_SILICON=$SCI_CLIENT_IN_SOC_DIR/ti-fs-firmware-$FW_SOC$FW_SOC_TYPE.bin
+export SYSFW_SE_INNER_CERT=$SCI_CLIENT_IN_SOC_DIR/ti-fs-firmware-$FW_SOC${FW_SOC_TYPE%-enc}-cert.bin
+export SYSFW_SE_SIGNED=$SCI_CLIENT_OUT_SOC_DIR/tifs$BIN_EXT.bin
+export SYSFW_SE_CUST_CERT=$SCI_CLIENT_OUT_SOC_DIR/tifs_cert.bin
 export SYSFW_LOAD_ADDR=0x40000
 fi
 
@@ -155,12 +145,12 @@ if [ "$FW_SOC" = "am64x" ]; then
 export SCI_CLIENT_OUT_SOC_DIR=$SCI_CLIENT_DIR/soc/V3
 SYSFW_SE_SIGNED=$SCI_CLIENT_OUT_SOC_DIR/sysfw$BIN_EXT.bin
 export SCICLIENT_FIRMWARE_HEADER=sciclient_firmware_V3$BIN_EXT.h
-export SYSFW_LOAD_ADDR=0x44000
-fi
-
 export FIRMWARE_SILICON=$SCI_CLIENT_IN_SOC_DIR/ti-sci-firmware-$FW_SOC$FW_SOC_TYPE.bin
 export SYSFW_SE_INNER_CERT=$SCI_CLIENT_IN_SOC_DIR/ti-sci-firmware-$FW_SOC${FW_SOC_TYPE%-enc}-cert.bin
 export SYSFW_SE_CUST_CERT=$SCI_CLIENT_OUT_SOC_DIR/sysfw_cert.bin
+export SYSFW_LOAD_ADDR=0x44000
+fi
+
 
 # SBL_CERT_GEN may already be depending on how this is called
 export SBL_CERT_GEN="${SBL_CERT_GEN:-$ROOTDIR/ti/build/makerules/x509CertificateGen.sh}"

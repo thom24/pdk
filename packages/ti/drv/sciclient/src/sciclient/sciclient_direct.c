@@ -306,6 +306,26 @@ int32_t Sciclient_service (const Sciclient_ReqPrm_t *pReqPrm,
                 }
 
                 break;
+            /* RM boardcfg must be sent to TIFS before local processing */
+            case TISCI_MSG_BOARD_CONFIG_RM:
+                ret = Sciclient_serviceSecureProxy(pReqPrm, pRespPrm);
+                if ((ret == CSL_PASS) && 
+                        ((pRespPrm->flags & TISCI_MSG_FLAG_ACK) == TISCI_MSG_FLAG_ACK))
+                {
+                    memcpy(message, pReqPrm->pReqPayload, pReqPrm->reqPayloadSize);
+                    ret = Sciclient_ProcessRmMessage(message);
+                    if (pRespPrm->pRespPayload != NULL)
+                    {
+                        memcpy(pRespPrm->pRespPayload, message, pRespPrm->respPayloadSize);
+                    }
+                    hdr = (struct tisci_header *) &message;
+                    pRespPrm->flags = hdr->flags;
+                }
+                else
+                {
+                    ret = CSL_EFAIL;
+                }
+                break;
             /* RM messages processed by Secure RM within TIFS on M3 */
             case TISCI_MSG_RM_PSIL_PAIR:
             case TISCI_MSG_RM_PSIL_UNPAIR:
