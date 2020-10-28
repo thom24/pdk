@@ -518,7 +518,11 @@ static void J721E_SetupQoS(void)
 {
     setup_navss_nb();
     setup_c66_qos();
-    setup_main_r5f_qos();
+	/* Workaround to unblock PDK-8359 . 
+	 * setup_main_r5f_qos() results in crashing the UDMA DRU examples on 
+	 * mcu2_0(with SBL uart boot mode) during CSL_REG64_WR(&pRegs->DRUQueues.CFG[queueId], regVal); 
+	 * Hence commenting out the following. */
+    /* setup_main_r5f_qos(); */
     setup_vpac_qos();
     setup_dmpac_qos();
     setup_dss_qos();
