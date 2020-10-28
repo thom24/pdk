@@ -251,3 +251,7 @@ void BoardDiag_timerIntrDisable(void)
 
 }
 
+int32_t start_boot_diag(void)
+{
+    return 0;
+}

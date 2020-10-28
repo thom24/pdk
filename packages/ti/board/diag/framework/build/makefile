@@ -83,7 +83,7 @@ EXTERNAL_LNKCMD_FILE_LOCAL = ../../common/$(SOC)/framework_linker.lds
 endif
 
 ifeq ($(CORE),$(filter $(CORE), mcu1_0))
-ifeq ($(SOC), $(filter $(SOC), am65xx j721e j7200))
+ifeq ($(SOC), $(filter $(SOC), am65xx j721e j7200 am64x))
 SRCS_COMMON += sbl_soc.c sbl_sci_client.c
 SRCS_ASM_COMMON += sbl_misc.asm
 endif

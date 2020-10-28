@@ -48,7 +48,7 @@ extern "C" {
  */
 
 #include <ti/csl/tistdtypes.h>
-#include <ti/board/src/am64x_evm/AM64xx_pinmux.h>
+#include <ti/board/src/am64x_evm/AM64x_pinmux.h>
 
 #define BOARD_GPIO_PIN_MUX_CFG         (0x50007U)
 

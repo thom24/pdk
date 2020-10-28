@@ -336,9 +336,9 @@ Board_STATUS Board_pinmuxConfig (void)
     pinmuxPerCfg_t* pInstanceData = NULL;
     int32_t i, j, k;
 
-    for(i = 0; PINMUX_END != gAM64xxMainPinmuxData[i].moduleId; i++)
+    for(i = 0; PINMUX_END != gAM64x_MainPinmuxData[i].moduleId; i++)
     {
-        pModuleData = gAM64xxMainPinmuxData[i].modulePinCfg;
+        pModuleData = gAM64x_MainPinmuxData[i].modulePinCfg;
         for(j = 0; (PINMUX_END != pModuleData[j].modInstNum); j++)
         {
             if(pModuleData[j].doPinConfig == TRUE)
@@ -353,9 +353,9 @@ Board_STATUS Board_pinmuxConfig (void)
         }
     }
 
-	for(i = 0; PINMUX_END != gAM64xxWkupPinmuxData[i].moduleId; i++)
+	for(i = 0; PINMUX_END != gAM64x_WkupPinmuxData[i].moduleId; i++)
     {
-        pModuleData = gAM64xxWkupPinmuxData[i].modulePinCfg;
+        pModuleData = gAM64x_WkupPinmuxData[i].modulePinCfg;
         for(j = 0; (PINMUX_END != pModuleData[j].modInstNum); j++)
         {
             if(pModuleData[j].doPinConfig == TRUE)
