@@ -226,20 +226,6 @@ void SBL_SciClientInit(void)
     }
 #endif
 
-#ifndef SBL_SKIP_BRD_CFG_RM
-    SBL_ADD_PROFILE_POINT;
-    sblBoardCfgRmPrms.boardConfigLow = (uint32_t)boardCfgInfo.boardCfgLowRm;
-    sblBoardCfgRmPrms.boardConfigHigh = 0;
-    sblBoardCfgRmPrms.boardConfigSize = boardCfgInfo.boardCfgLowRmSize;
-    sblBoardCfgRmPrms.devGrp = SBL_DEVGRP;
-    status = Sciclient_boardCfgRm(&sblBoardCfgRmPrms);
-    if (status != CSL_PASS)
-    {
-        SBL_log(SBL_LOG_ERR,"Sciclient board config rm...FAILED \n");
-        SblErrLoop(__FILE__, __LINE__);
-    }
-#endif
-
 #ifndef SBL_SKIP_BRD_CFG_SEC
     SBL_ADD_PROFILE_POINT;
     sblBoardCfgSecPrms.boardConfigLow = (uint32_t)boardCfgInfo.boardCfgLowSec;
@@ -280,6 +266,20 @@ void SBL_SciClientInit(void)
         }
     }
 #endif
+#endif
+
+#ifndef SBL_SKIP_BRD_CFG_RM
+    SBL_ADD_PROFILE_POINT;
+    sblBoardCfgRmPrms.boardConfigLow = (uint32_t)boardCfgInfo.boardCfgLowRm;
+    sblBoardCfgRmPrms.boardConfigHigh = 0;
+    sblBoardCfgRmPrms.boardConfigSize = boardCfgInfo.boardCfgLowRmSize;
+    sblBoardCfgRmPrms.devGrp = SBL_DEVGRP;
+    status = Sciclient_boardCfgRm(&sblBoardCfgRmPrms);
+    if (status != CSL_PASS)
+    {
+        SBL_log(SBL_LOG_ERR,"Sciclient board config rm...FAILED \n");
+        SblErrLoop(__FILE__, __LINE__);
+    }
 #endif
 
     /* Get SYSFW/TIFS version */
