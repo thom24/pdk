@@ -43,6 +43,7 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <string.h>
+#include <ti/osal/osal.h>
 #include <ti/drv/sciclient/soc/sysfw/include/tisci/tisci_protocol.h>
 #include <boardcfg/boardcfg.h>
 #include <startup.h>
@@ -184,6 +185,8 @@ typedef struct {
 /* ========================================================================== */
 
 static int32_t board_config_pm_handler(uint32_t *msg_recv);
+static uint16_t boardcfgRmFindCertSize(uint32_t *msg);
+static int32_t boardcfg_RmAdjustReq(uint32_t *msg, uint16_t adjSize);
 
 /* ========================================================================== */
 /*                            Global Variables                                */
@@ -208,6 +211,7 @@ int32_t Sciclient_service (const Sciclient_ReqPrm_t *pReqPrm,
     uint32_t msgType = pReqPrm->messageType;
     uint32_t message[20] = {0};
     struct tisci_header *hdr;
+    uint16_t adjSize = 0;
     uint8_t *fwdStatus = (uint8_t *)&pReqPrm->forwardStatus;
     uint8_t localSeqId;
     uint32_t contextId;
@@ -307,10 +311,31 @@ int32_t Sciclient_service (const Sciclient_ReqPrm_t *pReqPrm,
                 break;
             /* RM boardcfg must be sent to TIFS before local processing */
             case TISCI_MSG_BOARD_CONFIG_RM:
+
+                /* If RM boardcfg has a certificate, find the length */
+                adjSize = boardcfgRmFindCertSize((uint32_t *)pReqPrm->pReqPayload);
+
+                /* Send to TIFS */
                 ret = Sciclient_serviceSecureProxy(pReqPrm, pRespPrm);
                 if ((ret == CSL_PASS) && 
                         ((pRespPrm->flags & TISCI_MSG_FLAG_ACK) == TISCI_MSG_FLAG_ACK))
                 {
+                    /*
+                     * Invalidate the cache since TIFS will overwrite the memory
+                     * to replace the certificate.
+                     *
+                     * If the certificate is consumed, need to adjust the size
+                     * of the boardcfg requrest.
+                     *
+                     * If the certificate is not consumed (duplicate RM boardcfg
+                     * send), then the pointer to the boardcfg structure needs
+                     * to be advanced.
+                     */
+                    ret = boardcfg_RmAdjustReq((uint32_t *)pReqPrm->pReqPayload, adjSize);
+                }
+                if (ret == CSL_PASS)
+                {
+
                     memcpy(message, pReqPrm->pReqPayload, pReqPrm->reqPayloadSize);
                     ret = Sciclient_ProcessRmMessage(message);
                     if (pRespPrm->pRespPayload != NULL)
@@ -544,6 +569,102 @@ int32_t Sciclient_ProcessPmMessage(const uint32_t reqFlags, void *tx_msg)
         ret = CSL_PASS;
     }
     return ret;
+}
+
+static uint16_t boardcfgRmFindCertSize(uint32_t *msg_recv)
+{
+    uint16_t cert_len = 0;
+    uint8_t *cert_len_ptr = (uint8_t *)&cert_len;
+    uint8_t *x509_cert_ptr;
+
+    struct tisci_msg_board_config_rm_req *req =
+        (struct tisci_msg_board_config_rm_req *) msg_recv;
+
+   x509_cert_ptr = (uint8_t *)req->tisci_boardcfg_rmp_low;
+
+
+    if (*x509_cert_ptr != 0x30)
+    {
+        /* The data does not contain a certificate - return */
+        return 0;
+    }
+
+    cert_len = *(x509_cert_ptr + 1);
+
+    /* If you need more than 2 bytes to store the cert length  */
+    /* it means that the cert length is greater than 64 Kbytes */
+    /* and we do not support it                                */
+    if ((cert_len > 0x80) &&
+        (cert_len != 0x82))
+    {
+        return 0;
+    }
+
+    if (cert_len == 0x82)
+    {
+        *cert_len_ptr = *(x509_cert_ptr + 3);
+        *(cert_len_ptr + 1) = *(x509_cert_ptr + 2);
+
+        /* add current offset from start of x509 cert */
+        cert_len += 3;
+    }
+    else
+    {
+        /* add current offset from start of x509 cert  */
+        /* if cert len was obtained from 2nd byte i.e. */
+        /* cert size is 127 bytes or less              */
+        cert_len += 1;
+    }
+
+    /* cert_len now contains the offset of the last byte */
+    /* of the cert from the ccert_start. To get the size */
+    /* of certificate, add 1                             */
+
+    return cert_len + 1;
+}
+
+static int32_t boardcfg_RmAdjustReq(uint32_t *msg, uint16_t adjSize)
+{
+    int32_t r = CSL_PASS;
+    uint16_t newSize = 0;
+    struct tisci_msg_board_config_rm_req *req =
+        (struct tisci_msg_board_config_rm_req *) msg;
+
+    /* If there was no certificate to begin with, do not adjust anything */
+    if (adjSize == 0)
+    {
+        return r;
+    }
+
+    /* Invalidate the cache */
+    CacheP_Inv((const void*) req->tisci_boardcfg_rmp_low,
+            req->tisci_boardcfg_rm_size);
+
+    /*
+     * See if there is still a certificate that needs to be compensated for (in
+     * case TIFS did not process this upon multiple requests for RM board cfg).
+     *
+     * If there is no certificate, then we adjust the size of the RM boardcfg
+     * request. If there is a certificate, it should match the size we retrieved
+     * earlier. Advance the base pointer. If the size does not match, then this
+     * is an error.
+     */
+    newSize = boardcfgRmFindCertSize(msg);
+
+    if (newSize == 0)
+    {
+        req->tisci_boardcfg_rm_size -= adjSize;
+    }
+    else if (newSize == adjSize)
+    {
+        req->tisci_boardcfg_rmp_low += adjSize;
+    }
+    else
+    {
+        r = CSL_EFAIL;
+    }
+
+    return r;
 }
 
 static int32_t tisci_msg_board_config_rm_handler(uint32_t *msg_recv)
