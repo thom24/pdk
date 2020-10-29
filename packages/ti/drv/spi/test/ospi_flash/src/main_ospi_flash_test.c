@@ -135,6 +135,7 @@ typedef struct OSPI_Tests_s
 #define OSPI_PROFILE        /* Enable profiling */
 #define OSPI_WRITE          /* Enable write */
 #define OSPI_WRITE_TUNING   /* Enable write tuning data pattern to the falsh */
+#undef  OSPI_QSPI_FLASH     /* Enable QSPI flash test using OSPI controller */
 
 /* OSPI test ID definitions */
 #define OSPI_TEST_ID_DAC_133M     0   /* OSPI flash test in Direct Acess Controller mode at 133MHz RCLK */
@@ -647,6 +648,10 @@ void OSPI_initConfig(OSPI_Tests *test)
     /* Get the default OSPI init configurations */
     OSPI_socGetInitCfg(BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
 
+#ifdef OSPI_QSPI_FLASH
+    ospi_cfg.xferLines = OSPI_XFER_LINES_QUAD;
+#endif
+
     /* Modify the default OSPI configurations */
     ospi_cfg.dacEnable = test->dacMode;
     if (test->dacMode)
@@ -755,7 +760,11 @@ static bool OSPI_flash_test(void *arg)
     deviceId = BOARD_FLASH_ID_MT35XU512ABA1G12;
 
 #if defined(SOC_AM64X)
+#ifdef OSPI_QSPI_FLASH
+    deviceId = BOARD_FLASH_ID_S25FL256S;
+#else
     deviceId = BOARD_FLASH_ID_MT35XU256ABA1G12;
+#endif
 #endif
 
 #if defined(SOC_J7200)

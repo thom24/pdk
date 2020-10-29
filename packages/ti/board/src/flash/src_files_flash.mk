@@ -109,6 +109,13 @@ PACKAGE_SRCS_COMMON += src/flash/nor/ospi/nor_qspi.c src/flash/nor/ospi/nor_qspi
 PACKAGE_SRCS_COMMON += src/flash/nor/hyperflash/nor_hyperflash.c src/flash/nor/hyperflash/nor_hyperflash.h
 PACKAGE_SRCS_COMMON += src/flash/nor/device/s71ks512s.h
 PACKAGE_SRCS_COMMON += src/flash/nor/device/mt25qu512abb.h
+PACKAGE_SRCS_COMMON += src/flash/nor/device/s25fl256s.h
+endif
+
+ifeq ($(BOARD),$(filter $(BOARD), am64x_evm))
+SRCS_COMMON += nor_qspi.c
+PACKAGE_SRCS_COMMON += src/flash/nor/ospi/nor_qspi.c src/flash/nor/ospi/nor_qspi.h
+PACKAGE_SRCS_COMMON += src/flash/nor/device/s25fl256s.h
 endif
 
 ifeq ($(BOARD),$(filter $(BOARD), tpr12_evm tpr12_qt))

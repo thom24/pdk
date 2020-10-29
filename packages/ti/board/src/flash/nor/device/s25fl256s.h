@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 - 2019, Texas Instruments Incorporated
+ * Copyright (c) 2016 - 2020, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -89,6 +89,7 @@ extern "C" {
 #define NOR_CMD_QUAD_READ           (0x6CU)
 #define NOR_CMD_PAGE_PROG           (0x12U)
 #define NOR_CMD_QUAD_PAGE_PROG      (0x34U)
+#define NOR_CMD_QUAD_DDR_IO_READ    (0xEEU)
 #else
 #define NOR_CMD_BLOCK_ERASE         (0xD8U)
 #define NOR_CMD_SECTOR_ERASE        (0x20U)
@@ -97,6 +98,7 @@ extern "C" {
 #define NOR_CMD_QUAD_READ           (0x6BU)
 #define NOR_CMD_PAGE_PROG           (0x02U)
 #define NOR_CMD_QUAD_PAGE_PROG      (0x32U)
+#define NOR_CMD_QUAD_DDR_IO_READ    (0xEDU)
 #endif
 
 /* \brief Read ID command definitions */

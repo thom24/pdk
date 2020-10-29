@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Texas Instruments Incorporated
+ * Copyright (c) 2018 - 2020, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,9 +46,12 @@
 
 #include <ti/board/src/flash/nor/nor.h>
 #include <ti/drv/spi/SPI.h>
-//#include <ti/drv/spi/src/v0/OSPI_v0.h>
 #include <ti/drv/spi/soc/SPI_soc.h>
+#if defined (am64x_evm)
+#include <ti/board/src/flash/nor/device/s25fl256s.h>
+#else
 #include <ti/board/src/flash/nor/device/mt25qu512abb.h>
+#endif
 
 /**************************************************************************
  **                       Macro Definitions

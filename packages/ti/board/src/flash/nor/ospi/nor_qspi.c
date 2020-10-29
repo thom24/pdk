@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 - 2019, Texas Instruments Incorporated
+ * Copyright (c) 2018 - 2020, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,6 +40,8 @@
 #if defined (j7200_evm)
 /* Entry offset is at index 5 of SPI config array*/
 #define SPI_CONFIG_OFFSET     (5U)
+#elif defined (am64x_evm)
+#define SPI_CONFIG_OFFSET     (7U)
 #else
 #define SPI_CONFIG_OFFSET     CSL_MCSPI_PER_CNT
 #endif
@@ -134,15 +136,16 @@ static NOR_STATUS Nor_qspiReadId(SPI_Handle handle)
 static NOR_STATUS Nor_qspiEnableDDR(SPI_Handle handle)
 {
     OSPI_v0_HwAttrs const *hwAttrs;
-    NOR_STATUS       retVal;
+    NOR_STATUS       retVal = NOR_PASS;
     uint8_t          cmdWren = NOR_CMD_WREN;
+    uint8_t          data[3];
     uint32_t         opCode[3];
     uint32_t         dummyCycles;
     uint32_t         rx_lines;
-    uint8_t          data[3];
 
     hwAttrs = (OSPI_v0_HwAttrs const *)handle->hwAttrs;
 
+#if defined (j721e_evm) || defined (j7200_evm)
     /* Send Write Enable command */
     if (Nor_qspiCmdWrite(handle, &cmdWren, 1, 0))
     {
@@ -177,7 +180,42 @@ static NOR_STATUS Nor_qspiEnableDDR(SPI_Handle handle)
         SPI_control(handle, SPI_V0_CMD_SET_XFER_LINES, (void *)&rx_lines);
         SPI_control(handle, SPI_V0_CMD_XFER_OPCODE, (void *)opCode);
     }
+#else
+    /* Send Write Enable command */
+    if (Nor_qspiCmdWrite(handle, &cmdWren, 1, 0))
+    {
+        return NOR_FAIL;
+    }
 
+    if (Nor_qspiWaitReady(handle, NOR_WRR_WRITE_TIMEOUT))
+    {
+        return NOR_FAIL;
+    }
+
+    /* Write CR1 register to enable QSPI mode */
+    data[0] = NOR_CMD_WRR;
+    data[1] = 0x02;
+    retVal = Nor_qspiCmdWrite(handle, data, 1, 1);
+    if (retVal == NOR_PASS)
+    {
+        if (Nor_qspiWaitReady(handle, NOR_WRR_WRITE_TIMEOUT))
+        {
+            return NOR_FAIL;
+        }
+
+        /* Set opcodes */
+        dummyCycles = NOR_QUAD_READ_DUMMY_CYCLE;
+        rx_lines    = OSPI_XFER_LINES_QUAD;
+        opCode[0]   = NOR_CMD_QUAD_DDR_IO_READ;
+        opCode[1]   = NOR_CMD_QUAD_PAGE_PROG;
+        opCode[2]   = NOR_CMD_RDSR;
+
+        /* Update the read opCode, rx lines and read dummy cycles */
+        SPI_control(handle, SPI_V0_CMD_RD_DUMMY_CLKS, (void *)&dummyCycles);
+        SPI_control(handle, SPI_V0_CMD_SET_XFER_LINES, (void *)&rx_lines);
+        SPI_control(handle, SPI_V0_CMD_XFER_OPCODE, (void *)opCode);
+    }
+#endif
     CSL_ospiDtrEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), TRUE);
 
     return retVal;
@@ -187,16 +225,17 @@ static NOR_STATUS Nor_qspiEnableSDR(SPI_Handle handle)
 {
     OSPI_v0_HwAttrs const *hwAttrs;
     CSL_ospi_flash_cfgRegs *regAddr;
-    NOR_STATUS       retVal;
+    NOR_STATUS       retVal = NOR_PASS;
     uint8_t          cmdWren = NOR_CMD_WREN;
+    uint8_t          data[3];
     uint32_t         opCode[3];
     uint32_t         dummyCycles;
     uint32_t         rx_lines;
-    uint8_t          data[3];
     uint32_t         regVal;
 
     hwAttrs = (OSPI_v0_HwAttrs const *)handle->hwAttrs;
 
+#if defined (j721e_evm) || defined (j7200_evm)
     /* Send Write Enable command */
     if (Nor_qspiCmdWrite(handle, &cmdWren, 1, 0))
     {
@@ -214,6 +253,11 @@ static NOR_STATUS Nor_qspiEnableSDR(SPI_Handle handle)
     retVal = Nor_qspiCmdWrite(handle, data, 1, 1);
     if (retVal == NOR_PASS)
     {
+        if (Nor_qspiWaitReady(handle, NOR_WRR_WRITE_TIMEOUT))
+        {
+            return NOR_FAIL;
+        }
+
         dummyCycles = NOR_QUAD_READ_DUMMY_CYCLE;
         rx_lines    = OSPI_XFER_LINES_QUAD;
         opCode[0]     = NOR_CMD_QUAD_IO_FAST_RD;
@@ -224,14 +268,41 @@ static NOR_STATUS Nor_qspiEnableSDR(SPI_Handle handle)
         SPI_control(handle, SPI_V0_CMD_SET_XFER_LINES, (void *)&rx_lines);
         SPI_control(handle, SPI_V0_CMD_XFER_OPCODE, (void *)opCode);
     }
+#else
+    /* Send Write Enable command */
+    if (Nor_qspiCmdWrite(handle, &cmdWren, 1, 0))
+    {
+        return NOR_FAIL;
+    }
 
+    if (Nor_qspiWaitReady(handle, NOR_WRR_WRITE_TIMEOUT))
+    {
+        return NOR_FAIL;
+    }
+
+    /* Write CR1 register to enable QSPI mode */
+    data[0] = NOR_CMD_WRR;
+    data[1] = 0x02;
+    retVal = Nor_qspiCmdWrite(handle, data, 1, 1);
+    if (retVal == NOR_PASS)
+    {
+        rx_lines      = OSPI_XFER_LINES_QUAD;
+        opCode[0]     = NOR_CMD_QUAD_READ;
+        opCode[1]     = NOR_CMD_PAGE_PROG;
+        opCode[2]     = NOR_CMD_RDSR;
+
+        SPI_control(handle, SPI_V0_CMD_RD_DUMMY_CLKS, (void *)&dummyCycles);
+        SPI_control(handle, SPI_V0_CMD_SET_XFER_LINES, (void *)&rx_lines);
+        SPI_control(handle, SPI_V0_CMD_XFER_OPCODE, (void *)opCode);
+    }
+#endif
     /* Flash device requires 4-bit access for command as well in quad mode */
     regAddr = (CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr);
     regVal = CSL_REG32_RD(&regAddr->DEV_INSTR_RD_CONFIG_REG);
     regVal |= 0x200;
     CSL_REG32_WR(&regAddr->DEV_INSTR_RD_CONFIG_REG, regVal);
 
-    return NOR_PASS;
+    return retVal;
 }
 
 static NOR_STATUS Nor_qspiXipEnable(SPI_Handle handle)
