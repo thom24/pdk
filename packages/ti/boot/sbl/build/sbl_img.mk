@@ -50,8 +50,8 @@ INCLUDE_EXTERNAL_INTERFACES = pdk
 # List all the components required by the application
 COMP_LIST_COMMON = $(PDK_COMMON_BAREMETAL_COMP)
 ifneq ($(strip $(HS_SUFFIX)),) #if $(HS_SUFFIX) is non-empty
-  COMP_LIST_COMMON := $(filter-out sciclient,$(COMP_LIST_COMMON))
-  COMP_LIST_COMMON += sciclient$(HS_SUFFIX)
+  SCICLIENT := $(filter sciclient%,$(COMP_LIST_COMMON))
+  COMP_LIST_COMMON := $(subst $(SCICLIENT),$(SCICLIENT)_hs,$(COMP_LIST_COMMON))
 endif
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(SBL_CFLAGS)
