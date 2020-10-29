@@ -76,7 +76,7 @@ PACKAGE_SRCS_COMMON += ../../common/$(SOC)
 PACKAGE_SRCS_COMMON += ../../board_diag_component.mk
 PACKAGE_SRCS_COMMON += ../../create_sd.bat ../../create_sd.sh
 ifeq ($(BOARD), $(filter $(BOARD), j721e_evm am65xx_idk j7200_evm))
-PACKAGE_SRCS_COMMON =+ $(BOARD)
+PACKAGE_SRCS_COMMON += $(BOARD)
 endif
 
 SRCS_COMMON += mcan_test.c diag_common_cfg.c
