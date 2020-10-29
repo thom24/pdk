@@ -52,6 +52,10 @@
 #include <ti/sysbios/knl/Task.h>
 #endif
 
+/* CSL Header files */
+#include <ti/csl/soc.h>
+#include <ti/csl/csl_types.h>
+
 /* Driver Include files. */
 #include <ti/osal/osal.h>
 #include <ti/drv/edma/edma.h>
@@ -66,8 +70,12 @@
 
 #define TEST_BUF_LENGTH                     (2000U)
 
-#define TF_CACHE_LINESZ                     (128U)
-#define TF_ROUND_UP(x, y)                   (((x) + ((y)-1))/(y)*(y))
+/*
+ * Define the CACHE_LINSEZ based on system Cache configuration
+ * TPR12 use case: only L1 cache is enabled
+ */
+#define TF_CACHE_LINESZ                     CSL_CACHE_L1D_LINESIZE
+#define TF_ROUND_UP(x, y)                   CSL_NEXT_MULTIPLE_OF_POW2(x,y)
 
 #define TEST_TIMEOUT_CYCLES                 (1000000U)
 
