@@ -345,7 +345,7 @@ MMCSD_EMMC_DMA_TestApp_BOARDLIST = am65xx_idk am65xx_evm j721e_sim j721e_evm j72
 export MMCSD_EMMC_DMA_TestApp_BOARDLIST
 MMCSD_EMMC_DMA_TestApp_$(SOC)_CORELIST = $(drvmmcsd_$(SOC)_CORELIST)
 export MMCSD_EMMC_DMA_TestApp_$(SOC)_CORELIST
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e))
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
 MMCSD_EMMC_DMA_TestApp_SBL_APPIMAGEGEN = yes
 export MMCSD_EMMC_DMA_TestApp_SBL_APPIMAGEGEN
 endif
