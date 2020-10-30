@@ -160,9 +160,15 @@ void Board_initOSAL(void)
         BOARD_INIT_UART_STDIO;
 #else
     boardCfg = BOARD_INIT_PINMUX_CONFIG;
+    /* For TPR12 we dont do module clock init from app. This is done by
+     * GEL file or SBL. Doing Module Clock init causes OSAL RTI interrupts
+     * to stop if another core also runs OSAL test
+     */
+    #if !defined(SOC_TPR12)
     #if !defined(_TMS320C6X)
         boardCfg |= BOARD_INIT_MODULE_CLOCK;
     #endif
+    #endif /* !defined(SOC_TPR12) */
 
     #if defined (UART_CONSOLE)
         boardCfg |= BOARD_INIT_UART_STDIO;
@@ -1312,7 +1318,7 @@ void osal_test(UArg arg0, UArg arg1)
     bool testFail = false;
     Osal_StaticMemStatus pMemStats;
 
-//    Board_initOSAL();
+    Board_initOSAL();
 
 #ifdef BUILD_C7X_1
     Osal_appC7xPreInit();

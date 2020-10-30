@@ -143,7 +143,15 @@ bool SF25FL_bufferWrite(S25FL_Handle flashHandle,
 #ifdef SPI_DMA_ENABLE
         if (hwAttrs->dmaEnable)
         {
+/* TPR12 EVM flash  PP (Page program) sequence supported segLen of 32 due to 
+ * default wrap depth of the flash device. So setting segLen to 32 for TPR12_EVM
+ * build
+ */
+#if defined (tpr12_evm)
             segLen = 32;
+#else
+            segLen = 128;
+#endif
         }
 #endif
         remainSize = length;
@@ -399,7 +407,66 @@ bool SF25FL_bufferRead(S25FL_Handle flashHandle,
     return retVal;
 }
 
+#if !defined(tpr12_evm)
+bool S25FLFlash_WriteEnable(S25FL_Handle flashHandle)
+{
+    SPI_Handle handle = flashHandle->spiHandle; /* SPI handle */
+    bool retVal = false;                /* return value */
+    unsigned char writeVal;             /* data to be written */
+    unsigned int operMode;              /* temp variable to hold mode */
+    unsigned int rxLines;               /* temp variable to hold rx lines */
+    unsigned int frmLength;
+    unsigned int transferType;
+    QSPI_v1_Object  *object;
+    unsigned int rxLinesArg;
 
+    /* Get the pointer to the object and hwAttrs */
+    object = handle->object;
+
+    /* These operations require the qspi to be configured in the following mode
+       only: tx/rx single line and config mode. */
+
+    /* Save the current mode and rxLine configurations */
+    operMode = object->qspiMode;
+    rxLines  = object->rxLines;
+
+    /* Update the mode and rxLines with the required values */
+    SPI_control(handle, SPI_V1_CMD_SETCONFIGMODE, NULL);
+
+    rxLinesArg = QSPI_RX_LINES_SINGLE;
+    SPI_control(handle, SPI_V1_CMD_SETRXLINES, (void *)&rxLinesArg);
+
+    /* transaction frame length in words (bytes) */
+    frmLength = 1;
+    SPI_control(handle, SPI_V1_CMD_SETFRAMELENGTH, (void *)&frmLength);
+
+    /* Write enable command */
+    writeVal = QSPI_LIB_CMD_WRITE_ENABLE;
+
+    /* Update transaction parameters */
+    transaction.txBuf = (unsigned char *)&writeVal;
+    transaction.rxBuf = NULL;
+    transaction.count  = 1;
+
+    transferType = SPI_TRANSACTION_TYPE_WRITE;
+    SPI_control(handle, SPI_V1_CMD_TRANSFERMODE_RW, (void *)&transferType);
+
+    retVal = SPI_transfer(handle, &transaction);
+
+    /* Restore operating mode and rx Lines */
+    object->qspiMode = operMode;
+    SPI_control(handle, SPI_V1_CMD_SETRXLINES, (void *)&rxLines);
+
+    return retVal;
+}
+#else /* tpr12_evm case. 
+       * tpr12_evm is under #else case instead of #if defined(tpr12_evm) so that 
+       * diff in bitbucket shows the version for other SoC correctly as 
+       * unchanged correctly
+       */
+/* TPR12 EVM flash requires WREN in a loop until WEL gets set.Hence needs 
+ * different function for S25FLFlash_WriteEnable
+ */
 bool S25FLFlash_WriteEnable(S25FL_Handle flashHandle)
 {
     SPI_Handle handle = flashHandle->spiHandle; /* SPI handle */
@@ -455,7 +522,7 @@ bool S25FLFlash_WriteEnable(S25FL_Handle flashHandle)
     } while ((flashStatus & 0x2) == 0);
     return retVal;
 }
-
+#endif
 
 bool S25FLFlash_Enable4ByteAddrMode(S25FL_Handle flashHandle,
                                     bool enable4ByteMode)
@@ -730,7 +797,6 @@ bool S25FLFlash_QuadModeEnable(S25FL_Handle flashHandle)
 
     rxLinesArg = QSPI_RX_LINES_SINGLE;
     SPI_control(handle, SPI_V1_CMD_SETRXLINES, (void *)&rxLinesArg);
-
 
     /* Set transfer length in bytes: Reading status register */
     frmLength = 1 + 1;

@@ -350,9 +350,6 @@ static void MIBSPI_enablePinSettings(CSL_mss_spiRegs  *ptrMibSpiReg, MIBSPI_PinM
             CSL_FINS(regVal, SPI_SPIPC0_CLKFUN, 1U);
             CSL_FINS(regVal, SPI_SPIPC0_SIMOFUN0, 1U);
             CSL_FINS(regVal, SPI_SPIPC0_SOMIFUN0, 1U);
-           
-           //CSL_FINS(regVal, SPI_SPIPC0_SOMIFUN, 0U);
-           //CSL_FINS(regVal, SPI_SPIPC0_SOMIFUN, 0U);
 
             ptrMibSpiReg->SPIPC0 = regVal;         /* enable SOMI */
             break;
