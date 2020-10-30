@@ -181,6 +181,11 @@ bool VerifyData(uint8_t *expData,
 /**********************************************************************
  ************************** Global Variables **************************
  **********************************************************************/
+#ifdef USE_BIOS
+/* Test application stack */
+#define APP_TSK_STACK_MAIN              (16U * 1024U)
+static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN] __attribute__((aligned(32)));;
+#endif
 
 /* Buffer containing the known data that needs to be written to flash */
 #if defined(SOC_AM65XX) || defined(SOC_AM64X)
@@ -237,6 +242,8 @@ uint8_t rxBuf[TEST_BUF_LEN]  __attribute__((aligned(128)));
 /** \brief Total ring memory */
 #define UDMA_TEST_APP_RING_MEM_SIZE     (UDMA_TEST_APP_RING_ENTRIES * \
                                          UDMA_TEST_APP_RING_ENTRY_SIZE)
+/** \brief This ensures every channel memory is aligned */
+#define UDMA_TEST_APP_RING_MEM_SIZE_ALIGN ((UDMA_TEST_APP_RING_MEM_SIZE + UDMA_CACHELINE_ALIGNMENT) & ~(UDMA_CACHELINE_ALIGNMENT - 1U))
 /**
  *  \brief UDMA TR packet descriptor memory.
  *  This contains the CSL_UdmapCppi5TRPD + Padding to sizeof(CSL_UdmapTR15) +
@@ -260,9 +267,9 @@ Udma_DrvHandle          gDrvHandle = NULL;
 /*
  * UDMA Memories
  */
-static uint8_t gTxRingMem[UDMA_TEST_APP_RING_MEM_SIZE] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
-static uint8_t gTxCompRingMem[UDMA_TEST_APP_RING_MEM_SIZE] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
-static uint8_t gTxTdCompRingMem[UDMA_TEST_APP_RING_MEM_SIZE] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
+static uint8_t gTxRingMem[UDMA_TEST_APP_RING_MEM_SIZE_ALIGN] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
+static uint8_t gTxCompRingMem[UDMA_TEST_APP_RING_MEM_SIZE_ALIGN] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
+static uint8_t gTxTdCompRingMem[UDMA_TEST_APP_RING_MEM_SIZE_ALIGN] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
 static uint8_t gUdmaTprdMem[UDMA_TEST_APP_TRPD_SIZE_ALIGN] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
 static OSPI_dmaInfo gUdmaInfo;
 
@@ -634,7 +641,7 @@ void OSPI_configClk(uint32_t freq, bool usePHY)
 	    goto clk_cfg_exit;
     }
 
-    SPI_log("\n OSPI RCLK running at %d MHz. \n", ospi_rclk_freq);
+    SPI_log("\n OSPI RCLK running at %d MHz. \n", (uint32_t)ospi_rclk_freq);
 
 clk_cfg_exit:
       return;
@@ -665,12 +672,20 @@ void OSPI_initConfig(OSPI_Tests *test)
             Ospi_udma_init(&ospi_cfg);
         }
 #endif
+#if defined(SOC_J7200)
+        ospi_cfg.phyEnable  = false;
+        ospi_cfg.dtrEnable  = true;
+        ospi_cfg.dacEnable  = false;
+#endif
     }
     else
     {
         /* Enable interrupt in INDAC mode */
+#if defined(USE_BIOS) || defined(BUILD_MCU2_0) || defined(BUILD_MCU2_1)     /* interrupts are crashing in these cases */
+        ospi_cfg.intrEnable = false;        
+#else
         ospi_cfg.intrEnable = true;
-
+#endif
         /* Disable PHY in INDAC mode */
         ospi_cfg.phyEnable = false;
     }
@@ -783,7 +798,7 @@ static bool OSPI_flash_test(void *arg)
 #ifdef OSPI_PROFILE
     /* Get elapsed time for the Board_flashOpen measurement */
     elapsedTime = TimerP_getTimeInUsecs() - startTime;
-    SPI_log("\n Board_flashOpen elpased time %d us \n", elapsedTime);
+    SPI_log("\n Board_flashOpen elpased time %d us \n", (uint32_t)elapsedTime);
 #endif
     if (!boardHandle)
     {
@@ -819,6 +834,10 @@ static bool OSPI_flash_test(void *arg)
 #endif
 
 #ifdef OSPI_WRITE
+#if defined(SOC_J7200)
+if (!(test->dmaMode))           /* DAC DMA write does not work on J7200 */
+#endif
+{
     for (i = 0; i < testLen; i += NOR_BLOCK_SIZE)
     {
         offset = startOffset + i;
@@ -880,6 +899,7 @@ static bool OSPI_flash_test(void *arg)
     SPI_log("\n Board_flashWrite CPU load %d%% \n", cpuLoad);
 #endif
 #endif
+}
 #endif /* OSPI_WRITE */
 
 #ifdef OSPI_PROFILE
@@ -926,6 +946,10 @@ static bool OSPI_flash_test(void *arg)
 #endif
 
 #ifdef OSPI_WRITE
+#if defined(SOC_J7200)
+if (!(test->dmaMode))           /* DAC DMA write does not work on J7200 */
+#endif
+{
     /* Verify Data */
     if (VerifyData(pBuf, rxBuf, testLen) == false)
     {
@@ -933,6 +957,7 @@ static bool OSPI_flash_test(void *arg)
         testPassed = false;
         goto err;
     }
+}
 #endif
 
 err:
@@ -942,7 +967,10 @@ err:
     }
 
 #if SPI_DMA_ENABLE
-    Ospi_udma_deinit();
+    if (test->dmaMode)
+    {
+        Ospi_udma_deinit();
+    }
 #endif
 
     return (testPassed);
@@ -1058,17 +1086,30 @@ int main(void)
 #ifdef USE_BIOS
     Task_Handle task;
     Error_Block eb;
+    Task_Params taskParams;
 #endif
     boardCfg = BOARD_INIT_PINMUX_CONFIG |
         BOARD_INIT_MODULE_CLOCK |
         BOARD_INIT_UART_STDIO;
+#if defined (SOC_J7200)
+    /* Need to do PLL config through board init for proper clock input on J7200 */
+    boardCfg |= BOARD_INIT_PLL;
+#endif
 
     Board_init(boardCfg);
 
 #ifdef USE_BIOS
-    /* Start BIOS */
+
 	Error_init(&eb);
-	task = Task_create(spi_test, NULL, &eb);
+    /* Initialize the task params */
+    Task_Params_init(&taskParams);
+    /* Set the task priority higher than the default priority (1) */
+    taskParams.priority     = 2;
+    taskParams.stack        = gAppTskStackMain;
+    taskParams.stackSize    = sizeof (gAppTskStackMain);
+
+    /* Start BIOS */
+	task = Task_create(spi_test, &taskParams, &eb);
     if (task == NULL) {
         System_printf("Task_create() failed!\n");
         BIOS_exit(0);
