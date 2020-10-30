@@ -211,6 +211,9 @@ int32_t SBL_uartXmodemRead(uint8_t *dest, uint32_t destsz)
 #error "UART base address is set assuming UART instance 0 (MSS SCIA)"
 #endif
     uint32_t sbl_uart_baseAddr = CSL_MSS_SCIA_U_BASE;
+    /* Workaround for TPR12 ROM not sending ACK for EOT which results in host
+     * side terminal app still waiting after completing 100% transfer of
+     * SBL image */
     UART_putc(XMODEM_STS_ACK);
 #else
     UART_HwAttrs uart_cfg;

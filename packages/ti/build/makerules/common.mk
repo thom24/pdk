@@ -594,15 +594,7 @@ else
   SBL_BIN_FILE=sbl_img_bin
 endif
 
-#For SoCs like TPR12 which do not have GCC toolchain installed, arm-none-eabi-objcopy is used instead of gcc aarch64-none-elf-objcopy
-#arm-none-eabi-objcopy does not support --gap-fill=0xff option so set objcopy option based on objcopy tool used
-
-ifneq ($(findstring "%arm-none-eabi-objcopy",$(SBL_OBJ_COPY)), "")
-  export LC_ALL=C
-  SBL_OBJ_COPY_OPTS := 
-else
-  SBL_OBJ_COPY_OPTS := --gap-fill=0xff
-endif
+SBL_OBJ_COPY_OPTS := --gap-fill=0xff
 
 sbl_img_bin: $(EXE_NAME)
 	$(SBL_OBJ_COPY) $(SBL_OBJ_COPY_OPTS) -O binary $< $(SBL_BIN_PATH)
@@ -649,11 +641,12 @@ ifneq ($(OS),Windows_NT)
 endif
 	$(SBL_CERT_GEN) -b $(SBL_BIN_PATH) -o $(SBL_TIIMAGE_PATH) -c R5 -l $(SBL_RUN_ADDRESS) -k $($(APP_NAME)_SBL_CERT_KEY) -d DEBUG -j DBG_FULL_ENABLE -m $(SBL_MCU_STARTUP_MODE)
 else ifeq ($(SOC),$(filter $(SOC), tpr12))
-ifneq ("$(wildcard ${TPR12_ROM_SCRIPT_PATH}/gpkey.pem)","")
-	source $(PDK_INSTALL_PATH)/ti/build/makerules/tpr12rom_sign_non_secure.sh -b $(SBL_BIN_PATH) -c R5 -k ${TPR12_ROM_SCRIPT_PATH}/gpkey.pem -i
+ifneq ($(OS),Windows_NT)
+	$(CHMOD) a+x $(PDK_INSTALL_PATH)/ti/build/makerules/tpr12rom_sign_non_secure.sh
+	$(PDK_INSTALL_PATH)/ti/build/makerules/tpr12rom_sign_non_secure.sh -b $(SBL_BIN_PATH) -c R5 -k ${PDK_INSTALL_PATH}/ti/build/makerules/tpr12_gpkey.pem -i
 	cat R5-cert.bin $(SBL_BIN_PATH) > $(SBL_TIIMAGE_PATH)
 else
-	echo "Bypassing SBL signing as TPR12 ROM private key unavailable"
+	echo "Bypassing SBL signing as available only in unix environment presently"
 endif
 endif
 	$(ECHO) \# SBL image $@ created.
