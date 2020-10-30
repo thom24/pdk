@@ -43,6 +43,7 @@
 #include <ti/drv/edma/edma.h>
 
 #define QSPI_EVENTQUE                    (0U)
+#define QSPI_DMA_XFER_SIZE_ALIGN         (4U)
 
 /* DMA functions */
 static void QSPI_dmaIsrHandler (uintptr_t appData, uint8_t tcc);
@@ -67,8 +68,10 @@ int32_t QSPI_dmaConfig(SPI_Handle handle)
     QSPI_HwAttrs         *hwAttrs;
     int32_t               status  = SPI_STATUS_SUCCESS;
     int32_t               edmaStatus = EDMA_NO_ERROR;
+    QSPI_v1_Object        *object;
 
     /* Get the pointer to the object and hwAttrs */
+    object  = (QSPI_v1_Object *)handle->object;
     hwAttrs = (QSPI_HwAttrs*)handle->hwAttrs;
 
     /* Check EDMA handle is not NULL */
@@ -88,7 +91,7 @@ int32_t QSPI_dmaConfig(SPI_Handle handle)
             status = SPI_STATUS_ERROR;
         }
     }
-
+    object->intermediateDmaXferInitiated = false;
     return status;
 }
 
@@ -108,13 +111,15 @@ int32_t QSPI_dmaTransfer(SPI_Handle             handle,
 
     dataPtr = ((uintptr_t)hwAttrs->memMappedBaseAddr + (uintptr_t)transaction->txBuf);
 
+    object->intermediateDmaXferInitiated = false;
     if(SPI_TRANSACTION_TYPE_READ == object->transactionType)
     {
         uint32_t i;
 
         for (i = 0; i < transaction->count; i += QSPI_DMA_MAX_XFER_SIZE)
         {
-            uint32_t xferLen = CSL_NEXT_MULTIPLE_OF(CSL_MIN((transaction->count - i), QSPI_DMA_MAX_XFER_SIZE), 4);
+            /* QSPI EDMA read transfer should be 4 byte aligned else will result in corrupted tranfer */
+            uint32_t xferLen = CSL_NEXT_MULTIPLE_OF(CSL_MIN((transaction->count - i), QSPI_DMA_MAX_XFER_SIZE), QSPI_DMA_XFER_SIZE_ALIGN);
 
             if (transaction->count > (i + xferLen))
             {
@@ -125,6 +130,8 @@ int32_t QSPI_dmaTransfer(SPI_Handle             handle,
                                     ((uintptr_t)transaction->rxBuf + i),
                                     ((uintptr_t)dataPtr + i),
                                     xferLen);
+            //TODO: This reprogramming of intermidiate xfers shoud be done in
+            //intermediate xfer complete ISR and not in loop here.
             while (object->intermediateDmaXferInitiated == true);
         }
     }

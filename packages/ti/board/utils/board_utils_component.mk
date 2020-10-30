@@ -164,7 +164,9 @@ export board_utils_uart_flash_programmer_hs_SBL_IMAGEGEN
 # Uniflash utils is not supported for any profile
 # other than release due to memory constraint
 ifneq ($(BUILD_PROFILE), release)
+ifneq ($(SOC), tpr12)
 board_utils_EXAMPLE_LIST =
+endif # TPR12 Debug Uniflash build supported
 endif # ifneq ($(BUILD_PROFILE), release)
 
 export board_utils_EXAMPLE_LIST

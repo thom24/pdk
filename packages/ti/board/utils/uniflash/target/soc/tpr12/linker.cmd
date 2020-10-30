@@ -31,16 +31,25 @@ __ABORT_STACK_SIZE = 0x800;
 __UND_STACK_SIZE = 0x800;
 __SVC_STACK_SIZE = 0x2000;
 
+/***********************************************************************************
+ * This is reserved for the initialization code which is a part of the TCMA. The
+ * code should setup the MPU to allow L2 execution permissions
+ ***********************************************************************************/
+#define SBL_INIT_CODE_SIZE          640
+#define SBL_TEST_CCS_LOAD           1
+
 /*----------------------------------------------------------------------------*/
 /* Memory Map                                                                 */
 MEMORY
 {
-    /*  Reset Vectors base address(RESET_VECTORS) should be 64 bytes aligned  */
-    RESET_VECTORS (X) : origin=0x00000000 length=0x100
-    /* RESET_VECTORS (X) : origin=0x00020000 length=0x100 */
-    TCMA_RAM (RX) : origin=0x00000100 length=0x00007F00
+    /* IVT Table for the R5 SBL is always placed at the beginning of the TCM Memory */
+    /* Initialization code which executes in the TCM memory and sets up the MPU. */
+    INIT_CODE   : origin = 0x00000000, length = SBL_INIT_CODE_SIZE
+    TCMA_RAM (RX) : origin=SBL_INIT_CODE_SIZE length=(0x00008000 - SBL_INIT_CODE_SIZE)
     TCMB_RAM (RW) : origin=0x00080000 length=0x00008000
-    L2_RAM (RW)   : origin=0x10200000 length=0x00060000
+    /* L2 MEMORY reserved for IVT+Initialization code: */
+    L2_RESVD    : ORIGIN = 0x10200000, LENGTH = SBL_INIT_CODE_SIZE, fill = 0xBDBDBDBD
+    L2_RAM (RW)   : origin = (0x10200000 + SBL_INIT_CODE_SIZE) length=(0x00060000 - SBL_INIT_CODE_SIZE)
     L3_RAM (RW)   : origin=0x88000000 length=0x00390000
     HWA_RAM (RW)  : origin=0x82000000 length=0x00020000
 }  /* end of MEMORY */
@@ -50,8 +59,19 @@ MEMORY
 
 SECTIONS
 {
-    .rstvectors           : {} palign(8)                            > RESET_VECTORS
-    .bootCode    	      : {} palign(8)                            > L2_RAM
+    /* SBL Initialization Code: This needs to be relocated from the L2 to the TCMA
+     * The code is executed initially and this will setup the MPU permissions. */
+    .sbl_init_code: palign(8), fill=0xabcdabcd
+    {
+       *(.rstvectors) /* IVT is put at the beginning of the section */
+       . = align(8);
+       *(.bootCode)
+       . = align(8);
+#if  (SBL_TEST_CCS_LOAD == 1)
+    } > INIT_CODE
+#else
+    } load=L2_RESVD, run=INIT_CODE
+#endif
     .startupCode 	      : {} palign(8)                            > L2_RAM
     .startupData 	      : {} palign(8)                            > L2_RAM, type = NOINIT
     .text    	          : {} palign(8)                            > L2_RAM
