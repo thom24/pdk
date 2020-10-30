@@ -46,6 +46,11 @@ a request via
 :ref:`TISCI_MSG_RM_GET_RESOURCE_RANGE <pub_boardcfg_resasg_get_tisci>`.  The
 specified resource type's range is returned for the host who sent the request.
 
+.. warning:: Currently the RESASG_SUBTYPE_RA_MONITORS resource can only be
+             assigned to a single host in SoC RM board configurations due to
+             constraints in the number of host entries allowed in channelized
+             firewall programming.
+
 Device Groups for Resource Management Board Configuration
 ---------------------------------------------------------
 

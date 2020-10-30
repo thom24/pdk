@@ -78,10 +78,6 @@
           
             
             
-              <div class="version">
-                20.00.03
-              </div>
-            
           
 
           
@@ -225,6 +221,13 @@ boardcfg message NACK’d.</p>
 a request via
 <a class="reference internal" href="#pub-boardcfg-resasg-get-tisci"><span class="std std-ref">TISCI_MSG_RM_GET_RESOURCE_RANGE</span></a>.  The
 specified resource type’s range is returned for the host who sent the request.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Currently the RESASG_SUBTYPE_RA_MONITORS resource can only be
+assigned to a single host in SoC RM board configurations due to
+constraints in the number of host entries allowed in channelized
+firewall programming.</p>
+</div>
 <div class="section" id="device-groups-for-resource-management-board-configuration">
 <h3>Device Groups for Resource Management Board Configuration<a class="headerlink" href="#device-groups-for-resource-management-board-configuration" title="Permalink to this headline">¶</a></h3>
 <p>The RM board configuration TISCI message allows the user to specify the DEVGRP
@@ -1081,7 +1084,7 @@ steps fail the API would return with a NACK.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'20.00.03',
+            VERSION:'',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
