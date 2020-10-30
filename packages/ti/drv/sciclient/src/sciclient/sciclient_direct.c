@@ -678,13 +678,13 @@ int32_t Sciclient_boardCfgPrepHeader (
             (Sciclient_DirectBoardCfgDescTable *) pBoardCfgHeader;
         pBoardCfgDesc->num_elems = 2U;
         pBoardCfgDesc->sw_rev  = 0U; /* Not Used for RM and PM */
-        pBoardCfgDesc->descs[0].type = SCICLIENT_DIRECT_EXTBOOT_BOARDCFG_PM_INDEX;
+        pBoardCfgDesc->descs[0].type = TISCI_MSG_BOARD_CONFIG_PM;
         pBoardCfgDesc->descs[0].offset = (uint32_t) pInPmPrms->boardConfigLow -
                                          (uint32_t) pBoardCfgHeader;
         pBoardCfgDesc->descs[0].size = pInPmPrms->boardConfigSize;
         pBoardCfgDesc->descs[0].devgrp = pInPmPrms->devGrp;
         pBoardCfgDesc->descs[0].reserved = 0x0;
-        pBoardCfgDesc->descs[1].type = SCICLIENT_DIRECT_EXTBOOT_BOARDCFG_RM_INDEX;
+        pBoardCfgDesc->descs[1].type = TISCI_MSG_BOARD_CONFIG_RM;
         pBoardCfgDesc->descs[1].offset = 
             (uint32_t) pInRmPrms->boardConfigLow -
             (uint32_t) pBoardCfgHeader;
@@ -741,8 +741,7 @@ int32_t Sciclient_boardCfgParseHeader (
                 (Sciclient_DirectBoardCfgDescTable *) addr;
             for (i = 0U; i < pBoardCfgDesc->num_elems; i++)
             {
-                if (pBoardCfgDesc->descs[i].type ==
-                    SCICLIENT_DIRECT_EXTBOOT_BOARDCFG_PM_INDEX)
+                if (pBoardCfgDesc->descs[i].type == TISCI_MSG_BOARD_CONFIG_PM)
                 {
                     pInPmPrms->boardConfigLow = pBoardCfgDesc->descs[i].offset + 
                         (uint32_t) pBoardCfgDesc;
@@ -751,8 +750,7 @@ int32_t Sciclient_boardCfgParseHeader (
                     pInPmPrms->boardConfigHigh = 0U;
                     foundPm = 1U;
                 }
-                if (pBoardCfgDesc->descs[i].type ==
-                    SCICLIENT_DIRECT_EXTBOOT_BOARDCFG_RM_INDEX)
+                if (pBoardCfgDesc->descs[i].type == TISCI_MSG_BOARD_CONFIG_RM)
                 {
                     pInRmPrms->boardConfigLow = pBoardCfgDesc->descs[i].offset + 
                         (uint32_t) pBoardCfgDesc;
