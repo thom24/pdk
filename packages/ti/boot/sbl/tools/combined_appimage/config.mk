@@ -13,6 +13,8 @@ else
 PDK_INSTALL_PATH ?= $(mkfile_dir)../../../../..
 endif
 
+GCC_ARCH64_BIN_PREFIX ?= aarch64-none-elf
+
 include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 
 #################################################################################
