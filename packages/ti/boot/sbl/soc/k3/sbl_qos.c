@@ -242,7 +242,7 @@
 #define QOS_R5FSS0_CORE1_MEM_RD_PRIORITY     (2U)
 #define QOS_R5FSS0_CORE1_MEM_WR_PRIORITY     (2U)
 
-static void setup_navss_nb(void)
+void setup_navss_nb(void)
 {
     /* Map orderid 8-15 to VBUSM.C thread 2 (real-time traffic) */
     writel(2, NAVSS0_NBSS_NB0_CFG_NB_THREADMAP);
@@ -516,7 +516,10 @@ void setup_main_r5f_qos(void)
 
 static void J721E_SetupQoS(void)
 {
-    setup_navss_nb();
+    /* Workaround to unblock HS device boot
+     * setup_navss_nb() causes problem with load of TIFS
+     * So, we comment out the following. */
+    /* setup_navss_nb(); */
     setup_c66_qos();
 	/* Workaround to unblock PDK-8359 . 
 	 * setup_main_r5f_qos() results in crashing the UDMA DRU examples on 
