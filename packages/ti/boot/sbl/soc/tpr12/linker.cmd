@@ -79,15 +79,14 @@ SECTIONS
     .bootCode             : {} palign(8)                            > L2_RAM_SBL
     .startupCode          : {} palign(8)                            > L2_RAM_SBL
     .startupData          : {} palign(8)                            > L2_RAM_SBL
-    .sblScratch           : {} palign(8)                            > SBL_SCRATCH, type = NOINIT
-    .sbl_profile_info     : {} palign(8)                            > L2_RAM_SBL
-    .text    	          : {} palign(8)                            > L2_RAM_SBL
-    .const   	          : {} palign(8)                            > L2_RAM_SBL
+    .text                 : {} palign(8)                            > L2_RAM_SBL
+    .const                : {} palign(8)                            > L2_RAM_SBL
     .cinit                : {} palign(8)                            > L2_RAM_SBL
     .pinit                : {} palign(8)                            > L2_RAM_SBL
-    .boardcfg_data	  : {} palign(128)                          > L2_RAM_SBL
-
+    .boardcfg_data        : {} palign(128)                          > L2_RAM_SBL
     .data                 : {} palign(128)                          > L2_RAM_SBL
+    .sblScratch           : {} palign(8)                            > SBL_SCRATCH, type = NOINIT
+    .sbl_profile_info     : {} palign(8)                            > L2_RAM_SBL
     .bss     	          : {} align(4)                             > L2_RAM_SBL
     .sysmem  	          : {}                                      > L2_RAM_SBL
 

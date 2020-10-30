@@ -125,7 +125,7 @@ spi_EXAMPLE_LIST += MCSPI_Baremetal_Master_TestApp MCSPI_Baremetal_Slave_TestApp
 spi_EXAMPLE_LIST += MCSPI_Master_TestApp MCSPI_Slave_TestApp
 spi_EXAMPLE_LIST += MCSPI_Baremetal_Master_Dma_TestApp MCSPI_Baremetal_Slave_Dma_TestApp
 spi_EXAMPLE_LIST += MCSPI_Master_Dma_TestApp MCSPI_Slave_Dma_TestApp
-spi_EXAMPLE_LIST += OSPI_Baremetal_Flash_TestApp  OSPI_Baremetal_Flash_Dma_TestApp OSPI_Flash_TestApp OSPI_Flash_SMP_TestApp OSPI_Flash_Dma_TestApp OSPI_Flash_Dma_SMP_TestApp QSPI_Baremetal_Flash_TestApp QSPI_Flash_TestApp QSPI_Baremetal_Flash_Dma_TestApp QSPI_Flash_Dma_TestApp
+spi_EXAMPLE_LIST += OSPI_Baremetal_Flash_TestApp  OSPI_Baremetal_Flash_Dma_TestApp OSPI_Flash_TestApp OSPI_Flash_SMP_TestApp OSPI_Flash_Dma_TestApp OSPI_Flash_Dma_SMP_TestApp QSPI_Baremetal_Flash_TestApp QSPI_Flash_TestApp QSPI_Baremetal_Flash_Dma_TestApp QSPI_Flash_Dma_TestApp QSPI_FileFlashWrite_Dma_TestApp
 drvspi_EXAMPLE_LIST = $(spi_EXAMPLE_LIST)
 
 #
@@ -771,6 +771,27 @@ QSPI_Flash_Dma_TestApp_INCLUDE = $(QSPI_Flash_Dma_TestApp_PATH)
 QSPI_Flash_Dma_TestApp_BOARDLIST = tpr12_evm tpr12_qt
 export QSPI_Flash_Dma_TestApp_BOARDLIST
 QSPI_Flash_Dma_TestApp_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELIST)
+
+# QSPI dma File Flash Write Test app. 
+# This app allows us to write files to flash device using CCS.
+# This is temporary till we got correct uniflash support in TPR12.
+QSPI_FileFlashWrite_Dma_TestApp_COMP_LIST = QSPI_FileFlashWrite_Dma_TestApp
+QSPI_FileFlashWrite_Dma_TestApp_RELPATH = ti/drv/spi/test/qspi_flash
+QSPI_FileFlashWrite_Dma_TestApp_PATH = $(PDK_SPI_COMP_PATH)/test/qspi_flash
+QSPI_FileFlashWrite_Dma_TestApp_BOARD_DEPENDENCY = yes
+QSPI_FileFlashWrite_Dma_TestApp_CORE_DEPENDENCY = yes
+QSPI_FileFlashWrite_Dma_TestApp_XDC_CONFIGURO = yes
+QSPI_FileFlashWrite_Dma_TestApp_MAKEFILE = -f makefile_ccs_flash_write DMA=enable
+export QSPI_FileFlashWrite_Dma_TestApp_COMP_LIST
+export QSPI_FileFlashWrite_Dma_TestApp_BOARD_DEPENDENCY
+export QSPI_FileFlashWrite_Dma_TestApp_CORE_DEPENDENCY
+export QSPI_FileFlashWrite_Dma_TestApp_XDC_CONFIGURO
+export QSPI_FileFlashWrite_Dma_TestApp_MAKEFILE
+QSPI_FileFlashWrite_Dma_TestApp_PKG_LIST = QSPI_FileFlashWrite_Dma_TestApp
+QSPI_FileFlashWrite_Dma_TestApp_INCLUDE = $(QSPI_FileFlashWrite_Dma_TestApp_PATH)
+QSPI_FileFlashWrite_Dma_TestApp_BOARDLIST = tpr12_evm
+export QSPI_FileFlashWrite_Dma_TestApp_BOARDLIST
+QSPI_FileFlashWrite_Dma_TestApp_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELIST)
 
 export drvspi_LIB_LIST
 export spi_LIB_LIST

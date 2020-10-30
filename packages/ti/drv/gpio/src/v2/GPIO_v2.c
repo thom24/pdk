@@ -339,9 +339,6 @@ static void GPIO_init_v2(void)
             interruptRegParams.corepacConfig.arg         = (uintptr_t)(instIndex);
 
             interruptRegParams.corepacConfig.corepacEventNum = gpioHwAttr->lowInterruptNum;
-#if defined(SOC_TPR12) /* All TPR12 interrupts are pulse and not level */
-            interruptRegParams.corepacConfig.triggerSensitivity = OSAL_ARM_GIC_TRIG_TYPE_EDGE;
-#endif
         #if defined(_TMS320C6X)
             interruptRegParams.corepacConfig.intVecNum = OSAL_REGINT_INTVEC_EVENT_COMBINER;
         #else
