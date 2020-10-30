@@ -118,7 +118,9 @@ typedef int32_t Board_flash_STATUS;       /** Board Flash API return type */
 #define BOARD_FLASH_ID_MT25QU512ABB        (0xBB20) /**< 64MB NOR Flash */
 #define BOARD_FLASH_ID_S71KS512S           (0x007EU)  /**< 512 Mb cypress Hyperflash device Id  */
 #define BOARD_FLASH_ID_S28HS512T           (0x5B1AU)  /**< 512 Mb Cypress OSPI NOR flash */
-#define BOARD_FLASH_ID_MX25V1635F          (0x2315U)  /** Macronix 16MB NOR Flash **/
+#define BOARD_FLASH_ID_MX25V1635F          (0x2315U)  /** Macronix 16Mbit NOR Flash **/
+#define BOARD_FLASH_ID_GD25B16CSAG         (0x4015U)  /** Giga device 16Mbit NOR Flash **/
+#define BOARD_FLASH_ID_GD25B64CW2G         (0x4017U)  /** Giga device 16Mbit NOR Flash **/
 
 
 /**

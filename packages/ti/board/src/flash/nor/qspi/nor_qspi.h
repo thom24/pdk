@@ -57,7 +57,7 @@ extern "C" {
 #elif defined (iceK2G)
 #include <ti/board/src/flash/nor/device/s25fl256s.h>
 #elif defined (tpr12_evm) || defined (tpr12_qt)
-#include <ti/board/src/flash/nor/device/mx25v1635f.h>
+#include <ti/board/src/flash/nor/device/gd25b64cw2g.h>
 #endif
 
 /**************************************************************************

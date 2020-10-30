@@ -68,6 +68,8 @@ NOR_Info Nor_qspiInfo =
     NOR_SECTOR_SIZE            /* sectorSize */
 };
 
+static uint32_t gBoardQspiFlashSize = NOR_SIZE;
+
 static NOR_STATUS NOR_qspiCmdRead(SPI_Handle handle, uint8_t *cmdBuf,
                             uint32_t cmdLen, uint8_t *rxBuf, uint32_t rxLen)
 {
@@ -138,10 +140,19 @@ static NOR_STATUS Nor_qspiReadId(SPI_Handle handle)
     {
         manfID = (uint32_t)idCode[0];
         devID = ((uint32_t)idCode[1] << 8) | ((uint32_t)idCode[2]);
-        if ((manfID == NOR_MANF_ID) && (devID == NOR_DEVICE_ID))
+
+        if (((manfID == NOR_MANF_ID) && (devID == NOR_DEVICE_ID))             ||
+            ((manfID == NOR_MANF_ID) && (devID == NOR_DEVICE_ID_GD25B16CSAG)) ||
+            ((manfID == NOR_MANF_ID_MX25V1635F) && (devID == NOR_DEVICE_ID_MX25V1635F)))
         {
             Nor_qspiInfo.manufacturerId = manfID;
             Nor_qspiInfo.deviceId = devID;
+
+            if(devID != NOR_DEVICE_ID)
+            {
+                Nor_qspiInfo.blockCnt = NOR_NUM_BLOCKS_2MBIT_FLASH;
+                gBoardQspiFlashSize   = NOR_SIZE_2MBIT_FLASH;
+            }
         }
         else
         {
@@ -338,10 +349,8 @@ NOR_STATUS Nor_qspiQuadModeCtrl(SPI_Handle handle,
         /* quad disabled */
         cmd[1] = status & (~(NOR_SR_QE));
     }
-    /* Configuration Register */
-    cmd[2] = 0x0;
 
-    if (Nor_qspiCmdWrite(handle, cmd, 1, 2)) /* 1 byte command and 2 bytes write data */
+    if (Nor_qspiCmdWrite(handle, cmd, 1, 1))
     {
         goto err;
     }
@@ -402,7 +411,7 @@ NOR_STATUS Nor_qspiRead(NOR_HANDLE handle, uint32_t addr,
     rxLinesArg = object->rxLines;
 
     /* Validate address input */
-    if ((addr + len) > NOR_SIZE)
+    if ((addr + len) > gBoardQspiFlashSize)
     {
         return NOR_FAIL;
     }
@@ -548,7 +557,7 @@ NOR_STATUS Nor_qspiWrite(NOR_HANDLE handle, uint32_t addr, uint32_t len,
     hwAttrs   = (QSPI_HwAttrs *)(spiHandle->hwAttrs);
 
     /* Validate address input */
-    if ((addr + len) > NOR_SIZE)
+    if ((addr + len) > gBoardQspiFlashSize)
     {
         return NOR_FAIL;
     }
@@ -704,7 +713,7 @@ NOR_STATUS Nor_qspiErase(NOR_HANDLE handle, int32_t erLoc, bool blkErase)
     {
         if (blkErase == true)
         {
-            if (erLoc >= NOR_NUM_BLOCKS)
+            if (erLoc >= Nor_qspiInfo.blockCnt)
             {
                 return NOR_FAIL;
             }

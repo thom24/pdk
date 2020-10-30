@@ -117,7 +117,7 @@ INCDIR += src/flash/nor/qspi src/flash/nor
 SRCS_COMMON += nor_qspi_v1.c nor.c
 PACKAGE_SRCS_COMMON += src/flash/nor/nor.c src/flash/nor/nor.h
 PACKAGE_SRCS_COMMON += src/flash/nor/qspi/nor_qspi_v1.c src/flash/nor/qspi/nor_qspi.h
-PACKAGE_SRCS_COMMON += src/flash/nor/device/mx25v1635f.h
+PACKAGE_SRCS_COMMON += src/flash/nor/device/mx25v1635f.h src/flash/nor/device/gd25b64cw2g.h src/flash/nor/device/gd25b16csag.h
 endif
 
 PACKAGE_SRCS_COMMON += src/flash/include/board_flash.h src/flash/board_flash.c src/flash/src_files_flash.mk
