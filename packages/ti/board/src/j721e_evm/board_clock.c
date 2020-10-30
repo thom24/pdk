@@ -46,6 +46,7 @@ extern Board_initParams_t gBoardInitParams;
 
 uint32_t gBoardClkModuleMcuIDInitGroupl[] = {
     TISCI_DEV_MCU_TIMER0,
+    TISCI_DEV_MCU_TIMER2,
     TISCI_DEV_MCU_FSS0_HYPERBUS1P0_0,
     TISCI_DEV_MCU_FSS0_OSPI_0,
     TISCI_DEV_MCU_FSS0_OSPI_1,

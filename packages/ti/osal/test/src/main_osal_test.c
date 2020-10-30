@@ -354,9 +354,13 @@ UT_Timer_Type_t  timer_type =             UT_Timer_TIMER64;
     #define OSAL_TEST_TIMER_ID2               (5U)
     #define OSAL_TEST_TIMER_PERIOD            (5000U)
   #endif
-#elif defined(SOC_J721E) || defined(SOC_J7200)
+#elif defined(SOC_J721E)
   UT_Timer_Type_t  timer_type    =          UT_Timer_DMTIMER;
-  #if defined (__TI_ARM_V7R4__)
+  #if defined (BUILD_MCU1_0)
+    #define OSAL_TEST_TIMER_ID                (2U)
+    #define OSAL_TEST_TIMER_ID2               (3U)
+    #define OSAL_TEST_TIMER_PERIOD            (5000U)
+  #elif defined (__TI_ARM_V7R4__)
     #define OSAL_TEST_TIMER_ID                (1U)
     #define OSAL_TEST_TIMER_ID2               (2U)
     #define OSAL_TEST_TIMER_PERIOD            (5000U)
@@ -369,6 +373,17 @@ UT_Timer_Type_t  timer_type =             UT_Timer_TIMER64;
     #define OSAL_TEST_TIMER_ID2               (3U)
     #define OSAL_TEST_TIMER_PERIOD            (5000U)
   #elif defined (BUILD_C7X_1)
+    #define OSAL_TEST_TIMER_ID                (1U)
+    #define OSAL_TEST_TIMER_ID2               (2U)
+    #define OSAL_TEST_TIMER_PERIOD            (5000U)
+  #else
+    #define OSAL_TEST_TIMER_ID                (2U)
+    #define OSAL_TEST_TIMER_ID2               (5U)
+    #define OSAL_TEST_TIMER_PERIOD            (5000U)
+  #endif
+#elif defined(SOC_J7200)
+  UT_Timer_Type_t  timer_type    =          UT_Timer_DMTIMER;
+  #if defined (__TI_ARM_V7R4__)
     #define OSAL_TEST_TIMER_ID                (1U)
     #define OSAL_TEST_TIMER_ID2               (2U)
     #define OSAL_TEST_TIMER_PERIOD            (5000U)
@@ -538,9 +553,9 @@ bool OSAL_timer_test()
     id                  = OSAL_TEST_TIMER_ID;
 #endif
 
-#if defined(SOC_J721E) || defined(SOC_J7200)
+#if defined(SOC_J721E)
 #if !defined(BARE_METAL)
-#if defined(BUILD_C66X_1) || defined(BUILD_C66X_2) || defined(BUILD_C7X_1)
+#if defined(BUILD_C66X_1) || defined(BUILD_C66X_2) || defined(BUILD_C7X_1) || defined(BUILD_MCU1_0)
     id                  = OSAL_TEST_TIMER_ID;
 #endif
 #endif
