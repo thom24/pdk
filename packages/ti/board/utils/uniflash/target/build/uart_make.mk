@@ -97,8 +97,8 @@ COMP_LIST_COMMON += spi_dma
 endif
 
 ifneq ($(strip $(HS_SUFFIX)),) #if $(HS_SUFFIX) is non-empty
-  COMP_LIST_COMMON := $(filter-out sciclient,$(COMP_LIST_COMMON))
-  COMP_LIST_COMMON += sciclient$(HS_SUFFIX)
+  SCICLIENT := $(filter sciclient%,$(COMP_LIST_COMMON))
+  COMP_LIST_COMMON := $(subst $(SCICLIENT),$(SCICLIENT)_hs,$(COMP_LIST_COMMON))
 endif
 
 # Common source files and CFLAGS across all platforms and cores
