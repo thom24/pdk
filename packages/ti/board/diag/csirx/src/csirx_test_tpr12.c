@@ -780,7 +780,7 @@ int main (void)
                BOARD_INIT_PINMUX_CONFIG |
                BOARD_INIT_UART_STDIO;
 #else
-    boardCfg = BOARD_INIT_PINMUX_CONFIG | BOARD_INIT_UART_STDIO | BOARD_INIT_MODULE_CLOCK | BOARD_INIT_PLL ;
+    boardCfg = BOARD_INIT_PINMUX_CONFIG | BOARD_INIT_UART_STDIO | BOARD_INIT_MODULE_CLOCK;
 #endif
 
     status = Board_init(boardCfg);
