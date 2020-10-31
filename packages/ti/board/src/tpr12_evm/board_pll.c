@@ -65,15 +65,18 @@ uint32_t PllRegs[BOARD_PLL_COUNT] = {
  *
  */
 const Board_Pll_config_t pllConfig[BOARD_PLL_COUNT] = {
-    /* Board_Pll_type pll, Board_Pll_clkout_type clkOut,
-       mIntMult, nDiv, m2Div, n2Div, hsDiv3, hsDiv2,
-       hsDiv1, hsDiv0 */
-    {BOARD_CORE_PLL,  BOARD_PLL_CLKDCOLDO,   2000,   39,  1,
-    1, 9, 4, 3, 1},  /*2000MHz */
-    {BOARD_DSS_PLL,   BOARD_PLL_CLKDCOLDO,   1800,   39,  1,
-    1, 9, 4, 3, 0},  /*1800MHz */
-    {BOARD_PER_PLL,   BOARD_PLL_CLKDCOLDO,   1728,   39,  1,
-    1, 9, 17, 8, 0}  /*1728MHz */
+    /* Board_Pll_type , Board_Pll_clkout_type clkOut,
+       mIntMult, nDiv, m2Div, n2Div, fracM,
+       hsDiv3, hsDiv2, hsDiv1, hsDiv0 */
+    {BOARD_CORE_PLL, BOARD_PLL_CLKDCOLDO,
+     2000, 39,  1, 0, 0,
+     9, 4, 3, 1},  /* 2000MHz */
+    {BOARD_DSS_PLL, BOARD_PLL_CLKDCOLDO,
+     900, 19, 1, 0, 0,
+     0, 0, 1, 0},  /*900MHz */
+    {BOARD_PER_PLL, BOARD_PLL_CLKDCOLDO,
+     1728, 39, 1, 0, 0,
+     9, 17, 8, 0}  /*1728MHz */
 };
 
 /**
@@ -120,8 +123,8 @@ static void Board_PLLProgram (const Board_Pll_config_t *data)
 
     /* NWELLTRIM[28:24] = 9 IDLE[23] = 0 CLKDCOLDOPWDNZ[17] = 1
     SELFREQDCO[12:10] = 4 */
-    HW_WR_REG32(pll_base_addr + BOARD_PLL_CLKCTRL_OFFSET, 0x9021000);
-    
+    HW_WR_REG32(pll_base_addr + BOARD_PLL_CLKCTRL_OFFSET, 0x29131000);
+
     if(data->clkOut == BOARD_PLL_CLKDCOLDO)
     {
         /* bit 29 CLKDCOLDOEN[29] of MSS_TOPRCM_PLL_CORE_CLCKCTRL */
@@ -138,18 +141,12 @@ static void Board_PLLProgram (const Board_Pll_config_t *data)
         MSS_TOPRCM_PLL_CORE_CLKCTRL_PLL_CORE_CLKCTRL_CLKOUTEN, 1);
     }
 
-    /* TODO: CLKOUTLDOEN bit is read only */
-    /*if(data->clkOut == PLL_CLKOUTLDO)
-    {
-        bit 19 CLKOUTEN[19] of MSS_TOPRCM_PLL_CORE_CLCKCTRL
-        CSL_FINS((*(volatile uint32_t *)(pll_base_addr +
-        PLL_CLKCTRL_OFFSET)),
-        MSS_TOPRCM_PLL_CORE_CLKCTRL_PLL_CORE_CLKCTRL_CLKOUTLDO, 1);
-    }*/
-
     CSL_FINS((*(volatile uint32_t *)(pll_base_addr +
-    BOARD_PLL_CLKCTRL_OFFSET)),
+    BOARD_PLL_TENABLE_OFFSET)),
     MSS_TOPRCM_PLL_CORE_TENABLE_PLL_CORE_TENABLE_TENABLE, 1);
+
+    CSL_FINSR((*(volatile uint32_t *)(pll_base_addr + BOARD_PLL_CLKCTRL_OFFSET)),
+            0, 0, 1);
 
     /* TINTZ[0] of MSS_TOPRCM_PLL_CORE_CLCKCTRL */
     CSL_FINS((*(volatile uint32_t *)(pll_base_addr +
@@ -157,15 +154,15 @@ static void Board_PLLProgram (const Board_Pll_config_t *data)
     MSS_TOPRCM_PLL_CORE_CLKCTRL_PLL_CORE_CLKCTRL_TINTZ, 1);
 
     CSL_FINS((*(volatile uint32_t *)(pll_base_addr +
-    BOARD_PLL_CLKCTRL_OFFSET)),
+    BOARD_PLL_TENABLE_OFFSET)),
     MSS_TOPRCM_PLL_CORE_TENABLE_PLL_CORE_TENABLE_TENABLE, 0);
 
     CSL_FINS((*(volatile uint32_t *)(pll_base_addr +
-    BOARD_PLL_CLKCTRL_OFFSET)),
+    BOARD_PLL_TENABLEDIV_OFFSET)),
     MSS_TOPRCM_PLL_CORE_TENABLEDIV_PLL_CORE_TENABLEDIV_TENABLEDIV, 1);
 
     CSL_FINS((*(volatile uint32_t *)(pll_base_addr +
-    BOARD_PLL_CLKCTRL_OFFSET)),
+    BOARD_PLL_TENABLEDIV_OFFSET)),
     MSS_TOPRCM_PLL_CORE_TENABLEDIV_PLL_CORE_TENABLEDIV_TENABLEDIV, 0);
 
     /*  APPLJ-1  :  loop check to PLLLOCK DONE */
@@ -189,13 +186,6 @@ static void Board_PLLProgram (const Board_Pll_config_t *data)
     MSS_TOPRCM_PLL_CORE_HSDIVIDER_CLKOUT2_PLL_CORE_HSDIVIDER_CLKOUT2_DIV,
     data->hsDiv2);
 
-    /*TODO: HSDIVIDER_CLKOUT3 is mentioned as unused, need to check with TI */
-    /* CSL_FINS((*(volatile uint32_t *)(pll_base_addr +
-    PLL_HSDIVIDER_CLKOUT3_OFFSET)),
-    MSS_TOPRCM_PLL_CORE_HSDIVIDER_CLKOUT0_PLL_CORE_HSDIVIDER_CLKOUT3_DIV,
-    data->hsDiv3);
-    */
-
     CSL_FINS((*(volatile uint32_t *)(pll_base_addr +
     BOARD_PLL_HSDIVIDER_OFFSET)),
     MSS_TOPRCM_PLL_CORE_HSDIVIDER_PLL_CORE_HSDIVIDER_TENABLEDIV, 1);
@@ -218,13 +208,6 @@ static void Board_PLLProgram (const Board_Pll_config_t *data)
     BOARD_PLL_HSDIVIDER_CLKOUT2_OFFSET)),
     MSS_TOPRCM_PLL_CORE_HSDIVIDER_CLKOUT2_PLL_CORE_HSDIVIDER_CLKOUT2_GATE_CTRL,
     1);
-
-    /*TODO: HSDIVIDER_CLKOUT3 is mentioned as unused, need to check with TI */
-    /* CSL_FINS((*(volatile uint32_t *)(pll_base_addr +
-    BOARD_PLL_HSDIVIDER_CLKOUT3_OFFSET)),
-    MSS_TOPRCM_PLL_CORE_HSDIVIDER_CLKOUT0_PLL_CORE_HSDIVIDER_CLKOUT3_GATE, 1);
-    */
-
 }
 
 /**
@@ -253,7 +236,6 @@ Board_STATUS Board_PLLInitAll(void)
 {
     Board_STATUS status = BOARD_SOK;
 
-    Board_PLLConfig(&pllConfig[BOARD_CORE_PLL]);
     Board_PLLConfig(&pllConfig[BOARD_DSS_PLL]);
     Board_PLLConfig(&pllConfig[BOARD_PER_PLL]);
 

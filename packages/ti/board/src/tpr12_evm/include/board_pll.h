@@ -152,6 +152,8 @@ typedef struct  Board_Pll_config_s
     uint32_t m2Div;
     /**< DCO output divider */
     uint32_t n2Div;
+    /**< Fractional multiplier */
+    uint32_t fracM;
     /**< Bypass divider */
     uint32_t hsDiv3;
     /**< High speed divider 3 */
