@@ -48,10 +48,10 @@
 /* Port and pin number mask for PRG2 ETHERNET LED's.
    Bits 7-0: Pin number and Bits 15-8: Port number */
 
-#define BOARD_DIAG_SYNC_IN_FE1    		(0x0024U)	/* GPIO0_36 */
-#define BOARD_DIAG_MIBSPIA_HOST_INTR	(0x002AU)	/* GPIO0_42 */
-#define BOARD_DIAG_SYNC_IN_FE2    		(0x0029U)	/* GPIO0_41 */
-#define BOARD_DIAG_MIBSPIB_HOST_INTR	(0x002BU)	/* RCSS GPIO0_43 */
+#define BOARD_DIAG_SYNC_IN_FE1    		(SOC_TPR12_GPIO_42)	/* GPIO_42 */
+#define BOARD_DIAG_MIBSPIA_HOST_INTR	(SOC_TPR12_GPIO_34)	/* GPIO_34 */
+#define BOARD_DIAG_SYNC_IN_FE2    		(SOC_TPR12_GPIO_43)	/* GPIO_43 */
+#define BOARD_DIAG_MIBSPIB_HOST_INTR	(SOC_TPR12_GPIO_35)	/* GPIO_35 */
 
 
 /* GPIO Driver board specific pin configuration structure */
@@ -66,5 +66,5 @@ GPIO_v2_PinConfig gpioPinConfigs[] = {
 /* GPIO Driver configuration structure */
 GPIO_v2_Config GPIO_v2_config = {
     gpioPinConfigs,
-    sizeof(gpioPinConfigs) / sizeof(GPIO_PinConfig),
+    sizeof(gpioPinConfigs) / sizeof(GPIO_v2_PinConfig),
 };
