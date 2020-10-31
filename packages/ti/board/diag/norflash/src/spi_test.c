@@ -477,7 +477,7 @@ int BoardDiag_SpiFlashStressTest(void)
     BoardDiag_genPattern((uint8_t *)&txBuf[0], TEST_DATA_LEN,
                          BOARD_DIAG_TEST_PATTERN_RANDOM);
 
-    UART_printf("\nVerifying the SPI Flash ...\n");
+    UART_printf("\nVerifying the SPI Flash ...\n\n");
     /* This loop verifies the read/write access of whole memory */
     for(offset=BOARD_SPI_FIRST_PAGE; offset<=BOARD_SPI_LAST_PAGE; offset+=NOR_PAGE_SIZE)
     {
@@ -489,8 +489,14 @@ int BoardDiag_SpiFlashStressTest(void)
             Board_flashClose(boardHandle);
             return -1;
         }
+
+        if((offset != 0) && (offset % (32*NOR_PAGE_SIZE)) == 0)
+        {
+            UART_printf("Completed Up to 0x%x\n", offset);
+        }
     }
-    
+
+    UART_printf("Completed Up to 0x%x\n", offset);
     UART_printf("\nSPI NOR Flash verification Successful\n");        
 
     Board_flashClose(boardHandle);
