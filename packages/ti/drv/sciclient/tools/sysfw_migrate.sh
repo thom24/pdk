@@ -105,7 +105,7 @@ if [ "$SKIP_CHECKOUT" != "YES" ]; then
 
     $ECHO "Cloning the system-firmware-releases"
     cd $SCI_CLIENT_DIR/soc/
-    git clone ssh://git@bitbucket.itg.ti.com/~a0131625/system-firmware-releases.git --branch $RELEASE_TAG
+    git clone ssh://git@bitbucket.itg.ti.com/sysfw/system-firmware-releases.git --branch $RELEASE_TAG
     if [ $? -ne 0 ]; then
         $ECHO
         $ECHO "!!!ABORT!!! - SYSFW TAG NOT FOUND: $RELEASE_TAG"
