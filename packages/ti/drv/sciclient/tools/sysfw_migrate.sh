@@ -105,7 +105,7 @@ if [ "$SKIP_CHECKOUT" != "YES" ]; then
 
     $ECHO "Cloning the system-firmware-releases"
     cd $SCI_CLIENT_DIR/soc/
-    git clone ssh://git@bitbucket.itg.ti.com/sysfw/system-firmware-releases.git --branch $RELEASE_TAG
+    git clone ssh://git@bitbucket.itg.ti.com/~a0131625/system-firmware-releases.git --branch $RELEASE_TAG
     if [ $? -ne 0 ]; then
         $ECHO
         $ECHO "!!!ABORT!!! - SYSFW TAG NOT FOUND: $RELEASE_TAG"
@@ -169,6 +169,7 @@ if [ "$SKIP_BUILD" != "YES" ]; then
     cd $ROOTDIR/ti/build
 
     # J721e
+    make -j -s allclean
     make -j -s sciclient_boardcfg BOARD=j721e_evm
     make -j -s sciclient_boardcfg BOARD=j721e_evm BUILD_HS=yes
     make -j -s sciclient_ccs_init_clean BOARD=j721e_evm
@@ -179,6 +180,7 @@ if [ "$SKIP_BUILD" != "YES" ]; then
     $COPY $ROOTDIR/ti/binary/sciserver_testapp/bin/j721e/sciserver_testapp_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j721e/
 
     # AM65xx
+    make -j -s allclean
     make -j -s sciclient_boardcfg BOARD=am65xx_evm
     make -j -s sciclient_boardcfg BOARD=am65xx_evm BUILD_HS=yes
     make -j -s sciclient_ccs_init_clean BOARD=am65xx_evm
@@ -186,6 +188,7 @@ if [ "$SKIP_BUILD" != "YES" ]; then
     $COPY $ROOTDIR/ti/binary/sciclient_ccs_init/bin/am65xx/sciclient_ccs_init_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/am65xx/
    
     # AM64xx
+    make -j -s allclean
     make -j -s sciclient_boardcfg BOARD=am64x_evm
     make -j -s sciclient_boardcfg BOARD=am64x_evm BUILD_HS=yes
     make -j -s sciclient_ccs_init_clean BOARD=am64x_evm
@@ -193,6 +196,7 @@ if [ "$SKIP_BUILD" != "YES" ]; then
     $COPY $ROOTDIR/ti/binary/sciclient_ccs_init/bin/am64x/sciclient_ccs_init_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/am64x/
  
     # J7200
+    make -j -s allclean
     make -j -s sciclient_boardcfg BOARD=j7200_evm
     make -j -s sciclient_boardcfg BOARD=j7200_evm BUILD_HS=yes
     make -j -s sciclient_ccs_init_clean BOARD=j7200_evm

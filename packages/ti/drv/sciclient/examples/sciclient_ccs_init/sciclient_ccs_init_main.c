@@ -215,6 +215,8 @@ static void Sciclient_ccsSetBoardConfigHeader ();
 
 int32_t main(void)
 {
+    
+    printf(" SCICLIENT_CCS_INIT: %s, %s", __DATE__, __TIME__);
     App_getRevisionTest();
 
     #if defined (SCISERVER_POPULATE_BOARDCFG)

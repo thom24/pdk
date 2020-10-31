@@ -470,6 +470,8 @@ static int32_t Sciserver_UserProcessMsg(uint32_t *msg_recv,
             break;
         case TISCI_MSG_RM_IRQ_RELEASE:
             isRmMsg = 1;
+            isFwdMsg = 1;
+            reqMsgSize = sizeof(struct tisci_msg_rm_irq_release_req);
             respMsgSize = sizeof(struct tisci_msg_rm_irq_release_resp);
             break;
         case TISCI_MSG_RM_RING_CFG:

@@ -265,7 +265,6 @@ int32_t Sciclient_service (const Sciclient_ReqPrm_t *pReqPrm,
                 break;
             /* RM messages processed solely by RM within DM on MCU R5F */
             case TISCI_MSG_RM_GET_RESOURCE_RANGE:
-            case TISCI_MSG_RM_IRQ_RELEASE:
             case TISCI_MSG_RM_UDMAP_FLOW_CFG:
             case TISCI_MSG_RM_UDMAP_FLOW_SIZE_THRESH_CFG:
             case TISCI_MSG_RM_UDMAP_FLOW_DELEGATE:
@@ -284,6 +283,7 @@ int32_t Sciclient_service (const Sciclient_ReqPrm_t *pReqPrm,
              * RM within TIFS on M3
              */
             case TISCI_MSG_RM_IRQ_SET:
+            case TISCI_MSG_RM_IRQ_RELEASE:
             case TISCI_MSG_RM_RING_CFG:
             case TISCI_MSG_RM_RING_MON_CFG:
             case TISCI_MSG_RM_UDMAP_TX_CH_CFG:

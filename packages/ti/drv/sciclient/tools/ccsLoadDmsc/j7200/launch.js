@@ -165,8 +165,6 @@ function connectTargets()
 function disconnectTargets()
 {
     updateScriptVars();
-    // Reset the R5F to be in clean state.
-    dsMCU1_0.target.reset();
     // Disconnect targets
     dsDMSC_0.target.disconnect();
 }

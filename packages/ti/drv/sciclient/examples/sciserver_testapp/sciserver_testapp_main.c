@@ -114,6 +114,7 @@ int main(void)
         App_sciclientConsoleInit();
     }
 
+    App_sciclientPrintf("Sciserver Built On: %s %s\n", __DATE__, __TIME__);
     if (ret == CSL_PASS)
     {
         App_sciclientPrintf("Starting Sciserver..... PASSED\n");
