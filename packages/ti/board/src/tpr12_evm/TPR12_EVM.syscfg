@@ -2,7 +2,7 @@
  * These arguments were used when this file was generated. They will be automatically applied on subsequent loads
  * via the GUI or CLI. Run CLI with '--help' for additional information on how to override these arguments.
  * @cliArgs --device "TPR12" --package "ZCE" --part "Default" --product "TPR12@0.0.1"
- * @versions {"data":"2020092112","timestamp":"2020092112","tool":"1.0.0+dev","templates":"2020092112"}
+ * @versions {"data":"2020092112","timestamp":"2020092112","tool":"1.5.0+1309","templates":"2020092112"}
  */
 
 /**
@@ -28,6 +28,7 @@ const MSS_GPIO4    = MSS_GPIO.addInstance();
 const MSS_GPIO5    = MSS_GPIO.addInstance();
 const MSS_GPIO6    = MSS_GPIO.addInstance();
 const MSS_GPIO7    = MSS_GPIO.addInstance();
+const MSS_GPIO8    = MSS_GPIO.addInstance();
 const MSS_I2C      = scripting.addModule("/TPR12/MSS_I2C", {}, false);
 const MSS_I2C1     = MSS_I2C.addInstance();
 const MSS_MCAN     = scripting.addModule("/TPR12/MSS_MCAN", {}, false);
@@ -56,8 +57,6 @@ const RCSS_GPIO3   = RCSS_GPIO.addInstance();
 const RCSS_GPIO4   = RCSS_GPIO.addInstance();
 const RCSS_GPIO5   = RCSS_GPIO.addInstance();
 const RCSS_GPIO6   = RCSS_GPIO.addInstance();
-const RCSS_GPIO7   = RCSS_GPIO.addInstance();
-const RCSS_GPIO8   = RCSS_GPIO.addInstance();
 const RCSS_MIBSPI  = scripting.addModule("/TPR12/RCSS_MIBSPI", {}, false);
 const RCSS_MIBSPI1 = RCSS_MIBSPI.addInstance();
 const RCSS_MIBSPI2 = RCSS_MIBSPI.addInstance();
@@ -115,7 +114,7 @@ MSS_GPIO2.periph.PIN.$assign = "PAD_AZ";
 
 MSS_GPIO3.$name              = "TPR12_MSS_GPIO8";
 MSS_GPIO3.periph.$assign     = "MSS_GPIO8";
-MSS_GPIO3.periph.PIN.$assign = "PAD_DM";
+MSS_GPIO3.periph.PIN.$assign = "PAD_CS";
 
 MSS_GPIO4.$name              = "TPR12_MSS_GPIO9";
 MSS_GPIO4.periph.$assign     = "MSS_GPIO9";
@@ -132,6 +131,9 @@ MSS_GPIO6.periph.PIN.$assign = "PAD_DP";
 MSS_GPIO7.$name              = "TPR12_MSS_GPIO13";
 MSS_GPIO7.periph.$assign     = "MSS_GPIO13";
 MSS_GPIO7.periph.PIN.$assign = "PAD_DR";
+
+MSS_GPIO8.$name          = "TPR12_MSS_GPIO18";
+MSS_GPIO8.periph.$assign = "MSS_GPIO18";
 
 MSS_I2C1.$name              = "TPR12_MSS_I2C0";
 MSS_I2C1.periph.$assign     = "MSS_I2CA";
@@ -218,37 +220,29 @@ PMIC_CLKOUT1.$name                 = "TPR12_PMIC_CLKOUT0";
 PMIC_CLKOUT1.periph.$assign        = "PMIC_CLKOUT0";
 PMIC_CLKOUT1.periph.CLKOUT.$assign = "PAD_BA";
 
-RCSS_GPIO1.$name              = "TPR12_RCSS_GPIO50";
-RCSS_GPIO1.periph.$assign     = "RCSS_GPIO50";
-RCSS_GPIO1.periph.PIN.$assign = "PAD_DW";
+RCSS_GPIO1.$name              = "TPR12_RCSS_GPIO48";
+RCSS_GPIO1.periph.$assign     = "RCSS_GPIO48";
+RCSS_GPIO1.periph.PIN.$assign = "PAD_DU";
 
-RCSS_GPIO2.$name              = "TPR12_RCSS_GPIO34";
-RCSS_GPIO2.periph.$assign     = "RCSS_GPIO34";
-RCSS_GPIO2.periph.PIN.$assign = "PAD_CS";
+RCSS_GPIO2.$name              = "TPR12_RCSS_GPIO42";
+RCSS_GPIO2.periph.$assign     = "RCSS_GPIO42";
+RCSS_GPIO2.periph.PIN.$assign = "PAD_CY";
 
-RCSS_GPIO3.$name              = "TPR12_RCSS_GPIO48";
-RCSS_GPIO3.periph.$assign     = "RCSS_GPIO48";
-RCSS_GPIO3.periph.PIN.$assign = "PAD_DU";
+RCSS_GPIO3.$name              = "TPR12_RCSS_GPIO51";
+RCSS_GPIO3.periph.$assign     = "RCSS_GPIO51";
+RCSS_GPIO3.periph.PIN.$assign = "PAD_DX";
 
-RCSS_GPIO4.$name              = "TPR12_RCSS_GPIO42";
-RCSS_GPIO4.periph.$assign     = "RCSS_GPIO42";
-RCSS_GPIO4.periph.PIN.$assign = "PAD_CY";
+RCSS_GPIO4.$name              = "TPR12_RCSS_GPIO35";
+RCSS_GPIO4.periph.$assign     = "RCSS_GPIO35";
+RCSS_GPIO4.periph.PIN.$assign = "PAD_CX";
 
-RCSS_GPIO5.$name              = "TPR12_RCSS_GPIO51";
-RCSS_GPIO5.periph.$assign     = "RCSS_GPIO51";
-RCSS_GPIO5.periph.PIN.$assign = "PAD_DX";
+RCSS_GPIO5.$name              = "TPR12_RCSS_GPIO49";
+RCSS_GPIO5.periph.$assign     = "RCSS_GPIO49";
+RCSS_GPIO5.periph.PIN.$assign = "PAD_DV";
 
-RCSS_GPIO6.$name              = "TPR12_RCSS_GPIO35";
-RCSS_GPIO6.periph.$assign     = "RCSS_GPIO35";
-RCSS_GPIO6.periph.PIN.$assign = "PAD_CX";
-
-RCSS_GPIO7.$name              = "TPR12_RCSS_GPIO49";
-RCSS_GPIO7.periph.$assign     = "RCSS_GPIO49";
-RCSS_GPIO7.periph.PIN.$assign = "PAD_DV";
-
-RCSS_GPIO8.$name              = "TPR12_RCSS_GPIO43";
-RCSS_GPIO8.periph.$assign     = "RCSS_GPIO43";
-RCSS_GPIO8.periph.PIN.$assign = "PAD_CZ";
+RCSS_GPIO6.$name              = "TPR12_RCSS_GPIO43";
+RCSS_GPIO6.periph.$assign     = "RCSS_GPIO43";
+RCSS_GPIO6.periph.PIN.$assign = "PAD_CZ";
 
 RCSS_MIBSPI1.$name               = "TPR12_RCSS_MIBSPI0";
 RCSS_MIBSPI1.periph.$assign      = "RCSS_MIBSPIA";
@@ -306,5 +300,6 @@ XREF_CLK11.periph.CLK1.$assign = "PAD_DG";
  * version of the tool will not impact the pinmux you originally saw.  These lines can be completely deleted in order to
  * re-solve from scratch.
  */
-ERROR1.periph.$suggestSolution     = "ERROR0";
-XREF_CLK11.periph.$suggestSolution = "XREF_CLK10";
+ERROR1.periph.$suggestSolution        = "ERROR0";
+MSS_GPIO8.periph.PIN.$suggestSolution = "PAD_DW";
+XREF_CLK11.periph.$suggestSolution    = "XREF_CLK10";
