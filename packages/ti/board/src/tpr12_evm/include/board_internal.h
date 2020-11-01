@@ -149,6 +149,8 @@ typedef struct Board_I2cObj_s
 
 #define BOARD_ETHPHY_GPIO_MUX_CTRL2_REG_ADDR    (0x172U)
 
+#define BOARD_EEPROM_MEM_ACCESS_DELAY           (10U)
+
 /*****************************************************************************
  * Function Prototypes                                                       *
  *****************************************************************************/

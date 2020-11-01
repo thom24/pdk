@@ -72,7 +72,7 @@ Board_I2cInitCfg_t boardI2cInitCfg[MAX_NUM_OF_BOARDS] = {
 };
 #elif defined(SOC_TPR12)
 boardProgInfo_t boardProgInfo[MAX_NUM_OF_BOARDS] = {
-    {"EVM Board\0",                  BOARD_I2C_EEPROM_INSTANCE,     true}
+    {"EVM Board\0",                 BOARD_I2C_EEPROM_ADDR,     true}
 };
 #elif defined(SOC_AM64X)
 boardProgInfo_t boardProgInfo[MAX_NUM_OF_BOARDS] = {
@@ -148,7 +148,7 @@ int8_t eepromTest(uint8_t slaveAddress)
     UART_dataWrite((char *)&info.boardInfo.variant, BOARD_VARIANT_LEN);
     UART_printf("\n\tPCB Revision: ");
     UART_dataWrite((char *)&info.boardInfo.pcbRev, BOARD_PCBREV_LEN);
-#if defined(SOC_AM65XX)
+#if defined(SOC_AM65XX) || defined(SOC_TPR12)
     UART_printf("\n\tSchematic and BOM Revision: ");
     UART_dataWrite((char *)&info.boardInfo.schbomRev, BOARD_SCHMBOM_REV_LEN);
 #else

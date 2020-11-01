@@ -94,11 +94,10 @@ Board_STATUS Board_getIDInfo_v2(Board_IDInfo_v2 *info, uint8_t slaveAddress)
 
     i2cTransaction.slaveAddress = slaveAddress;
     i2cTransaction.writeBuf = (uint8_t *)&txBuf[0];
-    i2cTransaction.writeCount = 2;
+    i2cTransaction.writeCount = 1;
 
     /* Get header info */
-    txBuf[0] = (char)(((uint32_t) 0xFF00 & offsetAddress)>>8);
-    txBuf[1] = (char)((uint32_t) 0xFF & offsetAddress);
+    txBuf[0] = (char)((uint32_t) 0xFF & offsetAddress);
     i2cTransaction.readBuf = &info->headerInfo;
     i2cTransaction.readCount = BOARD_EEPROM_HEADER_FIELD_SIZE;
 
@@ -110,12 +109,13 @@ Board_STATUS Board_getIDInfo_v2(Board_IDInfo_v2 *info, uint8_t slaveAddress)
         return ret;
     }
 
+    BOARD_delay(BOARD_EEPROM_MEM_ACCESS_DELAY);
+
     /* Checking whether the board contents are flashed or not */
     if (info->headerInfo.magicNumber == BOARD_EEPROM_MAGIC_NUMBER)
     {
         offsetAddress = offsetAddress + i2cTransaction.readCount;
-        txBuf[0] = (char)(((uint32_t) 0xFF00 & offsetAddress) >> 8);
-        txBuf[1] = (char)((uint32_t) 0xFF & offsetAddress);
+        txBuf[0] = (char)((uint32_t) 0xFF & offsetAddress);
         i2cTransaction.readBuf = &info->boardInfo;
         i2cTransaction.readCount = BOARD_EEPROM_TYPE_SIZE +
                                     BOARD_EEPROM_STRUCT_LENGTH_SIZE;
@@ -127,9 +127,10 @@ Board_STATUS Board_getIDInfo_v2(Board_IDInfo_v2 *info, uint8_t slaveAddress)
             return ret;
         }
 
+        BOARD_delay(BOARD_EEPROM_MEM_ACCESS_DELAY);
+
         offsetAddress = offsetAddress + i2cTransaction.readCount;
-        txBuf[0] = (char)(((uint32_t) 0xFF00 & offsetAddress) >> 8);
-        txBuf[1] = (char)((uint32_t) 0xFF & offsetAddress);
+        txBuf[0] = (char)((uint32_t) 0xFF & offsetAddress);
         i2cTransaction.readBuf = info->boardInfo.boardName;
         i2cTransaction.readCount = info->boardInfo.boardInfoLength;
 
@@ -141,9 +142,10 @@ Board_STATUS Board_getIDInfo_v2(Board_IDInfo_v2 *info, uint8_t slaveAddress)
             return ret;
         }
 
+        BOARD_delay(BOARD_EEPROM_MEM_ACCESS_DELAY);
+
         offsetAddress = offsetAddress + i2cTransaction.readCount;
-        txBuf[0] = (char)(((uint32_t) 0xFF00 & offsetAddress) >> 8);
-        txBuf[1] = (char)((uint32_t) 0xFF & offsetAddress);
+        txBuf[0] = (char)((uint32_t) 0xFF & offsetAddress);
         i2cTransaction.readBuf = &rdBuff[0];
         i2cTransaction.readCount = BOARD_EEPROM_TYPE_SIZE +
                                     BOARD_EEPROM_STRUCT_LENGTH_SIZE;
@@ -156,14 +158,15 @@ Board_STATUS Board_getIDInfo_v2(Board_IDInfo_v2 *info, uint8_t slaveAddress)
             return ret;
         }
 
+        BOARD_delay(BOARD_EEPROM_MEM_ACCESS_DELAY);
+
         /* Checking whether MAC id field is present or not */
         if(rdBuff[0] == BOARD_MACINFO_FIELD_TYPE)
         {
             memcpy(&info->macInfo, &rdBuff[0], sizeof(rdBuff));
 
             offsetAddress = offsetAddress + i2cTransaction.readCount;
-            txBuf[0] = (char)(((uint32_t) 0xFF00 & offsetAddress) >> 8);
-            txBuf[1] = (char)((uint32_t) 0xFF & offsetAddress);
+            txBuf[0] = (char)((uint32_t) 0xFF & offsetAddress);
             i2cTransaction.readBuf = &info->macInfo.macControl;
             i2cTransaction.readCount = info->macInfo.macLength;
 
@@ -175,9 +178,10 @@ Board_STATUS Board_getIDInfo_v2(Board_IDInfo_v2 *info, uint8_t slaveAddress)
                 return ret;
             }
 
+            BOARD_delay(BOARD_EEPROM_MEM_ACCESS_DELAY);
+
             offsetAddress = offsetAddress + i2cTransaction.readCount;
-            txBuf[0] = (char)(((uint32_t) 0xFF00 & offsetAddress)>>8);
-            txBuf[1] = (char)((uint32_t) 0xFF & offsetAddress);
+            txBuf[0] = (char)((uint32_t) 0xFF & offsetAddress);
             i2cTransaction.readBuf = &rdBuff[0];
             i2cTransaction.readCount = BOARD_EEPROM_TYPE_SIZE;
 
@@ -188,6 +192,8 @@ Board_STATUS Board_getIDInfo_v2(Board_IDInfo_v2 *info, uint8_t slaveAddress)
                 Board_i2cDeInit();
                 return ret;
             }
+
+            BOARD_delay(BOARD_EEPROM_MEM_ACCESS_DELAY);
         }
 
         if(rdBuff[0] == BOARD_ENDLIST)
@@ -240,7 +246,7 @@ Board_STATUS Board_writeIDInfo_v2(Board_IDInfo_v2 *info, uint8_t slaveAddress)
     I2C_Transaction i2cTransaction;
     I2C_Handle handle = NULL;
     uint16_t offsetAddress = BOARD_EEPROM_HEADER_ADDR;
-    uint16_t offsetSize = 2;
+    uint16_t offsetSize = 1;
     char txBuf[BOARD_EEPROM_MAX_BUFF_LENGTH + 2 + 1];
     bool status;
 
@@ -268,9 +274,8 @@ Board_STATUS Board_writeIDInfo_v2(Board_IDInfo_v2 *info, uint8_t slaveAddress)
                                  BOARD_EEPROM_STRUCT_LENGTH_SIZE +
                                  info->boardInfo.boardInfoLength +
                                  offsetSize);
-    txBuf[0] = (char)(((uint32_t) 0xFF00 & offsetAddress) >> 8);
-    txBuf[1] = (char)((uint32_t) 0xFF & offsetAddress);
-    memcpy(&txBuf[2], &info->headerInfo, i2cTransaction.writeCount);
+    txBuf[0] = (char)((uint32_t) 0xFF & offsetAddress);
+    memcpy(&txBuf[1], &info->headerInfo, i2cTransaction.writeCount);
 
     i2cTransaction.readBuf = NULL;
     i2cTransaction.readCount = 0;
@@ -283,6 +288,8 @@ Board_STATUS Board_writeIDInfo_v2(Board_IDInfo_v2 *info, uint8_t slaveAddress)
         return ret;
     }
 
+    BOARD_delay(BOARD_EEPROM_MEM_ACCESS_DELAY);
+
     /* Checking whether MAC id field is included or not */
     if (info->macInfo.macStructType == BOARD_MACINFO_FIELD_TYPE)
     {
@@ -290,9 +297,8 @@ Board_STATUS Board_writeIDInfo_v2(Board_IDInfo_v2 *info, uint8_t slaveAddress)
         i2cTransaction.writeCount = info->macInfo.macLength +
                                      BOARD_EEPROM_TYPE_SIZE +
                                      BOARD_EEPROM_STRUCT_LENGTH_SIZE;
-        txBuf[0] = (char)(((uint32_t) 0xFF00 & offsetAddress) >> 8);
-        txBuf[1] = (char)((uint32_t) 0xFF & offsetAddress);
-        memcpy(&txBuf[2], &info->macInfo, i2cTransaction.writeCount);
+        txBuf[0] = (char)((uint32_t) 0xFF & offsetAddress);
+        memcpy(&txBuf[1], &info->macInfo, i2cTransaction.writeCount);
 
         status = I2C_transfer(handle, &i2cTransaction);
         if (status == false)
@@ -303,11 +309,12 @@ Board_STATUS Board_writeIDInfo_v2(Board_IDInfo_v2 *info, uint8_t slaveAddress)
         }
     }
 
+    BOARD_delay(BOARD_EEPROM_MEM_ACCESS_DELAY);
+
     offsetAddress = offsetAddress + i2cTransaction.writeCount;
     i2cTransaction.writeCount = BOARD_EEPROM_TYPE_SIZE;
-    txBuf[0] = (char)(((uint32_t) 0xFF00 & offsetAddress)>>8);
-    txBuf[1] = (char)((uint32_t) 0xFF & offsetAddress);
-    memcpy(&txBuf[2], &info->endList, i2cTransaction.writeCount);
+    txBuf[0] = (char)((uint32_t) 0xFF & offsetAddress);
+    memcpy(&txBuf[1], &info->endList, i2cTransaction.writeCount);
 
     status = I2C_transfer(handle, &i2cTransaction);
     if (status == false)
@@ -316,6 +323,8 @@ Board_STATUS Board_writeIDInfo_v2(Board_IDInfo_v2 *info, uint8_t slaveAddress)
         Board_i2cDeInit();
         return ret;
     }
+
+    BOARD_delay(BOARD_EEPROM_MEM_ACCESS_DELAY);
 
     Board_i2cDeInit();
     return ret;
