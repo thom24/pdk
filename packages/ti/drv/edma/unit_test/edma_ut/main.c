@@ -193,13 +193,8 @@ uint32_t SOC_translateAddressTPR12(uint32_t x)
 
 /* Comment above line when running from the EVM. */
 
-#if defined (SIM_BUILD)
 #define OSAL_DELAY_SMALL            (1U)
 #define OSAL_DELAY_BIG              (1U)
-#else
-#define OSAL_DELAY_SMALL            (1000U)
-#define OSAL_DELAY_BIG              (100000U)
-#endif
 
 /* ========================================================================== */
 /*                          Function Declarations                             */
