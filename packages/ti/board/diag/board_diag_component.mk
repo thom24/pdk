@@ -261,27 +261,50 @@ board_diag_csirx_COMP_LIST = board_diag_csirx
 board_diag_csirx_RELPATH = ti/board/diag/csirx/build
 board_diag_csirx_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/csirx/build
 board_diag_csirx_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
-board_diag_csirx_MAKEFILE = -f makefile
+board_diag_csirx_MAKEFILE = -f makefile IS_BAREMETAL=yes
 board_diag_csirx_BOARD_DEPENDENCY = yes
 board_diag_csirx_CORE_DEPENDENCY = yes
+board_diag_csirx_XDC_CONFIGURO = no
 export board_diag_csirx_COMP_LIST
 export board_diag_csirx_BOARD_DEPENDENCY
 export board_diag_csirx_CORE_DEPENDENCY
 export board_diag_csirx_MAKEFILE
+export board_diag_csirx_XDC_CONFIGURO
 board_diag_csirx_PKG_LIST = board_diag_csirx
 board_diag_csirx_INCLUDE = $(board_diag_csirx_PATH)
 board_diag_csirx_BOARDLIST = j721e_evm tpr12_evm
 ifeq ($(SOC),$(filter $(SOC), tpr12))
-board_diag_csirx_$(SOC)_CORELIST = mcu1_0
+board_diag_csirx_$(SOC)_CORELIST = mcu1_0 c66xdsp_1
 else
 board_diag_csirx_$(SOC)_CORELIST = mcu2_0
 endif
 export board_diag_csirx_$(SOC)_CORELIST
 export board_diag_csirx_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
 
+# csirx
+board_diag_csirx_tirtos_COMP_LIST = board_diag_csirx_tirtos
+board_diag_csirx_tirtos_RELPATH = ti/board/diag/csirx/build
+board_diag_csirx_tirtos_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/csirx/build
+board_diag_csirx_tirtos_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
+board_diag_csirx_tirtos_MAKEFILE = -f makefile IS_BAREMETAL=no
+board_diag_csirx_tirtos_BOARD_DEPENDENCY = yes
+board_diag_csirx_tirtos_CORE_DEPENDENCY = yes
+board_diag_csirx_tirtos_XDC_CONFIGURO = yes
+export board_diag_csirx_tirtos_COMP_LIST
+export board_diag_csirx_tirtos_BOARD_DEPENDENCY
+export board_diag_csirx_tirtos_CORE_DEPENDENCY
+export board_diag_csirx_tirtos_MAKEFILE
+export board_diag_csirx_tirtos_XDC_CONFIGURO
+board_diag_csirx_tirtos_PKG_LIST = board_diag_csirx_tirtos
+board_diag_csirx_tirtos_INCLUDE = $(board_diag_csirx_tirtos_PATH)
+board_diag_csirx_tirtos_BOARDLIST = tpr12_evm
+board_diag_csirx_tirtos_$(SOC)_CORELIST = mcu1_0 c66xdsp_1
+export board_diag_csirx_tirtos_$(SOC)_CORELIST
+export board_diag_csirx_tirtos_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
+
 # Add CSIRX diagnostic test only if the CSIRX component path exists
 ifneq ($(wildcard $(PDK_CSIRX_COMP_PATH)),)
-board_diag_EXAMPLE_LIST += board_diag_csirx
+board_diag_EXAMPLE_LIST += board_diag_csirx board_diag_csirx_tirtos
 endif
 
 

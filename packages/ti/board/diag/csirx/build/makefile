@@ -39,7 +39,11 @@
 include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 
 # Board diag parameters which can be controlled outside this makefile
+ifeq ($(IS_BAREMETAL),yes)
 DIAGNAME ?= csirx
+else
+DIAGNAME ?= csirx_tirtos
+endif
 PROFILE ?= release
 TESTMODE ?= FUNCTIONAL_TEST
 MODENAME ?=
@@ -48,11 +52,29 @@ APP_NAME ?= board_diag_$(DIAGNAME)
 
 BUILD_PROFILE_$(CORE) = $(PROFILE)
 
+ifeq ($(IS_BAREMETAL),yes)
 BUILD_OS_TYPE = baremetal
+CFLAGS_OS_DEFINES =
 LNKFLAGS_LOCAL_mpu1_0  += --entry Entry
+COMP_LIST_COMMON = $(PDK_COMMON_BAREMETAL_COMP)
 EXTERNAL_INTERFACES =
 XDC_CFG_FILE_mpu1_0 =
 XDC_CFG_FILE_mcu1_0 =
+else
+BUILD_OS_TYPE = tirtos
+CFLAGS_OS_DEFINES = -DUSE_BIOS
+EXTERNAL_INTERFACES = bios xdc
+COMP_LIST_COMMON    = $(PDK_COMMON_TIRTOS_COMP) 
+
+
+ifeq ($(SOC),$(filter $(SOC), tpr12))
+# Enable XDC build for application by providing XDC CFG File per core
+XDC_CFG_FILE_mcu1_0 = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_r5f.cfg
+XDC_CFG_FILE_c66xdsp_1 = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_c66.cfg
+XDC_CFG_UPDATE_$(CORE) = ../../common/$(SOC)/osal_log_config.xs
+endif
+
+endif
 
 ifeq ($(MODENAME), )
 ifeq ($(TESTMODE), STRESS_TEST)
@@ -60,15 +82,22 @@ MODENAME = Stress
 endif
 endif
 
+ifeq ($(BUILD_OS_TYPE), tirtos)
+CSIRX_OS_TESTPREFIX=
+else
+CSIRX_OS_TESTPREFIX=_Baremetal
+endif
+
+# Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
+LOCAL_APP_NAME =  $(DIAGNAME)$(CSIRX_OS_TESTPREFIX)$(MODENAME)_DiagExample_$(BOARD)_$(CORE)
+
 SRCDIR = ../src  ../../common/$(SOC) ./$(BOARD)
 INCDIR = ../../../../board ../src ../../../src/$(BOARD)/include ../../../src/devices ../../common/$(SOC) ../../../../csl
 
 # List all the external components/interfaces, whose interface header files
 # need to be included for this component
-INCLUDE_EXTERNAL_INTERFACES = pdk
+INCLUDE_EXTERNAL_INTERFACES = pdk $(EXTERNAL_INTERFACES)
 
-# List all the components required by the application
-COMP_LIST_COMMON = $(PDK_COMMON_BAREMETAL_COMP)
 
 ifeq ($(SOC), $(filter $(SOC), tpr12))
 COMP_LIST_COMMON += csirx
@@ -92,14 +121,28 @@ endif
 
 SRCS_COMMON += diag_common_cfg.c
 
-ifeq ($(SOC), $(filter $(SOC), tpr12))
-ifeq ($(CORE),$(filter $(CORE), mcu1_0))
-SRCS_ASM_COMMON += diag_entry_r5.asm
-EXTERNAL_LNKCMD_FILE_LOCAL = ../../common/$(SOC)/linker_$(CORE).lds
-endif
+ifeq ($(IS_BAREMETAL),yes)
+    ifeq ($(SOC), $(filter $(SOC), tpr12))
+        ifeq ($(CORE),$(filter $(CORE), mcu1_0))
+            SRCS_ASM_COMMON += diag_entry_r5.asm
+            EXTERNAL_LNKCMD_FILE_LOCAL = ../../common/$(SOC)/linker_$(CORE).lds
+        else
+            EXTERNAL_LNKCMD_FILE_LOCAL = ../../common/$(SOC)/linker_$(CORE).cmd
+        endif
+    endif
+else
+#sysbios case
+    ifeq ($(SOC), $(filter $(SOC), tpr12))
+        ifeq ($(CORE),$(filter $(CORE), c66xdsp_1))
+            EXTERNAL_LNKCMD_FILE_LOCAL = ../../common/$(SOC)/linker_$(CORE).cmd
+        endif
+        ifeq ($(CORE),$(filter $(CORE), mcu1_0))
+            EXTERNAL_LNKCMD_FILE_LOCAL = ../../common/$(SOC)/linker_mcu1_0_sysbios.lds
+        endif
+    endif
 endif
 
-CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) -DDIAG_$(TESTMODE) $(BOARD_DIAG_CFLAGS)
+CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) -DDIAG_$(TESTMODE) $(BOARD_DIAG_CFLAGS) $(CFLAGS_OS_DEFINES)
 
 # Include common make files
 ifeq ($(MAKERULEDIR), )

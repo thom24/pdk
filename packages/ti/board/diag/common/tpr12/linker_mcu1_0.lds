@@ -67,8 +67,6 @@ SECTIONS{
     */
     .l2ram   : {} > L2_RAM
     .l3ram   : {} > L3_RAM
-    .pingl3ram   : {} > L3_RAM_Ping
-    .pongl3ram   : {} > L3_RAM_Pong
 	.hwaram  : {} > HWA_RAM
     .text    : {} >> TCMA_RAM | L2_RAM
 

@@ -169,15 +169,6 @@ typedef struct BoardDaig_State_s
 extern "C" {
 #endif
 
-/**
- * \brief   This function executes CSI-Rx diagnostic test
- *
- * \return  int8_t
- *             0   - in case of success
- *            -1   - in case of failure
- *
- */
-int8_t BoardDiag_CsirxTest(void);
 
 #ifdef __cplusplus
 }

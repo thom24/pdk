@@ -48,6 +48,18 @@
  *  Supported Platforms: tp12_evm.
  */
 
+#ifdef USE_BIOS
+/* XDCtools Header files */
+#include <xdc/std.h>
+#include <xdc/cfg/global.h>
+#include <xdc/runtime/System.h>
+#include <stdio.h>
+#include <ti/sysbios/knl/Task.h>
+
+/* BIOS Header files */
+#include <ti/sysbios/BIOS.h>
+#include <xdc/runtime/Error.h>
+#endif /* #ifdef USE_BIOS */
 
 
 #include <csirx_test_tpr12.h>
@@ -114,7 +126,7 @@ void BoardDiag_CheckPayloadReceived(CSIRX_Handle handle)
         if(buf[bufIndx++] != BOARD_DIAG_TEST_PATTERN)
         {
             gTestState.isReceivedPayloadCorrect = false;
-            DebugP_log1("Frame - %d is invalid\n",
+            printf("Frame - %d is invalid\n",
             gTestState.contextIRQcounts[BOARD_DIAG_TEST_CONTEXT].frameEndCodeDetect);
             break;
         }
@@ -130,7 +142,7 @@ void BoardDiag_CheckPayloadReceived(CSIRX_Handle handle)
             if(buf[bufIndx++] != BOARD_DIAG_TEST_BUF_INIT_PATTERN)
             {
                 gTestState.isReceivedPayloadCorrect = false;
-                UART_printf("Buffer corruption - %d is invalid\n",
+                printf("Buffer corruption - %d is invalid\n",
                 gTestState.contextIRQcounts[BOARD_DIAG_TEST_CONTEXT].frameEndCodeDetect);
                 break;
             }
@@ -219,17 +231,17 @@ void BoardDiag_CheckStateError(bool *isTestPass)
 {
     if(gTestState.commonIRQcount.isOCPerror != 0)
     {
-        DebugP_log1("OCP error has occured %d number of times \n", gTestState.commonIRQcount.isOCPerror);
+        printf("OCP error has occured %d number of times \n", gTestState.commonIRQcount.isOCPerror);
         *isTestPass = false;
     }
     if(gTestState.commonIRQcount.isComplexIOerror != 0)
     {
-        DebugP_log1("Complex IO error has occured %d number of times \n", gTestState.commonIRQcount.isComplexIOerror);
+        printf("Complex IO error has occured %d number of times \n", gTestState.commonIRQcount.isComplexIOerror);
         *isTestPass = false;
     }
     if(gTestState.commonIRQcount.isFIFOoverflow != 0)
     {
-        DebugP_log1("FIFO Overflow error has occured %d number of times \n",gTestState.commonIRQcount.isFIFOoverflow);
+        printf("FIFO Overflow error has occured %d number of times \n",gTestState.commonIRQcount.isFIFOoverflow);
         *isTestPass = false;
     }
 }
@@ -489,7 +501,7 @@ bool BoardDiag_CsirxTestRun(uint8_t instanceId)
     errorCode = CSIRX_init();
     if(errorCode != CSIRX_NO_ERROR)
     {
-        DebugP_log1("CSIRX_init failed with errorCode = %d\n", errorCode);
+        printf("CSIRX_init failed with errorCode = %d\n", errorCode);
         isTestPass = false;
         return isTestPass;
     }
@@ -518,7 +530,7 @@ bool BoardDiag_CsirxTestRun(uint8_t instanceId)
     errorCode = CSIRX_reset(handle);
     if(errorCode != CSIRX_NO_ERROR)
     {
-        DebugP_log1("CSIRX_reset failed, errorCode = %d\n", errorCode);
+        printf("CSIRX_reset failed, errorCode = %d\n", errorCode);
         isTestPass = false;
         return isTestPass;
     }
@@ -526,7 +538,7 @@ bool BoardDiag_CsirxTestRun(uint8_t instanceId)
     errorCode = CSIRX_configComplexIO(handle, &testConfig.complexIOcfg);
     if(errorCode != CSIRX_NO_ERROR)
     {
-        DebugP_log1("CSIRX_configComplexIO failed, errorCode = %d\n",
+        printf("CSIRX_configComplexIO failed, errorCode = %d\n",
                     errorCode);
         isTestPass = false;
         return isTestPass;
@@ -536,7 +548,7 @@ bool BoardDiag_CsirxTestRun(uint8_t instanceId)
     errorCode = CSIRX_deassertComplexIOreset(handle);
     if(errorCode != CSIRX_NO_ERROR)
     {
-        DebugP_log1("CSIRX_deassertComplexIOreset failed, errorCode = %d\n",
+        printf("CSIRX_deassertComplexIOreset failed, errorCode = %d\n",
                     errorCode);
         isTestPass = false;
         return isTestPass;
@@ -546,7 +558,7 @@ bool BoardDiag_CsirxTestRun(uint8_t instanceId)
     errorCode = CSIRX_configDPHY(handle, &testConfig.DPHYcfg);
     if(errorCode != CSIRX_NO_ERROR)
     {
-        DebugP_log1("CSIRX_configDPHY failed, errorCode = %d\n", errorCode);
+        printf("CSIRX_configDPHY failed, errorCode = %d\n", errorCode);
         isTestPass = false;
         return isTestPass;
     }
@@ -554,7 +566,7 @@ bool BoardDiag_CsirxTestRun(uint8_t instanceId)
     errorCode = CSIRX_setComplexIOpowerCommand(handle, 1);
     if(errorCode != CSIRX_NO_ERROR)
     {
-        DebugP_log1("CSIRX_setComplexIOpowerCommand failed, errorCode = %d\n",
+        printf("CSIRX_setComplexIOpowerCommand failed, errorCode = %d\n",
                     errorCode);
         isTestPass = false;
         return isTestPass;
@@ -567,7 +579,7 @@ bool BoardDiag_CsirxTestRun(uint8_t instanceId)
                                             (uint8_t*)&isComplexIOpowerStatus);
         if(errorCode != CSIRX_NO_ERROR)
         {
-            DebugP_log1("CSIRX_getComplexIOpowerStatus failed, errorCode = "
+            printf("CSIRX_getComplexIOpowerStatus failed, errorCode = "
             " %d\n", errorCode);
             isTestPass = false;
         return isTestPass;
@@ -578,13 +590,13 @@ bool BoardDiag_CsirxTestRun(uint8_t instanceId)
         }
         numComplexIOPowerStatusPolls++;
     } while((isComplexIOpowerStatus == 0));
-    
+    printf("Complex IO Powered up.Run AWR FE binrary config now\n");
     /* config common */
     testConfig.commonCfg.IRQ.isContext[BOARD_DIAG_TEST_CONTEXT] = true,
     errorCode = CSIRX_configCommon(handle, &testConfig.commonCfg);
     if(errorCode != CSIRX_NO_ERROR)
     {
-        DebugP_log1("CSIRX_configCommon failed, errorCode = %d\n", errorCode);
+        printf("CSIRX_configCommon failed, errorCode = %d\n", errorCode);
         isTestPass = false;
         return isTestPass;
     }
@@ -600,7 +612,7 @@ bool BoardDiag_CsirxTestRun(uint8_t instanceId)
                                 &testConfig.contextCfg);
     if(errorCode != CSIRX_NO_ERROR)
     {
-        DebugP_log1("CSIRX_configContext failed, errorCode = %d\n", errorCode);
+        printf("CSIRX_configContext failed, errorCode = %d\n", errorCode);
         
         isTestPass = false;
         return isTestPass;
@@ -610,7 +622,7 @@ bool BoardDiag_CsirxTestRun(uint8_t instanceId)
     errorCode = CSIRX_enableContext(handle, BOARD_DIAG_TEST_CONTEXT);
     if(errorCode != CSIRX_NO_ERROR)
     {
-        DebugP_log1("CSIRX_enableContext failed, errorCode = %d\n", errorCode);
+        printf("CSIRX_enableContext failed, errorCode = %d\n", errorCode);
         isTestPass = false;
         return isTestPass;
     }
@@ -619,7 +631,7 @@ bool BoardDiag_CsirxTestRun(uint8_t instanceId)
     errorCode = CSIRX_enableInterface(handle);
     if(errorCode != CSIRX_NO_ERROR)
     {
-        DebugP_log1("CSIRX_enableInterface failed, errorCode = %d\n",
+        printf("CSIRX_enableInterface failed, errorCode = %d\n",
                     errorCode);
         isTestPass = false;
         return isTestPass;
@@ -633,7 +645,7 @@ bool BoardDiag_CsirxTestRun(uint8_t instanceId)
                                             (bool *)&isComplexIOresetDone);
         if(errorCode != CSIRX_NO_ERROR)
         {
-            DebugP_log1("CSIRX_isComplexIOresetDone failed, errorCode = "
+            printf("CSIRX_isComplexIOresetDone failed, errorCode = "
             " %d\n", errorCode);
             isTestPass = false;
             return isTestPass;
@@ -648,7 +660,7 @@ bool BoardDiag_CsirxTestRun(uint8_t instanceId)
 
     if(isComplexIOresetDone == false)
     {
-        DebugP_log0("CSIRX_isComplexIOresetDone attempts exceeded\n");
+        printf("CSIRX_isComplexIOresetDone attempts exceeded\n");
         isTestPass = false;
         return isTestPass;
     }
@@ -678,7 +690,7 @@ bool BoardDiag_CsirxTestRun(uint8_t instanceId)
 
     if(gFrameCounter != BOARD_DIAG_TEST_NUM_FRAMES)
     {
-        DebugP_log0("Number of frames recieved does not match\n");
+        printf("Number of frames recieved does not match\n");
         isTestPass = false;
     }
 
@@ -688,7 +700,7 @@ bool BoardDiag_CsirxTestRun(uint8_t instanceId)
     errorCode = CSIRX_disableContext(handle, BOARD_DIAG_TEST_CONTEXT);
     if(errorCode != CSIRX_NO_ERROR)
     {
-        DebugP_log1("CSIRX_disableContext failed,errorCode = %d\n", errorCode);
+        printf("CSIRX_disableContext failed,errorCode = %d\n", errorCode);
         isTestPass = false;
         return isTestPass;
     }
@@ -697,7 +709,7 @@ bool BoardDiag_CsirxTestRun(uint8_t instanceId)
     errorCode = CSIRX_disableInterface(handle);
     if(errorCode != CSIRX_NO_ERROR)
     {
-        DebugP_log1("CSIRX_disableInterface failed, errorCode = %d\n",
+        printf("CSIRX_disableInterface failed, errorCode = %d\n",
                     errorCode);
         isTestPass = false;
         return isTestPass;
@@ -707,7 +719,7 @@ bool BoardDiag_CsirxTestRun(uint8_t instanceId)
     errorCode = CSIRX_close(handle);
     if(errorCode != CSIRX_NO_ERROR)
     {
-        DebugP_log1("CSIRX_close failed, errorCode = %d\n", errorCode);
+        printf("CSIRX_close failed, errorCode = %d\n", errorCode);
         isTestPass = false;
         return isTestPass;
     }
@@ -724,7 +736,11 @@ bool BoardDiag_CsirxTestRun(uint8_t instanceId)
  *              -1 - in case of failure.
  *
  */
-int8_t BoardDiag_CsirxTest()
+#ifdef USE_BIOS
+int8_t BoardDiag_CsirxTest(UArg arg0, UArg arg1)
+#else
+int8_t BoardDiag_CsirxTest(void)
+#endif
 {
     uint8_t result;
     /* TPR12_TODO: Update this to menu based after initial testing */
@@ -735,27 +751,27 @@ int8_t BoardDiag_CsirxTest()
 #endif
     char instName[25];
 
-    UART_printf("\n**********************************************\n");
-    UART_printf  ("*                CSI-Rx Test                 *\n");
-    UART_printf  ("**********************************************\n");
+    printf("\n**********************************************\n");
+    printf  ("*                CSI-Rx Test                 *\n");
+    printf  ("**********************************************\n");
 
     CSIRX_getInstanceName(instanceId, &instName[0], sizeof(instName));
 
-    UART_printf("Receiving data from CSIRX instance #%d: %s\n", instanceId,
+    printf("Receiving data from CSIRX instance #%d: %s\n", instanceId,
                  instName);
 
     result = BoardDiag_CsirxTestRun(instanceId);
     if(result != true)
     {
-        UART_printf("Failed to receive data from CSIRX instance #%d\n",
+        printf("Failed to receive data from CSIRX instance #%d\n",
                     instanceId);
         return -1;
     }
     else
     {
-        UART_printf("CSIRX diag test passed\n");
+        printf("CSIRX diag test passed\n");
     }
-    UART_printf("csirx test finished\n");
+    printf("csirx test finished\n");
 
     return 0;
 
@@ -773,7 +789,20 @@ int main (void)
 {
     Board_STATUS status;
     Board_initCfg boardCfg;
+
+#ifdef USE_BIOS
+    Task_Handle task;
+    Error_Block eb;
+
+    Error_init(&eb);
+    task = Task_create((Task_FuncPtr)BoardDiag_CsirxTest, NULL, &eb);
+    if (task == NULL) {
+        System_printf("Task_create() failed!\n");
+        BIOS_exit(0);
+    }
+#else
     int8_t ret;
+#endif
 
 #ifdef PDK_RAW_BOOT
     boardCfg = BOARD_INIT_MODULE_CLOCK |
@@ -789,16 +818,21 @@ int main (void)
         return -1;
     }
 
+#ifdef USE_BIOS
+    /* Start BIOS */
+    BIOS_start();
+#else
     ret = BoardDiag_CsirxTest();
     if(ret != 0)
     {
-        UART_printf("\nCSIRX Test Failed\n");
+        printf("\nCSIRX Test Failed\n");
         return -1;
     }
     else
     {
-        UART_printf("\nCSIRX Test Passed\n");
+        printf("\nCSIRX Test Passed\n");
     }
+#endif
 
     return 0;
 }

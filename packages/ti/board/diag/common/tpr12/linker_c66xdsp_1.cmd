@@ -79,6 +79,9 @@ SECTIONS
     .cio:      {} > L2SRAM
     .data:     {} > L2SRAM
     .sysmem:   {} > L2SRAM
+    .l2ram   : {} > L2SRAM
+    .l3ram   : {} > L3SRAM
+	.hwaram  : {} > HWA_RAM
 
     GROUP
     {
