@@ -97,11 +97,7 @@ board_diag_EXAMPLE_LIST =
 # ARCH is used for diag binary folder name to align with existing platforms
 board_diag_LOCAL_BINPATH =
 
-ifeq ($(SOC),$(filter $(SOC), tpr12))
-board_diag_APPIMAGEGEN_CTRL = no
-else
 board_diag_APPIMAGEGEN_CTRL = yes
-endif
 
 # Board Diagnostic
 board_diag_COMP_LIST = board_diag
@@ -990,11 +986,15 @@ board_diag_EXAMPLE_LIST += board_diag_img
 export board_diag_EXAMPLE_LIST
 
 # Diagnostic test build flags
+ifeq ($(SOC),$(filter $(SOC), tpr12))
+BOARD_DIAG_CFLAGS = -DPDK_RAW_BOOT
+else
 ifeq ($(BUILD_PROFILE),debug)
 BOARD_DIAG_CFLAGS = -DPDK_RAW_BOOT
 PROFILE = debug
 export PROFILE
 export BOARD_DIAG_CFLAGS
+endif
 endif
 
 board_diag_component_make_include := 1
