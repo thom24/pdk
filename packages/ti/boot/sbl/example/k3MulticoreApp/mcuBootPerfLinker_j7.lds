@@ -44,9 +44,9 @@
 /* Stack Sizes for various modes */
 __IRQ_STACK_SIZE = 0x1000;
 __FIQ_STACK_SIZE = 0x1000;
-__ABORT_STACK_SIZE = 0x400;
-__UND_STACK_SIZE = 0x400;
-__SVC_STACK_SIZE = 0x400;
+__ABORT_STACK_SIZE = 0x1000;
+__UND_STACK_SIZE = 0x1000;
+__SVC_STACK_SIZE = 0x1000;
 
 /* interface with SBL */
 sblProfileLogAddr = 0x41c001f0;
