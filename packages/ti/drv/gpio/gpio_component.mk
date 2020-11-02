@@ -246,7 +246,12 @@ export GPIO_Baremetal_LedBlink_TestApp_BOARDLIST
 ifeq ($(SOC),$(filter $(SOC), j721e j7200 am64x))
 GPIO_Baremetal_LedBlink_TestApp_$(SOC)_CORELIST = $(drvgpio_$(SOC)_CORELISTARM)
 else
+ifeq ($(SOC),$(filter $(SOC), tpr12))
+#TPR12 EVM push button and LED are supported only on MSS R5F (mcu1_0)
+GPIO_Baremetal_LedBlink_TestApp_$(SOC)_CORELIST = mcu1_0
+else
 GPIO_Baremetal_LedBlink_TestApp_$(SOC)_CORELIST = $(drvgpio_$(SOC)_CORELIST)
+endif
 endif
 export GPIO_Baremetal_LedBlink_TestApp_$(SOC)_CORELIST
 ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
@@ -273,7 +278,12 @@ export GPIO_LedBlink_TestApp_BOARDLIST
 ifeq ($(SOC),$(filter $(SOC), am64x))
 GPIO_LedBlink_TestApp_$(SOC)_CORELIST = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
 else
+ifeq ($(SOC),$(filter $(SOC), tpr12))
+#TPR12 EVM push button and LED are supported only on MSS R5F (mcu1_0)
+GPIO_LedBlink_TestApp_$(SOC)_CORELIST = mcu1_0
+else
 GPIO_LedBlink_TestApp_$(SOC)_CORELIST = $(gpio_$(SOC)_CORELIST)
+endif
 endif
 export GPIO_LedBlink_TestApp_$(SOC)_CORELIST
 ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))

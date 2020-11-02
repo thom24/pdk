@@ -378,23 +378,6 @@ static void Board_initGPIO(void)
 
 #endif
 #if defined (SOC_TPR12)
-    /* TODO: This is applicable only for QT. Remove when testing on EVM.
-             For EVM pinmux will be done in board module. */
-    /* Unlock the pad config region. */
-    *((volatile uint32_t *)(0x020C01F8)) = 0x83E70B13;
-    *((volatile uint32_t *)(0x020C01FC)) = 0x95A4F1E0;
-  #if defined (__TI_ARM_V7R4__)
-    /* PAD config for USER_LED0, PADAZ to mode 1 for MSS GPIO port 0 pin 2. */
-    *((volatile uint32_t *)(0x020C0064)) = 0x201;
-    /* PAD config for USER_LED1, PADAC to mode 1 for MSS GPIO port 0 pin 1. */
-    *((volatile uint32_t *)(0x020C0008)) = 0x201;
-  #endif
-  #if defined (_TMS320C6X)
-    /* PAD config for USER_LED0, PADBH to mode 1 for RCSS GPIO port 0 pin 1. */
-    *((volatile uint32_t *)(0x020C0084)) = 0x201;
-    /* PAD config for USER_LED1, PADBI to mode 1 for RCSS GPIO port 0 pin 2. */
-    *((volatile uint32_t *)(0x020C0088)) = 0x201;
-  #endif
   GPIO_board_init_pinconfig();
 #endif
 

@@ -215,7 +215,7 @@ extern "C" {
 #define GPIO_LED1_PORT_NUM       0 /* MCU GPIO0 */
 #endif
 
-#if defined (tpr12_evm) || defined(tpr12_qt)
+#if defined (tpr12_evm)
 /* In case of TPR12 the pin configuration is maintiained inside the driver.
    Driver defines the macros for each of the GPIO pins of the SoC.
    The application needs to pass these macros for each of the GPIO APIs as the
@@ -225,8 +225,8 @@ extern "C" {
           MSS GIO port 0 pin1 and pin2 are connected to PADAC and PADAZ.
           These are internally connected to TB_GIO port 0 pin 0 and 1.
           TODO: To test on EVM update below based on schematics. */
-#define USER_LED0           SOC_TPR12_GPIO_2
-#define USER_LED1           SOC_TPR12_GPIO_1
+#define USER_LED0           SOC_TPR12_GPIO_28
+#define USER_LED1           BOARD_GPIO_LED_PIN_NUM
 #endif
 #if defined (_TMS320C6X)
 /* tpr12: Use RCSS GIO port 0 pin 1 and pin 2 for testing on QT.
