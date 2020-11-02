@@ -46,6 +46,24 @@ extern "C" {
 
 #include <ti/board/src/j7200_evm/include/board_internal.h>
 
+/**
+ * \brief Enables module clock
+ *
+ * \return  BOARD_SOK   - Clock enable sucessful. 
+ *          BOARD_FAIL  - Clock enable failed.
+ *
+ */
+Board_STATUS Board_moduleClockEnable(uint32_t moduleId);
+
+/**
+ * \brief Disables module clock
+ *
+ * \return  BOARD_SOK   - Clock disable successful.
+ *          BOARD_FAIL  - Clock disable failed.
+ *
+ */
+Board_STATUS Board_moduleClockDisable(uint32_t moduleId);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

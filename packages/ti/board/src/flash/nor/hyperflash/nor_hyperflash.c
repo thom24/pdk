@@ -32,6 +32,14 @@
  */
 
 #include <ti/board/src/flash/nor/hyperflash/nor_hyperflash.h>
+#if defined(j7200_evm)
+#include <ti/board/src/j7200_evm/include/board_clock.h>
+#include <ti/board/src/j7200_evm/include/board_utils.h>
+#else
+#include <ti/board/src/j721e_evm/include/board_clock.h>
+#include <ti/board/src/j721e_evm/include/board_utils.h>
+#endif
+#include <ti/drv/sciclient/sciclient.h>
 
 static NOR_HANDLE Nor_hpfOpen(uint32_t norIntf, uint32_t portNum, void *params);
 static void Nor_hpfClose(NOR_HANDLE handle);
@@ -132,6 +140,7 @@ static NOR_STATUS Nor_hpfReadId(NOR_Info *Nor_hpfInfo)
     uint16_t manfID, devID;
     uint16_t queryStr[3];
     uint32_t count = 0;
+    uint32_t idReadCount = 0;
 
     hpfObject = (HPF_Object *)Nor_hpfInfo->hwHandle;
 
@@ -152,12 +161,21 @@ static NOR_STATUS Nor_hpfReadId(NOR_Info *Nor_hpfInfo)
         if ((manfID == NOR_MANF_ID) && (devID == NOR_DEVICE_ID)
             && queryStr[0] == 'P' && queryStr[1] == 'R' && queryStr[2] == 'I')
         {
+            idReadCount++;
+        }
+        else
+        {
+            idReadCount = 0;
+        }
+        count++;
+
+        if(idReadCount >= 4)
+        {
             Nor_hpfInfo->manufacturerId = manfID;
             Nor_hpfInfo->deviceId = devID;
             retVal = NOR_PASS;
             break;
         }
-        count++;
     }
 
     HW_WR_REG16((hpfObject->baseAddr), NOR_CMD_RESET);
@@ -180,10 +198,30 @@ NOR_HANDLE Nor_hpfOpen(uint32_t norIntf, uint32_t portNum, void *params)
     NOR_HANDLE              hpfHandle = 0;
     HPF_Params              hpfParams;  /* HyperFlash params structure */
     CSL_hyperbus_coreRegs   *hpbCoreRegs = (CSL_hyperbus_coreRegs *)CSL_FSS0_HPB_CTRL_BASE;
+#if defined(SOC_J7200)
+    CSL_hyperbus_syscfgRegs *hpbSyscfgRegs = (CSL_hyperbus_syscfgRegs *)CSL_FSS0_HPB_SS_CFG_BASE;
+#endif
     int32_t retVal;
 
     if (gHpfObject.isOpen != TRUE)
     {
+        /* 
+         * Hyperbus controller should be enabled after PLL clocks are stable for
+         * proper operation.
+         * Reset the hyperbus controller to re-intialize with PLL clocks configured.
+         */
+        Board_moduleClockDisable(TISCI_DEV_MCU_FSS0_HYPERBUS1P0_0);
+        Board_moduleClockEnable(TISCI_DEV_MCU_FSS0_HYPERBUS1P0_0);
+
+#if defined(SOC_J7200)
+        /* Wait for the MDLL to get locked */
+        while(!CSL_REG32_FEXT(&hpbSyscfgRegs->DLL_STAT_REG,
+               HYPERBUS_SYSCFG_DLL_STAT_REG_MDLL_LOCK));
+#else
+        /* MDLL Lock status is not proper on J721E. Need to rely on delay */
+        BOARD_delay(1000); // 1 msec delay to allow MDLL to get locked
+#endif
+
         /* Enabling hyperbus in FSS0 */
         CSL_REG32_WR(MCU_FSS0_SYSCONFIG, ENABLE_FSS0_HPB);
 
