@@ -273,7 +273,7 @@ fi
 echo "CERT GENERATION SUCCESS: Generated $CERT"
 
 #Remove all intermediate files
-rm $X509_DEFAULT
+rm -f $X509_DEFAULT
 #rm enc*.bin enciv.txt encrs.txt encsalt.txt encprk.txt encgenkey.txt 1.bin
 
 #uncomment below to remove local x509 template used to generate certificate
