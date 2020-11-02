@@ -454,6 +454,22 @@ Board_STATUS Board_getSoCInfo(Board_SoCInfo *socInfo);
 Board_STATUS Board_init(Board_initCfg cfg);
 
 /**
+ * \brief  Board library initialization function with limited module initializations
+ *
+ *  This is ligher version of board init function which does not include the
+ *  initialization of modules that depend on drivers. This can be used on
+ *  platforms which are low on memory footprint.
+ *
+ *  Please refer the board specific init code for list module init supported
+ *  by this function.
+ *
+ * \param   cfg [IN]    Board configuration flags
+ *
+ * \return  BOARD_SOK in case of success or appropriate error code
+ */
+Board_STATUS Board_initLite(Board_initCfg cfg);
+
+/**
  * @brief  Board library deinitialization function
  *
  *  BOARD_DEINIT_UART_STDIO -

@@ -125,6 +125,62 @@ Board_STATUS Board_init(Board_initCfg cfg)
 }
 
 /**
+ * \brief  Board library initialization function with limited module initializations
+ *
+ *  Different board initialization routines are invoked by using configuration
+ *  flags as described below
+ *  BOARD_INIT_UNLOCK_MMR -
+ *      Unlocks the MMR registers of the SoC. MMR registers should be
+ *      enabled before any write access to MMR register address space.
+ *
+ *  BOARD_INIT_PLL -
+ *      Configures different PLL controller modules. This enables all the PLL
+ *      controllers on the SoC with default configurations. Any custom values
+ *      required for PLL output needs to be done separately
+ *
+ *  BOARD_INIT_PINMUX_CONFIG -
+ *      Enables pinmux for the board interfaces. Pin mux is done based on the
+ *      default/primary functionality of the board. Any pins shared by multiple
+ *      interfaces need to be reconfigured to access the secondary functionality.
+ *
+ *  BOARD_INIT_MODULE_CLOCK -
+ *      Enables different power domains and peripheral clocks of the SoC.
+ *      Some of the power domains and peripherals will be off by default.
+ *      Enabling the power domains is mandatory before accessing using
+ *      board interfaces connected to those peripherals.
+ *
+ * \param   cfg [IN]    Board configuration flags
+ *
+ * \return  BOARD_SOK in case of success or appropriate error code
+ */
+Board_STATUS Board_initLite(Board_initCfg cfg)
+{
+    Board_STATUS ret = BOARD_SOK;
+
+    if (cfg & BOARD_INIT_UNLOCK_MMR)
+        ret = Board_unlockMMR();
+    if (ret != BOARD_SOK)
+        return ret;
+
+    if (cfg & BOARD_INIT_MODULE_CLOCK)
+        ret = Board_moduleClockInit();
+    if (ret != BOARD_SOK)
+        return ret;
+
+    if (cfg & BOARD_INIT_PINMUX_CONFIG)
+        ret = Board_pinmuxConfig();
+    if (ret != BOARD_SOK)
+        return ret;
+
+    if (cfg & BOARD_INIT_PLL)
+        ret = Board_PLLInitAll();
+    if (ret != BOARD_SOK)
+        return ret;
+
+    return ret;
+}
+
+/**
  * \brief  Board library deinitialization function
  *
  *  BOARD_DEINIT_UART_STDIO -
