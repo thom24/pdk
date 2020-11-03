@@ -63,17 +63,10 @@ _boot_perf_app_pad_3:
 	.space 0x40000
 	.endasmfunc
 
-	.sect   ".imgPad_4"
+	.sect   ".text"
 	.global _boot_perf_app_pad_4
 	.asmfunc
 _boot_perf_app_pad_4:
-	.space 0x40000
-	.endasmfunc
-
-	.sect   ".text"
-	.global _boot_perf_app_pad_5
-	.asmfunc
-_boot_perf_app_pad_5:
 	.space 0x30000
 	.endasmfunc
 

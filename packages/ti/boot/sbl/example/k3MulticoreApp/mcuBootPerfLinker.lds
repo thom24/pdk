@@ -31,7 +31,6 @@
 --retain="_boot_perf_app_pad_2"
 --retain="_boot_perf_app_pad_3"
 --retain="_boot_perf_app_pad_4"
---retain="_boot_perf_app_pad_5"
 --fill_value=0
 --stack_size=0x2000
 --heap_size=0x1000
@@ -64,15 +63,14 @@ MEMORY
 
         /* App code resides here  */
 	RESET_VECTORS (X)      : origin=0x70100000 length=0x100
-	MSMC3_H                : origin=0x70100100 length=0x50000 - 0x1100 /* 256KB */
+	MSMC3_H                : origin=0x70100100 length=0x90000 - 0x1100 /* 256KB */
 	VECTORS (X)            : origin=0x701FF000 length=0x1000
 
         /* Dummy buffers to pad the app size */
 	MSMC3_PAD_0            : origin=0x70000000 length=0x40000 /* 256KB */
 	MSMC3_PAD_1            : origin=0x70040000 length=0x40000 /* 256KB */
 	MSMC3_PAD_2            : origin=0x70080000 length=0x40000 /* 256KB */
-	MSMC3_PAD_3            : origin=0x70150000 length=0x40000 /* 256KB */
-	MSMC3_PAD_4            : origin=0x70190000 length=0x40000 /* 256KB */
+	MSMC3_PAD_3            : origin=0x70190000 length=0x40000 /* 256KB */
 
 
 /* Additional memory settings	*/
@@ -125,7 +123,6 @@ SECTIONS
     .imgPad_1    	: {} palign(8) 		> MSMC3_PAD_1
     .imgPad_2    	: {} palign(8) 		> MSMC3_PAD_2
     .imgPad_3    	: {} palign(8) 		> MSMC3_PAD_3
-    .imgPad_4    	: {} palign(8) 		> MSMC3_PAD_4
 /* Additional sections settings 	*/
     .sysfw_data_cfg_board      : {} palign(128) > OCMRAM_SBL_UNUSED (HIGH)
     .sysfw_data_cfg_board_rm   : {} palign(128) > OCMRAM_SBL_UNUSED (HIGH)
