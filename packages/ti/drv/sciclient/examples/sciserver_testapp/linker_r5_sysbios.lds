@@ -44,6 +44,8 @@
 -e __VECS_ENTRY_POINT
 --retain="*(.utilsCopyVecsToAtcm)"
 
+#define BTCM_START 0x41010000
+
 /* Stack Sizes for various modes */
 __IRQ_STACK_SIZE = 0x100;
 __FIQ_STACK_SIZE = 0x100;
@@ -54,10 +56,9 @@ __SVC_STACK_SIZE = 0x100;
 
 MEMORY
 {
-    /* Bottom 256 KB used by SBL */
-    RESET_VECTORS(X)            : ORIGIN = 0x00000000 , LENGTH = 0x100
-    R5F_TCMA0(RWIX)             : ORIGIN = 0x00000100 , LENGTH = 0x00008000 - 0x100
-    R5F_TCMB0(RWIX)             : ORIGIN = 0x41010000 , LENGTH = 0x00008000
+    R5F_TCMA_SBL_RSVD(X)     : ORIGIN = 0x00000000 , LENGTH = 0x00000100
+    RESET_VECTORS(RWIX)      : ORIGIN = 0x41010000 , LENGTH = 0x00000100
+    R5F_TCMB0(RWIX)          : ORIGIN = 0x41010100 , LENGTH = 0x00007F00
     OCMC_RAM_BOARD_CFG (RWIX)   : ORIGIN = 0x41c80000 , LENGTH = 0x2000
     /* Sciserver App Space */
     OCMC_RAM_SCISERVER (RWIX)   : ORIGIN = 0x41C82000 , LENGTH = 0x60000
@@ -66,16 +67,20 @@ MEMORY
 
 SECTIONS
 {
+    .vecs : {
+         *(.vecs)
+    } palign(8) > BTCM_START
     .vecs       : {
         __VECS_ENTRY_POINT = .;
     } palign(8) > RESET_VECTORS
-    .text_boot {
-        *boot.aer5f*<*boot.o*>(.text)
-     }  palign(8)   > R5F_TCMA0
-    .text:xdc_runtime_Startup_reset__I     : {} palign(8) > R5F_TCMA0
-    .text:ti_sysbios_family_arm_v7r_Cache* : {} palign(8) > R5F_TCMA0
-    .text:ti_sysbios_family_arm_MPU*       : {} palign(8) > R5F_TCMA0
-    .utilsCopyVecsToAtcm                   : {} palign(8) > R5F_TCMA0
+    xdc.meta (COPY): { *(xdc.meta) } > R5F_TCMB0
+    .init_text  : {
+                     boot.*(.text)
+                     *(.text:ti_sysbios_family_arm_MPU_*)
+                     *(.text:ti_sysbios_family_arm_v7r_Cache_*)
+                  }  palign(8) > R5F_TCMB0
+    .text:xdc_runtime_Startup_reset__I     : {} palign(8) > R5F_TCMB0
+    .utilsCopyVecsToAtcm                   : {} palign(8) > R5F_TCMB0
 
     .text           : {} palign(8)   > OCMC_RAM_SCISERVER
     .cinit          : {} palign(8)   > OCMC_RAM_SCISERVER
