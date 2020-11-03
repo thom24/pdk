@@ -44,7 +44,7 @@ SECTIONS{
     .const   : {} > L2_RAM
     .switch  : {} > L2_RAM
     .cio:    : {} > SBL_RESERVED_L2_RAM | L2_RAM
-    .data:   : {} > SBL_RESERVED_L2_RAM | L2_RAM
+    .data:   : {} > L2_RAM
     
     .cinit   : {} > L2_RAM
     .pinit   : {} > L2_RAM

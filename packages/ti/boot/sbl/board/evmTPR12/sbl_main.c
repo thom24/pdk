@@ -433,10 +433,11 @@ int main()
     /* Boot the core running SBL in the end */
     if ((tpr12_evmEntry.CpuEntryPoint[MCU1_CPU1_ID] != SBL_INVALID_ENTRY_ADDR) ||
         (tpr12_evmEntry.CpuEntryPoint[MCU1_CPU0_ID] < SBL_INVALID_ENTRY_ADDR))
+    {
         SBL_SlaveCoreBoot(MCU1_CPU1_ID, NULL, &tpr12_evmEntry);
-
-    /* Execute a WFI */
-    SBL_localR5CoreTriggerReset();
+        /* Execute a WFI */
+        SBL_localR5CoreTriggerReset();
+    }
 
     return 0;
 }

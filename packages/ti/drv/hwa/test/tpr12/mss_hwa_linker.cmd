@@ -19,7 +19,8 @@ PAGE 0:
     VECTORS  (X)  : origin=0x00000000 length=0x00000100
     TCMA_RAM (RX) : origin=0x00000100 length=0x00007F00
     TCMB_RAM (RW) : origin=0x00080000 length=0x00008000
-    L2_RAM_BANK0 (RW) : origin=0x10200000 length=0x00080000
+    SBL_RESERVED_L2_RAM (RW)   : origin=0x10200000 length=0x00060000
+    L2_RAM_BANK0 (RW) : origin=0x10260000 length=0x00020000
     L2_RAM_BANK1 (RW) : origin=0x10280000 length=0x00070000
     L3_RAM (RW)   : origin=0x88000000 length=0x00300000
     HWA_RAM (RW)  : origin=0x28000000 length=0x00020000
@@ -46,13 +47,13 @@ SECTIONS{
     
     .const   : {} >> L2_RAM_BANK1 | L2_RAM_BANK0
     .switch  : {} >> L2_RAM_BANK1 | L2_RAM_BANK0
-    .cio:    : {} >> L2_RAM_BANK1 | L2_RAM_BANK0
+    .cio:    : {} >> SBL_RESERVED_L2_RAM | L2_RAM_BANK1 | L2_RAM_BANK0
     .data:   : {} >> L2_RAM_BANK1 | L2_RAM_BANK0
     
     .cinit   : {} > L2_RAM_BANK1 | L2_RAM_BANK0
     .pinit   : {} > L2_RAM_BANK1 | L2_RAM_BANK0
-    .bss     : {} > L2_RAM_BANK1 | L2_RAM_BANK0
-    .stack   : {} > TCMB_RAM | L2_RAM_BANK1 | L2_RAM_BANK0
+    .bss     : {} > SBL_RESERVED_L2_RAM | L2_RAM_BANK1 | L2_RAM_BANK0
+    .stack   : {} > TCMB_RAM | SBL_RESERVED_L2_RAM | L2_RAM_BANK1 | L2_RAM_BANK0
 
     .boot:{
        *.*(*ti_sysbios_family_arm_MPU*)
