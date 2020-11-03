@@ -41,7 +41,8 @@ endif
 
 ifeq ($(CORE),$(filter $(CORE), mcu1_0))
 # Enable XDC build for application by providing XDC CFG File per core
-XDC_CFG_FILE_$(CORE) = ../am65xx/r5/mmcsdUnitTest_r5.cfg
+#XDC_CFG_FILE_$(CORE) = ../am65xx/r5/mmcsdUnitTest_r5.cfg
+XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
 endif
 
 endif
