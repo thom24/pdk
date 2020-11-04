@@ -453,7 +453,7 @@ static SPI_Handle OSPI_open_v0(SPI_Handle handle, const SPI_Params *params)
             Osal_RegisterInterrupt_initParams(&interruptRegParams);
 
             interruptRegParams.corepacConfig.name=NULL;
-#ifndef __TI_ARM_V7R5__
+#ifdef __TI_ARM_V7R5__
             interruptRegParams.corepacConfig.priority=0x8U;
 #else
             interruptRegParams.corepacConfig.priority=0x20U;
