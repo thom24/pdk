@@ -100,6 +100,8 @@ HwiP_Handle gSciserverHwiHandles[SCISERVER_HWI_NUM];
 
 SemaphoreP_Params gSciserverUserSemParams[SCISERVER_SEMAPHORE_MAX_CNT];
 SemaphoreP_Handle gSciserverUserSemHandles[SCISERVER_SEMAPHORE_MAX_CNT];
+SemaphoreP_Params gSciserverSyncParam;
+SemaphoreP_Handle gSciserverSyncHandle;
 
 TaskP_Handle gSciserverUserTaskHandles[SCISERVER_TASK_MAX_CNT];
 TaskP_Params gSciserverUserTaskParams[SCISERVER_TASK_MAX_CNT];
@@ -250,7 +252,11 @@ void Sciserver_tirtosUserMsgTask(uintptr_t arg0, uintptr_t arg1)
         SemaphoreP_pend(gSciserverUserSemHandles[utd->semaphore_id],
                         SemaphoreP_WAIT_FOREVER);
 
+        SemaphoreP_pend(gSciserverSyncHandle, SCICLIENT_SERVICE_WAIT_FOREVER);
+
         ret = Sciserver_processtask (utd);
+
+        SemaphoreP_post(gSciserverSyncHandle);
 
         if (ret != CSL_PASS)
         {
@@ -286,6 +292,15 @@ static int32_t Sciserver_tirtosInitSemaphores(void)
         if (gSciserverUserSemHandles[i] == NULL) {
             ret = CSL_EFAIL;
             break;
+        }
+    }
+
+    if (ret == CSL_PASS) {
+        SemaphoreP_Params_init(&gSciserverSyncParam);
+        gSciserverSyncHandle = SemaphoreP_create(1U, &gSciserverSyncParam);
+
+        if (gSciserverSyncHandle == NULL) {
+            ret = CSL_EFAIL;
         }
     }
 

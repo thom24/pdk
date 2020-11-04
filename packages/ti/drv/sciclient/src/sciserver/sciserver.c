@@ -263,7 +263,6 @@ int32_t Sciserver_processtask(Sciserver_taskData *utd)
 
     if (utd->state->state == SCISERVER_TASK_PROCESSING_USER_MSG)
     {
-        Sciserver_printf("processtask: UserProcessMsg\n");
         ret = Sciserver_UserProcessMsg(
                 utd->hw_msg_buffer_list[utd->state->current_buffer_idx],
                 &respMsgSize,
@@ -417,7 +416,7 @@ int32_t Sciserver_ProcessForwardedMessage(uint32_t *msg_recv,
 
     if ((CSL_PASS == ret) && (respPrm.flags == TISCI_MSG_FLAG_ACK))
     {
-        Sciserver_printf("Sciserver_ProcessForwardedMessage: success type=%d\n", hdr->type);
+        Sciserver_printf("Sciserver: forward success type=%d\n", hdr->type);
         memcpy(msg_recv, respMsgBuffer, respMsgSize);
 
         /* Must restore the seq field. When forwarded message is processed by
@@ -426,7 +425,8 @@ int32_t Sciserver_ProcessForwardedMessage(uint32_t *msg_recv,
     }
     else
     {
-        Sciserver_printf("Sciserver_ProcessForwardedMessage: failed type=%d\n", hdr->type);
+        Sciserver_printf("Sciserver: forward failed type=%d, flag=%d\n",
+             hdr->type, respPrm.flags);
         ret = CSL_EFAIL;
     }
 
@@ -443,8 +443,7 @@ static int32_t Sciserver_UserProcessMsg(uint32_t *msg_recv,
     int32_t reqMsgSize;
     int32_t respMsgSize;
 
-    Sciserver_printf("hdr->type = %d\n", hdr->type);
-    Sciserver_printf("hdr->host = %d\n", hw_host_id);
+    Sciserver_printf("type = 0x%x, host = %d\n", hdr->type, hw_host_id);
 
     switch (hdr->type)
     {
