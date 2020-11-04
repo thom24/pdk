@@ -82,15 +82,6 @@ MODENAME = Stress
 endif
 endif
 
-ifeq ($(BUILD_OS_TYPE), tirtos)
-CSIRX_OS_TESTPREFIX=
-else
-CSIRX_OS_TESTPREFIX=_Baremetal
-endif
-
-# Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
-LOCAL_APP_NAME =  $(DIAGNAME)$(CSIRX_OS_TESTPREFIX)$(MODENAME)_DiagExample_$(BOARD)_$(CORE)
-
 SRCDIR = ../src  ../../common/$(SOC) ./$(BOARD)
 INCDIR = ../../../../board ../src ../../../src/$(BOARD)/include ../../../src/devices ../../common/$(SOC) ../../../../csl
 
