@@ -228,7 +228,7 @@ struct tisci_boardcfg_rm_resasg {
  * \param resasg Resource assignment configuration structure.
  */
 struct tisci_boardcfg_rm {
-    struct tisci_boardcfg_abi_rm_rev        rev;
+    struct tisci_boardcfg_abi_rm_rev    rev;
     struct tisci_boardcfg_rm_host_cfg    host_cfg;
     struct tisci_boardcfg_rm_resasg    resasg;
 } __attribute__((__packed__));

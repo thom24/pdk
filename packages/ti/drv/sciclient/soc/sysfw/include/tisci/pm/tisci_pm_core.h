@@ -160,8 +160,8 @@ struct tisci_msg_goodbye_resp {
  * \param domain Domain to be reset.
  */
 struct tisci_msg_sys_reset_req {
-    struct tisci_header hdr;
-    domgrp_t domain;
+    struct tisci_header    hdr;
+    domgrp_t        domain;
 } __attribute__((__packed__));
 
 /**
