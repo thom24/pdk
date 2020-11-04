@@ -306,7 +306,7 @@ void GetRevisionTest2(UArg arg0, UArg arg1)
     }
     if ((tsk1Pass == CSL_PASS) && (tsk2Pass == CSL_PASS))
     {
-        App_sciclientPrintf("All Tests Passed \n");
+        App_sciclientPrintf("All tests have passed \n");
     }
     if (tsk2Pass != CSL_PASS)
     {
