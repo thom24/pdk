@@ -374,6 +374,7 @@ int main(void)
         ret = -1;
     }
 #endif
+
 #if defined(j7200_evm)
     /* Enable the mux to select UART1 and UART3 */
     BoardDiag_UartMuxEnable(PIN_NUM_4, 0);
@@ -391,12 +392,15 @@ int main(void)
         ret = -1;
     }
 #endif
+
 #if defined(am65xx_evm) || defined(am64x_evm)
     ret = BoardDiag_UartStressTest(BOARD_UART1_INSTANCE, 0);
     if (ret != 0)
     {
         ret = -1;
     }
+#endif
+
 #if defined(am64x_evm)
     ret = BoardDiag_UartStressTest(BOARD_UART3_INSTANCE, 0);
     if (ret != 0)
@@ -404,12 +408,14 @@ int main(void)
         ret = -1;
     }
 #endif
-#elif defined(am65xx_idk) || defined(j721e_evm) || defined(j7200_evm)
+
+#if defined(am65xx_idk) || defined(j721e_evm) || defined(j7200_evm)
     ret = BoardDiag_UartStressTest(BOARD_UART_INSTANCE, 1);
     if (ret != 0)
     {
         ret = -1;
     }
+#endif
 
 #if !defined(am64x_evm)
     ret = BoardDiag_UartStressTest(BOARD_UART_INSTANCE, 2);

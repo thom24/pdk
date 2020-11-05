@@ -164,7 +164,7 @@ static int32_t ospiUdmaDeinit(void)
 }
 #endif
 
-#if defined(SOC_J7200)
+#if defined(SOC_J7200) && !defined(DIAG_STRESS_TEST)
 /**
  * \brief  ospi flash read test function
  *
