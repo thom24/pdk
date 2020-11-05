@@ -161,6 +161,8 @@ function connectTargets()
 function disconnectTargets()
 {
     updateScriptVars();
+    // Reset MCU1_0
+    dsMCU1_0.target.reset();
     // Disconnect targets
     dsDMSC_0.target.disconnect();
 }

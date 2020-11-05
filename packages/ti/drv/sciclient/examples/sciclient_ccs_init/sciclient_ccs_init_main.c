@@ -52,6 +52,7 @@
 #include <sciclient.h>
 #include <ti/board/board.h>
 #include <ti/drv/sciclient/src/sciclient/sciclient_priv.h>
+#include <ti/osal/CacheP.h>
 
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
@@ -636,6 +637,8 @@ static void Sciclient_ccsSetBoardConfigHeader ()
         (uint8_t *) SCISERVER_COMMON_X509_HEADER_ADDR,
         (uint8_t *) SCISERVER_BOARDCONFIG_HEADER_ADDR,
         &boardCfgPrms_pm, &boardCfgPrms_rm);
+    CacheP_wbInv((void*)SCISERVER_COMMON_X509_HEADER_ADDR, 0x500); 
+    CacheP_wbInv((void*)SCISERVER_BOARDCONFIG_HEADER_ADDR, 0x500); 
     if (CSL_PASS == status)
     {
         printf("PASSED\n");
@@ -645,6 +648,8 @@ static void Sciclient_ccsSetBoardConfigHeader ()
         printf("FAILED\n");
     }
     memcpy((void *)boardCfgPrms_pm.boardConfigLow, (void *) boardCfgLowPm, sizeof(boardCfgLowPm));
+    CacheP_wbInv((void*)boardCfgPrms_pm.boardConfigLow, sizeof(boardCfgLowPm)); 
     memcpy((void *)boardCfgPrms_rm.boardConfigLow, (void *) boardCfgLowRm, sizeof(boardCfgLowRm));
+    CacheP_wbInv((void*)boardCfgPrms_rm.boardConfigLow, sizeof(boardCfgLowRm)); 
 }
 #endif
