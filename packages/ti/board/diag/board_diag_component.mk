@@ -1009,15 +1009,11 @@ board_diag_EXAMPLE_LIST += board_diag_img
 export board_diag_EXAMPLE_LIST
 
 # Diagnostic test build flags
-ifeq ($(SOC),$(filter $(SOC), tpr12))
-BOARD_DIAG_CFLAGS = -DPDK_RAW_BOOT
-else
 ifeq ($(BUILD_PROFILE),debug)
 BOARD_DIAG_CFLAGS = -DPDK_RAW_BOOT
 PROFILE = debug
 export PROFILE
 export BOARD_DIAG_CFLAGS
-endif
 endif
 
 board_diag_component_make_include := 1
