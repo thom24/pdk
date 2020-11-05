@@ -98,7 +98,7 @@ function connectTargets()
     // Connect targets
     dsDMSC_0.target.connect();
     print("Fill R5F ATCM memory...");
-    dsDMSC_0.memory.fill(0x61000000, 0, 0x2000, 0);
+    dsDMSC_0.memory.fill(0x61000000, 0, 0x8000, 0);
     print("Writing While(1) for R5F")
     dsDMSC_0.memory.writeWord(0, 0x61000000, 0xE59FF004); /* ldr        pc, [pc, #4] */
     dsDMSC_0.memory.writeWord(0, 0x61000004, 0x38);       /* Address 0x38 */

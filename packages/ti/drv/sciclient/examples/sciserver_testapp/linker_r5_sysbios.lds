@@ -89,25 +89,25 @@ SECTIONS
     .const          : {} palign(8)   > OCMC_RAM_SCISERVER
     .data           : {} palign(128) > OCMC_RAM_SCISERVER
     .sysmem         : {} align(8)    > OCMC_RAM_SCISERVER
-    .stack          : {} align(4)    > OCMC_RAM_SCISERVER
+    .stack          : {} align(4)    > R5F_TCMB0
     .data_buffer    : {} palign(128) > OCMC_RAM_SCISERVER
     .boardcfg_data  : {} palign(8)   > OCMC_RAM_SCISERVER
-    .const*         : {} palign(4)   > OCMC_RAM_SCISERVER
-    .bss*           : {} align(4)    > OCMC_RAM_SCISERVER
+    .const*         : {} palign(4)   > R5F_TCMB0
+    .bss*           : {} align(4)    > R5F_TCMB0
 
-    .irqStack       : {. = . + __IRQ_STACK_SIZE;} align(4)    > OCMC_RAM_SCISERVER  (HIGH)
+    .irqStack       : {. = . + __IRQ_STACK_SIZE;} align(4)    > R5F_TCMB0  (HIGH)
                         RUN_START(__IRQ_STACK_START)
                         RUN_END(__IRQ_STACK_END)
-    .fiqStack       : {. = . + __FIQ_STACK_SIZE;} align(4)    > OCMC_RAM_SCISERVER  (HIGH)
+    .fiqStack       : {. = . + __FIQ_STACK_SIZE;} align(4)    > R5F_TCMB0  (HIGH)
                         RUN_START(__FIQ_STACK_START)
                         RUN_END(__FIQ_STACK_END)
-    .abortStack     : {. = . + __ABORT_STACK_SIZE;} align(4)  > OCMC_RAM_SCISERVER  (HIGH)
+    .abortStack     : {. = . + __ABORT_STACK_SIZE;} align(4)  > R5F_TCMB0  (HIGH)
                         RUN_START(__ABORT_STACK_START)
                         RUN_END(__ABORT_STACK_END)
-    .undStack       : {. = . + __UND_STACK_SIZE;} align(4)    > OCMC_RAM_SCISERVER  (HIGH)
+    .undStack       : {. = . + __UND_STACK_SIZE;} align(4)    > R5F_TCMB0  (HIGH)
                         RUN_START(__UND_STACK_START)
                         RUN_END(__UND_STACK_END)
-    .svcStac        : {. = . + __SVC_STACK_SIZE;} align(4)    > OCMC_RAM_SCISERVER  (HIGH)
+    .svcStac        : {. = . + __SVC_STACK_SIZE;} align(4)    > R5F_TCMB0  (HIGH)
                         RUN_START(__SVC_STACK_START)
                         RUN_END(__SVC_STACK_END)
     
