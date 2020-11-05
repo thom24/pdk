@@ -2077,10 +2077,10 @@ static UdmaTestParams gUdmaTestCases[] =
     },
 #if (UDMA_SOC_CFG_RING_MON_PRESENT == 1)
     {
-        .enableTest = TEST_DISABLE,
+        .enableTest = TEST_ENABLE,
         .tcId       = 4636U,
         .tcName     = "Ring Monitor Push and Pop Mode test",
-        .disableInfo= "Blocked on SYSFW-2824",
+        .disableInfo= NULL,
         .printEnable= PRINT_ENABLE,
         .prfEnable  = PRF_DISABLE,
         .tcType     = (UDMA_TCT_SANITY | UDMA_TCT_FUNCTIONAL),
@@ -2115,10 +2115,10 @@ static UdmaTestParams gUdmaTestCases[] =
         .ringPrmId  = UDMA_TEST_RING_PRMID_EVENT_NONE,
     },
     {
-        .enableTest = TEST_DISABLE,
+        .enableTest = TEST_ENABLE,
         .tcId       = 4637U,
         .tcName     = "Ring Monitor Low Threshold Mode test",
-        .disableInfo= "Blocked on SYSFW-2824",
+        .disableInfo= NULL,
         .printEnable= PRINT_ENABLE,
         .prfEnable  = PRF_DISABLE,
         .tcType     = (UDMA_TCT_SANITY | UDMA_TCT_FUNCTIONAL),
@@ -2153,10 +2153,10 @@ static UdmaTestParams gUdmaTestCases[] =
         .ringPrmId  = UDMA_TEST_RING_PRMID_EVENT_NONE,
     },
     {
-        .enableTest = TEST_DISABLE,
+        .enableTest = TEST_ENABLE,
         .tcId       = 4638U,
         .tcName     = "Ring Monitor High Threshold Mode test",
-        .disableInfo= "Blocked on SYSFW-2824",
+        .disableInfo= NULL,
         .printEnable= PRINT_ENABLE,
         .prfEnable  = PRF_DISABLE,
         .tcType     = (UDMA_TCT_SANITY | UDMA_TCT_FUNCTIONAL),
