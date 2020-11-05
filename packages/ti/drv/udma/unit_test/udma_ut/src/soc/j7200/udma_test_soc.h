@@ -85,7 +85,10 @@ extern "C" {
 #define UDMA_TEST_INST_ID_MAIN_BC       (UDMA_INST_ID_MAIN_0)
 #define UDMA_TEST_INST_ID_MCU_BC        (UDMA_INST_ID_MCU_0)
 
-#define UDMA_TEST_RF_MAIN_BC_HC         (0U)
+#define UDMA_TEST_RF_MAIN_BC_HC         (UDMA_TEST_RF_SOC | \
+                                         UDMA_TEST_RF_CORE_MPU1_0 | \
+                                         UDMA_TEST_RF_CORE_MCU2_0 | \
+                                         UDMA_TEST_RF_CFG_DEF)
 #define UDMA_TEST_RF_MAIN_BC            (UDMA_TEST_RF_SOC | UDMA_TEST_RF_CORE_ALL | UDMA_TEST_RF_CFG_DEF)
 #define UDMA_TEST_RF_MCU_BC_HC          (0U)
 #define UDMA_TEST_RF_MCU_BC             (UDMA_TEST_RF_SOC | \
@@ -100,9 +103,9 @@ extern "C" {
 #define UDMA_TEST_RF_CHAIN              (UDMA_TEST_RF_SOC | UDMA_TEST_RF_CORE_ALL | UDMA_TEST_RF_CFG_DEF)
 
 /* Multipe task testcases - some have only one instance. Doesn't make sense to run from 1 task */
-#define UDMA_TEST_RF_MAIN_BC_HC_MT      (UDMA_TEST_RF_MAIN_BC_HC)
+#define UDMA_TEST_RF_MAIN_BC_HC_MT      (0U)
 #define UDMA_TEST_RF_MAIN_BC_MT         (UDMA_TEST_RF_MAIN_BC)
-#define UDMA_TEST_RF_MCU_BC_HC_MT       (UDMA_TEST_RF_MCU_BC_HC)
+#define UDMA_TEST_RF_MCU_BC_HC_MT       (0U)
 /* Temp disable MCU NAVSS MT testcase on mpu1_0 until PDK-6611 is resolved
 #define UDMA_TEST_RF_MCU_BC_MT          (UDMA_TEST_RF_MCU_BC)
 */
@@ -122,31 +125,25 @@ extern "C" {
 #define UDMA_TEST_RF_MAIN_BC_PACING     (UDMA_TEST_RF_MAIN_BC)
 #define UDMA_TEST_RF_MAIN_BC_PAUSE      (UDMA_TEST_RF_MAIN_BC)
 
-#define UDMA_TEST_MAIN_UHC_START        (0U)
-#define UDMA_TEST_MCU_UHC_START         (0U)
 #if defined (BUILD_MPU1_0)
 #define UDMA_TEST_RF_CORE               (UDMA_TEST_RF_CORE_MPU1_0)
 #define UDMA_TEST_MAX_MAIN_BC_UHC_CH    (0U)
-#define UDMA_TEST_MAX_MAIN_BC_HC_CH     (0U)
+#define UDMA_TEST_MAX_MAIN_BC_HC_CH     (1U)
 #define UDMA_TEST_MAX_MAIN_BC_CH        (4U)
 #define UDMA_TEST_MAX_MCU_BC_UHC_CH     (0U)
 #define UDMA_TEST_MAX_MCU_BC_HC_CH      (0U)
 #define UDMA_TEST_MAX_MCU_BC_CH         (3U)
 #define UDMA_TEST_MAX_DRU_CH            (0U)
-#define UDMA_TEST_MAIN_HC_START         (0U)
-#define UDMA_TEST_MCU_HC_START          (0U)
 #endif
 #if defined (BUILD_MCU2_0)
 #define UDMA_TEST_RF_CORE               (UDMA_TEST_RF_CORE_MCU2_0)
 #define UDMA_TEST_MAX_MAIN_BC_UHC_CH    (0U)
-#define UDMA_TEST_MAX_MAIN_BC_HC_CH     (0U)
+#define UDMA_TEST_MAX_MAIN_BC_HC_CH     (1U)
 #define UDMA_TEST_MAX_MAIN_BC_CH        (2U)
 #define UDMA_TEST_MAX_MCU_BC_UHC_CH     (0U)
 #define UDMA_TEST_MAX_MCU_BC_HC_CH      (0U)
 #define UDMA_TEST_MAX_MCU_BC_CH         (2U)
 #define UDMA_TEST_MAX_DRU_CH            (0U)
-#define UDMA_TEST_MAIN_HC_START         (0U)
-#define UDMA_TEST_MCU_HC_START          (0U)
 #endif
 #if defined (BUILD_MCU2_1)
 #define UDMA_TEST_RF_CORE               (UDMA_TEST_RF_CORE_MCU2_1)
@@ -157,8 +154,6 @@ extern "C" {
 #define UDMA_TEST_MAX_MCU_BC_HC_CH      (0U)
 #define UDMA_TEST_MAX_MCU_BC_CH         (2U)
 #define UDMA_TEST_MAX_DRU_CH            (0U)
-#define UDMA_TEST_MAIN_HC_START         (0U)
-#define UDMA_TEST_MCU_HC_START          (0U)
 #endif
 #if defined (BUILD_MCU1_0)
 #define UDMA_TEST_RF_CORE               (UDMA_TEST_RF_CORE_MCU1_0)
@@ -166,11 +161,9 @@ extern "C" {
 #define UDMA_TEST_MAX_MAIN_BC_HC_CH     (0U)
 #define UDMA_TEST_MAX_MAIN_BC_CH        (2U)
 #define UDMA_TEST_MAX_MCU_BC_UHC_CH     (0U)
-#define UDMA_TEST_MAX_MCU_BC_HC_CH      (0U)
+#define UDMA_TEST_MAX_MCU_BC_HC_CH      (1U)
 #define UDMA_TEST_MAX_MCU_BC_CH         (2U)
 #define UDMA_TEST_MAX_DRU_CH            (0U)
-#define UDMA_TEST_MAIN_HC_START         (0U)
-#define UDMA_TEST_MCU_HC_START          (0U)
 #endif
 #if defined (BUILD_MCU1_1)
 #define UDMA_TEST_RF_CORE               (UDMA_TEST_RF_CORE_MCU1_1)
@@ -181,8 +174,6 @@ extern "C" {
 #define UDMA_TEST_MAX_MCU_BC_HC_CH      (0U)
 #define UDMA_TEST_MAX_MCU_BC_CH         (2U)
 #define UDMA_TEST_MAX_DRU_CH            (0U)
-#define UDMA_TEST_MAIN_HC_START         (0U)
-#define UDMA_TEST_MCU_HC_START          (0U)
 #endif
 
 #define UDMA_TEST_MAIN_BC_TCNAME_PREFIX     "Main NAVSS "

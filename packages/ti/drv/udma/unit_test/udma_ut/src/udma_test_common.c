@@ -95,6 +95,15 @@ int32_t udmaTestInitDriver(UdmaTestObj *testObj)
         initPrms.virtToPhyFxn       = &Udma_appVirtToPhyFxn;
         initPrms.phyToVirtFxn       = &Udma_appPhyToVirtFxn;
         initPrms.printFxn           = &udmaDrvPrint;
+#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
+        /* As per BoardCfg, there no HC Block Copy Channel assigned for any core.
+         * In this case, use the resource assigned for HC RX/TX channels
+         * to test various HC Block Copy testcases.
+         * This is with the assumption that, the range of this resources are same
+         * for both RX and TX High Capacity channels. */
+        initPrms.rmInitPrms.startBlkCopyHcCh  = initPrms.rmInitPrms.startRxHcCh;
+        initPrms.rmInitPrms.numBlkCopyHcCh = initPrms.rmInitPrms.numRxHcCh;
+#endif
         retVal += Udma_init(drvHandle, &initPrms);
         if(UDMA_SOK != retVal)
         {
