@@ -225,7 +225,14 @@ bool Board_initI2C(void)
          * Pulsar R5 core is on the Main domain, use the Main Pulsar
          * interrupt router
          */
-        i2c_cfg.intNum = I2C_INST_WKUP_I2C0_INT_NUM_MAIN;
+        if(info.cpuID == 0U)
+        {
+            i2c_cfg.intNum = I2C_INST_WKUP_I2C0_INT_NUM_MAIN;
+        }
+        else
+        {
+            i2c_cfg.intNum = I2C_INST_WKUP_I2C0_INT_NUM_MAIN + 128U;
+        }
     }
     else
     {
