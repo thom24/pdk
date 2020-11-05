@@ -45,7 +45,8 @@ diag_ex_LIB_LIST =
 diag_ex_SOCLIST         = j721e
 diag_ex_BOARDLIST       = j721e_evm
 diag_ex_j721e_CORELIST  = mcu1_0
-diag_ex_j721e_APPCORELIST = mcu1_0
+diag_ex_j721e_APPCORELIST = mpu1_0 mcu1_0 mcu2_0 mcu3_0 mcu1_1 mcu2_1 mcu3_1 c66xdsp_1 c66xdsp_2 c7x_1
+diag_ex_j721e_LASTCORE := $(word $(words $(diag_ex_j721e_APPCORELIST)), $(diag_ex_j721e_APPCORELIST))
 diag_ex_DISABLE_PARALLEL_MAKE = yes
 
 ############################
@@ -129,7 +130,7 @@ diag_ex_wwdt_perm_example_app_multicore_PKG_LIST = diag_ex_wwdt_perm_example_app
 diag_ex_wwdt_perm_example_app_multicore_INCLUDE = $(diag_ex_wwdt_perm_example_app_multicore_PATH)
 diag_ex_wwdt_perm_example_app_multicore_BOARDLIST = $(diag_ex_wwdt_perm_example_app_BOARDLIST)
 export diag_ex_wwdt_perm_example_app_multicore_BOARDLIST
-diag_ex_wwdt_perm_example_app_multicore_$(SOC)_CORELIST = mcu2_0
+diag_ex_wwdt_perm_example_app_multicore_$(SOC)_CORELIST := $(diag_ex_$(SOC)_LASTCORE)
 export diag_ex_wwdt_perm_example_app_multicore_$(SOC)_CORELIST
 diag_ex_wwdt_perm_example_app_multicore_SBL_APPIMAGEGEN = no
 export diag_ex_wwdt_perm_example_app_multicore_SBL_APPIMAGEGEN
@@ -173,7 +174,7 @@ diag_ex_wwdt_perm_fifty_example_app_multicore_PKG_LIST = diag_ex_wwdt_perm_fifty
 diag_ex_wwdt_perm_fifty_example_app_multicore_INCLUDE = $(diag_ex_wwdt_perm_fifty_example_app_multicore_PATH)
 diag_ex_wwdt_perm_fifty_example_app_multicore_BOARDLIST = $(diag_ex_wwdt_perm_fifty_example_app_BOARDLIST)
 export diag_ex_wwdt_perm_fifty_example_app_multicore_BOARDLIST
-diag_ex_wwdt_perm_fifty_example_app_multicore_$(SOC)_CORELIST = mcu2_0
+diag_ex_wwdt_perm_fifty_example_app_multicore_$(SOC)_CORELIST := $(diag_ex_$(SOC)_LASTCORE)
 export diag_ex_wwdt_perm_fifty_example_app_multicore_$(SOC)_CORELIST
 diag_ex_wwdt_perm_fifty_example_app_multicore_SBL_APPIMAGEGEN = no
 export diag_ex_wwdt_perm_fifty_example_app_multicore_SBL_APPIMAGEGEN
@@ -217,7 +218,7 @@ diag_ex_wwdt_early_example_app_multicore_PKG_LIST = diag_ex_wwdt_early_example_a
 diag_ex_wwdt_early_example_app_multicore_INCLUDE = $(diag_ex_wwdt_early_example_app_multicore_PATH)
 diag_ex_wwdt_early_example_app_multicore_BOARDLIST = $(diag_ex_wwdt_early_example_app_BOARDLIST)
 export diag_ex_wwdt_early_example_app_multicore_BOARDLIST
-diag_ex_wwdt_early_example_app_multicore_$(SOC)_CORELIST = mcu2_0
+diag_ex_wwdt_early_example_app_multicore_$(SOC)_CORELIST := $(diag_ex_$(SOC)_LASTCORE)
 export diag_ex_wwdt_early_example_app_multicore_$(SOC)_CORELIST
 diag_ex_wwdt_early_example_app_multicore_SBL_APPIMAGEGEN = no
 export diag_ex_wwdt_early_example_app_multicore_SBL_APPIMAGEGEN
@@ -261,16 +262,18 @@ diag_ex_wwdt_late_example_app_multicore_PKG_LIST = diag_ex_wwdt_late_example_app
 diag_ex_wwdt_late_example_app_multicore_INCLUDE = $(diag_ex_wwdt_late_example_app_multicore_PATH)
 diag_ex_wwdt_late_example_app_multicore_BOARDLIST = $(diag_ex_wwdt_late_example_app_BOARDLIST)
 export diag_ex_wwdt_late_example_app_multicore_BOARDLIST
-diag_ex_wwdt_late_example_app_multicore_$(SOC)_CORELIST = mcu2_0
+diag_ex_wwdt_late_example_app_multicore_$(SOC)_CORELIST := $(diag_ex_$(SOC)_LASTCORE)
 export diag_ex_wwdt_late_example_app_multicore_$(SOC)_CORELIST
 diag_ex_wwdt_late_example_app_multicore_SBL_APPIMAGEGEN = no
 export diag_ex_wwdt_late_example_app_multicore_SBL_APPIMAGEGEN
 
-diag_ex_EXAMPLE_LIST += diag_ex_esm_example_app
-#diag_ex_EXAMPLE_LIST += diag_ex_wwdt_perm_example_app_multicore
-#diag_ex_EXAMPLE_LIST += diag_ex_wwdt_perm_fifty_example_app_multicore
-#diag_ex_EXAMPLE_LIST += diag_ex_wwdt_early_example_app_multicore
-#diag_ex_EXAMPLE_LIST += diag_ex_wwdt_late_example_app_multicore
+diag_ex_EXAMPLE_LIST += diag_ex_esm_example_app diag_ex_wwdt_perm_example_app
+diag_ex_EXAMPLE_LIST += diag_ex_wwdt_perm_fifty_example_app diag_ex_wwdt_early_example_app
+diag_ex_EXAMPLE_LIST += diag_ex_wwdt_late_example_app
+diag_ex_EXAMPLE_LIST += diag_ex_wwdt_perm_example_app_multicore
+diag_ex_EXAMPLE_LIST += diag_ex_wwdt_perm_fifty_example_app_multicore
+diag_ex_EXAMPLE_LIST += diag_ex_wwdt_early_example_app_multicore
+diag_ex_EXAMPLE_LIST += diag_ex_wwdt_late_example_app_multicore
 
 # ECC example
 diag_ex_ecc_example_app_COMP_LIST = diag_ex_ecc_example_app
