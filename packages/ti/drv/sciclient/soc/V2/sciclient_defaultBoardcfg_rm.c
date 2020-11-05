@@ -122,7 +122,7 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
                 .magic = TISCI_BOARDCFG_RM_RESASG_MAGIC_NUM,
                 .size = (uint16_t) sizeof(struct tisci_boardcfg_rm_resasg),
             },
-            .resasg_entries_size = 293 * sizeof(struct tisci_boardcfg_rm_resasg_entry),
+            .resasg_entries_size = 292 * sizeof(struct tisci_boardcfg_rm_resasg_entry),
         },
     },
     .resasg_entries = {
@@ -1511,12 +1511,6 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
             .type = TISCI_RESASG_UTYPE (TISCI_DEV_MCU_NAVSS0_RINGACC0, TISCI_RESASG_SUBTYPE_RA_MONITORS),
             .start_resource = 3,
             .host_id = TISCI_HOST_ID_A72_3,
-        },
-        {
-            .num_resource = 6,
-            .type = TISCI_RESASG_UTYPE (TISCI_DEV_MCU_NAVSS0_RINGACC0, TISCI_RESASG_SUBTYPE_RA_MONITORS),
-            .start_resource = 5,
-            .host_id = TISCI_HOST_ID_MCU_0_R5_0,
         },
         {
             .num_resource = 6,
