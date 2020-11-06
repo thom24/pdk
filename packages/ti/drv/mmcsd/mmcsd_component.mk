@@ -83,8 +83,8 @@ drvmmcsd_am335x_CORELIST = a8host
 drvmmcsd_omapl137_CORELIST = arm9_0 c674x
 drvmmcsd_omapl138_CORELIST = arm9_0 c674x
 drvmmcsd_am65xx_CORELIST     = mpu1_0 mcu1_0
-drvmmcsd_j721e_CORELIST     = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1
-drvmmcsd_j7200_CORELIST     = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
+drvmmcsd_j721e_CORELIST     = mpu1_0 mcu1_0 mcu2_0 mcu2_1 mcu3_0 mcu3_1
+drvmmcsd_j7200_CORELIST     = mpu1_0 mcu1_0 mcu2_0 mcu2_1
 drvmmcsd_am64x_CORELIST     = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
 ############################
 # mmcsd package

@@ -289,8 +289,8 @@ MMCSD_Error MMCSD_socInit(void)
        }
        else
        {
-          MMCSDInitCfg[1].intNum = CSLR_R5FSS0_CORE1_INTR_R5FSS0_INTROUTER0_OUTL_0;
-          MMCSDInitCfg[2].intNum = CSLR_R5FSS0_CORE1_INTR_R5FSS0_INTROUTER0_OUTL_1;
+          MMCSDInitCfg[1].intNum = CSLR_R5FSS0_CORE1_INTR_R5FSS0_INTROUTER0_OUTL_128;
+          MMCSDInitCfg[2].intNum = CSLR_R5FSS0_CORE1_INTR_R5FSS0_INTROUTER0_OUTL_129;
        }
                   
     } else if (r5CpuInfo.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_2) /* Main R5 SS1*/
@@ -314,8 +314,8 @@ MMCSD_Error MMCSD_socInit(void)
         }
         else
         {
-          MMCSDInitCfg[1].intNum = CSLR_R5FSS1_CORE1_INTR_R5FSS1_INTROUTER0_OUTL_0;
-          MMCSDInitCfg[2].intNum = CSLR_R5FSS1_CORE1_INTR_R5FSS1_INTROUTER0_OUTL_1;
+          MMCSDInitCfg[1].intNum = CSLR_R5FSS1_CORE1_INTR_R5FSS1_INTROUTER0_OUTL_128;
+          MMCSDInitCfg[2].intNum = CSLR_R5FSS1_CORE1_INTR_R5FSS1_INTROUTER0_OUTL_129;
         }   
      } else {
 		 ret=MMCSD_ERR;
