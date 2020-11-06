@@ -149,7 +149,7 @@ endif
 
 ifeq ($(BOARD), $(filter $(BOARD), j721e_evm am65xx_evm am65xx_idk am64x_evm))
 ifeq ($(BUILD_HS),no)
-CFLAGS_LOCAL_COMMON += -DSPI_DMA_ENABLE
+#CFLAGS_LOCAL_COMMON += -DSPI_DMA_ENABLE
 endif
 endif
 

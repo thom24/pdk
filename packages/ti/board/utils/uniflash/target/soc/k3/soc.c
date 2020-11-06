@@ -327,28 +327,22 @@ int8_t UFP_socInit(Board_initCfg *cfg)
     noBootCfg = UFP_isNoBootEnabled();
 #endif
 
-    if (cfg == NULL)
+    if(noBootCfg == TRUE)
     {
-        boardCfg = BOARD_INIT_PINMUX_CONFIG;
+        boardCfg = (BOARD_INIT_PINMUX_CONFIG |
+                    BOARD_INIT_PLL |
+                    BOARD_INIT_MODULE_CLOCK);
 
-        /* System firmware should be already loaded for no boot mode.
-           Enable PLL and PSC config in board.
+        /* Board library init shall be called only in JTAG mode as 
+         * system firmware should be loaded before calling board init.
+         * In case of UART load, system configurations done by RBL
+         * shall be used till the system firmware is loaded and board init
+         * is called for default intializations.
          */
-        if(noBootCfg == TRUE)
+        if (Board_init(boardCfg))
         {
-            boardCfg |= (BOARD_INIT_PLL |
-                         BOARD_INIT_MODULE_CLOCK);
+            return -1;
         }
-    }
-    else
-    {
-        boardCfg = *cfg;
-    }
-
-    /* Board Library Init. */
-    if (Board_init(boardCfg))
-    {
-        return -1;
     }
 
     if(noBootCfg == TRUE)
@@ -395,7 +389,8 @@ int8_t UFP_loadSysFW(void *sysFW)
     UFP_sciclientInit(sysFW);
 
     /* Board Library Init. */
-    boardCfg = (BOARD_INIT_PLL |
+    boardCfg = (BOARD_INIT_PINMUX_CONFIG |
+                BOARD_INIT_PLL |
                 BOARD_INIT_MODULE_CLOCK);
     if (Board_init(boardCfg))
     {

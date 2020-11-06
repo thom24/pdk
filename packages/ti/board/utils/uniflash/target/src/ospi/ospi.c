@@ -369,6 +369,7 @@ static int8_t UFP_ospiFlashErase(uint32_t offset, uint32_t length)
 static int8_t UFP_ospiInit(void)
 {
     OSPI_v0_HwAttrs ospi_cfg;
+    uint32_t tuneEnable = FALSE;
 
     /* Get the default ospi init configurations */
     OSPI_socGetInitCfg(BOARD_OSPI_INSTANCE, &ospi_cfg);
@@ -383,15 +384,15 @@ static int8_t UFP_ospiInit(void)
 
 #if defined(SOC_J7200)
     ospi_cfg.dacEnable  = false;
-    ospi_cfg.phyEnable  = false;
 #endif
+    ospi_cfg.phyEnable  = false;
 
     /* Set the default ospi init configurations */
     OSPI_socSetInitCfg(BOARD_OSPI_INSTANCE, &ospi_cfg);
 
     /* Open the Board ospi NOR device with ospi port 0
        and use default ospi configurations */
-    gOspiHandle = Board_flashOpen(OSPI_FLASH_ID, BOARD_OSPI_INSTANCE, NULL);
+    gOspiHandle = Board_flashOpen(OSPI_FLASH_ID, BOARD_OSPI_INSTANCE, (void *)(&tuneEnable));
 
     if (!gOspiHandle)
     {
