@@ -46,7 +46,7 @@
 
 /* Port and pin number mask for GPIO Load pin.
    Bits 7-0: Pin number  and Bits 15-8: Port number */
-#define PIN1    (0x0005U) /* MCU_GPIO0_5 */
+#define PIN1    (0x0205U) /* MCU_GPIO2_5 */
 
 /* GPIO Driver board specific pin configuration structure */
 GPIO_PinConfig gpioPinConfigs[] = {

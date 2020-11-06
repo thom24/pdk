@@ -181,10 +181,8 @@ uint32_t Board_getSocDomain(void)
 
 #if defined (BUILD_MPU)
     socDomain = BOARD_SOC_DOMAIN_MAIN;
-#elif defined (BUILD_MCU)
-    socDomain = BOARD_SOC_DOMAIN_MCU;
 #else
-    #error "Unsupported core id"
+    socDomain = BOARD_SOC_DOMAIN_MCU;
 #endif
 
   return socDomain;

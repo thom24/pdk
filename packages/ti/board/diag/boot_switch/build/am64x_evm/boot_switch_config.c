@@ -46,41 +46,41 @@
    Port and pin number mask for GPIO.
    Bits 7-0: Pin number  and Bits 15-8: Port number */
 
-#define BOARD_BOOT_SW12_GPIO_PIN1          (0x000FU) /* GPIO0_15 */
-#define BOARD_BOOT_SW12_GPIO_PIN2          (0x0010U) /* GPIO0_16 */
-#define BOARD_BOOT_SW12_GPIO_PIN3          (0x0011U) /* GPIO0_17 */
-#define BOARD_BOOT_SW12_GPIO_PIN4          (0x0012U) /* GPIO0_18 */
-#define BOARD_BOOT_SW12_GPIO_PIN5          (0x0013U) /* GPIO0_19 */
-#define BOARD_BOOT_SW12_GPIO_PIN6          (0x0014U) /* GPIO0_20 */
-#define BOARD_BOOT_SW12_GPIO_PIN7          (0x0015U) /* GPIO0_21 */
-#define BOARD_BOOT_SW12_GPIO_PIN8          (0x0016U) /* GPIO0_22 */
+#define BOARD_BOOT_SW2_GPIO_PIN1          (0x000FU) /* GPIO0_15 */
+#define BOARD_BOOT_SW2_GPIO_PIN2          (0x0010U) /* GPIO0_16 */
+#define BOARD_BOOT_SW2_GPIO_PIN3          (0x0011U) /* GPIO0_17 */
+#define BOARD_BOOT_SW2_GPIO_PIN4          (0x0012U) /* GPIO0_18 */
+#define BOARD_BOOT_SW2_GPIO_PIN5          (0x0013U) /* GPIO0_19 */
+#define BOARD_BOOT_SW2_GPIO_PIN6          (0x0014U) /* GPIO0_20 */
+#define BOARD_BOOT_SW2_GPIO_PIN7          (0x0015U) /* GPIO0_21 */
+#define BOARD_BOOT_SW2_GPIO_PIN8          (0x0016U) /* GPIO0_22 */
 
-#define BOARD_BOOT_SW9_GPIO_PIN1           (0x0017U) /* GPIO0_23 */
-#define BOARD_BOOT_SW9_GPIO_PIN2           (0x0018U) /* GPIO0_24 */
-#define BOARD_BOOT_SW9_GPIO_PIN3           (0x0019U) /* GPIO0_25 */
-#define BOARD_BOOT_SW9_GPIO_PIN4           (0x001AU) /* GPIO0_26 */
-#define BOARD_BOOT_SW9_GPIO_PIN5           (0x001BU) /* GPIO0_27 */
-#define BOARD_BOOT_SW9_GPIO_PIN6           (0x001CU) /* GPIO0_28 */
-#define BOARD_BOOT_SW9_GPIO_PIN7           (0x001DU) /* GPIO0_29 */
-#define BOARD_BOOT_SW9_GPIO_PIN8           (0x001EU) /* GPIO0_30 */
+#define BOARD_BOOT_SW3_GPIO_PIN1           (0x0017U) /* GPIO0_23 */
+#define BOARD_BOOT_SW3_GPIO_PIN2           (0x0018U) /* GPIO0_24 */
+#define BOARD_BOOT_SW3_GPIO_PIN3           (0x0019U) /* GPIO0_25 */
+#define BOARD_BOOT_SW3_GPIO_PIN4           (0x001AU) /* GPIO0_26 */
+#define BOARD_BOOT_SW3_GPIO_PIN5           (0x001BU) /* GPIO0_27 */
+#define BOARD_BOOT_SW3_GPIO_PIN6           (0x001CU) /* GPIO0_28 */
+#define BOARD_BOOT_SW3_GPIO_PIN7           (0x001DU) /* GPIO0_29 */
+#define BOARD_BOOT_SW3_GPIO_PIN8           (0x001EU) /* GPIO0_30 */
 
-#define PIN1		(BOARD_BOOT_SW12_GPIO_PIN1)
-#define PIN2		(BOARD_BOOT_SW12_GPIO_PIN2)
-#define PIN3		(BOARD_BOOT_SW12_GPIO_PIN3)
-#define PIN4		(BOARD_BOOT_SW12_GPIO_PIN4)
-#define PIN5		(BOARD_BOOT_SW12_GPIO_PIN5)
-#define PIN6		(BOARD_BOOT_SW12_GPIO_PIN6)
-#define PIN7		(BOARD_BOOT_SW12_GPIO_PIN7)
-#define PIN8		(BOARD_BOOT_SW12_GPIO_PIN8)
+#define PIN1		(BOARD_BOOT_SW2_GPIO_PIN1)
+#define PIN2		(BOARD_BOOT_SW2_GPIO_PIN2)
+#define PIN3		(BOARD_BOOT_SW2_GPIO_PIN3)
+#define PIN4		(BOARD_BOOT_SW2_GPIO_PIN4)
+#define PIN5		(BOARD_BOOT_SW2_GPIO_PIN5)
+#define PIN6		(BOARD_BOOT_SW2_GPIO_PIN6)
+#define PIN7		(BOARD_BOOT_SW2_GPIO_PIN7)
+#define PIN8		(BOARD_BOOT_SW2_GPIO_PIN8)
 
-#define PIN9		(BOARD_BOOT_SW9_GPIO_PIN1)
-#define PIN10		(BOARD_BOOT_SW9_GPIO_PIN2)
-#define PIN11		(BOARD_BOOT_SW9_GPIO_PIN3)
-#define PIN12		(BOARD_BOOT_SW9_GPIO_PIN4)
-#define PIN13		(BOARD_BOOT_SW9_GPIO_PIN5)
-#define PIN14		(BOARD_BOOT_SW9_GPIO_PIN6)
-#define PIN15		(BOARD_BOOT_SW9_GPIO_PIN7)
-#define PIN16		(BOARD_BOOT_SW9_GPIO_PIN8)
+#define PIN9		(BOARD_BOOT_SW3_GPIO_PIN1)
+#define PIN10		(BOARD_BOOT_SW3_GPIO_PIN2)
+#define PIN11		(BOARD_BOOT_SW3_GPIO_PIN3)
+#define PIN12		(BOARD_BOOT_SW3_GPIO_PIN4)
+#define PIN13		(BOARD_BOOT_SW3_GPIO_PIN5)
+#define PIN14		(BOARD_BOOT_SW3_GPIO_PIN6)
+#define PIN15		(BOARD_BOOT_SW3_GPIO_PIN7)
+#define PIN16		(BOARD_BOOT_SW3_GPIO_PIN8)
 
 /* GPIO Driver board specific pin configuration structure */
 GPIO_PinConfig gpioPinConfigs[] = {

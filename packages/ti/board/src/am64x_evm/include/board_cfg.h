@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019 - 2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -80,7 +80,7 @@ extern "C" {
 /* UART LLD instance number for MAIN UART3 port */
 #define BOARD_UART3_INSTANCE                            (3U)
 /* UART LLD instance number for MCU UART0 port */
-#define BOARD_MCU_UART0_INSTANCE                        (0U)
+#define BOARD_MCU_UART0_INSTANCE                        (7U)
 
 /* UART LLD instance number for primary UART port */
 #ifdef SIM_BUILD
@@ -92,12 +92,12 @@ extern "C" {
 #else
 #if defined (BUILD_MCU)
 /* default UART instance for R5 cores in the Main domain */ 
-#define BOARD_UART_INSTANCE                             (BOARD_UART0_INSTANCE)
+#define BOARD_UART_INSTANCE                             (BOARD_MCU_UART0_INSTANCE)
 #endif
 
 #if defined (BUILD_MPU)
 /* default UART instance for A53 cores in the Main domain */
-#define BOARD_UART_INSTANCE                             (BOARD_UART2_INSTANCE)
+#define BOARD_UART_INSTANCE                             (BOARD_UART0_INSTANCE)
 #endif
 
 #if defined (BUILD_M4F)
@@ -161,21 +161,18 @@ extern "C" {
 #define BOARD_I2C_AUDIO_IOEXP_DEVICE_ADDR               (0x21U)
 #define BOARD_I2C_VIDEO_IOEXP_DEVICE_ADDR               (0x21U)
 
-#define BOARD_GPIO_IOEXP_SPI_RST_PORT_NUM               (0) //J7ES_TODO: need to update
-#define BOARD_GPIO_IOEXP_SPI_RST_PIN_NUM                (0) //J7ES_TODO: need to update
-
 /* OSPI instance number */
 #define BOARD_OSPI_INSTANCE                             (0)
 
-#define BOARD_GPIO_IOEXP_OSPI_RST_PORT_NUM              (0) //J7ES_TODO: need to update
-#define BOARD_GPIO_IOEXP_OSPI_RST_PIN_NUM               (0) //J7ES_TODO: need to update
+#define BOARD_GPIO_IOEXP_OSPI_RST_PORT_NUM              (0)
+#define BOARD_GPIO_IOEXP_OSPI_RST_PIN_NUM               (1)
 
 /* GPIO port & pin numbers for  MMC reset */
-#define GPIO_MMC_SDCD_PORT_NUM                          (0) //J7ES_TODO: need to update
-#define GPIO_MMC_SDCD_PIN_NUM                           (0) //J7ES_TODO: need to update
+#define GPIO_MMC_SDCD_PORT_NUM                          (0) //AM64x_TODO: Need to remove
+#define GPIO_MMC_SDCD_PIN_NUM                           (0) //AM64x_TODO: Need to remove
 
-#define BOARD_GPIO_IOEXP_EMMC_RST_PORT_NUM              (0x00) //J7ES_TODO: need to update
-#define BOARD_GPIO_IOEXP_EMMC_RST_PIN_NUM               (0x00) //J7ES_TODO: need to update
+#define BOARD_GPIO_IOEXP_EMMC_RST_PORT_NUM              (0x0)
+#define BOARD_GPIO_IOEXP_EMMC_RST_PIN_NUM               (0x0)
 
 /* I2C instance for External RTC */
 #define BOARD_I2C_EXT_RTC_INSTANCE                      (0U)
@@ -183,14 +180,10 @@ extern "C" {
 /* I2C address for External RTC */
 #define BOARD_I2C_EXT_RTC_ADDR                          (0x6FU)
 
-#define BOARD_I2C_TOUCH_INSTANCE                        (0) //J7ES_TODO: need to update
-
-#define BOARD_I2C_TOUCH_SLAVE_ADDR                      (0) //J7ES_TODO: need to update
-
 /* I2C instance Board Presence Circuit */
-#define BOARD_PRES_WKUP_I2C_INSTANCE                    (0U) //J7ES_TODO: need to update
+#define BOARD_PRES_I2C_INSTANCE                         (0U)
 /* I2C address Board Presence Circuit */
-#define BOARD_PRES_DETECT_SLAVE_ADDR                    (0) //J7ES_TODO: need to update
+#define BOARD_PRES_DETECT_SLAVE_ADDR                    (0x38U)
 
 /* User LED Pin Details */
 #define BOARD_I2C_USER_LED_INSTANCE                     (0U)
@@ -198,11 +191,11 @@ extern "C" {
 #define BOARD_USER_LED1                                 (1U) /* Main GPIO0_1 */
 #define BOARD_USER_LED2                                 (1U) /* MCU GPIO0_1 */
 
-#define BOARD_ICSS_EMAC_PORT_START                      (0) //J7ES_TODO: need to update
-#define BOARD_ICSS_EMAC_PORT_END                        (0) //J7ES_TODO: need to update
-#define BOARD_ICSS_EMAC_PORT_MAX                        (2) //J7ES_TODO: need to update
-#define BOARD_MCU_EMAC_PORT_MAX                         (0) //J7ES_TODO: need to update
-#define BOARD_MCU_ETH_PORT                              (0) //J7ES_TODO: need to update
+#define BOARD_ICSS_EMAC_PORT_START                      (0X0U)
+#define BOARD_ICSS_EMAC_PORT_END                        (0x5U)
+#define BOARD_ICSS_EMAC_PORT_MAX                        (0x6U)
+#define BOARD_MCU_EMAC_PORT_MAX                         (0x1U)
+#define BOARD_MCU_ETH_PORT                              (0x1U) //AM64x_TODO: need to update
 
 
 /* ICSS2 EMAC PHY register address */
@@ -211,12 +204,12 @@ extern "C" {
 
 
 /* PRG2_RGMII_RESETn */
-#define BOARD_GPIO_IOEXP_ICSS2_EMAC_RST_PORT_NUM        (0) //J7ES_TODO: need to update
-#define BOARD_GPIO_IOEXP_ICSS2_EMAC_RST_PIN_NUM         (0) //J7ES_TODO: need to update
+#define BOARD_GPIO_IOEXP_ICSS2_EMAC_RST_PORT_NUM        (0)
+#define BOARD_GPIO_IOEXP_ICSS2_EMAC_RST_PIN_NUM         (3)
 
 /* PRG2_RGMII_INTn */
 #define BOARD_GPIO_ICSS2_EMAC_INT_PORT_NUM              (0) /* WKUP_GPIO0_24  */ //J7ES_TODO: need to update
-#define BOARD_GPIO_ICSS2_EMAC_INT_PIN_NUM               (0) //J7ES_TODO: need to update
+#define BOARD_GPIO_ICSS2_EMAC_INT_PIN_NUM               (0x46) //J7ES_TODO: need to update
 
 /* PRG2_ETH1_LED_LINK */
 #define BOARD_GPIO_ICSS2_EMAC_PHY0_LED_LINK_PORT_NUM    (0) /* GPIO1_13 */ //J7ES_TODO: need to update
@@ -325,17 +318,18 @@ extern "C" {
 
 
 /* EEPROM board ID information */
-#define BOARD_EEPROM_HEADER_FIELD_SIZE                  (0) //J7ES_TODO: need to update
-#define BOARD_EEPROM_TYPE_SIZE                          (0) //J7ES_TODO: need to update
-#define BOARD_EEPROM_STRUCT_LENGTH_SIZE                 (0) //J7ES_TODO: need to update
-#define BOARD_EEPROM_MAGIC_NUMBER                       (0) //J7ES_TODO: need to update
+/* EEPROM board ID information */
+#define BOARD_EEPROM_HEADER_FIELD_SIZE                  (7U)
+#define BOARD_EEPROM_TYPE_SIZE                          (1U)
+#define BOARD_EEPROM_STRUCT_LENGTH_SIZE                 (2U)
+#define BOARD_EEPROM_MAGIC_NUMBER                       (0xEE3355AA)
 
-#define BOARD_BOARD_FIELD_TYPE                          (0) //J7ES_TODO: need to update
-#define BOARD_DDR_FIELD_TYPE                            (0) //J7ES_TODO: need to update
-#define BOARD_MACINFO_FIELD_TYPE                        (0) //J7ES_TODO: need to update
-#define BOARD_ENDLIST                                   (0) //J7ES_TODO: need to update
+#define BOARD_BOARD_FIELD_TYPE                          (0x10)
+#define BOARD_DDR_FIELD_TYPE                            (0x11)
+#define BOARD_MACINFO_FIELD_TYPE                        (0x13)
+#define BOARD_ENDLIST                                   (0xFE)
 
-#define BOARD_EEPROM_HEADER_ADDR                        (0U) //J7ES_TODO: need to update
+#define BOARD_EEPROM_HEADER_ADDR                        (0U)
 
 /* PinMux data to be programmed to configure a pin to be a GPIO */
 #define PINMUX_GPIO_CFG                                 (0x00050007U)

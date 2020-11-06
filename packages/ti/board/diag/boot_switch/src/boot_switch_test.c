@@ -83,7 +83,7 @@ switchDetails_t swDetails[NUM_OF_SW] = {
 #elif defined(am64x_evm)
 static uint32_t pinMuxgpio[PADCONFIG_MAX_COUNT] =
 {
-    /*      SW12         */
+    /*      SW2         */
     PIN_GPMC0_AD0,
     PIN_GPMC0_AD1,
     PIN_GPMC0_AD2,
@@ -92,7 +92,7 @@ static uint32_t pinMuxgpio[PADCONFIG_MAX_COUNT] =
     PIN_GPMC0_AD5,
     PIN_GPMC0_AD6,
     PIN_GPMC0_AD7,
-    /*      SW9         */
+    /*      SW3         */
     PIN_GPMC0_AD8,
     PIN_GPMC0_AD9,
     PIN_GPMC0_AD10,
@@ -104,8 +104,8 @@ static uint32_t pinMuxgpio[PADCONFIG_MAX_COUNT] =
 };
 
 switchDetails_t swDetails[NUM_OF_SW] = {
-    { "SW12", 8,  0 },
-    { "SW9",  8,  8 }
+    { "SW2", 8,  0 },
+    { "SW3", 8,  8 }
 };
 #elif defined(SOC_J721E)
 static uint32_t pinMuxgpio[PADCONFIG_MAX_COUNT] =

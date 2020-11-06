@@ -46,9 +46,6 @@
    Port and pin number mask for GPIO.
    Bits 7-0: Pin number  and Bits 15-8: Port number */
 
-/*
-   Port and pin number mask for GPIO.
-   Bits 7-0: Pin number  and Bits 15-8: Port number */
 #define PIN1       (0x0128)   /* GPIO1_40/GPIO1_51 */
 #define PIN2       (0x0133)
 
@@ -176,32 +173,32 @@
 #define PIN84      (0x0029)
 #define PIN85      (0x0109)
 /* Safety Connector Pins  */
-#define PIN86      (0x0004)  /* MCU_GPIO0_4/MCU_GPIO0_13 */
-#define PIN87      (0x000D)
+#define PIN86      (0x0204)  /* MCU_GPIO0_4/MCU_GPIO0_13 */
+#define PIN87      (0x020D)
 
-#define PIN88      (0x000A)  /* MCU_GPIO0_10/MCU_GPIO0_6 */
-#define PIN89      (0x0006)
+#define PIN88      (0x020A)  /* MCU_GPIO0_10/MCU_GPIO0_6 */
+#define PIN89      (0x0206)
 
-#define PIN90      (0x0010)  /* MCU_GPIO0_16/MCU_GPIO0_21 */
-#define PIN91      (0x0015)
+#define PIN90      (0x0210)  /* MCU_GPIO0_16/MCU_GPIO0_21 */
+#define PIN91      (0x0215)
 
-#define PIN92      (0x0009)  /* MCU_GPIO0_9/MCU_GPIO0_11 */
-#define PIN93      (0x000B)
+#define PIN92      (0x0209)  /* MCU_GPIO0_9/MCU_GPIO0_11 */
+#define PIN93      (0x020B)
 
-#define PIN94      (0x0014)  /* MCU_GPIO0_20/MCU_GPIO0_15 */
-#define PIN95      (0x000F)
+#define PIN94      (0x0214)  /* MCU_GPIO0_20/MCU_GPIO0_15 */
+#define PIN95      (0x020F)
 
-#define PIN96      (0x000C)  /* MCU_GPIO0_12/MCU_GPIO0_7 */
-#define PIN97      (0x0007)
+#define PIN96      (0x020C)  /* MCU_GPIO0_12/MCU_GPIO0_7 */
+#define PIN97      (0x0207)
 
-#define PIN98      (0x0008)  /* MCU_GPIO0_8/MCU_GPIO0_14 */
-#define PIN99      (0x000D)
+#define PIN98      (0x0208)  /* MCU_GPIO0_8/MCU_GPIO0_14 */
+#define PIN99      (0x020D)
 
-#define PIN100      (0x0011)  /* MCU_GPIO0_17/MCU_GPIO0_22 */
-#define PIN101      (0x0016)
+#define PIN100      (0x0211)  /* MCU_GPIO0_17/MCU_GPIO0_22 */
+#define PIN101      (0x0216)
 
-#define PIN102      (0x0012)  /* MCU_GPIO0_18/MCU_GPIO0_19 */
-#define PIN103      (0x0013)
+#define PIN102      (0x0212)  /* MCU_GPIO0_18/MCU_GPIO0_19 */
+#define PIN103      (0x0213)
 
 /* GPIO Driver board specific pin configuration structure */
 GPIO_PinConfig gpioPinConfigs[] = {
