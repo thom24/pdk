@@ -90,7 +90,9 @@ extern "C" {
                                          UDMA_TEST_RF_CORE_MCU2_0 | \
                                          UDMA_TEST_RF_CFG_DEF)
 #define UDMA_TEST_RF_MAIN_BC            (UDMA_TEST_RF_SOC | UDMA_TEST_RF_CORE_ALL | UDMA_TEST_RF_CFG_DEF)
-#define UDMA_TEST_RF_MCU_BC_HC          (0U)
+#define UDMA_TEST_RF_MCU_BC_HC          (UDMA_TEST_RF_SOC | \
+                                         UDMA_TEST_RF_CORE_MCU1_0 | \
+                                         UDMA_TEST_RF_CFG_DEF)
 #define UDMA_TEST_RF_MCU_BC             (UDMA_TEST_RF_SOC | \
                                          UDMA_TEST_RF_CORE_MPU1_0 | \
                                          UDMA_TEST_RF_CORE_MCU2_0 | \
