@@ -158,6 +158,19 @@ int32_t Sciserver_tirtosInit(Sciserver_TirtosCfgPrms_t *pAppPrms)
             ret = CSL_EFAIL;
         }
     }
+
+    /*
+     * Temporary hack for PDK-8511
+     * Configure the GTC clock to 200MHz to match SPL's expected frequency
+     */
+    if (ret == CSL_PASS)
+    {
+        #include <tisci_devices.h>
+        #include <tisci_clocks.h>
+        Sciclient_pmSetModuleClkFreq(TISCI_DEV_GTC0, TISCI_DEV_GTC0_GTC_CLK,
+            200000000, 0x0, SCICLIENT_SERVICE_WAIT_FOREVER);
+    }
+
     return ret;
 }
 
