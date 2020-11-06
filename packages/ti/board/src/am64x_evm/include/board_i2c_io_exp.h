@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -45,6 +45,7 @@
 #define _BOARD_I2C_IO_EXP_H_
 
 #include "board_internal.h"
+#include "board_utils.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -55,33 +56,7 @@ extern "C" {
 #include <stdlib.h>
 #include <string.h>
 
-/* Input command for single port IO expander */
-#define BOARD_1PORT_IOEXP_INPUT_CMD                             (0x00U)
-
-/* Output command for single port IO expander */
-#define BOARD_1PORT_IOEXP_OUTPUT_CMD                            (0x01U)
-
-/* Polarity inversion command for single port IO expander */
-#define BOARD_1PORT_IOEXP_POLARITY_CMD                          (0x02U)
-
-/* Configuration command for single port IO expander */
-#define BOARD_1PORT_IOEXP_CONFIGURATION_CMD                     (0x03U)
-
-/* Input commands for two port IO expander */
-#define BOARD_2PORT_IOEXP_PORT0_INPUT_CMD                       (0x00U)
-#define BOARD_2PORT_IOEXP_PORT1_INPUT_CMD                       (0x01U)
-
-/* Output commands for two port IO expander */
-#define BOARD_2PORT_IOEXP_PORT0_OUTPUT_CMD                      (0x02U)
-#define BOARD_2PORT_IOEXP_PORT1_OUTPUT_CMD                      (0x03U)
-
-/* Polarity inversion commands for two port IO expander */
-#define BOARD_2PORT_IOEXP_PORT0_POLARITY_CMD                    (0x04U)
-#define BOARD_2PORT_IOEXP_PORT1_POLARITY_CMD                    (0x05U)
-
-/* Configuration commands for two port IO expander */
-#define BOARD_2PORT_IOEXP_PORT0_CONFIGURATION_CMD               (0x06U)
-#define BOARD_2PORT_IOEXP_PORT1_CONFIGURATION_CMD               (0x07U)
+#define BOARD_IO_EXP_INPUT_PORT0_ADDR                           (0x00)
 
 /* Input commands for three port IO expander */
 #define BOARD_3PORT_IOEXP_PORT0_INPUT_CMD                       (0x00U)
@@ -102,6 +77,10 @@ extern "C" {
 #define BOARD_3PORT_IOEXP_PORT0_CONFIGURATION_CMD               (0x0CU)
 #define BOARD_3PORT_IOEXP_PORT1_CONFIGURATION_CMD               (0x0DU)
 #define BOARD_3PORT_IOEXP_PORT2_CONFIGURATION_CMD               (0x0EU)
+/* This command is used to write data to the data shift register and transfer
+   it to the output storage register immediately (extra load 22H command not
+   needed) */
+#define BOARD_IO_EXP_CMD_DIRECT_LOAD_DATA_OUPTUT                (0x44)
 
 /**
  *  \enum    i2cIoExpType_t
@@ -110,9 +89,7 @@ extern "C" {
  */
 typedef enum
 {
-    ONE_PORT_IOEXP = 0,
-    TWO_PORT_IOEXP,
-    THREE_PORT_IOEXP
+    THREE_PORT_IOEXP = 0
 }i2cIoExpType_t;
 
 /**
@@ -124,7 +101,8 @@ typedef enum
 {
     PORTNUM_0 = 0,
     PORTNUM_1,
-    PORTNUM_2
+    PORTNUM_2,
+    PORTNUM_NONE
 }i2cIoExpPortNumber_t;
 
 /**

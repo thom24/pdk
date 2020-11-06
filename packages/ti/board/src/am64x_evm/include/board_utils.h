@@ -162,6 +162,17 @@ Board_STATUS Board_getI2cInitConfig(Board_I2cInitCfg_t *i2cCfg);
 Board_STATUS Board_setI2cInitConfig(Board_I2cInitCfg_t *i2cCfg);
 
 /**
+ * \brief Function to get the SoC domain
+ *
+ *  This function returns the domain of the SoC core on which
+ *  it is executing.
+ *
+ * \return   SoC domain of the core.
+ *
+ */
+uint32_t Board_getSocDomain(void);
+
+/**
  *  \brief    Function to generate delay in micro seconds
  *
  *  This function takes the delay parameters in usecs but the generated

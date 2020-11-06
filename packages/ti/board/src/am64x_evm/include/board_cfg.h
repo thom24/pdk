@@ -106,6 +106,12 @@ extern "C" {
 #endif
 #endif
 
+/* Clock frequency for UART module */
+#define BOARD_UART_CLK_MAIN                             (48000000U)
+
+/** @brief Number of UART instances */
+#define BOARD_UART_PER_CNT                              (6U)
+
 /* ICSSG UART instance number */
 #define BOARD_ICSSG_UART_INSTANCE                       (4U)
 

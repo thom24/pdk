@@ -56,8 +56,6 @@
 #include "board_internal.h"
 #include <ti/drv/sciclient/sciclient.h>
 
-Board_gblObj Board_obj = {NULL};
-
 static bool gBoardSysInitDone = 0;
 
 /**

@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -39,21 +39,28 @@
  */
 
 #include "board_internal.h"
+#include "board_utils.h"
 #include "board_cfg.h"
 
-/**
- *  \brief   This function initializes the default UART instance for use for
- *           console operations.
- *
- *  \return  Board_STATUS in case of success or appropriate error code.
- *
- */
-Board_STATUS Board_uartStdioInit(void)
-{
-    UART_stdioInit(BOARD_UART_INSTANCE);
+extern Board_I2cInitCfg_t gBoardI2cInitCfg;
 
-    return BOARD_SOK;
-}
+extern Board_initParams_t gBoardInitParams;
+static uint32_t gUARTBaseAddr = 0;
+static uint32_t gUARTClkFreq = 0;
+
+uint32_t gBoardI2cBaseAddr[BOARD_SOC_DOMAIN_MAX][I2C_HWIP_MAX_CNT] =
+    {{CSL_I2C0_CFG_BASE, CSL_I2C1_CFG_BASE, CSL_I2C3_CFG_BASE},
+     {CSL_MCU_I2C0_CFG_BASE, CSL_MCU_I2C1_CFG_BASE, 0}};
+
+Board_I2cObj_t gBoardI2cObj[BOARD_I2C_PORT_CNT] = {
+    {NULL, BOARD_SOC_DOMAIN_MAIN, 0, 0},
+    {NULL, BOARD_SOC_DOMAIN_MAIN, 1, 0},
+    {NULL, BOARD_SOC_DOMAIN_MAIN, 3, 0},
+};
+
+uint32_t gBoardUartBaseAddr[BOARD_SOC_DOMAIN_MAX][BOARD_UART_PER_CNT] =
+    {{CSL_UART0_BASE, CSL_UART1_BASE, CSL_UART3_BASE},
+     {CSL_MCU_UART0_BASE, CSL_MCU_UART1_BASE, 0}};
 
 /**
  *  \brief   This function initializes the i2c instance connected to the
@@ -73,9 +80,301 @@ Board_STATUS Board_internalInitI2C(uint8_t i2cInst)
 }
 
 /**
+  *  \brief   Returns base address of given I2C instance
+  *
+  *  \param   instNum [IN] I2C instance
+  *
+  *  \param   domain  [IN] Domain of I2C controller
+  *                           BOARD_SOC_DOMAIN_MAIN - Main Domain
+  *                           BOARD_SOC_DOMAIN_MCU - MCU domain
+  *
+  *  \return  Valid base address in case of success or 0
+  *
+  */
+static uint32_t Board_getI2cBaseAddr(uint8_t instNum,
+                                     uint8_t domain)
+{
+    uint32_t baseAddr = 0;
+
+    if((instNum < I2C_HWIP_MAX_CNT) &&
+       (domain <= BOARD_SOC_DOMAIN_MCU))
+    {
+        baseAddr = gBoardI2cBaseAddr[domain][instNum];
+    }
+
+    return (baseAddr);
+}
+
+/**
+  *  \brief   Returns base address of given UART instance
+  *
+  *  \param   instNum [IN] UART instance
+  *
+  *  \param   domain  [IN] Domain of UART controller
+  *                           BOARD_SOC_DOMAIN_MAIN - Main Domain
+  *                           BOARD_SOC_DOMAIN_MCU - MCU domain
+  *
+  *  \return  Valid base address in case of success or 0
+  *
+  */
+static uint32_t Board_getUartBaseAddr(uint8_t instNum,
+                                      uint8_t domain)
+{
+    uint32_t baseAddr = 0;
+
+    if((instNum < BOARD_UART_PER_CNT) &&
+       (domain <= BOARD_SOC_DOMAIN_MCU))
+    {
+        baseAddr = gBoardUartBaseAddr[domain][instNum];
+    }
+
+    return (baseAddr);
+}
+
+/**
+ *  \brief   This function initializes the default UART instance for use for
+ *           console operations.
+ *
+ *  \return  Board_STATUS in case of success or appropriate error code.
+ *
+ */
+Board_STATUS Board_uartStdioInit(void)
+{
+    UART_HwAttrs uart_cfg;
+    uint32_t uartInst;
+    uint32_t uartBaseAddr;
+    uint32_t socDomainUART;
+    uint32_t socDomainCore;
+
+    uartInst      = gBoardInitParams.uartInst;
+    socDomainUART = gBoardInitParams.uartSocDomain;
+
+    socDomainCore = Board_getSocDomain();
+
+    /* Disable the UART interrupt */
+    UART_socGetInitCfg(uartInst, &uart_cfg);
+
+    if(socDomainUART != socDomainCore)
+    {
+        uartBaseAddr = Board_getUartBaseAddr(uartInst, socDomainUART);
+        if(uartBaseAddr != 0)
+        {
+            gUARTBaseAddr = uart_cfg.baseAddr;
+            uart_cfg.baseAddr = uartBaseAddr;
+        }
+        else
+        {
+            return BOARD_INVALID_PARAM;
+        }
+
+        gUARTClkFreq = uart_cfg.frequency;
+        if(socDomainUART == BOARD_SOC_DOMAIN_MAIN)
+        {
+            uart_cfg.frequency = BOARD_UART_CLK_MAIN;
+        }
+    }
+
+    uart_cfg.enableInterrupt = false;
+    UART_socSetInitCfg(uartInst, &uart_cfg);
+
+    UART_stdioInit(uartInst);
+
+    return BOARD_SOK;
+}
+
+/**
+ *  \brief   This function is to get the i2c handle of the requested
+ *           instance of the specifed domain
+ *
+ *  \param   domainType [IN] Domain of I2C controller
+ *                             BOARD_SOC_DOMAIN_MAIN - Main Domain
+ *                             BOARD_SOC_DOMAIN_MCU - MCU domain
+ *
+ *  \param   i2cInst    [IN]        I2C instance
+ *
+ *  \return  Valid I2C handle in case of success or NULL in case of failure.
+ *
+ */
+I2C_Handle Board_getI2CHandle(uint8_t domainType,
+                              uint32_t i2cInst)
+{
+    Board_STATUS status;
+    Board_I2cInitCfg_t i2cCfg;
+
+    i2cCfg.i2cInst    = i2cInst;
+    i2cCfg.socDomain  = domainType;
+    i2cCfg.enableIntr = false;
+    Board_setI2cInitConfig(&i2cCfg);
+
+    status = Board_i2cInit();
+    if(status != BOARD_SOK)
+    {
+        return NULL;
+    }
+
+    return (gBoardI2cObj[i2cInst].i2cHandle);
+}
+
+/**
+ *  \brief   This function is to release the i2c handle acquired using
+ *           Board_getI2CHandle function
+ *
+ *  \param   hI2c [IN] I2C handle
+ *
+ *  \return  Board_STATUS in case of success or appropriate error code.
+ *
+ */
+Board_STATUS Board_releaseI2CHandle(I2C_Handle hI2c)
+{
+    Board_STATUS status = BOARD_FAIL;
+    I2C_HwAttrs i2c_cfg;
+    uint32_t coreDomain;
+    uint32_t i2cInst;
+
+    if(hI2c != NULL)
+    {
+        for (i2cInst = 0; i2cInst < BOARD_I2C_PORT_CNT; i2cInst++)
+        {
+            if((hI2c == gBoardI2cObj[i2cInst].i2cHandle))
+            {
+                break;
+            }
+        }
+
+        if(i2cInst != BOARD_I2C_PORT_CNT)
+        {
+            I2C_close(gBoardI2cObj[i2cInst].i2cHandle);
+            gBoardI2cObj[i2cInst].i2cHandle = NULL;
+
+            coreDomain = Board_getSocDomain();
+
+            if(gBoardI2cObj[i2cInst].i2cDomain != coreDomain)
+            {
+                I2C_socGetInitCfg(i2cInst, &i2c_cfg);
+                i2c_cfg.baseAddr = gBoardI2cObj[i2cInst].i2cBaseAddr;
+                I2C_socSetInitCfg(i2cInst, &i2c_cfg);
+            }
+
+            status = BOARD_SOK;
+        }
+    }
+
+    return status;
+}
+
+/**
+  *  \brief   This function initializes the i2c instance set using
+  *           Board_setI2cInitConfig API.
+  *
+  *  \return  Board_STATUS in case of success or appropriate error code.
+  *
+  */
+Board_STATUS Board_i2cInit(void)
+{
+    I2C_Params i2cParams;
+    I2C_HwAttrs i2c_cfg;
+    uint32_t i2cInst;
+    uint32_t i2cBaseAddr;
+    uint32_t i2cDomain;
+    uint32_t coreDomain;
+
+    i2cInst   = gBoardI2cInitCfg.i2cInst;
+    i2cDomain = gBoardI2cInitCfg.socDomain;
+
+    if(gBoardI2cObj[i2cInst].i2cHandle == NULL)
+    {
+        coreDomain = Board_getSocDomain();
+
+        I2C_init();
+        I2C_socGetInitCfg(i2cInst, &i2c_cfg);
+
+        if(i2cDomain != coreDomain)
+        {
+            i2cBaseAddr = Board_getI2cBaseAddr(i2cInst, i2cDomain);
+            if(i2cBaseAddr != 0)
+            {
+                gBoardI2cObj[i2cInst].i2cBaseAddr = i2c_cfg.baseAddr;
+                i2c_cfg.baseAddr                  = i2cBaseAddr;
+            }
+            else
+            {
+                return BOARD_INVALID_PARAM;
+            }
+        }
+
+        i2c_cfg.enableIntr = gBoardI2cInitCfg.enableIntr;
+
+        I2C_socSetInitCfg(i2cInst, &i2c_cfg);
+        I2C_Params_init(&i2cParams);
+
+        gBoardI2cObj[i2cInst].i2cHandle = I2C_open(i2cInst, &i2cParams);
+        if (gBoardI2cObj[i2cInst].i2cHandle == NULL)
+        {
+            return BOARD_I2C_OPEN_FAIL;
+        }
+
+        gBoardI2cObj[i2cInst].i2cDomain = i2cDomain;
+        gBoardI2cObj[i2cInst].instNum   = i2cInst;
+    }
+    else
+    {
+        if(gBoardI2cObj[i2cInst].i2cDomain != i2cDomain)
+        {
+            return BOARD_I2C_OPEN_FAIL;
+        }
+    }
+
+    return BOARD_SOK;
+}
+
+/**
+ *  \brief   This function is used to close the initialized board I2C handle.
+ */
+Board_STATUS Board_i2cDeInit(void)
+{
+    uint32_t coreDomain;
+    I2C_HwAttrs i2c_cfg;
+    uint32_t i2cInst;
+
+    i2cInst = gBoardI2cInitCfg.i2cInst;
+
+    if(gBoardI2cObj[i2cInst].i2cHandle != NULL)
+    {
+        I2C_close(gBoardI2cObj[i2cInst].i2cHandle);
+        gBoardI2cObj[i2cInst].i2cHandle = NULL;
+
+        coreDomain = Board_getSocDomain();
+
+        if(gBoardI2cObj[i2cInst].i2cDomain != coreDomain)
+        {
+            I2C_socGetInitCfg(i2cInst, &i2c_cfg);
+            i2c_cfg.baseAddr = gBoardI2cObj[i2cInst].i2cBaseAddr;
+            I2C_socSetInitCfg(i2cInst, &i2c_cfg);
+        }
+    }
+
+    return BOARD_SOK;
+}
+
+/**
  *  \brief   This function is used to de-initialize board UART handles.
  */
 Board_STATUS Board_uartDeInit(void)
 {
+    UART_HwAttrs uart_cfg;
+    uint32_t socDomainCore;
+
+    UART_stdioDeInit();
+
+    socDomainCore = Board_getSocDomain();
+
+    if(gBoardInitParams.uartSocDomain != socDomainCore)
+    {
+        UART_socGetInitCfg(gBoardInitParams.uartInst, &uart_cfg);
+        uart_cfg.baseAddr  = gUARTBaseAddr;
+        uart_cfg.frequency = gUARTClkFreq;
+        UART_socSetInitCfg(gBoardInitParams.uartInst, &uart_cfg);
+    }
+
     return BOARD_SOK;
 }

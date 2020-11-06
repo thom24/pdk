@@ -167,6 +167,30 @@ bool Board_detectBoard(uint32_t boardID)
 }
 
 /**
+ * \brief Function to get the SoC domain
+ *
+ *  This function returns the domain of the SoC core on which
+ *  it is executing.
+ *
+ * \return   SoC domain of the core.
+ *
+ */
+uint32_t Board_getSocDomain(void)
+{
+    uint32_t socDomain;
+
+#if defined (BUILD_MPU)
+    socDomain = BOARD_SOC_DOMAIN_MAIN;
+#elif defined (BUILD_MCU)
+    socDomain = BOARD_SOC_DOMAIN_MCU;
+#else
+    #error "Unsupported core id"
+#endif
+
+  return socDomain;
+}
+
+/**
  *  \brief    Function to generate delay in micro seconds
  *
  *  This function takes the delay parameters in usecs but the generated
