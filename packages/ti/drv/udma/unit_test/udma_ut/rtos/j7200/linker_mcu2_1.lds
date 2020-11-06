@@ -15,7 +15,7 @@ MEMORY
     OCMC_RAM_BOARD_CFG (RWIX)   : origin=0x41c80000 length=0x2000
     VECTORS (X)                 : origin=0x41C82000 length=0x1000
     RESET_VECTORS (X)           : origin=0x41C83000 length=0x100
-    OCMC_RAM (RWIX)             : origin=0x41C93100 length=0x8000
+    OCMC_RAM (RWIX)             : origin=0x41C83100 length=0x8000
     OCMC_RAM_X509_HEADER (RWIX) : origin=0x41cffb00 length=0x500
     MSMC3       (RWIX)  : ORIGIN = 0x70040000, LENGTH = 0x000B0000  /* 1MB - 320 KB  */
 }
