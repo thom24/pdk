@@ -523,7 +523,7 @@ static sblCfgPmic_t pmicAvsVoltCfg[] =
     {0, 0, 0}
 };
 
-void SBL_SocEarlyInit(void)
+void SBL_SocEarlyInit(uint32_t isBuildHs)
 {
 }
 
@@ -744,12 +744,12 @@ static void J721E_SetupLvCmosDriveStrength(void)
     }
 }
 
-void SBL_SocEarlyInit(void)
+void SBL_SocEarlyInit(uint32_t isBuildHs)
 {
     J721E_SetupLvCmosDriveStrength();
     J721E_UART_InitPwrClk();
 #if !defined(SBL_ENABLE_DEV_GRP_MCU) && !defined(SBL_USE_MCU_DOMAIN_ONLY)
-    SBL_SetQoS();
+    SBL_SetQoS(isBuildHs);
 #endif
 }
 
@@ -769,7 +769,7 @@ static void J7200_UART_InitPwrClk(void)
     HW_WR_REG32(SBL_UART_PLL_BASE + SBL_UART_PLL_KICK1_OFFSET, SBL_UART_PLL_KICK_LOCK_VAL);
 }
 
-void SBL_SocEarlyInit(void)
+void SBL_SocEarlyInit(uint32_t isBuildHs)
 {
     J7200_UART_InitPwrClk();
 }
@@ -781,7 +781,7 @@ void SBL_SocLateInit(void)
 
 #if defined(SOC_AM64X)
 #include <ti/board/src/am64x_evm/include/board_internal.h>
-void SBL_SocEarlyInit(void)
+void SBL_SocEarlyInit(uint32_t isBuildHs)
 {
 }
 

@@ -319,7 +319,7 @@ int main()
     Board_init(BOARD_INIT_UNLOCK_MMR);
 
     /* Any SoC specific Init. */
-    SBL_SocEarlyInit();
+    SBL_SocEarlyInit(FALSE);
 
     if (SBL_LOG_LEVEL > SBL_LOG_ERR)
     {
@@ -378,7 +378,7 @@ int main()
 #if defined(SBL_ENABLE_PLL)
     {
         Rcm_PllHsDivOutConfig hsDivCfg;
-        
+
 
         SBL_log(SBL_LOG_MAX, "Initlialzing PLLs ...");
         SBL_ADD_PROFILE_POINT;
@@ -388,7 +388,7 @@ int main()
         SBL_RcmDspApllConfig(RCM_PLL_FOUT_FREQID_CLK_900MHZ, &hsDivCfg);
 
         hsDivCfg.hsdivOutEnMask = (RCM_PLL_HSDIV_OUTPUT_ENABLE_1 |
-                                   RCM_PLL_HSDIV_OUTPUT_ENABLE_2 | 
+                                   RCM_PLL_HSDIV_OUTPUT_ENABLE_2 |
                                    RCM_PLL_HSDIV_OUTPUT_ENABLE_3);
         /* Configure CLKOUT1 to DSS PLL Fout/2. Divider is hsDivOut + 1 so set 1 */
         hsDivCfg.hsDivOutFreqHz[RCM_PLL_HSDIV_OUTPUT_IDX1] = SBL_FREQ_MHZ2HZ(192U);

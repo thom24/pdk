@@ -734,12 +734,12 @@ extern uint16_t sblMapOtpVidToMilliVolts[256];
 #define SBL_DEV_ID_M4F_CLUSTER0     (TISCI_DEV_MCU_M4FSS0_CORE0)
 
 
-#define SBL_PROC_ID_MPU1_CPU0       (SCICLIENT_PROCID_A53_CL0_C0) 
+#define SBL_PROC_ID_MPU1_CPU0       (SCICLIENT_PROCID_A53_CL0_C0)
 #define SBL_DEV_ID_MPU1_CPU0        (TISCI_DEV_A53SS0_CORE_0)
 #define SBL_CLK_ID_MPU1_CPU0        (TISCI_DEV_A53SS0_COREPAC_ARM_CLK_CLK)
 #define SBL_MPU1_CPU0_FREQ_HZ       (800000000)
 
-#define SBL_PROC_ID_MPU1_CPU1       (SCICLIENT_PROCID_A53_CL0_C1) 
+#define SBL_PROC_ID_MPU1_CPU1       (SCICLIENT_PROCID_A53_CL0_C1)
 #define SBL_DEV_ID_MPU1_CPU1        (TISCI_DEV_A53SS0_CORE_1)
 #define SBL_CLK_ID_MPU1_CPU1        (TISCI_DEV_A53SS0_COREPAC_ARM_CLK_CLK)
 #define SBL_MPU1_CPU1_FREQ_HZ       (800000000)
@@ -829,6 +829,6 @@ extern uint16_t sblMapOtpVidToMilliVolts[256];
 /*                          Function Declarations                             */
 /* ========================================================================== */
 void SBL_RAT_Config(sblRatCfgInfo_t *remap_list);
-void SBL_SocEarlyInit(void);
+void SBL_SocEarlyInit(uint32_t isBuildHs);
 void SBL_SocLateInit(void);
 #endif

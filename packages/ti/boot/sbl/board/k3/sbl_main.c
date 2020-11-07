@@ -394,11 +394,17 @@ int main()
 #if defined(SBL_ENABLE_HLOS_BOOT) && (defined(SOC_J721E) || defined(SOC_J7200))
     cpu_core_id_t core_id;
 #endif
+    uint32_t isBuildHs;
 
     SBL_ADD_PROFILE_POINT;
 
     /* Any SoC specific Init. */
-    SBL_SocEarlyInit();
+#if defined (SBL_BUILD_HS)
+    isBuildHs = TRUE;
+#else
+    isBuildHs = FALSE;
+#endif
+    SBL_SocEarlyInit(isBuildHs);
 
     if (SBL_LOG_LEVEL > SBL_LOG_ERR)
     {

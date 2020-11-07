@@ -34,6 +34,6 @@
 #ifndef _SBL_QOS_H_
 #define _SBL_QOS_H_
 
-void SBL_SetQoS(void);
+void SBL_SetQoS(uint32_t isBuildHs);
 
 #endif /* _SBL_QOS_H_ */

@@ -202,7 +202,7 @@ int32_t SBL_VerifyMulticoreImage(void **img_handle,
  ******************* SoC Specific Initilization ***********************
  **********************************************************************/
 
-void SBL_SocEarlyInit(void)
+void SBL_SocEarlyInit(uint32_t isBuildHs)
 {
     //SetupLvCmosDriveStrength();
 
