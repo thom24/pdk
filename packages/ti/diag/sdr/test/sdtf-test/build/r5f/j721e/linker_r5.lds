@@ -70,8 +70,8 @@ __SVC_STACK_SIZE = 0x1000;
 MEMORY
 {
     /* MCU0_R5F_0 local view                                                  */
-    MCU0_R5F_TCMA (X)       : origin=0x0            length=0x7c00 fill=0xffffffff
-    MCU0_R5F_TCMA_TEST (X)      : origin=0x7c00         length=0x400 fill=0xffffffff
+    MCU0_R5F_TCMA (X)       : origin=0x0            length=0x7c00
+    MCU0_R5F_TCMA_TEST (X)      : origin=0x7c00         length=0x400
     MCU0_R5F_TCMB0 (RWIX)   : origin=0x41010000 length=0x8000
 
     /* MCU0_R5F_1 SoC view                                                    */
@@ -116,7 +116,7 @@ SECTIONS
 /* a range of +\- 16 MB                                                       */
     .intvecs    : {} palign(8)      > VECTORS
     .intc_text  : {} palign(8)      > VECTORS
-    .rstvectors     : {} palign(8)      > MCU0_R5F_TCMA
+    .rstvectors     : {} palign(8)      > RESET_VECTORS
     .sdr_text_esm align(8) : {
                               sdr.*<sdr_esm.o*> (.text)
                         }  > MSMC3_SDR
