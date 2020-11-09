@@ -22,11 +22,12 @@ INCDIR = . src
 ifeq ($(SOC),$(filter $(SOC), am65xx))
 XDC_CFG_FILE_mpu1_0 = ./$(SOC)/ospiFlashTest_a53.cfg
 XDC_CFG_FILE_mcu1_0 = ./$(SOC)/ospiFlashTest_r5.cfg
-else
-ifeq ($(SOC),$(filter $(SOC), j721e j7200 am64x))
-XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
-
 endif
+ifeq ($(SOC),$(filter $(SOC), j7200 am64x))
+XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
+endif
+ifeq ($(SOC),$(filter $(SOC), j721e))
+XDC_CFG_FILE_$(CORE) = ./$(SOC)/sysbios_$(ISA).cfg
 endif
 
 endif
