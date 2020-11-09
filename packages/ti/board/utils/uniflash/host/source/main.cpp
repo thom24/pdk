@@ -54,17 +54,27 @@
 void displayHelp( void )
 {
 #ifdef WINDOWS
-	cout << "\nUsage:" << endl << "dslite.bat --mode processors -c <COM_Port> -f <Path_to_the_file_to_be_transfered> -d <Device_Type> -i <Image_Type> -e <erase_length -o <Offset>\
-                                                                        \nDevice_Type:\n0 - NAND\n1 - SPI\n2 - QSPI\n3 - OSPI\n4 - eMMC\n5 - HyperFlash\n6 - UFS\
-                                                                        \nImage_Type:\n0 - Flash\n1 - MLO\n2 - Uboot\n3 - UImage\n4 - Firmware\n5 - Custom Image\
-																		\nerase_length:Length in Bytes\
-																		\nNote: File Path should not be specified in case of Flash Erase"<< endl;
+	cout << "\nUsage:" << endl << "dslite.bat --mode processors -c <COM_Port> -f <File_to_be_transferred_with_full_path> -d <Device_Type> -i <Image_Type> -e <Erase_Length> -o <Offset>\
+                                                                        \n\nCOM_Port: COM port number where processor UART console is connected\
+                                                                        \n\nFile_to_be_transferred_with_full_path: Name of the file to be flashed with full path\
+                                                                        \n\nDevice_Type:\n0 - NAND\n1 - SPI\n2 - QSPI\n3 - OSPI\n4 - eMMC\n5 - HyperFlash\n6 - UFS\n7 - Custom Flash\
+                                                                        \n\nImage_Type:\n0 - Flash\n1 - MLO\n2 - Uboot\n3 - UImage\n4 - Firmware\n5 - Custom Image\
+																		\n\nErase_Length:Flash erase length in bytes\
+                                                                        \n\nOffset: Flash start offset for image flashing or erase\
+                                                                        \n\nNote:\
+                                                                        \n - Image type parameter (-i 0) is mandatory while downloading the flash programmer\
+																		\n - File Path should not be specified in case of Flash Erase"<< endl;
 #else
-	cout << "\nUsage:" << endl << "sudo dslite.sh --mode processors -c <COM_Port> -f <Path_to_the_file_to_be_transfered> -d <Device_Type> -i <Image_Type> -e <erase_length -o <Offset>\
-                                                                        \nDevice_Type:\n0 - NAND\n1 - SPI\n2 - QSPI\n3 - OSPI\n4 - eMMC\n5 - HyperFlash\n6 - UFS\
-                                                                        \nImage_Type:\n0 - Flash\n1 - MLO\n2 - Uboot\n3 - UImage\n4 - Firmware\n5 - Custom Image\
-																		\nerase_length:Length in Bytes\
-																		\nNote: File Path should not be specified in case of Flash Erase"<< endl;
+	cout << "\nUsage:" << endl << "sudo dslite.sh --mode processors -c <COM_Port> -f <File_to_be_transferred_with_full_path> -d <Device_Type> -i <Image_Type> -e <erase_length -o <Offset>\
+                                                                        \n\nCOM_Port: COM port number where processor UART console is connected\
+                                                                        \n\nFile_to_be_transferred_with_full_path: Name of the file to be flashed with full path\
+                                                                        \n\nDevice_Type:\n0 - NAND\n1 - SPI\n2 - QSPI\n3 - OSPI\n4 - eMMC\n5 - HyperFlash\n6 - UFS\n7 - Custom Flash\
+                                                                        \n\nImage_Type:\n0 - Flash\n1 - MLO\n2 - Uboot\n3 - UImage\n4 - Firmware\n5 - Custom Image\
+																		\n\nErase_Length:Length in Bytes\
+                                                                        \n\nOffset: Flash start offset for image flashing or erase\
+                                                                        \n\nNote:\
+                                                                        \n - Image type parameter (-i 0) is mandatory while downloading the flash programmer\
+																		\n - File Path should not be specified in case of Flash Erase"<< endl;
 #endif
 	exit(1);
 }

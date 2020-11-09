@@ -38,7 +38,7 @@
 */
 #include "../include/ProcessorSDKSerialFlash.h"
 
-#define DEVICE_SUPPORTED 7
+#define DEVICE_SUPPORTED 8
 #define IMAGETYPE_SUPPORTED 5
 #define BUFF_SIZE 20
 #define FIND_STRING 2
@@ -48,7 +48,7 @@ unsigned int baudRate = BAUDRATE_0;
 int devtype = 0, imgtype = 0, addroff = 0, elen = 0, RBL = 0, FW = 1, fdesc = 0, flashErase = 0;
 unsigned int offset = 0, def_elen = 0;
 char def_itype = '5', def_dtype = '1', def_off = '0';
-char device_list[DEVICE_SUPPORTED][BUFF_SIZE]={"NAND", "SPI", "QSPI", "OSPI", "eMMC", "HyperFlash", "UFS"};
+char device_list[DEVICE_SUPPORTED][BUFF_SIZE]={"NAND", "SPI", "QSPI", "OSPI", "eMMC", "HyperFlash", "UFS", "Custom Flash"};
 
 unsigned int standardBaudRate[NUM_OF_SUP_BAUDRATE] = { BAUDRATE_0,
                                                        BAUDRATE_1,
@@ -1587,7 +1587,6 @@ int LoadImage( const char * imagePath, const char** optionNames, const char** op
     unsigned char supBaudRate = 0;
 	const char start = 'S', program = PROGRAM_CMD, setBaudrate = SET_BAUDRATE_CMD;
     std::string sysfw_path;
-    char findStr[FIND_STRING][BUFF_SIZE]={"am65xx", "j721e"};
     char *tokenStr, *tempStr;
     char *found = NULL;
     std::string fullpath = imagePath;
@@ -1630,25 +1629,6 @@ int LoadImage( const char * imagePath, const char** optionNames, const char** op
 		if( addroff == 0 )
 			offset = strtol( &def_off, NULL, 16 );
 	}
-    if (def_itype == '0')
-    {
-        for(i=0; i<FIND_STRING; i++)
-        {
-            found = strstr((char *)filename.c_str(), findStr[i]);
-            if(found)
-            {
-                break;
-            }
-        }
-        if(found)
-        {
-#ifdef DEBUG
-            cout <<"\nFinding string: " <<findStr;
-            cout <<endl <<"Filename=" <<filename <<endl;
-#endif
-            cout <<endl <<"Enabling SysFw transfer!!!\n";
-        }
-    }
 #ifdef DEBUG
 	cout <<"Device Type-" << def_dtype << endl <<"ImageType-" << def_itype << endl << "Offset-" << offset << endl;
 #endif
@@ -1675,13 +1655,9 @@ int LoadImage( const char * imagePath, const char** optionNames, const char** op
 		err =xmodemFTransfer( wc, (char *)imagePath);
 #else
 		err =xmodemFTransfer( (char *)imagePath, fdesc );
-	if(!found)
-	{
-        close(fdesc);
-	}
 #endif
         /* System Firmware Transfer */
-        if (found)
+        if (def_itype == '0')
         {
             tokenStr = strtok((char *)imagePath, "/\\");
             tempStr = tokenStr;
@@ -1702,40 +1678,47 @@ int LoadImage( const char * imagePath, const char** optionNames, const char** op
                 }
                 tempStr = tokenStr;
             }
-#ifdef DEBUG
-            cout <<endl <<"\nSysfw Filename=" <<sysfw_path <<endl;
-#endif
-            pathLen = sysfw_path.length();
-            char sysfwPath[pathLen+1];
-            strcpy(sysfwPath, sysfw_path.c_str());
-
-            /* Create Header Packet */
-            def_itype = FIRMWARE_DEVTYPE; /* Image Type is Firmware */
-            memset (header, 0, sizeof(header));
-            memcpy(header, &start, 1);
-            memcpy(&header[1], &program, 1);
-            memcpy(&header[3], &def_itype, 1);
-#ifdef DEBUG
-            cout <<"\nSystem Firmware Header - " << header << endl;
-#endif
-
-#ifdef WINDOWS
-            err =xmodemHTransfer( wc, header );
-#else
-            err = xmodemHTransfer( header, fdesc );
-#endif
-            if(!err)
+            ifstream sysfw_file(sysfw_path);
+            if(sysfw_file.is_open())
             {
-                cout << "Header Transfer complete\n";
-                cout << "Transferring System Firmware..";
-#ifdef WINDOWS
-                err =xmodemFTransfer( wc, sysfwPath);
-#else
-                err =xmodemFTransfer( sysfwPath, fdesc );
-                close(fdesc);
+                cout <<endl <<"Enabling SysFw transfer!!!\n";
+#ifdef DEBUG
+                cout <<endl <<"\nSysfw Filename=" <<sysfw_path <<endl;
 #endif
+                pathLen = sysfw_path.length();
+                char sysfwPath[pathLen+1];
+                strcpy(sysfwPath, sysfw_path.c_str());
+
+                /* Create Header Packet */
+                def_itype = FIRMWARE_DEVTYPE; /* Image Type is Firmware */
+                memset (header, 0, sizeof(header));
+                memcpy(header, &start, 1);
+                memcpy(&header[1], &program, 1);
+                memcpy(&header[3], &def_itype, 1);
+#ifdef DEBUG
+                cout <<"\nSystem Firmware Header - " << header << endl;
+#endif
+
+#ifdef WINDOWS
+                err =xmodemHTransfer( wc, header );
+#else
+                err = xmodemHTransfer( header, fdesc );
+#endif
+                if(!err)
+                {
+                    cout << "Header Transfer complete\n";
+                    cout << "Transferring System Firmware..";
+#ifdef WINDOWS
+                    err =xmodemFTransfer( wc, sysfwPath);
+#else
+                    err =xmodemFTransfer( sysfwPath, fdesc );
+#endif
+                }
             }
         }
+#ifndef WINDOWS
+        close(fdesc);
+#endif
         return err;
 	}
 	else	/* Transfer Files to Flash Writer */

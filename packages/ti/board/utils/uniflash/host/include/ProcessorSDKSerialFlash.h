@@ -4,10 +4,10 @@
 #include <iostream>
 #include <stdio.h>
 #include <string.h>
+#include <fstream>
 
 #ifdef WINDOWS
 
-#include <fstream>
 #include <time.h>
 #include <windows.h>
 #include <tchar.h>
@@ -56,7 +56,7 @@ int xmodemHTransfer ( unsigned char*, int );
 
 using namespace std;
 
-#define VERSION "1.2.1.0"
+#define VERSION "1.3.0.0"
 
 #define	SUCCESS                  0
 #define ERR_RCAN                -1
