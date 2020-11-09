@@ -215,13 +215,31 @@ static NOR_STATUS Nor_xspiHybridSectCfg(SPI_Handle handle,
 
     if(enable == 1)
     {
-        /* Enable hybrid sector configuration */
-        regData &= ~0x8;
+        if((regData & 0x8) == 0)
+        {
+            /* Hybrid sector configuration is already in enabled state.
+               No further action needed */
+            return NOR_PASS;
+        }
+        else
+        {
+            /* Enable hybrid sector configuration */
+            regData &= ~0x8;
+        }
     }
     else
     {
-        /* Disable hybrid sector configuration */
-        regData |= 0x8;
+        if((regData & 0x8) != 0)
+        {
+            /* Hybrid sector configuration is already in disabled state.
+               No further action needed */
+            return NOR_PASS;
+        }
+        else
+        {
+            /* Disable hybrid sector configuration */
+            regData |= 0x8;
+        }
     }
 
     /* Write configuration register3 */
@@ -803,7 +821,7 @@ NOR_STATUS Nor_xspiErase(NOR_HANDLE handle, int32_t erLoc, bool blkErase)
     {
         return NOR_FAIL;
     }
-    
+
     cmdWren[0]  = NOR_CMD_WREN;
 
     norOspiInfo = (NOR_Info *)handle;
