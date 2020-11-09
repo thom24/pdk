@@ -103,6 +103,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#centralized-foundational-security-management">Centralized Foundational Security Management</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#architecture-change-between-sdk-7-0-and-sdk-7-1">Architecture Change between SDK 7.0 and SDK 7.1</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#further-reading">Further Reading</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#glossary">Glossary</a></li>
 </ul>
 </li>
 </ul>
@@ -311,11 +312,13 @@ difference in the location of execution of centralized services from System Firm
 <img alt="../_images/softwareStack.png" src="../_images/softwareStack.png" />
 <p class="caption"><span class="caption-number">Fig. 2 </span><span class="caption-text">DMSC Firmware Change | TDA4VM, DRA829, DRA821</span></p>
 </div>
-<p>Purpose of DMSC firmware change
-- Secure HSM functions can run on a DMSC Security Island
-- Free a main domain R5F for general customer use.
-- Enables MCU Only mode with HSM functions on DMSC
-- Lockstep Safety R5F runs safety critical PM &amp; RM functions.</p>
+<p>Purpose of DMSC firmware change</p>
+<ul class="simple">
+<li>Secure HSM functions can run on a DMSC Security Island</li>
+<li>Free a main domain R5F for general customer use.</li>
+<li>Enables MCU Only mode with HSM functions on DMSC</li>
+<li>Lockstep Safety R5F runs safety critical PM &amp; RM functions.</li>
+</ul>
 <p>The Memory / CPU requirement is minimal (&lt; 150 KB, &lt; 10 MHz) so having the RM
 and PM execute on the MCU R5f has minimal impact to user applications.</p>
 <p>The SW impact summary for the end users is as given below. Kindly note since the
@@ -335,6 +338,18 @@ the changes required for integration of the SCISERVER and RM/PM on the MCU R5F.<
 <li>In <a class="reference internal" href="../4_trace/index.html#pub-interpret-trace"><span class="std std-ref">Chapter 4: Interpreting Trace Data</span></a>, we define trace data format.</li>
 <li>In <a class="reference internal" href="../5_soc_doc/index.html#pub-soc-family-doc"><span class="std std-ref">Chapter 5: SoC Family Specific Documentation</span></a>, we provide information specific to each SOC that is required using the TISCI messages described in <a class="reference internal" href="../2_tisci_msgs/index.html#pub-tisci-msg-doc"><span class="std std-ref">Chapter 2: TISCI Message Documentation</span></a>.</li>
 <li>In <a class="reference internal" href="../6_topic_user_guides/index.html#pub-user-guides"><span class="std std-ref">Chapter 6: Topic User Guides</span></a>, we provide user guides for the more complex scenarios.</li>
+</ul>
+</div>
+<div class="section" id="glossary">
+<h2>Glossary<a class="headerlink" href="#glossary" title="Permalink to this headline">¶</a></h2>
+<p>The following list defines the different acronyms and terms used in the rest of the document:</p>
+<ul class="simple">
+<li><strong>TIFS</strong> (Texas Instruments Foundational Security): Foundational security software provided from TI.</li>
+<li><strong>TISCI</strong> (Texas Instruments System Controller Interface) : API interface to TIFS, RM/PM services.</li>
+<li><strong>DM</strong> (Device Manager) : Collective term used to refer to the Resource Management and Power Management Software.</li>
+<li><strong>RM</strong> (Resource Management): Term used to refer to the Resource Management Software.</li>
+<li><strong>PM</strong> (Power Management): Term used to refer to the Power Management Software.</li>
+<li><strong>SYSFW</strong> (System Firmware): Collective term used to refer to the TIFS and RM/PM Software.</li>
 </ul>
 </div>
 </div>

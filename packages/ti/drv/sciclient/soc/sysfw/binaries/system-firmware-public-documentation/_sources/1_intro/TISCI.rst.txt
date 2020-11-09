@@ -135,6 +135,7 @@ difference in the location of execution of centralized services from |sysfw|.
     DMSC Firmware Change | TDA4VM, DRA829, DRA821
 
 Purpose of DMSC firmware change
+
 - Secure HSM functions can run on a DMSC Security Island 
 - Free a main domain R5F for general customer use.
 - Enables MCU Only mode with HSM functions on DMSC
@@ -160,5 +161,17 @@ Further Reading
 - In :ref:`pub_interpret_trace`, we define trace data format.
 - In :ref:`pub_soc_family_doc`, we provide information specific to each SOC that is required using the TISCI messages described in :ref:`pub_tisci_msg_doc`.
 - In :ref:`pub_user_guides`, we provide user guides for the more complex scenarios.
+
+Glossary
+--------
+
+The following list defines the different acronyms and terms used in the rest of the document:
+
+- **TIFS** (Texas Instruments Foundational Security): Foundational security software provided from TI.
+- **TISCI** (Texas Instruments System Controller Interface) : API interface to TIFS, RM/PM services.
+- **DM** (Device Manager) : Collective term used to refer to the Resource Management and Power Management Software.
+- **RM** (Resource Management): Term used to refer to the Resource Management Software.
+- **PM** (Power Management): Term used to refer to the Power Management Software.
+- **SYSFW** (System Firmware): Collective term used to refer to the TIFS and RM/PM Software.
 
 
