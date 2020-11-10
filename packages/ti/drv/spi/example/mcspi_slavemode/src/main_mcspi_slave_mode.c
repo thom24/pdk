@@ -1605,7 +1605,9 @@ void masterTaskFxn()
 #if defined (SOC_J721E) || defined (SOC_J7200)
     while ( *((volatile uint32_t *)(MCSPI_SYNC_ADDR)) != 0x12341234U)
     {
+#ifdef USE_BIOS
         Task_yield();
+#endif
         /* wait for slave to start. */
         CacheP_Inv((void *)MCSPI_SYNC_ADDR, 4);
     }
