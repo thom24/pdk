@@ -147,11 +147,11 @@ int main(void)
     Task_Params       taskParams;
     Board_initCfg     boardCfg;
 
-    /* Initialize SCI Client Server */
-    Ipc_setupSciServer();
-
     /* It must be called before BoardInit() */
     ipc_initSciclient();
+
+    /* Initialize SCI Client Server */
+    Ipc_setupSciServer();
 
     boardCfg = BOARD_INIT_PINMUX_CONFIG |
                BOARD_INIT_UART_STDIO;

@@ -237,11 +237,11 @@ int main(void)
     Error_Block eb;
     Task_Params taskParams;
 
+    /* Initialize SCI Client - It must be called before board init */
+    ipc_initSciclient();
+
     /* Initialize SCI Client Server */
     Ipc_setupSciServer();
-
-    /* It must be called before board init */
-    ipc_initSciclient();
 
 #if !defined(A72_LINUX_OS)
     ipc_boardInit();
