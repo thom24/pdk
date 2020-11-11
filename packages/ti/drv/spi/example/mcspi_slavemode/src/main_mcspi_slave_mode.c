@@ -1611,6 +1611,11 @@ void masterTaskFxn()
         /* wait for slave to start. */
         CacheP_Inv((void *)MCSPI_SYNC_ADDR, 4);
     }
+#ifdef USE_BIOS
+    /* Add small delay after the sync.
+     * for the slave to be ready before master initiates transfer. */
+    Task_sleep(1000);
+#endif
 #endif
 
     SPI_init();
