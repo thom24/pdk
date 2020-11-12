@@ -92,7 +92,7 @@
 #define MCU_SRAM_FWL_ID (1050)
 #define MSMC_SRAM_FWL_ID (4760)
 #define DRAM_FWL_ID (1280)
-#define PROC_HOST_ID (TISCI_HOST_ID_MCU_0_R5_0)
+#define PROC_HOST_ID (TISCI_HOST_ID_MCU_0_R5_1)
 #endif
 
 #if defined (SOC_J7200)
@@ -100,7 +100,7 @@
 #define MCU_SRAM_FWL_ID (1050)
 #define MSMC_SRAM_FWL_ID (4760)
 #define DRAM_FWL_ID (1280)
-#define PROC_HOST_ID (TISCI_HOST_ID_MCU_0_R5_0)
+#define PROC_HOST_ID (TISCI_HOST_ID_MCU_0_R5_1)
 #endif
 
 #if defined (SOC_AM65XX)
@@ -108,7 +108,7 @@
 #define MCU_SRAM_FWL_ID (1050)
 #define MSMC_SRAM_FWL_ID (4449)
 #define DRAM_FWL_ID (1280)
-#define PROC_HOST_ID (TISCI_HOST_ID_R5_0)
+#define PROC_HOST_ID (TISCI_HOST_ID_R5_1)
 #endif
 
 /* ========================================================================== */
@@ -194,20 +194,47 @@ void mainTask(UArg arg0, UArg arg1)
 
     int32_t r = CSL_PASS;
     volatile uint32_t loopForever = 1U;
+    Sciclient_ConfigPrms_t        config =
+    {
+        SCICLIENT_SERVICE_OPERATION_MODE_POLLED,
+        NULL,
+        1U,
+        0U,
+        TRUE
+    };
 
+    r = Sciclient_init(&config);
     App_sciclientConsoleInit();
     App_sciclientPrintf( "\n=====================\n");
     App_sciclientPrintf( "\nSciclient FW Test\n");
     App_sciclientPrintf( "\n=====================\n");
-  
-    r = Sciclient_firewallBackground(); 
+    if (CSL_PASS == r)
+    {
+        App_sciclientPrintf ("Sciclient_Init Passed.\n");
+    }
+    else
+    {
+        App_sciclientPrintf ("Sciclinet_Init Failed.\n");
+    }
+
+    if (r == CSL_PASS)
+    {
+        r = Sciclient_firewallBackground(); 
+    }
     /* Firwalling MCU SRAM */
     if (r == CSL_PASS)
     {
+#if defined (SOC_AM65XX)
+        #define MCU_SRAM_ADDRESS_PASS_START (0x41C00000)
+        #define MCU_SRAM_ADDRESS_PASS_END (0x41C00000 + 4 * 1024 - 1)
+        #define MCU_SRAM_ADDRESS_FAIL_START (0x41C00000 + 8 * 1024 - 1)
+        #define MCU_SRAM_ADDRESS_FAIL_END (0x41C00000 + 12 * 1024 - 1)
+#else
         #define MCU_SRAM_ADDRESS_PASS_START (0x41C3E000)
         #define MCU_SRAM_ADDRESS_PASS_END (0x41C3E000 + 4 * 1024 - 1)
         #define MCU_SRAM_ADDRESS_FAIL_START (0x41C3E000 + 8 * 1024 - 1)
         #define MCU_SRAM_ADDRESS_FAIL_END (0x41C3E000 + 12 * 1024 - 1)
+#endif
         r = Sciclient_fw_test(
                 MCU_SRAM_FWL_ID,
                 MCU_SRAM_ADDRESS_PASS_START,
@@ -227,14 +254,21 @@ void mainTask(UArg arg0, UArg arg1)
                               "\nMCU SRAM Tests have FAILED.\n");
         }
     }
-    
+
     /* Firewalling MSMC RAM */
     if (r == CSL_PASS)
     {
+#if defined (SOC_J7200)
+        #define MSMC_RAM_ADDRESS_PASS_START (0x70040000)
+        #define MSMC_RAM_ADDRESS_PASS_END (0x70040000 + 4 * 1024 - 1)
+        #define MSMC_RAM_ADDRESS_FAIL_START (0x70040000 + 8 * 1024)
+        #define MSMC_RAM_ADDRESS_FAIL_END (0x70040000 + 12 * 1024 - 1)
+#else
         #define MSMC_RAM_ADDRESS_PASS_START (0x70100000)
         #define MSMC_RAM_ADDRESS_PASS_END (0x70100000 + 4 * 1024 - 1)
         #define MSMC_RAM_ADDRESS_FAIL_START (0x70100000 + 8 * 1024)
         #define MSMC_RAM_ADDRESS_FAIL_END (0x70100000 + 12 * 1024 - 1)
+#endif
         r = Sciclient_fw_test(
                 MSMC_SRAM_FWL_ID,
                 MSMC_RAM_ADDRESS_PASS_START,
@@ -355,9 +389,17 @@ int32_t Sciclient_firewallBackground()
     req_fw_set_pass.permissions[1] = 0;
     req_fw_set_pass.permissions[2] = 0;
     req_fw_set_pass.control = 0x10A;
+    
     req.fwl_id = fwl_id;
-    req.region = 0;
+    req.region = 1;
     ret = Sciclient_firewallChangeOwnerInfo(&req, &resp, timeout);
+    
+    if (ret == CSL_PASS)
+    {
+        req.fwl_id = fwl_id;
+        req.region = 0;
+        ret = Sciclient_firewallChangeOwnerInfo(&req, &resp, timeout);
+    }
     if (ret == CSL_PASS)
     {
         /* Set background region */
