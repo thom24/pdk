@@ -52,17 +52,6 @@
 #include <ti/drv/sciclient/examples/common/sciclient_appCommon.h>
 #include <ti/osal/TimerP.h>
 
-#if defined(BUILD_MCU1_0) && defined(SOC_AM65XX)
-#include <ti/drv/mmcsd/MMCSD.h>
-#include <ti/drv/mmcsd/soc/MMCSD_soc.h>
-#include <ti/drv/mmcsd/src/MMCSD_osal.h>
-
-/* FATFS header file */
-#include <ti/fs/fatfs/ff.h>
-#include <ti/fs/fatfs/FATFS.h>
-#include <ti/board/board.h>
-#endif
-
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
@@ -81,61 +70,7 @@ volatile uint32_t loop = 1U;
 
 #pragma DATA_SECTION(gSciclient_firmware, ".firmware")
 
-#if defined (BUILD_MCU1_0) && defined(SOC_AM65XX)
-uint32_t gSciclient_firmware[SCICLIENT_FIRMWARE_SIZE_IN_BYTES/4];
-
-/* MMCSD function table for MMCSD implementation */
-FATFS_DrvFxnTable FATFS_drvFxnTable = {
-    &MMCSD_close,
-    &MMCSD_control,
-    &MMCSD_init,
-    &MMCSD_open,
-    &MMCSD_write,
-    &MMCSD_read
-};
-
-/* FATFS configuration structure */
-FATFS_HwAttrs FATFS_initCfg[_VOLUMES] =
-{
-    { 1U },
-    { 0U },
-    { 0U },
-    { 0U }
-};
-
-/* FATFS objects */
-FATFS_Object FATFS_objects[_VOLUMES];
-
-/* FATFS Handle */
-FATFS_Handle sciclientTest_fatfsHandle = NULL;
-
-/* FATFS configuration structure */
-const FATFS_Config FATFS_config[_VOLUMES + 1] = {
-    {
-        &FATFS_drvFxnTable,
-        &FATFS_objects[0],
-        &FATFS_initCfg[0]
-    },
-
-    {
-         &FATFS_drvFxnTable,
-         &FATFS_objects[1],
-         &FATFS_initCfg[1]
-    },
-
-    {
-         &FATFS_drvFxnTable,
-         &FATFS_objects[2],
-         &FATFS_initCfg[2]
-    },
-
-    {NULL, NULL, NULL},
-
-    {NULL, NULL, NULL}
-};
-#else
 uint32_t gSciclient_firmware[(SCICLIENT_FIRMWARE_SIZE_IN_BYTES + 3)/4] = SCICLIENT_FIRMWARE;
-#endif
 /* ========================================================================== */
 /*                         Structure Declarations                             */
 /* ========================================================================== */
@@ -146,9 +81,6 @@ uint32_t gSciclient_firmware[(SCICLIENT_FIRMWARE_SIZE_IN_BYTES + 3)/4] = SCICLIE
 /*                          Function Declarations                             */
 /* ========================================================================== */
 static int32_t App_loadFirmwareTest(void);
-#if defined(SOC_AM65XX)
-int32_t sciclientTest_ReadSysfwImage(void *sysfw_ptr, uint32_t num_bytes);
-#endif
 void App_printPerfStats(void);
 static int32_t App_boardCfgTest(void);
 static int32_t App_getRevisionTestPol(void);
@@ -174,15 +106,14 @@ int32_t main(void)
 #elif defined (SOC_AM65XX)
     /* Relocate CSL Vectors to ATCM*/
     memcpy((void *)CSL_MCU_ATCM_BASE, (void *)_resetvectors, 0x100);
-    App_sciclientConsoleInit();
 #else
     /* Relocate CSL Vectors to ATCM*/
     memcpy((void *)CSL_R5FSS0_ATCM_BASE, (void *)_resetvectors, 0x100);
+#endif
+    status = App_loadFirmwareTest();
 #ifdef PRINT_UART
     App_sciclientConsoleInit();
 #endif
-#endif
-    status = App_loadFirmwareTest();
     if (status == CSL_PASS)
     {
         status = App_boardCfgTest();
@@ -222,17 +153,10 @@ int32_t App_loadFirmwareTest(void)
     int32_t status = CSL_EFAIL;
     void *sysfw_ptr = gSciclient_firmware;
 
-#if defined(SOC_AM65XX)
-    status = sciclientTest_ReadSysfwImage(sysfw_ptr, SCICLIENT_FIRMWARE_SIZE_IN_BYTES);
-    /*Do a cache writeback*/
-    CacheP_wbInv(sysfw_ptr, SCICLIENT_FIRMWARE_SIZE_IN_BYTES);
-
-#else
     sysfw_ptr = (void *)&gSciclient_firmware;
 
     /*Do a cache writeback*/
     CacheP_wbInv(sysfw_ptr, SCICLIENT_FIRMWARE_SIZE_IN_BYTES);
-#endif
 
     start_ticks = TimerP_getTimeInUsecs();
     status = Sciclient_loadFirmware(sysfw_ptr);
@@ -245,60 +169,6 @@ int32_t App_loadFirmwareTest(void)
 
     return status;
 }
-
-#if defined(SOC_AM65XX)
-int32_t sciclientTest_ReadSysfwImage(void *sysfw_ptr, uint32_t num_bytes)
-{
-    int32_t retVal = CSL_PASS;
-    const TCHAR *fileName = "0:/sysfw.bin";
-    FIL     fp;
-    FRESULT  fresult;
-    uint32_t bytes_read = 0;
-    MMCSD_v2_HwAttrs hwAttrsConfig;
-
-     if(MMCSD_socGetInitCfg(FATFS_initCfg[0].drvInst,&hwAttrsConfig)!=0) {
-       App_sciclientPrintf("\nUnable to get config.Exiting. TEST FAILED.\r\n");
-       retVal = CSL_EFAIL;
-     }
-
-    hwAttrsConfig.enableInterrupt = ((uint32_t)(0U));
-    hwAttrsConfig.configSocIntrPath=NULL;
-
-    if(MMCSD_socSetInitCfg(FATFS_initCfg[0].drvInst,&hwAttrsConfig)!=0) {
-       App_sciclientPrintf("\nUnable to set config.Exiting. TEST FAILED.\r\n");
-       retVal = CSL_EFAIL;
-     }
-
-    if (sciclientTest_fatfsHandle)
-    {
-    }
-    else
-    {
-        /* Initialization of the driver. */
-        FATFS_init();
-
-        /* MMCSD FATFS initialization */
-        FATFS_open(0U, NULL, &sciclientTest_fatfsHandle);
-    }
-
-    fresult = f_open(&fp, fileName, ((BYTE)FA_READ));
-    if (fresult != FR_OK)
-    {
-        App_sciclientPrintf("\n SD Boot - sysfw File open fails \n");
-       retVal = CSL_EFAIL;
-    }
-    fresult  = f_read(&fp, sysfw_ptr, num_bytes, &bytes_read);
-    if (fresult != FR_OK)
-    {
-        App_sciclientPrintf("\n SD Boot - sysfw read fails \n");
-       retVal = CSL_EFAIL;
-    }
-
-    f_close(&fp);
-
-    return retVal;
-}
-#endif
 
 int32_t App_getRevisionTestPol(void)
 {
