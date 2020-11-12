@@ -56,9 +56,7 @@
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
 
-#if defined (SOC_AM64X) || defined (SOC_J7200) || defined (SOC_AM65XX)
 #define PRINT_UART
-#endif
 
 /* ========================================================================== */
 /*                            Global Variables                                */

@@ -209,7 +209,7 @@ export sciclient_firmware_boot_TestApp_BOARD_DEPENDENCY
 export sciclient_firmware_boot_TestApp_CORE_DEPENDENCY
 sciclient_firmware_boot_TestApp_PKG_LIST = sciclient_firmware_boot_TestApp
 sciclient_firmware_boot_TestApp_INCLUDE = $(sciclient_firmware_boot_TestApp_PATH)
-sciclient_firmware_boot_TestApp_BOARDLIST = am65xx_evm am64x_evm j7200_evm
+sciclient_firmware_boot_TestApp_BOARDLIST = am65xx_evm am64x_evm j7200_evm j721e_evm
 export sciclient_firmware_boot_TestApp_BOARDLIST
 sciclient_firmware_boot_TestApp_$(SOC)_CORELIST = mcu1_0
 export sciclient_firmware_boot_TestApp_$(SOC)_CORELIST
