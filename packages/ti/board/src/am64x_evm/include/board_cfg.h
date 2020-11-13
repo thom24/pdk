@@ -91,18 +91,13 @@ extern "C" {
 #endif
 #else
 #if defined (BUILD_MCU)
-/* default UART instance for R5 cores in the Main domain */ 
-#define BOARD_UART_INSTANCE                             (BOARD_MCU_UART0_INSTANCE)
-#endif
-
-#if defined (BUILD_MPU)
-/* default UART instance for A53 cores in the Main domain */
-#define BOARD_UART_INSTANCE                             (BOARD_UART0_INSTANCE)
-#endif
-
-#if defined (BUILD_M4F)
-/* default UART instance for M4 core in the MCU domain */
-#define BOARD_UART_INSTANCE                             (BOARD_MCU_UART0_INSTANCE)
+#define BOARD_UART_INSTANCE (BOARD_UART0_INSTANCE)
+#elif defined (BUILD_MPU)
+#define BOARD_UART_INSTANCE (BOARD_UART1_INSTANCE)
+#elif defined (BUILD_M4F)
+#define BOARD_UART_INSTANCE (BOARD_MCU_UART0_INSTANCE)
+#else
+#error "Unsupported core id"
 #endif
 #endif
 
@@ -310,7 +305,7 @@ extern "C" {
 #define BOARD_I2C_DOMAIN_INSTANCE_MAX                   (2U)
 
 /* SoC domain used by UART module */
-#if defined (__TI_ARM_V7R5__)
+#if defined (BUILD_M4F)
 #define BOARD_UART_SOC_DOMAIN    (BOARD_SOC_DOMAIN_MCU)
 #else
 #define BOARD_UART_SOC_DOMAIN    (BOARD_SOC_DOMAIN_MAIN)
