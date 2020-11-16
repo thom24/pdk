@@ -97,7 +97,7 @@ extern "C" {
 #elif defined (BUILD_M4F)
 #define BOARD_UART_INSTANCE (BOARD_MCU_UART0_INSTANCE)
 #else
-#error "Unsupported core id"
+#define BOARD_UART_INSTANCE (BOARD_UART0_INSTANCE)  /* Use MAIN UART0 by default */
 #endif
 #endif
 
