@@ -133,7 +133,7 @@ extern "C" {
 #define UDMA_TEST_MAX_MAIN_BC_CH        (2U)
 #define UDMA_TEST_MAX_MCU_BC_UHC_CH     (0U)
 #define UDMA_TEST_MAX_MCU_BC_HC_CH      (0U)
-#define UDMA_TEST_MAX_MCU_BC_CH         (2U)
+#define UDMA_TEST_MAX_MCU_BC_CH         (0U)
 #define UDMA_TEST_MAX_DRU_CH            (4U)
 #endif
 
