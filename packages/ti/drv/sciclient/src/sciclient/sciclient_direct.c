@@ -208,7 +208,7 @@ int32_t Sciclient_service (const Sciclient_ReqPrm_t *pReqPrm,
                            Sciclient_RespPrm_t      *pRespPrm)
 {
     int32_t ret = CSL_PASS;
-    uint32_t msgType = pReqPrm->messageType;
+    uint32_t msgType;
     uint32_t message[20] = {0};
     struct tisci_header *hdr;
     uint16_t adjSize = 0;
@@ -230,6 +230,7 @@ int32_t Sciclient_service (const Sciclient_ReqPrm_t *pReqPrm,
      */
     if (CSL_PASS == ret)
     {
+        msgType = pReqPrm->messageType;
         ret = Sciclient_serviceGetThreadIds (pReqPrm, &contextId, &txThread,
                                          &rxThread);
     }

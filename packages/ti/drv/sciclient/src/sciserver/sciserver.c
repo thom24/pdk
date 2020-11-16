@@ -242,9 +242,9 @@ int32_t Sciserver_processtask(Sciserver_taskData *utd)
     /* the response message size */
     int32_t respMsgSize;
     /* the response message pointer */
-    uint32_t *respMsg;
+    uint32_t *respMsg = NULL;
     /* the response message header pointer. Same as respMsg */
-    struct tisci_header *respMsgHeader;
+    struct tisci_header *respMsgHeader = NULL;
 
     for (i = 0; i < SCISERVER_SECPROXY_INSTANCE_COUNT; i++)
     {
@@ -277,30 +277,33 @@ int32_t Sciserver_processtask(Sciserver_taskData *utd)
 
     if (ret == CSL_PASS)
     {
-        Sciclient_TisciMsgSetAckResp(respMsgHeader);
-    }
-    else if ((respMsgHeader->flags & TISCI_MSG_FLAG_AOP) != 0)
-    {
-        Sciserver_TisciMsgClearFlags(respMsgHeader);
-        Sciclient_TisciMsgSetNakResp(respMsgHeader);
-    }
+        if (ret == CSL_PASS)
+        {
+            Sciclient_TisciMsgSetAckResp(respMsgHeader);
+        }
+        else if ((respMsgHeader->flags & TISCI_MSG_FLAG_AOP) != 0)
+        {
+            Sciserver_TisciMsgClearFlags(respMsgHeader);
+            Sciclient_TisciMsgSetNakResp(respMsgHeader);
+        }
 
-    respHost = utd->user_msg_data[utd->state->current_buffer_idx]->host;
-    if (respHost == TISCI_HOST_ID_DMSC2DM)
-    {
-        /* DMSC2DM is processed by DM. Need to update response message value
-         * so the host verification on TIFS can succeed */
-        Sciserver_SetMsgHostId(respMsg, TISCI_HOST_ID_DM);
+        respHost = utd->user_msg_data[utd->state->current_buffer_idx]->host;
+        if (respHost == TISCI_HOST_ID_DMSC2DM)
+        {
+            /* DMSC2DM is processed by DM. Need to update response message value
+             * so the host verification on TIFS can succeed */
+            Sciserver_SetMsgHostId(respMsg, TISCI_HOST_ID_DM);
+        }
+
+        ret = Sciserver_TisciMsgResponse(respHost, respMsg, respMsgSize);
+
+        if (ret == CSL_PASS)
+        {
+            utd->user_msg_data[utd->state->current_buffer_idx]->is_pending = false;
+        }
+
+        utd->state->state = SCISERVER_TASK_PENDING;
     }
-
-    ret = Sciserver_TisciMsgResponse(respHost, respMsg, respMsgSize);
-
-    if (ret == CSL_PASS)
-    {
-        utd->user_msg_data[utd->state->current_buffer_idx]->is_pending = false;
-    }
-
-    utd->state->state = SCISERVER_TASK_PENDING;
 
     return ret;
 }
