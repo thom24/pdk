@@ -42,9 +42,10 @@ drvudma_j721e_CORELIST  = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 c66xd
 drvudma_j7200_CORELIST  = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
 drvudma_am64x_CORELIST  = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 m4f_0
 
-ifneq ($(SOC),$(filter $(SOC), am64x))
+ifneq ($(SOC),$(filter $(SOC), am64x am65xx))
 drvudma_$(SOC)_example_CORELIST = $(drvudma_$(SOC)_CORELIST)
 else
+drvudma_am65xx_example_CORELIST = mpu1_0 mcu1_0
 drvudma_am64x_example_CORELIST  = mcu1_0 mcu1_1 mcu2_0 mcu2_1 mpu1_0 #m4f for baremetal examples only
 endif
 
