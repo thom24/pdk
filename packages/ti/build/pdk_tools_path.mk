@@ -28,11 +28,6 @@ ifeq ($(BOARD),$(filter $(BOARD), tpr12_evm tpr12_qt))
   CGT_ARM_VERSION=20.2.2.LTS
 endif
 
-ifeq ($(BOARD),$(filter $(BOARD), am64x_evm am64x_svb))
-  BIOS_VERSION=6_82_01_19
-  XDC_VERSION=3_61_00_16_core
-endif
-
   EDMA_VERSION=2_12_05_30E
   SECDEV_VERSION=01_06_00_05
   CGT_PRU_VERSION=2.3.3
