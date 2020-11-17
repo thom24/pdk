@@ -42,6 +42,15 @@
 #include <ti/csl/soc.h>
 #include <ti/csl/csl_sec_proxy.h>
 
+#if defined (BUILD_M4F)
+/** The offset is determined in CSL's m4 startup.c */
+#define M4F_RAT_MAP_OFFSET 0x60000000U
+/** Convert to M4F rat mapping */
+#define M4F_RAT_MAP(_val)  ((_val) + M4F_RAT_MAP_OFFSET)
+#else
+#define M4F_RAT_MAP(_val)  (_val)
+#endif
+
 /* ========================================================================== */
 /*                            Global Variables                                */
 /* ========================================================================== */
@@ -50,13 +59,13 @@
 *       the sec_proxy IP */
 CSL_SecProxyCfg gSciclient_secProxyCfg =
 {
-    (CSL_sec_proxyRegs *)       CSL_DMASS0_SEC_PROXY_MMRS_BASE,
+    (CSL_sec_proxyRegs *)       M4F_RAT_MAP(CSL_DMASS0_SEC_PROXY_MMRS_BASE),
     /*< pSecProxyRegs */
-    (CSL_sec_proxy_scfgRegs *)  CSL_DMASS0_SEC_PROXY_SCFG_BASE,
+    (CSL_sec_proxy_scfgRegs *)  M4F_RAT_MAP(CSL_DMASS0_SEC_PROXY_SCFG_BASE),
     /*< pSecProxyScfgRegs */
-    (CSL_sec_proxy_rtRegs *)    CSL_DMASS0_SEC_PROXY_RT_BASE,
+    (CSL_sec_proxy_rtRegs *)    M4F_RAT_MAP(CSL_DMASS0_SEC_PROXY_RT_BASE),
     /*< pSecProxyRtRegs */
-    (uint64_t)                  CSL_DMASS0_SEC_PROXY_SRC_TARGET_DATA_BASE,
+    (uint64_t)                  M4F_RAT_MAP(CSL_DMASS0_SEC_PROXY_SRC_TARGET_DATA_BASE),
     /*< proxyTargetAddr */
     0
     /*< maxMsgSize */
