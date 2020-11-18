@@ -625,8 +625,6 @@ Board_STATUS Board_moduleClockEnable(uint32_t moduleId)
 Board_STATUS Board_moduleClockInit(void)
 {
     Board_STATUS  status = BOARD_SOK;
-    /* Not supported for M4F  */
-#if defined(BUILD_MCU) || defined(BUILD_MPU)    
     uint32_t index;
     uint32_t loopCount;
     int32_t  ret;
@@ -709,6 +707,5 @@ Board_STATUS Board_moduleClockInit(void)
         }
     }
 #endif /* #ifdef ENABLE_PSC_REG_ACCESS */
-#endif /* #if defined(BUILD_MPU) || defined(BUILD_MCU) */
     return status;
 }
