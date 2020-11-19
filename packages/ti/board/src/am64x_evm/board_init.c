@@ -56,7 +56,7 @@
 #include "board_internal.h"
 #include <ti/drv/sciclient/sciclient.h>
 
-static bool gBoardSysInitDone = 0;
+static bool gBoardSysInitDone = 1;
 
 /**
  * \brief  Board global initializations
