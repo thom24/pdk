@@ -67,7 +67,7 @@
 #include <ti/board/board_cfg.h>
 #include <ti/board/src/flash/include/board_flash.h>
 #include <ti/board/src/flash/nor/ospi/nor_spi_patterns.h>
-#if defined(SOC_J7200)
+#if defined(SOC_J7200) || defined(SOC_AM64X)
 #include <ti/board/src/flash/nor/ospi/nor_xspi.h>
 #else
 #include <ti/board/src/flash/nor/ospi/nor_ospi.h>
@@ -85,9 +85,7 @@
 #ifdef SPI_DMA_ENABLE
 #include <ti/drv/udma/udma.h>
 #endif
-#if defined(SOC_AM64X)
-#include <ti/board/src/flash/nor/device/m35xu256.h>
-#elif defined(SOC_J7200)
+#if defined(SOC_AM64X) || defined(SOC_J7200)
 #include <ti/board/src/flash/nor/device/s28hs512t.h>
 #else
 #include <ti/board/src/flash/nor/device/m35xu512.h>

@@ -45,7 +45,6 @@
 #include <ti/csl/soc/am64x/src/cslr_mcu_pll_mmr.h>
 #include "board_internal.h"
 
-#ifdef SIM_BUILD
 #define AVV_PASS   (1U)
 #define AVV_FAIL   (0U)
 
@@ -283,7 +282,6 @@ uint32_t MCU_PLL_MMR_change_all_locks(mmr_lock_actions_t target_state);
         if(errors==0) { return AVV_PASS; }
         else          { return AVV_FAIL; }
     }
-#endif
 
 /**
  * \brief  Unlocks MMR registers
@@ -292,9 +290,7 @@ uint32_t MCU_PLL_MMR_change_all_locks(mmr_lock_actions_t target_state);
  */
 Board_STATUS Board_unlockMMR(void)
 {
-#ifdef SIM_BUILD
     MAIN_PADCONFIG_MMR_unlock_all();
-#endif
     return BOARD_SOK;
 }
 

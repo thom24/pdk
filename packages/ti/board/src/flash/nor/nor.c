@@ -93,7 +93,7 @@ NOR_Config Nor_config[BOARD_FLASH_NOR_INTF_MAX] =
         NULL
     }
 };
-#elif defined (am64x_evm) || defined(am64x_svb)
+#elif defined(am64x_svb)
 NOR_Config Nor_config[BOARD_FLASH_NOR_INTF_MAX] =
 {
     {
@@ -148,6 +148,25 @@ NOR_Config Nor_config[BOARD_FLASH_NOR_INTF_MAX] =
     },
     {
         &Nor_hpfFxnTable
+    }
+};
+#elif defined(am64x_evm)
+NOR_Config Nor_config[BOARD_FLASH_NOR_INTF_MAX] =
+{
+    {
+        NULL
+    },
+    {
+        NULL
+    },
+    {
+        NULL
+    },
+    {
+        &Nor_xspiFxnTable
+    },
+    {
+        NULL
     }
 };
 #elif defined (tpr12_evm) || defined (tpr12_qt)

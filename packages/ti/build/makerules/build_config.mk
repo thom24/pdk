@@ -147,8 +147,6 @@ CFLAGS_GLOBAL_j7200          = -DSOC_J7200
 CFLAGS_GLOBAL_am64x          = -DSOC_AM64X
 CFLAGS_GLOBAL_tpr12          = -DSOC_TPR12
 # The below flags are only defined for testing on VLAB or QT/Zebu and will need to be removed when testing on EVM
-CFLAGS_GLOBAL_am64x         += -DSIM_BUILD
-CFLAGS_GLOBAL_am64x_evm     += -DSIM_BUILD
 CFLAGS_GLOBAL_am64x_svb     += -DSIM_BUILD
 CFLAGS_GLOBAL_tpr12_qt      += -DSIM_BUILD
 
