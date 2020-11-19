@@ -53,6 +53,7 @@ SECTIONS
     .bootCode       : {} palign(8) > OCMRAM
     .startupCode    : {} palign(8) > OCMRAM
     .startupData    : {} palign(8) > OCMRAM, type = NOINIT
+    .utilsCopyVecsToAtcm : {} palign(8) > OCMRAM
 
     /* Place sysbios entry point - ends */
 
