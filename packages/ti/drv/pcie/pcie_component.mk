@@ -234,6 +234,7 @@ PCIE_sample_ExampleProject_BOARDLIST = $(drvpcie_BOARDLIST)
 export PCIE_sample_ExampleProject_BOARDLIST
 PCIE_sample_ExampleProject_$(SOC)_CORELIST = $(drvpcie_$(SOC)_CORELIST)
 export PCIE_sample_ExampleProject_$(SOC)_CORELIST
+export PCIE_sample_ExampleProject_SBL_APPIMAGEGEN = yes
 
 # PCIE Qos basic example app
 PCIE_Qos_ExampleProject_COMP_LIST = PCIE_Qos_ExampleProject
@@ -252,6 +253,7 @@ PCIE_Qos_ExampleProject_BOARDLIST = $(drvpcie_BOARDLIST)
 export PCIE_Qos_ExampleProject_BOARDLIST
 PCIE_Qos_ExampleProject_$(SOC)_CORELIST = $(drvpcie_$(SOC)_CORELIST)
 export PCIE_Qos_ExampleProject_$(SOC)_CORELIST
+export PCIE_Qos_ExampleProject_SBL_APPIMAGEGEN = yes
 
 # PCIE basic example app with SMP enabled
 PCIE_sample_SMP_ExampleProject_COMP_LIST = PCIE_sample_SMP_ExampleProject
@@ -271,6 +273,7 @@ PCIE_sample_SMP_ExampleProject_BOARDLIST = $(drvpcie_BOARDLIST)
 export PCIE_sample_SMP_ExampleProject_BOARDLIST
 PCIE_sample_SMP_ExampleProject_$(SOC)_CORELIST = $(drvpcie_$(SOC)_CORELIST)
 export PCIE_sample_SMP_ExampleProject_$(SOC)_CORELIST
+export PCIE_sample_SMP_ExampleProject_SBL_APPIMAGEGEN = yes
 
 export drvpcie_LIB_LIST
 export pcie_LIB_LIST
