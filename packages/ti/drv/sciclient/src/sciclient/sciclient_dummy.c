@@ -267,6 +267,21 @@ int32_t Sciclient_rmGetResourceRange(
     resp->range_start_sec = 5U;
     resp->range_num_sec   = 5U;
 
+#if defined (BUILD_C7X_1)
+    if(TISCI_RESASG_SUBTYPE_UDMAP_TX_ECHAN == req->subtype)
+    {
+        /* Return 16 DRU Channels for c7x-host-emu */
+        resp->range_start     = 0U;
+        resp->range_num       = 16U;
+    }
+    else if(TISCI_RESASG_SUBTYPE_RA_GP == req->subtype)
+    {
+        /* Return 32 Free Rings for c7x-host-emu */
+        resp->range_start     = 662U;
+        resp->range_num       = 32U;
+    }
+#endif
+
     return retVal;
 }
 #endif
