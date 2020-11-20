@@ -252,6 +252,13 @@ I2C_Handle Board_getI2CHandle(uint8_t domainType,
 Board_STATUS Board_unlockMMR(void);
 
 /**
+ * \brief  Locks MMR registers
+ *
+ * \return  Board_STATUS
+ */
+Board_STATUS Board_lockMMR(void);
+
+/**
  *  \brief Serdes configurations
  *
  *  The function detects the personality boards connected and configures the

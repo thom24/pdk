@@ -295,3 +295,15 @@ Board_STATUS Board_unlockMMR(void)
     return BOARD_SOK;
 }
 
+/**
+ * \brief  Locks MMR registers
+ *
+ * \return  Board_STATUS
+ */
+Board_STATUS Board_lockMMR(void)
+{
+    MAIN_PADCONFIG_MMR_lock_all();
+    MCU_PADCONFIG_MMR_lock_all();
+    return BOARD_SOK;
+}
+
