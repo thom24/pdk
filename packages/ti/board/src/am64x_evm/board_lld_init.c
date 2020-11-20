@@ -78,7 +78,7 @@ Board_STATUS Board_internalInitI2C(uint8_t i2cInst)
  */
 Board_STATUS Board_uartStdioInit(void)
 {
-    UART_stdioInit(BOARD_UART_INSTANCE);
+    UART_stdioInit(gBoardInitParams.uartInst);
 
     return BOARD_SOK;
 }
