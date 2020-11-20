@@ -69,6 +69,7 @@ SECTIONS
     .intvecs 	: {} palign(8) 		> VECTORS
     .intc_text 	: {} palign(8) 		> VECTORS
     .rstvectors 	: {} palign(8) 		> RESET_VECTORS
+    .utilsCopyVecsToAtcm : {} palign(8) > MCU0_R5F_TCMB0
     .text    	: {} palign(8) 		> MSMC3
     .const   	: {} palign(8) 		> MSMC3
     .cinit   	: {} palign(8) 		> MSMC3
