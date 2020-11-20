@@ -291,6 +291,7 @@ uint32_t MCU_PLL_MMR_change_all_locks(mmr_lock_actions_t target_state);
 Board_STATUS Board_unlockMMR(void)
 {
     MAIN_PADCONFIG_MMR_unlock_all();
+    MCU_PADCONFIG_MMR_unlock_all();
     return BOARD_SOK;
 }
 

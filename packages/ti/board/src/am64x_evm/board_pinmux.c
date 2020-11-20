@@ -62,6 +62,8 @@ Board_STATUS Board_pinmuxConfig (void)
     HW_WR_REG32(BOARD_UART_TX_LOCK_KICK_ADDR, KICK0_UNLOCK_VAL);
     HW_WR_REG32(BOARD_UART_TX_LOCK_KICK_ADDR + 4U, KICK1_UNLOCK_VAL);
 
+    Board_unlockMMR();
+
     pinmuxModuleCfg_t* pModuleData = NULL;
     pinmuxPerCfg_t* pInstanceData = NULL;
     int32_t i, j, k;
