@@ -62,7 +62,7 @@ pdkPath = "/ti/j7presi/workarea/pdk";
 ccs_init_elf_file = pdkPath+"/packages/ti/drv/sciclient/tools/ccsLoadDmsc/am64x/sciclient_ccs_init_mcu1_0_release.xer5f";
 
 //path to sysfw bin
-sysfw_bin = pdkPath+"/packages/ti/drv/sciclient/soc/sysfw/binaries/ti-sci-firmware-am64x-gp-vlab.bin"
+sysfw_bin = pdkPath+"/packages/ti/drv/sciclient/soc/sysfw/binaries/ti-sci-firmware-am64x-gp.bin"
 
 //<!!!!!! EDIT THIS !!!!!>
 
@@ -76,14 +76,8 @@ importPackage(java.lang);
 function updateScriptVars()
 {
     //Open a debug session
-    dsMCU1_0 = debugServer.openSession( ".*pulsar0_cr5f_0_proxy" );
-    dsMCU1_1 = debugServer.openSession( ".*pulsar0_cr5f_1_proxy" );
-    dsMCU2_0 = debugServer.openSession( ".*pulsar1_cr5f_0_proxy" );
-    dsMCU2_1 = debugServer.openSession( ".*pulsar1_cr5f_1_proxy" );
-    dsDMSC_0 = debugServer.openSession( ".*dmsc_cm3_0_proxy" );
-    dsA53_0 = debugServer.openSession( ".*ca53_1_0_proxy" );
-    dsA53_1 = debugServer.openSession( ".*ca53_1_1_proxy" );
-    dsM4SS = debugServer.openSession( ".*mcu_island_m4fss_cm4_0_proxy" );
+    dsMCU1_0 = debugServer.openSession( ".*MAIN_Cortex_R5_0_1" );
+    dsDMSC_0 = debugServer.openSession( ".*DMSC_Cortex_M3_0" );
 }
 
 function printVars()
@@ -96,23 +90,8 @@ function connectTargets()
     /* Set timeout of 20 seconds */
     script.setScriptTimeout(200000);
     updateScriptVars();
-    // On VLAB the sys reset is not present. This will be required post silicon
-    //sysResetVar=dsDMSC_0.target.getResetType(1);
-    //sysResetVar.issueReset();
-
-    // VLAB requires all the cores to be in running state
-    dsMCU1_1.target.connect();
-    dsMCU1_1.target.runAsynch();
-    dsMCU2_1.target.connect();
-    dsMCU2_1.target.runAsynch();
-    dsMCU2_0.target.connect();
-    dsMCU2_0.target.runAsynch();
-    dsA53_0.target.connect();
-    dsA53_0.target.runAsynch();
-    dsA53_1.target.connect();
-    dsA53_1.target.runAsynch();
-    dsM4SS.target.connect();
-    dsM4SS.target.runAsynch();
+    sysResetVar=dsDMSC_0.target.getResetType(1);
+    sysResetVar.issueReset();
 
     print("==================================================================");
     print("          Make sure VLAB Simulation is running                    ");
