@@ -66,7 +66,7 @@
 #
 ifeq ($(sbl_component_make_include), )
 
-sbl_BOARDLIST = am65xx_evm am65xx_idk j721e_evm j7200_evm am64x_evm tpr12_evm
+sbl_BOARDLIST = am65xx_evm am65xx_idk j721e_evm j7200_evm am64x_evm tpr12_evm tpr12_qt
 
 sbl_SOCLIST = am65xx j721e j7200 am64x tpr12
 
@@ -379,7 +379,7 @@ export sbl_lib_qspi_CORE_DEPENDENCY
 sbl_lib_qspi_PKG_LIST = sbl_lib_qspi
 sbl_lib_qspi_INCLUDE = $(sbl_lib_qspi_PATH)
 sbl_lib_qspi_SOCLIST = tpr12
-sbl_lib_qspi_BOARDLIST = tpr12_evm
+sbl_lib_qspi_BOARDLIST = tpr12_evm tpr12_qt
 export sbl_lib_qspi_SOCLIST
 export sbl_lib_qspi_BOARDLIST
 sbl_lib_qspi_$(SOC)_CORELIST = mcu1_0
@@ -399,7 +399,7 @@ export sbl_lib_qspi_nondma_CORE_DEPENDENCY = no
 sbl_lib_qspi_nondma_PKG_LIST = sbl_lib_qspi_nondma
 sbl_lib_qspi_nondma_INCLUDE = $(sbl_lib_qspi_nondma_PATH)
 export sbl_lib_qspi_nondma_SOCLIST = tpr12
-export sbl_lib_qspi_nondma_BOARDLIST = tpr12_evm
+export sbl_lib_qspi_nondma_BOARDLIST = tpr12_evm tpr12_qt
 export sbl_lib_qspi_nondma_$(SOC)_CORELIST = mcu1_0
 
 #
@@ -762,7 +762,7 @@ export sbl_qspi_img_SOC_DEPENDENCY
 export sbl_qspi_img_CORE_DEPENDENCY
 sbl_qspi_img_PKG_LIST = sbl
 sbl_qspi_img_INCLUDE = $(sbl_qspi_img_PATH)
-sbl_qspi_img_BOARDLIST = tpr12_evm
+sbl_qspi_img_BOARDLIST = tpr12_evm tpr12_qt
 export sbl_qspi_img_BOARDLIST
 sbl_qspi_img_$(SOC)_CORELIST = mcu1_0
 export sbl_qspi_img_$(SOC)_CORELIST
@@ -1311,7 +1311,7 @@ export sbl_r4tb_SOC_DEPENDENCY
 export sbl_r4tb_CORE_DEPENDENCY
 sbl_r4tb_PKG_LIST = sbl_r4tb
 sbl_r4tb_INCLUDE = $(sbl_r4tb_PATH)
-sbl_r4tb_BOARDLIST = tpr12_evm
+sbl_r4tb_BOARDLIST = tpr12_evm tpr12_qt
 export sbl_r4tb_BOARDLIST
 sbl_r4tb_$(SOC)_CORELIST = $(sbl_$(SOC)_CORELIST)
 export sbl_r4tb_$(SOC)_CORELIST

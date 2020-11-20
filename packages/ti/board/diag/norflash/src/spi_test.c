@@ -330,7 +330,7 @@ int BoardDiag_SpiFlashTest(void)
     /* Open the Board SPI NOR device with QSPI port 0
        and use default SPI configurations */
 
-    boardHandle = Board_flashOpen(BOARD_FLASH_ID_GD25B16CSAG,
+    boardHandle = Board_flashOpen(BOARD_FLASH_ID_GD25B64CW2G,
                                   BOARD_QSPI_NOR_INSTANCE, NULL);
 #else
     SPI_v1_HWAttrs spi_cfg;
@@ -442,7 +442,7 @@ int BoardDiag_SpiFlashStressTest(void)
     /* Open the Board SPI NOR device with QSPI port 0
        and use default SPI configurations */
 
-    boardHandle = Board_flashOpen(BOARD_FLASH_ID_GD25B16CSAG,
+    boardHandle = Board_flashOpen(BOARD_FLASH_ID_GD25B64CW2G,
                                   BOARD_QSPI_NOR_INSTANCE, params);
 #else
     /* Get the default SPI init configurations */

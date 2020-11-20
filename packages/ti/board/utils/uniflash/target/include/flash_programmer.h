@@ -101,7 +101,7 @@ extern "C" {
 #define EMMC_FLASH
 #endif
 
-#if defined(tpr12_evm)
+#if (defined(tpr12_evm) || defined(tpr12_qt))
 #define QSPI_FLASH
 #define MAX_BAUDRATE_SUPPORTED			(0x0U)
 #endif

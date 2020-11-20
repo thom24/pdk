@@ -61,7 +61,7 @@ static int8_t UFP_qspiClose(void);
 /*                            Global Variables                                */
 /* ========================================================================== */
 
-#if (defined(SOC_K2G) || defined(j721e_evm) || defined(tpr12_evm))
+#if (defined(SOC_K2G) || defined(j721e_evm) || defined(tpr12_evm) || defined(tpr12_qt))
     Board_flashHandle gQspiHandle;
 #else
     S25FL_Handle gQspiHandle;
@@ -130,7 +130,7 @@ static uintptr_t UFP_l2GlobalAddress (uintptr_t addr)
  */
 static int8_t UFP_qspiClose(void)
 {
-#if (defined(SOC_K2G) || defined(j721e_evm) || defined(tpr12_evm))
+#if (defined(SOC_K2G) || defined(j721e_evm) || defined(tpr12_evm) || defined(tpr12_qt))
     Board_flashClose(gQspiHandle);
 #else
     S25FLFlash_QuadModeEnable(gQspiHandle);
@@ -153,7 +153,7 @@ static int8_t UFP_qspiClose(void)
  */
 static int8_t UFP_qspiFlashRead(uint8_t *dst, uint32_t offset, uint32_t length)
 {
-#if (defined(SOC_K2G) || defined(j721e_evm) || defined(tpr12_evm))
+#if (defined(SOC_K2G) || defined(j721e_evm) || defined(tpr12_evm) || defined(tpr12_qt))
     uint32_t ioMode;
 
     ioMode = BOARD_FLASH_QSPI_IO_MODE_QUAD;
@@ -198,7 +198,7 @@ static int8_t UFP_qspiFlashRead(uint8_t *dst, uint32_t offset, uint32_t length)
  */
 static int8_t UFP_qspiFlashWrite(uint8_t *src, uint32_t offset, uint32_t length)
 {
-#if (defined(SOC_K2G) || defined(j721e_evm) || defined(tpr12_evm))
+#if (defined(SOC_K2G) || defined(j721e_evm) || defined(tpr12_evm) || defined(tpr12_qt))
     uint32_t startBlockNum, endBlockNum, pageNum;
     uint32_t ioMode, i;
 
@@ -351,7 +351,7 @@ static int8_t UFP_qspiFlashImage(uint8_t *flashAddr, uint8_t *checkAddr,
  */
 static int8_t UFP_qspiFlashErase(uint32_t offset, uint32_t length)
 {
-#if (defined(SOC_K2G) || defined(j721e_evm) || defined(tpr12_evm))
+#if (defined(SOC_K2G) || defined(j721e_evm) || defined(tpr12_evm) || defined(tpr12_qt))
     uint32_t startBlockNum, endBlockNum, pageNum, i;
 
     /* Get starting block number */
@@ -402,7 +402,7 @@ static int8_t UFP_qspiFlashErase(uint32_t offset, uint32_t length)
  */
 static int8_t UFP_qspiInit(void)
 {
-#if (defined(SOC_K2G) || defined(tpr12_evm))
+#if (defined(SOC_K2G) || defined(tpr12_evm) || defined(tpr12_qt))
 
 #if defined(SOC_K2G)
     QSPI_v0_HwAttrs qspi_cfg;

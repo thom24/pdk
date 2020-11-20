@@ -69,10 +69,13 @@ extern "C" {
 /** Flash device commands */
 #define NOR_BE_SECTOR_NUM           (-1U)
 #define NOR_CMD_BULK_ERASE          (0xCEU)
-#define NOR_CMD_WRR                 (0x01U)
+#define NOR_CMD_WRSR_S0_S7          (0x01U)
+#define NOR_CMD_WRSR_S8_S15         (0x31U)
+#define NOR_CMD_WRSR_S16_S23        (0x11U)
 #define NOR_CMD_WREN                (0x06U)
-#define NOR_CMD_RDSR                (0x05U)
-#define NOR_CMD_RDCR                (0x15U)
+#define NOR_CMD_RDSR_S0_S7          (0x05U)
+#define NOR_CMD_RDSR_S8_S15         (0x35U)
+#define NOR_CMD_RDSR_S16_S23        (0x15U)
 #define NOR_CMD_RDID                (0x9FU)
 
 /** Commands for 3 byte addressing */
@@ -95,7 +98,7 @@ extern "C" {
 
 /** Status Register, Write-in-Progress bit */
 #define NOR_SR_WIP			        (1U << 0U)
-#define NOR_SR_QE			        (1U << 6U)
+#define NOR_SR_QE			        (1U << 1U)
 
 /** Dummy cycles for Read operation */
 #define NOR_SINGLE_READ_DUMMY_CYCLE	(0U)

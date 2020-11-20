@@ -653,7 +653,8 @@ uint32_t FlashStatus(S25FL_Handle flashHandle)
     return (rxData & 0xFF);
 }
 
-#if defined(SOC_AM574x) || defined (SOC_AM571x) || defined (SOC_AM572x) || defined (SOC_DRA72x) || defined (SOC_DRA75x) || defined (SOC_DRA78x)
+
+#if defined(SOC_AM574x) || defined (SOC_AM571x) || defined (SOC_AM572x) || defined (SOC_DRA72x) || defined (SOC_DRA75x) || defined (SOC_DRA78x) || defined(tpr12_qt)
 bool S25FLFlash_QuadModeEnable(S25FL_Handle flashHandle)
 {
     SPI_Handle handle = flashHandle->spiHandle; /* SPI handle */
@@ -867,8 +868,80 @@ bool S25FLFlash_QuadModeEnable(S25FL_Handle flashHandle)
 }
 #endif
 
-#if defined (SOC_TPR12)
+#if defined (tpr12_evm)
 #include <ti/osal/DebugP.h>
+
+uint32_t FlashConfiguration(S25FL_Handle flashHandle)
+{
+    SPI_Handle handle = flashHandle->spiHandle; /* SPI handle */
+    bool retVal = false;             /* return value */
+    unsigned char writeVal;          /* data to be written */
+    uint32_t rxData = 0U;            /* received data */
+    unsigned int operMode;           /* temp variable to hold mode */
+    unsigned int rxLines;            /* temp variable to hold rx lines */
+    unsigned int frmLength;
+    unsigned int transferType;
+    QSPI_v1_Object  *object;
+    unsigned int rxLinesArg;
+
+    /* Get the pointer to the object and hwAttrs */
+    object = handle->object;
+
+    /* These operations require the qspi to be configured in the following mode
+       only: tx/rx single line and config mode. */
+
+    /* Save the current mode and rxLine configurations */
+    operMode = object->qspiMode;
+    rxLines  = object->rxLines;
+
+    /* Update the mode and rxLines with the required values */
+    SPI_control(handle, SPI_V1_CMD_SETCONFIGMODE, NULL);
+
+    rxLinesArg = QSPI_RX_LINES_SINGLE;
+    SPI_control(handle, SPI_V1_CMD_SETRXLINES, (void *)&rxLinesArg);
+
+    /* Total transaction frame length in words (bytes) */
+    frmLength = 1 + 1;
+    SPI_control(handle, SPI_V1_CMD_SETFRAMELENGTH, (void *)&frmLength);
+
+    /* Write Address Bytes */
+    writeVal = QSPI_LIB_CMD_READ_CONF_REG;
+    transaction.txBuf = (unsigned char *)&writeVal;
+    transaction.rxBuf = NULL;
+    transaction.count = 1U;
+
+    transferType = SPI_TRANSACTION_TYPE_WRITE;
+    SPI_control(handle, SPI_V1_CMD_TRANSFERMODE_RW, (void *)&transferType);
+
+    retVal = SPI_transfer(handle, &transaction);
+
+    if(retVal == false)
+    {
+        /* Error */
+    }
+
+    /* Read the status register */
+    transaction.txBuf = NULL;
+    transaction.rxBuf = (unsigned char *)&rxData;
+    transaction.count = 1U;
+
+    transferType = SPI_TRANSACTION_TYPE_READ;
+    SPI_control(handle, SPI_V1_CMD_TRANSFERMODE_RW, (void *)&transferType);
+
+    retVal = SPI_transfer(handle, &transaction);
+
+    if(retVal == false)
+    {
+        /* Error */
+    }
+
+    /* Restore operating mode and rx Lines */
+    object->qspiMode = operMode;
+    SPI_control(handle, SPI_V1_CMD_SETRXLINES, (void *)&rxLines);
+
+    return (rxData & 0xFF);
+}
+
 
 void S25FLFlash_WriteQEStatus(S25FL_Handle flashHandle)
 {
@@ -879,9 +952,9 @@ void S25FLFlash_WriteQEStatus(S25FL_Handle flashHandle)
     bool retVal = false;            /* return value */
     unsigned int transferType;
 
-    norStatus = FlashStatus(flashHandle);
+    norStatus = FlashConfiguration(flashHandle);
 
-    if ((norStatus & (0x1U << 0x6U)) == 0)
+    if ((norStatus & (0x1U << 0x1U)) == 0)
     {
             S25FLFlash_WriteEnable(flashHandle);
         
@@ -891,7 +964,7 @@ void S25FLFlash_WriteQEStatus(S25FL_Handle flashHandle)
             DebugP_assert(retVal == 0);
         
             /* Read command register */
-            writeVal = 0x01U;   //QSPI_LIB_CMD_QUAD_RD_CMD_REG;
+            writeVal = QSPI_LIB_CMD_QUAD_WR_CMD_REG;
             transaction.txBuf = (unsigned char *)&writeVal;
             transaction.rxBuf = NULL;
             transaction.count = 1;
@@ -906,7 +979,7 @@ void S25FLFlash_WriteQEStatus(S25FL_Handle flashHandle)
             /* Set status register 6th bit to 1 for Quad enable
              * Write this value to the status register.
              */
-            norStatus |= (0x1U << 0x6U);
+            norStatus |= (0x1U << 0x1U);
         
             transaction.txBuf = (unsigned char *)&norStatus;
             transaction.rxBuf = NULL;
@@ -922,7 +995,7 @@ void S25FLFlash_WriteQEStatus(S25FL_Handle flashHandle)
             /* Wait till the status register is being written */
             while (1U == (FlashStatus(flashHandle) & 0x1U));
         
-            while ((FlashStatus(flashHandle) & (0x1U << 0x6)) == 0);
+            while ((FlashConfiguration(flashHandle) & (0x1U << 0x1)) == 0);
     }
 }
 

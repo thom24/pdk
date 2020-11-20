@@ -169,7 +169,7 @@ NOR_HANDLE Nor_qspiOpen(uint32_t norIntf, uint32_t portNum, void *params)
     SPI_Handle      hwHandle;  /* SPI handle */
     NOR_HANDLE      norHandle = 0;
     uint8_t         status;
-    uint8_t         cmd = NOR_CMD_RDSR;
+    uint8_t         cmd = NOR_CMD_RDSR_S8_S15;
     unsigned int rxLinesArg;
 
     /* Init SPI driver */
@@ -288,7 +288,7 @@ static NOR_STATUS Nor_qspiCmdWrite(SPI_Handle handle, uint8_t *cmdBuf,
 static NOR_STATUS Nor_qspiWaitReady(SPI_Handle handle, uint32_t timeOut)
 {
     uint8_t         status;
-    uint8_t         cmd = NOR_CMD_RDSR;
+    uint8_t         cmd = NOR_CMD_RDSR_S0_S7;
 
     do
     {
@@ -331,14 +331,14 @@ NOR_STATUS Nor_qspiQuadModeCtrl(SPI_Handle handle,
     }
 
     /* Read status register */
-    cmd[0] = NOR_CMD_RDSR;
+    cmd[0] = NOR_CMD_RDSR_S8_S15;
     status = 0;
     if (NOR_qspiCmdRead(handle, cmd, 1, &status, 1))
     {
         goto err;
     }
 
-    cmd[0] = NOR_CMD_WRR;
+    cmd[0] = NOR_CMD_WRSR_S8_S15;
     if (enable)
     {
         /* quad enabled */
@@ -360,7 +360,7 @@ NOR_STATUS Nor_qspiQuadModeCtrl(SPI_Handle handle,
         goto err;
     }
 
-    cmd[0] = NOR_CMD_RDSR;
+    cmd[0] = NOR_CMD_RDSR_S8_S15;
     status = 0;
     if (NOR_qspiCmdRead(handle, cmd, 1, &status, 1))
     {

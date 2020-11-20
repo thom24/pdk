@@ -71,7 +71,9 @@
 #include "sbl_qspi_boardflash.h"
 
 #if defined(tpr12_evm)
-#define QSPI_FLASH_ID           BOARD_FLASH_ID_GD25B16CSAG
+#define QSPI_FLASH_ID           BOARD_FLASH_ID_GD25B64CW2G
+#elif defined(tpr12_qt)
+#define QSPI_FLASH_ID           BOARD_FLASH_ID_W25Q80VSFIG
 #endif
 
 /* QSPI Flash Read Sector API. */
