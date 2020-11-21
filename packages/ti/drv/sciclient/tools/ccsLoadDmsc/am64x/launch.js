@@ -56,7 +56,7 @@ if (disableGelLoad == 0)
     gelFilePath = "k3-avv-repo/framework/gels/K3J7";
 }
 //PDK path. Edit this
-pdkPath = "/ti/j7presi/workarea/pdk";
+pdkPath = "/ti/sitara/pdk";
 
 //path to board config elf
 ccs_init_elf_file = pdkPath+"/packages/ti/drv/sciclient/tools/ccsLoadDmsc/am64x/sciclient_ccs_init_mcu1_0_release.xer5f";
@@ -76,7 +76,7 @@ importPackage(java.lang);
 function updateScriptVars()
 {
     //Open a debug session
-    dsMCU1_0 = debugServer.openSession( ".*MAIN_Cortex_R5_0_1" );
+    dsMCU1_0 = debugServer.openSession( ".*MAIN_Cortex_R5_0_0" );
     dsDMSC_0 = debugServer.openSession( ".*DMSC_Cortex_M3_0" );
 }
 
@@ -90,31 +90,44 @@ function connectTargets()
     /* Set timeout of 20 seconds */
     script.setScriptTimeout(200000);
     updateScriptVars();
-    sysResetVar=dsDMSC_0.target.getResetType(1);
-    sysResetVar.issueReset();
+    // On VLAB the sys reset is not present. This will be required post silicon
+    //sysResetVar=dsDMSC_0.target.getResetType(1);
+    //sysResetVar.issueReset();
 
-    print("==================================================================");
-    print("          Make sure VLAB Simulation is running                    ");
-    print("==================================================================");
     print("Connecting to DMSC_Cortex_M3_0!");
     // Connect targets
     dsDMSC_0.target.connect();
     /* TODO: This will be required when the GEL files are done which does the R5F
      * RAT Mapping.
      */
-    //print("Fill R5F ATCM memory...");
-    //dsDMSC_0.memory.fill(0x61000000, 0, 0x2000, 0);
-    //print("Writing While(1) for R5F")
-    //dsDMSC_0.memory.writeWord(0, 0x61000000, 0xE59FF004); /* ldr        pc, [pc, #4] */
-    //dsDMSC_0.memory.writeWord(0, 0x61000004, 0x38);       /* Address 0x38 */
-    //dsDMSC_0.memory.writeWord(0, 0x61000038, 0xEAFFFFFE) /* b          #0x38 */
-    /* Map RAT Address for loading DMSC code */
-    // region 0
+    print("Fill R5F ATCM memory...");
+    dsDMSC_0.memory.fill(0x78000000, 0, 0x2000, 0);
+    print("Writing While(1) for R5F")
+    dsDMSC_0.memory.writeWord(0, 0x78000000, 0xE59FF004); /* ldr        pc, [pc, #4] */
+    dsDMSC_0.memory.writeWord(0, 0x78000004, 0x38);       /* Address 0x38 */
+    dsDMSC_0.memory.writeWord(0, 0x78000038, 0xEAFFFFFE) /* b          #0x38 */
+
+    /* RAT Config for OCSRAM SYSFW load */
     dsDMSC_0.memory.writeWord(0, 0x44200024, 0x00060000);
     dsDMSC_0.memory.writeWord(0, 0x44200028, 0x44060000);
     dsDMSC_0.memory.writeWord(0, 0x4420002C, 0x00000000);
     dsDMSC_0.memory.writeWord(0, 0x44200020, 0x80000011);
-    
+
+    dsDMSC_0.memory.writeWord(0, 0x44200034, 0x00080000);
+    dsDMSC_0.memory.writeWord(0, 0x44200038, 0x44080000);
+    dsDMSC_0.memory.writeWord(0, 0x4420003C, 0x00000000);
+    dsDMSC_0.memory.writeWord(0, 0x44200030, 0x80000011);
+
+    dsDMSC_0.memory.writeWord(0, 0x44200044, 0x60000000);
+    dsDMSC_0.memory.writeWord(0, 0x44200048, 0x00000000);
+    dsDMSC_0.memory.writeWord(0, 0x4420004C, 0x40000000);
+    dsDMSC_0.memory.writeWord(0, 0x44200040, 0x8000001D);
+
+    dsDMSC_0.memory.writeWord(0, 0x44200054, 0x80000000);
+    dsDMSC_0.memory.writeWord(0, 0x44200058, 0x00000000);
+    dsDMSC_0.memory.writeWord(0, 0x4420005C, 0x00000000);
+    dsDMSC_0.memory.writeWord(0, 0x44200050, 0x8000001D);
+
     print("Loading DMSC Firmware ... " + sysfw_bin);
     // Load the DMSC firmware
     dsDMSC_0.memory.loadRaw(0, 0x44000, sysfw_bin, 32, false);
@@ -132,11 +145,32 @@ function connectTargets()
     // Connect the MCU R5F
     dsMCU1_0.target.connect();
 
-    // Need to do this for VLAB
-    dsMCU1_0.target.runAsynch();
-    java.lang.Thread.sleep(2000);
+    // This is done to support other boot modes. OSPI is the most stable.
+    // MMC is not always stable.
+    bootMode = dsMCU1_0.memory.readWord(0, 0x43000030) & 0xF8;
+    print (" Main Boot Mode is " + bootMode);
+    if (bootMode != 0x78)
+    {
+        print("Disable MCU Timer for ROM clean up");
+        dsMCU1_0.memory.writeWord(0, 0x002400010, 0x1); /* Write reset to MCU Timer 0. Left running by ROM */
+        dsMCU1_0.memory.writeWord(0, 0x2FFF0430, 0xFFFFFFFF); /* Clear Pending Interrupts */
+        dsMCU1_0.memory.writeWord(0, 0x2FFF0018, 0x0); /* Clear Pending Interrupts */
+        // Reset the R5F to be in clean state.
+        dsMCU1_0.target.reset();
+        // Load the board configuration init file.
+        dsMCU1_0.expression.evaluate('GEL_Load("'+ ccs_init_elf_file +'")');
+        // Run Asynchronously
+        dsMCU1_0.target.runAsynch();
+        print ("Running Async");
+        // Halt the R5F and re-run.
+        dsMCU1_0.target.halt();
+    }
+
     // Halt the R5F and re-run.
     dsMCU1_0.target.halt();
+    
+    // Reset the R5F and run.
+    dsMCU1_0.target.reset();
 
     print("Running the board configuration initialization from R5!");
     // Load the board configuration init file.
@@ -161,33 +195,32 @@ function sampleDDRCheck ()
     print("Running DDR Memory Checks....");
     dsMCU1_0.memory.fill (0x80000000, 0, 1024, 0xA5A5A5A5);
     ar = dsMCU1_0.memory.readWord(0, 0x80000000, 1024);
-    fail = 0 
-    for (i = 0; i < ar.length; i++) {
+    fail = 0
+    for (i = 0; i < ar.length; i++) { 
             x = ar[i]; 
             if (x != 0xA5A5A5A5)
-            {   
+            {
                 fail = 1;
             }
         } 
     if (fail == 1)
-    {   
+    {
         print ("0x80000000: DDR memory sample check failed !!");
     }
     dsMCU1_0.memory.fill (0x81000000, 0, 1024, 0x5A5A5A5A);
     ar = dsMCU1_0.memory.readWord(0, 0x81000000, 1024);
-    fail = 0 
-    for (i = 0; i < ar.length; i++) {
+    fail = 0
+    for (i = 0; i < ar.length; i++) { 
             x = ar[i]; 
             if (x != 0x5a5a5a5a)
-            {   
+            {
                 fail = 1;
             }
         } 
     if (fail == 1)
-    {   
+    {
         print ("0x81000000: DDR memory sample check failed !!");
     }
-
 }
 
 function doEverything()
@@ -195,7 +228,7 @@ function doEverything()
     printVars();
     connectTargets();
     disconnectTargets();
-    sampleDDRCheck ();
+    //sampleDDRCheck ();
     print("Happy Debugging!!");
 }
 
