@@ -119,8 +119,8 @@ function connectTargets()
     dsDMSC_0.memory.writeWord(0, 0x44200030, 0x80000011);
 
     dsDMSC_0.memory.writeWord(0, 0x44200044, 0x60000000);
-    dsDMSC_0.memory.writeWord(0, 0x44200048, 0x00000000);
-    dsDMSC_0.memory.writeWord(0, 0x4420004C, 0x40000000);
+    dsDMSC_0.memory.writeWord(0, 0x44200048, 0x40000000);
+    dsDMSC_0.memory.writeWord(0, 0x4420004C, 0x00000000);
     dsDMSC_0.memory.writeWord(0, 0x44200040, 0x8000001D);
 
     dsDMSC_0.memory.writeWord(0, 0x44200054, 0x80000000);
@@ -179,6 +179,45 @@ function connectTargets()
     dsMCU1_0.target.halt();
     // Run Synchronously for the executable to finish
     dsMCU1_0.target.run();
+
+    /* Run the DDR Configuration */
+    /* RAT Config for OCSRAM SYSFW load */
+    print("Running the DDR configuration... Wait till it completes!");
+    dsDMSC_0.target.halt();
+    /* Reconfigure RAT for the GEL script to run */
+    dsDMSC_0.memory.writeWord(0, 0x44200034, 0x00080000);
+    dsDMSC_0.memory.writeWord(0, 0x44200038, 0x44080000);
+    dsDMSC_0.memory.writeWord(0, 0x4420003C, 0x00000000);
+    dsDMSC_0.memory.writeWord(0, 0x44200030, 0x80000011);
+
+    dsDMSC_0.memory.writeWord(0, 0x44200044, 0x60000000);
+    dsDMSC_0.memory.writeWord(0, 0x44200048, 0x40000000);
+    dsDMSC_0.memory.writeWord(0, 0x4420004C, 0x00000000);
+    dsDMSC_0.memory.writeWord(0, 0x44200040, 0x8000001D);
+
+    dsDMSC_0.memory.writeWord(0, 0x44200054, 0x80000000);
+    dsDMSC_0.memory.writeWord(0, 0x44200058, 0x00000000);
+    dsDMSC_0.memory.writeWord(0, 0x4420005C, 0x00000000);
+    dsDMSC_0.memory.writeWord(0, 0x44200050, 0x8000001D);
+
+    dsDMSC_0.expression.evaluate("DDR_Init()");
+
+    dsDMSC_0.memory.writeWord(0, 0x44200034, 0x60000000);
+    dsDMSC_0.memory.writeWord(0, 0x44200038, 0x00000000);
+    dsDMSC_0.memory.writeWord(0, 0x4420003C, 0x00000000);
+    dsDMSC_0.memory.writeWord(0, 0x44200030, 0x8000001D);
+
+    dsDMSC_0.memory.writeWord(0, 0x44200044, 0x80000000);
+    dsDMSC_0.memory.writeWord(0, 0x44200048, 0x20000000);
+    dsDMSC_0.memory.writeWord(0, 0x4420004C, 0x00000000);
+    dsDMSC_0.memory.writeWord(0, 0x44200040, 0x8000001D);
+
+    dsDMSC_0.memory.writeWord(0, 0x44200054, 0xA0000000);
+    dsDMSC_0.memory.writeWord(0, 0x44200058, 0x40000000);
+    dsDMSC_0.memory.writeWord(0, 0x4420005C, 0x00000000);
+    dsDMSC_0.memory.writeWord(0, 0x44200050, 0x8000001D);
+
+    dsDMSC_0.target.runAsynch();
 }
 
 function disconnectTargets()
@@ -228,7 +267,7 @@ function doEverything()
     printVars();
     connectTargets();
     disconnectTargets();
-    //sampleDDRCheck ();
+    sampleDDRCheck ();
     print("Happy Debugging!!");
 }
 
