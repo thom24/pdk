@@ -147,7 +147,7 @@ function connectTargets()
 
     // This is done to support other boot modes. OSPI is the most stable.
     // MMC is not always stable.
-    bootMode = dsMCU1_0.memory.readWord(0, 0x43000030) & 0xF8;
+    bootMode = dsMCU1_0.memory.readWord(0, 0x43000030) & 0x78;
     print (" Main Boot Mode is " + bootMode);
     if (bootMode != 0x78)
     {
