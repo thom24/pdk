@@ -31,7 +31,7 @@
  */
 /*
  *  ======== event_MPU.xs ========
- *  MPU Settings for SIMMAXWELL device's Cortex-R5F
+ *  MPU Settings for AM65XX device's Cortex-R5F
  */
 
 /*
@@ -74,8 +74,8 @@ attrs.subregionDisableMask = 0;
 MPU.setRegionMeta(0, 0x00000000, MPU.RegionSize_4G, attrs);
 
 attrs.enable = true;
-attrs.bufferable = true;
-attrs.cacheable = true;
+attrs.bufferable = false;
+attrs.cacheable = false;
 attrs.shareable = false;
 attrs.noExecute = false;
 attrs.accPerm = 1;          /* RW at PL1 */
@@ -84,8 +84,8 @@ attrs.subregionDisableMask = 0;
 MPU.setRegionMeta(1, 0x00000000, MPU.RegionSize_32K, attrs);
 
 attrs.enable = true;
-attrs.bufferable = true;
-attrs.cacheable = true;
+attrs.bufferable = false;
+attrs.cacheable = false;
 attrs.shareable = false;
 attrs.noExecute = false;
 attrs.accPerm = 1;          /* RW at PL1 */
@@ -94,8 +94,8 @@ attrs.subregionDisableMask = 0;
 MPU.setRegionMeta(2, 0x41000000, MPU.RegionSize_32K, attrs);
 
 attrs.enable = true;
-attrs.bufferable = true;
-attrs.cacheable = true;
+attrs.bufferable = false;
+attrs.cacheable = false;
 attrs.shareable = false;
 attrs.noExecute = false;
 attrs.accPerm = 1;          /* RW at PL1 */
@@ -121,17 +121,6 @@ attrs.noExecute = false;
 attrs.accPerm = 1;          /* RW at PL1 */
 attrs.tex = 1;
 attrs.subregionDisableMask = 0;
-MPU.setRegionMeta(4, 0x4F800000, MPU.RegionSize_512K, attrs);
-
-
-attrs.enable = true;
-attrs.bufferable = true;
-attrs.cacheable = true;
-attrs.shareable = false;
-attrs.noExecute = false;
-attrs.accPerm = 1;          /* RW at PL1 */
-attrs.tex = 1;
-attrs.subregionDisableMask = 0;
 MPU.setRegionMeta(5, 0x70000000, MPU.RegionSize_2M, attrs);
 
 
@@ -143,15 +132,4 @@ attrs.noExecute = false;
 attrs.accPerm = 1;          /* RW at PL1 */
 attrs.tex = 1;
 attrs.subregionDisableMask = 0;
-MPU.setRegionMeta(6, 0x04000000, MPU.RegionSize_2M, attrs);
-
-
-attrs.enable = true;
-attrs.bufferable = true;
-attrs.cacheable = true;
-attrs.shareable = false;
-attrs.noExecute = false;
-attrs.accPerm = 1;          /* RW at PL1 */
-attrs.tex = 1;
-attrs.subregionDisableMask = 0;
-MPU.setRegionMeta(7, 0x80000000, MPU.RegionSize_2G, attrs);
+MPU.setRegionMeta(6, 0x80000000, MPU.RegionSize_2G, attrs);
