@@ -97,6 +97,8 @@ function connectTargets()
     print("Connecting to DMSC_Cortex_M3_0!");
     // Connect targets
     dsDMSC_0.target.connect();
+    /* Init M4F. WFI Vector set into IRAM to avoid hard fault */
+    dsDMSC_0.expression.evaluate("Init_M4()");
     /* TODO: This will be required when the GEL files are done which does the R5F
      * RAT Mapping.
      */
