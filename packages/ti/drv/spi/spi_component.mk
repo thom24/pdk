@@ -789,7 +789,7 @@ export QSPI_FileFlashWrite_Dma_TestApp_XDC_CONFIGURO
 export QSPI_FileFlashWrite_Dma_TestApp_MAKEFILE
 QSPI_FileFlashWrite_Dma_TestApp_PKG_LIST = QSPI_FileFlashWrite_Dma_TestApp
 QSPI_FileFlashWrite_Dma_TestApp_INCLUDE = $(QSPI_FileFlashWrite_Dma_TestApp_PATH)
-QSPI_FileFlashWrite_Dma_TestApp_BOARDLIST = tpr12_evm
+QSPI_FileFlashWrite_Dma_TestApp_BOARDLIST = tpr12_evm tpr12_qt
 export QSPI_FileFlashWrite_Dma_TestApp_BOARDLIST
 QSPI_FileFlashWrite_Dma_TestApp_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELIST)
 

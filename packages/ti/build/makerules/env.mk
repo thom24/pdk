@@ -335,7 +335,7 @@ ifeq ($(BUILD_OS_TYPE),baremetal)
         CONFIG_BLD_LNK_r5f   = $(pdk_PATH)/ti/build/$(SOC)/linker_r5.lds
     endif
     ifeq ($(CONFIG_BLD_XDC_c66),)
-        CONFIG_BLD_LNK_c66   = $(pdk_PATH)/ti/build/$(SOC)/linker_c66.cmd
+        CONFIG_BLD_LNK_c66   = $(pdk_PATH)/ti/build/$(SOC)/linker_c66_baremetal.cmd
     endif
   endif
 endif

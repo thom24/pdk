@@ -158,6 +158,10 @@ ifneq ($(XDC_CFG_FILE_$(CORE)),)
   _CFLAGS += $(CFLAGS_XDCINTERNAL) $(CFLAGS_FOR_REENTRANCY_SUPPORT)
 endif
 
+ifeq ($(XDC_CFG_FILE_$(CORE)),)
+  LNKFLAGS_INTERNAL_COMMON += -u CSL_Entry
+endif
+
 # Decide the compile mode
 COMPILEMODE = -fc
 ifeq ($(CPLUSPLUS_BUILD), yes)

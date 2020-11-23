@@ -121,7 +121,7 @@ typedef int32_t Board_flash_STATUS;       /** Board Flash API return type */
 #define BOARD_FLASH_ID_MX25V1635F          (0x2315U)  /** Macronix 16Mbit NOR Flash **/
 #define BOARD_FLASH_ID_GD25B16CSAG         (0x4015U)  /** Giga device 16Mbit NOR Flash **/
 #define BOARD_FLASH_ID_GD25B64CW2G         (0x4017U)  /** Giga device 16Mbit NOR Flash **/
-#define BOARD_FLASH_ID_W25Q80VSFIG         (0x4014U)  /** Winbond flash model on QT **/
+#define BOARD_FLASH_ID_W25Q16FWSF          (0x6015U)  /** Winbond flash model on TPR12 QT **/
 
 /**
  * @brief 	Board specific Flash Device Identifiers.

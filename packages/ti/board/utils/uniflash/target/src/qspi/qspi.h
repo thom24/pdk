@@ -86,7 +86,7 @@ extern "C" {
 #elif defined(tpr12_evm)
 #define QSPI_FLASH_ID           BOARD_FLASH_ID_GD25B64CW2G
 #elif defined(tpr12_qt)
-#define QSPI_FLASH_ID           BOARD_FLASH_ID_W25Q80VSFIG
+#define QSPI_FLASH_ID           BOARD_FLASH_ID_W25Q16FWSF
 #endif
 
 #if !(defined(SOC_K2G) || defined(j721e_evm))

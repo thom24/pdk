@@ -73,8 +73,14 @@
 #if defined(tpr12_evm)
 #define QSPI_FLASH_ID           BOARD_FLASH_ID_GD25B64CW2G
 #elif defined(tpr12_qt)
-#define QSPI_FLASH_ID           BOARD_FLASH_ID_W25Q80VSFIG
+#define QSPI_FLASH_ID           BOARD_FLASH_ID_W25Q16FWSF
 #endif
+
+#if defined(tpr12_qt)
+#undef  QSPI_OFFSET_SI
+#define QSPI_OFFSET_SI              (0x80000U)
+#endif
+
 
 /* QSPI Flash Read Sector API. */
 static int32_t SBL_QSPI_ReadSectors(void *dstAddr,

@@ -66,22 +66,40 @@ int main()
 
 int main()
 {
+#if !defined(tpr12_qt)
+    Board_initCfg boardCfg;
+
+    boardCfg = BOARD_INIT_PINMUX_CONFIG |
+        BOARD_INIT_MODULE_CLOCK |
+        BOARD_INIT_UART_STDIO;
     /* Board Init UART for logging. */
-    Board_init(BOARD_INIT_UART_STDIO);
+    Board_init(boardCfg);
     UART_printf("MPU SMP boot test\r\n");
+#endif
 
     CacheP_Inv((const void *)DSP_POKE_MEM_ADDR,sizeof(int));
-	while (*(DSP_POKE_MEM_ADDR) != DSP_CORE_UP_PATTERN)
-	{
+    while (*(DSP_POKE_MEM_ADDR) != DSP_CORE_UP_PATTERN)
+    {
         CacheP_Inv((const void *)DSP_POKE_MEM_ADDR,sizeof(int));
-	}
+    }
  
     /* Check if MPUs have run in AMP mode */
     if (*(DSP_POKE_MEM_ADDR) != DSP_CORE_UP_PATTERN)
+    {
+#if !defined(tpr12_qt)
         UART_printf("Some tests have failed\r\n");
+#else
+        printf("Some tests have failed\r\n");
+#endif
+    }
     else
+    {
+#if !defined(tpr12_qt)
         UART_printf("All tests have passed\r\n");
-
+#else
+        printf("All tests have passed\r\n");
+#endif
+    }
     return 0;
 }
 #endif
