@@ -49,6 +49,12 @@
 #include <ti/sysbios/knl/Task.h>
 #include <ti/board/board.h>
 
+#if defined (SOC_AM65XX) && defined (BUILD_MCU1_0)
+/** Required for runtime relocation of .text area from loaded area */
+#include <cpy_tbl.h>
+/* Refer Compiler User Guide for details */
+#endif /* SOC_AM65XX and MCU 10 */
+
 #include <ti/drv/udma/examples/udma_apputils/udma_apputils.h>
 
 /* ========================================================================== */
@@ -79,6 +85,15 @@ extern int32_t Udma_adcTest(void);
 /* Test application stack */
 static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN] __attribute__((aligned(32)));;
 
+#if defined (SOC_AM65XX) && defined (BUILD_MCU1_0)
+/** Required for runtime relocation of .text area from loaded area */
+extern COPY_TABLE _text_run_time_load_section;
+/**< Text Section that requires to be copied */
+extern COPY_TABLE _data_run_time_load_section;
+/**< Data Section that requires to be copied */
+
+#endif /* SOC_AM65XX */
+
 /* ========================================================================== */
 /*                          Function Definitions                              */
 /* ========================================================================== */
@@ -90,6 +105,12 @@ int main(void)
     Task_Params taskParams;
 
     Error_init(&eb);
+
+#if defined (SOC_AM65XX) && defined (BUILD_MCU1_0)
+    /** Required for runtime relocation of .text area from loaded area */
+    copy_in(&_text_run_time_load_section);
+    copy_in(&_data_run_time_load_section);
+#endif /* SOC_AM65XX */
 
     Udma_appC7xPreInit();
 
