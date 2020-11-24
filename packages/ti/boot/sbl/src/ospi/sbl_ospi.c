@@ -212,7 +212,7 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
     /* Get default OSPI cfg */
     OSPI_socGetInitCfg(BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
 
-#if defined(SOC_J7200)
+#if defined(SOC_J7200) || defined(SOC_AM64X)
     ospi_cfg.funcClk = OSPI_MODULE_CLK_200M;
 #else
     ospi_cfg.funcClk = OSPI_MODULE_CLK_133M;
@@ -224,18 +224,18 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
     /*        work with ROM, as ROM needs byte accesses       */
     ospi_cfg.dtrEnable = true;
 
-    /* OSPI clock is set to 200MHz by RBL on J7200 platform.
+    /* OSPI clock is set to 200MHz by RBL on J7200 & AM64X platforms.
      * PHY mode cannot be used until sysfw is loaded and OSPI clock is
      * configured to 133MHz.
      */
-#if defined(SIM_BUILD) || defined(SOC_J7200)
+#if defined(SIM_BUILD) || defined(SOC_J7200) || defined(SOC_AM64X)
     ospi_cfg.phyEnable = false;
 #endif
 
     /* Set the default SPI init configurations */
     OSPI_socSetInitCfg(BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
 
-#if defined(SOC_J7200)
+#if defined(SOC_J7200) || defined(SOC_AM64X)
     h = Board_flashOpen(BOARD_FLASH_ID_S28HS512T,
                         BOARD_OSPI_NOR_INSTANCE, NULL);
 #else
@@ -247,7 +247,7 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
     {
         SBL_ADD_PROFILE_POINT;
 
-#if defined(SIM_BUILD) || defined(SOC_J7200)
+#if defined(SIM_BUILD) || defined(SOC_J7200) || defined(SOC_AM64X)
         /* Disable PHY pipeline mode */
         CSL_ospiPipelinePhyEnable((const CSL_ospi_flash_cfgRegs *)(ospi_cfg.baseAddr), FALSE);
 #else
@@ -255,7 +255,7 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
         CSL_ospiPipelinePhyEnable((const CSL_ospi_flash_cfgRegs *)(ospi_cfg.baseAddr), TRUE);
 #endif
 
-#if defined(SOC_J7200)
+#if defined(SOC_J7200) || defined(SOC_AM64X)
         /* Until OSPI PHY + DMA is enabled at this early stage, the
          * ROM can more efficiently load the SYSFW directly from xSPI flash */
         if(pBuffer)
@@ -349,7 +349,7 @@ int32_t SBL_ospiInit(void *handle)
 
     ospi_cfg.dtrEnable = true;
 
-#if defined(SOC_J7200)
+#if defined(SOC_J7200) || defined(SOC_AM64X)
     ospi_cfg.funcClk = OSPI_MODULE_CLK_133M;
 #endif
 
@@ -368,7 +368,7 @@ int32_t SBL_ospiInit(void *handle)
     /* Set the default SPI init configurations */
     OSPI_socSetInitCfg(BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
 
-#if defined(SOC_J7200)
+#if defined(SOC_J7200) || defined(SOC_AM64X)
     h = Board_flashOpen(BOARD_FLASH_ID_S28HS512T,
                         BOARD_OSPI_NOR_INSTANCE, (void *)(enableTuning));
 #else
@@ -511,7 +511,7 @@ int32_t SBL_ospiLeaveConfigSPI()
 
     SBL_ADD_PROFILE_POINT;
 
-#if defined(SOC_J7200)
+#if defined(SOC_J7200) || defined(SOC_AM64X)
     h = Board_flashOpen(BOARD_FLASH_ID_S28HS512T,
                         BOARD_OSPI_NOR_INSTANCE, NULL);
 #else
