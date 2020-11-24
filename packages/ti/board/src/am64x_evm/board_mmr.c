@@ -137,8 +137,13 @@ typedef enum {
 #define MAIN_PLL_MMR_BASE_ADDRESS   CSL_PLL0_CFG_BASE
 #define MCU_PLL_MMR_BASE_ADDRESS    CSL_MCU_PLL0_CFG_BASE
 
+#ifdef BUILD_M4F
+#define MAIN_PADCONFIG_MMR_BASE_ADDRESS CSL_PADCFG_CTRL0_CFG0_BASE + 0x60000000
+#define MCU_PADCONFIG_MMR_BASE_ADDRESS CSL_MCU_PADCFG_CTRL0_CFG0_BASE + 0x60000000
+#else
 #define MAIN_PADCONFIG_MMR_BASE_ADDRESS CSL_PADCFG_CTRL0_CFG0_BASE
 #define MCU_PADCONFIG_MMR_BASE_ADDRESS CSL_MCU_PADCFG_CTRL0_CFG0_BASE
+#endif
 
 uint32_t MMR_change_lock(mmr_lock_actions_t target_state, uint32_t * kick0);
 uint32_t generic_mmr_change_all_locks(mmr_lock_actions_t target_state, uint32_t base_addr, const  uint32_t * offset_array, uint32_t array_size);

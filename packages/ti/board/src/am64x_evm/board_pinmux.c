@@ -42,7 +42,13 @@
 #include "board_internal.h"
 #include "board_pinmux.h"
 
-#define MAIN_PADCONFIG_CTRL_BASE    0x000F0000
+#ifdef BUILD_M4F
+#define MAIN_PADCONFIG_CTRL_BASE    CSL_PADCFG_CTRL0_CFG0_BASE + 0x60000000
+#define MCU_PADCONFIG_CTRL_BASE     CSL_MCU_PADCFG_CTRL0_CFG0_BASE + 0x60000000
+#else
+#define MAIN_PADCONFIG_CTRL_BASE    CSL_PADCFG_CTRL0_CFG0_BASE
+#define MCU_PADCONFIG_CTRL_BASE     CSL_MCU_PADCFG_CTRL0_CFG0_BASE
+#endif
 #define CTRL_MMR0_PARTITION_SIZE    0x4000
 #define MAIN_CTRL_PINCFG_BASE       (MAIN_PADCONFIG_CTRL_BASE + (1 * CTRL_MMR0_PARTITION_SIZE))
 
@@ -57,7 +63,6 @@
 
 Board_STATUS Board_pinmuxConfig (void)
 {
-#ifndef BUILD_M4F
 
     Board_unlockMMR();
 
@@ -75,7 +80,7 @@ Board_STATUS Board_pinmuxConfig (void)
                 pInstanceData = pModuleData[j].instPins;
                 for(k = 0; (PINMUX_END != pInstanceData[k].pinOffset); k++)
                 {
-                    HW_WR_REG32((CSL_PADCFG_CTRL0_CFG0_BASE + 0x4000 + pInstanceData[k].pinOffset),
+                    HW_WR_REG32((MAIN_PADCONFIG_CTRL_BASE + 0x4000 + pInstanceData[k].pinOffset),
                                 (pInstanceData[k].pinSettings));
                 }
             }
@@ -92,7 +97,7 @@ Board_STATUS Board_pinmuxConfig (void)
                 pInstanceData = pModuleData[j].instPins;
                 for(k = 0; (PINMUX_END != pInstanceData[k].pinOffset); k++)
                 {
-                    HW_WR_REG32((CSL_MCU_PADCFG_CTRL0_CFG0_BASE + 0x4000 + pInstanceData[k].pinOffset),
+                    HW_WR_REG32((MCU_PADCONFIG_CTRL_BASE + 0x4000 + pInstanceData[k].pinOffset),
                                  (pInstanceData[k].pinSettings));
                 }
             }
@@ -100,13 +105,11 @@ Board_STATUS Board_pinmuxConfig (void)
     }
 
     Board_lockMMR();
-#endif /* #ifndef BUILD_M4F */
     return BOARD_SOK;
 }
 
 void Board_uartTxPinmuxConfig(void)
 {
-#ifndef BUILD_M4F
     /* Board_unlockMMR */
     HW_WR_REG32(BOARD_UART_TX_LOCK_KICK_ADDR, KICK0_UNLOCK_VAL);
     HW_WR_REG32(BOARD_UART_TX_LOCK_KICK_ADDR + 4U, KICK1_UNLOCK_VAL);
@@ -120,7 +123,6 @@ void Board_uartTxPinmuxConfig(void)
     /* Board_lockMMR */
     HW_WR_REG32(BOARD_UART_TX_LOCK_KICK_ADDR + 4U, 0);
     HW_WR_REG32(BOARD_UART_TX_LOCK_KICK_ADDR, 0);
-#endif
 }
 
 /**
