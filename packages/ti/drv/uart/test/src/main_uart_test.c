@@ -3109,6 +3109,20 @@ UART_Tests Uart_tests[] =
     {UART_test_callback, true, UART_TEST_ID_DMA_CB, "\r\n UART DMA read write test in callback mode"},
 #endif
     {UART_test_callback, false, UART_TEST_ID_CB, "\r\n UART non-DMA read write test in callback mode"},
+#ifdef USE_BIOS
+#if !defined(UART_API2_NOT_SUPPORTED)
+#ifdef UART_DMA_ENABLE
+    {UART_test_simultaneous_rw, true, UART_TEST_ID_DMA_RW, "\r\n UART DMA simultaneous read write test "},
+#endif
+    {UART_test_simultaneous_rw, false, UART_TEST_ID_RW, "\r\n UART non-DMA simultaneous read write test "},
+#endif
+#endif
+#if !defined(UART_NO_FIFO)
+#if defined(UART_DMA_ENABLE)
+    {UART_test_fifo_trglvl, true, UART_TEST_ID_DMA_TRGLVL, "\r\n UART DMA TX/RX FIFO trigger level test "},
+#endif
+    {UART_test_fifo_trglvl, false, UART_TEST_ID_TRGLVL, "\r\n UART non-DMA TX/RX FIFO trigger level test "},
+#endif
 #ifdef UART_DMA_ENABLE
     {UART_test_timeout, true, UART_TEST_ID_DMA_TO, "\r\n UART DMA timeout test, wait for 10 seconds to timeout read"},
 #endif
@@ -3123,23 +3137,7 @@ UART_Tests Uart_tests[] =
     {UART_test_read_write_cancel, true, UART_TEST_ID_DMA_CANCEL, "\r\n UART DMA read write cancel test, enter less than 16 chars"},
 #endif
     {UART_test_read_write_cancel, false, UART_TEST_ID_CANCEL, "\r\n UART non-DMA read write cancel test, enter less than 16 chars"},
-#ifdef USE_BIOS
-#if !defined(UART_API2_NOT_SUPPORTED)
-#ifdef UART_DMA_ENABLE
-    {UART_test_simultaneous_rw, true, UART_TEST_ID_DMA_RW, "\r\n UART DMA simultaneous read write test "},
-#endif
-    {UART_test_simultaneous_rw, false, UART_TEST_ID_RW, "\r\n UART non-DMA simultaneous read write test "},
-#endif
-#endif
-#if defined(UART_DMA_ENABLE)
-#if !defined(UART_NO_FIFO)
-    {UART_test_fifo_trglvl, true, UART_TEST_ID_DMA_TRGLVL, "\r\n UART DMA TX/RX FIFO trigger level test "},
-#endif
-#endif
     {UART_test_printf_scanf, false, UART_TEST_ID_PRINTF, "\r\n UART stdio printf and scanf test "},
-#if !defined(UART_NO_FIFO)
-    {UART_test_fifo_trglvl, false, UART_TEST_ID_TRGLVL, "\r\n UART non-DMA TX/RX FIFO trigger level test "},
-#endif
     {UART_test_polling_timeout, false, UART_TEST_ID_POLL_TO, "\r\n UART polling timeout test, wait for 10 seconds to timeout read"},
     {UART_test_printf_scanf_stdio_params, false, UART_TEST_ID_STDIOPARAMS, "\r\n UART stdio printf and scanf test with STDIO params(Default) "},
     {UART_test_read_write_int_disable, false, UART_TEST_ID_INT_DISABLE, "\r\n UART read write test with interrupt disabled"},
