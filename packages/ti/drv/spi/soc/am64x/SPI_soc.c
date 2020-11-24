@@ -487,7 +487,7 @@ OSPI_v0_HwAttrs ospiInitCfg =
         OSPI_DEV_DELAY_CSDA            /* default Chip Select De-Assert Delay */
     },
     256,                               /* device page size is 256 bytes  */
-    17,                                /* device block size is 2 ^ 17 = 128K bytes */
+    18,                                /* device block size is 2 ^ 18 = 256K bytes */
     OSPI_XFER_LINES_OCTAL,             /* xferLines */
     (bool)false,                       /* Interrupt mode */
     (bool)true,                        /* Direct Access Controller mode */
