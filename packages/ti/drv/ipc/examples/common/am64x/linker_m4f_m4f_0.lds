@@ -62,7 +62,6 @@ SECTIONS
 
     /* USB or any other LLD buffer for benchmarking */
     .benchmark_buffer (NOLOAD) {} ALIGN (8) > DDR0
-    .rat_cfg_buffer (NOINIT) : {} palign(8) > DRAM_M4F_MEM
     ipc_data_buffer (NOINIT) : {} palign(8) > DDR0
     .resource_table : {
         __RESOURCE_TABLE = .;
