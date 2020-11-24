@@ -37,8 +37,13 @@ MODULE_NAME = copyvecs
 SRCDIR = .
 INCDIR = .
 
-# Common source files across all platforms and cores
-SRCS_ASM_COMMON += utilsCopyVecs2ATcm.asm
+# TCM's are enabled & intialized and vectors copied for AM65xx
+# TCM's if enabled, vectors copied into ATCM for others
+ifeq ($(SOC),$(filter $(SOC), am65xx))
+  SRCS_ASM_COMMON += utilsEnableTcmCopyVecs2ATcm.asm
+else
+  SRCS_ASM_COMMON += utilsCopyVecs2ATcm.asm
+endif
 
 # List all the external components/interfaces, whose interface header files
 #  need to be included for this component
