@@ -269,10 +269,11 @@ bool  OSAL_core_hwi_test()
 
 bool OSAL_hwi_test()
 {
+  bool pass = true;
 #if (defined (SOC_AM65XX) || defined (SOC_AM64X) || defined(SOC_J721E) || defined(SOC_J7200) || defined (SOC_TPR12)) && (!defined(BUILD_C66X_1))&&(!defined(BUILD_C66X_2))&&(!defined(BUILD_C7X_1))
-  OSAL_core_hwi_test();
+  pass = OSAL_core_hwi_test();
 #endif
-  return true;
+  return pass;
 }
 
 typedef enum UT_Timer_Type_s {
