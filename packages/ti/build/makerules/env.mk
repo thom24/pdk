@@ -280,6 +280,7 @@ MV = $(UTILSPATH)mv
 RMDIR = $(UTILSPATH)rm -rf
 MKDIR = $(UTILSPATH)mkdir
 ECHO = @$(UTILSPATH)echo
+CAT	= $(UTILSPATH)cat
 
 #emake provides detailed info for build analysis.
 EMAKE = emake --emake-emulation=gmake --emake-gen-subbuild-db=1 --emake-annodetail=waiting

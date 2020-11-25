@@ -588,8 +588,8 @@ ifeq ($(SBL_TYPE), mflash)
   SBL_HS_ADDRESS=0xffffffff
 endif
 
-ifdef OTP_APP_BIN
-  SBL_BIN_FILE=otp_app_bin
+ifdef KEYWRITER_APP_BIN
+  SBL_BIN_FILE=keywriter_app_bin
 else
   SBL_BIN_FILE=sbl_img_bin
 endif
@@ -599,14 +599,10 @@ SBL_OBJ_COPY_OPTS := --gap-fill=0xff
 sbl_img_bin: $(EXE_NAME)
 	$(SBL_OBJ_COPY) $(SBL_OBJ_COPY_OPTS) -O binary $< $(SBL_BIN_PATH)
 
-otp_app_bin: sbl_img_bin
-  ifeq (4.2.0,$(firstword $(sort $(MAKE_VERSION) 4.2.0)))
-	$(ECHO) \# Appending $(OTP_APP_DIR)/otp_data.bin to $(SBL_BIN_PATH) ...
-	$(ECHO) \#
-	$(file >> $(SBL_BIN_PATH),$(file < $(OTP_APP_DIR)/otp_data.bin))
-  else
-	$(error Make version is $(MAKE_VERSION). Build requires make v4.2 or higher)
-  endif
+keywriter_app_bin: sbl_img_bin
+	$(info )
+	$(info Appending certificate to keywriter binary file)
+	$(CAT) $(KEYWRITER_APP_DIR)/x509cert/final_certificate.bin >> $(SBL_BIN_PATH)
 
 $(SBL_IMAGE_PATH): $(SBL_BIN_FILE)
 ifeq ($(SOC),$(filter $(SOC), tda2xx tda2ex tda2px tda3xx dra78x))
