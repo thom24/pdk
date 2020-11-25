@@ -321,6 +321,8 @@ typedef uint8_t devgrp_t;
 #include <ti/drv/sciclient/soc/sysfw/include/tisci/security/tisci_sec_handover.h>
 #include <ti/drv/sciclient/soc/sysfw/include/tisci/security/tisci_secure_jtag.h>
 #include <ti/drv/sciclient/soc/sysfw/include/tisci/security/tisci_soc_uid.h>
+#include <ti/drv/sciclient/soc/sysfw/include/tisci/security/tisci_keywriter.h>
+#include <ti/drv/sciclient/soc/sysfw/include/tisci/security/tisci_dkek.h>
 #include <ti/drv/sciclient/soc/sysfw/include/tisci/pm/tisci_pm_clock.h>
 #include <ti/drv/sciclient/soc/sysfw/include/tisci/pm/tisci_pm_device.h>
 #include <ti/drv/sciclient/soc/sysfw/include/tisci/pm/tisci_pm_core.h>
@@ -340,6 +342,7 @@ typedef uint8_t devgrp_t;
 #include <ti/drv/sciclient/include/sciclient_genericMsgs.h>
 #include <ti/drv/sciclient/include/sciclient_procboot.h>
 #include <ti/drv/sciclient/include/sciclient_boardcfg.h>
+#include <ti/drv/sciclient/include/sciclient_keywriter.h>
 
 #ifdef __cplusplus
 extern "C" {

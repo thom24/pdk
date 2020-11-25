@@ -249,6 +249,9 @@ struct tisci_sec_header {
 /** Message to derive a KEK and return it via TISCI */
 #define TISCI_MSG_SA2UL_GET_DKEK                (0x9029U)
 
+/* Message ID for keywriter */
+#define TISCI_MSG_KEY_WRITER             		(0x9031U)
+
 /******************************************************/
 
 /* Processor Control APIs */
