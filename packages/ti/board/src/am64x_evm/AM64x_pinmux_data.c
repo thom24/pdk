@@ -76,17 +76,17 @@ static pinmuxPerCfg_t gFsi_rx0PinCfg[] =
     /* MyFSI_RX1 -> FSI_RX0_CLK -> V19 */
     {
         PIN_GPMC0_AD8, PIN_MODE(1) | \
-        ((PIN_PULL_DISABLE) & (~PIN_PULL_DIRECTION & ~PIN_INPUT_ENABLE))
+        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
     },
     /* MyFSI_RX1 -> FSI_RX0_D0 -> T17 */
     {
         PIN_GPMC0_AD9, PIN_MODE(1) | \
-        ((PIN_PULL_DISABLE) & (~PIN_PULL_DIRECTION & ~PIN_INPUT_ENABLE))
+        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
     },
     /* MyFSI_RX1 -> FSI_RX0_D1 -> R16 */
     {
         PIN_GPMC0_AD10, PIN_MODE(1) | \
-        ((PIN_PULL_DISABLE) & (~PIN_PULL_DIRECTION & ~PIN_INPUT_ENABLE))
+        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
     },
     {PINMUX_END}
 };

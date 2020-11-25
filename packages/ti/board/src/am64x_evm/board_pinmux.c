@@ -181,7 +181,7 @@ Board_STATUS Board_pinmuxSetReg(uint8_t  domain,
     baseAddr = Board_pinmuxGetBaseAddr(domain);
     if(baseAddr != 0)
     {
-        HW_WR_REG32(baseAddr, muxData);
+        HW_WR_REG32((baseAddr + offset), muxData);
     }
     else
     {
