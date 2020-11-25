@@ -1105,13 +1105,14 @@ static void MCSPI_init_v1(MCSPI_Handle mcHandle)
     {
         /* Get the pointer to the object and hwAttrs */
         handle  = mcHandle->handle;
-        chNum   = mcHandle->chnNum;
         object = (SPI_v1_Object*)handle->object;
-        chObj   = &(object->chObject[chNum]);
-
-        /* reset channel object */
-        (void)memset(chObj, 0, sizeof(SPI_v1_chObject));
-        chObj->isOpen = (bool)false;
+        for(chNum = MCSPI_CHANNEL_0; chNum < MCSPI_MAX_NUM_CHANNELS; chNum++)
+        {
+            chObj   = &(object->chObject[chNum]);
+            /* reset channel object */
+            (void)memset(chObj, 0, sizeof(SPI_v1_chObject));
+            chObj->isOpen = (bool)false;
+        }
     }
 }
 
