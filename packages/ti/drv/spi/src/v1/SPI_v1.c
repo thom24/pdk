@@ -1138,302 +1138,317 @@ static MCSPI_Handle MCSPI_open_v1(MCSPI_Handle        mcHandle,
     /* Input parameter validation */
     if (mcHandle != NULL)
     {
-    /* Get the pointer to the object and hwAttrs */
-    handle  = mcHandle->handle;
-    chNum   = mcHandle->chnNum;
-    object = (SPI_v1_Object *)handle->object;
-    chObj   = &(object->chObject[chNum]);
-    hwAttrs = (const SPI_v1_HWAttrs *)handle->hwAttrs;
-    chnCfg  = &(hwAttrs->chnCfg[chNum]);
+        /* Get the pointer to the object and hwAttrs */
+        handle  = mcHandle->handle;
+        chNum   = mcHandle->chnNum;
+        object = (SPI_v1_Object *)handle->object;
+        chObj   = &(object->chObject[chNum]);
+        hwAttrs = (const SPI_v1_HWAttrs *)handle->hwAttrs;
+        chnCfg  = &(hwAttrs->chnCfg[chNum]);
 
-    /* Determine if the device index was already opened */
-    if(chObj->isOpen == (bool)true) {
-        retMcHandle = NULL;
-    }
-    else
-    {
-        /* Mark the channel handle as being used */
-        chObj->isOpen = (bool)true;
-
-        /* Store the SPI parameters */
-        if (pParams == NULL)
-        {
-            /* No params passed in, so use the defaults */
-            MCSPI_Params_init(&(chObj->spiParams));
-            pParams = &(chObj->spiParams);
+        /* Determine if the device index was already opened */
+        if(chObj->isOpen == (bool)true) {
+            retMcHandle = NULL;
         }
         else
         {
-            chObj->spiParams = *pParams;
-        }
+            /* Mark the channel handle as being used */
+            chObj->isOpen = (bool)true;
 
-        if (pParams->dataSize < 4U)
-        {
-            /* wrong data size param */
-            retMcHandle = NULL;
-            ret_flag = 1U;
-        }
-        else if (pParams->dataSize <= 8U)
-        {
-            chObj->wordLenShift = 0U;
-        }
-        else if (pParams->dataSize <= 16U)
-        {
-            chObj->wordLenShift = 1U;
-        }
-        else if (pParams->dataSize <= 32U)
-        {
-            chObj->wordLenShift = 2U;
-        }
-        else
-        {
-            /* wrong data size param */
-            retMcHandle = NULL;
-            ret_flag = 1U;
-        }
-
-        /* Store the current mode. Extract operating mode from hwAttrs and params */
-        if(SPI_MODE_BLOCKING == pParams->transferMode)
-        {
-            if ((bool)true == hwAttrs->enableIntr)
+            /* Store the SPI parameters */
+            if (pParams == NULL)
             {
-                chObj->operMode = (uint32_t)SPI_OPER_MODE_BLOCKING;
+                /* No params passed in, so use the defaults */
+                MCSPI_Params_init(&(chObj->spiParams));
+                pParams = &(chObj->spiParams);
             }
-#ifdef SPI_DMA_ENABLE
-            else if ((bool)true == hwAttrs->dmaMode)
-            {
-                chObj->operMode = (uint32_t)SPI_OPER_MODE_BLOCKING;
-            }
-#endif
             else
             {
-                chObj->operMode = (uint32_t)SPI_OPER_MODE_POLLING;
+                chObj->spiParams = *pParams;
             }
-        }
-        else
-        {
-            chObj->operMode = (uint32_t)SPI_OPER_MODE_CALLBACK;
-            /* Check to see if a callback function was defined for async mode */
-            if ((pParams->transferCallbackFxn == NULL) &&
-                (object->transferCallbackFxn == NULL))
+
+            if (pParams->dataSize < 4U)
             {
+                /* wrong data size param */
                 retMcHandle = NULL;
                 ret_flag = 1U;
             }
-        }
-
-        if ((chObj->operMode != (uint32_t)SPI_OPER_MODE_POLLING) &&
-            (object->hwi == NULL))
-        {
-            /* register interrrupt when the 1st
-               channel of the instance is opened */
-            Osal_RegisterInterrupt_initParams(&interruptRegParams);             
-
-            interruptRegParams.corepacConfig.name=NULL;
-#ifdef __TI_ARM_V7R4__
-            interruptRegParams.corepacConfig.priority=0x8U;
-#else
-            interruptRegParams.corepacConfig.priority=0x20U;
-#endif
-            interruptRegParams.corepacConfig.corepacEventNum = (int32_t)hwAttrs->eventId;
-            interruptRegParams.corepacConfig.intVecNum = (int32_t)hwAttrs->intNum; /* Host Interrupt vector */
-            interruptRegParams.corepacConfig.isrRoutine  = (void (*)(uintptr_t))(&MCSPI_v1_hwiFxn);
-            interruptRegParams.corepacConfig.arg         = (uintptr_t)mcHandle;
-
-            (void)SPI_osalRegisterInterrupt(&interruptRegParams,&(object->hwi));
-
-            if(object->hwi == NULL)
+            else if (pParams->dataSize <= 8U)
             {
-                MCSPI_close_v1(mcHandle);
-                ret_flag = 1u;
+                chObj->wordLenShift = 0U;
+            }
+            else if (pParams->dataSize <= 16U)
+            {
+                chObj->wordLenShift = 1U;
+            }
+            else if (pParams->dataSize <= 32U)
+            {
+                chObj->wordLenShift = 2U;
+            }
+            else
+            {
+                /* wrong data size param */
                 retMcHandle = NULL;
-            }
-        }
-
-        if(ret_flag == 0u)
-        {
-            /*
-             * Construct thread safe handles for this SPI peripheral
-             * Semaphore to provide exclusive access to the SPI peripheral
-             */
-            if (object->mutex == NULL)
-            {
-                SPI_osalSemParamsInit(&semParams);
-                semParams.mode = SemaphoreP_Mode_BINARY;
-                object->mutex = SPI_osalCreateBlockingLock(1U, &semParams);
+                ret_flag = 1U;
             }
 
-            if (chObj->operMode == (uint32_t)SPI_OPER_MODE_BLOCKING)
+            /* Store the current mode. Extract operating mode from hwAttrs and params */
+            if(SPI_MODE_BLOCKING == pParams->transferMode)
             {
-                /*
-                 * Construct a semaphore to block task execution for the duration of the
-                 * SPI transfer
-                 */
-                if (object->transferComplete == NULL)
+                if ((bool)true == hwAttrs->enableIntr)
                 {
-                    SPI_osalSemParamsInit(&semParams);
-                    semParams.mode = SemaphoreP_Mode_BINARY;
-                    object->transferComplete = SPI_osalCreateBlockingLock(0U, &semParams);
+                    chObj->operMode = (uint32_t)SPI_OPER_MODE_BLOCKING;
                 }
-            }
-
-            chObj->transaction = NULL;
-
-            /* Extract clock mode from the frame format */
-            switch(pParams->frameFormat)
-            {
-                case SPI_POL0_PHA0:
-                    chObj->clockMode = MCSPI_CLK_MODE_0;
-                    break;
-
-                case SPI_POL0_PHA1:
-                    chObj->clockMode = MCSPI_CLK_MODE_1;
-                    break;
-
-                case SPI_POL1_PHA0:
-                    chObj->clockMode = MCSPI_CLK_MODE_2;
-                    break;
-
-                case SPI_POL1_PHA1:
-                    chObj->clockMode = MCSPI_CLK_MODE_3;
-                    break;
-
-                default:
-                	chObj->clockMode = MCSPI_CLK_MODE_2;
-                    break;
-            }
-
-            if (object->chOpenedCnt == 0U)
-            {
-#ifdef SPI_DMA_ENABLE
-                if (hwAttrs->dmaMode == (bool)true)
+    #ifdef SPI_DMA_ENABLE
+                else if ((bool)true == hwAttrs->dmaMode)
                 {
-                    /* DMA Configuration */
-                    (void)MCSPI_dmaConfig(mcHandle);
-
-                    McSPIDMADisable(hwAttrs->baseAddr,
-                                    ((uint32_t) MCSPI_DMA_RX_EVENT | (uint32_t) MCSPI_DMA_TX_EVENT),
-                                    chNum);
+                    chObj->operMode = (uint32_t)SPI_OPER_MODE_BLOCKING;
                 }
-#endif
-                /* Reset SPI Peripheral */
-                McSPIReset(hwAttrs->baseAddr);
-
-                MCSPISysConfigSetup(hwAttrs->baseAddr, MCSPI_CLOCKS_OCP_ON_FUNC_ON,
-                                    MCSPI_SIDLEMODE_NO, MCSPI_WAKEUP_DISABLE,
-                                    MCSPI_AUTOIDLE_OFF);
-
-                if (hwAttrs->chMode == MCSPI_SINGLE_CH)
+    #endif
+                else
                 {
-                    /* Configure 3 pin or 4 pin mode */
-                    if((uint32_t)SPI_PINMODE_3_PIN == hwAttrs->pinMode)
-                    {
-                        /* Disable chip select pin.*/
-                        McSPICSDisable(hwAttrs->baseAddr);
-                    }
-                    else
-                    {
-                        /* Enable chip select pin.*/
-                        McSPICSEnable(hwAttrs->baseAddr);
-                    }
-                }
-            }
-
-            if ((object->chOpenedCnt != 0U) &&
-                ((pParams->mode != SPI_MASTER) || (object->mode != SPI_MASTER)))
-            {
-
-                /*
-                 * McSPI supports multiple master channels or single slave channel per instance:
-                 *
-                 * 1. if an instance has already had a channle opened in SPI_MASTER mode,
-                 * the new channel being opened should have the same SPI mode as the previous
-                 * channel opened.
-                 *
-                 * 2. if an instance has already had a channle opened in SPI_SLAVE mode,
-                 * no new channel can be opened.
-                 */
-                ret_flag = 1u;
-                retMcHandle = NULL;
-            }
-
-            if((SPI_MASTER == pParams->mode) && (ret_flag == 0U))
-            {
-                if (object->chOpenedCnt == 0U)
-                {
-                    /*
-                     * first channel opened in this instance,
-                     * enable SPI Master
-                     */
-                    McSPIMasterModeEnable(hwAttrs->baseAddr);
-                    object->mode = SPI_MASTER;
-                }
-
-                /* Configure the peripheral as single channel SPI Master */
-                (void)McSPIMasterModeConfig(hwAttrs->baseAddr,
-                                            hwAttrs->chMode,
-                                            chnCfg->trMode,
-                                            chnCfg->dataLineCommMode,
-                                            chNum);
-                /* Clock configuration */
-                McSPIClkConfig(hwAttrs->baseAddr,
-                               hwAttrs->inputClkFreq,
-                               pParams->bitRate,
-                               chNum,
-                               chObj->clockMode);
-
-                /* configure initial SPI delay only in signle master mode */
-                if ((hwAttrs->chMode == MCSPI_SINGLE_CH) && (object->chOpenedCnt == 0U))
-                {
-                    McSPIInitDelayConfig(hwAttrs->baseAddr, hwAttrs->initDelay);
+                    chObj->operMode = (uint32_t)SPI_OPER_MODE_POLLING;
                 }
             }
             else
             {
-                if (object->chOpenedCnt == 0U)
+                chObj->operMode = (uint32_t)SPI_OPER_MODE_CALLBACK;
+                /* Check to see if a callback function was defined for async mode */
+                if ((pParams->transferCallbackFxn == NULL) &&
+                    (object->transferCallbackFxn == NULL))
                 {
-                    /*
-                     * first channel opened in this instance,
-                     * enable SPI Slave
-                     */
-                    McSPISlaveModeEnable(hwAttrs->baseAddr);
-                    object->mode = SPI_SLAVE;
+                    retMcHandle = NULL;
+                    ret_flag = 1U;
                 }
-
-                /* Clock configuration */
-                McSPIClkConfig(hwAttrs->baseAddr,
-                               hwAttrs->inputClkFreq,
-                               pParams->bitRate,
-                               chNum,
-                               chObj->clockMode);
-
-                /* Set pin direction. */
-                (void)MCSPIPinDirSet(hwAttrs->baseAddr,
-                                     chnCfg->trMode,
-                                     chnCfg->dataLineCommMode,
-                                     chNum);
             }
 
-            /* Set word length for corresponding channel */
-            McSPIWordLengthSet(hwAttrs->baseAddr,
-                               MCSPI_WORD_LENGTH(pParams->dataSize),
-                               chNum);
+            if ((chObj->operMode != (uint32_t)SPI_OPER_MODE_POLLING) &&
+                (object->hwi == NULL))
+            {
+                /* register interrrupt when the 1st
+                channel of the instance is opened */
+                Osal_RegisterInterrupt_initParams(&interruptRegParams);             
 
-            /* Set polarity of SPIEN to low.*/
-            McSPICSPolarityConfig(hwAttrs->baseAddr,
-                                  chnCfg->csPolarity,
-                                  chNum);
+                interruptRegParams.corepacConfig.name=NULL;
+    #ifdef __TI_ARM_V7R4__
+                interruptRegParams.corepacConfig.priority=0x8U;
+    #else
+                interruptRegParams.corepacConfig.priority=0x20U;
+    #endif
+                interruptRegParams.corepacConfig.corepacEventNum = (int32_t)hwAttrs->eventId;
+                interruptRegParams.corepacConfig.intVecNum = (int32_t)hwAttrs->intNum; /* Host Interrupt vector */
+                interruptRegParams.corepacConfig.isrRoutine  = (void (*)(uintptr_t))(&MCSPI_v1_hwiFxn);
+                interruptRegParams.corepacConfig.arg         = (uintptr_t)mcHandle;
+
+                (void)SPI_osalRegisterInterrupt(&interruptRegParams,&(object->hwi));
+
+                if(object->hwi == NULL)
+                {
+                    MCSPI_close_v1(mcHandle);
+                    ret_flag = 1u;
+                    retMcHandle = NULL;
+                }
+            }
+
+            if(ret_flag == 0u)
+            {
+                /*
+                * Construct thread safe handles for this SPI peripheral
+                * Semaphore to provide exclusive access to the SPI peripheral
+                */
+                if (object->mutex == NULL)
+                {
+                    SPI_osalSemParamsInit(&semParams);
+                    semParams.mode = SemaphoreP_Mode_BINARY;
+                    object->mutex = SPI_osalCreateBlockingLock(1U, &semParams);
+                }
+
+                if (chObj->operMode == (uint32_t)SPI_OPER_MODE_BLOCKING)
+                {
+                    /*
+                    * Construct a semaphore to block task execution for the duration of the
+                    * SPI transfer
+                    */
+                    if (object->transferComplete == NULL)
+                    {
+                        SPI_osalSemParamsInit(&semParams);
+                        semParams.mode = SemaphoreP_Mode_BINARY;
+                        object->transferComplete = SPI_osalCreateBlockingLock(0U, &semParams);
+                    }
+                }
+
+                chObj->transaction = NULL;
+
+                /* Extract clock mode from the frame format */
+                switch(pParams->frameFormat)
+                {
+                    case SPI_POL0_PHA0:
+                        chObj->clockMode = MCSPI_CLK_MODE_0;
+                        break;
+
+                    case SPI_POL0_PHA1:
+                        chObj->clockMode = MCSPI_CLK_MODE_1;
+                        break;
+
+                    case SPI_POL1_PHA0:
+                        chObj->clockMode = MCSPI_CLK_MODE_2;
+                        break;
+
+                    case SPI_POL1_PHA1:
+                        chObj->clockMode = MCSPI_CLK_MODE_3;
+                        break;
+
+                    default:
+                        chObj->clockMode = MCSPI_CLK_MODE_2;
+                        break;
+                }
+
+                if (object->chOpenedCnt == 0U)
+                {
+    #ifdef SPI_DMA_ENABLE
+                    if (hwAttrs->dmaMode == (bool)true)
+                    {
+                        /* DMA Configuration */
+                        if(SPI_STATUS_SUCCESS == MCSPI_dmaConfig(mcHandle))
+                        {
+                            McSPIDMADisable(hwAttrs->baseAddr,
+                                            ((uint32_t) MCSPI_DMA_RX_EVENT | (uint32_t) MCSPI_DMA_TX_EVENT),
+                                            chNum);
+                        }
+                        else
+                        {
+                            ret_flag = 1u;
+                            retMcHandle = NULL;
+                        }
+                    }
+    #endif
+                    if(ret_flag == 0u)
+                    {
+                        /* Reset SPI Peripheral */
+                        McSPIReset(hwAttrs->baseAddr);
+
+                        MCSPISysConfigSetup(hwAttrs->baseAddr, MCSPI_CLOCKS_OCP_ON_FUNC_ON,
+                                            MCSPI_SIDLEMODE_NO, MCSPI_WAKEUP_DISABLE,
+                                            MCSPI_AUTOIDLE_OFF);
+
+                        if (hwAttrs->chMode == MCSPI_SINGLE_CH)
+                        {
+                            /* Configure 3 pin or 4 pin mode */
+                            if((uint32_t)SPI_PINMODE_3_PIN == hwAttrs->pinMode)
+                            {
+                                /* Disable chip select pin.*/
+                                McSPICSDisable(hwAttrs->baseAddr);
+                            }
+                            else
+                            {
+                                /* Enable chip select pin.*/
+                                McSPICSEnable(hwAttrs->baseAddr);
+                            }
+                        }
+                    }
+                }
+
+                if ((object->chOpenedCnt != 0U) &&
+                    ((pParams->mode != SPI_MASTER) || (object->mode != SPI_MASTER)))
+                {
+
+                    /*
+                    * McSPI supports multiple master channels or single slave channel per instance:
+                    *
+                    * 1. if an instance has already had a channle opened in SPI_MASTER mode,
+                    * the new channel being opened should have the same SPI mode as the previous
+                    * channel opened.
+                    *
+                    * 2. if an instance has already had a channle opened in SPI_SLAVE mode,
+                    * no new channel can be opened.
+                    */
+                    ret_flag = 1u;
+                    retMcHandle = NULL;
+                }
+
+                if(ret_flag == 0U)
+                {
+                    if(SPI_MASTER == pParams->mode)
+                    {
+                        if (object->chOpenedCnt == 0U)
+                        {
+                            /*
+                            * first channel opened in this instance,
+                            * enable SPI Master
+                            */
+                            McSPIMasterModeEnable(hwAttrs->baseAddr);
+                            object->mode = SPI_MASTER;
+                        }
+
+                        /* Configure the peripheral as single channel SPI Master */
+                        (void)McSPIMasterModeConfig(hwAttrs->baseAddr,
+                                                    hwAttrs->chMode,
+                                                    chnCfg->trMode,
+                                                    chnCfg->dataLineCommMode,
+                                                    chNum);
+                        /* Clock configuration */
+                        McSPIClkConfig(hwAttrs->baseAddr,
+                                    hwAttrs->inputClkFreq,
+                                    pParams->bitRate,
+                                    chNum,
+                                    chObj->clockMode);
+
+                        /* configure initial SPI delay only in signle master mode */
+                        if ((hwAttrs->chMode == MCSPI_SINGLE_CH) && (object->chOpenedCnt == 0U))
+                        {
+                            McSPIInitDelayConfig(hwAttrs->baseAddr, hwAttrs->initDelay);
+                        }
+                    }
+                    else
+                    {
+                        if (object->chOpenedCnt == 0U)
+                        {
+                            /*
+                            * first channel opened in this instance,
+                            * enable SPI Slave
+                            */
+                            McSPISlaveModeEnable(hwAttrs->baseAddr);
+                            object->mode = SPI_SLAVE;
+                        }
+
+                        /* Clock configuration */
+                        McSPIClkConfig(hwAttrs->baseAddr,
+                                    hwAttrs->inputClkFreq,
+                                    pParams->bitRate,
+                                    chNum,
+                                    chObj->clockMode);
+
+                        /* Set pin direction. */
+                        (void)MCSPIPinDirSet(hwAttrs->baseAddr,
+                                            chnCfg->trMode,
+                                            chnCfg->dataLineCommMode,
+                                            chNum);
+                    }
+
+                    /* Set word length for corresponding channel */
+                    McSPIWordLengthSet(hwAttrs->baseAddr,
+                                    MCSPI_WORD_LENGTH(pParams->dataSize),
+                                    chNum);
+
+                    /* Set polarity of SPIEN to low.*/
+                    McSPICSPolarityConfig(hwAttrs->baseAddr,
+                                        chnCfg->csPolarity,
+                                        chNum);
+                }
+            }
+
+            if(ret_flag == 0U)
+            {
+                if(SPI_MASTER == pParams->mode)
+                {
+                    /* Configure chip-select time control */
+                    McSPICSTimeControlSet(hwAttrs->baseAddr, chnCfg->tcs, chNum);
+                }
+
+                /* increment the channel opened count */
+                object->chOpenedCnt++;
+            }
         }
-
-        if(SPI_MASTER == pParams->mode)
-        {
-            /* Configure chip-select time control */
-            McSPICSTimeControlSet(hwAttrs->baseAddr, chnCfg->tcs, chNum);
-        }
-
-        /* increment the channel opened count */
-        object->chOpenedCnt++;
-    }
     }
 
     return (retMcHandle);
