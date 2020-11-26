@@ -37,14 +37,14 @@
     .text
     .sect   ".utilsCopyVecsToAtcm" ; No special sections required, reusing
 ;==============================================================================
-;   void utilsEnableTcmCopyVecs2ATcm( void )
+;   void utilsCopyVecs2ATcm( void )
 ;==============================================================================
     ; Global variables/functions used
     .global ti_sysbios_family_arm_v7r_keystone3_Hwi_vectors
     .ref memset
 
-    .global utilsEnableTcmCopyVecs2ATcm
-utilsEnableTcmCopyVecs2ATcm:
+    .global utilsCopyVecs2ATcm
+utilsCopyVecs2ATcm:
         .asmfunc
         push    {lr}                    ; Remmember the caller
         mrc     p15, #0, r0, c9, c1, #1 ; read ATCM Region Register
