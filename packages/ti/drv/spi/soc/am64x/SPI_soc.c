@@ -46,13 +46,17 @@
 #define OSPI_PER_CNT    (1U)
 #define SPI_PER_CNT     (MCSPI_PER_CNT + OSPI_PER_CNT)
 
+#if defined (BUILD_M4F)
+#define MCSPI_RAT_MAP_ADDR   (0x60000000U) /* RAT map address for MCSPI */
+#endif
+
 /* SPI configuration structure */
 SPI_v1_HWAttrs spiInitCfg[MCSPI_PER_CNT] =
 {
     {
 #if defined (BUILD_M4F)
         /* McSPI0 on the MCU channel */
-        CSL_MCU_MCSPI0_CFG_BASE,            /* baseAddr */
+        CSL_MCU_MCSPI0_CFG_BASE + MCSPI_RAT_MAP_ADDR, /* baseAddr */
 #else
         /* McSPI0 on the Main domain */
         CSL_MCSPI0_CFG_BASE,                /* baseAddr */
@@ -115,7 +119,7 @@ SPI_v1_HWAttrs spiInitCfg[MCSPI_PER_CNT] =
     {
 #if defined (BUILD_M4F)
         /* McSPI1 on the MCU channel */
-        CSL_MCU_MCSPI1_CFG_BASE,
+        CSL_MCU_MCSPI1_CFG_BASE + MCSPI_RAT_MAP_ADDR,
 #else
         /* McSPI1 on the Main domain */
         CSL_MCSPI1_CFG_BASE,
