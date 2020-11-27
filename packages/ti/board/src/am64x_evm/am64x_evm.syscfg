@@ -2,7 +2,7 @@
  * These arguments were used when this file was generated. They will be automatically applied on subsequent loads
  * via the GUI or CLI. Run CLI with '--help' for additional information on how to override these arguments.
  * @cliArgs --device "AM64x_beta" --package "ALV" --part "Default"
- * @versions {"data":"20201003","timestamp":"2020071713","tool":"1.5.0+1397","templates":"20190604"}
+ * @versions {"data":"20201908","timestamp":"2020110405","tool":"1.6.0+1543","templates":"20190604"}
  */
 
 /**
@@ -27,8 +27,6 @@ iADC1.AIN6.$assign                     = "ADC0_AIN6";
 iADC1.AIN6.$used                       = true;
 iADC1.AIN7.$assign                     = "ADC0_AIN7";
 iADC1.AIN7.$used                       = true;
-iADC1.EXT_TRIGGER0.$used               = false;
-iADC1.EXT_TRIGGER1.$used               = false;
 const iDDRSS1                          = scripting.addPeripheral("DDRSS");
 iDDRSS1.$name                          = "MyDDRSS1";
 iDDRSS1.$assign                        = "DDR0";
@@ -83,7 +81,7 @@ iMCAN2.RX.$assign                      = "MCAN1_RX";
 iMCAN2.TX.$assign                      = "MCAN1_TX";
 const iMCU_GPIO1                       = scripting.addPeripheral("MCU_GPIO");
 iMCU_GPIO1["0"].$used                  = false;
-iMCU_GPIO1["1"].$assign                = "MCU_SPI0_CS1";
+iMCU_GPIO1["1"].$assign                = "MCU_UART0_CTSn";
 iMCU_GPIO1["1"].$used                  = false;
 iMCU_GPIO1["2"].$used                  = false;
 iMCU_GPIO1["3"].$used                  = false;
@@ -101,8 +99,6 @@ iMCU_GPIO1["14"].$used                 = false;
 iMCU_GPIO1["15"].$used                 = false;
 iMCU_GPIO1["16"].$used                 = false;
 iMCU_GPIO1["17"].$used                 = false;
-iMCU_GPIO1["18"].$used                 = false;
-iMCU_GPIO1["19"].$used                 = false;
 iMCU_GPIO1["20"].$used                 = false;
 iMCU_GPIO1["21"].$used                 = false;
 iMCU_GPIO1["22"].$used                 = false;
@@ -124,13 +120,10 @@ iMCU_I2C2.SDA.pu_pd                    = "pu";
 iMCU_I2C2.SDA.$assign                  = "MCU_I2C1_SDA";
 const iMCU_SYSTEM1                     = scripting.addPeripheral("MCU_SYSTEM");
 iMCU_SYSTEM1.$name                     = "MyMCU_SYSTEM1";
-iMCU_SYSTEM1.MCU_EXT_REFCLK0.$used     = false;
-iMCU_SYSTEM1.MCU_OBSCLK0.$used         = false;
 iMCU_SYSTEM1.MCU_PORz.$assign          = "MCU_PORz";
 iMCU_SYSTEM1.MCU_RESETSTATz.$assign    = "MCU_RESETSTATz";
 iMCU_SYSTEM1.MCU_RESETz.$assign        = "MCU_RESETz";
 iMCU_SYSTEM1.MCU_SAFETY_ERRORn.$assign = "MCU_SAFETY_ERRORn";
-iMCU_SYSTEM1.MCU_SYSCLKOUT0.$used      = false;
 const iMCU_UART1                       = scripting.addPeripheral("MCU_UART");
 iMCU_UART1.$name                       = "MyMCU_UART1";
 iMCU_UART1.$assign                     = "MCU_USART0";
@@ -194,10 +187,6 @@ iOSPI1.D6.$assign                      = "OSPI0_D6";
 iOSPI1.D7.$assign                      = "OSPI0_D7";
 iOSPI1.DQS.$assign                     = "OSPI0_DQS";
 iOSPI1.LBCLKO.$assign                  = "OSPI0_LBCLKO";
-iOSPI1.LBCLKO.$used                    = false;
-iOSPI1.ECC_FAIL.$used                  = false;
-iOSPI1.RESET_OUT0.$used                = false;
-iOSPI1.RESET_OUT1.$used                = false;
 const iPRU_ICSSG0_MDIO1                = scripting.addPeripheral("PRU_ICSSG0_MDIO");
 iPRU_ICSSG0_MDIO1.$name                = "MyPRU_ICSSG0_MDIO1";
 iPRU_ICSSG0_MDIO1.$assign              = "PRU_ICSSG0_MDIO0";
@@ -360,16 +349,8 @@ iSPI1.D1.$assign                       = "SPI0_D1";
 const iSYSTEM1                         = scripting.addPeripheral("SYSTEM");
 iSYSTEM1.$name                         = "MySYSTEM1";
 iSYSTEM1.CLKOUT0.$assign               = "EXT_REFCLK1";
-iSYSTEM1.CLKOUT0.$used                 = false;
-iSYSTEM1.EXTINTn.$used                 = false;
 iSYSTEM1.EXT_REFCLK1.$assign           = "EXT_REFCLK1";
-iSYSTEM1.OBSCLK0.$used                 = false;
 iSYSTEM1.SYNC0_OUT.$assign             = "ECAP0_IN_APWM_OUT";
-iSYSTEM1.SYNC1_OUT.$used               = false;
-iSYSTEM1.SYNC2_OUT.$used               = false;
-iSYSTEM1.SYNC3_OUT.$used               = false;
-iSYSTEM1.SYSCLKOUT0.$used              = false;
-iSYSTEM1.RMII_REF_CLK.$used            = false;
 const iUART1                           = scripting.addPeripheral("UART");
 iUART1.$name                           = "MyUART1";
 iUART1.CTSn.$assign                    = "UART0_CTSn";
@@ -476,7 +457,7 @@ iGPIO2["43"].$suggestSolution        = "SPI0_CS1";
 iMCU_SYSTEM1.$suggestSolution        = "MCU_SYSTEM0";
 iSERDES1.$suggestSolution            = "SERDES0";
 iSYSTEM1.$suggestSolution            = "SYSTEM0";
-iSYSTEM1.FCLK_MUX.$suggestSolution   = "GPMC0_CLK";
 iSYSTEM1.PORz_OUT.$suggestSolution   = "PORz_OUT";
+iSYSTEM1.RESET_REQz.$suggestSolution = "RESET_REQz";
 iSYSTEM1.RESETSTATz.$suggestSolution = "RESETSTATz";
 iUART1.$suggestSolution              = "USART0";
