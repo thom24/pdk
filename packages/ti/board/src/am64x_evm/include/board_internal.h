@@ -70,12 +70,64 @@ extern "C" {
 #define PINMUX_BIT_MASK                      (0xFFF8FFF0U)
 #define GPIO_PIN_MUX_CFG                     (0x50007U)
 
-#define BOARD_PADCFG_PMUX_OFFSET             (0x4000)
+#ifdef BUILD_M4F
+#define BOARD_PADCFG_PMUX_OFFSET             (0x4000U + 0x60000000U)
+#else
+#define BOARD_PADCFG_PMUX_OFFSET             (0x4000U)
+#endif
+
 /* MAIN CTRL pinmux base address */
 #define BOARD_MAIN_PMUX_CTRL	             (CSL_PADCFG_CTRL0_CFG0_BASE + BOARD_PADCFG_PMUX_OFFSET)
 
 /* WKUP CTRL pinmux base address */
 #define BOARD_WKUP_PMUX_CTRL	              (CSL_MCU_PADCFG_CTRL0_CFG0_BASE + BOARD_PADCFG_PMUX_OFFSET)
+
+
+/* Ethenet board library MACROs */
+#define BOARD_ETHPHY_PHYID1_REG_ADDR            (0x2U)
+#define BOARD_ETHPHY_PHYID2_REG_ADDR            (0x3U)
+#define BOARD_ETHPHY_REGCR_REG_ADDR             (0xDU)
+#define BOARD_ETHPHY_REGCR_ADDR_EN              (0x1FU)
+#define BOARD_ETHPHY_REGCR_DATA_EN              (0x401FU)
+#define BOARD_ETHPHY_ADDAR_REG_ADDR             (0xEU)
+
+#define BOARD_ETHPHY_LEDCR1_REG_ADDR            (0x18U)
+
+#define BOARD_ETHPHY_FLD_THRESH_REG_ADDR        (0x2EU)
+
+#define BOARD_ETHPHY_RGMIICTL_REG_ADDR          (0x32U)
+#define BOARD_ETHPHY_RGMIICTL_CLKDELAY_MASK     (0x3U)
+#define BOARD_ETHPHY_RGMIICTL_TXDELAY_EN        (0x2U)
+#define BOARD_ETHPHY_RGMIICTL_RXDELAY_EN        (0x1U)
+
+#define BOARD_ETHPHY_STRAP_STS1_REG_ADDR        (0x6EU)
+#define BOARD_ETHPHY_STRAP_STS2_REG_ADDR        (0x6FU)
+
+#define BOARD_ETHPHY_RGMIIDCTL_REG_ADDR         (0x86U)
+
+#define BOARD_ETHPHY_GPIO_MUX_CTRL2_REG_ADDR    (0x172U)
+
+#define BOARD_ETHPHY_GPIO_MUX_CFG_REG_ADDR      (0x170U)
+
+#define BOARD_ETHPHY_GPIO_MUX_CTRL2_REG_MASK    (0xFU)
+#define BOARD_ETHPHY_GPIO_MUX_CTRL2_REG_CFG     (0x6U)
+
+#define BOARD_ETHPHY_LEDCR1_REG_MASK            (0xF000U)
+#define BOARD_ETHPHY_LEDCR1_REG_CFG             (0x8000U)
+
+#define BOARD_ETHPHY_ICSSG_DELAY                (0xA9U)
+#define BOARD_ETHPHY_CPSW9G_DELAY               (0xA9U)
+#define BOARD_ETHPHY_CPSW2G_DELAY               (0x77U)
+#define BOARD_ETHPHY_DELAY_CTRL                 (0xD3U)
+#define BOARD_ETHPHY_IO_IMPEDANCE               (0x0C1FU)
+#define BOARD_CPSW_MDIO_REG_OFFSET              (0xF00U)
+
+#define BOARD_MDIO_CTRL_REG_OFFSET              (0x4U)
+#define BOARD_MDIO_CLK_DIV_CFG                  (0xFFU)
+#define BOARD_EMAC_DELAY_CFG                    (0x01000000U)
+
+#define BOARD_ETHPHY_STRAP_FLD_MASK             (0x0400U)
+#define BOARD_ETHPHY_STRAP_FLD_THS_CHECK_FLAG   (0x222U)
 
 /*****************************************************************************
  * Internal Objects                                                          *

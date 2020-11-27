@@ -60,70 +60,9 @@
 #define BOARD_UART_TX_LOCK_KICK_ADDR        (MAIN_PADCONFIG_CTRL_BASE + \
                                                  CSL_MAIN_PADCFG_CTRL_MMR_CFG0_LOCK1_KICK0)
 
-
-Board_STATUS Board_pinmuxConfig (void)
-{
-
-    Board_unlockMMR();
-
-    pinmuxModuleCfg_t* pModuleData = NULL;
-    pinmuxPerCfg_t* pInstanceData = NULL;
-    int32_t i, j, k;
-
-    for(i = 0; PINMUX_END != gAM64x_MainPinmuxData[i].moduleId; i++)
-    {
-        pModuleData = gAM64x_MainPinmuxData[i].modulePinCfg;
-        for(j = 0; (PINMUX_END != pModuleData[j].modInstNum); j++)
-        {
-            if(pModuleData[j].doPinConfig == TRUE)
-            {
-                pInstanceData = pModuleData[j].instPins;
-                for(k = 0; (PINMUX_END != pInstanceData[k].pinOffset); k++)
-                {
-                    HW_WR_REG32((MAIN_PADCONFIG_CTRL_BASE + 0x4000 + pInstanceData[k].pinOffset),
-                                (pInstanceData[k].pinSettings));
-                }
-            }
-        }
-    }
-
-	for(i = 0; PINMUX_END != gAM64x_WkupPinmuxData[i].moduleId; i++)
-    {
-        pModuleData = gAM64x_WkupPinmuxData[i].modulePinCfg;
-        for(j = 0; (PINMUX_END != pModuleData[j].modInstNum); j++)
-        {
-            if(pModuleData[j].doPinConfig == TRUE)
-            {
-                pInstanceData = pModuleData[j].instPins;
-                for(k = 0; (PINMUX_END != pInstanceData[k].pinOffset); k++)
-                {
-                    HW_WR_REG32((MCU_PADCONFIG_CTRL_BASE + 0x4000 + pInstanceData[k].pinOffset),
-                                 (pInstanceData[k].pinSettings));
-                }
-            }
-        }
-    }
-
-    Board_lockMMR();
-    return BOARD_SOK;
-}
-
-void Board_uartTxPinmuxConfig(void)
-{
-    /* Board_unlockMMR */
-    HW_WR_REG32(BOARD_UART_TX_LOCK_KICK_ADDR, KICK0_UNLOCK_VAL);
-    HW_WR_REG32(BOARD_UART_TX_LOCK_KICK_ADDR + 4U, KICK1_UNLOCK_VAL);
-
-    /* Configure pinmux for UART Tx pin */
-    HW_WR_REG32(BOARD_SBL_UART_TX_PINMUX_ADDR, BOARD_UART_TX_PINMUX_VAL);     
-
-    /* Configure pinmux for SYSFW Tx pin */
-    HW_WR_REG32(BOARD_SYSFW_UART_TX_PINMUX_ADDR, BOARD_UART_TX_PINMUX_VAL);
-    
-    /* Board_lockMMR */
-    HW_WR_REG32(BOARD_UART_TX_LOCK_KICK_ADDR + 4U, 0);
-    HW_WR_REG32(BOARD_UART_TX_LOCK_KICK_ADDR, 0);
-}
+static Board_PinmuxConfig_t gBoardPinmuxCfg = {BOARD_PINMUX_DEFAULT,
+                                               BOARD_PINMUX_ICSS_RGMII,
+                                               0};
 
 /**
  *  \brief  Gets base address of padconfig registers
@@ -152,6 +91,153 @@ static uint32_t Board_pinmuxGetBaseAddr(uint8_t domain)
     }
 
     return baseAddr;
+}
+
+/**
+ *  \brief Sets the board pinmux configuration.
+ *
+ *  This API allows to change the default pinmux configurations
+ *  in the board library.
+ *
+ *  \n Usage:
+ *  \n - Call Board_pinmuxGetCfg to get default pinmux config
+ *  \n - Call Board_pinmuxSetCfg to change pinmux config
+ *  \n - Call Board_init with pinmux flag to apply the updated pinmux config
+ *
+ *  \param   pinmuxCfg [IN]  Pinmux configurations
+ *
+ *  \return  BOARD_SOK in case of success or appropriate error code
+ *
+ */
+Board_STATUS Board_pinmuxSetCfg(Board_PinmuxConfig_t *pinmuxCfg)
+{
+    gBoardPinmuxCfg = *pinmuxCfg;
+
+    return BOARD_SOK;
+}
+
+/**
+ *  \brief Gets the board pinmux configuration.
+ *
+ *  \param   pinmuxCfg [IN]  Pinmux configurations
+ *
+ *  \return  BOARD_SOK in case of success or appropriate error code
+ *
+ */
+Board_STATUS Board_pinmuxGetCfg(Board_PinmuxConfig_t *pinmuxCfg)
+{
+    *pinmuxCfg = gBoardPinmuxCfg;
+
+    return BOARD_SOK;
+}
+
+/**
+ * \brief  Board pinmuxing update function
+ *
+ * Provides the option to configure/update the pinmux.
+ * This function can be used to change the pinmux set by
+ * Board_init by default.
+ *
+ * \param   pinmuxData [IN]  Pinmux data structure
+ * \param   domain     [IN]  SoC domain for pinmux
+ *  \n                        BOARD_SOC_DOMAIN_MAIN - Main domain
+ *  \n                        BOARD_SOC_DOMAIN_MCU - MCU domain
+ *
+ * \return  BOARD_SOK in case of success or appropriate error code
+ *
+ */
+Board_STATUS Board_pinmuxUpdate (pinmuxBoardCfg_t *pinmuxData,
+                                 uint32_t domain)
+{
+    pinmuxModuleCfg_t *pModuleData = NULL;
+    pinmuxPerCfg_t *pInstanceData = NULL;
+    int32_t i, j, k;
+    uint32_t baseAddr;
+    Board_STATUS status = BOARD_SOK;
+
+    Board_unlockMMR();
+
+    baseAddr = Board_pinmuxGetBaseAddr(domain);
+    if(baseAddr != 0)
+    {
+        for(i = 0; PINMUX_END != pinmuxData[i].moduleId; i++)
+        {
+            pModuleData = pinmuxData[i].modulePinCfg;
+            for(j = 0; (PINMUX_END != pModuleData[j].modInstNum); j++)
+            {
+                if(pModuleData[j].doPinConfig == TRUE)
+                {
+                    pInstanceData = pModuleData[j].instPins;
+                    for(k = 0; (PINMUX_END != pInstanceData[k].pinOffset); k++)
+                    {
+                        HW_WR_REG32((baseAddr + pInstanceData[k].pinOffset),
+                                    (pInstanceData[k].pinSettings));
+                    }
+                }
+            }
+        }
+    }
+    else
+    {
+        status = BOARD_INVALID_PARAM;
+    }
+
+    Board_lockMMR();
+
+    return status;
+}
+
+/**
+ * \brief  Board pinmuxing enable function
+ *
+ * Enables pinmux for the board interfaces. Pin mux is done based
+ * on the default/primary functionality of the board. Any pins shared by
+ * multiple interfaces need to be reconfigured to access the secondary
+ * functionality.
+ *
+ * \param   void
+ *
+ * \return  BOARD_SOK in case of success or appropriate error code
+ *
+ */
+Board_STATUS Board_pinmuxConfig (void)
+{
+    Board_STATUS status = BOARD_SOK;
+
+    Board_pinmuxUpdate(gAM64x_MainPinmuxData,
+                       BOARD_SOC_DOMAIN_MAIN);
+    Board_pinmuxUpdate(gAM64x_WkupPinmuxData,
+                       BOARD_SOC_DOMAIN_MCU);
+
+    /* Note: EVM Specific config.
+     * Code below be removed for custom boards */
+    if(gBoardPinmuxCfg.muxCfg == BOARD_PINMUX_CUSTOM)
+    {
+        if(gBoardPinmuxCfg.icssMux == BOARD_PINMUX_ICSS_MII)
+        {
+            Board_pinmuxUpdate(gAM64x_MainPinmuxDataIcssMII,
+                               BOARD_SOC_DOMAIN_MAIN);
+        }
+    }
+
+    return status;
+}
+
+void Board_uartTxPinmuxConfig(void)
+{
+    /* Board_unlockMMR */
+    HW_WR_REG32(BOARD_UART_TX_LOCK_KICK_ADDR, KICK0_UNLOCK_VAL);
+    HW_WR_REG32(BOARD_UART_TX_LOCK_KICK_ADDR + 4U, KICK1_UNLOCK_VAL);
+
+    /* Configure pinmux for UART Tx pin */
+    HW_WR_REG32(BOARD_SBL_UART_TX_PINMUX_ADDR, BOARD_UART_TX_PINMUX_VAL);     
+
+    /* Configure pinmux for SYSFW Tx pin */
+    HW_WR_REG32(BOARD_SYSFW_UART_TX_PINMUX_ADDR, BOARD_UART_TX_PINMUX_VAL);
+    
+    /* Board_lockMMR */
+    HW_WR_REG32(BOARD_UART_TX_LOCK_KICK_ADDR + 4U, 0);
+    HW_WR_REG32(BOARD_UART_TX_LOCK_KICK_ADDR, 0);
 }
 
 /**

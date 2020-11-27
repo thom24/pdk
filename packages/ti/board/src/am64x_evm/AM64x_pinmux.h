@@ -177,6 +177,7 @@ enum pinMainOffsets
 	PIN_PRG1_PRU0_GPO3		 = 0x00C4,
 	PIN_PRG1_PRU0_GPO6		 = 0x00D0,
 	PIN_PRG1_PRU0_GPO4		 = 0x00C8,
+	PIN_PRG1_PRU0_GPO8		 = 0x00D8,
 	PIN_PRG1_PRU0_GPO11		 = 0x00E4,
 	PIN_PRG1_PRU0_GPO12		 = 0x00E8,
 	PIN_PRG1_PRU0_GPO13		 = 0x00EC,
@@ -267,6 +268,7 @@ enum pinWkupOffsets
            Pinmux tool. */
 extern pinmuxBoardCfg_t gAM64x_MainPinmuxData[];
 extern pinmuxBoardCfg_t gAM64x_WkupPinmuxData[];
+extern pinmuxBoardCfg_t gAM64x_MainPinmuxDataIcssMII[];
 
 #ifdef __cplusplus
 }
