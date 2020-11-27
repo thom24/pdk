@@ -45,8 +45,6 @@
 extern "C" {
 #endif
 
-#include <ti/board/src/am64x_evm/include/board_pinmux.h>
-
 /* Board ID information */
 #define BOARD_INFO_CPU_NAME     "am64x"
 #define BOARD_INFO_BOARD_NAME   "am64x_evm"
@@ -176,8 +174,8 @@ extern "C" {
 #define BOARD_USER_LED2                                 (1U) /* MCU GPIO0_1 */
 
 #define BOARD_ICSS_EMAC_PORT_START                      (0x0U)
-#define BOARD_ICSS_EMAC_PORT_END                        (0x5U)
-#define BOARD_ICSS_EMAC_PORT_MAX                        (0x6U)
+#define BOARD_ICSS_EMAC_PORT_END                        (0x1U)
+#define BOARD_ICSS_EMAC_PORT_MAX                        (0x2U)
 #define BOARD_MCU_EMAC_PORT_MAX                         (0x1U)
 #define BOARD_MCU_ETH_PORT                              (0x1U) //AM64x_TODO: need to update
 
@@ -185,6 +183,10 @@ extern "C" {
 /* ICSS2 EMAC PHY register address */
 #define BOARD_ICSS2_EMAC_PHY0_ADDR                      (0x0)
 #define BOARD_ICSS2_EMAC_PHY1_ADDR                      (0x3u)
+#define BOARD_ICSS_EMAC_PHY0_ADDR                       (0x3)
+#define BOARD_ICSS_EMAC_PHY1_ADDR                       (0xFu)
+#define BOARD_CPSW_EMAC_PHY0_ADDR                       (0x0)
+#define BOARD_CPSW_EMAC_PHY1_ADDR                       (0x3u)
 
 
 /* PRG1_RGMII2_RESETn */

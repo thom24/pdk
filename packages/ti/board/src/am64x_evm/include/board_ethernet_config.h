@@ -47,37 +47,49 @@
 extern "C" {
 #endif
 
+typedef struct Board_MdioInfo_s
+{
+    uint32_t mdioBaseAddrs;
+    uint8_t  phyAddrs;
+} Board_MdioInfo_t;
+
+/**
+ * \brief  Board specific configurations for CPSW Ethernet PHY
+ *
+ * This function takes care of configuring the internal delays for MCU gigabit
+ * Ethernet PHY
+ *
+ * \return  BOARD_SOK in case of success or appropriate error code
+ */
+Board_STATUS Board_cpswEthPhyConfig(void);
+
 /**
  * \brief  Board specific configurations for ICSS EMAC Ethernet PHYs
  *
  * This function takes care of configuring the internal delays for ICSS
  * Ethernet PHY
  *
- * \return  none
+ * \return  BOARD_SOK in case of success or appropriate error code
  */
-Board_STATUS Board_icssEthConfig(void);
+Board_STATUS Board_icssEthPhyConfig(void);
 
 /**
- * \brief  Board specific configurations for MCU Ethernet PHY
+ * \brief  Board specific configurations for CPSW Ethernet ports
  *
- * This function takes care of configuring the internal delays for MCU gigabit
- * Ethernet PHY
+ * This function used to configures CPSW Ethernet controllers with the respective modes
  *
- * \return  none
+ * \return  BOARD_SOK in case of success or appropriate error code
  */
-Board_STATUS Board_mcuEthConfig(void);
+Board_STATUS Board_ethConfigCpsw(void);
 
 /**
- * \brief  Function to configure the Ethernet PHY speed
+ * \brief  Board specific configurations for ICSS Ethernet ports
  *
- * \param   port [IN]    Ethernet PHY Port number (check above table)
- * \param   speed [IN]   Speed selection
- *                       0 -  100 mpbs
- *                       1 -  1000 mpbs
+ * This function used to configures ICSS Ethernet controllers with the respective modes
  *
- * \return  none
+ * \return  BOARD_SOK in case of success or appropriate error code
  */
-Board_STATUS Board_ethPhySpeedConfig(int8_t port, uint8_t speed);
+Board_STATUS Board_ethConfigIcss(void);
 
 #ifdef __cplusplus
 }

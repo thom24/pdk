@@ -38,6 +38,18 @@
 extern "C" {
 #endif
 
+#include <stdint.h>
+#include <ti/csl/hw_types.h>
+
+/**
+ * @brief   The return type for board library API calls
+ *
+ * @details Board library function calls will return this value, which contains
+ *          information as to whether the function succeeded or encountered an
+ *          error.
+ */
+typedef int32_t Board_STATUS;
+
 #if defined(evmAM335x)
 #include <ti/board/src/evmAM335x/include/board_cfg.h>
 
@@ -136,6 +148,7 @@ extern "C" {
 
 #elif defined (am64x_evm)
 #include <ti/board/src/am64x_evm/include/board_cfg.h>
+#include <ti/board/src/am64x_evm/include/board_pinmux.h>
 
 #elif defined (am64x_svb)
 #include <ti/board/src/am64x_svb/include/board_cfg.h>

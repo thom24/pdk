@@ -54,6 +54,7 @@
  */
 
 #include "board_internal.h"
+#include "board_ethernet_config.h"
 #include <ti/drv/sciclient/sciclient.h>
 
 static bool gBoardSysInitDone = 0;
@@ -198,13 +199,23 @@ Board_STATUS Board_init(Board_initCfg cfg)
     if (ret != BOARD_SOK)
         return ret;
 
+    if (cfg & BOARD_INIT_ENETCTRL_CPSW3G)
+        ret = Board_ethConfigCpsw();
+    if (ret != BOARD_SOK)
+        return ret;
+
+    if (cfg & BOARD_INIT_ENETCTRL_ICSS)
+        ret = Board_ethConfigIcss();
+    if (ret != BOARD_SOK)
+        return ret;
+
     if (cfg & BOARD_INIT_ETH_PHY)
-        ret = Board_mcuEthConfig();
+        ret = Board_cpswEthPhyConfig();
     if (ret != BOARD_SOK)
         return ret;
 
     if (cfg & BOARD_INIT_ICSS_ETH_PHY)
-        ret = Board_icssEthConfig();
+        ret = Board_icssEthPhyConfig();
     if (ret != BOARD_SOK)
         return ret;
 

@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -42,63 +42,87 @@
 #include "board_ethernet_config.h"
 #include "board_internal.h"
 #include <ti/csl/soc.h>
+#include <ti/csl/csl_mdio.h>
+
+Board_MdioInfo_t  Board_gPruIcssMdioInfo[BOARD_ICSS_EMAC_PORT_MAX] =
+                       {{CSL_PRU_ICSSG1_PR1_MDIO_V1P7_MDIO_BASE, BOARD_ICSS_EMAC_PHY0_ADDR},
+                        {CSL_PRU_ICSSG1_PR1_MDIO_V1P7_MDIO_BASE, BOARD_ICSS_EMAC_PHY1_ADDR}
+                       };
 
 /**
- * \brief  Board specific configurations for MCU Ethernet PHY
+ * \brief  Function to initialize MDIO
+ *
+ * \param   baseAddr [IN]   MDIO base address
+ *
+ * \return  uint32_t
+            TRUE     Read is successful.
+ *          FALSE    Read is not acknowledged properly.
+ */
+static void Board_mdioInit(uint32_t baseAddr)
+{
+    HW_WR_REG32((baseAddr + BOARD_MDIO_CTRL_REG_OFFSET),
+                (CSL_FMKT(MDIO_CONTROL_REG_ENABLE, YES) |
+                CSL_FMK(MDIO_CONTROL_REG_CLKDIV,
+                BOARD_MDIO_CLK_DIV_CFG)));
+}
+
+/**
+ * \brief  Board specific configurations for CPSW Ethernet PHY
  *
  * This function takes care of configuring the internal delays for MCU gigabit
  * Ethernet PHY
- * 
- * J7ES_TODO: Place holder. Needs update
  *
- * \return  none
+ * \return  BOARD_SOK in case of success or appropriate error code
  */
-Board_STATUS Board_mcuEthConfig(void)
+Board_STATUS Board_cpswEthPhyConfig(void)
 {
-	return BOARD_SOK;
+    return BOARD_SOK;
 }
 
 /**
  * \brief  Board specific configurations for ICSS EMAC Ethernet PHYs
  *
- * This function takes care of configuring the internal delays for ICSS 
+ * This function takes care of configuring the internal delays for ICSS
  * Ethernet PHY
  *
- * J7ES_TODO: Place holder. Needs update
- *
- * \return  none
+ * \return  BOARD_SOK in case of success or appropriate error code
  */
-Board_STATUS Board_icssEthConfig(void)
+Board_STATUS Board_icssEthPhyConfig(void)
+{
+    uint32_t baseAddr;
+    uint32_t index;
+    Board_STATUS status = BOARD_SOK;
+
+    for(index = 0; index < BOARD_ICSS_EMAC_PORT_MAX; index++)
+    {
+        baseAddr = Board_gPruIcssMdioInfo[index].mdioBaseAddrs;
+
+        Board_mdioInit(baseAddr);
+    }
+
+    return status;
+}
+
+/**
+ * \brief  Board specific configurations for CPSW Ethernet ports
+ *
+ * This function used to configures CPSW Ethernet controllers with the respective modes
+ *
+ * \return  BOARD_SOK in case of success or appropriate error code
+ */
+Board_STATUS Board_ethConfigCpsw(void)
 {
 	return BOARD_SOK;
 }
 
 /**
- * \brief  Board specific configurations for CPSW RGMII Ethernet
+ * \brief  Board specific configurations for ICSS Ethernet ports
  *
- * This function takes care of configuring the internal delays for CPSW9G 
- * RGMII Ethernet PHY
+ * This function used to configures ICSS Ethernet controllers with the respective modes
  *
- * J7ES_TODO: Place holder. Needs update
- *
- * \return  none
+ * \return  BOARD_SOK in case of success or appropriate error code
  */
-Board_STATUS Board_rgmiiEthConfig(void)
-{
-	return BOARD_SOK;
-}
-
-/**
- * \brief  Board specific configurations for SGMII Ethernet
- *
- * This function takes care of configuring the internal delays for 
- * SGMII Ethernet PHY
- *
- * J7ES_TODO: Place holder. Needs update
- *
- * \return  none
- */
-Board_STATUS Board_sgmiiEthConfig(void)
+Board_STATUS Board_ethConfigIcss(void)
 {
 	return BOARD_SOK;
 }

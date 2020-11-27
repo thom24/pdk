@@ -152,7 +152,7 @@ ifeq ($(BUILD_PROFILE_$(CORE)), release)
  ifeq ($(CGT_ISA),$(filter $(CGT_ISA), M4 R5 M3))
    LNKFLAGS_INTERNAL_BUILD_PROFILE = -qq --diag_warning=225 --diag_suppress=23000 $(LNKFLAGS_GLOBAL_$(CORE))
    ifeq ($(CGT_ISA),$(filter $(CGT_ISA), R5))
-#     CFLAGS_INTERNAL += -ms -O4 -s
+     CFLAGS_INTERNAL += -ms -O4 -s
    else
      CFLAGS_INTERNAL += -ms -O4 -op0 -os --optimize_with_debug --inline_recursion_limit=20
    endif

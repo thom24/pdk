@@ -119,15 +119,6 @@ extern "C" {
  * Return/Error values                                       *
  *************************************************************/
 
-/**
- * @brief   The return type for board library API calls
- *
- * @details Board library function calls will return this value, which contains
- *          information as to whether the function succeeded or encountered an
- *          error.
- */
-typedef int32_t Board_STATUS;
-
 #include <ti/board/board_cfg.h>
 
 /** Board status OK */
@@ -359,6 +350,7 @@ typedef uint32_t Board_initCfg;
 #define BOARD_INIT_CPSW9G_ETH_PHY       (1 << 26U)
 
 /* Configures ENET Control(mac mode, delay settings) for CPSW/ICCS ports */
+#define BOARD_INIT_ENETCTRL_CPSW3G      (1 << 27U)
 #define BOARD_INIT_ENETCTRL_CPSW2G      (1 << 27U)
 #define BOARD_INIT_ENETCTRL_CPSW9G      (1 << 28U)
 #define BOARD_INIT_ENETCTRL_ICSS        (1 << 29U)
