@@ -88,7 +88,7 @@ extern "C" {
 #elif defined(SOC_J7200)
 #define NUM_OF_INA_DEVICES                (32U)
 #define TOT_INA_IN_PM1                    (16U)
-#elif defined(SOC_AM64X)
+#elif defined(am64x_evm)
 #define NUM_OF_INA_DEVICES                (0x06U)
 #endif
 

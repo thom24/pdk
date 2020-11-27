@@ -141,14 +141,14 @@ inaCfgObj_t inaDevice[NUM_OF_INA_DEVICES] = {
     {"VIOIN_3V3",    0x44, {0.002, 0.0025, 1.25, 0.001068115, 0.0000427, 59919}},
     {"VDD_SRAM_1V2", 0x45, {0.002, 0.0025, 1.25, 0.000991821, 0.0000397, 64528}}
 };
-#elif defined(SOC_AM64X)  //AM64X_TODO: Need to update Values
+#elif defined(SOC_AM64X)
 inaCfgObj_t inaDevice[NUM_OF_INA_DEVICES] = {
-    {"VDD_CORE",      0x40, {0.002, 0.0025, 1.25, 305.17, 0.000152, 16777}},
-    {"VDDR_CORE",     0x41, {0.01, 0.0025, 1.25,  38.14,  0.0000305, 16777}},
-    {"VDDS_DDR",      0x46, {0.01, 0.0025, 1.25,  86.21,  0.0000610, 8388}},
-    {"SoC_DVDD1V8",   0x4B, {0.01, 0.0025, 1.25, 152.58,  0.0000915, 5592}},
-    {"SoC_DVDD3V3",   0x4C, {0.002, 0.0025, 1.25, 95.36,  0.0000915, 27962}},
-    {"SoC_AVDD1V8",   0x4E, {0.01, 0.0025, 1.25,  38.14,  0.0000122, 41943}}
+    {"VDD_CORE",      0x40, {0.002, 0.0025, 1.25, 0.001804352, 0.0000722, 35469}},
+    {"VDDR_CORE",     0x41, {0.01,  0.0025, 1.25, 0.000198364, 0.0000079, 64527}},
+    {"VDDS_DDR",      0x46, {0.01,  0.0025, 1.25, 0.000196838, 0.0000079, 65027}},
+    {"SoC_DVDD1V8",   0x4B, {0.01,  0.0025, 1.25, 0.000268555, 0.0000107, 47662}},
+    {"SoC_DVDD3V3",   0x4C, {0.01,  0.0025, 1.25, 0.0002388,   0.0000096, 53601}},
+    {"SoC_AVDD1V8",   0x4E, {0.01,  0.0025, 1.25, 0.001266479, 0.0000507, 10106}}
 };
 #else
 /* TODO: Need to update the values for iceK2G */
@@ -806,7 +806,7 @@ int main(void)
 	enableMAINI2C(2, CSL_I2C2_CFG_BASE);
 #endif
 
-#if (defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)) && !defined (__aarch64__)
+#if (defined(SOC_J721E) || defined(SOC_J7200)) && !defined (__aarch64__)
     /* MCU I2C instance will be active by default for R5 core.
      * Need update HW attrs to enable MAIN I2C instance.
      */
