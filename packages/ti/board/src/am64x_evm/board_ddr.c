@@ -49,7 +49,6 @@ static LPDDR4_PrivateData gBoardDdrPd;
 /* Local function prototypes */
 static int32_t emif_ConfigureECC(void);
 
-#ifndef SIM_BUILD
 /**
  * \brief   Set DDR PLL to bypass, efectively 20MHz or 19.2MHz (on silicon).
  *
@@ -57,7 +56,6 @@ static int32_t emif_ConfigureECC(void);
  */
 static void Board_DDRSetPLLExtBypass(void)
 {
-
     uint32_t addrOffset = 0x00000000;
     uint32_t baseAddr = CSL_PLL0_CFG_BASE;
     uint32_t regVal;
@@ -69,10 +67,7 @@ static void Board_DDRSetPLLExtBypass(void)
     regVal = HW_RD_REG32(regAddr);
     regVal |= (fieldVal << 31);
     HW_WR_REG32(regAddr, regVal);
-
 }
-
-#endif /* SIM_BUILD */
 
 /**
  * \brief   Set DDR PLL clock value
@@ -92,33 +87,6 @@ static Board_STATUS Board_DDRSetPLLClock(void)
     }
 
     return status;
-}
-
-/**
- * \brief   Controls the DDR PLL clock change sequence during inits
- *
- * \return  None
- */
-static void Board_DDRChangeFreqAck(void)
-{
-
-    /* Configure PLL Clock */
-    Board_DDRSetPLLClock();
-
-    BOARD_DEBUG_LOG("--->>> DDR PLL clock configured ... <<<---\n");
-}
-
-/**
- * \brief   Function to handle the configuration requests from DDR lib
- *
- * \return  None
- */
-static void Board_DDRInfoHandler(const LPDDR4_PrivateData *pd, LPDDR4_InfoType infotype)
-{
-    if (infotype == LPDDR4_DRV_SOC_PLL_UPDATE)
-    {
-        Board_DDRChangeFreqAck();
-    }
 }
 
 /**
@@ -164,7 +132,7 @@ static Board_STATUS Board_DDRInitDrv(void)
     }
 
     gBoardDdrCfg.ctlBase = (struct LPDDR4_CtlRegs_s *)BOARD_DDR_CTL_CFG_BASE;
-    gBoardDdrCfg.infoHandler = (LPDDR4_InfoCallback) Board_DDRInfoHandler;
+    gBoardDdrCfg.infoHandler = NULL;
 
     status = LPDDR4_Init(&gBoardDdrPd, &gBoardDdrCfg);
 
@@ -192,12 +160,6 @@ static Board_STATUS Board_DDRInitDrv(void)
 static Board_STATUS Board_DDRHWRegInit(void)
 {
     uint32_t status = 0U;
-
-    /* VBUSM2AXI Control Register sdram_idx, region_idx 0x11 --> 0x0F = log2(connected SDRAM size) - 16 */
-    HW_WR_REG32((CSL_DDR16SS0_SS_CFG_BASE + CSL_EMIF_SSCFG_V2A_CTL_REG),
-                 (0xFU << CSL_EMIF_SSCFG_V2A_CTL_REG_SDRAM_IDX_SHIFT)
-                 | (0xFU << CSL_EMIF_SSCFG_V2A_CTL_REG_REGION_IDX_SHIFT)); 
-
 
     status = LPDDR4_WriteCtlConfig(&gBoardDdrPd,
                                             DDRSS_ctlReg,
@@ -323,6 +285,25 @@ static Board_STATUS emif_ConfigureECC(void)
 }
 
 /**
+ * \brief DDR4 VTT regulator enable function
+ *
+ * This function used to enable the VTT configurations.
+ *
+ */
+static void Board_enableVTTRegulator(void)
+{
+    uint32_t i;
+
+	/* Set GPIO0_12 output high */
+    i = (HW_RD_REG32(0x600014)) | 0x1000;
+	HW_WR_REG32(0x600014, i);
+
+	/* Enable output for GPIO0_12 */
+    i =  (HW_RD_REG32(0x600010)) & (~0x1000);
+    HW_WR_REG32(0x600010, i);
+}
+
+/**
  * \brief DDR4 Initialization function
  *
  * Initializes the DDR timing parameters. Sets the DDR timing parameters
@@ -337,16 +318,21 @@ static Board_STATUS emif_ConfigureECC(void)
 Board_STATUS Board_DDRInit(Bool eccEnable)
 {
     Board_STATUS status = BOARD_SOK;
-#ifndef SIM_BUILD
+
+    Board_enableVTTRegulator();
+
     /* PLL should be bypassed while configuring the DDR */
     Board_DDRSetPLLExtBypass();
-#endif /* SIM_BUILD */
+
     /* Partition5 lockkey0 */
     HW_WR_REG32((CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK5_KICK0),
                 KICK0_UNLOCK);
     /* Partition5 lockkey1 */
     HW_WR_REG32((CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK5_KICK1),
                 KICK1_UNLOCK);
+
+    HW_WR_REG32((CSL_DDR16SS0_SS_CFG_BASE + 0x20), 0x1EF);
+    HW_WR_REG32((CSL_DDR16SS0_SS_CFG_BASE + 0x120), 0x00);
 
     status = Board_DDRProbe();
     if(status != BOARD_SOK)
@@ -365,6 +351,8 @@ Board_STATUS Board_DDRInit(Bool eccEnable)
     {
         return status;
     }
+
+    Board_DDRSetPLLClock();
 
     status = Board_DDRStart();
     if(status != BOARD_SOK)
