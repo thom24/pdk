@@ -163,11 +163,6 @@ static NOR_STATUS Nor_qspiEnableDDR(SPI_Handle handle)
     retVal = Nor_qspiCmdWrite(handle, data, 1, 1);
     if (retVal == NOR_PASS)
     {
-        if (Nor_qspiWaitReady(handle, NOR_WRR_WRITE_TIMEOUT))
-        {
-            return NOR_FAIL;
-        }
-
         /* Set opcodes */
         dummyCycles = NOR_QUAD_READ_DUMMY_CYCLE - 2;
         rx_lines    = OSPI_XFER_LINES_QUAD;
@@ -183,11 +178,6 @@ static NOR_STATUS Nor_qspiEnableDDR(SPI_Handle handle)
 #else
     /* Send Write Enable command */
     if (Nor_qspiCmdWrite(handle, &cmdWren, 1, 0))
-    {
-        return NOR_FAIL;
-    }
-
-    if (Nor_qspiWaitReady(handle, NOR_WRR_WRITE_TIMEOUT))
     {
         return NOR_FAIL;
     }
@@ -242,11 +232,6 @@ static NOR_STATUS Nor_qspiEnableSDR(SPI_Handle handle)
     	return NOR_FAIL;
     }
 
-    if (Nor_qspiWaitReady(handle, NOR_WRR_WRITE_TIMEOUT))
-    {
-    	return NOR_FAIL;
-    }
-
     /* Write Enhanced VCR register to enable quad mode */
     data[0] = NOR_CMD_WRITE_ENVCR;
     data[1] = 0x7F;  /* Enable quad mode */
@@ -271,11 +256,6 @@ static NOR_STATUS Nor_qspiEnableSDR(SPI_Handle handle)
 #else
     /* Send Write Enable command */
     if (Nor_qspiCmdWrite(handle, &cmdWren, 1, 0))
-    {
-        return NOR_FAIL;
-    }
-
-    if (Nor_qspiWaitReady(handle, NOR_WRR_WRITE_TIMEOUT))
     {
         return NOR_FAIL;
     }
