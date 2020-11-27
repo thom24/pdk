@@ -63,7 +63,7 @@ extern I2C_config_list I2C_config;
  *              -1 - in case of failure.
  *
  */
-#if (!(defined(SOC_AM65XX) || defined(SOC_AM64X)))
+#if !(defined(SOC_AM65XX))
 void led_write(I2C_Handle handle, uint8_t signalLevelData)
 {
     uint8_t tx[2];
@@ -89,7 +89,7 @@ void led_write(I2C_Handle handle, uint8_t signalLevelData)
  *  \param    delayValue          [IN]   Delay count.
  *
  */
-#if ((!(defined(SOC_AM65XX) || defined(SOC_AM64X))) || (!(defined(SOC_K2G))))
+#if ((!(defined(SOC_AM65XX))) || (!(defined(SOC_K2G))))
 void BoardDiag_AppDelay(uint32_t delayVal)
 {
     volatile uint32_t delay = 0;
@@ -116,7 +116,7 @@ static int8_t BoardDiag_i2c_slave_device_led_test(void)
     uint8_t writeRegData = 0;
     int8_t index;
 
-#if (!(defined(SOC_AM65XX) || defined(SOC_AM64X)))
+#if (!(defined(SOC_AM65XX)))
     I2C_Params i2cParams;
     I2C_HwAttrs i2cConfig;
     I2C_Handle handle = NULL;
@@ -152,18 +152,11 @@ static int8_t BoardDiag_i2c_slave_device_led_test(void)
         {
             if((writeRegData & 0xff) == 0)
                  writeRegData = 0x80;
-#if (!(defined(SOC_AM65XX) || defined(SOC_AM64X)))
+#if !defined(SOC_AM65XX)
             led_write(handle, writeRegData);
-#else
-#if defined(SOC_AM64X)
-            ret = Board_i2cIoExpWritePort(BOARD_I2C_IOEXP_DEVICE2_ADDR,
-                                          THREE_PORT_IOEXP,
-                                          PORTNUM_0,
-                                          writeRegData);
 #else
             ret = Board_i2cIoExpWritePort(BOARD_I2C_IOEXP_DEVICE1_ADDR,
                                           PORTNUM_NONE, writeRegData);
-#endif
             if(ret != 0)
             {
                 UART_printf("Writing on to the IO expander port "
@@ -248,7 +241,7 @@ static int8_t BoardDiag_i2c_slave_device_led_test(void)
 
 #endif
 
-#if defined(SOC_AM65XX) || defined(SOC_AM64X)
+#if defined(SOC_AM65XX)
     Board_i2cIoExpDeInit();
 #endif
 
@@ -372,10 +365,6 @@ int main(void)
      * Need update HW attrs to enable MAIN I2C instance.
      */
     enableMAINI2C(0, CSL_I2C0_CFG_BASE);
-#endif
-
-#if defined(SOC_AM64X)
-    enableMAINI2C(BOARD_I2C_IOEXP_DEVICE1_INSTANCE, CSL_I2C1_CFG_BASE);
 #endif
 
 #ifdef SOC_K2G

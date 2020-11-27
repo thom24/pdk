@@ -130,11 +130,13 @@ extern "C" {
 #define BOARD_I2C_IOEXP_DEVICE5_INSTANCE                (1U)
 #define BOARD_I2C_AUDIO_IOEXP_DEVICE_INSTANCE           (3U)
 #define BOARD_I2C_VIDEO_IOEXP_DEVICE_INSTANCE           (0U)
+#define BOARD_I2C_LED_INSTANCE                          (1U)
 
 /* I2C IO Expander Slave devices */
 #define BOARD_I2C_IOEXP_DEVICE1_ADDR                    (0x22U)
 /* Used to configure Ethernet PHY LED's */
 #define BOARD_I2C_IOEXP_DEVICE2_ADDR                    (0x60U)
+#define BOARD_I2C_LED_ADDR                              (0x60U)
 
 /* OSPI instance number */
 #define BOARD_OSPI_INSTANCE                             (0)
@@ -271,7 +273,7 @@ extern "C" {
 #define BOARD_GPMC_INSTANCE                             (0U)
 
 /* Number of LEDS connected to GPIO */
-#define BOARD_GPIO_LED_NUM                              (1U)
+#define BOARD_GPIO_LED_NUM                              (2U)
 
 /* SPI instance connected to EEPROM */
 #define BOARD_EEPROM_SPI0_PORT                          (0U)

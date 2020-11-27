@@ -295,13 +295,18 @@ static int8_t led_run_test(void)
                                                   gUserLeds[k],
                                                   GPIO_SIGNAL_LEVEL_LOW);
 #elif defined(SOC_AM64X)
-                        Board_i2cIoExpPinLevelSet(BOARD_I2C_IOEXP_DEVICE1_ADDR,
-                                                  THREE_PORT_IOEXP,
-                                                  PORTNUM_2,
-                                                  PIN_NUM_0,
-                                                  GPIO_SIGNAL_LEVEL_HIGH);
-
-                        GPIO_write(k, GPIO_PIN_VAL_HIGH);
+                        if(k == 0)
+                        {
+                            GPIO_write(k, GPIO_PIN_VAL_HIGH);
+                        }
+                        else
+                        {
+                            Board_i2cIoExpPinLevelSet(BOARD_I2C_IOEXP_DEVICE1_ADDR,
+                                                      THREE_PORT_IOEXP,
+                                                      PORTNUM_2,
+                                                      PIN_NUM_0,
+                                                      GPIO_SIGNAL_LEVEL_HIGH);
+                        }
 #else
                         GPIO_write(k, GPIO_PIN_VAL_HIGH);
 
@@ -315,13 +320,18 @@ static int8_t led_run_test(void)
                                                   gUserLeds[k],
                                                   GPIO_SIGNAL_LEVEL_HIGH);
 #elif defined(SOC_AM64X)
-                        Board_i2cIoExpPinLevelSet(BOARD_I2C_IOEXP_DEVICE1_ADDR,
-                                                  THREE_PORT_IOEXP,
-                                                  PORTNUM_2,
-                                                  PIN_NUM_0,
-                                                  GPIO_SIGNAL_LEVEL_LOW);
-
-                        GPIO_write(k, GPIO_PIN_VAL_LOW);
+                        if(k == 0)
+                        {
+                            GPIO_write(k, GPIO_PIN_VAL_LOW);
+                        }
+                        else
+                        {
+                            Board_i2cIoExpPinLevelSet(BOARD_I2C_IOEXP_DEVICE1_ADDR,
+                                                      THREE_PORT_IOEXP,
+                                                      PORTNUM_2,
+                                                      PIN_NUM_0,
+                                                      GPIO_SIGNAL_LEVEL_LOW);
+                        }
 #else
                         GPIO_write(k, GPIO_PIN_VAL_LOW);
 #endif
