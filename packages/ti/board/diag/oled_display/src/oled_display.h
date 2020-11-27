@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2020, Texas Instruments Incorporated
+ * Copyright (c) 2016, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,37 +31,55 @@
  *
  */
 
-/**
+ /**
  *
- * \file  oled_test.h
+ * \file	oled_display.h
  *
- * \brief   This file contains structure, typedefs, functions and
- *          prototypes used for oled test
+ * \brief This contains oled specific structure, typedefs, function prototypes
  *
- *****************************************************************************/
+ ******************************************************************************/
+#ifndef _OLED_DISPLAY_H_
+#define _OLED_DISPLAY_H_
 
-#ifndef _OLED_TEST_H_
-#define _OLED_TEST_H_
+/************************
+ * Include Files
+ ************************/
+#include "oled_bitmap.h"
 
-#include "board_cfg.h"
+/************************
+ * Defines and Macros
+ ************************/
+/** Macros for I2C slave address and instance */
+#define OLED_SLAVE_ADDR					(0x3C)
+#define OLED_I2C_INSTANCE				(1U)
 
-#if defined(SOC_AM64X)
-/* Platform test return type */
-typedef	int16_t TEST_STATUS;
-#endif
+/** Macros definitons for return types */
+#define OLED_ERR					(-1)
+#define OLED_SUCCESS				(0)
 
-/**
- * \brief This function performs oled test
- *
- * \param void
- *
- * \return
- * \n      TEST_PASS  - Test Passed
- * \n      TEST_FAIL  - Test Failed
- *
- */
-TEST_STATUS oledTest(void);
+typedef	int16_t OLED_RET;
 
-#endif // _OLED_TEST_H_
+/************************
+ * Function declarations
+ ************************/
 
-/* Nothing past this point */
+OLED_RET oledInit(void);
+OLED_RET init(void);
+OLED_RET clear(void);
+uint8_t printchar(uint8_t a);
+OLED_RET printstr(int8_t string[]);
+void noDisplay(void);
+void display(void);
+OLED_RET scrollDisplayLeft(void);
+OLED_RET scrollDisplayLeftLine(uint8_t line);
+OLED_RET scrollDisplayRight(void);
+OLED_RET scrollDisplayRightLine(uint8_t line);
+OLED_RET flip(void);
+OLED_RET setOrientation(uint8_t newDir);
+OLED_RET autoscroll(void);
+OLED_RET noAutoscroll(void);
+OLED_RET setline(uint8_t line);
+OLED_RET setRolling(uint8_t row, uint8_t status);
+OLED_RET resetCursor(uint8_t line);
+
+#endif /* _OLED_DISPLAY_H_ */

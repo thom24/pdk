@@ -77,7 +77,7 @@ PACKAGE_SRCS_COMMON += ../../common/$(SOC)
 PACKAGE_SRCS_COMMON += ../../board_diag_component.mk
 PACKAGE_SRCS_COMMON += ../../create_sd.bat ../../create_sd.sh
 
-SRCS_COMMON += oled_display.c icek2g_oled.c diag_common_cfg.c
+SRCS_COMMON += oled_display.c oled_test.c diag_common_cfg.c
 
 ifeq ($(CORE),$(filter $(CORE), mcu1_0))
 SRCS_ASM_COMMON += diag_entry_r5.asm

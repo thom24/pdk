@@ -33,25 +33,16 @@
 
 /**
  *
- * \file  oled_display_test.c
+ * \file  oled_display.c
  *
- * \brief This file contains oled display test functions.
+ * \brief This contains specific oled functions.
  *
  *  Supported SoCs : K2G & AM64X
  *
  *  Supported Platforms: k2g_ice & am64x_evm.
- *
  ******************************************************************************/
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-#if !defined(SOC_AM64X)
-#include <ti/drv/gpio/GPIO.h>
-#include <ti/drv/gpio/soc/GPIO_soc.h>
-#endif
-
+#include "oled_display.h"
 #include <ti/drv/i2c/I2C.h>
 #include <ti/drv/i2c/soc/I2C_soc.h>
 #include <ti/drv/uart/UART_stdio.h>
@@ -60,411 +51,746 @@
 #include "diag_common_cfg.h"
 #endif
 
-#include "board.h"
-#include "board_cfg.h"
-#include "oled_display.h"
-#include "icek2g_oled.h"
+uint8_t totalcols;
+uint8_t row;
+uint8_t dir;
+uint8_t col[2];
+uint8_t rolling0;
+uint8_t rolling1;
 
-#if defined(SOC_AM64X)
-#include <ti/drv/i2c/I2C.h>
-#include <ti/drv/i2c/soc/I2C_soc.h>
-#include "board_internal.h"
-#include "board_i2c_io_exp.h"
-
-/* Platform test return codes */
-#define TEST_PASS     (0)
-#define TEST_FAIL     (-1)
-
-#endif
-
-#if !defined(SOC_AM64X)
-/* GPIO pin value definitions */
-#define GPIO_PIN_VAL_LOW     (0U)
-#define GPIO_PIN_VAL_HIGH    (1U)
-
-#define GPIO_INDEX           (0U)
-
-/* Port and pin number mask for LCD GPIO.
-   Bits 7-0: Pin number  and Bits 15-8: Port number */
-#define LCD_BST_CONV_CTL_GPIO    0x002D
-#define LCD_RESET                0x0134
-#endif
-
+const uint8_t * FontBitmap;
+const FONT_CHAR_INFO * FontDescriptors;
+const FONT_INFO * FontInfo;
 extern I2C_config_list I2C_config;
-
-#if !defined(SOC_AM64X)
 extern void BOARD_delay(uint32_t usecs);
 
-/* GPIO Driver board specific pin configuration structure */
-GPIO_PinConfig gpioPinConfigs[] = {
-    LCD_BST_CONV_CTL_GPIO | GPIO_CFG_OUTPUT,
-    LCD_RESET | GPIO_CFG_OUTPUT,
-};
+I2C_Params i2cParams;
+I2C_Handle handle = NULL;
 
-/* GPIO Driver call back functions */
-GPIO_CallbackFxn gpioCallbackFunctions[] = {
-    NULL
-};
-
-GPIO_v0_Config GPIO_v0_config = {
-    gpioPinConfigs,
-    gpioCallbackFunctions,
-    sizeof(gpioPinConfigs) / sizeof(GPIO_PinConfig),
-    sizeof(gpioCallbackFunctions) / sizeof(GPIO_CallbackFxn),
-    0,
-};
-
-#endif
-/**
- *  \brief    This function executes oled display detection test
+/******************************************************************************
  *
- *  \param    void
+ * Function:	oledwrite
  *
- * \return
- * \n         TEST_PASS  - Test Passed
- * \n         TEST_FAIL  - Test Failed
- */
-static TEST_STATUS oled_display_detect_test(void)
+ * Description:	Writes a specified number of bytes to the given slave address.
+ *
+ * Parameters:	uint8_t *data          - Pointer to the buffer base address
+ * 				uint32_t numBytes      - Number of bytes of buffer
+ *
+ * Return Value: OLED_RET - OLED_SUCCESS
+ * 				 OLED_RET - OLED_ERR
+ *
+ ******************************************************************************/
+static OLED_RET oledwrite(uint8_t *data,uint32_t numBytes)
 {
-	uint32_t index;
-	I2C_Params i2cParams;
-    I2C_Handle handle = NULL;
-	uint8_t tx;
-	uint8_t rx;
 	I2C_Transaction i2cTransaction;
+	
+	I2C_transactionInit(&i2cTransaction);
+	i2cTransaction.slaveAddress = OLED_SLAVE_ADDR;
+	i2cTransaction.writeBuf = data;
+	i2cTransaction.writeCount = numBytes;
+	i2cTransaction.readCount = 0;
+	I2C_transfer(handle, &i2cTransaction);
+		
+	return (OLED_SUCCESS);
+}
 
+/******************************************************************************
+ *
+ * Function:	send
+ *
+ * Description:	Sends 2 bytes of data to the OSD9616
+ *
+ * Parameters:	uint8_t comdat            - Identifies command or data
+ *              uint8_t data              - Data to be sent
+ *
+ * Return Value: OLED_RET - OLED_SUCCESS
+ * 				 OLED_RET - OLED_ERR
+ *
+ ******************************************************************************/
+static OLED_RET send(uint8_t comdat, uint8_t data)
+{
+    uint8_t cmd[2];
+    OLED_RET ret;
+
+    cmd[0] = comdat & 0x00FF;     // Specifies whether data is Command or Data
+    cmd[1] = data;                // Command / Data
+    BOARD_delay(1);
+
+    ret = oledwrite(cmd, 2);
+    BOARD_delay(4);
+	if(ret == 0)
+	{
+        return (OLED_SUCCESS);
+	}
+	else
+	{
+		return (OLED_ERR);
+	}
+
+}
+
+/******************************************************************************
+ *
+ * Function:	multiSend
+ *
+ * Description:	Sends multiple bytes of data to the OSD9616
+ *
+ * Parameters:	uint8_t *data             - Pointer to start of I2C transfer
+ *              uint32_t len              - Length of I2C transaction
+ *
+ * Return Value: OLED_RET - OLED_SUCCESS
+ * 				 OLED_RET - OLED_ERR
+ *
+ ******************************************************************************/
+static OLED_RET multiSend(uint8_t *data, uint32_t len)
+{
+    int8_t index;
+    uint8_t cmd[10];
+    OLED_RET ret;
+
+    for(index=0;index<len;index++)               // Command / Data
+    {
+    	cmd[index] = data[index];
+    }
+
+    BOARD_delay(1);
+
+    ret = oledwrite(cmd, len);
+    BOARD_delay(4);
+    if(ret == 0)
+    {
+    	return (OLED_SUCCESS);
+    }
+    else
+    {
+    	return (OLED_ERR);
+    }
+}
+
+/******************************************************************************
+ *
+ * Function:	oledInit
+ *
+ * Description:	Function initializes I2C Module and also LCD.
+ *
+ * Parameters:  void
+ *
+ * Return Value: OLED_RET - OLED_SUCCESS
+ *
+ ******************************************************************************/
+OLED_RET oledInit(void)
+{
+	/*
+	 *  Font data for Century Gothic 8pt
+	 */
+
+	/* Character bitmaps for Century Gothic 8pt */
+	OLED_RET     returnValue;
+
+	int32_t index;
+	row = 0;
+	totalcols = 0;
+	
 	for (index=0; I2C_config[index].fxnTablePtr != NULL; index++)
 	{
 		((I2C_HwAttrs *)I2C_config[index].hwAttrs)->enableIntr = false;
 	}
 
-	I2C_init();
+    I2C_init();
 
     I2C_Params_init(&i2cParams);
 
-    handle = I2C_open(BOARD_OLED_DISPLAY_INSTANCE, &i2cParams);
-	if(handle == NULL)
+    handle = I2C_open(OLED_I2C_INSTANCE, &i2cParams);
+	
+	returnValue = init();
+	if (returnValue != OLED_SUCCESS)
 	{
-		UART_printf("I2C Handle open failed");
-		return(TEST_FAIL);
+		UART_printf("init: init Failed\n");
+	    return (returnValue);
+	}
+	FontBitmap = &arial_8ptBitmaps[0];
+    FontDescriptors = &arial_8ptDescriptors[0];
+    FontInfo = &arial_8ptFontInfo;
+	
+	return OLED_SUCCESS;
+
+}
+
+/******************************************************************************
+ *
+ * Function:	init
+ *
+ * Description:	Function initializes I2C Module and also LCD.
+ *
+ * Parameters:  void
+ *
+ * Return Value: OLED_RET - OLED_SUCCESS
+ *
+ ******************************************************************************/
+OLED_RET init(void)
+{
+    uint8_t cmd[10];
+
+    /* Note: Wire initialization will be done in main.cpp */
+    /* Initialize OSD9616 display */
+    send(0x00,0x00); // Set low column address
+    send(0x00,0x10); // Set high column address
+
+    send(0x00,0xae); // Turn off oled panel
+
+    send(0x00,0xd5); // Set display clock divide ratio/oscillator frequency
+    send(0x00,0x80); // Set divide ratio
+
+    cmd[0] = 0x00;   // Set multiplex ratio(1 to 16)
+    cmd[1] = 0xa8;
+    cmd[2] = 0x0f;
+    multiSend(cmd, 3);
+
+    send(0x00,0xd3); // Set display offset
+    send(0x00,0x00); // Not offset
+
+    send(0x00,0x40); // Set Display start line address
+
+    cmd[0] = 0x00;  //--set DC-DC enable
+    cmd[1] = 0x8d; // Set Charge Pump
+    cmd[2] = 0x14;
+    multiSend(cmd, 3);
+
+    send(0x00,0xa1); // Set segment re-map 95 to 0
+    send(0x00,0xc8); // Set COM Output Scan Direction
+
+    cmd[0] = 0x00;  // Set com pins hardware configuration
+    cmd[1] = 0xda;
+    cmd[2] = 0x02;
+    multiSend(cmd, 3);
+
+    cmd[0] = 0x00;  // Set contrast control register
+    cmd[1] = 0x81;
+    cmd[2] = 0xaf;
+    multiSend(cmd, 3);
+
+    cmd[0] = 0x00;  // Set pre-charge period
+    cmd[1] = 0xd9;
+    cmd[2] = 0xf1;
+    multiSend(cmd, 3);
+
+    send(0x00,0xdb); // Set vcomh
+    send(0x00,0x20); // 0.83*vref
+
+    send(0x00,0xa4); // Set entire display on/off
+    send(0x00,0xa6); // Set normal display
+
+    send(0x00,0xaf); // Turn on oled panel
+
+	dir = 0;
+
+	return OLED_SUCCESS;
+}
+
+/******************************************************************************
+ *
+ * Function:	setOrientation
+ *
+ * Description:	Function to set the orientation of LCD.
+ *
+ * Parameters:  uint8_t newDir      - Direction of orientation
+ *
+ * Return Value: OLED_RET - OLED_SUCCESS
+ *
+ ******************************************************************************/
+OLED_RET setOrientation(uint8_t newDir)
+{
+	if(newDir == 0)
+	{	/* Set divide ratio */
+		send(0x00,0xC8);
+		dir = 1;
+	}
+	else if(newDir == 1)
+	{	/* Set divide ratio */
+		send(0x00,0xC0);
+		dir = 0;
 	}
 
-    I2C_transactionInit(&i2cTransaction);
-	i2cTransaction.slaveAddress = OLED_SLAVE_ADDR;
-	i2cTransaction.writeBuf = &tx;
-	i2cTransaction.writeCount = 1;
-	i2cTransaction.readBuf = &rx;
-	i2cTransaction.readCount = 0;
-	tx = 0x81;
-	rx = 0x0;
-	I2C_transfer(handle, &i2cTransaction);
-	BOARD_delay(1000);
-	i2cTransaction.writeCount = 0;
-	i2cTransaction.readCount = 1;
+	return OLED_SUCCESS;
+}
 
-	I2C_transfer(handle, &i2cTransaction);
-	if(rx == 0x0)
+/******************************************************************************
+ *
+ * Function:	flip
+ *
+ * Description:	Flips the screen vertically
+ *
+ * Parameters:  void
+ *
+ * Return Value: OLED_RET - OLED_SUCCESS
+ *
+ ******************************************************************************/
+OLED_RET flip(void)
+{
+	if(dir == 0)
+	{   /* Set divide ratios */
+		send(0x00,0xC0);
+		send(0x00,0xA1);
+		dir = 1;
+	}
+	else if(dir == 1)
+	{   /* Set divide ratios */
+		send(0x00,0xC8);
+		send(0x00,0xA1);
+		dir = 0;
+	}
+
+	return OLED_SUCCESS;
+}
+
+/******************************************************************************
+ *
+ * Function:	setline
+ *
+ * Description:	Sets the start line for the display
+ *
+ * Parameters:  uint8_t line     - Line number
+ *
+ * Return Value: OLED_RET - OLED_SUCCESS
+ *
+ ******************************************************************************/
+OLED_RET setline(uint8_t line)
+{
+    if(line == 0)
+	{
+		/* Write to page 1 */
+		send(0x00,0x00);   // Set low column address
+		send(0x00,0x10);   // Set high column address
+		send(0x00,0xb0+1); // Set page for page 1
+    }
+	else if(line == 1)
+	{
+	    /* Write to page 0 */
+		send(0x00,0x00);   // Set low column address
+		send(0x00,0x10);   // Set high column address
+		send(0x00,0xb0+0); // Set page for page 0
+
+	}
+	totalcols = 0;
+	row = line;
+
+	return OLED_SUCCESS;
+}
+
+/******************************************************************************
+ *
+ * Function:	setRolling
+ *
+ * Description:	Sets the rolling parameters
+ *
+ * Parameters:  uint8_t row          - Row number
+ *              uint8_t status       - Status of rolling
+ *
+ * Return Value: OLED_RET - OLED_SUCCESS
+ *
+ ******************************************************************************/
+OLED_RET setRolling(uint8_t row, uint8_t status)
+{
+	if(row == 0)
+	{
+		if(status == 0)
+		{
+			rolling0 = 0;
+		}
+		else
+		{
+			rolling0 = 1;
+		}
+	}
+	else if(row == 1)
+	{
+		if(status == 0)
+		{
+			rolling1 = 0;
+		}
+		else
+		{
+			rolling1 = 1;
+		}
+	}
+
+	return OLED_SUCCESS;
+}
+
+/******************************************************************************
+ *
+ * Function:	printstr
+ *
+ * Description:	Prints a string to the LCD
+ *
+ * Parameters:  uint8_t string[]   - Pointer to the string to be printed
+ *
+ * Return Value: OLED_RET - OLED_SUCCESS
+ *
+ ******************************************************************************/
+OLED_RET printstr(int8_t string[])
+{
+    int8_t index = 0;
+
+	while(string[index] != '\0')
     {
-        UART_printf ("Oled display Detection Failed!\n");
-        return(TEST_FAIL);
+      if(printchar(string[index]) == 0) {break;}
+	  index++;
     }
 
-    UART_printf ("\nOled display Detection Successful!\n");
-
-	I2C_close(handle);
-    return (TEST_PASS);
+    return OLED_SUCCESS;
 }
 
-#if !defined(SOC_AM64X)
-/**
- * \brief	This function configures voltage regulator gpio's for lcd
+/******************************************************************************
  *
- * \param	void
+ * Function:	printchar
  *
- * \return
- * \n      TEST_PASS  - Test Passed
- * \n      TEST_FAIL  - Test Failed
+ * Description:	Prints a character to the LCD
  *
- */
-static TEST_STATUS lcd_gpio_config(void)
+ * Parameters:  uint8_t a   - Character to be printed
+ *
+ * Return Value: uint8_t - 0 Total columns are greater than 127
+ *               uint8_t - 1 Printed a character
+ *
+ ******************************************************************************/
+uint8_t printchar(uint8_t a)
 {
-    GPIO_write(GPIO_INDEX, GPIO_PIN_VAL_HIGH);
-    BOARD_delay(1000);
-    GPIO_write(GPIO_INDEX, GPIO_PIN_VAL_LOW);
+	int16_t index1, index2;
 
-    GPIO_write(1, GPIO_PIN_VAL_LOW);
-    BOARD_delay(1000);
-    GPIO_write(1, GPIO_PIN_VAL_HIGH);
+	index2 = (uint8_t) a - 0x20;
 
-	return (TEST_PASS);
-}
-#endif
-
-/**
- *  \brief    This function is used to perform Oled display detection
- *            test and Oled display position test
- *
- *  \param    void
- *
- * \return
- * \n         TEST_PASS  - Test Passed
- * \n         TEST_FAIL  - Test Failed
- */
-static TEST_STATUS run_oled_display_test(void)
-{
-	OLED_RET retVal;
-	TEST_STATUS testStatus;
-
-#if !defined(SOC_AM64X)
-	GPIO_init();
-
-	testStatus = lcd_gpio_config();
-	if(testStatus != TEST_PASS)
-	{
-		UART_printf("\n gpio_config Failed\n");
-		return (testStatus);
-	}
-#endif
-
-    UART_printf("\nRunning Oled display Detect Test\n");
-
-    testStatus = oled_display_detect_test();
-    if(testStatus != TEST_PASS)
-	{
-		UART_printf("\nOled display Detect Test Failed!!\n");
-		return (testStatus);
-	}
-	else
-	{
-		UART_printf("\nOled display Detect Test Passed!\n");
-	}
-
-    retVal = oledInit();
-	if (retVal != OLED_SUCCESS)
-	{
-		UART_printf("oledInit: oled module init Failed\n");
-		return (TEST_FAIL);
-	}
-	retVal = clear();
-	if (retVal != OLED_SUCCESS)
-	{
-		UART_printf("clear: oled screen clear Failed\n");
-		return (TEST_FAIL);
-	}
-	retVal = setline(0);
-	if (retVal != OLED_SUCCESS)
-	{
-		UART_printf("setline: line setting to first Failed\n");
-		return (TEST_FAIL);
-	}
-	retVal = setOrientation(1);
-	if (retVal != OLED_SUCCESS)
-	{
-		UART_printf("setOrientation: Horizontal orientation Failed\n");
-		return (TEST_FAIL);
-	}
-	retVal = printstr((int8_t *)"Welcome");
-	if (retVal != OLED_SUCCESS)
-	{
-		UART_printf("printstr: Oled print Failed\n");
-		return (TEST_FAIL);
-	}
-	BOARD_delay(2000);
-	retVal = clear();
-	if (retVal != OLED_SUCCESS)
-	{
-		UART_printf("clear: oled screen clear Failed\n");
-		return (TEST_FAIL);
-	}
-	retVal = setline(1);
-	if (retVal != OLED_SUCCESS)
-	{
-		UART_printf("setline: line setting to second Failed\n");
-		return (TEST_FAIL);
-	}
-	retVal = setOrientation(1);
-	if (retVal != OLED_SUCCESS)
-	{
-		UART_printf("setOrientation: Horizontal orientation Failed\n");
-		return (TEST_FAIL);
-	}
-	retVal = printstr((int8_t *)"K2G ICE EVM");
-	if (retVal != OLED_SUCCESS)
-	{
-		UART_printf("printstr: Oled print Failed\n");
-		return (TEST_FAIL);
-	}
-	BOARD_delay(500000);
-	retVal = clear();
-	if (retVal != OLED_SUCCESS)
-	{
-		UART_printf("clear: oled screen clear Failed\n");
-		return (TEST_FAIL);
-	}
-	//print two lines
-	retVal = setline(0);
-	if (retVal != OLED_SUCCESS)
-	{
-		UART_printf("setline: line setting to first Failed\n");
-		return (TEST_FAIL);
-	}
-	retVal = setOrientation(1);
-	if (retVal != OLED_SUCCESS)
-	{
-		UART_printf("setOrientation: Horizontal orientation Failed\n");
-		return (TEST_FAIL);
-	}
-	retVal = printstr((int8_t *)"Welcome");
-	if (retVal != OLED_SUCCESS)
-	{
-		UART_printf("printstr: Oled print Failed\n");
-		return (TEST_FAIL);
-	}
-	retVal = setline(1);
-	if (retVal != OLED_SUCCESS)
-	{
-		UART_printf("setline: line setting to second Failed\n");
-		return (TEST_FAIL);
-	}
-	retVal = printstr((int8_t *)"K2G ICE EVM");
-	if (retVal != OLED_SUCCESS)
-	{
-		UART_printf("printstr: Oled print Failed\n");
-		return (TEST_FAIL);
-	}
-	BOARD_delay(500000);
-	retVal = scrollDisplayLeft();
-	if (retVal != OLED_SUCCESS)
-	{
-		UART_printf("scrollDisplayLeft: Left scroll Failed\n");
-		return (TEST_FAIL);
-	}
-	BOARD_delay(2000000);
-	retVal = scrollDisplayRight();
-	if (retVal != OLED_SUCCESS)
-	{
-		UART_printf("scrollDisplayRight: Right scroll Failed\n");
-		return (TEST_FAIL);
-	}
-	BOARD_delay(1000000);
-
-	if (retVal == OLED_SUCCESS)
-	{
-		UART_printf("OLED LCD Display test PASS\n");
-		return TEST_PASS;
-	}
-	else
-	{
-		UART_printf("OLED LCD Display test FAIL\n");
-		return TEST_FAIL;
-	}
-
-#if !defined(SOC_AM64X)
-    return (testStatus);
-#endif
-
-}
-
-/**
- * \brief This function performs Oled display test
- *
- * \param void
- *
- * \return
- * \n      TEST_PASS  - Test Passed
- * \n      TEST_FAIL  - Test Failed
- *
- */
-TEST_STATUS oledTest(void)
-{
-	TEST_STATUS testStatus = 0;
-
-	UART_printf("\n********************************\n");
-	UART_printf(  "        OLED DISPLAY Test       \n");
-	UART_printf(  "********************************\n");
-
-	//Release OLED reset
-#if defined(SOC_AM64X)
-    Board_I2cInitCfg_t i2cCfg;
-
-#if !defined (__aarch64__)
-    /* MCU I2C instance will be active by default for R5 core.
-     * Need update HW attrs to enable MAIN I2C instance.
-     */
-    enableMAINI2C(1, CSL_I2C1_CFG_BASE);
-#endif
-
-    i2cCfg.i2cInst   = BOARD_I2C_IOEXP_DEVICE1_INSTANCE;
-    i2cCfg.socDomain = BOARD_SOC_DOMAIN_MAIN;
-    Board_setI2cInitConfig(&i2cCfg);
-
-    Board_i2cIoExpInit();
-	Board_i2cIoExpSetPinDirection(BOARD_I2C_IOEXP_DEVICE1_ADDR,
-                                  THREE_PORT_IOEXP,
-                                  PORTNUM_1,
-                                  PIN_NUM_6,
-                                  PIN_DIRECTION_OUTPUT);
-
-    /* Pulling GPIO_OLED_RESETn pin to high for accessing the INA devices */
-    Board_i2cIoExpPinLevelSet(BOARD_I2C_IOEXP_DEVICE1_ADDR,
-                              THREE_PORT_IOEXP,
-                              PORTNUM_1,
-                              PIN_NUM_6,
-                              (i2cIoExpSignalLevel_t) GPIO_SIGNAL_LEVEL_HIGH);
-
-#else
-	GPIO_init();
-	GPIO_write(0, 1);
-#endif
-
-	testStatus = run_oled_display_test();
-	if(testStatus != 0)
-	{
-		UART_printf("\nOled display Test Failed!\n");
-	}
-	else
-	{
-		UART_printf("\nOled display Test Passed!\n");
-	}
-
-	UART_printf("\nOled Tests Completed!!\n");
-	UART_printf("\n-----------------X-----------------\n\n\n");
-
-#if defined(SOC_AM64X)
-    Board_i2cIoExpDeInit();
-#endif
-
-	return (testStatus);
-
-} // oledTest
-
-/**
- * \brief Invokes oled test functions
- *
- */
-int main(void)
-{
-    TEST_STATUS      testStatus;
-    Board_initCfg    boardCfg;
-
-#ifdef SOC_K2G
-    DIAG_IntrInit();
-#endif
-
-#ifdef PDK_RAW_BOOT
-    boardCfg = BOARD_INIT_PINMUX_CONFIG |
-        BOARD_INIT_UART_STDIO;
-#else
-    boardCfg = BOARD_INIT_UART_STDIO;
-#endif
-    Board_init(boardCfg);
-
-    /* Invoke oled Test */
-    testStatus = oledTest();
-    if(testStatus != TEST_PASS)
+	for(index1=0;index1<(FontDescriptors[index2].widthBits);index1++)
     {
-    	return (-1);
+		if(totalcols > 127)
+		{
+			return 0;
+		}
+		else
+		{
+			totalcols++;
+		}
+		send(0x40,FontBitmap[FontDescriptors[index2].offset + index1]);
+    }
+	if(totalcols > 127)
+	{
+		return 0;
+	}
+	else
+	{
+		totalcols++;
+	}
+	send(0x40,0x00);
+	if(totalcols > 127)
+	{
+		return 0;
+	}
+	else
+	{
+		totalcols++;
+	}
+	send(0x40,0x00);  // 2 Spaces
+    send(0x00,0x2e);  // Deactivate Scrolling
+	return 1;
+
+}
+
+/******************************************************************************
+ *
+ * Function:	clear
+ *
+ * Description:	Clears the LCD screen and positions the cursor in the upper-left corner
+ *
+ * Parameters:  void
+ *
+ * Return Value: OLED_RET - OLED_SUCCESS
+ *
+ ******************************************************************************/
+OLED_RET clear(void)
+{
+	int16_t index;
+	totalcols = 0;
+	//This part is to initialize and blank the LCD.
+	/* Initialize OLED display */
+	send(0x00,0x2e);  // Deactivate Scrolling
+
+    /* Write to page 0 */
+    send(0x00,0x00);   // Set low column address
+    send(0x00,0x10);   // Set high column address
+    send(0x00,0xb0+0); // Set page for page 0 to page 5
+
+    for(index=0;index<128;index++)
+    {
+    	send(0x40,0x00);
     }
 
-    return (0);
+    /* Write to page 1*/
+    send(0x00,0x00);   // Set low column address
+    send(0x00,0x10);   // Set high column address
+    send(0x00,0xb0+1); // Set page for page 0 to page 5
+
+    for(index=0;index<128;index++)
+    {
+    	send(0x40,0x00);
+    }
+
+	/* Set cursor to upper left corner */
+    send(0x00,0x00);   // Set low column address
+    send(0x00,0x10);   // Set high column address
+    send(0x00,0xb0+1); // Set page for page 0 to page 5
+	row = 0;
+
+	return OLED_SUCCESS;
 }
+
+/******************************************************************************
+ *
+ * Function:	scrollDisplayLeft
+ *
+ * Description:	Scrolls the contents of the display (text and cursor) to the left
+ *
+ * Parameters:  void
+ *
+ * Return Value: OLED_RET - OLED_SUCCESS
+ *
+ ******************************************************************************/
+OLED_RET scrollDisplayLeft(void)
+{
+
+	uint8_t cmd[10]; // For multibyte commands
+
+    // These commands scroll the display without changing the RAM
+    /* Set vertical and horizontal scrolling */
+    cmd[0] = 0x00;
+    cmd[1] = 0x27;  // Vertical and Right Horizontal Scroll 26 = left, 27 = right, 29 = vl, 2A = vr
+    cmd[2] = 0x00;  // Dummy byte
+    cmd[3] = 0x00;  // Define start page address
+    cmd[4] = 0x00;  // Set time interval between each scroll step as 5 frames
+    cmd[5] = 0x01;  // Define end page address
+    cmd[6] = 0x00;  // Dummy byte
+    cmd[7] = 0xFF;  // Dummy byte
+    multiSend(cmd, 8);
+    send(0x00,0x2f);
+
+    return OLED_SUCCESS;
+}
+
+/******************************************************************************
+ *
+ * Function:	scrollDisplayLeftLine
+ *
+ * Description:	Scrolls the contents of a particular line, of the display (text and
+ *      cursor) to the left
+ *
+ * Parameters:  uint8_t line      - Line number
+ *
+ * Return Value: OLED_RET - OLED_SUCCESS
+ *
+ ******************************************************************************/
+OLED_RET scrollDisplayLeftLine(uint8_t line)
+{
+
+	uint8_t cmd[10]; // For multibyte commands
+
+    if ((0 == line) || (1 == line))
+    {
+        // These commands scroll the display without changing the RAM
+        /* Set vertical and horizontal scrolling */
+        cmd[0] = 0x00;
+        cmd[1] = 0x27;  // Vertical and Right Horizontal Scroll 26 = left, 27 = right, 29 = vl, 2A = vr
+        cmd[2] = 0x00;  // Dummy byte
+        cmd[3] = !line; // Define start page address
+        cmd[4] = 0x00;  // Set time interval between each scroll step as 5 frames
+        cmd[5] = !line; // Define end page address
+        cmd[6] = 0x00;  // Dummy byte
+        cmd[7] = 0xFF;  // Dummy byte
+        multiSend(cmd, 8);
+        send(0x00,0x2f);
+	}
+
+    return OLED_SUCCESS;
+}
+
+/******************************************************************************
+ *
+ * Function:	autoscroll
+ *
+ * Description:	Turns on automatic scrolling of the LCD
+ *
+ * Parameters:  void
+ *
+ * Return Value: OLED_RET - OLED_SUCCESS
+ *
+ ******************************************************************************/
+OLED_RET autoscroll(void)
+{
+	uint8_t cmd[10];    // For multibyte commands
+
+    /* Set vertical and horizontal scrolling */
+    cmd[0] = 0x00;
+    cmd[1] = 0x2A;  // Vertical and Right Horizontal Scroll 26 = left, 27 = right, 29 = vl, 2A = vr
+    cmd[2] = 0x00;  // Dummy byte
+    cmd[3] = 0x00;  // Define start page address
+    cmd[4] = 0x00;  // Set time interval between each scroll step as 5 frames
+    cmd[5] = 0x01;  // Define end page address
+    cmd[6] = 0x01;  // Vertical scrolling offset
+    multiSend(cmd, 7);
+    send(0x00,0x2f);
+
+    /* Keep first 8 rows from vertical scrolling  */
+    cmd[0] = 0x00;
+    cmd[1] = 0xa3;  // Set Vertical Scroll Area
+    cmd[2] = 0x08;  // Set No. of rows in top fixed area
+    cmd[3] = 0x08;  // Set No. of rows in scroll area
+    multiSend(cmd, 4);
+
+    return OLED_SUCCESS;
+}
+
+/******************************************************************************
+ *
+ * Function:	noAutoscroll
+ *
+ * Description:	Turns off automatic scrolling of the LCD
+ *
+ * Parameters:  void
+ *
+ * Return Value: OLED_RET - OLED_SUCCESS
+ *
+ ******************************************************************************/
+OLED_RET noAutoscroll(void)
+{
+	send(0x40,0x00);
+	send(0x40,0x00);  // 2 Spaces
+    send(0x00,0x2e);  // Deactivate Scrolling
+
+    return OLED_SUCCESS;
+}
+
+/******************************************************************************
+ *
+ * Function:	scrollDisplayRight
+ *
+ * Description:	Scrolls the contents of the display (text and cursor) to the right
+ *
+ * Parameters:  void
+ *
+ * Return Value: OLED_RET - OLED_SUCCESS
+ *
+ ******************************************************************************/
+OLED_RET scrollDisplayRight(void)
+{
+	uint8_t cmd[10];    // For multibyte commands
+
+    /* Set horizontal scrolling */
+    cmd[0] = 0x00;
+    cmd[1] = 0x26;  // Vertical and Left Horizontal Scroll 26 = left, 27 = right, 29 = vl, 2A = vr
+    cmd[2] = 0x00;  // Dummy byte
+    cmd[3] = 0x00;  // Define start page address
+    cmd[4] = 0x00;  // Set time interval between each scroll step as 5 frames
+    cmd[5] = 0x01;  // Define end page address
+    cmd[6] = 0x00;  // Dummy byte
+    cmd[7] = 0xFF;  // Dummy byte
+    multiSend(cmd, 8);
+    send(0x00,0x2f);
+
+    return OLED_SUCCESS;
+}
+
+/******************************************************************************
+ *
+ * Function:	scrollDisplayRightLine
+ *
+ * Description:	Scrolls the contents of a particular line, of the display (text and
+ *      cursor) to the right
+ *
+ * Parameters:  uint8_t line   - Line number
+ *
+ * Return Value: OLED_RET - OLED_SUCCESS
+ *
+ ******************************************************************************/
+OLED_RET scrollDisplayRightLine(uint8_t line)
+{
+	uint8_t cmd[10];    // For multibyte commands
+
+    if ((0 == line) || (1 == line))
+    {
+        /* Set horizontal scrolling */
+        cmd[0] = 0x00;
+        cmd[1] = 0x26;  // Vertical and Left Horizontal Scroll 26 = left, 27 = right, 29 = vl, 2A = vr
+        cmd[2] = 0x00;  // Dummy byte
+        cmd[3] = !line; // Define start page address
+        cmd[4] = 0x00;  // Set time interval between each scroll step as 5 frames
+        cmd[5] = !line; // Define end page address
+        cmd[6] = 0x00;  // Dummy byte
+        cmd[7] = 0xFF;  // Dummy byte
+        multiSend(cmd, 8);
+        send(0x00,0x2f);
+	}
+
+    return OLED_SUCCESS;
+}
+
+/******************************************************************************
+ *
+ * Function:	noDisplay
+ *
+ * Description:	Turns off the LCD display
+ *
+ * Parameters:  void
+ *
+ * Return Value: void
+ *
+ ******************************************************************************/
+void noDisplay(void)
+{
+    send(0x00,0xae); // Turn off oled panel
+}
+
+/******************************************************************************
+ *
+ * Function:	display
+ *
+ * Description:	Turns on the LCD display
+ *
+ * Parameters:  void
+ *
+ * Return Value: void
+ *
+ ******************************************************************************/
+void display(void)
+{
+    send(0x00,0xaf); // Turn on oled panel
+}
+
+/******************************************************************************
+ *
+ * Function:	resetCursor
+ *
+ * Description:	Resets the cursor position to the beginning in a given line
+ *
+ * Parameters:  uint8_t line   - Line number
+ *
+ * Return Value: OLED_RET - OLED_SUCCESS
+ *
+ ******************************************************************************/
+OLED_RET resetCursor(uint8_t line)
+{
+	totalcols = 0;
+	if(line == 0)
+	{
+		/* Write to line 0 */
+		send(0x00,0x00);   // Set low column address
+		send(0x00,0x10);   // Set high column address
+		send(0x00,0xb0+1); // Set page for page 0 to page 5
+	}
+	else if(line == 1)
+	{
+	   /* Write to line 1*/
+		send(0x00,0x00);   // Set low column address
+		send(0x00,0x10);   // Set high column address
+		send(0x00,0xb0+0); // Set page for page 0 to page 5
+	}
+
+	return OLED_SUCCESS;
+}
+
