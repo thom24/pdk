@@ -50,8 +50,8 @@
 #define BOARD_BOOT_SW2_GPIO_PIN2          (0x0010U) /* GPIO0_16 */
 #define BOARD_BOOT_SW2_GPIO_PIN3          (0x0011U) /* GPIO0_17 */
 #define BOARD_BOOT_SW2_GPIO_PIN4          (0x0012U) /* GPIO0_18 */
-#define BOARD_BOOT_SW2_GPIO_PIN5          (0x0013U) /* GPIO0_19 */
-#define BOARD_BOOT_SW2_GPIO_PIN6          (0x0014U) /* GPIO0_20 */
+#define BOARD_BOOT_SW2_GPIO_PIN5          (0x0052U) /* GPIO0_82 */
+#define BOARD_BOOT_SW2_GPIO_PIN6          (0x0053U) /* GPIO0_83 */
 #define BOARD_BOOT_SW2_GPIO_PIN7          (0x0015U) /* GPIO0_21 */
 #define BOARD_BOOT_SW2_GPIO_PIN8          (0x0016U) /* GPIO0_22 */
 
