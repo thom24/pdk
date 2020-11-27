@@ -59,6 +59,13 @@ extern "C" {
 
 #define DDR_PLL_INDEX		12
 
+typedef struct Board_PllClkCfg_s
+{
+    uint32_t tisciDevID;
+    uint32_t tisciClkID;
+    uint64_t clkRate;
+} Board_PllClkCfg_t;
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

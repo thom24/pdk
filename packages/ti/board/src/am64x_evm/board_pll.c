@@ -42,6 +42,51 @@
 #include "board_pll.h"
 #include <ti/drv/sciclient/sciclient.h>
 
+static Board_PllClkCfg_t gBoardPllClkCfg[] =
+{
+
+ { TISCI_DEV_MCU_UART0,
+   TISCI_DEV_MCU_UART0_FCLK_CLK,
+   96000000
+ }, //MCU_PLL0_HSDIV2_CLKOUT,
+
+ { TISCI_DEV_MCU_I2C0,
+   TISCI_DEV_MCU_UART0_FCLK_CLK,
+   96000000
+ }, //MCU_PLL0_HSDIV1_CLKOUT,
+
+ { TISCI_DEV_UART0,
+   TISCI_DEV_UART0_FCLK_CLK,
+   48000000
+ }, //MAIN_PLL1_HSDIV1_CLKOUT,
+
+ { TISCI_DEV_FSS0_OSPI_0,
+   TISCI_DEV_FSS0_OSPI_0_OSPI_RCLK_CLK,
+   166666666
+ }, //MAIN_PLL0_HSDIV1_CLKOUT,
+
+ { TISCI_DEV_PRU_ICSSG0,
+   TISCI_DEV_PRU_ICSSG0_CORE_CLK,
+   225000000
+ }, //MAIN_PLL2_HSDIV0_CLKOUT,
+
+ { TISCI_DEV_PRU_ICSSG0,
+   TISCI_DEV_PRU_ICSSG0_UCLK_CLK,
+   192000000
+ }, //MAIN_PLL1_HSDIV0_CLKOUT,
+
+ { TISCI_DEV_PRU_ICSSG0,
+   TISCI_DEV_PRU_ICSSG0_RGMII_MHZ_250_CLK,
+   250000000
+ }, //MAIN_PLL0_HSDIV4_CLKOUT,
+
+ { TISCI_DEV_MCAN0,
+   TISCI_DEV_MCAN0_MCANSS_CCLK_CLK,
+   80000000
+ }, //MAIN_PLL0_HSDIV2_CLKOUT,
+
+};
+
 /**
  * \brief  PLL clock enable
  *
@@ -205,5 +250,22 @@ Board_STATUS Board_PLLInit(uint32_t modId,
  */
 Board_STATUS Board_PLLInitAll(void)
 {
-    return BOARD_SOK;
+    Board_STATUS  status = BOARD_SOK;
+    uint32_t index;
+    uint32_t loopCount;
+
+    loopCount = sizeof (gBoardPllClkCfg)/sizeof(Board_PllClkCfg_t);
+
+    for (index = 0; index < loopCount; index++)
+    {
+        status = Board_PLLInit(gBoardPllClkCfg[index].tisciDevID,
+                               gBoardPllClkCfg[index].tisciClkID,
+                               gBoardPllClkCfg[index].clkRate);
+        if(status != BOARD_SOK)
+        {
+            BOARD_DEBUG_LOG("Failed to set the PLL clock freq at index =%d\n\n",index);
+        }
+    }
+
+    return status;
 }
