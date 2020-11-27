@@ -263,7 +263,7 @@ static int8_t BoardDiag_run_automation_header_test(void)
         return -1;
     }
 
-#if (!(defined(SOC_J721E) || defined(SOC_J7200)))
+#if (!(defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)))
     UART_printf("\n\rWriting the output PORT2 register value "
                 "of I2C Boot mode buffer...\n\r");
     ret = BoardDiag_write_register(handle,
@@ -464,7 +464,7 @@ int main(void)
     {
         return -1;
     }
-#if (defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM65XX) || defined(SOC_AM64X)) && !defined (__aarch64__)
+#if (defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM65XX)) && !defined (__aarch64__)
     /* MCU I2C instance will be active by default for R5 core.
      * Need update HW attrs to enable MAIN I2C instance.
      */
