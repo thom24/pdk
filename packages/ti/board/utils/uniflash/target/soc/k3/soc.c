@@ -42,7 +42,11 @@
 /*                            Global Variables                                */
 /* ========================================================================== */
 
+#if defined(am64x_evm)
+uint32_t uart_baseAddr = CSL_UART0_BASE;
+#else
 uint32_t uart_baseAddr = CSL_MCU_UART0_BASE;
+#endif
 uint8_t uart_inst = BOARD_UART_INSTANCE;
 
 /* ========================================================================== */
@@ -52,9 +56,14 @@ uint8_t uart_inst = BOARD_UART_INSTANCE;
 void _resetvectors (void);
 int8_t UFP_openUartHandle(void);
 
+#if defined(am64x_evm)
 static int32_t UFP_isNoBootEnabled(void)
 {
-#if !defined(am64x_evm) // AM64x_TODO: Need update this for am64x evm
+    return (TRUE);
+}
+#else
+static int32_t UFP_isNoBootEnabled(void)
+{
     uint32_t mainDevStat;
     uint32_t wkupDevStat;
 
@@ -66,10 +75,10 @@ static int32_t UFP_isNoBootEnabled(void)
     {
         return (TRUE);
     }
-#endif
 
     return (FALSE);
 }
+#endif
 
 static void UFP_asmAtcmEn(void)
 {

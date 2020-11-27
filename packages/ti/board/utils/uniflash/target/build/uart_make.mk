@@ -124,12 +124,13 @@ ifeq ($(BOARD), $(filter $(BOARD), j721e_evm j7200_evm))
 SRCS_COMMON += ospi.c emmc.c hyperflash.c
 EXTERNAL_LNKCMD_FILE_LOCAL = $(UNIFLASH_BASE_DIR)/soc/k3/linker_j7.cmd
 endif
+
 ifeq ($(BOARD), $(filter $(BOARD), j721e_evm))
 SRCS_COMMON += qspi.c
 endif
 ifeq ($(BOARD), $(filter $(BOARD), am65xx_evm am65xx_idk am64x_evm))
 SRCS_COMMON += ospi.c emmc.c
-EXTERNAL_LNKCMD_FILE_LOCAL = $(UNIFLASH_BASE_DIR)/soc/k3/linker.cmd
+EXTERNAL_LNKCMD_FILE_LOCAL = $(UNIFLASH_BASE_DIR)/soc/k3/linker_am64x.cmd
 endif
 
 ifeq ($(BOARD), $(filter $(BOARD), tpr12_evm))

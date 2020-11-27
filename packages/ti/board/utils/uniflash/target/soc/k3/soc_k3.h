@@ -99,6 +99,8 @@ extern "C" {
 #define UFP_WKUP_DEVSTAT_NOBOOT_CFG     (0x38U)
 #define UFP_MAIN_DEVSTAT_NOBOOT_MASK    (0xEFU)
 #define UFP_WKUP_DEVSTAT_NOBOOT_MASK    (0xF8U)
+#elif defined(SOC_AM64X)
+#define UFP_MAIN_DEVSTAT_NOBOOT_MASK    (0xEFU)
 #else
 #define UFP_MAIN_DEVSTAT_NOBOOT_CFG    (0)
 #define UFP_WKUP_DEVSTAT_NOBOOT_CFG    (0)

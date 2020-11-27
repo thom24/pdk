@@ -85,9 +85,17 @@ extern "C" {
 #define EMMC_FLASH
 #endif
 
-#if defined(am65xx_evm) || defined(am65xx_idk) || defined(am64x_evm)
+#if defined(am65xx_evm) || defined(am65xx_idk)
 #define MAX_BAUDRATE_SUPPORTED			(0xEU)
 #define MAX_BAUDRATE_SUPPORTED_LINUX	(0xBU)
+
+#define OSPI_FLASH
+#define EMMC_FLASH
+#endif
+
+#if defined(am64x_evm)
+#define MAX_BAUDRATE_SUPPORTED          (0x0U)
+#define MAX_BAUDRATE_SUPPORTED_LINUX    (0x0U)
 
 #define OSPI_FLASH
 #define EMMC_FLASH

@@ -382,7 +382,7 @@ static int8_t UFP_ospiInit(void)
     ospiUdmaInit(&ospi_cfg);
 #endif
 
-#if defined(SOC_J7200)
+#if defined(SOC_J7200) || defined(SOC_AM64X)
     ospi_cfg.dacEnable  = false;
 #endif
     ospi_cfg.phyEnable  = false;
