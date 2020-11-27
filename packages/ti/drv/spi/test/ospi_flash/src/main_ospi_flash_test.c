@@ -809,20 +809,29 @@ static bool OSPI_flash_test(void *arg)
         pBuf = txBuf;
     }
 #ifdef SPI_DMA_ENABLE
-#if !defined (__aarch64__)
     if (test->dmaMode)
     {
         CacheP_wbInv((void *)pBuf, (int32_t)testLen);
         CacheP_wbInv((void *)rxBuf, (int32_t)testLen);
     }
 #endif
-#endif
 
 #ifdef OSPI_WRITE
 #if defined(SOC_J7200) || defined(SOC_AM64X)
-if (!(test->dmaMode))           /* DAC DMA write does not work on J7200 */
+    if (test->dacMode)                          /* DAC writes are not supported on Cypress xSPI Flash - Switch to INDAC mode for write as WA to PDK-7115 */
+    {
+        SPI_log("\n The Cypress xSPI Flash does not support DAC writes, switching to INDAC mode. \n");
+        OSPI_v0_HwAttrs ospi_cfg;
+        Board_flashClose(boardHandle);
+        OSPI_socGetInitCfg(BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
+        ospi_cfg.dacEnable = false;
+        ospi_cfg.phyEnable = false;
+        ospi_cfg.dmaEnable = false;
+        ospi_cfg.intrEnable = true;
+        OSPI_socSetInitCfg(BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
+        boardHandle = Board_flashOpen(deviceId, BOARD_OSPI_NOR_INSTANCE, (void *)(&tuneEnable));
+    }
 #endif
-{
     for (i = 0; i < testLen; i += NOR_BLOCK_SIZE)
     {
         offset = startOffset + i;
@@ -884,9 +893,40 @@ if (!(test->dmaMode))           /* DAC DMA write does not work on J7200 */
     SPI_log("\n Board_flashWrite CPU load %d%% \n", cpuLoad);
 #endif
 #endif
-}
 #endif /* OSPI_WRITE */
 
+#if defined(SOC_J7200) || defined(SOC_AM64X)
+    if (test->dacMode)                          /* DAC reads are supported - switching back to DAC mode */
+    {
+        SPI_log("\n The Cypress xSPI Flash supports DAC reads, switching back to DAC mode. \n");
+        OSPI_v0_HwAttrs ospi_cfg;
+        Board_flashClose(boardHandle);
+        OSPI_socGetInitCfg(BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
+        if (test->testId == OSPI_TEST_ID_DAC_133M_SPI)
+        {
+            /* Disable PHY in legacy SPI mode (1-1-1) */
+            ospi_cfg.phyEnable = false;
+            ospi_cfg.dtrEnable = false;
+            ospi_cfg.xferLines = OSPI_XFER_LINES_SINGLE;
+        }
+        else
+        {
+            /* Enable PHY in octal SPI mode (8-8-8) */
+            ospi_cfg.phyEnable = true;
+            ospi_cfg.dtrEnable = true;
+            ospi_cfg.xferLines = OSPI_XFER_LINES_OCTAL;
+        }
+
+        /* Would be enabled when PDK-8724 is fixed */
+        ospi_cfg.phyEnable = false;
+
+        ospi_cfg.dacEnable = true;
+        ospi_cfg.dmaEnable = test->dmaMode;
+        ospi_cfg.intrEnable = false;
+        OSPI_socSetInitCfg(BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
+        boardHandle = Board_flashOpen(deviceId, BOARD_OSPI_NOR_INSTANCE, (void *)(&tuneEnable));
+    }
+#endif
 #ifdef OSPI_PROFILE
 #ifdef USE_BIOS
     Load_reset( );
@@ -894,7 +934,6 @@ if (!(test->dmaMode))           /* DAC DMA write does not work on J7200 */
     /* Get start time stamp for the read performance measurement */
     startTime = TimerP_getTimeInUsecs();
 #endif
-
     for (i = 0; i < testLen; i += testSegLen)
     {
         offset = startOffset + i;
@@ -931,10 +970,6 @@ if (!(test->dmaMode))           /* DAC DMA write does not work on J7200 */
 #endif
 
 #ifdef OSPI_WRITE
-#if defined(SOC_J7200) || defined(SOC_AM64X)
-if (!(test->dmaMode))           /* DAC DMA write does not work on J7200 */
-#endif
-{
     /* Verify Data */
     if (VerifyData(pBuf, rxBuf, testLen) == false)
     {
@@ -942,7 +977,6 @@ if (!(test->dmaMode))           /* DAC DMA write does not work on J7200 */
         testPassed = false;
         goto err;
     }
-}
 #endif
 
 err:
@@ -978,30 +1012,23 @@ OSPI_Tests Ospi_tests[] =
 {
 #ifdef OSPI_WRITE_TUNING
 #if defined(SOC_J7200) || defined(SOC_AM64X)
-    {OSPI_flash_test, OSPI_TEST_ID_WR_TUNING,    false,   false,  OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave to write tuning data to flash"},
+    /* testFunc       testID                     dacMode dmaMode clk                   testDesc */
+    {OSPI_flash_test, OSPI_TEST_ID_WR_TUNING,    false,  false,  OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave to write tuning data to flash"},
 #else
     {OSPI_flash_test, OSPI_TEST_ID_WR_TUNING,    true,   false,  OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave to write tuning data to flash"},
 #endif
 #endif
-#if !defined(SOC_J7200) && !defined(SOC_AM64X)
-    {OSPI_flash_test, OSPI_TEST_ID_DAC_166M,     true,   false,  OSPI_MODULE_CLK_166M, "\r\n OSPI flash test slave in DAC mode at 166MHz RCLK"},
-#endif
-    {OSPI_flash_test, OSPI_TEST_ID_INDAC_166M,   false,  false,  OSPI_MODULE_CLK_166M, "\r\n OSPI flash test slave in INDAC mode at 166MHz RCLK"},
-#ifdef SPI_DMA_ENABLE
-    {OSPI_flash_test, OSPI_TEST_ID_DAC_DMA_166M, true,   true,   OSPI_MODULE_CLK_166M, "\r\n OSPI flash test slave in DAC DMA mode at 166MHz RCLK"},
-#endif
-#if !defined(SOC_J7200) && !defined(SOC_AM64X) /* Shall be enabled for J7200 when PDK-7115 is addressed */
-    /* testFunc       testID                     dacMode dmaMode clk                   testDesc */
     {OSPI_flash_test, OSPI_TEST_ID_DAC_133M,     true,   false,  OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave in DAC mode at 133MHz RCLK"},
-#endif
     {OSPI_flash_test, OSPI_TEST_ID_INDAC_133M,   false,  false,  OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave in INDAC mode at 133MHz RCLK"},
 #ifdef SPI_DMA_ENABLE
     {OSPI_flash_test, OSPI_TEST_ID_DAC_DMA_133M, true,   true,   OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave in DAC DMA mode at 133MHz RCLK"},
 #endif
-
-#if !defined(SOC_J7200) && !defined(SOC_AM64X) /* Shall be enabled for J7200 when PDK-7115 is addressed */
-    {OSPI_flash_test, OSPI_TEST_ID_DAC_133M_SPI, true,   false,  OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave in DAC Legacy SPI mode at 133MHz RCLK"},
+    {OSPI_flash_test, OSPI_TEST_ID_DAC_166M,     true,   false,  OSPI_MODULE_CLK_166M, "\r\n OSPI flash test slave in DAC mode at 166MHz RCLK"},
+    {OSPI_flash_test, OSPI_TEST_ID_INDAC_166M,   false,  false,  OSPI_MODULE_CLK_166M, "\r\n OSPI flash test slave in INDAC mode at 166MHz RCLK"},
+#ifdef SPI_DMA_ENABLE
+    {OSPI_flash_test, OSPI_TEST_ID_DAC_DMA_166M, true,   true,   OSPI_MODULE_CLK_166M, "\r\n OSPI flash test slave in DAC DMA mode at 166MHz RCLK"},
 #endif
+    {OSPI_flash_test, OSPI_TEST_ID_DAC_133M_SPI, true,   false,  OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave in DAC Legacy SPI mode at 133MHz RCLK"},
     {NULL, }
 };
 
