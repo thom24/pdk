@@ -169,7 +169,7 @@
 #define PIN81      (0x0140)  /* GPIO1_64/GPIO1_65 */
 #define PIN82      (0x0141)
 
-#define PIN83      (0x012F)  /* GPIO1_27/GPIO0_41/GPIO1_9 */
+#define PIN83      (0x011B)  /* GPIO1_27/GPIO0_41/GPIO1_9 */
 #define PIN84      (0x0029)
 #define PIN85      (0x0109)
 /* Safety Connector Pins  */

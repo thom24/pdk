@@ -360,6 +360,17 @@ static int8_t BoardDiag_runGpioTestHeaderVerification(uint8_t index,
                 retVal = -1;
             }
         }
+        else
+        {
+            if(gpioSignalLevel == GPIO_PIN_VAL_HIGH)
+            {
+                UART_printf("Looping back the signal high Passed for pin %d \n\r", pinIndex);
+            }
+            else
+            {
+                UART_printf("Looping back the signal low Passed for pin %d \n\r", pinIndex);
+            }
+        }
     }
 
     return retVal;
@@ -686,9 +697,6 @@ int main(void)
     Board_STATUS status;
     Board_initCfg boardCfg;
     int8_t ret = 0;
-#if defined(SOC_AM64X)
-    char p = 'n';
-#endif
 #if (defined(SOC_J721E) || defined(SOC_AM64X))
     Board_I2cInitCfg_t i2cCfg;
 #endif
@@ -822,18 +830,6 @@ int main(void)
                        PIN_PRG0_PRU0_GPO5,
                        BOARD_GPIO_PIN_MUX_CFG);
     GPIO_write(0, GPIO_PIN_VAL_HIGH);
-#endif
-
-#if defined(SOC_AM64X)
-    UART_printf("\nPress 'y' if Test Jig Connected");
-
-    UART_scanFmt("%c", &p);
-    if ( (p != 'Y') || (p != 'y') )
-    {
-        UART_printf("\nPlease Connect the HSE test Jig");
-        UART_printf("\nTest Failed");
-		return 0;
-	}
 #endif
 
 #ifdef DIAG_STRESS_TEST
