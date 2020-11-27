@@ -143,8 +143,8 @@ extern "C" {
 #define BOARD_GPIO_IOEXP_OSPI_RST_PIN_NUM               (1)
 
 /* GPIO port & pin numbers for  MMC reset */
-#define GPIO_MMC_SDCD_PORT_NUM                          (0) //AM64x_TODO: Need to remove
-#define GPIO_MMC_SDCD_PIN_NUM                           (0) //AM64x_TODO: Need to remove
+#define GPIO_MMC_SDCD_PORT_NUM                          (0)
+#define GPIO_MMC_SDCD_PIN_NUM                           (0)
 
 #define BOARD_GPIO_IOEXP_EMMC_RST_PORT_NUM              (0x0)
 #define BOARD_GPIO_IOEXP_EMMC_RST_PIN_NUM               (0x0)
@@ -181,8 +181,6 @@ extern "C" {
 
 
 /* ICSS2 EMAC PHY register address */
-#define BOARD_ICSS2_EMAC_PHY0_ADDR                      (0x0)
-#define BOARD_ICSS2_EMAC_PHY1_ADDR                      (0x3u)
 #define BOARD_ICSS_EMAC_PHY0_ADDR                       (0x3)
 #define BOARD_ICSS_EMAC_PHY1_ADDR                       (0xFu)
 #define BOARD_CPSW_EMAC_PHY0_ADDR                       (0x0)
@@ -281,14 +279,14 @@ extern "C" {
 #define BOARD_EEPROM_SPI0_PORT                          (0U)
 
 /* Enable NOR flash driver */
-#define BOARD_NOR_FLASH_IN //J7ES_TODO: need to update
+#define BOARD_NOR_FLASH_IN
 
 /* McSPI instance for master and slave test */
-#define BOARD_MCSPI_MASTER_INSTANCE                     (1) //J7ES_TODO: need to update
-#define BOARD_MCSPI_SLAVE_INSTANCE                      (1) //J7ES_TODO: need to update
+#define BOARD_MCSPI_MASTER_INSTANCE                     (1)
+#define BOARD_MCSPI_SLAVE_INSTANCE                      (1)
 
 /* Maximum possible buffer length */
-#define BOARD_EEPROM_MAX_BUFF_LENGTH                    (0) //J7ES_TODO: need to update
+#define BOARD_EEPROM_MAX_BUFF_LENGTH                    (0)
 
 /* Maximum number of SoC domains */
 #define BOARD_SOC_DOMAIN_MAX                            (2U)
@@ -328,10 +326,10 @@ extern "C" {
 #define PINMUX_GPIO_CFG                                 (0x00050007U)
 
 /* Clock frequency for UART module */
-#define BOARD_UART_CLK_MAIN                             (48000000U) //AM64x_TODO: Need to cross check
+#define BOARD_UART_CLK_MAIN                             (48000000U)
 
 /** @brief Number of UART instances */
-#define BOARD_UART_PER_CNT                              (6U) //AM64x_TODO: Need to verify the Value
+#define BOARD_UART_PER_CNT                              (6U)
 
 /* SPI instance connected to LED Driver */
 #define BOARD_SPI1_INSTANCE                              (1U)
