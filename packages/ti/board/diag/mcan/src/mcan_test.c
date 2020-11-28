@@ -78,7 +78,7 @@ BoardDiag_McanPortInfo_t gMcanDiagPortInfo[MCAN_MAX_PORTS_EXP] =
  {CSL_MCAN8_MSGMEM_RAM_BASE,     8, MAIN_MCAN8_TX_INT_NUM, MAIN_MCAN8_RX_INT_NUM, MAIN_MCAN8_TS_INT_NUM},
  {CSL_MCAN10_MSGMEM_RAM_BASE,   10, MAIN_MCAN10_TX_INT_NUM, MAIN_MCAN10_RX_INT_NUM, MAIN_MCAN10_TS_INT_NUM}
 };
-#elif defined(SOC_AM64X)
+#elif defined(am64x_evm)
 BoardDiag_McanPortInfo_t  gMcanDiagPortInfo[MCAN_MAX_PORTS] = {{CSL_MCAN0_MSGMEM_RAM_BASE,     0, MAIN_MCAN0_TX_INT_NUM, MAIN_MCAN0_RX_INT_NUM, MAIN_MCAN0_TS_INT_NUM},
                                                        {CSL_MCAN1_MSGMEM_RAM_BASE,     1, MAIN_MCAN1_TX_INT_NUM, MAIN_MCAN1_RX_INT_NUM, MAIN_MCAN1_TS_INT_NUM},
                                                       };
@@ -881,12 +881,12 @@ static void BoardDiag_mcanEnable(void)
     BoardDiag_mcanGpioConfig(CSL_GPIO1_BASE, 1);
     GPIO_write(0, 1);
     GPIO_write(1, 1);
-#elif defined(SOC_AM64X)
+#elif defined(am64x_evm)
     Board_I2cInitCfg_t i2cCfg;
 
     i2cCfg.i2cInst   = BOARD_I2C_IOEXP_DEVICE1_INSTANCE;
     i2cCfg.socDomain = BOARD_SOC_DOMAIN_MAIN;
-    i2cCfg.enableIntr = false;  //AM64X_TODO: Need to check this
+    i2cCfg.enableIntr = false;
     Board_setI2cInitConfig(&i2cCfg);
 
     Board_i2cIoExpInit();
@@ -897,12 +897,12 @@ static void BoardDiag_mcanEnable(void)
                                   PIN_NUM_0,
                                   PIN_DIRECTION_OUTPUT);
 
-    /* Pulling the MCAN0_STB_EN pin to high for the reset to happen */
+    /* Pulling the MCAN0_STB_EN pin to low for normal mode */
     Board_i2cIoExpPinLevelSet(BOARD_I2C_IOEXP_DEVICE1_ADDR,
                               THREE_PORT_IOEXP,
                               PORTNUM_1,
                               PIN_NUM_0,
-                              GPIO_SIGNAL_LEVEL_HIGH);
+                              GPIO_SIGNAL_LEVEL_LOW);
 
     /* Setting the pin direction as output */
     Board_i2cIoExpSetPinDirection(BOARD_I2C_IOEXP_DEVICE1_ADDR,
@@ -911,12 +911,12 @@ static void BoardDiag_mcanEnable(void)
                                   PIN_NUM_1,
                                   PIN_DIRECTION_OUTPUT);
 
-    /* Pulling the MCAN1_STB_EN pin to high for the reset to happen */
+    /* Pulling the MCAN1_STB_EN pin to low for normal mode */
     Board_i2cIoExpPinLevelSet(BOARD_I2C_IOEXP_DEVICE1_ADDR,
                               THREE_PORT_IOEXP,
                               PORTNUM_1,
                               PIN_NUM_1,
-                              GPIO_SIGNAL_LEVEL_HIGH);
+                              GPIO_SIGNAL_LEVEL_LOW);
 
     BOARD_delay(1000);
     Board_i2cIoExpDeInit();
