@@ -164,7 +164,7 @@ static int32_t ospiUdmaDeinit(void)
 }
 #endif
 
-#if defined(SOC_J7200) && !defined(DIAG_STRESS_TEST)
+#if (defined(SOC_J7200) || defined(SOC_AM64X)) && !defined(DIAG_STRESS_TEST)
 /**
  * \brief  ospi flash read test function
  *
@@ -531,9 +531,9 @@ static int8_t BoardDiag_ospiFlashPhyTest(void)
     BoardDiag_genPattern((uint8_t *)&rxBuf[0], TEST_DATA_LEN,
                          BOARD_DIAG_TEST_PATTERN_NULL);
 
-#if defined(SOC_J7200)
+#if defined(SOC_J7200) || defined(SOC_AM64X)
     /*
-     * j7200 evm xspi flash does not support writing the data in DAC mode.
+     * xspi flash does not support writing the data in DAC mode.
      * Below test does only read with PHY and DAC mode enabled.
      */
     UART_printf("\n Verifying the OSPI Flash Read with PHY Enabled...\n");
@@ -666,8 +666,8 @@ int main(void)
                BOARD_INIT_UART_STDIO;
 #else
     boardCfg = BOARD_INIT_UART_STDIO | BOARD_INIT_PINMUX_CONFIG;
-#if defined (SOC_J7200)
-    /* Need to do PLL config through board init for proper clock input on J7200 */
+#if defined (SOC_J7200) || defined (SOC_AM64X)
+    /* Need to do PLL config through board init for proper clock input. */
     boardCfg |= BOARD_INIT_PLL;
 #endif
 #endif

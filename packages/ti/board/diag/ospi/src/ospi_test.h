@@ -67,7 +67,10 @@
 extern "C" {
 #endif
 
+#if !defined(am64x_evm)
 #define UDMA_ENABLE
+#endif
+
 #if defined(UDMA_ENABLE)
 /* for enabling SPI_DMA */
 #include <ti/drv/udma/udma.h>
@@ -112,14 +115,6 @@ extern "C" {
 
 
 #else /* #ifdef DIAG_STRESS_TEST */
-
-//AM64X_TODO: Need to remove this after enabling ospi board flash library
-#if defined (am64x_evm)
-#define NOR_SIZE                     (64U * 1024U * 1024U)
-#define NOR_PAGE_SIZE                (256U)
-#define NOR_BLOCK_SIZE               (256U * 1024U)
-#endif
-
 
 #define TEST_DATA_LEN                         (NOR_PAGE_SIZE)
 #define MAX_BUFF_SIZE                         (TEST_DATA_LEN + 4)
