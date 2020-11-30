@@ -103,7 +103,7 @@ extern "C" {
 
 #if (defined(tpr12_evm) || defined(tpr12_qt))
 #define QSPI_FLASH
-#define MAX_BAUDRATE_SUPPORTED			(0x0U)
+#define MAX_BAUDRATE_SUPPORTED			(0x4U)
 #endif
 
 #define FLASH_DEVICE_MAX          (6U)

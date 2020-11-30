@@ -125,9 +125,7 @@ export board_utils_uart_flash_programmer_BOARDLIST
 board_utils_uart_flash_programmer_$(SOC)_CORELIST = $(board_utils_$(SOC)_CORELIST)
 export board_utils_uart_flash_programmer_$(SOC)_CORELIST
 board_utils_EXAMPLE_LIST += board_utils_uart_flash_programmer
-ifneq ($(SOC), $(filter $(SOC), tpr12))
- board_utils_uart_flash_programmer_SBL_IMAGEGEN = yes
-endif
+board_utils_uart_flash_programmer_SBL_IMAGEGEN = yes
 export board_utils_uart_flash_programmer_SBL_IMAGEGEN
 
 board_utils_uart_flash_programmer_hs_COMP_LIST = board_utils_uart_flash_programmer_hs

@@ -4,7 +4,7 @@
 /*    Link command file for TPR12 Uniflash                                    */
 /*                                                                            */
 /*    Platform: R5 Cores on TPR12                                             */
-/* (c) Texas Instruments 2018, All rights reserved.                           */
+/* (c) Texas Instruments 2020, All rights reserved.                           */
 /*----------------------------------------------------------------------------*/
 --retain="*(.bootCode)"
 --retain="*(.startupCode)"
@@ -35,21 +35,22 @@ __SVC_STACK_SIZE = 0x2000;
  * This is reserved for the initialization code which is a part of the TCMA. The
  * code should setup the MPU to allow L2 execution permissions
  ***********************************************************************************/
-#define SBL_INIT_CODE_SIZE          640
-#define SBL_TEST_CCS_LOAD           1
+#define UFP_INIT_CODE_SIZE          640
+/* Note: Set below variable to 1 for enabling CCS load if Uniflash flash programmer */
+#define UFP_CCS_LOAD                0
 
 /*----------------------------------------------------------------------------*/
 /* Memory Map                                                                 */
 MEMORY
 {
-    /* IVT Table for the R5 SBL is always placed at the beginning of the TCM Memory */
+    /* IVT Table for the R5 Bootable image is always placed at the beginning of the TCM Memory */
     /* Initialization code which executes in the TCM memory and sets up the MPU. */
-    INIT_CODE   : origin = 0x00000000, length = SBL_INIT_CODE_SIZE
-    TCMA_RAM (RX) : origin=SBL_INIT_CODE_SIZE length=(0x00008000 - SBL_INIT_CODE_SIZE)
+    INIT_CODE   : origin = 0x00000000, length = UFP_INIT_CODE_SIZE
+    TCMA_RAM (RX) : origin=UFP_INIT_CODE_SIZE length=(0x00008000 - UFP_INIT_CODE_SIZE)
     TCMB_RAM (RW) : origin=0x00080000 length=0x00008000
     /* L2 MEMORY reserved for IVT+Initialization code: */
-    L2_RESVD    : ORIGIN = 0x10200000, LENGTH = SBL_INIT_CODE_SIZE, fill = 0xBDBDBDBD
-    L2_RAM (RW)   : origin = (0x10200000 + SBL_INIT_CODE_SIZE) length=(0x00060000 - SBL_INIT_CODE_SIZE)
+    L2_RESVD    : ORIGIN = 0x10200000, LENGTH = UFP_INIT_CODE_SIZE, fill = 0xBDBDBDBD
+    L2_RAM (RW)   : origin = (0x10200000 + UFP_INIT_CODE_SIZE) length=(0x00060000 - UFP_INIT_CODE_SIZE)
     L3_RAM (RW)   : origin=0x88000000 length=0x00390000
     HWA_RAM (RW)  : origin=0x82000000 length=0x00020000
 }  /* end of MEMORY */
@@ -61,13 +62,13 @@ SECTIONS
 {
     /* SBL Initialization Code: This needs to be relocated from the L2 to the TCMA
      * The code is executed initially and this will setup the MPU permissions. */
-    .sbl_init_code: palign(8), fill=0xabcdabcd
+    .ufp_init_code: palign(8), fill=0xabcdabcd
     {
        *(.rstvectors) /* IVT is put at the beginning of the section */
        . = align(8);
        *(.bootCode)
        . = align(8);
-#if  (SBL_TEST_CCS_LOAD == 1)
+#if  (UFP_CCS_LOAD == 1)
     } > INIT_CODE
 #else
     } load=L2_RESVD, run=INIT_CODE

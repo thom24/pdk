@@ -65,6 +65,7 @@ int8_t UFP_socInit(Board_initCfg *cfg)
     if (cfg == NULL)
     {
         boardCfg = BOARD_INIT_MODULE_CLOCK |
+                   BOARD_INIT_PLL |
                    BOARD_INIT_PINMUX_CONFIG;
     }
     else
