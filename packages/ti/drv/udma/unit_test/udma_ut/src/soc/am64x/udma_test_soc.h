@@ -51,8 +51,6 @@ extern "C" {
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
 
-#define UDMA_TEST_SOC_PRESILICON
-
 /** \brief Utility define for Kilobyte, i.e 1024 bytes */
 #ifndef KB
 #define KB ((uint32_t) 1024U)

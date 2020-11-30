@@ -8,12 +8,14 @@
 
 MEMORY
 {
-    /* R5F_TCMA_SBL_RSVD(X): ORIGIN = 0x00000000, LENGTH = 0x100 */
-    RESET_VECTORS(X)    : ORIGIN = 0x00000000, LENGTH = 0x00008000
-    R5F_TCMB0   (RWIX)  : ORIGIN = 0x41010000, LENGTH = 0x00008000  /*  32 KB */
-    DDR0        (RWIX)  : ORIGIN = 0xB0000000, LENGTH = 0x08000000  /* 128 MB per core */
-    MSMC3       (RWIX)  : ORIGIN = 0x70144400, LENGTH = 0x0002BC00  /* 175 KB per R5 core */
-    MSMC3_H     (RWIX)  : ORIGIN = 0x70170000, LENGTH = 0x00090000  /* ~0.5MB  Reserved for SYSFW Secure Proxy */
+    SBL_RSVD      (X)     : ORIGIN = 0x70000000, LENGTH = 0x80000           /* Reserved for SBL code/data */
+    RESET_VECTORS (X)     : ORIGIN = 0x70080000, LENGTH = 0x100             /* Reset Vectors base address should be 64 bytes aligned  */
+    MSMC3         (RWIX)  : ORIGIN = 0x70080100, LENGTH = 0x40000 - 0x1100  /* AM64x MCMS3 location */  
+    VECTORS       (X)     : ORIGIN = 0x700BF000, LENGTH = 0x1000
+    MSMC3_H       (RWIX)  : ORIGIN = 0x70170000, LENGTH = 0x100000          /* ~0.5MB  Reserved for SYSFW Secure Proxy */
+    SYSFW_RSVD_1  (X)     : ORIGIN = 0x71C00000, LENGTH = 0x20000           /* Reserved by ROM for SYSFW */
+    SYSFW_RSVD_2  (X)     : ORIGIN  =0x71E00000, LENGTH = 0x20000           /* Reserved by ROM for SYSFW */
+    DDR0          (RWIX)  : ORIGIN = 0x80000000, LENGTH = 0x80000000        /* 2GB */
 }
 
 SECTIONS
@@ -23,10 +25,10 @@ SECTIONS
     }                                            palign(8)   > RESET_VECTORS
     .text_boot {
         *boot.aer5f*<*boot.o*>(.text)
-     }                                           palign(8)   > R5F_TCMB0
-    .text:xdc_runtime_Startup_reset__I      : {} palign(8)   > R5F_TCMB0
-    .text:ti_sysbios_family_arm_v7r_Cache*  : {} palign(8)   > R5F_TCMB0
-    .text:ti_sysbios_family_arm_MPU*        : {} palign(8)   > R5F_TCMB0
+     }                                           palign(8)   > MSMC3
+    .text:xdc_runtime_Startup_reset__I      : {} palign(8)   > MSMC3
+    .text:ti_sysbios_family_arm_v7r_Cache*  : {} palign(8)   > MSMC3
+    .text:ti_sysbios_family_arm_MPU*        : {} palign(8)   > MSMC3
     .utilsCopyVecsToAtcm                    : {} palign(8)   > MSMC3
 
     .text                                   : {} palign(8)   > DDR0

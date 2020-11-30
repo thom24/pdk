@@ -3,22 +3,15 @@ __TI_STACK_SIZE = __STACK_SIZE;
 
 MEMORY
 {
-    /* am64x MCMS3 locations                                                  */
-
-
-    /* am64x Reserved Memory for ARM Trusted Firmware                        */
-    MSMC3_ARM_STARTUP	(RWIX)   : ORIGIN = 0x000070080000, LENGTH = 0x800
-    MSMC_MPU2	(RWX)	    : ORIGIN = 0x000070080800, LENGTH = 0x800
-    MSMC_MPU1	(RWX)	    : ORIGIN = 0x000070081000, LENGTH = 0x40000 /* 256 KB for A53 core */
-
-    /* Reserved for SYSFW Secure Proxy */
-    MSMC3_H	(RWIX)          : ORIGIN = 0x70170000, LENGTH = 0x100000   
-
-    /* Reserved by ROM for SYSFW */
-    SYSFW_RSVD_1	(X)      : ORIGIN = 0x71C00000, LENGTH = 0x20000 
-    SYSFW_RSVD_2	(X)      : ORIGIN = 0x71E00000, LENGTH = 0x20000 
-
-    DDR_MPU1	(RWX)	    : ORIGIN =  0x80000000, LENGTH = 0x08000000 /* 128 MB per core */
+    
+    SBL_RSVD	      (X)    : ORIGIN = 0x70000000, LENGTH = 0x80000        /* Reserved for SBL code/data */
+    MSMC3_ARM_STARTUP (RWIX) : ORIGIN = 0x70080000, LENGTH = 0x800          /* AM64x Reserved Memory for ARM Trusted Firmware */
+    MSMC_MPU2	      (RWX)	 : ORIGIN = 0x70080800, LENGTH = 0x800          /* AM64x MCMS3 location */
+    MSMC_MPU1	      (RWX)	 : ORIGIN = 0x70081000, LENGTH = 0x40000-0x1000 /* AM64x MCMS3 location */
+    MSMC3_H	          (RWIX) : ORIGIN = 0x700C0000, LENGTH = 0x100000       /* Reserved for SYSFW Secure Proxy */ 
+    SYSFW_RSVD_1	  (X)    : ORIGIN = 0x71C00000, LENGTH = 0x20000        /* Reserved by ROM for SYSFW */
+    SYSFW_RSVD_2	  (X)    : ORIGIN = 0x71E00000, LENGTH = 0x20000        /* Reserved by ROM for SYSFW */
+    DDR_MPU1	      (RWX)	 : ORIGIN = 0x80000000, LENGTH = 0x80000000     /* 2GB */
 
 }
 REGION_ALIAS("REGION_TEXT_EL3", DDR_MPU1);
