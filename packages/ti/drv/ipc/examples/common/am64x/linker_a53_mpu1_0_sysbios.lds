@@ -1,43 +1,59 @@
-
-/*	File: linker_a53.lds
- *  Semihosting supported gcc Linker script for AM65XX A53 for QT
- *	Purpose: single core A53 C app
-*/
-__STACK_SIZE = 0x10000;
+__STACK_SIZE = 0x20000;
 __TI_STACK_SIZE = __STACK_SIZE;
 
 MEMORY
 {
-    MCU_RESVD   : ORIGIN = 0x000041C00000, LENGTH = 0x00060000				/* MCUSS-OCMC RAM RESERVED FOR MCUSS & SOC Boot  - 384KB 	*/
-    OCMCRAM     : ORIGIN = 0x000041C60000, LENGTH = 0x00020000				/* MCUSS-OCMC RAM - 128KB 					*/
-    BOOTVECTOR  : ORIGIN = 0x000070000100, LENGTH = 0x00001000 - 0x100      /* MSMC RAM INIT CODE (4 KB)				*/
-    MSMC_SRAM   : ORIGIN = 0x000070001000, LENGTH = 0xEF000				/* MSMC RAM GENERAL USE */
-    MSMC_DMSC   : ORIGIN = 0x700F0000, LENGTH = 0x10000				/* Reserved for DMSC */
-    MSMC_SRAM_H : ORIGIN = 0x000070100000, LENGTH = 0xF2000				/* MSMC RAM GENERAL USE - High memory */
-    MSMC_SRAM_H_NOCACHE : ORIGIN = 0x0000701F2000, LENGTH = 0x0000E000				/* MSMC RAM no cache */
+    /* am64x MCMS3 locations                                                  */
 
-    DDR_0      (RWX) : ORIGIN =  0x80000000, LENGTH = 0x10000000
-    DDR_1      (RWX) : ORIGIN =  0x90000000, LENGTH = 0x10000000
-    DDR_2      (RWX) : ORIGIN =  0xA0000000, LENGTH = 0x60000000
+    /* Reserved for SBL code/data */
+    SBL_RSVD	(X)            : ORIGIN = 0x70000000, LENGTH = 0x80000
+
+    /* am64x Reserved Memory for ARM Trusted Firmware                        */
+    MSMC3_ARM_STARTUP	(RWIX)   : ORIGIN = 0x000070080000, LENGTH = 0x800
+    MSMC_MPU2	(RWX)	    : ORIGIN = 0x000070080800, LENGTH = 0x800
+    MSMC_MPU1	(RWX)	    : ORIGIN = 0x000070081000, LENGTH = 0x40000-0x1000
+
+    /* Reserved for SYSFW Secure Proxy */
+    MSMC3_H	(RWIX)          : ORIGIN = 0x700C0000, LENGTH = 0x100000   
+
+    /* Reserved by ROM for SYSFW */
+    SYSFW_RSVD_1	(X)      : ORIGIN = 0x71C00000, LENGTH = 0x20000 
+    SYSFW_RSVD_2	(X)      : ORIGIN = 0x71E00000, LENGTH = 0x20000 
+
+    DDR_MPU1	(RWX)	    : ORIGIN =  0x80000000, LENGTH = 0x80000000
+
 }
-
-REGION_ALIAS("REGION_TEXT", DDR_0);
-REGION_ALIAS("REGION_BSS", DDR_0);
-REGION_ALIAS("REGION_DATA", DDR_0);
-REGION_ALIAS("REGION_STACK", DDR_0);
-REGION_ALIAS("REGION_HEAP", DDR_0);
-REGION_ALIAS("REGION_ARM_EXIDX", DDR_0);
-REGION_ALIAS("REGION_ARM_EXTAB", DDR_0);
-REGION_ALIAS("REGION_TEXT_STARTUP", DDR_0);
-REGION_ALIAS("REGION_DATA_BUFFER", DDR_0);
-REGION_ALIAS("REGION_FAR", DDR_0);
-REGION_ALIAS("IPC_DATA_BUFFER_1", DDR_1);
+REGION_ALIAS("REGION_TEXT_EL3", DDR_MPU1);
+REGION_ALIAS("BOOTVECTOR_EL3", DDR_MPU1);
+REGION_ALIAS("BOOTVECTOR", DDR_MPU1);
+REGION_ALIAS("REGION_TEXT", DDR_MPU1);
+REGION_ALIAS("REGION_BSS", DDR_MPU1);
+REGION_ALIAS("REGION_DATA", DDR_MPU1);
+REGION_ALIAS("REGION_STACK", DDR_MPU1);
+REGION_ALIAS("REGION_HEAP", DDR_MPU1);
+REGION_ALIAS("REGION_ARM_EXIDX", DDR_MPU1);
+REGION_ALIAS("REGION_ARM_EXTAB", DDR_MPU1);
+REGION_ALIAS("REGION_TEXT_STARTUP", DDR_MPU1);
+REGION_ALIAS("REGION_DATA_BUFFER", DDR_MPU1);
+REGION_ALIAS("IPC_DATA_BUFFER_1", DDR_MPU1);
 
 SECTIONS {
 
     .vecs : {
         *(.vecs)
-    } > BOOTVECTOR AT> BOOTVECTOR
+    } > BOOTVECTOR AT> DDR_MPU1
+
+    .vectors : {
+        *(.vectors)
+    } > BOOTVECTOR_EL3 AT> DDR_MPU1
+	.text.el3 : {
+	    *(.text.el3)
+		 /* Ensure 8-byte alignment for descriptors and ensure inclusion */
+        . = ALIGN(8);
+        __RT_SVC_DESCS_START__ = .;
+        KEEP(*(rt_svc_descs))
+        __RT_SVC_DESCS_END__ = .;
+    } > REGION_TEXT_EL3 AT> DDR_MPU1
 
     .text.csl_a53_startup : {
         *(.text.csl_a53_startup)
@@ -97,22 +113,22 @@ SECTIONS {
         *(.ARM.extab* .gnu.linkonce.armextab.*)
     } > REGION_ARM_EXTAB AT> REGION_ARM_EXTAB
 
-    /* usb application ramdisk buffer */
-    .bss:extMemCache:ramdisk (NOLOAD) : ALIGN (32) {
-    } > DDR_0
-
-    /* For NDK packet memory, we need to map this sections before .bss*/
-    .bss:NDK_PACKETMEM (NOLOAD) : ALIGN (128) {} > DDR_0
-    .bss:NDK_MMBUFFER  (NOLOAD) : ALIGN (128) {} > DDR_0
+    .bss:extMemCache:ramdisk : {
+    } > DDR_MPU1  /* MSMC_MPU1 */
 
     /* USB or any other LLD buffer for benchmarking */
     .benchmark_buffer (NOLOAD) : ALIGN (32) {
-    } > DDR_0
+    } > DDR_MPU1
 
-    /* cal's application buffer */
     .bss:frameBuffer (NOLOAD) : ALIGN (32) {
-    } > DDR_0
+    } > DDR_MPU1
 
+    ipc_data_buffer (NOLOAD) : ALIGN (32) {
+    } > IPC_DATA_BUFFER_1
+
+    /* For NDK packet memory, we need to map this sections before .bss*/
+    .bss:NDK_PACKETMEM (NOLOAD) : ALIGN (128) {} > DDR_MPU1
+    .bss:NDK_MMBUFFER  (NOLOAD) : ALIGN (128) {} > DDR_MPU1
 
     .bss : {
         __bss_start__ = .;
@@ -124,16 +140,6 @@ SECTIONS {
         . = ALIGN (8);
         *(COMMON)
     } > REGION_BSS AT> REGION_BSS
-
-    .far : {
-        __far_start__ = .;
-        *(.far)
-        *(.far:*)
-        *(.far.*)
-        . = ALIGN (8);
-        __far_end__ = .;
-        . = ALIGN (8);
-    } > REGION_FAR AT> REGION_FAR
 
     .heap : {
         __heap_start__ = .;
@@ -195,7 +201,4 @@ SECTIONS {
     .debug_macro    0 : { *(.debug_macro) }
     .note.gnu.arm.ident 0 : { KEEP (*(.note.gnu.arm.ident)) }
     /DISCARD/ : { *(.note.GNU-stack) *(.gnu_debuglink) *(.gnu.lto_*) }
-
-    ipc_data_buffer (NOLOAD) : ALIGN (32) {
-    } > IPC_DATA_BUFFER_1
 }
