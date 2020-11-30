@@ -268,7 +268,7 @@ OSAL_TestApp_BOARDLIST = $(libosal_BOARDLIST)
 export OSAL_TestApp_BOARDLIST
 OSAL_TestApp_$(SOC)_CORELIST = $(osal_$(SOC)_CORELIST)
 export OSAL_TestApp_$(SOC)_CORELIST
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x tpr12))
 OSAL_TestApp_SBL_APPIMAGEGEN = yes
 else
 OSAL_TestApp_SBL_APPIMAGEGEN = no

@@ -51,7 +51,7 @@
 
 /* Default SPI parameters structure */
 const MIBSPI_Params MIBSPI_defaultParams = {
-    .mode               = MIBSPI_SLAVE,
+    .mode               = MIBSPI_MASTER,
     .dataSize           = 16U,
     .frameFormat        = MIBSPI_POL0_PHA0,
     .transferMode       = MIBSPI_MODE_BLOCKING,

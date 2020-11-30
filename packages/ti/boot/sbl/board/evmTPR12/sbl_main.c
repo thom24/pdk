@@ -313,10 +313,14 @@ const CSL_ArmR5MpuRegionCfg gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
 
 int main()
 {
+    Board_STATUS boardStatus;
+    Board_initCfg boardCfg;
     cpu_core_id_t core_id;
 
     SBL_ADD_PROFILE_POINT;
-    Board_init(BOARD_INIT_UNLOCK_MMR);
+    boardCfg = (BOARD_INIT_UNLOCK_MMR | BOARD_INIT_PINMUX_CONFIG);
+    boardStatus = Board_init(boardCfg);
+    DebugP_assert(boardStatus == BOARD_SOK);
 
     /* Any SoC specific Init. */
     SBL_SocEarlyInit(FALSE);
