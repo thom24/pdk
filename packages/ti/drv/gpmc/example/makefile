@@ -2,7 +2,6 @@
 include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 
 BUILD_OS_TYPE = baremetal
-CFLAGS_OS_DEFINES =
 LNKFLAGS_LOCAL_mpu1_0  += --entry Entry
 COMP_LIST_COMMON =  $(PDK_COMMON_BAREMETAL_COMP)
 EXTERNAL_INTERFACES =
@@ -18,19 +17,12 @@ SRCS_COMMON += main_gpmc_probing_example.c
 # need to be included for this component
 INCLUDE_EXTERNAL_INTERFACES = pdk $(EXTERNAL_INTERFACES)
 
-GPMC_OS_TYPE=_Baremetal
-
 #Name of the directory created under packages/ti/binary/
-APP_NAME = GPMC$(GPMC_OS_TYPE)_Probing_Example
-# Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
-LOCAL_APP_NAME =  GPMC$(GPMC_OS_TYPE)_$(BOARD)_$(CORE)Probing_Example
+APP_NAME = GPMC_Baremetal_Probing_Example
 
 COMP_LIST_COMMON   += gpmc
-CFLAGS_GPMC_DMA    =
 
 PACKAGE_SRCS_COMMON = makefile src/
-
-CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_GPMC_DMA) $(CFLAGS_OS_DEFINES)
 
 # Include common make files
 ifeq ($(MAKERULEDIR), )

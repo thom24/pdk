@@ -308,7 +308,7 @@ GPMC_Baremetal_Probing_Example_COMP_LIST = GPMC_Baremetal_Probing_Example
 GPMC_Baremetal_Probing_Example_RELPATH = ti/drv/gpmc/example
 GPMC_Baremetal_Probing_Example_PATH = $(PDK_GPMC_COMP_PATH)/example
 GPMC_Baremetal_Probing_Example_BOARD_DEPENDENCY = yes
-GPMC_Baremetal_Probing_Example_CORE_DEPENDENCY = no
+GPMC_Baremetal_Probing_Example_CORE_DEPENDENCY = yes
 GPMC_Baremetal_Probing_Example_MAKEFILE = -f makefile IS_BAREMETAL=yes
 export GPMC_Baremetal_Probing_Example_COMP_LIST
 export GPMC_Baremetal_Probing_Example_BOARD_DEPENDENCY

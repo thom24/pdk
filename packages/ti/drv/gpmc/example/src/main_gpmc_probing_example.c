@@ -42,18 +42,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#ifdef USE_BIOS
-/* XDCtools Header files */
-#include <xdc/std.h>
-#include <xdc/cfg/global.h>
-#include <xdc/runtime/System.h>
-#include <xdc/runtime/Error.h>
-
-#include <ti/sysbios/knl/Task.h>
-#include <ti/sysbios/BIOS.h>
-#include <ti/sysbios/utils/Load.h>
-#endif
-
 /* GPMC Header files */
 #include <ti/drv/gpmc/GPMC.h>
 #include <ti/drv/gpmc/soc/GPMC_soc.h>
@@ -66,21 +54,19 @@
 
 #include <ti/drv/sciclient/sciclient.h>
 #include <ti/osal/TimerP.h>
-#ifdef GPMC_DMA_ENABLE
-#include <ti/osal/CacheP.h>
-#include <ti/drv/udma/udma.h>
-#endif
 
 /**********************************************************************
  ************************** Macros ************************************
  **********************************************************************/
-#define GPMC_PROFILE        /* Enable profiling */
-
+#define GPMC_PROFILE                                    /* Enable profiling */
+#define GPMC_APP_STATUS_SUCCESS     ((int32_t)(0))      /* Succes code */
+#define GPMC_APP_STATUS_ERROR       (-((int32_t)1))     /* Failure code */
 
 /**********************************************************************
  ************************** Global Variables **************************
  **********************************************************************/
 uint8_t txBuf[TEST_DATA_LEN]  __attribute__((aligned(4))) __attribute__((section(".benchmark_buffer")));
+uint8_t rxBuf[TEST_DATA_LEN]  __attribute__((aligned(4))) __attribute__((section(".benchmark_buffer")));
 GPMC_Transaction transaction;
 
 
@@ -103,22 +89,9 @@ static void GeneratePattern(uint8_t *txBuf, uint8_t *rxBuf, uint32_t length)
     }
 }
 
-void GPMC_initConfig()
+int32_t gpmc_test()
 {
-    GPMC_v1_HwAttrs gpmc_cfg;
-
-    /* Get the default GPMC init configurations */
-    GPMC_socGetInitCfg(BOARD_GPMC_INSTANCE, &gpmc_cfg);
-
-    /* Modify the default GPMC configurations */
-
-    /* Set the default GPMC init configurations */
-    GPMC_socSetInitCfg(BOARD_GPMC_INSTANCE, &gpmc_cfg);
-}
-
-uint32_t gpmc_test()
-{
-    uint32_t    testPassed = TRUE;
+    int32_t     status = GPMC_APP_STATUS_SUCCESS;
     uint32_t    i;
     GPMC_Params params;
     GPMC_Handle handle;
@@ -130,18 +103,17 @@ uint32_t gpmc_test()
     uint32_t    xferRateInt;
 #endif
 
-    GPMC_initConfig();
     GPMC_Params_init(&params);
     handle = GPMC_open(BOARD_GPMC_INSTANCE, &params);
     if (handle == NULL)
     {
         GPMC_log("\n GPMC open failed. \n");
-        testPassed = FALSE;
+        status = GPMC_APP_STATUS_ERROR;
         goto Err;
     }
 
     /* Generate the data */
-    GeneratePattern(txBuf, NULL, TEST_DATA_LEN);
+    GeneratePattern(txBuf, rxBuf, TEST_DATA_LEN);
 
     /* Write data */
     transaction.transType = GPMC_TRANSACTION_TYPE_WRITE;
@@ -151,37 +123,35 @@ uint32_t gpmc_test()
     transaction.rxBuf     = NULL;
     transaction.arg       = NULL;
 
-    for(i=0 ; i<1000 ; i++)
-    {
 	#ifdef GPMC_PROFILE
 	    /* Get start time stamp for the write performance measurement */
 	    startTime = TimerP_getTimeInUsecs();
 	#endif
-    	
-    	if(GPMC_transfer(handle, &transaction))
-    	{    		
-		#ifdef GPMC_PROFILE
-		    elapsedTime = TimerP_getTimeInUsecs() - startTime;
-		    /* calculate the write transfer rate in MBps */
-		    xferRate = (float) (((float)testLen) / elapsedTime);
-		    xferRateInt = (uint32_t)xferRate;
-		    GPMC_log("\n GPMC write %d bytes at transfer rate %d MBps \n", testLen, xferRateInt);
-		#endif
-		}
-		else
-		{
-	        GPMC_log("\n GPMC write failed. \n");
+
+    for(i=0 ; i<1000 ; i++)
+    {    	
+    	if(!GPMC_transfer(handle, &transaction))
+    	{
+	        GPMC_log("[Error] GPMC write failed. \n");
 	        break;
 	    }
 	}
 
+	#ifdef GPMC_PROFILE
+        elapsedTime = TimerP_getTimeInUsecs() - startTime;
+        /* calculate the write transfer rate in MBps */
+        xferRate = (float) (((float)(testLen*i)) / elapsedTime);
+        xferRateInt = (uint32_t)xferRate;
+        GPMC_log("\n GPMC write %d bytes at transfer rate %d MBps \n", testLen, xferRateInt);
+    #endif
+	
 Err:
     if (handle != NULL)
     {
         GPMC_close(handle);
     }
 
-    return (testPassed);
+    return (status);
 }
 
 #if defined(SOC_AM64X)
@@ -259,9 +229,9 @@ clk_cfg_exit:
 }
 #endif
 
-uint32_t Board_initGPMC(void)
+int32_t Board_initGPMC(void)
 {
-    uint32_t      retVal = TRUE;
+    int32_t       status = GPMC_APP_STATUS_SUCCESS;
     Board_initCfg boardCfg;
     Board_STATUS  boardStatus;
 
@@ -271,41 +241,45 @@ uint32_t Board_initGPMC(void)
     boardStatus = Board_init(boardCfg);
     if (boardStatus != BOARD_SOK)
     {
-        retVal = FALSE;
+        GPMC_log("[Error] Board init failed!!\n");
+        status = GPMC_APP_STATUS_ERROR;
     }
 
 #if defined(SOC_AM64X)
-    if (retVal == TRUE)
+    if (status == GPMC_APP_STATUS_SUCCESS)
     {
-        retVal = GPMC_configClk(GPMC_MODULE_CLK_80MHZ);
+        status += GPMC_configClk(GPMC_MODULE_CLK_80MHZ);
+        if(status != GPMC_APP_STATUS_SUCCESS)
+        {
+            GPMC_log("[Error] Config clock failed!!\n");
+        }
     }
 #endif
-    return (retVal);
+
+    GPMC_init();
+
+    return (status);
 }
 
 int main(void)
 {
-    uint32_t testResult = FALSE;
+    int32_t status = GPMC_APP_STATUS_SUCCESS;
 
-    if (Board_initGPMC() == FALSE)
+    status += Board_initGPMC();
+
+    if(status != GPMC_APP_STATUS_SUCCESS)
     {
-        return (0);
+        GPMC_log("[Error] GPMC init failed!!\n");
+        goto testfail;
     }
 
-    GPMC_init();
+    status += gpmc_test();
 
-    testResult = gpmc_test();
-
-    if (testResult)
+testfail:
+    if (status != GPMC_APP_STATUS_SUCCESS)
     {
-        GPMC_log("\n GPMC Write x100 has successfully completed! \n");
-    }
-    else
-    {
-        GPMC_log("\n Test Failed! \n");
+        GPMC_log("[Error] Test Failed! \n");
     }
 
-    while (1)
-    {
-    }
+    return(0);
 }
