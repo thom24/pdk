@@ -65,6 +65,7 @@ drvgpmc_LIB_LIST = $(gpmc_LIB_LIST)
 ############################
 gpmc_EXAMPLE_LIST  = GPMC_Baremetal_TestApp GPMC_TestApp
 gpmc_EXAMPLE_LIST += GPMC_Baremetal_Dma_TestApp GPMC_Dma_TestApp
+gpmc_EXAMPLE_LIST += GPMC_Baremetal_Probing_Example
 drvgpmc_EXAMPLE_LIST = $(gpmc_EXAMPLE_LIST)
 
 #
@@ -300,6 +301,30 @@ export GPMC_Dma_TestApp_$(SOC)_CORELIST
 
 GPMC_Dma_TestApp_SBL_APPIMAGEGEN = yes
 export GPMC_Dma_TestApp_SBL_APPIMAGEGEN
+
+
+# GPMC probing example baremetal app
+GPMC_Baremetal_Probing_Example_COMP_LIST = GPMC_Baremetal_Probing_Example
+GPMC_Baremetal_Probing_Example_RELPATH = ti/drv/gpmc/example
+GPMC_Baremetal_Probing_Example_PATH = $(PDK_GPMC_COMP_PATH)/example
+GPMC_Baremetal_Probing_Example_BOARD_DEPENDENCY = yes
+GPMC_Baremetal_Probing_Example_CORE_DEPENDENCY = no
+GPMC_Baremetal_Probing_Example_MAKEFILE = -f makefile IS_BAREMETAL=yes
+export GPMC_Baremetal_Probing_Example_COMP_LIST
+export GPMC_Baremetal_Probing_Example_BOARD_DEPENDENCY
+export GPMC_Baremetal_Probing_Example_CORE_DEPENDENCY
+export GPMC_Baremetal_Probing_Example_MAKEFILE
+GPMC_Baremetal_Probing_Example_PKG_LIST = GPMC_Baremetal_Probing_Example
+GPMC_Baremetal_Probing_Example_INCLUDE = $(GPMC_Baremetal_Probing_Example_PATH)
+GPMC_Baremetal_Probing_Example_BOARDLIST = am64x_evm
+export GPMC_Baremetal_Probing_Example_BOARDLIST
+ifeq ($(SOC),$(filter $(SOC), am64x))
+GPMC_Baremetal_Probing_Example_$(SOC)_CORELIST = mcu1_0
+endif
+export GPMC_Baremetal_Probing_Example_$(SOC)_CORELIST
+
+GPMC_Baremetal_Probing_Example_SBL_APPIMAGEGEN = yes
+export GPMC_Baremetal_Probing_Example_SBL_APPIMAGEGEN
 
 
 export drvgpmc_LIB_LIST
