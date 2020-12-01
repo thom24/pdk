@@ -209,10 +209,10 @@ extern "C" {
 #endif
 
 #if defined (am64x_evm)
-#define GPIO_LED0_PIN_NUM        BOARD_USER_LED1
-#define GPIO_LED0_PORT_NUM       0 /* Main GPIO0 */
-#define GPIO_LED1_PIN_NUM        BOARD_USER_LED2
-#define GPIO_LED1_PORT_NUM       0 /* MCU GPIO0 */
+#define GPIO_LED0_PIN_NUM        BOARD_GPIO_TEST_LED1_PIN_NUM  /* Pin 1  */
+#define GPIO_LED0_PORT_NUM       BOARD_GPIO_TEST_LED1_PORT_NUM /* Port 0 */
+#define GPIO_LED1_PIN_NUM        BOARD_MCU_GPIO_TEST_LED2_PIN_NUM  /* Pin 5  */
+#define GPIO_LED1_PORT_NUM       BOARD_MCU_GPIO_TEST_LED2_PORT_NUM /* Port 2 */
 #endif
 
 #if defined (tpr12_evm)

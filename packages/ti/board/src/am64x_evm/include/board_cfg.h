@@ -164,7 +164,7 @@ extern "C" {
 #define BOARD_GPIO_TEST_LED1_PORT_NUM           	    (0)       /* Port 0 */
 #define BOARD_GPIO_TEST_LED1_PIN_NUM                    (0x01)    /* Pin 1  */
 /* Pin and port numbers for TEST_LED2 on CP board */
-#define BOARD_MCU_GPIO_TEST_LED2_PORT_NUM               (0)       /* Port 0 */
+#define BOARD_MCU_GPIO_TEST_LED2_PORT_NUM               (2)       /* Port 2 */
 #define BOARD_MCU_GPIO_TEST_LED2_PIN_NUM                (0x05)    /* Pin 5  */
 
 /* User LED Pin Details */

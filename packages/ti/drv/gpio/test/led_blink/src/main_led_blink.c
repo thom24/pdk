@@ -470,8 +470,12 @@ int main()
         /* Trigger interrupt */
         GPIOTriggerPinInt(gpioBaseAddr, 0, gpioPin);
 #endif
-#if defined(SOC_K2H) || defined(SOC_K2K) || defined(SOC_K2E) || defined(SOC_K2G) || defined(SOC_OMAPL137) || defined(SOC_OMAPL138) || defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
+#if defined(SOC_K2H) || defined(SOC_K2K) || defined(SOC_K2E) || defined(SOC_K2G) || defined(SOC_OMAPL137) || defined(SOC_OMAPL138) || defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)
         GPIO_toggle(USER_LED0);
+#elif defined(SOC_AM64X)
+        /* In AM64x GP EVM, USER_LED0 (TEST_LED1) is connected to IO EXPANDER.
+         * So, toggling USER_LED1 (TEST_LED2) - connected to MCU_GPIO0_5(EVM-LD26) */
+        GPIO_toggle(USER_LED1);
 #endif
         AppDelay(DELAY_VALUE);
         if (testOutput)
