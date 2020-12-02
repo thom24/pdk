@@ -121,7 +121,7 @@ endif
 # List below all examples for allowed values
 ############################
 ifeq ($(SOC),$(filter $(SOC), am64x))
-sbl_EXAMPLE_LIST = sbl_ospi_img sbl_mmcsd_img sbl_uart_img
+sbl_EXAMPLE_LIST = sbl_ospi_img sbl_mmcsd_img sbl_uart_img sbl_mmcsd_img_hlos sbl_ospi_img_hlos
 else
   ifeq ($(SOC), j7200)
     sbl_EXAMPLE_LIST = sbl_mmcsd_img sbl_mmcsd_img_hlos sbl_ospi_img sbl_ospi_img_hlos sbl_uart_img
