@@ -56,11 +56,6 @@ CFLAGS_MMCSD_UT    += -DsimAM6x
 endif
 
 # EVM build
-ifeq ($(BOARD),$(filter $(BOARD), am64x_evm))
-#CFLAGS_MMCSD_UT +=
-endif
-
-# EVM build
 ifeq ($(BOARD),$(filter $(BOARD), am65xx-evm))
 CFLAGS_MMCSD_UT += -DevmAM65xx
 endif

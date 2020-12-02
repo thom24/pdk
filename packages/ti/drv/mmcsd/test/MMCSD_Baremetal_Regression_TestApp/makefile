@@ -28,7 +28,7 @@ SRCDIR = ../src ../../
 INCDIR = ../src ../include ../../
 # Common source files across all platforms and cores
 SRCS_COMMON += main.c  
-CFLAGS_MMCSD_UT += -DMMCSD_ADMA_ENABLED -DMMCSD_REGRESSION_TEST -DMMCSD_TEST_FATFS_BENCHMARK_ENABLED -DVLAB_SIM=1
+CFLAGS_MMCSD_UT += -DMMCSD_ADMA_ENABLED -DMMCSD_REGRESSION_TEST -DMMCSD_TEST_FATFS_BENCHMARK_ENABLED
 #CFLAGS_MMCSD_UT += -DMMCSD_TEST_DDR_DISABLED 
 
 #CFLAGS_MMCSD_UT += -DSTRESS_PATTERN_RANDOM_SMH_TEST_ENABLE
@@ -57,11 +57,6 @@ LNKFLAGS_LOCAL_mpu1_0 += --entry Entry
 # am65xx build
 ifeq ($(BOARD),$(filter $(BOARD), am65xx-sim))
 CFLAGS_MMCSD_UT    += -DsimAM6x
-endif
-
-# EVM build
-ifeq ($(BOARD),$(filter $(BOARD), am64x_evm))
-CFLAGS_MMCSD_UT += -DSIMULATOR
 endif
 
 # EVM build
