@@ -57,7 +57,7 @@ endif
 
 # EVM build
 ifeq ($(BOARD),$(filter $(BOARD), am64x_evm))
-CFLAGS_MMCSD_UT += -DSIMULATOR
+#CFLAGS_MMCSD_UT +=
 endif
 
 # EVM build
@@ -67,6 +67,11 @@ endif
 
 PACKAGE_SRCS_COMMON = ../
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_MMCSD_UT) -DBARE_METAL
+
+LNKFLAGS_LOCAL_a15_0  += --entry Entry
+LNKFLAGS_LOCAL_a8host += --entry Entry
+LNKFLAGS_LOCAL_a9host += --entry Entry
+LNKFLAGS_LOCAL_mpu1_0 += --entry Entry
 
 # Core/SoC/platform specific source files and CFLAGS
 # Example:
