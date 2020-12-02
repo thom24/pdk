@@ -1,8 +1,8 @@
 /**
  * These arguments were used when this file was generated. They will be automatically applied on subsequent loads
  * via the GUI or CLI. Run CLI with '--help' for additional information on how to override these arguments.
- * @cliArgs --device "TPR12" --package "ZCE" --part "Default" --product "TPR12@0.0.1"
- * @versions {"data":"2020110516","timestamp":"2020110516","tool":"1.0.0+dev","templates":"2020110516"}
+ * @cliArgs --device "TPR12" --package "ZCE" --part "Default"
+ * @versions {"data":"2020111214","timestamp":"2020111214","tool":"1.7.0+1672","templates":null}
  */
 
 /**
@@ -16,10 +16,6 @@ const FE1_REFCLK   = scripting.addModule("/ti/peripherals/FE1_REFCLK", {}, false
 const FE1_REFCLK1  = FE1_REFCLK.addInstance();
 const FE2_REFCLK   = scripting.addModule("/ti/peripherals/FE2_REFCLK", {}, false);
 const FE2_REFCLK1  = FE2_REFCLK.addInstance();
-const HW_SYNC_FE1  = scripting.addModule("/ti/peripherals/HW_SYNC_FE1", {}, false);
-const HW_SYNC_FE11 = HW_SYNC_FE1.addInstance();
-const HW_SYNC_FE2  = scripting.addModule("/ti/peripherals/HW_SYNC_FE2", {}, false);
-const HW_SYNC_FE21 = HW_SYNC_FE2.addInstance();
 const JTAG         = scripting.addModule("/ti/peripherals/JTAG", {}, false);
 const JTAG1        = JTAG.addInstance();
 const MSS_EPWM     = scripting.addModule("/ti/peripherals/MSS_EPWM", {}, false);
@@ -82,14 +78,6 @@ FE1_REFCLK1.peripheral.REFCLK.$assign = "PAD_AB";
 FE2_REFCLK1.$name                     = "MyFE2_REFCLK0";
 FE2_REFCLK1.peripheral.$assign        = "FE2_REFCLK0";
 FE2_REFCLK1.peripheral.REFCLK.$assign = "PAD_AC";
-
-HW_SYNC_FE11.$name                  = "MyHW_SYNC_FE10";
-HW_SYNC_FE11.peripheral.$assign     = "HW_SYNC_FE10";
-HW_SYNC_FE11.peripheral.FE1.$assign = "PAD_CY";
-
-HW_SYNC_FE21.$name                  = "MyHW_SYNC_FE20";
-HW_SYNC_FE21.peripheral.$assign     = "HW_SYNC_FE20";
-HW_SYNC_FE21.peripheral.FE2.$assign = "PAD_CZ";
 
 JTAG1.$name                  = "MyJTAG0";
 JTAG1.peripheral.$assign     = "JTAG0";
@@ -201,9 +189,16 @@ PMIC_CLKOUT1.$name                     = "MyPMIC_CLKOUT0";
 PMIC_CLKOUT1.peripheral.$assign        = "PMIC_CLKOUT0";
 PMIC_CLKOUT1.peripheral.CLKOUT.$assign = "PAD_BA";
 
-RCSS_GPIO1.$name                  = "MyRCSS_GPIO0";
-RCSS_GPIO1.peripheral.$assign     = "RCSS_GPIO0";
-RCSS_GPIO1.peripheral.PIN.$assign = "PAD_BX";
+RCSS_GPIO1.$name                   = "MyRCSS_GPIO0";
+RCSS_GPIO1.numGPIO                 = 7;
+RCSS_GPIO1.peripheral.$assign      = "RCSS_GPIO0";
+RCSS_GPIO1.peripheral.PIN.$assign  = "PAD_DW";
+RCSS_GPIO1.peripheral.PIN1.$assign = "PAD_CS";
+RCSS_GPIO1.peripheral.PIN2.$assign = "PAD_DU";
+RCSS_GPIO1.peripheral.PIN3.$assign = "PAD_DX";
+RCSS_GPIO1.peripheral.PIN4.$assign = "PAD_CX";
+RCSS_GPIO1.peripheral.PIN5.$assign = "PAD_DV";
+RCSS_GPIO1.peripheral.PIN6.$assign = "PAD_CZ";
 
 RCSS_MIBSPI1.$name                   = "MyRCSS_MIBSPI0";
 RCSS_MIBSPI1.peripheral.$assign      = "RCSS_MIBSPIA";
