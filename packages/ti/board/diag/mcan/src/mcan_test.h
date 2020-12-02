@@ -71,7 +71,7 @@
 #include "board_pinmux.h"
 #include "board_control.h"
 #endif
-#if !defined(am65xx_idk)
+#if !defined(am65xx_idk) && !defined(SOC_TPR12)
 #include "board_i2c_io_exp.h"
 #endif
 
@@ -195,6 +195,19 @@ extern "C" {
 #define MAIN_MCAN1_TX_INT_NUM   (CSLR_R5FSS0_CORE0_INTR_MCAN1_MCANSS_MCAN_LVL_INT_0)
 #define MAIN_MCAN1_RX_INT_NUM   (CSLR_R5FSS0_CORE0_INTR_MCAN1_MCANSS_MCAN_LVL_INT_1)
 #define MAIN_MCAN1_TS_INT_NUM   (CSLR_R5FSS0_CORE0_INTR_MCAN1_MCANSS_EXT_TS_ROLLOVER_LVL_INT_0)
+
+#elif defined(SOC_TPR12)
+#define MCAN_MAX_PORTS    (2U)
+
+/* Interrupt configurations */
+
+#define MAIN_MCAN0_TX_INT_NUM   (CSL_MSS_INTR_MSS_MCANA_INT0)
+#define MAIN_MCAN0_RX_INT_NUM   (CSL_MSS_INTR_MSS_MCANA_INT1)
+#define MAIN_MCAN0_TS_INT_NUM   (ESMG1_MCANA_TS_ERR)
+
+#define MAIN_MCAN1_TX_INT_NUM   (CSL_MSS_INTR_MSS_MCANB_INT0)
+#define MAIN_MCAN1_RX_INT_NUM   (CSL_MSS_INTR_MSS_MCANB_INT1)
+#define MAIN_MCAN1_TS_INT_NUM   (ESMG1_MCANB_TS_ERR)
 
 #else
 #define MCAN_MAX_PORTS    (2U)
