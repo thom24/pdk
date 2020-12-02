@@ -79,6 +79,13 @@ SECTIONS{
     .stack   : {} > TCMB_RAM | SBL_RESERVED_L2_RAM | L2_RAM
     .sysmem  : {} > SBL_RESERVED_L2_RAM | L2_RAM
     uartbuffer : {} palign(8) > L3_RAM
+
+    /* For Ethernet packet memory*/
+    .bss:ENET_DMA_DESC_MEMPOOL (NOLOAD) {} ALIGN (128) > L3_RAM
+    .bss:ENET_DMA_RING_MEMPOOL (NOLOAD) {} ALIGN (128) > L3_RAM
+    .bss:ENET_DMA_PKT_MEMPOOL  (NOLOAD) {} ALIGN (128) > L3_RAM
+    .bss:ENET_DMA_OBJ_MEM      (NOLOAD) {} ALIGN (128) > L3_RAM
+
     .irqStack  : {. = . + __IRQ_STACK_SIZE;} align(4)    > L2_RAM  (HIGH)
     RUN_START(__IRQ_STACK_START)
     RUN_END(__IRQ_STACK_END)

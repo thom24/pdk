@@ -1,37 +1,38 @@
 /******************************************************************************
- * Copyright (c) 2019 Texas Instruments Incorporated - http://www.ti.com
- *
- *  Redistribution and use in source and binary forms, with or without
- *  modification, are permitted provided that the following conditions
- *  are met:
- *
- *    Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- *
- *    Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the
- *    distribution.
- *
- *    Neither the name of Texas Instruments Incorporated nor the names of
- *    its contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- *****************************************************************************/
+* Copyright (c) 2020 Texas Instruments Incorporated - http://www.ti.com
+*
+* Redistribution and use in source and binary forms, with or without
+* modification, are permitted provided that the following conditions
+* are met:
+*
+* Redistributions of source code must retain the above copyright
+* notice, this list of conditions and the following disclaimer.
+*
+* Redistributions in binary form must reproduce the above copyright
+* notice, this list of conditions and the following disclaimer in the
+* documentation and/or other materials provided with the
+* distribution.
+*
+* Neither the name of Texas Instruments Incorporated nor the names of
+* its contributors may be used to endorse or promote products derived
+* from this software without specific prior written permission.
+*
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+* "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+* LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+* A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+* OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+* SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+* LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+* DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+* THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+* (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+* OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*
+*****************************************************************************/
+
 /**
- *  \file   cpsw_test.c
+ *  \file   cpsw_eth_test.c
  *
  *  \brief  CPSW ethernet diagnostic test file
  *
@@ -42,93 +43,358 @@
  *  The test code showcases usage of the CPSW Driver exported API for
  *  sending/receiving Ethernet packets.
  *
- *  Supported SoCs: J721E.
+ *  Supported SoCs: TPR12.
  *
- *  Supported Platforms:j721e_evm.
+ *  Supported Platforms:tpr12_evm.
  *
  */
 
 /* Test application local header file */
 #include "cpsw_eth_test.h"
 
-static volatile bool txSem = false;
-static volatile bool rxSem = false;
+/* Trasnmitt and receive status variables */
+static volatile bool gTxSem = false;
+static volatile bool gRxSem = false;
 
-/* Broadcast address */
-static uint8_t bcastAddr[CPSW_MAC_ADDR_LEN] =
-        { 0xffU, 0xffU, 0xffU, 0xffU, 0xffU, 0xffU };
-
-/* CPSW configuration */
-static CpswDma_OpenTxChPrms   cpswTxChCfg;
-
-static CpswDma_OpenRxFlowPrms cpswRxFlowCfg;
-
-static cpsw_Obj gCpswLpbkObj = {
-#if defined(SOC_J721E)
-    .cpswType = CPSW_9G,
-#else
-    .cpswType = CPSW_5G,
-#endif
-};
+/* Enet loopback test object */
+static BoardDiag_EnetLpbkObj_t gEnetLpbk;
 
 /**
- * \brief   CPSW receive ISR function
+ * \brief   ENET receive ISR function
  *
- * \param   hUdmaEvt     [IN]   UDMA event handle
- * \param   eventType    [IN]   Event type
- * \param   appData      [IN]   Pointer to application data
+ * \param   void *appData   application data
  *
+ * \return  NULL
  */
-static void BoardDiag_cpswRxIsrFxn(void *appData)
+static void BoardDiag_enetLpbkRxIsrFxn(void *appData)
 {
-    rxSem = true;
+    gRxSem = true;
 }
 
 /**
- * \brief   CPSW transmit ISR function
+ * \brief   ENET transmit ISR function
  *
- * \param   hUdmaEvt     [IN]   UDMA event handle
- * \param   eventType    [IN]   Event type
- * \param   appData      [IN]   Pointer to application data
+ * \param   void *appData   application data
+ *
+ * \return  NULL
+ */
+static void BoardDiag_enetLpbkTxIsrFxn(void *appData)
+{
+    gTxSem = true;
+}
+
+/**
+ * \brief   This function is used for close the ENET module.
+ *
+ * \param   NULL
+ *
+ * \return  NULL
+ */
+static void BoardDiag_enetLpbkCloseEnet(void)
+{
+    Enet_IoctlPrms prms;
+    int32_t status;
+
+    /* Close port link */
+    ENET_IOCTL_SET_IN_ARGS(&prms, &gEnetLpbk.macPort);
+
+    status = Enet_ioctl(gEnetLpbk.hEnet, gEnetLpbk.coreId,
+                        ENET_PER_IOCTL_CLOSE_PORT_LINK, &prms);
+    if (status != ENET_SOK)
+    {
+        UART_printf("Failed to close port link: %d\n", status);
+    }
+
+    /* Detach core */
+    if (status == ENET_SOK)
+    {
+        ENET_IOCTL_SET_IN_ARGS(&prms, &gEnetLpbk.coreKey);
+
+        status = Enet_ioctl(gEnetLpbk.hEnet, gEnetLpbk.coreId,
+                            ENET_PER_IOCTL_DETACH_CORE, &prms);
+        if (status != ENET_SOK)
+        {
+            UART_printf("Failed to detach core key %u: %d\n", gEnetLpbk.coreKey, status);
+        }
+    }
+
+    /* Close Enet driver */
+    Enet_close(gEnetLpbk.hEnet);
+
+    gEnetLpbk.hEnet = NULL;
+}
+
+/**
+ * \brief   This function is used for de-initialize the ENET DMA driver.
+ *
+ * \param   NULL
+ *
+ * \return  NULL
+ */
+static void BoardDiag_enetLpbkCloseDma()
+{
+    EnetDma_PktQ fqPktInfoQ;
+    EnetDma_PktQ cqPktInfoQ;
+
+    EnetQueue_initQ(&fqPktInfoQ);
+    EnetQueue_initQ(&cqPktInfoQ);
+
+    UART_printf("Closing DMA\n");
+    /* There should not be any ready packet */
+    if(EnetQueue_getQCount(&gEnetLpbk.rxReadyQ) != 0)
+    {
+        UART_printf("EnetQueue_getQCount Failed\n");
+        return;
+    }
+
+    /* Close RX Flow */
+    EnetAppUtils_closeRxCh(gEnetLpbk.hEnet,
+                           gEnetLpbk.coreKey,
+                           gEnetLpbk.coreId,
+                           &fqPktInfoQ,
+                           &cqPktInfoQ,
+                           gEnetLpbk.hRxCh,
+                           gEnetLpbk.rxChNum);
+    EnetAppUtils_freePktInfoQ(&fqPktInfoQ);
+    EnetAppUtils_freePktInfoQ(&cqPktInfoQ);
+
+    /* Close TX channel */
+    EnetQueue_initQ(&fqPktInfoQ);
+    EnetQueue_initQ(&cqPktInfoQ);
+
+    EnetAppUtils_closeTxCh(gEnetLpbk.hEnet,
+                           gEnetLpbk.coreKey,
+                           gEnetLpbk.coreId,
+                           &fqPktInfoQ,
+                           &cqPktInfoQ,
+                           gEnetLpbk.hTxCh,
+                           gEnetLpbk.txChNum);
+    EnetAppUtils_freePktInfoQ(&fqPktInfoQ);
+    EnetAppUtils_freePktInfoQ(&cqPktInfoQ);
+
+    EnetAppUtils_freePktInfoQ(&gEnetLpbk.rxFreeQ);
+    EnetAppUtils_freePktInfoQ(&gEnetLpbk.txFreePktInfoQ);
+
+    CpswAppMemUtils_deInit();
+}
+
+/**
+ * \brief   This function is used to Mac port statistics
+ *
+ * \param   CpswStats_HostPort_2g *st   Cpsw stats
+ *
+ * \return  NULL
+ */
+static void BoardDiag_printMacPortStats2G(CpswStats_MacPort_2g *st)
+{
+    uint32_t i;
+
+    UART_printf("rxGoodFrames            = %d\n", (uint32_t)st->rxGoodFrames);
+    UART_printf("rxBcastFrames           = %d\n", (uint32_t)st->rxBcastFrames);
+    UART_printf("rxOctets                = %d\n", (uint32_t)st->rxOctets);
+    UART_printf("txGoodFrames            = %d\n", (uint32_t)st->txGoodFrames);
+    UART_printf("txBcastFrames           = %d\n", (uint32_t)st->txBcastFrames);
+    UART_printf("txOctets                = %d\n", (uint32_t)st->txOctets);
+    UART_printf("octetsFrames512to1023   = %d\n",
+                (uint32_t)st->octetsFrames512to1023);
+
+    for (i = 0U; i < ENET_ARRAYSIZE((uint32_t)st->txPri); i++)
+    {
+        UART_printf("txPri[%u]                = %d\n", i,
+                    (uint32_t)st->txPri[i]);
+    }
+
+    for (i = 0U; i < ENET_ARRAYSIZE((uint32_t)st->txPriBcnt); i++)
+    {
+        UART_printf("txPriBcnt[%u]            = %d\n", i,
+                    (uint32_t)st->txPriBcnt[i]);
+    }
+}
+
+/**
+ * \brief   This function is used to Host port statistics
+ *
+ * \param   CpswStats_HostPort_2g *st   Cpsw stats
+ *
+ * \return  NULL
+ */
+static void BoardDiag_printHostPortStats2G(CpswStats_HostPort_2g *st)
+{
+    UART_printf("rxGoodFrames            = %d\n", (uint32_t)st->rxGoodFrames);
+    UART_printf("rxBcastFrames           = %u\n", (uint32_t)st->rxBcastFrames);
+    UART_printf("rxOctets                = %d\n", (uint32_t)st->rxOctets);
+    UART_printf("txGoodFrames            = %d\n", (uint32_t)st->txGoodFrames);
+    UART_printf("txBcastFrames           = %d\n", (uint32_t)st->txBcastFrames);
+    UART_printf("txOctets                = %d\n", (uint32_t)st->txOctets);
+    UART_printf("octetsFrames512to1023   = %d\n",
+                (uint32_t)st->octetsFrames512to1023);
+}
+
+/**
+ * \brief   This function is used to display Mac and Host port statistics
+ *
+ * \param   NULL
+ *
+ * \return  NULL
  *
  */
-static void BoardDiag_cpswTxIsrFxn(void *appData)
+static void BoardDiag_enetLpbkShowCpswStats(void)
 {
-    txSem = true;
+    Enet_IoctlPrms prms;
+    CpswStats_PortStats portStats;
+    int32_t status;
+
+    /* Show host port statistics */
+    ENET_IOCTL_SET_OUT_ARGS(&prms, &portStats);
+    status = Enet_ioctl(gEnetLpbk.hEnet, gEnetLpbk.coreId,
+                        ENET_STATS_IOCTL_GET_HOSTPORT_STATS, &prms);
+    if (status == ENET_SOK)
+    {
+        UART_printf("\n Port 0 Statistics\n");
+        UART_printf("-----------------------------------------\n");
+        BoardDiag_printHostPortStats2G((CpswStats_HostPort_2g *)&portStats);
+        UART_printf("\n");
+    }
+    else
+    {
+        UART_printf("Failed to get host stats: %d\n", status);
+    }
+
+    /* Show MAC port statistics */
+    if (status == ENET_SOK)
+    {
+        ENET_IOCTL_SET_INOUT_ARGS(&prms, &gEnetLpbk.macPort, &portStats);
+        status = Enet_ioctl(gEnetLpbk.hEnet, gEnetLpbk.coreId,
+                            ENET_STATS_IOCTL_GET_MACPORT_STATS, &prms);
+        if (status == ENET_SOK)
+        {
+            UART_printf("\n Port 1 Statistics\n");
+            UART_printf("-----------------------------------------\n");
+            BoardDiag_printMacPortStats2G((CpswStats_MacPort_2g *)&portStats);
+            UART_printf("\n");
+        }
+        else
+        {
+            UART_printf("Failed to get MAC stats: %d\n", status);
+        }
+    }
+}
+
+/**
+ * \brief   This function is used to display Mac address
+ *
+ * \param   uint8_t macAddr[] MAC Address
+ *
+ * \return   NULL
+ *
+ */
+static void BoardDiag_printMacAddr(uint8_t macAddr[])
+{
+    UART_printf("%02x:%02x:%02x:%02x:%02x:%02x\n",
+                       macAddr[0] & 0xFF,
+                       macAddr[1] & 0xFF,
+                       macAddr[2] & 0xFF,
+                       macAddr[3] & 0xFF,
+                       macAddr[4] & 0xFF,
+                       macAddr[5] & 0xFF);
+}
+
+/**
+ * \brief   This function is used to display Mac address
+ *
+ * \param   EthFrame EthFrame[] frame to be displayed
+ *          uint32_t len        length of the frame
+ * \return  NULL
+ *
+ */
+static void BoardDiag_printFrame(EthFrame *frame,
+                                uint32_t len)
+{
+    uint8_t *payload;
+    uint32_t i;
+
+    UART_printf("Dst addr : ");
+    BoardDiag_printMacAddr(&frame->hdr.dstMac[0]);
+
+    UART_printf("Src addr : ");
+    BoardDiag_printMacAddr(&frame->hdr.srcMac[0]);
+
+    if (frame->hdr.etherType == htons(ETHERTYPE_VLAN_TAG))
+    {
+        EthVlanFrame *vlanFrame = (EthVlanFrame *)frame;
+
+        UART_printf("TPID     : 0x%04x\n", 
+                    ntohs(vlanFrame->hdr.tpid) & 0xFFFFU);
+        UART_printf("Priority : %d\n",
+                    (ntohs(vlanFrame->hdr.tci) & 0xFFFFU) >> 13);
+        UART_printf("VLAN Id  : %d\n",
+                    ntohs(vlanFrame->hdr.tci) & 0xFFFU);
+        UART_printf("EtherType: 0x%04x\n",
+                    ntohs(vlanFrame->hdr.etherType) & 0xFFFFU);
+        payload = vlanFrame->payload;
+        len    -= ETH_VLAN_TAG_LEN;
+    }
+    else
+    {
+        UART_printf("EtherType: 0x%04x\n", 
+                    ntohs(frame->hdr.etherType) & 0xFFFFU);
+        payload = frame->payload;
+    }
+
+    UART_printf("Payload  : ");
+    for (i = 0; i < len; i++)
+    {
+        UART_printf("0x%02x ", payload[i]);
+        if (i && (((i + 1) % OCTETS_PER_ROW) == 0))
+        {
+            UART_printf("\n           ");
+        }
+    }
+
+    if (len && ((len % OCTETS_PER_ROW) != 0))
+    {
+        UART_printf("\n");
+    }
+
+    UART_printf("\n");
 }
 
 /**
  * \brief   This function is used to queue the received packets to rx ready queue
  *
+ * \param   NULL
+ *
  * \return  uint32_t - Receive ready queue count
  *
  */
-static uint32_t BoardDiag_cpswReceivePkts(void)
+static uint32_t BoardDiag_enetLpbkReceivePkts(void)
 {
-    CpswDma_PktInfoQ rxReadyQ;
-    CpswDma_PktInfo *pktInfo;
-    int32_t          status;
-    uint32_t         rxReadyCnt = 0U;
+    EnetDma_PktQ rxReadyQ;
+    EnetDma_Pkt *pktInfo;
+    int32_t status;
+    uint32_t rxReadyCnt = 0U;
 
-    CpswUtils_initQ(&rxReadyQ);
+    EnetQueue_initQ(&rxReadyQ);
 
     /* Retrieve any CPSW packets which are ready */
-    status = CpswDma_retrieveRxPackets(gCpswLpbkObj.hRxFlow, &rxReadyQ);
-    if (status == CPSW_SOK)
+    status = EnetDma_retrieveRxPktQ(gEnetLpbk.hRxCh, &rxReadyQ);
+
+    if (status == ENET_SOK)
     {
-        rxReadyCnt = CpswUtils_getQCount(&rxReadyQ);
+        rxReadyCnt = EnetQueue_getQCount(&rxReadyQ);
+
         /* Queue the received packet to rxReadyQ and pass new ones from rxFreeQ
         **/
-        pktInfo = (CpswDma_PktInfo *) CpswUtils_deQ(&rxReadyQ);
+        pktInfo = (EnetDma_Pkt *)EnetQueue_deq(&rxReadyQ);
         while (pktInfo != NULL)
         {
-            CpswUtils_checkPktState(&pktInfo->pktState,
-                                    CPSW_PKTSTATE_MODULE_APP,
-                                    CPSW_PKTSTATE_APP_WITH_DRIVER,
-                                    CPSW_PKTSTATE_APP_WITH_READYQ);
+            EnetDma_checkPktState(&pktInfo->pktState,
+                                    ENET_PKTSTATE_MODULE_APP,
+                                    ENET_PKTSTATE_APP_WITH_DRIVER,
+                                    ENET_PKTSTATE_APP_WITH_READYQ);
 
-            CpswUtils_enQ(&gCpswLpbkObj.rxReadyQ, &pktInfo->node);
-            pktInfo = (CpswDma_PktInfo *) CpswUtils_deQ(&rxReadyQ);
+            EnetQueue_enq(&gEnetLpbk.rxReadyQ, &pktInfo->node);
+            pktInfo = (EnetDma_Pkt *)EnetQueue_deq(&rxReadyQ);
         }
     }
     else
@@ -143,34 +409,36 @@ static uint32_t BoardDiag_cpswReceivePkts(void)
 /**
  * \brief   This function is used to retrieve's any CPSW packets that may be free now
  *
+ * \param   NULL
+ *
  * \return  uint32_t - Transmit free queue count
  *
  */
-static uint32_t BoardDiag_cpswRetrieveFreeTxPkts(void)
+static uint32_t BoardDiag_enetLpbkRetrieveFreeTxPkts(void)
 {
-    CpswDma_PktInfoQ txFreeQ;
-    CpswDma_PktInfo *pktInfo;
-    int32_t          status;
-    uint32_t         txFreeQCnt = 0U;
+    EnetDma_PktQ txFreeQ;
+    EnetDma_Pkt *pktInfo;
+    int32_t status;
+    uint32_t txFreeQCnt = 0U;
 
-    CpswUtils_initQ(&txFreeQ);
+    EnetQueue_initQ(&txFreeQ);
 
     /* Retrieve any CPSW packets that may be free now */
-    status = CpswDma_retrieveTxDonePackets(gCpswLpbkObj.hTxCh, &txFreeQ);
-    if (status == CPSW_SOK)
+    status = EnetDma_retrieveTxPktQ(gEnetLpbk.hTxCh, &txFreeQ);
+    if (status == ENET_SOK)
     {
-        txFreeQCnt = CpswUtils_getQCount(&txFreeQ);
+        txFreeQCnt = EnetQueue_getQCount(&txFreeQ);
 
-        pktInfo = (CpswDma_PktInfo *) CpswUtils_deQ(&txFreeQ);
-        while (pktInfo != NULL)
+        pktInfo = (EnetDma_Pkt *)EnetQueue_deq(&txFreeQ);
+        while (NULL != pktInfo)
         {
-            CpswUtils_checkPktState(&pktInfo->pktState,
-                                    CPSW_PKTSTATE_MODULE_APP,
-                                    CPSW_PKTSTATE_APP_WITH_DRIVER,
-                                    CPSW_PKTSTATE_APP_WITH_FREEQ);
+            EnetDma_checkPktState(&pktInfo->pktState,
+                                    ENET_PKTSTATE_MODULE_APP,
+                                    ENET_PKTSTATE_APP_WITH_DRIVER,
+                                    ENET_PKTSTATE_APP_WITH_FREEQ);
 
-            CpswUtils_enQ(&gCpswLpbkObj.txFreePktInfoQ, &pktInfo->node);
-            pktInfo = (CpswDma_PktInfo *) CpswUtils_deQ(&txFreeQ);
+            EnetQueue_enq(&gEnetLpbk.txFreePktInfoQ, &pktInfo->node);
+            pktInfo = (EnetDma_Pkt *)EnetQueue_deq(&txFreeQ);
         }
     }
     else
@@ -183,12 +451,187 @@ static uint32_t BoardDiag_cpswRetrieveFreeTxPkts(void)
 }
 
 /**
+ * \brief   This function is used for CPSW packet transmission
+ *          and reception
+ *
+ * \param   NULL
+ *
+ * \return  int32_t
+ *               0 - in case of success
+ *              -1 - in case of failure.
+ *
+ */
+static int32_t BoardDiag_cpswPktRxTx(void)
+{
+    EnetDma_PktQ txSubmitQ;
+    EnetDma_Pkt *pktInfo;
+    EthFrame *frame;
+    uint32_t txRetrievePktCnt = 0;
+    uint32_t loopTxPktCnt = 0;
+    uint32_t loopRxPktCnt = 0;
+    uint32_t loopCnt = 0, pktCnt = 0;
+    uint32_t rxReadyCnt = 0;
+    int32_t status = ENET_SOK;
+    uint8_t bcastAddr[ENET_MAC_ADDR_LEN] = 
+            {0xffU, 0xffU, 0xffU, 0xffU, 0xffU, 0xffU};
+
+    gEnetLpbk.totalTxCnt = 0U;
+    for (loopCnt = 0U; loopCnt < BOARD_DIAG_ENETLPBK_NUM_ITERATION; loopCnt++)
+    {
+        pktCnt = 0U;
+        while (pktCnt < BOARD_DIAG_ENETLPBK_TEST_PKT_NUM)
+        {
+            loopRxPktCnt = loopTxPktCnt = 0U;
+            /* Transmit a single packet */
+            EnetQueue_initQ(&txSubmitQ);
+
+            /* Dequeue one free TX Eth packet */
+            pktInfo = (EnetDma_Pkt *)EnetQueue_deq(&gEnetLpbk.txFreePktInfoQ);
+
+            while (NULL != pktInfo)
+            {
+                pktCnt++;
+                /* Fill the TX Eth frame with test content */
+                frame = (EthFrame *)pktInfo->bufPtr;
+                memcpy(frame->hdr.dstMac, bcastAddr, ENET_MAC_ADDR_LEN);
+                memcpy(frame->hdr.srcMac, &gEnetLpbk.hostMacAddr[0U],
+                        ENET_MAC_ADDR_LEN);
+                frame->hdr.etherType = htons(ETHERTYPE_EXPERIMENTAL1);
+                memset(&frame->payload[0U], (uint8_t)(0xA5 + pktCnt),
+                        BOARD_DIAG_ENETLPBK_TEST_PKT_LEN);
+                pktInfo->userBufLen = BOARD_DIAG_ENETLPBK_TEST_PKT_LEN +
+                                      sizeof(EthFrameHeader);
+                pktInfo->appPriv    = &gEnetLpbk;
+                EnetDma_checkPktState(&pktInfo->pktState,
+                                        ENET_PKTSTATE_MODULE_APP,
+                                        ENET_PKTSTATE_APP_WITH_FREEQ,
+                                        ENET_PKTSTATE_APP_WITH_DRIVER);
+
+                /* Enqueue the packet for later transmission */
+                EnetQueue_enq(&txSubmitQ, &pktInfo->node);
+
+                if (pktCnt >= BOARD_DIAG_ENETLPBK_TEST_PKT_NUM)
+                {
+                    break;
+                }
+
+                /* Dequeue one free TX Eth packet */
+                pktInfo =
+                (EnetDma_Pkt *)EnetQueue_deq(&gEnetLpbk.txFreePktInfoQ);
+            }
+            loopTxPktCnt = EnetQueue_getQCount(&txSubmitQ);
+            while (0U != EnetQueue_getQCount(&txSubmitQ))
+            {
+                uint32_t txCnt = EnetQueue_getQCount(&txSubmitQ);
+                status = EnetDma_submitTxPktQ(gEnetLpbk.hTxCh,
+                                                   &txSubmitQ);
+                while (gTxSem != true);
+                gTxSem = false;
+
+                /* Retrieve TX free packets */
+                if (status == ENET_SOK)
+                {
+                    txCnt            = txCnt - EnetQueue_getQCount(&txSubmitQ);
+                    txRetrievePktCnt = 0U;
+                    while (txRetrievePktCnt != txCnt)
+                    {
+                        /* TODO this is not failure as HW is busy sending
+                         * packets, we need to wait and again call retrieve
+                         * packets */
+                        BOARD_delay(1);
+                        txRetrievePktCnt += BoardDiag_enetLpbkRetrieveFreeTxPkts();
+                    }
+                }
+                else
+                {
+                    break;
+                }
+            }
+            
+            /* wait to receive the packet */
+            do
+            {
+                while (gRxSem != true);
+                gRxSem = false;
+
+                /* Get the packets received so far */
+                rxReadyCnt = BoardDiag_enetLpbkReceivePkts();
+                if (rxReadyCnt > 0U)
+                {
+                    /* Consume the received packets and release them */
+                    pktInfo =
+                    (EnetDma_Pkt *)EnetQueue_deq(&gEnetLpbk.rxReadyQ);
+                    while (NULL != pktInfo)
+                    {
+                        EnetDma_checkPktState(&pktInfo->pktState,
+                                                ENET_PKTSTATE_MODULE_APP,
+                                                ENET_PKTSTATE_APP_WITH_READYQ,
+                                                ENET_PKTSTATE_APP_WITH_FREEQ);
+
+                        /* Consume the packet by just printing its content */
+                        if (gEnetLpbk.printFrame)
+                        {
+                            frame = (EthFrame *)pktInfo->bufPtr;
+
+                            BoardDiag_printFrame(frame, pktInfo->userBufLen -
+                                        sizeof(EthFrameHeader));
+                        }
+
+                        /* Release the received packet */
+                        EnetQueue_enq(&gEnetLpbk.rxFreeQ, &pktInfo->node);
+                        pktInfo =
+                        (EnetDma_Pkt *)EnetQueue_deq(&gEnetLpbk.rxReadyQ);
+                    }
+
+                    /*Submit now processed buffers */
+                    if (status == ENET_SOK)
+                    {
+                        EnetAppUtils_validatePacketState(
+                                                &gEnetLpbk.rxFreeQ,
+                                                ENET_PKTSTATE_APP_WITH_FREEQ,
+                                                ENET_PKTSTATE_APP_WITH_DRIVER);
+
+                        EnetDma_submitRxPktQ(gEnetLpbk.hRxCh,
+                                         &gEnetLpbk.rxFreeQ);
+                    }
+                }
+
+                loopRxPktCnt += rxReadyCnt;
+            }
+            while (loopRxPktCnt < loopTxPktCnt);
+
+            gEnetLpbk.totalRxCnt += loopTxPktCnt;
+        }
+
+        gEnetLpbk.totalTxCnt += pktCnt;
+    }
+    
+    if (status == ENET_SOK)
+    {
+        if(gEnetLpbk.totalTxCnt != gEnetLpbk.totalRxCnt)
+        {
+            UART_printf("Packet loss, Test Failed\n");
+            return -1;
+        }
+        UART_printf("\nTransmitted - %d packets\nReceived - %d packets\n",
+                        gEnetLpbk.totalTxCnt, gEnetLpbk.totalRxCnt);
+    }
+    else
+    {
+        UART_printf("Failed to transmit/receive packets: %d,transmitted: %d\n",
+                    BOARD_DIAG_ENETLPBK_TEST_PKT_NUM, gEnetLpbk.totalTxCnt);
+    }
+
+    return status;
+}
+
+/**
  * \brief   CPSW delay function
  *
  * \param   waitTime     [IN]   Wait time
  *
  */
-static void BoardDiag_cpswWait(uint32_t waitTime)
+static void BoardDiag_enetWait(uint32_t waitTime)
 {
     volatile uint32_t index;
 
@@ -198,72 +641,207 @@ static void BoardDiag_cpswWait(uint32_t waitTime)
 }
 
 /**
+ * \brief   This function Waits till phy link is up.
+ *
+ * \param   NULL
+ *
+ * \return  int32_t
+ *               0 - in case of success
+ *              -1 - in case of failure.
+ *
+ */
+static int32_t BoardDiag_enetLpbkWaitForLinkUp(void)
+{
+    Enet_IoctlPrms prms;
+    bool linked = false;
+    int32_t status = ENET_SOK;
+
+    ENET_IOCTL_SET_INOUT_ARGS(&prms, &gEnetLpbk.macPort, &linked);
+
+    while (!linked)
+    {
+        status = Enet_ioctl(gEnetLpbk.hEnet, gEnetLpbk.coreId,
+                            ENET_PER_IOCTL_IS_PORT_LINK_UP, &prms);
+        if (status != ENET_SOK)
+        {
+            UART_printf("Failed to get port %u's link status: %d\n",
+                            ENET_MACPORT_ID(gEnetLpbk.macPort), status);
+            linked = false;
+            break;
+        }
+
+        if (!linked)
+        {
+            Enet_periodicTick(gEnetLpbk.hEnet);
+            BoardDiag_enetWait(1000U);
+        }
+    }
+
+    return status;
+}
+
+/**
+ * \brief   This function checks the live status of the phy
+ *
+ * \param   NULL
+ *
+ * \return  int32_t
+ *               0 - in case of success
+ *              -1 - in case of failure.
+ *
+ */
+static int32_t BoardDiag_enetLpbkShowAlivePhys(void)
+{
+    Enet_IoctlPrms prms;
+    bool alive = false;
+    int8_t phyCnt;
+    int32_t status;
+
+    for (phyCnt = 0U; phyCnt < ENET_MDIO_PHY_CNT_MAX; phyCnt++)
+    {
+        ENET_IOCTL_SET_INOUT_ARGS(&prms, &phyCnt, &alive);
+
+        status = Enet_ioctl(gEnetLpbk.hEnet, gEnetLpbk.coreId,
+                            ENET_MDIO_IOCTL_IS_ALIVE, &prms);
+        if (status == ENET_SOK)
+        {
+            if (alive == true)
+            {
+                UART_printf("PHY %u is alive\n", phyCnt);
+            }
+        }
+        else
+        {
+            UART_printf("Failed to get PHY %u alive status: %d\n", phyCnt, status);
+            return -1;
+        }
+    }
+
+    return status;
+}
+
+/**
+ * \brief   This function is used to set the ALE port state to forward.
+ *
+ * \param   NULL
+ *
+ * \return  int32_t
+ *               0 - in case of success
+ *              -1 - in case of failure.
+ *
+ */
+static int32_t BoardDiag_enetLpbkSetupCpswAle(void)
+{
+    Enet_IoctlPrms prms;
+    CpswAle_SetPortStateInArgs setPortStateInArgs;
+    CpswAle_SetUcastEntryInArgs setUcastInArgs;
+    uint32_t entryIdx;
+    int32_t status;
+
+    /* ALE entry with "secure" bit cleared is required for loopback */
+    setUcastInArgs.addr.vlanId  = 0U;
+    setUcastInArgs.info.portNum = CPSW_ALE_HOST_PORT_NUM;
+    setUcastInArgs.info.blocked = false;
+    setUcastInArgs.info.secure  = false;
+    setUcastInArgs.info.super   = false;
+    setUcastInArgs.info.ageable = false;
+    setUcastInArgs.info.trunk   = false;
+
+    EnetUtils_copyMacAddr(&setUcastInArgs.addr.addr[0U],
+                          gEnetLpbk.hostMacAddr);
+
+    ENET_IOCTL_SET_INOUT_ARGS(&prms, &setUcastInArgs, &entryIdx);
+
+    status = Enet_ioctl(gEnetLpbk.hEnet, gEnetLpbk.coreId,
+                        CPSW_ALE_IOCTL_ADD_UCAST, &prms);
+    if (status != ENET_SOK)
+    {
+        UART_printf("Failed to add ucast entry: %d\n", status);
+    }
+
+    /* Set host port to 'forwarding' state */
+    if (status == ENET_SOK)
+    {
+        setPortStateInArgs.portNum   = CPSW_ALE_HOST_PORT_NUM;
+        setPortStateInArgs.portState = CPSW_ALE_PORTSTATE_FORWARD;
+        ENET_IOCTL_SET_IN_ARGS(&prms, &setPortStateInArgs);
+
+        status = Enet_ioctl(gEnetLpbk.hEnet, gEnetLpbk.coreId,
+                            CPSW_ALE_IOCTL_SET_PORT_STATE, &prms);
+        if (status != ENET_SOK)
+        {
+            UART_printf("Failed to set ALE port state: %d\n", status);
+        }
+    }
+
+    return status;
+}
+
+/**
  * \brief   This function is used to initialize the receive ready packet queue
+ *
+ * \param   NULL
  *
  * \return  int8_t
  *               0 - in case of success
  *              -1 - in case of failure.
  *
  */
-static int8_t boarDiag_cpswInitRxReadyPktQ(void)
+static int8_t BoardDiag_enetLpbkInitRxReadyPktQ(void)
 {
-    CpswDma_PktInfoQ rxReadyQ;
-    int32_t          status;
-    uint32_t         index;
-    CpswDma_PktInfo *pPktInfo;
+    EnetDma_PktQ rxReadyQ;
+    EnetDma_Pkt *pPktInfo;
+    int32_t status;
+    uint32_t memUtilsRxPkts;
 
-    CpswUtils_initQ(&gCpswLpbkObj.rxFreeQ);
-    CpswUtils_initQ(&gCpswLpbkObj.rxReadyQ);
-    CpswUtils_initQ(&rxReadyQ);
+    EnetQueue_initQ(&gEnetLpbk.rxFreeQ);
+    EnetQueue_initQ(&gEnetLpbk.rxReadyQ);
+    EnetQueue_initQ(&rxReadyQ);
 
-    for (index = 0U; index < CPSW_APPMEMUTILS_NUM_RX_PKTS; index++)
+    for (memUtilsRxPkts = 0U; memUtilsRxPkts < CPSW_APPMEMUTILS_NUM_RX_PKTS; memUtilsRxPkts++)
     {
-        pPktInfo = CpswAppMemUtils_allocEthPktFxn(&gCpswLpbkObj,
-                                                  CPSW_APPMEMUTILS_LARGE_POOL_PKT_SIZE,
-                                                  UDMA_CACHELINE_ALIGNMENT);
+        pPktInfo =
+        CpswAppMemUtils_allocEthPktFxn(&gEnetLpbk,
+                                       CPSW_APPMEMUTILS_LARGE_POOL_PKT_SIZE,
+                                       UDMA_CACHELINE_ALIGNMENT);
         if(pPktInfo == NULL)
         {
-           UART_printf("CpswAppMemUtils_allocEthPktFxn Failed\n");
-           return -1;
+            UART_printf("CpswAppMemUtils_allocEthPktFxn failed\n");
+            return -1;
         }
-
-        CPSW_UTILS_SET_PKT_APP_STATE(&pPktInfo->pktState,
-                                     CPSW_PKTSTATE_APP_WITH_FREEQ);
-        CpswUtils_enQ(&gCpswLpbkObj.rxFreeQ,
-                      &pPktInfo->node);
+        ENET_UTILS_SET_PKT_APP_STATE(&pPktInfo->pktState,
+                                     ENET_PKTSTATE_APP_WITH_FREEQ);
+        EnetQueue_enq(&gEnetLpbk.rxFreeQ, &pPktInfo->node);
     }
 
     /* Retrieve any CPSW packets which are ready */
-    status = CpswDma_retrieveRxPackets(gCpswLpbkObj.hRxFlow,
-                                       &rxReadyQ);
-    if( status != CPSW_SOK )
+    status = EnetDma_retrieveRxPktQ(gEnetLpbk.hRxCh, &rxReadyQ);
+    if(status != ENET_SOK)
     {
-        UART_printf("Failed to retrive the CPSW RX packets\n");
+        UART_printf("EnetDma_retrieveRxPktQ failed\n");
         return -1;
     }
-
     /* There should not be any packet with DMA during init */
-    if(CpswUtils_getQCount(&rxReadyQ) != 0U )
+    if(EnetQueue_getQCount(&rxReadyQ) != 0U)
     {
-        UART_printf("rxReadyQ is not zero,...Exiting\n");
+        UART_printf("EnetQueue_getQCount failed\n");
         return -1;
     }
 
-    CpswAppUtils_validatePacketState(&gCpswLpbkObj.rxFreeQ,
-                                     CPSW_PKTSTATE_APP_WITH_FREEQ,
-                                     CPSW_PKTSTATE_APP_WITH_DRIVER);
+    EnetAppUtils_validatePacketState(&gEnetLpbk.rxFreeQ,
+                                     ENET_PKTSTATE_APP_WITH_FREEQ,
+                                     ENET_PKTSTATE_APP_WITH_DRIVER);
 
-    CpswAppUtils_submitRxPackets(gCpswLpbkObj.hRxFlow,
-                                 &gCpswLpbkObj.rxFreeQ);
+    EnetDma_submitRxPktQ(gEnetLpbk.hRxCh,
+                         &gEnetLpbk.rxFreeQ);
+
     /* Assert here as during init no. of DMA descriptors should be equal to
      * no. of free Ethernet buffers available with app */
-
-    if(CpswUtils_getQCount(&gCpswLpbkObj.rxFreeQ) != 0)
+    if(EnetQueue_getQCount(&gEnetLpbk.rxFreeQ) != 0U)
     {
-        UART_printf("rxFreeQ is not '0',...Exiting\n");
+        UART_printf("EnetQueue_getQCount failed\n");
         return -1;
     }
-
     return 0;
 }
 
@@ -271,1080 +849,629 @@ static int8_t boarDiag_cpswInitRxReadyPktQ(void)
  * \brief   This function is used to initialize the free packet
  *          info queue with the Ethernet packets to be transmitted.
  *
+ * \param   NULL
+ *
  * \return  int8_t
  *               0 - in case of success
  *              -1 - in case of failure.
  *
  */
-static int8_t BoardDiag_cpswInitTxFreePktQ(void)
+static int8_t BoardDiag_enetLpbkInitTxFreePktQ(void)
 {
-    CpswDma_PktInfo *pktInfo;
-    uint32_t         index;
+    EnetDma_Pkt *pPktInfo;
+    uint32_t memUtilsTxPkts;
 
     /* Initialize all queues */
-    CpswUtils_initQ(&gCpswLpbkObj.txFreePktInfoQ);
+    EnetQueue_initQ(&gEnetLpbk.txFreePktInfoQ);
 
     /* Initialize TX EthPkts and queue them to txFreePktInfoQ */
-    for(index = 0U; index < CPSWAPPUTILS_ARRAY_SIZE(gCpswLpbkObj.txFreePktInfo); index++)
+    for (memUtilsTxPkts = 0U; memUtilsTxPkts < CPSW_APPMEMUTILS_NUM_TX_PKTS; memUtilsTxPkts++)
     {
-        pktInfo = CpswAppMemUtils_allocEthPktFxn(&gCpswLpbkObj,
-                                                  CPSW_APPMEMUTILS_LARGE_POOL_PKT_SIZE,
-                                                  UDMA_CACHELINE_ALIGNMENT);
-
-        if(pktInfo == NULL)
+        pPktInfo = 
+        CpswAppMemUtils_allocEthPktFxn(&gEnetLpbk,
+                                       CPSW_APPMEMUTILS_LARGE_POOL_PKT_SIZE,
+                                       UDMA_CACHELINE_ALIGNMENT);
+        if(pPktInfo == NULL)
         {
-            UART_printf("\n"); 
+            UART_printf("CpswAppMemUtils_allocEthPktFxn failed\n");
+            return -1;
         }
-        CPSW_UTILS_SET_PKT_APP_STATE(&pktInfo->pktState,
-                                     CPSW_PKTSTATE_APP_WITH_FREEQ);
+        ENET_UTILS_SET_PKT_APP_STATE(&pPktInfo->pktState,
+                                     ENET_PKTSTATE_APP_WITH_FREEQ);
 
-        CpswUtils_enQ(&gCpswLpbkObj.txFreePktInfoQ,
-                      &pktInfo->node);
-
+        EnetQueue_enq(&gEnetLpbk.txFreePktInfoQ, &pPktInfo->node);
     }
 
     UART_printf("initQs() txFreePktInfoQ initialized with %d pkts\n",
-                 CpswUtils_getQCount(&gCpswLpbkObj.txFreePktInfoQ));
+                       EnetQueue_getQCount(&gEnetLpbk.txFreePktInfoQ));
     return 0;
-}
-
-/**
- * \brief   This function is used to set the ALE port state to forward.
- *
- * \param   macAddr     [IN]   host MAC address
- *
- * \return  int32_t
- *               0 - in case of success
- *              -1 - in case of failure.
- *
- */
-static int32_t BoardDiag_cpswChangeHostAleEntry(uint8_t macAddr[])
-{
-    int32_t status;
-    Cpsw_IoctlPrms prms;
-    CpswAle_AddEntryOutArgs setUcastOutArgs;
-    CpswAle_SetUcastEntryInArgs setUcastInArgs;
-
-    memcpy(&setUcastInArgs.addr.addr[0U],
-            macAddr,
-            sizeof(setUcastInArgs.addr.addr));
-
-    setUcastInArgs.addr.vlanId  = 0U;
-    setUcastInArgs.info.portNum = 0U;
-    setUcastInArgs.info.blocked = false;
-    setUcastInArgs.info.secure  = false;
-    setUcastInArgs.info.super   = 0U;
-    setUcastInArgs.info.ageable = false;
-
-
-    CPSW_IOCTL_SET_INOUT_ARGS(&prms,
-                              &setUcastInArgs,
-                              &setUcastOutArgs);
-
-    status = Cpsw_ioctl(gCpswLpbkObj.hCpsw,
-                        gCpswLpbkObj.coreId,
-                        CPSW_ALE_IOCTL_ADD_UNICAST,
-                        &prms);
-    if (status != CPSW_SOK)
-    {
-        UART_printf("Setting the ALE port state to forward failed with error status - %d\n\r", status);
-        return status;
-    }
-
-    return status;
-}
-
-/**
- * \brief   This function is used for converting the virtual address
- *          to physical address
- *
- * \param   virtAddr   [IN/OUT]   Pointer to virtual address
- * \param   appData    [IN]       Pointer to application data
- *
- * \return  uint64_t  -  CPSW physical address
- *
- */
-static uint64_t BoardDiag_cpswvirtToPhyFx(const void *virtAddr,
-                                          void       *appData)
-{
-    return ((uint64_t)virtAddr);
-}
-
-/**
- * \brief   This function is used for converting the physical address
- *          to virtual address
- *
- * \param   phyAddr     [IN]   Pointer to physical address
- * \param   appData     [IN]   Pointer to application data
- *
- * \return  void  -  Pointer to virtual address
- *
- */
-static void *BoardDiag_cpswPhyToVirtFxn(uint64_t phyAddr,
-                                        void    *appData)
-{
-#if defined (__aarch64__)
-    uint64_t temp = phyAddr;
-#else
-    /* R5 is 32-bit machine, need to truncate to avoid void * typecast error */
-    uint32_t temp = (uint32_t)phyAddr;
-#endif
-    return ((void *) temp);
-}
-
-/**
- * \brief   This function is used for initialize the ALE submodule.
- *
- * \param   aleConfig  [IN]   Pointer to ALE configuration structure
- *
- */
-static void BoardDiag_cpswInitAleConfig(CpswAle_Config *aleConfig)
-{
-    aleConfig->modeFlags =
-        (CPSW_ALE_CONFIG_MASK_ALE_MODULE_ENABLE);
-    aleConfig->agingConfig.enableAutoAging = TRUE;
-    aleConfig->agingConfig.agingPeriodInMs = 1000;
-    aleConfig->nwSecCfg.enableVid0Mode = TRUE;
-    aleConfig->vlanConfig.aleVlanAwareMode = FALSE;
-    aleConfig->vlanConfig.cpswVlanAwareMode = FALSE;
-    aleConfig->vlanConfig.unknownUnregMcastFloodMask = CPSW_ALE_ALL_PORTS_MASK;
-    aleConfig->vlanConfig.unknownRegMcastFloodMask = CPSW_ALE_ALL_PORTS_MASK;
-    aleConfig->vlanConfig.unknownVlanMemberListMask = CPSW_ALE_ALL_PORTS_MASK;
-}
-
-/**
- * \brief   This function is used for de-initialize the CPSW module.
- *
- */
-void BoardDiag_cpswClose(void)
-{
-    int32_t status;
-    Cpsw_IoctlPrms prms;
-
-    Cpsw_GenericPortLinkInArgs args0 = {
-        .portNum = gCpswLpbkObj.portNum0,
-    };
-
-
-    Cpsw_GenericPortLinkInArgs args1 = {
-        .portNum = gCpswLpbkObj.portNum1,
-    };
-
-    CPSW_IOCTL_SET_IN_ARGS(&prms,
-                           &gCpswLpbkObj.coreKey);
-
-    status = Cpsw_ioctl(gCpswLpbkObj.hCpsw,
-                        gCpswLpbkObj.coreId,
-                        CPSW_IOCTL_DETACH_CORE,
-                        &prms);
-    if (status != CPSW_SOK)
-    {
-        UART_printf("close() failed to close MAC port: %d\n", status);
-    }
-
-    CPSW_IOCTL_SET_IN_ARGS(&prms, &args0);
-    status = Cpsw_ioctl(gCpswLpbkObj.hCpsw,
-                        gCpswLpbkObj.coreId,
-                        CPSW_IOCTL_CLOSE_PORT_LINK,
-                        &prms);
-    if (status != CPSW_SOK)
-    {
-        UART_printf("close() failed to close MAC port0: %d\n", status);
-    }
-
-    CPSW_IOCTL_SET_IN_ARGS(&prms, &args1);
-    status = Cpsw_ioctl(gCpswLpbkObj.hCpsw,
-                        gCpswLpbkObj.coreId,
-                        CPSW_IOCTL_CLOSE_PORT_LINK,
-                        &prms);
-    if (status != CPSW_SOK)
-    {
-        UART_printf("close() failed to close MAC port1: %d\n", status);
-    }
-
-    Cpsw_close(gCpswLpbkObj.hCpsw);
-
-    Cpsw_deinit(gCpswLpbkObj.cpswType);
-}
-
-
-/**
- * \brief   This function is used for de-initialize the CPSW DMA driver.
- *
- */
-void BoardDiag_cpswCloseDma(void)
-{
-    CpswDma_PktInfoQ fqPktInfoQ;
-    CpswDma_PktInfoQ cqPktInfoQ;
-
-    CpswUtils_initQ(&fqPktInfoQ);
-    CpswUtils_initQ(&cqPktInfoQ);
-
-    /* Close RX Flow */
-    CpswAppUtils_closeRxFlow(gCpswLpbkObj.hCpsw,
-                             gCpswLpbkObj.coreKey,
-                             gCpswLpbkObj.coreId,
-                             true,
-                             &fqPktInfoQ,
-                             &cqPktInfoQ,
-                             gCpswLpbkObj.rxStartFlowIdx,
-                             gCpswLpbkObj.rxFlowIdx,
-                             gCpswLpbkObj.hostMacAddr0,
-                             gCpswLpbkObj.hRxFlow);
-
-    CpswAppUtils_freePktInfoQ(&fqPktInfoQ);
-    CpswAppUtils_freePktInfoQ(&cqPktInfoQ);
-
-    /* Close TX channel */
-    CpswUtils_initQ(&fqPktInfoQ);
-    CpswUtils_initQ(&cqPktInfoQ);
-
-    CpswAppUtils_closeTxCh(gCpswLpbkObj.hCpsw,
-                           gCpswLpbkObj.coreKey,
-                           gCpswLpbkObj.coreId,
-                           &fqPktInfoQ,
-                           &cqPktInfoQ,
-                           gCpswLpbkObj.hTxCh,
-                           gCpswLpbkObj.txChNum);
-
-    CpswAppUtils_freePktInfoQ(&fqPktInfoQ);
-    CpswAppUtils_freePktInfoQ(&cqPktInfoQ);
-
-    CpswAppUtils_freePktInfoQ(&gCpswLpbkObj.rxFreeQ);
-    CpswAppUtils_freePktInfoQ(&gCpswLpbkObj.txFreePktInfoQ);
-
-    CpswAppMemUtils_deInit();
-}
-
-/**
- * \brief   This function is used to display Mac and Host port statistics
- *
- */
-static void BoardDiag_cpswShowStats(void)
-{
-    Cpsw_IoctlPrms prms;
-    CpswStats_GenericMacPortInArgs inArgs;
-    CpswStats_PortStats portStats;
-    int32_t status = CPSW_SOK;
-
-    CPSW_IOCTL_SET_OUT_ARGS(&prms,
-                            &portStats);
-    status = Cpsw_ioctl(gCpswLpbkObj.hCpsw,
-                        gCpswLpbkObj.coreId,
-                        CPSW_STATS_IOCTL_GET_HOSTPORT_STATS,
-                        &prms);
-    if (status != CPSW_SOK)
-    {
-        UART_printf("CpswApp_showStats() failed to get host stats: %d\n",
-                     status);
-    }
-
-    if (status == CPSW_SOK)
-    {
-        inArgs.portNum = gCpswLpbkObj.portNum0;
-        CPSW_IOCTL_SET_INOUT_ARGS(&prms,
-                                  &inArgs,
-                                  &portStats);
-
-        status = Cpsw_ioctl(gCpswLpbkObj.hCpsw,
-                            gCpswLpbkObj.coreId,
-                            CPSW_STATS_IOCTL_GET_MACPORT_STATS,
-                            &prms);
-        if (status != CPSW_SOK)
-        {
-            UART_printf("CpswApp_showStats() failed to get MAC stats: %d\n",
-                         status);
-        }
-    }
-}
-
-/**
- * \brief   This function is used for CPSW packet transmission
- *          and reception
- *
- * \return  int32_t
- *               0 - in case of success
- *              -1 - in case of failure.
- *
- */
-int32_t BoardDiag_cpswPktRxTx(void)
-{
-    CpswDma_PktInfoQ txSubmitQ;
-    CpswDma_PktInfo  *pktInfo;
-    EthFrame         *frame;
-    uint32_t         txRetrievePktCnt;
-    uint32_t         loopTxPktCnt;
-    uint32_t         totalTxCnt;
-    uint32_t         rxReadyCnt;
-    uint32_t         loopCnt;
-    uint32_t         pktCnt;
-    uint32_t         loopRxPktCnt;
-    int32_t          status = CPSW_SOK;
-
-    totalTxCnt = 0U;
-    for (loopCnt = 0U; loopCnt < BOARD_DIAG_CPSW_TEST_NUM_LOOP; loopCnt++)
-    {
-        pktCnt = 0U;
-        while (pktCnt < BOARD_DIAG_CPSW_TEST_PTK_NUM)
-        {
-            loopRxPktCnt = loopTxPktCnt = 0U;
-            /* Transmit a single packet */
-            CpswUtils_initQ(&txSubmitQ);
-
-            /* Dequeue one free TX Eth packet */
-            pktInfo = (CpswDma_PktInfo *)CpswUtils_deQ(&gCpswLpbkObj.txFreePktInfoQ);
-
-            while ( NULL != pktInfo )
-            {
-                pktCnt++;
-                /* Fill the TX Eth frame with test content */
-                frame = (EthFrame *)pktInfo->bufPtr;
-
-                memcpy(frame->hdr.dstMac,
-                       bcastAddr,
-                       CPSW_MAC_ADDR_LEN);
-
-                memcpy(frame->hdr.srcMac,
-                       &gCpswLpbkObj.hostMacAddr0[0U],
-                       CPSW_MAC_ADDR_LEN);
-
-                frame->hdr.etherType = htons(ETHERTYPE_EXPERIMENTAL1);
-                memset(&frame->payload[0U],
-                       (uint8_t)(0xA5 + pktCnt),
-                       BOARD_DIAG_CPSW_TEST_LEN);
-                pktInfo->userBufLen = BOARD_DIAG_CPSW_TEST_LEN + sizeof (EthFrameHeader);
-                pktInfo->appPriv    = &gCpswLpbkObj;
-                CpswUtils_checkPktState(&pktInfo->pktState,
-                                        CPSW_PKTSTATE_MODULE_APP,
-                                        CPSW_PKTSTATE_APP_WITH_FREEQ,
-                                        CPSW_PKTSTATE_APP_WITH_DRIVER);
-
-                /* Enqueue the packet for later transmission */
-                CpswUtils_enQ(&txSubmitQ,
-                              &pktInfo->node);
-
-                if (pktCnt >= BOARD_DIAG_CPSW_TEST_PTK_NUM)
-                {
-                    break;
-                }
-                /* Dequeue one free TX Eth packet */
-                pktInfo = (CpswDma_PktInfo *)CpswUtils_deQ(&gCpswLpbkObj.txFreePktInfoQ);
-            }
-
-            loopTxPktCnt = CpswUtils_getQCount(&txSubmitQ);
-            while (0U != CpswUtils_getQCount(&txSubmitQ))
-            {
-                uint32_t txCnt = CpswUtils_getQCount(&txSubmitQ);
-                status = CpswAppUtils_submitTxPackets(gCpswLpbkObj.hTxCh,
-                                                      &txSubmitQ);
-                while (txSem != true);
-                txSem = false;
-
-                /* Retrieve TX free packets */
-                if (status == CPSW_SOK)
-                {
-                    txCnt = txCnt - CpswUtils_getQCount(&txSubmitQ);
-                    txRetrievePktCnt = 0U;
-                    while (txRetrievePktCnt != txCnt)
-                    {
-                        BOARD_delay(1);
-                        txRetrievePktCnt |= BoardDiag_cpswRetrieveFreeTxPkts();
-                    }
-                }
-                else
-                {
-                    break;
-                }
-            }
-
-            /* Wait for packet reception */
-            do
-            {
-                while (rxSem != true);
-                rxSem = false;
-
-                /* Get the packets received so far */
-                rxReadyCnt = BoardDiag_cpswReceivePkts();
-                if (rxReadyCnt > 0U)
-                {
-                    /* Consume the received packets and release them */
-                    pktInfo = (CpswDma_PktInfo *)CpswUtils_deQ(&gCpswLpbkObj.rxReadyQ);
-                    while (pktInfo != NULL)
-                    {
-                        CpswUtils_checkPktState(&pktInfo->pktState,
-                                                CPSW_PKTSTATE_MODULE_APP,
-                                                CPSW_PKTSTATE_APP_WITH_READYQ,
-                                                CPSW_PKTSTATE_APP_WITH_FREEQ);
-
-                        /* Consume the packet by just printing its content */
-                        frame = (EthFrame *)pktInfo->bufPtr;
-                        if (gCpswLpbkObj.printFrame)
-                        {
-                            CpswAppUtils_printFrame(frame,
-                                                    (pktInfo->userBufLen - sizeof (EthFrameHeader)));
-                        }
-
-                        /* Release the received packet */
-                        CpswUtils_enQ(&gCpswLpbkObj.rxFreeQ,
-                                      &pktInfo->node);
-                        pktInfo = (CpswDma_PktInfo *)CpswUtils_deQ(&gCpswLpbkObj.rxReadyQ);
-                    }
-
-                    /*Submit now processed buffers */
-                    if (status == CPSW_SOK)
-                    {
-                        CpswAppUtils_validatePacketState(&gCpswLpbkObj.rxFreeQ,
-                                                         CPSW_PKTSTATE_APP_WITH_FREEQ,
-                                                         CPSW_PKTSTATE_APP_WITH_DRIVER);
-
-                        CpswAppUtils_submitRxPackets(gCpswLpbkObj.hRxFlow,
-                                                     &gCpswLpbkObj.rxFreeQ);
-                    }
-                }
-                loopRxPktCnt |= rxReadyCnt;
-            }
-            while (loopRxPktCnt < loopTxPktCnt);
-
-            totalTxCnt |= loopTxPktCnt;
-        }
-    }
-
-    if (status == CPSW_SOK)
-    {
-        UART_printf("Transmitted & Received %d packets\n", totalTxCnt);
-    }
-    else
-    {
-        UART_printf("Failed to transmit/receive packets: %d, transmitted: %d \n",
-                    BOARD_DIAG_CPSW_TEST_PTK_NUM, totalTxCnt);
-    }
-
-    return status;
 }
 
 /**
  * \brief   This function is used to open the CPSW DMA module
  *
- * \param   testMode   [IN/OUT]   Pointer to virtual address
+ * \param   NULL
  *
- * \return  int32_t
+ * \return  int8_t
  *               0 - in case of success
  *              -1 - in case of failure.
  *
  */
-int32_t BoardDiag_cpswOpenDma(void)
+static int8_t BoardDiag_enetLpbkOpenDma()
 {
-    int32_t status = CPSW_SOK;
+    int32_t status = ENET_SOK;
+    EnetCpdma_OpenRxChPrms rxChCfg;
+    EnetCpdma_OpenTxChPrms txChCfg;
 
     /* Open the CPSW TX channel  */
-    CpswDma_initTxChParams(&cpswTxChCfg);
-
-    cpswTxChCfg.hUdmaDrv  = gCpswLpbkObj.hUdmaDrv;
-    cpswTxChCfg.hCbArg    = &gCpswLpbkObj;
-    cpswTxChCfg.notifyCb  = BoardDiag_cpswTxIsrFxn;
-
-    CpswAppUtils_setCommonTxChPrms(&cpswTxChCfg);
-
-    CpswAppUtils_openTxCh(gCpswLpbkObj.hCpsw,
-                          gCpswLpbkObj.coreKey,
-                          gCpswLpbkObj.coreId,
-                          &gCpswLpbkObj.txChNum,
-                          &gCpswLpbkObj.hTxCh,
-                          &cpswTxChCfg);
-
-    BoardDiag_cpswInitTxFreePktQ();
-
-    if (NULL != gCpswLpbkObj.hTxCh)
+    if (status == ENET_SOK)
     {
-        status = CpswDma_enableTxEvent(gCpswLpbkObj.hTxCh);
-        if (CPSW_SOK != status)
+        EnetDma_initTxChParams(&txChCfg);
+
+        txChCfg.cbArg   = &gEnetLpbk;
+        txChCfg.notifyCb = BoardDiag_enetLpbkTxIsrFxn;
+
+        EnetAppUtils_setCommonTxChPrms(&txChCfg);
+
+        EnetAppUtils_openTxCh(gEnetLpbk.hEnet,
+                              gEnetLpbk.coreKey,
+                              gEnetLpbk.coreId,
+                              &gEnetLpbk.txChNum,
+                              &gEnetLpbk.hTxCh,
+                              &txChCfg);
+
+        if(BoardDiag_enetLpbkInitTxFreePktQ() != BOARD_DIAG_SUCCESS)
         {
-            /* Free the Ch Num if enable event failed */
-            CpswAppUtils_freeTxCh(gCpswLpbkObj.hCpsw,
-                                  gCpswLpbkObj.coreKey,
-                                  gCpswLpbkObj.coreId,
-                                  gCpswLpbkObj.txChNum);
-            UART_printf("CpswDma_startTxCh() failed: %d\n", status);
-            status = CPSW_EFAIL;
+            UART_printf("BoardDiag_enetLpbkInitTxFreePktQ Failed\n");
+            return -1;
+        }
+
+        if (NULL == gEnetLpbk.hTxCh)
+        {
+            /* Free the Ch Num if open Tx Ch failed */
+            EnetAppUtils_freeTxCh(gEnetLpbk.hEnet,
+                                  gEnetLpbk.coreKey,
+                                  gEnetLpbk.coreId,
+                                  gEnetLpbk.txChNum);
+            UART_printf("EnetDma_openTxCh() failed to open: %d\n",
+                               status);
         }
     }
-    else
+
+    /* Open the CPSW RX Channel  */
+    if (status == ENET_SOK)
     {
-        /* Free the Ch Num if open Tx Ch failed */
-        CpswAppUtils_freeTxCh(gCpswLpbkObj.hCpsw,
-                              gCpswLpbkObj.coreKey,
-                              gCpswLpbkObj.coreId,
-                              gCpswLpbkObj.txChNum);
-        UART_printf("CpswDma_openTxCh() failed to open: %d\n",
-                     status);
-        status = CPSW_EFAIL;
+        EnetDma_initRxChParams(&rxChCfg);
+        rxChCfg.notifyCb = BoardDiag_enetLpbkRxIsrFxn;
+        rxChCfg.cbArg   = &gEnetLpbk;
+
+        EnetAppUtils_setCommonRxChPrms(&rxChCfg);
+
+        EnetAppUtils_openRxCh(gEnetLpbk.hEnet,
+                              gEnetLpbk.coreKey,
+                              gEnetLpbk.coreId,
+                              &gEnetLpbk.rxChNum,
+                              &gEnetLpbk.hRxCh,
+                              &rxChCfg);
+
+        if (NULL == gEnetLpbk.hRxCh)
+        {
+            EnetAppUtils_freeRxCh(gEnetLpbk.hEnet,
+                                  gEnetLpbk.coreKey,
+                                  gEnetLpbk.coreId,
+                                  gEnetLpbk.rxChNum);
+            UART_printf("EnetDma_openRxCh() failed to open: %d\n",
+                               status);
+
+	    /* TODO: should we close TxCh here */
+        }
+        else
+        {
+            status = EnetAppUtils_allocMac(gEnetLpbk.hEnet,
+                                           gEnetLpbk.coreKey,
+                                           gEnetLpbk.coreId,
+                                           gEnetLpbk.hostMacAddr);
+            UART_printf("Host MAC address: ");
+            BoardDiag_printMacAddr(gEnetLpbk.hostMacAddr);
+            /* Submit all ready RX buffers to DMA.*/
+            if(BoardDiag_enetLpbkInitRxReadyPktQ() != BOARD_DIAG_SUCCESS)
+            {
+                UART_printf("BoardDiag_enetLpbkInitRxReadyPktQ failed\n");
+                return -1;
+            }
+        }
+    }
+    if(status != ENET_SOK)
+    {
+        return -1;
+    }
+    return 0;
+}
+
+/**
+ * \brief   This function is used set MII mode.
+ *
+ * \param   emac_mode       macMode   mac mode
+ *          EnetPhy_Mii     *mii      MII mode
+ *
+ * \return  int8_t
+ *               0 - in case of success
+ *              -1 - in case of failure.
+ *
+ */
+static int8_t BoardDiag_enetLpbkMacMode2PhyMii(emac_mode macMode,
+                                    EnetPhy_Mii *mii)
+{
+    switch (macMode)
+    {
+        case RMII:
+            *mii = ENETPHY_MAC_MII_RMII;
+            break;
+        case RGMII:
+            *mii = ENETPHY_MAC_MII_RGMII;
+            break;
+        default:
+            UART_printf("Invalid MAC mode: %u\n", macMode);
+            return -1;
+    }
+    return 0;
+}
+
+
+/**
+ * \brief   This function is used set layerType,sublayerType and variantType.
+ *
+ * \param   emac_mode                   macMode   mac mode
+ *          EnetMacPort_Interface       *mii      MII mode
+ *
+ * \return  int8_t
+ *               0 - in case of success
+ *              -1 - in case of failure.
+ *
+ */
+static int8_t BoardDiag_enetLpbkMacMode2MacMii(emac_mode macMode,
+                                    EnetMacPort_Interface *mii)
+{
+    switch (macMode)
+    {
+        case RMII:
+            mii->layerType    = ENET_MAC_LAYER_MII;
+            mii->sublayerType = ENET_MAC_SUBLAYER_REDUCED;
+            mii->variantType  = ENET_MAC_VARIANT_NONE;
+            break;
+        case RGMII:
+            mii->layerType    = ENET_MAC_LAYER_GMII;
+            mii->sublayerType = ENET_MAC_SUBLAYER_REDUCED;
+            mii->variantType  = ENET_MAC_VARIANT_FORCED;
+            break;
+        default:
+            UART_printf("Invalid MAC mode: %u\n", macMode);
+            return -1;
+    }
+    return 0;
+}
+
+/**
+ * \brief   This function is used init cpsw configurations.
+ *
+ * \param   Cpsw_Cfg *cpswCfg           cpsw configurations
+ *
+ * \return  NULL
+ *
+ */
+static void BoardDiag_enetLpbkInitCpswCfg(Cpsw_Cfg *cpswCfg)
+{
+    CpswHostPort_Cfg *hostPortCfg = &cpswCfg->hostPortCfg;
+    CpswAle_Cfg *aleCfg = &cpswCfg->aleCfg;
+    CpswCpts_Cfg *cptsCfg = &cpswCfg->cptsCfg;
+
+    /* Set initial config */
+    Enet_initCfg(gEnetLpbk.enetType, gEnetLpbk.instId, cpswCfg,
+                sizeof(*cpswCfg));
+
+    /* Peripheral config */
+    cpswCfg->vlanCfg.vlanAware = false;
+
+    /* Host port config */
+    hostPortCfg->removeCrc      = true;
+    hostPortCfg->padShortPacket = true;
+    hostPortCfg->passCrcErrors  = true;
+
+    /* ALE config */
+    aleCfg->modeFlags                          = CPSW_ALE_CFG_MODULE_EN;
+    aleCfg->agingCfg.enableAutoAging           = true;
+    aleCfg->agingCfg.agingPeriodInMs           = 1000;
+    aleCfg->nwSecCfg.enableVid0Mode            = true;
+    aleCfg->vlanCfg.aleVlanAwareMode           = false;
+    aleCfg->vlanCfg.cpswVlanAwareMode          = false;
+    aleCfg->vlanCfg.unknownUnregMcastFloodMask = CPSW_ALE_ALL_PORTS_MASK;
+    aleCfg->vlanCfg.unknownRegMcastFloodMask   = CPSW_ALE_ALL_PORTS_MASK;
+    aleCfg->vlanCfg.unknownVlanMemberListMask  = CPSW_ALE_ALL_PORTS_MASK;
+
+    /* CPTS config */
+    /* Note: Timestamping and MAC loopback are not supported together because
+     * of IP limitation, so disabling timestamping for this application */
+    cptsCfg->hostRxTsEn = false;
+
+    EnetAppUtils_initResourceConfig(gEnetLpbk.enetType, gEnetLpbk.coreId,
+                                    &cpswCfg->resCfg);
+}
+
+/**
+ * \brief   This function is used to open the ENET driver
+ *
+ * \param   NULL
+ *
+ * \return  int8_t
+ *               0 - in case of success
+ *              -1 - in case of failure.
+ *
+ */
+static int8_t BoardDiag_enetLpbkOpenEnet(void)
+{
+    Cpsw_Cfg cpswCfg;
+
+    Enet_IoctlPrms prms;
+    EnetPer_PortLinkCfg portLinkCfg;
+    CpswMacPort_Cfg macCfg;
+    int32_t status = ENET_SOK;
+
+    /* Initialize peripheral config */
+    BoardDiag_enetLpbkInitCpswCfg(&cpswCfg);
+
+    UART_printf("CPSW_2G Test on MCU NAVSS\n");
+ 
+    /* Set Enet global runtime log level */
+    Enet_setTraceLevel(ENET_TRACE_DEBUG);
+
+    /* Open the Enet driver */
+    gEnetLpbk.hEnet = Enet_open(gEnetLpbk.enetType, gEnetLpbk.instId, &cpswCfg,
+                                sizeof(cpswCfg));
+
+    if (gEnetLpbk.hEnet == NULL)
+    {
+        UART_printf("Failed to open Enet driver\n");
+        return -1;
     }
 
-    /* Open the CPSW RX flow  */
-    if (status == CPSW_SOK)
+    /* Setup port link open parameters */
+    if (status == ENET_SOK)
     {
-        CpswDma_initRxFlowParams(&cpswRxFlowCfg);
-        cpswRxFlowCfg.notifyCb  = BoardDiag_cpswRxIsrFxn;
-        cpswRxFlowCfg.hUdmaDrv  = gCpswLpbkObj.hUdmaDrv;
-        cpswRxFlowCfg.hCbArg    = &gCpswLpbkObj;
+        EnetBoard_EthPort ethPort;
+        EnetMacPort_LinkCfg *linkCfg = &portLinkCfg.linkCfg;
+        EnetMacPort_Interface *mii = &portLinkCfg.mii;
+        EnetPhy_Cfg *phyCfg = &portLinkCfg.phyCfg;
+        EnetPhy_Mii phyMii;
 
-        CpswAppUtils_setCommonRxFlowPrms(&cpswRxFlowCfg);
-
-        CpswAppUtils_openRxFlow(gCpswLpbkObj.hCpsw,
-                                gCpswLpbkObj.coreKey,
-                                gCpswLpbkObj.coreId,
-                                true,
-                                &gCpswLpbkObj.rxStartFlowIdx,
-                                &gCpswLpbkObj.rxFlowIdx,
-                                &gCpswLpbkObj.hostMacAddr0[0U],
-                                &gCpswLpbkObj.hRxFlow,
-                                &cpswRxFlowCfg);
-
-        if (NULL == gCpswLpbkObj.hRxFlow)
+        /* Setup board for requested Ethernet port */
+        ethPort.enetType = gEnetLpbk.enetType;
+        ethPort.instId   = gEnetLpbk.instId;
+        ethPort.macPort  = gEnetLpbk.macPort;
+        ethPort.boardId  = gEnetLpbk.boardId;
+        if(BoardDiag_enetLpbkMacMode2MacMii(gEnetLpbk.macMode, &ethPort.mii) != 
+                                            BOARD_DIAG_SUCCESS)
         {
-            CpswAppUtils_freeRxFlow(gCpswLpbkObj.hCpsw,
-                                    gCpswLpbkObj.coreKey,
-                                    gCpswLpbkObj.coreId,
-                                    gCpswLpbkObj.rxFlowIdx);
-            UART_printf("CpswDma_openRxFlow() failed to open: %d\n",
-                         status);
-            if(gCpswLpbkObj.hRxFlow == NULL)
+            UART_printf("BoardDiag_enetLpbkMacMode2MacMii failed\n");
+            return -1;
+        }
+
+        status = EnetBoard_setupPorts(&ethPort, 1U);
+        if(status != ENET_SOK)
+        {
+            UART_printf("EnetBoard_setupPorts failed\n");
+            return -1;
+        }
+
+        /* Set port link params */
+        portLinkCfg.macPort = gEnetLpbk.macPort;
+        portLinkCfg.macCfg = &macCfg;
+
+        CpswMacPort_initCfg(&macCfg);
+
+        if(BoardDiag_enetLpbkMacMode2MacMii(gEnetLpbk.macMode, mii) 
+                                            != BOARD_DIAG_SUCCESS)
+        {
+            UART_printf("BoardDiag_enetLpbkMacMode2MacMii failed\n");
+            return -1;
+        }
+
+        if (gEnetLpbk.testPhyLoopback)
+        {
+            const EnetBoard_PhyCfg *boardPhyCfg = NULL;
+
+            /* Set PHY configuration params */
+            EnetPhy_initCfg(phyCfg);
+
+            if (BoardDiag_enetLpbkMacMode2PhyMii(gEnetLpbk.macMode, &phyMii) 
+                                                == BOARD_DIAG_SUCCESS)
             {
+                boardPhyCfg = EnetBoard_getPhyCfg(&ethPort);
+                if (boardPhyCfg != NULL)
+                {
+                    phyCfg->phyAddr     = boardPhyCfg->phyAddr;
+                    phyCfg->isStrapped  = boardPhyCfg->isStrapped;
+                    phyCfg->skipExtendedCfg = boardPhyCfg->skipExtendedCfg;
+                    phyCfg->extendedCfgSize = boardPhyCfg->extendedCfgSize;
+                    memcpy(phyCfg->extendedCfg, boardPhyCfg->extendedCfg,
+                            phyCfg->extendedCfgSize);
+                }
+                else
+                {
+                    UART_printf("PHY info not found\n");
+                    return -1;
+                }
+
+                if ((phyMii == ENETPHY_MAC_MII_MII) ||
+                    (phyMii == ENETPHY_MAC_MII_RMII))
+                {
+                    linkCfg->speed = ENET_SPEED_100MBIT;
+                }
+                else
+                {
+                    /* TODO: TPR12 always 100 Mbits */
+                    linkCfg->speed = ENET_SPEED_100MBIT;
+                }
+
+                linkCfg->duplexity = ENET_DUPLEX_FULL;
+            }
+            else
+            {
+                UART_printf("BoardDiag_enetLpbkMacMode2PhyMii failed\n");
                 return -1;
             }
         }
         else
         {
-            CpswAppUtils_print("Host MAC0 address: ");
-            CpswAppUtils_printMacAddr(gCpswLpbkObj.hostMacAddr0);
-            /* For MAC loopback disable secure flag for the host port entry */
-            BoardDiag_cpswChangeHostAleEntry(&gCpswLpbkObj.hostMacAddr0[0U]);
-            
-            //CpswAppUtils_print("Host MAC1 address: ");
-            //CpswAppUtils_printMacAddr(gCpswLpbkObj.hostMacAddr1);
-            /* For MAC loopback disable secure flag for the host port entry */
-            //BoardDiag_cpswChangeHostAleEntry(&gCpswLpbkObj.hostMacAddr1[0U]);
-            
+            phyCfg->phyAddr = ENETPHY_INVALID_PHYADDR;
 
-            /* Submit all ready RX buffers to DMA.*/
-            boarDiag_cpswInitRxReadyPktQ();
+            if (mii->layerType == ENET_MAC_LAYER_MII)
+            {
+                linkCfg->speed = ENET_SPEED_100MBIT;
+            }
+            else
+            {
+                linkCfg->speed = ENET_SPEED_1GBIT;
+            }
+
+            linkCfg->duplexity = ENET_DUPLEX_FULL;
+
+        }
+
+        /* MAC and PHY loopbacks are mutually exclusive */
+        phyCfg->enableLoopback = gEnetLpbk.testPhyLoopback &&
+                                 !gEnetLpbk.testExtLoopback;
+
+        macCfg.loopbackEn = !gEnetLpbk.testPhyLoopback;
+    }
+
+    /* Open port link */
+    if (status == ENET_SOK)
+    {
+        ENET_IOCTL_SET_IN_ARGS(&prms, &portLinkCfg);
+
+        status = Enet_ioctl(gEnetLpbk.hEnet, gEnetLpbk.coreId,
+                            ENET_PER_IOCTL_OPEN_PORT_LINK, &prms);
+        if (status != ENET_SOK)
+        {
+            UART_printf("Failed to open port link: %d\n", status);
+            return -1;
         }
     }
 
-    return status;
+    return 0;
 }
 
 /**
- * \brief   This function is used to open the CPSW driver
+ * \brief   This function is used to initialiaze the enet
+            parameters(gEnetLpbk) Ethernet external loopback test.
  *
- * \return  int32_t
- *               0 - in case of success
- *              -1 - in case of failure.
+ * \param   NULL
+ *
+ * \return  NULL
  *
  */
-static int32_t BoardDiag_cpswOpen(uint32_t testMode)
+static void BoardDiag_enetIniParams()
 {
-    Cpsw_Config    cpswCfg;
-    CpswOsal_Prms  osalPrms;
-    CpswUtils_Prms utilsPrms;
-    int32_t status = CPSW_SOK;
-    Cpsw_IoctlPrms prms;
-    Cpsw_AttachCoreOutArgs attachCoreOutArgs;
+     /* Initialize loopback test config */
+    memset(&gEnetLpbk, 0, sizeof(gEnetLpbk));
+    
+    gEnetLpbk.enetType        = ENET_CPSW_9G;
+    gEnetLpbk.instId          = 0U;
+    gEnetLpbk.testPhyLoopback = true;
+    gEnetLpbk.testExtLoopback = true;
+    gEnetLpbk.macPort         = ENET_MAC_PORT_1;
+    gEnetLpbk.macMode         = RGMII;
+    gEnetLpbk.enetType        = ENET_CPSW_2G;
+    gEnetLpbk.boardId         = ENETBOARD_CPB_ID;
 
-    /* Set configuration parameters */
-    Cpsw_initParams(&cpswCfg);
-    cpswCfg.vlanConfig.vlanAware          = false;
-    cpswCfg.hostPortConfig.removeCrc      = true;
-    cpswCfg.hostPortConfig.padShortPacket = true;
-    cpswCfg.hostPortConfig.passCrcErrors  = true;
-    CpswAppUtils_initResourceConfig(gCpswLpbkObj.cpswType,
-                                    gCpswLpbkObj.coreId,
-                                    &cpswCfg.resourceConfig);
-    BoardDiag_cpswInitAleConfig(&cpswCfg.aleConfig);
-
-    cpswCfg.dmaConfig.rxChInitPrms.dmaPriority = UDMA_DEFAULT_RX_CH_DMA_PRIORITY;
-
-    /* App should open UDMA first as UDMA handle is needed to initialize
-     * CPSW RX channel */
-    gCpswLpbkObj.hUdmaDrv = CpswAppUtils_udmaOpen(gCpswLpbkObj.cpswType, NULL);
-    if(gCpswLpbkObj.hUdmaDrv != NULL)
-    {
-        cpswCfg.dmaConfig.hUdmaDrv = gCpswLpbkObj.hUdmaDrv;
-    }
-    else
-    {
-        UART_printf("Failed to get the UDMA handle\n");
-        return -1;
-    }
-
-    /* Initialize CPSW driver with default OSAL, utils */
-    utilsPrms.printFxn     = UART_printf;
-    utilsPrms.traceFxn     = UART_printf;
-    utilsPrms.phyToVirtFxn = &BoardDiag_cpswPhyToVirtFxn;
-    utilsPrms.virtToPhyFxn = &BoardDiag_cpswvirtToPhyFx;
-
-    Cpsw_initOsalPrms(&osalPrms);
-
-    Cpsw_init(gCpswLpbkObj.cpswType, &osalPrms, &utilsPrms);
-
-    /* Open the CPSW driver */
-    gCpswLpbkObj.hCpsw = Cpsw_open(gCpswLpbkObj.cpswType,
-                                   &cpswCfg);
-    if(gCpswLpbkObj.hCpsw == NULL)
-    {
-        UART_printf("BoardDiag_cpswOpen() failed to open: %d\n", status);
-        status = CPSW_EFAIL;
-    }
-
-    if(status == CPSW_SOK)
-    {
-        /* Attach the core with RM */
-        CPSW_IOCTL_SET_INOUT_ARGS(&prms,
-                                  &gCpswLpbkObj.coreId,
-                                  &attachCoreOutArgs);
-
-        status = Cpsw_ioctl(gCpswLpbkObj.hCpsw,
-                            gCpswLpbkObj.coreId,
-                            CPSW_IOCTL_ATTACH_CORE,
-                            &prms);
-        if(status != CPSW_SOK)
-        {
-            UART_printf("CpswApp_loopbackTest failed CPSW_IOCTL_ATTACH_CORE: %d\n",
-                         status);
-        }
-        else
-        {
-            gCpswLpbkObj.coreKey = attachCoreOutArgs.coreKey;
-        }
-    }
-
-    if(status == CPSW_SOK)
-    {
-        /* memutils open should happen after Cpsw is opened as it uses CpswUtils_Q
-         * functions */
-        status = CpswAppMemUtils_init();
-        if(status != CPSW_SOK)
-        {
-            UART_printf("cpsw memutils open function failed\n");
-        }
-    }
-
-    if(status == CPSW_SOK)
-    {
-        Cpsw_OpenPortLinkInArgs linkArgs0 = {
-            .portNum = gCpswLpbkObj.portNum0,
-        };
-        CpswMacPort_Config     *macConfig  = &linkArgs0.macConfig;
-        CpswMacPort_LinkConfig *linkConfig = &linkArgs0.linkConfig;
-        CpswPhy_Config         *phyConfig  = &linkArgs0.phyConfig;
-        CpswMacPort_Interface  *interface  = &linkArgs0.interface;
-
-        Cpsw_initMacPortParams(macConfig);
-
-        BoardDiag_cpswChangeHostAleEntry(&gCpswLpbkObj.hostMacAddr0[0U]);
-
-#if defined(j7200_evm)
-        if(testMode == BOARD_DIAG_CPSW_RGMII_TEST)
-        {
-            /*
-             * J7200 EVM has only one RGMII port supported on GESI board.
-             * Loopback test is done between GESI RGMII port and one SGMII Ethernet port.
-             * Port0 is configured for SGMII and port1 is configured for RGMII.
-             */
-            CpswAppBoardUtils_setPhyConfigQsgmii(gCpswLpbkObj.cpswType,
-                                                 linkArgs0.portNum,
-                                                 macConfig,
-                                                 interface,
-                                                 phyConfig);
-        }
-        else
-        {
-            CpswAppBoardUtils_setPhyConfig(gCpswLpbkObj.cpswType,
-                                           linkArgs0.portNum,
-                                           macConfig,
-                                           interface,
-                                           phyConfig);
-        }
-#else
-        CpswAppBoardUtils_setPhyConfig(gCpswLpbkObj.cpswType,
-                                       linkArgs0.portNum,
-                                       macConfig,
-                                       interface,
-                                       phyConfig);
-#endif
-        macConfig->enableLoopback = false;
-        linkConfig->speed     = CPSW_SPEED_AUTO;
-        linkConfig->duplexity = CPSW_DUPLEX_AUTO;
-
-        Cpsw_OpenPortLinkInArgs linkArgs1 = {
-            .portNum = gCpswLpbkObj.portNum1,
-        };
-
-        macConfig = &linkArgs1.macConfig;
-        linkConfig = &linkArgs1.linkConfig;
-        phyConfig = &linkArgs1.phyConfig;
-        interface = &linkArgs1.interface;
-
-        Cpsw_initMacPortParams(macConfig);
-
-        BoardDiag_cpswChangeHostAleEntry(&gCpswLpbkObj.hostMacAddr1[0U]);
-
-#if defined(j7200_evm)
-        if(testMode == BOARD_DIAG_CPSW_RGMII_TEST)
-        {
-            /*
-             * J7200 EVM has only one RGMII port supported on GESI board.
-             * Loopback test is done between GESI RGMII port and one SGMII Ethernet port.
-             * Port0 is configured for SGMII and port1 is configured for RGMII.
-             */
-            CpswAppBoardUtils_setPhyConfigRgmii(gCpswLpbkObj.cpswType,
-                                                linkArgs1.portNum,
-                                                macConfig,
-                                                interface,
-                                                phyConfig);
-        }
-        else
-        {
-            CpswAppBoardUtils_setPhyConfig(gCpswLpbkObj.cpswType,
-                                           linkArgs1.portNum,
-                                           macConfig,
-                                           interface,
-                                           phyConfig);
-        }
-#else
-        CpswAppBoardUtils_setPhyConfig(gCpswLpbkObj.cpswType,
-                                       linkArgs1.portNum,
-                                       macConfig,
-                                       interface,
-                                       phyConfig);
-#endif
-        if(status == CPSW_PHY_INVALID_PHYADDR)
-        {
-            UART_printf("PHY configuration failed\n\r");
-            return -1;
-        }
-
-        macConfig->enableLoopback = false;
-        linkConfig->speed     = CPSW_SPEED_AUTO;
-        linkConfig->duplexity = CPSW_DUPLEX_AUTO;
-
-        CPSW_IOCTL_SET_IN_ARGS(&prms, &linkArgs0);
-
-        status = Cpsw_ioctl(gCpswLpbkObj.hCpsw,
-                            gCpswLpbkObj.coreId,
-                            CPSW_IOCTL_OPEN_PORT_LINK,
-                            &prms);
-        if (status != CPSW_SOK)
-        {
-            UART_printf("CpswApp_openCpsw() failed to open MAC port: %d\n",
-                         status);
-        }
-
-        CPSW_IOCTL_SET_IN_ARGS(&prms, &linkArgs1);
-        status = Cpsw_ioctl(gCpswLpbkObj.hCpsw,
-                            gCpswLpbkObj.coreId,
-                            CPSW_IOCTL_OPEN_PORT_LINK,
-                            &prms);
-        if(status != CPSW_SOK)
-        {
-            UART_printf("CpswApp_openCpsw() failed to open MAC port: %d\n",
-                         status);
-        }
-
-    }
-
-    return status;
-}
-
-void BoardDiag_enetPhyEnable(void)
-{
-    Board_I2cInitCfg_t i2cCfg;
-
-    i2cCfg.i2cInst   = BOARD_I2C_IOEXP_DEVICE2_INSTANCE;
-    i2cCfg.socDomain = BOARD_SOC_DOMAIN_MAIN;
-    i2cCfg.enableIntr = false;
-    Board_setI2cInitConfig(&i2cCfg);
-
-    Board_i2cIoExpInit();
-
-
-    Board_i2cIoExpSetPinDirection(BOARD_I2C_IOEXP_DEVICE2_ADDR,
-                                  THREE_PORT_IOEXP,
-                                  PORTNUM_2,
-                                  PIN_NUM_0,
-                                  PIN_DIRECTION_OUTPUT);
-
-    Board_i2cIoExpPinLevelSet(BOARD_I2C_IOEXP_DEVICE2_ADDR,
-                              THREE_PORT_IOEXP,
-                              PORTNUM_2,
-                              PIN_NUM_0,
-                              GPIO_SIGNAL_LEVEL_LOW);
-
-    Board_i2cIoExpSetPinDirection(BOARD_I2C_IOEXP_DEVICE2_ADDR,
-                                  THREE_PORT_IOEXP,
-                                  PORTNUM_2,
-                                  PIN_NUM_1,
-                                  PIN_DIRECTION_OUTPUT);
-
-    Board_i2cIoExpPinLevelSet(BOARD_I2C_IOEXP_DEVICE2_ADDR,
-                              THREE_PORT_IOEXP,
-                              PORTNUM_2,
-                              PIN_NUM_1,
-                              GPIO_SIGNAL_LEVEL_HIGH);
 }
 
 /**
  * \brief   This function is used to perform the CPSW
- *          Ethernet port to port external loopback test
+ *          Ethernet external loopback test
  *
- * \param   testMode   [IN/OUT]   Pointer to virtual address
+ * \param   NULL
  *
- * \return  int32_t
+ * \return  int8_t
  *               0 - in case of success
  *              -1 - in case of failure.
  *
  */
-int32_t BoardDiag_cpswLoopbackTest(uint32_t testMode)
+static int8_t BoardDiag_cpswLoopbackTest()
 {
-    int32_t       status;
-    bool          alive;
-    uint8_t       index;
+    EnetOsal_Cfg osalCfg;
+    EnetUtils_Cfg utilsCfg;
+    Enet_IoctlPrms prms;
+    int32_t status;
 
-    Cpsw_IoctlPrms prms;
-    CpswAle_SetPortStateInArgs setPortStateInArgs;
+    /* Initialize the phy configurations */
+    EnetBoard_init();
 
-    CpswAppBoardUtils_initEthFw();
-    CpswAppUtils_enableClocks(gCpswLpbkObj.cpswType);
+    /* Initialize the enet parameters */
+    BoardDiag_enetIniParams();
 
-    gCpswLpbkObj.coreId = CpswAppSoc_getCoreId();
+    EnetAppUtils_enableClocks(gEnetLpbk.enetType);
 
-    /* Open the CPSW */
-    status = BoardDiag_cpswOpen(testMode);
-    if (status != CPSW_SOK)
+    /* Local core id */
+    gEnetLpbk.coreId = EnetSoc_getCoreId();
+
+    /* Initialize Enet driver (use default OSAL and utils) */
+    Enet_initOsalCfg(&osalCfg);
+    Enet_initUtilsCfg(&utilsCfg);
+    utilsCfg.print = EnetAppUtils_print;
+    Enet_init(&osalCfg, &utilsCfg);
+
+    /* Open Enet driver */
+    status = BoardDiag_enetLpbkOpenEnet();
+    if (status != 0)
     {
-        UART_printf("Failed to open CPSW: %d\n", status);
+        UART_printf("Failed to open Enet driver: %d\n", status);
+        return -1;
     }
 
-    /* Open CPSW DMA driver */
-    if (status == CPSW_SOK)
+    if (status == ENET_SOK)
     {
-        status = BoardDiag_cpswOpenDma();
-        if (status != CPSW_SOK)
+        /* Attach the core with RM */
+        uint32_t coreId;
+        EnetPer_AttachCoreOutArgs attachCoreOutArgs;
+        coreId = gEnetLpbk.coreId;
+
+        ENET_IOCTL_SET_INOUT_ARGS(&prms, &coreId, &attachCoreOutArgs);
+        status = Enet_ioctl(gEnetLpbk.hEnet, gEnetLpbk.coreId,
+                            ENET_PER_IOCTL_ATTACH_CORE, &prms);
+        if (status != ENET_SOK)
         {
-            UART_printf("Failed to open CPSW DMA: %d\n", status);
+            UART_printf("EnetLpbk_loopbackTest failed"
+                         "ENET_PER_IOCTL_ATTACH_CORE: %d\n", status);
+            return -1;
+        }
+        else
+        {
+            gEnetLpbk.coreKey = attachCoreOutArgs.coreKey;
+        }
+    }
+
+    if (status == ENET_SOK)
+    {
+        /* memutils open should happen after Cpsw is opened as it uses 
+         * CpswUtils_Q functions */
+        status = CpswAppMemUtils_init();
+        if (status != ENET_SOK)
+        {
+            UART_printf("CpswAppMemUtils_init failed: "
+                        "%d\n", status);
+            return -1;
+        }
+    }
+
+    /* Open DMA driver */
+    if (status == ENET_SOK)
+    {
+        status = BoardDiag_enetLpbkOpenDma();
+        if (status != ENET_SOK)
+        {
+            UART_printf("Failed to open DMA: %d\n", status);
+            return -1;
         }
     }
 
     /* Enable host port */
-    if (status == CPSW_SOK)
+    if (status == ENET_SOK)
     {
-        setPortStateInArgs.portNum   = CPSW_ALE_HOST_PORT_NUM;
-        setPortStateInArgs.portState = CPSW_ALE_PORTSTATE_FORWARD;
-
-        CPSW_IOCTL_SET_IN_ARGS(&prms, &setPortStateInArgs);
-        prms.outArgs = NULL;
-
-        status = Cpsw_ioctl(gCpswLpbkObj.hCpsw,
-                            gCpswLpbkObj.coreId,
-                            CPSW_ALE_IOCTL_SET_PORT_STATE,
-                            &prms);
-        if (status != CPSW_SOK)
+        if (Enet_isCpswFamily(gEnetLpbk.enetType))
         {
-            UART_printf("CpswApp_openCpsw() failed CPSW_ALE_IOCTL_SET_PORT_STATE: %d\n", status);
+            status = BoardDiag_enetLpbkSetupCpswAle();
+            if (status != ENET_SOK)
+            {
+                UART_printf("Failed to setup CPSW ALE: %d\n", status);
+                return -1;
+            }
         }
 
-        if (status == CPSW_SOK)
+        if (status == ENET_SOK)
         {
-            status = Cpsw_ioctl(gCpswLpbkObj.hCpsw,
-                                gCpswLpbkObj.coreId,
-                                CPSW_HOSTPORT_IOCTL_ENABLE,
-                                NULL);
-            if (status != CPSW_SOK)
+            ENET_IOCTL_SET_NO_ARGS(&prms);
+            status = Enet_ioctl(gEnetLpbk.hEnet, gEnetLpbk.coreId,
+                                ENET_HOSTPORT_IOCTL_ENABLE, &prms);
+            if (status != ENET_SOK)
             {
                 UART_printf("Failed to enable host port: %d\n", status);
+                return -1;
             }
         }
     }
 
     /* Show alive PHYs */
-    if (status == CPSW_SOK)
+    if (status == ENET_SOK)
     {
-        for (index = BOARD_DIAG_CPSW_PHY_START_ADDRESS; index < BOARD_DIAG_CPSW_PHY_END_ADDRESS; index++)
-        {
-            CPSW_IOCTL_SET_INOUT_ARGS(&prms, &index, &alive);
+        status = BoardDiag_enetLpbkShowAlivePhys();
+    }
 
-            status = Cpsw_ioctl(gCpswLpbkObj.hCpsw,
-                                gCpswLpbkObj.coreId,
-                                CPSW_MDIO_IOCTL_GET_ALIVE_STATUS,
-                                &prms);
-            if (status == CPSW_SOK)
-            {
-                if (alive == true)
-                {
-                    UART_printf("PHY %d is alive\n", index);
-                }
-            }
-            else
-            {
-                UART_printf("Failed to get PHY %d alive status: %d\n", index,
-                             status);
-            }
+    /* Wait for link up */
+    if ((status == ENET_SOK) && gEnetLpbk.testPhyLoopback)
+    {
+        status = BoardDiag_enetLpbkWaitForLinkUp();
+    }
+
+    /* Do packet transmission and reception */
+    if (status == ENET_SOK)
+    {
+       status = BoardDiag_cpswPktRxTx();
+    }
+
+    /* Print network statistics */
+    if (status == ENET_SOK)
+    {
+        if (Enet_isCpswFamily(gEnetLpbk.enetType))
+        {
+            BoardDiag_enetLpbkShowCpswStats();
         }
     }
 
-    UART_printf("Waiting for link to up for portNum-%d and portNum-%d...\n\r",
-                 gCpswLpbkObj.portNum0,
-                 gCpswLpbkObj.portNum1);
-
-    if (status == CPSW_SOK)
+    /* Disable host port */
+    if (status == ENET_SOK)
     {
-
-        while (!CpswAppUtils_isPortLinkUp(gCpswLpbkObj.hCpsw,
-                                          gCpswLpbkObj.coreId,
-                                          gCpswLpbkObj.portNum0))
+        ENET_IOCTL_SET_NO_ARGS(&prms);
+        status = Enet_ioctl(gEnetLpbk.hEnet, gEnetLpbk.coreId,
+                            ENET_HOSTPORT_IOCTL_DISABLE, &prms);
+        if (status != ENET_SOK)
         {
-            BoardDiag_cpswWait(1000);
-            /* Cpsw_periodicTick should be called from non-ISR context.
-             * Calling Cpsw_periodicTick at regular intervals for port link detect before
-             * starting packet RX/TX */
-            Cpsw_periodicTick(gCpswLpbkObj.hCpsw);
-        }
-
-        while (!CpswAppUtils_isPortLinkUp(gCpswLpbkObj.hCpsw,
-                                          gCpswLpbkObj.coreId,
-                                          gCpswLpbkObj.portNum1))
-        {
-            BoardDiag_cpswWait(1000);
-            /* Cpsw_periodicTick should be called from non-ISR context.
-             * Calling Cpsw_periodicTick at regular intervals for port link detect before
-             * starting packet RX/TX */
-            Cpsw_periodicTick(gCpswLpbkObj.hCpsw);
-        }
-
-        UART_printf("Link up for portNum-%d and portNum-%d\n\r",
-                     gCpswLpbkObj.portNum0,
-                     gCpswLpbkObj.portNum1);
-
-        BoardDiag_cpswWait(20000);
-        UART_printf("Started with the packet rx tx test\n\r");
-        status = BoardDiag_cpswPktRxTx();
-        if (status != CPSW_SOK)
-        {
-            UART_printf("Failed to enable host port: %d\n", status);
+            UART_printf("Failed to disable host port: %d\n", status);
             return -1;
         }
     }
 
-    /* Print CPSW statistics of all ports */
-    BoardDiag_cpswShowStats();
-
-    /* Disable host port */
-    status = Cpsw_ioctl(gCpswLpbkObj.hCpsw,
-                        gCpswLpbkObj.coreId,
-                        CPSW_HOSTPORT_IOCTL_DISABLE,
-                        NULL);
-    if (status != CPSW_SOK)
+    /* Print DMA statistics */
+    if (status == ENET_SOK)
     {
-        UART_printf("Failed to disable host port: %d\n", status);
+        EnetAppUtils_showRxChStats(gEnetLpbk.hRxCh);
+        EnetAppUtils_showTxChStats(gEnetLpbk.hTxCh);
+    }
+
+    /* Close Enet DMA driver */
+    BoardDiag_enetLpbkCloseDma();
+
+    /* Close Enet driver */
+    BoardDiag_enetLpbkCloseEnet();
+
+    /* Disable peripheral clocks */
+    EnetAppUtils_disableClocks(gEnetLpbk.enetType);
+
+    /* Deinit Enet driver */
+    Enet_deinit();
+    UART_printf("Deinitializing of Enet driver done\n");
+
+    if(status == ENET_SOK)
+    {
+        UART_printf("Test Passed\n");
+    }
+    else
+    {
+        UART_printf("Test Failed\n");
         return -1;
     }
 
-    /* Close CPSW DMA driver */
-    BoardDiag_cpswCloseDma();
-    /* Close CPSW */
-    BoardDiag_cpswClose();
-    /* Close UDMA driver */
-    CpswAppUtils_udmaclose(gCpswLpbkObj.hUdmaDrv);
-
-    CpswAppUtils_disableClocks(gCpswLpbkObj.cpswType);
-    CpswAppBoardUtils_deInit();
-
     return 0;
-}
-
-#if defined (j721e_evm)
-void BoardDiag_rgmiiPortSelect(void)
-{
-    uint32_t userInput = 0;
-
-    UART_printf("Select any one option from below\n\r");
-    UART_printf("1 - PRG0 Port Loopback Test\n\r");
-    UART_printf("2 - PRG1 Port Loopback Test\n\r");
-
-    UART_scanFmt("%d", (uint8_t*)&userInput);
-
-    while((userInput != BOARD_DIAG_CPSW_RGMII_PRG0_TEST) &&
-          (userInput != BOARD_DIAG_CPSW_RGMII_PRG1_TEST))
-    {
-        UART_printf("Invalid userInput, Please try again\n\r");
-        UART_scanFmt("%d", &userInput);
-    }
-
-    if(userInput == BOARD_DIAG_CPSW_RGMII_PRG0_TEST)
-    {
-        gCpswLpbkObj.portNum0 = CPSW_MAC_PORT_2;
-        gCpswLpbkObj.portNum1 = CPSW_MAC_PORT_3;
-    }
-    else
-    {
-        gCpswLpbkObj.portNum0 = CPSW_MAC_PORT_0;
-        gCpswLpbkObj.portNum1 = CPSW_MAC_PORT_7;
-    }
-}
-#else
-void BoardDiag_rgmiiPortSelect(void)
-{
-    gCpswLpbkObj.portNum0 = CPSW_MAC_PORT_0;
-    gCpswLpbkObj.portNum1 = CPSW_MAC_PORT_1;
-
-    Board_serdesCfgQsgmii();
-    BoardDiag_enetPhyEnable();
-}
-#endif
-
-void BoardDiag_sgmiiPortSelect(void)
-{
-    uint32_t userInput = 0;
-
-    UART_printf("Select any one option from below\n\r");
-    UART_printf("1 - Port0 & Port1 Loopback Test\n\r");
-    UART_printf("2 - Port2 & Port3 Loopback Test\n\r");
-
-    UART_scanFmt("%d", (uint8_t*)&userInput);
-
-    while((userInput != BOARD_DIAG_CPSW_SGMII_P0P1_TEST) &&
-          (userInput != BOARD_DIAG_CPSW_SGMII_P2P3_TEST))
-    {
-        UART_printf("Invalid userInput, Please try again\n\r");
-        UART_scanFmt("%d", &userInput);
-    }
-
-#if defined (j721e_evm)
-    if(userInput == BOARD_DIAG_CPSW_SGMII_P0P1_TEST)
-    {
-        gCpswLpbkObj.portNum0 = CPSW_MAC_PORT_1;
-        gCpswLpbkObj.portNum1 = CPSW_MAC_PORT_4;
-    }
-    else
-    {
-        gCpswLpbkObj.portNum0 = CPSW_MAC_PORT_5;
-        gCpswLpbkObj.portNum1 = CPSW_MAC_PORT_6;
-    }
-#else
-    if(userInput == BOARD_DIAG_CPSW_SGMII_P0P1_TEST)
-    {
-        gCpswLpbkObj.portNum0 = CPSW_MAC_PORT_0;
-        gCpswLpbkObj.portNum1 = CPSW_MAC_PORT_1;
-    }
-    else
-    {
-        gCpswLpbkObj.portNum0 = CPSW_MAC_PORT_2;
-        gCpswLpbkObj.portNum1 = CPSW_MAC_PORT_3;
-    }
-#endif
-
-    Board_serdesCfgQsgmii();
-    BoardDiag_enetPhyEnable();
 }
 
 /**
@@ -1355,36 +1482,16 @@ void BoardDiag_sgmiiPortSelect(void)
  *              -1 - in case of failure.
  *
  */
-int8_t BoardDiag_CpswEthRunTest(void)
+int8_t BoardDiag_cpswEthRunTest(void)
 {
     int8_t ret;
-    uint32_t userInput = 0;
 
-    UART_printf  ("************************************************\n");
-    UART_printf  ("*             CPSW Ethernet Test               *\n");
-    UART_printf  ("************************************************\n");
-
-    UART_printf("Select any one option from below\n\r");
-#if defined (j721e_evm)
-    UART_printf("1 - CPSW9G RGMII Ethernet Test\n\r");
-    UART_printf("2 - CPSW9G SGMII Ethernet Test\n\r");
-#else
-    UART_printf("1 - CPSW5G RGMII Ethernet Test\n\r");
-    UART_printf("2 - CPSW5G SGMII Ethernet Test\n\r");
-#endif
-    UART_scanFmt("%d", (uint8_t*)&userInput);
-
-    if(userInput == BOARD_DIAG_CPSW_RGMII_TEST)
-    {
-        BoardDiag_rgmiiPortSelect();
-    }
-    else
-    {
-        BoardDiag_sgmiiPortSelect();
-    }
+    UART_printf("\n*********************************************\n");
+    UART_printf  ("*            ENET Ethernet Test             *\n");
+    UART_printf  ("*********************************************\n");
 
     /* Run the loopback test */
-    ret = BoardDiag_cpswLoopbackTest(userInput);
+    ret = BoardDiag_cpswLoopbackTest();
 
     return ret;
 }
@@ -1399,34 +1506,19 @@ int8_t BoardDiag_CpswEthRunTest(void)
  *             -1  - in case of failure
  *
  */
+#ifndef SPI_BOOT_FRAMEWORK
 int main(void)
 {
     Board_initCfg boardCfg;
     Board_STATUS status;
     int8_t ret = 0;
 
-    Board_PinmuxConfig_t gesiIcssgPinmux;
-
-    Board_pinmuxGetCfg(&gesiIcssgPinmux);
-    gesiIcssgPinmux.autoCfg = BOARD_PINMUX_CUSTOM;
-    gesiIcssgPinmux.gesiExp = BOARD_PINMUX_GESI_CPSW;
-    Board_pinmuxSetCfg(&gesiIcssgPinmux);
-
 #ifdef PDK_RAW_BOOT
     boardCfg = BOARD_INIT_MODULE_CLOCK |
                BOARD_INIT_PINMUX_CONFIG |
                BOARD_INIT_UART_STDIO;
 #else
-    boardCfg = BOARD_INIT_PINMUX_CONFIG |
-               BOARD_INIT_UART_STDIO;
-#endif
-
-#if defined (j721e_evm)
-    boardCfg |= BOARD_INIT_ENETCTRL_CPSW9G |
-                BOARD_INIT_CPSW9G_ETH_PHY;
-#else
-    boardCfg |= BOARD_INIT_ENETCTRL_CPSW5G |
-                BOARD_INIT_CPSW5G_ETH_PHY;
+    boardCfg = BOARD_INIT_UART_STDIO | BOARD_INIT_PINMUX_CONFIG;
 #endif
 
     status = Board_init(boardCfg);
@@ -1435,15 +1527,7 @@ int main(void)
         return -1;
     }
 
-    /* Enable CPSW RGMII MDIO mux */
-    status = Board_control(BOARD_CTRL_CMD_SET_GESI_CPSW_MDIO_MUX,
-                           NULL);
-    if(status != BOARD_SOK)
-    {
-        return -1;
-    }
-
-    ret = BoardDiag_CpswEthRunTest();
+    ret = BoardDiag_cpswEthRunTest();
     if(ret == 0)
     {
         UART_printf("CPSW Loopback Test Passed\n\r");
@@ -1457,3 +1541,5 @@ int main(void)
     return ret;
 
 }
+#endif
+

@@ -54,7 +54,7 @@ EXTERNAL_INTERFACES =
 XDC_CFG_FILE_mpu1_0 =
 XDC_CFG_FILE_mcu1_0 =
 
-SRCDIR = ../../../../drv/cpsw/examples/cpsw_loopback_test ../src ../../common/$(SOC) ./$(BOARD)
+SRCDIR = ../src  ../../common/$(SOC) ./$(BOARD)
 INCDIR = ../../../../board ../src ../../../src/$(BOARD)/include ../../../src/$(BOARD) ../../../src/flash ../../common/$(SOC) ../../../../csl
 
 # List all the external components/interfaces, whose interface header files
@@ -63,7 +63,7 @@ INCLUDE_EXTERNAL_INTERFACES = pdk
 
 # List all the components required by the application
 COMP_LIST_COMMON = $(PDK_COMMON_BAREMETAL_COMP)
-COMP_LIST_COMMON += cpsw cpswsoc cpsw_apputils
+COMP_LIST_COMMON += enet enetsoc enetphy enet_example_utils_baremetal
 
 # Common source files and CFLAGS across all platforms and cores
 PACKAGE_SRCS_COMMON = ../src makefile
@@ -73,7 +73,11 @@ PACKAGE_SRCS_COMMON += ../../create_sd.bat ../../create_sd.sh
 
 SRCS_COMMON += cpsw_eth_test.c diag_common_cfg.c
 
-CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) -DDIAG_$(TESTMODE) $(BOARD_DIAG_CFLAGS) -DCPSW_CFG_ASSERT_ENABLE -DCPSW_CFG_PRINT_ENABLE -DUART_ENABLED -DCPSW_TRACE_CFG_TRACE_LEVEL=4 -DCPSW_CFG_DEV_ERROR -DCPSWDMA_INSTRUMENTATION_ENABLED
+CFLAGS_LOCAL_COMMON += $(PDK_CFLAGS) -DDIAG_$(TESTMODE) $(BOARD_DIAG_CFLAGS) $(ENET_CFLAGS)
+
+ifeq ($(CORE),$(filter $(CORE), mcu1_0))
+EXTERNAL_LNKCMD_FILE_LOCAL = ../../common/$(SOC)/linker_$(CORE).lds
+endif
 
 # Include common make files
 ifeq ($(MAKERULEDIR), )
