@@ -876,7 +876,7 @@ CANFD_MsgObjHandle CANFD_createMsgObject(CANFD_Handle handle, const CANFD_MCANMs
         baseAddr = ptrCanFdMCB->hwCfg.regBaseAddress;
 
         /* Allocate memory for the CAN Message Object */
-        ptrCanMsgObj = MemoryP_ctrlAlloc (sizeof(CANFD_MessageObject), 0U);
+        ptrCanMsgObj = (CANFD_MessageObject *)MemoryP_ctrlAlloc (sizeof(CANFD_MessageObject), 0U);
         if (ptrCanMsgObj == NULL)
         {
             /* Error: Unable to allocate the memory */
@@ -1049,7 +1049,7 @@ CANFD_MsgObjHandle CANFD_createRxRangeMsgObject(CANFD_Handle handle, const CANFD
         baseAddr = ptrCanFdMCB->hwCfg.regBaseAddress;
 
         /* Allocate memory for the CAN Message Object */
-        ptrCanMsgObj = MemoryP_ctrlAlloc (sizeof(CANFD_MessageObject), 0U);
+        ptrCanMsgObj = (CANFD_MessageObject *)MemoryP_ctrlAlloc (sizeof(CANFD_MessageObject), 0U);
         if (ptrCanMsgObj == NULL)
         {
             /* Error: Unable to allocate the memory */

@@ -16,9 +16,10 @@ INCLUDE_EXTERNAL_INTERFACES = pdk
 SRCS_COMMON += canfd.c canfd_soc.c
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(MAILBOX_CFLAGS)
 
-PACKAGE_SRCS_COMMON = canfd.h makefile canfd_component.mk .gitignore src soc/canfd_soc.h soc/$(SOC) include
+PACKAGE_SRCS_COMMON = canfd.h makefile canfd_component.mk .gitignore src soc/canfd_soc.h soc/$(SOC)
 PACKAGE_SRCS_COMMON += config_mk.bld package.bld package.xdc package.xs
 PACKAGE_SRCS_COMMON += Settings.xdc
+PACKAGE_SRCS_COMMON += test
 
 # Core/SoC/platform specific source files and CFLAGS
 # Example:
