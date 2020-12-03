@@ -59,6 +59,18 @@
 /* BIOS Header files */
 #include <ti/sysbios/BIOS.h>
 #include <xdc/runtime/Error.h>
+#else
+#ifdef BUILD_C66X_1
+/* !! HACK to workaround c66x OSAL baremetal issue with not enabling Hwi interrupt associated with EventCombiner */
+/* Osal baremetal lib for c66x does not enable the Hwi interrupt number when Osal_enableInterrupt is called.
+ * This is correct behaviour but the issue is when registering interrupt the Hwi interrupt number is not
+ * enabled if Osal_registerInterrupt enableIntr param is set to FALSE> This iswrong and the Hwi interrupt
+ * number should be enabled irrespective of a particular eventCombiner event is enabled or not.
+ * Until this is fixed in c6xx osal baremetal library, adding hack in application to enable the interrupt
+ */
+#include <ti/osal/src/nonos/Nonos_config.h>
+#define CSIRX_C66X_COMMON_ISR_HWI_INT_NUM                                                         (6U)
+#endif
 #endif /* #ifdef USE_BIOS */
 
 
@@ -600,7 +612,18 @@ bool BoardDiag_CsirxTestRun(uint8_t instanceId)
         isTestPass = false;
         return isTestPass;
     }
-
+#ifndef USE_BIOS
+#ifdef BUILD_C66X_1
+    /* !! HACK to workaround c66x OSAL baremetal issue with not enabling Hwi interrupt associated with EventCombiner */
+    /* Osal baremetal lib for c66x does not enable the Hwi interrupt number when Osal_enableInterrupt is called.
+     * This is correct behaviour but the issue is when registering interrupt the Hwi interrupt number is not
+     * enabled if Osal_registerInterrupt enableIntr param is set to FALSE> This iswrong and the Hwi interrupt
+     * number should be enabled irrespective of a particular eventCombiner event is enabled or not.
+     * Until this is fixed in c6xx osal baremetal library, adding hack in application to enable the interrupt
+     */
+    OsalArch_enableInterrupt(CSIRX_C66X_COMMON_ISR_HWI_INT_NUM);
+#endif
+#endif
     /* config contexts */
     /* assign ping pong address */
     testConfig.contextCfg.pingPongConfig.pingAddress =
