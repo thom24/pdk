@@ -14,7 +14,7 @@ INCLUDE_EXTERNAL_INTERFACES = pdk
 
 # Common source files and CFLAGS across all platforms and cores
 SRCS_COMMON += canfd.c canfd_soc.c
-CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(MAILBOX_CFLAGS)
+CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS)
 
 PACKAGE_SRCS_COMMON = canfd.h makefile canfd_component.mk .gitignore src soc/canfd_soc.h soc/$(SOC)
 PACKAGE_SRCS_COMMON += config_mk.bld package.bld package.xdc package.xs
