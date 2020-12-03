@@ -159,7 +159,11 @@ SBL_OBJ_COPY := $(TOOLCHAIN_PATH_GCC_ARCH64)/bin/$(GCC_ARCH64_BIN_PREFIX)-objcop
 #SoCs like TPR12 do not have GCC tool. So we package it as part of SBL
 #TI ARM CGT objcopy does not copy .data sections correctly so cannot be used
 ifeq ("$(wildcard ${TOOLCHAIN_PATH_GCC_ARCH64})","")
+ifneq ($(OS),Windows_NT)
 SBL_OBJ_COPY := ${PDK_SBL_COMP_PATH}/tools/tpr12SBLImageGen/unix/aarch64-none-elf-objcopy
+else
+SBL_OBJ_COPY := ${PDK_SBL_COMP_PATH}/tools/tpr12SBLImageGen/windows/aarch64-none-elf-objcopy.exe
+endif
 endif
 export SBL_OBJ_COPY
 

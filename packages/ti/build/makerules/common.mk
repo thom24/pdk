@@ -646,7 +646,7 @@ ifneq ($(OS),Windows_NT)
 	$(PDK_INSTALL_PATH)/ti/build/makerules/tpr12rom_sign_non_secure.sh -b $(SBL_BIN_PATH) -c R5 -k ${PDK_INSTALL_PATH}/ti/build/makerules/tpr12_gpkey.pem -i
 	cat R5-cert.bin $(SBL_BIN_PATH) > $(SBL_TIIMAGE_PATH)
 else
-	echo "Bypassing SBL signing as available only in unix environment presently"
+	powershell -executionpolicy unrestricted -command $(PDK_INSTALL_PATH)/ti/build/makerules/tpr12rom_sign_non_secure.ps1 -b $(SBL_BIN_PATH) -c R5 -k ${PDK_INSTALL_PATH}/ti/build/makerules/tpr12_gpkey.pem -o $(SBL_TIIMAGE_PATH)
 endif
 endif
 	$(ECHO) \# SBL image $@ created.
