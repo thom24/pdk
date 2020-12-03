@@ -62,6 +62,8 @@
 static int32_t udmaTestBlkcpyTestLoop(UdmaTestTaskObj *taskObj, uint32_t pauseTest, uint32_t chainTest);
 static int32_t udmaTestBlkcpyTest(UdmaTestTaskObj *taskObj, uint32_t pauseTest, uint32_t chainTest);
 
+static int32_t udmaTestBlkCpyRingPrimeLcdmaTestLoop(UdmaTestTaskObj *taskObj);
+
 static int32_t udmaTestBlkcpyCreate(UdmaTestTaskObj *taskObj, uint32_t chainTest);
 static int32_t udmaTestBlkcpyDelete(UdmaTestTaskObj *taskObj, uint32_t chainTest);
 static int32_t udmaTestBlkcpyAlloc(UdmaTestTaskObj *taskObj);
@@ -166,6 +168,34 @@ int32_t udmaTestBlkcpyChainingTc(UdmaTestTaskObj *taskObj)
     Utils_prfTsEnd(taskObj->prfTsHandle, (taskObj->loopCnt * taskObj->numCh));
 
     retVal += udmaTestBlkcpyDelete(taskObj, TRUE);
+    retVal += udmaTestBlkcpyFree(taskObj);
+
+    retVal += gUdmaTestBlkcpyResult;
+
+    return (retVal);
+}
+
+int32_t udmaTestBlkCpyRingPrimeLcdmaTest(UdmaTestTaskObj *taskObj)
+{
+    int32_t     retVal = UDMA_SOK;
+    uint32_t    loopCnt = 0U;
+
+    retVal = udmaTestBlkcpyAlloc(taskObj);
+    retVal += udmaTestBlkcpyCreate(taskObj, FALSE);
+
+    while(loopCnt < taskObj->loopCnt)
+    {
+        /* Perform block copy with ring prime */
+        retVal = udmaTestBlkCpyRingPrimeLcdmaTestLoop(taskObj);
+        if(UDMA_SOK != retVal)
+        {
+            break;
+        }
+
+        loopCnt++;
+    }
+
+    retVal += udmaTestBlkcpyDelete(taskObj, FALSE);
     retVal += udmaTestBlkcpyFree(taskObj);
 
     retVal += gUdmaTestBlkcpyResult;
@@ -520,6 +550,173 @@ static int32_t udmaTestBlkcpyTest(UdmaTestTaskObj *taskObj, uint32_t pauseTest, 
             {
                 break;
             }
+        }
+    }
+
+    return (retVal);
+}
+
+static int32_t udmaTestBlkCpyRingPrimeLcdmaTestLoop(UdmaTestTaskObj *taskObj)
+{
+    int32_t             retVal = UDMA_SOK;
+    uint32_t            chCnt, qCnt;
+    UdmaTestChObj      *chObj;
+    Udma_RingHandle     ringHandle;
+    void               *trpdMem;
+    uint64_t            pDesc = 0;
+    uint32_t            elemCnt, ringMemSize, rOcc;
+    void               *ringMem = NULL;
+    
+    /* Update TR packet descriptor */
+    for(chCnt = 0U ; chCnt < taskObj->numCh; chCnt++)
+    {
+        chObj = taskObj->chObj[chCnt];
+        GT_assert(taskObj->traceMask, chObj != NULL);
+        for(qCnt = 0U; qCnt < chObj->qdepth; qCnt++)
+        {
+            udmaTestBlkcpyTrpdInit(chObj, qCnt);
+        }
+    }
+    
+    for(chCnt = 0U ; chCnt < taskObj->numCh; chCnt++)
+    {
+        chObj       = taskObj->chObj[chCnt];  
+        ringHandle  = Udma_chGetFqRingHandle(chObj->chHandle);   
+        elemCnt     = chObj->qdepth;
+        ringMem     = chObj->chHandle->chPrms.fqRingPrms.ringMem;
+        ringMemSize = chObj->chHandle->chPrms.fqRingPrms.ringMemSize;
+
+        /* Check ring mode after allocation */
+        if (Udma_ringGetMode(ringHandle) != TISCI_MSG_VALUE_RM_RING_MODE_RING)
+        {
+            GT_0trace   (taskObj->traceMask, GT_ERR, " Ring mode mismatch!!\n");
+            retVal = UDMA_EFAIL;
+            break;
+        }
+
+        /* Check ring elements count after allocation */
+        if (Udma_ringGetElementCnt(ringHandle) != elemCnt)
+        {
+            GT_0trace(taskObj->traceMask, GT_ERR, " Ring elements count mismatch!!\n");
+            retVal = UDMA_EFAIL;
+            break;
+        }
+
+        /* Check wrIdx of ring after allocation */
+        if (Udma_ringGetWrIdx(ringHandle) != 0U)
+        {
+            GT_0trace(taskObj->traceMask, GT_ERR, " Ring rwIdx value mismatch!!\n");
+            retVal = UDMA_EFAIL;
+            break;
+        }
+
+        /* Queue through prime API */
+        for(qCnt = 0U; qCnt < elemCnt; qCnt++)
+        {
+            Udma_ringPrime(ringHandle, 
+                           Udma_appVirtToPhyFxn(chObj->trpdMem[qCnt], 0U, NULL));
+        }
+
+        /* Check if the HW occupancy is zero as the queue is not committed */
+        if(udmaTestCompareRingHwOccDriver(ringHandle, 0U, UDMA_TEST_RING_ACC_DIRECTION_FORWARD) != UDMA_SOK)
+        {
+            GT_0trace(taskObj->traceMask, GT_ERR, " Ring element count mismatch!!\n");
+            retVal = UDMA_EFAIL;
+            break;
+        }
+
+        /* Pause the channel before setting the doorbell, to verify the Forward Occupancy.
+         * Else, as soon as doorbell is set, transfer happens and FOCC can't be verified. */
+        retVal = Udma_chPause(chObj->chHandle);
+        if(UDMA_SOK != retVal)
+        {
+            GT_0trace(taskObj->traceMask, GT_ERR, " Channel pause failed!!\n");
+            break;
+        }
+
+        /* Do Cache flush and commit to ring */
+        Udma_appUtilsCacheWb(ringMem, ringMemSize);
+        Udma_ringSetDoorBell(ringHandle, elemCnt);
+
+        /* Check if the HW occupancy is same as what is queued */
+        if(udmaTestCompareRingHwOccDriver(ringHandle, elemCnt, UDMA_TEST_RING_ACC_DIRECTION_FORWARD) != UDMA_SOK)
+        {
+            GT_0trace(taskObj->traceMask, GT_ERR, " Ring element count mismatch!!\n");
+            retVal = UDMA_EFAIL;
+            break;
+        }
+
+        /* Check wrIdx of ring after queuing, wrIdx should be back to zero as
+         * ring is full */
+        if (Udma_ringGetWrIdx(ringHandle) != 0U)
+        {
+            GT_0trace(taskObj->traceMask, GT_ERR, " Ring wrIdx value mismatch!!\n");
+            retVal = UDMA_EFAIL;
+            break;
+        }
+
+        /* After verifying FOCC and wrIdx, Resume channel to start the transfer */
+        retVal = Udma_chResume(chObj->chHandle);
+        if(UDMA_SOK != retVal)
+        {
+            GT_0trace(taskObj->traceMask, GT_ERR, " Channel resume failed!!\n");
+            break;
+        }
+
+        /* Wait for the reverse occupancy of the Dual ring to become elemCnt
+         * (waiting for the transfer to complete),
+         * before starting ring prime read.  */
+        while(1)
+        {
+            /* Update cfg->occ count */
+            rOcc = Udma_ringGetReverseRingOcc(ringHandle); 
+        
+            if(elemCnt == rOcc)
+            {
+                break;
+            }
+        }
+        
+        /* Do Cache invalidate before reading ring elements */
+        Udma_appUtilsCacheInv(ringMem, ringMemSize);
+        
+        /* Dequeue using prime read API */
+        for(qCnt = 0U; qCnt < elemCnt; qCnt++)
+        {
+            trpdMem  = (void *) chObj->trpdMem[qCnt];
+            
+            Udma_ringPrimeRead(ringHandle, &pDesc);
+            /* Check returned descriptor pointer */
+            if(Udma_appPhyToVirtFxn(pDesc, 0U, NULL) != trpdMem)
+            {
+                GT_0trace(taskObj->traceMask, GT_ERR,
+                    " TR descriptor pointer returned doesn't match the submitted address!!\n");
+                retVal = UDMA_EFAIL;
+                break;
+            }
+        }
+        if(UDMA_SOK != retVal)
+        {
+            break;
+        }
+
+        /* Check if the HW occupancy is same as elemCnt as the queue is not committed */
+        if(udmaTestCompareRingHwOccDriver(ringHandle, elemCnt, UDMA_TEST_RING_ACC_DIRECTION_REVERSE) != UDMA_SOK)
+        {
+            GT_0trace(taskObj->traceMask, GT_ERR, " Ring element count mismatch!!\n");
+            retVal = UDMA_EFAIL;
+            break;
+        }
+
+        /* Set door bell value as -1 * elemCnt to reduce ring occupancy after reading */
+        Udma_ringSetDoorBell(ringHandle, (-1 * (int32_t)elemCnt));
+
+        /* Check if the HW occupancy is zero */
+        if(udmaTestCompareRingHwOccDriver(ringHandle, 0U, UDMA_TEST_RING_ACC_DIRECTION_REVERSE) != UDMA_SOK)
+        {
+            GT_0trace(taskObj->traceMask, GT_ERR, " Ring not empty!!\n");
+            retVal = UDMA_EFAIL;
+            break;
         }
     }
 

@@ -2037,6 +2037,7 @@ static UdmaTestParams gUdmaTestCases[] =
         .runFlag    = (UDMA_TEST_RF_SOC_AM65XX | UDMA_TEST_RF_CORE_ALL | UDMA_TEST_RF_CFG_DEF | UDMA_TEST_RF_CFG_DYN),
         .ringPrmId  = UDMA_TEST_RING_PRMID_EVENT_NONE,
     },
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
     {
         .enableTest = TEST_ENABLE,
         .tcId       = 4693U,
@@ -2075,6 +2076,53 @@ static UdmaTestParams gUdmaTestCases[] =
         .runFlag    = (UDMA_TEST_RF_SOC_ALL | UDMA_TEST_RF_CORE_ALL | UDMA_TEST_RF_CFG_DEF | UDMA_TEST_RF_CFG_DYN),
         .ringPrmId  = UDMA_TEST_RING_PRMID_EVENT_NONE,
     },
+#endif /* #if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1) */
+#if (UDMA_SOC_CFG_RA_LCDMA_PRESENT == 1)
+    {
+        /* For LCDMA with Dual ring, 
+         * Ring Prime Read checks for Reverse occupancy.
+         * In this case, actual transfer should happen to populate
+         * reverse occupancy count and successfully do a ring prime read.
+         * This testcase, implements block copy using ring prime API's 
+         * This tests only Ring Prime API's.
+         * Data check and TR Responce checks are NOT carried out.*/
+        .enableTest = TEST_ENABLE,
+        .tcId       = 8837U,
+        .tcName     = "LCDMA Ring Prime Test",
+        .disableInfo= NULL,
+        .printEnable= PRINT_ENABLE,
+        .prfEnable  = PRF_DISABLE,
+        .tcType     = (UDMA_TCT_SANITY | UDMA_TCT_FUNCTIONAL),
+        .dcEnable   = DATA_CHECK_DISABLE,
+        .loopCnt    = 1U,
+        .numTasks   = 1U,
+        .numCh      = {1U},
+        .instId     = {UDMA_TEST_INST_ID_BCDMA_BC},
+        .testType   = {UDMA_TT_MISC},
+        .testFxnPtr = {&udmaTestRingPrimeLcdmaTc},
+        .qdepth     = {500U},
+        .pacingTime = {PACING_NONE},
+        .chPrmId    = {UDMA_TEST_CH_PRMID_DEF},
+        .icnt       = {
+                        {16U, 1U, 1U, 1U}
+                      },
+        .dicnt      = {
+                        {16U, 1U, 1U, 1U}
+                      },
+        .dim        = {
+                        {0U, 0U, 0U}
+                      },
+        .ddim       = {
+                        {0U, 0U, 0U}
+                      },
+        .heapIdSrc  = {DEF_HEAP_ID},
+        .heapIdDest = {DEF_HEAP_ID},
+        .srcBufSize = {UDMA_TEST_DEF_ICNT0},
+        .destBufSize= {UDMA_TEST_DEF_DICNT0},
+        .runFlag    = (UDMA_TEST_RF_BCDMA_BC | UDMA_TEST_RF_CFG_DYN),
+        .ringPrmId  = UDMA_TEST_RING_PRMID_EVENT_NONE,
+    },
+#endif /* #if (UDMA_SOC_CFG_RA_LCDMA_PRESENT == 1) */
 #if (UDMA_SOC_CFG_RING_MON_PRESENT == 1)
     {
         .enableTest = TEST_ENABLE,

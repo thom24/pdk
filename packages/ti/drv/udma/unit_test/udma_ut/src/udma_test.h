@@ -98,7 +98,7 @@ extern "C" {
 
 #define UDMA_TEST_MAX_TASKS             (10U)
 #define UDMA_TEST_MAX_CH                (15U)
-#define UDMA_TEST_MAX_QDEPTH            (5U)
+#define UDMA_TEST_MAX_QDEPTH            (500U)
 
 #define UDMA_TEST_MAX_ICNT              (4U)
 #define UDMA_TEST_MAX_DIM               (3U)
@@ -606,6 +606,7 @@ int32_t udmaTestRingMemPtrTc(UdmaTestTaskObj *taskObj);
 int32_t udmaTestRingAttachTc(UdmaTestTaskObj *taskObj);
 int32_t udmaTestRingResetTc(UdmaTestTaskObj *taskObj);
 int32_t udmaTestRingPrimeTc(UdmaTestTaskObj *taskObj);
+int32_t udmaTestRingPrimeLcdmaTc(UdmaTestTaskObj *taskObj);
 /*
  * UDMA ring monitor test functions
  */
@@ -668,6 +669,7 @@ void udmaTestCalcPerformance(UdmaTestTaskObj *taskObj, uint32_t durationMs);
 void udmaTestCalcTotalPerformance(UdmaTestObj *testObj, uint32_t durationMs);
 int32_t udmaTestCompareRingHwOccDriver(Udma_RingHandle ringHandle, uint32_t cnt, uint32_t direction);
 uint32_t udmaTestGetRingHwOccDriver(Udma_RingHandle ringHandle, uint32_t direction);
+int32_t udmaTestBlkCpyRingPrimeLcdmaTest(UdmaTestTaskObj *taskObj);
 
 char AppUtils_getChar(void);
 int32_t AppUtils_getCharTimeout(char *ch, uint32_t msec);

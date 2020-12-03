@@ -423,6 +423,21 @@ int32_t udmaTestRingPrimeTc(UdmaTestTaskObj *taskObj)
     return (retVal);
 }
 
+int32_t udmaTestRingPrimeLcdmaTc(UdmaTestTaskObj *taskObj)
+{
+    int32_t     retVal = UDMA_SOK;
+
+    GT_1trace(taskObj->traceMask, GT_INFO1,
+              " |TEST INFO|:: Task:%d: LCDMA Ring Prime Testcase ::\r\n", taskObj->taskId);
+    GT_2trace(taskObj->traceMask, GT_INFO1,
+              " |TEST INFO|:: Task:%d: Loop count                 : %d ::\r\n", taskObj->taskId, taskObj->loopCnt);
+
+    /* Perform ring prime lcdma test using block copy */
+    retVal = udmaTestBlkCpyRingPrimeLcdmaTest(taskObj);
+
+    return (retVal);
+}
+
 static int32_t udmaTestRingProxyTestLoop(UdmaTestTaskObj *taskObj)
 {
     int32_t             retVal = UDMA_SOK;
