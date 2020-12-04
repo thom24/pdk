@@ -62,7 +62,7 @@
 
 static Board_PinmuxConfig_t gBoardPinmuxCfg = {BOARD_PINMUX_DEFAULT,
                                                BOARD_PINMUX_ICSS_RGMII,
-                                               0};
+                                               BOARD_PINMUX_EXP_NONE};
 
 /**
  *  \brief  Gets base address of padconfig registers
@@ -216,6 +216,12 @@ Board_STATUS Board_pinmuxConfig (void)
         if(gBoardPinmuxCfg.icssMux == BOARD_PINMUX_ICSS_MII)
         {
             Board_pinmuxUpdate(gAM64x_MainPinmuxDataIcssMII,
+                               BOARD_SOC_DOMAIN_MAIN);
+        }
+
+        if(gBoardPinmuxCfg.expBoardMux == BOARD_PINMUX_EXP_GPMC)
+        {
+            Board_pinmuxUpdate(gAM64x_MainPinmuxDataGPMC,
                                BOARD_SOC_DOMAIN_MAIN);
         }
     }

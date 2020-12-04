@@ -58,6 +58,9 @@ extern "C" {
 #define BOARD_PINMUX_CUSTOM                (0)
 #define BOARD_PINMUX_DEFAULT               (1U)   /* Default */
 
+#define BOARD_PINMUX_EXP_NONE              (0)    /* Default */
+#define BOARD_PINMUX_EXP_GPMC              (1U)
+
 /* Structure to set the board pinmux configuration */
 typedef struct Board_PinmuxConfig_s
 {
@@ -77,8 +80,8 @@ typedef struct Board_PinmuxConfig_s
 
     /**
      * Pinmux config control for application cards
-     *  Note in use.
-     *  Placeholder in case specific pinmux is needed for expansion boards.
+     *  BOARD_PINMUX_EXP_NONE(0) - No expansion board pinmux config
+     *  BOARD_PINMUX_EXP_GPMC(1) - Enables pinmux for GPMC
      */
     uint8_t expBoardMux;
 

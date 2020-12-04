@@ -269,6 +269,7 @@ enum pinWkupOffsets
 extern pinmuxBoardCfg_t gAM64x_MainPinmuxData[];
 extern pinmuxBoardCfg_t gAM64x_WkupPinmuxData[];
 extern pinmuxBoardCfg_t gAM64x_MainPinmuxDataIcssMII[];
+extern pinmuxBoardCfg_t gAM64x_MainPinmuxDataGPMC[];
 
 #ifdef __cplusplus
 }
