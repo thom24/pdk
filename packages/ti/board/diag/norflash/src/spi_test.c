@@ -74,7 +74,12 @@ int BoardDiag_SpiReadWriteTest(Board_flashHandle  handle,
 {
     uint32_t blockNum, pageNum;      /* Block, page number */
     uint32_t failIndex;
-    
+#if defined(SOC_TPR12)
+    uint32_t ioMode = BOARD_FLASH_QSPI_IO_MODE_QUAD;
+#else
+    uint32_t ioMode = BOARD_FLASH_QSPI_IO_MODE_SINGLE;
+#endif
+
     if (Board_flashOffsetToBlkPage(handle,offset,&blockNum, &pageNum))
     {
         UART_printf("\n Board_flashOffsetToBlkPage failed. \n");
@@ -98,7 +103,7 @@ int BoardDiag_SpiReadWriteTest(Board_flashHandle  handle,
 
     /* Read the flash memory */
     if (Board_flashRead(handle, offset,
-                      (uint8_t *)&rxBuf, TEST_DATA_LEN, NULL))
+                      (uint8_t *)&rxBuf, TEST_DATA_LEN, (void *)(&ioMode)))
     {
         UART_printf("\n Board_flashRead failed. \n");
         return -1;
