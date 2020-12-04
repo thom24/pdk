@@ -44,6 +44,11 @@
 #define FIFO_SIZE     (64U)
 #define BAUD_RATE_MAX (7384615U)
 
+#if defined(SOC_TPR12)
+#include <string.h>
+uint8_t gUartTestBuf[100] = "\nTesting UART print to console at 115.2k baud rate";
+#endif
+
 #if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
 #include "board_i2c_io_exp.h"
 #include "diag_common_cfg.h"
@@ -862,6 +867,69 @@ int main(void)
     BoardDiag_enableMAINUART();
     UART_stdioInit(BOARD_UART_INSTANCE);
     UART_printf("\nUART Test Completed!!\n");
+
+    return ret;
+}
+#elif defined(SOC_TPR12) && defined (__TI_ARM_V7R4__)
+int main(void)
+{
+    Board_STATUS status;
+    Board_initCfg boardCfg;
+    int ret;
+    UART_Handle uart_handle = NULL;
+    UART_Params params;
+    char p = 'r';
+
+    boardCfg = BOARD_INIT_PINMUX_CONFIG | BOARD_INIT_UART_STDIO;
+
+    status = Board_init(boardCfg);
+    if(status != BOARD_SOK)
+    {
+        return -1;
+    }
+
+    ret = uart_test();
+    if(ret != 0)
+    {
+        UART_printf("\nMSS UARTA Test Failed!!\n");
+        return ret;
+    }
+
+    UART_printf("\nMSS UARTA Test Completed!\n");
+
+    UART_printf("\n\nStarting MSS UARTB Test...\n");
+    UART_printf("\nCheck the Logs on MSS UARTB console\n");
+    UART_printf("Press 'y' if Test Message on MSS UARTB is Proper, else Press Any Other Key: ");
+
+    UART_Params_init(&params);
+
+    uart_handle = UART_open(BOARD_MSS_UARTB_INSTANCE, &params);
+    if(uart_handle == NULL)
+    {
+        return -1;
+    }
+
+    ret = UART_write(uart_handle, (uint8_t *)&gUartTestBuf[0], strlen((const char *)gUartTestBuf));
+    if(!ret)
+    {
+        UART_close(uart_handle);
+        return -1;
+    }
+
+	UART_scanFmt("%c", &p);
+
+	UART_printf("Received: %c\n", p);
+	if ( (p == 'y') || (p == 'Y') ) {
+		UART_printf("\nMSS UARTB Test PASSED!\n");
+	}
+	else {
+		UART_printf("\nMSS UARTB Test FAILED!\n");
+		return -1;
+	}
+
+    UART_printf("\n\nUART Test Completed!!\n");
+
+    UART_close(uart_handle);
 
     return ret;
 }

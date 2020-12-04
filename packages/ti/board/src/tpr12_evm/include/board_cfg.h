@@ -52,6 +52,8 @@ extern "C" {
 /* UART LLD instance number for MSS UART port */
 #define BOARD_MSS_UART_INSTANCE                 (0U)
 
+#define BOARD_MSS_UARTB_INSTANCE                (1U)
+
 /* UART LLD instance number for DSS UART port */
 #define BOARD_DSS_UART_INSTANCE                 (0U)
 
