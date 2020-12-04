@@ -145,7 +145,7 @@ typedef enum {
 #define MCU_PADCONFIG_MMR_BASE_ADDRESS CSL_MCU_PADCFG_CTRL0_CFG0_BASE
 #endif
 
-uint32_t MMR_change_lock(mmr_lock_actions_t target_state, uint32_t * kick0);
+uint32_t MMR_change_lock(mmr_lock_actions_t target_state, volatile uint32_t * kick0);
 uint32_t generic_mmr_change_all_locks(mmr_lock_actions_t target_state, uint32_t base_addr, const  uint32_t * offset_array, uint32_t array_size);
 
 uint32_t MAIN_PADCONFIG_MMR_unlock_all();
@@ -173,8 +173,8 @@ uint32_t MCU_PLL_MMR_lock_all();
 uint32_t MCU_PLL_MMR_change_all_locks(mmr_lock_actions_t target_state);
 
 
-    uint32_t MMR_change_lock(mmr_lock_actions_t target_state, uint32_t * kick0) {
-        uint32_t * kick1 = kick0 + 1;
+    uint32_t MMR_change_lock(mmr_lock_actions_t target_state, volatile uint32_t * kick0) {
+        volatile uint32_t * kick1 = kick0 + 1;
         uint32_t lock_state = (*kick0 & 0x1); //status is 1 if unlocked, 0 if locked
 
         //If lock state is not what we want, change it
@@ -206,9 +206,9 @@ uint32_t MCU_PLL_MMR_change_all_locks(mmr_lock_actions_t target_state);
     uint32_t generic_mmr_change_all_locks(mmr_lock_actions_t target_state, uint32_t base_addr, const uint32_t * offset_array, uint32_t array_size) {
         uint32_t errors=0;
         uint32_t i=0;
-        uint32_t * kick0_ptr;
+        volatile uint32_t * kick0_ptr;
         for(i=0;i<array_size;i++) {
-            kick0_ptr = (uint32_t *) (base_addr + offset_array[i]);
+            kick0_ptr = (volatile uint32_t *) (base_addr + offset_array[i]);
             if(MMR_change_lock(target_state, kick0_ptr) == AVV_FAIL){
                 errors++;
             }
