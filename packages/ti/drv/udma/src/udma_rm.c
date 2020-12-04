@@ -1406,7 +1406,7 @@ uint32_t Udma_rmAllocMappedRing(Udma_DrvHandle drvHandle,
 
     retVal = Udma_getMappedChRingAttributes(drvHandle, mappedRingGrp, mappedChNum, &chAttr);
     
-    if(UDMA_SOK == retVal)
+    if((UDMA_SOK == retVal) && (0U != chAttr.numFreeRing))
     {
         /* Derive the intersecting pool (loopStart and loopMax) based on the rings reserved for the core (rmcfg)
         * and the permissible range for the given channel(free rings reserved for specific channels).
@@ -1440,6 +1440,7 @@ uint32_t Udma_rmAllocMappedRing(Udma_DrvHandle drvHandle,
             /* Update loopMax to stop at Channel_ring_End,
             * so as to skip the last rings which are reserved for the core, 
             * but can't be used for the current channel */
+            Udma_assert(drvHandle, (chAttr.startFreeRing + chAttr.numFreeRing) >= rmInitPrms->startMappedRing[mappedRingGrp]);
             loopMax = (chAttr.startFreeRing + chAttr.numFreeRing) - rmInitPrms->startMappedRing[mappedRingGrp];
         }
         /* For all other CASE 'B's, loopMax should be rmInitPrms->numMappedRing[mappedRingGrp] itself. */

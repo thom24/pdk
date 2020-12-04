@@ -329,21 +329,32 @@ GT_1trace(taskObj->traceMask, GT_INFO1,
     return (retVal);
 }
 
-uint32_t udmaTestGetMappedFlowChNum(Udma_DrvHandle drvHandle, uint32_t mappedFlowGrp, uint32_t mappedFlowNum)
+uint32_t udmaTestGetMappedRingChNum(Udma_DrvHandle drvHandle, uint32_t mappedRingGrp, uint32_t mappedRingNum)
 {
     int32_t     retVal = UDMA_SOK;
     Udma_MappedChRingAttributes  chAttr;
-    uint32_t    mappedChNum = 0U;
+    uint32_t    mappedChNum = 0U, mappedeChNumStart, mappedChNumMax;
 
-    for(mappedChNum = CSL_DMSS_PKTDMA_RX_CHANS_CPSW_START; mappedChNum < CSL_DMSS_PKTDMA_NUM_RX_CHANS; mappedChNum++)
+    if(mappedRingGrp < UDMA_NUM_MAPPED_TX_GROUP) /* Mapped TX Channel */
     {
-        retVal = Udma_getMappedChRingAttributes(drvHandle, mappedFlowGrp, mappedChNum, &chAttr);
+        mappedeChNumStart = CSL_DMSS_PKTDMA_TX_CHANS_CPSW_START;
+        mappedChNumMax    = CSL_DMSS_PKTDMA_NUM_TX_CHANS;
+    }
+    else /* Mapped RX Channel */
+    {
+        mappedeChNumStart = CSL_DMSS_PKTDMA_RX_CHANS_CPSW_START;
+        mappedChNumMax    = CSL_DMSS_PKTDMA_NUM_RX_CHANS;
+    }
+
+    for(mappedChNum = mappedeChNumStart; mappedChNum < mappedChNumMax; mappedChNum++)
+    {
+        retVal = Udma_getMappedChRingAttributes(drvHandle, mappedRingGrp, mappedChNum, &chAttr);
         
         if(UDMA_SOK == retVal)
         {
-            if((chAttr.defaultRing == mappedFlowNum) ||
-               ((mappedFlowNum >= chAttr.startFreeRing) &&
-                (mappedFlowNum < chAttr.startFreeRing + chAttr.numFreeRing)))
+            if((chAttr.defaultRing == mappedRingNum) ||
+               ((mappedRingNum >= chAttr.startFreeRing) &&
+                (mappedRingNum < chAttr.startFreeRing + chAttr.numFreeRing)))
             {
                 break;
             }

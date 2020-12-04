@@ -193,7 +193,7 @@ extern "C" {
 /*                          Function Declarations                             */
 /* ========================================================================== */
 
-uint32_t udmaTestGetMappedFlowChNum(Udma_DrvHandle drvHandle, uint32_t mappedFlowGrp, uint32_t mappedFlowNum);
+uint32_t udmaTestGetMappedRingChNum(Udma_DrvHandle drvHandle, uint32_t mappedRingGrp, uint32_t mappedRingNum);
 
 #ifdef __cplusplus
 }

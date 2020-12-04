@@ -328,6 +328,7 @@ static int32_t udmaTestFlowAttachMappedTestLoop(UdmaTestTaskObj *taskObj)
     Udma_FlowPrms       flowPrms;
     Udma_FlowAllocMappedPrms    flowAllocMappedPrms;
     Udma_RmInitPrms             *rmInitPrms;
+    char *mappedFlowGrpStr[] = { "CPSW RX", "SAUL RX", "ICSSG0 RX", "ICSSG1_RX"};
 
     if(UDMA_SOK == retVal)
     {
@@ -338,17 +339,24 @@ static int32_t udmaTestFlowAttachMappedTestLoop(UdmaTestTaskObj *taskObj)
 
         for(mappedFlowGrp = UDMA_NUM_MAPPED_TX_GROUP; mappedFlowGrp < numMappedFlowGrp; mappedFlowGrp++)
         {
+
+            GT_1trace(taskObj->traceMask, GT_INFO1,
+                      " Testing for PKTDMA Mapped Flow Group : %s ...\r\n",
+                      mappedFlowGrpStr[mappedFlowGrp - UDMA_NUM_MAPPED_TX_GROUP]);
+
             rmInitPrms = &drvHandle->initPrms.rmInitPrms;
             
             if(0U == rmInitPrms->numMappedRing[mappedFlowGrp])
             {
-                /* Skip the test since, no rings are reserved for the core */
+                GT_1trace(taskObj->traceMask, GT_INFO1,
+                          " Skipping the Test for PKTDMA Mapped Flow Group : %s , since no rings are reserved!!\r\n",
+                          mappedFlowGrpStr[mappedFlowGrp - UDMA_NUM_MAPPED_TX_GROUP]);
                 continue;
             }
             
             /* Allocate mapped free flows */
             flowAllocMappedPrms.mappedFlowGrp = mappedFlowGrp;
-            flowAllocMappedPrms.mappedChNum = udmaTestGetMappedFlowChNum(drvHandle, mappedFlowGrp, rmInitPrms->startMappedRing[mappedFlowGrp]);
+            flowAllocMappedPrms.mappedChNum = udmaTestGetMappedRingChNum(drvHandle, mappedFlowGrp, rmInitPrms->startMappedRing[mappedFlowGrp]);
             retVal = Udma_flowAllocMapped(drvHandle, flowHandle, &flowAllocMappedPrms);
             if(UDMA_SOK != retVal)
             {
@@ -430,6 +438,17 @@ static int32_t udmaTestFlowAttachMappedTestLoop(UdmaTestTaskObj *taskObj)
                 {
                     mappedFlowAllocated = FALSE;
                 }
+            }
+
+            if(UDMA_SOK == retVal)
+            {
+                GT_1trace(taskObj->traceMask, GT_INFO1,
+                          " Testing for PKTDMA Mapped Flow Group : %s passed!!\r\n",
+                          mappedFlowGrpStr[mappedFlowGrp - UDMA_NUM_MAPPED_TX_GROUP]);
+            }
+            else
+            {
+                break;
             }
         }
     }
