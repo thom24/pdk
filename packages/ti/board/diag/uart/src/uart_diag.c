@@ -44,9 +44,9 @@
 #define FIFO_SIZE     (64U)
 #define BAUD_RATE_MAX (7384615U)
 
-#if defined(SOC_TPR12)
+#if defined(SOC_TPR12) && defined (__TI_ARM_V7R4__)
 #include <string.h>
-uint8_t gUartTestBuf[100] = "\nTesting UART print to console at 115.2k baud rate";
+static uint8_t gUartTestBuf[100] = "\nTesting UART print to console at 115.2k baud rate";
 #endif
 
 #if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
