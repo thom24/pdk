@@ -449,7 +449,7 @@ int32_t Mailbox_write(Mbox_Handle handle, const uint8_t *buffer, uint32_t size)
         else
         {
             hwCfg = (Mailbox_HwCfg *)driver->hwCfg;
-            cnt = driver->cfg.readTimeout;
+            cnt = driver->cfg.writeTimeout;
 
             key = gMailboxMCB.initParam.osalPrms.disableAllIntr();
 
