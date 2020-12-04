@@ -328,7 +328,7 @@ int32_t Ipc_mailboxSend(uint32_t selfId, uint32_t remoteProcId, uint32_t val,
 }
 
 int32_t Ipc_mailboxRegister(uint16_t selfId, uint16_t remoteProcId,
-           Mailbox_hwiCallback func, uint32_t arg)
+           Mailbox_hwiCallback func, uint32_t arg, uint32_t timeoutCnt)
 {
     int32_t               retVal = IPC_SOK;
     Mailbox_openParams openParam;
@@ -338,7 +338,9 @@ int32_t Ipc_mailboxRegister(uint16_t selfId, uint16_t remoteProcId,
     Mailbox_openParams_init(&openParam);
 
     openParam.cfg.writeMode = MAILBOX_MODE_POLLING;
+    openParam.cfg.writeTimeout = timeoutCnt;
     openParam.cfg.readMode = MAILBOX_MODE_CALLBACK;
+    openParam.cfg.readTimeout = timeoutCnt;
     openParam.cfg.readCallback = Ipc_mailboxInternalCallback;
     /*
      * Set enableInterrupts to false, we want to enable later after

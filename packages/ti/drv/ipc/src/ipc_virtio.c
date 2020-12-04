@@ -668,7 +668,7 @@ void Virtio_isr(uint32_t* msg, uint32_t priv)
         {
             uint32_t selfId = Ipc_mpGetSelfId();
             queueRegistry[2*procId+1] = vq;
-            retVal = Ipc_mailboxRegister((uint16_t)selfId, (uint16_t)procId, Virtio_isr, procId);
+            retVal = Ipc_mailboxRegister((uint16_t)selfId, (uint16_t)procId, Virtio_isr, procId, timeoutCnt);
             if (retVal != IPC_SOK)
             {
                  SystemP_printf("Virtio_create : Failed to register mailbox\n");

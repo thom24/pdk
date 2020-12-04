@@ -304,7 +304,7 @@ int32_t Ipc_mailboxSend(uint32_t selfId, uint32_t remoteProcId, uint32_t val,
 }
 
 int32_t Ipc_mailboxRegister(uint16_t selfId, uint16_t remoteProcId,
-           Mailbox_hwiCallback func, uint32_t arg)
+           Mailbox_hwiCallback func, uint32_t arg, uint32_t timeoutCnt)
 {
     int32_t               retVal = IPC_SOK;
     uint32_t              clusterId;
