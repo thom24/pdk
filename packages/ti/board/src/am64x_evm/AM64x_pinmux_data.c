@@ -421,7 +421,7 @@ static pinmuxPerCfg_t gMmc11PinCfg[] =
     /* MyMMC11 -> MMC1_CMD -> J19 */
     {
         PIN_MMC1_CMD, PIN_MODE(0) | \
-        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+        ((PIN_PULL_DIRECTION | PIN_INPUT_ENABLE) & (~PIN_PULL_DISABLE))
     },
     /* MyMMC11 -> MMC1_CLK -> L20 */
     {
@@ -436,27 +436,27 @@ static pinmuxPerCfg_t gMmc11PinCfg[] =
     /* MyMMC11 -> MMC1_DAT0 -> K21 */
     {
         PIN_MMC1_DAT0, PIN_MODE(0) | \
-        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+        ((PIN_PULL_DIRECTION | PIN_INPUT_ENABLE) & (~PIN_PULL_DISABLE))
     },
     /* MyMMC11 -> MMC1_DAT1 -> L21 */
     {
         PIN_MMC1_DAT1, PIN_MODE(0) | \
-        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+        ((PIN_PULL_DIRECTION | PIN_INPUT_ENABLE) & (~PIN_PULL_DISABLE))
     },
     /* MyMMC11 -> MMC1_DAT2 -> K19 */
     {
         PIN_MMC1_DAT2, PIN_MODE(0) | \
-        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+        ((PIN_PULL_DIRECTION | PIN_INPUT_ENABLE) & (~PIN_PULL_DISABLE))
     },
     /* MyMMC11 -> MMC1_DAT3 -> K18 */
     {
         PIN_MMC1_DAT3, PIN_MODE(0) | \
-        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+        ((PIN_PULL_DIRECTION | PIN_INPUT_ENABLE) & (~PIN_PULL_DISABLE))
     },
     /* MyMMC11 -> MMC1_SDCD -> D19 */
     {
         PIN_MMC1_SDCD, PIN_MODE(0) | \
-        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+        ((PIN_PULL_DIRECTION | PIN_INPUT_ENABLE) & (~PIN_PULL_DISABLE))
     },
     {PINMUX_END}
 };
