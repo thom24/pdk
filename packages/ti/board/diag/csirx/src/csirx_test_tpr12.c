@@ -31,241 +31,73 @@
 *
 *****************************************************************************/
 
-
 /**
  *  \file   csirx_test_tpr12.c
  *
  *  \brief  csirx diagnostic test file.
  *
- *  Targeted Functionality: Verification of csirx interface by receiving fixed
- *                          pattern data from Radar sensor.
+ *  Targeted Functionality: Verification of csirx interface by receiving frames from
+ *                          IWR1443 and AWR2243 radar sensors.
  *
- *  Operation: This test verifies CSIRX interface by receiving the userDefinedMapping
- *          user defined from IWR143 radar sensor.
+ *  Operation: This test verifies CSIRX interface by receiving
+ *              1. User defined fixed data pattern from IWR1443 radar sensor
+ *                    - fixed data validation done in case of IWR1443 sensor along
+ *					    with verifying number of frames and frame size.
+ *              2. Actual frames transmitted from the AWR2243 radar sensor
+ *                    - Varifying the number of frames received and
+ *                      size of each frame received in case of AWR2243 sensor.
  *
  *  Supported SoCs: TPR12.
  *
  *  Supported Platforms: tp12_evm.
  */
 
-#ifdef USE_BIOS
-/* XDCtools Header files */
-#include <xdc/std.h>
-#include <xdc/cfg/global.h>
-#include <xdc/runtime/System.h>
-#include <stdio.h>
-#include <ti/sysbios/knl/Task.h>
-
-/* BIOS Header files */
-#include <ti/sysbios/BIOS.h>
-#include <xdc/runtime/Error.h>
-#else
-#ifdef BUILD_C66X_1
-/* !! HACK to workaround c66x OSAL baremetal issue with not enabling Hwi interrupt associated with EventCombiner */
-/* Osal baremetal lib for c66x does not enable the Hwi interrupt number when Osal_enableInterrupt is called.
- * This is correct behaviour but the issue is when registering interrupt the Hwi interrupt number is not
- * enabled if Osal_registerInterrupt enableIntr param is set to FALSE> This iswrong and the Hwi interrupt
- * number should be enabled irrespective of a particular eventCombiner event is enabled or not.
- * Until this is fixed in c6xx osal baremetal library, adding hack in application to enable the interrupt
- */
-#include <ti/osal/src/nonos/Nonos_config.h>
-#define CSIRX_C66X_COMMON_ISR_HWI_INT_NUM                                                         (6U)
-#endif
-#endif /* #ifdef USE_BIOS */
-
-
 #include <csirx_test_tpr12.h>
 
-BoardDaig_State gTestState = {0};
+/* Global variable to indicate the frame received */
 volatile bool gFrameReceived = 0;
+/* Global variable to check the error code */
 uint32_t gErrorCode = 0;
+/* Global variable to count the number of frame received */
 uint32_t gFrameCounter = 0;
 
-#define BOARD_DIAG_CSIRX_A_TEST             (1U)
-#define BOARD_DIAG_TEST_BUF_INIT_PATTERN    (0xBE)
-#define BOARD_DIAG_TEST_PAYLOAD_PATTERN_NUM_BYTES_PER_FRAME (128U)
-#define BOARD_DIAG_INIT_PATTERN_SIZE        (BOARD_DIAG_PING_OR_PONG_BUF_SIZE_ALIGNED + 32U)
-/* Ping */
-#pragma DATA_SECTION(testPingBufL3, ".l3ram");
-uint8_t testPingBufL3[BOARD_DIAG_INIT_PATTERN_SIZE]       \
-        __attribute__ ((aligned(BOARD_DIAG_PING_PONG_ALIGNMENT)));
+/* L3 RAM Ping Buffer */
+#pragma DATA_SECTION(gTestPingBufL3, ".l3ram");
+uint8_t gTestPingBufL3[BOARD_DIAG_CSIRX_TEST_INIT_PATTERN_SIZE]       \
+        __attribute__ ((aligned(BOARD_DIAG_CSIRX_TEST_PING_PONG_ALIGNMENT)));
+/* HWA RAM Ping Buffer */
+#pragma DATA_SECTION(gTestPingBufHWA, ".hwaram");
+uint8_t gTestPingBufHWA[BOARD_DIAG_CSIRX_TEST_INIT_PATTERN_SIZE]       \
+        __attribute__ ((aligned(BOARD_DIAG_CSIRX_TEST_PING_PONG_ALIGNMENT)));
+/* L2 RAM Ping Buffer */
+#pragma DATA_SECTION(gTestPingBufL2, ".l2ram");
+uint8_t gTestPingBufL2[BOARD_DIAG_CSIRX_TEST_INIT_PATTERN_SIZE]       \
+        __attribute__ ((aligned(BOARD_DIAG_CSIRX_TEST_PING_PONG_ALIGNMENT)));
 
-#pragma DATA_SECTION(testPingBufHWA, ".hwaram");
-uint8_t testPingBufHWA[BOARD_DIAG_INIT_PATTERN_SIZE]       \
-        __attribute__ ((aligned(BOARD_DIAG_PING_PONG_ALIGNMENT)));
+/* L3 RAM Pong Buffer */
+#pragma DATA_SECTION(gTestPongBufL3, ".l3ram");
+uint8_t gTestPongBufL3[BOARD_DIAG_CSIRX_TEST_INIT_PATTERN_SIZE]       \
+        __attribute__ ((aligned(BOARD_DIAG_CSIRX_TEST_PING_PONG_ALIGNMENT)));
+/* HWA RAM Pong Buffer */
+#pragma DATA_SECTION(gTestPongBufHWA, ".hwaram");
+uint8_t gTestPongBufHWA[BOARD_DIAG_CSIRX_TEST_INIT_PATTERN_SIZE]       \
+        __attribute__ ((aligned(BOARD_DIAG_CSIRX_TEST_PING_PONG_ALIGNMENT)));
+/* L2 RAM Pong Buffer */
+#pragma DATA_SECTION(gTestPongBufL2, ".l2ram");
+uint8_t gTestPongBufL2[BOARD_DIAG_CSIRX_TEST_INIT_PATTERN_SIZE]       \
+        __attribute__ ((aligned(BOARD_DIAG_CSIRX_TEST_PING_PONG_ALIGNMENT)));
 
-#pragma DATA_SECTION(testPingBufL2, ".l2ram");
-uint8_t testPingBufL2[BOARD_DIAG_INIT_PATTERN_SIZE]       \
-        __attribute__ ((aligned(BOARD_DIAG_PING_PONG_ALIGNMENT)));
-
-/* Pong */
-#pragma DATA_SECTION(testPongBufL3, ".l3ram");
-uint8_t testPongBufL3[BOARD_DIAG_INIT_PATTERN_SIZE]       \
-        __attribute__ ((aligned(BOARD_DIAG_PING_PONG_ALIGNMENT)));
-
-#pragma DATA_SECTION(testPongBufHWA, ".hwaram");
-uint8_t testPongBufHWA[BOARD_DIAG_INIT_PATTERN_SIZE]       \
-        __attribute__ ((aligned(BOARD_DIAG_PING_PONG_ALIGNMENT)));
-
-#pragma DATA_SECTION(testPongBufL2, ".l2ram");
-uint8_t testPongBufL2[BOARD_DIAG_INIT_PATTERN_SIZE]       \
-        __attribute__ ((aligned(BOARD_DIAG_PING_PONG_ALIGNMENT)));
-
-/**
- *  \brief    Used to read the payload data from the ping-pong buffers
- *            This function comapres the data received from the buffers
- *            to expected value.
- *
- *  \param    handle              [IN]     CSIRX Handler
- *
- *  \return   NULL
- *
- */
-void BoardDiag_CheckPayloadReceived(CSIRX_Handle handle)
-{
-    uint32_t numBytes = 0;
-    uint32_t buffer, bufIndx = 0;
-    uint8_t *buf;
-
-    gErrorCode = CSIRX_getContextReceivedBuffer(handle, BOARD_DIAG_TEST_CONTEXT, &buffer);
-    DebugP_assert(gErrorCode == CSIRX_NO_ERROR);
-    buffer = CSL_globToLocAddr(buffer);
-    buf = (uint8_t *)buffer;
-    CacheP_Inv(buf,BOARD_DIAG_PING_OR_PONG_BUF_SIZE_ALIGNED);
-#if defined(PAYLOAD_PATTERN_CHECK)
-    for(numBytes = 0; numBytes < BOARD_DIAG_PING_OR_PONG_BUF_SIZE_ALIGNED; numBytes++)
-    {
-        if(buf[bufIndx++] != BOARD_DIAG_TEST_PATTERN)
-        {
-            gTestState.isReceivedPayloadCorrect = false;
-            printf("Frame - %d is invalid\n",
-            gTestState.contextIRQcounts[BOARD_DIAG_TEST_CONTEXT].frameEndCodeDetect);
-            break;
-        }
-    }
-#else
-    numBytes = BOARD_DIAG_PING_OR_PONG_BUF_SIZE_ALIGNED;
-    bufIndx = BOARD_DIAG_PING_OR_PONG_BUF_SIZE_ALIGNED;
+/* Global structure to hold the states of CSIRX test */
+static BoardDiag_State_t gTestState = {0};
+/* Common callback function */
+static void BoardDiag_commonCallback(CSIRX_Handle handle, uint32_t arg,
+                              CSIRX_CommonIRQ_t *IRQ);
+#ifndef BUILD_DSP_1
+/* Combined EOF callback function */
+static void BoardDiag_combinedEOFcallback(CSIRX_Handle handle, uint32_t arg);
 #endif
-    if (numBytes == BOARD_DIAG_PING_OR_PONG_BUF_SIZE_ALIGNED)
-    {
-        for (; numBytes < (BOARD_DIAG_INIT_PATTERN_SIZE);numBytes++)
-        {
-            if(buf[bufIndx++] != BOARD_DIAG_TEST_BUF_INIT_PATTERN)
-            {
-                gTestState.isReceivedPayloadCorrect = false;
-                printf("Buffer corruption - %d is invalid\n",
-                gTestState.contextIRQcounts[BOARD_DIAG_TEST_CONTEXT].frameEndCodeDetect);
-                break;
-            }
-        }
-    }
-}
-
-/**
- *  \brief    Callback function for common.irq interrupt, generated when
- *            end of frame code and line code detected.
- *
- *  \param    handle              [IN]     CSIRX Handler
- *            arg                 [IN]     CALLBACK function argument
- *            IRQ                 [OUT]    CSIRX common irq
- *
- */
-void BoardDiag_commonCallback(CSIRX_Handle handle, uint32_t arg,
-                              CSIRX_CommonIRQ_t *IRQ)
-{
-    uint8_t i;
-    uint32_t frameCounter =
-    gTestState.contextIRQcounts[BOARD_DIAG_TEST_CONTEXT].frameEndCodeDetect + 1;
-
-    DebugP_assert(handle != NULL);
-    DebugP_assert(arg == BOARD_DIAG_TEST_COMMON_CB_ARG);
-    gTestState.callbackCount.common++;
-
-    gTestState.IRQ.common = *IRQ;
-
-    /* Counts book-keeping */
-    if(IRQ->isOCPerror == true)
-    {
-        gTestState.commonIRQcount.isOCPerror++;
-    }
-    if(IRQ->isComplexIOerror == true)
-    {
-        gTestState.commonIRQcount.isComplexIOerror++;
-    }
-    if(IRQ->isFIFOoverflow == true)
-    {
-        gTestState.commonIRQcount.isFIFOoverflow++;
-    }
-
-    if(IRQ->isComplexIOerror)
-    {
-        gErrorCode = CSIRX_getComplexIOlanesIRQ(handle,
-                                               &gTestState.IRQ.complexIOlanes);
-        if(gErrorCode != CSIRX_NO_ERROR)
-        {
-            DebugP_log1("Error occured while recieving the frame-%d\n", frameCounter);
-        }
-        DebugP_assert(gErrorCode == CSIRX_NO_ERROR);
-
-        gErrorCode = CSIRX_clearAllcomplexIOlanesIRQ(handle);
-        DebugP_assert(gErrorCode == CSIRX_NO_ERROR);
-    }
-
-    for(i = 0; i < CSIRX_NUM_CONTEXTS; i++)
-    {
-        if(IRQ->isContext[i] == true)
-        {
-            gErrorCode = CSIRX_getContextIRQ(handle, i,
-                                            &gTestState.IRQ.context[i]);
-            DebugP_assert(gErrorCode == CSIRX_NO_ERROR);
-
-            if(gTestState.IRQ.context[i].isFrameEndCodeDetect == true)
-            {
-                gTestState.contextIRQcounts[i].frameEndCodeDetect++;
-                  /* Single frame is received */
-                gFrameReceived = true;
-
-            }
-
-            if(gTestState.IRQ.context[i].isLineEndCodeDetect == true)
-            {
-                gTestState.contextIRQcounts[i].lineEndCodeDetect++;
-            }
-
-            gErrorCode = CSIRX_clearAllcontextIRQ(handle, i);
-            DebugP_assert(gErrorCode == CSIRX_NO_ERROR);
-        }
-    }
-}
-
-void BoardDiag_CheckStateError(bool *isTestPass)
-{
-    if(gTestState.commonIRQcount.isOCPerror != 0)
-    {
-        printf("OCP error has occured %d number of times \n", gTestState.commonIRQcount.isOCPerror);
-        *isTestPass = false;
-    }
-    if(gTestState.commonIRQcount.isComplexIOerror != 0)
-    {
-        printf("Complex IO error has occured %d number of times \n", gTestState.commonIRQcount.isComplexIOerror);
-        *isTestPass = false;
-    }
-    if(gTestState.commonIRQcount.isFIFOoverflow != 0)
-    {
-        printf("FIFO Overflow error has occured %d number of times \n",gTestState.commonIRQcount.isFIFOoverflow);
-        *isTestPass = false;
-    }
-}
-
-void BoardDiag_combinedEOFcallback(CSIRX_Handle handle, uint32_t arg)
-{
-    DebugP_assert(handle != NULL);
-    DebugP_assert(arg == BOARD_DIAG_TEST_COMBINED_EOF_CB_ARG);
-    gTestState.callbackCount.combinedEOF++;
-}
-
-Board_DiagConfig testConfig =
+/* Intialization of CSIRX configuration structure */
+static BoardDiag_Config_t gTestConfig =
 {
     /* DDR clock set to 300 MHz */
     .DPHYcfg.ddrClockInHz = 300000000U,
@@ -322,9 +154,9 @@ Board_DiagConfig testConfig =
     .commonCfg.stopStateFSMtimeoutInNanoSecs = 200000U,
     .commonCfg.burstSize = 8,
     .commonCfg.endianness = CSIRX_ALL_LITTLE_ENDIAN,
-    .commonCfg.startOfFrameIRQ0contextId = BOARD_DIAG_TEST_CONTEXT,
+    .commonCfg.startOfFrameIRQ0contextId = BOARD_DIAG_CSIRX_TEST_CONTEXT,
     .commonCfg.startOfFrameIRQ1contextId = 0,
-    .commonCfg.endOfFrameIRQ0contextId = BOARD_DIAG_TEST_CONTEXT,
+    .commonCfg.endOfFrameIRQ0contextId = BOARD_DIAG_CSIRX_TEST_CONTEXT,
     .commonCfg.endOfFrameIRQ1contextId = 0,
     .commonCfg.IRQ.isOCPerror = true,
     .commonCfg.IRQ.isGenericShortPacketReceive = false,
@@ -341,7 +173,7 @@ Board_DiagConfig testConfig =
     .commonCfg.IRQ.isContext[6] = false,
     .commonCfg.IRQ.isContext[7] = false,
     .commonCfg.IRQcallbacks.common.fxn = BoardDiag_commonCallback,
-    .commonCfg.IRQcallbacks.common.arg = BOARD_DIAG_TEST_COMMON_CB_ARG,
+    .commonCfg.IRQcallbacks.common.arg = BOARD_DIAG_CSIRX_TEST_COMMON_CB_ARG,
     .commonCfg.IRQcallbacks.combinedEndOfLine.fxn = NULL,
     .commonCfg.IRQcallbacks.combinedEndOfLine.arg = 0,
 #ifdef BUILD_DSP_1
@@ -351,7 +183,7 @@ Board_DiagConfig testConfig =
     .commonCfg.IRQcallbacks.combinedEndOfFrame.fxn =
         BoardDiag_combinedEOFcallback,
     .commonCfg.IRQcallbacks.combinedEndOfFrame.arg =
-        BOARD_DIAG_TEST_COMBINED_EOF_CB_ARG,
+        BOARD_DIAG_CSIRX_TEST_COMBINED_EOF_CB_ARG,
 #endif
     .commonCfg.IRQcallbacks.startOfFrameIRQ0.fxn = NULL,
     .commonCfg.IRQcallbacks.startOfFrameIRQ0.arg = 0,
@@ -362,9 +194,10 @@ Board_DiagConfig testConfig =
     .commonCfg.IRQcallbacks.endOfFrameIRQ1.fxn = NULL,
     .commonCfg.IRQcallbacks.endOfFrameIRQ1.arg = 0,
 
-    .contextCfg.virtualChannelId = BOARD_DIAG_TEST_VC,
-    .contextCfg.format = BOARD_DIAG_TEST_FORMAT,
-    .contextCfg.userDefinedMapping = BOARD_DIAG_TEST_USER_DEFINED_MAPPING,
+    .contextCfg.virtualChannelId = BOARD_DIAG_CSIRX_TEST_VC,
+    .contextCfg.format = BOARD_DIAG_CSIRX_TEST_FORMAT,
+    .contextCfg.userDefinedMapping =
+            BOARD_DIAG_CSIRX_TEST_USER_DEFINED_MAPPING,
     .contextCfg.isByteSwapEnabled = false,
     .contextCfg.isGenericEnabled = false,
     .contextCfg.isTranscodingEnabled = false,
@@ -376,7 +209,8 @@ Board_DiagConfig testConfig =
     .contextCfg.transcodeConfig.crop.verticalCount = 0,
     .contextCfg.transcodeConfig.crop.verticalSkip = 0,
     .contextCfg.alpha = 0,
-    .contextCfg.pingPongConfig.pingPongSwitchMode = CSIRX_PING_PONG_FRAME_SWITCHING,
+    .contextCfg.pingPongConfig.pingPongSwitchMode =
+            CSIRX_PING_PONG_FRAME_SWITCHING,
     .contextCfg.pingPongConfig.numFramesForFrameBasedPingPongSwitching = 1,
     .contextCfg.pingPongConfig.lineOffset =
                             CSIRX_LINEOFFSET_CONTIGUOUS_STORAGE,
@@ -401,27 +235,219 @@ Board_DiagConfig testConfig =
 };
 
 /**
- *  \brief    Initialize the ping pong buffers to reset values
- *  \param    pingBuf   [OUT]    Ping buffer
- *            pongBuf   [OUT]    Pong buffer
- *            sizeBuf   [OUT]    Size of the buffer
+ *  \brief    Used to read the payload data from the ping-pong buffers
+ *            This function compares the data received from the buffers
+ *            to expected value.
  *
- * \retval
- *      none
+ *  \param    handle              [IN]     CSIRX Handler
+ *
+ *  \return   NULL
+ *
  */
-void BoardDiag_InitBuf(uint32_t pingBuf, uint32_t pongBuf, uint32_t sizeBuf)
+static void BoardDiag_checkPayloadReceived(CSIRX_Handle handle)
+{
+    uint32_t numBytes = 0;
+    uint32_t buffer, bufIndx = 0;
+    uint8_t *pBuf;
+
+    gErrorCode = CSIRX_getContextReceivedBuffer(handle,
+                        BOARD_DIAG_CSIRX_TEST_CONTEXT, &buffer);
+    DebugP_assert(gErrorCode == CSIRX_NO_ERROR);
+    buffer = CSL_globToLocAddr(buffer);
+    pBuf = (uint8_t *)buffer;
+    CacheP_Inv(pBuf,BOARD_DIAG_CSIRX_TEST_PING_OR_PONG_BUF_SIZE_ALIGNED);
+/* Verifying fixed data pattern received for IWR1443 device only */
+#if defined(FE_IWR1443)
+    for(numBytes = 0; numBytes <
+        BOARD_DIAG_CSIRX_TEST_PING_OR_PONG_BUF_SIZE_ALIGNED; numBytes++)
+    {
+        if(pBuf[bufIndx++] != BOARD_DIAG_CSIRX_TEST_PATTERN)
+        {
+            gTestState.isReceivedPayloadCorrect = false;
+            UART_printf("Frame - %d is invalid\n",
+            gTestState.contextIRQcounts[BOARD_DIAG_CSIRX_TEST_CONTEXT].
+                                        frameEndCodeDetect);
+            break;
+        }
+    }
+#else
+    numBytes = BOARD_DIAG_CSIRX_TEST_PING_OR_PONG_BUF_SIZE_ALIGNED;
+    bufIndx = BOARD_DIAG_CSIRX_TEST_PING_OR_PONG_BUF_SIZE_ALIGNED;
+#endif
+/* Verifying the buffer overflow check */
+    if (numBytes == BOARD_DIAG_CSIRX_TEST_PING_OR_PONG_BUF_SIZE_ALIGNED)
+    {
+        for (; numBytes < (BOARD_DIAG_CSIRX_TEST_INIT_PATTERN_SIZE);numBytes++)
+        {
+            if(pBuf[bufIndx++] != BOARD_DIAG_CSIRX_TEST_BUF_INIT_PATTERN)
+            {
+                gTestState.isReceivedPayloadCorrect = false;
+                UART_printf("Buffer corruption - %d is invalid\n",
+                gTestState.contextIRQcounts[BOARD_DIAG_CSIRX_TEST_CONTEXT].
+                                            frameEndCodeDetect);
+                break;
+            }
+        }
+    }
+}
+
+/**
+ *  \brief    Callback function for common.irq interrupt, generated when
+ *            end of frame code and line code detected.
+ *
+ *  \param    handle              [IN]     CSIRX Handler
+ *  \param    arg                 [IN]     CALLBACK function argument
+ *  \param    IRQ                 [OUT]    CSIRX common irq
+ *
+ *  \return   NULL
+ *
+ */
+static void BoardDiag_commonCallback(CSIRX_Handle handle, uint32_t arg,
+                              CSIRX_CommonIRQ_t *IRQ)
+{
+    uint8_t context;
+    uint32_t frameCounter =
+    gTestState.contextIRQcounts[BOARD_DIAG_CSIRX_TEST_CONTEXT].
+                                frameEndCodeDetect + 1;
+
+    DebugP_assert(handle != NULL);
+    DebugP_assert(arg == BOARD_DIAG_CSIRX_TEST_COMMON_CB_ARG);
+    gTestState.callbackCount.common++;
+
+    gTestState.IRQ.common = *IRQ;
+
+    /* Counts book-keeping */
+    if(IRQ->isOCPerror == true)
+    {
+        gTestState.commonIRQcount.isOCPerror++;
+    }
+    if(IRQ->isComplexIOerror == true)
+    {
+        gTestState.commonIRQcount.isComplexIOerror++;
+    }
+    if(IRQ->isFIFOoverflow == true)
+    {
+        gTestState.commonIRQcount.isFIFOoverflow++;
+    }
+
+    if(IRQ->isComplexIOerror)
+    {
+        gErrorCode = CSIRX_getComplexIOlanesIRQ(handle,
+                                               &gTestState.IRQ.complexIOlanes);
+        if(gErrorCode != CSIRX_NO_ERROR)
+        {
+            UART_printf("Error occured while recieving the frame-%d\n",
+                        frameCounter);
+        }
+        DebugP_assert(gErrorCode == CSIRX_NO_ERROR);
+
+        gErrorCode = CSIRX_clearAllcomplexIOlanesIRQ(handle);
+        DebugP_assert(gErrorCode == CSIRX_NO_ERROR);
+    }
+
+    for(context = 0; context < CSIRX_NUM_CONTEXTS; context++)
+    {
+        if(IRQ->isContext[context] == true)
+        {
+            gErrorCode = CSIRX_getContextIRQ(handle, context,
+                                            &gTestState.IRQ.context[context]);
+            DebugP_assert(gErrorCode == CSIRX_NO_ERROR);
+
+            if(gTestState.IRQ.context[context].isFrameEndCodeDetect == true)
+            {
+                gTestState.contextIRQcounts[context].frameEndCodeDetect++;
+                  /* Single frame is received */
+                gFrameReceived = true;
+
+            }
+
+            if(gTestState.IRQ.context[context].isLineEndCodeDetect == true)
+            {
+                gTestState.contextIRQcounts[context].lineEndCodeDetect++;
+            }
+
+            gErrorCode = CSIRX_clearAllcontextIRQ(handle, context);
+            DebugP_assert(gErrorCode == CSIRX_NO_ERROR);
+        }
+    }
+}
+
+/**
+ *  \brief    State error check function, this function will be called
+ *            Once all the frames are received to check the error states.
+ *
+ *  \param    pIsTestPass              [OUT]    true if there is no state error
+ *
+ *  \return   NULL
+ *
+ */
+static void BoardDiag_checkStateError(bool *pIsTestPass)
+{
+    if(gTestState.commonIRQcount.isOCPerror != 0)
+    {
+        UART_printf("OCP error has occured %d number of times \n",
+                    gTestState.commonIRQcount.isOCPerror);
+        *pIsTestPass = false;
+    }
+    if(gTestState.commonIRQcount.isComplexIOerror != 0)
+    {
+        UART_printf("Complex IO error has occured %d number of times \n",
+                    gTestState.commonIRQcount.isComplexIOerror);
+        *pIsTestPass = false;
+    }
+    if(gTestState.commonIRQcount.isFIFOoverflow != 0)
+    {
+        UART_printf("FIFO Overflow error has occured %d number of times \n",
+                    gTestState.commonIRQcount.isFIFOoverflow);
+        *pIsTestPass = false;
+    }
+}
+#ifndef BUILD_DSP_1
+/**
+ *  \brief    Callback function to be called once the Combined EOF detected.
+ *
+ *  \param    handle              [IN]     CSIRX Handler
+ *  \param    arg                 [IN]     CB function argument
+ *
+ *  \return   NULL
+ *
+ */
+static void BoardDiag_combinedEOFcallback(CSIRX_Handle handle, uint32_t arg)
+{
+    DebugP_assert(handle != NULL);
+    DebugP_assert(arg == BOARD_DIAG_CSIRX_TEST_COMBINED_EOF_CB_ARG);
+    gTestState.callbackCount.combinedEOF++;
+}
+#endif
+/**
+ *  \brief    Initialize the ping pong buffers to reset values
+ *
+ *  \param    pingBuf   [OUT]    Ping buffer
+ *  \param    pongBuf   [OUT]    Pong buffer
+ *  \param    sizeBuf   [IN]    Size of the buffer
+ *
+ *  \return   NULL
+ *
+ */
+static void BoardDiag_initBuf(uint32_t pingBuf, uint32_t pongBuf,
+                              uint32_t sizeBuf)
 {
     /* initialize ping/pong bufs to known failing pattern */
-    memset((void *)pingBuf, BOARD_DIAG_TEST_BUF_INIT_PATTERN, sizeBuf);
+    memset((void *)pingBuf, BOARD_DIAG_CSIRX_TEST_BUF_INIT_PATTERN, sizeBuf);
     CacheP_wbInv((void *)pingBuf, sizeBuf);
-    memset((void *)pongBuf, BOARD_DIAG_TEST_BUF_INIT_PATTERN, sizeBuf);
+    memset((void *)pongBuf, BOARD_DIAG_CSIRX_TEST_BUF_INIT_PATTERN, sizeBuf);
     CacheP_wbInv((void *)pongBuf, sizeBuf);
 }
 
 /**
  *  \brief    This function initializes test state variable.
+ *
+ *  \param    NULL
+ *
+ *  \return   NULL
+ *
  */
-void BoardDiag_TestInit(void)
+static void BoardDiag_testInit(void)
 {
     memset(&gTestState, 0, sizeof(gTestState));
 
@@ -431,28 +457,30 @@ void BoardDiag_TestInit(void)
 
 /**
  *  \brief    Gets test buffer address from a bunch of input parameters
- *  \param    BoardDiag_RAMtype   [IN]    Type of buffer RAM
- *            buf                 [OUT]   Pointer to where the buffer address is returned
- *            isPing              [IN]    true if ping buffer else pong buffer
  *
+ *  \param    BoardDiag_RamType   [IN]    Type of buffer RAM
+ *  \param    pBuf                [OUT]   Pointer to where the buffer address
+ *                                        is returned
+ *  \param    isPing              [IN]    true if ping buffer else pong buffer
  *
- *  \retval
- *      none
+ *  \return   NULL
+ *
  */
-void BoardDiag_getBuf(BoardDiag_RAMtype bufRAMtype, uint32_t *buf, bool isPing)
+static void BoardDiag_getBuf(BoardDiag_RamType bufRAMtype, uint32_t *pBuf,
+                             bool isPing)
 {
     if(isPing == true)
     {
         switch(bufRAMtype)
         {
-        case BOARD_DIAG_L3RAM:
-            *buf = (uint32_t) &testPingBufL3;
+        case BOARD_DIAG_CSIRX_TEST_L3RAM:
+            *pBuf = (uint32_t) &gTestPingBufL3;
             break;
-        case BOARD_DIAG_HWARAM:
-            *buf = (uint32_t) &testPingBufHWA;
+        case BOARD_DIAG_CSIRX_TEST_HWARAM:
+            *pBuf = (uint32_t) &gTestPingBufHWA;
             break;
-        case BOARD_DIAG_L2RAM:
-            *buf = (uint32_t) &testPingBufL2;
+        case BOARD_DIAG_CSIRX_TEST_L2RAM:
+            *pBuf = (uint32_t) &gTestPingBufL2;
             break;
         }
     }
@@ -460,14 +488,14 @@ void BoardDiag_getBuf(BoardDiag_RAMtype bufRAMtype, uint32_t *buf, bool isPing)
     {
         switch(bufRAMtype)
         {
-        case BOARD_DIAG_L3RAM:
-            *buf = (uint32_t) &testPongBufL3;
+        case BOARD_DIAG_CSIRX_TEST_L3RAM:
+            *pBuf = (uint32_t) &gTestPongBufL3;
             break;
-        case BOARD_DIAG_HWARAM:
-            *buf = (uint32_t) &testPongBufHWA;
+        case BOARD_DIAG_CSIRX_TEST_HWARAM:
+            *pBuf = (uint32_t) &gTestPongBufHWA;
             break;
-        case BOARD_DIAG_L2RAM:
-            *buf = (uint32_t) &testPongBufL2;
+        case BOARD_DIAG_CSIRX_TEST_L2RAM:
+            *pBuf = (uint32_t) &gTestPongBufL2;
             break;
         }
     }
@@ -477,19 +505,21 @@ void BoardDiag_getBuf(BoardDiag_RAMtype bufRAMtype, uint32_t *buf, bool isPing)
  *  \brief    The function performs the CSI-Rx Diagnostic
  *            test.
  *
- *  \return   int8_t
- *               0 - in case of success
- *              -1 - in case of failure.
+ *  \param    instanceId        [IN]        Csirx instance ID
+ *
+ *  \return   bool
+ *              true  - in case of success.
+ *              false - in case of failure.
  *
  */
-bool BoardDiag_CsirxTestRun(uint8_t instanceId)
+static bool BoardDiag_csirxTestRun(uint8_t instanceId)
 {
     CSIRX_Handle         handle;
     int32_t errorCode;
     uint32_t pingBuf, pongBuf;
     CSIRX_InstanceInfo_t instanceInfo;
     bool isTestPass = true;
-    CSL_rcss_rcmRegs *rcss_rcm = (CSL_rcss_rcmRegs *)CSL_RCSS_RCM_U_BASE;
+    CSL_rcss_rcmRegs *pRcssRcmRegs = (CSL_rcss_rcmRegs *)CSL_RCSS_RCM_U_BASE;
     volatile bool isComplexIOresetDone, isForceRxModeDeasserted;
     volatile uint32_t numComplexIOresetDonePolls, numComplexIOPowerStatusPolls,
              numForceRxModeDeassertedPolls;
@@ -497,23 +527,25 @@ bool BoardDiag_CsirxTestRun(uint8_t instanceId)
     volatile bool isForceRxModeOnComplexIOdeasserted;
 
     /* get ping-pong buffer addresses based on the RAM type and context */
-    BoardDiag_getBuf(BOARD_DIAG_HWARAM, &pingBuf, true);
-    BoardDiag_getBuf(BOARD_DIAG_HWARAM, &pongBuf, false);
+    BoardDiag_getBuf(BOARD_DIAG_CSIRX_TEST_HWARAM, &pingBuf, true);
+    BoardDiag_getBuf(BOARD_DIAG_CSIRX_TEST_HWARAM, &pongBuf, false);
 
-    BoardDiag_InitBuf(pingBuf, pongBuf, BOARD_DIAG_INIT_PATTERN_SIZE);
+    BoardDiag_initBuf(pingBuf, pongBuf,
+                      BOARD_DIAG_CSIRX_TEST_INIT_PATTERN_SIZE);
     /* initialize the ping-pong buffers */
-    BoardDiag_TestInit();
+    BoardDiag_testInit();
 
-    CSL_FINS(rcss_rcm->RCSS_CSI2A_RST_CTRL, RCSS_RCM_RCSS_CSI2A_RST_CTRL_RCSS_CSI2A_RST_CTRL_ASSERT, 0x7);
+    CSL_FINS(pRcssRcmRegs->RCSS_CSI2A_RST_CTRL,
+             RCSS_RCM_RCSS_CSI2A_RST_CTRL_RCSS_CSI2A_RST_CTRL_ASSERT, 0x7);
 
-    CSL_FINS(rcss_rcm->RCSS_CSI2A_RST_CTRL, RCSS_RCM_RCSS_CSI2A_RST_CTRL_RCSS_CSI2A_RST_CTRL_ASSERT, 0U);
-
+    CSL_FINS(pRcssRcmRegs->RCSS_CSI2A_RST_CTRL,
+            RCSS_RCM_RCSS_CSI2A_RST_CTRL_RCSS_CSI2A_RST_CTRL_ASSERT, 0U);
 
     /* Initialize CSIRX */
     errorCode = CSIRX_init();
     if(errorCode != CSIRX_NO_ERROR)
     {
-        printf("CSIRX_init failed with errorCode = %d\n", errorCode);
+        UART_printf("CSIRX_init failed with errorCode = %d\n", errorCode);
         isTestPass = false;
         return isTestPass;
     }
@@ -524,16 +556,17 @@ bool BoardDiag_CsirxTestRun(uint8_t instanceId)
     {
         if(errorCode == CSIRX_E_INVALID__INSTANCE_ID)
         {
-            printf("Csirx Instance not supported\n");
+            UART_printf("Csirx Instance not supported\n");
         }
         else
         {
-            printf("Unable to open the csirx Instance, erorCode = %d\n", errorCode);
+            UART_printf("Unable to open the csirx Instance, erorCode = %d\n",
+                        errorCode);
         }
         isTestPass = false;
         return isTestPass;
     }
-    DebugP_log3("Instance opened, Revision = %d.%d, Number of "
+    UART_printf("Instance opened, Revision = %d.%d, Number of "
             "Contexts = %d\n", instanceInfo.majorRevisionId,
             instanceInfo.minorRevisionId,
             instanceInfo.numContexts);
@@ -542,47 +575,48 @@ bool BoardDiag_CsirxTestRun(uint8_t instanceId)
     errorCode = CSIRX_reset(handle);
     if(errorCode != CSIRX_NO_ERROR)
     {
-        printf("CSIRX_reset failed, errorCode = %d\n", errorCode);
+        UART_printf("CSIRX_reset failed, errorCode = %d\n", errorCode);
         isTestPass = false;
-        return isTestPass;
+        goto exit;
     }
     /* config complex IO - lanes and IRQ */
-    errorCode = CSIRX_configComplexIO(handle, &testConfig.complexIOcfg);
+    errorCode = CSIRX_configComplexIO(handle, &gTestConfig.complexIOcfg);
     if(errorCode != CSIRX_NO_ERROR)
     {
-        printf("CSIRX_configComplexIO failed, errorCode = %d\n",
+        UART_printf("CSIRX_configComplexIO failed, errorCode = %d\n",
                     errorCode);
         isTestPass = false;
-        return isTestPass;
+        goto exit;
     }
 
     /* deassert complex IO reset */
     errorCode = CSIRX_deassertComplexIOreset(handle);
     if(errorCode != CSIRX_NO_ERROR)
     {
-        printf("CSIRX_deassertComplexIOreset failed, errorCode = %d\n",
+        UART_printf("CSIRX_deassertComplexIOreset failed, errorCode = %d\n",
                     errorCode);
         isTestPass = false;
-        return isTestPass;
+        goto exit;
     }
 
     /* config DPHY */
-    errorCode = CSIRX_configDPHY(handle, &testConfig.DPHYcfg);
+    errorCode = CSIRX_configDPHY(handle, &gTestConfig.DPHYcfg);
     if(errorCode != CSIRX_NO_ERROR)
     {
-        printf("CSIRX_configDPHY failed, errorCode = %d\n", errorCode);
+        UART_printf("CSIRX_configDPHY failed, errorCode = %d\n", errorCode);
         isTestPass = false;
-        return isTestPass;
+        goto exit;
     }
 
     errorCode = CSIRX_setComplexIOpowerCommand(handle, 1);
     if(errorCode != CSIRX_NO_ERROR)
     {
-        printf("CSIRX_setComplexIOpowerCommand failed, errorCode = %d\n",
+        UART_printf("CSIRX_setComplexIOpowerCommand failed, errorCode = %d\n",
                     errorCode);
         isTestPass = false;
-        return isTestPass;
+        goto exit;
     }
+    UART_printf("Wait till the complex IO power up!\n");
 
     numComplexIOPowerStatusPolls = 0;
     do
@@ -591,10 +625,10 @@ bool BoardDiag_CsirxTestRun(uint8_t instanceId)
                                             (uint8_t*)&isComplexIOpowerStatus);
         if(errorCode != CSIRX_NO_ERROR)
         {
-            printf("CSIRX_getComplexIOpowerStatus failed, errorCode = "
+            UART_printf("CSIRX_getComplexIOpowerStatus failed, errorCode = "
             " %d\n", errorCode);
             isTestPass = false;
-        return isTestPass;
+            goto exit;
         }
         if (isComplexIOpowerStatus == 0)
         {
@@ -602,15 +636,15 @@ bool BoardDiag_CsirxTestRun(uint8_t instanceId)
         }
         numComplexIOPowerStatusPolls++;
     } while((isComplexIOpowerStatus == 0));
-    printf("Complex IO Powered up.Run AWR FE binrary config now\n");
+    UART_printf("Complex IO Powered up.Run FE binrary config now\n");
     /* config common */
-    testConfig.commonCfg.IRQ.isContext[BOARD_DIAG_TEST_CONTEXT] = true,
-    errorCode = CSIRX_configCommon(handle, &testConfig.commonCfg);
+    gTestConfig.commonCfg.IRQ.isContext[BOARD_DIAG_CSIRX_TEST_CONTEXT] = true,
+    errorCode = CSIRX_configCommon(handle, &gTestConfig.commonCfg);
     if(errorCode != CSIRX_NO_ERROR)
     {
-        printf("CSIRX_configCommon failed, errorCode = %d\n", errorCode);
+        UART_printf("CSIRX_configCommon failed, errorCode = %d\n", errorCode);
         isTestPass = false;
-        return isTestPass;
+        goto exit;
     }
 #ifndef USE_BIOS
 #ifdef BUILD_C66X_1
@@ -626,38 +660,37 @@ bool BoardDiag_CsirxTestRun(uint8_t instanceId)
 #endif
     /* config contexts */
     /* assign ping pong address */
-    testConfig.contextCfg.pingPongConfig.pingAddress =
+    gTestConfig.contextCfg.pingPongConfig.pingAddress =
             (uint32_t) CSL_locToGlobAddr(pingBuf);
-    testConfig.contextCfg.pingPongConfig.pongAddress =
+    gTestConfig.contextCfg.pingPongConfig.pongAddress =
             (uint32_t) CSL_locToGlobAddr(pongBuf);
 
-    errorCode = CSIRX_configContext(handle, BOARD_DIAG_TEST_CONTEXT,
-                                &testConfig.contextCfg);
+    errorCode = CSIRX_configContext(handle, BOARD_DIAG_CSIRX_TEST_CONTEXT,
+                                &gTestConfig.contextCfg);
     if(errorCode != CSIRX_NO_ERROR)
     {
-        printf("CSIRX_configContext failed, errorCode = %d\n", errorCode);
-        
+        UART_printf("CSIRX_configContext failed, errorCode = %d\n", errorCode);
         isTestPass = false;
-        return isTestPass;
+        goto exit;
     }
 
     /* enable context */
-    errorCode = CSIRX_enableContext(handle, BOARD_DIAG_TEST_CONTEXT);
+    errorCode = CSIRX_enableContext(handle, BOARD_DIAG_CSIRX_TEST_CONTEXT);
     if(errorCode != CSIRX_NO_ERROR)
     {
-        printf("CSIRX_enableContext failed, errorCode = %d\n", errorCode);
+        UART_printf("CSIRX_enableContext failed, errorCode = %d\n", errorCode);
         isTestPass = false;
-        return isTestPass;
+        goto exit;
     }
 
     /* enable interface */
     errorCode = CSIRX_enableInterface(handle);
     if(errorCode != CSIRX_NO_ERROR)
     {
-        printf("CSIRX_enableInterface failed, errorCode = %d\n",
+        UART_printf("CSIRX_enableInterface failed, errorCode = %d\n",
                     errorCode);
         isTestPass = false;
-        return isTestPass;
+        goto exit;
     }
 
     /* Wait until complex IO reset complete */
@@ -668,14 +701,15 @@ bool BoardDiag_CsirxTestRun(uint8_t instanceId)
                                             (bool *)&isComplexIOresetDone);
         if(errorCode != CSIRX_NO_ERROR)
         {
-            printf("CSIRX_isComplexIOresetDone failed, errorCode = "
+            UART_printf("CSIRX_isComplexIOresetDone failed, errorCode = "
             " %d\n", errorCode);
             isTestPass = false;
-            return isTestPass;
+            goto exit;
         }
         if (isComplexIOresetDone == false)
         {
-            /* NOTE: This delay should be much smaller than frame time, default BIOS tick = 1 ms */
+            /* NOTE: This delay should be much smaller than frame time,
+                     default BIOS tick = 1 ms */
             Osal_delay(1);
         }
         numComplexIOresetDonePolls++;
@@ -683,22 +717,19 @@ bool BoardDiag_CsirxTestRun(uint8_t instanceId)
 
     if(isComplexIOresetDone == false)
     {
-        printf("CSIRX_isComplexIOresetDone attempts exceeded\n");
+        UART_printf("CSIRX_isComplexIOresetDone attempts exceeded\n");
         isTestPass = false;
-        return isTestPass;
+        goto exit;
     }
 
     /*Wait csirx receive the data */
     while(gFrameCounter !=
-          BOARD_DIAG_TEST_NUM_FRAMES)
+          BOARD_DIAG_CSIRX_TEST_NUM_FRAMES)
     {
         if(gFrameReceived)
         {
-            /* TODO: Added global variable counter to check the while loop is not optimized */
             gFrameCounter++;
-            BoardDiag_CheckPayloadReceived(handle);
-            DebugP_log1("Frame - %d received\n" ,
-            gTestState.contextIRQcounts[BOARD_DIAG_TEST_CONTEXT].frameEndCodeDetect);
+            BoardDiag_checkPayloadReceived(handle);
             gFrameReceived = false;
 
             /* Test is considered as failed even if any one of the frame
@@ -711,40 +742,40 @@ bool BoardDiag_CsirxTestRun(uint8_t instanceId)
         Osal_delay(1);
     }
 
-    if(gFrameCounter != BOARD_DIAG_TEST_NUM_FRAMES)
+    if(gFrameCounter != BOARD_DIAG_CSIRX_TEST_NUM_FRAMES)
     {
-        printf("Number of frames recieved does not match\n");
+        UART_printf("Number of frames recieved does not match\n");
         isTestPass = false;
     }
 
-    BoardDiag_CheckStateError(&isTestPass);
+    UART_printf("Number of frame received - %d\n", gFrameCounter);
 
+    BoardDiag_checkStateError(&isTestPass);
+
+exit:
     /* disable context */
-    errorCode = CSIRX_disableContext(handle, BOARD_DIAG_TEST_CONTEXT);
+    errorCode = CSIRX_disableContext(handle, BOARD_DIAG_CSIRX_TEST_CONTEXT);
     if(errorCode != CSIRX_NO_ERROR)
     {
-        printf("CSIRX_disableContext failed,errorCode = %d\n", errorCode);
+        UART_printf("CSIRX_disableContext failed,errorCode = %d\n", errorCode);
         isTestPass = false;
-        return isTestPass;
     }
 
     /* disable interface */
     errorCode = CSIRX_disableInterface(handle);
     if(errorCode != CSIRX_NO_ERROR)
     {
-        printf("CSIRX_disableInterface failed, errorCode = %d\n",
+        UART_printf("CSIRX_disableInterface failed, errorCode = %d\n",
                     errorCode);
         isTestPass = false;
-        return isTestPass;
     }
 
     /* close instance */
     errorCode = CSIRX_close(handle);
     if(errorCode != CSIRX_NO_ERROR)
     {
-        printf("CSIRX_close failed, errorCode = %d\n", errorCode);
+        UART_printf("CSIRX_close failed, errorCode = %d\n", errorCode);
         isTestPass = false;
-        return isTestPass;
     }
 
     return(isTestPass);
@@ -754,47 +785,57 @@ bool BoardDiag_CsirxTestRun(uint8_t instanceId)
  *  \brief    The function performs the CSIRX Diagnostic
  *            test.
  *
+ *  \param    NULL      For Bare Metal test.
+ *
+ *  \param    arg0      [IN]    argument-0 for BIOS test
+ *  \param    arg1      [IN]    argument-1 for BIOS test
+ *
  *  \return   int8_t
  *               0 - in case of success
  *              -1 - in case of failure.
  *
  */
 #ifdef USE_BIOS
-int8_t BoardDiag_CsirxTest(UArg arg0, UArg arg1)
+int8_t BoardDiag_csirxTest(UArg arg0, UArg arg1)
 #else
-int8_t BoardDiag_CsirxTest(void)
+int8_t BoardDiag_csirxTest(void)
 #endif
 {
     uint8_t result;
-    /* TPR12_TODO: Update this to menu based after initial testing */
-#if defined (BOARD_DIAG_CSIRX_A_TEST)
-    uint8_t instanceId = CSIRX_INST_ID_FIRST;
-#else
-    uint8_t instanceId = CSIRX_INST_ID_LAST;
-#endif
-    char instName[25];
+    uint32_t instanceId;
+    uint8_t instName[25];
 
-    printf("\n**********************************************\n");
-    printf  ("*                CSI-Rx Test                 *\n");
-    printf  ("**********************************************\n");
+    UART_printf("\n**********************************************\n");
+    UART_printf  ("*                CSI-Rx Test                 *\n");
+    UART_printf  ("**********************************************\n");
 
-    CSIRX_getInstanceName(instanceId, &instName[0], sizeof(instName));
+    UART_printf("Please select the CSIRX instance id\n");
+    UART_printf("0 -  CSIRX-A\n1 -  CSIRX-B\n");
+    UART_scanFmt("%d\n", &instanceId);
 
-    printf("Receiving data from CSIRX instance #%d: %s\n", instanceId,
+    if((instanceId != CSIRX_INST_A_ID) && (instanceId != CSIRX_INST_B_ID))
+    {
+        UART_printf("Please select the valid CSIRX instance\n");
+        return -1;
+    }
+
+    CSIRX_getInstanceName(instanceId, (char *)instName, sizeof(instName));
+
+    UART_printf("Receiving data from CSIRX instance #%d: %s\n", instanceId,
                  instName);
 
-    result = BoardDiag_CsirxTestRun(instanceId);
+    result = BoardDiag_csirxTestRun(instanceId);
     if(result != true)
     {
-        printf("Failed to receive data from CSIRX instance #%d\n",
+        UART_printf("Failed to receive data from CSIRX instance #%d\n",
                     instanceId);
         return -1;
     }
     else
     {
-        printf("CSIRX diag test passed\n");
+        UART_printf("CSIRX diag test passed\n");
     }
-    printf("csirx test finished\n");
+    UART_printf("csirx test finished\n");
 
     return 0;
 
@@ -803,11 +844,14 @@ int8_t BoardDiag_CsirxTest(void)
 /**
  *  \brief   CSIRX Diagnostic test main function
  *
+ *  \param   NULL
+ *
  *  \return  int - CSIRX Diagnostic test status.
  *             0 - in case of success
  *            -1 - in case of failure.
  *
  */
+#ifndef SPI_BOOT_FRAMEWORK
 int main (void)
 {
     Board_STATUS status;
@@ -818,7 +862,7 @@ int main (void)
     Error_Block eb;
 
     Error_init(&eb);
-    task = Task_create((Task_FuncPtr)BoardDiag_CsirxTest, NULL, &eb);
+    task = Task_create((Task_FuncPtr)BoardDiag_csirxTest, NULL, &eb);
     if (task == NULL) {
         System_printf("Task_create() failed!\n");
         BIOS_exit(0);
@@ -845,17 +889,18 @@ int main (void)
     /* Start BIOS */
     BIOS_start();
 #else
-    ret = BoardDiag_CsirxTest();
+    ret = BoardDiag_csirxTest();
     if(ret != 0)
     {
-        printf("\nCSIRX Test Failed\n");
+        UART_printf("\nCSIRX Test Failed\n");
         return -1;
     }
     else
     {
-        printf("\nCSIRX Test Passed\n");
+        UART_printf("\nCSIRX Test Passed\n");
     }
 #endif
 
     return 0;
 }
+#endif

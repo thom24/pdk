@@ -47,6 +47,7 @@ endif
 PROFILE ?= release
 TESTMODE ?= FUNCTIONAL_TEST
 MODENAME ?=
+FE_DEVICE ?= AWR2243
 BOARD_DIAG_CFLAGS ?=
 APP_NAME ?= board_diag_$(DIAGNAME)
 
@@ -104,7 +105,7 @@ PACKAGE_SRCS_COMMON += ../../create_sd.bat ../../create_sd.sh
 
 ifeq ($(SOC), $(filter $(SOC), tpr12))
 PACKAGE_SRCS_COMMON += ../src/csirx_test_tpr12.c ../src/csirx_test_tpr12.h
-#AWR2243 configuration binaries
+#AWR2243/IWR1443 configuration binaries
 PACKAGE_SRCS_COMMON += ../frontendcfg
 SRCS_COMMON += csirx_test_tpr12.c
 else
@@ -135,7 +136,7 @@ else
     endif
 endif
 
-CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) -DDIAG_$(TESTMODE) $(BOARD_DIAG_CFLAGS) $(CFLAGS_OS_DEFINES)
+CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) -DDIAG_$(TESTMODE) $(BOARD_DIAG_CFLAGS) $(CFLAGS_OS_DEFINES) -DFE_$(FE_DEVICE)
 
 # Include common make files
 ifeq ($(MAKERULEDIR), )
