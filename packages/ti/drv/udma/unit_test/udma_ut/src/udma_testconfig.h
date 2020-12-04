@@ -489,6 +489,75 @@ static const UdmaTestRingPrm gUdmaTestRingPrm[] =
 #define UDMA_TEST_NUM_RING_PRM          (sizeof(gUdmaTestRingPrm) / \
                                          sizeof(gUdmaTestRingPrm[0U]))
 
+#if (UDMA_SOC_CFG_RA_LCDMA_PRESENT == 1)
+/** \brief Defines the various PKTDMA channel parameters. */
+static const UdmaTestPktdmaChPrm gUdmaTestPktdmaChPrm[] =
+{
+    {
+        .pktdmachPrmId  = UDMA_TEST_PKTDMA_CH_PRMID_UNMAPPED_TX,
+        .chType         = UDMA_CH_TYPE_TX,
+        .mappedChGrp    = UDMA_MAPPED_GROUP_INVALID,
+        .peerChNum      = UDMA_TEST_PKTDMA_UNMAPPED_TX_PEER_CH,
+    },
+    {
+        .pktdmachPrmId  = UDMA_TEST_PKTDMA_CH_PRMID_CPSW_TX,
+        .chType         = UDMA_CH_TYPE_TX_MAPPED,
+        .mappedChGrp    = UDMA_MAPPED_TX_GROUP_CPSW,
+        .peerChNum      = UDMA_TEST_PKTDMA_CPSW_TX_PEER_CH,
+    },
+    {
+        .pktdmachPrmId  = UDMA_TEST_PKTDMA_CH_PRMID_SAUL_TX,
+        .chType         = UDMA_CH_TYPE_TX_MAPPED,
+        .mappedChGrp    = UDMA_MAPPED_TX_GROUP_SAUL,
+        .peerChNum      = UDMA_TEST_PKTDMA_SAUL_TX_PEER_CH,
+    },
+    {
+        .pktdmachPrmId  = UDMA_TEST_PKTDMA_CH_PRMID_ICSSG_0_TX,
+        .chType         = UDMA_CH_TYPE_TX_MAPPED,
+        .mappedChGrp    = UDMA_MAPPED_TX_GROUP_ICSSG_0,
+        .peerChNum      = UDMA_TEST_PKTDMA_ICSSG_0_TX_PEER_CH,
+    },
+    {
+        .pktdmachPrmId  = UDMA_TEST_PKTDMA_CH_PRMID_ICSSG_1_TX,
+        .chType         = UDMA_CH_TYPE_TX_MAPPED,
+        .mappedChGrp    = UDMA_MAPPED_TX_GROUP_ICSSG_1,
+        .peerChNum      = UDMA_TEST_PKTDMA_ICSSG_1_TX_PEER_CH,
+    },
+    {
+        .pktdmachPrmId  = UDMA_TEST_PKTDMA_CH_PRMID_UNMAPPED_RX,
+        .chType         = UDMA_CH_TYPE_RX,
+        .mappedChGrp    = UDMA_MAPPED_GROUP_INVALID,
+        .peerChNum      = UDMA_TEST_PKTDMA_UNMAPPED_RX_PEER_CH,
+    },
+    {
+        .pktdmachPrmId  = UDMA_TEST_PKTDMA_CH_PRMID_CPSW_RX,
+        .chType         = UDMA_CH_TYPE_RX_MAPPED,
+        .mappedChGrp    = UDMA_MAPPED_RX_GROUP_CPSW,
+        .peerChNum      = UDMA_TEST_PKTDMA_CPSW_RX_PEER_CH,
+    },
+    {
+        .pktdmachPrmId  = UDMA_TEST_PKTDMA_CH_PRMID_SAUL_RX,
+        .chType         = UDMA_CH_TYPE_RX_MAPPED,
+        .mappedChGrp    = UDMA_MAPPED_RX_GROUP_SAUL,
+        .peerChNum      = UDMA_TEST_PKTDMA_SAUL_RX_PEER_CH,
+    },
+    {
+        .pktdmachPrmId  = UDMA_TEST_PKTDMA_CH_PRMID_ICSSG_0_RX,
+        .chType         = UDMA_CH_TYPE_RX_MAPPED,
+        .mappedChGrp    = UDMA_MAPPED_RX_GROUP_ICSSG_0,
+        .peerChNum      = UDMA_TEST_PKTDMA_ICSSG_0_RX_PEER_CH,
+    },
+    {
+        .pktdmachPrmId  = UDMA_TEST_PKTDMA_CH_PRMID_ICSSG_1_RX,
+        .chType         = UDMA_CH_TYPE_RX_MAPPED,
+        .mappedChGrp    = UDMA_MAPPED_RX_GROUP_ICSSG_1,
+        .peerChNum      = UDMA_TEST_PKTDMA_ICSSG_1_RX_PEER_CH,
+    },
+};
+#define UDMA_TEST_NUM_PKTDMA_CH_PRM          (sizeof(gUdmaTestPktdmaChPrm) / \
+                                              sizeof(gUdmaTestPktdmaChPrm[0U]))
+#endif
+
 #ifdef __cplusplus
 }
 #endif

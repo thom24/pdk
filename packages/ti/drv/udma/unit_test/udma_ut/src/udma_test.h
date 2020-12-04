@@ -283,6 +283,25 @@ typedef enum
     UDMA_TEST_RING_PRMID_INVALID,
 } UdmaTestRingPrmId;
 
+#if (UDMA_SOC_CFG_RA_LCDMA_PRESENT == 1)
+/**
+ *  UDMA UT PKTDMA channel param IDs.
+ */
+typedef enum
+{
+    UDMA_TEST_PKTDMA_CH_PRMID_UNMAPPED_TX,
+    UDMA_TEST_PKTDMA_CH_PRMID_CPSW_TX,
+    UDMA_TEST_PKTDMA_CH_PRMID_SAUL_TX,
+    UDMA_TEST_PKTDMA_CH_PRMID_ICSSG_0_TX,
+    UDMA_TEST_PKTDMA_CH_PRMID_ICSSG_1_TX,
+    UDMA_TEST_PKTDMA_CH_PRMID_UNMAPPED_RX,
+    UDMA_TEST_PKTDMA_CH_PRMID_CPSW_RX,
+    UDMA_TEST_PKTDMA_CH_PRMID_SAUL_RX,
+    UDMA_TEST_PKTDMA_CH_PRMID_ICSSG_0_RX,
+    UDMA_TEST_PKTDMA_CH_PRMID_ICSSG_1_RX,
+} UdmaTestPktdmaChPrmId;
+#endif
+
 /* ========================================================================== */
 /*                         Structure Declarations                             */
 /* ========================================================================== */
@@ -381,6 +400,23 @@ typedef struct
     /**< Use no event, event with interrupt or event with polled mode.
      *   Refer #UdmaTestEventMode */
 } UdmaTestRingPrm;
+
+#if (UDMA_SOC_CFG_RA_LCDMA_PRESENT == 1)
+/**
+ *  \brief Test parameters for a PKTDMA Channel.
+ */
+typedef struct
+{
+    UdmaTestPktdmaChPrmId   pktdmachPrmId;
+    /**< PKTDMA Channel parameter ID. */
+    uint32_t                chType;
+    /**< UDMA channel type. */
+    uint32_t                mappedChGrp;
+    /**< UDMA mapped channel group. */
+    uint32_t                peerChNum;
+    /**< UDMA peer channel to link the #chNum using PSILCFG.*/
+} UdmaTestPktdmaChPrm;
+#endif
 
 /**
  *  \brief Test case parameter structure.
@@ -643,6 +679,7 @@ int32_t udmaTestBugTcPDK_4654(UdmaTestTaskObj *taskObj);
  * UDMA channel test functions
  */
 int32_t udmaTestChPktdmaParamCheckTc(UdmaTestTaskObj *taskObj);
+int32_t udmaTestChPktdmaChApiTc(UdmaTestTaskObj *taskObj);
 
 /*
  * UDMA Negative test case functions
