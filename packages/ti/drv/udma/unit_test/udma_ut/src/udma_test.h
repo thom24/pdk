@@ -639,6 +639,10 @@ int32_t udmaTestStructSizeTc(UdmaTestTaskObj *taskObj);
  */
 int32_t udmaTestBugTcPDK_3863(UdmaTestTaskObj *taskObj);
 int32_t udmaTestBugTcPDK_4654(UdmaTestTaskObj *taskObj);
+/*
+ * UDMA channel test functions
+ */
+int32_t udmaTestChPktdmaParamCheckTc(UdmaTestTaskObj *taskObj);
 
 /*
  * UDMA Negative test case functions
