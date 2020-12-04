@@ -218,14 +218,7 @@ uint32_t GPMC_configClk(uint32_t freq)
     GPMC_log("\n GPMC CLK running at %d Hz. \n", freq);
 
 clk_cfg_exit:
-    if (retVal == CSL_PASS)
-    {
-        return TRUE;
-    }
-    else
-    {
-        return FALSE;
-    }
+    return retVal;
 }
 #endif
 
@@ -234,6 +227,13 @@ int32_t Board_initGPMC(void)
     int32_t       status = GPMC_APP_STATUS_SUCCESS;
     Board_initCfg boardCfg;
     Board_STATUS  boardStatus;
+    Board_PinmuxConfig_t gpmcPinmux;
+
+    /* Pinmux configuration to enable probing from expansion board */
+    Board_pinmuxGetCfg(&gpmcPinmux);
+    gpmcPinmux.muxCfg = BOARD_PINMUX_CUSTOM;
+    gpmcPinmux.expBoardMux = BOARD_PINMUX_EXP_GPMC;
+    Board_pinmuxSetCfg(&gpmcPinmux);
 
     boardCfg = BOARD_INIT_MODULE_CLOCK  |
                BOARD_INIT_PINMUX_CONFIG |
