@@ -99,6 +99,7 @@ sbl_DISABLE_PARALLEL_MAKE = yes
 
 ifeq ($(SOC), am64x)
 sbl_LIB_LIST = sbl_lib_ospi_nondma sbl_lib_cust sbl_lib_mmcsd sbl_lib_uart
+sbl_LIB_LIST += sbl_lib_mmcsd_hlos sbl_lib_ospi_nondma_hlos
 else
   ifeq ($(SOC), j7200)
     sbl_LIB_LIST = sbl_lib_mmcsd sbl_lib_mmcsd_hlos sbl_lib_ospi sbl_lib_ospi_hlos sbl_lib_uart sbl_lib_cust
