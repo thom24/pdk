@@ -130,6 +130,11 @@ void SBL_SciClientInit(void)
         0,
         TRUE
     };
+
+#if defined(SOC_AM65XX)
+    config.isSecureMode = 0U;
+#endif /* AM65xx the default board cfg is for non-secure mode */
+
 #endif
 
     SBL_ADD_PROFILE_POINT;
