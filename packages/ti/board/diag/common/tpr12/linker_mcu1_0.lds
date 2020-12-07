@@ -39,7 +39,8 @@ PAGE 0:
     TCMA_RAM (RX) : origin=0x00000100 length=0x00007F00
     TCMB_RAM (RW) : origin=0x00080000 length=0x00008000
     SBL_RESERVED_L2_RAM (RW)   : origin=0x10200000 length=0x00060000
-    L2_RAM (RW)   : origin=0x10260000 length=0x00090000
+    CPPI_DESC (RW): origin=0x10260000 length=0x00001000
+    L2_RAM (RW)   : origin=0x10261000 length=(0x00090000 - 0x00001000)
     L3_RAM (RW)   : origin=0x88000000 length=0x00300000
     L3_RAM_Ping (RW)   : origin=0x88300000 length=0x0040000
     L3_RAM_Pong (RW)   : origin=0x88340000 length=0x0040000
@@ -80,6 +81,7 @@ SECTIONS{
     .sysmem  : {} > SBL_RESERVED_L2_RAM | L2_RAM
     uartbuffer : {} palign(8) > L3_RAM
 
+    .bss:ENET_CPPI_DESC        (NOLOAD) {} ALIGN (128) > CPPI_DESC
     /* For Ethernet packet memory*/
     .bss:ENET_DMA_DESC_MEMPOOL (NOLOAD) {} ALIGN (128) > L3_RAM
     .bss:ENET_DMA_RING_MEMPOOL (NOLOAD) {} ALIGN (128) > L3_RAM

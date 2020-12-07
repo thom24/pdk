@@ -105,6 +105,7 @@ static void BoardDiag_enetLpbkCloseEnet(void)
         UART_printf("Failed to close port link: %d\n", status);
     }
 
+#if !defined(SOC_TPR12)
     /* Detach core */
     if (status == ENET_SOK)
     {
@@ -117,7 +118,7 @@ static void BoardDiag_enetLpbkCloseEnet(void)
             UART_printf("Failed to detach core key %u: %d\n", gEnetLpbk.coreKey, status);
         }
     }
-
+#endif
     /* Close Enet driver */
     Enet_close(gEnetLpbk.hEnet);
 
@@ -175,7 +176,7 @@ static void BoardDiag_enetLpbkCloseDma()
     EnetAppUtils_freePktInfoQ(&gEnetLpbk.rxFreeQ);
     EnetAppUtils_freePktInfoQ(&gEnetLpbk.txFreePktInfoQ);
 
-    CpswAppMemUtils_deInit();
+    EnetMem_deInit();
 }
 
 /**
@@ -798,15 +799,15 @@ static int8_t BoardDiag_enetLpbkInitRxReadyPktQ(void)
     EnetQueue_initQ(&gEnetLpbk.rxReadyQ);
     EnetQueue_initQ(&rxReadyQ);
 
-    for (memUtilsRxPkts = 0U; memUtilsRxPkts < CPSW_APPMEMUTILS_NUM_RX_PKTS; memUtilsRxPkts++)
+    for (memUtilsRxPkts = 0U; memUtilsRxPkts < ENET_MEM_NUM_RX_PKTS; memUtilsRxPkts++)
     {
         pPktInfo =
-        CpswAppMemUtils_allocEthPktFxn(&gEnetLpbk,
-                                       CPSW_APPMEMUTILS_LARGE_POOL_PKT_SIZE,
-                                       UDMA_CACHELINE_ALIGNMENT);
+        EnetMem_allocEthPkt(&gEnetLpbk,
+                            ENET_MEM_LARGE_POOL_PKT_SIZE,
+                            ENETDMA_CACHELINE_ALIGNMENT);
         if(pPktInfo == NULL)
         {
-            UART_printf("CpswAppMemUtils_allocEthPktFxn failed\n");
+            UART_printf("EnetMem_allocEthPkt failed\n");
             return -1;
         }
         ENET_UTILS_SET_PKT_APP_STATE(&pPktInfo->pktState,
@@ -865,15 +866,15 @@ static int8_t BoardDiag_enetLpbkInitTxFreePktQ(void)
     EnetQueue_initQ(&gEnetLpbk.txFreePktInfoQ);
 
     /* Initialize TX EthPkts and queue them to txFreePktInfoQ */
-    for (memUtilsTxPkts = 0U; memUtilsTxPkts < CPSW_APPMEMUTILS_NUM_TX_PKTS; memUtilsTxPkts++)
+    for (memUtilsTxPkts = 0U; memUtilsTxPkts < ENET_MEM_NUM_TX_PKTS; memUtilsTxPkts++)
     {
         pPktInfo = 
-        CpswAppMemUtils_allocEthPktFxn(&gEnetLpbk,
-                                       CPSW_APPMEMUTILS_LARGE_POOL_PKT_SIZE,
-                                       UDMA_CACHELINE_ALIGNMENT);
+        EnetMem_allocEthPkt(&gEnetLpbk,
+                                       ENET_MEM_LARGE_POOL_PKT_SIZE,
+                                       ENETDMA_CACHELINE_ALIGNMENT);
         if(pPktInfo == NULL)
         {
-            UART_printf("CpswAppMemUtils_allocEthPktFxn failed\n");
+            UART_printf("EnetMem_allocEthPkt failed\n");
             return -1;
         }
         ENET_UTILS_SET_PKT_APP_STATE(&pPktInfo->pktState,
@@ -956,10 +957,6 @@ static int8_t BoardDiag_enetLpbkOpenDma()
 
         if (NULL == gEnetLpbk.hRxCh)
         {
-            EnetAppUtils_freeRxCh(gEnetLpbk.hEnet,
-                                  gEnetLpbk.coreKey,
-                                  gEnetLpbk.coreId,
-                                  gEnetLpbk.rxChNum);
             UART_printf("EnetDma_openRxCh() failed to open: %d\n",
                                status);
 
@@ -1079,9 +1076,9 @@ static void BoardDiag_enetLpbkInitCpswCfg(Cpsw_Cfg *cpswCfg)
 
     /* ALE config */
     aleCfg->modeFlags                          = CPSW_ALE_CFG_MODULE_EN;
-    aleCfg->agingCfg.enableAutoAging           = true;
+    aleCfg->agingCfg.autoAgingEn           = true;
     aleCfg->agingCfg.agingPeriodInMs           = 1000;
-    aleCfg->nwSecCfg.enableVid0Mode            = true;
+    aleCfg->nwSecCfg.vid0ModeEn            = true;
     aleCfg->vlanCfg.aleVlanAwareMode           = false;
     aleCfg->vlanCfg.cpswVlanAwareMode          = false;
     aleCfg->vlanCfg.unknownUnregMcastFloodMask = CPSW_ALE_ALL_PORTS_MASK;
@@ -1110,12 +1107,13 @@ static void BoardDiag_enetLpbkInitCpswCfg(Cpsw_Cfg *cpswCfg)
 static int8_t BoardDiag_enetLpbkOpenEnet(void)
 {
     Cpsw_Cfg cpswCfg;
-
+    EnetCpdma_Cfg dmaCfg;
     Enet_IoctlPrms prms;
     EnetPer_PortLinkCfg portLinkCfg;
     CpswMacPort_Cfg macCfg;
     int32_t status = ENET_SOK;
 
+    cpswCfg.dmaCfg = &dmaCfg;
     /* Initialize peripheral config */
     BoardDiag_enetLpbkInitCpswCfg(&cpswCfg);
 
@@ -1238,7 +1236,7 @@ static int8_t BoardDiag_enetLpbkOpenEnet(void)
         }
 
         /* MAC and PHY loopbacks are mutually exclusive */
-        phyCfg->enableLoopback = gEnetLpbk.testPhyLoopback &&
+        phyCfg->loopbackEn = gEnetLpbk.testPhyLoopback &&
                                  !gEnetLpbk.testExtLoopback;
 
         macCfg.loopbackEn = !gEnetLpbk.testPhyLoopback;
@@ -1310,7 +1308,7 @@ static int8_t BoardDiag_cpswLoopbackTest()
     /* Initialize the enet parameters */
     BoardDiag_enetIniParams();
 
-    EnetAppUtils_enableClocks(gEnetLpbk.enetType);
+    EnetAppUtils_enableClocks(gEnetLpbk.enetType, gEnetLpbk.instId);
 
     /* Local core id */
     gEnetLpbk.coreId = EnetSoc_getCoreId();
@@ -1328,7 +1326,7 @@ static int8_t BoardDiag_cpswLoopbackTest()
         UART_printf("Failed to open Enet driver: %d\n", status);
         return -1;
     }
-
+#if !defined(SOC_TPR12)
     if (status == ENET_SOK)
     {
         /* Attach the core with RM */
@@ -1350,15 +1348,15 @@ static int8_t BoardDiag_cpswLoopbackTest()
             gEnetLpbk.coreKey = attachCoreOutArgs.coreKey;
         }
     }
-
+#endif
     if (status == ENET_SOK)
     {
         /* memutils open should happen after Cpsw is opened as it uses 
          * CpswUtils_Q functions */
-        status = CpswAppMemUtils_init();
+        status = EnetMem_init();
         if (status != ENET_SOK)
         {
-            UART_printf("CpswAppMemUtils_init failed: "
+            UART_printf("EnetMem_init failed: "
                         "%d\n", status);
             return -1;
         }
@@ -1455,7 +1453,7 @@ static int8_t BoardDiag_cpswLoopbackTest()
     BoardDiag_enetLpbkCloseEnet();
 
     /* Disable peripheral clocks */
-    EnetAppUtils_disableClocks(gEnetLpbk.enetType);
+    EnetAppUtils_disableClocks(gEnetLpbk.enetType, gEnetLpbk.instId);
 
     /* Deinit Enet driver */
     Enet_deinit();

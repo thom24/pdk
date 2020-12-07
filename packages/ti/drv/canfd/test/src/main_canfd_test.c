@@ -70,6 +70,7 @@
 #include <ti/board/board.h>
 #include <ti/drv/esm/esm.h>
 #include <ti/drv/canfd/canfd.h>
+#include <ti/drv/uart/UART_stdio.h>
 
 /**************************************************************************
  *************************** Global Definitions ***************************
@@ -140,7 +141,7 @@ uint8_t                 txData[128U] =
 
 uint32_t                gDisplayStats = 0;
 uint32_t                gTerminate = 0;
-uint32_t                gMCANMode = 1U;
+uint32_t                gMCANMode = 2U;
 CANFD_MCANFrameType     testFrameType = CANFD_MCANFrameType_FD;
 
 /**
@@ -328,7 +329,8 @@ static int32_t PlatformInit(void)
     Board_STATUS boardStatus;
     Board_initCfg boardCfg;
 
-    boardCfg = (BOARD_INIT_PINMUX_CONFIG | BOARD_INIT_MODULE_CLOCK);
+    boardCfg = (BOARD_INIT_PINMUX_CONFIG | BOARD_INIT_MODULE_CLOCK | 
+                BOARD_INIT_UART_STDIO);
     boardStatus = Board_init(boardCfg);
 
     DebugP_assert(boardStatus == BOARD_SOK);
@@ -414,7 +416,7 @@ static int32_t mcanLoopbackTest()
     canHandle = CANFD_init(0U, &mcanCfgParams, &errCode);
     if (canHandle == NULL)
     {
-        System_printf ("Error: CANFD Module Initialization failed [Error code %d]\n", errCode);
+        UART_printf ("Error: CANFD Module Initialization failed [Error code %d]\n", errCode);
         return -1;
     }
 
@@ -425,7 +427,7 @@ static int32_t mcanLoopbackTest()
         Sync jump: 1
         BRP(Baud rate Prescaler): 2
 
-        Nominal Bit rate = (40)/(((8+6+5)+1)*BRP) = 1Mhz
+        Nominal Bit rate = (80)/(((8+6+5)+1)*BRP) = 1Mhz
 
         Timing Params for Data Bit rate:
         Prop seg: 2
@@ -434,7 +436,7 @@ static int32_t mcanLoopbackTest()
         Sync jump: 1
         BRP(Baud rate Prescaler): 1
 
-        Nominal Bit rate = (40)/(((2+2+3)+1)*BRP) = 5Mhz
+        Nominal Bit rate = (80)/(((2+2+3)+1)*BRP) = 5Mhz
     */
 
     mcanBitTimingParams.nomBrp      = 0x4U;
@@ -443,7 +445,7 @@ static int32_t mcanLoopbackTest()
     mcanBitTimingParams.nomPseg2    = 0x5U;
     mcanBitTimingParams.nomSjw      = 0x1U;
 
-    mcanBitTimingParams.dataBrp     = 0x1U;
+    mcanBitTimingParams.dataBrp     = 0x2U;
     mcanBitTimingParams.dataPropSeg = 0x2U;
     mcanBitTimingParams.dataPseg1   = 0x2U;
     mcanBitTimingParams.dataPseg2   = 0x3U;
@@ -453,7 +455,7 @@ static int32_t mcanLoopbackTest()
     retVal = CANFD_configBitTime (canHandle, &mcanBitTimingParams, &errCode);
     if (retVal < 0)
     {
-        System_printf ("Error: CANFD Module configure bit time failed [Error code %d]\n", errCode);
+        UART_printf ("Error: CANFD Module configure bit time failed [Error code %d]\n", errCode);
         return -1;
     }
 
@@ -470,7 +472,7 @@ static int32_t mcanLoopbackTest()
     retVal =  CANFD_setOptions(canHandle, &optionTLV, &errCode);
     if (retVal < 0)
     {
-        System_printf ("Error: CANFD set option Loopback failed [Error code %d]\n", errCode);
+        UART_printf ("Error: CANFD set option Loopback failed [Error code %d]\n", errCode);
         return -1;
     }
 
@@ -482,7 +484,7 @@ static int32_t mcanLoopbackTest()
     txMsgObjHandle = CANFD_createMsgObject (canHandle, &txMsgObjectParams, &errCode);
     if (txMsgObjHandle == NULL)
     {
-        System_printf ("Error: CANFD create Tx message object failed [Error code %d]\n", errCode);
+        UART_printf ("Error: CANFD create Tx message object failed [Error code %d]\n", errCode);
         return -1;
     }
 
@@ -494,7 +496,7 @@ static int32_t mcanLoopbackTest()
     rxMsgObjHandle = CANFD_createMsgObject (canHandle, &rxMsgObjectParams, &errCode);
     if (rxMsgObjHandle == NULL)
     {
-        System_printf ("Error: CANFD create Rx message object failed [Error code %d]\n", errCode);
+        UART_printf ("Error: CANFD create Rx message object failed [Error code %d]\n", errCode);
         return -1;
     }
 
@@ -520,7 +522,7 @@ static int32_t mcanLoopbackTest()
 
             if (retVal < 0)
             {
-                System_printf ("Error: CANFD transmit data for iteration %d failed [Error code %d]\n", iterationCount, errCode);
+                UART_printf ("Error: CANFD transmit data for iteration %d failed [Error code %d]\n", iterationCount, errCode);
                 return -1;
             }
         }
@@ -541,15 +543,15 @@ static int32_t mcanLoopbackTest()
         iterationCount++;
     }
 
-    System_printf("Debug: Number of iterations              : %d\n", iterationCount);
-    System_printf("Debug: Number of messages transmitted    : %d\n", gTxPkts);
-    System_printf("Debug: Number of messages received       : %d\n", gRxPkts);
-    System_printf("Debug: Number of messages lost           : %d\n", gErrMsgLstCnt);
-    System_printf("Debug: Number of data mismatch           : %d\n", gErrDataMissMatchCnt);
-    System_printf("Debug: Number of Frame mismatch          : %d\n", gErrFrameType);
-    System_printf("Debug: Number of Get_Data errors         : %d\n", gErrGetData);
-    System_printf("Debug: Error Status Interrupt            : %d\n", gErrStatusInt);
-    System_printf("\n\n");
+    UART_printf("Debug: Number of iterations              : %d\n", iterationCount);
+    UART_printf("Debug: Number of messages transmitted    : %d\n", gTxPkts);
+    UART_printf("Debug: Number of messages received       : %d\n", gRxPkts);
+    UART_printf("Debug: Number of messages lost           : %d\n", gErrMsgLstCnt);
+    UART_printf("Debug: Number of data mismatch           : %d\n", gErrDataMissMatchCnt);
+    UART_printf("Debug: Number of Frame mismatch          : %d\n", gErrFrameType);
+    UART_printf("Debug: Number of Get_Data errors         : %d\n", gErrGetData);
+    UART_printf("Debug: Error Status Interrupt            : %d\n", gErrStatusInt);
+    UART_printf("\n\n");
 
     msgObjStats.handle = txMsgObjHandle;
     optionTLV.type = CANFD_Option_MCAN_MSG_OBJECT_STATS;
@@ -559,34 +561,34 @@ static int32_t mcanLoopbackTest()
     retVal =  CANFD_getOptions(canHandle, &optionTLV, &errCode);
     if (retVal < 0)
     {
-        System_printf ("Error: CANFD get stats failed [Error code %d]\n", errCode);
+        UART_printf ("Error: CANFD get stats failed [Error code %d]\n", errCode);
         return -1;
     }
 
-    System_printf("Debug: Message Identifier                : 0x%x\n", msgObjStats.startMsgIdentifier);
-    System_printf("Debug: Direction                         : %s\n", (msgObjStats.direction == 0) ? "Receive" : "Transmit");
-    System_printf("Debug: Number of interrupts received     : %d\n", msgObjStats.interruptsRxed);
-    System_printf("Debug: Number of messages processed      : %d\n", msgObjStats.messageProcessed);
-    System_printf("\n\n");
+    UART_printf("Debug: Message Identifier                : 0x%x\n", msgObjStats.startMsgIdentifier);
+    UART_printf("Debug: Direction                         : %s\n", (msgObjStats.direction == 0) ? "Receive" : "Transmit");
+    UART_printf("Debug: Number of interrupts received     : %d\n", msgObjStats.interruptsRxed);
+    UART_printf("Debug: Number of messages processed      : %d\n", msgObjStats.messageProcessed);
+    UART_printf("\n\n");
 
     msgObjStats.handle = rxMsgObjHandle;
     retVal =  CANFD_getOptions(canHandle, &optionTLV, &errCode);
     if (retVal < 0)
     {
-        System_printf ("Error: CANFD get stats failed [Error code %d]\n", errCode);
+        UART_printf ("Error: CANFD get stats failed [Error code %d]\n", errCode);
         return -1;
     }
 
-    System_printf("Debug: Message Identifier                : 0x%x\n", msgObjStats.startMsgIdentifier);
-    System_printf("Debug: Direction                         : %s\n", (msgObjStats.direction == 0) ? "Receive" : "Transmit");
-    System_printf("Debug: Number of interrupts received     : %d\n", msgObjStats.interruptsRxed);
-    System_printf("Debug: Number of messages processed      : %d\n", msgObjStats.messageProcessed);
+    UART_printf("Debug: Message Identifier                : 0x%x\n", msgObjStats.startMsgIdentifier);
+    UART_printf("Debug: Direction                         : %s\n", (msgObjStats.direction == 0) ? "Receive" : "Transmit");
+    UART_printf("Debug: Number of interrupts received     : %d\n", msgObjStats.interruptsRxed);
+    UART_printf("Debug: Number of messages processed      : %d\n", msgObjStats.messageProcessed);
 
-    System_printf("Debug: Receive & Transmit Measurements\n");
-    System_printf("Debug: Rx Min:%d Max: %d Average:%d ticks\n", minRxTicks, maxRxTicks, totalRxTicks/gRxPkts);
-    System_printf("Debug: Tx Min:%d Max: %d Average:%d ticks\n", minTxTicks, maxTxTicks, totalTxTicks/gTxPkts);
+    UART_printf("Debug: Receive & Transmit Measurements\n");
+    UART_printf("Debug: Rx Min:%d Max: %d Average:%d ticks\n", minRxTicks, maxRxTicks, totalRxTicks/gRxPkts);
+    UART_printf("Debug: Tx Min:%d Max: %d Average:%d ticks\n", minTxTicks, maxTxTicks, totalTxTicks/gTxPkts);
 
-    System_printf("\n\n");
+    UART_printf("\n\n");
 
     /* Reset the driver */
     optionTLV.type = CANFD_Option_MCAN_MODE;
@@ -597,7 +599,7 @@ static int32_t mcanLoopbackTest()
     retVal =  CANFD_setOptions(canHandle, &optionTLV, &errCode);
     if (retVal < 0)
     {
-        System_printf ("Error: CANFD set option Mode - SW INIT failed [Error code %d]\n", errCode);
+        UART_printf ("Error: CANFD set option Mode - SW INIT failed [Error code %d]\n", errCode);
         return -1;
     }
 
@@ -609,28 +611,28 @@ static int32_t mcanLoopbackTest()
     retVal =  CANFD_setOptions(canHandle, &optionTLV, &errCode);
     if (retVal < 0)
     {
-        System_printf ("Error: CANFD set option Mode - NORMAL failed [Error code %d]\n", errCode);
+        UART_printf ("Error: CANFD set option Mode - NORMAL failed [Error code %d]\n", errCode);
         return -1;
     }
 
     retVal = CANFD_deleteMsgObject(txMsgObjHandle, &errCode);
     if (retVal < 0)
     {
-        System_printf ("Error: CANFD delete Tx message object failed [Error code %d]\n", errCode);
+        UART_printf ("Error: CANFD delete Tx message object failed [Error code %d]\n", errCode);
         return -1;
     }
 
     retVal = CANFD_deleteMsgObject(rxMsgObjHandle, &errCode);
     if (retVal < 0)
     {
-        System_printf ("Error: CANFD delete Rx message object failed [Error code %d]\n", errCode);
+        UART_printf ("Error: CANFD delete Rx message object failed [Error code %d]\n", errCode);
         return -1;
     }
 
     retVal = CANFD_deinit(canHandle, &errCode);
     if (retVal < 0)
     {
-        System_printf ("Error: CANFD deinit failed [Error code %d]\n", errCode);
+        UART_printf ("Error: CANFD deinit failed [Error code %d]\n", errCode);
         return -1;
     }
 
@@ -638,23 +640,23 @@ static int32_t mcanLoopbackTest()
     {
         if (testSelection == MCAN_APP_TEST_INTERNAL_LOOPBACK)
         {
-            System_printf("Debug: Internal loopback testing for %d iterations Passed\n", iterationCount);
+            UART_printf("Debug: Internal loopback testing for %d iterations Passed\n", iterationCount);
         }
         else
         {
-            System_printf("Debug: External loopback testing for %d iterations Passed\n", iterationCount);
+            UART_printf("Debug: External loopback testing for %d iterations Passed\n", iterationCount);
         }
     }
     else
     {
         if (testSelection == MCAN_APP_TEST_INTERNAL_LOOPBACK)
         {
-            System_printf("Debug: Internal loopback testing for %d iterations Failed\n", iterationCount);
+            UART_printf("Debug: Internal loopback testing for %d iterations Failed\n", iterationCount);
             retVal = -1;
         }
         else
         {
-            System_printf("Debug: External loopback testing for %d iterations Failed\n", iterationCount);
+            UART_printf("Debug: External loopback testing for %d iterations Failed\n", iterationCount);
             retVal = -1;
         }
     }
@@ -684,7 +686,7 @@ static int32_t mcanTestTxCancel()
     canHandle = CANFD_init(0U, &mcanCfgParams, &errCode);
     if (canHandle == NULL)
     {
-        System_printf ("Error: CANFD Module Initialization failed [Error code %d]\n", errCode);
+        UART_printf ("Error: CANFD Module Initialization failed [Error code %d]\n", errCode);
         return -1;
     }
 
@@ -695,7 +697,7 @@ static int32_t mcanTestTxCancel()
         Sync jump: 1
         BRP(Baud rate Prescaler): 2
 
-        Nominal Bit rate = (40)/(((8+6+5)+1)*BRP) = 1Mhz
+        Nominal Bit rate = (80)/(((8+6+5)+1)*BRP) = 1Mhz
 
         Timing Params for Data Bit rate:
         Prop seg: 2
@@ -704,7 +706,7 @@ static int32_t mcanTestTxCancel()
         Sync jump: 1
         BRP(Baud rate Prescaler): 1
 
-        Nominal Bit rate = (40)/(((2+2+3)+1)*BRP) = 5Mhz
+        Nominal Bit rate = (80)/(((2+2+3)+1)*BRP) = 5Mhz
     */
 
     mcanBitTimingParams.nomBrp      = 0x4U;
@@ -713,7 +715,7 @@ static int32_t mcanTestTxCancel()
     mcanBitTimingParams.nomPseg2    = 0x5U;
     mcanBitTimingParams.nomSjw      = 0x1U;
 
-    mcanBitTimingParams.dataBrp     = 0x1U;
+    mcanBitTimingParams.dataBrp     = 0x2U;
     mcanBitTimingParams.dataPropSeg = 0x2U;
     mcanBitTimingParams.dataPseg1   = 0x2U;
     mcanBitTimingParams.dataPseg2   = 0x3U;
@@ -723,7 +725,7 @@ static int32_t mcanTestTxCancel()
     retVal = CANFD_configBitTime (canHandle, &mcanBitTimingParams, &errCode);
     if (retVal < 0)
     {
-        System_printf ("Error: CANFD Module configure bit time failed [Error code %d]\n", errCode);
+        UART_printf ("Error: CANFD Module configure bit time failed [Error code %d]\n", errCode);
         return -1;
     }
 
@@ -737,7 +739,7 @@ static int32_t mcanTestTxCancel()
     retVal =  CANFD_setOptions(canHandle, &optionTLV, &errCode);
     if (retVal < 0)
     {
-        System_printf ("Error: CANFD set option Loopback failed [Error code %d]\n", errCode);
+        UART_printf ("Error: CANFD set option Loopback failed [Error code %d]\n", errCode);
         return -1;
     }
 
@@ -749,7 +751,7 @@ static int32_t mcanTestTxCancel()
     txMsgObjHandle = CANFD_createMsgObject (canHandle, &txMsgObjectParams, &errCode);
     if (txMsgObjHandle == NULL)
     {
-        System_printf ("Error: CANFD create Tx message object failed [Error code %d]\n", errCode);
+        UART_printf ("Error: CANFD create Tx message object failed [Error code %d]\n", errCode);
         return -1;
     }
 
@@ -763,7 +765,7 @@ static int32_t mcanTestTxCancel()
 
         if (retVal < 0)
         {
-            System_printf ("Error: CANFD transmit data for iteration %d failed [Error code %d]\n", iterationCount, errCode);
+            UART_printf ("Error: CANFD transmit data for iteration %d failed [Error code %d]\n", iterationCount, errCode);
             return -1;
         }
 
@@ -771,7 +773,7 @@ static int32_t mcanTestTxCancel()
         retVal = CANFD_transmitDataCancel (txMsgObjHandle, &errCode);
         if (retVal < 0)
         {
-            System_printf ("Error: CANFD transmit data cancel for iteration %d failed [Error code %d]\n", iterationCount, errCode);
+            UART_printf ("Error: CANFD transmit data cancel for iteration %d failed [Error code %d]\n", iterationCount, errCode);
             return -1;
         }
 
@@ -781,14 +783,14 @@ static int32_t mcanTestTxCancel()
         iterationCount++;
     }
 
-    System_printf("Debug: Number of iterations              : %d\n", iterationCount);
-    System_printf("Debug: Number of messages Cancelled      : %d\n", gTxCancelPkts);
-    System_printf("Debug: Number of messages lost           : %d\n", gErrMsgLstCnt);
-    System_printf("Debug: Number of data mismatch           : %d\n", gErrDataMissMatchCnt);
-    System_printf("Debug: Number of Frame mismatch          : %d\n", gErrFrameType);
-    System_printf("Debug: Number of Get_Data errors         : %d\n", gErrGetData);
-    System_printf("Debug: Error Status Interrupt            : %d\n", gErrStatusInt);
-    System_printf("\n\n");
+    UART_printf("Debug: Number of iterations              : %d\n", iterationCount);
+    UART_printf("Debug: Number of messages Cancelled      : %d\n", gTxCancelPkts);
+    UART_printf("Debug: Number of messages lost           : %d\n", gErrMsgLstCnt);
+    UART_printf("Debug: Number of data mismatch           : %d\n", gErrDataMissMatchCnt);
+    UART_printf("Debug: Number of Frame mismatch          : %d\n", gErrFrameType);
+    UART_printf("Debug: Number of Get_Data errors         : %d\n", gErrGetData);
+    UART_printf("Debug: Error Status Interrupt            : %d\n", gErrStatusInt);
+    UART_printf("\n\n");
 
     msgObjStats.handle = txMsgObjHandle;
     optionTLV.type = CANFD_Option_MCAN_MSG_OBJECT_STATS;
@@ -798,15 +800,15 @@ static int32_t mcanTestTxCancel()
     retVal =  CANFD_getOptions(canHandle, &optionTLV, &errCode);
     if (retVal < 0)
     {
-        System_printf ("Error: CANFD get stats failed [Error code %d]\n", errCode);
+        UART_printf ("Error: CANFD get stats failed [Error code %d]\n", errCode);
         return -1;
     }
 
-    System_printf("Debug: Message Identifier                : 0x%x\n", msgObjStats.startMsgIdentifier);
-    System_printf("Debug: Direction                         : %s\n", (msgObjStats.direction == 0) ? "Receive" : "Transmit");
-    System_printf("Debug: Number of interrupts received     : %d\n", msgObjStats.interruptsRxed);
-    System_printf("Debug: Number of messages processed      : %d\n", msgObjStats.messageProcessed);
-    System_printf("\n\n");
+    UART_printf("Debug: Message Identifier                : 0x%x\n", msgObjStats.startMsgIdentifier);
+    UART_printf("Debug: Direction                         : %s\n", (msgObjStats.direction == 0) ? "Receive" : "Transmit");
+    UART_printf("Debug: Number of interrupts received     : %d\n", msgObjStats.interruptsRxed);
+    UART_printf("Debug: Number of messages processed      : %d\n", msgObjStats.messageProcessed);
+    UART_printf("\n\n");
 
     /* Reset the driver */
     optionTLV.type = CANFD_Option_MCAN_MODE;
@@ -817,7 +819,7 @@ static int32_t mcanTestTxCancel()
     retVal =  CANFD_setOptions(canHandle, &optionTLV, &errCode);
     if (retVal < 0)
     {
-        System_printf ("Error: CANFD set option Mode - SW INIT failed [Error code %d]\n", errCode);
+        UART_printf ("Error: CANFD set option Mode - SW INIT failed [Error code %d]\n", errCode);
         return -1;
     }
 
@@ -829,25 +831,25 @@ static int32_t mcanTestTxCancel()
     retVal =  CANFD_setOptions(canHandle, &optionTLV, &errCode);
     if (retVal < 0)
     {
-        System_printf ("Error: CANFD set option Mode - NORMAL failed [Error code %d]\n", errCode);
+        UART_printf ("Error: CANFD set option Mode - NORMAL failed [Error code %d]\n", errCode);
         return -1;
     }
 
     retVal = CANFD_deleteMsgObject(txMsgObjHandle, &errCode);
     if (retVal < 0)
     {
-        System_printf ("Error: CANFD delete Tx message object failed [Error code %d]\n", errCode);
+        UART_printf ("Error: CANFD delete Tx message object failed [Error code %d]\n", errCode);
         return -1;
     }
 
     retVal = CANFD_deinit(canHandle, &errCode);
     if (retVal < 0)
     {
-        System_printf ("Error: CANFD deinit failed [Error code %d]\n", errCode);
+        UART_printf ("Error: CANFD deinit failed [Error code %d]\n", errCode);
         return -1;
     }
 
-    System_printf("Debug: Tx transmit cancel testing for %d iterations Passed\n", iterationCount);
+    UART_printf("Debug: Tx transmit cancel testing for %d iterations Passed\n", iterationCount);
     return retVal;
 }
 
@@ -875,7 +877,7 @@ static int32_t mcanPowerDownTest()
     canHandle = CANFD_init(0U, &mcanCfgParams, &errCode);
     if (canHandle == NULL)
     {
-        System_printf ("Error: CANFD Module Initialization failed [Error code %d]\n", errCode);
+        UART_printf ("Error: CANFD Module Initialization failed [Error code %d]\n", errCode);
         return -1;
     }
 
@@ -886,7 +888,7 @@ static int32_t mcanPowerDownTest()
         Sync jump: 1
         BRP(Baud rate Prescaler): 2
 
-        Nominal Bit rate = (40)/(((8+6+5)+1)*BRP) = 1Mhz
+        Nominal Bit rate = (80)/(((8+6+5)+1)*BRP) = 1Mhz
 
         Timing Params for Data Bit rate:
         Prop seg: 2
@@ -895,7 +897,7 @@ static int32_t mcanPowerDownTest()
         Sync jump: 1
         BRP(Baud rate Prescaler): 1
 
-        Nominal Bit rate = (40)/(((2+2+3)+1)*BRP) = 5Mhz
+        Nominal Bit rate = (80)/(((2+2+3)+1)*BRP) = 5Mhz
     */
 
     mcanBitTimingParams.nomBrp      = 0x4U;
@@ -904,7 +906,7 @@ static int32_t mcanPowerDownTest()
     mcanBitTimingParams.nomPseg2    = 0x5U;
     mcanBitTimingParams.nomSjw      = 0x1U;
 
-    mcanBitTimingParams.dataBrp     = 0x1U;
+    mcanBitTimingParams.dataBrp     = 0x2U;
     mcanBitTimingParams.dataPropSeg = 0x2U;
     mcanBitTimingParams.dataPseg1   = 0x2U;
     mcanBitTimingParams.dataPseg2   = 0x3U;
@@ -914,7 +916,7 @@ static int32_t mcanPowerDownTest()
     retVal = CANFD_configBitTime (canHandle, &mcanBitTimingParams, &errCode);
     if (retVal < 0)
     {
-        System_printf ("Error: CANFD Module configure bit time failed [Error code %d]\n", errCode);
+        UART_printf ("Error: CANFD Module configure bit time failed [Error code %d]\n", errCode);
         return -1;
     }
 
@@ -928,7 +930,7 @@ static int32_t mcanPowerDownTest()
     retVal =  CANFD_setOptions(canHandle, &optionTLV, &errCode);
     if (retVal < 0)
     {
-        System_printf ("Error: CANFD set option Loopback failed [Error code %d]\n", errCode);
+        UART_printf ("Error: CANFD set option Loopback failed [Error code %d]\n", errCode);
         return -1;
     }
 
@@ -940,7 +942,7 @@ static int32_t mcanPowerDownTest()
     txMsgObjHandle = CANFD_createMsgObject (canHandle, &txMsgObjectParams, &errCode);
     if (txMsgObjHandle == NULL)
     {
-        System_printf ("Error: CANFD create Tx message object failed [Error code %d]\n", errCode);
+        UART_printf ("Error: CANFD create Tx message object failed [Error code %d]\n", errCode);
         return -1;
     }
 
@@ -952,7 +954,7 @@ static int32_t mcanPowerDownTest()
     rxMsgObjHandle = CANFD_createMsgObject (canHandle, &rxMsgObjectParams, &errCode);
     if (rxMsgObjHandle == NULL)
     {
-        System_printf ("Error: CANFD create Rx message object failed [Error code %d]\n", errCode);
+        UART_printf ("Error: CANFD create Rx message object failed [Error code %d]\n", errCode);
         return -1;
     }
 
@@ -978,7 +980,7 @@ static int32_t mcanPowerDownTest()
 
             if (retVal < 0)
             {
-                System_printf ("Error: CANFD transmit data for iteration %d failed [Error code %d]\n", iterationCount, errCode);
+                UART_printf ("Error: CANFD transmit data for iteration %d failed [Error code %d]\n", iterationCount, errCode);
                 return -1;
             }
         }
@@ -999,15 +1001,15 @@ static int32_t mcanPowerDownTest()
         iterationCount++;
     }
 
-    System_printf("Debug: Number of iterations              : %d\n", iterationCount);
-    System_printf("Debug: Number of messages transmitted    : %d\n", gTxPkts);
-    System_printf("Debug: Number of messages received       : %d\n", gRxPkts);
-    System_printf("Debug: Number of messages lost           : %d\n", gErrMsgLstCnt);
-    System_printf("Debug: Number of data mismatch           : %d\n", gErrDataMissMatchCnt);
-    System_printf("Debug: Number of Frame mismatch          : %d\n", gErrFrameType);
-    System_printf("Debug: Number of Get_Data errors         : %d\n", gErrGetData);
-    System_printf("Debug: Error Status Interrupt            : %d\n", gErrStatusInt);
-    System_printf("\n\n");
+    UART_printf("Debug: Number of iterations              : %d\n", iterationCount);
+    UART_printf("Debug: Number of messages transmitted    : %d\n", gTxPkts);
+    UART_printf("Debug: Number of messages received       : %d\n", gRxPkts);
+    UART_printf("Debug: Number of messages lost           : %d\n", gErrMsgLstCnt);
+    UART_printf("Debug: Number of data mismatch           : %d\n", gErrDataMissMatchCnt);
+    UART_printf("Debug: Number of Frame mismatch          : %d\n", gErrFrameType);
+    UART_printf("Debug: Number of Get_Data errors         : %d\n", gErrGetData);
+    UART_printf("Debug: Error Status Interrupt            : %d\n", gErrStatusInt);
+    UART_printf("\n\n");
 
     msgObjStats.handle = txMsgObjHandle;
     optionTLV.type = CANFD_Option_MCAN_MSG_OBJECT_STATS;
@@ -1017,30 +1019,30 @@ static int32_t mcanPowerDownTest()
     retVal =  CANFD_getOptions(canHandle, &optionTLV, &errCode);
     if (retVal < 0)
     {
-        System_printf ("Error: CANFD get stats failed [Error code %d]\n", errCode);
+        UART_printf ("Error: CANFD get stats failed [Error code %d]\n", errCode);
         return -1;
     }
 
-    System_printf("Debug: Message Identifier                : 0x%x\n", msgObjStats.startMsgIdentifier);
-    System_printf("Debug: Direction                         : %s\n", (msgObjStats.direction == 0) ? "Receive" : "Transmit");
-    System_printf("Debug: Number of interrupts received     : %d\n", msgObjStats.interruptsRxed);
-    System_printf("Debug: Number of messages processed      : %d\n", msgObjStats.messageProcessed);
-    System_printf("\n\n");
+    UART_printf("Debug: Message Identifier                : 0x%x\n", msgObjStats.startMsgIdentifier);
+    UART_printf("Debug: Direction                         : %s\n", (msgObjStats.direction == 0) ? "Receive" : "Transmit");
+    UART_printf("Debug: Number of interrupts received     : %d\n", msgObjStats.interruptsRxed);
+    UART_printf("Debug: Number of messages processed      : %d\n", msgObjStats.messageProcessed);
+    UART_printf("\n\n");
 
     msgObjStats.handle = rxMsgObjHandle;
     retVal =  CANFD_getOptions(canHandle, &optionTLV, &errCode);
     if (retVal < 0)
     {
-        System_printf ("Error: CANFD get stats failed [Error code %d]\n", errCode);
+        UART_printf ("Error: CANFD get stats failed [Error code %d]\n", errCode);
         return -1;
     }
 
-    System_printf("Debug: Message Identifier                : 0x%x\n", msgObjStats.startMsgIdentifier);
-    System_printf("Debug: Direction                         : %s\n", (msgObjStats.direction == 0) ? "Receive" : "Transmit");
-    System_printf("Debug: Number of interrupts received     : %d\n", msgObjStats.interruptsRxed);
-    System_printf("Debug: Number of messages processed      : %d\n", msgObjStats.messageProcessed);
+    UART_printf("Debug: Message Identifier                : 0x%x\n", msgObjStats.startMsgIdentifier);
+    UART_printf("Debug: Direction                         : %s\n", (msgObjStats.direction == 0) ? "Receive" : "Transmit");
+    UART_printf("Debug: Number of interrupts received     : %d\n", msgObjStats.interruptsRxed);
+    UART_printf("Debug: Number of messages processed      : %d\n", msgObjStats.messageProcessed);
 
-    System_printf("\n\n");
+    UART_printf("\n\n");
 
     /* Power Down the module */
     optionTLV.type = CANFD_Option_MCAN_POWER_DOWN;
@@ -1051,11 +1053,11 @@ static int32_t mcanPowerDownTest()
     retVal =  CANFD_setOptions(canHandle, &optionTLV, &errCode);
     if (retVal < 0)
     {
-        System_printf ("Error: CANFD set option Power Down failed [Error code %d]\n", errCode);
+        UART_printf ("Error: CANFD set option Power Down failed [Error code %d]\n", errCode);
         return -1;
     }
     else
-        System_printf ("Debug: CANFD Module Power Down sucessful\n");
+        UART_printf ("Debug: CANFD Module Power Down sucessful\n");
 
     optionTLV.type = CANFD_Option_MCAN_POWER_DOWN;
     optionTLV.length = sizeof(uint8_t);
@@ -1065,13 +1067,13 @@ static int32_t mcanPowerDownTest()
     retVal =  CANFD_setOptions(canHandle, &optionTLV, &errCode);
     if (retVal < 0)
     {
-        System_printf ("Error: CANFD set option Wake Up failed [Error code %d]\n", errCode);
+        UART_printf ("Error: CANFD set option Wake Up failed [Error code %d]\n", errCode);
         return -1;
     }
     else
-        System_printf ("Debug: CANFD Module is Wake Up sucessful\n");
+        UART_printf ("Debug: CANFD Module is Wake Up sucessful\n");
 
-    System_printf("\n\n");
+    UART_printf("\n\n");
 
     iterationCount = 0;
     while (iterationCount != MCAN_APP_TEST_MESSAGE_COUNT)
@@ -1088,7 +1090,7 @@ static int32_t mcanPowerDownTest()
 
             if (retVal < 0)
             {
-                System_printf ("Error: CANFD transmit data for iteration %d failed [Error code %d]\n", iterationCount, errCode);
+                UART_printf ("Error: CANFD transmit data for iteration %d failed [Error code %d]\n", iterationCount, errCode);
                 return -1;
             }
         }
@@ -1109,16 +1111,16 @@ static int32_t mcanPowerDownTest()
         iterationCount++;
     }
 
-    System_printf("\n\n");
-    System_printf("Debug: Number of iterations              : %d\n", iterationCount);
-    System_printf("Debug: Number of messages transmitted    : %d\n", gTxPkts);
-    System_printf("Debug: Number of messages received       : %d\n", gRxPkts);
-    System_printf("Debug: Number of messages lost           : %d\n", gErrMsgLstCnt);
-    System_printf("Debug: Number of data mismatch           : %d\n", gErrDataMissMatchCnt);
-    System_printf("Debug: Number of Frame mismatch          : %d\n", gErrFrameType);
-    System_printf("Debug: Number of Get_Data errors         : %d\n", gErrGetData);
-    System_printf("Debug: Error Status Interrupt            : %d\n", gErrStatusInt);
-    System_printf("\n\n");
+    UART_printf("\n\n");
+    UART_printf("Debug: Number of iterations              : %d\n", iterationCount);
+    UART_printf("Debug: Number of messages transmitted    : %d\n", gTxPkts);
+    UART_printf("Debug: Number of messages received       : %d\n", gRxPkts);
+    UART_printf("Debug: Number of messages lost           : %d\n", gErrMsgLstCnt);
+    UART_printf("Debug: Number of data mismatch           : %d\n", gErrDataMissMatchCnt);
+    UART_printf("Debug: Number of Frame mismatch          : %d\n", gErrFrameType);
+    UART_printf("Debug: Number of Get_Data errors         : %d\n", gErrGetData);
+    UART_printf("Debug: Error Status Interrupt            : %d\n", gErrStatusInt);
+    UART_printf("\n\n");
 
     msgObjStats.handle = txMsgObjHandle;
     optionTLV.type = CANFD_Option_MCAN_MSG_OBJECT_STATS;
@@ -1128,55 +1130,55 @@ static int32_t mcanPowerDownTest()
     retVal =  CANFD_getOptions(canHandle, &optionTLV, &errCode);
     if (retVal < 0)
     {
-        System_printf ("Error: CANFD get stats failed [Error code %d]\n", errCode);
+        UART_printf ("Error: CANFD get stats failed [Error code %d]\n", errCode);
         return -1;
     }
 
-    System_printf("Debug: Message Identifier                : 0x%x\n", msgObjStats.startMsgIdentifier);
-    System_printf("Debug: Direction                         : %s\n", (msgObjStats.direction == 0) ? "Receive" : "Transmit");
-    System_printf("Debug: Number of interrupts received     : %d\n", msgObjStats.interruptsRxed);
-    System_printf("Debug: Number of messages processed      : %d\n", msgObjStats.messageProcessed);
-    System_printf("\n\n");
+    UART_printf("Debug: Message Identifier                : 0x%x\n", msgObjStats.startMsgIdentifier);
+    UART_printf("Debug: Direction                         : %s\n", (msgObjStats.direction == 0) ? "Receive" : "Transmit");
+    UART_printf("Debug: Number of interrupts received     : %d\n", msgObjStats.interruptsRxed);
+    UART_printf("Debug: Number of messages processed      : %d\n", msgObjStats.messageProcessed);
+    UART_printf("\n\n");
 
     msgObjStats.handle = rxMsgObjHandle;
     retVal =  CANFD_getOptions(canHandle, &optionTLV, &errCode);
     if (retVal < 0)
     {
-        System_printf ("Error: CANFD get stats failed [Error code %d]\n", errCode);
+        UART_printf ("Error: CANFD get stats failed [Error code %d]\n", errCode);
         return -1;
     }
 
-    System_printf("Debug: Message Identifier                : 0x%x\n", msgObjStats.startMsgIdentifier);
-    System_printf("Debug: Direction                         : %s\n", (msgObjStats.direction == 0) ? "Receive" : "Transmit");
-    System_printf("Debug: Number of interrupts received     : %d\n", msgObjStats.interruptsRxed);
-    System_printf("Debug: Number of messages processed      : %d\n", msgObjStats.messageProcessed);
+    UART_printf("Debug: Message Identifier                : 0x%x\n", msgObjStats.startMsgIdentifier);
+    UART_printf("Debug: Direction                         : %s\n", (msgObjStats.direction == 0) ? "Receive" : "Transmit");
+    UART_printf("Debug: Number of interrupts received     : %d\n", msgObjStats.interruptsRxed);
+    UART_printf("Debug: Number of messages processed      : %d\n", msgObjStats.messageProcessed);
 
-    System_printf("\n\n");
+    UART_printf("\n\n");
 
     retVal = CANFD_deleteMsgObject(txMsgObjHandle, &errCode);
     if (retVal < 0)
     {
-        System_printf ("Error: CANFD delete Tx message object failed [Error code %d]\n", errCode);
+        UART_printf ("Error: CANFD delete Tx message object failed [Error code %d]\n", errCode);
         return -1;
     }
 
     retVal = CANFD_deleteMsgObject(rxMsgObjHandle, &errCode);
     if (retVal < 0)
     {
-        System_printf ("Error: CANFD delete Rx message object failed [Error code %d]\n", errCode);
+        UART_printf ("Error: CANFD delete Rx message object failed [Error code %d]\n", errCode);
         return -1;
     }
 
     retVal = CANFD_deinit(canHandle, &errCode);
     if (retVal < 0)
     {
-        System_printf ("Error: CANFD deinit failed [Error code %d]\n", errCode);
+        UART_printf ("Error: CANFD deinit failed [Error code %d]\n", errCode);
         return -1;
     }
 
     if ((gErrMsgLstCnt != 0) || (gErrDataMissMatchCnt != 0) && (gErrFrameType == 0) && (gErrGetData == 0))
     {
-        System_printf("Debug: Power down testing with data failed\n");
+        UART_printf("Debug: Power down testing with data failed\n");
         retVal = -1;
     }
     return retVal;
@@ -1201,6 +1203,7 @@ static int32_t mcanTransmitTest()
     uint32_t                    index = 0U;
     uint32_t                    msgId ;
     uint32_t                    idIndex = 0;
+    uint32_t                    numIterations;
 
     gTxDoneFlag = 0;
     gRxDoneFlag = 0;
@@ -1211,7 +1214,7 @@ static int32_t mcanTransmitTest()
     canHandle = CANFD_init(0U, &mcanCfgParams, &errCode);
     if (canHandle == NULL)
     {
-        System_printf ("Error: CANFD Module Initialization failed [Error code %d]\n", errCode);
+        UART_printf ("Error: CANFD Module Initialization failed [Error code %d]\n", errCode);
         return -1;
     }
 
@@ -1222,7 +1225,7 @@ static int32_t mcanTransmitTest()
         Sync jump: 1
         BRP(Baud rate Prescaler): 2
 
-        Nominal Bit rate = (40)/(((8+6+5)+1)*BRP) = 1Mhz
+        Nominal Bit rate = (80)/(((8+6+5)+1)*BRP) = 1Mhz
 
         Timing Params for Data Bit rate:
         Prop seg: 2
@@ -1231,41 +1234,25 @@ static int32_t mcanTransmitTest()
         Sync jump: 1
         BRP(Baud rate Prescaler): 1
 
-        Nominal Bit rate = (40)/(((2+2+3)+1)*BRP) = 5Mhz
+        Nominal Bit rate = (80)/(((2+2+3)+1)*BRP) = 5Mhz
     */
-#if 1
-    mcanBitTimingParams.nomBrp      = 0x2U;
+    mcanBitTimingParams.nomBrp      = 0x4U;
     mcanBitTimingParams.nomPropSeg  = 0x8U;
     mcanBitTimingParams.nomPseg1    = 0x6U;
     mcanBitTimingParams.nomPseg2    = 0x5U;
     mcanBitTimingParams.nomSjw      = 0x1U;
 
-    /*5MHz*/
-    mcanBitTimingParams.dataBrp     = 0x1U;
+    mcanBitTimingParams.dataBrp     = 0x2U;
     mcanBitTimingParams.dataPropSeg = 0x2U;
     mcanBitTimingParams.dataPseg1   = 0x2U;
     mcanBitTimingParams.dataPseg2   = 0x3U;
     mcanBitTimingParams.dataSjw     = 0x1U;
-#else
-    mcanBitTimingParams.nomBrp      = 0x2U;
-    mcanBitTimingParams.nomPropSeg  = 0x8U;
-    mcanBitTimingParams.nomPseg1    = 0x6U;
-    mcanBitTimingParams.nomPseg2    = 0x5U;
-    mcanBitTimingParams.nomSjw      = 0x1U;
-
-    /*8MHz*/
-    mcanBitTimingParams.dataBrp     = 0x1U;
-    mcanBitTimingParams.dataPropSeg = 0x2U;
-    mcanBitTimingParams.dataPseg1   = 0x1U;
-    mcanBitTimingParams.dataPseg2   = 0x1U;
-    mcanBitTimingParams.dataSjw     = 0x1U;
-#endif
 
     /* Configure the CAN driver */
     retVal = CANFD_configBitTime (canHandle, &mcanBitTimingParams, &errCode);
     if (retVal < 0)
     {
-        System_printf ("Error: CANFD Module configure bit time failed [Error code %d]\n", errCode);
+        UART_printf ("Error: CANFD Module configure bit time failed [Error code %d]\n", errCode);
         return -1;
     }
 
@@ -1277,7 +1264,7 @@ static int32_t mcanTransmitTest()
     txMsgObjHandle = CANFD_createMsgObject (canHandle, &txMsgObjectParams, &errCode);
     if (txMsgObjHandle == NULL)
     {
-        System_printf ("Error: CANFD create Tx message object failed [Error code %d]\n", errCode);
+        UART_printf ("Error: CANFD create Tx message object failed [Error code %d]\n", errCode);
         return -1;
     }
 
@@ -1289,11 +1276,12 @@ static int32_t mcanTransmitTest()
     rxMsgObjHandle = CANFD_createMsgObject (canHandle, &rxMsgObjectParams, &errCode);
     if (rxMsgObjHandle == NULL)
     {
-        System_printf ("Error: CANFD create Rx message object failed [Error code %d]\n", errCode);
+        UART_printf ("Error: CANFD create Rx message object failed [Error code %d]\n", errCode);
         return -1;
     }
 
-    while (1)
+    numIterations = 0;
+    while (numIterations < 5)
     {
         /* Send data over Tx message object */
         if (testFrameType == CANFD_MCANFrameType_FD)
@@ -1305,13 +1293,13 @@ static int32_t mcanTransmitTest()
                 idIndex = 0;
             }
             msgId = txMsgObjectParams.msgIdentifier + idIndex;
-            Task_sleep(1U);
+            Task_sleep(100U);
             while(length > MCAN_APP_TEST_DATA_SIZE)
             {
 
                 retVal = CANFD_transmitData (txMsgObjHandle, msgId, CANFD_MCANFrameType_FD, MCAN_APP_TEST_DATA_SIZE, &txData[0], &errCode);
                 length = length - MCAN_APP_TEST_DATA_SIZE;
-                Task_sleep(1);
+                Task_sleep(100);
             }
             idIndex++;
         }
@@ -1321,7 +1309,7 @@ static int32_t mcanTransmitTest()
             length = 128U;
             index = 0;
             msgId = txMsgObjectParams.msgIdentifier;
-            Task_sleep(1);
+            Task_sleep(100);
             while(length > 8U)
             {
 
@@ -1329,12 +1317,12 @@ static int32_t mcanTransmitTest()
                 length = length - 8U;
                 index = index + 8U;
                 msgId = msgId + 1U;
-                Task_sleep(1U);
+                Task_sleep(100U);
             }
             retVal = CANFD_transmitData (txMsgObjHandle, msgId, CANFD_MCANFrameType_CLASSIC, length, &txData[index], &errCode);
 
         }
-        Task_sleep(2U);
+        Task_sleep(200U);
         if (retVal < 0)
         {
             gErrMsgLstCnt++;
@@ -1347,13 +1335,13 @@ static int32_t mcanTransmitTest()
         {
             gDisplayStats = 0;
 
-            System_printf("Debug: Number of iterations              : %d\n", iterationCount);
-            System_printf("Debug: Number of messages transmitted    : %d\n", gTxPkts);
-            System_printf("Debug: Number of messages received       : %d\n", gRxPkts);
-            System_printf("Debug: Number of messages lost           : %d\n", gErrMsgLstCnt);
-            System_printf("Debug: Error Status Interrupt            : %d\n", gErrStatusInt);
-            System_printf("Debug: Error Reason                      : %d\n", gErrorReason);
-            System_printf("\n\n");
+            UART_printf("Debug: Number of iterations              : %d\n", iterationCount);
+            UART_printf("Debug: Number of messages transmitted    : %d\n", gTxPkts);
+            UART_printf("Debug: Number of messages received       : %d\n", gRxPkts);
+            UART_printf("Debug: Number of messages lost           : %d\n", gErrMsgLstCnt);
+            UART_printf("Debug: Error Status Interrupt            : %d\n", gErrStatusInt);
+            UART_printf("Debug: Error Reason                      : %d\n", gErrorReason);
+            UART_printf("\n\n");
 
             msgObjStats.handle = txMsgObjHandle;
             optionTLV.type = CANFD_Option_MCAN_MSG_OBJECT_STATS;
@@ -1363,27 +1351,27 @@ static int32_t mcanTransmitTest()
             retVal =  CANFD_getOptions(canHandle, &optionTLV, &errCode);
             if (retVal < 0)
             {
-                System_printf ("Error: CANFD get stats failed [Error code %d]\n", errCode);
+                UART_printf ("Error: CANFD get stats failed [Error code %d]\n", errCode);
             }
 
-            System_printf("Debug: Message Identifier                : 0x%x\n", msgObjStats.startMsgIdentifier);
-            System_printf("Debug: Direction                         : %s\n", (msgObjStats.direction == 0) ? "Receive" : "Transmit");
-            System_printf("Debug: Number of interrupts received     : %d\n", msgObjStats.interruptsRxed);
-            System_printf("Debug: Number of messages processed      : %d\n", msgObjStats.messageProcessed);
-            System_printf("\n\n");
+            UART_printf("Debug: Message Identifier                : 0x%x\n", msgObjStats.startMsgIdentifier);
+            UART_printf("Debug: Direction                         : %s\n", (msgObjStats.direction == 0) ? "Receive" : "Transmit");
+            UART_printf("Debug: Number of interrupts received     : %d\n", msgObjStats.interruptsRxed);
+            UART_printf("Debug: Number of messages processed      : %d\n", msgObjStats.messageProcessed);
+            UART_printf("\n\n");
 
             msgObjStats.handle = rxMsgObjHandle;
             retVal =  CANFD_getOptions(canHandle, &optionTLV, &errCode);
             if (retVal < 0)
             {
-                System_printf ("Error: CANFD get stats failed [Error code %d]\n", errCode);
+                UART_printf ("Error: CANFD get stats failed [Error code %d]\n", errCode);
             }
 
-            System_printf("Debug: Message Identifier                : 0x%x\n", msgObjStats.startMsgIdentifier);
-            System_printf("Debug: Direction                         : %s\n", (msgObjStats.direction == 0) ? "Receive" : "Transmit");
-            System_printf("Debug: Number of interrupts received     : %d\n", msgObjStats.interruptsRxed);
-            System_printf("Debug: Number of messages processed      : %d\n", msgObjStats.messageProcessed);
-            System_printf("\n\n");
+            UART_printf("Debug: Message Identifier                : 0x%x\n", msgObjStats.startMsgIdentifier);
+            UART_printf("Debug: Direction                         : %s\n", (msgObjStats.direction == 0) ? "Receive" : "Transmit");
+            UART_printf("Debug: Number of interrupts received     : %d\n", msgObjStats.interruptsRxed);
+            UART_printf("Debug: Number of messages processed      : %d\n", msgObjStats.messageProcessed);
+            UART_printf("\n\n");
 
             optionTLV.type = CANFD_Option_MCAN_ERROR_COUNTER;
             optionTLV.length = sizeof(CANFD_MCANErrCntStatus);
@@ -1392,14 +1380,14 @@ static int32_t mcanTransmitTest()
             retVal =  CANFD_getOptions(canHandle, &optionTLV, &errCode);
             if (retVal < 0)
             {
-                System_printf ("Error: CANFD get error counter failed [Error code %d]\n", errCode);
+                UART_printf ("Error: CANFD get error counter failed [Error code %d]\n", errCode);
             }
 
-            System_printf("Debug: Receive passive status            : %d\n", errCounter.rpStatus);
-            System_printf("Debug: Transmit Error Counter            : %d\n", errCounter.transErrLogCnt);
-            System_printf("Debug: Receive Error Counter             : %d\n", errCounter.recErrCnt);
-            System_printf("Debug: Error Logging Counter             : %d\n", errCounter.canErrLogCnt);
-            System_printf("\n\n");
+            UART_printf("Debug: Receive passive status            : %d\n", errCounter.rpStatus);
+            UART_printf("Debug: Transmit Error Counter            : %d\n", errCounter.transErrLogCnt);
+            UART_printf("Debug: Receive Error Counter             : %d\n", errCounter.recErrCnt);
+            UART_printf("Debug: Error Logging Counter             : %d\n", errCounter.canErrLogCnt);
+            UART_printf("\n\n");
 
             optionTLV.type = CANFD_Option_MCAN_PROTOCOL_STATUS;
             optionTLV.length = sizeof(CANFD_MCANProtocolStatus);
@@ -1408,23 +1396,25 @@ static int32_t mcanTransmitTest()
             retVal =  CANFD_getOptions(canHandle, &optionTLV, &errCode);
             if (retVal < 0)
             {
-                System_printf ("Error: CANFD get protocol status failed [Error code %d]\n", errCode);
+                UART_printf ("Error: CANFD get protocol status failed [Error code %d]\n", errCode);
             }
 
-            System_printf("Debug: LEC                               : %d\n", protoStatus.lastErrCode);
-            System_printf("Debug: Activity                          : %d\n", protoStatus.act);
-            System_printf("Debug: Error Passive                     : %d\n", protoStatus.errPassive);
-            System_printf("Debug: Warning Status                    : %d\n", protoStatus.warningStatus);
-            System_printf("Debug: Bus Off Status                    : %d\n", protoStatus.busOffStatus);
-            System_printf("Debug: Data Phase LEC                    : %d\n", protoStatus.dlec);
-            System_printf("Debug: Rx ESI flag                       : %d\n", protoStatus.resi);
-            System_printf("Debug: Rx BRS flag                       : %d\n", protoStatus.rbrs);
-            System_printf("Debug: Rx CAN FD                         : %d\n", protoStatus.rfdf);
-            System_printf("Debug: Protocol Exception Event          : %d\n", protoStatus.pxe);
-            System_printf("Debug: TDC value                         : %d\n", protoStatus.tdcv);
-            System_printf("\n\n");
+            UART_printf("Debug: LEC                               : %d\n", protoStatus.lastErrCode);
+            UART_printf("Debug: Activity                          : %d\n", protoStatus.act);
+            UART_printf("Debug: Error Passive                     : %d\n", protoStatus.errPassive);
+            UART_printf("Debug: Warning Status                    : %d\n", protoStatus.warningStatus);
+            UART_printf("Debug: Bus Off Status                    : %d\n", protoStatus.busOffStatus);
+            UART_printf("Debug: Data Phase LEC                    : %d\n", protoStatus.dlec);
+            UART_printf("Debug: Rx ESI flag                       : %d\n", protoStatus.resi);
+            UART_printf("Debug: Rx BRS flag                       : %d\n", protoStatus.rbrs);
+            UART_printf("Debug: Rx CAN FD                         : %d\n", protoStatus.rfdf);
+            UART_printf("Debug: Protocol Exception Event          : %d\n", protoStatus.pxe);
+            UART_printf("Debug: TDC value                         : %d\n", protoStatus.tdcv);
+            UART_printf("\n\n");
         }
+        numIterations++;
     }
+    return 0;
 }
 
 static int32_t mcanEVM_EVMTest()
@@ -1456,7 +1446,7 @@ static int32_t mcanEVM_EVMTest()
     canHandle = CANFD_init(0U, &mcanCfgParams, &errCode);
     if (canHandle == NULL)
     {
-        System_printf ("Error: CANFD Module Initialization failed [Error code %d]\n", errCode);
+        UART_printf ("Error: CANFD Module Initialization failed [Error code %d]\n", errCode);
         return -1;
     }
 
@@ -1479,13 +1469,13 @@ static int32_t mcanEVM_EVMTest()
         Nominal Bit rate = (40)/(((2+2+3)+1)*BRP) = 5Mhz
     */
 
-    mcanBitTimingParams.nomBrp      = 0x2U;
+    mcanBitTimingParams.nomBrp      = 0x4U;
     mcanBitTimingParams.nomPropSeg  = 0x8U;
     mcanBitTimingParams.nomPseg1    = 0x6U;
     mcanBitTimingParams.nomPseg2    = 0x5U;
     mcanBitTimingParams.nomSjw      = 0x1U;
 
-    mcanBitTimingParams.dataBrp     = 0x1U;
+    mcanBitTimingParams.dataBrp     = 0x2U;
     mcanBitTimingParams.dataPropSeg = 0x2U;
     mcanBitTimingParams.dataPseg1   = 0x2U;
     mcanBitTimingParams.dataPseg2   = 0x3U;
@@ -1495,7 +1485,7 @@ static int32_t mcanEVM_EVMTest()
     retVal = CANFD_configBitTime (canHandle, &mcanBitTimingParams, &errCode);
     if (retVal < 0)
     {
-        System_printf ("Error: CANFD Module configure bit time failed [Error code %d]\n", errCode);
+        UART_printf ("Error: CANFD Module configure bit time failed [Error code %d]\n", errCode);
         return -1;
     }
 
@@ -1518,13 +1508,13 @@ static int32_t mcanEVM_EVMTest()
         txMsgObjHandle = CANFD_createMsgObject (canHandle, &txMsgObjectParams, &errCode);
         if (txMsgObjHandle == NULL)
         {
-            System_printf ("Error: CANFD create Tx message object failed [Error code %d]\n", errCode);
+            UART_printf ("Error: CANFD create Tx message object failed [Error code %d]\n", errCode);
             return -1;
         }
         else
         {
-            System_printf ("Debug: EVM in transmit mode...\n");
-            System_printf("\n\n");
+            UART_printf ("Debug: EVM in transmit mode...\n");
+            UART_printf("\n\n");
         }
 
         for (i = 0; i < MCAN_APP_TEST_MESSAGE_COUNT; i++)
@@ -1554,11 +1544,11 @@ static int32_t mcanEVM_EVMTest()
             gTxDoneFlag = 0;
         }
 
-        System_printf("Debug: Number of iterations              : %d\n", iterationCount);
-        System_printf("Debug: Number of messages transmitted    : %d\n", gTxPkts);
-        System_printf("Debug: Number of messages lost           : %d\n", gErrMsgLstCnt);
-        System_printf("Debug: Error Status Interrupt            : %d\n", gErrStatusInt);
-        System_printf("\n\n");
+        UART_printf("Debug: Number of iterations              : %d\n", iterationCount);
+        UART_printf("Debug: Number of messages transmitted    : %d\n", gTxPkts);
+        UART_printf("Debug: Number of messages lost           : %d\n", gErrMsgLstCnt);
+        UART_printf("Debug: Error Status Interrupt            : %d\n", gErrStatusInt);
+        UART_printf("\n\n");
 
         msgObjStats.handle = txMsgObjHandle;
         optionTLV.type = CANFD_Option_MCAN_MSG_OBJECT_STATS;
@@ -1568,14 +1558,14 @@ static int32_t mcanEVM_EVMTest()
         retVal =  CANFD_getOptions(canHandle, &optionTLV, &errCode);
         if (retVal < 0)
         {
-            System_printf ("Error: CANFD get stats failed [Error code %d]\n", errCode);
+            UART_printf ("Error: CANFD get stats failed [Error code %d]\n", errCode);
         }
 
-        System_printf("Debug: Message Identifier                : 0x%x\n", msgObjStats.startMsgIdentifier);
-        System_printf("Debug: Direction                         : %s\n", (msgObjStats.direction == 0) ? "Receive" : "Transmit");
-        System_printf("Debug: Number of interrupts received     : %d\n", msgObjStats.interruptsRxed);
-        System_printf("Debug: Number of messages processed      : %d\n", msgObjStats.messageProcessed);
-        System_printf("\n\n");
+        UART_printf("Debug: Message Identifier                : 0x%x\n", msgObjStats.startMsgIdentifier);
+        UART_printf("Debug: Direction                         : %s\n", (msgObjStats.direction == 0) ? "Receive" : "Transmit");
+        UART_printf("Debug: Number of interrupts received     : %d\n", msgObjStats.interruptsRxed);
+        UART_printf("Debug: Number of messages processed      : %d\n", msgObjStats.messageProcessed);
+        UART_printf("\n\n");
     }
 
     /* Set the EVM in recieve mode*/
@@ -1591,12 +1581,12 @@ static int32_t mcanEVM_EVMTest()
             rxMsgObjHandle = CANFD_createMsgObject (canHandle, &rxMsgObjectParams, &errCode);
             if (rxMsgObjHandle == NULL)
             {
-                System_printf ("Error: CANFD create Rx message object failed [Error code %d]\n", errCode);
+                UART_printf ("Error: CANFD create Rx message object failed [Error code %d]\n", errCode);
                 return -1;
             }
             else
             {
-                System_printf ("Debug: EVM in Rx buffer mode...\n");
+                UART_printf ("Debug: EVM in Rx buffer mode...\n");
             }
 
         }
@@ -1609,12 +1599,12 @@ static int32_t mcanEVM_EVMTest()
             rxRangeMsgObjHandle = CANFD_createRxRangeMsgObject (canHandle, &rxRangeMsgObjectParams, &errCode);
             if (rxRangeMsgObjHandle == NULL)
             {
-                System_printf ("Error: CANFD create Rx message object failed [Error code %d]\n", errCode);
+                UART_printf ("Error: CANFD create Rx message object failed [Error code %d]\n", errCode);
                 return -1;
             }
             else
             {
-                System_printf ("Debug: EVM in Rx FIFO mode...\n");
+                UART_printf ("Debug: EVM in Rx FIFO mode...\n");
             }
         }
 
@@ -1635,25 +1625,25 @@ static int32_t mcanEVM_EVMTest()
         retVal =  CANFD_getOptions(canHandle, &optionTLV, &errCode);
         if (retVal < 0)
         {
-            System_printf ("Error: CANFD get stats failed [Error code %d]\n", errCode);
+            UART_printf ("Error: CANFD get stats failed [Error code %d]\n", errCode);
         }
 
-        System_printf("Debug: Message Identifier                : 0x%x\n", msgObjStats.startMsgIdentifier);
-        System_printf("Debug: Direction                         : %s\n", (msgObjStats.direction == 0) ? "Receive" : "Transmit");
-        System_printf("Debug: Number of interrupts received     : %d\n", msgObjStats.interruptsRxed);
-        System_printf("Debug: Number of messages processed      : %d\n", msgObjStats.messageProcessed);
-        System_printf("Debug: Number of messages received       : %d\n", gRxPkts);
-        System_printf("\n\n");
+        UART_printf("Debug: Message Identifier                : 0x%x\n", msgObjStats.startMsgIdentifier);
+        UART_printf("Debug: Direction                         : %s\n", (msgObjStats.direction == 0) ? "Receive" : "Transmit");
+        UART_printf("Debug: Number of interrupts received     : %d\n", msgObjStats.interruptsRxed);
+        UART_printf("Debug: Number of messages processed      : %d\n", msgObjStats.messageProcessed);
+        UART_printf("Debug: Number of messages received       : %d\n", gRxPkts);
+        UART_printf("\n\n");
 
 
-        System_printf("Debug: Receive & Transmit Measurements\n");
-        System_printf("Debug: Rx Min:%d Max:%d Total:%d ticks, Total packets: %d\n", minRxTicks, maxRxTicks, totalRxTicks, gRxPkts);
+        UART_printf("Debug: Receive & Transmit Measurements\n");
+        UART_printf("Debug: Rx Min:%d Max:%d Total:%d ticks, Total packets: %d\n", minRxTicks, maxRxTicks, totalRxTicks, gRxPkts);
 
         /* 8 bits per byte * (data size + header) * Number of packet * VBUS frequency / total ticks */
         throughput = 8.0 * (MCAN_APP_TEST_DATA_SIZE + 16U) * gRxPkts * VBUSP_FREQ / totalRxTicks;
         printf("Debug: Rx Throughput: %.2f Mbps\n", throughput);
 
-        System_printf("\n\n");
+        UART_printf("\n\n");
 
         optionTLV.type = CANFD_Option_MCAN_ERROR_COUNTER;
         optionTLV.length = sizeof(CANFD_MCANErrCntStatus);
@@ -1662,14 +1652,14 @@ static int32_t mcanEVM_EVMTest()
         retVal =  CANFD_getOptions(canHandle, &optionTLV, &errCode);
         if (retVal < 0)
         {
-            System_printf ("Error: CANFD get error counter failed [Error code %d]\n", errCode);
+            UART_printf ("Error: CANFD get error counter failed [Error code %d]\n", errCode);
         }
 
-        System_printf("Debug: Receive passive status            : %d\n", errCounter.rpStatus);
-        System_printf("Debug: Transmit Error Counter            : %d\n", errCounter.transErrLogCnt);
-        System_printf("Debug: Receive Error Counter             : %d\n", errCounter.recErrCnt);
-        System_printf("Debug: Error Logging Counter             : %d\n", errCounter.canErrLogCnt);
-        System_printf("\n\n");
+        UART_printf("Debug: Receive passive status            : %d\n", errCounter.rpStatus);
+        UART_printf("Debug: Transmit Error Counter            : %d\n", errCounter.transErrLogCnt);
+        UART_printf("Debug: Receive Error Counter             : %d\n", errCounter.recErrCnt);
+        UART_printf("Debug: Error Logging Counter             : %d\n", errCounter.canErrLogCnt);
+        UART_printf("\n\n");
 
         optionTLV.type = CANFD_Option_MCAN_PROTOCOL_STATUS;
         optionTLV.length = sizeof(CANFD_MCANProtocolStatus);
@@ -1678,21 +1668,21 @@ static int32_t mcanEVM_EVMTest()
         retVal =  CANFD_getOptions(canHandle, &optionTLV, &errCode);
         if (retVal < 0)
         {
-            System_printf ("Error: CANFD get protocol status failed [Error code %d]\n", errCode);
+            UART_printf ("Error: CANFD get protocol status failed [Error code %d]\n", errCode);
         }
 
-        System_printf("Debug: LEC                               : %d\n", protoStatus.lastErrCode);
-        System_printf("Debug: Activity                          : %d\n", protoStatus.act);
-        System_printf("Debug: Error Passive                     : %d\n", protoStatus.errPassive);
-        System_printf("Debug: Warning Status                    : %d\n", protoStatus.warningStatus);
-        System_printf("Debug: Bus Off Status                    : %d\n", protoStatus.busOffStatus);
-        System_printf("Debug: Data Phase LEC                    : %d\n", protoStatus.dlec);
-        System_printf("Debug: Rx ESI flag                       : %d\n", protoStatus.resi);
-        System_printf("Debug: Rx BRS flag                       : %d\n", protoStatus.rbrs);
-        System_printf("Debug: Rx CAN FD                         : %d\n", protoStatus.rfdf);
-        System_printf("Debug: Protocol Exception Event          : %d\n", protoStatus.pxe);
-        System_printf("Debug: TDC value                         : %d\n", protoStatus.tdcv);
-        System_printf("\n\n");
+        UART_printf("Debug: LEC                               : %d\n", protoStatus.lastErrCode);
+        UART_printf("Debug: Activity                          : %d\n", protoStatus.act);
+        UART_printf("Debug: Error Passive                     : %d\n", protoStatus.errPassive);
+        UART_printf("Debug: Warning Status                    : %d\n", protoStatus.warningStatus);
+        UART_printf("Debug: Bus Off Status                    : %d\n", protoStatus.busOffStatus);
+        UART_printf("Debug: Data Phase LEC                    : %d\n", protoStatus.dlec);
+        UART_printf("Debug: Rx ESI flag                       : %d\n", protoStatus.resi);
+        UART_printf("Debug: Rx BRS flag                       : %d\n", protoStatus.rbrs);
+        UART_printf("Debug: Rx CAN FD                         : %d\n", protoStatus.rfdf);
+        UART_printf("Debug: Protocol Exception Event          : %d\n", protoStatus.pxe);
+        UART_printf("Debug: TDC value                         : %d\n", protoStatus.tdcv);
+        UART_printf("\n\n");
     }
 
     return 0;
@@ -1708,6 +1698,7 @@ static int32_t mcanMultiTransmission()
     CANFD_MCANBitTimingParams   mcanBitTimingParams;
     CANFD_MCANMsgObjCfgParams   txMsgObjectParams[5U];
     int32_t                     index;
+    uint32_t                    numIterations;
 
     gTxDoneFlag = 0;
     gRxDoneFlag = 0;
@@ -1718,7 +1709,7 @@ static int32_t mcanMultiTransmission()
     canHandle = CANFD_init(0U, &mcanCfgParams, &errCode);
     if (canHandle == NULL)
     {
-        System_printf ("Error: CANFD Module Initialization failed [Error code %d]\n", errCode);
+        UART_printf ("Error: CANFD Module Initialization failed [Error code %d]\n", errCode);
         return -1;
     }
 
@@ -1729,7 +1720,7 @@ static int32_t mcanMultiTransmission()
         Sync jump: 1
         BRP(Baud rate Prescaler): 2
 
-        Nominal Bit rate = (40)/(((8+6+5)+1)*BRP) = 1Mhz
+        Nominal Bit rate = (80)/(((8+6+5)+1)*BRP) = 1Mhz
 
         Timing Params for Data Bit rate:
         Prop seg: 2
@@ -1738,16 +1729,16 @@ static int32_t mcanMultiTransmission()
         Sync jump: 1
         BRP(Baud rate Prescaler): 1
 
-        Nominal Bit rate = (40)/(((2+8+6)+5)*2) = 1Mhz
+        Nominal Bit rate = (80)/(((2+8+6)+5)*2) = 1Mhz
     */
 
-    mcanBitTimingParams.nomBrp      = 0x2U;
+    mcanBitTimingParams.nomBrp      = 0x4U;
     mcanBitTimingParams.nomPropSeg  = 0x8U;
     mcanBitTimingParams.nomPseg1    = 0x6U;
     mcanBitTimingParams.nomPseg2    = 0x5U;
     mcanBitTimingParams.nomSjw      = 0x1U;
 
-    mcanBitTimingParams.dataBrp     = 0x2U;
+    mcanBitTimingParams.dataBrp     = 0x4U;
     mcanBitTimingParams.dataPropSeg = 0x8U;
     mcanBitTimingParams.dataPseg1   = 0x6U;
     mcanBitTimingParams.dataPseg2   = 0x5U;
@@ -1757,11 +1748,12 @@ static int32_t mcanMultiTransmission()
     retVal = CANFD_configBitTime (canHandle, &mcanBitTimingParams, &errCode);
     if (retVal < 0)
     {
-        System_printf ("Error: CANFD Module configure bit time failed [Error code %d]\n", errCode);
+        UART_printf ("Error: CANFD Module configure bit time failed [Error code %d]\n", errCode);
         return -1;
     }
 
-    while (1)
+    numIterations = 0;
+    while (numIterations < 5)
     {
         /* Setup the transmit message object */
         for(index = 0; index < 5U ; index++)
@@ -1773,7 +1765,7 @@ static int32_t mcanMultiTransmission()
             txMsgObjHandle[index] = CANFD_createMsgObject (canHandle, &txMsgObjectParams[index], &errCode);
             if (txMsgObjHandle[index] == NULL)
             {
-                System_printf ("Error: CANFD create Tx message object failed [Error code %d]\n", errCode);
+                UART_printf ("Error: CANFD create Tx message object failed [Error code %d]\n", errCode);
                 return -1;
             }
         }
@@ -1783,9 +1775,9 @@ static int32_t mcanMultiTransmission()
             retVal = CANFD_transmitData (txMsgObjHandle[index], txMsgObjectParams[index].msgIdentifier, CANFD_MCANFrameType_CLASSIC, 8U, &txData[0], &errCode);
             if (retVal < 0)
             {
-                System_printf ("Error: CANFD transmit data retry failed [Error code %d]\n", errCode);
+                UART_printf ("Error: CANFD transmit data retry failed [Error code %d]\n", errCode);
             }
-            Task_sleep(1);
+            Task_sleep(100);
         }
 
         /* Delete the transmit message object */
@@ -1794,11 +1786,13 @@ static int32_t mcanMultiTransmission()
             retVal = CANFD_deleteMsgObject(txMsgObjHandle[index], &errCode);
             if (retVal < 0)
             {
-                System_printf ("Error: CANFD delete Tx message object failed [Error code %d]\n", errCode);
+                UART_printf ("Error: CANFD delete Tx message object failed [Error code %d]\n", errCode);
                 return -1;
             }
         }
+        numIterations++;
     }
+    return 0;
 }
 
 static int32_t mcanMsgIdRangeTest()
@@ -1825,7 +1819,7 @@ static int32_t mcanMsgIdRangeTest()
     canHandle = CANFD_init(0U, &mcanCfgParams, &errCode);
     if (canHandle == NULL)
     {
-        System_printf ("Error: CANFD Module Initialization failed [Error code %d]\n", errCode);
+        UART_printf ("Error: CANFD Module Initialization failed [Error code %d]\n", errCode);
         return -1;
     }
 
@@ -1836,7 +1830,7 @@ static int32_t mcanMsgIdRangeTest()
         Sync jump: 1
         BRP(Baud rate Prescaler): 2
 
-        Nominal Bit rate = (40)/(((8+6+5)+1)*BRP) = 1Mhz
+        Nominal Bit rate = (80)/(((8+6+5)+1)*BRP) = 1Mhz
 
         Timing Params for Data Bit rate:
         Prop seg: 2
@@ -1845,16 +1839,16 @@ static int32_t mcanMsgIdRangeTest()
         Sync jump: 1
         BRP(Baud rate Prescaler): 1
 
-        Data Bit rate = (40)/(((1+2+1)+1)*1) = 8Mhz
+        Data Bit rate = (80)/(((1+2+1)+1)*BRP) = 4Mhz
     */
 
-    mcanBitTimingParams.nomBrp      = 0x2U;
+    mcanBitTimingParams.nomBrp      = 0x4U;
     mcanBitTimingParams.nomPropSeg  = 0x8U;
     mcanBitTimingParams.nomPseg1    = 0x6U;
     mcanBitTimingParams.nomPseg2    = 0x5U;
     mcanBitTimingParams.nomSjw      = 0x1U;
 
-    mcanBitTimingParams.dataBrp     = 0x1U;
+    mcanBitTimingParams.dataBrp     = 0x4U;
     mcanBitTimingParams.dataPropSeg = 0x2U;
     mcanBitTimingParams.dataPseg1   = 0x1U;
     mcanBitTimingParams.dataPseg2   = 0x1U;
@@ -1864,7 +1858,7 @@ static int32_t mcanMsgIdRangeTest()
     retVal = CANFD_configBitTime (canHandle, &mcanBitTimingParams, &errCode);
     if (retVal < 0)
     {
-        System_printf ("Error: CANFD Module configure bit time failed [Error code %d]\n", errCode);
+        UART_printf ("Error: CANFD Module configure bit time failed [Error code %d]\n", errCode);
         return -1;
     }
 
@@ -1877,7 +1871,7 @@ static int32_t mcanMsgIdRangeTest()
 
     if (rxMsgObjHandle == NULL)
     {
-        System_printf ("Error: CANFD create Rx message object failed [Error code %d]\n", errCode);
+        UART_printf ("Error: CANFD create Rx message object failed [Error code %d]\n", errCode);
         return -1;
     }
 
@@ -1891,7 +1885,7 @@ static int32_t mcanMsgIdRangeTest()
 
     if (rxMsgEndObjHandle == NULL)
     {
-        System_printf ("Error: CANFD create Terminate Rx message object failed [Error code %d]\n", errCode);
+        UART_printf ("Error: CANFD create Terminate Rx message object failed [Error code %d]\n", errCode);
         return -1;
     }
 
@@ -1905,7 +1899,7 @@ static int32_t mcanMsgIdRangeTest()
         rxRangeMsgObjHandle[index] = CANFD_createRxRangeMsgObject (canHandle, &rxRangeMsgObjectParams, &errCode);
         if (rxRangeMsgObjHandle[index] == NULL)
         {
-            System_printf ("Error: CANFD create Rx message object failed [Error code %d]\n", errCode);
+            UART_printf ("Error: CANFD create Rx message object failed [Error code %d]\n", errCode);
             return -1;
         }
     }
@@ -1918,7 +1912,7 @@ static int32_t mcanMsgIdRangeTest()
         while (gRxDoneFlag == 0);
         gRxDoneFlag = 0;
 
-        Task_sleep(1);
+        Task_sleep(100);
 
         if (gTerminate == 1)
         {
@@ -1937,16 +1931,16 @@ static int32_t mcanMsgIdRangeTest()
             retVal =  CANFD_getOptions(canHandle, &optionTLV, &errCode);
             if (retVal < 0)
             {
-                System_printf ("Error: CANFD get stats failed [Error code %d]\n", errCode);
+                UART_printf ("Error: CANFD get stats failed [Error code %d]\n", errCode);
             }
 
-            System_printf("Debug: Single Message Identifier\n");
-            System_printf("Debug: Start Message Identifier          : 0x%x\n", msgObjStats.startMsgIdentifier);
-            System_printf("Debug: End Message Identifier            : 0x%x\n", msgObjStats.endMsgIdentifier);
-            System_printf("Debug: Direction                         : %s\n", (msgObjStats.direction == 0) ? "Receive" : "Transmit");
-            System_printf("Debug: Number of interrupts received     : %d\n", msgObjStats.interruptsRxed);
-            System_printf("Debug: Number of messages processed      : %d\n", msgObjStats.messageProcessed);
-            System_printf("\n\n");
+            UART_printf("Debug: Single Message Identifier\n");
+            UART_printf("Debug: Start Message Identifier          : 0x%x\n", msgObjStats.startMsgIdentifier);
+            UART_printf("Debug: End Message Identifier            : 0x%x\n", msgObjStats.endMsgIdentifier);
+            UART_printf("Debug: Direction                         : %s\n", (msgObjStats.direction == 0) ? "Receive" : "Transmit");
+            UART_printf("Debug: Number of interrupts received     : %d\n", msgObjStats.interruptsRxed);
+            UART_printf("Debug: Number of messages processed      : %d\n", msgObjStats.messageProcessed);
+            UART_printf("\n\n");
 
             for(index = 0; index < 3U ; index++)
             {
@@ -1955,20 +1949,20 @@ static int32_t mcanMsgIdRangeTest()
                 retVal =  CANFD_getOptions(canHandle, &optionTLV, &errCode);
                 if (retVal < 0)
                 {
-                    System_printf ("Error: CANFD get stats failed [Error code %d]\n", errCode);
+                    UART_printf ("Error: CANFD get stats failed [Error code %d]\n", errCode);
                 }
 
-                System_printf("Debug: Range Message Identifier\n");
-                System_printf("Debug: %d Start Message Identifier          : 0x%x\n", index, msgObjStats.startMsgIdentifier);
-                System_printf("Debug: %d End Message Identifier            : 0x%x\n", index, msgObjStats.endMsgIdentifier);
-                System_printf("Debug: %d Direction                         : %s\n", index, (msgObjStats.direction == 0) ? "Receive" : "Transmit");
-                System_printf("Debug: %d Number of interrupts received     : %d\n", index, msgObjStats.interruptsRxed);
-                System_printf("Debug: %d Number of messages processed      : %d\n", index, msgObjStats.messageProcessed);
-                System_printf("\n\n");
+                UART_printf("Debug: Range Message Identifier\n");
+                UART_printf("Debug: %d Start Message Identifier          : 0x%x\n", index, msgObjStats.startMsgIdentifier);
+                UART_printf("Debug: %d End Message Identifier            : 0x%x\n", index, msgObjStats.endMsgIdentifier);
+                UART_printf("Debug: %d Direction                         : %s\n", index, (msgObjStats.direction == 0) ? "Receive" : "Transmit");
+                UART_printf("Debug: %d Number of interrupts received     : %d\n", index, msgObjStats.interruptsRxed);
+                UART_printf("Debug: %d Number of messages processed      : %d\n", index, msgObjStats.messageProcessed);
+                UART_printf("\n\n");
             }
-            System_printf("Debug: Number of Frame mismatch            : %d\n", gErrFrameType);
-            System_printf("Debug: Number of Get_Data errors           : %d\n", gErrGetData);
-            System_printf("Debug: Error Status Interrupt              : %d\n", gErrStatusInt);
+            UART_printf("Debug: Number of Frame mismatch            : %d\n", gErrFrameType);
+            UART_printf("Debug: Number of Get_Data errors           : %d\n", gErrGetData);
+            UART_printf("Debug: Error Status Interrupt              : %d\n", gErrStatusInt);
         }
 
         /* Terminate the test */
@@ -2002,21 +1996,21 @@ static void Test_initTask(UArg arg0, UArg arg1)
 
     while (1)
     {
-        System_printf ("*******************************************************\n");
-        System_printf ("CANFD Unit Test Menu                        \n");
-        System_printf ("Please select the type of test to execute:  \n");
-        System_printf ("1. MCAN Internal loopback test              \n");
-        System_printf ("2. MCAN External loopback test              \n");
-        System_printf ("3. MCAN Multiple Tx test                    \n");
-        System_printf ("4. MCAN External Tx/Rx test                 \n");
-        System_printf ("5. MCAN EVM-EVM test                        \n");
-        System_printf ("6. MCAN Tx Cancel test                      \n");
-        System_printf ("7. MCAN Power down test                     \n");
-        System_printf ("8. MCAN Message Id Range test               \n");
-        System_printf ("*******************************************************\n");
-        System_printf ("> Enter your selection: ");
+        UART_printf ("*******************************************************\n");
+        UART_printf ("CANFD Unit Test Menu                        \n");
+        UART_printf ("Please select the type of test to execute:  \n");
+        UART_printf ("1. MCAN Internal loopback test              \n");
+        UART_printf ("2. MCAN External loopback test              \n");
+        UART_printf ("3. MCAN Multiple Tx test                    \n");
+        UART_printf ("4. MCAN External Tx/Rx test                 \n");
+        UART_printf ("5. MCAN EVM-EVM test                        \n");
+        UART_printf ("6. MCAN Tx Cancel test                      \n");
+        UART_printf ("7. MCAN Power down test                     \n");
+        UART_printf ("8. MCAN Message Id Range test               \n");
+        UART_printf ("*******************************************************\n");
+        UART_printf ("> Enter your selection: ");
 
-        while (testSelection == 0);
+        UART_scanFmt ("%d",&testSelection);
 
         /* Validate the selection: */
         if ((testSelection >= MCAN_APP_TEST_INTERNAL_LOOPBACK) && (testSelection <= MCAN_APP_TEST_MSGID_RANGE))
@@ -2025,80 +2019,80 @@ static void Test_initTask(UArg arg0, UArg arg1)
 
     if (testSelection == MCAN_APP_TEST_INTERNAL_LOOPBACK)
     {
-        System_printf("Debug: Internal loopback testing\n");
+        UART_printf("Debug: Internal loopback testing\n");
         retVal = mcanLoopbackTest();
         if (retVal == -1)
-            System_printf("Internal loopback testing : Fail\n");
+            UART_printf("Internal loopback testing : Fail\n");
         else
-            System_printf("Internal loopback testing : Pass\n");
+            UART_printf("Internal loopback testing : Pass\n");
     }
     else if (testSelection == MCAN_APP_TEST_EXTERNAL_LOOPBACK)
     {
-        System_printf("Debug: External loopback testing\n");
+        UART_printf("Debug: External loopback testing\n");
         retVal = mcanLoopbackTest();
         if (retVal == -1)
-            System_printf("External loopback testing : Fail\n");
+            UART_printf("External loopback testing : Fail\n");
         else
-            System_printf("External loopback testing : Pass\n");
+            UART_printf("External loopback testing : Pass\n");
     }
     else if (testSelection == MCAN_APP_TEST_TX_CANCEL)
     {
-        System_printf("Debug: Tx Cancel testing\n");
+        UART_printf("Debug: Tx Cancel testing\n");
         retVal = mcanTestTxCancel();
         if (retVal == -1)
-            System_printf("Tx Cancel testing: Fail \n");
+            UART_printf("Tx Cancel testing: Fail \n");
         else
-            System_printf("Tx Cancel testing: Pass \n");
+            UART_printf("Tx Cancel testing: Pass \n");
     }
     else if (testSelection == MCAN_APP_TEST_EXTERNAL_DATA)
     {
-        System_printf("Debug: External transmit testing\n");
+        UART_printf("Debug: External transmit testing\n");
         retVal = mcanTransmitTest();
         if (retVal == -1)
-            System_printf("External transmit testing: Fail \n");
+            UART_printf("External transmit testing: Fail \n");
         else
-            System_printf("External transmit testing: Pass \n");
+            UART_printf("External transmit testing: Pass \n");
     }
     else if (testSelection == MCAN_APP_TEST_EVM_EVM)
     {
-        System_printf("Debug: EVM-EVM testing\n");
+        UART_printf("Debug: EVM-EVM testing\n");
         retVal = mcanEVM_EVMTest();
         if (retVal == -1)
-            System_printf("EVM to EVM testing FAIL");
+            UART_printf("EVM to EVM testing FAIL");
         else
-            System_printf("EVM to EVM testing PASS");
+            UART_printf("EVM to EVM testing PASS");
     }
     else if (testSelection == MCAN_APP_TEST_POWERDOWN)
     {
-        System_printf("Debug: Power Down testing\n");
+        UART_printf("Debug: Power Down testing\n");
         retVal = mcanPowerDownTest();
         if (retVal == -1)
-            System_printf("Power Down testing FAIL");
+            UART_printf("Power Down testing FAIL");
         else
-            System_printf("Power Down testing PASS");
+            UART_printf("Power Down testing PASS");
     }
     else if (testSelection == MCAN_APP_TEST_MULTIPLE_TRANSMISSION)
     {
-        System_printf("Debug: Multiple transmission testing\n");
+        UART_printf("Debug: Multiple transmission testing\n");
         retVal = mcanMultiTransmission();
         if (retVal == -1)
-            System_printf("Multiple transmission testing FAIL");
+            UART_printf("Multiple transmission testing FAIL");
         else
-            System_printf("Multiple transmission testing PASS");
+            UART_printf("Multiple transmission testing PASS");
     }
     else if (testSelection == MCAN_APP_TEST_MSGID_RANGE)
     {
-        System_printf("Debug: Message Id Range testing\n");
+        UART_printf("Debug: Message Id Range testing\n");
         retVal = mcanMsgIdRangeTest();
         if (retVal == -1)
-            System_printf("Message Id Range testing FAIL");
+            UART_printf("Message Id Range testing FAIL");
         else
-            System_printf("Message Id Range testing PASS");
+            UART_printf("Message Id Range testing PASS");
     }
 
     if (retVal < 0)
     {
-        System_printf("Debug:CANFD testing failed\n");
+        UART_printf("Debug:CANFD testing failed\n");
     }
 
 
