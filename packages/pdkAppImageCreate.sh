@@ -100,16 +100,51 @@ fi
 
 
 if [ $SOC == am65xx ] || [ $SOC == j721e ] || [ $SOC == am64x ]; then
+    export CORE_ID=""
     #Refer to SBL document for core ID value (0, or 4 bellow).
     if [ "$PROCESSOR" == "mpu" ]; then
-        export BIN_PATH=$APP_PATH
-        export TOOLS_PATH=$PDK_PATH/ti/boot/sbl/tools
-        . $PDK_PATH/ti/boot/sbl/tools/scripts/K3ImageGen.sh 0 $APP_PATH/$APP_NAME.out
+        export CORE_ID=4
     elif [ "$PROCESSOR" == "mcu" ]; then
+        export CORE_ID=0
+    elif [ "$PROCESSOR" == "mpu1_0" ]; then
+        export CORE_ID=0
+    elif [ "$PROCESSOR" == "mpu1_1" ]; then
+        export CORE_ID=1
+    elif [ "$PROCESSOR" == "mpu2_0" ]; then
+        export CORE_ID=2
+    elif [ "$PROCESSOR" == "mpu2_1" ]; then
+        export CORE_ID=3
+    elif [ "$PROCESSOR" == "mcu1_0" ]; then
+        export CORE_ID=4
+    elif [ "$PROCESSOR" == "mcu1_1" ]; then
+        export CORE_ID=5
+    elif [ "$PROCESSOR" == "mcu2_0" ]; then
+        export CORE_ID=6
+    elif [ "$PROCESSOR" == "mcu2_1" ]; then
+        export CORE_ID=7
+    elif [ "$PROCESSOR" == "mcu3_0" ]; then
+        export CORE_ID=8
+    elif [ "$PROCESSOR" == "mcu3_1" ]; then
+        export CORE_ID=9
+    elif [ "$PROCESSOR" == "c66xdsp_1" ]; then
+        export CORE_ID=10
+    elif [ "$PROCESSOR" == "c66xdsp_2" ]; then
+        export CORE_ID=11
+    elif [ "$PROCESSOR" == "c7x_1" ]; then
+        export CORE_ID=12
+    elif [ "$PROCESSOR" == "c7x_1" ]; then
+        export CORE_ID=13
+    fi
+    elif [ "$PROCESSOR" == "m4f_0" ]; then
+        export CORE_ID=14
+    fi
+
+    if [ "$CORE_ID" == "" ]; then
+        echo Invalid Processor core
+    else
         export BIN_PATH=$APP_PATH
         export TOOLS_PATH=$PDK_PATH/ti/boot/sbl/tools
-        . $PDK_PATH/ti/boot/sbl/tools/scripts/K3ImageGen.sh 4 $APP_PATH/$APP_NAME.out
-    else
-        echo Invalid Processor core
+        export PDK_INSTALL_PATH=$PDK_PATH
+        . $PDK_PATH/ti/boot/sbl/tools/scripts/K3ImageGen.sh $CORE_ID $APP_PATH/$APP_NAME
     fi
 fi

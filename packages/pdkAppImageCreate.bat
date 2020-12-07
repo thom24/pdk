@@ -81,16 +81,66 @@ set PROCESSOR=%6
 
 :SOC_K3
     @REM Refer to SBL document for core ID value (0, or 4 bellow).
+    set CORE_ID=""
     if %PROCESSOR% == mpu (
-        set BIN_PATH=%APP_PATH%
-        set TOOLS_PATH=%PDK_PATH%/ti/boot/sbl/tools
-        call %PDK_PATH%/ti/boot/sbl/tools/scripts/K3ImageGen.bat 0 %APP_PATH%/%APP_NAME%.out
+        set CORE_ID=0
     )
     if %PROCESSOR% == mcu (
+        set CORE_ID=4
+    )
+    if %PROCESSOR% == mpu1_0 (
+        set CORE_ID=0
+    )
+    if %PROCESSOR% == mpu1_1 (
+        set CORE_ID=1
+    )
+    if %PROCESSOR% == mpu2_0 (
+        set CORE_ID=2
+    )
+    if %PROCESSOR% == mpu2_1 (
+        set CORE_ID=3
+    )
+    if %PROCESSOR% == mcu1_0 (
+        set CORE_ID=4
+    )
+    if %PROCESSOR% == mcu1_1 (
+        set CORE_ID=5
+    )
+    if %PROCESSOR% == mcu2_0 (
+        set CORE_ID=6
+    )
+    if %PROCESSOR% == mcu2_1 (
+        set CORE_ID=7
+    )
+    if %PROCESSOR% == mcu3_0 (
+        set CORE_ID=8
+    )
+    if %PROCESSOR% == mcu3_1 (
+        set CORE_ID=9
+    )
+    if %PROCESSOR% == c66xdsp_1 (
+        set CORE_ID=10
+    )
+    if %PROCESSOR% == c66xdsp_2 (
+        set CORE_ID=11
+    )
+    if %PROCESSOR% == c7x_1 (
+        set CORE_ID=12
+    )
+    if %PROCESSOR% == c7x_2 (
+        set CORE_ID=13
+    )
+    if %PROCESSOR% == m4f_0 (
+        set CORE_ID=14
+    )
+
+    if NOT %CORE_ID%=="" (
         set BIN_PATH=%APP_PATH%
         set TOOLS_PATH=%PDK_PATH%/ti/boot/sbl/tools
-        call %PDK_PATH%/ti/boot/sbl/tools/scripts/K3ImageGen.bat 4 %APP_PATH%/%APP_NAME%.out
+        set PDK_INSTALL_PATH=%PDK_PATH%
+        call %PDK_PATH%/ti/boot/sbl/tools/scripts/K3ImageGen.bat  %CORE_ID% %APP_PATH%/%APP_NAME%
     )
+
     goto ENDSCRIPT
 :SOC_K2G
     if %PROCESSOR% == arm (
