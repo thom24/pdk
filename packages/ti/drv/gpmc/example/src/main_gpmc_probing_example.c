@@ -66,7 +66,6 @@
  ************************** Global Variables **************************
  **********************************************************************/
 uint8_t txBuf[TEST_DATA_LEN]  __attribute__((aligned(4))) __attribute__((section(".benchmark_buffer")));
-uint8_t rxBuf[TEST_DATA_LEN]  __attribute__((aligned(4))) __attribute__((section(".benchmark_buffer")));
 GPMC_Transaction transaction;
 
 
@@ -76,16 +75,14 @@ GPMC_Transaction transaction;
 /*
  *  ======== GeneratePattern ========
  */
-static void GeneratePattern(uint8_t *txBuf, uint8_t *rxBuf, uint32_t length)
+static void GeneratePattern(uint8_t *txBuf, uint32_t length)
 {
     volatile uint32_t idx;
     volatile uint8_t *txPtr = txBuf;
-    volatile uint8_t *rxPtr = rxBuf;
 
     for(idx = 0; idx < length; idx++)
     {
         *txPtr++ = (uint8_t)idx;
-        *rxPtr++ = (uint8_t)0U;
     }
 }
 
@@ -113,7 +110,7 @@ int32_t gpmc_test()
     }
 
     /* Generate the data */
-    GeneratePattern(txBuf, rxBuf, TEST_DATA_LEN);
+    GeneratePattern(txBuf, TEST_DATA_LEN);
 
     /* Write data */
     transaction.transType = GPMC_TRANSACTION_TYPE_WRITE;
@@ -123,28 +120,29 @@ int32_t gpmc_test()
     transaction.rxBuf     = NULL;
     transaction.arg       = NULL;
 
-	#ifdef GPMC_PROFILE
-	    /* Get start time stamp for the write performance measurement */
-	    startTime = TimerP_getTimeInUsecs();
-	#endif
+#ifdef GPMC_PROFILE
+    /* Get start time stamp for the write performance measurement */
+    startTime = TimerP_getTimeInUsecs();
+#endif
 
-    for(i=0 ; i<1000 ; i++)
-    {    	
+    for(i=0; i<1000; i++)
+    {
     	if(!GPMC_transfer(handle, &transaction))
     	{
 	        GPMC_log("[Error] GPMC write failed. \n");
+	        status = GPMC_APP_STATUS_ERROR;
 	        break;
 	    }
 	}
 
-	#ifdef GPMC_PROFILE
-        elapsedTime = TimerP_getTimeInUsecs() - startTime;
-        /* calculate the write transfer rate in MBps */
-        xferRate = (float) (((float)(testLen*i)) / elapsedTime);
-        xferRateInt = (uint32_t)xferRate;
-        GPMC_log("\n GPMC write %d bytes at transfer rate %d MBps \n", testLen, xferRateInt);
-    #endif
-	
+#ifdef GPMC_PROFILE
+    elapsedTime = TimerP_getTimeInUsecs() - startTime;
+    /* calculate the write transfer rate in MBps */
+    xferRate = (float) (((float)(testLen*i)) / elapsedTime);
+    xferRateInt = (uint32_t)xferRate;
+    GPMC_log("\n GPMC write %d bytes at transfer rate %d MBps \n", testLen, xferRateInt);
+#endif
+
 Err:
     if (handle != NULL)
     {
@@ -266,7 +264,6 @@ int main(void)
     int32_t status = GPMC_APP_STATUS_SUCCESS;
 
     status += Board_initGPMC();
-
     if(status != GPMC_APP_STATUS_SUCCESS)
     {
         GPMC_log("[Error] GPMC init failed!!\n");
@@ -276,9 +273,15 @@ int main(void)
     status += gpmc_test();
 
 testfail:
-    if (status != GPMC_APP_STATUS_SUCCESS)
+    if (status == GPMC_APP_STATUS_SUCCESS)
     {
-        GPMC_log("[Error] Test Failed! \n");
+        GPMC_log("GPMC probing test Passed!!\n");
+        GPMC_log("All tests have passed!!\n");
+    }
+    else
+    {
+        GPMC_log("GPMC probing test Failed!!\n");
+        GPMC_log("Some tests have failed!!\n");
     }
 
     return(0);
