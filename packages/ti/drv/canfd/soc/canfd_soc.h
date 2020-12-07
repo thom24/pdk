@@ -1,12 +1,5 @@
 /*!
- *   @file  canfd_soc.h
  *
- *   @brief
- *      This is an header file used by the CANFD module and has SoC specific
- *      configuration.
- *
- *  \par
- *  NOTE:
  *      (C) Copyright 2020 Texas Instruments, Inc.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -36,6 +29,24 @@
  *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+/**
+ *  @defgroup DRV_CANFD_SOC_MODULE CANFD SOC specific interface
+ *  @ingroup DRV_CANFD_MODULE
+ *
+ *  @brief
+ *  The section has a SoC specific interface definitions for the CANFD driver
+
+ *  @{
+ */
+
+/**
+ *   @file  canfd/soc/canfd_soc.h
+ *
+ *   @brief
+ *      This is an header file used by the CANFD module and has SoC specific
+ *      configuration.
  */
 
 #ifndef CANFD_SOC_H
@@ -90,4 +101,5 @@ typedef struct CANFD_HwCfg_t
 }
 #endif
 
-#endif /* CANFD_INTERNAL_H */
+#endif /* CANFD_SOC_H */
+/* @} */

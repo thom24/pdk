@@ -39,7 +39,8 @@
  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/** @mainpage CANFD Driver
+/**
+ *  \defgroup DRV_CANFD_MODULE CANFD Driver
  *
  *  The CANFD driver provides functionality of transferring data between CANFD peripherals.
  *  This driver does not interpret any of the data sent to or received from using this peripheral.
@@ -84,11 +85,7 @@
  * ## Limitation #
  *  The CANFD driver does not support the DMA or power down.
  *
- *  The canfd/include/hw_mcanss.h has the register layer definitons for the CANFD controller module.
  *
- */
-
-/** @defgroup CANFD_DRIVER      CANFD Driver
  */
 
 #ifndef CANFD_H_
@@ -103,8 +100,9 @@ extern "C" {
 
 
 /**
+
 @defgroup CANFD_DRIVER_EXTERNAL_FUNCTION     CANFD Driver External Functions
-@ingroup CANFD_DRIVER
+@ingroup DRV_CANFD_MODULE
 @brief
 *   The section has a list of all the exported API which the applications need to
 *   invoke in order to use the CANFD driver
@@ -112,18 +110,16 @@ extern "C" {
 
 /**
 @defgroup CANFD_DRIVER_EXTERNAL_DATA_STRUCTURE      CANFD Driver External Data Structures
-@ingroup CANFD_DRIVER
+@ingroup DRV_CANFD_MODULE
 @brief
 *   The section has a list of all the data structures which are exposed to the application
 */
 
 /**
 @defgroup CANFD_DRIVER_ERROR_CODE            CANFD Driver Error code
-@ingroup CANFD_DRIVER
+@ingroup DRV_CANFD_MODULE
 @brief
 *   The section has a list of all the error codes which are returned to the application.
-*   Base error code for the CANFD module is defined in the
-*  \include ti/common/mmwave_error.h
  @{ */
 
 /**
