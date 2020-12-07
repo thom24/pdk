@@ -1524,8 +1524,8 @@ static int32_t Sciclient_rmIrqIsVintRouteSet(struct Sciclient_rmIrqCfg  *cfg,
 {
     int32_t r;
     uint16_t i;
-    const struct Sciclient_rmIrqNode *ia_node;
-    const struct Sciclient_rmIrqIf *iface;
+    const struct Sciclient_rmIrqNode *ia_node = NULL;
+    const struct Sciclient_rmIrqIf *iface = NULL;
     bool found_iface = false;
     uint16_t ir_inp;
 
@@ -1547,21 +1547,24 @@ static int32_t Sciclient_rmIrqIsVintRouteSet(struct Sciclient_rmIrqCfg  *cfg,
         }
     }
 
-    if ((found_iface == true) && Sciclient_rmIrIsIr(iface->rid)) {
-        /* Check if the IR input tied to the IA VINT is in use. */
-        ir_inp = SCICLIENT_OUTP_TO_INP(cfg->vint, iface->lbase, iface->rbase);
-        if (Sciclient_rmIrInpIsFree(iface->rid, ir_inp) != CSL_PASS) {
-            *vint_used = true;
+    if (iface != NULL)
+    {
+        if ((found_iface == true) && Sciclient_rmIrIsIr(iface->rid)) {
+            /* Check if the IR input tied to the IA VINT is in use. */
+            ir_inp = SCICLIENT_OUTP_TO_INP(cfg->vint, iface->lbase, iface->rbase);
+            if (Sciclient_rmIrInpIsFree(iface->rid, ir_inp) != CSL_PASS) {
+                *vint_used = true;
+            }
         }
-    }
-    else if (!Sciclient_rmIrIsIr(iface->rid))
-    {
-        /* The IA is the only one in the route from IA to Destination */
-        *vint_used = false;
-    }
-    else
-    {
-        *vint_used = false;
+        else if (!Sciclient_rmIrIsIr(iface->rid))
+        {
+            /* The IA is the only one in the route from IA to Destination */
+            *vint_used = false;
+        }
+        else
+        {
+            *vint_used = false;
+        }
     }
 
     return r;
