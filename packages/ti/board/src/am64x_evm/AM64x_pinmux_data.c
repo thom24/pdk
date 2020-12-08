@@ -303,6 +303,36 @@ static pinmuxModuleCfg_t gMcu_i2cPinCfg[] =
     {PINMUX_END}
 };
 
+static pinmuxPerCfg_t gMcu_spi0PinCfg[] =
+{
+    /* MyMCU_SPI1 -> MCU_SPI0_CLK -> HSE_J1_16 */
+    {
+        PIN_MCU_SPI0_CLK, PIN_MODE(0) | \
+        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+    },
+    /* MyMCU_SPI1 -> MCU_SPI0_CS0 -> HSE_J1_6 */
+    {
+        PIN_MCU_SPI0_CS0, PIN_MODE(0) | \
+        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+    },
+    /* MyMCU_SPI1 -> MCU_SPI0_D0 -> HSE_J1_4 */
+    {
+        PIN_MCU_SPI0_D0, PIN_MODE(0) | \
+        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+    },
+    /* MyMCU_SPI1 -> MCU_SPI0_D1 -> HSE_J1_2 */
+    {
+        PIN_MCU_SPI0_D1, PIN_MODE(0) | \
+        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+    },
+    {PINMUX_END}
+};
+
+static pinmuxModuleCfg_t gMcu_spiPinCfg[] =
+{
+    {0, TRUE, gMcu_spi0PinCfg},
+    {PINMUX_END}
+};
 
 static pinmuxPerCfg_t gMcu_system0PinCfg[] =
 {
@@ -976,7 +1006,8 @@ pinmuxBoardCfg_t gAM64x_WkupPinmuxData[] =
 {
     {0, gMcu_gpioPinCfg},
     {1, gMcu_i2cPinCfg},
-    {2, gMcu_systemPinCfg},
-    {3, gMcu_uartPinCfg},
+    {2, gMcu_spiPinCfg},
+    {3, gMcu_systemPinCfg},
+    {4, gMcu_uartPinCfg},
     {PINMUX_END}
 };
