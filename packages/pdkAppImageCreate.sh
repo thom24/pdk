@@ -17,6 +17,7 @@
 # *****************************************************************************
 
 export PDK_PATH=$1
+export PDK_INSTALL_PATH=$PDK_PATH
 export CG_TOOL_PATH=$2
 export APP_PATH=$3
 export APP_NAME=$4
