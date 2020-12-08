@@ -66,7 +66,7 @@ REM ImageGen
 if defined image_gen (
 echo Generating MulticoreImage 
 "%TOOLS_PATH%\multicoreImageGen\bin\MulticoreImageGen.exe" LE %Dev_ID% %BIN_PATH%\%APP_OUT_NAME%.appimage %CORE_ID% %APP_RPRC%
-"powershell -executionpolicy unrestricted -command %PDK_INSTALL_PATH%\ti\build\makerules\x509CertificateGen.ps1" -b %BIN_PATH%\%APP_OUT_NAME%.appimage -o %BIN_PATH%\%APP_OUT_NAME%.appimage.signed -c R5 -l 0x0 -k %PDK_INSTALL_PATH%\ti\build\makerules\k3_dev_mpk.pem )
+powershell -executionpolicy unrestricted -command "%PDK_INSTALL_PATH%\ti\build\makerules\x509CertificateGen.ps1" -b %BIN_PATH%\%APP_OUT_NAME%.appimage -o %BIN_PATH%\%APP_OUT_NAME%.appimage.signed -c R5 -l 0x0 -k %PDK_INSTALL_PATH%\ti\build\makerules\k3_dev_mpk.pem )
 
 if not defined image_gen (
 echo. Error Application .out missing!! )
