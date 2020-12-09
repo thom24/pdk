@@ -83,6 +83,7 @@ PACKAGE_SRCS_COMMON += src/flash/nor/nor.c src/flash/nor/nor.h
 PACKAGE_SRCS_COMMON += src/flash/nor/ospi/nor_ospi.c src/flash/nor/ospi/nor_ospi.h
 PACKAGE_SRCS_COMMON += src/flash/nor/ospi/nor_spi_patterns.c src/flash/nor/ospi/nor_spi_patterns.h
 PACKAGE_SRCS_COMMON += src/flash/nor/ospi/nor_spi_phy_tune.c src/flash/nor/ospi/nor_spi_phy_tune.h
+PACKAGE_SRCS_COMMON += src/flash/nor/ospi/nor_spi_patterns.bin
 ifeq ($(BOARD),$(filter $(BOARD), am64x_evm am64x_svb))
 PACKAGE_SRCS_COMMON += src/flash/nor/device/m35xu256.h
 else
@@ -99,6 +100,7 @@ PACKAGE_SRCS_COMMON += src/flash/nor/ospi/nor_xspi.c src/flash/nor/ospi/nor_xspi
 PACKAGE_SRCS_COMMON += src/flash/nor/device/s28hs512t.h
 PACKAGE_SRCS_COMMON += src/flash/nor/ospi/nor_spi_patterns.c src/flash/nor/ospi/nor_spi_patterns.h
 PACKAGE_SRCS_COMMON += src/flash/nor/ospi/nor_spi_phy_tune.c src/flash/nor/ospi/nor_spi_phy_tune.h
+PACKAGE_SRCS_COMMON += src/flash/nor/ospi/nor_spi_patterns.bin
 endif
 
 ifeq ($(BOARD),$(filter $(BOARD), j721e_sim j721e_evm j7200_evm))
