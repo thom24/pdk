@@ -511,6 +511,10 @@ FB_BROADCAST_CHECK_CT:
 
 FB_SKIP_VLAN_FLTR:
     .endif
+
+    ;PINDSW-4577: Fix to avoid cut-through packets from going via Storm Prevention
+    ;Storm prevention is done only if host receive flag is set
+    QBBC    FB_CONT_CT_CHECK, MII_RCV.rx_flags , host_rcv_flag_shift
     
     ; Storm Prevention
     QBBC    FB_STORM_NOT_MC, R22, RX_MC_FRAME
