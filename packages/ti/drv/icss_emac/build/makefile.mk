@@ -45,7 +45,7 @@ endif
 # List all the external components/interfaces, whose interface header files
 #  need to be included for this component
 INCLUDE_EXTERNAL_INTERFACES = pdk
-                      
+
 ifeq ($(SOC),$(filter $(SOC), am571x am572x am574x am437x am335x k2g am65xx am64x))
 PACKAGE_SRCS_COMMON += soc/$(SOC)
 endif
@@ -54,7 +54,9 @@ endif
 PACKAGE_SRCS_COMMON += soc/icss_emacSoc.h
 
 # Package associated firmware
+ifeq ($(SOC),$(filter $(SOC), am65xx))
 PACKAGE_SRCS_COMMON += firmware
+endif
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS)
 
