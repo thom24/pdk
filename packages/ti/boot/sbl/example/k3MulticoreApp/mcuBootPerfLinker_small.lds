@@ -56,6 +56,7 @@ MEMORY
         /* Used for SYSFW initlization */
 	OCMRAM_SBL_SYSFW (RWIX) : origin=0x41C3E000 length=0x4000
 	OCMRAM_SBL_UNUSED (X)   : origin=0x41C7E000 length=0x2000
+    /* Line below is not used / not needed for AM65xx */
     OCMRAM_SBL_RM_PM_HAL (X): origin=0x41C80000 length=0x6000
 
         /* App code resides here  */
