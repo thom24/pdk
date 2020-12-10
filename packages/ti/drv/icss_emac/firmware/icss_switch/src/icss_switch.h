@@ -14,7 +14,7 @@
 ;  such license is granted  solely to the extent that any such patent is necessary 
 ;  to Utilize the software alone.  The patent license shall not apply to any 
 ;  combinations which include this software, other than combinations with devices 
-;  manufactured by or for TI (¿TI Devices¿).  No hardware patent is licensed hereunder.
+;  manufactured by or for TI (ï¿½TI Devicesï¿½).  No hardware patent is licensed hereunder.
 ; 
 ;  Redistributions must preserve existing copyright notices and reproduce this license 
 ;  (including the above copyright notice and the disclaimer and (if applicable) source 
@@ -42,9 +42,9 @@
 ; 
 ;  DISCLAIMER.
 ; 
-;  THIS SOFTWARE IS PROVIDED BY TI AND TI¿S LICENSORS "AS IS" AND ANY EXPRESS OR IMPLIED 
+;  THIS SOFTWARE IS PROVIDED BY TI AND TIï¿½S LICENSORS "AS IS" AND ANY EXPRESS OR IMPLIED 
 ;  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
-;  AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL TI AND TI¿S 
+;  AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL TI AND TIï¿½S 
 ;  LICENSORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
 ;  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE 
 ;  GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
@@ -126,13 +126,13 @@ NUMBER_OF_QUEUES    .set    4           ; different number of queues will have s
 QUEUE_1_SIZE    .set        97  ; Network Management high
 QUEUE_2_SIZE    .set        97  ; Network Management low
 QUEUE_3_SIZE    .set        97  ; Protocol specific
-QUEUE_4_SIZE    .set        97  ; NRT (IP,ARP, ICMP, …)
+QUEUE_4_SIZE    .set        97  ; NRT (IP,ARP, ICMP, ï¿½)
 
 ; HOST PORT QUEUES can buffer up to 4 full sized frames per queue
 HOST_QUEUE_1_SIZE    .set       194 ; Protocol and/or VLAN priority 7 and 6
 HOST_QUEUE_2_SIZE    .set       194 ; Protocol mid
 HOST_QUEUE_3_SIZE    .set       194 ; Protocol low
-HOST_QUEUE_4_SIZE    .set       194 ; NRT (IP, ARP, ICMP …)
+HOST_QUEUE_4_SIZE    .set       194 ; NRT (IP, ARP, ICMP ï¿½)
 
 COLLISION_QUEUE_SIZE    .set    48
 P0_COL_TOP_MOST_BD_OFFSET    .set   (4*COLLISION_QUEUE_SIZE) + P0_COL_BD_OFFSET - 4
@@ -451,17 +451,24 @@ STAT_SIZE    .set  0x98    ;always keep it's value same as the last stat offset
 ;              3. Port Status Offset                                        *
 ;*              These are present on both PRU0 and PRU1                     *
 ;****************************************************************************
-;STATISTICS_OFFSET    .set             0x1f00
-STORM_PREVENTION_OFFSET_BC .set       STATISTICS_OFFSET + STAT_SIZE             ;4 bytes
-PHY_SPEED_OFFSET    .set              STATISTICS_OFFSET + STAT_SIZE + 4     ;4 bytes
-PORT_STATUS_OFFSET    .set            STATISTICS_OFFSET + STAT_SIZE + 8     ;1 byte
-COLLISION_COUNTER    .set             STATISTICS_OFFSET + STAT_SIZE + 9     ;1 byte
-RX_PKT_SIZE_OFFSET    .set            STATISTICS_OFFSET + STAT_SIZE + 10        ;4 bytes
-PORT_CONTROL_ADDR    .set             STATISTICS_OFFSET + STAT_SIZE + 14        ;4 bytes
-PORT_MAC_ADDR    .set                 STATISTICS_OFFSET + STAT_SIZE + 18        ;6 bytes 
-RX_INT_STATUS_OFFSET    .set          STATISTICS_OFFSET + STAT_SIZE + 24        ;1 byte
-STORM_PREVENTION_OFFSET_MC	.set  	  STATISTICS_OFFSET + STAT_SIZE + 25			 ;4 bytes
-STORM_PREVENTION_OFFSET_UC	.set   	  STATISTICS_OFFSET + STAT_SIZE	+ 29			 ;4 bytes
+STORM_PREVENTION_OFFSET_BC_DRIVER   .set    STATISTICS_OFFSET + STAT_SIZE       ;4 bytes
+PHY_SPEED_OFFSET                    .set    STATISTICS_OFFSET + STAT_SIZE + 4   ;4 bytes
+PORT_STATUS_OFFSET                  .set    STATISTICS_OFFSET + STAT_SIZE + 8   ;1 byte
+COLLISION_COUNTER                   .set    STATISTICS_OFFSET + STAT_SIZE + 9   ;1 byte
+RX_PKT_SIZE_OFFSET                  .set    STATISTICS_OFFSET + STAT_SIZE + 10  ;4 bytes
+PORT_CONTROL_ADDR                   .set    STATISTICS_OFFSET + STAT_SIZE + 14  ;4 bytes
+PORT_MAC_ADDR                       .set    STATISTICS_OFFSET + STAT_SIZE + 18  ;6 bytes
+RX_INT_STATUS_OFFSET                .set    STATISTICS_OFFSET + STAT_SIZE + 24  ;1 byte
+STORM_PREVENTION_OFFSET_MC_DRIVER   .set    STATISTICS_OFFSET + STAT_SIZE + 25  ;4 bytes
+STORM_PREVENTION_OFFSET_UC_DRIVER   .set    STATISTICS_OFFSET + STAT_SIZE + 29  ;4 bytes
+STORM_PREVENTION_OFFSET_BC          .set    STATISTICS_OFFSET + STAT_SIZE + 33  ;4 bytes
+STORM_PREVENTION_OFFSET_MC          .set    STATISTICS_OFFSET + STAT_SIZE + 37  ;4 bytes
+STORM_PREVENTION_OFFSET_UC          .set    STATISTICS_OFFSET + STAT_SIZE + 41  ;4 bytes
+SP_UPDATE_TIMESTAMP_OFFSET          .set    STATISTICS_OFFSET + STAT_SIZE + 45  ;4 bytes
+SP_INCREMENT_COUNT_OFFSET           .set    STATISTICS_OFFSET + STAT_SIZE + 49  ;4 bytes
+SP_COUNTER_UPDATE_INTERVAL_OFFSET   .set    STATISTICS_OFFSET + STAT_SIZE + 53  ;4 bytes
+
+SP_COUNTER_UPDATE_INTERVAL_DEFAULT  .set    100000000
 
     
 ;****************************************************************************

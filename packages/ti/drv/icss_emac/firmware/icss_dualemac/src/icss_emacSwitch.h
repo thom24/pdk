@@ -234,7 +234,8 @@ ICSS_EMAC_TTS_CYC_INTERRUPT_ENABLE_MASK	.set			(ICSS_EMAC_TTS_CYC_TX_SOF_MASK <<
 	
 ;EMAC Time Triggered Send Constants
 ICSS_EMAC_TTS_IEP_MAX_VAL	.set	0x3B9ACA00	
-ICSS_EMAC_TTS_FIRST_CST_SAFETY_MARGIN	.set	0x3A98	
+ICSS_EMAC_TTS_FIRST_CST_SAFETY_MARGIN	.set	0x3A98
+SP_COUNTER_UPDATE_INTERVAL_DEFAULT      .set    100000000	
 	
 ;Other protocols related defines
 TRANSMIT_QUEUES_BUFFER_OFFSET	.set	0	
@@ -471,16 +472,22 @@ STAT_SIZE	.set	0x98
 ;              3. Port Status Offset                                        *
 ;*              These are present on both PRU0 and PRU1                     *
 ;****************************************************************************
-STORM_PREVENTION_OFFSET_BC	.set	   	  STATISTICS_OFFSET + STAT_SIZE				 ;4 bytes
-PHY_SPEED_OFFSET	.set				  STATISTICS_OFFSET + STAT_SIZE + 4		 ;4 bytes
-PORT_STATUS_OFFSET	.set	      	  STATISTICS_OFFSET + STAT_SIZE + 8		 ;1 byte
-COLLISION_COUNTER	.set				  STATISTICS_OFFSET + STAT_SIZE + 9		 ;1 byte
-RX_PKT_SIZE_OFFSET	.set				  STATISTICS_OFFSET + STAT_SIZE + 10		 ;4 bytes
-PORT_CONTROL_ADDR	.set				  STATISTICS_OFFSET + STAT_SIZE + 14		 ;4 bytes
-PORT_MAC_ADDR	.set				  	  STATISTICS_OFFSET + STAT_SIZE + 18		 ;6 bytes
-RX_INT_STATUS_OFFSET	.set			  STATISTICS_OFFSET + STAT_SIZE + 24		 ;1 byte
-STORM_PREVENTION_OFFSET_MC	.set	   	  STATISTICS_OFFSET + STAT_SIZE + 25			 ;4 bytes
-STORM_PREVENTION_OFFSET_UC	.set	   	  STATISTICS_OFFSET + STAT_SIZE	+ 29			 ;4 bytes
+STORM_PREVENTION_OFFSET_BC_DRIVER   .set    STATISTICS_OFFSET + STAT_SIZE       ;4 bytes
+PHY_SPEED_OFFSET                    .set    STATISTICS_OFFSET + STAT_SIZE + 4   ;4 bytes
+PORT_STATUS_OFFSET                  .set    STATISTICS_OFFSET + STAT_SIZE + 8   ;1 byte
+COLLISION_COUNTER                   .set    STATISTICS_OFFSET + STAT_SIZE + 9   ;1 byte
+RX_PKT_SIZE_OFFSET                  .set    STATISTICS_OFFSET + STAT_SIZE + 10  ;4 bytes
+PORT_CONTROL_ADDR                   .set    STATISTICS_OFFSET + STAT_SIZE + 14  ;4 bytes
+PORT_MAC_ADDR                       .set    STATISTICS_OFFSET + STAT_SIZE + 18  ;6 bytes
+RX_INT_STATUS_OFFSET                .set    STATISTICS_OFFSET + STAT_SIZE + 24  ;1 byte
+STORM_PREVENTION_OFFSET_MC_DRIVER   .set    STATISTICS_OFFSET + STAT_SIZE + 25  ;4 bytes
+STORM_PREVENTION_OFFSET_UC_DRIVER   .set    STATISTICS_OFFSET + STAT_SIZE + 29  ;4 bytes
+STORM_PREVENTION_OFFSET_BC          .set    STATISTICS_OFFSET + STAT_SIZE + 33  ;4 bytes
+STORM_PREVENTION_OFFSET_MC          .set    STATISTICS_OFFSET + STAT_SIZE + 37  ;4 bytes
+STORM_PREVENTION_OFFSET_UC          .set    STATISTICS_OFFSET + STAT_SIZE + 41  ;4 bytes
+SP_UPDATE_TIMESTAMP_OFFSET          .set    STATISTICS_OFFSET + STAT_SIZE + 45  ;4 bytes
+SP_INCREMENT_COUNT_OFFSET           .set    STATISTICS_OFFSET + STAT_SIZE + 49  ;4 bytes
+SP_COUNTER_UPDATE_INTERVAL_OFFSET   .set    STATISTICS_OFFSET + STAT_SIZE + 53  ;4 bytes
 	
 ;***********************************************************************************************************
 ;											                   *
