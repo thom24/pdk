@@ -267,5 +267,13 @@ Board_STATUS Board_PLLInitAll(void)
         }
     }
 
+    /*
+     * Temporary solution for enabling M4F application load via SBL.
+     * Actual fix will be in SYSFW doing early PLL initialization for MCU_PLLCTRL0
+     * 
+     * MCU_PLLCTRL0's PLLCTL, set PLLENSRC = 0 and PLLEN = 1
+     */
+    HW_WR_REG32((CSL_MCU_PLLCTRL0_BASE + 0x100UL), 0x49U);
+
     return status;
 }
