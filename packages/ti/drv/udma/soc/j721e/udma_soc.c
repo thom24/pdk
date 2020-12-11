@@ -509,7 +509,6 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
     drvHandle->blkCopyTrIrqOffset    = TISCI_UDMAP0_RX_OES_IRQ_SRC_IDX_START; 
     drvHandle->txTrIrqOffset         = TISCI_UDMAP0_TX_OES_IRQ_SRC_IDX_START;
     drvHandle->rxTrIrqOffset         = TISCI_UDMAP0_RX_OES_IRQ_SRC_IDX_START;
-    drvHandle->blkCopyChOffset       = 0U; 
     drvHandle->txChOffset            = 0U;
     drvHandle->extChOffset           = drvHandle->txChOffset + pUdmapRegs->txChanCnt;
     drvHandle->rxChOffset            =

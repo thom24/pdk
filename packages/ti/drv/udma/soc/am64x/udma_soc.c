@@ -247,10 +247,6 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
     /* Init other variables */
     if(UDMA_INST_ID_BCDMA_0 == instId)
     {
-       /* DMSC differentiates block copy channel from split tr tx, if the index have an offset of 32.
-        * The offset of 32 is chosen because it’s the next power of 2 above the max split tr tx channel (19).
-        */ 
-        drvHandle->blkCopyChOffset      = 32U; 
         drvHandle->txChOffset           = pBcdmaRegs->bcChanCnt;
 	    drvHandle->rxChOffset   		= drvHandle->txChOffset + pBcdmaRegs->splitTxChanCnt;
        /* The srcIdx passed to Sciclient_rmIrqset API for configuring DMA Completion/Ring events, 
@@ -274,7 +270,6 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
     }
     else
     {
-        drvHandle->blkCopyChOffset      = 0U; /* Not used for PktDMA Instance */ 
         drvHandle->txChOffset           = CSL_DMSS_PKTDMA_TX_FLOWS_UNMAPPED_START; 
 	    drvHandle->rxChOffset   		= CSL_DMSS_PKTDMA_RX_FLOWS_UNMAPPED_START;
         drvHandle->blkCopyRingIrqOffset = 0U; /* Not used for PktDMA Instance */ 

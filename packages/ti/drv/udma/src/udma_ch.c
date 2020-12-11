@@ -324,6 +324,7 @@ int32_t Udma_chConfigTx(Udma_ChHandle chHandle, const Udma_ChTxPrms *txPrms)
                                           TISCI_MSG_VALUE_RM_UDMAP_CH_BURST_SIZE_VALID |
                                           TISCI_MSG_VALUE_RM_UDMAP_CH_TX_CREDIT_COUNT_VALID;
         rmUdmaTxReq.nav_id              = drvHandle->devIdUdma;
+        rmUdmaTxReq.index               = (uint16_t)chHandle->txChNum;
         rmUdmaTxReq.tx_pause_on_err     = txPrms->pauseOnError;
         rmUdmaTxReq.tx_filt_einfo       = txPrms->filterEinfo;
         rmUdmaTxReq.tx_filt_pswords     = txPrms->filterPsWords;
@@ -337,23 +338,21 @@ int32_t Udma_chConfigTx(Udma_ChHandle chHandle, const Udma_ChTxPrms *txPrms)
         rmUdmaTxReq.tx_burst_size       = txPrms->burstSize;
         rmUdmaTxReq.tx_sched_priority   = txPrms->dmaPriority;
         rmUdmaTxReq.tx_credit_count     = txPrms->txCredit;
-        /* This workaround is to support Config of BCDMA Block Copy channel using same Sciclient API.
-        *
-        *  In case of BCDMA, the channels are spread across three MMR regions tchan, rchan, and bchan.
-        *  So when blkCopyChOffset is added to index, the tx_ch_cfg API RM knows it’s a block copy channel
-        *  and programs within the bchan MMR region. Otherwise the tx_ch_cfg API RM knows it’s a
-        *  split tr tx channel and programs within the tchan MMR region.
-        *
-        *  In case of UDMAP blkCopyChOffset must be 0.
-        */
-        if((chHandle->chType & UDMA_CH_FLAG_BLK_COPY) == UDMA_CH_FLAG_BLK_COPY)
+#if (UDMA_SOC_CFG_LCDMA_PRESENT == 1)
+        if(UDMA_INST_TYPE_LCDMA_BCDMA == drvHandle->instType)
         {
-            rmUdmaTxReq.index           = (uint16_t) (chHandle->txChNum + drvHandle->blkCopyChOffset);
+            if((chHandle->chType & UDMA_CH_FLAG_BLK_COPY) == UDMA_CH_FLAG_BLK_COPY)
+            {
+                rmUdmaTxReq.valid_params    |= TISCI_MSG_VALUE_RM_UDMAP_EXTENDED_CH_TYPE_VALID;
+                rmUdmaTxReq.extended_ch_type = UDMA_DMSC_EXTENDED_CH_TYPE_BCDMA_BLK_CPY;
+            }
+            else if((chHandle->chType & UDMA_CH_FLAG_TX) == UDMA_CH_FLAG_TX)
+            {
+                rmUdmaTxReq.valid_params    |= TISCI_MSG_VALUE_RM_UDMAP_EXTENDED_CH_TYPE_VALID;
+                rmUdmaTxReq.extended_ch_type = UDMA_DMSC_EXTENDED_CH_TYPE_BCDMA_SPLIT_TR_TX;
+            }
         }
-        else
-        {
-            rmUdmaTxReq.index           = (uint16_t)chHandle->txChNum;
-        }
+#endif
         if(NULL_PTR != chHandle->tdCqRing)
         {
             Udma_assert(drvHandle,

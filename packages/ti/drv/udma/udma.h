@@ -539,16 +539,6 @@ struct Udma_DrvObj
     /*
      * Channel Offsets
      */
-    uint32_t                blkCopyChOffset;
-    /**< Block Copy channel offset. 
-     *   blkCopyChOffset is used to support Config of BCDMA Block Copy channel using same Sciclient API.
-     *
-     *  In case of BCDMA, the channels are spread across three MMR regions tchan, rchan, and bchan.
-     *  So when blkCopyChOffset is added to index, the tx_ch_cfg API RM knows it’s a block copy channel 
-     *  and programs within the bchan MMR region. Otherwise the tx_ch_cfg API RM knows it’s a 
-     *  split tr tx channel and programs within the tchan MMR region.
-     *
-     *  In case of UDMAP (type SOC's) blkCopyChOffset must be 0.*/
     uint32_t                txChOffset;
     /**< TX channel offset. */
     uint32_t                extChOffset;
