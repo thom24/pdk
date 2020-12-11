@@ -183,12 +183,6 @@ int32_t BoardDiag_ButtonTest(keyPadInfo_t *pBoardKeyPad)
     GPIO_init();
 #elif defined(SOC_AM64X)
     GPIO_init();
-
-    GPIO_v0_HwAttrs gpioCfg;
-    GPIO_socGetInitCfg(1, &gpioCfg);
-    gpioCfg.baseAddr = CSL_MCU_GPIO0_BASE;
-    GPIO_socSetInitCfg(1, &gpioCfg);
-    GPIO_init();
 #else
 #if defined(SOC_TPR12)
     GPIO_v2_updateConfig(&GPIO_v2_config);
@@ -435,11 +429,11 @@ int32_t BoardDiag_GetKeyPadInfo(char *pBoardName, keyPadInfo_t *pBoardKeyPad)
 #endif
     /* Check if the board is EVM AM64X by comparing the string read from
        EEPROM. */
-    else if (strncmp("AM64-COMP", pBoardName, BOARD_NAME_LENGTH) == 0U)
+    else if (strncmp("AM64-GPEVM", pBoardName, BOARD_NAME_LENGTH) == 0U)
     {
 
         pBoardKeyPad->buttonSet = 1;
-        pBoardKeyPad->scnKeyNum = 2;
+        pBoardKeyPad->scnKeyNum = 1;
         pBoardKeyPad->pwrKeyNum = 1;
         pBoardKeyPad->pwrKeyIdx = 0;
         buttonStart[0]=5;
@@ -449,9 +443,6 @@ int32_t BoardDiag_GetKeyPadInfo(char *pBoardName, keyPadInfo_t *pBoardKeyPad)
         /* Update the GPIO data for keypad inputs. */
         KeyScn[0].instance=1;
         KeyScn[0].pin=43;
-
-        KeyScn[1].instance=0;
-        KeyScn[1].pin=6;
     }
     else
     {
