@@ -74,10 +74,10 @@ Board_I2cInitCfg_t boardI2cInitCfg[MAX_NUM_OF_BOARDS] = {
 boardProgInfo_t boardProgInfo[MAX_NUM_OF_BOARDS] = {
     {"EVM Board\0",                 BOARD_I2C_EEPROM_ADDR,     true}
 };
-#elif defined(SOC_AM64X)
+#elif defined(am64x_evm)
 boardProgInfo_t boardProgInfo[MAX_NUM_OF_BOARDS] = {
-    {"CP Board\0",                  CP_EEPROM_SLAVE_ADDR,        true},
-    {"IO Link Board\0",             IOLINK_EEPROM_SLAVE_ADDR,    false}
+    {"AM64x EVM\0",                 EVM_EEPROM_SLAVE_ADDR,       true},
+    {"AM64x IO-Link Board\0",       IOLINK_EEPROM_SLAVE_ADDR,    false}
 };
 Board_I2cInitCfg_t boardI2cInitCfg[MAX_NUM_OF_BOARDS] = {
     {0,     BOARD_SOC_DOMAIN_MAIN, false},
@@ -260,12 +260,6 @@ int main(void)
 #if defined(am65xx_evm) || defined(am65xx_idk)
     /* Detecting Boards */
     enableWKUPI2C();
-#endif
-#if defined(am64x_evm) && !defined (__aarch64__)
-    /* MCU I2C instance will be active by default for R5 core.
-     * Need to update HW attrs to enable MAIN I2C instance.
-     */
-	enableMAINI2C(BOARD_I2C_EEPROM_INSTANCE, CSL_I2C0_CFG_BASE);
 #endif
 #if !(defined(SOC_TPR12))
 	for(index = STARTING_BOARD_NUM; index < MAX_NUM_OF_BOARDS; index++)

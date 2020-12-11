@@ -39,12 +39,10 @@
 #include <ti/board/board.h>
 
 #define BOARD_DIAG_PUSH_BUTTON0                       (0x012B) /* Port1 & Pin43 */
-#define BOARD_DIAG_PUSH_BUTTON1                       (0x0006) /* Port0 & pin6 */
 
 /* GPIO Driver board specific pin configuration structure */
 GPIO_PinConfig gpioPinConfigs[] = {
     BOARD_DIAG_PUSH_BUTTON0 | GPIO_CFG_INPUT | GPIO_CFG_IN_INT_RISING,
-    BOARD_DIAG_PUSH_BUTTON1 | GPIO_CFG_INPUT | GPIO_CFG_IN_INT_RISING
 };
 
 /* GPIO Driver call back functions */
