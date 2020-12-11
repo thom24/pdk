@@ -53,9 +53,17 @@ endif
 #Package the associated header, ignore other non-required files
 PACKAGE_SRCS_COMMON += soc/icss_emacSoc.h
 
-# Package associated firmware
-ifeq ($(SOC),$(filter $(SOC), am65xx))
+# Package whole firmware folder for am335x, am437x and am57xx 
+# For other platforms package only needed header files
+ifeq ($(SOC),$(filter $(SOC), am335x am437x am571x am572x am574x))
 PACKAGE_SRCS_COMMON += firmware
+else
+PACKAGE_SRCS_COMMON += firmware/icss_switch/src/icss_stp_switch.h
+PACKAGE_SRCS_COMMON += firmware/icss_switch/config/icss_emacFwVersion.h
+PACKAGE_SRCS_COMMON += firmware/icss_dualemac/src/icss_vlan_mcast_filter_mmap.h
+PACKAGE_SRCS_COMMON += firmware/icss_dualemac/src/icss_rx_int_pacing_mmap.h
+PACKAGE_SRCS_COMMON += firmware/icss_dualemac/config/icss_emacFwConfig.h
+PACKAGE_SRCS_COMMON += firmware/icss_dualemac/config/icss_emacFwVersion.h
 endif
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS)
