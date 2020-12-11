@@ -209,6 +209,21 @@ unlocking JTAG on target via a TISCI message documented in this chapter.</p>
 <h2>API Description<a class="headerlink" href="#api-description" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="tisci-msg-get-soc-uid-get-soc-uid">
 <span id="get-soc-uid"></span><h3>TISCI_MSG_GET_SOC_UID - Get SOC UID<a class="headerlink" href="#tisci-msg-get-soc-uid-get-soc-uid" title="Permalink to this headline">¶</a></h3>
+<p><strong>Usage</strong>:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="75%" />
+<col width="25%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><strong>Message Type</strong></td>
+<td>Normal</td>
+</tr>
+<tr class="row-even"><td><strong>Secure Queue Only?</strong></td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
 <p>Unlocking the JTAG port requires a X509 certificate signed with the active root
 of trust asymmetric key. The X509 certificate must contain the Unique identifier
 for the SOC (SOC UID). This enables debug certificates to be tied to specific
@@ -274,6 +289,21 @@ populate in the debug unlock certificate. For more information, see
 </div>
 <div class="section" id="tisci-msg-open-debug-fwls-open-debug-firewalls">
 <span id="open-debug-fwls"></span><h3>TISCI_MSG_OPEN_DEBUG_FWLS - Open Debug Firewalls<a class="headerlink" href="#tisci-msg-open-debug-fwls-open-debug-firewalls" title="Permalink to this headline">¶</a></h3>
+<p><strong>Usage</strong>:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="75%" />
+<col width="25%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><strong>Message Type</strong></td>
+<td>Normal</td>
+</tr>
+<tr class="row-even"><td><strong>Secure Queue Only?</strong></td>
+<td>Yes</td>
+</tr>
+</tbody>
+</table>
 <p>Unlocking the JTAG port requires a X509 certificate signed with the active root
 of trust asymmetric key. This API is used to provide the signed certificate to
 System Firmware for proceessing and JTAG unlock.</p>

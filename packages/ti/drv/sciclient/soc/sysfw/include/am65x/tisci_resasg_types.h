@@ -74,8 +74,8 @@
  */
 
 #define TISCI_RESASG_UTYPE(type, subtype) \
-    (((type << TISCI_RESASG_TYPE_SHIFT) & TISCI_RESASG_TYPE_MASK) | \
-     ((subtype << TISCI_RESASG_SUBTYPE_SHIFT) & TISCI_RESASG_SUBTYPE_MASK))
+    ((((uint16_t) (type) << TISCI_RESASG_TYPE_SHIFT) & TISCI_RESASG_TYPE_MASK) |    \
+     (((uint16_t) (subtype) << TISCI_RESASG_SUBTYPE_SHIFT) & TISCI_RESASG_SUBTYPE_MASK))
 
 /**
  * IA subtypes definitions

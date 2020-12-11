@@ -258,7 +258,7 @@ shown below in ASN.1 notation.</p>
 </pre></div>
 </div>
 <p>The boot extension is decoded into the below structure.</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">sec_boot_ctrl</span> <span class="p">{</span>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">sec_boot_ctrl</span> <span class="p">{</span>
     <span class="n">u32</span> <span class="n">bootCore</span><span class="p">;</span>
     <span class="n">u32</span> <span class="n">configFlags_set</span><span class="p">;</span>
     <span class="n">u32</span> <span class="n">configFlags_clr</span><span class="p">;</span>
@@ -321,9 +321,9 @@ payload. It is identified by the OID <strong>1.3.6.1.4.1.294.1.34</strong>. The 
 the field is shown below in ASN.1 notation.</p>
 <div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">SYSFW</span><span class="o">-</span><span class="nl">INTEGRITY</span> <span class="p">:</span><span class="o">=</span> <span class="n">SEQUENCE</span>
 <span class="p">{</span>
-   <span class="n">shaType</span> <span class="n">OID</span><span class="p">,</span> <span class="o">--</span> <span class="n">indicates</span> <span class="n">OID</span> <span class="n">of</span> <span class="n">the</span> <span class="n">hash</span> <span class="n">used</span><span class="p">.</span> <span class="n">Must</span> <span class="n">always</span> <span class="n">be</span> <span class="n">set</span> <span class="n">to</span> <span class="n">SHA2</span><span class="mi">-512</span>
+   <span class="n">shaType</span> <span class="n">OID</span><span class="p">,</span> <span class="o">--</span> <span class="n">indicates</span> <span class="n">OID</span> <span class="n">of</span> <span class="n">the</span> <span class="n">hash</span> <span class="n">used</span><span class="p">.</span> <span class="n">Must</span> <span class="n">always</span> <span class="n">be</span> <span class="n">set</span> <span class="n">to</span> <span class="n">SHA2</span><span class="o">-</span><span class="mi">512</span>
                 <span class="o">--</span> <span class="nl">OID</span><span class="p">:</span><span class="mf">2.16.840.1.101.3.4.2.3</span>
-   <span class="n">shaValue</span> <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span> <span class="o">--</span> <span class="n">SHA2</span><span class="mi">-512</span> <span class="n">value</span> <span class="n">of</span> <span class="n">the</span> <span class="n">payload</span>
+   <span class="n">shaValue</span> <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span> <span class="o">--</span> <span class="n">SHA2</span><span class="o">-</span><span class="mi">512</span> <span class="n">value</span> <span class="n">of</span> <span class="n">the</span> <span class="n">payload</span>
    <span class="n">imageSize</span> <span class="n">INTEGER</span><span class="p">,</span> <span class="o">--</span> <span class="n">Size</span> <span class="n">of</span> <span class="n">the</span> <span class="n">image</span> <span class="n">in</span> <span class="n">bytes</span><span class="p">.</span> <span class="n">This</span> <span class="n">will</span> <span class="n">be</span> <span class="n">amount</span> <span class="n">of</span> <span class="n">data</span>
                       <span class="o">--</span> <span class="n">used</span> <span class="n">when</span> <span class="n">checking</span> <span class="n">the</span> <span class="n">image</span> <span class="n">integrity</span><span class="p">,</span> <span class="n">copying</span> <span class="n">the</span> <span class="n">image</span>
                       <span class="o">--</span> <span class="n">to</span> <span class="n">its</span> <span class="n">destination</span> <span class="n">or</span> <span class="n">when</span> <span class="n">decrypting</span> <span class="n">the</span> <span class="n">image</span><span class="p">.</span>
@@ -357,7 +357,7 @@ as part of authentication. The load extension is identified by OID <strong>1.3.6
 </pre></div>
 </div>
 <p>The load extension is decoded into the below structure.</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">ti_load_info</span> <span class="p">{</span>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">ti_load_info</span> <span class="p">{</span>
  <span class="n">u64</span> <span class="n">destAddr</span><span class="p">;</span>
  <span class="n">u8</span>  <span class="n">auth_in_place</span><span class="p">;</span>
 <span class="p">};</span>
@@ -427,7 +427,7 @@ additional information is required. This is identified by OID
 </pre></div>
 </div>
 <p>The encryption extension is decoded into the following data structure.</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">ti_enc_info</span> <span class="p">{</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">ti_enc_info</span> <span class="p">{</span>
  <span class="n">u8</span> <span class="n">initialVector</span><span class="p">[</span><span class="mi">16</span><span class="p">];</span>
  <span class="n">u8</span> <span class="n">randomString</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span>
  <span class="n">u8</span> <span class="n">iterationCnt</span><span class="p">;</span>
@@ -485,7 +485,7 @@ ASN.1 notation.</p>
 </pre></div>
 </div>
 <p>The debug control data is decoded as a structure below:</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">sdbg_debug_ctrl</span> <span class="p">{</span>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">sdbg_debug_ctrl</span> <span class="p">{</span>
     <span class="n">u16</span> <span class="n">debug_priv_level</span><span class="p">;</span>
     <span class="n">u16</span> <span class="n">reserved</span><span class="p">;</span>
     <span class="n">u8</span> <span class="n">debug_core_sel</span><span class="p">[</span><span class="n">MAX_CPU_CORES</span><span class="p">];</span>
@@ -598,7 +598,7 @@ extension is identified by OID <strong>1.3.6.1.4.1.294.1.36</strong>.</p>
 </pre></div>
 </div>
 <p>The extension is decoded into the following data structure.</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">ti_bcfg_info</span> <span class="p">{</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">ti_bcfg_info</span> <span class="p">{</span>
  <span class="n">u8</span> <span class="n">initialVector</span><span class="p">[</span><span class="mi">16</span><span class="p">];</span>
  <span class="n">u8</span> <span class="n">randomString</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span>
  <span class="n">u8</span> <span class="n">iterationCnt</span><span class="p">;</span>

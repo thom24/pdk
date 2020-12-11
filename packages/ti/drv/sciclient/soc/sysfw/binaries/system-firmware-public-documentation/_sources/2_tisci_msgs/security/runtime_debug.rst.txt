@@ -39,6 +39,14 @@ API Description
 TISCI_MSG_GET_SOC_UID - Get SOC UID
 -----------------------------------
 
+**Usage**:
+
++------------------------+--------+
+| **Message Type**       | Normal |
++------------------------+--------+
+| **Secure Queue Only?** | No     |
++------------------------+--------+
+
 Unlocking the JTAG port requires a X509 certificate signed with the active root
 of trust asymmetric key. The X509 certificate must contain the Unique identifier
 for the SOC (SOC UID). This enables debug certificates to be tied to specific
@@ -61,6 +69,14 @@ TISCI Message ID
 
 TISCI_MSG_OPEN_DEBUG_FWLS - Open Debug Firewalls
 ------------------------------------------------
+
+**Usage**:
+
++------------------------+--------+
+| **Message Type**       | Normal |
++------------------------+--------+
+| **Secure Queue Only?** | Yes    |
++------------------------+--------+
 
 Unlocking the JTAG port requires a X509 certificate signed with the active root
 of trust asymmetric key. This API is used to provide the signed certificate to

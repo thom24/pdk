@@ -1079,6 +1079,16 @@
                                             "name": "tdtype"
                                         }
                                     ]
+                                },
+                                "0x26": {
+                                    "msg_data": [
+                                        {
+                                            "fmt": "%d",
+                                            "higher_bit": 16,
+                                            "lower_bit": 0,
+                                            "name": "extended_ch_type"
+                                        }
+                                    ]
                                 }
                             }
                         }

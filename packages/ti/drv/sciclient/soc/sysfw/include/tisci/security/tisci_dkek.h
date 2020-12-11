@@ -62,7 +62,7 @@
 /**
  * \brief key derivation label and context length
  */
-#define KDF_LABEL_AND_CONTEXT_LEN_MAX       41
+#define KDF_LABEL_AND_CONTEXT_LEN_MAX       41U
 
 /**
  * \brief TISCI Request for setting DKEK in SA2UL registers

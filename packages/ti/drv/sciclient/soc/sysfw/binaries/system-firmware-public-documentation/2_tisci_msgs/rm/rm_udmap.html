@@ -320,7 +320,7 @@ within any Navigator Subsystem UDMAP on the device.</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="1%" />
-<col width="2%" />
+<col width="1%" />
 <col width="97%" />
 </colgroup>
 <thead valign="bottom">
@@ -336,7 +336,7 @@ within any Navigator Subsystem UDMAP on the device.</p>
 </tr>
 <tr class="row-odd"><td>valid_params</td>
 <td>u32</td>
-<td>Bitfield defining validity of tx channel configuration parameters.  The tx channel configuration fields are not valid, and will not be used for ch configuration, if their corresponding valid bit is zero.  Valid bit usage: 0 - Valid bit for &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::tx_pause_on_err 1 - Valid bit for &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::tx_atype 2 - Valid bit for &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::tx_chan_type 3 - Valid bit for &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::tx_fetch_size 4 - Valid bit for &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::txcq_qnum 5 - Valid bit for &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::tx_priority 6 - Valid bit for &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::tx_qos 7 - Valid bit for &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::tx_orderid 8 - Valid bit for &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::tx_sched_priority 9 - Valid bit for &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::tx_filt_einfo 10 - Valid bit for &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::tx_filt_pswords 11 - Valid bit for &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::tx_supr_tdpkt 12 - Valid bit for &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::tx_credit_count 13 - Valid bit for &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::fdepth 14 - Valid bit for &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::tx_burst_size 15 - Valid bit for &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::tx_tdtype</td>
+<td>Bitfield defining validity of tx channel configuration parameters.  The tx channel configuration fields are not valid, and will not be used for ch configuration, if their corresponding valid bit is zero.  Valid bit usage: 0 - Valid bit for &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::tx_pause_on_err 1 - Valid bit for &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::tx_atype 2 - Valid bit for &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::tx_chan_type 3 - Valid bit for &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::tx_fetch_size 4 - Valid bit for &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::txcq_qnum 5 - Valid bit for &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::tx_priority 6 - Valid bit for &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::tx_qos 7 - Valid bit for &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::tx_orderid 8 - Valid bit for &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::tx_sched_priority 9 - Valid bit for &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::tx_filt_einfo 10 - Valid bit for &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::tx_filt_pswords 11 - Valid bit for &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::tx_supr_tdpkt 12 - Valid bit for &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::tx_credit_count 13 - Valid bit for &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::fdepth 14 - Valid bit for &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::tx_burst_size 15 - Valid bit for &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::tx_tdtype 16 - Valid bit for &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::extended_ch_type</td>
 </tr>
 <tr class="row-even"><td>nav_id</td>
 <td>u16</td>
@@ -409,6 +409,10 @@ within any Navigator Subsystem UDMAP on the device.</p>
 <tr class="row-odd"><td>tx_tdtype</td>
 <td>u8</td>
 <td>UDMAP transmit channel teardown type configuration to be programmed into the tdtype field of the TCHAN_TCFG register.  Can be set to: &#64;ref TISCI_MSG_VALUE_RM_UDMAP_TX_CH_TDTYPE_IMMEDIATE &#64;ref TISCI_MSG_VALUE_RM_UDMAP_TX_CH_TDTYPE_WAIT This field is only valid if &#64;ref TISCI_MSG_VALUE_RM_UDMAP_CH_TX_TDTYPE_VALID is set in &#64;ref tisci_msg_rm_udmap_tx_ch_cfg_req::valid_params.  This field is not supported on some SoCs.  On SoCs that do not support this field the input is quietly ignored even if the valid bit is set.</td>
+</tr>
+<tr class="row-even"><td>extended_ch_type</td>
+<td>u8</td>
+<td>Extended Channel Type specific to BCDMA. A value of zero is the NULL extended_ch_type and applies UDMA and PKTDMA which dont have the MMR region layout that BCDMA does.  BCDMA will have an extended_ch_type of value 1 assigned to block copy channels.  So for BCDMA, supplying extended_ch_type value of 0 gets you access to the split TR TX channels. A value of 1 get you access to the block copy channels.</td>
 </tr>
 </tbody>
 </table>
@@ -519,6 +523,12 @@ channel configure message optional parameters:</p>
 </tr>
 <tr class="row-even"><td>14</td>
 <td>tx_burst_size</td>
+</tr>
+<tr class="row-odd"><td>15</td>
+<td>tx_tdtype</td>
+</tr>
+<tr class="row-even"><td>16</td>
+<td>extended_ch_type</td>
 </tr>
 </tbody>
 </table>

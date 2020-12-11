@@ -107,6 +107,10 @@
  * tx and rx channel configure TISCI message
  */
 #define TISCI_MSG_VALUE_RM_UDMAP_CH_BURST_SIZE_VALID           ((uint32_t) 1u << 14U)
+/**
+ * The extended_ch_type field is valid or not.
+ */
+#define TISCI_MSG_VALUE_RM_UDMAP_EXTENDED_CH_TYPE_VALID        ((uint32_t) 1u << 16U)
 
 /**
  * On error or exception the channel will drop current work and move on
@@ -806,6 +810,7 @@ struct tisci_msg_rm_udmap_gcfg_cfg_resp {
  *   13 - Valid bit for @ref tisci_msg_rm_udmap_tx_ch_cfg_req::fdepth
  *   14 - Valid bit for @ref tisci_msg_rm_udmap_tx_ch_cfg_req::tx_burst_size
  *   15 - Valid bit for @ref tisci_msg_rm_udmap_tx_ch_cfg_req::tx_tdtype
+ *   16 - Valid bit for @ref tisci_msg_rm_udmap_tx_ch_cfg_req::extended_ch_type
  *
  * \param nav_id
  * SoC device ID of Navigator Subsystem where tx channel is located
@@ -989,6 +994,14 @@ struct tisci_msg_rm_udmap_gcfg_cfg_resp {
  * @ref tisci_msg_rm_udmap_tx_ch_cfg_req::valid_params.  This field is not
  * supported on some SoCs.  On SoCs that do not support this field the input
  * is quietly ignored even if the valid bit is set.
+ *
+ * \param extended_ch_type
+ * Extended Channel Type specific to BCDMA. A value of zero is the NULL
+ * extended_ch_type and applies UDMA and PKTDMA which dont have the MMR
+ * region layout that BCDMA does.  BCDMA will have an extended_ch_type of
+ * value 1 assigned to block copy channels.  So for BCDMA, supplying
+ * extended_ch_type value of 0 gets you access to the split TR TX channels.
+ * A value of 1 get you access to the block copy channels.
  */
 struct tisci_msg_rm_udmap_tx_ch_cfg_req {
     struct tisci_header    hdr;
@@ -1011,6 +1024,7 @@ struct tisci_msg_rm_udmap_tx_ch_cfg_req {
     uint8_t            tx_sched_priority;
     uint8_t            tx_burst_size;
     uint8_t            tx_tdtype;
+    uint8_t            extended_ch_type;
 } __attribute__((__packed__));
 
 /**

@@ -36,7 +36,7 @@ TISCI_MSG_SA2UL_SET_DKEK - Set DKEK
 +------------------------+--------+
 | **Message Type**       | Normal |
 +------------------------+--------+
-| **Secure Queue Only?** | No     |
+| **Secure Queue Only?** | Yes    |
 +------------------------+--------+
 
 TISCI Message ID
@@ -63,7 +63,7 @@ TISCI_MSG_SA2UL_RELEASE_DKEK - Release DKEK
 +------------------------+--------+
 | **Message Type**       | Normal |
 +------------------------+--------+
-| **Secure Queue Only?** | No     |
+| **Secure Queue Only?** | Yes    |
 +------------------------+--------+
 
 TISCI Message ID
