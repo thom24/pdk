@@ -462,13 +462,13 @@ const Udma_RmInitPrms gUdmaRmDefCfg_Pktdma[UDMA_NUM_CORE] =
         4U,         /* numRxCh */
 
         {16U, 25U, 26U, 34U},  /* startMappedTxCh[] */
-        {2U,  1U,  4U,  4U},   /* numMappedTxCh[] */
+        {8U,  1U,  4U,  4U},   /* numMappedTxCh[] */
 
         {16U, 19U, 21U, 25U},  /* startMappedRxCh[] */
         {1U,  2U,  2U,  2U},   /* numMappedRxCh[] */
 
         {16U, 88U, 96U, 104U, 128U, 152U, 160U, 224U},   /* startMappedRing[] */
-        {16U, 8U,  4U,  4U,   11U,  8U,   32U,  32U},    /* numMappedRing[] */
+        {64U, 8U,  4U,  4U,   16U,  8U,   32U,  32U},    /* numMappedRing[] */
 
         0U,         /* startFreeFlow */
         0U,         /* numFreeFlow */
@@ -515,14 +515,14 @@ const Udma_RmInitPrms gUdmaRmDefCfg_Pktdma[UDMA_NUM_CORE] =
         9U,         /* startRxCh */
         4U,         /* numRxCh */
 
-        {21U, 0U, 0U, 0U},  /* startMappedTxCh[] */
-        {1U, 0U, 0U, 0U},   /* numMappedTxCh[] */
+        {0U, 0U, 0U, 0U},  /* startMappedTxCh[] */
+        {0U, 0U, 0U, 0U},  /* numMappedTxCh[] */
 
         {0U, 0U, 0U, 0U},  /* startMappedRxCh[] */
         {0U, 0U, 0U, 0U},  /* numMappedRxCh[] */
 
-        {56U, 0U, 0U, 0U, 141U, 0U, 0U, 0U},   /* startMappedRing[] */
-        {8U,  0U, 0U, 0U, 1U,   0U, 0U, 0U},   /* numMappedRing[] */
+        {0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U},   /* startMappedRing[] */
+        {0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U},   /* numMappedRing[] */
 
         0U,         /* startFreeFlow */
         0U,         /* numFreeFlow */
@@ -569,14 +569,14 @@ const Udma_RmInitPrms gUdmaRmDefCfg_Pktdma[UDMA_NUM_CORE] =
         13U,        /* startRxCh */
         2U,         /* numRxCh */
 
-        {22U, 0U, 0U, 0U},  /* startMappedTxCh[] */
-        {1U, 0U, 0U, 0U},   /* numMappedTxCh[] */
+        {0U, 0U, 0U, 0U},   /* startMappedTxCh[] */
+        {0U, 0U, 0U, 0U},   /* numMappedTxCh[] */
 
         {0U, 0U, 0U, 0U},   /* startMappedRxCh[] */
         {0U, 0U, 0U, 0U},   /* numMappedRxCh[] */
 
-        {64U, 0U, 0U, 0U, 142U, 0U, 0U, 0U},   /* startMappedRing[] */
-        {8U,  0U, 0U, 0U, 1U,   0U, 0U, 0U},   /* numMappedRing[] */
+        {0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U},   /* startMappedRing[] */
+        {0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U},   /* numMappedRing[] */
 
         0U,         /* startFreeFlow */
         0U,         /* numFreeFlow */
@@ -623,14 +623,14 @@ const Udma_RmInitPrms gUdmaRmDefCfg_Pktdma[UDMA_NUM_CORE] =
         4U,         /* startRxCh */
         3U,         /* numRxCh */
 
-        {18U, 0U,  30U, 38U},  /* startMappedTxCh[] */
-        {2U,  0U,  4U,  4U},   /* numMappedTxCh[] */
+        {0U, 0U,  30U, 38U},  /* startMappedTxCh[] */
+        {0U,  0U,  4U,  4U},   /* numMappedTxCh[] */
 
         {0U, 0U,  23U, 27U},  /* startMappedRxCh[] */
         {0U, 0U,  2U,  2U},   /* numMappedRxCh[] */
 
-        {32U, 0U, 100U, 108U, 139U, 0U, 192U, 256U},   /* startMappedRing[] */
-        {16U, 0U, 4U,   4U,   1U,   0U, 32U,  32U},    /* numMappedRing[] */
+        {0U, 0U, 100U, 108U, 0U, 0U, 192U, 256U},   /* startMappedRing[] */
+        {0U, 0U, 4U,   4U,   0U, 0U, 32U,  32U},    /* numMappedRing[] */
 
         0U,         /* startFreeFlow */
         0U,         /* numFreeFlow */
@@ -677,14 +677,14 @@ const Udma_RmInitPrms gUdmaRmDefCfg_Pktdma[UDMA_NUM_CORE] =
         7U,         /* startRxCh */
         2U,         /* numRxCh */
 
-        {20U, 0U, 0U, 0U},  /* startMappedTxCh[] */
-        {1U, 0U, 0U, 0U},   /* numMappedTxCh[] */
+        {0U, 0U, 0U, 0U},  /* startMappedTxCh[] */
+        {0U, 0U, 0U, 0U},  /* numMappedTxCh[] */
 
         {0U, 0U, 0U, 0U},  /* startMappedRxCh[] */
         {0U, 0U, 0U, 0U},  /* numMappedRxCh[] */
 
-        {48U, 0U, 0U, 0U, 140U, 0U, 0U, 0U},   /* startMappedRing[] */
-        {8U,  0U, 0U, 0U, 1U,   0U, 0U, 0U},   /* numMappedRing[] */
+        {0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U},   /* startMappedRing[] */
+        {0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U},   /* numMappedRing[] */
 
         0U,         /* startFreeFlow */
         0U,         /* numFreeFlow */
@@ -731,14 +731,14 @@ const Udma_RmInitPrms gUdmaRmDefCfg_Pktdma[UDMA_NUM_CORE] =
         15U,        /* startRxCh */
         1U,         /* numRxCh */
 
-        {23U, 0U, 0U, 0U},  /* startMappedTxCh[] */
-        {1U, 0U, 0U, 0U},   /* numMappedTxCh[] */
+        {0U, 0U, 0U, 0U},  /* startMappedTxCh[] */
+        {0U, 0U, 0U, 0U},  /* numMappedTxCh[] */
 
         {0U, 0U, 0U, 0U},  /* startMappedRxCh[] */
         {0U, 0U, 0U, 0U},  /* numMappedRxCh[] */
 
-        {72U, 0U, 0U, 0U, 143U, 0U, 0U, 0U},   /* startMappedRing[] */
-        {8U,  0U, 0U, 0U, 1U,   0U, 0U, 0U},   /* numMappedRing[] */
+        {0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U},   /* startMappedRing[] */
+        {0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U},   /* numMappedRing[] */
 
         0U,         /* startFreeFlow */
         0U,         /* numFreeFlow */
