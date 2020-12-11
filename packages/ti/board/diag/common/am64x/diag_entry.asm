@@ -236,7 +236,7 @@ gnu_targets_arm_rtsv8A_startupAsm:
     stp     x21, x22, [sp, #-16]!  /* save SP and LR to stack */
 
     /* do more initialization in C, go to main() */
-    bl      main
+    bl      start_boot
     mov     x20, x0
     ldp     x0, x1, [sp], #16  /* Load SP and LR to stack */
     mov     sp, x0
