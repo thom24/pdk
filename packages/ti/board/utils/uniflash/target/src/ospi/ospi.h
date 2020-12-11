@@ -47,7 +47,7 @@ extern "C" {
 #include <ti/drv/spi/soc/SPI_soc.h>
 #include <ti/board/src/flash/include/board_flash.h>
 
-#if defined(j7200_evm)
+#if defined(j7200_evm) || defined(am64x_evm)
 #include <ti/board/src/flash/nor/ospi/nor_xspi.h>
 #else
 #include <ti/board/src/flash/nor/ospi/nor_ospi.h>
