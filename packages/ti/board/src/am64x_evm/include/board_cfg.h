@@ -103,19 +103,10 @@ extern "C" {
 #define BOARD_I2C_BOOT_EEPROM_ADDR2                     (0x51U)
 
 /* I2C address for Board Id EEPROM */
-#define BOARD_I2C_EEPROM_ADDR                           (0x51U)
+#define BOARD_I2C_EEPROM_ADDR                           (0x50U)
 
 /* QSPI instance number */
 #define BOARD_SPI_NOR_INSTANCE                          (0U)
-
-/* I2C Instance connected to clock generator */
-#define BOARD_CLOCK_GENERATOR_INSTANCE                  (0U)
-/* I2C slave address of clock generator */
-#define BOARD_I2C_CLOCK_GENERATOR1                      (0)   //Can be used later
-#define BOARD_I2C_CLOCK_GENERATOR2_ADDR1                (0x76)
-#define BOARD_I2C_CLOCK_GENERATOR2_ADDR2                (0x77)
-#define BOARD_I2C_QSGMII_CLOCK_GENERATOR                (0x77)
-#define BOARD_I2C_PERI_CLOCK_GENERATOR                  (0x6D)
 
 /* OSPI instance connected to OSPI NOR flash */
 #define BOARD_OSPI_NOR_INSTANCE                         (0U)
@@ -123,11 +114,6 @@ extern "C" {
 /* I2C instance connected to IO Expander */
 #define BOARD_I2C_IOEXP_DEVICE1_INSTANCE                (1U)
 #define BOARD_I2C_IOEXP_DEVICE2_INSTANCE                (0U)
-#define BOARD_I2C_IOEXP_DEVICE3_INSTANCE                (3U)
-#define BOARD_I2C_IOEXP_DEVICE4_INSTANCE                (0U)
-#define BOARD_I2C_IOEXP_DEVICE5_INSTANCE                (1U)
-#define BOARD_I2C_AUDIO_IOEXP_DEVICE_INSTANCE           (3U)
-#define BOARD_I2C_VIDEO_IOEXP_DEVICE_INSTANCE           (0U)
 #define BOARD_I2C_LED_INSTANCE                          (1U)
 
 /* I2C IO Expander Slave devices */
@@ -139,21 +125,12 @@ extern "C" {
 /* OSPI instance number */
 #define BOARD_OSPI_INSTANCE                             (0)
 
-#define BOARD_GPIO_IOEXP_OSPI_RST_PORT_NUM              (0)
-#define BOARD_GPIO_IOEXP_OSPI_RST_PIN_NUM               (1)
-
 /* GPIO port & pin numbers for  MMC reset */
 #define GPIO_MMC_SDCD_PORT_NUM                          (0)
 #define GPIO_MMC_SDCD_PIN_NUM                           (0)
 
 #define BOARD_GPIO_IOEXP_EMMC_RST_PORT_NUM              (0x0)
 #define BOARD_GPIO_IOEXP_EMMC_RST_PIN_NUM               (0x0)
-
-/* I2C instance for External RTC */
-#define BOARD_I2C_EXT_RTC_INSTANCE                      (0U)
-
-/* I2C address for External RTC */
-#define BOARD_I2C_EXT_RTC_ADDR                          (0x6FU)
 
 /* I2C instance Board Presence Circuit */
 #define BOARD_PRES_I2C_INSTANCE                         (0U)
@@ -170,9 +147,6 @@ extern "C" {
 /* User LED Pin Details */
 #define BOARD_I2C_USER_LED_INSTANCE                     (0U)
 
-#define BOARD_USER_LED1                                 (1U) /* Main GPIO0_1 */
-#define BOARD_USER_LED2                                 (1U) /* MCU GPIO0_1 */
-
 #define BOARD_ICSS_EMAC_PORT_START                      (0x0U)
 #define BOARD_ICSS_EMAC_PORT_END                        (0x1U)
 #define BOARD_ICSS_EMAC_PORT_MAX                        (0x2U)
@@ -185,43 +159,6 @@ extern "C" {
 #define BOARD_ICSS_EMAC_PHY1_ADDR                       (0xFu)
 #define BOARD_CPSW_EMAC_PHY0_ADDR                       (0x0)
 #define BOARD_CPSW_EMAC_PHY1_ADDR                       (0x3u)
-
-
-/* PRG1_RGMII2_RESETn */
-#define BOARD_GPIO_IOEXP_ICSS1_EMAC_RST_PORT_NUM        (0)
-#define BOARD_GPIO_IOEXP_ICSS1_EMAC_RST_PIN_NUM         (4)
-
-/* PRG1_RGMII1_RESETn */
-#define BOARD_GPIO_IOEXP_ICSS2_EMAC_RST_PORT_NUM        (0)
-#define BOARD_GPIO_IOEXP_ICSS2_EMAC_RST_PIN_NUM         (3)
-
-/* PRG1_RGMII_INTn */
-#define BOARD_GPIO_ICSS2_EMAC_INT_PORT_NUM              (0) /* GPIO1_70  */
-#define BOARD_GPIO_ICSS2_EMAC_INT_PIN_NUM               (0x46)
-
-/* PRG1_ETH1_LED_LINK */
-#define BOARD_GPIO_ICSS2_EMAC_PHY0_LED_LINK_PORT_NUM    (0)  /* PRG1_PRU0_GPO8 - GPIO0_53 */
-#define BOARD_GPIO_ICSS2_EMAC_PHY0_LED_LINK_PIN_NUM     (35)
-
-/* PRG1_ETH2_LED_LINK */
-#define BOARD_GPIO_ICSS2_EMAC_PHY1_LED_LINK_PORT_NUM    (0)  /* PRG1_PRU1_GPO8 - GPIO0_73 */
-#define BOARD_GPIO_ICSS2_EMAC_PHY1_LED_LINK_PIN_NUM     (49)
-
-/* GPIO to drive PRG2 LED0 */
-#define BOARD_GPIO_ICSS2_EMAC_LED0_PORT_NUM             (0) //AM64x_TODO: need to update
-#define BOARD_GPIO_ICSS2_EMAC_LED0_PIN_NUM              (0) //AM64x_TODO: need to update
-
-/* GPIO to drive PRG2 LED1 */
-#define BOARD_GPIO_ICSS2_EMAC_LED1_PORT_NUM             (0) //AM64x_TODO: need to update
-#define BOARD_GPIO_ICSS2_EMAC_LED1_PIN_NUM              (0) //AM64x_TODO: need to update
-
-/* GPIO to drive PRG2 LED2 */
-#define BOARD_GPIO_ICSS2_EMAC_LED2_PORT_NUM             (0) //AM64x_TODO: need to update
-#define BOARD_GPIO_ICSS2_EMAC_LED2_PIN_NUM              (0) //AM64x_TODO: need to update
-
-/* GPIO to drive PRG2 LED3 */
-#define BOARD_GPIO_ICSS2_EMAC_LED3_PORT_NUM             (0) //AM64x_TODO: need to update
-#define BOARD_GPIO_ICSS2_EMAC_LED3_PIN_NUM              (0) //AM64x_TODO: need to update
 
 /* MCU EMAC PHY MDIO address */
 #define BOARD_MCU_EMAC_PHY_ADDR                         (0U)
@@ -286,7 +223,7 @@ extern "C" {
 #define BOARD_MCSPI_SLAVE_INSTANCE                      (1)
 
 /* Maximum possible buffer length */
-#define BOARD_EEPROM_MAX_BUFF_LENGTH                    (0)
+#define BOARD_EEPROM_MAX_BUFF_LENGTH                    (197U)
 
 /* Maximum number of SoC domains */
 #define BOARD_SOC_DOMAIN_MAX                            (2U)
@@ -336,21 +273,6 @@ extern "C" {
 
 /* PinMux data to be programmed to configure a pin to be a GPIO */
 #define PINMUX_GPIO_CFG                                 (0x00050007U)
-
-typedef enum
-{
-	APP_CARD_DETECT = 0,
-	LCD_BRD_DETECT,
-	SERDES_BRD_DETECT,
-	HDMI_BRD_DETECT
-}boardPresDetect_t;
-
-typedef enum domainType
-{
-    MAIN_DOMAIN = 0U,
-    WKUP_DOMAIN
-}domainType_t;
-
 
 #define BOARD_EEPROM_HEADER_LENGTH                      (4U)
 #define BOARD_EEPROM_BOARD_NAME_LENGTH                  (8U)
