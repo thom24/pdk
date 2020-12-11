@@ -520,11 +520,8 @@ static bool BoardDiag_csirxTestRun(uint8_t instanceId)
     CSIRX_InstanceInfo_t instanceInfo;
     bool isTestPass = true;
     CSL_rcss_rcmRegs *pRcssRcmRegs = (CSL_rcss_rcmRegs *)CSL_RCSS_RCM_U_BASE;
-    volatile bool isComplexIOresetDone, isForceRxModeDeasserted;
-    volatile uint32_t numComplexIOresetDonePolls, numComplexIOPowerStatusPolls,
-             numForceRxModeDeassertedPolls;
+    volatile bool isComplexIOresetDone;
     volatile uint8_t isComplexIOpowerStatus;
-    volatile bool isForceRxModeOnComplexIOdeasserted;
 
     /* get ping-pong buffer addresses based on the RAM type and context */
     BoardDiag_getBuf(BOARD_DIAG_CSIRX_TEST_HWARAM, &pingBuf, true);
@@ -618,7 +615,6 @@ static bool BoardDiag_csirxTestRun(uint8_t instanceId)
     }
     UART_printf("Wait till the complex IO power up!\n");
 
-    numComplexIOPowerStatusPolls = 0;
     do
     {
         errorCode = CSIRX_getComplexIOpowerStatus(handle,
@@ -630,11 +626,7 @@ static bool BoardDiag_csirxTestRun(uint8_t instanceId)
             isTestPass = false;
             goto exit;
         }
-        if (isComplexIOpowerStatus == 0)
-        {
-            Osal_delay(1);
-        }
-        numComplexIOPowerStatusPolls++;
+
     } while((isComplexIOpowerStatus == 0));
     UART_printf("Complex IO Powered up.Run FE binrary config now\n");
     /* config common */
@@ -694,7 +686,6 @@ static bool BoardDiag_csirxTestRun(uint8_t instanceId)
     }
 
     /* Wait until complex IO reset complete */
-    numComplexIOresetDonePolls = 0;
     do
     {
         errorCode = CSIRX_isComplexIOresetDone(handle,
@@ -712,7 +703,6 @@ static bool BoardDiag_csirxTestRun(uint8_t instanceId)
                      default BIOS tick = 1 ms */
             Osal_delay(1);
         }
-        numComplexIOresetDonePolls++;
     }while((isComplexIOresetDone == false));
 
     if(isComplexIOresetDone == false)
