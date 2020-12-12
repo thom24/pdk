@@ -2,7 +2,7 @@
  * These arguments were used when this file was generated. They will be automatically applied on subsequent loads
  * via the GUI or CLI. Run CLI with '--help' for additional information on how to override these arguments.
  * @cliArgs --device "AM64x_beta" --package "ALV" --part "Default"
- * @versions {"data":"20201908","timestamp":"2020110405","tool":"1.6.0+1543","templates":"20190604"}
+ * @versions {"data":"20201908","timestamp":"2020113022","tool":"1.6.0+1543","templates":"20190604"}
  */
 
 /**
@@ -118,6 +118,13 @@ iMCU_I2C2.SCL.pu_pd                    = "pu";
 iMCU_I2C2.SCL.$assign                  = "MCU_I2C1_SCL";
 iMCU_I2C2.SDA.pu_pd                    = "pu";
 iMCU_I2C2.SDA.$assign                  = "MCU_I2C1_SDA";
+const iMCU_SPI1                        = scripting.addPeripheral("MCU_SPI");
+iMCU_SPI1.$name                        = "MyMCU_SPI1";
+iMCU_SPI1.CLK.$assign                  = "MCU_SPI0_CLK";
+iMCU_SPI1.CS0.$assign                  = "MCU_SPI0_CS0";
+iMCU_SPI1.CS1.$assign                  = "MCU_SPI0_CS1";
+iMCU_SPI1.D0.$assign                   = "MCU_SPI0_D0";
+iMCU_SPI1.D1.$assign                   = "MCU_SPI0_D1";
 const iMCU_SYSTEM1                     = scripting.addPeripheral("MCU_SYSTEM");
 iMCU_SYSTEM1.$name                     = "MyMCU_SYSTEM1";
 iMCU_SYSTEM1.MCU_PORz.$assign          = "MCU_PORz";
@@ -160,13 +167,24 @@ iMMC01.DAT7.$assign                    = "MMC0_DAT7";
 const iMMC11                           = scripting.addPeripheral("MMC1");
 iMMC11.$name                           = "MyMMC11";
 iMMC11.$assign                         = "MMC1";
+iMMC11.CMD.pu_pd                       = "pu";
 iMMC11.CMD.$assign                     = "MMC1_CMD";
+iMMC11.CLKLB.pu_pd                     = "pu";
+iMMC11.CLKLB.rx                        = true;
+iMMC11.CLKLB.$assign                   = "MMC1_CLKLB";
+iMMC11.CLK.pu_pd                       = "pu";
 iMMC11.CLK.$assign                     = "MMC1_CLK";
+iMMC11.DAT0.pu_pd                      = "pu";
 iMMC11.DAT0.$assign                    = "MMC1_DAT0";
+iMMC11.DAT1.pu_pd                      = "pu";
 iMMC11.DAT1.$assign                    = "MMC1_DAT1";
+iMMC11.DAT2.pu_pd                      = "pu";
 iMMC11.DAT2.$assign                    = "MMC1_DAT2";
+iMMC11.DAT3.pu_pd                      = "pu";
 iMMC11.DAT3.$assign                    = "MMC1_DAT3";
+iMMC11.SDCD.pu_pd                      = "pu";
 iMMC11.SDCD.$assign                    = "MMC1_SDCD";
+iMMC11.SDWP.pu_pd                      = "pu";
 iMMC11.SDWP.$assign                    = "MMC1_SDWP";
 iMMC11.SDWP.$used                      = false;
 const iOSPI1                           = scripting.addPeripheral("OSPI");
@@ -350,7 +368,11 @@ const iSYSTEM1                         = scripting.addPeripheral("SYSTEM");
 iSYSTEM1.$name                         = "MySYSTEM1";
 iSYSTEM1.CLKOUT0.$assign               = "EXT_REFCLK1";
 iSYSTEM1.EXT_REFCLK1.$assign           = "EXT_REFCLK1";
+iSYSTEM1.EXT_REFCLK1.$used             = true;
+iSYSTEM1.FCLK_MUX.$used                = true;
+iSYSTEM1.RESET_REQz.$used              = false;
 iSYSTEM1.SYNC0_OUT.$assign             = "ECAP0_IN_APWM_OUT";
+iSYSTEM1.SYNC0_OUT.$used               = true;
 const iUART1                           = scripting.addPeripheral("UART");
 iUART1.$name                           = "MyUART1";
 iUART1.CTSn.$assign                    = "UART0_CTSn";
@@ -454,10 +476,11 @@ iDDRSS1.RESET0_n.$suggestSolution    = "DDR0_RESET0_n";
 iDDRSS1.WE_n.$suggestSolution        = "DDR0_WE_n";
 iFSI_TX1.$suggestSolution            = "FSI_TX0";
 iGPIO2["43"].$suggestSolution        = "SPI0_CS1";
+iMCU_SPI1.$suggestSolution           = "MCU_SPI0";
 iMCU_SYSTEM1.$suggestSolution        = "MCU_SYSTEM0";
 iSERDES1.$suggestSolution            = "SERDES0";
 iSYSTEM1.$suggestSolution            = "SYSTEM0";
+iSYSTEM1.FCLK_MUX.$suggestSolution   = "GPMC0_CLK";
 iSYSTEM1.PORz_OUT.$suggestSolution   = "PORz_OUT";
-iSYSTEM1.RESET_REQz.$suggestSolution = "RESET_REQz";
 iSYSTEM1.RESETSTATz.$suggestSolution = "RESETSTATz";
 iUART1.$suggestSolution              = "USART0";
