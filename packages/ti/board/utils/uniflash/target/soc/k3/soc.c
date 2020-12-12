@@ -59,7 +59,16 @@ int8_t UFP_openUartHandle(void);
 #if defined(am64x_evm)
 static int32_t UFP_isNoBootEnabled(void)
 {
-    return (TRUE);
+    uint32_t mainDevStat;
+
+    mainDevStat = HW_RD_REG32(UFP_MAIN_DEVSTAT_ADDR);
+
+    if((mainDevStat & UFP_MAIN_DEVSTAT_NOBOOT_MASK) == UFP_MAIN_DEVSTAT_NOBOOT_CFG)
+    {
+        return (TRUE);
+    }
+
+    return (FALSE);
 }
 #else
 static int32_t UFP_isNoBootEnabled(void)
@@ -299,7 +308,28 @@ int8_t UFP_sciclientInit(void *sysfw)
         return (-1);
     }
 
-#if !defined(am64x_evm)
+#if defined(SOC_AM64X)
+    Sciclient_pmSetModuleState(TISCI_DEV_RTI8,
+                               TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF,
+                               TISCI_MSG_FLAG_AOP,
+                               SCICLIENT_SERVICE_WAIT_FOREVER);
+    Sciclient_pmSetModuleState(TISCI_DEV_RTI9,
+                               TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF,
+                               TISCI_MSG_FLAG_AOP,
+                               SCICLIENT_SERVICE_WAIT_FOREVER);
+    Sciclient_pmSetModuleState(TISCI_DEV_RTI10,
+                               TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF,
+                               TISCI_MSG_FLAG_AOP,
+                               SCICLIENT_SERVICE_WAIT_FOREVER);
+    Sciclient_pmSetModuleState(TISCI_DEV_RTI11,
+                               TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF,
+                               TISCI_MSG_FLAG_AOP,
+                               SCICLIENT_SERVICE_WAIT_FOREVER);
+    Sciclient_pmSetModuleState(TISCI_DEV_MCU_RTI0,
+                               TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF,
+                               TISCI_MSG_FLAG_AOP,
+                               SCICLIENT_SERVICE_WAIT_FOREVER);
+#else
     /* RTI seems to be turned on by ROM. Turning it off so that Power domain can transition */
     Sciclient_pmSetModuleState(TISCI_DEV_MCU_RTI0,
                                TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF,

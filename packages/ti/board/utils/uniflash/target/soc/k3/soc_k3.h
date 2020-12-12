@@ -80,11 +80,15 @@ extern "C" {
 #elif defined(SOC_AM65XX)
 #define UFP_MCU_ARMSS_ATCM_BASE             (CSL_MCU_ATCM_BASE)
 #elif defined(SOC_AM64X)
-#define UFP_MCU_ARMSS_ATCM_BASE             (0) // AM64x_TODO: Need check this address during the verification
+#define UFP_MCU_ARMSS_ATCM_BASE             (CSL_R5FSS0_ATCM_BASE)
 #endif
 
 #define UFP_ROM_UART_MODULE_INPUT_CLK       (48000000U)
+#if defined (SOC_AM64X)
+#define UFP_SYSFW_UART_MODULE_INPUT_CLK     (48000000U)
+#else
 #define UFP_SYSFW_UART_MODULE_INPUT_CLK     (96000000U)
+#endif
 
 #define UFP_SYSFW_NOT_PROCESSED    (0x0U)
 #define UFP_SYSFW_CLEAR_TEXT       (0x55555555u)
@@ -100,7 +104,8 @@ extern "C" {
 #define UFP_MAIN_DEVSTAT_NOBOOT_MASK    (0xEFU)
 #define UFP_WKUP_DEVSTAT_NOBOOT_MASK    (0xF8U)
 #elif defined(SOC_AM64X)
-#define UFP_MAIN_DEVSTAT_NOBOOT_MASK    (0xEFU)
+#define UFP_MAIN_DEVSTAT_NOBOOT_CFG     (0xFBU)
+#define UFP_MAIN_DEVSTAT_NOBOOT_MASK    (0xFFU)
 #else
 #define UFP_MAIN_DEVSTAT_NOBOOT_CFG    (0)
 #define UFP_WKUP_DEVSTAT_NOBOOT_CFG    (0)

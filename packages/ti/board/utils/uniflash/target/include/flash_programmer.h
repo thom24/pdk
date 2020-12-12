@@ -94,8 +94,8 @@ extern "C" {
 #endif
 
 #if defined(am64x_evm)
-#define MAX_BAUDRATE_SUPPORTED          (0x0U)
-#define MAX_BAUDRATE_SUPPORTED_LINUX    (0x0U)
+#define MAX_BAUDRATE_SUPPORTED          (0x8U)  /* 1500000 */
+#define MAX_BAUDRATE_SUPPORTED_LINUX    (0x8U)  /* 1500000 */
 
 #define OSPI_FLASH
 #define EMMC_FLASH
