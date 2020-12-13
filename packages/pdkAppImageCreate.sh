@@ -134,7 +134,6 @@ if [ $SOC == am65xx ] || [ $SOC == j721e ] || [ $SOC == am64x ]; then
         export CORE_ID=12
     elif [ "$PROCESSOR" == "c7x_1" ]; then
         export CORE_ID=13
-    fi
     elif [ "$PROCESSOR" == "m4f_0" ]; then
         export CORE_ID=14
     fi
