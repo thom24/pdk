@@ -280,8 +280,8 @@ static void App_udmaEventTdCb(Udma_EventHandle eventHandle,
                               void *appData);
 #endif
 
-static int32_t App_init(App_UdmaObj *appObj);
-static int32_t App_deinit(App_UdmaObj *appObj);
+static int32_t App_init(App_UdmaObj *appObj, App_OspiObj *ospiObj);
+static int32_t App_deinit(App_UdmaObj *appObj, App_OspiObj *ospiObj);
 
 static int32_t App_create(App_UdmaObj *appObj);
 static int32_t App_delete(App_UdmaObj *appObj);
@@ -300,7 +300,7 @@ int32_t App_setGTCClk(uint32_t moduleId,
                       uint64_t clkRateHz);
 
 
-static int32_t App_ospiFlashInit(uint32_t clk);
+static int32_t App_ospiFlashInit(App_OspiObj *ospiObj, uint32_t clk);
 static int32_t App_ospiFlashStart(uint32_t numBytes) __attribute__((section(".udma_critical_fxns")));
 
 /* ========================================================================== */
@@ -311,6 +311,7 @@ static int32_t App_ospiFlashStart(uint32_t numBytes) __attribute__((section(".ud
  * UDMA driver and channel objects
  */
 App_UdmaObj gUdmaAppObj;
+App_OspiObj gOspiAppObj;
 
 /*
  * UDMA Memories
@@ -418,8 +419,9 @@ static int32_t Udma_ospiFlashTestRun(void)
 {
     int32_t         retVal;
     App_UdmaObj    *appObj = &gUdmaAppObj;
+    App_OspiObj    *ospiObj = &gOspiAppObj;
 
-    retVal = App_init(appObj);
+    retVal = App_init(appObj, ospiObj);
     if(UDMA_SOK != retVal)
     {
         App_print("\n [Error] UDMA App init failed!!\n");
@@ -451,7 +453,7 @@ static int32_t Udma_ospiFlashTestRun(void)
         App_print("\n [Error] UDMA App delete failed!!\n");
     }
 
-    retVal += App_deinit(appObj);
+    retVal += App_deinit(appObj, ospiObj);
     if(UDMA_SOK != retVal)
     {
         App_print("\n [Error] UDMA App deinit failed!!\n");
@@ -810,7 +812,7 @@ static void App_udmaEventTdCb(Udma_EventHandle eventHandle,
 }
 #endif
 
-static int32_t App_init(App_UdmaObj *appObj)
+static int32_t App_init(App_UdmaObj *appObj, App_OspiObj *ospiObj)
 {
     int32_t              retVal;
     Udma_InitPrms        initPrms;
@@ -869,19 +871,19 @@ static int32_t App_init(App_UdmaObj *appObj)
 
     if(UDMA_SOK == retVal)
     {
-       retVal = App_ospiFlashInit(appTestObj->clk);
+       retVal = App_ospiFlashInit(ospiObj, appTestObj->clk);
     }
 
     return (retVal);
 }
 
 
-static int32_t App_deinit(App_UdmaObj *appObj)
+static int32_t App_deinit(App_UdmaObj *appObj, App_OspiObj *ospiObj)
 {
     int32_t         retVal;
     Udma_DrvHandle  drvHandle = &appObj->drvObj;
 
-    OspiFlash_ospiClose(FALSE);
+    OspiFlash_ospiClose(ospiObj, FALSE);
 
     retVal = Udma_deinit(drvHandle);
     if(UDMA_SOK != retVal)
@@ -1346,7 +1348,7 @@ int32_t App_setGTCClk(uint32_t moduleId,
     return (retVal);
 }
 
-static int32_t App_ospiFlashInit(uint32_t clk)
+static int32_t App_ospiFlashInit(App_OspiObj *ospiObj, uint32_t clk)
 {
     int32_t status = UDMA_SOK;
 
@@ -1356,11 +1358,11 @@ static int32_t App_ospiFlashInit(uint32_t clk)
         App_printNum("\n OSPI RCLK running at %d Hz. \n", clk);
     }
 
-    status += OspiFlash_ospiOpen(OSPI_FLASH_WRITE_TIMEOUT, OSPI_FLASH_CHECK_IDLE_DELAY, FALSE);
+    status += OspiFlash_ospiOpen(ospiObj, OSPI_FLASH_WRITE_TIMEOUT, OSPI_FLASH_CHECK_IDLE_DELAY, TRUE, FALSE);
 
-    status += OspiFlash_ospiEnableDDR(FALSE);
+    status += OspiFlash_ospiEnableDDR(TRUE, FALSE);
 
-    status += OspiFlash_ospiSetOpcode();
+    status += OspiFlash_ospiSetOpcode(TRUE);
 
     status += OspiFlash_ospiConfigPHY(clk, FALSE);
 
