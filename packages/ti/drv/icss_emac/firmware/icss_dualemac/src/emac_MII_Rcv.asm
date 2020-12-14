@@ -514,7 +514,12 @@ FB_SKIP_VLAN_FLTR:
 
     ;PINDSW-4577: Fix to avoid cut-through packets from going via Storm Prevention
     ;Storm prevention is done only if host receive flag is set
+    LDI     RCV_TEMP_REG_3.w2, DISABLE_STORM_PREV_FOR_HOST
+    LBCO    &RCV_TEMP_REG_3.b0, PRU_DMEM_ADDR, RCV_TEMP_REG_3.w2, 1   ; load the control value
+    ;This check is for maintaining backward compatibility, driver needs to write non-zero value for enabling
+    QBEQ    FB_SKIP_HOST_CHECK_STORM_PREV, RCV_TEMP_REG_3.b0, 0       
     QBBC    FB_CONT_CT_CHECK, MII_RCV.rx_flags , host_rcv_flag_shift
+FB_SKIP_HOST_CHECK_STORM_PREV:
     
     ; Storm Prevention
     QBBC    FB_STORM_NOT_MC, R22, RX_MC_FRAME

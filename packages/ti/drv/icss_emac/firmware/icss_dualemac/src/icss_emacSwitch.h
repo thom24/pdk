@@ -488,6 +488,7 @@ STORM_PREVENTION_OFFSET_UC          .set    STATISTICS_OFFSET + STAT_SIZE + 41  
 SP_UPDATE_TIMESTAMP_OFFSET          .set    STATISTICS_OFFSET + STAT_SIZE + 45  ;4 bytes
 SP_INCREMENT_COUNT_OFFSET           .set    STATISTICS_OFFSET + STAT_SIZE + 49  ;4 bytes
 SP_COUNTER_UPDATE_INTERVAL_OFFSET   .set    STATISTICS_OFFSET + STAT_SIZE + 53  ;4 bytes
+DISABLE_STORM_PREV_FOR_HOST         .set    STATISTICS_OFFSET + STAT_SIZE + 57  ;1 byte
 	
 ;***********************************************************************************************************
 ;											                   *

@@ -467,6 +467,7 @@ STORM_PREVENTION_OFFSET_UC          .set    STATISTICS_OFFSET + STAT_SIZE + 41  
 SP_UPDATE_TIMESTAMP_OFFSET          .set    STATISTICS_OFFSET + STAT_SIZE + 45  ;4 bytes
 SP_INCREMENT_COUNT_OFFSET           .set    STATISTICS_OFFSET + STAT_SIZE + 49  ;4 bytes
 SP_COUNTER_UPDATE_INTERVAL_OFFSET   .set    STATISTICS_OFFSET + STAT_SIZE + 53  ;4 bytes
+DISABLE_STORM_PREV_FOR_HOST         .set    STATISTICS_OFFSET + STAT_SIZE + 57  ;1 byte
 
 SP_COUNTER_UPDATE_INTERVAL_DEFAULT  .set    100000000
 
@@ -475,7 +476,7 @@ SP_COUNTER_UPDATE_INTERVAL_DEFAULT  .set    100000000
 ;                          Protocol-specific Stats                          *
 ;****************************************************************************
 ; Placing these AFTER cfg offsets so as to not interfere with icss_emac
-STP_INVALID_STATE_OFFSET    .set              STORM_PREVENTION_OFFSET_UC + 4 ; number of invalid STP state errors
+STP_INVALID_STATE_OFFSET    .set           STATISTICS_OFFSET + STAT_SIZE + 58 ; number of invalid STP state errors
 
 ;***********************************************************************************************************
 ;                                                                                                          *
