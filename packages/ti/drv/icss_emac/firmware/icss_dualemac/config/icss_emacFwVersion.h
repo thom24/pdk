@@ -78,7 +78,7 @@ extern "C" {
 
 #define FIRMWARE_VERSION_MAJOR        ((uint32_t)5U)
 #define FIRMWARE_VERSION_MINOR        ((uint32_t)2U)
-#define FIRMWARE_VERSION_BUILD        ((uint32_t)7U)
+#define FIRMWARE_VERSION_BUILD        ((uint32_t)8U)
 
 
 #if defined(icev2AM335x) || defined(idkAM437x) || defined(iceAMIC110)
