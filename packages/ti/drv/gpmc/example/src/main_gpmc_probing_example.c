@@ -259,6 +259,102 @@ int32_t Board_initGPMC(void)
     return (status);
 }
 
+void gpmc_registerDump()
+{
+    uint32_t baseAddr = CSL_GPMC0_CFG_BASE;
+    uint32_t csOnTime, csRdOffTime, csWrOffTime, advOnTime, advRdOffTime, advWrOffTime, advAadMuxOnTime, advAadMuxRdOffTime, advAadMuxWrOffTime, weOnTime, weOffTime, oeOnTime, oeOffTime, oeAadMuxOnTime, oeAadMuxOffTime, pageBurstAccessTime, readAccessTime, writeAccessTime, rdCycleTime, wrCycleTime, wrDataOnMuxBus, cycleToCycleDelay, cycleToCycleDelaySameCS, cycleToCycleDelayDiffCS, busTurnAroundTime, csExtraDelay;
+
+    csOnTime    = HW_RD_FIELD32(baseAddr + GPMC_CONFIG2_N(0),
+                                GPMC_CONFIG2_N_CSONTIME);
+    csRdOffTime = HW_RD_FIELD32(baseAddr + GPMC_CONFIG2_N(0),
+                                GPMC_CONFIG2_N_CSRDOFFTIME);
+    csWrOffTime = HW_RD_FIELD32(baseAddr + GPMC_CONFIG2_N(0),
+                                GPMC_CONFIG2_N_CSWROFFTIME);
+
+    advOnTime    = HW_RD_FIELD32(baseAddr + GPMC_CONFIG3_N(0),
+                                 GPMC_CONFIG3_N_ADVONTIME);
+    advRdOffTime = HW_RD_FIELD32(baseAddr + GPMC_CONFIG3_N(0),
+                                 GPMC_CONFIG3_N_ADVRDOFFTIME);
+    advWrOffTime = HW_RD_FIELD32(baseAddr + GPMC_CONFIG3_N(0),
+                                 GPMC_CONFIG3_N_ADVWROFFTIME);
+
+    advAadMuxOnTime     = HW_RD_FIELD32(baseAddr + GPMC_CONFIG3_N(0),
+                                        GPMC_CONFIG3_N_ADVAADMUXONTIME);
+    advAadMuxRdOffTime  = HW_RD_FIELD32(baseAddr + GPMC_CONFIG3_N(0),
+                                        GPMC_CONFIG3_N_ADVAADMUXRDOFFTIME);
+    advAadMuxWrOffTime  = HW_RD_FIELD32(baseAddr + GPMC_CONFIG3_N(0),
+                                        GPMC_CONFIG3_N_ADVAADMUXWROFFTIME);
+
+    weOnTime    = HW_RD_FIELD32(baseAddr + GPMC_CONFIG4_N(0),
+                                GPMC_CONFIG4_N_WEONTIME);
+    weOffTime   = HW_RD_FIELD32(baseAddr + GPMC_CONFIG4_N(0),
+                                GPMC_CONFIG4_N_WEOFFTIME);
+
+    oeOnTime    = HW_RD_FIELD32(baseAddr + GPMC_CONFIG4_N(0),
+                                GPMC_CONFIG4_N_OEONTIME);
+    oeOffTime   = HW_RD_FIELD32(baseAddr + GPMC_CONFIG4_N(0),
+                                GPMC_CONFIG4_N_OEOFFTIME);
+
+    oeAadMuxOnTime  = HW_RD_FIELD32(baseAddr + GPMC_CONFIG4_N(0),
+                                    GPMC_CONFIG4_N_OEAADMUXONTIME);
+    oeAadMuxOffTime = HW_RD_FIELD32(baseAddr + GPMC_CONFIG4_N(0),
+                                    GPMC_CONFIG4_N_OEAADMUXOFFTIME);
+
+    pageBurstAccessTime = HW_RD_FIELD32(baseAddr + GPMC_CONFIG5_N(0),
+                                        GPMC_CONFIG5_N_PAGEBURSTACCESSTIME);
+    readAccessTime      = HW_RD_FIELD32(baseAddr + GPMC_CONFIG5_N(0),
+                                        GPMC_CONFIG5_N_RDACCESSTIME);
+    writeAccessTime     = HW_RD_FIELD32(baseAddr + GPMC_CONFIG6_N(0),
+                                        GPMC_CONFIG6_N_WRACCESSTIME);
+
+    rdCycleTime     =  HW_RD_FIELD32(baseAddr + GPMC_CONFIG5_N(0),
+                                     GPMC_CONFIG5_N_RDCYCLETIME);
+    wrCycleTime     =  HW_RD_FIELD32(baseAddr + GPMC_CONFIG5_N(0),
+                                     GPMC_CONFIG5_N_WRCYCLETIME);
+
+    wrDataOnMuxBus  = HW_RD_FIELD32(baseAddr + GPMC_CONFIG6_N(0),
+                                    GPMC_CONFIG6_N_WRDATAONADMUXBUS);
+
+    cycleToCycleDelay       = HW_RD_FIELD32(baseAddr + GPMC_CONFIG6_N(0),
+                                            GPMC_CONFIG6_N_CYCLE2CYCLEDELAY);
+    cycleToCycleDelaySameCS = HW_RD_FIELD32(baseAddr + GPMC_CONFIG6_N(0),
+                                            GPMC_CONFIG6_N_CYCLE2CYCLESAMECSEN);
+    cycleToCycleDelayDiffCS = HW_RD_FIELD32(baseAddr + GPMC_CONFIG6_N(0),
+                                            GPMC_CONFIG6_N_CYCLE2CYCLEDIFFCSEN);
+
+    busTurnAroundTime   = HW_RD_FIELD32(baseAddr + GPMC_CONFIG6_N(0),
+                                        GPMC_CONFIG6_N_BUSTURNAROUND);
+    csExtraDelay        = HW_RD_FIELD32(baseAddr + GPMC_CONFIG2_N(0),
+                                        GPMC_CONFIG2_N_CSEXTRADELAY);
+
+    GPMC_log("csOnTime = %d",csOnTime);
+    GPMC_log("csRdOffTime = %d",csRdOffTime);
+    GPMC_log("csWrOffTime = %d",csWrOffTime);
+    GPMC_log("advOnTime = %d",advOnTime);
+    GPMC_log("advRdOffTime = %d",advRdOffTime);
+    GPMC_log("advWrOffTime = %d",advWrOffTime);
+    GPMC_log("advAadMuxOnTime = %d",advAadMuxOnTime);
+    GPMC_log("advAadMuxRdOffTime = %d",advAadMuxRdOffTime);
+    GPMC_log("advAadMuxWrOffTime = %d",advAadMuxWrOffTime);
+    GPMC_log("weOnTime = %d",weOnTime);
+    GPMC_log("weOffTime = %d",weOffTime);
+    GPMC_log("oeOnTime = %d",oeOnTime);
+    GPMC_log("oeOffTime = %d",oeOffTime);
+    GPMC_log("oeAadMuxOnTime = %d",oeAadMuxOnTime);
+    GPMC_log("oeAadMuxOffTime = %d",oeAadMuxOffTime);
+    GPMC_log("pageBurstAccessTime = %d",pageBurstAccessTime);
+    GPMC_log("readAccessTime = %d",readAccessTime);
+    GPMC_log("writeAccessTime = %d",writeAccessTime);
+    GPMC_log("rdCycleTime = %d",rdCycleTime);
+    GPMC_log("wrCycleTime = %d",wrCycleTime);
+    GPMC_log("wrDataOnMuxBus = %d",wrDataOnMuxBus);
+    GPMC_log("cycleToCycleDelay = %d",cycleToCycleDelay);
+    GPMC_log("cycleToCycleDelaySameCS = %d",cycleToCycleDelaySameCS);
+    GPMC_log("cycleToCycleDelayDiffCS = %d",cycleToCycleDelayDiffCS);
+    GPMC_log("busTurnAroundTime = %d",busTurnAroundTime);
+    GPMC_log("csExtraDelay = %d",csExtraDelay);
+}
+
 int main(void)
 {
     int32_t status = GPMC_APP_STATUS_SUCCESS;
@@ -269,6 +365,8 @@ int main(void)
         GPMC_log("[Error] GPMC init failed!!\n");
         goto testfail;
     }
+
+    gpmc_registerDump();
 
     status += gpmc_test();
 
