@@ -909,6 +909,17 @@ XMT_LB_1OOMbps_MODE:
     ; Don't allow insertion of next packet in TX Fifo unless it is empty
     CLR	R22 , R22 , PACKET_TX_ALLOWED 
     CLR	R22 , R22 , Entire_Tx_Data_Not_Pushed 
+
+    ;fix for issue where Tx FIFO goes into overflow and locks up
+    ;when cable is removed during high traffic scenario
+
+    ;Detect FIFO overflow and reset
+    .if $defined("ICSS_REV1")	
+        M_XMT_FILL_LEVEL_CALC_ICSS_REV1	 ;calculates Fill level and resets in case of underflow/overflow
+    .endif
+    .if $defined("ICSS_REV2")	
+        M_XMT_FILL_LEVEL_CALC_ICSS_REV2	;calculates Fill level and resets in case of underflow/overflow
+    .endif
     
 xmt_save_context:
     
