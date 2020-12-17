@@ -170,6 +170,15 @@ int32_t SBL_MulticoreImageParse(void *srcAddr,
             {
                 if (mHdrCore[i].core_id != (0xFFFFFFFFU))
                 {
+#if defined(SOC_AM64X)
+                    /* Do not touch the M4 if reset isolation is enabled */
+                    uint32_t mmrMagicRegister;
+                    mmrMagicRegister = (*((volatile uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE+CSL_MAIN_CTRL_MMR_CFG0_RST_MAGIC_WORD)));
+                    if (mHdrCore[i].core_id == M4F_CPU0_ID && mmrMagicRegister != 0)
+                    {
+                        continue;
+                    }
+#endif
                     fp_seek(srcAddr, mHdrCore[i].image_offset);
                     if (SBL_RprcImageParse(srcAddr, &entryPoint,
                                        (int32_t)(mHdrCore[i].core_id)) != E_PASS)
