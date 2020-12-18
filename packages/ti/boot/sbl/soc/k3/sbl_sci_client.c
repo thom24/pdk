@@ -122,14 +122,18 @@ void SBL_SciClientInit(void)
 #ifndef SBL_SKIP_SYSFW_INIT
     /* SYSFW board configurations */
     Sciclient_DefaultBoardCfgInfo_t boardCfgInfo;
-    Sciclient_ConfigPrms_t        config =
-    {
-        SCICLIENT_SERVICE_OPERATION_MODE_POLLED,
-        NULL,
-        1,
-        0,
-        TRUE
-    };
+    Sciclient_ConfigPrms_t config;
+    Sciclient_configPrmsInit(&config);
+    config.opModeFlag               =   SCICLIENT_SERVICE_OPERATION_MODE_POLLED;
+    config.pBoardCfgPrms            =   NULL;
+    config.isSecureMode             =   1;
+    config.c66xRatRegion            =   0;
+    config.skipLocalBoardCfgProcess =   TRUE;
+
+#if defined(SOC_AM65XX)
+    config.isSecureMode = 0U;
+#endif /* AM65xx the default board cfg is for non-secure mode */
+
 #endif
 
     SBL_ADD_PROFILE_POINT;
