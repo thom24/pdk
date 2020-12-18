@@ -87,6 +87,15 @@
 /* ========================================================================== */
 
 /*
+ * Flash type
+ */
+#if defined (SOC_J7200) || defined(SOC_AM64x)
+#define FLASH_TYPE_XSPI
+#else
+#define FLASH_TYPE_OSPI
+#endif
+
+/*
  * Application test config parameters
  */
 /** \brief Maximum Number of bytes to perform OSPI Read/Write per operation (Actual number based on test) */
@@ -269,9 +278,9 @@ typedef struct
 
 static int32_t Udma_ospiFlashTestRun(void);
 
-static int32_t App_ospiFlashTest(App_UdmaObj *appObj);
-static int32_t App_udmaOspiFlash(App_UdmaObj *appObj);
-static int32_t App_udmaOspiFlashWrite(App_UdmaObj *appObj) __attribute__((section(".udma_critical_fxns")));
+static int32_t App_ospiFlashTest(App_UdmaObj *appObj, App_OspiObj *ospiObj);
+static int32_t App_udmaOspiFlash(App_UdmaObj *appObj, App_OspiObj *ospiObj);
+static int32_t App_udmaOspiFlashWrite(App_UdmaObj *appObj, App_OspiObj *ospiObj) __attribute__((section(".udma_critical_fxns")));
 static int32_t App_udmaOspiFlashRead(App_UdmaObj *appObj) __attribute__((section(".udma_critical_fxns")));
 
 #if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
@@ -287,8 +296,10 @@ static int32_t App_create(App_UdmaObj *appObj);
 static int32_t App_delete(App_UdmaObj *appObj);
 
 static void App_udmaTrpdInit(App_UdmaTrObj *appTrObj, App_UdmaChObj  *appChObj);
+#if defined(FLASH_TYPE_OSPI)
 static int32_t App_udmaTrpdSanityCheck(App_UdmaChObj *appChObj, uint64_t pDesc);
 static inline void App_udmaTrObjInitWrite(App_UdmaTestObj *appTestObj, App_UdmaTrObj *appTrObj);
+#endif
 static inline void App_udmaTrObjInitRead(App_UdmaTestObj *appTestObj, App_UdmaTrObj *appTrObj);
 
 static void App_printPerfResults(App_UdmaObj *appObj);
@@ -301,7 +312,10 @@ int32_t App_setGTCClk(uint32_t moduleId,
 
 
 static int32_t App_ospiFlashInit(App_OspiObj *ospiObj, uint32_t clk);
+void App_ospiFlashConfigDacMode(bool dacMode);
+#if defined(FLASH_TYPE_OSPI)
 static int32_t App_ospiFlashStart(uint32_t numBytes) __attribute__((section(".udma_critical_fxns")));
+#endif
 
 /* ========================================================================== */
 /*                            Global Variables                                */
@@ -440,7 +454,7 @@ static int32_t Udma_ospiFlashTestRun(void)
 
     if(UDMA_SOK == retVal)
     {
-        retVal = App_ospiFlashTest(appObj);
+        retVal = App_ospiFlashTest(appObj, ospiObj);
         if(UDMA_SOK != retVal)
         {
             App_print("\n [Error] UDMA App OSPI Flash test failed!!\n");
@@ -462,7 +476,7 @@ static int32_t Udma_ospiFlashTestRun(void)
     return (retVal);
 }
 
-static int32_t App_ospiFlashTest(App_UdmaObj *appObj)
+static int32_t App_ospiFlashTest(App_UdmaObj *appObj, App_OspiObj *ospiObj)
 {
     int32_t         retVal = UDMA_SOK;
     uint32_t        i;
@@ -478,7 +492,7 @@ static int32_t App_ospiFlashTest(App_UdmaObj *appObj)
     Udma_appUtilsCacheWb(rxBuf, appObj->totalNumBytes);
 
     /* Perform UDMA memcpy */
-    retVal = App_udmaOspiFlash(appObj);
+    retVal = App_udmaOspiFlash(appObj, ospiObj);
     if(UDMA_SOK == retVal)
     {
         /* Print performance results for OSPI Flash in DAC DMA mode */
@@ -488,25 +502,33 @@ static int32_t App_ospiFlashTest(App_UdmaObj *appObj)
     return (retVal);
 }
 
-static int32_t App_udmaOspiFlash(App_UdmaObj *appObj)
+static int32_t App_udmaOspiFlash(App_UdmaObj *appObj, App_OspiObj *ospiObj)
 {
     int32_t         retVal = UDMA_SOK;
     uint32_t        i;
     uint8_t        *rxBuf, *txBuf;
 
+#if defined(FLASH_TYPE_OSPI)
     retVal = App_ospiFlashStart(appObj->totalNumBytes);
     if(UDMA_SOK != retVal)
     {
         App_print("\n [Error] OSPI Start failed!!\n");
     }
+#endif
 
     if(UDMA_SOK == retVal)
     {
-        retVal = App_udmaOspiFlashWrite(appObj);
+        retVal = App_udmaOspiFlashWrite(appObj, ospiObj);
         if(UDMA_SOK != retVal)
         {
             App_print("\n [Error]UDMA OSPI Write failed!!\n");
         }
+    #if defined(FLASH_TYPE_XSPI)
+        /* For XSPI Flash App_ospiFlashInit configures in INDAC mode for Write.
+         * Now switching to DAC mode to perform DAC DMA read.
+         */
+        App_ospiFlashConfigDacMode(TRUE);
+    #endif
     }
 
     if(UDMA_SOK == retVal)
@@ -538,7 +560,9 @@ static int32_t App_udmaOspiFlash(App_UdmaObj *appObj)
     return (retVal);
 }
 
-static int32_t App_udmaOspiFlashWrite(App_UdmaObj *appObj)
+/* Micron OSPI Flash supports writes in DAC Mode */
+#if defined(FLASH_TYPE_OSPI)
+static int32_t App_udmaOspiFlashWrite(App_UdmaObj *appObj, App_OspiObj *ospiObj)
 {
     int32_t              retVal = UDMA_SOK;
     uint64_t             pDesc = 0;
@@ -687,6 +711,40 @@ static int32_t App_udmaOspiFlashWrite(App_UdmaObj *appObj)
 
     return (retVal);
 }
+#else
+/* Cypress XSPI Flash does not support writes in DAC mode */
+static int32_t App_udmaOspiFlashWrite(App_UdmaObj *appObj, App_OspiObj *ospiObj)
+{
+    int32_t              retVal = UDMA_SOK;
+    uint32_t             i;
+    /* Use local variables in real-time loop for optimized performance */
+    uint32_t             txStartTicks, txStopTicks;
+    App_UdmaCounterObj  *appCounterObj    = &appObj->appCounterObj;
+    uint8_t             *txBuf            = &gUdmaTestTxBuf[0U];
+    uint16_t             totalSize        = appObj->totalNumBytes;
+
+    /* Init TX buffers */
+    for(i = 0U; i < totalSize; i++)
+    {
+        txBuf[i] = i;
+    }
+
+    /* Capture the time at the beginning of operation */
+    txStartTicks = App_getGTCTimerTicks();
+
+    /* Call the API to write in INDAC mode */
+    OspiFlash_xspiIndacWrite(ospiObj, txBuf, totalSize, FALSE);
+
+    /* Capture the time at the end of operation */
+    txStopTicks = App_getGTCTimerTicks();
+
+    /* Save the captured time to the app object */
+    appCounterObj->txStartTicks = txStartTicks;
+    appCounterObj->txStopTicks = txStopTicks;
+
+    return (retVal);
+}
+#endif
 
 static int32_t App_udmaOspiFlashRead(App_UdmaObj *appObj)
 {
@@ -871,7 +929,7 @@ static int32_t App_init(App_UdmaObj *appObj, App_OspiObj *ospiObj)
 
     if(UDMA_SOK == retVal)
     {
-       retVal = App_ospiFlashInit(ospiObj, appTestObj->clk);
+        retVal += App_ospiFlashInit(ospiObj, appTestObj->clk);
     }
 
     return (retVal);
@@ -1122,6 +1180,7 @@ static void App_udmaTrpdInit(App_UdmaTrObj *appTrObj, App_UdmaChObj  *appChObj)
     return;
 }
 
+#if defined(FLASH_TYPE_OSPI)
 static int32_t App_udmaTrpdSanityCheck(App_UdmaChObj *appChObj, uint64_t pDesc)
 {
     int32_t         retVal  = UDMA_SOK;
@@ -1153,6 +1212,7 @@ static int32_t App_udmaTrpdSanityCheck(App_UdmaChObj *appChObj, uint64_t pDesc)
     
     return (retVal);
 }
+#endif
 
 static inline void App_udmaTrObjInitRead(App_UdmaTestObj *appTestObj, App_UdmaTrObj *appTrObj)
 {
@@ -1200,6 +1260,7 @@ static inline void App_udmaTrObjInitRead(App_UdmaTestObj *appTestObj, App_UdmaTr
     return;
 }
 
+#if defined(FLASH_TYPE_OSPI)
 static inline void App_udmaTrObjInitWrite(App_UdmaTestObj *appTestObj, App_UdmaTrObj *appTrObj)
 {
     /* TR Reload Count */
@@ -1256,6 +1317,7 @@ static inline void App_udmaTrObjInitWrite(App_UdmaTestObj *appTestObj, App_UdmaT
 
     return;
 }
+#endif
 
 static void App_printPerfResults(App_UdmaObj *appObj)
 {    
@@ -1351,24 +1413,39 @@ int32_t App_setGTCClk(uint32_t moduleId,
 static int32_t App_ospiFlashInit(App_OspiObj *ospiObj, uint32_t clk)
 {
     int32_t status = UDMA_SOK;
+    bool dacMode;
+
+#if defined(FLASH_TYPE_OSPI)
+    dacMode = TRUE;
+#else
+    dacMode = FALSE;
+#endif
 
     status += OspiFlash_ospiConfigClk(clk);
     if(UDMA_SOK == status)
     {
         App_printNum("\n OSPI RCLK running at %d Hz. \n", clk);
     }
+    
+    status += OspiFlash_ospiOpen(ospiObj, OSPI_FLASH_WRITE_TIMEOUT, OSPI_FLASH_CHECK_IDLE_DELAY, dacMode, FALSE);
 
-    status += OspiFlash_ospiOpen(ospiObj, OSPI_FLASH_WRITE_TIMEOUT, OSPI_FLASH_CHECK_IDLE_DELAY, TRUE, FALSE);
+    status += OspiFlash_ospiEnableDDR(dacMode, FALSE);
 
-    status += OspiFlash_ospiEnableDDR(TRUE, FALSE);
+    status += OspiFlash_ospiSetOpcode(dacMode);
 
-    status += OspiFlash_ospiSetOpcode(TRUE);
-
+#if defined(FLASH_TYPE_OSPI)
     status += OspiFlash_ospiConfigPHY(clk, FALSE);
+#endif
 
     return (status);    
 }
 
+void App_ospiFlashConfigDacMode(bool dacMode)
+{
+    CSL_ospiDacEnable((const CSL_ospi_flash_cfgRegs *)(OSPI_FLASH_CONFIG_REG_BASE_ADDR), dacMode);
+}
+
+#if defined(FLASH_TYPE_OSPI)
 static int32_t App_ospiFlashStart(uint32_t numBytes)
 {
     int32_t retVal = UDMA_SOK;
@@ -1383,3 +1460,4 @@ static int32_t App_ospiFlashStart(uint32_t numBytes)
 
     return (retVal);
 }
+#endif
