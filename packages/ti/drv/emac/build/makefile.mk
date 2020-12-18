@@ -61,10 +61,11 @@ endif
 include $(MAKERULEDIR)/common.mk
 
 ifeq ($(SOC), $(filter $(SOC), am65xx))
-ifeq ($(CORE), $(filter $(CORE), mpu1_0))
+ifeq ($(CORE), $(filter $(CORE), mpu1_0 mcu1_0))
 .PHONY: dualmac_fw
 
 mpu1_0: dualmac_fw
+mcu1_0: dualmac_fw
 
 dualmac_fw:
 	@echo "Building DualMac FW"

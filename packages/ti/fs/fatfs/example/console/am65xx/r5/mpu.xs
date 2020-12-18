@@ -31,7 +31,7 @@
  */
 /*
  *  ======== event_MPU.xs ========
- *  MPU Settings for SIMMAXWELL device's Cortex-R5F
+ *  MPU Settings for AM65XX device's Cortex-R5F
  */
 
 /*
@@ -40,13 +40,21 @@
  * |-------------------------------------------------------------------------------------------------------------|
  * | 0  | 0x00000000   | 4GB  | T  | Strongly Ordered, Shareable               | T  | RW at PL 1          | 0x0  |
  * |----|--------------|------|----|-------------------------------------------|----|---------------------|------|
- * | 1  | 0x00000000   | 1K   | T  | Write-Back, Write-Allocate, Non-Shareable | F  | RW at PL 1          | 0x0  |
+ * | 1  | 0x00000000   | 1K   | T  | Non-cacheable, Non-Shareable              | F  | RW at PL 1          | 0x0  |
  * |----|--------------|------|----|-------------------------------------------|----|---------------------|------|
- * | 2  | 0x41000000   | 32K  | T  | Write-Back, Write-Allocate, Non-Shareable | F  | RW at PL 1          | 0x0  |
+ * | 2  | 0x41000000   | 32K  | T  | Non-cacheable Non-Shareable               | F  | RW at PL 1          | 0x0  |
  * |----|--------------|------|----|-------------------------------------------|----|---------------------|------|
- * | 3  | 0x41010000   | 32K  | T  | Write-Back, Write-Allocate, Non-Shareable | F  | RW at PL 1          | 0x0  |
+ * | 3  | 0x41010000   | 32K  | T  |Non-cacheable, Non-Shareable               | F  | RW at PL 1          | 0x0  |
  * |----|--------------|------|----|-------------------------------------------|----|---------------------|------|
  * | 4  | 0x41C00000   | 512K | T  | Write-Back, Write-Allocate, Non-Shareable | F  | RW at PL 1          | 0x0  |
+ * |----|--------------|------|----|-------------------------------------------|----|---------------------|------|
+ * | 5  | 0x4F800000   | 512K | T  |Write-Back, Write-Allocate, Non-Shareable  | F  | RW at PL 1          | 0x0  |
+ * |----|--------------|------|----|-------------------------------------------|----|---------------------|------|
+ * | 6  | 0x70000000   | 2MB  | T  |Write-Back, Write-Allocate, Non-Shareable  | F  | RW at PL 1          | 0x0  |
+ * |----|--------------|------|----|-------------------------------------------|----|---------------------|------|
+ * | 7  | 0x04000000   | 2MB  | T  |Write-Back, Write-Allocate, Non-Shareable  | F  | RW at PL 1          | 0x0  |
+ * |----|--------------|------|----|-------------------------------------------|----|---------------------|------|
+ * | 8  | 0x80000000   | 2GB  | T  | Write-Back, Write-Allocate, Non-Shareable | F  | RW at PL 1          | 0x0  |
  *  -------------------------------------------------------------------------------------------------------------
  */
 
@@ -74,8 +82,8 @@ attrs.subregionDisableMask = 0;
 MPU.setRegionMeta(0, 0x00000000, MPU.RegionSize_4G, attrs);
 
 attrs.enable = true;
-attrs.bufferable = true;
-attrs.cacheable = true;
+attrs.bufferable = false;
+attrs.cacheable = false;
 attrs.shareable = false;
 attrs.noExecute = false;
 attrs.accPerm = 1;          /* RW at PL1 */
@@ -84,8 +92,8 @@ attrs.subregionDisableMask = 0;
 MPU.setRegionMeta(1, 0x00000000, MPU.RegionSize_32K, attrs);
 
 attrs.enable = true;
-attrs.bufferable = true;
-attrs.cacheable = true;
+attrs.bufferable = false;
+attrs.cacheable = false;
 attrs.shareable = false;
 attrs.noExecute = false;
 attrs.accPerm = 1;          /* RW at PL1 */
@@ -94,8 +102,8 @@ attrs.subregionDisableMask = 0;
 MPU.setRegionMeta(2, 0x41000000, MPU.RegionSize_32K, attrs);
 
 attrs.enable = true;
-attrs.bufferable = true;
-attrs.cacheable = true;
+attrs.bufferable = false;
+attrs.cacheable = false;
 attrs.shareable = false;
 attrs.noExecute = false;
 attrs.accPerm = 1;          /* RW at PL1 */
@@ -121,7 +129,7 @@ attrs.noExecute = false;
 attrs.accPerm = 1;          /* RW at PL1 */
 attrs.tex = 1;
 attrs.subregionDisableMask = 0;
-MPU.setRegionMeta(4, 0x4F800000, MPU.RegionSize_512K, attrs);
+MPU.setRegionMeta(5, 0x4F800000, MPU.RegionSize_512K, attrs);
 
 
 attrs.enable = true;
@@ -132,7 +140,7 @@ attrs.noExecute = false;
 attrs.accPerm = 1;          /* RW at PL1 */
 attrs.tex = 1;
 attrs.subregionDisableMask = 0;
-MPU.setRegionMeta(5, 0x70000000, MPU.RegionSize_2M, attrs);
+MPU.setRegionMeta(6, 0x70000000, MPU.RegionSize_2M, attrs);
 
 
 attrs.enable = true;
@@ -143,4 +151,14 @@ attrs.noExecute = false;
 attrs.accPerm = 1;          /* RW at PL1 */
 attrs.tex = 1;
 attrs.subregionDisableMask = 0;
-MPU.setRegionMeta(6, 0x04000000, MPU.RegionSize_2M, attrs);
+MPU.setRegionMeta(7, 0x04000000, MPU.RegionSize_2M, attrs);
+
+attrs.enable = true;
+attrs.bufferable = true;
+attrs.cacheable = true;
+attrs.shareable = false;
+attrs.noExecute = false;
+attrs.accPerm = 1;          /* RW at PL1 */
+attrs.tex = 1;
+attrs.subregionDisableMask = 0;
+MPU.setRegionMeta(8, 0x80000000, MPU.RegionSize_2G, attrs);

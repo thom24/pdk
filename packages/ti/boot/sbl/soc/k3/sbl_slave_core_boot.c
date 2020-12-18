@@ -536,7 +536,7 @@ void SBL_SetupCoreMem(uint32_t core_id)
             }
 #endif
 
-            SBL_log(SBL_LOG_MAX, "Sciclient_procBootSetProcessorCfg enabling TCMs...\n");
+            SBL_log(SBL_LOG_MAX, "Sciclient_procBootSetProcessorCfg update TCM enable/disable settings...\n");
             status =  Sciclient_procBootSetProcessorCfg(&proc_set_config_req,  SCICLIENT_SERVICE_WAIT_FOREVER);
             if (status != CSL_PASS)
             {
@@ -679,7 +679,6 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
 
 #if defined(SBL_SKIP_MCU_RESET) && (defined(SBL_SKIP_BRD_CFG_BOARD) || defined(SBL_SKIP_BRD_CFG_PM) || defined(SBL_SKIP_SYSFW_INIT))
     /* Skip copy if R5 app entry point is already 0 */
-#if !defined(SOC_AM65XX)  /* Pre-loading ATCM is not permitted for AM65xx */
     if ((core_id == MCU1_CPU0_ID) &&
        (pAppEntry->CpuEntryPoint[core_id]) &&
        (pAppEntry->CpuEntryPoint[core_id] <  SBL_INVALID_ENTRY_ADDR))
@@ -688,7 +687,6 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
         memcpy(((void *)(SblAtcmAddr[core_id - MCU1_CPU0_ID])), (void *)(pAppEntry->CpuEntryPoint[core_id]), 128);
         return;
     }
-#endif
 
     /* Finished processing images for all cores, start MCU_0 */
     if ((core_id == MCU1_CPU1_ID) &&
@@ -886,7 +884,7 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
 
         case MCU1_CPU0_ID:
             /* Skip copy if R5 app entry point is already 0 */
-#if !defined(SOC_AM65XX)  /* Pre-loading ATCM is not permitted for AM65xx */
+#if !defined(SOC_AM65XX) || defined(SBL_SKIP_MCU_RESET)
             if (pAppEntry->CpuEntryPoint[core_id])
             {
                 SBL_log(SBL_LOG_MAX, "Copying first 128 bytes from app to MCU ATCM @ 0x%x for core %d\n", SblAtcmAddr[core_id - MCU1_CPU0_ID], core_id);

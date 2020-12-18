@@ -16,6 +16,7 @@
 @echo off
 
 set PDK_PATH=%1
+set PDK_INSTALL_PATH=%PDK_PATH%
 set CG_TOOL_PATH=%2
 set APP_PATH=%3
 set APP_NAME=%4
