@@ -17,3 +17,4 @@
    ./sa2ul_access
    ./security_handover
    ./secure_debug
+   ./key_writer

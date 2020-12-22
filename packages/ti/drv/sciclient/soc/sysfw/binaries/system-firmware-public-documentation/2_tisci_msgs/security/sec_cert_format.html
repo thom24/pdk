@@ -117,6 +117,7 @@
 <li class="toctree-l3"><a class="reference internal" href="extended_otp.html">Extended OTP TISCI Description</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dkek_management.html">Derived KEK TISCI Description</a></li>
 <li class="toctree-l3"><a class="reference internal" href="security_handover.html">Security Handover Message Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="keywriter.html">OTP Keywriter TISCI Description</a></li>
 </ul>
 </li>
 </ul>
@@ -202,35 +203,96 @@ frameworks
 <p>The following X509 extensions are supported by System Firmware.</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="49%" />
-<col width="51%" />
+<col width="35%" />
+<col width="45%" />
+<col width="21%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Extension Name</th>
 <th class="head">Purpose</th>
+<th class="head">OID</th>
 </tr>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td><a class="reference internal" href="#sysfw-boot-ext"><span class="std std-ref">System Firmware Boot Extension</span></a></td>
 <td>Provide boot information</td>
+<td>1.3.6.1.4.1.294.1.33</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#sysfw-image-integrity-ext"><span class="std std-ref">System Firmware Image Integrity Extension</span></a></td>
 <td>Image hash and length</td>
+<td>1.3.6.1.4.1.294.1.34</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#sysfw-swrev-ext"><span class="std std-ref">System Firmware Software Revision Extension</span></a></td>
 <td>revision of binary for anti-rollback</td>
+<td>1.3.6.1.4.1.294.1.3</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#sysfw-load-ext"><span class="std std-ref">System Firmware Load Extension</span></a></td>
 <td>Provide load information</td>
+<td>1.3.6.1.4.1.294.1.35</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#sysfw-debug-ext"><span class="std std-ref">System Firmware Debug Extension</span></a></td>
 <td>To unlock debug port</td>
+<td>1.3.6.1.4.1.294.1.8</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#sysfw-encryption-ext"><span class="std std-ref">System Firmware Encryption Extension</span></a></td>
 <td>Encryption extension</td>
+<td>1.3.6.1.4.1.294.1.4</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#sysfw-hs-bcfg-ext"><span class="std std-ref">System Firmware HS Board Configuration Extension</span></a></td>
 <td>HS Boardcfg extension</td>
+<td>1.3.6.1.4.1.294.1.36</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#keywr-enc-aes-ext"><span class="std std-ref">System Firmware Keywriter Encrypted AES extension</span></a></td>
+<td>Keywriter Encrypted AES extension</td>
+<td>1.3.6.1.4.1.294.1.64</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#keywr-enc-smpk-sign-aes-ext"><span class="std std-ref">System Firmware Keywriter Encrypted SMPK Signed AES extension</span></a></td>
+<td>Keywriter Encrypted SMPK Signed AES extension</td>
+<td>1.3.6.1.4.1.294.1.65</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#keywr-enc-bmpk-sign-aes-ext"><span class="std std-ref">System Firmware Keywriter Encrypted BMPK Signed AES extension</span></a></td>
+<td>Keywriter Encrypted BMPK Signed AES extension</td>
+<td>1.3.6.1.4.1.294.1.66</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#keywr-aes-enc-smpkh"><span class="std std-ref">System Firmware Keywriter AES Encrypted SMPKH</span></a></td>
+<td>Keywriter AES Encrypted SMPKH</td>
+<td>1.3.6.1.4.1.294.1.67</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#keywr-aes-enc-smek"><span class="std std-ref">System Firmware Keywriter AES Encrypted SMEK</span></a></td>
+<td>Keywriter AES Encrypted SMEK</td>
+<td>1.3.6.1.4.1.294.1.68</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#keywr-aes-enc-smpk-opt"><span class="std std-ref">System Firmware Keywriter AES Encrypted SMPK Options</span></a></td>
+<td>Keywriter AES Encrypted SMPK Options</td>
+<td>1.3.6.1.4.1.294.1.69</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#keywr-aes-enc-bmpkh"><span class="std std-ref">System Firmware Keywriter AES Encrypted BMPKH</span></a></td>
+<td>Keywriter AES Encrypted BMPKH</td>
+<td>1.3.6.1.4.1.294.1.70</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#keywr-aes-enc-bmek"><span class="std std-ref">System Firmware Keywriter AES Encrypted BMEK</span></a></td>
+<td>Keywriter AES Encrypted BMEK</td>
+<td>1.3.6.1.4.1.294.1.71</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#keywr-aes-enc-bmpk-opt"><span class="std std-ref">System Firmware Keywriter AES Encrypted BMPK Options</span></a></td>
+<td>Keywriter AES Encrypted BMPK Options</td>
+<td>1.3.6.1.4.1.294.1.72</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#keywr-aes-enc-user-otp"><span class="std std-ref">System Firmware Keywriter AES Encrypted user OTP</span></a></td>
+<td>Keywriter AES Encrypted user OTP</td>
+<td>1.3.6.1.4.1.294.1.73</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#keywr-aes-enc-keyrev"><span class="std std-ref">System Firmware Keywriter AES Encrypted key revision</span></a></td>
+<td>Keywriter AES Encrypted key revision</td>
+<td>1.3.6.1.4.1.294.1.74</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#keywr-aes-enc-swrev"><span class="std std-ref">System Firmware Keywriter AES Encrypted software revision</span></a></td>
+<td>Keywriter AES Encrypted software revision</td>
+<td>1.3.6.1.4.1.294.1.75</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#keywr-aes-enc-msv"><span class="std std-ref">System Firmware Keywriter AES Encrypted MSV</span></a></td>
+<td>Keywriter AES Encrypted MSV</td>
+<td>1.3.6.1.4.1.294.1.76</td>
 </tr>
 </tbody>
 </table>
@@ -258,7 +320,7 @@ shown below in ASN.1 notation.</p>
 </pre></div>
 </div>
 <p>The boot extension is decoded into the below structure.</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">sec_boot_ctrl</span> <span class="p">{</span>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">sec_boot_ctrl</span> <span class="p">{</span>
     <span class="n">u32</span> <span class="n">bootCore</span><span class="p">;</span>
     <span class="n">u32</span> <span class="n">configFlags_set</span><span class="p">;</span>
     <span class="n">u32</span> <span class="n">configFlags_clr</span><span class="p">;</span>
@@ -321,9 +383,9 @@ payload. It is identified by the OID <strong>1.3.6.1.4.1.294.1.34</strong>. The 
 the field is shown below in ASN.1 notation.</p>
 <div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">SYSFW</span><span class="o">-</span><span class="nl">INTEGRITY</span> <span class="p">:</span><span class="o">=</span> <span class="n">SEQUENCE</span>
 <span class="p">{</span>
-   <span class="n">shaType</span> <span class="n">OID</span><span class="p">,</span> <span class="o">--</span> <span class="n">indicates</span> <span class="n">OID</span> <span class="n">of</span> <span class="n">the</span> <span class="n">hash</span> <span class="n">used</span><span class="p">.</span> <span class="n">Must</span> <span class="n">always</span> <span class="n">be</span> <span class="n">set</span> <span class="n">to</span> <span class="n">SHA2</span><span class="o">-</span><span class="mi">512</span>
+   <span class="n">shaType</span> <span class="n">OID</span><span class="p">,</span> <span class="o">--</span> <span class="n">indicates</span> <span class="n">OID</span> <span class="n">of</span> <span class="n">the</span> <span class="n">hash</span> <span class="n">used</span><span class="p">.</span> <span class="n">Must</span> <span class="n">always</span> <span class="n">be</span> <span class="n">set</span> <span class="n">to</span> <span class="n">SHA2</span><span class="mi">-512</span>
                 <span class="o">--</span> <span class="nl">OID</span><span class="p">:</span><span class="mf">2.16.840.1.101.3.4.2.3</span>
-   <span class="n">shaValue</span> <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span> <span class="o">--</span> <span class="n">SHA2</span><span class="o">-</span><span class="mi">512</span> <span class="n">value</span> <span class="n">of</span> <span class="n">the</span> <span class="n">payload</span>
+   <span class="n">shaValue</span> <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span> <span class="o">--</span> <span class="n">SHA2</span><span class="mi">-512</span> <span class="n">value</span> <span class="n">of</span> <span class="n">the</span> <span class="n">payload</span>
    <span class="n">imageSize</span> <span class="n">INTEGER</span><span class="p">,</span> <span class="o">--</span> <span class="n">Size</span> <span class="n">of</span> <span class="n">the</span> <span class="n">image</span> <span class="n">in</span> <span class="n">bytes</span><span class="p">.</span> <span class="n">This</span> <span class="n">will</span> <span class="n">be</span> <span class="n">amount</span> <span class="n">of</span> <span class="n">data</span>
                       <span class="o">--</span> <span class="n">used</span> <span class="n">when</span> <span class="n">checking</span> <span class="n">the</span> <span class="n">image</span> <span class="n">integrity</span><span class="p">,</span> <span class="n">copying</span> <span class="n">the</span> <span class="n">image</span>
                       <span class="o">--</span> <span class="n">to</span> <span class="n">its</span> <span class="n">destination</span> <span class="n">or</span> <span class="n">when</span> <span class="n">decrypting</span> <span class="n">the</span> <span class="n">image</span><span class="p">.</span>
@@ -357,7 +419,7 @@ as part of authentication. The load extension is identified by OID <strong>1.3.6
 </pre></div>
 </div>
 <p>The load extension is decoded into the below structure.</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">ti_load_info</span> <span class="p">{</span>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">ti_load_info</span> <span class="p">{</span>
  <span class="n">u64</span> <span class="n">destAddr</span><span class="p">;</span>
  <span class="n">u8</span>  <span class="n">auth_in_place</span><span class="p">;</span>
 <span class="p">};</span>
@@ -427,7 +489,7 @@ additional information is required. This is identified by OID
 </pre></div>
 </div>
 <p>The encryption extension is decoded into the following data structure.</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">ti_enc_info</span> <span class="p">{</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">ti_enc_info</span> <span class="p">{</span>
  <span class="n">u8</span> <span class="n">initialVector</span><span class="p">[</span><span class="mi">16</span><span class="p">];</span>
  <span class="n">u8</span> <span class="n">randomString</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span>
  <span class="n">u8</span> <span class="n">iterationCnt</span><span class="p">;</span>
@@ -485,7 +547,7 @@ ASN.1 notation.</p>
 </pre></div>
 </div>
 <p>The debug control data is decoded as a structure below:</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">sdbg_debug_ctrl</span> <span class="p">{</span>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">sdbg_debug_ctrl</span> <span class="p">{</span>
     <span class="n">u16</span> <span class="n">debug_priv_level</span><span class="p">;</span>
     <span class="n">u16</span> <span class="n">reserved</span><span class="p">;</span>
     <span class="n">u8</span> <span class="n">debug_core_sel</span><span class="p">[</span><span class="n">MAX_CPU_CORES</span><span class="p">];</span>
@@ -598,7 +660,7 @@ extension is identified by OID <strong>1.3.6.1.4.1.294.1.36</strong>.</p>
 </pre></div>
 </div>
 <p>The extension is decoded into the following data structure.</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">ti_bcfg_info</span> <span class="p">{</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">ti_bcfg_info</span> <span class="p">{</span>
  <span class="n">u8</span> <span class="n">initialVector</span><span class="p">[</span><span class="mi">16</span><span class="p">];</span>
  <span class="n">u8</span> <span class="n">randomString</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span>
  <span class="n">u8</span> <span class="n">iterationCnt</span><span class="p">;</span>
@@ -661,6 +723,300 @@ structure.</li>
 </ul>
 </li>
 </ol>
+</div>
+</div>
+<div class="section" id="sysfw-keywriter-encrypted-aes-extension">
+<span id="keywr-enc-aes-ext"></span><h3>System Firmware Keywriter Encrypted AES extension<a class="headerlink" href="#sysfw-keywriter-encrypted-aes-extension" title="Permalink to this headline">¶</a></h3>
+<p>This extension has the information about TIFEK(public) encrypted AES-256 key (random key,
+chosen by customer for keywriter). It is identified by the OID <strong>1.3.6.1.4.1.294.1.64</strong>.
+The structure of the fields is shown below in ASN.1 notation.</p>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">KEYWR</span><span class="o">-</span><span class="n">ENC</span><span class="o">-</span><span class="nl">AES</span> <span class="p">:</span><span class="o">=</span> <span class="n">SEQUENCE</span>
+<span class="p">{</span>
+   <span class="n">val</span> <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>     <span class="o">--</span> <span class="n">TIFEK</span><span class="p">(</span><span class="n">pub</span><span class="p">)</span> <span class="n">encrypted</span> <span class="n">AES</span><span class="mi">-256</span> <span class="n">key</span> <span class="n">chosen</span> <span class="n">by</span> <span class="n">the</span> <span class="n">user</span><span class="p">.</span>
+   <span class="n">size</span> <span class="n">INTEGER</span>          <span class="o">--</span> <span class="n">size</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">keywr_enc_aes</span> <span class="p">{</span>
+   <span class="n">u8</span> <span class="n">val</span><span class="p">[</span><span class="mi">512</span><span class="p">];</span>
+   <span class="n">u32</span> <span class="n">size</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="sysfw-keywriter-encrypted-smpk-signed-aes-extension">
+<span id="keywr-enc-smpk-sign-aes-ext"></span><h3>System Firmware Keywriter Encrypted SMPK Signed AES extension<a class="headerlink" href="#sysfw-keywriter-encrypted-smpk-signed-aes-extension" title="Permalink to this headline">¶</a></h3>
+<p>This extension has the information about TIFEK(public) encrypted, SMPK(priv) signed
+AES-256 key (random key, chosen by customer for keywriter). It is identified by the
+OID <strong>1.3.6.1.4.1.294.1.65</strong>. The structure of the fields is shown below in ASN.1 notation.</p>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">KEYWR</span><span class="o">-</span><span class="n">ENC</span><span class="o">-</span><span class="n">SMPK</span><span class="o">-</span><span class="n">SIGN</span><span class="o">-</span><span class="nl">AES</span> <span class="p">:</span><span class="o">=</span> <span class="n">SEQUENCE</span>
+<span class="p">{</span>
+   <span class="n">val</span> <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>     <span class="o">--</span> <span class="n">TIFEK</span><span class="p">(</span><span class="n">pub</span><span class="p">)</span> <span class="n">encrypted</span><span class="p">,</span> <span class="n">SMPK</span><span class="p">(</span><span class="n">priv</span><span class="p">)</span> <span class="kt">signed</span> <span class="n">AES</span><span class="mi">-256</span> <span class="n">key</span> <span class="n">chosen</span> <span class="n">by</span> <span class="n">the</span> <span class="n">user</span><span class="p">.</span>
+   <span class="n">size</span> <span class="n">INTEGER</span>          <span class="o">--</span> <span class="n">size</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">keywr_enc_smpk_sign_aes</span> <span class="p">{</span>
+   <span class="n">u8</span> <span class="n">val</span><span class="p">[</span><span class="mi">512</span><span class="p">];</span>
+   <span class="n">u32</span> <span class="n">size</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="sysfw-keywriter-encrypted-bmpk-signed-aes-extension">
+<span id="keywr-enc-bmpk-sign-aes-ext"></span><h3>System Firmware Keywriter Encrypted BMPK Signed AES extension<a class="headerlink" href="#sysfw-keywriter-encrypted-bmpk-signed-aes-extension" title="Permalink to this headline">¶</a></h3>
+<p>This extension has the information about TIFEK(public) encrypted, BMPK(priv) signed AES-256 key (random key,
+chosen by customer for keywriter). It is identified by the OID <strong>1.3.6.1.4.1.294.1.66</strong>.
+The structure of the fields is shown below in ASN.1 notation.</p>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">KEYWR</span><span class="o">-</span><span class="n">ENC</span><span class="o">-</span><span class="n">BMPK</span><span class="o">-</span><span class="n">SIGN</span><span class="o">-</span><span class="nl">AES</span> <span class="p">:</span><span class="o">=</span> <span class="n">SEQUENCE</span>
+<span class="p">{</span>
+   <span class="n">val</span> <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>     <span class="o">--</span> <span class="n">TIFEK</span><span class="p">(</span><span class="n">pub</span><span class="p">)</span> <span class="n">encrypted</span><span class="p">,</span> <span class="n">BMPK</span><span class="p">(</span><span class="n">priv</span><span class="p">)</span> <span class="kt">signed</span> <span class="n">AES</span><span class="mi">-256</span> <span class="n">key</span> <span class="n">chosen</span> <span class="n">by</span> <span class="n">the</span> <span class="n">user</span><span class="p">.</span>
+   <span class="n">size</span> <span class="n">INTEGER</span>          <span class="o">--</span> <span class="n">size</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">keywr_enc_bmpk_sign_aes</span> <span class="p">{</span>
+   <span class="n">u8</span> <span class="n">val</span><span class="p">[</span><span class="mi">512</span><span class="p">];</span>
+   <span class="n">u32</span> <span class="n">size</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="sysfw-keywriter-aes-encrypted-smpkh">
+<span id="keywr-aes-enc-smpkh"></span><h3>System Firmware Keywriter AES Encrypted SMPKH<a class="headerlink" href="#sysfw-keywriter-aes-encrypted-smpkh" title="Permalink to this headline">¶</a></h3>
+<p>This extension has the information about AES-256 key encrypted SMPKH (SHA-512 used for hashing).
+It is identified by the OID <strong>1.3.6.1.4.1.294.1.67</strong>
+The structure of the fields is shown below in ASN.1 notation.</p>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">KEYWR</span><span class="o">-</span><span class="n">AES</span><span class="o">-</span><span class="n">ENC</span><span class="o">-</span><span class="nl">SMPKH</span> <span class="p">:</span><span class="o">=</span> <span class="n">SEQUENCE</span>
+<span class="p">{</span>
+   <span class="n">val</span> <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>     <span class="o">--</span> <span class="n">AES</span><span class="mi">-256</span> <span class="n">key</span> <span class="n">encrypted</span> <span class="n">SMPKH</span> <span class="p">(</span><span class="n">SHA</span><span class="mi">-512</span> <span class="n">used</span> <span class="k">for</span> <span class="n">hashing</span><span class="p">)</span>
+   <span class="n">iv</span>  <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>     <span class="o">--</span> <span class="n">Intitial</span> <span class="n">Value</span> <span class="n">used</span> <span class="n">in</span> <span class="n">AES</span><span class="mi">-256</span><span class="o">-</span><span class="n">CBC</span> <span class="n">encryption</span><span class="p">,</span> <span class="mi">128</span> <span class="n">bits</span>
+   <span class="n">rs</span>  <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>     <span class="o">--</span> <span class="n">Random</span> <span class="n">String</span> <span class="n">used</span> <span class="n">in</span> <span class="n">AES</span><span class="mi">-256</span><span class="o">-</span><span class="n">CBC</span> <span class="n">encryption</span><span class="p">,</span> <span class="mi">256</span> <span class="n">bits</span>
+   <span class="n">size</span> <span class="n">INTEGER</span>          <span class="o">--</span> <span class="n">size</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">keywr_aes_enc_smpkh</span> <span class="p">{</span>
+   <span class="n">u8</span> <span class="n">val</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span>
+   <span class="n">u8</span> <span class="n">iv</span><span class="p">[</span><span class="mi">16</span><span class="p">];</span>
+   <span class="n">u8</span> <span class="n">rs</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span>
+   <span class="n">u32</span> <span class="n">size</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="sysfw-keywriter-aes-encrypted-smek">
+<span id="keywr-aes-enc-smek"></span><h3>System Firmware Keywriter AES Encrypted SMEK<a class="headerlink" href="#sysfw-keywriter-aes-encrypted-smek" title="Permalink to this headline">¶</a></h3>
+<p>This extension has the information about AES-256 key encrypted SMEK.
+It is identified by the OID <strong>1.3.6.1.4.1.294.1.68</strong>
+The structure of the fields is shown below in ASN.1 notation.</p>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">KEYWR</span><span class="o">-</span><span class="n">AES</span><span class="o">-</span><span class="n">ENC</span><span class="o">-</span><span class="nl">SMEK</span> <span class="p">:</span><span class="o">=</span> <span class="n">SEQUENCE</span>
+<span class="p">{</span>
+   <span class="n">val</span> <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>     <span class="o">--</span> <span class="n">AES</span><span class="mi">-256</span> <span class="n">key</span> <span class="n">encrypted</span> <span class="n">SMEK</span>
+   <span class="n">iv</span>  <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>     <span class="o">--</span> <span class="n">Intitial</span> <span class="n">Value</span> <span class="n">used</span> <span class="n">in</span> <span class="n">AES</span><span class="mi">-256</span><span class="o">-</span><span class="n">CBC</span> <span class="n">encryption</span><span class="p">,</span> <span class="mi">128</span> <span class="n">bits</span>
+   <span class="n">rs</span>  <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>     <span class="o">--</span> <span class="n">Random</span> <span class="n">String</span> <span class="n">used</span> <span class="n">in</span> <span class="n">AES</span><span class="mi">-256</span><span class="o">-</span><span class="n">CBC</span> <span class="n">encryption</span><span class="p">,</span> <span class="mi">256</span> <span class="n">bits</span>
+   <span class="n">size</span> <span class="n">INTEGER</span>          <span class="o">--</span> <span class="n">size</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">keywr_aes_enc_smek</span> <span class="p">{</span>
+   <span class="n">u8</span> <span class="n">val</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span>
+   <span class="n">u8</span> <span class="n">iv</span><span class="p">[</span><span class="mi">16</span><span class="p">];</span>
+   <span class="n">u8</span> <span class="n">rs</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span>
+   <span class="n">u32</span> <span class="n">size</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="sysfw-keywriter-aes-encrypted-smpk-options">
+<span id="keywr-aes-enc-smpk-opt"></span><h3>System Firmware Keywriter AES Encrypted SMPK Options<a class="headerlink" href="#sysfw-keywriter-aes-encrypted-smpk-options" title="Permalink to this headline">¶</a></h3>
+<p>This extension has the information about AES-256 key encrypted SMPK Options
+It is identified by the OID <strong>1.3.6.1.4.1.294.1.69</strong>
+The structure of the fields is shown below in ASN.1 notation.
+This is not currently supported by OTP Keywriter</p>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">KEYWR</span><span class="o">-</span><span class="n">AES</span><span class="o">-</span><span class="n">ENC</span><span class="o">-</span><span class="n">SMPK</span><span class="o">-</span><span class="nl">OPT</span> <span class="p">:</span><span class="o">=</span> <span class="n">SEQUENCE</span>
+<span class="p">{</span>
+   <span class="n">val</span> <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>     <span class="o">--</span> <span class="n">AES</span><span class="mi">-256</span> <span class="n">key</span> <span class="n">encrypted</span> <span class="n">SMPK</span> <span class="n">Options</span>
+   <span class="n">iv</span>  <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>     <span class="o">--</span> <span class="n">Intitial</span> <span class="n">Value</span> <span class="n">used</span> <span class="n">in</span> <span class="n">AES</span><span class="mi">-256</span><span class="o">-</span><span class="n">CBC</span> <span class="n">encryption</span><span class="p">,</span> <span class="mi">128</span> <span class="n">bits</span>
+   <span class="n">rs</span>  <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>     <span class="o">--</span> <span class="n">Random</span> <span class="n">String</span> <span class="n">used</span> <span class="n">in</span> <span class="n">AES</span><span class="mi">-256</span><span class="o">-</span><span class="n">CBC</span> <span class="n">encryption</span><span class="p">,</span> <span class="mi">256</span> <span class="n">bits</span>
+   <span class="n">size</span> <span class="n">INTEGER</span>          <span class="o">--</span> <span class="n">size</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">keywr_aes_enc_smpk_opt</span> <span class="p">{</span>
+   <span class="n">u8</span> <span class="n">val</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span>
+   <span class="n">u8</span> <span class="n">iv</span><span class="p">[</span><span class="mi">16</span><span class="p">];</span>
+   <span class="n">u8</span> <span class="n">rs</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span>
+   <span class="n">u32</span> <span class="n">size</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="sysfw-keywriter-aes-encrypted-bmpkh">
+<span id="keywr-aes-enc-bmpkh"></span><h3>System Firmware Keywriter AES Encrypted BMPKH<a class="headerlink" href="#sysfw-keywriter-aes-encrypted-bmpkh" title="Permalink to this headline">¶</a></h3>
+<p>This extension has the information about AES-256 key encrypted BMPKH (SHA-512 used for hashing).
+It is identified by the OID <strong>1.3.6.1.4.1.294.1.70</strong>
+The structure of the fields is shown below in ASN.1 notation.</p>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">KEYWR</span><span class="o">-</span><span class="n">AES</span><span class="o">-</span><span class="n">ENC</span><span class="o">-</span><span class="nl">BMPKH</span> <span class="p">:</span><span class="o">=</span> <span class="n">SEQUENCE</span>
+<span class="p">{</span>
+   <span class="n">val</span> <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>     <span class="o">--</span> <span class="n">AES</span><span class="mi">-256</span> <span class="n">key</span> <span class="n">encrypted</span> <span class="n">BMPKH</span> <span class="p">(</span><span class="n">SHA</span><span class="mi">-512</span> <span class="n">used</span> <span class="k">for</span> <span class="n">hashing</span><span class="p">)</span>
+   <span class="n">iv</span>  <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>     <span class="o">--</span> <span class="n">Intitial</span> <span class="n">Value</span> <span class="n">used</span> <span class="n">in</span> <span class="n">AES</span><span class="mi">-256</span><span class="o">-</span><span class="n">CBC</span> <span class="n">encryption</span><span class="p">,</span> <span class="mi">128</span> <span class="n">bits</span>
+   <span class="n">rs</span>  <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>     <span class="o">--</span> <span class="n">Random</span> <span class="n">String</span> <span class="n">used</span> <span class="n">in</span> <span class="n">AES</span><span class="mi">-256</span><span class="o">-</span><span class="n">CBC</span> <span class="n">encryption</span><span class="p">,</span> <span class="mi">256</span> <span class="n">bits</span>
+   <span class="n">size</span> <span class="n">INTEGER</span>          <span class="o">--</span> <span class="n">size</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">keywr_aes_enc_bmpkh</span> <span class="p">{</span>
+   <span class="n">u8</span> <span class="n">val</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span>
+   <span class="n">u8</span> <span class="n">iv</span><span class="p">[</span><span class="mi">16</span><span class="p">];</span>
+   <span class="n">u8</span> <span class="n">rs</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span>
+   <span class="n">u32</span> <span class="n">size</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="sysfw-keywriter-aes-encrypted-bmek">
+<span id="keywr-aes-enc-bmek"></span><h3>System Firmware Keywriter AES Encrypted BMEK<a class="headerlink" href="#sysfw-keywriter-aes-encrypted-bmek" title="Permalink to this headline">¶</a></h3>
+<p>This extension has the information about AES-256 key encrypted BMEK.
+It is identified by the OID <strong>1.3.6.1.4.1.294.1.71</strong>
+The structure of the fields is shown below in ASN.1 notation.</p>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">KEYWR</span><span class="o">-</span><span class="n">AES</span><span class="o">-</span><span class="n">ENC</span><span class="o">-</span><span class="nl">BMEK</span> <span class="p">:</span><span class="o">=</span> <span class="n">SEQUENCE</span>
+<span class="p">{</span>
+   <span class="n">val</span> <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>     <span class="o">--</span> <span class="n">AES</span><span class="mi">-256</span> <span class="n">key</span> <span class="n">encrypted</span> <span class="n">BMEK</span>
+   <span class="n">iv</span>  <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>     <span class="o">--</span> <span class="n">Intitial</span> <span class="n">Value</span> <span class="n">used</span> <span class="n">in</span> <span class="n">AES</span><span class="mi">-256</span><span class="o">-</span><span class="n">CBC</span> <span class="n">encryption</span><span class="p">,</span> <span class="mi">128</span> <span class="n">bits</span>
+   <span class="n">rs</span>  <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>     <span class="o">--</span> <span class="n">Random</span> <span class="n">String</span> <span class="n">used</span> <span class="n">in</span> <span class="n">AES</span><span class="mi">-256</span><span class="o">-</span><span class="n">CBC</span> <span class="n">encryption</span><span class="p">,</span> <span class="mi">256</span> <span class="n">bits</span>
+   <span class="n">size</span> <span class="n">INTEGER</span>          <span class="o">--</span> <span class="n">size</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">keywr_aes_enc_bmek</span> <span class="p">{</span>
+   <span class="n">u8</span> <span class="n">val</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span>
+   <span class="n">u8</span> <span class="n">iv</span><span class="p">[</span><span class="mi">16</span><span class="p">];</span>
+   <span class="n">u8</span> <span class="n">rs</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span>
+   <span class="n">u32</span> <span class="n">size</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="sysfw-keywriter-aes-encrypted-bmpk-options">
+<span id="keywr-aes-enc-bmpk-opt"></span><h3>System Firmware Keywriter AES Encrypted BMPK Options<a class="headerlink" href="#sysfw-keywriter-aes-encrypted-bmpk-options" title="Permalink to this headline">¶</a></h3>
+<p>This extension has the information about AES-256 key encrypted BMPK Options
+It is identified by the OID <strong>1.3.6.1.4.1.294.1.72</strong>
+The structure of the fields is shown below in ASN.1 notation.
+This is not currently supported by OTP Keywriter</p>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">KEYWR</span><span class="o">-</span><span class="n">AES</span><span class="o">-</span><span class="n">ENC</span><span class="o">-</span><span class="n">BMPK</span><span class="o">-</span><span class="nl">OPT</span> <span class="p">:</span><span class="o">=</span> <span class="n">SEQUENCE</span>
+<span class="p">{</span>
+   <span class="n">val</span> <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>     <span class="o">--</span> <span class="n">AES</span><span class="mi">-256</span> <span class="n">key</span> <span class="n">encrypted</span> <span class="n">SMPK</span> <span class="n">Options</span>
+   <span class="n">iv</span>  <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>     <span class="o">--</span> <span class="n">Intitial</span> <span class="n">Value</span> <span class="n">used</span> <span class="n">in</span> <span class="n">AES</span><span class="mi">-256</span><span class="o">-</span><span class="n">CBC</span> <span class="n">encryption</span><span class="p">,</span> <span class="mi">128</span> <span class="n">bits</span>
+   <span class="n">rs</span>  <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>     <span class="o">--</span> <span class="n">Random</span> <span class="n">String</span> <span class="n">used</span> <span class="n">in</span> <span class="n">AES</span><span class="mi">-256</span><span class="o">-</span><span class="n">CBC</span> <span class="n">encryption</span><span class="p">,</span> <span class="mi">256</span> <span class="n">bits</span>
+   <span class="n">size</span> <span class="n">INTEGER</span>          <span class="o">--</span> <span class="n">size</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">keywr_aes_enc_bmpk_opt</span> <span class="p">{</span>
+   <span class="n">u8</span> <span class="n">val</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span>
+   <span class="n">u8</span> <span class="n">iv</span><span class="p">[</span><span class="mi">16</span><span class="p">];</span>
+   <span class="n">u8</span> <span class="n">rs</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span>
+   <span class="n">u32</span> <span class="n">size</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="sysfw-keywriter-aes-encrypted-user-otp">
+<span id="keywr-aes-enc-user-otp"></span><h3>System Firmware Keywriter AES Encrypted user OTP<a class="headerlink" href="#sysfw-keywriter-aes-encrypted-user-otp" title="Permalink to this headline">¶</a></h3>
+<p>This extension has the information about AES-256 key encrypted extended OTP
+It is identified by the OID <strong>1.3.6.1.4.1.294.1.73</strong>
+The structure of the fields is shown below in ASN.1 notation.
+This is not currently supported by OTP Keywriter</p>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">KEYWR</span><span class="o">-</span><span class="n">AES</span><span class="o">-</span><span class="n">ENC</span><span class="o">-</span><span class="n">USER</span><span class="o">-</span><span class="nl">OTP</span> <span class="p">:</span><span class="o">=</span> <span class="n">SEQUENCE</span>
+<span class="p">{</span>
+   <span class="n">val</span> <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>      <span class="o">--</span> <span class="n">Extended</span> <span class="n">OTP</span> <span class="n">in</span> <span class="n">octet</span> <span class="n">string</span> <span class="n">format</span>
+   <span class="n">iv</span>  <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>     <span class="o">--</span> <span class="n">Intitial</span> <span class="n">Value</span> <span class="n">used</span> <span class="n">in</span> <span class="n">AES</span><span class="mi">-256</span><span class="o">-</span><span class="n">CBC</span> <span class="n">encryption</span><span class="p">,</span> <span class="mi">128</span> <span class="n">bits</span>
+   <span class="n">rs</span>  <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>     <span class="o">--</span> <span class="n">Random</span> <span class="n">String</span> <span class="n">used</span> <span class="n">in</span> <span class="n">AES</span><span class="mi">-256</span><span class="o">-</span><span class="n">CBC</span> <span class="n">encryption</span><span class="p">,</span> <span class="mi">256</span> <span class="n">bits</span>
+   <span class="n">size</span> <span class="n">INTEGER</span>              <span class="o">--</span> <span class="n">size</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">keywr_aes_enc_user_otp</span> <span class="p">{</span>
+   <span class="n">u8</span> <span class="n">val</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span>
+   <span class="n">u8</span> <span class="n">iv</span><span class="p">[</span><span class="mi">16</span><span class="p">];</span>
+   <span class="n">u8</span> <span class="n">rs</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span>
+   <span class="n">u32</span> <span class="n">size</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="sysfw-keywriter-aes-encrypted-key-revision">
+<span id="keywr-aes-enc-keyrev"></span><h3>System Firmware Keywriter AES Encrypted key revision<a class="headerlink" href="#sysfw-keywriter-aes-encrypted-key-revision" title="Permalink to this headline">¶</a></h3>
+<p>This extension has the information about AES-256 key encrypted Keyrevision.
+By default, keyrevision should be set to 1. If it is set to 2, BMPK and BMEK will be used
+instead of SMPK and SMEK. It is identified by the OID <strong>1.3.6.1.4.1.294.1.74</strong>.
+The structure of the fields is shown below in ASN.1 notation.
+This is not currently supported by OTP Keywriter</p>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">KEYWR</span><span class="o">-</span><span class="n">AES</span><span class="o">-</span><span class="n">ENC</span><span class="o">-</span><span class="nl">KEYREV</span> <span class="p">:</span><span class="o">=</span> <span class="n">SEQUENCE</span>
+<span class="p">{</span>
+   <span class="n">val</span> <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>     <span class="o">--</span> <span class="n">AES</span><span class="mi">-256</span> <span class="n">key</span> <span class="n">encrypted</span> <span class="n">Keyrev</span>
+   <span class="n">iv</span>  <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>     <span class="o">--</span> <span class="n">Intitial</span> <span class="n">Value</span> <span class="n">used</span> <span class="n">in</span> <span class="n">AES</span><span class="mi">-256</span><span class="o">-</span><span class="n">CBC</span> <span class="n">encryption</span><span class="p">,</span> <span class="mi">128</span> <span class="n">bits</span>
+   <span class="n">rs</span>  <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>     <span class="o">--</span> <span class="n">Random</span> <span class="n">String</span> <span class="n">used</span> <span class="n">in</span> <span class="n">AES</span><span class="mi">-256</span><span class="o">-</span><span class="n">CBC</span> <span class="n">encryption</span><span class="p">,</span> <span class="mi">256</span> <span class="n">bits</span>
+   <span class="n">size</span> <span class="n">INTEGER</span>          <span class="o">--</span> <span class="n">size</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">keywr_aes_enc_keyrev</span> <span class="p">{</span>
+   <span class="n">u8</span> <span class="n">val</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span>
+   <span class="n">u8</span> <span class="n">iv</span><span class="p">[</span><span class="mi">16</span><span class="p">];</span>
+   <span class="n">u8</span> <span class="n">rs</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span>
+   <span class="n">u32</span> <span class="n">size</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="sysfw-keywriter-aes-encrypted-software-revision">
+<span id="keywr-aes-enc-swrev"></span><h3>System Firmware Keywriter AES Encrypted software revision<a class="headerlink" href="#sysfw-keywriter-aes-encrypted-software-revision" title="Permalink to this headline">¶</a></h3>
+<p>This extension has the information about AES-256 key encrypted Software revision.
+It is identified by the OID <strong>1.3.6.1.4.1.294.1.75</strong>
+The structure of the fields is shown below in ASN.1 notation.
+This is not currently supported by OTP Keywriter</p>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">KEYWR</span><span class="o">-</span><span class="n">AES</span><span class="o">-</span><span class="n">ENC</span><span class="o">-</span><span class="nl">SWREV</span> <span class="p">:</span><span class="o">=</span> <span class="n">SEQUENCE</span>
+<span class="p">{</span>
+   <span class="n">val</span> <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>     <span class="o">--</span> <span class="n">AES</span><span class="mi">-256</span> <span class="n">key</span> <span class="n">encrypted</span> <span class="n">Keyrev</span>
+   <span class="n">iv</span>  <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>     <span class="o">--</span> <span class="n">Intitial</span> <span class="n">Value</span> <span class="n">used</span> <span class="n">in</span> <span class="n">AES</span><span class="mi">-256</span><span class="o">-</span><span class="n">CBC</span> <span class="n">encryption</span><span class="p">,</span> <span class="mi">128</span> <span class="n">bits</span>
+   <span class="n">rs</span>  <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>     <span class="o">--</span> <span class="n">Random</span> <span class="n">String</span> <span class="n">used</span> <span class="n">in</span> <span class="n">AES</span><span class="mi">-256</span><span class="o">-</span><span class="n">CBC</span> <span class="n">encryption</span><span class="p">,</span> <span class="mi">256</span> <span class="n">bits</span>
+   <span class="n">size</span> <span class="n">INTEGER</span>          <span class="o">--</span> <span class="n">size</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">keywr_aes_enc_swrev</span> <span class="p">{</span>
+   <span class="n">u8</span> <span class="n">val</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span>
+   <span class="n">u8</span> <span class="n">iv</span><span class="p">[</span><span class="mi">16</span><span class="p">];</span>
+   <span class="n">u8</span> <span class="n">rs</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span>
+   <span class="n">u32</span> <span class="n">size</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="sysfw-keywriter-aes-encrypted-msv">
+<span id="keywr-aes-enc-msv"></span><h3>System Firmware Keywriter AES Encrypted MSV<a class="headerlink" href="#sysfw-keywriter-aes-encrypted-msv" title="Permalink to this headline">¶</a></h3>
+<p>This extension has the information about AES-256 key encrypted MSV
+It is identified by the OID <strong>1.3.6.1.4.1.294.1.76</strong>
+The structure of the fields is shown below in ASN.1 notation.
+This is not currently supported by OTP Keywriter</p>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">KEYWR</span><span class="o">-</span><span class="n">AES</span><span class="o">-</span><span class="n">ENC</span><span class="o">-</span><span class="nl">MSV</span> <span class="p">:</span><span class="o">=</span> <span class="n">SEQUENCE</span>
+<span class="p">{</span>
+   <span class="n">val</span> <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>     <span class="o">--</span> <span class="n">AES</span><span class="mi">-256</span> <span class="n">key</span> <span class="n">encrypted</span> <span class="n">MSV</span>
+   <span class="n">iv</span>  <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>     <span class="o">--</span> <span class="n">Intitial</span> <span class="n">Value</span> <span class="n">used</span> <span class="n">in</span> <span class="n">AES</span><span class="mi">-256</span><span class="o">-</span><span class="n">CBC</span> <span class="n">encryption</span><span class="p">,</span> <span class="mi">128</span> <span class="n">bits</span>
+   <span class="n">rs</span>  <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>     <span class="o">--</span> <span class="n">Random</span> <span class="n">String</span> <span class="n">used</span> <span class="n">in</span> <span class="n">AES</span><span class="mi">-256</span><span class="o">-</span><span class="n">CBC</span> <span class="n">encryption</span><span class="p">,</span> <span class="mi">256</span> <span class="n">bits</span>
+   <span class="n">size</span> <span class="n">INTEGER</span>          <span class="o">--</span> <span class="n">size</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">keywr_aes_enc_msv</span> <span class="p">{</span>
+   <span class="n">u8</span> <span class="n">val</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span>
+   <span class="n">u8</span> <span class="n">iv</span><span class="p">[</span><span class="mi">16</span><span class="p">];</span>
+   <span class="n">u8</span> <span class="n">rs</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span>
+   <span class="n">u32</span> <span class="n">size</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
 </div>
 </div>
 <div class="section" id="sample-x509-template">

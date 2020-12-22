@@ -249,10 +249,15 @@ struct tisci_sec_header {
 /** Message to derive a KEK and return it via TISCI */
 #define TISCI_MSG_SA2UL_GET_DKEK                (0x9029U)
 
-/* Message ID for keywriter */
-#define TISCI_MSG_KEY_WRITER             		(0x9031U)
+/** Message for handing over subset of security functionality to
+ * another core. Only available on certain platforms.
+ */
+#define TISCI_MSG_SEC_HANDOVER                  (0x9030U)
 
 /******************************************************/
+
+/* Keywriter TISCI message to write keys from a certificate  */
+#define TISCI_MSG_KEY_WRITER                    (0x9031U)
 
 /* Processor Control APIs */
 

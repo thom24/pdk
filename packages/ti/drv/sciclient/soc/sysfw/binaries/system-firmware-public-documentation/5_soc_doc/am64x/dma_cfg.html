@@ -255,11 +255,6 @@ detected.</p>
 </tr>
 </tbody>
 </table>
-<p><strong>NOTE</strong>: Block copy channels are configured via the
-TISCI_MSG_RM_UDMAP_TX_CH_CFG TISCI message API.  An offset must be applied to
-the block copy channel index when programming the index parameter of the
-TISCI_MSG_RM_UDMAP_TX_CH_CFG message because both transmit and block copy
-channels start at index zero physically.</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="38%" />
@@ -272,13 +267,7 @@ channels start at index zero physically.</p>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>BLOCK_COPY_CHAN</td>
-<td><ol class="first last arabic simple" start="32">
-<li><ul class="first">
-<li>0 to 27</li>
-</ul>
-</li>
-</ol>
-</td>
+<td>0 to 27</td>
 </tr>
 </tbody>
 </table>
@@ -378,8 +367,8 @@ channels start at index zero physically.</p>
 </table>
 <table border="1" class="docutils">
 <colgroup>
-<col width="44%" />
-<col width="56%" />
+<col width="60%" />
+<col width="40%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Rx Flow Type</th>
@@ -393,7 +382,8 @@ channels start at index zero physically.</p>
 <tr class="row-odd"><td>CPSW_TX_CHAN</td>
 <td>16 to 79</td>
 </tr>
-<tr class="row-even"><td>SAUL_TX_0_CHAN</td>
+<tr class="row-even"><td>SAUL_TX_0_CHAN
+(<strong>RESERVED BY SYSTEM FIRMWARE</strong>)</td>
 <td>80 to 87</td>
 </tr>
 <tr class="row-odd"><td>SAUL_TX_1_CHAN</td>
@@ -411,7 +401,8 @@ channels start at index zero physically.</p>
 <tr class="row-odd"><td>CPSW_RX_CHAN</td>
 <td>128 to 143</td>
 </tr>
-<tr class="row-even"><td>SAUL_RX_0_CHAN</td>
+<tr class="row-even"><td>SAUL_RX_0_CHAN
+(<strong>RESERVED BY SYSTEM FIRMWARE</strong>)</td>
 <td>144 to 151</td>
 </tr>
 <tr class="row-odd"><td>SAUL_RX_1_CHAN</td>

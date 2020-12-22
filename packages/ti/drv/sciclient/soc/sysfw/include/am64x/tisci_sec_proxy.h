@@ -49,7 +49,7 @@
  *
  * Secure Proxy indices for AM64X device
  *
- * Data version: 200505_104840
+ * Data version: 201208_205323
  *
  */
 #ifndef AM64X_TISCI_SEC_PROXY_H
