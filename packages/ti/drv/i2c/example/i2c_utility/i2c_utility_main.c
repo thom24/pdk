@@ -69,7 +69,7 @@
 #endif
 #if defined (SOC_J721E) || defined (SOC_AM77X) || defined (SOC_J7200)
 /**< Number of I2C channels */
-#define APP_I2C_INST_MAX                                    ((uint32_t)9U)
+#define APP_I2C_INST_MAX                                    ((uint32_t)7U)
 #endif
 /**< Number of addressing and data modes */
 #define APP_I2C_MODES_MAX                                   ((uint32_t)4U)
@@ -144,15 +144,13 @@ static const char gAppI2cInstNames[APP_I2C_INST_MAX][50U] =
     {" \r\n 3: MCU Domain Inst1"},
 #endif
 #if defined (SOC_J721E) || defined (SOC_AM77X) || defined (SOC_J7200)
-    {" \r\n 0: Main Domain Inst0"},
-    {" \r\n 1: Main Domain Inst1"},
-    {" \r\n 2: Main Domain Inst2"},
-    {" \r\n 3: Main Domain Inst3"},
-    {" \r\n 4: Main Domain Inst4"},
-    {" \r\n 5: Main Domain Inst5"},
-    {" \r\n 6: Main Domain Inst6"},
-    {" \r\n 7: MCU Domain Inst0"},
-    {" \r\n 8: MCU Domain Inst1"},
+    {" \r\n 0: MCU Domain Inst0"},
+    {" \r\n 1: MCU Domain Inst1"},
+    {" \r\n 2: Main Domain Inst0"},
+    {" \r\n 3: Main Domain Inst1"},
+    {" \r\n 4: Main Domain Inst2"},
+    {" \r\n 5: Main Domain Inst3"},
+    {" \r\n 6: Main Domain Inst4"},
 #endif
 };
 
@@ -172,8 +170,6 @@ static const uint32_t gAppI2cInstIds[APP_I2C_INST_MAX] =
     4U,
     5U,
     6U,
-    0U,
-    1U,
 #endif
 };
 
@@ -217,6 +213,9 @@ char gLine[1024];
 /* ========================================================================== */
 /*                 Internal Function Declarations                             */
 /* ========================================================================== */
+
+static int32_t App_i2cPreInt(void);
+
 static int32_t App_showMenu(void);
 static int32_t App_showSetting(void);
 static int32_t App_changeSetting(void);
@@ -250,8 +249,6 @@ static int32_t App_gets(char *str);
 int32_t main(void)
 {
     Bool done = FALSE;
-    uint8_t index;
-    I2C_HwAttrs i2cConfig;
     Board_STATUS status;
     Board_initCfg boardCfg;
     int32_t retVal = CSL_SOK;
@@ -267,12 +264,7 @@ int32_t main(void)
     }
 
     /* Initialize I2C Driver */
-    for(index = 0; index < I2C_HWIP_MAX_CNT; index++)
-    {
-        I2C_socGetInitCfg(index, &i2cConfig);
-        i2cConfig.enableIntr = false;
-        I2C_socSetInitCfg(index, &i2cConfig);
-    }
+    App_i2cPreInt();
 
     /* Initializes the I2C */
     I2C_init();
@@ -1156,3 +1148,92 @@ static int32_t App_gets(char *str)
 
     return (retVal);
 }
+
+/* If there are any steps required before the initialization of I2C is done */
+#if defined (SOC_J721E)
+
+static int32_t App_i2cPreInt(void)
+{
+    uint32_t baseAddr, inst;
+    I2C_HwAttrs i2cCfg;
+    int32_t retVal = CSL_SOK;
+
+/*
+    Drv Inst    SoC Inst
+        0:      MCU Domain Inst0
+        1:      MCU Domain Inst1
+        2:      Main Domain Inst0
+        3:      Main Domain Inst1
+        4:      Main Domain Inst2
+        5:      Main Domain Inst3
+        6:      Main Domain Inst4
+        7:      Main Domain Inst5
+        8:      Main Domain Inst6
+*/
+
+    for (inst = 0U; ((inst < APP_I2C_INST_MAX) && (CSL_SOK == retVal)); inst++)
+    {
+        switch (inst)
+        {
+            case 0:
+                baseAddr = CSL_MCU_I2C0_CFG_BASE;
+            break;
+            case 1:
+                baseAddr = CSL_MCU_I2C1_CFG_BASE;
+            break;
+            case 2:
+                baseAddr = CSL_I2C0_CFG_BASE;
+            break;
+            case 3:
+                baseAddr = CSL_I2C1_CFG_BASE;
+            break;
+            case 4:
+                baseAddr = CSL_I2C2_CFG_BASE;
+            break;
+            case 5:
+                baseAddr = CSL_I2C3_CFG_BASE;
+            break;
+            case 6:
+                baseAddr = CSL_I2C4_CFG_BASE;
+            break;
+
+            default:
+                retVal = CSL_EFAIL;
+            break;
+        }
+
+        if (CSL_SOK == retVal)
+        {
+            I2C_socGetInitCfg(inst, &i2cCfg);
+
+            i2cCfg.baseAddr = baseAddr;
+            i2cCfg.enableIntr = 0;
+
+            I2C_socSetInitCfg(inst, &i2cCfg);
+        }
+    }
+
+    return (retVal);
+}
+
+#else /* Any other silicon */
+
+static int32_t App_i2cPreInt(void)
+{
+    uint32_t baseAddr, inst;
+    I2C_HwAttrs i2cCfg;
+
+    for (inst = 0U; (inst < APP_I2C_INST_MAX); inst++)
+    {
+        I2C_socGetInitCfg(inst, &i2cCfg);
+
+        i2cCfg.baseAddr = baseAddr;
+        i2cCfg.enableIntr = 0;
+
+        I2C_socSetInitCfg(inst, &i2cCfg);
+    }
+
+    return 0;
+}
+
+#endif
