@@ -83,13 +83,15 @@ extern "C" {
  *  the permitted access list to request for a physical processor control.
  *
  *  \n<b>Message</b>:    #TISCI_MSG_KEY_WRITER
- *  \n<b>Request</b>:    #tisci_otp_process_key_cfg_req
- *  \n<b>Response</b>:   #tisci_otp_process_key_cfg_resp
+ *  \n<b>Request</b>:    #tisci_msg_keywriter_req
+ *  \n<b>Response</b>:   #tisci_msg_keywriter_resp
  *
  *  \param  otpKeyCfgAddr   Address of otp writer key config structure
  *                          Refer \ref Sciclient_ProcessorIds.
  *  \param  timeout         Gives a sense of how long to wait for the operation.
  *                          Refer \ref Sciclient_ServiceOperationTimeout.
+ *  \param  debug_response  Address of debug_response variable to store the 
+ *  						debug response from API call 
  *  \return CSL_PASS on success, else failure
  */
 int32_t Sciclient_otpProcessKeyCfg(uint32_t *otpKeyCfgAddr,
