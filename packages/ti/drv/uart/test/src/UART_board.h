@@ -78,8 +78,6 @@ extern EDMA3_RM_GblConfigParams sampleEdma3GblCfgParams[];
  * DSP: 0 (DSS UART 0)
  */
 #define UART_INSTANCE   (0U)
-#elif defined(SOC_AM64X)
-#define UART_INSTANCE   (BOARD_UART0_INSTANCE)
 #else
 #define UART_INSTANCE   (BOARD_UART_INSTANCE)
 #endif
