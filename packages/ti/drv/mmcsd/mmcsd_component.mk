@@ -385,7 +385,7 @@ export MMCSD_Baremetal_DMA_TestApp_CORE_DEPENDENCY
 export MMCSD_Baremetal_DMA_TestApp_XDC_CONFIGURO
 MMCSD_Baremetal_DMA_TestApp_PKG_LIST = MMCSD_Baremetal_DMA_TestApp
 MMCSD_Baremetal_DMA_TestApp_INCLUDE = $(MMCSD_Baremetal_DMA_TestApp_PATH)
-MMCSD_Baremetal_DMA_TestApp_BOARDLIST = am65xx_idk am65xx_evm j721e_sim j721e_evm j7200_evm
+MMCSD_Baremetal_DMA_TestApp_BOARDLIST = am65xx_idk am65xx_evm j721e_sim j721e_evm j7200_evm am64x_evm
 export MMCSD_Baremetal_DMA_TestApp_BOARDLIST
 MMCSD_Baremetal_DMA_TestApp_$(SOC)_CORELIST = $(drvmmcsd_$(SOC)_CORELIST)
 export MMCSD_Baremetal_DMA_TestApp_$(SOC)_CORELIST
