@@ -312,7 +312,7 @@ int32_t UART_udma_deinit(void)
 #endif
 #endif /* #if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) */
 
-#if defined(SOC_AM64X)
+#if defined(SOC_AM64X) && defined(BUILD_MCU)
 int32_t UART_configClk(uint32_t freq)
 {
     int32_t retVal = CSL_PASS;
@@ -418,7 +418,7 @@ static void UART_initConfig(bool dmaMode)
     }
 
     uart_cfg.loopback   = verifyLoopback;
-#if defined(SOC_AM64X)
+#if defined(SOC_AM64X) && defined(BUILD_MCU)
     if (verifyRS485 == TRUE)
     {
         uart_cfg.frequency = UART_MODULE_CLK_160M;
@@ -1884,7 +1884,7 @@ Err:
     return (ret);
 }
 
-#if defined (SOC_AM64X)
+#if defined (SOC_AM64X) && defined(BUILD_MCU)
 /* RS-485 Direction Enable loopback test */
 static bool UART_test_rs485(bool dmaMode)
 {
@@ -2126,7 +2126,7 @@ static bool UART_test_read_verify(bool dmaMode)
     UART_close(uart);
     uart = NULL;
 
-#if defined (SOC_AM64X)
+#if defined (SOC_AM64X) && defined(BUILD_MCU)
     if (UART_test_rs485(dmaMode) == false)
     {
         ret = false;
