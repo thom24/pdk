@@ -130,7 +130,7 @@ SRCS_COMMON += qspi.c
 endif
 ifeq ($(BOARD), $(filter $(BOARD), am65xx_evm am65xx_idk am64x_evm))
 SRCS_COMMON += ospi.c emmc.c
-EXTERNAL_LNKCMD_FILE_LOCAL = $(UNIFLASH_BASE_DIR)/soc/k3/linker_am64x.cmd
+EXTERNAL_LNKCMD_FILE_LOCAL = $(UNIFLASH_BASE_DIR)/soc/k3/linker_$(SOC).cmd
 endif
 
 ifeq ($(BOARD), $(filter $(BOARD), am64x_evm))
