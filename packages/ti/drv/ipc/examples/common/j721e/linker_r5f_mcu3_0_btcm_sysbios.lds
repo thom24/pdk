@@ -136,6 +136,7 @@ SECTIONS
                   }  palign(8) > MCU3_R5F0_TCMB0
     .text:xdc_runtime_Startup_reset__I : {} palign(8) > MCU3_R5F0_TCMB0
     .bootCode    	: {} palign(8) 		> MCU3_R5F0_TCMB0
+    .utilsCopyVecsToAtcm               : {} palign(8) > MCU3_R5F0_TCMB0
     .startupCode 	: {} palign(8) 		> MCU3_R5F0_TCMB0
     .startupData 	: {} palign(8) 		> MCU3_R5F0_TCMB0, type = NOINIT
     .text	: {} palign(8)		> MCU3_0_DDR_SPACE
