@@ -917,9 +917,6 @@ static bool OSPI_flash_test(void *arg)
             ospi_cfg.xferLines = OSPI_XFER_LINES_OCTAL;
         }
 
-        /* Would be enabled when PDK-8724 is fixed */
-        ospi_cfg.phyEnable = false;
-
         ospi_cfg.dacEnable = true;
         ospi_cfg.dmaEnable = test->dmaMode;
         ospi_cfg.intrEnable = false;
@@ -1007,7 +1004,6 @@ void OSPI_test_print_test_desc(OSPI_Tests *test)
     SPI_log("\r\n %s\r\n", test->testDesc);
 }
 
-/* The order of tests has been changed to 166MHz followed by 133MHz as a work around to PDK-8724 */
 OSPI_Tests Ospi_tests[] =
 {
 #ifdef OSPI_WRITE_TUNING

@@ -599,14 +599,30 @@ void Nor_xspiClose(NOR_HANDLE handle)
 {
     NOR_Info    *norOspiInfo;
     SPI_Handle   spiHandle;
+    OSPI_v0_HwAttrs const        *hwAttrs;
+    const CSL_ospi_flash_cfgRegs *pRegs;
 
     if (handle)
     {
         norOspiInfo = (NOR_Info *)handle;
         spiHandle = (SPI_Handle)norOspiInfo->hwHandle;
+        hwAttrs = (OSPI_v0_HwAttrs const *)spiHandle->hwAttrs;
+        pRegs = (const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr);
 
         if (spiHandle)
         {
+            /* 
+            * Some fields in RD_DATA_CAPTURE_REG are modified by the Nor_spiPhyTune API.
+            * These fields need to be reset here to avoid errors in subsequent tests.
+            */
+            CSL_REG32_FINS(&pRegs->RD_DATA_CAPTURE_REG,
+                            OSPI_FLASH_CFG_RD_DATA_CAPTURE_REG_SAMPLE_EDGE_SEL_FLD,
+                            0);
+
+            CSL_REG32_FINS(&pRegs->RD_DATA_CAPTURE_REG,
+                            OSPI_FLASH_CFG_RD_DATA_CAPTURE_REG_DQS_ENABLE_FLD,
+                            0);
+
             SPI_close(spiHandle);
         }
     }
@@ -706,6 +722,7 @@ NOR_STATUS Nor_xspiRead(NOR_HANDLE handle, uint32_t addr,
     transaction.count = len;
 
     ret = SPI_transfer(spiHandle, &transaction);
+
     if (ret == true)
     {
         return NOR_PASS;
