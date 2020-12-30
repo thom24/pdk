@@ -2799,12 +2799,12 @@ static bool Sciclient_rmIrOutpRomMapped(const struct Sciclient_rmIrInst  *inst,
 
     if (inst->rom_usage != NULL) {
         for (i = 0u; i < inst->n_rom_usage; i++) {
-            if ((inst->rom_usage[i].cleared == false) &&
+            if ((inst->rom_usage[i].opCleared == false) &&
                 (outp >= inst->rom_usage[i].outp_start) &&
                 (outp < (inst->rom_usage[i].outp_start +
                         inst->rom_usage[i].length))) {
                 rom_mapped = true;
-                inst->rom_usage[i].cleared = true;
+                inst->rom_usage[i].opCleared = true;
                 break;
             }
         }

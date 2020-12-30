@@ -121,12 +121,14 @@ static struct Sciclient_rmIrUsedMapping rom_usage_MAIN2MCU_LVL_INTRTR0[2U] = {
         .outp_start = 32U,
         .length = 2U,
         .cleared = false,
+        .opCleared = false,
     },
     {
         .inp_start = 128U,
         .outp_start = 34U,
         .length = 16U,
         .cleared = false,
+        .opCleared = false,
     },
 };
 static struct Sciclient_rmIrUsedMapping rom_usage_MCU_NAVSS0_INTR_ROUTER_0[1U] = {
@@ -135,6 +137,7 @@ static struct Sciclient_rmIrUsedMapping rom_usage_MCU_NAVSS0_INTR_ROUTER_0[1U] =
         .outp_start = 0U,
         .length = 2U,
         .cleared = false,
+        .opCleared = false,
     },
 };
 

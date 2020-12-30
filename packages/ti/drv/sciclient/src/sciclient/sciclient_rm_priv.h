@@ -150,13 +150,19 @@ struct Sciclient_rmIaInst {
  * Length of the mapping range
  *
  * \param cleared
- * Boolean storing whether or not the mapped range has been cleared
+ * Boolean storing whether or not the input mapped range is going to be cleared.
+ *
+ * \param opCleared
+ * Boolean storing whether or not the output mapped range is going to be cleared.
+ * The sciclient logic does not clear the mapping. The IR mapping is cleared by
+ * the RM logic.
  */
 struct Sciclient_rmIrUsedMapping {
     uint16_t    inp_start;
     uint16_t    outp_start;
     uint16_t    length;
     bool        cleared;
+    bool        opCleared;
 };
 
 /**
