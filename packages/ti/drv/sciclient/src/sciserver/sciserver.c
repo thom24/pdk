@@ -49,12 +49,12 @@
 #include <sciserver_secproxyTransfer.h>
 #include <sciserver_hwiData.h>
 #include <ti/drv/sciclient/src/sciclient/sciclient_priv.h>
+#include <ti/drv/uart/UART_stdio.h>
 
 /* Set VERBOSE to 1 for trace information on message routing */
 #define VERBOSE 0
 
 #if VERBOSE
-#include <ti/drv/uart/UART_stdio.h>
 #define Sciserver_printf UART_printf
 #else
 #define Sciserver_printf(...)
@@ -87,7 +87,6 @@ static int32_t Sciserver_UserProcessMsg(uint32_t *msg_recv,
                                         int32_t *pRespMsgSize,
                                         uint8_t hw_host);
 
-static void Sciserver_TisciMsgClearFlags(struct tisci_header *hdr);
 static int32_t Sciserver_TisciMsgResponse(uint8_t   response_host,
                                    uint32_t  *response,
                                    uint32_t  size);
@@ -243,8 +242,6 @@ int32_t Sciserver_processtask(Sciserver_taskData *utd)
     int32_t respMsgSize;
     /* the response message pointer */
     uint32_t *respMsg = NULL;
-    /* the response message header pointer. Same as respMsg */
-    struct tisci_header *respMsgHeader = NULL;
 
     for (i = 0; i < SCISERVER_SECPROXY_INSTANCE_COUNT; i++)
     {
@@ -268,7 +265,6 @@ int32_t Sciserver_processtask(Sciserver_taskData *utd)
                 &respMsgSize,
                 utd->user_msg_data[utd->state->current_buffer_idx]->host);
         respMsg = utd->hw_msg_buffer_list[utd->state->current_buffer_idx];
-        respMsgHeader = (struct tisci_header *) respMsg;
     }
     else
     {
@@ -277,16 +273,6 @@ int32_t Sciserver_processtask(Sciserver_taskData *utd)
 
     if (ret == CSL_PASS)
     {
-        if (ret == CSL_PASS)
-        {
-            Sciclient_TisciMsgSetAckResp(respMsgHeader);
-        }
-        else if ((respMsgHeader->flags & TISCI_MSG_FLAG_AOP) != 0)
-        {
-            Sciserver_TisciMsgClearFlags(respMsgHeader);
-            Sciclient_TisciMsgSetNakResp(respMsgHeader);
-        }
-
         respHost = utd->user_msg_data[utd->state->current_buffer_idx]->host;
         if (respHost == TISCI_HOST_ID_DMSC2DM)
         {
@@ -341,11 +327,6 @@ static int32_t Sciserver_MsgVerifyHost(uint32_t *msg, uint8_t known_host)
 }
 
 
-static void Sciserver_TisciMsgClearFlags(struct tisci_header *hdr)
-{
-    hdr->flags = 0;
-}
-
 static int32_t Sciserver_TisciMsgResponse(uint8_t   response_host,
                            uint32_t *response,
                            uint32_t  size)
@@ -382,7 +363,7 @@ static void Sciserver_SetMsgHostId(uint32_t *msg, uint8_t hostId)
     hdr->host = hostId;
 }
 
-int32_t Sciserver_ProcessForwardedMessage(uint32_t *msg_recv,
+int32_t Sciserver_ProcessFullMessage(uint32_t *msg_recv,
     int32_t reqMsgSize,
     int32_t respMsgSize)
 {
@@ -417,21 +398,11 @@ int32_t Sciserver_ProcessForwardedMessage(uint32_t *msg_recv,
 
     ret = Sciclient_service(&reqPrm, &respPrm);
 
-    if ((CSL_PASS == ret) && (respPrm.flags == TISCI_MSG_FLAG_ACK))
-    {
-        Sciserver_printf("Sciserver: forward success type=%d\n", hdr->type);
-        memcpy(msg_recv, respMsgBuffer, respMsgSize);
+    memcpy(msg_recv, respMsgBuffer, respMsgSize);
 
-        /* Must restore the seq field. When forwarded message is processed by
-         * TIFS, the returned message would have incorrect sequence value */
-        hdr->seq = reqSeq;
-    }
-    else
-    {
-        Sciserver_printf("Sciserver: forward failed type=%d, flag=%d\n",
-             hdr->type, respPrm.flags);
-        ret = CSL_EFAIL;
-    }
+    /* Must restore the seq field. When forwarded message is processed by
+     * TIFS, the returned message would have incorrect sequence value */
+    hdr->seq = reqSeq;
 
     return ret;
 }
@@ -442,7 +413,7 @@ static int32_t Sciserver_UserProcessMsg(uint32_t *msg_recv,
 {
     int32_t ret = CSL_PASS;
     struct  tisci_header *hdr = (struct tisci_header *) msg_recv;
-    int32_t isRmMsg = 0, isPmMsg = 0, isFwdMsg = 0;
+    int32_t runLocalRmOnly = 0;
     int32_t reqMsgSize;
     int32_t respMsgSize;
 
@@ -451,155 +422,132 @@ static int32_t Sciserver_UserProcessMsg(uint32_t *msg_recv,
     switch (hdr->type)
     {
         case TISCI_MSG_VERSION:
-            isFwdMsg = 1;
             reqMsgSize = sizeof(struct tisci_msg_version_req);
             respMsgSize = sizeof(struct tisci_msg_version_resp);
             break;
         /* Start of RM messages */
         case TISCI_MSG_BOARD_CONFIG_RM:
-            isRmMsg = 1;
+            reqMsgSize = sizeof(struct tisci_msg_board_config_rm_req);
             respMsgSize = sizeof(struct tisci_msg_board_config_rm_resp);
             break;
         case TISCI_MSG_RM_GET_RESOURCE_RANGE:
-            isRmMsg = 1;
+            reqMsgSize = sizeof(struct tisci_msg_rm_get_resource_range_req);
             respMsgSize = sizeof(struct tisci_msg_rm_get_resource_range_resp);
             break;
         case TISCI_MSG_RM_IRQ_SET:
-            isRmMsg = 1;
-            isFwdMsg = 1;
             reqMsgSize = sizeof(struct tisci_msg_rm_irq_set_req);
             respMsgSize = sizeof(struct tisci_msg_rm_irq_set_resp);
             break;
         case TISCI_MSG_RM_IRQ_RELEASE:
-            isRmMsg = 1;
-            isFwdMsg = 1;
             reqMsgSize = sizeof(struct tisci_msg_rm_irq_release_req);
             respMsgSize = sizeof(struct tisci_msg_rm_irq_release_resp);
             break;
         case TISCI_MSG_RM_RING_CFG:
-            isRmMsg = 1;
-            isFwdMsg = 1;
             reqMsgSize = sizeof(struct tisci_msg_rm_ring_cfg_req);
             respMsgSize = sizeof(struct tisci_msg_rm_ring_cfg_resp);
             break;
         case TISCI_MSG_RM_RING_MON_CFG:
-            isRmMsg = 1;
-            isFwdMsg = 1;
             reqMsgSize = sizeof(struct tisci_msg_rm_ring_mon_cfg_req);
             respMsgSize = sizeof(struct tisci_msg_rm_ring_mon_cfg_resp);
             break;
         case TISCI_MSG_RM_UDMAP_TX_CH_CFG:
-            isRmMsg = 1;
-            isFwdMsg = 1;
             reqMsgSize = sizeof(struct tisci_msg_rm_udmap_tx_ch_cfg_req);
             respMsgSize = sizeof(struct tisci_msg_rm_udmap_tx_ch_cfg_resp);
             break;
         case TISCI_MSG_RM_UDMAP_RX_CH_CFG:
-            isRmMsg = 1;
-            isFwdMsg = 1;
             reqMsgSize = sizeof(struct tisci_msg_rm_udmap_rx_ch_cfg_req);
             respMsgSize = sizeof(struct tisci_msg_rm_udmap_rx_ch_cfg_resp);
             break;
         case TISCI_MSG_RM_UDMAP_FLOW_CFG:
-            isRmMsg = 1;
+            reqMsgSize = sizeof(struct tisci_msg_rm_udmap_flow_cfg_req);
             respMsgSize = sizeof(struct tisci_msg_rm_udmap_flow_cfg_resp);
             break;
         case TISCI_MSG_RM_UDMAP_FLOW_SIZE_THRESH_CFG:
-            isRmMsg = 1;
+            reqMsgSize = sizeof(struct tisci_msg_rm_udmap_flow_size_thresh_cfg_req);
             respMsgSize = sizeof(struct tisci_msg_rm_udmap_flow_size_thresh_cfg_resp);
             break;
         case TISCI_MSG_RM_UDMAP_FLOW_DELEGATE:
-            isRmMsg = 1;
+            reqMsgSize = sizeof(struct tisci_msg_rm_udmap_flow_delegate_req);
             respMsgSize = sizeof(struct tisci_msg_rm_udmap_flow_delegate_resp);
             break;
         case TISCI_MSG_RM_UDMAP_GCFG_CFG:
-            isRmMsg = 1;
+            reqMsgSize = sizeof(struct tisci_msg_rm_udmap_gcfg_cfg_req);
             respMsgSize = sizeof(struct tisci_msg_rm_udmap_gcfg_cfg_resp);
             break;
         case TISCI_MSG_RM_PSIL_PAIR:
-            isFwdMsg = 1;
             reqMsgSize = sizeof(struct tisci_msg_rm_psil_pair_req);
             respMsgSize = sizeof(struct tisci_msg_rm_psil_pair_resp);
             break;
         case TISCI_MSG_RM_PSIL_UNPAIR:
-            isFwdMsg = 1;
             reqMsgSize = sizeof(struct tisci_msg_rm_psil_unpair_req);
             respMsgSize = sizeof(struct tisci_msg_rm_psil_unpair_resp);
             break;
         case TISCI_MSG_RM_PSIL_READ:
-            isFwdMsg = 1;
             reqMsgSize = sizeof(struct tisci_msg_rm_psil_read_req);
             respMsgSize = sizeof(struct tisci_msg_rm_psil_read_resp);
             break;
         case TISCI_MSG_RM_PSIL_WRITE:
-            isFwdMsg = 1;
             reqMsgSize = sizeof(struct tisci_msg_rm_psil_write_req);
             respMsgSize = sizeof(struct tisci_msg_rm_psil_write_resp);
             break;
         case TISCI_MSG_RM_PROXY_CFG:
-            isFwdMsg = 1;
             reqMsgSize = sizeof(struct tisci_msg_rm_proxy_cfg_req);
             respMsgSize = sizeof(struct tisci_msg_rm_proxy_cfg_resp);
             break;
         /* Start of PM messages */
         case TISCI_MSG_BOARD_CONFIG_PM:
-            isPmMsg = 1;
+            reqMsgSize = sizeof(struct tisci_msg_board_config_pm_req);
             respMsgSize = sizeof(struct tisci_msg_board_config_pm_resp);
             break;
         case TISCI_MSG_SET_CLOCK:
-            isPmMsg = 1;
+            reqMsgSize = sizeof(struct tisci_msg_set_clock_req);
             respMsgSize = sizeof(struct tisci_msg_set_clock_resp);
             break;
         case TISCI_MSG_GET_CLOCK:
-            isPmMsg = 1;
+            reqMsgSize = sizeof(struct tisci_msg_get_clock_req);
             respMsgSize = sizeof(struct tisci_msg_get_clock_resp);
             break;
         case TISCI_MSG_SET_CLOCK_PARENT:
-            isPmMsg = 1;
+            reqMsgSize = sizeof(struct tisci_msg_set_clock_parent_req);
             respMsgSize = sizeof(struct tisci_msg_set_clock_parent_resp);
             break;
         case TISCI_MSG_GET_CLOCK_PARENT:
-            isPmMsg = 1;
+            reqMsgSize = sizeof(struct tisci_msg_get_clock_parent_req);
             respMsgSize = sizeof(struct tisci_msg_get_clock_parent_resp);
             break;
         case TISCI_MSG_GET_NUM_CLOCK_PARENTS:
-            isPmMsg = 1;
+            reqMsgSize = sizeof(struct tisci_msg_get_num_clock_parents_req);
             respMsgSize = sizeof(struct tisci_msg_get_num_clock_parents_resp);
             break;
         case TISCI_MSG_SET_FREQ:
-            isPmMsg = 1;
+            reqMsgSize = sizeof(struct tisci_msg_set_freq_req);
             respMsgSize = sizeof(struct tisci_msg_set_freq_resp);
             break;
         case TISCI_MSG_QUERY_FREQ:
-            isPmMsg = 1;
+            reqMsgSize = sizeof(struct tisci_msg_query_freq_req);
             respMsgSize = sizeof(struct tisci_msg_query_freq_resp);
             break;
         case TISCI_MSG_GET_FREQ:
-            isPmMsg = 1;
+            reqMsgSize = sizeof(struct tisci_msg_get_freq_req);
             respMsgSize = sizeof(struct tisci_msg_get_freq_resp);
             break;
         case TISCI_MSG_SET_DEVICE:
-            isPmMsg = 1;
+            reqMsgSize = sizeof(struct tisci_msg_set_device_req);
             respMsgSize = sizeof(struct tisci_msg_set_device_resp);
             break;
         case TISCI_MSG_GET_DEVICE:
-            isPmMsg = 1;
+            reqMsgSize = sizeof(struct tisci_msg_get_device_req);
             respMsgSize = sizeof(struct tisci_msg_get_device_resp);
             break;
         case TISCI_MSG_SET_DEVICE_RESETS:
-            isPmMsg = 1;
+            reqMsgSize = sizeof(struct tisci_msg_set_device_resets_req);
             respMsgSize = sizeof(struct tisci_msg_set_device_resets_resp);
             break;
         case TISCI_MSG_SYS_RESET:
-            isPmMsg = 1;
+            reqMsgSize = sizeof(struct tisci_msg_sys_reset_req);
             respMsgSize = sizeof(struct tisci_msg_sys_reset_resp);
             break;
-
         default:
-            isRmMsg = 0;
-            isPmMsg = 0;
-            isFwdMsg = 1;
-
             /* Forward the full message size */
             reqMsgSize = SCISERVER_HW_QUEUE_SIZE;
             respMsgSize = SCISERVER_HW_QUEUE_SIZE;
@@ -616,27 +564,19 @@ static int32_t Sciserver_UserProcessMsg(uint32_t *msg_recv,
         case TISCI_MSG_RM_PROXY_CFG:
             if (hw_host_id == TISCI_HOST_ID_DMSC2DM)
             {
-                Sciserver_printf("Skip forward: type = %d\n", hdr->type);
-                isFwdMsg = 0;
-                isRmMsg = 1;
+                runLocalRmOnly = 1;
             }
             break;
     }
 
-    if (isRmMsg)
+    if (runLocalRmOnly == 1)
     {
         ret = Sciclient_ProcessRmMessage(msg_recv);
     }
-
-    if (isPmMsg)
+    else
     {
-        ret = Sciclient_ProcessPmMessage(0, msg_recv);
-    }
-
-    if (isFwdMsg)
-    {
-        ret = Sciserver_ProcessForwardedMessage(msg_recv,
-                                                reqMsgSize, respMsgSize);
+        ret = Sciserver_ProcessFullMessage(msg_recv,
+                                           reqMsgSize, respMsgSize);
     }
 
     *pRespMsgSize = respMsgSize;
