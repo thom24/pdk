@@ -38,6 +38,15 @@ CONFIG_UDMAP_UDMA=y
 CONFIG_RM_PROXY=y
 # end of Resource Manager Feature Support
 
+#
+# Trace configuration for RM/PM
+# This should be enabled only when debugging.
+# If you enable this there is an additional size and boot time increase
+#
+# CONFIG_TRACE=y
+# CONFIG_TRACE_BUFFER=y
+# CONFIG_TRACE_UART=y
+
 ifeq ($(SOC),$(filter $(SOC), j721e))
 CONFIG_SOC_FOLDER_STRING="j721e"
 endif
@@ -123,6 +132,19 @@ CFLAGS_LOCAL_COMMON += -DCONFIG_UDMAP_PKTDMA
 endif
 ifeq ($(CONFIG_RM_PROXY),y)
 CFLAGS_LOCAL_COMMON += -DCONFIG_RM_PROXY
+endif
+
+#
+# Trace configuration for RM/PM
+#
+ifeq ($(CONFIG_TRACE),y)
+CFLAGS_LOCAL_COMMON += -DCONFIG_TRACE
+endif
+ifeq ($(CONFIG_TRACE_BUFFER),y)
+CFLAGS_LOCAL_COMMON += -DCONFIG_TRACE_BUFFER
+endif
+ifeq ($(CONFIG_TRACE_UART),y)
+CFLAGS_LOCAL_COMMON += -DCONFIG_TRACE_UART
 endif
 
 CFLAGS_LOCAL_COMMON += -DCONFIG_DEVICE_TYPE_GP
