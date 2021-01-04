@@ -44,7 +44,14 @@
 /*                            Global Variables                                */
 /* ========================================================================== */
 
+#if defined(am64x_evm)
+/* Reduced the delay for am64x evm as the initial handshake is taking longer 
+   with higher delay when compared with other platforms, due to lower CPU clock.
+ */
+uint32_t DELAY = 500000U;
+#else
 uint32_t DELAY = 0x3FFFFF;
+#endif
 extern uint32_t uart_baseAddr;
 extern UFP_flashConfig UPF_flashFxnPtr[FLASH_DEVICE_MAX];
 extern UART_Handle gUfpUartHandle;
@@ -438,7 +445,6 @@ int8_t UFP_xModemHeaderReceive(unsigned char *xbuff)
     if (!(check(&xbuff[0], 12))) /* 12th & 13th bytes have CRC */
         return -1;
 
-    outbyte(XMODEM_STS_ACK);
     return 0;
 }
 

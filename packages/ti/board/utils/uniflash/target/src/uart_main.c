@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2018-2021 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -77,6 +77,7 @@ extern uint32_t DELAY;
 extern uint8_t uart_inst;
 
 static uint32_t gMaxBaudRate = UFP_BAUDRATE_115200;
+static uint32_t gFlowCtrlSts = 0;
 static UART_Params gUartParams;
 UART_Handle gUfpUartHandle = NULL;
 uint32_t gUfpBaudRateList[UFP_BAUDRATE_LIST_COUNT] = 
@@ -171,6 +172,7 @@ static int8_t UFP_parseHeader(unsigned char *hdrBuf,
 	switch (hdrBuf[1])
     {
         case UFP_CMD_ERASE:
+            outbyte(XMODEM_STS_ACK);
             *devType = hdrBuf[2] - '0';
             *offset = ((hdrBuf[7] << 24) | (hdrBuf[6] << 16) |
                        (hdrBuf[5] << 8) | (hdrBuf[4]));
@@ -182,12 +184,27 @@ static int8_t UFP_parseHeader(unsigned char *hdrBuf,
             }
             break;
         case UFP_CMD_GET_MAX_BAUDRATE:
-            outbyte(MAX_BAUDRATE_SUPPORTED);
+            outbyte(XMODEM_STS_ACK);
+            if (gFlowCtrlSts)
+            {
+                outbyte(MAX_BAUDRATE_SUPPORTED_FC);
+            }
+            else
+            {
+                outbyte(MAX_BAUDRATE_SUPPORTED);
+            }
             c = inbyte(DELAY);
 #if defined(j7200_evm) || defined(j721e_evm) || defined(am65xx_evm) || defined(am65xx_idk) || defined(am64x_evm)
             if (c == XMODEM_STS_NSUP)
             {
-                outbyte(MAX_BAUDRATE_SUPPORTED_LINUX);
+                if (gFlowCtrlSts)
+                {
+                    outbyte(MAX_BAUDRATE_SUPPORTED_LINUX_FC);
+                }
+                else
+                {
+                    outbyte(MAX_BAUDRATE_SUPPORTED_LINUX);
+                }
                 c = inbyte(DELAY);
             }
 #endif
@@ -195,17 +212,32 @@ static int8_t UFP_parseHeader(unsigned char *hdrBuf,
                 return -1;
             break;
         case UFP_CMD_PROGRAM:
+            outbyte(XMODEM_STS_ACK);
             *devType = hdrBuf[2] - '0';
             *offset = ((hdrBuf[7] << 24) | (hdrBuf[6] << 16) |
                        (hdrBuf[5] << 8) | (hdrBuf[4]));
             *imgType = hdrBuf[3] - '0';
             break;
         case UFP_CMD_SET_BAUDRATE:
+            outbyte(XMODEM_STS_ACK);
             gMaxBaudRate = gUfpBaudRateList[hdrBuf[2]];
             outbyte(XMODEM_STS_ACK);
             break;
+        case UFP_CMD_GET_FLOWCTRL:
+            outbyte(XMODEM_STS_ACK);
+            outbyte(UFP_FLOW_CTRL_STS);
+            c = inbyte(DELAY);
+            if (c != XMODEM_STS_ACK)
+                return -1;
+            break;
+        case UFP_CMD_SET_FLOWCTRL:
+            outbyte(XMODEM_STS_ACK);
+            gFlowCtrlSts = UFP_FLOW_CTRL_STS;
+            outbyte(XMODEM_STS_ACK);
+            break;
         default:
-            return -1;
+            outbyte(XMODEM_STS_NSUP);
+            break;
     }
 
     c = inbyte(DELAY);
@@ -261,7 +293,8 @@ int8_t UFP_uartConfig(uint32_t baudrate)
      * when there is baudrate change needed
      */
     if((gUartParams.baudRate != baudrate) ||
-       (gUfpUartHandle == NULL))
+       (gUfpUartHandle == NULL) ||
+       (gUartParams.flowControlType != gFlowCtrlSts))
     {
         /* Close UART in case reconfiguring baudrate */
         UFP_uartClose();
@@ -271,6 +304,14 @@ int8_t UFP_uartConfig(uint32_t baudrate)
         UART_socSetInitCfg(uart_inst, &uartCfg);
 
         gUartParams.baudRate = baudrate;
+        if (gFlowCtrlSts)
+        {
+            gUartParams.flowControlType = UART_FC_HW;
+        }
+        else
+        {
+            gUartParams.flowControlType = UART_FC_NONE;
+        }
         gUfpUartHandle = UART_open(uart_inst, &gUartParams);
         if(gUfpUartHandle == NULL)
         {
@@ -407,6 +448,7 @@ int main(void)
                 c = inbyte(DELAY);
                 if(c == XMODEM_STS_ACK)
                 {
+                    gFlowCtrlSts = 0;
                     break;
                 }
             }

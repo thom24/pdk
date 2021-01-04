@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2019-2021 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -106,6 +106,25 @@ extern "C" {
 #define MAX_BAUDRATE_SUPPORTED			(0x4U)
 #endif
 
+/* Configurations for UART HW flow control */
+#if defined(am64x_evm)
+#define UFP_FLOW_CTRL_STS               (0x1U)
+
+#define MAX_BAUDRATE_SUPPORTED_FC       (0xBU)  /* 3000000 */
+#define MAX_BAUDRATE_SUPPORTED_LINUX_FC (0xBU)  /* 3000000 */
+
+#else
+#define UFP_FLOW_CTRL_STS               (0x0U)
+
+#if (defined(j7200_evm) || defined(j721e_evm) || defined(am65xx_evm) || defined(am65xx_idk))
+#define MAX_BAUDRATE_SUPPORTED_FC       (MAX_BAUDRATE_SUPPORTED)
+#define MAX_BAUDRATE_SUPPORTED_LINUX_FC (MAX_BAUDRATE_SUPPORTED_LINUX)
+#else
+#define MAX_BAUDRATE_SUPPORTED_FC       (MAX_BAUDRATE_SUPPORTED)
+#endif
+
+#endif   /* #if defined(am64x_evm) */
+
 #define FLASH_DEVICE_MAX          (6U)
 
 #define UFP_FLASH_DEV_NAND        (0x0U)
@@ -148,7 +167,8 @@ extern "C" {
 #define UFP_CMD_ERASE               (0x45U)
 #define UFP_CMD_GET_MAX_BAUDRATE    (0x47U)
 #define UFP_CMD_SET_BAUDRATE        (0x53U)
-
+#define UFP_CMD_GET_FLOWCTRL        (0x48U)
+#define UFP_CMD_SET_FLOWCTRL        (0x49U)
 
 /*
  *  @brief      A function pointer to initialize flash device.
