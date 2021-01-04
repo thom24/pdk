@@ -81,6 +81,7 @@
 #if (UDMA_SOC_CFG_LCDMA_PRESENT == 1)
 #include <ti/csl/csl_bcdma.h>
 #include <ti/csl/csl_pktdma.h>
+#include <ti/csl/src/ip/udmap/V0/csl_udmap_cppi5.h>
 #endif
 #include <ti/csl/csl_intaggr.h>
 #include <ti/csl/csl_intr_router.h>
