@@ -560,7 +560,7 @@ OSPI_Baremetal_Flash_TestApp_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELIST)
 endif
 export OSPI_Baremetal_Flash_TestApp_$(SOC)_CORELIST
 
-ifeq ($(SOC),$(filter $(SOC), j721e am65xx j7200))
+ifeq ($(SOC),$(filter $(SOC), j721e am65xx j7200 am64x))
 OSPI_Baremetal_Flash_TestApp_SBL_APPIMAGEGEN = yes
 export OSPI_Baremetal_Flash_TestApp_SBL_APPIMAGEGEN
 endif
@@ -587,7 +587,7 @@ OSPI_Baremetal_Flash_Dma_TestApp_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELIST)
 endif
 export OSPI_Baremetal_Flash_Dma_TestApp_$(SOC)_CORELIST
 
-ifeq ($(SOC),$(filter $(SOC), j721e am65xx j7200))
+ifeq ($(SOC),$(filter $(SOC), j721e am65xx j7200 am64x))
 OSPI_Baremetal_Flash_Dma_TestApp_SBL_APPIMAGEGEN = yes
 export OSPI_Baremetal_Flash_Dma_TestApp_SBL_APPIMAGEGEN
 endif
@@ -616,7 +616,7 @@ OSPI_Flash_TestApp_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELIST)
 endif
 export OSPI_Flash_TestApp_$(SOC)_CORELIST
 
-ifeq ($(SOC),$(filter $(SOC), j721e am65xx j7200))
+ifeq ($(SOC),$(filter $(SOC), j721e am65xx j7200 am64x))
 OSPI_Flash_TestApp_SBL_APPIMAGEGEN = yes
 export OSPI_Flash_TestApp_SBL_APPIMAGEGEN
 endif
@@ -670,7 +670,7 @@ OSPI_Flash_Dma_TestApp_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELIST)
 endif
 export OSPI_Flash_Dma_TestApp_$(SOC)_CORELIST
 
-ifeq ($(SOC),$(filter $(SOC), j721e am65xx j7200))
+ifeq ($(SOC),$(filter $(SOC), j721e am65xx j7200 am64x))
 OSPI_Flash_Dma_TestApp_SBL_APPIMAGEGEN = yes
 export OSPI_Flash_Dma_TestApp_SBL_APPIMAGEGEN
 endif
