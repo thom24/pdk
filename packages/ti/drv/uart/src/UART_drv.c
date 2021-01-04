@@ -72,10 +72,8 @@ const UART_Params UART_defaultParams = {
     UART_PAR_NONE,        /* parityType */
     NULL,                 /* readCallback2 */
     NULL,                 /* writeCallback2 */
-#ifdef PRU_ICSS_FW // PRU UART FW only
     UART_FC_NONE,         /* Flow Control type */
     0                     /* Flow Control threshold */
-#endif    
 };
 
 /* Default UART transaction parameters structure */

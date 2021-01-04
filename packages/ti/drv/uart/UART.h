@@ -357,7 +357,6 @@ typedef enum UART_PAR_e {
     UART_PAR_ONE  = 4   /*!< Parity bit is always one */
 } UART_PAR;
 
-#ifdef PRU_ICSS_FW // PRU UART FW only
 /*!
  *  @brief    UART flow control settings
  *
@@ -367,7 +366,6 @@ typedef enum UART_FC_TYPE_e {
     UART_FC_NONE = 0,   /*!< No flow control */
     UART_FC_HW   = 1    /*!< Hardware flow control */
 } UART_FC_TYPE;
-#endif
 
 /*!
  *  @brief    Basic UART Parameters
@@ -389,10 +387,8 @@ typedef struct UART_Params_s {
     UART_PAR        parityType;         /*!< Parity bit type for UART */
     UART_Callback2  readCallback2;      /**< Pointer to read callback2 */
     UART_Callback2  writeCallback2;     /**< Pointer to write callback2 */
-#ifdef PRU_ICSS_FW // PRU UART FW only, currently unsupported by HW IP driver
     UART_FC_TYPE    flowControlType;    /*!< Flow Control type */
     uint8_t         hwFlowControlThr;   /*!< Hardware flow Control threshold, 0-0x100 */
-#endif
 } UART_Params;
 
 /*!
