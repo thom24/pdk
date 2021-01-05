@@ -163,8 +163,8 @@ static void hostEmulation_triggerDMA(struct Udma_DrvObj * udmaDrvHandle)
     {
       uint8_t *srcPtr;
       uint8_t *dstPtr;
-      uint16_t *srcPtr1;
-      uint16_t *dstPtr1;
+      uint16_t *srcPtr16;
+      uint16_t *dstPtr16;
       uint32_t triggerType;
       uint32_t circDir;
       uint32_t icnt0;
@@ -260,11 +260,14 @@ static void hostEmulation_triggerDMA(struct Udma_DrvObj * udmaDrvHandle)
       /* allocate worst case, actual buffer used will depend on trugerType */
       uint32_t interimBufSize = (origTransferRecord->icnt0 * origTransferRecord->icnt1 * origTransferRecord->icnt2 *
                                         origTransferRecord->icnt3);
-      if ( ELYPE == CSL_UDMAP_TR_FMTFLAGS_ELYPE_2_1)
+      if (( ELYPE == CSL_UDMAP_TR_FMTFLAGS_ELYPE_2_1) ||
+          ( ELYPE == CSL_UDMAP_TR_FMTFLAGS_ELYPE_1_2))
+      {
         interimBufSize *= 2; // As icnt0 is in elements in case of 16 bit to 8 bit conversion
+      }
       interimBuffer = (uint8_t *)malloc(interimBufSize);
       dstPtr = interimBuffer;
-      dstPtr1 = (uint16_t *)interimBuffer;
+      dstPtr16 = (uint16_t *)interimBuffer;
 
       totalSrcCnt = nextTransferRecord->icnt0 * nextTransferRecord->icnt1 * nextTransferRecord->icnt2 * nextTransferRecord->icnt3;
       totalDstCnt = nextTransferRecord->dicnt0 * nextTransferRecord->dicnt1 * nextTransferRecord->dicnt2 * nextTransferRecord->dicnt3;
@@ -276,14 +279,24 @@ static void hostEmulation_triggerDMA(struct Udma_DrvObj * udmaDrvHandle)
 
       while (1)
       {
-        if( ELYPE == CSL_UDMAP_TR_FMTFLAGS_ELYPE_2_1)
+        if( ELYPE == CSL_UDMAP_TR_FMTFLAGS_ELYPE_1_2)
         {
-          srcPtr1 = (uint16_t *)nextTransferRecord->addr;
+          srcPtr = (uint8_t *)nextTransferRecord->addr;
           for (icnt0 = 0; icnt0 < nextTransferRecord->icnt0; icnt0++)
           {
-            *dstPtr1 = *srcPtr1;
-              srcPtr1 = (uint16_t *)hostEmulation_addressUpdate((uint64_t)srcPtr1, 2, srcAM0);
-              dstPtr1++;
+            *dstPtr16 = *srcPtr;
+              srcPtr = (uint8_t *)hostEmulation_addressUpdate((uint64_t)srcPtr, 1, srcAM0);
+              dstPtr16++;
+          }
+        }
+        else if( ELYPE == CSL_UDMAP_TR_FMTFLAGS_ELYPE_2_1)
+        {
+          srcPtr16 = (uint16_t *)nextTransferRecord->addr;
+          for (icnt0 = 0; icnt0 < nextTransferRecord->icnt0; icnt0++)
+          {
+            *dstPtr16 = *srcPtr16;
+              srcPtr16 = (uint16_t *)hostEmulation_addressUpdate((uint64_t)srcPtr16, 2, srcAM0);
+              dstPtr16++;
           }
         }
         else
@@ -370,30 +383,40 @@ static void hostEmulation_triggerDMA(struct Udma_DrvObj * udmaDrvHandle)
       loopCnt2Reset = 0;
 
      srcPtr = interimBuffer;
-     srcPtr1 = (uint16_t *)interimBuffer;
+     srcPtr16 = (uint16_t *)interimBuffer;
       /* Now copy the intermediate data to the destination buffer */
      while (1)
       {
-        if( ELYPE == CSL_UDMAP_TR_FMTFLAGS_ELYPE_2_1)
+        if( ELYPE == CSL_UDMAP_TR_FMTFLAGS_ELYPE_1_2)
+        {
+          dstPtr16 = (uint16_t *)nextTransferRecord->daddr;
+          for (icnt0 = 0; icnt0 < nextTransferRecord->dicnt0; icnt0++)
+          {
+            *dstPtr16 = (uint16_t)(*srcPtr16);
+            srcPtr16++;
+            dstPtr16 = (uint16_t *)hostEmulation_addressUpdate((uint64_t)dstPtr16, 2, dstAM0);
+          }
+        }
+        else if( ELYPE == CSL_UDMAP_TR_FMTFLAGS_ELYPE_2_1)
         {
           dstPtr = (uint8_t *)nextTransferRecord->daddr;
           for (icnt0 = 0; icnt0 < nextTransferRecord->dicnt0; icnt0++)
           {
-            *dstPtr = (uint8_t)(*srcPtr1);
-              srcPtr1++;
+            *dstPtr = (uint8_t)(*srcPtr16);
+              srcPtr16++;
               dstPtr = (uint8_t *)hostEmulation_addressUpdate((uint64_t)dstPtr, 1, dstAM0);
           }
         }
         else
-      {
-        dstPtr = (uint8_t *)nextTransferRecord->daddr;
-
-        for (icnt0 = 0; icnt0 < nextTransferRecord->dicnt0; icnt0++)
         {
-          *dstPtr = *srcPtr;
-           *srcPtr++;
-            dstPtr = (uint8_t *)hostEmulation_addressUpdate((uint64_t)dstPtr, 1, dstAM0);
-        }
+          dstPtr = (uint8_t *)nextTransferRecord->daddr;
+
+          for (icnt0 = 0; icnt0 < nextTransferRecord->dicnt0; icnt0++)
+          {
+            *dstPtr = *srcPtr;
+             *srcPtr++;
+              dstPtr = (uint8_t *)hostEmulation_addressUpdate((uint64_t)dstPtr, 1, dstAM0);
+          }
         }
         nextTransferRecord->dicnt1--;
 
