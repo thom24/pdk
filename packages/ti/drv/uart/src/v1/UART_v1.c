@@ -906,11 +906,19 @@ static UART_Handle UART_open_v1(UART_Handle handle, const UART_Params *params)
 
             UART_drv_log1("UART:(0x%x) opened", hwAttrs->baseAddr);
         }
-    }
 
-    if (object->params.flowControlType == UART_FC_HW)
-    {
-        UARTHardwareFlowCtrlOptSet(hwAttrs->baseAddr, UART_RTS_CTS_ENABLE);
+        /* Configure the HW flow control */
+        if ((retHandle != NULL) && (object != NULL))
+        {
+            if (object->params.flowControlType == UART_FC_HW)
+            {
+                UARTHardwareFlowCtrlOptSet(hwAttrs->baseAddr, UART_RTS_CTS_ENABLE);
+            }
+            else
+            {
+                UARTHardwareFlowCtrlOptSet(hwAttrs->baseAddr, UART_NO_HARDWARE_FLOW_CONTROL);
+            }
+        }
     }
 
     /* Return the handle of the UART_Object. */
