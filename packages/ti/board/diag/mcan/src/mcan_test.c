@@ -44,7 +44,7 @@
  *
  *  Supported SoCs: AM65XX, J721E, J7200,AM64x, TPR12.
  *
- *  Supported Platforms: am65xx_idk, j721e_evm, j7200_evm, am64x_evm & tpr12_evm.
+ *  Supported Platforms: am65xx_idk, j721e_evm, j7200_evm, am64x_evm, am64x_svb & tpr12_evm.
  *
  */
 
@@ -78,10 +78,11 @@ BoardDiag_McanPortInfo_t gMcanDiagPortInfo[MCAN_MAX_PORTS_EXP] =
  {CSL_MCAN8_MSGMEM_RAM_BASE,     8, MAIN_MCAN8_TX_INT_NUM, MAIN_MCAN8_RX_INT_NUM, MAIN_MCAN8_TS_INT_NUM},
  {CSL_MCAN10_MSGMEM_RAM_BASE,   10, MAIN_MCAN10_TX_INT_NUM, MAIN_MCAN10_RX_INT_NUM, MAIN_MCAN10_TS_INT_NUM}
 };
-#elif defined(am64x_evm)
-BoardDiag_McanPortInfo_t  gMcanDiagPortInfo[MCAN_MAX_PORTS] = {{CSL_MCAN0_MSGMEM_RAM_BASE,     0, MAIN_MCAN0_TX_INT_NUM, MAIN_MCAN0_RX_INT_NUM, MAIN_MCAN0_TS_INT_NUM},
-                                                       {CSL_MCAN1_MSGMEM_RAM_BASE,     1, MAIN_MCAN1_TX_INT_NUM, MAIN_MCAN1_RX_INT_NUM, MAIN_MCAN1_TS_INT_NUM},
-                                                      };
+#elif defined(SOC_AM64X)
+BoardDiag_McanPortInfo_t  gMcanDiagPortInfo[MCAN_MAX_PORTS] =
+{{CSL_MCAN0_MSGMEM_RAM_BASE,     0, MAIN_MCAN0_TX_INT_NUM, MAIN_MCAN0_RX_INT_NUM, MAIN_MCAN0_TS_INT_NUM},
+ {CSL_MCAN1_MSGMEM_RAM_BASE,     1, MAIN_MCAN1_TX_INT_NUM, MAIN_MCAN1_RX_INT_NUM, MAIN_MCAN1_TS_INT_NUM},
+};
 
 #elif defined(tpr12_evm)
 BoardDiag_McanPortInfo_t  gMcanDiagPortInfo[MCAN_MAX_PORTS] = {{CSL_MSS_MCANA_MSG_RAM_U_BASE,     0, MAIN_MCAN0_TX_INT_NUM, MAIN_MCAN0_RX_INT_NUM, MAIN_MCAN0_TS_INT_NUM},
@@ -886,7 +887,7 @@ static void BoardDiag_mcanEnable(void)
     BoardDiag_mcanGpioConfig(CSL_GPIO1_BASE, 1);
     GPIO_write(0, 1);
     GPIO_write(1, 1);
-#elif defined(am64x_evm)
+#elif defined(SOC_AM64X)
     Board_I2cInitCfg_t i2cCfg;
 
     i2cCfg.i2cInst   = BOARD_I2C_IOEXP_DEVICE1_INSTANCE;
@@ -1005,7 +1006,7 @@ int32_t BoardDiag_mcanTest(void)
 #if !defined(SOC_TPR12)
     BoardDiag_mcanEnable();
 #endif
-#if defined(am65xx_idk) || defined(am64x_evm) || defined(SOC_TPR12)
+#if defined(am65xx_idk) || defined(SOC_AM64X) || defined(SOC_TPR12)
     mcanMaxPorts = MCAN_MAX_PORTS;
 #else
     if(expBoardDetect)
