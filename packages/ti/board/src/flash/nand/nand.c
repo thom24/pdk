@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, Texas Instruments Incorporated
+ * Copyright (c) 2016-2020, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,7 +36,7 @@
 
 uint32_t Nand_intf;
 
-#if defined (evmAM437x)
+#if defined (evmAM437x) || defined (am64x_svb) || defined (am640x_svb)
 NAND_Config Nand_config[BOARD_FLASH_NAND_INTF_MAX] =
 {
     {

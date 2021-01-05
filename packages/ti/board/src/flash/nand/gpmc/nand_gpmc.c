@@ -58,7 +58,11 @@ NAND_Info Nand_gpmcInfo =
     0,                        /* hwHandle */
     0,                        /* manufacturerId */
     0,                        /* deviceId */
+#if defined(am64x_svb)
+    NAND_BUSWIDTH_16BITS,      /* busWidth */
+#else
     NAND_BUSWIDTH_8BITS,      /* busWidth */
+#endif
     NAND_NUM_BLOCKS,          /* blockCnt */
     NAND_NUM_PAGES_PER_BLOCK, /* pageCnt */
     NAND_PAGE_SIZE,           /* pageSize */

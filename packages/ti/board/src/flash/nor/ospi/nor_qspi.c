@@ -40,7 +40,7 @@
 #if defined (j7200_evm)
 /* Entry offset is at index 5 of SPI config array*/
 #define SPI_CONFIG_OFFSET     (5U)
-#elif defined (am64x_evm)
+#elif defined (am64x_evm) || defined (am64x_svb) || defined (am640x_svb)
 #define SPI_CONFIG_OFFSET     (7U)
 #else
 #define SPI_CONFIG_OFFSET     CSL_MCSPI_PER_CNT
@@ -145,7 +145,7 @@ static NOR_STATUS Nor_qspiEnableDDR(SPI_Handle handle)
 
     hwAttrs = (OSPI_v0_HwAttrs const *)handle->hwAttrs;
 
-#if defined (j721e_evm) || defined (j7200_evm)
+#if defined (j721e_evm) || defined (j7200_evm) || defined (am64x_svb) || defined (am640x_svb)
     /* Send Write Enable command */
     if (Nor_qspiCmdWrite(handle, &cmdWren, 1, 0))
     {
@@ -225,7 +225,7 @@ static NOR_STATUS Nor_qspiEnableSDR(SPI_Handle handle)
 
     hwAttrs = (OSPI_v0_HwAttrs const *)handle->hwAttrs;
 
-#if defined (j721e_evm) || defined (j7200_evm)
+#if defined (j721e_evm) || defined (j7200_evm) || defined (am64x_svb) || defined (am640x_svb)
     /* Send Write Enable command */
     if (Nor_qspiCmdWrite(handle, &cmdWren, 1, 0))
     {
@@ -238,11 +238,6 @@ static NOR_STATUS Nor_qspiEnableSDR(SPI_Handle handle)
     retVal = Nor_qspiCmdWrite(handle, data, 1, 1);
     if (retVal == NOR_PASS)
     {
-        if (Nor_qspiWaitReady(handle, NOR_WRR_WRITE_TIMEOUT))
-        {
-            return NOR_FAIL;
-        }
-
         dummyCycles = NOR_QUAD_READ_DUMMY_CYCLE;
         rx_lines    = OSPI_XFER_LINES_QUAD;
         opCode[0]     = NOR_CMD_QUAD_IO_FAST_RD;

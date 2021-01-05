@@ -103,10 +103,10 @@ NOR_Config Nor_config[BOARD_FLASH_NOR_INTF_MAX] =
         &Nor_qspiFxnTable
     },
     {
-        NULL
+        &Nor_gpmcFxnTable
     },
     {
-        &Nor_ospiFxnTable
+        &Nor_xspiFxnTable
     },
     {
         NULL

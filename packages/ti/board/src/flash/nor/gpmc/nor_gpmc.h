@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2017, Texas Instruments Incorporated
+ * Copyright (c) 2016-2020, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -50,10 +50,12 @@ extern "C" {
 
 #include <ti/board/src/flash/nor/nor.h>
 #include <ti/drv/gpmc/GPMC.h>
+#include <ti/drv/gpmc/soc/GPMC_soc.h>
 
 #if defined (icev2AM335x)
 #include <ti/board/src/flash/nor/device/m29w160eb.h>
-#include <ti/drv/gpmc/soc/GPMC_soc.h>
+#elif defined (am64x_svb) || defined (am640x_svb)
+#include <ti/board/src/flash/nor/device/mt28ew256aba.h>
 #endif
 
 #define BIT5          (0x20U)

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, Texas Instruments Incorporated
+ * Copyright (c) 2016-2020, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -53,6 +53,8 @@ extern "C" {
 
 #if defined (evmAM437x)
 #include <ti/board/src/flash/nand/device/mt29f4g08ab.h>
+#elif defined (am64x_svb) || defined (am640x_svb)
+#include <ti/board/src/flash/nand/device/mt29f8g16abafah.h>
 #endif
 
 /**************************************************************************

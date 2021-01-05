@@ -122,6 +122,10 @@ typedef int32_t Board_flash_STATUS;       /** Board Flash API return type */
 #define BOARD_FLASH_ID_GD25B16CSAG         (0x4015U)  /** Giga device 16Mbit NOR Flash **/
 #define BOARD_FLASH_ID_GD25B64CW2G         (0x4017U)  /** Giga device 16Mbit NOR Flash **/
 #define BOARD_FLASH_ID_W25Q16FWSF          (0x6015U)  /** Winbond flash model on TPR12 QT **/
+#define BOARD_FLASH_ID_MT29F4G16ABAFAH     (0xCC4DU)  /* Device Id code 1 */
+#define BOARD_FLASH_ID_MT29F8G16ABACAWP    (0x2C00U)  /* Device Id code 1 */
+#define BOARD_FLASH_ID_MT28EW256ABA        (0x227EU)  /* Device Id code 1 */
+#define BOARD_FLASH_ID_CY7C10612G          (0)
 
 /**
  * @brief 	Board specific Flash Device Identifiers.

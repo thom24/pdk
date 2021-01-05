@@ -68,11 +68,14 @@ static uint32_t Board_getFlashIntf(uint32_t deviceId)
     {
         flashIntf = BOARD_FLASH_NOR_QSPI;
     }
-    else if(deviceId == BOARD_FLASH_ID_MT29W160EB)
+    else if((deviceId == BOARD_FLASH_ID_MT29W160EB) || \
+            (deviceId == BOARD_FLASH_ID_MT28EW256ABA))
     {
         flashIntf = BOARD_FLASH_NOR_GPMC;
     }
-    else if(deviceId == BOARD_FLASH_ID_MT29F4G08ABAEAWP)
+    else if((deviceId == BOARD_FLASH_ID_MT29F4G08ABAEAWP) || \
+            (deviceId == BOARD_FLASH_ID_MT29F4G16ABAFAH) || \
+            (deviceId == BOARD_FLASH_ID_MT29F8G16ABACAWP))
     {
         flashIntf = BOARD_FLASH_NAND_GPMC;
     }
@@ -138,7 +141,8 @@ Board_flashHandle Board_flashOpen(uint32_t deviceId, uint32_t portNum, void *par
         (deviceId == BOARD_FLASH_ID_GD25B16CSAG)         || \
         (deviceId == BOARD_FLASH_ID_GD25B64CW2G)         || \
         (deviceId == BOARD_FLASH_ID_W25Q16FWSF)          || \
-        (deviceId == BOARD_FLASH_ID_MX25V1635F)
+        (deviceId == BOARD_FLASH_ID_MX25V1635F)			 || \
+        (deviceId == BOARD_FLASH_ID_MT28EW256ABA)
        )
     {
         /* Open the NOR flash */
@@ -172,7 +176,9 @@ Board_flashHandle Board_flashOpen(uint32_t deviceId, uint32_t portNum, void *par
     NAND_HANDLE        flashHandle;
     NAND_Info         *nandInfo;
 
-    if (deviceId == BOARD_FLASH_ID_MT29F4G08ABAEAWP)
+    if ((deviceId == BOARD_FLASH_ID_MT29F4G08ABAEAWP) || \
+        (deviceId == BOARD_FLASH_ID_MT29F4G16ABAFAH) || \
+        (deviceId == BOARD_FLASH_ID_MT29F8G16ABACAWP))
     {
         /* Open the Nand flash */
         flashHandle = NAND_open(flashIntf, portNum, params);
@@ -240,13 +246,16 @@ Board_flash_STATUS Board_flashClose(Board_flashHandle handle)
         (flashInfo->device_id == BOARD_FLASH_ID_GD25B16CSAG)         || \
         (flashInfo->device_id == BOARD_FLASH_ID_GD25B64CW2G)         || \
         (flashInfo->device_id == BOARD_FLASH_ID_W25Q16FWSF)          || \
-        (flashInfo->device_id == BOARD_FLASH_ID_MX25V1635F)
+        (flashInfo->device_id == BOARD_FLASH_ID_MX25V1635F)			 || \
+        (flashInfo->device_id == BOARD_FLASH_ID_MT28EW256ABA)
        )
     {
         NOR_close(flashInfo->flashHandle);
     }
 #elif defined (BOARD_NAND_FLASH_IN)
-    if (flashInfo->device_id == BOARD_FLASH_ID_MT29F4G08ABAEAWP)
+    if ((flashInfo->device_id == BOARD_FLASH_ID_MT29F4G08ABAEAWP) || \
+        (flashInfo->device_id == BOARD_FLASH_ID_MT29F4G16ABAFAH) || \
+        (flashInfo->device_id == BOARD_FLASH_ID_MT29F8G16ABACAWP))
     {
         NAND_close(flashInfo->flashHandle);
     }
@@ -302,7 +311,8 @@ Board_flash_STATUS Board_flashRead(Board_flashHandle  handle,
         (flashInfo->device_id == BOARD_FLASH_ID_GD25B16CSAG)         || \
         (flashInfo->device_id == BOARD_FLASH_ID_GD25B64CW2G)         || \
         (flashInfo->device_id == BOARD_FLASH_ID_W25Q16FWSF)          || \
-        (flashInfo->device_id == BOARD_FLASH_ID_MX25V1635F)
+        (flashInfo->device_id == BOARD_FLASH_ID_MX25V1635F)			 || \
+        (flashInfo->device_id == BOARD_FLASH_ID_MT28EW256ABA)
        )
     {
         if (params)
@@ -318,7 +328,9 @@ Board_flash_STATUS Board_flashRead(Board_flashHandle  handle,
         return BOARD_FLASH_EOK;
     }
 #elif defined (BOARD_NAND_FLASH_IN)
-    if (flashInfo->device_id == BOARD_FLASH_ID_MT29F4G08ABAEAWP)
+    if ((flashInfo->device_id == BOARD_FLASH_ID_MT29F4G08ABAEAWP) || \
+        (flashInfo->device_id == BOARD_FLASH_ID_MT29F4G16ABAFAH) || \
+        (flashInfo->device_id == BOARD_FLASH_ID_MT29F8G16ABACAWP))
     {
         if (NAND_read(flashInfo->flashHandle, offset, len, buf) \
             != NAND_PASS)
@@ -467,7 +479,8 @@ Board_flash_STATUS Board_flashOffsetToBlkPage(Board_flashHandle  handle,
         (flashInfo->device_id == BOARD_FLASH_ID_GD25B16CSAG)         || \
         (flashInfo->device_id == BOARD_FLASH_ID_GD25B64CW2G)         || \
         (flashInfo->device_id == BOARD_FLASH_ID_W25Q16FWSF)          || \
-        (flashInfo->device_id == BOARD_FLASH_ID_MX25V1635F)
+        (flashInfo->device_id == BOARD_FLASH_ID_MX25V1635F)			 || \
+        (flashInfo->device_id == BOARD_FLASH_ID_MT28EW256ABA)
        )
     {
         block_count = flashInfo->block_count;
@@ -540,7 +553,8 @@ Board_flash_STATUS Board_flashBlkPageToOffset(Board_flashHandle  handle,
         (flashInfo->device_id == BOARD_FLASH_ID_GD25B16CSAG)         || \
         (flashInfo->device_id == BOARD_FLASH_ID_GD25B64CW2G)         || \
         (flashInfo->device_id == BOARD_FLASH_ID_W25Q16FWSF)          || \
-        (flashInfo->device_id == BOARD_FLASH_ID_MX25V1635F)
+        (flashInfo->device_id == BOARD_FLASH_ID_MX25V1635F)			 || \
+        (flashInfo->device_id == BOARD_FLASH_ID_MT28EW256ABA)
        )
     {
         block_count = flashInfo->block_count;
@@ -607,7 +621,8 @@ Board_flash_STATUS Board_flashWrite(Board_flashHandle  handle,
         (flashInfo->device_id == BOARD_FLASH_ID_GD25B16CSAG)         || \
         (flashInfo->device_id == BOARD_FLASH_ID_GD25B64CW2G)         || \
         (flashInfo->device_id == BOARD_FLASH_ID_W25Q16FWSF)          || \
-        (flashInfo->device_id == BOARD_FLASH_ID_MX25V1635F)
+        (flashInfo->device_id == BOARD_FLASH_ID_MX25V1635F)			 || \
+        (flashInfo->device_id == BOARD_FLASH_ID_MT28EW256ABA)
        )
     {
         if (params)
@@ -623,7 +638,9 @@ Board_flash_STATUS Board_flashWrite(Board_flashHandle  handle,
         return BOARD_FLASH_EOK;
     }
 #elif defined (BOARD_NAND_FLASH_IN)
-    if (flashInfo->device_id == BOARD_FLASH_ID_MT29F4G08ABAEAWP)
+    if ((flashInfo->device_id == BOARD_FLASH_ID_MT29F4G08ABAEAWP) || \
+        (flashInfo->device_id == BOARD_FLASH_ID_MT29F4G16ABAFAH) || \
+        (flashInfo->device_id == BOARD_FLASH_ID_MT29F8G16ABACAWP))
     {
         if (NAND_write(flashInfo->flashHandle, offset, len, buf) != NAND_PASS)
         {
@@ -693,7 +710,8 @@ Board_flash_STATUS Board_flashEraseBlk(Board_flashHandle handle,
         (flashInfo->device_id == BOARD_FLASH_ID_GD25B16CSAG)         || \
         (flashInfo->device_id == BOARD_FLASH_ID_GD25B64CW2G)         || \
         (flashInfo->device_id == BOARD_FLASH_ID_W25Q16FWSF)          || \
-        (flashInfo->device_id == BOARD_FLASH_ID_MX25V1635F)
+        (flashInfo->device_id == BOARD_FLASH_ID_MX25V1635F)			 || \
+        (flashInfo->device_id == BOARD_FLASH_ID_MT28EW256ABA)
        )
     {
         if (NOR_erase (flashInfo->flashHandle, blk_num, flashInfo->blkErase_flag) != NOR_PASS)
@@ -705,7 +723,9 @@ Board_flash_STATUS Board_flashEraseBlk(Board_flashHandle handle,
 #elif defined (BOARD_NAND_FLASH_IN)
     NAND_STATUS status;
 
-    if (flashInfo->device_id == BOARD_FLASH_ID_MT29F4G08ABAEAWP)
+    if ((flashInfo->device_id == BOARD_FLASH_ID_MT29F4G08ABAEAWP) || \
+        (flashInfo->device_id == BOARD_FLASH_ID_MT29F4G16ABAFAH) || \
+        (flashInfo->device_id == BOARD_FLASH_ID_MT29F8G16ABACAWP))
     {
         if (flashInfo->bblist[blk_num] == NAND_BAD_BLOCK)
         {

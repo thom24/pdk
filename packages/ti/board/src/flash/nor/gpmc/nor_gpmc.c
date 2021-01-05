@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 - 2019, Texas Instruments Incorporated
+ * Copyright (c) 2016 - 2020, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -58,7 +58,11 @@ NOR_Info Nor_gpmcInfo =
     0,                          /* deviceId */
     0,                          /* busWidth */
     NOR_NUM_BLOCKS,            /* blockCnt */
-    NOR_NUM_PAGES_PER_BLOCK,   /* pageCnt */
+#if defined(am64x_svb)
+    1,                          /* pageCnt */
+#else
+    NOR_NUM_PAGES_PER_BLOCK    /* pageCnt */
+#endif
     NOR_PAGE_SIZE,             /* pageSize */
     0,                         /* baseAddr */
     NOR_SECTOR_SIZE            /* sectorSize */
@@ -217,7 +221,11 @@ static NOR_STATUS Nor_gpmcReadId(NOR_HANDLE handle)
     /* Read manufacturer's and device ID */
     manfID = Nor_gpmcReadData(handle, norGpmcInfo->baseAddr, NOR_MANFID_ADDR);
     devID = Nor_gpmcReadData(handle, norGpmcInfo->baseAddr, NOR_DEVID_ADDR0);
+#if defined(am64x_svb)
+    if ((manfID == NOR_MANF_ID) && (devID == NOR_DEVICE_ID1))
+#else
     if ((manfID == NOR_MANF_ID) && (devID == NOR_DEVICE_ID))
+#endif
     {
         Nor_gpmcInfo.manufacturerId = manfID;
         Nor_gpmcInfo.deviceId = devID;
@@ -255,6 +263,9 @@ NOR_HANDLE Nor_gpmcOpen(uint32_t norIntf, uint32_t portNum, void *params)
 		GPMC_control(hwHandle, GPMC_V1_CMD_GETDEVADDR, (void *)(&Nor_gpmcInfo.baseAddr));
 		GPMC_control(hwHandle, GPMC_V1_CMD_GETDEVSIZE, (void *)(&Nor_gpmcInfo.busWidth));
 
+#if defined(am64x_svb)
+        Nor_gpmcInfo.baseAddr = Nor_gpmcInfo.baseAddr | 0x40000000;
+#endif
         Nor_gpmcSoftReset((NOR_HANDLE)(&Nor_gpmcInfo));
         if (Nor_gpmcReadId((NOR_HANDLE)(&Nor_gpmcInfo)) == NOR_PASS)
         {

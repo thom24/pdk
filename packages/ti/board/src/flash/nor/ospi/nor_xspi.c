@@ -38,7 +38,7 @@
 #if defined (j7200_evm) 
 /* SPI entry offset is at index 5 of SPI config array */
 #define SPI_CONFIG_OFFSET     (5U)
-#elif defined (am64x_evm) 
+#elif defined (am64x_evm) || defined(am64x_svb)
 /* SPI entry offset is at index 7 of SPI config array */
 #define SPI_CONFIG_OFFSET     (7U)
 #else

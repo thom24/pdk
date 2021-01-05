@@ -36,14 +36,14 @@ SRCS_COMMON += board_flash.c
 SRCDIR += src/flash src/flash/include
 INCDIR += src/flash src/flash/include
 
-ifeq ($(BOARD),$(filter $(BOARD), icev2AM335x))
+ifeq ($(BOARD),$(filter $(BOARD), icev2AM335x am64x_svb am640x_svb))
 SRCDIR += src/flash/nor src/flash/nor/device src/flash/nor/gpmc
 INCDIR += src/flash/nor src/flash/nor/device src/flash/nor/gpmc
 
 SRCS_COMMON += nor.c nor_gpmc.c
 endif
 
-ifeq ($(BOARD),$(filter $(BOARD), evmAM437x))
+ifeq ($(BOARD),$(filter $(BOARD), evmAM437x am64x_svb am640x_svb))
 SRCDIR += src/flash/nand src/flash/nand/device src/flash/nand/gpmc
 INCDIR += src/flash/nand src/flash/nand/device src/flash/nand/gpmc
 
@@ -75,7 +75,7 @@ endif
 endif
 
 
-ifeq ($(BOARD),$(filter $(BOARD), am65xx_idk am65xx_evm j721e_sim j721e_evm am64x_svb))
+ifeq ($(BOARD),$(filter $(BOARD), am65xx_idk am65xx_evm j721e_sim j721e_evm))
 SRCDIR += src/flash/nor src/flash/nor/device src/flash/nor/ospi
 INCDIR += src/flash/nor src/flash/nor/device src/flash/nor/ospi
 SRCS_COMMON += nor_ospi.c nor.c nor_spi_patterns.c nor_spi_phy_tune.c
@@ -92,7 +92,7 @@ PACKAGE_SRCS_COMMON += src/flash/nor/device/m35xu512.h
 endif
 endif
 
-ifeq ($(BOARD),$(filter $(BOARD), j7200_evm am64x_evm))
+ifeq ($(BOARD),$(filter $(BOARD), j7200_evm am64x_evm am64x_svb))
 SRCDIR += src/flash/nor src/flash/nor/device src/flash/nor/ospi
 INCDIR += src/flash/nor src/flash/nor/device src/flash/nor/ospi
 SRCS_COMMON += nor_xspi.c nor.c nor_spi_patterns.c nor_spi_phy_tune.c
@@ -115,10 +115,14 @@ PACKAGE_SRCS_COMMON += src/flash/nor/device/mt25qu512abb.h
 PACKAGE_SRCS_COMMON += src/flash/nor/device/s25fl256s.h
 endif
 
-ifeq ($(BOARD),$(filter $(BOARD), am64x_evm))
+ifeq ($(BOARD),$(filter $(BOARD), am64x_evm am64x_svb am640x_svb))
 SRCS_COMMON += nor_qspi.c
 PACKAGE_SRCS_COMMON += src/flash/nor/ospi/nor_qspi.c src/flash/nor/ospi/nor_qspi.h
+ifeq ($(BOARD),$(filter $(BOARD), am64x_evm))
 PACKAGE_SRCS_COMMON += src/flash/nor/device/s25fl256s.h
+else
+PACKAGE_SRCS_COMMON += src/flash/nor/device/mt25qu512abb.h
+endif
 endif
 
 ifeq ($(BOARD),$(filter $(BOARD), tpr12_evm tpr12_qt))
