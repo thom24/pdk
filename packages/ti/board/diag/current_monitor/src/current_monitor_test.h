@@ -90,6 +90,8 @@ extern "C" {
 #define TOT_INA_IN_PM1                    (16U)
 #elif defined(am64x_evm)
 #define NUM_OF_INA_DEVICES                (0x06U)
+#elif defined(am64x_svb)
+#define NUM_OF_INA_DEVICES                (11U)
 #endif
 
 /* INA Device register masks */

@@ -46,7 +46,7 @@
  *
  *  Supported SoCs: K2G, AM65XX, J721E, J7200, TPR12 & AM64x
  *
- *  Supported Platforms: iceK2G, am65xx_evm, am65xx_idk, j721e_evm, j7200_evm, tpr12_evm & am64x_evm.
+ *  Supported Platforms: iceK2G, am65xx_evm, am65xx_idk, j721e_evm, j7200_evm, tpr12_evm, am64x_evm & am64x_svb.
  *
  */
 
@@ -141,7 +141,7 @@ inaCfgObj_t inaDevice[NUM_OF_INA_DEVICES] = {
     {"VIOIN_3V3",    0x44, {0.002, 0.0025, 1.25, 0.001068115, 0.0000427, 59919}},
     {"VDD_SRAM_1V2", 0x45, {0.002, 0.0025, 1.25, 0.000991821, 0.0000397, 64528}}
 };
-#elif defined(SOC_AM64X)
+#elif defined(am64x_evm) 
 inaCfgObj_t inaDevice[NUM_OF_INA_DEVICES] = {
     {"VDD_CORE",      0x40, {0.002, 0.0025, 1.25, 0.001804352, 0.0000722, 35469}},
     {"VDDR_CORE",     0x41, {0.01,  0.0025, 1.25, 0.000198364, 0.0000079, 64527}},
@@ -149,6 +149,20 @@ inaCfgObj_t inaDevice[NUM_OF_INA_DEVICES] = {
     {"SoC_DVDD1V8",   0x4B, {0.01,  0.0025, 1.25, 0.000268555, 0.0000107, 47662}},
     {"SoC_DVDD3V3",   0x4C, {0.01,  0.0025, 1.25, 0.0002388,   0.0000096, 53601}},
     {"SoC_AVDD1V8",   0x4E, {0.01,  0.0025, 1.25, 0.001266479, 0.0000507, 10106}}
+};
+#elif defined(am64x_svb)
+inaCfgObj_t inaDevice[NUM_OF_INA_DEVICES] = {
+    {"VDD_CORE",         0x40, {0.02, 0.0025, 1.25, 0.001879119873, 0.0000752, 3547}},
+    {"VDDR_CORE",        0x41, {0.1, 0.0025, 1.25, 0.0001724243164, 0.0000069, 7424}},
+    {"MCU_WKUP_1V8",     0x45, {0.1, 0.0025, 1.25, 0.0003814697266, 0.0000153, 3355}},
+    {"VDDS_DDR",         0x46, {0.1, 0.0025, 1.25, 0.0001525878906, 0.0000061, 8389}},
+    {"VDD_DIMM",         0x47, {0.1, 0.0025, 1.25, 0.00008850097656, 0.0000035, 14463}},
+    {"MCU_WKUP_3V3",     0x4A, {0.1, 0.0025, 1.25, 0.0003814697266,	0.0000153, 3355}},
+    {"SOC_1V8",          0x4B, {0.05, 0.0025, 1.25, 0.0004577636719, 0.0000183, 5592}},
+    {"SOC_3V3",          0x4C, {0.05, 0.0025, 1.25, 0.0003967285156, 0.0000159, 6453}},
+    {"MCU_WKUP_1V8_LDO", 0x4D, {0.1, 0.0025, 1.25, 0.00001907348633, 0.0000008, 41943}}, //AM64X_SVB_TODO: Need to update this Value
+    {"SOC_1V8_LDO",      0x4E, {0.1, 0.0025, 1.25, 0.00005340576172, 0.0000021, 23968}},
+    {"SOC_3V3_LDO",      0x4F, {0.1, 0.0025, 1.25, 0.00003051757813, 0.0000012, 41943}}
 };
 #else
 /* TODO: Need to update the values for iceK2G */
