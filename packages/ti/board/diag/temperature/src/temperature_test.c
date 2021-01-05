@@ -46,7 +46,7 @@
  *  Supported SoCs: K2G, AM571x, AM572x, AM437x, AM335x, AM65xx, J721E, J7200, TPR12 & AM64x
  *
  *  Supported Platforms: evmK2G, evmAM571x, evmAM572x, idkAM437x, evmAM335x,
- *  am65xx_evm, am65xx_idk, j721e_evm, j7200_evm, tpr12_evm & am64x_evm.
+ *  am65xx_evm, am65xx_idk, j721e_evm, j7200_evm, tpr12_evm, am64x_evm & am64x_svb.
  *
  */
 
@@ -363,7 +363,7 @@ int main(void)
 #endif
     Board_init(boardCfg);
 
-#if (defined(SOC_AM65XX) || defined(SOC_AM64X)) && !defined (__aarch64__)
+#if defined(SOC_AM65XX) && !defined (__aarch64__)
     /* MCU I2C instance will be active by default for R5 core.
      * Need update HW attrs to enable MAIN I2C instance.
      */
