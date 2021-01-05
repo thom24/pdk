@@ -366,7 +366,7 @@ export I2C_Baremetal_Eeprom_TestApp_BOARDLIST
 ifeq ($(SOC),$(filter $(SOC), j721e))
 I2C_Baremetal_Eeprom_TestApp_$(SOC)_CORELIST = $(drvi2c_j721e_CORELISTARM)
 else ifeq ($(SOC),$(filter $(SOC), am64x))
-I2C_Eeprom_TestApp_$(SOC)_CORELIST = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
+I2C_Baremetal_Eeprom_TestApp_$(SOC)_CORELIST = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
 else
 I2C_Baremetal_Eeprom_TestApp_$(SOC)_CORELIST = $(drvi2c_$(SOC)_CORELIST)
 endif
