@@ -303,7 +303,7 @@ endif
 export sciclient_unit_testapp_$(SOC)_CORELIST
 
 sciclient_unit_testapp_SBL_APPIMAGEGEN = no
-ifeq ($(SOC),$(filter $(SOC), j721e am65xx j7200))
+ifeq ($(SOC),$(filter $(SOC), j721e am65xx j7200 am64x))
   sciclient_unit_testapp_SBL_APPIMAGEGEN = yes
 endif
 export sciclient_unit_testapp_SBL_APPIMAGEGEN
