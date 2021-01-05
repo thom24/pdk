@@ -68,7 +68,7 @@ SECTIONS
     .data          : {} palign(128)    > MSMC3
     .boardcfg_data : {} palign(128)    > MSMC3
     .sysmem        : {}                > MSMC3
-    .data_buffer   : {} palign(128)    > MSMC3
+    .data_buffer   : {} palign(128)    > DDR0
 
     /* USB or any other LLD buffer for benchmarking */
     .benchmark_buffer (NOLOAD) {} ALIGN (8) > DDR0

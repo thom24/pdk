@@ -99,10 +99,8 @@ extern "C" {
 #define BOARD_DIAG_OSPI_HYPER_BUS_SEL_PIN     (0U)
 #endif
 
-#if defined(j7200_evm) || defined (am64x_evm)
+#if defined(j7200_evm) || defined (am64x_evm) || defined(am64x_svb)
 #define BOARD_DIAG_OSPI_FLASH_ID              (BOARD_FLASH_ID_S28HS512T)
-#elif defined(am64x_evm) || defined(am64x_svb)
-#define BOARD_DIAG_OSPI_FLASH_ID              (BOARD_FLASH_ID_MT35XU256ABA1G12)
 #else
 #define BOARD_DIAG_OSPI_FLASH_ID              (BOARD_FLASH_ID_MT35XU512ABA1G12)
 #endif

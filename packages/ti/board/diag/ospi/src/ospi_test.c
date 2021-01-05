@@ -44,7 +44,7 @@
  *
  *  Supported SoCs : AM65XX, J721E, J7200, AM64X
  *
- *  Supported Platforms: am65xx_evm, am65xx_idk, j721e_evm, j7200_evm, am64x_evm.
+ *  Supported Platforms: am65xx_evm, am65xx_idk, j721e_evm, j7200_evm, am64x_evm, am64x_svb.
  *
  */
 
@@ -52,7 +52,7 @@
 #include <ti/board/src/flash/nor/nor.h>
 #include <ti/board/src/flash/nor/ospi/nor_spi_patterns.h>
 
-#if (defined(DIAG_STRESS_TEST) && defined(j7200_evm))
+#if (defined(DIAG_STRESS_TEST) && defined(j7200_evm) || defined(SOC_AM64X))
 /* Buffer containing the known data that needs to be written to flash */
 uint8_t txBuf[MAX_BUFF_SIZE] __attribute__ ((section (".data_buffer")));
 /* Buffer containing the received data */
@@ -297,7 +297,7 @@ static int8_t BoardDiag_ospiFlashStressTest(void)
 #else
     ospi_cfg.dmaEnable  = false;
 #endif
-#if defined(j7200_evm)
+#if defined(j7200_evm) || defined(SOC_AM64X)
     ospi_cfg.phyEnable  = false;
     ospi_cfg.dtrEnable  = true;
     ospi_cfg.dacEnable  = false;

@@ -91,13 +91,23 @@ extern "C" {
 
 #elif defined(tpr12_evm)
 #define MAX_NUM_OF_BOARDS						(BOARD_ID_MAX_BOARDS)
-#elif defined(SOC_AM64X)
+#elif defined(am64x_evm)
 #define I2C_INSTANCE                            (0U)
 #define MAX_NUM_OF_BOARDS                       (2U)
 
 #define EVM_EEPROM_SLAVE_ADDR                   (0x50U)
 #define IOLINK_EEPROM_SLAVE_ADDR                (0x52U)
 #define STARTING_BOARD_NUM                      (1U)
+
+#elif defined(am64x_svb)
+#define STARTING_BOARD_NUM                      (0U)
+#define MAX_NUM_OF_BOARDS                       (10U)
+#define EEPROM_SLAVE_ADDR                       (BOARD_DUT_EEPROM_SLAVE_ADDR)
+#define FMZ_EEPROM_SLAVE_ADDR                   (BOARD_FMZ_EEPROM_SLAVE_ADDR)
+#define VPS_EEPROM_SLAVE_ADDR                   (BOARD_VPS_EEPROM_SLAVE_ADDR)
+#define DDR4_EEPROM_SLAVE_ADDR                  (BOARD_DDR_DIMM_EEPROM_SLAVE_ADDR)
+#define SERDES_EEPROM_SLAVE_ADDR                (BOARD_SERDES_EEPROM_SLAVE_ADDR) // J17 in PCIe x1 SMA SERDES 1-2 SHORT
+
 #else  /* j721e_evm */
 #define MAX_NUM_OF_BOARDS                       (9U)
 #define STARTING_BOARD_NUM                      (2U)

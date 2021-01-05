@@ -42,9 +42,9 @@
  *  writing a test pattern to a memory page and reading the same page for
  *  data verification. Nor flash will be using OSPI controller in quad mode.
  *
- *  Supported SoCs : J721E
+ *  Supported SoCs : J721E, AM64X
  *
- *  Supported Platforms: j721e_evm.
+ *  Supported Platforms: j721e_evm, am64x_svb.
  *
  */
 
@@ -246,8 +246,11 @@ static int8_t BoardDiag_norFlashStressTest(void)
 #else
     ospi_cfg.dmaEnable  = false;
 #endif
-#if defined(j721e_evm)
+#if defined(j721e_evm) || defined(am64x_svb)
     ospi_cfg.phyEnable  = false;
+#endif
+#if defined(am64x_svb)
+    ospi_cfg.chipSelect = CSL_OSPI_CS1;
 #endif
     ospi_cfg.xferLines = OSPI_XFER_LINES_QUAD;
     ospi_cfg.dtrEnable = false;
@@ -350,8 +353,11 @@ static int8_t BoardDiag_norFlashTest(void)
 #else
     ospi_cfg.dmaEnable  = false;
 #endif
-#if defined(j721e_evm)
+#if defined(j721e_evm) || defined(am64x_svb)
     ospi_cfg.phyEnable  = false;
+#endif
+#if defined(am64x_svb)
+    ospi_cfg.chipSelect = CSL_OSPI_CS1;
 #endif
     ospi_cfg.xferLines = OSPI_XFER_LINES_QUAD;
     ospi_cfg.dtrEnable = false;

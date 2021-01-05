@@ -71,6 +71,10 @@ INCLUDE_EXTERNAL_INTERFACES = pdk
 COMP_LIST_COMMON = $(PDK_COMMON_BAREMETAL_COMP)
 COMP_LIST_COMMON += spi_dma
 
+ifeq ($(BOARD), $(filter $(BOARD), am64x_svb))
+COMP_LIST_COMMON += gpmc
+endif
+
 # Common source files and CFLAGS across all platforms and cores
 PACKAGE_SRCS_COMMON = ../src makefile
 PACKAGE_SRCS_COMMON += ../../common/$(SOC)

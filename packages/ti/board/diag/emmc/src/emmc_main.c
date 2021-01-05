@@ -54,10 +54,10 @@
 #include <ti/drv/gpio/GPIO.h>
 #include <ti/drv/gpio/soc/GPIO_soc.h>
 #endif
-#if (defined(am65xx_evm) || defined(am65xx_idk) || defined(am64x_evm))
+#if (defined(am65xx_evm) || defined(am65xx_idk) || defined(SOC_AM64X))
 #include "board_i2c_io_exp.h"
 #endif
-#if defined(am64x_evm)
+#if defined(SOC_AM64X)
 #include "board_utils.h"
 #endif
 #include "board.h"
@@ -275,7 +275,7 @@ static void EmmcsReset(void)
                               GPIO_SIGNAL_LEVEL_HIGH);
 #endif
 
-#if defined(am64x_evm)
+#if defined(SOC_AM64X)
     Board_I2cInitCfg_t i2cCfg;
 
     i2cCfg.i2cInst    = BOARD_I2C_IOEXP_DEVICE1_INSTANCE;

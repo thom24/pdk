@@ -44,7 +44,7 @@
  *  Supported SoCs: AM65XX, J721E, J7200, TPR12, AM64x.
  *
  *  Supported Platforms: am65xx_evm, am65xx_idk, j721e_evm, j7200_evm, tpr12_evm,
- *                       am64x_evm
+ *                       am64x_evm ,am64x_svb.
  *
  */
 
@@ -82,6 +82,31 @@ boardProgInfo_t boardProgInfo[MAX_NUM_OF_BOARDS] = {
 Board_I2cInitCfg_t boardI2cInitCfg[MAX_NUM_OF_BOARDS] = {
     {0,     BOARD_SOC_DOMAIN_MAIN, false},
     {0,     BOARD_SOC_DOMAIN_MAIN, false}
+};
+#elif defined(am64x_svb)
+boardProgInfo_t boardProgInfo[MAX_NUM_OF_BOARDS] = {
+    {}, /* BOARD_ID FOR 0 IS NOT DEFIEND */
+    {"Board ID EEPROM - FMZ\0",                 FMZ_EEPROM_SLAVE_ADDR,      false},
+    {"Board ID EEPROM - VPS\0",                 VPS_EEPROM_SLAVE_ADDR,      false},
+    {"Board ID EEPROM - Serdes SMA\0",          SERDES_EEPROM_SLAVE_ADDR,   false},
+    {"Board ID EEPROM - DDR4\0",                DDR4_EEPROM_SLAVE_ADDR,     false},
+    {"Board ID EEPROM - DUT Board\0",           EEPROM_SLAVE_ADDR,          true},
+    {"Board ID EEPROM - LPDDR4\0",              DDR4_EEPROM_SLAVE_ADDR,     false},
+    {"Board ID EEPROM - Serdes PCIe X1\0",      SERDES_EEPROM_SLAVE_ADDR,   false},
+    {"Board ID EEPROM - Serdes USBA\0",         SERDES_EEPROM_SLAVE_ADDR,   false},
+    {"Board ID EEPROM - Serdes USB AB\0",       SERDES_EEPROM_SLAVE_ADDR,   false},
+};
+Board_I2cInitCfg_t boardI2cInitCfg[MAX_NUM_OF_BOARDS] = {
+    {}, /* BOARD_ID FOR 0 IS NOT DEFIEND */
+    {0,     BOARD_SOC_DOMAIN_MAIN, false},
+    {0,     BOARD_SOC_DOMAIN_MAIN, false},
+    {0,     BOARD_SOC_DOMAIN_MAIN, false},
+    {0,     BOARD_SOC_DOMAIN_MAIN, false},
+    {0,     BOARD_SOC_DOMAIN_MAIN, false},
+    {0,     BOARD_SOC_DOMAIN_MAIN, false},
+    {0,     BOARD_SOC_DOMAIN_MAIN, false},
+    {0,     BOARD_SOC_DOMAIN_MAIN, false},
+    {0,     BOARD_SOC_DOMAIN_MAIN, false},
 };
 #else
 
