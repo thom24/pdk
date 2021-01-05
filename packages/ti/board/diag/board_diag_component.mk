@@ -524,6 +524,26 @@ export board_diag_framework_$(SOC)_CORELIST
 export board_diag_framework_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
 board_diag_EXAMPLE_LIST += board_diag_framework
 
+# GPMC
+board_diag_gpmc_COMP_LIST = board_diag_gpmc
+board_diag_gpmc_RELPATH = ti/board/diag/gpmc/build
+board_diag_gpmc_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/gpmc/build
+board_diag_gpmc_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
+board_diag_gpmc_MAKEFILE = -f makefile
+board_diag_gpmc_BOARD_DEPENDENCY = yes
+board_diag_gpmc_CORE_DEPENDENCY = yes
+export board_diag_gpmc_COMP_LIST
+export board_diag_gpmc_BOARD_DEPENDENCY
+export board_diag_gpmc_CORE_DEPENDENCY
+export board_diag_gpmc_MAKEFILE
+board_diag_gpmc_PKG_LIST = board_diag_gpmc
+board_diag_gpmc_INCLUDE = $(board_diag_gpmc_PATH)
+board_diag_gpmc_BOARDLIST = am64x_svb am640x_svb
+board_diag_gpmc_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
+export board_diag_gpmc_$(SOC)_CORELIST
+export board_diag_gpmc_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
+board_diag_EXAMPLE_LIST += board_diag_gpmc
+
 # HDMI
 board_diag_hdmi_COMP_LIST = board_diag_hdmi
 board_diag_hdmi_RELPATH = ti/board/diag/hdmi/build
