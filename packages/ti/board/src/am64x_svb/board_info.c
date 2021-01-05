@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -38,10 +38,13 @@
  *
  */
 
+#include "board_utils.h"
 #include "board_internal.h"
 #include "board_cfg.h"
 #include <stdio.h>
 #include <string.h>
+
+extern Board_I2cInitCfg_t gBoardI2cInitCfg;
 
 /**
  *  @brief  This function is not supported by this platform.
@@ -57,6 +60,10 @@ Board_STATUS Board_getIDInfo(Board_IDInfo *info)
 
 /**
  *  @brief      Get board information.
+ *  
+ *  This function requires the information of I2C instance and domain
+ *  to which board ID EEPROM is connected. This need to be set using
+ *  Board_setI2cInitConfig() before calling this function.
  *
  *  @param[out] Board_STATUS
  *    Returns status on API call
@@ -68,7 +75,228 @@ Board_STATUS Board_getIDInfo(Board_IDInfo *info)
  */
 Board_STATUS Board_getIDInfo_v2(Board_IDInfo_v2 *info, uint8_t slaveAddress)
 {
-    return BOARD_SOK;
+    Board_STATUS ret = BOARD_SOK;
+    I2C_Transaction i2cTransaction;
+    I2C_Handle handle = NULL;
+    uint16_t offsetAddress = BOARD_EEPROM_HEADER_ADDR;
+    uint8_t rdBuff[3];
+    char txBuf[2] = {0x00, 0x00};
+    bool status;
+
+    I2C_transactionInit(&i2cTransaction);
+
+    handle = Board_getI2CHandle(gBoardI2cInitCfg.socDomain,
+                                gBoardI2cInitCfg.i2cInst);
+    if(handle == NULL)
+    {
+        ret = BOARD_I2C_OPEN_FAIL;
+    }
+
+    i2cTransaction.slaveAddress = slaveAddress;
+    i2cTransaction.writeBuf = (uint8_t *)&txBuf[0];
+    if (slaveAddress == BOARD_DDR_DIMM_EEPROM_SLAVE_ADDR)
+    {
+        i2cTransaction.writeCount = 1;
+        txBuf[0] = (char)((uint8_t) 0xFF & offsetAddress);
+    }
+    else
+    {
+        i2cTransaction.writeCount = 2;
+
+        /* Get header info */
+        txBuf[0] = (char)(((uint32_t) 0xFF00 & offsetAddress)>>8);
+        txBuf[1] = (char)((uint32_t) 0xFF & offsetAddress);
+    }
+    i2cTransaction.readBuf = &info->headerInfo;
+    i2cTransaction.readCount = BOARD_EEPROM_HEADER_FIELD_SIZE;
+
+    status = I2C_transfer(handle, &i2cTransaction);
+    if (status == false)
+    {
+        ret = BOARD_I2C_TRANSFER_FAIL;
+        Board_i2cDeInit();
+        return ret;
+    }
+
+    /* Checking whether the board contents are flashed or not */
+    if (info->headerInfo.magicNumber == BOARD_EEPROM_MAGIC_NUMBER)
+    {
+        offsetAddress = offsetAddress + i2cTransaction.readCount;
+        if (slaveAddress == BOARD_DDR_DIMM_EEPROM_SLAVE_ADDR)
+        {
+            txBuf[0] = (char)((uint8_t) 0xFF & offsetAddress);
+        }
+        else
+        {
+            txBuf[0] = (char)(((uint32_t) 0xFF00 & offsetAddress) >> 8);
+            txBuf[1] = (char)((uint32_t) 0xFF & offsetAddress);
+        }
+        i2cTransaction.readBuf = &info->boardInfo;
+        i2cTransaction.readCount = BOARD_EEPROM_TYPE_SIZE +
+                                    BOARD_EEPROM_STRUCT_LENGTH_SIZE;
+        status = I2C_transfer(handle, &i2cTransaction);
+        if (status == false)
+        {
+            ret = BOARD_I2C_TRANSFER_FAIL;
+            Board_i2cDeInit();
+            return ret;
+        }
+
+        offsetAddress = offsetAddress + i2cTransaction.readCount;
+        if (slaveAddress == BOARD_DDR_DIMM_EEPROM_SLAVE_ADDR)
+        {
+            txBuf[0] = (char)((uint8_t) 0xFF & offsetAddress);
+        }
+        else
+        {
+            txBuf[0] = (char)(((uint32_t) 0xFF00 & offsetAddress) >> 8);
+            txBuf[1] = (char)((uint32_t) 0xFF & offsetAddress);
+        }
+        i2cTransaction.readBuf = info->boardInfo.boardName;
+        i2cTransaction.readCount = info->boardInfo.boardInfoLength;
+
+        status = I2C_transfer(handle, &i2cTransaction);
+        if (status == false)
+        {
+            ret = BOARD_I2C_TRANSFER_FAIL;
+            Board_i2cDeInit();
+            return ret;
+        }
+
+        offsetAddress = offsetAddress + i2cTransaction.readCount;
+        if (slaveAddress == BOARD_DDR_DIMM_EEPROM_SLAVE_ADDR)
+        {
+            txBuf[0] = (char)((uint8_t) 0xFF & offsetAddress);
+        }
+        else
+        {
+            txBuf[0] = (char)(((uint32_t) 0xFF00 & offsetAddress) >> 8);
+            txBuf[1] = (char)((uint32_t) 0xFF & offsetAddress);
+        }
+        i2cTransaction.readBuf = &rdBuff[0];
+        i2cTransaction.readCount = BOARD_EEPROM_TYPE_SIZE +
+                                    BOARD_EEPROM_STRUCT_LENGTH_SIZE;
+
+        status = I2C_transfer(handle, &i2cTransaction);
+        if (status == false)
+        {
+            ret = BOARD_I2C_TRANSFER_FAIL;
+            Board_i2cDeInit();
+            return ret;
+        }
+
+        /* Checking whether DDR field is present or not */
+        if (rdBuff[0] == BOARD_DDR_FIELD_TYPE)
+        {
+            memcpy(&info->ddrInfo, &rdBuff[0], sizeof(rdBuff));
+
+            offsetAddress = offsetAddress + i2cTransaction.readCount;
+        if (slaveAddress == BOARD_DDR_DIMM_EEPROM_SLAVE_ADDR)
+        {
+            txBuf[0] = (char)((uint8_t) 0xFF & offsetAddress);
+        }
+        else
+        {
+            txBuf[0] = (char)(((uint32_t) 0xFF00 & offsetAddress) >> 8);
+            txBuf[1] = (char)((uint32_t) 0xFF & offsetAddress);
+        }
+            i2cTransaction.readBuf = &info->ddrInfo.ddrCtrl;
+            i2cTransaction.readCount = info->ddrInfo.ddrStructLen;
+
+            status = I2C_transfer(handle, &i2cTransaction);
+            if (status == false)
+            {
+                ret = BOARD_I2C_TRANSFER_FAIL;
+                Board_i2cDeInit();
+                return ret;
+            }
+
+            offsetAddress = offsetAddress + i2cTransaction.readCount;
+            if (slaveAddress == BOARD_DDR_DIMM_EEPROM_SLAVE_ADDR)
+            {
+                txBuf[0] = (char)((uint8_t) 0xFF & offsetAddress);
+            }
+            else
+            {
+                txBuf[0] = (char)(((uint32_t) 0xFF00 & offsetAddress) >> 8);
+                txBuf[1] = (char)((uint32_t) 0xFF & offsetAddress);
+            }
+            i2cTransaction.readBuf = &rdBuff[0];
+            i2cTransaction.readCount = BOARD_EEPROM_TYPE_SIZE +
+                                        BOARD_EEPROM_STRUCT_LENGTH_SIZE;
+            status = I2C_transfer(handle, &i2cTransaction);
+            if (status == false)
+            {
+                ret = BOARD_I2C_TRANSFER_FAIL;
+                Board_i2cDeInit();
+                return ret;
+            }
+        }
+
+        /* Checking whether MAC id field is present or not */
+        if(rdBuff[0] == BOARD_MACINFO_FIELD_TYPE)
+        {
+            memcpy(&info->macInfo, &rdBuff[0], sizeof(rdBuff));
+
+            offsetAddress = offsetAddress + i2cTransaction.readCount;
+            if (slaveAddress == BOARD_DDR_DIMM_EEPROM_SLAVE_ADDR)
+            {
+                txBuf[0] = (char)((uint8_t) 0xFF & offsetAddress);
+            }
+            else
+            {
+                txBuf[0] = (char)(((uint32_t) 0xFF00 & offsetAddress) >> 8);
+                txBuf[1] = (char)((uint32_t) 0xFF & offsetAddress);
+            }
+            i2cTransaction.readBuf = &info->macInfo.macControl;
+            i2cTransaction.readCount = info->macInfo.macLength;
+
+            status = I2C_transfer(handle, &i2cTransaction);
+            if (status == false)
+            {
+                ret = BOARD_I2C_TRANSFER_FAIL;
+                Board_i2cDeInit();
+                return ret;
+            }
+
+            offsetAddress = offsetAddress + i2cTransaction.readCount;
+                if (slaveAddress == BOARD_DDR_DIMM_EEPROM_SLAVE_ADDR)
+                {
+                    txBuf[0] = (char)((uint8_t) 0xFF & offsetAddress);
+                }
+                else
+                {
+                    txBuf[0] = (char)(((uint32_t) 0xFF00 & offsetAddress) >> 8);
+                    txBuf[1] = (char)((uint32_t) 0xFF & offsetAddress);
+                }
+
+            i2cTransaction.readBuf = &rdBuff[0];
+            i2cTransaction.readCount = BOARD_EEPROM_TYPE_SIZE;
+
+            status = I2C_transfer(handle, &i2cTransaction);
+            if (status == false)
+            {
+                ret = BOARD_I2C_TRANSFER_FAIL;
+                Board_i2cDeInit();
+                return ret;
+            }
+        }
+
+        if(rdBuff[0] == BOARD_ENDLIST)
+        {
+            info->endList = rdBuff[0];
+        }
+    }
+    else
+    {
+        ret = BOARD_INVALID_PARAM;
+        Board_i2cDeInit();
+        return ret;
+    }
+
+    Board_i2cDeInit();
+
+    return ret;
 }
 
 /**

@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -42,178 +42,195 @@
 #include "board_internal.h"
 #include "board_pinmux.h"
 
-
-/* am64xx_main_padcfg_ctrl_mmr */
-#define MAIN_PADCONFIG_CTRL_BASE    0x000F0000
+#ifdef BUILD_M4F
+#define MAIN_PADCONFIG_CTRL_BASE    CSL_PADCFG_CTRL0_CFG0_BASE + 0x60000000
+#define MCU_PADCONFIG_CTRL_BASE     CSL_MCU_PADCFG_CTRL0_CFG0_BASE + 0x60000000
+#else
+#define MAIN_PADCONFIG_CTRL_BASE    CSL_PADCFG_CTRL0_CFG0_BASE
+#define MCU_PADCONFIG_CTRL_BASE     CSL_MCU_PADCFG_CTRL0_CFG0_BASE
+#endif
 #define CTRL_MMR0_PARTITION_SIZE    0x4000
 #define MAIN_CTRL_PINCFG_BASE       (MAIN_PADCONFIG_CTRL_BASE + (1 * CTRL_MMR0_PARTITION_SIZE))
 
-#ifndef BUILD_M4F
-#ifdef SIM_BUILD
-
-#define MAIN_UART0_RXD  0x0230
-#define MAIN_UART0_TXD  0x0234
-#define MAIN_UART0_CTSn 0x0238
-#define MAIN_UART0_RTSn 0x023c
-#define MAIN_UART1_RXD  0x0240
-#define MAIN_UART1_TXD  0x0244
-#define MAIN_UART1_CTSn 0x0248
-#define MAIN_UART1_RTSn 0x024c
-
-#define MAIN_SPI0_CS0   0x0208U
-
-#define MAIN_GPMC0_AD0  0x003cU
-
-void Board_uartPinmxCfg()
-{
-    volatile uint32_t *addr = (volatile uint32_t *)(MAIN_CTRL_PINCFG_BASE + MAIN_UART0_RXD);
-    uint32_t i;
-
-    for (i = 0; i < 8; i++)
-    {
-        *addr++ = 0x54000;
-    }
-}
-
-void Board_ospiPinmxCfg()
-{
-    volatile uint32_t *addr = (volatile uint32_t *)MAIN_CTRL_PINCFG_BASE;
-    uint32_t ospiData[15] =
-    {
-        0x24000, 0x64000, 0x264000, 0x54000,
-        0x54000, 0x54000, 0x054000, 0x54000,
-        0x54000, 0x54000, 0x054000, 0x14000,
-        0x14000, 0x04002, 0x4001
-    };
-    uint32_t i;
-
-    for (i = 0; i < 15; i++)
-    {
-        *addr++ = ospiData[i];
-    }
-}
-
-void Board_spiPinmxCfg()
-{
-    volatile uint32_t *addr = (volatile uint32_t *)(MAIN_CTRL_PINCFG_BASE + MAIN_SPI0_CS0);
-    uint32_t spiData[5] =
-    {
-        PIN_MODE(0) | ((~PIN_PULL_DISABLE) & (PIN_PULL_DIRECTION & ~PIN_INPUT_ENABLE)), /* SPI0_CS0 */
-        PIN_MODE(0) | ((~PIN_PULL_DISABLE) & (PIN_PULL_DIRECTION & ~PIN_INPUT_ENABLE)), /* SPI0_CS1 */
-        PIN_MODE(0) | ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION)),  /* SPI0_CLK */
-        PIN_MODE(0) | ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION)),  /* SPI0_D0 */
-        PIN_MODE(0) | ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))   /* SPI0_D1 */
-     };
-    uint32_t i;
-
-    for (i = 0; i < 5; i++)
-    {
-        *addr++ = spiData[i];
-    }
-}
-
-void Board_gpmcPinmxCfg()
-{
-    volatile uint32_t *addr = (volatile uint32_t *)(MAIN_CTRL_PINCFG_BASE + MAIN_GPMC0_AD0);
-    uint32_t gpmcData[69] =
-    {
-        0x50000, 0x50000, 0x50000, 0x50000,
-        0x40000, 0x40000, 0x50000, 0x50000,
-        0x50000, 0x50000, 0x50000, 0x50000,
-        0x50000, 0x50000, 0x50000, 0x50000,
-        0x50004, 0x50000, 0x40000, 0x40000,
-        0x40000, 0x40000, 0x40000, 0x60000,
-        0x60000, 0x40000, 0x50000, 0x40000,
-        0x40000, 0x40000, 0x40000, 0x50008,
-        0x50008, 0x50008, 0x50008, 0x50008,
-        0x50008, 0x50008, 0x50008, 0x50008,
-        0x50008, 0x50008, 0x50008, 0x50008,
-        0x50008, 0x50008, 0x50008, 0x40008,
-        0x50008, 0x50008, 0x40008, 0x60008,
-        0x40008, 0x40008, 0x40008, 0x40008,
-        0x40008, 0x40008, 0x40008, 0x40008,
-        0x40008, 0x40008, 0x40008, 0x40008,
-        0x40008, 0x40008, 0x40008, 0x40008,
-        0x40008
-    };
-    uint32_t i;
-
-    for (i = 0; i < 69; i++)
-    {
-        *addr++ = gpmcData[i];
-    }
-}
-
-#endif  /* #ifdef SIM_BUILD */
-#endif  /* #ifndef BUILD_M4F */
-
 /* Default pinmux configuration of UART Tx pin used by ROM/SBL */
 #define BOARD_UART_TX_PINMUX_VAL            (PIN_MODE(0) | ((PIN_PULL_DISABLE) & \
-                                                 (~PIN_PULL_DIRECTION & ~PIN_INPUT_ENABLE)))
-#define BOARD_SYSFW_UART_TX_PINMUX_ADDR           (MAIN_PADCONFIG_CTRL_BASE + CSL_MAIN_PADCFG_CTRL_MMR_CFG0_PADCONFIG141)
-#define BOARD_SBL_UART_TX_PINMUX_ADDR           (MAIN_PADCONFIG_CTRL_BASE + CSL_MAIN_PADCFG_CTRL_MMR_CFG0_PADCONFIG145)
+                                            (~PIN_PULL_DIRECTION & ~PIN_INPUT_ENABLE)))
+#define BOARD_SYSFW_UART_TX_PINMUX_ADDR     (MAIN_PADCONFIG_CTRL_BASE + CSL_MAIN_PADCFG_CTRL_MMR_CFG0_PADCONFIG141)
+#define BOARD_SBL_UART_TX_PINMUX_ADDR       (MAIN_PADCONFIG_CTRL_BASE + CSL_MAIN_PADCFG_CTRL_MMR_CFG0_PADCONFIG145)
 #define BOARD_UART_TX_LOCK_KICK_ADDR        (MAIN_PADCONFIG_CTRL_BASE + \
-                                                 CSL_MAIN_PADCFG_CTRL_MMR_CFG0_LOCK1_KICK0)
+                                            CSL_MAIN_PADCFG_CTRL_MMR_CFG0_LOCK1_KICK0)
 
+static Board_PinmuxConfig_t gBoardPinmuxCfg = {BOARD_PINMUX_DEFAULT,
+                                               BOARD_PINMUX_ICSS_RGMII,
+                                               BOARD_PINMUX_EXP_NONE};
 
+/**
+ *  \brief  Gets base address of padconfig registers
+ *
+ *  \param   domain [IN]  SoC domain for pinmux
+ *  \n                     BOARD_SOC_DOMAIN_MAIN - Main domain
+ *  \n                     BOARD_SOC_DOMAIN_MCU  - MCU domain
+ *
+ *  \return   Valid address in case success or 0 in case of failure
+ */
+static uint32_t Board_pinmuxGetBaseAddr(uint8_t domain)
+{
+    uint32_t baseAddr;
+
+    switch(domain)
+    {
+        case BOARD_SOC_DOMAIN_MAIN:
+            baseAddr = BOARD_MAIN_PMUX_CTRL;
+        break;
+        case BOARD_SOC_DOMAIN_MCU:
+            baseAddr = BOARD_WKUP_PMUX_CTRL;
+        break;
+        default:
+            baseAddr = 0;
+        break;
+    }
+
+    return baseAddr;
+}
+
+/**
+ *  \brief Sets the board pinmux configuration.
+ *
+ *  This API allows to change the default pinmux configurations
+ *  in the board library.
+ *
+ *  \n Usage:
+ *  \n - Call Board_pinmuxGetCfg to get default pinmux config
+ *  \n - Call Board_pinmuxSetCfg to change pinmux config
+ *  \n - Call Board_init with pinmux flag to apply the updated pinmux config
+ *
+ *  \param   pinmuxCfg [IN]  Pinmux configurations
+ *
+ *  \return  BOARD_SOK in case of success or appropriate error code
+ *
+ */
+Board_STATUS Board_pinmuxSetCfg(Board_PinmuxConfig_t *pinmuxCfg)
+{
+    gBoardPinmuxCfg = *pinmuxCfg;
+
+    return BOARD_SOK;
+}
+
+/**
+ *  \brief Gets the board pinmux configuration.
+ *
+ *  \param   pinmuxCfg [IN]  Pinmux configurations
+ *
+ *  \return  BOARD_SOK in case of success or appropriate error code
+ *
+ */
+Board_STATUS Board_pinmuxGetCfg(Board_PinmuxConfig_t *pinmuxCfg)
+{
+    *pinmuxCfg = gBoardPinmuxCfg;
+
+    return BOARD_SOK;
+}
+
+/**
+ * \brief  Board pinmuxing update function
+ *
+ * Provides the option to configure/update the pinmux.
+ * This function can be used to change the pinmux set by
+ * Board_init by default.
+ *
+ * \param   pinmuxData [IN]  Pinmux data structure
+ * \param   domain     [IN]  SoC domain for pinmux
+ *  \n                        BOARD_SOC_DOMAIN_MAIN - Main domain
+ *  \n                        BOARD_SOC_DOMAIN_MCU - MCU domain
+ *
+ * \return  BOARD_SOK in case of success or appropriate error code
+ *
+ */
+Board_STATUS Board_pinmuxUpdate (pinmuxBoardCfg_t *pinmuxData,
+                                 uint32_t domain)
+{
+    pinmuxModuleCfg_t *pModuleData = NULL;
+    pinmuxPerCfg_t *pInstanceData = NULL;
+    int32_t i, j, k;
+    uint32_t baseAddr;
+    Board_STATUS status = BOARD_SOK;
+
+    Board_unlockMMR();
+
+    baseAddr = Board_pinmuxGetBaseAddr(domain);
+    if(baseAddr != 0)
+    {
+        for(i = 0; PINMUX_END != pinmuxData[i].moduleId; i++)
+        {
+            pModuleData = pinmuxData[i].modulePinCfg;
+            for(j = 0; (PINMUX_END != pModuleData[j].modInstNum); j++)
+            {
+                if(pModuleData[j].doPinConfig == TRUE)
+                {
+                    pInstanceData = pModuleData[j].instPins;
+                    for(k = 0; (PINMUX_END != pInstanceData[k].pinOffset); k++)
+                    {
+                        HW_WR_REG32((baseAddr + pInstanceData[k].pinOffset),
+                                    (pInstanceData[k].pinSettings));
+                    }
+                }
+            }
+        }
+    }
+    else
+    {
+        status = BOARD_INVALID_PARAM;
+    }
+
+    Board_lockMMR();
+
+    return status;
+}
+
+/**
+ * \brief  Board pinmuxing enable function
+ *
+ * Enables pinmux for the board interfaces. Pin mux is done based
+ * on the default/primary functionality of the board. Any pins shared by
+ * multiple interfaces need to be reconfigured to access the secondary
+ * functionality.
+ *
+ * \param   void
+ *
+ * \return  BOARD_SOK in case of success or appropriate error code
+ *
+ */
 Board_STATUS Board_pinmuxConfig (void)
 {
-#ifndef BUILD_M4F
-    /* Board_unlockMMR */
-    HW_WR_REG32(BOARD_UART_TX_LOCK_KICK_ADDR, KICK0_UNLOCK_VAL);
-    HW_WR_REG32(BOARD_UART_TX_LOCK_KICK_ADDR + 4U, KICK1_UNLOCK_VAL);
+    Board_STATUS status = BOARD_SOK;
 
-#ifdef SIM_BUILD
-    Board_uartPinmxCfg();
-    Board_ospiPinmxCfg();
-    Board_spiPinmxCfg();
-    Board_gpmcPinmxCfg();
-#else
-    pinmuxModuleCfg_t* pModuleData = NULL;
-    pinmuxPerCfg_t* pInstanceData = NULL;
-    int32_t i, j, k;
+    Board_pinmuxUpdate(gAM64x_MainPinmuxData,
+                       BOARD_SOC_DOMAIN_MAIN);
+    Board_pinmuxUpdate(gAM64x_WkupPinmuxData,
+                       BOARD_SOC_DOMAIN_MCU);
 
-    for(i = 0; PINMUX_END != gAM64xxMainPinmuxData[i].moduleId; i++)
+    /* Note: EVM Specific config.
+     * Code below be removed for custom boards */
+    if(gBoardPinmuxCfg.muxCfg == BOARD_PINMUX_CUSTOM)
     {
-        pModuleData = gAM64xxMainPinmuxData[i].modulePinCfg;
-        for(j = 0; (PINMUX_END != pModuleData[j].modInstNum); j++)
+        if(gBoardPinmuxCfg.icssMux == BOARD_PINMUX_ICSS_MII)
         {
-            if(pModuleData[j].doPinConfig == TRUE)
-            {
-                pInstanceData = pModuleData[j].instPins;
-                for(k = 0; (PINMUX_END != pInstanceData[k].pinOffset); k++)
-                {
-                    HW_WR_REG32((CSL_PADCFG_CTRL0_CFG0_BASE + 0x4000 + pInstanceData[k].pinOffset),
-                                (pInstanceData[k].pinSettings));
-                }
-            }
+            Board_pinmuxUpdate(gAM64x_MainPinmuxDataIcssMII,
+                               BOARD_SOC_DOMAIN_MAIN);
+        }
+
+        if(gBoardPinmuxCfg.expBoardMux == BOARD_PINMUX_EXP_GPMC)
+        {
+            Board_pinmuxUpdate(gAM64x_MainPinmuxDataGPMC,
+                               BOARD_SOC_DOMAIN_MAIN);
         }
     }
 
-	for(i = 0; PINMUX_END != gAM64xxWkupPinmuxData[i].moduleId; i++)
-    {
-        pModuleData = gAM64xxWkupPinmuxData[i].modulePinCfg;
-        for(j = 0; (PINMUX_END != pModuleData[j].modInstNum); j++)
-        {
-            if(pModuleData[j].doPinConfig == TRUE)
-            {
-                pInstanceData = pModuleData[j].instPins;
-                for(k = 0; (PINMUX_END != pInstanceData[k].pinOffset); k++)
-                {
-                    HW_WR_REG32((CSL_MCU_PADCFG_CTRL0_CFG0_BASE + 0x4000 + pInstanceData[k].pinOffset),
-                                 (pInstanceData[k].pinSettings));
-                }
-            }
-        }
-    }
-#endif /* #ifdef SIM_BUILD */
-#endif /* #ifndef BUILD_M4F */
-    return BOARD_SOK;
+    return status;
 }
 
 void Board_uartTxPinmuxConfig(void)
 {
-#ifndef BUILD_M4F
     /* Board_unlockMMR */
     HW_WR_REG32(BOARD_UART_TX_LOCK_KICK_ADDR, KICK0_UNLOCK_VAL);
     HW_WR_REG32(BOARD_UART_TX_LOCK_KICK_ADDR + 4U, KICK1_UNLOCK_VAL);
@@ -227,5 +244,41 @@ void Board_uartTxPinmuxConfig(void)
     /* Board_lockMMR */
     HW_WR_REG32(BOARD_UART_TX_LOCK_KICK_ADDR + 4U, 0);
     HW_WR_REG32(BOARD_UART_TX_LOCK_KICK_ADDR, 0);
-#endif
+}
+
+/**
+ *  \brief Sets padconfig register of a pin at given offset
+ *
+ *  Configures whole padconfig register of the pin at given offset
+ *  with the value in 'muxData'.
+ *
+ *  \param   domain  [IN]  SoC domain for pinmux
+ *  \n                      BOARD_SOC_DOMAIN_MAIN - Main domain
+ *
+ *  \param   offset  [IN]  Pad config offset of the pin
+ *  \param   muxData [IN]  Value to be written to padconfig register
+ *
+ *  \return   BOARD_SOK in case of success or appropriate error code
+ *
+ */
+Board_STATUS Board_pinmuxSetReg(uint8_t  domain,
+                                uint32_t offset,
+                                uint32_t muxData)
+{
+    uint32_t baseAddr;
+    Board_STATUS status = BOARD_SOK;
+
+    Board_unlockMMR();
+
+    baseAddr = Board_pinmuxGetBaseAddr(domain);
+    if(baseAddr != 0)
+    {
+        HW_WR_REG32((baseAddr + offset), muxData);
+    }
+    else
+    {
+        status = BOARD_INVALID_PARAM;
+    }
+
+    return status;
 }

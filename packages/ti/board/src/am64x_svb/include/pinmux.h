@@ -41,7 +41,7 @@ extern "C" {
 /**
  * \file   pinmux.h
  *
- * \brief  AM65x EVM board pinmux header file
+ * \brief  AM65x SVB board pinmux header file
  *
  * This file includes the structures to enable the pinmux configurations
  *

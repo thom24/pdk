@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019-2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -56,8 +56,6 @@
 #include "board_internal.h"
 #include <ti/drv/sciclient/sciclient.h>
 
-Board_gblObj Board_obj = {NULL};
-
 static bool gBoardSysInitDone = 0;
 
 /**
@@ -86,6 +84,34 @@ static Board_STATUS Board_sysInit(void)
         if(status == BOARD_SOK)
         {
             gBoardSysInitDone = 1;
+        }
+    }
+
+    return status;
+}
+
+/**
+ * \brief  Board global de-initializations
+ *
+ * \return  BOARD_SOK in case of success or appropriate error code
+ *
+ */
+static Board_STATUS Board_sysDeinit(void)
+{
+    Board_STATUS status = BOARD_SOK;
+    int32_t ret;
+
+    if(gBoardSysInitDone == 1)
+    {
+        ret = Sciclient_deinit();
+        if(ret != 0)
+        {
+            status = BOARD_FAIL;
+        }
+
+        if(status == BOARD_SOK)
+        {
+            gBoardSysInitDone = 0;
         }
     }
 
@@ -189,6 +215,33 @@ Board_STATUS Board_init(Board_initCfg cfg)
 
     if (cfg & BOARD_INIT_SERDES_PHY)
         ret = Board_serdesCfg();
+    if (ret != BOARD_SOK)
+        return ret;
+
+    return ret;
+}
+
+/**
+ * \brief  Board library de-initialization function
+ *
+ *  Different board de-initialization routines are invoked by using configuration
+ *  flags as described below
+ *
+ *  BOARD_DEINIT_UART_STDIO -
+ *      Closes the board UART instance configured for serial console logs
+ *
+ * \param   cfg [IN]    Board configuration flags
+ *
+ * \return  BOARD_SOK in case of success or appropriate error code
+ */
+Board_STATUS Board_deinit(Board_initCfg cfg)
+{
+    Board_STATUS ret = BOARD_SOK;
+
+    Board_sysDeinit();
+
+    if (cfg & BOARD_DEINIT_UART_STDIO)
+        ret = Board_uartDeInit();
     if (ret != BOARD_SOK)
         return ret;
 

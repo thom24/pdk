@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -41,6 +41,7 @@
 #include <soc.h>
 #include "board_ddr.h"
 #include "board_ddrRegInit.h"
+#include "board_lpddr4RegInit.h"
 
 /* Global variables */
 static LPDDR4_Config gBoardDdrCfg;
@@ -72,6 +73,8 @@ static void Board_DDRSetPLLExtBypass(void)
 
 }
 
+#endif /* SIM_BUILD */
+
 /**
  * \brief   Set DDR PLL clock value
  *
@@ -91,7 +94,6 @@ static Board_STATUS Board_DDRSetPLLClock(void)
 
     return status;
 }
-#endif /* SIM_BUILD */
 
 /**
  * \brief   Controls the DDR PLL clock change sequence during inits
@@ -100,101 +102,11 @@ static Board_STATUS Board_DDRSetPLLClock(void)
  */
 static void Board_DDRChangeFreqAck(void)
 {
-#ifndef SIM_BUILD
-    uint32_t reqType;
-    uint32_t regVal;
-    volatile uint32_t counter;
-    volatile uint32_t counter2;
-    volatile uint32_t temp = 0;
 
-    temp = temp;  /* To suppress compiler warning */
-#endif
-    BOARD_DEBUG_LOG("--->>> LPDDR4 Initialization is in progress ... <<<---\n");
+    /* Configure PLL Clock */
+    Board_DDRSetPLLClock();
 
-#ifdef SIM_BUILD
-    printf("--->>> Waiting for frequency change request ... <<<---\n");
-    //wait for first freq change request
-    while(((HW_RD_REG32(BOARD_DDR_FSP_CLKCHNG_REQ_ADDR)) & 0x80) == 0x0);
-        //0x80114080
-    HW_WR_REG32(BOARD_DDR_FSP_CLKCHNG_ACK_ADDR, 0x1); //set the ack bit
-    while(((HW_RD_REG32(BOARD_DDR_FSP_CLKCHNG_REQ_ADDR)) & 0x80) == 0x80);
-    HW_WR_REG32(BOARD_DDR_FSP_CLKCHNG_ACK_ADDR, 0x0); //clear the ack bit
-    printf("--->>> Waiting for second frequency change request ... <<<---\n");
-    //wait for first second change request
-    while(((HW_RD_REG32(BOARD_DDR_FSP_CLKCHNG_REQ_ADDR)) & 0x80) == 0x0);
-    HW_WR_REG32(BOARD_DDR_FSP_CLKCHNG_ACK_ADDR, 0x1); //set the ack bit
-    while(((HW_RD_REG32(BOARD_DDR_FSP_CLKCHNG_REQ_ADDR)) & 0x80) == 0x80);
-    HW_WR_REG32(BOARD_DDR_FSP_CLKCHNG_ACK_ADDR, 0x0); //clear the ack bit
-#else
-
-    for(counter = 0; counter < DDRSS_PLL_FHS_CNT; counter++)
-    {
-        /* wait for freq change request */
-        regVal = HW_RD_REG32(BOARD_DDR_FSP_CLKCHNG_REQ_ADDR) & 0x80;
-        BOARD_DEBUG_LOG("Reg Value: %d \n", regVal);
-
-        while(regVal == 0x0)
-        {
-            regVal = HW_RD_REG32(BOARD_DDR_FSP_CLKCHNG_REQ_ADDR) & 0x80;
-            BOARD_DEBUG_LOG("Reg Value: %d \n", regVal);
-        }
-
-        reqType = HW_RD_REG32(BOARD_DDR_FSP_CLKCHNG_REQ_ADDR) & 0x03;
-        BOARD_DEBUG_LOG("Frequency Change type %d request from Controller \n", reqType);
-
-        if(reqType == 1)
-        {
-            Board_DDRSetPLLClock();
-        }
-        else if(reqType == 2)
-        {
-            Board_DDRSetPLLClock();
-        }
-        else if(reqType == 0)
-        {
-            Board_DDRSetPLLExtBypass();
-        }
-        else
-        {
-            BOARD_DEBUG_LOG("Invalid Request Type\n");
-        }
-
-        counter2 = 0;
-        while(counter2 < 200)
-        {
-            temp = HW_RD_REG32(BOARD_DDR_FSP_CLKCHNG_REQ_ADDR);
-            counter2++;
-        }
-
-        HW_WR_REG32(BOARD_DDR_FSP_CLKCHNG_ACK_ADDR, 0x1);
-
-        counter2 = 0;
-        while(counter2 < 10)
-        {
-            temp = HW_RD_REG32(BOARD_DDR_FSP_CLKCHNG_REQ_ADDR);
-            counter2++;
-        }
-
-        while((HW_RD_REG32(BOARD_DDR_FSP_CLKCHNG_REQ_ADDR) & 0x80) == 0x80);
-
-        counter2 = 0;
-        while(counter2 < 10)
-        {
-            temp = HW_RD_REG32(BOARD_DDR_FSP_CLKCHNG_REQ_ADDR);
-            counter2++;
-        }
-
-        HW_WR_REG32(BOARD_DDR_FSP_CLKCHNG_ACK_ADDR, 0x0);
-
-        counter2 = 0;
-        while(counter2 < 10)
-        {
-            temp= HW_RD_REG32(BOARD_DDR_FSP_CLKCHNG_REQ_ADDR);
-            counter2++;
-        }
-    }
-#endif
-    BOARD_DEBUG_LOG("--->>> Frequency Change request handshake is completed... <<<---\n");
+    BOARD_DEBUG_LOG("--->>> DDR PLL clock configured ... <<<---\n");
 }
 
 /**
@@ -274,18 +186,18 @@ static Board_STATUS Board_DDRInitDrv(void)
 }
 
 /**
- * \brief   DDR registers initialization function
+ * \brief   DDR registers initialization function for DDR4.
  *
- * \return  BOARD_SOK in case of success or appropriate error code
+ * \return  BOARD_SOK in case of success or appropriate error code.
  */
-static Board_STATUS Board_DDRHWRegInit(void)
+static Board_STATUS Board_DDRHWRegInitDdr4(void)
 {
     uint32_t status = 0U;
 
     /* VBUSM2AXI Control Register sdram_idx, region_idx 0x11 --> 0x0F = log2(connected SDRAM size) - 16 */
     HW_WR_REG32((CSL_DDR16SS0_SS_CFG_BASE + CSL_EMIF_SSCFG_V2A_CTL_REG),
                  (0xFU << CSL_EMIF_SSCFG_V2A_CTL_REG_SDRAM_IDX_SHIFT)
-                 | (0xFU << CSL_EMIF_SSCFG_V2A_CTL_REG_REGION_IDX_SHIFT)); 
+                 | (0xFU << CSL_EMIF_SSCFG_V2A_CTL_REG_REGION_IDX_SHIFT));
 
 
     status = LPDDR4_WriteCtlConfig(&gBoardDdrPd,
@@ -309,7 +221,49 @@ static Board_STATUS Board_DDRHWRegInit(void)
 
     if (status)
     {
-        BOARD_DEBUG_LOG(" ERROR: Board_DDRHWRegInit failed!!\n");
+        BOARD_DEBUG_LOG(" ERROR: Board_DDRHWRegInitDdr4 failed!!\n");
+        return BOARD_FAIL;
+    }
+    return BOARD_SOK;
+}
+
+/**
+ * \brief   DDR registers initialization function for LPDDR4.
+ *
+ * \return  BOARD_SOK in case of success or appropriate error code.
+ */
+static Board_STATUS Board_DDRHWRegInitLpddr4(void)
+{
+    uint32_t status = 0U;
+
+    /* VBUSM2AXI Control Register sdram_idx, region_idx 0x11 --> 0x0F = log2(connected SDRAM size) - 16 */
+    HW_WR_REG32((CSL_DDR16SS0_SS_CFG_BASE + CSL_EMIF_SSCFG_V2A_CTL_REG),
+                 (0xFU << CSL_EMIF_SSCFG_V2A_CTL_REG_SDRAM_IDX_SHIFT)
+                 | (0xFU << CSL_EMIF_SSCFG_V2A_CTL_REG_REGION_IDX_SHIFT));
+
+
+    status = LPDDR4_WriteCtlConfig(&gBoardDdrPd,
+                                            DDRSS_ctlReg_lpddr4,
+                                            DDRSS_ctlRegNum_lpddr4,
+                                            (uint16_t)DDRSS_CTL_REG_INIT_COUNT);
+    if (!status)
+    {
+        status = LPDDR4_WritePhyIndepConfig(&gBoardDdrPd,
+                                                     DDRSS_phyIndepReg_lpddr4,
+                                                     DDRSS_phyIndepRegNum_lpddr4,
+                                                     (uint16_t)DDRSS_PHY_INDEP_REG_INIT_COUNT);
+    }
+    if (!status)
+    {
+        status = LPDDR4_WritePhyConfig(&gBoardDdrPd,
+                                                DDRSS_phyReg_lpddr4,
+                                                DDRSS_phyRegNum_lpddr4,
+                                                (uint16_t)DDRSS_PHY_REG_INIT_COUNT);
+    }
+
+    if (status)
+    {
+        BOARD_DEBUG_LOG(" ERROR: Board_DDRHWRegInitLpddr4 failed!!\n");
         return BOARD_FAIL;
     }
     return BOARD_SOK;
@@ -426,10 +380,41 @@ static Board_STATUS emif_ConfigureECC(void)
 Board_STATUS Board_DDRInit(Bool eccEnable)
 {
     Board_STATUS status = BOARD_SOK;
+    Board_initParams_t initParams;
+    uint32_t ddrType=0;
+
 #ifndef SIM_BUILD
     /* PLL should be bypassed while configuring the DDR */
     Board_DDRSetPLLExtBypass();
 #endif /* SIM_BUILD */
+
+    Board_getInitParams(&initParams);
+    if(initParams.ddrType == BOARD_DDR_AUTO)
+    {
+        /* Detecting the type of DDR connected */
+        if(Board_detectBoard(BOARD_ID_LPDDR4))
+        {
+            ddrType = BOARD_ID_LPDDR4;
+        }
+        else if(Board_detectBoard(BOARD_ID_DDR4))
+        {
+            ddrType = BOARD_ID_DDR4;
+        }
+        else
+        {
+            status = BOARD_FAIL;
+            return status;
+        }
+    }
+    else if(initParams.ddrType == BOARD_DDR_DDR4)
+    {
+        ddrType = BOARD_ID_DDR4;
+    }
+    else if(initParams.ddrType == BOARD_DDR_LPDDR4)
+    {
+        ddrType = BOARD_ID_LPDDR4;
+    }
+
     /* Partition5 lockkey0 */
     HW_WR_REG32((CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK5_KICK0),
                 KICK0_UNLOCK);
@@ -449,10 +434,21 @@ Board_STATUS Board_DDRInit(Bool eccEnable)
         return status;
     }
 
-    status = Board_DDRHWRegInit();
-    if(status != BOARD_SOK)
+    if(ddrType == BOARD_ID_DDR4)
     {
-        return status;
+        status = Board_DDRHWRegInitDdr4();
+        if(status != BOARD_SOK)
+        {
+            return status;
+        }
+    }
+    else if(ddrType == BOARD_ID_LPDDR4)
+    {
+        status = Board_DDRHWRegInitLpddr4();
+        if(status != BOARD_SOK)
+        {
+            return status;
+        }
     }
 
     status = Board_DDRStart();

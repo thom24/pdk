@@ -51,6 +51,7 @@ extern "C" {
 
 #include "board.h"
 #include "board_pll.h"
+#include "board_utils.h"
 #include "board_internal.h"
 
 #define BOARD_DDR_CTL_CFG_BASE           (CSL_DDR16SS0_CTL_CFG_BASE)

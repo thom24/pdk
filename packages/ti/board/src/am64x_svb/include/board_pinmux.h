@@ -48,13 +48,132 @@ extern "C" {
  */
 
 #include <ti/csl/tistdtypes.h>
-#include <ti/board/src/am64x_svb/AM64xx_pinmux.h>
+#include <ti/board/src/am64x_svb/AM64x_pinmux.h>
+
+#define BOARD_GPIO_PIN_MUX_CFG         (0x50007U)
+
+#define BOARD_PINMUX_ICSS_RGMII            (0U)  /* Default */
+#define BOARD_PINMUX_ICSS_MII              (1U)
+
+#define BOARD_PINMUX_CUSTOM                (0)
+#define BOARD_PINMUX_DEFAULT               (1U)   /* Default */
+
+#define BOARD_PINMUX_EXP_NONE              (0)    /* Default */
+#define BOARD_PINMUX_EXP_GPMC              (1U)
+
+/* Structure to set the board pinmux configuration */
+typedef struct Board_PinmuxConfig_s
+{
+    /**
+     * Pinmux config control
+     *  BOARD_PINMUX_CUSTOM(0) - Pinmux is based custom pinmux config set from apps
+     *  BOARD_PINMUX_DEFAULT(1) - Pinmux is based on default board pinmux config
+     */
+    uint8_t muxCfg;
+
+    /**
+     * Pinmux config control for ICSS interface
+     *  BOARD_PINMUX_ICSS_RGMII(0) - Enables ICSS RGMII mode
+     *  BOARD_PINMUX_ICSS_MII(1) - Enables ICSS MII mode
+     */
+    uint8_t icssMux;
+
+    /**
+     * Pinmux config control for application cards
+     *  BOARD_PINMUX_EXP_NONE(0) - No expansion board pinmux config
+     *  BOARD_PINMUX_EXP_GPMC(1) - Enables pinmux for GPMC
+     */
+    uint8_t expBoardMux;
+
+} Board_PinmuxConfig_t;
 
 /* ========================================================================== */
 /*                         Structures and Enums                               */
 /* ========================================================================== */
 
 void Board_uartTxPinmuxConfig(void);
+
+/**
+ *  \brief Sets padconfig register of a pin at given offset
+ *
+ *  Configures whole padconfig register of the pin at given offset
+ *  with the value in 'muxData'.
+ *
+ *  \param   domain  [IN]  SoC domain for pinmux
+ *  \n                      BOARD_SOC_MAIN_DOMAIN - Main domain
+ *  \n                      BOARD_SOC_MCU_DOMAIN - MCU domain
+ *
+ *  \param   offset  [IN]  Pad config offset of the pin
+ *  \param   muxData [IN]  Value to be written to padconfig register
+ *
+ *  \return   BOARD_SOK in case of success or appropriate error code
+ *
+ */
+Board_STATUS Board_pinmuxSetReg(uint8_t  domain,
+                                uint32_t offset,
+                                uint32_t muxData);
+
+/**
+ *  \brief Sets the board pinmux configuration.
+ *
+ *  This API allows to change the default pinmux configurations
+ *  in the board library.
+ *
+ *  \n Usage:
+ *  \n - Call Board_pinmuxGetCfg to get default pinmux config
+ *  \n - Call Board_pinmuxSetCfg to change pinmux config
+ *  \n - Call Board_init with pinmux flag to apply the updated pinmux config
+ *
+ *  \param   pinmuxCfg [IN]  Pinmux configurations
+ *
+ *  \return  BOARD_SOK in case of success or appropriate error code
+ *
+ */
+Board_STATUS Board_pinmuxSetCfg(Board_PinmuxConfig_t *pinmuxCfg);
+
+/**
+ *  \brief Gets the board pinmux configuration.
+ *
+ *  \param   pinmuxCfg [IN]  Pinmux configurations
+ *
+ *  \return  BOARD_SOK in case of success or appropriate error code
+ *
+ */
+Board_STATUS Board_pinmuxGetCfg(Board_PinmuxConfig_t *pinmuxCfg);
+
+/**
+ * \brief  Board pinmuxing update function
+ *
+ * Provides the option to configure/update the pinmux.
+ * This function can be used to change the pinmux set by
+ * Board_init by default.
+ *
+ * \param   pinmuxData [IN]  Pinmux data structure
+ * \param   domain     [IN]  SoC domain for pinmux
+ *  \n                        BOARD_SOC_MAIN_DOMAIN - Main domain
+ *  \n                        BOARD_SOC_WKUP_DOMAIN - Wakeup domain
+ *
+ * \return  BOARD_SOK in case of success or appropriate error code
+ *
+ */
+Board_STATUS Board_pinmuxUpdate (pinmuxBoardCfg_t *pinmuxData,
+                                 uint32_t domain);
+
+/**
+ * \brief  Board pinmuxing enable function
+ *
+ * Enables pinmux for the board interfaces. Pin mux is done based
+ * on the default/primary functionality of the board. Any pins shared by
+ * multiple interfaces need to be reconfigured to access the secondary
+ * functionality.
+ *
+ * \param   void
+ *
+ * \return  BOARD_SOK in case of success or appropriate error code
+ *
+ */
+Board_STATUS Board_pinmuxConfig (void);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

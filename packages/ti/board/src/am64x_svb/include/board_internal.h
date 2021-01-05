@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -70,34 +70,32 @@ extern "C" {
 #define PINMUX_BIT_MASK                      (0xFFF8FFF0U)
 #define GPIO_PIN_MUX_CFG                     (0x50007U)
 
-/* MAIN CTRL base address + offset to beginning of PAD CONFIG  section */
-#define MAIN_PMUX_CTRL	                     (0)  //J7ES_TODO: Need to update
+#define BOARD_PADCFG_PMUX_OFFSET             (0x4000)
+/* MAIN CTRL pinmux base address */
+#define BOARD_MAIN_PMUX_CTRL	             (CSL_PADCFG_CTRL0_CFG0_BASE + BOARD_PADCFG_PMUX_OFFSET)
 
-/* WKUP CTRL base address + offset to beginning of PAD CONFIG section */
-#define WKUP_PMUX_CTRL	                     (0)  //J7ES_TODO: Need to update
+/* WKUP CTRL pinmux base address */
+#define BOARD_WKUP_PMUX_CTRL	              (CSL_MCU_PADCFG_CTRL0_CFG0_BASE + BOARD_PADCFG_PMUX_OFFSET)
 
 /*****************************************************************************
  * Internal Objects                                                          *
  *****************************************************************************/
-extern const I2C_Config I2C_config[];
+extern I2C_config_list I2C_config;
 
-typedef struct
+typedef struct Board_I2cObj_s
 {
-    I2C_Handle i2cHandle;
-} Board_gblObj;
-
-extern Board_gblObj Board_obj;
+    I2C_Handle    i2cHandle;
+    uint8_t       i2cDomain;
+    uint32_t      instNum;
+    uint32_t      i2cBaseAddr;
+} Board_I2cObj_t;
 
 /****************************************************************************/
 
 #define KICK0_UNLOCK_VAL                     (0x68EF3490U)
 #define KICK1_UNLOCK_VAL                     (0xD172BC5AU)
 
-/* The below macro are for temporary use only, Once the CSL macros are 
- *  added these can be removed */ 
-
-#define MAIN_PSC_ADDR_OFFSET                 (0x80000000U)  //J7ES_TODO: Need to update
-#define WAKEUP_PSC_ADDR_OFFSET               (0x20000000U)  //J7ES_TODO: Need to update
+#define BOARD_I2C_PORT_CNT                   (I2C_HWIP_MAX_CNT)
 
 /*****************************************************************************
  * Function Prototypes                                                       *
@@ -192,6 +190,11 @@ Board_STATUS Board_icssEthConfig(void);
 Board_STATUS Board_uartStdioInit(void);
 
 /**
+ *  \brief   This function is used to de-initialize board UART handles.
+ */
+Board_STATUS Board_uartDeInit(void);
+
+/**
  * \brief   This function initializes the i2c instance connected to the
  *          board Id EEPROM.
  * This function disables the interrupt mode as the Board i2c instance
@@ -206,19 +209,40 @@ Board_STATUS Board_uartStdioInit(void);
 Board_STATUS Board_internalInitI2C(uint8_t i2cInst);
 
 /**
- * \brief board detect test
+ *  \brief   This function is used to close all the initialized board I2C handles.
  *
- * This function used to check whether the specified board exists.
+ *  \return  Board_STATUS in case of success or appropriate error code.
+ */
+Board_STATUS Board_i2cDeInit(void);
+
+/**
+  *  \brief   This function initializes the i2c instance connected to
+  *           different control modules on the board
+  *
+  *  This function disables the interrupt mode as the Board i2c instance
+  *  doesn't require interrupt mode and restores back original at the end.
+  *
+  *  \return  Board_STATUS in case of success or appropriate error code.
+  *
+  */
+Board_STATUS Board_i2cInit(void);
+
+/**
+ *  \brief   This function is to get the i2c handle of the requested
+ *           instance of the specifed domain
  *
- * \param   detectBoard  [IN]  enum used to send the name of the
- *                             board going to be detected.
+ *  \param   domainType [IN] Domain of I2C controller
+ *                             BOARD_SOC_DOMAIN_MAIN - Main Domain
+ *                             BOARD_SOC_DOMAIN_WKUP - Wakeup domain
+ *                             BOARD_SOC_DOMAIN_MCU - MCU domain
  *
- * \return   bool
- *                    true   - In case of specified board detected
- *                    false  - In case of specified board not detected.
+ *  \param   i2cInst    [IN]        I2C instance
+ *
+ *  \return  Board_STATUS in case of success or appropriate error code.
  *
  */
-bool Board_detectBoard(boardPresDetect_t detectBoard);
+I2C_Handle Board_getI2CHandle(uint8_t domainType,
+                              uint32_t i2cInst);
 
 /**
  * \brief  Unlocks MMR registers
@@ -226,6 +250,13 @@ bool Board_detectBoard(boardPresDetect_t detectBoard);
  * \return  Board_STATUS
  */
 Board_STATUS Board_unlockMMR(void);
+
+/**
+ * \brief  Locks MMR registers
+ *
+ * \return  Board_STATUS
+ */
+Board_STATUS Board_lockMMR(void);
 
 /**
  *  \brief Serdes configurations
@@ -248,6 +279,25 @@ Board_STATUS Board_serdesCfg(void);
  * \return BOARD_SOK in case of success or appropriate error code
  */
 Board_STATUS Board_PLLInitAll(void);
+
+/**
+ *  \brief Sets padconfig register of a pin at given offset
+ *
+ *  Configures whole padconfig register of the pin at given offset
+ *  with the value in 'muxData'.
+ *
+ *  \param   domain  [IN]  SoC domain for pinmux
+ *  \n                      BOARD_SOC_DOMAIN_MAIN - Main domain
+ *
+ *  \param   offset  [IN]  Pad config offset of the pin
+ *  \param   muxData [IN]  Value to be written to padconfig register
+ *
+ *  \return   BOARD_SOK in case of success or appropriate error code
+ *
+ */
+Board_STATUS Board_pinmuxSetReg(uint8_t  domain,
+                                uint32_t offset,
+                                uint32_t muxData);
 
 #ifdef __cplusplus
 }
