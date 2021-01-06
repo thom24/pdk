@@ -66,6 +66,19 @@ void UART_disableDmaChannel(UART_Handle handle, bool txChan)
     }
 
     (void)Udma_chDisable(channel, UDMA_DEFAULT_CH_DISABLE_TIMEOUT);
+    /* Flush any pending request from the free queue */
+    while(1)
+    {
+        uint64_t            pDesc;
+        int32_t             tempRetVal;
+
+        tempRetVal = Udma_ringFlushRaw(
+                         Udma_chGetFqRingHandle(channel), &pDesc);
+        if(UDMA_ETIMEOUT == tempRetVal)
+        {
+            break;
+        }
+    }
 }
 
 void UART_freeDmaChannel(UART_Handle handle)
