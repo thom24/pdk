@@ -1220,14 +1220,13 @@ static int32_t App_i2cPreInt(void)
 
 static int32_t App_i2cPreInt(void)
 {
-    uint32_t baseAddr, inst;
+    uint32_t inst;
     I2C_HwAttrs i2cCfg;
 
     for (inst = 0U; (inst < APP_I2C_INST_MAX); inst++)
     {
         I2C_socGetInitCfg(inst, &i2cCfg);
 
-        i2cCfg.baseAddr = baseAddr;
         i2cCfg.enableIntr = 0;
 
         I2C_socSetInitCfg(inst, &i2cCfg);
