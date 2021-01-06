@@ -23,11 +23,12 @@ ifeq ($(SOC),$(filter $(SOC), am65xx))
 XDC_CFG_FILE_mpu1_0 = ./$(SOC)/ospiFlashTest_a53.cfg
 XDC_CFG_FILE_mcu1_0 = ./$(SOC)/ospiFlashTest_r5.cfg
 endif
-ifeq ($(SOC),$(filter $(SOC), j7200 am64x))
-XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
-endif
-ifeq ($(SOC),$(filter $(SOC), j721e))
-XDC_CFG_FILE_$(CORE) = ./$(SOC)/sysbios_$(ISA).cfg
+ifeq ($(SOC),$(filter $(SOC), j7200 j721e am64x))
+    ifeq ($(CACHE), enable)
+        XDC_CFG_FILE_$(CORE) = ./$(SOC)/cached/sysbios_$(ISA).cfg
+    else
+        XDC_CFG_FILE_$(CORE) = ./$(SOC)/non_cached/sysbios_$(ISA).cfg
+    endif
 endif
 
 endif
@@ -48,43 +49,85 @@ endif
 # need to be included for this component
 INCLUDE_EXTERNAL_INTERFACES = pdk $(EXTERNAL_INTERFACES)
 
-ifeq ($(DMA), enable)
-    ifeq ($(SMP), enable)
-        #Name of the directory created under packages/ti/binary/
-        APP_NAME = OSPI$(OSPI_OS_TESTPREFIX)_Flash_Dma_SMP_TestApp
-        # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
-        LOCAL_APP_NAME =  OSPI$(OSPI_OS_TESTPREFIX)_Flash_Dma_$(BOARD)_$(CORE)_SMP_TestApp
-        ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
-            LOCAL_APP_NAME =  OSPI$(OSPI_OS_TESTPREFIX)_Flash_Dma_SMP_TestApp_$(CORE)
+ifeq ($(CACHE), enable)
+    ifeq ($(DMA), enable)
+        ifeq ($(SMP), enable)
+            #Name of the directory created under packages/ti/binary/
+            APP_NAME = OSPI$(OSPI_OS_TESTPREFIX)_Flash_Dma_SMP_Cache_TestApp
+            # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
+            LOCAL_APP_NAME =  OSPI$(OSPI_OS_TESTPREFIX)_Flash_Dma_$(BOARD)_$(CORE)_SMP_Cache_TestApp
+            ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
+                LOCAL_APP_NAME =  OSPI$(OSPI_OS_TESTPREFIX)_Flash_Dma_SMP_Cache_TestApp_$(CORE)
+            endif
+
+        else
+            #Name of the directory created under packages/ti/binary/
+            APP_NAME = OSPI$(OSPI_OS_TESTPREFIX)_Flash_Dma_Cache_TestApp
+            # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
+            LOCAL_APP_NAME =  OSPI$(OSPI_OS_TESTPREFIX)_Flash_Dma_Cache_$(BOARD)_$(CORE)TestApp
+            ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
+                LOCAL_APP_NAME =  OSPI$(OSPI_OS_TESTPREFIX)_Flash_Dma_Cache_TestApp_$(CORE)
+            endif
         endif
 
+    COMP_LIST_COMMON += spi_dma
+    #COMP_LIST_COMMON += spi_dma_profile
+    CFLAGS_SPI_DMA    = -DSPI_DMA_ENABLE 
     else
-        #Name of the directory created under packages/ti/binary/
-        APP_NAME = OSPI$(OSPI_OS_TESTPREFIX)_Flash_Dma_TestApp
-        # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
-        LOCAL_APP_NAME =  OSPI$(OSPI_OS_TESTPREFIX)_Flash_Dma_$(BOARD)_$(CORE)TestApp
-        ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
-            LOCAL_APP_NAME =  OSPI$(OSPI_OS_TESTPREFIX)_Flash_Dma_TestApp_$(CORE)
+        ifeq ($(SMP), enable)
+            APP_NAME = OSPI$(OSPI_OS_TESTPREFIX)_Flash_SMP_Cache_TestApp
+            # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
+            LOCAL_APP_NAME =  OSPI$(OSPI_OS_TESTPREFIX)_Flash_$(BOARD)_$(CORE)_SMP_Cache_TestApp
+        else
+            APP_NAME = OSPI$(OSPI_OS_TESTPREFIX)_Flash_Cache_TestApp
+            # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
+            LOCAL_APP_NAME =  OSPI$(OSPI_OS_TESTPREFIX)_Flash_Cache_$(BOARD)_$(CORE)TestApp
         endif
+
+    COMP_LIST_COMMON += spi 
+    #COMP_LIST_COMMON += spi_profile
+    CFLAGS_SPI_DMA    =
     endif
 
-COMP_LIST_COMMON += spi_dma
-#COMP_LIST_COMMON += spi_dma_profile
-CFLAGS_SPI_DMA    = -DSPI_DMA_ENABLE 
 else
-    ifeq ($(SMP), enable)
-        APP_NAME = OSPI$(OSPI_OS_TESTPREFIX)_Flash_SMP_TestApp
-        # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
-        LOCAL_APP_NAME =  OSPI$(OSPI_OS_TESTPREFIX)_Flash_$(BOARD)_$(CORE)_SMP_TestApp
-    else
-        APP_NAME = OSPI$(OSPI_OS_TESTPREFIX)_Flash_TestApp
-        # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
-        LOCAL_APP_NAME =  OSPI$(OSPI_OS_TESTPREFIX)_Flash_$(BOARD)_$(CORE)TestApp
-    endif
+    ifeq ($(DMA), enable)
+        ifeq ($(SMP), enable)
+            #Name of the directory created under packages/ti/binary/
+            APP_NAME = OSPI$(OSPI_OS_TESTPREFIX)_Flash_Dma_SMP_TestApp
+            # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
+            LOCAL_APP_NAME =  OSPI$(OSPI_OS_TESTPREFIX)_Flash_Dma_$(BOARD)_$(CORE)_SMP_TestApp
+            ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
+                LOCAL_APP_NAME =  OSPI$(OSPI_OS_TESTPREFIX)_Flash_Dma_SMP_TestApp_$(CORE)
+            endif
 
-COMP_LIST_COMMON += spi 
-#COMP_LIST_COMMON += spi_profile
-CFLAGS_SPI_DMA    =
+        else
+            #Name of the directory created under packages/ti/binary/
+            APP_NAME = OSPI$(OSPI_OS_TESTPREFIX)_Flash_Dma_TestApp
+            # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
+            LOCAL_APP_NAME =  OSPI$(OSPI_OS_TESTPREFIX)_Flash_Dma_$(BOARD)_$(CORE)TestApp
+            ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
+                LOCAL_APP_NAME =  OSPI$(OSPI_OS_TESTPREFIX)_Flash_Dma_TestApp_$(CORE)
+            endif
+        endif
+
+    COMP_LIST_COMMON += spi_dma
+    #COMP_LIST_COMMON += spi_dma_profile
+    CFLAGS_SPI_DMA    = -DSPI_DMA_ENABLE 
+    else
+        ifeq ($(SMP), enable)
+            APP_NAME = OSPI$(OSPI_OS_TESTPREFIX)_Flash_SMP_TestApp
+            # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
+            LOCAL_APP_NAME =  OSPI$(OSPI_OS_TESTPREFIX)_Flash_$(BOARD)_$(CORE)_SMP_TestApp
+        else
+            APP_NAME = OSPI$(OSPI_OS_TESTPREFIX)_Flash_TestApp
+            # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
+            LOCAL_APP_NAME =  OSPI$(OSPI_OS_TESTPREFIX)_Flash_$(BOARD)_$(CORE)TestApp
+        endif
+
+    COMP_LIST_COMMON += spi 
+    #COMP_LIST_COMMON += spi_profile
+    CFLAGS_SPI_DMA    =
+    endif
 endif
 
 PACKAGE_SRCS_COMMON = .

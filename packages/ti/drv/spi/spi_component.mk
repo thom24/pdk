@@ -126,7 +126,7 @@ spi_EXAMPLE_LIST += MCSPI_Baremetal_Master_TestApp MCSPI_Baremetal_Slave_TestApp
 spi_EXAMPLE_LIST += MCSPI_Master_TestApp MCSPI_Slave_TestApp
 spi_EXAMPLE_LIST += MCSPI_Baremetal_Master_Dma_TestApp MCSPI_Baremetal_Slave_Dma_TestApp
 spi_EXAMPLE_LIST += MCSPI_Master_Dma_TestApp MCSPI_Slave_Dma_TestApp
-spi_EXAMPLE_LIST += OSPI_Baremetal_Flash_TestApp  OSPI_Baremetal_Flash_Dma_TestApp OSPI_Flash_TestApp OSPI_Flash_SMP_TestApp OSPI_Flash_Dma_TestApp OSPI_Flash_Dma_SMP_TestApp QSPI_Baremetal_Flash_TestApp QSPI_Flash_TestApp QSPI_Baremetal_Flash_Dma_TestApp QSPI_Flash_Dma_TestApp QSPI_FileFlashWrite_Dma_TestApp
+spi_EXAMPLE_LIST += OSPI_Baremetal_Flash_TestApp  OSPI_Baremetal_Flash_Dma_TestApp OSPI_Flash_TestApp OSPI_Flash_Dma_TestApp OSPI_Baremetal_Flash_Cache_TestApp  OSPI_Baremetal_Flash_Dma_Cache_TestApp OSPI_Flash_Cache_TestApp OSPI_Flash_Dma_Cache_TestApp OSPI_Flash_SMP_TestApp OSPI_Flash_Dma_SMP_TestApp QSPI_Baremetal_Flash_TestApp QSPI_Flash_TestApp QSPI_Baremetal_Flash_Dma_TestApp QSPI_Flash_Dma_TestApp QSPI_FileFlashWrite_Dma_TestApp
 drvspi_EXAMPLE_LIST = $(spi_EXAMPLE_LIST)
 
 #
@@ -622,31 +622,6 @@ OSPI_Flash_TestApp_SBL_APPIMAGEGEN = yes
 export OSPI_Flash_TestApp_SBL_APPIMAGEGEN
 endif
 
-# OSPI rtos Flash Test app with SMP enabled
-OSPI_Flash_SMP_TestApp_COMP_LIST = OSPI_Flash_SMP_TestApp
-OSPI_Flash_SMP_TestApp_RELPATH = ti/drv/spi/test/ospi_flash
-OSPI_Flash_SMP_TestApp_PATH = $(PDK_SPI_COMP_PATH)/test/ospi_flash
-OSPI_Flash_SMP_TestApp_BOARD_DEPENDENCY = yes
-OSPI_Flash_SMP_TestApp_CORE_DEPENDENCY = no
-OSPI_Flash_SMP_TestApp_XDC_CONFIGURO = yes
-OSPI_Flash_SMP_TestApp_MAKEFILE = -f makefile SMP=enable
-export OSPI_Flash_SMP_TestApp_COMP_LIST
-export OSPI_Flash_SMP_TestApp_BOARD_DEPENDENCY
-export OSPI_Flash_SMP_TestApp_CORE_DEPENDENCY
-export OSPI_Flash_SMP_TestApp_XDC_CONFIGURO
-export OSPI_Flash_SMP_TestApp_MAKEFILE
-OSPI_Flash_SMP_TestApp_PKG_LIST = OSPI_Flash_SMP_TestApp
-OSPI_Flash_SMP_TestApp_INCLUDE = $(OSPI_Flash_SMP_TestApp_PATH)
-OSPI_Flash_SMP_TestApp_BOARDLIST = am65xx_idk
-export OSPI_Flash_SMP_TestApp_BOARDLIST
-OSPI_Flash_SMP_TestApp_$(SOC)_CORELIST = mpu1_0
-export OSPI_Flash_SMP_TestApp_$(SOC)_CORELIST
-
-ifeq ($(SOC),$(filter $(SOC), j721e am65xx))
-OSPI_Flash_SMP_TestApp_SBL_APPIMAGEGEN = yes
-export OSPI_Flash_SMP_TestApp_SBL_APPIMAGEGEN
-endif
-
 # OSPI rtos DMA Flash Test app
 OSPI_Flash_Dma_TestApp_COMP_LIST = OSPI_Flash_Dma_TestApp
 OSPI_Flash_Dma_TestApp_RELPATH = ti/drv/spi/test/ospi_flash
@@ -674,6 +649,143 @@ export OSPI_Flash_Dma_TestApp_$(SOC)_CORELIST
 ifeq ($(SOC),$(filter $(SOC), j721e am65xx j7200 am64x))
 OSPI_Flash_Dma_TestApp_SBL_APPIMAGEGEN = yes
 export OSPI_Flash_Dma_TestApp_SBL_APPIMAGEGEN
+endif
+
+# OSPI baremetal Flash Test app with cacheable OSPI memory
+OSPI_Baremetal_Flash_Cache_TestApp_COMP_LIST = OSPI_Baremetal_Flash_Cache_TestApp
+OSPI_Baremetal_Flash_Cache_TestApp_RELPATH = ti/drv/spi/test/ospi_flash
+OSPI_Baremetal_Flash_Cache_TestApp_PATH = $(PDK_SPI_COMP_PATH)/test/ospi_flash
+OSPI_Baremetal_Flash_Cache_TestApp_BOARD_DEPENDENCY = yes
+OSPI_Baremetal_Flash_Cache_TestApp_CORE_DEPENDENCY = no
+OSPI_Baremetal_Flash_Cache_TestApp_MAKEFILE = -f makefile IS_BAREMETAL=yes CACHE=enable
+export OSPI_Baremetal_Flash_Cache_TestApp_COMP_LIST
+export OSPI_Baremetal_Flash_Cache_TestApp_BOARD_DEPENDENCY
+export OSPI_Baremetal_Flash_Cache_TestApp_CORE_DEPENDENCY
+export OSPI_Baremetal_Flash_Cache_TestApp_MAKEFILE
+OSPI_Baremetal_Flash_Cache_TestApp_PKG_LIST = OSPI_Baremetal_Flash_Cache_TestApp
+OSPI_Baremetal_Flash_Cache_TestApp_INCLUDE = $(OSPI_Baremetal_Flash_Cache_TestApp_PATH)
+OSPI_Baremetal_Flash_Cache_TestApp_BOARDLIST = $(drvspi_BOARDLIST)
+export OSPI_Baremetal_Flash_Cache_TestApp_BOARDLIST
+ifeq ($(SOC),$(filter $(SOC), j721e am64x))
+OSPI_Baremetal_Flash_Cache_TestApp_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELISTARM)
+else
+OSPI_Baremetal_Flash_Cache_TestApp_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELIST)
+endif
+export OSPI_Baremetal_Flash_Cache_TestApp_$(SOC)_CORELIST
+
+ifeq ($(SOC),$(filter $(SOC), j721e am65xx j7200 am64x))
+OSPI_Baremetal_Flash_Cache_TestApp_SBL_APPIMAGEGEN = yes
+export OSPI_Baremetal_Flash_Cache_TestApp_SBL_APPIMAGEGEN
+endif
+
+# OSPI baremetal dma Flash Test app with cacheable OSPI memory
+OSPI_Baremetal_Flash_Dma_Cache_TestApp_COMP_LIST = OSPI_Baremetal_Flash_Dma_Cache_TestApp
+OSPI_Baremetal_Flash_Dma_Cache_TestApp_RELPATH = ti/drv/spi/test/ospi_flash
+OSPI_Baremetal_Flash_Dma_Cache_TestApp_PATH = $(PDK_SPI_COMP_PATH)/test/ospi_flash
+OSPI_Baremetal_Flash_Dma_Cache_TestApp_BOARD_DEPENDENCY = yes
+OSPI_Baremetal_Flash_Dma_Cache_TestApp_CORE_DEPENDENCY = no
+OSPI_Baremetal_Flash_Dma_Cache_TestApp_MAKEFILE = -f makefile IS_BAREMETAL=yes DMA=enable CACHE=enable
+export OSPI_Baremetal_Flash_Dma_Cache_TestApp_COMP_LIST
+export OSPI_Baremetal_Flash_Dma_Cache_TestApp_BOARD_DEPENDENCY
+export OSPI_Baremetal_Flash_Dma_Cache_TestApp_CORE_DEPENDENCY
+export OSPI_Baremetal_Flash_Dma_Cache_TestApp_MAKEFILE
+OSPI_Baremetal_Flash_Dma_Cache_TestApp_PKG_LIST = OSPI_Baremetal_Flash_Dma_Cache_TestApp
+OSPI_Baremetal_Flash_Dma_Cache_TestApp_INCLUDE = $(OSPI_Baremetal_Flash_Dma_Cache_TestApp_PATH)
+OSPI_Baremetal_Flash_Dma_Cache_TestApp_BOARDLIST = $(drvspi_BOARDLIST)
+export OSPI_Baremetal_Flash_Dma_Cache_TestApp_BOARDLIST
+ifeq ($(SOC),$(filter $(SOC), j721e am64x))
+OSPI_Baremetal_Flash_Dma_Cache_TestApp_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELISTARM)
+else
+OSPI_Baremetal_Flash_Dma_Cache_TestApp_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELIST)
+endif
+export OSPI_Baremetal_Flash_Dma_Cache_TestApp_$(SOC)_CORELIST
+
+ifeq ($(SOC),$(filter $(SOC), j721e am65xx j7200 am64x))
+OSPI_Baremetal_Flash_Dma_Cache_TestApp_SBL_APPIMAGEGEN = yes
+export OSPI_Baremetal_Flash_Dma_Cache_TestApp_SBL_APPIMAGEGEN
+endif
+
+# OSPI rtos Flash Test app with cacheable OSPI memory
+OSPI_Flash_Cache_TestApp_COMP_LIST = OSPI_Flash_Cache_TestApp
+OSPI_Flash_Cache_TestApp_RELPATH = ti/drv/spi/test/ospi_flash
+OSPI_Flash_Cache_TestApp_PATH = $(PDK_SPI_COMP_PATH)/test/ospi_flash
+OSPI_Flash_Cache_TestApp_BOARD_DEPENDENCY = yes
+OSPI_Flash_Cache_TestApp_CORE_DEPENDENCY = no
+OSPI_Flash_Cache_TestApp_XDC_CONFIGURO = yes
+OSPI_Flash_Cache_TestApp_MAKEFILE = -f makefile CACHE=enable
+export OSPI_Flash_Cache_TestApp_COMP_LIST
+export OSPI_Flash_Cache_TestApp_BOARD_DEPENDENCY
+export OSPI_Flash_Cache_TestApp_CORE_DEPENDENCY
+export OSPI_Flash_Cache_TestApp_XDC_CONFIGURO
+export OSPI_Flash_Cache_TestApp_MAKEFILE
+OSPI_Flash_Cache_TestApp_PKG_LIST = OSPI_Flash_Cache_TestApp
+OSPI_Flash_Cache_TestApp_INCLUDE = $(OSPI_Flash_Cache_TestApp_PATH)
+OSPI_Flash_Cache_TestApp_BOARDLIST = $(drvspi_BOARDLIST)
+export OSPI_Flash_Cache_TestApp_BOARDLIST
+ifeq ($(SOC),$(filter $(SOC), j721e am64x))
+OSPI_Flash_Cache_TestApp_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELISTARM)
+else
+OSPI_Flash_Cache_TestApp_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELIST)
+endif
+export OSPI_Flash_Cache_TestApp_$(SOC)_CORELIST
+
+ifeq ($(SOC),$(filter $(SOC), j721e am65xx j7200 am64x))
+OSPI_Flash_Cache_TestApp_SBL_APPIMAGEGEN = yes
+export OSPI_Flash_Cache_TestApp_SBL_APPIMAGEGEN
+endif
+
+# OSPI rtos DMA Flash Test app with cacheable OSPI memory
+OSPI_Flash_Dma_Cache_TestApp_COMP_LIST = OSPI_Flash_Dma_Cache_TestApp
+OSPI_Flash_Dma_Cache_TestApp_RELPATH = ti/drv/spi/test/ospi_flash
+OSPI_Flash_Dma_Cache_TestApp_PATH = $(PDK_SPI_COMP_PATH)/test/ospi_flash
+OSPI_Flash_Dma_Cache_TestApp_BOARD_DEPENDENCY = yes
+OSPI_Flash_Dma_Cache_TestApp_CORE_DEPENDENCY = no
+OSPI_Flash_Dma_Cache_TestApp_XDC_CONFIGURO = yes
+OSPI_Flash_Dma_Cache_TestApp_MAKEFILE = -f makefile DMA=enable CACHE=enable
+export OSPI_Flash_Dma_Cache_TestApp_COMP_LIST
+export OSPI_Flash_Dma_Cache_TestApp_BOARD_DEPENDENCY
+export OSPI_Flash_Dma_Cache_TestApp_CORE_DEPENDENCY
+export OSPI_Flash_Dma_Cache_TestApp_XDC_CONFIGURO
+export OSPI_Flash_Dma_Cache_TestApp_MAKEFILE
+OSPI_Flash_Dma_Cache_TestApp_PKG_LIST = OSPI_Flash_Dma_Cache_TestApp
+OSPI_Flash_Dma_Cache_TestApp_INCLUDE = $(OSPI_Flash_Dma_Cache_TestApp_PATH)
+OSPI_Flash_Dma_Cache_TestApp_BOARDLIST = $(drvspi_BOARDLIST)
+export OSPI_Flash_Dma_Cache_TestApp_BOARDLIST
+ifeq ($(SOC),$(filter $(SOC), j721e am64x))
+OSPI_Flash_Dma_Cache_TestApp_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELISTARM)
+else
+OSPI_Flash_Dma_Cache_TestApp_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELIST)
+endif
+export OSPI_Flash_Dma_Cache_TestApp_$(SOC)_CORELIST
+
+ifeq ($(SOC),$(filter $(SOC), j721e am65xx j7200 am64x))
+OSPI_Flash_Dma_Cache_TestApp_SBL_APPIMAGEGEN = yes
+export OSPI_Flash_Dma_Cache_TestApp_SBL_APPIMAGEGEN
+endif
+
+# OSPI rtos Flash Test app with SMP enabled
+OSPI_Flash_SMP_TestApp_COMP_LIST = OSPI_Flash_SMP_TestApp
+OSPI_Flash_SMP_TestApp_RELPATH = ti/drv/spi/test/ospi_flash
+OSPI_Flash_SMP_TestApp_PATH = $(PDK_SPI_COMP_PATH)/test/ospi_flash
+OSPI_Flash_SMP_TestApp_BOARD_DEPENDENCY = yes
+OSPI_Flash_SMP_TestApp_CORE_DEPENDENCY = no
+OSPI_Flash_SMP_TestApp_XDC_CONFIGURO = yes
+OSPI_Flash_SMP_TestApp_MAKEFILE = -f makefile SMP=enable
+export OSPI_Flash_SMP_TestApp_COMP_LIST
+export OSPI_Flash_SMP_TestApp_BOARD_DEPENDENCY
+export OSPI_Flash_SMP_TestApp_CORE_DEPENDENCY
+export OSPI_Flash_SMP_TestApp_XDC_CONFIGURO
+export OSPI_Flash_SMP_TestApp_MAKEFILE
+OSPI_Flash_SMP_TestApp_PKG_LIST = OSPI_Flash_SMP_TestApp
+OSPI_Flash_SMP_TestApp_INCLUDE = $(OSPI_Flash_SMP_TestApp_PATH)
+OSPI_Flash_SMP_TestApp_BOARDLIST = am65xx_idk
+export OSPI_Flash_SMP_TestApp_BOARDLIST
+OSPI_Flash_SMP_TestApp_$(SOC)_CORELIST = mpu1_0
+export OSPI_Flash_SMP_TestApp_$(SOC)_CORELIST
+
+ifeq ($(SOC),$(filter $(SOC), j721e am65xx))
+OSPI_Flash_SMP_TestApp_SBL_APPIMAGEGEN = yes
+export OSPI_Flash_SMP_TestApp_SBL_APPIMAGEGEN
 endif
 
 # OSPI rtos DMA Flash Test app with SMP enabled
