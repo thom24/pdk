@@ -58,12 +58,13 @@ MEMORY
 
     /* MCU0 memory used for sciclientTest. Available to app for dynamic use ~160KB */
     /* RBL uses 0x41C58000 and beyond. sciclientTest, at load cannot cross this */
-    OCMRAM_sciclientTest    (RWIX)   : origin=0x41C00200 length=0x50000-0x200
+    OCMRAM_sciclientTest    (RWIX)   : origin=0x41C00200 length=0x3F000-0x200
 
     /* Used by sciclientTest at runtime to load SYSFW. Available to app for dynamic use */
-    OCMRAM_sciclientTest_SYSFW (RWIX): origin=0x41C50000 length=0x41000
+    OCMRAM_sciclientTest_SYSFW (RWIX): origin=0x41C3F000 length=0x41000
 
-    /* Sciserver App space - This is not used */
+    /* Sciserver App space */
+    OCMC_RAM_SCISERVER (RWIX)        : origin=0x41c82000 length=0x60000
 
 }  /* end of MEMORY */
 

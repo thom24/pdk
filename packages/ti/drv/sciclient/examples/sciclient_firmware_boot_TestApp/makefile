@@ -37,7 +37,11 @@ PACKAGE_SRCS_COMMON = . ../common
 ifeq ($(SOC),$(filter $(SOC), am64x))
 CONFIG_BLD_LNK_r5f = $(PDK_INSTALL_PATH)/ti/drv/sciclient/examples/$(APP_NAME)/linker_r5_am64x.lds
 else
-CONFIG_BLD_LNK_r5f = $(PDK_INSTALL_PATH)/ti/drv/sciclient/examples/$(APP_NAME)/linker_r5.lds
+    ifeq ($(SOC),$(filter $(SOC), am65xx))
+    CONFIG_BLD_LNK_r5f = $(PDK_INSTALL_PATH)/ti/drv/sciclient/examples/$(APP_NAME)/linker_r5_am65x.lds
+    else
+    CONFIG_BLD_LNK_r5f = $(PDK_INSTALL_PATH)/ti/drv/sciclient/examples/$(APP_NAME)/linker_r5.lds
+    endif
 endif
 
 ifeq ($(CORE),mpu1_0)
