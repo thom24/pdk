@@ -65,7 +65,7 @@ ifeq ($(MAKERULEDIR), )
 endif
 include $(MAKERULEDIR)/common.mk
 
-main.c: ti-fs-keywriter.h
+main.o: main.c ti-fs-keywriter.h
 
 ti-fs-keywriter.h: $(BIN2C_EXE) $(SIGNED_SYSFW_BIN)
 	# USAGE: bin2c <binary file name> <c file name> <array name>
