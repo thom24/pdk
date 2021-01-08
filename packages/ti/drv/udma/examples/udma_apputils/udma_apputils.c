@@ -198,6 +198,25 @@ uint64_t Udma_appVirtToPhyFxn(const void *virtAddr, uint32_t chNum, void *appDat
 #endif
 #endif
 
+#if defined (SOC_AM64X)
+#if defined (BUILD_MCU1_0)
+    atcmSizeLocal = CSL_R5FSS0_ATCM_SIZE;
+    atcmBaseGlobal = CSL_R5FSS0_CORE0_ATCM_BASE;
+#endif
+#if defined (BUILD_MCU1_1)
+    atcmSizeLocal = CSL_R5FSS0_ATCM_SIZE;
+    atcmBaseGlobal = CSL_R5FSS0_CORE1_ATCM_BASE;
+#endif
+#if defined (BUILD_MCU2_0)
+    atcmSizeLocal = CSL_R5FSS1_ATCM_BASE;
+    atcmBaseGlobal = CSL_R5FSS1_CORE0_ATCM_BASE;
+#endif
+#if defined (BUILD_MCU2_1)
+    atcmSizeLocal = CSL_R5FSS1_ATCM_BASE;
+    atcmBaseGlobal = CSL_R5FSS1_CORE1_ATCM_BASE;
+#endif
+#endif
+
      /* check for start address avoided since atcmBase is 0U */
     if(phyAddr < atcmSizeLocal) 
     {
@@ -270,6 +289,25 @@ void *Udma_appPhyToVirtFxn(uint64_t phyAddr, uint32_t chNum, void *appData)
     atcmBaseGlobal = CSL_R5FSS1_CORE0_ATCM_BASE;
 #endif
 #if defined (BUILD_MCU3_1)
+    atcmSizeGlobal = CSL_R5FSS1_CORE1_ATCM_SIZE;
+    atcmBaseGlobal = CSL_R5FSS1_CORE1_ATCM_BASE;
+#endif
+#endif
+
+#if defined (SOC_AM64X)
+#if defined (BUILD_MCU1_0)
+    atcmSizeGlobal = CSL_R5FSS0_CORE0_ATCM_SIZE;
+    atcmBaseGlobal = CSL_R5FSS0_CORE0_ATCM_BASE;
+#endif
+#if defined (BUILD_MCU1_1)
+    atcmSizeGlobal = CSL_R5FSS0_CORE1_ATCM_SIZE;
+    atcmBaseGlobal = CSL_R5FSS0_CORE1_ATCM_BASE;
+#endif
+#if defined (BUILD_MCU2_0)
+    atcmSizeGlobal = CSL_R5FSS1_CORE0_ATCM_SIZE;
+    atcmBaseGlobal = CSL_R5FSS1_CORE0_ATCM_BASE;
+#endif
+#if defined (BUILD_MCU2_1)
     atcmSizeGlobal = CSL_R5FSS1_CORE1_ATCM_SIZE;
     atcmBaseGlobal = CSL_R5FSS1_CORE1_ATCM_BASE;
 #endif

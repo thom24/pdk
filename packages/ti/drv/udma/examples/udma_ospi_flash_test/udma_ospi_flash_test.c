@@ -89,7 +89,7 @@
 /*
  * Flash type
  */
-#if defined (SOC_J7200) || defined(SOC_AM64x)
+#if defined (SOC_J7200) || defined(SOC_AM64X)
 #define FLASH_TYPE_XSPI
 #else
 #define FLASH_TYPE_OSPI
