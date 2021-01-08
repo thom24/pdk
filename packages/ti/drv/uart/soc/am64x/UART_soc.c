@@ -355,11 +355,7 @@ UART_HwAttrs uartInitCfg[CSL_UART_PER_CNT] =
         UART_TXTRIGLVL_56,
         FALSE,
         FALSE,
-#if defined (BUILD_MPU) || defined (BUILD_MCU)
         TRUE,
-#else
-        FALSE,
-#endif
         UART16x_OPER_MODE,
         NULL,
         NULL,
@@ -394,11 +390,7 @@ UART_HwAttrs uartInitCfg[CSL_UART_PER_CNT] =
         UART_TXTRIGLVL_56,
         FALSE,
         FALSE,
-#if defined (BUILD_MPU) || defined (BUILD_MCU)
         TRUE,
-#else
-        FALSE,
-#endif
         UART16x_OPER_MODE,
         NULL,
         NULL,
