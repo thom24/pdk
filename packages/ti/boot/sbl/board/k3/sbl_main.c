@@ -154,6 +154,23 @@ const CSL_ArmR5MpuRegionCfg gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         .cacheable        = (uint32_t)TRUE,
         .cachePolicy      = CSL_ARM_R5_MEM_ATTR_CACHED_WT_NO_WA,
         .memAttr          = 0U,
+    },
+    {
+        /* Region 6 configuration (Non-cached for PHY tuning data): Covers last 256KB of EVM Flash (FSS DAT0) */
+        .regionId         = 6U,
+        .enable           = 1U,
+        .baseAddr         = 0x63FC0000,
+        .size             = CSL_ARM_R5_MPU_REGION_SIZE_256KB,
+        .subRegionEnable  = CSL_ARM_R5_MPU_SUB_REGION_ENABLE_ALL,
+        .exeNeverControl  = 0U,
+        .accessPermission = CSL_ARM_R5_ACC_PERM_PRIV_USR_RD_WR,
+        .shareable        = 0U,
+        /* OSPI PHY tuning algorithm which runs in DAC mode needs
+         * cache to be disabled for this section of FSS data region.
+         */
+        .cacheable        = (uint32_t)FALSE,
+        .cachePolicy      = 0U,
+        .memAttr          = 0U,
     }
 };
 #else

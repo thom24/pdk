@@ -340,7 +340,11 @@ int32_t SBL_ospiInit(void *handle)
          * unsupported values. This is a workaround until
          * that issue is fixed
          */
+#if defined(SOC_AM64X)
+        ospiFunClk = (uint64_t)(OSPI_MODULE_CLK_166M);
+#else
         ospiFunClk = (uint64_t)(OSPI_MODULE_CLK_133M);
+#endif
         Sciclient_pmSetModuleClkFreq(ospiClkInfo[BOARD_OSPI_NOR_INSTANCE].moduleId, ospiClkInfo[BOARD_OSPI_NOR_INSTANCE].clockId, ospiFunClk, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
         ospi_cfg.funcClk = (uint32_t)ospiFunClk;
         SBL_log(SBL_LOG_MAX, "ospiFunClk = %d Hz \n", ospi_cfg.funcClk);
@@ -349,8 +353,10 @@ int32_t SBL_ospiInit(void *handle)
 
     ospi_cfg.dtrEnable = true;
 
-#if defined(SOC_J7200) || defined(SOC_AM64X)
+#if defined(SOC_J7200)
     ospi_cfg.funcClk = OSPI_MODULE_CLK_133M;
+#elif defined(SOC_AM64X)
+    ospi_cfg.funcClk = OSPI_MODULE_CLK_166M;
 #endif
 
 #if SBL_USE_DMA
