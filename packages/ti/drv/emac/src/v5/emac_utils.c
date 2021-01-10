@@ -2069,7 +2069,7 @@ void emac_icssg_update_rgmii_cfg_10MB(uint32_t portNum, uintptr_t icssgRgmiiCfgB
  */
 void emac_icssg_update_link_speed_10MB(uint32_t portNum, uint32_t link_status)
 {
-    uintptr_t icssgRgmiiCfgAddr;
+    uintptr_t icssgRgmiiCfgAddr, baseAddr;
 
     icssgRgmiiCfgAddr = emac_get_icssg_rgmii_cfg_base_addr(portNum);
     emac_icssg_update_rgmii_cfg_10MB(portNum, icssgRgmiiCfgAddr, link_status);
@@ -2082,13 +2082,24 @@ void emac_icssg_update_link_speed_10MB(uint32_t portNum, uint32_t link_status)
     {
         emac_configure_link_speed_duplexity(portNum, EMAC_IOCTL_SPEED_DUPLEXITY_10FD);
     }
+    
+    /*Notify the port link speed to firmware */
+    if ((portNum & 1) == 0)
+    {
+        baseAddr = emac_mcb.port_cb[portNum].icssDram0BaseAddr + PORT_LINK_SPEED_OFFSET;
+    }
+    else
+    {
+        baseAddr =  emac_mcb.port_cb[portNum].icssDram1BaseAddr + PORT_LINK_SPEED_OFFSET;
+    }
+    CSL_REG8_WR (baseAddr, FW_LINK_SPEED_10M);
 }
 /*
  *  ======== emac_icssg_update_link_speed_100MB ========
  */
 void emac_icssg_update_link_speed_100MB(uint32_t portNum, uint32_t link_status)
 {
-    uintptr_t icssgRgmiiCfgAddr, icssgTxIpgCfgAddr;
+    uintptr_t icssgRgmiiCfgAddr, icssgTxIpgCfgAddr, baseAddr;
     uint32_t regVal;
     
 
@@ -2124,6 +2135,17 @@ void emac_icssg_update_link_speed_100MB(uint32_t portNum, uint32_t link_status)
             CSL_REG32_WR (icssgTxIpgCfgAddr, regVal);
         }
     }
+    
+    /*Notify the port link speed to firmware */
+    if ((portNum & 1) == 0)
+    {
+        baseAddr = emac_mcb.port_cb[portNum].icssDram0BaseAddr + PORT_LINK_SPEED_OFFSET;
+    }
+    else
+    {
+        baseAddr =  emac_mcb.port_cb[portNum].icssDram1BaseAddr + PORT_LINK_SPEED_OFFSET;
+    }
+    CSL_REG8_WR (baseAddr, FW_LINK_SPEED_100M);
 }
 
 /*
@@ -2131,7 +2153,7 @@ void emac_icssg_update_link_speed_100MB(uint32_t portNum, uint32_t link_status)
  */
 void emac_icssg_update_link_speed_1G(uint32_t portNum)
 {
-    uintptr_t icssgRgmiiCfgAddr, icssgTxIpgCfgAddr;
+    uintptr_t icssgRgmiiCfgAddr, icssgTxIpgCfgAddr, baseAddr;
     uint32_t regVal;
 
     icssgRgmiiCfgAddr = emac_get_icssg_rgmii_cfg_base_addr(portNum);
@@ -2159,6 +2181,17 @@ void emac_icssg_update_link_speed_1G(uint32_t portNum)
             CSL_REG32_WR (icssgTxIpgCfgAddr, regVal);
         }
     }
+    
+    /*Notify the port link speed to firmware */
+    if ((portNum & 1) == 0)
+    {
+        baseAddr = emac_mcb.port_cb[portNum].icssDram0BaseAddr + PORT_LINK_SPEED_OFFSET;
+    }
+    else
+    {
+        baseAddr =  emac_mcb.port_cb[portNum].icssDram1BaseAddr + PORT_LINK_SPEED_OFFSET;
+    }
+    CSL_REG8_WR (baseAddr, FW_LINK_SPEED_1G);
 }
 
 /*

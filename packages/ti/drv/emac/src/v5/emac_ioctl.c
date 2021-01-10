@@ -155,8 +155,8 @@ void emac_ioctl_icss_add_mac (uint32_t portNum, uint8_t*  macAddr)
     if ((portNum % 2U) == 0)
     {
         /* add mac */
-        CSL_REG32_WR(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_MAC_PRU0_0, macLo); 
-        CSL_REG32_WR(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_MAC_PRU0_1, macHi); 
+        CSL_REG32_WR(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_MAC_PRU0_0, macLo);
+        CSL_REG32_WR(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_MAC_PRU0_1, macHi);
         /* enable filter */
         CSL_REG32_WR(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RX_CLASS4_AND_EN_PRU0, 0x0U);
         CSL_REG32_WR(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RX_CLASS4_OR_EN_PRU0, 0x22000000U);
@@ -286,7 +286,7 @@ void emac_classifier_disable(uint32_t portNum)
         temp &= ~(0x3U << (classi*2U));
         temp |=    (0U << (classi *2U));
         CSL_REG32_WR(addr,temp);
-        
+
         temp = CSL_REG32_RD(addr+EMAC_CLASS_GATE_OFF);
         /*clear the classi & allow masks */
         temp &= ~(0x60U );
@@ -326,14 +326,14 @@ void emac_switch_vlan_init(uint32_t portNum,EMAC_OPEN_CONFIG_INFO_T *p_config)
     regAddr = hwAttrs->portCfg[portNum].icssgCfgRegBaseAddr + CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FDB_GEN_CFG2;
     regVal =CSL_REG32_RD (regAddr);
 
-    regVal |= (0x1 << CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FDB_GEN_CFG2_FDB_PRU0_EN_SHIFT)| 
-              (0x1 << CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FDB_GEN_CFG2_FDB_PRU1_EN_SHIFT)| 
-              (0x1 << CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FDB_GEN_CFG2_FDB_HOST_EN_SHIFT)| 
+    regVal |= (0x1 << CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FDB_GEN_CFG2_FDB_PRU0_EN_SHIFT)|
+              (0x1 << CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FDB_GEN_CFG2_FDB_PRU1_EN_SHIFT)|
+              (0x1 << CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FDB_GEN_CFG2_FDB_HOST_EN_SHIFT)|
               (0x1 << CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FDB_GEN_CFG2_FDB_VLAN_EN_SHIFT);
     CSL_REG32_WR (regAddr,regVal);
 
     /* Initialize VLAN-FID table to 0, do two entries at a time (4 byte) */
-    for(vlanEntry=0; vlanEntry<2048; vlanEntry++) 
+    for(vlanEntry=0; vlanEntry<2048; vlanEntry++)
         CSL_REG32_WR((hwAttrs->portCfg[portNum].icssSharedRamBaseAddr+ vlanDefaultTblOffset) + vlanEntry*4, 0);
 
     UTILS_trace(UTIL_TRACE_LEVEL_INFO, emac_mcb.drv_trace_cb, "port: %d: EXIT",portNum);
@@ -378,7 +378,7 @@ EMAC_DRV_ERR_E emac_ioctl_vlan_ctrl_get_entry(uint32_t portNum, void* ctrl)
 EMAC_DRV_ERR_E emac_ioctl_vlan_ctrl_set_entry(uint32_t portNum, void* ctrl)
 {
     uint16_t  vlanEntry;
-    EMAC_DRV_ERR_E retVal = EMAC_DRV_RESULT_OK; 
+    EMAC_DRV_ERR_E retVal = EMAC_DRV_RESULT_OK;
 
     UTILS_trace(UTIL_TRACE_LEVEL_INFO, emac_mcb.drv_trace_cb, "port: %d: ENTER",portNum);
     EMAC_IOCTL_VLAN_FID_ENTRY *pVlanTblEntry = (EMAC_IOCTL_VLAN_FID_ENTRY*)ctrl;
@@ -409,7 +409,7 @@ EMAC_DRV_ERR_E emac_ioctl_vlan_ctrl_set_default_tbl(uint32_t portNum, void* ctrl
     EMAC_IOCTL_VLAN_FID_PARAMS *pVlanTblEntryParams = (EMAC_IOCTL_VLAN_FID_PARAMS*)ctrl;
     uint32_t count;
     uint16_t vlanEntry;
- 
+
     UTILS_trace(UTIL_TRACE_LEVEL_INFO, emac_mcb.drv_trace_cb, "port: %d: ENTER",portNum);
     vlanEntry = (pVlanTblEntryParams->hostMember) | (pVlanTblEntryParams->p1Member << 1) |
                     (pVlanTblEntryParams->p2Member << 2)  | (pVlanTblEntryParams->hostTagged << 3)|
@@ -452,11 +452,11 @@ EMAC_DRV_ERR_E emac_ioctl_vlan_ctrl_set_default_vlan_id_host_port(uint32_t portN
         tempByte1 = (uint8_t)(vlanDefaultEntry->pcp << 5) | (uint8_t)((uint16_t)vlanDefaultEntry->vlanId >> 8);
         /*Populate second byte which contains 8 bits of VLAN*/
         tempByte2 = (uint8_t)((uint16_t)vlanDefaultEntry->vlanId & 0xFF);  /*Lower 8 bits*/
-    
+
         /* Write Host default VLAN to memory. This is used directly to update MMR for inserting VLAN tag . DEI is 0*/
         /*OR the values*/
         regVal = (uint32_t)(0x0081) | ((uint32_t)tempByte1 << 16) | ((uint32_t)tempByte2 << 24);
-    
+
         regAddr = emac_mcb.port_cb[portNum].icssSharedRamBaseAddr + EMAC_ICSSG_SWITCH_PORT0_DEFAULT_VLAN_OFFSET;
         CSL_REG32_WR (regAddr, regVal);
     }
@@ -492,11 +492,11 @@ EMAC_DRV_ERR_E emac_ioctl_vlan_ctrl_set_default_vlan_id(uint32_t portNum, void* 
         tempByte1 = (uint8_t)(vlanDefaultEntry->pcp << 5) | (uint8_t)((uint16_t)vlanDefaultEntry->vlanId >> 8);
         /*Populate second byte which contains 8 bits of VLAN*/
         tempByte2 = (uint8_t)((uint16_t)vlanDefaultEntry->vlanId & 0xFF);  /*Lower 8 bits*/
-        
+
         /* Write Host default VLAN to memory. This is used directly to update MMR for inserting VLAN tag . DEI is 0*/
         /*OR the values*/
         regVal = (uint32_t)(0x0081) | ((uint32_t)tempByte1 << 16) | ((uint32_t)tempByte2 << 24);
-        
+
         /* Update for host port */
         if ((portNum & 1) == 0)
         {
@@ -860,7 +860,7 @@ EMAC_DRV_ERR_E emac_add_fdb_multiple_ctrl(uint32_t portNum, void* p_params)
         pCmd->commandHeader = EMAC_FW_MGMT_CMD_HEADER;
         pCmd->commandType = 0x3;  // FDB COMMAND
         pCmd->seqNumber = pParams->seqNumber;
-        pCmd->commandParam = ((portNum & 1) << 4) | EMAC_IOCTL_FDB_ENTRY_ADD_MULTIPLE; 
+        pCmd->commandParam = ((portNum & 1) << 4) | EMAC_IOCTL_FDB_ENTRY_ADD_MULTIPLE;
         retVal = emac_ioctl_send_mgmt_msg(portNum, emac_mcb.ioctl_cb.pCmd1Icssg, NULL);
         UTILS_trace(UTIL_TRACE_LEVEL_INFO, emac_mcb.drv_trace_cb, "port: %d: EXIT with status: %d",portNum, retVal);
     }
@@ -872,7 +872,7 @@ EMAC_DRV_ERR_E emac_add_fdb_multiple_ctrl(uint32_t portNum, void* p_params)
  */
 EMAC_DRV_ERR_E emac_ioctl_accept_frame_check_ctrl(uint32_t portNum, void* p_params)
 {
-    EMAC_DRV_ERR_E retVal = EMAC_DRV_RESULT_IOCTL_ERR; 
+    EMAC_DRV_ERR_E retVal = EMAC_DRV_RESULT_IOCTL_ERR;
     EMAC_IOCTL_PARAMS *pParams = (EMAC_IOCTL_PARAMS*) p_params;
     UTILS_trace(UTIL_TRACE_LEVEL_INFO, emac_mcb.drv_trace_cb, "port: %d: ENTER",portNum);
 
@@ -984,7 +984,7 @@ EMAC_DRV_ERR_E emac_ioctl_prio_regen_mapping_ctrl(uint32_t portNum, void*  ctrl)
     {
         tempVal = (uint32_t)pPrioRegenMap->prioRegenMap[index];
         /*Shift PCP value by 5 so HW can save a cycle*/
-        tempVal = tempVal << 5; 
+        tempVal = tempVal << 5;
         HWREGB(icssgBaseAddr + PORT_Q_PRIORITY_REGEN_OFFSET + index) = tempVal;
     }
     return EMAC_DRV_RESULT_OK;
@@ -1073,7 +1073,7 @@ EMAC_DRV_ERR_E emac_ioctl_configure_interface_mac_ctrl(uint32_t portNum, void* p
         CSL_REG32_WR(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_MAC_PRU1_0, macLo);
         CSL_REG32_WR(baseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_MAC_PRU1_1, macHi);
     }
-    
+
     UTILS_trace(UTIL_TRACE_LEVEL_INFO, emac_mcb.drv_trace_cb, "port: %d: EXIT with status: %d",portNum, retVal);
     return retVal;
 
@@ -1206,7 +1206,7 @@ EMAC_DRV_ERR_E emac_ioctl_frame_premption_ctrl(uint32_t portNum, void* p_params)
             break;
         case EMAC_IOCTL_PREEMPT_GET_MIN_FRAG_SIZE_LOCAL:
             premptionMinFragSizeAddr = emac_mcb.port_cb[portNum].icssDram0BaseAddr + 0x2000*portLoc + PRE_EMPTION_ADD_FRAG_SIZE_LOCAL;
-            entry->premt_min_fragment_size = CSL_REG8_RD(premptionMinFragSizeAddr);
+            entry->premt_min_fragment_size = (CSL_REG16_RD(premptionMinFragSizeAddr)/64)-1;
             retVal = EMAC_DRV_RESULT_OK;
             break;
         case  EMAC_IOCTL_PREEMPT_SET_MIN_FRAG_SIZE_REMOTE:
@@ -1251,7 +1251,7 @@ EMAC_DRV_ERR_E emac_ioctl_speed_duplexity_cfg(uint32_t portNum, void* p_params)
     EMAC_IOCTL_PARAMS *pParams = (EMAC_IOCTL_PARAMS*) p_params;
     EMAC_DRV_ERR_E retVal;
     EMAC_IOCTL_CMD_T *pCmd = emac_mcb.ioctl_cb.pCmd1Icssg;
- 
+
     memset(pCmd, 0, sizeof(EMAC_IOCTL_CMD_T));
     pCmd->commandHeader = EMAC_FW_MGMT_CMD_HEADER;
     pCmd->commandType = EMAC_FW_MGMT_SPEED_DUPLEXITY_CMD_TYPE;
@@ -1305,13 +1305,185 @@ EMAC_DRV_ERR_E emac_ioctl_configure_fdb_ageing_interval(uint32_t portNum, void* 
     /*Calculate number of buckets*/
     numFDBBuckets = EMAC_ICSSG_SIZE_OF_FDB / EMAC_ICSSG_NUM_FDB_BUCKET_ENTRIES;
 
-    fdbAgeingIntervalAddr = emac_mcb.port_cb[portNum].icssDram1BaseAddr + FDB_AGEING_TIMEOUT_OFFSET; 
+    fdbAgeingIntervalAddr = emac_mcb.port_cb[portNum].icssSharedRamBaseAddr + FDB_AGEING_TIMEOUT_OFFSET;
     /*The actual value written to memory is ageing timeout divided by number of buckets
     because in firmware we iterate per bucket not for entire FDB. See NRT design doc for more details*/
     CSL_REG64_WR(fdbAgeingIntervalAddr, entry->fdbAgeingInterval/(uint64_t)numFDBBuckets);
     return EMAC_DRV_RESULT_OK;
-    
+
 }
 
+/*
+ *  ======== emac_ioctl_ingress_rate_limiter_ctrl ========
+ */
+EMAC_DRV_ERR_E emac_ioctl_ingress_rate_limiter_ctrl(uint32_t portNum, void* p_params)
+{
+    EMAC_IOCTL_PARAMS *pParams = (EMAC_IOCTL_PARAMS*) p_params;
+    EMAC_IOCTL_INGRESS_RATE_LIMIT_T *entry = (EMAC_IOCTL_INGRESS_RATE_LIMIT_T*)pParams->ioctlVal;
+    uintptr_t baseAddr = emac_mcb.port_cb[portNum].icssDram0BaseAddr + CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_REGS_BASE;
+    uintptr_t regOffset;
+    uint32_t tempRegVal, tempRegMask = ~(0xFF), tempRegShift, i;
+    regOffset = ((portNum  & 1) == 0) ? CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RX_RATE_CFG0_PRU0 \
+                                      : CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RX_RATE_CFG0_PRU1 ;
+    if (entry->rateIndex < 8)
+        regOffset += (entry->rateIndex << 2);
+    //Program rate in Mbps
+    CSL_REG32_WR (baseAddr+regOffset, (entry->rateLimit * 32768)/250);
+    regOffset = ((portNum  & 1) == 0) ? CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RX_RATE_SRC_SEL0_PRU0 \
+                                      : CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RX_RATE_SRC_SEL0_PRU1 ;
+    if (entry->rateIndex < 8)
+    {
+        if (entry->rateIndex < 4)
+        {
+            tempRegShift = entry->rateIndex << 3 ;
+            tempRegMask = ~(0xFF << tempRegShift);
+        }
+        else if ((entry->rateIndex >= 4) && (entry->rateIndex <= 7))
+        {
+            tempRegShift = (entry->rateIndex - 4) << 3 ;
+            regOffset += 4; //CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RX_RATE_SRC_SEL1_PRU0/1
+            tempRegMask = ~(0xFF << tempRegShift);
+        }
+        tempRegVal = CSL_REG32_RD (baseAddr+regOffset);
+        tempRegVal &= tempRegMask;
+        tempRegVal |= (entry->rateSrcSel << tempRegShift);
+        CSL_REG32_WR (baseAddr+regOffset, tempRegVal);
+    }
+
+    if (entry->classIndex < 16)
+    {
+        regOffset = ((portNum  & 1) == 0) ? CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RX_CLASS_GATES0_PRU0 \
+                                          : CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RX_CLASS_GATES0_PRU1 ;
+        regOffset += (entry->classIndex << 2);
+        CSL_REG32_WR (baseAddr+regOffset, (0x10 | entry->rateIndex));
+
+        regOffset = ((portNum  & 1) == 0) ? CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RX_CLASS0_AND_EN_PRU0 \
+                                          : CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RX_CLASS0_AND_EN_PRU1 ;
+        regOffset += (entry->classIndex << 3);
+        CSL_REG32_WR (baseAddr+regOffset, entry->classDataAndTerm);
+
+        regOffset = ((portNum  & 1) == 0) ? CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RX_CLASS0_OR_EN_PRU0 \
+                                          : CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RX_CLASS0_OR_EN_PRU1 ;
+        regOffset += (entry->classIndex << 3);
+        CSL_REG32_WR (baseAddr+regOffset, entry->classDataOrTerm);
+
+        tempRegShift = entry->classIndex << 1 ;
+        tempRegMask = ~(0x3 << tempRegShift);
+
+        regOffset = ((portNum  & 1) == 0) ? CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RX_CLASS_CFG1_PRU0 \
+                                          : CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RX_CLASS_CFG1_PRU1 ;
+
+        tempRegVal = CSL_REG32_RD (baseAddr+regOffset);
+        tempRegVal &= tempRegMask;
+
+        tempRegVal |= (entry->classSel << tempRegShift);
+        CSL_REG32_WR (baseAddr+regOffset, tempRegVal);
+
+        regOffset = ((portNum  & 1) == 0) ? CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RX_CLASS_CFG2_PRU0 \
+                                          : CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RX_CLASS_CFG2_PRU1 ;
+
+        tempRegVal = CSL_REG32_RD (baseAddr+regOffset);
+        if (entry->notMask & 1) //AND nv enable
+            tempRegVal |= (1 << entry->classIndex);
+        if (entry->notMask & 2) //OR nv enable
+            tempRegVal |= (1 << (entry->classIndex+16));
+        CSL_REG32_WR (baseAddr+regOffset, tempRegVal);
+    }
+
+    for (i = 0; i < 2 ; i++)
+    {
+        if (((entry->filter[i].type == 0) && (entry->filter[i].index >= 8)) ||
+            ((entry->filter[i].type == 1) && (entry->filter[i].index >= 16)))
+            break;
+        if ((entry->filter[i].type == 0) && (entry->filter[i].index < 8))
+        {
+            regOffset = ((portNum  & 1) == 0) ? CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT1_START_LEN_PRU0 \
+                                              : CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT1_START_LEN_PRU1 ;
+            tempRegVal = CSL_REG32_RD (baseAddr+regOffset);
+            if (tempRegVal != (entry->filter[i].ft1Start | (entry->filter[i].ft1Len << 16)))
+            {
+                return EMAC_DRV_RESULT_IOCTL_ERR;
+            }
+            regOffset = ((portNum  & 1) == 0) ? CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT1_CFG_PRU0 \
+                                              : CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT1_CFG_PRU1 ;
+            tempRegVal = CSL_REG16_RD (baseAddr+regOffset);
+            if (tempRegVal != entry->filter[i].ft1Cfg)
+            {
+                return EMAC_DRV_RESULT_IOCTL_ERR;
+            }
+            regOffset = ((portNum  & 1) == 0) ? CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT1_0_DA0_PRU0 \
+                                              : CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT1_0_DA0_PRU1 ;
+            regOffset += (entry->filter[i].index << 4);
+            CSL_REG32_WR (baseAddr+regOffset, entry->filter[i].u.ft1.destAddrLow);
+            regOffset = ((portNum  & 1) == 0) ? CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT1_0_DA1_PRU0 \
+                                              : CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT1_0_DA1_PRU1 ;
+            regOffset += (entry->filter[i].index << 4);
+            CSL_REG32_WR (baseAddr+regOffset, entry->filter[i].u.ft1.destAddrHigh);
+            regOffset = ((portNum  & 1) == 0) ? CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT1_0_DA_MASK0_PRU0 \
+                                              : CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT1_0_DA_MASK0_PRU1 ;
+            regOffset += (entry->filter[i].index << 4);
+            CSL_REG32_WR (baseAddr+regOffset, entry->filter[i].u.ft1.destAddrMaskLow);
+            regOffset = ((portNum  & 1) == 0) ? CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT1_0_DA_MASK1_PRU0 \
+                                              : CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT1_0_DA_MASK1_PRU1 ;
+            regOffset += (entry->filter[i].index << 4);
+            CSL_REG32_WR (baseAddr+regOffset, entry->filter[i].u.ft1.destAddrMaskHigh);
+
+        } else if ((entry->filter[i].type == 1) && (entry->filter[i].index < 16))
+        {
+            regOffset = ((portNum  & 1) == 0) ? CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT3_0_START_PRU0 \
+                                              : CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT3_0_START_PRU1 ;
+            regOffset += (entry->filter[i].index << 5);
+            CSL_REG32_WR (baseAddr+regOffset, entry->filter[i].u.ft3.start);
+            regOffset = ((portNum  & 1) == 0) ? CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT3_0_START_AUTO_PRU0 \
+                                              : CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT3_0_START_AUTO_PRU1 ;
+            regOffset += (entry->filter[i].index << 5);
+            CSL_REG32_WR (baseAddr+regOffset, entry->filter[i].u.ft3.startAuto);
+            regOffset = ((portNum  & 1) == 0) ? CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT3_0_START_LEN_PRU0 \
+                                              : CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT3_0_START_LEN_PRU1 ;
+            regOffset += (entry->filter[i].index << 5);
+            CSL_REG32_WR (baseAddr+regOffset, entry->filter[i].u.ft3.startLen);
+            regOffset = ((portNum  & 1) == 0) ? CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT3_0_JMP_OFFSET_PRU0 \
+                                              : CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT3_0_JMP_OFFSET_PRU1 ;
+            regOffset += (entry->filter[i].index << 5);
+            CSL_REG32_WR (baseAddr+regOffset, entry->filter[i].u.ft3.jmpOffset);
+            regOffset = ((portNum  & 1) == 0) ? CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT3_0_LEN_PRU0 \
+                                              : CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT3_0_LEN_PRU1 ;
+            regOffset += (entry->filter[i].index << 5);
+            CSL_REG32_WR (baseAddr+regOffset, entry->filter[i].u.ft3.len);
+            regOffset = ((portNum  & 1) == 0) ? CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT3_0_CFG_PRU0 \
+                                              : CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT3_0_CFG_PRU1 ;
+            regOffset += (entry->filter[i].index << 5);
+            CSL_REG32_WR (baseAddr+regOffset, entry->filter[i].u.ft3.config);
+            regOffset = ((portNum  & 1) == 0) ? CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT3_0_T_PRU0 \
+                                              : CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT3_0_T_PRU1 ;
+            regOffset += (entry->filter[i].index << 5);
+            CSL_REG32_WR (baseAddr+regOffset, entry->filter[i].u.ft3.type);
+            regOffset = ((portNum  & 1) == 0) ? CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT3_0_T_MASK_PRU0 \
+                                              : CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT3_0_T_MASK_PRU1 ;
+            regOffset += (entry->filter[i].index << 5);
+            CSL_REG32_WR (baseAddr+regOffset, entry->filter[i].u.ft3.typeMask);
+
+            regOffset = ((portNum  & 1) == 0) ? CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT3_0_P0_PRU0 \
+                                              : CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT3_0_P0_PRU1 ;
+            regOffset += (entry->filter[i].index << 5);
+            CSL_REG32_WR (baseAddr+regOffset, entry->filter[i].u.ft3.patternLow);
+            regOffset = ((portNum  & 1) == 0) ? CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT3_0_P1_PRU0 \
+                                              : CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT3_0_P1_PRU1 ;
+            regOffset += (entry->filter[i].index << 5);
+            CSL_REG32_WR (baseAddr+regOffset, entry->filter[i].u.ft3.patternHigh);
+            regOffset = ((portNum  & 1) == 0) ? CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT3_0_P_MASK0_PRU0 \
+                                              : CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT3_0_P_MASK0_PRU1 ;
+            regOffset += (entry->filter[i].index << 5);
+            CSL_REG32_WR (baseAddr+regOffset, entry->filter[i].u.ft3.patternMaskLow);
+            regOffset = ((portNum  & 1) == 0) ? CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT3_0_P_MASK1_PRU0 \
+                                              : CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT3_0_P_MASK1_PRU1 ;
+            regOffset += (entry->filter[i].index << 5);
+            CSL_REG32_WR (baseAddr+regOffset, entry->filter[i].u.ft3.patternMaskHigh);
+        }
+    }
+
+    return EMAC_DRV_RESULT_OK;
+
+}
 /* Nothing past this point */
 

@@ -507,6 +507,18 @@ typedef struct EMAC_IOCTL_FDB_ENTRY_MULTIPLE_S {
 
 /*@}*/
 /** @} */
+
+/**
+ *  @defgroup  EMAC_IOCTL_INTERFACE_MAC_CTRL Control sub-commands
+ *  @ingroup emaclld_api_ioctl_macros
+ *  @{
+ *
+ *  @name EMAC_IOCTL_INTERFACE_MAC_CTRL sub-commands
+ *  @details The following macros are sub-commands that to be used when issueing
+ *  emac_ioctl with EMAC_IOCTL_CMD set to EMAC_IOCTL_INTERFACE_MAC_CTRL
+ *
+ */
+ 
 /**
  *  @defgroup  EMAC_IOCTL_INTERFACE_MAC_CTRL Control sub-commands
  *  @ingroup emaclld_api_ioctl_macros
@@ -647,6 +659,132 @@ typedef struct EMAC_IOCTL_FDB_ENTRY_MULTIPLE_S {
 /*@}*/
 /** @} */
 
+//Rx Rate Source Selection
+#define RATE_SRC_SEL_FT1_MATCH0 0
+#define RATE_SRC_SEL_FT1_MATCH1 1
+#define RATE_SRC_SEL_FT1_MATCH2 2
+#define RATE_SRC_SEL_FT1_MATCH3 3
+#define RATE_SRC_SEL_FT1_MATCH4 4
+#define RATE_SRC_SEL_FT1_MATCH5 5
+#define RATE_SRC_SEL_FT1_MATCH6 6
+#define RATE_SRC_SEL_FT1_MATCH7 7
+#define RATE_SRC_SEL_FT3_MATCH0 8
+#define RATE_SRC_SEL_FT3_MATCH1 9
+#define RATE_SRC_SEL_FT3_MATCH2 10
+#define RATE_SRC_SEL_FT3_MATCH3 11
+#define RATE_SRC_SEL_FT3_MATCH4 12
+#define RATE_SRC_SEL_FT3_MATCH5 13
+#define RATE_SRC_SEL_FT3_MATCH6 14
+#define RATE_SRC_SEL_FT3_MATCH7 15
+#define RATE_SRC_SEL_FT3_MATCH8 16
+#define RATE_SRC_SEL_FT3_MATCH9 17
+#define RATE_SRC_SEL_FT3_MATCH10 18
+#define RATE_SRC_SEL_FT3_MATCH11 19
+#define RATE_SRC_SEL_FT3_MATCH12 20
+#define RATE_SRC_SEL_FT3_MATCH13 21
+#define RATE_SRC_SEL_FT3_MATCH14 22
+#define RATE_SRC_SEL_FT3_MATCH15 23
+#define RATE_SRC_SEL_FT_RX_UC    24
+#define RATE_SRC_SEL_FT_RX_MC    25
+#define RATE_SRC_SEL_FT_RX_BC    26
+#define RATE_SRC_SEL_FT_RX_SAV   27
+#define RATE_SRC_SEL_FT_RX_FWD   28
+#define RATE_SRC_SEL_FT_RX_RCV   29
+#define RATE_SRC_SEL_FT_RX_VLAN  30
+#define RATE_SRC_SEL_FT_RX_DA_P  31
+#define RATE_SRC_SEL_FT_RX_DA_I  32
+#define RATE_SRC_SEL_RX_CLASS_RAW0 33
+#define RATE_SRC_SEL_RX_CLASS_RAW1 34
+#define RATE_SRC_SEL_RX_CLASS_RAW2 35
+#define RATE_SRC_SEL_RX_CLASS_RAW3 36
+#define RATE_SRC_SEL_RX_CLASS_RAW4 37
+#define RATE_SRC_SEL_RX_CLASS_RAW5 38
+#define RATE_SRC_SEL_RX_CLASS_RAW6 39
+#define RATE_SRC_SEL_RX_CLASS_RAW7 40
+#define RATE_SRC_SEL_RX_CLASS_RAW8 41
+#define RATE_SRC_SEL_RX_CLASS_RAW9 42
+#define RATE_SRC_SEL_RX_CLASS_RAW10 43
+#define RATE_SRC_SEL_RX_CLASS_RAW11 44
+#define RATE_SRC_SEL_RX_CLASS_RAW12 45
+#define RATE_SRC_SEL_RX_CLASS_RAW13 46
+#define RATE_SRC_SEL_RX_CLASS_RAW14 47
+#define RATE_SRC_SEL_RX_CLASS_RAW15 48
+
+//RX class data mapping 
+#define RX_CLASS_DATA_FT3_MATCH0 0
+#define RX_CLASS_DATA_FT3_MATCH1 1
+#define RX_CLASS_DATA_FT3_MATCH2 2
+#define RX_CLASS_DATA_FT3_MATCH3 3
+#define RX_CLASS_DATA_FT3_MATCH4 4
+#define RX_CLASS_DATA_FT3_MATCH5 5
+#define RX_CLASS_DATA_FT3_MATCH6 6
+#define RX_CLASS_DATA_FT3_MATCH7 7
+#define RX_CLASS_DATA_FT3_MATCH8 8
+#define RX_CLASS_DATA_FT3_MATCH9 9
+#define RX_CLASS_DATA_FT3_MATCH10 10
+#define RX_CLASS_DATA_FT3_MATCH11 11
+#define RX_CLASS_DATA_FT3_MATCH12 12
+#define RX_CLASS_DATA_FT3_MATCH13 13
+#define RX_CLASS_DATA_FT3_MATCH14 14
+#define RX_CLASS_DATA_FT3_MATCH15 15
+#define RX_CLASS_DATA_FT1_MATCH0 16
+#define RX_CLASS_DATA_FT1_MATCH1 17
+#define RX_CLASS_DATA_FT1_MATCH2 18
+#define RX_CLASS_DATA_FT1_MATCH3 19
+#define RX_CLASS_DATA_FT1_MATCH4 20
+#define RX_CLASS_DATA_FT1_MATCH5 21
+#define RX_CLASS_DATA_FT1_MATCH6 22
+#define RX_CLASS_DATA_FT1_MATCH7 23
+#define RX_CLASS_DATA_FT_RX_DA_I  24
+#define RX_CLASS_DATA_FT_RX_DA_P  25
+#define RX_CLASS_DATA_FT_RX_VLAN  26
+#define RX_CLASS_DATA_FT_RX_RCV   27
+#define RX_CLASS_DATA_FT_RX_FWD   28
+#define RX_CLASS_DATA_FT_RX_BC    29
+#define RX_CLASS_DATA_FT_RX_MC    30
+#define RX_CLASS_DATA_FT_RX_SAV   31
+
+typedef struct EMAC_IOCTL_INGRESS_RATE_LIMIT_S {
+    uint32_t rateLimit; //In Mbps
+    uint32_t rateSrcSel;//0..47
+    uint8_t  rateIndex; //0..7, 0xFF : skip
+    uint8_t  classIndex; //0..15 - FW dependent
+    uint8_t  notMask; //Bit 0 : !AND Bit1 : !OR
+    uint8_t  classSel; //0: OR 1 : AND 2: OR AND AND 3 : OR OR AND
+    uint32_t classDataAndTerm;
+    uint32_t classDataOrTerm;
+    struct FT_S {
+        uint8_t index; //FT1 (0..7) FT3 (0..15)0XFF : Skip
+        uint8_t type; // 0 : FT1 or 1 : FT3
+        uint16_t ft1Start;
+        uint16_t ft1Len;
+        uint16_t ft1Cfg;
+        union FT_U {
+            struct FT1_CONFIG_S {
+                uint32_t destAddrLow;
+                uint32_t destAddrHigh;
+                uint32_t destAddrMaskLow;
+                uint32_t destAddrMaskHigh;
+            } ft1;
+            struct FT3_CONFIG_S {
+                uint32_t start;
+                uint32_t startAuto;
+                uint32_t startLen;
+                uint32_t jmpOffset;
+                uint32_t len;
+                uint32_t config;
+                uint32_t type;
+                uint32_t typeMask;
+                uint32_t patternLow;
+                uint32_t patternHigh;
+                uint32_t patternMaskLow;
+                uint32_t patternMaskHigh;
+            } ft3;
+        } u;
+    } filter[2];
+} EMAC_IOCTL_INGRESS_RATE_LIMIT_T;
+
+
 /*!
  *  @cond NODOC
  *  Internally used by the driver, IOCTL helper functions
@@ -678,6 +816,7 @@ extern EMAC_DRV_ERR_E emac_ioctl_frame_premption_ctrl(uint32_t port_num, void* p
 extern EMAC_DRV_ERR_E emac_ioctl_configure_fdb_ageing_interval(uint32_t port_num, void* p_params);
 extern EMAC_DRV_ERR_E emac_ioctl_speed_duplexity_cfg(uint32_t port_num, void* p_params);
 extern EMAC_DRV_ERR_E emac_add_fdb_multiple_ctrl(uint32_t portNum, void* p_params);
+extern EMAC_DRV_ERR_E emac_ioctl_ingress_rate_limiter_ctrl(uint32_t portNum, void* p_params);
 
 /*! @endcond */
 

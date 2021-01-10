@@ -568,6 +568,9 @@ static EMAC_DRV_ERR_E emac_ioctl_v5_icssg_switch(uint32_t portNum, EMAC_IOCTL_CM
                         break;
                 }
                 break;
+            case EMAC_IOCTL_INGRESS_RATE_LIMIT_CTRL:
+                retVal = emac_ioctl_ingress_rate_limiter_ctrl(portNum, (void*)emacIoctlParams);
+                break;
             default:
                 break;
         }

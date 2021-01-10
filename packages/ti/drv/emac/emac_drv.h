@@ -904,7 +904,8 @@ typedef enum EMAC_IOCTL_CMD_E{
     EMAC_IOCTL_SPECIAL_FRAME_PRIO_CONFIG,   /**< special packets default prio config ioctl */
     EMAC_IOCTL_FRAME_PREEMPTION_CTRL,       /**< premption control config ioctl */
     EMAC_IOCTL_FDB_AGEING_TIMEOUT_CTRL,     /**< configure FDB ageing timeout ioctl*/
-    EMAC_IOCTL_SPEED_DUPLEXITY_CTRL        /**< configure link speed and duplexity ioctl */
+    EMAC_IOCTL_SPEED_DUPLEXITY_CTRL,        /**< configure link speed and duplexity ioctl */
+    EMAC_IOCTL_INGRESS_RATE_LIMIT_CTRL      /**< configure ingress rate limiters */
 
 } EMAC_IOCTL_CMD;
 
