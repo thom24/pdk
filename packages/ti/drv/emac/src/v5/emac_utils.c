@@ -1258,7 +1258,7 @@ EMAC_DRV_ERR_E emac_poll_tx_ring(uint32_t portNum, Udma_RingHandle compRingHandl
     EMAC_CPPI_DESC_T *pCppiDesc = NULL;
     EMAC_PKT_DESC_T  *pPktDesc;
     uintptr_t key;
-
+    uint32_t temp=0;
     do
     {
         if ((emac_udma_ring_dequeue(compRingHandle, &pCppiDesc)) ==0)
@@ -1269,7 +1269,22 @@ EMAC_DRV_ERR_E emac_poll_tx_ring(uint32_t portNum, Udma_RingHandle compRingHandl
                 pPktDesc = pCppiDesc->appPtr;
                 if ((pPktDesc != NULL) && (!(pCppiDesc->hostDesc.pktInfo2 & EMAC_FW_MGMT_PKT)))
                 {
-                    EMAC_FREE_PKT(portNum, pCppiDesc->appPtr);
+                   /* EMAC_FREE_PKT needs to be invoked on Port/Slice used to transmit the packet
+                      as packet will be scheduled by ICSSG firmware irrespective of the port in which
+                      application is polling for TX completion */ 
+                   
+                    temp = pCppiDesc->hostDesc.srcDstTag & (uint32_t)0x3 ;
+
+                    if(temp == 1) 
+                    {
+                         temp = (portNum & 0x6); /*Switch Port0 */
+                    }
+                    else if (temp == 2)
+                    {
+                         temp = (portNum & 0x6) + 1; /*Switch Port1 */
+                    }
+              
+                    EMAC_FREE_PKT(temp, pCppiDesc->appPtr);
                 }
                 key = EMAC_osalHardwareIntDisable();
                 pCppiDesc->nextPtr = emac_mcb.port_cb[portNum].txReadyDescs[ringNum];
