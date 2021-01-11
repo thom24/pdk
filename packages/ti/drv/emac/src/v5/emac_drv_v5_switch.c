@@ -365,7 +365,7 @@ static  EMAC_DRV_ERR_E emac_poll_v5_icssg_switch(uint32_t portNum, EMAC_LINK_INF
  */
 static EMAC_DRV_ERR_E emac_poll_pkt_v5_icssg_switch(uint32_t portNum)
 {
-    EMAC_DRV_ERR_E retVal = emac_poll_pkt_v5_common(emac_port_info[portNum].pollPortNum);
+    EMAC_DRV_ERR_E retVal = emac_poll_pkt_v5_common(portNum);
     return retVal;
 }
 
@@ -583,7 +583,7 @@ static EMAC_DRV_ERR_E emac_ioctl_v5_icssg_switch(uint32_t portNum, EMAC_IOCTL_CM
  */
 static EMAC_DRV_ERR_E emac_poll_ctrl_v5_icssg_switch(uint32_t portNum, uint32_t rxPktRings, uint32_t rxMgmtRings, uint32_t txRings)
 {
-    EMAC_DRV_ERR_E retVal = emac_poll_ctrl_v5_common(emac_port_info[portNum].pollPortNum,rxPktRings, rxMgmtRings, txRings);
+    EMAC_DRV_ERR_E retVal = emac_poll_ctrl_v5_common(portNum,rxPktRings, rxMgmtRings, txRings);
     return retVal;
 }
 
