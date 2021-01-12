@@ -62,12 +62,7 @@ ifeq ($(BOOTMODE), cust)
   COMP_LIST_COMMON += sbl_lib_$(BOOTMODE)
 else
   ifeq ($(SBL_USE_DMA),yes)
-    ifneq ($(SOC),$(filter $(SOC), am64x))
-      SBL_CFLAGS += -DSBL_USE_DMA=1
-    else
-      # DMA not yet enabled for AM64x
-      SBL_CFLAGS += -DSBL_USE_DMA=0
-    endif
+    SBL_CFLAGS += -DSBL_USE_DMA=1
   else
     SBL_CFLAGS += -DSBL_USE_DMA=0
   endif
