@@ -151,7 +151,12 @@ static int32_t Ospi_udma_init(OSPI_v0_HwAttrs *cfg)
     if (gDrvHandle == (Udma_DrvHandle)uint32_to_void_ptr(0U))
     {
         /* UDMA driver init */
+#if defined (SOC_AM64X)
+        /* Use Block Copy DMA for AM64x */
+        instId = UDMA_INST_ID_BCDMA_0;
+#else
         instId = UDMA_INST_ID_MCU_0;
+#endif
 
         UdmaInitPrms_init(instId, &initPrms);
         retVal = Udma_init(&gUdmaDrvObj, &initPrms);
@@ -366,7 +371,7 @@ int32_t SBL_ospiInit(void *handle)
 
 #if SBL_USE_DMA
     /* J721E: PHY mode was already previously enabled, so we keep it enabled */
-    /* J7200: Enable the PHY mode which was disabled in SBL_ReadSysfwImage */
+    /* J7200/AM64X: Enable the PHY mode which was disabled in SBL_ReadSysfwImage */
     ospi_cfg.phyEnable = true;
 #else
     ospi_cfg.phyEnable = false;

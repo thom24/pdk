@@ -97,21 +97,16 @@ sbl_DISABLE_PARALLEL_MAKE = yes
 # The components included here are built and will be part of sbl
 ############################
 
-ifeq ($(SOC), am64x)
-sbl_LIB_LIST = sbl_lib_ospi_nondma sbl_lib_cust sbl_lib_mmcsd sbl_lib_uart
-sbl_LIB_LIST += sbl_lib_mmcsd_hlos sbl_lib_ospi_nondma_hlos
+ifeq ($(SOC),$(filter $(SOC), j7200 am64x))
+  sbl_LIB_LIST = sbl_lib_mmcsd sbl_lib_mmcsd_hlos sbl_lib_ospi sbl_lib_ospi_hlos sbl_lib_uart sbl_lib_cust
 else
-  ifeq ($(SOC), j7200)
-    sbl_LIB_LIST = sbl_lib_mmcsd sbl_lib_mmcsd_hlos sbl_lib_ospi sbl_lib_ospi_hlos sbl_lib_uart sbl_lib_cust
+  ifeq ($(SOC), tpr12)
+    sbl_LIB_LIST = sbl_lib_uart
+    sbl_LIB_LIST += sbl_lib_qspi sbl_lib_qspi_nondma
   else
-	ifeq ($(SOC), tpr12)
-      sbl_LIB_LIST = sbl_lib_uart
-      sbl_LIB_LIST += sbl_lib_qspi sbl_lib_qspi_nondma
-	else
-      sbl_LIB_LIST = sbl_lib_mmcsd sbl_lib_ospi sbl_lib_uart sbl_lib_hyperflash sbl_lib_cust
-      sbl_LIB_LIST += sbl_lib_mmcsd_hlos sbl_lib_ospi_hlos sbl_lib_hyperflash_hlos
-      sbl_LIB_LIST += sbl_lib_ospi_nondma sbl_lib_ospi_nondma_hlos
-    endif
+    sbl_LIB_LIST = sbl_lib_mmcsd sbl_lib_ospi sbl_lib_uart sbl_lib_hyperflash sbl_lib_cust
+    sbl_LIB_LIST += sbl_lib_mmcsd_hlos sbl_lib_ospi_hlos sbl_lib_hyperflash_hlos
+    sbl_LIB_LIST += sbl_lib_ospi_nondma sbl_lib_ospi_nondma_hlos
   endif
 endif
 
@@ -121,20 +116,16 @@ endif
 # All the tests mentioned in list are built when test target is called
 # List below all examples for allowed values
 ############################
-ifeq ($(SOC),$(filter $(SOC), am64x))
-sbl_EXAMPLE_LIST = sbl_ospi_img sbl_mmcsd_img sbl_uart_img sbl_mmcsd_img_hlos sbl_ospi_img_hlos
+ifeq ($(SOC),$(filter $(SOC), j7200 am64x))
+  sbl_EXAMPLE_LIST = sbl_mmcsd_img sbl_mmcsd_img_hlos sbl_ospi_img sbl_ospi_img_hlos sbl_uart_img
 else
-  ifeq ($(SOC), j7200)
-    sbl_EXAMPLE_LIST = sbl_mmcsd_img sbl_mmcsd_img_hlos sbl_ospi_img sbl_ospi_img_hlos sbl_uart_img
+  ifeq ($(SOC), tpr12)
+    sbl_EXAMPLE_LIST = sbl_uart_img sbl_qspi_img
   else
-    ifeq ($(SOC), tpr12)
-      sbl_EXAMPLE_LIST = sbl_uart_img sbl_qspi_img
-    else
-      sbl_EXAMPLE_LIST = sbl_uart_img
-      sbl_EXAMPLE_LIST += sbl_mmcsd_img sbl_mmcsd_img_hlos sbl_ospi_img sbl_ospi_img_hlos sbl_hyperflash_img sbl_hyperflash_img_hlos
-      sbl_EXAMPLE_LIST += sbl_mmcsd_img_hs sbl_ospi_img_hs sbl_hyperflash_img_hs sbl_uart_img_hs
-      sbl_EXAMPLE_LIST += sbl_mmcsd_img_hlos_hs sbl_ospi_img_hlos_hs sbl_hyperflash_img_hlos_hs
-    endif
+    sbl_EXAMPLE_LIST = sbl_uart_img
+    sbl_EXAMPLE_LIST += sbl_mmcsd_img sbl_mmcsd_img_hlos sbl_ospi_img sbl_ospi_img_hlos sbl_hyperflash_img sbl_hyperflash_img_hlos
+    sbl_EXAMPLE_LIST += sbl_mmcsd_img_hs sbl_ospi_img_hs sbl_hyperflash_img_hs sbl_uart_img_hs
+    sbl_EXAMPLE_LIST += sbl_mmcsd_img_hlos_hs sbl_ospi_img_hlos_hs sbl_hyperflash_img_hlos_hs
   endif
 endif
 
@@ -504,11 +495,7 @@ sbl_ospi_img_COMP_LIST = sbl_ospi_img
 sbl_ospi_img_RELPATH = ti/boot/sbl/board/k3
 sbl_ospi_img_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)/ospi/bin
 sbl_ospi_img_PATH = $(PDK_SBL_COMP_PATH)/board/k3
-ifeq ($(SOC),$(filter $(SOC), am64x))
-  sbl_ospi_img_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=ospi SBL_USE_DMA=no BUILD_HS=no
-else
-  sbl_ospi_img_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=ospi SBL_USE_DMA=yes BUILD_HS=no
-endif
+sbl_ospi_img_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=ospi SBL_USE_DMA=yes BUILD_HS=no
 export sbl_ospi_img_MAKEFILE
 export sbl_ospi_img_SBL_CERT_KEY=$(SBL_CERT_KEY)
 sbl_ospi_img_BOARD_DEPENDENCY = yes
@@ -532,11 +519,7 @@ sbl_ospi_img_hlos_COMP_LIST = sbl_ospi_img_hlos
 sbl_ospi_img_hlos_RELPATH = ti/boot/sbl/board/k3
 sbl_ospi_img_hlos_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)/ospi/bin
 sbl_ospi_img_hlos_PATH = $(PDK_SBL_COMP_PATH)/board/k3
-ifeq ($(SOC),$(filter $(SOC), am64x))
-  sbl_ospi_img_hlos_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=ospi HLOS_BOOT=yes SBL_USE_DMA=no BUILD_HS=no
-else
-  sbl_ospi_img_hlos_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=ospi HLOS_BOOT=yes SBL_USE_DMA=yes BUILD_HS=no
-endif
+sbl_ospi_img_hlos_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=ospi HLOS_BOOT=yes SBL_USE_DMA=yes BUILD_HS=no
 export sbl_ospi_img_hlos_MAKEFILE
 export sbl_ospi_img_hlos_SBL_CERT_KEY=$(SBL_CERT_KEY)
 sbl_ospi_img_hlos_BOARD_DEPENDENCY = yes
