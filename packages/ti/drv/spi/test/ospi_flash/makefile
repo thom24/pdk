@@ -35,7 +35,7 @@ endif
 
 # Common source files across all platforms and cores
 SRCDIR += . src
-SRCS_COMMON += main_ospi_flash_test.c
+SRCS_COMMON += main_ospi_flash_test.c override_mpu_config.c
 
 ifeq ($(BUILD_OS_TYPE), tirtos)
 OSPI_OS_TESTPREFIX=
@@ -88,7 +88,7 @@ ifeq ($(CACHE), enable)
     #COMP_LIST_COMMON += spi_profile
     CFLAGS_SPI_DMA    =
     endif
-
+CFLAGS_SPI_CACHE    = -DSPI_CACHE_ENABLE
 else
     ifeq ($(DMA), enable)
         ifeq ($(SMP), enable)
@@ -128,11 +128,12 @@ else
     #COMP_LIST_COMMON += spi_profile
     CFLAGS_SPI_DMA    =
     endif
+CFLAGS_SPI_CACHE    = 
 endif
 
 PACKAGE_SRCS_COMMON = .
 PACKAGE_SRCS_COMMON += ../src/SPI_log.h ../src/SPI_log.c
-CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_SPI_DMA) $(CFLAGS_OS_DEFINES)
+CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_SPI_DMA) $(CFLAGS_OS_DEFINES) $(CFLAGS_SPI_CACHE)
 
 # Core/SoC/platform specific source files and CFLAGS
 # Example:
