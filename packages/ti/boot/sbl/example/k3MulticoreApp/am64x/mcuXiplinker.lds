@@ -12,15 +12,15 @@
 
 MEMORY
 {
-    OSPI_MCU1_CPU0_XIP_VEC      : origin=0x600e0000 length=0x40			/* 64B */
-    OSPI_MCU1_CPU0_XIP	        : origin=0x600e0040 length=0x2000 - 0x40	/* 8KB - 64B*/
-    OCMRAM_SBL_SYSFW	        : origin=0x70080000 length=0x2000 - 0x800	/* 8KB */
+    OSPI_MCU1_CPU0_XIP_VEC      : origin=0x601c0000 length=0x40			/* 64B */
+    OSPI_MCU1_CPU0_XIP	        : origin=0x601c0040 length=0x2000 - 0x40	/* 8KB - 64B*/
+    OCMRAM_SBL_EXTRA	        : origin=0x70080000 length=0x2000 - 0x800	/* 8KB */
 }
 
 SECTIONS
 {
     .rstvectors			: {} palign(8) 		> OSPI_MCU1_CPU0_XIP_VEC
     .sbl_mcu_1_0_resetvector	: {} palign(8) 		> OSPI_MCU1_CPU0_XIP
-    .stack 			: {} palign(8) 		> OCMRAM_SBL_SYSFW
+    .stack 			: {} palign(8) 		> OCMRAM_SBL_EXTRA
 }
 

@@ -7,7 +7,7 @@
 /* (c) Texas Instruments 2019, All rights reserved.                           */
 /*----------------------------------------------------------------------------*/
 
-_xipAppEntry=0x600e0000;
+_xipAppEntry=0x601c0000;
 --entry_point=_xipAppEntry
 --retain="_xipAppEntry"
 --retain="_xip_stub"
