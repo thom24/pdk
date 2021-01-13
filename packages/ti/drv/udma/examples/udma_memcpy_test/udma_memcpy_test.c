@@ -520,9 +520,9 @@ static int32_t App_init(Udma_DrvHandle drvHandle)
 #endif
 
 #if defined UDMA_OVERRIDE_DEF_RM_SHARED_RES_PRMS
-#if defined (SOC_J721E) || defined(SOC_J7200)
+#if defined (SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) 
     /* Override the default RM Shared Resource parameters. 
-    *  For example, using maximum no.of available resources of Gloable Events
+    *  For example, using maximum no.of available resources of Global Events
     *  for current instance and updating mimium requirement to 10U */
     Udma_RmSharedResPrms *rmSharedResPrms;
     

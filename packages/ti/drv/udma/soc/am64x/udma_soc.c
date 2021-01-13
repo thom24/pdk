@@ -219,31 +219,8 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
 
     drvHandle->iaGemOffset  = CSL_DMSS_GEM_INTA0_SEVI_OFFSET;
     drvHandle->devIdIa      = TISCI_DEV_DMASS0_INTAGGR_0;
+    drvHandle->devIdCore    = Udma_getCoreSciDevId();
     
-#if defined (BUILD_MCU1_0)
-    drvHandle->devIdCore    = TISCI_DEV_R5FSS0_CORE0;
-#endif
-
-#if defined (BUILD_MCU1_1)
-    drvHandle->devIdCore    = TISCI_DEV_R5FSS0_CORE1;
-#endif
-
-#if defined (BUILD_MPU1_0)
-    drvHandle->devIdCore    = TISCI_DEV_A53SS0_CORE_0;
-#endif
-
-#if defined (BUILD_MCU2_0)
-    drvHandle->devIdCore    = TISCI_DEV_R5FSS1_CORE0;
-#endif
-
-#if defined (BUILD_MCU2_1)
-    drvHandle->devIdCore    = TISCI_DEV_R5FSS1_CORE1;
-#endif
-
-#if defined (BUILD_M4F_0)
-    drvHandle->devIdCore    = TISCI_DEV_MCU_M4FSS0_CORE0;
-#endif
-
     /* Init other variables */
     if(UDMA_INST_ID_BCDMA_0 == instId)
     {
@@ -295,20 +272,6 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
     return;
 }
 
-int32_t UdmaRmInitPrms_init(uint32_t instId, Udma_RmInitPrms *rmInitPrms)
-{
-    int32_t retVal = UDMA_SOK;
-
-    const Udma_RmInitPrms *rmInitDefaultCfg;
-
-    if(NULL_PTR != rmInitPrms)
-    {
-        rmInitDefaultCfg = Udma_rmGetDefaultCfg(instId);
-        (void) memcpy(rmInitPrms, rmInitDefaultCfg, sizeof (Udma_RmInitPrms));
-    }
-
-    return (retVal);
-}
 
 uint32_t Udma_getCoreId(void)
 {
@@ -334,6 +297,37 @@ uint32_t Udma_getCoreId(void)
 #endif
 
     return (coreId);
+}
+
+uint16_t Udma_getCoreSciDevId(void)
+{
+    uint16_t coreSciDevId;
+
+#if defined (BUILD_MCU1_0)
+    coreSciDevId    = TISCI_DEV_R5FSS0_CORE0;
+#endif
+
+#if defined (BUILD_MCU1_1)
+    coreSciDevId    = TISCI_DEV_R5FSS0_CORE1;
+#endif
+
+#if defined (BUILD_MPU1_0)
+    coreSciDevId    = TISCI_DEV_GICSS0;
+#endif
+
+#if defined (BUILD_MCU2_0)
+    coreSciDevId    = TISCI_DEV_R5FSS1_CORE0;
+#endif
+
+#if defined (BUILD_MCU2_1)
+    coreSciDevId    = TISCI_DEV_R5FSS1_CORE1;
+#endif
+
+#if defined (BUILD_M4F_0)
+    coreSciDevId    = TISCI_DEV_MCU_M4FSS0_CORE0;
+#endif
+
+    return (coreSciDevId);
 }
 
 uint32_t Udma_isCacheCoherent(void)

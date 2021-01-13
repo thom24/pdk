@@ -340,7 +340,7 @@ typedef struct
 /*                          Function Declarations                             */
 /* ========================================================================== */
 
-#if defined (SOC_AM64X) || defined(SOC_AM65XX)
+#if defined(SOC_AM65XX)
 /**
  *  \brief Returns the default RM config structure based on instance and core.
  *  User can use this API to get the default config and override as per need.

@@ -87,7 +87,7 @@ int32_t Udma_rmInit(Udma_DrvHandle drvHandle)
     uint32_t            mappedGrp;
 #endif
 
-#if defined (SOC_AM64X) || defined(SOC_AM65XX)
+#if defined (SOC_AM65XX)
     /* Check if the default config has any overlap */
     /* Other SOC's queries from Sciclient Default BoardCfg - No need of Check */
     if(FALSE == drvHandle->initPrms.skipRmOverlapCheck)
@@ -2027,52 +2027,62 @@ uint32_t Udma_rmTranslateCoreIntrInput(Udma_DrvHandle drvHandle, uint32_t coreIn
 } 
 
 int32_t Udma_rmGetSciclientDefaultBoardCfgRmRange(const Udma_RmDefBoardCfgPrms *rmDefBoardCfgPrms,
-                                                  struct tisci_msg_rm_get_resource_range_resp *res,
+                                                  Udma_RmDefBoardCfgResp *rmDefBoardCfgResp,
                                                   uint32_t *splitResFlag)
 {
     int32_t                                     retVal = UDMA_SOK;
     struct tisci_msg_rm_get_resource_range_req  req = {0};
+    struct tisci_msg_rm_get_resource_range_resp res = {0};
 
     req.type           = rmDefBoardCfgPrms->sciclientReqType;
     req.subtype        = rmDefBoardCfgPrms->sciclientReqSubtype;
     req.secondary_host = rmDefBoardCfgPrms->sciclientSecHost;
 
-    res->range_num       = 0;
-    res->range_start     = 0;
-    res->range_num_sec   = 0;
-    res->range_start_sec = 0;
-
-    /* Get resource number range */
-    retVal =  Sciclient_rmGetResourceRange(
-                &req,
-                res,
-                UDMA_SCICLIENT_TIMEOUT);
-    if((CSL_PASS != retVal) || 
-       ((res->range_num == 0) && (res->range_num_sec == 0)))
+    /* Skip for invalid type/subtype.
+     * This is for the cases in which IP supports some type of resorces and
+     * a particular SOC dosen't have any. 
+     * (Here, no TISCI define for those resource will be defined for the SOC)
+     */
+    if((UDMA_RM_SCI_REQ_TYPE_INVALID != req.type) && (UDMA_RM_SCI_REQ_SUBTYPE_INVALID != req.type))
     {
-        /* If range_num and range_num_sec = 0 (no entry for the core),
-         * There is no reservation for the current core.
-         * In this case, Try with HOST_ID_ALL*/
-        req.secondary_host = TISCI_HOST_ID_ALL;
-
-        retVal = Sciclient_rmGetResourceRange(
+        /* Get resource number range */
+        retVal =  Sciclient_rmGetResourceRange(
                     &req,
-                    res,
+                    &res,
                     UDMA_SCICLIENT_TIMEOUT);
-        if((CSL_PASS == retVal) && (res->range_num != 0)) 
+        if((CSL_PASS != retVal) || 
+        ((res.range_num == 0) && (res.range_num_sec == 0)))
         {
-            /* If range_num != 0, 
-             * ie, When using TISCI_HOST_ID_ALL entry, 
-             * Set the split resource flag, if passed.
-             * (no need to check for range_num_sec, 
-             *  since there will only be single entry for TISCI_HOST_ID_ALL) */
-             if(NULL_PTR != splitResFlag)
-            { 
-                *splitResFlag = 1;
+            /* If range_num and range_num_sec = 0 (no entry for the core),
+            * There is no reservation for the current core.
+            * In this case, Try with HOST_ID_ALL*/
+            req.secondary_host = TISCI_HOST_ID_ALL;
+
+            retVal = Sciclient_rmGetResourceRange(
+                        &req,
+                        &res,
+                        UDMA_SCICLIENT_TIMEOUT);
+            if((CSL_PASS == retVal) && (res.range_num != 0)) 
+            {
+                /* If range_num != 0, 
+                * ie, When using TISCI_HOST_ID_ALL entry, 
+                * Set the split resource flag, if passed.
+                * (no need to check for range_num_sec, 
+                *  since there will only be single entry for TISCI_HOST_ID_ALL) */
+                if(NULL_PTR != splitResFlag)
+                { 
+                    *splitResFlag = 1;
+                }
             }
         }
     }
-    
+
+    rmDefBoardCfgResp->resId         = rmDefBoardCfgPrms->resId;
+    rmDefBoardCfgResp->rangeStart    = res.range_start;
+    rmDefBoardCfgResp->rangeNum      = res.range_num;
+    rmDefBoardCfgResp->rangeStartSec = res.range_start_sec;
+    rmDefBoardCfgResp->rangeNumSec   = res.range_num_sec;
+
     return (retVal);
 }
 
@@ -2159,10 +2169,10 @@ int32_t Udma_rmSetSharedResRmInitPrms(const Udma_RmSharedResPrms *rmSharedResPrm
             }
         }
 
-        *num = instFinalShare[instId];
+        *num = instFinalShare[instId - UDMA_INST_ID_START];
         /* Calculate the start for requested instance */
         *start = rangeStart + startResrvCnt;
-        for(i = 0U; i < instId; i++)
+        for(i = 0U; i < (instId - UDMA_INST_ID_START); i++)
         {
             *start += instFinalShare[i];
         }

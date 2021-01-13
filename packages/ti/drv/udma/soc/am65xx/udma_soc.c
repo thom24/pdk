@@ -187,10 +187,8 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
     drvHandle->devIdIa      = TISCI_DEV_MCU_NAVSS0_INTR_AGGR_0;
     drvHandle->devIdIr      = TISCI_DEV_MCU_NAVSS0_INTR_ROUTER_0;
 #if defined (BUILD_MCU1_0)
-    drvHandle->devIdCore    = TISCI_DEV_MCU_ARMSS0_CPU0;
     drvHandle->druCoreId    = UDMA_DRU_CORE_ID_MCU1_0;
 #else
-    drvHandle->devIdCore    = TISCI_DEV_MCU_ARMSS0_CPU1;
     drvHandle->druCoreId    = UDMA_DRU_CORE_ID_MCU1_1;
 #endif
 #endif
@@ -209,9 +207,10 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
     drvHandle->iaGemOffset  = CSL_NAVSS_GEM_MAIN_UDMA_INTA0_SEVI_OFFSET;
     drvHandle->devIdIa      = TISCI_DEV_NAVSS0_UDMASS_INTA0;
     drvHandle->devIdIr      = TISCI_DEV_NAVSS0_INTR_ROUTER_0;
-    drvHandle->devIdCore    = TISCI_DEV_GIC0;
     drvHandle->druCoreId    = UDMA_DRU_CORE_ID_MPU1_0;
 #endif
+
+    drvHandle->devIdCore    = Udma_getCoreSciDevId();
 
     /*
      * UTC config init
@@ -332,6 +331,23 @@ uint32_t Udma_getCoreId(void)
 #endif
 
     return (coreId);
+}
+
+uint16_t Udma_getCoreSciDevId(void)
+{
+    uint16_t coreSciDevId;
+
+#if defined (BUILD_MPU1_0)
+    coreSciDevId = TISCI_DEV_GIC0;
+#endif
+#if defined (BUILD_MCU1_0)
+    coreSciDevId = TISCI_DEV_MCU_ARMSS0_CPU0;
+#endif
+#if defined (BUILD_MCU1_1)
+    coreSciDevId = TISCI_DEV_MCU_ARMSS0_CPU1;
+#endif
+
+    return (coreSciDevId);
 }
 
 uint32_t Udma_isCacheCoherent(void)

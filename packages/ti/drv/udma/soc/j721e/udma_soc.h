@@ -765,6 +765,13 @@ extern "C" {
 uint32_t Udma_getCoreId(void);
 
 /**
+ *  \brief Returns the core tisci device ID
+ *
+ *  \return Core tisci Dev ID
+ */
+uint16_t Udma_getCoreSciDevId(void);
+
+/**
  *  \brief Returns TRUE if the memory is cache coherent
  *
  *  \return TRUE/FALSE

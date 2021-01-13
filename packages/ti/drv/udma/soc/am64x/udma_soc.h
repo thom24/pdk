@@ -218,7 +218,90 @@ extern "C" {
  *
  *  @{
  */
+/** \brief Ultra High Capacity Block Copy Channels */
+#define UDMA_RM_RES_ID_BC_UHC                   (0U)
+/** \brief High Capacity Block Copy Channels */
+#define UDMA_RM_RES_ID_BC_HC                    (1U) 
+/** \brief Normal Capacity Block Copy Channels */
+#define UDMA_RM_RES_ID_BC                       (2U)
+/** \brief Ultra High Capacity TX Channels */
+#define UDMA_RM_RES_ID_TX_UHC                   (3U)
+/** \brief High Capacity TX Channels */
+#define UDMA_RM_RES_ID_TX_HC                    (4U) 
+/** \brief Normal Capacity TX Channels */
+#define UDMA_RM_RES_ID_TX                       (5U)
+/** \brief Ultra High Capacity RX Channels */
+#define UDMA_RM_RES_ID_RX_UHC                   (6U) 
+/** \brief High Capacity RX Channels */
+#define UDMA_RM_RES_ID_RX_HC                    (7U)       
+/** \brief Normal Capacity RX Channels */
+#define UDMA_RM_RES_ID_RX                       (8U) 
+/** \brief Global Event */
+#define UDMA_RM_RES_ID_GLOBAL_EVENT             (9U) 
+/** \brief Virtual Interrupts */
+#define UDMA_RM_RES_ID_VINTR                    (10U)        
+/** \brief [Pktdma Only] Mapped TX Channels for CPSW */
+#define UDMA_RM_RES_ID_MAPPED_TX_CPSW           (11U)        
+/** \brief [Pktdma Only] Mapped TX Channels for SAUL_0 */
+#define UDMA_RM_RES_ID_MAPPED_TX_SAUL_0         (12U)        
+/** \brief [Pktdma Only] Mapped TX Channels for SAUL_1 */
+#define UDMA_RM_RES_ID_MAPPED_TX_SAUL_1         (13U)       
+/** \brief [Pktdma Only] Mapped TX Channels for ICSSG_0 */
+#define UDMA_RM_RES_ID_MAPPED_TX_ICSSG_0        (14U)        
+/** \brief [Pktdma Only] Mapped TX Channels for ICSSG_1 */
+#define UDMA_RM_RES_ID_MAPPED_TX_ICSSG_1        (15U)       
+/** \brief [Pktdma Only] Mapped RX Channels for CPSW */
+#define UDMA_RM_RES_ID_MAPPED_RX_CPSW           (16U)        
+/** \brief [Pktdma Only] Mapped RX Channels for SAUL_0 */
+#define UDMA_RM_RES_ID_MAPPED_RX_SAUL_0         (17U)        
+/** \brief [Pktdma Only] Mapped RX Channels for SAUL_1 */
+#define UDMA_RM_RES_ID_MAPPED_RX_SAUL_1         (18U)          
+/** \brief [Pktdma Only] Mapped RX Channels for SAUL_2 */
+#define UDMA_RM_RES_ID_MAPPED_RX_SAUL_2         (19U)        
+/** \brief [Pktdma Only] Mapped RX Channels for SAUL_3 */
+#define UDMA_RM_RES_ID_MAPPED_RX_SAUL_3         (20U)       
+/** \brief [Pktdma Only] Mapped RX Channels for ICSSG_0 */
+#define UDMA_RM_RES_ID_MAPPED_RX_ICSSG_0        (21U)        
+/** \brief [Pktdma Only] Mapped RX Channels for ICSSG_1 */
+#define UDMA_RM_RES_ID_MAPPED_RX_ICSSG_1        (22U) 
+/** \brief [Pktdma Only] Mapped TX Rings for CPSW */
+#define UDMA_RM_RES_ID_MAPPED_TX_RING_CPSW      (23U)   
+/** \brief [Pktdma Only] Mapped TX Rings for SAUL_0 */
+#define UDMA_RM_RES_ID_MAPPED_TX_RING_SAUL_0    (24U)   
+/** \brief [Pktdma Only] Mapped TX Rings for SAUL_1 */
+#define UDMA_RM_RES_ID_MAPPED_TX_RING_SAUL_1    (25U)  
+/** \brief [Pktdma Only] Mapped TX Rings for ICSSG_0 */
+#define UDMA_RM_RES_ID_MAPPED_TX_RING_ICSSG_0   (26U)   
+/** \brief [Pktdma Only] Mapped TX Rings for ICSSG_1 */
+#define UDMA_RM_RES_ID_MAPPED_TX_RING_ICSSG_1   (27U)  
+/** \brief [Pktdma Only] Mapped RX Rings for CPSW */
+#define UDMA_RM_RES_ID_MAPPED_RX_RING_CPSW      (28U)   
+/** \brief [Pktdma Only] Mapped RX Rings for SAUL_0 */
+#define UDMA_RM_RES_ID_MAPPED_RX_RING_SAUL_0    (29U)   
+/** \brief [Pktdma Only] Mapped RX Rings for SAUL_1 */
+#define UDMA_RM_RES_ID_MAPPED_RX_RING_SAUL_1    (30U)
+/** \brief [Pktdma Only] Mapped RX Rings for SAUL_2 */
+#define UDMA_RM_RES_ID_MAPPED_RX_RING_SAUL_2    (31U)   
+/** \brief [Pktdma Only] Mapped RX Rings for SAUL_3 */
+#define UDMA_RM_RES_ID_MAPPED_RX_RING_SAUL_3    (32U)  
+/** \brief [Pktdma Only] Mapped RX Rings for ICSSG_0 */
+#define UDMA_RM_RES_ID_MAPPED_RX_RING_ICSSG_0   (33U)   
+/** \brief [Pktdma Only] Mapped RX Rings for ICSSG_1 */
+#define UDMA_RM_RES_ID_MAPPED_RX_RING_ICSSG_1   (34U)  
+/** \brief Total number of BCDMA resources */
+#define UDMA_RM_NUM_BCDMA_RES                   (11U) 
+/** \brief Total number of PKTDMA resources */
+#define UDMA_RM_NUM_PKTDMA_RES                  (35U) 
+/** \brief Total number of resources */
+#define UDMA_RM_NUM_RES                         (35U) 
 /* @} */
+
+/** \brief Total number of shared resources - 
+ *  Global_Event/IR Intr */
+#define UDMA_RM_NUM_SHARED_RES                  (2U) 
+/** \brief Maximum no.of instances to split a shared resource. 
+ *  This should be max(UDMA_NUM_CORE,UDMA_NUM_INST_ID) */
+#define UDMA_RM_SHARED_RES_MAX_INST             (UDMA_NUM_CORE)
 
 /**
  *  \anchor Udma_PsilCh
@@ -413,10 +496,6 @@ extern "C" {
 
 /* @} */
 
-/** \brief Maximum no.of instances to split a shared resource. 
- *  Note: This is only used when querying from defaultBoardCfg*/ 
-#define UDMA_RM_SHARED_RES_MAX_INST              (0)
-
 /**
  *  \brief UDMA mapped channel ring attributes.
  */
@@ -446,6 +525,13 @@ typedef struct
  *  \return Core ID \ref Udma_CoreId
  */
 uint32_t Udma_getCoreId(void);
+
+/**
+ *  \brief Returns the core tisci device ID
+ *
+ *  \return Core tisci Dev ID
+ */
+uint16_t Udma_getCoreSciDevId(void);
 
 /**
  *  \brief Returns TRUE if the memory is cache coherent

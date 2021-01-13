@@ -101,6 +101,12 @@ extern "C" {
 /** \brief Macro used to specify that the thread ID is invalid. */
 #define UDMA_THREAD_ID_INVALID          ((uint32_t) 0xFFFF0004U)
 
+/** \brief Macro used to specify that the Sciclient RM resource assignment type is invalid. */
+#define UDMA_RM_SCI_REQ_TYPE_INVALID       ((uint16_t) 0xFFFFU)
+
+/** \brief Macro used to specify that the Sciclient RM resource assignment subtype is invalid. */
+#define UDMA_RM_SCI_REQ_SUBTYPE_INVALID    ((uint16_t) 0xFFFFU)
+
 /** \brief Macro used to specify shift value for RX flow threshold before passing to SysFw */
 #define UDMA_RFLOW_RX_SIZE_THRESH_VAL_SHIFT      ((uint32_t) 0x00000005U)
 
@@ -122,6 +128,24 @@ typedef struct
     uint8_t                 sciclientSecHost;
     /**< Sciclient Secondary host */
 } Udma_RmDefBoardCfgPrms;
+
+
+/**
+ *  \brief UDMA Sciclient Default BoardCfg RM Response.
+ */
+typedef struct
+{
+    uint32_t                resId;
+    /**< UDMA Resource Id \ref Udma_RmResId macros. */
+    uint16_t                rangeStart;
+    /**< Sciclient RM resource reservation start */
+    uint16_t                rangeNum;
+    /**< Sciclient RM no. of resources reserverd */
+    uint16_t                rangeStartSec;
+    /**< Sciclient RM resource secondary reservation start */
+    uint16_t                rangeNumSec;
+    /**< Sciclient RM no. of resources reserverd secondary*/
+} Udma_RmDefBoardCfgResp;
 
 /* ========================================================================== */
 /*                         Global Variables                                   */
@@ -318,7 +342,7 @@ uint32_t Udma_rmTranslateCoreIntrInput(Udma_DrvHandle drvHandle, uint32_t coreIn
 void Udma_rmFreeCoreIntr(uint32_t coreIntrNum, Udma_DrvHandle drvHandle);
 /* Query Sciclient_DefaultBoardCfg_rm API */
 int32_t Udma_rmGetSciclientDefaultBoardCfgRmRange(const Udma_RmDefBoardCfgPrms *rmDefBoardCfgPrms,
-                                                  struct tisci_msg_rm_get_resource_range_resp *res,
+                                                  Udma_RmDefBoardCfgResp *rmDefBoardCfgResp,
                                                   uint32_t *splitResFlag);
 /* Set Shared Resource rmInitPrms API */
 int32_t Udma_rmSetSharedResRmInitPrms(const Udma_RmSharedResPrms *rmSharedResPrms,

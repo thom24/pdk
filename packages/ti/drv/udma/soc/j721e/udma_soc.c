@@ -333,10 +333,8 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
     drvHandle->devIdIa      = TISCI_DEV_MCU_NAVSS0_UDMASS_INTA_0;
     drvHandle->devIdIr      = TISCI_DEV_MCU_NAVSS0_INTR_0;
 #if defined (BUILD_MCU1_0)
-    drvHandle->devIdCore    = TISCI_DEV_MCU_R5FSS0_CORE0;
     drvHandle->druCoreId    = UDMA_DRU_CORE_ID_MCU1_0;
 #else
-    drvHandle->devIdCore    = TISCI_DEV_MCU_R5FSS0_CORE1;
     drvHandle->druCoreId    = UDMA_DRU_CORE_ID_MCU1_1;
 #endif
 #else
@@ -360,35 +358,27 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
     drvHandle->clecRtMap    = CSL_CLEC_RTMAP_DISABLE;
     drvHandle->clecOffset   = 0U;
 #if defined (BUILD_MPU1_0)
-    drvHandle->devIdCore    = TISCI_DEV_COMPUTE_CLUSTER0_GIC500SS;
     drvHandle->druCoreId    = UDMA_DRU_CORE_ID_MPU1_0;
 #endif
 #if defined (BUILD_MCU2_0)
-    drvHandle->devIdCore    = TISCI_DEV_R5FSS0_CORE0;
     drvHandle->druCoreId    = UDMA_DRU_CORE_ID_MCU2_0;
 #endif
 #if defined (BUILD_MCU2_1)
-    drvHandle->devIdCore    = TISCI_DEV_R5FSS0_CORE1;
     drvHandle->druCoreId    = UDMA_DRU_CORE_ID_MCU2_1;
 #endif
 #if defined (BUILD_MCU3_0)
-    drvHandle->devIdCore    = TISCI_DEV_R5FSS1_CORE0;
     drvHandle->druCoreId    = UDMA_DRU_CORE_ID_MCU3_0;
 #endif
 #if defined (BUILD_MCU3_1)
-    drvHandle->devIdCore    = TISCI_DEV_R5FSS1_CORE1;
     drvHandle->druCoreId    = UDMA_DRU_CORE_ID_MCU3_1;
 #endif
 #if defined (BUILD_C66X_1)
-    drvHandle->devIdCore    = TISCI_DEV_C66SS0_CORE0;
     drvHandle->druCoreId    = UDMA_DRU_CORE_ID_C66X_1;
 #endif
 #if defined (BUILD_C66X_2)
-    drvHandle->devIdCore    = TISCI_DEV_C66SS1_CORE0;
     drvHandle->druCoreId    = UDMA_DRU_CORE_ID_C66X_2;
 #endif
 #if defined (BUILD_C7X_1)
-    drvHandle->devIdCore    = TISCI_DEV_COMPUTE_CLUSTER0_CLEC;
     drvHandle->druCoreId    = UDMA_DRU_CORE_ID_C7X_1;
     drvHandle->clecRtMap    = CSL_CLEC_RTMAP_CPU_4; /* CPU4 is C7x_1 in J721E */
     /* CLEC interrupt number 1024 is connected to GIC interrupt number 32 in J721E.
@@ -397,6 +387,8 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
     drvHandle->clecOffset   = 1024U - 32U;
 #endif
 #endif
+
+    drvHandle->devIdCore    = Udma_getCoreSciDevId();
 
     /*
      * UTC config init
@@ -555,6 +547,43 @@ uint32_t Udma_getCoreId(void)
     return (coreId);
 }
 
+uint16_t Udma_getCoreSciDevId(void)
+{
+    uint16_t coreSciDevId;
+
+#if defined (BUILD_MPU1_0)
+    coreSciDevId = TISCI_DEV_COMPUTE_CLUSTER0_GIC500SS;
+#endif
+#if defined (BUILD_MCU2_0)
+    coreSciDevId = TISCI_DEV_R5FSS0_CORE0;
+#endif
+#if defined (BUILD_MCU2_1)
+    coreSciDevId = TISCI_DEV_R5FSS0_CORE1;
+#endif
+#if defined (BUILD_MCU3_0)
+    coreSciDevId = TISCI_DEV_R5FSS1_CORE0;
+#endif
+#if defined (BUILD_MCU3_1)
+    coreSciDevId = TISCI_DEV_R5FSS1_CORE1;
+#endif
+#if defined (BUILD_C7X_1)
+    coreSciDevId = TISCI_DEV_COMPUTE_CLUSTER0_CLEC;
+#endif
+#if defined (BUILD_C66X_1)
+    coreSciDevId = TISCI_DEV_C66SS0_CORE0;
+#endif
+#if defined (BUILD_C66X_2)
+    coreSciDevId = TISCI_DEV_C66SS1_CORE0;
+#endif
+#if defined (BUILD_MCU1_0)
+    coreSciDevId = TISCI_DEV_MCU_R5FSS0_CORE0;
+#endif
+#if defined (BUILD_MCU1_1)
+    coreSciDevId = TISCI_DEV_MCU_R5FSS0_CORE1;
+#endif
+
+    return (coreSciDevId);
+}
 uint32_t Udma_isCacheCoherent(void)
 {
     uint32_t isCacheCoherent;
