@@ -54,19 +54,23 @@ MEMORY
     OCMRAM 	(RWIX) 		: origin=0x41C60000 length=0x20000 - 0x2000	     /* ~124KB */
 
     /* am64x MSMC3 locations */
-    MCU1_0_MSMC3   (RWIX)              : origin=0x000070001000 length=0x30000 - 0x1000 /* .5 MB - 64K */
-    MCU1_0_MSMC3_DATA (RWIX)           : origin=0x000070030000 length=0x3C000 - 0x30000
-    MCU1_1_MSMC3   (RWIX)              : origin=0x00007003C000 length=0x6C000 - 0x3C000
-    MCU1_1_MSMC3_DATA (RWIX)           : origin=0x00007006C000 length=0x78000 - 0x6C000
-    MCU2_0_MSMC3   (RWIX)              : origin=0x000070078000 length=0xA8000 - 0x78000
-    MCU2_0_MSMC3_DATA (RWIX)           : origin=0x0000700A8000 length=0xB4000 - 0xA8000
-    MCU2_1_MSMC3   (RWIX)              : origin=0x0000700B4000 length=0xE4000 - 0xB4000 /* .5 MB - 64K */
-    MCU2_1_MSMC3_DATA (RWIX)           : origin=0x0000700E4000 length=0xF0000 - 0xE4000
+    MCU1_0_MSMC3_RESET (RWIX)          : origin=0x000070040000 length=0x100
+    MCU1_0_MSMC3   (RWIX)              : origin=0x000070040100 length=0x31F00
+    MCU1_0_MSMC3_DATA (RWIX)           : origin=0x000070072000 length=0xA000
+    MCU1_1_MSMC3_RESET (RWIX)          : origin=0x00007007C000 length=0x100
+    MCU1_1_MSMC3   (RWIX)              : origin=0x00007007C100 length=0x31F00
+    MCU1_1_MSMC3_DATA (RWIX)           : origin=0x0000700AE000 length=0xA000
+    MCU2_0_MSMC3_RESET (RWIX)          : origin=0x0000700B8000 length=0x100
+    MCU2_0_MSMC3   (RWIX)              : origin=0x0000700B8100 length=0x31F00
+    MCU2_0_MSMC3_DATA (RWIX)           : origin=0x0000700EA000 length=0xA000
+    MCU2_1_MSMC3_RESET (RWIX)          : origin=0x0000700F4000 length=0x100
+    MCU2_1_MSMC3   (RWIX)              : origin=0x0000700F4100 length=0x31F00
+    MCU2_1_MSMC3_DATA (RWIX)           : origin=0x000070126000 length=0xA000
     /* Reserved for DMSC */
-    MSMC3_DMSC (RWIX)		: origin=0x700F0000 length=0x10000			/* 64K */
-    MSMC3_H (RWIX)	 		: origin=0x70100000 length=0xF2000			/* 1MB -56K */
-    MSMC3_NOCACHE (RWIX)	: origin=0x701F2000 length=0xE000			/* 56K */
-    DDR0    (RWIX)  		: origin=0x90030000 length=0x00010000    	/* 64K */
+    /*MSMC3_DMSC (RWIX)		: origin=0x700F0000 length=0x10000*/			/* 64K */
+    /*MSMC3_H (RWIX)	 		: origin=0x70100000 length=0xF2000*/			/* 1MB -56K */
+    /*MSMC3_NOCACHE (RWIX)	: origin=0x701F2000 length=0xE000*/			/* 56K */
+    DDR0    (RWIX)  		: origin=0x90000000 length=0x00010000    	/* 64K */
 
 /* Additional memory settings	*/
 
@@ -81,7 +85,7 @@ SECTIONS
 /* a range of +\- 16 MB                                                       */
     .intvecs 	: {} palign(8) 		> MCU2_1_MSMC3
     .intc_text 	: {} palign(8) 		> MCU2_1_MSMC3
-    .rstvectors 	: {} palign(8) 		> MCU2_1_MSMC3
+    .rstvectors 	: {} palign(8) 		> MCU2_1_MSMC3_RESET
     .bootCode    	: {} palign(8) 		> MCU2_1_MSMC3
     .startupCode    : {} palign(8) 		> MCU2_1_MSMC3
     .startupData    : {} palign(8) 		> MCU2_1_MSMC3

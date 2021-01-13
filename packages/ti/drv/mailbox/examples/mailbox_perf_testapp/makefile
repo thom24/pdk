@@ -47,18 +47,20 @@ endif
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS)
 
 # RTOS Interrupt mode
+ifeq ($(ISA),$(filter $(ISA), r5f a53))
 CFLAGS_LOCAL_COMMON += -DMEASURE_LATENCY_DISTRIBUTION
+endif
 
 # RTOS Interrupt mode with detailed profiling
+#ifeq ($(ISA),$(filter $(ISA), r5f a53))
 #CFLAGS_LOCAL_COMMON += -DMEASURE_LATENCY_DISTRIBUTION -DDETAILED_PROFILING
-
-ifeq ($(SOC),$(filter $(SOC), am64x))
-CFLAGS_LOCAL_COMMON += -DUSE_STD_PRINTF
-endif
+#endif
 
 ifeq ($(CORE),mpu1_0)
 CFLAGS_LOCAL_COMMON += -DSYSTEM_MASTER
 endif
+
+CFLAGS_LOCAL_COMMON += -DBUILD_RTOS
 
 # Core/SoC/platform specific source files and CFLAGS
 # Example:

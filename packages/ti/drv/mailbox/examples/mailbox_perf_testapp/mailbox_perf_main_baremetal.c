@@ -44,15 +44,10 @@
 #include <ti/csl/csl_types.h>
 #include <ti/csl/soc.h>
 #include <ti/csl/arch/csl_arch.h>
-#include <ti/csl/csl_rat.h>
 #include "mailbox_app.h"
-#if defined (SOC_AM65XX)
 #include <ti/board/board.h>
-#endif
-#if defined (SOC_AM65XX) || defined (SOC_AM64X)
 #include <ti/drv/uart/UART.h>
 #include <ti/drv/uart/UART_stdio.h>
-#endif
 
 /* ========================================================================== */
 /*                                 Macros                                     */
@@ -61,67 +56,6 @@
 /* ========================================================================== */
 /*                            Global Variables                                */
 /* ========================================================================== */
-#if defined(SOC_AM64X) && defined(BUILD_M4F_0)
-/*
-  Custom RAT configuration for M4F to make Mailbox Registers accessible
-*/
-CSL_RatTranslationCfgInfo gCslM4RatCfg[8+1] __attribute__ ((section(".rat_cfg_buffer"), aligned (8))) =
-{
-    /* Add an entry for accessing MCU addresses including  MCU IPs */
-    {
-        .sizeInBytes        = (uint64_t) (0x01000000UL), /* Size in Bytes for the map */
-        .baseAddress        = (uint32_t) (0x64000000U),  /* Translated base address */
-        .translatedAddress  = (uint64_t) (0x04000000UL)  /* Physical addresses */
-    },
-    /* Add an entry for accessing MSRAM addresses */
-    {
-        .sizeInBytes        = (uint64_t) (0x00200000UL), /* Size in Bytes for the map */
-        .baseAddress        = (uint32_t) (0x70000000U),  /* Translated base address */
-        .translatedAddress  = (uint64_t) (0x70000000UL)  /* Physical addresses */
-    },
-    /* Add an entry for MAIN I2C/McSPI addresses */
-    {
-        .sizeInBytes        = (uint64_t) (0x00150000UL),  /* Size in Bytes for the map */
-        .baseAddress        = (uint32_t) (0x60000000U),   /* Translated base address */
-        .translatedAddress  = (uint64_t) (0x20000000UL)   /* Physical addresses */
-    },
-    /* Add an entry for MAIN GTC addresses */
-    {
-        .sizeInBytes        = (uint64_t) (0x00080000UL), /* Size in Bytes for the map */
-        .baseAddress        = (uint32_t) (0x60A80000U),   /* Translated base address */
-        .translatedAddress  = (uint64_t) (0x00A80000UL)   /* Physical addresses */
-    },
-    /* Add an entry for MAIN Timer addresses */
-    {
-        .sizeInBytes        = (uint64_t) (0x00080000UL),  /* Size in Bytes for the map */
-        .baseAddress        = (uint32_t) (0x62400000U),   /* Translated base address */
-        .translatedAddress  = (uint64_t) (0x02400000UL)   /* Physical addresses */
-    },
-    /* Add an entry for Main UART addresses */
-    {
-        .sizeInBytes        = (uint64_t) (0x00080000UL),  /* Size in Bytes for the map */
-        .baseAddress        = (uint32_t) (0x62800000U),   /* Translated base address */
-        .translatedAddress  = (uint64_t) (0x02800000UL)   /* Physical addresses */
-    },
-    /* Add an entry for accessing DDR addresses */
-    {
-        .sizeInBytes        = (uint64_t) (0x10000000UL), /* Size in Bytes for the map */
-        .baseAddress        = (uint32_t) (0x90000000U),  /* Translated base address */
-        .translatedAddress  = (uint64_t) (0x90000000UL)  /* Physical addresses */
-    },
-    {
-        .sizeInBytes        = (uint64_t) (0x01000000UL),
-        .baseAddress        = (uint32_t) (0x69000000U),
-        .translatedAddress  = (uint64_t) (0x29000000U),
-    },
-    /* Last entry to quit RAT cfg */
-    {
-        .sizeInBytes        = (uint64_t) (0xDEADFACEUL), /* Size in Bytes for the map = END of MAP */
-        .baseAddress        = (uint32_t) (0xDEADFACEU),  /* Translated base address   = END of MAP */
-        .translatedAddress  = (uint64_t) (0xDEADFACEUL)  /* Physical addresses        = END of MAP */
-    }
-};
-#endif
 
 /* ========================================================================== */
 /*                 Internal Function Declarations                             */
@@ -133,17 +67,21 @@ CSL_RatTranslationCfgInfo gCslM4RatCfg[8+1] __attribute__ ((section(".rat_cfg_bu
 
 void padConfig_prcmEnable()
 {
-#if defined (SOC_AM65XX)
     /*Pad configurations */
     Board_initCfg boardCfg;
+#if defined (SOC_AM65XX)
     boardCfg = BOARD_INIT_UNLOCK_MMR | BOARD_INIT_UART_STDIO |
                BOARD_INIT_MODULE_CLOCK | BOARD_INIT_PINMUX_CONFIG;
-    Board_init(boardCfg);
+#else /* SOC_AM64X */
+    boardCfg = BOARD_INIT_MODULE_CLOCK  |
+               BOARD_INIT_PINMUX_CONFIG |
+               BOARD_INIT_UART_STDIO;
 #endif
+    Board_init(boardCfg);
 
 }
 
-void test_Mailbox_runPerfTests(void)
+int32_t test_Mailbox_runPerfTests(void)
 {
     int32_t retValue;
 
@@ -166,8 +104,9 @@ void test_Mailbox_runPerfTests(void)
         }
 #endif
     }
+    return retValue;
 }
-void test_Mailbox_runInterruptModePerfTests(void)
+int32_t test_Mailbox_runInterruptModePerfTests(void)
 {
     int32_t retValue;
 
@@ -190,11 +129,29 @@ void test_Mailbox_runInterruptModePerfTests(void)
         }
 #endif
     }
+
+    return retValue;
 }
 void test_mailbox_perf_app_runner(void)
 {
-    test_Mailbox_runPerfTests();
-    test_Mailbox_runInterruptModePerfTests();
+    int32_t retValue = 0;
+
+    retValue = test_Mailbox_runPerfTests();
+    if (retValue == 0)
+    {
+        retValue = test_Mailbox_runInterruptModePerfTests();
+    }
+#ifdef SYSTEM_MASTER
+    if (retValue == 0)
+    {
+        MailboxAppPrint("\nAll tests have passed. \n");
+    }
+    else
+    {
+        MailboxAppPrint("Test failed\n");
+    }
+
+#endif
 }
 
 int main(void)
@@ -232,11 +189,7 @@ void MailboxAppPrint(const char * str)
 #ifdef USE_STD_PRINTF
     printf(str);
 #else
-#if defined (SOC_AM65XX) || defined (SOC_AM64X)
     UART_printf(str);
-#else
-    UARTConfigPuts(uartBaseAddr, str, -1);
-#endif
 #endif
 }
 

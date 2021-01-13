@@ -38,6 +38,9 @@ drvmailbox_SOCLIST          = tpr12 am64x
 drvmailbox_tpr12_CORELIST   = mcu1_0 c66xdsp_1
 drvmailbox_am64x_CORELIST   = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 m4f_0
 drvmailbox_am64x_rtos_CORELIST = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
+drvmailbox_am64x_LASTCORE := $(word $(words $(drvmailbox_am64x_CORELIST)), $(drvmailbox_am64x_CORELIST))
+drvmailbox_am64x_rtos_LASTCORE := $(word $(words $(drvmailbox_am64x_rtos_CORELIST)), $(drvmailbox_am64x_rtos_CORELIST))
+
 drvmailbox_BOARDLIST        = tpr12_evm tpr12_qt am64x_evm
 drvmailbox_k3_BOARDLIST     = am64x_evm
 drvmailbox_tpr_BOARDLIST    = tpr12_evm tpr12_qt
@@ -104,6 +107,7 @@ mailbox_perf_testapp_INCLUDE = $(mailbox_perf_testapp_PATH)
 export mailbox_perf_testapp_BOARDLIST = $(drvmailbox_k3_BOARDLIST)
 export mailbox_perf_testapp_$(SOC)_CORELIST = $(drvmailbox_$(SOC)_rtos_CORELIST)
 mailbox_EXAMPLE_LIST += mailbox_perf_testapp
+export mailbox_perf_testapp_SBL_APPIMAGEGEN = yes
 
 # mailbox baremetal perf test app
 export mailbox_baremetal_perf_testapp_COMP_LIST = mailbox_baremetal_perf_testapp
@@ -117,6 +121,39 @@ mailbox_baremetal_perf_testapp_INCLUDE = $(mailbox_baremetal_perf_testapp_PATH)
 export mailbox_baremetal_perf_testapp_BOARDLIST = $(drvmailbox_k3_BOARDLIST)
 export mailbox_baremetal_perf_testapp_$(SOC)_CORELIST = $(drvmailbox_$(SOC)_CORELIST)
 mailbox_EXAMPLE_LIST += mailbox_baremetal_perf_testapp
+export mailbox_baremetal_perf_testapp_SBL_APPIMAGEGEN = yes
+
+# Multicore performance test - baremetal
+export mailbox_baremetal_multicore_perf_testapp_COMP_LIST = mailbox_baremetal_multicore_perf_testapp
+mailbox_baremetal_multicore_perf_testapp_RELPATH = ti/drv/mailbox/examples/mailbox_perf_testapp
+mailbox_baremetal_multicore_perf_testapp_BINPATH = $(PDK_INSTALL_PATH)/ti/binary/mailbox_baremetal_perf_testapp/bin
+mailbox_baremetal_multicore_perf_testapp_PATH = $(PDK_MAILBOX_COMP_PATH)/examples/mailbox_perf_testapp
+mailbox_baremetal_multicore_perf_testapp_MAKEFILE = -f$(PDK_MAILBOX_COMP_PATH)/examples/mailbox_multicore_appimage.mk APP_NAME=mailbox_baremetal_multicore_perf_testapp RPRC_PREFIX=mailbox_baremetal_perf_testapp
+export mailbox_baremetal_multicore_perf_testapp_BOARD_DEPENDENCY = yes
+export mailbox_baremetal_multicore_perf_testapp_CORE_DEPENDENCY = yes
+mailbox_baremetal_multicore_perf_testapp_PKG_LIST = mailbox_baremetal_multicore_perf_testapp
+mailbox_baremetal_multicore_perf_testapp_INCLUDE = $(mailbox_baremetal_multicore_perf_testapp_PATH)
+export mailbox_baremetal_multicore_perf_testapp_BOARDLIST = $(drvmailbox_k3_BOARDLIST)
+export mailbox_baremetal_multicore_perf_testapp_$(SOC)_CORELIST := $(drvmailbox_$(SOC)_LASTCORE)
+mailbox_DUP_EXAMPLE_LIST += mailbox_baremetal_multicore_perf_testapp
+mailbox_baremetal_multicore_perf_testapp_SBL_APPIMAGEGEN = no
+export mailbox_baremetal_multicore_perf_testapp_SBL_APPIMAGEGEN
+
+# Multicore performance test - ti rtos
+export mailbox_multicore_perf_testapp_COMP_LIST = mailbox_multicore_perf_testapp
+mailbox_multicore_perf_testapp_RELPATH = ti/drv/mailbox/examples/mailbox_perf_testapp
+mailbox_multicore_perf_testapp_BINPATH = $(PDK_INSTALL_PATH)/ti/binary/mailbox_perf_testapp/bin
+mailbox_multicore_perf_testapp_PATH = $(PDK_MAILBOX_COMP_PATH)/examples/mailbox_perf_testapp
+mailbox_multicore_perf_testapp_MAKEFILE = -f$(PDK_MAILBOX_COMP_PATH)/examples/mailbox_multicore_appimage.mk APP_NAME=mailbox_multicore_perf_testapp RPRC_PREFIX=mailbox_perf_testapp
+export mailbox_multicore_perf_testapp_BOARD_DEPENDENCY = yes
+export mailbox_multicore_perf_testapp_CORE_DEPENDENCY = yes
+mailbox_multicore_perf_testapp_PKG_LIST = mailbox_multicore_perf_testapp
+mailbox_multicore_perf_testapp_INCLUDE = $(mailbox_multicore_perf_testapp_PATH)
+export mailbox_multicore_perf_testapp_BOARDLIST = $(drvmailbox_k3_BOARDLIST)
+export mailbox_multicore_perf_testapp_$(SOC)_CORELIST := $(drvmailbox_$(SOC)_rtos_LASTCORE)
+mailbox_DUP_EXAMPLE_LIST += mailbox_multicore_perf_testapp
+mailbox_multicore_perf_testapp_SBL_APPIMAGEGEN = no
+export mailbox_multicore_perf_testapp_SBL_APPIMAGEGEN
 
 export mailbox_LIB_LIST
 export mailbox_EXAMPLE_LIST

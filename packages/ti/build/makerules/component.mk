@@ -846,6 +846,9 @@ endif
 ifneq ($(mailbox_EXAMPLE_LIST),)
   pdk_EXAMPLE_LIST += $(mailbox_EXAMPLE_LIST)
 endif
+ifneq ($(mailbox_DUP_EXAMPLE_LIST),)
+  pdk_DUP_EXAMPLE_LIST += $(mailbox_DUP_EXAMPLE_LIST)
+endif
 
 -include $(PDK_MIBSPI_COMP_PATH)/mibspi_component.mk
 ifneq ($(mibspi_LIB_LIST),)

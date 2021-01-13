@@ -53,13 +53,9 @@
 #include <ti/csl/soc.h>
 #include <ti/csl/arch/csl_arch.h>
 #include "mailbox_app.h"
-#if defined (SOC_AM65XX)
 #include <ti/board/board.h>
-#endif
-#if defined (SOC_AM65XX) || defined (SOC_AM64X)
 #include <ti/drv/uart/UART.h>
 #include <ti/drv/uart/UART_stdio.h>
-#endif
 
 /* ========================================================================== */
 /*                                 Macros                                     */
@@ -88,17 +84,21 @@ static Void taskFxn(UArg a0, UArg a1);
 
 void padConfig_prcmEnable()
 {
-#if defined (SOC_AM65XX)
     /*Pad configurations */
     Board_initCfg boardCfg;
+#if defined (SOC_AM65XX)
     boardCfg = BOARD_INIT_UNLOCK_MMR | BOARD_INIT_UART_STDIO |
                BOARD_INIT_MODULE_CLOCK | BOARD_INIT_PINMUX_CONFIG;
-    Board_init(boardCfg);
+#else
+    boardCfg = BOARD_INIT_MODULE_CLOCK  |
+               BOARD_INIT_PINMUX_CONFIG |
+               BOARD_INIT_UART_STDIO;
 #endif
+    Board_init(boardCfg);
 
 }
 
-void test_Mailbox_runPerfTests(void)
+int32_t test_Mailbox_runPerfTests(void)
 {
     int32_t retValue;
 
@@ -121,8 +121,9 @@ void test_Mailbox_runPerfTests(void)
         }
 #endif
     }
+    return retValue;
 }
-void test_Mailbox_runInterruptModePerfTests(void)
+int32_t test_Mailbox_runInterruptModePerfTests(void)
 {
     int32_t retValue;
 
@@ -145,11 +146,28 @@ void test_Mailbox_runInterruptModePerfTests(void)
         }
 #endif
     }
+    return retValue;
 }
 void test_mailbox_perf_app_runner(void)
 {
-    test_Mailbox_runPerfTests();
-    test_Mailbox_runInterruptModePerfTests();
+    int32_t retValue = 0;
+
+    retValue = test_Mailbox_runPerfTests();
+    if (retValue == 0)
+    {
+        retValue = test_Mailbox_runInterruptModePerfTests();
+    }
+#ifdef SYSTEM_MASTER
+    if (retValue == 0)
+    {
+        MailboxAppPrint("\nAll tests have passed. \n");
+    }
+    else
+    {
+        MailboxAppPrint("Test failed\n");
+    }
+
+#endif
 }
 
 int main(void)
@@ -208,16 +226,10 @@ static Void taskFxn(UArg a0, UArg a1)
 
 void MailboxAppPrint(const char * str)
 {
-#if !defined (SIM_BUILD) || !defined (BUILD_MPU1_0)
 #ifdef USE_STD_PRINTF
     printf(str);
 #else
-#if defined (SOC_AM65XX) || defined (SOC_AM64X)
     UART_printf(str);
-#else
-    UARTConfigPuts(uartBaseAddr, str, -1);
-#endif
-#endif
 #endif
 }
 

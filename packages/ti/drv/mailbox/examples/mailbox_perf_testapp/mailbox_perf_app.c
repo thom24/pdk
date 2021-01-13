@@ -74,8 +74,9 @@ volatile uint32_t gSkipCoreId      = MAILBOX_INST_MPU1_0;
 volatile uint32_t gInterruptMode   = 0u;
 volatile Mbox_Handle gHandles[MAILBOX_MAX_INST];
 
-uint32_t gTimeIntArray[MAILBOX_MAX_INST][MAILBOX_SEND_NUM_MESSAGES] __attribute__ ((section(".benchmark_buffer"), aligned (8)));
-uint32_t gTimePollArray[MAILBOX_MAX_INST][MAILBOX_SEND_NUM_MESSAGES] __attribute__ ((section(".benchmark_buffer"), aligned (8)));
+/* minus 1 because don't need to keep data for self */
+uint32_t gTimeIntArray[MAILBOX_MAX_INST-1][MAILBOX_SEND_NUM_MESSAGES] __attribute__ ((section(".benchmark_buffer"), aligned (8)));
+uint32_t gTimePollArray[MAILBOX_MAX_INST-1][MAILBOX_SEND_NUM_MESSAGES] __attribute__ ((section(".benchmark_buffer"), aligned (8)));
 
 /* ========================================================================== */
 /*                 Internal Function Declarations                             */
@@ -90,12 +91,8 @@ uint32_t perfTestGetTimerCount(void)
 {
 
     uint32_t    val = 0;
-#if defined(BUILD_MPU1_0) || defined(BUILD_M4F)
 #if defined(BUILD_MPU1_0)
     CSL_gtc_cfg1Regs *gtcRegs = (CSL_gtc_cfg1Regs *) CSL_GTC0_GTC_CFG1_BASE;
-#elif defined(BUILD_M4F)
-    CSL_gtc_cfg1Regs *gtcRegs = (CSL_gtc_cfg1Regs *) (CSL_GTC0_GTC_CFG1_BASE + 0x60000000);
-#endif
 
     /* Read GTC counter register */
     val = (uint32_t)gtcRegs->CNTCV_LO;
@@ -199,6 +196,13 @@ int32_t perfTestInit(void)
         {
             continue;
         }
+#ifdef BUILD_RTOS
+        /* M4F is not supported for RTOS */
+        if (remoteId == MAILBOX_INST_M4F_0)
+        {
+            continue;
+        }
+#endif
         openParam.remoteEndpoint = remoteId;
 
         /* Open the  Instance */
@@ -238,6 +242,13 @@ int32_t perfTestInterruptModeInit(void)
         {
             continue;
         }
+#ifdef BUILD_RTOS
+        /* M4F is not supported for RTOS */
+        if (remoteId == MAILBOX_INST_M4F_0)
+        {
+            continue;
+        }
+#endif
 
         Mailbox_close(gHandles[remoteId]);
     }
@@ -331,6 +342,13 @@ int perfTestSync(void)
         {
             continue;
         }
+#ifdef BUILD_RTOS
+        /* M4F is not supported for RTOS */
+        if (remoteId == MAILBOX_INST_M4F_0)
+        {
+            continue;
+        }
+#endif
         msg = MAILBOX_APP_SYNC_MESSAGE;
 
         /* Send initial Sync message */
@@ -345,6 +363,13 @@ int perfTestSync(void)
         {
             continue;
         }
+#ifdef BUILD_RTOS
+        /* M4F is not supported for RTOS */
+        if (remoteId == MAILBOX_INST_M4F_0)
+        {
+            continue;
+        }
+#endif
         if (gInterruptMode == 0u)
         {
             do
@@ -399,8 +424,9 @@ void perfTestSendReceiveMessages(uint16_t remoteId)
     uint32_t maxTotalTimerCountAfterFirst=0u;
 #endif
     uint32_t * timeArray;
-    uint32_t * timeArrayInt = gTimeIntArray[remoteId];
-    uint32_t * timeArrayPoll = gTimePollArray[remoteId];
+    uint32_t timeArrayIdx = (remoteId < gSelfId) ? remoteId : (remoteId - 1);
+    uint32_t * timeArrayInt = gTimeIntArray[timeArrayIdx];
+    uint32_t * timeArrayPoll = gTimePollArray[timeArrayIdx];
 
     int i;
     uint32_t lastNumMessagesRecd;
@@ -612,6 +638,13 @@ int32_t perfTestRun(void)
                 {
                     continue;
                 }
+#ifdef BUILD_RTOS
+                /* M4F is not supported for RTOS */
+                if (remoteId == MAILBOX_INST_M4F_0)
+                {
+                    continue;
+                }
+#endif
 #ifdef SOC_AM64X
                 if ((gSelfId == gSkipCoreId) || (remoteId == gSkipCoreId))
                 {
@@ -622,6 +655,12 @@ int32_t perfTestRun(void)
             }
             /* Now pass the token to next processor */
             gTokenHolder++;
+#ifdef BUILD_RTOS
+            if (gTokenHolder == MAILBOX_INST_M4F_0)
+            {
+                gTokenHolder++;
+            }
+#endif
             if (gTokenHolder >= MAILBOX_MAX_INST)
             {
                     gTokenHolder = 0u;
@@ -633,6 +672,13 @@ int32_t perfTestRun(void)
                 {
                     continue;
                 }
+#ifdef BUILD_RTOS
+                /* M4F is not supported for RTOS */
+                if (remoteId == MAILBOX_INST_M4F_0)
+                {
+                    continue;
+                }
+#endif
                 /* Finish up and send end message */
                 msg = MAILBOX_APP_STOP_MESSAGE;
                 Mailbox_write(gHandles[remoteId], (uint8_t *)&msg, sizeof(uint32_t));
@@ -669,6 +715,12 @@ int32_t perfTestRun(void)
             }
 
             gTokenHolder++;
+#ifdef BUILD_RTOS
+            if (gTokenHolder == MAILBOX_INST_M4F_0)
+            {
+                gTokenHolder++;
+            }
+#endif
             if (gTokenHolder >= MAILBOX_MAX_INST)
             {
                 gTokenHolder = 0u;

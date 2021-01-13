@@ -43,14 +43,14 @@ ifeq ($(ISA),$(filter $(ISA), a53 a72))
 endif
 
 # Baremetal Interrupt mode
+ifeq ($(ISA),$(filter $(ISA), r5f a53))
 CFLAGS_LOCAL_COMMON += -DBARE_METAL -DMEASURE_LATENCY_DISTRIBUTION
+endif
 
 # Baremetal Interrupt mode with detailed profiling
+#ifeq ($(ISA),$(filter $(ISA), r5f a53))
 #CFLAGS_LOCAL_COMMON += -DBARE_METAL -DMEASURE_LATENCY_DISTRIBUTION -DDETAILED_PROFILING
-
-ifeq ($(SOC),$(filter $(SOC), am64x))
-CFLAGS_LOCAL_COMMON += -DUSE_STD_PRINTF
-endif
+#endif
 
 ifeq ($(CORE),mpu1_0)
 CFLAGS_LOCAL_COMMON += -DSYSTEM_MASTER
