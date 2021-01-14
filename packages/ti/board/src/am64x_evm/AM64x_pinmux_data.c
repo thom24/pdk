@@ -256,6 +256,16 @@ static pinmuxPerCfg_t gMcu_gpio0PinCfg[] =
         PIN_MCU_SPI1_CS0, PIN_MODE(7) | \
         ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
     },
+    /* MyMCU_GPIO1 -> MCU_GPIO0_6 -> B7 */
+    {
+        PIN_MCU_SPI1_CS1, PIN_MODE(7) | \
+        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+    },
+    /* MyMCU_GPIO1 -> MCU_GPIO0_7 -> D7 */
+    {
+        PIN_MCU_SPI1_CLK, PIN_MODE(7) | \
+        ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
+    },
     {PINMUX_END}
 };
 
