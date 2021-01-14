@@ -517,7 +517,7 @@ int main()
     SBL_log(SBL_LOG_MAX, "InitlialzingClocks ...");
     SBL_ADD_PROFILE_POINT;
 #if defined(SBL_ENABLE_HLOS_BOOT)
-#if defined(SOC_J721E) || defined(SOC_J7200)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
     Board_initParams_t initParams;
     Board_getInitParams(&initParams);
     initParams.mainClkGrp = BOARD_MAIN_CLOCK_GROUP1;
@@ -572,6 +572,10 @@ int main()
         if (k3xx_evmEntry.CpuEntryPoint[core_id] != SBL_INVALID_ENTRY_ADDR)
             SBL_SlaveCoreBoot(core_id, NULL, &k3xx_evmEntry, SBL_REQUEST_CORE);
     }
+#endif
+
+#if defined(SBL_ENABLE_HLOS_BOOT) && defined(SOC_AM64X)
+    Board_releaseResource(BOARD_RESOURCE_MODULE_CLOCK);
 #endif
 
     /* Boot the core running SBL in the end */

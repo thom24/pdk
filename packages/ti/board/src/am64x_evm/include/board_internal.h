@@ -192,18 +192,54 @@ Board_STATUS Board_PLLInit(uint32_t modId, uint32_t clkId, uint64_t clkRate);
 Board_STATUS Board_DDRInit(Bool eccEnable);
 
 /**
+ * \brief clock Initialization function for MCU domain
  *
- * \brief clock Initialization function
- *
- * Enables different power domains and peripheral clocks of the SoC.
- * Some of the power domains and peripherals will be off by default.
+ * Enables different power domains and peripheral clocks of the MCU.
+ * Some of the power domains and peripherals will be OFF by default.
  * Enabling the power domains is mandatory before accessing using
  * board interfaces connected to those peripherals.
  *
- * \return  BOARD_SOK in case of success or appropriate error code
+ * \return  BOARD_SOK              - Clock initialization sucessful.
+ *          BOARD_INIT_CLOCK_FAIL  - Clock initialization failed.
  *
  */
-Board_STATUS Board_moduleClockInit(void);
+Board_STATUS Board_moduleClockInitMcu(void);
+
+/**
+ * \brief clock Initialization function for MAIN domain
+ *
+ * Enables different power domains and peripheral clocks of the SoC.
+ * Some of the power domains and peripherals will be OFF by default.
+ * Enabling the power domains is mandatory before accessing using
+ * board interfaces connected to those peripherals.
+ *
+ * \return  BOARD_SOK              - Clock initialization successful.
+ *          BOARD_INIT_CLOCK_FAIL  - Clock initialization failed.
+ *
+ */
+Board_STATUS Board_moduleClockInitMain(void);
+
+/**
+ * \brief clock de-initialization function for MCU domain
+ *
+ * Disables different power domains and peripheral clocks of the SoC.
+ *
+ * \return  BOARD_SOK              - Clock de-initialization successful. 
+ *          BOARD_INIT_CLOCK_FAIL  - Clock de-initialization failed.
+ *
+ */
+Board_STATUS Board_moduleClockDeinitMcu(void);
+
+/**
+ * \brief clock de-initialization function for MAIN domain
+ *
+ * Disables different power domains and peripheral clocks of the SoC.
+ *
+ * \return  BOARD_SOK              - Clock de-initialization successful.
+ *          BOARD_INIT_CLOCK_FAIL  - Clock de-initialization failed.
+ *
+ */
+Board_STATUS Board_moduleClockDeinitMain(void);
 
 /**
  * \brief  Board specific configurations for Gigabit Ethernet PHYs
