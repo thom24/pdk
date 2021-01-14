@@ -853,7 +853,7 @@ static MMCSD_Error MMCSD_v2_close(MMCSD_Handle handle)
         memset(object, 0, sizeof(MMCSD_v2_Object));
 
     #ifdef LOG_EN
-        MMCSD_drv_log(Diags_USER1, "MMCSD: Object closed 0x%x", ((MMCSD_Config *) handle)->hwAttrs->baseAddr);
+        MMCSD_drv_log4(Diags_USER1, "MMCSD: Object closed 0x%x", hwAttrs->baseAddr);
     #endif
     }
     return (ret);
@@ -1026,11 +1026,11 @@ static MMCSD_Error MMCSD_v2_open(MMCSD_Handle handle, MMCSD_Params params)
     	if(inputClockRet!=0) {
 
     	  if(inputClockRet!=hwAttrs->inputClk) {
-    		  MMCSD_drv_log4(Diags_USER1,"Input clock[%d] to MMC is different from what is set in hwAttrs",inputClockRet);
+    		  MMCSD_drv_log4(Diags_USER1,"Input clock[%d] to MMC is different from what is set in hwAttrs\n",inputClockRet);
     	     hwAttrs->inputClk=inputClockRet;
     	  }
     	} else {
-     	 MMCSD_drv_log(Diags_USER1,"Something is wrong. Input clock is not enabled!!");
+     	 MMCSD_drv_log(Diags_USER1,"Something is wrong. Input clock is not enabled!!\n");
      	 ret = MMCSD_ERR;
        }
     }
@@ -1119,8 +1119,8 @@ static MMCSD_Error MMCSD_v2_initSd(MMCSD_Handle handle)
         if (STW_SOK != status)
         {
 #ifdef LOG_EN
-            MMCSD_drv_log(Diags_USER1,
-                    "MMCSD:(%p) HS MMC/SD Reset failed", hwAttrs->baseAddr);
+            MMCSD_drv_log4(Diags_USER1,
+                    "MMCSD:(%p) HS MMC/SD Reset failed\n", hwAttrs->baseAddr);
 #endif
             ret = MMCSD_ERR;
         }
@@ -1210,8 +1210,8 @@ static MMCSD_Error MMCSD_v2_initSd(MMCSD_Handle handle)
         if (STW_SOK != status)
         {
 #ifdef LOG_EN
-            MMCSD_drv_log(Diags_USER1,
-                    "MMCSD:(%p) HS MMC/SD Power on failed", hwAttrs->baseAddr);
+            MMCSD_drv_log4(Diags_USER1,
+                    "MMCSD:(%p) HS MMC/SD Power on failed\n", hwAttrs->baseAddr);
 #endif
             ret = MMCSD_ERR;
         }
@@ -1682,7 +1682,7 @@ static MMCSD_Error MMCSD_v2_initSd(MMCSD_Handle handle)
  			   }
               ret=MMCSD_switch_card_speed(handle,cmd16_grp1_fn);
 			  if(ret==MMCSD_OK) {
-			     MMCSD_drv_log(Diags_USER1," Successfully switched to the above speed");
+			     MMCSD_drv_log(Diags_USER1," Successfully switched to the above speed\n");
 			     break;/* Successful switching */
 			  }
  		    }
@@ -2333,8 +2333,8 @@ static MMCSD_Error MMCSD_v2_initEmmc(MMCSD_Handle handle)
         if (STW_SOK != status)
         {
 #ifdef LOG_EN
-            MMCSD_drv_log(Diags_USER1,
-                    "MMCSD:(%p) HS MMC/SD Reset failed", hwAttrs->baseAddr);
+            MMCSD_drv_log4(Diags_USER1,
+                    "MMCSD:(%p) HS MMC/SD Reset failed\n", hwAttrs->baseAddr);
 #endif
             ret = MMCSD_ERR;
         }
@@ -2408,8 +2408,8 @@ static MMCSD_Error MMCSD_v2_initEmmc(MMCSD_Handle handle)
         if (STW_SOK != status)
         {
 #ifdef LOG_EN
-            MMCSD_drv_log(Diags_USER1,
-                    "MMCSD:(%p) HS MMC/SD Power on failed", hwAttrs->baseAddr);
+            MMCSD_drv_log4(Diags_USER1,
+                    "MMCSD:(%p) HS MMC/SD Power on failed\n", hwAttrs->baseAddr);
 #endif
             ret = MMCSD_ERR;
         }
@@ -2423,8 +2423,8 @@ static MMCSD_Error MMCSD_v2_initEmmc(MMCSD_Handle handle)
         if (STW_SOK != status)
         {
 #ifdef LOG_EN
-        MMCSD_drv_log(Diags_USER1,
-          "MMCSD:(%p) HS MMC/SD Bus Frequency set failed", hwAttrs->baseAddr);
+        MMCSD_drv_log4(Diags_USER1,
+          "MMCSD:(%p) HS MMC/SD Bus Frequency set failed\n", hwAttrs->baseAddr);
 #endif
             ret = MMCSD_ERR;
         }
@@ -2920,8 +2920,8 @@ cmdObj.cmd.xferType = (transaction->flags & MMCSD_CMDRSP_READ) ? \
             /*  MMCSD_osalHardwareIntrEnable(hwAttrs->intNum); */
 
 #ifdef LOG_EN
-            MMCSD_drv_log(Diags_USER1,
-                       "MMCSD:(%p) Pending on commandComplete semaphore",
+            MMCSD_drv_log4(Diags_USER1,
+                       "MMCSD:(%p) Pending on commandComplete semaphore\n",
                        hwAttrs->baseAddr);
 #endif
 
@@ -2952,7 +2952,7 @@ cmdObj.cmd.xferType = (transaction->flags & MMCSD_CMDRSP_READ) ? \
             	
 #ifdef LOG_EN
             MMCSD_drv_log4(Diags_USER1,
-                       "MMCSD:(%p) Command transaction completed", hwAttrs->baseAddr);
+                       "MMCSD:(%p) Command transaction completed\n", hwAttrs->baseAddr);
 #endif
 
 
@@ -3006,8 +3006,8 @@ cmdObj.cmd.xferType = (transaction->flags & MMCSD_CMDRSP_READ) ? \
                 /* Git response for command sent to MMC device */
                 HSMMCSDResponseGet(hwAttrs->baseAddr, transaction->response);
 #ifdef LOG_EN
-                MMCSD_drv_log(Diags_USER1,
-                        "MMCSD:(%p) Command Execution Failed", hwAttrs->baseAddr);
+                MMCSD_drv_log4(Diags_USER1,
+                        "MMCSD:(%p) Command Execution Failed\n", hwAttrs->baseAddr);
 #endif
             }
 
@@ -3018,8 +3018,8 @@ cmdObj.cmd.xferType = (transaction->flags & MMCSD_CMDRSP_READ) ? \
             if(MMCSD_OK == ret)
             {
 #ifdef LOG_EN
-            MMCSD_drv_log(Diags_USER1,
-                           "MMCSD:(%p) Pending on transferComplete semaphore",
+            MMCSD_drv_log4(Diags_USER1,
+                           "MMCSD:(%p) Pending on transferComplete semaphore\n",
                            hwAttrs->baseAddr);
 #endif
 
@@ -3059,8 +3059,8 @@ cmdObj.cmd.xferType = (transaction->flags & MMCSD_CMDRSP_READ) ? \
 
             }
 #ifdef LOG_EN
-                MMCSD_drv_log(Diags_USER1,
-                           "MMCSD:(%p) Data transaction completed", hwAttrs->baseAddr);
+                MMCSD_drv_log4(Diags_USER1,
+                           "MMCSD:(%p) Data transaction completed\n", hwAttrs->baseAddr);
 #endif
 
             if( object->manualTuning && object->cmdError && ( (cmdObj.cmd.cmdId==MMCSD_CMD(19U)) || (cmdObj.cmd.cmdId==MMCSD_CMD(21U)) ) )  
@@ -3080,8 +3080,8 @@ cmdObj.cmd.xferType = (transaction->flags & MMCSD_CMDRSP_READ) ? \
                    MMCSD_DEBUG_TRAP
                    object->xferTimeout = 0;
 #ifdef LOG_EN
-                    MMCSD_drv_log(Diags_USER1,
-                            "MMCSD:(%p) Data Transfer Failed", hwAttrs->baseAddr);
+                    MMCSD_drv_log4(Diags_USER1,
+                            "MMCSD:(%p) Data Transfer Failed\n", hwAttrs->baseAddr);
 #endif
                 }
 
@@ -3091,8 +3091,8 @@ cmdObj.cmd.xferType = (transaction->flags & MMCSD_CMDRSP_READ) ? \
                    ret = MMCSD_OK;
                    object->xferComp = 0;
 #ifdef LOG_EN
-                    MMCSD_drv_log(Diags_USER1,
-                            "MMCSD:(%p) Data Transfer Successful", hwAttrs->baseAddr);
+                    MMCSD_drv_log4(Diags_USER1,
+                            "MMCSD:(%p) Data Transfer Successful\n", hwAttrs->baseAddr);
 #endif
                 }
             }
@@ -3142,8 +3142,8 @@ cmdObj.cmd.xferType = (transaction->flags & MMCSD_CMDRSP_READ) ? \
                                cmdObj.enableDma,
                                MMC_CMD_ACEN_DISABLE);
 #ifdef LOG_EN
-            MMCSD_drv_log(Diags_USER1,
-                       "MMCSD:(%p) Pending on commandComplete semaphore",
+            MMCSD_drv_log4(Diags_USER1,
+                       "MMCSD:(%p) Pending on commandComplete semaphore\n",
                        hwAttrs->baseAddr);
 #endif
 
@@ -3165,8 +3165,8 @@ cmdObj.cmd.xferType = (transaction->flags & MMCSD_CMDRSP_READ) ? \
             }
 
 #ifdef LOG_EN
-            MMCSD_drv_log(Diags_USER1,
-                       "MMCSD:(%p) Command transaction completed", hwAttrs->baseAddr);
+            MMCSD_drv_log4(Diags_USER1,
+                       "MMCSD:(%p) Command transaction completed\n", hwAttrs->baseAddr);
 #endif
 
             /* Command execution successful */
@@ -3175,8 +3175,8 @@ cmdObj.cmd.xferType = (transaction->flags & MMCSD_CMDRSP_READ) ? \
                 ret = MMCSD_OK;
                 object->cmdComp = 0;
 #ifdef LOG_EN
-                MMCSD_drv_log(Diags_USER1,
-                        "MMCSD:(%p) Command Execution Failed", hwAttrs->baseAddr);
+                MMCSD_drv_log4(Diags_USER1,
+                        "MMCSD:(%p) Command Execution Failed\n", hwAttrs->baseAddr);
 #endif
             }
 
@@ -3186,8 +3186,8 @@ cmdObj.cmd.xferType = (transaction->flags & MMCSD_CMDRSP_READ) ? \
                 ret = MMCSD_ERR;
                 object->cmdTimeout = 0;
 #ifdef LOG_EN
-                MMCSD_drv_log(Diags_USER1,
-                        "MMCSD:(%p) Command Execution Failed", hwAttrs->baseAddr);
+                MMCSD_drv_log4(Diags_USER1,
+                        "MMCSD:(%p) Command Execution Failed\n", hwAttrs->baseAddr);
 #endif
             }
 
