@@ -865,6 +865,26 @@ int32_t Udma_chDequeueTdResponse(Udma_ChHandle chHandle,
                                  CSL_UdmapTdResponse *tdResponse);
 
 /**
+ *  \brief Returns the global trigger event for the channel
+ *
+ *  This function will return the appropriate global 0/1 trigger event for the channel.
+ *
+ *  Notes: Trigger is not supported for external channels
+ *         and the function will return #UDMA_EVENT_INVALID.
+ *
+ *  Requirement: DOX_REQ_TAG(PDK-2594)
+ *
+ *  \param chHandle     [IN] UDMA channel handle.
+ *                           This parameter can't be NULL.
+ * 
+ *  \param trigger      [IN] Global0 or Global 1 Trigger - refer
+ *                          \ref CSL_UdmapTrFlagsTrigger
+ *                            
+ *  \return Global trigger event
+ */
+uint32_t Udma_chGetTriggerEvent(Udma_ChHandle chHandle, uint32_t trigger);
+
+/**
  *  \brief Returns the software trigger register address for the channel
  *
  *  This function will return the appropriate SW trigger register.

@@ -84,9 +84,6 @@ static int32_t Udma_chDisableRxChan(Udma_ChHandle chHandle, uint32_t timeout);
 #if (UDMA_NUM_UTC_INSTANCE > 0)
 static int32_t Udma_chDisableExtChan(Udma_ChHandle chHandle, uint32_t timeout);
 #endif
-static uint32_t Udma_chGetTriggerEvent(Udma_DrvHandle drvHandle,
-                                       Udma_ChHandle chHandle,
-                                       uint32_t trigger);
 #if (UDMA_NUM_UTC_INSTANCE > 0)
 static int32_t Udma_psilcfgSetRtEnable(Udma_DrvHandle drvHandle,
                                        uint32_t threadId,
@@ -1260,6 +1257,86 @@ int32_t Udma_chDequeueTdResponse(Udma_ChHandle chHandle,
     return (retVal);
 }
 
+uint32_t Udma_chGetTriggerEvent(Udma_ChHandle chHandle,
+                                uint32_t trigger)
+{
+    int32_t         retVal = UDMA_SOK;
+    Udma_DrvHandle  drvHandle;
+    uint32_t        triggerEvent = UDMA_EVENT_INVALID;
+
+    /* Error check */
+    if((NULL_PTR == chHandle) ||
+       (chHandle->chInitDone != UDMA_INIT_DONE))
+    {
+        retVal = UDMA_EBADARGS;
+    }
+    if(UDMA_SOK == retVal)
+    {
+        drvHandle = chHandle->drvHandle;
+        if((NULL_PTR == drvHandle) || (drvHandle->drvInitDone != UDMA_INIT_DONE))
+        {
+            retVal = UDMA_EFAIL;
+        }
+    }
+
+    if(UDMA_SOK == retVal)
+    {
+        if((CSL_UDMAP_TR_FLAGS_TRIGGER_GLOBAL0 == trigger) ||
+        (CSL_UDMAP_TR_FLAGS_TRIGGER_GLOBAL1 == trigger))
+        {
+            /* Global 0/1 triggers are interleaved - so multiply by 2 */
+            if(((chHandle->chType & UDMA_CH_FLAG_BLK_COPY) == UDMA_CH_FLAG_BLK_COPY) ||
+            ((chHandle->chType & UDMA_CH_FLAG_TX) == UDMA_CH_FLAG_TX))
+            {
+                /* For block copy return the TX channel trigger */
+                triggerEvent = (chHandle->txChNum * 2U);
+                if(CSL_UDMAP_TR_FLAGS_TRIGGER_GLOBAL1 == trigger)
+                {
+                    triggerEvent++; /* Global1 trigger is next to global0 */
+                }
+                /* Add the global offset */
+                triggerEvent += drvHandle->trigGemOffset;
+            }
+            else if((chHandle->chType & UDMA_CH_FLAG_RX) == UDMA_CH_FLAG_RX)
+            {
+                /* RX trigger is after TX channel triggers
+                * Note: There is no external channel triggers - hence not
+                * using rxChOffset */
+#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
+                if(UDMA_INST_TYPE_NORMAL == drvHandle->instType)
+                {
+                    triggerEvent  = (drvHandle->udmapRegs.txChanCnt * 2U);
+                }
+#endif
+#if (UDMA_SOC_CFG_LCDMA_PRESENT == 1)
+                if(UDMA_INST_TYPE_LCDMA_BCDMA == drvHandle->instType)
+                {
+                    triggerEvent  = (drvHandle->bcdmaRegs.txChanCnt * 2U);
+                }
+                else if(UDMA_INST_TYPE_LCDMA_PKTDMA == drvHandle->instType)
+                {
+                    triggerEvent  = (drvHandle->pktdmaRegs.txChanCnt * 2U);
+                }
+#endif
+                triggerEvent += (chHandle->rxChNum * 2U);
+                if(CSL_UDMAP_TR_FLAGS_TRIGGER_GLOBAL1 == trigger)
+                {
+                    triggerEvent++; /* Global1 trigger is next to global0 */
+                }
+                /* Add the global offset */
+                triggerEvent += drvHandle->trigGemOffset;
+            }
+            else
+            {
+                /* Trigger not supported for external channel -
+                * return no event - already set */
+            }
+        }
+    }
+
+    return (triggerEvent);
+}
+
 void *Udma_chGetSwTriggerRegister(Udma_ChHandle chHandle)
 {
     int32_t                 retVal = UDMA_SOK;
@@ -1434,7 +1511,7 @@ int32_t Udma_chSetChaining(Udma_ChHandle triggerChHandle,
     {
         /* Get the global trigger event to set */
         triggerEvent =
-            Udma_chGetTriggerEvent(drvHandle, chainedChHandle, trigger);
+            Udma_chGetTriggerEvent(chainedChHandle, trigger);
         if(UDMA_EVENT_INVALID == triggerEvent)
         {
             retVal = UDMA_EFAIL;
@@ -1556,7 +1633,7 @@ int32_t Udma_chBreakChaining(Udma_ChHandle triggerChHandle,
     {
         /* Get the global trigger event to set */
         triggerEvent =
-            Udma_chGetTriggerEvent(drvHandle, chainedChHandle, triggerChHandle->trigger);
+            Udma_chGetTriggerEvent(chainedChHandle, triggerChHandle->trigger);
         if(UDMA_EVENT_INVALID == triggerEvent)
         {
             retVal = UDMA_EFAIL;
@@ -3724,67 +3801,6 @@ static int32_t Udma_chDisableExtChan(Udma_ChHandle chHandle, uint32_t timeout)
     return (retVal);
 }
 #endif
-
-static uint32_t Udma_chGetTriggerEvent(Udma_DrvHandle drvHandle,
-                                       Udma_ChHandle chHandle,
-                                       uint32_t trigger)
-{
-    uint32_t        triggerEvent = UDMA_EVENT_INVALID;
-
-    if((CSL_UDMAP_TR_FLAGS_TRIGGER_GLOBAL0 == trigger) ||
-       (CSL_UDMAP_TR_FLAGS_TRIGGER_GLOBAL1 == trigger))
-    {
-        /* Global 0/1 triggers are interleaved - so multiply by 2 */
-        if(((chHandle->chType & UDMA_CH_FLAG_BLK_COPY) == UDMA_CH_FLAG_BLK_COPY) ||
-           ((chHandle->chType & UDMA_CH_FLAG_TX) == UDMA_CH_FLAG_TX))
-        {
-            /* For block copy return the TX channel trigger */
-            triggerEvent = (chHandle->txChNum * 2U);
-            if(CSL_UDMAP_TR_FLAGS_TRIGGER_GLOBAL1 == trigger)
-            {
-                triggerEvent++; /* Global1 trigger is next to global0 */
-            }
-            /* Add the global offset */
-            triggerEvent += drvHandle->trigGemOffset;
-        }
-        else if((chHandle->chType & UDMA_CH_FLAG_RX) == UDMA_CH_FLAG_RX)
-        {
-            /* RX trigger is after TX channel triggers
-             * Note: There is no external channel triggers - hence not
-             * using rxChOffset */
-#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
-            if(UDMA_INST_TYPE_NORMAL == drvHandle->instType)
-            {
-                triggerEvent  = (drvHandle->udmapRegs.txChanCnt * 2U);
-            }
-#endif
-#if (UDMA_SOC_CFG_LCDMA_PRESENT == 1)
-            if(UDMA_INST_TYPE_LCDMA_BCDMA == drvHandle->instType)
-            {
-                triggerEvent  = (drvHandle->bcdmaRegs.txChanCnt * 2U);
-            }
-            else if(UDMA_INST_TYPE_LCDMA_PKTDMA == drvHandle->instType)
-            {
-                triggerEvent  = (drvHandle->pktdmaRegs.txChanCnt * 2U);
-            }
-#endif
-            triggerEvent += (chHandle->rxChNum * 2U);
-            if(CSL_UDMAP_TR_FLAGS_TRIGGER_GLOBAL1 == trigger)
-            {
-                triggerEvent++; /* Global1 trigger is next to global0 */
-            }
-            /* Add the global offset */
-            triggerEvent += drvHandle->trigGemOffset;
-        }
-        else
-        {
-            /* Trigger not supported for external channel -
-             * return no event - already set */
-        }
-    }
-
-    return (triggerEvent);
-}
 
 #if (UDMA_NUM_UTC_INSTANCE > 0)
 static int32_t Udma_psilcfgSetRtEnable(Udma_DrvHandle drvHandle,
