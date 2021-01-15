@@ -4,7 +4,7 @@
  * \brief Command Line Application for File Transfer over UART
  */
 /*
-* Copyright (C) 2017-2020 Texas Instruments Incorporated - http://www.ti.com/
+* Copyright (C) 2017-2021 Texas Instruments Incorporated - http://www.ti.com/
 */
 /*
 *  Redistribution and use in source and binary forms, with or without
@@ -40,14 +40,16 @@
 
 #define DEVICE_SUPPORTED 8
 #define IMAGETYPE_SUPPORTED 5
+#define FCTYPE_SUPPORTED 1
+#define RAWTYPE_SUPPORTED 1
 #define BUFF_SIZE 20
 #define FIND_STRING 2
 
 unsigned int baudRate = BAUDRATE_0;
 
-int devtype = 0, imgtype = 0, addroff = 0, elen = 0, RBL = 0, FW = 1, fdesc = 0, flashErase = 0;
+int devtype = 0, imgtype = 0, addroff = 0, elen = 0, RBL = 0, FW = 1, fdesc = 0, flashErase = 0, fcsts = 0, rawsts = 0;
 unsigned int offset = 0, def_elen = 0;
-char def_itype = '5', def_dtype = '1', def_off = '0';
+char def_itype = '5', def_dtype = '1', def_off = '0', def_fc = '0', def_raw = '0';
 char device_list[DEVICE_SUPPORTED][BUFF_SIZE]={"NAND", "SPI", "QSPI", "OSPI", "eMMC", "HyperFlash", "UFS", "Custom Flash"};
 
 unsigned int standardBaudRate[NUM_OF_SUP_BAUDRATE] = { BAUDRATE_0,
@@ -112,7 +114,7 @@ SerialPort::~SerialPort() {
  * \return Returns 0 on success.
  */
 
-int SerialPort::connect( wchar_t* device, unsigned int baudrate ) {
+int SerialPort::connect( wchar_t* device, unsigned int baudrate, int hwFlowCtrl, int rawMode ) {
 	int error=0, buf_siz = 1024;
 	wchar_t append_str[20] = L"\\\\.\\";
 	wchar_t* port_name;
@@ -146,12 +148,12 @@ int SerialPort::connect( wchar_t* device, unsigned int baudrate ) {
 	dcb.fParity = 0;
 	dcb.XoffChar = 19;
 	dcb.XonChar = 17;
-	dcb.fOutxCtsFlow = 0;
+	dcb.fOutxCtsFlow = hwFlowCtrl;
 	dcb.fOutxDsrFlow = 0;
 	dcb.fDtrControl = 0;
 	dcb.fDsrSensitivity = 0;
 	dcb.fTXContinueOnXoff = 0;
-	dcb.fRtsControl = 0;
+	dcb.fRtsControl = hwFlowCtrl;
 	dcb.XonLim = 0;
 	dcb.XoffLim = 0;
 
@@ -341,7 +343,7 @@ FILE *file;
  * \return Returns 0 on success and error value on failure.
  */
 
-int set_interface_attribs (int fd, int speed, int parity)
+int set_interface_attribs (int fd, int speed, int parity, int hwFlowCtrl, int rawMode)
 {
 		int error = 0;
         struct termios tty;
@@ -361,16 +363,37 @@ int set_interface_attribs (int fd, int speed, int parity)
 		tty.c_cflag &= ~(PARENB | PARODD);      /* shut off parity */
         tty.c_cflag |= parity;
         tty.c_cflag &= ~CSTOPB;
-        tty.c_cflag &= ~CRTSCTS;
 		tty.c_oflag = 0;
 		tty.c_lflag = 0;
+
+        if (hwFlowCtrl)
+        {
+            tty.c_cflag |= CRTSCTS;
+        }
+        else
+        {
+            tty.c_cflag &= ~CRTSCTS;
+        }
+
+        if(rawMode != '0')
+        {
+            cfmakeraw(&tty);
+            tty.c_cc[VTIME] = 5;
+            tty.c_cc[VMIN] = 1;
+        }
 
         if (tcsetattr (fd, TCSANOW, &tty) != 0)
         {
                 cout << "error " << errno << "from tcsetattr";
-		error = errno;
+                error = errno;
                 return error;
         }
+
+        if(rawMode != '0')
+        {
+            tcflush(fd, TCIOFLUSH);
+        }
+
         return error;
 }
 
@@ -454,7 +477,7 @@ unsigned short crc16_ccitt(unsigned char *buf, int len)
  *
  */
 
-int xmodemFTransfer( wchar_t *destname, char *sname)
+int xmodemFTransfer( wchar_t *destname, char *sname, int hwFlowCtrl, int rawMode)
 {
 	SerialPort serialPort;
 	ifstream ifile;
@@ -472,7 +495,7 @@ int xmodemFTransfer( wchar_t *destname, char *sname)
  *
  */
 
-int xmodemFTransfer( char *sname, int fd )
+int xmodemFTransfer( char *sname, int fd, int hwFlowCtrl, int rawMode )
 {
 	char rxBuff[1];
 #endif	
@@ -489,7 +512,7 @@ int xmodemFTransfer( char *sname, int fd )
 	}
 
 	ifile = file_open( sname, &srcsz); /* Opening Binary file to be copied */
-	error = serialPort.connect(destname, baudRate);
+	error = serialPort.connect(destname, baudRate, hwFlowCtrl, rawMode);
 	if(error < 0)
 		return error;
 #else
@@ -807,6 +830,253 @@ conn_close:
 
 #ifdef WINDOWS
 /**
+ * Xmodem Flow Control change
+ *
+ * \param destname points to the COM Port to be connected
+ *
+ * This function request flow control change over UART using XMODEM protocol.
+ *
+ * \return Returns 0 on success and error value on failure.
+ *
+ */
+int getFlowCtrl( wchar_t *destname, unsigned char *hwFlowCtrl, int rawMode )
+{
+	SerialPort serialPort;
+    unsigned char rxBuff[1];
+#else
+/**
+ * Xmodem Header Transmit
+ *
+ * This function request flow control change over UART using XMODEM protocol.
+ *
+ * \return Returns 0 on success and error value on failure.
+ *
+ */
+int getFlowCtrl( int fd, unsigned char *hwFlowCtrl, int rawMode )
+{
+    char rxBuff[1];
+#endif
+    unsigned char ack = ACK, EoT = EOT;
+	int error = 0, inbyte = 1, crc = 0, hsize = 12;
+	unsigned short ccrc;
+    unsigned char command[14];
+	const char start = 'S', getCmd = GET_FLOW_CONTROL_CMD;
+    unsigned short i;
+
+#ifdef WINDOWS
+	if((*destname) == NULL)
+	{
+		cout << "xmodemHTransfer: Invalid input parameters!" << endl;
+		return ERR_INVALID;
+	}
+	error = serialPort.connect(destname, BAUDRATE_0, 0, def_raw);
+	if(error < 0)
+		return error;
+#endif
+
+    memset (command, 0, sizeof(command));
+    memcpy (command, &start, 1);
+    memcpy (&command[1], &getCmd, 1);
+
+    for (;;){
+        #ifdef WINDOWS
+        if ((serialPort.getArray(rxBuff, inbyte)) == inbyte)
+        #else
+        if ((readport(rxBuff, fd)) == inbyte)
+        #endif
+        {
+            if (rxBuff[0] == 'C') {
+                crc = 1;
+                ccrc = crc16_ccitt(command, hsize);
+                #ifdef DEBUG
+                cout <<"crc: " <<ccrc <<endl;
+                #endif
+                command[hsize] = (ccrc>>8) & 0xFF;
+                command[hsize+1] = ccrc & 0xFF;
+
+                #ifdef DEBUG
+                cout <<"hsize: " <<hsize <<endl;
+                #endif
+                #ifdef WINDOWS
+                if(serialPort.sendArray(command, (hsize+2)) != (hsize+2))
+                #else
+                if(write(fd, command, (hsize+2)) != (hsize+2))
+                #endif
+                {
+                    cout << "Transmit of header Failed!\n";
+                    error = ERR_XMIT;
+                    #ifdef WINDOWS
+                        serialPort.clear();
+                        serialPort.disconnect();
+                    #endif
+                    return error;
+                }
+                else
+                {
+                    #ifdef WINDOWS
+                    if ((serialPort.getArray(rxBuff, inbyte)) != inbyte )
+                    #else
+                    if ( (readport(rxBuff, fd)) != inbyte )
+                    #endif
+                    {
+                        #ifdef DEBUG
+                            cout << "Received from Rx !!" << rxBuff[0] << "Retry" << retry << endl;
+                        #endif
+                    }
+                    else {
+                        if (rxBuff[0] == ACK)
+                        {
+                            #ifdef WINDOWS
+                            if ((serialPort.getArray(rxBuff, inbyte)) != inbyte)
+                            #else
+                            if ((readport(rxBuff, fd)) != inbyte)
+                            #endif
+                            {
+                                error = ERR_XMIT;
+                                #ifdef WINDOWS
+                                    serialPort.clear();
+                                    serialPort.disconnect();
+                                #endif
+                                return error;
+                            }
+                            else
+                            {
+                                /* Flash programmer has to send either '0' or '1' as status */
+                                if (rxBuff[0] == 0 || rxBuff[0] == 1)
+                                {
+                                    *hwFlowCtrl = rxBuff[0];
+                                    #ifdef WINDOWS
+                                    if (serialPort.sendArray(&ack, inbyte) != inbyte)
+                                    #else
+                                    if ( write(fd, &ack, inbyte) != inbyte )
+                                    #endif
+                                        cout << "Sending ACK Failed!!\n";
+                                    #ifdef WINDOWS
+                                    if (serialPort.sendArray(&EoT, inbyte) != inbyte)
+                                    #else
+                                    if ( write(fd, &EoT, inbyte) != inbyte )
+                                    #endif
+                                        cout <<"Sending EOT Failed!!\n";
+                                    #ifdef WINDOWS
+                                    if (serialPort.getArray(rxBuff, inbyte) != inbyte)
+                                    #else
+                                    if (readport(rxBuff, fd) != inbyte)
+                                    #endif
+                                    {
+                                        cout << "ACK not received for EOT!!\n";
+                                        error = ERR_XMIT;
+                                        #ifdef WINDOWS
+                                            serialPort.clear();
+                                            serialPort.disconnect();
+                                        #endif
+                                        return error;
+                                    }
+                                    else if (rxBuff[0] != ack)
+                                    {
+                                        error = ERR_RCAN;
+                                        #ifdef WINDOWS
+                                            serialPort.clear();
+                                            serialPort.disconnect();
+                                        #endif
+                                        return error; /* canceled by remote */
+                                    }
+                                    else
+                                    {
+                                        return error;
+                                    }
+                                }
+                                else
+                                {
+                                    error = ERR_XMIT;
+                                    #ifdef WINDOWS
+                                        serialPort.clear();
+                                        serialPort.disconnect();
+                                    #endif
+                                    return error;
+                                }
+                            }
+                        }
+                        else if (rxBuff[0] == NOT_SUPPORTED)
+                        {
+                            #ifdef WINDOWS
+                                if (serialPort.sendArray(&EoT, inbyte) != inbyte)
+                                #else
+                                if ( write(fd, &EoT, inbyte) != inbyte )
+                                #endif
+                                    cout <<"Sending EOT Failed!!\n";
+                                #ifdef WINDOWS
+                                if (serialPort.getArray(rxBuff, inbyte) != inbyte)
+                                #else
+                                if (readport(rxBuff, fd) != inbyte)
+                                #endif
+                                {
+                                    cout << "ACK not received for EOT!!\n";
+                                    error = ERR_XMIT;
+                                    #ifdef WINDOWS
+                                        serialPort.clear();
+                                        serialPort.disconnect();
+                                    #endif
+                                    return error;
+                                }
+                                else if (rxBuff[0] != ack)
+                                {
+                                    error = ERR_RCAN;
+                                    #ifdef WINDOWS
+                                        serialPort.clear();
+                                        serialPort.disconnect();
+                                    #endif
+                                    return error; /* canceled by remote */
+                                }
+                                else
+                                {
+                                    return error;
+                                }
+                        }
+                        else{ /* if CAN */
+                            #ifdef WINDOWS
+                            if( (serialPort.getArray(rxBuff, inbyte)) == inbyte )
+                            #else
+                            if( readport(rxBuff, fd) == inbyte )
+                            #endif
+                            {
+                                if (rxBuff[0] == CAN) {
+                                #ifdef WINDOWS
+                                    if (serialPort.sendArray(&ack, inbyte) != inbyte)
+                                #else
+                                    if ( write(fd, &ack, inbyte)!= inbyte )
+                                #endif
+                                        cout <<"Sending ACK Failed!!\n";
+                                    cout <<"\nFailure: Canceled by remote!!\n";
+                                    error = ERR_RCAN;
+                                #ifdef WINDOWS
+                                    serialPort.clear();
+                                    serialPort.disconnect();
+                                #endif
+                                    return error; /* canceled by remote */
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        else
+        {
+            #ifdef DEBUG
+            cout << "Failure in sending Command packet" << endl;
+            #endif
+        }
+    }
+
+#ifdef WINDOWS
+	serialPort.clear();
+	serialPort.disconnect();
+#endif
+	return error;
+}
+
+#ifdef WINDOWS
+/**
  * Xmodem Baudrate change
  *
  * \param destname points to the COM Port to be connected
@@ -816,7 +1086,7 @@ conn_close:
  * \return Returns 0 on success and error value on failure.
  *
  */
-int getMaxBaudRate( wchar_t *destname, unsigned char *maxBaudrate )
+int getMaxBaudRate( wchar_t *destname, unsigned char *maxBaudrate, int hwFlowCtrl, int rawMode )
 {
 	SerialPort serialPort;
     unsigned char rxBuff[1];
@@ -829,11 +1099,11 @@ int getMaxBaudRate( wchar_t *destname, unsigned char *maxBaudrate )
  * \return Returns 0 on success and error value on failure.
  *
  */
-int getMaxBaudRate( int fd, unsigned char *maxBaudrate )
+int getMaxBaudRate( int fd, unsigned char *maxBaudrate, int hwFlowCtrl, int rawMode )
 {
     char rxBuff[1];
 #endif
-    unsigned char ack = ACK, EoT = EOT, nSupported = NOT_SUPPORTED_BAUDRATE;
+    unsigned char ack = ACK, EoT = EOT, nSupported = NOT_SUPPORTED;
 	int error = 0, inbyte = 1, crc = 0, hsize = 12;
 	unsigned short ccrc;
     unsigned char command[14];
@@ -846,7 +1116,7 @@ int getMaxBaudRate( int fd, unsigned char *maxBaudrate )
 		cout << "xmodemHTransfer: Invalid input parameters!" << endl;
 		return ERR_INVALID;
 	}
-	error = serialPort.connect(destname, BAUDRATE_0);
+	error = serialPort.connect(destname, BAUDRATE_0, hwFlowCtrl, rawMode);
 	if(error < 0)
 		return error;
 #endif
@@ -1012,6 +1282,42 @@ int getMaxBaudRate( int fd, unsigned char *maxBaudrate )
                                     return error;
                                 }
                             }
+                            else if (rxBuff[0] == nSupported)
+                            {
+                                #ifdef WINDOWS
+                                if (serialPort.sendArray(&EoT, inbyte) != inbyte)
+                                #else
+                                if ( write(fd, &EoT, inbyte) != inbyte )
+                                #endif
+                                    cout <<"Sending EOT Failed!!\n";
+                                #ifdef WINDOWS
+                                if (serialPort.getArray(rxBuff, inbyte) != inbyte)
+                                #else
+                                if (readport(rxBuff, fd) != inbyte)
+                                #endif
+                                {
+                                    cout << "ACK not received for EOT!!\n";
+                                    error = ERR_XMIT;
+                                    #ifdef WINDOWS
+                                        serialPort.clear();
+                                        serialPort.disconnect();
+                                    #endif
+                                    return error;
+                                }
+                                else if (rxBuff[0] != ack)
+                                {
+                                    error = ERR_RCAN;
+                                    #ifdef WINDOWS
+                                        serialPort.clear();
+                                        serialPort.disconnect();
+                                    #endif
+                                    return error; /* canceled by remote */
+                                }
+                                else
+                                {
+                                    return error;
+                                }
+                            }
                             else //else if CAN
                             {
                                 #ifdef WINDOWS
@@ -1098,7 +1404,7 @@ int getMaxBaudRate( int fd, unsigned char *maxBaudrate )
  *
  */
 
-int xmodemHTransfer( wchar_t *destname, unsigned char *src)
+int xmodemHTransfer( wchar_t *destname, unsigned char *src, int hwFlowCtrl, int rawMode)
 {
 	SerialPort serialPort;
 	unsigned char rxBuff[1], ack = ACK, EoT = EOT;
@@ -1116,7 +1422,7 @@ int xmodemHTransfer( wchar_t *destname, unsigned char *src)
  * \return Returns 0 on success and error value on failure.
  *
  */
-int xmodemHTransfer( unsigned char *src, int fd )
+int xmodemHTransfer( unsigned char *src, int fd, int hwFlowCtrl, int rawMode )
 {
 	char rxBuff[1], ack = ACK, EoT = EOT;
 #endif
@@ -1128,7 +1434,7 @@ int xmodemHTransfer( unsigned char *src, int fd )
 		cout << "xmodemHTransfer: Invalid input parameters!" << endl;
 		return ERR_INVALID;
 	}
-	error = serialPort.connect(destname, BAUDRATE_0);
+	error = serialPort.connect(destname, BAUDRATE_0, hwFlowCtrl, rawMode);
 	if(error < 0)
 		return error;
 #else
@@ -1184,6 +1490,7 @@ int xmodemHTransfer( unsigned char *src, int fd )
 						#endif
 						switch (rxBuff[0]) {
 						case ACK:
+                        case NOT_SUPPORTED:
 							for (retry = 0; retry < txretry; ++retry) {
 							#ifdef DEBUG
 							cout << "Sending EOT\n";
@@ -1194,7 +1501,7 @@ int xmodemHTransfer( unsigned char *src, int fd )
 							if ( write(fd, &EoT, inbyte) != inbyte )
 							#endif
 								cout <<"Sending EOT Failed!!\n";
-							#ifdef WINDOWS
+                            #ifdef WINDOWS
 							if (serialPort.getArray(rxBuff, inbyte) != inbyte)
 							#else
 							if (readport(rxBuff, fd) != inbyte)
@@ -1202,7 +1509,6 @@ int xmodemHTransfer( unsigned char *src, int fd )
 								cout << "ACK not received for EOT!!\n";
 							if ( rxBuff[0] == ack)
 							#ifdef DEBUG
-							cout << "Rcvd ACK for EOT\n";
 							#endif
 							break;
 							}
@@ -1305,7 +1611,7 @@ int xmodemHTransfer( unsigned char *src, int fd )
 
 int validate( const char *argval )
 {
-	int error = 0, dtype = 0, itype = 0, erLen = 0;
+	int error = 0, dtype = 0, itype = 0, erLen = 0, fctype = 0, rawtype = 0;
 	/* Validate the Command Line Arguments recived */
 	if( devtype == 1 )
 	{
@@ -1334,6 +1640,32 @@ int validate( const char *argval )
 		if( itype == 0 )
 			RBL = 1;
 		memcpy(&def_itype, argval, 1);
+	}
+    if( fcsts == 1 )
+	{
+		fctype = atoi( argval );
+		if( (fctype<0) || (fctype>FCTYPE_SUPPORTED) || !isdigit((int) (*argval)) )
+		{
+			displayVersion();
+			cout << "Invalid FlowControl Type!!\n";
+			fcsts++;
+			displayHelp();
+		}
+		fcsts++;
+        memcpy(&def_fc, argval, 1);
+	}
+    if( rawsts == 1 )
+	{
+		rawtype = atoi( argval );
+		if( (rawtype<0) || (rawtype>RAWTYPE_SUPPORTED) || !isdigit((int) (*argval)) )
+		{
+			displayVersion();
+			cout << "Invalid Raw value!!\n";
+			rawsts++;
+			displayHelp();
+		}
+		rawsts++;
+		memcpy(&def_raw, argval, 1);
 	}
 	if( addroff == 1 )
 	{
@@ -1406,6 +1738,32 @@ int chparam( const char *cliarg, const char *cliargval)
 			imgtype++;
 		validate(cliargval);
 	}
+    else if( !(strcmp(cliarg,"-fc")) )
+	{
+		if( fcsts > 0 )
+		{
+			displayVersion();
+			cout <<"\nDuplication of flow control option Detected!!";
+			err = -1;
+			return err;
+		}
+		else
+			fcsts++;
+		validate(cliargval);
+	}
+    else if( !(strcmp(cliarg,"-raw")) )
+	{
+		if( rawsts > 0 )
+		{
+			displayVersion();
+			cout <<"\nDuplication of Raw Option Detected!!";
+			err = -1;
+			return err;
+		}
+		else
+			rawsts++;
+		validate(cliargval);
+	}
 	else if( !(strcmp(cliarg,"-o")) )
 	{
 		if( addroff > 0 )
@@ -1452,7 +1810,7 @@ int chparam( const char *cliarg, const char *cliargval)
  */
 
 #ifndef WINDOWS
-int  openport(char *comm_port, unsigned int baudrate)
+int  openport(char *comm_port, unsigned int baudrate, int hwFlowCtrl, int rawMode)
 {
         int error = 0;
 
@@ -1465,7 +1823,7 @@ int  openport(char *comm_port, unsigned int baudrate)
 
         }
 
-        error = set_interface_attribs(fdesc, baudrate, 0);
+        error = set_interface_attribs(fdesc, baudrate, 0, hwFlowCtrl, rawMode);
         return error;
 }
 #endif
@@ -1514,14 +1872,14 @@ int FlashErase( const char** optionNames, const char** optionValues, const int o
 	wc = new wchar_t[cSize];
 	mbstowcs (wc, *commPort, cSize);
 #else
-	err = openport( (char *)*commPort, baudRate );
-        if(err == 0)
-                cout <<"Opening Port Successful!\n";
-        else
-        {
-                cout <<"Opening Port Failed!\n";
-                return err;
-        }
+	err = openport( (char *)*commPort, baudRate, 0, def_raw );
+    if(err == 0)
+            cout <<"Opening Port Successful!\n";
+    else
+    {
+            cout <<"Opening Port Failed!\n";
+            return err;
+    }
 #endif
 		/* Create Header Packet */
 		memset (header, 0, sizeof(header));
@@ -1540,9 +1898,9 @@ int FlashErase( const char** optionNames, const char** optionValues, const int o
 
         cout << "\nTransferring Header information..\n";
 #ifdef WINDOWS
-		err =xmodemHTransfer( wc, header );
+		err =xmodemHTransfer( wc, header, 0, def_raw );
 #else
-		err = xmodemHTransfer( header, fdesc );
+		err = xmodemHTransfer( header, fdesc, 0, def_raw );
 #endif
 		if(!err)
 		{
@@ -1582,11 +1940,13 @@ int LoadImage( const char * imagePath, const char** optionNames, const char** op
 	const char **commPort, **optInName, **optInVal;
 	size_t cSize;
 	wchar_t* wc;
-	int err = 0, i = 0, pathLen = 0;
+	int err = 0, i = 0, v = 0;
 	unsigned char header[16];
-    unsigned char supBaudRate = 0;
+    unsigned char supBaudRate = 0, hwFlowCtrl = 0;
 	const char start = 'S', program = PROGRAM_CMD, setBaudrate = SET_BAUDRATE_CMD;
-    std::string sysfw_path;
+    const char setFlowCtrlCmd = SET_FLOW_CONTROL_CMD;
+    const char *sysfwFileName[NUM_OF_SYSFW] = {"sysfw.bin" , "tifs.bin"};
+    std::string sysfw_path, tempSysfw_path;
     char *tokenStr, *tempStr;
     char *found = NULL;
     std::string fullpath = imagePath;
@@ -1610,6 +1970,7 @@ int LoadImage( const char * imagePath, const char** optionNames, const char** op
 #ifdef DEBUG
 			cout <<"optInName: " <<*optInName <<endl <<"optInVal: " <<*optInVal <<endl;
 #endif
+
 			if( chparam(*optInName, *optInVal) != 0)
 				displayHelp();
 		}
@@ -1631,6 +1992,7 @@ int LoadImage( const char * imagePath, const char** optionNames, const char** op
 	}
 #ifdef DEBUG
 	cout <<"Device Type-" << def_dtype << endl <<"ImageType-" << def_itype << endl << "Offset-" << offset << endl;
+    cout <<"Hardware Flow Control-" << def_fc << endl <<"Raw Mode-" << def_raw << endl;
 #endif
 
 #ifdef WINDOWS
@@ -1638,7 +2000,7 @@ int LoadImage( const char * imagePath, const char** optionNames, const char** op
 	wc = new wchar_t[cSize];
 	mbstowcs (wc, *commPort, cSize);
 #else
-	err = openport( (char *)*commPort, baudRate );
+	err = openport( (char *)*commPort, baudRate, hwFlowCtrl, def_raw );
     if(err == 0)
         cout <<"Opening Port Successful!\n";
     else
@@ -1652,9 +2014,9 @@ int LoadImage( const char * imagePath, const char** optionNames, const char** op
 	{
 		FileTx:
 #ifdef WINDOWS
-		err =xmodemFTransfer( wc, (char *)imagePath);
+		err =xmodemFTransfer( wc, (char *)imagePath, hwFlowCtrl, def_raw);
 #else
-		err =xmodemFTransfer( (char *)imagePath, fdesc );
+		err =xmodemFTransfer( (char *)imagePath, fdesc, hwFlowCtrl, def_raw );
 #endif
         /* System Firmware Transfer */
         if (def_itype == '0')
@@ -1672,47 +2034,48 @@ int LoadImage( const char * imagePath, const char** optionNames, const char** op
                     sysfw_path.append(tempStr);
                     sysfw_path.append("/");
                 }
-                else
-                {
-                    sysfw_path.append("sysfw.bin");
-                }
                 tempStr = tokenStr;
             }
-            ifstream sysfw_file(sysfw_path);
-            if(sysfw_file.is_open())
+            for (i=0; i<NUM_OF_SYSFW; i++)
             {
-                cout <<endl <<"Enabling SysFw transfer!!!\n";
-#ifdef DEBUG
-                cout <<endl <<"\nSysfw Filename=" <<sysfw_path <<endl;
-#endif
-                pathLen = sysfw_path.length();
-                char sysfwPath[pathLen+1];
-                strcpy(sysfwPath, sysfw_path.c_str());
-
-                /* Create Header Packet */
-                def_itype = FIRMWARE_DEVTYPE; /* Image Type is Firmware */
-                memset (header, 0, sizeof(header));
-                memcpy(header, &start, 1);
-                memcpy(&header[1], &program, 1);
-                memcpy(&header[3], &def_itype, 1);
-#ifdef DEBUG
-                cout <<"\nSystem Firmware Header - " << header << endl;
-#endif
-
-#ifdef WINDOWS
-                err =xmodemHTransfer( wc, header );
-#else
-                err = xmodemHTransfer( header, fdesc );
-#endif
-                if(!err)
+                tempSysfw_path = sysfw_path;
+                tempSysfw_path.append(sysfwFileName[i]);
+                ifstream sysfw_file(tempSysfw_path);
+                if(sysfw_file.is_open())
                 {
-                    cout << "Header Transfer complete\n";
-                    cout << "Transferring System Firmware..";
-#ifdef WINDOWS
-                    err =xmodemFTransfer( wc, sysfwPath);
-#else
-                    err =xmodemFTransfer( sysfwPath, fdesc );
+                    cout <<endl <<"Enabling System firmware transfer!!!\n";
+#ifdef DEBUG
+                    cout <<endl <<"\nSysfw Filename=" <<tempSysfw_path <<endl;
 #endif
+                    char sysfwPath[1024];
+                    strcpy(sysfwPath, tempSysfw_path.c_str());
+
+                    /* Create Header Packet */
+                    def_itype = FIRMWARE_DEVTYPE; /* Image Type is Firmware */
+                    memset (header, 0, sizeof(header));
+                    memcpy(header, &start, 1);
+                    memcpy(&header[1], &program, 1);
+                    memcpy(&header[3], &def_itype, 1);
+#ifdef DEBUG
+                    cout <<"\nSystem Firmware Header - " << header << endl;
+#endif
+
+#ifdef WINDOWS
+                    err =xmodemHTransfer( wc, header, hwFlowCtrl, def_raw );
+#else
+                    err = xmodemHTransfer( header, fdesc, hwFlowCtrl, def_raw );
+#endif
+                    if(!err)
+                    {
+                        cout << "Header Transfer complete\n";
+                        cout << "Transferring System Firmware..";
+#ifdef WINDOWS
+                        err =xmodemFTransfer( wc, sysfwPath, hwFlowCtrl, def_raw);
+#else
+                        err =xmodemFTransfer( sysfwPath, fdesc, hwFlowCtrl, def_raw );
+#endif
+                    }
+                    break;
                 }
             }
         }
@@ -1723,10 +2086,53 @@ int LoadImage( const char * imagePath, const char** optionNames, const char** op
 	}
 	else	/* Transfer Files to Flash Writer */
 	{
+        if (def_fc == '1')
+        {
 #ifdef WINDOWS
-		err = getMaxBaudRate( wc, &supBaudRate );
+            err = getFlowCtrl( wc, &hwFlowCtrl, def_raw );
 #else
-		err = getMaxBaudRate( fdesc, &supBaudRate );
+            err = getFlowCtrl( fdesc, &hwFlowCtrl, def_raw );
+#endif
+
+            if(err < 0)
+            {
+#ifndef WINDOWS
+                close(fdesc);
+#endif
+                cout << "File Transfer Failed!\n";
+                return err;
+            }
+            if (err != UNSUPPORTED || hwFlowCtrl == 1)
+            {
+                /* Create Header Packet for Set Flow Control command */
+                memset (header, 0, sizeof(header));
+                memcpy(header, &start, 1);
+                memcpy(&header[1], &setFlowCtrlCmd, 1);
+                memcpy(&header[2], &hwFlowCtrl, 1);
+#ifdef WINDOWS
+                err = xmodemHTransfer( wc, header, 0, def_raw );
+#else
+                err = xmodemHTransfer( header, fdesc, 0, def_raw );
+#endif
+ 
+#ifdef DEBUG
+                cout <<"Set FlowCtrl command packet - " << header << endl;
+#endif
+                if(err)
+                {
+#ifndef WINDOWS
+                    close(fdesc);
+#endif
+                    cout << "File Transfer Failed!\n";
+                    return err;
+                }
+            }
+        }
+
+#ifdef WINDOWS
+		err = getMaxBaudRate( wc, &supBaudRate, hwFlowCtrl, def_raw );
+#else
+		err = getMaxBaudRate( fdesc, &supBaudRate, hwFlowCtrl, def_raw );
 #endif
         if(err)
         {
@@ -1737,29 +2143,31 @@ int LoadImage( const char * imagePath, const char** optionNames, const char** op
             return err;
         }
 
-        /* Create Header Packet */
-		memset (header, 0, sizeof(header));
-		memcpy(header, &start, 1);
-		memcpy(&header[1], &setBaudrate, 1);
-        memcpy(&header[2], &supBaudRate, 1);
+        if (err != UNSUPPORTED)
+        {
+            /* Create Header Packet */
+            memset (header, 0, sizeof(header));
+            memcpy(header, &start, 1);
+            memcpy(&header[1], &setBaudrate, 1);
+            memcpy(&header[2], &supBaudRate, 1);
 #ifdef WINDOWS
-		err = xmodemHTransfer( wc, header );
+            err = xmodemHTransfer( wc, header, hwFlowCtrl, def_raw );
 #else
-		err = xmodemHTransfer( header, fdesc );
+            err = xmodemHTransfer( header, fdesc, hwFlowCtrl, def_raw );
 #endif
 
 #ifdef DEBUG
-        cout <<"Set BaudRate command packet - " << header << endl;
+            cout <<"Set BaudRate command packet - " << header << endl;
 #endif
-        if(err)
-        {
+            if(err)
+            {
 #ifndef WINDOWS
-            close(fdesc);
+                close(fdesc);
 #endif
-            cout << "File Transfer Failed!\n";
-            return err;
+                cout << "File Transfer Failed!\n";
+                return err;
+            }
         }
-
         /* Create Header Packet */
 		memset (header, 0, sizeof(header));
 		memcpy(header, &start, 1);
@@ -1774,9 +2182,9 @@ int LoadImage( const char * imagePath, const char** optionNames, const char** op
 #endif
 
 #ifdef WINDOWS
-		err = xmodemHTransfer( wc, header );
+		err = xmodemHTransfer( wc, header, hwFlowCtrl, def_raw );
 #else
-		err = xmodemHTransfer( header, fdesc );
+		err = xmodemHTransfer( header, fdesc, hwFlowCtrl, def_raw );
 #endif
         if(!err)
         {
@@ -1787,7 +2195,7 @@ int LoadImage( const char * imagePath, const char** optionNames, const char** op
 #endif
 #ifndef WINDOWS
             close(fdesc);
-            err = openport( (char *)*commPort, baudRate );
+            err = openport( (char *)*commPort, baudRate, hwFlowCtrl, def_raw );
             if(err == 0)
                     cout <<"Opening Port Successful!\n";
             else

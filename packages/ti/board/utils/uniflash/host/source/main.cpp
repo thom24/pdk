@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright (C) 2017-2020 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2017-2021 Texas Instruments Incorporated - http://www.ti.com/
  */
 /*
  *  Redistribution and use in source and binary forms, with or without
@@ -55,12 +55,15 @@ void displayHelp( void )
 {
 #ifdef WINDOWS
 	cout << "\nUsage:" << endl << "dslite.bat --mode processors -c <COM_Port> -f <File_to_be_transferred_with_full_path> -d <Device_Type> -i <Image_Type> -e <Erase_Length> -o <Offset>\
+                                                                        \n-fc <Hardware_Flow_Control> -raw <Raw_Mode>\
                                                                         \n\nCOM_Port: COM port number where processor UART console is connected\
                                                                         \n\nFile_to_be_transferred_with_full_path: Name of the file to be flashed with full path\
                                                                         \n\nDevice_Type:\n0 - NAND\n1 - SPI\n2 - QSPI\n3 - OSPI\n4 - eMMC\n5 - HyperFlash\n6 - UFS\n7 - Custom Flash\
                                                                         \n\nImage_Type:\n0 - Flash\n1 - MLO\n2 - Uboot\n3 - UImage\n4 - Firmware\n5 - Custom Image\
 																		\n\nErase_Length:Flash erase length in bytes\
                                                                         \n\nOffset: Flash start offset for image flashing or erase\
+                                                                        \n\nHardware_Flow_Control:\n0 - disable\n1 - enable\
+                                                                        \n\nRaw_Mode:\n0 - disable\n1 - enable\
                                                                         \n\nNote:\
                                                                         \n - Image type parameter (-i 0) is mandatory while downloading the flash programmer\
 																		\n - File Path should not be specified in case of Flash Erase"<< endl;
@@ -93,7 +96,7 @@ void displayVersion( void )
 {
 	cout <<"\n----------------------------------------------------------------------------";
 	cout <<"\nProcessorSDKSerialFlash CLI Tool";
-	cout <<"\nCopyright (C) 2017-2020 Texas Instruments Incorporated - http://www.ti.com/";
+	cout <<"\nCopyright (C) 2017-2021 Texas Instruments Incorporated - http://www.ti.com/";
 	cout <<"\nVersion " <<VERSION;
 	cout <<"\n----------------------------------------------------------------------------";
 }
@@ -112,7 +115,7 @@ void displayVersion( void )
 
 int main(int argc,const char *argv[])
 {
-	int argmin = 5, argmax = 11, i = 0, e_argmin = 7, e_argmax = 9, retVal = 0;
+	int argmin = 5, argmax = 15, i = 0, e_argmin = 7, e_argmax = 11, retVal = 0;
     const char *eraseCommand = "FlashErase";
 
 	if((argc == 1) || !(strcmp(argv[1],"-h")))

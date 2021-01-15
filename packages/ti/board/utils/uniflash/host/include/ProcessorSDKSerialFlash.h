@@ -22,7 +22,7 @@ public:
 SerialPort();
 ~SerialPort();
  
-int connect (wchar_t *device, unsigned int baudrate);
+int connect (wchar_t *device, unsigned int baudrate, int hwFlowCtrl, int rawMode);
 void disconnect(void);
  
 int sendArray(unsigned char *buffer, int len);
@@ -31,8 +31,8 @@ int getArray (unsigned char *buffer, int len);
 void clear();
 };
 
-int xmodemHTransfer( wchar_t *destname, unsigned char *src);
-int xmodemFTransfer( wchar_t *destname, char *sname);
+int xmodemHTransfer( wchar_t *destname, unsigned char *src, int hwFlowCtrl, int rawMode);
+int xmodemHTransfer( unsigned char *src, int fd, int hwFlowCtrl, int rawMode );
 
 #else
 
@@ -46,18 +46,21 @@ int xmodemFTransfer( wchar_t *destname, char *sname);
 #include <unistd.h>
 #include <errno.h>
 
-int set_interface_attribs ( int, int, int );
-int openport ( char* );
-int readport ( char*, int );
-int xmodemFTransfer ( char*, int );
-int xmodemHTransfer ( unsigned char*, int );
+int set_interface_attribs ( int, int, int, int, int);
+int openport ( char*, unsigned int, int, int );
+int readport ( char*, int, int, int );
+int xmodemFTransfer ( char*, int, int, int );
+int xmodemHTransfer ( unsigned char*, int, int, int );
 
 #endif	
 
 using namespace std;
 
-#define VERSION "1.3.0.0"
+#define VERSION "1.4.0.0"
 
+#define NUM_OF_SYSFW             2
+
+#define UNSUPPORTED              0x10
 #define	SUCCESS                  0
 #define ERR_RCAN                -1
 #define ERR_NOSYNC              -2
@@ -70,6 +73,8 @@ using namespace std;
 #define ERASE_CMD               0x45U
 #define GET_MAX_BAUDRATE_CMD    0x47U
 #define SET_BAUDRATE_CMD        0x53U
+#define GET_FLOW_CONTROL_CMD    0x48U
+#define SET_FLOW_CONTROL_CMD    0x49U
 
 #define SOH                     0x01
 #define STX                     0x02
@@ -78,7 +83,7 @@ using namespace std;
 #define NAK                     0x15
 #define CAN                     0x18
 #define CTRLZ                   0x1A
-#define NOT_SUPPORTED_BAUDRATE  0x29
+#define NOT_SUPPORTED           0x29
 #define FLASH_SUCCESS           0x2A
 #define FLASH_FAILURE           0x2B
 

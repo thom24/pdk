@@ -1,16 +1,3 @@
-ifeq ($(RULES_MAKE), )
-include $(PDK_INSTALL_PATH)/ti/build/Rules.make
-else
-include $(RULES_MAKE)
-endif
-
-# Support backwards compatibility with KeyStone1 approach
- CC = $(TOOLCHAIN_PATH_A15)/bin/$(CROSS_TOOL_PRFX)g++
- AC = $(TOOLCHAIN_PATH_A15)/bin/$(CROSS_TOOL_PRFX)as
- AR = $(TOOLCHAIN_PATH_A15)/bin/$(CROSS_TOOL_PRFX)ar
- LD = $(TOOLCHAIN_PATH_A15)/bin/$(CROSS_TOOL_PRFX)g++
- BIN = $(TOOLCHAIN_PATH_A15)/bin/$(CROSS_TOOL_PRFX)objcopy
-
 UNIFLASH_HOST_BINDIR = bin
 UNIFLASH_HOST_SRCDIR = source
 CPPFLAG = -static
