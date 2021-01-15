@@ -1,12 +1,6 @@
-#include <ti/csl/arch/r5/csl_arm_r5_mpu.h>
+#include <ti/csl/arch/csl_arch.h>
 
-#pragma SET_CODE_SECTION(".startupCode")
-#pragma SET_DATA_SECTION(".startupData")
-
-#define TRUE 1
-#define FALSE 0
-
-extern const CSL_ArmR5MpuRegionCfg __attribute__((weak)) gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
+const CSL_ArmR5MpuRegionCfg gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
 {
     {
         /* Region 0 configuration: complete 32 bit address space = 4Gbits */
@@ -128,8 +122,9 @@ extern const CSL_ArmR5MpuRegionCfg __attribute__((weak)) gCslR5MpuCfg[CSL_ARM_R5
         .cachePolicy      = CSL_ARM_R5_CACHE_POLICY_NON_CACHEABLE,
         .memAttr          = 0U,
     },
+#if defined (SPI_CACHE_ENABLE)
     {
-        /* Region 7 configuration: Covers first 32MB of EVM Flash (FSS DAT0) */
+        //Region 7 configuration: Covers first 32MB of EVM Flash (FSS DAT0) *
         .regionId         = 7U,
         .enable           = 1U,
         .baseAddr         = 0x50000000,
@@ -138,12 +133,12 @@ extern const CSL_ArmR5MpuRegionCfg __attribute__((weak)) gCslR5MpuCfg[CSL_ARM_R5
         .exeNeverControl  = 0U,
         .accessPermission = CSL_ARM_R5_ACC_PERM_PRIV_USR_RD_WR,
         .shareable        = 0U,
-        .cacheable        = (uint32_t)TRUE,
-        .cachePolicy      = CSL_ARM_R5_MEM_ATTR_CACHED_WT_NO_WA,
+        .cacheable        = (uint32_t)FALSE,
+        .cachePolicy      = 0U,
         .memAttr          = 0U,
     },
     {
-        /* Region 8 configuration: Covers next 16MB of EVM Flash (FSS DAT0) */
+        //Region 8 configuration: Covers next 16MB of EVM Flash (FSS DAT0) *
         .regionId         = 8U,
         .enable           = 1U,
         .baseAddr         = 0x52000000,
@@ -157,7 +152,7 @@ extern const CSL_ArmR5MpuRegionCfg __attribute__((weak)) gCslR5MpuCfg[CSL_ARM_R5
         .memAttr          = 0U,
     },
     {
-        /* Region 9 configuration: Covers next 8MB of EVM Flash (FSS DAT0) */
+        //Region 9 configuration: Covers next 8MB of EVM Flash (FSS DAT0) *
         .regionId         = 9U,
         .enable           = 1U,
         .baseAddr         = 0x53000000,
@@ -171,7 +166,7 @@ extern const CSL_ArmR5MpuRegionCfg __attribute__((weak)) gCslR5MpuCfg[CSL_ARM_R5
         .memAttr          = 0U,
     },
     {
-        /* Region 10 configuration: Covers next 4MB of EVM Flash (FSS DAT0) */
+        //Region 10 configuration: Covers next 4MB of EVM Flash (FSS DAT0) *
         .regionId         = 10U,
         .enable           = 1U,
         .baseAddr         = 0x53800000,
@@ -185,7 +180,7 @@ extern const CSL_ArmR5MpuRegionCfg __attribute__((weak)) gCslR5MpuCfg[CSL_ARM_R5
         .memAttr          = 0U,
     },
     {
-        /* Region 11 configuration: Covers next 2MB of EVM Flash (FSS DAT0) */
+        //Region 11 configuration: Covers next 2MB of EVM Flash (FSS DAT0) *
         .regionId         = 11U,
         .enable           = 1U,
         .baseAddr         = 0x53C00000,
@@ -199,7 +194,7 @@ extern const CSL_ArmR5MpuRegionCfg __attribute__((weak)) gCslR5MpuCfg[CSL_ARM_R5
         .memAttr          = 0U,
     },
     {
-        /* Region 12 configuration: Covers next 1MB of EVM Flash (FSS DAT0) */
+        //Region 12 configuration: Covers next 1MB of EVM Flash (FSS DAT0) *
         .regionId         = 12U,
         .enable           = 1U,
         .baseAddr         = 0x53E00000,
@@ -213,7 +208,7 @@ extern const CSL_ArmR5MpuRegionCfg __attribute__((weak)) gCslR5MpuCfg[CSL_ARM_R5
         .memAttr          = 0U,
     },
     {
-        /* Region 13 configuration: Covers next 512KB of EVM Flash (FSS DAT0) */
+        //Region 13 configuration: Covers next 512KB of EVM Flash (FSS DAT0) *
         .regionId         = 13U,
         .enable           = 1U,
         .baseAddr         = 0x53F00000,
@@ -227,7 +222,7 @@ extern const CSL_ArmR5MpuRegionCfg __attribute__((weak)) gCslR5MpuCfg[CSL_ARM_R5
         .memAttr          = 0U,
     },
     {
-        /* Region 14 configuration: Covers next 256KB of EVM Flash (FSS DAT0) */
+        //Region 14 configuration: Covers next 256KB of EVM Flash (FSS DAT0) *
         .regionId         = 14U,
         .enable           = 1U,
         .baseAddr         = 0x53F80000,
@@ -240,25 +235,26 @@ extern const CSL_ArmR5MpuRegionCfg __attribute__((weak)) gCslR5MpuCfg[CSL_ARM_R5
         .cachePolicy      = CSL_ARM_R5_MEM_ATTR_CACHED_WT_NO_WA,
         .memAttr          = 0U,
     },
+#endif
     {
-        /* Region 15 configuration (Cahched or Non-cached for PHY tuning data based on macro): Covers last 256KB of EVM Flash (FSS DAT0) */
+        //Region 15 configuration (Cahched or Non-cached for PHY tuning data based on macro): Covers last 256KB of EVM Flash (FSS DAT0) *
         .regionId         = 15U,
         .enable           = 1U,
         .baseAddr         = 0x53FC0000,
+    #if defined(SOC_AM65XX) || defined(SOC_J721E)
+        .size             = CSL_ARM_R5_MPU_REGION_SIZE_128KB,
+    #else
         .size             = CSL_ARM_R5_MPU_REGION_SIZE_256KB,
+    #endif
         .subRegionEnable  = CSL_ARM_R5_MPU_SUB_REGION_ENABLE_ALL,
         .exeNeverControl  = 0U,
         .accessPermission = CSL_ARM_R5_ACC_PERM_PRIV_USR_RD_WR,
         .shareable        = 0U,
-
-#if defined (SPI_CACHE_ENABLE)
-        .cacheable        = (uint32_t)TRUE,
-        .cachePolicy      = CSL_ARM_R5_MEM_ATTR_CACHED_WT_NO_WA,
-#else
+        /* OSPI PHY tuning algorithm which runs in DAC mode needs
+         * cache to be disabled for this section of FSS data region.
+         */
         .cacheable        = (uint32_t)FALSE,
         .cachePolicy      = 0U,
-#endif
-
         .memAttr          = 0U,
     },
 };
