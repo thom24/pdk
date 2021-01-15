@@ -40,7 +40,12 @@ ifeq ($(BOARD),$(filter $(BOARD), icev2AM335x am64x_svb am640x_svb))
 SRCDIR += src/flash/nor src/flash/nor/device src/flash/nor/gpmc
 INCDIR += src/flash/nor src/flash/nor/device src/flash/nor/gpmc
 
+ifeq ($(BOARD),$(filter $(BOARD), am64x_svb am640x_svb))
+SRCS_COMMON += nor_gpmc.c
+PACKAGE_SRCS_COMMON += src/flash/nor/gpmc/nor_gpmc.c
+else
 SRCS_COMMON += nor.c nor_gpmc.c
+endif
 endif
 
 ifeq ($(BOARD),$(filter $(BOARD), evmAM437x am64x_svb am640x_svb))
