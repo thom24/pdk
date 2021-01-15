@@ -1235,7 +1235,9 @@ export sbl_cust_img_BOARDLIST
 sbl_cust_img_$(SOC)_CORELIST = mcu1_0
 export sbl_cust_img_$(SOC)_CORELIST
 ifneq ($(SOC),$(filter $(SOC), tpr12))
+ifneq ($(BOARD),$(filter $(BOARD), am64x_svb))
 sbl_EXAMPLE_LIST += sbl_cust_img
+endif
 endif
 sbl_cust_img_SBL_IMAGEGEN = yes
 export sbl_cust_img_SBL_IMAGEGEN

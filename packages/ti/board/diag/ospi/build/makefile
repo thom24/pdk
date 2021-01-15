@@ -95,7 +95,7 @@ endif
 
 ifeq ($(CORE),$(filter $(CORE), mpu1_0))
 SRCS_ASM_COMMON += diag_entry.asm
-ifeq ($(BOARD), $(filter $(BOARD), am64x_svb))
+ifeq ($(BOARD), $(filter $(BOARD), am64x_evm am64x_svb))
 EXTERNAL_LNKCMD_FILE_LOCAL = ../../common/$(SOC)/linker_$(CORE)_ddr.lds
 else
 EXTERNAL_LNKCMD_FILE_LOCAL = ../../common/$(SOC)/linker_$(CORE).lds
