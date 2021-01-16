@@ -245,6 +245,9 @@ static int8_t BoardDiag_i2c_slave_device_led_test(void)
     Board_i2cIoExpDeInit();
 #endif
 
+#if defined(SOC_AM64X)
+    I2C_close(handle);
+#endif
     return ret;
 }
 

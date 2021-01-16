@@ -101,8 +101,9 @@ static int8_t BoardDiag_UartStressTest(uint32_t uartInstance, uint8_t setPort)
     uint32_t          ret = 0;
     uint32_t          index;
     uint32_t          failIndex;
+#if !defined(SOC_AM64X)
     UART_HwAttrs uart_hwAttrs;
-
+#endif
     uint8_t testPassMsg[] = "UART Stress Test Passed\n";
     uint8_t testFailMsg[] = "UART Stress Test Failed\n";
     uint8_t input = '\n';
@@ -407,8 +408,14 @@ int main(void)
     {
         ret = -1;
     }
-#endif
 
+    ret = BoardDiag_UartStressTest(BOARD_MCU_UART0_INSTANCE, 1);
+    if (ret != 0)
+    {
+        ret = -1;
+    }
+#endif
+#endif
 #if defined(am65xx_idk) || defined(j721e_evm) || defined(j7200_evm)
     ret = BoardDiag_UartStressTest(BOARD_UART_INSTANCE, 1);
     if (ret != 0)

@@ -52,7 +52,7 @@
 #include "board_cfg.h"
 #include "diag_common_cfg.h"
 
-#if defined(j721e_evm) || defined(j7200_evm) || defined(am64x_evm)
+#if defined(j721e_evm) || defined(j7200_evm)
 #include "board_control.h"
 #endif
 
