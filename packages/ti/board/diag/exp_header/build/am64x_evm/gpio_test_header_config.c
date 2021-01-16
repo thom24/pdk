@@ -176,29 +176,26 @@
 #define PIN86      (0x0204)  /* MCU_GPIO0_4/MCU_GPIO0_13 */
 #define PIN87      (0x020D)
 
-#define PIN88      (0x020A)  /* MCU_GPIO0_10/MCU_GPIO0_6 */
-#define PIN89      (0x0206)
+#define PIN88      (0x0210)  /* MCU_GPIO0_16/MCU_GPIO0_21 */
+#define PIN89      (0x0215)
 
-#define PIN90      (0x0210)  /* MCU_GPIO0_16/MCU_GPIO0_21 */
-#define PIN91      (0x0215)
+#define PIN90      (0x0209)  /* MCU_GPIO0_9/MCU_GPIO0_11 */
+#define PIN91      (0x020B)
 
-#define PIN92      (0x0209)  /* MCU_GPIO0_9/MCU_GPIO0_11 */
-#define PIN93      (0x020B)
+#define PIN92      (0x0214)  /* MCU_GPIO0_20/MCU_GPIO0_15 */
+#define PIN93      (0x020F)
 
-#define PIN94      (0x0214)  /* MCU_GPIO0_20/MCU_GPIO0_15 */
-#define PIN95      (0x020F)
+#define PIN94      (0x020C)  /* MCU_GPIO0_12/MCU_GPIO0_7 */
+#define PIN95      (0x0207)
 
-#define PIN96      (0x020C)  /* MCU_GPIO0_12/MCU_GPIO0_7 */
-#define PIN97      (0x0207)
+#define PIN96      (0x0208)  /* MCU_GPIO0_8/MCU_GPIO0_14 */
+#define PIN97      (0x020D)
 
-#define PIN98      (0x0208)  /* MCU_GPIO0_8/MCU_GPIO0_14 */
-#define PIN99      (0x020D)
+#define PIN98      (0x0211)  /* MCU_GPIO0_17/MCU_GPIO0_22 */
+#define PIN99      (0x0216)
 
-#define PIN100      (0x0211)  /* MCU_GPIO0_17/MCU_GPIO0_22 */
-#define PIN101      (0x0216)
-
-#define PIN102      (0x0212)  /* MCU_GPIO0_18/MCU_GPIO0_19 */
-#define PIN103      (0x0213)
+#define PIN100      (0x0212)  /* MCU_GPIO0_18/MCU_GPIO0_19 */
+#define PIN101      (0x0213)
 
 /* GPIO Driver board specific pin configuration structure */
 GPIO_PinConfig gpioPinConfigs[] = {
@@ -305,9 +302,6 @@ GPIO_PinConfig gpioPinConfigs[] = {
     PIN99 | GPIO_CFG_INPUT,
     PIN100 | GPIO_CFG_OUTPUT,
     PIN101 | GPIO_CFG_INPUT,
-    PIN102 | GPIO_CFG_OUTPUT,
-    PIN103 | GPIO_CFG_INPUT,
-
 };
 
 /* GPIO Driver call back functions */

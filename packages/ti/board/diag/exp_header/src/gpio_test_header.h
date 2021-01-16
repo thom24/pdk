@@ -103,7 +103,7 @@ extern "C" {
 #elif defined(SOC_AM64X)
 /* Maximum number of pad config registers supported */
 #define MAIN_PADCONFIG_MAX_COUNT    (85U)
-#define PADCONFIG_MAX_COUNT         (103U)
+#define PADCONFIG_MAX_COUNT         (101U)
 /* number of gpio pin sets for loopback test*/
 #define NUM_PIN_SETS                (2U)
 #else /*j7200_evm*/

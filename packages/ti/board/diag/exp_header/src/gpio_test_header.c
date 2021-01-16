@@ -69,7 +69,7 @@ static uint32_t pinMuxgpio[PADCONFIG_MAX_COUNT] =
 #elif defined(SOC_AM64X)
 testHeaderPinDetails_t testHeaderPin[NUM_PIN_SETS] = {
     {"HSE TEST JIG PINS\0",      0U,     85U,     CSL_GPIO0_BASE},
-    {"SAFETY TEST JIG PINS\0",   85,     18U,     CSL_MCU_GPIO0_BASE}
+    {"SAFETY TEST JIG PINS\0",   85,     16U,     CSL_MCU_GPIO0_BASE}
 };
 
 /* Pad Config register offset address details */
@@ -163,8 +163,6 @@ static uint32_t pinMuxgpio[PADCONFIG_MAX_COUNT] =
 /* Safety Connector Pins  */
     PIN_MCU_SPI0_D1,
     PIN_MCU_SPI0_CS0,
-    PIN_MCU_SPI0_D0,
-    PIN_MCU_SPI1_CS1,
     PIN_MCU_UART1_CTSN,
     PIN_MCU_I2C1_SDA,
     PIN_MCU_SPI1_D1,
