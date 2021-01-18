@@ -112,9 +112,11 @@ static int32_t App_udmaAdcRx(Udma_ChHandle rxChHandle, uint32_t *destBuf);
 static void App_udmaEventDmaCb(Udma_EventHandle eventHandle,
                                uint32_t eventType,
                                void *appData);
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
 static void App_udmaEventTdCb(Udma_EventHandle eventHandle,
                               uint32_t eventType,
                               void *appData);
+#endif
 
 static int32_t App_init(Udma_DrvHandle drvHandle);
 static int32_t App_deinit(Udma_DrvHandle drvHandle);
@@ -145,14 +147,18 @@ static void App_printNum(const char *str, uint32_t num);
 struct Udma_DrvObj      gUdmaDrvObj;
 struct Udma_ChObj       gUdmaRxChObj;
 struct Udma_EventObj    gUdmaCqEventObj;
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
 struct Udma_EventObj    gUdmaTdCqEventObj;
+#endif
 
 /*
  * UDMA Memories
  */
 static uint8_t gRxFqRingMem[UDMA_TEST_APP_RING_MEM_SIZE_ALIGN] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
 static uint8_t gRxCqRingMem[UDMA_TEST_APP_RING_MEM_SIZE_ALIGN] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
 static uint8_t gRxTdCqRingMem[UDMA_TEST_APP_RING_MEM_SIZE_ALIGN] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
+#endif
 static uint8_t gUdmaRxHpdMem[UDMA_TEST_APP_DESC_SIZE_ALIGN] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
 
 /*
@@ -257,31 +263,10 @@ static int32_t App_udmaAdcRx(Udma_ChHandle rxChHandle, uint32_t *destBuf)
 {
     int32_t         retVal = UDMA_SOK;
     uint32_t        loopCnt, fifoData, adcData, stepId, chCnt;
-    Udma_ChPdmaPrms pdmaPrms;
     uint64_t        pDesc = 0;
     uint8_t        *pHpdMem = &gUdmaRxHpdMem[0U];
 
     App_adcConfig();
-
-    /* Config PDMA channel */
-    UdmaChPdmaPrms_init(&pdmaPrms);
-    pdmaPrms.elemSize   = UDMA_PDMA_ES_32BITS;
-    pdmaPrms.elemCnt    = RX_BYTES_PER_EVENT;
-    pdmaPrms.fifoCnt    = (APP_ADC_NUM_CH / RX_BYTES_PER_EVENT);
-    retVal = Udma_chConfigPdma(rxChHandle, &pdmaPrms);
-    if(UDMA_SOK != retVal)
-    {
-        App_print("[Error] UDMA RX PDMA config failed!!\n");
-    }
-
-    if(UDMA_SOK == retVal)
-    {
-        retVal = Udma_chEnable(rxChHandle);
-        if(UDMA_SOK != retVal)
-        {
-            App_print("[Error] UDMA RX channel enable failed!!\n");
-        }
-    }
 
     if(UDMA_SOK == retVal)
     {
@@ -290,7 +275,8 @@ static int32_t App_udmaAdcRx(Udma_ChHandle rxChHandle, uint32_t *destBuf)
 
         /* Submit HPD to channel */
         retVal = Udma_ringQueueRaw(
-                     Udma_chGetFqRingHandle(rxChHandle), (uint64_t) pHpdMem);
+                     Udma_chGetFqRingHandle(rxChHandle), 
+                     (uint64_t) Udma_appVirtToPhyFxn(pHpdMem, 0U, NULL));
         if(UDMA_SOK != retVal)
         {
             App_print("[Error] Channel queue failed!!\n");
@@ -321,7 +307,7 @@ static int32_t App_udmaAdcRx(Udma_ChHandle rxChHandle, uint32_t *destBuf)
          * Sanity check
          */
         /* Check returned descriptor pointer */
-        if(pDesc != ((uint64_t) pHpdMem))
+        if(((uint64_t) Udma_appPhyToVirtFxn(pDesc, 0U, NULL)) != ((uint64_t) pHpdMem))
         {
             App_print("[Error] Host packet descriptor pointer returned doesn't "
                    "match the submitted address!!\n");
@@ -354,12 +340,6 @@ static int32_t App_udmaAdcRx(Udma_ChHandle rxChHandle, uint32_t *destBuf)
 
     App_adcStop();
 
-    retVal += Udma_chDisable(rxChHandle, UDMA_DEFAULT_CH_DISABLE_TIMEOUT);
-    if(UDMA_SOK != retVal)
-    {
-        App_print("[Error] UDMA channel disable failed!!\n");
-    }
-
     return (retVal);
 }
 
@@ -375,6 +355,7 @@ static void App_udmaEventDmaCb(Udma_EventHandle eventHandle,
     return;
 }
 
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
 static void App_udmaEventTdCb(Udma_EventHandle eventHandle,
                               uint32_t eventType,
                               void *appData)
@@ -399,6 +380,7 @@ static void App_udmaEventTdCb(Udma_EventHandle eventHandle,
 
     return;
 }
+#endif
 
 static int32_t App_init(Udma_DrvHandle drvHandle)
 {
@@ -414,7 +396,9 @@ static int32_t App_init(Udma_DrvHandle drvHandle)
     instId = UDMA_INST_ID_MCU_0;        /* Use the same domain NAVSS instance - ADC is in MCU domain */
 #endif
     UdmaInitPrms_init(instId, &initPrms);
-    initPrms.printFxn = &App_print;
+    initPrms.virtToPhyFxn   = &Udma_appVirtToPhyFxn;
+    initPrms.phyToVirtFxn   = &Udma_appPhyToVirtFxn;
+    initPrms.printFxn       = &App_print;
     retVal = Udma_init(drvHandle, &initPrms);
     if(UDMA_SOK != retVal)
     {
@@ -450,6 +434,7 @@ static int32_t App_create(Udma_DrvHandle drvHandle, Udma_ChHandle rxChHandle)
     Udma_EventHandle    eventHandle;
     Udma_EventPrms      eventPrms;
     SemaphoreP_Params   semPrms;
+    Udma_ChPdmaPrms     pdmaPrms;
 
     SemaphoreP_Params_init(&semPrms);
     gUdmaAppDoneSem = SemaphoreP_create(0, &semPrms);
@@ -466,14 +451,20 @@ static int32_t App_create(Udma_DrvHandle drvHandle, Udma_ChHandle rxChHandle)
         UdmaChPrms_init(&chPrms, chType);
         chPrms.peerChNum            = APP_ADC_RX_PDMA_CH;
         chPrms.fqRingPrms.ringMem   = &gRxFqRingMem[0U];
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
         chPrms.cqRingPrms.ringMem   = &gRxCqRingMem[0U];
         chPrms.tdCqRingPrms.ringMem = &gRxTdCqRingMem[0U];
+#endif
         chPrms.fqRingPrms.ringMemSize   = UDMA_TEST_APP_RING_MEM_SIZE;
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
         chPrms.cqRingPrms.ringMemSize   = UDMA_TEST_APP_RING_MEM_SIZE;
         chPrms.tdCqRingPrms.ringMemSize = UDMA_TEST_APP_RING_MEM_SIZE;
+#endif
         chPrms.fqRingPrms.elemCnt   = UDMA_TEST_APP_RING_ENTRIES;
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
         chPrms.cqRingPrms.elemCnt   = UDMA_TEST_APP_RING_ENTRIES;
         chPrms.tdCqRingPrms.elemCnt = UDMA_TEST_APP_RING_ENTRIES;
+#endif
 
         /* Open channel for block copy */
         retVal = Udma_chOpen(drvHandle, rxChHandle, chType, &chPrms);
@@ -511,6 +502,7 @@ static int32_t App_create(Udma_DrvHandle drvHandle, Udma_ChHandle rxChHandle)
         }
     }
 
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
     if(UDMA_SOK == retVal)
     {
         /* Register teardown ring completion callback */
@@ -527,6 +519,27 @@ static int32_t App_create(Udma_DrvHandle drvHandle, Udma_ChHandle rxChHandle)
             App_print("[Error] UDMA Teardown CQ event register failed!!\n");
         }
     }
+#endif 
+
+    /* Config PDMA channel */
+    UdmaChPdmaPrms_init(&pdmaPrms);
+    pdmaPrms.elemSize   = UDMA_PDMA_ES_32BITS;
+    pdmaPrms.elemCnt    = RX_BYTES_PER_EVENT;
+    pdmaPrms.fifoCnt    = (APP_ADC_NUM_CH / RX_BYTES_PER_EVENT);
+    retVal = Udma_chConfigPdma(rxChHandle, &pdmaPrms);
+    if(UDMA_SOK != retVal)
+    {
+        App_print("[Error] UDMA RX PDMA config failed!!\n");
+    }
+
+    if(UDMA_SOK == retVal)
+    {
+        retVal = Udma_chEnable(rxChHandle);
+        if(UDMA_SOK != retVal)
+        {
+            App_print("[Error] UDMA RX channel enable failed!!\n");
+        }
+    }
 
     return (retVal);
 }
@@ -536,9 +549,17 @@ static int32_t App_delete(Udma_DrvHandle drvHandle, Udma_ChHandle rxChHandle)
     int32_t             retVal = UDMA_SOK;
     Udma_EventHandle    eventHandle;
 
+    retVal += Udma_chDisable(rxChHandle, UDMA_DEFAULT_CH_DISABLE_TIMEOUT);
+    if(UDMA_SOK != retVal)
+    {
+        App_print("[Error] UDMA channel disable failed!!\n");
+    }
+
     /* Unregister all events */
+#if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
     eventHandle = &gUdmaTdCqEventObj;
     retVal += Udma_eventUnRegister(eventHandle);
+#endif
     eventHandle = &gUdmaCqEventObj;
     retVal += Udma_eventUnRegister(eventHandle);
     if(UDMA_SOK != retVal)
@@ -588,9 +609,9 @@ static void App_udmaRxHpdInit(Udma_ChHandle rxChHandle,
         CSL_UDMAP_CPPI5_PD_PKTINFO2_RETPUSHPOLICY_VAL_TO_TAIL,
         cqRingNum);
     CSL_udmapCppi5LinkDesc(pHpd, 0U);
-    CSL_udmapCppi5SetBufferAddr(pHpd, (uint64_t) destBuf);
+    CSL_udmapCppi5SetBufferAddr(pHpd, (uint64_t) Udma_appVirtToPhyFxn(destBuf, 0U, NULL));
     CSL_udmapCppi5SetBufferLen(pHpd, length);
-    CSL_udmapCppi5SetOrgBufferAddr(pHpd, (uint64_t) destBuf);
+    CSL_udmapCppi5SetOrgBufferAddr(pHpd, (uint64_t) Udma_appVirtToPhyFxn(destBuf, 0U, NULL));
     CSL_udmapCppi5SetOrgBufferLen(pHpd, length);
 
     /* Writeback cache */
