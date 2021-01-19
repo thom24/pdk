@@ -363,7 +363,7 @@ else
 MCSPI_Baremetal_Master_TestApp_$(SOC)_CORELIST = mcu1_0
 endif
 export MCSPI_Baremetal_Master_TestApp_$(SOC)_CORELIST
-ifeq ($(SOC),$(filter $(SOC), j721e am65xx j7200))
+ifeq ($(SOC),$(filter $(SOC), j721e am65xx j7200 am64x))
 export MCSPI_Baremetal_Master_TestApp_SBL_APPIMAGEGEN = yes
 endif
 
@@ -409,7 +409,7 @@ else
 MCSPI_Baremetal_Master_Dma_TestApp_$(SOC)_CORELIST = mcu1_0
 endif
 export MCSPI_Baremetal_Master_Dma_TestApp_$(SOC)_CORELIST
-ifeq ($(SOC),$(filter $(SOC), j721e am65xx j7200))
+ifeq ($(SOC),$(filter $(SOC), j721e am65xx j7200 am64x))
 export MCSPI_Baremetal_Master_Dma_TestApp_SBL_APPIMAGEGEN = yes
 endif
 
@@ -457,7 +457,7 @@ else
 MCSPI_Master_TestApp_$(SOC)_CORELIST = mcu1_0
 endif
 export MCSPI_Master_TestApp_$(SOC)_CORELIST
-ifeq ($(SOC),$(filter $(SOC), j721e am65xx j7200))
+ifeq ($(SOC),$(filter $(SOC), j721e am65xx j7200 am64x))
 export MCSPI_Master_TestApp_SBL_APPIMAGEGEN = yes
 endif
 
@@ -511,7 +511,7 @@ else
 MCSPI_Master_Dma_TestApp_$(SOC)_CORELIST = mcu1_0
 endif
 export MCSPI_Master_Dma_TestApp_$(SOC)_CORELIST
-ifeq ($(SOC),$(filter $(SOC), j721e am65xx j7200))
+ifeq ($(SOC),$(filter $(SOC), j721e am65xx j7200 am64x))
 export MCSPI_Master_Dma_TestApp_SBL_APPIMAGEGEN = yes
 endif
 
