@@ -242,6 +242,15 @@ static int32_t App_adcTest(Udma_ChHandle rxChHandle)
     int32_t     retVal = UDMA_SOK;
     uint32_t    loopCnt = 0U;
     uint32_t   *destBuf = &gAdcDestBuf[0U];
+    uint32_t    i;
+
+    /* Init buffers */
+    for(i = 0U; i < APP_ADC_NUM_CH; i++)
+    {
+        destBuf[i] = 0U;
+    }
+    /* Writeback buffer */
+    Udma_appUtilsCacheWb(&gAdcDestBuf[0U], sizeof(gAdcDestBuf));
 
     while(loopCnt < UDMA_TEST_APP_LOOP_CNT)
     {
