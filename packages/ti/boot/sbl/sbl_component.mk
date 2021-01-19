@@ -83,7 +83,7 @@ sbl_j7200_CORELIST := mcu1_0 mcu1_1 mcu2_0 mcu2_1 mpu1_0 mpu1_1
 j7200_LASTCORE := $(word $(words $(sbl_j7200_CORELIST)), $(sbl_j7200_CORELIST))
 
 am64x_smp_CORELIST := mcu1_0 mcu2_0 mpu1_0
-sbl_am64x_CORELIST := mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 mpu1_0 mpu1_1
+sbl_am64x_CORELIST := mcu1_0 mcu1_1 mcu2_0 mcu2_1 mpu1_0 mpu1_1
 am64x_LASTCORE := $(word $(words $(sbl_am64x_CORELIST)), $(sbl_am64x_CORELIST))
 
 sbl_tpr12_CORELIST := mcu1_0 mcu1_1 c66xdsp_1
