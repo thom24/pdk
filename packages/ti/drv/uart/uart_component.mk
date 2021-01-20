@@ -366,7 +366,7 @@ UART_Baremetal_TestApp_PKG_LIST = UART_Baremetal_TestApp
 UART_Baremetal_TestApp_INCLUDE = $(UART_Baremetal_TestApp_PATH)
 UART_Baremetal_TestApp_BOARDLIST = $(drvuart_BOARDLIST)
 export UART_Baremetal_TestApp_BOARDLIST
-ifeq ($(SOC),$(filter $(SOC), j721e j7200))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200 am64x))
 UART_Baremetal_TestApp_$(SOC)_CORELIST = $(drvuart_$(SOC)_CORELISTARM)
 else
 UART_Baremetal_TestApp_$(SOC)_CORELIST = $(drvuart_$(SOC)_CORELIST)
