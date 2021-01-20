@@ -70,8 +70,8 @@ PRUICSS_HwAttrs prussInitCfg[PRUICSS_INSTANCE_TWO] =
        CSL_PRU_ICSSG0_PR1_TX1_PR1_TX1_IRAM_RAM_BASE,      /* prussTxPru1IramBase */
        CSL_PRU_ICSSG0_DRAM0_SLV_RAM_SIZE,                 /* prussPru0DramSize */
        CSL_PRU_ICSSG0_DRAM1_SLV_RAM_SIZE,                 /* prussPru1DramSize */
-       CSL_PRU_ICSSG0_PR1_PDSP0_IRAM_SIZE,                /* prussPru0IramSize */
-       CSL_PRU_ICSSG0_PR1_PDSP1_IRAM_SIZE,                /* prussPru1IramSize */
+       CSL_PRU_ICSSG0_PR1_PDSP0_IRAM_RAM_SIZE,            /* prussPru0IramSize */
+       CSL_PRU_ICSSG0_PR1_PDSP1_IRAM_RAM_SIZE,            /* prussPru1IramSize */
        CSL_PRU_ICSSG0_RAM_SLV_RAM_SIZE,                   /* prussSharedDramSize */
        CSL_PRU_ICSSG0_PR1_RTU0_PR1_RTU0_IRAM_RAM_SIZE,    /* prussRtu0IramSize */
        CSL_PRU_ICSSG0_PR1_RTU1_PR1_RTU1_IRAM_RAM_SIZE,    /* prussRtu1IramSize */
@@ -105,8 +105,8 @@ PRUICSS_HwAttrs prussInitCfg[PRUICSS_INSTANCE_TWO] =
        CSL_PRU_ICSSG1_PR1_TX1_PR1_TX1_IRAM_RAM_BASE,      /* prussTxPru1IramBase */
        CSL_PRU_ICSSG1_DRAM0_SLV_RAM_SIZE,                 /* prussPru0DramSize */
        CSL_PRU_ICSSG1_DRAM1_SLV_RAM_SIZE,                 /* prussPru1DramSize */
-       CSL_PRU_ICSSG1_PR1_PDSP0_IRAM_SIZE,                /* prussPru0IramSize */
-       CSL_PRU_ICSSG1_PR1_PDSP1_IRAM_SIZE,                /* prussPru1IramSize */
+       CSL_PRU_ICSSG1_PR1_PDSP0_IRAM_RAM_SIZE,            /* prussPru0IramSize */
+       CSL_PRU_ICSSG1_PR1_PDSP1_IRAM_RAM_SIZE,            /* prussPru1IramSize */
        CSL_PRU_ICSSG1_RAM_SLV_RAM_SIZE,                   /* prussSharedDramSize */
        CSL_PRU_ICSSG1_PR1_RTU0_PR1_RTU0_IRAM_RAM_SIZE,    /* prussRtu0IramSize */
        CSL_PRU_ICSSG1_PR1_RTU1_PR1_RTU1_IRAM_RAM_SIZE,    /* prussRtu1IramSize */
