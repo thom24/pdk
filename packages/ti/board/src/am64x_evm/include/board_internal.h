@@ -154,17 +154,19 @@ typedef struct Board_I2cObj_s
  *****************************************************************************/
 
 /**
- *
  * \brief  Board pinmuxing enable function
  *
- * Enables pinmux for the Maxwell idk board interfaces. Pin mux is done based on the
- * default/primary functionality of the board. Any pins shared by multiple
- * interfaces need to be reconfigured to access the secondary functionality.
+ * Enables pinmux for the board interfaces. Pin mux is done based
+ * on the default/primary functionality of the board. Any pins shared by
+ * multiple interfaces need to be reconfigured to access the secondary
+ * functionality.
+ *
+ * \param   void
  *
  * \return  BOARD_SOK in case of success or appropriate error code
  *
  */
-Board_STATUS Board_pinmuxConfig(void);
+Board_STATUS Board_pinmuxConfig (void);
 
 /**
  *

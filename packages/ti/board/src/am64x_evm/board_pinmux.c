@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019 - 2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -229,6 +229,10 @@ Board_STATUS Board_pinmuxConfig (void)
     return status;
 }
 
+/**
+ * \brief  Function to configure UART Tx pinmux
+ *
+ */
 void Board_uartTxPinmuxConfig(void)
 {
     /* Board_unlockMMR */

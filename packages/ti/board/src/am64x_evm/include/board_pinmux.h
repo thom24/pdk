@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -158,21 +158,6 @@ Board_STATUS Board_pinmuxGetCfg(Board_PinmuxConfig_t *pinmuxCfg);
  */
 Board_STATUS Board_pinmuxUpdate (pinmuxBoardCfg_t *pinmuxData,
                                  uint32_t domain);
-
-/**
- * \brief  Board pinmuxing enable function
- *
- * Enables pinmux for the board interfaces. Pin mux is done based
- * on the default/primary functionality of the board. Any pins shared by
- * multiple interfaces need to be reconfigured to access the secondary
- * functionality.
- *
- * \param   void
- *
- * \return  BOARD_SOK in case of success or appropriate error code
- *
- */
-Board_STATUS Board_pinmuxConfig (void);
 
 #ifdef __cplusplus
 }

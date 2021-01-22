@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -48,85 +48,11 @@
 #define BOARD_MMR_PASS   (1U)
 #define BOARD_MMR_FAIL   (0U)
 
-static const uint32_t main_ctrl_mmr_kick_offsets[]= {  CSL_MAIN_CTRL_MMR_CFG0_LOCK0_KICK0,
-                                                CSL_MAIN_CTRL_MMR_CFG0_LOCK1_KICK0,
-                                                CSL_MAIN_CTRL_MMR_CFG0_LOCK2_KICK0,
-                                                CSL_MAIN_CTRL_MMR_CFG0_LOCK3_KICK0,
-                                                CSL_MAIN_CTRL_MMR_CFG0_LOCK4_KICK0,
-                                                CSL_MAIN_CTRL_MMR_CFG0_LOCK5_KICK0,
-                                                //CSL_MAIN_CTRL_MMR_CFG0_LOCK6_KICK0,
-                                                //CSL_MAIN_CTRL_MMR_CFG0_LOCK7_KICK0,
-                                             };
-static const uint32_t main_ctrl_mmr_kick_num = sizeof(main_ctrl_mmr_kick_offsets)/sizeof(uint32_t);
-
-static const uint32_t mcu_ctrl_mmr_kick_offsets[]= {   CSL_MCU_CTRL_MMR_CFG0_LOCK0_KICK0,
-                                                CSL_MCU_CTRL_MMR_CFG0_LOCK1_KICK0,
-                                                CSL_MCU_CTRL_MMR_CFG0_LOCK2_KICK0,
-                                                CSL_MCU_CTRL_MMR_CFG0_LOCK3_KICK0,
-                                                CSL_MCU_CTRL_MMR_CFG0_LOCK4_KICK0,
-                                                //CSL_MCU_CTRL_MMR_CFG0_LOCK5_KICK0,
-                                                CSL_MCU_CTRL_MMR_CFG0_LOCK6_KICK0,
-                                                //CSL_MCU_CTRL_MMR_CFG0_LOCK7_KICK0,
-                                             };
-static const uint32_t mcu_ctrl_mmr_kick_num = sizeof(mcu_ctrl_mmr_kick_offsets)/sizeof(uint32_t);
-
-
-
-static const uint32_t main_pll_mmr_kick_offsets[]= {  CSL_MAIN_PLL_MMR_CFG_PLL0_LOCKKEY0,
-                                               CSL_MAIN_PLL_MMR_CFG_PLL1_LOCKKEY0,
-                                               CSL_MAIN_PLL_MMR_CFG_PLL2_LOCKKEY0,
-                                               //CSL_MAIN_PLL_MMR_CFG_PLL3_LOCKKEY0,
-                                               //CSL_MAIN_PLL_MMR_CFG_PLL4_LOCKKEY0,
-                                               //CSL_MAIN_PLL_MMR_CFG_PLL5_LOCKKEY0,
-                                               //CSL_MAIN_PLL_MMR_CFG_PLL6_LOCKKEY0,
-                                               //CSL_MAIN_PLL_MMR_CFG_PLL7_LOCKKEY0,
-                                               CSL_MAIN_PLL_MMR_CFG_PLL8_LOCKKEY0,
-                                               //CSL_MAIN_PLL_MMR_CFG_PLL9_LOCKKEY0,
-                                               //CSL_MAIN_PLL_MMR_CFG_PLL10_LOCKKEY0,
-                                               //CSL_MAIN_PLL_MMR_CFG_PLL11_LOCKKEY0,
-                                               CSL_MAIN_PLL_MMR_CFG_PLL12_LOCKKEY0,
-                                             };
-static const uint32_t main_pll_mmr_kick_num = sizeof(main_pll_mmr_kick_offsets)/sizeof(uint32_t);
-
-static const uint32_t mcu_pll_mmr_kick_offsets[]= {  CSL_MCU_PLL_MMR_CFG_PLL0_LOCKKEY0,
-                                              //CSL_MCU_PLL_MMR_CFG_PLL1_LOCKKEY0,
-                                              //CSL_MCU_PLL_MMR_CFG_PLL2_LOCKKEY0,
-                                              //CSL_MCU_PLL_MMR_CFG_PLL3_LOCKKEY0,
-                                              //CSL_MCU_PLL_MMR_CFG_PLL4_LOCKKEY0,
-                                              //CSL_MCU_PLL_MMR_CFG_PLL5_LOCKKEY0,
-                                              //CSL_MCU_PLL_MMR_CFG_PLL6_LOCKKEY0,
-                                              //CSL_MCU_PLL_MMR_CFG_PLL7_LOCKKEY0,
-                                              //CSL_MCU_PLL_MMR_CFG_PLL8_LOCKKEY0,
-                                              //CSL_MCU_PLL_MMR_CFG_PLL9_LOCKKEY0,
-                                              //CSL_MCU_PLL_MMR_CFG_PLL10_LOCKKEY0,
-                                              //CSL_MCU_PLL_MMR_CFG_PLL11_LOCKKEY0,
-                                              //CSL_MCU_PLL_MMR_CFG_PLL12_LOCKKEY0,
-                                            };
-static const uint32_t mcu_pll_mmr_kick_num = sizeof(mcu_pll_mmr_kick_offsets)/sizeof(uint32_t);
-
-
-#define TEMP_REPLACE_WITH_CSL_MAIN_PADCONFIG_LOCK0_KICK0_OFFSET (0x1008)
-#define TEMP_REPLACE_WITH_CSL_MAIN_PADCONFIG_LOCK1_KICK0_OFFSET (0x5008)
-
-#define TEMP_REPLACE_WITH_CSL_MCU_PADCONFIG_LOCK0_KICK0_OFFSET (0x1008)
-#define TEMP_REPLACE_WITH_CSL_MCU_PADCONFIG_LOCK1_KICK0_OFFSET (0x5008)
-
-static const uint32_t main_padcfg_mmr_kick_offsets[]= {  TEMP_REPLACE_WITH_CSL_MAIN_PADCONFIG_LOCK0_KICK0_OFFSET,
-                                                  TEMP_REPLACE_WITH_CSL_MAIN_PADCONFIG_LOCK1_KICK0_OFFSET,
-                                               };
-static const uint32_t main_padcfg_mmr_kick_num = sizeof(main_padcfg_mmr_kick_offsets)/sizeof(uint32_t);
-
-static const uint32_t mcu_padcfg_mmr_kick_offsets[]= {   TEMP_REPLACE_WITH_CSL_MCU_PADCONFIG_LOCK0_KICK0_OFFSET,
-                                                  TEMP_REPLACE_WITH_CSL_MCU_PADCONFIG_LOCK1_KICK0_OFFSET,
-                                              };
-static const uint32_t mcu_padcfg_mmr_kick_num = sizeof(mcu_padcfg_mmr_kick_offsets)/sizeof(uint32_t);
-
-
-
-typedef enum {
+typedef enum 
+{
     MMR_UNLOCK= 1,
     MMR_LOCK=0
-} mmr_lock_actions_t;
+} Board_MmrLockActions_t;
 
 /* define the unlock and lock values */
 #define KICK_LOCK_VAL    0x00000000
@@ -145,148 +71,117 @@ typedef enum {
 #define MCU_PADCONFIG_MMR_BASE_ADDRESS CSL_MCU_PADCFG_CTRL0_CFG0_BASE
 #endif
 
-uint32_t MMR_change_lock(mmr_lock_actions_t target_state, volatile uint32_t * kick0);
-uint32_t generic_mmr_change_all_locks(mmr_lock_actions_t target_state, uint32_t base_addr, const  uint32_t * offset_array, uint32_t array_size);
+static const uint32_t Board_mmrMainPadCfgKickOffsets[]= {CSL_MAIN_PADCFG_CTRL_MMR_CFG0_LOCK0_KICK0,
+                                                         CSL_MAIN_PADCFG_CTRL_MMR_CFG0_LOCK1_KICK0};
+static const uint32_t Board_mmrMainPadCfgKickNum = sizeof(Board_mmrMainPadCfgKickOffsets)/sizeof(uint32_t);
 
-uint32_t MAIN_PADCONFIG_MMR_unlock_all();
-uint32_t MAIN_PADCONFIG_MMR_lock_all();
-uint32_t MAIN_PADCONFIG_MMR_change_all_locks(mmr_lock_actions_t target_state);
+static const uint32_t Board_mmrMcuPadCfgKickOffsets[]= {CSL_MCU_CTRL_MMR_CFG0_LOCK0_KICK0,
+                                                        CSL_MCU_CTRL_MMR_CFG0_LOCK1_KICK0};
+static const uint32_t Board_mmrMcuPadCfgKickNum = sizeof(Board_mmrMcuPadCfgKickOffsets)/sizeof(uint32_t);
 
-uint32_t MCU_PADCONFIG_MMR_unlock_all();
-uint32_t MCU_PADCONFIG_MMR_lock_all();
-uint32_t MCU_PADCONFIG_MMR_change_all_locks(mmr_lock_actions_t target_state);
+static uint32_t Board_mmrChangeLock(Board_MmrLockActions_t targetState,
+                                    volatile uint32_t *kick0)
+{
+    volatile uint32_t *kick1 = kick0 + 1;
+    uint32_t lock_state = (*kick0 & 0x1); /* status is 1 if unlocked, 0 if locked */
 
-uint32_t MAIN_CTRL_MMR_unlock_all();
-uint32_t MAIN_CTRL_MMR_lock_all();
-uint32_t MAIN_CTRL_MMR_change_all_locks(mmr_lock_actions_t target_state);
-
-uint32_t MCU_CTRL_MMR_unlock_all();
-uint32_t MCU_CTRL_MMR_lock_all();
-uint32_t MCU_CTRL_MMR_change_all_locks(mmr_lock_actions_t target_state);
-
-uint32_t MAIN_PLL_MMR_unlock_all();
-uint32_t MAIN_PLL_MMR_lock_all();
-uint32_t MAIN_PLL_MMR_change_all_locks(mmr_lock_actions_t target_state);
-
-uint32_t MCU_PLL_MMR_unlock_all();
-uint32_t MCU_PLL_MMR_lock_all();
-uint32_t MCU_PLL_MMR_change_all_locks(mmr_lock_actions_t target_state);
-
-
-    uint32_t MMR_change_lock(mmr_lock_actions_t target_state, volatile uint32_t * kick0) {
-        volatile uint32_t * kick1 = kick0 + 1;
-        uint32_t lock_state = (*kick0 & 0x1); //status is 1 if unlocked, 0 if locked
-
-        //If lock state is not what we want, change it
-        if (lock_state != (uint32_t) target_state ) {
-            switch(target_state) {
-                case MMR_LOCK:
-                    // lock the partition by writing the lock values to the kick lock registers
-                    *kick0 = KICK_LOCK_VAL;
-                    *kick1 = KICK_LOCK_VAL;
-                    break;
-                case MMR_UNLOCK:
-                    // unlock the partition by writing the unlock values to the kick lock registers
-                    *kick0 = KICK0_UNLOCK_VAL;
-                    *kick1 = KICK1_UNLOCK_VAL;
-                    break;
-            }
-
-            lock_state = (*kick0 & 0x1);
-            //Error out if the change did not take effect
-            if(lock_state!= (uint32_t) target_state ){
-                //Could insert debug statement here
-                //printf("SAVV_DEBUG: Error in changing MMR lock state at address %llx", kick0 );
-                return BOARD_MMR_FAIL;
-            }
+    /* If lock state is not what we want, change it */
+    if (lock_state != (uint32_t) targetState )
+    {
+        switch(targetState)
+        {
+            case MMR_LOCK:
+                /* lock the partition by writing the lock values to the kick lock registers */
+                *kick0 = KICK_LOCK_VAL;
+                *kick1 = KICK_LOCK_VAL;
+                break;
+            case MMR_UNLOCK:
+                /* unlock the partition by writing the unlock values to the kick lock registers */
+                *kick0 = KICK0_UNLOCK_VAL;
+                *kick1 = KICK1_UNLOCK_VAL;
+                break;
         }
-        //Return pass if lock is already what we want or if changing lock succeeds
+
+        lock_state = (*kick0 & 0x1);
+        /* Error out if the change did not take effect */
+        if(lock_state!= (uint32_t) targetState )
+        {
+            return BOARD_MMR_FAIL;
+        }
+    }
+
+    /* Return pass if lock is already what we want or if changing lock succeeds */
+    return BOARD_MMR_PASS;
+}
+
+static uint32_t Board_mmrChangeAllLocks(Board_MmrLockActions_t targetState,
+                                        uint32_t base_addr,
+                                        const uint32_t * offset_array,
+                                        uint32_t array_size)
+{
+    uint32_t errors = 0;
+    uint32_t i = 0;
+    volatile uint32_t * kick0_ptr;
+
+    for(i = 0; i < array_size; i++)
+    {
+        kick0_ptr = (volatile uint32_t *) (base_addr + offset_array[i]);
+        if(Board_mmrChangeLock(targetState, kick0_ptr) == BOARD_MMR_FAIL)
+        {
+            errors++;
+        }
+    }
+
+    return errors;
+}
+
+static uint32_t Board_mmrMainPadCfgChangeAllLocks(Board_MmrLockActions_t targetState)
+{
+    uint32_t errors=Board_mmrChangeAllLocks(targetState, (uint32_t) MAIN_PADCONFIG_MMR_BASE_ADDRESS, Board_mmrMainPadCfgKickOffsets, Board_mmrMainPadCfgKickNum);
+
+    if(errors == 0)
+    {
         return BOARD_MMR_PASS;
     }
-    uint32_t generic_mmr_change_all_locks(mmr_lock_actions_t target_state, uint32_t base_addr, const uint32_t * offset_array, uint32_t array_size) {
-        uint32_t errors=0;
-        uint32_t i=0;
-        volatile uint32_t * kick0_ptr;
-        for(i=0;i<array_size;i++) {
-            kick0_ptr = (volatile uint32_t *) (base_addr + offset_array[i]);
-            if(MMR_change_lock(target_state, kick0_ptr) == BOARD_MMR_FAIL){
-                errors++;
-            }
-        }
-        return errors;
+    else
+    {
+        return BOARD_MMR_FAIL;
     }
-    //MAIN_CTRL_MMR
-    uint32_t MAIN_CTRL_MMR_unlock_all() {
-        return MAIN_CTRL_MMR_change_all_locks(MMR_UNLOCK);
+}
+
+static uint32_t Board_mainPadCfgMmrUnlockAll(void)
+{
+    return Board_mmrMainPadCfgChangeAllLocks(MMR_UNLOCK);
+}
+
+static uint32_t Board_mmrMainPadCfgLockAll(void)
+{
+    return Board_mmrMainPadCfgChangeAllLocks(MMR_LOCK);
+}
+
+static uint32_t Board_mmrMcuPadCfgChangeAllLocks(Board_MmrLockActions_t targetState)
+{
+    uint32_t errors=Board_mmrChangeAllLocks(targetState, (uint32_t) MCU_PADCONFIG_MMR_BASE_ADDRESS, Board_mmrMcuPadCfgKickOffsets, Board_mmrMcuPadCfgKickNum);
+
+    if(errors == 0)
+    {
+        return BOARD_MMR_PASS;
     }
-    uint32_t MAIN_CTRL_MMR_lock_all() {
-        return MAIN_CTRL_MMR_change_all_locks(MMR_LOCK);
+    else
+    {
+        return BOARD_MMR_FAIL;
     }
-    uint32_t MAIN_CTRL_MMR_change_all_locks(mmr_lock_actions_t target_state) {
-        uint32_t errors=generic_mmr_change_all_locks(target_state, (uint32_t) MAIN_MMR_BASE_ADDRESS, main_ctrl_mmr_kick_offsets, main_ctrl_mmr_kick_num);
-        if(errors==0) { return BOARD_MMR_PASS; }
-        else          { return BOARD_MMR_FAIL; }
-    }
-    //MCU_CTRL_MMR
-    uint32_t MCU_CTRL_MMR_unlock_all() {
-        return MCU_CTRL_MMR_change_all_locks(MMR_UNLOCK);
-    }
-    uint32_t MCU_CTRL_MMR_lock_all() {
-        return MCU_CTRL_MMR_change_all_locks(MMR_LOCK);
-    }
-    uint32_t MCU_CTRL_MMR_change_all_locks(mmr_lock_actions_t target_state) {
-        uint32_t errors=generic_mmr_change_all_locks(target_state, (uint32_t) MCU_MMR_BASE_ADDRESS, mcu_ctrl_mmr_kick_offsets, mcu_ctrl_mmr_kick_num);
-        if(errors==0) { return BOARD_MMR_PASS; }
-        else          { return BOARD_MMR_FAIL; }
-    }
-    //MAIN_PLL_MMR
-    uint32_t MAIN_PLL_MMR_unlock_all() {
-        return MAIN_PLL_MMR_change_all_locks(MMR_UNLOCK);
-    }
-    uint32_t MAIN_PLL_MMR_lock_all() {
-        return MAIN_PLL_MMR_change_all_locks(MMR_LOCK);
-    }
-    uint32_t MAIN_PLL_MMR_change_all_locks(mmr_lock_actions_t target_state) {
-        uint32_t errors=generic_mmr_change_all_locks(target_state, (uint32_t) MAIN_PLL_MMR_BASE_ADDRESS, main_pll_mmr_kick_offsets, main_pll_mmr_kick_num);
-        if(errors==0) { return BOARD_MMR_PASS; }
-        else          { return BOARD_MMR_FAIL; }
-    }
-    //MCU_PLL_MMR
-    uint32_t MCU_PLL_MMR_unlock_all() {
-        return MCU_PLL_MMR_change_all_locks(MMR_UNLOCK);
-    }
-    uint32_t MCU_PLL_MMR_lock_all() {
-        return MCU_PLL_MMR_change_all_locks(MMR_LOCK);
-    }
-    uint32_t MCU_PLL_MMR_change_all_locks(mmr_lock_actions_t target_state) {
-        uint32_t errors=generic_mmr_change_all_locks(target_state, (uint32_t) MCU_PLL_MMR_BASE_ADDRESS, mcu_pll_mmr_kick_offsets, mcu_pll_mmr_kick_num);
-        if(errors==0) { return BOARD_MMR_PASS; }
-        else          { return BOARD_MMR_FAIL; }
-    }
-    //MAIN_PADCONFIG_MMR
-    uint32_t MAIN_PADCONFIG_MMR_unlock_all() {
-        return MAIN_PADCONFIG_MMR_change_all_locks(MMR_UNLOCK);
-    }
-    uint32_t MAIN_PADCONFIG_MMR_lock_all() {
-        return MAIN_PADCONFIG_MMR_change_all_locks(MMR_LOCK);
-    }
-    uint32_t MAIN_PADCONFIG_MMR_change_all_locks(mmr_lock_actions_t target_state) {
-        uint32_t errors=generic_mmr_change_all_locks(target_state, (uint32_t) MAIN_PADCONFIG_MMR_BASE_ADDRESS, main_padcfg_mmr_kick_offsets, main_padcfg_mmr_kick_num);
-        if(errors==0) { return BOARD_MMR_PASS; }
-        else          { return BOARD_MMR_FAIL; }
-    }
-    //MCU_PADCONFIG_MMR
-    uint32_t MCU_PADCONFIG_MMR_unlock_all() {
-        return MCU_PADCONFIG_MMR_change_all_locks(MMR_UNLOCK);
-    }
-    uint32_t MCU_PADCONFIG_MMR_lock_all() {
-        return MCU_PADCONFIG_MMR_change_all_locks(MMR_LOCK);
-    }
-    uint32_t MCU_PADCONFIG_MMR_change_all_locks(mmr_lock_actions_t target_state) {
-        uint32_t errors=generic_mmr_change_all_locks(target_state, (uint32_t) MCU_PADCONFIG_MMR_BASE_ADDRESS, mcu_padcfg_mmr_kick_offsets, mcu_padcfg_mmr_kick_num);
-        if(errors==0) { return BOARD_MMR_PASS; }
-        else          { return BOARD_MMR_FAIL; }
-    }
+}
+
+static uint32_t Board_mmrMcuPadCfgUnlockAll(void)
+{
+    return Board_mmrMcuPadCfgChangeAllLocks(MMR_UNLOCK);
+}
+
+uint32_t Board_mmrMcuPadCfgLockAll(void)
+{
+    return Board_mmrMcuPadCfgChangeAllLocks(MMR_LOCK);
+}
 
 /**
  * \brief  Unlocks MMR registers
@@ -295,8 +190,9 @@ uint32_t MCU_PLL_MMR_change_all_locks(mmr_lock_actions_t target_state);
  */
 Board_STATUS Board_unlockMMR(void)
 {
-    MAIN_PADCONFIG_MMR_unlock_all();
-    MCU_PADCONFIG_MMR_unlock_all();
+    Board_mainPadCfgMmrUnlockAll();
+    Board_mmrMcuPadCfgUnlockAll();
+
     return BOARD_SOK;
 }
 
@@ -307,8 +203,8 @@ Board_STATUS Board_unlockMMR(void)
  */
 Board_STATUS Board_lockMMR(void)
 {
-    MAIN_PADCONFIG_MMR_lock_all();
-    MCU_PADCONFIG_MMR_lock_all();
+    Board_mmrMainPadCfgLockAll();
+    Board_mmrMcuPadCfgLockAll();
+
     return BOARD_SOK;
 }
-
