@@ -171,6 +171,20 @@ const CSL_ArmR5MpuRegionCfg gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         .cacheable        = (uint32_t)FALSE,
         .cachePolicy      = 0U,
         .memAttr          = 0U,
+    },
+    {
+        /* Region 7 configuration: Covers the M4F memory regions */
+        .regionId         = 7U,
+        .enable           = 1U,
+        .baseAddr         = 0x5000000,
+        .size             = CSL_ARM_R5_MPU_REGION_SIZE_512KB,
+        .subRegionEnable  = CSL_ARM_R5_MPU_SUB_REGION_ENABLE_ALL,
+        .exeNeverControl  = 0U,
+        .accessPermission = CSL_ARM_R5_ACC_PERM_PRIV_USR_RD_WR,
+        .shareable        = 0U,
+        .cacheable        = (uint32_t)TRUE,
+        .cachePolicy      = CSL_ARM_R5_MEM_ATTR_CACHED_WT_NO_WA,
+        .memAttr          = 0U,
     }
 };
 #else

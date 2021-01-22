@@ -428,6 +428,17 @@ int32_t SBL_ospiFlashRead(const void *handle, uint8_t *dst, uint32_t length,
     Board_flashHandle h = *(const Board_flashHandle *) handle;
     uint32_t ioMode = OSPI_FLASH_OCTAL_READ;
 
+#if defined(SOC_AM64X)
+    /* Special handling for M4F memory region transfers to workaround BCDMA copy issue */
+    if (((uint32_t)dst >= (uint32_t)(SBL_M4F_IRAM_BASE_ADDR_SOC)) &&
+        ((uint32_t)dst < (uint32_t)(SBL_M4F_DRAM_BASE_ADDR_SOC + SBL_M4F_DRAM_SIZE)))
+    {
+        memcpy((void *)dst, (void *)(ospi_cfg.dataAddr + offset), length);
+        SBL_log(SBL_LOG_MAX, "Copy to M4F mem location 0x%x ...\n", (uint32_t)dst);
+    }
+    else
+    {
+#endif
     if (length > 4 * 1024)
     {
         /* split transfer if not reading from 16 byte aligned flash offset */
@@ -455,6 +466,10 @@ int32_t SBL_ospiFlashRead(const void *handle, uint8_t *dst, uint32_t length,
         SBL_DCacheClean((void *)dst, length);
         Board_flashRead(h, offset, dst, length, (void *)(&ioMode));
     }
+#if defined(SOC_AM64X)
+    }  /* End of 'else' for M4F memory region transfers */
+#endif
+
 #else
     memcpy((void *)dst, (void *)(ospi_cfg.dataAddr + offset), length);
 #endif /* #if SBL_USE_DMA */
