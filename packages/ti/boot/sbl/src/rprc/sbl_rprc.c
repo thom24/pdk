@@ -784,8 +784,8 @@ static int32_t SBL_RprcImageParse(void *srcAddr,
 
     const uint32_t SocAtcmAddr[] =
     {
-#if defined(SOC_AM64X) && defined(BOOT_MMCSD)
-    /* Use SoC level address of MCU1_0 ATCM for MMCSD ADMA copies */
+#if defined(SOC_AM64X)
+    /* Use SoC level address of MCU1_0 ATCM for non-CPU writes to this TCM. Works for CPU copying as well. */
     SBL_MCU1_CPU0_ATCM_BASE_ADDR_SOC,
 #else
     SBL_MCU_ATCM_BASE,
@@ -799,8 +799,8 @@ static int32_t SBL_RprcImageParse(void *srcAddr,
 
     const uint32_t SocBtcmAddr[] =
     {
-#if defined(SOC_AM64X) && defined(BOOT_MMCSD)
-    /* Use SoC level address of MCU1_0 BTCM for MMCSD ADMA copies */
+#if defined(SOC_AM64X)
+    /* Use SoC level address of MCU1_0 BTCM for non-CPU writes to this TCM. Works for CPU copying as well. */
     SBL_MCU1_CPU0_BTCM_BASE_ADDR_SOC,
 #else
     SBL_MCU_BTCM_BASE,
@@ -871,8 +871,8 @@ static int32_t SBL_RprcImageParse(void *srcAddr,
 
             switch (CoreId)
             {
-#if defined(SOC_AM64X) && defined(BOOT_MMCSD)
-                /* Need address translation to SoC level addresses of MCU1_0 TCMs, for MMCSD ADMA, when trying to copy to local addresses */
+#if defined(SOC_AM64X)
+                /* Need address translation to SoC level addresses of MCU1_0 TCMs, when trying to copy to local addresses */
                 case MCU1_CPU0_ID:
 #endif
                 case MCU1_CPU1_ID:
