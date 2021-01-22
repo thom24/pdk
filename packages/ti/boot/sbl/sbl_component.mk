@@ -99,6 +99,7 @@ sbl_DISABLE_PARALLEL_MAKE = yes
 
 ifeq ($(SOC),$(filter $(SOC), j7200 am64x))
   sbl_LIB_LIST = sbl_lib_mmcsd sbl_lib_mmcsd_hlos sbl_lib_ospi sbl_lib_ospi_hlos sbl_lib_uart sbl_lib_cust
+  sbl_LIB_LIST += sbl_lib_ospi_nondma_hlos
 else
   ifeq ($(SOC), tpr12)
     sbl_LIB_LIST = sbl_lib_uart
@@ -519,7 +520,11 @@ sbl_ospi_img_hlos_COMP_LIST = sbl_ospi_img_hlos
 sbl_ospi_img_hlos_RELPATH = ti/boot/sbl/board/k3
 sbl_ospi_img_hlos_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)/ospi/bin
 sbl_ospi_img_hlos_PATH = $(PDK_SBL_COMP_PATH)/board/k3
-sbl_ospi_img_hlos_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=ospi HLOS_BOOT=yes SBL_USE_DMA=yes BUILD_HS=no
+ifeq ($(SOC),$(filter $(SOC), am64x))
+  sbl_ospi_img_hlos_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=ospi HLOS_BOOT=yes SBL_USE_DMA=no BUILD_HS=no
+else
+  sbl_ospi_img_hlos_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=ospi HLOS_BOOT=yes SBL_USE_DMA=yes BUILD_HS=no
+endif
 export sbl_ospi_img_hlos_MAKEFILE
 export sbl_ospi_img_hlos_SBL_CERT_KEY=$(SBL_CERT_KEY)
 sbl_ospi_img_hlos_BOARD_DEPENDENCY = yes
