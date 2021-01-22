@@ -400,7 +400,6 @@ int main(void)
     {
         ret = -1;
     }
-#endif
 
 #if defined(am64x_evm)
     ret = BoardDiag_UartStressTest(BOARD_UART3_INSTANCE, 0);
@@ -416,6 +415,7 @@ int main(void)
     }
 #endif
 #endif
+
 #if defined(am65xx_idk) || defined(j721e_evm) || defined(j7200_evm)
     ret = BoardDiag_UartStressTest(BOARD_UART_INSTANCE, 1);
     if (ret != 0)

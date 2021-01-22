@@ -159,6 +159,12 @@ SECTIONS {
 
 	__TI_STACK_BASE = __stack;
 
+    uartbuffer (NOLOAD):
+    {
+        . = ALIGN(8);
+        *(uartbuffer*)
+    } > REGION_DATA_BUFFER AT> REGION_DATA_BUFFER
+
     /* Stabs debugging sections.  */
     .stab          0 : { *(.stab) }
     .stabstr       0 : { *(.stabstr) }
