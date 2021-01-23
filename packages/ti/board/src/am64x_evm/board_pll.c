@@ -40,6 +40,7 @@
 
 #include "board_internal.h"
 #include "board_pll.h"
+#include <ti/csl/cslr_gtc.h>
 #include <ti/drv/sciclient/sciclient.h>
 
 static Board_PllClkCfg_t gBoardPllClkCfg[] =
@@ -221,6 +222,35 @@ static int32_t Board_PLLSetModuleClkFreq(uint32_t modId,
     return status;
 }
 
+/**
+ * \brief  Configures GTC Frequency ID register
+ *
+ * GTC freuqnecy ID register indicates base frequency of the system counter.
+ * This needs to be configured with the frequency of the selected GTC clock
+ * source before enabling the system counter.
+ *
+ * \return int32_t
+ *                CSL_PASS - on Success
+ *                CSL_EFAIL - on Failure
+ *
+ */
+static int32_t Board_PLLSetGtcFID(void)
+{
+    int32_t status = CSL_EFAIL;
+    uint32_t clkRate = 0;
+
+    status = Sciclient_pmGetModuleClkFreq(TISCI_DEV_GTC0,
+                                          TISCI_DEV_GTC0_GTC_CLK,
+                                          (uint64_t *)&clkRate,
+                                          SCICLIENT_SERVICE_WAIT_FOREVER);
+
+    if (status == CSL_PASS)
+    {
+        HW_WR_REG32((CSL_GTC0_GTC_CFG1_BASE+CSL_GTC_CFG1_CNTFID0), clkRate);
+    }
+
+    return status;
+}
 
 /**
  * \brief  Function to initialize module clock frequency
@@ -271,6 +301,9 @@ Board_STATUS Board_PLLInitAll(void)
             BOARD_DEBUG_LOG("Failed to set the PLL clock freq at index =%d\n\n",index);
         }
     }
+
+    /* Configure the GTC frequecy ID register */
+    Board_PLLSetGtcFID();
 
     return status;
 }
