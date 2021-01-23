@@ -85,6 +85,11 @@ static Board_PllClkCfg_t gBoardPllClkCfg[] =
    80000000
  }, //MAIN_PLL0_HSDIV2_CLKOUT,
 
+  /* GTC Clockout */
+ { TISCI_DEV_GTC0,
+   TISCI_DEV_GTC0_GTC_CLK,
+   200000000
+ }, //MAIN_PLL0_HSDIV6_CLKOUT,
 };
 
 /**
