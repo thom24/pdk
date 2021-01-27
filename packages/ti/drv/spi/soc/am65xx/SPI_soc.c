@@ -41,8 +41,6 @@
 #include <ti/csl/soc/am65xx/src/cslr_soc.h>
 #include <ti/csl/soc/am65xx/src/csl_psilcfg_thread_map.h>
 #include <ti/drv/spi/soc/SPI_soc.h>
-#include <ti/csl/arch/csl_arch.h>
-#include <ti/drv/sciclient/sciclient.h>
 
 #if defined (__aarch64__)
 #define SPI_PDMA_TX_THREAD_BASE        (CSL_PSILCFG_NAVSS_MAIN_PDMA_MAIN1_PSILD_THREAD_OFFSET + 0U)
@@ -340,7 +338,6 @@ SPI_v1_Object SpiObjects[CSL_MCSPI_PER_CNT];
 OSPI_v0_HwAttrs ospiInitCfg[CSL_OSPI_PER_CNT + 1U] =
 {
     {
-        0,                                 /* Instance Number */
         CSL_MCU_FSS0_OSPI0_CTRL_BASE,      /* flash config register baseAddr */
 #if defined (__aarch64__)
         CSL_MCU_FSS0_DAT_REG0_BASE,        /* OSPI data base address */
@@ -379,7 +376,6 @@ OSPI_v0_HwAttrs ospiInitCfg[CSL_OSPI_PER_CNT + 1U] =
                                               to override default divider settings */
     },
     {
-        1,                                  /* Instance Number */
         CSL_MCU_FSS0_OSPI1_CTRL_BASE,
 #if defined (__aarch64__)
         CSL_MCU_FSS0_OSPI1_R0_BASE,
@@ -690,61 +686,3 @@ int32_t OSPI_socSetInitCfg(uint32_t idx, const OSPI_v0_HwAttrs *cfg)
     return ret;
 }
 
-/**
- * \brief  This API update the default SoC level of configurations
- *         based on the core and domain
- *
- *         ospiInitCfg table configures MCU domain's OSPI instances by
- *         default for R5, OSPI_socInit() is called to
- *         overwrite the defaut configurations with the configurations
- *         of Main domain's OSPI instances if R5 is on the Main domain
- *
- * \param  none
- *
- * \return           0 success: -1: error
- *
- */
-int32_t OSPI_socInit(void)
-{
-    int32_t ret = 0;
-#if defined (BUILD_MCU)
-    CSL_ArmR5CPUInfo r5CpuInfo;
-
-    CSL_armR5GetCpuID(&r5CpuInfo);
-
-    if (r5CpuInfo.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_0)
-    {
-        /* Configure the MCU SS OSPI instances for MCU SS Pulsar R5 . R5FSS'n'_CORE'n' */
-        if(r5CpuInfo.cpuID == 0U)
-        {
-            /*  ********* OSPI-0 . intrNum = R5FSS'n'_CORE'n' **************** */
-            ospiInitCfg[0].intrNum = CSL_MCU0_INTR_FSS0_OSPI0_LVL_INTR;
-            /* ********* OSPI-1 . intrNum = R5FSS'n'_INTRTR0 **************** */
-            ospiInitCfg[1].intrNum = CSL_MCU0_INTR_FSS0_OSPI1_LVL_INTR;
-        }
-    }
-    else
-    {
-        ret = -1;
-    }
-#endif
-    return (ret);
-}
-
-/**
- * \brief  This function will configure the interrupt path to the destination CPU
- *         using DMSC firmware via sciclient. if setIntrPath is set to TRUE,
- *         a path is set, else the interrupt path is released
- *
- * \param  hwAttrs_ptr Pointer to hardware attributes
- * \param  setIntrPath Set or release interrupt
- *
- * \return           0 success: -1: error
- *
- */
-int32_t OSPI_configSocIntrPath(void *hwAttrs_ptr, bool setIntrPath)
-{
-    int32_t ret = 0;
-    /* Routing of interrupts not required for this SOC */
-    return(ret);
-}

@@ -257,11 +257,6 @@ static void OSPI_hwiFxn_v0(uintptr_t arg)
                 CSL_ospiIntrClear((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), intrStatus);
             }
         }
-        else
-        {
-            /* Clear interrupt status */
-            CSL_ospiIntrClear((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), intrStatus);
-        }
     }
     else
     {
@@ -315,11 +310,6 @@ static void OSPI_hwiFxn_v0(uintptr_t arg)
                 /* Clear interrupt status */
                 CSL_ospiIntrClear((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), intrStatus);
             }
-        }
-        else
-        {
-            /* Clear interrupt status */
-            CSL_ospiIntrClear((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), intrStatus);
         }
     }
 }

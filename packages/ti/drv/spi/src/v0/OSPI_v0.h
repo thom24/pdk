@@ -206,8 +206,6 @@ typedef struct OSPI_dmaInfo_s {
  *  @brief  OSPI IP V0 Hardware attributes
  */
 typedef struct OSPI_v0_HwAttrs_s {
-    /*! OSPI IP V0 Peripheral instance number */
-    uint32_t        instNum;
     /*! OSPI IP V0 Peripheral base address. */
     uintptr_t       baseAddr;
     /*! OSPI Data base address */

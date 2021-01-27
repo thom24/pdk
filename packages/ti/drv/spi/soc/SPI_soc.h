@@ -105,8 +105,6 @@ extern int32_t SPI_socSetInitCfg(uint32_t idx, const SPI_v1_HWAttrs *cfg);
 #if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
 extern int32_t OSPI_socGetInitCfg(uint32_t idx, OSPI_v0_HwAttrs *cfg);
 extern int32_t OSPI_socSetInitCfg(uint32_t idx, const OSPI_v0_HwAttrs *cfg);
-extern int32_t OSPI_socInit(void);
-extern int32_t OSPI_configSocIntrPath(void *hwAttrs_ptr, bool setIntrPath);
 #define OSPI_MODULE_CLK_133M   (133333333U)
 #define OSPI_MODULE_CLK_166M   (166666666U)
 #define OSPI_MODULE_CLK_160M   (160000000U)

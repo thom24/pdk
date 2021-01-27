@@ -41,8 +41,6 @@
 #include <ti/csl/soc/am64x/src/cslr_soc.h>
 #include <ti/csl/soc/am64x/src/csl_psilcfg_thread_map.h>
 #include <ti/drv/spi/soc/SPI_soc.h>
-#include <ti/csl/arch/csl_arch.h>
-#include <ti/drv/sciclient/sciclient.h>
 
 #define MCSPI_PER_CNT   (7U)
 #define OSPI_PER_CNT    (1U)
@@ -463,7 +461,6 @@ SPI_v1_Object SpiObjects[MCSPI_PER_CNT];
 OSPI_v0_HwAttrs ospiInitCfg =
 {
     /* OSPI0 on the Main domain */
-    0,                                  /* Instance Number */
     CSL_FSS0_OSPI0_CTRL_BASE,          /* baseAddr, flash config register baseAddr */
 #if defined (BUILD_MPU)
     /* A53 cores on the Main domain */
@@ -812,56 +809,3 @@ int32_t OSPI_socSetInitCfg(uint32_t idx, const OSPI_v0_HwAttrs *cfg)
     return ret;
 }
 
-/**
- * \brief  This API update the default SoC level of configurations
- *         based on the core and domain
- *
- *         ospiInitCfg table configures MCU domain's OSPI instances by
- *         default for R5, OSPI_socInit() is called to
- *         overwrite the defaut configurations with the configurations
- *         of Main domain's OSPI instances if R5 is on the Main domain
- *
- * \param  none
- *
- * \return           0 success: -1: error
- *
- */
-int32_t OSPI_socInit(void)
-{
-    int32_t ret = 0;
-#if defined (BUILD_MCU)
-    CSL_ArmR5CPUInfo r5CpuInfo;
-
-    CSL_armR5GetCpuID(&r5CpuInfo);
-
-    if (r5CpuInfo.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_0)
-    {
-        /* Configure the MCU SS OSPI instances for MCU SS Pulsar R5 . R5FSS'n'_CORE'n' */
-        /*  ********* OSPI-0 . intrNum = R5FSS'n'_CORE'n' **************** */
-        ospiInitCfg.intrNum = CSLR_R5FSS0_CORE0_INTR_FSS0_OSPI_0_OSPI_LVL_INTR_0;
-    }
-    else
-    {
-        ret = -1;
-    }
-#endif
-    return (ret);
-}
-
-/**
- * \brief  This function will configure the interrupt path to the destination CPU
- *         using DMSC firmware via sciclient. if setIntrPath is set to TRUE,
- *         a path is set, else the interrupt path is released
- *
- * \param  hwAttrs_ptr Pointer to hardware attributes
- * \param  setIntrPath Set or release interrupt
- *
- * \return           0 success: -1: error
- *
- */
-int32_t OSPI_configSocIntrPath(void *hwAttrs_ptr, bool setIntrPath)
-{
-    int32_t ret = 0;
-    /* Routing of interrupts not required for this SOC */
-    return(ret);
-}
