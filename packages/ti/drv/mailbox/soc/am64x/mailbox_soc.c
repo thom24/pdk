@@ -446,6 +446,10 @@ int32_t Mailbox_write(Mbox_Handle handle, const uint8_t *buffer, uint32_t size)
         {
             retVal = MAILBOX_EINVAL;
         }
+        else if (buffer == NULL)
+        {
+            retVal = MAILBOX_EINVAL;
+        }
         else
         {
             hwCfg = (Mailbox_HwCfg *)driver->hwCfg;

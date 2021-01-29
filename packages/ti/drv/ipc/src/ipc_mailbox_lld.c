@@ -404,7 +404,7 @@ void Ipc_mailboxInternalCallback(Mbox_Handle handle, Mailbox_Instance remoteEndp
 
     if (ret == MAILBOX_SOK)
     {
-        if (g_ipc_mBoxData[remoteProcId].func)
+        if ((remoteProcId < IPC_MAX_PROCS) && (g_ipc_mBoxData[remoteProcId].func))
         {
             (g_ipc_mBoxData[remoteProcId].func)(&msg, g_ipc_mBoxData[remoteProcId].arg);
         }
@@ -413,7 +413,7 @@ void Ipc_mailboxInternalCallback(Mbox_Handle handle, Mailbox_Instance remoteEndp
             SystemP_printf("Ipc_mailboxInternalCallback: callback for procId %d with NULL func!\n", remoteProcId);
         }
     }
-    else
+    else if (remoteProcId < IPC_MAX_PROCS)
     {
         g_ipc_mBoxData[remoteProcId].noMsgCnt++;
     }
