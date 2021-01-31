@@ -178,6 +178,7 @@ if [ "$SKIP_BUILD" != "YES" ]; then
     make -j -s sciserver_testapp BOARD=j721e_evm
     $COPY $ROOTDIR/ti/binary/sciclient_ccs_init/bin/j721e/sciclient_ccs_init_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j721e/
     $COPY $ROOTDIR/ti/binary/sciserver_testapp/bin/j721e/sciserver_testapp_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j721e/
+    $COPY $ROOTDIR/ti/binary/sciserver_testapp/bin/j721e/sciserver_testapp_mcu1_0_release.rprc $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j721e/
 
     # AM65xx
     make -j -s allclean
@@ -205,6 +206,7 @@ if [ "$SKIP_BUILD" != "YES" ]; then
     make -j -s sciserver_testapp BOARD=j7200_evm
     $COPY $ROOTDIR/ti/binary/sciclient_ccs_init/bin/j7200/sciclient_ccs_init_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j7200/
     $COPY $ROOTDIR/ti/binary/sciserver_testapp/bin/j7200/sciserver_testapp_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j7200/
+    $COPY $ROOTDIR/ti/binary/sciserver_testapp/bin/j7200/sciserver_testapp_mcu1_0_release.rprc $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j7200/
 
     cd -
 fi

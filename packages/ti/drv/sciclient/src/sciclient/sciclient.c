@@ -614,7 +614,7 @@ int32_t Sciclient_serviceGetPayloadSize(const Sciclient_ReqPrm_t *pReqPrm,
         /* The response Payload is expected to have the Header the payload */
         if (pRespPrm->respPayloadSize > 0U)
         {
-            *rxPayloadSize = pRespPrm->respPayloadSize - sizeof(struct tisci_header);
+            *rxPayloadSize = pRespPrm->respPayloadSize;
         }
         else
         {
@@ -669,8 +669,7 @@ int32_t Sciclient_serviceSecureProxy(const Sciclient_ReqPrm_t *pReqPrm,
     }
     if (status == CSL_PASS)
     {
-        pLocalRespPayload = (uint8_t *)(pRespPrm->pRespPayload + 
-                            sizeof(struct tisci_header));
+        pLocalRespPayload = (uint8_t *)(pRespPrm->pRespPayload);
     }
 
     /* CRITICAL Section */
@@ -781,13 +780,11 @@ int32_t Sciclient_serviceSecureProxy(const Sciclient_ReqPrm_t *pReqPrm,
         /* Read the full message */
         pRespPrm->flags = Sciclient_readThread32(rxThread, 1U+gSecHeaderSizeWords);
 
-        /*We do not need to read the header*/
         for (i = 0; i < numWords; i++)
         {
             uint32_t tempWord = Sciclient_readThread32(
                 rxThread,
-                ((uint8_t) i +
-                 SCICLIENT_HEADER_SIZE_IN_WORDS+gSecHeaderSizeWords));
+                ((uint8_t) i + gSecHeaderSizeWords));
             uint8_t * tempWordPtr = (uint8_t*) & tempWord;
             uint32_t j = 0U;
             for (j = 0U; j < 4U; j++)
@@ -802,8 +799,7 @@ int32_t Sciclient_serviceSecureProxy(const Sciclient_ReqPrm_t *pReqPrm,
         {
             uint32_t tempWord = Sciclient_readThread32(
                     rxThread,
-                    ((uint8_t)i +
-                     SCICLIENT_HEADER_SIZE_IN_WORDS+gSecHeaderSizeWords));
+                    ((uint8_t)i + gSecHeaderSizeWords));
             uint8_t * pTempWord = (uint8_t*) &tempWord;
             Sciclient_utilByteCopy(pTempWord,
                                    (uint8_t*)pLocalRespPayload + i*4,
