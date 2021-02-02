@@ -30,14 +30,15 @@
 # OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 # EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-# Usage : For AM65XX    : ./firmwareHeaderGen.sh am65x
-#         For AM65XX    : ./firmwareHeaderGen.sh am65x_sr2
-#         For AM65XX-HS : ./firmwareHeaderGen.sh am65x-hs
-#         For AM65XX-HS : ./firmwareHeaderGen.sh am65x_sr2-hs
-#         For J721E     : ./firmwareHeaderGen.sh j721e
-#         For J721E-HS  : ./firmwareHeaderGen.sh j721e-hs
-#         For AM64x     : ./firmwareHeaderGen.sh am64x
-#         For J7200     : ./firmwareHeaderGen.sh j7200
+# Usage : For AM65XX            : ./firmwareHeaderGen.sh am65x
+#         For AM65XX            : ./firmwareHeaderGen.sh am65x_sr2
+#         For AM65XX-HS         : ./firmwareHeaderGen.sh am65x-hs
+#         For AM65XX-HS         : ./firmwareHeaderGen.sh am65x_sr2-hs
+#         For J721E             : ./firmwareHeaderGen.sh j721e
+#         For J721E-HS          : ./firmwareHeaderGen.sh j721e-hs
+#         For J721E-HS (ES1.1)  : ./firmwareHeaderGen.sh j721e_sr1.1-hs
+#         For AM64x             : ./firmwareHeaderGen.sh am64x
+#         For J7200             : ./firmwareHeaderGen.sh j7200
 export RM=rm
 export MV=mv
 export MAKE=gcc
@@ -129,6 +130,17 @@ export SYSFW_SE_INNER_CERT=$SCI_CLIENT_IN_SOC_DIR/ti-fs-firmware-$FW_SOC${FW_SOC
 export SYSFW_SE_CUST_CERT=$SCI_CLIENT_OUT_SOC_DIR/tifs_cert.bin
 export SYSFW_LOAD_ADDR=0x40000
 fi
+
+if [ "$FW_SOC" = "j721e_sr1.1" ]; then
+export SCI_CLIENT_OUT_SOC_DIR=$SCI_CLIENT_DIR/soc/V1
+export SCICLIENT_FIRMWARE_HEADER=sciclient_firmware_V1_sr1.1$BIN_EXT.h
+export SYSFW_SE_SIGNED=$SCI_CLIENT_OUT_SOC_DIR/tifs_sr1.1$BIN_EXT.bin
+export FIRMWARE_SILICON=$SCI_CLIENT_IN_SOC_DIR/ti-fs-firmware-$FW_SOC$FW_SOC_TYPE.bin
+export SYSFW_SE_INNER_CERT=$SCI_CLIENT_IN_SOC_DIR/ti-fs-firmware-$FW_SOC${FW_SOC_TYPE%-enc}-cert.bin
+export SYSFW_SE_CUST_CERT=$SCI_CLIENT_OUT_SOC_DIR/tifs_cert_sr1.1.bin
+export SYSFW_LOAD_ADDR=0x40000
+fi
+
 
 if [ "$FW_SOC" = "j7200" ]; then
 export SCI_CLIENT_OUT_SOC_DIR=$SCI_CLIENT_DIR/soc/V2
