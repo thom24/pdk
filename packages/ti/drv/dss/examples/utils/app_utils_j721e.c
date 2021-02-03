@@ -87,7 +87,6 @@ void App_configureSoC(void)
 void App_configureLCD(uint32_t app_output)
 {
     int32_t status = PM_SUCCESS;
-    uint32_t regVal;
 
     if(APP_OUTPUT_HDMI == app_output)
     {
@@ -189,72 +188,67 @@ void App_configureLCD(uint32_t app_output)
         if(PM_SUCCESS == status)
         {
             status = Sciclient_pmSetModuleState(TISCI_DEV_SERDES_10G0,
-                    TISCI_MSG_VALUE_DEVICE_SW_STATE_ON,
-                    TISCI_MSG_FLAG_AOP,
-                    SCICLIENT_SERVICE_WAIT_FOREVER);
+                TISCI_MSG_VALUE_DEVICE_SW_STATE_ON,
+                TISCI_MSG_FLAG_AOP,
+                SCICLIENT_SERVICE_WAIT_FOREVER);
         }
 
         if(PM_SUCCESS == status)
         {
             status = Sciclient_pmSetModuleState(TISCI_DEV_DSS_EDP0,
-                    TISCI_MSG_VALUE_DEVICE_SW_STATE_ON,
-                    TISCI_MSG_FLAG_AOP,
-                    SCICLIENT_SERVICE_WAIT_FOREVER);
-        }
-
-        /* Very Ugly Hack: Select DPI0 clk from DPI1_clk */
-        if(PM_SUCCESS == status)
-        {
-            status = Sciclient_pmSetModuleClkParent(TISCI_DEV_DSS0,
-                    TISCI_DEV_DSS0_DSS_INST0_DPI_1_IN_2X_CLK,
-                    TISCI_DEV_DSS0_DSS_INST0_DPI_1_IN_2X_CLK_PARENT_DPI0_EXT_CLKSEL_OUT0,
-                    SCICLIENT_SERVICE_WAIT_FOREVER);
+                TISCI_MSG_VALUE_DEVICE_SW_STATE_ON,
+                TISCI_MSG_FLAG_AOP,
+                SCICLIENT_SERVICE_WAIT_FOREVER);
         }
 
         if(PM_SUCCESS == status)
         {
             status = Sciclient_pmSetModuleState(TISCI_DEV_DSS0,
-                    TISCI_MSG_VALUE_DEVICE_SW_STATE_ON,
-                    TISCI_MSG_FLAG_AOP,
-                    SCICLIENT_SERVICE_WAIT_FOREVER);
+                TISCI_MSG_VALUE_DEVICE_SW_STATE_ON,
+                TISCI_MSG_FLAG_AOP,
+                SCICLIENT_SERVICE_WAIT_FOREVER);
         }
 
         if(PM_SUCCESS == status)
         {
-            status = Sciclient_pmModuleClkRequest(TISCI_DEV_DSS0,
-                    TISCI_DEV_DSS0_DSS_FUNC_CLK,
-                    TISCI_MSG_VALUE_CLOCK_SW_STATE_REQ,
-                    0,
-                    SCICLIENT_SERVICE_WAIT_FOREVER);
+            status = Sciclient_pmSetModuleClkParent(TISCI_DEV_DSS0,
+                TISCI_DEV_DSS0_DSS_INST0_DPI_2_IN_2X_CLK,
+                TISCI_DEV_DSS0_DSS_INST0_DPI_2_IN_2X_CLK_PARENT_HSDIV1_16FFT_MAIN_18_HSDIVOUT0_CLK,
+                SCICLIENT_SERVICE_WAIT_FOREVER);
+        }
+
+        if(PM_SUCCESS == status)
+        {
+            status = Sciclient_pmSetModuleClkParent(TISCI_DEV_DSS0,
+                TISCI_DEV_DSS0_DSS_INST0_DPI_3_IN_2X_CLK,
+                TISCI_DEV_DSS0_DSS_INST0_DPI_3_IN_2X_CLK_PARENT_DPI1_EXT_CLKSEL_OUT0,
+                SCICLIENT_SERVICE_WAIT_FOREVER);
+        }
+
+        if(PM_SUCCESS == status)
+        {
+            status = Sciclient_pmSetModuleClkParent(TISCI_DEV_DSS0,
+                TISCI_DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK,
+                TISCI_DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK_PARENT_HSDIV1_16FFT_MAIN_16_HSDIVOUT0_CLK,
+                SCICLIENT_SERVICE_WAIT_FOREVER);
         }
 
         if(PM_SUCCESS == status)
         {
             status = Sciclient_pmSetModuleClkFreq(TISCI_DEV_DSS0,
-                    TISCI_DEV_DSS0_DSS_INST0_DPI_1_IN_2X_CLK,
-                    148500000ULL,
-                    0,
-                    SCICLIENT_SERVICE_WAIT_FOREVER);
+                TISCI_DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK,
+                148500000ULL,
+                0U,
+                SCICLIENT_SERVICE_WAIT_FOREVER);
         }
 
         if(PM_SUCCESS == status)
         {
             status = Sciclient_pmModuleClkRequest(TISCI_DEV_DSS0,
-                    TISCI_DEV_DSS0_DSS_INST0_DPI_1_IN_2X_CLK,
-                    TISCI_MSG_VALUE_CLOCK_SW_STATE_REQ,
-                    0,
-                    SCICLIENT_SERVICE_WAIT_FOREVER);
-        }
-
-        if(PM_SUCCESS == status)
-        {
-            regVal = CSL_REG32_RD(CSL_CTRL_MMR0_CFG0_BASE +
-                    CSL_MAIN_CTRL_MMR_CFG0_DSS_DISPC0_CLKSEL3);
-            CSL_FINS(regVal,
-                    MAIN_CTRL_MMR_CFG0_DSS_DISPC0_CLKSEL3_DPI3_PCLK,
-                    0x5U);
-            CSL_REG32_WR(CSL_CTRL_MMR0_CFG0_BASE +
-                    CSL_MAIN_CTRL_MMR_CFG0_DSS_DISPC0_CLKSEL3, regVal);
+                TISCI_DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK,
+                TISCI_MSG_VALUE_CLOCK_SW_STATE_REQ,
+                0U,
+                SCICLIENT_SERVICE_WAIT_FOREVER);
         }
     }
 
