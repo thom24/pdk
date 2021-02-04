@@ -55,14 +55,6 @@ static Board_PllClkCfg_t gBoardPllClkCfgMcu[] =
    TISCI_DEV_SA2_UL0_PKA_IN_CLK,
    400000000
  }, //MCU_PLL1_HSDIV0_CLKOUT
-
-#if 0
- { TISCI_DEV_MCU_ADC12_16FFC0,
-   TISCI_DEV_MCU_ADC12_16FFC0_ADC_CLK_PARENT_HSDIV1_16FFT_MCU_0_HSDIVOUT1_CLK,
-   60000000
- }, //MCU_PLL1_HSDIV1_CLKOUT
-#endif
-
  { TISCI_DEV_MCU_MCAN0,
    TISCI_DEV_MCU_MCAN0_MCANSS_CCLK_CLK_PARENT_HSDIV4_16FFT_MCU_1_HSDIVOUT2_CLK,
    80000000
@@ -169,7 +161,6 @@ static Board_PllClkCfg_t gBoardPllClkCfgMain[] =
    250000000
  }, //MAIN_PLL3_HSDIV3_CLKOUT
 
-#ifdef NOT_YET /* PDK-9050 */
    /* MAIN PLL4((AUDIO0_PLL) Clockout */
  { TISCI_DEV_MCASP0,
    TISCI_DEV_MCASP0_AUX_CLK_PARENT_HSDIV3_16FFT_MAIN_4_HSDIVOUT0_CLK,
@@ -181,27 +172,18 @@ static Board_PllClkCfg_t gBoardPllClkCfgMain[] =
    196608000
  },
 
-   /* MAIN PLL15 (AUDIO1 PLL) Clockout */
- { TISCI_DEV_MCASP0,
-   TISCI_DEV_MCASP0_AUX_CLK_PARENT_HSDIV3_16FFT_MAIN_15_HSDIVOUT0_CLK,
-   196608000
- },
-
  { TISCI_DEV_ATL0,
-   TISCI_DEV_ATL0_ATL_CLK_PARENT_HSDIV3_16FFT_MAIN_15_HSDIVOUT1_CLK,
+   TISCI_DEV_ATL0_ATL_CLK,
    294912000
  },
-
  { TISCI_DEV_TIMER0,
-   TISCI_DEV_TIMER0_TIMER_TCLK_CLK_PARENT_HSDIV3_16FFT_MAIN_15_HSDIVOUT2_CLK,
+   TISCI_DEV_TIMER0_TIMER_TCLK_CLK,
    196608000
  },
- 
  { TISCI_DEV_AASRC0,
-   TISCI_DEV_AASRC0_RX1_SYNC_PARENT_HSDIV3_16FFT_MAIN_15_HSDIVOUT3_CLK,
+   TISCI_DEV_AASRC0_RX1_SYNC_PARENT_HSDIV3_16FFT_MAIN_4_HSDIVOUT3_CLK,
    12288000
  },
-#endif /* NOT_YET - PDK-9050 */
 
   /* MAIN PLL25 Clockout */
  { TISCI_DEV_BOARD0,
@@ -391,7 +373,8 @@ Board_STATUS Board_PLLInitMcu(void)
                                gBoardPllClkCfgMcu[index].clkRate);
         if(status != BOARD_SOK)
         {
-            BOARD_DEBUG_LOG("Failed to set the MCU PLL clock freq at index =%d\n\n",index);
+            BOARD_DEBUG_LOG("Failed to set the MCU PLL clock freq at index =%d; Module ID =%d; Clock ID =%d\n\n",index,
+                            gBoardPllClkCfgMcu[index].tisciDevID, gBoardPllClkCfgMcu[index].tisciClkID);
         }
     }
 
@@ -418,7 +401,8 @@ Board_STATUS Board_PLLInitMain(void)
                                gBoardPllClkCfgMain[index].clkRate);
         if(status != BOARD_SOK)
         {
-            BOARD_DEBUG_LOG("Failed to set the Main PLL clock freq at index =%d\n\n",index);
+            BOARD_DEBUG_LOG("Failed to set the Main PLL clock freq at index =%d; Module ID =%d; Clock ID =%d\n\n",index,
+                            gBoardPllClkCfgMain[index].tisciDevID, gBoardPllClkCfgMain[index].tisciClkID);
         }
     }
 
