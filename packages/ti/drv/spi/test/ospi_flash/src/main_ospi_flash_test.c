@@ -259,6 +259,12 @@ static uint8_t gTxTdCompRingMem[UDMA_TEST_APP_RING_MEM_SIZE_ALIGN] __attribute__
 static uint8_t gUdmaTprdMem[UDMA_TEST_APP_TRPD_SIZE_ALIGN] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
 static OSPI_dmaInfo gUdmaInfo;
 
+static void App_print(const char *str)
+{
+    UART_printf("%s", str);
+    return;
+}
+
 int32_t Ospi_udma_init(OSPI_v0_HwAttrs *cfg)
 {
     int32_t         retVal = UDMA_SOK;
@@ -281,6 +287,7 @@ int32_t Ospi_udma_init(OSPI_v0_HwAttrs *cfg)
 #endif
 
         UdmaInitPrms_init(instId, &initPrms);
+        initPrms.printFxn = &App_print;
         retVal = Udma_init(&gUdmaDrvObj, &initPrms);
         if(UDMA_SOK == retVal)
         {
@@ -638,6 +645,11 @@ void OSPI_initConfig(OSPI_Tests *test)
 {
     OSPI_v0_HwAttrs ospi_cfg;
 
+#if defined (BUILD_MCU)
+    /* Change interrupt number based on core */
+    OSPI_socInit();
+#endif
+
     /* Get the default OSPI init configurations */
     OSPI_socGetInitCfg(BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
 
@@ -663,13 +675,7 @@ void OSPI_initConfig(OSPI_Tests *test)
     else
     {
         /* Enable interrupt in INDAC mode */
-#if   (defined(SOC_J7200) && (defined(BUILD_MCU2_0)||defined(BUILD_MCU2_1)))     
-        ospi_cfg.intrEnable = false;        
-#elif (defined(SOC_J721E) && (defined(BUILD_MCU2_0)||defined(BUILD_MCU2_1)||defined(BUILD_MCU3_0)||defined(BUILD_MCU3_1)))     /* Work Around until PDK-8607 is addressed */
-        ospi_cfg.intrEnable = false;        
-#else
         ospi_cfg.intrEnable = true;
-#endif
         /* Disable PHY in INDAC mode */
         ospi_cfg.phyEnable = false;
         ospi_cfg.dmaEnable = false;
@@ -704,8 +710,32 @@ void OSPI_initConfig(OSPI_Tests *test)
         ospi_cfg.devDelays[3] = OSPI_DEV_DELAY_CSDA_3;
     }
 
+    if(ospi_cfg.intrEnable)
+    {
+        /* Set interrupt path */
+        if(OSPI_configSocIntrPath(&ospi_cfg, TRUE) != CSL_PASS)
+        {
+            SPI_log("\n Set interrupt path failed!\n");
+        }
+        else
+        {
+            SPI_log("\n The interrupt path has been set with interrupt number %d", ospi_cfg.intrNum);
+        }
+    }
+
     /* Set the default OSPI init configurations */
     OSPI_socSetInitCfg(BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
+}
+
+void OSPI_deInitConfig(OSPI_Tests *test)
+{
+    OSPI_v0_HwAttrs ospi_cfg;
+
+    /* Get the default OSPI init configurations */
+    OSPI_socGetInitCfg(BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
+
+    /* Release interrupt path */
+    OSPI_configSocIntrPath(&ospi_cfg, FALSE);
 }
 
 /*
@@ -823,6 +853,12 @@ static bool OSPI_flash_test(void *arg)
         SPI_log("\n The Cypress xSPI Flash does not support DAC writes, switching to INDAC mode. \n");
         OSPI_v0_HwAttrs ospi_cfg;
         Board_flashClose(boardHandle);
+    #if SPI_DMA_ENABLE
+        if (test->dmaMode)
+        {
+            Ospi_udma_deinit();
+        }
+    #endif
         OSPI_socGetInitCfg(BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
         ospi_cfg.dacEnable = false;
         ospi_cfg.phyEnable = false;
@@ -920,6 +956,12 @@ static bool OSPI_flash_test(void *arg)
         ospi_cfg.dacEnable = true;
         ospi_cfg.dmaEnable = test->dmaMode;
         ospi_cfg.intrEnable = false;
+    #ifdef SPI_DMA_ENABLE
+        if (ospi_cfg.dmaEnable)
+        {
+            Ospi_udma_init(&ospi_cfg);
+        }
+    #endif
         OSPI_socSetInitCfg(BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
         boardHandle = Board_flashOpen(deviceId, BOARD_OSPI_NOR_INSTANCE, (void *)(&tuneEnable));
     }
@@ -977,6 +1019,8 @@ static bool OSPI_flash_test(void *arg)
 #endif
 
 err:
+    OSPI_deInitConfig(test);
+    
     if (boardHandle != 0U)
     {
         Board_flashClose(boardHandle);
