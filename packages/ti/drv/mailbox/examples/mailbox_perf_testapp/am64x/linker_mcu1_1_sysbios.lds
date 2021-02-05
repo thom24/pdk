@@ -15,14 +15,14 @@ MEMORY
     ATCM_TEST(RWIX)     : ORIGIN = 0x00000100 , LENGTH = 0x00000F00
     R5F_TCMB0(RWIX)     : ORIGIN = 0x41010000 , LENGTH = 0x00008000
     /* am64x MSMC3 locations */
-    MCU1_0_MSMC3   (RWIX)              : origin=0x000070040000 length=0x38000
-    MCU1_0_MSMC3_DATA (RWIX)           : origin=0x000070078000 length=0xA000
-    MCU1_1_MSMC3   (RWIX)              : origin=0x000070082000 length=0x38000
-    MCU1_1_MSMC3_DATA (RWIX)           : origin=0x0000700BA000 length=0xA000
-    MCU2_0_MSMC3   (RWIX)              : origin=0x0000700C4000 length=0x38000
-    MCU2_0_MSMC3_DATA (RWIX)           : origin=0x0000700FC000 length=0xA000
-    MCU2_1_MSMC3   (RWIX)              : origin=0x000070106000 length=0x38000
-    MCU2_1_MSMC3_DATA (RWIX)           : origin=0x00007013E000 length=0xA000
+    MCU1_0_MSMC3   (RWIX)              : origin=0x000070040100 length=0x39F00
+    MCU1_0_MSMC3_DATA (RWIX)           : origin=0x00007007A000 length=0xA000
+    MCU1_1_MSMC3   (RWIX)              : origin=0x000070084000 length=0x3A000
+    MCU1_1_MSMC3_DATA (RWIX)           : origin=0x0000700BE000 length=0xA000
+    MCU2_0_MSMC3   (RWIX)              : origin=0x0000700C8000 length=0x3A000
+    MCU2_0_MSMC3_DATA (RWIX)           : origin=0x000070102000 length=0xA000
+    MCU2_1_MSMC3   (RWIX)              : origin=0x00007010C000 length=0x3A000
+    MCU2_1_MSMC3_DATA (RWIX)           : origin=0x000070146000 length=0xA000
     /* Reserved for DMSC */
     /*MSMC3_DMSC (RWIX)		: origin=0x700F0000 length=0x10000*/			/* 64K */
     /*MSMC3_H (RWIX)	 		: origin=0x70100000 length=0xF2000*/			/* 1MB -56K */
