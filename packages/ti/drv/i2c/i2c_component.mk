@@ -68,7 +68,7 @@ ifeq ($(i2c_component_make_include), )
 
 drvi2c_BOARDLIST       = am65xx_evm am65xx_idk j721e_sim j721e_evm j7200_evm am64x_evm
 drvi2c_BOARDLISTLIM    = am65xx_evm am65xx_idk am64x_evm
-drvi2c_SOCLIST         = am574x am572x am571x tda2xx tda2px tda2ex tda3xx dra78x dra72x dra75x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j7200 am64x tpr12
+drvi2c_SOCLIST         = am574x am572x am571x tda2xx tda2px tda2ex tda3xx dra78x dra72x dra75x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j7200 am64x tpr12 awr294x
 drvi2c_SOCLISTLIM      = am574x am572x am571x tda2xx tda2px tda2ex tda3xx dra78x dra72x dra75x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx am64x
 drvi2c_tda2xx_CORELIST = ipu1_0
 drvi2c_tda2px_CORELIST = ipu1_0
@@ -97,6 +97,7 @@ drvi2c_j721e_CORELISTARM = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1
 drvi2c_j7200_CORELIST  = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
 drvi2c_am64x_CORELIST  = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 m4f_0
 drvi2c_tpr12_CORELIST  = mcu1_0 c66xdsp_1
+drvi2c_awr294x_CORELIST  = mcu1_0 c66xdsp_1
 
 
 ############################
@@ -462,7 +463,7 @@ export I2C_Master_TestApp_XDC_CONFIGURO
 export I2C_Master_TestApp_MAKEFILE
 I2C_Master_TestApp_PKG_LIST = I2C_Master_TestApp
 I2C_Master_TestApp_INCLUDE = $(I2C_Master_TestApp_PATH)
-I2C_Master_TestApp_BOARDLIST = tpr12_evm tpr12_qt
+I2C_Master_TestApp_BOARDLIST = tpr12_evm tpr12_qt awr294x_evm
 export I2C_Master_TestApp_BOARDLIST
 I2C_Master_TestApp_$(SOC)_CORELIST = $(i2c_$(SOC)_CORELIST)
 export I2C_Master_TestApp_$(SOC)_CORELIST
@@ -483,7 +484,7 @@ export I2C_Slave_TestApp_XDC_CONFIGURO
 export I2C_Slave_TestApp_MAKEFILE
 I2C_Slave_TestApp_PKG_LIST = I2C_Slave_TestApp
 I2C_Slave_TestApp_INCLUDE = $(I2C_Slave_TestApp_PATH)
-I2C_Slave_TestApp_BOARDLIST = tpr12_evm tpr12_qt
+I2C_Slave_TestApp_BOARDLIST = tpr12_evm tpr12_qt awr294x_evm
 export I2C_Slave_TestApp_BOARDLIST
 I2C_Slave_TestApp_$(SOC)_CORELIST = $(i2c_$(SOC)_CORELIST)
 export I2C_Slave_TestApp_$(SOC)_CORELIST

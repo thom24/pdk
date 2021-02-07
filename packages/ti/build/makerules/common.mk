@@ -636,7 +636,7 @@ ifneq ($(OS),Windows_NT)
 	$(CHMOD) a+x $(SBL_CERT_GEN)
 endif
 	$(SBL_CERT_GEN) -b $(SBL_BIN_PATH) -o $(SBL_TIIMAGE_PATH) -c R5 -l $(SBL_RUN_ADDRESS) -k $($(APP_NAME)_SBL_CERT_KEY) -d DEBUG -j DBG_FULL_ENABLE -m $(SBL_MCU_STARTUP_MODE)
-else ifeq ($(SOC),$(filter $(SOC), tpr12))
+else ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
 ifneq ($(OS),Windows_NT)
 	$(CHMOD) a+x $(PDK_INSTALL_PATH)/ti/build/makerules/tpr12rom_sign_non_secure.sh
 	$(PDK_INSTALL_PATH)/ti/build/makerules/tpr12rom_sign_non_secure.sh -b $(SBL_BIN_PATH) -c R5 -k ${PDK_INSTALL_PATH}/ti/build/makerules/tpr12_gpkey.pem -i
@@ -724,7 +724,7 @@ else
    endif
 	$(SBL_CERT_GEN) -b $@ -o $(SBL_APPIMAGE_PATH_SIGNED)    -c R5 -l $(SBL_RUN_ADDRESS) -k $(SBL_CERT_KEY_HS)
  else
-   ifeq ($(SOC),$(filter $(SOC), tpr12))
+   ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
 		@echo "No certificate for SBL for appimage presently supported"
    endif
  endif

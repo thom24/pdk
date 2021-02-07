@@ -34,6 +34,9 @@ ifeq ($(LIMIT_CORES),)
   ifeq ($(BOARD),$(filter $(BOARD), tpr12_evm tpr12_qt))
     CORE_LIST_ALL = $(CORE_LIST_tpr12)
   endif
+  ifeq ($(BOARD),$(filter $(BOARD), awr294x_evm))
+    CORE_LIST_ALL = $(CORE_LIST_awr294x)
+  endif
 ifeq ($(BOARD),$(filter $(BOARD), am64x_evm am64x_svb))
   CORE_LIST_ALL = $(CORE_LIST_am64x)
 endif

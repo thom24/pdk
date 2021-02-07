@@ -130,7 +130,7 @@ PACKAGE_SRCS_COMMON += src/flash/nor/device/mt25qu512abb.h
 endif
 endif
 
-ifeq ($(BOARD),$(filter $(BOARD), tpr12_evm tpr12_qt))
+ifeq ($(BOARD),$(filter $(BOARD), tpr12_evm tpr12_qt awr294x_evm))
 SRCDIR += src/flash/nor/qspi src/flash/nor
 INCDIR += src/flash/nor/qspi src/flash/nor
 SRCS_COMMON += nor_qspi_v1.c nor.c

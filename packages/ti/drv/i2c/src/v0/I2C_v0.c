@@ -659,7 +659,7 @@ static I2C_Handle I2C_open_v0(I2C_Handle handle, const I2C_Params *params)
             interruptRegParams.corepacConfig.priority = hwAttrs->intNum;
 #elif defined (__TI_ARM_V7R4__)
             interruptRegParams.corepacConfig.priority=0x8U;
-#if defined(SOC_TPR12) /* TPR12: QSPI uses pulse interrupt instead of level one (default for R5F) */
+#if defined(SOC_TPR12) || defined (SOC_AWR294X) /* TPR12: QSPI uses pulse interrupt instead of level one (default for R5F) */
             interruptRegParams.corepacConfig.triggerSensitivity = OSAL_ARM_GIC_TRIG_TYPE_EDGE;
 #endif
 #elif defined (_TMS320C6X)

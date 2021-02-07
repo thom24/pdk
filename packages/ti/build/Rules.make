@@ -77,7 +77,7 @@ endif
 ifeq ($(BOARD),$(filter $(BOARD), j721e_hostemu j7200_hostemu))
   CORE = c7x-hostemu
 endif
-ifeq ($(BOARD),$(filter $(BOARD), tpr12_evm tpr12_qt))
+ifeq ($(BOARD),$(filter $(BOARD), tpr12_evm tpr12_qt awr294x_evm))
   CORE ?= mcu1_0
 endif
 CORE ?= ipu1_0
@@ -98,7 +98,7 @@ BOARD_LIST_J7_TDA += am65xx_evm
 export BOARD_LIST_J7_TDA
 
 #Various boards support for TPR12 family of devices
-export BOARD_LIST_TPR12 = tpr12_evm tpr12_qt
+export BOARD_LIST_TPR12 = tpr12_evm tpr12_qt awr294x_evm
 
 ################################################################################
 # Other advanced configurable variables

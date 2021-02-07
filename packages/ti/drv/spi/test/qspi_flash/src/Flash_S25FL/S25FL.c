@@ -147,7 +147,7 @@ bool SF25FL_bufferWrite(S25FL_Handle flashHandle,
  * default wrap depth of the flash device. So setting segLen to 32 for TPR12_EVM
  * build
  */
-#if defined (tpr12_evm)
+#if defined (tpr12_evm) || defined (awr294x_evm)
             segLen = 32;
 #else
             segLen = 128;
@@ -407,7 +407,7 @@ bool SF25FL_bufferRead(S25FL_Handle flashHandle,
     return retVal;
 }
 
-#if !defined(tpr12_evm)
+#if !(defined(tpr12_evm) || defined (awr294x_evm))
 bool S25FLFlash_WriteEnable(S25FL_Handle flashHandle)
 {
     SPI_Handle handle = flashHandle->spiHandle; /* SPI handle */
@@ -459,12 +459,12 @@ bool S25FLFlash_WriteEnable(S25FL_Handle flashHandle)
 
     return retVal;
 }
-#else /* tpr12_evm case. 
-       * tpr12_evm is under #else case instead of #if defined(tpr12_evm) so that 
+#else /* tpr12_evm, awr294x_evm case.
+       * tpr12_evm, awr294x_evm is under #else case instead of #if defined(tpr12_evm) so that
        * diff in bitbucket shows the version for other SoC correctly as 
        * unchanged correctly
        */
-/* TPR12 EVM flash requires WREN in a loop until WEL gets set.Hence needs 
+/* TPR12, awr294x EVM flash requires WREN in a loop until WEL gets set.Hence needs
  * different function for S25FLFlash_WriteEnable
  */
 bool S25FLFlash_WriteEnable(S25FL_Handle flashHandle)
@@ -868,7 +868,7 @@ bool S25FLFlash_QuadModeEnable(S25FL_Handle flashHandle)
 }
 #endif
 
-#if defined (tpr12_evm)
+#if defined (tpr12_evm) || defined (awr294x_evm)
 #include <ti/osal/DebugP.h>
 
 uint32_t FlashConfiguration(S25FL_Handle flashHandle)

@@ -14,7 +14,7 @@ BUILD_OS_TYPE = tirtos
 CFLAGS_OS_DEFINES = -DUSE_BIOS
 EXTERNAL_INTERFACES = bios xdc
 COMP_LIST_COMMON    = $(PDK_COMMON_TIRTOS_COMP)
-ifeq ($(SOC),$(filter $(SOC), j721e j7200 am65xx tpr12))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200 am65xx tpr12 awr294x))
 XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
 endif
 endif

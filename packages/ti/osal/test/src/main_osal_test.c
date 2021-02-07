@@ -76,7 +76,7 @@
  ************************** Internal functions ************************
  **********************************************************************/
 #define TWO_TIMER_INTERRUPT_TEST 0
-#if defined(SOC_TPR12)
+#if defined(SOC_TPR12) || defined (SOC_AWR294X)
 #define ENABLE_DEBUG_LOG_TEST	1
 #endif
 
@@ -88,7 +88,7 @@
 #endif
 #include <ti/csl/tistdtypes.h>
 #ifdef BARE_METAL
-#if !defined(SOC_TPR12)
+#if !defined(SOC_TPR12) && !defined (SOC_AWR294X)
 #include <ti/csl/csl_timer.h>
 #endif
 #include <ti/csl/arch/csl_arch.h>
@@ -117,7 +117,7 @@ void    C7x_ConfigureTimerOutput(void);
 #endif
 
 #undef  ENABLE_GET_TIME_TEST
-#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_AM572x) || defined(SOC_K2G) || defined(SOC_AM335x) || defined(SOC_AM437x) || defined(SOC_J7200)|| defined(SOC_TPR12)
+#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_AM572x) || defined(SOC_K2G) || defined(SOC_AM335x) || defined(SOC_AM437x) || defined(SOC_J7200)|| defined(SOC_TPR12) || defined (SOC_AWR294X)
 #define ENABLE_GET_TIME_TEST     1
 #endif
 
@@ -160,11 +160,11 @@ void Board_initOSAL(void)
         BOARD_INIT_UART_STDIO;
 #else
     boardCfg = BOARD_INIT_PINMUX_CONFIG;
-    /* For TPR12 we dont do module clock init from app. This is done by
+    /* For TPR12 AWR294X we dont do module clock init from app. This is done by
      * GEL file or SBL. Doing Module Clock init causes OSAL RTI interrupts
      * to stop if another core also runs OSAL test
      */
-    #if !defined(SOC_TPR12)
+    #if !defined(SOC_TPR12) && !defined (SOC_AWR294X)
     #if !defined(_TMS320C6X)
         boardCfg |= BOARD_INIT_MODULE_CLOCK;
     #endif
@@ -190,7 +190,7 @@ void Board_initOSAL(void)
  */
 volatile   uint64_t gTestlocalTimeout = 0x300000U;
 
-#if (defined (SOC_AM65XX) || defined (SOC_AM64X) || defined(SOC_J721E) || defined(SOC_J7200) || defined (SOC_TPR12)) && (!defined(BUILD_C66X_1))&&(!defined(BUILD_C66X_2))&&(!defined(BUILD_C7X_1))
+#if (defined (SOC_AM65XX) || defined (SOC_AM64X) || defined(SOC_J721E) || defined(SOC_J7200) || defined (SOC_TPR12) || defined (SOC_AWR294X)) && (!defined(BUILD_C66X_1))&&(!defined(BUILD_C66X_2))&&(!defined(BUILD_C7X_1))
 #define INT_NUM_IRQ 32
 #define LOOP_CNT    100
 volatile uint64_t gFlagIRQ = 0;
@@ -270,7 +270,7 @@ bool  OSAL_core_hwi_test()
 bool OSAL_hwi_test()
 {
   bool pass = true;
-#if (defined (SOC_AM65XX) || defined (SOC_AM64X) || defined(SOC_J721E) || defined(SOC_J7200) || defined (SOC_TPR12)) && (!defined(BUILD_C66X_1))&&(!defined(BUILD_C66X_2))&&(!defined(BUILD_C7X_1))
+#if (defined (SOC_AM65XX) || defined (SOC_AM64X) || defined(SOC_J721E) || defined(SOC_J7200) || defined (SOC_TPR12) || defined (SOC_AWR294X)) && (!defined(BUILD_C66X_1))&&(!defined(BUILD_C66X_2))&&(!defined(BUILD_C7X_1))
   pass = OSAL_core_hwi_test();
 #endif
   return pass;
@@ -410,7 +410,7 @@ UT_Timer_Type_t  timer_type =             UT_Timer_TIMER64;
     #define OSAL_TEST_TIMER_ID2               (2U)
     #define OSAL_TEST_TIMER_PERIOD            (5000U)
   #endif
-#elif defined(SOC_TPR12)
+#elif (defined(SOC_TPR12) || defined (SOC_AWR294X))
     UT_Timer_Type_t  timer_type =           UT_Timer_RTITIMER;
 #define OSAL_TEST_TIMER_ID                    (TimerP_ANY)
 #if defined(SIM_BUILD)
@@ -1582,7 +1582,7 @@ void C7x_ConfigureTimerOutput()
 /* To set C66 timer interrupts on J7ES VLAB */
 void C66xTimerInterruptInit(void)
 {
-#if defined (_TMS320C6X) && !defined(SOC_TPR12)
+#if defined (_TMS320C6X) && !defined(SOC_TPR12) && !defined (SOC_AWR294X)
     struct tisci_msg_rm_irq_set_req     rmIrqReq;
     struct tisci_msg_rm_irq_set_resp    rmIrqResp;
 
@@ -1661,7 +1661,7 @@ int main(void)
      * For AM65XX TPR12 and J7 the common RTSC cfg file is used and hence there is
      * no test application specific task is created in teh RTSC cfg file
      */
-#if defined (SOC_AM65XX) || defined (SOC_J721E) || defined(SOC_J7200) || defined(SOC_TPR12) || defined(SOC_AM64X)
+#if defined (SOC_AM65XX) || defined (SOC_J721E) || defined(SOC_J7200) || defined(SOC_TPR12) || defined (SOC_AWR294X)|| defined(SOC_AM64X)
     TaskP_Params taskParams;
     Error_Block  eb;
     TaskP_Params_init(&taskParams);

@@ -328,7 +328,7 @@ static void GPIO_init_v2(void)
         #else
             interruptRegParams.corepacConfig.intVecNum = gpioHwAttr->highInterruptNum;
         #endif
-#if defined(SOC_TPR12) /* All TPR12 interrupts are pulse and not level */
+#if defined(SOC_TPR12) || defined (SOC_AWR294X) /* All TPR12 interrupts are pulse and not level */
             interruptRegParams.corepacConfig.triggerSensitivity = OSAL_ARM_GIC_TRIG_TYPE_EDGE;
 #endif
             GPIO_osalRegisterInterrupt(&interruptRegParams,&(gGPIOMCB.hwiHandleHigh[instIndex]));
@@ -344,7 +344,7 @@ static void GPIO_init_v2(void)
         #else
             interruptRegParams.corepacConfig.intVecNum = gpioHwAttr->lowInterruptNum;
         #endif
-#if defined(SOC_TPR12) /* All TPR12 interrupts are pulse and not level */
+#if defined(SOC_TPR12) || defined (SOC_AWR294X) /* All TPR12 interrupts are pulse and not level */
             interruptRegParams.corepacConfig.triggerSensitivity = OSAL_ARM_GIC_TRIG_TYPE_EDGE;
 #endif
             GPIO_osalRegisterInterrupt(&interruptRegParams,&(gGPIOMCB.hwiHandleLow[instIndex]));

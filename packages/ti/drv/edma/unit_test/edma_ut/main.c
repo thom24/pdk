@@ -68,7 +68,7 @@
 #if defined (BUILD_DSP_1)
 #include <ti/sysbios/family/c64p/Hwi.h>
 #include <ti/sysbios/family/c64p/EventCombiner.h>
-#ifdef SOC_TPR12
+#if defined (SOC_TPR12) || defined (SOC_AWR294X)
 #include <ti/sysbios/family/c66/Cache.h>
 #else
 #include <ti/sysbios/family/c64p/Cache.h>
@@ -78,7 +78,7 @@
 #include <ti/osal/SemaphoreP.h>
 #include <ti/drv/edma/edma.h>
 
-#ifdef SOC_TPR12
+#if defined (SOC_TPR12) || defined (SOC_AWR294X)
 #ifdef BUILD_MCU
 #include <ti/sysbios/family/arm/v7r/Cache.h>
 #endif
@@ -159,7 +159,7 @@
 #define TEST_MAX_C_COUNT 1
 #define TEST_BUF_LENGTH (TEST_MAX_A_COUNT * TEST_MAX_B_COUNT * TEST_MAX_C_COUNT)
 
-#ifdef SOC_TPR12
+#if defined (SOC_TPR12) || defined (SOC_AWR294X)
 uint32_t SOC_translateAddressTPR12(uint32_t x)
 {
     return((uint32_t)CSL_locToGlobAddr((uintptr_t)(x)));
@@ -1646,7 +1646,7 @@ void Test_initBufs(uint8_t channelStart, uint8_t channelEnd)
         }
     }
 
-#if (defined(BUILD_DSP_1) || (defined(SOC_TPR12) && defined(BUILD_MCU)))
+#if (defined(BUILD_DSP_1) || ((defined(SOC_TPR12) || defined (SOC_AWR294X)) && defined(BUILD_MCU)))
     Cache_wbInvAll();
 #endif
 }

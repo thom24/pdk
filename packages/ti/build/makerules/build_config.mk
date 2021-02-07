@@ -115,6 +115,7 @@ CFLAGS_GLOBAL_am64x_evm         = -DSOC_AM64X -Dam64x_evm=am64x_evm
 CFLAGS_GLOBAL_am64x_svb         = -DSOC_AM64X -Dam64x_svb=am64x_svb
 CFLAGS_GLOBAL_tpr12_qt          = -DSOC_TPR12 -Dtpr12_qt=tpr12_qt
 CFLAGS_GLOBAL_tpr12_evm         = -DSOC_TPR12 -Dtpr12_evm=tpr12_evm
+CFLAGS_GLOBAL_awr294x_evm       = -DSOC_AWR294X -Dawr294x_evm=awr294x_evm
 
 #
 # SOC specific
@@ -146,6 +147,7 @@ CFLAGS_GLOBAL_j721e          = -DSOC_J721E -DI2128_SW_WORKAROUND
 CFLAGS_GLOBAL_j7200          = -DSOC_J7200
 CFLAGS_GLOBAL_am64x          = -DSOC_AM64X
 CFLAGS_GLOBAL_tpr12          = -DSOC_TPR12
+CFLAGS_GLOBAL_awr294x        = -DSOC_AWR294X
 # The below flags are only defined for testing on VLAB or QT/Zebu and will need to be removed when testing on EVM
 CFLAGS_GLOBAL_am64x_svb     += -DSIM_BUILD
 CFLAGS_GLOBAL_tpr12_qt      += -DSIM_BUILD

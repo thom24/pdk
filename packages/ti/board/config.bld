@@ -377,6 +377,12 @@ var tpr12_qt = {
     targets: [C66LE],
 }
 
+var awr294x_evm = {
+    name: "awr294x_evm",
+    ccOpts: "-Dawr294x_evm -DSOC_AWR294X",
+    targets: [C66LE],
+}
+
 /* List all the build targets here. */
 Build.targets = [ C66LE, C66BE, A15LE, M4LE, A9LE, A8LE, ARM9LE, C674LE A53LE ];
 var boards = [ evmAM335x, icev2AM335x, skAM335x, bbbAM335x, evmAM437x, idkAM437x, skAM437x, evmAM572x, idkAM571x, idkAM572x, evmK2H, evmK2K, evmK2E, evmK2L, evmK2G, evmC6678, evmC6657, evmOMAPL137 idkAM574x am65xx_evm am65xx_idk am64x_evm ];

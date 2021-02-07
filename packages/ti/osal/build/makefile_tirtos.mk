@@ -51,7 +51,7 @@ ifeq ($(SOC),$(filter $(SOC), k2h k2k k2l k2e k2g c6678 c6657))
   SRCS_COMMON += MuxIntcP_tirtos.c
 endif
 
-ifeq ($(SOC),$(filter $(SOC), tpr12 am64x))
+ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x am64x))
   SRCDIR += src/tirtos/muxintcp/v2
   INCDIR += src/tirtos/muxintcp/v2
   PACKAGE_SRCS_COMMON += src/tirtos/muxintcp/v2

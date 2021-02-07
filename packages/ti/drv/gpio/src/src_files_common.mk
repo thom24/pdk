@@ -1,5 +1,5 @@
-SOC_DEP_LIB_SOCS=k2h k2hk k2l k2e k2g c6678 c6657 omapl137 omapl138 am65xx j721e am77x j7200 am64x tpr12
-GPIO_V2_SOCS=tpr12
+SOC_DEP_LIB_SOCS=k2h k2hk k2l k2e k2g c6678 c6657 omapl137 omapl138 am65xx j721e am77x j7200 am64x tpr12 awr294x
+GPIO_V2_SOCS=tpr12 awr294x
 
 # Common source files across all platforms and cores
 ifeq ($(SOC),$(filter $(SOC),$(SOC_DEP_LIB_SOCS) ))

@@ -24,7 +24,7 @@ ifeq ($(SOC),$(filter $(SOC), j7200))
   SRCS_COMMON += TimerP_default_$(ISA).c
 endif
 
-ifeq ($(SOC),$(filter $(SOC), tpr12))
+ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
   SRCDIR      += soc/$(SOC)
   SRCS_COMMON += TimerP_default.c CycleprofilerP_nonos.c
 endif

@@ -98,7 +98,7 @@
 #endif
 
 
-#if defined(SOC_TPR12)
+#if defined(SOC_TPR12) || defined (SOC_AWR294X)
 #if defined(SIM_BUILD)
 #define UART_RX_LOOPBACK_ONLY
 #endif
@@ -404,7 +404,7 @@ static void UART_initConfig(bool dmaMode)
         uart_cfg.edmaHandle = UartApp_udmaInit(&uart_cfg);
 #else
         uart_cfg.edmaHandle = UartApp_edmaInit();
-    #if defined(SOC_TPR12)
+    #if defined(SOC_TPR12) || defined (SOC_AWR294X)
         uart_cfg.paramSetId = EDMA_NUM_DMA_CHANNELS;
     #endif
 #endif
@@ -686,7 +686,7 @@ static uintptr_t l2_global_address (uintptr_t addr)
 #else
     return addr;
 #endif
-#elif defined (SOC_TPR12)
+#elif defined (SOC_TPR12) || defined (SOC_AWR294X)
     return ((uintptr_t)CSL_locToGlobAddr(addr));
 #else
     return addr;
@@ -704,7 +704,7 @@ void UART_callback2(UART_Handle handle, UART_Transaction *transaction)
     UART_osalPostLock(callbackSem);
 }
 
-#if !defined(SOC_TPR12)
+#if !(defined(SOC_TPR12) || defined (SOC_AWR294X))
 
 #define UART_NUM_TRIG_LVL           (4U)
 
@@ -2417,7 +2417,7 @@ Err:
 }
 
 #ifdef UART_DMA_ENABLE
-#if !defined(SOC_TPR12)
+#if !(defined(SOC_TPR12) || defined (SOC_AWR294X))
 static uint32_t UART_getMaxNumInst(uint32_t numInst)
 {
     uint32_t     i = 0;
@@ -2760,7 +2760,7 @@ bool UART_test_api (bool dmaMode)
     return true;
 }
 
-#if defined(SOC_TPR12) && defined(SIM_BUILD)
+#if (defined(SOC_TPR12) || defined (SOC_AWR294X)) && defined(SIM_BUILD)
 
 /**
  *  @b Description
@@ -3145,12 +3145,12 @@ UART_Tests Uart_tests[] =
     {UART_test_read_write_int_disable, false, UART_TEST_ID_INT_DISABLE, "\r\n UART read write test with interrupt disabled"},
     {UART_test_read_verify, false, UART_TEST_ID_RDVERIFY, "\r\n UART non-DMA read API test in loopback mode"},
 #ifdef UART_DMA_ENABLE
-#if !defined(SOC_TPR12)
+#if !(defined(SOC_TPR12) || defined (SOC_AWR294X))
     {UART_test_multiple_instances, true, UART_TEST_ID_MULTI_INSTS, "\r\n UART DMA multiple instances loopback test "},
 #endif
 #endif
     {UART_test_api, false, UART_TEST_ID_API, "\r\n UART API Test"},
-#if defined(SOC_TPR12) && defined(SIM_BUILD)
+#if (defined(SOC_TPR12) || defined (SOC_AWR294X)) && defined(SIM_BUILD)
     {UART_test_profile_tx, false, UART_TEST_ID_PROF_TX, "\r\n UART non-DMA/DMA Blocking/Polling transmit profiling"},
 #endif
 #ifdef UART_DMA_ENABLE
@@ -3345,7 +3345,7 @@ Int main()
 #endif /* #ifdef USE_BIOS */
 
 #ifdef UART_DMA_ENABLE
-#if !(defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_TPR12))
+#if !(defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_TPR12) || defined (SOC_AWR294X))
 EDMA3_RM_Handle gEdmaHandle = NULL;
 
 /*
@@ -3404,7 +3404,7 @@ static EDMA3_RM_Handle UartApp_edmaInit(void)
     return(gEdmaHandle);
 }
 #endif
-#if defined(SOC_TPR12)
+#if defined(SOC_TPR12) || defined (SOC_AWR294X)
 EDMA_Handle gEdmaHandle = NULL;
 
 #ifdef BUILD_MCU

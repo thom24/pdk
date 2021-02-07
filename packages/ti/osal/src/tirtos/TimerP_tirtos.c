@@ -54,7 +54,7 @@
 #elif defined (SOC_C6678) || defined (SOC_K2G) || defined (SOC_K2H) || defined(SOC_K2K) || defined(SOC_K2L) || defined(SOC_K2E) || defined(SOC_C6657) || defined(SOC_C6678) || defined(SOC_OMAPL137) || defined(SOC_OMAPL138)
 #define  TIMER64_SUPPORT
 #include <ti/sysbios/timers/timer64/Timer.h>
-#elif defined (SOC_TPR12)
+#elif defined (SOC_TPR12) || defined (SOC_AWR294X)
 #if defined(TIMER64_SUPPORT)
 #undef   TIMER64_SUPPORT
 #endif

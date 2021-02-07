@@ -67,9 +67,9 @@
 ifeq ($(uart_component_make_include), )
 
 # under other list
-drvuart_BOARDLIST       = am65xx_evm am65xx_idk j721e_sim j721e_evm j7200_evm am64x_evm tpr12_evm tpr12_qt
+drvuart_BOARDLIST       = am65xx_evm am65xx_idk j721e_sim j721e_evm j7200_evm am64x_evm tpr12_evm tpr12_qt awr294x_evm
 drvuart_dma_SOCLIST     = tda2xx tda2px dra72x dra75x tda2ex tda3xx dra78x am574x am572x am571x k2h k2k k2l k2e k2g c6678 c6657 omapl137 omapl138 am437x am65xx j721e j7200
-drvuart_SOCLIST         = tda2xx tda2px dra72x dra75x tda2ex tda3xx dra78x am574x am572x am571x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j7200 am64x tpr12
+drvuart_SOCLIST         = tda2xx tda2px dra72x dra75x tda2ex tda3xx dra78x am574x am572x am571x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j7200 am64x tpr12 awr294x
 drvuart_tda2xx_CORELIST = ipu1_0
 drvuart_tda2px_CORELIST = ipu1_0
 drvuart_tda2ex_CORELIST = ipu1_0
@@ -99,6 +99,7 @@ drvuart_j7200_CORELISTARM = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
 drvuart_am64x_CORELIST = $(DEFAULT_am64x_CORELIST)
 drvuart_am64x_CORELISTARM = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
 drvuart_tpr12_CORELIST = mcu1_0 c66xdsp_1
+drvuart_awr294x_CORELIST = mcu1_0 c66xdsp_1
 
 ############################
 # uart package
@@ -151,7 +152,7 @@ export uart_CORE_DEPENDENCY
 export uart_SOC_DEPENDENCY
 uart_PKG_LIST = uart
 uart_INCLUDE = $(uart_PATH)
-uart_SOCLIST = tda2xx tda2px tda2ex tda3xx dra78x am574x am572x am571x dra72x dra75x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j7200 am64x tpr12
+uart_SOCLIST = tda2xx tda2px tda2ex tda3xx dra78x am574x am572x am571x dra72x dra75x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j7200 am64x tpr12 awr294x
 export uart_SOCLIST
 uart_$(SOC)_CORELIST = $(drvuart_$(SOC)_CORELIST)
 ifeq ($(SOC),$(filter $(SOC), j721e))
@@ -206,7 +207,7 @@ export uart_dma_CORE_DEPENDENCY
 export uart_dma_SOC_DEPENDENCY
 uart_dma_PKG_LIST = uart_dma
 uart_dma_INCLUDE = $(uart_dma_PATH)
-uart_dma_SOCLIST = am574x am572x am571x dra72x dra75x dra78x k2h k2k k2l k2e k2g c6678 c6657 omapl137 omapl138 am437x am65xx j721e j7200 am335x am64x tpr12
+uart_dma_SOCLIST = am574x am572x am571x dra72x dra75x dra78x k2h k2k k2l k2e k2g c6678 c6657 omapl137 omapl138 am437x am65xx j721e j7200 am335x am64x tpr12 awr294x
 export uart_dma_SOCLIST
 uart_dma_$(SOC)_CORELIST = $(drvuart_$(SOC)_CORELIST)
 export uart_dma_$(SOC)_CORELIST
@@ -310,7 +311,7 @@ export uart_console_CORE_DEPENDENCY
 export uart_console_SOC_DEPENDENCY
 uart_console_PKG_LIST = uart_console
 uart_console_INCLUDE = $(uart_console_PATH)
-uart_console_SOCLIST = tda2xx tda2px tda2ex tda3xx am65xx j721e j7200 tpr12
+uart_console_SOCLIST = tda2xx tda2px tda2ex tda3xx am65xx j721e j7200 tpr12 awr294x
 export uart_console_SOCLIST
 uart_console_$(SOC)_CORELIST = $(drvuart_$(SOC)_CORELIST)
 export uart_console_$(SOC)_CORELIST

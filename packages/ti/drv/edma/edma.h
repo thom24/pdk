@@ -1430,7 +1430,7 @@ extern uint8_t EDMA_getNumInstances(void);
 *      initialization parameter.
 *      for default initialization use EDMA3CCInitParams_init.
 *      Note: default parameter initialization makes all resources as owned.
-*      1. For devices like TPR12 where EDMA instance is not shared between cores,
+*      1. For devices like TPR12, AWR294X where EDMA instance is not shared between cores,
 *      Application is expected to pass the default parameter itself.
 *      2. Currently no error checking is done in other APIs for owned resources.
 *      Error checking will be introduced in later releases.

@@ -208,7 +208,7 @@ static void EDMA_transferController_error_isr (uintptr_t arg);
 
 static void EDMA_error_isr (uintptr_t arg);
 
-#ifdef SOC_TPR12
+#if defined (SOC_TPR12) || defined (SOC_AWR294X)
 static void EDMA_aggregated_error_transferController_error_isr (uintptr_t arg);
 #endif
 
@@ -554,7 +554,7 @@ static void EDMA_transferComplete_isr (uintptr_t arg)
     hwAttrs =  edmaConfig->hwAttrs;
     ccBaseAddr = hwAttrs->CCbaseAddress;
 
-#ifdef SOC_TPR12
+#if defined (SOC_TPR12) || defined (SOC_AWR294X)
     /* Global interrupt must be set in the status */
     // DebugP_assert((HW_RD_REG32(hwAttrs->CCcompletionInterruptsAggregatorStatusRegAddress) &
     //               (1U << EDMA_TPCC_INTAGG_TPCC_INTG__POS)) == (1U << EDMA_TPCC_INTAGG_TPCC_INTG__POS));
@@ -618,7 +618,7 @@ static void EDMA_transferComplete_isr (uintptr_t arg)
         }
     }
 
-#ifdef SOC_TPR12
+#if defined (SOC_TPR12) || defined (SOC_AWR294X)
     /* clear interrupt */
     HW_WR_REG32(hwAttrs->CCcompletionInterruptsAggregatorStatusRegAddress, (1U << EDMA_TPCC_INTAGG_TPCC_INTG__POS));
 #endif
@@ -1071,7 +1071,7 @@ static void EDMA_transferController_error_isr (uintptr_t arg)
  *  @retval
  *      None.
  */
-#ifdef SOC_TPR12
+#if defined (SOC_TPR12) || defined (SOC_AWR294X)
 static void EDMA_aggregated_error_transferController_error_isr (uintptr_t arg)
 {
     uint32_t errInt, tc, tcErr;
@@ -2212,7 +2212,7 @@ EDMA_Handle EDMA_open(uint8_t instanceId, int32_t *errorCode,
         /* register transfer complete interrupt handler */
         if (hwAttrs->transferCompletionInterruptNum != EDMA_INTERRUPT_NOT_CONNECTED_ID)
         {
-    #ifdef SOC_TPR12
+    #if defined (SOC_TPR12) || defined (SOC_AWR294X)
             uint32_t mask = ~0U;
 
             /* Clear all status */
@@ -2288,7 +2288,7 @@ EDMA_Handle EDMA_open(uint8_t instanceId, int32_t *errorCode,
         #endif
 
 
-    #ifdef SOC_TPR12 //TODO_TPR12 Currently using #ifdef due to *ERR__POS defines, should they be in platform file or overkill?
+    #if defined (SOC_TPR12) || defined (SOC_AWR294X) //TODO_TPR12 Currently using #ifdef due to *ERR__POS defines, should they be in platform file or overkill?
             if (isUnifiedErrorInterrupts == true)
             {
                 uint32_t mask = ~0U;

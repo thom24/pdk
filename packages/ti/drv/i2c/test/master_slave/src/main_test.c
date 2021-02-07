@@ -305,7 +305,7 @@ static void I2C_initConfig(uint32_t instance, I2C_Tests *test)
         }
     }
 
-#if defined (evmK2H) || defined (evmK2K) || defined (evmK2E) || defined (evmK2L) || defined (evmK2G) || defined (LCDK_OMAPL138) || defined (SOC_TPR12)
+#if defined (evmK2H) || defined (evmK2K) || defined (evmK2E) || defined (evmK2L) || defined (evmK2G) || defined (LCDK_OMAPL138) || defined (SOC_TPR12) || defined (SOC_AWR294X)
     i2c_cfg.ownSlaveAddr = ownSlaveAddr;
 #else
     i2c_cfg.ownSlaveAddr[0] = ownSlaveAddr;
@@ -767,7 +767,7 @@ int main(void)
     Board_SoCInfo socInfo;
 #endif
 
-#if defined(SOC_AM335x) || defined (SOC_AM437x) || defined (SOC_TPR12)
+#if defined(SOC_AM335x) || defined (SOC_AM437x) || defined (SOC_TPR12) || defined (SOC_AWR294X)
     Task_Handle task;
     Error_Block eb;
 

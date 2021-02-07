@@ -40,12 +40,12 @@ INCDIR = . src
 
 PACKAGE_SRCS_COMMON =
 
-ifeq ($(BOARD),$(filter $(BOARD),evmAM335x icev2AM335x iceAMIC110 skAM335x bbbAM335x evmAM437x idkAM437x skAM437x evmAM572x idkAM571x idkAM572x evmK2H evmK2K evmK2E evmK2L evmK2G iceK2G evmC6678 evmC6657 evmOMAPL137 lcdkOMAPL138 idkAM574x am65xx_evm am65xx_idk am64x_evm am64x_svb tpr12_evm tpr12_qt))
+ifeq ($(BOARD),$(filter $(BOARD),evmAM335x icev2AM335x iceAMIC110 skAM335x bbbAM335x evmAM437x idkAM437x skAM437x evmAM572x idkAM571x idkAM572x evmK2H evmK2K evmK2E evmK2L evmK2G iceK2G evmC6678 evmC6657 evmOMAPL137 lcdkOMAPL138 idkAM574x am65xx_evm am65xx_idk am64x_evm am64x_svb tpr12_evm tpr12_qt awr294x_evm))
 # Common source files across all platforms and cores
 SRCS_COMMON += board.c
 endif
 
-ifeq ($(BOARD),$(filter $(BOARD),evmAM335x icev2AM335x iceAMIC110 skAM335x bbbAM335x evmAM437x idkAM437x skAM437x evmAM572x idkAM571x idkAM572x evmK2H evmK2K evmK2E evmK2L iceK2G evmC6678 evmC6657 evmOMAPL137 lcdkOMAPL138 idkAM574x evmDRA72x evmDRA75x evmDRA78x evmTDAxx j721e_sim j721e_qt j7200_evm tpr12_evm tpr12_qt))
+ifeq ($(BOARD),$(filter $(BOARD),evmAM335x icev2AM335x iceAMIC110 skAM335x bbbAM335x evmAM437x idkAM437x skAM437x evmAM572x idkAM571x idkAM572x evmK2H evmK2K evmK2E evmK2L iceK2G evmC6678 evmC6657 evmOMAPL137 lcdkOMAPL138 idkAM574x evmDRA72x evmDRA75x evmDRA78x evmTDAxx j721e_sim j721e_qt j7200_evm tpr12_evm tpr12_qt awr294x_evm))
 # Board stub function enabled for all the boards except evmK2G
 SRCS_COMMON += boardStub.c
 endif
@@ -94,6 +94,12 @@ ifeq ($(BOARD),$(filter $(BOARD), tpr12_evm tpr12_qt))
 include $(PDK_BOARD_COMP_PATH)/src/tpr12_evm/src_files_tpr12_evm.mk
 include $(PDK_BOARD_COMP_PATH)/src/flash/src_files_flash.mk
 PACKAGE_SRCS_COMMON += src/tpr12_evm
+endif
+
+ifeq ($(BOARD),$(filter $(BOARD), awr294x_evm))
+include $(PDK_BOARD_COMP_PATH)/src/awr294x_evm/src_files_awr294x_evm.mk
+include $(PDK_BOARD_COMP_PATH)/src/flash/src_files_flash.mk
+PACKAGE_SRCS_COMMON += src/awr294x_evm
 endif
 
 ifeq ($(BOARD),$(filter $(BOARD), evmAM572x idkAM571x idkAM572x idkAM574x))
@@ -164,7 +170,7 @@ PACKAGE_SRCS_COMMON += makefile board_component.mk board.h
 PACKAGE_SRCS_COMMON += board_cfg.h build
 PACKAGE_SRCS_COMMON += config_mk.bld package.bld package.xdc package.xs
 PACKAGE_SRCS_COMMON += Settings.xdc.xdt utils.xs
-ifeq ($(BOARD),$(filter $(BOARD), j721e_sim j721e_qt j721e_evm j7200_evm tpr12_evm tpr12_qt))
+ifeq ($(BOARD),$(filter $(BOARD), j721e_sim j721e_qt j721e_evm j7200_evm tpr12_evm tpr12_qt awr294x_evm))
 PACKAGE_SRCS_COMMON += src/board.c src/boardStub.c src/Module.xs
 PACKAGE_SRCS_COMMON += src/src_files_lld.mk src/src_files_starterware.mk
 else

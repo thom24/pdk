@@ -52,7 +52,7 @@ extern "C" {
 #ifdef UART_DMA_ENABLE
 #if defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
 #include <ti/drv/udma/udma.h>
-#elif defined (SOC_TPR12)
+#elif defined (SOC_TPR12) || defined (SOC_AWR294X)
 #include <ti/drv/edma/edma.h>
 #include <ti/drv/edma/soc/edma_soc.h>
 static EDMA_Handle UartApp_edmaInit(void);
@@ -72,7 +72,7 @@ extern EDMA3_RM_GblConfigParams sampleEdma3GblCfgParams[];
 
 #if defined(idkAM574x) || defined (idkAM572x) || defined (idkAM571x)
 #define UART_INSTANCE   (2U)
-#elif defined(SOC_TPR12)
+#elif defined(SOC_TPR12) || defined (SOC_AWR294X)
 /*
  * MCU: 0 (MSS UART 0), 1 (MSS UART 1, tx only), 2 (DSS UART 0)
  * DSP: 0 (DSS UART 0)

@@ -169,7 +169,7 @@ NOR_Config Nor_config[BOARD_FLASH_NOR_INTF_MAX] =
         NULL
     }
 };
-#elif defined (tpr12_evm) || defined (tpr12_qt)
+#elif defined (tpr12_evm) || defined (tpr12_qt) || defined (awr294x_evm)
 NOR_Config Nor_config[BOARD_FLASH_NOR_INTF_MAX] =
 {
     {

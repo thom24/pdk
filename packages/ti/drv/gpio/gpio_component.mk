@@ -67,8 +67,8 @@
 ifeq ($(gpio_component_make_include), )
 
 # under other list
-drvgpio_BOARDLIST       = am65xx_evm am65xx_idk j721e_sim j721e_evm j7200_evm tpr12_evm tpr12_qt am64x_evm
-drvgpio_SOCLIST         = am574x am572x am571x dra72x dra75x dra78x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j7200 tpr12 am64x
+drvgpio_BOARDLIST       = am65xx_evm am65xx_idk j721e_sim j721e_evm j7200_evm tpr12_evm tpr12_qt awr294x_evm am64x_evm
+drvgpio_SOCLIST         = am574x am572x am571x dra72x dra75x dra78x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j7200 tpr12 awr294x am64x
 drvgpio_SOCPROFILELIST  = am574x am572x am571x dra72x dra75x dra78x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 
 drvgpio_am574x_CORELIST = c66x a15_0 ipu1_0
 drvgpio_am572x_CORELIST = c66x a15_0 ipu1_0
@@ -93,6 +93,7 @@ drvgpio_j721e_CORELISTARM = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1
 drvgpio_j7200_CORELIST    = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
 drvgpio_j7200_CORELISTARM = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
 drvgpio_tpr12_CORELIST    = mcu1_0 c66xdsp_1
+drvgpio_awr294x_CORELIST    = mcu1_0 c66xdsp_1
 drvgpio_am64x_CORELIST    = $(DEFAULT_am64x_CORELIST)
 drvgpio_am64x_CORELISTARM = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
 ############################
@@ -246,7 +247,7 @@ export GPIO_Baremetal_LedBlink_TestApp_BOARDLIST
 ifeq ($(SOC),$(filter $(SOC), j721e j7200 am64x))
 GPIO_Baremetal_LedBlink_TestApp_$(SOC)_CORELIST = $(drvgpio_$(SOC)_CORELISTARM)
 else
-ifeq ($(SOC),$(filter $(SOC), tpr12))
+ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
 #TPR12 EVM push button and LED are supported only on MSS R5F (mcu1_0)
 GPIO_Baremetal_LedBlink_TestApp_$(SOC)_CORELIST = mcu1_0
 else
@@ -278,7 +279,7 @@ export GPIO_LedBlink_TestApp_BOARDLIST
 ifeq ($(SOC),$(filter $(SOC), am64x))
 GPIO_LedBlink_TestApp_$(SOC)_CORELIST = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
 else
-ifeq ($(SOC),$(filter $(SOC), tpr12))
+ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
 #TPR12 EVM push button and LED are supported only on MSS R5F (mcu1_0)
 GPIO_LedBlink_TestApp_$(SOC)_CORELIST = mcu1_0
 else

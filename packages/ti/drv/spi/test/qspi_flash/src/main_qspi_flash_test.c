@@ -67,7 +67,7 @@
 #ifdef SPI_DMA_ENABLE
 #include <ti/osal/CacheP.h>
 /* EDMA3 Header files */
-#if defined(SOC_TPR12)
+#if defined(SOC_TPR12) || defined (SOC_AWR294X)
 #include <ti/drv/edma/edma.h>
 #else
 #include <ti/sdo/edma3/drv/edma3_drv.h>
@@ -88,7 +88,7 @@
 #if defined(SOC_AM574x) || defined (SOC_AM572x) || defined (SOC_AM571x)
 #define QSPI_OFFSET             (4U)
 #endif
-#if defined(SOC_TPR12)
+#if defined(SOC_TPR12) || defined (SOC_AWR294X)
 #define QSPI_OFFSET             (0U)
 #endif
 
@@ -129,7 +129,7 @@ void QSPI_board_crossbarInit(void);
 #endif
 
 #ifdef SPI_DMA_ENABLE
-#if defined(SOC_TPR12)
+#if defined(SOC_TPR12) || defined (SOC_AWR294X)
 static EDMA_Handle QSPIApp_edmaInit(void);
 #else
 static EDMA3_RM_Handle QSPIApp_edmaInit(void);
@@ -164,7 +164,7 @@ uint32_t transferLength = 0;
  * \brief      Function to initialize the edma driver and get the handle to the
  *             edma driver;
  */
-#if defined (SOC_TPR12)
+#if defined (SOC_TPR12) || defined (SOC_AWR294X)
 EDMA_Handle  gEdmaHandle = NULL;
 
 static EDMA_Handle QSPIApp_edmaInit(void)
@@ -280,7 +280,7 @@ static void QSPI_initConfig(uint32_t instance, QSPI_Tests *test)
 #ifdef SPI_DMA_ENABLE
 static uintptr_t l2_global_address (uintptr_t addr)
 {
-#if defined (SOC_TPR12)
+#if defined (SOC_TPR12) || defined (SOC_AWR294X)
     return ((uintptr_t)CSL_locToGlobAddr(addr));
 #else
     return addr;
@@ -492,7 +492,7 @@ int main(void)
     /* Call board init functions */
     Board_initCfg boardCfg;
 
-#if defined (SOC_AM335x) || defined (SOC_AM437x) || defined (SOC_TPR12)
+#if defined (SOC_AM335x) || defined (SOC_AM437x) || defined (SOC_TPR12) || defined (SOC_AWR294X)
 #ifdef USE_BIOS
     Task_Handle task;
     Error_Block eb;

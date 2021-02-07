@@ -37,8 +37,8 @@ PACKAGE_SRCS_COMMON = makefile UART.h uart_component.mk src/UART_osal.h \
                       src/src_files_common.mk src/src_files_uart_console.mk src/Module.xs build \
                       config_mk.bld package.bld package.xdc package.xs Settings.xdc.xdt UART_ver.h UART_ver.h.xdt
 
-# For TPR12, the following v3 files are all that is shipped
-ifeq ($(SOC),$(filter $(SOC), tpr12))
+# For TPR12, AWR294X the following v3 files are all that is shipped
+ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
   SRCDIR = . src src/v3
   INCDIR = . src src/v3
   SRCS_COMMON += UART_drv.c uartsci.c

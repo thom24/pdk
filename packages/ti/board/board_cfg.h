@@ -157,6 +157,9 @@ typedef int32_t Board_STATUS;
 #elif defined (tpr12_evm) || defined (tpr12_qt)
 #include <ti/board/src/tpr12_evm/include/board_cfg.h>
 
+#elif defined (awr294x_evm)
+#include <ti/board/src/awr294x_evm/include/board_cfg.h>
+
 #endif
 
 #ifdef __cplusplus

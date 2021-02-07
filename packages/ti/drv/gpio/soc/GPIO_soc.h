@@ -58,6 +58,11 @@ extern "C" {
 #include <ti/drv/gpio/soc/tpr12/GPIO_soc.h>
 #endif
 
+#if defined (SOC_AWR294X)
+#include <ti/drv/gpio/src/v2/GPIO_v2.h>
+#include <ti/drv/gpio/soc/awr294x/GPIO_soc.h>
+#endif
+
 /* GPIO SoC level API */
 #if defined(SOC_K2H) || defined(SOC_K2K) || defined(SOC_K2L) || defined(SOC_K2E) || defined(SOC_K2G) || defined(SOC_C6678) || defined(SOC_C6657) || defined(SOC_OMAPL137) || defined(SOC_OMAPL138) || defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
 extern int32_t GPIO_socGetInitCfg(uint32_t idx, GPIO_v0_HwAttrs *cfg);

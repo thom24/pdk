@@ -284,7 +284,7 @@ static SPI_Handle QSPI_open_v1(SPI_Handle handle, const SPI_Params *params)
         interruptRegParams.corepacConfig.corepacEventNum = hwAttrs->eventId;
         interruptRegParams.corepacConfig.intVecNum=hwAttrs->intrNum; /* Host Interrupt vector */
         interruptRegParams.corepacConfig.isrRoutine  = (void (*)(uintptr_t))(&QSPI_hwiFxn_v1);
-#if defined(SOC_TPR12) /* All TPR12 interrupts are pulse and not level */
+#if defined(SOC_TPR12) || defined (SOC_AWR294X) /* All TPR12 interrupts are pulse and not level */
         interruptRegParams.corepacConfig.triggerSensitivity = OSAL_ARM_GIC_TRIG_TYPE_EDGE;
 #endif
         interruptRegParams.corepacConfig.arg         = (uintptr_t)handle;
@@ -391,7 +391,7 @@ static SPI_Handle QSPI_open_v1(SPI_Handle handle, const SPI_Params *params)
 
 static void QSPIMmapCsEnable(uint32_t baseAddr, uint32_t chipSelect)
 {
-#if !(defined(SOC_AM437x) || defined(SOC_TPR12))
+#if !(defined(SOC_AM437x) || defined(SOC_TPR12) || defined (SOC_AWR294X))
     uint32_t regVal;
 
     regVal = HW_RD_REG32(CTRL_CORE_CONTROL_IO_2);

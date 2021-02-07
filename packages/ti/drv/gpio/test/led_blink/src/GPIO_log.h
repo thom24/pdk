@@ -48,7 +48,7 @@ extern "C" {
 
 #include <stdio.h>
 
-#if !defined (SOC_TPR12)
+#if !(defined (SOC_TPR12) || defined (SOC_AWR294X))
 // TODO: After 0.5 release move print to uart
 /* UART Header files */
 #include <ti/drv/uart/UART.h>
@@ -70,7 +70,7 @@ extern void ConsoleUtilsInit(void);
 /* Enable the below macro to have prints on the IO Console */
 //#define IO_CONSOLE
 
-#if defined (SOC_TPR12)
+#if defined (SOC_TPR12) || defined (SOC_AWR294X)
 // TODO: After 0.5 release move print to uart
 #define IO_CONSOLE
 #endif

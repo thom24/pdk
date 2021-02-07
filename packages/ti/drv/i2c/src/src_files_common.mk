@@ -38,8 +38,8 @@ PACKAGE_SRCS_COMMON = makefile I2C.h i2c_component.mk \
                       build src/src_files_common.mk src/Module.xs \
                       config_mk.bld I2Cver.h I2Cver.h.xdt package.bld package.xdc package.xs Settings.xdc.xdt
 
-# For TPR12, the following v0 files are all that is shipped
-ifeq ($(SOC),$(filter $(SOC), tpr12))
+# For TPR12,awr294x the following v0 files are all that is shipped
+ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
   SRCDIR = . src src/v0
   INCDIR = . src src/v0
   SRCS_COMMON += I2C_drv.c I2C_v0.c

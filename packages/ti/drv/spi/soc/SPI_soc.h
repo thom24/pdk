@@ -71,7 +71,7 @@
 #include <ti/drv/spi/src/v0/OSPI_v0.h>
 #endif
 
-#if defined (SOC_TPR12)
+#if defined (SOC_TPR12) || defined (SOC_AWR294X)
 #include <ti/drv/spi/soc/QSPI_v1.h>
 #endif
 
@@ -126,7 +126,7 @@ extern int32_t ESPI_socSetFwCfg(uint32_t index, const ESPI_SwIPAttrs *cfg);
 extern void ESPI_socInitFwCfg(void);
 #endif
 
-#if defined (SOC_TPR12)
+#if defined (SOC_TPR12) || defined (SOC_AWR294X)
 extern int32_t QSPI_socGetInitCfg(uint32_t idx, QSPI_HwAttrs *cfg);
 extern int32_t QSPI_socSetInitCfg(uint32_t idx, const QSPI_HwAttrs *cfg);
 #define QSPI_MODULE_CLK_80M   (80000000U)

@@ -43,7 +43,7 @@
     defined(DEVICE_K2H) || defined(DEVICE_K2K) || defined(DEVICE_K2L) || defined(DEVICE_K2E) || defined(DEVICE_K2G) || defined(DEVICE_C6678) || defined(DEVICE_C6657) || defined(DEVICE_OMAPL137) || defined(DEVICE_OMAPL138)
 #include <ti/csl/src/ip/uart/V0/uart.h>
 #include <ti/drv/uart/src/v0/UART_v0.h>
-#elif defined(SOC_TPR12)
+#elif defined(SOC_TPR12) || defined (SOC_AWR294X)
 #include <ti/drv/uart/src/v3/uartsci_soc.h>
 #else
 #include <ti/csl/src/ip/uart/V1/uart.h>

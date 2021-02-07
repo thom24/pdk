@@ -1190,6 +1190,10 @@ ifeq ($(SOC),$(filter $(SOC), tpr12))
   PDK_COMMON_COMP = csl uart i2c board gpio edma
 endif
 
+ifeq ($(SOC),$(filter $(SOC), awr294x))
+  PDK_COMMON_COMP = csl uart i2c board gpio edma
+endif
+
 ifeq ($(SOC),$(filter $(SOC), am571x am572x am574x dra72x dra75x dra78x))
   PDK_COMMON_COMP = csl uart i2c board gpio pm_lib pm_hal
 endif
@@ -1207,7 +1211,9 @@ ifeq ($(SOC),$(filter $(SOC), c6747))
 endif
 
 PDK_COMMON_TIRTOS_COMP = $(PDK_COMMON_COMP) osal_tirtos
-ifneq ($(SOC),$(filter $(SOC), tpr12))
+ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
+# Add copyvecs for socs other than tpr12 and awr294x
+else
 # Enable copy of vectors
   ifeq ($(ISA),$(filter $(ISA), r5f))
     PDK_COMMON_TIRTOS_COMP += copyvecs

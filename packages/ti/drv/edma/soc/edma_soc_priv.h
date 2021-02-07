@@ -47,6 +47,10 @@
 #include <ti/drv/edma/soc/tpr12/edma_soc_priv.h>
 #endif
 
+#if defined (SOC_AWR294X)
+#include <ti/drv/edma/soc/awr294x/edma_soc_priv.h>
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif

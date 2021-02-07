@@ -24,7 +24,7 @@ endif
   CGT_ARP32_VERSION=1.0.8
   CG_XML_VERSION=2.61.00
 
-ifeq ($(BOARD),$(filter $(BOARD), tpr12_evm tpr12_qt))
+ifeq ($(BOARD),$(filter $(BOARD), tpr12_evm tpr12_qt awr294x_evm))
   CGT_ARM_VERSION=20.2.2.LTS
 endif
 
@@ -37,7 +37,7 @@ endif
   NDK_VERSION=3_61_01_01
   NS_VERSION=2_60_01_06
 
-ifeq ($(BOARD),$(filter $(BOARD), am65xx_evm am65xx_idk j721e_evm j7200_evm am64x_evm am64x_svb tpr12_qt tpr12_evm))
+ifeq ($(BOARD),$(filter $(BOARD), am65xx_evm am65xx_idk j721e_evm j7200_evm am64x_evm am64x_svb tpr12_qt tpr12_evm awr294x_evm))
   NDK_VERSION=3_80_00_19
   NS_VERSION=2_80_00_17
 endif

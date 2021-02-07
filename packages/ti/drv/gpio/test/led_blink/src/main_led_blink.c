@@ -377,7 +377,7 @@ static void Board_initGPIO(void)
     GPIO_socSetInitCfg(GPIO_LED0_PORT_NUM, &gpio_cfg);
 
 #endif
-#if defined (SOC_TPR12)
+#if defined (SOC_TPR12) || defined (SOC_AWR294X)
   GPIO_board_init_pinconfig();
 #endif
 
@@ -438,7 +438,7 @@ int main()
     Task_exit();
 #endif
 
-#elif defined (SOC_TPR12)
+#elif defined (SOC_TPR12) || defined (SOC_AWR294X)
     {
         uint32_t loopCnt = 4;
         while (loopCnt-- > 0U)
@@ -501,7 +501,7 @@ int main(void)
     AppGPIOInit();
 #endif
 
-#if defined (SOC_J721E) || defined(SOC_J7200) || defined (SOC_TPR12) || defined(SOC_AM64X)
+#if defined (SOC_J721E) || defined(SOC_J7200) || defined (SOC_TPR12) || defined (SOC_AWR294X) || defined(SOC_AM64X)
     Task_Handle task;
     Error_Block eb;
     Task_Params taskParams;
@@ -513,7 +513,7 @@ int main(void)
 
     /* Set the task priority higher than the default priority (1) */
     taskParams.priority = 2;
-  #if defined (SOC_TPR12)
+  #if defined (SOC_TPR12) || defined (SOC_AWR294X)
     taskParams.stackSize = 4*1024;
   #else
     taskParams.stackSize = 0x8000;
@@ -554,7 +554,7 @@ void AppLoopDelay(uint32_t delayVal)
 /*
  *  ======== Callback function ========
  */
-#if defined (SOC_TPR12)
+#if defined (SOC_TPR12) || defined (SOC_AWR294X)
 void AppGpioCallbackFxn(void)
 {
     gpio_intr_triggered = 1;

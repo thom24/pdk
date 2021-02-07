@@ -36,7 +36,7 @@ INCLUDE_EXTERNAL_INTERFACES += xdc bios
 XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
 endif
 
-ifeq ($(SOC),$(filter $(SOC), tpr12))
+ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
 # Append local auxilia�ry linker command file
 APPEND_LNKCMD_FILE = ./$(SOC)/linker_$(ISA).cmd
 endif

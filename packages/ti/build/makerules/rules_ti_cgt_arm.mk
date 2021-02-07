@@ -196,7 +196,7 @@ else
 endif
 
 # For TPR12, fore enum type to int to be compatible with DSP
-ifeq ($(SOC),$(filter $(SOC), tpr12))
+ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
   _CFLAGS += --enum_type=int
 endif
 

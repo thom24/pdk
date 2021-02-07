@@ -8,7 +8,7 @@ ifeq ($(SOC),$(filter $(SOC), am574x am572x am571x k2g k2l k2e k2h k2k c6678 c66
 SRCS_COMMON += TimerP_tirtos.c
 endif
 
-ifeq ($(SOC),$(filter $(SOC), tpr12))
+ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
   SRCS_COMMON += TimerP_tirtos.c CycleprofilerP_tirtos.c MemoryP_tirtos.c
 endif
 

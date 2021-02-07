@@ -77,6 +77,7 @@ Steps to build
   am64x_evm             - AM64X EVM build
   am64x_svb             - AM64X SVB build with LPDDR4
   tpr12_evm             - TPR12 EVM build
+  awr294x_evm           - awr294x EVM build
 
   Valid values for BUILD_PROFILE_$(CORE) are:
   debug                 - Debug build with NO compiler optimizations

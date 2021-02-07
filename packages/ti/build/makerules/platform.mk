@@ -197,6 +197,13 @@ ifeq ($(BOARD),$(filter $(BOARD), tpr12_evm tpr12_qt))
  SBL_DEV_ID=55
 endif
 
+# AWR294X
+ifeq ($(BOARD),$(filter $(BOARD), awr294x_evm))
+ SOC = awr294x
+ SBL_RUN_ADDRESS=0x10200000
+ SBL_DEV_ID=55
+endif
+
 # SBL related macro
 export SBL_CERT_KEY_HS=$(ROOTDIR)/ti/build/makerules/k3_dev_mpk.pem
 export SBL_CERT_KEY=$(ROOTDIR)/ti/build/makerules/rom_degenerateKey.pem
@@ -319,7 +326,7 @@ ifeq ($(CORE),$(filter $(CORE), c7x-hostemu))
  ARCH = c7x
 endif
 
-# DSP for tda2xx/tda2px/am572x/tda2ex/dra72x/dra75x/am571x/tda3xx/dra78x/k2h/k2k/k2l/k2e/c6657/c6678/am574x/tpr12
+# DSP for tda2xx/tda2px/am572x/tda2ex/dra72x/dra75x/am571x/tda3xx/dra78x/k2h/k2k/k2l/k2e/c6657/c6678/am574x/tpr12/awr294x
 ifeq ($(CORE),$(filter $(CORE), c66x c66xdsp_1 c66xdsp_2))
  ISA = c66
  ISA_EXT = 66
@@ -491,6 +498,11 @@ ifeq ($(ISA),r5f)
   endif
 
   ifeq ($(SOC),$(filter $(SOC), tpr12))
+    # Use the platform define from TI RTOS but do not use the default linker command file (false)
+    PLATFORM_XDC = "ti.platforms.cortexR:TPR12:0"
+  endif
+
+  ifeq ($(SOC),$(filter $(SOC), awr294x))
     # Use the platform define from TI RTOS but do not use the default linker command file (false)
     PLATFORM_XDC = "ti.platforms.cortexR:TPR12:0"
   endif
@@ -734,6 +746,10 @@ ifeq ($(ISA),c66)
       PLATFORM_XDC = "ti.platforms.c6x:TPR12"
     endif
 
+    ifeq ($(SOC),$(filter $(SOC), awr294x))
+      PLATFORM_XDC = "ti.platforms.c6x:TPR12"
+    endif
+
   endif
 
   # If ENDIAN is set to "big", set ENDIAN_EXT to "e", that would be used in
@@ -908,7 +924,7 @@ ifeq ($(SOC),$(filter $(SOC), am65xx am64x j721e j7200))
   SBL_CORE_ID_load_only = 21
 endif
 
-ifeq ($(SOC),$(filter $(SOC), tpr12))
+ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
 #  SBL_CORE_ID_mcu1_0 = 0
 # Presently MCU1 supports only lock step so configure MCU_1_0 core id as MCU_1_SMP_CORE_ID so that SBL configure MCU1 in lock step
   SBL_CORE_ID_mcu1_0 = 3

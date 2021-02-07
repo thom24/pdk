@@ -66,8 +66,8 @@
 #
 ifeq ($(osal_component_make_include), )
 
-libosal_BOARDLIST       = evmAM572x evmAM335x evmAM437x iceK2G idkAM574x idkAM572x idkAM571x idkAM437x am65xx_evm am65xx_idk evmOMAPL137 lcdkOMAPL138 evmK2E evmK2H evmK2K evmK2L j721e_evm j7200_evm am64x_evm tpr12_evm tpr12_qt
-libosal_SOCLIST         = tda2xx tda2px tda2ex tda3xx dra78x dra72x dra75x am574x am572x am571x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j7200 am64x tpr12
+libosal_BOARDLIST       = evmAM572x evmAM335x evmAM437x iceK2G idkAM574x idkAM572x idkAM571x idkAM437x am65xx_evm am65xx_idk evmOMAPL137 lcdkOMAPL138 evmK2E evmK2H evmK2K evmK2L j721e_evm j7200_evm am64x_evm tpr12_evm tpr12_qt awr294x_evm
+libosal_SOCLIST         = tda2xx tda2px tda2ex tda3xx dra78x dra72x dra75x am574x am572x am571x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j7200 am64x tpr12 awr294x
 libosal_tda2xx_CORELIST = a15_0 ipu1_0
 libosal_tda2px_CORELIST = a15_0 ipu1_0
 libosal_tda2ex_CORELIST = a15_0 ipu1_0
@@ -94,6 +94,7 @@ libosal_j721e_CORELIST = $(DEFAULT_j721e_CORELIST)
 libosal_j7200_CORELIST = $(DEFAULT_j7200_CORELIST)
 libosal_am64x_CORELIST = $(DEFAULT_am64x_CORELIST)
 libosal_tpr12_CORELIST = $(DEFAULT_tpr12_CORELIST)
+libosal_awr294x_CORELIST = $(DEFAULT_awr294x_CORELIST)
 
 ############################
 # osal package
@@ -268,7 +269,7 @@ OSAL_TestApp_BOARDLIST = $(libosal_BOARDLIST)
 export OSAL_TestApp_BOARDLIST
 OSAL_TestApp_$(SOC)_CORELIST = $(osal_$(SOC)_CORELIST)
 export OSAL_TestApp_$(SOC)_CORELIST
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x tpr12))
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x tpr12 awr294x))
 OSAL_TestApp_SBL_APPIMAGEGEN = yes
 else
 OSAL_TestApp_SBL_APPIMAGEGEN = no
@@ -361,6 +362,11 @@ ifeq ($(SOC),$(filter $(SOC), j7200))
 endif
 
 ifeq ($(SOC),$(filter $(SOC), tpr12))
+ OSAL_TestApp_$(SOC)_CORELIST = mcu1_0 c66xdsp_1
+ OSAL_Baremetal_TestApp_$(SOC)_CORELIST = mcu1_0 c66xdsp_1
+endif
+
+ifeq ($(SOC),$(filter $(SOC), awr294x))
  OSAL_TestApp_$(SOC)_CORELIST = mcu1_0 c66xdsp_1
  OSAL_Baremetal_TestApp_$(SOC)_CORELIST = mcu1_0 c66xdsp_1
 endif

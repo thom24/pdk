@@ -6,7 +6,7 @@ CFLAGS_OS_DEFINES = -DUSE_BIOS
 EXTERNAL_INTERFACES = bios xdc
 COMP_LIST_COMMON    = $(PDK_COMMON_TIRTOS_COMP) 
 
-ifeq ($(SOC),$(filter $(SOC), tpr12))
+ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
 # Enable XDC build for application by providing XDC CFG File per core
 XDC_CFG_FILE_mcu1_0 = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_r5f.cfg
 endif
@@ -36,7 +36,7 @@ CFLAGS_SPI_DMA    = -DSPI_DMA_ENABLE
 PACKAGE_SRCS_COMMON = .
 PACKAGE_SRCS_COMMON += ../src/SPI_log.h
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_SPI_DMA) $(CFLAGS_OS_DEFINES)
-ifeq ($(SOC),$(filter $(SOC), tpr12))
+ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
 CFLAGS_LOCAL_COMMON += -DTPR12_QT
 endif
 

@@ -9,7 +9,7 @@ LOCAL_APP_NAME =  OSAL_$(BOARD)_$(CORE)TestApp
 
 PACKAGE_SRCS_COMMON = . ../src
 
-ifeq ($(SOC),$(filter $(SOC), am64x am65xx j721e j7200 tpr12))
+ifeq ($(SOC),$(filter $(SOC), am64x am65xx j721e j7200 tpr12 awr294x))
 SRCDIR = . ../src ../
 INCDIR = . ../src ../
 # Common source files across all platforms and cores
@@ -91,6 +91,12 @@ endif
 
 ifeq ($(SOC),$(filter $(SOC), tpr12))
   XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/tpr12/sysbios_$(ISA).cfg
+  XDC_CFG_UPDATE_$(CORE) = ../$(SOC)/osal_log_config.xs
+  PACKAGE_SRCS_COMMON += ../$(SOC)
+endif
+
+ifeq ($(SOC),$(filter $(SOC), awr294x))
+  XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/awr294x/sysbios_$(ISA).cfg
   XDC_CFG_UPDATE_$(CORE) = ../$(SOC)/osal_log_config.xs
   PACKAGE_SRCS_COMMON += ../$(SOC)
 endif

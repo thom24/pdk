@@ -331,7 +331,7 @@ ifeq ($(BUILD_OS_TYPE),baremetal)
         CONFIG_BLD_LNK_c7x   = $(pdk_PATH)/ti/build/$(SOC)/linker_c7x.lds
     endif
   endif
-  ifeq ($(SOC),$(filter $(SOC), tpr12))
+  ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
     ifeq ($(CONFIG_BLD_XDC_r5f),)
         CONFIG_BLD_LNK_r5f   = $(pdk_PATH)/ti/build/$(SOC)/linker_r5.lds
     endif
@@ -347,7 +347,7 @@ ifeq ($(BUILD_OS_TYPE),tirtos)
   #
   # XDC Config.bld file (required for configuro); Derives from top-level pdk_PATH
 
-  ifeq ($(SOC),$(filter $(SOC), tpr12))
+  ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
     ifeq ($(CONFIG_BLD_XDC_r5f),)
         CONFIG_BLD_XDC_r5f   = $(pdk_PATH)/ti/build/$(SOC)/config_$(SOC)_r5f.bld
         CONFIG_BLD_LNK_r5f   = $(pdk_PATH)/ti/build/$(SOC)/linker_r5_sysbios.lds

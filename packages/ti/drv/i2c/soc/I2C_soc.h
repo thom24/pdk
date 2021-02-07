@@ -44,7 +44,7 @@ extern "C" {
 
 #include <ti/csl/csl_utils.h>
 #include <ti/drv/i2c/I2C.h>
-#if defined(SOC_K2H) || defined(SOC_K2K) || defined(SOC_K2L) || defined(SOC_K2E) || defined(SOC_K2G) || defined(SOC_C6678) || defined(SOC_C6657) || defined(SOC_OMAPL137) || defined(SOC_OMAPL138) || defined(SOC_TPR12)
+#if defined(SOC_K2H) || defined(SOC_K2K) || defined(SOC_K2L) || defined(SOC_K2E) || defined(SOC_K2G) || defined(SOC_C6678) || defined(SOC_C6657) || defined(SOC_OMAPL137) || defined(SOC_OMAPL138) || defined(SOC_TPR12) || defined (SOC_AWR294X)
 #include <ti/drv/i2c/soc/I2C_v0.h>
 #else
 #include <ti/drv/i2c/soc/I2C_v1.h>
