@@ -32,9 +32,9 @@
  *****************************************************************************/
 #include <string.h>
 #include <ti/csl/csl_lpddr.h>
+#include <ti/csl/arch/csl_arch.h>
 #include "board_ddr.h"
 
-#ifdef BUILD_MCU1_0
 typedef struct Board_DDRThermalMgmtInstance_s
 {
     LPDDR4_Config      boardDDRCfg;
@@ -43,6 +43,8 @@ typedef struct Board_DDRThermalMgmtInstance_s
     uint32_t           boardDDRTrasMax[LPDDR4_FSP_2+1];
     HwiP_Handle        boardTempInterruptHandle;
     Board_thermalMgmtCallbackFunction_t appCallBackFunction;
+    uint16_t           devIdCore;
+    uint16_t           devIdIr;
 } Board_DDRThermalMgmtInstance_t;
 
 #ifdef __cplusplus
@@ -109,6 +111,99 @@ void Board_updateRefreshRate(const LPDDR4_CtlFspNum fsNum, uint32_t refreshMultF
         BOARD_DEBUG_LOG("LPDDR4_GetRefreshRate: FAIL\n");
         /* Add Assert if needed*/
     }
+}
+
+#ifdef __cplusplus
+#pragma CODE_SECTION(".text:BOARD_DDR_thermalManagement");
+#else
+#pragma CODE_SECTION(Board_DDRSetDevId, ".text:BOARD_DDR_thermalManagement");
+#endif
+
+static void Board_DDRSetDevId()
+{ 
+    CSL_ArmR5CPUInfo info;
+
+    CSL_armR5GetCpuID(&info);
+    if (info.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_0)
+    {
+        /* MCU SS Pulsar R5 SS */
+        /* For R5 cores in the MCU domain MAIN2MCU_LVL_INTRTR0 is the base interrupt to the VIM. */
+        gBoard_DDRThermalMgmtInstance.devIdIr   = TISCI_DEV_MAIN2MCU_LVL_INTRTR0;
+        gBoard_DDRThermalMgmtInstance.devIdCore = (info.cpuID == CSL_ARM_R5_CPU_ID_0)?
+                                                        TISCI_DEV_MCU_R5FSS0_CORE0:
+                                                        TISCI_DEV_MCU_R5FSS0_CORE1;
+    }
+    else if (info.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_1)
+    {
+        /* MAIN SS Pulsar R5 SS0 */
+        gBoard_DDRThermalMgmtInstance.devIdIr   = TISCI_DEV_R5FSS0_INTROUTER0;
+        gBoard_DDRThermalMgmtInstance.devIdCore = (info.cpuID == CSL_ARM_R5_CPU_ID_0)?
+                                                        TISCI_DEV_R5FSS0_CORE0:
+                                                        TISCI_DEV_R5FSS0_CORE1;
+    }
+    else if (info.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_2)
+    {
+        /* MAIN SS Pulsar R5 SS1 */
+        gBoard_DDRThermalMgmtInstance.devIdIr   = TISCI_DEV_R5FSS1_INTROUTER0;
+        gBoard_DDRThermalMgmtInstance.devIdCore = (info.cpuID == CSL_ARM_R5_CPU_ID_0)?
+                                                        TISCI_DEV_R5FSS1_CORE0:
+                                                        TISCI_DEV_R5FSS1_CORE1;
+    }
+    
+    return;
+}
+
+#ifdef __cplusplus
+#pragma CODE_SECTION(".text:BOARD_DDR_thermalManagement");
+#else
+#pragma CODE_SECTION(Board_DDRGetIntNum, ".text:BOARD_DDR_thermalManagement");
+#endif
+
+static Board_STATUS Board_DDRGetIntNum(uint16_t *coreInterruptIdx)
+{
+    Board_STATUS    status = BOARD_SOK;
+    uint16_t        irIntrIdx;
+    struct tisci_msg_rm_get_resource_range_resp res = {0};
+    struct tisci_msg_rm_get_resource_range_req  req = {0};
+
+    req.type           = gBoard_DDRThermalMgmtInstance.devIdIr;
+    req.subtype        = (uint8_t)TISCI_RESASG_SUBTYPE_IR_OUTPUT;
+    req.secondary_host = (uint8_t)TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
+
+    res.range_num = 0;
+    res.range_start = 0;
+
+    /* Get interrupt number range */
+    status =  Sciclient_rmGetResourceRange(
+                &req,
+                &res,
+                SCICLIENT_SERVICE_WAIT_FOREVER);
+    if (CSL_PASS != status || res.range_num == 0) {
+        /* Try with HOST_ID_ALL */
+        req.type           = gBoard_DDRThermalMgmtInstance.devIdIr;
+        req.subtype        = (uint8_t)TISCI_RESASG_SUBTYPE_IR_OUTPUT;
+        req.secondary_host = TISCI_HOST_ID_ALL;
+
+        status = Sciclient_rmGetResourceRange(
+                &req,
+                &res,
+                SCICLIENT_SERVICE_WAIT_FOREVER);
+    }
+    if ((CSL_PASS == status) && (res.range_num != 0))
+    {
+        /* Translate IR Idx to Core Interrupt Idx */
+        irIntrIdx = res.range_start;
+        status = Sciclient_rmIrqTranslateIrOutput(gBoard_DDRThermalMgmtInstance.devIdIr,
+                                                  irIntrIdx,
+                                                  gBoard_DDRThermalMgmtInstance.devIdCore,
+                                                  coreInterruptIdx);
+    }
+    else
+    {
+        status = BOARD_FAIL;
+    }
+
+    return status;
 }
 
 #ifdef __cplusplus
@@ -214,6 +309,7 @@ Board_STATUS Board_DDRTempMonitoringInit(Board_thermalMgmtCallbackFunction_t cal
     uint64_t                    interruptMask;
     uint32_t                    lpddrStatus;
     uint32_t                    fspIndex;
+    uint16_t                    coreInterruptIdx;
     
     struct tisci_msg_rm_irq_release_req irq_release_req =
     {
@@ -262,6 +358,13 @@ Board_STATUS Board_DDRTempMonitoringInit(Board_thermalMgmtCallbackFunction_t cal
     
     if (status == BOARD_SOK)
     {
+        Board_DDRSetDevId();
+        /* Get the Core IRQ Idx */
+        status = Board_DDRGetIntNum(&coreInterruptIdx);
+    }
+
+    if (status == BOARD_SOK)
+    {
         /* Configure interrupt router to route DDR Ctrl interrupt to Monitoring
          * CPU
          */
@@ -270,8 +373,8 @@ Board_STATUS Board_DDRTempMonitoringInit(Board_thermalMgmtCallbackFunction_t cal
                                        | TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID;
         irq_release_req.src_id = TISCI_DEV_DDR0;
         irq_release_req.src_index = 0; /* First interrupt in DDR group is the DDR controller interrupt */
-        irq_release_req.dst_id = TISCI_DEV_MCU_R5FSS0_CORE0;
-        irq_release_req.dst_host_irq = CSLR_MCU_R5FSS0_CORE0_INTR_MAIN2MCU_LVL_INTRTR0_OUTL_63;
+        irq_release_req.dst_id = gBoard_DDRThermalMgmtInstance.devIdCore;
+        irq_release_req.dst_host_irq = coreInterruptIdx;
 
         /* Call irq Release */
         if (CSL_PASS != Sciclient_rmIrqRelease(&irq_release_req, BOARD_SCICLIENT_RESP_TIMEOUT))
@@ -284,8 +387,8 @@ Board_STATUS Board_DDRTempMonitoringInit(Board_thermalMgmtCallbackFunction_t cal
                                    | TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID;
         irq_set_req.src_id = TISCI_DEV_DDR0;
         irq_set_req.src_index = 0; /* First interrupt in DDR group is the DDR controller interrupt */
-        irq_set_req.dst_id = TISCI_DEV_MCU_R5FSS0_CORE0;
-        irq_set_req.dst_host_irq = CSLR_MCU_R5FSS0_CORE0_INTR_MAIN2MCU_LVL_INTRTR0_OUTL_63;
+        irq_set_req.dst_id = gBoard_DDRThermalMgmtInstance.devIdCore;
+        irq_set_req.dst_host_irq = coreInterruptIdx;
 
         /* Call irq Set */
         if (CSL_PASS != Sciclient_rmIrqSet(&irq_set_req, &resp, BOARD_SCICLIENT_RESP_TIMEOUT))
@@ -301,7 +404,7 @@ Board_STATUS Board_DDRTempMonitoringInit(Board_thermalMgmtCallbackFunction_t cal
         Osal_RegisterInterrupt_initParams(&intrPrms); 
         
         intrPrms.corepacConfig.corepacEventNum  = 0;
-        intrPrms.corepacConfig.intVecNum        = CSLR_MCU_R5FSS0_CORE0_INTR_MAIN2MCU_LVL_INTRTR0_OUTL_63;
+        intrPrms.corepacConfig.intVecNum        = coreInterruptIdx;
         intrPrms.corepacConfig.arg              = (uintptr_t)(&(gBoard_DDRThermalMgmtInstance.boardTempInterruptHandle));
         intrPrms.corepacConfig.isrRoutine       = &Board_DDRInterruptHandler;
 
@@ -339,4 +442,3 @@ Board_STATUS Board_DDRTempMonitoringInit(Board_thermalMgmtCallbackFunction_t cal
     }
     return status;
 }
-#endif /* BUILD_MCU1_0 */

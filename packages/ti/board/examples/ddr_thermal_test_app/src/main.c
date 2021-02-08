@@ -94,10 +94,10 @@ int main(void)
 #endif /* #ifdef USE_BIOS */
 {
     int32_t       retVal = 0;
+    Board_STATUS  boardStatus;
     char inputChar;
 #ifndef USE_BIOS
     Board_initCfg boardCfg;
-    Board_STATUS  boardStatus;
 
     boardCfg = BOARD_INIT_PINMUX_CONFIG
                | BOARD_INIT_UART_STDIO;
@@ -110,20 +110,28 @@ int main(void)
 #endif /* USE_BIOS */
     if (retVal == 0)
     {
-        Board_DDRTempMonitoringInit(&Test_DDRTempMonitorCallback);
+        boardStatus = Board_DDRTempMonitoringInit(&Test_DDRTempMonitorCallback);
+    }
+    if (boardStatus != BOARD_SOK)
+    {
+        retVal = -1;
+        UART_printf("[Error] Board DDRTempMonitoringInit failed!!\n");
     }
 
-    do
+    if (retVal == 0)
     {
-        UART_printf("\n Press any key to continue... Press q to quit");
-        inputChar = UART_getc();
-
-        if (inputChar == 'q')
+        do
         {
-            UART_printf("\n Ending test \n");
-            break;
-        }
-    } while(inputChar != 'q');
+            UART_printf("\n Press any key to continue... Press q to quit");
+            inputChar = UART_getc();
+
+            if (inputChar == 'q')
+            {
+                UART_printf("\n Ending test \n");
+                break;
+            }
+        } while(inputChar != 'q');
+    }
 
 #ifdef USE_BIOS
     return;

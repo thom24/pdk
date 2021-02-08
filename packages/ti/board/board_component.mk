@@ -165,7 +165,7 @@ board_ddr_thermal_test_app_PKG_LIST = board_ddr_thermal_test_app
 board_ddr_thermal_test_app_INCLUDE = $(board_ddr_thermal_test_app_PATH)
 board_ddr_thermal_test_app_BOARDLIST = j721e_evm
 export board_ddr_thermal_test_app_BOARDLIST
-board_ddr_thermal_test_app_$(SOC)_CORELIST = mcu1_0
+board_ddr_thermal_test_app_$(SOC)_CORELIST = mcu1_0 mcu2_0 mcu2_1 mcu3_0 mcu3_1
 export board_ddr_thermal_test_app_$(SOC)_CORELIST
 ifeq ($(SOC),$(filter $(SOC), j721e))
 board_ddr_thermal_test_app_SBL_APPIMAGEGEN = yes
