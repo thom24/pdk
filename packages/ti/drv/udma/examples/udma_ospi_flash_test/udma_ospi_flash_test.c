@@ -81,6 +81,8 @@
 #include <ti/drv/uart/UART_stdio.h>
 #include <ti/drv/udma/examples/udma_apputils/udma_apputils.h>
 #include <ti/csl/example/ospi/ospi_flash/common/ospi_flash_common.h>
+#include <ti/csl/example/ospi/ospi_flash/common/ospi_flash_phy_tune.h>
+#include <ti/csl/example/ospi/ospi_flash/common/ospi_flash_patterns.h>
 
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
@@ -104,6 +106,8 @@
 #define UDMA_TEST_XFER_REPEAT_CNT       (10U)
 /** \brief ChunkSize in bytes for each DMA mode OSPI Flash Write operation */
 #define UDMA_TEST_WRITE_CHUNK_SIZE      (16U)
+/** \brief Disable CacheOps in Realtime loop */
+#define UDMA_TEST_DISABLE_RT_CACHEOPS
 
 /*
  * Application other test parameters
@@ -168,7 +172,9 @@
 #define UDMA_OSPI_FLASH_TEST_ID_DAC_DMA_133M_1024B   (12U) 
 /** \brief OSPI flash test at 166MHz RCLK - Read/Write 1024 Bytes */
 #define UDMA_OSPI_FLASH_TEST_ID_DAC_DMA_166M_1024B   (13U)
-    
+/** \brief OSPI flash test at 133MHz RCLK - Write PHY tuning data (For Cypress Flash)*/
+#define UDMA_OSPI_FLASH_TEST_ID_WR_TUNING            (14U)
+
 /** \brief Get GTC Timer Ticks */
 #define App_getGTCTimerTicks() (*((uint64_t *)(CSL_GTC0_GTC_CFG1_BASE + 0x8U)))
 
@@ -312,7 +318,7 @@ int32_t App_setGTCClk(uint32_t moduleId,
 
 
 static int32_t App_ospiFlashInit(App_OspiObj *ospiObj, uint32_t clk);
-void App_ospiFlashConfigDacMode(bool dacMode);
+void App_ospiFlashConfigDacMode( App_OspiObj *ospiObj, bool dacMode);
 #if defined(FLASH_TYPE_OSPI)
 static int32_t App_ospiFlashStart(uint32_t numBytes) __attribute__((section(".udma_critical_fxns")));
 #endif
@@ -356,6 +362,9 @@ volatile uint64_t getTicksDelay = 0;
 App_UdmaTestObj gUdmaAppTestObj[] =
 {
     /* testFunc, testID, clk, numBytes, testDesc */
+#if defined(FLASH_TYPE_XSPI)
+    {Udma_ospiFlashTestRun, UDMA_OSPI_FLASH_TEST_ID_WR_TUNING,         OSPI_MODULE_CLK_133M, OSPI_FLASH_ATTACK_VECTOR_SIZE, "\r\n OSPI flash test at 133MHz RCLK - Write PHY tuning data"},
+#endif
     {Udma_ospiFlashTestRun, UDMA_OSPI_FLASH_TEST_ID_DAC_DMA_133M_16B,  OSPI_MODULE_CLK_133M, 16U, "\r\n OSPI flash test at 133MHz RCLK - Read/Write 16 Bytes"},
     {Udma_ospiFlashTestRun, UDMA_OSPI_FLASH_TEST_ID_DAC_DMA_166M_16B,  OSPI_MODULE_CLK_166M, 16U, "\r\n OSPI flash test at 166MHz RCLK - Read/Write 16 Bytes"},
     {Udma_ospiFlashTestRun, UDMA_OSPI_FLASH_TEST_ID_DAC_DMA_133M_32B,  OSPI_MODULE_CLK_133M, 32U, "\r\n OSPI flash test at 133MHz RCLK - Read/Write 32 Bytes"},
@@ -505,6 +514,7 @@ static int32_t App_ospiFlashTest(App_UdmaObj *appObj, App_OspiObj *ospiObj)
 static int32_t App_udmaOspiFlash(App_UdmaObj *appObj, App_OspiObj *ospiObj)
 {
     int32_t         retVal = UDMA_SOK;
+    App_UdmaTestObj *appTestObj = &appObj->appTestObj;
     uint32_t        i;
     uint8_t        *rxBuf, *txBuf;
 
@@ -527,7 +537,7 @@ static int32_t App_udmaOspiFlash(App_UdmaObj *appObj, App_OspiObj *ospiObj)
         /* For XSPI Flash App_ospiFlashInit configures in INDAC mode for Write.
          * Now switching to DAC mode to perform DAC DMA read.
          */
-        App_ospiFlashConfigDacMode(TRUE);
+        App_ospiFlashConfigDacMode(ospiObj, TRUE);
     #endif
     }
 
@@ -540,19 +550,26 @@ static int32_t App_udmaOspiFlash(App_UdmaObj *appObj, App_OspiObj *ospiObj)
         }
     }
 
-    if(UDMA_SOK == retVal)
+    if(appTestObj->testId != UDMA_OSPI_FLASH_TEST_ID_WR_TUNING)
     {
-        rxBuf  = &gUdmaTestRxBuf[0U];
-        txBuf  = &gUdmaTestTxBuf[0U];
-
-        /* Compare data */
-        for(i = 0U; i < appObj->totalNumBytes; i++)
+        if(UDMA_SOK == retVal)
         {
-            if(rxBuf[i] != txBuf[i])
+            rxBuf  = &gUdmaTestRxBuf[0U];
+            txBuf  = &gUdmaTestTxBuf[0U];
+
+#ifdef UDMA_TEST_DISABLE_RT_CACHEOPS
+            /* Invalidate destination buffer */
+            Udma_appUtilsCacheInv(rxBuf, appObj->totalNumBytes);
+#endif
+            /* Compare data */
+            for(i = 0U; i < appObj->totalNumBytes; i++)
             {
-                App_printNum("\n [Error] Data mismatch at idx %d", i);
-                retVal = UDMA_EFAIL;
-                break;
+                if(rxBuf[i] != txBuf[i])
+                {
+                    App_printNum("\n [Error] Data mismatch at idx %d", i);
+                    retVal = UDMA_EFAIL;
+                    break;
+                }
             }
         }
     }
@@ -720,20 +737,34 @@ static int32_t App_udmaOspiFlashWrite(App_UdmaObj *appObj, App_OspiObj *ospiObj)
     /* Use local variables in real-time loop for optimized performance */
     uint32_t             txStartTicks, txStopTicks;
     App_UdmaCounterObj  *appCounterObj    = &appObj->appCounterObj;
+    App_UdmaTestObj     *appTestObj       = &appObj->appTestObj;
     uint8_t             *txBuf            = &gUdmaTestTxBuf[0U];
     uint16_t             totalSize        = appObj->totalNumBytes;
+    uint32_t             offset;
 
     /* Init TX buffers */
-    for(i = 0U; i < totalSize; i++)
+    if(appTestObj->testId == UDMA_OSPI_FLASH_TEST_ID_WR_TUNING)
     {
-        txBuf[i] = i;
+        for(i = 0U; i < totalSize; i++)
+        {
+            txBuf[i] = ospi_flash_attack_vector[i];
+        }
+        offset = OSPI_FLASH_TUNING_DATA_OFFSET;
+    }
+    else
+    {
+        for(i = 0U; i < totalSize; i++)
+        {
+            txBuf[i] = i;
+        }
+        offset = 0;
     }
 
     /* Capture the time at the beginning of operation */
     txStartTicks = App_getGTCTimerTicks();
 
     /* Call the API to write in INDAC mode */
-    OspiFlash_xspiIndacWrite(ospiObj, txBuf, totalSize, FALSE);
+    OspiFlash_xspiIndacWrite(ospiObj, txBuf, totalSize, FALSE, offset);
 
     /* Capture the time at the end of operation */
     txStopTicks = App_getGTCTimerTicks();
@@ -759,78 +790,94 @@ static int32_t App_udmaOspiFlashRead(App_UdmaObj *appObj)
     App_UdmaTrObj       *appTrObj         = &appChObj->appTrObj;
     App_UdmaCounterObj  *appCounterObj    = &appObj->appCounterObj;
     Udma_ChHandle        chHandle         = appChObj->chHandle;
+#ifndef UDMA_TEST_DISABLE_RT_CACHEOPS
     uint8_t             *rxBuf            = &gUdmaTestRxBuf[0U];
     const uint16_t       size             = appTestObj->numBytes;
+#endif
     volatile uint64_t   *pintrStatusReg   = appTrObj->trEventPrms.intrStatusReg;
     uint64_t             intrMask         = appTrObj->trEventPrms.intrMask;
     volatile uint64_t   *intrClearReg     = appTrObj->trEventPrms.intrClearReg;
     uint8_t             *trpdMem          = appChObj->trpdMem;
-    
-    App_udmaTrObjInitRead(appTestObj, appTrObj);
 
-    /* Get SW trigger register for easy access */
-    triggerMask = ((uint32_t)1U << (appTrObj->trigger - 1U));
-    pSwTriggerReg = (volatile uint32_t *) Udma_chGetSwTriggerRegister(chHandle);
-    if(NULL == pSwTriggerReg)
+    if(appTestObj->testId != UDMA_OSPI_FLASH_TEST_ID_WR_TUNING)
     {
-        App_print("\n [Error] Channel trigger register get failed!!\n");
-    }
+    #if defined(FLASH_TYPE_XSPI)
+        OspiFlash_spiPhyTune(TRUE, OSPI_FLASH_TUNING_DATA_OFFSET);
+    #endif
 
-    /* Submit TRPD to channels */
-    App_udmaTrpdInit(appTrObj, appChObj);
-    retVal = Udma_ringQueueRaw(
-                Udma_chGetFqRingHandle(chHandle),
-                (uint64_t) Udma_appVirtToPhyFxn(trpdMem, 0U, NULL));
-    if(UDMA_SOK != retVal)
-    {
-        App_print("\n [Error] Channel queue failed!!\n");
-    }
+        App_udmaTrObjInitRead(appTestObj, appTrObj);
 
-    if(UDMA_SOK == retVal)
-    {
-        /* Set number of times to trigger RX transfer */
-        triggerCnt = UDMA_TEST_XFER_REPEAT_CNT;
-        for(tCnt = 0U; tCnt < triggerCnt; tCnt++)
-        {      
-
-            /********************************************************
-             * OSPI Read "appTestObj->numBytes" (= appTrObj->icnt[0])
-             ********************************************************/
-
-            rxStartTicks = App_getGTCTimerTicks();
-
-            /* Set channel trigger and wait for completion */
-            CSL_REG32_WR(pSwTriggerReg, triggerMask);
-
-            /* Wait for the transfer to complete in polling mode */
-            while(1U)
-            {
-                volatile uint64_t   intrStatusReg;
-                intrStatusReg = CSL_REG64_RD(pintrStatusReg);
-                /* Check whether the interrupt status Reg is set - which indicates the
-                 * transfer completion of appTestObj->numBytes */
-                if(intrStatusReg & intrMask)
-                {
-                    /* Clear interrupt */
-                    CSL_REG64_WR(intrClearReg, intrMask);
-                    break;
-                }
-            }
-            /* Do Cache invalidate for the received chunk */
-            CSL_armR5CacheInv(rxBuf, size);
-
-            rxStopTicks = App_getGTCTimerTicks();
-
-            appCounterObj->rxStartTicks[tCnt] = rxStartTicks;
-            appCounterObj->rxStopTicks[tCnt] = rxStopTicks;
+        /* Get SW trigger register for easy access */
+        triggerMask = ((uint32_t)1U << (appTrObj->trigger - 1U));
+        pSwTriggerReg = (volatile uint32_t *) Udma_chGetSwTriggerRegister(chHandle);
+        if(NULL == pSwTriggerReg)
+        {
+            App_print("\n [Error] Channel trigger register get failed!!\n");
         }
-    }
-    /* Since TR Reload Count Set for perpetual loop, TRPD never completes and comes back to CQ.
-     * To exit, teardown the channel using Udma_chDisable */
-    retVal = Udma_chDisable(chHandle, UDMA_DEFAULT_CH_DISABLE_TIMEOUT);
-    if(UDMA_SOK != retVal)
-    {
-        App_print("\n [Error] UDMA channel disable failed!!\n");
+
+        /* Submit TRPD to channels */
+        App_udmaTrpdInit(appTrObj, appChObj);
+        retVal = Udma_ringQueueRaw(
+                    Udma_chGetFqRingHandle(chHandle),
+                    (uint64_t) Udma_appVirtToPhyFxn(trpdMem, 0U, NULL));
+        if(UDMA_SOK != retVal)
+        {
+            App_print("\n [Error] Channel queue failed!!\n");
+        }
+
+        if(UDMA_SOK == retVal)
+        {
+            /* Set number of times to trigger RX transfer */
+            triggerCnt = UDMA_TEST_XFER_REPEAT_CNT;
+            for(tCnt = 0U; tCnt < triggerCnt; tCnt++)
+            {      
+
+                /********************************************************
+                 * OSPI Read "appTestObj->numBytes" (= appTrObj->icnt[0])
+                 ********************************************************/
+
+                rxStartTicks = App_getGTCTimerTicks();
+
+                /* Set channel trigger and wait for completion */
+                CSL_REG32_WR(pSwTriggerReg, triggerMask);
+
+                /* Wait for the transfer to complete in polling mode */
+                while(1U)
+                {
+                    volatile uint64_t   intrStatusReg;
+                    intrStatusReg = CSL_REG64_RD(pintrStatusReg);
+                    /* Check whether the interrupt status Reg is set - which indicates the
+                    * transfer completion of appTestObj->numBytes */
+                    if(intrStatusReg & intrMask)
+                    {
+                        /* Clear interrupt */
+                        CSL_REG64_WR(intrClearReg, intrMask);
+                        break;
+                    }
+                }
+#ifndef UDMA_TEST_DISABLE_RT_CACHEOPS
+                /* Do Cache invalidate for the received chunk */
+                CSL_armR5CacheInv(rxBuf, size);
+#endif
+
+                rxStopTicks = App_getGTCTimerTicks();
+
+                appCounterObj->rxStartTicks[tCnt] = rxStartTicks;
+                appCounterObj->rxStopTicks[tCnt] = rxStopTicks;
+            }
+        }
+        /* Since TR Reload Count Set for perpetual loop, TRPD never completes and comes back to CQ.
+        * To exit, teardown the channel using Udma_chDisable */
+        retVal = Udma_chDisable(chHandle, UDMA_DEFAULT_CH_DISABLE_TIMEOUT);
+        if(UDMA_SOK != retVal)
+        {
+            App_print("\n [Error] UDMA channel disable failed!!\n");
+        }
+        /* During channel forced teardown to break from the TR Reload Perpetual loop,
+         * DMA will complete the already reloaded TR. This results in setting the 
+         * interrupt status register after this transfer completion.
+         * Hence clear the interrupt */
+        CSL_REG64_WR(intrClearReg, intrMask);
     }
     return (retVal);
 }
@@ -1333,23 +1380,26 @@ static void App_printPerfResults(App_UdmaObj *appObj)
     App_printNum(" bytes in %d", (uint32_t)appCounterObj->txElapsedTime);
     App_print("ns.");
 
-    triggerCnt = UDMA_TEST_XFER_REPEAT_CNT;
-    for(tCnt = 0U; tCnt < triggerCnt; tCnt++)
+    if(appTestObj->testId != UDMA_OSPI_FLASH_TEST_ID_WR_TUNING)
     {
-        appCounterObj->rxTotalTicks[tCnt] = appCounterObj->rxStopTicks[tCnt] - appCounterObj->rxStartTicks[tCnt]  - getTicksDelay;
-        appCounterObj->rxTotalTicks[triggerCnt] += appCounterObj->rxTotalTicks[tCnt];
-        appCounterObj->rxElapsedTime[tCnt] = (appCounterObj->rxTotalTicks[tCnt]*1000000000U)/(uint64_t)OSPI_FLASH_GTC_CLK_FREQ;
+        triggerCnt = UDMA_TEST_XFER_REPEAT_CNT;
+        for(tCnt = 0U; tCnt < triggerCnt; tCnt++)
+        {
+            appCounterObj->rxTotalTicks[tCnt] = appCounterObj->rxStopTicks[tCnt] - appCounterObj->rxStartTicks[tCnt]  - getTicksDelay;
+            appCounterObj->rxTotalTicks[triggerCnt] += appCounterObj->rxTotalTicks[tCnt];
+            appCounterObj->rxElapsedTime[tCnt] = (appCounterObj->rxTotalTicks[tCnt]*1000000000U)/(uint64_t)OSPI_FLASH_GTC_CLK_FREQ;
 
-        App_printNum("\n OSPI Read %d", appTestObj->numBytes);
-        App_printNum(" bytes in %d", (uint32_t)appCounterObj->rxElapsedTime[tCnt]);
-        App_print("ns.");
+            App_printNum("\n OSPI Read %d", appTestObj->numBytes);
+            App_printNum(" bytes in %d", (uint32_t)appCounterObj->rxElapsedTime[tCnt]);
+            App_print("ns.");
+        }
+        
+        appCounterObj->rxTotalTicks[triggerCnt] = appCounterObj->rxTotalTicks[triggerCnt]/triggerCnt;
+        appCounterObj->rxElapsedTime[triggerCnt] = (appCounterObj->rxTotalTicks[triggerCnt]*1000000000U)/(uint64_t)OSPI_FLASH_GTC_CLK_FREQ;
+        App_printNum("\n\n Average time for OSPI Read %d", appTestObj->numBytes);
+        App_printNum(" bytes = %d", (uint32_t)appCounterObj->rxElapsedTime[triggerCnt]);
+        App_print("ns. \n\n");
     }
-    
-    appCounterObj->rxTotalTicks[triggerCnt] = appCounterObj->rxTotalTicks[triggerCnt]/triggerCnt;
-    appCounterObj->rxElapsedTime[triggerCnt] = (appCounterObj->rxTotalTicks[triggerCnt]*1000000000U)/(uint64_t)OSPI_FLASH_GTC_CLK_FREQ;
-    App_printNum("\n\n Average time for OSPI Read %d", appTestObj->numBytes);
-    App_printNum(" bytes = %d", (uint32_t)appCounterObj->rxElapsedTime[triggerCnt]);
-    App_print("ns. \n\n");
 
     return;
 }
@@ -1421,12 +1471,15 @@ static int32_t App_ospiFlashInit(App_OspiObj *ospiObj, uint32_t clk)
     dacMode = FALSE;
 #endif
 
+    OspiFlash_spiPhyTuneReset(TRUE);
+
     status += OspiFlash_ospiConfigClk(clk);
     if(UDMA_SOK == status)
     {
         App_printNum("\n OSPI RCLK running at %d Hz. \n", clk);
     }
-    
+
+    ospiObj->clk = clk;
     status += OspiFlash_ospiOpen(ospiObj, OSPI_FLASH_WRITE_TIMEOUT, OSPI_FLASH_CHECK_IDLE_DELAY, dacMode, FALSE);
 
     status += OspiFlash_ospiEnableDDR(dacMode, FALSE);
@@ -1440,9 +1493,12 @@ static int32_t App_ospiFlashInit(App_OspiObj *ospiObj, uint32_t clk)
     return (status);    
 }
 
-void App_ospiFlashConfigDacMode(bool dacMode)
+void App_ospiFlashConfigDacMode( App_OspiObj *ospiObj, bool dacMode)
 {
-    CSL_ospiDacEnable((const CSL_ospi_flash_cfgRegs *)(OSPI_FLASH_CONFIG_REG_BASE_ADDR), dacMode);
+    OspiFlash_ospiClose(ospiObj, FALSE);
+    OspiFlash_ospiOpen(ospiObj, OSPI_FLASH_WRITE_TIMEOUT, OSPI_FLASH_CHECK_IDLE_DELAY, TRUE, TRUE);
+    OspiFlash_ospiEnableDDR(dacMode, FALSE);
+    OspiFlash_ospiSetOpcode(dacMode);
 }
 
 #if defined(FLASH_TYPE_OSPI)
@@ -1451,7 +1507,7 @@ static int32_t App_ospiFlashStart(uint32_t numBytes)
     int32_t retVal = UDMA_SOK;
     const CSL_ospi_flash_cfgRegs *baseAddr = (const CSL_ospi_flash_cfgRegs *)(OSPI_FLASH_CONFIG_REG_BASE_ADDR);
 
-    retVal = OspiFlash_ospiEraseBlk(numBytes, FALSE);
+    retVal = OspiFlash_ospiEraseBlk(0U, numBytes, FALSE);
 
     OspiFlash_ospiXferIntrInit(FALSE);
 

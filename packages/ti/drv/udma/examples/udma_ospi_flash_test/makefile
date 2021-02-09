@@ -27,7 +27,7 @@ COMP_LIST_COMMON += udma_apputils
 PACKAGE_SRCS_COMMON = . ../../../../csl/example/ospi/ospi_flash/common/ ../../../../csl/example/ospi/ospi_flash/common/soc/$(SOC)
 INCDIR = . ../../../../csl/example/ospi/ospi_flash/common/ ../../../../csl/example/ospi/ospi_flash/common/soc/$(SOC)
 SRCDIR = . ../../../../csl/example/ospi/ospi_flash/common/ ../../../../csl/example/ospi/ospi_flash/common/soc/$(SOC)
-SRCS_COMMON = main_baremetal.c udma_ospi_flash_test.c ospi_flash_common.c
+SRCS_COMMON = main_baremetal.c udma_ospi_flash_test.c ospi_flash_common.c ospi_flash_phy_tune.c ospi_flash_patterns.c
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS)
 
 # Core/SoC/platform specific source files and CFLAGS
