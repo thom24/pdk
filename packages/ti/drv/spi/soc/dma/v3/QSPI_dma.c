@@ -45,6 +45,8 @@
 #define QSPI_EVENTQUE                    (0U)
 #define QSPI_DMA_XFER_SIZE_ALIGN         (4U)
 
+#define QSPI_DMA_MAX_XFER_CHUNK_SIZE (31U * 1024U)
+
 /* DMA functions */
 static void QSPI_dmaIsrHandler (uintptr_t appData, uint8_t tcc);
 
@@ -91,11 +93,9 @@ int32_t QSPI_dmaConfig(SPI_Handle handle)
             status = SPI_STATUS_ERROR;
         }
     }
-    object->intermediateDmaXferInitiated = false;
+    object->reminderBytes = 0;
     return status;
 }
-
-#define QSPI_DMA_MAX_XFER_SIZE (31U * 1024U)
 
 int32_t QSPI_dmaTransfer(SPI_Handle             handle,
                          const SPI_Transaction *transaction)
@@ -111,32 +111,33 @@ int32_t QSPI_dmaTransfer(SPI_Handle             handle,
 
     dataPtr = ((uintptr_t)hwAttrs->memMappedBaseAddr + (uintptr_t)transaction->txBuf);
 
-    object->intermediateDmaXferInitiated = false;
     if(SPI_TRANSACTION_TYPE_READ == object->transactionType)
     {
-        uint32_t i;
-
-        for (i = 0; i < transaction->count; i += QSPI_DMA_MAX_XFER_SIZE)
+        uint32_t xferLen;
+        if (transaction->count > QSPI_DMA_MAX_XFER_CHUNK_SIZE)
         {
-            /* QSPI EDMA read transfer should be 4 byte aligned else will result in corrupted tranfer */
-            uint32_t xferLen = CSL_NEXT_MULTIPLE_OF(CSL_MIN((transaction->count - i), QSPI_DMA_MAX_XFER_SIZE), QSPI_DMA_XFER_SIZE_ALIGN);
-
-            if (transaction->count > (i + xferLen))
-            {
-                object->intermediateDmaXferInitiated = true;
-            }
-            /* RX Mode */
-            status = QSPI_dmaMemcpy(handle,
-                                    ((uintptr_t)transaction->rxBuf + i),
-                                    ((uintptr_t)dataPtr + i),
-                                    xferLen);
-            //TODO: This reprogramming of intermidiate xfers shoud be done in
-            //intermediate xfer complete ISR and not in loop here.
-            while (object->intermediateDmaXferInitiated == true);
+            object->reminderBytes = transaction->count % QSPI_DMA_MAX_XFER_CHUNK_SIZE;
+            xferLen = transaction->count - object->reminderBytes;
         }
+        else
+        {
+            object->reminderBytes = 0;
+            xferLen = transaction->count;
+        }
+        /* QSPI EDMA read transfer should be 4 byte aligned else will result in corrupted tranfer.
+           Align xferLen and reminderBytes to 4 bytes. */
+        xferLen = CSL_NEXT_MULTIPLE_OF(xferLen, QSPI_DMA_XFER_SIZE_ALIGN);
+        object->reminderBytes = CSL_NEXT_MULTIPLE_OF(object->reminderBytes, QSPI_DMA_XFER_SIZE_ALIGN);
+
+        /* RX Mode */
+        status = QSPI_dmaMemcpy(handle,
+                                ((uintptr_t)transaction->rxBuf),
+                                ((uintptr_t)dataPtr),
+                                xferLen);
     }
     else
     {
+        object->reminderBytes = 0;
         /* TX Mode */
         status  = QSPI_dmaMemcpy(handle,
                                 (uintptr_t)dataPtr,
@@ -179,23 +180,28 @@ static void QSPI_dmaIsrHandler (uintptr_t appData, uint8_t tcc)
     object   = (QSPI_v1_Object*)handle->object;
     hwAttrs  = (QSPI_HwAttrs*)handle->hwAttrs;
 
-    if (object->intermediateDmaXferInitiated == false)
-    {
-        object->transaction->status = SPI_TRANSFER_COMPLETED;
-    }
     /* EDMA is done - disable the DMA channel */
     EDMA_disableChannel(hwAttrs->edmaHandle,
                         tcc,
                         EDMA3_CHANNEL_TYPE_DMA);
 
-    if (object->intermediateDmaXferInitiated == false)
+    if (object->reminderBytes == 0)
     {
+        object->transaction->status = SPI_TRANSFER_COMPLETED;
         /* Call the transfer completion callback function */
         object->qspiParams.transferCallbackFxn(handle, object->transaction);
     }
     else
     {
-        object->intermediateDmaXferInitiated = false;
+        /* Initiate the last chunk of transfer. */
+        uint32_t transferredBytes = object->transaction->count - object->reminderBytes;
+        uintptr_t dataPtr = ((uintptr_t)hwAttrs->memMappedBaseAddr + (uintptr_t)object->transaction->txBuf);
+        /* RX Mode */
+        QSPI_dmaMemcpy(handle,
+                       ((uintptr_t)object->transaction->rxBuf + transferredBytes),
+                       ((uintptr_t)dataPtr + transferredBytes),
+                       object->reminderBytes);
+        object->reminderBytes = 0;
     }
 }
 
@@ -283,15 +289,22 @@ static int32_t QSPI_dmaMemcpy(SPI_Handle     handle,
     paramSet.paramSetConfig.destinationAddress = (uint32_t)destBuf;
 
     /* aCount holds the number of bytes in an array. */
-    paramSet.paramSetConfig.aCount = (uint16_t)1;
+    if (length < QSPI_DMA_MAX_XFER_CHUNK_SIZE)
+    {
+        paramSet.paramSetConfig.aCount = 1;
+    }
+    else
+    {
+        paramSet.paramSetConfig.aCount = ((uint32_t)(length / QSPI_DMA_MAX_XFER_CHUNK_SIZE));
+    }
 
     /*
      * bCnt holds the number of such arrays to be transferred.
      * cCnt holds the number of frames of aCnt*bBcnt bytes to be transferred
      */
-    DebugP_assert (length < 0x8000U);
-    paramSet.paramSetConfig.bCount = (uint16_t)length;
+    paramSet.paramSetConfig.bCount = (uint16_t)(length / paramSet.paramSetConfig.aCount);
     paramSet.paramSetConfig.cCount = (uint16_t)1;
+    /* cIdx will not be used as the cCount is always set to 1. */
     cIdx = (int32_t)paramSet.paramSetConfig.bCount;
 
     /**

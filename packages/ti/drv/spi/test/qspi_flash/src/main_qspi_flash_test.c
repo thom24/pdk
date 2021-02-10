@@ -92,7 +92,16 @@
 #define QSPI_OFFSET             (0U)
 #endif
 
-#define QSPI_TEST_LENGTH        (75U)  /* read/write test data size in 32-bit words */
+#define QSPI_TEST_LENGTH        (75U)     /* read/write test data size in 32-bit words */
+#if defined(SOC_TPR12) || defined (SOC_AWR294X)
+/* Test dma transfer of more than 32K length. */
+#define QSPI_TEST_LENGTH_MMAP   (16000U)  /* read/write test data size in 32-bit words */
+#else
+#define QSPI_TEST_LENGTH_MMAP   (75U)     /* read/write test data size in 32-bit words */
+#endif
+
+/* Tx and Rx Buffer length should be max of transfer length with min length of 1024. */
+#define QSPI_TEST_LENGTH_BUFLEN   CSL_MAX(1024, CSL_MAX(QSPI_TEST_LENGTH, QSPI_TEST_LENGTH_MMAP))
 
 /* Unit test IDs */
 #define QSPI_TEST_ID_CMD          0   /* Command mode test */
@@ -143,12 +152,12 @@ static EDMA3_RM_Handle QSPIApp_edmaInit(void);
 /* Buffer containing the known data that needs to be written to flash */
 #if (defined(_TMS320C6X) || defined (__TI_ARM_V7M4__))
 #pragma DATA_ALIGN (txBuf, 128)
-uint32_t txBuf[1024];
+uint32_t txBuf[QSPI_TEST_LENGTH_BUFLEN];
 #pragma DATA_ALIGN (rxBuf, 128)
-uint32_t rxBuf[1024];
+uint32_t rxBuf[QSPI_TEST_LENGTH_BUFLEN];
 #else
-uint32_t txBuf[1024] __attribute__((aligned(128)));
-uint32_t rxBuf[1024] __attribute__((aligned(128)));
+uint32_t txBuf[QSPI_TEST_LENGTH_BUFLEN] __attribute__((aligned(128)));
+uint32_t rxBuf[QSPI_TEST_LENGTH_BUFLEN] __attribute__((aligned(128)));
 #endif
 
 unsigned int addrValue = 0x000000U;
@@ -335,7 +344,15 @@ static bool QSPI_test_func (void *arg)
         S25FLFlash_BlockErase(flashHandle, blockNumber);
 
         /* Set the transfer length in number of 32 bit words */
-        transferLength = QSPI_TEST_LENGTH;
+
+        if (test->mmapMode)
+        {
+            transferLength = QSPI_TEST_LENGTH_MMAP;
+        }
+        else
+        {
+            transferLength = QSPI_TEST_LENGTH;
+        }
 
         /* Generate the data */
         GeneratePattern((uint8_t *)&txBuf[0], (uint8_t *)&rxBuf[0], transferLength);

@@ -212,7 +212,7 @@ typedef struct QSPI_v1_Object_s {
     bool                  isOpen;         /* flag to indicate module is open */
 
     SPI_Transaction      *transaction;    /* transacation pointer */
-    volatile bool        intermediateDmaXferInitiated; /* Remaining transaction bytes */
+    uint32_t             reminderBytes; /* Remaining bytes to transfer */
 } QSPI_v1_Object;
 
 #ifdef SPI_DMA_ENABLE
