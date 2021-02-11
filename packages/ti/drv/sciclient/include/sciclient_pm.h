@@ -68,7 +68,20 @@ extern "C" {
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
 
-/* None */
+/** SoC defined domgrp 00 */
+#define DOMGRP_00               ((0x01U) << 0U)
+/** SoC defined domgrp 01 */
+#define DOMGRP_01               ((0x01U) << 1U)
+/** SoC defined domgrp 02 */
+#define DOMGRP_02               ((0x01U) << 2U)
+/** SoC defined domgrp 03 */
+#define DOMGRP_03               ((0x01U) << 3U)
+/** SoC defined domgrp 04 */
+#define DOMGRP_04               ((0x01U) << 4U)
+/** SoC defined domgrp 05 */
+#define DOMGRP_05               ((0x01U) << 5U)
+/** SoC defined domgrp 06 */
+#define DOMGRP_06               ((0x01U) << 6U)
 
 /* ========================================================================== */
 /*                         Structure Declarations                             */
@@ -541,6 +554,21 @@ int32_t Sciclient_pmDevicePowerOff(uint32_t timeout);
  *  \return CSL_PASS on success, else failure
  */
 int32_t Sciclient_pmDeviceReset(uint32_t timeout);
+
+/**
+ *  \brief   Objective: Trigger a SoC level reset to parts of the SoC
+ *
+ *  \n<b>Message</b>:    #TISCI_MSG_SYS_RESET
+ *  \n<b>Request</b>:    #tisci_msg_sys_reset_req
+ *  \n<b>Response</b>:   #tisci_msg_sys_reset_resp
+ *
+ *  \param domGrp           Domain group to reset
+ *  \param  timeout         Gives a sense of how long to wait for the operation.
+ *                          Refer \ref Sciclient_ServiceOperationTimeout.
+ *  \return CSL_PASS on success, else failure
+ */
+int32_t Sciclient_pmDomainReset(domgrp_t domGrp, uint32_t timeout);
+
 
 /**
  *  \brief   This API would check if the given module Id is valid for the

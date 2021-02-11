@@ -770,6 +770,34 @@ int32_t Sciclient_pmDeviceReset(uint32_t timeout)
     return retVal;
 }
 
+int32_t Sciclient_pmDomainReset(domgrp_t domGrp, uint32_t timeout)
+{
+    int32_t retVal = CSL_PASS;
+
+    Sciclient_ReqPrm_t reqParam ;
+    struct tisci_msg_sys_reset_req request = {0};
+    struct tisci_msg_sys_reset_resp response = {0};
+    request.domain = domGrp;
+    reqParam.messageType    = (uint16_t) TISCI_MSG_SYS_RESET;
+    reqParam.flags          = (uint32_t) TISCI_MSG_FLAG_AOP;
+    reqParam.pReqPayload    = (const uint8_t *) &request;
+    reqParam.reqPayloadSize = (uint32_t) sizeof(request);
+    reqParam.timeout        = (uint32_t) timeout;
+
+    Sciclient_RespPrm_t respParam ;
+    respParam.flags           = (uint32_t) 0;   /* Populated by the API */
+    respParam.pRespPayload    = (uint8_t *) &response;
+    respParam.respPayloadSize = (uint32_t) sizeof(response);
+
+    retVal = Sciclient_service(&reqParam, &respParam);
+    if((retVal != CSL_PASS) ||
+        ((respParam.flags & TISCI_MSG_FLAG_ACK) != TISCI_MSG_FLAG_ACK))
+    {
+        retVal = CSL_EFAIL;
+    }
+    return retVal;
+}
+
 int32_t Sciclient_pmIsModuleValid(uint32_t modId)
 {
    int32_t retVal = CSL_PASS;
