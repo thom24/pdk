@@ -905,6 +905,19 @@ ifneq ($(watchdog_EXAMPLE_LIST),)
   pdk_EXAMPLE_LIST += $(watchdog_EXAMPLE_LIST)
 endif
 
+# - used to ignore include if component not present
+-include $(PDK_ADCBUF_COMP_PATH)/adcbuf_component.mk
+ifneq ($(adcbuf_LIB_LIST),)
+  pdk_LIB_LIST += $(adcbuf_LIB_LIST)
+endif
+ifneq ($(adcbuf_APP_LIB_LIST),)
+  pdk_APP_LIB_LIST += $(adcbuf_APP_LIB_LIST)
+endif
+ifneq ($(adcbuf_EXAMPLE_LIST),)
+  pdk_EXAMPLE_LIST += $(adcbuf_EXAMPLE_LIST)
+endif
+
+
 # Components included for non-baremetal OS
 ifneq ($(BUILD_OS_TYPE), baremetal)
   #Below applicable only for TDA devices for backward compatibility;not applicable for PRSDK
