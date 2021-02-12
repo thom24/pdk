@@ -82,6 +82,7 @@ static Board_STATUS Board_serdesInitParams(CSL_SerdesLaneEnableParams *laneParam
 
 static Board_STATUS Board_serdesCfgEthernet(uint32_t phyType)
 {
+    CSL_SerdesStatus status;
     CSL_SerdesResult result;
     CSL_SerdesLaneEnableStatus laneRetVal = CSL_SERDES_LANE_ENABLE_NO_ERR;
     CSL_SerdesLaneEnableParams serdesLane0EnableParams  = {0};
@@ -89,6 +90,13 @@ static Board_STATUS Board_serdesCfgEthernet(uint32_t phyType)
     memset(&serdesLane0EnableParams, 0, sizeof(serdesLane0EnableParams));
 
     Board_serdesInitParams(&serdesLane0EnableParams, phyType);
+
+    /* Bail out early if SERDES is already configured */
+    status = CSL_serdesConfigStatus(serdesLane0EnableParams.baseAddr);
+    if (status == 1U)
+    {
+        return BOARD_SOK;
+    }
 
     CSL_serdesPorReset(serdesLane0EnableParams.baseAddr);
 
