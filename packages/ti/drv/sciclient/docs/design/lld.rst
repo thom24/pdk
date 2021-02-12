@@ -1416,6 +1416,42 @@ None
 **See Also**
 None
 
+Sciclient_pmDomainReset
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+ Trigger warm reset of a domain
+ NOTE: Depending on permissions configured for the SoC, not all domains
+ can be reset
+
+ \n<b>Message</b>: #TISCI_MSG_SYS_RESET
+ \n<b>Request</b>: #tisci_msg_sys_reset_req
+ \n<b>Response</b>: #tisci_msg_sys_reset_resp
+
+**Syntax**
+
+int32_t Sciclient_pmDomainReset(domgrp_t domGrp, uint32_t timeout);
+
+**Arguments**
+
+ domGrp :  The domain to be reset.
+
+ timeout :  Gives a sense of how long to wait for the operation.
+ Refer \ref Sciclient_ServiceOperationTimeout.
+
+
+
+**Return Value**
+CSL_PASS on success, else failure
+
+**Comments**
+If domGrp = 0, this API functions like Sciclient_pmDeviceReset.
+
+**Constraints**
+None
+
+**See Also**
+None
+
 Sciclient_pmIsModuleValid
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
