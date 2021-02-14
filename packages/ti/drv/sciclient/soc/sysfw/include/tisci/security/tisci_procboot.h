@@ -407,6 +407,13 @@ struct tisci_msg_proc_get_status_req {
 /** R5 Single Core configuration Only Efuse setting */
 #define TISCI_MSG_VAL_PROC_BOOT_STATUS_FLAG_R5_SINGLECORE_ONLY        (0x00000200U)
 
+/* C7x Status Flags */
+
+/** C7x Set if the core is in WFE state */
+#define TISCI_MSG_VAL_PROC_BOOT_STATUS_FLAG_C7X_WFE         (0x00000001U)
+/** C7x Set if the core is in WFI state */
+#define TISCI_MSG_VAL_PROC_BOOT_STATUS_FLAG_C7X_WFI         (0x00000002U)
+
 /* M4F Status Flags */
 
 /** M4F Set if the core is in WFI state */

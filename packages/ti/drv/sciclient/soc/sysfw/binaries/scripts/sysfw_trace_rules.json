@@ -176,6 +176,18 @@
                         }
                     ]
                 },
+				"0x03":{
+					"action_long": "Points of failures during secure boot api call",
+					"action_short": "SEC_BOOT",
+					"msg_data": [
+						{
+							"fmt": "%d",
+                            "higher_bit": 1,
+                            "lower_bit": 0,
+                            "name": "0x01 => Certificate length > ASN1P_IMAX, 0x02 => Issue fetching certificate, 0x3 => Issue with Hash operation, 0x4 => Hash comparison fails"
+						}
+					]
+				},
                 "0x7F": {
                     "action_long": "Generic Debug Message",
                     "action_short": "GENERIC_DEBUG",

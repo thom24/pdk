@@ -19,11 +19,11 @@ provide root of trust. Each board configuration blob must be signed by the
 private key corresponding to the PKH to establish authenticity. |sysfw| supports
 two ways of signing the board configuration blobs.
 
-1. :ref:`sysfw_pub_hs_bcfg_flexi_approach` - when the board configuration is
+#. :ref:`sysfw_pub_hs_bcfg_flexi_approach` - when the board configuration is
    changing during system development and flexiblity in updating each board
    configuration independently is desired.
 
-2. :ref:`sysfw_pub_hs_bcfg_opt_approach` - when the board configuration is
+#. :ref:`sysfw_pub_hs_bcfg_opt_approach` - when the board configuration is
    fixed and millisecond improvements in boot time are a care about.
 
 In addition, |sysfw| also supports the use of encryption for the |sec_bcfg|.
@@ -32,6 +32,12 @@ In addition, |sysfw| also supports the use of encryption for the |sec_bcfg|.
 
    Both the approaches described above are exclusive. All the board
    configuration blobs must follow the same signing approach.
+
+.. note::
+
+   For all devices which support the :doc:`combined boot image format
+   <../3_boardcfg/BOARDCFG_COMBINED_IMG_FORMAT>`, only the
+   :ref:`sysfw_pub_hs_bcfg_flexi_approach` is enabled at this time.
 
 The rest of the document is organized as follows.
 
@@ -148,8 +154,15 @@ The signing steps are the same as the steps described in
 
 .. _sysfw_pub_hs_bcfg_opt_approach:
    
-Signing procedue for optimized boot time
-========================================
+Signing procedure for optimized boot time
+=========================================
+
+.. note::
+
+   This sequence is only applicable to am65x, am65x_sr2, and j721e devices.
+   This format is deprecated for all other devices which support the
+   :doc:`combined boot image format
+   <../3_boardcfg/BOARDCFG_COMBINED_IMG_FORMAT>`.
 
 Due to the asymmetric key verify operation when authenticating the signed board
 configuration, there is ~4 ms increase in boot time compared to using an

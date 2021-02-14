@@ -1,3 +1,5 @@
+.. _pub_sysfw_introduction:
+
 Introduction
 ============
 

@@ -78,6 +78,10 @@
           
             
             
+              <div class="version">
+                21.01.00
+              </div>
+            
           
 
           
@@ -463,10 +467,10 @@ comprehend the trace version when decoding trace logs</td>
 <span id="pub-trace-debug-data-format-action-id-security"></span><h4>Security Action IDs<a class="headerlink" href="#security-action-ids" title="Permalink to this headline">¶</a></h4>
 <table border="1" class="docutils">
 <colgroup>
-<col width="22%" />
-<col width="9%" />
-<col width="46%" />
-<col width="22%" />
+<col width="17%" />
+<col width="7%" />
+<col width="35%" />
+<col width="40%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Action ID</th>
@@ -490,12 +494,21 @@ initialization</td>
 <td>Bit [0] - 0 =&gt;
 start, 1 =&gt; end</td>
 </tr>
-<tr class="row-even"><td>FAIL (modifier)</td>
+<tr class="row-even"><td>Secure Boot</td>
+<td>0x3</td>
+<td>Indicates points of failures
+during secure boot api call</td>
+<td>0x1 =&gt; Certificate length &gt; ASN1P_IMAX
+0x2 =&gt; Issue fetching certificate
+0x3 =&gt; Issue with Hash operation
+0x4 =&gt; Hash comparison fails</td>
+</tr>
+<tr class="row-odd"><td>FAIL (modifier)</td>
 <td>0x40</td>
 <td>Action failed when action bit set</td>
 <td>N/A</td>
 </tr>
-<tr class="row-odd"><td>Generic
+<tr class="row-even"><td>Generic
 Debug</td>
 <td>127</td>
 <td>Generic Debug message</td>
@@ -1911,7 +1924,7 @@ to the requested device</td>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'',
+            VERSION:'21.01.00',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

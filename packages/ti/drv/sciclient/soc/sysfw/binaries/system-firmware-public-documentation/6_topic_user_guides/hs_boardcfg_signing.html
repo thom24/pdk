@@ -78,6 +78,10 @@
           
             
             
+              <div class="version">
+                21.01.00
+              </div>
+            
           
 
           
@@ -111,7 +115,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#signing-security-board-configuration">Signing Security Board configuration</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#signing-procedue-for-optimized-boot-time">Signing procedue for optimized boot time</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#signing-procedure-for-optimized-boot-time">Signing procedure for optimized boot time</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#including-board-configuration-information-in-sysfw-outer-certificate">Including board configuration information in System Firmware outer certificate</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#payload-format-for-tisci-messages">Payload format for TISCI messages</a></li>
 </ul>
@@ -190,7 +194,7 @@ two ways of signing the board configuration blobs.</p>
 <li><a class="reference internal" href="#sysfw-pub-hs-bcfg-flexi-approach"><span class="std std-ref">Signing procedure during development</span></a> - when the board configuration is
 changing during system development and flexiblity in updating each board
 configuration independently is desired.</li>
-<li><a class="reference internal" href="#sysfw-pub-hs-bcfg-opt-approach"><span class="std std-ref">Signing procedue for optimized boot time</span></a> - when the board configuration is
+<li><a class="reference internal" href="#sysfw-pub-hs-bcfg-opt-approach"><span class="std std-ref">Signing procedure for optimized boot time</span></a> - when the board configuration is
 fixed and millisecond improvements in boot time are a care about.</li>
 </ol>
 <p>In addition, System Firmware also supports the use of encryption for the security board configuration.</p>
@@ -198,6 +202,11 @@ fixed and millisecond improvements in boot time are a care about.</li>
 <p class="first admonition-title">Warning</p>
 <p class="last">Both the approaches described above are exclusive. All the board
 configuration blobs must follow the same signing approach.</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">For all devices which support the <a class="reference internal" href="../3_boardcfg/BOARDCFG_COMBINED_IMG_FORMAT.html"><span class="doc">combined boot image format</span></a>, only the
+<a class="reference internal" href="#sysfw-pub-hs-bcfg-flexi-approach"><span class="std std-ref">Signing procedure during development</span></a> is enabled at this time.</p>
 </div>
 <p>The rest of the document is organized as follows.</p>
 <ol class="arabic simple">
@@ -292,8 +301,14 @@ configuration blob.</li>
 </div>
 </div>
 </div>
-<div class="section" id="signing-procedue-for-optimized-boot-time">
-<span id="sysfw-pub-hs-bcfg-opt-approach"></span><h2>Signing procedue for optimized boot time<a class="headerlink" href="#signing-procedue-for-optimized-boot-time" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="signing-procedure-for-optimized-boot-time">
+<span id="sysfw-pub-hs-bcfg-opt-approach"></span><h2>Signing procedure for optimized boot time<a class="headerlink" href="#signing-procedure-for-optimized-boot-time" title="Permalink to this headline">¶</a></h2>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This sequence is only applicable to am65x, am65x_sr2, and j721e devices.
+This format is deprecated for all other devices which support the
+<a class="reference internal" href="../3_boardcfg/BOARDCFG_COMBINED_IMG_FORMAT.html"><span class="doc">combined boot image format</span></a>.</p>
+</div>
 <p>Due to the asymmetric key verify operation when authenticating the signed board
 configuration, there is ~4 ms increase in boot time compared to using an
 unsigned board configuration. To reduce the boot time increase, System Firmware offers
@@ -490,7 +505,7 @@ boardcfg</td>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'',
+            VERSION:'21.01.00',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
