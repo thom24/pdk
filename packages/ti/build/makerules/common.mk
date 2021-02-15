@@ -617,21 +617,28 @@ ifeq ($(SBL_TYPE), mflash)
   SBL_HS_ADDRESS=0xffffffff
 endif
 
-ifdef KEYWRITER_APP_BIN
-  SBL_BIN_FILE=keywriter_app_bin
-else
-  SBL_BIN_FILE=sbl_img_bin
-endif
 
+SBL_BIN_FILE=sbl_img_bin
 SBL_OBJ_COPY_OPTS := --gap-fill=0xff
 
 sbl_img_bin: $(EXE_NAME)
 	$(SBL_OBJ_COPY) $(SBL_OBJ_COPY_OPTS) -O binary $< $(SBL_BIN_PATH)
 
-keywriter_app_bin: sbl_img_bin
-	$(info )
-	$(info Appending certificate to keywriter binary file)
+keywr_imagegen: $(SBL_BIN_FILE)
+	$(SBL_OBJ_COPY) $(SBL_OBJ_COPY_OPTS) -O binary $(EXE_NAME) $(SBL_BIN_PATH)
+	$(ECHO) \# Appending certificate to keywriter binary file.
 	$(CAT) $(KEYWRITER_APP_DIR)/x509cert/final_certificate.bin >> $(SBL_BIN_PATH)
+ifeq ($(SOC),$(filter $(SOC), j721e))
+ifneq ($(OS),Windows_NT)
+	$(CHMOD) a+x $(SBL_CERT_GEN)
+endif
+	$(SBL_CERT_GEN) -b $(SBL_BIN_PATH) -o $(SBL_TIIMAGE_PATH) -c R5 -l $(SBL_RUN_ADDRESS) -k $($(APP_NAME)_KEYWR_CERT_KEY) -d DEBUG -j DBG_FULL_ENABLE -m $(SBL_MCU_STARTUP_MODE)
+else
+	$(ECHO) $(SOC) "not yet supported"
+endif
+	$(ECHO) \# Signed Keywriter image $(SBL_TIIMAGE_PATH) created.
+	$(ECHO) \#
+
 
 $(SBL_IMAGE_PATH): $(SBL_BIN_FILE)
 ifeq ($(SOC),$(filter $(SOC), tda2xx tda2ex tda2px tda3xx dra78x))

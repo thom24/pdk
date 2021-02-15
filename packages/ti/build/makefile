@@ -393,6 +393,15 @@ $(FINAL_PKG_LIST_ALL) $(FINAL_DUP_EXAMPLE_LIST):
 	    $(if $(filter $(CORE), $(subst emptyreplacement,,$($@_$(SOC)_CORELIST))),\
 	        $(if $(filter yes, $(subst emptyreplacement,,$($@_SBL_APPIMAGEGEN))),\
 	            $(MAKE) -C $($@_PATH) $($@_MAKEFILE) sbl_appimagegen,),),))
+	$(if $(filter $(SOC), $(subst emptyreplacement,,$($@_SOCLIST))),\
+	    $(if $(filter $(CORE), $(subst emptyreplacement,,$($@_$(SOC)_CORELIST))),\
+	        $(if $(filter yes, $(subst emptyreplacement,,$($@_KEYWR_IMAGEGEN))),\
+	            $(MAKE) -C $($@_PATH) $($@_MAKEFILE) keywr_imagegen,),),\
+	$(if $(filter $(BOARD), $(subst emptyreplacement,,$($@_BOARDLIST))),\
+	    $(if $(filter $(CORE), $(subst emptyreplacement,,$($@_$(SOC)_CORELIST))),\
+	        $(if $(filter yes, $(subst emptyreplacement,,$($@_KEYWR_IMAGEGEN))),\
+	            $(MAKE) -C $($@_PATH) $($@_MAKEFILE) keywr_imagegen,),),))
+
 
 $(FINAL_PKG_LIST_ALL_CLEAN) $(FINAL_DUP_EXAMPLE_LIST_CLEAN):
 	$(if $(filter $(SOC), $(subst emptyreplacement,,$($(subst _clean,,$@)_SOCLIST))),\

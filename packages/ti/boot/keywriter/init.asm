@@ -1,6 +1,6 @@
 ;******************************************************************************
 ;*                                                                            *
-;* Copyright (c) 2020 Texas Instruments Incorporated                          *
+;* Copyright (c) 2021 Texas Instruments Incorporated                          *
 ;* http://www.ti.com/                                                         *
 ;*                                                                            *
 ;*  Redistribution and  use in source  and binary forms, with  or without     *
@@ -81,11 +81,9 @@ KeywrErrLoop:
 
 	.endasmfunc
 
-;_keywriterTestStackTop:
-;	.space 64
-;_keywriterTestStackBase:
-
+; Certificate will be appended to keywriter binary, 
+; keywr_end provides a way to get the address of the certificate
 	.sect ".keywr_bin_end"
 	.global keywr_end
 	.def keywr_end
-keywr_end	.long 0x1CEB00DA
+keywr_end	.long 0xC0FFEEEE

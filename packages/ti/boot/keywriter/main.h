@@ -6,7 +6,7 @@
  */
 
 /*
- * Copyright (C) 2020 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2021 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -58,24 +58,25 @@
 #include <ti/board/board.h>
 #include <ti/csl/soc.h>
 
+#include <keywr_defaultBoardcfg_hex.h>
+#include <keywr_defaultBoardcfg_rm_hex.h>
+#include <keywr_defaultBoardcfg_pm_hex.h>
+#include <keywr_defaultBoardcfg_security_hex.h>
+
+
 /* Discard any previous definitions 
- * These two macros are defined in sysfw_keywriter.h file.
+ * These two macros are defined in ti-fs-keywriter.h file.
  * */
 #undef TIFS_KEYWRITER_BIN_SIZE_IN_BYTES
 #undef TIFS_KEYWRITER_BIN
 #include "ti-fs-keywriter.h"
 
-#define OTP_VERSION_STR  "OTP Keywriter Revision: 01.00.00.00"
-#define OTP_LOG_NONE    (0U)
-#define OTP_LOG_MAX     (1U)
-
-#define OTP_log(dbg_level, ...)  if ((int32_t)(dbg_level) <= KEYWRITER_LOG_LEVEL) { UART_printf(__VA_ARGS__); }
-
+#define OTP_VERSION_STR  "OTP Keywriter Version: 02.00.00.00"
 
 #if defined (SOC_J721E)
 
-#define MCU_UART_TXD_MUX_ADDR     (BOARD_WKUP_PMUX_CTRL_ADDR + PIN_WKUP_GPIO0_12)
-#define WKUP_UART_TXD_MUX_ADDR    (BOARD_WKUP_PMUX_CTRL_ADDR + PIN_WKUP_UART0_TXD)
+#define MCU_UART_TXD_MUX_ADDR     		(BOARD_WKUP_PMUX_CTRL_ADDR + PIN_WKUP_GPIO0_12)
+#define WKUP_UART_TXD_MUX_ADDR    		(BOARD_WKUP_PMUX_CTRL_ADDR + PIN_WKUP_UART0_TXD)
 
 #define PIN_INPUT					  	(PIN_INPUT_ENABLE | PIN_PULL_DISABLE)
 #define PIN_OUTPUT					  	(PIN_PULL_DISABLE)
@@ -96,15 +97,24 @@
 
 #endif
 
+const uint32_t gKeywr_boardCfgLow[(KEYWR_BOARDCFG_SIZE_IN_BYTES+3U)/4U]
+    __attribute__(( aligned(128), section(".boardcfg_data") ))
+    = KEYWR_BOARDCFG;
+const uint32_t gKeywr_boardCfgLow_rm[(KEYWR_BOARDCFG_RM_SIZE_IN_BYTES+3U)/4U]
+    __attribute__(( aligned(128), section(".boardcfg_data") ))
+    = KEYWR_BOARDCFG_RM;
+const uint32_t gKeywr_boardCfgLow_sec[(KEYWR_BOARDCFG_SECURITY_SIZE_IN_BYTES+3U)/4U]
+    __attribute__(( aligned(128), section(".boardcfg_data") ))
+    = KEYWR_BOARDCFG_SECURITY;
+const uint32_t gKeywr_boardCfgLow_pm[(KEYWR_BOARDCFG_PM_SIZE_IN_BYTES+3U)/4U]
+    __attribute__(( aligned(128), section(".boardcfg_data") ))
+    = KEYWR_BOARDCFG_PM;
+
 /**
  *  \brief  CSL Reset Vectors.
- *
- *
  *  \param  fileName
  *  \param  lineNo
- *
  *  \return None
- *
  */
 void KeywrErrLoop (const char *fileName, int32_t lineNo);
 

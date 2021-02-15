@@ -810,23 +810,6 @@ export sbl_ospi_img_hlos_hs_$(SOC)_CORELIST = mcu1_0
 export sbl_ospi_img_hlos_hs_SBL_IMAGEGEN = yes
 
 # KEYWRITER Image
-export keywriter_img_COMP_LIST = keywriter_img
-export keywriter_img_RELPATH = ti/boot/sbl/example/k3MulticoreApp/keywriter
-export keywriter_img_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/example/k3MulticoreApp/binary
-export keywriter_img_PATH = $(PDK_SBL_COMP_PATH)/build
-export keywriter_img_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/keywriter.mk KEYWRITER_APP_BIN=keywriter_bin
-export keywriter_img_SBL_CERT_KEY=$(SBL_CERT_KEY_HS)
-export keywriter_img_BOARD_DEPENDENCY = yes
-export keywriter_img_SOC_DEPENDENCY = yes
-export keywriter_img_CORE_DEPENDENCY = yes
-export keywriter_img_PKG_LIST = sbl
-export keywriter_img_INCLUDE = $(keywriter_img_PATH)
-export keywriter_img_BOARDLIST = j721e_evm
-export keywriter_img_$(SOC)_CORELIST = mcu1_0
-export keywriter_img_SBL_IMAGEGEN = yes
-
-sbl_EXAMPLE_LIST += keywriter_img
-
 # SBL HYPERFLASH Image
 sbl_hyperflash_img_COMP_LIST = sbl_hyperflash_img
 sbl_hyperflash_img_RELPATH = ti/boot/sbl/board/k3

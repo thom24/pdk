@@ -7,7 +7,7 @@
  */
 
 /*
- * Copyright (C) 2020 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2021 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -41,11 +41,10 @@
 
 #include "main.h"
 
-volatile int dbg;
-
 extern uint32_t keywr_end;
 
 /* These two macros define size, and hex code of system firmware Key writer binary */
+#pragma DATA_SECTION(gSciclient_firmware,".data:kw_firmware");
 uint32_t gSciclient_firmware[(TIFS_KEYWRITER_BIN_SIZE_IN_BYTES+3)/4] = TIFS_KEYWRITER_BIN;
 
 Sciclient_BoardCfgPrms_t sblBoardCfgPrms = {0};
@@ -56,6 +55,8 @@ static void OTP_SciClientInit(void)
 {
 	int32_t status = CSL_EFAIL;
 	void *sysfw_ptr = gSciclient_firmware;
+	UART_HwAttrs uart_cfg;
+
 	/* SYSFW board configurations */
 	Sciclient_DefaultBoardCfgInfo_t boardCfgInfo;
 	Sciclient_ConfigPrms_t        config =
@@ -67,17 +68,20 @@ static void OTP_SciClientInit(void)
 		TRUE
 	};
 
-	status = Sciclient_getDefaultBoardCfgInfo(&boardCfgInfo);
-	if (status != CSL_PASS)
-	{
-		UART_printf("Sciclient get default board config...FAILED \n");
-		KeywrErrLoop(__FILE__, __LINE__);
-	}
+	/* Use snapshot of sciclient boardconfigs */
+	boardCfgInfo.boardCfgLow          = &gKeywr_boardCfgLow[0U];
+    boardCfgInfo.boardCfgLowRm        = &gKeywr_boardCfgLow_rm[0U];
+    boardCfgInfo.boardCfgLowSec       = &gKeywr_boardCfgLow_sec[0U];
+    boardCfgInfo.boardCfgLowPm        = &gKeywr_boardCfgLow_pm[0U];
+    boardCfgInfo.boardCfgLowSize      = KEYWR_BOARDCFG_SIZE_IN_BYTES;
+    boardCfgInfo.boardCfgLowRmSize    = KEYWR_BOARDCFG_RM_SIZE_IN_BYTES;
+    boardCfgInfo.boardCfgLowSecSize   = KEYWR_BOARDCFG_SECURITY_SIZE_IN_BYTES;
+    boardCfgInfo.boardCfgLowPmSize    = KEYWR_BOARDCFG_PM_SIZE_IN_BYTES;
 
 	status = Sciclient_loadFirmware((const uint32_t *) sysfw_ptr);
 	if (status != CSL_PASS)
     {
-        /* UART_printf("TIFS load...FAILED \n"); */
+		UART_printf("TIFS load...FAILED \n");
 		KeywrErrLoop(__FILE__, __LINE__);
     }
 
@@ -88,84 +92,52 @@ static void OTP_SciClientInit(void)
 		KeywrErrLoop(__FILE__, __LINE__);
 	}
 
-
-	sblBoardCfgPrms.boardConfigLow = (uint32_t)boardCfgInfo.boardCfgLow;
+	sblBoardCfgPrms.boardConfigLow  = (uint32_t)boardCfgInfo.boardCfgLow;
 	sblBoardCfgPrms.boardConfigHigh = 0;
 	sblBoardCfgPrms.boardConfigSize = boardCfgInfo.boardCfgLowSize;
-	sblBoardCfgPrms.devGrp = DEVGRP_ALL;
+	sblBoardCfgPrms.devGrp          = DEVGRP_ALL;
 	status = Sciclient_boardCfg(&sblBoardCfgPrms);
+
 	if (status != CSL_PASS)
 	{
 		UART_printf("Sciclient board config ...FAILED \n");
 		KeywrErrLoop(__FILE__, __LINE__);
 	}
+	
+	UART_stdioDeInit();                                                  
 
-	 if (KEYWRITER_LOG_LEVEL > OTP_LOG_NONE)                                        
-	 {                                                                        
-	     UART_stdioDeInit();                                                  
-	 }                                                                        
-	 sblBoardCfgPmPrms.boardConfigLow = (uint32_t)boardCfgInfo.boardCfgLowPm; 
-	 sblBoardCfgPmPrms.boardConfigHigh = 0;                                   
-	 sblBoardCfgPmPrms.boardConfigSize = boardCfgInfo.boardCfgLowPmSize;      
-	 sblBoardCfgPmPrms.devGrp = DEVGRP_ALL;                                   
-	 status = Sciclient_boardCfgPm(&sblBoardCfgPmPrms);                       
-	 if (status != CSL_PASS)                                                  
-	 {                                                                        
-	     UART_printf("Sciclient board config pm...FAILED \n");
-	     KeywrErrLoop(__FILE__, __LINE__);                                      
-	 }                                                                        
-	 if (KEYWRITER_LOG_LEVEL > OTP_LOG_NONE)                                        
-	 {
-		/* Re-init UART for logging */                                                                        
-	    UART_HwAttrs uart_cfg;                                               
-	                                                                          
-	    UART_socGetInitCfg(BOARD_UART_INSTANCE, &uart_cfg);                  
-	    uart_cfg.frequency = SBL_SYSFW_UART_MODULE_INPUT_CLK;                
-	    UART_socSetInitCfg(BOARD_UART_INSTANCE, &uart_cfg);                  
-	    UART_stdioInit(BOARD_UART_INSTANCE);                                 
-	 }
-	
-	
-	sblBoardCfgSecPrms.boardConfigLow = (uint32_t)boardCfgInfo.boardCfgLowSec;
+	sblBoardCfgPmPrms.boardConfigLow  = (uint32_t)boardCfgInfo.boardCfgLowPm;
+	sblBoardCfgPmPrms.boardConfigHigh = 0;
+	sblBoardCfgPmPrms.boardConfigSize = boardCfgInfo.boardCfgLowPmSize;
+	sblBoardCfgPmPrms.devGrp          = DEVGRP_ALL;
+	status = Sciclient_boardCfgPm(&sblBoardCfgPmPrms);
+
+	if (status != CSL_PASS)                                                  
+	{                                                                        
+		UART_printf("Sciclient board config pm...FAILED \n");
+		KeywrErrLoop(__FILE__, __LINE__);                                      
+	}
+
+	/* Re-init UART for logging */                                                                        
+	UART_socGetInitCfg(BOARD_UART_INSTANCE, &uart_cfg);                  
+	uart_cfg.frequency = SBL_SYSFW_UART_MODULE_INPUT_CLK;                
+	UART_socSetInitCfg(BOARD_UART_INSTANCE, &uart_cfg);                  
+	UART_stdioInit(BOARD_UART_INSTANCE);                                 
+
+	sblBoardCfgSecPrms.boardConfigLow  = (uint32_t)boardCfgInfo.boardCfgLowSec;
 	sblBoardCfgSecPrms.boardConfigHigh = 0;
 	sblBoardCfgSecPrms.boardConfigSize = boardCfgInfo.boardCfgLowSecSize;
-	sblBoardCfgSecPrms.devGrp = DEVGRP_ALL;
+	sblBoardCfgSecPrms.devGrp          = DEVGRP_ALL;
 	status = Sciclient_boardCfgSec(&sblBoardCfgSecPrms);
 	if (status != CSL_PASS)
 	{
 		UART_printf("Sciclient board config sec...FAILED \n");
 		KeywrErrLoop(__FILE__, __LINE__);
 	}
-	/* Secure ROM has left firewall regions for FSS DAT0 set.  Disable them for DMA usage. */
-	uint16_t i;
-	struct tisci_msg_fwl_set_firewall_region_resp respFwCtrl = {0};
-	struct tisci_msg_fwl_set_firewall_region_req reqFwCtrl =
-	{
-		.fwl_id = (uint16_t) MCU_FSS0_S0_FWID,
-		.region = (uint16_t) 0,
-		.n_permission_regs = (uint32_t) 3,
-		.control = (uint32_t) 0,
-		.permissions[0] = (uint32_t) 0,
-		.permissions[1] = (uint32_t) 0,
-		.permissions[2] = (uint32_t) 0,
-		.start_address = 0,
-		.end_address = 0
-	};
-
-	for (i = 0; i < MCU_FSS0_S0_FW_REGIONS; i++)
-	{
-		reqFwCtrl.region = i;
-		status = Sciclient_firewallSetRegion(&reqFwCtrl, &respFwCtrl, SCICLIENT_SERVICE_WAIT_FOREVER);
-		if (status != CSL_PASS)
-		{
-			UART_printf("MCU FSS0_S0 firewall region # %d disable...FAILED \n", i);
-		}
-	}
-
-	/* Skipping board cfg RM, since it is not included in sysfw for keywriter */
+	
+	/* Skipping board cfg RM, since it is not included in keywriter firmware */
 
 	/* Print System Firmware Version Information */
-
 	struct tisci_msg_version_req req = {0};
 	const Sciclient_ReqPrm_t      reqPrm =
 	{
@@ -229,20 +201,19 @@ int main()
 	UART_stdioInit(BOARD_UART_INSTANCE);
 
 	UART_printf("%s (%s - %s)\n", OTP_VERSION_STR, __DATE__, __TIME__);
-
 	OTP_SciClientInit();
 
-	UART_printf("Beginning key programming sequence \n");
-	UART_printf("Taking OTP configuration from 0x%x\n", (uint32_t *)keywriter_cert);	
+	UART_printf("Key programming sequence initialted\n");
+	UART_printf("Taking OTP certificate from 0x%x\n", (uint32_t *)keywriter_cert);	
 	status = Sciclient_otpProcessKeyCfg((uint32_t *)keywriter_cert, SCICLIENT_SERVICE_WAIT_FOREVER, &debug_response);
 	if (status != CSL_PASS)
 	{
-		UART_printf("Something wrong happened!!\n");
+		UART_printf("Sciclient_otpProcessKeyCfg returns: %d\n", status);
 	}
 	
 	UART_printf("Debug response: 0x%x\n", debug_response);
 	
-	UART_printf("Key programming is complete \n");
+	UART_printf("Key programming sequence completed\n");
 
 	asm volatile (" wfi");
 

@@ -273,6 +273,18 @@ ifneq ($(sbl_EXAMPLE_LIST),)
 endif
 
 # - used to ignore include if component not present
+-include $(PDK_KEYWR_COMP_PATH)/keywriter_component.mk
+ifneq ($(keywriter_LIB_LIST),)
+  pdk_LIB_LIST += $(keywriter_LIB_LIST)
+endif
+ifneq ($(keywriter_APP_LIB_LIST),)
+  pdk_APP_LIB_LIST += $(keywriter_APP_LIB_LIST)
+endif
+ifneq ($(keywriter_EXAMPLE_LIST),)
+  pdk_EXAMPLE_LIST += $(keywriter_EXAMPLE_LIST)
+endif
+
+# - used to ignore include if component not present
 -include $(PDK_SBL_AUTO_COMP_PATH)/sbl_auto_component.mk
 ifneq ($(sbl_auto_LIB_LIST),)
   pdk_LIB_LIST += $(sbl_auto_LIB_LIST)

@@ -32,7 +32,7 @@
 */
 
 /**
-*  \file ti-fs-keywriter.h
+*  \file keywr_defaultBoardcfg_hex.h
 *
 *  \brief File containing the Binary in a C array.
 *
@@ -48,7 +48,7 @@
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
 
-#define TIFS_KEYWRITER_BIN_SIZE_IN_BYTES (0U)
+#define KEYWR_BOARDCFG_SIZE_IN_BYTES (29U)
 
 /* ========================================================================== */
 /*                         Structure Declarations                             */
@@ -66,5 +66,7 @@
 /*                            Global Variables                                */
 /* ========================================================================== */
 
-#define TIFS_KEYWRITER_BIN {\
-} /* 0 bytes */
+#define KEYWR_BOARDCFG { \
+    0xc1d30100U,     0x045a0007U,     0x07120700U,     0x00010100U, \
+    0x0005a5c3U,     0x08020c00U,     0x3f000d00U,     0x00000000U\
+} /* 29 bytes */
