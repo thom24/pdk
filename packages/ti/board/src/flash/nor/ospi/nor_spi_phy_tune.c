@@ -281,10 +281,10 @@ NOR_STATUS Nor_spiPhyDdrTune(SPI_Handle handle, uint32_t offset)
     NOR_PhyConfig          topRight;
     NOR_PhyConfig          gapLow;
     NOR_PhyConfig          gapHigh;
-    NOR_PhyConfig          rxLow, rxHigh, txLow, txHigh, temp;
+    NOR_PhyConfig          rxLow, rxHigh, txLow, txHigh, temp, left, right;
     int32_t                rdDelay;
     float                  temperature = 0;
-    float                  m,b,length1,length2;
+    float                  length1,length2;
 
     /*
      * Bottom left corner is present in initial rdDelay value and search from there.
@@ -611,34 +611,42 @@ NOR_STATUS Nor_spiPhyDdrTune(SPI_Handle handle, uint32_t offset)
         topRight.rdDelay = temp.rdDelay;
     }
 
-    /* Draw a line between the two */
-    m = ((float)topRight.rxDLL-(float)bottomLeft.rxDLL)/((float)topRight.txDLL-(float)bottomLeft.txDLL);
-    b = (float)topRight.rxDLL-m*(float)topRight.txDLL;
+	left  = bottomLeft;
+	right = topRight;
 
-    /* Search along line between the corners */
-    searchPoint = bottomLeft;
-    do{
-        NOR_spiPhyConfig(handle,searchPoint);
-        status = NOR_spiPhyRdAttack(hwAttrs->dataAddr + offset);
-#ifdef NOR_SPI_TUNE_DEBUG
-        norSpiTuneCnt++;
-#endif
-        searchPoint.txDLL+=1U;
-        searchPoint.rxDLL = (int32_t)(m*searchPoint.txDLL+b);
-    }while(status == NOR_FAIL);
+	searchPoint.txDLL = left.txDLL + ((right.txDLL - left.txDLL) / 2);
+	searchPoint.rxDLL = left.rxDLL + ((right.rxDLL - left.rxDLL) / 2);
+	searchPoint.rdDelay = left.rdDelay;
 
     do{
         NOR_spiPhyConfig(handle,searchPoint);
         status = NOR_spiPhyRdAttack(hwAttrs->dataAddr + offset);
+        if(status == NOR_FAIL){
+            /*
+             * Since we couldn't find the pattern, we need to go the
+             * the upper half.
+             */
+            right.txDLL = searchPoint.txDLL;
+            right.rxDLL = searchPoint.rxDLL;
+            
+            searchPoint.txDLL = left.txDLL + ((searchPoint.txDLL - left.txDLL)/2);
+            searchPoint.rxDLL = left.rxDLL + ((searchPoint.rxDLL - left.rxDLL)/2);
+        }else{
+            /*
+             * Since we found the pattern, we need to go to the
+             * lower half.
+             */
+            left.txDLL = searchPoint.txDLL;
+            left.rxDLL = searchPoint.rxDLL;
+            
+            searchPoint.txDLL = searchPoint.txDLL + ((right.txDLL - searchPoint.txDLL)/2);
+            searchPoint.rxDLL = searchPoint.rxDLL + ((right.rxDLL - searchPoint.rxDLL)/2);
+        }
 #ifdef NOR_SPI_TUNE_DEBUG
         norSpiTuneCnt++;
 #endif
-        searchPoint.txDLL+=1U;
-        searchPoint.rxDLL = (int)(m*searchPoint.txDLL+b);
-    }while(status == NOR_PASS);
-
-    searchPoint.txDLL-=1U;
-    searchPoint.rxDLL = (int)(m*searchPoint.txDLL+b);
+    /* Break the loop if the window has closed. */
+    } while ((right.txDLL - left.txDLL >= 2) && (right.rxDLL - left.rxDLL >= 2));
     gapLow = searchPoint;
 
     /* If there's only one segment, put tuning point in the middle and adjust for temperature */
@@ -656,29 +664,44 @@ NOR_STATUS Nor_spiPhyDdrTune(SPI_Handle handle, uint32_t offset)
         searchPoint.rxDLL+= (topRight.rxDLL-bottomLeft.rxDLL)*(0.5*(temperature-42.5)/165U);
     }else{
         /* If there are two segments, find the start and end of the second one */
-        searchPoint = topRight;
-        do{
-            NOR_spiPhyConfig(handle,searchPoint);
-            status = NOR_spiPhyRdAttack(hwAttrs->dataAddr + offset);
-#ifdef NOR_SPI_TUNE_DEBUG
-            norSpiTuneCnt++;
-#endif
-            searchPoint.txDLL-=1;
-            searchPoint.rxDLL = (int)(m*searchPoint.txDLL+b);
-        }while(status == NOR_FAIL);
+
+        left  = bottomLeft;
+        right = topRight;
+
+        searchPoint.txDLL = left.txDLL + ((right.txDLL - left.txDLL) / 2);
+        searchPoint.rxDLL = left.rxDLL + ((right.rxDLL - left.rxDLL) / 2);
+        searchPoint.rdDelay = right.rdDelay;
 
         do{
             NOR_spiPhyConfig(handle,searchPoint);
             status = NOR_spiPhyRdAttack(hwAttrs->dataAddr + offset);
+            if(status == NOR_FAIL){
+                /*
+			     * Since we couldn't find the pattern, we need to go the
+			     * the upper half.
+			     */
+                left.txDLL = searchPoint.txDLL;
+                left.rxDLL = searchPoint.rxDLL;
+                
+                searchPoint.txDLL = searchPoint.txDLL + ((right.txDLL - searchPoint.txDLL)/2);
+                searchPoint.rxDLL = searchPoint.rxDLL + ((right.rxDLL - searchPoint.rxDLL)/2);
+            }else{
+                /*
+			     * Since we found the pattern, we need to go to the
+			     * lower half.
+			     */
+                right.txDLL = searchPoint.txDLL;
+                right.rxDLL = searchPoint.rxDLL;
+                
+                searchPoint.txDLL = left.txDLL + ((searchPoint.txDLL - left.txDLL)/2);
+                searchPoint.rxDLL = left.rxDLL + ((searchPoint.rxDLL - left.rxDLL)/2);
+            }
 #ifdef NOR_SPI_TUNE_DEBUG
             norSpiTuneCnt++;
 #endif
-            searchPoint.txDLL-=1U;
-            searchPoint.rxDLL = (int)(m*searchPoint.txDLL+b);
-        }while(status == NOR_PASS);
+        /* Break the loop if the window has closed. */
+        } while ((right.txDLL - left.txDLL >= 2) && (right.rxDLL - left.rxDLL >= 2));
 
-        searchPoint.txDLL+=1U;
-        searchPoint.rxDLL = (int)(m*searchPoint.txDLL+b);
         gapHigh = searchPoint;
         /* Place the final tuning point of the PHY in the corner furthest from the gap */
         length1 = abs(gapLow.txDLL-bottomLeft.txDLL) + abs(gapLow.rxDLL-bottomLeft.rxDLL);
@@ -686,11 +709,11 @@ NOR_STATUS Nor_spiPhyDdrTune(SPI_Handle handle, uint32_t offset)
         if(length2>length1){
             searchPoint = topRight;
             searchPoint.txDLL-=16U;
-            searchPoint.rxDLL-= 16U*m;
+            searchPoint.rxDLL-= 16U * ((float)topRight.rxDLL-(float)bottomLeft.rxDLL)/((float)topRight.txDLL-(float)bottomLeft.txDLL);
         }else{
             searchPoint = bottomLeft;
             searchPoint.txDLL+=16U;
-            searchPoint.rxDLL+=16U*m;
+            searchPoint.rxDLL+=16U * ((float)topRight.rxDLL-(float)bottomLeft.rxDLL)/((float)topRight.txDLL-(float)bottomLeft.txDLL);
         }
 #ifdef NOR_SPI_TUNE_DEBUG
         NOR_log("Bottom left found at txDLL,rxDLL of %d,%d to %d,%d, and a rdDelay of %d\n",bottomLeft.txDLL,bottomLeft.rxDLL,gapLow.txDLL,gapLow.rxDLL,gapLow.rdDelay);
