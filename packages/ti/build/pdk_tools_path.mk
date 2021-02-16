@@ -112,7 +112,9 @@ endif
   export GCC_ARM_NONE_TOOLCHAIN    ?= $(SDK_INSTALL_PATH)/gcc-$(GCC_CROSS_TOOL_PREFIX)$(GCC_CROSS_TOOL_TAG)
   export TI_CGT6x_INSTALL_DIR      ?= $(SDK_INSTALL_PATH)/c6000_7.4.16
   export M4_TOOLCHAIN_INSTALL_DIR  ?= $(TOOLCHAIN_PATH_M4)
-
+  export FREERTOS_KERNEL_INSTALL_PATH   ?= $(SDK_INSTALL_PATH)/freertos/FreeRTOS-LTS/FreeRTOS
+  export FREERTOS_LABS_INSTALL_PATH     ?= $(SDK_INSTALL_PATH)/freertos/FreeRTOS-Labs/FreeRTOS-Labs/Source
+  
 ifeq ($(SOC),$(filter $(SOC), am335x))
   export HARDLIB_PATH ?= $(TOOLCHAIN_PATH_A8)/lib/gcc/arm-none-eabi/$(GCC_VERSION_HARDLIB)
   export FPULIB_PATH ?= $(TOOLCHAIN_PATH_A8)/lib/gcc/arm-none-eabi/$(GCC_VERSION_FPULIB)/fpu

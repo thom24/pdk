@@ -89,11 +89,18 @@ void OsalArch_clearInterrupt(uint32_t intNum)
     CSL_intcInterruptClear((CSL_IntcVectId)intNum);
     return;
 }
+extern cregister volatile unsigned int IRP;
+extern cregister volatile unsigned int IER;
+extern cregister volatile unsigned int ISR;
+extern cregister volatile unsigned int ICR;
+extern cregister volatile unsigned int ISTP;
+
 /* Below function posts the interrupt */
 int32_t OsalArch_postInterrupt(uint32_t intrNum)
 {
-    /* Workaround to resolve the Misra-C 2012 Rule 2.7 issue */
-    (void)intrNum;
+
+    ISR = (1 << intrNum);
+    asm("    nop 4    ");
 
     return (osal_UNSUPPORTED);
 }

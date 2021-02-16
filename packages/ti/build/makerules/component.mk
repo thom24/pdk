@@ -872,6 +872,17 @@ ifneq ($(canfd_EXAMPLE_LIST),)
   pdk_EXAMPLE_LIST += $(canfd_EXAMPLE_LIST)
 endif
 
+-include $(PDK_FREERTOS_COMP_PATH)/freertos_component.mk
+ifneq ($(freertos_LIB_LIST),)
+  pdk_LIB_LIST += $(freertos_LIB_LIST)
+endif
+ifneq ($(freertos_APP_LIB_LIST),)
+  pdk_APP_LIB_LIST += $(freertos_APP_LIB_LIST)
+endif
+ifneq ($(freertos_EXAMPLE_LIST),)
+  pdk_EXAMPLE_LIST += $(freertos_EXAMPLE_LIST)
+endif
+
 -include $(PDK_ESM_COMP_PATH)/esm_component.mk
 ifneq ($(esm_LIB_LIST),)
   pdk_LIB_LIST += $(esm_LIB_LIST)
