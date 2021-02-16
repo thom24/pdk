@@ -156,6 +156,9 @@ typedef struct HwiP_Params_s {
                                         v2.0 specific implementations as @ref OSAL_armGicTrigType_t 
                                     */
 #endif
+#ifdef QNX_OS
+    uint32_t   autoEnable; /*!< Automatically enable the interrupt after calling ISR routine */
+#endif
 } HwiP_Params;
 
 /*!

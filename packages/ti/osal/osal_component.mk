@@ -126,6 +126,9 @@ ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
 osal_LIB_LIST += osal_safertos
 endif
 endif
+ifeq ($(BUILD_OS_TYPE), qnx)
+osal_LIB_LIST += osal_qnx
+endif
 
 libosal_LIB_LIST = $(osal_LIB_LIST)
 
@@ -135,6 +138,38 @@ libosal_LIB_LIST = $(osal_LIB_LIST)
 # All the tests mentioned in list are built when test target is called
 # List below all examples for allowed values
 ############################
+
+#
+# QNX Modules
+#
+
+# OSAL QNX LIB
+osal_qnx_COMP_LIST = osal_qnx
+osal_qnx_RELPATH = ti/osal
+osal_qnx_PATH = $(PDK_OSAL_COMP_PATH)
+osal_qnx_LIBNAME = ti.osal
+export osal_qnx_LIBNAME
+osal_qnx_LIBPATH = $(osal_qnx_PATH)/lib/qnx
+export osal_qnx_LIBPATH
+osal_qnx_OBJPATH = $(osal_qnx_RELPATH)/osal_qnx
+export osal_qnx_OBJPATH
+osal_qnx_MAKEFILE = -f build/makefile_qnx.mk
+export osal_qnx_MAKEFILE
+osal_qnx_PLATFORM_DEPENDENCY = no
+osal_qnx_CORE_DEPENDENCY = no
+osal_qnx_SOC_DEPENDENCY = yes
+export osal_qnx_COMP_LIST
+export osal_qnx_PLATFORM_DEPENDENCY
+export osal_qnx_CORE_DEPENDENCY
+export osal_qnx_SOC_DEPENDENCY
+osal_qnx_PKG_LIST = osal_qnx
+export osal_qnx_PKG_LIST
+osal_qnx_INCLUDE = $(osal_qnx_PATH)
+osal_qnx_SOCLIST = $(libosal_SOCLIST)
+export osal_qnx_SOCLIST
+osal_qnx_$(SOC)_CORELIST = qnx_mpu1_0
+export osal_qnx_$(SOC)_CORELIST
+
 osal_EXAMPLE_LIST =
 
 #

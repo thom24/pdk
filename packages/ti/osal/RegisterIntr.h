@@ -92,6 +92,9 @@ typedef struct {
     uint32_t enableIntr;          /*!< When set to TRUE, interrupt is enabled after registration
                                        (@ref Osal_RegisterInterrupt) otherwise interrupt is disabled
                                    */
+#ifdef QNX_OS
+    uint32_t intAutoEnable;     /*!< Automatically enable interrupt after calling ISR routine */
+#endif
 } OsalRegisterIntParams_corepac_t;
 
 /*!
