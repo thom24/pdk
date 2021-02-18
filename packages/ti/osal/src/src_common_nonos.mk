@@ -35,7 +35,7 @@ ifeq ($(CORE),mpu1_0)
   PACKAGE_SRCS_COMMON += arch/core/a53
 endif
 
-ifeq ($(CORE),$(filter $(CORE), mcu1_0 mcu2_0 mcu2_1))
+ifeq ($(CORE),$(filter $(CORE), mcu1_0 mcu2_0 mcu2_1 mcu1_1))
   SRCDIR += arch/core/r5
   SRCS_COMMON += CacheP_nonos.c Arch_util.c
   SRCS_ASM_COMMON += TimestampProvider_asm.asm
