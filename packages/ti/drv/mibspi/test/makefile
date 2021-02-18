@@ -14,12 +14,12 @@ CFLAGS_OS_DEFINES = -DUSE_BIOS
 EXTERNAL_INTERFACES = bios xdc
 COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP)
 
-ifeq ($(SOC),$(filter $(SOC), tpr12))
+ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
 ifeq ($(CORE),$(filter $(CORE), mcu1_0))
-  XDC_CFG_FILE_$(CORE) = ./tpr12/mss.cfg
+  XDC_CFG_FILE_$(CORE) = ./$(SOC)/mss.cfg
 endif
 ifeq ($(CORE),$(filter $(CORE), c66xdsp_1))
-  XDC_CFG_FILE_$(CORE) = ./tpr12/dss.cfg
+  XDC_CFG_FILE_$(CORE) = ./$(SOC)/dss.cfg
 endif
 endif
 
@@ -28,7 +28,7 @@ endif
 SRCDIR = . src
 INCDIR = . src
 
-ifeq ($(SOC),$(filter $(SOC), tpr12))
+ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
 SRCDIR += $(SOC)
 INCDIR += $(SOC)
 endif
@@ -74,22 +74,22 @@ endif
 
 # Master running on mcu1_0 core, use the common linker command file in build
 #CFLAGS_SPI_MS     = -DMIBSPI_MASTER_TASK
-ifeq ($(SOC),$(filter $(SOC), tpr12))
+ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
 # MIBSPI uses local linker command file to avoid code/data memory conflict with master application
 ifeq ($(IS_BAREMETAL),yes)
-EXTERNAL_LNKCMD_FILE_LOCAL =  ./tpr12/mss_spi_linker.cmd
+EXTERNAL_LNKCMD_FILE_LOCAL =  ./$(SOC)/mss_spi_linker.cmd
 else
 ifeq ($(CORE),$(filter $(CORE), mcu1_0))
-  EXTERNAL_LNKCMD_FILE_LOCAL =  ./tpr12/mss_spi_linker.cmd
+  EXTERNAL_LNKCMD_FILE_LOCAL =  ./$(SOC)/mss_spi_linker.cmd
 endif
 ifeq ($(CORE),$(filter $(CORE), c66xdsp_1))
-  EXTERNAL_LNKCMD_FILE_LOCAL =  ./tpr12/dss_spi_linker.cmd
+  EXTERNAL_LNKCMD_FILE_LOCAL =  ./$(SOC)/dss_spi_linker.cmd
 endif
 endif
 endif
 
-# tpr12 build
-ifeq ($(BOARD),$(filter $(BOARD), tpr12_evm))
+# tpr12, awr294x build
+ifeq ($(BOARD),$(filter $(BOARD), tpr12_evm awr294x_evm))
 #CFLAGS_SPI_UT    = -DMIBSPI_MULT_CHANNEL
 endif
 

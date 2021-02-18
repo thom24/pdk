@@ -25,10 +25,10 @@ COMP_LIST_COMMON += hwa
 INCLUDE_EXTERNAL_INTERFACES += xdc bios pdk
 XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
 ifeq ($(CORE),$(filter $(CORE), c66xdsp_1))
-EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/drv/hwa/test/tpr12/dss_hwa_linker.cmd
+EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/drv/hwa/test/$(SOC)/dss_hwa_linker.cmd
 endif
 ifeq ($(CORE),$(filter $(CORE), mcu1_0))
-EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/drv/hwa/test/tpr12/mss_hwa_linker.cmd
+EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/drv/hwa/test/$(SOC)/mss_hwa_linker.cmd
 endif
 # Common source files and CFLAGS across all platforms and cores
 

@@ -20,12 +20,18 @@ ifeq ($(CORE),$(filter $(CORE), mcu1_0))
 endif
 endif
 
+ifeq ($(SOC),$(filter $(SOC), awr294x))
+ifeq ($(CORE),$(filter $(CORE), mcu1_0))
+  XDC_CFG_FILE_$(CORE) = ./awr294x/mss.cfg
+endif
+endif
+
 endif
 
 SRCDIR = . src
 INCDIR = . src
 
-ifeq ($(SOC),$(filter $(SOC), tpr12))
+ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
 SRCDIR += $(SOC)
 INCDIR += $(SOC)
 endif
@@ -58,6 +64,12 @@ COMP_LIST_COMMON += canfd esm
 ifeq ($(SOC),$(filter $(SOC), tpr12))
     ifeq ($(CORE),$(filter $(CORE), mcu1_0))
         EXTERNAL_LNKCMD_FILE_LOCAL =  ./tpr12/mss_canfd_linker.cmd
+    endif
+endif
+
+ifeq ($(SOC),$(filter $(SOC), awr294x))
+    ifeq ($(CORE),$(filter $(CORE), mcu1_0))
+        EXTERNAL_LNKCMD_FILE_LOCAL =  ./awr294x/mss_canfd_linker.cmd
     endif
 endif
 

@@ -41,7 +41,11 @@
 #include <stdbool.h>
 
 #include <ti/osal/osal.h>
+#if defined(SOC_TPR12)
 #include <ti/csl/soc/tpr12/src/cslr_soc_defines.h>
+#elif defined(SOC_AWR294X)
+#include <ti/csl/soc/awr294x/src/cslr_soc_defines.h>
+#endif
 #include <ti/drv/hwa/hwa.h>
 #include <ti/drv/hwa/src/V1/hwa_internal.h>
 #include <ti/drv/hwa/soc/hwa_soc.h>

@@ -66,9 +66,10 @@
 #
 ifeq ($(watchdog_component_make_include), )
 
-drvwatchdog_SOCLIST          = tpr12
+drvwatchdog_SOCLIST          = tpr12 awr294x
 drvwatchdog_tpr12_CORELIST   = $(DEFAULT_tpr12_CORELIST)
-drvwatchdog_BOARDLIST        = tpr12_evm tpr12_qt
+drvwatchdog_awr294x_CORELIST = $(DEFAULT_awr294x_CORELIST)
+drvwatchdog_BOARDLIST        = tpr12_evm tpr12_qt awr294x_evm
 
 ############################
 # watchdog package

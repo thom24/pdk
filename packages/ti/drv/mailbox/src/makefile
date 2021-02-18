@@ -14,7 +14,7 @@ INCLUDE_EXTERNAL_INTERFACES = pdk
 
 # Common source files and CFLAGS across all platforms and cores
 SRCS_COMMON += mailbox.c mailbox_osal.c mailbox_soc.c
-ifeq ($(SOC),$(filter $(SOC), tpr12))
+ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
   SRCS_COMMON += csl_mbox.c
 endif
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(MAILBOX_CFLAGS)

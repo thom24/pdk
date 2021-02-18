@@ -46,7 +46,7 @@
 
 #include <ti/csl/csl_utils.h>
 
-#if defined(SOC_TPR12)
+#if defined(SOC_TPR12) || defined(SOC_AWR294X)
 #include <ti/drv/watchdog/soc/watchdog_v0.h>
 #define Watchdog_HwAttrs    Watchdog_v0_HwAttrs
 extern void RTI_socEnableWatchdog();

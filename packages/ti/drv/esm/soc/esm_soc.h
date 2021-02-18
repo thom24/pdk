@@ -46,7 +46,7 @@
 
 #include <ti/csl/csl_utils.h>
 
-#if defined(SOC_TPR12)
+#if defined(SOC_TPR12) || defined(SOC_AWR294X)
 #include <ti/drv/esm/soc/esm_v0.h>
 #define ESM_HwAttrs    ESM_v0_HwAttrs
 extern int32_t ESM_socConfigErrorGating(uint8_t groupNumber, uint8_t errorNumber, uint8_t gating);

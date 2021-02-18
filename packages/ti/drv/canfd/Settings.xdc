@@ -8,6 +8,7 @@ module Settings
      *
      *      var canfdSettings = xdc.useModule ('ti.drv.canfd.Settings');
      *      canfdSettings.socType = "tpr12";
+     *      canfdSettings.socType = "awr294x";
      *
      */
     metaonly config string socType = "";

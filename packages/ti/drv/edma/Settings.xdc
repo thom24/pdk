@@ -8,6 +8,7 @@ module Settings
      *
      *      var edmaSettings = xdc.useModule ('ti.drv.edma.Settings');
      *      edmaSettings.socType = "tpr12";
+     *      edmaSettings.socType = "awr294x";
      *
      */
     metaonly config string socType = "";

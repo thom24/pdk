@@ -66,9 +66,10 @@
 #
 ifeq ($(esm_component_make_include), )
 
-drvesm_SOCLIST          = tpr12
+drvesm_SOCLIST          = tpr12 awr294x
 drvesm_tpr12_CORELIST   = $(DEFAULT_tpr12_CORELIST)
-drvesm_BOARDLIST        = tpr12_evm tpr12_qt
+drvesm_awr294x_CORELIST   = $(DEFAULT_awr294x_CORELIST)
+drvesm_BOARDLIST        = tpr12_evm tpr12_qt awr294x_evm
 
 ############################
 # esm package

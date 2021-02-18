@@ -34,9 +34,10 @@
 #
 ifeq ($(hwa_component_make_include), )
 
-drvhwa_SOCLIST          = tpr12
+drvhwa_SOCLIST          = tpr12 awr294x
 drvhwa_tpr12_CORELIST   = $(DEFAULT_tpr12_CORELIST)
-drvhwa_BOARDLIST        = tpr12_evm
+drvhwa_awr294x_CORELIST   = $(DEFAULT_awr294x_CORELIST)
+drvhwa_BOARDLIST        = tpr12_evm awr294x_evm
 
 ############################
 # hwa package

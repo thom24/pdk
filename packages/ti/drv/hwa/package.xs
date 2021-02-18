@@ -17,6 +17,7 @@ function getLibs(prog)
     var socType = this.Settings.socType;
     var socTypes = [
                      'tpr12',
+                     'awr294x',
                    ];
     var libNames = [
                      'hwa'

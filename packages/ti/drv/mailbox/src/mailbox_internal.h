@@ -51,6 +51,8 @@
 #include <ti/drv/mailbox/mailbox.h>
 #if defined (SOC_TPR12)
 #include <ti/drv/mailbox/soc/tpr12/csl_mbox.h>
+#elif defined (SOC_AWR294X)
+#include <ti/drv/mailbox/soc/awr294x/csl_mbox.h>
 #endif
 
 #ifdef __cplusplus

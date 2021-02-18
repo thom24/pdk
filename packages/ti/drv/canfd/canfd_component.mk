@@ -66,9 +66,10 @@
 #
 ifeq ($(canfd_component_make_include), )
 
-drvcanfd_BOARDLIST       = tpr12_evm
-drvcanfd_SOCLIST         = tpr12
+drvcanfd_BOARDLIST       = tpr12_evm awr294x_evm
+drvcanfd_SOCLIST         = tpr12 awr294x
 drvcanfd_tpr12_CORELIST   = mcu1_0
+drvcanfd_awr294x_CORELIST   = mcu1_0
 
 ############################
 # canfd package
@@ -87,7 +88,7 @@ drvcanfd_LIB_LIST = $(canfd_LIB_LIST)
 ############################
 canfd_EXAMPLE_LIST = 
 
-ifeq ($(SOC),$(filter $(SOC), tpr12))
+ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
 canfd_EXAMPLE_LIST = canfd_test
 endif
 

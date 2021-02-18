@@ -8,6 +8,7 @@ module Settings
      *
      *      var mailboxSettings = xdc.useModule ('ti.drv.mailbox.Settings');
      *      mailboxSettings.socType = "tpr12";
+     *      mailboxSettings.socType = "awr294x";
      *
      */
     metaonly config string socType = "";

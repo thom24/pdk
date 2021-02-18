@@ -53,6 +53,10 @@
 
 #if defined(SOC_TPR12)
 #include <ti/drv/mibspi/soc/tpr12/MIBSPI_soc.h>
+#elif defined(SOC_AWR294X)
+#include <ti/drv/mibspi/soc/awr294x/MIBSPI_soc.h>
+#endif
+#if defined(SOC_TPR12) || defined(SOC_AWR294X)
 #include <ti/drv/mibspi/soc/MIBSPI_v0.h>
 #define MIBSPI_HWAttrs    MIBSPI_v0_HWAttrs
 #endif

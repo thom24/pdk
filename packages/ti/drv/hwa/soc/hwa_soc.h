@@ -46,6 +46,9 @@
 #if defined (SOC_TPR12)
 #include <ti/drv/hwa/soc/tpr12/hwa_soc.h>
 #endif
+#if defined (SOC_AWR294X)
+#include <ti/drv/hwa/soc/awr294x/hwa_soc.h>
+#endif
 
 #ifdef __cplusplus
 extern "C" {

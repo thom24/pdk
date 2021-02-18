@@ -8,6 +8,7 @@ module Settings
      *
      *      var watchdogSettings = xdc.useModule ('ti.drv.watchdog.Settings');
      *      watchdogSettings.socType = "tpr12";
+     *      watchdogSettings.socType = "awr294x";
      *
      */
     metaonly config string socType = "";

@@ -5,7 +5,7 @@ BUILD_OS_TYPE = tirtos
 EXTERNAL_INTERFACES = bios xdc
 COMP_LIST_COMMON    = $(PDK_COMMON_TIRTOS_COMP)
 
-ifeq ($(SOC),$(filter $(SOC), tpr12))
+ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
 # Enable XDC build for application by providing XDC CFG File per core
 XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
 # Append the NMI exception handler for DSS

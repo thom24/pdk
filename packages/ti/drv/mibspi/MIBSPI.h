@@ -34,7 +34,7 @@
  *  \defgroup DRV_MIBSPI_MODULE MIBSPI Driver
  *
  *  The MIBSPI peripheral is a feature rich serial peripheral interface  
- *  in the ARxxxx/TPR12 SoCs which provides a 16-bit configurable synchronous 
+ *  in the ARxxxx/TPR12/AWR294X SoCs which provides a 16-bit configurable synchronous
  *  multi-buffered multi-pin serial peripheral interface (MibSPI). The MibSPI is 
  *  a programmable-length shift register used for high-speed communication between 
  *  external peripherals or other microcontrollers. The MibSPI peripheral can be 
@@ -58,7 +58,7 @@
  *
  *  \section mibspi_limit Limitations
  *     \subsection mibspi_hwlimit Unsupported Hardware features.
- *       Following features of the MIBSPI hardware are presently NOT supported (on TPR12):
+ *       Following features of the MIBSPI hardware are presently NOT supported (on TPR12, AWR294X):
  *       - Paralllel mode operation
  *       - Modulo mode operation
  *       - SPIENA pin configuration

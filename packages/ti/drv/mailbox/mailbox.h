@@ -377,7 +377,7 @@ typedef enum
  *              when used in MAILBOX_MODE_CALLBACK.
  *              The callback can occur in task or HWI context.
  *
- *  @warning    For TPR12, making Mailbox_read() calls within its own callback
+ *  @warning    For TPR12,AWR294X making Mailbox_read() calls within its own callback
  *              routines are STRONGLY discouraged as it will impact Task and
  *              System stack size requirements!
  *              For AM64x, it is advised to call Mailbox_read() within the callback
@@ -482,7 +482,7 @@ typedef struct Mailbox_Config_t
      *         during Mailbox_open). If set to FALSE, the application must
      *         call Mailbox_enableInterrupts() for the mailbox instance
      *         in order to enable the interrupts.
-     *         The only supported value for TPR12 is TRUE.
+     *         The only supported value for TPR12,AWR294X is TRUE.
      */
     bool                     enableInterrupts;
 } Mailbox_Config;
@@ -672,7 +672,7 @@ extern Mbox_Handle Mailbox_open(Mailbox_openParams *openParam,  int32_t* errCode
  *          enableInterrupts was set to false in the Mailbox_open params.
  *          This is useful for the situation where the application wishes to
  *          delay enabling of interrupts until it has been able to do further setup.
- *          This functionality is not supported on TPR12.
+ *          This functionality is not supported on TPR12, AWR294X.
  *
  *  @pre    Mailbox_open() has been called
  *
@@ -687,7 +687,7 @@ extern int32_t Mailbox_enableInterrupts(Mbox_Handle handle);
 
 /*!
  *  \brief  Function to disable the mailbox interrupts for a mailbox instance.
- *          This functionality is not supported on TPR12.
+ *          This functionality is not supported on TPR12, AWR294X.
  *
  *  @pre    Mailbox_open() with open param enableInterrupts set to true or
  *          Mailbox_enableInterrupts() has been called.
@@ -813,7 +813,7 @@ extern int32_t Mailbox_write(Mbox_Handle handle, const uint8_t *buffer, uint32_t
  * RTOS applications as there is no support for this feature with RTOS currently. If this option is enabled for RTOS, it
  * will be ignored and fall back to the regular interrupt registration path.
  *
- * For TPR12, in any of the modes described above, Mailbox_readFlush() needs to be issued after the message is fully
+ * For TPR12,AWR294X in any of the modes described above, Mailbox_readFlush() needs to be issued after the message is fully
  * read by the application.
  *
  *  @pre    Mailbox_open() has been called
@@ -840,7 +840,7 @@ extern int32_t Mailbox_read(Mbox_Handle handle, uint8_t *buffer, uint32_t size);
  * Remote endpoint can not send a new message to the local endpoint until Mailbox_readFlush() is issued by the local endpoint.
  * Once Mailbox_readFlush() is issued, the local endpoint must assume that the previously received message
  * is no longer in the mailbox buffer and subsequent Mailbox_read() will return no data until a new message arrives in the mailbox.
- * This applies only for TPR12 Mailbox LLD. It is not needed for AM64X.
+ * This applies only for TPR12, AWR294X Mailbox LLD. It is not needed for AM64X.
  *
  *  @pre    Mailbox_open() has been called
  *

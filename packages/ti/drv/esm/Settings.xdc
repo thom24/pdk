@@ -8,6 +8,7 @@ module Settings
      *
      *      var esmSettings = xdc.useModule ('ti.drv.esm.Settings');
      *      esmSettings.socType = "tpr12";
+     *      esmSettings.socType = "awr294x";
      *
      */
     metaonly config string socType = "";

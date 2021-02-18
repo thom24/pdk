@@ -34,9 +34,10 @@
 #
 ifeq ($(crc_component_make_include), )
 
-drvcrc_SOCLIST          = tpr12
+drvcrc_SOCLIST          = tpr12 awr294x
 drvcrc_tpr12_CORELIST   = $(DEFAULT_tpr12_CORELIST)
-drvcrc_BOARDLIST        = tpr12_evm
+drvcrc_awr294x_CORELIST   = $(DEFAULT_awr294x_CORELIST)
+drvcrc_BOARDLIST        = tpr12_evm awr294x_evm
 
 ############################
 # crc package

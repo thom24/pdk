@@ -29,7 +29,7 @@
 # OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 # EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-SOC_DEP_LIB_SOCS=tpr12
+SOC_DEP_LIB_SOCS=tpr12 awr294x
 
 PACKAGE_SRCS_COMMON = makefile MIBSPI.h mibspi_component.mk .gitignore \
                       src/MIBSPI_osal.h src/src_files_common.mk \
@@ -39,8 +39,8 @@ PACKAGE_SRCS_COMMON += config_mk.bld package.bld package.xdc package.xs
 PACKAGE_SRCS_COMMON += Settings.xdc
 
 ifeq ($(SOC),$(filter $(SOC),$(SOC_DEP_LIB_SOCS) ))
-  ifeq ($(SOC),$(filter $(SOC), tpr12))
-    # TPR12 targets include SPI_V3
+  ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
+    # TPR12 AWR294X targets include SPI_V3
     SRCDIR = . src
     INCDIR = . src
     SRCS_COMMON += mibspi_priv.c MIBSPI_api.c mibspi_trace.c mibspi_utils.c
@@ -54,7 +54,7 @@ ifeq ($(SOC),$(filter $(SOC),$(SOC_DEP_LIB_SOCS) ))
 endif
 
 
-ifeq ($(SOC),$(filter $(SOC), tpr12))
+ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
   MIBSPI_CFLAGS =
 
   # Enable asserts and prints

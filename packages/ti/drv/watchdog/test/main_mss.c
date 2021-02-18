@@ -63,7 +63,11 @@
 #include <ti/drv/watchdog/watchdog.h>
 #include <ti/drv/watchdog/soc/watchdog_soc.h>
 #include <ti/drv/esm/esm.h>
+#if defined(SOC_TPR12)
 #include <ti/csl/soc/tpr12/src/cslr_intr_esm_mss.h>
+#elif defined(SOC_AWR294X)
+#include <ti/csl/soc/awr294x/src/cslr_intr_esm_mss.h>
+#endif
 #include <ti/board/board.h>
 
 #include "watchdog_log.h"

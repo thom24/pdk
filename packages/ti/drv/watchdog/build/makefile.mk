@@ -35,7 +35,7 @@ include $(PDK_WATCHDOG_COMP_PATH)/src/src_files_common.mk
 
 MODULE_NAME = watchdog
 
-ifeq ($(SOC),$(filter $(SOC), tpr12))
+ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
 SRCDIR += soc/$(SOC)
 INCDIR += soc
 # Common source files across all platforms and cores
@@ -46,7 +46,7 @@ endif
 #  need to be included for this component
 INCLUDE_EXTERNAL_INTERFACES = pdk
 
-ifeq ($(SOC),$(filter $(SOC), tpr12))
+ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
 PACKAGE_SRCS_COMMON += soc/$(SOC) soc/watchdog_soc.h
 endif
 

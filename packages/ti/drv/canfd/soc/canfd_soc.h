@@ -56,6 +56,8 @@
 
 #if defined(SOC_TPR12)
 #include <ti/drv/canfd/soc/tpr12/canfd_soc.h>
+#elif defined(SOC_AWR294X)
+#include <ti/drv/canfd/soc/awr294x/canfd_soc.h>
 #endif
 
 #ifdef __cplusplus

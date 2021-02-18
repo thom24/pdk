@@ -8,6 +8,7 @@ module Settings
      *
      *      var mibspiSettings = xdc.useModule ('ti.drv.mibspi.Settings');
      *      mibspiSettings.socType = "tpr12";
+     *      mibspiSettings.socType = "awr294x";
      *
      */
     metaonly config string socType = "";

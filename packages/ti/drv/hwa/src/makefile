@@ -15,7 +15,7 @@ INCLUDE_EXTERNAL_INTERFACES = pdk
 # Common source files and CFLAGS across all platforms and cores
 PACKAGE_SRCS_COMMON = .
 
-SRCS_COMMON += hwa.c hwa_tpr12.c
+SRCS_COMMON += hwa.c hwa_$(SOC).c
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(HWA_CFLAGS)
 PACKAGE_SRCS_COMMON = hwa.h hwa_component.mk makefile .gitignore src soc

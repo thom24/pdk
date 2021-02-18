@@ -66,9 +66,10 @@
 #
 ifeq ($(mibspi_component_make_include), )
 
-drvmibspi_BOARDLIST       = tpr12_evm tpr12_qt
-drvmibspi_SOCLIST         = tpr12
+drvmibspi_BOARDLIST       = tpr12_evm tpr12_qt awr294x_evm
+drvmibspi_SOCLIST         = tpr12 awr294x
 drvmibspi_tpr12_CORELIST   = mcu1_0 c66xdsp_1
+drvmibspi_awr294x_CORELIST   = mcu1_0 c66xdsp_1
 
 ############################
 # mibspi package
@@ -92,7 +93,7 @@ mibspi_EXAMPLE_LIST =
 # All the tests mentioned in list are built when test target is called
 # List below all examples for allowed values
 ############################
-ifeq ($(SOC),$(filter $(SOC), tpr12))
+ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
 mibspi_EXAMPLE_LIST = MIBSPI_Loopback_TestApp MIBSPI_Loopback_Dma_TestApp
 endif
 

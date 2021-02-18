@@ -3,7 +3,7 @@
  *
  *   @brief
  *      The file implements the Controller Area Network Driver Flexible data
- *      for TPR12.
+ *      for TPR12/AWR294X.
  *
  *  \par
  *  NOTE:

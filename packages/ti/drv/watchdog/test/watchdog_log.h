@@ -47,7 +47,7 @@ extern "C" {
 #endif
 
 #include <stdio.h>
-#if defined(SOC_TPR12)
+#if defined(SOC_TPR12) || defined(SOC_AWR294X)
 #undef  UART_CONSOLE
 #else
 #define UART_CONSOLE

@@ -8,6 +8,7 @@ module Settings
      *
      *      var hwaSettings = xdc.useModule ('ti.drv.hwa.Settings');
      *      hwaSettings.socType = "tpr12";
+     *      hwaSettings.socType = "awr294x";
      *
      */
     metaonly config string socType = "";

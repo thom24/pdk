@@ -29,7 +29,7 @@
 # OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 # EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-SOC_DEP_LIB_SOCS=tpr12
+SOC_DEP_LIB_SOCS=tpr12 awr294x
 
 PACKAGE_SRCS_COMMON = makefile watchdog.h watchdog_component.mk .gitignore \
                       src/src_files_common.mk \
@@ -37,8 +37,8 @@ PACKAGE_SRCS_COMMON = makefile watchdog.h watchdog_component.mk .gitignore \
 PACKAGE_SRCS_COMMON += config_mk.bld package.bld package.xdc package.xs
 PACKAGE_SRCS_COMMON += Settings.xdc
 
-ifeq ($(SOC),$(filter $(SOC), tpr12))
-    # TPR12 targets
+ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
+    # TPR12, AWR294X targets
     SRCDIR = . src src/v0
     INCDIR = . src src/v0
     SRCS_COMMON += watchdog_drv.c watchdog_rti.c

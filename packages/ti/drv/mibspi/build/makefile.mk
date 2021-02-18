@@ -35,7 +35,7 @@ include $(PDK_MIBSPI_COMP_PATH)/src/src_files_common.mk
 
 MODULE_NAME = mibspi
 
-ifeq ($(SOC),$(filter $(SOC), tpr12))
+ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
 SRCDIR += soc/$(SOC)
 INCDIR += soc
 # Common source files across all platforms and cores
@@ -44,17 +44,17 @@ endif
 
 # List all the external components/interfaces, whose interface header files
 #  need to be included for this component
-ifeq ($(SOC),$(filter $(SOC), tpr12))
+ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
 INCLUDE_EXTERNAL_INTERFACES = pdk
 endif
 
 
-ifeq ($(SOC),$(filter $(SOC), tpr12))
+ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
 PACKAGE_SRCS_COMMON += soc/$(SOC) soc/MIBSPI_soc.h
 endif
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS)
-ifeq ($(SOC),$(filter $(SOC), tpr12))
+ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
 CFLAGS_LOCAL_COMMON += $(MIBSPI_CFLAGS)
 endif
 

@@ -47,6 +47,10 @@
 #include <ti/drv/mailbox/soc/tpr12/mailbox_soc.h>
 #endif
 
+#if defined (SOC_AWR294X)
+#include <ti/drv/mailbox/soc/awr294x/mailbox_soc.h>
+#endif
+
 #if defined (SOC_AM64X)
 #include <ti/drv/mailbox/soc/am64x/mailbox_soc.h>
 #endif

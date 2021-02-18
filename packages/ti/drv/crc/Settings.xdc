@@ -8,6 +8,7 @@ module Settings
      *
      *      var crcSettings = xdc.useModule ('ti.drv.crc.Settings');
      *      crcSettings.socType = "tpr12";
+     *      crcSettings.socType = "awr294x";
      *
      */
     metaonly config string socType = "";
