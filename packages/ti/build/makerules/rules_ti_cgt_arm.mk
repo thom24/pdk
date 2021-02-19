@@ -331,6 +331,7 @@ endif
 ifeq ($(BUILD_PROFILE_$(CORE)), release)
 	$(ECHO) \# Generating stripped image into $(EXE_STRIP_NAME)...
 	$(ECHO) \#
+	$(RM)  $(EXE_STRIP_NAME)
 	$(STRP) -p $(EXE_NAME) -o $(EXE_STRIP_NAME)
 endif
 # XDC specific - assemble XDC-Configuro command
