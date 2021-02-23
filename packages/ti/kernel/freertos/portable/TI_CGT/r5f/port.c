@@ -490,3 +490,17 @@ static StackType_t uxTimerTaskStack[ configTIMER_TASK_STACK_DEPTH ];
      */
     *pulTimerTaskStackSize = configTIMER_TASK_STACK_DEPTH;
 }
+
+/*
+ * Returns true if the current core is in ISR context; low prio ISR, med prio ISR or timer tick ISR. High prio ISRs
+ * aren't detected here, but they normally cannot call C code, so that should not be an issue anyway.
+ */
+BaseType_t xPortInIsrContext()
+{
+    BaseType_t inISR = false;
+    if (ulPortInterruptNesting != 0)
+    {
+        inISR =  true;
+    }
+    return inISR;
+}

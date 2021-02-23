@@ -68,6 +68,8 @@ ifeq ($(osal_component_make_include), )
 
 libosal_BOARDLIST       = evmAM572x evmAM335x evmAM437x iceK2G idkAM574x idkAM572x idkAM571x idkAM437x am65xx_evm am65xx_idk evmOMAPL137 lcdkOMAPL138 evmK2E evmK2H evmK2K evmK2L j721e_evm j7200_evm am64x_evm tpr12_evm tpr12_qt awr294x_evm
 libosal_SOCLIST         = tda2xx tda2px tda2ex tda3xx dra78x dra72x dra75x am574x am572x am571x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j7200 am64x tpr12 awr294x
+libosal_freertos_BOARDLIST  = tpr12_evm
+libosal_freertos_SOCLIST    = tpr12
 libosal_tda2xx_CORELIST = a15_0 ipu1_0
 libosal_tda2px_CORELIST = a15_0 ipu1_0
 libosal_tda2ex_CORELIST = a15_0 ipu1_0
@@ -105,6 +107,7 @@ osal_LIB_LIST = osal_nonos osal_nonos_indp
 ifeq ($(BUILD_OS_TYPE),tirtos)
 osal_LIB_LIST += osal_tirtos osal_tirtos_indp
 endif
+osal_LIB_LIST += osal_freertos
 libosal_LIB_LIST = $(osal_LIB_LIST)
 
 ############################
@@ -230,6 +233,33 @@ export osal_tirtos_indp_SOCLIST
 osal_tirtos_indp_$(SOC)_CORELIST = $(libosal_$(SOC)_CORELIST)
 export osal_tirtos_indp_$(SOC)_CORELIST
 
+# OSAL FREE RTOS LIB
+osal_freertos_COMP_LIST = osal_freertos
+osal_freertos_RELPATH = ti/osal
+osal_freertos_PATH = $(PDK_OSAL_COMP_PATH)
+osal_freertos_LIBNAME = ti.osal
+export osal_freertos_LIBNAME
+osal_freertos_LIBPATH = $(osal_freertos_PATH)/lib/freertos
+export osal_freertos_LIBPATH
+osal_freertos_OBJPATH = $(osal_freertos_RELPATH)/osal_freertos
+export osal_freertos_OBJPATH
+osal_freertos_MAKEFILE = -f build/makefile_freertos.mk
+export osal_freertos_MAKEFILE
+osal_freertos_PLATFORM_DEPENDENCY = no
+osal_freertos_CORE_DEPENDENCY = no
+osal_freertos_SOC_DEPENDENCY = yes
+export osal_freertos_COMP_LIST
+export osal_freertos_PLATFORM_DEPENDENCY
+export osal_freertos_CORE_DEPENDENCY
+export osal_freertos_SOC_DEPENDENCY
+osal_freertos_PKG_LIST = osal_freertos
+export osal_freertos_PKG_LIST
+osal_freertos_INCLUDE = $(osal_freertos_PATH)
+osal_freertos_SOCLIST = $(libosal_freertos_SOCLIST)
+export osal_freertos_SOCLIST
+osal_freertos_$(SOC)_CORELIST = $(libosal_$(SOC)_CORELIST)
+export osal_freertos_$(SOC)_CORELIST
+
 #
 # OSAL Examples
 #
@@ -251,6 +281,21 @@ else
 OSAL_Baremetal_TestApp_SBL_APPIMAGEGEN = no
 endif
 export OSAL_Baremetal_TestApp_SBL_APPIMAGEGEN
+
+OSAL_freertos_TestApp_COMP_LIST = OSAL_freertos_TestApp
+OSAL_freertos_TestApp_RELPATH = ti/osal/test/freertos
+OSAL_freertos_TestApp_PATH = $(PDK_OSAL_COMP_PATH)/test/freertos
+OSAL_freertos_TestApp_BOARD_DEPENDENCY = yes
+OSAL_freertos_TestApp_CORE_DEPENDENCY = no
+export OSAL_freertos_TestApp_COMP_LIST
+export OSAL_freertos_TestApp_BOARD_DEPENDENCY
+export OSAL_freertos_TestApp_CORE_DEPENDENCY
+OSAL_freertos_TestApp_PKG_LIST = OSAL_freertos_TestApp
+OSAL_freertos_TestApp_INCLUDE = $(OSAL_freertos_TestApp_PATH)
+OSAL_freertos_TestApp_BOARDLIST = $(libosal_freertos_BOARDLIST)
+export OSAL_freertos_TestApp_BOARDLIST
+OSAL_freertos_TestApp_SBL_APPIMAGEGEN = yes
+export OSAL_freertos_TestApp_SBL_APPIMAGEGEN
 
 # OSAL sysbios unit test app
 OSAL_TestApp_COMP_LIST = OSAL_TestApp
@@ -364,6 +409,7 @@ endif
 ifeq ($(SOC),$(filter $(SOC), tpr12))
  OSAL_TestApp_$(SOC)_CORELIST = mcu1_0 c66xdsp_1
  OSAL_Baremetal_TestApp_$(SOC)_CORELIST = mcu1_0 c66xdsp_1
+ OSAL_freertos_TestApp_$(SOC)_CORELIST = mcu1_0 c66xdsp_1
 endif
 
 ifeq ($(SOC),$(filter $(SOC), awr294x))
@@ -375,6 +421,7 @@ export OSAL_Baremetal_TestApp_$(SOC)_CORELIST
 export OSAL_TestApp_$(SOC)_CORELIST
 
 osal_EXAMPLE_LIST += OSAL_Baremetal_TestApp
+osal_EXAMPLE_LIST += OSAL_freertos_TestApp
 
 # do not support RTOS example for AM64x yet
 osal_EXAMPLE_LIST += OSAL_TestApp

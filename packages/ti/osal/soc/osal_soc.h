@@ -143,6 +143,32 @@
 #endif /* OSAL_TIRTOS_CONFIGNUM_SEMAPHORE */
 
 /*********************************************************************
+ * @def OSAL_FREERTOS_CONFIGNUM_SEMAPHORE
+ * To satisfy AMIC110 out of box needs, defaults are reduced to 20 as below
+ * If the need is more than the defaults, application would need to
+ * suppliment the additional memory for OSAL using @ref Osal_setHwAttrs
+ * API calls by setting the extended memory block for semaphores
+ *********************************************************************/
+
+/* Set the number of SemaphoreP_Handles for FREERTOS */
+#ifndef OSAL_FREERTOS_CONFIGNUM_SEMAPHORE
+#define OSAL_FREERTOS_CONFIGNUM_SEMAPHORE (OSAL_FREERTOS_MAX_SEMAPHOREP_PER_SOC)
+#endif /* OSAL_FREERTOS_CONFIGNUM_SEMAPHORE */
+
+/*********************************************************************
+ * @def OSAL_FREERTOS_CONFIGNUM_TASK
+ * To satisfy AMIC110 out of box needs, defaults are reduced to 20 as below
+ * If the need is more than the defaults, application would need to
+ * suppliment the additional memory for OSAL using @ref Osal_setHwAttrs
+ * API calls by setting the extended memory block for semaphores
+ *********************************************************************/
+
+/* Set the number of SemaphoreP_Handles for FREERTOS */
+#ifndef OSAL_FREERTOS_CONFIGNUM_TASK
+#define OSAL_FREERTOS_CONFIGNUM_TASK (OSAL_FREERTOS_MAX_TASKP_PER_SOC)
+#endif /* OSAL_FREERTOS_CONFIGNUM_TASK */
+
+/*********************************************************************
  * @def OSAL_NONOS_CONFIGNUM_HWI
  * To satisfy AMIC110 out of box needs, defaults are reduced to 10 as below
  * If the need is more than the defaults, application would need to

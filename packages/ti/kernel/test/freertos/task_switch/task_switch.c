@@ -36,10 +36,13 @@
 #include <ti/osal/osal.h>
 #include <ti/osal/DebugP.h>
 #include <ti/osal/HwiP.h>
+#include <ti/osal/SemaphoreP.h>
+#include <ti/osal/TaskP.h>
 #include <FreeRTOS.h>
 #include <task.h>
-#include <semphr.h>
 #include <ti/csl/soc.h>
+
+TaskHandle_t TaskP_getFreertosHandle(TaskP_Handle handle);
 
 /*
  * IMPORTANT NOTES:
@@ -105,30 +108,20 @@ StackType_t gPingTaskStack[PING_TASK_SIZE] __attribute__((aligned(32)));
 #define PONG_TASK_SIZE (4096u)
 StackType_t gPongTaskStack[PONG_TASK_SIZE] __attribute__((aligned(32)));
 
-StaticTask_t gPingTaskObj;
-TaskHandle_t gPingTask;
-StaticSemaphore_t gPingSemObj;
-SemaphoreHandle_t gPingSem;
+TaskP_Handle gPingTask;
+SemaphoreP_Handle gPingSem;
 
-StaticTask_t gPongTaskObj;
-TaskHandle_t gPongTask;
-StaticSemaphore_t gPongSemObj;
-SemaphoreHandle_t gPongSem;
+TaskP_Handle gPongTask;
+SemaphoreP_Handle gPongSem;
 
 static void ping_isr(uintptr_t arg)
 {
-    BaseType_t doTaskSwitch = 0;
-
-    xSemaphoreGiveFromISR( gPongSem, &doTaskSwitch); /* wake up pong task */
-    portYIELD_FROM_ISR( doTaskSwitch );
+    SemaphoreP_post(gPongSem);
 }
 
 static void pong_isr(uintptr_t arg)
 {
-    BaseType_t doTaskSwitch = 0;
-
-    xSemaphoreGiveFromISR( gPingSem, &doTaskSwitch); /* wake up ping task */
-    portYIELD_FROM_ISR( doTaskSwitch );
+    SemaphoreP_post(gPingSem);
 }
 
 void ping_main(void *args)
@@ -143,8 +136,8 @@ void ping_main(void *args)
         curTime = uiPortGetRunTimeCounterValue();
         while(count--)
         {
-            xSemaphoreGive( gPongSem); /* wake up pong task */
-            xSemaphoreTake( gPingSem, portMAX_DELAY); /* wait for pong to signal */
+            SemaphoreP_post(gPongSem);
+            SemaphoreP_pend(gPingSem, SemaphoreP_WAIT_FOREVER);
         }
         curTime = uiPortGetRunTimeCounterValue() - curTime;
 
@@ -158,7 +151,7 @@ void ping_main(void *args)
         curTime = uiPortGetRunTimeCounterValue();
         while(count--)
         {
-            xTaskNotifyGive( gPongTask); /* wake up pong task */
+            xTaskNotifyGive( TaskP_getFreertosHandle(gPongTask)); /* wake up pong task */
             ulTaskNotifyTake( pdTRUE, portMAX_DELAY); /* wait for pong to signal */
         }
         curTime = uiPortGetRunTimeCounterValue() - curTime;
@@ -186,7 +179,7 @@ void ping_main(void *args)
         while(count--)
         {
             HwiP_post(PING_INT_NUM);
-            xSemaphoreTake( gPingSem, portMAX_DELAY); /* wait for ISR to signal */
+            SemaphoreP_pend(gPingSem, SemaphoreP_WAIT_FOREVER);
         }
         curTime = uiPortGetRunTimeCounterValue() - curTime;
 
@@ -207,9 +200,7 @@ void ping_main(void *args)
     DebugP_log0("[FreeRTOS] ping task ... done !!!\r\n");
     DebugP_log0("\r\n");
     DebugP_log0("All tests have passed!!\r\n");
-
-    /* One MUST not return out of a FreeRTOS task instead one MUST call vTaskDelete */
-    vTaskDelete(NULL);
+    printf("All tests have passed!!\r\n");
 }
 
 void pong_main(void *args)
@@ -219,14 +210,14 @@ void pong_main(void *args)
     count = NUM_TASK_SWITCHES;
     while(count--)
     {
-        xSemaphoreTake( gPongSem, portMAX_DELAY); /* wait for ping to signal */
-        xSemaphoreGive( gPingSem); /* wakeup ping task */
+        SemaphoreP_pend(gPongSem, SemaphoreP_WAIT_FOREVER);
+        SemaphoreP_post(gPingSem);
     }
     count = NUM_TASK_SWITCHES;
     while(count--)
     {
         ulTaskNotifyTake( pdTRUE, portMAX_DELAY); /* wait for ping to signal */
-        xTaskNotifyGive( gPingTask); /* wake up ping task */
+        xTaskNotifyGive( TaskP_getFreertosHandle(gPingTask)); /* wake up ping task */
     }
     {
         HwiP_Params hwiParams;
@@ -243,46 +234,51 @@ void pong_main(void *args)
         count = NUM_TASK_SWITCHES;
         while(count--)
         {
-            xSemaphoreTake( gPongSem, portMAX_DELAY); /* wait for ISR to signal */
+            SemaphoreP_pend(gPongSem, SemaphoreP_WAIT_FOREVER);
             HwiP_post(PONG_INT_NUM);
         }
         hwiStatus = HwiP_delete(hHwi);
         DebugP_assert(hwiStatus == HwiP_OK);
     }
-    /* One MUST not return out of a FreeRTOS task instead one MUST call vTaskDelete */
-    vTaskDelete(NULL);
 }
 
 void task_switch_main(void *args)
 {
+    SemaphoreP_Params semParams;
+    TaskP_Params      taskParams;
+
     /* Open drivers to open the UART driver for console */
     //Drivers_open();
 
+    SemaphoreP_Params_init(&semParams);
+    semParams.mode = SemaphoreP_Mode_BINARY;
+
     /* first create the semaphores */
-    gPingSem = xSemaphoreCreateBinaryStatic(&gPingSemObj);
+    gPingSem = SemaphoreP_create(0, &semParams);
     configASSERT(gPingSem != NULL);
-    gPongSem = xSemaphoreCreateBinaryStatic(&gPongSemObj);
+    gPongSem = SemaphoreP_create(0, &semParams);
     configASSERT(gPongSem != NULL);
 
-    /* then create the tasks, order of task creation does not matter for this example */
-    gPongTask = xTaskCreateStatic( pong_main,      /* Pointer to the function that implements the task. */
-                                  "pong",          /* Text name for the task.  This is to facilitate debugging only. */
-                                  PONG_TASK_SIZE,  /* Stack depth in units of StackType_t typically uint32_t on 32b CPUs */
-                                  NULL,            /* We are not using the task parameter. */
-                                  PONG_TASK_PRI,   /* task priority, 0 is lowest priority, configMAX_PRIORITIES-1 is highest */
-                                  gPongTaskStack,  /* pointer to stack base */
-                                  &gPongTaskObj ); /* pointer to statically allocated task object memory */
+    TaskP_Params_init(&taskParams);
+    taskParams.name = "pong";
+    taskParams.stacksize = PONG_TASK_SIZE;
+    taskParams.stack = gPongTaskStack;
+    taskParams.priority = PONG_TASK_PRI;
+    taskParams.arg0 = NULL;
+
+    gPongTask = TaskP_create(pong_main, &taskParams);
     configASSERT(gPongTask != NULL);
 
-    gPingTask = xTaskCreateStatic( ping_main,      /* Pointer to the function that implements the task. */
-                                  "ping",          /* Text name for the task.  This is to facilitate debugging only. */
-                                  PING_TASK_SIZE,  /* Stack depth in units of StackType_t typically uint32_t on 32b CPUs */
-                                  NULL,            /* We are not using the task parameter. */
-                                  PING_TASK_PRI,   /* task priority, 0 is lowest priority, configMAX_PRIORITIES-1 is highest */
-                                  gPingTaskStack,  /* pointer to stack base */
-                                  &gPingTaskObj ); /* pointer to statically allocated task object memory */
+    TaskP_Params_init(&taskParams);
+    taskParams.name = "ping";
+    taskParams.stacksize = PING_TASK_SIZE;
+    taskParams.stack = gPingTaskStack;
+    taskParams.priority = PING_TASK_PRI;
+    taskParams.arg0 = NULL;
+    gPingTask = TaskP_create(ping_main, &taskParams);
     configASSERT(gPingTask != NULL);
 
     /* Dont close drivers to keep the UART driver open for console */
     /* Drivers_close(); */
 }
+

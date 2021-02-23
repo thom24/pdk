@@ -38,7 +38,7 @@
  *
  */
 
-#ifndef BARE_METAL
+#if !(defined(BARE_METAL) || defined(FREERTOS))
 /* XDCtools Header files */
 #include <xdc/std.h>
 #if defined (SOC_J721E) || defined(SOC_J7200)
@@ -56,8 +56,18 @@
 
 /* BIOS Header files */
 #include <ti/sysbios/BIOS.h>
-#include <ti/osal/TaskP.h>
 #include <ti/osal/SwiP.h>
+#endif
+
+#if !defined(BARE_METAL)
+/* include for both tirtos and freertos. */
+#include <ti/osal/TaskP.h>
+#endif
+
+#if defined (FREERTOS)
+#include "FreeRTOS.h"
+#include "task.h"
+#include <ti/osal/MemoryP.h>
 #endif
 
 #include <stdio.h>
@@ -87,7 +97,7 @@
 #include <ti/csl/arch/csl_arch.h>
 #endif
 #include <ti/csl/tistdtypes.h>
-#ifdef BARE_METAL
+#if defined (BARE_METAL)
 #if !defined(SOC_TPR12) && !defined (SOC_AWR294X)
 #include <ti/csl/csl_timer.h>
 #endif
@@ -97,6 +107,7 @@
 #undef  TWO_TIMER_INTERRUPT_TEST
 #define TWO_TIMER_INTERRUPT_TEST 1
 #endif
+#elif defined (FREERTOS)
 
 #else
 void ErrorHandler(Error_Block *eb)
@@ -540,7 +551,7 @@ bool OSAL_timer_test()
     TimerP_Status timerStatus;
     Osal_HwAttrs  hwAttrs;
 
-#ifdef BARE_METAL
+#if defined(BARE_METAL) || defined(FREERTOS)
     int32_t       id    = OSAL_TEST_TIMER_ID;
 #else
     int32_t       id    = TimerP_ANY;
@@ -634,7 +645,11 @@ bool OSAL_timer_test()
 
 #if !defined(SOC_J721E) || !defined(SOC_J7200)
 #if defined(_TMS320C6X)
+#if defined(SOC_TPR12)
+    timerParams.intNum     = 16;
+#else
     timerParams.intNum     = 15;
+#endif
     OSAL_log("\n set intNum=%d, id=%d,  \n", timerParams.intNum, id);
 #endif
 #endif
@@ -1110,7 +1125,7 @@ bool OSAL_semaphore_test()
     return true;
 }
 
-#ifndef BARE_METAL
+#if !(defined(BARE_METAL) || defined(FREERTOS))
 
 /*
  *  ======== Queue test function ========
@@ -1272,61 +1287,154 @@ bool OSAL_log_test()
 #endif
 
 #ifndef BARE_METAL
+#if  defined(FREERTOS)
+
+#else
 #include <ti/sysbios/knl/Clock.h>
+#endif
 #ifndef SIM_BUILD
 #define   OSAL_TASKP_TEST_ITERATION    (10U)
+#if  defined(FREERTOS)
+#define   OSAL_TASKP_TEST_1MS          (1U)
+#else
 #define   OSAL_TASKP_TEST_1MS          (1000U)
+#endif
 #define   OSAL_TASKP_TEST_TICKS        (1000U)
 #else
 #define   OSAL_TASKP_TEST_ITERATION    (2U)
 #define   OSAL_TASKP_TEST_1MS          (10U)
 #define   OSAL_TASKP_TEST_TICKS        (10U)
 #endif
+
+uint64_t OSAL_get_ticks()
+{
+    uint64_t ticks;
+#if  defined(FREERTOS)
+    ticks = (uint64_t)uiPortGetRunTimeCounterValue();
+#else
+    ticks = (uint64_t)Clock_getTicks();
+#endif
+    return ticks;
+}
+
 bool OSAL_task_sleep_test(void)
 {
     int32_t i;
-    uint32_t    start_time_nticks, end_time_nticks;
+    uint64_t    start_time_nticks, end_time_nticks;
     uint32_t    diff_nticks, diff_tout;
 
     /* nTicks in OSAL is 1000 ticks per milli seconds
      * hence the task sleep = 1000 milliseconds should
      * provide the same sleep time as in TaskP_sleep(nTicks = 1000)
      */
-    start_time_nticks = Clock_getTicks();
+    start_time_nticks = OSAL_get_ticks();
 
     for (i=0; i < OSAL_TASKP_TEST_ITERATION; i++)
     {
        TaskP_sleep(OSAL_TASKP_TEST_TICKS);
     }
-    end_time_nticks = Clock_getTicks();
-    diff_nticks     = end_time_nticks - start_time_nticks;
+    end_time_nticks = OSAL_get_ticks();
+    diff_nticks     = (uint32_t)(end_time_nticks - start_time_nticks);
 
-    start_time_nticks = Clock_getTicks();
+    start_time_nticks = OSAL_get_ticks();
 
     for (i=0; i < OSAL_TASKP_TEST_ITERATION; i++)
     {
        TaskP_sleepInMsecs(OSAL_TASKP_TEST_1MS);
     }
-    end_time_nticks = Clock_getTicks();
-    diff_tout       = end_time_nticks - start_time_nticks;
+    end_time_nticks = OSAL_get_ticks();
+    diff_tout       = (uint32_t)(end_time_nticks - start_time_nticks);
 
     OSAL_log(" \n \
                diff_nticks = %d \n \
-               diff_tout   = %d \n \
-               Clock_tickPeriod = %d \n \
-               Clock_tickSource = %d ", diff_nticks, diff_tout, \
-                                        Clock_tickPeriod, Clock_tickSource);
+               diff_tout   = %d \n ", diff_nticks, diff_tout);
+#if  !defined(FREERTOS)
+    OSAL_log(" Clock_tickPeriod = %d \n \
+               Clock_tickSource = %d ", Clock_tickPeriod, Clock_tickSource);
+#endif
 
     return (true);
 
 }
 #endif
 
+#if  defined(FREERTOS)
+bool OSAL_mempry_test()
+{
+    void *memPtr1, *memPtr2, *memPtr[5];
+    uint32_t align;
+    bool retVal = true;
+    uint32_t i;
+
+    /* Test1: Allocate 16 bytes aligned memory. */
+    align = 16;
+    memPtr1 = MemoryP_ctrlAlloc(100, align);
+    if (memPtr1 != NULL)
+    {
+        /* Check if teh allocated mempry is 16 bytes aligned. */
+        if ((uintptr_t)memPtr1 & (align - 1)!= 0)
+        {
+            retVal = false;
+        }
+    }
+    else
+    {
+        retVal = false;
+    }
+
+    /* Test2: Allocate 64 bytes aligned memory. */
+    align = 64;
+    memPtr2 = MemoryP_ctrlAlloc(200, align);
+    if (memPtr2 != NULL)
+    {
+        /* Check if teh allocated mempry is 16 bytes aligned. */
+        if ((uintptr_t)memPtr2 & (align - 1)!= 0)
+        {
+            retVal = false;
+        }
+    }
+    else
+    {
+        retVal = false;
+    }
+
+    if (memPtr1 != NULL)
+    {
+        MemoryP_ctrlFree(memPtr1, 100);
+    }
+    if (memPtr2 != NULL)
+    {
+        MemoryP_ctrlFree(memPtr2, 200);
+    }
+
+    /* Test2: check memory leak
+     * multiple iteration of alloc and free to give same mem pointer.
+     */
+    for (i=0; i<5; i++)
+    {
+        align = 64;
+        memPtr[i] = MemoryP_ctrlAlloc(200, align);
+        MemoryP_ctrlFree(memPtr[i], 200);
+    }
+    for (i=1; i<5; i++)
+    {
+        if (memPtr[i] != memPtr[i-1])
+        {
+            retVal = false;
+            break;
+        }
+    }
+    return retVal;
+}
+#endif
+
 /*
  *  ======== main test function ========
  */
-#ifdef BARE_METAL
+#if defined(BARE_METAL)
 void osal_test()
+#elif defined(FREERTOS)
+void osal_test(void *arg0, void *arg1)
 #else
 void osal_test(UArg arg0, UArg arg1)
 #endif
@@ -1489,7 +1597,7 @@ void osal_test(UArg arg0, UArg arg1)
       OSAL_log("\n Memory Statistics query failed \n");
     }
 
-#ifndef BARE_METAL
+#if !(defined(BARE_METAL) || defined(FREERTOS))
     if(OSAL_swi_test() == true)
     {
         OSAL_log("\n SWI tests have passed. \n");
@@ -1519,6 +1627,18 @@ void osal_test(UArg arg0, UArg arg1)
     else
     {
         OSAL_log("\n DebugP Log tests have failed. \n");
+        testFail = true;
+    }
+#endif
+
+#if defined(FREERTOS)
+    if(OSAL_mempry_test() == true)
+    {
+        OSAL_log("\n MemoryP Log tests have passed. \n");
+    }
+    else
+    {
+        OSAL_log("\n MemoryP Log tests have failed. \n");
         testFail = true;
     }
 #endif
@@ -1663,16 +1783,25 @@ int main(void)
      */
 #if defined (SOC_AM65XX) || defined (SOC_J721E) || defined(SOC_J7200) || defined(SOC_TPR12) || defined (SOC_AWR294X)|| defined(SOC_AM64X)
     TaskP_Params taskParams;
+#if !defined(FREERTOS)
     Error_Block  eb;
+#endif
     TaskP_Params_init(&taskParams);
     taskParams.priority =2;
     taskParams.stack        = gAppTskStackMain;
     taskParams.stacksize    = sizeof (gAppTskStackMain);
+#if !defined(FREERTOS)
     taskParams.pErrBlk      = &eb;
+#endif
     TaskP_create(osal_test, &taskParams);
 #endif
+#if defined (FREERTOS)
+    /* Start the scheduler to start the tasks executing. */
+    vTaskStartScheduler();
+#else
     /* Start BIOS */
     BIOS_start();
+#endif
 #endif
     return (0);
 }

@@ -139,6 +139,7 @@
         #define portASSERT_IF_INTERRUPT_PRIORITY_INVALID()    vPortValidateInterruptPriority()
     #endif /* configASSERT */
 
+    extern BaseType_t xPortInIsrContext(void);
     
     #ifdef __cplusplus
         } /* extern C */

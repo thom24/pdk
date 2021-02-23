@@ -143,6 +143,26 @@ extern "C" {
  *********************************************************************/
 #define  OSAL_TIRTOS_HWIP_SIZE_BYTES (96U)
 
+/*********************************************************************
+ * @def OSAL_FREERTOS_SEMAPHOREP_SIZE_BYTES
+ * Semaphorep handle size for non-os use case
+ * Application can use this size to provide a secondary extended
+ * memory block for semaphore creation when all the memory  (internal to osal)
+ * are utilized
+ *
+ *********************************************************************/
+#define  OSAL_FREERTOS_SEMAPHOREP_SIZE_BYTES ((uint32_t) 96U)
+
+/*********************************************************************
+ * @def OSAL_FREERTOS_TASKP_SIZE_BYTES
+ * TaskP handle size for non-os use case
+ * Application can use this size to provide a secondary extended
+ * memory block for semaphore creation when all the memory  (internal to osal)
+ * are utilized
+ *
+ *********************************************************************/
+#define  OSAL_FREERTOS_TASKP_SIZE_BYTES ((uint32_t) 128U)
+
 /**
  *  \brief This structure holds static memory status parameters of OSAL
  *         library

@@ -74,7 +74,7 @@ extern "C" {
         }
         #define OSAL_log                dummy_printf
     #else
-        #if defined(BARE_METAL)
+        #if defined(BARE_METAL) || defined(FREERTOS)
             #define OSAL_log                printf
         #else
             #define OSAL_log                System_printf

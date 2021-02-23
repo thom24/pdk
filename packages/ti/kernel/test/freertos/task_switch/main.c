@@ -37,32 +37,25 @@
 #include <stdlib.h>
 #include <ti/osal/osal.h>
 #include <ti/osal/DebugP.h>
+#include <ti/osal/TaskP.h>
 #include <ti/board/board.h>
 #include "FreeRTOS.h"
 #include "task.h"
 
 #define MAIN_TASK_PRI  (configMAX_PRIORITIES-1)
 
-#define MAIN_TASK_SIZE (16384U/sizeof(configSTACK_DEPTH_TYPE))
+#define MAIN_TASK_SIZE (4096u)
 StackType_t gMainTaskStack[MAIN_TASK_SIZE] __attribute__((aligned(32)));
 
-StaticTask_t gMainTaskObj;
-TaskHandle_t gMainTask;
+TaskP_Handle gMainTask;
 
 void task_switch_main(void *args);
-
-void frertos_main(void *args)
-{
-    task_switch_main(NULL);
-
-    vTaskDelete(NULL);    
-}
-
 
 int main()
 {
     Board_initCfg boardCfg;
     Board_STATUS  status;
+    TaskP_Params      taskParams;
 
     boardCfg = BOARD_INIT_PINMUX_CONFIG |  
                BOARD_INIT_UNLOCK_MMR;
@@ -70,14 +63,17 @@ int main()
     status = Board_init(boardCfg);
 
     DebugP_assert(status == BOARD_SOK);
+
+    TaskP_Params_init(&taskParams);
+    taskParams.name = "freertos_main";
+    taskParams.stacksize = MAIN_TASK_SIZE;
+    taskParams.stack = gMainTaskStack;
+    taskParams.priority = MAIN_TASK_PRI;
+    taskParams.arg0 = NULL;
+    taskParams.arg1 = NULL;
+
 	/* This task is created at highest priority, it should create more tasks and then delete itself */
-    gMainTask = xTaskCreateStatic( frertos_main,   /* Pointer to the function that implements the task. */
-                                  "freertos_main", /* Text name for the task.  This is to facilitate debugging only. */
-                                  MAIN_TASK_SIZE,  /* Stack depth in units of StackType_t typically uint32_t on 32b CPUs */
-                                  NULL,            /* We are not using the task parameter. */
-                                  MAIN_TASK_PRI,   /* task priority, 0 is lowest priority, configMAX_PRIORITIES-1 is highest */
-                                  gMainTaskStack,  /* pointer to stack base */
-                                  &gMainTaskObj ); /* pointer to statically allocated task object memory */
+    gMainTask = TaskP_create(task_switch_main, &taskParams);
     configASSERT(gMainTask != NULL);
 
     /* Start the scheduler to start the tasks executing. */

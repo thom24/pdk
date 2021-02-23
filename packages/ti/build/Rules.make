@@ -37,7 +37,7 @@ export OS ?= linux
 SDK_INSTALL_PATH ?= $(abspath ../../../../)
 TOOLS_INSTALL_PATH ?= $(SDK_INSTALL_PATH)
 
-#Default BUILD_OS_TYPE (tirtos/baremetal/qnx)
+#Default BUILD_OS_TYPE (tirtos/baremetal/qnx/freertos)
 export BUILD_OS_TYPE ?= tirtos
 
 include $(PDK_INSTALL_PATH)/ti/build/procsdk_defs.mk
