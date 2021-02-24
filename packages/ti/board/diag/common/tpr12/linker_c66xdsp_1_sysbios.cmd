@@ -61,6 +61,10 @@ PAGE 1:
 -stack  0x2000                              /* SOFTWARE STACK SIZE           */
 -heap   0x2000                              /* HEAP AREA SIZE                */
 
+/* Set L1D, L1P and L2 Cache Sizes */
+ti_sysbios_family_c66_Cache_l1dSize = L1D_CACHE_SIZE;
+ti_sysbios_family_c66_Cache_l1pSize = L1P_CACHE_SIZE;
+ti_sysbios_family_c66_Cache_l2Size  = 0;
 
 SECTIONS
 {

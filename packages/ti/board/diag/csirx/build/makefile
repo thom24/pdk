@@ -128,7 +128,7 @@ else
 #sysbios case
     ifeq ($(SOC), $(filter $(SOC), tpr12))
         ifeq ($(CORE),$(filter $(CORE), c66xdsp_1))
-            EXTERNAL_LNKCMD_FILE_LOCAL = ../../common/$(SOC)/linker_$(CORE).cmd
+            EXTERNAL_LNKCMD_FILE_LOCAL = ../../common/$(SOC)/linker_c66xdsp_1_sysbios.cmd
         endif
         ifeq ($(CORE),$(filter $(CORE), mcu1_0))
             EXTERNAL_LNKCMD_FILE_LOCAL = ../../common/$(SOC)/linker_mcu1_0_sysbios.lds
