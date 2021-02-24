@@ -585,6 +585,44 @@ int32_t Sciclient_init(const Sciclient_ConfigPrms_t *pCfgPrms);
 int32_t Sciclient_service(const Sciclient_ReqPrm_t *pReqPrm,
                           Sciclient_RespPrm_t      *pRespPrm);
 
+#ifdef QNX_OS
+/**
+ *  \brief  This API allows communicating with the System firmware which can be
+ *          called to perform various functions in the system.
+ *          Core sciclient function for transmitting payload and recieving
+ *          the response.
+ *          The caller is expected to allocate memory for the input request
+ *          parameter (Refer #Sciclient_ReqPrm_t). This involves setting the
+ *          message type being communicated to the firmware, the response flags,
+ *          populate the payload of the message based on the inputs in the
+ *          files sciclient_fmwPmMessages.h,sciclient_fmwRmMessages.h,
+ *          sciclient_fmwSecMessages.h and sciclient_fmwCommonMessages.h.
+ *          Since the payload in considered a stream of bytes in this API,
+ *          the caller should also populate the size of this stream in
+ *          reqPayloadSize. The timeout is used to determine for what amount
+ *          of iterations the API would wait for their operation to complete.
+ *
+ *          To make sure the response is captured correctly the caller should
+ *          also allocate the space for #Sciclient_RespPrm_t parameters. The
+ *          caller should populate the pointer to the pRespPayload and the size
+ *          respPayloadSize. The API would populate the response flags to
+ *          indicate any firmware specific errors and also populate the memory
+ *          pointed by pRespPayload till the size given in respPayloadSize.
+ *
+ *
+ * Requirement: DOX_REQ_TAG(PDK-2142), DOX_REQ_TAG(PDK-2141),
+ *              DOX_REQ_TAG(PDK-2140), DOX_REQ_TAG(PDK-2139)
+ *
+ *  \param pReqPrm        [IN]  Pointer to #Sciclient_ReqPrm_t
+ *  \param pRespPrm       [OUT] Pointer to #Sciclient_RespPrm_t
+ *
+ *  \return CSL_PASS on success, else failure
+ *
+ */
+int32_t Sciclient_service_rsmgr(const Sciclient_ReqPrm_t *pReqPrm,
+                          Sciclient_RespPrm_t      *pRespPrm);
+#endif
+
 /**
  *  \brief  De-initialization of sciclient. This de-initialization is specific
  *          to the application. It only de-initializes the semaphores,

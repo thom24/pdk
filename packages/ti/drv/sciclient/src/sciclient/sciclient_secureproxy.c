@@ -83,11 +83,19 @@ extern CSL_SecProxyCfg gSciclient_secProxyCfg;
 /*                          Function Definitions                              */
 /* ========================================================================== */
 
+#ifdef QNX_OS
+uintptr_t Sciclient_threadStatusReg(uint32_t thread)
+{
+    return ((uintptr_t)(gSciclient_secProxyCfg.pSecProxyRtRegs) +
+        CSL_SEC_PROXY_RT_THREAD_STATUS(thread));
+}
+#else
 uint32_t Sciclient_threadStatusReg(uint32_t thread)
 {
     return ((uint32_t)(uintptr_t)(gSciclient_secProxyCfg.pSecProxyRtRegs) +
         CSL_SEC_PROXY_RT_THREAD_STATUS(thread));
 }
+#endif
 
 uint32_t Sciclient_readThread32(uint32_t thread, uint8_t idx)
 {

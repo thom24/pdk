@@ -51,6 +51,11 @@
 #include <ti/csl/csl_intaggr.h>
 #include <ti/csl/csl_intr_router.h>
 
+#ifdef QNX_OS
+#include <sys/mman.h>
+#include <sys/neutrino.h>
+#endif
+
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
@@ -2531,7 +2536,9 @@ static int32_t Sciclient_rmIaValidateEvt(const struct Sciclient_rmIaInst    *ins
 #else
         entry_int_map_lo = (volatile uint32_t *)(inst->imap + SCICLIENT_IA_ENTRY_INTMAP_LO(evt));
 #endif
-
+#ifdef QNX_OS
+        entry_int_map_lo = ((uint32_t *) mmap_device_memory(0, sizeof(uint32_t), PROT_READ|PROT_WRITE|PROT_NOCACHE, 0, (uint64_t)entry_int_map_lo));
+#endif
         if (in_use == true) {
             /* Check if event is in use */
             reg_vint = CSL_REG32_FEXT(entry_int_map_lo,
@@ -2568,6 +2575,9 @@ static int32_t Sciclient_rmIaValidateEvt(const struct Sciclient_rmIaInst    *ins
                 r = CSL_EBADARGS;
             }
         }
+ #ifdef QNX_OS
+        munmap_device_memory((void *)entry_int_map_lo, sizeof(uint32_t));
+ #endif
     }
 
     return r;
@@ -2633,11 +2643,17 @@ static int32_t Sciclient_rmIaValidateMapping(uint8_t   host,
         entry_int_map_lo = (volatile uint32_t *)(inst->imap + SCICLIENT_IA_ENTRY_INTMAP_LO(evt));
 #endif
 
+#ifdef QNX_OS
+        entry_int_map_lo = ((uint32_t *) mmap_device_memory(0, sizeof(uint32_t), PROT_READ|PROT_WRITE|PROT_NOCACHE, 0, (uint64_t)entry_int_map_lo));
+#endif
         /* Check if event is in use */
         reg_vint = CSL_REG32_FEXT(entry_int_map_lo,
                                   INTAGGR_IMAP_GEVI_IMAP_REGNUM);
         reg_sb = CSL_REG32_FEXT(entry_int_map_lo,
                                 INTAGGR_IMAP_GEVI_IMAP_BITNUM);
+ #ifdef QNX_OS
+        munmap_device_memory((void *)entry_int_map_lo, sizeof(uint32_t));
+ #endif
         if ((reg_vint == 0u) && (reg_sb == 0u)) {
             /*
              * INTMAP register's default value is zero which signifies VINT 0
@@ -2771,8 +2787,14 @@ static int32_t Sciclient_rmIrInpIsFree(uint16_t id,
              */
             for (i = 0u; i < inst->n_outp; i++) {
                 int_ctrl_reg = (volatile uint32_t *)Sciclient_getIrAddr(inst->cfg, i);
+ #ifdef QNX_OS
+                int_ctrl_reg = ((uint32_t *) mmap_device_memory(0, sizeof(uint32_t), PROT_READ|PROT_WRITE|PROT_NOCACHE, 0, (uint64_t)int_ctrl_reg));
+ #endif
                 extracted_inp = CSL_REG32_FEXT(int_ctrl_reg,
                                                INTR_ROUTER_CFG_MUXCNTL_ENABLE);
+ #ifdef QNX_OS
+                munmap_device_memory((void *)int_ctrl_reg, sizeof(uint32_t));
+ #endif
                 /*
                  * Do not return as in use if input is mapped by ROM.  SYSFW will
                  * clear the mapping when it receives the request to configure
@@ -2832,8 +2854,14 @@ static int32_t Sciclient_rmIrOutpIsFree(uint16_t    id,
 
     if (r == CSL_PASS) {
         int_ctrl_reg = (volatile uint32_t *) Sciclient_getIrAddr (inst->cfg, outp);
+ #ifdef QNX_OS
+        int_ctrl_reg = ((uint32_t *) mmap_device_memory(0, sizeof(uint32_t), PROT_READ|PROT_WRITE|PROT_NOCACHE, 0, (uint64_t)int_ctrl_reg));
+ #endif
         extracted_inp = CSL_REG32_FEXT(int_ctrl_reg,
                                        INTR_ROUTER_CFG_MUXCNTL_ENABLE);
+ #ifdef QNX_OS
+        munmap_device_memory((void *)int_ctrl_reg, sizeof(uint32_t));
+ #endif
         /*
          * Do not return as in use if output is mapped by ROM.  SYSFW will
          * clear the mapping when it receives the request to configure
@@ -2896,8 +2924,14 @@ static int32_t Sciclient_rmIrGetOutp(uint16_t   id,
          */
         for (i = 0u; i < inst->n_outp; i++) {
             int_ctrl_reg = (volatile uint32_t *) Sciclient_getIrAddr (inst->cfg, i);
+#ifdef QNX_OS
+            int_ctrl_reg = ((uint32_t *) mmap_device_memory(0, sizeof(uint32_t), PROT_READ|PROT_WRITE|PROT_NOCACHE, 0, (uint64_t)int_ctrl_reg));
+#endif
             extracted_inp = CSL_REG32_FEXT(int_ctrl_reg,
                                            INTR_ROUTER_CFG_MUXCNTL_ENABLE);
+#ifdef QNX_OS
+            munmap_device_memory((void *)int_ctrl_reg, sizeof(uint32_t));
+#endif
             if (inp == extracted_inp) {
                 *outp = i;
                 r = CSL_PASS;

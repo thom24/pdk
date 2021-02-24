@@ -51,6 +51,11 @@
 #include <ti/drv/sciclient/sciserver.h>
 #include <ti/osal/osal.h>
 
+#ifdef QNX_OS
+#include <ti/drv/sciclient/src/sciclient/sciclient_qnx.h>
+#include <errno.h>
+#endif
+
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
@@ -142,6 +147,63 @@ extern CSL_SecProxyCfg gSciclient_secProxyCfg;
 /*                          Function Definitions                              */
 /* ========================================================================== */
 
+#ifdef QNX_OS
+uint64_t Sciclient_qnxVirtToPhyFxn(const void *virtAddr,
+                                   void *appData)
+{
+    int ret;
+    off64_t    phyAddr = 0;
+    uint32_t   length;
+    int errno;
+
+    if(appData != NULL_PTR) {
+        length = (uint32_t) *((uint32_t *) appData);
+    }
+    else {
+        printf("%s: Must specify memory size to map\n", __func__);
+        return (-1);
+    }
+
+    /* Get destination physical address */
+    ret = mem_offset64(virtAddr, NOFD, length, &phyAddr, NULL);
+    if (ret != 0) {
+        if (errno != EAGAIN) {
+            printf("%s:Error from mem_offset - errno=%d\n", __func__, errno);
+        }
+        else if (phyAddr == NULL) {
+            printf("%s:Error from mem_offset - errno=%d and phyAddr is NULL \n", __func__, errno);
+        }
+    }
+
+    QNX_DEBUG_PRINT("%s: physical/0x%lx virtual/%p\n",__func__,phyAddr,virtAddr);
+    return (uint64_t ) phyAddr;
+}
+
+void * Sciclient_qnxPhyToVirtFxn(uint64_t phyAddr,
+                                 void *appData)
+{
+    uint64_t *temp = 0;
+    uint32_t length = 0;
+
+
+    if(appData != NULL_PTR) {
+        length = (uint32_t) *((uint32_t *) appData);
+    }
+    else {
+        printf("%s: Must specify memory size to map\n", __func__);
+        return (NULL);
+    }
+
+    temp  = mmap_device_memory(0, length, PROT_READ|PROT_WRITE|PROT_NOCACHE, 0, phyAddr);
+    if((temp == MAP_FAILED))
+    {
+        printf("%s: mmmap_device_memory failed\n",__func__);
+    }
+    QNX_DEBUG_PRINT("%s: physical/0x%lx virtual/%p\n",__func__, phyAddr, temp);
+    return ((void *) temp);
+}
+#endif
+
 int32_t Sciclient_configPrmsInit(Sciclient_ConfigPrms_t *pCfgPrms)
 {
     int32_t ret = CSL_PASS;
@@ -199,6 +261,35 @@ int32_t Sciclient_init(const Sciclient_ConfigPrms_t *pCfgPrms)
     uintptr_t key;
     uint32_t b_doInit = 0U;
     uint32_t rxThread;
+
+#ifdef QNX_OS
+
+    /* Check if resource manager is already running, if so, do not initialize SCI */
+    if(access("/dev/tisci",F_OK) != -1) {
+        return status;
+    }
+
+    /* If using QNX at runtime need to remap addresses to be virtual */
+    gSciclient_secProxyCfg.pSecProxyRegs     = (CSL_sec_proxyRegs *)
+        mmap_device_memory(0, CSL_NAVSS0_SEC_PROXY0_CFG_MMRS_SIZE, PROT_READ|PROT_WRITE|PROT_NOCACHE, 0, CSL_NAVSS0_SEC_PROXY0_CFG_MMRS_BASE);
+    gSciclient_secProxyCfg.pSecProxyScfgRegs = (CSL_sec_proxy_scfgRegs *)
+        mmap_device_memory(0, CSL_NAVSS0_SEC_PROXY0_CFG_SCFG_SIZE, PROT_READ|PROT_WRITE|PROT_NOCACHE, 0, CSL_NAVSS0_SEC_PROXY0_CFG_SCFG_BASE);
+    gSciclient_secProxyCfg.pSecProxyRtRegs   = (CSL_sec_proxy_rtRegs *)
+        mmap_device_memory(0, CSL_NAVSS0_SEC_PROXY0_CFG_RT_SIZE, PROT_READ|PROT_WRITE|PROT_NOCACHE, 0, CSL_NAVSS0_SEC_PROXY0_CFG_RT_BASE);
+    gSciclient_secProxyCfg.proxyTargetAddr   =  (uint64_t)
+        mmap_device_io(CSL_NAVSS0_SEC_PROXY0_SRC_TARGET_DATA_SIZE, CSL_NAVSS0_SEC_PROXY0_SRC_TARGET_DATA_BASE);
+
+    if((gSciclient_secProxyCfg.pSecProxyRegs == MAP_FAILED) ||
+      (gSciclient_secProxyCfg.pSecProxyScfgRegs == MAP_FAILED) ||
+      (gSciclient_secProxyCfg.pSecProxyRtRegs == MAP_FAILED)) {
+        printf("%s: Failed to map device memory\n",__FUNCTION__);
+        status = CSL_EBADARGS;
+    }
+    if( gSciclient_secProxyCfg.proxyTargetAddr == MAP_DEVICE_FAILED) {
+        printf("%s: Failed to map device io  memory\n",__FUNCTION__);
+        status = CSL_EBADARGS;
+    }
+#endif
 
     /* Updating gSciclientHandle.initCount is CRITICAL */
     key = HwiP_disable();
@@ -304,6 +395,9 @@ int32_t Sciclient_init(const Sciclient_ConfigPrms_t *pCfgPrms)
                     intrPrms.corepacConfig.priority = 1U;
                 }
                 #endif
+#ifdef QNX_OS
+                intrPrms.corepacConfig.intAutoEnable  = 0;
+#endif
                 /* Clear Interrupt */
                 Osal_ClearInterrupt(intrPrms.corepacConfig.corepacEventNum, intrPrms.corepacConfig.intVecNum);
                 /* Register interrupts */
@@ -365,6 +459,9 @@ int32_t Sciclient_init(const Sciclient_ConfigPrms_t *pCfgPrms)
                     intrPrms.corepacConfig.priority = 1U;
                 }
                 #endif
+#ifdef QNX_OS
+                intrPrms.corepacConfig.intAutoEnable  = 0;
+#endif
                 /* Clear Interrupt */
                 Osal_ClearInterrupt(intrPrms.corepacConfig.corepacEventNum, intrPrms.corepacConfig.intVecNum);
                 /* Register interrupts */
@@ -439,11 +536,13 @@ int32_t Sciclient_init(const Sciclient_ConfigPrms_t *pCfgPrms)
         }
 #endif
     }
+#ifndef QNX_OS
     if (status == CSL_PASS)
     {
         gSciclient_writeInProgress = 0U;
         status = Sciclient_abiCheck();
     }
+#endif
     return status;
 }
 
@@ -1049,6 +1148,7 @@ static void Sciclient_ISR(uintptr_t arg)
             #if defined (_TMS320C6X)
             Osal_DisableInterrupt((int32_t) gSciclientMap[contextId].respIntrNum, OSAL_REGINT_INTVEC_EVENT_COMBINER);
             #else
+#ifndef QNX_OS
             Osal_DisableInterrupt(0, (int32_t) gSciclientMap[contextId].respIntrNum);
             #if defined (__C7100__)
             {
@@ -1074,6 +1174,7 @@ static void Sciclient_ISR(uintptr_t arg)
             }
             Osal_ClearInterrupt(0, (int32_t) gSciclientMap[contextId].respIntrNum);
             #endif
+#endif
             #endif
         }
         else

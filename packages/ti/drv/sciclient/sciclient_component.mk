@@ -46,12 +46,14 @@ ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
 sciclient_LIB_LIST += sciclient_hs
 endif
 
+ifneq ($(BUILD_OS_TYPE), qnx)
 ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2))
 sciclient_LIB_LIST += rm_pm_hal
 sciclient_LIB_LIST += sciserver_tirtos
 sciclient_LIB_LIST += sciserver_baremetal
 sciclient_LIB_LIST += sciclient_direct
 sciclient_LIB_LIST += sciclient_direct_hs
+endif
 endif
 
 drvsciclient_BOARDLIST = am65xx_evm am65xx_idk j721e_sim j721e_evm j7200_evm j721s2_evm am64x_evm
@@ -62,6 +64,10 @@ drvsciclient_j7200_CORELIST = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
 drvsciclient_j721s2_CORELIST = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 c7x_1 c7x_2
 drvsciclient_am64x_CORELIST = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 m4f_0
 drvsciclient_DISABLE_PARALLEL_MAKE = yes
+ifeq ($(BUILD_OS_TYPE), qnx)
+drvsciclient_j721e_CORELIST += qnx_mpu1_0
+drvsciclient_j7200_CORELIST += qnx_mpu1_0
+endif
 
 define DRV_SCICLIENT_RTOS_BOARDLIST_RULE
 

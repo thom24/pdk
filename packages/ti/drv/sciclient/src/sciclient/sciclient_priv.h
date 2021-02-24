@@ -233,7 +233,11 @@ uint32_t Sciclient_getCurrentContext(uint16_t messageType);
  *
  *  \return  address   address of the thread status
  */
+#ifdef QNX_OS
+uintptr_t Sciclient_threadStatusReg(uint32_t thread);
+#else
 uint32_t Sciclient_threadStatusReg(uint32_t thread);
+#endif
 
 /**
  *  \brief   Read a 32 bit word from the thread.
