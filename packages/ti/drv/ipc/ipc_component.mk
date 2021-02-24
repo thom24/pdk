@@ -65,6 +65,7 @@ drvipc_DISABLE_PARALLEL_MAKE = yes
 
 ifeq ($(BUILD_OS_TYPE), qnx)
 drvipc_j721e_CORELIST += qnx_mpu1_0
+drvipc_j7200_CORELIST += qnx_mpu1_0
 endif
 
 ############################
