@@ -675,7 +675,7 @@ void OSPI_initConfig(OSPI_Tests *test)
     else
     {
         /* Enable interrupt in INDAC mode */
-        ospi_cfg.intrEnable = true;
+        ospi_cfg.intrEnable = false;
         /* Disable PHY in INDAC mode */
         ospi_cfg.phyEnable = false;
         ospi_cfg.dmaEnable = false;
@@ -1088,12 +1088,26 @@ void spi_test()
     /* Init SPI driver */
     SPI_init();
 
-    for (i = 0; ; i++)
+    while(1)
     {
+        UART_printf("\r\n Which UT would you like to run? (9 to exit)\n");
+        i = 0;
+        UART_scanFmt("%d", &i);
+
+        if(i == 9)
+        {
+            break;
+        }
+
         test = &Ospi_tests[i];
         if (test->testFunc == NULL)
         {
-            break;
+            UART_printf("\r\n Invalid number entered\n");
+            continue;
+        }
+        else
+        {
+            UART_printf("\r\n Running UT %d\n", i);
         }
 
         OSPI_configClk(test->clk, true);
@@ -1108,7 +1122,7 @@ void spi_test()
         {
             SPI_log("\r\n %s have failed\r\n", test->testDesc);
             testFail = true;
-            break;
+            //break;
         }
     }
 
@@ -1150,6 +1164,12 @@ int main(void)
 
     Board_init(boardCfg);
 
+    volatile int loop = 0;
+    while(loop)
+    {
+        /* wait for CCS connection */
+    }
+
 #ifdef USE_BIOS
 
 	Error_init(&eb);
@@ -1190,6 +1210,8 @@ bool VerifyData(uint8_t *expData,
         {
             match = 0;
             SPI_log("Data mismatch at idx %d\n", idx);
+            SPI_log("\r\n expData \t rxData \n");
+            SPI_log("\r\n %d \t %d \n", *expData, *rxData);
         }
         expData++;
         rxData++;

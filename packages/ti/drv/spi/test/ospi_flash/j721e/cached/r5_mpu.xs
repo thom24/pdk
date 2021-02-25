@@ -152,7 +152,7 @@ attrs.noExecute = false;
 attrs.accPerm = 1;          /* RW at PL1 */
 attrs.tex = 1;
 attrs.subregionDisableMask = 0;
-MPU.setRegionMeta(5, 0x70000000, MPU.RegionSize_1M, attrs);
+MPU.setRegionMeta(5, 0x70000000, MPU.RegionSize_8M, attrs);
 
 /* This entry covers DDR memory */
 attrs.enable = true;
@@ -174,7 +174,17 @@ attrs.noExecute = true;
 attrs.accPerm = 3;          /* RW at PL1 & PL2 */
 attrs.tex = 0;
 attrs.subregionDisableMask = 0;
-MPU.setRegionMeta(7, 0xA4000000, MPU.RegionSize_8M, attrs);
+MPU.setRegionMeta(7, 0xAA000000, MPU.RegionSize_32M, attrs);
+
+attrs.enable = true;
+attrs.bufferable = true;
+attrs.cacheable = true;
+attrs.shareable = false;
+attrs.noExecute = false;
+attrs.accPerm = 3;          /* RW at PL1 & PL2*/
+attrs.tex = 1;
+attrs.subregionDisableMask = 0;
+MPU.setRegionMeta(8, 0x50000000, MPU.RegionSize_64M, attrs);
 
 attrs.enable = true;
 attrs.bufferable = false;
@@ -184,84 +194,4 @@ attrs.noExecute = false;
 attrs.accPerm = 3;          /* RW at PL1 & PL2 */
 attrs.tex = 0;
 attrs.subregionDisableMask = 0;
-MPU.setRegionMeta(8, 0x50000000, MPU.RegionSize_32M, attrs);
-
-attrs.enable = true;
-attrs.bufferable = true;
-attrs.cacheable = true;
-attrs.shareable = false;
-attrs.noExecute = false;
-attrs.accPerm = 3;          /* RW at PL1 & PL2 */
-attrs.tex = 1;
-attrs.subregionDisableMask = 0;
-MPU.setRegionMeta(9, 0x52000000, MPU.RegionSize_16M, attrs);
-
-attrs.enable = true;
-attrs.bufferable = true;
-attrs.cacheable = true;
-attrs.shareable = false;
-attrs.noExecute = false;
-attrs.accPerm = 3;          /* RW at PL1 & PL2 */
-attrs.tex = 1;
-attrs.subregionDisableMask = 0;
-MPU.setRegionMeta(10, 0x53000000, MPU.RegionSize_8M, attrs);
-
-attrs.enable = true;
-attrs.bufferable = true;
-attrs.cacheable = true;
-attrs.shareable = false;
-attrs.noExecute = false;
-attrs.accPerm = 3;          /* RW at PL1 & PL2 */
-attrs.tex = 1;
-attrs.subregionDisableMask = 0;
-MPU.setRegionMeta(11, 0x53800000, MPU.RegionSize_4M, attrs);
-
-attrs.enable = true;
-attrs.bufferable = true;
-attrs.cacheable = true;
-attrs.shareable = false;
-attrs.noExecute = false;
-attrs.accPerm = 3;          /* RW at PL1 & PL2 */
-attrs.tex = 1;
-attrs.subregionDisableMask = 0;
-MPU.setRegionMeta(12, 0x53C00000, MPU.RegionSize_2M, attrs);
-
-attrs.enable = true;
-attrs.bufferable = true;
-attrs.cacheable = true;
-attrs.shareable = false;
-attrs.noExecute = false;
-attrs.accPerm = 3;          /* RW at PL1 & PL2 */
-attrs.tex = 1;
-attrs.subregionDisableMask = 0;
-MPU.setRegionMeta(13, 0x53E00000, MPU.RegionSize_1M, attrs);
-
-attrs.enable = true;
-attrs.bufferable = true;
-attrs.cacheable = true;
-attrs.shareable = false;
-attrs.noExecute = false;
-attrs.accPerm = 3;          /* RW at PL1 & PL2 */
-attrs.tex = 1;
-attrs.subregionDisableMask = 0;
-MPU.setRegionMeta(14, 0x53F00000, MPU.RegionSize_512K, attrs);
-
-attrs.enable = true;
-attrs.bufferable = true;
-attrs.cacheable = true;
-attrs.shareable = false;
-attrs.noExecute = false;
-attrs.accPerm = 3;          /* RW at PL1 & PL2 */
-attrs.tex = 1;
-attrs.subregionDisableMask = 0;
-MPU.setRegionMeta(15, 0x53F80000, MPU.RegionSize_256K, attrs);
-
-attrs.enable = true;
-attrs.bufferable = false;
-attrs.cacheable = false;
-attrs.shareable = false;
-attrs.noExecute = false;
-attrs.accPerm = 3;          /* RW at PL1 & PL2 */
-attrs.tex = 1;
-attrs.subregionDisableMask = 0;
-MPU.setRegionMeta(16, 0x53FC0000, MPU.RegionSize_128K, attrs);
+MPU.setRegionMeta(9, 0x53FE0000, MPU.RegionSize_128K, attrs);

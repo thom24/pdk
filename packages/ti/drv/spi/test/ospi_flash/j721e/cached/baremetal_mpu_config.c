@@ -35,12 +35,7 @@ const CSL_ArmR5MpuRegionCfg gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         .regionId         = 2U,
         .enable           = 1U,
         .baseAddr         = 0x41C00000,
-        .size             = CSL_ARM_R5_MPU_REGION_SIZE_512KB,
-
-#if defined (SOC_J721E) || defined (SOC_J7200)
         .size             = CSL_ARM_R5_MPU_REGION_SIZE_1MB,
-#endif
-
         .subRegionEnable  = CSL_ARM_R5_MPU_SUB_REGION_ENABLE_ALL,
         .exeNeverControl  = 0U,
         .accessPermission = CSL_ARM_R5_ACC_PERM_PRIV_USR_RD_WR,
@@ -50,20 +45,11 @@ const CSL_ArmR5MpuRegionCfg gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         .memAttr          = 0U,
     },
     {
-        /* Region 3 configuration: 2 MB MCMS3 RAM */
+        /* Region 3 configuration: 8 MB MCMS3 RAM */
         .regionId         = 3U,
         .enable           = 1U,
         .baseAddr         = 0x70000000,
-        .size             = CSL_ARM_R5_MPU_REGION_SIZE_2MB,
-
-#if defined (SOC_J721E)
         .size             = CSL_ARM_R5_MPU_REGION_SIZE_8MB,
-#endif
-
-#if defined (SOC_J7200)
-        .size             = CSL_ARM_R5_MPU_REGION_SIZE_1MB,
-#endif
-
         .subRegionEnable  = CSL_ARM_R5_MPU_SUB_REGION_ENABLE_ALL,
         .exeNeverControl  = 0U,
         .accessPermission = CSL_ARM_R5_ACC_PERM_PRIV_USR_RD_WR,
@@ -122,7 +108,6 @@ const CSL_ArmR5MpuRegionCfg gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         .cachePolicy      = CSL_ARM_R5_CACHE_POLICY_NON_CACHEABLE,
         .memAttr          = 0U,
     },
-#if defined (SPI_CACHE_ENABLE)
     {
         //Region 7 configuration: Covers first 32MB of EVM Flash (FSS DAT0) *
         .regionId         = 7U,
@@ -137,18 +122,12 @@ const CSL_ArmR5MpuRegionCfg gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         .cachePolicy      = CSL_ARM_R5_CACHE_POLICY_WB_WA,
         .memAttr          = 0U,
     },
-#endif
     {
         //Region 8 configuration (Cahched or Non-cached for PHY tuning data based on macro): Covers last 256KB of EVM Flash (FSS DAT0) *
         .regionId         = 8U,
         .enable           = 1U,
-    #if defined(SOC_AM65XX) || defined(SOC_J721E)
         .baseAddr         = 0x53FE0000,
         .size             = CSL_ARM_R5_MPU_REGION_SIZE_128KB,
-    #else
-        .baseAddr         = 0x53FC0000,
-        .size             = CSL_ARM_R5_MPU_REGION_SIZE_256KB,
-    #endif
         .subRegionEnable  = CSL_ARM_R5_MPU_SUB_REGION_ENABLE_ALL,
         .exeNeverControl  = 0U,
         .accessPermission = CSL_ARM_R5_ACC_PERM_PRIV_USR_RD_WR,
