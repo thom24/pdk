@@ -629,7 +629,7 @@ static SPI_Handle OSPI_open_v0(SPI_Handle handle, const SPI_Params *params)
             else
             {
                 CSL_ospiSetIndTrigAddr((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
-                                       0);
+                                       0x3FE0000);
             }
 
             /* Disable write completion auto polling */
@@ -827,7 +827,7 @@ static int32_t OSPI_ind_xfer_mode_read_v0(SPI_Handle handle,
             rdBytes = (rdBytes > remaining) ? remaining : rdBytes;
 
             /* Read data from FIFO */
-            CSL_ospiReadFifoData(hwAttrs->dataAddr, pDst, rdBytes);
+            CSL_ospiReadFifoData(hwAttrs->dataAddr+0x3FE0000, pDst, rdBytes);
 
             pDst += rdBytes;
             remaining -= rdBytes;
@@ -920,6 +920,11 @@ static int32_t OSPI_dac_xfer_mode_read_v0(SPI_Handle handle,
     else
 #endif
     {
+        if (hwAttrs->phyEnable == (bool)true)
+        {
+            /* Enable PHY pipeline mode for read */
+            CSL_ospiPipelinePhyEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), TRUE);
+        }
         pSrc = (uint8_t *)(hwAttrs->dataAddr + offset);
         remainSize = (uint32_t)transaction->count & 3U;
         size = (uint32_t)transaction->count - remainSize;
@@ -939,6 +944,7 @@ static int32_t OSPI_dac_xfer_mode_read_v0(SPI_Handle handle,
             CSL_archMemoryFence();
 #endif
         }
+    CacheP_wbInv((void *)(hwAttrs->dataAddr + offset), transaction->count);
     }
 
     return (0);
@@ -1226,7 +1232,7 @@ static int32_t OSPI_ind_xfer_mode_write_v0(SPI_Handle handle,
                 wrBytes = (wrBytes > remaining) ? remaining : wrBytes;
 
                 /* Write data to FIFO */
-                CSL_ospiWriteFifoData(hwAttrs->dataAddr, pSrc, wrBytes);
+                CSL_ospiWriteFifoData(hwAttrs->dataAddr+0x3FE0000, pSrc, wrBytes);
 
                 pSrc += wrBytes;
                 remaining -= wrBytes;
@@ -1318,6 +1324,7 @@ static int32_t OSPI_dac_xfer_mode_write_v0(SPI_Handle handle,
             }
         }
     }
+    CacheP_wbInv((void *)(hwAttrs->dataAddr + offset), transaction->count);
     return (retVal);
 }
 
