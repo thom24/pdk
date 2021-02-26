@@ -675,7 +675,7 @@ void OSPI_initConfig(OSPI_Tests *test)
     else
     {
         /* Enable interrupt in INDAC mode */
-        ospi_cfg.intrEnable = false;
+        ospi_cfg.intrEnable = true;
         /* Disable PHY in INDAC mode */
         ospi_cfg.phyEnable = false;
         ospi_cfg.dmaEnable = false;

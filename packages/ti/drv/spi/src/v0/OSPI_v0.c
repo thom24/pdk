@@ -211,7 +211,7 @@ static void OSPI_hwiFxn_v0(uintptr_t arg)
                     rdBytes = (rdBytes > object->readCountIdx) ? object->readCountIdx : rdBytes;
 
                     /* Read data from FIFO */
-                    CSL_ospiReadFifoData(hwAttrs->dataAddr, object->readBufIdx, rdBytes);
+                    CSL_ospiReadFifoData(hwAttrs->dataAddr+0x3FE0000, object->readBufIdx, rdBytes);
 
                     object->readBufIdx += rdBytes;
                     object->readCountIdx -= rdBytes;
@@ -230,7 +230,7 @@ static void OSPI_hwiFxn_v0(uintptr_t arg)
                         }
                     }
                     rdBytes = object->readCountIdx;
-                    CSL_ospiReadFifoData(hwAttrs->dataAddr, object->readBufIdx, rdBytes);
+                    CSL_ospiReadFifoData(hwAttrs->dataAddr+0x3FE0000, object->readBufIdx, rdBytes);
                     object->readBufIdx += rdBytes;
                     object->readCountIdx -= rdBytes;
                 }
@@ -277,7 +277,7 @@ static void OSPI_hwiFxn_v0(uintptr_t arg)
                 wrBytes = (wrBytes > object->writeCountIdx) ? object->writeCountIdx : wrBytes;
 
                 /* Write data to FIFO */
-                CSL_ospiWriteFifoData(hwAttrs->dataAddr, object->writeBufIdx, wrBytes);
+                CSL_ospiWriteFifoData(hwAttrs->dataAddr+0x3FE0000, object->writeBufIdx, wrBytes);
 
                 object->writeBufIdx += wrBytes;
                 object->writeCountIdx -= wrBytes;
@@ -289,7 +289,7 @@ static void OSPI_hwiFxn_v0(uintptr_t arg)
                     (object->writeCountIdx <= (sramLevel * CSL_OSPI_FIFO_WIDTH)))
                 {
                     wrBytes = object->writeCountIdx;
-                    CSL_ospiWriteFifoData(hwAttrs->dataAddr, object->writeBufIdx, wrBytes);
+                    CSL_ospiWriteFifoData(hwAttrs->dataAddr+0x3FE0000, object->writeBufIdx, wrBytes);
                     object->writeBufIdx += wrBytes;
                     object->writeCountIdx -= wrBytes;
                 }
