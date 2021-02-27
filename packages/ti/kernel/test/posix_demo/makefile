@@ -50,13 +50,11 @@ endif
 PACKAGE_SRCS_COMMON = .
 SRCS_COMMON += main.c posix_demo.c
 
-ifeq ($(SOC), $(filter $(SOC), tpr12))
-  ifeq ($(CORE),$(filter $(CORE), c66xdsp_1))
-      EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/linker_c66_freertos.cmd
-  endif
-  ifeq ($(CORE),$(filter $(CORE), mcu1_0))
-      EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/linker_r5_freertos.lds
-  endif
+ifeq ($(CORE),$(filter $(CORE), c66xdsp_1))
+  EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/linker_c66_freertos.cmd
+endif
+ifeq ($(CORE),$(filter $(CORE), mcu1_0))
+  EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/linker_r5_freertos.lds
 endif
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_TEST_DEFINES)

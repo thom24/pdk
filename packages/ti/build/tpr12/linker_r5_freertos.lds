@@ -6,9 +6,7 @@
 
 /* USER CODE BEGIN (0) */
 /* USER CODE END */
---retain="*(.intvecs)"
 --retain="*(.intc_text)"
---retain="*(.rstvectors)"
 --retain="*(.irqStack)"
 --retain="*(.fiqStack)"
 --retain="*(.abortStack)"
@@ -28,7 +26,6 @@ __SVC_STACK_SIZE = 0x4000;
 
 /*----------------------------------------------------------------------------*/
 /* Linker Settings                                                            */
---retain="*(.intvecs)"
 
 /*----------------------------------------------------------------------------*/
 /* Memory Map                                                                 */

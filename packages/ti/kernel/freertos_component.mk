@@ -66,9 +66,12 @@
 #
 ifeq ($(freertos_component_make_include), )
 
-freertos_BOARDLIST       = tpr12_evm
-freertos_SOCLIST         = tpr12
+freertos_BOARDLIST       = tpr12_evm j721e_evm j7200_evm am65xx_evm am65xx_idk
+freertos_SOCLIST         = tpr12 j721e j7200 am65xx
 freertos_tpr12_CORELIST   = c66xdsp_1 mcu1_0
+freertos_j721e_CORELIST   = mcu1_0
+freertos_j7200_CORELIST   = mcu1_0
+freertos_am65xx_CORELIST   = mcu1_0
 
 ############################
 # freertos package
@@ -87,7 +90,7 @@ freertos_LIB_LIST = freertos
 ############################
 freertos_EXAMPLE_LIST = 
 
-ifeq ($(SOC),$(filter $(SOC), tpr12))
+ifeq ($(SOC),$(filter $(SOC), $(freertos_SOCLIST)))
 freertos_EXAMPLE_LIST =  freertos_test_task_switch
 freertos_EXAMPLE_LIST += freertos_test_ut
 freertos_EXAMPLE_LIST += freertos_test_posix
@@ -111,7 +114,7 @@ export freertos_OBJPATH
 freertos_MAKEFILE = -f freertos.mak
 export freertos_MAKEFILE
 freertos_BOARD_DEPENDENCY = no
-freertos_CORE_DEPENDENCY = no
+freertos_CORE_DEPENDENCY = yes
 freertos_SOC_DEPENDENCY = yes
 export freertos_COMP_LIST
 export freertos_BOARD_DEPENDENCY
@@ -148,7 +151,7 @@ export freertos_test_task_switch_PKG_LIST
 freertos_test_task_switch_INCLUDE = $(freertos_test_task_switch_PATH)
 freertos_test_task_switch_BOARDLIST = $(freertos_BOARDLIST)
 export freertos_test_task_switch_BOARDLIST
-freertos_test_task_switch_$(SOC)_CORELIST = $(freertos_tpr12_CORELIST)
+freertos_test_task_switch_$(SOC)_CORELIST = $(freertos_$(SOC)_CORELIST)
 export freertos_test_task_switch_$(SOC)_CORELIST
 
 # freertos rtos test app
@@ -169,7 +172,7 @@ export freertos_test_ut_PKG_LIST
 freertos_test_ut_INCLUDE = $(freertos_test_ut_PATH)
 freertos_test_ut_BOARDLIST = $(freertos_BOARDLIST)
 export freertos_test_ut_BOARDLIST
-freertos_test_ut_$(SOC)_CORELIST = $(freertos_tpr12_CORELIST)
+freertos_test_ut_$(SOC)_CORELIST = $(freertos_$(SOC)_CORELIST)
 export freertos_test_ut_$(SOC)_CORELIST
 
 # freertos rtos test app
@@ -190,7 +193,7 @@ export freertos_test_posix_PKG_LIST
 freertos_test_posix_INCLUDE = $(freertos_test_posix_PATH)
 freertos_test_posix_BOARDLIST = $(freertos_BOARDLIST)
 export freertos_test_posix_BOARDLIST
-freertos_test_posix_$(SOC)_CORELIST = $(freertos_tpr12_CORELIST)
+freertos_test_posix_$(SOC)_CORELIST = $(freertos_$(SOC)_CORELIST)
 export freertos_test_posix_$(SOC)_CORELIST
 
 

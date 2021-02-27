@@ -66,8 +66,8 @@
 #define configUSE_MALLOC_FAILED_HOOK            (0)
 #define configUSE_DAEMON_TASK_STARTUP_HOOK      (0)
 #define configUSE_TICK_HOOK                     (0)
-#define configCPU_CLOCK_HZ                      (400 * 1000 * 1000)
-#define configSYSTICK_CLOCK_HZ                  (200 * 1000 * 1000)
+#define configCPU_CLOCK_HZ                      (1000 * 1000 * 1000)
+#define configSYSTICK_CLOCK_HZ                  (19200000)
 #define configTICK_RATE_HZ                      (1000)
 #define configMAX_PRIORITIES                    (16)
 #define configMINIMAL_STACK_SIZE                (1024) /* in units of configSTACK_DEPTH_TYPE, not bytes */

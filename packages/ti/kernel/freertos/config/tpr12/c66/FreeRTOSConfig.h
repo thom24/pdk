@@ -35,6 +35,9 @@
 #define TI_FREERTOS_CONFIG_H
 
 #include <ti/osal/DebugP.h>
+#ifdef BUILD_C66X_1
+#include "FreeRTOSConfig_c66xdsp_1.h"
+#endif
 
 /*-----------------------------------------------------------
  * Application specific definitions.

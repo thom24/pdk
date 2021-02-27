@@ -62,8 +62,39 @@
 
 #define NUM_TASK_SWITCHES      (1000000u)
 
-#define PING_INT_NUM           (8u)
-#define PONG_INT_NUM           (9u)
+#ifdef SOC_TPR12
+    #ifdef BUILD_MCU1_0
+        #define PING_INT_NUM           (236u)
+        #define PONG_INT_NUM           (237u)
+    #endif
+    #ifdef BUILD_C66X_1
+        #define PING_INT_NUM           (8u)
+        #define PING_EVT_ID            (CSL_DSS_INTR_DSS_RTIB_0)
+        #define PONG_INT_NUM           (9u)
+        #define PONG_EVT_ID            (CSL_DSS_INTR_DSS_RTIB_1)
+    #endif
+#endif
+
+#ifdef SOC_AM65XX
+    #ifdef BUILD_MCU1_0
+        #define PING_INT_NUM           (CSL_MCU0_INTR_MAIN2MCU_LVL_INTR0_OUTL_0)
+        #define PONG_INT_NUM           (CSL_MCU0_INTR_MAIN2MCU_LVL_INTR0_OUTL_1)
+    #endif
+#endif
+
+#ifdef SOC_J721E
+    #ifdef BUILD_MCU1_0
+        #define PING_INT_NUM           (CSLR_MCU_R5FSS0_CORE0_INTR_MAIN2MCU_LVL_INTRTR0_OUTL_0)
+        #define PONG_INT_NUM           (CSLR_MCU_R5FSS0_CORE0_INTR_MAIN2MCU_LVL_INTRTR0_OUTL_1)
+    #endif
+#endif
+
+#ifdef SOC_J7200
+    #ifdef BUILD_MCU1_0
+        #define PING_INT_NUM           (CSLR_MCU_R5FSS0_CORE0_INTR_MAIN2MCU_LVL_INTRTR0_OUTL_0)
+        #define PONG_INT_NUM           (CSLR_MCU_R5FSS0_CORE0_INTR_MAIN2MCU_LVL_INTRTR0_OUTL_1)
+    #endif
+#endif
 
 #define PING_TASK_PRI  (2u)
 #define PONG_TASK_PRI  (3u)
@@ -143,7 +174,9 @@ void ping_main(void *args)
         HwiP_Status hwiStatus;
 
         HwiP_Params_init(&hwiParams);
-        hwiParams.evtId = CSL_DSS_INTR_DSS_RTIB_0;
+#ifdef BUILD_C66X_1
+        hwiParams.evtId = PING_EVT_ID;
+#endif
         hHwi = HwiP_create(PING_INT_NUM, ping_isr, &hwiParams);
         DebugP_assert(hHwi != NULL);
 
@@ -201,7 +234,9 @@ void pong_main(void *args)
         HwiP_Status hwiStatus;
 
         HwiP_Params_init(&hwiParams);
-        hwiParams.evtId = CSL_DSS_INTR_DSS_RTIB_1;
+#ifdef BUILD_C66X_1
+        hwiParams.evtId = PONG_EVT_ID;
+#endif
         hHwi = HwiP_create(PONG_INT_NUM, pong_isr, &hwiParams);
         DebugP_assert(hHwi != NULL);
 
