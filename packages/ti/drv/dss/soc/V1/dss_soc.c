@@ -121,6 +121,10 @@ static const Dss_VpRegInfo gDss_vpRegInfo[] = {
     {CSL_DSS_VP_ID_4, (void *)CSL_DSS0_VP4_BASE}
 };
 
+static const Dss_WbPipeRegInfo gDss_wbRegInfo[] = {
+    {CSL_DSS_WB_PIPE_ID_1, (void *)CSL_DSS0_WB_BASE},
+};
+
 static const Dss_OverlayConnInfo gDss_OverlayConnInfo[] = {
     {CSL_DSS_OVERLAY_ID_1, CSL_DSS_VP_ID_1},
     {CSL_DSS_OVERLAY_ID_2, CSL_DSS_VP_ID_2},
@@ -204,6 +208,14 @@ void Dss_fillSocInfo(Dss_RmInfo *rmInfo)
         {
             gDss_SocInfo.vpRegs[i] =
                     (CSL_dss_vpRegs *)gDss_vpRegInfo[i].vpRegs;
+        }
+    }
+    for(i=CSL_DSS_WB_PIPE_ID_1; i<CSL_DSS_WB_PIPE_ID_MAX; i++)
+    {
+        if(TRUE == rmInfo->isWbPipeAvailable[i])
+        {
+            gDss_SocInfo.wbRegs[i] =
+                    (CSL_dss_wbRegs *)gDss_wbRegInfo[i].wbPipeRegs;
         }
     }
 }

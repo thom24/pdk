@@ -203,10 +203,27 @@ typedef struct
  */
 typedef struct
 {
+    uint32_t instId;
+    /**< DSS M2M/WB pipeline instance ID */
     CSL_DssWbPipeDmaCfg dmaCfg;
     /**< DMA configuration for WB pipeline
      *   See \ref CSL_DssWbPipeDmaCfg for details */
+    uint32_t pipeId;
+    /**< ID DSS pipeline to use.
+     *   See \ref CSL_DssVidPipeId for details */
+    uint32_t overlayId;
+    /**< ID DSS overlay to use. CSL_DssOverlayId.
+     *   See \ref CSL_DssOverlayId for details */
 } Dss_WbCreateParams;
+
+/**
+ *  \brief DSS M2M driver create status. Returned after calling Fvid2_create().
+ */
+typedef struct
+{
+    int32_t retVal;
+    /**< Create status, FVID2_SOK on success, else failure. */
+} Dss_WbCreateStatus;
 /* ========================================================================== */
 /*                  Internal/Private Function Declarations                    */
 /* ========================================================================== */
@@ -221,7 +238,7 @@ typedef struct
  *
  *  \return None
  */
-static inline void Csirx_m2mCreateParamsInit(Dss_WbCreateParams *createParams);
+static inline void Dss_m2mCreateParamsInit(Dss_WbCreateParams *createParams);
 
 /**
  *  \brief Dss_WbPipeCfgParams structure init function.
@@ -230,7 +247,7 @@ static inline void Csirx_m2mCreateParamsInit(Dss_WbCreateParams *createParams);
  *
  *  \return None
  */
-static inline void Csirx_m2mPipeCfgParamsInit(Dss_WbPipeCfgParams *cfgParams);
+static inline void Dss_m2mPipeCfgParamsInit(Dss_WbPipeCfgParams *cfgParams);
 
 /**
  *  \brief Dss_WbPipeMflagParams structure init function.
@@ -239,7 +256,7 @@ static inline void Csirx_m2mPipeCfgParamsInit(Dss_WbPipeCfgParams *cfgParams);
  *
  *  \return None
  */
-static inline void Csirx_m2mMFlagParamsInit(Dss_WbPipeMflagParams *mFlagParams);
+static inline void Dss_m2mMFlagParamsInit(Dss_WbPipeMflagParams *mFlagParams);
 
 /**
  *  \brief Dss_WbStatus structure init function.
@@ -248,19 +265,22 @@ static inline void Csirx_m2mMFlagParamsInit(Dss_WbPipeMflagParams *mFlagParams);
  *
  *  \return None
  */
-static inline void Csirx_m2mStatusInit(Dss_WbStatus *status);
+static inline void Dss_m2mStatusInit(Dss_WbStatus *status);
 /* ========================================================================== */
 /*                       Static Function Definitions                          */
 /* ========================================================================== */
-static inline void Csirx_m2mCreateParamsInit(Dss_WbCreateParams *createParams)
+static inline void Dss_m2mCreateParamsInit(Dss_WbCreateParams *createParams)
 {
     if(NULL != createParams)
     {
+        createParams->instId    = DSS_M2M_WB_PIPELINE_ID_0;
+        createParams->pipeId    = CSL_DSS_VID_PIPE_ID_VID1;
+        createParams->overlayId = CSL_DSS_OVERLAY_ID_1;
         CSL_dssWbPipeDmaCfgInit(&(createParams->dmaCfg));
     }
 }
 
-static inline void Csirx_m2mPipeCfgParamsInit(Dss_WbPipeCfgParams *cfgParams)
+static inline void Dss_m2mPipeCfgParamsInit(Dss_WbPipeCfgParams *cfgParams)
 {
     if(NULL != cfgParams)
     {
@@ -268,7 +288,7 @@ static inline void Csirx_m2mPipeCfgParamsInit(Dss_WbPipeCfgParams *cfgParams)
     }
 }
 
-static inline void Csirx_m2mMFlagParamsInit(Dss_WbPipeMflagParams *mFlagParams)
+static inline void Dss_m2mMFlagParamsInit(Dss_WbPipeMflagParams *mFlagParams)
 {
     if(NULL != mFlagParams)
     {
@@ -276,7 +296,7 @@ static inline void Csirx_m2mMFlagParamsInit(Dss_WbPipeMflagParams *mFlagParams)
     }
 }
 
-static inline void Csirx_m2mStatusInit(Dss_WbStatus *status)
+static inline void Dss_m2mStatusInit(Dss_WbStatus *status)
 {
     if(NULL != status)
     {

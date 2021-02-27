@@ -254,6 +254,17 @@ typedef struct
 } Dss_VpRegInfo;
 
 /**
+ *  \brief This structure contains WB pipeline register information
+ */
+typedef struct
+{
+    uint32_t pipeId;
+    /**< Write-back pipeline id. Refer #CSL_DssWbPipeId for valid values */
+    void *wbPipeRegs;
+    /**< Write-back pipeline registers */
+} Dss_WbPipeRegInfo;
+
+/**
  *  \brief This structure defines module id for a particular nodeId
  */
 typedef struct
@@ -279,6 +290,8 @@ typedef struct
     /**< Overlay registers */
     CSL_dss_vpRegs *vpRegs[CSL_DSS_VP_ID_MAX];
     /**< Video Port registers */
+    CSL_dss_wbRegs *wbRegs[CSL_DSS_WB_PIPE_ID_MAX];
+    /**< Write-back Pipe registers */
 } Dss_SocInfo;
 
 /**
@@ -611,6 +624,10 @@ static inline void Dss_socInfoInit(Dss_SocInfo *socInfo)
         for(i=CSL_DSS_VP_ID_1; i<CSL_DSS_VP_ID_MAX; i++)
         {
             socInfo->vpRegs[i]=NULL;
+        }
+        for(i=CSL_DSS_WB_PIPE_ID_1; i<CSL_DSS_WB_PIPE_ID_MAX; i++)
+        {
+            socInfo->wbRegs[i]=NULL;
         }
     }
 }

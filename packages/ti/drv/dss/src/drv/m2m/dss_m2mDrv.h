@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018
+ *  Copyright (c) Texas Instruments Incorporated 2021
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -32,27 +32,18 @@
  */
 
 /**
- *  \ingroup DRV_DSS_MODULE
- *  \defgroup DRV_DSS_CFG_MODULE DSS Driver Configurations
- *            This is documentation for DSS driver configuration
+ *  \file dss_m2mDrv.h
  *
- *  @{
+ *  \brief DSS m2m driver internal interface file.
  */
 
-/**
- *  \file dss_cfg.h
- *
- *  \brief DSS Driver configuration file.
- */
-
-#ifndef DSS_CFG_H_
-#define DSS_CFG_H_
+#ifndef DSS_M2MDRV_H_
+#define DSS_M2MDRV_H_
 
 /* ========================================================================== */
 /*                             Include Files                                  */
 /* ========================================================================== */
-
-/* None */
+#include <ti/drv/dss/src/drv/m2m/dss_m2mPriv.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -62,26 +53,22 @@ extern "C" {
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
 
-/** \brief Default max number of frames that can be queued per display driver
- *   instance */
-#define DSS_DEF_QUEUE_LEN_PER_INST                    (16U)
-
-/** \brief Default max number of frames that can be queued per display M2M driver
- *   instance */
-#define DSS_DEF_QUEUE_LEN_PER_M2M_DRV_INST            (4U)
-
-/** \brief Log enable for DSS module */
-#define DssTrace                              ((uint32_t) GT_ERR | \
-                                               (uint32_t) GT_TraceState_Enable)
+/* None */
 
 /* ========================================================================== */
 /*                         Structure Declarations                             */
 /* ========================================================================== */
-
-/* None */
+/**
+ *  \brief DSS M2M Driver initialization parameters.
+ */
+typedef struct
+{
+    uint32_t drvInstId;
+    /**< Driver Instance Id */
+} Dss_M2MDrvInitParams;
 
 /* ========================================================================== */
-/*                  Internal/Private Function Declarations                    */
+/*                  Internal/Private Function Declarations                   */
 /* ========================================================================== */
 
 /* None */
@@ -89,9 +76,55 @@ extern "C" {
 /* ========================================================================== */
 /*                          Function Declarations                             */
 /* ========================================================================== */
+/**
+ *  \brief DSS display driver initialization function.
+ *   This function gets called as a part of Dss_init(). It Initializes internal
+ *   data structures and common system level resources related to display.
+ *
+ *  \param initParams     Pointer to a #Dss_InitParams structure
+ *                        containing the driver init configuration
+ *
+ *  \return FVID2_SOK if successful, else suitable error code
+ */
+int32_t Dss_m2mDrvInit(const Dss_InitParams *initParams);
 
-/* None */
+/**
+ *  \brief DSS display driver de-initialization function.
+ *   This function gets called as a part of Dss_deInit(). It de-Initializes
+ *   internal data structures and common system level resources
+ *   related to display.
+ *
+ *  \param None
+ *
+ *  \return FVID2_SOK if successful, else suitable error code
+ */
+int32_t Dss_m2mDrvDeInit(void);
 
+/*
+ * FVID2 DSS M2M Driver API's
+ */
+Fdrv_Handle Dss_m2mCreate(uint32_t drvId,
+                          uint32_t instId,
+                          void *createArgs,
+                          void *createStatusArgs,
+                          const Fvid2_DrvCbParams *fdmCbParams);
+
+int32_t Dss_m2mDelete(Fdrv_Handle handle, void *reserved);
+
+int32_t Dss_m2mProcessRequest(Fdrv_Handle handle,
+                              Fvid2_FrameList *inProcessList,
+                              Fvid2_FrameList *outProcessList,
+                              uint32_t timeout);
+
+int32_t Dss_m2mGetProcessedRequest(Fdrv_Handle handle,
+                                   Fvid2_FrameList *inProcessList,
+                                   Fvid2_FrameList *outProcessList,
+                                   uint32_t timeout);
+
+int32_t Dss_m2mControl(Fdrv_Handle handle,
+                       uint32_t cmd,
+                       void *cmdArgs,
+                       void *cmdStatusArgs);
 /* ========================================================================== */
 /*                       Static Function Definitions                          */
 /* ========================================================================== */
@@ -102,6 +135,4 @@ extern "C" {
 }
 #endif
 
-#endif /* #ifndef DSS_CFG_H_ */
-
-/* @} */
+#endif /* #ifndef DSS_M2MDRV_H_ */

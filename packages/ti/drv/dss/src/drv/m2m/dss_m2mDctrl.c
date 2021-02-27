@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018
+ *  Copyright (c) Texas Instruments Incorporated 2021
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -32,22 +32,23 @@
  */
 
 /**
- *  \file dss_init.c
+ *  \file dss_m2mDctrl.c
  *
- *  \brief File containing the DSS initialization APIs.
+ *  \brief File containing the DSS M2M driver DSS_DCTRL APIs.
  *
  */
 
 /* ========================================================================== */
 /*                             Include Files                                  */
 /* ========================================================================== */
-
 #include <ti/drv/dss/dss.h>
-#include <dss_soc_priv.h>
 #include <ti/drv/dss/src/drv/common/dss_evtMgr.h>
-#include <ti/drv/dss/src/drv/dctrl/dss_dctrlDrv.h>
 #include <ti/drv/dss/src/drv/disp/dss_dispDrv.h>
+#include <ti/drv/dss/src/drv/disp/dss_dispPriv.h>
+#include <ti/drv/dss/src/drv/dctrl/dss_dctrlDrv.h>
+#include <ti/drv/dss/src/drv/dctrl/dss_dctrlPriv.h>
 #include <ti/drv/dss/src/drv/m2m/dss_m2mDrv.h>
+#include <dss_soc_priv.h>
 
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
@@ -64,124 +65,84 @@
 /* ========================================================================== */
 /*                          Function Declarations                             */
 /* ========================================================================== */
+int32_t Dss_m2mDrvIoctlSetOverlayParams(DssM2MDrv_VirtContext *context,
+                                        const Dss_DctrlOverlayParams *ovlParams);
 
-/* None */
+int32_t Dss_m2mDrvIoctlSetLayerParams(DssM2MDrv_VirtContext *context,
+                        const Dss_DctrlOverlayLayerParams *ovlLayerParams);
 
+int32_t Dss_m2mDrvIoctlSetGlobalParams(DssM2MDrv_VirtContext *context,
+                               const Dss_DctrlGlobalDssParams *globalParams);
 /* ========================================================================== */
 /*                            Global Variables                                */
 /* ========================================================================== */
-
-/* None */
+extern DssM2MDrv_CommonObj gDssM2mCommonObj;
 
 /* ========================================================================== */
 /*                          Function Definitions                              */
 /* ========================================================================== */
-
-void Dss_initParamsInit(Dss_InitParams *dssParams)
-{
-    if(NULL != dssParams)
-    {
-        Dss_socParamsInit(&(dssParams->socParams));
-    }
-}
-
-int32_t Dss_init(const Dss_InitParams *initParams)
+int32_t Dss_m2mDrvIoctlSetOverlayParams(DssM2MDrv_VirtContext *context,
+                                        const Dss_DctrlOverlayParams *ovlParams)
 {
     int32_t retVal = FVID2_SOK;
-    uint32_t i, numInst = 0U;
-    uint32_t isPipeAvailable[CSL_DSS_VID_PIPE_ID_MAX];
-    uint32_t isPortAvailable[CSL_DSS_VP_ID_MAX];
-    Dss_DctrlDrvInitParams dctrlInitParams;
-    Dss_EvtMgrInitParams evtMgrInitParams;
-    Dss_DispDrvInitParams dispInitParams[CSL_DSS_VID_PIPE_ID_MAX];
-    Dss_RmInfo *rmInfo;
-    Dss_IrqParams *irqParams;
 
-    /* Check for NULL pointers and invalid arguments */
-    if(NULL == initParams)
+    /* check for parameters */
+    if (NULL == ovlParams)
     {
-        GT_0trace(DssTrace, GT_ERR, "Invalid arguments\r\n");
         retVal = FVID2_EBADARGS;
     }
-
-    if(FVID2_SOK == retVal)
+    else
     {
-        rmInfo = (Dss_RmInfo *)(&(initParams->socParams.rmInfo));
-        Dss_fillSocInfo(rmInfo);
-
-        /* Initialize event manager */
-        irqParams = (Dss_IrqParams *)(&(initParams->socParams.irqParams));
-        Dss_evtMgrInitParamsInit(&evtMgrInitParams);
-        retVal = Dss_fillEvtMgrInitInfo(&evtMgrInitParams, irqParams);
-        retVal += Dss_evtMgrInit(
-                            (const Dss_EvtMgrInitParams *) &evtMgrInitParams);
-    }
-
-    if(FVID2_SOK == retVal)
-    {
-        /* Initialize display controller driver */
-        dctrlInitParams.drvInstId = DSS_DCTRL_INST_0;
-        dctrlInitParams.numAvailablePorts = 0U;
-        for(i=CSL_DSS_VP_ID_1; i<CSL_DSS_VP_ID_MAX; i++)
-        {
-            isPortAvailable[i] =
-                            initParams->socParams.rmInfo.isPortAvailable[i];
-
-            if(TRUE == isPortAvailable[i])
-            {
-                dctrlInitParams.availablePortId[
-                                        dctrlInitParams.numAvailablePorts] = i;
-                dctrlInitParams.numAvailablePorts++;
-            }
-        }
-
-#if defined(SOC_J721E)
-        dctrlInitParams.dpInitParams.isAvailable = initParams->socParams.dpInitParams.isAvailable;
-        dctrlInitParams.dpInitParams.isHpdSupported = initParams->socParams.dpInitParams.isHpdSupported;
-#endif
-
-        dctrlInitParams.dsiInitParams.isAvailable = FALSE;
-#if defined(SOC_J721E)
-        dctrlInitParams.dsiInitParams.isAvailable =
-            initParams->socParams.dsiInitParams.isAvailable;
-#endif
-
-        retVal = Dss_dctrlDrvInit(&dctrlInitParams);
-    }
-
-    if(FVID2_SOK == retVal)
-    {
-        /* Initialize display driver */
-        for(i=0U; i<CSL_DSS_VID_PIPE_ID_MAX; i++)
-        {
-            isPipeAvailable[i] =
-                                initParams->socParams.rmInfo.isPipeAvailable[i];
-
-            if(TRUE == isPipeAvailable[i])
-            {
-                dispInitParams[numInst].drvInstId = i;
-                numInst++;
-            }
-        }
-        retVal += Dss_dispDrvInit(numInst, dispInitParams);
-    }
-    if(FVID2_SOK == retVal)
-    {
-        /* Initialize display M2M driver */
-        retVal += Dss_m2mDrvInit(initParams);
+        /* upgrade configurations into context object and re-program HW module
+           on buffer submission */
+        Fvid2Utils_memcpy(&context->instCfg.dctrlCfg.ovlParams,
+                          ovlParams,
+                          sizeof(Dss_DctrlOverlayParams));
     }
 
     return retVal;
 }
 
-int32_t Dss_deInit(void)
+int32_t Dss_m2mDrvIoctlSetLayerParams(DssM2MDrv_VirtContext *context,
+                            const Dss_DctrlOverlayLayerParams *ovlLayerParams)
 {
     int32_t retVal = FVID2_SOK;
 
-    retVal += Dss_m2mDrvDeInit();
-    retVal += Dss_dispDrvDeInit();
-    retVal += Dss_dctrlDrvDeInit();
-    retVal += Dss_evtMgrDeInit();
+    /* check for parameters */
+    if (NULL == ovlLayerParams)
+    {
+        retVal = FVID2_EBADARGS;
+    }
+    else
+    {
+        /* upgrade configurations into context object and re-program HW module
+           on buffer submission */
+        Fvid2Utils_memcpy(&context->instCfg.dctrlCfg.ovlLayerParams,
+                          ovlLayerParams,
+                          sizeof(Dss_DctrlOverlayLayerParams));
+    }
+
+    return retVal;
+}
+
+int32_t Dss_m2mDrvIoctlSetGlobalParams(DssM2MDrv_VirtContext *context,
+                               const Dss_DctrlGlobalDssParams *globalParams)
+{
+    int32_t retVal = FVID2_SOK;
+
+    /* check for parameters */
+    if (NULL == globalParams)
+    {
+        retVal = FVID2_EBADARGS;
+    }
+    else
+    {
+        /* upgrade configurations into context object and re-program HW module
+           on buffer submission */
+        Fvid2Utils_memcpy(&context->instCfg.dctrlCfg.globalParams,
+                          globalParams,
+                          sizeof(Dss_DctrlGlobalDssParams));
+    }
 
     return retVal;
 }

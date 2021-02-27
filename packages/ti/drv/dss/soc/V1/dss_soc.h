@@ -199,6 +199,14 @@ typedef void (*Dss_DctrlDpHpdCbFxn)(uint32_t hpdState, void *appData);
 #define DSS_EVT_MGR_INST_ID_INVALID           ((uint32_t) 0xFFU)
 /* @} */
 
+/** \brief DSS M2M/WB pipe-line number available in the SoC */
+#define DSS_M2M_WB_PIPELINE_ID_0                     (CSL_DSS_WB_PIPE_ID_1)
+#define DSS_M2M_WB_PIPELINE_ID_MAX                   (CSL_DSS_WB_PIPE_ID_MAX)
+#define DSSM2M_NUM_WB_PIPELINE                       (CSL_DSS_WB_PIPE_ID_MAX)
+
+/** \brief DSS M2M DRV Virtual Context: Number of virtual contexts per DSS M2M pipeline */
+#define DSSM2M_NUM_VIRTUAL_CONTEXT                   (8U)
+
 /*
  *  SOC specific IOCTLs.
  */
@@ -285,6 +293,8 @@ typedef struct
     /**< Ids for available overlays */
     uint32_t isPortAvailable[CSL_DSS_VP_ID_MAX];
     /**< Ids for available video ports */
+    uint32_t isWbPipeAvailable[CSL_DSS_WB_PIPE_ID_MAX];
+    /**< Ids for available WB pipelines */
 } Dss_RmInfo;
 
 /**
@@ -472,6 +482,10 @@ static inline void Dss_rmInfoInit(Dss_RmInfo *rmInfo)
         for(i=CSL_DSS_VP_ID_1; i<CSL_DSS_VP_ID_MAX; i++)
         {
             rmInfo->isPortAvailable[i] = TRUE;
+        }
+        for(i=CSL_DSS_WB_PIPE_ID_1; i<CSL_DSS_WB_PIPE_ID_MAX; i++)
+        {
+            rmInfo->isWbPipeAvailable[i] = TRUE;
         }
     }
 }
