@@ -34,7 +34,7 @@
 ;
 ;
 
-        .cdecls C,NOLIST,"Hwi.h"
+        .cdecls C,NOLIST,"port_Hwi.h"
 
 ;
 ; We should probably define a C struct for the stack frame below ...

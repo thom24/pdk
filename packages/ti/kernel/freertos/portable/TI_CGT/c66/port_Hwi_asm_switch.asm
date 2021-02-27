@@ -3,7 +3,7 @@
 ;
 ;
 
-        .cdecls C,NOLIST,"Hwi.h"
+        .cdecls C,NOLIST,"port_Hwi.h"
 
 ;
 ; This logic is needed to allow this code to work with 6.1.x codegen

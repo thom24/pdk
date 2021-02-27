@@ -5,13 +5,12 @@ include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 
 MODULE_NAME = freertos
 
-SRCDIR = freertos/dpl/$(ISA) 
-SRCDIR += freertos/portable/TI_CGT/$(ISA)
+SRCDIR = freertos/portable/TI_CGT/$(ISA)
 SRCDIR += ${FREERTOS_KERNEL_INSTALL_PATH}/FreeRTOS-Kernel/ \
           ${FREERTOS_KERNEL_INSTALL_PATH}/FreeRTOS-Kernel/portable/MemMang \
           ${FREERTOS_LABS_INSTALL_PATH}/FreeRTOS-Plus-POSIX/FreeRTOS-Plus-POSIX/source
 	
-INCDIR = freertos/config/$(SOC)/$(ISA) dpl
+INCDIR = freertos/config/$(SOC)/$(ISA)
 INCDIR += ${FREERTOS_KERNEL_INSTALL_PATH}/FreeRTOS-Kernel/include \
           freertos/portable/TI_CGT/$(ISA) \
           ${FREERTOS_LABS_INSTALL_PATH}/FreeRTOS-Plus-POSIX/include \
@@ -46,28 +45,27 @@ SRCS_COMMON += \
 #ISA specific C files
 ifeq ($(ISA),$(filter $(ISA), c66))
 SRCS_COMMON += \
-    Hwi.c
+    port_Hwi.c
 endif
 
 ifeq ($(ISA),$(filter $(ISA), r5f))
 SRCS_COMMON += \
-    Hwi.c
+    port_Hwi.c
 endif
 
 #ISA specific assembly files
 ifeq ($(ISA),$(filter $(ISA), c66))
 SRCS_ASM_COMMON := \
-    Hwi_asm_switch.asm \
-    Hwi_disp_always.asm \
-    Hwi_intcIsrDispatch.asm \
-    TaskSupport_asm.asm
+    port_Hwi_asm_switch.asm \
+    port_Hwi_disp_always.asm \
+    port_Hwi_intcIsrDispatch.asm \
+    port_TaskSupport_asm.asm
 endif
 
 ifeq ($(ISA),$(filter $(ISA), r5f))
 SRCS_ASM_COMMON := \
     portASM.asm \
-    Hwi_handlers_asm.asm
-
+    port_Hwi_handlers_asm.asm
 endif
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS)

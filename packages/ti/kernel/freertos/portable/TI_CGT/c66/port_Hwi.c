@@ -31,7 +31,7 @@
  */
 
 #include <stdio.h>
-#include "Hwi.h"
+#include "port_Hwi.h"
 #include <FreeRTOS.h>
 #include <task.h>
 #include <ti/csl/src/intc/csl_intc.h>

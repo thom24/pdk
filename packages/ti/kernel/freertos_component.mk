@@ -135,8 +135,8 @@ export freertos_$(SOC)_CORELIST
 
 # freertos rtos test app
 freertos_test_task_switch_COMP_LIST = freertos_test_task_switch
-freertos_test_task_switch_RELPATH = ti/kernel/test/task_switch
-freertos_test_task_switch_PATH = $(PDK_FREERTOS_COMP_PATH)/test/task_switch
+freertos_test_task_switch_RELPATH = ti/kernel/test/freertos/task_switch
+freertos_test_task_switch_PATH = $(PDK_FREERTOS_COMP_PATH)/test/freertos/task_switch
 freertos_test_task_switch_BOARD_DEPENDENCY = yes
 freertos_test_task_switch_CORE_DEPENDENCY = no
 freertos_test_task_switch_XDC_CONFIGURO = no
@@ -156,8 +156,8 @@ export freertos_test_task_switch_$(SOC)_CORELIST
 
 # freertos rtos test app
 freertos_test_ut_COMP_LIST = freertos_test_ut
-freertos_test_ut_RELPATH = ti/kernel/test/ut
-freertos_test_ut_PATH = $(PDK_FREERTOS_COMP_PATH)/test/ut
+freertos_test_ut_RELPATH = ti/kernel/test/freertos/ut
+freertos_test_ut_PATH = $(PDK_FREERTOS_COMP_PATH)/test/freertos/ut
 freertos_test_ut_BOARD_DEPENDENCY = yes
 freertos_test_ut_CORE_DEPENDENCY = no
 freertos_test_ut_XDC_CONFIGURO = no
@@ -177,8 +177,8 @@ export freertos_test_ut_$(SOC)_CORELIST
 
 # freertos rtos test app
 freertos_test_posix_COMP_LIST = freertos_test_posix
-freertos_test_posix_RELPATH = ti/kernel/test/
-freertos_test_posix_PATH = $(PDK_FREERTOS_COMP_PATH)/test/posix_demo
+freertos_test_posix_RELPATH = ti/kernel/test/freertos/
+freertos_test_posix_PATH = $(PDK_FREERTOS_COMP_PATH)/test/freertos/posix_demo
 freertos_test_posix_BOARD_DEPENDENCY = yes
 freertos_test_posix_CORE_DEPENDENCY = no
 freertos_test_posix_XDC_CONFIGURO = no

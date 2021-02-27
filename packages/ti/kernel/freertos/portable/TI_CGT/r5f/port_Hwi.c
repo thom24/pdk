@@ -42,7 +42,7 @@
 
 #include <stdio.h>
 #include <ti/csl/arch/csl_arch.h>
-#include "Hwi_priv.h"
+#include "port_Hwi_priv.h"
 
 /* ========================================================================== */
 /*                                Macros                                      */
