@@ -34,7 +34,7 @@
 #ifndef TI_FREERTOS_CONFIG_H
 #define TI_FREERTOS_CONFIG_H
 
-#include <kernel/dpl/DebugP.h>
+#include <ti/osal/DebugP.h>
 
 /*-----------------------------------------------------------
  * Application specific definitions.
@@ -54,7 +54,7 @@
  * This is not a FreeRTOS defined config and is defined by TI to quickly switch
  * between optimized and not-so-optimized config
  */
-#define configOPTIMIZE_FOR_LATENCY              (1)
+#define configOPTIMIZE_FOR_LATENCY              (0)
 
 #define configUSE_PREEMPTION					(1)
 #define configUSE_PORT_OPTIMISED_TASK_SELECTION	(1)
@@ -63,13 +63,13 @@
 #define configUSE_MALLOC_FAILED_HOOK            (0)
 #define configUSE_DAEMON_TASK_STARTUP_HOOK      (0)
 #define configUSE_TICK_HOOK                     (0)
-#define configCPU_CLOCK_HZ                      (19200000)
-#define configSYSTICK_CLOCK_HZ                  (19200000)
+#define configCPU_CLOCK_HZ                      (400 * 1000 * 1000)
+#define configSYSTICK_CLOCK_HZ                  (200 * 1000 * 1000)
 #define configTICK_RATE_HZ                      (1000)
 #define configMAX_PRIORITIES                    (16)
 #define configMINIMAL_STACK_SIZE                (1024) /* in units of configSTACK_DEPTH_TYPE, not bytes */
 #define configMAX_TASK_NAME_LEN                 (32)
-#define configUSE_TRACE_FACILITY                (0)
+#define configUSE_TRACE_FACILITY                (1)
 #define configUSE_STATS_FORMATTING_FUNCTIONS    (0)
 #define configUSE_16_BIT_TICKS                  (0)
 #define configIDLE_SHOULD_YIELD                 (1)
@@ -85,10 +85,11 @@
  *           char *pcTaskName ); 
  */
 #if (configOPTIMIZE_FOR_LATENCY==0)
-#define configCHECK_FOR_STACK_OVERFLOW          (1) 
+#define configCHECK_FOR_STACK_OVERFLOW          (2) 
 #else
 #define configCHECK_FOR_STACK_OVERFLOW          (0) 
 #endif
+#define configRECORD_STACK_HIGH_ADDRESS         (1)
 #define configQUEUE_REGISTRY_SIZE               (0)
 #define configUSE_QUEUE_SETS                    (0)
 #define configUSE_TIME_SLICING                  (0) /* keep as 0 to get same functionality as SysBIOS6 */
@@ -108,7 +109,7 @@
                                                      *      uint32_t *pulIdleTaskStackSize );
                                                      */ 
 #define configSUPPORT_DYNAMIC_ALLOCATION        (1)
-#define configTOTAL_HEAP_SIZE                   (4*1024) /* not used when heap_3.c is the selected heap */
+#define configTOTAL_HEAP_SIZE                   (32*1024) /* not used when heap_3.c is the selected heap */
 #define configAPPLICATION_ALLOCATED_HEAP        (0)    
 
 /* run-time stats config */
@@ -157,5 +158,10 @@ uint32_t uiPortGetRunTimeCounterValue();
 #define INCLUDE_vTaskSuspend        (1)
 #define INCLUDE_xTimerDelete        (1)
 #define INCLUDE_vSemaphoreDelete    (1)
+
+/* Size of ISR Stack in c66x */
+#define configHWI_TASK_STACK_DEPTH                                        (4096)
+#define configTIMER_ID                                                    (0)
+#define configTIMER_INT_NUM                                               (15)
 
 #endif /* TI_FREERTOS_CONFIG_H */

@@ -148,7 +148,7 @@ export freertos_test_task_switch_PKG_LIST
 freertos_test_task_switch_INCLUDE = $(freertos_test_task_switch_PATH)
 freertos_test_task_switch_BOARDLIST = $(freertos_BOARDLIST)
 export freertos_test_task_switch_BOARDLIST
-freertos_test_task_switch_$(SOC)_CORELIST = c66xdsp_1
+freertos_test_task_switch_$(SOC)_CORELIST = $(freertos_tpr12_CORELIST)
 export freertos_test_task_switch_$(SOC)_CORELIST
 
 # freertos rtos test app
@@ -169,7 +169,7 @@ export freertos_test_ut_PKG_LIST
 freertos_test_ut_INCLUDE = $(freertos_test_ut_PATH)
 freertos_test_ut_BOARDLIST = $(freertos_BOARDLIST)
 export freertos_test_ut_BOARDLIST
-freertos_test_ut_$(SOC)_CORELIST = c66xdsp_1
+freertos_test_ut_$(SOC)_CORELIST = $(freertos_tpr12_CORELIST)
 export freertos_test_ut_$(SOC)_CORELIST
 
 # freertos rtos test app
@@ -190,7 +190,7 @@ export freertos_test_posix_PKG_LIST
 freertos_test_posix_INCLUDE = $(freertos_test_posix_PATH)
 freertos_test_posix_BOARDLIST = $(freertos_BOARDLIST)
 export freertos_test_posix_BOARDLIST
-freertos_test_posix_$(SOC)_CORELIST = c66xdsp_1
+freertos_test_posix_$(SOC)_CORELIST = $(freertos_tpr12_CORELIST)
 export freertos_test_posix_$(SOC)_CORELIST
 
 

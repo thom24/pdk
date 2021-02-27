@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, Texas Instruments Incorporated
+ * Copyright (c) 2015-2019, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,62 +29,26 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+/*
+ *  ======== Hwi_priv.h ========
+ *  FreeRTOS Interrupt glue layer private include file
+ */
 
-#define L1P_CACHE_SIZE (16*1024)
-#define L1D_CACHE_SIZE (16*1024)
+#ifndef ti_kernel_freertos_r5f_Hwi_priv_include
+#define ti_kernel_freertos_r5f_Hwi_priv_include
 
-MEMORY
-{
-PAGE 0:
-
-#if (L1P_CACHE_SIZE < 0x8000)
-    L1PSRAM:        o = 0x00E00000, l = (0x00008000 - L1P_CACHE_SIZE)
+#ifdef __cplusplus
+extern "C" {
 #endif
-#if (L1D_CACHE_SIZE < 0x8000)
-    L1DSRAM:        o = 0x00F00000, l = (0x00008000 - L1D_CACHE_SIZE)
+
+#include <ti/osal/osal.h>
+
+void HwiP_fiq_handler(void);
+void HwiP_irq_handler(void);
+
+
+#ifdef __cplusplus
+}
 #endif
-    L2SRAM:   o = 0x00800000, l = 0x00060000
-    L3SRAM:   o = 0x88000000, l = 0x00390000
-    HWA_RAM:  o = 0x82000000, l = 0x00020000
 
-    /* PAGEs 1 and onwards are for overlay purposes for memory optimization.
-       Some examples:
-       1. Overlay one-time only text with uninitialized data.
-       2. Overlay L1PSRAM data path processing fast code and use copy tables
-          to page in (before entering data path) and out of L1PSRAM (when entering
-          sleep/low power).
-    */
-PAGE 1:
-    L3SRAM:   o = 0x88000000, l = 0x00390000
-}
-
--stack  0x2000                              /* SOFTWARE STACK SIZE           */
--heap   0x1000                              /* HEAP AREA SIZE                */
--u _Hwi_intcVectorTable
-
-SECTIONS
-{
-    /* hard addresses forces vecs to be allocated there */
-    .hwi_vect: {. = align(32); } > 0x00800000
-    .csl_vect: {} > L2SRAM
-
-    .fardata:  {} > L2SRAM
-    .const:    {} > L2SRAM
-    .switch:   {} > L2SRAM
-    .cio:      {} > L2SRAM
-    .data:     {} > L2SRAM
-    .sysmem:   {} > L2SRAM
-
-    GROUP
-    {
-    .rodata:
-    .bss:
-    .neardata:
-    } > L2SRAM
-    .stack:    {} > L2SRAM
-    .cinit:    {} > L2SRAM
-    .far:      {} > L2SRAM
-
-    .text: {} > L2SRAM
-}
-
+#endif /* ti_kernel_freertos_r5_Hwi_priv_include */

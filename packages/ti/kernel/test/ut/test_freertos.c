@@ -64,8 +64,16 @@
 
 #define NUM_TASK_SWITCHES (1000000u)
 
-#define PING_INT_NUM           (8u)
-#define PONG_INT_NUM           (9u)
+#ifdef SOC_TPR12
+    #ifdef BUILD_MCU1_0
+        #define PING_INT_NUM           (236u)
+        #define PONG_INT_NUM           (237u)
+    #endif
+    #ifdef BUILD_C66X_1
+        #define PING_INT_NUM           (8u)
+        #define PONG_INT_NUM           (9u)
+    #endif
+#endif
 
 #define PING_TASK_PRI (2u)
 #define PONG_TASK_PRI (3u)

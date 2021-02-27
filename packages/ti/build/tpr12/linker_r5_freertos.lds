@@ -15,20 +15,20 @@
 --retain="*(.undStack)"
 --retain="*(.svcStack)"
 -stack  0x2000                              /* SOFTWARE STACK SIZE           */
--heap   0x2000                              /* HEAP AREA SIZE                */
+-heap   0x1000                              /* HEAP AREA SIZE                */
 
+-u _freertosresetvectors
 
 /* Stack Sizes for various modes */
-__IRQ_STACK_SIZE = 0x1000;
-__FIQ_STACK_SIZE = 0x1000;
-__ABORT_STACK_SIZE = 0x1000;
-__UND_STACK_SIZE = 0x1000;
-__SVC_STACK_SIZE = 0x1000;
+__IRQ_STACK_SIZE = 0x4000;
+__FIQ_STACK_SIZE = 0x4000;
+__ABORT_STACK_SIZE = 0x4000;
+__UND_STACK_SIZE = 0x4000;
+__SVC_STACK_SIZE = 0x4000;
 
 /*----------------------------------------------------------------------------*/
 /* Linker Settings                                                            */
 --retain="*(.intvecs)"
--u _resetvectors
 
 /*----------------------------------------------------------------------------*/
 /* Memory Map                                                                 */
@@ -51,11 +51,10 @@ PAGE 1:
 /*----------------------------------------------------------------------------*/
 /* Section Configuration                                                      */
 SECTIONS{
-    /* .intvecs       : {} palign(8)      > VECTORS */
-    /* .intc_text     : {} palign(8)      > VECTORS */
-    .rstvectors    : {} palign(8)      > RESET_VECTORS
+    .freertosrstvectors    : {} palign(8)      > RESET_VECTORS
     .bootCode      : {} palign(8)      > TCMA_RAM
     .startupCode   : {} palign(8)      > TCMA_RAM
+    .text.hwi   : {} palign(8)      > TCMA_RAM
     .startupData   : {} palign(8)      > TCMB_RAM, type = NOINIT
 
     /* The linker notation "X >> Y | Z" indicates section X is first allocated in Y

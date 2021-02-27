@@ -29,9 +29,6 @@ ifeq ($(BUILD_OS_TYPE), baremetal)
 COMP_LIST_COMMON = $(PDK_COMMON_BAREMETAL_COMP)
 else
 # List all the components required by the application
-COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP)
-INCLUDE_EXTERNAL_INTERFACES += xdc bios
-XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
 endif
 
 COMP_LIST_COMMON += freertos
@@ -41,13 +38,13 @@ ifeq ($(SOC), $(filter $(SOC), tpr12))
       EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/linker_c66_freertos.cmd
   endif
   ifeq ($(CORE),$(filter $(CORE), mcu1_0))
-      EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/linker_r5_freertos.cmd
+      EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/linker_r5_freertos.lds
   endif
 endif
 
 ifeq ($(SOC),$(filter $(SOC), tpr12))
 # Append local auxillary linker command file
-APPEND_LNKCMD_FILE = ./$(SOC)/linker_$(ISA).cmd
+APPEND_LNKCMD_FILE = ../build/$(SOC)/linker_$(ISA).cmd
 endif
 
 # Common source files and CFLAGS across all platforms and cores

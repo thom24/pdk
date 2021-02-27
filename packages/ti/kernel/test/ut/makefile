@@ -41,7 +41,7 @@ ifeq ($(SOC), $(filter $(SOC), tpr12))
       EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/linker_c66_freertos.cmd
   endif
   ifeq ($(CORE),$(filter $(CORE), mcu1_0))
-      EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/linker_r5_freertos.cmd
+      EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/linker_r5_freertos.lds
   endif
 endif
 
@@ -65,6 +65,7 @@ CFLAGS_LOCAL_COMMON += -DUNITY_INCLUDE_CONFIG_H
 #   SRCS_<core/SoC/platform-name> =
 #   CFLAGS_LOCAL_<core/SoC/platform-name> =
 CFLAGS_LOCAL_c66xdsp_1 = --c99
+CFLAGS_LOCAL_mcu1_0 = --c99
 
 # Include common make files
 ifeq ($(MAKERULEDIR), )

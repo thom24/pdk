@@ -25,12 +25,11 @@ INCLUDE_EXTERNAL_INTERFACES = pdk
 
 # Common source files and CFLAGS across all platforms and cores
 SRCS_COMMON += \
-    Hwi.c \
     tasks.c \
     timers.c \
     queue.c \
     list.c \
-    heap_3.c \
+    heap_4.c \
     FreeRTOS_POSIX_clock.c \
     FreeRTOS_POSIX_mqueue.c \
     FreeRTOS_POSIX_pthread_barrier.c \
@@ -44,11 +43,32 @@ SRCS_COMMON += \
     FreeRTOS_POSIX_utils.c \
     port.c
 
+#ISA specific C files
+ifeq ($(ISA),$(filter $(ISA), c66))
+SRCS_COMMON += \
+    Hwi.c
+endif
+
+ifeq ($(ISA),$(filter $(ISA), r5f))
+SRCS_COMMON += \
+    Hwi.c
+endif
+
+#ISA specific assembly files
+ifeq ($(ISA),$(filter $(ISA), c66))
 SRCS_ASM_COMMON := \
     Hwi_asm_switch.asm \
     Hwi_disp_always.asm \
     Hwi_intcIsrDispatch.asm \
     TaskSupport_asm.asm
+endif
+
+ifeq ($(ISA),$(filter $(ISA), r5f))
+SRCS_ASM_COMMON := \
+    portASM.asm \
+    Hwi_handlers_asm.asm
+
+endif
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS)
 
