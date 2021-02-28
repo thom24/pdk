@@ -40,14 +40,14 @@
 
 /* --> __TI_STATIC_BASE */
 extern void* __TI_STATIC_BASE;
-extern void* _CSL_intcVectorTable;
+extern void* _Hwi_intcVectorTable;
 
 ti_sysbios_family_c64p_Hwi_Module_State__ ti_sysbios_family_c64p_Hwi_Module__state__V = {
     (uint16_t)0x4003,  /* ierMask */
     (int32_t)0x0,  /* intNum */
     ((char*)NULL),  /* taskSP */
     ((char*)NULL),  /* isrStack */
-    ((void *)((void*)&_CSL_intcVectorTable)),  /* vectorTableBase */
+    ((void *)((void*)&_Hwi_intcVectorTable)),  /* vectorTableBase */
     ((void *)((void*)&__TI_STATIC_BASE)),  /* bss */
     (int32_t)0x0,  /* scw */
 };

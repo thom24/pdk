@@ -15,6 +15,7 @@
     .ref ti_sysbios_family_c64p_Hwi_dispatchAlways
     .ref _CSL_Entry
 
+
 RESV    .macro num
     .loop num
     mvkh _CSL_intcCpuIntrTable,a4
@@ -40,7 +41,7 @@ CALLDISP .macro intr
     .sect ".hwi_vect"
     .align 0x400
     .nocmp
-__Hwi_intcVectorTable:    
+__Hwi_intcVectorTable:
 __Hwi_intcRsv0:
     NOP
     NOP
@@ -110,4 +111,11 @@ __Hwi_intcIsr14:
 __Hwi_intcIsr15:
     CALLDISP 15 
     
+    .sect  ".text:hwi_text"
+    .global CSL_intcIvpSet
+CSL_intcIvpSet:
+    bnop b3,2
+    mvkl __Hwi_intcVectorTable, b0
+    mvkh __Hwi_intcVectorTable, b0
+    mvc b0, istp
 

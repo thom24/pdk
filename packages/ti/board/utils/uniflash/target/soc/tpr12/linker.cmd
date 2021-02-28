@@ -24,6 +24,8 @@
 -stack  0x2000                              /* SOFTWARE STACK SIZE           */
 -heap   0x2000                              /* HEAP AREA SIZE                */
 
+-u _resetvectors
+
 /* Stack Sizes for various modes */
 __IRQ_STACK_SIZE = 0x1000;
 __FIQ_STACK_SIZE = 0x1000;

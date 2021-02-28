@@ -24,23 +24,28 @@ INCLUDE_EXTERNAL_INTERFACES = pdk
 
 # Common source files and CFLAGS across all platforms and cores
 SRCS_COMMON += \
-    tasks.c \
     timers.c \
     queue.c \
     list.c \
-    heap_4.c \
     FreeRTOS_POSIX_clock.c \
-    FreeRTOS_POSIX_mqueue.c \
     FreeRTOS_POSIX_pthread_barrier.c \
     FreeRTOS_POSIX_pthread_cond.c \
     FreeRTOS_POSIX_pthread_mutex.c \
     FreeRTOS_POSIX_pthread.c \
     FreeRTOS_POSIX_sched.c \
     FreeRTOS_POSIX_semaphore.c \
-    FreeRTOS_POSIX_timer.c \
     FreeRTOS_POSIX_unistd.c \
     FreeRTOS_POSIX_utils.c \
     port.c
+
+# FreeRTOS tasks does not compile in CPP build. Skip it for CPP build
+ifneq ($(CPLUSPLUS_BUILD), yes)
+SRCS_COMMON += \
+    FreeRTOS_POSIX_timer.c \
+    FreeRTOS_POSIX_mqueue.c \
+    tasks.c \
+    heap_4.c
+endif
 
 #ISA specific C files
 ifeq ($(ISA),$(filter $(ISA), c66))

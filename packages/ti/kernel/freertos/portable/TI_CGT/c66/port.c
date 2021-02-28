@@ -176,7 +176,7 @@ StackType_t *pxPortInitialiseStack(StackType_t * pxTopOfStack, TaskFunction_t px
     }
 #endif
 
-    pxTopOfStack = TaskSupport_buildTaskStack(pxTopOfStack, ti_sysbios_knl_Task_Func, Task_exit, Task_enter, (uint32_t)pvParameters, (uint32_t)pxCode);
+    pxTopOfStack = (StackType_t *)TaskSupport_buildTaskStack(pxTopOfStack, ti_sysbios_knl_Task_Func, Task_exit, Task_enter, (uint32_t)pvParameters, (uint32_t)pxCode);
 
     return pxTopOfStack;
 }

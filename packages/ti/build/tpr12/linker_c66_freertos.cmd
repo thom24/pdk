@@ -66,8 +66,7 @@ SECTIONS
 {
     /* hard addresses forces vecs to be allocated there */
     .hwi_vect: {. = align(32); } > 0x00800000
-    .csl_vect: {} > L2SRAM
-
+    .text:csl_entry:{} > L2SRAM
     .fardata:  {} > L2SRAM
     .const:    {} > L2SRAM
     .switch:   {} > L2SRAM
