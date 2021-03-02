@@ -157,7 +157,7 @@ void __attribute__((section(".text.hwi"))) HwiP_irq_handler_c(void)
         args = argArray[intNum];
 
         /* allow nesting of interrupts */
-        CSL_armR5IntrEnableIrq(1);  /* Enable IRQ interrupt in R5 */
+        //CSL_armR5IntrEnableIrq(1);  /* Enable IRQ interrupt in R5 */
 
         if(NULL!=isr)
         {
@@ -165,7 +165,7 @@ void __attribute__((section(".text.hwi"))) HwiP_irq_handler_c(void)
         }
 
         /* disallow nesting of interrupts */
-        CSL_armR5IntrEnableIrq(0);  /* Disbale IRQ interrupt in R5 */
+        //CSL_armR5IntrEnableIrq(0);  /* Disbale IRQ interrupt in R5 */
 
         if(CSL_VIM_INTR_TYPE_LEVEL == intrType)
         {

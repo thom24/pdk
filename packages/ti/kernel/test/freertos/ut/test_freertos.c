@@ -101,10 +101,10 @@
 #define PING_TASK_PRI (2u)
 #define PONG_TASK_PRI (3u)
 
-#define PING_TASK_SIZE (4096u)
+#define PING_TASK_SIZE (16384u)
 StackType_t gPingTaskStack[PING_TASK_SIZE] __attribute__((aligned(32)));
 
-#define PONG_TASK_SIZE (4096u)
+#define PONG_TASK_SIZE (16384u)
 StackType_t gPongTaskStack[PONG_TASK_SIZE] __attribute__((aligned(32)));
 
 StaticTask_t gPingTaskObj;
