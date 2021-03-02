@@ -43,13 +43,23 @@
 #endif
 #include <ti/board/src/flash/nor/ospi/nor_spi_patterns.h>
 #include <ti/board/src/flash/nor/ospi/nor_spi_phy_tune.h>
+/* UART Header files */
+#include <ti/drv/uart/UART.h>
+#include <ti/drv/uart/UART_stdio.h>
+
+extern void UART_printf(const char *pcString, ...);
 
 #undef NOR_SPI_TUNE_DEBUG
+#undef NOR_SPI_TUNE_PROFILE
 #undef NOR_DISABLE_TXDLL_WINDOW
 
 #ifdef NOR_SPI_TUNE_DEBUG
-#define NOR_log printf
+#define NOR_log UART_printf
 uint32_t norSpiTuneCnt = 0;
+#endif
+
+#ifdef NOR_SPI_TUNE_PROFILE
+#define NOR_log UART_printf
 #endif
 
 static NOR_PhyConfig ddrTuningPoint = {0, };
@@ -959,6 +969,12 @@ NOR_STATUS Nor_spiPhyTune(SPI_Handle handle, uint32_t offset)
     OSPI_v0_HwAttrs const        *hwAttrs = (OSPI_v0_HwAttrs const *)handle->hwAttrs;
     const CSL_ospi_flash_cfgRegs *pRegs = (const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr);
 
+#ifdef NOR_SPI_TUNE_PROFILE
+    uint64_t          startTime;        /* start time stamp in usec */
+    uint64_t          elapsedTime;      /* elapsed time in usec */
+    startTime = TimerP_getTimeInUsecs();
+#endif
+
 #ifdef NOR_SPI_TUNE_DEBUG
     NOR_log("\n");
     NOR_log("\n Fast Tuning at temperature %dC\n",(int)NOR_spiPhyAvgVtmTemp(NOR_SPI_PHY_VTM_TARGET));
@@ -990,6 +1006,11 @@ NOR_STATUS Nor_spiPhyTune(SPI_Handle handle, uint32_t offset)
             NOR_spiPhyConfig(handle, sdrTuningPoint);
         }
     }
+
+#ifdef NOR_SPI_TUNE_PROFILE
+    elapsedTime = TimerP_getTimeInUsecs() - startTime;
+    NOR_log("\n PHY tuning elapsed %d us", (uint32_t)elapsedTime);
+#endif
 
     return status;
 }
