@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2016-2018, Texas Instruments Incorporated
+# Copyright (c) 2016-2021, Texas Instruments Incorporated
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -125,6 +125,10 @@ ifeq ($(SOC),$(filter $(SOC), j721e))
 CFLAGS_LOCAL_COMMON += -DDEBUG
 endif
 #CFLAGS_LOCAL_COMMON += -DDEBUG_PRINT_EN            #this flag enable debug prints. Used only with UART in poll mode
+endif
+
+ifeq ($(SOC),$(filter $(SOC), am65xx))
+#CFLAGS_LOCAL_COMMON += -DENABLE_SERDES_SSC_MODE    #this flag enables SerDes SSC mode
 endif
 
 # this is to disable the dsb instruction in usb/src/include/hw_types.h

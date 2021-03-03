@@ -5,7 +5,7 @@
  *            As the name suggests this file implements the USB wrapper as
  *            impemented by AM6x .
  *
- *  \copyright Copyright (C) 2018-2019 Texas Instruments Incorporated -
+ *  \copyright Copyright (C) 2018-2021 Texas Instruments Incorporated -
  *             http://www.ti.com/
  */
 
@@ -215,7 +215,7 @@ int32_t usbClockSSCfg(void)
     CSL_SerdesRefClock  refClock = CSL_SERDES_REF_CLOCK_100M; 
     CSL_SerdesLinkRate  linkRate = CSL_SERDES_LINK_RATE_5G;
     int32_t             i;
-    int32_t             rc;
+    int32_t             rc = 0;
 
 	CSL_SerdesLaneEnableParams serdesLaneEnableParams;
 	CSL_SerdesLaneEnableStatus laneRetVal = CSL_SERDES_LANE_ENABLE_NO_ERR;
@@ -249,8 +249,32 @@ int32_t usbClockSSCfg(void)
                            MAIN_CTRL_MMR_CFG0_SERDES0_REFCLK_SEL_CLK_SEL, 
                            0x2); /* MAIN_PLL_CLKOUT */
 
+    memset(&serdesLaneEnableParams, 0, sizeof(serdesLaneEnableParams));
+
+    serdesLaneEnableParams.baseAddr     = baseAddr;
+    serdesLaneEnableParams.refClock     = refClock;
+    serdesLaneEnableParams.linkRate     = linkRate;
+    serdesLaneEnableParams.numLanes     = numLanes;
+    serdesLaneEnableParams.laneMask     = 0x1; /* all lanes */
+    serdesLaneEnableParams.phyType      = CSL_SERDES_PHY_TYPE_USB;
+    serdesLaneEnableParams.operatingMode= CSL_SERDES_FUNCTIONAL_MODE;
+    serdesLaneEnableParams.forceAttBoost= CSL_SERDES_FORCE_ATT_BOOST_DISABLED;
+#if defined(ENABLE_SERDES_SSC_MODE)
+    serdesLaneEnableParams.sscMode      = CSL_SERDES_SSC_ENABLED;
+#else
+    serdesLaneEnableParams.sscMode      = CSL_SERDES_SSC_DISABLED;
+#endif
+
+    for(i=0; i< serdesLaneEnableParams.numLanes; i++)
+    {
+      serdesLaneEnableParams.laneCtrlRate[i] = CSL_SERDES_LANE_FULL_RATE;
+      serdesLaneEnableParams.loopbackMode[i] = CSL_SERDES_LOOPBACK_DISABLED;
+      serdesLaneEnableParams.rxCoeff.forceAttVal[i] = 7;
+      serdesLaneEnableParams.rxCoeff.forceBoostVal[i] = 1;
+    }
+
     /* init the SERDES */
-    sdrc = CSL_serdesUSBInit(baseAddr, numLanes, refClock, linkRate);
+    sdrc = CSL_serdesUSBInit(&serdesLaneEnableParams);
     if (sdrc == CSL_SERDES_NO_ERR)
     {
         rc = 0;
@@ -262,26 +286,6 @@ int32_t usbClockSSCfg(void)
 
     if (rc == 0)
     {
-        memset(&serdesLaneEnableParams, 0, sizeof(serdesLaneEnableParams));
-
-        serdesLaneEnableParams.baseAddr     = baseAddr;
-        serdesLaneEnableParams.refClock     = refClock;
-        serdesLaneEnableParams.linkRate     = linkRate;
-        serdesLaneEnableParams.numLanes     = numLanes;
-        serdesLaneEnableParams.laneMask     = 0x1; /* all lanes */
-        serdesLaneEnableParams.phyType      = CSL_SERDES_PHY_TYPE_USB;
-        serdesLaneEnableParams.operatingMode= CSL_SERDES_FUNCTIONAL_MODE;
-        serdesLaneEnableParams.forceAttBoost= CSL_SERDES_FORCE_ATT_BOOST_DISABLED;
-
-
-        for(i=0; i< serdesLaneEnableParams.numLanes; i++)
-        {
-          serdesLaneEnableParams.laneCtrlRate[i] = CSL_SERDES_LANE_FULL_RATE;
-          serdesLaneEnableParams.loopbackMode[i] = CSL_SERDES_LOOPBACK_DISABLED;
-          serdesLaneEnableParams.rxCoeff.forceAttVal[i] = 7;
-          serdesLaneEnableParams.rxCoeff.forceBoostVal[i] = 1;
-        }
-
         /* Common Lane Enable API for lane enable, pll enable etc */
         laneRetVal = CSL_serdesLaneEnable(&serdesLaneEnableParams);
 

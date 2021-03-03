@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2018 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2021 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -79,11 +79,15 @@ static Board_STATUS Board_OnelanePCIeUSBSerdesCfg(void)
     serdesLane0EnableParams.phyType            = CSL_SERDES_PHY_TYPE_USB ;
     serdesLane0EnableParams.operatingMode      = CSL_SERDES_FUNCTIONAL_MODE;
     serdesLane0EnableParams.iterationMode      = CSL_SERDES_LANE_ENABLE_COMMON_INIT;
+    serdesLane0EnableParams.forceAttBoost      = CSL_SERDES_FORCE_ATT_BOOST_DISABLED;
+    serdesLane0EnableParams.sscMode            = CSL_SERDES_SSC_DISABLED;
 
     for(index = 0; index < serdesLane0EnableParams.numLanes; index++)
     {
-        serdesLane0EnableParams.loopbackMode[index]   = CSL_SERDES_LOOPBACK_DISABLED;
-        serdesLane0EnableParams.laneCtrlRate[index]   = CSL_SERDES_LANE_FULL_RATE; 
+        serdesLane0EnableParams.loopbackMode[index]          = CSL_SERDES_LOOPBACK_DISABLED;
+        serdesLane0EnableParams.laneCtrlRate[index]          = CSL_SERDES_LANE_FULL_RATE;
+        serdesLane0EnableParams.rxCoeff.forceAttVal[index]   = 7;
+        serdesLane0EnableParams.rxCoeff.forceBoostVal[index] = 1;
     }
 
     /* Configuring PCIe1 Lane0 */ 
@@ -109,10 +113,7 @@ static Board_STATUS Board_OnelanePCIeUSBSerdesCfg(void)
     CSL_serdesPorReset(serdesLane1EnableParams.baseAddr);
 
     /* USB3.0 initializations */
-    result = CSL_serdesUSBInit(serdesLane0EnableParams.baseAddr,
-                               serdesLane0EnableParams.numLanes,
-                               serdesLane0EnableParams.refClock,
-                               serdesLane0EnableParams.linkRate);
+    result = CSL_serdesUSBInit(&serdesLane0EnableParams);
     if (result != CSL_SERDES_NO_ERR)
     {
         return BOARD_FAIL;
