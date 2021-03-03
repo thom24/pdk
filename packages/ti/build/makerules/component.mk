@@ -1253,16 +1253,16 @@ else
   endif
 endif
 
-PDK_COMMON_FREERTOS_COMP = $(PDK_COMMON_COMP) osal_freertos
-ifeq ($(SOC),$(filter $(SOC), tpr12))
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 tpr12))
+  PDK_COMMON_FREERTOS_COMP = $(PDK_COMMON_COMP) osal_freertos 
   PDK_COMMON_FREERTOS_COMP += freertos
-endif
 ifeq ($(ARCH),c66x)
   PDK_COMMON_FREERTOS_COMP += csl_intc
 else
   ifneq ($(ARCH),c71)
     PDK_COMMON_FREERTOS_COMP += csl_init
   endif
+endif
 endif
 
 export PDK_COMMON_TIRTOS_COMP

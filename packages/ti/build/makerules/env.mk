@@ -304,7 +304,20 @@ else
   CHMOD = $(UTILSPATH)chmod
 endif
 
-ifeq ($(BUILD_OS_TYPE),$(filter $(BUILD_OS_TYPE), baremetal freertos))
+ifeq ($(BUILD_OS_TYPE),freertos)
+  ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 tpr12 awr294x))
+    ifeq ($(CONFIG_BLD_XDC_r5f),)
+        CONFIG_BLD_LNK_r5f   = $(pdk_PATH)/ti/build/$(SOC)/linker_r5_freertos.lds
+    endif 
+  endif
+  ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
+    ifeq ($(CONFIG_BLD_XDC_c66),)
+        CONFIG_BLD_LNK_c66   = $(pdk_PATH)/ti/build/$(SOC)/linker_c66_freertos.cmd
+    endif
+  endif
+endif
+
+ifeq ($(BUILD_OS_TYPE),baremetal)
   ifeq ($(SOC),$(filter $(SOC), am65xx j721e am77x j7200 am64x))
     ifeq ($(CONFIG_BLD_XDC_r5f),)
         CONFIG_BLD_LNK_r5f   = $(pdk_PATH)/ti/build/$(SOC)/linker_r5.lds
@@ -333,18 +346,10 @@ ifeq ($(BUILD_OS_TYPE),$(filter $(BUILD_OS_TYPE), baremetal freertos))
   endif
   ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
     ifeq ($(CONFIG_BLD_XDC_r5f),)
-      ifeq ($(BUILD_OS_TYPE),freertos)
-        CONFIG_BLD_LNK_r5f   = $(pdk_PATH)/ti/build/$(SOC)/linker_r5_freertos.lds
-      else
         CONFIG_BLD_LNK_r5f   = $(pdk_PATH)/ti/build/$(SOC)/linker_r5.lds
-      endif
     endif
     ifeq ($(CONFIG_BLD_XDC_c66),)
-      ifeq ($(BUILD_OS_TYPE),freertos)
-        CONFIG_BLD_LNK_c66   = $(pdk_PATH)/ti/build/$(SOC)/linker_c66_freertos.cmd
-      else
         CONFIG_BLD_LNK_c66   = $(pdk_PATH)/ti/build/$(SOC)/linker_c66_baremetal.cmd
-      endif
     endif
   endif
 endif

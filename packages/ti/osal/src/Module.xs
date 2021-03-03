@@ -95,8 +95,38 @@ function modBuild()
                 }
                 libUtility.buildLibrary ("nonos", soc, libOptions, Pkg.name, dev.targets[target], targetFiles_nonos);                
             }
+        } 
+        /* Build the target libs for SoC specific FreeRTOS */    
+        /* Build the libraries for the SoCs */
+        for each(var soc in soc_names)
+        {        
+            var dev = socs[soc];
+            var targetFiles_freertos;
+                    
+                    if (dev.familyType == "keystone") {
+                       targetFiles_freertos = osTypes["freertos"].srcFile.slice().concat(keyStoneFamilySrcFiles["freertos"].srcFile.slice());
+                    }
+                    else {
+                       targetFiles_freertos = osTypes["freertos"].srcFile.slice().concat(amFamilySrcFiles["freertos"].srcFile.slice());			
+                    }
+
+            /* Don't build if it is not configured */
+            if (dev.build == "false")
+                continue;
+                
+            /* Build the libraries for the soc targets */
+            for (var target=0; target < dev.targets.length; target++)
+            {
+                print (" Building for Soc: " + soc + " target : " + dev.targets[target] );
+                var copts_loc  = osTypes["freertos"].copts + " " + dev.copts;
+                var libOptions = {
+                                copts: copts_loc,
+                                incs:  osalIncludePath, 
+                }
+                libUtility.buildLibrary ("freertos", soc, libOptions, Pkg.name, dev.targets[target], targetFiles_freertos);                
+            }
         }	
-    }	
+    }		
     /* Add all the .c files to the release package. */
     var testFiles = libUtility.listAllFiles (".c", "src", true);
     for (var k = 0 ; k < testFiles.length; k++)

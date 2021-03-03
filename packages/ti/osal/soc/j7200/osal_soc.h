@@ -100,6 +100,11 @@ extern "C" {
 #define OSAL_TIRTOS_MAX_HWIP_PER_SOC         ((uint32_t) 40U)
 #define OSAL_TIRTOS_MAX_TIMERP_PER_SOC       (TimerP_numTimerDevices)
 
+#define OSAL_FREERTOS_MAX_SEMAPHOREP_PER_SOC ((uint32_t) 80U)
+#define OSAL_FREERTOS_MAX_HWIP_PER_SOC       ((uint32_t) 40U)
+#define OSAL_FREERTOS_MAX_TIMERP_PER_SOC     (TimerP_numTimerDevices)
+#define OSAL_FREERTOS_MAX_TASKP_PER_SOC      ((uint32_t) 20U)
+
 /* external references */
 extern Osal_HwAttrs  gOsal_HwAttrs;
 #if defined (BUILD_MCU)
