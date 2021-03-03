@@ -685,6 +685,7 @@ int32_t TimeSync_sendPtpFrame(TimeSync_Handle timeSyncHandle,
             pktInfo->userBufLen = size;
             pktInfo->appPriv = (void *)timeSyncHandle;
             pktInfo->txPortNum = (Enet_MacPort)ENET_MACPORT_NORM(txPort);
+            pktInfo->txPktTc = ENET_TRAFFIC_CLASS_INV;
 
             /* Save tx pkt info to re-use during notify callback */
             pTxTsPktInfo = &timeSyncHandle->txTsPktInfo;
